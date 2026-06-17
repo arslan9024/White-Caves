@@ -4,11 +4,16 @@
  */
 
 import { PrismaClient } from '@prisma/client';
+import { DATABASE_URL } from './config/env.js';
 import { createLogger } from './utils/logger.js';
 import { registerLeadScoringMiddleware } from './services/ai/leadScoringMiddleware.js';
 
 const log = createLogger('Database');
 const SLOW_QUERY_THRESHOLD_MS = Number(process.env.SLOW_QUERY_THRESHOLD_MS ?? 200);
+
+if (DATABASE_URL) {
+  process.env.DATABASE_URL = DATABASE_URL;
+}
 
 type PrismaLikeError = { code?: string; errorCode?: string };
 

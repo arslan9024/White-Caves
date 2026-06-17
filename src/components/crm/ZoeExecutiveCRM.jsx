@@ -1,56 +1,20 @@
 import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-import {
-  Briefcase,
-  Calendar,
-  Clock,
-  CheckCircle,
-  Users,
-  Video,
-  Phone,
-  Mail,
-  FileText,
-  AlertCircle,
-  Bell,
-  ArrowUp,
-  ArrowDown,
-  Plus,
-  Search,
-  MapPin,
-  Star,
-  Filter,
-  Inbox,
-  TrendingUp,
-  AlertTriangle,
-  Lightbulb,
-  DollarSign,
-  Shield,
-  Archive,
-  Eye,
-  ChevronRight,
-  Zap,
-  Building2,
-  Network,
-  Workflow,
-  Bot,
-  ChevronDown,
-  Play,
-  MessageSquare,
-  RefreshCw,
-  Database,
-  Loader2,
-  Download,
+import { 
+  Briefcase, Calendar, Clock, CheckCircle, Users,
+  Video, Phone, Mail, FileText, AlertCircle, Bell,
+  ArrowUp, ArrowDown, Plus, Search, MapPin, Star,
+  Filter, Inbox, TrendingUp, AlertTriangle, Lightbulb,
+  DollarSign, Shield, Archive, Eye, ChevronRight, Zap,
+  Building2, Network, Workflow, Bot, ChevronDown, Play,
+  MessageSquare, RefreshCw, Database, Loader2, Download
 } from 'lucide-react';
 import { AssistantDocsTab } from './shared';
 import { FlowchartViewer, ServiceDemoMode, ZoeConsole } from './index';
 import AIAssistantsRegistry from './ui/AIAssistantsRegistry';
 import { EXECUTIVES, DIRECTORS, DEPARTMENTS_CONFIG } from '../../data/organization/orgStructure';
 import { EMPLOYEES, WHATSAPP_AGENTS } from '../../data/organization/employees';
-import {
-  COMPANY_SERVICES,
-  getAllServices,
-  getServiceStats,
-} from '../../data/services/companyServices';
+import { COMPANY_SERVICES, getAllServices, getServiceStats } from '../../data/services/companyServices';
 import useOrganizationData from '../../hooks/useOrganizationData';
 import {
   selectFilteredSuggestions,
@@ -62,88 +26,24 @@ import {
   clearSuggestionFilters,
   selectLeadFunnelMetrics,
   selectComplianceMetrics,
-  selectConfidentialVault,
+  selectConfidentialVault
 } from '../../store/slices/aiAssistantDashboardSlice';
-import { crmDataService } from '../../services/CRMDataService';
+import { crmDataService } from '../../services/crmDataService';
 import './AssistantDashboard.css';
 import './ZoeExecutiveCRM.css';
 
 const MEETINGS = [
-  {
-    id: 1,
-    title: 'Board Meeting Q1 Review',
-    time: '10:00 AM',
-    duration: '2h',
-    type: 'board',
-    attendees: 8,
-    location: 'Conference Room A',
-    status: 'upcoming',
-  },
-  {
-    id: 2,
-    title: 'Client Meeting - Al Rashid Family',
-    time: '2:00 PM',
-    duration: '1h',
-    type: 'client',
-    attendees: 4,
-    location: 'VIP Room',
-    status: 'upcoming',
-  },
-  {
-    id: 3,
-    title: 'Marketing Strategy Review',
-    time: '4:00 PM',
-    duration: '45m',
-    type: 'internal',
-    attendees: 5,
-    location: 'Zoom',
-    status: 'upcoming',
-  },
-  {
-    id: 4,
-    title: 'Property Tour - Palm Jumeirah',
-    time: '9:00 AM',
-    duration: '3h',
-    type: 'site_visit',
-    attendees: 3,
-    location: 'Palm Jumeirah',
-    status: 'completed',
-  },
+  { id: 1, title: 'Board Meeting Q1 Review', time: '10:00 AM', duration: '2h', type: 'board', attendees: 8, location: 'Conference Room A', status: 'upcoming' },
+  { id: 2, title: 'Client Meeting - Al Rashid Family', time: '2:00 PM', duration: '1h', type: 'client', attendees: 4, location: 'VIP Room', status: 'upcoming' },
+  { id: 3, title: 'Marketing Strategy Review', time: '4:00 PM', duration: '45m', type: 'internal', attendees: 5, location: 'Zoom', status: 'upcoming' },
+  { id: 4, title: 'Property Tour - Palm Jumeirah', time: '9:00 AM', duration: '3h', type: 'site_visit', attendees: 3, location: 'Palm Jumeirah', status: 'completed' }
 ];
 
 const TASKS = [
-  {
-    id: 1,
-    title: 'Review Q1 Financial Report',
-    priority: 'high',
-    dueDate: '2024-01-10',
-    status: 'in_progress',
-    assignee: 'CEO',
-  },
-  {
-    id: 2,
-    title: 'Approve Marketing Budget',
-    priority: 'medium',
-    dueDate: '2024-01-12',
-    status: 'pending',
-    assignee: 'CEO',
-  },
-  {
-    id: 3,
-    title: 'Sign Partnership Agreement',
-    priority: 'high',
-    dueDate: '2024-01-09',
-    status: 'completed',
-    assignee: 'CEO',
-  },
-  {
-    id: 4,
-    title: 'Review New Agent Applications',
-    priority: 'low',
-    dueDate: '2024-01-15',
-    status: 'pending',
-    assignee: 'CEO',
-  },
+  { id: 1, title: 'Review Q1 Financial Report', priority: 'high', dueDate: '2024-01-10', status: 'in_progress', assignee: 'CEO' },
+  { id: 2, title: 'Approve Marketing Budget', priority: 'medium', dueDate: '2024-01-12', status: 'pending', assignee: 'CEO' },
+  { id: 3, title: 'Sign Partnership Agreement', priority: 'high', dueDate: '2024-01-09', status: 'completed', assignee: 'CEO' },
+  { id: 4, title: 'Review New Agent Applications', priority: 'low', dueDate: '2024-01-15', status: 'pending', assignee: 'CEO' }
 ];
 
 const ASSISTANT_COLORS = {
@@ -157,27 +57,27 @@ const ASSISTANT_COLORS = {
   laila: '#6366F1',
   aurora: '#14B8A6',
   sophia: '#F97316',
-  apex: '#FFD700',
+  apex: '#FFD700'
 };
 
 const TYPE_ICONS = {
   process_improvement: TrendingUp,
   new_opportunity: Lightbulb,
   risk_alert: AlertTriangle,
-  cost_saving: DollarSign,
+  cost_saving: DollarSign
 };
 
 const FEATURE_TO_TAB = {
-  dashboard: 'console',
-  suggestion_inbox: 'suggestions',
-  executive_reports: 'reports',
-  kpi_analytics: 'analytics',
-  md_briefings: 'briefings',
-  organization: 'organization',
-  services: 'services',
-  events: 'events',
-  demo: 'demo',
-  docs: 'docs',
+  'dashboard': 'console',
+  'suggestion_inbox': 'suggestions',
+  'executive_reports': 'reports',
+  'kpi_analytics': 'analytics',
+  'md_briefings': 'briefings',
+  'organization': 'organization',
+  'services': 'services',
+  'events': 'events',
+  'demo': 'demo',
+  'docs': 'docs'
 };
 
 const ZoeExecutiveCRM = ({ activeFeature }) => {
@@ -209,19 +109,18 @@ const ZoeExecutiveCRM = ({ activeFeature }) => {
     seeding,
     refetch,
     seedDatabase,
-    getEmployeesByLevel,
+    getEmployeesByLevel
   } = useOrganizationData();
-
+  
   const [employeeSearch, setEmployeeSearch] = useState('');
   const [employeeFilter, setEmployeeFilter] = useState('all');
   const [departmentFilter, setDepartmentFilter] = useState('all');
   const [serviceSearch, setServiceSearch] = useState('');
   const [serviceCategoryFilter, setServiceCategoryFilter] = useState('all');
 
-  const activeTab =
-    activeFeature && FEATURE_TO_TAB[activeFeature] ? FEATURE_TO_TAB[activeFeature] : internalTab;
+  const activeTab = activeFeature && FEATURE_TO_TAB[activeFeature] ? FEATURE_TO_TAB[activeFeature] : internalTab;
   const setActiveTab = setInternalTab;
-
+  
   const filteredSuggestions = useSelector(selectFilteredSuggestions);
   const unreviewedCount = useSelector(selectUnreviewedSuggestionsCount);
   const criticalSuggestions = useSelector(selectCriticalSuggestions);
@@ -247,22 +146,20 @@ const ZoeExecutiveCRM = ({ activeFeature }) => {
 
   const filteredEmployees = useMemo(() => {
     return apiEmployees.filter(emp => {
-      const matchesSearch =
-        !employeeSearch ||
+      const matchesSearch = !employeeSearch || 
         emp.name?.toLowerCase().includes(employeeSearch.toLowerCase()) ||
         emp.jobTitle?.toLowerCase().includes(employeeSearch.toLowerCase()) ||
         emp.email?.toLowerCase().includes(employeeSearch.toLowerCase());
       const matchesLevel = employeeFilter === 'all' || emp.level === employeeFilter;
-      const matchesDept =
-        departmentFilter === 'all' ||
-        emp.department?._id === departmentFilter ||
+      const matchesDept = departmentFilter === 'all' || 
+        emp.department?._id === departmentFilter || 
         emp.department?.code === departmentFilter;
       return matchesSearch && matchesLevel && matchesDept;
     });
   }, [apiEmployees, employeeSearch, employeeFilter, departmentFilter]);
 
   const employeesByLevel = useMemo(() => {
-    const levels = { 'C-Suite': 0, Director: 0, Senior: 0, Mid: 0, Junior: 0 };
+    const levels = { 'C-Suite': 0, 'Director': 0, 'Senior': 0, 'Mid': 0, 'Junior': 0 };
     apiEmployees.forEach(emp => {
       if (levels[emp.level] !== undefined) levels[emp.level]++;
     });
@@ -271,12 +168,10 @@ const ZoeExecutiveCRM = ({ activeFeature }) => {
 
   const filteredServices = useMemo(() => {
     return apiServices.filter(svc => {
-      const matchesSearch =
-        !serviceSearch ||
+      const matchesSearch = !serviceSearch || 
         svc.name?.toLowerCase().includes(serviceSearch.toLowerCase()) ||
         svc.description?.toLowerCase().includes(serviceSearch.toLowerCase());
-      const matchesCategory =
-        serviceCategoryFilter === 'all' || svc.category === serviceCategoryFilter;
+      const matchesCategory = serviceCategoryFilter === 'all' || svc.category === serviceCategoryFilter;
       return matchesSearch && matchesCategory;
     });
   }, [apiServices, serviceSearch, serviceCategoryFilter]);
@@ -286,22 +181,16 @@ const ZoeExecutiveCRM = ({ activeFeature }) => {
     return Array.from(cats);
   }, [apiServices]);
 
-  const handleStatusChange = useCallback(
-    (suggestionId, status) => {
-      dispatch(updateSuggestionStatus({ suggestionId, status }));
-      if (selectedSuggestion?.id === suggestionId) {
-        setSelectedSuggestion(prev => ({ ...prev, status }));
-      }
-    },
-    [dispatch, selectedSuggestion]
-  );
+  const handleStatusChange = useCallback((suggestionId, status) => {
+    dispatch(updateSuggestionStatus({ suggestionId, status }));
+    if (selectedSuggestion?.id === suggestionId) {
+      setSelectedSuggestion(prev => ({ ...prev, status }));
+    }
+  }, [dispatch, selectedSuggestion]);
 
-  const handleFilterChange = useCallback(
-    (filterType, value) => {
-      dispatch(setSuggestionFilters({ [filterType]: value }));
-    },
-    [dispatch]
-  );
+  const handleFilterChange = useCallback((filterType, value) => {
+    dispatch(setSuggestionFilters({ [filterType]: value }));
+  }, [dispatch]);
 
   const fetchRecruitmentOverview = useCallback(async () => {
     try {
@@ -316,7 +205,7 @@ const ZoeExecutiveCRM = ({ activeFeature }) => {
     }
   }, []);
 
-  const fetchManagerShortlist = useCallback(async jobId => {
+  const fetchManagerShortlist = useCallback(async (jobId) => {
     if (!jobId) {
       setManagerShortlist([]);
       return;
@@ -328,7 +217,7 @@ const ZoeExecutiveCRM = ({ activeFeature }) => {
       const data = await crmDataService.getManagerShortlist(jobId, {
         minScore: 70,
         limit: 20,
-        role: 'hiring_manager',
+        role: 'hiring_manager'
       });
       setManagerShortlist(data.shortlist || []);
     } catch (error) {
@@ -338,34 +227,31 @@ const ZoeExecutiveCRM = ({ activeFeature }) => {
     }
   }, []);
 
-  const handleManagerDecision = useCallback(
-    async (applicationId, decision) => {
-      if (!applicationId) {
-        return;
-      }
+  const handleManagerDecision = useCallback(async (applicationId, decision) => {
+    if (!applicationId) {
+      return;
+    }
 
-      try {
-        setActiveReviewApplicationId(applicationId);
-        setReviewActionError('');
-        setReviewActionMessage('');
-        await crmDataService.submitManagerReview(
-          applicationId,
-          decision,
-          `Decision from Zoe dashboard: ${decision}`,
-          'hiring_manager'
-        );
+    try {
+      setActiveReviewApplicationId(applicationId);
+      setReviewActionError('');
+      setReviewActionMessage('');
+      await crmDataService.submitManagerReview(
+        applicationId,
+        decision,
+        `Decision from Zoe dashboard: ${decision}`,
+        'hiring_manager'
+      );
 
-        setReviewActionMessage(`Review decision recorded: ${decision}`);
-        await fetchManagerShortlist(selectedShortlistJobId);
-        await fetchRecruitmentOverview();
-      } catch (error) {
-        setReviewActionError(error.message || 'Failed to submit manager review decision');
-      } finally {
-        setActiveReviewApplicationId('');
-      }
-    },
-    [fetchManagerShortlist, fetchRecruitmentOverview, selectedShortlistJobId]
-  );
+      setReviewActionMessage(`Review decision recorded: ${decision}`);
+      await fetchManagerShortlist(selectedShortlistJobId);
+      await fetchRecruitmentOverview();
+    } catch (error) {
+      setReviewActionError(error.message || 'Failed to submit manager review decision');
+    } finally {
+      setActiveReviewApplicationId('');
+    }
+  }, [fetchManagerShortlist, fetchRecruitmentOverview, selectedShortlistJobId]);
 
   const handleExportKpiTrends = useCallback(async () => {
     try {
@@ -402,7 +288,7 @@ const ZoeExecutiveCRM = ({ activeFeature }) => {
     fetchManagerShortlist(selectedShortlistJobId);
   }, [fetchManagerShortlist, selectedShortlistJobId]);
 
-  const formatTimeAgo = timestamp => {
+  const formatTimeAgo = (timestamp) => {
     if (!timestamp) return 'Unknown';
     const diff = Date.now() - new Date(timestamp).getTime();
     const hours = Math.floor(diff / (1000 * 60 * 60));
@@ -412,27 +298,22 @@ const ZoeExecutiveCRM = ({ activeFeature }) => {
     return 'Just now';
   };
 
-  const formatCurrency = value => {
+  const formatCurrency = (value) => {
     const numeric = Number(value || 0);
     return `AED ${numeric.toLocaleString()}`;
   };
 
-  const getPriorityClass = priority => {
+  const getPriorityClass = (priority) => {
     switch (priority) {
-      case 'critical':
-        return 'priority-critical';
-      case 'high':
-        return 'priority-high';
-      case 'medium':
-        return 'priority-medium';
-      case 'low':
-        return 'priority-low';
-      default:
-        return '';
+      case 'critical': return 'priority-critical';
+      case 'high': return 'priority-high';
+      case 'medium': return 'priority-medium';
+      case 'low': return 'priority-low';
+      default: return '';
     }
   };
 
-  const getTypeIcon = type => {
+  const getTypeIcon = (type) => {
     const IconComponent = TYPE_ICONS[type] || Lightbulb;
     return <IconComponent size={16} />;
   };
@@ -440,10 +321,7 @@ const ZoeExecutiveCRM = ({ activeFeature }) => {
   return (
     <div className="assistant-dashboard zoe">
       <div className="assistant-header">
-        <div
-          className="assistant-avatar"
-          style={{ background: 'linear-gradient(135deg, #43E97B 0%, #38F9D7 100%)' }}
-        >
+        <div className="assistant-avatar" style={{ background: 'linear-gradient(135deg, #43E97B 0%, #38F9D7 100%)' }}>
           <Briefcase size={28} />
         </div>
         <div className="assistant-info">
@@ -458,10 +336,7 @@ const ZoeExecutiveCRM = ({ activeFeature }) => {
 
       <div className="quick-stats">
         <div className="stat-card highlight">
-          <div
-            className="stat-icon"
-            style={{ background: 'rgba(239, 68, 68, 0.2)', color: '#EF4444' }}
-          >
+          <div className="stat-icon" style={{ background: 'rgba(239, 68, 68, 0.2)', color: '#EF4444' }}>
             <Inbox size={20} />
           </div>
           <div className="stat-content">
@@ -473,10 +348,7 @@ const ZoeExecutiveCRM = ({ activeFeature }) => {
           )}
         </div>
         <div className="stat-card">
-          <div
-            className="stat-icon"
-            style={{ background: 'rgba(67, 233, 123, 0.2)', color: '#43E97B' }}
-          >
+          <div className="stat-icon" style={{ background: 'rgba(67, 233, 123, 0.2)', color: '#43E97B' }}>
             <Calendar size={20} />
           </div>
           <div className="stat-content">
@@ -486,10 +358,7 @@ const ZoeExecutiveCRM = ({ activeFeature }) => {
           <span className="stat-change">3 remaining</span>
         </div>
         <div className="stat-card">
-          <div
-            className="stat-icon"
-            style={{ background: 'rgba(245, 158, 11, 0.2)', color: '#F59E0B' }}
-          >
+          <div className="stat-icon" style={{ background: 'rgba(245, 158, 11, 0.2)', color: '#F59E0B' }}>
             <CheckCircle size={20} />
           </div>
           <div className="stat-content">
@@ -499,63 +368,42 @@ const ZoeExecutiveCRM = ({ activeFeature }) => {
           <span className="stat-change warning">4 urgent</span>
         </div>
         <div className="stat-card">
-          <div
-            className="stat-icon"
-            style={{ background: 'rgba(139, 92, 246, 0.2)', color: '#8B5CF6' }}
-          >
+          <div className="stat-icon" style={{ background: 'rgba(139, 92, 246, 0.2)', color: '#8B5CF6' }}>
             <Bot size={20} />
           </div>
           <div className="stat-content">
             <span className="stat-value">{orgStats?.assistants || apiAssistants.length || 32}</span>
             <span className="stat-label">AI Assistants</span>
           </div>
-          <span className="stat-change positive">
-            {orgStats?.onlineAssistants || apiAssistants.filter(a => a.status === 'online').length}{' '}
-            online
-          </span>
+          <span className="stat-change positive">{orgStats?.onlineAssistants || apiAssistants.filter(a => a.status === 'online').length} online</span>
         </div>
         <div className="stat-card">
-          <div
-            className="stat-icon"
-            style={{ background: 'rgba(6, 182, 212, 0.2)', color: '#06B6D4' }}
-          >
+          <div className="stat-icon" style={{ background: 'rgba(6, 182, 212, 0.2)', color: '#06B6D4' }}>
             <Users size={20} />
           </div>
           <div className="stat-content">
             <span className="stat-value">{orgStats?.employees || apiEmployees.length || 132}</span>
             <span className="stat-label">Employees</span>
           </div>
-          <span className="stat-change positive">
-            {orgStats?.activeEmployees ||
-              apiEmployees.filter(e => e.employment?.status === 'active').length}{' '}
-            active
-          </span>
+          <span className="stat-change positive">{orgStats?.activeEmployees || apiEmployees.filter(e => e.employment?.status === 'active').length} active</span>
         </div>
       </div>
 
       <div className="quick-stats secondary">
         <div className="stat-card">
-          <div
-            className="stat-icon"
-            style={{ background: 'rgba(99, 102, 241, 0.2)', color: '#6366F1' }}
-          >
+          <div className="stat-icon" style={{ background: 'rgba(99, 102, 241, 0.2)', color: '#6366F1' }}>
             <Shield size={20} />
           </div>
           <div className="stat-content">
             <span className="stat-value">{complianceMetrics.totalProfiles || 89}</span>
             <span className="stat-label">KYC Profiles</span>
           </div>
-          <span
-            className={`stat-change ${complianceMetrics.pendingReview > 5 ? 'warning' : 'positive'}`}
-          >
+          <span className={`stat-change ${complianceMetrics.pendingReview > 5 ? 'warning' : 'positive'}`}>
             {complianceMetrics.pendingReview || 12} pending
           </span>
         </div>
         <div className="stat-card">
-          <div
-            className="stat-icon"
-            style={{ background: 'rgba(236, 72, 153, 0.2)', color: '#EC4899' }}
-          >
+          <div className="stat-icon" style={{ background: 'rgba(236, 72, 153, 0.2)', color: '#EC4899' }}>
             <TrendingUp size={20} />
           </div>
           <div className="stat-content">
@@ -567,10 +415,7 @@ const ZoeExecutiveCRM = ({ activeFeature }) => {
           </span>
         </div>
         <div className="stat-card">
-          <div
-            className="stat-icon"
-            style={{ background: 'rgba(20, 184, 166, 0.2)', color: '#14B8A6' }}
-          >
+          <div className="stat-icon" style={{ background: 'rgba(20, 184, 166, 0.2)', color: '#14B8A6' }}>
             <Archive size={20} />
           </div>
           <div className="stat-content">
@@ -582,10 +427,7 @@ const ZoeExecutiveCRM = ({ activeFeature }) => {
           </span>
         </div>
         <div className="stat-card">
-          <div
-            className="stat-icon"
-            style={{ background: 'rgba(251, 146, 60, 0.2)', color: '#FB923C' }}
-          >
+          <div className="stat-icon" style={{ background: 'rgba(251, 146, 60, 0.2)', color: '#FB923C' }}>
             <Zap size={20} />
           </div>
           <div className="stat-content">
@@ -595,51 +437,29 @@ const ZoeExecutiveCRM = ({ activeFeature }) => {
           <span className="stat-change">Pipeline split</span>
         </div>
         <div className="stat-card highlight">
-          <div
-            className="stat-icon"
-            style={{ background: 'rgba(99, 102, 241, 0.2)', color: '#6366F1' }}
-          >
+          <div className="stat-icon" style={{ background: 'rgba(99, 102, 241, 0.2)', color: '#6366F1' }}>
             <TrendingUp size={20} />
           </div>
           <div className="stat-content">
-            <span className="stat-value">
-              {(orgStats?.monthlyTransactions || 16000).toLocaleString()}+
-            </span>
+            <span className="stat-value">{(orgStats?.monthlyTransactions || 16000).toLocaleString()}+</span>
             <span className="stat-label">Monthly Transactions</span>
           </div>
           <span className="stat-change positive">All services</span>
         </div>
         <div className="stat-card">
-          <div
-            className="stat-icon"
-            style={{ background: 'rgba(34, 197, 94, 0.2)', color: '#22C55E' }}
-          >
+          <div className="stat-icon" style={{ background: 'rgba(34, 197, 94, 0.2)', color: '#22C55E' }}>
             <Workflow size={20} />
           </div>
           <div className="stat-content">
             <span className="stat-value">{orgStats?.services || apiServices.length || 35}</span>
             <span className="stat-label">Services</span>
           </div>
-          <span className="stat-change positive">
-            {orgStats?.activeServices || apiServices.filter(s => s.status === 'active').length}{' '}
-            active
-          </span>
+          <span className="stat-change positive">{orgStats?.activeServices || apiServices.filter(s => s.status === 'active').length} active</span>
         </div>
       </div>
 
       <div className="assistant-tabs">
-        {[
-          'console',
-          'analytics',
-          'suggestions',
-          'assistants',
-          'organization',
-          'departments',
-          'employees',
-          'services',
-          'demo',
-          'docs',
-        ].map(tab => (
+        {['console', 'analytics', 'suggestions', 'assistants', 'organization', 'departments', 'employees', 'services', 'demo', 'docs'].map(tab => (
           <button
             key={tab}
             className={`tab-btn ${activeTab === tab ? 'active' : ''}`}
@@ -658,15 +478,11 @@ const ZoeExecutiveCRM = ({ activeFeature }) => {
             {tab === 'services' && <Workflow size={14} />}
             {tab === 'demo' && <Play size={14} />}
             {tab === 'docs' && <FileText size={14} />}
-            {tab === 'console'
-              ? 'AI Console'
-              : tab === 'analytics'
-                ? 'Recruitment Analytics'
-                : tab === 'assistants'
-                  ? 'AI Registry'
-                  : tab === 'employees'
-                    ? `Employees (${apiEmployees.length || orgStats?.employees || 132})`
-                    : tab.charAt(0).toUpperCase() + tab.slice(1)}
+            {tab === 'console' ? 'AI Console' : 
+             tab === 'analytics' ? 'Recruitment Analytics' :
+             tab === 'assistants' ? 'AI Registry' : 
+             tab === 'employees' ? `Employees (${apiEmployees.length || orgStats?.employees || 132})` :
+             tab.charAt(0).toUpperCase() + tab.slice(1)}
           </button>
         ))}
       </div>
@@ -682,32 +498,16 @@ const ZoeExecutiveCRM = ({ activeFeature }) => {
           <div className="recruitment-analytics-view">
             <div className="view-header recruitment-header">
               <div>
-                <h3>
-                  <TrendingUp size={18} /> Recruitment Intelligence
-                </h3>
-                <p className="view-subtitle">
-                  Live hiring KPIs for Nancy, Linda, and Zoe coordination
-                </p>
+                <h3><TrendingUp size={18} /> Recruitment Intelligence</h3>
+                <p className="view-subtitle">Live hiring KPIs for Nancy, Linda, and Zoe coordination</p>
               </div>
               <div className="analytics-actions">
-                <button
-                  className="action-btn secondary"
-                  onClick={handleExportKpiTrends}
-                  disabled={exportLoading}
-                >
+                <button className="action-btn secondary" onClick={handleExportKpiTrends} disabled={exportLoading}>
                   {exportLoading ? <Loader2 size={14} className="spin" /> : <Download size={14} />}
                   Export Trends
                 </button>
-                <button
-                  className="action-btn secondary"
-                  onClick={fetchRecruitmentOverview}
-                  disabled={recruitmentLoading}
-                >
-                  {recruitmentLoading ? (
-                    <Loader2 size={14} className="spin" />
-                  ) : (
-                    <RefreshCw size={14} />
-                  )}
+                <button className="action-btn secondary" onClick={fetchRecruitmentOverview} disabled={recruitmentLoading}>
+                  {recruitmentLoading ? <Loader2 size={14} className="spin" /> : <RefreshCw size={14} />}
                   Refresh
                 </button>
               </div>
@@ -721,66 +521,44 @@ const ZoeExecutiveCRM = ({ activeFeature }) => {
 
             <div className="quick-stats recruitment-overview-grid">
               <div className="stat-card highlight">
-                <div
-                  className="stat-icon"
-                  style={{ background: 'rgba(16, 185, 129, 0.2)', color: '#10B981' }}
-                >
+                <div className="stat-icon" style={{ background: 'rgba(16, 185, 129, 0.2)', color: '#10B981' }}>
                   <Briefcase size={20} />
                 </div>
                 <div className="stat-content">
                   <span className="stat-value">{recruitmentOverview?.totals?.open_jobs ?? 0}</span>
                   <span className="stat-label">Open Jobs</span>
                 </div>
-                <span className="stat-change positive">
-                  {recruitmentOverview?.totals?.jobs ?? 0} total
-                </span>
+                <span className="stat-change positive">{recruitmentOverview?.totals?.jobs ?? 0} total</span>
               </div>
               <div className="stat-card">
-                <div
-                  className="stat-icon"
-                  style={{ background: 'rgba(6, 182, 212, 0.2)', color: '#06B6D4' }}
-                >
+                <div className="stat-icon" style={{ background: 'rgba(6, 182, 212, 0.2)', color: '#06B6D4' }}>
                   <Users size={20} />
                 </div>
                 <div className="stat-content">
-                  <span className="stat-value">
-                    {recruitmentOverview?.totals?.active_applications ?? 0}
-                  </span>
+                  <span className="stat-value">{recruitmentOverview?.totals?.active_applications ?? 0}</span>
                   <span className="stat-label">Active Applications</span>
                 </div>
                 <span className="stat-change">Pipeline live</span>
               </div>
               <div className="stat-card">
-                <div
-                  className="stat-icon"
-                  style={{ background: 'rgba(245, 158, 11, 0.2)', color: '#F59E0B' }}
-                >
+                <div className="stat-icon" style={{ background: 'rgba(245, 158, 11, 0.2)', color: '#F59E0B' }}>
                   <Calendar size={20} />
                 </div>
                 <div className="stat-content">
-                  <span className="stat-value">
-                    {recruitmentOverview?.totals?.interview_pipeline ?? 0}
-                  </span>
+                  <span className="stat-value">{recruitmentOverview?.totals?.interview_pipeline ?? 0}</span>
                   <span className="stat-label">Interview Stage</span>
                 </div>
                 <span className="stat-change">Ready to schedule</span>
               </div>
               <div className="stat-card">
-                <div
-                  className="stat-icon"
-                  style={{ background: 'rgba(139, 92, 246, 0.2)', color: '#8B5CF6' }}
-                >
+                <div className="stat-icon" style={{ background: 'rgba(139, 92, 246, 0.2)', color: '#8B5CF6' }}>
                   <FileText size={20} />
                 </div>
                 <div className="stat-content">
-                  <span className="stat-value">
-                    {recruitmentOverview?.totals?.offer_pipeline ?? 0}
-                  </span>
+                  <span className="stat-value">{recruitmentOverview?.totals?.offer_pipeline ?? 0}</span>
                   <span className="stat-label">Offer Stage</span>
                 </div>
-                <span className="stat-change positive">
-                  {recruitmentOverview?.totals?.hired ?? 0} hired
-                </span>
+                <span className="stat-change positive">{recruitmentOverview?.totals?.hired ?? 0} hired</span>
               </div>
             </div>
 
@@ -789,46 +567,19 @@ const ZoeExecutiveCRM = ({ activeFeature }) => {
                 <TrendingUp size={24} />
                 <h4>Score Quality</h4>
                 <p>Average score: {recruitmentOverview?.screening?.average_score ?? 0}/100</p>
-                <div className="metric-pair">
-                  <span className="metric-label">Strong</span>
-                  <span>{recruitmentOverview?.screening?.strong_matches ?? 0}</span>
-                </div>
-                <div className="metric-pair">
-                  <span className="metric-label">Moderate</span>
-                  <span>{recruitmentOverview?.screening?.moderate_matches ?? 0}</span>
-                </div>
-                <div className="metric-pair">
-                  <span className="metric-label">Weak</span>
-                  <span>{recruitmentOverview?.screening?.weak_matches ?? 0}</span>
-                </div>
-                <div className="metric-pair">
-                  <span className="metric-label">Rejected</span>
-                  <span>{recruitmentOverview?.screening?.rejected_matches ?? 0}</span>
-                </div>
+                <div className="metric-pair"><span className="metric-label">Strong</span><span>{recruitmentOverview?.screening?.strong_matches ?? 0}</span></div>
+                <div className="metric-pair"><span className="metric-label">Moderate</span><span>{recruitmentOverview?.screening?.moderate_matches ?? 0}</span></div>
+                <div className="metric-pair"><span className="metric-label">Weak</span><span>{recruitmentOverview?.screening?.weak_matches ?? 0}</span></div>
+                <div className="metric-pair"><span className="metric-label">Rejected</span><span>{recruitmentOverview?.screening?.rejected_matches ?? 0}</span></div>
               </div>
               <div className="report-card">
                 <Workflow size={24} />
                 <h4>Pipeline Distribution</h4>
                 <p>Median score: {recruitmentOverview?.screening?.median_score ?? 0}</p>
-                <div className="metric-pair">
-                  <span className="metric-label">Very high</span>
-                  <span>{recruitmentOverview?.screening?.score_distribution?.very_high ?? 0}</span>
-                </div>
-                <div className="metric-pair">
-                  <span className="metric-label">High</span>
-                  <span>{recruitmentOverview?.screening?.score_distribution?.high ?? 0}</span>
-                </div>
-                <div className="metric-pair">
-                  <span className="metric-label">Medium</span>
-                  <span>{recruitmentOverview?.screening?.score_distribution?.medium ?? 0}</span>
-                </div>
-                <div className="metric-pair">
-                  <span className="metric-label">Low + very low</span>
-                  <span>
-                    {(recruitmentOverview?.screening?.score_distribution?.low ?? 0) +
-                      (recruitmentOverview?.screening?.score_distribution?.very_low ?? 0)}
-                  </span>
-                </div>
+                <div className="metric-pair"><span className="metric-label">Very high</span><span>{recruitmentOverview?.screening?.score_distribution?.very_high ?? 0}</span></div>
+                <div className="metric-pair"><span className="metric-label">High</span><span>{recruitmentOverview?.screening?.score_distribution?.high ?? 0}</span></div>
+                <div className="metric-pair"><span className="metric-label">Medium</span><span>{recruitmentOverview?.screening?.score_distribution?.medium ?? 0}</span></div>
+                <div className="metric-pair"><span className="metric-label">Low + very low</span><span>{(recruitmentOverview?.screening?.score_distribution?.low ?? 0) + (recruitmentOverview?.screening?.score_distribution?.very_low ?? 0)}</span></div>
               </div>
               <div className="report-card">
                 <Building2 size={24} />
@@ -844,8 +595,7 @@ const ZoeExecutiveCRM = ({ activeFeature }) => {
                       <span>{job.applications} apps</span>
                     </div>
                   ))}
-                  {(!recruitmentOverview?.recent_jobs ||
-                    recruitmentOverview.recent_jobs.length === 0) && (
+                  {(!recruitmentOverview?.recent_jobs || recruitmentOverview.recent_jobs.length === 0) && (
                     <div className="job-pill empty">No recruitment jobs yet</div>
                   )}
                 </div>
@@ -854,140 +604,86 @@ const ZoeExecutiveCRM = ({ activeFeature }) => {
                 <Clock size={24} />
                 <h4>KPI Trends</h4>
                 <p>Latest hiring efficiency trends from recruitment history</p>
-                <div className="metric-pair">
-                  <span className="metric-label">Time to hire</span>
-                  <span>{recruitmentOverview?.kpi_trends?.latest?.avg_time_to_hire ?? 0} days</span>
-                </div>
+                <div className="metric-pair"><span className="metric-label">Time to hire</span><span>{recruitmentOverview?.kpi_trends?.latest?.avg_time_to_hire ?? 0} days</span></div>
                 <div className="metric-pair">
                   <span className="metric-label">Time delta</span>
                   <span>
-                    {(recruitmentOverview?.kpi_trends?.deltas?.time_to_hire_days ?? 0) <= 0 ? (
-                      <ArrowDown size={12} />
-                    ) : (
-                      <ArrowUp size={12} />
-                    )}{' '}
-                    {recruitmentOverview?.kpi_trends?.deltas?.time_to_hire_days ?? 0} days
+                    {(recruitmentOverview?.kpi_trends?.deltas?.time_to_hire_days ?? 0) <= 0 ? <ArrowDown size={12} /> : <ArrowUp size={12} />} {recruitmentOverview?.kpi_trends?.deltas?.time_to_hire_days ?? 0} days
                   </span>
                 </div>
-                <div className="metric-pair">
-                  <span className="metric-label">Cost per hire</span>
-                  <span>
-                    {formatCurrency(
-                      recruitmentOverview?.kpi_trends?.latest?.avg_cost_per_hire ?? 0
-                    )}
-                  </span>
-                </div>
-                <div className="metric-pair">
-                  <span className="metric-label">Automation</span>
-                  <span>
-                    {recruitmentOverview?.kpi_trends?.latest?.automation_percentage ?? 0}%
-                  </span>
-                </div>
+                <div className="metric-pair"><span className="metric-label">Cost per hire</span><span>{formatCurrency(recruitmentOverview?.kpi_trends?.latest?.avg_cost_per_hire ?? 0)}</span></div>
+                <div className="metric-pair"><span className="metric-label">Automation</span><span>{recruitmentOverview?.kpi_trends?.latest?.automation_percentage ?? 0}%</span></div>
               </div>
             </div>
 
             <div className="manager-shortlist-panel">
               <div className="manager-shortlist-header">
                 <div>
-                  <h4>
-                    <Users size={18} /> Manager Shortlist Workflow
-                  </h4>
-                  <p>
-                    Hiring managers can shortlist, hold, or reject from the live score pipeline.
-                  </p>
+                  <h4><Users size={18} /> Manager Shortlist Workflow</h4>
+                  <p>Hiring managers can shortlist, hold, or reject from the live score pipeline.</p>
                 </div>
                 <div className="shortlist-job-selector">
                   <label htmlFor="shortlist-job">Open role</label>
                   <select
                     id="shortlist-job"
                     value={selectedShortlistJobId}
-                    onChange={e => setSelectedShortlistJobId(e.target.value)}
+                    onChange={(e) => setSelectedShortlistJobId(e.target.value)}
                   >
                     {(recruitmentOverview?.recent_jobs || []).map(job => (
-                      <option key={job.id} value={job.id}>
-                        {job.title}
-                      </option>
+                      <option key={job.id} value={job.id}>{job.title}</option>
                     ))}
                   </select>
                 </div>
               </div>
 
-              {reviewActionMessage && (
-                <div className="analytics-success">
-                  <CheckCircle size={14} /> {reviewActionMessage}
-                </div>
-              )}
-              {reviewActionError && (
-                <div className="analytics-error">
-                  <AlertCircle size={14} /> {reviewActionError}
-                </div>
-              )}
-              {shortlistError && (
-                <div className="analytics-error">
-                  <AlertCircle size={14} /> {shortlistError}
-                </div>
-              )}
+              {reviewActionMessage && <div className="analytics-success"><CheckCircle size={14} /> {reviewActionMessage}</div>}
+              {reviewActionError && <div className="analytics-error"><AlertCircle size={14} /> {reviewActionError}</div>}
+              {shortlistError && <div className="analytics-error"><AlertCircle size={14} /> {shortlistError}</div>}
 
               <div className="shortlist-candidate-list">
                 {shortlistLoading && (
-                  <div className="shortlist-empty">
-                    <Loader2 size={16} className="spin" /> Loading manager shortlist...
-                  </div>
+                  <div className="shortlist-empty"><Loader2 size={16} className="spin" /> Loading manager shortlist...</div>
                 )}
 
-                {!shortlistLoading &&
-                  managerShortlist.map(entry => (
-                    <div key={entry.candidate.id} className="shortlist-candidate-item">
-                      <div className="candidate-main">
-                        <strong>{entry.candidate.name}</strong>
-                        <span>{entry.candidate.email}</span>
-                      </div>
-                      <div className="candidate-metrics">
-                        <span className="score-chip">{Math.round(entry.score.overall)} / 100</span>
-                        <span className="status-chip">{entry.score.screening_status}</span>
-                        <span className="recommendation-chip">
-                          {entry.recommendation.replace('_', ' ')}
-                        </span>
-                      </div>
-                      <div className="candidate-actions">
-                        <button
-                          className="action-btn secondary"
-                          disabled={
-                            !entry.application?.id ||
-                            activeReviewApplicationId === entry.application?.id
-                          }
-                          onClick={() => handleManagerDecision(entry.application?.id, 'shortlist')}
-                        >
-                          Shortlist
-                        </button>
-                        <button
-                          className="action-btn secondary"
-                          disabled={
-                            !entry.application?.id ||
-                            activeReviewApplicationId === entry.application?.id
-                          }
-                          onClick={() => handleManagerDecision(entry.application?.id, 'hold')}
-                        >
-                          Hold
-                        </button>
-                        <button
-                          className="action-btn secondary danger"
-                          disabled={
-                            !entry.application?.id ||
-                            activeReviewApplicationId === entry.application?.id
-                          }
-                          onClick={() => handleManagerDecision(entry.application?.id, 'reject')}
-                        >
-                          Reject
-                        </button>
-                      </div>
+                {!shortlistLoading && managerShortlist.map(entry => (
+                  <div key={entry.candidate.id} className="shortlist-candidate-item">
+                    <div className="candidate-main">
+                      <strong>{entry.candidate.name}</strong>
+                      <span>{entry.candidate.email}</span>
                     </div>
-                  ))}
+                    <div className="candidate-metrics">
+                      <span className="score-chip">{Math.round(entry.score.overall)} / 100</span>
+                      <span className="status-chip">{entry.score.screening_status}</span>
+                      <span className="recommendation-chip">{entry.recommendation.replace('_', ' ')}</span>
+                    </div>
+                    <div className="candidate-actions">
+                      <button
+                        className="action-btn secondary"
+                        disabled={!entry.application?.id || activeReviewApplicationId === entry.application?.id}
+                        onClick={() => handleManagerDecision(entry.application?.id, 'shortlist')}
+                      >
+                        Shortlist
+                      </button>
+                      <button
+                        className="action-btn secondary"
+                        disabled={!entry.application?.id || activeReviewApplicationId === entry.application?.id}
+                        onClick={() => handleManagerDecision(entry.application?.id, 'hold')}
+                      >
+                        Hold
+                      </button>
+                      <button
+                        className="action-btn secondary danger"
+                        disabled={!entry.application?.id || activeReviewApplicationId === entry.application?.id}
+                        onClick={() => handleManagerDecision(entry.application?.id, 'reject')}
+                      >
+                        Reject
+                      </button>
+                    </div>
+                  </div>
+                ))}
 
                 {!shortlistLoading && managerShortlist.length === 0 && (
-                  <div className="shortlist-empty">
-                    No candidates met the shortlist threshold for this role.
-                  </div>
+                  <div className="shortlist-empty">No candidates met the shortlist threshold for this role.</div>
                 )}
               </div>
             </div>
@@ -1004,13 +700,13 @@ const ZoeExecutiveCRM = ({ activeFeature }) => {
                 </div>
                 <div className="alert-list">
                   {criticalSuggestions.map(suggestion => (
-                    <div
-                      key={suggestion.id}
+                    <div 
+                      key={suggestion.id} 
                       className="alert-card critical"
                       onClick={() => setSelectedSuggestion(suggestion)}
                     >
                       <div className="alert-content">
-                        <span
+                        <span 
                           className="assistant-badge"
                           style={{ background: ASSISTANT_COLORS[suggestion.fromAssistant] }}
                         >
@@ -1027,15 +723,13 @@ const ZoeExecutiveCRM = ({ activeFeature }) => {
 
             <div className="inbox-section">
               <div className="inbox-header">
-                <h3>
-                  <Inbox size={18} /> Suggestion Inbox
-                </h3>
+                <h3><Inbox size={18} /> Suggestion Inbox</h3>
                 <div className="filter-controls">
                   <div className="filter-group">
                     <Filter size={14} />
-                    <select
-                      value={filters.priority || 'all'}
-                      onChange={e => handleFilterChange('priority', e.target.value)}
+                    <select 
+                      value={filters.priority || 'all'} 
+                      onChange={(e) => handleFilterChange('priority', e.target.value)}
                     >
                       <option value="all">All Priorities</option>
                       <option value="critical">Critical</option>
@@ -1045,9 +739,9 @@ const ZoeExecutiveCRM = ({ activeFeature }) => {
                     </select>
                   </div>
                   <div className="filter-group">
-                    <select
-                      value={filters.department || 'all'}
-                      onChange={e => handleFilterChange('department', e.target.value)}
+                    <select 
+                      value={filters.department || 'all'} 
+                      onChange={(e) => handleFilterChange('department', e.target.value)}
                     >
                       <option value="all">All Departments</option>
                       <option value="sales">Sales</option>
@@ -1058,9 +752,9 @@ const ZoeExecutiveCRM = ({ activeFeature }) => {
                     </select>
                   </div>
                   <div className="filter-group">
-                    <select
-                      value={filters.status || 'unreviewed'}
-                      onChange={e => handleFilterChange('status', e.target.value)}
+                    <select 
+                      value={filters.status || 'unreviewed'} 
+                      onChange={(e) => handleFilterChange('status', e.target.value)}
                     >
                       <option value="all">All Status</option>
                       <option value="unreviewed">Unreviewed</option>
@@ -1081,13 +775,13 @@ const ZoeExecutiveCRM = ({ activeFeature }) => {
                     </div>
                   ) : (
                     filteredSuggestions.map(suggestion => (
-                      <div
+                      <div 
                         key={suggestion.id}
                         className={`suggestion-card ${selectedSuggestion?.id === suggestion.id ? 'selected' : ''} ${getPriorityClass(suggestion.priority)}`}
                         onClick={() => setSelectedSuggestion(suggestion)}
                       >
                         <div className="suggestion-header">
-                          <span
+                          <span 
                             className="assistant-badge"
                             style={{ background: ASSISTANT_COLORS[suggestion.fromAssistant] }}
                           >
@@ -1102,15 +796,11 @@ const ZoeExecutiveCRM = ({ activeFeature }) => {
                           <div className="type-icon">{getTypeIcon(suggestion.type)}</div>
                           <div className="suggestion-content">
                             <h4>{suggestion.title}</h4>
-                            <p className="analysis-preview">
-                              {suggestion.analysis.substring(0, 100)}...
-                            </p>
+                            <p className="analysis-preview">{suggestion.analysis.substring(0, 100)}...</p>
                           </div>
                         </div>
                         <div className="suggestion-footer">
-                          <span className={`status-badge ${suggestion.status}`}>
-                            {suggestion.status}
-                          </span>
+                          <span className={`status-badge ${suggestion.status}`}>{suggestion.status}</span>
                           <span className="confidence">
                             <Zap size={12} /> {Math.round(suggestion.confidence * 100)}% confidence
                           </span>
@@ -1124,13 +814,11 @@ const ZoeExecutiveCRM = ({ activeFeature }) => {
                   <div className="suggestion-detail">
                     <div className="detail-header">
                       <div className="header-top">
-                        <span
+                        <span 
                           className="assistant-badge large"
                           style={{ background: ASSISTANT_COLORS[selectedSuggestion.fromAssistant] }}
                         >
-                          From:{' '}
-                          {selectedSuggestion.fromAssistant.charAt(0).toUpperCase() +
-                            selectedSuggestion.fromAssistant.slice(1)}
+                          From: {selectedSuggestion.fromAssistant.charAt(0).toUpperCase() + selectedSuggestion.fromAssistant.slice(1)}
                         </span>
                         <span className={`priority-badge large ${selectedSuggestion.priority}`}>
                           {selectedSuggestion.priority.toUpperCase()}
@@ -1142,12 +830,8 @@ const ZoeExecutiveCRM = ({ activeFeature }) => {
                           {getTypeIcon(selectedSuggestion.type)}
                           {selectedSuggestion.type.replace('_', ' ')}
                         </span>
-                        <span className="department-badge">
-                          {selectedSuggestion.assistantDepartment}
-                        </span>
-                        <span className="timestamp">
-                          {formatTimeAgo(selectedSuggestion.timestamp)}
-                        </span>
+                        <span className="department-badge">{selectedSuggestion.assistantDepartment}</span>
+                        <span className="timestamp">{formatTimeAgo(selectedSuggestion.timestamp)}</span>
                       </div>
                     </div>
 
@@ -1174,31 +858,29 @@ const ZoeExecutiveCRM = ({ activeFeature }) => {
                       <div className="confidence-meter">
                         <span>Confidence Score</span>
                         <div className="meter">
-                          <div
+                          <div 
                             className="meter-fill"
                             style={{ width: `${selectedSuggestion.confidence * 100}%` }}
                           />
                         </div>
-                        <span className="score">
-                          {Math.round(selectedSuggestion.confidence * 100)}%
-                        </span>
+                        <span className="score">{Math.round(selectedSuggestion.confidence * 100)}%</span>
                       </div>
                     </div>
 
                     <div className="detail-actions">
-                      <button
+                      <button 
                         className="action-btn primary"
                         onClick={() => handleStatusChange(selectedSuggestion.id, 'acknowledged')}
                       >
                         <Eye size={14} /> Acknowledge
                       </button>
-                      <button
+                      <button 
                         className="action-btn warning"
                         onClick={() => handleStatusChange(selectedSuggestion.id, 'escalated')}
                       >
                         <AlertTriangle size={14} /> Escalate
                       </button>
-                      <button
+                      <button 
                         className="action-btn secondary"
                         onClick={() => handleStatusChange(selectedSuggestion.id, 'archived')}
                       >
@@ -1215,12 +897,8 @@ const ZoeExecutiveCRM = ({ activeFeature }) => {
         {activeTab === 'assistants' && (
           <div className="assistants-registry-view">
             <div className="view-header">
-              <h3>
-                <Bot size={18} /> AI Assistants Registry
-              </h3>
-              <p className="view-subtitle">
-                Complete registry of all 32 AI assistants managing White Caves operations
-              </p>
+              <h3><Bot size={18} /> AI Assistants Registry</h3>
+              <p className="view-subtitle">Complete registry of all 32 AI assistants managing White Caves operations</p>
             </div>
             <AIAssistantsRegistry showFilters={true} showSearch={true} />
           </div>
@@ -1230,9 +908,7 @@ const ZoeExecutiveCRM = ({ activeFeature }) => {
           <div className="calendar-view">
             <div className="view-header">
               <h3>Today's Schedule - January 8, 2024</h3>
-              <button className="add-btn">
-                <Plus size={16} /> New Meeting
-              </button>
+              <button className="add-btn"><Plus size={16} /> New Meeting</button>
             </div>
             <div className="meetings-list">
               {MEETINGS.map(meeting => (
@@ -1244,17 +920,11 @@ const ZoeExecutiveCRM = ({ activeFeature }) => {
                   <div className="meeting-details">
                     <h4>{meeting.title}</h4>
                     <div className="meeting-meta">
-                      <span>
-                        <Users size={12} /> {meeting.attendees} attendees
-                      </span>
-                      <span>
-                        <MapPin size={12} /> {meeting.location}
-                      </span>
+                      <span><Users size={12} /> {meeting.attendees} attendees</span>
+                      <span><MapPin size={12} /> {meeting.location}</span>
                     </div>
                   </div>
-                  <div className={`meeting-type ${meeting.type}`}>
-                    {meeting.type.replace('_', ' ')}
-                  </div>
+                  <div className={`meeting-type ${meeting.type}`}>{meeting.type.replace('_', ' ')}</div>
                 </div>
               ))}
             </div>
@@ -1268,32 +938,22 @@ const ZoeExecutiveCRM = ({ activeFeature }) => {
                 <Search size={16} />
                 <input type="text" placeholder="Search tasks..." />
               </div>
-              <button className="add-btn">
-                <Plus size={16} /> Add Task
-              </button>
+              <button className="add-btn"><Plus size={16} /> Add Task</button>
             </div>
             <div className="tasks-list">
               {TASKS.map(task => (
                 <div key={task.id} className={`task-card ${task.priority}`}>
                   <div className="task-checkbox">
-                    {task.status === 'completed' ? (
-                      <CheckCircle size={20} />
-                    ) : (
-                      <div className="checkbox"></div>
-                    )}
+                    {task.status === 'completed' ? <CheckCircle size={20} /> : <div className="checkbox"></div>}
                   </div>
                   <div className="task-details">
                     <h4 className={task.status === 'completed' ? 'completed' : ''}>{task.title}</h4>
                     <div className="task-meta">
                       <span className={`priority-badge ${task.priority}`}>{task.priority}</span>
-                      <span>
-                        <Clock size={12} /> Due: {task.dueDate}
-                      </span>
+                      <span><Clock size={12} /> Due: {task.dueDate}</span>
                     </div>
                   </div>
-                  <div className={`task-status ${task.status}`}>
-                    {task.status.replace('_', ' ')}
-                  </div>
+                  <div className={`task-status ${task.status}`}>{task.status.replace('_', ' ')}</div>
                 </div>
               ))}
             </div>
@@ -1311,19 +971,11 @@ const ZoeExecutiveCRM = ({ activeFeature }) => {
                     <h4>{exec.name}</h4>
                     <p>{exec.role}</p>
                   </div>
-                  <div className={`exec-status ${exec.status}`}>
-                    {exec.status.replace('_', ' ')}
-                  </div>
+                  <div className={`exec-status ${exec.status}`}>{exec.status.replace('_', ' ')}</div>
                   <div className="exec-actions">
-                    <button>
-                      <Calendar size={14} />
-                    </button>
-                    <button>
-                      <Mail size={14} />
-                    </button>
-                    <button>
-                      <Phone size={14} />
-                    </button>
+                    <button><Calendar size={14} /></button>
+                    <button><Mail size={14} /></button>
+                    <button><Phone size={14} /></button>
                   </div>
                 </div>
               ))}
@@ -1360,25 +1012,15 @@ const ZoeExecutiveCRM = ({ activeFeature }) => {
         {activeTab === 'organization' && (
           <div className="organization-view">
             <div className="org-header">
-              <h3>
-                <Network size={18} /> Organization Chart
-              </h3>
+              <h3><Network size={18} /> Organization Chart</h3>
               <div className="org-stats">
-                <span className="org-stat">
-                  <Users size={14} /> {EXECUTIVES.length} Executives
-                </span>
-                <span className="org-stat">
-                  <Building2 size={14} /> {DIRECTORS.length} Directors
-                </span>
-                <span className="org-stat">
-                  <Users size={14} /> {EMPLOYEES.length} Staff
-                </span>
-                <span className="org-stat">
-                  <Bot size={14} /> 24 AI Assistants
-                </span>
+                <span className="org-stat"><Users size={14} /> {EXECUTIVES.length} Executives</span>
+                <span className="org-stat"><Building2 size={14} /> {DIRECTORS.length} Directors</span>
+                <span className="org-stat"><Users size={14} /> {EMPLOYEES.length} Staff</span>
+                <span className="org-stat"><Bot size={14} /> 24 AI Assistants</span>
               </div>
             </div>
-
+            
             <div className="org-section">
               <h4>Executive Team</h4>
               <div className="org-cards">
@@ -1398,7 +1040,7 @@ const ZoeExecutiveCRM = ({ activeFeature }) => {
                 ))}
               </div>
             </div>
-
+            
             <div className="org-section">
               <h4>Department Directors</h4>
               <div className="org-cards directors">
@@ -1408,15 +1050,11 @@ const ZoeExecutiveCRM = ({ activeFeature }) => {
                     <div className="org-info">
                       <h5>{dir.name}</h5>
                       <p className="org-role">{dir.role}</p>
-                      <span className="team-size">
-                        <Users size={12} /> {dir.teamSize} team members
-                      </span>
+                      <span className="team-size"><Users size={12} /> {dir.teamSize} team members</span>
                     </div>
                     <div className="org-assistants">
                       {dir.assignedAssistants?.slice(0, 3).map(a => (
-                        <span key={a} className="assistant-chip">
-                          {a}
-                        </span>
+                        <span key={a} className="assistant-chip">{a}</span>
                       ))}
                     </div>
                   </div>
@@ -1429,14 +1067,10 @@ const ZoeExecutiveCRM = ({ activeFeature }) => {
         {activeTab === 'departments' && (
           <div className="departments-view">
             <div className="view-header">
-              <h3>
-                <Building2 size={18} /> Department Overview
-              </h3>
+              <h3><Building2 size={18} /> Department Overview</h3>
               <div className="header-actions">
-                <span className="dept-count">
-                  {apiDepartments.length || Object.keys(DEPARTMENTS_CONFIG).length} Departments
-                </span>
-                <button
+                <span className="dept-count">{apiDepartments.length || Object.keys(DEPARTMENTS_CONFIG).length} Departments</span>
+                <button 
                   className="action-btn secondary small"
                   onClick={refetch}
                   disabled={orgLoading}
@@ -1445,7 +1079,7 @@ const ZoeExecutiveCRM = ({ activeFeature }) => {
                   Refresh
                 </button>
                 {!hasData && (
-                  <button
+                  <button 
                     className="action-btn primary small"
                     onClick={seedDatabase}
                     disabled={seeding}
@@ -1464,16 +1098,9 @@ const ZoeExecutiveCRM = ({ activeFeature }) => {
             ) : apiDepartments.length > 0 ? (
               <div className="departments-grid">
                 {apiDepartments.map(dept => (
-                  <div
-                    key={dept._id}
-                    className="department-card"
-                    style={{ borderLeftColor: dept.color }}
-                  >
+                  <div key={dept._id} className="department-card" style={{ borderLeftColor: dept.color }}>
                     <div className="dept-header">
-                      <div
-                        className="dept-icon"
-                        style={{ backgroundColor: `${dept.color}20`, color: dept.color }}
-                      >
+                      <div className="dept-icon" style={{ backgroundColor: `${dept.color}20`, color: dept.color }}>
                         <Building2 size={20} />
                       </div>
                       <div className="dept-title">
@@ -1482,9 +1109,7 @@ const ZoeExecutiveCRM = ({ activeFeature }) => {
                       </div>
                     </div>
                     <div className="dept-meta">
-                      <span className="meta-item">
-                        <Users size={12} /> {dept.head?.name || 'Not assigned'}
-                      </span>
+                      <span className="meta-item"><Users size={12} /> {dept.head?.name || 'Not assigned'}</span>
                       <span className="meta-item status-badge active">{dept.status}</span>
                     </div>
                     <div className="dept-kpis">
@@ -1496,12 +1121,12 @@ const ZoeExecutiveCRM = ({ activeFeature }) => {
                           </span>
                           <span className="kpi-label">{kpi.name}</span>
                           <div className="kpi-bar">
-                            <div
-                              className="kpi-fill"
-                              style={{
+                            <div 
+                              className="kpi-fill" 
+                              style={{ 
                                 width: `${Math.min((kpi.current / kpi.target) * 100, 100)}%`,
-                                backgroundColor: dept.color,
-                              }}
+                                backgroundColor: dept.color 
+                              }} 
                             />
                           </div>
                         </div>
@@ -1510,19 +1135,16 @@ const ZoeExecutiveCRM = ({ activeFeature }) => {
                     <div className="dept-budget">
                       <span className="budget-label">Budget:</span>
                       <span className="budget-value">
-                        {(dept.budget?.spent || 0).toLocaleString()} /{' '}
-                        {(dept.budget?.allocated || 0).toLocaleString()} AED
+                        {(dept.budget?.spent || 0).toLocaleString()} / {(dept.budget?.allocated || 0).toLocaleString()} AED
                       </span>
                     </div>
                     <div className="dept-assistants">
-                      <span className="assistants-label">
-                        <Bot size={12} /> AI Assistants ({dept.assistants?.length || 0}):
-                      </span>
+                      <span className="assistants-label"><Bot size={12} /> AI Assistants ({dept.assistants?.length || 0}):</span>
                       <div className="assistants-list">
                         {(dept.assistants || []).slice(0, 4).map(a => (
-                          <span
-                            key={a._id || a}
-                            className="assistant-tag"
+                          <span 
+                            key={a._id || a} 
+                            className="assistant-tag" 
                             style={{ backgroundColor: `${dept.color}20`, color: dept.color }}
                           >
                             {a.name || a}
@@ -1539,16 +1161,9 @@ const ZoeExecutiveCRM = ({ activeFeature }) => {
             ) : (
               <div className="departments-grid">
                 {Object.values(DEPARTMENTS_CONFIG).map(dept => (
-                  <div
-                    key={dept.id}
-                    className="department-card"
-                    style={{ borderLeftColor: dept.color }}
-                  >
+                  <div key={dept.id} className="department-card" style={{ borderLeftColor: dept.color }}>
                     <div className="dept-header">
-                      <div
-                        className="dept-icon"
-                        style={{ backgroundColor: `${dept.color}20`, color: dept.color }}
-                      >
+                      <div className="dept-icon" style={{ backgroundColor: `${dept.color}20`, color: dept.color }}>
                         <Building2 size={20} />
                       </div>
                       <div className="dept-title">
@@ -1557,32 +1172,18 @@ const ZoeExecutiveCRM = ({ activeFeature }) => {
                       </div>
                     </div>
                     <div className="dept-kpis">
-                      {Object.entries(dept.kpis || {})
-                        .slice(0, 3)
-                        .map(([key, value]) => (
-                          <div key={key} className="kpi-item">
-                            <span className="kpi-value">
-                              {typeof value === 'number' ? value.toLocaleString() : value}
-                            </span>
-                            <span className="kpi-label">
-                              {key.replace(/([A-Z])/g, ' $1').trim()}
-                            </span>
-                          </div>
-                        ))}
+                      {Object.entries(dept.kpis || {}).slice(0, 3).map(([key, value]) => (
+                        <div key={key} className="kpi-item">
+                          <span className="kpi-value">{typeof value === 'number' ? value.toLocaleString() : value}</span>
+                          <span className="kpi-label">{key.replace(/([A-Z])/g, ' $1').trim()}</span>
+                        </div>
+                      ))}
                     </div>
                     <div className="dept-assistants">
-                      <span className="assistants-label">
-                        <Bot size={12} /> AI Assistants:
-                      </span>
+                      <span className="assistants-label"><Bot size={12} /> AI Assistants:</span>
                       <div className="assistants-list">
                         {dept.assistants?.map(a => (
-                          <span
-                            key={a}
-                            className="assistant-tag"
-                            style={{ backgroundColor: `${dept.color}20`, color: dept.color }}
-                          >
-                            {a}
-                          </span>
+                          <span key={a} className="assistant-tag" style={{ backgroundColor: `${dept.color}20`, color: dept.color }}>{a}</span>
                         ))}
                       </div>
                     </div>
@@ -1596,18 +1197,12 @@ const ZoeExecutiveCRM = ({ activeFeature }) => {
         {activeTab === 'services' && (
           <div className="services-view">
             <div className="view-header">
-              <h3>
-                <Workflow size={18} /> Company Services
-              </h3>
+              <h3><Workflow size={18} /> Company Services</h3>
               <div className="services-stats">
                 <span>{apiServices.length || getServiceStats().total} Services</span>
                 <span>|</span>
-                <span>
-                  {totalServiceVolume.toLocaleString() ||
-                    getServiceStats().totalMonthlyVolume.toLocaleString()}{' '}
-                  Total Requests
-                </span>
-                <button
+                <span>{totalServiceVolume.toLocaleString() || getServiceStats().totalMonthlyVolume.toLocaleString()} Total Requests</span>
+                <button 
                   className="action-btn secondary small"
                   onClick={refetch}
                   disabled={orgLoading}
@@ -1633,60 +1228,39 @@ const ZoeExecutiveCRM = ({ activeFeature }) => {
                       {categoryServices.map(service => (
                         <div key={service._id} className="service-card">
                           <div className="service-header">
-                            <div
-                              className="service-icon-wrap"
-                              style={{ backgroundColor: 'rgba(99, 102, 241, 0.15)' }}
-                            >
+                            <div className="service-icon-wrap" style={{ backgroundColor: 'rgba(99, 102, 241, 0.15)' }}>
                               <Workflow size={18} style={{ color: '#6366F1' }} />
                             </div>
                             <div className="service-info">
                               <h5>{service.name}</h5>
-                              <p>
-                                {service.shortDescription || service.description?.slice(0, 60)}...
-                              </p>
+                              <p>{service.shortDescription || service.description?.slice(0, 60)}...</p>
                             </div>
                           </div>
                           <div className="service-meta">
-                            <span className="service-stat">
-                              <Clock size={12} /> {service.workflow?.estimatedDuration || 'N/A'}
-                            </span>
-                            <span className="service-stat">
-                              <TrendingUp size={12} /> {service.metrics?.totalRequests || 0}{' '}
-                              requests
-                            </span>
+                            <span className="service-stat"><Clock size={12} /> {service.workflow?.estimatedDuration || 'N/A'}</span>
+                            <span className="service-stat"><TrendingUp size={12} /> {service.metrics?.totalRequests || 0} requests</span>
                           </div>
                           <div className="service-metrics">
                             <div className="metric-item">
-                              <span className="metric-value">
-                                {service.metrics?.completedRequests || 0}
-                              </span>
+                              <span className="metric-value">{service.metrics?.completedRequests || 0}</span>
                               <span className="metric-label">Completed</span>
                             </div>
                             <div className="metric-item">
-                              <span className="metric-value">
-                                {service.metrics?.satisfactionScore || 0}%
-                              </span>
+                              <span className="metric-value">{service.metrics?.satisfactionScore || 0}%</span>
                               <span className="metric-label">Satisfaction</span>
                             </div>
                             <div className="metric-item">
-                              <span className="metric-value">
-                                {((service.metrics?.revenue || 0) / 1000).toFixed(0)}K
-                              </span>
+                              <span className="metric-value">{((service.metrics?.revenue || 0) / 1000).toFixed(0)}K</span>
                               <span className="metric-label">Revenue</span>
                             </div>
                           </div>
                           <div className="service-workflow">
-                            <span className="workflow-label">
-                              Workflow ({service.workflow?.stages?.length || 0} stages):
-                            </span>
+                            <span className="workflow-label">Workflow ({service.workflow?.stages?.length || 0} stages):</span>
                             <div className="workflow-stages">
                               {(service.workflow?.stages || []).slice(0, 3).map((stage, idx) => (
                                 <span key={idx} className="stage-chip">
                                   {stage.name}
-                                  {idx <
-                                    Math.min((service.workflow?.stages?.length || 0) - 1, 2) && (
-                                    <ChevronRight size={10} />
-                                  )}
+                                  {idx < Math.min((service.workflow?.stages?.length || 0) - 1, 2) && <ChevronRight size={10} />}
                                 </span>
                               ))}
                               {(service.workflow?.stages?.length || 0) > 3 && (
@@ -1728,12 +1302,8 @@ const ZoeExecutiveCRM = ({ activeFeature }) => {
                             </div>
                           </div>
                           <div className="service-meta">
-                            <span className="service-stat">
-                              <Clock size={12} /> {service.avgDuration}
-                            </span>
-                            <span className="service-stat">
-                              <TrendingUp size={12} /> {service.monthlyVolume}/mo
-                            </span>
+                            <span className="service-stat"><Clock size={12} /> {service.avgDuration}</span>
+                            <span className="service-stat"><TrendingUp size={12} /> {service.monthlyVolume}/mo</span>
                           </div>
                           <div className="service-workflow">
                             <span className="workflow-label">Workflow:</span>
@@ -1741,14 +1311,10 @@ const ZoeExecutiveCRM = ({ activeFeature }) => {
                               {service.stages?.slice(0, 4).map((stage, idx) => (
                                 <span key={stage.id} className="stage-chip">
                                   {stage.icon} {stage.name}
-                                  {idx < Math.min(service.stages.length - 1, 3) && (
-                                    <ChevronRight size={10} />
-                                  )}
+                                  {idx < Math.min(service.stages.length - 1, 3) && <ChevronRight size={10} />}
                                 </span>
                               ))}
-                              {service.stages?.length > 4 && (
-                                <span className="more">+{service.stages.length - 4}</span>
-                              )}
+                              {service.stages?.length > 4 && <span className="more">+{service.stages.length - 4}</span>}
                             </div>
                           </div>
                         </div>
@@ -1764,23 +1330,21 @@ const ZoeExecutiveCRM = ({ activeFeature }) => {
         {activeTab === 'employees' && (
           <div className="employees-view">
             <div className="view-header">
-              <h3>
-                <Users size={18} /> Employee Directory
-              </h3>
+              <h3><Users size={18} /> Employee Directory</h3>
               <div className="header-actions">
                 <div className="search-box">
                   <Search size={16} />
-                  <input
-                    type="text"
-                    placeholder="Search employees..."
+                  <input 
+                    type="text" 
+                    placeholder="Search employees..." 
                     value={employeeSearch}
-                    onChange={e => setEmployeeSearch(e.target.value)}
+                    onChange={(e) => setEmployeeSearch(e.target.value)}
                   />
                 </div>
-                <select
+                <select 
                   className="filter-select"
                   value={employeeFilter}
-                  onChange={e => setEmployeeFilter(e.target.value)}
+                  onChange={(e) => setEmployeeFilter(e.target.value)}
                 >
                   <option value="all">All Levels</option>
                   <option value="C-Suite">C-Suite</option>
@@ -1789,19 +1353,17 @@ const ZoeExecutiveCRM = ({ activeFeature }) => {
                   <option value="Mid">Mid-Level</option>
                   <option value="Junior">Junior</option>
                 </select>
-                <select
+                <select 
                   className="filter-select"
                   value={departmentFilter}
-                  onChange={e => setDepartmentFilter(e.target.value)}
+                  onChange={(e) => setDepartmentFilter(e.target.value)}
                 >
                   <option value="all">All Departments</option>
                   {apiDepartments.map(dept => (
-                    <option key={dept._id} value={dept._id}>
-                      {dept.name}
-                    </option>
+                    <option key={dept._id} value={dept._id}>{dept.name}</option>
                   ))}
                 </select>
-                <button
+                <button 
                   className="action-btn secondary small"
                   onClick={refetch}
                   disabled={orgLoading}
@@ -1809,7 +1371,7 @@ const ZoeExecutiveCRM = ({ activeFeature }) => {
                   <RefreshCw size={14} className={orgLoading ? 'spinning' : ''} />
                 </button>
                 {!hasData && (
-                  <button
+                  <button 
                     className="action-btn primary small"
                     onClick={seedDatabase}
                     disabled={seeding}
@@ -1820,7 +1382,7 @@ const ZoeExecutiveCRM = ({ activeFeature }) => {
                 )}
               </div>
             </div>
-
+            
             <div className="employees-stats">
               <div className="stat-pill">
                 <Star size={14} />
@@ -1868,27 +1430,14 @@ const ZoeExecutiveCRM = ({ activeFeature }) => {
                   </thead>
                   <tbody>
                     {filteredEmployees.map(emp => (
-                      <tr
-                        key={emp._id}
-                        className={`employee-row ${emp.level?.toLowerCase().replace('-', '')}`}
-                      >
+                      <tr key={emp._id} className={`employee-row ${emp.level?.toLowerCase().replace('-', '')}`}>
                         <td className="employee-cell">
-                          <div
-                            className="employee-avatar"
-                            style={{
-                              background:
-                                emp.level === 'C-Suite'
-                                  ? 'linear-gradient(135deg, #FFD700, #F59E0B)'
-                                  : emp.level === 'Director'
-                                    ? 'linear-gradient(135deg, #8B5CF6, #6366F1)'
-                                    : 'linear-gradient(135deg, #6366F1, #4F46E5)',
-                            }}
-                          >
-                            {emp.name
-                              ?.split(' ')
-                              .map(n => n[0])
-                              .join('')
-                              .slice(0, 2)}
+                          <div className="employee-avatar" style={{ 
+                            background: emp.level === 'C-Suite' ? 'linear-gradient(135deg, #FFD700, #F59E0B)' :
+                                       emp.level === 'Director' ? 'linear-gradient(135deg, #8B5CF6, #6366F1)' :
+                                       'linear-gradient(135deg, #6366F1, #4F46E5)'
+                          }}>
+                            {emp.name?.split(' ').map(n => n[0]).join('').slice(0, 2)}
                           </div>
                           <div className="employee-info">
                             <span className="name">{emp.name}</span>
@@ -1897,20 +1446,18 @@ const ZoeExecutiveCRM = ({ activeFeature }) => {
                         </td>
                         <td>{emp.jobTitle}</td>
                         <td>
-                          <span
+                          <span 
                             className="dept-badge"
-                            style={{
+                            style={{ 
                               backgroundColor: `${emp.department?.color || '#6366F1'}20`,
-                              color: emp.department?.color || '#6366F1',
+                              color: emp.department?.color || '#6366F1'
                             }}
                           >
                             {emp.department?.name || 'Unassigned'}
                           </span>
                         </td>
                         <td>
-                          <span
-                            className={`level-badge ${emp.level?.toLowerCase().replace('-', '')}`}
-                          >
+                          <span className={`level-badge ${emp.level?.toLowerCase().replace('-', '')}`}>
                             {emp.level}
                           </span>
                         </td>
@@ -1948,7 +1495,9 @@ const ZoeExecutiveCRM = ({ activeFeature }) => {
           </div>
         )}
 
-        {activeTab === 'demo' && <ServiceDemoMode />}
+        {activeTab === 'demo' && (
+          <ServiceDemoMode />
+        )}
 
         {activeTab === 'docs' && <AssistantDocsTab assistantId="zoe" />}
       </div>
