@@ -1,6 +1,7 @@
 /* eslint-disable security/detect-non-literal-fs-filename, no-console */
 import fs from 'fs';
 import path from 'path';
+import { runGovernanceAudit } from './orchestrator/governance-audit.js';
 
 const repoRoot = process.cwd();
 const plansDir = path.join(repoRoot, 'plans');
@@ -189,6 +190,10 @@ for (const wavePlan of linkedWavePlans) {
   'plans/PLANNING_GOVERNANCE.md',
   'plans/waves/README.md',
 ].forEach(file => assertRecentUpdatedDate(file, 45));
+
+const governanceAudit = runGovernanceAudit();
+errors.push(...governanceAudit.errors);
+warnings.push(...governanceAudit.warnings);
 
 if (warnings.length > 0) {
   console.warn('⚠️  Planning governance warnings:');

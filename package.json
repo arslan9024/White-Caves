@@ -220,9 +220,9 @@
     "autopilot:unlimited:dry": "powershell -ExecutionPolicy Bypass -File scripts/orchestrator/autopilot-unlimited.ps1 -DryRun",
     "autopilot:unlimited:nobuild": "powershell -ExecutionPolicy Bypass -File scripts/orchestrator/autopilot-unlimited.ps1 -SkipBuild",
     "autopilot:unlimited:3": "powershell -ExecutionPolicy Bypass -File scripts/orchestrator/autopilot-unlimited.ps1 -MaxSessions 3",
-    "autopilot:pause": "node -e \"require('fs').mkdirSync('logs/orchestrator',{recursive:true});require('fs').writeFileSync('logs/orchestrator/PAUSE','');console.log('PAUSE file created — autopilot will stop after current session')\"",
-    "autopilot:resume": "node -e \"try{require('fs').unlinkSync('logs/orchestrator/PAUSE');console.log('PAUSE file removed — autopilot will resume');}catch{console.log('No PAUSE file found');}\"",
-    "subagents": "node -e \"const r=require('./scripts/orchestrator/subagents-registry.json');console.log('Total agents:',r.agents.length);r.agents.forEach(a=>console.log(' #'+a.id,a.name,'—',a.title,'|',a.unit,'|',a.model))\"",
+    "autopilot:pause": "node -e \"require('fs').mkdirSync('logs/orchestrator',{recursive:true});require('fs').writeFileSync('logs/orchestrator/PAUSE','');console.log('PAUSE file created \u2014 autopilot will stop after current session')\"",
+    "autopilot:resume": "node -e \"try{require('fs').unlinkSync('logs/orchestrator/PAUSE');console.log('PAUSE file removed \u2014 autopilot will resume');}catch{console.log('No PAUSE file found');}\"",
+    "subagents": "node -e \"const r=require('./scripts/orchestrator/subagents-registry.json');console.log('Total agents:',r.agents.length);r.agents.forEach(a=>console.log(' #'+a.id,a.name,'\u2014',a.title,'|',a.unit,'|',a.model))\"",
     "subagents:team": "node -e \"const r=require('./scripts/orchestrator/subagents-registry.json');const t=process.argv[2];const m=r.agents.filter(a=>a.unit&&a.unit.toLowerCase().includes(t?t.toLowerCase():''));console.log('Agents in unit matching:',t,'\\n');m.forEach(a=>console.log('#'+a.id,a.name,'-',a.title))\" --",
     "plans:validate": "node scripts/validate-plans-governance.js",
     "orchestrator:loop:sync-main": "powershell -ExecutionPolicy Bypass -File scripts/orchestrator/loop-start-sync.ps1",
@@ -273,7 +273,12 @@
     "aegis:route:status": "node scripts/orchestrator/confidence-router.js --status",
     "aegis:policy:gate": "node scripts/orchestrator/policy-gate.js",
     "aegis:health": "node scripts/orchestrator/aegis-health.js",
-    "aegis:health:json": "node scripts/orchestrator/aegis-health.js --json"
+    "aegis:health:json": "node scripts/orchestrator/aegis-health.js --json",
+    "aegis:context:manifest": "node scripts/orchestrator/context-manager.js --manifest",
+    "aegis:context:handoff": "node scripts/orchestrator/context-manager.js --handoff",
+    "aegis:context:bootstrap": "node scripts/orchestrator/context-manager.js --bootstrap",
+    "aegis:context:status": "node scripts/orchestrator/context-manager.js --status",
+    "aegis:context:validate": "node scripts/orchestrator/governance-audit.js --strict"
   },
   "prisma": {
     "seed": "tsx prisma/seed.ts"

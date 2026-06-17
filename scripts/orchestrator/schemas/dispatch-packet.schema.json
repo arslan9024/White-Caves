@@ -1,0 +1,72 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Aegis Dispatch Packet",
+  "type": "object",
+  "required": [
+    "taskId",
+    "agent",
+    "objective",
+    "validationCommand"
+  ],
+  "properties": {
+    "taskId": {
+      "type": "string",
+      "minLength": 1
+    },
+    "agent": {
+      "type": "string",
+      "minLength": 1
+    },
+    "agentTitle": {
+      "type": "string"
+    },
+    "agentUnit": {
+      "type": "string"
+    },
+    "agentModel": {
+      "type": "string"
+    },
+    "agentToolUrl": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "objective": {
+      "type": "string",
+      "minLength": 1
+    },
+    "fullPrompt": {
+      "type": "string"
+    },
+    "inputArtifacts": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "outputArtifact": {
+      "type": "string"
+    },
+    "acceptanceCriteria": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "validationCommand": {
+      "type": "string",
+      "minLength": 1
+    },
+    "invocationPattern": {
+      "type": "string"
+    },
+    "responsibilities": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    }
+  },
+  "additionalProperties": true
+}
