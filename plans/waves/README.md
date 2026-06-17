@@ -24,6 +24,9 @@ Each wave should be executed only in roadmap order.
 | 20 | Full Leasing & Tenancy — Ejari, PDC, Tenant Portal, Landlord Portal | 📋 Planned | [`SDD`](./WAVE_20_SDD.md) | [`Readiness`](./WAVE_20_READINESS_PACKET.md) | [`Backlog`](./WAVE_20_IMPLEMENTATION_BACKLOG.md) | — |
 | 21 | Finance, UAE VAT, Commission Engine & Compliance Reporting | 📋 Planned | [`SDD`](./WAVE_21_SDD.md) | [`Readiness`](./WAVE_21_READINESS_PACKET.md) | [`Backlog`](./WAVE_21_IMPLEMENTATION_BACKLOG.md) | — |
 | 22 | Market Intelligence, Off-Plan Projects, Valuation & Advanced Analytics | 📋 Planned | [`SDD`](./WAVE_22_SDD.md) | [`Readiness`](./WAVE_22_READINESS_PACKET.md) | [`Backlog`](./WAVE_22_IMPLEMENTATION_BACKLOG.md) | — |
+| 23 | Mobile CRM, PWA Offline Mode & Push Notifications | 📋 Planned | [`SDD`](./WAVE_23_SDD.md) | [`Readiness`](./WAVE_23_READINESS_PACKET.md) | [`Backlog`](./WAVE_23_IMPLEMENTATION_BACKLOG.md) | [`Tests`](./WAVE_23_TEST_ROLLOUT.md) |
+| 24 | WhatsApp Automation, AI Chat Engine & In-App Notification Centre | 📋 Planned | [`SDD`](./WAVE_24_SDD.md) | [`Readiness`](./WAVE_24_READINESS_PACKET.md) | [`Backlog`](./WAVE_24_IMPLEMENTATION_BACKLOG.md) | [`Tests`](./WAVE_24_TEST_ROLLOUT.md) |
+| 25 | Portal Syndication, Careers Portal, Community Management & Advanced SEO | 📋 Planned | [`SDD`](./WAVE_25_SDD.md) | [`Readiness`](./WAVE_25_READINESS_PACKET.md) | [`Backlog`](./WAVE_25_IMPLEMENTATION_BACKLOG.md) | [`Tests`](./WAVE_25_TEST_ROLLOUT.md) |
 
 ## Notes
 
@@ -36,3 +39,4 @@ Each wave should be executed only in roadmap order.
 - Superseded root-level Wave 12 market-intelligence docs were archived to `../archives/` to avoid naming collisions with the active Wave 12 automation bundle.
 - Wave 17 (Full UI/UX Luxury Upgrade) is implemented and validated; see the Wave 17 bundle docs for closeout details.
 - **Waves 20–22 added June 2026:** Full leasing & tenancy lifecycle (Wave 20), UAE VAT + commission engine (Wave 21), and market intelligence + off-plan + advanced analytics (Wave 22). Each has SDD, readiness packet, and full implementation backlog. Entry gates follow standard approval phrase sequence.
+- **Waves 23–25 added June 2026:** Mobile CRM + PWA offline + push (Wave 23), WhatsApp automation + AI chat + notification centre (Wave 24), and portal syndication + careers + community management + advanced SEO (Wave 25). All three waves have full four-artifact bundles (SDD, readiness, backlog, test rollout). Entry gates follow the standard approval phrase sequence. Wave 23 readiness is 72%, Wave 24 is 78%, Wave 25 is 75% — all above the 60% unlock threshold.

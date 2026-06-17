@@ -65,6 +65,9 @@
 | 12 | 20 | Full Leasing & Tenancy — Ejari, PDC, Tenant Portal, Landlord Portal | @Victoria + @Mira + @Una + @Barbara + @Katherine | 📋 Planned | [`WAVE_20_SDD.md`](./waves/WAVE_20_SDD.md), [`WAVE_20_IMPLEMENTATION_BACKLOG.md`](./waves/WAVE_20_IMPLEMENTATION_BACKLOG.md), [`tenancy-ejari.md`](../business_docs/09_crm_features/tenancy-ejari.md), [`tenant-portal.md`](../business_docs/09_crm_features/tenant-portal.md) | Wave 19 green + readiness 60% + @Ada approval phrase | Lease lifecycle, PDC bounce flow, tenant/landlord portals, RBAC all verified; validation green |
 | 13 | 21 | Finance, UAE VAT, Commission Engine & Compliance Reporting | @Invoice + @Mira + @Barbara + @Sofia + @Katherine | 📋 Planned | [`WAVE_21_SDD.md`](./waves/WAVE_21_SDD.md), [`WAVE_21_IMPLEMENTATION_BACKLOG.md`](./waves/WAVE_21_IMPLEMENTATION_BACKLOG.md), [`financial-reporting.md`](../business_docs/09_crm_features/financial-reporting.md), [`revenue-model.md`](../business_docs/07_business_model/revenue-model.md) | Wave 20 green + readiness 60% + @Ada approval phrase | VAT engine, commission approval, immutable ledger, P&L, and VAT return all verified; validation green |
 | 14 | 22 | Market Intelligence, Off-Plan Projects, Valuation & Advanced Analytics | @Cassie + @Fei-Fei + @Maya + @Mira + @Una + @Barbara | 📋 Planned | [`WAVE_22_SDD.md`](./waves/WAVE_22_SDD.md), [`WAVE_22_IMPLEMENTATION_BACKLOG.md`](./waves/WAVE_22_IMPLEMENTATION_BACKLOG.md), [`analytics-dashboard.md`](../business_docs/09_crm_features/analytics-dashboard.md), [`off-plan-projects.md`](../business_docs/09_crm_features/off-plan-projects.md) | Wave 21 green + readiness 60% + @Ada approval phrase | AVM, off-plan lifecycle, Oqood tracking, analytics snapshots, RERA license guard all verified; validation green |
+| 15 | 23 | Mobile CRM, PWA Offline Mode & Push Notifications | @Una + @Tracy + @Cyra + @Mira + @Gwynne + @Katherine | 📋 Planned | [`WAVE_23_SDD.md`](./waves/WAVE_23_SDD.md), [`WAVE_23_IMPLEMENTATION_BACKLOG.md`](./waves/WAVE_23_IMPLEMENTATION_BACKLOG.md), [`wave-15-pwa-readiness.md`](../business_docs/09_crm_features/wave-15-pwa-readiness.md) | Wave 22 green + readiness 60% + @Ada approval phrase | SW/offline mode, FCM push, mobile nav, swipe gestures, Lighthouse CI gate all verified; validation green |
+| 16 | 24 | WhatsApp Automation, AI Chat Engine & In-App Notification Centre | @Mira + @Joelle + @Una + @Barbara + @Katherine | 📋 Planned | [`WAVE_24_SDD.md`](./waves/WAVE_24_SDD.md), [`WAVE_24_IMPLEMENTATION_BACKLOG.md`](./waves/WAVE_24_IMPLEMENTATION_BACKLOG.md), [`whatsapp-integration.md`](../business_docs/09_crm_features/whatsapp-integration.md), [`ai-chat.md`](../business_docs/09_crm_features/ai-chat.md) | Wave 23 green + readiness 60% + @Ada approval phrase | Nina chatbot flows, AI SSE streaming, 7-day nurture sequence, notification centre all verified; validation green |
+| 17 | 25 | Portal Syndication, Careers Portal, Community Management & Advanced SEO | @Rachel + @Mira + @Una + @Marissa + @Barbara + @Katherine | 📋 Planned | [`WAVE_25_SDD.md`](./waves/WAVE_25_SDD.md), [`WAVE_25_IMPLEMENTATION_BACKLOG.md`](./waves/WAVE_25_IMPLEMENTATION_BACKLOG.md), [`seo-strategy.md`](../business_docs/09_crm_features/seo-strategy.md), [`portal-syndication.md`](../business_docs/09_crm_features/portal-syndication.md) | Wave 24 green + readiness 60% + @Ada approval phrase | PF/Bayut feeds, careers portal, community management, JSON-LD, hreflang, sitemap all verified; validation green |
 
 ---
 
@@ -89,6 +92,9 @@ Use [`waves/README.md`](./waves/README.md) for the full bundle list.
 | 20 | 📋 Planned | [`Wave 20`](./waves/WAVE_20_SDD.md) |
 | 21 | 📋 Planned | [`Wave 21`](./waves/WAVE_21_SDD.md) |
 | 22 | 📋 Planned | [`Wave 22`](./waves/WAVE_22_SDD.md) |
+| 23 | 📋 Planned | [`Wave 23`](./waves/WAVE_23_SDD.md) |
+| 24 | 📋 Planned | [`Wave 24`](./waves/WAVE_24_SDD.md) |
+| 25 | 📋 Planned | [`Wave 25`](./waves/WAVE_25_SDD.md) |
 
 ---
 
