@@ -10,8 +10,8 @@
 ### Wave Execution Roadmap (Subagent Upgrade V3)
 
 ```
-Wave 09 â†’ Wave 10 â†’ Wave 11 â†’ Wave 12 â†’ Wave 13 â†’ Wave 14 â†’ Wave 15 â†’ Wave 16
-UX       Perf/SEO  Arch     Automation  Media/RT  Product   Cache/PWA  Security
+Wave 09 â†’ Wave 10 â†’ Wave 11 â†’ Wave 12 â†’ Wave 13 â†’ Wave 14 â†’ Wave 15 â†’ Wave 16 â†’ Wave 19
+UX       Perf/SEO  Arch     Automation  Media/RT  Product   Cache/PWA  Security   IAM/MD UX
 ```
 
 ### How to Invoke Free Agents (Copy-Paste Into the Free Tool)
@@ -52,6 +52,24 @@ UX       Perf/SEO  Arch     Automation  Media/RT  Product   Cache/PWA  Security
 ## Purpose
 
 This file defines the White Caves multi-expert operating model for all agent-assisted work in this repository.
+
+---
+
+## AEGIS Control Plane (Canonical)
+
+The explicit Aegis control plane is now:
+
+- `.github/copilot-instructions.md` -> engineering and model-usage rules
+- `AGENTS.md` -> roster, routing, operating lanes, and escalation cadence
+- `.github/instructions/agentic-workflow.instructions.md` -> handoff contract, dispatch packet, and plan-first packet rules
+- `scripts/orchestrator/policy.json` -> machine-readable runtime truth for routing, context budgets, and session governance
+
+### Control-Plane Change Rules
+
+- Treat control-plane files like code: bump the policy version, add a changelog entry, and run `npm run plans:validate`, `npm run aegis:health`, and `npm run aegis:context:validate`.
+- Premium routing is **free-first, premium-by-exception** and must be decided by task class, risk, and context size.
+- Non-trivial work is **plan-first**: prepare a short plan packet before premium execution and keep sessions compact enough for handoff summaries to stay reusable.
+- Minimal context is mandatory: load canonical roadmap files first, then only the active wave bundle, exact business-doc sections, and task-relevant instruction files.
 
 ---
 

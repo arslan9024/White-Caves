@@ -1,6 +1,6 @@
 {
-  "version": "2026.05.27-aegis-vnext-v2",
-  "schemaVersion": "2.0.0",
+  "version": "2026.06.17-aegis-control-plane-v1",
+  "schemaVersion": "2.1.0",
   "readinessThresholdPct": 60,
   "readinessTargetPct": 90,
   "largeWaveMinReadinessPct": 90,
@@ -209,7 +209,78 @@
     "premiumModels": [
       "GPT-4o",
       "claude-3.5-sonnet"
-    ]
+    ],
+    "policyMode": "free-first-premium-by-exception",
+    "premiumUsage": {
+      "assumeExternalCredits": false,
+      "defaultCapMode": "soft-warning",
+      "hardDailyCap": null,
+      "maxPremiumTurnsPerTask": 4,
+      "maxPremiumTurnsPerSession": 12,
+      "maxPremiumTurnsPerDay": 40
+    },
+    "taskClassRouting": {
+      "exploration": {
+        "modelTier": "free",
+        "modelRecommendation": "Gemini 2.0 Flash",
+        "fallbackModel": "Llama 3.1 70B",
+        "maxPremiumTurnsPerTask": 0
+      },
+      "planning": {
+        "modelTier": "free",
+        "modelRecommendation": "Gemini 2.0 Flash",
+        "fallbackModel": "DeepSeek V3",
+        "maxPremiumTurnsPerTask": 0
+      },
+      "documentation": {
+        "modelTier": "free",
+        "modelRecommendation": "Llama 3.1 70B",
+        "fallbackModel": "Gemini 2.0 Flash",
+        "maxPremiumTurnsPerTask": 0
+      },
+      "triage": {
+        "modelTier": "free",
+        "modelRecommendation": "DeepSeek V3",
+        "fallbackModel": "Gemini 2.0 Flash",
+        "maxPremiumTurnsPerTask": 0
+      },
+      "research": {
+        "modelTier": "free",
+        "modelRecommendation": "DeepSeek V3",
+        "fallbackModel": "Gemini 2.0 Flash",
+        "maxPremiumTurnsPerTask": 0
+      },
+      "architecture-arbitration": {
+        "modelTier": "premium",
+        "modelRecommendation": "GPT-4o",
+        "fallbackModel": "claude-3.5-sonnet",
+        "maxPremiumTurnsPerTask": 2
+      },
+      "high-risk-implementation": {
+        "modelTier": "premium",
+        "modelRecommendation": "GPT-4o",
+        "fallbackModel": "claude-3.5-sonnet",
+        "maxPremiumTurnsPerTask": 4
+      },
+      "ambiguous-debugging": {
+        "modelTier": "premium",
+        "modelRecommendation": "GPT-4o",
+        "fallbackModel": "claude-3.5-sonnet",
+        "maxPremiumTurnsPerTask": 3
+      },
+      "security-sensitive": {
+        "modelTier": "premium",
+        "modelRecommendation": "GPT-4o",
+        "fallbackModel": "claude-3.5-sonnet",
+        "maxPremiumTurnsPerTask": 4
+      },
+      "final-synthesis": {
+        "modelTier": "premium",
+        "modelRecommendation": "GPT-4o",
+        "fallbackModel": "Gemini 2.0 Flash",
+        "maxPremiumTurnsPerTask": 2
+      }
+    }
   },
   "executionMode": {
     "default": "approval",
@@ -326,21 +397,39 @@
   },
   "workflowGraph": {
     "enabled": true,
-    "steps": ["plan", "code", "verify", "merge-ready"],
+    "steps": [
+      "plan",
+      "code",
+      "verify",
+      "merge-ready"
+    ],
     "stepPatterns": {
-      "sequential": ["plan", "code", "verify", "merge-ready"],
+      "sequential": [
+        "plan",
+        "code",
+        "verify",
+        "merge-ready"
+      ],
       "parallel": {
-        "code": ["frontend", "backend", "tests"]
+        "code": [
+          "frontend",
+          "backend",
+          "tests"
+        ]
       },
       "handoff": {
-        "plan→code": "@Ada→@Mira",
-        "code→verify": "@Mira→@Katherine",
-        "verify→merge-ready": "@Katherine→@Gwynne"
+        "plan\u2192code": "@Ada\u2192@Mira",
+        "code\u2192verify": "@Mira\u2192@Katherine",
+        "verify\u2192merge-ready": "@Katherine\u2192@Gwynne"
       },
       "group-review": {
         "trigger": "high-risk",
         "minRiskScore": 70,
-        "reviewers": ["@Ada", "@Katherine", "@Radia"],
+        "reviewers": [
+          "@Ada",
+          "@Katherine",
+          "@Radia"
+        ],
         "requiredApprovals": 2
       }
     },
@@ -373,11 +462,34 @@
       "highRiskPathWeight": 10
     },
     "tiers": {
-      "security": { "blockSeverities": ["critical"] },
-      "auth": { "blockSeverities": ["critical", "high"] },
-      "database": { "blockSeverities": ["critical", "high"] },
-      "payment": { "blockSeverities": ["critical", "high"] },
-      "general": { "blockSeverities": ["critical"] }
+      "security": {
+        "blockSeverities": [
+          "critical"
+        ]
+      },
+      "auth": {
+        "blockSeverities": [
+          "critical",
+          "high"
+        ]
+      },
+      "database": {
+        "blockSeverities": [
+          "critical",
+          "high"
+        ]
+      },
+      "payment": {
+        "blockSeverities": [
+          "critical",
+          "high"
+        ]
+      },
+      "general": {
+        "blockSeverities": [
+          "critical"
+        ]
+      }
     },
     "exceptions": []
   },
@@ -428,11 +540,107 @@
     "requireHumanApprovalMaxConfidence": 0.5,
     "riskScoreLowMax": 30,
     "riskScoreHighMin": 70,
-    "highRiskDomains": ["security", "auth", "payment", "database-migration"],
+    "highRiskDomains": [
+      "security",
+      "auth",
+      "payment",
+      "database-migration"
+    ],
     "routingStateDir": "logs/orchestrator/confidence",
     "fallbackDecision": "human-approval",
-    "fallbackChain": ["human-approval", "approval", "escalate"],
+    "fallbackChain": [
+      "human-approval",
+      "approval",
+      "escalate"
+    ],
     "requireReviewMetadataOnUncertain": true,
     "canaryPercentOverride": null
+  },
+  "artifactSchemasDir": "scripts/orchestrator/schemas",
+  "changeLog": [
+    {
+      "date": "2026-06-17",
+      "summary": "Added control-plane ownership, free-first task-class routing, plan-first packets, context budgets, and session compaction governance."
+    },
+    {
+      "date": "2026-05-27",
+      "summary": "Aegis vNext v2 baseline policy."
+    }
+  ],
+  "controlPlane": {
+    "authoritativeFiles": [
+      ".github/copilot-instructions.md",
+      "AGENTS.md",
+      ".github/instructions/agentic-workflow.instructions.md",
+      "scripts/orchestrator/policy.json"
+    ],
+    "ownership": {
+      ".github/copilot-instructions.md": "engineering-and-model-usage-rules",
+      "AGENTS.md": "roster-routing-and-operating-lanes",
+      ".github/instructions/agentic-workflow.instructions.md": "handoff-contract-and-dispatch-shape",
+      "scripts/orchestrator/policy.json": "machine-readable-runtime-truth"
+    },
+    "changeControl": {
+      "requireVersionBump": true,
+      "requireChangelogEntry": true,
+      "validationCommands": [
+        "npm run plans:validate",
+        "npm run aegis:health",
+        "npm run aegis:context:validate"
+      ],
+      "forbidSilentDrift": true
+    }
+  },
+  "planFirst": {
+    "enabled": true,
+    "defaultMode": "plan-before-agent",
+    "trivialExemptions": [
+      "formatting-only",
+      "comment-only",
+      "small-doc-fix"
+    ],
+    "requiredPlanPacketFields": [
+      "goal",
+      "filesInScope",
+      "validationPath",
+      "recommendedModelTier",
+      "contextSizeExpectation"
+    ],
+    "enforceBeforePremiumExecution": true
+  },
+  "contextBudget": {
+    "enabled": true,
+    "defaultMaxFiles": 12,
+    "defaultMaxInstructionFiles": 4,
+    "defaultMaxWaveBundles": 1,
+    "defaultMaxBusinessDocSections": 6,
+    "warnAfterTurns": 16,
+    "hardStopAfterTurns": 28,
+    "warnAfterApproxTokens": 120000,
+    "hardStopAfterApproxTokens": 220000,
+    "preferStructuredSummaries": true
+  },
+  "sessionManagement": {
+    "oneObjectivePerSession": true,
+    "oneWaveOrBugFamilyPerSession": true,
+    "mandatoryEndOfSessionSummary": true,
+    "requireCarryForwardList": true,
+    "newChatTriggers": [
+      "objective-changed",
+      "file-scope-widened",
+      "turn-threshold-exceeded",
+      "handoff-no-longer-compact"
+    ]
+  },
+  "historyManagement": {
+    "enabled": true,
+    "layers": [
+      "raw-logs",
+      "session-snapshot",
+      "handoff-summary"
+    ],
+    "reuseLayer": "handoff-summary",
+    "markStaleAsNonCanonical": true,
+    "bootstrapFromMinimalPacket": true
   }
 }

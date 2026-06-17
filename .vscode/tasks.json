@@ -1,0 +1,53 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "Aegis: Plan First",
+      "type": "shell",
+      "command": "npm run orchestrator:session:compact",
+      "problemMatcher": []
+    },
+    {
+      "label": "Aegis: Free-Agent Dispatch",
+      "type": "shell",
+      "command": "npm run orchestrator:today-sprint:compact",
+      "problemMatcher": []
+    },
+    {
+      "label": "Aegis: Premium Gate Check",
+      "type": "shell",
+      "command": "npm run aegis:policy:gate && npm run aegis:health",
+      "problemMatcher": []
+    },
+    {
+      "label": "Aegis: Context Manifest",
+      "type": "shell",
+      "command": "npm run aegis:context:manifest",
+      "problemMatcher": []
+    },
+    {
+      "label": "Aegis: New-Chat Handoff",
+      "type": "shell",
+      "command": "npm run aegis:context:bootstrap",
+      "problemMatcher": []
+    },
+    {
+      "label": "Aegis: Prompt Verify",
+      "type": "shell",
+      "command": "npm run orchestrator:verify-prompts",
+      "problemMatcher": []
+    },
+    {
+      "label": "Aegis: Premium Efficiency",
+      "type": "shell",
+      "command": "npm run orchestrator:premium-efficiency:brief",
+      "problemMatcher": []
+    },
+    {
+      "label": "Aegis: Plan Validate",
+      "type": "shell",
+      "command": "npm run plans:validate",
+      "problemMatcher": []
+    }
+  ]
+}

@@ -187,11 +187,18 @@ For orchestration/governance rules (handoff contracts, readiness gates, approval
 
 ### Policy precedence
 
-1. Engineering/code quality rules → this file (`.github/copilot-instructions.md`)
-2. Workflow/orchestration rules → `AGENTS.md` + agentic workflow instructions
+1. Engineering/code quality rules -> this file (`.github/copilot-instructions.md`)
+2. Workflow/orchestration rules -> `AGENTS.md` + agentic workflow instructions
 
 When rules overlap, follow both; when they conflict, apply precedence above and document the decision in task notes.
 
+### Aegis control-plane defaults
+
+- Control-plane ownership is explicit: this file = engineering + model usage, `AGENTS.md` = roster/routing/lanes, `agentic-workflow.instructions.md` = handoff contract, `scripts/orchestrator/policy.json` = runtime truth.
+- Use **plan mode before agent mode** for any non-trivial task. A plan packet must define goal, files in scope, validation path, recommended model tier, and context-size expectation before premium execution.
+- Route **free-first, premium-by-exception** by task class. Exploration, planning, research, doc expansion, and queue triage stay on free models unless risk/escalation demands otherwise.
+- Apply the context budget before opening files: canonical roadmap first, then one wave bundle, only exact business-doc sections, and only task-relevant instruction files.
+- Prefer compact handoff summaries over transcript replay. Raw logs may remain in history, but reusable context must come from the session snapshot and handoff summary layers.
 
 ---
 
