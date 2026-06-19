@@ -1,4 +1,3 @@
-// @ts-nocheck
 import express, { Router, Request, Response, NextFunction } from 'express';
 import MessageQueueService from '../queue/queue.service.js';
 import AnalyticsService from '../analytics/analytics.service.js';
@@ -420,10 +419,4 @@ router.get('/health', (req: Request, res: Response) => {
 });
 
 export { router as phase6Router };
-export {
-  queueService,
-  analyticsService,
-  notificationService,
-  encryptionService,
-  presenceService,
-};
+export { queueService, analyticsService, notificationService, encryptionService, presenceService };

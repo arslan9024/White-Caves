@@ -24,6 +24,27 @@ export interface GroupedModules {
   byZone: Record<string, GroupedModuleItem[]>;
 }
 
+export type MDWorkspaceId = 'md-company-workspace' | 'md-ai-command-center';
+
+export interface MDWorkspaceDefinition {
+  id: MDWorkspaceId;
+  label: string;
+  icon: string;
+  defaultTabId: string;
+}
+
+export interface ModuleWorkspaceOwnership {
+  moduleId: string;
+  workspaceId: MDWorkspaceId;
+}
+
+export interface MDWorkspaceKPIBoundary {
+  workspaceId: MDWorkspaceId;
+  kpiIds: string[];
+  drillDownTabs: string[];
+  aiCommandSurface: boolean;
+}
+
 const MD_PINNED_WORKSPACE_IDS = ['overview', 'leads', 'analytics', 'ai-command', 'users'];
 
 const ADVANCED_MODULE_IDS = new Set([
@@ -64,6 +85,50 @@ const CORE_MODULE_IDS = new Set([
 
 const AI_ZONE = 'ai_command';
 
+export const MD_TOP_LEVEL_WORKSPACES: MDWorkspaceDefinition[] = [
+  {
+    id: 'md-company-workspace',
+    label: 'Company Structure & Business Process',
+    icon: '🏢',
+    defaultTabId: 'overview',
+  },
+  {
+    id: 'md-ai-command-center',
+    label: 'AI Command Center',
+    icon: '🤖',
+    defaultTabId: 'ai-command',
+  },
+];
+
+export const MD_WORKSPACE_KPI_BOUNDARIES: MDWorkspaceKPIBoundary[] = [
+  {
+    workspaceId: 'md-company-workspace',
+    kpiIds: [
+      'properties',
+      'leads',
+      'revenue',
+      'agents',
+      'contracts',
+      'pipeline_velocity',
+      'compliance_health',
+    ],
+    drillDownTabs: ['overview', 'properties', 'agents', 'leads', 'contracts', 'analytics', 'users'],
+    aiCommandSurface: false,
+  },
+  {
+    workspaceId: 'md-ai-command-center',
+    kpiIds: [
+      'assistant_online',
+      'assistant_degraded',
+      'queue_pending',
+      'queue_stuck',
+      'handoff_sla_minutes',
+    ],
+    drillDownTabs: ['ai-command', 'ai-hub'],
+    aiCommandSurface: true,
+  },
+];
+
 export const ZONE_LABELS: Record<string, string> = {
   executive: 'Executive',
   sales_leads: 'Sales & Leads',
@@ -77,6 +142,34 @@ export function groupWorkspacesForMD(tabs: RoleTab[]): GroupedWorkspace {
   const pinned = tabs.filter(tab => MD_PINNED_WORKSPACE_IDS.includes(tab.id));
   const core = tabs.filter(tab => !MD_PINNED_WORKSPACE_IDS.includes(tab.id));
   return { pinned, core };
+}
+
+export function getWorkspaceForMDModule(moduleId: string): MDWorkspaceId {
+  const moduleDef = getCRMModule(moduleId);
+  if (moduleDef?.zone === AI_ZONE) {
+    return 'md-ai-command-center';
+  }
+
+  return 'md-company-workspace';
+}
+
+export function getWorkspaceForMDTab(tabId: string): MDWorkspaceId {
+  if (tabId === 'ai-command' || tabId === 'ai-hub') {
+    return 'md-ai-command-center';
+  }
+
+  return 'md-company-workspace';
+}
+
+export function getMDModuleOwnershipMap(
+  moduleEntries: Array<[string, CRMModuleEntry]>
+): ModuleWorkspaceOwnership[] {
+  return moduleEntries
+    .map(([moduleId]) => ({
+      moduleId,
+      workspaceId: getWorkspaceForMDModule(moduleId),
+    }))
+    .sort((a, b) => a.moduleId.localeCompare(b.moduleId));
 }
 
 export function groupModulesForMD(moduleEntries: Array<[string, CRMModuleEntry]>): GroupedModules {

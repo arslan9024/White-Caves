@@ -23,21 +23,21 @@
 
 ## Improvement Inventory (132 Total)
 
-| Pillar | Count |
-| --- | ---: |
-| Search & Discovery | 14 |
-| Listing Quality & Trust | 10 |
-| Lead Capture & Conversion | 12 |
-| CRM Workflow Productivity | 18 |
-| WhatsApp/Omnichannel & AI Ops | 12 |
-| Tenant/Landlord Lifecycle | 12 |
-| Analytics & Revenue Intelligence | 9 |
-| Mobile CRM & Field Ops | 8 |
-| Performance/Core Web Vitals/PWA | 8 |
-| Integrations & Data Platform | 11 |
-| Security/Compliance/Audit | 8 |
-| SEO/Growth/Marketplace Flywheel | 10 |
-| **Total** | **132** |
+| Pillar                           |   Count |
+| -------------------------------- | ------: |
+| Search & Discovery               |      14 |
+| Listing Quality & Trust          |      10 |
+| Lead Capture & Conversion        |      12 |
+| CRM Workflow Productivity        |      18 |
+| WhatsApp/Omnichannel & AI Ops    |      12 |
+| Tenant/Landlord Lifecycle        |      12 |
+| Analytics & Revenue Intelligence |       9 |
+| Mobile CRM & Field Ops           |       8 |
+| Performance/Core Web Vitals/PWA  |       8 |
+| Integrations & Data Platform     |      11 |
+| Security/Compliance/Audit        |       8 |
+| SEO/Growth/Marketplace Flywheel  |      10 |
+| **Total**                        | **132** |
 
 ---
 
@@ -59,28 +59,28 @@ Weighted score per task:
 
 ## Top-20 P0 Execution Queue
 
-| ID | Pillar | Task | Owner | Success Metric | Validation Gate |
-| --- | --- | --- | --- | --- | --- |
-| W18.1-P0-001 | Search & Discovery | Add intent-aware ranking profile for buy/rent/invest journeys | @Mira + @Lea | +15% qualified click-through to property detail | Search relevance regression tests + `npm run build` |
-| W18.1-P0-002 | Search & Discovery | Add advanced search facets (furnishing, handover stage, permit status, fee band) | @Mira + @Lea | +20% filter usage without conversion drop | API filter tests + UI integration tests |
-| W18.1-P0-003 | Search & Discovery | Improve map/list synchronization and viewport persistence | @Tracy + @Mira | -30% map abandonment rate | Playwright map-flow tests |
-| W18.1-P0-004 | Lead Capture & Conversion | ✅ Build one-click inquiry→viewing path from listing cards and detail page | @Mira + @Una | +25% viewing booking conversion | Route tests + UX flow tests |
-| W18.1-P0-005 | Lead Capture & Conversion | ✅ Enforce lead SLA timers with escalating nudges to assignee/manager | @Mira + @Katherine | -40% median first-response time | Scheduler tests + dashboard evidence |
-| W18.1-P0-006 | Lead Capture & Conversion | ✅ Create unified lead timeline across web forms, WhatsApp, calls, tasks | @Mira + @Jaime | +20% lead-to-offer progression | Timeline API tests + CRM UI checks |
-| W18.1-P0-007 | CRM Workflow Productivity | ✅ Ship one-screen agent task cockpit (today queue, SLA risk, priority) | @Una + @Mira | +35% daily task completion | Component tests + role-access checks |
-| W18.1-P0-008 | CRM Workflow Productivity | ✅ Add bulk lead actions (assign, stage, reminder, archive) with audit trail | @Mira + @Katherine | -25% repetitive CRM actions per lead | Bulk-action tests + audit evidence |
-| W18.1-P0-009 | Mobile CRM & Field Ops | Deliver mobile-first CRM command bar for top 8 field actions | @Tracy + @Una | +35% mobile CRM completion rate | Playwright mobile suite |
-| W18.1-P0-010 | Mobile CRM & Field Ops | Add offline-safe draft capture for notes/viewing feedback | @Mira + @Ruchi | 0% data loss incidents in spotty network | PWA cache tests + sync tests |
-| W18.1-P0-011 | Listing Quality & Trust | Add listing completeness scoring and remediation checklist | @Mira + @Lea | +30% listing completeness score | Listing score tests + UI checks |
-| W18.1-P0-012 | Listing Quality & Trust | Add verification/freshness badges with traceable evidence fields | @Sofia + @Mira | +20% trust interactions on listing pages | Compliance route tests + frontend checks |
-| W18.1-P0-013 | Security/Compliance/Audit | Enforce KYC gate before high-risk transaction transitions | @Sofia + @Mira | 100% gated risky transactions | Compliance tests + RBAC tests |
-| W18.1-P0-014 | Security/Compliance/Audit | Add permit/BRN/Ejari expiry risk queue with escalation | @Sofia + @Katherine | 0 missed critical expiry alerts | Scheduler + notification tests |
-| W18.1-P0-015 | Tenant/Landlord Lifecycle | ✅ Expand tenant portal lifecycle (payments, renewals, maintenance SLA) | @Victoria + @Mira | +30% tenant portal MAU | Portal integration tests |
-| W18.1-P0-016 | Tenant/Landlord Lifecycle | ✅ Expand landlord portfolio health dashboard with issue hotspots | @Victoria + @Mira | +30% landlord portal MAU | Dashboard tests + data contract checks |
-| W18.1-P0-017 | WhatsApp/Omnichannel & AI Ops | One-click WhatsApp conversation→lead conversion + ownership routing | @Joelle + @Mira | +20% WA lead creation conversion | WhatsApp route tests |
-| W18.1-P0-018 | WhatsApp/Omnichannel & AI Ops | Implement channel orchestration cadence rules (WA/email/call) | @Joelle + @Katherine | +15% follow-up adherence rate | Automation tests + SLA evidence |
-| W18.1-P0-019 | Analytics & Revenue Intelligence | Ship funnel economics dashboard (lead→viewing→offer→close) | @Invoice + @Mira | +20% offer submission rate | Reporting tests + KPI dashboard checks |
-| W18.1-P0-020 | Analytics & Revenue Intelligence | Add baseline KPI tracker for 90-day target monitoring | @Invoice + @Katherine | Weekly KPI trend published with deltas | Tracker update + `npm run plans:validate` |
+| ID           | Pillar                           | Task                                                                             | Owner                 | Success Metric                                  | Validation Gate                                     |
+| ------------ | -------------------------------- | -------------------------------------------------------------------------------- | --------------------- | ----------------------------------------------- | --------------------------------------------------- |
+| W18.1-P0-001 | Search & Discovery               | Add intent-aware ranking profile for buy/rent/invest journeys                    | @Mira + @Lea          | +15% qualified click-through to property detail | Search relevance regression tests + `npm run build` |
+| W18.1-P0-002 | Search & Discovery               | Add advanced search facets (furnishing, handover stage, permit status, fee band) | @Mira + @Lea          | +20% filter usage without conversion drop       | API filter tests + UI integration tests             |
+| W18.1-P0-003 | Search & Discovery               | Improve map/list synchronization and viewport persistence                        | @Tracy + @Mira        | -30% map abandonment rate                       | Playwright map-flow tests                           |
+| W18.1-P0-004 | Lead Capture & Conversion        | ✅ Build one-click inquiry→viewing path from listing cards and detail page       | @Mira + @Una          | +25% viewing booking conversion                 | Route tests + UX flow tests                         |
+| W18.1-P0-005 | Lead Capture & Conversion        | ✅ Enforce lead SLA timers with escalating nudges to assignee/manager            | @Mira + @Katherine    | -40% median first-response time                 | Scheduler tests + dashboard evidence                |
+| W18.1-P0-006 | Lead Capture & Conversion        | ✅ Create unified lead timeline across web forms, WhatsApp, calls, tasks         | @Mira + @Jaime        | +20% lead-to-offer progression                  | Timeline API tests + CRM UI checks                  |
+| W18.1-P0-007 | CRM Workflow Productivity        | ✅ Ship one-screen agent task cockpit (today queue, SLA risk, priority)          | @Una + @Mira          | +35% daily task completion                      | Component tests + role-access checks                |
+| W18.1-P0-008 | CRM Workflow Productivity        | ✅ Add bulk lead actions (assign, stage, reminder, archive) with audit trail     | @Mira + @Katherine    | -25% repetitive CRM actions per lead            | Bulk-action tests + audit evidence                  |
+| W18.1-P0-009 | Mobile CRM & Field Ops           | Deliver mobile-first CRM command bar for top 8 field actions                     | @Tracy + @Una         | +35% mobile CRM completion rate                 | Playwright mobile suite                             |
+| W18.1-P0-010 | Mobile CRM & Field Ops           | Add offline-safe draft capture for notes/viewing feedback                        | @Mira + @Ruchi        | 0% data loss incidents in spotty network        | PWA cache tests + sync tests                        |
+| W18.1-P0-011 | Listing Quality & Trust          | Add listing completeness scoring and remediation checklist                       | @Mira + @Lea          | +30% listing completeness score                 | Listing score tests + UI checks                     |
+| W18.1-P0-012 | Listing Quality & Trust          | Add verification/freshness badges with traceable evidence fields                 | @Sofia + @Mira        | +20% trust interactions on listing pages        | Compliance route tests + frontend checks            |
+| W18.1-P0-013 | Security/Compliance/Audit        | Enforce KYC gate before high-risk transaction transitions                        | @Sofia + @Mira        | 100% gated risky transactions                   | Compliance tests + RBAC tests                       |
+| W18.1-P0-014 | Security/Compliance/Audit        | Add permit/BRN/Ejari expiry risk queue with escalation                           | @Sofia + @Katherine   | 0 missed critical expiry alerts                 | Scheduler + notification tests                      |
+| W18.1-P0-015 | Tenant/Landlord Lifecycle        | ✅ Expand tenant portal lifecycle (payments, renewals, maintenance SLA)          | @Victoria + @Mira     | +30% tenant portal MAU                          | Portal integration tests                            |
+| W18.1-P0-016 | Tenant/Landlord Lifecycle        | ✅ Expand landlord portfolio health dashboard with issue hotspots                | @Victoria + @Mira     | +30% landlord portal MAU                        | Dashboard tests + data contract checks              |
+| W18.1-P0-017 | WhatsApp/Omnichannel & AI Ops    | One-click WhatsApp conversation→lead conversion + ownership routing              | @Joelle + @Mira       | +20% WA lead creation conversion                | WhatsApp route tests                                |
+| W18.1-P0-018 | WhatsApp/Omnichannel & AI Ops    | Implement channel orchestration cadence rules (WA/email/call)                    | @Joelle + @Katherine  | +15% follow-up adherence rate                   | Automation tests + SLA evidence                     |
+| W18.1-P0-019 | Analytics & Revenue Intelligence | Ship funnel economics dashboard (lead→viewing→offer→close)                       | @Invoice + @Mira      | +20% offer submission rate                      | Reporting tests + KPI dashboard checks              |
+| W18.1-P0-020 | Analytics & Revenue Intelligence | Add baseline KPI tracker for 90-day target monitoring                            | @Invoice + @Katherine | Weekly KPI trend published with deltas          | Tracker update + `npm run plans:validate`           |
 
 ---
 
@@ -131,31 +131,31 @@ Weighted score per task:
 
 ### Tasks Marked Complete (Prior to Session 2)
 
-| ID | Task | Reason |
-|----|------|--------|
+| ID           | Task                                               | Reason                                                                                                                                                                                                                                                          |
+| ------------ | -------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | W18.1-P0-014 | Permit/BRN/Ejari expiry risk queue with escalation | Wave 4 fully delivered: `reraExpiryScheduler.js`, `permitAlertScheduler.js`, `propertyPermitEnforcementScheduler.js`, `/api/compliance/permit-alerts`, `/api/compliance/brn-expiry`, `/api/compliance/brn-check` all confirmed in `server/routes/compliance.ts` |
 
 ### Session 2 Target Tasks (10 of remaining P0)
 
-| Batch | ID | Task | Owner(s) | Priority | Validation Gate |
-|-------|-----|------|----------|----------|-----------------|
-| A | W18.1-P0-001 | ✅ Intent-aware ranking (buy/rent/invest) | @Mira + @Una | P0 | propertySlice tests + build |
-| A | W18.1-P0-002 | ✅ Advanced search facets (furnishing, handover, permit, fee) | @Mira + @Una + @Tracy | P0 | PropertyFilterPanel tests + API filter tests + build |
-| A | W18.1-P0-003 | ✅ Map/list sync + viewport persistence | @Tracy + @Mira | P0 | InteractiveMap tests + Playwright map suite + build |
-| B | W18.1-P0-011 | ✅ Listing completeness scoring + remediation checklist | @Mira + @Una | P0 | completenessScorer tests + widget tests + build |
-| B | W18.1-P0-012 | ✅ Verification/freshness badges with evidence fields | @Una + @Mira | P0 | VerificationBadge tests + FreshnessBadge tests + build |
-| C | W18.1-P0-017 | ✅ One-click WhatsApp conversation→lead conversion + ownership routing | @Mira + @Una | P0 | nadia convert-to-lead tests + ConversationsTab tests + build |
-| C | W18.1-P0-019 | ✅ Funnel economics dashboard (API wire-up) | @Mira + @Katherine | P0 | FunnelEconomicsDashboard tests + reporting.ts tests + build |
-| C | W18.1-P0-020 | ✅ Baseline KPI tracker (API wire-up) | @Mira + @Katherine | P0 | KPIBaselineTracker tests + build |
-| D | W18.1-P0-013 | ✅ KYC gate before high-risk transaction transitions | @Mira + @Sofia + @Katherine | P0 | kyc-gate tests + transactions.test.ts + typecheck + build |
-| D | W18.1-P0-009 | ✅ Mobile-first CRM command bar (top 8 field actions) | @Tracy + @Una | P0 | MobileCRMCommandBar tests + Playwright mobile suite + build |
+| Batch | ID           | Task                                                                   | Owner(s)                    | Priority | Validation Gate                                              |
+| ----- | ------------ | ---------------------------------------------------------------------- | --------------------------- | -------- | ------------------------------------------------------------ |
+| A     | W18.1-P0-001 | ✅ Intent-aware ranking (buy/rent/invest)                              | @Mira + @Una                | P0       | propertySlice tests + build                                  |
+| A     | W18.1-P0-002 | ✅ Advanced search facets (furnishing, handover, permit, fee)          | @Mira + @Una + @Tracy       | P0       | PropertyFilterPanel tests + API filter tests + build         |
+| A     | W18.1-P0-003 | ✅ Map/list sync + viewport persistence                                | @Tracy + @Mira              | P0       | InteractiveMap tests + Playwright map suite + build          |
+| B     | W18.1-P0-011 | ✅ Listing completeness scoring + remediation checklist                | @Mira + @Una                | P0       | completenessScorer tests + widget tests + build              |
+| B     | W18.1-P0-012 | ✅ Verification/freshness badges with evidence fields                  | @Una + @Mira                | P0       | VerificationBadge tests + FreshnessBadge tests + build       |
+| C     | W18.1-P0-017 | ✅ One-click WhatsApp conversation→lead conversion + ownership routing | @Mira + @Una                | P0       | nadia convert-to-lead tests + ConversationsTab tests + build |
+| C     | W18.1-P0-019 | ✅ Funnel economics dashboard (API wire-up)                            | @Mira + @Katherine          | P0       | FunnelEconomicsDashboard tests + reporting.ts tests + build  |
+| C     | W18.1-P0-020 | ✅ Baseline KPI tracker (API wire-up)                                  | @Mira + @Katherine          | P0       | KPIBaselineTracker tests + build                             |
+| D     | W18.1-P0-013 | ✅ KYC gate before high-risk transaction transitions                   | @Mira + @Sofia + @Katherine | P0       | kyc-gate tests + transactions.test.ts + typecheck + build    |
+| D     | W18.1-P0-009 | ✅ Mobile-first CRM command bar (top 8 field actions)                  | @Tracy + @Una               | P0       | MobileCRMCommandBar tests + Playwright mobile suite + build  |
 
 ### Tasks Deferred to Session 3
 
-| ID | Task | Reason |
-|----|------|--------|
+| ID           | Task                                                  | Reason                                                                                                                                                      |
+| ------------ | ----------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | W18.1-P0-010 | Offline-safe draft capture for notes/viewing feedback | PWA complexity — requires IndexedDB spike, sync-conflict resolution strategy, and service worker update. Scheduled as a standalone Session 3 PWA mini-wave. |
-| W18.1-P0-018 | Channel orchestration cadence rules (WA/email/call) | Requires a cadence rules engine design (no data model exists yet). @Margaret to roadmap as first item of Session 3 planning. |
+| W18.1-P0-018 | Channel orchestration cadence rules (WA/email/call)   | Requires a cadence rules engine design (no data model exists yet). @Margaret to roadmap as first item of Session 3 planning.                                |
 
 ### Session 2 Architectural Risks
 
@@ -176,13 +176,13 @@ Weighted score per task:
 
 ### 90-Day KPI Progress Check (at Session 2 close)
 
-| KPI | Target | Session 1 Baseline | Session 2 Expected |
-|-----|--------|-------------------|--------------------|
-| First response time | -40% | Not measured | Measurable via leads.ts timestamps |
-| Viewing conversion | +25% | Not measured | Measurable via viewings/leads ratio |
-| Listing completeness | +30% | ~62% (hardcoded) | Real score via P0-011 endpoint |
-| Mobile CRM sessions | +35% | ~31% (hardcoded) | Partially measurable with P0-009 |
-| Offer submission rate | +20% | Not measured | Measurable via P0-019 funnel data |
+| KPI                   | Target | Session 1 Baseline | Session 2 Expected                  |
+| --------------------- | ------ | ------------------ | ----------------------------------- |
+| First response time   | -40%   | Not measured       | Measurable via leads.ts timestamps  |
+| Viewing conversion    | +25%   | Not measured       | Measurable via viewings/leads ratio |
+| Listing completeness  | +30%   | ~62% (hardcoded)   | Real score via P0-011 endpoint      |
+| Mobile CRM sessions   | +35%   | ~31% (hardcoded)   | Partially measurable with P0-009    |
+| Offer submission rate | +20%   | Not measured       | Measurable via P0-019 funnel data   |
 
 ---
 
@@ -204,18 +204,18 @@ Weighted score per task:
 
 ### Session 3 Target Tasks (10 Total)
 
-| Batch | ID | Task | Owner(s) | Priority | Validation Gate |
-|-------|-----|------|----------|----------|-----------------|
-| A | W18.1-P0-010 | Offline-safe draft capture for notes/viewing feedback (IndexedDB + sync-conflict resolution + service worker update) — **baseline delivered (IndexedDB persistence for viewing feedback)** | @Mira + @Ruchi | P0 | PWA cache tests + sync-conflict tests + Lighthouse PWA ≥ 90 + `npm run build` |
-| A | W18.1-P0-018 | Channel orchestration cadence rules engine (WA/email/call cadence — data model + scheduler + admin UI) — **backend cadence-rule CRUD baseline delivered** | @Joelle + @Margaret + @Mira | P0 | Cadence engine unit tests + admin UI component tests + scheduler integration tests + `npm run build` |
-| B | W18.1-P1-001 | Lead import: CSV/XLSX bulk upload with dedup, field-mapping UI, and per-row error reporting | @Mira + @Katherine | P1 | Import route tests + dedup logic tests + UI field-mapping component tests + `npm run build` |
-| B | W18.1-P1-002 | Immutable audit log UI: filterable, paginated activity log surface with XLSX export for compliance/manager roles — **CSV export baseline delivered** | @Una + @Mira | P1 | AuditLogUI component tests + export route tests + RBAC access tests + `npm run build` |
-| B | W18.1-P1-003 | Agent performance report: filterable dashboard by agent/date/stage + XLSX/PDF export | @Mira + @Katherine | P1 | Report API tests + export endpoint tests + dashboard component tests + `npm run build` |
-| B | W18.1-P1-004 | WhatsApp bot escalation hardening: Nina confidence-gate threshold + structured context handoff to assigned agent | @Joelle + @Mira | P1 | Nina confidence-gate unit tests + escalation routing tests + context-payload contract tests + `npm run build` |
-| B | W18.1-P1-005 | Contract e-sign flow completion: signing-link delivery via email + webhook status callback + contract signing status UI — **webhook callback baseline delivered** | @Mira + @Sofia | P1 | Contract signing route tests + webhook callback tests + SigningStatusBadge component tests + `npm run build` |
-| B | W18.1-P1-006 | Portal syndication baseline: Property Finder/Bayut push-API stub with `SYNDICATION_ENABLED` feature flag + sync-queue endpoint — **API baseline delivered** | @Mira + @Lea | P1 | Syndication route tests + queue endpoint tests + feature-flag isolation tests + `npm run build` |
-| B | W18.1-P1-007 | CRM follow-up automation depth: multi-tier reminder escalation + template trigger builder (stage-based + time-based conditions) | @Mira + @Margaret | P1 | Follow-up automation tests + cadence escalation tier tests + template trigger tests + `npm run build` |
-| B | W18.1-P1-008 | Ejari + rent collection completion: Ejari registration tracking UI + overdue rent collection queue with notification | @Victoria + @Mira | P1 | Ejari tracking route tests + overdue-collection queue tests + portal UI tests + `npm run build` |
+| Batch | ID           | Task                                                                                                                                                                                       | Owner(s)                    | Priority | Validation Gate                                                                                                                                                                                               |
+| ----- | ------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | --------------------------- | -------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| A     | W18.1-P0-010 | Offline-safe draft capture for notes/viewing feedback (IndexedDB + sync-conflict resolution + service worker update) — **baseline delivered (IndexedDB persistence for viewing feedback)** | @Mira + @Ruchi              | P0       | PWA cache tests + sync-conflict tests + Lighthouse PWA ≥ 90 + `npm run build`                                                                                                                                 |
+| A     | W18.1-P0-018 | Channel orchestration cadence rules engine (WA/email/call cadence — data model + scheduler + admin UI) — **backend cadence-rule CRUD baseline delivered**                                  | @Joelle + @Margaret + @Mira | P0       | Cadence engine unit tests + admin UI component tests + scheduler integration tests + `npm run build`                                                                                                          |
+| B     | W18.1-P1-001 | Lead import: CSV/XLSX bulk upload with dedup, field-mapping UI, and per-row error reporting                                                                                                | @Mira + @Katherine          | P1       | Import route tests + dedup logic tests + UI field-mapping component tests + `npm run build`                                                                                                                   |
+| B     | W18.1-P1-002 | Immutable audit log UI: filterable, paginated activity log surface with XLSX export for compliance/manager roles — **CSV export baseline delivered**                                       | @Una + @Mira                | P1       | AuditLogUI component tests + export route tests + RBAC access tests + `npm run build`                                                                                                                         |
+| B     | W18.1-P1-003 | Agent performance report: filterable dashboard by agent/date/stage + XLSX/PDF export                                                                                                       | @Mira + @Katherine          | P1       | ✅ Route tests + export endpoint tests passing (`server/routes/reporting.test.ts` 32/32 ✅) — `GET /agent-performance` (filterable), `POST /agent-performance/export`, `GET /agent-performance/export/:jobId` |
+| B     | W18.1-P1-004 | WhatsApp bot escalation hardening: Nina confidence-gate threshold + structured context handoff to assigned agent                                                                           | @Joelle + @Mira             | P1       | Nina confidence-gate unit tests + escalation routing tests + context-payload contract tests + `npm run build`                                                                                                 |
+| B     | W18.1-P1-005 | Contract e-sign flow completion: signing-link delivery via email + webhook status callback + contract signing status UI — **webhook callback baseline delivered**                          | @Mira + @Sofia              | P1       | Contract signing route tests + webhook callback tests + SigningStatusBadge component tests + `npm run build`                                                                                                  |
+| B     | W18.1-P1-006 | Portal syndication baseline: Property Finder/Bayut push-API stub with `SYNDICATION_ENABLED` feature flag + sync-queue endpoint — **API baseline delivered**                                | @Mira + @Lea                | P1       | Syndication route tests + queue endpoint tests + feature-flag isolation tests + `npm run build`                                                                                                               |
+| B     | W18.1-P1-007 | CRM follow-up automation depth: multi-tier reminder escalation + template trigger builder (stage-based + time-based conditions)                                                            | @Mira + @Margaret           | P1       | Follow-up automation tests + cadence escalation tier tests + template trigger tests + `npm run build`                                                                                                         |
+| B     | W18.1-P1-008 | Ejari + rent collection completion: Ejari registration tracking UI + overdue rent collection queue with notification                                                                       | @Victoria + @Mira           | P1       | Ejari tracking route tests + overdue-collection queue tests + portal UI tests + `npm run build`                                                                                                               |
 
 ### Session 3 Architectural Risks
 
@@ -240,13 +240,13 @@ Weighted score per task:
 
 ### 90-Day KPI Progress Check (Session 3 targets)
 
-| KPI | Target | S1+S2 State | S3 Expected |
-|-----|--------|-------------|-------------|
-| First response time | -40% | Measurable via leads timestamps | Enforced by cadence engine (P0-018) |
-| Follow-up adherence | +15% | Not enforced | Measurable via cadence engine (P0-018) |
-| Offline data loss incidents | 0% | Not protected | Protected by IndexedDB drafts (P0-010) |
-| Viewing conversion | +25% | Measurable via viewings/leads ratio | Field agent notes captured offline (P0-010) |
-| Lead import efficiency | New baseline | Manual only | Bulk import route via P1-001 |
-| Audit compliance coverage | +Coverage | Routes exist, UI partial | Full audit log UI via P1-002 |
-| Agent performance visibility | New baseline | Not measured | Report dashboard via P1-003 |
-| WA bot escalation quality | +Quality | Basic routing only | Confidence-gated with context handoff P1-004 |
+| KPI                          | Target       | S1+S2 State                         | S3 Expected                                  |
+| ---------------------------- | ------------ | ----------------------------------- | -------------------------------------------- |
+| First response time          | -40%         | Measurable via leads timestamps     | Enforced by cadence engine (P0-018)          |
+| Follow-up adherence          | +15%         | Not enforced                        | Measurable via cadence engine (P0-018)       |
+| Offline data loss incidents  | 0%           | Not protected                       | Protected by IndexedDB drafts (P0-010)       |
+| Viewing conversion           | +25%         | Measurable via viewings/leads ratio | Field agent notes captured offline (P0-010)  |
+| Lead import efficiency       | New baseline | Manual only                         | Bulk import route via P1-001                 |
+| Audit compliance coverage    | +Coverage    | Routes exist, UI partial            | Full audit log UI via P1-002                 |
+| Agent performance visibility | New baseline | Not measured                        | Report dashboard via P1-003                  |
+| WA bot escalation quality    | +Quality     | Basic routing only                  | Confidence-gated with context handoff P1-004 |

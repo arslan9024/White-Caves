@@ -1,4 +1,3 @@
-// @ts-nocheck
 /**
  * Lease Invoices API Routes
  * ─────────────────────────

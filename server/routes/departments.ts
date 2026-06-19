@@ -14,12 +14,26 @@
  */
 
 import { Router, Request, Response } from 'express';
-import { asyncHandler } from '../middleware/errorHandler.js';
+import { asyncHandler, AppError } from '../middleware/errorHandler.js';
 import { requirePermission } from '../middleware/rbac.js';
-import { requireDepartmentAccess, requireDepartmentPermission } from '../middleware/departmentAuth.js';
+import {
+  requireDepartmentAccess,
+  requireDepartmentPermission,
+} from '../middleware/departmentAuth.js';
 import { prisma } from '../database.js';
 
 const router = Router();
+
+const routeParamToString = (value: string | string[] | undefined): string | null => {
+  if (typeof value === 'string' && value.trim().length > 0) {
+    return value;
+  }
+  if (Array.isArray(value) && value.length > 0 && typeof value[0] === 'string') {
+    const first = value[0].trim();
+    return first.length > 0 ? first : null;
+  }
+  return null;
+};
 
 // â”€â”€â”€ Supported departments â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
@@ -124,6 +138,8 @@ async function getSalesData() {
   return {
     code: 'SALES',
     name: 'Sales & Leasing',
+    departmentCode: 'SALES',
+    departmentName: 'Sales & Leasing',
     totalLeads,
     activeDeals,
     conversionRate,
@@ -240,6 +256,8 @@ async function getFinanceData() {
   return {
     code: 'FINANCE',
     name: 'Finance',
+    departmentCode: 'FINANCE',
+    departmentName: 'Finance',
     totalBudget,
     spent,
     remaining,
@@ -362,6 +380,8 @@ async function getHRData() {
   return {
     code: 'HR',
     name: 'Human Resources',
+    departmentCode: 'HR',
+    departmentName: 'Human Resources',
     totalEmployees,
     activePositions: openPositions,
     attendanceRate: 94.5, // Placeholder â€” no attendance system yet; will be replaced when timesheet module is built
@@ -432,7 +452,11 @@ router.get(
   requireDepartmentAccess,
   requireDepartmentPermission('READ'),
   asyncHandler(async (req: Request, res: Response) => {
-    const code = req.params.code.toUpperCase();
+    const codeParam = routeParamToString(req.params.code);
+    if (!codeParam) {
+      throw new AppError('Department code is required', 400);
+    }
+    const code = codeParam.toUpperCase();
 
     let data: Record<string, unknown>;
 
@@ -460,8 +484,14 @@ router.get(
 router.get(
   '/:code/kpis',
   requirePermission('view_analytics'),
+  requireDepartmentAccess,
+  requireDepartmentPermission('READ'),
   asyncHandler(async (req: Request, res: Response) => {
-    const code = req.params.code.toUpperCase();
+    const codeParam = routeParamToString(req.params.code);
+    if (!codeParam) {
+      throw new AppError('Department code is required', 400);
+    }
+    const code = codeParam.toUpperCase();
     let data: Record<string, unknown>;
 
     switch (code) {
@@ -492,8 +522,14 @@ router.get(
 router.get(
   '/:code/trends',
   requirePermission('view_analytics'),
+  requireDepartmentAccess,
+  requireDepartmentPermission('READ'),
   asyncHandler(async (req: Request, res: Response) => {
-    const code = req.params.code.toUpperCase();
+    const codeParam = routeParamToString(req.params.code);
+    if (!codeParam) {
+      throw new AppError('Department code is required', 400);
+    }
+    const code = codeParam.toUpperCase();
     let data: Record<string, unknown>;
 
     switch (code) {
@@ -524,8 +560,14 @@ router.get(
 router.get(
   '/:code/summary',
   requirePermission('view_analytics'),
+  requireDepartmentAccess,
+  requireDepartmentPermission('READ'),
   asyncHandler(async (req: Request, res: Response) => {
-    const code = req.params.code.toUpperCase();
+    const codeParam = routeParamToString(req.params.code);
+    if (!codeParam) {
+      throw new AppError('Department code is required', 400);
+    }
+    const code = codeParam.toUpperCase();
     let data: Record<string, unknown>;
 
     switch (code) {

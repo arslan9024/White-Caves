@@ -1,4 +1,3 @@
-// @ts-nocheck
 /**
  * Tenants API Routes — Full Implementation
  * Tenant management and leasing
@@ -14,6 +13,17 @@ import { validateIdParam } from '../utils/validate';
 import { requirePermission, requireRole } from '../middleware/rbac';
 
 const router = Router();
+
+const routeParamToString = (value: string | string[] | undefined): string | null => {
+  if (typeof value === 'string' && value.trim().length > 0) {
+    return value;
+  }
+  if (Array.isArray(value) && value.length > 0 && typeof value[0] === 'string') {
+    const first = value[0].trim();
+    return first.length > 0 ? first : null;
+  }
+  return null;
+};
 
 // â”€â”€â”€ GET /api/tenants â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 router.get(
@@ -103,14 +113,19 @@ router.get(
   '/:id',
   requirePermission('view_contracts'),
   asyncHandler(async (req: Request, res: Response) => {
-    validateIdParam(req.params.id, 'Tenant ID');
+    const tenantId = routeParamToString(req.params.id);
+    if (!tenantId) {
+      throw new AppError('Tenant ID is required', 400);
+    }
+
+    validateIdParam(tenantId, 'Tenant ID');
 
     // AUTHORIZATION: Tenant details restricted to managers/admins
     const allowedRoles = ['owner', 'manager', 'admin'];
     if (!allowedRoles.includes(req.user?.role || '')) {
       throw new AppError('Access denied â€” tenant details require manager or above role', 403);
     }
-    const tenant = await prisma.tenant.findUnique({ where: { id: req.params.id } });
+    const tenant = await prisma.tenant.findUnique({ where: { id: tenantId } });
     if (!tenant) throw new AppError('Tenant not found', 404);
     res.status(200).json({ success: true, data: tenant });
   })
@@ -344,8 +359,13 @@ router.get(
   '/:id/leases',
   requirePermission('view_contracts'),
   asyncHandler(async (req: Request, res: Response) => {
-    validateIdParam(req.params.id, 'Tenant ID');
-    const tenant = await prisma.tenant.findUnique({ where: { id: req.params.id } });
+    const tenantId = routeParamToString(req.params.id);
+    if (!tenantId) {
+      throw new AppError('Tenant ID is required', 400);
+    }
+
+    validateIdParam(tenantId, 'Tenant ID');
+    const tenant = await prisma.tenant.findUnique({ where: { id: tenantId } });
     if (!tenant) throw new AppError('Tenant not found', 404);
 
     let property = null;

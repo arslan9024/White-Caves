@@ -202,7 +202,7 @@ RentPayment {
 
 > **@Victoria — EXPAND task completed** | Model: Gemini 2.0 Flash (FREE)
 
-### Overview
+### PDC Overview
 
 In Dubai, residential rent is typically paid via 1–4 post-dated cheques (PDCs) collected upfront for the full lease term. The platform must track every PDC issued, monitor clearing dates, and handle bounced cheques.
 
@@ -230,7 +230,7 @@ PDCCheque {
 
 ### PDC Lifecycle Workflow
 
-```
+```text
 1. COLLECTION (on lease signing)
    Agent collects physical cheques from tenant
    → Each cheque scanned and uploaded as PDF/JPEG
@@ -301,13 +301,30 @@ Under UAE Law (Law No. 18 of 1993 — Commercial Transactions Law), issuing a ch
 
 ### Escalation Timeline
 
-| Day | Action                                                                | Owner         | Platform Action                               |
-| --- | --------------------------------------------------------------------- | ------------- | --------------------------------------------- |
-| 0   | Cheque returned by bank                                               | Bank          | Bounce incident created; notifications sent   |
-| 1-3 | Agent contacts tenant; request replacement cheque or bank transfer    | Leasing Agent | Activity logged against lease                 |
-| 3   | If no resolution: formal notice sent (via WhatsApp + registered mail) | Manager       | Legal Notice template auto-generated (Form 7) |
-| 7   | If unresolved: escalate to legal / file police report                 | Owner/Legal   | Incident status → "Escalated to Legal"        |
-| 15  | Eviction notice initiation if lease breached                          | Legal / RERA  | Eviction workflow triggered (see Section 8)   |
+- **Day 0**
+  - **Action:** Cheque returned by bank
+  - **Owner:** Bank
+  - **Platform Action:** Bounce incident created; notifications sent
+
+- **Day 1–3**
+  - **Action:** Agent contacts tenant and requests replacement cheque or bank transfer
+  - **Owner:** Leasing Agent
+  - **Platform Action:** Activity logged against lease
+
+- **Day 3**
+  - **Action:** If no resolution, formal notice sent (via WhatsApp + registered mail)
+  - **Owner:** Manager
+  - **Platform Action:** Legal notice template auto-generated (Form 12)
+
+- **Day 7**
+  - **Action:** If unresolved, escalate to legal / file police report
+  - **Owner:** Owner/Legal
+  - **Platform Action:** Incident status set to `Escalated to Legal`
+
+- **Day 15**
+  - **Action:** Eviction notice initiation if lease breach persists
+  - **Owner:** Legal / RERA
+  - **Platform Action:** Eviction workflow triggered (see Section 8)
 
 ### Replacement Cheque Protocol
 
@@ -346,7 +363,7 @@ Dubai rental disputes are governed by the **Dubai Rental Law (Law No. 26 of 2007
 
 ### Eviction Initiation Workflow
 
-```
+```text
 Step 1: NOTICE ISSUANCE (CRM)
   Manager generates formal eviction notice from template
   → Notice contains: tenant name, property, violation, legal basis (Article ref), vacate-by date
@@ -472,29 +489,30 @@ EarlyTermination {
 
 ---
 
-## Legal Notice Generation (Form 7, Form 12, NOC)
+## Legal Notice Generation (Form 6, Form 7, Form 12, NOC)
 
-### Overview
+### Legal Notice Overview
 
 White Caves must generate Dubai-compliant legal notices directly from the CRM, avoiding manual drafting errors and ensuring regulatory formatting requirements are met.
 
 ### Legal Notice Types
 
-| Notice Type                             | Trigger                                    | Legal Reference    | Required Delivery                |
-| --------------------------------------- | ------------------------------------------ | ------------------ | -------------------------------- |
-| Form 7 — Eviction Notice (Non-Payment)  | Bounced cheque x2 or 30-day arrears        | RERA Article 25(1) | Notary Public or Registered Mail |
-| Form 7 — Eviction Notice (Other Breach) | Subletting, illegal use, etc.              | RERA Article 25    | Notary Public or Registered Mail |
-| Form 12 — Notice of Rent Increase       | Annual renewal with rent adjustment        | RERA Decree        | 90 days before renewal           |
-| Renewal Offer Letter                    | Lease expiring in 90 days                  | Internal policy    | WhatsApp + Email                 |
-| Mutual Termination Addendum             | Early termination agreement                | Dubai Contract Law | Signed by both parties           |
-| NOC (No Objection Certificate)          | Tenant requesting sublease or modification | Internal + DLD     | Landlord signature required      |
+| Notice Type                              | Trigger                                    | Legal Reference     | Required Delivery                |
+| ---------------------------------------- | ------------------------------------------ | ------------------- | -------------------------------- |
+| Form 7 — Notice of Rent Increase         | Annual renewal with rent adjustment        | RERA Decree         | 90 days before renewal           |
+| Form 12 — Eviction Notice (Non-Payment)  | Bounced cheque x2 or 30-day arrears        | RERA Article 25(1)  | Notary Public or Registered Mail |
+| Form 12 — Eviction Notice (Other Breach) | Subletting, illegal use, etc.              | RERA Article 25     | Notary Public or Registered Mail |
+| Form 6 — Non-Renewal Notice              | Non-renewal decision for upcoming expiry   | Dubai tenancy rules | 90 days before expiry            |
+| Renewal Offer Letter                     | Lease expiring in 90 days                  | Internal policy     | WhatsApp + Email                 |
+| Mutual Termination Addendum              | Early termination agreement                | Dubai Contract Law  | Signed by both parties           |
+| NOC (No Objection Certificate)           | Tenant requesting sublease or modification | Internal + DLD      | Landlord signature required      |
 
-### Form 7 — Auto-Generation Flow
+### Form 12 — Auto-Generation Flow (Eviction)
 
 The system auto-populates the following fields from the lease record:
 
-```
-NOTICE OF EVICTION / VACATION
+```text
+FORM 12 — NOTICE OF EVICTION / VACATION
 Dubai Rental Disputes Center — RDSC
 
 TO:        [Tenant Full Name]
@@ -523,13 +541,13 @@ ISSUED:    [Date]
 SIGNATURE: _________________________ (Authorized Signatory)
 ```
 
-### Form 12 — Rent Increase Notice
+### Form 7 — Rent Increase Notice
 
 Under RERA Decree No. 43 of 2013, rent increases follow the RERA Rent Calculator index. The CRM enforces the following:
 
 - Rent increase only permitted at lease renewal (not mid-lease)
 - Maximum increase percentage from RERA index auto-fetched or manually entered
-- Form 12 must be issued **minimum 90 days before renewal date**
+- Form 7 must be issued **minimum 90 days before renewal date**
 - CRM auto-creates renewal task 120 days before lease expiry (30-day buffer)
 - If no notice issued by 90-day mark: system blocks rent increase for that renewal cycle
 
@@ -546,14 +564,20 @@ RentIncreaseNotice {
   renewalStartDate: Date
   tenantAcknowledgmentDate?: Date
   tenantResponse?: 'accepted' | 'rejected' | 'no_response'
-  form12DocumentUrl?: string
+  form7DocumentUrl?: string
 }
 ```
 
+### Form 6 — Non-Renewal Notice
+
+- Used when landlord/tenant chooses non-renewal.
+- Must be issued **minimum 90 days before lease expiry**.
+- Includes lease details, vacate date, delivery method, and acknowledgment tracking.
+
 ### Acceptance Criteria — Legal Notice Generation
 
-- [ ] Form 7 template generates in < 5 seconds with all fields pre-filled from lease record
-- [ ] Form 12 blocked if notice date < 90 days from renewal (system validation)
+- [ ] Form 12 template generates in < 5 seconds with all fields pre-filled from lease record for eviction paths
+- [ ] Form 7 blocked if notice date < 90 days from renewal (system validation)
 - [ ] All notices exported as branded PDF (company letterhead, RERA license in footer)
 - [ ] Generated notice linked to lease record with: generation date, generated by, delivery status
 - [ ] Delivery confirmation (WhatsApp read receipt or mail tracking reference) uploadable against notice

@@ -128,6 +128,94 @@ try {
     $existingFeedsAck = $task.evidence.feedsAck
   }
 
+  $taskPhase = [string]$task.phase
+  if ([string]::IsNullOrWhiteSpace($taskPhase)) {
+    $taskTeam = [string]$task.team
+    $taskPhase = if ($taskTeam -match "implementation|premium") { "implementation" } else { "planning" }
+  }
+  $taskPhase = $taskPhase.ToLower()
+
+  $isImplementationTask = ($taskPhase -eq "implementation")
+  $isImplementationEvidenceCompletion = ($task.status -eq "evidence_pending" -and $isImplementationTask)
+  $isImplementationFinalization = ($isImplementationTask -and -not $MarkEvidencePending)
+  if ($isImplementationTask) {
+    $hasConcreteRef = -not [string]::IsNullOrWhiteSpace($ProducedRef)
+    $hasNonTrivialEvidence = $false
+    if (-not [string]::IsNullOrWhiteSpace($EvidenceNote)) {
+      $normalizedNote = $EvidenceNote.ToLower()
+      $hasNonTrivialEvidence = (
+        $normalizedNote -notmatch "no meaningful project diff detected" -and
+        $normalizedNote -notmatch "blind completion" -and
+        $normalizedNote -notmatch "auto-advanced via agent-loop non-interactive mode"
+      )
+    }
+
+    if (-not $hasConcreteRef -or -not $hasNonTrivialEvidence) {
+      Write-Output (@{
+        ok = $false;
+        reason = "implementation_evidence_required";
+        taskId = $TaskId;
+        hint = "Implementation tasks in evidence_pending require a concrete ProducedRef and a non-generic evidence note before completion."
+      } | ConvertTo-Json -Depth 6)
+      exit 1
+    }
+
+    if ($isImplementationFinalization) {
+      $resolvedProducedRef = Join-Path $WorkspaceRoot $ProducedRef
+      if (-not (Test-Path $resolvedProducedRef)) {
+        Write-Output (@{
+          ok = $false;
+          reason = "implementation_artifact_missing";
+          taskId = $TaskId;
+          hint = "Implementation finalization requires an existing ProducedRef path before the task can be completed."
+        } | ConvertTo-Json -Depth 6)
+        exit 1
+      }
+
+      $meaningfulDiff = $false
+      try {
+        $diffFiles = @(git diff --name-only HEAD 2>$null)
+        $ignoredPrefixes = @(
+          "logs/orchestrator/",
+          "artifacts/",
+          "dist/"
+        )
+        $ignoredExact = @(
+          "scripts/orchestrator/prompts.json",
+          "logs/orchestrator/task-queue.json",
+          "logs/orchestrator/aegis-state.json",
+          "logs/orchestrator/aegis-phase-state.json"
+        )
+
+        foreach ($f in $diffFiles) {
+          if ($ignoredExact -contains $f) { continue }
+
+          $skip = $false
+          foreach ($prefix in $ignoredPrefixes) {
+            if ($f.StartsWith($prefix)) { $skip = $true; break }
+          }
+          if ($skip) { continue }
+
+          $meaningfulDiff = $true
+          break
+        }
+      }
+      catch {
+        $meaningfulDiff = $false
+      }
+
+      if (-not $meaningfulDiff) {
+        Write-Output (@{
+          ok = $false;
+          reason = "implementation_diff_missing";
+          taskId = $TaskId;
+          hint = "Implementation finalization requires at least one meaningful project diff outside orchestrator/log artifacts."
+        } | ConvertTo-Json -Depth 6)
+        exit 1
+      }
+    }
+  }
+
   $task.evidence = @{}
   if (-not [string]::IsNullOrWhiteSpace($EvidenceNote)) {
     $task.evidence.note = $EvidenceNote

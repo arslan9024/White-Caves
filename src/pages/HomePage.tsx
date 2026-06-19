@@ -121,6 +121,13 @@ const HomePage: FC = () => {
       }),
     [marketStats, displayedFeatured, topAgents, locationTrends]
   );
+  const structuredDataPayload = useMemo<Array<Record<string, unknown>>>(() => {
+    const homepageSchemas = Array.isArray(homepageJsonLd) ? homepageJsonLd : [homepageJsonLd];
+
+    return [...homepageSchemas, buildOrganizationSchema()].filter(
+      (entry): entry is Record<string, unknown> => Boolean(entry)
+    );
+  }, [homepageJsonLd]);
   const trustHighlights = useMemo(
     () => [
       { label: 'Active Listings', value: marketStats.availableProperties.toLocaleString('en-US') },
@@ -211,10 +218,7 @@ const HomePage: FC = () => {
         ogImage="https://images.unsplash.com/photo-1582268611958-ebfd161ef9cf?w=1200&h=630&fit=crop&q=80"
         jsonLd={homepageJsonLd}
       />
-      <StructuredData 
-        id="home-jsonld" 
-        data={[homepageJsonLd, buildOrganizationSchema()].filter(Boolean)} 
-      />
+      <StructuredData id="home-jsonld" data={structuredDataPayload} />
       <div className="home-page">
         {homepageError && !isHomepageLoading ? (
           <div role="status" aria-live="polite" className="homepage-live-data-alert">
@@ -262,7 +266,7 @@ const HomePage: FC = () => {
           <div id="tools-insights" className="home-page-tools-insights">
             <div className="home-page-tools-insights__inner">
               <p className="home-page-tools-insights__eyebrow">Expert Resources</p>
-              <h2 className="home-page-tools-insights__title">Tools &amp; Insights</h2>
+              <h2 className="home-page-tools-insights__title">Tools & Insights</h2>
               <p className="home-page-tools-insights__description">
                 Use our interactive calculators, market data, and research tools to make confident
                 property decisions in Dubai.

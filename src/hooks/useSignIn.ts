@@ -17,7 +17,6 @@ import {
   signInWithPhone,
   auth as firebaseAuth,
   createRecaptchaVerifier,
-  resetPassword,
   signOut as signOutFirebase,
   isFirebaseAuthConfigured,
   firebaseAuthUnavailableReason,
@@ -29,6 +28,9 @@ import {
   syncFirebaseUser,
   completeSocialRegistration,
   verifyTwoFactor as backendVerifyTwoFactor,
+  requestPasswordReset,
+  verifyPasswordResetToken,
+  resetPasswordWithToken,
   type LoginSuccessData,
 } from '../services/authService';
 import { safeStorage } from '../utils/safeStorage';
@@ -68,7 +70,7 @@ interface SocialAuthErrorLike {
 }
 
 const MAX_SOCIAL_RETRY_ATTEMPTS = 3;
-const SUPERUSER_EMAIL = 'arslanmalikgoraha@gmail.com';
+const SUPERUSER_EMAIL = (import.meta.env.VITE_CREATOR_SUPERUSER_EMAIL ?? '').toLowerCase().trim();
 const AUTH_ROUTE_BLOCKLIST = new Set(['/signin', '/signup', '/select-role', '/pending-approval']);
 const CLIENT_ROLE_KEYS = new Set(['buyer', 'seller', 'landlord', 'property-owner', 'tenant']);
 const LANDLORD_ROLE_KEYS = new Set(['landlord', 'property-owner']);
@@ -98,7 +100,12 @@ const resolveCategoryFromRole = (role: string | null | undefined): 'client' | 's
 };
 
 const isSuperuserEmail = (value: string | null | undefined): boolean =>
-  (value || '').toLowerCase().trim() === SUPERUSER_EMAIL;
+  // Read env var lazily at call time so vi.stubEnv works correctly in tests
+  (() => {
+    const configured = (import.meta.env.VITE_CREATOR_SUPERUSER_EMAIL ?? '').toLowerCase().trim();
+    if (!configured) return false;
+    return (value || '').toLowerCase().trim() === configured;
+  })();
 
 const normalizeSocialAuthErrorMessage = (error: unknown, provider: string): string => {
   const socialError = error as SocialAuthErrorLike;
@@ -141,6 +148,37 @@ const shouldClearFirebaseSessionAfterSyncFailure = (message: string): boolean =>
   /uid mismatch|email mismatch|token verification failed|invalid firebase token|verified firebase email is required|authentication token is missing|firebase token is required/i.test(
     message.toLowerCase()
   );
+
+const deriveProfileCompletionSignal = (user: {
+  name?: string | null;
+  phone?: string | null;
+  profileCompleted?: boolean;
+  profileComplete?: boolean;
+  profileCompletion?: {
+    profileCompleted?: boolean;
+  };
+}): boolean | undefined => {
+  if (typeof user.profileCompleted === 'boolean') {
+    return user.profileCompleted;
+  }
+
+  if (typeof user.profileComplete === 'boolean') {
+    return user.profileComplete;
+  }
+
+  if (typeof user.profileCompletion?.profileCompleted === 'boolean') {
+    return user.profileCompletion.profileCompleted;
+  }
+
+  const hasPhoneField = Object.prototype.hasOwnProperty.call(user, 'phone');
+  if (!hasPhoneField) {
+    return undefined;
+  }
+
+  const hasName = typeof user.name === 'string' && user.name.trim().length > 0;
+  const hasPhone = typeof user.phone === 'string' && user.phone.trim().length > 0;
+  return hasName && hasPhone;
+};
 
 export interface UserCategory {
   id: string;
@@ -207,8 +245,17 @@ export function useSignIn() {
   const [activeTab, setActiveTab] = useState<'email' | 'phone'>('email');
   const [loading, setLoading] = useState(false);
   const [forgotPasswordLoading, setForgotPasswordLoading] = useState(false);
+  const [verifyResetLoading, setVerifyResetLoading] = useState(false);
+  const [completeResetLoading, setCompleteResetLoading] = useState(false);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
+  const [resetStage, setResetStage] = useState<
+    'request' | 'verify' | 'reset' | 'success' | 'locked'
+  >('request');
+  const [resetToken, setResetToken] = useState('');
+  const [resetSessionToken, setResetSessionToken] = useState('');
+  const [newPassword, setNewPassword] = useState('');
+  const [confirmNewPassword, setConfirmNewPassword] = useState('');
 
   // ── Form fields ────────────────────────────────────────────────
   const [email, setEmail] = useState('');
@@ -240,6 +287,8 @@ export function useSignIn() {
     'Google sign-in is temporarily unavailable because Firebase authentication is not configured in this environment.' +
     (firebaseAuthUnavailableReason ? ` ${firebaseAuthUnavailableReason}` : '');
 
+  const hasResetTokenInUrl = useRef(false);
+
   useEffect(() => {
     return () => {
       clearTimeout(navTimerRef.current);
@@ -253,6 +302,25 @@ export function useSignIn() {
     }
   }, [location.pathname]);
 
+  useEffect(() => {
+    const params = new URLSearchParams(location.search);
+    const emailFromQuery = params.get('reset_email');
+    const tokenFromQuery = params.get('reset_token');
+
+    if (!emailFromQuery || !tokenFromQuery) {
+      return;
+    }
+
+    hasResetTokenInUrl.current = true;
+    setMode('signin');
+    setStep(1);
+    setActiveTab('email');
+    setEmail(emailFromQuery.trim().toLowerCase());
+    setResetToken(tokenFromQuery.trim());
+    setResetStage('verify');
+    setSuccess('Reset token detected. Verify token to continue with password reset.');
+  }, [location.search]);
+
   // ── Helpers ────────────────────────────────────────────────────
 
   const saveUserData = useCallback(
@@ -263,35 +331,22 @@ export function useSignIn() {
   );
 
   const resolvePostLoginRoute = useCallback(
-    (user: { role?: string; status?: string }): string => {
-      const resolvedStatus = user.status?.toLowerCase().trim() || 'active';
-      const normalizedRole = normalizeRoleKey(user.role);
-
-      if (resolvedStatus === 'pending') {
-        return '/pending-approval';
-      }
-
+    (user: {
+      role?: string;
+      status?: string;
+      email?: string | null;
+      profileCompleted?: boolean;
+    }): string => {
       const stateValue = location.state as { from?: string } | null;
       const returnPath = resolveSafeReturnPath(stateValue?.from);
       if (returnPath) {
         return returnPath;
       }
 
-      if (!normalizedRole) {
-        return '/select-role';
-      }
-
-      if (normalizedRole === 'tenant') {
-        return '/tenant-portal';
-      }
-
-      if (LANDLORD_ROLE_KEYS.has(normalizedRole)) {
-        return '/landlord-portal';
-      }
-
-      // Profile-first post-login journey: CRM-eligible users always visit /profile
-      // before the dashboard so they can review/complete their account setup.
-      return '/profile';
+      return getPostLoginRoute(user.role, user.email, {
+        status: user.status,
+        profileCompleted: user.profileCompleted,
+      });
     },
     [location.state]
   );
@@ -304,12 +359,21 @@ export function useSignIn() {
       role?: string;
       status?: string;
       photoUrl?: string | null;
+      phone?: string | null;
+      profileCompleted?: boolean;
+      profileComplete?: boolean;
     }): void => {
       const resolvedStatus = user.status?.toLowerCase().trim() || 'active';
       const normalizedRole = isSuperuserEmail(user.email)
         ? 'managing_director'
         : normalizeRoleKey(user.role);
-      const fallbackRoute = resolvePostLoginRoute({ role: normalizedRole, status: resolvedStatus });
+      const profileCompleted = deriveProfileCompletionSignal(user);
+      const fallbackRoute = resolvePostLoginRoute({
+        role: normalizedRole,
+        status: resolvedStatus,
+        email: user.email,
+        profileCompleted,
+      });
 
       dispatch(
         setUser({
@@ -319,6 +383,8 @@ export function useSignIn() {
           role: normalizedRole || user.role,
           status: resolvedStatus === 'pending' ? 'pending' : 'active',
           photoURL: user.photoUrl || undefined,
+          phone: user.phone || undefined,
+          profileCompleted,
         })
       );
 
@@ -327,10 +393,7 @@ export function useSignIn() {
       }
 
       setSuccess('Sign in successful!');
-      navTimerRef.current = setTimeout(
-        () => navigate(getPostLoginRoute(user.role, user.email)),
-        TIMING.NAVIGATION_DELAY
-      );
+      navTimerRef.current = setTimeout(() => navigate(fallbackRoute), TIMING.NAVIGATION_DELAY);
     },
     [dispatch, navigate, resolvePostLoginRoute, saveUserData]
   );
@@ -820,17 +883,103 @@ export function useSignIn() {
 
     setForgotPasswordLoading(true);
     try {
-      await resetPassword(normalizedEmail);
+      await requestPasswordReset(normalizedEmail);
+      setResetStage('verify');
       setSuccess(
-        'Password reset email sent. Please check your inbox (and spam folder) for the reset link.'
+        'Password reset requested. Check your inbox for the reset token, then verify it to continue.'
       );
     } catch (err: unknown) {
       const message = err instanceof Error ? err.message : 'Failed to send reset email';
       setError(message);
+      if (/rate-limit|too many|locked|retry/i.test(message.toLowerCase())) {
+        setResetStage('locked');
+      }
     } finally {
       setForgotPasswordLoading(false);
     }
   }, [email]);
+
+  const handleVerifyResetToken = useCallback(async (): Promise<void> => {
+    const normalizedEmail = email.trim().toLowerCase();
+    const normalizedToken = resetToken.trim();
+
+    setError('');
+    setSuccess('');
+
+    if (!normalizedEmail) {
+      setError('Please provide your email before verifying reset token.');
+      return;
+    }
+
+    if (!normalizedToken) {
+      setError('Please enter the reset token from your email.');
+      return;
+    }
+
+    setVerifyResetLoading(true);
+    try {
+      const response = await verifyPasswordResetToken(normalizedEmail, normalizedToken);
+      setResetSessionToken(response.data.resetSessionToken);
+      setResetStage('reset');
+      setSuccess('Reset token verified. You can now set a new password.');
+    } catch (err: unknown) {
+      const message = err instanceof Error ? err.message : 'Reset token verification failed';
+      setError(message);
+      if (/rate-limit|too many|locked|retry/i.test(message.toLowerCase())) {
+        setResetStage('locked');
+      }
+    } finally {
+      setVerifyResetLoading(false);
+    }
+  }, [email, resetToken]);
+
+  const handleCompletePasswordReset = useCallback(async (): Promise<void> => {
+    setError('');
+    setSuccess('');
+
+    if (!resetSessionToken) {
+      setError('Reset session is missing. Verify reset token again.');
+      return;
+    }
+
+    if (newPassword.length < 8) {
+      setError('Password must be at least 8 characters.');
+      return;
+    }
+
+    if (!/[a-zA-Z]/.test(newPassword) || !/[0-9]/.test(newPassword)) {
+      setError('Password must contain at least one letter and one number.');
+      return;
+    }
+
+    if (newPassword !== confirmNewPassword) {
+      setError('New password and confirmation do not match.');
+      return;
+    }
+
+    setCompleteResetLoading(true);
+    try {
+      await resetPasswordWithToken(resetSessionToken, newPassword);
+      setResetStage('success');
+      setResetSessionToken('');
+      setResetToken('');
+      setNewPassword('');
+      setConfirmNewPassword('');
+      if (hasResetTokenInUrl.current) {
+        navigate('/signin', { replace: true });
+        hasResetTokenInUrl.current = false;
+      }
+      setSuccess('Password reset successful. You can now sign in with your new password.');
+    } catch (err: unknown) {
+      const message = err instanceof Error ? err.message : 'Password reset failed';
+      setError(message);
+      if (/rate-limit|too many|locked|retry/i.test(message.toLowerCase())) {
+        setResetStage('locked');
+      }
+    } finally {
+      setCompleteResetLoading(false);
+    }
+  }, [confirmNewPassword, navigate, newPassword, resetSessionToken]);
 
   // ── Mode switch ────────────────────────────────────────────────
 
@@ -872,9 +1021,19 @@ export function useSignIn() {
     setActiveTab,
     loading,
     forgotPasswordLoading,
+    verifyResetLoading,
+    completeResetLoading,
     error,
     setError,
     success,
+    resetStage,
+    setResetStage,
+    resetToken,
+    setResetToken,
+    newPassword,
+    setNewPassword,
+    confirmNewPassword,
+    setConfirmNewPassword,
     socialSyncRecovery,
     socialRetryAttempts,
     remainingSocialRetries,
@@ -922,6 +1081,8 @@ export function useSignIn() {
     clearSocialRecovery,
     handleEmailSubmit,
     handleForgotPassword,
+    handleVerifyResetToken,
+    handleCompletePasswordReset,
     handlePhoneSubmit,
     handleOtpVerify,
     proceedToRoleSelection,

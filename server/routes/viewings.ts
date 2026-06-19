@@ -1,4 +1,3 @@
-// @ts-nocheck
 /**
  * Viewings API Routes — Enhanced Phase 3C
  * ────────────────────────────────────────
@@ -236,9 +235,9 @@ router.post(
       } else {
         const inquiryLead = await prisma.lead.create({
           data: {
-            name: req.user?.name || req.user?.email || 'Viewing inquiry',
+            name: req.user?.email || 'Viewing inquiry',
             email: req.user?.email || null,
-            phone: req.user?.phone || null,
+            phone: null,
             source: 'website',
             status: 'viewing',
             propertyId,

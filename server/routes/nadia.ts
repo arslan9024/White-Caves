@@ -1,4 +1,3 @@
-// @ts-nocheck
 /**
  * NADIA WhatsApp CRM API Routes
  * Handles conversation lifecycle, message management, and queue routing
@@ -1012,8 +1011,9 @@ router.post(
 
     const convId = typeof conversationId === 'string' ? conversationId : undefined;
 
-    const { assistantOrchestrator } =
-      await import('../services/orchestrator/AssistantOrchestrator.js');
+    const { assistantOrchestrator } = await import(
+      '../services/orchestrator/AssistantOrchestrator.js'
+    );
 
     if ((alertType as AlertType) === 'compliance_failed') {
       assistantOrchestrator.emitEvent('henry:compliance_failed', {
@@ -1053,8 +1053,9 @@ router.get(
   '/cross-status',
   requirePermission('view_whatsapp_conversations'),
   asyncHandler(async (_req: Request, res: Response) => {
-    const { getOrchestratorStatus } =
-      await import('../services/orchestrator/AssistantOrchestrator.js');
+    const { getOrchestratorStatus } = await import(
+      '../services/orchestrator/AssistantOrchestrator.js'
+    );
     const orchStatus = getOrchestratorStatus();
 
     res.status(200).json({

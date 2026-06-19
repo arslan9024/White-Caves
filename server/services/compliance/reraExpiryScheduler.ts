@@ -1,4 +1,3 @@
-// @ts-nocheck
 /**
  * RERA BRN Expiry Scheduler — Phase 3D
  * ─────────────────────────────────────
@@ -115,8 +114,9 @@ export async function checkBRNExpirations(): Promise<ExpiryCheckResult> {
       if (agent.phone) {
         try {
           const { createMetaAPIClient } = await import('../whatsapp/metaAPI.js');
-          const { normalizePhone, WHATSAPP_TEMPLATES, getTemplateParams } =
-            await import('../whatsapp/whatsappUtils.js');
+          const { normalizePhone, WHATSAPP_TEMPLATES, getTemplateParams } = await import(
+            '../whatsapp/whatsappUtils.js'
+          );
 
           const phone = normalizePhone(agent.phone);
           const metaConfig = {
@@ -245,7 +245,7 @@ export async function getBRNExpiryReport(): Promise<
 
   const now = new Date();
 
-  return agents.map(agent => {
+  return agents.map((agent: any) => {
     if (!agent.brnNumber || !agent.brnExpiry) {
       return { ...agent, daysUntilExpiry: null, status: 'not_set' as const };
     }

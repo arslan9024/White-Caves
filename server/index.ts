@@ -1,4 +1,3 @@
-// @ts-nocheck
 /**
  * White Caves CRM - Express.js Server Setup
  * Main server entry point with middleware and routing
@@ -106,6 +105,8 @@ import { startRateRefresh } from './services/currencyService.js';
 import { startViewingReminderScheduler } from './services/schedulingService.js';
 import { startRERAExpiryScheduler } from './services/compliance/reraExpiryScheduler.js';
 import { startAutoRouting } from './services/ai/leadAutoRouter.js';
+import { cacheService } from './services/CacheService.js';
+import { schedulerService } from './services/SchedulerService.js';
 
 const app: Express = express();
 const allowedCorsOrigins = buildAllowedCorsOrigins(CORS_ORIGINS, process.env.NODE_ENV);

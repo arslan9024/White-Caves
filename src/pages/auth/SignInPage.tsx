@@ -62,9 +62,19 @@ const SignInPage: FC = () => {
     setActiveTab,
     loading,
     forgotPasswordLoading,
+    verifyResetLoading,
+    completeResetLoading,
     error,
     setError,
     success,
+    resetStage,
+    setResetStage,
+    resetToken,
+    setResetToken,
+    newPassword,
+    setNewPassword,
+    confirmNewPassword,
+    setConfirmNewPassword,
     socialSyncRecovery,
     socialRetryAttempts,
     remainingSocialRetries,
@@ -101,6 +111,8 @@ const SignInPage: FC = () => {
     clearSocialRecovery,
     handleEmailSubmit,
     handleForgotPassword,
+    handleVerifyResetToken,
+    handleCompletePasswordReset,
     handlePhoneSubmit,
     handleOtpVerify,
     proceedToRoleSelection,
@@ -237,11 +249,7 @@ const SignInPage: FC = () => {
 
                 {error && <div className="auth-error">{error}</div>}
                 {socialSyncRecovery && (
-                  <div
-                    className="auth-recovery"
-                    role="status"
-                    aria-live="polite"
-                  >
+                  <div className="auth-recovery" role="status" aria-live="polite">
                     <p className="auth-recovery__title">
                       {socialSyncRecovery.provider[0].toUpperCase() +
                         socialSyncRecovery.provider.slice(1)}{' '}
@@ -369,6 +377,137 @@ const SignInPage: FC = () => {
                 <div className="auth-content">
                   {activeTab === 'email' && (
                     <form onSubmit={handleEmailSubmit} className="auth-form">
+                      {mode === 'signin' && resetStage !== 'request' && (
+                        <div
+                          className="auth-google-help"
+                          role="region"
+                          aria-label="Password reset flow"
+                        >
+                          <p className="auth-google-help__title">Password reset</p>
+                          {resetStage === 'verify' && (
+                            <>
+                              <p className="auth-google-help__list">
+                                Enter the reset token from your email, then verify to continue.
+                              </p>
+                              <div className="form-group auth-form-group-spaced">
+                                <label htmlFor="reset-token">Reset Token</label>
+                                <input
+                                  id="reset-token"
+                                  type="text"
+                                  value={resetToken}
+                                  onChange={(e: ChangeEvent<HTMLInputElement>) =>
+                                    setResetToken(e.target.value)
+                                  }
+                                  placeholder="Paste your reset token"
+                                  autoComplete="one-time-code"
+                                />
+                              </div>
+                              <div className="auth-google-help__actions">
+                                <button
+                                  type="button"
+                                  className="btn btn-secondary"
+                                  onClick={() => {
+                                    void handleVerifyResetToken();
+                                  }}
+                                  disabled={verifyResetLoading || loading}
+                                >
+                                  {verifyResetLoading ? 'Verifying token...' : 'Verify Reset Token'}
+                                </button>
+                                <button
+                                  type="button"
+                                  className="btn btn-link"
+                                  onClick={() => {
+                                    setResetStage('request');
+                                  }}
+                                >
+                                  Start Over
+                                </button>
+                              </div>
+                            </>
+                          )}
+
+                          {resetStage === 'reset' && (
+                            <>
+                              <p className="auth-google-help__list">
+                                Token verified. Set your new password to finish the reset journey.
+                              </p>
+                              <div className="form-group auth-form-group-spaced">
+                                <label htmlFor="new-password">New Password</label>
+                                <input
+                                  id="new-password"
+                                  type="password"
+                                  value={newPassword}
+                                  onChange={(e: ChangeEvent<HTMLInputElement>) =>
+                                    setNewPassword(e.target.value)
+                                  }
+                                  placeholder="Enter your new password"
+                                  autoComplete="new-password"
+                                />
+                              </div>
+                              <div className="form-group auth-form-group-spaced">
+                                <label htmlFor="confirm-new-password">Confirm New Password</label>
+                                <input
+                                  id="confirm-new-password"
+                                  type="password"
+                                  value={confirmNewPassword}
+                                  onChange={(e: ChangeEvent<HTMLInputElement>) =>
+                                    setConfirmNewPassword(e.target.value)
+                                  }
+                                  placeholder="Confirm your new password"
+                                  autoComplete="new-password"
+                                />
+                              </div>
+                              <button
+                                type="button"
+                                className="btn btn-primary btn-full"
+                                onClick={() => {
+                                  void handleCompletePasswordReset();
+                                }}
+                                disabled={completeResetLoading || loading}
+                              >
+                                {completeResetLoading
+                                  ? 'Resetting Password...'
+                                  : 'Complete Password Reset'}
+                              </button>
+                            </>
+                          )}
+
+                          {resetStage === 'success' && (
+                            <>
+                              <p className="auth-google-help__list">
+                                Password reset succeeded. Sign in below using your new password.
+                              </p>
+                              <button
+                                type="button"
+                                className="btn btn-link"
+                                onClick={() => {
+                                  setResetStage('request');
+                                }}
+                              >
+                                Dismiss
+                              </button>
+                            </>
+                          )}
+
+                          {resetStage === 'locked' && (
+                            <>
+                              <p className="auth-google-help__list">
+                                Too many reset attempts detected. Please wait and retry later.
+                              </p>
+                              <button
+                                type="button"
+                                className="btn btn-link"
+                                onClick={() => {
+                                  setResetStage('request');
+                                }}
+                              >
+                                Back to standard sign in
+                              </button>
+                            </>
+                          )}
+                        </div>
+                      )}
+
                       {mode === 'signup' && (
                         <div className="form-group">
                           <label htmlFor="signin-fullname">Full Name</label>
@@ -393,7 +532,9 @@ const SignInPage: FC = () => {
                             id="signin-email"
                             type="email"
                             value={email}
-                            onChange={(e: ChangeEvent<HTMLInputElement>) => setEmail(e.target.value)}
+                            onChange={(e: ChangeEvent<HTMLInputElement>) =>
+                              setEmail(e.target.value)
+                            }
                             placeholder="Enter your email"
                             required
                             autoComplete="email"
@@ -404,7 +545,9 @@ const SignInPage: FC = () => {
                             id="signin-email"
                             type="email"
                             value={email}
-                            onChange={(e: ChangeEvent<HTMLInputElement>) => setEmail(e.target.value)}
+                            onChange={(e: ChangeEvent<HTMLInputElement>) =>
+                              setEmail(e.target.value)
+                            }
                             placeholder="Enter your email"
                             required
                             autoComplete="username"
@@ -666,8 +809,7 @@ const SignInPage: FC = () => {
               <>
                 <h1>Two-Factor Authentication</h1>
                 <p className="auth-subtitle">
-                  Enter the 6-digit code from your authenticator app (or an 8-character backup
-                  code)
+                  Enter the 6-digit code from your authenticator app (or an 8-character backup code)
                 </p>
 
                 {error && <div className="auth-error">{error}</div>}

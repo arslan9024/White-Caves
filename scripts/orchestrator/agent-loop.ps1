@@ -1043,6 +1043,9 @@ function Invoke-AegisUnblockSweep {
     }
 
     if ($t.status -eq "evidence_pending") {
+      if (-not $aegisAutopilotAutoResolveEvidencePending) { continue }
+      if ([string]$t.phase -eq "implementation") { continue }
+
       $completeOut = & powershell -ExecutionPolicy Bypass -File "$completeTaskScript" `
         -TaskId $t.taskId `
         -WorkspaceRoot $root `
@@ -1818,8 +1821,8 @@ if (Test-Path $phaseStateFile) {
       }
 
       if ($effectiveNonInteractive) {
-        Write-Host "  [AEGIS] Exiting autopilot loop to avoid non-productive completion cycles." -ForegroundColor DarkYellow
-        break outerLoop
+        Write-Host "  [AEGIS] Continuing autopilot with next eligible task after evidence_pending handoff." -ForegroundColor DarkYellow
+        continue outerLoop
       }
     }
   }

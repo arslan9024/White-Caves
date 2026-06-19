@@ -4,6 +4,34 @@
   padding: 24px;
 }
 
+.detail-not-found-icon {
+  font-size: 3rem;
+  margin-bottom: 1rem;
+}
+
+.detail-tour-toggle-row {
+  margin-top: 0.75rem;
+  display: flex;
+  gap: 0.5rem;
+}
+
+.detail-tour-toggle-btn {
+  width: auto;
+  height: auto;
+  border-radius: 999px;
+  font-size: 0.85rem;
+  padding: 0.5rem 1rem;
+}
+
+.detail-virtual-tour-section {
+  margin-bottom: 2rem;
+}
+
+.detail-virtual-tour-loading {
+  padding: 2rem;
+  text-align: center;
+}
+
 .breadcrumb-nav {
   display: flex;
   align-items: center;
@@ -18,7 +46,7 @@
 }
 
 .breadcrumb-nav a:hover {
-  color: #B03737;
+  color: #b03737;
 }
 
 .breadcrumb-nav span {
@@ -45,13 +73,15 @@
   width: 48px;
   height: 48px;
   border: 4px solid #f1f5f9;
-  border-top-color: #B03737;
+  border-top-color: #b03737;
   border-radius: 50%;
   animation: spin 1s linear infinite;
 }
 
 @keyframes spin {
-  to { transform: rotate(360deg); }
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 .back-btn {
@@ -59,7 +89,7 @@
   align-items: center;
   gap: 8px;
   padding: 12px 24px;
-  background: #B03737;
+  background: #b03737;
   color: white;
   border: none;
   border-radius: 8px;
@@ -68,7 +98,7 @@
 }
 
 .back-btn:hover {
-  background: #8B2C2C;
+  background: #8b2c2c;
 }
 
 .property-gallery-section {
@@ -160,7 +190,7 @@
 }
 
 .action-btn.active {
-  color: #B03737;
+  color: #b03737;
 }
 
 .thumbnail-row {
@@ -189,11 +219,11 @@
 }
 
 .thumbnail.active {
-  border-color: #B03737;
+  border-color: #b03737;
 }
 
 .thumbnail:hover {
-  border-color: #B03737;
+  border-color: #b03737;
   opacity: 0.9;
 }
 
@@ -238,7 +268,7 @@
 }
 
 .badge.featured {
-  background: linear-gradient(135deg, #B03737 0%, #d44444 100%);
+  background: linear-gradient(135deg, #b03737 0%, #d44444 100%);
   color: white;
 }
 
@@ -274,7 +304,7 @@
 }
 
 .property-location svg {
-  color: #B03737;
+  color: #b03737;
 }
 
 .property-price-section {
@@ -284,7 +314,7 @@
 .price {
   font-size: 2rem;
   font-weight: 700;
-  color: #B03737;
+  color: #b03737;
 }
 
 .price-breakdown {
@@ -312,7 +342,7 @@
 }
 
 .spec svg {
-  color: #B03737;
+  color: #b03737;
 }
 
 .spec span {
@@ -363,7 +393,7 @@
 }
 
 .amenity-item svg {
-  color: #B03737;
+  color: #b03737;
   flex-shrink: 0;
 }
 
@@ -379,7 +409,7 @@
 }
 
 .location-info svg {
-  color: #B03737;
+  color: #b03737;
 }
 
 .google-map-container {
@@ -463,12 +493,12 @@
 }
 
 .contact-btn.primary {
-  background: #B03737;
+  background: #b03737;
   color: white;
 }
 
 .contact-btn.primary:hover {
-  background: #8B2C2C;
+  background: #8b2c2c;
 }
 
 .contact-btn.secondary {
@@ -482,7 +512,7 @@
 }
 
 .contact-btn.whatsapp {
-  background: #25D366;
+  background: #25d366;
   color: white;
 }
 
@@ -526,7 +556,7 @@
   align-items: center;
   gap: 4px;
   font-size: 0.75rem;
-  color: #B03737;
+  color: #b03737;
   font-weight: 500;
 }
 
@@ -553,8 +583,8 @@
 }
 
 .quick-action-btn:hover {
-  border-color: #B03737;
-  color: #B03737;
+  border-color: #b03737;
+  color: #b03737;
 }
 
 .trust-badges {
@@ -575,7 +605,7 @@
 }
 
 .trust-item svg {
-  color: #B03737;
+  color: #b03737;
 }
 
 .trust-item strong {
@@ -711,7 +741,7 @@
 }
 
 .modal-property {
-  color: #B03737;
+  color: #b03737;
   font-weight: 500;
   margin-bottom: 24px;
 }
@@ -735,7 +765,7 @@
 .form-group input:focus,
 .form-group textarea:focus {
   outline: none;
-  border-color: #B03737;
+  border-color: #b03737;
 }
 
 .form-group textarea {
@@ -744,7 +774,7 @@
 
 .submit-btn {
   padding: 16px;
-  background: #B03737;
+  background: #b03737;
   color: white;
   border: none;
   border-radius: 10px;
@@ -755,7 +785,7 @@
 }
 
 .submit-btn:hover:not(:disabled) {
-  background: #8B2C2C;
+  background: #8b2c2c;
 }
 
 .submit-btn:disabled {
@@ -787,7 +817,7 @@
   .property-detail-content {
     grid-template-columns: 1fr;
   }
-  
+
   .property-sidebar {
     position: static;
   }
@@ -797,37 +827,37 @@
   .property-detail-page {
     padding: 16px;
   }
-  
+
   .property-header h1 {
     font-size: 1.5rem;
   }
-  
+
   .price {
     font-size: 1.5rem;
   }
-  
+
   .property-specs {
     grid-template-columns: repeat(2, 1fr);
   }
-  
+
   .thumbnail-row {
     overflow-x: auto;
     flex-wrap: nowrap;
     padding-bottom: 8px;
   }
-  
+
   .thumbnail {
     flex: 0 0 100px;
   }
-  
+
   .details-grid {
     grid-template-columns: 1fr;
   }
-  
+
   .modal-nav.prev {
     left: 10px;
   }
-  
+
   .modal-nav.next {
     right: 10px;
   }

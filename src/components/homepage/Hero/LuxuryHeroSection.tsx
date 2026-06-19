@@ -1,6 +1,4 @@
-﻿// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-// @ts-nocheck
-/**
+﻿/**
  * @component LuxuryHeroSection
  * @agent @Una (Luxury UI/UX Specialist)
  * @milestone MILESTONE-HERO

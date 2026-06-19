@@ -34,11 +34,7 @@ import type { DashboardData, CRMModuleProps } from '../hooks/useUnifiedDashboard
 import { AI_ASSISTANTS_REGISTRY } from '../store/slices/aiAssistant/registry';
 import { selectSelectedAssistant } from '../store/slices/sidebarSlice';
 import { SUPERUSER_CRM_MODULE_ORDER, getCRMModule } from '../config/crmModuleRegistry';
-import {
-  ZONE_LABELS,
-  groupModulesForMD,
-  groupWorkspacesForMD,
-} from '../config/crmNavigationSchema';
+import { ZONE_LABELS, groupModulesForMD } from '../config/crmNavigationSchema';
 import type { RootState } from '../store/store';
 import './UnifiedDashboardPage.css';
 
@@ -298,6 +294,8 @@ const UnifiedDashboardPage: FC = () => {
 
   const selectedCRMModuleConfig = selectedCRMModule ? CRM_MODULES[selectedCRMModule] : null;
   const isExecutiveCockpitMode = searchParams.get('cockpit') === 'md';
+  const isManagingDirector = currentRole === 'managing_director';
+  const isExecutiveRole = isSuperUser || isManagingDirector;
   const currentTab = availableTabs.find(tab => tab.id === activeTab);
 
   const overview = (dashboardData?.overview ?? {}) as GenericEntity;
@@ -384,8 +382,14 @@ const UnifiedDashboardPage: FC = () => {
   }, [profileCompletionItems]);
 
   const hasProfileCompletionGaps = profileCompletionPercent < 100;
+  const isDashboardDataEmpty =
+    propertiesCount === 0 &&
+    agentsCount === 0 &&
+    leadsCount === 0 &&
+    contractsCount === 0 &&
+    hotLeadsCount === 0 &&
+    monthlyRevenue <= 0;
   const superuserModuleCount = moduleEntries.length;
-  const groupedWorkspaces = useMemo(() => groupWorkspacesForMD(availableTabs), [availableTabs]);
   const groupedModules = useMemo(() => groupModulesForMD(moduleEntries), []);
   const departmentZones = useMemo(
     () =>
@@ -393,10 +397,6 @@ const UnifiedDashboardPage: FC = () => {
         .filter(([, items]) => items.length > 0)
         .sort((a, b) => (ZONE_LABELS[a[0]] ?? a[0]).localeCompare(ZONE_LABELS[b[0]] ?? b[0])),
     [groupedModules.byZone]
-  );
-  const orderedWorkspaceTabs = useMemo(
-    () => [...groupedWorkspaces.pinned, ...groupedWorkspaces.core],
-    [groupedWorkspaces]
   );
   const availableTabIds = useMemo(() => new Set(availableTabs.map(tab => tab.id)), [availableTabs]);
 
@@ -410,7 +410,7 @@ const UnifiedDashboardPage: FC = () => {
       type: 'tab' as const,
       target: tab.id,
     }));
-    const modules = isSuperUser
+    const modules = isExecutiveRole
       ? moduleEntries.map(([key, module]) => {
           const def = getCRMModule(key);
           return {
@@ -428,7 +428,7 @@ const UnifiedDashboardPage: FC = () => {
       if (!query) return true;
       return `${item.label} ${item.meta}`.toLowerCase().includes(query);
     });
-  }, [availableTabs, commandQuery, isSuperUser]);
+  }, [availableTabs, commandQuery, isExecutiveRole]);
 
   const globalSearchResults = useMemo<SearchItem[]>(() => {
     const query = globalSearchQuery.trim().toLowerCase();
@@ -470,7 +470,7 @@ const UnifiedDashboardPage: FC = () => {
           type: 'tab' as const,
           target: tab.id,
         })),
-      ...(isSuperUser
+      ...(isExecutiveRole
         ? moduleEntries
             .filter(([, module]) => module.label.toLowerCase().includes(query))
             .map(([key, module]) => {
@@ -501,7 +501,7 @@ const UnifiedDashboardPage: FC = () => {
     dashboardData?.leads,
     dashboardData?.properties,
     globalSearchQuery,
-    isSuperUser,
+    isExecutiveRole,
   ]);
 
   const executeSearchItem = (item: SearchItem) => {
@@ -659,26 +659,31 @@ const UnifiedDashboardPage: FC = () => {
   };
 
   const handleTabKeyDown = (event: KeyboardEvent<HTMLButtonElement>, index: number) => {
-    const lastIndex = orderedWorkspaceTabs.length - 1;
+    const renderedButtons = tabButtonRefs.current.filter(Boolean);
+    const lastIndex = renderedButtons.length - 1;
+
+    if (lastIndex < 0) {
+      return;
+    }
 
     switch (event.key) {
       case 'ArrowDown':
       case 'ArrowRight':
         event.preventDefault();
-        tabButtonRefs.current[index === lastIndex ? 0 : index + 1]?.focus();
+        renderedButtons[index === lastIndex ? 0 : index + 1]?.focus();
         break;
       case 'ArrowUp':
       case 'ArrowLeft':
         event.preventDefault();
-        tabButtonRefs.current[index === 0 ? lastIndex : index - 1]?.focus();
+        renderedButtons[index === 0 ? lastIndex : index - 1]?.focus();
         break;
       case 'Home':
         event.preventDefault();
-        tabButtonRefs.current[0]?.focus();
+        renderedButtons[0]?.focus();
         break;
       case 'End':
         event.preventDefault();
-        tabButtonRefs.current[lastIndex]?.focus();
+        renderedButtons[lastIndex]?.focus();
         break;
       default:
         break;
@@ -748,6 +753,7 @@ const UnifiedDashboardPage: FC = () => {
             availableTabs={availableTabs}
             activeTab={activeTab}
             selectedCRMModule={selectedCRMModule}
+            currentRole={currentRole}
             isSuperUser={isSuperUser}
             modulesExpanded={modulesExpanded}
             moduleEntries={moduleEntries}
@@ -850,8 +856,9 @@ const UnifiedDashboardPage: FC = () => {
             </section>
           )}
 
-          {isSuperUser && !selectedDepartment && (
+          {isExecutiveRole && !selectedDepartment && (
             <SuperuserControlCenter
+              persona={isSuperUser ? 'superuser' : 'executive'}
               hotLeadsCount={hotLeadsCount}
               superuserModuleCount={superuserModuleCount}
               monthlyRevenueLabel={formatCurrency(monthlyRevenue)}
@@ -888,6 +895,41 @@ const UnifiedDashboardPage: FC = () => {
           )}
 
           {!selectedDepartment && !selectedCRMModule && <DashboardKpiStrip cards={kpiCards} />}
+
+          {!selectedDepartment &&
+            !selectedCRMModule &&
+            !isLoading &&
+            !error &&
+            isDashboardDataEmpty && (
+              <section
+                className="dashboard-empty-state"
+                aria-label="Dashboard empty state"
+                role="status"
+              >
+                <p className="dashboard-empty-state__eyebrow">No data yet</p>
+                <h2>Your executive dashboard is ready</h2>
+                <p>
+                  Connect your first workflows to populate KPIs, activity timeline, and operations
+                  intelligence.
+                </p>
+                <div className="dashboard-empty-state__actions">
+                  <button
+                    type="button"
+                    className="dashboard-superuser-btn dashboard-superuser-btn--primary"
+                    onClick={() => setIsCommandPaletteOpen(true)}
+                  >
+                    Open command palette
+                  </button>
+                  <button
+                    type="button"
+                    className="dashboard-superuser-btn"
+                    onClick={() => handleCRMModuleSelect('unified')}
+                  >
+                    Open Unified CRM
+                  </button>
+                </div>
+              </section>
+            )}
 
           {selectedDepartment ? (
             <div className="dashboard-surface-panel">

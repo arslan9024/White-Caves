@@ -1,4 +1,3 @@
-// @ts-nocheck
 import { Request, Response } from 'express';
 import { prisma } from '../database.js';
 import { asyncHandler, AppError } from '../middleware/errorHandler.js';
@@ -61,7 +60,7 @@ export const uploadPropertyDocument = asyncHandler(async (req: Request, res: Res
   }
 
   const fileUrl = `/uploads/${req.file.filename}`;
-  
+
   let dataToUpdate: any = {};
   if (documentType === 'titleDeed') {
     dataToUpdate.titleDeedMissing = false;
@@ -99,7 +98,13 @@ export const transitionPropertyStage = asyncHandler(async (req: Request, res: Re
   const { id } = req.params as Record<string, string>;
   const { newStage } = req.body;
 
-  const validStages = ['draft_collected', 'verified_active', 'under_offer', 'leased_sold', 'handed_over'];
+  const validStages = [
+    'draft_collected',
+    'verified_active',
+    'under_offer',
+    'leased_sold',
+    'handed_over',
+  ];
   if (!validStages.includes(newStage)) {
     throw new AppError('Invalid stage', 400);
   }
@@ -112,7 +117,10 @@ export const transitionPropertyStage = asyncHandler(async (req: Request, res: Re
   // Strict validation logic (@Mary's rules)
   if (newStage === 'verified_active') {
     if (property.titleDeedMissing || property.landlordPassportMissing) {
-      throw new AppError('Cannot move to Verified Active. Title Deed and Landlord Passport are required.', 400);
+      throw new AppError(
+        'Cannot move to Verified Active. Title Deed and Landlord Passport are required.',
+        400
+      );
     }
   }
 
@@ -221,10 +229,10 @@ export const completeHandover = asyncHandler(async (req: Request, res: Response)
 
   const property = await prisma.property.update({
     where: { id },
-    data: { 
+    data: {
       inventoryStage: 'handed_over',
       isLocked: true,
-      lockedAt: new Date()
+      lockedAt: new Date(),
     },
   });
 

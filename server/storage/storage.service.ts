@@ -1,4 +1,3 @@
-// @ts-nocheck
 import * as fs from 'fs';
 import * as path from 'path';
 import * as crypto from 'crypto';
@@ -56,7 +55,7 @@ export class StorageService {
    * Ensure required directories exist
    */
   private ensureDirectories(): void {
-    [this.basePath, this.uploadDir, this.thumbnailDir].forEach((dir) => {
+    [this.basePath, this.uploadDir, this.thumbnailDir].forEach(dir => {
       if (!fs.existsSync(dir)) {
         fs.mkdirSync(dir, { recursive: true });
       }
@@ -120,7 +119,7 @@ export class StorageService {
    */
   public downloadFile(fileId: string): Buffer | null {
     const files = fs.readdirSync(this.uploadDir);
-    const filename = files.find((f) => f.startsWith(fileId));
+    const filename = files.find(f => f.startsWith(fileId));
 
     if (!filename) {
       logger.warn(`File not found: ${fileId}`);
@@ -136,7 +135,7 @@ export class StorageService {
    */
   public deleteFile(fileId: string): boolean {
     const files = fs.readdirSync(this.uploadDir);
-    const filename = files.find((f) => f.startsWith(fileId));
+    const filename = files.find(f => f.startsWith(fileId));
 
     if (!filename) {
       return false;
@@ -147,7 +146,7 @@ export class StorageService {
 
     // Delete thumbnail if exists
     const thumbFiles = fs.readdirSync(this.thumbnailDir);
-    const thumbFile = thumbFiles.find((f) => f.startsWith(fileId));
+    const thumbFile = thumbFiles.find(f => f.startsWith(fileId));
     if (thumbFile) {
       fs.unlinkSync(path.join(this.thumbnailDir, thumbFile));
     }
@@ -159,10 +158,7 @@ export class StorageService {
   /**
    * Generate thumbnail for image
    */
-  private async generateThumbnail(
-    fileBuffer: Buffer,
-    fileId: string
-  ): Promise<string> {
+  private async generateThumbnail(fileBuffer: Buffer, fileId: string): Promise<string> {
     const thumbnailName = `${fileId}-thumb.webp`;
     const thumbnailPath = path.join(this.thumbnailDir, thumbnailName);
 
@@ -177,11 +173,7 @@ export class StorageService {
   /**
    * Validate file
    */
-  private validateFile(
-    buffer: Buffer,
-    mimetype: string,
-    filename: string
-  ): void {
+  private validateFile(buffer: Buffer, mimetype: string, filename: string): void {
     // Check size
     if (buffer.length > this.maxFileSize) {
       throw new Error(
@@ -233,7 +225,7 @@ export class StorageService {
     const cutoffTime = now.getTime() - daysOld * 24 * 60 * 60 * 1000;
     let deletedCount = 0;
 
-    fs.readdirSync(this.uploadDir).forEach((filename) => {
+    fs.readdirSync(this.uploadDir).forEach(filename => {
       const filepath = path.join(this.uploadDir, filename);
       const stats = fs.statSync(filepath);
 
@@ -252,7 +244,7 @@ export class StorageService {
    */
   public getFileInfo(fileId: string): FileMetadata | null {
     const files = fs.readdirSync(this.uploadDir);
-    const filename = files.find((f) => f.startsWith(fileId));
+    const filename = files.find(f => f.startsWith(fileId));
 
     if (!filename) {
       return null;
@@ -306,7 +298,7 @@ export class StorageService {
     let totalSize = 0;
     let totalFiles = 0;
 
-    fs.readdirSync(this.uploadDir).forEach((filename) => {
+    fs.readdirSync(this.uploadDir).forEach(filename => {
       const filepath = path.join(this.uploadDir, filename);
       const stats = fs.statSync(filepath);
       totalSize += stats.size;

@@ -219,14 +219,10 @@
     "maxRegenerationsPerRun": 100000,
     "restartFromNextPhaseWhenQueueComplete": true,
     "nextPhaseRoadmap": [
-      "Wave 09 - UX Foundation",
-      "Wave 10 - Performance & SEO",
-      "Wave 11 - Architecture Stabilization",
-      "Wave 12 - Automation Engine",
-      "Wave 13 - Media & Real-time",
-      "Wave 14 - Product Intelligence",
-      "Wave 15 - Cache & PWA",
-      "Wave 16 - Security Hardening"
+      "Wave 19 - Identity & Access v2 + CRM Routing + MD Workspace Split",
+      "Wave 20 - Security Compliance Schema Blockers",
+      "Wave 21 - Backend Contract Hardening + Observability",
+      "Wave 22 - KPI Integrity + Executive Intelligence"
     ],
     "smartSelectionEnabled": true,
     "phaseBalanceEnabled": true,
@@ -234,11 +230,11 @@
     "preflightEnabled": true,
     "autoUnblockSweepEnabled": true,
     "queueHealthEveryNTasks": 3,
-    "problemScannerEnabled": true,
+    "problemScannerEnabled": false,
     "problemScannerAutoFixEnabled": true,
     "problemScannerEveryNTasks": 3,
     "problemScannerIdleEveryNLoops": 6,
-    "developmentSweepEnabled": true,
+    "developmentSweepEnabled": false,
     "developmentSweepAutoFixEnabled": true,
     "developmentSweepEveryNTasks": 5,
     "developmentSweepIdleEveryNLoops": 10,
@@ -280,8 +276,8 @@
           "team": "premium-implementation",
           "priority": "critical",
           "priorityScore": 1000,
-          "title": "Homepage fix errors and possible upgrades",
-          "prompt": "@Mira -- PRIORITY IMPLEMENT+VERIFY: Homepage fix errors and possible upgrades. Execute this before any non-priority queue tasks. Deliver production-safe fixes for homepage errors, apply meaningful UI/performance/resilience upgrades, and include strict validation evidence (typecheck/lint/build/tests) plus rollback notes."
+          "title": "Wave 19 auth-routing-session foundation",
+          "prompt": "@Mira -- PRIORITY IMPLEMENT+VERIFY: Wave 19 auth-routing-session foundation. Execute this before any non-priority queue tasks. Align login success routing, profile completion gate behavior, CRM entry consistency, access-token refresh flow, and session hydration against the current Wave 19 bundle. Include strict validation evidence (typecheck/lint/build/tests), route regression notes, and rollback steps."
         },
         {
           "agent": "@Mala",
@@ -290,24 +286,24 @@
           "team": "premium-implementation",
           "priority": "critical",
           "priorityScore": 999,
-          "title": "MD login and post-login best UI/UX",
-          "prompt": "@Mala -- PRIORITY IMPLEMENT+VERIFY: MD login and post-login best UI/UX. Execute this before any non-priority queue tasks. Improve MD authentication/login flow reliability and design a premium post-login experience with best-practice UX, accessibility, and responsiveness; include validation evidence and rollback notes."
+          "title": "Wave 19 superuser dashboard workspace split and executive UX",
+          "prompt": "@Mala -- PRIORITY IMPLEMENT+VERIFY: Wave 19 superuser dashboard workspace split and executive UX. Execute this before non-priority queue tasks. Deliver the current canonical MD workspace split, first-screen executive hierarchy, responsive behavior, accessibility states, and premium UX polish defined by the Wave 19 plan and UI/UX business docs. Include validation evidence and rollback notes."
         },
         {
-          "agent": "@Mira",
+          "agent": "@S5",
           "lane": "A",
           "phase": "implementation",
           "team": "premium-implementation",
           "priority": "critical",
           "priorityScore": 998,
-          "title": "Managing Director super-user operations cockpit",
-          "prompt": "@Mira -- PRIORITY IMPLEMENT+VERIFY: Managing Director super-user operations cockpit. Execute this before non-priority tasks. Upgrade post-login super-user UI/UX so the Managing Director can see and operate full company operations in one place (cross-module visibility, key KPIs, alerts, approvals, queue health, quick actions, accessibility, responsive layout). Include production-safe implementation slices, strict validation evidence (typecheck/lint/build/tests), and rollback notes."
+          "title": "Wave 20 P0 security, RBAC, and compliance blocker hardening",
+          "prompt": "@S5 -- PRIORITY IMPLEMENT+VERIFY: Wave 20 P0 security, RBAC, and compliance blocker hardening. Execute this before non-priority tasks. Remove known P0 auth/RBAC/compliance blockers from the active implementation path, including route protection mismatches, session security gaps, and enforcement controls required by the canonical plans. Include strict validation evidence, risk notes, and rollback steps."
         }
       ]
     },
     "devSmokeEnabled": true,
     "devSmokeEveryNTasks": 3,
-    "devRuntimeCheckEnabled": true,
+    "devRuntimeCheckEnabled": false,
     "devRuntimeCheckIntervalHours": 2,
     "devRuntimeCheckMaxRunMinutes": 2,
     "devRuntimeCheckRunProblemScan": true,
@@ -318,7 +314,7 @@
     "progressDriftConsecutiveThreshold": 2,
     "blockerAgingWarnHours": 4,
     "autopilotRequireProducedRef": false,
-    "autopilotAutoResolveEvidencePending": true,
+    "autopilotAutoResolveEvidencePending": false,
     "realityExecutionGate": {
       "enabled": true,
       "minSelectionScore": 120,

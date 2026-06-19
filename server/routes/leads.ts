@@ -1,5 +1,4 @@
-﻿// @ts-nocheck
-/**
+﻿/**
  * Leads API Routes — Full CRUD Implementation
  * Endpoints: /api/leads
  * Supports: search, filter, pagination, bulk operations, analytics
@@ -61,6 +60,26 @@ import {
 } from '../services/leadWorkflowService.js';
 
 const router = Router();
+
+const routeParamToString = (value: string | string[] | undefined): string | null => {
+  if (typeof value === 'string' && value.trim().length > 0) {
+    return value;
+  }
+  if (Array.isArray(value) && value.length > 0 && typeof value[0] === 'string') {
+    const first = value[0].trim();
+    return first.length > 0 ? first : null;
+  }
+  return null;
+};
+
+const normalizeJsonRecord = (
+  value: Prisma.JsonValue | null | undefined
+): Record<string, unknown> | null => {
+  if (value && typeof value === 'object' && !Array.isArray(value)) {
+    return value as Record<string, unknown>;
+  }
+  return null;
+};
 
 // ─── GET /api/leads ─────────────────────────────────────────────────────
 router.get(
@@ -252,8 +271,8 @@ router.get(
   asyncHandler(async (req: Request, res: Response) => {
     const { page = '1', pageSize = '50' } = req.query as Record<string, string | undefined>;
     const pageNum = Math.max(1, parseInt(page as string, 10) || 1);
-    const limit   = Math.min(100, Math.max(1, parseInt(pageSize as string, 10) || 50));
-    const skip    = (pageNum - 1) * limit;
+    const limit = Math.min(100, Math.max(1, parseInt(pageSize as string, 10) || 50));
+    const skip = (pageNum - 1) * limit;
 
     // A lead has breached SLA if it is still in an uncontacted state and was created > 4h ago
     const slaThreshold = new Date(Date.now() - SLA_MS);
@@ -292,7 +311,7 @@ router.get(
     const now = Date.now();
     const enriched = leads.map(lead => ({
       ...lead,
-      slaBreachHours: Math.round((now - lead.createdAt.getTime()) / (1000 * 60 * 60) * 10) / 10,
+      slaBreachHours: Math.round(((now - lead.createdAt.getTime()) / (1000 * 60 * 60)) * 10) / 10,
     }));
 
     res.status(200).json({
@@ -352,9 +371,14 @@ router.get(
   '/:id',
   requirePermission('view_leads'),
   asyncHandler(async (req: Request, res: Response) => {
-    validateIdParam(req.params.id, 'Lead ID');
+    const leadId = routeParamToString(req.params.id);
+    if (!leadId) {
+      throw new AppError('Lead ID is required', 400);
+    }
+
+    validateIdParam(leadId, 'Lead ID');
     const lead = await prisma.lead.findUnique({
-      where: { id: req.params.id },
+      where: { id: leadId },
       include: {
         assignedTo: { select: { id: true, name: true, email: true, phone: true } },
         createdBy: { select: { id: true, name: true, email: true } },
@@ -427,9 +451,14 @@ router.get(
       }),
     ]);
 
+    const normalizedActivities = activities.map(activity => ({
+      ...activity,
+      metadata: normalizeJsonRecord(activity.metadata),
+    }));
+
     res.status(200).json({
       success: true,
-      data: buildLeadTimeline({ lead, activities, viewings }),
+      data: buildLeadTimeline({ lead, activities: normalizedActivities, viewings }),
     });
   })
 );
@@ -767,20 +796,25 @@ router.get(
   '/:id/activities',
   requirePermission('view_leads'),
   asyncHandler(async (req: Request, res: Response) => {
-    validateIdParam(req.params.id, 'Lead ID');
+    const leadId = routeParamToString(req.params.id);
+    if (!leadId) {
+      throw new AppError('Lead ID is required', 400);
+    }
+
+    validateIdParam(leadId, 'Lead ID');
     const { page = '1', pageSize = '20' } = req.query as Record<string, string | undefined>;
     const pageNum = Math.max(1, parseInt(page as string) || 1);
     const limit = Math.min(50, Math.max(1, parseInt(pageSize as string) || 20));
 
     const [activities, total] = await Promise.all([
       prisma.activity.findMany({
-        where: { leadId: req.params.id },
+        where: { leadId },
         orderBy: { createdAt: 'desc' },
         skip: (pageNum - 1) * limit,
         take: limit,
         include: { user: { select: { id: true, name: true } } },
       }),
-      prisma.activity.count({ where: { leadId: req.params.id } }),
+      prisma.activity.count({ where: { leadId } }),
     ]);
 
     res.status(200).json({
@@ -1004,8 +1038,13 @@ router.post(
   '/:id/auto-route',
   requirePermission('manage_leads'),
   asyncHandler(async (req: Request, res: Response) => {
-    validateIdParam(req.params.id, 'Lead ID');
-    const decision = await autoRouteHotLead(req.params.id);
+    const leadId = routeParamToString(req.params.id);
+    if (!leadId) {
+      throw new AppError('Lead ID is required', 400);
+    }
+
+    validateIdParam(leadId, 'Lead ID');
+    const decision = await autoRouteHotLead(leadId);
 
     if (!decision) {
       res.status(200).json({
@@ -1029,8 +1068,13 @@ router.get(
   '/:id/score',
   requirePermission('view_leads'),
   asyncHandler(async (req: Request, res: Response) => {
-    validateIdParam(req.params.id, 'Lead ID');
-    const result = await scoreLead(req.params.id);
+    const leadId = routeParamToString(req.params.id);
+    if (!leadId) {
+      throw new AppError('Lead ID is required', 400);
+    }
+
+    validateIdParam(leadId, 'Lead ID');
+    const result = await scoreLead(leadId);
 
     res.status(200).json({
       success: true,
@@ -1060,7 +1104,12 @@ router.post(
   '/:id/score/override',
   requirePermission('manage_leads'),
   asyncHandler(async (req: Request, res: Response) => {
-    validateIdParam(req.params.id, 'Lead ID');
+    const leadId = routeParamToString(req.params.id);
+    if (!leadId) {
+      throw new AppError('Lead ID is required', 400);
+    }
+
+    validateIdParam(leadId, 'Lead ID');
     const { score, reason } = req.body;
 
     if (typeof score !== 'number' || score < 0 || score > 100) {
@@ -1071,7 +1120,7 @@ router.post(
     }
 
     const result = await overrideScore(
-      req.params.id,
+      leadId,
       score,
       sanitizeString(reason.trim().slice(0, 500)),
       req.user?.id
@@ -1116,9 +1165,14 @@ router.get(
   '/:id/score/history',
   requirePermission('view_leads'),
   asyncHandler(async (req: Request, res: Response) => {
-    validateIdParam(req.params.id, 'Lead ID');
+    const leadId = routeParamToString(req.params.id);
+    if (!leadId) {
+      throw new AppError('Lead ID is required', 400);
+    }
+
+    validateIdParam(leadId, 'Lead ID');
     const { limit = '50', days = '90' } = req.query as Record<string, string | undefined>;
-    const history = await getScoreHistory(req.params.id, {
+    const history = await getScoreHistory(leadId, {
       limit: Math.min(200, parseInt(limit as string) || 50),
       days: Math.min(365, parseInt(days as string) || 90),
     });
@@ -1126,7 +1180,7 @@ router.get(
     res.status(200).json({
       success: true,
       data: {
-        leadId: req.params.id,
+        leadId,
         history,
         count: history.length,
       },
@@ -1140,10 +1194,15 @@ router.post(
   '/:id/score/whatsapp',
   requirePermission('manage_leads'),
   asyncHandler(async (req: Request, res: Response) => {
-    validateIdParam(req.params.id, 'Lead ID');
+    const leadId = routeParamToString(req.params.id);
+    if (!leadId) {
+      throw new AppError('Lead ID is required', 400);
+    }
+
+    validateIdParam(leadId, 'Lead ID');
     const { intentScore, sentimentScore, engagementScore, responseTimeScore, conversationScore } =
       req.body;
-    const result = await applyWhatsAppSignal(req.params.id, {
+    const result = await applyWhatsAppSignal(leadId, {
       intentScore: typeof intentScore === 'number' ? intentScore : undefined,
       sentimentScore: typeof sentimentScore === 'number' ? sentimentScore : undefined,
       engagementScore: typeof engagementScore === 'number' ? engagementScore : undefined,
@@ -1294,13 +1353,10 @@ router.post(
     }
 
     const VALID_BULK_ACTIONS = ['assign', 'change-status', 'archive', 'set-reminder'] as const;
-    type BulkAction = typeof VALID_BULK_ACTIONS[number];
+    type BulkAction = (typeof VALID_BULK_ACTIONS)[number];
 
     if (!VALID_BULK_ACTIONS.includes(action as BulkAction)) {
-      throw new AppError(
-        `Invalid action. Must be one of: ${VALID_BULK_ACTIONS.join(', ')}`,
-        400,
-      );
+      throw new AppError(`Invalid action. Must be one of: ${VALID_BULK_ACTIONS.join(', ')}`, 400);
     }
     const typedAction = action as BulkAction;
 
@@ -1314,7 +1370,9 @@ router.post(
     }
 
     // ── Build update data ─────────────────────────────────────────────────
-    const payloadObj = (payload && typeof payload === 'object') ? payload as Record<string, unknown> : {};
+    const payloadObj =
+      payload && typeof payload === 'object' ? (payload as Record<string, unknown>) : {};
+    const payloadMetadata = JSON.parse(JSON.stringify(payloadObj)) as Prisma.InputJsonValue;
     const updateData: Record<string, unknown> = {};
     let activityDescription = '';
 
@@ -1334,7 +1392,11 @@ router.post(
       activityDescription = `Bulk assigned to agent ${assigneeId}`;
     } else if (typedAction === 'set-reminder') {
       const reminderAt = payloadObj['reminderAt'];
-      if (!reminderAt || typeof reminderAt !== 'string' || Number.isNaN(new Date(reminderAt).getTime())) {
+      if (
+        !reminderAt ||
+        typeof reminderAt !== 'string' ||
+        Number.isNaN(new Date(reminderAt).getTime())
+      ) {
         throw new AppError('payload.reminderAt is required for set-reminder action', 400);
       }
       activityDescription = `Bulk reminder scheduled for ${new Date(reminderAt).toISOString()}`;
@@ -1362,7 +1424,10 @@ router.post(
             description: activityDescription,
             userId: req.user?.id ?? null,
             leadId,
-            metadata: { bulkAction: typedAction, payload: payloadObj },
+            metadata: {
+              bulkAction: typedAction,
+              payload: payloadMetadata,
+            } as Prisma.InputJsonValue,
           },
         });
       }
@@ -1410,14 +1475,14 @@ router.post(
 
     if (!lead) throw new AppError('Lead not found', 404);
 
-    const breachMs   = Date.now() - lead.createdAt.getTime();
-    const breachHrs  = Math.round(breachMs / (1000 * 60 * 60) * 10) / 10;
+    const breachMs = Date.now() - lead.createdAt.getTime();
+    const breachHrs = Math.round((breachMs / (1000 * 60 * 60)) * 10) / 10;
     const isBreached = breachMs > SLA_MS;
 
     if (!isBreached) {
       throw new AppError(
         `Lead is within SLA window (${breachHrs}h elapsed, limit is ${SLA_HOURS}h)`,
-        409,
+        409
       );
     }
 
@@ -1464,7 +1529,7 @@ router.get(
   asyncHandler(async (req: Request, res: Response) => {
     const periodParam = String(req.query.period ?? '30d');
     const VALID_PERIODS = ['7d', '30d', '90d'] as const;
-    type Period = typeof VALID_PERIODS[number];
+    type Period = (typeof VALID_PERIODS)[number];
     const period: Period = (VALID_PERIODS as readonly string[]).includes(periodParam)
       ? (periodParam as Period)
       : '30d';
@@ -1475,7 +1540,7 @@ router.get(
     const STATUSES = ['new', 'contacted', 'qualified', 'viewing', 'offered', 'won'] as const;
 
     const counts = await Promise.all(
-      STATUSES.map(s => prisma.lead.count({ where: { status: s, createdAt: { gte: since } } })),
+      STATUSES.map(s => prisma.lead.count({ where: { status: s, createdAt: { gte: since } } }))
     );
     const total = await prisma.lead.count({ where: { createdAt: { gte: since } } });
 
@@ -1496,13 +1561,13 @@ router.get(
     const wonCount = counts[STATUSES.indexOf('won')];
 
     const viewingRate = total > 0 ? Math.round((viewingCount / total) * 1000) / 10 : 0;
-    const offerRate   = total > 0 ? Math.round((offerCount   / total) * 1000) / 10 : 0;
-    const wonRate     = total > 0 ? Math.round((wonCount     / total) * 1000) / 10 : 0;
+    const offerRate = total > 0 ? Math.round((offerCount / total) * 1000) / 10 : 0;
+    const wonRate = total > 0 ? Math.round((wonCount / total) * 1000) / 10 : 0;
 
     const stageLabels = ['New', 'Contacted', 'Qualified', 'Viewing Scheduled', 'Offer Made', 'Won'];
     const stages = stageLabels.map((label, i) => {
       const count = counts[i] ?? 0;
-      const prev  = i > 0 ? (counts[i - 1] ?? 0) : count;
+      const prev = i > 0 ? (counts[i - 1] ?? 0) : count;
       const dropOffPct = prev > 0 ? Math.round(((prev - count) / prev) * 100) : 0;
       return { stage: label, count, dropOffPct, avgDays: Math.round(i * 1.5 * 10) / 10 };
     });

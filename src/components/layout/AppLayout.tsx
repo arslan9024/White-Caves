@@ -37,6 +37,7 @@ import CommandPalette from '../common/CommandPalette';
 import { AppLayoutContainer, AppBody, AppMain } from './AppLayout/styles';
 import type { RootState } from '../../store/store';
 import { authFetch } from '../../utils/authFetch';
+import { hasPermission, PERMISSIONS } from '../../utils/permissions';
 import { createLogger } from '../../utils/logger';
 
 const log = createLogger('AppLayout');
@@ -69,6 +70,10 @@ const ROLE_PATHS: string[] = [
 const isJsDomTestEnvironment =
   typeof navigator !== 'undefined' && /jsdom/i.test(navigator.userAgent);
 
+export function canReadCompanyActivityNotifications(role: string | null | undefined): boolean {
+  return hasPermission(role ?? null, PERMISSIONS.VIEW_AUDIT_LOGS);
+}
+
 const AppLayout: React.FC<AppLayoutProps> = ({ children, showNav = true, isSuperUser = false }) => {
   const location = useLocation();
   const dispatch = useDispatch();
@@ -81,6 +86,10 @@ const AppLayout: React.FC<AppLayoutProps> = ({ children, showNav = true, isSuper
   const fetchNotifications = useCallback(async () => {
     if (!user) return;
     if (isJsDomTestEnvironment) {
+      setNotifications([]);
+      return;
+    }
+    if (!canReadCompanyActivityNotifications(user.role)) {
       setNotifications([]);
       return;
     }

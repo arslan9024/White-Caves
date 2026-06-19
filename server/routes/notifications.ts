@@ -1,4 +1,3 @@
-// @ts-nocheck
 /**
  * Notifications API Routes — Full CRUD Implementation
  * In-app notification management for authenticated users

@@ -3769,3 +3769,549 @@ Auto-discovered Aegis queue-empty upgrades are appended here when the orchestrat
 - Plan evidence: 5 keyword hits in planning docs
 - Scan evidence: 1 keyword hits in codebase scan signals
 - Prompt: @S5 -- EXPAND: wave-16-security-hardening.md -> add CSRF coverage plan for all mutation routes, token issuance, validation points, and rollout verification
+
+## 2026-06-17T12:43:41.149Z — Queue-empty discovery run
+
+### DU001 — CSRF coverage for mutation routes
+
+- Feature ID: security-csrf-mutation-routes
+- Agent: @S5
+- Target file: business_docs/09_crm_features/wave-16-security-hardening.md
+- Research basis: OWASP CSRF mitigation requirement for session-backed mutation endpoints
+- Score: 155
+- Gap evidence: 0/2 signatures matched
+- Plan evidence: 5 keyword hits in planning docs
+- Scan evidence: 1 keyword hits in codebase scan signals
+- Prompt: @S5 -- EXPAND: wave-16-security-hardening.md -> add CSRF coverage plan for all mutation routes, token issuance, validation points, and rollout verification
+
+## 2026-06-17T12:49:57.531Z — Queue-empty discovery run
+
+### DU001 — CSRF coverage for mutation routes
+
+- Feature ID: security-csrf-mutation-routes
+- Agent: @S5
+- Target file: business_docs/09_crm_features/wave-16-security-hardening.md
+- Research basis: OWASP CSRF mitigation requirement for session-backed mutation endpoints
+- Score: 155
+- Gap evidence: 0/2 signatures matched
+- Plan evidence: 5 keyword hits in planning docs
+- Scan evidence: 1 keyword hits in codebase scan signals
+- Prompt: @S5 -- EXPAND: wave-16-security-hardening.md -> add CSRF coverage plan for all mutation routes, token issuance, validation points, and rollout verification
+
+## 2026-06-17T12:55:45.775Z — Queue-empty discovery run
+
+### DU001 — CSRF coverage for mutation routes
+
+- Feature ID: security-csrf-mutation-routes
+- Agent: @S5
+- Target file: business_docs/09_crm_features/wave-16-security-hardening.md
+- Research basis: OWASP CSRF mitigation requirement for session-backed mutation endpoints
+- Score: 155
+- Gap evidence: 0/2 signatures matched
+- Plan evidence: 5 keyword hits in planning docs
+- Scan evidence: 1 keyword hits in codebase scan signals
+- Prompt: @S5 -- EXPAND: wave-16-security-hardening.md -> add CSRF coverage plan for all mutation routes, token issuance, validation points, and rollout verification
+
+## 2026-06-17T13:01:02.769Z — Queue-empty discovery run
+
+### DU001 — CSRF coverage for mutation routes
+
+- Feature ID: security-csrf-mutation-routes
+- Agent: @S5
+- Target file: business_docs/09_crm_features/wave-16-security-hardening.md
+- Research basis: OWASP CSRF mitigation requirement for session-backed mutation endpoints
+- Score: 155
+- Gap evidence: 0/2 signatures matched
+- Plan evidence: 5 keyword hits in planning docs
+- Scan evidence: 1 keyword hits in codebase scan signals
+- Prompt: @S5 -- EXPAND: wave-16-security-hardening.md -> add CSRF coverage plan for all mutation routes, token issuance, validation points, and rollout verification
+
+## 2026-06-17T13:06:39.559Z — Queue-empty discovery run
+
+### DU001 — CSRF coverage for mutation routes
+
+- Feature ID: security-csrf-mutation-routes
+- Agent: @S5
+- Target file: business_docs/09_crm_features/wave-16-security-hardening.md
+- Research basis: OWASP CSRF mitigation requirement for session-backed mutation endpoints
+- Score: 155
+- Gap evidence: 0/2 signatures matched
+- Plan evidence: 5 keyword hits in planning docs
+- Scan evidence: 1 keyword hits in codebase scan signals
+- Prompt: @S5 -- EXPAND: wave-16-security-hardening.md -> add CSRF coverage plan for all mutation routes, token issuance, validation points, and rollout verification
+
+## 2026-06-17T13:12:15.930Z — Queue-empty discovery run
+
+### DU001 — CSRF coverage for mutation routes
+
+- Feature ID: security-csrf-mutation-routes
+- Agent: @S5
+- Target file: business_docs/09_crm_features/wave-16-security-hardening.md
+- Research basis: OWASP CSRF mitigation requirement for session-backed mutation endpoints
+- Score: 155
+- Gap evidence: 0/2 signatures matched
+- Plan evidence: 5 keyword hits in planning docs
+- Scan evidence: 1 keyword hits in codebase scan signals
+- Prompt: @S5 -- EXPAND: wave-16-security-hardening.md -> add CSRF coverage plan for all mutation routes, token issuance, validation points, and rollout verification
+
+## 2026-06-17T13:17:52.071Z — Queue-empty discovery run
+
+### DU001 — CSRF coverage for mutation routes
+
+- Feature ID: security-csrf-mutation-routes
+- Agent: @S5
+- Target file: business_docs/09_crm_features/wave-16-security-hardening.md
+- Research basis: OWASP CSRF mitigation requirement for session-backed mutation endpoints
+- Score: 155
+- Gap evidence: 0/2 signatures matched
+- Plan evidence: 5 keyword hits in planning docs
+- Scan evidence: 1 keyword hits in codebase scan signals
+- Prompt: @S5 -- EXPAND: wave-16-security-hardening.md -> add CSRF coverage plan for all mutation routes, token issuance, validation points, and rollout verification
+
+## 2026-06-17T13:23:28.115Z — Queue-empty discovery run
+
+### DU001 — CSRF coverage for mutation routes
+
+- Feature ID: security-csrf-mutation-routes
+- Agent: @S5
+- Target file: business_docs/09_crm_features/wave-16-security-hardening.md
+- Research basis: OWASP CSRF mitigation requirement for session-backed mutation endpoints
+- Score: 155
+- Gap evidence: 0/2 signatures matched
+- Plan evidence: 5 keyword hits in planning docs
+- Scan evidence: 1 keyword hits in codebase scan signals
+- Prompt: @S5 -- EXPAND: wave-16-security-hardening.md -> add CSRF coverage plan for all mutation routes, token issuance, validation points, and rollout verification
+
+## 2026-06-17T13:29:06.817Z — Queue-empty discovery run
+
+### DU001 — CSRF coverage for mutation routes
+
+- Feature ID: security-csrf-mutation-routes
+- Agent: @S5
+- Target file: business_docs/09_crm_features/wave-16-security-hardening.md
+- Research basis: OWASP CSRF mitigation requirement for session-backed mutation endpoints
+- Score: 155
+- Gap evidence: 0/2 signatures matched
+- Plan evidence: 5 keyword hits in planning docs
+- Scan evidence: 1 keyword hits in codebase scan signals
+- Prompt: @S5 -- EXPAND: wave-16-security-hardening.md -> add CSRF coverage plan for all mutation routes, token issuance, validation points, and rollout verification
+
+## 2026-06-17T13:34:13.396Z — Queue-empty discovery run
+
+### DU001 — CSRF coverage for mutation routes
+
+- Feature ID: security-csrf-mutation-routes
+- Agent: @S5
+- Target file: business_docs/09_crm_features/wave-16-security-hardening.md
+- Research basis: OWASP CSRF mitigation requirement for session-backed mutation endpoints
+- Score: 155
+- Gap evidence: 0/2 signatures matched
+- Plan evidence: 5 keyword hits in planning docs
+- Scan evidence: 1 keyword hits in codebase scan signals
+- Prompt: @S5 -- EXPAND: wave-16-security-hardening.md -> add CSRF coverage plan for all mutation routes, token issuance, validation points, and rollout verification
+
+## 2026-06-17T13:39:22.569Z — Queue-empty discovery run
+
+### DU001 — CSRF coverage for mutation routes
+
+- Feature ID: security-csrf-mutation-routes
+- Agent: @S5
+- Target file: business_docs/09_crm_features/wave-16-security-hardening.md
+- Research basis: OWASP CSRF mitigation requirement for session-backed mutation endpoints
+- Score: 155
+- Gap evidence: 0/2 signatures matched
+- Plan evidence: 5 keyword hits in planning docs
+- Scan evidence: 1 keyword hits in codebase scan signals
+- Prompt: @S5 -- EXPAND: wave-16-security-hardening.md -> add CSRF coverage plan for all mutation routes, token issuance, validation points, and rollout verification
+
+## 2026-06-17T13:44:31.594Z — Queue-empty discovery run
+
+### DU001 — CSRF coverage for mutation routes
+
+- Feature ID: security-csrf-mutation-routes
+- Agent: @S5
+- Target file: business_docs/09_crm_features/wave-16-security-hardening.md
+- Research basis: OWASP CSRF mitigation requirement for session-backed mutation endpoints
+- Score: 155
+- Gap evidence: 0/2 signatures matched
+- Plan evidence: 5 keyword hits in planning docs
+- Scan evidence: 1 keyword hits in codebase scan signals
+- Prompt: @S5 -- EXPAND: wave-16-security-hardening.md -> add CSRF coverage plan for all mutation routes, token issuance, validation points, and rollout verification
+
+## 2026-06-17T13:49:43.887Z — Queue-empty discovery run
+
+### DU001 — CSRF coverage for mutation routes
+
+- Feature ID: security-csrf-mutation-routes
+- Agent: @S5
+- Target file: business_docs/09_crm_features/wave-16-security-hardening.md
+- Research basis: OWASP CSRF mitigation requirement for session-backed mutation endpoints
+- Score: 155
+- Gap evidence: 0/2 signatures matched
+- Plan evidence: 5 keyword hits in planning docs
+- Scan evidence: 1 keyword hits in codebase scan signals
+- Prompt: @S5 -- EXPAND: wave-16-security-hardening.md -> add CSRF coverage plan for all mutation routes, token issuance, validation points, and rollout verification
+
+## 2026-06-17T13:54:58.303Z — Queue-empty discovery run
+
+### DU001 — CSRF coverage for mutation routes
+
+- Feature ID: security-csrf-mutation-routes
+- Agent: @S5
+- Target file: business_docs/09_crm_features/wave-16-security-hardening.md
+- Research basis: OWASP CSRF mitigation requirement for session-backed mutation endpoints
+- Score: 155
+- Gap evidence: 0/2 signatures matched
+- Plan evidence: 5 keyword hits in planning docs
+- Scan evidence: 1 keyword hits in codebase scan signals
+- Prompt: @S5 -- EXPAND: wave-16-security-hardening.md -> add CSRF coverage plan for all mutation routes, token issuance, validation points, and rollout verification
+
+## 2026-06-17T14:35:26.749Z — Queue-empty discovery run
+
+### DU001 — CSRF coverage for mutation routes
+
+- Feature ID: security-csrf-mutation-routes
+- Agent: @S5
+- Target file: business_docs/09_crm_features/wave-16-security-hardening.md
+- Research basis: OWASP CSRF mitigation requirement for session-backed mutation endpoints
+- Score: 155
+- Gap evidence: 0/2 signatures matched
+- Plan evidence: 5 keyword hits in planning docs
+- Scan evidence: 1 keyword hits in codebase scan signals
+- Prompt: @S5 -- EXPAND: wave-16-security-hardening.md -> add CSRF coverage plan for all mutation routes, token issuance, validation points, and rollout verification
+
+## 2026-06-17T14:41:04.671Z — Queue-empty discovery run
+
+### DU001 — CSRF coverage for mutation routes
+
+- Feature ID: security-csrf-mutation-routes
+- Agent: @S5
+- Target file: business_docs/09_crm_features/wave-16-security-hardening.md
+- Research basis: OWASP CSRF mitigation requirement for session-backed mutation endpoints
+- Score: 155
+- Gap evidence: 0/2 signatures matched
+- Plan evidence: 5 keyword hits in planning docs
+- Scan evidence: 1 keyword hits in codebase scan signals
+- Prompt: @S5 -- EXPAND: wave-16-security-hardening.md -> add CSRF coverage plan for all mutation routes, token issuance, validation points, and rollout verification
+
+## 2026-06-17T14:46:44.433Z — Queue-empty discovery run
+
+### DU001 — CSRF coverage for mutation routes
+
+- Feature ID: security-csrf-mutation-routes
+- Agent: @S5
+- Target file: business_docs/09_crm_features/wave-16-security-hardening.md
+- Research basis: OWASP CSRF mitigation requirement for session-backed mutation endpoints
+- Score: 155
+- Gap evidence: 0/2 signatures matched
+- Plan evidence: 5 keyword hits in planning docs
+- Scan evidence: 1 keyword hits in codebase scan signals
+- Prompt: @S5 -- EXPAND: wave-16-security-hardening.md -> add CSRF coverage plan for all mutation routes, token issuance, validation points, and rollout verification
+
+## 2026-06-17T14:51:53.714Z — Queue-empty discovery run
+
+### DU001 — CSRF coverage for mutation routes
+
+- Feature ID: security-csrf-mutation-routes
+- Agent: @S5
+- Target file: business_docs/09_crm_features/wave-16-security-hardening.md
+- Research basis: OWASP CSRF mitigation requirement for session-backed mutation endpoints
+- Score: 155
+- Gap evidence: 0/2 signatures matched
+- Plan evidence: 5 keyword hits in planning docs
+- Scan evidence: 1 keyword hits in codebase scan signals
+- Prompt: @S5 -- EXPAND: wave-16-security-hardening.md -> add CSRF coverage plan for all mutation routes, token issuance, validation points, and rollout verification
+
+## 2026-06-17T14:57:35.854Z — Queue-empty discovery run
+
+### DU001 — CSRF coverage for mutation routes
+
+- Feature ID: security-csrf-mutation-routes
+- Agent: @S5
+- Target file: business_docs/09_crm_features/wave-16-security-hardening.md
+- Research basis: OWASP CSRF mitigation requirement for session-backed mutation endpoints
+- Score: 155
+- Gap evidence: 0/2 signatures matched
+- Plan evidence: 5 keyword hits in planning docs
+- Scan evidence: 1 keyword hits in codebase scan signals
+- Prompt: @S5 -- EXPAND: wave-16-security-hardening.md -> add CSRF coverage plan for all mutation routes, token issuance, validation points, and rollout verification
+
+## 2026-06-17T15:02:43.607Z — Queue-empty discovery run
+
+### DU001 — CSRF coverage for mutation routes
+
+- Feature ID: security-csrf-mutation-routes
+- Agent: @S5
+- Target file: business_docs/09_crm_features/wave-16-security-hardening.md
+- Research basis: OWASP CSRF mitigation requirement for session-backed mutation endpoints
+- Score: 155
+- Gap evidence: 0/2 signatures matched
+- Plan evidence: 5 keyword hits in planning docs
+- Scan evidence: 1 keyword hits in codebase scan signals
+- Prompt: @S5 -- EXPAND: wave-16-security-hardening.md -> add CSRF coverage plan for all mutation routes, token issuance, validation points, and rollout verification
+
+## 2026-06-17T15:07:50.931Z — Queue-empty discovery run
+
+### DU001 — CSRF coverage for mutation routes
+
+- Feature ID: security-csrf-mutation-routes
+- Agent: @S5
+- Target file: business_docs/09_crm_features/wave-16-security-hardening.md
+- Research basis: OWASP CSRF mitigation requirement for session-backed mutation endpoints
+- Score: 155
+- Gap evidence: 0/2 signatures matched
+- Plan evidence: 5 keyword hits in planning docs
+- Scan evidence: 1 keyword hits in codebase scan signals
+- Prompt: @S5 -- EXPAND: wave-16-security-hardening.md -> add CSRF coverage plan for all mutation routes, token issuance, validation points, and rollout verification
+
+## 2026-06-17T15:13:28.203Z — Queue-empty discovery run
+
+### DU001 — CSRF coverage for mutation routes
+
+- Feature ID: security-csrf-mutation-routes
+- Agent: @S5
+- Target file: business_docs/09_crm_features/wave-16-security-hardening.md
+- Research basis: OWASP CSRF mitigation requirement for session-backed mutation endpoints
+- Score: 155
+- Gap evidence: 0/2 signatures matched
+- Plan evidence: 5 keyword hits in planning docs
+- Scan evidence: 1 keyword hits in codebase scan signals
+- Prompt: @S5 -- EXPAND: wave-16-security-hardening.md -> add CSRF coverage plan for all mutation routes, token issuance, validation points, and rollout verification
+
+## 2026-06-17T15:19:05.163Z — Queue-empty discovery run
+
+### DU001 — CSRF coverage for mutation routes
+
+- Feature ID: security-csrf-mutation-routes
+- Agent: @S5
+- Target file: business_docs/09_crm_features/wave-16-security-hardening.md
+- Research basis: OWASP CSRF mitigation requirement for session-backed mutation endpoints
+- Score: 155
+- Gap evidence: 0/2 signatures matched
+- Plan evidence: 5 keyword hits in planning docs
+- Scan evidence: 1 keyword hits in codebase scan signals
+- Prompt: @S5 -- EXPAND: wave-16-security-hardening.md -> add CSRF coverage plan for all mutation routes, token issuance, validation points, and rollout verification
+
+## 2026-06-17T15:24:12.368Z — Queue-empty discovery run
+
+### DU001 — CSRF coverage for mutation routes
+
+- Feature ID: security-csrf-mutation-routes
+- Agent: @S5
+- Target file: business_docs/09_crm_features/wave-16-security-hardening.md
+- Research basis: OWASP CSRF mitigation requirement for session-backed mutation endpoints
+- Score: 155
+- Gap evidence: 0/2 signatures matched
+- Plan evidence: 5 keyword hits in planning docs
+- Scan evidence: 1 keyword hits in codebase scan signals
+- Prompt: @S5 -- EXPAND: wave-16-security-hardening.md -> add CSRF coverage plan for all mutation routes, token issuance, validation points, and rollout verification
+
+## 2026-06-17T15:29:49.592Z — Queue-empty discovery run
+
+### DU001 — CSRF coverage for mutation routes
+
+- Feature ID: security-csrf-mutation-routes
+- Agent: @S5
+- Target file: business_docs/09_crm_features/wave-16-security-hardening.md
+- Research basis: OWASP CSRF mitigation requirement for session-backed mutation endpoints
+- Score: 155
+- Gap evidence: 0/2 signatures matched
+- Plan evidence: 5 keyword hits in planning docs
+- Scan evidence: 1 keyword hits in codebase scan signals
+- Prompt: @S5 -- EXPAND: wave-16-security-hardening.md -> add CSRF coverage plan for all mutation routes, token issuance, validation points, and rollout verification
+
+## 2026-06-17T15:35:27.051Z — Queue-empty discovery run
+
+### DU001 — CSRF coverage for mutation routes
+
+- Feature ID: security-csrf-mutation-routes
+- Agent: @S5
+- Target file: business_docs/09_crm_features/wave-16-security-hardening.md
+- Research basis: OWASP CSRF mitigation requirement for session-backed mutation endpoints
+- Score: 155
+- Gap evidence: 0/2 signatures matched
+- Plan evidence: 5 keyword hits in planning docs
+- Scan evidence: 1 keyword hits in codebase scan signals
+- Prompt: @S5 -- EXPAND: wave-16-security-hardening.md -> add CSRF coverage plan for all mutation routes, token issuance, validation points, and rollout verification
+
+## 2026-06-17T15:41:04.158Z — Queue-empty discovery run
+
+### DU001 — CSRF coverage for mutation routes
+
+- Feature ID: security-csrf-mutation-routes
+- Agent: @S5
+- Target file: business_docs/09_crm_features/wave-16-security-hardening.md
+- Research basis: OWASP CSRF mitigation requirement for session-backed mutation endpoints
+- Score: 155
+- Gap evidence: 0/2 signatures matched
+- Plan evidence: 5 keyword hits in planning docs
+- Scan evidence: 1 keyword hits in codebase scan signals
+- Prompt: @S5 -- EXPAND: wave-16-security-hardening.md -> add CSRF coverage plan for all mutation routes, token issuance, validation points, and rollout verification
+
+## 2026-06-17T15:46:12.025Z — Queue-empty discovery run
+
+### DU001 — CSRF coverage for mutation routes
+
+- Feature ID: security-csrf-mutation-routes
+- Agent: @S5
+- Target file: business_docs/09_crm_features/wave-16-security-hardening.md
+- Research basis: OWASP CSRF mitigation requirement for session-backed mutation endpoints
+- Score: 155
+- Gap evidence: 0/2 signatures matched
+- Plan evidence: 5 keyword hits in planning docs
+- Scan evidence: 1 keyword hits in codebase scan signals
+- Prompt: @S5 -- EXPAND: wave-16-security-hardening.md -> add CSRF coverage plan for all mutation routes, token issuance, validation points, and rollout verification
+
+## 2026-06-17T15:51:49.544Z — Queue-empty discovery run
+
+### DU001 — CSRF coverage for mutation routes
+
+- Feature ID: security-csrf-mutation-routes
+- Agent: @S5
+- Target file: business_docs/09_crm_features/wave-16-security-hardening.md
+- Research basis: OWASP CSRF mitigation requirement for session-backed mutation endpoints
+- Score: 155
+- Gap evidence: 0/2 signatures matched
+- Plan evidence: 5 keyword hits in planning docs
+- Scan evidence: 1 keyword hits in codebase scan signals
+- Prompt: @S5 -- EXPAND: wave-16-security-hardening.md -> add CSRF coverage plan for all mutation routes, token issuance, validation points, and rollout verification
+
+## 2026-06-17T15:57:27.300Z — Queue-empty discovery run
+
+### DU001 — CSRF coverage for mutation routes
+
+- Feature ID: security-csrf-mutation-routes
+- Agent: @S5
+- Target file: business_docs/09_crm_features/wave-16-security-hardening.md
+- Research basis: OWASP CSRF mitigation requirement for session-backed mutation endpoints
+- Score: 155
+- Gap evidence: 0/2 signatures matched
+- Plan evidence: 5 keyword hits in planning docs
+- Scan evidence: 1 keyword hits in codebase scan signals
+- Prompt: @S5 -- EXPAND: wave-16-security-hardening.md -> add CSRF coverage plan for all mutation routes, token issuance, validation points, and rollout verification
+
+## 2026-06-17T16:03:05.160Z — Queue-empty discovery run
+
+### DU001 — CSRF coverage for mutation routes
+
+- Feature ID: security-csrf-mutation-routes
+- Agent: @S5
+- Target file: business_docs/09_crm_features/wave-16-security-hardening.md
+- Research basis: OWASP CSRF mitigation requirement for session-backed mutation endpoints
+- Score: 155
+- Gap evidence: 0/2 signatures matched
+- Plan evidence: 5 keyword hits in planning docs
+- Scan evidence: 1 keyword hits in codebase scan signals
+- Prompt: @S5 -- EXPAND: wave-16-security-hardening.md -> add CSRF coverage plan for all mutation routes, token issuance, validation points, and rollout verification
+
+## 2026-06-17T16:08:12.976Z — Queue-empty discovery run
+
+### DU001 — CSRF coverage for mutation routes
+
+- Feature ID: security-csrf-mutation-routes
+- Agent: @S5
+- Target file: business_docs/09_crm_features/wave-16-security-hardening.md
+- Research basis: OWASP CSRF mitigation requirement for session-backed mutation endpoints
+- Score: 155
+- Gap evidence: 0/2 signatures matched
+- Plan evidence: 5 keyword hits in planning docs
+- Scan evidence: 1 keyword hits in codebase scan signals
+- Prompt: @S5 -- EXPAND: wave-16-security-hardening.md -> add CSRF coverage plan for all mutation routes, token issuance, validation points, and rollout verification
+
+## 2026-06-17T22:34:20.969Z — Queue-empty discovery run
+
+### DU001 — CSRF coverage for mutation routes
+
+- Feature ID: security-csrf-mutation-routes
+- Agent: @S5
+- Target file: business_docs/09_crm_features/wave-16-security-hardening.md
+- Research basis: OWASP CSRF mitigation requirement for session-backed mutation endpoints
+- Score: 155
+- Gap evidence: 0/2 signatures matched
+- Plan evidence: 5 keyword hits in planning docs
+- Scan evidence: 1 keyword hits in codebase scan signals
+- Prompt: @S5 -- EXPAND: wave-16-security-hardening.md -> add CSRF coverage plan for all mutation routes, token issuance, validation points, and rollout verification
+
+## 2026-06-17T22:34:26.892Z — Queue-empty discovery run
+
+### DU001 — CSRF coverage for mutation routes
+
+- Feature ID: security-csrf-mutation-routes
+- Agent: @S5
+- Target file: business_docs/09_crm_features/wave-16-security-hardening.md
+- Research basis: OWASP CSRF mitigation requirement for session-backed mutation endpoints
+- Score: 155
+- Gap evidence: 0/2 signatures matched
+- Plan evidence: 5 keyword hits in planning docs
+- Scan evidence: 1 keyword hits in codebase scan signals
+- Prompt: @S5 -- EXPAND: wave-16-security-hardening.md -> add CSRF coverage plan for all mutation routes, token issuance, validation points, and rollout verification
+
+## 2026-06-17T22:40:46.330Z — Queue-empty discovery run
+
+### DU001 — CSRF coverage for mutation routes
+
+- Feature ID: security-csrf-mutation-routes
+- Agent: @S5
+- Target file: business_docs/09_crm_features/wave-16-security-hardening.md
+- Research basis: OWASP CSRF mitigation requirement for session-backed mutation endpoints
+- Score: 155
+- Gap evidence: 0/2 signatures matched
+- Plan evidence: 5 keyword hits in planning docs
+- Scan evidence: 1 keyword hits in codebase scan signals
+- Prompt: @S5 -- EXPAND: wave-16-security-hardening.md -> add CSRF coverage plan for all mutation routes, token issuance, validation points, and rollout verification
+
+## 2026-06-17T23:31:01.340Z — Queue-empty discovery run
+
+### DU001 — CSRF coverage for mutation routes
+
+- Feature ID: security-csrf-mutation-routes
+- Agent: @S5
+- Target file: business_docs/09_crm_features/wave-16-security-hardening.md
+- Research basis: OWASP CSRF mitigation requirement for session-backed mutation endpoints
+- Score: 155
+- Gap evidence: 0/2 signatures matched
+- Plan evidence: 5 keyword hits in planning docs
+- Scan evidence: 1 keyword hits in codebase scan signals
+- Prompt: @S5 -- EXPAND: wave-16-security-hardening.md -> add CSRF coverage plan for all mutation routes, token issuance, validation points, and rollout verification
+
+## 2026-06-17T23:32:43.978Z — Queue-empty discovery run
+
+### DU001 — CSRF coverage for mutation routes
+
+- Feature ID: security-csrf-mutation-routes
+- Agent: @S5
+- Target file: business_docs/09_crm_features/wave-16-security-hardening.md
+- Research basis: OWASP CSRF mitigation requirement for session-backed mutation endpoints
+- Score: 155
+- Gap evidence: 0/2 signatures matched
+- Plan evidence: 5 keyword hits in planning docs
+- Scan evidence: 1 keyword hits in codebase scan signals
+- Prompt: @S5 -- EXPAND: wave-16-security-hardening.md -> add CSRF coverage plan for all mutation routes, token issuance, validation points, and rollout verification
+
+## 2026-06-17T23:34:47.113Z — Queue-empty discovery run
+
+### DU001 — CSRF coverage for mutation routes
+
+- Feature ID: security-csrf-mutation-routes
+- Agent: @S5
+- Target file: business_docs/09_crm_features/wave-16-security-hardening.md
+- Research basis: OWASP CSRF mitigation requirement for session-backed mutation endpoints
+- Score: 155
+- Gap evidence: 0/2 signatures matched
+- Plan evidence: 5 keyword hits in planning docs
+- Scan evidence: 1 keyword hits in codebase scan signals
+- Prompt: @S5 -- EXPAND: wave-16-security-hardening.md -> add CSRF coverage plan for all mutation routes, token issuance, validation points, and rollout verification
+
+## 2026-06-17T23:41:44.921Z — Queue-empty discovery run
+
+### DU001 — CSRF coverage for mutation routes
+
+- Feature ID: security-csrf-mutation-routes
+- Agent: @S5
+- Target file: business_docs/09_crm_features/wave-16-security-hardening.md
+- Research basis: OWASP CSRF mitigation requirement for session-backed mutation endpoints
+- Score: 155
+- Gap evidence: 0/2 signatures matched
+- Plan evidence: 5 keyword hits in planning docs
+- Scan evidence: 1 keyword hits in codebase scan signals
+- Prompt: @S5 -- EXPAND: wave-16-security-hardening.md -> add CSRF coverage plan for all mutation routes, token issuance, validation points, and rollout verification

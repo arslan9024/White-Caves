@@ -1,0 +1,6 @@
+﻿
+> white-caves-real-estate@1.0.0 orchestrator:progress:intel:brief
+> powershell -ExecutionPolicy Bypass -File scripts/orchestrator/progress-intelligence.ps1 -Brief
+
+[PROGRESS-INTEL] completion=0% | +30% target ETA=unknown | bands=n/a | velocity=0 tasks/day | topLane=A:0% | drift=stable(streak=1) | quality pass=100%
+

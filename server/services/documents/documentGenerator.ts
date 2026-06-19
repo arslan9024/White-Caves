@@ -1,4 +1,3 @@
-// @ts-nocheck
 /**
  * Document Generator — Renders Handlebars templates into documents
  *
@@ -19,8 +18,8 @@ const db = prisma as any;
 // ─── Types ──────────────────────────────────────────────────────────────
 
 export interface GenerateDocumentInput {
-  type: string;                         // mou, form_f, noc, commission_invoice, viewing_report, offer_letter
-  variables: Record<string, string>;    // template variables
+  type: string; // mou, form_f, noc, commission_invoice, viewing_report, offer_letter
+  variables: Record<string, string>; // template variables
   transactionId?: string;
   leadId?: string;
   propertyId?: string;
@@ -60,16 +59,14 @@ Handlebars.registerHelper('lowercase', (str: string) => (str || '').toLowerCase(
  * 4. Stores in Document model (with version tracking)
  * 5. Logs activity
  */
-export async function generateDocument(
-  input: GenerateDocumentInput,
-): Promise<GeneratedDocument> {
+export async function generateDocument(input: GenerateDocumentInput): Promise<GeneratedDocument> {
   const { type, variables, transactionId, leadId, propertyId, commissionId, generatedById } = input;
 
   // 1. Validate template type
   const templateSource = DOCUMENT_TEMPLATES[type];
   if (!templateSource) {
     throw new Error(
-      `Unknown document type: "${type}". Valid types: ${Object.keys(DOCUMENT_TEMPLATES).join(', ')}`,
+      `Unknown document type: "${type}". Valid types: ${Object.keys(DOCUMENT_TEMPLATES).join(', ')}`
     );
   }
 
@@ -78,7 +75,9 @@ export async function generateDocument(
   const enrichedVars: Record<string, string> = {
     ...variables,
     generatedAt: now.toLocaleDateString('en-GB', {
-      day: '2-digit', month: 'long', year: 'numeric',
+      day: '2-digit',
+      month: 'long',
+      year: 'numeric',
     }),
     date: variables.date || now.toLocaleDateString('en-GB'),
     referenceNumber: variables.referenceNumber || generateRefNumber(type),
@@ -205,16 +204,24 @@ export async function listDocuments(filters?: {
       skip: (page - 1) * pageSize,
       take: pageSize,
       select: {
-        id: true, type: true, title: true, version: true, status: true,
+        id: true,
+        type: true,
+        title: true,
+        version: true,
+        status: true,
         htmlContent: false, // don't send full HTML in list
-        metadata: true, createdAt: true, updatedAt: true,
-        transactionId: true, leadId: true, propertyId: true,
+        metadata: true,
+        createdAt: true,
+        updatedAt: true,
+        transactionId: true,
+        leadId: true,
+        propertyId: true,
       },
     }),
   ]);
 
   return {
-    data: documents.map((d) => ({
+    data: documents.map((d: any) => ({
       id: d.id,
       type: d.type,
       title: d.title,
@@ -232,7 +239,7 @@ export async function listDocuments(filters?: {
 
 export async function updateDocumentStatus(
   documentId: string,
-  status: 'draft' | 'final' | 'signed' | 'archived',
+  status: 'draft' | 'final' | 'signed' | 'archived'
 ): Promise<void> {
   const doc = await db.document.findUnique({ where: { id: documentId } });
   if (!doc) throw new Error(`Document not found: ${documentId}`);

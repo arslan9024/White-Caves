@@ -23,19 +23,35 @@ const mockSignInWithGoogle = vi.fn();
 const mockSignInWithFacebook = vi.fn();
 const mockSignInWithApple = vi.fn();
 const mockSignOut = vi.fn();
-const { mockFirebaseAuthConfigured, mockFirebaseAuthUnavailableReason } = vi.hoisted(() => ({
-  mockFirebaseAuthConfigured: { value: true },
-  mockFirebaseAuthUnavailableReason: { value: '' },
-}));
+const { mockFirebaseAuthConfigured, mockFirebaseAuthUnavailableReason, mockFirebaseAuthState } =
+  vi.hoisted(() => ({
+    mockFirebaseAuthConfigured: { value: true },
+    mockFirebaseAuthUnavailableReason: { value: '' },
+    mockFirebaseAuthState: { value: { currentUser: null as unknown } },
+  }));
 
 vi.mock('../../config/firebase', () => ({
+  get auth() {
+    return mockFirebaseAuthState.value;
+  },
   get isFirebaseAuthConfigured() {
     return mockFirebaseAuthConfigured.value;
   },
   get firebaseAuthUnavailableReason() {
     return mockFirebaseAuthUnavailableReason.value;
   },
-  signInWithGoogle: (...args: unknown[]) => mockSignInWithGoogle(...args),
+  signInWithGoogle: (...args: unknown[]) =>
+    Promise.resolve(mockSignInWithGoogle(...args)).then(result => {
+      if (
+        typeof result === 'object' &&
+        result !== null &&
+        'user' in result &&
+        (result as { user?: unknown }).user
+      ) {
+        mockFirebaseAuthState.value.currentUser = (result as { user: unknown }).user;
+      }
+      return result;
+    }),
   signInWithFacebook: (...args: unknown[]) => mockSignInWithFacebook(...args),
   signInWithApple: (...args: unknown[]) => mockSignInWithApple(...args),
   signOut: (...args: unknown[]) => mockSignOut(...args),
@@ -46,10 +62,16 @@ vi.mock('../../config/firebase', () => ({
 const mockBackendLogin = vi.fn();
 const mockBackendRegister = vi.fn();
 const mockSyncFirebaseUser = vi.fn();
+const mockRequestPasswordReset = vi.fn();
+const mockVerifyPasswordResetToken = vi.fn();
+const mockResetPasswordWithToken = vi.fn();
 vi.mock('../../services/authService', () => ({
   loginWithEmail: (...args: unknown[]) => mockBackendLogin(...args),
   registerWithEmail: (...args: unknown[]) => mockBackendRegister(...args),
   syncFirebaseUser: (...args: unknown[]) => mockSyncFirebaseUser(...args),
+  requestPasswordReset: (...args: unknown[]) => mockRequestPasswordReset(...args),
+  verifyPasswordResetToken: (...args: unknown[]) => mockVerifyPasswordResetToken(...args),
+  resetPasswordWithToken: (...args: unknown[]) => mockResetPasswordWithToken(...args),
 }));
 
 vi.mock('../../features/auth/components/BiometricLogin', () => ({
@@ -109,8 +131,19 @@ const renderPage = () => {
 describe('SignInPage', () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    mockSignInWithGoogle.mockReset();
+    mockSignInWithFacebook.mockReset();
+    mockSignInWithApple.mockReset();
+    mockSignOut.mockReset();
+    mockBackendLogin.mockReset();
+    mockBackendRegister.mockReset();
+    mockSyncFirebaseUser.mockReset();
+    mockRequestPasswordReset.mockReset();
+    mockVerifyPasswordResetToken.mockReset();
+    mockResetPasswordWithToken.mockReset();
     mockFirebaseAuthConfigured.value = true;
     mockFirebaseAuthUnavailableReason.value = '';
+    mockFirebaseAuthState.value.currentUser = null;
     vi.useFakeTimers({ shouldAdvanceTime: true });
   });
 
@@ -153,7 +186,9 @@ describe('SignInPage', () => {
       renderPage();
       expect(screen.getByRole('button', { name: /Google/i })).toBeDisabled();
       expect(
-        screen.getByText(/Google sign-in is temporarily unavailable because Firebase authentication/)
+        screen.getByText(
+          /Google sign-in is temporarily unavailable because Firebase authentication/
+        )
       ).toBeInTheDocument();
     });
 
@@ -165,7 +200,9 @@ describe('SignInPage', () => {
       renderPage();
 
       expect(
-        screen.getByText(/Missing environment variables: VITE_FIREBASE_API_KEY, VITE_FIREBASE_AUTH_DOMAIN/i)
+        screen.getByText(
+          /Missing environment variables: VITE_FIREBASE_API_KEY, VITE_FIREBASE_AUTH_DOMAIN/i
+        )
       ).toBeInTheDocument();
     });
 
@@ -520,7 +557,7 @@ describe('SignInPage', () => {
       });
 
       await waitFor(() => {
-        expect(mockNavigate).toHaveBeenCalledWith('/profile');
+        expect(mockNavigate).toHaveBeenCalledWith('/crm');
       });
     });
 

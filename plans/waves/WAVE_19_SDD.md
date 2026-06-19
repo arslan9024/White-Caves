@@ -2,8 +2,8 @@
 
 **Wave:** 19  
 **Focus:** Identity & Access v2 + CRM Entry Routing + MD Workspace Split + Executive UX Discoverability  
-**Status:** 📋 Planned  
-**Date:** 2026-05-26  
+**Status:** ✅ Complete (implemented + validated)  
+**Date:** 2026-06-17  
 **Owners:** @Ada + @Mira + @Una + @Katherine + @Radia
 
 ---
@@ -83,12 +83,49 @@ Design and implement a world-class authentication-to-dashboard journey with expl
 ## Deliverables
 
 1. Wave 19 planning bundle (SDD, readiness packet, implementation backlog, test rollout)
-2. Canonical planning updates in:
+2. Dashboard execution contract:
+   - `plans/waves/WAVE_19_DASHBOARD_API_CONTRACT.md`
+   - endpoint envelopes, freshness rules, and export reliability thresholds
+3. Identity & Access v2 execution contract:
+   - `plans/waves/WAVE_19_IDENTITY_ACCESS_V2_CONTRACT.md`
+   - unified auth entrypoints, state model, route-resolution and lockout behavior
+4. Canonical planning updates in:
    - `plans/MASTER_PLAN.md`
    - `plans/PENDING_TASKS_ONLY.md`
    - `plans/waves/README.md`
-3. Requirement-traceable task breakdown for implementation execution
-4. Validation gate matrix covering auth, routing, IA split, and UX states
+5. Requirement-traceable task breakdown for implementation execution
+6. Validation gate matrix covering auth, routing, IA split, and UX states
+
+---
+
+## Dashboard Planning Upgrade Addendum (2026-06-17)
+
+### A) Execution sequencing guard
+
+Wave 19 dashboard implementation must execute in this order:
+
+1. close open Wave 18.1 dashboard depth dependency (`W18.1-P1-003`)
+2. freeze dashboard API contracts (Wave 19 contract doc)
+3. implement dashboard UX discoverability/state parity changes
+4. run traceability-aligned tests and rollout checks
+
+### B) Dashboard state-system requirements
+
+For both MD workspaces, each major panel must include:
+
+1. loading state
+2. success state
+3. empty/no-data state
+4. retryable error state
+5. degraded-data state with safe fallback messaging
+
+### C) KPI threshold gates (Wave 19 dashboard)
+
+1. Dashboard load p95 <= 2200ms
+2. Dashboard API p95 <= 700ms (summary/funnel/KPI)
+3. Export completion success >= 98% (rolling 7 days)
+4. Freshness SLA >= 95% responses with freshness <= 300s
+5. WCAG critical violations = 0 on in-scope dashboard surfaces
 
 ---
 
@@ -100,3 +137,5 @@ Wave 19 planning is complete when:
 2. canonical roadmap and queue include Wave 19 in order
 3. test rollout defines pass/fail gates for auth, profile gate, routing, workspace split, and UX states
 4. `npm run plans:validate` passes
+5. dashboard API contract is published with envelope + error + freshness rules
+6. dashboard rollout and rollback triggers are documented with metric thresholds

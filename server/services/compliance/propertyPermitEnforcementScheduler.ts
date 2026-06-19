@@ -1,4 +1,3 @@
-// @ts-nocheck
 import { prisma } from '../../database.js';
 import logger from '../../utils/logger.js';
 
@@ -68,11 +67,11 @@ export async function enforcePropertyPermitCompliance(
   if (dryRun) {
     logger.info('Property permit enforcement dry-run complete', {
       scanned: summary.scanned,
-      ids: nonCompliantListings.map(p => p.id),
+      ids: nonCompliantListings.map((p: any) => p.id),
     });
     return {
       ...summary,
-      affectedPropertyIds: nonCompliantListings.map(p => p.id),
+      affectedPropertyIds: nonCompliantListings.map((p: any) => p.id),
     };
   }
 

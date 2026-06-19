@@ -128,6 +128,12 @@ function Invoke-AutoResolveEvidenceIfNeeded {
   $candidate = Get-NextEvidencePendingTask
   if ($null -eq $candidate) { return $false }
 
+  # Safety rail: never auto-resolve implementation work from worker lanes.
+  if ([string]$candidate.phase -eq "implementation") {
+    Write-Log ("Auto-resolve skipped for implementation task {0} ({1})." -f $candidate.taskId, $candidate.agent)
+    return $false
+  }
+
   Write-Log ("Auto-resolving review-state task {0} ({1}) status={2}" -f $candidate.taskId, $candidate.agent, $candidate.status)
 
   $ackByDirect = [string]$candidate.feedsAckBy

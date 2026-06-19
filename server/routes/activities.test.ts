@@ -110,6 +110,20 @@ describe('Activities Routes — /api/activities', () => {
 
   // ── GET / ────────────────────────────────────────────────────────
   describe('GET /api/activities', () => {
+    it('returns 403 for agent role', async () => {
+      const res = await request(createApp('agent')).get('/api/activities');
+
+      expect(res.status).toBe(403);
+      expect(res.body.error).toMatch(/manager or above/i);
+    });
+
+    it('returns 403 for landlord role', async () => {
+      const res = await request(createApp('landlord')).get('/api/activities');
+
+      expect(res.status).toBe(403);
+      expect(res.body.error).toMatch(/manager or above/i);
+    });
+
     it('returns a paginated list of activities', async () => {
       const res = await request(createApp()).get('/api/activities');
 
@@ -203,6 +217,13 @@ describe('Activities Routes — /api/activities', () => {
 
   // ── GET /:id ─────────────────────────────────────────────────────
   describe('GET /api/activities/:id', () => {
+    it('returns 403 for agent role', async () => {
+      const res = await request(createApp('agent')).get(`/api/activities/${VALID_ID}`);
+
+      expect(res.status).toBe(403);
+      expect(res.body.error).toMatch(/manager or above/i);
+    });
+
     it('returns a single activity by valid id', async () => {
       const res = await request(createApp()).get(`/api/activities/${VALID_ID}`);
 
@@ -286,6 +307,19 @@ describe('Activities Routes — /api/activities', () => {
     });
 
     it('triggers lead auto-rescore when leadId is present', async () => {
+      mockPrisma.activity.create.mockResolvedValueOnce({
+        id: 'act-aabbccddee11223344556677',
+        type: 'lead',
+        action: 'created',
+        description: 'Lead was created',
+        metadata: null,
+        createdAt: new Date('2026-01-15T10:00:00Z'),
+        userId: 'user-1',
+        leadId: 'lead-99',
+        user: { id: 'user-1', name: 'Agent Smith', email: 'agent@whitecaves.ae' },
+        lead: null,
+      });
+
       await request(createApp())
         .post('/api/activities')
         .send({ type: 'lead', action: 'created', description: 'test', leadId: 'lead-99' });
@@ -332,7 +366,9 @@ describe('Activities Routes — /api/activities', () => {
     });
 
     it('triggers lead auto-rescore on patch', async () => {
-      await request(createApp()).patch(`/api/activities/${VALID_ID}`).send({ description: 'Updated' });
+      await request(createApp())
+        .patch(`/api/activities/${VALID_ID}`)
+        .send({ description: 'Updated' });
       expect(triggerLeadRescore).toHaveBeenCalledWith(expect.anything(), 'activity_updated');
     });
   });
@@ -372,5 +408,52 @@ describe('Activities Routes — /api/activities', () => {
       await request(createApp('owner')).delete(`/api/activities/${VALID_ID}`);
       expect(triggerLeadRescore).toHaveBeenCalledWith(expect.anything(), 'activity_deleted');
     });
+  });
+});
+
+// ─────────────────────────────────────────────────────────────────────────────
+// W20-001 — Audit Export RBAC Security Tests
+// Verifies the ROLE_PERMISSIONS contract: only manager+ roles can access audit
+// exports. Uses vi.importActual to bypass the module mock above.
+// ─────────────────────────────────────────────────────────────────────────────
+
+describe('W20-001 — Audit Export RBAC — ROLE_PERMISSIONS contract', () => {
+  let ROLE_PERMISSIONS: Record<string, string[]>;
+
+  beforeAll(async () => {
+    const actual = await vi.importActual<typeof import('../middleware/rbac')>('../middleware/rbac');
+    ROLE_PERMISSIONS = actual.ROLE_PERMISSIONS;
+  });
+
+  it('buyer does not have view_audit_logs permission', () => {
+    expect(ROLE_PERMISSIONS['buyer'] ?? []).not.toContain('view_audit_logs');
+  });
+
+  it('tenant does not have view_audit_logs permission', () => {
+    expect(ROLE_PERMISSIONS['tenant'] ?? []).not.toContain('view_audit_logs');
+  });
+
+  it('seller does not have view_audit_logs permission', () => {
+    expect(ROLE_PERMISSIONS['seller'] ?? []).not.toContain('view_audit_logs');
+  });
+
+  it('landlord does not have view_audit_logs permission', () => {
+    expect(ROLE_PERMISSIONS['landlord'] ?? []).not.toContain('view_audit_logs');
+  });
+
+  it('agent does not have view_audit_logs permission', () => {
+    expect(ROLE_PERMISSIONS['agent'] ?? []).not.toContain('view_audit_logs');
+  });
+
+  it('manager has view_audit_logs permission', () => {
+    expect(ROLE_PERMISSIONS['manager']).toContain('view_audit_logs');
+  });
+
+  it('admin has view_audit_logs permission', () => {
+    expect(ROLE_PERMISSIONS['admin']).toContain('view_audit_logs');
+  });
+
+  it('owner has view_audit_logs permission', () => {
+    expect(ROLE_PERMISSIONS['owner']).toContain('view_audit_logs');
   });
 });

@@ -1,4 +1,3 @@
-// @ts-nocheck
 /**
  * Landlord Portal API Routes
  * ──────────────────────────
@@ -28,23 +27,24 @@ router.get(
     if (!userId) throw new AppError('Authentication required', 401);
 
     // All properties owned by this landlord
-    const [properties, activeLeasesCount, maintenanceOpen, maintenanceEmergency] = await Promise.all([
-      prisma.property.count({ where: { userId } }),
-      prisma.lease.count({ where: { landlordId: userId, status: 'active' } }),
-      prisma.maintenance.count({
-        where: {
-          property: { userId },
-          status: { in: ['open', 'in_progress'] },
-        },
-      }),
-      prisma.maintenance.count({
-        where: {
-          property: { userId },
-          priority: 'emergency',
-          status: { notIn: ['completed', 'cancelled'] },
-        },
-      }),
-    ]);
+    const [properties, activeLeasesCount, maintenanceOpen, maintenanceEmergency] =
+      await Promise.all([
+        prisma.property.count({ where: { userId } }),
+        prisma.lease.count({ where: { landlordId: userId, status: 'active' } }),
+        prisma.maintenance.count({
+          where: {
+            property: { userId },
+            status: { in: ['open', 'in_progress'] },
+          },
+        }),
+        prisma.maintenance.count({
+          where: {
+            property: { userId },
+            priority: 'emergency',
+            status: { notIn: ['completed', 'cancelled'] },
+          },
+        }),
+      ]);
 
     // Monthly income from active leases
     const activeLeases = await prisma.lease.findMany({
@@ -147,7 +147,8 @@ router.post(
     } = req.body;
 
     if (!title || typeof title !== 'string') throw new AppError('title is required', 400);
-    if (!price || typeof price !== 'number' || price <= 0) throw new AppError('price must be a positive number', 400);
+    if (!price || typeof price !== 'number' || price <= 0)
+      throw new AppError('price must be a positive number', 400);
     if (!location || typeof location !== 'string') throw new AppError('location is required', 400);
 
     const property = await prisma.property.create({
@@ -223,7 +224,9 @@ router.patch(
     const updated = await prisma.maintenance.update({
       where: { id },
       data: {
-        ...(status ? { status, ...(status === 'completed' ? { completedAt: new Date() } : {}) } : {}),
+        ...(status
+          ? { status, ...(status === 'completed' ? { completedAt: new Date() } : {}) }
+          : {}),
         ...(notes ? { notes: String(notes).slice(0, 2000) } : {}),
         ...(scheduledDate ? { scheduledDate: new Date(scheduledDate) } : {}),
         ...(cost !== undefined ? { cost: Number(cost) } : {}),

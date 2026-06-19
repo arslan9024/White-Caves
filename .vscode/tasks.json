@@ -1,1035 +1,1454 @@
 {
-	"version": "2.0.0",
-	"tasks": [
-		{
-			"label": "start-dev-server",
-			"type": "shell",
-			"command": "cmd.exe",
-			"args": [
-				"/c",
-				"npm.cmd run dev"
-			],
-			"isBackground": true
-		},
-		{
-			"label": "start-dev-server-nodepath",
-			"type": "shell",
-			"command": "C:\\Users\\Murad Ali\\AppData\\Local\\Microsoft\\WinGet\\Packages\\OpenJS.NodeJS.LTS_Microsoft.Winget.Source_8wekyb3d8bbwe\\node-v24.16.0-win-x64\\npm.cmd",
-			"args": [
-				"run",
-				"dev"
-			],
-			"isBackground": true
-		},
-		{
-			"label": "find-npm-location",
-			"type": "shell",
-			"command": "where.exe",
-			"args": [
-				"npm"
-			]
-		},
-		{
-			"label": "find-node-location",
-			"type": "shell",
-			"command": "where.exe",
-			"args": [
-				"node"
-			]
-		},
-		{
-			"label": "probe-winget-node-paths",
-			"type": "shell",
-			"command": "powershell",
-			"args": [
-				"-NoProfile",
-				"-Command",
-				"$candidates=@('C:\\Users\\Murad Ali\\AppData\\Local\\Microsoft\\WinGet\\Links\\npm.cmd','C:\\Users\\Murad Ali\\AppData\\Local\\Microsoft\\WinGet\\Links\\node.exe','C:\\Program Files\\nodejs\\npm.cmd','C:\\Program Files\\nodejs\\node.exe'); $candidates | ForEach-Object { \"$_ => \" + (Test-Path $_) }"
-			]
-		},
-		{
-			"label": "probe-winget-node-paths-cmd",
-			"type": "shell",
-			"command": "cmd.exe",
-			"args": [
-				"/c",
-				"if exist \"C:\\Users\\Murad Ali\\AppData\\Local\\Microsoft\\WinGet\\Links\\npm.cmd\" (echo WINGET_NPM=YES) else (echo WINGET_NPM=NO) & if exist \"C:\\Users\\Murad Ali\\AppData\\Local\\Microsoft\\WinGet\\Links\\node.exe\" (echo WINGET_NODE=YES) else (echo WINGET_NODE=NO) & if exist \"C:\\Program Files\\nodejs\\npm.cmd\" (echo PF_NPM=YES) else (echo PF_NPM=NO) & if exist \"C:\\Program Files\\nodejs\\node.exe\" (echo PF_NODE=YES) else (echo PF_NODE=NO)"
-			]
-		},
-		{
-			"label": "probe-node-one",
-			"type": "shell",
-			"command": "powershell.exe",
-			"args": [
-				"-NoProfile",
-				"-Command",
-				"Test-Path 'C:\\Users\\Murad Ali\\AppData\\Local\\Microsoft\\WinGet\\Links\\npm.cmd'; Test-Path 'C:\\Users\\Murad Ali\\AppData\\Local\\Microsoft\\WinGet\\Links\\node.exe'; Test-Path 'C:\\Program Files\\nodejs\\npm.cmd'; Test-Path 'C:\\Program Files\\nodejs\\node.exe'"
-			]
-		},
-		{
-			"label": "probe-node-env",
-			"type": "shell",
-			"command": "powershell.exe",
-			"args": [
-				"-NoProfile",
-				"-Command",
-				"$p1=Join-Path $env:LOCALAPPDATA \"Microsoft\\WinGet\\Links\\npm.cmd\"; $p2=Join-Path $env:LOCALAPPDATA \"Microsoft\\WinGet\\Links\\node.exe\"; Write-Output $p1; Test-Path $p1; Write-Output $p2; Test-Path $p2"
-			]
-		},
-		{
-			"label": "probe-node-programfiles",
-			"type": "shell",
-			"command": "powershell.exe",
-			"args": [
-				"-NoProfile",
-				"-Command",
-				"$p1=Join-Path $env:ProgramFiles \"nodejs\\npm.cmd\"; $p2=Join-Path $env:ProgramFiles \"nodejs\\node.exe\"; Write-Output $p1; Test-Path $p1; Write-Output $p2; Test-Path $p2"
-			]
-		},
-		{
-			"label": "find-node-in-userprofile",
-			"type": "shell",
-			"command": "powershell.exe",
-			"args": [
-				"-NoProfile",
-				"-Command",
-				"$root=$env:USERPROFILE; Get-ChildItem -Path $root -Filter node.exe -Recurse -ErrorAction SilentlyContinue | Select-Object -First 20 -ExpandProperty FullName"
-			]
-		},
-		{
-			"label": "check-autopilot-process",
-			"type": "shell",
-			"command": "powershell.exe",
-			"options": {
-				"shell": {
-					"executable": "cmd.exe",
-					"args": [
-						"/d",
-						"/c"
-					]
-				}
-			},
-			"args": [
-				"-NoProfile",
-				"-Command",
-				"Get-CimInstance Win32_Process | Where-Object { $_.Name -match 'powershell' -and ($_.CommandLine -match 'autopilot-daemon.ps1' -or $_.CommandLine -match 'agent-loop.ps1') } | Select-Object ProcessId,Name,CommandLine | Format-Table -AutoSize"
-			]
-		},
-		{
-			"label": "detect-package-managers",
-			"type": "shell",
-			"command": "cmd.exe",
-			"args": [
-				"/c",
-				"where winget & where choco & where scoop"
-			]
-		},
-		{
-			"label": "install-node-lts-winget",
-			"type": "shell",
-			"command": "winget",
-			"args": [
-				"install",
-				"--id",
-				"OpenJS.NodeJS.LTS",
-				"-e",
-				"--scope",
-				"user",
-				"--accept-source-agreements",
-				"--accept-package-agreements"
-			]
-		},
-		{
-			"label": "locate-node-paths",
-			"type": "shell",
-			"command": "cmd.exe",
-			"args": [
-				"/c",
-				"dir /s /b \"%LOCALAPPDATA%\\Programs\\nodejs\\node.exe\" 2>nul & dir /s /b \"%ProgramFiles%\\nodejs\\node.exe\" 2>nul & dir /s /b \"%LOCALAPPDATA%\\Microsoft\\WinGet\\Packages\\OpenJS.NodeJS.LTS_*\\*\\node.exe\" 2>nul"
-			]
-		},
-		{
-			"label": "winget-list-node",
-			"type": "shell",
-			"command": "winget",
-			"args": [
-				"list",
-				"--id",
-				"OpenJS.NodeJS.LTS"
-			]
-		},
-		{
-			"label": "find-node-registry-location",
-			"type": "shell",
-			"command": "powershell.exe",
-			"args": [
-				"-NoProfile",
-				"-Command",
-				"$paths=@('HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*','HKLM:\\Software\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*','HKLM:\\Software\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*'); Get-ItemProperty $paths -ErrorAction SilentlyContinue | Where-Object { $_.DisplayName -match 'Node.js' } | Select-Object DisplayName,DisplayVersion,InstallLocation,UninstallString,DisplayIcon | Format-List"
-			]
-		},
-		{
-			"label": "reg-query-node",
-			"type": "shell",
-			"command": "cmd.exe",
-			"args": [
-				"/c",
-				"reg query \"HKCU\\Software\\Microsoft\\Windows\\CurrentVersion\\Uninstall\" /s /f \"Node.js\" & reg query \"HKLM\\Software\\Microsoft\\Windows\\CurrentVersion\\Uninstall\" /s /f \"Node.js\" & reg query \"HKLM\\Software\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\" /s /f \"Node.js\""
-			]
-		},
-		{
-			"label": "reg-query-node-key-values",
-			"type": "shell",
-			"command": "cmd.exe",
-			"args": [
-				"/c",
-				"reg query \"HKCU\\Software\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\OpenJS.NodeJS.LTS_Microsoft.Winget.Source_8wekyb3d8bbwe\""
-			]
-		},
-		{
-			"label": "list-node-install-dir",
-			"type": "shell",
-			"command": "cmd.exe",
-			"args": [
-				"/c",
-				"dir /b \"C:\\Users\\Murad Ali\\AppData\\Local\\Microsoft\\WinGet\\Packages\\OpenJS.NodeJS.LTS_Microsoft.Winget.Source_8wekyb3d8bbwe\""
-			]
-		},
-		{
-			"label": "list-winget-packages-dir",
-			"type": "shell",
-			"command": "cmd.exe",
-			"args": [
-				"/c",
-				"dir /b \"C:\\Users\\Murad Ali\\AppData\\Local\\Microsoft\\WinGet\\Packages\""
-			]
-		},
-		{
-			"label": "echo-localappdata-and-winget-dir",
-			"type": "shell",
-			"command": "cmd.exe",
-			"args": [
-				"/c",
-				"echo LOCALAPPDATA=%LOCALAPPDATA% & dir /b \"%LOCALAPPDATA%\\Microsoft\" & dir /b \"%LOCALAPPDATA%\\Microsoft\\WinGet\""
-			]
-		},
-		{
-			"label": "check-windowsapps-node-alias",
-			"type": "shell",
-			"command": "cmd.exe",
-			"args": [
-				"/c",
-				"if exist \"%LOCALAPPDATA%\\Microsoft\\WindowsApps\\node.exe\" (echo NODE_ALIAS=YES) else (echo NODE_ALIAS=NO) & if exist \"%LOCALAPPDATA%\\Microsoft\\WindowsApps\\npm.cmd\" (echo NPM_ALIAS=YES) else (echo NPM_ALIAS=NO)"
-			]
-		},
-		{
-			"label": "probe-windowsapps-node-env",
-			"type": "shell",
-			"command": "powershell.exe",
-			"args": [
-				"-NoProfile",
-				"-Command",
-				"$p1=Join-Path $env:LOCALAPPDATA \"Microsoft\\WindowsApps\\node.exe\"; $p2=Join-Path $env:LOCALAPPDATA \"Microsoft\\WindowsApps\\npm.cmd\"; Write-Output $p1; Test-Path $p1; Write-Output $p2; Test-Path $p2"
-			]
-		},
-		{
-			"label": "install-node-lts-choco",
-			"type": "shell",
-			"command": "choco",
-			"args": [
-				"install",
-				"nodejs-lts",
-				"-y",
-				"--no-progress"
-			]
-		},
-		{
-			"label": "test-node-installlocation-from-registry",
-			"type": "shell",
-			"command": "powershell.exe",
-			"args": [
-				"-NoProfile",
-				"-Command",
-				"$k=\"HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\OpenJS.NodeJS.LTS_Microsoft.Winget.Source_8wekyb3d8bbwe\"; $loc=(Get-ItemProperty -Path $k -ErrorAction SilentlyContinue).InstallLocation; Write-Output $loc; if($loc){ Test-Path $loc; Get-ChildItem -Path $loc -Recurse -Filter node.exe -ErrorAction SilentlyContinue | Select-Object -First 5 -ExpandProperty FullName; Get-ChildItem -Path $loc -Recurse -Filter npm.cmd -ErrorAction SilentlyContinue | Select-Object -First 5 -ExpandProperty FullName }"
-			]
-		},
-		{
-			"label": "test-node-installlocation-via-cmd-powershell",
-			"type": "shell",
-			"command": "cmd.exe",
-			"args": [
-				"/c",
-				"powershell -NoProfile -Command \"$k='HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\OpenJS.NodeJS.LTS_Microsoft.Winget.Source_8wekyb3d8bbwe'; $loc=(Get-ItemProperty -Path $k -ErrorAction SilentlyContinue).InstallLocation; Write-Output $loc; if($loc){ Test-Path $loc; Get-ChildItem -Path $loc -Recurse -Filter node.exe -ErrorAction SilentlyContinue | Select-Object -First 5 -ExpandProperty FullName; Get-ChildItem -Path $loc -Recurse -Filter npm.cmd -ErrorAction SilentlyContinue | Select-Object -First 5 -ExpandProperty FullName }\""
-			]
-		},
-		{
-			"label": "detect-package-managers",
-			"type": "shell",
-			"command": "powershell.exe",
-			"args": [
-				"-NoProfile",
-				"-Command",
-				"$w=Get-Command winget -ErrorAction SilentlyContinue; $c=Get-Command choco -ErrorAction SilentlyContinue; $s=Get-Command scoop -ErrorAction SilentlyContinue; Write-Host ('winget=' + [bool]$w); Write-Host ('choco=' + [bool]$c); Write-Host ('scoop=' + [bool]$s)"
-			]
-		},
-		{
-			"label": "orchestrator-project-scan-autofix",
-			"type": "shell",
-			"command": "powershell.exe",
-			"args": [
-				"-NoProfile",
-				"-ExecutionPolicy",
-				"Bypass",
-				"-File",
-				"scripts/orchestrator/project-problem-scan.ps1",
-				"-WorkspaceRoot",
-				".",
-				"-AutoFix"
-			]
-		},
-		{
-			"label": "run-project-problem-scan-direct",
-			"type": "shell",
-			"command": "cmd.exe",
-			"args": [
-				"/c",
-				"powershell -NoProfile -ExecutionPolicy Bypass -File scripts\\orchestrator\\project-problem-scan.ps1 -WorkspaceRoot . -AutoFix -Brief"
-			]
-		},
-		{
-			"label": "run-project-problem-scan-direct",
-			"type": "shell",
-			"command": "cmd.exe",
-			"args": [
-				"/c",
-				"powershell -NoProfile -ExecutionPolicy Bypass -File scripts\\orchestrator\\project-problem-scan.ps1 -WorkspaceRoot . -AutoFix -Brief"
-			]
-		},
-		{
-			"label": "locate-node-paths",
-			"type": "shell",
-			"command": "powershell.exe",
-			"args": [
-				"-NoProfile",
-				"-Command",
-				"$roots=@($env:LOCALAPPDATA,$env:ProgramFiles,$env:ProgramFiles+' (x86)'); foreach($r in $roots){ if(Test-Path $r){ Get-ChildItem -Path $r -Recurse -Filter node.exe -ErrorAction SilentlyContinue | Select-Object -First 20 -ExpandProperty FullName } }"
-			]
-		},
-		{
-			"label": "winget-list-node",
-			"type": "shell",
-			"command": "winget",
-			"args": [
-				"list",
-				"--id",
-				"OpenJS.NodeJS.LTS"
-			]
-		},
-		{
-			"label": "find-node-registry-location",
-			"type": "shell",
-			"command": "powershell.exe",
-			"args": [
-				"-NoProfile",
-				"-Command",
-				"$paths=@('HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*','HKLM:\\Software\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*','HKLM:\\Software\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*'); Get-ItemProperty $paths -ErrorAction SilentlyContinue | Where-Object { $_.DisplayName -match 'Node.js|OpenJS.NodeJS' } | Select-Object DisplayName,DisplayVersion,InstallLocation,UninstallString,DisplayIcon | Format-List"
-			]
-		},
-		{
-			"label": "reg-query-node",
-			"type": "shell",
-			"command": "cmd.exe",
-			"args": [
-				"/c",
-				"reg query \"HKCU\\Software\\Microsoft\\Windows\\CurrentVersion\\Uninstall\" /s /f \"Node.js\" & reg query \"HKLM\\Software\\Microsoft\\Windows\\CurrentVersion\\Uninstall\" /s /f \"Node.js\" & reg query \"HKLM\\Software\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\" /s /f \"Node.js\""
-			]
-		},
-		{
-			"label": "reg-query-node-key-values",
-			"type": "shell",
-			"command": "cmd.exe",
-			"args": [
-				"/c",
-				"reg query \"HKCU\\Software\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\OpenJS.NodeJS.LTS_Microsoft.Winget.Source_8wekyb3d8bbwe\""
-			]
-		},
-		{
-			"label": "list-node-install-dir",
-			"type": "shell",
-			"command": "cmd.exe",
-			"args": [
-				"/c",
-				"dir /s /b \"C:\\Users\\Murad Ali\\AppData\\Local\\Microsoft\\WinGet\\Packages\\OpenJS.NodeJS.LTS_Microsoft.Winget.Source_8wekyb3d8bbwe\\node.exe\" & dir /s /b \"C:\\Users\\Murad Ali\\AppData\\Local\\Microsoft\\WinGet\\Packages\\OpenJS.NodeJS.LTS_Microsoft.Winget.Source_8wekyb3d8bbwe\\npm.cmd\""
-			]
-		},
-		{
-			"label": "echo-localappdata-and-winget-dir",
-			"type": "shell",
-			"command": "cmd.exe",
-			"args": [
-				"/c",
-				"echo LOCALAPPDATA=%LOCALAPPDATA% & dir /b \"%LOCALAPPDATA%\\Microsoft\" & dir /b \"%LOCALAPPDATA%\\Microsoft\\WinGet\""
-			]
-		},
-		{
-			"label": "list-localappdata-root",
-			"type": "shell",
-			"command": "cmd.exe",
-			"args": [
-				"/c",
-				"dir /b \"%LOCALAPPDATA%\""
-			]
-		},
-		{
-			"label": "install-node-lts-choco",
-			"type": "shell",
-			"command": "choco",
-			"args": [
-				"install",
-				"nodejs-lts",
-				"-y",
-				"--no-progress"
-			]
-		},
-		{
-			"label": "find-node-location",
-			"type": "shell",
-			"command": "where.exe",
-			"args": [
-				"node"
-			]
-		},
-		{
-			"label": "dev-server-health-check",
-			"type": "shell",
-			"command": "cmd.exe",
-			"args": [
-				"/c",
-				"powershell -NoProfile -Command \"try { $r = Invoke-WebRequest -Uri \\\"http://localhost:5000/\\\" -UseBasicParsing -TimeoutSec 15; Write-Host status:$($r.StatusCode); Write-Host length:$($r.Content.Length) } catch { Write-Host probe_error:$($_.Exception.Message); exit 1 }\""
-			]
-		},
-		{
-			"label": "locate-node-paths",
-			"type": "shell",
-			"command": "powershell.exe",
-			"args": [
-				"-NoProfile",
-				"-Command",
-				"$roots=@($env:LOCALAPPDATA,$env:ProgramFiles,$env:ProgramFiles+' (x86)'); foreach($r in $roots){ if(Test-Path $r){ Get-ChildItem -Path $r -Recurse -Filter node.exe -ErrorAction SilentlyContinue | Select-Object -First 20 -ExpandProperty FullName } }"
-			]
-		},
-		{
-			"label": "aegis-node-discovery-check-20260605-1",
-			"type": "shell",
-			"command": "powershell.exe",
-			"args": [
-				"-NoProfile",
-				"-Command",
-				"$node=Get-Command node -ErrorAction SilentlyContinue; if($node){'NODE_CMD='+$node.Source}else{'NODE_CMD=NONE'}; $wingetRoot=Join-Path $env:LOCALAPPDATA 'Microsoft\\WinGet\\Packages'; 'WINGET_ROOT='+$wingetRoot; 'WINGET_EXISTS=' + (Test-Path $wingetRoot); if(Test-Path $wingetRoot){ Get-ChildItem -Path $wingetRoot -Recurse -Filter node.exe -ErrorAction SilentlyContinue | Where-Object { $_.FullName -match 'OpenJS\\.NodeJS' } | Select-Object -First 5 -ExpandProperty FullName }"
-			]
-		},
-		{
-			"label": "aegis-node-discovery-check-20260605-2",
-			"type": "shell",
-			"command": "cmd.exe",
-			"args": [
-				"/c",
-				"where node & where npm & dir /s /b \"%LOCALAPPDATA%\\Microsoft\\WinGet\\Packages\\OpenJS.NodeJS.LTS_*\\*\\node.exe\""
-			]
-		},
-		{
-			"label": "aegis-problem-scan-run-20260605-1",
-			"type": "shell",
-			"command": "cmd.exe",
-			"args": [
-				"/c",
-				"powershell -NoProfile -ExecutionPolicy Bypass -File scripts\\orchestrator\\project-problem-scan.ps1 -WorkspaceRoot . -AutoFix -Brief"
-			]
-		},
-		{
-			"label": "aegis-kill-autopilot-20260605-1",
-			"type": "shell",
-			"command": "powershell.exe",
-			"args": [
-				"-NoProfile",
-				"-Command",
-				"$p=Get-CimInstance Win32_Process | Where-Object { $_.Name -like \"*powershell*\" -and (($_.CommandLine -like \"*autopilot-daemon.ps1*\") -or ($_.CommandLine -like \"*agent-loop.ps1*\")) }; if($p){ $ids=@($p|Select-Object -ExpandProperty ProcessId); Stop-Process -Id $ids -Force -ErrorAction SilentlyContinue; Write-Output (\"killed=\" + ($ids -join ',')) } else { Write-Output 'killed=none' }"
-			]
-		},
-		{
-			"label": "aegis-problem-scan-run-20260605-2",
-			"type": "shell",
-			"command": "cmd.exe",
-			"args": [
-				"/c",
-				"powershell -NoProfile -ExecutionPolicy Bypass -File scripts\\orchestrator\\project-problem-scan.ps1 -WorkspaceRoot . -AutoFix -Brief"
-			]
-		},
-		{
-			"label": "aegis-problem-scan-run-20260605-3",
-			"type": "shell",
-			"command": "cmd.exe",
-			"args": [
-				"/c",
-				"powershell -NoProfile -ExecutionPolicy Bypass -File scripts\\orchestrator\\project-problem-scan.ps1 -WorkspaceRoot . -AutoFix -Brief"
-			]
-		},
-		{
-			"label": "quality-quick-check",
-			"type": "shell",
-			"command": "npm.cmd",
-			"args": [
-				"run",
-				"quality:quick"
-			],
-			"isBackground": false
-		},
-		{
-			"label": "quality-quick-log-task",
-			"type": "shell",
-			"command": "cmd.exe",
-			"args": [
-				"/c",
-				"cd /d c:\\Users\\Murad Ali\\White-Caves & npm.cmd run quality:quick > quality-quick-latest.log 2>&1"
-			],
-			"isBackground": false
-		},
-		{
-			"label": "orchestrator-queue-health-snapshot",
-			"type": "shell",
-			"command": "powershell.exe",
-			"options": {
-				"shell": {
-					"executable": "cmd.exe",
-					"args": [
-						"/d",
-						"/c"
-					]
-				}
-			},
-			"args": [
-				"-NoProfile",
-				"-ExecutionPolicy",
-				"Bypass",
-				"-File",
-				"scripts/orchestrator/queue-health.ps1",
-				"-WorkspaceRoot",
-				".",
-				"-Brief"
-			]
-		},
-		{
-			"label": "tracker-lock-diagnose",
-			"type": "shell",
-			"command": "powershell.exe",
-			"options": {
-				"shell": {
-					"executable": "cmd.exe",
-					"args": [
-						"/d",
-						"/c"
-					]
-				}
-			},
-			"args": [
-				"-NoProfile",
-				"-ExecutionPolicy",
-				"Bypass",
-				"-Command",
-				"$f='DAILY_MILESTONE_TRACKER.md'; if(!(Test-Path $f)){ Write-Host 'TRACKER=missing'; exit 1 }; try { $tmp='logs/orchestrator/_tracker-lock-probe.tmp'; Copy-Item -Path $f -Destination $tmp -Force; Remove-Item -Path $tmp -Force -ErrorAction SilentlyContinue; Write-Host 'TRACKER_LOCK=free' } catch { Write-Host ('TRACKER_LOCK=locked :: ' + $_.Exception.Message) }"
-			]
-		},
-		{
-			"label": "tracker-commit-when-free",
-			"type": "shell",
-			"command": "powershell.exe",
-			"options": {
-				"shell": {
-					"executable": "cmd.exe",
-					"args": [
-						"/d",
-						"/c"
-					]
-				}
-			},
-			"args": [
-				"-NoProfile",
-				"-ExecutionPolicy",
-				"Bypass",
-				"-File",
-				"scripts/orchestrator/tracker-commit-when-free.ps1",
-				"-WorkspaceRoot",
-				".",
-				"-TimeoutSeconds",
-				"90",
-				"-PollIntervalSeconds",
-				"1",
-				"-Branch",
-				"recruitment-analytics-onboarding"
-			]
-		},
-		{
-			"label": "homepage-tests-after-routing-refactor",
-			"type": "shell",
-			"command": "npm.cmd",
-			"args": [
-				"run",
-				"test:run",
-				"--",
-				"src/pages/HomePage.test.tsx"
-			],
-			"isBackground": false
-		},
-		{
-			"label": "homepage-typecheck-after-route-style-fixes",
-			"type": "shell",
-			"command": "npm.cmd",
-			"args": [
-				"run",
-				"typecheck"
-			],
-			"isBackground": false
-		},
-		{
-			"label": "typecheck-after-homepage-and-unified-fixes",
-			"type": "shell",
-			"command": "npm.cmd",
-			"args": [
-				"run",
-				"typecheck"
-			],
-			"isBackground": false
-		},
-		{
-			"label": "typecheck-after-unified-adapter-fix",
-			"type": "shell",
-			"command": "npm.cmd",
-			"args": [
-				"run",
-				"typecheck"
-			],
-			"isBackground": false
-		},
-		{
-			"label": "homepage-tests-after-blog-route-targets",
-			"type": "shell",
-			"command": "npm.cmd",
-			"args": [
-				"run",
-				"test:run",
-				"--",
-				"src/pages/HomePage.test.tsx"
-			],
-			"isBackground": false
-		},
-		{
-			"label": "typecheck-after-unified-adapter-fix",
-			"type": "shell",
-			"command": "npm.cmd",
-			"args": [
-				"run",
-				"typecheck"
-			],
-			"isBackground": false
-		},
-		{
-			"label": "homepage-component-routing-tests",
-			"type": "shell",
-			"command": "npm.cmd",
-			"args": [
-				"run",
-				"test:run",
-				"--",
-				"src/components/BlogSection.test.tsx",
-				"src/components/homepage/Features/Features.test.tsx"
-			],
-			"isBackground": false
-		},
-		{
-			"label": "homepage-component-routing-tests-rerun",
-			"type": "shell",
-			"command": "npm.cmd",
-			"args": [
-				"run",
-				"test:run",
-				"--",
-				"src/components/BlogSection.test.tsx",
-				"src/components/homepage/Features/Features.test.tsx"
-			],
-			"isBackground": false
-		},
-		{
-			"label": "homepage-component-routing-tests-rerun-2",
-			"type": "shell",
-			"command": "npm.cmd",
-			"args": [
-				"run",
-				"test:run",
-				"--",
-				"src/components/BlogSection.test.tsx",
-				"src/components/homepage/Features/Features.test.tsx",
-				"src/pages/HomePage.test.tsx"
-			],
-			"isBackground": false
-		},
-		{
-			"label": "homepage-component-routing-tests-rerun-2",
-			"type": "shell",
-			"command": "npm.cmd",
-			"args": [
-				"run",
-				"test:run",
-				"--",
-				"src/components/BlogSection.test.tsx",
-				"src/components/homepage/Features/Features.test.tsx",
-				"src/pages/HomePage.test.tsx"
-			],
-			"isBackground": false
-		},
-		{
-			"label": "homepage-component-routing-tests-rerun-2",
-			"type": "shell",
-			"command": "npm.cmd",
-			"args": [
-				"run",
-				"test:run",
-				"--",
-				"src/components/DubaiMap.test.tsx",
-				"src/components/BlogSection.test.tsx",
-				"src/components/homepage/Features/Features.test.tsx",
-				"src/pages/HomePage.test.tsx"
-			],
-			"isBackground": false
-		},
-		{
-			"label": "homepage-component-routing-tests-with-dubaimap",
-			"type": "shell",
-			"command": "npm.cmd",
-			"args": [
-				"run",
-				"test:run",
-				"--",
-				"src/components/DubaiMap.test.tsx"
-			],
-			"isBackground": false
-		},
-		{
-			"label": "typecheck-after-homepage-routing-test-hardening",
-			"type": "shell",
-			"command": "npm.cmd",
-			"args": [
-				"run",
-				"typecheck"
-			],
-			"isBackground": false
-		},
-		{
-			"label": "homepage-component-routing-tests-rerun-2",
-			"type": "shell",
-			"command": "npm.cmd",
-			"args": [
-				"run",
-				"test:run",
-				"--",
-				"src/components/homepage/FeaturedProperties/FeaturedPropertiesSection.test.tsx",
-				"src/components/DubaiMap.test.tsx",
-				"src/components/BlogSection.test.tsx",
-				"src/components/homepage/Features/Features.test.tsx",
-				"src/components/homepage/Locations/Locations.test.tsx",
-				"src/pages/HomePage.test.tsx"
-			],
-			"isBackground": false
-		},
-		{
-			"label": "homepage-routing-matrix-tests-full",
-			"type": "shell",
-			"command": "npm.cmd",
-			"args": [
-				"run",
-				"test:run",
-				"--",
-				"src/components/homepage/FeaturedProperties/FeaturedPropertiesSection.test.tsx",
-				"src/components/DubaiMap.test.tsx",
-				"src/components/BlogSection.test.tsx",
-				"src/components/homepage/Features/Features.test.tsx",
-				"src/components/homepage/Locations/Locations.test.tsx",
-				"src/pages/HomePage.test.tsx"
-			],
-			"isBackground": false
-		},
-		{
-			"label": "typecheck-after-homepage-routing-test-hardening",
-			"type": "shell",
-			"command": "npm.cmd",
-			"args": [
-				"run",
-				"typecheck"
-			],
-			"isBackground": false
-		},
-		{
-			"label": "install-eslint-core-package",
-			"type": "shell",
-			"command": "npm.cmd",
-			"args": [
-				"install",
-				"-D",
-				"eslint@^9.39.1"
-			],
-			"isBackground": false
-		},
-		{
-			"label": "lint-targeted-homepage-routing-wave",
-			"type": "shell",
-			"command": "npm.cmd",
-			"args": [
-				"exec",
-				"eslint",
-				"server/middleware/rateLimiter.ts",
-				"server/services/automation/followUpEngine.ts",
-				"src/components/BlogSection.tsx",
-				"src/components/DubaiMap.tsx",
-				"src/components/homepage/Features/Features.tsx",
-				"src/pages/HomePage.tsx",
-				"src/pages/UnifiedDashboardPage.tsx",
-				"src/components/BlogSection.test.tsx",
-				"src/components/DubaiMap.test.tsx",
-				"src/components/homepage/Features/Features.test.tsx",
-				"src/components/homepage/FeaturedProperties/FeaturedPropertiesSection.test.tsx",
-				"src/pages/HomePage.test.tsx"
-			],
-			"isBackground": false
-		},
-		{
-			"label": "build-after-homepage-routing-wave",
-			"type": "shell",
-			"command": "npm.cmd",
-			"args": [
-				"run",
-				"build"
-			],
-			"isBackground": false
-		},
-		{
-			"label": "full-lint-post-eslint-install",
-			"type": "shell",
-			"command": "npm.cmd",
-			"args": [
-				"run",
-				"lint"
-			],
-			"isBackground": false
-		},
-		{
-			"label": "git-status-after-quality-sweep",
-			"type": "shell",
-			"command": "git",
-			"args": [
-				"status",
-				"--short"
-			],
-			"isBackground": false
-		},
-		{
-			"label": "post-commit-status-check",
-			"type": "shell",
-			"command": "git",
-			"args": [
-				"status",
-				"--short"
-			],
-			"isBackground": false
-		},
-		{
-			"label": "prettier-and-commit-retry",
-			"type": "shell",
-			"command": "npm.cmd",
-			"args": [
-				"ls",
-				"prettier",
-				"--depth=0"
-			],
-			"isBackground": false
-		},
-		{
-			"label": "install-prettier-core-package",
-			"type": "shell",
-			"command": "npm.cmd",
-			"args": [
-				"install",
-				"-D",
-				"prettier@^3.6.2"
-			],
-			"isBackground": false
-		},
-		{
-			"label": "commit-homepage-routing-wave",
-			"type": "shell",
-			"command": "git",
-			"args": [
-				"commit",
-				"-m",
-				"fix(homepage): harden routing flows and add regression coverage"
-			],
-			"isBackground": false
-		},
-		{
-			"label": "post-commit-verify-and-push-readiness",
-			"type": "shell",
-			"command": "git",
-			"args": [
-				"status",
-				"--short"
-			],
-			"isBackground": false
-		},
-		{
-			"label": "remaining-package-diff",
-			"type": "shell",
-			"command": "git",
-			"args": [
-				"diff",
-				"--",
-				"package.json",
-				"package-lock.json"
-			],
-			"isBackground": false
-		},
-		{
-			"label": "commit-prettier-dependency",
-			"type": "shell",
-			"command": "git",
-			"args": [
-				"add",
-				"package.json",
-				"package-lock.json"
-			],
-			"isBackground": false
-		},
-		{
-			"label": "commit-prettier-dependency-message",
-			"type": "shell",
-			"command": "git",
-			"args": [
-				"commit",
-				"-m",
-				"chore(tooling): add prettier for lint-staged hooks"
-			],
-			"isBackground": false
-		},
-		{
-			"label": "final-git-handoff-status",
-			"type": "shell",
-			"command": "git",
-			"args": [
-				"status",
-				"--short"
-			],
-			"isBackground": false
-		},
-		{
-			"label": "final-git-handoff-log",
-			"type": "shell",
-			"command": "git",
-			"args": [
-				"log",
-				"-2",
-				"--oneline"
-			],
-			"isBackground": false
-		},
-		{
-			"label": "rescan-git-status",
-			"type": "shell",
-			"command": "git",
-			"args": [
-				"status",
-				"--short"
-			],
-			"isBackground": false
-		},
-		{
-			"label": "rescan-git-log",
-			"type": "shell",
-			"command": "git",
-			"args": [
-				"log",
-				"-5",
-				"--oneline",
-				"--decorate"
-			],
-			"isBackground": false
-		},
-		{
-			"label": "verify-branch-sync",
-			"type": "shell",
-			"command": "git",
-			"args": [
-				"status",
-				"-sb"
-			],
-			"isBackground": false
-		},
-		{
-			"label": "final-commits-content-check",
-			"type": "shell",
-			"command": "git",
-			"args": [
-				"show",
-				"--name-status",
-				"--oneline",
-				"-2"
-			],
-			"isBackground": false
-		},
-		{
-			"label": "remote-head-check",
-			"type": "shell",
-			"command": "git",
-			"args": [
-				"log",
-				"origin/recruitment-analytics-onboarding",
-				"-2",
-				"--oneline"
-			],
-			"isBackground": false
-		},
-		{
-			"label": "final-local-dirty-check",
-			"type": "shell",
-			"command": "git",
-			"args": [
-				"status",
-				"--short"
-			],
-			"isBackground": false
-		},
-		{
-			"label": "remaining-diff-stat",
-			"type": "shell",
-			"command": "git",
-			"args": [
-				"diff",
-				"--stat",
-				"--",
-				".vscode/tasks.json",
-				"DAILY_MILESTONE_TRACKER.md",
-				"scripts/orchestrator/prompts.json"
-			],
-			"isBackground": false
-		},
-		{
-			"label": "remaining-diff-preview",
-			"type": "shell",
-			"command": "git",
-			"args": [
-				"diff",
-				"--",
-				".vscode/tasks.json",
-				"DAILY_MILESTONE_TRACKER.md",
-				"scripts/orchestrator/prompts.json"
-			],
-			"isBackground": false
-		}
-	]
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "start-dev-server",
+      "type": "shell",
+      "command": "cmd.exe",
+      "args": ["/c", "npm.cmd run dev"],
+      "isBackground": true
+    },
+    {
+      "label": "start-dev-server-nodepath",
+      "type": "shell",
+      "command": "C:\\Users\\Murad Ali\\AppData\\Local\\Microsoft\\WinGet\\Packages\\OpenJS.NodeJS.LTS_Microsoft.Winget.Source_8wekyb3d8bbwe\\node-v24.16.0-win-x64\\npm.cmd",
+      "args": ["run", "dev"],
+      "isBackground": true
+    },
+    {
+      "label": "find-npm-location",
+      "type": "shell",
+      "command": "where.exe",
+      "args": ["npm"]
+    },
+    {
+      "label": "find-node-location",
+      "type": "shell",
+      "command": "where.exe",
+      "args": ["node"]
+    },
+    {
+      "label": "probe-winget-node-paths",
+      "type": "shell",
+      "command": "powershell",
+      "args": [
+        "-NoProfile",
+        "-Command",
+        "$candidates=@('C:\\Users\\Murad Ali\\AppData\\Local\\Microsoft\\WinGet\\Links\\npm.cmd','C:\\Users\\Murad Ali\\AppData\\Local\\Microsoft\\WinGet\\Links\\node.exe','C:\\Program Files\\nodejs\\npm.cmd','C:\\Program Files\\nodejs\\node.exe'); $candidates | ForEach-Object { \"$_ => \" + (Test-Path $_) }"
+      ]
+    },
+    {
+      "label": "probe-winget-node-paths-cmd",
+      "type": "shell",
+      "command": "cmd.exe",
+      "args": [
+        "/c",
+        "if exist \"C:\\Users\\Murad Ali\\AppData\\Local\\Microsoft\\WinGet\\Links\\npm.cmd\" (echo WINGET_NPM=YES) else (echo WINGET_NPM=NO) & if exist \"C:\\Users\\Murad Ali\\AppData\\Local\\Microsoft\\WinGet\\Links\\node.exe\" (echo WINGET_NODE=YES) else (echo WINGET_NODE=NO) & if exist \"C:\\Program Files\\nodejs\\npm.cmd\" (echo PF_NPM=YES) else (echo PF_NPM=NO) & if exist \"C:\\Program Files\\nodejs\\node.exe\" (echo PF_NODE=YES) else (echo PF_NODE=NO)"
+      ]
+    },
+    {
+      "label": "probe-node-one",
+      "type": "shell",
+      "command": "powershell.exe",
+      "args": [
+        "-NoProfile",
+        "-Command",
+        "Test-Path 'C:\\Users\\Murad Ali\\AppData\\Local\\Microsoft\\WinGet\\Links\\npm.cmd'; Test-Path 'C:\\Users\\Murad Ali\\AppData\\Local\\Microsoft\\WinGet\\Links\\node.exe'; Test-Path 'C:\\Program Files\\nodejs\\npm.cmd'; Test-Path 'C:\\Program Files\\nodejs\\node.exe'"
+      ]
+    },
+    {
+      "label": "probe-node-env",
+      "type": "shell",
+      "command": "powershell.exe",
+      "args": [
+        "-NoProfile",
+        "-Command",
+        "$p1=Join-Path $env:LOCALAPPDATA \"Microsoft\\WinGet\\Links\\npm.cmd\"; $p2=Join-Path $env:LOCALAPPDATA \"Microsoft\\WinGet\\Links\\node.exe\"; Write-Output $p1; Test-Path $p1; Write-Output $p2; Test-Path $p2"
+      ]
+    },
+    {
+      "label": "probe-node-programfiles",
+      "type": "shell",
+      "command": "powershell.exe",
+      "args": [
+        "-NoProfile",
+        "-Command",
+        "$p1=Join-Path $env:ProgramFiles \"nodejs\\npm.cmd\"; $p2=Join-Path $env:ProgramFiles \"nodejs\\node.exe\"; Write-Output $p1; Test-Path $p1; Write-Output $p2; Test-Path $p2"
+      ]
+    },
+    {
+      "label": "find-node-in-userprofile",
+      "type": "shell",
+      "command": "powershell.exe",
+      "args": [
+        "-NoProfile",
+        "-Command",
+        "$root=$env:USERPROFILE; Get-ChildItem -Path $root -Filter node.exe -Recurse -ErrorAction SilentlyContinue | Select-Object -First 20 -ExpandProperty FullName"
+      ]
+    },
+    {
+      "label": "check-autopilot-process",
+      "type": "shell",
+      "command": "powershell.exe",
+      "options": {
+        "shell": {
+          "executable": "cmd.exe",
+          "args": ["/d", "/c"]
+        }
+      },
+      "args": [
+        "-NoProfile",
+        "-Command",
+        "Get-CimInstance Win32_Process | Where-Object { $_.Name -match 'powershell' -and ($_.CommandLine -match 'autopilot-daemon.ps1' -or $_.CommandLine -match 'agent-loop.ps1') } | Select-Object ProcessId,Name,CommandLine | Format-Table -AutoSize"
+      ]
+    },
+    {
+      "label": "detect-package-managers",
+      "type": "shell",
+      "command": "cmd.exe",
+      "args": ["/c", "where winget & where choco & where scoop"]
+    },
+    {
+      "label": "install-node-lts-winget",
+      "type": "shell",
+      "command": "winget",
+      "args": [
+        "install",
+        "--id",
+        "OpenJS.NodeJS.LTS",
+        "-e",
+        "--scope",
+        "user",
+        "--accept-source-agreements",
+        "--accept-package-agreements"
+      ]
+    },
+    {
+      "label": "locate-node-paths",
+      "type": "shell",
+      "command": "cmd.exe",
+      "args": [
+        "/c",
+        "dir /s /b \"%LOCALAPPDATA%\\Programs\\nodejs\\node.exe\" 2>nul & dir /s /b \"%ProgramFiles%\\nodejs\\node.exe\" 2>nul & dir /s /b \"%LOCALAPPDATA%\\Microsoft\\WinGet\\Packages\\OpenJS.NodeJS.LTS_*\\*\\node.exe\" 2>nul"
+      ]
+    },
+    {
+      "label": "winget-list-node",
+      "type": "shell",
+      "command": "winget",
+      "args": ["list", "--id", "OpenJS.NodeJS.LTS"]
+    },
+    {
+      "label": "find-node-registry-location",
+      "type": "shell",
+      "command": "powershell.exe",
+      "args": [
+        "-NoProfile",
+        "-Command",
+        "$paths=@('HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*','HKLM:\\Software\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*','HKLM:\\Software\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*'); Get-ItemProperty $paths -ErrorAction SilentlyContinue | Where-Object { $_.DisplayName -match 'Node.js' } | Select-Object DisplayName,DisplayVersion,InstallLocation,UninstallString,DisplayIcon | Format-List"
+      ]
+    },
+    {
+      "label": "reg-query-node",
+      "type": "shell",
+      "command": "cmd.exe",
+      "args": [
+        "/c",
+        "reg query \"HKCU\\Software\\Microsoft\\Windows\\CurrentVersion\\Uninstall\" /s /f \"Node.js\" & reg query \"HKLM\\Software\\Microsoft\\Windows\\CurrentVersion\\Uninstall\" /s /f \"Node.js\" & reg query \"HKLM\\Software\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\" /s /f \"Node.js\""
+      ]
+    },
+    {
+      "label": "reg-query-node-key-values",
+      "type": "shell",
+      "command": "cmd.exe",
+      "args": [
+        "/c",
+        "reg query \"HKCU\\Software\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\OpenJS.NodeJS.LTS_Microsoft.Winget.Source_8wekyb3d8bbwe\""
+      ]
+    },
+    {
+      "label": "list-node-install-dir",
+      "type": "shell",
+      "command": "cmd.exe",
+      "args": [
+        "/c",
+        "dir /b \"C:\\Users\\Murad Ali\\AppData\\Local\\Microsoft\\WinGet\\Packages\\OpenJS.NodeJS.LTS_Microsoft.Winget.Source_8wekyb3d8bbwe\""
+      ]
+    },
+    {
+      "label": "list-winget-packages-dir",
+      "type": "shell",
+      "command": "cmd.exe",
+      "args": ["/c", "dir /b \"C:\\Users\\Murad Ali\\AppData\\Local\\Microsoft\\WinGet\\Packages\""]
+    },
+    {
+      "label": "echo-localappdata-and-winget-dir",
+      "type": "shell",
+      "command": "cmd.exe",
+      "args": [
+        "/c",
+        "echo LOCALAPPDATA=%LOCALAPPDATA% & dir /b \"%LOCALAPPDATA%\\Microsoft\" & dir /b \"%LOCALAPPDATA%\\Microsoft\\WinGet\""
+      ]
+    },
+    {
+      "label": "check-windowsapps-node-alias",
+      "type": "shell",
+      "command": "cmd.exe",
+      "args": [
+        "/c",
+        "if exist \"%LOCALAPPDATA%\\Microsoft\\WindowsApps\\node.exe\" (echo NODE_ALIAS=YES) else (echo NODE_ALIAS=NO) & if exist \"%LOCALAPPDATA%\\Microsoft\\WindowsApps\\npm.cmd\" (echo NPM_ALIAS=YES) else (echo NPM_ALIAS=NO)"
+      ]
+    },
+    {
+      "label": "probe-windowsapps-node-env",
+      "type": "shell",
+      "command": "powershell.exe",
+      "args": [
+        "-NoProfile",
+        "-Command",
+        "$p1=Join-Path $env:LOCALAPPDATA \"Microsoft\\WindowsApps\\node.exe\"; $p2=Join-Path $env:LOCALAPPDATA \"Microsoft\\WindowsApps\\npm.cmd\"; Write-Output $p1; Test-Path $p1; Write-Output $p2; Test-Path $p2"
+      ]
+    },
+    {
+      "label": "install-node-lts-choco",
+      "type": "shell",
+      "command": "choco",
+      "args": ["install", "nodejs-lts", "-y", "--no-progress"]
+    },
+    {
+      "label": "test-node-installlocation-from-registry",
+      "type": "shell",
+      "command": "powershell.exe",
+      "args": [
+        "-NoProfile",
+        "-Command",
+        "$k=\"HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\OpenJS.NodeJS.LTS_Microsoft.Winget.Source_8wekyb3d8bbwe\"; $loc=(Get-ItemProperty -Path $k -ErrorAction SilentlyContinue).InstallLocation; Write-Output $loc; if($loc){ Test-Path $loc; Get-ChildItem -Path $loc -Recurse -Filter node.exe -ErrorAction SilentlyContinue | Select-Object -First 5 -ExpandProperty FullName; Get-ChildItem -Path $loc -Recurse -Filter npm.cmd -ErrorAction SilentlyContinue | Select-Object -First 5 -ExpandProperty FullName }"
+      ]
+    },
+    {
+      "label": "test-node-installlocation-via-cmd-powershell",
+      "type": "shell",
+      "command": "cmd.exe",
+      "args": [
+        "/c",
+        "powershell -NoProfile -Command \"$k='HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\OpenJS.NodeJS.LTS_Microsoft.Winget.Source_8wekyb3d8bbwe'; $loc=(Get-ItemProperty -Path $k -ErrorAction SilentlyContinue).InstallLocation; Write-Output $loc; if($loc){ Test-Path $loc; Get-ChildItem -Path $loc -Recurse -Filter node.exe -ErrorAction SilentlyContinue | Select-Object -First 5 -ExpandProperty FullName; Get-ChildItem -Path $loc -Recurse -Filter npm.cmd -ErrorAction SilentlyContinue | Select-Object -First 5 -ExpandProperty FullName }\""
+      ]
+    },
+    {
+      "label": "detect-package-managers",
+      "type": "shell",
+      "command": "powershell.exe",
+      "args": [
+        "-NoProfile",
+        "-Command",
+        "$w=Get-Command winget -ErrorAction SilentlyContinue; $c=Get-Command choco -ErrorAction SilentlyContinue; $s=Get-Command scoop -ErrorAction SilentlyContinue; Write-Host ('winget=' + [bool]$w); Write-Host ('choco=' + [bool]$c); Write-Host ('scoop=' + [bool]$s)"
+      ]
+    },
+    {
+      "label": "orchestrator-project-scan-autofix",
+      "type": "shell",
+      "command": "powershell.exe",
+      "args": [
+        "-NoProfile",
+        "-ExecutionPolicy",
+        "Bypass",
+        "-File",
+        "scripts/orchestrator/project-problem-scan.ps1",
+        "-WorkspaceRoot",
+        ".",
+        "-AutoFix"
+      ]
+    },
+    {
+      "label": "run-project-problem-scan-direct",
+      "type": "shell",
+      "command": "cmd.exe",
+      "args": [
+        "/c",
+        "powershell -NoProfile -ExecutionPolicy Bypass -File scripts\\orchestrator\\project-problem-scan.ps1 -WorkspaceRoot . -AutoFix -Brief"
+      ]
+    },
+    {
+      "label": "run-project-problem-scan-direct",
+      "type": "shell",
+      "command": "cmd.exe",
+      "args": [
+        "/c",
+        "powershell -NoProfile -ExecutionPolicy Bypass -File scripts\\orchestrator\\project-problem-scan.ps1 -WorkspaceRoot . -AutoFix -Brief"
+      ]
+    },
+    {
+      "label": "locate-node-paths",
+      "type": "shell",
+      "command": "powershell.exe",
+      "args": [
+        "-NoProfile",
+        "-Command",
+        "$roots=@($env:LOCALAPPDATA,$env:ProgramFiles,$env:ProgramFiles+' (x86)'); foreach($r in $roots){ if(Test-Path $r){ Get-ChildItem -Path $r -Recurse -Filter node.exe -ErrorAction SilentlyContinue | Select-Object -First 20 -ExpandProperty FullName } }"
+      ]
+    },
+    {
+      "label": "winget-list-node",
+      "type": "shell",
+      "command": "winget",
+      "args": ["list", "--id", "OpenJS.NodeJS.LTS"]
+    },
+    {
+      "label": "find-node-registry-location",
+      "type": "shell",
+      "command": "powershell.exe",
+      "args": [
+        "-NoProfile",
+        "-Command",
+        "$paths=@('HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*','HKLM:\\Software\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*','HKLM:\\Software\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*'); Get-ItemProperty $paths -ErrorAction SilentlyContinue | Where-Object { $_.DisplayName -match 'Node.js|OpenJS.NodeJS' } | Select-Object DisplayName,DisplayVersion,InstallLocation,UninstallString,DisplayIcon | Format-List"
+      ]
+    },
+    {
+      "label": "reg-query-node",
+      "type": "shell",
+      "command": "cmd.exe",
+      "args": [
+        "/c",
+        "reg query \"HKCU\\Software\\Microsoft\\Windows\\CurrentVersion\\Uninstall\" /s /f \"Node.js\" & reg query \"HKLM\\Software\\Microsoft\\Windows\\CurrentVersion\\Uninstall\" /s /f \"Node.js\" & reg query \"HKLM\\Software\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\" /s /f \"Node.js\""
+      ]
+    },
+    {
+      "label": "reg-query-node-key-values",
+      "type": "shell",
+      "command": "cmd.exe",
+      "args": [
+        "/c",
+        "reg query \"HKCU\\Software\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\OpenJS.NodeJS.LTS_Microsoft.Winget.Source_8wekyb3d8bbwe\""
+      ]
+    },
+    {
+      "label": "list-node-install-dir",
+      "type": "shell",
+      "command": "cmd.exe",
+      "args": [
+        "/c",
+        "dir /s /b \"C:\\Users\\Murad Ali\\AppData\\Local\\Microsoft\\WinGet\\Packages\\OpenJS.NodeJS.LTS_Microsoft.Winget.Source_8wekyb3d8bbwe\\node.exe\" & dir /s /b \"C:\\Users\\Murad Ali\\AppData\\Local\\Microsoft\\WinGet\\Packages\\OpenJS.NodeJS.LTS_Microsoft.Winget.Source_8wekyb3d8bbwe\\npm.cmd\""
+      ]
+    },
+    {
+      "label": "echo-localappdata-and-winget-dir",
+      "type": "shell",
+      "command": "cmd.exe",
+      "args": [
+        "/c",
+        "echo LOCALAPPDATA=%LOCALAPPDATA% & dir /b \"%LOCALAPPDATA%\\Microsoft\" & dir /b \"%LOCALAPPDATA%\\Microsoft\\WinGet\""
+      ]
+    },
+    {
+      "label": "list-localappdata-root",
+      "type": "shell",
+      "command": "cmd.exe",
+      "args": ["/c", "dir /b \"%LOCALAPPDATA%\""]
+    },
+    {
+      "label": "install-node-lts-choco",
+      "type": "shell",
+      "command": "choco",
+      "args": ["install", "nodejs-lts", "-y", "--no-progress"]
+    },
+    {
+      "label": "find-node-location",
+      "type": "shell",
+      "command": "where.exe",
+      "args": ["node"]
+    },
+    {
+      "label": "dev-server-health-check",
+      "type": "shell",
+      "command": "cmd.exe",
+      "args": [
+        "/c",
+        "powershell -NoProfile -Command \"try { $r = Invoke-WebRequest -Uri \\\"http://localhost:5000/\\\" -UseBasicParsing -TimeoutSec 15; Write-Host status:$($r.StatusCode); Write-Host length:$($r.Content.Length) } catch { Write-Host probe_error:$($_.Exception.Message); exit 1 }\""
+      ]
+    },
+    {
+      "label": "locate-node-paths",
+      "type": "shell",
+      "command": "powershell.exe",
+      "args": [
+        "-NoProfile",
+        "-Command",
+        "$roots=@($env:LOCALAPPDATA,$env:ProgramFiles,$env:ProgramFiles+' (x86)'); foreach($r in $roots){ if(Test-Path $r){ Get-ChildItem -Path $r -Recurse -Filter node.exe -ErrorAction SilentlyContinue | Select-Object -First 20 -ExpandProperty FullName } }"
+      ]
+    },
+    {
+      "label": "aegis-node-discovery-check-20260605-1",
+      "type": "shell",
+      "command": "powershell.exe",
+      "args": [
+        "-NoProfile",
+        "-Command",
+        "$node=Get-Command node -ErrorAction SilentlyContinue; if($node){'NODE_CMD='+$node.Source}else{'NODE_CMD=NONE'}; $wingetRoot=Join-Path $env:LOCALAPPDATA 'Microsoft\\WinGet\\Packages'; 'WINGET_ROOT='+$wingetRoot; 'WINGET_EXISTS=' + (Test-Path $wingetRoot); if(Test-Path $wingetRoot){ Get-ChildItem -Path $wingetRoot -Recurse -Filter node.exe -ErrorAction SilentlyContinue | Where-Object { $_.FullName -match 'OpenJS\\.NodeJS' } | Select-Object -First 5 -ExpandProperty FullName }"
+      ]
+    },
+    {
+      "label": "aegis-node-discovery-check-20260605-2",
+      "type": "shell",
+      "command": "cmd.exe",
+      "args": [
+        "/c",
+        "where node & where npm & dir /s /b \"%LOCALAPPDATA%\\Microsoft\\WinGet\\Packages\\OpenJS.NodeJS.LTS_*\\*\\node.exe\""
+      ]
+    },
+    {
+      "label": "aegis-problem-scan-run-20260605-1",
+      "type": "shell",
+      "command": "cmd.exe",
+      "args": [
+        "/c",
+        "powershell -NoProfile -ExecutionPolicy Bypass -File scripts\\orchestrator\\project-problem-scan.ps1 -WorkspaceRoot . -AutoFix -Brief"
+      ]
+    },
+    {
+      "label": "aegis-kill-autopilot-20260605-1",
+      "type": "shell",
+      "command": "powershell.exe",
+      "args": [
+        "-NoProfile",
+        "-Command",
+        "$p=Get-CimInstance Win32_Process | Where-Object { $_.Name -like \"*powershell*\" -and (($_.CommandLine -like \"*autopilot-daemon.ps1*\") -or ($_.CommandLine -like \"*agent-loop.ps1*\")) }; if($p){ $ids=@($p|Select-Object -ExpandProperty ProcessId); Stop-Process -Id $ids -Force -ErrorAction SilentlyContinue; Write-Output (\"killed=\" + ($ids -join ',')) } else { Write-Output 'killed=none' }"
+      ]
+    },
+    {
+      "label": "aegis-problem-scan-run-20260605-2",
+      "type": "shell",
+      "command": "cmd.exe",
+      "args": [
+        "/c",
+        "powershell -NoProfile -ExecutionPolicy Bypass -File scripts\\orchestrator\\project-problem-scan.ps1 -WorkspaceRoot . -AutoFix -Brief"
+      ]
+    },
+    {
+      "label": "aegis-problem-scan-run-20260605-3",
+      "type": "shell",
+      "command": "cmd.exe",
+      "args": [
+        "/c",
+        "powershell -NoProfile -ExecutionPolicy Bypass -File scripts\\orchestrator\\project-problem-scan.ps1 -WorkspaceRoot . -AutoFix -Brief"
+      ]
+    },
+    {
+      "label": "quality-quick-check",
+      "type": "shell",
+      "command": "npm.cmd",
+      "args": ["run", "quality:quick"],
+      "isBackground": false
+    },
+    {
+      "label": "quality-quick-log-task",
+      "type": "shell",
+      "command": "cmd.exe",
+      "args": [
+        "/c",
+        "cd /d c:\\Users\\Murad Ali\\White-Caves & npm.cmd run quality:quick > quality-quick-latest.log 2>&1"
+      ],
+      "isBackground": false
+    },
+    {
+      "label": "orchestrator-queue-health-snapshot",
+      "type": "shell",
+      "command": "powershell.exe",
+      "options": {
+        "shell": {
+          "executable": "cmd.exe",
+          "args": ["/d", "/c"]
+        }
+      },
+      "args": [
+        "-NoProfile",
+        "-ExecutionPolicy",
+        "Bypass",
+        "-File",
+        "scripts/orchestrator/queue-health.ps1",
+        "-WorkspaceRoot",
+        ".",
+        "-Brief"
+      ]
+    },
+    {
+      "label": "tracker-lock-diagnose",
+      "type": "shell",
+      "command": "powershell.exe",
+      "options": {
+        "shell": {
+          "executable": "cmd.exe",
+          "args": ["/d", "/c"]
+        }
+      },
+      "args": [
+        "-NoProfile",
+        "-ExecutionPolicy",
+        "Bypass",
+        "-Command",
+        "$f='DAILY_MILESTONE_TRACKER.md'; if(!(Test-Path $f)){ Write-Host 'TRACKER=missing'; exit 1 }; try { $tmp='logs/orchestrator/_tracker-lock-probe.tmp'; Copy-Item -Path $f -Destination $tmp -Force; Remove-Item -Path $tmp -Force -ErrorAction SilentlyContinue; Write-Host 'TRACKER_LOCK=free' } catch { Write-Host ('TRACKER_LOCK=locked :: ' + $_.Exception.Message) }"
+      ]
+    },
+    {
+      "label": "tracker-commit-when-free",
+      "type": "shell",
+      "command": "powershell.exe",
+      "options": {
+        "shell": {
+          "executable": "cmd.exe",
+          "args": ["/d", "/c"]
+        }
+      },
+      "args": [
+        "-NoProfile",
+        "-ExecutionPolicy",
+        "Bypass",
+        "-File",
+        "scripts/orchestrator/tracker-commit-when-free.ps1",
+        "-WorkspaceRoot",
+        ".",
+        "-TimeoutSeconds",
+        "90",
+        "-PollIntervalSeconds",
+        "1",
+        "-Branch",
+        "recruitment-analytics-onboarding"
+      ]
+    },
+    {
+      "label": "homepage-tests-after-routing-refactor",
+      "type": "shell",
+      "command": "npm.cmd",
+      "args": ["run", "test:run", "--", "src/pages/HomePage.test.tsx"],
+      "isBackground": false
+    },
+    {
+      "label": "homepage-typecheck-after-route-style-fixes",
+      "type": "shell",
+      "command": "npm.cmd",
+      "args": ["run", "typecheck"],
+      "isBackground": false
+    },
+    {
+      "label": "typecheck-after-homepage-and-unified-fixes",
+      "type": "shell",
+      "command": "npm.cmd",
+      "args": ["run", "typecheck"],
+      "isBackground": false
+    },
+    {
+      "label": "typecheck-after-unified-adapter-fix",
+      "type": "shell",
+      "command": "npm.cmd",
+      "args": ["run", "typecheck"],
+      "isBackground": false
+    },
+    {
+      "label": "homepage-tests-after-blog-route-targets",
+      "type": "shell",
+      "command": "npm.cmd",
+      "args": ["run", "test:run", "--", "src/pages/HomePage.test.tsx"],
+      "isBackground": false
+    },
+    {
+      "label": "typecheck-after-unified-adapter-fix",
+      "type": "shell",
+      "command": "npm.cmd",
+      "args": ["run", "typecheck"],
+      "isBackground": false
+    },
+    {
+      "label": "homepage-component-routing-tests",
+      "type": "shell",
+      "command": "npm.cmd",
+      "args": [
+        "run",
+        "test:run",
+        "--",
+        "src/components/BlogSection.test.tsx",
+        "src/components/homepage/Features/Features.test.tsx"
+      ],
+      "isBackground": false
+    },
+    {
+      "label": "homepage-component-routing-tests-rerun",
+      "type": "shell",
+      "command": "npm.cmd",
+      "args": [
+        "run",
+        "test:run",
+        "--",
+        "src/components/BlogSection.test.tsx",
+        "src/components/homepage/Features/Features.test.tsx"
+      ],
+      "isBackground": false
+    },
+    {
+      "label": "homepage-component-routing-tests-rerun-2",
+      "type": "shell",
+      "command": "npm.cmd",
+      "args": [
+        "run",
+        "test:run",
+        "--",
+        "src/components/BlogSection.test.tsx",
+        "src/components/homepage/Features/Features.test.tsx",
+        "src/pages/HomePage.test.tsx"
+      ],
+      "isBackground": false
+    },
+    {
+      "label": "homepage-component-routing-tests-rerun-2",
+      "type": "shell",
+      "command": "npm.cmd",
+      "args": [
+        "run",
+        "test:run",
+        "--",
+        "src/components/BlogSection.test.tsx",
+        "src/components/homepage/Features/Features.test.tsx",
+        "src/pages/HomePage.test.tsx"
+      ],
+      "isBackground": false
+    },
+    {
+      "label": "homepage-component-routing-tests-rerun-2",
+      "type": "shell",
+      "command": "npm.cmd",
+      "args": [
+        "run",
+        "test:run",
+        "--",
+        "src/components/DubaiMap.test.tsx",
+        "src/components/BlogSection.test.tsx",
+        "src/components/homepage/Features/Features.test.tsx",
+        "src/pages/HomePage.test.tsx"
+      ],
+      "isBackground": false
+    },
+    {
+      "label": "homepage-component-routing-tests-with-dubaimap",
+      "type": "shell",
+      "command": "npm.cmd",
+      "args": ["run", "test:run", "--", "src/components/DubaiMap.test.tsx"],
+      "isBackground": false
+    },
+    {
+      "label": "typecheck-after-homepage-routing-test-hardening",
+      "type": "shell",
+      "command": "npm.cmd",
+      "args": ["run", "typecheck"],
+      "isBackground": false
+    },
+    {
+      "label": "homepage-component-routing-tests-rerun-2",
+      "type": "shell",
+      "command": "npm.cmd",
+      "args": [
+        "run",
+        "test:run",
+        "--",
+        "src/components/homepage/FeaturedProperties/FeaturedPropertiesSection.test.tsx",
+        "src/components/DubaiMap.test.tsx",
+        "src/components/BlogSection.test.tsx",
+        "src/components/homepage/Features/Features.test.tsx",
+        "src/components/homepage/Locations/Locations.test.tsx",
+        "src/pages/HomePage.test.tsx"
+      ],
+      "isBackground": false
+    },
+    {
+      "label": "homepage-routing-matrix-tests-full",
+      "type": "shell",
+      "command": "npm.cmd",
+      "args": [
+        "run",
+        "test:run",
+        "--",
+        "src/components/homepage/FeaturedProperties/FeaturedPropertiesSection.test.tsx",
+        "src/components/DubaiMap.test.tsx",
+        "src/components/BlogSection.test.tsx",
+        "src/components/homepage/Features/Features.test.tsx",
+        "src/components/homepage/Locations/Locations.test.tsx",
+        "src/pages/HomePage.test.tsx"
+      ],
+      "isBackground": false
+    },
+    {
+      "label": "typecheck-after-homepage-routing-test-hardening",
+      "type": "shell",
+      "command": "npm.cmd",
+      "args": ["run", "typecheck"],
+      "isBackground": false
+    },
+    {
+      "label": "install-eslint-core-package",
+      "type": "shell",
+      "command": "npm.cmd",
+      "args": ["install", "-D", "eslint@^9.39.1"],
+      "isBackground": false
+    },
+    {
+      "label": "lint-targeted-homepage-routing-wave",
+      "type": "shell",
+      "command": "npm.cmd",
+      "args": [
+        "exec",
+        "eslint",
+        "server/middleware/rateLimiter.ts",
+        "server/services/automation/followUpEngine.ts",
+        "src/components/BlogSection.tsx",
+        "src/components/DubaiMap.tsx",
+        "src/components/homepage/Features/Features.tsx",
+        "src/pages/HomePage.tsx",
+        "src/pages/UnifiedDashboardPage.tsx",
+        "src/components/BlogSection.test.tsx",
+        "src/components/DubaiMap.test.tsx",
+        "src/components/homepage/Features/Features.test.tsx",
+        "src/components/homepage/FeaturedProperties/FeaturedPropertiesSection.test.tsx",
+        "src/pages/HomePage.test.tsx"
+      ],
+      "isBackground": false
+    },
+    {
+      "label": "build-after-homepage-routing-wave",
+      "type": "shell",
+      "command": "npm.cmd",
+      "args": ["run", "build"],
+      "isBackground": false
+    },
+    {
+      "label": "full-lint-post-eslint-install",
+      "type": "shell",
+      "command": "npm.cmd",
+      "args": ["run", "lint"],
+      "isBackground": false
+    },
+    {
+      "label": "git-status-after-quality-sweep",
+      "type": "shell",
+      "command": "git",
+      "args": ["status", "--short"],
+      "isBackground": false
+    },
+    {
+      "label": "post-commit-status-check",
+      "type": "shell",
+      "command": "git",
+      "args": ["status", "--short"],
+      "isBackground": false
+    },
+    {
+      "label": "prettier-and-commit-retry",
+      "type": "shell",
+      "command": "npm.cmd",
+      "args": ["ls", "prettier", "--depth=0"],
+      "isBackground": false
+    },
+    {
+      "label": "install-prettier-core-package",
+      "type": "shell",
+      "command": "npm.cmd",
+      "args": ["install", "-D", "prettier@^3.6.2"],
+      "isBackground": false
+    },
+    {
+      "label": "commit-homepage-routing-wave",
+      "type": "shell",
+      "command": "git",
+      "args": ["commit", "-m", "fix(homepage): harden routing flows and add regression coverage"],
+      "isBackground": false
+    },
+    {
+      "label": "post-commit-verify-and-push-readiness",
+      "type": "shell",
+      "command": "git",
+      "args": ["status", "--short"],
+      "isBackground": false
+    },
+    {
+      "label": "remaining-package-diff",
+      "type": "shell",
+      "command": "git",
+      "args": ["diff", "--", "package.json", "package-lock.json"],
+      "isBackground": false
+    },
+    {
+      "label": "commit-prettier-dependency",
+      "type": "shell",
+      "command": "git",
+      "args": ["add", "package.json", "package-lock.json"],
+      "isBackground": false
+    },
+    {
+      "label": "commit-prettier-dependency-message",
+      "type": "shell",
+      "command": "git",
+      "args": ["commit", "-m", "chore(tooling): add prettier for lint-staged hooks"],
+      "isBackground": false
+    },
+    {
+      "label": "final-git-handoff-status",
+      "type": "shell",
+      "command": "git",
+      "args": ["status", "--short"],
+      "isBackground": false
+    },
+    {
+      "label": "final-git-handoff-log",
+      "type": "shell",
+      "command": "git",
+      "args": ["log", "-2", "--oneline"],
+      "isBackground": false
+    },
+    {
+      "label": "rescan-git-status",
+      "type": "shell",
+      "command": "git",
+      "args": ["status", "--short"],
+      "isBackground": false
+    },
+    {
+      "label": "rescan-git-log",
+      "type": "shell",
+      "command": "git",
+      "args": ["log", "-5", "--oneline", "--decorate"],
+      "isBackground": false
+    },
+    {
+      "label": "verify-branch-sync",
+      "type": "shell",
+      "command": "git",
+      "args": ["status", "-sb"],
+      "isBackground": false
+    },
+    {
+      "label": "final-commits-content-check",
+      "type": "shell",
+      "command": "git",
+      "args": ["show", "--name-status", "--oneline", "-2"],
+      "isBackground": false
+    },
+    {
+      "label": "remote-head-check",
+      "type": "shell",
+      "command": "git",
+      "args": ["log", "origin/recruitment-analytics-onboarding", "-2", "--oneline"],
+      "isBackground": false
+    },
+    {
+      "label": "final-local-dirty-check",
+      "type": "shell",
+      "command": "git",
+      "args": ["status", "--short"],
+      "isBackground": false
+    },
+    {
+      "label": "remaining-diff-stat",
+      "type": "shell",
+      "command": "git",
+      "args": [
+        "diff",
+        "--stat",
+        "--",
+        ".vscode/tasks.json",
+        "DAILY_MILESTONE_TRACKER.md",
+        "scripts/orchestrator/prompts.json"
+      ],
+      "isBackground": false
+    },
+    {
+      "label": "remaining-diff-preview",
+      "type": "shell",
+      "command": "git",
+      "args": [
+        "diff",
+        "--",
+        ".vscode/tasks.json",
+        "DAILY_MILESTONE_TRACKER.md",
+        "scripts/orchestrator/prompts.json"
+      ],
+      "isBackground": false
+    },
+    {
+      "label": "start-aegis-continuous-daemon",
+      "type": "shell",
+      "command": "npm.cmd",
+      "args": ["run", "orchestrator:autopilot:daemon:fast"],
+      "isBackground": true
+    },
+    {
+      "label": "start-orchestrator-dashboard-watch",
+      "type": "shell",
+      "command": "npm.cmd",
+      "args": ["run", "orchestrator:dashboard:watch"],
+      "isBackground": true
+    },
+    {
+      "label": "restart-orchestrator-workers",
+      "type": "shell",
+      "command": "npm.cmd",
+      "args": ["run", "orchestrator:bg:restart"],
+      "isBackground": false
+    },
+    {
+      "label": "kick-agent-loop-auto-nobrowser",
+      "type": "shell",
+      "command": "npm.cmd",
+      "args": ["run", "orchestrator:agent-loop:auto:nobrowser"],
+      "isBackground": true
+    },
+    {
+      "label": "w19-002-focused-tests",
+      "type": "shell",
+      "command": "cmd",
+      "args": [
+        "/c",
+        "npm run test:run -- src/hooks/useSignIn.test.ts src/services/authService.test.ts server/routes/auth.test.ts src/pages/auth/SignInPage.test.tsx"
+      ],
+      "isBackground": false
+    },
+    {
+      "label": "w19-002-focused-tests-rerun",
+      "type": "shell",
+      "command": "cmd",
+      "args": [
+        "/c",
+        "npm run test:run -- src/hooks/useSignIn.test.ts src/services/authService.test.ts server/routes/auth.test.ts src/pages/auth/SignInPage.test.tsx"
+      ],
+      "isBackground": false
+    },
+    {
+      "label": "w19-002-client-tests-rerun",
+      "type": "shell",
+      "command": "cmd",
+      "args": [
+        "/c",
+        "npm run test:run -- src/hooks/useSignIn.test.ts src/services/authService.test.ts src/pages/auth/SignInPage.test.tsx"
+      ],
+      "isBackground": false
+    },
+    {
+      "label": "w19-002-client-tests-rerun-2",
+      "type": "shell",
+      "command": "cmd",
+      "args": [
+        "/c",
+        "npm run test:run -- src/hooks/useSignIn.test.ts src/services/authService.test.ts src/pages/auth/SignInPage.test.tsx"
+      ],
+      "isBackground": false
+    },
+    {
+      "label": "w19-002-quality-quick",
+      "type": "shell",
+      "command": "cmd",
+      "args": ["/c", "npm run quality:quick"],
+      "isBackground": false
+    },
+    {
+      "label": "w19-002-typecheck",
+      "type": "shell",
+      "command": "cmd",
+      "args": ["/c", "npm run typecheck"],
+      "isBackground": false
+    },
+    {
+      "label": "wave19-w19-002-forgot-password-tests",
+      "type": "shell",
+      "command": "npm.cmd",
+      "args": [
+        "run",
+        "test:run",
+        "--",
+        "server/routes/auth.test.ts",
+        "src/hooks/useSignIn.test.ts"
+      ],
+      "isBackground": false
+    },
+    {
+      "label": "install-supertest-devdep",
+      "type": "shell",
+      "command": "npm.cmd",
+      "args": ["install", "-D", "supertest"],
+      "isBackground": false
+    },
+    {
+      "label": "wave19-w19-002-forgot-password-tests-rerun",
+      "type": "shell",
+      "command": "npm.cmd",
+      "args": [
+        "run",
+        "test:run",
+        "--",
+        "server/routes/auth.test.ts",
+        "src/hooks/useSignIn.test.ts"
+      ],
+      "isBackground": false
+    },
+    {
+      "label": "wave19-w19-002-plans-validate",
+      "type": "shell",
+      "command": "npm.cmd",
+      "args": ["run", "plans:validate"],
+      "isBackground": false
+    },
+    {
+      "label": "wave19-progress-intel-refresh",
+      "type": "shell",
+      "command": "npm.cmd",
+      "args": ["run", "orchestrator:progress:intel:brief"],
+      "isBackground": false
+    },
+    {
+      "label": "wave19-w19-002-git-status",
+      "type": "shell",
+      "command": "git",
+      "args": ["status", "--short"],
+      "isBackground": false
+    },
+    {
+      "label": "wave19-w19-003-targeted-tests",
+      "type": "shell",
+      "command": "npm.cmd",
+      "args": [
+        "run",
+        "test:run",
+        "--",
+        "src/utils/routing.test.ts",
+        "src/hooks/useSignIn.test.ts",
+        "server/routes/auth.test.ts"
+      ],
+      "isBackground": false
+    },
+    {
+      "label": "wave19-w19-003-targeted-tests-rerun",
+      "type": "shell",
+      "command": "npm.cmd",
+      "args": [
+        "run",
+        "test:run",
+        "--",
+        "src/utils/routing.test.ts",
+        "src/hooks/useSignIn.test.ts",
+        "server/routes/auth.test.ts"
+      ],
+      "isBackground": false
+    },
+    {
+      "label": "wave19-w19-003-plans-validate",
+      "type": "shell",
+      "command": "npm.cmd",
+      "args": ["run", "plans:validate"],
+      "isBackground": false
+    },
+    {
+      "label": "wave19-progress-intel-refresh-2",
+      "type": "shell",
+      "command": "npm.cmd",
+      "args": ["run", "orchestrator:progress:intel:brief"],
+      "isBackground": false
+    },
+    {
+      "label": "wave19-w19-004-targeted-tests",
+      "type": "shell",
+      "command": "npm.cmd",
+      "args": [
+        "run",
+        "test:run",
+        "--",
+        "server/routes/auth.test.ts",
+        "src/hooks/useSignIn.test.ts",
+        "src/utils/routing.test.ts"
+      ],
+      "isBackground": false
+    },
+    {
+      "label": "wave19-w19-004-plans-validate",
+      "type": "shell",
+      "command": "npm.cmd",
+      "args": ["run", "plans:validate"],
+      "isBackground": false
+    },
+    {
+      "label": "wave19-progress-intel-refresh-3",
+      "type": "shell",
+      "command": "npm.cmd",
+      "args": ["run", "orchestrator:progress:intel:brief"],
+      "isBackground": false
+    },
+    {
+      "label": "wave19-w19-005-targeted-tests",
+      "type": "shell",
+      "command": "npm.cmd",
+      "args": [
+        "run",
+        "test:run",
+        "--",
+        "src/utils/authSession.test.ts",
+        "src/utils/routing.test.ts",
+        "src/hooks/useSignIn.test.ts",
+        "server/routes/auth.test.ts"
+      ],
+      "isBackground": false
+    },
+    {
+      "label": "wave19-plans-validate-after-w19-005",
+      "type": "shell",
+      "command": "npm.cmd",
+      "args": ["run", "plans:validate"],
+      "isBackground": false
+    },
+    {
+      "label": "wave19-progress-intel-brief-after-w19-005",
+      "type": "shell",
+      "command": "npm.cmd",
+      "args": ["run", "orchestrator:progress:intel:brief"],
+      "isBackground": false
+    },
+    {
+      "label": "wave19-w19-006-targeted-tests",
+      "type": "shell",
+      "command": "npm.cmd",
+      "args": [
+        "run",
+        "test:run",
+        "--",
+        "src/utils/routing.test.ts",
+        "src/utils/authSession.test.ts",
+        "src/hooks/useSignIn.test.ts"
+      ],
+      "isBackground": false
+    },
+    {
+      "label": "wave19-plans-validate-after-w19-006",
+      "type": "shell",
+      "command": "npm.cmd",
+      "args": ["run", "plans:validate"],
+      "isBackground": false
+    },
+    {
+      "label": "wave19-w19-007-targeted-tests",
+      "type": "shell",
+      "command": "npm.cmd",
+      "args": [
+        "run",
+        "test:run",
+        "--",
+        "src/config/crmNavigationSchema.test.ts",
+        "src/pages/UnifiedDashboardPage.test.tsx"
+      ],
+      "isBackground": false
+    },
+    {
+      "label": "wave19-w19-007-unified-dashboard-tests-rerun",
+      "type": "shell",
+      "command": "npm.cmd",
+      "args": ["run", "test:run", "--", "src/pages/UnifiedDashboardPage.test.tsx"],
+      "isBackground": false
+    },
+    {
+      "label": "wave19-w19-007-md-workspace-tests-only",
+      "type": "shell",
+      "command": "npm.cmd",
+      "args": [
+        "run",
+        "test:run",
+        "--",
+        "src/pages/UnifiedDashboardPage.test.tsx",
+        "-t",
+        "managing director|top-level workspaces|AI command center workspace"
+      ],
+      "isBackground": false
+    },
+    {
+      "label": "wave19-w19-007-fast-navigation-tests",
+      "type": "shell",
+      "command": "npm.cmd",
+      "args": [
+        "run",
+        "test:run",
+        "--",
+        "src/config/crmNavigationSchema.test.ts",
+        "src/components/dashboard/DashboardSideRail.test.tsx"
+      ],
+      "isBackground": false
+    },
+    {
+      "label": "wave19-plans-validate-after-w19-007",
+      "type": "shell",
+      "command": "npm.cmd",
+      "args": ["run", "plans:validate"],
+      "isBackground": false
+    },
+    {
+      "label": "wave19-progress-intel-brief-after-w19-007",
+      "type": "shell",
+      "command": "npm.cmd",
+      "args": ["run", "orchestrator:progress:intel:brief"],
+      "isBackground": false
+    },
+    {
+      "label": "wave19-w19-008-targeted-tests",
+      "type": "shell",
+      "command": "npm.cmd",
+      "args": [
+        "run",
+        "test:run",
+        "--",
+        "src/config/crmNavigationSchema.test.ts",
+        "src/components/dashboard/DashboardSideRail.test.tsx"
+      ],
+      "isBackground": false
+    },
+    {
+      "label": "wave19-plans-validate-after-w19-008",
+      "type": "shell",
+      "command": "npm.cmd",
+      "args": ["run", "plans:validate"],
+      "isBackground": false
+    },
+    {
+      "label": "wave19-progress-intel-brief-after-w19-008",
+      "type": "shell",
+      "command": "npm.cmd",
+      "args": ["run", "orchestrator:progress:intel:brief"],
+      "isBackground": false
+    },
+    {
+      "label": "wave19-w19-009-targeted-tests",
+      "type": "shell",
+      "command": "npm.cmd",
+      "args": [
+        "run",
+        "test:run",
+        "--",
+        "src/components/dashboard/SuperuserControlCenter.test.tsx",
+        "src/components/dashboard/DashboardSideRail.test.tsx",
+        "src/pages/UnifiedDashboardPage.test.tsx",
+        "-t",
+        "executive|managing director|workspaces"
+      ],
+      "isBackground": false
+    },
+    {
+      "label": "wave19-plans-validate-after-w19-009",
+      "type": "shell",
+      "command": "npm.cmd",
+      "args": ["run", "plans:validate"],
+      "isBackground": false
+    },
+    {
+      "label": "wave19-progress-intel-brief-after-w19-009",
+      "type": "shell",
+      "command": "npm.cmd",
+      "args": ["run", "orchestrator:progress:intel:brief"],
+      "isBackground": false
+    },
+    {
+      "label": "wave19-w19-010-targeted-tests",
+      "type": "shell",
+      "command": "npm.cmd",
+      "args": [
+        "run",
+        "test:run",
+        "--",
+        "src/pages/UnifiedDashboardPage.test.tsx",
+        "src/components/dashboard/SuperuserControlCenter.test.tsx",
+        "-t",
+        "empty-state|empty state|executive|workspaces"
+      ],
+      "isBackground": false
+    },
+    {
+      "label": "wave19-w19-010-targeted-tests-rerun",
+      "type": "shell",
+      "command": "npm.cmd",
+      "args": [
+        "run",
+        "test:run",
+        "--",
+        "src/pages/UnifiedDashboardPage.test.tsx",
+        "src/components/dashboard/SuperuserControlCenter.test.tsx",
+        "-t",
+        "empty-state|empty state|executive|workspaces"
+      ],
+      "isBackground": false
+    },
+    {
+      "label": "wave19-w19-010-empty-state-test-only",
+      "type": "shell",
+      "command": "npm.cmd",
+      "args": [
+        "run",
+        "test:run",
+        "--",
+        "src/pages/UnifiedDashboardPage.test.tsx",
+        "-t",
+        "should render empty-state guidance when dashboard data is not yet available"
+      ],
+      "isBackground": false
+    },
+    {
+      "label": "wave19-w19-010-plans-validate",
+      "type": "shell",
+      "command": "npm.cmd",
+      "args": ["run", "plans:validate"],
+      "isBackground": false
+    },
+    {
+      "label": "wave19-w19-010-progress-intel-brief",
+      "type": "shell",
+      "command": "npm.cmd",
+      "args": ["run", "orchestrator:progress:intel:brief"],
+      "isBackground": false
+    },
+    {
+      "label": "wave19-w19-010-status-snapshot",
+      "type": "shell",
+      "command": "git",
+      "args": ["status", "--short"],
+      "isBackground": false
+    },
+    {
+      "label": "wave19-w19-011-plans-validate",
+      "type": "shell",
+      "command": "npm.cmd",
+      "args": ["run", "plans:validate"],
+      "isBackground": false
+    },
+    {
+      "label": "wave19-w19-011-progress-intel-brief",
+      "type": "shell",
+      "command": "npm.cmd",
+      "args": ["run", "orchestrator:progress:intel:brief"],
+      "isBackground": false
+    },
+    {
+      "label": "wave19-w19-012-013-plans-validate",
+      "type": "shell",
+      "command": "npm.cmd",
+      "args": ["run", "plans:validate"],
+      "isBackground": false
+    },
+    {
+      "label": "wave19-w19-012-013-progress-intel-brief",
+      "type": "shell",
+      "command": "npm.cmd",
+      "args": ["run", "orchestrator:progress:intel:brief"],
+      "isBackground": false
+    },
+    {
+      "label": "wave19-post-sync-plans-validate",
+      "type": "shell",
+      "command": "npm.cmd",
+      "args": ["run", "plans:validate"],
+      "isBackground": false
+    },
+    {
+      "label": "wave19-post-sync-progress-intel-brief",
+      "type": "shell",
+      "command": "npm.cmd",
+      "args": ["run", "orchestrator:progress:intel:brief"],
+      "isBackground": false
+    },
+    {
+      "label": "wave19-unified-dashboard-test-full-file",
+      "type": "shell",
+      "command": "npm.cmd",
+      "args": ["run", "test:run", "--", "src/pages/UnifiedDashboardPage.test.tsx"],
+      "isBackground": false
+    },
+    {
+      "label": "wave19-empty-state-targeted-confirmation",
+      "type": "shell",
+      "command": "npm.cmd",
+      "args": [
+        "run",
+        "test:run",
+        "--",
+        "src/pages/UnifiedDashboardPage.test.tsx",
+        "-t",
+        "empty-state guidance"
+      ],
+      "isBackground": false
+    },
+    {
+      "label": "wave19-p1-003-reporting-route-tests",
+      "type": "shell",
+      "command": "npm.cmd",
+      "args": ["run", "test:run", "--", "server/routes/reporting.test.ts"],
+      "isBackground": false
+    },
+    {
+      "label": "wave19-p1-003-reporting-route-tests-2",
+      "type": "shell",
+      "command": "npm.cmd",
+      "args": ["run", "test:run", "--", "server/routes/reporting.test.ts"],
+      "isBackground": false
+    },
+    {
+      "label": "wave19-final-plans-validate",
+      "type": "shell",
+      "command": "npm.cmd",
+      "args": ["run", "plans:validate"],
+      "isBackground": false
+    },
+    {
+      "label": "wave19-final-full-regression",
+      "type": "shell",
+      "command": "npm.cmd",
+      "args": [
+        "run",
+        "test:run",
+        "--",
+        "server/routes/reporting.test.ts",
+        "src/pages/UnifiedDashboardPage.test.tsx",
+        "src/components/dashboard/SuperuserControlCenter.test.tsx",
+        "src/utils/routing.test.ts",
+        "src/utils/authSession.test.ts"
+      ],
+      "isBackground": false
+    },
+    {
+      "label": "wave19-final-progress-intel-brief",
+      "type": "shell",
+      "command": "npm.cmd",
+      "args": ["run", "orchestrator:progress:intel:brief"],
+      "isBackground": false
+    },
+    {
+      "label": "wave19-tracker-sync-plans-validate",
+      "type": "shell",
+      "command": "npm.cmd",
+      "args": ["run", "plans:validate"],
+      "isBackground": false
+    },
+    {
+      "label": "wave19-tracker-sync-progress-intel",
+      "type": "shell",
+      "command": "npm.cmd",
+      "args": ["run", "orchestrator:progress:intel:brief"],
+      "isBackground": false
+    },
+    {
+      "label": "wave19-canonical-sync-plans-validate-2",
+      "type": "shell",
+      "command": "npm.cmd",
+      "args": ["run", "plans:validate"],
+      "isBackground": false
+    },
+    {
+      "label": "wave19-canonical-sync-git-status",
+      "type": "shell",
+      "command": "git",
+      "args": ["status", "--short"],
+      "isBackground": false
+    },
+    {
+      "label": "wave19-bundle-status-sync-validate",
+      "type": "shell",
+      "command": "npm.cmd",
+      "args": ["run", "plans:validate"],
+      "isBackground": false
+    }
+  ]
 }

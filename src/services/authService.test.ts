@@ -4,6 +4,9 @@ import {
   loginWithEmail,
   registerWithEmail,
   syncFirebaseUser,
+  requestPasswordReset,
+  verifyPasswordResetToken,
+  resetPasswordWithToken,
   fetchProfile,
   changePassword,
   logout,
@@ -278,10 +281,13 @@ describe('authService', () => {
     it('stops after retry when transient errors persist', async () => {
       mApiPost
         .mockRejectedValueOnce(new HttpError('', 503, 'Service Unavailable', null))
+        .mockRejectedValueOnce(new HttpError('', 503, 'Service Unavailable', null))
         .mockRejectedValueOnce(new HttpError('', 503, 'Service Unavailable', null));
 
-      await expect(syncFirebaseUser(fbUser)).rejects.toThrow(/temporarily unavailable/i);
-      expect(mApiPost).toHaveBeenCalledTimes(2);
+      await expect(syncFirebaseUser(fbUser)).rejects.toThrow(
+        /temporarily unavailable on the server/i
+      );
+      expect(mApiPost).toHaveBeenCalledTimes(3);
     });
   });
 
@@ -292,6 +298,55 @@ describe('authService', () => {
       const result = await fetchProfile();
       expect(mApiGet).toHaveBeenCalledWith('/auth/profile');
       expect(result.data).toEqual(testUser);
+    });
+  });
+
+  // ── forgot password lifecycle ─────────────────────────────────────
+  describe('forgot password lifecycle', () => {
+    it('requestPasswordReset calls forgot-password request endpoint', async () => {
+      mApiPost.mockResolvedValue({
+        success: true,
+        data: { requested: true, expiresInMinutes: 30, message: 'ok' },
+      });
+
+      const result = await requestPasswordReset('user@example.com');
+
+      expect(mApiPost).toHaveBeenCalledWith('/auth/forgot-password/request', {
+        email: 'user@example.com',
+      });
+      expect(result.success).toBe(true);
+      expect(result.data.requested).toBe(true);
+    });
+
+    it('verifyPasswordResetToken calls forgot-password verify endpoint', async () => {
+      mApiPost.mockResolvedValue({
+        success: true,
+        data: { verified: true, resetSessionToken: 'session-token' },
+      });
+
+      const result = await verifyPasswordResetToken('user@example.com', 'email-token');
+
+      expect(mApiPost).toHaveBeenCalledWith('/auth/forgot-password/verify', {
+        email: 'user@example.com',
+        token: 'email-token',
+      });
+      expect(result.data.verified).toBe(true);
+      expect(result.data.resetSessionToken).toBe('session-token');
+    });
+
+    it('resetPasswordWithToken calls forgot-password reset endpoint', async () => {
+      mApiPost.mockResolvedValue({
+        success: true,
+        data: { reset: true, message: 'done' },
+      });
+
+      const result = await resetPasswordWithToken('session-token', 'NewPass123');
+
+      expect(mApiPost).toHaveBeenCalledWith('/auth/forgot-password/reset', {
+        resetSessionToken: 'session-token',
+        newPassword: 'NewPass123',
+      });
+      expect(result.data.reset).toBe(true);
     });
   });
 

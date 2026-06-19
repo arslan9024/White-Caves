@@ -1,4 +1,3 @@
-// @ts-nocheck
 /**
  * Agents API Routes — Full Implementation
  * Endpoints: /api/agents
@@ -15,6 +14,17 @@ import { cacheService } from '../services/CacheService.js';
 const router = Router();
 
 const CACHE_TTL_AGENTS = 300; // 5 minutes
+
+const routeParamToString = (value: string | string[] | undefined): string | null => {
+  if (typeof value === 'string' && value.trim().length > 0) {
+    return value;
+  }
+  if (Array.isArray(value) && value.length > 0 && typeof value[0] === 'string') {
+    const first = value[0].trim();
+    return first.length > 0 ? first : null;
+  }
+  return null;
+};
 
 // ─── GET /api/agents ────────────────────────────────────────────────────
 router.get(
@@ -193,18 +203,22 @@ router.get(
 router.get(
   '/:id',
   asyncHandler(async (req: Request, res: Response) => {
-    validateIdParam(req.params.id, 'Agent ID');
+    const agentId = routeParamToString(req.params.id);
+    if (!agentId) {
+      throw new AppError('Agent ID is required', 400);
+    }
+    validateIdParam(agentId, 'Agent ID');
 
     // IDOR protection: agents can only view their own profile; managers+ can view any
     const userRole = req.user?.role || '';
     const userId = req.user?.id || '';
     const isManagerOrAbove = ['owner', 'manager', 'admin'].includes(userRole);
-    if (!isManagerOrAbove && userId !== req.params.id) {
+    if (!isManagerOrAbove && userId !== agentId) {
       throw new AppError('Access denied — you can only view your own agent profile', 403);
     }
 
     const agent = await prisma.user.findUnique({
-      where: { id: req.params.id },
+      where: { id: agentId },
       select: {
         id: true,
         name: true,
@@ -304,13 +318,17 @@ router.get(
 router.get(
   '/:id/commissions',
   asyncHandler(async (req: Request, res: Response) => {
-    validateIdParam(req.params.id, 'Agent ID');
+    const agentId = routeParamToString(req.params.id);
+    if (!agentId) {
+      throw new AppError('Agent ID is required', 400);
+    }
+    validateIdParam(agentId, 'Agent ID');
 
     // IDOR protection: agents can only view their own commission data
     const userRole = req.user?.role || '';
     const userId = req.user?.id || '';
     const isManagerOrAbove = ['owner', 'manager', 'admin'].includes(userRole);
-    if (!isManagerOrAbove && userId !== req.params.id) {
+    if (!isManagerOrAbove && userId !== agentId) {
       throw new AppError('Access denied — you can only view your own commission data', 403);
     }
 
@@ -318,7 +336,7 @@ router.get(
     const pageNum = Math.max(1, parseInt(page as string) || 1);
     const limit = Math.min(100, Math.max(1, parseInt(pageSize as string) || 50));
 
-    const where: Record<string, unknown> = { agentId: req.params.id };
+    const where: Record<string, unknown> = { agentId };
     if (status) where.status = status as string;
 
     const [commissions, total] = await Promise.all([

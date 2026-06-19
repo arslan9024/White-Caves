@@ -17,14 +17,16 @@ import {
   selectDepartmentTrends,
   selectDepartmentSummaries,
   selectDepartmentLoading,
-  selectDepartmentError,
-  setSelectedDepartment,
+  selectDepartmentsFetchError,
+  selectDepartmentDataError,
+  selectDepartmentKPIsError,
+  selectDepartmentTrendsError,
+  selectDepartmentSummaryError,
   clearError,
 } from '../store/slices/departmentSlice';
 import { apiIntegration } from '../services/apiIntegration';
-import { DateRange } from '../services/departmentService';
 import { PaginationParams } from '../services/apiOptimizer';
-import { DepartmentData } from '../mocks/departmentData';
+import { DepartmentData } from '../services/departmentService';
 import type { RootState } from '../store/store';
 
 /**
@@ -35,7 +37,7 @@ export const useDepartmentsOptimized = (forceRefresh = false) => {
   const dispatch = useDispatch();
   const departments = useSelector(selectDepartments);
   const loading = useSelector((state: RootState) => selectDepartmentLoading(state).departments);
-  const error = useSelector((state: RootState) => selectDepartmentError(state).departments);
+  const error = useSelector(selectDepartmentsFetchError);
 
   useEffect(() => {
     // Only fetch if we don't have departments or force refresh
@@ -71,7 +73,7 @@ export const useDepartmentDataOptimized = (code: string | null, forceRefresh = f
   const departmentData = useSelector(selectDepartmentData);
   const data = code ? departmentData[code] : null;
   const loading = useSelector((state: RootState) => selectDepartmentLoading(state).data);
-  const error = useSelector((state: RootState) => selectDepartmentError(state).data);
+  const error = useSelector(selectDepartmentDataError);
 
   useEffect(() => {
     // Fetch data when code changes or force refresh
@@ -113,7 +115,7 @@ export const useDepartmentKPIsOptimized = (
   const kpisMap = useSelector(selectDepartmentKPIs);
   const kpis = code ? kpisMap[code] || [] : [];
   const loading = useSelector((state: RootState) => selectDepartmentLoading(state).kpis);
-  const error = useSelector((state: RootState) => selectDepartmentError(state).kpis);
+  const error = useSelector(selectDepartmentKPIsError);
 
   useEffect(() => {
     // Fetch KPIs when code changes
@@ -173,7 +175,7 @@ export const useDepartmentTrendsOptimized = (
   const trendsMap = useSelector(selectDepartmentTrends);
   const trends = code ? trendsMap[code] || [] : [];
   const loading = useSelector((state: RootState) => selectDepartmentLoading(state).trends);
-  const error = useSelector((state: RootState) => selectDepartmentError(state).trends);
+  const error = useSelector(selectDepartmentTrendsError);
 
   useEffect(() => {
     // Fetch trends when code or timeframe changes
@@ -237,7 +239,7 @@ export const useDepartmentSummaryOptimized = (code: string | null, forceRefresh 
   const summariesMap = useSelector(selectDepartmentSummaries);
   const summary = code ? summariesMap[code] : null;
   const loading = useSelector((state: RootState) => selectDepartmentLoading(state).summary);
-  const error = useSelector((state: RootState) => selectDepartmentError(state).summary);
+  const error = useSelector(selectDepartmentSummaryError);
 
   useEffect(() => {
     // Fetch summary when code changes
@@ -326,7 +328,7 @@ export const useBatchFetchDepartments = (codes: string[], forceRefresh = false) 
         setData(result);
         setError(null);
       } catch (err) {
-        setError(err);
+        setError(err instanceof Error ? err : new Error(String(err)));
         setData(null);
       } finally {
         setIsLoading(false);

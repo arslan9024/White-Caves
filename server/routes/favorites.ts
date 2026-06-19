@@ -1,4 +1,3 @@
-// @ts-nocheck
 /**
  * Favorites API Routes
  * ────────────────────
@@ -70,7 +69,7 @@ router.get(
         totalPages: Math.ceil(total / pageSize),
       },
     });
-  }),
+  })
 );
 
 // ─── GET /api/favorites/ids — Get all favorited property IDs (lightweight) ───
@@ -89,7 +88,7 @@ router.get(
       success: true,
       data: favorites.map(f => f.propertyId),
     });
-  }),
+  })
 );
 
 // ─── GET /api/favorites/check/:propertyId — Check if property is favorited ───
@@ -112,7 +111,7 @@ router.get(
       success: true,
       data: { isFavorited: !!favorite },
     });
-  }),
+  })
 );
 
 // ─── POST /api/favorites — Add a favorite ────────────────────────────────────
@@ -160,7 +159,7 @@ router.post(
       success: true,
       data: favorite,
     });
-  }),
+  })
 );
 
 // ─── DELETE /api/favorites/:propertyId — Remove a favorite ───────────────────
@@ -196,7 +195,7 @@ router.delete(
       success: true,
       message: 'Favorite removed',
     });
-  }),
+  })
 );
 
 export default router;

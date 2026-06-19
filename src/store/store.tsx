@@ -19,6 +19,7 @@ import roleReducer from './roleSlice';
 import featuresReducer from './featuresSlice';
 import savedSearchesReducer from './slices/savedSearchesSlice';
 import homepageReducer from './slices/homepageSlice';
+import departmentsReducer from './slices/departmentSlice';
 import searchLeadsReducer from './slices/searchLeadsSlice';
 import crmViewReducer from './slices/crmViewSlice';
 import propertySearchReducer from '../redux/slices/propertySlice';
@@ -61,6 +62,7 @@ export const store = configureStore({
     features: featuresReducer,
     savedSearches: savedSearchesReducer,
     homepage: homepageReducer,
+    departments: departmentsReducer,
     searchLeads: searchLeadsReducer,
     crmView: crmViewReducer,
     propertySearch: propertySearchReducer,

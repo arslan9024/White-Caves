@@ -1,4 +1,3 @@
-// @ts-nocheck
 /**
  * Documents Routes — REST API for document generation and management
  *
@@ -13,7 +12,7 @@
 
 import { Router, Request, Response } from 'express';
 import { requirePermission } from '../middleware/rbac.js';
-import { asyncHandler } from '../middleware/errorHandler.js';
+import { asyncHandler, AppError } from '../middleware/errorHandler.js';
 import {
   generateDocument,
   getDocument,
@@ -30,6 +29,17 @@ import {
 import { logger } from '../utils/logger.js';
 
 const router = Router();
+
+const routeParamToString = (value: string | string[] | undefined): string | null => {
+  if (typeof value === 'string' && value.trim().length > 0) {
+    return value;
+  }
+  if (Array.isArray(value) && value.length > 0 && typeof value[0] === 'string') {
+    const first = value[0].trim();
+    return first.length > 0 ? first : null;
+  }
+  return null;
+};
 
 // â”€â”€ Generate a document â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
@@ -223,7 +233,11 @@ router.get(
   '/contract/:id/pdf',
   requirePermission('view_leads'),
   asyncHandler(async (req: Request, res: Response) => {
-    const file = await documentService.generateContractPdf(req.params.id);
+    const contractId = routeParamToString(req.params.id);
+    if (!contractId) {
+      throw new AppError('Contract ID is required', 400);
+    }
+    const file = await documentService.generateContractPdf(contractId);
     res.setHeader('Content-Type', file.mimeType);
     res.setHeader('Content-Disposition', `attachment; filename="${file.filename}"`);
     res.status(200).send(file.buffer);
@@ -236,7 +250,11 @@ router.get(
   '/commission/:agentId/pdf',
   requirePermission('view_all_reports'),
   asyncHandler(async (req: Request, res: Response) => {
-    const file = await documentService.generateCommissionPdf(req.params.agentId);
+    const agentId = routeParamToString(req.params.agentId);
+    if (!agentId) {
+      throw new AppError('Agent ID is required', 400);
+    }
+    const file = await documentService.generateCommissionPdf(agentId);
     res.setHeader('Content-Type', file.mimeType);
     res.setHeader('Content-Disposition', `attachment; filename="${file.filename}"`);
     res.status(200).send(file.buffer);

@@ -1,4 +1,3 @@
-// @ts-nocheck
 /**
  * Compliance API Routes — Phase 3D Enhanced
  * ──────────────────────────────────────────
@@ -44,6 +43,16 @@ import logger from '../utils/logger.js';
 const db = prisma as any;
 
 const router = Router();
+
+const COMPLIANCE_MANAGER_ROLES = ['owner', 'manager', 'admin', 'finance'] as const;
+
+function ensureComplianceManagerRole(role: string | undefined, message: string): void {
+  if (
+    !COMPLIANCE_MANAGER_ROLES.includes((role || '') as (typeof COMPLIANCE_MANAGER_ROLES)[number])
+  ) {
+    throw new AppError(message, 403);
+  }
+}
 
 function normalizeMetadata(metadata: unknown): Record<string, unknown> {
   if (metadata && typeof metadata === 'object' && !Array.isArray(metadata)) {
@@ -181,7 +190,12 @@ router.get(
       throw new AppError('Access denied — audit logs require owner or manager role', 403);
     }
 
-    const { page = '1', pageSize = '50', type, action } = req.query as Record<string, string | undefined>;
+    const {
+      page = '1',
+      pageSize = '50',
+      type,
+      action,
+    } = req.query as Record<string, string | undefined>;
     const pageNum = Math.max(1, parseInt(page as string) || 1);
     const limit = Math.min(100, Math.max(1, parseInt(pageSize as string) || 50));
 
@@ -204,7 +218,7 @@ router.get(
 
     res.status(200).json({
       success: true,
-      data: logs.map(l => ({
+      data: logs.map((l: any) => ({
         id: l.id,
         type: l.type,
         action: l.action,
@@ -224,11 +238,10 @@ router.post(
   '/reports',
   requireMinRole('agent'),
   asyncHandler(async (req: Request, res: Response) => {
-    // AUTHORIZATION: compliance report submission requires elevated privileges
-    const userRole = req.user?.role || '';
-    if (!['owner', 'manager'].includes(userRole)) {
-      throw new AppError('Access denied — only owners/managers can submit compliance reports', 403);
-    }
+    ensureComplianceManagerRole(
+      req.user?.role,
+      'Access denied — compliance report submission requires manager role or above'
+    );
 
     const { title, findings, recommendations } = req.body;
 
@@ -299,10 +312,10 @@ router.post(
   '/brn-check',
   requireMinRole('agent'),
   asyncHandler(async (req: Request, res: Response) => {
-    const userRole = req.user?.role || '';
-    if (!['owner', 'manager'].includes(userRole)) {
-      throw new AppError('Access denied — only owners/managers can trigger BRN checks', 403);
-    }
+    ensureComplianceManagerRole(
+      req.user?.role,
+      'Access denied — BRN checks require manager role or above'
+    );
 
     logger.info('Manual BRN expiry check triggered', { userId: req.user?.id });
     const result = await checkBRNExpirations();
@@ -358,7 +371,7 @@ router.get(
       },
     });
 
-    const data = runs.map(run => {
+    const data = runs.map((run: any) => {
       const metadata = normalizeMetadata(run.metadata);
       return {
         id: run.id,
@@ -379,8 +392,8 @@ router.get(
       data,
       summary: {
         total: data.length,
-        totalNotified: data.reduce((sum, run) => sum + run.summary.notified, 0),
-        totalErrors: data.reduce((sum, run) => sum + run.summary.errors, 0),
+        totalNotified: data.reduce((sum: number, run: any) => sum + run.summary.notified, 0),
+        totalErrors: data.reduce((sum: number, run: any) => sum + run.summary.errors, 0),
       },
     });
   })
@@ -563,7 +576,7 @@ router.get(
       db.property.count({ where: missingWhere }),
     ]);
 
-    const data = properties.map(p => {
+    const data = properties.map((p: any) => {
       const permitStatus =
         !p.municipalityNumber ||
         !String(p.municipalityNumber).trim() ||
@@ -666,7 +679,7 @@ router.get(
       },
     });
 
-    const data = runs.map(run => {
+    const data = runs.map((run: any) => {
       const metadata = normalizeMetadata(run.metadata);
       return {
         id: run.id,
@@ -691,8 +704,8 @@ router.get(
       data,
       summary: {
         total: data.length,
-        liveRuns: data.filter(r => r.action === 'permit_enforcement_triggered').length,
-        dryRuns: data.filter(r => r.action === 'permit_enforcement_dry_run').length,
+        liveRuns: data.filter((r: any) => r.action === 'permit_enforcement_triggered').length,
+        dryRuns: data.filter((r: any) => r.action === 'permit_enforcement_dry_run').length,
       },
     });
   })
@@ -871,7 +884,7 @@ router.get(
       take: 200,
     });
 
-    const mapped = docs.map(d => {
+    const mapped = docs.map((d: any) => {
       const metadata = normalizeMetadata(d.metadata);
       return {
         id: d.id,
@@ -916,14 +929,14 @@ router.get(
       },
     });
 
-    const pending = docs.filter(d => {
+    const pending = docs.filter((d: any) => {
       const metadata = normalizeMetadata(d.metadata);
       return (metadata.reviewStatus || 'pending') === 'pending';
     });
 
     res.json({
       success: true,
-      data: pending.map(d => {
+      data: pending.map((d: any) => {
         const metadata = normalizeMetadata(d.metadata);
         return {
           id: d.id,
@@ -949,10 +962,7 @@ router.patch(
   '/kyc/documents/:documentId/review',
   requirePermission('view_analytics'),
   asyncHandler(async (req: Request, res: Response) => {
-    const allowedRoles = ['owner', 'manager', 'admin', 'finance'];
-    if (!allowedRoles.includes(req.user?.role || '')) {
-      throw new AppError('Access denied — KYC review requires manager role', 403);
-    }
+    ensureComplianceManagerRole(req.user?.role, 'Access denied — KYC review requires manager role');
 
     const { documentId } = req.params as Record<string, string>;
     const { decision, comments } = req.body;
@@ -991,7 +1001,7 @@ router.patch(
       });
 
       if (lead) {
-        const normalizedTags = (lead.tags || []).map(t => String(t).toLowerCase());
+        const normalizedTags = (lead.tags || []).map((t: unknown) => String(t).toLowerCase());
         const hasVerified = normalizedTags.includes('kyc_verified');
         const hasRejected = normalizedTags.includes('kyc_rejected');
 
@@ -1095,7 +1105,7 @@ router.post(
     });
 
     if (isFlagged) {
-      const normalizedTags = (lead.tags || []).map(t => String(t).toLowerCase());
+      const normalizedTags = (lead.tags || []).map((t: unknown) => String(t).toLowerCase());
       const hasAmlFlagged = normalizedTags.includes('aml_flagged');
       if (!hasAmlFlagged) {
         await db.lead.update({
@@ -1142,7 +1152,7 @@ router.get(
       take,
     });
 
-    const filtered = alerts.filter(a => {
+    const filtered = alerts.filter((a: any) => {
       const metadata = normalizeMetadata(a.metadata);
       const alertStatus = String(metadata.status || 'open');
       return status === 'all' ? true : alertStatus === status;
@@ -1150,7 +1160,7 @@ router.get(
 
     res.json({
       success: true,
-      data: filtered.map(a => {
+      data: filtered.map((a: any) => {
         const metadata = normalizeMetadata(a.metadata);
         return {
           id: a.id,
@@ -1233,10 +1243,10 @@ router.post(
   '/consent',
   requireMinRole('agent'),
   asyncHandler(async (req: Request, res: Response) => {
-    const allowedRoles = ['owner', 'manager', 'admin', 'finance', 'agent'];
-    if (!allowedRoles.includes(req.user?.role || '')) {
-      throw new AppError('Access denied — consent creation requires agent role or above', 403);
-    }
+    ensureComplianceManagerRole(
+      req.user?.role,
+      'Access denied — consent creation requires manager role or above'
+    );
 
     const { entityType = 'lead', entityId, purpose, channel, consentTextVersion } = req.body;
     if (!entityId || !purpose) {
@@ -1285,10 +1295,10 @@ router.patch(
   '/consent/:consentId/revoke',
   requirePermission('view_analytics'),
   asyncHandler(async (req: Request, res: Response) => {
-    const allowedRoles = ['owner', 'manager', 'admin', 'finance'];
-    if (!allowedRoles.includes(req.user?.role || '')) {
-      throw new AppError('Access denied — consent revoke requires manager role', 403);
-    }
+    ensureComplianceManagerRole(
+      req.user?.role,
+      'Access denied — consent revoke requires manager role'
+    );
 
     const { consentId } = req.params as Record<string, string>;
     const { reason } = req.body;
@@ -1361,7 +1371,7 @@ router.get(
       take,
     });
 
-    const mapped = records.map(r => {
+    const mapped = records.map((r: any) => {
       const metadata = normalizeMetadata(r.metadata);
       return {
         id: r.id,
@@ -1377,7 +1387,7 @@ router.get(
       };
     });
 
-    const filtered = mapped.filter(row => {
+    const filtered = mapped.filter((row: any) => {
       if (status !== 'all' && String(row.status) !== status) return false;
       if (entityType && String(row.entityType) !== entityType) return false;
       if (entityId && String(row.entityId) !== entityId) return false;
@@ -1400,10 +1410,10 @@ router.delete(
   '/consent/:consentId',
   requirePermission('view_analytics'),
   asyncHandler(async (req: Request, res: Response) => {
-    const allowedRoles = ['owner', 'manager', 'admin'];
-    if (!allowedRoles.includes(req.user?.role || '')) {
-      throw new AppError('Access denied — consent delete requires admin role', 403);
-    }
+    ensureComplianceManagerRole(
+      req.user?.role,
+      'Access denied — consent delete requires manager role or above'
+    );
 
     const { consentId } = req.params;
     const consent = await db.activity.findUnique({ where: { id: consentId } });
@@ -1499,12 +1509,12 @@ router.get(
       }),
     ]);
 
-    const pendingKyc = kycDocs.filter(d => {
+    const pendingKyc = kycDocs.filter((d: any) => {
       const metadata = normalizeMetadata(d.metadata);
       return (metadata.reviewStatus || 'pending') === 'pending';
     });
 
-    const openAml = amlAlerts.filter(a => {
+    const openAml = amlAlerts.filter((a: any) => {
       const metadata = normalizeMetadata(a.metadata);
       return String(metadata.status || 'open') === 'open';
     });
@@ -1518,7 +1528,7 @@ router.get(
           amlOpenAlerts: openAml.length,
         },
         permitIssues: permitIssues.slice(0, 20),
-        kycPendingReview: pendingKyc.slice(0, 20).map(d => {
+        kycPendingReview: pendingKyc.slice(0, 20).map((d: any) => {
           const metadata = normalizeMetadata(d.metadata);
           return {
             id: d.id,
@@ -1528,7 +1538,7 @@ router.get(
             uploadedAt: metadata.uploadedAt || d.createdAt.toISOString(),
           };
         }),
-        amlOpenAlerts: openAml.slice(0, 20).map(a => {
+        amlOpenAlerts: openAml.slice(0, 20).map((a: any) => {
           const metadata = normalizeMetadata(a.metadata);
           return {
             id: a.id,

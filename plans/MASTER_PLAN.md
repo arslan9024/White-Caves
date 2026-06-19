@@ -2,7 +2,7 @@
 
 **Purpose:** Canonical roadmap for execution decisions.  
 **Owners:** @Ada + @Margaret  
-**Last Updated:** 2026-06-10  
+**Last Updated:** 2026-06-19  
 **Update cadence:** Weekly roadmap refresh (daily execution goes to `PROJECT_PROGRESS.md` and `DAILY_MILESTONE_TRACKER.md`)
 
 ---
@@ -11,7 +11,8 @@
 
 - N+1 through N+9 implementation stream: **✅ Completed**
 - Wave 08 stabilization/governance pass: **✅ Completed**
-- Active implementation focus: **Wave 18 ✅ Complete → Wave 18.1 competitor parity execution — Session 1 ✅ → Session 2 ✅ → Session 3 🟡 In Progress → Wave 18.2 profile-first post-login journey ✅ Complete**
+- Active implementation focus: **Wave 19 ✅ Complete (W19-001…W19-015) and Wave 20 ✅ Complete (RBAC hardening + audit export security + compliance/consent mutation guards)**
+- Business documentation P0 uplift: **✅ Complete (DAMAC Hills 2 area playbook + leasing support operations playbook + Sentinel Property and Maintenance spec upgrades + tenancy/legal notice taxonomy normalization)**
 - Observability / autopilot focus: **Progress-intelligence dashboard, trend exports, reroute hints, and visible ETA/drift signals ✅ Complete**
 - Canonical planning stack: `MASTER_PLAN.md` + `PENDING_TASKS_ONLY.md` + `waves/README.md`
 - Superseded Wave 12 market-intelligence documents were archived to avoid naming collisions with the active automation Wave 12 bundle
@@ -65,6 +66,8 @@ Use [`waves/README.md`](./waves/README.md) for the full bundle list.
 | 16   | ✅ Complete | [`Wave 16`](./waves/WAVE_16_SDD.md) |
 | 17   | ✅ Complete | [`Wave 17`](./waves/WAVE_17_SDD.md) |
 | 18   | ✅ Complete | [`Wave 18`](./waves/WAVE_18_SDD.md) |
+| 19   | ✅ Complete | [`Wave 19`](./waves/WAVE_19_SDD.md) |
+| 20   | ✅ Complete | [`Wave 20`](./waves/WAVE_20_SDD.md) |
 
 ---
 

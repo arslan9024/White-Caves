@@ -1,7 +1,7 @@
 # Pending Tasks Only
 
-**Last Updated:** 2026-06-10
-**Current Focus:** Wave 18.1 Session 3 (P0 closure + top P1s) 🟡 In Progress → orchestration telemetry refreshed (progress-intelligence, trend exports, reroute hints) ✅ Complete.
+**Last Updated:** 2026-06-19
+**Current Focus:** Wave 19 implementation + governance closeout ✅ Complete (W19-001…W19-015); Wave 20 security hardening ✅ Complete; documentation governance sync and P0 business-doc implementation evidence capture active.
 
 ## Canonical Sources
 
@@ -14,7 +14,7 @@
 
 ## Implementation Order
 
-`09 → 10 → 11 → 12 → 13 → 14 → 15 → 16 → 17 → 18`
+`09 → 10 → 11 → 12 → 13 → 14 → 15 → 16 → 17 → 18 → 19 → 20`
 
 Advance only when the prior wave is green, the readiness gate is satisfied, and `@Ada — Context Ready (60% Readiness) — Coding Phase Approved` has been issued for that wave.
 
@@ -36,6 +36,42 @@ Advance only when the prior wave is green, the readiness gate is satisfied, and 
 | S12    | 18.1    | Competitor parity execution — Session 1 ✅ complete, Session 2 ✅ complete                       | ✅ Complete    | @Ada + @Mira + @Una + @Tracy + @Katherine + @Sofia     | Session 1 + Session 2 tests green + build green + `npm run plans:validate`                   |
 | S13    | 18.1-S3 | Competitor parity execution — Session 3: 2 deferred P0s + top 8 P1s                              | 🟡 In Progress | @Ada + @Mira + @Joelle + @Katherine + @Victoria + @Una | Session 3 tests green + build green + `npm run plans:validate`                               |
 | S14    | 18.2    | Profile-first post-login journey + Dashboard CTA alignment                                       | ✅ Complete    | @Ada + @Mira                                           | `useSignIn` tests green + build green                                                        |
+| S15    | 19      | Identity & Access v2, routing, MD workspace split, executive UX                                  | ✅ Complete    | @Ada + @Mira + @Una + @Katherine                       | W19-001…W19-015 complete; 142 auth/routing tests green; `npm run plans:validate`             |
+| S16    | 20      | RBAC hardening + audit export security + OWASP A01 superuser email fix                           | ✅ Complete    | @Mira + @Radia + @Katherine                            | 142 auth tests + 37 activities tests green; `npm run plans:validate`                         |
+
+### Wave 19 Closeout (Complete)
+
+- **Wave 19 status:** ✅ Complete
+- **Scope delivered:** Identity & Access v2, `/crm` routing consistency, MD workspace split, executive dashboard UX parity, state-system parity, traceability matrix, rollout/rollback thresholds.
+- **Evidence:** `WAVE_19_IMPLEMENTATION_BACKLOG.md` (W19-001…W19-015 ✅), `server/routes/reporting.test.ts` (32/32 ✅), `src/utils/routing.test.ts`, `src/utils/authSession.test.ts`, `src/pages/UnifiedDashboardPage.test.tsx`, `npm run plans:validate`.
+
+### Next Planned Stream (Wave 20)
+
+### Wave 20 Closeout (Complete)
+
+- **Wave 20 status:** ✅ Complete
+- **Key deliveries:**
+  - W20-001: Audit log CSV/XLSX export re-gated from `view_leads` to `view_audit_logs` (OWASP A01)
+  - W20-001 RBAC contract tests: 8 ROLE_PERMISSIONS matrix tests via `vi.importActual`
+  - W20-002: compliance mutations (`/reports`, `/brn-check`, `/kyc/documents/:id/review`) now enforce explicit manager+ (`owner/manager/admin/finance`) role guards
+  - W20-003: PDPL consent create/revoke/delete mutations now enforce explicit manager+ (`owner/manager/admin/finance`) role guards with agent negative-path coverage
+  - OWASP A01 fix: hardcoded superuser email removed from source, moved to env vars `CREATOR_SUPERUSER_EMAIL` / `VITE_CREATOR_SUPERUSER_EMAIL`
+  - Lazy evaluation pattern applied so `vi.stubEnv` works correctly in tests
+  - `.env.example` updated with both server and client env var keys
+- **Tests:** prior Wave 20 auth/activities evidence remains green; focused `server/routes/compliance.test.ts` + `server/routes/activities.test.ts` rerun completed with **exit code 0**; `npm run plans:validate` completed with **exit code 0**
+
+### P0 Business Documentation Wave (Complete)
+
+- **Status:** ✅ Complete (2026-06-19)
+- **Delivered artifacts:**
+  - `business_docs/08_market_research/damac-hills-2-area-playbook.md` (new)
+  - `business_docs/04_workflows/leasing-support-operations-playbook.md` (new)
+  - `business_docs/09_crm_features/sentinel-property.md` (stub-to-spec replacement)
+  - `business_docs/09_crm_features/maintenance.md` (stub-to-spec replacement)
+  - `business_docs/09_crm_features/tenancy-ejari.md` (legal notice taxonomy normalized with `legal-management.md`)
+- **Validation evidence:**
+  - Markdown diagnostics for all touched business docs: **No errors found**
+  - Stub marker sweep (`TODO|awaiting expansion|STUB|Stub`) for sentinel/maintenance: **No matches**
 
 ## Completed Stream History
 

@@ -27,6 +27,8 @@ export default function PropertyImageSlider({
   const [currentIndex, setCurrentIndex] = useState<number>(0);
   const [isFullscreen, setIsFullscreen] = useState<boolean>(false);
   const fullscreenRef = useRef<HTMLDivElement>(null);
+  const sliderRef = useRef<HTMLDivElement>(null);
+  const sliderTrackRef = useRef<HTMLDivElement>(null);
 
   const defaultImages: string[] = [
     'https://images.unsplash.com/photo-1613490493576-7fde63acd811?w=800',
@@ -92,10 +94,20 @@ export default function PropertyImageSlider({
     };
   }, [isFullscreen, closeFullscreen, goToPrev, goToNext]);
 
+  useEffect(() => {
+    if (!sliderRef.current) return;
+    sliderRef.current.style.setProperty('--slider-aspect-ratio', aspectRatio);
+  }, [aspectRatio]);
+
+  useEffect(() => {
+    if (!sliderTrackRef.current) return;
+    sliderTrackRef.current.style.transform = `translateX(-${currentIndex * 100}%)`;
+  }, [currentIndex]);
+
   return (
     <>
-      <div className="property-image-slider" style={{ aspectRatio }}>
-        <div className="slider-track">
+      <div className="property-image-slider" ref={sliderRef}>
+        <div className="slider-track" ref={sliderTrackRef}>
           {imageList.map((img, index) => {
             const sources = generatePictureSources({
               baseUrl: img,
@@ -106,7 +118,6 @@ export default function PropertyImageSlider({
               <div
                 key={img ?? `slide-${index}`}
                 className={`slide ${index === currentIndex ? 'active' : ''}`}
-                style={{ transform: `translateX(${(index - currentIndex) * 100}%)` }}
               >
                 <picture>
                   <source srcSet={sources.avifSrc} type="image/avif" />
@@ -228,7 +239,12 @@ export default function PropertyImageSlider({
           aria-modal="true"
           aria-label="Image gallery"
         >
-          <button className="close-fullscreen" onClick={closeFullscreen}>
+          <button
+            className="close-fullscreen"
+            onClick={closeFullscreen}
+            title="Close fullscreen gallery"
+            aria-label="Close fullscreen gallery"
+          >
             <X size={24} />
           </button>
 
@@ -250,10 +266,20 @@ export default function PropertyImageSlider({
 
             {imageList.length > 1 && (
               <>
-                <button className="fs-nav-btn prev" onClick={goToPrev}>
+                <button
+                  className="fs-nav-btn prev"
+                  onClick={goToPrev}
+                  title="Previous image"
+                  aria-label="Previous image"
+                >
                   <ChevronLeft size={32} />
                 </button>
-                <button className="fs-nav-btn next" onClick={goToNext}>
+                <button
+                  className="fs-nav-btn next"
+                  onClick={goToNext}
+                  title="Next image"
+                  aria-label="Next image"
+                >
                   <ChevronRight size={32} />
                 </button>
               </>

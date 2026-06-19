@@ -1,4 +1,3 @@
-// @ts-nocheck
 import { prisma } from '../../database.js';
 import logger from '../../utils/logger.js';
 
@@ -86,7 +85,7 @@ export async function getPermitAlerts(daysAhead = 30): Promise<PermitAlertResult
     take: 200,
   });
 
-  const brnPermitAlerts = brnExpiringOrExpired.map(agent => {
+  const brnPermitAlerts = brnExpiringOrExpired.map((agent: any) => {
     const expiry = agent.brnExpiry as Date;
     const daysToExpiry = Math.ceil((expiry.getTime() - now.getTime()) / (24 * 60 * 60 * 1000));
     return {
@@ -100,8 +99,8 @@ export async function getPermitAlerts(daysAhead = 30): Promise<PermitAlertResult
     summary: {
       daysAhead: parsedDaysAhead,
       listingPermitIssues: listingPermitIssues.length,
-      brnExpired: brnPermitAlerts.filter(a => a.status === 'expired').length,
-      brnExpiringSoon: brnPermitAlerts.filter(a => a.status === 'expiring_soon').length,
+      brnExpired: brnPermitAlerts.filter((a: any) => a.status === 'expired').length,
+      brnExpiringSoon: brnPermitAlerts.filter((a: any) => a.status === 'expiring_soon').length,
     },
     listingPermitIssues,
     brnPermitAlerts,

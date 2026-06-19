@@ -1,4 +1,3 @@
-// @ts-nocheck
 /**
  * Activities API Routes — Standalone CRUD
  * Endpoints: /api/activities
@@ -17,6 +16,14 @@ import { requirePermission } from '../middleware/rbac';
 import { triggerLeadRescore } from '../services/ai/leadAutoRescore.js';
 
 const router = Router();
+
+const ACTIVITY_AUDIT_ROLES = ['owner', 'manager', 'admin'] as const;
+
+function ensureActivityAuditRole(role: string | undefined): void {
+  if (!ACTIVITY_AUDIT_ROLES.includes((role || '') as (typeof ACTIVITY_AUDIT_ROLES)[number])) {
+    throw new AppError('Access denied — activity audit requires manager or above role', 403);
+  }
+}
 
 function buildActivityWhere(params: Record<string, string | undefined>): Prisma.ActivityWhereInput {
   const { type, action, userId, leadId, search } = params;
@@ -45,9 +52,23 @@ router.get(
   '/',
   requirePermission('view_leads'),
   asyncHandler(async (req: Request, res: Response) => {
-    const { type, action, userId, leadId, search, sortBy = 'createdAt', sortOrder = 'desc' } = req.query as Record<string, string | undefined>;
+    ensureActivityAuditRole(req.user?.role);
 
-    const { page: pageNum, limit, skip } = parsePagination({
+    const {
+      type,
+      action,
+      userId,
+      leadId,
+      search,
+      sortBy = 'createdAt',
+      sortOrder = 'desc',
+    } = req.query as Record<string, string | undefined>;
+
+    const {
+      page: pageNum,
+      limit,
+      skip,
+    } = parsePagination({
       page: req.query.page as string,
       limit: req.query.pageSize as string,
     });
@@ -56,7 +77,9 @@ router.get(
 
     const validSorts = ['createdAt', 'type', 'action'];
     const field = validSorts.includes(sortBy as string) ? (sortBy as string) : 'createdAt';
-    const orderBy: Prisma.ActivityOrderByWithRelationInput = { [field]: sortOrder === 'asc' ? 'asc' : 'desc' };
+    const orderBy: Prisma.ActivityOrderByWithRelationInput = {
+      [field]: sortOrder === 'asc' ? 'asc' : 'desc',
+    };
 
     const [activities, total] = await Promise.all([
       prisma.activity.findMany({
@@ -74,7 +97,7 @@ router.get(
 
     res.status(200).json({
       success: true,
-      data: activities.map((a) => ({
+      data: activities.map(a => ({
         id: a.id,
         type: a.type,
         action: a.action,
@@ -94,9 +117,12 @@ router.get(
 // ─── GET /api/activities/export/csv ──────────────────────────────────────
 router.get(
   '/export/csv',
-  requirePermission('view_leads'),
+  requirePermission('view_audit_logs'),
   asyncHandler(async (req: Request, res: Response) => {
-    const { type, action, userId, leadId, search } = req.query as Record<string, string | undefined>;
+    const { type, action, userId, leadId, search } = req.query as Record<
+      string,
+      string | undefined
+    >;
     const where = buildActivityWhere({ type, action, userId, leadId, search });
 
     const rows = await prisma.activity.findMany({
@@ -117,7 +143,7 @@ router.get(
 
     const csvLines = [
       ['id', 'createdAt', 'type', 'action', 'description', 'user', 'email', 'lead'].join(','),
-      ...rows.map((row) =>
+      ...rows.map(row =>
         [
           escape(row.id),
           escape(row.createdAt.toISOString()),
@@ -127,22 +153,25 @@ router.get(
           escape(row.user?.name || 'System'),
           escape(row.user?.email || ''),
           escape(row.lead?.name || ''),
-        ].join(','),
+        ].join(',')
       ),
     ];
 
     res.setHeader('Content-Type', 'text/csv; charset=utf-8');
     res.setHeader('Content-Disposition', 'attachment; filename="audit-log.csv"');
     res.status(200).send(csvLines.join('\n'));
-  }),
+  })
 );
 
 // ─── GET /api/activities/export/xlsx ─────────────────────────────────────
 router.get(
   '/export/xlsx',
-  requirePermission('view_leads'),
+  requirePermission('view_audit_logs'),
   asyncHandler(async (req: Request, res: Response) => {
-    const { type, action, userId, leadId, search } = req.query as Record<string, string | undefined>;
+    const { type, action, userId, leadId, search } = req.query as Record<
+      string,
+      string | undefined
+    >;
     const where = buildActivityWhere({ type, action, userId, leadId, search });
 
     const rows = await prisma.activity.findMany({
@@ -190,10 +219,13 @@ router.get(
     };
 
     const buffer = await workbook.xlsx.writeBuffer();
-    res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+    res.setHeader(
+      'Content-Type',
+      'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+    );
     res.setHeader('Content-Disposition', 'attachment; filename="audit-log.xlsx"');
     res.status(200).send(Buffer.from(buffer));
-  }),
+  })
 );
 
 // ─── GET /api/activities/:id ────────────────────────────────────────────
@@ -201,6 +233,8 @@ router.get(
   '/:id',
   requirePermission('view_leads'),
   asyncHandler(async (req: Request, res: Response) => {
+    ensureActivityAuditRole(req.user?.role);
+
     validateIdParam(req.params.id as string, 'Activity ID');
 
     const activity = await prisma.activity.findUnique({
@@ -223,7 +257,9 @@ router.get(
         metadata: activity.metadata,
         createdAt: activity.createdAt.toISOString(),
         userId: activity.userId,
-        user: activity.user ? { id: activity.user.id, name: activity.user.name, email: activity.user.email } : null,
+        user: activity.user
+          ? { id: activity.user.id, name: activity.user.name, email: activity.user.email }
+          : null,
         leadId: activity.leadId,
         lead: activity.lead ? { id: activity.lead.id, name: activity.lead.name } : null,
       },
@@ -240,10 +276,16 @@ router.post(
     const { type, action, description, metadata, leadId } = req.body;
 
     if (!type || typeof type !== 'string') {
-      throw new AppError('Activity type is required (lead, property, deal, commission, agent, client, system)', 400);
+      throw new AppError(
+        'Activity type is required (lead, property, deal, commission, agent, client, system)',
+        400
+      );
     }
     if (!action || typeof action !== 'string') {
-      throw new AppError('Activity action is required (created, updated, deleted, status_changed, note_added, call, email, visit)', 400);
+      throw new AppError(
+        'Activity action is required (created, updated, deleted, status_changed, note_added, call, email, visit)',
+        400
+      );
     }
     if (!description || typeof description !== 'string') {
       throw new AppError('Activity description is required', 400);

@@ -1,4 +1,3 @@
-// @ts-nocheck
 /**
  * Compliance Service — Phase 3D
  * ─────────────────────────────
@@ -91,20 +90,16 @@ export interface ComplianceOverview {
 // ─── VAT Rates (Dubai regulations) ──────────────────────────────────────
 
 const VAT_RATES: Record<string, number> = {
-  residential: 0,     // 0% VAT on residential property sales/rentals
-  commercial: 5,      // 5% VAT on commercial property
-  commission: 5,      // 5% VAT on commission income (default)
+  residential: 0, // 0% VAT on residential property sales/rentals
+  commercial: 5, // 5% VAT on commercial property
+  commission: 5, // 5% VAT on commission income (default)
 };
 
 // ─── Residential property types ──────────────────────────────────────────
 
-const RESIDENTIAL_TYPES = new Set([
-  'apartment', 'villa', 'townhouse', 'penthouse', 'studio',
-]);
+const RESIDENTIAL_TYPES = new Set(['apartment', 'villa', 'townhouse', 'penthouse', 'studio']);
 
-const COMMERCIAL_TYPES = new Set([
-  'commercial', 'office', 'retail', 'warehouse', 'industrial',
-]);
+const COMMERCIAL_TYPES = new Set(['commercial', 'office', 'retail', 'warehouse', 'industrial']);
 
 // ─── Ejari CSV Export ────────────────────────────────────────────────────
 
@@ -112,9 +107,11 @@ const COMMERCIAL_TYPES = new Set([
  * Generate Ejari CSV data for bulk registration.
  * Returns array of rows + CSV string.
  */
-export async function generateEjariExport(
-  filters?: { status?: string; fromDate?: Date; toDate?: Date },
-): Promise<{ rows: EjariExportRow[]; csv: string; count: number }> {
+export async function generateEjariExport(filters?: {
+  status?: string;
+  fromDate?: Date;
+  toDate?: Date;
+}): Promise<{ rows: EjariExportRow[]; csv: string; count: number }> {
   const where: Record<string, unknown> = {};
 
   if (filters?.status) {
@@ -137,11 +134,11 @@ export async function generateEjariExport(
     orderBy: { startDate: 'desc' },
   });
 
-  const rows: EjariExportRow[] = leases.map((lease) => ({
+  const rows: EjariExportRow[] = leases.map((lease: any) => ({
     leaseNumber: lease.leaseNumber || '',
     tenantName: lease.tenant?.name || '',
     tenantEmail: lease.tenant?.email || '',
-    tenantPhone: (lease.tenant as Record<string, unknown>)?.phone as string || '',
+    tenantPhone: ((lease.tenant as Record<string, unknown>)?.phone as string) || '',
     landlordName: lease.landlord?.name || '',
     propertyTitle: lease.property?.title || '',
     propertyLocation: lease.property?.location || '',
@@ -158,22 +155,45 @@ export async function generateEjariExport(
 
   // Generate CSV
   const headers = [
-    'Lease Number', 'Tenant Name', 'Tenant Email', 'Tenant Phone',
-    'Landlord Name', 'Property Title', 'Property Location', 'Property Type',
-    'Start Date', 'End Date', 'Monthly Rent', 'Currency',
-    'Ejari Number', 'Ejari Status', 'Registration Date', 'Expiry Date',
+    'Lease Number',
+    'Tenant Name',
+    'Tenant Email',
+    'Tenant Phone',
+    'Landlord Name',
+    'Property Title',
+    'Property Location',
+    'Property Type',
+    'Start Date',
+    'End Date',
+    'Monthly Rent',
+    'Currency',
+    'Ejari Number',
+    'Ejari Status',
+    'Registration Date',
+    'Expiry Date',
   ];
 
   const csvLines = [
     headers.join(','),
-    ...rows.map((r) =>
+    ...rows.map(r =>
       [
-        escapeCSV(r.leaseNumber), escapeCSV(r.tenantName), escapeCSV(r.tenantEmail),
-        escapeCSV(r.tenantPhone), escapeCSV(r.landlordName), escapeCSV(r.propertyTitle),
-        escapeCSV(r.propertyLocation), escapeCSV(r.propertyType),
-        r.startDate, r.endDate, r.monthlyRent, r.currency,
-        escapeCSV(r.ejariNumber), r.ejariStatus, r.ejariRegistrationDate, r.ejariExpiryDate,
-      ].join(','),
+        escapeCSV(r.leaseNumber),
+        escapeCSV(r.tenantName),
+        escapeCSV(r.tenantEmail),
+        escapeCSV(r.tenantPhone),
+        escapeCSV(r.landlordName),
+        escapeCSV(r.propertyTitle),
+        escapeCSV(r.propertyLocation),
+        escapeCSV(r.propertyType),
+        r.startDate,
+        r.endDate,
+        r.monthlyRent,
+        r.currency,
+        escapeCSV(r.ejariNumber),
+        r.ejariStatus,
+        r.ejariRegistrationDate,
+        r.ejariExpiryDate,
+      ].join(',')
     ),
   ];
 
@@ -203,10 +223,7 @@ function escapeCSV(value: string): string {
  * Calculate VAT summary for commissions grouped by property type.
  * Dubai VAT rules: 0% residential, 5% commercial, 5% on commission fees.
  */
-export async function calculateVATSummary(
-  fromDate?: Date,
-  toDate?: Date,
-): Promise<VATSummary> {
+export async function calculateVATSummary(fromDate?: Date, toDate?: Date): Promise<VATSummary> {
   const where: Record<string, unknown> = {
     status: { in: ['approved', 'paid'] },
   };
@@ -254,9 +271,13 @@ export async function calculateVATSummary(
 
   // Calculate totals
   summary.totals.commissions =
-    summary.residential.commissions + summary.commercial.commissions + summary.unclassified.commissions;
+    summary.residential.commissions +
+    summary.commercial.commissions +
+    summary.unclassified.commissions;
   summary.totals.totalAmount =
-    summary.residential.totalAmount + summary.commercial.totalAmount + summary.unclassified.totalAmount;
+    summary.residential.totalAmount +
+    summary.commercial.totalAmount +
+    summary.unclassified.totalAmount;
   summary.totals.totalVAT =
     summary.residential.vatAmount + summary.commercial.vatAmount + summary.unclassified.vatAmount;
   summary.totals.grandTotal = summary.totals.totalAmount + summary.totals.totalVAT;
@@ -321,15 +342,15 @@ export async function getComplianceOverview(): Promise<ComplianceOverview> {
     }),
   ]);
 
-  const brnPct = brnStats.total > 0
-    ? Math.round(((brnStats.valid + brnStats.expiringSoon) / brnStats.total) * 100)
-    : 100;
-  const ejariPct = ejariStats.totalLeases > 0
-    ? Math.round((ejariStats.registered / ejariStats.totalLeases) * 100)
-    : 100;
-  const docPct = totalProps > 0
-    ? Math.round((propsWithDocs / totalProps) * 100)
-    : 100;
+  const brnPct =
+    brnStats.total > 0
+      ? Math.round(((brnStats.valid + brnStats.expiringSoon) / brnStats.total) * 100)
+      : 100;
+  const ejariPct =
+    ejariStats.totalLeases > 0
+      ? Math.round((ejariStats.registered / ejariStats.totalLeases) * 100)
+      : 100;
+  const docPct = totalProps > 0 ? Math.round((propsWithDocs / totalProps) * 100) : 100;
 
   return {
     brnCompliance: { ...brnStats, percentage: brnPct },
@@ -355,7 +376,7 @@ export async function updateEjariStatus(
     ejariStatus?: string;
     ejariRegistrationDate?: Date;
     ejariExpiryDate?: Date;
-  },
+  }
 ): Promise<unknown> {
   const lease = await db.lease.findUnique({ where: { id: leaseId } });
   if (!lease) throw new Error('Lease not found');
@@ -370,6 +391,10 @@ export async function updateEjariStatus(
     },
   });
 
-  logger.info('Ejari status updated', { leaseId, ejariNumber: updated.ejariNumber, ejariStatus: updated.ejariStatus });
+  logger.info('Ejari status updated', {
+    leaseId,
+    ejariNumber: updated.ejariNumber,
+    ejariStatus: updated.ejariStatus,
+  });
   return updated;
 }

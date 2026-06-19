@@ -40,6 +40,20 @@ function Convert-ToDateSafe {
   }
 }
 
+function Get-TaskAgeHours {
+  param([object]$Task)
+
+  $timestamps = @(
+    (Convert-ToDateSafe -Value $Task.startedAt),
+    (Convert-ToDateSafe -Value $Task.updatedAt),
+    (Convert-ToDateSafe -Value $Task.createdAt)
+  ) | Where-Object { $null -ne $_ }
+
+  if (@($timestamps).Count -eq 0) { return $null }
+  $anchor = @($timestamps | Sort-Object | Select-Object -First 1)[0]
+  return [math]::Round(((Get-Date) - $anchor).TotalHours, 1)
+}
+
 function Test-TitleMatch {
   param(
     [string]$Title,

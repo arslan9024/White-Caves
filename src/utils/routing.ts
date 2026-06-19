@@ -6,40 +6,71 @@
  */
 
 import { getRank, resolveBackendRole } from './permissions';
+import { createLogger } from './logger';
 import { isCreatorSuperUserEmail, isSuperUserAliasRole } from './superUserAccess';
+
+const authRoutingLogger = createLogger('AuthRouting');
+
+interface PostLoginRouteOptions {
+  status?: string | null;
+  profileCompleted?: boolean;
+}
 
 /**
  * Returns the correct landing path after a successful login based on the user's role.
  *
- * Rank 1 (general users)  → /profile
- * Rank 2 (staff/CRM)      → /profile
- * Rank 3 (customers)      → /profile
+ * Rank 1 (general users)  → /profile (or /crm when profile is complete)
+ * Rank 2 (staff/CRM)      → /crm (or /profile when profile is incomplete)
+ * Rank 3 (customers)      → role-specific portal or /crm fallback
  * No role / unknown       → /select-role
  */
 export function getPostLoginRoute(
   role: string | null | undefined,
-  email?: string | null
+  email?: string | null,
+  options?: PostLoginRouteOptions
 ): string {
+  const normalizedStatus = options?.status?.toLowerCase().trim();
+
+  if (normalizedStatus === 'pending') {
+    return '/pending-approval';
+  }
+
   if (isSuperUserAliasRole(role) || isCreatorSuperUserEmail(email)) {
-    return '/profile';
+    return '/crm';
   }
 
   if (!role) return '/select-role';
 
   const resolved = resolveBackendRole(role);
   const rank = getRank(resolved);
+  const profileCompleted = options?.profileCompleted;
 
-  if (rank === 1) return '/profile';
+  if (rank === 0) {
+    authRoutingLogger.warn('Unauthorized role mapping hard-failed to safe fallback route', {
+      role,
+      resolvedRole: resolved,
+      status: normalizedStatus ?? 'active',
+      auditEvent: 'AUTH_UNAUTHORIZED_ROLE_MAPPING',
+    });
+    return '/pending-approval';
+  }
+
+  if (rank === 1) {
+    return profileCompleted === true ? '/crm' : '/profile';
+  }
 
   if (rank === 2) {
-    return '/profile';
+    return profileCompleted === false ? '/profile' : '/crm';
   }
 
   if (rank === 3) {
-    return '/profile';
+    if (resolved === 'landlord') return '/landlord-portal';
+    if (resolved === 'tenant') return '/tenant-portal';
+    if (profileCompleted === false) return '/profile';
+    return '/crm';
   }
 
-  return '/select-role';
+  return '/pending-approval';
 }
 
 /**

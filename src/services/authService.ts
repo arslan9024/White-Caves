@@ -20,6 +20,14 @@ export interface AuthUser {
   role: string;
   department?: string | null;
   photoUrl?: string | null;
+  phone?: string | null;
+  profileCompleted?: boolean;
+  profileCompletion?: {
+    roleCategory: 'general' | 'client' | 'agent' | 'leadership';
+    requiredFields: Array<'name' | 'phone' | 'department'>;
+    optionalFields: Array<'name' | 'phone' | 'department'>;
+    missingFields: Array<'name' | 'phone' | 'department'>;
+  };
 }
 
 /** Shape of `data` when login succeeds normally */
@@ -60,6 +68,31 @@ export interface RegisterResponse {
 export interface ProfileResponse {
   success: boolean;
   data: AuthUser;
+}
+
+export interface ForgotPasswordRequestResponse {
+  success: boolean;
+  data: {
+    requested: boolean;
+    expiresInMinutes: number;
+    message: string;
+  };
+}
+
+export interface ForgotPasswordVerifyResponse {
+  success: boolean;
+  data: {
+    verified: boolean;
+    resetSessionToken: string;
+  };
+}
+
+export interface ForgotPasswordResetResponse {
+  success: boolean;
+  data: {
+    reset: boolean;
+    message: string;
+  };
 }
 
 // ─── Token helpers ──────────────────────────────────────────────────────────
@@ -232,6 +265,41 @@ export async function verifyTwoFactor(email: string, code: string): Promise<Auth
 
   const profile = await fetchProfile();
   return profile.data;
+}
+
+/**
+ * Request a password reset challenge for the given email.
+ */
+export async function requestPasswordReset(email: string): Promise<ForgotPasswordRequestResponse> {
+  return (await apiClient.post('/auth/forgot-password/request', {
+    email,
+  })) as ForgotPasswordRequestResponse;
+}
+
+/**
+ * Verify the reset token sent for the user.
+ */
+export async function verifyPasswordResetToken(
+  email: string,
+  token: string
+): Promise<ForgotPasswordVerifyResponse> {
+  return (await apiClient.post('/auth/forgot-password/verify', {
+    email,
+    token,
+  })) as ForgotPasswordVerifyResponse;
+}
+
+/**
+ * Complete password reset after token verification.
+ */
+export async function resetPasswordWithToken(
+  resetSessionToken: string,
+  newPassword: string
+): Promise<ForgotPasswordResetResponse> {
+  return (await apiClient.post('/auth/forgot-password/reset', {
+    resetSessionToken,
+    newPassword,
+  })) as ForgotPasswordResetResponse;
 }
 
 /**

@@ -2,21 +2,23 @@
 
 **Wave:** 19  
 **Focus:** Identity & Access v2 + Dashboard Routing + MD Workspace IA Split  
-**Status:** 🟢 Ready (planning)  
-**Date:** 2026-05-26  
-**Readiness Score:** 82% (planning bundle prepared; implementation pending approval)
+**Status:** ✅ Complete (implemented, validated)  
+**Date:** 2026-06-17  
+**Readiness Score:** 100% (W19-001…W19-015 complete with validation evidence)
 
 ---
 
 ## Entry Gate Checklist
 
-| Gate | Requirement | Status |
-| --- | --- | --- |
-| Canonical stack aligned | `MASTER_PLAN` + `PENDING_TASKS_ONLY` + `waves/README` updated for Wave 19 | ✅ |
-| Requirement IDs defined | `REQ-IAMV2-*`, `REQ-ROUTEV2-*`, `REQ-MDIA-*`, `REQ-UXMD-*` published | ✅ |
-| Existing auth/routing baseline understood | Sign-in, profile page, dashboard route, role resolution reviewed | ✅ |
-| Existing MD module architecture understood | CRM module registry + dashboard surfaces reviewed | ✅ |
-| Validation gates drafted | Wave 19 test rollout includes auth/routing/IA/UX gates | ✅ |
+| Gate                                       | Requirement                                                                   | Status |
+| ------------------------------------------ | ----------------------------------------------------------------------------- | ------ |
+| Canonical stack aligned                    | `MASTER_PLAN` + `PENDING_TASKS_ONLY` + `waves/README` updated for Wave 19     | ✅     |
+| Requirement IDs defined                    | `REQ-IAMV2-*`, `REQ-ROUTEV2-*`, `REQ-MDIA-*`, `REQ-UXMD-*` published          | ✅     |
+| Existing auth/routing baseline understood  | Sign-in, profile page, dashboard route, role resolution reviewed              | ✅     |
+| Existing MD module architecture understood | CRM module registry + dashboard surfaces reviewed                             | ✅     |
+| Validation gates drafted                   | Wave 19 test rollout includes auth/routing/IA/UX gates                        | ✅     |
+| Dashboard API contract locked              | `WAVE_19_DASHBOARD_API_CONTRACT.md` added with envelope/error/freshness rules | ✅     |
+| Predecessor sequencing defined             | `W18.1-P1-003` dependency check added before Wave 19 dashboard implementation | ✅     |
 
 ---
 
@@ -39,12 +41,31 @@ Wave 19 scope here is planning-artifact updates only.
 3. Biometric login is documented as optional convenience unless policy elevation is explicitly approved.
 4. MD `/crm` entry defaults to the split workspace landing for creator/lion context.
 5. Workspace mapping must avoid overlap ambiguity (single ownership per module).
+6. Dashboard API p95/load p95/export reliability/freshness SLA thresholds are mandatory rollout gates.
+
+---
+
+## Wave 19 Planning Evidence Set
+
+1. `plans/waves/WAVE_19_SDD.md`
+2. `plans/waves/WAVE_19_IMPLEMENTATION_BACKLOG.md`
+3. `plans/waves/WAVE_19_TEST_ROLLOUT.md`
+4. `plans/waves/WAVE_19_DASHBOARD_API_CONTRACT.md`
+5. `plans/waves/WAVE_19_IDENTITY_ACCESS_V2_CONTRACT.md`
+
+---
+
+## Implementation Start Conditions (Additional)
+
+1. Required @Ada approval phrase issued.
+2. `W18.1-P1-003` closure evidence linked in queue/progress tracker.
+3. Wave 19 contract + traceability matrix unchanged or explicitly version-bumped.
 
 ---
 
 ## Required Approval Phrase for Implementation
 
-```
+```text
 @Ada — Context Ready (60% Readiness) — Coding Phase Approved
 ```
 

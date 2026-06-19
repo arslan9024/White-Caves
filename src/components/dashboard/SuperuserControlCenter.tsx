@@ -1,6 +1,7 @@
 import React, { FC, useMemo } from 'react';
 
 interface SuperuserControlCenterProps {
+  persona?: 'superuser' | 'executive';
   hotLeadsCount: number;
   superuserModuleCount: number;
   monthlyRevenueLabel: string;
@@ -65,6 +66,7 @@ const toHealthScore = (
 };
 
 const SuperuserControlCenter: FC<SuperuserControlCenterProps> = ({
+  persona = 'superuser',
   hotLeadsCount,
   superuserModuleCount,
   monthlyRevenueLabel,
@@ -221,19 +223,23 @@ const SuperuserControlCenter: FC<SuperuserControlCenterProps> = ({
     ]
   );
 
+  const isSuperuserPersona = persona === 'superuser';
+  const controlLabel = isSuperuserPersona ? 'Superuser controls' : 'Executive controls';
+  const roleBadge = isSuperuserPersona ? '👑 Lion' : '🏢 Managing Director';
+  const roleIntro = isSuperuserPersona
+    ? 'Full-platform access. Coordinate workflows, route actions, and monitor platform health in real time.'
+    : 'Executive visibility across company operations with direct paths to high-priority workflows.';
+
   return (
-    <section className="dashboard-superuser-strip" aria-label="Superuser controls">
+    <section className="dashboard-superuser-strip" aria-label={controlLabel}>
       <div className="dashboard-superuser-strip__header">
         <div className="dashboard-superuser-strip__eyebrow-row">
           <span className="dashboard-superuser-live-dot" aria-hidden="true" />
           <p className="dashboard-superuser-strip__eyebrow">Platform live</p>
-          <span className="dashboard-superuser-role-badge">👑 Lion</span>
+          <span className="dashboard-superuser-role-badge">{roleBadge}</span>
         </div>
         <h2>Executive command center</h2>
-        <p>
-          Full-platform access. Coordinate workflows, route actions, and monitor platform health in
-          real time.
-        </p>
+        <p>{roleIntro}</p>
       </div>
 
       <div className="dashboard-superuser-grid" aria-label="Superuser quick metrics">
@@ -253,7 +259,10 @@ const SuperuserControlCenter: FC<SuperuserControlCenterProps> = ({
         ))}
       </div>
 
-      <div className="dashboard-superuser-ops-grid" aria-label="Managing Director operations visibility">
+      <div
+        className="dashboard-superuser-ops-grid"
+        aria-label="Managing Director operations visibility"
+      >
         {operationsDomains.map(domain => (
           <article key={domain.id} className="dashboard-superuser-ops-card">
             <div>
@@ -291,7 +300,11 @@ const SuperuserControlCenter: FC<SuperuserControlCenterProps> = ({
             AI modules
           </button>
         )}
-        <button type="button" className="dashboard-superuser-btn" onClick={onOpenAnalyticsWorkspace}>
+        <button
+          type="button"
+          className="dashboard-superuser-btn"
+          onClick={onOpenAnalyticsWorkspace}
+        >
           Analytics
         </button>
         <button type="button" className="dashboard-superuser-btn" onClick={onOpenAdminWorkspace}>
