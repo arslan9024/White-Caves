@@ -89,6 +89,7 @@ export interface Contract {
   amount: number;
   status: string;
   ejariStatus: string;
+  signatureStatus?: 'pending' | 'sent' | 'opened' | 'signed' | 'rejected' | 'expired';
 }
 
 export interface ContractsData {

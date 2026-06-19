@@ -135,6 +135,44 @@
   /* consolidation: matches .card-standard pattern */
 }
 
+.signature-badge {
+  font-size: 0.72rem;
+  font-weight: 600;
+  padding: 4px 8px;
+  border-radius: 999px;
+  display: inline-block;
+}
+
+.signature-badge--pending {
+  background-color: #6b728020;
+  color: #6b7280;
+}
+
+.signature-badge--sent {
+  background-color: #3b82f620;
+  color: #3b82f6;
+}
+
+.signature-badge--opened {
+  background-color: #a855f720;
+  color: #a855f7;
+}
+
+.signature-badge--signed {
+  background-color: #22c55e20;
+  color: #22c55e;
+}
+
+.signature-badge--rejected {
+  background-color: #ef444420;
+  color: #ef4444;
+}
+
+.signature-badge--expired {
+  background-color: #f59e0b20;
+  color: #f59e0b;
+}
+
 .quick-actions-section h3 {
   color: white;
   margin: 0 0 16px;
