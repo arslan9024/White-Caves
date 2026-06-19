@@ -17,6 +17,33 @@
 
 import { test, expect } from '@playwright/test';
 
+function toCanonicalDashboardPath(path: string): string {
+  if (path.startsWith('/landlord/dashboard')) {
+    return path.replace('/landlord/dashboard', '/landlord-portal');
+  }
+  if (path.startsWith('/tenant/dashboard')) {
+    return path.replace('/tenant/dashboard', '/tenant-portal');
+  }
+
+  const crmDashboardPrefixes = [
+    '/md/dashboard',
+    '/owner/dashboard',
+    '/buyer/dashboard',
+    '/seller/dashboard',
+    '/leasing-agent/dashboard',
+    '/secondary-sales-agent/dashboard',
+    '/team-leader/dashboard',
+    '/agent/dashboard',
+  ];
+
+  const matchedPrefix = crmDashboardPrefixes.find(prefix => path.startsWith(prefix));
+  if (matchedPrefix) {
+    return path.replace(matchedPrefix, '/crm');
+  }
+
+  return path;
+}
+
 async function skipIfLoadingShell(page: any, options?: { expectedPath?: string }) {
   await page.waitForTimeout(300);
   const bodyText =
@@ -36,10 +63,11 @@ async function skipIfLoadingShell(page: any, options?: { expectedPath?: string }
       currentPath = '';
     }
 
-    if (currentPath !== options.expectedPath) {
+    const canonicalExpectedPath = toCanonicalDashboardPath(options.expectedPath);
+    if (currentPath !== canonicalExpectedPath) {
       test.skip(
         true,
-        `Expected ${options.expectedPath} but landed on ${currentPath || 'unknown path'}.`
+        `Expected ${canonicalExpectedPath} but landed on ${currentPath || 'unknown path'}.`
       );
     }
   }
@@ -50,7 +78,7 @@ test.describe('LAYER 3: FUNCTIONALITY TESTING', () => {
   test.describe('Dashboard Loading & Rendering', () => {
     test('L3-001: Owner Dashboard loads without errors', async ({ page }) => {
       const response = await page
-        .goto('/md/dashboard', {
+        .goto('/crm', {
           waitUntil: 'domcontentloaded',
           timeout: 10000,
         })
@@ -64,12 +92,12 @@ test.describe('LAYER 3: FUNCTIONALITY TESTING', () => {
 
     test('L3-002: Dashboard renders main layout elements', async ({ page }) => {
       await page
-        .goto('/md/dashboard', {
+        .goto('/crm', {
           waitUntil: 'domcontentloaded',
           timeout: 10000,
         })
         .catch(() => {});
-      await skipIfLoadingShell(page, { expectedPath: '/md/dashboard' });
+      await skipIfLoadingShell(page, { expectedPath: '/crm' });
 
       const loadingCount = await page
         .getByText(/Loading\s+page/i)
@@ -101,12 +129,12 @@ test.describe('LAYER 3: FUNCTIONALITY TESTING', () => {
       });
 
       await page
-        .goto('/md/dashboard', {
+        .goto('/crm', {
           waitUntil: 'domcontentloaded',
           timeout: 10000,
         })
         .catch(() => {});
-      await skipIfLoadingShell(page, { expectedPath: '/md/dashboard' });
+      await skipIfLoadingShell(page, { expectedPath: '/crm' });
 
       // Allow some framework errors but no critical ones
       const criticalErrors = errors.filter(
@@ -148,12 +176,12 @@ test.describe('LAYER 3: FUNCTIONALITY TESTING', () => {
   test.describe('Tab Navigation & Switching', () => {
     test('L3-010: Dashboard has multiple tabs', async ({ page }) => {
       await page
-        .goto('/md/dashboard', {
+        .goto('/crm', {
           waitUntil: 'domcontentloaded',
           timeout: 10000,
         })
         .catch(() => {});
-      await skipIfLoadingShell(page, { expectedPath: '/md/dashboard' });
+      await skipIfLoadingShell(page, { expectedPath: '/crm' });
 
       const loadingCount = await page
         .getByText(/Loading\s+page/i)
@@ -172,12 +200,12 @@ test.describe('LAYER 3: FUNCTIONALITY TESTING', () => {
 
     test('L3-011: Tab content switches on click', async ({ page }) => {
       await page
-        .goto('/md/dashboard', {
+        .goto('/crm', {
           waitUntil: 'domcontentloaded',
           timeout: 10000,
         })
         .catch(() => {});
-      await skipIfLoadingShell(page, { expectedPath: '/md/dashboard' });
+      await skipIfLoadingShell(page, { expectedPath: '/crm' });
 
       const tabs = page.locator('button, [role="tab"]');
       const tabCount = await tabs.count();
@@ -195,12 +223,12 @@ test.describe('LAYER 3: FUNCTIONALITY TESTING', () => {
 
     test('L3-012: Tab state is maintained', async ({ page }) => {
       await page
-        .goto('/md/dashboard', {
+        .goto('/crm', {
           waitUntil: 'domcontentloaded',
           timeout: 10000,
         })
         .catch(() => {});
-      await skipIfLoadingShell(page, { expectedPath: '/md/dashboard' });
+      await skipIfLoadingShell(page, { expectedPath: '/crm' });
 
       const tabs = page.locator('button, [role="tab"]');
       const tabCount = await tabs.count();
@@ -222,12 +250,12 @@ test.describe('LAYER 3: FUNCTIONALITY TESTING', () => {
   test.describe('CRM Module Loading', () => {
     test('L3-020: CRM modules load with suspense fallback', async ({ page }) => {
       await page
-        .goto('/md/dashboard', {
+        .goto('/crm', {
           waitUntil: 'domcontentloaded',
           timeout: 10000,
         })
         .catch(() => {});
-      await skipIfLoadingShell(page, { expectedPath: '/md/dashboard' });
+      await skipIfLoadingShell(page, { expectedPath: '/crm' });
 
       // Check if loading states are present (suspense fallback should show then hide)
       const loaders = page.locator('.crm-loading-fallback, .loading-spinner, [role="status"]');
@@ -239,12 +267,12 @@ test.describe('LAYER 3: FUNCTIONALITY TESTING', () => {
 
     test('L3-021: CRM modules render content after loading', async ({ page }) => {
       await page
-        .goto('/md/dashboard', {
+        .goto('/crm', {
           waitUntil: 'domcontentloaded',
           timeout: 10000,
         })
         .catch(() => {});
-      await skipIfLoadingShell(page, { expectedPath: '/md/dashboard' });
+      await skipIfLoadingShell(page, { expectedPath: '/crm' });
 
       // Wait for content to load
       await page.waitForTimeout(2000);
@@ -256,12 +284,12 @@ test.describe('LAYER 3: FUNCTIONALITY TESTING', () => {
 
     test('L3-022: CRM modules handle errors gracefully', async ({ page }) => {
       await page
-        .goto('/md/dashboard', {
+        .goto('/crm', {
           waitUntil: 'domcontentloaded',
           timeout: 10000,
         })
         .catch(() => {});
-      await skipIfLoadingShell(page, { expectedPath: '/md/dashboard' });
+      await skipIfLoadingShell(page, { expectedPath: '/crm' });
 
       // No error boundary alerts should appear
       const errorBoundaries = page.locator('.error-boundary-screen, [role="alert"]');
@@ -282,12 +310,12 @@ test.describe('LAYER 3: FUNCTIONALITY TESTING', () => {
   test.describe('User Interactions', () => {
     test('L3-030: Button clicks are responsive', async ({ page }) => {
       await page
-        .goto('/md/dashboard', {
+        .goto('/crm', {
           waitUntil: 'domcontentloaded',
           timeout: 10000,
         })
         .catch(() => {});
-      await skipIfLoadingShell(page, { expectedPath: '/md/dashboard' });
+      await skipIfLoadingShell(page, { expectedPath: '/crm' });
 
       const buttons = page.locator('button');
       const buttonCount = await buttons.count();
@@ -308,12 +336,12 @@ test.describe('LAYER 3: FUNCTIONALITY TESTING', () => {
 
     test('L3-031: Hover states work on interactive elements', async ({ page }) => {
       await page
-        .goto('/md/dashboard', {
+        .goto('/crm', {
           waitUntil: 'domcontentloaded',
           timeout: 10000,
         })
         .catch(() => {});
-      await skipIfLoadingShell(page, { expectedPath: '/md/dashboard' });
+      await skipIfLoadingShell(page, { expectedPath: '/crm' });
 
       const buttons = page.locator('button');
       const count = await buttons.count();
@@ -361,12 +389,12 @@ test.describe('LAYER 3: FUNCTIONALITY TESTING', () => {
   test.describe('Data Display & Rendering', () => {
     test('L3-040: Dashboard displays data tables', async ({ page }) => {
       await page
-        .goto('/md/dashboard', {
+        .goto('/crm', {
           waitUntil: 'domcontentloaded',
           timeout: 10000,
         })
         .catch(() => {});
-      await skipIfLoadingShell(page, { expectedPath: '/md/dashboard' });
+      await skipIfLoadingShell(page, { expectedPath: '/crm' });
 
       // Look for table elements
       const tables = page.locator('table');
@@ -378,12 +406,12 @@ test.describe('LAYER 3: FUNCTIONALITY TESTING', () => {
 
     test('L3-041: Dashboard displays cards/panels', async ({ page }) => {
       await page
-        .goto('/md/dashboard', {
+        .goto('/crm', {
           waitUntil: 'domcontentloaded',
           timeout: 10000,
         })
         .catch(() => {});
-      await skipIfLoadingShell(page, { expectedPath: '/md/dashboard' });
+      await skipIfLoadingShell(page, { expectedPath: '/crm' });
 
       // Look for common card/panel patterns
       const cards = page.locator('.card, [class*="Card"], .panel, .stat-card');
@@ -395,12 +423,12 @@ test.describe('LAYER 3: FUNCTIONALITY TESTING', () => {
 
     test('L3-042: Dashboard renders statistics/metrics', async ({ page }) => {
       await page
-        .goto('/md/dashboard', {
+        .goto('/crm', {
           waitUntil: 'domcontentloaded',
           timeout: 10000,
         })
         .catch(() => {});
-      await skipIfLoadingShell(page, { expectedPath: '/md/dashboard' });
+      await skipIfLoadingShell(page, { expectedPath: '/crm' });
 
       // Wait for data to load
       await page.waitForTimeout(1000);
@@ -419,12 +447,12 @@ test.describe('LAYER 3: FUNCTIONALITY TESTING', () => {
   test.describe('Form Handling', () => {
     test('L3-050: Forms are present and functional', async ({ page }) => {
       await page
-        .goto('/md/dashboard', {
+        .goto('/crm', {
           waitUntil: 'domcontentloaded',
           timeout: 10000,
         })
         .catch(() => {});
-      await skipIfLoadingShell(page, { expectedPath: '/md/dashboard' });
+      await skipIfLoadingShell(page, { expectedPath: '/crm' });
 
       const forms = page.locator('form');
       const formCount = await forms.count();
@@ -435,12 +463,12 @@ test.describe('LAYER 3: FUNCTIONALITY TESTING', () => {
 
     test('L3-051: Input fields are functional', async ({ page }) => {
       await page
-        .goto('/md/dashboard', {
+        .goto('/crm', {
           waitUntil: 'domcontentloaded',
           timeout: 10000,
         })
         .catch(() => {});
-      await skipIfLoadingShell(page, { expectedPath: '/md/dashboard' });
+      await skipIfLoadingShell(page, { expectedPath: '/crm' });
 
       const inputs = page.locator('input');
       const inputCount = await inputs.count();
@@ -460,12 +488,12 @@ test.describe('LAYER 3: FUNCTIONALITY TESTING', () => {
 
     test('L3-052: Form submission works', async ({ page }) => {
       await page
-        .goto('/md/dashboard', {
+        .goto('/crm', {
           waitUntil: 'domcontentloaded',
           timeout: 10000,
         })
         .catch(() => {});
-      await skipIfLoadingShell(page, { expectedPath: '/md/dashboard' });
+      await skipIfLoadingShell(page, { expectedPath: '/crm' });
 
       const forms = page.locator('form');
       const formCount = await forms.count();
@@ -619,12 +647,12 @@ test.describe('LAYER 3: FUNCTIONALITY TESTING', () => {
 
     test('L3-071: Error messages are visible and helpful', async ({ page }) => {
       await page
-        .goto('/md/dashboard', {
+        .goto('/crm', {
           waitUntil: 'domcontentloaded',
           timeout: 10000,
         })
         .catch(() => {});
-      await skipIfLoadingShell(page, { expectedPath: '/md/dashboard' });
+      await skipIfLoadingShell(page, { expectedPath: '/crm' });
 
       // Look for error messages
       const errorMessages = page.locator('[role="alert"], .error, .alert-error');
@@ -663,12 +691,12 @@ test.describe('LAYER 3: FUNCTIONALITY TESTING', () => {
   test.describe('State Management', () => {
     test('L3-080: Component state updates on interaction', async ({ page }) => {
       await page
-        .goto('/md/dashboard', {
+        .goto('/crm', {
           waitUntil: 'domcontentloaded',
           timeout: 10000,
         })
         .catch(() => {});
-      await skipIfLoadingShell(page, { expectedPath: '/md/dashboard' });
+      await skipIfLoadingShell(page, { expectedPath: '/crm' });
 
       // Get initial content
       const contentBefore = await page.locator('main, [role="main"]').textContent();
@@ -755,12 +783,12 @@ test.describe('LAYER 3: FUNCTIONALITY TESTING', () => {
   test.describe('Search & Filters', () => {
     test('L3-090: Search inputs respond to user input', async ({ page }) => {
       await page
-        .goto('/md/dashboard', {
+        .goto('/crm', {
           waitUntil: 'domcontentloaded',
           timeout: 10000,
         })
         .catch(() => {});
-      await skipIfLoadingShell(page, { expectedPath: '/md/dashboard' });
+      await skipIfLoadingShell(page, { expectedPath: '/crm' });
 
       const searchInputs = page.locator('input[type="search"], input[placeholder*="Search"i]');
       const inputCount = await searchInputs.count();
@@ -775,7 +803,7 @@ test.describe('LAYER 3: FUNCTIONALITY TESTING', () => {
 
     test('L3-091: Filter dropdowns work', async ({ page }) => {
       await page
-        .goto('/md/dashboard', {
+        .goto('/crm', {
           waitUntil: 'domcontentloaded',
           timeout: 10000,
         })
@@ -799,7 +827,7 @@ test.describe('LAYER 3: FUNCTIONALITY TESTING', () => {
       const startTime = Date.now();
 
       await page
-        .goto('/md/dashboard', {
+        .goto('/crm', {
           waitUntil: 'domcontentloaded',
           timeout: 10000,
         })
@@ -813,12 +841,12 @@ test.describe('LAYER 3: FUNCTIONALITY TESTING', () => {
 
     test('L3-101: Page remains responsive during interaction', async ({ page }) => {
       await page
-        .goto('/md/dashboard', {
+        .goto('/crm', {
           waitUntil: 'domcontentloaded',
           timeout: 10000,
         })
         .catch(() => {});
-      await skipIfLoadingShell(page, { expectedPath: '/md/dashboard' });
+      await skipIfLoadingShell(page, { expectedPath: '/crm' });
 
       await page.keyboard.press('Escape').catch(() => {});
       await page.waitForTimeout(200);
@@ -862,7 +890,7 @@ test.describe('LAYER 3: FUNCTIONALITY TESTING', () => {
       await page.setViewportSize({ width: 375, height: 667 });
 
       await page
-        .goto('/md/dashboard', {
+        .goto('/crm', {
           waitUntil: 'domcontentloaded',
           timeout: 10000,
         })
@@ -878,7 +906,7 @@ test.describe('LAYER 3: FUNCTIONALITY TESTING', () => {
       await page.setViewportSize({ width: 768, height: 1024 });
 
       await page
-        .goto('/md/dashboard', {
+        .goto('/crm', {
           waitUntil: 'domcontentloaded',
           timeout: 10000,
         })
@@ -893,7 +921,7 @@ test.describe('LAYER 3: FUNCTIONALITY TESTING', () => {
       await page.setViewportSize({ width: 1920, height: 1080 });
 
       await page
-        .goto('/md/dashboard', {
+        .goto('/crm', {
           waitUntil: 'domcontentloaded',
           timeout: 10000,
         })

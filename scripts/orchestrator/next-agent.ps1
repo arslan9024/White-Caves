@@ -33,7 +33,45 @@ if (-not (Test-Path $queueFile))   { Write-Host "[ERROR] queue not found"   -For
 if (-not (Test-Path $promptsFile)) { Write-Host "[ERROR] prompts not found" -ForegroundColor Red; exit 1 }
 if (Test-Path $browserLaunchScript) { . $browserLaunchScript }
 
-$q       = Get-Content $queueFile   -Raw | ConvertFrom-Json
+$q = $null
+function Read-JsonFileSafe {
+  param(
+    [Parameter(Mandatory = $true)]
+    [string]$Path,
+    [long]$MaxBytes = 8MB,
+    [switch]$TryTmpRecovery
+  )
+
+  if (-not (Test-Path $Path)) { return $null }
+  $info = Get-Item -Path $Path -ErrorAction SilentlyContinue
+  if ($null -eq $info) { return $null }
+
+  function Try-ParseCandidate {
+    param([string]$CandidatePath)
+    try {
+      $raw = Get-Content -Path $CandidatePath -Raw -ErrorAction Stop
+      if ([string]::IsNullOrWhiteSpace($raw)) { return $null }
+      return ($raw | ConvertFrom-Json -ErrorAction Stop)
+    } catch { return $null }
+  }
+
+  if ($info.Length -gt $MaxBytes) {
+    if (-not $TryTmpRecovery) { return $null }
+    $dir = Split-Path -Parent $Path
+    $base = [System.IO.Path]::GetFileName($Path)
+    foreach ($tmp in @(Get-ChildItem -Path $dir -Filter ("{0}.tmp.*" -f $base) -File -ErrorAction SilentlyContinue | Sort-Object LastWriteTime -Descending)) {
+      if ($tmp.Length -gt $MaxBytes) { continue }
+      $parsed = Try-ParseCandidate -CandidatePath $tmp.FullName
+      if ($null -eq $parsed) { continue }
+      try { Copy-Item -Path $tmp.FullName -Destination $Path -Force } catch {}
+      return $parsed
+    }
+    return $null
+  }
+  return (Try-ParseCandidate -CandidatePath $Path)
+}
+
+$q       = Read-JsonFileSafe -Path $queueFile -MaxBytes 8MB -TryTmpRecovery
 $prompts = Get-Content $promptsFile -Raw | ConvertFrom-Json
 $tasks   = @($q.tasks)
 
@@ -99,6 +137,34 @@ function Test-AllDepsDone([array]$deps) {
     if ($null -eq $dep -or $dep.status -ne "done") { return $false }
   }
   return $true
+}
+
+function Get-NormalizedDeps {
+  param($deps)
+
+  $normalized = New-Object 'System.Collections.Generic.List[string]'
+
+  if ($null -eq $deps) { return ,$normalized.ToArray() }
+
+  foreach ($item in @($deps)) {
+    if ($null -eq $item) { continue }
+    if ($item -is [string]) {
+      if ([string]::IsNullOrWhiteSpace($item)) { continue }
+      [void]$normalized.Add($item)
+      continue
+    }
+
+    if ($null -ne $item.PSObject -and $item.PSObject.Properties.Count -eq 0) {
+      continue
+    }
+
+    $text = [string]$item
+    if (-not [string]::IsNullOrWhiteSpace($text)) {
+      [void]$normalized.Add($text)
+    }
+  }
+
+  return ,$normalized.ToArray()
 }
 
 # Returns tasks that become READY after $completedId moves to done
@@ -245,7 +311,7 @@ Write-Host ""
 if ($ShowAll -or ($TaskId -eq "" -and -not $ShowAll)) {
   $readyTasks = @($tasks | Where-Object {
     ($_.status -eq "queued" -or $_.status -eq "retrying") -and
-    (Test-AllDepsDone @($_.dependsOn))
+    (Test-AllDepsDone (Get-NormalizedDeps $_.dependsOn))
   })
   if ($TaskId -eq "" -and -not $ShowAll) {
     # Auto-detect: find most recently done task
@@ -300,7 +366,7 @@ $unlocked = Get-Unlocked -completedId $TaskId
 $sameReady = @($tasks | Where-Object {
   ($_.status -eq "queued" -or $_.status -eq "retrying") -and
   $_.lane -eq $sourceTask.lane -and
-  (Test-AllDepsDone @($_.dependsOn))
+  (Test-AllDepsDone (Get-NormalizedDeps $_.dependsOn))
 })
 
 if ($unlocked.Count -eq 0 -and $sameReady.Count -eq 0) {
@@ -309,7 +375,7 @@ if ($unlocked.Count -eq 0 -and $sameReady.Count -eq 0) {
   Write-Host ""
   Write-Host ("  Currently READY in all lanes:") -ForegroundColor White
   $allReady = @($tasks | Where-Object {
-    ($_.status -eq "queued") -and (Test-AllDepsDone @($_.dependsOn))
+    ($_.status -eq "queued") -and (Test-AllDepsDone (Get-NormalizedDeps $_.dependsOn))
   })
   foreach ($rt in $allReady) {
     Write-Host ("    {0,-7} {1}" -f $rt.taskId, $rt.agent) -ForegroundColor DarkGray

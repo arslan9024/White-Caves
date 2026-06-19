@@ -23,7 +23,7 @@ test.describe('LAYER 5: PERFORMANCE TESTING', () => {
       const startTime = Date.now();
 
       await page
-        .goto('/md/dashboard', {
+        .goto('/crm', {
           waitUntil: 'domcontentloaded',
           timeout: 30000,
         })
@@ -40,7 +40,7 @@ test.describe('LAYER 5: PERFORMANCE TESTING', () => {
       const startTime = Date.now();
 
       await page
-        .goto('/seller/dashboard', {
+        .goto('/crm', {
           waitUntil: 'domcontentloaded',
           timeout: 30000,
         })
@@ -56,7 +56,7 @@ test.describe('LAYER 5: PERFORMANCE TESTING', () => {
       const startTime = Date.now();
 
       await page
-        .goto('/buyer/dashboard', {
+        .goto('/crm', {
           waitUntil: 'domcontentloaded',
           timeout: 30000,
         })
@@ -105,7 +105,7 @@ test.describe('LAYER 5: PERFORMANCE TESTING', () => {
 
     test('P5-011: Form input response', async ({ page }) => {
       await page
-        .goto('/md/dashboard', {
+        .goto('/crm', {
           waitUntil: 'domcontentloaded',
           timeout: 30000,
         })
@@ -137,7 +137,7 @@ test.describe('LAYER 5: PERFORMANCE TESTING', () => {
 
     test('P5-012: Tab switch response', async ({ page }) => {
       await page
-        .goto('/md/dashboard', {
+        .goto('/crm', {
           waitUntil: 'domcontentloaded',
           timeout: 30000,
         })
@@ -222,7 +222,7 @@ test.describe('LAYER 5: PERFORMANCE TESTING', () => {
       const startTime = Date.now();
 
       await page
-        .goto('/md/dashboard', {
+        .goto('/crm', {
           waitUntil: 'domcontentloaded',
           timeout: 30000,
         })
@@ -236,7 +236,7 @@ test.describe('LAYER 5: PERFORMANCE TESTING', () => {
 
     test('P5-031: Page render stability', async ({ page }) => {
       await page
-        .goto('/md/dashboard', {
+        .goto('/crm', {
           waitUntil: 'domcontentloaded',
           timeout: 30000,
         })
@@ -274,7 +274,7 @@ test.describe('LAYER 5: PERFORMANCE TESTING', () => {
       const startTime = Date.now();
 
       await page
-        .goto('/md/dashboard', {
+        .goto('/crm', {
           waitUntil: 'domcontentloaded',
           timeout: 30000,
         })
@@ -292,7 +292,7 @@ test.describe('LAYER 5: PERFORMANCE TESTING', () => {
       const startTime = Date.now();
 
       await page
-        .goto('/md/dashboard', {
+        .goto('/crm', {
           waitUntil: 'domcontentloaded',
           timeout: 30000,
         })
@@ -310,7 +310,7 @@ test.describe('LAYER 5: PERFORMANCE TESTING', () => {
       const startTime = Date.now();
 
       await page
-        .goto('/md/dashboard', {
+        .goto('/crm', {
           waitUntil: 'domcontentloaded',
           timeout: 30000,
         })
@@ -355,7 +355,7 @@ test.describe('LAYER 5: PERFORMANCE TESTING', () => {
 
     test('P5-051: Rapid form input', async ({ page }) => {
       await page
-        .goto('/md/dashboard', {
+        .goto('/crm', {
           waitUntil: 'domcontentloaded',
           timeout: 30000,
         })
@@ -384,7 +384,7 @@ test.describe('LAYER 5: PERFORMANCE TESTING', () => {
 
     test('P5-052: Memory stability', async ({ page }) => {
       await page
-        .goto('/md/dashboard', {
+        .goto('/crm', {
           waitUntil: 'domcontentloaded',
           timeout: 30000,
         })
@@ -437,7 +437,7 @@ test.describe('LAYER 5: PERFORMANCE TESTING', () => {
   test.describe('Network Performance', () => {
     test('P5-060: API response time', async ({ page }) => {
       await page
-        .goto('/md/dashboard', {
+        .goto('/crm', {
           waitUntil: 'domcontentloaded',
           timeout: 30000,
         })

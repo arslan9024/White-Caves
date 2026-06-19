@@ -4,13 +4,26 @@
  */
 
 import { PrismaClient } from '@prisma/client';
+import { DATABASE_URL } from './config/env.js';
 import { createLogger } from './utils/logger.js';
 import { registerLeadScoringMiddleware } from './services/ai/leadScoringMiddleware.js';
 
 const log = createLogger('Database');
+const SLOW_QUERY_THRESHOLD_MS = Number(process.env.SLOW_QUERY_THRESHOLD_MS ?? 200);
 
-// Slow-query threshold: log any query taking longer than this
-const SLOW_QUERY_THRESHOLD_MS = 500;
+if (DATABASE_URL) {
+  process.env.DATABASE_URL = DATABASE_URL;
+}
+
+type PrismaLikeError = { code?: string; errorCode?: string };
+
+const getPrismaErrorCode = (error: unknown): string | null => {
+  if (!error || typeof error !== 'object') return null;
+  const candidate = error as PrismaLikeError;
+  if (typeof candidate.code === 'string') return candidate.code;
+  if (typeof candidate.errorCode === 'string') return candidate.errorCode;
+  return null;
+};
 
 let prisma: PrismaClient;
 
@@ -79,10 +92,15 @@ declare global {
 export const connectDatabase = async (): Promise<void> => {
   try {
     await prisma.$connect();
-    log.info('Prisma connected to MongoDB');
+    log.info('Prisma connected to database');
     log.info('Database health check passed');
   } catch (error) {
-    log.error('Database connection failed', error);
+    const errorCode = getPrismaErrorCode(error);
+    if (errorCode === 'P1001') {
+      log.warn('Database server unreachable (P1001)');
+    } else {
+      log.error('Database connection failed', error);
+    }
     throw error;
   }
 };

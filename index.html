@@ -9,7 +9,6 @@
     <link rel="manifest" href="/manifest.json" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     
-    <meta name="theme-color" content="#E31E24" />
     <title>White Caves Real Estate Dubai | Luxury Villas, Apartments & Penthouses</title>
     <meta name="description" content="White Caves is Dubai's premier luxury real estate platform. Find exclusive villas, apartments, and penthouses in Palm Jumeirah, Downtown Dubai, Emirates Hills, and Dubai Marina. Expert agents, virtual tours, and personalized service." />
     <meta name="keywords" content="Dubai real estate, luxury villas Dubai, apartments Dubai, penthouses Dubai, Palm Jumeirah properties, Downtown Dubai real estate, Emirates Hills villas, Dubai Marina apartments, buy property Dubai, rent property Dubai, off-plan Dubai, real estate investment Dubai" />
@@ -56,7 +55,6 @@
       rel="preload"
       as="image"
       href="https://images.unsplash.com/photo-1582268611958-ebfd161ef9cf?ixlib=rb-4.0.3&auto=format&fit=crop&w=1440&q=75"
-      fetchpriority="high"
     />
     <!-- Latin fonts — used for LTR (English) layout -->
     <!-- Primary UI fonts + Cormorant Garamond for luxury display headings (agency brand requirement) -->
@@ -82,6 +80,8 @@
       .app-skeleton-bar { height: 64px; background: linear-gradient(90deg, #e0e0e0 25%, #f0f0f0 50%, #e0e0e0 75%); animation: pulse 1.5s ease-in-out infinite; }
       .app-skeleton-content { flex: 1; padding: 24px; }
       .app-skeleton-block { height: 200px; border-radius: 8px; margin-bottom: 16px; background: linear-gradient(90deg, #e0e0e0 25%, #f0f0f0 50%, #e0e0e0 75%); animation: pulse 1.5s ease-in-out infinite; animation-delay: 0.3s; }
+      .app-skeleton-block--short { height: 120px; animation-delay: 0.5s; }
+      .noscript-fallback { padding: 40px; text-align: center; font-family: sans-serif; }
     </style>
     
     <script type="application/ld+json">
@@ -259,7 +259,7 @@
   </head>
   <body>
     <noscript>
-      <div style="padding: 40px; text-align: center; font-family: sans-serif;">
+      <div class="noscript-fallback">
         <h1>White Caves Real Estate</h1>
         <p>This application requires JavaScript to run. Please enable JavaScript in your browser settings.</p>
       </div>
@@ -270,7 +270,7 @@
         <div class="app-skeleton-bar"></div>
         <div class="app-skeleton-content">
           <div class="app-skeleton-block"></div>
-          <div class="app-skeleton-block" style="height: 120px; animation-delay: 0.5s;"></div>
+          <div class="app-skeleton-block app-skeleton-block--short"></div>
         </div>
       </div>
     </div>

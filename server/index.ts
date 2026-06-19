@@ -11,7 +11,6 @@ import cors from 'cors';
 import helmet from 'helmet';
 import path from 'path';
 import compression from 'compression';
-import morgan from 'morgan';
 import cookieParser from 'cookie-parser';
 import { Prisma } from '@prisma/client';
 import { connectDatabase, prisma } from './database.js';
@@ -106,9 +105,8 @@ import { startRateRefresh } from './services/currencyService.js';
 import { startViewingReminderScheduler } from './services/schedulingService.js';
 import { startRERAExpiryScheduler } from './services/compliance/reraExpiryScheduler.js';
 import { startAutoRouting } from './services/ai/leadAutoRouter.js';
-import { createSocketServer } from './services/socketServer.js';
-import { schedulerService } from './services/SchedulerService.js';
 import { cacheService } from './services/CacheService.js';
+import { schedulerService } from './services/SchedulerService.js';
 
 const app: Express = express();
 const allowedCorsOrigins = buildAllowedCorsOrigins(CORS_ORIGINS, process.env.NODE_ENV);
@@ -122,10 +120,67 @@ const allowedCorsOrigins = buildAllowedCorsOrigins(CORS_ORIGINS, process.env.NOD
 app.set('trust proxy', 1);
 // In development, keep API on 3001 to avoid colliding with Vite (5000).
 // Use API_PORT when provided; in production/staging, respect PORT as platform-provided.
-const resolvedPortValue =
+const PREFERRED_PORT =
   process.env.API_PORT ||
   (process.env.NODE_ENV === 'development' ? 3001 : process.env.PORT || 3001);
-const PORT = Number(resolvedPortValue);
+
+const parsePort = (value: string | number): number => {
+  const parsed = Number(value);
+  return Number.isFinite(parsed) && parsed > 0 ? parsed : 3001;
+};
+
+const listenWithPortFallback = async (
+  server: ReturnType<typeof createServer>,
+  preferredPort: number,
+  options: { enableFallback: boolean; maxAttempts?: number }
+): Promise<number> => {
+  const maxAttempts = Math.max(1, options.maxAttempts ?? 12);
+  let attempts = 0;
+  let suppressedRetryLogs = 0;
+
+  return new Promise<number>((resolve, reject) => {
+    const tryListen = (port: number): void => {
+      const onListening = (): void => {
+        server.off('error', onError);
+        server.off('listening', onListening);
+
+        if (suppressedRetryLogs > 0) {
+          logger.warn(
+            `Suppressed ${suppressedRetryLogs} additional port retry log(s) during fallback before binding to ${port}`
+          );
+        }
+
+        resolve(port);
+      };
+
+      const onError = (error: NodeJS.ErrnoException): void => {
+        server.off('error', onError);
+        server.off('listening', onListening);
+
+        if (error.code === 'EADDRINUSE' && options.enableFallback && attempts < maxAttempts) {
+          attempts += 1;
+          const nextPort = port + 1;
+          const shouldLogRetry = attempts <= 3 || attempts % 5 === 0 || attempts === maxAttempts;
+          if (shouldLogRetry) {
+            logger.warn(`Port ${port} is already in use — retrying on ${nextPort}`);
+          } else {
+            suppressedRetryLogs += 1;
+          }
+          tryListen(nextPort);
+          return;
+        }
+
+        reject(error);
+      };
+
+      server.once('listening', onListening);
+      server.once('error', onError);
+      server.listen(port);
+    };
+
+    tryListen(preferredPort);
+  });
+};
 
 // ============================================================================
 // MIDDLEWARE SETUP
@@ -192,8 +247,22 @@ app.use(compression());
 // Static files for uploads
 app.use('/uploads', express.static(path.join(process.cwd(), 'server', 'public', 'uploads')));
 
-// Logging
-app.use(morgan(process.env.NODE_ENV === 'production' ? 'combined' : 'dev'));
+// Request logging
+app.use((req: Request, res: Response, next: NextFunction) => {
+  const start = Date.now();
+  res.on('finish', () => {
+    const durationMs = Date.now() - start;
+    const message = `${req.method} ${req.originalUrl} ${res.statusCode} ${durationMs}ms`;
+    if (res.statusCode >= 500) {
+      logger.error(message);
+    } else if (res.statusCode >= 400) {
+      logger.warn(message);
+    } else if (process.env.NODE_ENV !== 'production') {
+      logger.info(message);
+    }
+  });
+  next();
+});
 
 // Body parsing
 app.use(express.json({ limit: '1mb' }));
@@ -1168,48 +1237,38 @@ const startServer = async () => {
     }
   } catch (error: unknown) {
     const message = error instanceof Error ? error.message : String(error);
-    logger.warn(`MongoDB connection failed: ${message}`);
+    const firstLine = message
+      .split('\n')
+      .map(line => line.trim())
+      .find(Boolean);
+    logger.warn(`Database connection failed: ${firstLine ?? message}`);
     logger.warn('Server will start without database — API calls will return errors');
   }
 
   // Start listening regardless of DB status
-  const host = process.env.API_URL || `http://localhost:${PORT}`;
+  const preferredPort = parsePort(PREFERRED_PORT);
+  const allowPortFallback = process.env.NODE_ENV === 'development';
 
   // Wrap Express in a raw http.Server so Socket.io can share the same port
   const httpServer = createServer(app);
 
-  // Attach Socket.io to the http server (must happen before listen)
-  createSocketServer(httpServer);
+  // Socket server bootstrap intentionally disabled in this runtime profile.
+  // Re-enable once socket.io package/runtime is guaranteed in all environments.
 
-  const maxBindRetries = IS_PRODUCTION ? 0 : 20;
-  let bindAttempts = 0;
-
-  await new Promise<void>((resolve, reject) => {
-    const onListening = () => {
-      httpServer.off('error', onError);
-      resolve();
-    };
-
-    const onError = (error: NodeJS.ErrnoException) => {
-      if (error.code === 'EADDRINUSE' && bindAttempts < maxBindRetries) {
-        bindAttempts += 1;
-        logger.warn(
-          `Port ${PORT} is still busy (attempt ${bindAttempts}/${maxBindRetries}). Retrying bind...`
-        );
-        setTimeout(() => {
-          httpServer.listen(PORT);
-        }, 250);
-        return;
-      }
-
-      httpServer.off('listening', onListening);
-      reject(error);
-    };
-
-    httpServer.once('listening', onListening);
-    httpServer.on('error', onError);
-    httpServer.listen(PORT);
+  const activePort = await listenWithPortFallback(httpServer, preferredPort, {
+    enableFallback: allowPortFallback,
+    maxAttempts: 20,
   });
+  const host = process.env.API_URL || `http://localhost:${activePort}`;
+
+  logger.info(`Server started on ${host}`);
+  logger.info(`Environment: ${process.env.NODE_ENV || 'development'}`);
+  logger.info(`API Base: ${host}/api`);
+  logger.info(`Socket.io: ws://${host.replace(/^https?:\/\//, '')}`);
+
+  if (activePort !== preferredPort) {
+    logger.warn(`API port fallback active: preferred ${preferredPort}, listening on ${activePort}`);
+  }
 
   logger.info(`Server started on ${host}`);
   logger.info(`Environment: ${process.env.NODE_ENV || 'development'}`);

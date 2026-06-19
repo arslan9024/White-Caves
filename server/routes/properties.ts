@@ -17,8 +17,8 @@ import { cacheService } from '../services/CacheService.js';
 const router = Router();
 
 // Cache TTLs (seconds)
-const CACHE_TTL_LIST   = 60;   // property list: 1 minute
-const CACHE_TTL_DETAIL = 300;  // property detail: 5 minutes
+const CACHE_TTL_LIST = 60; // property list: 1 minute
+const CACHE_TTL_DETAIL = 300; // property detail: 5 minutes
 
 // ─── Task 4: Listing Completeness ────────────────────────────────────────────
 
@@ -50,21 +50,81 @@ interface CompletenessCriterion {
 }
 
 const COMPLETENESS_CRITERIA: CompletenessCriterion[] = [
-  { key: 'title',               label: 'Title',               check: p => Boolean(p.title?.trim()),              hint: 'Add a descriptive property title'            },
-  { key: 'description',         label: 'Description',         check: p => (p.description?.length ?? 0) > 50,     hint: 'Write a description of at least 50 characters' },
-  { key: 'price',               label: 'Price',               check: p => p.price > 0,                            hint: 'Set a non-zero listing price'                },
-  { key: 'type',                label: 'Property Type',       check: p => Boolean(p.type?.trim()),               hint: 'Specify the property type'                   },
-  { key: 'status',              label: 'Status',              check: p => Boolean(p.status?.trim()),             hint: 'Set the availability status'                 },
-  { key: 'location',            label: 'Location',            check: p => Boolean(p.location?.trim()),           hint: 'Add a street/building location'              },
-  { key: 'area',                label: 'Area / Community',    check: p => Boolean(p.area?.trim()),               hint: 'Specify the Dubai community or area'         },
-  { key: 'bedrooms',            label: 'Bedrooms',            check: p => p.bedrooms > 0,                         hint: 'Add bedroom count'                          },
-  { key: 'bathrooms',           label: 'Bathrooms',           check: p => p.bathrooms > 0,                        hint: 'Add bathroom count'                         },
-  { key: 'sqft',                label: 'Square Footage',      check: p => p.sqft > 0,                             hint: 'Add the property area in sq ft'             },
-  { key: 'images',              label: 'Photos (≥ 3)',        check: p => p.images.length > 2,                    hint: 'Upload at least 3 property photos'          },
-  { key: 'amenities',           label: 'Amenities',           check: p => p.amenities.length > 0,                 hint: 'List at least one amenity'                  },
-  { key: 'buildingPermitNumber',label: 'Building Permit',     check: p => Boolean(p.buildingPermitNumber?.trim()),hint: 'Add the DM building permit number'           },
-  { key: 'municipalityNumber',  label: 'Municipality Number', check: p => Boolean(p.municipalityNumber?.trim()), hint: 'Add the Dubai municipality plot/unit number' },
-  { key: 'contactInfo',         label: 'Agent Assigned',      check: p => Boolean(p.userId),                     hint: 'Assign a responsible agent'                 },
+  {
+    key: 'title',
+    label: 'Title',
+    check: p => Boolean(p.title?.trim()),
+    hint: 'Add a descriptive property title',
+  },
+  {
+    key: 'description',
+    label: 'Description',
+    check: p => (p.description?.length ?? 0) > 50,
+    hint: 'Write a description of at least 50 characters',
+  },
+  { key: 'price', label: 'Price', check: p => p.price > 0, hint: 'Set a non-zero listing price' },
+  {
+    key: 'type',
+    label: 'Property Type',
+    check: p => Boolean(p.type?.trim()),
+    hint: 'Specify the property type',
+  },
+  {
+    key: 'status',
+    label: 'Status',
+    check: p => Boolean(p.status?.trim()),
+    hint: 'Set the availability status',
+  },
+  {
+    key: 'location',
+    label: 'Location',
+    check: p => Boolean(p.location?.trim()),
+    hint: 'Add a street/building location',
+  },
+  {
+    key: 'area',
+    label: 'Area / Community',
+    check: p => Boolean(p.area?.trim()),
+    hint: 'Specify the Dubai community or area',
+  },
+  { key: 'bedrooms', label: 'Bedrooms', check: p => p.bedrooms > 0, hint: 'Add bedroom count' },
+  { key: 'bathrooms', label: 'Bathrooms', check: p => p.bathrooms > 0, hint: 'Add bathroom count' },
+  {
+    key: 'sqft',
+    label: 'Square Footage',
+    check: p => p.sqft > 0,
+    hint: 'Add the property area in sq ft',
+  },
+  {
+    key: 'images',
+    label: 'Photos (≥ 3)',
+    check: p => p.images.length > 2,
+    hint: 'Upload at least 3 property photos',
+  },
+  {
+    key: 'amenities',
+    label: 'Amenities',
+    check: p => p.amenities.length > 0,
+    hint: 'List at least one amenity',
+  },
+  {
+    key: 'buildingPermitNumber',
+    label: 'Building Permit',
+    check: p => Boolean(p.buildingPermitNumber?.trim()),
+    hint: 'Add the DM building permit number',
+  },
+  {
+    key: 'municipalityNumber',
+    label: 'Municipality Number',
+    check: p => Boolean(p.municipalityNumber?.trim()),
+    hint: 'Add the Dubai municipality plot/unit number',
+  },
+  {
+    key: 'contactInfo',
+    label: 'Agent Assigned',
+    check: p => Boolean(p.userId),
+    hint: 'Assign a responsible agent',
+  },
 ];
 
 function computeCompletenessScore(property: CompletenessProperty): {
@@ -93,12 +153,7 @@ function assertAvailabilityCompliance(params: {
   nextMunicipalityNumber: string | null | undefined;
   nextBuildingPermitNumber: string | null | undefined;
 }) {
-  const {
-    currentStatus,
-    nextStatus,
-    nextMunicipalityNumber,
-    nextBuildingPermitNumber,
-  } = params;
+  const { currentStatus, nextStatus, nextMunicipalityNumber, nextBuildingPermitNumber } = params;
 
   const movingToAvailable = nextStatus === 'available' && currentStatus !== 'available';
   if (!movingToAvailable) {
@@ -209,7 +264,7 @@ router.get(
     // ── Task 1: Advanced facet filters ──────────────────────────────────
     // furnishing: "furnished" | "unfurnished" | "all" (default)
     if (furnishing && furnishing !== 'all') {
-      if (furnishing === 'furnished')   where.furnished = true;
+      if (furnishing === 'furnished') where.furnished = true;
       if (furnishing === 'unfurnished') where.furnished = false;
       // "semi-furnished" has no schema field — gracefully ignored (no filter applied)
     }
@@ -217,8 +272,8 @@ router.get(
     // handoverStage → maps to Property.inventoryStage
     if (handoverStage && handoverStage !== 'all') {
       const stageMap: Record<string, string> = {
-        'ready':              'handed_over',
-        'off-plan':           'draft_collected',
+        ready: 'handed_over',
+        'off-plan': 'draft_collected',
         'under-construction': 'verified_active',
       };
       const mapped = stageMap[handoverStage];
@@ -227,16 +282,19 @@ router.get(
 
     // permitStatus → derived from presence of buildingPermitNumber
     if (permitStatus && permitStatus !== 'all') {
-      if (permitStatus === 'active')  where.buildingPermitNumber = { not: null } as Prisma.StringNullableFilter;
+      if (permitStatus === 'active')
+        where.buildingPermitNumber = { not: null } as Prisma.StringNullableFilter;
       if (permitStatus === 'pending') where.buildingPermitNumber = null;
       // "expired" has no schema field — gracefully ignored
     }
 
     // feeBand → maps to commissionPercent range
     if (feeBand && feeBand !== 'all') {
-      if (feeBand === 'no-fee')       where.commissionPercent = { lte: 0 } as Prisma.FloatNullableFilter;
-      if (feeBand === 'low-fee')      where.commissionPercent = { gt: 0, lte: 2 } as Prisma.FloatNullableFilter;
-      if (feeBand === 'standard-fee') where.commissionPercent = { gt: 2 } as Prisma.FloatNullableFilter;
+      if (feeBand === 'no-fee') where.commissionPercent = { lte: 0 } as Prisma.FloatNullableFilter;
+      if (feeBand === 'low-fee')
+        where.commissionPercent = { gt: 0, lte: 2 } as Prisma.FloatNullableFilter;
+      if (feeBand === 'standard-fee')
+        where.commissionPercent = { gt: 2 } as Prisma.FloatNullableFilter;
     }
     // ── End Task 1 filters ───────────────────────────────────────────────
 
@@ -282,7 +340,7 @@ router.get(
                 intentScore = 1;
               }
             } else if (intent === 'rent') {
-              intentScore = (p.rentalPrice != null && p.rentalPrice > 0) ? 2 : 0;
+              intentScore = p.rentalPrice != null && p.rentalPrice > 0 ? 2 : 0;
             } else if (intent === 'invest') {
               if (p.featured) {
                 intentScore = 2;
@@ -406,29 +464,41 @@ router.get(
       prisma.property.groupBy({ by: ['inventoryStage'], _count: { _all: true } }),
 
       // permitStatus facets (derived from buildingPermitNumber presence)
-      prisma.property.count({ where: { buildingPermitNumber: { not: null } as Prisma.StringNullableFilter } }),
+      prisma.property.count({
+        where: { buildingPermitNumber: { not: null } as Prisma.StringNullableFilter },
+      }),
       prisma.property.count({ where: { buildingPermitNumber: null } }),
 
       // feeBand facets (commissionPercent ranges)
-      prisma.property.count({ where: { commissionPercent: { lte: 0 } as Prisma.FloatNullableFilter } }),
-      prisma.property.count({ where: { commissionPercent: { gt: 0, lte: 2 } as Prisma.FloatNullableFilter } }),
-      prisma.property.count({ where: { commissionPercent: { gt: 2 } as Prisma.FloatNullableFilter } }),
+      prisma.property.count({
+        where: { commissionPercent: { lte: 0 } as Prisma.FloatNullableFilter },
+      }),
+      prisma.property.count({
+        where: { commissionPercent: { gt: 0, lte: 2 } as Prisma.FloatNullableFilter },
+      }),
+      prisma.property.count({
+        where: { commissionPercent: { gt: 2 } as Prisma.FloatNullableFilter },
+      }),
     ]);
 
     // Build furnishing counts
     const furnishing: Record<string, number> = { furnished: 0, unfurnished: 0 };
     furnishingGroups.forEach(g => {
-      if (g.furnished)       furnishing['furnished']   = g._count._all;
-      else                   furnishing['unfurnished']  = g._count._all;
+      if (g.furnished) furnishing['furnished'] = g._count._all;
+      else furnishing['unfurnished'] = g._count._all;
     });
 
     // Build handoverStage counts — map inventoryStage back to task param names
     const stageReverseMap: Record<string, string> = {
-      handed_over:     'ready',
+      handed_over: 'ready',
       draft_collected: 'off-plan',
       verified_active: 'under-construction',
     };
-    const handoverStage: Record<string, number> = { ready: 0, 'off-plan': 0, 'under-construction': 0 };
+    const handoverStage: Record<string, number> = {
+      ready: 0,
+      'off-plan': 0,
+      'under-construction': 0,
+    };
     handoverGroups.forEach(g => {
       const label = stageReverseMap[g.inventoryStage ?? 'draft_collected'];
       if (label) handoverStage[label] = (handoverStage[label] ?? 0) + g._count._all;
@@ -482,28 +552,25 @@ router.get(
     }));
 
     const total = scores.length;
-    const averageScore = total > 0
-      ? Math.round(scores.reduce((sum, s) => sum + s.score, 0) / total)
-      : 0;
+    const averageScore =
+      total > 0 ? Math.round(scores.reduce((sum, s) => sum + s.score, 0) / total) : 0;
 
     // Band breakdown — approximate quartile labels
     const bands: Record<string, number> = {
-      '0-25 (poor)':       0,
-      '26-50 (fair)':      0,
-      '51-75 (good)':      0,
+      '0-25 (poor)': 0,
+      '26-50 (fair)': 0,
+      '51-75 (good)': 0,
       '76-100 (excellent)': 0,
     };
     scores.forEach(({ score }) => {
-      if (score <= 25)      bands['0-25 (poor)']++;
+      if (score <= 25) bands['0-25 (poor)']++;
       else if (score <= 50) bands['26-50 (fair)']++;
       else if (score <= 75) bands['51-75 (good)']++;
-      else                  bands['76-100 (excellent)']++;
+      else bands['76-100 (excellent)']++;
     });
 
     // Surface the worst 10 listings for quick remediation
-    const worst10 = scores
-      .sort((a, b) => a.score - b.score)
-      .slice(0, 10);
+    const worst10 = scores.sort((a, b) => a.score - b.score).slice(0, 10);
 
     res.status(200).json({
       success: true,
@@ -517,10 +584,10 @@ router.get(
   '/:id',
   requirePermission('view_properties'),
   asyncHandler(async (req: Request, res: Response) => {
-    // @ts-expect-error -- pre-existing: req.params/query string|string[] narrowing
-    validateIdParam(req.params.id, 'Property ID');
+    const { id } = req.params as Record<string, string>;
+    validateIdParam(id, 'Property ID');
 
-    const cacheKey = `properties:detail:${req.params.id}`;
+    const cacheKey = `properties:detail:${id}`;
     const cached = await cacheService.get(cacheKey);
     if (cached !== null) {
       res.setHeader('X-Cache', 'HIT');
@@ -528,8 +595,7 @@ router.get(
     }
 
     const property = await prisma.property.findUnique({
-    // @ts-expect-error -- pre-existing: req.params/query string|string[] narrowing
-      where: { id: req.params.id },
+      where: { id },
       include: {
         user: { select: { id: true, name: true, email: true, phone: true } },
         leads: {
@@ -645,8 +711,10 @@ router.post(
     } = req.body as Record<string, unknown>;
 
     if (!title || typeof title !== 'string') throw new AppError('Property title is required', 400);
-    if (!location || typeof location !== 'string') throw new AppError('Property location is required', 400);
-    if (price === undefined || price === null) throw new AppError('Property price is required', 400);
+    if (!location || typeof location !== 'string')
+      throw new AppError('Property location is required', 400);
+    if (price === undefined || price === null)
+      throw new AppError('Property price is required', 400);
 
     const parsedPrice = typeof price === 'number' ? price : parseFloat(String(price));
     if (isNaN(parsedPrice) || parsedPrice < 0) throw new AppError('Invalid price value', 400);
@@ -671,9 +739,10 @@ router.post(
         unitNumber: unitNumber ? String(unitNumber) : null,
         floorPlan: floorPlan ? String(floorPlan) : null,
         rentalPrice: rentalPrice ? parseFloat(String(rentalPrice)) : null,
-        commissionPercent: commissionPercent !== undefined && commissionPercent !== null
-          ? parseFloat(String(commissionPercent))
-          : undefined,
+        commissionPercent:
+          commissionPercent !== undefined && commissionPercent !== null
+            ? parseFloat(String(commissionPercent))
+            : undefined,
         availabilityDate: availabilityDate ? new Date(String(availabilityDate)) : null,
         inventoryStage: inventoryStage ? String(inventoryStage) : 'draft_collected',
         municipalityNumber: municipalityNumber ? String(municipalityNumber) : null,
@@ -729,49 +798,77 @@ router.put(
     const updateData: Prisma.PropertyUpdateInput = {};
     const body = req.body as Record<string, unknown>;
 
-    if (body.title !== undefined)       updateData.title       = sanitizeString(String(body.title));
-    if (body.description !== undefined) updateData.description = body.description ? sanitizeString(String(body.description)) : null;
-    if (body.type !== undefined)        updateData.type        = String(body.type);
-    if (body.status !== undefined)      updateData.status      = String(body.status);
-    if (body.price !== undefined)       updateData.price       = parseFloat(String(body.price));
-    if (body.currency !== undefined)    updateData.currency    = String(body.currency);
-    if (body.bedrooms !== undefined)    updateData.bedrooms    = parseInt(String(body.bedrooms), 10);
-    if (body.bathrooms !== undefined)   updateData.bathrooms   = parseInt(String(body.bathrooms), 10);
-    if (body.sqft !== undefined)        updateData.sqft        = parseInt(String(body.sqft), 10);
-    if (body.location !== undefined)    updateData.location    = sanitizeString(String(body.location));
-    if (body.area !== undefined)        updateData.area        = body.area ? sanitizeString(String(body.area)) : null;
-    if (body.amenities !== undefined)   updateData.amenities   = Array.isArray(body.amenities) ? (body.amenities as string[]) : [];
-    if (body.images !== undefined)      updateData.images      = Array.isArray(body.images) ? (body.images as string[]) : [];
-    if (body.featured !== undefined)    updateData.featured    = body.featured === true || body.featured === 'true';
-    if (body.agentName !== undefined)   updateData.agentName   = body.agentName ? String(body.agentName) : null;
+    if (body.title !== undefined) updateData.title = sanitizeString(String(body.title));
+    if (body.description !== undefined)
+      updateData.description = body.description ? sanitizeString(String(body.description)) : null;
+    if (body.type !== undefined) updateData.type = String(body.type);
+    if (body.status !== undefined) updateData.status = String(body.status);
+    if (body.price !== undefined) updateData.price = parseFloat(String(body.price));
+    if (body.currency !== undefined) updateData.currency = String(body.currency);
+    if (body.bedrooms !== undefined) updateData.bedrooms = parseInt(String(body.bedrooms), 10);
+    if (body.bathrooms !== undefined) updateData.bathrooms = parseInt(String(body.bathrooms), 10);
+    if (body.sqft !== undefined) updateData.sqft = parseInt(String(body.sqft), 10);
+    if (body.location !== undefined) updateData.location = sanitizeString(String(body.location));
+    if (body.area !== undefined)
+      updateData.area = body.area ? sanitizeString(String(body.area)) : null;
+    if (body.amenities !== undefined)
+      updateData.amenities = Array.isArray(body.amenities) ? (body.amenities as string[]) : [];
+    if (body.images !== undefined)
+      updateData.images = Array.isArray(body.images) ? (body.images as string[]) : [];
+    if (body.featured !== undefined)
+      updateData.featured = body.featured === true || body.featured === 'true';
+    if (body.agentName !== undefined)
+      updateData.agentName = body.agentName ? String(body.agentName) : null;
 
     // Inventory / compliance fields
-    if (body.unitNumber !== undefined)         updateData.unitNumber         = body.unitNumber ? String(body.unitNumber) : null;
-    if (body.floorPlan !== undefined)          updateData.floorPlan          = body.floorPlan ? String(body.floorPlan) : null;
-    if (body.rentalPrice !== undefined)        updateData.rentalPrice        = body.rentalPrice ? parseFloat(String(body.rentalPrice)) : null;
-    if (body.commissionPercent !== undefined)  updateData.commissionPercent  = body.commissionPercent !== null ? parseFloat(String(body.commissionPercent)) : null;
-    if (body.availabilityDate !== undefined)   updateData.availabilityDate   = body.availabilityDate ? new Date(String(body.availabilityDate)) : null;
-    if (body.inventoryStage !== undefined)     updateData.inventoryStage     = String(body.inventoryStage);
-    if (body.municipalityNumber !== undefined) updateData.municipalityNumber = body.municipalityNumber ? String(body.municipalityNumber) : null;
-    if (body.plotNumber !== undefined)         updateData.plotNumber         = body.plotNumber ? String(body.plotNumber) : null;
-    if (body.buildingPermitNumber !== undefined) updateData.buildingPermitNumber = body.buildingPermitNumber ? String(body.buildingPermitNumber) : null;
-    if (body.rentIndexRef !== undefined)       updateData.rentIndexRef       = body.rentIndexRef ? String(body.rentIndexRef) : null;
-    if (body.furnished !== undefined)          updateData.furnished          = body.furnished === true || body.furnished === 'true';
+    if (body.unitNumber !== undefined)
+      updateData.unitNumber = body.unitNumber ? String(body.unitNumber) : null;
+    if (body.floorPlan !== undefined)
+      updateData.floorPlan = body.floorPlan ? String(body.floorPlan) : null;
+    if (body.rentalPrice !== undefined)
+      updateData.rentalPrice = body.rentalPrice ? parseFloat(String(body.rentalPrice)) : null;
+    if (body.commissionPercent !== undefined)
+      updateData.commissionPercent =
+        body.commissionPercent !== null ? parseFloat(String(body.commissionPercent)) : null;
+    if (body.availabilityDate !== undefined)
+      updateData.availabilityDate = body.availabilityDate
+        ? new Date(String(body.availabilityDate))
+        : null;
+    if (body.inventoryStage !== undefined) updateData.inventoryStage = String(body.inventoryStage);
+    if (body.municipalityNumber !== undefined)
+      updateData.municipalityNumber = body.municipalityNumber
+        ? String(body.municipalityNumber)
+        : null;
+    if (body.plotNumber !== undefined)
+      updateData.plotNumber = body.plotNumber ? String(body.plotNumber) : null;
+    if (body.buildingPermitNumber !== undefined)
+      updateData.buildingPermitNumber = body.buildingPermitNumber
+        ? String(body.buildingPermitNumber)
+        : null;
+    if (body.rentIndexRef !== undefined)
+      updateData.rentIndexRef = body.rentIndexRef ? String(body.rentIndexRef) : null;
+    if (body.furnished !== undefined)
+      updateData.furnished = body.furnished === true || body.furnished === 'true';
 
     // Document flags
-    if (body.titleDeedMissing !== undefined)        updateData.titleDeedMissing        = Boolean(body.titleDeedMissing);
-    if (body.landlordPassportMissing !== undefined) updateData.landlordPassportMissing = Boolean(body.landlordPassportMissing);
-    if (body.ejariMissing !== undefined)            updateData.ejariMissing            = Boolean(body.ejariMissing);
+    if (body.titleDeedMissing !== undefined)
+      updateData.titleDeedMissing = Boolean(body.titleDeedMissing);
+    if (body.landlordPassportMissing !== undefined)
+      updateData.landlordPassportMissing = Boolean(body.landlordPassportMissing);
+    if (body.ejariMissing !== undefined) updateData.ejariMissing = Boolean(body.ejariMissing);
 
-    const nextStatus =
-      body.status !== undefined ? String(body.status) : existing.status;
+    const nextStatus = body.status !== undefined ? String(body.status) : existing.status;
     const nextMunicipalityNumber =
       body.municipalityNumber !== undefined
-        ? (body.municipalityNumber ? String(body.municipalityNumber) : '')
+        ? body.municipalityNumber
+          ? String(body.municipalityNumber)
+          : ''
         : existing.municipalityNumber;
     const nextBuildingPermitNumber =
       body.buildingPermitNumber !== undefined
-        ? (body.buildingPermitNumber ? String(body.buildingPermitNumber) : '')
+        ? body.buildingPermitNumber
+          ? String(body.buildingPermitNumber)
+          : ''
         : existing.buildingPermitNumber;
 
     assertAvailabilityCompliance({
@@ -832,46 +929,83 @@ router.patch(
     const body = req.body as Record<string, unknown>;
     const updateData: Prisma.PropertyUpdateInput = {};
 
-    const stringFields = ['title', 'description', 'type', 'status', 'currency', 'location', 'area',
-      'agentName', 'unitNumber', 'floorPlan', 'inventoryStage', 'municipalityNumber',
-      'plotNumber', 'buildingPermitNumber', 'rentIndexRef'] as const;
+    const stringFields = [
+      'title',
+      'description',
+      'type',
+      'status',
+      'currency',
+      'location',
+      'area',
+      'agentName',
+      'unitNumber',
+      'floorPlan',
+      'inventoryStage',
+      'municipalityNumber',
+      'plotNumber',
+      'buildingPermitNumber',
+      'rentIndexRef',
+    ] as const;
 
     stringFields.forEach(field => {
       if (body[field] !== undefined) {
-        (updateData as Record<string, unknown>)[field] = body[field] !== null
-          ? sanitizeString(String(body[field]))
-          : null;
+        (updateData as Record<string, unknown>)[field] =
+          body[field] !== null ? sanitizeString(String(body[field])) : null;
       }
     });
 
-    if (body.price !== undefined)          updateData.price          = parseFloat(String(body.price));
-    if (body.bedrooms !== undefined)       updateData.bedrooms       = parseInt(String(body.bedrooms), 10);
-    if (body.bathrooms !== undefined)      updateData.bathrooms      = parseInt(String(body.bathrooms), 10);
-    if (body.sqft !== undefined)           updateData.sqft           = parseInt(String(body.sqft), 10);
-    if (body.rentalPrice !== undefined)    updateData.rentalPrice    = body.rentalPrice !== null ? parseFloat(String(body.rentalPrice)) : null;
-    if (body.commissionPercent !== undefined) updateData.commissionPercent = body.commissionPercent !== null ? parseFloat(String(body.commissionPercent)) : null;
-    if (body.availabilityDate !== undefined) updateData.availabilityDate = body.availabilityDate ? new Date(String(body.availabilityDate)) : null;
-    if (body.featured !== undefined)       updateData.featured       = body.featured === true || body.featured === 'true';
-    if (body.furnished !== undefined)      updateData.furnished      = body.furnished === true || body.furnished === 'true';
-    if (body.amenities !== undefined)      updateData.amenities      = Array.isArray(body.amenities) ? (body.amenities as string[]) : [];
-    if (body.images !== undefined)         updateData.images         = Array.isArray(body.images) ? (body.images as string[]) : [];
-    if (body.titleDeedMissing !== undefined)        updateData.titleDeedMissing        = Boolean(body.titleDeedMissing);
-    if (body.landlordPassportMissing !== undefined) updateData.landlordPassportMissing = Boolean(body.landlordPassportMissing);
-    if (body.ejariMissing !== undefined)            updateData.ejariMissing            = Boolean(body.ejariMissing);
-    if (body.verifiedAt !== undefined)         updateData.verifiedAt         = body.verifiedAt ? new Date(String(body.verifiedAt)) : null;
-    if (body.verifiedBy !== undefined)         updateData.verifiedBy         = body.verifiedBy ? String(body.verifiedBy) : null;
-    if (body.verificationNotes !== undefined)  updateData.verificationNotes  = body.verificationNotes ? sanitizeString(String(body.verificationNotes)) : null;
-    if (body.lastRefreshedAt !== undefined)    updateData.lastRefreshedAt    = body.lastRefreshedAt ? new Date(String(body.lastRefreshedAt)) : null;
+    if (body.price !== undefined) updateData.price = parseFloat(String(body.price));
+    if (body.bedrooms !== undefined) updateData.bedrooms = parseInt(String(body.bedrooms), 10);
+    if (body.bathrooms !== undefined) updateData.bathrooms = parseInt(String(body.bathrooms), 10);
+    if (body.sqft !== undefined) updateData.sqft = parseInt(String(body.sqft), 10);
+    if (body.rentalPrice !== undefined)
+      updateData.rentalPrice =
+        body.rentalPrice !== null ? parseFloat(String(body.rentalPrice)) : null;
+    if (body.commissionPercent !== undefined)
+      updateData.commissionPercent =
+        body.commissionPercent !== null ? parseFloat(String(body.commissionPercent)) : null;
+    if (body.availabilityDate !== undefined)
+      updateData.availabilityDate = body.availabilityDate
+        ? new Date(String(body.availabilityDate))
+        : null;
+    if (body.featured !== undefined)
+      updateData.featured = body.featured === true || body.featured === 'true';
+    if (body.furnished !== undefined)
+      updateData.furnished = body.furnished === true || body.furnished === 'true';
+    if (body.amenities !== undefined)
+      updateData.amenities = Array.isArray(body.amenities) ? (body.amenities as string[]) : [];
+    if (body.images !== undefined)
+      updateData.images = Array.isArray(body.images) ? (body.images as string[]) : [];
+    if (body.titleDeedMissing !== undefined)
+      updateData.titleDeedMissing = Boolean(body.titleDeedMissing);
+    if (body.landlordPassportMissing !== undefined)
+      updateData.landlordPassportMissing = Boolean(body.landlordPassportMissing);
+    if (body.ejariMissing !== undefined) updateData.ejariMissing = Boolean(body.ejariMissing);
+    if (body.verifiedAt !== undefined)
+      updateData.verifiedAt = body.verifiedAt ? new Date(String(body.verifiedAt)) : null;
+    if (body.verifiedBy !== undefined)
+      updateData.verifiedBy = body.verifiedBy ? String(body.verifiedBy) : null;
+    if (body.verificationNotes !== undefined)
+      updateData.verificationNotes = body.verificationNotes
+        ? sanitizeString(String(body.verificationNotes))
+        : null;
+    if (body.lastRefreshedAt !== undefined)
+      updateData.lastRefreshedAt = body.lastRefreshedAt
+        ? new Date(String(body.lastRefreshedAt))
+        : null;
 
-    const nextStatus =
-      body.status !== undefined ? String(body.status) : existing.status;
+    const nextStatus = body.status !== undefined ? String(body.status) : existing.status;
     const nextMunicipalityNumber =
       body.municipalityNumber !== undefined
-        ? (body.municipalityNumber ? String(body.municipalityNumber) : '')
+        ? body.municipalityNumber
+          ? String(body.municipalityNumber)
+          : ''
         : existing.municipalityNumber;
     const nextBuildingPermitNumber =
       body.buildingPermitNumber !== undefined
-        ? (body.buildingPermitNumber ? String(body.buildingPermitNumber) : '')
+        ? body.buildingPermitNumber
+          ? String(body.buildingPermitNumber)
+          : ''
         : existing.buildingPermitNumber;
 
     assertAvailabilityCompliance({

@@ -1,26 +1,39 @@
 /**
- * Departments API Routes â€” Phase 30
+ * Departments API Routes — Phase 30
  *
  * Aggregates real-time KPI data from existing tables and serves it
  * to the EnhancedSalesDepartmentView, EnhancedFinanceDepartmentView,
  * and EnhancedHRDepartmentView frontend components.
  *
  * Endpoints:
- *   GET /api/departments                    â€” list all supported departments
- *   GET /api/departments/:code/data         â€” aggregated KPI data for a department
- *   GET /api/departments/:code/kpis         â€” KPI array for a department
- *   GET /api/departments/:code/trends       â€” monthly trend data for a department
- *   GET /api/departments/:code/summary      â€” summary stats for a department
+ *   GET /api/departments                    — list all supported departments
+ *   GET /api/departments/:code/data         — aggregated KPI data for a department
+ *   GET /api/departments/:code/kpis         — KPI array for a department
+ *   GET /api/departments/:code/trends       — monthly trend data for a department
+ *   GET /api/departments/:code/summary      — summary stats for a department
  */
 
 import { Router, Request, Response } from 'express';
-import { asyncHandler } from '../middleware/errorHandler.js';
+import { asyncHandler, AppError } from '../middleware/errorHandler.js';
 import { requirePermission } from '../middleware/rbac.js';
+import {
+  requireDepartmentAccess,
+  requireDepartmentPermission,
+} from '../middleware/departmentAuth.js';
 import { prisma } from '../database.js';
 
 const router = Router();
 
-type RouteRequest = Request<Record<string, string>>;
+const routeParamToString = (value: string | string[] | undefined): string | null => {
+  if (typeof value === 'string' && value.trim().length > 0) {
+    return value;
+  }
+  if (Array.isArray(value) && value.length > 0 && typeof value[0] === 'string') {
+    const first = value[0].trim();
+    return first.length > 0 ? first : null;
+  }
+  return null;
+};
 
 // â”€â”€â”€ Supported departments â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
@@ -125,6 +138,8 @@ async function getSalesData() {
   return {
     code: 'SALES',
     name: 'Sales & Leasing',
+    departmentCode: 'SALES',
+    departmentName: 'Sales & Leasing',
     totalLeads,
     activeDeals,
     conversionRate,
@@ -241,6 +256,8 @@ async function getFinanceData() {
   return {
     code: 'FINANCE',
     name: 'Finance',
+    departmentCode: 'FINANCE',
+    departmentName: 'Finance',
     totalBudget,
     spent,
     remaining,
@@ -363,6 +380,8 @@ async function getHRData() {
   return {
     code: 'HR',
     name: 'Human Resources',
+    departmentCode: 'HR',
+    departmentName: 'Human Resources',
     totalEmployees,
     activePositions: openPositions,
     attendanceRate: 94.5, // Placeholder â€” no attendance system yet; will be replaced when timesheet module is built
@@ -430,8 +449,14 @@ router.get(
 router.get(
   '/:code/data',
   requirePermission('view_analytics'),
-  asyncHandler(async (req: RouteRequest, res: Response) => {
-    const code = req.params.code.toUpperCase();
+  requireDepartmentAccess,
+  requireDepartmentPermission('READ'),
+  asyncHandler(async (req: Request, res: Response) => {
+    const codeParam = routeParamToString(req.params.code);
+    if (!codeParam) {
+      throw new AppError('Department code is required', 400);
+    }
+    const code = codeParam.toUpperCase();
 
     let data: Record<string, unknown>;
 
@@ -459,8 +484,14 @@ router.get(
 router.get(
   '/:code/kpis',
   requirePermission('view_analytics'),
-  asyncHandler(async (req: RouteRequest, res: Response) => {
-    const code = req.params.code.toUpperCase();
+  requireDepartmentAccess,
+  requireDepartmentPermission('READ'),
+  asyncHandler(async (req: Request, res: Response) => {
+    const codeParam = routeParamToString(req.params.code);
+    if (!codeParam) {
+      throw new AppError('Department code is required', 400);
+    }
+    const code = codeParam.toUpperCase();
     let data: Record<string, unknown>;
 
     switch (code) {
@@ -491,8 +522,14 @@ router.get(
 router.get(
   '/:code/trends',
   requirePermission('view_analytics'),
-  asyncHandler(async (req: RouteRequest, res: Response) => {
-    const code = req.params.code.toUpperCase();
+  requireDepartmentAccess,
+  requireDepartmentPermission('READ'),
+  asyncHandler(async (req: Request, res: Response) => {
+    const codeParam = routeParamToString(req.params.code);
+    if (!codeParam) {
+      throw new AppError('Department code is required', 400);
+    }
+    const code = codeParam.toUpperCase();
     let data: Record<string, unknown>;
 
     switch (code) {
@@ -523,8 +560,14 @@ router.get(
 router.get(
   '/:code/summary',
   requirePermission('view_analytics'),
-  asyncHandler(async (req: RouteRequest, res: Response) => {
-    const code = req.params.code.toUpperCase();
+  requireDepartmentAccess,
+  requireDepartmentPermission('READ'),
+  asyncHandler(async (req: Request, res: Response) => {
+    const codeParam = routeParamToString(req.params.code);
+    if (!codeParam) {
+      throw new AppError('Department code is required', 400);
+    }
+    const code = codeParam.toUpperCase();
     let data: Record<string, unknown>;
 
     switch (code) {

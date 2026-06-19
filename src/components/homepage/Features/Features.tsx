@@ -21,7 +21,7 @@ interface Feature {
   icon: LucideIcon;
   title: string;
   description: string;
-  color: string;
+  tone: 'red' | 'green' | 'blue' | 'purple' | 'orange' | 'whatsapp';
   detail: FeatureDetail;
 }
 
@@ -31,7 +31,7 @@ const features: Feature[] = [
     title: 'AI-Powered Matching',
     description:
       'Intelligent property recommendations tailored to your preferences, budget, and investment goals.',
-    color: '#E31E24',
+    tone: 'red',
     detail: {
       details:
         'Our ML algorithm analyzes 50+ property attributes against your preferences to surface the most relevant listings. Updated daily with new market data.',
@@ -43,11 +43,11 @@ const features: Feature[] = [
     title: 'WhatsApp-First Communication',
     description:
       'Direct messaging with agents on WhatsApp for instant answers to your property questions.',
-    color: '#25D366',
+    tone: 'whatsapp',
     detail: {
       details:
         'Connect directly with your dedicated agent on WhatsApp within minutes. No forms, no waiting — real conversations with licensed professionals.',
-      cta: { text: 'Chat on WhatsApp', link: '#chat' },
+      cta: { text: 'Chat on WhatsApp', link: '/owner/whatsapp' },
     },
   },
   {
@@ -55,7 +55,7 @@ const features: Feature[] = [
     title: 'RERA Compliant',
     description:
       'Fully licensed and regulated by Dubai Real Estate Regulatory Agency for complete peace of mind.',
-    color: '#10B981',
+    tone: 'green',
     detail: {
       details:
         'White Caves operates as a RERA-compliant real estate brokerage in Dubai. All listings are verified and our agents are registered with DLD.',
@@ -67,11 +67,11 @@ const features: Feature[] = [
     title: 'Multi-Language Support',
     description:
       'Browse properties and communicate with our team in English, Arabic, and other languages.',
-    color: '#3B82F6',
+    tone: 'blue',
     detail: {
       details:
         'Full support for English and Arabic with more languages coming. Our team includes speakers of 12+ languages.',
-      cta: { text: 'Meet Our Team', link: '#team' },
+      cta: { text: 'Meet Our Team', link: '/about' },
     },
   },
   {
@@ -79,7 +79,7 @@ const features: Feature[] = [
     title: '24/7 Availability',
     description:
       "Round-the-clock customer support and property inquiries — we're always here to assist you.",
-    color: '#8B5CF6',
+    tone: 'purple',
     detail: {
       details: 'Our AI assistant Zoe is always on. Human agents are available 9am-10pm Dubai time.',
       cta: { text: 'Contact Us', link: '/contact' },
@@ -90,7 +90,7 @@ const features: Feature[] = [
     title: 'Verified Listings',
     description:
       'Every property is thoroughly verified and updated in real-time for accuracy and transparency.',
-    color: '#F59E0B',
+    tone: 'orange',
     detail: {
       details:
         'Every listing goes through a 5-step verification: agent license check, title deed validation, site visit, pricing audit, and photo authentication.',
@@ -173,10 +173,7 @@ const Features = () => {
                 }}
               >
                 <span className="feature-number">{String(idx + 1).padStart(2, '0')}</span>
-                <div
-                  className="feature-icon-wrapper"
-                  style={{ backgroundColor: `${feature.color}15`, color: feature.color }}
-                >
+                <div className={`feature-icon-wrapper feature-icon-wrapper--${feature.tone}`}>
                   <feature.icon size={28} strokeWidth={1.5} />
                 </div>
                 <h3 className="feature-title">{feature.title}</h3>
@@ -194,42 +191,20 @@ const Features = () => {
                 <AnimatePresence>
                   {isOpen && (
                     <motion.div
+                      className="feature-detail-panel"
                       initial={{ opacity: 0, height: 0 }}
                       animate={{ opacity: 1, height: 'auto' }}
                       exit={{ opacity: 0, height: 0 }}
                       transition={{ duration: 0.3, ease: 'easeInOut' }}
-                      style={{ overflow: 'hidden' }}
                       onClick={e => e.stopPropagation()}
                     >
                       <div
-                        style={{
-                          borderTop: `2px solid ${feature.color}30`,
-                          marginTop: '0.75rem',
-                          paddingTop: '0.75rem',
-                        }}
+                        className={`feature-detail-content feature-detail-content--${feature.tone}`}
                       >
-                        <p
-                          style={{
-                            fontSize: '0.85rem',
-                            color: '#4b5563',
-                            lineHeight: 1.6,
-                            marginBottom: '0.75rem',
-                          }}
-                        >
-                          {feature.detail.details}
-                        </p>
+                        <p className="feature-detail-text">{feature.detail.details}</p>
                         <a
                           href={feature.detail.cta.link}
-                          style={{
-                            display: 'inline-block',
-                            padding: '0.4rem 1rem',
-                            background: feature.color,
-                            color: '#fff',
-                            borderRadius: 20,
-                            fontSize: '0.8rem',
-                            fontWeight: 600,
-                            textDecoration: 'none',
-                          }}
+                          className={`feature-detail-cta feature-detail-cta--${feature.tone}`}
                         >
                           {feature.detail.cta.text}
                         </a>

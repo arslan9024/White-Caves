@@ -48,10 +48,21 @@ const firebaseConfig: FirebaseConfig = {
   appId: import.meta.env.VITE_FIREBASE_APP_ID
 };
 
+const firebaseRequiredConfigMap: Record<string, string | undefined> = {
+  VITE_FIREBASE_API_KEY: firebaseConfig.apiKey,
+  VITE_FIREBASE_AUTH_DOMAIN: firebaseConfig.authDomain,
+  VITE_FIREBASE_PROJECT_ID: firebaseConfig.projectId,
+  VITE_FIREBASE_APP_ID: firebaseConfig.appId,
+};
+
+const missingFirebaseConfigKeys = Object.entries(firebaseRequiredConfigMap)
+  .filter(([, value]) => !value)
+  .map(([key]) => key);
+
 let app: FirebaseApp | null = null;
 let authInstance: Auth | null = null;
 
-if (firebaseConfig.apiKey) {
+if (missingFirebaseConfigKeys.length === 0) {
   try {
     app = initializeApp(firebaseConfig);
     authInstance = getAuth(app);
@@ -59,15 +70,28 @@ if (firebaseConfig.apiKey) {
     log.error('Failed to initialize Firebase app', error);
   }
 } else {
-  log.warn('Firebase API key is missing; auth features are disabled.');
+  log.warn(
+    `Firebase auth features are disabled. Missing configuration: ${missingFirebaseConfigKeys.join(', ')}`
+  );
 }
 
 export const auth: Auth | null = authInstance;
 export const isFirebaseAuthConfigured = Boolean(authInstance);
+export const firebaseAuthUnavailableReason =
+  missingFirebaseConfigKeys.length > 0
+    ? `Missing environment variables: ${missingFirebaseConfigKeys.join(', ')}`
+    : '';
 
 const googleProvider = new GoogleAuthProvider();
 const facebookProvider = new FacebookAuthProvider();
 const appleProvider = new OAuthProvider('apple.com');
+
+googleProvider.setCustomParameters({ prompt: 'select_account' });
+googleProvider.addScope('email');
+googleProvider.addScope('profile');
+
+facebookProvider.setCustomParameters({ display: 'popup' });
+appleProvider.setCustomParameters({ locale: 'en_US' });
 
 export const signInWithGoogle = async () => {
   if (!auth) throw new Error('Firebase not initialized');

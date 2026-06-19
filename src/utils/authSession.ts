@@ -9,6 +9,7 @@ import {
   isCreatorSuperUserEmail,
   normalizeRoleForUserContext,
 } from './superUserAccess';
+import { getPostLoginRoute } from './routing';
 
 const BLOCKED_RETURN_TO_PREFIXES = ['/signin', '/signup', '/login', '/auth/signin'];
 
@@ -21,7 +22,11 @@ export const sanitizeReturnToPath = (value?: string | null): string | null => {
   const candidate = value.trim();
   if (!candidate) return null;
   if (!isInternalPath(candidate)) return null;
-  if (BLOCKED_RETURN_TO_PREFIXES.some(prefix => candidate === prefix || candidate.startsWith(`${prefix}?`))) {
+  if (
+    BLOCKED_RETURN_TO_PREFIXES.some(
+      prefix => candidate === prefix || candidate.startsWith(`${prefix}?`)
+    )
+  ) {
     return null;
   }
   return candidate;
@@ -32,7 +37,7 @@ export const getCurrentPathWithQuery = (pathname: string, search = '', hash = ''
 };
 
 export const resolvePostLoginDestination = (options: {
-  user: Pick<AppUser, 'role' | 'status'> & { email?: string | null };
+  user: Pick<AppUser, 'role' | 'status' | 'profileCompleted'> & { email?: string | null };
   returnTo?: string | null;
 }): string => {
   const normalizedReturnTo = sanitizeReturnToPath(options.returnTo);
@@ -40,29 +45,12 @@ export const resolvePostLoginDestination = (options: {
     return normalizedReturnTo;
   }
 
-  if (options.user.status === 'pending') {
-    return '/pending-approval';
-  }
-
   const normalizedRole = normalizeRoleForUserContext(options.user.role, options.user.email);
 
-  if (!normalizedRole) {
-    return '/select-role';
-  }
-
-  if (normalizedRole === 'tenant') {
-    return '/tenant-portal';
-  }
-
-  if (normalizedRole === 'landlord' || normalizedRole === 'property-owner') {
-    return '/landlord-portal';
-  }
-
-  if (isCreatorSuperUserEmail(options.user.email)) {
-    return '/crm';
-  }
-
-  return '/crm';
+  return getPostLoginRoute(normalizedRole ?? options.user.role, options.user.email, {
+    status: options.user.status,
+    profileCompleted: options.user.profileCompleted,
+  });
 };
 
 const persistRolePreference = (
@@ -134,9 +122,7 @@ export const navigateToPostLoginDestination = (
   navigate(destination, { replace });
 };
 
-export const getReturnToFromLocationState = (
-  state: unknown
-): string | null => {
+export const getReturnToFromLocationState = (state: unknown): string | null => {
   if (!state || typeof state !== 'object') return null;
   const maybeFrom = (state as { from?: unknown }).from;
   return typeof maybeFrom === 'string' ? sanitizeReturnToPath(maybeFrom) : null;

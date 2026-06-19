@@ -108,7 +108,7 @@ const TopCommandBar = () => {
           </button>
         )}
 
-        <div className="tcb-logo" onClick={() => navigate('/dashboard')}>
+        <div className="tcb-logo" onClick={() => navigate('/crm')}>
           <div className="tcb-logo-icon">
             <Building2 size={24} />
           </div>

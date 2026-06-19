@@ -30,7 +30,16 @@ import { triggerLeadRescore } from '../services/ai/leadAutoRescore.js';
 
 const router = Router();
 
-type RouteRequest = Request<Record<string, string>>;
+const routeParamToString = (value: string | string[] | undefined): string | null => {
+  if (typeof value === 'string' && value.trim().length > 0) {
+    return value;
+  }
+  if (Array.isArray(value) && value.length > 0 && typeof value[0] === 'string') {
+    const first = value[0].trim();
+    return first.length > 0 ? first : null;
+  }
+  return null;
+};
 const db = prisma as any;
 
 const VALID_TYPES = ['viewing', 'meeting', 'call', 'inspection', 'signing'] as const;
@@ -213,9 +222,14 @@ router.get(
 router.get(
   '/:id',
   requirePermission('view_appointments'),
-  asyncHandler(async (req: RouteRequest, res: Response) => {
-    validateIdParam(req.params.id, 'Appointment ID');
-    const appt = await db.appointment.findUnique({ where: { id: req.params.id } });
+  asyncHandler(async (req: Request, res: Response) => {
+    const appointmentId = routeParamToString(req.params.id);
+    if (!appointmentId) {
+      throw new AppError('Appointment ID is required', 400);
+    }
+
+    validateIdParam(appointmentId, 'Appointment ID');
+    const appt = await db.appointment.findUnique({ where: { id: appointmentId } });
     if (!appt) throw new AppError('Appointment not found', 404);
     res.status(200).json({ success: true, data: appt });
   })

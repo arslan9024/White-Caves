@@ -34,7 +34,7 @@ export default function RoleGateway({ user, onRoleSelect }) {
       };
       localStorage.setItem('userRole', JSON.stringify(mdRole));
       dispatch(setActiveRole('md'));
-      navigate('/md/dashboard');
+      navigate('/profile');
     }
   }, [user, navigate, dispatch]);
 
@@ -58,7 +58,7 @@ export default function RoleGateway({ user, onRoleSelect }) {
       onRoleSelect(selectedRole);
     }
     
-    navigate(`/${selectedRole}/dashboard`);
+    navigate('/profile');
   };
 
   return (
@@ -128,7 +128,7 @@ export function RoleGuard({ allowedRoles, children }) {
     }
     
     if (!allowedRoles.includes(userRole.role)) {
-      navigate(`/${userRole.role}/dashboard`);
+      navigate('/profile');
     }
   }, [userRole, allowedRoles, navigate]);
   

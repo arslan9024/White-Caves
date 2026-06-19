@@ -1,7 +1,7 @@
-import React, { FC } from 'react';
+import React, { FC, useEffect, useRef, useState } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
 
-interface CommandItem {
+export interface CommandPaletteItemData {
   id: string;
   icon: string;
   label: string;
@@ -10,25 +10,47 @@ interface CommandItem {
 
 interface DashboardCommandPaletteProps {
   isOpen: boolean;
-  prefersReducedMotion: boolean;
   query: string;
-  items: CommandItem[];
+  items: CommandPaletteItemData[];
+  prefersReducedMotion: boolean;
   onClose: () => void;
-  onQueryChange: (query: string) => void;
-  onRunTopResult: () => void;
-  onSelectItem: (itemId: string) => void;
+  onQueryChange: (value: string) => void;
+  onEnter: (activeIndex: number) => void;
+  onSelect: (item: CommandPaletteItemData) => void;
 }
 
 const DashboardCommandPalette: FC<DashboardCommandPaletteProps> = ({
   isOpen,
-  prefersReducedMotion,
   query,
   items,
+  prefersReducedMotion,
   onClose,
   onQueryChange,
-  onRunTopResult,
-  onSelectItem,
+  onEnter,
+  onSelect,
 }) => {
+  const [activeIndex, setActiveIndex] = useState(0);
+  const itemRefs = useRef<Array<HTMLButtonElement | null>>([]);
+
+  useEffect(() => {
+    if (!isOpen) {
+      setActiveIndex(0);
+      return;
+    }
+
+    if (items.length === 0) {
+      setActiveIndex(0);
+      return;
+    }
+
+    setActiveIndex(current => Math.min(current, items.length - 1));
+  }, [isOpen, items]);
+
+  useEffect(() => {
+    if (!isOpen || items.length === 0) return;
+    itemRefs.current[activeIndex]?.scrollIntoView({ block: 'nearest' });
+  }, [activeIndex, isOpen, items.length]);
+
   return (
     <AnimatePresence>
       {isOpen && (
@@ -41,6 +63,9 @@ const DashboardCommandPalette: FC<DashboardCommandPaletteProps> = ({
         >
           <motion.div
             className="dashboard-command-palette"
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="dashboard-command-palette-title"
             initial={prefersReducedMotion ? false : { opacity: 0, y: 16 }}
             animate={prefersReducedMotion ? {} : { opacity: 1, y: 0 }}
             exit={prefersReducedMotion ? {} : { opacity: 0, y: 12 }}
@@ -48,7 +73,7 @@ const DashboardCommandPalette: FC<DashboardCommandPaletteProps> = ({
             onClick={event => event.stopPropagation()}
           >
             <div className="dashboard-command-palette__header">
-              <strong>Command palette</strong>
+              <strong id="dashboard-command-palette-title">Command palette</strong>
               <button type="button" onClick={onClose}>
                 Esc
               </button>
@@ -59,21 +84,49 @@ const DashboardCommandPalette: FC<DashboardCommandPaletteProps> = ({
               value={query}
               onChange={event => onQueryChange(event.target.value)}
               onKeyDown={event => {
+                if (event.key === 'ArrowDown') {
+                  event.preventDefault();
+                  setActiveIndex(current => (current >= items.length - 1 ? 0 : current + 1));
+                  return;
+                }
+
+                if (event.key === 'ArrowUp') {
+                  event.preventDefault();
+                  setActiveIndex(current => (current <= 0 ? items.length - 1 : current - 1));
+                  return;
+                }
+
+                if (event.key === 'Home') {
+                  event.preventDefault();
+                  setActiveIndex(0);
+                  return;
+                }
+
+                if (event.key === 'End') {
+                  event.preventDefault();
+                  setActiveIndex(items.length - 1);
+                  return;
+                }
+
                 if (event.key === 'Enter') {
                   event.preventDefault();
-                  onRunTopResult();
+                  onEnter(activeIndex);
                 }
               }}
               placeholder="Search tabs or AI CRM modules"
               aria-label="Search command palette"
             />
             <div className="dashboard-command-palette__results">
-              {items.map(item => (
+              {items.map((item, index) => (
                 <button
                   key={item.id}
+                  ref={element => {
+                    itemRefs.current[index] = element;
+                  }}
                   type="button"
-                  className="dashboard-command-palette__item"
-                  onClick={() => onSelectItem(item.id)}
+                  className={`dashboard-command-palette__item${index === activeIndex ? ' dashboard-command-palette__item--active' : ''}`}
+                  onMouseEnter={() => setActiveIndex(index)}
+                  onClick={() => onSelect(item)}
                 >
                   <span aria-hidden="true">{item.icon}</span>
                   <span className="dashboard-command-palette__copy">

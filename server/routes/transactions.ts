@@ -29,7 +29,12 @@ router.get(
       throw new AppError('Access denied — insufficient role for transaction data', 403);
     }
 
-    const { status, type, sortBy = 'createdAt', sortOrder = 'desc' } = req.query as Record<string, string | undefined>;
+    const {
+      status,
+      type,
+      sortBy = 'createdAt',
+      sortOrder = 'desc',
+    } = req.query as Record<string, string | undefined>;
 
     const {
       page: pageNum,
@@ -116,8 +121,8 @@ router.get(
   '/:id',
   requirePermission('view_payments'),
   asyncHandler(async (req: Request, res: Response) => {
-    // @ts-expect-error -- pre-existing: req.params/query string|string[] narrowing
-    validateIdParam(req.params.id, 'Transaction ID');
+    const { id } = req.params as Record<string, string>;
+    validateIdParam(id, 'Transaction ID');
 
     // AUTHORIZATION: Only managers/finance can view individual transaction details
     const allowedRoles = ['owner', 'manager', 'admin', 'finance'];
@@ -126,8 +131,7 @@ router.get(
     }
 
     const transaction = await prisma.transaction.findUnique({
-    // @ts-expect-error -- pre-existing: req.params/query string|string[] narrowing
-      where: { id: req.params.id },
+      where: { id },
     });
 
     if (!transaction) throw new AppError('Transaction not found', 404);
@@ -241,7 +245,14 @@ router.patch(
     const { status, amount, type, closingDate, notes, documents } = req.body;
 
     validate(req.body, {
-      status: rules.oneOf('Status', ['draft', 'pending', 'active', 'in_progress', 'completed', 'cancelled']),
+      status: rules.oneOf('Status', [
+        'draft',
+        'pending',
+        'active',
+        'in_progress',
+        'completed',
+        'cancelled',
+      ]),
       amount: rules.optionalPositiveNumber('Amount'),
       type: rules.oneOf('Transaction type', ['sale', 'lease', 'rental']),
       documents: rules.optionalArray('Documents'),
@@ -261,15 +272,15 @@ router.patch(
       // P0-013: KYC gate — block risky status transitions without verified lead
       const riskyStatuses = ['in_progress', 'completed'];
       if (status && riskyStatuses.includes(status)) {
-        const effectiveType   = type ?? existing.type;
+        const effectiveType = type ?? existing.type;
         const effectiveAmount = amount != null ? parseFloat(amount) : Number(existing.amount);
-        const isRisky         = effectiveType === 'sale' || effectiveAmount >= RISKY_AMOUNT_AED;
+        const isRisky = effectiveType === 'sale' || effectiveAmount >= RISKY_AMOUNT_AED;
 
         if (isRisky) {
           if (!existing.leadId) {
             throw new AppError(
               'KYC required: risky transactions must reference a verified lead (leadId missing)',
-              400,
+              400
             );
           }
           const lead = await tx.lead.findUnique({
@@ -283,7 +294,7 @@ router.patch(
           if (!hasKyc) {
             throw new AppError(
               'KYC verification required: lead must be verified before this transaction can proceed',
-              403,
+              403
             );
           }
         }
@@ -303,7 +314,7 @@ router.patch(
           if (isNaN(d.getTime())) {
             throw new AppError(
               'Invalid closing date format. Use ISO 8601 format (YYYY-MM-DD)',
-              400,
+              400
             );
           }
           data.closingDate = d;

@@ -7,7 +7,7 @@
 /* eslint-disable react/display-name, security/detect-object-injection */
 
 import React from 'react';
-import { render, screen } from '@testing-library/react';
+import { render, screen, fireEvent } from '@testing-library/react';
 import { describe, it, expect, vi } from 'vitest';
 
 // Mock framer-motion — render all motion.* as plain HTML
@@ -137,5 +137,27 @@ describe('Features', () => {
     render(<Features />);
     const arrows = document.querySelectorAll('.arrow');
     expect(arrows.length).toBe(6);
+  });
+
+  // ──────────────────────────────────────────────────────────
+  // Expanded CTA routes
+  // ──────────────────────────────────────────────────────────
+
+  it('opens WhatsApp feature and links to /owner/whatsapp', () => {
+    render(<Features />);
+    const cardTitle = screen.getByText('WhatsApp-First Communication');
+    fireEvent.click(cardTitle.closest('.feature-card') as HTMLElement);
+
+    const cta = screen.getByRole('link', { name: 'Chat on WhatsApp' });
+    expect(cta.getAttribute('href')).toBe('/owner/whatsapp');
+  });
+
+  it('opens Multi-Language feature and links to /about', () => {
+    render(<Features />);
+    const cardTitle = screen.getByText('Multi-Language Support');
+    fireEvent.click(cardTitle.closest('.feature-card') as HTMLElement);
+
+    const cta = screen.getByRole('link', { name: 'Meet Our Team' });
+    expect(cta.getAttribute('href')).toBe('/about');
   });
 });

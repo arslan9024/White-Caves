@@ -304,9 +304,9 @@ InventoryPropertySchema.statics.getAreaStats = async function () {
         total: { $sum: 1 },
         available: { $sum: { $cond: [{ $eq: ['$status', 'available'] }, 1, 0] } },
         rented: { $sum: { $cond: [{ $eq: ['$status', 'rented'] }, 1, 0] } },
-        sold: { $sum: { $cond: [{ $eq: ['$status', 'sold'] }, 1, 0] } },
-      },
-    },
+        sold: { $sum: { $cond: [{ $eq: ['$status', 'sold'] }, 1, 0] } }
+      }
+    }
   ]);
 };
 

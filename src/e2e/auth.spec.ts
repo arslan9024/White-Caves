@@ -64,11 +64,11 @@ test.describe('Authentication Flow', () => {
   });
 
   test('should preserve route guard behavior for dashboard access', async ({ page }) => {
-    await page.goto('/md/dashboard', { waitUntil: 'domcontentloaded' });
+    await page.goto('/crm', { waitUntil: 'domcontentloaded' });
 
     // Either dashboard loads, or user is redirected to auth/home (both valid depending on auth state)
     const currentPath = new URL(page.url()).pathname;
-    const isDashboard = currentPath.startsWith('/md/dashboard');
+    const isDashboard = currentPath.startsWith('/crm');
     const isAuthOrHome = currentPath.startsWith('/signin') || currentPath === '/';
 
     expect(isDashboard || isAuthOrHome).toBeTruthy();

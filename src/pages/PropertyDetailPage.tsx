@@ -14,6 +14,7 @@ import { usePublicFavorites } from '../hooks/usePublicFavorites';
 import PublicLayout from '../components/layout/PublicLayout';
 import PageMeta from '../components/seo/PageMeta';
 import StructuredData from '../components/seo/StructuredData';
+import { buildPropertyDetailPageSchemas } from '../utils/jsonLdSchemas';
 import { PropertyImageSlider } from '../shared/components/property';
 import Skeleton from '../components/ui/Skeleton/Skeleton';
 import {
@@ -107,37 +108,54 @@ const PropertyDetailPage: FC = () => {
   const propertySeoImage = useMemo(() => {
     const firstImage = property?.images?.[0] || property?.image;
     if (!firstImage) return undefined;
-    return firstImage.includes('fm=') ? firstImage : `${firstImage}${firstImage.includes('?') ? '&' : '?'}fm=webp`;
+    return firstImage.includes('fm=')
+      ? firstImage
+      : `${firstImage}${firstImage.includes('?') ? '&' : '?'}fm=webp`;
   }, [property]);
 
   const propertyJsonLd = useMemo(() => {
     if (!property) return null;
 
-    return {
-      '@context': 'https://schema.org',
-      '@type': 'RealEstateListing',
-      name: property.title,
-      description: `${property.type} in ${property.location}`,
-      url: `${window.location.origin}/property/${property.id}`,
-      image: property.images?.[0] || property.image,
-      numberOfRooms: property.beds,
-      floorSize: {
-        '@type': 'QuantitativeValue',
-        value: property.sqft,
-        unitCode: 'FTK',
+    // Build comprehensive schemas for property detail page
+    // Includes: Organization + Breadcrumb + Property listing
+    const schemas = buildPropertyDetailPageSchemas(
+      {
+        name: property.title,
+        description: `${property.type} in ${property.location}`,
+        address: {
+          streetAddress: property.location,
+          addressLocality: property.location,
+          addressRegion: 'Dubai',
+          postalCode: '',
+          addressCountry: 'AE',
+        },
+        price: {
+          amount: property.price,
+          currency: 'AED',
+        },
+        bedrooms: property.beds,
+        bathrooms: property.baths,
+        floorSize: {
+          value: property.sqft,
+          unitCode: 'SQF',
+        },
+        image: property.images || property.image,
+        url: `${window.location.origin}/property/${property.id}`,
+        pricingType: 'SalePrice',
+        availability: 'InStock',
       },
-      address: {
-        '@type': 'PostalAddress',
-        addressLocality: property.location,
-        addressCountry: 'AE',
-      },
-      offers: {
-        '@type': 'Offer',
-        price: property.price,
-        priceCurrency: 'AED',
-        availability: 'https://schema.org/InStock',
-      },
-    };
+      undefined, // agentInfo - can be added later
+      [
+        { name: 'Home', url: '/' },
+        {
+          name: property.location,
+          url: `/properties?area=${encodeURIComponent(property.location)}`,
+        },
+        { name: property.title, url: `${window.location.origin}/property/${property.id}` },
+      ]
+    );
+
+    return schemas;
   }, [property]);
 
   const favoriteItem = property
@@ -212,7 +230,7 @@ const PropertyDetailPage: FC = () => {
       <PublicLayout>
         <div className="property-detail-page dubai-luxury-theme">
           <div className="detail-not-found">
-            <p style={{ fontSize: '3rem', marginBottom: '1rem' }}>🏠</p>
+            <p className="detail-not-found-icon">🏠</p>
             <h2>Property Not Found</h2>
             <p>The property you&apos;re looking for doesn&apos;t exist or has been removed.</p>
             <Link to="/properties" className="back-to-listings">
@@ -263,12 +281,10 @@ const PropertyDetailPage: FC = () => {
             onShare={() => shareProperty(property)}
           />
           {property.images && property.images.length > 0 && (
-            <div style={{ marginTop: '0.75rem', display: 'flex', gap: '0.5rem' }}>
+            <div className="detail-tour-toggle-row">
               <button
-                className={`action-btn${showTour ? ' active' : ''}`}
-                style={{ fontSize: '0.85rem', padding: '0.5rem 1rem' }}
+                className={`action-btn detail-tour-toggle-btn${showTour ? ' active' : ''}`}
                 onClick={() => setShowTour(v => !v)}
-                aria-expanded={showTour}
               >
                 {showTour ? '🏠 Hide 360° Tour' : '🔭 360° Virtual Tour'}
               </button>
@@ -278,11 +294,9 @@ const PropertyDetailPage: FC = () => {
 
         {/* ─── Virtual Tour (lazy) ───────────────────────────── */}
         {showTour && property.images && property.images.length > 0 && (
-          <section className="detail-virtual-tour" style={{ marginBottom: '2rem' }}>
+          <section className="detail-virtual-tour detail-virtual-tour-section">
             <Suspense
-              fallback={
-                <div style={{ padding: '2rem', textAlign: 'center' }}>Loading virtual tour…</div>
-              }
+              fallback={<div className="detail-virtual-tour-loading">Loading virtual tour…</div>}
             >
               <VirtualTour
                 images={property.images.map((src: string) => ({ src, name: property.title }))}

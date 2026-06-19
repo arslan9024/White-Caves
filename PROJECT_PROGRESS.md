@@ -2,7 +2,7 @@
 
 > **Agency:** White Caves Global Agency
 > **Orchestrator:** @Ada (Chief Architect)
-> **Last Updated:** 2026-05-28
+> **Last Updated:** 2026-06-19
 > **Policy Mode:** Dual-threshold readiness (60% unlock, 90% target) + policy-driven gating (Governance V2 active)
 > **Daily Report:** `PROJECT_PROGRESS_REPORT.md`
 
@@ -12,7 +12,61 @@
 
 - Canonical roadmap: **[plans/MASTER_PLAN.md](plans/MASTER_PLAN.md)**
 - Active queue: **[plans/PENDING_TASKS_ONLY.md](plans/PENDING_TASKS_ONLY.md)**
-- Last Updated (ISO): 2026-05-28
+- Last Updated (ISO): 2026-06-19
+
+## 🚀 Wave 19 Planning Upgrade Evidence (Dashboard Hardening)
+
+- Wave 19 planning artifacts upgraded for execution depth:
+  - `plans/waves/WAVE_19_SDD.md`
+  - `plans/waves/WAVE_19_IMPLEMENTATION_BACKLOG.md`
+  - `plans/waves/WAVE_19_TEST_ROLLOUT.md`
+  - `plans/waves/WAVE_19_READINESS_PACKET.md`
+- New contract artifact added:
+  - `plans/waves/WAVE_19_DASHBOARD_API_CONTRACT.md`
+- New controls now explicitly documented:
+  - REQ→test traceability for dashboard-critical requirements
+  - rollout/rollback metric gates (dashboard API/load p95, export reliability, freshness SLA)
+  - predecessor sequencing guard to verify Wave 18.1 Session 3 dashboard dependency closure before Wave 19 coding
+
+## 🚀 Wave 19 Implementation Progress (Current Cycle)
+
+- ✅ W19-010 through W19-013 completed in sequence (auth routing standardization, fallback hardening, MD split workspaces, KPI/AI boundaries, executive first-screen UX, state-system empty-state + RTL parity, dashboard API contract lock).
+- ✅ W19-012 completed: REQ→test traceability matrix upgraded in `plans/waves/WAVE_19_TEST_ROLLOUT.md` with explicit test IDs, evidence files, and validation commands.
+- ✅ W19-013 completed: rollout/rollback threshold matrix added in `plans/waves/WAVE_19_DASHBOARD_API_CONTRACT.md`.
+- ✅ W19-014 completed: `W18.1-P1-003` closure evidence confirmed and linked. Agent performance filterable dashboard + XLSX/PDF export routes shipped (`GET /api/dashboard/agent-performance`, `POST .../export`, `GET .../export/:jobId`) with 32/32 route tests passing.
+- ✅ W19-015 completed: `npm run plans:validate` passed after all W19-010–W19-014 task closures.
+- ✅ Governance checks run for this cycle: `npm run plans:validate` passed; orchestrator progress brief refreshed.
+
+## 🚀 Wave 20 Security Hardening Closeout
+
+- ✅ W20-001 completed: audit log CSV/XLSX exports re-gated from `view_leads` to `view_audit_logs` in `server/routes/activities.ts`.
+- ✅ W20-002 completed: compliance mutations now require explicit manager+ (`owner`, `manager`, `admin`, `finance`) role guards for:
+  - `POST /api/compliance/reports`
+  - `POST /api/compliance/brn-check`
+  - `PATCH /api/compliance/kyc/documents/:documentId/review`
+- ✅ W20-003 completed: PDPL consent mutations now require explicit manager+ role guards for:
+  - `POST /api/compliance/consent`
+  - `PATCH /api/compliance/consent/:consentId/revoke`
+  - `DELETE /api/compliance/consent/:consentId`
+- ✅ OWASP A01 hardening retained: hardcoded privileged creator email removed from source and moved to env-backed configuration (`CREATOR_SUPERUSER_EMAIL`, `VITE_CREATOR_SUPERUSER_EMAIL`).
+- ✅ Validation evidence refreshed for Wave 20 closeout:
+  - focused `server/routes/compliance.test.ts` + `server/routes/activities.test.ts` regression rerun completed with exit code `0`
+  - `npm run plans:validate` completed with exit code `0`
+  - `npm run orchestrator:progress:intel:brief` completed with exit code `0`
+
+## 🚀 P0 Business Documentation Uplift (Dubai/DAMAC + Inventory + Leasing)
+
+- ✅ Created `business_docs/08_market_research/damac-hills-2-area-playbook.md` with operating segmentation, pricing/positioning modes, SLA strategy, KPI thresholds, and risk-governance controls.
+- ✅ Created `business_docs/04_workflows/leasing-support-operations-playbook.md` with case taxonomy, routing lanes, SLA clocks, escalation ladder, and service recovery framework.
+- ✅ Replaced stub content in `business_docs/09_crm_features/sentinel-property.md` with implementation-grade lifecycle/compliance/quality-scoring/import governance specification.
+- ✅ Replaced stub content in `business_docs/09_crm_features/maintenance.md` with implementation-grade request schema, assignment, SLA escalation, approval gates, and acceptance-test framing.
+- ✅ Normalized legal notice taxonomy in `business_docs/09_crm_features/tenancy-ejari.md` to align with `business_docs/09_crm_features/legal-management.md`:
+  - Form 7 = rent increase
+  - Form 12 = eviction
+  - Form 6 = non-renewal
+- ✅ Validation evidence:
+  - markdown diagnostics across all touched docs: **No errors found**
+  - stub marker sweep for sentinel/maintenance: **No TODO/STUB markers remain**
 
 ## 🚀 Wave 18.1 Session 2 Delivery Evidence
 
@@ -75,56 +129,149 @@
 
 **Usage Log (this week):**
 
-| Date         | Agent                               | Task                                                                                                                                                                                                                                                                                                                                                                                  | Requests Used |
-| ------------ | ----------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------- |
-| May 3, 2026  | @Mira + @Gwynne                     | Phase 29: Landlord portal live API wiring                                                                                                                                                                                                                                                                                                                                             | 3             |
-| May 4, 2026  | @Gwynne                             | Merge development → main + push                                                                                                                                                                                                                                                                                                                                                       | 1             |
-| May 5, 2026  | @Mira                               | Phase 31: Income + Offer Review live wiring                                                                                                                                                                                                                                                                                                                                           | 1             |
-| May 5, 2026  | @Mira + @Una                        | Phase 32: Payments date-filter + mobile CSS completion                                                                                                                                                                                                                                                                                                                                | 1             |
-| May 5, 2026  | @Mira + @Una                        | Phase 33 Step 2: Homepage leasing conversion tracking                                                                                                                                                                                                                                                                                                                                 | 1             |
-| May 5, 2026  | @Katherine                          | Phase 33 Step 3: Leasing continuity E2E spec (18/18 ✅ Chromium+Firefox+WebKit)                                                                                                                                                                                                                                                                                                       | 1             |
-| May 5, 2026  | @Mira                               | Phase 34: Wire ?mode=rent/buy URL param → Properties purpose filter (3-file change, 7/7 tests ✅)                                                                                                                                                                                                                                                                                     | 1             |
-| May 5, 2026  | @Mira                               | Phase 35: Wire 'Request Viewing' to POST /api/viewings — auth path + WhatsApp fallback (51/51 tests ✅)                                                                                                                                                                                                                                                                               | 1             |
-| May 5, 2026  | @Mira + @Katherine                  | Phase 36: Replace alert() with inline StatusBanner in MessageScheduler — 5 alerts removed (9/9 tests ✅)                                                                                                                                                                                                                                                                              | 1             |
-| May 6, 2026  | @Mira + @Katherine                  | Phase 37: Replace 8 alert() calls in LeasingAcquisition with ToastBanner — added LeasingProperty interface, typed state, eslint clean (10/10 tests ✅)                                                                                                                                                                                                                                | 1             |
-| May 6, 2026  | @Mira + @Katherine                  | Phase 38: Replace 6 alert() calls across 3 leasing modals (ContractSignModal, EjariRegistrationModal, DocumentChecklist) — typed interfaces, ErrorBanner, 25/25 tests ✅                                                                                                                                                                                                              | 1             |
-| May 6, 2026  | @Mira + @Katherine                  | Phase 39: Replace 5 alert() calls in SalesPipelinePage (2), CompanyProfile (2), and SettingsTab (1) — 39/39 tests ✅; later audit found additional legacy alert() clusters outside the original Phase 36–39 scope                                                                                                                                                                     | 1             |
-| May 6, 2026  | @Mira + @Katherine                  | Phase 40: Replace 3 alert() calls in TransactionsView with inline status banner; added 5 tests and fixed loading-state regression in fetchTransactions() ✅                                                                                                                                                                                                                           | 1             |
-| May 6, 2026  | @Mira + @Katherine                  | Phase 41: Replace 3 alert() calls in AIModelSelector with inline status banner; added 5 fetch-mocked tests and removed unused helper for ESLint clean ✅                                                                                                                                                                                                                              | 1             |
-| May 6, 2026  | @Mira + @Katherine                  | Phase 42: Replace 3 alert() calls in PropertyDetailPage, PropertyGalleryPage, and PriceRangeFilter with inline live-region banners; added 4 focused tests and lint hardening ✅                                                                                                                                                                                                       | 1             |
-| May 6, 2026  | @Mira + @Katherine                  | Phase 43: Replace 2 alert() calls in DocumentVerificationProcessor and PropertyOpportunityList with inline status banners; added focused test coverage for inventory-queue flow and lint hardening ✅                                                                                                                                                                                 | 1             |
-| May 6, 2026  | @Mira + @Katherine                  | Phase 44: Replace 4 alert() calls in ProfilePage (2) and TenancyContractForm (2) with inline status banners; added 2 focused tests, fixed missing legacy imports/assets, lint clean and build verified ✅                                                                                                                                                                             | 1             |
-| May 6, 2026  | @Mira + @Katherine                  | Phase 45: Replace 2 alert() calls in ZoeExecutiveDashboard escalation actions with inline status banner; added focused alert-elimination test and local lint hardening ✅                                                                                                                                                                                                             | 1             |
-| May 6, 2026  | @Mira + @Katherine                  | Phase 46: Replace 19 alert() calls in PlanManager (main + CreatePlanModal + MergePlansModal + PlanEditor) with inline live-region banners; added focused validation test, removed local lint debt, build verified ✅                                                                                                                                                                  | 1             |
-| May 6, 2026  | @Mira + @Katherine                  | Phase 47: Added runtime alert regression guard test for non-test source files to enforce zero production `alert()` calls going forward ✅                                                                                                                                                                                                                                             | 1             |
-| May 15, 2026 | @Ada + @Margaret + guardian + @Dena | Multiagent 11-wave execution program synthesis, canonical planning alignment, and tracker update                                                                                                                                                                                                                                                                                      | 0             |
-| May 15, 2026 | @Mira + @Radia                      | Wave 03 kickoff: Meta webhook idempotency hardening in `server/routes/meta-webhook.ts` (duplicate `waMessageId` guard) with test/build validation ✅                                                                                                                                                                                                                                  | 1             |
-| May 15, 2026 | @Mira + @Radia                      | Wave 03 hardening: outbound WhatsApp send/template rate-limit enforcement (`429` + `retryAfterMs`) in `server/routes/meta-webhook.ts` with green tests/build ✅                                                                                                                                                                                                                       | 1             |
-| May 15, 2026 | @Mira + @Sofia + @Katherine         | Wave 04 kickoff: property compliance guard in `server/routes/properties.ts` requiring `municipalityNumber` + `buildingPermitNumber` for `available` listings/transition, with updated route tests (25/25 ✅) and build pass ✅                                                                                                                                                        | 1             |
-| May 15, 2026 | @Mira + @Sofia + @Katherine         | Wave 04 W4-002 partial delivery: added `/api/compliance/permit-alerts` (listing permit issues + BRN expiring/expired alert feed for dashboard path), with route tests green (26/26 ✅) and build pass ✅                                                                                                                                                                              | 1             |
-| May 15, 2026 | @Mira + @Jaime + @Katherine         | Wave 03 W3-004 progression: explicit Nadia inbox endpoints added (`/conversations/:id/assign`, `/conversations/:id/close`, `/conversations/:id/reply`) with stricter status/sender validation; new route tests green (6/6 ✅) and build pass ✅                                                                                                                                       | 1             |
-| May 16, 2026 | @Mira + @Joelle + @Katherine        | Wave 03 W3-006 delivered: inbound Meta webhook now auto-links/creates CRM lead (`source=whatsapp`) with duplicate-safe behavior + activity trail, backed by new route tests (3/3 ✅) and build pass ✅                                                                                                                                                                                | 1             |
-| May 16, 2026 | @Mira + @Sofia + @Katherine         | Wave 04 W4-004 baseline delivered: risky transaction creation now blocked without verified lead KYC (`kyc_verified` tag) in `POST /api/transactions`, with targeted transaction tests green (27/27 ✅) and build pass ✅                                                                                                                                                              | 1             |
-| May 16, 2026 | @Mira + @Jaime + @Katherine         | Wave 03 W3-005 delivered: Nina first-response state machine added (`auto_reply` / `clarify` / `escalate_to_agent`) with safer escalation routing for low-confidence general inquiries; assistant tests green (6/6 ✅) and build pass ✅                                                                                                                                               | 1             |
-| May 16, 2026 | @Mira + @Jaime + @Katherine         | Wave 03 W3-007 foundation delivered: persisted Linda broadcast campaigns added (`GET/POST /api/linda/campaigns`, `POST /api/linda/campaigns/:id/dispatch`, `POST /api/linda/campaigns/dispatch-due`) using `LindaBroadcastCampaign` + per-recipient rate-limit gate; focused route tests green (3/3 ✅) and build pass ✅                                                             | 1             |
-| May 16, 2026 | @Mira + @Sofia + @Katherine         | Wave 04 W4-003 delivered: compliance KYC upload/list/review workflow added (`POST /api/compliance/kyc/:leadId/documents`, `GET /api/compliance/kyc/:leadId/documents`, `GET /api/compliance/kyc/review-queue`, `PATCH /api/compliance/kyc/documents/:documentId/review`) with lead-tag sync to `kyc_verified`/`kyc_rejected`; route tests green (29/29 ✅) and build pass ✅          | 1             |
-| May 16, 2026 | @Mira + @Timnit + @Katherine        | Wave 04 W4-005 delivered: AML adapter + flagging flow baseline added (`POST /api/compliance/aml/screen`, `GET /api/compliance/aml/alerts`, `PATCH /api/compliance/aml/alerts/:alertId/resolve`) with provider abstraction (`server/services/compliance/amlAdapter.ts`), compliance alert lifecycle, and lead `aml_flagged` tag sync; route tests green (32/32 ✅) and build pass ✅   | 1             |
-| May 16, 2026 | @Mira + @Sofia + @Katherine         | Wave 04 W4-006 delivered: PDPL consent controls baseline added (`POST /api/compliance/consent`, `PATCH /api/compliance/consent/:consentId/revoke`, `GET /api/compliance/consent/export`, `DELETE /api/compliance/consent/:consentId`) covering consent create/revoke/export/delete lifecycle with permission guards; route tests green (35/35 ✅) and build pass ✅                   | 1             |
-| May 16, 2026 | @Mira + @Lea + @Katherine           | Wave 04 W4-007 baseline delivered: unified compliance queue feed endpoint added (`GET /api/compliance/queues`) aggregating permit issues + pending KYC docs + open AML alerts for dashboard consumption, with focused queue tests and access guard checks green (37/37 ✅) and build pass ✅                                                                                          | 1             |
-| May 16, 2026 | @Mira + @Timnit + @Katherine        | Wave 04 W4-005 hardening: added dedicated AML adapter unit suite (`server/services/compliance/__tests__/amlAdapter.test.ts`) covering low/high-risk scoring, flag generation, and 100-score cap; focused verification green (41/41 targeted tests ✅) with lint/build pass ✅                                                                                                         | 1             |
-| May 16, 2026 | @Mira + @Sofia + @Katherine         | Wave 04 W4-006 hardening: consent governance audit trail expanded with explicit revoke/delete compliance events (`pdpl_consent_revoked`, `pdpl_consent_deleted`) and verified assertions in route tests; focused verification green (41/41 targeted tests ✅) with lint/build pass ✅                                                                                                 | 1             |
-| May 20, 2026 | @Mira + @Katherine                  | Post-closure stability verification: `npm run quality:quick` revalidated on latest runtime/deploy baseline (lint ✅, build ✅, ops tests 11/11 ✅) with no new regressions                                                                                                                                                                                                            | 0             |
-| May 24, 2026 | @Margaret + @Copilot                | Planning workspace cleanup: added canonical wave index, split Wave 15/16 queueing, archived duplicate root Wave 12 market-intelligence docs, restored `npm run plans:validate`, and added Wave 11 test rollout coverage                                                                                                                                                               | 0             |
-| May 25, 2026 | @Mira + @Una + @Katherine + @Copilot | **Wave 13 completed:** real-time notification + media + virtual tour wave moved to complete across canonical queue, master roadmap, wave index, and Wave 13 bundle docs; governance sync validated with `npm run plans:validate`                                                                                                                                                        | 0             |
-| May 20, 2026 | @Mira + @Katherine                  | Notification transport wave: added webhook-backed optional push dispatch in `server/notifications/notification.service.ts` with local fallback and focused regression tests                                                                                                                                                                                                           | 0             |
-| May 24, 2026 | @Una + @Lea + @Tracy + @Katherine + @Copilot | **Wave 09 completed:** finalized reusable `EmptyState` + `ErrorBoundary`, wired CRM lead/favorites loading+empty states with skeleton UX, added mobile drawer swipe-close behavior, tightened accessibility audit assertions to fail critical/serious violations, and synced wave trackers/status boards to completed state (build/lint/targeted tests validated; full typecheck blocked by unrelated Prisma client baseline) | 0             |
-| May 20, 2026 | @Mira + @Katherine                  | Contracts signing wave: `POST /api/contracts/:id/request-signature` now sends a branded signing-link email via tracked email service; focused route regression test added                                                                                                                                                                                                             | 0             |
-| May 20, 2026 | @Mira + @Katherine                  | Signature service wave: `SignatureService` now sends branded signing-request and reminder emails via tracked email service; focused service regression test added                                                                                                                                                                                                                     | 0             |
-| May 20, 2026 | @Mira + @Katherine                  | Import history dashboard wave: mounted `importHistory` runtime routes, aligned `/api/inventory/import/history` path contract used by frontend, and exposed real `GET /api/admin/dashboard` collection stats with focused route regression tests                                                                                                                                       | 0             |
-| May 20, 2026 | @Mira + @Katherine                  | Import history resilience wave: standardized `/api/inventory/import/session/:sessionId/errors` and JSON report payload to source `importErrors` with legacy fallback, backed by focused route tests (4/4 ✅)                                                                                                                                                                          | 0             |
-| May 22, 2026 | @Margaret + @Ada + @Copilot         | **Acceleration wave:** resolved PR merge conflicts (clean auto-merge); TypeScript 0 errors confirmed (client + server); Wave 08 S1 declared ✅ Complete; Wave 09 promoted 🟢 Ready; Wave 09/10/11 full bundles created (SDD + Readiness + Backlog + Test Rollout x4 artifacts each); MASTER_PLAN + PENDING_TASKS_ONLY upgraded to reflect full execution path through Wave 11 closure | 0             |
-| May 26, 2026 | @Ada + @Margaret + @Katherine + @Copilot | **Wave 18 completed:** all 15 backlog items (W18-001 to W18-015) closed; governance validation (`npm run plans:validate` ✅); Wave 18 marked ✅ Complete in MASTER_PLAN, PENDING_TASKS_ONLY, waves/README; Wave 18.1 promoted 🟢 Ready; 8-platform parity matrix + top-20 P0 queue + 132-item opportunity inventory + 90-day KPI targets all locked | 0             |
-| May 27, 2026 | @Ada + @Mira + @Tracy + @Katherine + @Sofia + @Copilot | **Wave 18.1 Session 2 delivered:** all 10 P0 competitor parity tasks ✅ — P0-001 intent ranking ✅, P0-002 advanced facets ✅, P0-003 map/viewport Redux sync ✅, P0-009 mobile CRM command bar ✅, P0-011 listing completeness ✅, P0-012 verification badges ✅, P0-013 KYC gate live (merged duplicate PATCH + `prisma.$transaction`) ✅, P0-017 WA→lead conversion backend + frontend wired ✅, P0-019 funnel analytics endpoint ✅, P0-020 KPI baseline tracker ✅; typecheck clean; build green; all tests pass; `npm run plans:validate` ✅ | 0             |
+- **May 3, 2026 — @Mira + @Gwynne — Requests Used: 3**
+  - Phase 29: Landlord portal live API wiring.
+
+- **May 4, 2026 — @Gwynne — Requests Used: 1**
+  - Merge development → main + push.
+
+- **May 5, 2026 — @Mira — Requests Used: 1**
+  - Phase 31: Income + Offer Review live wiring.
+
+- **May 5, 2026 — @Mira + @Una — Requests Used: 1**
+  - Phase 32: Payments date-filter + mobile CSS completion.
+
+- **May 5, 2026 — @Mira + @Una — Requests Used: 1**
+  - Phase 33 Step 2: Homepage leasing conversion tracking.
+
+- **May 5, 2026 — @Katherine — Requests Used: 1**
+  - Phase 33 Step 3: Leasing continuity E2E spec (18/18 ✅ Chromium+Firefox+WebKit).
+
+- **May 5, 2026 — @Mira — Requests Used: 1**
+  - Phase 34: Wire `?mode=rent/buy` URL param → Properties purpose filter (3-file change, 7/7 tests ✅).
+
+- **May 5, 2026 — @Mira — Requests Used: 1**
+  - Phase 35: Wire Request Viewing to `POST /api/viewings` — auth path + WhatsApp fallback (51/51 tests ✅).
+
+- **May 6, 2026 — @Mira + @Katherine — Requests Used: 1**
+  - Phase 36: Replace `alert()` with inline `StatusBanner` in MessageScheduler — 5 alerts removed (9/9 tests ✅).
+
+- **May 6, 2026 — @Mira + @Katherine — Requests Used: 1**
+  - Phase 37: Replace 8 `alert()` calls in LeasingAcquisition with ToastBanner; added `LeasingProperty` interface, typed state, ESLint clean (10/10 tests ✅).
+
+- **May 6, 2026 — @Mira + @Katherine — Requests Used: 1**
+  - Phase 38: Replace 6 `alert()` calls across 3 leasing modals (ContractSignModal, EjariRegistrationModal, DocumentChecklist); typed interfaces, `ErrorBanner`, 25/25 tests ✅.
+
+- **May 6, 2026 — @Mira + @Katherine — Requests Used: 1**
+  - Phase 39: Replace 5 `alert()` calls in SalesPipelinePage (2), CompanyProfile (2), and SettingsTab (1) — 39/39 tests ✅; later audit found additional legacy `alert()` clusters outside original Phase 36–39 scope.
+
+- **May 6, 2026 — @Mira + @Katherine — Requests Used: 1**
+  - Phase 40: Replace 3 `alert()` calls in TransactionsView with inline status banner; added 5 tests and fixed loading-state regression in `fetchTransactions()` ✅.
+
+- **May 6, 2026 — @Mira + @Katherine — Requests Used: 1**
+  - Phase 41: Replace 3 `alert()` calls in AIModelSelector with inline status banner; added 5 fetch-mocked tests and removed unused helper for ESLint clean ✅.
+
+- **May 6, 2026 — @Mira + @Katherine — Requests Used: 1**
+  - Phase 42: Replace 3 `alert()` calls in PropertyDetailPage, PropertyGalleryPage, and PriceRangeFilter with inline live-region banners; added 4 focused tests and lint hardening ✅.
+
+- **May 6, 2026 — @Mira + @Katherine — Requests Used: 1**
+  - Phase 43: Replace 2 `alert()` calls in DocumentVerificationProcessor and PropertyOpportunityList with inline status banners; added focused test coverage for inventory queue flow and lint hardening ✅.
+
+- **May 6, 2026 — @Mira + @Katherine — Requests Used: 1**
+  - Phase 44: Replace 4 `alert()` calls in ProfilePage (2) and TenancyContractForm (2) with inline status banners; added 2 focused tests, fixed missing legacy imports/assets, lint clean and build verified ✅.
+
+- **May 6, 2026 — @Mira + @Katherine — Requests Used: 1**
+  - Phase 45: Replace 2 `alert()` calls in ZoeExecutiveDashboard escalation actions with inline status banner; added focused alert-elimination test and local lint hardening ✅.
+
+- **May 6, 2026 — @Mira + @Katherine — Requests Used: 1**
+  - Phase 46: Replace 19 `alert()` calls in PlanManager (main + CreatePlanModal + MergePlansModal + PlanEditor) with inline live-region banners; added focused validation test, removed local lint debt, build verified ✅.
+
+- **May 6, 2026 — @Mira + @Katherine — Requests Used: 1**
+  - Phase 47: Added runtime alert regression guard test for non-test source files to enforce zero production `alert()` calls going forward ✅.
+
+- **May 15, 2026 — @Ada + @Margaret + guardian + @Dena — Requests Used: 0**
+  - Multiagent 11-wave execution program synthesis, canonical planning alignment, and tracker update.
+
+- **May 15, 2026 — @Mira + @Radia — Requests Used: 1**
+  - Wave 03 kickoff: Meta webhook idempotency hardening in `server/routes/meta-webhook.ts` (duplicate `waMessageId` guard) with test/build validation ✅.
+
+- **May 15, 2026 — @Mira + @Radia — Requests Used: 1**
+  - Wave 03 hardening: outbound WhatsApp send/template rate-limit enforcement (`429` + `retryAfterMs`) in `server/routes/meta-webhook.ts` with green tests/build ✅.
+
+- **May 15, 2026 — @Mira + @Sofia + @Katherine — Requests Used: 1**
+  - Wave 04 kickoff: property compliance guard in `server/routes/properties.ts` requiring `municipalityNumber` + `buildingPermitNumber` for `available` listings/transition; route tests 25/25 ✅ and build pass ✅.
+
+- **May 15, 2026 — @Mira + @Sofia + @Katherine — Requests Used: 1**
+  - Wave 04 W4-002 partial delivery: added `/api/compliance/permit-alerts` (listing permit issues + BRN expiring/expired alert feed for dashboard path); route tests 26/26 ✅ and build pass ✅.
+
+- **May 15, 2026 — @Mira + @Jaime + @Katherine — Requests Used: 1**
+  - Wave 03 W3-004 progression: explicit Nadia inbox endpoints added (`/conversations/:id/assign`, `/conversations/:id/close`, `/conversations/:id/reply`) with stricter status/sender validation; route tests 6/6 ✅ and build pass ✅.
+
+- **May 16, 2026 — @Mira + @Joelle + @Katherine — Requests Used: 1**
+  - Wave 03 W3-006 delivered: inbound Meta webhook now auto-links/creates CRM lead (`source=whatsapp`) with duplicate-safe behavior + activity trail; route tests 3/3 ✅ and build pass ✅.
+
+- **May 16, 2026 — @Mira + @Sofia + @Katherine — Requests Used: 1**
+  - Wave 04 W4-004 baseline delivered: risky transaction creation now blocked without verified lead KYC (`kyc_verified` tag) in `POST /api/transactions`; targeted tests 27/27 ✅ and build pass ✅.
+
+- **May 16, 2026 — @Mira + @Jaime + @Katherine — Requests Used: 1**
+  - Wave 03 W3-005 delivered: Nina first-response state machine added (`auto_reply` / `clarify` / `escalate_to_agent`) with safer escalation routing for low-confidence general inquiries; assistant tests 6/6 ✅ and build pass ✅.
+
+- **May 16, 2026 — @Mira + @Jaime + @Katherine — Requests Used: 1**
+  - Wave 03 W3-007 foundation delivered: persisted Linda broadcast campaigns added (`GET/POST /api/linda/campaigns`, `POST /api/linda/campaigns/:id/dispatch`, `POST /api/linda/campaigns/dispatch-due`) using `LindaBroadcastCampaign` + per-recipient rate-limit gate; route tests 3/3 ✅ and build pass ✅.
+
+- **May 16, 2026 — @Mira + @Sofia + @Katherine — Requests Used: 1**
+  - Wave 04 W4-003 delivered: compliance KYC upload/list/review workflow added (`POST /api/compliance/kyc/:leadId/documents`, `GET /api/compliance/kyc/:leadId/documents`, `GET /api/compliance/kyc/review-queue`, `PATCH /api/compliance/kyc/documents/:documentId/review`) with lead-tag sync to `kyc_verified`/`kyc_rejected`; route tests 29/29 ✅ and build pass ✅.
+
+- **May 16, 2026 — @Mira + @Timnit + @Katherine — Requests Used: 1**
+  - Wave 04 W4-005 delivered: AML adapter + flagging flow baseline added (`POST /api/compliance/aml/screen`, `GET /api/compliance/aml/alerts`, `PATCH /api/compliance/aml/alerts/:alertId/resolve`) with provider abstraction (`server/services/compliance/amlAdapter.ts`), compliance alert lifecycle, and lead `aml_flagged` tag sync; route tests 32/32 ✅ and build pass ✅.
+
+- **May 16, 2026 — @Mira + @Sofia + @Katherine — Requests Used: 1**
+  - Wave 04 W4-006 delivered: PDPL consent controls baseline added (`POST /api/compliance/consent`, `PATCH /api/compliance/consent/:consentId/revoke`, `GET /api/compliance/consent/export`, `DELETE /api/compliance/consent/:consentId`) covering consent lifecycle with permission guards; route tests 35/35 ✅ and build pass ✅.
+
+- **May 16, 2026 — @Mira + @Lea + @Katherine — Requests Used: 1**
+  - Wave 04 W4-007 baseline delivered: unified compliance queue feed endpoint added (`GET /api/compliance/queues`) aggregating permit issues + pending KYC docs + open AML alerts for dashboard consumption; queue tests/access guards 37/37 ✅ and build pass ✅.
+
+- **May 16, 2026 — @Mira + @Timnit + @Katherine — Requests Used: 1**
+  - Wave 04 W4-005 hardening: dedicated AML adapter unit suite (`server/services/compliance/__tests__/amlAdapter.test.ts`) added covering low/high-risk scoring, flag generation, and 100-score cap; targeted tests 41/41 ✅ with lint/build pass ✅.
+
+- **May 16, 2026 — @Mira + @Sofia + @Katherine — Requests Used: 1**
+  - Wave 04 W4-006 hardening: consent governance audit trail expanded with explicit revoke/delete compliance events (`pdpl_consent_revoked`, `pdpl_consent_deleted`) and verified assertions in route tests; targeted tests 41/41 ✅ with lint/build pass ✅.
+
+- **May 20, 2026 — @Mira + @Katherine — Requests Used: 0**
+  - Post-closure stability verification: `npm run quality:quick` revalidated on latest runtime/deploy baseline (lint ✅, build ✅, ops tests 11/11 ✅) with no new regressions.
+
+- **May 24, 2026 — @Margaret + @Copilot — Requests Used: 0**
+  - Planning workspace cleanup: canonical wave index, Wave 15/16 queue split, duplicate root Wave 12 market-intelligence docs archived, `npm run plans:validate` restored, and Wave 11 test rollout coverage added.
+
+- **May 25, 2026 — @Mira + @Una + @Katherine + @Copilot — Requests Used: 0**
+  - Wave 13 completed: real-time notification + media + virtual tour wave moved to complete across canonical queue, master roadmap, wave index, and Wave 13 bundle docs; governance sync validated with `npm run plans:validate`.
+
+- **May 20, 2026 — @Mira + @Katherine — Requests Used: 0**
+  - Notification transport wave: webhook-backed optional push dispatch added in `server/notifications/notification.service.ts` with local fallback and focused regression tests.
+
+- **May 24, 2026 — @Una + @Lea + @Tracy + @Katherine + @Copilot — Requests Used: 0**
+  - Wave 09 completed: reusable `EmptyState` + `ErrorBoundary` finalized, CRM lead/favorites loading + empty states wired with skeleton UX, mobile drawer swipe-close behavior added, accessibility assertions tightened to fail critical/serious violations, and wave trackers/status boards synced to completed state (build/lint/targeted tests validated; full typecheck blocked by unrelated Prisma client baseline).
+
+- **May 20, 2026 — @Mira + @Katherine — Requests Used: 0**
+  - Contracts signing wave: `POST /api/contracts/:id/request-signature` now sends branded signing-link email via tracked email service; focused route regression test added.
+
+- **May 20, 2026 — @Mira + @Katherine — Requests Used: 0**
+  - Signature service wave: `SignatureService` now sends branded signing-request and reminder emails via tracked email service; focused service regression test added.
+
+- **May 20, 2026 — @Mira + @Katherine — Requests Used: 0**
+  - Import history dashboard wave: mounted `importHistory` runtime routes, aligned `/api/inventory/import/history` path contract used by frontend, and exposed real `GET /api/admin/dashboard` collection stats with focused route regression tests.
+
+- **May 20, 2026 — @Mira + @Katherine — Requests Used: 0**
+  - Import history resilience wave: standardized `/api/inventory/import/session/:sessionId/errors` and JSON report payload to source `importErrors` with legacy fallback, backed by focused route tests (4/4 ✅).
+
+- **May 22, 2026 — @Margaret + @Ada + @Copilot — Requests Used: 0**
+  - Acceleration wave: resolved PR merge conflicts (clean auto-merge), confirmed TypeScript 0 errors (client + server), declared Wave 08 S1 complete, promoted Wave 09 ready, created Wave 09/10/11 full bundles (SDD + Readiness + Backlog + Test Rollout for each), and upgraded MASTER_PLAN + PENDING_TASKS_ONLY through Wave 11 closure.
+
+- **May 26, 2026 — @Ada + @Margaret + @Katherine + @Copilot — Requests Used: 0**
+  - Wave 18 completed: all 15 backlog items (W18-001 to W18-015) closed; governance validation (`npm run plans:validate` ✅); Wave 18 marked complete in MASTER_PLAN, PENDING_TASKS_ONLY, and waves/README; Wave 18.1 promoted ready; 8-platform parity matrix + top-20 P0 queue + 132-item opportunity inventory + 90-day KPI targets locked.
+
+- **May 27, 2026 — @Ada + @Mira + @Tracy + @Katherine + @Sofia + @Copilot — Requests Used: 0**
+  - Wave 18.1 Session 2 delivered: all 10 P0 competitor parity tasks complete (P0-001, P0-002, P0-003, P0-009, P0-011, P0-012, P0-013, P0-017, P0-019, P0-020); typecheck clean, build green, all tests pass, `npm run plans:validate` ✅.
 
 ---
 
@@ -172,7 +319,7 @@
 
 ### MILESTONE-P0-PHASE-33
 
-**Priority Module — Homepage + Single Superuser + Leasing E2E**
+### Priority Module — Homepage + Single Superuser + Leasing E2E
 
 **Status:** 🔨 PLANNING UPDATED (Docs-first)
 
@@ -188,7 +335,7 @@
 
 ### MILESTONE-GOV-1000
 
-**Governance Hardening V2 — 1000% + 92% + Collaboration Mesh + Daily Quota**
+### Governance Hardening V2 — 1000% + 92% + Collaboration Mesh + Daily Quota
 
 **Status:** 🔨 IN PROGRESS (May 5 rollout)
 
@@ -202,7 +349,7 @@
 
 ### MILESTONE-11-WAVE-PROGRAM
 
-**Multiagent 11-Wave Execution Program — coordinated implementation layer**
+### Multiagent 11-Wave Execution Program — coordinated implementation layer
 
 **Status:** 🔨 PLANNING UPDATED (May 15 synthesis)
 
@@ -241,7 +388,7 @@
 
 ### MILESTONE-PHASE-27
 
-**Subagent Next-Level Upgrade — 90% Readiness + Full-Team Collaboration**
+### Subagent Next-Level Upgrade — 90% Readiness + Full-Team Collaboration
 
 **Status:** 🔨 PLANNED (May 18, 2026)
 
@@ -253,7 +400,7 @@
 
 ### MILESTONE-NPLUS1-6-CLOSURE
 
-**N+1 to N+6 Combined Completion Verification (May 19, 2026)**
+### N+1 to N+6 Combined Completion Verification (May 19, 2026)
 
 **Status:** ✅ VERIFIED COMPLETE
 
@@ -264,7 +411,7 @@
 
 ### MILESTONE-NEXT-WAVE-02
 
-**Tracker Governance Closure (May 19, 2026)**
+### Tracker Governance Closure (May 19, 2026)
 
 **Status:** ✅ COMPLETE
 
@@ -274,7 +421,7 @@
 
 ### MILESTONE-WAVE17-SCAFFOLD
 
-**Wave 17 — Full UI/UX Luxury Upgrade — Implementation Complete (May 25, 2026)**
+### Wave 17 — Full UI/UX Luxury Upgrade — Implementation Complete (May 25, 2026)
 
 **Status:** ✅ COMPLETE
 
@@ -310,7 +457,7 @@
 
 ### MILESTONE-PHASE-2
 
-**Phase 2 Landlord/Tenant Portal Definition of Done**
+### Phase 2 Landlord/Tenant Portal Definition of Done
 
 **Status:** ✅ COMPLETE
 
@@ -321,7 +468,7 @@
 
 ### MILESTONE-PHASE-3
 
-**Phase 3 — CRM Superuser Full Wiring**
+### Phase 3 — CRM Superuser Full Wiring
 
 **Status:** ✅ SUPERSEDED / UNBLOCKED (Governance V2)
 
@@ -333,13 +480,20 @@
 
 ## ✅ Completed Milestones (Recent)
 
-| Date        | Milestone            | Result                                                        |
-| ----------- | -------------------- | ------------------------------------------------------------- |
-| May 24, 2026 | Planning cleanup     | Canonical plan navigation, validation, and wave structure upgraded |
-| May 5, 2026 | Phase 33 Step 2      | Homepage leasing conversion events + hero CTA leasing-first   |
-| May 5, 2026 | Phase 31             | LandlordIncomeTab + LandlordOfferReviewTab live API completed |
-| May 5, 2026 | Phase 32             | LandlordPayments date-range + mobile responsive CSS completed |
-| May 3, 2026 | Phase 26 docs sprint | revenue-model, analytics-dashboard, AI personas expansion     |
+- **May 24, 2026 — Planning cleanup**
+  - Canonical plan navigation, validation, and wave structure upgraded.
+
+- **May 5, 2026 — Phase 33 Step 2**
+  - Homepage leasing conversion events + hero CTA leasing-first.
+
+- **May 5, 2026 — Phase 31**
+  - `LandlordIncomeTab` + `LandlordOfferReviewTab` live API completed.
+
+- **May 5, 2026 — Phase 32**
+  - `LandlordPayments` date-range + mobile responsive CSS completed.
+
+- **May 3, 2026 — Phase 26 docs sprint**
+  - `revenue-model`, `analytics-dashboard`, and AI personas expansion.
 
 ---
 

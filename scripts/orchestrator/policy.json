@@ -98,7 +98,9 @@
       "@Mala",
       "@Dena",
       "@Rachel",
+      "@Jaime",
       "@Annie",
+      "@Joelle",
       "@Lara",
       "@Tana",
       "@Rima",
@@ -192,98 +194,13 @@
       "@River",
       "@Rowan"
     ],
-    "freeModelProviders": [
-      "google-ai-studio",
-      "groq",
-      "deepseek"
-    ],
-    "premiumModelProviders": [
-      "openai",
-      "anthropic"
-    ],
-    "freeModels": [
-      "Gemini 2.0 Flash",
-      "Llama 3.1 70B",
-      "DeepSeek V3"
-    ],
-    "premiumModels": [
-      "GPT-4o",
-      "claude-3.5-sonnet"
-    ],
-    "policyMode": "free-first-premium-by-exception",
-    "premiumUsage": {
-      "assumeExternalCredits": false,
-      "defaultCapMode": "soft-warning",
-      "hardDailyCap": null,
-      "maxPremiumTurnsPerTask": 4,
-      "maxPremiumTurnsPerSession": 12,
-      "maxPremiumTurnsPerDay": 40
-    },
-    "taskClassRouting": {
-      "exploration": {
-        "modelTier": "free",
-        "modelRecommendation": "Gemini 2.0 Flash",
-        "fallbackModel": "Llama 3.1 70B",
-        "maxPremiumTurnsPerTask": 0
-      },
-      "planning": {
-        "modelTier": "free",
-        "modelRecommendation": "Gemini 2.0 Flash",
-        "fallbackModel": "DeepSeek V3",
-        "maxPremiumTurnsPerTask": 0
-      },
-      "documentation": {
-        "modelTier": "free",
-        "modelRecommendation": "Llama 3.1 70B",
-        "fallbackModel": "Gemini 2.0 Flash",
-        "maxPremiumTurnsPerTask": 0
-      },
-      "triage": {
-        "modelTier": "free",
-        "modelRecommendation": "DeepSeek V3",
-        "fallbackModel": "Gemini 2.0 Flash",
-        "maxPremiumTurnsPerTask": 0
-      },
-      "research": {
-        "modelTier": "free",
-        "modelRecommendation": "DeepSeek V3",
-        "fallbackModel": "Gemini 2.0 Flash",
-        "maxPremiumTurnsPerTask": 0
-      },
-      "architecture-arbitration": {
-        "modelTier": "premium",
-        "modelRecommendation": "GPT-4o",
-        "fallbackModel": "claude-3.5-sonnet",
-        "maxPremiumTurnsPerTask": 2
-      },
-      "high-risk-implementation": {
-        "modelTier": "premium",
-        "modelRecommendation": "GPT-4o",
-        "fallbackModel": "claude-3.5-sonnet",
-        "maxPremiumTurnsPerTask": 4
-      },
-      "ambiguous-debugging": {
-        "modelTier": "premium",
-        "modelRecommendation": "GPT-4o",
-        "fallbackModel": "claude-3.5-sonnet",
-        "maxPremiumTurnsPerTask": 3
-      },
-      "security-sensitive": {
-        "modelTier": "premium",
-        "modelRecommendation": "GPT-4o",
-        "fallbackModel": "claude-3.5-sonnet",
-        "maxPremiumTurnsPerTask": 4
-      },
-      "final-synthesis": {
-        "modelTier": "premium",
-        "modelRecommendation": "GPT-4o",
-        "fallbackModel": "Gemini 2.0 Flash",
-        "maxPremiumTurnsPerTask": 2
-      }
-    }
+    "freeModelProviders": ["google-ai-studio", "groq", "deepseek"],
+    "premiumModelProviders": ["openai", "anthropic"],
+    "freeModels": ["Gemini 2.0 Flash", "Llama 3.1 70B", "DeepSeek V3"],
+    "premiumModels": ["GPT-4o", "claude-3.5-sonnet"]
   },
   "executionMode": {
-    "default": "approval",
+    "default": "autopilot",
     "autopilot": {
       "continuous": true,
       "useSubagents": true,
@@ -297,39 +214,141 @@
       "hardStopOnly": false
     }
   },
-  "compatibility": {
-    "legacyPolicyVersions": [
-      "2026.05.26-aegis-170-v3",
-      "2026.05.25-aegis-150-v2"
+  "aegis": {
+    "autoRegenerateWhenQueueComplete": true,
+    "maxRegenerationsPerRun": 100000,
+    "restartFromNextPhaseWhenQueueComplete": true,
+    "nextPhaseRoadmap": [
+      "Wave 19 - Identity & Access v2 + CRM Routing + MD Workspace Split",
+      "Wave 20 - Security Compliance Schema Blockers",
+      "Wave 21 - Backend Contract Hardening + Observability",
+      "Wave 22 - KPI Integrity + Executive Intelligence"
     ],
-    "acceptLegacyLabels": true
-  },
-  "rollout": {
-    "environment": "development",
-    "policyModeByEnv": {
-      "development": "shadow",
-      "staging": "canary",
-      "production": "stable"
+    "smartSelectionEnabled": true,
+    "phaseBalanceEnabled": true,
+    "targetImplementationSharePct": 60,
+    "preflightEnabled": true,
+    "autoUnblockSweepEnabled": true,
+    "queueHealthEveryNTasks": 3,
+    "problemScannerEnabled": false,
+    "problemScannerAutoFixEnabled": true,
+    "problemScannerEveryNTasks": 3,
+    "problemScannerIdleEveryNLoops": 6,
+    "developmentSweepEnabled": false,
+    "developmentSweepAutoFixEnabled": true,
+    "developmentSweepEveryNTasks": 5,
+    "developmentSweepIdleEveryNLoops": 10,
+    "developmentSweepIncludeE2E": false,
+    "developmentSweepIncludeAudit": false,
+    "developmentSweepTargetedChecksEnabled": true,
+    "developmentSweepTargetedMaxChecks": 4,
+    "developmentSweepRiskTierEnabled": true,
+    "developmentSweepRiskTierBlockOnMissingRequired": false,
+    "developmentSweepRiskProfiles": {
+      "security": {
+        "requiredChecks": ["test:run", "verify:runtime:dry", "audit"],
+        "optionalChecks": ["test:e2e:accessibility"]
+      },
+      "auth": {
+        "requiredChecks": ["test:run", "verify:runtime:dry", "test:assistant-contract"],
+        "optionalChecks": ["test:e2e:smoke"]
+      },
+      "database": {
+        "requiredChecks": ["test:run", "verify:runtime:dry", "build"],
+        "optionalChecks": []
+      },
+      "payment": {
+        "requiredChecks": ["test:run", "verify:runtime:dry", "build"],
+        "optionalChecks": ["audit"]
+      },
+      "general": {
+        "requiredChecks": ["test:run"],
+        "optionalChecks": []
+      }
     },
-    "canaryPercentByEnv": {
-      "development": 100,
-      "staging": 20,
-      "production": 5
+    "priorityOverride": {
+      "enabled": true,
+      "tasks": [
+        {
+          "agent": "@Mira",
+          "lane": "A",
+          "phase": "implementation",
+          "team": "premium-implementation",
+          "priority": "critical",
+          "priorityScore": 1000,
+          "title": "Wave 19 auth-routing-session foundation",
+          "prompt": "@Mira -- PRIORITY IMPLEMENT+VERIFY: Wave 19 auth-routing-session foundation. Execute this before any non-priority queue tasks. Align login success routing, profile completion gate behavior, CRM entry consistency, access-token refresh flow, and session hydration against the current Wave 19 bundle. Include strict validation evidence (typecheck/lint/build/tests), route regression notes, and rollback steps."
+        },
+        {
+          "agent": "@Mala",
+          "lane": "B",
+          "phase": "implementation",
+          "team": "premium-implementation",
+          "priority": "critical",
+          "priorityScore": 999,
+          "title": "Wave 19 superuser dashboard workspace split and executive UX",
+          "prompt": "@Mala -- PRIORITY IMPLEMENT+VERIFY: Wave 19 superuser dashboard workspace split and executive UX. Execute this before non-priority queue tasks. Deliver the current canonical MD workspace split, first-screen executive hierarchy, responsive behavior, accessibility states, and premium UX polish defined by the Wave 19 plan and UI/UX business docs. Include validation evidence and rollback notes."
+        },
+        {
+          "agent": "@S5",
+          "lane": "A",
+          "phase": "implementation",
+          "team": "premium-implementation",
+          "priority": "critical",
+          "priorityScore": 998,
+          "title": "Wave 20 P0 security, RBAC, and compliance blocker hardening",
+          "prompt": "@S5 -- PRIORITY IMPLEMENT+VERIFY: Wave 20 P0 security, RBAC, and compliance blocker hardening. Execute this before non-priority tasks. Remove known P0 auth/RBAC/compliance blockers from the active implementation path, including route protection mismatches, session security gaps, and enforcement controls required by the canonical plans. Include strict validation evidence, risk notes, and rollback steps."
+        }
+      ]
     },
-    "shadowPolicyEvaluation": true,
-    "autoRollbackOnRegression": true,
-    "regressionThresholdPct": 10
-  },
-  "features": {
-    "killSwitchAll": false,
-    "graph": true,
-    "checkpoints": true,
-    "gates": true,
-    "rollback": true,
-    "tracing": true,
-    "budget": true,
-    "routing": true,
-    "benchmark": true
+    "devSmokeEnabled": true,
+    "devSmokeEveryNTasks": 3,
+    "devRuntimeCheckEnabled": false,
+    "devRuntimeCheckIntervalHours": 2,
+    "devRuntimeCheckMaxRunMinutes": 2,
+    "devRuntimeCheckRunProblemScan": true,
+    "progressIntelligenceEnabled": true,
+    "progressIntelligenceEveryNTasks": 1,
+    "minLoopImprovementPct": 2,
+    "targetProjectBoostPct": 30,
+    "progressDriftConsecutiveThreshold": 2,
+    "blockerAgingWarnHours": 4,
+    "autopilotRequireProducedRef": false,
+    "autopilotAutoResolveEvidencePending": false,
+    "realityExecutionGate": {
+      "enabled": true,
+      "minSelectionScore": 120,
+      "projectKeywords": [
+        "homepage",
+        "login",
+        "auth",
+        "api",
+        "ux",
+        "ui",
+        "performance",
+        "security",
+        "dashboard",
+        "crm",
+        "property",
+        "lead",
+        "tenant",
+        "automation"
+      ],
+      "qualityMarkers": [
+        "implement",
+        "verify",
+        "validation",
+        "rollback",
+        "best-practice",
+        "security",
+        "test",
+        "build",
+        "lint",
+        "typecheck"
+      ]
+    },
+    "deadlockRecoveryEnabled": true,
+    "idleSleepSeconds": 5
   },
   "autonomousDefault": false,
   "registryPath": "plans/SUBAGENT_REGISTRY_170.json",
@@ -372,12 +391,7 @@
     },
     "development": {
       "deliveryStyle": "vertical-slice",
-      "requiredChecks": [
-        "typecheck",
-        "lint",
-        "build",
-        "plans:validate"
-      ],
+      "requiredChecks": ["typecheck", "lint", "build", "plans:validate"],
       "targetedTestsRequired": true,
       "maxAutoFixRetries": 3,
       "securityScanRequired": true
@@ -385,10 +399,7 @@
     "git": {
       "defaultRemote": "origin",
       "integrationBranch": "develop",
-      "integrationFallbackBranches": [
-        "development",
-        "main"
-      ],
+      "integrationFallbackBranches": ["development", "main"],
       "releaseBranch": "main",
       "featureBranchPrefix": "feature/",
       "autoMergeReleaseBranch": false,
@@ -525,13 +536,7 @@
     "cadence": "weekly",
     "metricsDir": "logs/orchestrator/benchmarks",
     "baselineFile": "logs/orchestrator/benchmarks/baseline.json",
-    "metrics": [
-      "taskSuccessRate",
-      "passRate",
-      "reworkRate",
-      "cycleTimeSec",
-      "rollbackRate"
-    ],
+    "metrics": ["taskSuccessRate", "passRate", "reworkRate", "cycleTimeSec", "rollbackRate"],
     "regressionAlertThreshold": 0.1
   },
   "confidenceRouting": {

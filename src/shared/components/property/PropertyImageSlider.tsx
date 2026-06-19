@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { ChevronLeft, ChevronRight, Expand, Heart, Share2, X } from 'lucide-react';
+import { generatePictureSources } from '../../../utils/imageOptimization';
 import './PropertyImageSlider.css';
 
 export interface PropertyImageSliderProps {
@@ -26,6 +27,8 @@ export default function PropertyImageSlider({
   const [currentIndex, setCurrentIndex] = useState<number>(0);
   const [isFullscreen, setIsFullscreen] = useState<boolean>(false);
   const fullscreenRef = useRef<HTMLDivElement>(null);
+  const sliderRef = useRef<HTMLDivElement>(null);
+  const sliderTrackRef = useRef<HTMLDivElement>(null);
 
   const defaultImages: string[] = [
     'https://images.unsplash.com/photo-1613490493576-7fde63acd811?w=800',
@@ -91,26 +94,47 @@ export default function PropertyImageSlider({
     };
   }, [isFullscreen, closeFullscreen, goToPrev, goToNext]);
 
+  useEffect(() => {
+    if (!sliderRef.current) return;
+    sliderRef.current.style.setProperty('--slider-aspect-ratio', aspectRatio);
+  }, [aspectRatio]);
+
+  useEffect(() => {
+    if (!sliderTrackRef.current) return;
+    sliderTrackRef.current.style.transform = `translateX(-${currentIndex * 100}%)`;
+  }, [currentIndex]);
+
   return (
     <>
-      <div className="property-image-slider" style={{ aspectRatio }}>
-        <div className="slider-track">
-          {imageList.map((img, index) => (
-            <div
-              key={img ?? `slide-${index}`}
-              className={`slide ${index === currentIndex ? 'active' : ''}`}
-              style={{ transform: `translateX(${(index - currentIndex) * 100}%)` }}
-            >
-              <img
-                src={img.includes('fm=') ? img : `${img}${img.includes('?') ? '&' : '?'}fm=webp`}
-                alt={`${title} - Image ${index + 1}`}
-                loading={index === currentIndex ? 'eager' : 'lazy'}
-                onError={e => {
-                  (e.target as HTMLImageElement).style.display = 'none';
-                }}
-              />
-            </div>
-          ))}
+      <div className="property-image-slider" ref={sliderRef}>
+        <div className="slider-track" ref={sliderTrackRef}>
+          {imageList.map((img, index) => {
+            const sources = generatePictureSources({
+              baseUrl: img,
+              width: 1200,
+              quality: 75,
+            });
+            return (
+              <div
+                key={img ?? `slide-${index}`}
+                className={`slide ${index === currentIndex ? 'active' : ''}`}
+              >
+                <picture>
+                  <source srcSet={sources.avifSrc} type="image/avif" />
+                  <source srcSet={sources.webpSrc} type="image/webp" />
+                  <img
+                    src={sources.fallbackSrc}
+                    alt={`${title} - Image ${index + 1}`}
+                    loading={index === currentIndex ? 'eager' : 'lazy'}
+                    decoding="async"
+                    onError={e => {
+                      (e.target as HTMLImageElement).style.display = 'none';
+                    }}
+                  />
+                </picture>
+              </div>
+            );
+          })}
         </div>
 
         {imageList.length > 1 && (
@@ -177,19 +201,31 @@ export default function PropertyImageSlider({
 
       {showThumbnails && imageList.length > 1 && (
         <div className="thumbnail-strip">
-          {imageList.map((img, index) => (
-            <button
-              key={img ?? `thumb-${index}`}
-              className={`thumbnail ${index === currentIndex ? 'active' : ''}`}
-              onClick={() => goToSlide(index)}
-            >
-              <img
-                src={img.includes('fm=') ? img : `${img}${img.includes('?') ? '&' : '?'}fm=webp`}
-                alt={`${title || 'Property'} thumbnail ${index + 1}`}
-                loading="lazy"
-              />
-            </button>
-          ))}
+          {imageList.map((img, index) => {
+            const sources = generatePictureSources({
+              baseUrl: img,
+              width: 200,
+              quality: 75,
+            });
+            return (
+              <button
+                key={img ?? `thumb-${index}`}
+                className={`thumbnail ${index === currentIndex ? 'active' : ''}`}
+                onClick={() => goToSlide(index)}
+              >
+                <picture>
+                  <source srcSet={sources.avifSrc} type="image/avif" />
+                  <source srcSet={sources.webpSrc} type="image/webp" />
+                  <img
+                    src={sources.fallbackSrc}
+                    alt={`${title || 'Property'} thumbnail ${index + 1}`}
+                    loading="lazy"
+                    decoding="async"
+                  />
+                </picture>
+              </button>
+            );
+          })}
         </div>
       )}
 
@@ -203,7 +239,12 @@ export default function PropertyImageSlider({
           aria-modal="true"
           aria-label="Image gallery"
         >
-          <button className="close-fullscreen" onClick={closeFullscreen}>
+          <button
+            className="close-fullscreen"
+            onClick={closeFullscreen}
+            title="Close fullscreen gallery"
+            aria-label="Close fullscreen gallery"
+          >
             <X size={24} />
           </button>
 
@@ -225,10 +266,20 @@ export default function PropertyImageSlider({
 
             {imageList.length > 1 && (
               <>
-                <button className="fs-nav-btn prev" onClick={goToPrev}>
+                <button
+                  className="fs-nav-btn prev"
+                  onClick={goToPrev}
+                  title="Previous image"
+                  aria-label="Previous image"
+                >
                   <ChevronLeft size={32} />
                 </button>
-                <button className="fs-nav-btn next" onClick={goToNext}>
+                <button
+                  className="fs-nav-btn next"
+                  onClick={goToNext}
+                  title="Next image"
+                  aria-label="Next image"
+                >
                   <ChevronRight size={32} />
                 </button>
               </>

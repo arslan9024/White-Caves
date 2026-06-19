@@ -1,4 +1,5 @@
 import fs from 'fs';
+import * as XLSX from 'xlsx';
 
 export const COLUMN_MAPPING = {
   'P-NUMBER': 'pNumber',

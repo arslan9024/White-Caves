@@ -2225,9 +2225,11 @@ Auto-discovered Aegis queue-empty upgrades are appended here when the orchestrat
 - Plan evidence: 6 keyword hits in planning docs
 - Scan evidence: 1 keyword hits in codebase scan signals
 - Prompt: @Invoice -- EXPAND: financial-reporting.md -> add UAE FTA VAT filing workflow including taxable/exempt buckets, quarterly submission steps, reconciliation checkpoints, exception handling, and acceptance criteria
+
 ## 2026-06-05T10:11:30.219Z — Queue-empty discovery run
 
 ### DU001 — CSRF coverage for mutation routes
+
 - Feature ID: security-csrf-mutation-routes
 - Agent: @S5
 - Target file: business_docs/09_crm_features/wave-16-security-hardening.md
@@ -2241,6 +2243,7 @@ Auto-discovered Aegis queue-empty upgrades are appended here when the orchestrat
 ## 2026-06-05T10:11:32.703Z — Queue-empty discovery run
 
 ### DU002 — PDC bounce escalation
+
 - Feature ID: leasing-pdc-bounce-escalation
 - Agent: @Victoria
 - Target file: business_docs/09_crm_features/tenancy-ejari.md
@@ -2252,6 +2255,7 @@ Auto-discovered Aegis queue-empty upgrades are appended here when the orchestrat
 - Prompt: @Victoria -- EXPAND: tenancy-ejari.md -> add bounced PDC escalation flow including cheque-return capture, landlord alerting, grace-period rules, legal escalation checkpoints, and acceptance criteria
 
 ### DU003 — VAT FTA filing workflow
+
 - Feature ID: finance-vat-fta-filing
 - Agent: @Invoice
 - Target file: business_docs/09_crm_features/financial-reporting.md
@@ -2265,6 +2269,7 @@ Auto-discovered Aegis queue-empty upgrades are appended here when the orchestrat
 ## 2026-06-05T10:11:41.319Z — Queue-empty discovery run
 
 ### DU004 — Server route test coverage uplift
+
 - Feature ID: quality-server-route-test-coverage
 - Agent: @Salma
 - Target file: plans/IMPROVEMENTS_UX.md
@@ -2278,6 +2283,7 @@ Auto-discovered Aegis queue-empty upgrades are appended here when the orchestrat
 ## 2026-06-05T10:11:43.540Z — Queue-empty discovery run
 
 ### DU005 — Oqood registration workflow
+
 - Feature ID: compliance-oqood-registration
 - Agent: @Timnit
 - Target file: business_docs/09_crm_features/dld-integration.md
@@ -2289,6 +2295,7 @@ Auto-discovered Aegis queue-empty upgrades are appended here when the orchestrat
 - Prompt: @Timnit -- DRAFT: dld-integration.md -> add end-to-end Oqood registration workflow including payload schema, retries, exception handling, and settlement checkpoints
 
 ### DU006 — RERA Form 7 and Form 12 generation
+
 - Feature ID: compliance-form7-form12-generation
 - Agent: @Timnit
 - Target file: business_docs/09_crm_features/legal-management.md
@@ -2302,6 +2309,7 @@ Auto-discovered Aegis queue-empty upgrades are appended here when the orchestrat
 ## 2026-06-05T10:11:52.153Z — Queue-empty discovery run
 
 ### DU007 — AML risk scoring
+
 - Feature ID: compliance-aml-risk-scoring
 - Agent: @Sofia
 - Target file: business_docs/05_requirements/compliance-requirements.md
@@ -2313,6 +2321,7 @@ Auto-discovered Aegis queue-empty upgrades are appended here when the orchestrat
 - Prompt: @Sofia -- EXPAND: compliance-requirements.md -> add AML risk scoring model covering source-of-funds triggers, PEP checks, sanctions screening, review cadence, and audit outputs
 
 ### DU008 — CSP header completeness audit
+
 - Feature ID: security-csp-completeness
 - Agent: @S5
 - Target file: business_docs/09_crm_features/wave-16-security-hardening.md
@@ -2324,6 +2333,7 @@ Auto-discovered Aegis queue-empty upgrades are appended here when the orchestrat
 - Prompt: @S5 -- DRAFT: wave-16-security-hardening.md -> add CSP completeness audit covering script-src, connect-src, report-only rollout, and third-party exceptions
 
 ### DU009 — JWT refresh rotation hardening
+
 - Feature ID: security-jwt-refresh-rotation
 - Agent: @S5
 - Target file: business_docs/09_crm_features/wave-16-security-hardening.md
@@ -2337,6 +2347,7 @@ Auto-discovered Aegis queue-empty upgrades are appended here when the orchestrat
 ## 2026-06-05T10:11:57.449Z — Queue-empty discovery run
 
 ### DU010 — Mobile analytics view
+
 - Feature ID: analytics-mobile-view
 - Agent: @Cassie
 - Target file: business_docs/09_crm_features/analytics-dashboard.md
@@ -2350,6 +2361,7 @@ Auto-discovered Aegis queue-empty upgrades are appended here when the orchestrat
 ## 2026-06-05T10:12:02.802Z — Queue-empty discovery run
 
 ### DU011 — AI lead-score re-trigger automation
+
 - Feature ID: ai-lead-score-retrigger
 - Agent: @Joelle
 - Target file: business_docs/03_ai_assistants/README.md
@@ -2361,6 +2373,7 @@ Auto-discovered Aegis queue-empty upgrades are appended here when the orchestrat
 - Prompt: @Joelle -- DRAFT: README.md -> add AI lead-score re-trigger automation covering behavior triggers, cooldowns, fallback handling, and audit visibility
 
 ### DU012 — Analytics CSV/Excel export API
+
 - Feature ID: analytics-export-api
 - Agent: @Cassie
 - Target file: business_docs/09_crm_features/analytics-dashboard.md
@@ -2372,6 +2385,7 @@ Auto-discovered Aegis queue-empty upgrades are appended here when the orchestrat
 - Prompt: @Cassie -- EXPAND: analytics-dashboard.md -> add CSV/Excel export API workflow including async jobs, download security, row limits, and delivery notifications
 
 ### DU013 — Arabic RTL keyboard navigation audit
+
 - Feature ID: ux-arabic-rtl-keyboard-nav
 - Agent: @Marissa
 - Target file: business_docs/06_design_architecture/ui-ux-specification.md
@@ -2385,6 +2399,7 @@ Auto-discovered Aegis queue-empty upgrades are appended here when the orchestrat
 ## 2026-06-05T10:12:14.322Z — Queue-empty discovery run
 
 ### DU014 — Commission split calculator
+
 - Feature ID: finance-commission-split-calculator
 - Agent: @Invoice
 - Target file: business_docs/09_crm_features/financial-reporting.md
@@ -2396,6 +2411,7 @@ Auto-discovered Aegis queue-empty upgrades are appended here when the orchestrat
 - Prompt: @Invoice -- DRAFT: financial-reporting.md -> add commission split calculator covering agent, manager, referral, and company share waterfalls, overrides, and payout validation rules
 
 ### DU015 — Document template registry
+
 - Feature ID: documents-template-registry
 - Agent: @Annie
 - Target file: business_docs/09_crm_features/document-generation.md
@@ -2407,6 +2423,7 @@ Auto-discovered Aegis queue-empty upgrades are appended here when the orchestrat
 - Prompt: @Annie -- EXPAND: document-generation.md -> add a document template registry with versioning, variable maps, approval controls, and deprecation workflow
 
 ### DU016 — Tenant e-NOC generation
+
 - Feature ID: leasing-enoc-generation
 - Agent: @Victoria
 - Target file: business_docs/09_crm_features/landlord-portal.md
@@ -2420,6 +2437,7 @@ Auto-discovered Aegis queue-empty upgrades are appended here when the orchestrat
 ## 2026-06-05T10:12:25.571Z — Queue-empty discovery run
 
 ### DU017 — Tenant portal Playwright E2E suite
+
 - Feature ID: quality-tenant-portal-e2e
 - Agent: @Salma
 - Target file: plans/IMPROVEMENTS_UX.md
@@ -2431,6 +2449,7 @@ Auto-discovered Aegis queue-empty upgrades are appended here when the orchestrat
 - Prompt: @Salma -- DRAFT: IMPROVEMENTS_UX.md -> add a Playwright E2E suite plan for tenant portal login, documents, payments, and maintenance flows
 
 ### DU018 — WhatsApp chatbot fallback recovery
+
 - Feature ID: ai-whatsapp-fallback-recovery
 - Agent: @Jaime
 - Target file: business_docs/09_crm_features/whatsapp-integration.md
@@ -2444,6 +2463,7 @@ Auto-discovered Aegis queue-empty upgrades are appended here when the orchestrat
 ## 2026-06-05T10:12:30.622Z — Queue-empty discovery run
 
 ### DU019 — Local business schema audit
+
 - Feature ID: seo-local-business-schema-audit
 - Agent: @Rachel
 - Target file: business_docs/09_crm_features/seo-strategy.md
@@ -2455,6 +2475,7 @@ Auto-discovered Aegis queue-empty upgrades are appended here when the orchestrat
 - Prompt: @Rachel -- EXPAND: seo-strategy.md -> add a local business schema audit covering JSON-LD completeness, branch details, Arabic metadata, and validation steps
 
 ### DU020 — Validation error envelope coverage
+
 - Feature ID: validation-error-envelope-coverage
 - Agent: @Zod
 - Target file: business_docs/09_crm_features/wave-14-validation-architecture.md
@@ -2468,6 +2489,7 @@ Auto-discovered Aegis queue-empty upgrades are appended here when the orchestrat
 ## 2026-06-05T10:12:35.691Z — Queue-empty discovery run
 
 ### DU021 — Ejari renewal automation
+
 - Feature ID: leasing-ejari-renewal-automation
 - Agent: @Victoria
 - Target file: business_docs/09_crm_features/tenancy-ejari.md
@@ -2479,6 +2501,7 @@ Auto-discovered Aegis queue-empty upgrades are appended here when the orchestrat
 - Prompt: @Victoria -- EXPAND: tenancy-ejari.md -> add Ejari renewal automation workflow including reminders, required document checklist, DLD/Ejari renewal submission steps, SLA tracking, and acceptance criteria
 
 ### DU022 — Rent arrears escalation
+
 - Feature ID: finance-arrears-escalation
 - Agent: @Invoice
 - Target file: business_docs/09_crm_features/financial-reporting.md
@@ -2492,6 +2515,7 @@ Auto-discovered Aegis queue-empty upgrades are appended here when the orchestrat
 ## 2026-06-05T10:12:43.893Z — Queue-empty discovery run
 
 ### DU023 — Arabic/English hreflang coverage
+
 - Feature ID: seo-hreflang-coverage
 - Agent: @Rachel
 - Target file: business_docs/09_crm_features/seo-strategy.md
@@ -2503,6 +2527,7 @@ Auto-discovered Aegis queue-empty upgrades are appended here when the orchestrat
 - Prompt: @Rachel -- EXPAND: seo-strategy.md -> add hreflang coverage planning for English and Arabic pages, localization rules, and validation workflow
 
 ### DU024 — Area heatmap drill-down
+
 - Feature ID: analytics-area-heatmap-drilldown
 - Agent: @Fei-Fei
 - Target file: business_docs/09_crm_features/market-analytics.md
@@ -2514,6 +2539,7 @@ Auto-discovered Aegis queue-empty upgrades are appended here when the orchestrat
 - Prompt: @Fei-Fei -- DRAFT: market-analytics.md -> add area heatmap drill-down experience with choropleth interaction, market filters, and insight panel acceptance criteria
 
 ### DU025 — Cache read-through policy
+
 - Feature ID: cache-readthrough-policy
 - Agent: @Redis
 - Target file: business_docs/09_crm_features/wave-15-cache-performance.md
@@ -2527,6 +2553,7 @@ Auto-discovered Aegis queue-empty upgrades are appended here when the orchestrat
 ## 2026-06-05T10:12:51.983Z — Queue-empty discovery run
 
 ### DU026 — Dark mode completeness audit
+
 - Feature ID: ux-dark-mode-completeness
 - Agent: @Marissa
 - Target file: business_docs/06_design_architecture/ui-ux-specification.md
@@ -2538,6 +2565,7 @@ Auto-discovered Aegis queue-empty upgrades are appended here when the orchestrat
 - Prompt: @Marissa -- EXPAND: ui-ux-specification.md -> add dark mode completeness audit covering tokens, contrast exceptions, fallback surfaces, and QA checkpoints
 
 ### DU027 — Maintenance SLA dashboard
+
 - Feature ID: operations-maintenance-sla-dashboard
 - Agent: @Rania
 - Target file: business_docs/09_crm_features/maintenance.md
@@ -2549,6 +2577,7 @@ Auto-discovered Aegis queue-empty upgrades are appended here when the orchestrat
 - Prompt: @Rania -- DRAFT: maintenance.md -> add a maintenance SLA dashboard with queue aging, breach alerts, contractor performance, and landlord visibility metrics
 
 ### DU028 — Media retention policy
+
 - Feature ID: media-retention-policy
 - Agent: @Cloudinary
 - Target file: business_docs/09_crm_features/wave-13-media-upload.md
@@ -2562,6 +2591,7 @@ Auto-discovered Aegis queue-empty upgrades are appended here when the orchestrat
 ## 2026-06-05T10:12:56.840Z — Queue-empty discovery run
 
 ### DU029 — Mortgage offer comparison panel
+
 - Feature ID: finance-mortgage-offer-comparison
 - Agent: @Mortgage
 - Target file: business_docs/09_crm_features/wave-14-finance-features.md
@@ -2573,6 +2603,7 @@ Auto-discovered Aegis queue-empty upgrades are appended here when the orchestrat
 - Prompt: @Mortgage -- EXPAND: wave-14-finance-features.md -> add mortgage offer comparison panel with bank terms, APR differences, and recommendation rules
 
 ### DU030 — Notification preferences matrix
+
 - Feature ID: realtime-notification-preferences
 - Agent: @Socket
 - Target file: business_docs/09_crm_features/wave-13-realtime-notifications.md
@@ -2584,6 +2615,7 @@ Auto-discovered Aegis queue-empty upgrades are appended here when the orchestrat
 - Prompt: @Socket -- EXPAND: wave-13-realtime-notifications.md -> add notification preferences matrix covering in-app, email, push, and quiet hours by role
 
 ### DU031 — Product automation audit visibility
+
 - Feature ID: product-automation-audit-visibility
 - Agent: @LeadScore
 - Target file: business_docs/09_crm_features/wave-14-product-automation.md
@@ -2597,6 +2629,7 @@ Auto-discovered Aegis queue-empty upgrades are appended here when the orchestrat
 ## 2026-06-05T10:12:58.513Z — Queue-empty discovery run
 
 ### DU032 — Redis cache layer planning
+
 - Feature ID: quality-redis-cache-layer
 - Agent: @Wafa
 - Target file: business_docs/09_crm_features/wave-15-cache-performance.md
@@ -2608,6 +2641,7 @@ Auto-discovered Aegis queue-empty upgrades are appended here when the orchestrat
 - Prompt: @Wafa -- DRAFT: wave-15-cache-performance.md -> add Redis cache layer planning for keys, TTLs, invalidation, and rollout safeguards
 
 ### DU033 — Resend delivery analytics
+
 - Feature ID: communications-resend-delivery-analytics
 - Agent: @Annie
 - Target file: business_docs/09_crm_features/email-automation.md
@@ -2619,6 +2653,7 @@ Auto-discovered Aegis queue-empty upgrades are appended here when the orchestrat
 - Prompt: @Annie -- EXPAND: email-automation.md -> add Resend delivery analytics with event capture, bounce handling, suppression, and campaign health KPIs
 
 ### DU034 — Virtual tour fallback behavior
+
 - Feature ID: virtual-tour-fallback-behavior
 - Agent: @Pannellum
 - Target file: business_docs/09_crm_features/wave-13-virtual-tour.md
@@ -2632,6 +2667,7 @@ Auto-discovered Aegis queue-empty upgrades are appended here when the orchestrat
 ## 2026-06-05T10:13:03.240Z — Queue-empty discovery run
 
 ### DU035 — AI-generated property description workflow
+
 - Feature ID: ai-generated-property-descriptions
 - Agent: @Joelle
 - Target file: business_docs/03_ai_assistants/README.md
@@ -2643,6 +2679,7 @@ Auto-discovered Aegis queue-empty upgrades are appended here when the orchestrat
 - Prompt: @Joelle -- DRAFT: README.md -> add AI-generated property description workflow covering prompt inputs, tone controls, compliance review, and approval safeguards
 
 ### DU036 — PWA groundwork refresh
+
 - Feature ID: pwa-groundwork-refresh
 - Agent: @PWA
 - Target file: plans/IMPROVEMENTS_UX.md
@@ -2654,6 +2691,7 @@ Auto-discovered Aegis queue-empty upgrades are appended here when the orchestrat
 - Prompt: @PWA -- EXPAND: IMPROVEMENTS_UX.md -> add PWA groundwork refresh covering manifest review, service worker scope, cache policy, and installability checks
 
 ### DU037 — Tenant journey mapping
+
 - Feature ID: operations-tenant-journey-map
 - Agent: @Tara
 - Target file: business_docs/09_crm_features/tenant-portal.md
@@ -2667,6 +2705,7 @@ Auto-discovered Aegis queue-empty upgrades are appended here when the orchestrat
 ## 2026-06-05T13:49:40.383Z — Queue-empty discovery run
 
 ### DU001 — CSRF coverage for mutation routes
+
 - Feature ID: security-csrf-mutation-routes
 - Agent: @S5
 - Target file: business_docs/09_crm_features/wave-16-security-hardening.md
@@ -2680,6 +2719,7 @@ Auto-discovered Aegis queue-empty upgrades are appended here when the orchestrat
 ## 2026-06-05T13:49:43.137Z — Queue-empty discovery run
 
 ### DU002 — PDC bounce escalation
+
 - Feature ID: leasing-pdc-bounce-escalation
 - Agent: @Victoria
 - Target file: business_docs/09_crm_features/tenancy-ejari.md
@@ -2691,6 +2731,7 @@ Auto-discovered Aegis queue-empty upgrades are appended here when the orchestrat
 - Prompt: @Victoria -- EXPAND: tenancy-ejari.md -> add bounced PDC escalation flow including cheque-return capture, landlord alerting, grace-period rules, legal escalation checkpoints, and acceptance criteria
 
 ### DU003 — VAT FTA filing workflow
+
 - Feature ID: finance-vat-fta-filing
 - Agent: @Invoice
 - Target file: business_docs/09_crm_features/financial-reporting.md
@@ -2704,6 +2745,7 @@ Auto-discovered Aegis queue-empty upgrades are appended here when the orchestrat
 ## 2026-06-05T13:49:54.486Z — Queue-empty discovery run
 
 ### DU004 — Server route test coverage uplift
+
 - Feature ID: quality-server-route-test-coverage
 - Agent: @Salma
 - Target file: plans/IMPROVEMENTS_UX.md
@@ -2717,6 +2759,7 @@ Auto-discovered Aegis queue-empty upgrades are appended here when the orchestrat
 ## 2026-06-05T13:49:56.621Z — Queue-empty discovery run
 
 ### DU005 — Oqood registration workflow
+
 - Feature ID: compliance-oqood-registration
 - Agent: @Timnit
 - Target file: business_docs/09_crm_features/dld-integration.md
@@ -2728,6 +2771,7 @@ Auto-discovered Aegis queue-empty upgrades are appended here when the orchestrat
 - Prompt: @Timnit -- DRAFT: dld-integration.md -> add end-to-end Oqood registration workflow including payload schema, retries, exception handling, and settlement checkpoints
 
 ### DU006 — RERA Form 7 and Form 12 generation
+
 - Feature ID: compliance-form7-form12-generation
 - Agent: @Timnit
 - Target file: business_docs/09_crm_features/legal-management.md
@@ -2741,6 +2785,7 @@ Auto-discovered Aegis queue-empty upgrades are appended here when the orchestrat
 ## 2026-06-05T13:50:05.019Z — Queue-empty discovery run
 
 ### DU007 — AML risk scoring
+
 - Feature ID: compliance-aml-risk-scoring
 - Agent: @Sofia
 - Target file: business_docs/05_requirements/compliance-requirements.md
@@ -2752,6 +2797,7 @@ Auto-discovered Aegis queue-empty upgrades are appended here when the orchestrat
 - Prompt: @Sofia -- EXPAND: compliance-requirements.md -> add AML risk scoring model covering source-of-funds triggers, PEP checks, sanctions screening, review cadence, and audit outputs
 
 ### DU008 — CSP header completeness audit
+
 - Feature ID: security-csp-completeness
 - Agent: @S5
 - Target file: business_docs/09_crm_features/wave-16-security-hardening.md
@@ -2763,6 +2809,7 @@ Auto-discovered Aegis queue-empty upgrades are appended here when the orchestrat
 - Prompt: @S5 -- DRAFT: wave-16-security-hardening.md -> add CSP completeness audit covering script-src, connect-src, report-only rollout, and third-party exceptions
 
 ### DU009 — JWT refresh rotation hardening
+
 - Feature ID: security-jwt-refresh-rotation
 - Agent: @S5
 - Target file: business_docs/09_crm_features/wave-16-security-hardening.md
@@ -2776,6 +2823,7 @@ Auto-discovered Aegis queue-empty upgrades are appended here when the orchestrat
 ## 2026-06-05T13:50:10.465Z — Queue-empty discovery run
 
 ### DU010 — Mobile analytics view
+
 - Feature ID: analytics-mobile-view
 - Agent: @Cassie
 - Target file: business_docs/09_crm_features/analytics-dashboard.md
@@ -2789,6 +2837,7 @@ Auto-discovered Aegis queue-empty upgrades are appended here when the orchestrat
 ## 2026-06-05T13:50:15.600Z — Queue-empty discovery run
 
 ### DU011 — AI lead-score re-trigger automation
+
 - Feature ID: ai-lead-score-retrigger
 - Agent: @Joelle
 - Target file: business_docs/03_ai_assistants/README.md
@@ -2800,6 +2849,7 @@ Auto-discovered Aegis queue-empty upgrades are appended here when the orchestrat
 - Prompt: @Joelle -- DRAFT: README.md -> add AI lead-score re-trigger automation covering behavior triggers, cooldowns, fallback handling, and audit visibility
 
 ### DU012 — Analytics CSV/Excel export API
+
 - Feature ID: analytics-export-api
 - Agent: @Cassie
 - Target file: business_docs/09_crm_features/analytics-dashboard.md
@@ -2811,6 +2861,7 @@ Auto-discovered Aegis queue-empty upgrades are appended here when the orchestrat
 - Prompt: @Cassie -- EXPAND: analytics-dashboard.md -> add CSV/Excel export API workflow including async jobs, download security, row limits, and delivery notifications
 
 ### DU013 — Arabic RTL keyboard navigation audit
+
 - Feature ID: ux-arabic-rtl-keyboard-nav
 - Agent: @Marissa
 - Target file: business_docs/06_design_architecture/ui-ux-specification.md
@@ -2824,6 +2875,7 @@ Auto-discovered Aegis queue-empty upgrades are appended here when the orchestrat
 ## 2026-06-05T13:50:27.072Z — Queue-empty discovery run
 
 ### DU014 — Commission split calculator
+
 - Feature ID: finance-commission-split-calculator
 - Agent: @Invoice
 - Target file: business_docs/09_crm_features/financial-reporting.md
@@ -2835,6 +2887,7 @@ Auto-discovered Aegis queue-empty upgrades are appended here when the orchestrat
 - Prompt: @Invoice -- DRAFT: financial-reporting.md -> add commission split calculator covering agent, manager, referral, and company share waterfalls, overrides, and payout validation rules
 
 ### DU015 — Document template registry
+
 - Feature ID: documents-template-registry
 - Agent: @Annie
 - Target file: business_docs/09_crm_features/document-generation.md
@@ -2846,6 +2899,7 @@ Auto-discovered Aegis queue-empty upgrades are appended here when the orchestrat
 - Prompt: @Annie -- EXPAND: document-generation.md -> add a document template registry with versioning, variable maps, approval controls, and deprecation workflow
 
 ### DU016 — Tenant e-NOC generation
+
 - Feature ID: leasing-enoc-generation
 - Agent: @Victoria
 - Target file: business_docs/09_crm_features/landlord-portal.md
@@ -2859,6 +2913,7 @@ Auto-discovered Aegis queue-empty upgrades are appended here when the orchestrat
 ## 2026-06-05T13:50:38.268Z — Queue-empty discovery run
 
 ### DU017 — Tenant portal Playwright E2E suite
+
 - Feature ID: quality-tenant-portal-e2e
 - Agent: @Salma
 - Target file: plans/IMPROVEMENTS_UX.md
@@ -2870,6 +2925,7 @@ Auto-discovered Aegis queue-empty upgrades are appended here when the orchestrat
 - Prompt: @Salma -- DRAFT: IMPROVEMENTS_UX.md -> add a Playwright E2E suite plan for tenant portal login, documents, payments, and maintenance flows
 
 ### DU018 — WhatsApp chatbot fallback recovery
+
 - Feature ID: ai-whatsapp-fallback-recovery
 - Agent: @Jaime
 - Target file: business_docs/09_crm_features/whatsapp-integration.md
@@ -2883,6 +2939,7 @@ Auto-discovered Aegis queue-empty upgrades are appended here when the orchestrat
 ## 2026-06-05T13:50:43.245Z — Queue-empty discovery run
 
 ### DU019 — Local business schema audit
+
 - Feature ID: seo-local-business-schema-audit
 - Agent: @Rachel
 - Target file: business_docs/09_crm_features/seo-strategy.md
@@ -2896,6 +2953,7 @@ Auto-discovered Aegis queue-empty upgrades are appended here when the orchestrat
 ## 2026-06-05T13:50:48.269Z — Queue-empty discovery run
 
 ### DU020 — Ejari renewal automation
+
 - Feature ID: leasing-ejari-renewal-automation
 - Agent: @Victoria
 - Target file: business_docs/09_crm_features/tenancy-ejari.md
@@ -2907,6 +2965,7 @@ Auto-discovered Aegis queue-empty upgrades are appended here when the orchestrat
 - Prompt: @Victoria -- EXPAND: tenancy-ejari.md -> add Ejari renewal automation workflow including reminders, required document checklist, DLD/Ejari renewal submission steps, SLA tracking, and acceptance criteria
 
 ### DU021 — Rent arrears escalation
+
 - Feature ID: finance-arrears-escalation
 - Agent: @Invoice
 - Target file: business_docs/09_crm_features/financial-reporting.md
@@ -2920,6 +2979,7 @@ Auto-discovered Aegis queue-empty upgrades are appended here when the orchestrat
 ## 2026-06-05T13:50:56.287Z — Queue-empty discovery run
 
 ### DU022 — Arabic/English hreflang coverage
+
 - Feature ID: seo-hreflang-coverage
 - Agent: @Rachel
 - Target file: business_docs/09_crm_features/seo-strategy.md
@@ -2931,6 +2991,7 @@ Auto-discovered Aegis queue-empty upgrades are appended here when the orchestrat
 - Prompt: @Rachel -- EXPAND: seo-strategy.md -> add hreflang coverage planning for English and Arabic pages, localization rules, and validation workflow
 
 ### DU023 — Area heatmap drill-down
+
 - Feature ID: analytics-area-heatmap-drilldown
 - Agent: @Fei-Fei
 - Target file: business_docs/09_crm_features/market-analytics.md
@@ -2942,6 +3003,7 @@ Auto-discovered Aegis queue-empty upgrades are appended here when the orchestrat
 - Prompt: @Fei-Fei -- DRAFT: market-analytics.md -> add area heatmap drill-down experience with choropleth interaction, market filters, and insight panel acceptance criteria
 
 ### DU024 — Cache read-through policy
+
 - Feature ID: cache-readthrough-policy
 - Agent: @Redis
 - Target file: business_docs/09_crm_features/wave-15-cache-performance.md
@@ -2955,6 +3017,7 @@ Auto-discovered Aegis queue-empty upgrades are appended here when the orchestrat
 ## 2026-06-05T13:51:04.401Z — Queue-empty discovery run
 
 ### DU025 — Dark mode completeness audit
+
 - Feature ID: ux-dark-mode-completeness
 - Agent: @Marissa
 - Target file: business_docs/06_design_architecture/ui-ux-specification.md
@@ -2966,6 +3029,7 @@ Auto-discovered Aegis queue-empty upgrades are appended here when the orchestrat
 - Prompt: @Marissa -- EXPAND: ui-ux-specification.md -> add dark mode completeness audit covering tokens, contrast exceptions, fallback surfaces, and QA checkpoints
 
 ### DU026 — Maintenance SLA dashboard
+
 - Feature ID: operations-maintenance-sla-dashboard
 - Agent: @Rania
 - Target file: business_docs/09_crm_features/maintenance.md
@@ -2977,6 +3041,7 @@ Auto-discovered Aegis queue-empty upgrades are appended here when the orchestrat
 - Prompt: @Rania -- DRAFT: maintenance.md -> add a maintenance SLA dashboard with queue aging, breach alerts, contractor performance, and landlord visibility metrics
 
 ### DU027 — Media retention policy
+
 - Feature ID: media-retention-policy
 - Agent: @Cloudinary
 - Target file: business_docs/09_crm_features/wave-13-media-upload.md
@@ -2990,6 +3055,7 @@ Auto-discovered Aegis queue-empty upgrades are appended here when the orchestrat
 ## 2026-06-05T13:51:09.235Z — Queue-empty discovery run
 
 ### DU028 — Mortgage offer comparison panel
+
 - Feature ID: finance-mortgage-offer-comparison
 - Agent: @Mortgage
 - Target file: business_docs/09_crm_features/wave-14-finance-features.md
@@ -3001,6 +3067,7 @@ Auto-discovered Aegis queue-empty upgrades are appended here when the orchestrat
 - Prompt: @Mortgage -- EXPAND: wave-14-finance-features.md -> add mortgage offer comparison panel with bank terms, APR differences, and recommendation rules
 
 ### DU029 — Notification preferences matrix
+
 - Feature ID: realtime-notification-preferences
 - Agent: @Socket
 - Target file: business_docs/09_crm_features/wave-13-realtime-notifications.md
@@ -3012,6 +3079,7 @@ Auto-discovered Aegis queue-empty upgrades are appended here when the orchestrat
 - Prompt: @Socket -- EXPAND: wave-13-realtime-notifications.md -> add notification preferences matrix covering in-app, email, push, and quiet hours by role
 
 ### DU030 — Product automation audit visibility
+
 - Feature ID: product-automation-audit-visibility
 - Agent: @LeadScore
 - Target file: business_docs/09_crm_features/wave-14-product-automation.md
@@ -3025,6 +3093,7 @@ Auto-discovered Aegis queue-empty upgrades are appended here when the orchestrat
 ## 2026-06-05T13:51:10.949Z — Queue-empty discovery run
 
 ### DU031 — Redis cache layer planning
+
 - Feature ID: quality-redis-cache-layer
 - Agent: @Wafa
 - Target file: business_docs/09_crm_features/wave-15-cache-performance.md
@@ -3036,6 +3105,7 @@ Auto-discovered Aegis queue-empty upgrades are appended here when the orchestrat
 - Prompt: @Wafa -- DRAFT: wave-15-cache-performance.md -> add Redis cache layer planning for keys, TTLs, invalidation, and rollout safeguards
 
 ### DU032 — Resend delivery analytics
+
 - Feature ID: communications-resend-delivery-analytics
 - Agent: @Annie
 - Target file: business_docs/09_crm_features/email-automation.md
@@ -3047,6 +3117,7 @@ Auto-discovered Aegis queue-empty upgrades are appended here when the orchestrat
 - Prompt: @Annie -- EXPAND: email-automation.md -> add Resend delivery analytics with event capture, bounce handling, suppression, and campaign health KPIs
 
 ### DU033 — Validation error envelope coverage
+
 - Feature ID: validation-error-envelope-coverage
 - Agent: @Zod
 - Target file: business_docs/09_crm_features/wave-14-validation-architecture.md
@@ -3060,6 +3131,7 @@ Auto-discovered Aegis queue-empty upgrades are appended here when the orchestrat
 ## 2026-06-05T13:51:15.868Z — Queue-empty discovery run
 
 ### DU034 — Virtual tour fallback behavior
+
 - Feature ID: virtual-tour-fallback-behavior
 - Agent: @Pannellum
 - Target file: business_docs/09_crm_features/wave-13-virtual-tour.md
@@ -3073,6 +3145,7 @@ Auto-discovered Aegis queue-empty upgrades are appended here when the orchestrat
 ## 2026-06-05T13:51:17.580Z — Queue-empty discovery run
 
 ### DU035 — AI-generated property description workflow
+
 - Feature ID: ai-generated-property-descriptions
 - Agent: @Joelle
 - Target file: business_docs/03_ai_assistants/README.md
@@ -3084,6 +3157,7 @@ Auto-discovered Aegis queue-empty upgrades are appended here when the orchestrat
 - Prompt: @Joelle -- DRAFT: README.md -> add AI-generated property description workflow covering prompt inputs, tone controls, compliance review, and approval safeguards
 
 ### DU036 — PWA groundwork refresh
+
 - Feature ID: pwa-groundwork-refresh
 - Agent: @PWA
 - Target file: plans/IMPROVEMENTS_UX.md
@@ -3095,6 +3169,7 @@ Auto-discovered Aegis queue-empty upgrades are appended here when the orchestrat
 - Prompt: @PWA -- EXPAND: IMPROVEMENTS_UX.md -> add PWA groundwork refresh covering manifest review, service worker scope, cache policy, and installability checks
 
 ### DU037 — Tenant journey mapping
+
 - Feature ID: operations-tenant-journey-map
 - Agent: @Tara
 - Target file: business_docs/09_crm_features/tenant-portal.md
@@ -3108,6 +3183,7 @@ Auto-discovered Aegis queue-empty upgrades are appended here when the orchestrat
 ## 2026-06-05T14:43:14.479Z — Queue-empty discovery run
 
 ### DU001 — CSRF coverage for mutation routes
+
 - Feature ID: security-csrf-mutation-routes
 - Agent: @S5
 - Target file: business_docs/09_crm_features/wave-16-security-hardening.md
@@ -3121,6 +3197,7 @@ Auto-discovered Aegis queue-empty upgrades are appended here when the orchestrat
 ## 2026-06-05T14:43:17.000Z — Queue-empty discovery run
 
 ### DU002 — PDC bounce escalation
+
 - Feature ID: leasing-pdc-bounce-escalation
 - Agent: @Victoria
 - Target file: business_docs/09_crm_features/tenancy-ejari.md
@@ -3132,6 +3209,7 @@ Auto-discovered Aegis queue-empty upgrades are appended here when the orchestrat
 - Prompt: @Victoria -- EXPAND: tenancy-ejari.md -> add bounced PDC escalation flow including cheque-return capture, landlord alerting, grace-period rules, legal escalation checkpoints, and acceptance criteria
 
 ### DU003 — VAT FTA filing workflow
+
 - Feature ID: finance-vat-fta-filing
 - Agent: @Invoice
 - Target file: business_docs/09_crm_features/financial-reporting.md
@@ -3145,6 +3223,7 @@ Auto-discovered Aegis queue-empty upgrades are appended here when the orchestrat
 ## 2026-06-05T14:43:27.785Z — Queue-empty discovery run
 
 ### DU004 — Server route test coverage uplift
+
 - Feature ID: quality-server-route-test-coverage
 - Agent: @Salma
 - Target file: plans/IMPROVEMENTS_UX.md
@@ -3158,6 +3237,7 @@ Auto-discovered Aegis queue-empty upgrades are appended here when the orchestrat
 ## 2026-06-05T14:43:29.718Z — Queue-empty discovery run
 
 ### DU005 — Oqood registration workflow
+
 - Feature ID: compliance-oqood-registration
 - Agent: @Timnit
 - Target file: business_docs/09_crm_features/dld-integration.md
@@ -3169,6 +3249,7 @@ Auto-discovered Aegis queue-empty upgrades are appended here when the orchestrat
 - Prompt: @Timnit -- DRAFT: dld-integration.md -> add end-to-end Oqood registration workflow including payload schema, retries, exception handling, and settlement checkpoints
 
 ### DU006 — RERA Form 7 and Form 12 generation
+
 - Feature ID: compliance-form7-form12-generation
 - Agent: @Timnit
 - Target file: business_docs/09_crm_features/legal-management.md
@@ -3182,6 +3263,7 @@ Auto-discovered Aegis queue-empty upgrades are appended here when the orchestrat
 ## 2026-06-05T14:43:37.203Z — Queue-empty discovery run
 
 ### DU007 — AML risk scoring
+
 - Feature ID: compliance-aml-risk-scoring
 - Agent: @Sofia
 - Target file: business_docs/05_requirements/compliance-requirements.md
@@ -3193,6 +3275,7 @@ Auto-discovered Aegis queue-empty upgrades are appended here when the orchestrat
 - Prompt: @Sofia -- EXPAND: compliance-requirements.md -> add AML risk scoring model covering source-of-funds triggers, PEP checks, sanctions screening, review cadence, and audit outputs
 
 ### DU008 — CSP header completeness audit
+
 - Feature ID: security-csp-completeness
 - Agent: @S5
 - Target file: business_docs/09_crm_features/wave-16-security-hardening.md
@@ -3204,6 +3287,7 @@ Auto-discovered Aegis queue-empty upgrades are appended here when the orchestrat
 - Prompt: @S5 -- DRAFT: wave-16-security-hardening.md -> add CSP completeness audit covering script-src, connect-src, report-only rollout, and third-party exceptions
 
 ### DU009 — JWT refresh rotation hardening
+
 - Feature ID: security-jwt-refresh-rotation
 - Agent: @S5
 - Target file: business_docs/09_crm_features/wave-16-security-hardening.md
@@ -3217,6 +3301,7 @@ Auto-discovered Aegis queue-empty upgrades are appended here when the orchestrat
 ## 2026-06-05T14:43:41.821Z — Queue-empty discovery run
 
 ### DU010 — Mobile analytics view
+
 - Feature ID: analytics-mobile-view
 - Agent: @Cassie
 - Target file: business_docs/09_crm_features/analytics-dashboard.md
@@ -3230,6 +3315,7 @@ Auto-discovered Aegis queue-empty upgrades are appended here when the orchestrat
 ## 2026-06-05T14:43:46.426Z — Queue-empty discovery run
 
 ### DU011 — AI lead-score re-trigger automation
+
 - Feature ID: ai-lead-score-retrigger
 - Agent: @Joelle
 - Target file: business_docs/03_ai_assistants/README.md
@@ -3241,6 +3327,7 @@ Auto-discovered Aegis queue-empty upgrades are appended here when the orchestrat
 - Prompt: @Joelle -- DRAFT: README.md -> add AI lead-score re-trigger automation covering behavior triggers, cooldowns, fallback handling, and audit visibility
 
 ### DU012 — Analytics CSV/Excel export API
+
 - Feature ID: analytics-export-api
 - Agent: @Cassie
 - Target file: business_docs/09_crm_features/analytics-dashboard.md
@@ -3252,6 +3339,7 @@ Auto-discovered Aegis queue-empty upgrades are appended here when the orchestrat
 - Prompt: @Cassie -- EXPAND: analytics-dashboard.md -> add CSV/Excel export API workflow including async jobs, download security, row limits, and delivery notifications
 
 ### DU013 — Arabic RTL keyboard navigation audit
+
 - Feature ID: ux-arabic-rtl-keyboard-nav
 - Agent: @Marissa
 - Target file: business_docs/06_design_architecture/ui-ux-specification.md
@@ -3265,6 +3353,7 @@ Auto-discovered Aegis queue-empty upgrades are appended here when the orchestrat
 ## 2026-06-05T14:43:56.626Z — Queue-empty discovery run
 
 ### DU014 — Commission split calculator
+
 - Feature ID: finance-commission-split-calculator
 - Agent: @Invoice
 - Target file: business_docs/09_crm_features/financial-reporting.md
@@ -3276,6 +3365,7 @@ Auto-discovered Aegis queue-empty upgrades are appended here when the orchestrat
 - Prompt: @Invoice -- DRAFT: financial-reporting.md -> add commission split calculator covering agent, manager, referral, and company share waterfalls, overrides, and payout validation rules
 
 ### DU015 — Document template registry
+
 - Feature ID: documents-template-registry
 - Agent: @Annie
 - Target file: business_docs/09_crm_features/document-generation.md
@@ -3287,6 +3377,7 @@ Auto-discovered Aegis queue-empty upgrades are appended here when the orchestrat
 - Prompt: @Annie -- EXPAND: document-generation.md -> add a document template registry with versioning, variable maps, approval controls, and deprecation workflow
 
 ### DU016 — Tenant e-NOC generation
+
 - Feature ID: leasing-enoc-generation
 - Agent: @Victoria
 - Target file: business_docs/09_crm_features/landlord-portal.md
@@ -3300,6 +3391,7 @@ Auto-discovered Aegis queue-empty upgrades are appended here when the orchestrat
 ## 2026-06-05T14:44:06.832Z — Queue-empty discovery run
 
 ### DU017 — Tenant portal Playwright E2E suite
+
 - Feature ID: quality-tenant-portal-e2e
 - Agent: @Salma
 - Target file: plans/IMPROVEMENTS_UX.md
@@ -3311,6 +3403,7 @@ Auto-discovered Aegis queue-empty upgrades are appended here when the orchestrat
 - Prompt: @Salma -- DRAFT: IMPROVEMENTS_UX.md -> add a Playwright E2E suite plan for tenant portal login, documents, payments, and maintenance flows
 
 ### DU018 — WhatsApp chatbot fallback recovery
+
 - Feature ID: ai-whatsapp-fallback-recovery
 - Agent: @Jaime
 - Target file: business_docs/09_crm_features/whatsapp-integration.md
@@ -3324,6 +3417,7 @@ Auto-discovered Aegis queue-empty upgrades are appended here when the orchestrat
 ## 2026-06-05T14:44:11.290Z — Queue-empty discovery run
 
 ### DU019 — Local business schema audit
+
 - Feature ID: seo-local-business-schema-audit
 - Agent: @Rachel
 - Target file: business_docs/09_crm_features/seo-strategy.md
@@ -3337,6 +3431,7 @@ Auto-discovered Aegis queue-empty upgrades are appended here when the orchestrat
 ## 2026-06-05T14:44:15.762Z — Queue-empty discovery run
 
 ### DU020 — Ejari renewal automation
+
 - Feature ID: leasing-ejari-renewal-automation
 - Agent: @Victoria
 - Target file: business_docs/09_crm_features/tenancy-ejari.md
@@ -3348,6 +3443,7 @@ Auto-discovered Aegis queue-empty upgrades are appended here when the orchestrat
 - Prompt: @Victoria -- EXPAND: tenancy-ejari.md -> add Ejari renewal automation workflow including reminders, required document checklist, DLD/Ejari renewal submission steps, SLA tracking, and acceptance criteria
 
 ### DU021 — Rent arrears escalation
+
 - Feature ID: finance-arrears-escalation
 - Agent: @Invoice
 - Target file: business_docs/09_crm_features/financial-reporting.md
@@ -3361,6 +3457,7 @@ Auto-discovered Aegis queue-empty upgrades are appended here when the orchestrat
 ## 2026-06-05T14:44:22.920Z — Queue-empty discovery run
 
 ### DU022 — Arabic/English hreflang coverage
+
 - Feature ID: seo-hreflang-coverage
 - Agent: @Rachel
 - Target file: business_docs/09_crm_features/seo-strategy.md
@@ -3372,6 +3469,7 @@ Auto-discovered Aegis queue-empty upgrades are appended here when the orchestrat
 - Prompt: @Rachel -- EXPAND: seo-strategy.md -> add hreflang coverage planning for English and Arabic pages, localization rules, and validation workflow
 
 ### DU023 — Area heatmap drill-down
+
 - Feature ID: analytics-area-heatmap-drilldown
 - Agent: @Fei-Fei
 - Target file: business_docs/09_crm_features/market-analytics.md
@@ -3383,6 +3481,7 @@ Auto-discovered Aegis queue-empty upgrades are appended here when the orchestrat
 - Prompt: @Fei-Fei -- DRAFT: market-analytics.md -> add area heatmap drill-down experience with choropleth interaction, market filters, and insight panel acceptance criteria
 
 ### DU024 — Cache read-through policy
+
 - Feature ID: cache-readthrough-policy
 - Agent: @Redis
 - Target file: business_docs/09_crm_features/wave-15-cache-performance.md
@@ -3396,6 +3495,7 @@ Auto-discovered Aegis queue-empty upgrades are appended here when the orchestrat
 ## 2026-06-05T14:44:30.074Z — Queue-empty discovery run
 
 ### DU025 — Dark mode completeness audit
+
 - Feature ID: ux-dark-mode-completeness
 - Agent: @Marissa
 - Target file: business_docs/06_design_architecture/ui-ux-specification.md
@@ -3407,6 +3507,7 @@ Auto-discovered Aegis queue-empty upgrades are appended here when the orchestrat
 - Prompt: @Marissa -- EXPAND: ui-ux-specification.md -> add dark mode completeness audit covering tokens, contrast exceptions, fallback surfaces, and QA checkpoints
 
 ### DU026 — Maintenance SLA dashboard
+
 - Feature ID: operations-maintenance-sla-dashboard
 - Agent: @Rania
 - Target file: business_docs/09_crm_features/maintenance.md
@@ -3418,6 +3519,7 @@ Auto-discovered Aegis queue-empty upgrades are appended here when the orchestrat
 - Prompt: @Rania -- DRAFT: maintenance.md -> add a maintenance SLA dashboard with queue aging, breach alerts, contractor performance, and landlord visibility metrics
 
 ### DU027 — Media retention policy
+
 - Feature ID: media-retention-policy
 - Agent: @Cloudinary
 - Target file: business_docs/09_crm_features/wave-13-media-upload.md
@@ -3431,6 +3533,7 @@ Auto-discovered Aegis queue-empty upgrades are appended here when the orchestrat
 ## 2026-06-05T14:44:34.341Z — Queue-empty discovery run
 
 ### DU028 — Mortgage offer comparison panel
+
 - Feature ID: finance-mortgage-offer-comparison
 - Agent: @Mortgage
 - Target file: business_docs/09_crm_features/wave-14-finance-features.md
@@ -3442,6 +3545,7 @@ Auto-discovered Aegis queue-empty upgrades are appended here when the orchestrat
 - Prompt: @Mortgage -- EXPAND: wave-14-finance-features.md -> add mortgage offer comparison panel with bank terms, APR differences, and recommendation rules
 
 ### DU029 — Notification preferences matrix
+
 - Feature ID: realtime-notification-preferences
 - Agent: @Socket
 - Target file: business_docs/09_crm_features/wave-13-realtime-notifications.md
@@ -3453,6 +3557,7 @@ Auto-discovered Aegis queue-empty upgrades are appended here when the orchestrat
 - Prompt: @Socket -- EXPAND: wave-13-realtime-notifications.md -> add notification preferences matrix covering in-app, email, push, and quiet hours by role
 
 ### DU030 — Product automation audit visibility
+
 - Feature ID: product-automation-audit-visibility
 - Agent: @LeadScore
 - Target file: business_docs/09_crm_features/wave-14-product-automation.md
@@ -3466,6 +3571,7 @@ Auto-discovered Aegis queue-empty upgrades are appended here when the orchestrat
 ## 2026-06-05T14:44:35.775Z — Queue-empty discovery run
 
 ### DU031 — Redis cache layer planning
+
 - Feature ID: quality-redis-cache-layer
 - Agent: @Wafa
 - Target file: business_docs/09_crm_features/wave-15-cache-performance.md
@@ -3477,6 +3583,7 @@ Auto-discovered Aegis queue-empty upgrades are appended here when the orchestrat
 - Prompt: @Wafa -- DRAFT: wave-15-cache-performance.md -> add Redis cache layer planning for keys, TTLs, invalidation, and rollout safeguards
 
 ### DU032 — Resend delivery analytics
+
 - Feature ID: communications-resend-delivery-analytics
 - Agent: @Annie
 - Target file: business_docs/09_crm_features/email-automation.md
@@ -3488,6 +3595,7 @@ Auto-discovered Aegis queue-empty upgrades are appended here when the orchestrat
 - Prompt: @Annie -- EXPAND: email-automation.md -> add Resend delivery analytics with event capture, bounce handling, suppression, and campaign health KPIs
 
 ### DU033 — Validation error envelope coverage
+
 - Feature ID: validation-error-envelope-coverage
 - Agent: @Zod
 - Target file: business_docs/09_crm_features/wave-14-validation-architecture.md
@@ -3501,6 +3609,7 @@ Auto-discovered Aegis queue-empty upgrades are appended here when the orchestrat
 ## 2026-06-05T14:44:39.976Z — Queue-empty discovery run
 
 ### DU034 — Virtual tour fallback behavior
+
 - Feature ID: virtual-tour-fallback-behavior
 - Agent: @Pannellum
 - Target file: business_docs/09_crm_features/wave-13-virtual-tour.md
@@ -3514,6 +3623,7 @@ Auto-discovered Aegis queue-empty upgrades are appended here when the orchestrat
 ## 2026-06-05T14:44:41.338Z — Queue-empty discovery run
 
 ### DU035 — AI-generated property description workflow
+
 - Feature ID: ai-generated-property-descriptions
 - Agent: @Joelle
 - Target file: business_docs/03_ai_assistants/README.md
@@ -3525,6 +3635,7 @@ Auto-discovered Aegis queue-empty upgrades are appended here when the orchestrat
 - Prompt: @Joelle -- DRAFT: README.md -> add AI-generated property description workflow covering prompt inputs, tone controls, compliance review, and approval safeguards
 
 ### DU036 — PWA groundwork refresh
+
 - Feature ID: pwa-groundwork-refresh
 - Agent: @PWA
 - Target file: plans/IMPROVEMENTS_UX.md
@@ -3536,6 +3647,7 @@ Auto-discovered Aegis queue-empty upgrades are appended here when the orchestrat
 - Prompt: @PWA -- EXPAND: IMPROVEMENTS_UX.md -> add PWA groundwork refresh covering manifest review, service worker scope, cache policy, and installability checks
 
 ### DU037 — Tenant journey mapping
+
 - Feature ID: operations-tenant-journey-map
 - Agent: @Tara
 - Target file: business_docs/09_crm_features/tenant-portal.md
@@ -3546,3 +3658,660 @@ Auto-discovered Aegis queue-empty upgrades are appended here when the orchestrat
 - Scan evidence: 0 keyword hits in codebase scan signals
 - Prompt: @Tara -- DRAFT: tenant-portal.md -> add tenant journey mapping from onboarding through renewal, including pain points, KPIs, and service moments
 
+## 2026-06-10T05:46:36.392Z — Queue-empty discovery run
+
+### DU001 — CSRF coverage for mutation routes
+
+- Feature ID: security-csrf-mutation-routes
+- Agent: @S5
+- Target file: business_docs/09_crm_features/wave-16-security-hardening.md
+- Research basis: OWASP CSRF mitigation requirement for session-backed mutation endpoints
+- Score: 155
+- Gap evidence: 0/2 signatures matched
+- Plan evidence: 5 keyword hits in planning docs
+- Scan evidence: 1 keyword hits in codebase scan signals
+- Prompt: @S5 -- EXPAND: wave-16-security-hardening.md -> add CSRF coverage plan for all mutation routes, token issuance, validation points, and rollout verification
+
+## 2026-06-10T15:47:42.204Z — Queue-empty discovery run
+
+### DU001 — CSRF coverage for mutation routes
+
+- Feature ID: security-csrf-mutation-routes
+- Agent: @S5
+- Target file: business_docs/09_crm_features/wave-16-security-hardening.md
+- Research basis: OWASP CSRF mitigation requirement for session-backed mutation endpoints
+- Score: 155
+- Gap evidence: 0/2 signatures matched
+- Plan evidence: 5 keyword hits in planning docs
+- Scan evidence: 1 keyword hits in codebase scan signals
+- Prompt: @S5 -- EXPAND: wave-16-security-hardening.md -> add CSRF coverage plan for all mutation routes, token issuance, validation points, and rollout verification
+
+## 2026-06-10T19:57:04.676Z — Queue-empty discovery run
+
+### DU001 — CSRF coverage for mutation routes
+
+- Feature ID: security-csrf-mutation-routes
+- Agent: @S5
+- Target file: business_docs/09_crm_features/wave-16-security-hardening.md
+- Research basis: OWASP CSRF mitigation requirement for session-backed mutation endpoints
+- Score: 155
+- Gap evidence: 0/2 signatures matched
+- Plan evidence: 5 keyword hits in planning docs
+- Scan evidence: 1 keyword hits in codebase scan signals
+- Prompt: @S5 -- EXPAND: wave-16-security-hardening.md -> add CSRF coverage plan for all mutation routes, token issuance, validation points, and rollout verification
+
+## 2026-06-10T19:59:13.100Z — Queue-empty discovery run
+
+### DU001 — CSRF coverage for mutation routes
+
+- Feature ID: security-csrf-mutation-routes
+- Agent: @S5
+- Target file: business_docs/09_crm_features/wave-16-security-hardening.md
+- Research basis: OWASP CSRF mitigation requirement for session-backed mutation endpoints
+- Score: 155
+- Gap evidence: 0/2 signatures matched
+- Plan evidence: 5 keyword hits in planning docs
+- Scan evidence: 1 keyword hits in codebase scan signals
+- Prompt: @S5 -- EXPAND: wave-16-security-hardening.md -> add CSRF coverage plan for all mutation routes, token issuance, validation points, and rollout verification
+
+## 2026-06-10T20:12:04.618Z — Queue-empty discovery run
+
+### DU001 — CSRF coverage for mutation routes
+
+- Feature ID: security-csrf-mutation-routes
+- Agent: @S5
+- Target file: business_docs/09_crm_features/wave-16-security-hardening.md
+- Research basis: OWASP CSRF mitigation requirement for session-backed mutation endpoints
+- Score: 155
+- Gap evidence: 0/2 signatures matched
+- Plan evidence: 5 keyword hits in planning docs
+- Scan evidence: 1 keyword hits in codebase scan signals
+- Prompt: @S5 -- EXPAND: wave-16-security-hardening.md -> add CSRF coverage plan for all mutation routes, token issuance, validation points, and rollout verification
+
+## 2026-06-10T20:14:46.199Z — Queue-empty discovery run
+
+### DU001 — CSRF coverage for mutation routes
+
+- Feature ID: security-csrf-mutation-routes
+- Agent: @S5
+- Target file: business_docs/09_crm_features/wave-16-security-hardening.md
+- Research basis: OWASP CSRF mitigation requirement for session-backed mutation endpoints
+- Score: 155
+- Gap evidence: 0/2 signatures matched
+- Plan evidence: 5 keyword hits in planning docs
+- Scan evidence: 1 keyword hits in codebase scan signals
+- Prompt: @S5 -- EXPAND: wave-16-security-hardening.md -> add CSRF coverage plan for all mutation routes, token issuance, validation points, and rollout verification
+
+## 2026-06-10T20:15:53.952Z — Queue-empty discovery run
+
+### DU001 — CSRF coverage for mutation routes
+
+- Feature ID: security-csrf-mutation-routes
+- Agent: @S5
+- Target file: business_docs/09_crm_features/wave-16-security-hardening.md
+- Research basis: OWASP CSRF mitigation requirement for session-backed mutation endpoints
+- Score: 155
+- Gap evidence: 0/2 signatures matched
+- Plan evidence: 5 keyword hits in planning docs
+- Scan evidence: 1 keyword hits in codebase scan signals
+- Prompt: @S5 -- EXPAND: wave-16-security-hardening.md -> add CSRF coverage plan for all mutation routes, token issuance, validation points, and rollout verification
+
+## 2026-06-10T20:17:54.809Z — Queue-empty discovery run
+
+### DU001 — CSRF coverage for mutation routes
+
+- Feature ID: security-csrf-mutation-routes
+- Agent: @S5
+- Target file: business_docs/09_crm_features/wave-16-security-hardening.md
+- Research basis: OWASP CSRF mitigation requirement for session-backed mutation endpoints
+- Score: 155
+- Gap evidence: 0/2 signatures matched
+- Plan evidence: 5 keyword hits in planning docs
+- Scan evidence: 1 keyword hits in codebase scan signals
+- Prompt: @S5 -- EXPAND: wave-16-security-hardening.md -> add CSRF coverage plan for all mutation routes, token issuance, validation points, and rollout verification
+
+## 2026-06-17T12:43:41.149Z — Queue-empty discovery run
+
+### DU001 — CSRF coverage for mutation routes
+
+- Feature ID: security-csrf-mutation-routes
+- Agent: @S5
+- Target file: business_docs/09_crm_features/wave-16-security-hardening.md
+- Research basis: OWASP CSRF mitigation requirement for session-backed mutation endpoints
+- Score: 155
+- Gap evidence: 0/2 signatures matched
+- Plan evidence: 5 keyword hits in planning docs
+- Scan evidence: 1 keyword hits in codebase scan signals
+- Prompt: @S5 -- EXPAND: wave-16-security-hardening.md -> add CSRF coverage plan for all mutation routes, token issuance, validation points, and rollout verification
+
+## 2026-06-17T12:49:57.531Z — Queue-empty discovery run
+
+### DU001 — CSRF coverage for mutation routes
+
+- Feature ID: security-csrf-mutation-routes
+- Agent: @S5
+- Target file: business_docs/09_crm_features/wave-16-security-hardening.md
+- Research basis: OWASP CSRF mitigation requirement for session-backed mutation endpoints
+- Score: 155
+- Gap evidence: 0/2 signatures matched
+- Plan evidence: 5 keyword hits in planning docs
+- Scan evidence: 1 keyword hits in codebase scan signals
+- Prompt: @S5 -- EXPAND: wave-16-security-hardening.md -> add CSRF coverage plan for all mutation routes, token issuance, validation points, and rollout verification
+
+## 2026-06-17T12:55:45.775Z — Queue-empty discovery run
+
+### DU001 — CSRF coverage for mutation routes
+
+- Feature ID: security-csrf-mutation-routes
+- Agent: @S5
+- Target file: business_docs/09_crm_features/wave-16-security-hardening.md
+- Research basis: OWASP CSRF mitigation requirement for session-backed mutation endpoints
+- Score: 155
+- Gap evidence: 0/2 signatures matched
+- Plan evidence: 5 keyword hits in planning docs
+- Scan evidence: 1 keyword hits in codebase scan signals
+- Prompt: @S5 -- EXPAND: wave-16-security-hardening.md -> add CSRF coverage plan for all mutation routes, token issuance, validation points, and rollout verification
+
+## 2026-06-17T13:01:02.769Z — Queue-empty discovery run
+
+### DU001 — CSRF coverage for mutation routes
+
+- Feature ID: security-csrf-mutation-routes
+- Agent: @S5
+- Target file: business_docs/09_crm_features/wave-16-security-hardening.md
+- Research basis: OWASP CSRF mitigation requirement for session-backed mutation endpoints
+- Score: 155
+- Gap evidence: 0/2 signatures matched
+- Plan evidence: 5 keyword hits in planning docs
+- Scan evidence: 1 keyword hits in codebase scan signals
+- Prompt: @S5 -- EXPAND: wave-16-security-hardening.md -> add CSRF coverage plan for all mutation routes, token issuance, validation points, and rollout verification
+
+## 2026-06-17T13:06:39.559Z — Queue-empty discovery run
+
+### DU001 — CSRF coverage for mutation routes
+
+- Feature ID: security-csrf-mutation-routes
+- Agent: @S5
+- Target file: business_docs/09_crm_features/wave-16-security-hardening.md
+- Research basis: OWASP CSRF mitigation requirement for session-backed mutation endpoints
+- Score: 155
+- Gap evidence: 0/2 signatures matched
+- Plan evidence: 5 keyword hits in planning docs
+- Scan evidence: 1 keyword hits in codebase scan signals
+- Prompt: @S5 -- EXPAND: wave-16-security-hardening.md -> add CSRF coverage plan for all mutation routes, token issuance, validation points, and rollout verification
+
+## 2026-06-17T13:12:15.930Z — Queue-empty discovery run
+
+### DU001 — CSRF coverage for mutation routes
+
+- Feature ID: security-csrf-mutation-routes
+- Agent: @S5
+- Target file: business_docs/09_crm_features/wave-16-security-hardening.md
+- Research basis: OWASP CSRF mitigation requirement for session-backed mutation endpoints
+- Score: 155
+- Gap evidence: 0/2 signatures matched
+- Plan evidence: 5 keyword hits in planning docs
+- Scan evidence: 1 keyword hits in codebase scan signals
+- Prompt: @S5 -- EXPAND: wave-16-security-hardening.md -> add CSRF coverage plan for all mutation routes, token issuance, validation points, and rollout verification
+
+## 2026-06-17T13:17:52.071Z — Queue-empty discovery run
+
+### DU001 — CSRF coverage for mutation routes
+
+- Feature ID: security-csrf-mutation-routes
+- Agent: @S5
+- Target file: business_docs/09_crm_features/wave-16-security-hardening.md
+- Research basis: OWASP CSRF mitigation requirement for session-backed mutation endpoints
+- Score: 155
+- Gap evidence: 0/2 signatures matched
+- Plan evidence: 5 keyword hits in planning docs
+- Scan evidence: 1 keyword hits in codebase scan signals
+- Prompt: @S5 -- EXPAND: wave-16-security-hardening.md -> add CSRF coverage plan for all mutation routes, token issuance, validation points, and rollout verification
+
+## 2026-06-17T13:23:28.115Z — Queue-empty discovery run
+
+### DU001 — CSRF coverage for mutation routes
+
+- Feature ID: security-csrf-mutation-routes
+- Agent: @S5
+- Target file: business_docs/09_crm_features/wave-16-security-hardening.md
+- Research basis: OWASP CSRF mitigation requirement for session-backed mutation endpoints
+- Score: 155
+- Gap evidence: 0/2 signatures matched
+- Plan evidence: 5 keyword hits in planning docs
+- Scan evidence: 1 keyword hits in codebase scan signals
+- Prompt: @S5 -- EXPAND: wave-16-security-hardening.md -> add CSRF coverage plan for all mutation routes, token issuance, validation points, and rollout verification
+
+## 2026-06-17T13:29:06.817Z — Queue-empty discovery run
+
+### DU001 — CSRF coverage for mutation routes
+
+- Feature ID: security-csrf-mutation-routes
+- Agent: @S5
+- Target file: business_docs/09_crm_features/wave-16-security-hardening.md
+- Research basis: OWASP CSRF mitigation requirement for session-backed mutation endpoints
+- Score: 155
+- Gap evidence: 0/2 signatures matched
+- Plan evidence: 5 keyword hits in planning docs
+- Scan evidence: 1 keyword hits in codebase scan signals
+- Prompt: @S5 -- EXPAND: wave-16-security-hardening.md -> add CSRF coverage plan for all mutation routes, token issuance, validation points, and rollout verification
+
+## 2026-06-17T13:34:13.396Z — Queue-empty discovery run
+
+### DU001 — CSRF coverage for mutation routes
+
+- Feature ID: security-csrf-mutation-routes
+- Agent: @S5
+- Target file: business_docs/09_crm_features/wave-16-security-hardening.md
+- Research basis: OWASP CSRF mitigation requirement for session-backed mutation endpoints
+- Score: 155
+- Gap evidence: 0/2 signatures matched
+- Plan evidence: 5 keyword hits in planning docs
+- Scan evidence: 1 keyword hits in codebase scan signals
+- Prompt: @S5 -- EXPAND: wave-16-security-hardening.md -> add CSRF coverage plan for all mutation routes, token issuance, validation points, and rollout verification
+
+## 2026-06-17T13:39:22.569Z — Queue-empty discovery run
+
+### DU001 — CSRF coverage for mutation routes
+
+- Feature ID: security-csrf-mutation-routes
+- Agent: @S5
+- Target file: business_docs/09_crm_features/wave-16-security-hardening.md
+- Research basis: OWASP CSRF mitigation requirement for session-backed mutation endpoints
+- Score: 155
+- Gap evidence: 0/2 signatures matched
+- Plan evidence: 5 keyword hits in planning docs
+- Scan evidence: 1 keyword hits in codebase scan signals
+- Prompt: @S5 -- EXPAND: wave-16-security-hardening.md -> add CSRF coverage plan for all mutation routes, token issuance, validation points, and rollout verification
+
+## 2026-06-17T13:44:31.594Z — Queue-empty discovery run
+
+### DU001 — CSRF coverage for mutation routes
+
+- Feature ID: security-csrf-mutation-routes
+- Agent: @S5
+- Target file: business_docs/09_crm_features/wave-16-security-hardening.md
+- Research basis: OWASP CSRF mitigation requirement for session-backed mutation endpoints
+- Score: 155
+- Gap evidence: 0/2 signatures matched
+- Plan evidence: 5 keyword hits in planning docs
+- Scan evidence: 1 keyword hits in codebase scan signals
+- Prompt: @S5 -- EXPAND: wave-16-security-hardening.md -> add CSRF coverage plan for all mutation routes, token issuance, validation points, and rollout verification
+
+## 2026-06-17T13:49:43.887Z — Queue-empty discovery run
+
+### DU001 — CSRF coverage for mutation routes
+
+- Feature ID: security-csrf-mutation-routes
+- Agent: @S5
+- Target file: business_docs/09_crm_features/wave-16-security-hardening.md
+- Research basis: OWASP CSRF mitigation requirement for session-backed mutation endpoints
+- Score: 155
+- Gap evidence: 0/2 signatures matched
+- Plan evidence: 5 keyword hits in planning docs
+- Scan evidence: 1 keyword hits in codebase scan signals
+- Prompt: @S5 -- EXPAND: wave-16-security-hardening.md -> add CSRF coverage plan for all mutation routes, token issuance, validation points, and rollout verification
+
+## 2026-06-17T13:54:58.303Z — Queue-empty discovery run
+
+### DU001 — CSRF coverage for mutation routes
+
+- Feature ID: security-csrf-mutation-routes
+- Agent: @S5
+- Target file: business_docs/09_crm_features/wave-16-security-hardening.md
+- Research basis: OWASP CSRF mitigation requirement for session-backed mutation endpoints
+- Score: 155
+- Gap evidence: 0/2 signatures matched
+- Plan evidence: 5 keyword hits in planning docs
+- Scan evidence: 1 keyword hits in codebase scan signals
+- Prompt: @S5 -- EXPAND: wave-16-security-hardening.md -> add CSRF coverage plan for all mutation routes, token issuance, validation points, and rollout verification
+
+## 2026-06-17T14:35:26.749Z — Queue-empty discovery run
+
+### DU001 — CSRF coverage for mutation routes
+
+- Feature ID: security-csrf-mutation-routes
+- Agent: @S5
+- Target file: business_docs/09_crm_features/wave-16-security-hardening.md
+- Research basis: OWASP CSRF mitigation requirement for session-backed mutation endpoints
+- Score: 155
+- Gap evidence: 0/2 signatures matched
+- Plan evidence: 5 keyword hits in planning docs
+- Scan evidence: 1 keyword hits in codebase scan signals
+- Prompt: @S5 -- EXPAND: wave-16-security-hardening.md -> add CSRF coverage plan for all mutation routes, token issuance, validation points, and rollout verification
+
+## 2026-06-17T14:41:04.671Z — Queue-empty discovery run
+
+### DU001 — CSRF coverage for mutation routes
+
+- Feature ID: security-csrf-mutation-routes
+- Agent: @S5
+- Target file: business_docs/09_crm_features/wave-16-security-hardening.md
+- Research basis: OWASP CSRF mitigation requirement for session-backed mutation endpoints
+- Score: 155
+- Gap evidence: 0/2 signatures matched
+- Plan evidence: 5 keyword hits in planning docs
+- Scan evidence: 1 keyword hits in codebase scan signals
+- Prompt: @S5 -- EXPAND: wave-16-security-hardening.md -> add CSRF coverage plan for all mutation routes, token issuance, validation points, and rollout verification
+
+## 2026-06-17T14:46:44.433Z — Queue-empty discovery run
+
+### DU001 — CSRF coverage for mutation routes
+
+- Feature ID: security-csrf-mutation-routes
+- Agent: @S5
+- Target file: business_docs/09_crm_features/wave-16-security-hardening.md
+- Research basis: OWASP CSRF mitigation requirement for session-backed mutation endpoints
+- Score: 155
+- Gap evidence: 0/2 signatures matched
+- Plan evidence: 5 keyword hits in planning docs
+- Scan evidence: 1 keyword hits in codebase scan signals
+- Prompt: @S5 -- EXPAND: wave-16-security-hardening.md -> add CSRF coverage plan for all mutation routes, token issuance, validation points, and rollout verification
+
+## 2026-06-17T14:51:53.714Z — Queue-empty discovery run
+
+### DU001 — CSRF coverage for mutation routes
+
+- Feature ID: security-csrf-mutation-routes
+- Agent: @S5
+- Target file: business_docs/09_crm_features/wave-16-security-hardening.md
+- Research basis: OWASP CSRF mitigation requirement for session-backed mutation endpoints
+- Score: 155
+- Gap evidence: 0/2 signatures matched
+- Plan evidence: 5 keyword hits in planning docs
+- Scan evidence: 1 keyword hits in codebase scan signals
+- Prompt: @S5 -- EXPAND: wave-16-security-hardening.md -> add CSRF coverage plan for all mutation routes, token issuance, validation points, and rollout verification
+
+## 2026-06-17T14:57:35.854Z — Queue-empty discovery run
+
+### DU001 — CSRF coverage for mutation routes
+
+- Feature ID: security-csrf-mutation-routes
+- Agent: @S5
+- Target file: business_docs/09_crm_features/wave-16-security-hardening.md
+- Research basis: OWASP CSRF mitigation requirement for session-backed mutation endpoints
+- Score: 155
+- Gap evidence: 0/2 signatures matched
+- Plan evidence: 5 keyword hits in planning docs
+- Scan evidence: 1 keyword hits in codebase scan signals
+- Prompt: @S5 -- EXPAND: wave-16-security-hardening.md -> add CSRF coverage plan for all mutation routes, token issuance, validation points, and rollout verification
+
+## 2026-06-17T15:02:43.607Z — Queue-empty discovery run
+
+### DU001 — CSRF coverage for mutation routes
+
+- Feature ID: security-csrf-mutation-routes
+- Agent: @S5
+- Target file: business_docs/09_crm_features/wave-16-security-hardening.md
+- Research basis: OWASP CSRF mitigation requirement for session-backed mutation endpoints
+- Score: 155
+- Gap evidence: 0/2 signatures matched
+- Plan evidence: 5 keyword hits in planning docs
+- Scan evidence: 1 keyword hits in codebase scan signals
+- Prompt: @S5 -- EXPAND: wave-16-security-hardening.md -> add CSRF coverage plan for all mutation routes, token issuance, validation points, and rollout verification
+
+## 2026-06-17T15:07:50.931Z — Queue-empty discovery run
+
+### DU001 — CSRF coverage for mutation routes
+
+- Feature ID: security-csrf-mutation-routes
+- Agent: @S5
+- Target file: business_docs/09_crm_features/wave-16-security-hardening.md
+- Research basis: OWASP CSRF mitigation requirement for session-backed mutation endpoints
+- Score: 155
+- Gap evidence: 0/2 signatures matched
+- Plan evidence: 5 keyword hits in planning docs
+- Scan evidence: 1 keyword hits in codebase scan signals
+- Prompt: @S5 -- EXPAND: wave-16-security-hardening.md -> add CSRF coverage plan for all mutation routes, token issuance, validation points, and rollout verification
+
+## 2026-06-17T15:13:28.203Z — Queue-empty discovery run
+
+### DU001 — CSRF coverage for mutation routes
+
+- Feature ID: security-csrf-mutation-routes
+- Agent: @S5
+- Target file: business_docs/09_crm_features/wave-16-security-hardening.md
+- Research basis: OWASP CSRF mitigation requirement for session-backed mutation endpoints
+- Score: 155
+- Gap evidence: 0/2 signatures matched
+- Plan evidence: 5 keyword hits in planning docs
+- Scan evidence: 1 keyword hits in codebase scan signals
+- Prompt: @S5 -- EXPAND: wave-16-security-hardening.md -> add CSRF coverage plan for all mutation routes, token issuance, validation points, and rollout verification
+
+## 2026-06-17T15:19:05.163Z — Queue-empty discovery run
+
+### DU001 — CSRF coverage for mutation routes
+
+- Feature ID: security-csrf-mutation-routes
+- Agent: @S5
+- Target file: business_docs/09_crm_features/wave-16-security-hardening.md
+- Research basis: OWASP CSRF mitigation requirement for session-backed mutation endpoints
+- Score: 155
+- Gap evidence: 0/2 signatures matched
+- Plan evidence: 5 keyword hits in planning docs
+- Scan evidence: 1 keyword hits in codebase scan signals
+- Prompt: @S5 -- EXPAND: wave-16-security-hardening.md -> add CSRF coverage plan for all mutation routes, token issuance, validation points, and rollout verification
+
+## 2026-06-17T15:24:12.368Z — Queue-empty discovery run
+
+### DU001 — CSRF coverage for mutation routes
+
+- Feature ID: security-csrf-mutation-routes
+- Agent: @S5
+- Target file: business_docs/09_crm_features/wave-16-security-hardening.md
+- Research basis: OWASP CSRF mitigation requirement for session-backed mutation endpoints
+- Score: 155
+- Gap evidence: 0/2 signatures matched
+- Plan evidence: 5 keyword hits in planning docs
+- Scan evidence: 1 keyword hits in codebase scan signals
+- Prompt: @S5 -- EXPAND: wave-16-security-hardening.md -> add CSRF coverage plan for all mutation routes, token issuance, validation points, and rollout verification
+
+## 2026-06-17T15:29:49.592Z — Queue-empty discovery run
+
+### DU001 — CSRF coverage for mutation routes
+
+- Feature ID: security-csrf-mutation-routes
+- Agent: @S5
+- Target file: business_docs/09_crm_features/wave-16-security-hardening.md
+- Research basis: OWASP CSRF mitigation requirement for session-backed mutation endpoints
+- Score: 155
+- Gap evidence: 0/2 signatures matched
+- Plan evidence: 5 keyword hits in planning docs
+- Scan evidence: 1 keyword hits in codebase scan signals
+- Prompt: @S5 -- EXPAND: wave-16-security-hardening.md -> add CSRF coverage plan for all mutation routes, token issuance, validation points, and rollout verification
+
+## 2026-06-17T15:35:27.051Z — Queue-empty discovery run
+
+### DU001 — CSRF coverage for mutation routes
+
+- Feature ID: security-csrf-mutation-routes
+- Agent: @S5
+- Target file: business_docs/09_crm_features/wave-16-security-hardening.md
+- Research basis: OWASP CSRF mitigation requirement for session-backed mutation endpoints
+- Score: 155
+- Gap evidence: 0/2 signatures matched
+- Plan evidence: 5 keyword hits in planning docs
+- Scan evidence: 1 keyword hits in codebase scan signals
+- Prompt: @S5 -- EXPAND: wave-16-security-hardening.md -> add CSRF coverage plan for all mutation routes, token issuance, validation points, and rollout verification
+
+## 2026-06-17T15:41:04.158Z — Queue-empty discovery run
+
+### DU001 — CSRF coverage for mutation routes
+
+- Feature ID: security-csrf-mutation-routes
+- Agent: @S5
+- Target file: business_docs/09_crm_features/wave-16-security-hardening.md
+- Research basis: OWASP CSRF mitigation requirement for session-backed mutation endpoints
+- Score: 155
+- Gap evidence: 0/2 signatures matched
+- Plan evidence: 5 keyword hits in planning docs
+- Scan evidence: 1 keyword hits in codebase scan signals
+- Prompt: @S5 -- EXPAND: wave-16-security-hardening.md -> add CSRF coverage plan for all mutation routes, token issuance, validation points, and rollout verification
+
+## 2026-06-17T15:46:12.025Z — Queue-empty discovery run
+
+### DU001 — CSRF coverage for mutation routes
+
+- Feature ID: security-csrf-mutation-routes
+- Agent: @S5
+- Target file: business_docs/09_crm_features/wave-16-security-hardening.md
+- Research basis: OWASP CSRF mitigation requirement for session-backed mutation endpoints
+- Score: 155
+- Gap evidence: 0/2 signatures matched
+- Plan evidence: 5 keyword hits in planning docs
+- Scan evidence: 1 keyword hits in codebase scan signals
+- Prompt: @S5 -- EXPAND: wave-16-security-hardening.md -> add CSRF coverage plan for all mutation routes, token issuance, validation points, and rollout verification
+
+## 2026-06-17T15:51:49.544Z — Queue-empty discovery run
+
+### DU001 — CSRF coverage for mutation routes
+
+- Feature ID: security-csrf-mutation-routes
+- Agent: @S5
+- Target file: business_docs/09_crm_features/wave-16-security-hardening.md
+- Research basis: OWASP CSRF mitigation requirement for session-backed mutation endpoints
+- Score: 155
+- Gap evidence: 0/2 signatures matched
+- Plan evidence: 5 keyword hits in planning docs
+- Scan evidence: 1 keyword hits in codebase scan signals
+- Prompt: @S5 -- EXPAND: wave-16-security-hardening.md -> add CSRF coverage plan for all mutation routes, token issuance, validation points, and rollout verification
+
+## 2026-06-17T15:57:27.300Z — Queue-empty discovery run
+
+### DU001 — CSRF coverage for mutation routes
+
+- Feature ID: security-csrf-mutation-routes
+- Agent: @S5
+- Target file: business_docs/09_crm_features/wave-16-security-hardening.md
+- Research basis: OWASP CSRF mitigation requirement for session-backed mutation endpoints
+- Score: 155
+- Gap evidence: 0/2 signatures matched
+- Plan evidence: 5 keyword hits in planning docs
+- Scan evidence: 1 keyword hits in codebase scan signals
+- Prompt: @S5 -- EXPAND: wave-16-security-hardening.md -> add CSRF coverage plan for all mutation routes, token issuance, validation points, and rollout verification
+
+## 2026-06-17T16:03:05.160Z — Queue-empty discovery run
+
+### DU001 — CSRF coverage for mutation routes
+
+- Feature ID: security-csrf-mutation-routes
+- Agent: @S5
+- Target file: business_docs/09_crm_features/wave-16-security-hardening.md
+- Research basis: OWASP CSRF mitigation requirement for session-backed mutation endpoints
+- Score: 155
+- Gap evidence: 0/2 signatures matched
+- Plan evidence: 5 keyword hits in planning docs
+- Scan evidence: 1 keyword hits in codebase scan signals
+- Prompt: @S5 -- EXPAND: wave-16-security-hardening.md -> add CSRF coverage plan for all mutation routes, token issuance, validation points, and rollout verification
+
+## 2026-06-17T16:08:12.976Z — Queue-empty discovery run
+
+### DU001 — CSRF coverage for mutation routes
+
+- Feature ID: security-csrf-mutation-routes
+- Agent: @S5
+- Target file: business_docs/09_crm_features/wave-16-security-hardening.md
+- Research basis: OWASP CSRF mitigation requirement for session-backed mutation endpoints
+- Score: 155
+- Gap evidence: 0/2 signatures matched
+- Plan evidence: 5 keyword hits in planning docs
+- Scan evidence: 1 keyword hits in codebase scan signals
+- Prompt: @S5 -- EXPAND: wave-16-security-hardening.md -> add CSRF coverage plan for all mutation routes, token issuance, validation points, and rollout verification
+
+## 2026-06-17T22:34:20.969Z — Queue-empty discovery run
+
+### DU001 — CSRF coverage for mutation routes
+
+- Feature ID: security-csrf-mutation-routes
+- Agent: @S5
+- Target file: business_docs/09_crm_features/wave-16-security-hardening.md
+- Research basis: OWASP CSRF mitigation requirement for session-backed mutation endpoints
+- Score: 155
+- Gap evidence: 0/2 signatures matched
+- Plan evidence: 5 keyword hits in planning docs
+- Scan evidence: 1 keyword hits in codebase scan signals
+- Prompt: @S5 -- EXPAND: wave-16-security-hardening.md -> add CSRF coverage plan for all mutation routes, token issuance, validation points, and rollout verification
+
+## 2026-06-17T22:34:26.892Z — Queue-empty discovery run
+
+### DU001 — CSRF coverage for mutation routes
+
+- Feature ID: security-csrf-mutation-routes
+- Agent: @S5
+- Target file: business_docs/09_crm_features/wave-16-security-hardening.md
+- Research basis: OWASP CSRF mitigation requirement for session-backed mutation endpoints
+- Score: 155
+- Gap evidence: 0/2 signatures matched
+- Plan evidence: 5 keyword hits in planning docs
+- Scan evidence: 1 keyword hits in codebase scan signals
+- Prompt: @S5 -- EXPAND: wave-16-security-hardening.md -> add CSRF coverage plan for all mutation routes, token issuance, validation points, and rollout verification
+
+## 2026-06-17T22:40:46.330Z — Queue-empty discovery run
+
+### DU001 — CSRF coverage for mutation routes
+
+- Feature ID: security-csrf-mutation-routes
+- Agent: @S5
+- Target file: business_docs/09_crm_features/wave-16-security-hardening.md
+- Research basis: OWASP CSRF mitigation requirement for session-backed mutation endpoints
+- Score: 155
+- Gap evidence: 0/2 signatures matched
+- Plan evidence: 5 keyword hits in planning docs
+- Scan evidence: 1 keyword hits in codebase scan signals
+- Prompt: @S5 -- EXPAND: wave-16-security-hardening.md -> add CSRF coverage plan for all mutation routes, token issuance, validation points, and rollout verification
+
+## 2026-06-17T23:31:01.340Z — Queue-empty discovery run
+
+### DU001 — CSRF coverage for mutation routes
+
+- Feature ID: security-csrf-mutation-routes
+- Agent: @S5
+- Target file: business_docs/09_crm_features/wave-16-security-hardening.md
+- Research basis: OWASP CSRF mitigation requirement for session-backed mutation endpoints
+- Score: 155
+- Gap evidence: 0/2 signatures matched
+- Plan evidence: 5 keyword hits in planning docs
+- Scan evidence: 1 keyword hits in codebase scan signals
+- Prompt: @S5 -- EXPAND: wave-16-security-hardening.md -> add CSRF coverage plan for all mutation routes, token issuance, validation points, and rollout verification
+
+## 2026-06-17T23:32:43.978Z — Queue-empty discovery run
+
+### DU001 — CSRF coverage for mutation routes
+
+- Feature ID: security-csrf-mutation-routes
+- Agent: @S5
+- Target file: business_docs/09_crm_features/wave-16-security-hardening.md
+- Research basis: OWASP CSRF mitigation requirement for session-backed mutation endpoints
+- Score: 155
+- Gap evidence: 0/2 signatures matched
+- Plan evidence: 5 keyword hits in planning docs
+- Scan evidence: 1 keyword hits in codebase scan signals
+- Prompt: @S5 -- EXPAND: wave-16-security-hardening.md -> add CSRF coverage plan for all mutation routes, token issuance, validation points, and rollout verification
+
+## 2026-06-17T23:34:47.113Z — Queue-empty discovery run
+
+### DU001 — CSRF coverage for mutation routes
+
+- Feature ID: security-csrf-mutation-routes
+- Agent: @S5
+- Target file: business_docs/09_crm_features/wave-16-security-hardening.md
+- Research basis: OWASP CSRF mitigation requirement for session-backed mutation endpoints
+- Score: 155
+- Gap evidence: 0/2 signatures matched
+- Plan evidence: 5 keyword hits in planning docs
+- Scan evidence: 1 keyword hits in codebase scan signals
+- Prompt: @S5 -- EXPAND: wave-16-security-hardening.md -> add CSRF coverage plan for all mutation routes, token issuance, validation points, and rollout verification
+
+## 2026-06-17T23:41:44.921Z — Queue-empty discovery run
+
+### DU001 — CSRF coverage for mutation routes
+
+- Feature ID: security-csrf-mutation-routes
+- Agent: @S5
+- Target file: business_docs/09_crm_features/wave-16-security-hardening.md
+- Research basis: OWASP CSRF mitigation requirement for session-backed mutation endpoints
+- Score: 155
+- Gap evidence: 0/2 signatures matched
+- Plan evidence: 5 keyword hits in planning docs
+- Scan evidence: 1 keyword hits in codebase scan signals
+- Prompt: @S5 -- EXPAND: wave-16-security-hardening.md -> add CSRF coverage plan for all mutation routes, token issuance, validation points, and rollout verification

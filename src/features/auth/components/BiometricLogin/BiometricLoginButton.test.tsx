@@ -171,19 +171,15 @@ describe('BiometricLoginButton', () => {
       });
     });
 
-    it('navigates to /crm when biometric user has admin role', async () => {
-      mockAuthenticateWithBiometric.mockResolvedValue({
-        success: true,
-        user: { id: 'u1', email: 'admin@test.com', name: 'Admin User', role: 'admin' },
-        token: 'jwt-token-123',
-      });
+    it('navigates to profile when existing role found', async () => {
+      (safeStorage.getJSON as ReturnType<typeof vi.fn>).mockReturnValue({ role: 'admin' });
       render(<BiometricLoginButton />);
       await waitFor(() => {
         expect(screen.getByLabelText('Sign in with Face ID or Touch ID')).toBeInTheDocument();
       });
       fireEvent.click(screen.getByLabelText('Sign in with Face ID or Touch ID'));
       await waitFor(() => {
-        expect(mockNavigate).toHaveBeenCalledWith('/crm', { replace: true });
+        expect(mockNavigate).toHaveBeenCalledWith('/profile');
       });
     });
   });

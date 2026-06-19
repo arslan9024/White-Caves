@@ -21,6 +21,7 @@ param(
 
 $root = Resolve-Path $WorkspaceRoot
 $promptsFile = Join-Path $root "scripts\orchestrator\prompts.json"
+$promptsMutex = New-Object System.Threading.Mutex($false, "Global\WhiteCaves_Orchestrator_Prompts")
 if (-not (Test-Path $promptsFile)) {
   Write-Host "[ERROR] prompts.json not found" -ForegroundColor Red
   exit 1
@@ -75,7 +76,37 @@ $prompts = Get-Content $promptsFile -Raw | ConvertFrom-Json
 
 function Save-Prompts($obj) {
   $json = $obj | ConvertTo-Json -Depth 20
-  [System.IO.File]::WriteAllText($promptsFile, $json, (New-Object System.Text.UTF8Encoding($false)))
+  $encoding = New-Object System.Text.UTF8Encoding($false)
+  $dir = Split-Path -Parent $promptsFile
+  if (-not (Test-Path $dir)) {
+    New-Item -ItemType Directory -Force -Path $dir | Out-Null
+  }
+
+  $acquired = $false
+  try {
+    $acquired = $promptsMutex.WaitOne(5000)
+
+    $lastError = $null
+    for ($attempt = 1; $attempt -le 5; $attempt++) {
+      $tmp = Join-Path $dir ("prompts.json.tmp.{0}" -f [guid]::NewGuid().ToString("N"))
+      try {
+        [System.IO.File]::WriteAllText($tmp, $json, $encoding)
+        [System.IO.File]::Copy($tmp, $promptsFile, $true)
+        Remove-Item -Path $tmp -Force -ErrorAction SilentlyContinue
+        return
+      } catch {
+        $lastError = $_
+        Remove-Item -Path $tmp -Force -ErrorAction SilentlyContinue
+        Start-Sleep -Milliseconds ([Math]::Min(1000, 150 * $attempt))
+      }
+    }
+
+    throw $lastError
+  } finally {
+    if ($acquired) {
+      $promptsMutex.ReleaseMutex() | Out-Null
+    }
+  }
 }
 
 if ($Save) {
@@ -238,4 +269,5 @@ if ($Stats) {
 }
 
 Write-Host "No mode selected. Use -Save/-Search/-Clone/-History/-Export/-Stats/-MarkSuccess." -ForegroundColor Yellow
+$promptsMutex.Dispose()
 exit 1

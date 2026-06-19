@@ -660,4 +660,130 @@ router.patch(
   })
 );
 
+// ─── GET /api/leases/overdue-collection-queue ──────────────────────────────
+// Returns bounced/overdue rent cheque queue for collections workflow.
+router.get(
+  '/collections/overdue-queue',
+  asyncHandler(async (req: AuthRequest, res: Response) => {
+    const userId = req.user?.id;
+    if (!userId) throw new AppError('Authentication required', 401);
+
+    const role = req.user?.role;
+    const isOwner = role === 'owner';
+
+    const overdueItems = await prisma.pDCSchedule.findMany({
+      where: {
+        OR: [{ status: 'bounced' }, { status: 'pending', dueDate: { lt: new Date() } }],
+        ...(isOwner ? {} : { lease: { landlordId: userId } }),
+      },
+      include: {
+        lease: {
+          select: {
+            id: true,
+            leaseNumber: true,
+            monthlyRent: true,
+            currency: true,
+            property: { select: { id: true, title: true, location: true } },
+            tenant: { select: { id: true, name: true, email: true, phone: true } },
+            landlord: { select: { id: true, name: true, email: true, phone: true } },
+          },
+        },
+      },
+      orderBy: [{ dueDate: 'asc' }, { createdAt: 'asc' }],
+      take: 300,
+    });
+
+    const now = Date.now();
+    const data = overdueItems.map(item => ({
+      id: item.id,
+      leaseId: item.leaseId,
+      chequeNumber: item.chequeNumber,
+      bankName: item.bankName,
+      amount: item.amount,
+      currency: item.lease?.currency || 'AED',
+      dueDate: item.dueDate,
+      status: item.status,
+      daysOverdue: Math.max(0, Math.floor((now - item.dueDate.getTime()) / 86400000)),
+      notes: item.notes,
+      lease: item.lease,
+    }));
+
+    res.status(200).json({
+      success: true,
+      data,
+      summary: {
+        total: data.length,
+        bounced: data.filter(i => i.status === 'bounced').length,
+        overduePending: data.filter(i => i.status === 'pending').length,
+      },
+    });
+  })
+);
+
+// ─── POST /api/leases/overdue-collection-queue/:pdcId/notify ───────────────
+// Records a collection notification attempt for auditability.
+router.post(
+  '/overdue-collection-queue/:pdcId/notify',
+  asyncHandler(async (req: AuthRequest, res: Response) => {
+    const userId = req.user?.id;
+    if (!userId) throw new AppError('Authentication required', 401);
+
+    const { pdcId } = req.params as Record<string, string>;
+    const pdc = await prisma.pDCSchedule.findUnique({
+      where: { id: pdcId },
+      include: {
+        lease: { select: { id: true, leaseNumber: true, tenantId: true, landlordId: true } },
+      },
+    });
+
+    if (!pdc || !pdc.lease) {
+      throw new AppError('PDC record not found', 404);
+    }
+
+    const role = req.user?.role;
+    const isOwner = role === 'owner';
+    if (!isOwner && pdc.lease.landlordId !== userId) {
+      throw new AppError(
+        'Access denied — only lease landlord or owner can notify collections',
+        403
+      );
+    }
+
+    const channel = typeof req.body?.channel === 'string' ? req.body.channel : 'whatsapp';
+    const note =
+      typeof req.body?.note === 'string'
+        ? req.body.note
+        : 'Automated overdue rent collection reminder';
+
+    const activity = await prisma.activity.create({
+      data: {
+        type: 'payment',
+        action: 'overdue_collection_notified',
+        description: `Collection reminder sent for cheque ${pdc.chequeNumber} (${channel})`,
+        userId,
+        metadata: {
+          pdcId: pdc.id,
+          leaseId: pdc.lease.id,
+          leaseNumber: pdc.lease.leaseNumber,
+          channel,
+          note,
+          status: pdc.status,
+        },
+      },
+    });
+
+    res.status(200).json({
+      success: true,
+      data: {
+        pdcId: pdc.id,
+        leaseId: pdc.lease.id,
+        channel,
+        notifiedAt: activity.createdAt,
+        activityId: activity.id,
+      },
+      message: 'Collection reminder logged',
+    });
+  })
+);
+
 export default router;

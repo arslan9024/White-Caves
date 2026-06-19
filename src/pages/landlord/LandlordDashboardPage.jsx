@@ -49,7 +49,7 @@ export default function LandlordDashboardPage() {
     // Set up polling interval (refresh every 30 seconds)
     const pollingInterval = setInterval(() => {
       dispatch(fetchLandlordStats());
-      dispatch(fetchLandlordProperties());
+      dispatch(fetchLandlordMaintenance());
     }, 30000);
 
     return () => clearInterval(pollingInterval);

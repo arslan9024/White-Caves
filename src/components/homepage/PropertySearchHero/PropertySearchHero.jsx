@@ -377,7 +377,7 @@ export default function PropertySearchHero() {
           ))}
           <button 
             className="quick-link aurora-link"
-            onClick={() => navigate('/dashboard')}
+            onClick={() => navigate('/crm')}
           >
             Ask Aurora AI
           </button>

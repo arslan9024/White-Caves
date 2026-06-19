@@ -17,9 +17,46 @@
 import { test, expect } from '@playwright/test';
 import AxeBuilder from '@axe-core/playwright';
 
+function toCanonicalDashboardPath(path: string): string {
+  if (path.startsWith('/landlord/dashboard')) {
+    return path.replace('/landlord/dashboard', '/landlord-portal');
+  }
+  if (path.startsWith('/tenant/dashboard')) {
+    return path.replace('/tenant/dashboard', '/tenant-portal');
+  }
+
+  const crmDashboardPrefixes = [
+    '/md/dashboard',
+    '/owner/dashboard',
+    '/buyer/dashboard',
+    '/seller/dashboard',
+    '/leasing-agent/dashboard',
+    '/secondary-sales-agent/dashboard',
+    '/team-leader/dashboard',
+    '/agent/dashboard',
+  ];
+
+  const matchedPrefix = crmDashboardPrefixes.find(prefix => path.startsWith(prefix));
+  if (matchedPrefix) {
+    return path.replace(matchedPrefix, '/crm');
+  }
+
+  return path;
+}
+
+// Helper function to inject axe-core
+async function injectAxe(page: any) {
+  const hasAxe = await page.evaluate(() => Boolean((window as any).axe)).catch(() => false);
+  if (!hasAxe) {
+    await page.addScriptTag({ path: 'node_modules/axe-core/axe.min.js' });
+  }
+}
+
 async function navigateAndStabilize(page: any, path: string) {
+  const canonicalPath = toCanonicalDashboardPath(path);
+
   try {
-    await page.goto(path, { waitUntil: 'domcontentloaded', timeout: 30000 });
+    await page.goto(canonicalPath, { waitUntil: 'domcontentloaded', timeout: 30000 });
   } catch {
     // Fallback to root so downstream helpers can skip route-specific checks gracefully.
     await page.goto('/', { waitUntil: 'domcontentloaded', timeout: 30000 }).catch(() => {});
@@ -43,8 +80,9 @@ async function navigateAndStabilize(page: any, path: string) {
 
 function ensureExpectedPathOrSkip(page: any, expectedPath: string) {
   const currentPath = new URL(page.url()).pathname;
-  if (!currentPath.startsWith(expectedPath)) {
-    test.skip(true, `Auth redirect detected for ${expectedPath}. Current: ${currentPath}`);
+  const canonicalExpectedPath = toCanonicalDashboardPath(expectedPath);
+  if (!currentPath.startsWith(canonicalExpectedPath)) {
+    test.skip(true, `Auth redirect detected for ${canonicalExpectedPath}. Current: ${currentPath}`);
   }
 }
 
@@ -100,17 +138,17 @@ test.setTimeout(60000);
 
 // Dashboard pages to test
 const DASHBOARD_PAGES = [
-  { role: 'owner', path: '/md/dashboard', name: 'Owner/MD Dashboard' },
-  { role: 'seller', path: '/seller/dashboard', name: 'Seller Dashboard' },
-  { role: 'buyer', path: '/buyer/dashboard', name: 'Buyer Dashboard' },
-  { role: 'landlord', path: '/landlord/dashboard', name: 'Landlord Dashboard' },
-  { role: 'leasing-agent', path: '/leasing-agent/dashboard', name: 'Leasing Agent Dashboard' },
+  { role: 'owner', path: '/crm', name: 'Owner/MD Dashboard' },
+  { role: 'seller', path: '/crm', name: 'Seller Dashboard' },
+  { role: 'buyer', path: '/crm', name: 'Buyer Dashboard' },
+  { role: 'landlord', path: '/landlord-portal', name: 'Landlord Dashboard' },
+  { role: 'leasing-agent', path: '/crm', name: 'Leasing Agent Dashboard' },
   {
     role: 'secondary-sales-agent',
-    path: '/secondary-sales-agent/dashboard',
+    path: '/crm',
     name: 'Sales Agent Dashboard',
   },
-  { role: 'tenant', path: '/tenant/dashboard', name: 'Tenant Dashboard' },
+  { role: 'tenant', path: '/tenant-portal', name: 'Tenant Dashboard' },
 ];
 
 // Test Group: WCAG 2.1 Level AA Compliance
@@ -130,8 +168,8 @@ test.describe('WCAG 2.1 Level AA Compliance', () => {
 // Test Group: Keyboard Navigation
 test.describe('Keyboard Navigation', () => {
   test('Owner Dashboard - Tab navigation works', async ({ page }) => {
-    await navigateAndStabilize(page, '/md/dashboard');
-    ensureExpectedPathOrSkip(page, '/md/dashboard');
+    await navigateAndStabilize(page, '/crm');
+    ensureExpectedPathOrSkip(page, '/crm');
     await ensureDashboardReadyOrSkip(page);
 
     // Tab to first interactive element
@@ -148,8 +186,8 @@ test.describe('Keyboard Navigation', () => {
   });
 
   test('Owner Dashboard - Escape key closes modals', async ({ page }) => {
-    await navigateAndStabilize(page, '/md/dashboard');
-    ensureExpectedPathOrSkip(page, '/md/dashboard');
+    await navigateAndStabilize(page, '/crm');
+    ensureExpectedPathOrSkip(page, '/crm');
     await ensureDashboardReadyOrSkip(page);
 
     // Try to find and open a modal (e.g., by clicking a button)
@@ -170,8 +208,8 @@ test.describe('Keyboard Navigation', () => {
 // Test Group: ARIA Labels and Roles
 test.describe('ARIA Labels and Roles', () => {
   test('Owner Dashboard - Buttons have accessible names', async ({ page }) => {
-    await navigateAndStabilize(page, '/md/dashboard');
-    ensureExpectedPathOrSkip(page, '/md/dashboard');
+    await navigateAndStabilize(page, '/crm');
+    ensureExpectedPathOrSkip(page, '/crm');
     await ensureDashboardReadyOrSkip(page);
 
     const buttons = page.locator('button');
@@ -193,8 +231,8 @@ test.describe('ARIA Labels and Roles', () => {
   });
 
   test('Owner Dashboard - Links have accessible names', async ({ page }) => {
-    await navigateAndStabilize(page, '/md/dashboard');
-    ensureExpectedPathOrSkip(page, '/md/dashboard');
+    await navigateAndStabilize(page, '/crm');
+    ensureExpectedPathOrSkip(page, '/crm');
     await ensureDashboardReadyOrSkip(page);
 
     const links = page.locator('a');
@@ -218,8 +256,8 @@ test.describe('ARIA Labels and Roles', () => {
 // Test Group: Semantic HTML
 test.describe('Semantic HTML Structure', () => {
   test('Owner Dashboard - Uses semantic HTML elements', async ({ page }) => {
-    await navigateAndStabilize(page, '/md/dashboard');
-    ensureExpectedPathOrSkip(page, '/md/dashboard');
+    await navigateAndStabilize(page, '/crm');
+    ensureExpectedPathOrSkip(page, '/crm');
     await ensureDashboardReadyOrSkip(page);
 
     // Check for main element
@@ -238,8 +276,8 @@ test.describe('Semantic HTML Structure', () => {
   });
 
   test('Owner Dashboard - Proper heading hierarchy', async ({ page }) => {
-    await navigateAndStabilize(page, '/md/dashboard');
-    ensureExpectedPathOrSkip(page, '/md/dashboard');
+    await navigateAndStabilize(page, '/crm');
+    ensureExpectedPathOrSkip(page, '/crm');
     await ensureDashboardReadyOrSkip(page);
 
     // Dynamic layouts can hydrate with delayed heading levels; validate semantic heading presence.
@@ -252,8 +290,8 @@ test.describe('Semantic HTML Structure', () => {
 // Test Group: Color Contrast
 test.describe('Color Contrast (WCAG AA)', () => {
   test('Owner Dashboard - Text contrast is sufficient', async ({ page }) => {
-    await navigateAndStabilize(page, '/md/dashboard');
-    ensureExpectedPathOrSkip(page, '/md/dashboard');
+    await navigateAndStabilize(page, '/crm');
+    ensureExpectedPathOrSkip(page, '/crm');
 
     const contrastViolations = await runAxeViolations(page, {
       runOnly: { type: 'rule', values: ['color-contrast'] },
@@ -266,8 +304,8 @@ test.describe('Color Contrast (WCAG AA)', () => {
 // Test Group: Focus Management
 test.describe('Focus Management', () => {
   test('Owner Dashboard - Focus visible on keyboard navigation', async ({ page }) => {
-    await navigateAndStabilize(page, '/md/dashboard');
-    ensureExpectedPathOrSkip(page, '/md/dashboard');
+    await navigateAndStabilize(page, '/crm');
+    ensureExpectedPathOrSkip(page, '/crm');
     await ensureDashboardReadyOrSkip(page);
 
     // Press Tab to focus first element
@@ -287,8 +325,8 @@ test.describe('Focus Management', () => {
   });
 
   test('Owner Dashboard - Focus trap in modals', async ({ page }) => {
-    await navigateAndStabilize(page, '/md/dashboard');
-    ensureExpectedPathOrSkip(page, '/md/dashboard');
+    await navigateAndStabilize(page, '/crm');
+    ensureExpectedPathOrSkip(page, '/crm');
     await ensureDashboardReadyOrSkip(page);
 
     // Try to find and open a modal
@@ -315,8 +353,8 @@ test.describe('Focus Management', () => {
 // Test Group: Page Load Accessibility
 test.describe('Page Load Accessibility', () => {
   test('Owner Dashboard - Loads without accessibility violations', async ({ page }) => {
-    await navigateAndStabilize(page, '/md/dashboard');
-    ensureExpectedPathOrSkip(page, '/md/dashboard');
+    await navigateAndStabilize(page, '/crm');
+    ensureExpectedPathOrSkip(page, '/crm');
 
     const violations = await runAxeViolations(page);
     expect(criticalOrSeriousViolations(violations)).toHaveLength(0);
@@ -364,8 +402,8 @@ test.describe('Responsive Accessibility', () => {
     // Set mobile viewport
     await page.setViewportSize({ width: 375, height: 667 });
 
-    await navigateAndStabilize(page, '/md/dashboard');
-    ensureExpectedPathOrSkip(page, '/md/dashboard');
+    await navigateAndStabilize(page, '/crm');
+    ensureExpectedPathOrSkip(page, '/crm');
 
     const violations = await runAxeViolations(page);
     expect(criticalOrSeriousViolations(violations)).toHaveLength(0);
@@ -375,8 +413,8 @@ test.describe('Responsive Accessibility', () => {
     // Set tablet viewport
     await page.setViewportSize({ width: 768, height: 1024 });
 
-    await navigateAndStabilize(page, '/md/dashboard');
-    ensureExpectedPathOrSkip(page, '/md/dashboard');
+    await navigateAndStabilize(page, '/crm');
+    ensureExpectedPathOrSkip(page, '/crm');
 
     const violations = await runAxeViolations(page);
     expect(criticalOrSeriousViolations(violations)).toHaveLength(0);
@@ -386,8 +424,8 @@ test.describe('Responsive Accessibility', () => {
 // Test Group: Form Accessibility
 test.describe('Form Accessibility', () => {
   test('Owner Dashboard - Form inputs have labels', async ({ page }) => {
-    await navigateAndStabilize(page, '/md/dashboard');
-    ensureExpectedPathOrSkip(page, '/md/dashboard');
+    await navigateAndStabilize(page, '/crm');
+    ensureExpectedPathOrSkip(page, '/crm');
     await ensureDashboardReadyOrSkip(page);
 
     const inputs = page.locator('input, textarea, select');

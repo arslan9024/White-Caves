@@ -20,6 +20,14 @@ export interface AuthUser {
   role: string;
   department?: string | null;
   photoUrl?: string | null;
+  phone?: string | null;
+  profileCompleted?: boolean;
+  profileCompletion?: {
+    roleCategory: 'general' | 'client' | 'agent' | 'leadership';
+    requiredFields: Array<'name' | 'phone' | 'department'>;
+    optionalFields: Array<'name' | 'phone' | 'department'>;
+    missingFields: Array<'name' | 'phone' | 'department'>;
+  };
 }
 
 /** Shape of `data` when login succeeds normally */
@@ -60,6 +68,31 @@ export interface RegisterResponse {
 export interface ProfileResponse {
   success: boolean;
   data: AuthUser;
+}
+
+export interface ForgotPasswordRequestResponse {
+  success: boolean;
+  data: {
+    requested: boolean;
+    expiresInMinutes: number;
+    message: string;
+  };
+}
+
+export interface ForgotPasswordVerifyResponse {
+  success: boolean;
+  data: {
+    verified: boolean;
+    resetSessionToken: string;
+  };
+}
+
+export interface ForgotPasswordResetResponse {
+  success: boolean;
+  data: {
+    reset: boolean;
+    message: string;
+  };
 }
 
 // ─── Token helpers ──────────────────────────────────────────────────────────
@@ -147,6 +180,42 @@ function resolveFirebaseSyncErrorMessage(error: unknown): string {
   return 'Unable to complete authentication sync';
 }
 
+function isTransientFirebaseSyncError(error: unknown): boolean {
+  if (error instanceof HttpError) {
+    if (error.status === 429 || error.status === 503 || error.status === 504) {
+      return true;
+    }
+
+    const data = error.data;
+    if (typeof data === 'object' && data !== null) {
+      const payload = data as Record<string, unknown>;
+      const payloadMessage =
+        (typeof payload.message === 'string' && payload.message) ||
+        (typeof payload.error === 'string' && payload.error) ||
+        '';
+
+      if (/temporarily|timeout|rate[- ]?limit|too many|try again/i.test(payloadMessage)) {
+        return true;
+      }
+    }
+
+    if (/temporarily|timeout|rate[- ]?limit|too many|try again/i.test(error.message || '')) {
+      return true;
+    }
+  }
+
+  if (error instanceof Error) {
+    return /network|timeout|fetch failed|econnreset|temporarily/i.test(error.message || '');
+  }
+
+  return false;
+}
+
+const wait = (ms: number): Promise<void> =>
+  new Promise(resolve => {
+    setTimeout(resolve, ms);
+  });
+
 /** Restore token from storage on app init */
 export function restoreAuthToken(): string | null {
   const token = safeStorage.get(TOKEN_KEY);
@@ -199,6 +268,41 @@ export async function verifyTwoFactor(email: string, code: string): Promise<Auth
 }
 
 /**
+ * Request a password reset challenge for the given email.
+ */
+export async function requestPasswordReset(email: string): Promise<ForgotPasswordRequestResponse> {
+  return (await apiClient.post('/auth/forgot-password/request', {
+    email,
+  })) as ForgotPasswordRequestResponse;
+}
+
+/**
+ * Verify the reset token sent for the user.
+ */
+export async function verifyPasswordResetToken(
+  email: string,
+  token: string
+): Promise<ForgotPasswordVerifyResponse> {
+  return (await apiClient.post('/auth/forgot-password/verify', {
+    email,
+    token,
+  })) as ForgotPasswordVerifyResponse;
+}
+
+/**
+ * Complete password reset after token verification.
+ */
+export async function resetPasswordWithToken(
+  resetSessionToken: string,
+  newPassword: string
+): Promise<ForgotPasswordResetResponse> {
+  return (await apiClient.post('/auth/forgot-password/reset', {
+    resetSessionToken,
+    newPassword,
+  })) as ForgotPasswordResetResponse;
+}
+
+/**
  * Register a new user via the backend.
  * Returns user data and stores the JWT.
  */
@@ -241,43 +345,68 @@ export async function syncFirebaseUser(firebaseUser: {
   email: string | null;
   displayName: string | null;
   photoURL: string | null;
-  getIdToken?: () => Promise<string>;
+  getIdToken?: (forceRefresh?: boolean) => Promise<string>;
 }): Promise<FirebaseSyncResponse> {
-  let firebaseToken: string | null = null;
+  let response: FirebaseSyncResponse | null = null;
+  const maxAttempts = 3;
 
-  if (typeof firebaseUser.getIdToken === 'function') {
-    firebaseToken = await firebaseUser.getIdToken();
-  }
+  const resolveFirebaseToken = async (forceRefresh: boolean): Promise<string> => {
+    let resolvedToken: string | null = null;
 
-  if (!firebaseToken && firebaseAuth?.currentUser?.uid === firebaseUser.uid) {
-    firebaseToken = await firebaseAuth.currentUser.getIdToken();
-  }
-
-  if (!firebaseToken) {
-    throw new Error(
-      'Firebase authentication token is missing. Please retry Google sign-in to establish a secure backend session.'
-    );
-  }
-
-  let response: FirebaseSyncResponse;
-  try {
-    response = (await apiClient.post('/auth/firebase-sync', {
-      firebaseUid: firebaseUser.uid,
-      email: firebaseUser.email,
-      name: firebaseUser.displayName,
-      photoUrl: firebaseUser.photoURL,
-      firebaseToken,
-    })) as FirebaseSyncResponse;
-  } catch (error: unknown) {
-    throw new Error(resolveFirebaseSyncErrorMessage(error));
-  }
-
-  if (response.success) {
-    if (!response.data?.token) {
-      throw new Error('Firebase sync succeeded but no authentication token was returned');
+    if (typeof firebaseUser.getIdToken === 'function') {
+      resolvedToken = await firebaseUser.getIdToken(forceRefresh);
     }
-    persistToken(response.data.token);
+
+    if (!resolvedToken && firebaseAuth?.currentUser?.uid === firebaseUser.uid) {
+      resolvedToken = await firebaseAuth.currentUser.getIdToken(forceRefresh);
+    }
+
+    if (!resolvedToken) {
+      throw new Error(
+        'Firebase authentication token is missing. Please retry Google sign-in to establish a secure backend session.'
+      );
+    }
+
+    return resolvedToken;
+  };
+
+  for (let attempt = 1; attempt <= maxAttempts; attempt += 1) {
+    const forceRefresh = attempt > 1;
+
+    try {
+      const firebaseToken = await resolveFirebaseToken(forceRefresh);
+      response = (await apiClient.post('/auth/firebase-sync', {
+        firebaseUid: firebaseUser.uid,
+        email: firebaseUser.email,
+        name: firebaseUser.displayName,
+        photoUrl: firebaseUser.photoURL,
+        firebaseToken,
+      })) as FirebaseSyncResponse;
+      break;
+    } catch (error: unknown) {
+      const canRetry = attempt < maxAttempts && isTransientFirebaseSyncError(error);
+      if (canRetry) {
+        await wait(400 * attempt);
+        continue;
+      }
+
+      throw new Error(resolveFirebaseSyncErrorMessage(error));
+    }
   }
+
+  if (!response) {
+    throw new Error('Unable to complete authentication sync');
+  }
+
+  if (!response.success) {
+    throw new Error('Backend session setup was rejected. Please try Google sign-in again.');
+  }
+
+  if (!response.data?.token) {
+    throw new Error('Firebase sync succeeded but no authentication token was returned');
+  }
+
+  persistToken(response.data.token);
 
   return response;
 }

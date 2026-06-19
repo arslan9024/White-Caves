@@ -125,6 +125,13 @@ function Get-DoneCount {
   return @($q.tasks | Where-Object { $_.status -eq "done" }).Count
 }
 
+function Get-QueueTotal {
+  $qf = Join-Path $root "logs\orchestrator\task-queue.json"
+  if (-not (Test-Path $qf)) { return 0 }
+  $q = Get-Content $qf -Raw | ConvertFrom-Json
+  return @($q.tasks).Count
+}
+
 $snapshotFile = Join-Path $root "logs\orchestrator\session-snapshot.json"
 $prevSnap = $null
 if (Test-Path $snapshotFile) {
@@ -148,6 +155,7 @@ if ($null -ne $prevSnap) {
   $snapDone = [int]$prevSnap.doneCount
   $nowPass  = (Get-PassState).Count
   $nowDone  = Get-DoneCount
+  $nowTotal = Get-QueueTotal
   $dPass = $nowPass - $snapPass
   $dDone = $nowDone - $snapDone
   $dPassStr  = if ($dPass -gt 0) { "+$dPass" } elseif ($dPass -eq 0) { "=0" } else { "$dPass" }
@@ -157,7 +165,7 @@ if ($null -ne $prevSnap) {
   Write-Host ""
   Write-Host ("  Since last session ({0}):" -f $snapDate) -ForegroundColor DarkGray
   Write-Host ("    PASS files  : {0,-5}  ({1} -> {2} / {3} total)" -f $dPassStr, $snapPass, $nowPass, $gateTargets.Count) -ForegroundColor $dPassCol
-  Write-Host ("    Tasks done  : {0,-5}  ({1} -> {2} / 51 total)" -f $dDoneStr, $snapDone, $nowDone) -ForegroundColor $dDoneCol
+  Write-Host ("    Tasks done  : {0,-5}  ({1} -> {2} / {3} total)" -f $dDoneStr, $snapDone, $nowDone, $nowTotal) -ForegroundColor $dDoneCol
   # list any new PASS files since last snapshot
   if ($dPass -gt 0) {
     $prevFiles  = if ($null -ne $prevSnap.passFiles) { @($prevSnap.passFiles) } else { @() }
@@ -477,6 +485,7 @@ $elapsed = [math]::Round(((Get-Date) - $t0).TotalSeconds, 1)
 # -- Write session snapshot for next session's delta --
 $finalPass = Get-PassState
 $finalDone = Get-DoneCount
+$finalTotal = Get-QueueTotal
 $snapObj   = [ordered]@{
   timestamp = (Get-Date -Format "yyyy-MM-ddTHH:mm:ss")
   date      = (Get-Date -Format "yyyy-MM-dd")
@@ -501,7 +510,7 @@ if ($null -ne $prevSnap) {
   $sdpStr  = if ($sd_pass -gt 0) { "+$sd_pass PASS" } else { "=0 PASS" }
   $sddStr  = if ($sd_done -gt 0) { "+$sd_done tasks" } else { "=0 tasks" }
   $sdCol   = if ($sd_pass -gt 0 -or $sd_done -gt 0) { "Green" } else { "DarkGray" }
-  Write-Host ("  Session delta   : {0} | {1} | queue {2}/51" -f $sdpStr, $sddStr, $finalDone) -ForegroundColor $sdCol
+  Write-Host ("  Session delta   : {0} | {1} | queue {2}/{3}" -f $sdpStr, $sddStr, $finalDone, $finalTotal) -ForegroundColor $sdCol
 }
 Write-Host ""
 Write-Host "  Quick actions:" -ForegroundColor White

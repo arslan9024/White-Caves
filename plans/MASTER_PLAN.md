@@ -2,7 +2,7 @@
 
 **Purpose:** Canonical roadmap for execution decisions.  
 **Owners:** @Ada + @Margaret  
-**Last Updated:** 2026-06-17  
+**Last Updated:** 2026-06-19  
 **Update cadence:** Weekly roadmap refresh (daily execution goes to `PROJECT_PROGRESS.md` and `DAILY_MILESTONE_TRACKER.md`)
 
 ---
@@ -11,7 +11,9 @@
 
 - N+1 through N+9 implementation stream: **✅ Completed**
 - Wave 08 stabilization/governance pass: **✅ Completed**
-- Active implementation focus: **Wave 18 ✅ Complete → Wave 18.1 competitor parity execution — Session 1 ✅ → Session 2 ✅ → Session 3 🟡 In Progress → Wave 18.2 profile-first post-login journey ✅ Complete → Wave 19 planning bundle published (implementation still gated)**
+- Active implementation focus: **Wave 19 ✅ Complete (W19-001…W19-015) and Wave 20 ✅ Complete (RBAC hardening + audit export security + compliance/consent mutation guards)**
+- Business documentation P0 uplift: **✅ Complete (DAMAC Hills 2 area playbook + leasing support operations playbook + Sentinel Property and Maintenance spec upgrades + tenancy/legal notice taxonomy normalization)**
+- Observability / autopilot focus: **Progress-intelligence dashboard, trend exports, reroute hints, and visible ETA/drift signals ✅ Complete**
 - Canonical planning stack: `MASTER_PLAN.md` + `PENDING_TASKS_ONLY.md` + `waves/README.md`
 - Superseded Wave 12 market-intelligence documents were archived to avoid naming collisions with the active automation Wave 12 bundle
 
@@ -36,38 +38,31 @@
 
 ## Implementation Operating Model
 
-| Step | Purpose | Canonical artifact |
-| --- | --- | --- |
-| 1 | Confirm roadmap order and status | [`MASTER_PLAN.md`](./MASTER_PLAN.md) |
-| 2 | Confirm the live queue and entry gate | [`PENDING_TASKS_ONLY.md`](./PENDING_TASKS_ONLY.md) |
-| 3 | Open the ordered execution bundle | [`waves/README.md`](./waves/README.md) |
-| 4 | Implement only against approved source backlogs and bundle tasks | `plans/waves/WAVE_##_*` |
-| 5 | Close out with tracker updates + governance validation | `PROJECT_PROGRESS.md`, `DAILY_MILESTONE_TRACKER.md`, `npm run plans:validate` |
+| Step | Purpose                                                          | Canonical artifact                                                            |
+| ---- | ---------------------------------------------------------------- | ----------------------------------------------------------------------------- |
+| 1    | Confirm roadmap order and status                                 | [`MASTER_PLAN.md`](./MASTER_PLAN.md)                                          |
+| 2    | Confirm the live queue and entry gate                            | [`PENDING_TASKS_ONLY.md`](./PENDING_TASKS_ONLY.md)                            |
+| 3    | Open the ordered execution bundle                                | [`waves/README.md`](./waves/README.md)                                        |
+| 4    | Implement only against approved source backlogs and bundle tasks | `plans/waves/WAVE_##_*`                                                       |
+| 5    | Close out with tracker updates + governance validation           | `PROJECT_PROGRESS.md`, `DAILY_MILESTONE_TRACKER.md`, `npm run plans:validate` |
 
 ---
 
 ## Active Execution Ladder
 
-| Sequence | Wave | Objective | Owners | Status | Source Backlog(s) | Entry Gate | Exit Criteria |
-| --- | --- | --- | --- | --- | --- | --- | --- |
-| 0 | 08 | TypeScript/errors stabilization | @Mira + @Katherine | ✅ Complete | Governance + stabilization bundle | `npm run plans:validate` + baseline clean | TypeScript baseline confirmed green |
-| 1 | 09 | UX loading-state + interaction hardening | @Una + @Lea + @Tracy + @Inas | 🟢 Ready | [`IMPROVEMENTS_UX.md`](./IMPROVEMENTS_UX.md) | S1 green + readiness 72% + @Ada approval phrase | Items 30–33 closed; typecheck/lint/build + wave validation green |
-| 2 | 10 | Performance + SEO + security uplift | @Ruchi + @Rachel + @Radia | 📋 Planned | [`IMPROVEMENTS_PERFORMANCE.md`](./IMPROVEMENTS_PERFORMANCE.md), [`IMPROVEMENTS_SEO.md`](./IMPROVEMENTS_SEO.md), [`IMPROVEMENTS_SECURITY.md`](./IMPROVEMENTS_SECURITY.md) | Wave 09 green + readiness 65% + @Ada approval phrase | Perf/SEO/security tasks closed; typecheck/lint/build + wave validation green |
-| 3 | 11 | Incomplete features closure + architecture refactor | @Ada + @Mira + @Barbara | 📋 Planned | [`IMPROVEMENTS_INCOMPLETE_FEATURES.md`](./IMPROVEMENTS_INCOMPLETE_FEATURES.md), [`IMPROVEMENTS_ARCHITECTURE.md`](./IMPROVEMENTS_ARCHITECTURE.md) | Wave 10 green + readiness 60% + @Ada approval phrase | Scheduler/documents/email + architecture tasks closed; wave validation green |
-| 4 | 12 | Automation engine (cron + documents + email wiring) | @Cron + @Puppeteer + @Handlebars + @Mira | 📋 Planned | [`IMPROVEMENTS_INCOMPLETE_FEATURES.md`](./IMPROVEMENTS_INCOMPLETE_FEATURES.md) items 6–8 | Wave 11 green + readiness 60% + @Ada approval phrase | Automation bundle closed + tracker sync + governance validation green |
-| 5 | 13 | Real-time notifications + media + virtual tours | @Socket + @Cloudinary + @Pannellum + @Mira | ✅ Complete | [`IMPROVEMENTS_INCOMPLETE_FEATURES.md`](./IMPROVEMENTS_INCOMPLETE_FEATURES.md) items 10–12 | Wave 12 green + readiness 60% + @Ada approval phrase | Real-time/media bundle closed + validation green |
-| 6 | 14 | Product features closure | @LeadScore + @Mortgage + @Zod + @Mira | ✅ Complete | [`IMPROVEMENTS_PRODUCT.md`](./IMPROVEMENTS_PRODUCT.md) items 34–38 | Wave 13 green + readiness 60% + @Ada approval phrase | Product feature bundle closed + validation green |
-| 7 | 15 | Cache + PWA readiness | @Redis + @PWA + @Ruchi + @Una | ✅ Complete | [`IMPROVEMENTS_PERFORMANCE.md`](./IMPROVEMENTS_PERFORMANCE.md), [`IMPROVEMENTS_UX.md`](./IMPROVEMENTS_UX.md) | Wave 14 green + readiness 60% + @Ada approval phrase | Cache/PWA bundle closed + validation green |
-| 8 | 16 | Security hardening + API versioning | @S5 + @Radia + @Mira | ✅ Complete | [`IMPROVEMENTS_SECURITY.md`](./IMPROVEMENTS_SECURITY.md), [`IMPROVEMENTS_ARCHITECTURE.md`](./IMPROVEMENTS_ARCHITECTURE.md) | Wave 15 green + readiness 60% + @Ada approval phrase | `/api/v1`, CSRF, error-envelope hardening closed + validation green |
-| 9 | 17 | Full UI/UX luxury upgrade (design tokens + animations + mobile + PWA + WCAG 2.2) | @Una + @Lea + @Tracy + @Africa + @Cyra + @Katherine | ✅ Complete | [`IMPROVEMENTS_UX.md`](./IMPROVEMENTS_UX.md), [`ui-ux-specification.md`](../../business_docs/06_design_architecture/ui-ux-specification.md) | Wave 16 green + free-agent specs + readiness 60% + @Ada approval phrase | Glassmorphism + animations + mobile + PWA + WCAG 2.2 all closed; Lighthouse CI gate green |
-| 10 | 18 | Cross-platform workflow parity audit + prioritized gap backlog | @Ada + @Margaret + @Mira + @Katherine | ✅ Complete | [`WAVE_18_WORKFLOW_PARITY_MATRIX.md`](./waves/WAVE_18_WORKFLOW_PARITY_MATRIX.md), [`WAVE_18_1_IMPLEMENTATION_BACKLOG.md`](./waves/WAVE_18_1_IMPLEMENTATION_BACKLOG.md), [`functional-requirements.md`](../business_docs/05_requirements/functional-requirements.md), [`business_docs/04_workflows/README.md`](../business_docs/04_workflows/README.md) | Wave 17 green + readiness 60% + @Ada approval phrase | Parity matrix finalized, top-20 P0 queue locked, canonical plans updated, `npm run plans:validate` green |
-| 11 | 19 | Identity & Access v2 + `/crm` routing + MD workspace split | @Ada + @Mira + @Una + @Katherine + @Radia | 📋 Planned | [`WAVE_19_SDD.md`](./waves/WAVE_19_SDD.md), [`WAVE_19_IMPLEMENTATION_BACKLOG.md`](./waves/WAVE_19_IMPLEMENTATION_BACKLOG.md), [`functional-requirements.md`](../business_docs/05_requirements/functional-requirements.md) | Wave 18.1 Session 3 closeout + readiness 60% + @Ada approval phrase | Auth/profile/routing/IA validation gates green; trackers + plans stay synchronized |
-| 12 | 20 | Full Leasing & Tenancy — Ejari, PDC, Tenant Portal, Landlord Portal | @Victoria + @Mira + @Una + @Barbara + @Katherine | 📋 Planned | [`WAVE_20_SDD.md`](./waves/WAVE_20_SDD.md), [`WAVE_20_IMPLEMENTATION_BACKLOG.md`](./waves/WAVE_20_IMPLEMENTATION_BACKLOG.md), [`tenancy-ejari.md`](../business_docs/09_crm_features/tenancy-ejari.md), [`tenant-portal.md`](../business_docs/09_crm_features/tenant-portal.md) | Wave 19 green + readiness 60% + @Ada approval phrase | Lease lifecycle, PDC bounce flow, tenant/landlord portals, RBAC all verified; validation green |
-| 13 | 21 | Finance, UAE VAT, Commission Engine & Compliance Reporting | @Invoice + @Mira + @Barbara + @Sofia + @Katherine | 📋 Planned | [`WAVE_21_SDD.md`](./waves/WAVE_21_SDD.md), [`WAVE_21_IMPLEMENTATION_BACKLOG.md`](./waves/WAVE_21_IMPLEMENTATION_BACKLOG.md), [`financial-reporting.md`](../business_docs/09_crm_features/financial-reporting.md), [`revenue-model.md`](../business_docs/07_business_model/revenue-model.md) | Wave 20 green + readiness 60% + @Ada approval phrase | VAT engine, commission approval, immutable ledger, P&L, and VAT return all verified; validation green |
-| 14 | 22 | Market Intelligence, Off-Plan Projects, Valuation & Advanced Analytics | @Cassie + @Fei-Fei + @Maya + @Mira + @Una + @Barbara | 📋 Planned | [`WAVE_22_SDD.md`](./waves/WAVE_22_SDD.md), [`WAVE_22_IMPLEMENTATION_BACKLOG.md`](./waves/WAVE_22_IMPLEMENTATION_BACKLOG.md), [`analytics-dashboard.md`](../business_docs/09_crm_features/analytics-dashboard.md), [`off-plan-projects.md`](../business_docs/09_crm_features/off-plan-projects.md) | Wave 21 green + readiness 60% + @Ada approval phrase | AVM, off-plan lifecycle, Oqood tracking, analytics snapshots, RERA license guard all verified; validation green |
-| 15 | 23 | Mobile CRM, PWA Offline Mode & Push Notifications | @Una + @Tracy + @Cyra + @Mira + @Gwynne + @Katherine | 📋 Planned | [`WAVE_23_SDD.md`](./waves/WAVE_23_SDD.md), [`WAVE_23_IMPLEMENTATION_BACKLOG.md`](./waves/WAVE_23_IMPLEMENTATION_BACKLOG.md), [`wave-15-pwa-readiness.md`](../business_docs/09_crm_features/wave-15-pwa-readiness.md) | Wave 22 green + readiness 60% + @Ada approval phrase | SW/offline mode, FCM push, mobile nav, swipe gestures, Lighthouse CI gate all verified; validation green |
-| 16 | 24 | WhatsApp Automation, AI Chat Engine & In-App Notification Centre | @Mira + @Joelle + @Una + @Barbara + @Katherine | 📋 Planned | [`WAVE_24_SDD.md`](./waves/WAVE_24_SDD.md), [`WAVE_24_IMPLEMENTATION_BACKLOG.md`](./waves/WAVE_24_IMPLEMENTATION_BACKLOG.md), [`whatsapp-integration.md`](../business_docs/09_crm_features/whatsapp-integration.md), [`ai-chat.md`](../business_docs/09_crm_features/ai-chat.md) | Wave 23 green + readiness 60% + @Ada approval phrase | Nina chatbot flows, AI SSE streaming, 7-day nurture sequence, notification centre all verified; validation green |
-| 17 | 25 | Portal Syndication, Careers Portal, Community Management & Advanced SEO | @Rachel + @Mira + @Una + @Marissa + @Barbara + @Katherine | 📋 Planned | [`WAVE_25_SDD.md`](./waves/WAVE_25_SDD.md), [`WAVE_25_IMPLEMENTATION_BACKLOG.md`](./waves/WAVE_25_IMPLEMENTATION_BACKLOG.md), [`seo-strategy.md`](../business_docs/09_crm_features/seo-strategy.md), [`portal-syndication.md`](../business_docs/09_crm_features/portal-syndication.md) | Wave 24 green + readiness 60% + @Ada approval phrase | PF/Bayut feeds, careers portal, community management, JSON-LD, hreflang, sitemap all verified; validation green |
+| Sequence | Wave | Objective                                                                        | Owners                                              | Status      | Source Backlog(s)                                                                                                                                                                                                                                                                                                                                      | Entry Gate                                                              | Exit Criteria                                                                                            |
+| -------- | ---- | -------------------------------------------------------------------------------- | --------------------------------------------------- | ----------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ----------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------- |
+| 0        | 08   | TypeScript/errors stabilization                                                  | @Mira + @Katherine                                  | ✅ Complete | Governance + stabilization bundle                                                                                                                                                                                                                                                                                                                      | `npm run plans:validate` + baseline clean                               | TypeScript baseline confirmed green                                                                      |
+| 1        | 09   | UX loading-state + interaction hardening                                         | @Una + @Lea + @Tracy + @Inas                        | 🟢 Ready    | [`IMPROVEMENTS_UX.md`](./IMPROVEMENTS_UX.md)                                                                                                                                                                                                                                                                                                           | S1 green + readiness 72% + @Ada approval phrase                         | Items 30–33 closed; typecheck/lint/build + wave validation green                                         |
+| 2        | 10   | Performance + SEO + security uplift                                              | @Ruchi + @Rachel + @Radia                           | 📋 Planned  | [`IMPROVEMENTS_PERFORMANCE.md`](./IMPROVEMENTS_PERFORMANCE.md), [`IMPROVEMENTS_SEO.md`](./IMPROVEMENTS_SEO.md), [`IMPROVEMENTS_SECURITY.md`](./IMPROVEMENTS_SECURITY.md)                                                                                                                                                                               | Wave 09 green + readiness 65% + @Ada approval phrase                    | Perf/SEO/security tasks closed; typecheck/lint/build + wave validation green                             |
+| 3        | 11   | Incomplete features closure + architecture refactor                              | @Ada + @Mira + @Barbara                             | 📋 Planned  | [`IMPROVEMENTS_INCOMPLETE_FEATURES.md`](./IMPROVEMENTS_INCOMPLETE_FEATURES.md), [`IMPROVEMENTS_ARCHITECTURE.md`](./IMPROVEMENTS_ARCHITECTURE.md)                                                                                                                                                                                                       | Wave 10 green + readiness 60% + @Ada approval phrase                    | Scheduler/documents/email + architecture tasks closed; wave validation green                             |
+| 4        | 12   | Automation engine (cron + documents + email wiring)                              | @Cron + @Puppeteer + @Handlebars + @Mira            | 📋 Planned  | [`IMPROVEMENTS_INCOMPLETE_FEATURES.md`](./IMPROVEMENTS_INCOMPLETE_FEATURES.md) items 6–8                                                                                                                                                                                                                                                               | Wave 11 green + readiness 60% + @Ada approval phrase                    | Automation bundle closed + tracker sync + governance validation green                                    |
+| 5        | 13   | Real-time notifications + media + virtual tours                                  | @Socket + @Cloudinary + @Pannellum + @Mira          | ✅ Complete | [`IMPROVEMENTS_INCOMPLETE_FEATURES.md`](./IMPROVEMENTS_INCOMPLETE_FEATURES.md) items 10–12                                                                                                                                                                                                                                                             | Wave 12 green + readiness 60% + @Ada approval phrase                    | Real-time/media bundle closed + validation green                                                         |
+| 6        | 14   | Product features closure                                                         | @LeadScore + @Mortgage + @Zod + @Mira               | ✅ Complete | [`IMPROVEMENTS_PRODUCT.md`](./IMPROVEMENTS_PRODUCT.md) items 34–38                                                                                                                                                                                                                                                                                     | Wave 13 green + readiness 60% + @Ada approval phrase                    | Product feature bundle closed + validation green                                                         |
+| 7        | 15   | Cache + PWA readiness                                                            | @Redis + @PWA + @Ruchi + @Una                       | ✅ Complete | [`IMPROVEMENTS_PERFORMANCE.md`](./IMPROVEMENTS_PERFORMANCE.md), [`IMPROVEMENTS_UX.md`](./IMPROVEMENTS_UX.md)                                                                                                                                                                                                                                           | Wave 14 green + readiness 60% + @Ada approval phrase                    | Cache/PWA bundle closed + validation green                                                               |
+| 8        | 16   | Security hardening + API versioning                                              | @S5 + @Radia + @Mira                                | ✅ Complete | [`IMPROVEMENTS_SECURITY.md`](./IMPROVEMENTS_SECURITY.md), [`IMPROVEMENTS_ARCHITECTURE.md`](./IMPROVEMENTS_ARCHITECTURE.md)                                                                                                                                                                                                                             | Wave 15 green + readiness 60% + @Ada approval phrase                    | `/api/v1`, CSRF, error-envelope hardening closed + validation green                                      |
+| 9        | 17   | Full UI/UX luxury upgrade (design tokens + animations + mobile + PWA + WCAG 2.2) | @Una + @Lea + @Tracy + @Africa + @Cyra + @Katherine | ✅ Complete | [`IMPROVEMENTS_UX.md`](./IMPROVEMENTS_UX.md), [`ui-ux-specification.md`](../../business_docs/06_design_architecture/ui-ux-specification.md)                                                                                                                                                                                                            | Wave 16 green + free-agent specs + readiness 60% + @Ada approval phrase | Glassmorphism + animations + mobile + PWA + WCAG 2.2 all closed; Lighthouse CI gate green                |
+| 10       | 18   | Cross-platform workflow parity audit + prioritized gap backlog                   | @Ada + @Margaret + @Mira + @Katherine               | ✅ Complete | [`WAVE_18_WORKFLOW_PARITY_MATRIX.md`](./waves/WAVE_18_WORKFLOW_PARITY_MATRIX.md), [`WAVE_18_1_IMPLEMENTATION_BACKLOG.md`](./waves/WAVE_18_1_IMPLEMENTATION_BACKLOG.md), [`functional-requirements.md`](../business_docs/05_requirements/functional-requirements.md), [`business_docs/04_workflows/README.md`](../business_docs/04_workflows/README.md) | Wave 17 green + readiness 60% + @Ada approval phrase                    | Parity matrix finalized, top-20 P0 queue locked, canonical plans updated, `npm run plans:validate` green |
 
 ---
 
@@ -75,119 +70,21 @@
 
 Use [`waves/README.md`](./waves/README.md) for the full bundle list.
 
-| Wave | Status | Bundle |
-| --- | --- | --- |
-| 08 | ✅ Complete | [`Wave 08`](./waves/WAVE_08_SDD.md) |
-| 09 | 🟢 Ready | [`Wave 09`](./waves/WAVE_09_SDD.md) |
-| 10 | 📋 Planned | [`Wave 10`](./waves/WAVE_10_SDD.md) |
-| 11 | 📋 Planned | [`Wave 11`](./waves/WAVE_11_SDD.md) |
-| 12 | 📋 Planned | [`Wave 12`](./waves/WAVE_12_SDD.md) |
-| 13 | ✅ Complete | [`Wave 13`](./waves/WAVE_13_SDD.md) |
-| 14 | ✅ Complete | [`Wave 14`](./waves/WAVE_14_SDD.md) |
-| 15 | ✅ Complete | [`Wave 15`](./waves/WAVE_15_SDD.md) |
-| 16 | ✅ Complete | [`Wave 16`](./waves/WAVE_16_SDD.md) |
-| 17 | ✅ Complete | [`Wave 17`](./waves/WAVE_17_SDD.md) |
-| 18 | ✅ Complete | [`Wave 18`](./waves/WAVE_18_SDD.md) |
-| 19 | 📋 Planned | [`Wave 19`](./waves/WAVE_19_SDD.md) |
-| 20 | 📋 Planned | [`Wave 20`](./waves/WAVE_20_SDD.md) |
-| 21 | 📋 Planned | [`Wave 21`](./waves/WAVE_21_SDD.md) |
-| 22 | 📋 Planned | [`Wave 22`](./waves/WAVE_22_SDD.md) |
-| 23 | 📋 Planned | [`Wave 23`](./waves/WAVE_23_SDD.md) |
-| 24 | 📋 Planned | [`Wave 24`](./waves/WAVE_24_SDD.md) |
-| 25 | 📋 Planned | [`Wave 25`](./waves/WAVE_25_SDD.md) |
-
----
-
-## Wave 19–25 Dependency Graph
-
-> Mermaid diagram showing inter-wave data dependencies.
-> A → B means Wave B cannot start until Wave A is green.
-
-```mermaid
-graph TD
-    W18_1["Wave 18.1 — Competitor Parity (🟡 In Progress)"]
-    W19["Wave 19 — Auth Hardening + MD Dashboard (📋 Gated)"]
-    W20["Wave 20 — Full Leasing & Tenancy"]
-    W21["Wave 21 — Finance, VAT & Commission Engine"]
-    W22["Wave 22 — Market Intelligence & Off-Plan"]
-    W23["Wave 23 — Mobile CRM & PWA"]
-    W24["Wave 24 — WhatsApp & Communications Engine"]
-    W25["Wave 25 — AI Assistants & Recommendations"]
-
-    W18_1 -->|"Session 3 green + @Ada 60% gate"| W19
-    W19 -->|"JWT/RBAC hardened + MD Dashboard verified"| W20
-    W19 -->|"Auth contracts stable"| W21
-    W20 -->|"Ejari/PDC lifecycle shipped"| W21
-    W21 -->|"VAT + commission engine green"| W22
-    W20 -->|"Tenant portal API stable"| W22
-    W22 -->|"AVM + off-plan data model green"| W23
-    W21 -->|"Financial data model stable"| W23
-    W23 -->|"Mobile nav + push infra green"| W24
-    W20 -->|"Contact/lead data model stable"| W24
-    W24 -->|"WhatsApp message pipeline green"| W25
-    W22 -->|"Market data + lead scoring ready"| W25
-```
-
-### Key dependency notes
-
-| Dependency | Blocking risk | Mitigation |
-| --- | --- | --- |
-| W19 DLD/Ejari mock | Live DLD Sandbox may not be available | `USE_MOCK_DLD=true` mock services in `server/services/mock/` |
-| W21 Stripe payments | Live Stripe keys may not be configured in all envs | `STRIPE_ENABLED=false` mock PaymentIntent fallback in `server/index.ts` |
-| W22 DLD transaction data | DLD API rate limits in sandbox | Mock transaction history via `dldMockService.getTransaction()` |
-| W25 OpenAI / Groq keys | AI provider availability | Provider abstraction layer with fallback chain (ADR-002 pattern) |
-
----
-
-## Multi-Currency Architecture Decision
-
-**Base currency:** AED (UAE Dirham) — all financial storage, calculations, and Prisma models use AED.
-
-**Supported display currencies:** USD, GBP, EUR, INR, PKR, SAR, QAR
-
-**FX rate source:** ExchangeRate-API (free tier, 1,500 requests/month) with Open Exchange Rates as fallback.
-
-**Cache strategy:**
-- In-memory `Map<string, { rate: number; cachedAt: number }>` with 4-hour TTL
-- On cache miss: fetch live rate → store → return
-- On stale cache (age > 4h) and API unavailable: serve last-known rate with `X-FX-Stale: true` header
-- Redis optional for multi-instance deployments (config flag `USE_REDIS_FX_CACHE`)
-
-**Historical rates:** Daily closing rates stored in MongoDB `currency_rates` collection for backdated commission calculations. Schema: `{ date: Date, base: 'AED', rates: Record<string, number> }`.
-
-**Frontend wire:** `currencySlice.tsx` holds the selected display currency and the current rate object. KPI tiles and financial reports use `formatCurrencyAmount(aedValue, targetCurrency, rates)` utility from `src/utils/currency.ts`.
-
----
-
-## RERA 2025/2026 Compliance Update
-
-> Cross-reference: [`business_docs/05_requirements/compliance-requirements.md`](../business_docs/05_requirements/compliance-requirements.md)
-
-### Key 2025/2026 RERA/DLD regulatory changes affecting White Caves
-
-| Area | Update | Impact on codebase | Wave |
-| --- | --- | --- | --- |
-| **Ejari digital mandate** | All tenancy contracts must be registered via Ejari digital platform (no paper filings accepted from Q1 2026) | `server/services/mock/ejariMockService.ts` must mirror the new digital submission fields | W20 |
-| **RERA rental index** | Annual rental index now published quarterly (was annually); permitted increase % varies by area | `ejariMockService.renewContract()` uses area-based index rates; W20 must wire to live DLD/Ejari API for real rates | W20 |
-| **Oqood off-plan** | Registration deadline tightened to 30 days from SPA signing (was 60 days) | Update `dldMockService.registerOqood()` `expiryDate` to 30-day window when switching to live API | W20/W22 |
-| **AML thresholds** | CBUAE updated AML cash transaction reporting threshold to AED 55,000 (was AED 40,000) | `server/services/compliance/amlAdapter.js` threshold must be updated | W21 |
-| **DLD Smart Judgment** | DLD Smart Judgment system now accepts electronic dispute filings | `legal-management.md` RERA dispute section to be updated; backend workflow in W21 | W21 |
-| **VAT on residential rent** | UAE FTA reconfirmed zero-rated status for long-term residential leases; short-term holiday lets remain standard-rated 5% | VAT calculation in `calculateVATSummary()` already handles this; confirm in W21 testing | W21 |
-| **Broker BRN renewal** | RERA now enforces 6-month BRN renewal reminder (was annual) | `reraExpiryScheduler.js` expiry window must add a 6-month pre-warning alert | W19 (BRN sub-task) |
-
-### Prisma Lease model gap analysis (vs business_docs/09_crm_features/tenancy-ejari.md)
-
-Fields present in `tenancy-ejari.md` spec but **not yet in `prisma/schema.prisma` Lease model**:
-
-| Field | Type | Wave |
-| --- | --- | --- |
-| `pdcCheques` | Array of `{ bankName, chequeNumber, amount, dueDate, status }` | W20 |
-| `ejariActivationReference` | String (format: `EJR-YYYY-NNNNNNN`) | W20 |
-| `reraRentalIndexRate` | Float (%) | W20 |
-| `earlyTerminationClauseActive` | Boolean | W20 |
-| `noticePeriodDays` | Int (default 90) | W20 |
-
-These are queued as Wave 20 pre-conditions. `ejariMockService.activateContract()` already returns `activationReference` in the correct format so front-end work can proceed before W20 ships the schema migration.
+| Wave | Status      | Bundle                              |
+| ---- | ----------- | ----------------------------------- |
+| 08   | ✅ Complete | [`Wave 08`](./waves/WAVE_08_SDD.md) |
+| 09   | 🟢 Ready    | [`Wave 09`](./waves/WAVE_09_SDD.md) |
+| 10   | 📋 Planned  | [`Wave 10`](./waves/WAVE_10_SDD.md) |
+| 11   | 📋 Planned  | [`Wave 11`](./waves/WAVE_11_SDD.md) |
+| 12   | 📋 Planned  | [`Wave 12`](./waves/WAVE_12_SDD.md) |
+| 13   | ✅ Complete | [`Wave 13`](./waves/WAVE_13_SDD.md) |
+| 14   | ✅ Complete | [`Wave 14`](./waves/WAVE_14_SDD.md) |
+| 15   | ✅ Complete | [`Wave 15`](./waves/WAVE_15_SDD.md) |
+| 16   | ✅ Complete | [`Wave 16`](./waves/WAVE_16_SDD.md) |
+| 17   | ✅ Complete | [`Wave 17`](./waves/WAVE_17_SDD.md) |
+| 18   | ✅ Complete | [`Wave 18`](./waves/WAVE_18_SDD.md) |
+| 19   | ✅ Complete | [`Wave 19`](./waves/WAVE_19_SDD.md) |
+| 20   | ✅ Complete | [`Wave 20`](./waves/WAVE_20_SDD.md) |
 
 ---
 

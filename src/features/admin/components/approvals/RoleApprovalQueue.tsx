@@ -34,7 +34,7 @@ const RoleApprovalQueue = () => {
     } catch (error) {
       const err = error as { message?: string };
       
-      setFetchError(err.message || 'Failed to load role requests');
+      setFetchError((error as Error).message || 'Failed to load role requests');
     } finally {
       setInitialLoading(false);
     }
@@ -66,7 +66,7 @@ const RoleApprovalQueue = () => {
     } catch (error) {
       const err = error as { message?: string };
       
-      toast.error(err.message || 'Failed to approve request');
+      alert((error as Error).message || 'Failed to approve request');
     } finally {
       setLoading(false);
     }
@@ -100,7 +100,7 @@ const RoleApprovalQueue = () => {
     } catch (error) {
       const err = error as { message?: string };
       
-      toast.error(err.message || 'Failed to reject request');
+      alert((error as Error).message || 'Failed to reject request');
     } finally {
       setLoading(false);
     }

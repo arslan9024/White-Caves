@@ -11,6 +11,7 @@
 
 import { Router, Request, Response } from 'express';
 import { requirePermission } from '../middleware/rbac.js';
+import { AppError, asyncHandler } from '../middleware/errorHandler';
 import {
   sendEmailTracked,
   EMAIL_TEMPLATES,
@@ -26,13 +27,14 @@ const router = Router();
  * Send a custom email
  * Body: { to, subject, text?, html?, replyTo? }
  */
-router.post('/send', requirePermission('manage_leads'), async (req: Request, res: Response) => {
-  try {
+router.post(
+  '/send',
+  requirePermission('manage_leads'),
+  asyncHandler(async (req: Request, res: Response) => {
     const { to, subject, text, html, replyTo } = req.body;
 
     if (!to || !subject) {
-      res.status(400).json({ success: false, error: 'Missing required fields: to, subject' });
-      return;
+      throw new AppError('Missing required fields: to, subject', 400);
     }
 
     const result = await sendEmailTracked({
@@ -44,39 +46,31 @@ router.post('/send', requirePermission('manage_leads'), async (req: Request, res
     });
 
     res.json({ success: result.success, data: result });
-  } catch (error) {
-    res.status(500).json({
-      success: false,
-      error: error instanceof Error ? error.message : 'Failed to send email',
-    });
-  }
-});
+  })
+);
 
 /**
  * POST /api/email/template
  * Send a predefined template email
  * Body: { template, to, params }
  */
-router.post('/template', requirePermission('manage_leads'), async (req: Request, res: Response) => {
-  try {
+router.post(
+  '/template',
+  requirePermission('manage_leads'),
+  asyncHandler(async (req: Request, res: Response) => {
     const { template, to, params } = req.body;
 
     if (!template || !to || !params) {
-      res.status(400).json({
-        success: false,
-        error: 'Missing required fields: template, to, params',
-      });
-      return;
+      throw new AppError('Missing required fields: template, to, params', 400);
     }
 
     // Get template function
     const templateFn = EMAIL_TEMPLATES[template as keyof typeof EMAIL_TEMPLATES];
     if (!templateFn) {
-      res.status(400).json({
-        success: false,
-        error: `Unknown template: ${template}. Available: ${Object.keys(EMAIL_TEMPLATES).join(', ')}`,
-      });
-      return;
+      throw new AppError(
+        `Unknown template: ${template}. Available: ${Object.keys(EMAIL_TEMPLATES).join(', ')}`,
+        400
+      );
     }
 
     // Build email from template
@@ -149,8 +143,7 @@ router.post('/template', requirePermission('manage_leads'), async (req: Request,
         );
         break;
       default:
-        res.status(400).json({ success: false, error: `No handler for template: ${template}` });
-        return;
+        throw new AppError(`No handler for template: ${template}`, 400);
     }
 
     const result = await sendEmailTracked({
@@ -162,13 +155,8 @@ router.post('/template', requirePermission('manage_leads'), async (req: Request,
     });
 
     res.json({ success: result.success, data: { ...result, template } });
-  } catch (error) {
-    res.status(500).json({
-      success: false,
-      error: error instanceof Error ? error.message : 'Failed to send template email',
-    });
-  }
-});
+  })
+);
 
 /**
  * GET /api/email/templates

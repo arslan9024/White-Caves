@@ -60,10 +60,8 @@ const BiometricLoginButton = ({ onSuccess, onError, disabled }: BiometricLoginBu
         throw new Error('Authentication succeeded but no session data returned.');
       }
     } catch (error) {
-      const authError = error as { message?: string };
-      
-      dispatch(loginFailure(authError.message || 'Biometric authentication failed'));
-      onError?.(authError);
+      dispatch(loginFailure((error as Error).message));
+      onError?.(error);
     } finally {
       setLoading(false);
     }

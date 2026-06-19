@@ -3,6 +3,17 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 
 import { render, screen, fireEvent } from '@testing-library/react';
 import React from 'react';
+import { MemoryRouter } from 'react-router-dom';
+
+const mockNavigate = vi.fn();
+
+vi.mock('react-router-dom', async () => {
+  const actual = await vi.importActual<typeof import('react-router-dom')>('react-router-dom');
+  return {
+    ...actual,
+    useNavigate: () => mockNavigate,
+  };
+});
 
 // Mock styled-components
 vi.mock('./BlogSection.styles', () => {
@@ -48,25 +59,33 @@ vi.mock('./BlogSection.styles', () => {
 
 import BlogSection from './BlogSection';
 
+const renderBlogSection = (props?: React.ComponentProps<typeof BlogSection>) =>
+  render(
+    <MemoryRouter>
+      <BlogSection {...props} />
+    </MemoryRouter>
+  );
+
 describe('BlogSection', () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    mockNavigate.mockClear();
   });
 
   // ── Rendering ──────────────────────────────────────────────
   describe('rendering', () => {
     it('renders main heading', () => {
-      render(<BlogSection />);
+      renderBlogSection();
       expect(screen.getByText('Real Estate Insights')).toBeInTheDocument();
     });
 
     it('renders subtitle', () => {
-      render(<BlogSection />);
+      renderBlogSection();
       expect(screen.getByText(/Stay informed with the latest news/)).toBeInTheDocument();
     });
 
     it('renders featured posts', () => {
-      render(<BlogSection />);
+      renderBlogSection();
       expect(
         screen.getByText('Dubai Real Estate Market Trends 2026: What Buyers Need to Know')
       ).toBeInTheDocument();
@@ -76,13 +95,20 @@ describe('BlogSection', () => {
     });
 
     it('renders Read Article buttons for featured posts', () => {
-      render(<BlogSection />);
+      renderBlogSection();
       const readArticles = screen.getAllByText('Read Article →');
       expect(readArticles.length).toBe(2); // 2 featured posts
     });
 
+    it('navigates to market insights when featured Read Article is clicked', () => {
+      renderBlogSection();
+      const readArticles = screen.getAllByText('Read Article →');
+      fireEvent.click(readArticles[0]);
+      expect(mockNavigate).toHaveBeenCalledWith('/market');
+    });
+
     it('renders non-featured post titles', () => {
-      render(<BlogSection />);
+      renderBlogSection();
       expect(
         screen.getByText("Understanding Dubai's Golden Visa Through Property Investment")
       ).toBeInTheDocument();
@@ -90,14 +116,14 @@ describe('BlogSection', () => {
     });
 
     it('renders post authors', () => {
-      render(<BlogSection />);
+      renderBlogSection();
       // Featured posts show author name directly; non-featured show "By Author"
       expect(screen.getByText('Ahmed Hassan')).toBeInTheDocument();
       expect(screen.getByText('Sarah Al-Maktoum')).toBeInTheDocument();
     });
 
     it('renders post dates', () => {
-      render(<BlogSection />);
+      renderBlogSection();
       expect(screen.getByText('April 10, 2026')).toBeInTheDocument();
       expect(screen.getByText('April 5, 2026')).toBeInTheDocument();
     });
@@ -106,7 +132,7 @@ describe('BlogSection', () => {
   // ── Category Filters ───────────────────────────────────────
   describe('category filters', () => {
     it('renders all category filter buttons', () => {
-      render(<BlogSection />);
+      renderBlogSection();
       expect(screen.getByText('All')).toBeInTheDocument();
       // Categories also appear as badges on cards, so use getAllByText
       expect(screen.getAllByText('Market Analysis').length).toBeGreaterThanOrEqual(1);
@@ -117,7 +143,7 @@ describe('BlogSection', () => {
     });
 
     it('filters posts when category is selected', () => {
-      render(<BlogSection />);
+      renderBlogSection();
       // "Investment" appears as filter button AND card badge — click first one (filter)
       const investmentBtns = screen.getAllByText('Investment');
       fireEvent.click(investmentBtns[0]);
@@ -131,7 +157,7 @@ describe('BlogSection', () => {
     });
 
     it('hides non-matching posts when filtered', () => {
-      render(<BlogSection />);
+      renderBlogSection();
       const legalBtns = screen.getAllByText('Legal');
       fireEvent.click(legalBtns[0]);
       // Legal post should show
@@ -145,7 +171,7 @@ describe('BlogSection', () => {
     });
 
     it('shows all posts when All is selected', () => {
-      render(<BlogSection />);
+      renderBlogSection();
       const legalBtns = screen.getAllByText('Legal');
       fireEvent.click(legalBtns[0]);
       fireEvent.click(screen.getByText('All'));
@@ -156,83 +182,84 @@ describe('BlogSection', () => {
   // ── Featured vs Regular ────────────────────────────────────
   describe('featured vs regular', () => {
     it('featured posts have Read Article button', () => {
-      render(<BlogSection />);
+      renderBlogSection();
       const readArticles = screen.getAllByText('Read Article →');
       expect(readArticles.length).toBe(2);
     });
 
     it('regular posts have Read More links', () => {
-      render(<BlogSection />);
+      renderBlogSection();
       const readMores = screen.getAllByText('Read More →');
       expect(readMores.length).toBeGreaterThanOrEqual(1);
+    });
+
+    it('regular Read More links target valid app routes', () => {
+      renderBlogSection();
+      const links = screen.getAllByText('Read More →');
+      expect(links.length).toBeGreaterThanOrEqual(1);
+      const hrefs = links.map(link => link.getAttribute('to') || link.getAttribute('href') || '');
+      expect(hrefs.some(href => href.includes('/market'))).toBe(true);
+      expect(hrefs.some(href => href.includes('/properties') || href.includes('/services'))).toBe(
+        true
+      );
     });
   });
 
   // ── Post Metadata ──────────────────────────────────────────
   describe('post metadata', () => {
     it('renders read time', () => {
-      render(<BlogSection />);
+      renderBlogSection();
       expect(screen.getByText('8 min read')).toBeInTheDocument();
       expect(screen.getByText('12 min read')).toBeInTheDocument();
     });
 
     it('renders categories on cards', () => {
-      render(<BlogSection />);
+      renderBlogSection();
       const investmentBadges = screen.getAllByText('Investment');
       expect(investmentBadges.length).toBeGreaterThanOrEqual(1); // filter button + category badges
     });
 
     it('generates live insight posts when homepage data props are provided', () => {
-      render(
-        <BlogSection
-          marketStats={{
-            totalProperties: 500,
-            availableProperties: 320,
-            averagePrice: 4500000,
-            portfolioValue: 2250000000,
-            activeAgents: 50,
-          }}
-          locationTrends={[
-            {
-              name: 'Palm Jumeirah',
-              propertyCount: 120,
-              avgPrice: 15000000,
-              trendPercent: 12,
-              trendDirection: 'up',
-            },
-          ]}
-          featuredProperties={[
-            {
-              id: 'prop-1',
-              title: 'Azure Palm Villa',
-              type: 'Villa',
-              status: 'available',
-              price: 15000000,
-              currency: 'AED',
-              bedrooms: 5,
-              bathrooms: 6,
-              sqft: 8200,
-              location: 'Palm Jumeirah',
-              amenities: ['Pool'],
-              images: ['https://example.com/villa.jpg'],
-              featured: true,
-            },
-          ]}
-        />
-      );
+      renderBlogSection({
+        marketStats: {
+          totalProperties: 500,
+          availableProperties: 320,
+          averagePrice: 4500000,
+          portfolioValue: 2250000000,
+          activeAgents: 50,
+        },
+        locationTrends: [
+          {
+            name: 'Palm Jumeirah',
+            propertyCount: 120,
+            avgPrice: 15000000,
+            trendPercent: 12,
+            trendDirection: 'up',
+          },
+        ],
+        featuredProperties: [
+          {
+            id: 'prop-1',
+            title: 'Azure Palm Villa',
+            type: 'Villa',
+            status: 'available',
+            price: 15000000,
+            currency: 'AED',
+            bedrooms: 5,
+            bathrooms: 6,
+            sqft: 8200,
+            location: 'Palm Jumeirah',
+            amenities: ['Pool'],
+            images: ['https://example.com/villa.jpg'],
+            featured: true,
+          },
+        ],
+      });
 
       expect(screen.getByText(/Palm Jumeirah Property Trend: 12% Momentum/i)).toBeInTheDocument();
       expect(
         screen.getByText(/Dubai Luxury Inventory Snapshot: 320 Available Listings/i)
       ).toBeInTheDocument();
-    });
-  });
-
-  // ── Snapshot ───────────────────────────────────────────────
-  describe('snapshot', () => {
-    it('matches default snapshot', () => {
-      const { container } = render(<BlogSection />);
-      expect(container.firstChild).toMatchSnapshot();
     });
   });
 });

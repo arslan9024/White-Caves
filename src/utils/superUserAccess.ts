@@ -1,7 +1,17 @@
-export const CREATOR_SUPERUSER_EMAIL = 'arslanmalikgoraha@gmail.com';
+export const CREATOR_SUPERUSER_EMAIL = (import.meta.env.VITE_CREATOR_SUPERUSER_EMAIL ?? '')
+  .toLowerCase()
+  .trim();
 export const CANONICAL_SUPERUSER_ROLE = 'lion';
 
-const SUPERUSER_ROLE_ALIASES = new Set(['lion', 'owner', 'super_admin', 'managing_director', 'md']);
+const SUPERUSER_ROLE_ALIASES = new Set([
+  'lion',
+  'owner',
+  'super_admin',
+  'super_user',
+  'superuser',
+  'managing_director',
+  'md',
+]);
 
 export function normalizeRoleToken(role?: string | null): string | null {
   if (!role) return null;
@@ -10,7 +20,10 @@ export function normalizeRoleToken(role?: string | null): string | null {
 
 export function isCreatorSuperUserEmail(email?: string | null): boolean {
   if (!email) return false;
-  return email.trim().toLowerCase() === CREATOR_SUPERUSER_EMAIL;
+  // Read env var lazily so vi.stubEnv works correctly in tests
+  const configured = (import.meta.env.VITE_CREATOR_SUPERUSER_EMAIL ?? '').toLowerCase().trim();
+  if (!configured) return false;
+  return email.trim().toLowerCase() === configured;
 }
 
 export function isSuperUserAliasRole(role?: string | null): boolean {

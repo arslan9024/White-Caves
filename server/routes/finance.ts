@@ -1,5 +1,5 @@
 /**
- * Finance API Routes â€” Full Implementation
+ * Finance API Routes — Full Implementation
  * Commission management, financial summaries, payments
  * Endpoints: /api/finance
  */
@@ -14,7 +14,16 @@ import { requirePermission } from '../middleware/rbac';
 
 const router = Router();
 
-type RouteRequest = Request<Record<string, string>>;
+const routeParamToString = (value: string | string[] | undefined): string | null => {
+  if (typeof value === 'string' && value.trim().length > 0) {
+    return value;
+  }
+  if (Array.isArray(value) && value.length > 0 && typeof value[0] === 'string') {
+    const first = value[0].trim();
+    return first.length > 0 ? first : null;
+  }
+  return null;
+};
 
 // â”€â”€â”€ GET /api/finance/summary â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 router.get(
@@ -140,10 +149,15 @@ router.get(
 router.get(
   '/commissions/:id',
   requirePermission('view_payments'),
-  asyncHandler(async (req: RouteRequest, res: Response) => {
-    validateIdParam(req.params.id, 'Commission ID');
+  asyncHandler(async (req: Request, res: Response) => {
+    const commissionId = routeParamToString(req.params.id);
+    if (!commissionId) {
+      throw new AppError('Commission ID is required', 400);
+    }
+
+    validateIdParam(commissionId, 'Commission ID');
     const commission = await prisma.commission.findUnique({
-      where: { id: req.params.id },
+      where: { id: commissionId },
       include: {
         agent: { select: { id: true, name: true, email: true, phone: true } },
         lead: { select: { id: true, name: true, email: true, phone: true, budget: true } },
@@ -399,9 +413,14 @@ router.get(
 router.get(
   '/invoices/:id',
   requirePermission('view_payments'),
-  asyncHandler(async (req: RouteRequest, res: Response) => {
-    validateIdParam(req.params.id, 'Invoice ID');
-    const invoice = await prisma.invoice.findUnique({ where: { id: req.params.id } });
+  asyncHandler(async (req: Request, res: Response) => {
+    const invoiceId = routeParamToString(req.params.id);
+    if (!invoiceId) {
+      throw new AppError('Invoice ID is required', 400);
+    }
+
+    validateIdParam(invoiceId, 'Invoice ID');
+    const invoice = await prisma.invoice.findUnique({ where: { id: invoiceId } });
     if (!invoice) throw new AppError('Invoice not found', 404);
     res.status(200).json({ success: true, data: invoice });
   })
@@ -456,9 +475,14 @@ router.post(
 router.patch(
   '/invoices/:id',
   requirePermission('process_payments'),
-  asyncHandler(async (req: RouteRequest, res: Response) => {
-    validateIdParam(req.params.id, 'Invoice ID');
-    const existing = await prisma.invoice.findUnique({ where: { id: req.params.id } });
+  asyncHandler(async (req: Request, res: Response) => {
+    const invoiceId = routeParamToString(req.params.id);
+    if (!invoiceId) {
+      throw new AppError('Invoice ID is required', 400);
+    }
+
+    validateIdParam(invoiceId, 'Invoice ID');
+    const existing = await prisma.invoice.findUnique({ where: { id: invoiceId } });
     if (!existing) throw new AppError('Invoice not found', 404);
 
     const { status, amount, vatAmount, notes, client, property, dueDate } = req.body;
@@ -484,7 +508,7 @@ router.patch(
     if (client !== undefined) data.client = sanitizeString(client);
     if (property !== undefined) data.property = property ? sanitizeString(property) : null;
     if (dueDate !== undefined) data.dueDate = new Date(dueDate);
-    const invoice = await prisma.invoice.update({ where: { id: req.params.id }, data });
+    const invoice = await prisma.invoice.update({ where: { id: invoiceId }, data });
     res.status(200).json({ success: true, data: invoice });
   })
 );
@@ -493,12 +517,17 @@ router.patch(
 router.delete(
   '/invoices/:id',
   requirePermission('process_payments'),
-  asyncHandler(async (req: RouteRequest, res: Response) => {
-    validateIdParam(req.params.id, 'Invoice ID');
-    const existing = await prisma.invoice.findUnique({ where: { id: req.params.id } });
+  asyncHandler(async (req: Request, res: Response) => {
+    const invoiceId = routeParamToString(req.params.id);
+    if (!invoiceId) {
+      throw new AppError('Invoice ID is required', 400);
+    }
+
+    validateIdParam(invoiceId, 'Invoice ID');
+    const existing = await prisma.invoice.findUnique({ where: { id: invoiceId } });
     if (!existing) throw new AppError('Invoice not found', 404);
     if (existing.status === 'paid') throw new AppError('Cannot delete a paid invoice', 400);
-    await prisma.invoice.delete({ where: { id: req.params.id } });
+    await prisma.invoice.delete({ where: { id: invoiceId } });
     res.status(200).json({ success: true, message: 'Invoice deleted' });
   })
 );
@@ -551,9 +580,14 @@ router.get(
 router.get(
   '/expenses/:id',
   requirePermission('view_payments'),
-  asyncHandler(async (req: RouteRequest, res: Response) => {
-    validateIdParam(req.params.id, 'Expense ID');
-    const expense = await prisma.expense.findUnique({ where: { id: req.params.id } });
+  asyncHandler(async (req: Request, res: Response) => {
+    const expenseId = routeParamToString(req.params.id);
+    if (!expenseId) {
+      throw new AppError('Expense ID is required', 400);
+    }
+
+    validateIdParam(expenseId, 'Expense ID');
+    const expense = await prisma.expense.findUnique({ where: { id: expenseId } });
     if (!expense) throw new AppError('Expense not found', 404);
     res.status(200).json({ success: true, data: expense });
   })
@@ -608,9 +642,14 @@ router.post(
 router.patch(
   '/expenses/:id',
   requirePermission('process_payments'),
-  asyncHandler(async (req: RouteRequest, res: Response) => {
-    validateIdParam(req.params.id, 'Expense ID');
-    const existing = await prisma.expense.findUnique({ where: { id: req.params.id } });
+  asyncHandler(async (req: Request, res: Response) => {
+    const expenseId = routeParamToString(req.params.id);
+    if (!expenseId) {
+      throw new AppError('Expense ID is required', 400);
+    }
+
+    validateIdParam(expenseId, 'Expense ID');
+    const existing = await prisma.expense.findUnique({ where: { id: expenseId } });
     if (!existing) throw new AppError('Expense not found', 404);
 
     const { status, amount, category, description, notes, receiptUrl } = req.body;
@@ -636,7 +675,7 @@ router.patch(
     if (description !== undefined) data.description = sanitizeString(description);
     if (notes !== undefined) data.notes = notes ? sanitizeString(String(notes)) : null;
     if (receiptUrl !== undefined) data.receiptUrl = receiptUrl || null;
-    const expense = await prisma.expense.update({ where: { id: req.params.id }, data });
+    const expense = await prisma.expense.update({ where: { id: expenseId }, data });
     res.status(200).json({ success: true, data: expense });
   })
 );
@@ -645,13 +684,18 @@ router.patch(
 router.delete(
   '/expenses/:id',
   requirePermission('process_payments'),
-  asyncHandler(async (req: RouteRequest, res: Response) => {
-    validateIdParam(req.params.id, 'Expense ID');
-    const existing = await prisma.expense.findUnique({ where: { id: req.params.id } });
+  asyncHandler(async (req: Request, res: Response) => {
+    const expenseId = routeParamToString(req.params.id);
+    if (!expenseId) {
+      throw new AppError('Expense ID is required', 400);
+    }
+
+    validateIdParam(expenseId, 'Expense ID');
+    const existing = await prisma.expense.findUnique({ where: { id: expenseId } });
     if (!existing) throw new AppError('Expense not found', 404);
     if (existing.status === 'processed')
       throw new AppError('Cannot delete a processed expense', 400);
-    await prisma.expense.delete({ where: { id: req.params.id } });
+    await prisma.expense.delete({ where: { id: expenseId } });
     res.status(200).json({ success: true, message: 'Expense deleted' });
   })
 );

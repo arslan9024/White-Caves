@@ -94,6 +94,28 @@ describe('authSession utilities', () => {
         })
       ).toBe('/crm');
     });
+
+    it('hard-fails unauthorized mapped roles to pending approval', () => {
+      expect(
+        resolvePostLoginDestination({
+          user: { role: 'unknown-role', status: 'active' },
+        })
+      ).toBe('/pending-approval');
+    });
+
+    it('routes CRM-bound users with incomplete profile to /profile', () => {
+      expect(
+        resolvePostLoginDestination({
+          user: { role: 'agent', status: 'active', profileCompleted: false },
+        })
+      ).toBe('/profile');
+
+      expect(
+        resolvePostLoginDestination({
+          user: { role: 'buyer', status: 'active', profileCompleted: false },
+        })
+      ).toBe('/profile');
+    });
   });
 
   describe('finalizeAuthenticatedSession', () => {
@@ -106,6 +128,7 @@ describe('authSession utilities', () => {
     });
 
     it('dispatches user/auth state, persists normalized role, and returns destination', () => {
+      vi.stubEnv('VITE_CREATOR_SUPERUSER_EMAIL', 'arslanmalikgoraha@gmail.com');
       const dispatch = vi.fn();
       const user = createUser({ role: 'owner', email: 'arslanmalikgoraha@gmail.com' });
 
@@ -185,7 +208,9 @@ describe('authSession utilities', () => {
 
   describe('misc helpers', () => {
     it('builds pathname + search + hash correctly', () => {
-      expect(getCurrentPathWithQuery('/crm', '?tab=insights', '#section')).toBe('/crm?tab=insights#section');
+      expect(getCurrentPathWithQuery('/crm', '?tab=insights', '#section')).toBe(
+        '/crm?tab=insights#section'
+      );
     });
 
     it('extracts and sanitizes returnTo value from location state', () => {
@@ -195,8 +220,13 @@ describe('authSession utilities', () => {
     });
 
     it('resolves privileged role for creator and admin users only', () => {
-      expect(getPrivilegedRoleFromUser({ email: 'arslanmalikgoraha@gmail.com', role: 'owner' })).toBe('lion');
-      expect(getPrivilegedRoleFromUser({ email: 'admin@example.com', role: 'admin' })).toBe('admin');
+      vi.stubEnv('VITE_CREATOR_SUPERUSER_EMAIL', 'arslanmalikgoraha@gmail.com');
+      expect(
+        getPrivilegedRoleFromUser({ email: 'arslanmalikgoraha@gmail.com', role: 'owner' })
+      ).toBe('lion');
+      expect(getPrivilegedRoleFromUser({ email: 'admin@example.com', role: 'admin' })).toBe(
+        'admin'
+      );
       expect(getPrivilegedRoleFromUser({ email: 'buyer@example.com', role: 'buyer' })).toBeNull();
     });
   });

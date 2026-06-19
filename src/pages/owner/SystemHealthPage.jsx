@@ -147,7 +147,7 @@ function SystemHealthPage() {
 
   return (
     <div className="system-health-page">
-      <button className="btn-back" onClick={() => navigate('/owner/dashboard')}>
+      <button className="btn-back" onClick={() => navigate('/crm')}>
         ← Back to Dashboard
       </button>
 

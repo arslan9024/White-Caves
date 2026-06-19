@@ -21,7 +21,16 @@ import { requirePermission, requireRole } from '../middleware/rbac.js';
 
 const router = Router();
 
-type RouteRequest = Request<Record<string, string>>;
+const routeParamToString = (value: string | string[] | undefined): string | null => {
+  if (typeof value === 'string' && value.trim().length > 0) {
+    return value;
+  }
+  if (Array.isArray(value) && value.length > 0 && typeof value[0] === 'string') {
+    const first = value[0].trim();
+    return first.length > 0 ? first : null;
+  }
+  return null;
+};
 const db = prisma as any;
 
 const VALID_CONTRACT_TYPES = ['sale', 'rental', 'mou', 'form_f', 'listing', 'management'] as const;
@@ -93,9 +102,14 @@ router.get(
 router.get(
   '/:id',
   requirePermission('view_contracts'),
-  asyncHandler(async (req: RouteRequest, res: Response) => {
-    validateIdParam(req.params.id, 'Contract ID');
-    const contract = await db.contract.findUnique({ where: { id: req.params.id } });
+  asyncHandler(async (req: Request, res: Response) => {
+    const contractId = routeParamToString(req.params.id);
+    if (!contractId) {
+      throw new AppError('Contract ID is required', 400);
+    }
+
+    validateIdParam(contractId, 'Contract ID');
+    const contract = await db.contract.findUnique({ where: { id: contractId } });
     if (!contract) throw new AppError('Contract not found', 404);
     res.status(200).json({ success: true, data: contract });
   })

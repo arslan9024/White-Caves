@@ -110,7 +110,7 @@ export const MAIN_NAVIGATION = [
     id: 'dashboard',
     label: 'Dashboard',
     icon: LayoutDashboard,
-    path: '/md/dashboard',
+    path: '/crm',
     workspace: 'executive',
     roles: ['md', 'owner', 'agent'],
     children: []
@@ -119,63 +119,63 @@ export const MAIN_NAVIGATION = [
     id: 'leads',
     label: 'Leads',
     icon: Users,
-    path: '/md/dashboard/leads',
+    path: '/crm?tab=leads',
     workspace: 'leads',
     roles: ['md', 'owner', 'agent'],
     assistants: ['clara', 'hunter'],
     children: [
-      { id: 'all-leads', label: 'All Leads', path: '/dashboard/leads' },
-      { id: 'pipeline', label: 'Pipeline', path: '/dashboard/leads/pipeline' },
-      { id: 'sources', label: 'Sources', path: '/dashboard/leads/sources' }
+      { id: 'all-leads', label: 'All Leads', path: '/crm?tab=leads' },
+      { id: 'pipeline', label: 'Pipeline', path: '/crm?tab=pipeline' },
+      { id: 'sources', label: 'Sources', path: '/crm?tab=sources' }
     ]
   },
   {
     id: 'properties',
     label: 'Properties',
     icon: Building2,
-    path: '/dashboard/properties',
+    path: '/crm?tab=properties',
     workspace: 'properties',
     roles: ['md', 'owner', 'agent', 'seller'],
     assistants: ['mary', 'daisy', 'olivia'],
     children: [
-      { id: 'inventory', label: 'Inventory', path: '/dashboard/properties/inventory' },
-      { id: 'featured', label: 'Featured', path: '/dashboard/properties/featured' },
-      { id: 'areas', label: 'Areas', path: '/dashboard/properties/areas' }
+      { id: 'inventory', label: 'Inventory', path: '/crm?tab=inventory' },
+      { id: 'featured', label: 'Featured', path: '/crm?tab=featured' },
+      { id: 'areas', label: 'Areas', path: '/crm?tab=areas' }
     ]
   },
   {
     id: 'agents',
     label: 'Agents',
     icon: UserCog,
-    path: '/dashboard/agents',
+    path: '/crm?tab=agents',
     workspace: 'agents',
     roles: ['md', 'owner'],
     assistants: ['nancy'],
     children: [
-      { id: 'team', label: 'Team', path: '/dashboard/agents/team' },
-      { id: 'performance', label: 'Performance', path: '/dashboard/agents/performance' },
-      { id: 'assignments', label: 'Assignments', path: '/dashboard/agents/assignments' }
+      { id: 'team', label: 'Team', path: '/crm?tab=team' },
+      { id: 'performance', label: 'Performance', path: '/crm?tab=performance' },
+      { id: 'assignments', label: 'Assignments', path: '/crm?tab=assignments' }
     ]
   },
   {
     id: 'finance',
     label: 'Finance',
     icon: DollarSign,
-    path: '/dashboard/finance',
+    path: '/crm?tab=finance',
     workspace: 'finance',
     roles: ['md', 'owner'],
     assistants: ['theodora', 'penny', 'quinn'],
     children: [
-      { id: 'overview', label: 'Overview', path: '/dashboard/finance' },
-      { id: 'commissions', label: 'Commissions', path: '/dashboard/finance/commissions' },
-      { id: 'payments', label: 'Payments', path: '/dashboard/finance/payments' }
+      { id: 'overview', label: 'Overview', path: '/crm?tab=finance' },
+      { id: 'commissions', label: 'Commissions', path: '/crm?tab=commissions' },
+      { id: 'payments', label: 'Payments', path: '/crm?tab=payments' }
     ]
   },
   {
     id: 'ai-command',
     label: 'AI Command',
     icon: Bot,
-    path: '/md/dashboard/ai',
+    path: '/crm?tab=ai-command',
     workspace: 'ai-command',
     roles: ['md', 'owner'],
     children: []
@@ -184,7 +184,7 @@ export const MAIN_NAVIGATION = [
     id: 'analytics',
     label: 'Analytics',
     icon: BarChart3,
-    path: '/md/dashboard/analytics',
+    path: '/crm?tab=analytics',
     workspace: 'analytics',
     roles: ['md', 'owner'],
     assistants: ['sage'],
@@ -194,7 +194,7 @@ export const MAIN_NAVIGATION = [
     id: 'settings',
     label: 'Settings',
     icon: Settings,
-    path: '/md/dashboard/settings',
+    path: '/crm?tab=settings',
     workspace: 'settings',
     roles: ['md', 'owner'],
     children: []

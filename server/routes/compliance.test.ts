@@ -315,11 +315,11 @@ describe('Compliance Routes — /api/compliance', () => {
       expect(res.body.error).toMatch(/500 characters/i);
     });
 
-    it('returns 403 for admin role (not owner/manager)', async () => {
+    it('returns 201 for admin role', async () => {
       const res = await request(createApp('admin'))
         .post('/api/compliance/reports')
         .send({ title: 'Test Report' });
-      expect(res.status).toBe(403);
+      expect(res.status).toBe(201);
     });
 
     it('returns 403 for agent role', async () => {
@@ -333,6 +333,13 @@ describe('Compliance Routes — /api/compliance', () => {
       const res = await request(createApp('manager'))
         .post('/api/compliance/reports')
         .send({ title: 'Manager Report' });
+      expect(res.status).toBe(201);
+    });
+
+    it('returns 201 for finance role', async () => {
+      const res = await request(createApp('finance'))
+        .post('/api/compliance/reports')
+        .send({ title: 'Finance Report' });
       expect(res.status).toBe(201);
     });
 
@@ -452,6 +459,20 @@ describe('Compliance Routes — /api/compliance', () => {
     it('returns 403 for agent on manual BRN check', async () => {
       const res = await request(createApp('agent')).post('/api/compliance/brn-check').send({});
       expect(res.status).toBe(403);
+    });
+
+    it('allows finance to trigger manual BRN check', async () => {
+      const brnCheckMock = checkBRNExpirations as unknown as ReturnType<typeof vi.fn>;
+      brnCheckMock.mockResolvedValueOnce({
+        notified: 0,
+        errors: 0,
+        agents: [],
+      });
+
+      const res = await request(createApp('finance')).post('/api/compliance/brn-check').send({});
+
+      expect(res.status).toBe(200);
+      expect(res.body.success).toBe(true);
     });
 
     it('returns BRN check history for finance role', async () => {
@@ -747,6 +768,25 @@ describe('Compliance Routes — /api/compliance', () => {
         })
       );
     });
+
+    it('allows finance to review KYC documents', async () => {
+      mockPrisma.activity.findUnique.mockResolvedValueOnce({
+        id: 'doc-2',
+        type: 'compliance',
+        action: 'kyc_document_uploaded',
+        leadId: 'lead-2',
+        metadata: { reviewStatus: 'pending' },
+      });
+      mockPrisma.activity.update.mockResolvedValueOnce({ id: 'doc-2' });
+      mockPrisma.lead.findUnique.mockResolvedValueOnce({ id: 'lead-2', tags: [] });
+
+      const res = await request(createApp('finance'))
+        .patch('/api/compliance/kyc/documents/doc-2/review')
+        .send({ decision: 'approved' });
+
+      expect(res.status).toBe(200);
+      expect(res.body.success).toBe(true);
+    });
   });
 
   // ── W4-005 AML workflow ─────────────────────────────────────────
@@ -848,7 +888,7 @@ describe('Compliance Routes — /api/compliance', () => {
 
   // ── W4-006 PDPL consent controls ────────────────────────────────
   describe('PDPL consent controls', () => {
-    it('creates consent record', async () => {
+    it('creates consent record for manager role', async () => {
       mockPrisma.lead.findUnique.mockResolvedValueOnce({ id: 'lead-1' });
       mockPrisma.activity.create.mockResolvedValueOnce({
         id: 'consent-1',
@@ -856,7 +896,7 @@ describe('Compliance Routes — /api/compliance', () => {
         metadata: { status: 'active', purpose: 'marketing_sms' },
       });
 
-      const res = await request(createApp('agent')).post('/api/compliance/consent').send({
+      const res = await request(createApp('manager')).post('/api/compliance/consent').send({
         entityType: 'lead',
         entityId: 'lead-1',
         purpose: 'marketing_sms',
@@ -866,6 +906,16 @@ describe('Compliance Routes — /api/compliance', () => {
       expect(res.status).toBe(201);
       expect(res.body.success).toBe(true);
       expect(res.body.data.status).toBe('active');
+    });
+
+    it('returns 403 for agent when creating consent record', async () => {
+      const res = await request(createApp('agent')).post('/api/compliance/consent').send({
+        entityType: 'lead',
+        entityId: 'lead-1',
+        purpose: 'marketing_sms',
+      });
+
+      expect(res.status).toBe(403);
     });
 
     it('revokes consent record', async () => {
@@ -931,7 +981,7 @@ describe('Compliance Routes — /api/compliance', () => {
       });
       mockPrisma.activity.update.mockResolvedValueOnce({ id: 'consent-1' });
 
-      const deleteRes = await request(createApp('admin')).delete(
+      const deleteRes = await request(createApp('finance')).delete(
         '/api/compliance/consent/consent-1'
       );
       expect(deleteRes.status).toBe(200);
@@ -944,6 +994,12 @@ describe('Compliance Routes — /api/compliance', () => {
           }),
         })
       );
+
+      it('returns 403 for agent on consent delete', async () => {
+        const res = await request(createApp('agent')).delete('/api/compliance/consent/consent-1');
+
+        expect(res.status).toBe(403);
+      });
     });
   });
 

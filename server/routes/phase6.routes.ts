@@ -419,10 +419,4 @@ router.get('/health', (req: Request, res: Response) => {
 });
 
 export { router as phase6Router };
-export {
-  queueService,
-  analyticsService,
-  notificationService,
-  encryptionService,
-  presenceService,
-};
+export { queueService, analyticsService, notificationService, encryptionService, presenceService };

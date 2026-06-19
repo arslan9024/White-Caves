@@ -14,7 +14,7 @@ vi.mock('./OffPlanTracker.styles', () => {
         Object.entries(rest).filter(([key]) => !key.startsWith('$'))
       );
       return (
-        <div data-testid={name} onClick={onClick} className={className} style={style} {...clean}>
+        <div data-testid={name} onClick={onClick} className={className} {...clean}>
           {src ? <img src={src} alt={alt} /> : null}
           {children}
         </div>
@@ -50,6 +50,7 @@ vi.mock('./OffPlanTracker.styles', () => {
     DetailLabel: stub('DetailLabel'),
     DetailValue: stub('DetailValue'),
     ProjectPrice: stub('ProjectPrice'),
+    ProjectFeatures: stub('ProjectFeatures'),
     FeaturesChip: stub('FeaturesChip'),
     ActionButtons: stub('ActionButtons'),
     ActionButton: stub('ActionButton'),

@@ -13,7 +13,16 @@ import { requireRole } from '../middleware/rbac.js';
 
 const router = Router();
 
-type RouteRequest = Request<Record<string, string>>;
+const routeParamToString = (value: string | string[] | undefined): string | null => {
+  if (typeof value === 'string' && value.trim().length > 0) {
+    return value;
+  }
+  if (Array.isArray(value) && value.length > 0 && typeof value[0] === 'string') {
+    const first = value[0].trim();
+    return first.length > 0 ? first : null;
+  }
+  return null;
+};
 
 type ModelTier = 'free' | 'standard' | 'premium';
 type TaskState = 'queued' | 'running' | 'done' | 'failed' | 'blocked';
@@ -708,8 +717,13 @@ router.get(
 
 router.get(
   '/snapshots/:fileName/compare',
-  asyncHandler(async (req: RouteRequest, res: Response) => {
-    const sourceSnapshot = readSnapshotDetail(req.params.fileName);
+  asyncHandler(async (req: Request, res: Response) => {
+    const fileName = routeParamToString(req.params.fileName);
+    if (!fileName) {
+      throw new AppError('Snapshot file name is required', 400);
+    }
+
+    const sourceSnapshot = readSnapshotDetail(fileName);
     const targetFileName =
       typeof req.query.target === 'string' && req.query.target.trim().length > 0
         ? req.query.target.trim()
@@ -783,8 +797,13 @@ router.get(
 
 router.get(
   '/snapshots/:fileName/recommend-restore',
-  asyncHandler(async (req: RouteRequest, res: Response) => {
-    const sourceSnapshot = readSnapshotDetail(req.params.fileName);
+  asyncHandler(async (req: Request, res: Response) => {
+    const fileName = routeParamToString(req.params.fileName);
+    if (!fileName) {
+      throw new AppError('Snapshot file name is required', 400);
+    }
+
+    const sourceSnapshot = readSnapshotDetail(fileName);
     const targetFileName =
       typeof req.query.target === 'string' && req.query.target.trim().length > 0
         ? req.query.target.trim()
@@ -831,8 +850,13 @@ router.get(
 
 router.get(
   '/snapshots/:fileName/preview',
-  asyncHandler(async (req: RouteRequest, res: Response) => {
-    const snapshot = readSnapshotDetail(req.params.fileName);
+  asyncHandler(async (req: Request, res: Response) => {
+    const fileName = routeParamToString(req.params.fileName);
+    if (!fileName) {
+      throw new AppError('Snapshot file name is required', 400);
+    }
+
+    const snapshot = readSnapshotDetail(fileName);
     const currentMetrics = computeMetrics(orchestrationTasks);
     const snapshotMetrics = snapshot.metrics;
 
@@ -873,8 +897,13 @@ router.get(
 
 router.get(
   '/snapshots/:fileName',
-  asyncHandler(async (req: RouteRequest, res: Response) => {
-    const snapshot = readSnapshotDetail(req.params.fileName);
+  asyncHandler(async (req: Request, res: Response) => {
+    const fileName = routeParamToString(req.params.fileName);
+    if (!fileName) {
+      throw new AppError('Snapshot file name is required', 400);
+    }
+
+    const snapshot = readSnapshotDetail(fileName);
     res.json({ success: true, data: snapshot });
   })
 );
@@ -908,8 +937,13 @@ router.post(
 router.delete(
   '/snapshots/:fileName',
   requireRole('owner', 'admin', 'manager'),
-  asyncHandler(async (req: RouteRequest, res: Response) => {
-    const deletedSnapshot = deleteSnapshot(req.params.fileName);
+  asyncHandler(async (req: Request, res: Response) => {
+    const fileName = routeParamToString(req.params.fileName);
+    if (!fileName) {
+      throw new AppError('Snapshot file name is required', 400);
+    }
+
+    const deletedSnapshot = deleteSnapshot(fileName);
     res.json({
       success: true,
       data: {

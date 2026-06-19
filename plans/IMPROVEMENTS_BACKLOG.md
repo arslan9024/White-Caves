@@ -12,6 +12,15 @@
 This file is the single consolidated backlog of all improvements identified during the April 2026 codebase audit.
 Each item includes: what the problem is, what needs to be done, and which phase it belongs to.
 
+## June 2026 operator-requested additions
+
+- [Homepage Public Site Modernization Backlog](./improvements/HOMEPAGE_PUBLIC_SITE_MODERNIZATION_BACKLOG.md)
+  - Fix live market data 500/fallback behavior on homepage
+  - Remove duplicate homepage components
+  - Make homepage composition more dynamic and event/state driven
+  - Correct card routing to listing/detail pages
+  - Upgrade homepage UI/UX to modern public-site standard
+
 For category-specific deep dives, see the linked detail files:
 
 | Category | File | Count |

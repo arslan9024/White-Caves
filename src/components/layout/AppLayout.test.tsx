@@ -57,7 +57,7 @@ vi.mock('./AppLayout/styles', () => ({
   ),
 }));
 
-import AppLayout from './AppLayout';
+import AppLayout, { canReadCompanyActivityNotifications } from './AppLayout';
 import navigationReducer from '../../store/navigationSlice';
 import userReducer from '../../store/userSlice';
 import sidebarReducer from '../../store/slices/sidebarSlice';
@@ -258,6 +258,23 @@ describe('AppLayout', () => {
         </Provider>
       );
       expect(store.getState().navigation.activeRole).not.toBe('unknown');
+    });
+  });
+
+  describe('Activity notification permissions', () => {
+    it('allows owner, manager, admin, and aliased managing_director roles', () => {
+      expect(canReadCompanyActivityNotifications('owner')).toBe(true);
+      expect(canReadCompanyActivityNotifications('manager')).toBe(true);
+      expect(canReadCompanyActivityNotifications('admin')).toBe(true);
+      expect(canReadCompanyActivityNotifications('managing_director')).toBe(true);
+    });
+
+    it('blocks finance, agent, and customer-facing roles', () => {
+      expect(canReadCompanyActivityNotifications('finance')).toBe(false);
+      expect(canReadCompanyActivityNotifications('agent')).toBe(false);
+      expect(canReadCompanyActivityNotifications('buyer')).toBe(false);
+      expect(canReadCompanyActivityNotifications('tenant')).toBe(false);
+      expect(canReadCompanyActivityNotifications('landlord')).toBe(false);
     });
   });
 });

@@ -9,8 +9,8 @@ import React, {
   useState,
 } from 'react';
 import { useSelector } from 'react-redux';
-import { useNavigate } from 'react-router-dom';
-import { useReducedMotion } from 'framer-motion';
+import { useNavigate, useSearchParams } from 'react-router-dom';
+import { AnimatePresence, motion, useReducedMotion } from 'framer-motion';
 import SuspenseLoader from '../components/common/SuspenseLoader';
 import RouteErrorBoundary from '../components/RouteErrorBoundary';
 import DepartmentContentPanel from '../components/layout/DepartmentContentPanel/DepartmentContentPanel';
@@ -22,24 +22,20 @@ import DashboardSidebar from '../components/layout/DashboardSidebar/DashboardSid
 import SubNavBar from '../components/common/SubNavBar';
 import { DashboardSubTabRenderer } from '../components/dashboard/DashboardRenderer';
 import SuperuserControlCenter from '../components/dashboard/SuperuserControlCenter';
-import DashboardKPIStrip from '../components/dashboard/DashboardKPIStrip';
-import DashboardGreetingBanner from '../components/dashboard/DashboardGreetingBanner';
+import DashboardTopBar from '../components/dashboard/DashboardTopBar';
+import DashboardSideRail from '../components/dashboard/DashboardSideRail';
+import DashboardPageHeader from '../components/dashboard/DashboardPageHeader';
+import DashboardKpiStrip, { type KpiCardData } from '../components/dashboard/DashboardKpiStrip';
+import DashboardProfileCompletion from '../components/dashboard/DashboardProfileCompletion';
 import DashboardCommandPalette from '../components/dashboard/DashboardCommandPalette';
-import DashboardWorkspaceTabs from '../components/dashboard/DashboardWorkspaceTabs';
-import DashboardActivityFeed from '../components/dashboard/DashboardActivityFeed';
-import DashboardModuleGrid from '../components/dashboard/DashboardModuleGrid';
-import AIAssistantGrid from '../components/dashboard/AIAssistantGrid';
+import DashboardModuleToolbar from '../components/dashboard/DashboardModuleToolbar';
 import CRMContextPanel from '../components/crm/CRMContextPanel';
 import { useUnifiedDashboard } from '../hooks/useUnifiedDashboard';
 import type { DashboardData, CRMModuleProps } from '../hooks/useUnifiedDashboard';
 import { AI_ASSISTANTS_REGISTRY } from '../store/slices/aiAssistant/registry';
 import { selectSelectedAssistant } from '../store/slices/sidebarSlice';
 import { SUPERUSER_CRM_MODULE_ORDER, getCRMModule } from '../config/crmModuleRegistry';
-import {
-  ZONE_LABELS,
-  groupModulesForMD,
-  groupWorkspacesForMD,
-} from '../config/crmNavigationSchema';
+import { ZONE_LABELS, groupModulesForMD } from '../config/crmNavigationSchema';
 import type { RootState } from '../store/store';
 import './UnifiedDashboardPage.css';
 import '../styles/dashboard-tokens.css';
@@ -65,7 +61,27 @@ import type {
 import AdminDashboard from '../components/admin/AdminDashboard';
 
 const AIAssistantHub = lazy(() => import('../components/crm/AIAssistantHub'));
-const AICommandCenter = lazy(() => import('../components/crm/AICommandCenter'));
+const AICommandCenter = lazy(() => import('../components/crm/AICommandCenter.tsx'));
+const NadiaWhatsAppCRM = lazy(() => import('../components/crm/NadiaWhatsAppCRM'));
+const MaryInventoryCRM = lazy(() => import('../components/crm/MaryInventoryCRM_NEW'));
+const ClaraLeadsCRM = lazy(() => import('../components/crm/ClaraLeadsCRM_NEW'));
+const NinaWhatsAppBotCRM = lazy(() => import('../components/crm/NinaWhatsAppBotCRM_NEW'));
+const NancyHRCRM = lazy(() => import('../components/crm/NancyHRCRM_NEW'));
+const SophiaSalesCRM = lazy(() => import('../components/crm/SophiaSalesCRM_NEW'));
+const DaisyLeasingCRM = lazy(() => import('../components/crm/DaisyLeasingCRM_NEW'));
+const TheodoraFinanceCRM = lazy(() => import('../components/crm/TheodoraFinanceCRM_NEW'));
+const OliviaMarketingCRM = lazy(() => import('../components/crm/OliviaMarketingCRM_NEW'));
+const ZoeExecutiveCRM = lazy(() => import('../components/crm/ZoeExecutiveCRM_NEW'));
+const LailaComplianceCRM = lazy(() => import('../components/crm/LailaComplianceCRM_NEW'));
+const AuroraCTODashboard = lazy(() => import('../components/crm/AuroraCTODashboard_NEW'));
+const HazelFrontendCRM = lazy(() => import('../components/crm/HazelFrontendCRM_NEW'));
+const WillowBackendCRM = lazy(() => import('../components/crm/WillowBackendCRM_NEW'));
+const UnifiedCRM = lazy(() => import('../components/crm/UnifiedCRM'));
+const RERAComplianceModule = lazy(() => import('../components/crm/RERAComplianceModule'));
+const DLDIntegrationModule = lazy(() => import('../components/crm/DLDIntegrationModule'));
+const LeadScoringModule = lazy(() => import('../components/crm/LeadScoringModule'));
+const PropertyValuationModule = lazy(() => import('../components/crm/PropertyValuationModule'));
+const MarketAnalyticsModule = lazy(() => import('../components/crm/MarketAnalyticsModule'));
 
 interface CRMModule {
   Component: ComponentType<CRMModuleProps>;
@@ -93,18 +109,51 @@ const TabLoadingFallback: FC = () => (
   </div>
 );
 
-const CRM_MODULES: Record<string, CRMModule> = SUPERUSER_CRM_MODULE_ORDER.reduce(
-  (accumulator, moduleId) => {
-    const moduleDef = getCRMModule(moduleId);
-    if (!moduleDef) return accumulator;
-    accumulator[moduleId] = {
-      Component: moduleDef.Component as ComponentType<CRMModuleProps>,
-      label: moduleDef.label,
-    };
-    return accumulator;
-  },
-  {} as Record<string, CRMModule>
+const DashboardSearchItem: FC<{ item: SearchItem; onSelect: (item: SearchItem) => void }> = ({
+  item,
+  onSelect,
+}) => (
+  <button
+    className="dashboard-search-result"
+    onMouseDown={event => {
+      event.preventDefault();
+      onSelect(item);
+    }}
+  >
+    <span className="dashboard-search-result__icon" aria-hidden="true">
+      {item.icon}
+    </span>
+    <span className="dashboard-search-result__copy">
+      <strong>{item.label}</strong>
+      <small>{item.meta}</small>
+    </span>
+  </button>
 );
+
+const UnifiedCRMAdapter: FC<CRMModuleProps> = () => <UnifiedCRM />;
+
+const CRM_MODULES: Record<string, CRMModule> = {
+  unified: { Component: UnifiedCRMAdapter, label: 'Unified CRM Dashboard' },
+  nadia: { Component: NadiaWhatsAppCRM, label: 'WhatsApp CRM' },
+  mary: { Component: MaryInventoryCRM, label: 'Inventory CRM' },
+  clara: { Component: ClaraLeadsCRM, label: 'Leads CRM' },
+  nina: { Component: NinaWhatsAppBotCRM, label: 'WhatsApp Bot CRM' },
+  nancy: { Component: NancyHRCRM, label: 'HR CRM' },
+  sophia: { Component: SophiaSalesCRM, label: 'Sales CRM' },
+  daisy: { Component: DaisyLeasingCRM, label: 'Leasing CRM' },
+  theodora: { Component: TheodoraFinanceCRM, label: 'Finance CRM' },
+  olivia: { Component: OliviaMarketingCRM, label: 'Marketing CRM' },
+  zoe: { Component: ZoeExecutiveCRM, label: 'Executive CRM' },
+  laila: { Component: LailaComplianceCRM, label: 'Compliance CRM' },
+  aurora: { Component: AuroraCTODashboard, label: 'CTO Dashboard' },
+  hazel: { Component: HazelFrontendCRM, label: 'Frontend CRM' },
+  willow: { Component: WillowBackendCRM, label: 'Backend CRM' },
+  rera: { Component: RERAComplianceModule, label: 'RERA Compliance' },
+  dld: { Component: DLDIntegrationModule, label: 'DLD Integration' },
+  leads: { Component: LeadScoringModule, label: 'Lead Scoring' },
+  valuation: { Component: PropertyValuationModule, label: 'Property Valuation' },
+  analytics: { Component: MarketAnalyticsModule, label: 'Market Analytics' },
+};
 
 const moduleEntries = Object.entries(CRM_MODULES);
 
@@ -152,6 +201,7 @@ const formatCurrency = (value: number): string =>
 
 const UnifiedDashboardPage: FC = () => {
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   const {
     currentRole,
     currentModule,
@@ -181,11 +231,14 @@ const UnifiedDashboardPage: FC = () => {
   const [commandQuery, setCommandQuery] = useState('');
   const [globalSearchQuery, setGlobalSearchQuery] = useState('');
   const [isGlobalSearchOpen, setIsGlobalSearchOpen] = useState(false);
-  const [aiModulesExpanded, setAiModulesExpanded] = useState(true);
+  const [modulesExpanded, setModulesExpanded] = useState(true);
   const [advancedExpanded, setAdvancedExpanded] = useState(false);
   const [departmentsExpanded, setDepartmentsExpanded] = useState(true);
   const [selectedContext, setSelectedContext] = useState<SearchItem | null>(null);
   const [isMobileDrawerOpen, setIsMobileDrawerOpen] = useState(false);
+  const globalSearchRef = useRef<HTMLDivElement | null>(null);
+  const tabButtonRefs = useRef<Array<HTMLButtonElement | null>>([]);
+  const lastFocusedElementRef = useRef<HTMLElement | null>(null);
 
   useEffect(() => {
     if (!selectedAssistant) return;
@@ -212,19 +265,39 @@ const UnifiedDashboardPage: FC = () => {
   }, []);
 
   useEffect(() => {
-    if (!isMobileDrawerOpen) return;
-
-    const onResize = () => {
-      if (window.innerWidth > 768) {
-        setIsMobileDrawerOpen(false);
+    const handleOutsideClick = (event: MouseEvent) => {
+      if (!globalSearchRef.current?.contains(event.target as Node)) {
+        setIsGlobalSearchOpen(false);
       }
     };
 
-    window.addEventListener('resize', onResize);
-    return () => window.removeEventListener('resize', onResize);
-  }, [isMobileDrawerOpen]);
+    document.addEventListener('mousedown', handleOutsideClick);
+    return () => document.removeEventListener('mousedown', handleOutsideClick);
+  }, []);
+
+  useEffect(() => {
+    if (isCommandPaletteOpen) {
+      const activeElement = document.activeElement;
+      if (activeElement instanceof HTMLElement) {
+        lastFocusedElementRef.current = activeElement;
+      }
+      return;
+    }
+
+    const lastFocusedElement = lastFocusedElementRef.current;
+    if (lastFocusedElement && document.contains(lastFocusedElement)) {
+      lastFocusedElement.focus();
+    }
+
+    if (commandQuery.length > 0) {
+      setCommandQuery('');
+    }
+  }, [commandQuery, isCommandPaletteOpen]);
 
   const selectedCRMModuleConfig = selectedCRMModule ? CRM_MODULES[selectedCRMModule] : null;
+  const isExecutiveCockpitMode = searchParams.get('cockpit') === 'md';
+  const isManagingDirector = currentRole === 'managing_director';
+  const isExecutiveRole = isSuperUser || isManagingDirector;
   const currentTab = availableTabs.find(tab => tab.id === activeTab);
 
   const overview = (dashboardData?.overview ?? {}) as GenericEntity;
@@ -245,7 +318,7 @@ const UnifiedDashboardPage: FC = () => {
   }).format(new Date());
   const greetingLine = `${getTimeGreeting(new Date())}, ${greetingName} · ${todayLabel} · ${hotLeadsCount} active leads need follow-up`;
 
-  const kpiCards = useMemo(
+  const kpiCards = useMemo<KpiCardData[]>(
     () => [
       {
         id: 'properties',
@@ -311,8 +384,14 @@ const UnifiedDashboardPage: FC = () => {
   }, [profileCompletionItems]);
 
   const hasProfileCompletionGaps = profileCompletionPercent < 100;
+  const isDashboardDataEmpty =
+    propertiesCount === 0 &&
+    agentsCount === 0 &&
+    leadsCount === 0 &&
+    contractsCount === 0 &&
+    hotLeadsCount === 0 &&
+    monthlyRevenue <= 0;
   const superuserModuleCount = moduleEntries.length;
-  const groupedWorkspaces = useMemo(() => groupWorkspacesForMD(availableTabs), [availableTabs]);
   const groupedModules = useMemo(() => groupModulesForMD(moduleEntries), []);
   const departmentZones = useMemo(
     () =>
@@ -333,7 +412,7 @@ const UnifiedDashboardPage: FC = () => {
       type: 'tab' as const,
       target: tab.id,
     }));
-    const modules = isSuperUser
+    const modules = isExecutiveRole
       ? moduleEntries.map(([key, module]) => {
           const def = getCRMModule(key);
           return {
@@ -351,7 +430,7 @@ const UnifiedDashboardPage: FC = () => {
       if (!query) return true;
       return `${item.label} ${item.meta}`.toLowerCase().includes(query);
     });
-  }, [availableTabs, commandQuery, isSuperUser]);
+  }, [availableTabs, commandQuery, isExecutiveRole]);
 
   const globalSearchResults = useMemo<SearchItem[]>(() => {
     const query = globalSearchQuery.trim().toLowerCase();
@@ -393,7 +472,7 @@ const UnifiedDashboardPage: FC = () => {
           type: 'tab' as const,
           target: tab.id,
         })),
-      ...(isSuperUser
+      ...(isExecutiveRole
         ? moduleEntries
             .filter(([, module]) => module.label.toLowerCase().includes(query))
             .map(([key, module]) => {
@@ -424,7 +503,7 @@ const UnifiedDashboardPage: FC = () => {
     dashboardData?.leads,
     dashboardData?.properties,
     globalSearchQuery,
-    isSuperUser,
+    isExecutiveRole,
   ]);
 
   const commandItemsById = useMemo(
@@ -590,6 +669,38 @@ const UnifiedDashboardPage: FC = () => {
     }
   };
 
+  const handleTabKeyDown = (event: KeyboardEvent<HTMLButtonElement>, index: number) => {
+    const renderedButtons = tabButtonRefs.current.filter(Boolean);
+    const lastIndex = renderedButtons.length - 1;
+
+    if (lastIndex < 0) {
+      return;
+    }
+
+    switch (event.key) {
+      case 'ArrowDown':
+      case 'ArrowRight':
+        event.preventDefault();
+        renderedButtons[index === lastIndex ? 0 : index + 1]?.focus();
+        break;
+      case 'ArrowUp':
+      case 'ArrowLeft':
+        event.preventDefault();
+        renderedButtons[index === 0 ? lastIndex : index - 1]?.focus();
+        break;
+      case 'Home':
+        event.preventDefault();
+        renderedButtons[0]?.focus();
+        break;
+      case 'End':
+        event.preventDefault();
+        renderedButtons[lastIndex]?.focus();
+        break;
+      default:
+        break;
+    }
+  };
+
   if (!user) {
     return (
       <div className="unified-dashboard unified-dashboard-error">
@@ -603,6 +714,38 @@ const UnifiedDashboardPage: FC = () => {
 
   return (
     <AuthenticatedPageShell>
+      <DashboardTopBar
+        globalSearchRef={globalSearchRef}
+        globalSearchQuery={globalSearchQuery}
+        isGlobalSearchOpen={isGlobalSearchOpen && globalSearchQuery.trim().length > 0}
+        globalSearchResults={
+          globalSearchResults.length > 0 ? (
+            globalSearchResults.map(item => (
+              <DashboardSearchItem key={item.id} item={item} onSelect={executeSearchItem} />
+            ))
+          ) : (
+            <div className="dashboard-search-results__empty" role="status" aria-live="polite">
+              No matches found. Try another lead, property, tab, or module keyword.
+            </div>
+          )
+        }
+        hotLeadsCount={hotLeadsCount}
+        greetingName={greetingName}
+        userEmail={user.email}
+        onOpenCommandPalette={() => setIsCommandPaletteOpen(true)}
+        onQuickAction={() => setIsCommandPaletteOpen(true)}
+        onSearchChange={value => {
+          setGlobalSearchQuery(value);
+          setIsGlobalSearchOpen(true);
+        }}
+        onSearchFocus={() => setIsGlobalSearchOpen(true)}
+        onSearchEnter={() => {
+          if (globalSearchResults[0]) {
+            executeSearchItem(globalSearchResults[0]);
+          }
+        }}
+      />
+
       {error && (
         <div className="unified-dashboard-error-banner" role="alert" aria-live="assertive">
           <span className="error-icon" aria-hidden="true">
@@ -615,213 +758,277 @@ const UnifiedDashboardPage: FC = () => {
         </div>
       )}
 
-      <DashboardShell
-        topbar={
-          <DashboardTopBar
-            isSuperUser={isSuperUser}
-            greetingName={greetingName}
-            email={user.email}
-            hotLeadsCount={hotLeadsCount}
-            searchQuery={globalSearchQuery}
-            searchResults={globalSearchResults}
-            isSearchOpen={isGlobalSearchOpen}
-            onSearchChange={query => {
-              setGlobalSearchQuery(query);
-              setIsGlobalSearchOpen(true);
-            }}
-            onSearchFocus={() => setIsGlobalSearchOpen(true)}
-            onSearchEnter={() => {
-              if (globalSearchResults[0]) {
-                executeSearchItem(globalSearchResults[0]);
-              }
-            }}
-            onSearchResultSelect={resultId => {
-              const item = globalSearchItemsById.get(resultId);
-              if (item) executeSearchItem(item);
-            }}
-            onSearchBlurOutside={() => setIsGlobalSearchOpen(false)}
-            onOpenMobileMenu={() => setIsMobileDrawerOpen(true)}
-            onOpenCommandPalette={() => setIsCommandPaletteOpen(true)}
-          />
-        }
-        sidebar={
-          <DashboardSidebar
-            isSuperUser={isSuperUser}
+      <div className="dashboard-workspace-shell">
+        {!selectedDepartment && (
+          <DashboardSideRail
+            availableTabs={availableTabs}
             activeTab={activeTab}
             selectedCRMModule={selectedCRMModule}
-            pinnedTabs={groupedWorkspaces.pinned}
-            coreTabs={groupedWorkspaces.core}
-            aiModules={groupedModules.ai}
-            advancedModules={groupedModules.advanced}
-            zoneGroups={departmentZones.map(([zone, items]) => ({ zone, items }))}
-            zoneLabels={ZONE_LABELS}
-            aiModulesExpanded={aiModulesExpanded}
-            departmentsExpanded={departmentsExpanded}
-            advancedExpanded={advancedExpanded}
-            onToggleAiModules={() => setAiModulesExpanded(current => !current)}
-            onToggleDepartments={() => setDepartmentsExpanded(current => !current)}
-            onToggleAdvanced={() => setAdvancedExpanded(current => !current)}
-            onSelectTab={tabId => {
-              const tab = availableTabs.find(item => item.id === tabId);
-              setSelectedContext({
-                id: `tab-${tabId}`,
-                icon: tab?.icon ?? '🧭',
-                label: tab?.label ?? tabId,
-                meta: 'Workspace',
-                type: 'tab',
-                target: tabId,
-              });
-              handleWorkspaceSelect(tabId);
-            }}
-            onSelectModule={moduleId => {
-              const module = getCRMModule(moduleId);
-              setSelectedContext({
-                id: `module-${moduleId}`,
-                icon: module?.icon ?? '🤖',
-                label: module?.label ?? moduleId,
-                meta: module?.zone ? (ZONE_LABELS[module.zone] ?? module.zone) : 'CRM module',
-                type: 'module',
-                target: moduleId,
-              });
-              handleCRMModuleSelect(moduleId);
-            }}
-          />
-        }
-        rightPanel={
-          !selectedDepartment ? (
-            <CRMContextPanel
-              isSuperUser={isSuperUser}
-              activeWorkspaceLabel={selectedCRMModuleConfig?.label ?? currentTab?.label ?? 'Overview'}
-              activeWorkspaceMeta={
-                selectedCRMModuleConfig ? 'AI CRM module context' : 'Workspace context'
-              }
-              selectedContext={
-                selectedContext
-                  ? {
-                      label: selectedContext.label,
-                      meta: selectedContext.meta,
-                      type: selectedContext.type,
-                    }
-                  : null
-              }
-              recentActivities={
-                Array.isArray(dashboardData?.recentActivities) ? dashboardData.recentActivities : []
-              }
-              onOpenCommandPalette={() => setIsCommandPaletteOpen(true)}
-              onOpenQuickAction={() => setIsCommandPaletteOpen(true)}
-            />
-          ) : undefined
-        }
-      >
-        <main id="dashboard-main" className="dashboard-main-panel">
-          <DashboardGreetingBanner
-            currentModule={currentModule}
             currentRole={currentRole}
-            workspaceLabel={selectedCRMModuleConfig?.label ?? currentTab?.label ?? 'Overview'}
+            isSuperUser={isSuperUser}
+            modulesExpanded={modulesExpanded}
+            moduleEntries={moduleEntries}
+            tabButtonRefs={tabButtonRefs}
+            onSelectTab={tabId => {
+              handleBackFromCRM();
+              setActiveTab(tabId);
+            }}
+            onTabKeyDown={handleTabKeyDown}
+            onToggleModules={() => setModulesExpanded(current => !current)}
+            onSelectModule={handleCRMModuleSelect}
+          />
+        )}
+
+        <main id="dashboard-main" className="dashboard-main-panel">
+          <DashboardPageHeader
+            currentModule={currentModule ?? null}
+            currentRole={currentRole}
+            currentTabLabel={currentTab?.label}
+            selectedCRMModuleLabel={selectedCRMModuleConfig?.label}
             roleLabel={roleInfo.label}
             roleDescription={roleInfo.description}
             greetingLine={greetingLine}
             userEmail={user.email}
-            profileCompletionPercent={profileCompletionPercent}
-            profileCompletionItems={profileCompletionItems}
-            showProfileCompletion={!isSuperUser && hasProfileCompletionGaps}
-            onOpenProfile={() => navigate('/profile')}
           />
 
-          {isSuperUser && !selectedDepartment && (
+          {isExecutiveCockpitMode && isSuperUser && !selectedDepartment && (
+            <section
+              className="dashboard-executive-cockpit-banner"
+              aria-label="Managing Director cockpit mode"
+            >
+              <div>
+                <p className="dashboard-executive-cockpit-banner__eyebrow">
+                  Managing Director · Full Company View
+                </p>
+                <h2>Executive cockpit engaged</h2>
+                <p>
+                  Priority control over portfolio, pipeline, team, finance, compliance, and AI
+                  modules. All company operations visible in one place.
+                </p>
+              </div>
+              <div className="dashboard-executive-cockpit-banner__actions">
+                <button
+                  type="button"
+                  className="dashboard-superuser-btn dashboard-superuser-btn--primary"
+                  onClick={() => setIsCommandPaletteOpen(true)}
+                >
+                  Command palette
+                </button>
+                <button
+                  type="button"
+                  className="dashboard-superuser-btn"
+                  onClick={() => openWorkspaceTab('overview', 'unified')}
+                >
+                  Overview
+                </button>
+                <button
+                  type="button"
+                  className="dashboard-superuser-btn"
+                  onClick={() => openWorkspaceTab('analytics', 'analytics')}
+                >
+                  Analytics
+                </button>
+                <button
+                  type="button"
+                  className="dashboard-superuser-btn"
+                  onClick={() => handleCRMModuleSelect('theodora')}
+                >
+                  Finance
+                </button>
+                <button
+                  type="button"
+                  className="dashboard-superuser-btn"
+                  onClick={() => handleCRMModuleSelect('laila')}
+                >
+                  Compliance
+                </button>
+                <button
+                  type="button"
+                  className="dashboard-superuser-btn"
+                  onClick={() => openWorkspaceTab('ai-hub', 'unified')}
+                >
+                  AI modules
+                </button>
+                <button
+                  type="button"
+                  className="dashboard-superuser-btn"
+                  onClick={() => openWorkspaceTab('users', 'unified')}
+                >
+                  Users
+                </button>
+                <button
+                  type="button"
+                  className="dashboard-superuser-btn"
+                  onClick={() => navigate('/profile')}
+                >
+                  Profile
+                </button>
+              </div>
+            </section>
+          )}
+
+          {isExecutiveRole && !selectedDepartment && (
             <SuperuserControlCenter
+              persona={isSuperUser ? 'superuser' : 'executive'}
               hotLeadsCount={hotLeadsCount}
               superuserModuleCount={superuserModuleCount}
               monthlyRevenueLabel={formatCurrency(monthlyRevenue)}
               profileCompletionPercent={profileCompletionPercent}
+              propertiesCount={propertiesCount}
+              agentsCount={agentsCount}
+              leadsCount={leadsCount}
+              contractsCount={contractsCount}
               onRefreshData={handleRetryAll}
               onOpenCommandPalette={() => {
-                setAiModulesExpanded(true);
+                setModulesExpanded(true);
                 setIsCommandPaletteOpen(true);
               }}
               onOpenAdminWorkspace={() => openWorkspaceTab('admin', 'unified')}
               onOpenAnalyticsWorkspace={() => openWorkspaceTab('analytics', 'analytics')}
               onOpenUsersWorkspace={() => openWorkspaceTab('users', 'unified')}
               onLaunchUnifiedCRM={() => handleCRMModuleSelect('unified')}
-              onOpenGoals={() => navigate('/owner/goals/argentina')}
+              onOpenPropertiesWorkspace={() => openWorkspaceTab('properties', 'unified')}
+              onOpenLeadsWorkspace={() => openWorkspaceTab('leads', 'leads')}
+              onOpenAgentsWorkspace={() => openWorkspaceTab('agents', 'unified')}
+              onOpenContractsWorkspace={() => openWorkspaceTab('contracts', 'unified')}
+              onOpenFinanceWorkspace={() => handleCRMModuleSelect('theodora')}
+              onOpenComplianceWorkspace={() => handleCRMModuleSelect('laila')}
+              onLaunchAIModules={() => openWorkspaceTab('ai-hub', 'unified')}
             />
           )}
 
-          {!selectedDepartment && !selectedCRMModule && (
-            <>
-              <DashboardKPIStrip cards={kpiCards} />
-              {isSuperUser && (
-                <>
-                  <DashboardModuleGrid
-                    modulesByZone={departmentZones}
-                    zoneLabels={ZONE_LABELS}
-                    onOpenModule={handleCRMModuleSelect}
-                  />
-                  <AIAssistantGrid onOpenAssistant={assistantId => handleCRMModuleSelect(assistantId)} />
-                  <DashboardActivityFeed
-                    seedItems={
-                      Array.isArray(dashboardData?.recentActivities)
-                        ? (dashboardData.recentActivities as Record<string, unknown>[])
-                        : []
-                    }
-                    onViewAll={() => handleCRMModuleSelect('henryAudit')}
-                  />
-                </>
-              )}
-            </>
+          {hasProfileCompletionGaps && (
+            <DashboardProfileCompletion
+              percent={profileCompletionPercent}
+              items={profileCompletionItems}
+              onFinishSetup={() => navigate('/profile')}
+            />
           )}
+
+          {!selectedDepartment && !selectedCRMModule && <DashboardKpiStrip cards={kpiCards} />}
+
+          {!selectedDepartment &&
+            !selectedCRMModule &&
+            !isLoading &&
+            !error &&
+            isDashboardDataEmpty && (
+              <section
+                className="dashboard-empty-state"
+                aria-label="Dashboard empty state"
+                role="status"
+              >
+                <p className="dashboard-empty-state__eyebrow">No data yet</p>
+                <h2>Your executive dashboard is ready</h2>
+                <p>
+                  Connect your first workflows to populate KPIs, activity timeline, and operations
+                  intelligence.
+                </p>
+                <div className="dashboard-empty-state__actions">
+                  <button
+                    type="button"
+                    className="dashboard-superuser-btn dashboard-superuser-btn--primary"
+                    onClick={() => setIsCommandPaletteOpen(true)}
+                  >
+                    Open command palette
+                  </button>
+                  <button
+                    type="button"
+                    className="dashboard-superuser-btn"
+                    onClick={() => handleCRMModuleSelect('unified')}
+                  >
+                    Open Unified CRM
+                  </button>
+                </div>
+              </section>
+            )}
 
           {selectedDepartment ? (
             <div className="dashboard-surface-panel">
               <DepartmentContentPanel />
             </div>
           ) : (
-            <DashboardWorkspaceTabs
-              roleSubNavItemsCount={roleSubNavItems.length}
-              subNav={<SubNavBar moduleId={currentModule ?? currentRole} />}
-              selectedCRMModuleLabel={selectedCRMModuleConfig?.label}
-              showModuleToolbar={Boolean(selectedCRMModuleConfig && isSuperUser)}
-              contentKey={activeContentKey}
-              isLoading={isLoading}
-              content={<Suspense fallback={<TabLoadingFallback />}>{renderTabContent()}</Suspense>}
-              loadingFallback={<TabLoadingFallback />}
-              prefersReducedMotion={Boolean(prefersReducedMotion)}
-              onBackFromCRM={handleBackFromCRM}
-            />
+            <>
+              {roleSubNavItems.length > 0 && (
+                <div className="dashboard-subnav-panel">
+                  <SubNavBar moduleId={currentModule ?? currentRole} />
+                </div>
+              )}
+
+              <div className="dashboard-content-frame">
+                {selectedCRMModuleConfig && isSuperUser && (
+                  <DashboardModuleToolbar
+                    label={selectedCRMModuleConfig.label}
+                    onBack={handleBackFromCRM}
+                  />
+                )}
+
+                <AnimatePresence mode="wait" initial={false}>
+                  <motion.section
+                    key={activeContentKey}
+                    className="unified-dashboard-content"
+                    initial={
+                      prefersReducedMotion
+                        ? false
+                        : {
+                            opacity: 0,
+                            x: selectedCRMModule ? 24 : 0,
+                            y: selectedCRMModule ? 0 : 12,
+                          }
+                    }
+                    animate={prefersReducedMotion ? {} : { opacity: 1, x: 0, y: 0 }}
+                    exit={prefersReducedMotion ? {} : { opacity: 0, y: -8 }}
+                    transition={{ duration: prefersReducedMotion ? 0 : 0.22, ease: 'easeOut' }}
+                  >
+                    {isLoading ? (
+                      <TabLoadingFallback />
+                    ) : (
+                      <Suspense fallback={<TabLoadingFallback />}>{renderTabContent()}</Suspense>
+                    )}
+                  </motion.section>
+                </AnimatePresence>
+              </div>
+            </>
           )}
         </main>
-      </DashboardShell>
 
-      <MobileCRMDrawer
-        isOpen={isMobileDrawerOpen}
-        tabs={availableTabs}
-        activeTab={activeTab}
-        selectedCRMModule={selectedCRMModule}
-        isSuperUser={isSuperUser}
-        moduleEntries={moduleEntries}
-        onClose={() => setIsMobileDrawerOpen(false)}
-        onSelectTab={tabId => {
-          handleWorkspaceSelect(tabId);
-        }}
-        onSelectModule={moduleId => handleCRMModuleSelect(moduleId)}
-      />
+        {!selectedDepartment && (
+          <CRMContextPanel
+            isSuperUser={isSuperUser}
+            activeWorkspaceLabel={selectedCRMModuleConfig?.label ?? currentTab?.label ?? 'Overview'}
+            activeWorkspaceMeta={
+              selectedCRMModuleConfig ? 'AI CRM module context' : 'Workspace context'
+            }
+            selectedContext={
+              selectedContext
+                ? {
+                    label: selectedContext.label,
+                    meta: selectedContext.meta,
+                    type: selectedContext.type,
+                  }
+                : null
+            }
+            recentActivities={
+              Array.isArray(dashboardData?.recentActivities) ? dashboardData.recentActivities : []
+            }
+            onOpenCommandPalette={() => setIsCommandPaletteOpen(true)}
+            onOpenQuickAction={() => setIsCommandPaletteOpen(true)}
+          />
+        )}
+      </div>
 
       <DashboardCommandPalette
         isOpen={isCommandPaletteOpen}
-        prefersReducedMotion={Boolean(prefersReducedMotion)}
         query={commandQuery}
         items={commandItems}
+        prefersReducedMotion={Boolean(prefersReducedMotion)}
         onClose={() => setIsCommandPaletteOpen(false)}
         onQueryChange={setCommandQuery}
-        onRunTopResult={() => {
-          if (commandItems[0]) {
-            executeSearchItem(commandItems[0]);
+        onEnter={activeIndex => {
+          if (commandItems[activeIndex]) {
+            executeSearchItem(commandItems[activeIndex]);
           }
         }}
-        onSelectItem={itemId => {
-          const item = commandItemsById.get(itemId);
-          if (item) executeSearchItem(item);
-        }}
+        onSelect={item => executeSearchItem(item as unknown as SearchItem)}
       />
     </AuthenticatedPageShell>
   );

@@ -1,5 +1,5 @@
 /**
- * Users API Routes â€” Full User Management
+ * Users API Routes — Full User Management
  * Endpoints: /api/users
  *
  * Provides admin-level CRUD over all platform users (all roles).
@@ -30,7 +30,16 @@ import {
 
 const router = Router();
 
-type RouteRequest = Request<Record<string, string>>;
+const routeParamToString = (value: string | string[] | undefined): string | null => {
+  if (typeof value === 'string' && value.trim().length > 0) {
+    return value;
+  }
+  if (Array.isArray(value) && value.length > 0 && typeof value[0] === 'string') {
+    const first = value[0].trim();
+    return first.length > 0 ? first : null;
+  }
+  return null;
+};
 
 // All role strings accepted by the PATCH endpoint.
 // Includes both canonical backend roles and frontend UI aliases.
@@ -216,11 +225,16 @@ router.get(
 router.get(
   '/:id',
   requireMinRole('admin'),
-  asyncHandler(async (req: RouteRequest, res: Response) => {
-    validateIdParam(req.params.id, 'User ID');
+  asyncHandler(async (req: Request, res: Response) => {
+    const userId = routeParamToString(req.params.id);
+    if (!userId) {
+      throw new AppError('User ID is required', 400);
+    }
+
+    validateIdParam(userId, 'User ID');
 
     const user = await prisma.user.findUnique({
-      where: { id: req.params.id },
+      where: { id: userId },
       select: {
         id: true,
         email: true,
@@ -265,11 +279,15 @@ router.get(
 router.patch(
   '/:id',
   requireRole('owner'),
-  asyncHandler(async (req: RouteRequest, res: Response) => {
-    validateIdParam(req.params.id, 'User ID');
+  asyncHandler(async (req: Request, res: Response) => {
+    const targetId = routeParamToString(req.params.id);
+    if (!targetId) {
+      throw new AppError('User ID is required', 400);
+    }
+
+    validateIdParam(targetId, 'User ID');
 
     const requesterId = (req as AuthRequest).user?.id;
-    const targetId = req.params.id;
 
     // Owners cannot remove their own owner role (safety guard)
     if (
@@ -380,18 +398,23 @@ router.patch(
 router.patch(
   '/:id/status',
   requireMinRole('admin'),
-  asyncHandler(async (req: RouteRequest, res: Response) => {
-    validateIdParam(req.params.id, 'User ID');
+  asyncHandler(async (req: Request, res: Response) => {
+    const userId = routeParamToString(req.params.id);
+    if (!userId) {
+      throw new AppError('User ID is required', 400);
+    }
+
+    validateIdParam(userId, 'User ID');
 
     const { status } = req.body;
     if (!status || !VALID_STATUSES.includes(status as UserStatus)) {
       throw new AppError(`Invalid status. Must be one of: ${VALID_STATUSES.join(', ')}`, 400);
     }
-    const target = await prisma.user.findUnique({ where: { id: req.params.id } });
+    const target = await prisma.user.findUnique({ where: { id: userId } });
     if (!target) throw new AppError('User not found', 404);
 
     const updated = await prisma.user.update({
-      where: { id: req.params.id },
+      where: { id: userId },
       data: { status: status as string },
       select: {
         id: true,

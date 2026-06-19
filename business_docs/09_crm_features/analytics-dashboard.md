@@ -12,7 +12,7 @@
 
 The Analytics & Business Intelligence Dashboard provides real-time, role-based insights across every dimension of the real estate business — sales performance, financial health, marketing effectiveness, property portfolio, and agent productivity. The system is designed for data-driven decision-making at every level of the organization.
 
-### Purpose
+### Mobile View Purpose
 
 Deliver actionable intelligence through interactive dashboards, automated reports, and AI-powered market insights — enabling executives to steer strategy, managers to optimize operations, and agents to maximize their performance.
 
@@ -351,6 +351,67 @@ Tracks leads through every stage of the sales pipeline.
 - **CSV**: Plain data export
 - **Google Sheets**: Direct export to linked sheet
 - **API**: Programmatic access to report data
+
+## Mobile Analytics View
+
+### Purpose
+
+Give managers and executives a compact, touch-friendly analytics experience on phones and tablets without losing the critical KPIs.
+
+### Mobile Layout Requirements
+
+- 2-column KPI card grid on phones, 3-column on tablets, 4-column on desktop
+- Primary cards: revenue, pipeline value, active leads, conversion rate, deals closed
+- Thumb-friendly filter drawer with area, date range, source, and agent selectors
+- Sticky period switcher for MTD / QTD / YTD / 12M views
+- Compact sparkline row for revenue, leads, and conversion
+
+### Offline / Low-Connectivity Behavior
+
+- Last loaded dashboard snapshot cached locally for read-only fallback
+- Show stale-data banner when live feed is unavailable
+- Queue refresh request and recover automatically when connection returns
+- Disable destructive actions while offline
+
+### Mobile View Acceptance Criteria
+
+- Mobile dashboard loads without horizontal scrolling at 375px width
+- Filters remain reachable by keyboard and touch
+- KPI cards retain readable labels and trend direction on small screens
+- Offline fallback clearly indicates when data is stale
+
+## Export API Workflow
+
+### Export Workflow Purpose
+
+Allow finance and leadership users to export reports asynchronously without blocking the UI or risking oversized downloads.
+
+### API Contract
+
+- `POST /api/analytics/export`
+- `GET /api/analytics/export/:jobId`
+- `GET /api/analytics/export/:jobId/download`
+
+### Export Rules
+
+- Async job returns a `jobId` immediately
+- Maximum 50,000 rows per export request
+- Supported formats: CSV, Excel, PDF
+- Download URLs expire after a short, configurable window
+- Export activity is recorded in the audit trail
+
+### Export Security / Safety
+
+- Role-based access control enforced before job creation
+- File downloads require ownership or elevated access
+- Export jobs sanitize filters to prevent injection in query builders
+
+### Export Acceptance Criteria
+
+- Large exports are processed asynchronously
+- Users can check status while the job is running
+- Completed exports are downloadable exactly once or until expiry
+- Export requests appear in audit logs with user and timestamp
 
 ---
 

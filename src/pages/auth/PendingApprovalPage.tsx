@@ -46,7 +46,7 @@ const PendingApprovalPage: FC = () => {
     const stored = safeStorage.getJSON<UserData>('userRole');
     if (stored) {
       if (stored.status !== 'pending') {
-        navigate(`/${stored.role}/dashboard`);
+        navigate('/profile');
         return;
       }
       setUserData(stored);

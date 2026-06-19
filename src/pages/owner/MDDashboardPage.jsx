@@ -17,11 +17,14 @@ import SettingsTab from '../../components/owner/tabs/SettingsTab';
 import UsersTab from '../../components/owner/tabs/UsersTab';
 import FeatureExplorer from '../../components/owner/FeatureExplorer';
 import { SUPER_ADMIN, isMDAuthorized } from '../../config/superAdmin';
+import { createLogger } from '../../utils/logger';
 import '../../shared/styles/theme.css';
 import '../../styles/crm-layout.css';
 import '../../styles/crm-views.css';
 import './MDDashboardPage.css';
 import ContextualDashboardRenderer from '../../components/crm/ContextualDashboardRenderer';
+
+const log = createLogger('MDDashboardPage');
 
 const LindaWhatsAppCRM = lazy(() => import('../../components/crm/LindaWhatsAppCRM'));
 const MaryInventoryCRM = lazy(() => import('../../components/crm/MaryInventoryCRM'));
@@ -72,6 +75,7 @@ export default function MDDashboardPage() {
   const [activeTab, setActiveTab] = useState('dashboard');
   const [loading, setLoading] = useState(false);
   const [dashboardData, setDashboardData] = useState({});
+  const [dashboardError, setDashboardError] = useState('');
 
   useEffect(() => {
     if (!isMDAuthorized(user)) {
@@ -107,23 +111,50 @@ export default function MDDashboardPage() {
   }, [activeAssistant, activeWorkspace]);
 
   useEffect(() => {
-    fetchDashboardData();
-    const interval = setInterval(fetchDashboardData, 30000);
-    return () => clearInterval(interval);
+    let isMounted = true;
+
+    const pollDashboard = async () => {
+      await fetchDashboardData(() => isMounted);
+    };
+
+    void pollDashboard();
+    const interval = setInterval(() => {
+      void pollDashboard();
+    }, 30000);
+
+    return () => {
+      isMounted = false;
+      clearInterval(interval);
+    };
   }, []);
 
-  const fetchDashboardData = async () => {
+  const fetchDashboardData = async (isMounted = () => true) => {
     try {
-      setLoading(true);
+      if (isMounted()) {
+        setLoading(true);
+      }
+
       const response = await fetch('/api/dashboard/owner/summary');
       if (response.ok) {
         const data = await response.json();
-        setDashboardData(data);
+        if (isMounted()) {
+          setDashboardData(data);
+          setDashboardError('');
+        }
+      } else if (isMounted()) {
+        const statusMessage = `Unable to refresh MD dashboard summary (HTTP ${response.status}).`;
+        setDashboardError(statusMessage);
+        log.warn(statusMessage);
       }
     } catch (error) {
-      
+      if (isMounted()) {
+        setDashboardError('Unable to refresh MD dashboard summary. Please retry shortly.');
+      }
+      log.error('Failed to fetch MD dashboard summary:', error);
     } finally {
-      setLoading(false);
+      if (isMounted()) {
+        setLoading(false);
+      }
     }
   };
 
@@ -322,9 +353,11 @@ export default function MDDashboardPage() {
       });
       if (response.ok) {
         alert('Settings saved successfully!');
+      } else {
+        log.warn(`Failed to save settings (HTTP ${response.status}).`);
       }
     } catch (error) {
-      
+      log.error('Failed to save MD settings:', error);
     }
   };
 
@@ -466,6 +499,14 @@ export default function MDDashboardPage() {
 
   return (
     <CRMShell activeTab={activeTab} onTabChange={handleTabChange}>
+      {dashboardError ? (
+        <div role="status" aria-live="polite" className="homepage-live-data-alert">
+          <span>{dashboardError}</span>
+          <button type="button" onClick={() => void fetchDashboardData()} className="homepage-live-data-alert__retry">
+            Retry
+          </button>
+        </div>
+      ) : null}
       {renderTabContent()}
     </CRMShell>
   );

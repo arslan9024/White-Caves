@@ -71,7 +71,6 @@ const DropdownNavItem: React.FC<DropdownNavItemProps> = ({ group }) => {
         }
         onClick={() => setOpen(false)}
         aria-haspopup="menu"
-        aria-expanded={open}
       >
         {group.label}
         <svg
@@ -93,7 +92,7 @@ const DropdownNavItem: React.FC<DropdownNavItemProps> = ({ group }) => {
       </NavLink>
 
       {open && (
-        <div className="public-navbar__dropdown" role="menu">
+        <div className="public-navbar__dropdown">
           {group.children!.map(item => (
             <Link
               key={item.path}
@@ -136,7 +135,7 @@ const PublicNavbar = (): React.JSX.Element => {
     {
       label: t('nav.company'),
       path: '/about',
-      children: [...PUBLIC_NAV.company] as NavItem[],
+      children: PUBLIC_NAV.company as unknown as NavItem[],
     },
     { label: t('common.contact'), path: '/contact' },
   ];
@@ -211,7 +210,6 @@ const PublicNavbar = (): React.JSX.Element => {
             type="button"
             className={`public-navbar__menu-btn${isMobileOpen ? ' is-open' : ''}`}
             onClick={() => setIsMobileOpen(prev => !prev)}
-            aria-expanded={isMobileOpen}
             aria-controls="public-mobile-menu"
             aria-label="Toggle navigation menu"
           >

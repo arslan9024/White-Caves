@@ -84,7 +84,12 @@ router.post(
     const activity = await prisma.activity.create({
       data: {
         type: 'client',
-        action: resolvedChannel === 'email' ? 'email' : resolvedChannel === 'call' ? 'call' : 'note_added',
+        action:
+          resolvedChannel === 'email'
+            ? 'email'
+            : resolvedChannel === 'call'
+              ? 'call'
+              : 'note_added',
         description: `Message sent via ${resolvedChannel}: ${sanitizedContent.substring(0, 100)}${sanitizedContent.length > 100 ? '...' : ''}`,
         userId: req.user?.id || null,
         leadId: leadId || null,
@@ -128,7 +133,7 @@ router.get(
     if (!userId) throw new AppError('Authentication required', 401);
     const hasAccess = await verifyLeadAccess(userId, userRole, recipientId);
     if (!hasAccess) {
-      throw new AppError('You do not have access to this lead\'s messages', 403);
+      throw new AppError("You do not have access to this lead's messages", 403);
     }
 
     const { page = '1', pageSize = '20' } = req.query as Record<string, string | undefined>;
@@ -154,7 +159,7 @@ router.get(
 
     res.status(200).json({
       success: true,
-      data: messages.map((m) => ({
+      data: messages.map(m => ({
         id: m.id,
         type: m.action,
         description: m.description,
@@ -206,12 +211,12 @@ router.get(
     // Deduplicate by leadId, keeping most recent
     const seen = new Set<string>();
     const conversations = recentComms
-      .filter((c) => {
+      .filter(c => {
         if (!c.leadId || seen.has(c.leadId)) return false;
         seen.add(c.leadId);
         return true;
       })
-      .map((c) => ({
+      .map(c => ({
         leadId: c.leadId,
         lead: c.lead,
         lastMessage: c.description,

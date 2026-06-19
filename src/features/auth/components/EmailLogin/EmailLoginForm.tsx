@@ -116,7 +116,8 @@ const EmailLoginForm: React.FC<EmailLoginFormProps> = ({ mode = 'login', onSucce
       
       let errorMessage = 'Authentication failed';
       
-      switch (authError.code) {
+        const authErr = error as { code?: string; message?: string };
+        switch (authErr.code) {
         case 'auth/user-not-found':
           errorMessage = 'No account found with this email';
           break;
@@ -133,11 +134,11 @@ const EmailLoginForm: React.FC<EmailLoginFormProps> = ({ mode = 'login', onSucce
           errorMessage = 'Invalid email address';
           break;
         default:
-          errorMessage = authError.message || 'Authentication failed';
+            errorMessage = authErr.message || 'Authentication failed';
       }
       
       dispatch(loginFailure(errorMessage));
-      onError?.(authError);
+        onError?.(error);
     } finally {
       setLoading(false);
     }

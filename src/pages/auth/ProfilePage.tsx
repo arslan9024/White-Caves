@@ -1,317 +1,284 @@
-﻿import React, { FC, useCallback, useEffect, useState } from 'react';
+import React, { FC, useCallback, useEffect, useRef, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useDocumentTitle } from '../../hooks/useDocumentTitle';
 import { useUserProfile } from '../../hooks/useUserProfile';
 import { BiometricSetup } from '../../features/auth/components/BiometricLogin';
 import { authFetch } from '../../utils/authFetch';
 import { isCreatorRole } from '../../config/ROLE_TAB_MAPPING';
-import '../../styles/dashboard-tokens.css';
+import './AuthPages.css';
 
-// â”€â”€â”€ Luxury Styles â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ─── Sub-components ───────────────────────────────────────────────────────────
 
-const styles = {
-  page: {
-    minHeight: '100vh',
-    background: '#0A0A0A',
-    color: '#F5F5F0',
-    fontFamily: "'Inter', sans-serif",
-  } as React.CSSProperties,
-  hero: {
-    position: 'relative' as const,
-    background: 'linear-gradient(135deg, #141414 0%, #1a1205 50%, #141414 100%)',
-    borderBottom: '1px solid #C9A84C33',
-    padding: '0 0 32px',
-    overflow: 'hidden' as const,
-  } as React.CSSProperties,
-  heroCover: {
-    height: '140px',
-    background: 'linear-gradient(135deg, #C9A84C22 0%, #0A0A0A 100%)',
-    position: 'relative' as const,
-    overflow: 'hidden' as const,
-  } as React.CSSProperties,
-  heroCoverPattern: {
-    position: 'absolute' as const,
-    inset: 0,
-    backgroundImage:
-      'repeating-linear-gradient(45deg, #C9A84C08 0px, #C9A84C08 1px, transparent 1px, transparent 30px)',
-  } as React.CSSProperties,
-  heroContent: {
-    padding: '0 40px',
-    display: 'flex',
-    alignItems: 'flex-end',
-    gap: '24px',
-    marginTop: '-40px',
-  } as React.CSSProperties,
-  avatarRing: {
-    width: '88px',
-    height: '88px',
-    borderRadius: '50%',
-    background: 'linear-gradient(135deg, #C9A84C, #8B6914)',
-    padding: '3px',
-    flexShrink: 0 as const,
-    boxShadow: '0 0 0 3px #0A0A0A, 0 8px 24px rgba(201,168,76,0.3)',
-  } as React.CSSProperties,
-  avatarInner: {
-    width: '100%',
-    height: '100%',
-    borderRadius: '50%',
-    background: '#141414',
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    fontSize: '28px',
-    fontWeight: 700,
-    color: '#C9A84C',
-    overflow: 'hidden' as const,
-  } as React.CSSProperties,
-  heroInfo: {
-    flex: 1,
-    paddingBottom: '4px',
-    display: 'flex',
-    flexDirection: 'column' as const,
-    gap: '6px',
-  } as React.CSSProperties,
-  heroName: {
-    fontSize: '24px',
-    fontWeight: 700,
-    color: '#F5F5F0',
-    margin: 0,
-    letterSpacing: '-0.5px',
-  } as React.CSSProperties,
-  heroMeta: {
-    display: 'flex',
-    alignItems: 'center',
-    gap: '10px',
-    flexWrap: 'wrap' as const,
-  } as React.CSSProperties,
-  heroEmail: {
-    fontSize: '13px',
-    color: '#9CA3AF',
-  } as React.CSSProperties,
-  roleBadge: {
-    display: 'inline-flex',
-    alignItems: 'center',
-    gap: '5px',
-    padding: '3px 10px',
-    borderRadius: '20px',
-    background: '#C9A84C22',
-    border: '1px solid #C9A84C44',
-    color: '#C9A84C',
-    fontSize: '11px',
-    fontWeight: 600,
-    letterSpacing: '0.3px',
-    textTransform: 'uppercase' as const,
-  } as React.CSSProperties,
-  founderBadge: {
-    display: 'inline-flex',
-    alignItems: 'center',
-    gap: '5px',
-    padding: '3px 10px',
-    borderRadius: '20px',
-    background: 'linear-gradient(135deg, #C9A84C33, #8B691433)',
-    border: '1px solid #C9A84C',
-    color: '#C9A84C',
-    fontSize: '11px',
-    fontWeight: 700,
-    letterSpacing: '0.5px',
-    textTransform: 'uppercase' as const,
-    boxShadow: '0 0 12px rgba(201,168,76,0.2)',
-  } as React.CSSProperties,
-  heroActions: {
-    display: 'flex',
-    gap: '10px',
-    paddingBottom: '4px',
-    flexShrink: 0 as const,
-  } as React.CSSProperties,
-  statsRow: {
-    display: 'flex',
-    gap: '12px',
-    padding: '20px 40px 0',
-    flexWrap: 'wrap' as const,
-  } as React.CSSProperties,
-  statCard: {
-    flex: '1 1 120px',
-    background: '#141414',
-    border: '1px solid #2A2A2A',
-    borderRadius: '10px',
-    padding: '14px 18px',
-    display: 'flex',
-    flexDirection: 'column' as const,
-    gap: '4px',
-  } as React.CSSProperties,
-  statValue: {
-    fontSize: '22px',
-    fontWeight: 700,
-    color: '#C9A84C',
-  } as React.CSSProperties,
-  statLabel: {
-    fontSize: '11px',
-    color: '#6B7280',
-    letterSpacing: '0.3px',
-  } as React.CSSProperties,
-  tabsRow: {
-    display: 'flex',
-    gap: '0',
-    padding: '0 40px',
-    borderBottom: '1px solid #1E1E1E',
-    background: '#0A0A0A',
-    overflowX: 'auto' as const,
-  } as React.CSSProperties,
-  tabBtn: (active: boolean) =>
-    ({
-      padding: '14px 20px',
-      background: 'transparent',
-      border: 'none',
-      borderBottom: active ? '2px solid #C9A84C' : '2px solid transparent',
-      color: active ? '#C9A84C' : '#6B7280',
-      fontSize: '13px',
-      fontWeight: active ? 600 : 400,
-      cursor: 'pointer',
-      whiteSpace: 'nowrap' as const,
-      transition: 'all 0.15s ease',
-      letterSpacing: '0.2px',
-    }) as React.CSSProperties,
-  body: {
-    padding: '32px 40px',
-    maxWidth: '900px',
-  } as React.CSSProperties,
-  card: {
-    background: '#141414',
-    border: '1px solid #2A2A2A',
-    borderRadius: '12px',
-    padding: '24px',
-    marginBottom: '20px',
-  } as React.CSSProperties,
-  cardTitle: {
-    fontSize: '16px',
-    fontWeight: 600,
-    color: '#F5F5F0',
-    margin: '0 0 16px',
-    display: 'flex',
-    alignItems: 'center',
-    gap: '8px',
-  } as React.CSSProperties,
-  infoRow: {
-    display: 'flex',
-    alignItems: 'center',
-    padding: '10px 0',
-    borderBottom: '1px solid #1E1E1E',
-  } as React.CSSProperties,
-  infoLabel: {
-    width: '160px',
-    fontSize: '12px',
-    color: '#6B7280',
-    flexShrink: 0,
-  } as React.CSSProperties,
-  infoValue: {
-    fontSize: '13px',
-    color: '#F5F5F0',
-  } as React.CSSProperties,
-  grid2: {
-    display: 'grid',
-    gridTemplateColumns: '1fr 1fr',
-    gap: '20px',
-  } as React.CSSProperties,
-  formGroup: {
-    display: 'flex',
-    flexDirection: 'column' as const,
-    gap: '6px',
-    marginBottom: '16px',
-  } as React.CSSProperties,
-  label: {
-    fontSize: '12px',
-    color: '#9CA3AF',
-    letterSpacing: '0.3px',
-  } as React.CSSProperties,
-  input: {
-    padding: '10px 14px',
-    background: '#0A0A0A',
-    border: '1px solid #2A2A2A',
-    borderRadius: '8px',
-    color: '#F5F5F0',
-    fontSize: '13px',
-    outline: 'none',
-  } as React.CSSProperties,
-  select: {
-    padding: '10px 14px',
-    background: '#0A0A0A',
-    border: '1px solid #2A2A2A',
-    borderRadius: '8px',
-    color: '#F5F5F0',
-    fontSize: '13px',
-    outline: 'none',
-  } as React.CSSProperties,
-  btnPrimary: {
-    padding: '10px 20px',
-    background: 'linear-gradient(135deg, #C9A84C, #8B6914)',
-    border: 'none',
-    borderRadius: '8px',
-    color: '#0A0A0A',
-    fontSize: '13px',
-    fontWeight: 700,
-    cursor: 'pointer',
-    letterSpacing: '0.3px',
-  } as React.CSSProperties,
-  btnSecondary: {
-    padding: '10px 20px',
-    background: 'transparent',
-    border: '1px solid #C9A84C',
-    borderRadius: '8px',
-    color: '#C9A84C',
-    fontSize: '13px',
-    fontWeight: 600,
-    cursor: 'pointer',
-  } as React.CSSProperties,
-  btnDanger: {
-    padding: '10px 20px',
-    background: 'transparent',
-    border: '1px solid #EF4444',
-    borderRadius: '8px',
-    color: '#EF4444',
-    fontSize: '13px',
-    fontWeight: 600,
-    cursor: 'pointer',
-  } as React.CSSProperties,
-  hint: {
-    fontSize: '11px',
-    color: '#6B7280',
-  } as React.CSSProperties,
-  comingSoon: {
-    display: 'flex',
-    flexDirection: 'column' as const,
-    alignItems: 'center',
-    justifyContent: 'center',
-    padding: '60px 40px',
-    color: '#4B5563',
-    gap: '12px',
-    textAlign: 'center' as const,
-  } as React.CSSProperties,
-  backBtn: {
-    display: 'inline-flex',
-    alignItems: 'center',
-    gap: '6px',
-    padding: '8px 16px',
-    background: '#141414',
-    border: '1px solid #2A2A2A',
-    borderRadius: '8px',
-    color: '#9CA3AF',
-    fontSize: '12px',
-    cursor: 'pointer',
-    textDecoration: 'none',
-  } as React.CSSProperties,
+const CompletionRing: FC<{ pct: number; size?: number }> = ({ pct, size = 56 }) => {
+  const r = (size - 8) / 2;
+  const circ = 2 * Math.PI * r;
+  const filled = circ * (pct / 100);
+  const color = pct === 100 ? '#4ade80' : pct >= 60 ? '#C9A84C' : '#6b7280';
+  return (
+    <svg width={size} height={size} className="pp-ring" aria-hidden="true">
+      <circle
+        cx={size / 2}
+        cy={size / 2}
+        r={r}
+        fill="none"
+        stroke="rgba(255,255,255,0.1)"
+        strokeWidth={6}
+      />
+      <circle
+        cx={size / 2}
+        cy={size / 2}
+        r={r}
+        fill="none"
+        stroke={color}
+        strokeWidth={6}
+        strokeDasharray={`${filled} ${circ}`}
+        strokeLinecap="round"
+        className="pp-ring-progress"
+      />
+    </svg>
+  );
 };
 
-// â”€â”€â”€ Component â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+interface SetPasswordFormProps {
+  userEmail: string;
+}
+const SetPasswordForm: FC<SetPasswordFormProps> = ({ userEmail }) => {
+  const [newPw, setNewPw] = useState('');
+  const [confirmPw, setConfirmPw] = useState('');
+  const [saving, setSaving] = useState(false);
+  const [msg, setMsg] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
+
+  const save = useCallback(async () => {
+    setMsg(null);
+    if (newPw.length < 8) {
+      setMsg({ type: 'error', text: 'Password must be at least 8 characters.' });
+      return;
+    }
+    if (!/[a-zA-Z]/.test(newPw) || !/[0-9]/.test(newPw)) {
+      setMsg({ type: 'error', text: 'Password must contain letters and numbers.' });
+      return;
+    }
+    if (newPw !== confirmPw) {
+      setMsg({ type: 'error', text: 'Passwords do not match.' });
+      return;
+    }
+    setSaving(true);
+    try {
+      const res = await authFetch('/api/auth/password', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ newPassword: newPw }),
+      });
+      const data = (await res.json()) as { success?: boolean; error?: string };
+      if (data.success) {
+        setMsg({
+          type: 'success',
+          text: 'Password set successfully. You can now sign in with email too.',
+        });
+        setNewPw('');
+        setConfirmPw('');
+      } else {
+        setMsg({ type: 'error', text: data.error ?? 'Failed to set password.' });
+      }
+    } catch {
+      setMsg({ type: 'error', text: 'Network error. Try again.' });
+    } finally {
+      setSaving(false);
+    }
+  }, [newPw, confirmPw]);
+
+  const strength = newPw.length === 0 ? 0 : newPw.length < 8 ? 1 : newPw.length < 12 ? 2 : 3;
+  const strengthColors = ['transparent', '#ef4444', '#C9A84C', '#4ade80'];
+  const strengthLabels = ['', 'Weak', 'Fair', 'Strong'];
+
+  return (
+    <div className="pp-set-password">
+      <p className="pp-helper">
+        Your account uses Gmail sign-in. Set a password to also enable email+password login.
+      </p>
+      <div className="pp-form-row">
+        <label htmlFor="sp-new">New Password</label>
+        <input
+          id="sp-new"
+          type="password"
+          autoComplete="new-password"
+          value={newPw}
+          onChange={e => setNewPw(e.target.value)}
+          placeholder="Min 8 chars, letters + numbers"
+        />
+        {newPw.length > 0 && (
+          <div
+            className="pp-strength-bar"
+            aria-label={`Password strength: ${strengthLabels[strength]}`}
+          >
+            {[1, 2, 3].map(n => (
+              <span
+                key={n}
+                className={`pp-strength-seg pp-strength-seg--${n <= strength ? `s${strength}` : 'empty'}`}
+              />
+            ))}
+            <span className={`pp-strength-label pp-strength-label--s${strength}`}>
+              {strengthLabels[strength]}
+            </span>
+          </div>
+        )}
+      </div>
+      <div className="pp-form-row">
+        <label htmlFor="sp-confirm">Confirm Password</label>
+        <input
+          id="sp-confirm"
+          type="password"
+          autoComplete="new-password"
+          value={confirmPw}
+          onChange={e => setConfirmPw(e.target.value)}
+          placeholder="Repeat password"
+        />
+      </div>
+      {msg?.type === 'error' && (
+        <p className="pp-msg pp-msg--error" role="alert">
+          {msg.text}
+        </p>
+      )}
+      {msg?.type === 'success' && (
+        <p className="pp-msg pp-msg--success" role="status">
+          {msg.text}
+        </p>
+      )}
+      <button className="pp-btn pp-btn--primary" onClick={() => void save()} disabled={saving}>
+        {saving ? 'Saving…' : '🔐 Set Password'}
+      </button>
+    </div>
+  );
+};
+
+interface ChangePasswordFormProps {
+  hasPassword: boolean;
+}
+const ChangePasswordForm: FC<ChangePasswordFormProps> = ({ hasPassword }) => {
+  const [curr, setCurr] = useState('');
+  const [next, setNext] = useState('');
+  const [conf, setConf] = useState('');
+  const [saving, setSaving] = useState(false);
+  const [msg, setMsg] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
+
+  const save = useCallback(async () => {
+    setMsg(null);
+    if (hasPassword && !curr) {
+      setMsg({ type: 'error', text: 'Enter your current password.' });
+      return;
+    }
+    if (next.length < 8) {
+      setMsg({ type: 'error', text: 'New password must be at least 8 characters.' });
+      return;
+    }
+    if (!/[a-zA-Z]/.test(next) || !/[0-9]/.test(next)) {
+      setMsg({ type: 'error', text: 'Password must contain letters and numbers.' });
+      return;
+    }
+    if (next !== conf) {
+      setMsg({ type: 'error', text: 'Passwords do not match.' });
+      return;
+    }
+    setSaving(true);
+    try {
+      const res = await authFetch('/api/auth/password', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ currentPassword: curr, newPassword: next }),
+      });
+      const data = (await res.json()) as { success?: boolean; error?: string };
+      if (data.success) {
+        setMsg({ type: 'success', text: 'Password updated successfully.' });
+        setCurr('');
+        setNext('');
+        setConf('');
+      } else {
+        setMsg({ type: 'error', text: data.error ?? 'Failed to update password.' });
+      }
+    } catch {
+      setMsg({ type: 'error', text: 'Network error. Try again.' });
+    } finally {
+      setSaving(false);
+    }
+  }, [curr, next, conf, hasPassword]);
+
+  return (
+    <div className="pp-set-password">
+      {hasPassword && (
+        <div className="pp-form-row">
+          <label htmlFor="cp-curr">Current Password</label>
+          <input
+            id="cp-curr"
+            type="password"
+            autoComplete="current-password"
+            value={curr}
+            onChange={e => setCurr(e.target.value)}
+            placeholder="Enter current password"
+          />
+        </div>
+      )}
+      <div className="pp-form-row">
+        <label htmlFor="cp-next">New Password</label>
+        <input
+          id="cp-next"
+          type="password"
+          autoComplete="new-password"
+          value={next}
+          onChange={e => setNext(e.target.value)}
+          placeholder="Min 8 chars, letters + numbers"
+        />
+      </div>
+      <div className="pp-form-row">
+        <label htmlFor="cp-conf">Confirm New Password</label>
+        <input
+          id="cp-conf"
+          type="password"
+          autoComplete="new-password"
+          value={conf}
+          onChange={e => setConf(e.target.value)}
+          placeholder="Repeat new password"
+        />
+      </div>
+      {msg?.type === 'error' && (
+        <p className="pp-msg pp-msg--error" role="alert">
+          {msg.text}
+        </p>
+      )}
+      {msg?.type === 'success' && (
+        <p className="pp-msg pp-msg--success" role="status">
+          {msg.text}
+        </p>
+      )}
+      <button className="pp-btn pp-btn--primary" onClick={() => void save()} disabled={saving}>
+        {saving ? 'Saving…' : '🔐 Update Password'}
+      </button>
+    </div>
+  );
+};
+
+// ─── Constants ────────────────────────────────────────────────────────────────
 
 const PROFILE_TABS = [
-  { id: 'overview', label: 'ðŸ“Š Overview' },
-  { id: 'activity', label: 'âš¡ Activity' },
-  { id: 'performance', label: 'ðŸ“ˆ Performance' },
-  { id: 'settings', label: 'âš™ï¸ Settings' },
-  { id: 'security', label: 'ðŸ”’ Security' },
-  { id: 'permissions', label: 'ðŸ›¡ï¸ Permissions' },
-  { id: 'system', label: 'ðŸ–¥ï¸ System' },
+  { id: 'overview', label: 'Overview', icon: '◎' },
+  { id: 'settings', label: 'Profile', icon: '✦' },
+  { id: 'security', label: 'Security', icon: '⬡' },
+  { id: 'activity', label: 'Activity', icon: '⚡' },
+  { id: 'performance', label: 'Performance', icon: '◈' },
+  { id: 'permissions', label: 'Permissions', icon: '⬟' },
+  { id: 'system', label: 'System', icon: '⬕' },
 ] as const;
+
+const PROFILE_ONBOARDING_SEEN_KEY = 'wc-profile-onboarding-seen';
+const EXECUTIVE_OPERATIONS_ROLES = new Set([
+  'lion',
+  'managing_director',
+  'md',
+  'owner',
+  'super_admin',
+  'super_user',
+  'admin',
+]);
+const EXECUTIVE_COMPANY_DASHBOARD_PATH = '/crm';
 
 type ProfileTab = (typeof PROFILE_TABS)[number]['id'];
 
@@ -334,17 +301,9 @@ const ProfilePage: FC = () => {
   } = useUserProfile();
 
   const [activeTab, setActiveTab] = useState<ProfileTab>('overview');
+  const [showOnboarding, setShowOnboarding] = useState(false);
 
-  const isFounder = isCreatorRole(userRole?.role ?? '');
-
-  const normalizeDashboardRole = (role: string): string => {
-    if (role === 'owner' || role === 'lion' || role === 'managing_director' || role === 'md') return 'owner';
-    if (role === 'landlord') return 'landlord';
-    if (role === 'tenant') return 'tenant';
-    return '';
-  };
-
-  // â”€â”€â”€ 2FA state â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  // 2FA
   const [twoFactorSetupUri, setTwoFactorSetupUri] = useState<string | null>(null);
   const [twoFactorSetupError, setTwoFactorSetupError] = useState<string | null>(null);
   const [twoFactorSetupLoading, setTwoFactorSetupLoading] = useState(false);
@@ -357,13 +316,76 @@ const ProfilePage: FC = () => {
   const [twoFactorDisableLoading, setTwoFactorDisableLoading] = useState(false);
   const [twoFactorDisableError, setTwoFactorDisableError] = useState<string | null>(null);
 
+  // Gmail password detection
+  const [hasPassword, setHasPassword] = useState<boolean | null>(null);
+  const isGmailUser = Boolean(
+    user?.email?.endsWith('@gmail.com') || (user as Record<string, unknown>)?.firebaseUid
+  );
+
+  const isFounder = isCreatorRole(userRole?.role ?? '');
+  const effectiveRole = (userRole?.role ?? user?.role ?? '').toLowerCase();
+  const isExecutiveOperator = EXECUTIVE_OPERATIONS_ROLES.has(effectiveRole);
+  const defaultDashboardPath = '/crm';
+  const dashboardButtonLabel = isExecutiveOperator ? 'Company Dashboard' : 'Dashboard';
+
+  // Profile completion
+  const completionItems = [
+    {
+      id: 'name',
+      label: 'Add full name',
+      complete: Boolean((user?.name || profileName || '').trim()),
+      action: () => setActiveTab('settings'),
+    },
+    {
+      id: 'phone',
+      label: 'Add phone number',
+      complete: Boolean((user?.phone || profilePhone || '').trim()),
+      action: () => setActiveTab('settings'),
+    },
+    {
+      id: '2fa',
+      label: 'Enable 2FA',
+      complete: twoFactorEnabled,
+      action: () => setActiveTab('security'),
+    },
+    ...(isGmailUser
+      ? [
+          {
+            id: 'password',
+            label: 'Set a password (Gmail users)',
+            complete: hasPassword === true,
+            action: () => setActiveTab('security'),
+          },
+        ]
+      : []),
+  ];
+  const completedCount = completionItems.filter(i => i.complete).length;
+  const completionPct = Math.round((completedCount / completionItems.length) * 100);
+
+  useEffect(() => {
+    if (!user) navigate('/signin');
+  }, [navigate, user]);
+
+  useEffect(() => {
+    try {
+      setShowOnboarding(localStorage.getItem(PROFILE_ONBOARDING_SEEN_KEY) !== 'true');
+    } catch {
+      setShowOnboarding(true);
+    }
+  }, []);
+
   useEffect(() => {
     let cancelled = false;
     authFetch('/api/auth/profile')
       .then(r => r.json())
-      .then(payload => {
+      .then((p: unknown) => {
+        const payload = p as {
+          success?: boolean;
+          data?: { twoFactorEnabled?: boolean; hasPassword?: boolean };
+        };
         if (!cancelled && payload.success) {
           setTwoFactorEnabled(Boolean(payload.data?.twoFactorEnabled));
+          setHasPassword(Boolean(payload.data?.hasPassword));
         }
       })
       .catch(() => {});
@@ -372,6 +394,27 @@ const ProfilePage: FC = () => {
     };
   }, []);
 
+  const dismissOnboarding = useCallback(() => {
+    setShowOnboarding(false);
+    try {
+      localStorage.setItem(PROFILE_ONBOARDING_SEEN_KEY, 'true');
+    } catch {}
+  }, []);
+
+  const goToDashboard = useCallback(() => {
+    dismissOnboarding();
+    navigate(defaultDashboardPath);
+  }, [defaultDashboardPath, dismissOnboarding, navigate]);
+  const goToCockpit = useCallback(() => {
+    dismissOnboarding();
+    navigate(EXECUTIVE_COMPANY_DASHBOARD_PATH);
+  }, [dismissOnboarding, navigate]);
+  const goToKpis = useCallback(() => {
+    dismissOnboarding();
+    navigate('/crm?tab=analytics');
+  }, [dismissOnboarding, navigate]);
+
+  // ── 2FA handlers ──────────────────────────────────────────────────────────
   const handleEnableTwoFactor = useCallback(async () => {
     setTwoFactorSetupLoading(true);
     setTwoFactorSetupError(null);
@@ -384,12 +427,16 @@ const ProfilePage: FC = () => {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({}),
       });
-      const payload = await res.json();
-      if (payload.success && payload.data?.otpAuthUrl) {
-        setTwoFactorSetupUri(payload.data.otpAuthUrl as string);
+      const data = (await res.json()) as {
+        success?: boolean;
+        data?: { otpAuthUrl?: string };
+        error?: string;
+      };
+      if (data.success && data.data?.otpAuthUrl) {
+        setTwoFactorSetupUri(data.data.otpAuthUrl);
         setTwoFactorCode('');
       } else {
-        setTwoFactorSetupError(payload.error || 'Unable to start 2FA setup.');
+        setTwoFactorSetupError(data.error ?? 'Unable to start 2FA setup.');
       }
     } catch {
       setTwoFactorSetupError('Unable to start 2FA setup. Please try again.');
@@ -413,18 +460,17 @@ const ProfilePage: FC = () => {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email: user?.email ?? '', code }),
       });
-      const payload = await res.json();
-      if (payload.success) {
+      const data = (await res.json()) as { success?: boolean; error?: string };
+      if (data.success) {
         setTwoFactorEnabled(true);
         setTwoFactorSetupUri(null);
         setTwoFactorCode('');
-        setTwoFactorDisableError(null);
         setTwoFactorVerifySuccess('Two-factor authentication is now enabled.');
       } else {
-        setTwoFactorVerifyError(payload.error || 'Invalid verification code. Please try again.');
+        setTwoFactorVerifyError(data.error ?? 'Invalid verification code.');
       }
     } catch {
-      setTwoFactorVerifyError('Unable to verify 2FA code. Please try again.');
+      setTwoFactorVerifyError('Unable to verify code. Please try again.');
     } finally {
       setTwoFactorVerifyLoading(false);
     }
@@ -433,7 +479,7 @@ const ProfilePage: FC = () => {
   const handleDisableTwoFactor = useCallback(async () => {
     const password = twoFactorDisablePassword.trim();
     if (!password) {
-      setTwoFactorDisableError('Please enter your current password to disable 2FA.');
+      setTwoFactorDisableError('Please enter your current password.');
       return;
     }
     setTwoFactorDisableLoading(true);
@@ -444,15 +490,15 @@ const ProfilePage: FC = () => {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ currentPassword: password }),
       });
-      const payload = await res.json();
-      if (payload.success) {
+      const data = (await res.json()) as { success?: boolean; error?: string };
+      if (data.success) {
         setTwoFactorEnabled(false);
         setTwoFactorSetupUri(null);
         setTwoFactorCode('');
         setTwoFactorDisablePassword('');
-        setTwoFactorVerifySuccess('Two-factor authentication has been disabled.');
+        setTwoFactorVerifySuccess('2FA has been disabled.');
       } else {
-        setTwoFactorDisableError(payload.error || 'Unable to disable 2FA.');
+        setTwoFactorDisableError(data.error ?? 'Unable to disable 2FA.');
       }
     } catch {
       setTwoFactorDisableError('Unable to disable 2FA. Please try again.');
@@ -488,522 +534,455 @@ const ProfilePage: FC = () => {
           : '/crm';
   const dashboardLabel = isFounder ? 'Enter Dashboard' : 'Go to dashboard';
 
-  // â”€â”€â”€ Tab content renderer â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
-
+  // ── Tab renderer ──────────────────────────────────────────────────────────
   const renderTab = () => {
     switch (activeTab) {
       case 'overview':
         return (
-          <>
-            <div style={styles.grid2}>
-              <div style={styles.card}>
-                <h3 style={styles.cardTitle}>ðŸ‘¤ Account Information</h3>
-                {[
-                  { label: 'Full Name', value: user.name || 'Not set' },
-                  { label: 'Email', value: user.email || 'Not set' },
-                  { label: 'Phone', value: user.phone || 'Not set' },
-                  {
-                    label: 'Language',
-                    value: profileLanguage === 'ar' ? 'Arabic ðŸ‡¦ðŸ‡ª' : 'English ðŸ‡¬ðŸ‡§',
-                  },
-                  { label: 'Role', value: roleLabel },
-                ].map(row => (
-                  <div key={row.label} style={styles.infoRow}>
-                    <span style={styles.infoLabel}>{row.label}</span>
-                    <span style={styles.infoValue}>{row.value}</span>
-                  </div>
-                ))}
-              </div>
+          <section className="pp-section" aria-labelledby="tab-overview">
+            <h2 id="tab-overview" className="pp-section-title">
+              Overview
+            </h2>
+            <p className="pp-section-sub">Your account at a glance.</p>
 
-              <div style={styles.card}>
-                <h3 style={styles.cardTitle}>ðŸ”— Connected Accounts</h3>
-                {[
-                  { icon: 'G', name: 'Google', status: 'Connected', color: '#4285F4' },
-                  { icon: 'f', name: 'Facebook', status: 'Not connected', color: '#1877F2' },
-                  { icon: 'A', name: 'Apple', status: 'Not connected', color: '#F5F5F0' },
-                ].map(acc => (
-                  <div
-                    key={acc.name}
-                    style={{
-                      display: 'flex',
-                      alignItems: 'center',
-                      gap: 12,
-                      padding: '10px 0',
-                      borderBottom: '1px solid #1E1E1E',
-                    }}
-                  >
-                    <span
-                      style={{
-                        width: 28,
-                        height: 28,
-                        borderRadius: 6,
-                        background: `${acc.color}22`,
-                        color: acc.color,
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        fontSize: 13,
-                        fontWeight: 700,
-                      }}
-                    >
-                      {acc.icon}
-                    </span>
-                    <span style={{ flex: 1, fontSize: 13, color: '#F5F5F0' }}>{acc.name}</span>
-                    <span
-                      style={{
-                        fontSize: 11,
-                        color: acc.status === 'Connected' ? '#22C55E' : '#6B7280',
-                      }}
-                    >
-                      {acc.status}
+            {/* Completion banner */}
+            {completionPct < 100 && showOnboarding && (
+              <div className="pp-banner" role="status">
+                <div className="pp-banner__left">
+                  <CompletionRing pct={completionPct} />
+                  <div>
+                    <strong>{completionPct}% complete</strong>
+                    <span className="pp-banner__sub">
+                      {completedCount}/{completionItems.length} essentials done
                     </span>
                   </div>
-                ))}
-              </div>
-            </div>
-
-            {isFounder && (
-              <div
-                style={{
-                  ...styles.card,
-                  borderColor: '#C9A84C44',
-                  background: 'linear-gradient(135deg, #141414 0%, #1a1205 100%)',
-                }}
-              >
-                <h3 style={{ ...styles.cardTitle, color: '#C9A84C' }}>ðŸ‘‘ Founder Panel</h3>
-                <p style={{ fontSize: 13, color: '#9CA3AF', margin: '0 0 16px' }}>
-                  You are the platform creator of White Caves Real Estate LLC. You have unrestricted
-                  access to all features, modules, and system settings.
-                </p>
-                <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap' }}>
-                  {[
-                    'System Health',
-                    'All Agents',
-                    'All CRM Modules',
-                    'Admin Dashboard',
-                    'AI Registry',
-                  ].map(item => (
-                    <span
-                      key={item}
-                      style={{
-                        padding: '4px 12px',
-                        background: '#C9A84C15',
-                        border: '1px solid #C9A84C33',
-                        borderRadius: 20,
-                        fontSize: 11,
-                        color: '#C9A84C',
-                      }}
-                    >
-                      {item}
-                    </span>
-                  ))}
                 </div>
+                <ul className="pp-checklist">
+                  {completionItems.map(item => (
+                    <li
+                      key={item.id}
+                      className={`pp-check${item.complete ? ' pp-check--done' : ''}`}
+                    >
+                      {item.complete ? (
+                        <>
+                          <span aria-hidden="true">✓</span> {item.label}
+                        </>
+                      ) : (
+                        <button type="button" className="pp-check-btn" onClick={item.action}>
+                          <span aria-hidden="true">○</span> {item.label}
+                        </button>
+                      )}
+                    </li>
+                  ))}
+                </ul>
+                <button
+                  className="pp-btn pp-btn--ghost pp-banner__dismiss"
+                  onClick={dismissOnboarding}
+                  aria-label="Dismiss banner"
+                >
+                  ✕
+                </button>
               </div>
             )}
-          </>
+
+            <div className="pp-cards">
+              {/* Account card */}
+              <div className="pp-card">
+                <h3 className="pp-card-title">Account</h3>
+                <dl className="pp-dl">
+                  {[
+                    ['Name', user.name || '—'],
+                    ['Email', user.email || '—'],
+                    ['Phone', user.phone || '—'],
+                    ['Language', profileLanguage === 'ar' ? 'Arabic' : 'English'],
+                    ['Role', roleLabel],
+                  ].map(([k, v]) => (
+                    <div key={k} className="pp-dl-row">
+                      <dt>{k}</dt>
+                      <dd>{v}</dd>
+                    </div>
+                  ))}
+                </dl>
+              </div>
+
+              {/* Security quick-status */}
+              <div className="pp-card">
+                <h3 className="pp-card-title">Security</h3>
+                <div className="pp-security-grid">
+                  <div
+                    className={`pp-sec-item ${twoFactorEnabled ? 'pp-sec-item--ok' : 'pp-sec-item--warn'}`}
+                  >
+                    <span aria-hidden="true">{twoFactorEnabled ? '✓' : '!'}</span>
+                    <span>2FA {twoFactorEnabled ? 'Enabled' : 'Disabled'}</span>
+                  </div>
+                  {isGmailUser && (
+                    <div
+                      className={`pp-sec-item ${hasPassword ? 'pp-sec-item--ok' : 'pp-sec-item--warn'}`}
+                    >
+                      <span aria-hidden="true">{hasPassword ? '✓' : '!'}</span>
+                      <span>Password {hasPassword ? 'Set' : 'Not set'}</span>
+                    </div>
+                  )}
+                  <div className="pp-sec-item pp-sec-item--ok">
+                    <span aria-hidden="true">G</span>
+                    <span>Google {isGmailUser ? 'Connected' : 'Not linked'}</span>
+                  </div>
+                </div>
+                <button
+                  className="pp-btn pp-btn--ghost pp-card-cta"
+                  onClick={() => setActiveTab('security')}
+                >
+                  Manage Security →
+                </button>
+              </div>
+
+              {/* Executive cockpit */}
+              {isExecutiveOperator && (
+                <div className="pp-card pp-card--gold">
+                  <h3 className="pp-card-title">Executive Cockpit</h3>
+                  <div className="pp-pills">
+                    {['Portfolio: Live', 'Lead Ops: Active', 'AI: Online', 'Compliance: OK'].map(
+                      pill => (
+                        <span key={pill} className="pp-pill">
+                          {pill}
+                        </span>
+                      )
+                    )}
+                  </div>
+                  <div className="pp-card-actions">
+                    <button className="pp-btn pp-btn--primary" onClick={goToCockpit}>
+                      Open Cockpit
+                    </button>
+                    <button className="pp-btn pp-btn--ghost" onClick={goToDashboard}>
+                      Unified CRM
+                    </button>
+                    <button className="pp-btn pp-btn--ghost" onClick={goToKpis}>
+                      KPIs
+                    </button>
+                  </div>
+                </div>
+              )}
+
+              {/* Founder badge */}
+              {isFounder && (
+                <div className="pp-card pp-card--gold">
+                  <h3 className="pp-card-title">Founder &amp; Creator</h3>
+                  <p className="pp-card-body">
+                    Platform owner with unrestricted access to all modules and system settings.
+                  </p>
+                  <div className="pp-pills">
+                    {['System Health', 'All Agents', 'CRM Modules', 'Admin', 'AI Registry'].map(
+                      b => (
+                        <span key={b} className="pp-pill">
+                          {b}
+                        </span>
+                      )
+                    )}
+                  </div>
+                </div>
+              )}
+            </div>
+          </section>
         );
 
       case 'settings':
         return (
-          <div style={styles.card}>
-            <h3 style={styles.cardTitle}>âš™ï¸ Profile Settings</h3>
-            <div style={styles.grid2}>
-              <div>
-                <div style={styles.formGroup}>
-                  <label htmlFor="profile-name" style={styles.label}>
-                    Full Name
-                  </label>
-                  <input
-                    id="profile-name"
-                    type="text"
-                    value={profileName}
-                    onChange={e => setProfileName(e.target.value)}
-                    placeholder="Enter your name"
-                    autoComplete="name"
-                    style={styles.input}
-                  />
-                </div>
-                <div style={styles.formGroup}>
-                  <label htmlFor="profile-email" style={styles.label}>
-                    Email Address
-                  </label>
-                  <input
-                    id="profile-email"
-                    type="email"
-                    value={user.email || ''}
-                    placeholder="Email"
-                    disabled
-                    autoComplete="email"
-                    style={{ ...styles.input, opacity: 0.5 }}
-                  />
-                  <span style={styles.hint}>Email cannot be changed</span>
-                </div>
+          <section className="pp-section" aria-labelledby="tab-settings">
+            <h2 id="tab-settings" className="pp-section-title">
+              Profile Settings
+            </h2>
+            <p className="pp-section-sub">Update your personal information</p>
+            <div className="pp-form pp-card">
+              <div className="pp-form-row">
+                <label htmlFor="pf-name">Full Name</label>
+                <input
+                  id="pf-name"
+                  type="text"
+                  value={profileName}
+                  onChange={e => setProfileName(e.target.value)}
+                  placeholder="Enter your full name"
+                  autoComplete="name"
+                />
               </div>
-              <div>
-                <div style={styles.formGroup}>
-                  <label htmlFor="profile-phone" style={styles.label}>
-                    Phone Number
-                  </label>
-                  <input
-                    id="profile-phone"
-                    type="tel"
-                    value={profilePhone}
-                    onChange={e => setProfilePhone(e.target.value)}
-                    placeholder="+971 50 123 4567"
-                    autoComplete="tel"
-                    style={styles.input}
-                  />
-                </div>
-                <div style={styles.formGroup}>
-                  <label htmlFor="profile-language" style={styles.label}>
-                    Preferred Language
-                  </label>
-                  <select
-                    id="profile-language"
-                    value={profileLanguage}
-                    onChange={e => setProfileLanguage(e.target.value)}
-                    style={styles.select}
-                  >
-                    <option value="en">English ðŸ‡¬ðŸ‡§</option>
-                    <option value="ar">Arabic ðŸ‡¦ðŸ‡ª</option>
-                  </select>
-                </div>
+              <div className="pp-form-row">
+                <label htmlFor="pf-email">Email Address</label>
+                <input
+                  id="pf-email"
+                  type="email"
+                  value={user.email || ''}
+                  disabled
+                  autoComplete="email"
+                />
+                <span className="pp-hint">Email is managed by your sign-in provider</span>
               </div>
+              <div className="pp-form-row">
+                <label htmlFor="pf-phone">Phone Number</label>
+                <input
+                  id="pf-phone"
+                  type="tel"
+                  value={profilePhone}
+                  onChange={e => setProfilePhone(e.target.value)}
+                  placeholder="+971 50 123 4567"
+                  autoComplete="tel"
+                />
+              </div>
+              <div className="pp-form-row">
+                <label htmlFor="pf-lang">Language</label>
+                <select
+                  id="pf-lang"
+                  value={profileLanguage}
+                  onChange={e => setProfileLanguage(e.target.value)}
+                >
+                  <option value="en">English</option>
+                  <option value="ar">العربية</option>
+                </select>
+              </div>
+              <button
+                className="pp-btn pp-btn--primary"
+                onClick={() => void handleSaveProfile()}
+                disabled={isSaving}
+              >
+                {isSaving ? 'Saving…' : 'Save Changes'}
+              </button>
             </div>
-            <button style={styles.btnPrimary} onClick={handleSaveProfile} disabled={isSaving}>
-              {isSaving ? 'Savingâ€¦' : 'ðŸ’¾ Save Changes'}
-            </button>
-          </div>
+          </section>
         );
 
       case 'security':
         return (
-          <>
-            <div style={styles.card}>
-              <h3 style={styles.cardTitle}>ðŸ”‘ Biometric Login</h3>
-              <BiometricSetup />
-            </div>
-
-            <div style={styles.card}>
-              <h3 style={styles.cardTitle}>ðŸ” Two-Factor Authentication</h3>
-              <p style={{ fontSize: 13, color: '#9CA3AF', margin: '0 0 16px' }}>
-                Add an extra layer of security to your account
-              </p>
-
-              {!twoFactorEnabled && !twoFactorSetupUri && (
-                <button
-                  style={styles.btnSecondary}
-                  onClick={() => void handleEnableTwoFactor()}
-                  disabled={twoFactorSetupLoading}
-                >
-                  {twoFactorSetupLoading ? 'Preparingâ€¦' : 'ðŸ›¡ï¸ Enable 2FA'}
-                </button>
-              )}
-              {twoFactorEnabled && (
-                <p style={{ color: '#22C55E', fontSize: 13 }}>
-                  âœ… 2FA is currently enabled on your account.
-                </p>
-              )}
-              {twoFactorSetupUri && (
-                <div>
-                  <p style={{ ...styles.hint, wordBreak: 'break-all', marginBottom: 12 }}>
-                    Scan this URI in your authenticator app: {twoFactorSetupUri}
+          <section className="pp-section" aria-labelledby="tab-security">
+            <h2 id="tab-security" className="pp-section-title">
+              Security
+            </h2>
+            <p className="pp-section-sub">Protect your account with strong authentication</p>
+            <div className="pp-cards">
+              {/* Gmail password setup */}
+              {isGmailUser && hasPassword === false && (
+                <div className="pp-card pp-card--highlight">
+                  <h3 className="pp-card-title">
+                    <span className="pp-badge pp-badge--warn" aria-hidden="true">
+                      !
+                    </span>
+                    Set a Password
+                  </h3>
+                  <p className="pp-card-body">
+                    Your account was created with Google. Adding a password lets you also sign in
+                    with email+password as a fallback.
                   </p>
-                  <div style={styles.formGroup}>
-                    <label htmlFor="two-factor-code" style={styles.label}>
-                      Verification Code
-                    </label>
-                    <input
-                      id="two-factor-code"
-                      type="text"
-                      inputMode="numeric"
-                      maxLength={6}
-                      value={twoFactorCode}
-                      onChange={e => setTwoFactorCode(e.target.value.replace(/\D/g, ''))}
-                      placeholder="Enter 6-digit code"
-                      style={styles.input}
-                    />
-                  </div>
-                  <button
-                    style={styles.btnPrimary}
-                    onClick={() => void handleVerifyTwoFactor()}
-                    disabled={twoFactorVerifyLoading}
-                  >
-                    {twoFactorVerifyLoading ? 'Verifyingâ€¦' : 'âœ… Verify & Activate 2FA'}
-                  </button>
+                  <SetPasswordForm userEmail={user.email ?? ''} />
                 </div>
               )}
-              {twoFactorSetupError && (
-                <p role="alert" style={{ color: '#EF4444', fontSize: 12, marginTop: 8 }}>
-                  {twoFactorSetupError}
-                </p>
+
+              {/* Change password (has existing password) */}
+              {hasPassword === true && (
+                <div className="pp-card">
+                  <h3 className="pp-card-title">Change Password</h3>
+                  <ChangePasswordForm hasPassword={true} />
+                </div>
               )}
-              {twoFactorVerifyError && (
-                <p role="alert" style={{ color: '#EF4444', fontSize: 12, marginTop: 8 }}>
-                  {twoFactorVerifyError}
-                </p>
-              )}
-              {twoFactorVerifySuccess && (
-                <p role="status" style={{ color: '#22C55E', fontSize: 12, marginTop: 8 }}>
-                  {twoFactorVerifySuccess}
+
+              {/* Gmail already has password — still allow change */}
+              {isGmailUser && hasPassword === true && (
+                <p className="pp-hint pp-hint--inline">
+                  ✓ Password is already set for your Gmail account.
                 </p>
               )}
 
-              {twoFactorEnabled && (
-                <div style={{ marginTop: 20, paddingTop: 20, borderTop: '1px solid #2A2A2A' }}>
-                  <div style={styles.formGroup}>
-                    <label htmlFor="disable-two-factor-password" style={styles.label}>
-                      Current Password (to disable 2FA)
-                    </label>
-                    <input
-                      id="disable-two-factor-password"
-                      type="password"
-                      autoComplete="current-password"
-                      value={twoFactorDisablePassword}
-                      onChange={e => setTwoFactorDisablePassword(e.target.value)}
-                      placeholder="Enter current password"
-                      style={styles.input}
-                    />
-                  </div>
+              {/* 2FA */}
+              <div className="pp-card">
+                <h3 className="pp-card-title">Two-Factor Authentication</h3>
+                <p className="pp-card-body">
+                  {twoFactorEnabled
+                    ? '✅ 2FA is active. Your account is protected with a one-time code on every login.'
+                    : 'Add an extra layer of protection to your account.'}
+                </p>
+
+                {!twoFactorEnabled && !twoFactorSetupUri && (
                   <button
-                    style={styles.btnDanger}
-                    onClick={() => void handleDisableTwoFactor()}
-                    disabled={twoFactorDisableLoading}
+                    className="pp-btn pp-btn--primary"
+                    onClick={() => void handleEnableTwoFactor()}
+                    disabled={twoFactorSetupLoading}
                   >
-                    {twoFactorDisableLoading ? 'Disabling...' : 'Disable 2FA'}
+                    {twoFactorSetupLoading ? 'Preparing…' : 'Enable 2FA'}
                   </button>
-                  {twoFactorDisableError && (
-                    <p role="alert" style={{ color: '#EF4444', fontSize: 12, marginTop: 8 }}>
-                      {twoFactorDisableError}
+                )}
+
+                {twoFactorSetupUri && (
+                  <div className="pp-2fa-setup">
+                    <p className="pp-hint">
+                      Scan this in your authenticator app (Google Authenticator, Authy, etc.):
                     </p>
-                  )}
-                </div>
-              )}
-            </div>
+                    <code className="pp-code">{twoFactorSetupUri}</code>
+                    <div className="pp-form-row">
+                      <label htmlFor="pp-2fa-code">6-digit code from app</label>
+                      <input
+                        id="pp-2fa-code"
+                        type="text"
+                        inputMode="numeric"
+                        maxLength={6}
+                        value={twoFactorCode}
+                        onChange={e => setTwoFactorCode(e.target.value.replace(/\D/g, ''))}
+                        placeholder="000000"
+                      />
+                    </div>
+                    <button
+                      className="pp-btn pp-btn--primary"
+                      onClick={() => void handleVerifyTwoFactor()}
+                      disabled={twoFactorVerifyLoading}
+                    >
+                      {twoFactorVerifyLoading ? 'Verifying…' : 'Activate 2FA'}
+                    </button>
+                  </div>
+                )}
 
-            <div style={{ ...styles.card, borderColor: '#EF444444' }}>
-              <h3 style={{ ...styles.cardTitle, color: '#EF4444' }}>Danger Zone</h3>
-              <p style={{ fontSize: 13, color: '#9CA3AF', marginBottom: 16 }}>
-                Permanently delete your account and all associated data. This cannot be undone.
-              </p>
-              <button style={styles.btnDanger}>Delete Account</button>
-            </div>
-          </>
-        );
+                {twoFactorSetupError && (
+                  <p className="pp-msg pp-msg--error" role="alert">
+                    {twoFactorSetupError}
+                  </p>
+                )}
+                {twoFactorVerifyError && (
+                  <p className="pp-msg pp-msg--error" role="alert">
+                    {twoFactorVerifyError}
+                  </p>
+                )}
+                {twoFactorVerifySuccess && (
+                  <p className="pp-msg pp-msg--success" role="status">
+                    {twoFactorVerifySuccess}
+                  </p>
+                )}
 
-      case 'activity':
-      case 'performance':
-      case 'permissions':
-      case 'system':
-        return (
-          <div style={styles.comingSoon}>
-            <div style={{ fontSize: 48, opacity: 0.3 }}>
-              {activeTab === 'activity'
-                ? 'Activity'
-                : activeTab === 'performance'
-                  ? 'Performance'
-                  : activeTab === 'permissions'
-                    ? 'Permissions'
-                    : 'System'}
+                {twoFactorEnabled && (
+                  <div className="pp-2fa-disable">
+                    <div className="pp-form-row">
+                      <label htmlFor="pp-2fa-disable-pw">Current password (to disable 2FA)</label>
+                      <input
+                        id="pp-2fa-disable-pw"
+                        type="password"
+                        autoComplete="current-password"
+                        value={twoFactorDisablePassword}
+                        onChange={e => setTwoFactorDisablePassword(e.target.value)}
+                        placeholder="Enter current password"
+                      />
+                    </div>
+                    <button
+                      className="pp-btn pp-btn--danger"
+                      onClick={() => void handleDisableTwoFactor()}
+                      disabled={twoFactorDisableLoading}
+                    >
+                      {twoFactorDisableLoading ? 'Disabling…' : 'Disable 2FA'}
+                    </button>
+                    {twoFactorDisableError && (
+                      <p className="pp-msg pp-msg--error" role="alert">
+                        {twoFactorDisableError}
+                      </p>
+                    )}
+                  </div>
+                )}
+              </div>
+
+              {/* Biometric */}
+              <div className="pp-card">
+                <h3 className="pp-card-title">Biometric Login</h3>
+                <BiometricSetup />
+              </div>
+
+              {/* Danger zone */}
+              <div className="pp-card pp-card--danger">
+                <h3 className="pp-card-title">Danger Zone</h3>
+                <p className="pp-card-body">
+                  Permanently delete your account. This action cannot be undone.
+                </p>
+                <button className="pp-btn pp-btn--danger">Delete Account</button>
+              </div>
             </div>
-            <p style={{ fontSize: 16, fontWeight: 600, color: '#4B5563' }}>
-              {activeTab.charAt(0).toUpperCase() + activeTab.slice(1)} Tab
-            </p>
-            <p style={{ fontSize: 13, color: '#374151' }}>Coming in the next sprint</p>
-          </div>
+          </section>
         );
 
       default:
-        return null;
+        return (
+          <section className="pp-section" aria-labelledby={`tab-${activeTab}`}>
+            <h2 id={`tab-${activeTab}`} className="pp-section-title">
+              {activeTab.charAt(0).toUpperCase() + activeTab.slice(1)}
+            </h2>
+            <div className="pp-card pp-card--placeholder">
+              <p className="pp-placeholder-text">Coming in the next sprint ✦</p>
+            </div>
+          </section>
+        );
     }
   };
 
   return (
-    <div style={styles.page}>
-      {/* Hero Section */}
-      <div style={styles.hero}>
-        {/* Cover Pattern */}
-        <div style={styles.heroCover}>
-          <div style={styles.heroCoverPattern} />
-          {/* Back navigation */}
-          <div style={{ position: 'absolute', top: 16, left: 40, display: 'flex', gap: 10 }}>
-            <button
-              onClick={() => navigate(-1)}
-              style={{ ...styles.backBtn, background: '#00000060', border: '1px solid #ffffff20' }}
-            >
-              Back
-            </button>
-            {userRole && (
-              <Link
-                to="/crm"
-                style={{
-                  ...styles.backBtn,
-                  background: '#00000060',
-                  border: '1px solid #ffffff20',
-                }}
-              >
-                Dashboard
-              </Link>
-            )}
-          </div>
-        </div>
+    <div className="pp-root" data-theme="dark">
+      {/* ── Left rail ── */}
+      <aside className="pp-rail" aria-label="Profile navigation">
+        <Link to="/" className="pp-logo" aria-label="White Caves home">
+          <img src="/company-logo.jpg" alt="" aria-hidden="true" />
+          <span>White Caves</span>
+        </Link>
 
-        {/* Avatar + Info */}
-        <div style={styles.heroContent}>
-          <div style={styles.avatarRing}>
-            <div style={styles.avatarInner}>
+        {/* Avatar + completion ring */}
+        <div className="pp-user-card">
+          <div className="pp-avatar-wrap" aria-label={`Profile ${completionPct}% complete`}>
+            <div className="pp-avatar">
               {avatarSrc ? (
-                <img
-                  src={avatarSrc}
-                  alt={user.name || 'User'}
-                  style={{ width: '100%', height: '100%', objectFit: 'cover' }}
-                />
+                <img src={avatarSrc} alt={user.name || 'User avatar'} />
               ) : (
-                initials
+                <span aria-hidden="true">{initials}</span>
               )}
             </div>
-          </div>
-
-          <div style={styles.heroInfo}>
-            <h1 style={styles.heroName}>{user.name || 'User'}</h1>
-            <div style={styles.heroMeta}>
-              <span style={styles.heroEmail}>{user.email}</span>
-              <span style={styles.roleBadge}>{roleLabel}</span>
-              {isFounder && <span style={styles.founderBadge}>ðŸ‘‘ Founder & Creator</span>}
+            <div className="pp-avatar-ring">
+              <CompletionRing pct={completionPct} size={72} />
             </div>
           </div>
-
-          <div style={styles.heroActions}>
-            <button style={styles.btnSecondary} onClick={() => setActiveTab('settings')}>
-              âœï¸ Edit Profile
-            </button>
-            <button style={styles.btnDanger} onClick={handleLogout}>
-              Sign Out
-            </button>
-          </div>
+          <h3 className="pp-user-name">{user.name || 'User'}</h3>
+          <p className="pp-user-email">{user.email || '—'}</p>
+          <span className="pp-role-badge">{roleLabel}</span>
+          {isFounder && <span className="pp-role-badge pp-role-badge--gold">Founder</span>}
+          <span className="pp-completion-label">{completionPct}% profile complete</span>
         </div>
 
-        {/* Stats Row */}
-        <div style={styles.statsRow}>
-          {[
-            { value: '0', label: 'Saved Properties' },
-            { value: '0', label: 'Viewings' },
-            { value: '0', label: 'Inquiries' },
-            { value: twoFactorEnabled ? 'ðŸŸ¢' : 'ðŸ”´', label: '2FA Status' },
-          ].map(stat => (
-            <div key={stat.label} style={styles.statCard}>
-              <span style={styles.statValue}>{stat.value}</span>
-              <span style={styles.statLabel}>{stat.label}</span>
-            </div>
-          ))}
-        </div>
-
-        <div
-          style={{
-            margin: '18px 40px 0',
-            padding: '14px',
-            border: '1px solid #2A2A2A',
-            borderRadius: 12,
-            background: '#121212',
-          }}
-        >
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 12 }}>
-            <div>
-              <strong style={{ fontSize: 14 }}>Profile completion</strong>
-              <p style={{ fontSize: 12, color: '#9CA3AF', margin: '4px 0 0' }}>
-                Complete your account to unlock smooth dashboard access.
-              </p>
-            </div>
-            <span style={{ fontSize: 13, color: '#C9A84C', fontWeight: 700 }}>
-              {profileCompletionPercent}%
-            </span>
-          </div>
-          <div
-            style={{
-              marginTop: 10,
-              width: '100%',
-              height: 8,
-              borderRadius: 999,
-              background: '#1F2937',
-              overflow: 'hidden',
-            }}
-            role="progressbar"
-            aria-valuemin={0}
-            aria-valuemax={100}
-            aria-valuenow={profileCompletionPercent}
-            aria-label="Profile completion status"
-          >
-            <div
-              style={{
-                width: `${profileCompletionPercent}%`,
-                height: '100%',
-                background: 'linear-gradient(90deg, #C9A84C, #D6BC6E)',
-                transition: 'width 0.2s ease',
-              }}
-            />
-          </div>
-          {!isProfileComplete && (
-            <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8, marginTop: 10 }}>
-              {profileChecklist
-                .filter(item => !item.complete)
-                .map(item => (
-                  <span
-                    key={item.key}
-                    style={{
-                      padding: '4px 10px',
-                      borderRadius: 999,
-                      background: '#7F1D1D33',
-                      border: '1px solid #EF444444',
-                      color: '#FCA5A5',
-                      fontSize: 11,
-                    }}
-                  >
-                    Missing {item.label}
-                  </span>
-                ))}
-            </div>
-          )}
-          <div style={{ marginTop: 12, display: 'flex', justifyContent: 'flex-end' }}>
+        {/* Tab nav */}
+        <nav className="pp-nav" aria-label="Profile sections">
+          {PROFILE_TABS.map(tab => (
             <button
-              type="button"
-              style={{
-                ...styles.btnPrimary,
-                opacity: isProfileComplete ? 1 : 0.55,
-                cursor: isProfileComplete ? 'pointer' : 'not-allowed',
-              }}
-              onClick={() => {
-                if (!isProfileComplete) {
-                  setActiveTab('settings');
-                  return;
-                }
-                navigate(dashboardPath);
-              }}
+              key={tab.id}
+              className={`pp-nav-item${activeTab === tab.id ? ' pp-nav-item--active' : ''}`}
+              onClick={() => setActiveTab(tab.id)}
             >
-              {dashboardLabel}
+              <span className="pp-nav-icon" aria-hidden="true">
+                {tab.icon}
+              </span>
+              <span>{tab.label}</span>
             </button>
-          </div>
-        </div>
-      </div>
+          ))}
+        </nav>
 
-      {/* â”€â”€â”€ Tabs â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
-      <div style={styles.tabsRow} role="tablist" aria-label="Profile sections">
-        {PROFILE_TABS.map(tab => (
-          <button
-            key={tab.id}
-            style={styles.tabBtn(activeTab === tab.id)}
-            onClick={() => setActiveTab(tab.id)}
-            role="tab"
-            aria-selected={activeTab === tab.id}
-          >
-            {tab.label}
+        {/* Footer actions */}
+        <div className="pp-rail-footer">
+          <button className="pp-nav-item pp-nav-item--cta" onClick={goToDashboard}>
+            <span aria-hidden="true">⬟</span>
+            <span>{dashboardButtonLabel}</span>
           </button>
-        ))}
-      </div>
+          {isExecutiveOperator && (
+            <button className="pp-nav-item" onClick={goToCockpit}>
+              <span aria-hidden="true">◆</span>
+              <span>Cockpit</span>
+            </button>
+          )}
+          <Link to="/" className="pp-nav-item">
+            <span aria-hidden="true">◎</span>
+            <span>Homepage</span>
+          </Link>
+          <button className="pp-nav-item pp-nav-item--logout" onClick={() => void handleLogout()}>
+            <span aria-hidden="true">↩</span>
+            <span>Sign Out</span>
+          </button>
+        </div>
+      </aside>
 
-      {/* â”€â”€â”€ Tab Content â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
-      <div style={styles.body} role="tabpanel">
-        {renderTab()}
-      </div>
+      {/* ── Main content ── */}
+      <main className="pp-main">{renderTab()}</main>
     </div>
   );
 };

@@ -122,7 +122,10 @@ function runAvm(input: AvmInput): AvmResult {
 router.get(
   '/yield-calculator',
   asyncHandler(async (req: AuthRequest, res: Response) => {
-    const { salePrice, annualRent, serviceCharge } = req.query as Record<string, string | undefined>;
+    const { salePrice, annualRent, serviceCharge } = req.query as Record<
+      string,
+      string | undefined
+    >;
     if (!salePrice || !annualRent) {
       throw new AppError('salePrice and annualRent are required', 400);
     }

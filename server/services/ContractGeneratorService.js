@@ -1,9 +1,9 @@
-const mongoose = require('mongoose');
-const Contract = require('../models/Contract');
-const Offer = require('../models/Offer');
-const InventoryProperty = require('../models/InventoryProperty');
-const User = require('../models/User');
-const Owner = require('../models/Owner');
+import mongoose from 'mongoose';
+import Contract from '../models/Contract.js';
+import Offer from '../models/Offer.js';
+import InventoryProperty from '../models/InventoryProperty.js';
+import User from '../models/User.js';
+import Owner from '../models/Owner.js';
 
 /**
  * ContractGeneratorService
@@ -596,4 +596,4 @@ class ContractGeneratorService {
   }
 }
 
-module.exports = new ContractGeneratorService();
+export default new ContractGeneratorService();

@@ -15,7 +15,7 @@ const AUTH_COPY = {
     signInSubtitle: 'Sign in to access your personalized dashboard',
     signUpSubtitle: 'Join White Caves to explore luxury properties in Dubai',
     socialLabel: 'Quick sign in with',
-    google: 'Google',
+    google: 'Continue with Google (Gmail)',
     facebook: 'Facebook',
     apple: 'Apple',
     email: 'Email',
@@ -29,7 +29,7 @@ const AUTH_COPY = {
     signInSubtitle: 'سجّل الدخول للوصول إلى لوحة التحكم الخاصة بك',
     signUpSubtitle: 'انضم إلى وايت كيفز لاستكشاف العقارات الفاخرة في دبي',
     socialLabel: 'تسجيل الدخول السريع عبر',
-    google: 'جوجل',
+    google: 'المتابعة باستخدام جوجل (Gmail)',
     facebook: 'فيسبوك',
     apple: 'آبل',
     email: 'البريد الإلكتروني',
@@ -51,6 +51,7 @@ const SignInPage: FC = () => {
   const location = useLocation();
   const modalRef = useRef<HTMLDivElement | null>(null);
   const closeButtonRef = useRef<HTMLButtonElement | null>(null);
+  const emailInputRef = useRef<HTMLInputElement | null>(null);
   const locale = getAuthLocale();
   const copy = AUTH_COPY[locale];
 
@@ -60,9 +61,20 @@ const SignInPage: FC = () => {
     activeTab,
     setActiveTab,
     loading,
+    forgotPasswordLoading,
+    verifyResetLoading,
+    completeResetLoading,
     error,
     setError,
     success,
+    resetStage,
+    setResetStage,
+    resetToken,
+    setResetToken,
+    newPassword,
+    setNewPassword,
+    confirmNewPassword,
+    setConfirmNewPassword,
     socialSyncRecovery,
     socialRetryAttempts,
     remainingSocialRetries,
@@ -98,6 +110,9 @@ const SignInPage: FC = () => {
     retrySocialAuth,
     clearSocialRecovery,
     handleEmailSubmit,
+    handleForgotPassword,
+    handleVerifyResetToken,
+    handleCompletePasswordReset,
     handlePhoneSubmit,
     handleOtpVerify,
     proceedToRoleSelection,
@@ -106,6 +121,18 @@ const SignInPage: FC = () => {
   } = useSignIn();
 
   const retryLimitReached = socialRetryAttempts >= 3;
+  const isSigningUp = mode === 'signup';
+  const hasGoogleErrorSignal = /google|gmail|popup|firebase|third-party cookies|blocked/i.test(
+    error.toLowerCase()
+  );
+  const shouldShowGoogleHelp =
+    mode === 'signin' &&
+    step === 1 &&
+    (!isGoogleAuthAvailable || socialSyncRecovery?.provider === 'google' || hasGoogleErrorSignal);
+  const authHighlights = isSigningUp
+    ? ['Fast account setup', 'Google / Gmail sign-in', 'Mobile OTP backup']
+    : ['Secure CRM access', 'Gmail-friendly login', 'Phone verification ready'];
+
   const closeAuthModal = useCallback((): void => {
     const stateValue = location.state as { from?: string } | null;
     const returnTo = stateValue?.from;
@@ -201,19 +228,28 @@ const SignInPage: FC = () => {
           <div className="auth-card">
             {step === 1 && (
               <>
-                <h1>{mode === 'signup' ? copy.signUpTitle : copy.signInTitle}</h1>
-                <p className="auth-subtitle">
-                  {mode === 'signup' ? copy.signUpSubtitle : copy.signInSubtitle}
-                </p>
+                <div className="auth-intro">
+                  <p className="auth-eyebrow">
+                    {isSigningUp
+                      ? 'Create your secure White Caves account'
+                      : 'Sign in faster with Gmail'}
+                  </p>
+                  <h1>{mode === 'signup' ? copy.signUpTitle : copy.signInTitle}</h1>
+                  <p className="auth-subtitle">
+                    {mode === 'signup' ? copy.signUpSubtitle : copy.signInSubtitle}
+                  </p>
+                  <div className="auth-highlights" aria-label="Authentication benefits">
+                    {authHighlights.map(highlight => (
+                      <span key={highlight} className="auth-highlight-pill">
+                        {highlight}
+                      </span>
+                    ))}
+                  </div>
+                </div>
 
                 {error && <div className="auth-error">{error}</div>}
                 {socialSyncRecovery && (
-                  <div
-                    className="auth-recovery"
-                    role="status"
-                    aria-live="polite"
-                    aria-busy={loading}
-                  >
+                  <div className="auth-recovery" role="status" aria-live="polite">
                     <p className="auth-recovery__title">
                       {socialSyncRecovery.provider[0].toUpperCase() +
                         socialSyncRecovery.provider.slice(1)}{' '}
@@ -285,8 +321,47 @@ const SignInPage: FC = () => {
                   facebookText={copy.facebook}
                   appleText={copy.apple}
                   googleDisabled={!isGoogleAuthAvailable}
-                  helperText={!isGoogleAuthAvailable ? googleAuthUnavailableMessage : undefined}
+                  helperText={
+                    !isGoogleAuthAvailable
+                      ? googleAuthUnavailableMessage
+                      : 'Use the Gmail account linked to your White Caves profile for the fastest login.'
+                  }
                 />
+
+                {shouldShowGoogleHelp && (
+                  <div className="auth-google-help" role="region" aria-label="Google sign-in help">
+                    <p className="auth-google-help__title">Trouble signing in with Gmail?</p>
+                    <ul className="auth-google-help__list">
+                      <li>Allow popups and third-party cookies for this site.</li>
+                      <li>Pick the same Gmail account linked to your White Caves profile.</li>
+                      <li>If Google still fails, continue with Email + password below.</li>
+                    </ul>
+                    <div className="auth-google-help__actions">
+                      <button
+                        type="button"
+                        className="btn btn-secondary"
+                        onClick={() => {
+                          void handleSocialAuth('google');
+                        }}
+                        disabled={loading || !isGoogleAuthAvailable}
+                      >
+                        Try Gmail again
+                      </button>
+                      <button
+                        type="button"
+                        className="btn btn-link"
+                        onClick={() => {
+                          setActiveTab('email');
+                          window.setTimeout(() => {
+                            emailInputRef.current?.focus();
+                          }, 0);
+                        }}
+                      >
+                        Continue with Email
+                      </button>
+                    </div>
+                  </div>
+                )}
 
                 <div className="auth-divider">
                   <span>or continue with</span>
@@ -302,6 +377,137 @@ const SignInPage: FC = () => {
                 <div className="auth-content">
                   {activeTab === 'email' && (
                     <form onSubmit={handleEmailSubmit} className="auth-form">
+                      {mode === 'signin' && resetStage !== 'request' && (
+                        <div
+                          className="auth-google-help"
+                          role="region"
+                          aria-label="Password reset flow"
+                        >
+                          <p className="auth-google-help__title">Password reset</p>
+                          {resetStage === 'verify' && (
+                            <>
+                              <p className="auth-google-help__list">
+                                Enter the reset token from your email, then verify to continue.
+                              </p>
+                              <div className="form-group auth-form-group-spaced">
+                                <label htmlFor="reset-token">Reset Token</label>
+                                <input
+                                  id="reset-token"
+                                  type="text"
+                                  value={resetToken}
+                                  onChange={(e: ChangeEvent<HTMLInputElement>) =>
+                                    setResetToken(e.target.value)
+                                  }
+                                  placeholder="Paste your reset token"
+                                  autoComplete="one-time-code"
+                                />
+                              </div>
+                              <div className="auth-google-help__actions">
+                                <button
+                                  type="button"
+                                  className="btn btn-secondary"
+                                  onClick={() => {
+                                    void handleVerifyResetToken();
+                                  }}
+                                  disabled={verifyResetLoading || loading}
+                                >
+                                  {verifyResetLoading ? 'Verifying token...' : 'Verify Reset Token'}
+                                </button>
+                                <button
+                                  type="button"
+                                  className="btn btn-link"
+                                  onClick={() => {
+                                    setResetStage('request');
+                                  }}
+                                >
+                                  Start Over
+                                </button>
+                              </div>
+                            </>
+                          )}
+
+                          {resetStage === 'reset' && (
+                            <>
+                              <p className="auth-google-help__list">
+                                Token verified. Set your new password to finish the reset journey.
+                              </p>
+                              <div className="form-group auth-form-group-spaced">
+                                <label htmlFor="new-password">New Password</label>
+                                <input
+                                  id="new-password"
+                                  type="password"
+                                  value={newPassword}
+                                  onChange={(e: ChangeEvent<HTMLInputElement>) =>
+                                    setNewPassword(e.target.value)
+                                  }
+                                  placeholder="Enter your new password"
+                                  autoComplete="new-password"
+                                />
+                              </div>
+                              <div className="form-group auth-form-group-spaced">
+                                <label htmlFor="confirm-new-password">Confirm New Password</label>
+                                <input
+                                  id="confirm-new-password"
+                                  type="password"
+                                  value={confirmNewPassword}
+                                  onChange={(e: ChangeEvent<HTMLInputElement>) =>
+                                    setConfirmNewPassword(e.target.value)
+                                  }
+                                  placeholder="Confirm your new password"
+                                  autoComplete="new-password"
+                                />
+                              </div>
+                              <button
+                                type="button"
+                                className="btn btn-primary btn-full"
+                                onClick={() => {
+                                  void handleCompletePasswordReset();
+                                }}
+                                disabled={completeResetLoading || loading}
+                              >
+                                {completeResetLoading
+                                  ? 'Resetting Password...'
+                                  : 'Complete Password Reset'}
+                              </button>
+                            </>
+                          )}
+
+                          {resetStage === 'success' && (
+                            <>
+                              <p className="auth-google-help__list">
+                                Password reset succeeded. Sign in below using your new password.
+                              </p>
+                              <button
+                                type="button"
+                                className="btn btn-link"
+                                onClick={() => {
+                                  setResetStage('request');
+                                }}
+                              >
+                                Dismiss
+                              </button>
+                            </>
+                          )}
+
+                          {resetStage === 'locked' && (
+                            <>
+                              <p className="auth-google-help__list">
+                                Too many reset attempts detected. Please wait and retry later.
+                              </p>
+                              <button
+                                type="button"
+                                className="btn btn-link"
+                                onClick={() => {
+                                  setResetStage('request');
+                                }}
+                              >
+                                Back to standard sign in
+                              </button>
+                            </>
+                          )}
+                        </div>
+                      )}
+
                       {mode === 'signup' && (
                         <div className="form-group">
                           <label htmlFor="signin-fullname">Full Name</label>
@@ -320,29 +526,61 @@ const SignInPage: FC = () => {
                       )}
                       <div className="form-group">
                         <label htmlFor="signin-email">Email Address</label>
-                        <input
-                          id="signin-email"
-                          type="email"
-                          value={email}
-                          onChange={(e: ChangeEvent<HTMLInputElement>) => setEmail(e.target.value)}
-                          placeholder="Enter your email"
-                          required
-                          autoComplete="email"
-                        />
+                        {mode === 'signup' ? (
+                          <input
+                            ref={emailInputRef}
+                            id="signin-email"
+                            type="email"
+                            value={email}
+                            onChange={(e: ChangeEvent<HTMLInputElement>) =>
+                              setEmail(e.target.value)
+                            }
+                            placeholder="Enter your email"
+                            required
+                            autoComplete="email"
+                          />
+                        ) : (
+                          <input
+                            ref={emailInputRef}
+                            id="signin-email"
+                            type="email"
+                            value={email}
+                            onChange={(e: ChangeEvent<HTMLInputElement>) =>
+                              setEmail(e.target.value)
+                            }
+                            placeholder="Enter your email"
+                            required
+                            autoComplete="username"
+                          />
+                        )}
                       </div>
                       <div className="form-group">
                         <label htmlFor="signin-password">Password</label>
-                        <input
-                          id="signin-password"
-                          type="password"
-                          value={password}
-                          onChange={(e: ChangeEvent<HTMLInputElement>) =>
-                            setPassword(e.target.value)
-                          }
-                          placeholder="Enter your password"
-                          required
-                          autoComplete={mode === 'signup' ? 'new-password' : 'current-password'}
-                        />
+                        {mode === 'signup' ? (
+                          <input
+                            id="signin-password"
+                            type="password"
+                            value={password}
+                            onChange={(e: ChangeEvent<HTMLInputElement>) =>
+                              setPassword(e.target.value)
+                            }
+                            placeholder="Enter your password"
+                            required
+                            autoComplete="new-password"
+                          />
+                        ) : (
+                          <input
+                            id="signin-password"
+                            type="password"
+                            value={password}
+                            onChange={(e: ChangeEvent<HTMLInputElement>) =>
+                              setPassword(e.target.value)
+                            }
+                            placeholder="Enter your password"
+                            required
+                            autoComplete="current-password"
+                          />
+                        )}
                       </div>
                       {mode === 'signup' && (
                         <div className="form-group">
@@ -363,6 +601,18 @@ const SignInPage: FC = () => {
                       <button type="submit" className="btn btn-primary btn-full" disabled={loading}>
                         {loading ? 'Please wait...' : mode === 'signup' ? 'Continue' : 'Sign In'}
                       </button>
+                      {mode === 'signin' && (
+                        <button
+                          type="button"
+                          className="btn btn-link auth-forgot-link"
+                          onClick={() => {
+                            void handleForgotPassword();
+                          }}
+                          disabled={forgotPasswordLoading || loading}
+                        >
+                          {forgotPasswordLoading ? 'Sending reset link...' : 'Forgot password?'}
+                        </button>
+                      )}
                     </form>
                   )}
 
@@ -465,9 +715,9 @@ const SignInPage: FC = () => {
                   {USER_CATEGORIES.map(cat => (
                     <button
                       key={cat.id}
-                      className={`category-card ${selectedCategory === cat.id ? 'selected' : ''}`}
+                      className={`category-card category-card--${cat.id} ${selectedCategory === cat.id ? 'selected' : ''}`}
                       onClick={() => setSelectedCategory(cat.id)}
-                      style={{ '--accent-color': cat.color } as React.CSSProperties}
+                      type="button"
                     >
                       <span className="category-icon">{cat.icon}</span>
                       <div className="category-info">
@@ -529,7 +779,7 @@ const SignInPage: FC = () => {
                 </div>
 
                 {selectedCategory === 'staff' && (
-                  <div className="form-group" style={{ marginBottom: '1rem' }}>
+                  <div className="form-group auth-form-group-spaced">
                     <label htmlFor="employee-id">Employee ID (Optional)</label>
                     <input
                       id="employee-id"
@@ -559,8 +809,7 @@ const SignInPage: FC = () => {
               <>
                 <h1>Two-Factor Authentication</h1>
                 <p className="auth-subtitle">
-                  Enter the 6-digit code from your authenticator app (or an 8-character backup
-                  code)
+                  Enter the 6-digit code from your authenticator app (or an 8-character backup code)
                 </p>
 
                 {error && <div className="auth-error">{error}</div>}

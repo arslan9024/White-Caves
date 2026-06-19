@@ -58,10 +58,27 @@ try {
   }
 
   if ($newStatus -eq "done" -and (Test-Path $promptManagerScript)) {
-    & powershell -ExecutionPolicy Bypass -File "$promptManagerScript" `
-      -WorkspaceRoot $WorkspaceRoot `
-      -MarkSuccess `
-      -TaskId $TaskId 2>&1 | Out-String | Write-Host
+    $markSuccessOk = $false
+    for ($attempt = 1; $attempt -le 3; $attempt++) {
+      $pmOut = & powershell -ExecutionPolicy Bypass -File "$promptManagerScript" `
+        -WorkspaceRoot $WorkspaceRoot `
+        -MarkSuccess `
+        -TaskId $TaskId 2>&1 | Out-String
+
+      if ($LASTEXITCODE -eq 0) {
+        $markSuccessOk = $true
+        $pmOut | Write-Host
+        break
+      }
+
+      if ($attempt -lt 3) {
+        Write-Host ("  [WARN] prompt-manager MarkSuccess contention (attempt {0}/3). Retrying..." -f $attempt) -ForegroundColor DarkYellow
+        Start-Sleep -Milliseconds (200 * $attempt)
+      } else {
+        Write-Host "  [WARN] prompt-manager MarkSuccess failed after retries; task completion remains valid." -ForegroundColor DarkYellow
+        $pmOut | Write-Host
+      }
+    }
 
     $evidenceLc = [string]$EvidenceNote
     $evidenceLc = $evidenceLc.ToLower()
@@ -77,11 +94,28 @@ try {
     if (-not [string]::IsNullOrWhiteSpace($saveText)) {
       Write-Host ""
       Write-Host "  [PROMPT SAVE] Auto-saving refined prompt text..." -ForegroundColor Cyan
-      & powershell -ExecutionPolicy Bypass -File "$promptManagerScript" `
-        -WorkspaceRoot $WorkspaceRoot `
-        -Save `
-        -TaskId $TaskId `
-        -Text $saveText 2>&1 | Out-String | Write-Host
+      $saveOk = $false
+      for ($attempt = 1; $attempt -le 3; $attempt++) {
+        $saveOut = & powershell -ExecutionPolicy Bypass -File "$promptManagerScript" `
+          -WorkspaceRoot $WorkspaceRoot `
+          -Save `
+          -TaskId $TaskId `
+          -Text $saveText 2>&1 | Out-String
+
+        if ($LASTEXITCODE -eq 0) {
+          $saveOk = $true
+          $saveOut | Write-Host
+          break
+        }
+
+        if ($attempt -lt 3) {
+          Write-Host ("  [WARN] prompt-manager Save contention (attempt {0}/3). Retrying..." -f $attempt) -ForegroundColor DarkYellow
+          Start-Sleep -Milliseconds (200 * $attempt)
+        } else {
+          Write-Host "  [WARN] prompt-manager Save failed after retries; continuing without blocking task flow." -ForegroundColor DarkYellow
+          $saveOut | Write-Host
+        }
+      }
     } elseif ($evidenceLc -like "*refined prompt*" -or $evidenceLc -like "*updated prompt*") {
       Write-Host "  [PROMPT SAVE] Mention detected but no '...prompt: <text>' payload found." -ForegroundColor Yellow
     }

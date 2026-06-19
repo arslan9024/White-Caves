@@ -119,7 +119,9 @@ If full matrix is too expensive, run focused scope checks first and clearly repo
 - Respect existing rate-limit and CORS/security middleware setup.
 - Keep responses consistent with existing API envelope conventions.
 - Never bypass security checks for convenience.
+
 ---
+
 - Free-planning agents MUST use only approved free models: Gemini 2.0 Flash / 1.5 Flash (Google AI Studio), Llama 3.1 70B / 3.3 70B (Groq), DeepSeek V3 / R1 (DeepSeek Chat), Mistral Small (Mistral Le Chat), Qwen2.5 72B (HuggingFace / Together.ai). See `plans/AGENT_SKILLS_UPGRADE_V3.md` for the full model assignment matrix by role type.
 - Senior coding/design agents use GPT-4o by default for coding and verification.
 - Claude 3.5 Sonnet is reserved for explicit complex architecture/design reviews by: @Ada, @Mira, @Barbara, @Una, @Daniela, @Framer, @Radia.
@@ -135,6 +137,7 @@ For any new UI surface:
 - avoid brittle selectors and flaky timing assumptions in tests
 
 ---
+
 ## 9) Editing Behavior for Copilot/Agents
 
 When generating or modifying code in this repo:
@@ -168,8 +171,24 @@ A task is done only when:
 - Unit tests: `npm run test:run:unit`
 - E2E (local chromium): `npm run test:e2e:local`
 - E2E matrix: `npm run test:e2e:matrix`
+- Orchestration dashboard (watch): `npm run orchestrator:dashboard:watch`
+- Progress intelligence snapshot: `npm run orchestrator:progress:intel`
+- Progress intelligence brief: `npm run orchestrator:progress:intel:brief`
 
 Use these as defaults unless task scope requires something narrower.
+
+---
+
+## 11.1) Progress Visibility Requirement (MANDATORY)
+
+For any multi-step implementation wave, ensure progress is measurable and visible:
+
+1. Refresh progress intelligence (`orchestrator:progress:intel`) at least once per active cycle.
+2. Verify dashboard reflects:
+   - daily movement (`developed`, `fixed`, `upgraded`)
+   - monthly movement (`developed`, `fixed`, `upgraded`)
+   - ETA forecast toward the configured improvement target (`targetProjectBoostPct` in policy)
+3. If ETA/velocity data is missing, treat it as an orchestration observability bug and fix it before closing the wave.
 
 ---
 
@@ -191,14 +210,6 @@ For orchestration/governance rules (handoff contracts, readiness gates, approval
 2. Workflow/orchestration rules -> `AGENTS.md` + agentic workflow instructions
 
 When rules overlap, follow both; when they conflict, apply precedence above and document the decision in task notes.
-
-### Aegis control-plane defaults
-
-- Control-plane ownership is explicit: this file = engineering + model usage, `AGENTS.md` = roster/routing/lanes, `agentic-workflow.instructions.md` = handoff contract, `scripts/orchestrator/policy.json` = runtime truth.
-- Use **plan mode before agent mode** for any non-trivial task. A plan packet must define goal, files in scope, validation path, recommended model tier, and context-size expectation before premium execution.
-- Route **free-first, premium-by-exception** by task class. Exploration, planning, research, doc expansion, and queue triage stay on free models unless risk/escalation demands otherwise.
-- Apply the context budget before opening files: canonical roadmap first, then one wave bundle, only exact business-doc sections, and only task-relevant instruction files.
-- Prefer compact handoff summaries over transcript replay. Raw logs may remain in history, but reusable context must come from the session snapshot and handoff summary layers.
 
 ---
 

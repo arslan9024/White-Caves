@@ -22,6 +22,17 @@ import logger from '../utils/logger.js';
 
 const router = Router();
 
+const routeParamToString = (value: string | string[] | undefined): string | null => {
+  if (typeof value === 'string' && value.trim().length > 0) {
+    return value;
+  }
+  if (Array.isArray(value) && value.length > 0 && typeof value[0] === 'string') {
+    const first = value[0].trim();
+    return first.length > 0 ? first : null;
+  }
+  return null;
+};
+
 // ─── GET /api/agent-availability/:agentId — Get agent's availability ────
 
 router.get(
@@ -134,8 +145,11 @@ router.delete(
     const userId = req.user?.id;
     if (!userId) throw new AppError('Authentication required', 401);
 
-    const { dayOfWeek: dayOfWeekParam } = req.params as Record<string, string>;
-    const dayOfWeek = parseInt(dayOfWeekParam, 10);
+    const dayParam = routeParamToString(req.params.dayOfWeek);
+    if (!dayParam) {
+      throw new AppError('dayOfWeek is required', 400);
+    }
+    const dayOfWeek = parseInt(dayParam, 10);
     if (isNaN(dayOfWeek) || dayOfWeek < 0 || dayOfWeek > 6) {
       throw new AppError('Invalid dayOfWeek (0-6)', 400);
     }

@@ -128,7 +128,7 @@ const RoleSelectionForm = ({ userId, onComplete, onSkip }: RoleSelectionFormProp
     } catch (err) {
       const roleError = err as { message?: string };
       
-      setError(roleError.message || 'Failed to set role. Please try again.');
+      setError((err as Error).message || 'Failed to set role. Please try again.');
     } finally {
       setLoading(false);
     }
