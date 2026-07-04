@@ -5,6 +5,34 @@
  * Training: Hybrid (pre-built patterns + gradual learning from corrections)
  */
 
+/**
+ * Confidence gate threshold — if primary intent confidence falls below this
+ * value, Nina cannot reliably handle the message and must escalate to a human
+ * agent with a structured context handoff payload.
+ *
+ * The engine awards 30 confidence points per keyword match (scoreMatch).
+ * A threshold of 30 means any message with at least one matching keyword
+ * is handled by Nina; messages with zero matches (confidence = 0, UNKNOWN
+ * intent) are always escalated.
+ */
+export const CONFIDENCE_GATE_THRESHOLD = 30;
+
+/**
+ * Structured payload passed to the assigned agent when a conversation is
+ * escalated due to low confidence or intent-based rules.
+ */
+export interface HandoffPayload {
+  reason: 'LOW_CONFIDENCE' | 'COMPLAINT' | 'ASSISTANCE_NEEDED' | 'NEGATIVE_SENTIMENT';
+  confidence: number;
+  detectedIntent: Intent;
+  entities: Entity[];
+  sentiment: SentimentResult;
+  conversationId: string;
+  customerName?: string;
+  customerPhone?: string;
+  suggestedQueue: 'GENERAL' | 'SALES' | 'SUPPORT' | 'COMPLAINTS';
+}
+
 export enum Intent {
   // Property-related intents
   PROPERTY_INQUIRY = 'PROPERTY_INQUIRY',
@@ -89,6 +117,7 @@ export interface IntentResult {
   sentiment: SentimentResult;
   topics: string[];
   requiresAgentHandoff: boolean;
+  handoffPayload?: HandoffPayload;
   suggestedResponse: string;
   timestamp: Date;
 }
@@ -145,13 +174,19 @@ export class NinaEngine {
     // Extract topics
     const topics = this.extractTopics(normalized, entities);
 
-    // Check if handoff needed
+    // Check if handoff needed (intent-based + confidence gate)
     const requiresHandoff = this.shouldHandoffToAgent(
       primaryIntent.intent,
       sentiment,
       entities,
-      context
+      context,
+      primaryIntent.confidence,
     );
+
+    // Build structured handoff payload when escalating
+    const handoffPayload: HandoffPayload | undefined = requiresHandoff
+      ? this.buildHandoffPayload(primaryIntent, sentiment, entities, context)
+      : undefined;
 
     // Generate suggested response
     const suggestedResponse = this.generateResponse(
@@ -168,6 +203,7 @@ export class NinaEngine {
       sentiment,
       topics,
       requiresAgentHandoff: requiresHandoff,
+      handoffPayload,
       suggestedResponse,
       timestamp: new Date(),
     };
@@ -478,13 +514,19 @@ export class NinaEngine {
 
   /**
    * Should this message be handled by an agent?
+   * Escalates on: complaint intents, ASSISTANCE_NEEDED, negative sentiment
+   * with many entities, OR primary intent confidence below CONFIDENCE_GATE_THRESHOLD.
    */
   private shouldHandoffToAgent(
     intent: Intent,
     sentiment: SentimentResult,
     entities: Entity[],
-    context: ConversationContext
+    context: ConversationContext,
+    confidence: number = 100,
   ): boolean {
+    // Confidence gate: escalate when Nina is not certain enough
+    if (confidence < CONFIDENCE_GATE_THRESHOLD) return true;
+
     // Always handoff complaints
     if (intent.includes('COMPLAINT')) return true;
 
@@ -496,6 +538,46 @@ export class NinaEngine {
 
     // Otherwise, use auto-response
     return false;
+  }
+
+  /**
+   * Build structured handoff payload for the receiving agent.
+   */
+  private buildHandoffPayload(
+    primary: IntentScore,
+    sentiment: SentimentResult,
+    entities: Entity[],
+    context: ConversationContext,
+  ): HandoffPayload {
+    const reason =
+      primary.confidence < CONFIDENCE_GATE_THRESHOLD
+        ? 'LOW_CONFIDENCE'
+        : primary.intent.includes('COMPLAINT')
+          ? 'COMPLAINT'
+          : sentiment.sentiment === 'NEGATIVE'
+            ? 'NEGATIVE_SENTIMENT'
+            : 'ASSISTANCE_NEEDED';
+
+    const suggestedQueue: HandoffPayload['suggestedQueue'] =
+      reason === 'COMPLAINT'
+        ? 'COMPLAINTS'
+        : primary.intent.includes('PURCHASE') || primary.intent.includes('NEGOTIATION')
+          ? 'SALES'
+          : reason === 'ASSISTANCE_NEEDED' || reason === 'NEGATIVE_SENTIMENT'
+            ? 'SUPPORT'
+            : 'GENERAL';
+
+    return {
+      reason,
+      confidence: primary.confidence,
+      detectedIntent: primary.intent,
+      entities,
+      sentiment,
+      conversationId: context.conversationId,
+      customerName: context.customerName,
+      customerPhone: context.customerPhone,
+      suggestedQueue,
+    };
   }
 
   /**
