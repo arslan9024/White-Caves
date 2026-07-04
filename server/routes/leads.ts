@@ -59,8 +59,25 @@ import {
   buildLeadTaskCockpit,
   buildLeadTimeline,
 } from '../services/leadWorkflowService.js';
+import multer from 'multer';
+import * as XLSX from 'xlsx';
 
 const router = Router();
+
+// ── Multer: memory storage for CSV/XLSX import ───────────────────────
+const importUpload = multer({
+  storage: multer.memoryStorage(),
+  limits: { fileSize: 10 * 1024 * 1024 }, // 10 MB
+  fileFilter: (_req, file, cb) => {
+    const ok =
+      file.mimetype === 'text/csv' ||
+      file.mimetype === 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' ||
+      file.mimetype === 'application/vnd.ms-excel' ||
+      file.originalname.endsWith('.csv') ||
+      file.originalname.endsWith('.xlsx');
+    cb(null, ok);
+  },
+});
 
 const routeParamToString = (value: string | string[] | undefined): string | null => {
   if (typeof value === 'string' && value.trim().length > 0) {
@@ -824,6 +841,148 @@ router.get(
       pagination: { page: pageNum, pageSize: limit, total, totalPages: Math.ceil(total / limit) },
     });
   })
+);
+
+
+// ─── POST /api/leads/import/file ────────────────────────────────────────────
+// Accepts multipart CSV or XLSX upload.  Parses, validates, deduplicates by
+// email or phone against existing leads, and bulk-inserts new rows.
+// Returns: { imported, duplicates, errors: [{ row, field, message }] }
+router.post(
+  '/import/file',
+  requirePermission('manage_leads'),
+  importUpload.single('file'),
+  asyncHandler(async (req: Request, res: Response) => {
+    if (!req.file) throw new AppError('No file uploaded', 400);
+
+    // ── Parse file into rows ────────────────────────────────────────
+    const wb = XLSX.read(req.file.buffer, { type: 'buffer' });
+    const ws = wb.Sheets[wb.SheetNames[0]];
+    const rawRows = XLSX.utils.sheet_to_json<Record<string, string | number | null>>(ws, {
+      defval: null,
+    });
+
+    if (rawRows.length === 0) throw new AppError('File contains no data rows', 400);
+    if (rawRows.length > 500) throw new AppError('Maximum 500 rows per import', 400);
+
+    // ── Field-map each row (support flexible column names) ──────────
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    const phoneRegex = /^\+?[\d\s\-()]{7,20}$/;
+
+    const perRowErrors: { row: number; field: string; message: string }[] = [];
+    const candidates: {
+      name: string;
+      email: string | null;
+      phone: string | null;
+      company: string | null;
+      status: string;
+      source: string;
+      budget: number | null;
+      score: number;
+      notes: string | null;
+      tags: string[];
+    }[] = [];
+
+    for (let i = 0; i < rawRows.length; i++) {
+      const r = rawRows[i];
+      const rowNum = i + 2; // 1-based + header row
+
+      // Accept both "Name" and "name" variants
+      const get = (...keys: string[]): string | null => {
+        for (const k of keys) {
+          const v = r[k] ?? r[k.toLowerCase()] ?? r[k.toUpperCase()];
+          if (v !== undefined && v !== null && String(v).trim() !== '') return String(v).trim();
+        }
+        return null;
+      };
+
+      const name = get('name', 'Name', 'Full Name', 'full_name');
+      if (!name) {
+        perRowErrors.push({ row: rowNum, field: 'name', message: 'Name is required' });
+        continue;
+      }
+
+      const emailRaw = get('email', 'Email', 'email_address');
+      const email =
+        emailRaw && emailRegex.test(emailRaw) ? emailRaw.toLowerCase().slice(0, 254) : null;
+      if (emailRaw && !email) {
+        perRowErrors.push({ row: rowNum, field: 'email', message: `Invalid email: ${emailRaw}` });
+      }
+
+      const phoneRaw = get('phone', 'Phone', 'mobile', 'Mobile', 'phone_number');
+      const phone = phoneRaw && phoneRegex.test(phoneRaw) ? phoneRaw.slice(0, 20) : null;
+      if (phoneRaw && !phone) {
+        perRowErrors.push({ row: rowNum, field: 'phone', message: `Invalid phone: ${phoneRaw}` });
+      }
+
+      const statusRaw = get('status', 'Status') ?? 'new';
+      const status = VALID_LEAD_STATUSES.includes(
+        statusRaw as (typeof VALID_LEAD_STATUSES)[number],
+      )
+        ? statusRaw
+        : 'new';
+
+      const budgetRaw = get('budget', 'Budget');
+      const budget = budgetRaw ? parseFloat(budgetRaw) || null : null;
+
+      const scoreRaw = get('score', 'Score');
+      const score = scoreRaw
+        ? Math.min(100, Math.max(0, Math.round(parseFloat(scoreRaw) || 0)))
+        : 0;
+
+      candidates.push({
+        name: sanitizeString(name.slice(0, 200)),
+        email,
+        phone,
+        company:
+          sanitizeString((get('company', 'Company') ?? '').slice(0, 200)) || null,
+        status,
+        source: sanitizeString((get('source', 'Source') ?? 'import').slice(0, 100)),
+        budget,
+        score,
+        notes:
+          sanitizeString((get('notes', 'Notes') ?? '').slice(0, 5000)) || null,
+        tags: [],
+      });
+    }
+
+    // ── Deduplication ───────────────────────────────────────────────
+    const candidateEmails = candidates.map(c => c.email).filter(Boolean) as string[];
+    const candidatePhones = candidates.map(c => c.phone).filter(Boolean) as string[];
+
+    const existing = await prisma.lead.findMany({
+      where: {
+        OR: [
+          ...(candidateEmails.length ? [{ email: { in: candidateEmails } }] : []),
+          ...(candidatePhones.length ? [{ phone: { in: candidatePhones } }] : []),
+        ],
+      },
+      select: { email: true, phone: true },
+    });
+
+    const existingEmails = new Set(existing.map(e => e.email).filter(Boolean));
+    const existingPhones = new Set(existing.map(e => e.phone).filter(Boolean));
+
+    const toInsert = candidates.filter(
+      c => !(c.email && existingEmails.has(c.email)) && !(c.phone && existingPhones.has(c.phone)),
+    );
+    const duplicates = candidates.length - toInsert.length;
+
+    // ── Insert ──────────────────────────────────────────────────────
+    const result = toInsert.length
+      ? await prisma.lead.createMany({ data: toInsert })
+      : { count: 0 };
+
+    res.status(201).json({
+      success: true,
+      data: {
+        imported: result.count,
+        duplicates,
+        errors: perRowErrors,
+        total: rawRows.length,
+      },
+    });
+  }),
 );
 
 // ─── POST /api/leads/bulk-import ────────────────────────────────────────
