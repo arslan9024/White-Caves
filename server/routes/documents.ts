@@ -11,6 +11,7 @@
  */
 
 import { Router, Request, Response } from 'express';
+type RouteRequest = Request<Record<string, string>>;
 import { requirePermission } from '../middleware/rbac.js';
 import { asyncHandler, AppError } from '../middleware/errorHandler.js';
 import {

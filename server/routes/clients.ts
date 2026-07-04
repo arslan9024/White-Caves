@@ -5,6 +5,7 @@
  */
 
 import { Router, Request, Response } from 'express';
+type RouteRequest = Request<Record<string, string>>;
 import { Prisma } from '@prisma/client';
 import { asyncHandler } from '../middleware/errorHandler';
 import { prisma } from '../database.js';

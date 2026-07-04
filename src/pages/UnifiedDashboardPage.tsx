@@ -6,6 +6,7 @@ import React, {
   Suspense,
   useEffect,
   useMemo,
+  useRef,
   useState,
 } from 'react';
 import { useSelector } from 'react-redux';
@@ -17,12 +18,11 @@ import DepartmentContentPanel from '../components/layout/DepartmentContentPanel/
 import MobileCRMDrawer from '../components/layout/MobileCRMDrawer';
 import AuthenticatedPageShell from '../components/layout/authenticated/AuthenticatedPageShell';
 import DashboardShell from '../components/layout/DashboardShell/DashboardShell';
-import DashboardTopBar from '../components/layout/DashboardTopBar/DashboardTopBar';
+import DashboardTopBar from '../components/dashboard/DashboardTopBar';
 import DashboardSidebar from '../components/layout/DashboardSidebar/DashboardSidebar';
 import SubNavBar from '../components/common/SubNavBar';
 import { DashboardSubTabRenderer } from '../components/dashboard/DashboardRenderer';
 import SuperuserControlCenter from '../components/dashboard/SuperuserControlCenter';
-import DashboardTopBar from '../components/dashboard/DashboardTopBar';
 import DashboardSideRail from '../components/dashboard/DashboardSideRail';
 import DashboardPageHeader from '../components/dashboard/DashboardPageHeader';
 import DashboardKpiStrip, { type KpiCardData } from '../components/dashboard/DashboardKpiStrip';
@@ -669,7 +669,7 @@ const UnifiedDashboardPage: FC = () => {
     }
   };
 
-  const handleTabKeyDown = (event: KeyboardEvent<HTMLButtonElement>, index: number) => {
+  const handleTabKeyDown = (event: React.KeyboardEvent<HTMLButtonElement>, index: number) => {
     const renderedButtons = tabButtonRefs.current.filter(Boolean);
     const lastIndex = renderedButtons.length - 1;
 

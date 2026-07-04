@@ -218,10 +218,3 @@ export const ejariMockService = {
     };
   },
 };
-
-export type {
-  EjariActivationRequest,
-  EjariActivationResponse,
-  EjariStatusResponse,
-  EjariRenewalResponse,
-};

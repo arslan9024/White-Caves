@@ -1,4 +1,5 @@
 import { Router, Request, Response } from 'express';
+type RouteRequest = Request<Record<string, string>>;
 import {
   existsSync,
   mkdirSync,

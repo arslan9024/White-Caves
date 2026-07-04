@@ -361,12 +361,11 @@ export function useSignIn() {
       status?: string;
       phone?: string | null;
       photoUrl?: string | null;
-      phone?: string | null;
       profileCompleted?: boolean;
       profileComplete?: boolean;
     }): void => {
       const resolvedStatus = user.status?.toLowerCase().trim() || 'active';
-      const normalizedRole = isCreatorSuperUserEmail(user.email)
+      const normalizedRole = isSuperuserEmail(user.email)
         ? 'managing_director'
         : normalizeRoleKey(user.role);
       const profileCompleted = deriveProfileCompletionSignal(user);
@@ -574,12 +573,12 @@ export function useSignIn() {
           setError('');
 
           if (mode === 'signup') {
-            if (isCreatorSuperUserEmail(backendUser.email)) {
+            if (isSuperuserEmail(backendUser.email)) {
               handleSignInSuccess({
                 ...backendUser,
                 role: 'managing_director',
                 status: 'active',
-                photoURL: backendUser.photoUrl || result.user.photoURL,
+                photoUrl: backendUser.photoUrl || result.user.photoURL,
                 displayName: backendUser.name || result.user.displayName,
               });
             } else {
@@ -593,17 +592,17 @@ export function useSignIn() {
             }
           } else {
             handleSignInSuccess(
-              isCreatorSuperUserEmail(backendUser.email)
+              isSuperuserEmail(backendUser.email)
                 ? {
                     ...backendUser,
                     role: 'managing_director',
                     status: 'active',
-                    photoURL: backendUser.photoUrl || result.user.photoURL,
+                    photoUrl: backendUser.photoUrl || result.user.photoURL,
                     displayName: backendUser.name || result.user.displayName,
                   }
                 : {
                     ...backendUser,
-                    photoURL: backendUser.photoUrl || result.user.photoURL,
+                    photoUrl: backendUser.photoUrl || result.user.photoURL,
                     displayName: backendUser.name || result.user.displayName,
                   }
             );
@@ -770,7 +769,7 @@ export function useSignIn() {
 
       try {
         if (mode === 'signup') {
-          if (isCreatorSuperUserEmail(normalizedEmail)) {
+          if (isSuperuserEmail(normalizedEmail)) {
             const response = await backendRegister(
               normalizedEmail,
               password,
