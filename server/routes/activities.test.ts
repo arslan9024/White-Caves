@@ -412,6 +412,131 @@ describe('Activities Routes — /api/activities', () => {
 });
 
 // ─────────────────────────────────────────────────────────────────────────────
+// ─────────────────────────────────────────────────────────────────────────────
+// W18.1-P1-002 — Audit Log Export Route Tests (CSV + XLSX)
+// requirePermission is mocked to no-op in this file; RBAC permission contracts
+// are covered by the W20-001 block below.  These tests cover HTTP behaviour.
+// ─────────────────────────────────────────────────────────────────────────────
+
+vi.mock('exceljs', () => {
+  const mockSheet = {
+    columns: [] as unknown[],
+    views: [] as unknown[],
+    autoFilter: null as unknown,
+    addRow: vi.fn(),
+    getRow: vi.fn(() => ({ font: {} })),
+  };
+  const mockWorkbook = {
+    addWorksheet: vi.fn(() => mockSheet),
+    xlsx: {
+      writeBuffer: vi.fn().mockResolvedValue(Buffer.from('XLSX_BINARY_STUB')),
+    },
+  };
+  // The route calls `new ExcelJS.Workbook()`, so the default export must be
+  // an object with a `Workbook` constructor property.
+  return { default: { Workbook: vi.fn(() => mockWorkbook) }, __esModule: true };
+});
+
+describe('W18.1-P1-002 — GET /api/activities/export/csv', () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+    mockPrisma.activity.findMany.mockResolvedValue([
+      {
+        id: 'act-export-001',
+        createdAt: new Date('2026-05-28T10:00:00Z'),
+        type: 'lead',
+        action: 'created',
+        description: 'Lead created for CSV test',
+        user: { name: 'Agent Smith', email: 'smith@wc.ae' },
+        lead: { name: 'Buyer Ali' },
+      },
+    ]);
+  });
+
+  it('returns CSV with Content-Type text/csv for owner', async () => {
+    const res = await request(createApp('owner')).get('/api/activities/export/csv');
+    expect(res.status).toBe(200);
+    expect(res.headers['content-type']).toMatch(/text\/csv/);
+    expect(res.headers['content-disposition']).toMatch(/audit-log\.csv/);
+  });
+
+  it('returns CSV with Content-Disposition header for manager', async () => {
+    const res = await request(createApp('manager')).get('/api/activities/export/csv');
+    expect(res.status).toBe(200);
+    expect(res.headers['content-disposition']).toMatch(/attachment/);
+    expect(res.headers['content-disposition']).toMatch(/audit-log\.csv/);
+  });
+
+  // CSV header row is lowercase (id,createdAt,type,action,description,user,email,lead)
+  it('includes header row and data row in CSV body', async () => {
+    const res = await request(createApp('owner')).get('/api/activities/export/csv');
+    expect(res.status).toBe(200);
+    const lines = (res.text as string).split('\n').filter(Boolean);
+    expect(lines[0]).toContain('id');
+    expect(lines[0]).toContain('type');
+    expect(lines[0]).toContain('action');
+    expect(lines[1]).toContain('act-export-001');
+    expect(lines[1]).toContain('lead');
+  });
+
+  it('passes type query filter to prisma findMany', async () => {
+    await request(createApp('admin')).get('/api/activities/export/csv?type=property');
+    expect(mockPrisma.activity.findMany).toHaveBeenCalledWith(
+      expect.objectContaining({ where: expect.objectContaining({ type: 'property' }) }),
+    );
+  });
+
+  it('returns 200 for admin role', async () => {
+    const res = await request(createApp('admin')).get('/api/activities/export/csv');
+    expect(res.status).toBe(200);
+  });
+});
+
+describe('W18.1-P1-002 — GET /api/activities/export/xlsx', () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+    mockPrisma.activity.findMany.mockResolvedValue([
+      {
+        id: 'act-xlsx-001',
+        createdAt: new Date('2026-05-28T11:00:00Z'),
+        type: 'lease',
+        action: 'signed',
+        description: 'Lease signed for unit 401',
+        user: { name: 'Victoria', email: 'v@wc.ae' },
+        lead: null,
+      },
+    ]);
+  });
+
+  it('returns XLSX with correct content-type for manager', async () => {
+    const res = await request(createApp('manager')).get('/api/activities/export/xlsx');
+    expect(res.status).toBe(200);
+    expect(res.headers['content-type']).toMatch(
+      /application\/vnd\.openxmlformats-officedocument\.spreadsheetml\.sheet/,
+    );
+    expect(res.headers['content-disposition']).toMatch(/audit-log\.xlsx/);
+  });
+
+  it('returns XLSX for admin role', async () => {
+    const res = await request(createApp('admin')).get('/api/activities/export/xlsx');
+    expect(res.status).toBe(200);
+  });
+
+  it('returns XLSX for owner role', async () => {
+    const res = await request(createApp('owner')).get('/api/activities/export/xlsx');
+    expect(res.status).toBe(200);
+    expect(mockPrisma.activity.findMany).toHaveBeenCalledTimes(1);
+  });
+
+  it('passes action filter to prisma', async () => {
+    await request(createApp('admin')).get('/api/activities/export/xlsx?action=signed');
+    expect(mockPrisma.activity.findMany).toHaveBeenCalledWith(
+      expect.objectContaining({ where: expect.objectContaining({ action: 'signed' }) }),
+    );
+  });
+});
+
+// ─────────────────────────────────────────────────────────────────────────────
 // W20-001 — Audit Export RBAC Security Tests
 // Verifies the ROLE_PERMISSIONS contract: only manager+ roles can access audit
 // exports. Uses vi.importActual to bypass the module mock above.
