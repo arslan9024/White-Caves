@@ -2,7 +2,7 @@
 
 **Purpose:** Canonical roadmap for execution decisions.  
 **Owners:** @Ada + @Margaret  
-**Last Updated:** 2026-06-19  
+**Last Updated:** 2026-07-05  
 **Update cadence:** Weekly roadmap refresh (daily execution goes to `PROJECT_PROGRESS.md` and `DAILY_MILESTONE_TRACKER.md`)
 
 ---
@@ -63,6 +63,13 @@
 | 8        | 16   | Security hardening + API versioning                                              | @S5 + @Radia + @Mira                                | ✅ Complete | [`IMPROVEMENTS_SECURITY.md`](./IMPROVEMENTS_SECURITY.md), [`IMPROVEMENTS_ARCHITECTURE.md`](./IMPROVEMENTS_ARCHITECTURE.md)                                                                                                                                                                                                                             | Wave 15 green + readiness 60% + @Ada approval phrase                    | `/api/v1`, CSRF, error-envelope hardening closed + validation green                                      |
 | 9        | 17   | Full UI/UX luxury upgrade (design tokens + animations + mobile + PWA + WCAG 2.2) | @Una + @Lea + @Tracy + @Africa + @Cyra + @Katherine | ✅ Complete | [`IMPROVEMENTS_UX.md`](./IMPROVEMENTS_UX.md), [`ui-ux-specification.md`](../../business_docs/06_design_architecture/ui-ux-specification.md)                                                                                                                                                                                                            | Wave 16 green + free-agent specs + readiness 60% + @Ada approval phrase | Glassmorphism + animations + mobile + PWA + WCAG 2.2 all closed; Lighthouse CI gate green                |
 | 10       | 18   | Cross-platform workflow parity audit + prioritized gap backlog                   | @Ada + @Margaret + @Mira + @Katherine               | ✅ Complete | [`WAVE_18_WORKFLOW_PARITY_MATRIX.md`](./waves/WAVE_18_WORKFLOW_PARITY_MATRIX.md), [`WAVE_18_1_IMPLEMENTATION_BACKLOG.md`](./waves/WAVE_18_1_IMPLEMENTATION_BACKLOG.md), [`functional-requirements.md`](../business_docs/05_requirements/functional-requirements.md), [`business_docs/04_workflows/README.md`](../business_docs/04_workflows/README.md) | Wave 17 green + readiness 60% + @Ada approval phrase                    | Parity matrix finalized, top-20 P0 queue locked, canonical plans updated, `npm run plans:validate` green |
+| 11       | 19   | Identity & Access v2 + `/crm` routing + MD workspace split + executive UX        | @Ada + @Mira + @Una + @Katherine                    | ✅ Complete | [`WAVE_19_IMPLEMENTATION_BACKLOG.md`](./waves/WAVE_19_IMPLEMENTATION_BACKLOG.md)                                                                                                                                                                                                                                                                       | Wave 18 green + readiness 60% + @Ada approval phrase                    | W19-001…W19-015 complete; 142 auth/routing tests green; `npm run plans:validate`                         |
+| 12       | 20   | RBAC hardening + audit export security + compliance mutation guards               | @Mira + @Radia + @Katherine                         | ✅ Complete | [`WAVE_20_IMPLEMENTATION_BACKLOG.md`](./waves/WAVE_20_IMPLEMENTATION_BACKLOG.md)                                                                                                                                                                                                                                                                       | Wave 19 green + readiness 60% + @Ada approval phrase                    | 142 auth tests + 37 activities tests green; `npm run plans:validate`                                     |
+| 13       | 21   | Finance, UAE VAT, commission engine & compliance reporting                        | @Mira + @Barbara + @Katherine                       | 📋 Planned  | [`WAVE_21_IMPLEMENTATION_BACKLOG.md`](./waves/WAVE_21_IMPLEMENTATION_BACKLOG.md)                                                                                                                                                                                                                                                                       | Wave 20 green + readiness 60% + @Ada approval phrase                    | VAT engine + invoice PDF + commission workflow + P&L + immutable ledger + `npm run plans:validate`       |
+| 14       | 22   | Market intelligence, off-plan projects, property valuation & advanced analytics   | @Mira + @Barbara + @Cassie                          | 📋 Planned  | [`WAVE_22_IMPLEMENTATION_BACKLOG.md`](./waves/WAVE_22_IMPLEMENTATION_BACKLOG.md)                                                                                                                                                                                                                                                                       | Wave 21 green + readiness 60% + @Ada approval phrase                    | AVM + off-plan lifecycle + Oqood tracking + analytics snapshots + RERA license + `npm run plans:validate`|
+| 15       | 23   | Mobile CRM, PWA offline mode & push notifications                                 | @Cyra + @Una + @Mira + @Katherine                   | 📋 Planned  | [`WAVE_23_IMPLEMENTATION_BACKLOG.md`](./waves/WAVE_23_IMPLEMENTATION_BACKLOG.md)                                                                                                                                                                                                                                                                       | Wave 22 green + readiness 60% + @Ada approval phrase                    | SW + Background Sync + FCM push + BottomNav + Lighthouse CI gate + `npm run plans:validate`              |
+| 16       | 24   | WhatsApp automation, AI chat engine & in-app notification centre                  | @Mira + @Joelle + @Una                              | 📋 Planned  | [`WAVE_24_IMPLEMENTATION_BACKLOG.md`](./waves/WAVE_24_IMPLEMENTATION_BACKLOG.md)                                                                                                                                                                                                                                                                       | Wave 23 green + readiness 60% + @Ada approval phrase                    | WhatsApp webhook + Nina flows + AI SSE stream + sequence engine + notification bell + `npm run plans:validate` |
+| 17       | 25   | Portal syndication, careers portal, community management & advanced SEO           | @Mira + @Barbara + @Una + @Rachel                   | 📋 Planned  | [`WAVE_25_IMPLEMENTATION_BACKLOG.md`](./waves/WAVE_25_IMPLEMENTATION_BACKLOG.md)                                                                                                                                                                                                                                                                       | Wave 24 green + readiness 60% + @Ada approval phrase                    | PF/Bayut feeds + careers JSON-LD + facility booking + hreflang + sitemap + `npm run plans:validate`      |
 
 ---
 
@@ -73,10 +80,10 @@ Use [`waves/README.md`](./waves/README.md) for the full bundle list.
 | Wave | Status      | Bundle                              |
 | ---- | ----------- | ----------------------------------- |
 | 08   | ✅ Complete | [`Wave 08`](./waves/WAVE_08_SDD.md) |
-| 09   | 🟢 Ready    | [`Wave 09`](./waves/WAVE_09_SDD.md) |
-| 10   | 📋 Planned  | [`Wave 10`](./waves/WAVE_10_SDD.md) |
-| 11   | 📋 Planned  | [`Wave 11`](./waves/WAVE_11_SDD.md) |
-| 12   | 📋 Planned  | [`Wave 12`](./waves/WAVE_12_SDD.md) |
+| 09   | ✅ Complete | [`Wave 09`](./waves/WAVE_09_SDD.md) |
+| 10   | ✅ Complete | [`Wave 10`](./waves/WAVE_10_SDD.md) |
+| 11   | ✅ Complete | [`Wave 11`](./waves/WAVE_11_SDD.md) |
+| 12   | ✅ Complete | [`Wave 12`](./waves/WAVE_12_SDD.md) |
 | 13   | ✅ Complete | [`Wave 13`](./waves/WAVE_13_SDD.md) |
 | 14   | ✅ Complete | [`Wave 14`](./waves/WAVE_14_SDD.md) |
 | 15   | ✅ Complete | [`Wave 15`](./waves/WAVE_15_SDD.md) |
@@ -85,6 +92,11 @@ Use [`waves/README.md`](./waves/README.md) for the full bundle list.
 | 18   | ✅ Complete | [`Wave 18`](./waves/WAVE_18_SDD.md) |
 | 19   | ✅ Complete | [`Wave 19`](./waves/WAVE_19_SDD.md) |
 | 20   | ✅ Complete | [`Wave 20`](./waves/WAVE_20_SDD.md) |
+| 21   | 📋 Planned  | [`Wave 21`](./waves/WAVE_21_SDD.md) |
+| 22   | 📋 Planned  | [`Wave 22`](./waves/WAVE_22_SDD.md) |
+| 23   | 📋 Planned  | [`Wave 23`](./waves/WAVE_23_SDD.md) |
+| 24   | 📋 Planned  | [`Wave 24`](./waves/WAVE_24_SDD.md) |
+| 25   | 📋 Planned  | [`Wave 25`](./waves/WAVE_25_SDD.md) |
 
 ---
 

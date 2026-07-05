@@ -1,7 +1,7 @@
 # Pending Tasks Only
 
-**Last Updated:** 2026-06-19
-**Current Focus:** Wave 19 implementation + governance closeout ✅ Complete (W19-001…W19-015); Wave 20 security hardening ✅ Complete; documentation governance sync and P0 business-doc implementation evidence capture active.
+**Last Updated:** 2026-07-05
+**Current Focus:** Wave 20 ✅ Complete; Waves 21–25 planned (full four-artifact bundles available); governance sync active.
 
 ## Canonical Sources
 
@@ -14,7 +14,7 @@
 
 ## Implementation Order
 
-`09 → 10 → 11 → 12 → 13 → 14 → 15 → 16 → 17 → 18 → 19 → 20`
+`09 → 10 → 11 → 12 → 13 → 14 → 15 → 16 → 17 → 18 → 19 → 20 → 21 → 22 → 23 → 24 → 25`
 
 Advance only when the prior wave is green, the readiness gate is satisfied, and `@Ada — Context Ready (60% Readiness) — Coding Phase Approved` has been issued for that wave.
 
@@ -38,6 +38,11 @@ Advance only when the prior wave is green, the readiness gate is satisfied, and 
 | S14    | 18.2    | Profile-first post-login journey + Dashboard CTA alignment                                       | ✅ Complete    | @Ada + @Mira                                           | `useSignIn` tests green + build green                                                        |
 | S15    | 19      | Identity & Access v2, routing, MD workspace split, executive UX                                  | ✅ Complete    | @Ada + @Mira + @Una + @Katherine                       | W19-001…W19-015 complete; 142 auth/routing tests green; `npm run plans:validate`             |
 | S16    | 20      | RBAC hardening + audit export security + OWASP A01 superuser email fix                           | ✅ Complete    | @Mira + @Radia + @Katherine                            | 142 auth tests + 37 activities tests green; `npm run plans:validate`                         |
+| S17    | 21      | Finance, UAE VAT, commission engine & compliance reporting                                        | 📋 Planned     | @Mira + @Barbara + @Katherine                          | Wave 20 green + readiness 60% + @Ada approval phrase; [`WAVE_21_IMPLEMENTATION_BACKLOG.md`](./waves/WAVE_21_IMPLEMENTATION_BACKLOG.md) |
+| S18    | 22      | Market intelligence, off-plan projects, property valuation & advanced analytics                   | 📋 Planned     | @Mira + @Barbara + @Cassie                             | Wave 21 green + readiness 60% + @Ada approval phrase; [`WAVE_22_IMPLEMENTATION_BACKLOG.md`](./waves/WAVE_22_IMPLEMENTATION_BACKLOG.md) |
+| S19    | 23      | Mobile CRM, PWA offline mode & push notifications                                                 | 📋 Planned     | @Cyra + @Una + @Mira + @Katherine                      | Wave 22 green + readiness 60% + @Ada approval phrase; [`WAVE_23_IMPLEMENTATION_BACKLOG.md`](./waves/WAVE_23_IMPLEMENTATION_BACKLOG.md) |
+| S20    | 24      | WhatsApp automation, AI chat engine & in-app notification centre                                  | 📋 Planned     | @Mira + @Joelle + @Una                                 | Wave 23 green + readiness 60% + @Ada approval phrase; [`WAVE_24_IMPLEMENTATION_BACKLOG.md`](./waves/WAVE_24_IMPLEMENTATION_BACKLOG.md) |
+| S21    | 25      | Portal syndication, careers portal, community management & advanced SEO                           | 📋 Planned     | @Mira + @Barbara + @Una + @Rachel                      | Wave 24 green + readiness 60% + @Ada approval phrase; [`WAVE_25_IMPLEMENTATION_BACKLOG.md`](./waves/WAVE_25_IMPLEMENTATION_BACKLOG.md) |
 
 ### Wave 19 Closeout (Complete)
 
