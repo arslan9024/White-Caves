@@ -13,6 +13,7 @@
 
 import { Router, Response } from 'express';
 import type { Request } from 'express';
+type RouteRequest = Request<Record<string, string>>;
 import { Prisma } from '@prisma/client';
 import { asyncHandler, AppError } from '../middleware/errorHandler.js';
 import { prisma } from '../database.js';

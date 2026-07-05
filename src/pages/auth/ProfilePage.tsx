@@ -7,6 +7,14 @@ import { authFetch } from '../../utils/authFetch';
 import { isCreatorRole } from '../../config/ROLE_TAB_MAPPING';
 import './AuthPages.css';
 
+// Maps a raw role string to a simplified dashboard category token.
+const normalizeDashboardRole = (role: string): string => {
+  const r = role.toLowerCase().trim();
+  if (r === 'landlord') return 'landlord';
+  if (r === 'tenant') return 'tenant';
+  return 'owner';
+};
+
 // ─── Sub-components ───────────────────────────────────────────────────────────
 
 const CompletionRing: FC<{ pct: number; size?: number }> = ({ pct, size = 56 }) => {

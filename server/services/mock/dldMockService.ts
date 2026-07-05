@@ -195,5 +195,3 @@ export const dldMockService = {
     };
   },
 };
-
-export type { OqoodRegistrationRequest, OqoodRegistrationResponse };

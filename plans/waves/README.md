@@ -1,6 +1,6 @@
 # Wave Bundle Index
 
-**Last Updated:** 2026-06-19
+**Last Updated:** 2026-07-05
 
 Use this index after reviewing [`../MASTER_PLAN.md`](../MASTER_PLAN.md) and [`../PENDING_TASKS_ONLY.md`](../PENDING_TASKS_ONLY.md).
 Each wave should be executed only in roadmap order.
@@ -22,6 +22,11 @@ Each wave should be executed only in roadmap order.
 | 18   | Workflow parity audit + benchmark gap backlog                             | ✅ Complete | [`SDD`](./WAVE_18_SDD.md) | [`Readiness`](./WAVE_18_READINESS_PACKET.md) | [`Backlog`](./WAVE_18_IMPLEMENTATION_BACKLOG.md) | [`Tests`](./WAVE_18_TEST_ROLLOUT.md) |
 | 19   | Identity & Access v2 + `/crm` routing + MD workspace split + executive UX | ✅ Complete | [`SDD`](./WAVE_19_SDD.md) | [`Readiness`](./WAVE_19_READINESS_PACKET.md) | [`Backlog`](./WAVE_19_IMPLEMENTATION_BACKLOG.md) | [`Tests`](./WAVE_19_TEST_ROLLOUT.md) |
 | 20   | RBAC hardening + audit export security + compliance mutation guards       | ✅ Complete | [`SDD`](./WAVE_20_SDD.md) | [`Readiness`](./WAVE_20_READINESS_PACKET.md) | [`Backlog`](./WAVE_20_IMPLEMENTATION_BACKLOG.md) | [`Tests`](./WAVE_20_TEST_ROLLOUT.md) |
+| 21   | Finance, UAE VAT, commission engine & compliance reporting                | 📋 Planned  | [`SDD`](./WAVE_21_SDD.md) | [`Readiness`](./WAVE_21_READINESS_PACKET.md) | [`Backlog`](./WAVE_21_IMPLEMENTATION_BACKLOG.md) | —                                    |
+| 22   | Market intelligence, off-plan projects, property valuation & analytics    | 📋 Planned  | [`SDD`](./WAVE_22_SDD.md) | [`Readiness`](./WAVE_22_READINESS_PACKET.md) | [`Backlog`](./WAVE_22_IMPLEMENTATION_BACKLOG.md) | —                                    |
+| 23   | Mobile CRM, PWA offline mode & push notifications                         | 📋 Planned  | [`SDD`](./WAVE_23_SDD.md) | [`Readiness`](./WAVE_23_READINESS_PACKET.md) | [`Backlog`](./WAVE_23_IMPLEMENTATION_BACKLOG.md) | [`Tests`](./WAVE_23_TEST_ROLLOUT.md) |
+| 24   | WhatsApp automation, AI chat engine & in-app notification centre          | 📋 Planned  | [`SDD`](./WAVE_24_SDD.md) | [`Readiness`](./WAVE_24_READINESS_PACKET.md) | [`Backlog`](./WAVE_24_IMPLEMENTATION_BACKLOG.md) | [`Tests`](./WAVE_24_TEST_ROLLOUT.md) |
+| 25   | Portal syndication, careers, community management & advanced SEO          | 📋 Planned  | [`SDD`](./WAVE_25_SDD.md) | [`Readiness`](./WAVE_25_READINESS_PACKET.md) | [`Backlog`](./WAVE_25_IMPLEMENTATION_BACKLOG.md) | [`Tests`](./WAVE_25_TEST_ROLLOUT.md) |
 
 ## Notes
 

@@ -15,6 +15,7 @@
  */
 
 import { Router, Request, Response } from 'express';
+type RouteRequest = Request<Record<string, string>>;
 import { asyncHandler, AppError } from '../middleware/errorHandler';
 import type { AuthRequest } from '../middleware/auth';
 import { prisma } from '../database.js';

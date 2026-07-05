@@ -12,6 +12,7 @@
 
 import { Router, Response } from 'express';
 import type { Request } from 'express';
+type RouteRequest = Request<Record<string, string>>;
 import { asyncHandler, AppError } from '../middleware/errorHandler.js';
 import { prisma } from '../database.js';
 import { sanitizeString } from '../utils/sanitize.js';

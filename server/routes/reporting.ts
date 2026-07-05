@@ -536,20 +536,9 @@ router.post(
 
     const jobId = `exp_${Date.now()}_${Math.random().toString(36).slice(2, 8)}`;
 
-    // Async export: delegate to document service if available, otherwise acknowledge
-    setImmediate(async () => {
-      try {
-        await documentService
-          .generateReport?.({
-            type: 'agent_performance',
-            format,
-            filters: { agentId, from, to, stage },
-            jobId,
-          })
-          .catch(() => null);
-      } catch {
-        // Non-blocking — export job is best-effort from route perspective
-      }
+    // Async export: best-effort background job (extend DocumentService when needed)
+    setImmediate(() => {
+      // generateReport() not yet implemented on DocumentService — acknowledged, non-blocking
     });
 
     res.status(202).json({
