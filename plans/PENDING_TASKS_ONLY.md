@@ -299,6 +299,10 @@ Key closures:
 | W18.1-P1-007 | CRM follow-up automation depth (escalation tiers + template triggers) | P1       | @Mira + @Margaret           | Follow-up automation tests + escalation tier tests             |
 | W18.1-P1-008 | Ejari + rent collection workflow completion                           | P1       | @Victoria + @Mira           | Ejari tracking tests + overdue-collection tests + portal tests |
 
+**Latest S13 checkpoint (2026-07-06):**
+
+- `W18.1-P1-004` hardening validated with focused confidence-gate test suite (`whatsappAssistant` + `nadia.routes`, 29/29 passing), targeted lint clean, `npm run typecheck` and `npm run build` green.
+
 ---
 
 ## S14 — Wave 18.2: Profile-First Post-Login Journey ✅ Complete

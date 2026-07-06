@@ -141,6 +141,11 @@
   - `server/routes/nadia.routes.test.ts` (12/12)
 - Targeted lint passed for touched Nadia files (`whatsappAssistant`, `nadia` route/tests) ✅
 - Type safety gate passed: `npm run typecheck` ✅
+- Adjacent Session 3 P1 regression confirmations also green in this cycle:
+  - `server/routes/contracts.test.ts` + `server/routes/signatures.test.ts` + `src/components/owner/tabs/__tests__/SigningStatusBadge.test.tsx` + `src/pages/SignContractPage.test.tsx` (**35/35 passing**)
+  - `server/routes/syndication.test.ts` (**5/5 passing**)
+  - `server/routes/follow-ups.test.ts` (**8/8 passing**)
+  - `npm run build` ✅
 
 ## 🚀 Wave 18.1 Session 1 Delivery
 

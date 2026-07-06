@@ -217,6 +217,11 @@ Weighted score per task:
 | B     | W18.1-P1-007 | CRM follow-up automation depth: multi-tier reminder escalation + template trigger builder (stage-based + time-based conditions)                                                            | @Mira + @Margaret           | P1       | Follow-up automation tests + cadence escalation tier tests + template trigger tests + `npm run build`                                                                                                         |
 | B     | W18.1-P1-008 | Ejari + rent collection completion: Ejari registration tracking UI + overdue rent collection queue with notification                                                                       | @Victoria + @Mira           | P1       | Ejari tracking route tests + overdue-collection queue tests + portal UI tests + `npm run build`                                                                                                               |
 
+#### Session 3 Checkpoint — W18.1-P1-004
+
+- Confidence-threshold hardening completed with policy-configurable gate (`NADIA_ESCALATION_CONFIDENCE_THRESHOLD`) and assistant response metadata exposure (`escalationPolicy.confidenceThreshold`).
+- Validation evidence: `server/services/nadia/whatsappAssistant.test.ts` + `server/routes/nadia.routes.test.ts` (**29/29 passing**) and `npm run build` green (2026-07-06).
+
 ### Session 3 Architectural Risks
 
 1. **RISK-S3-001 (HIGH) — IndexedDB schema versioning (P0-010):** `draftNotes` and `viewingFeedback` stores must use versioned upgrade path. Conflict resolution: "server-wins with local-delta merge". @Ruchi delivers spike document Day 1.

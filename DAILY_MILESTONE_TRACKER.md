@@ -91,7 +91,9 @@
   - Added assistant response policy visibility (`escalationPolicy.confidenceThreshold`) for operator/audit transparency.
   - Validation evidence:
     - focused tests: `server/services/nadia/whatsappAssistant.test.ts`, `server/routes/nadia.routes.test.ts` (**29/29 passing**)
+    - Session 3 adjacent regression confirmations: contracts/signatures/status UI tests (**35/35**), syndication tests (**5/5**), follow-up automation tests (**8/8**)
     - `npm run typecheck` passed
+    - `npm run build` passed
     - targeted lint passed for touched Nadia files
 
 - **Jul 06, 2026 — @Mira + @Katherine + @Margaret + @Copilot — Done**
