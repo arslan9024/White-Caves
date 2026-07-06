@@ -251,11 +251,7 @@ const ContractsTab: React.FC<ContractsTabProps> = ({ data, loading }) => {
     };
     // eslint-disable-next-line security/detect-object-injection
     const c = config[status] || { color: '#6B7280', text: status };
-    return (
-      <span className="status-badge" style={{ backgroundColor: `${c.color}20`, color: c.color }}>
-        {c.text}
-      </span>
-    );
+    return <span className={`status-badge status-badge--${status}`}>{c.text}</span>;
   };
 
   const getEjariBadge = (status: string) => {
@@ -263,11 +259,7 @@ const ContractsTab: React.FC<ContractsTabProps> = ({ data, loading }) => {
     const isRegistered = status === 'registered';
     return (
       <span
-        className="ejari-badge"
-        style={{
-          backgroundColor: isRegistered ? '#22C55E20' : '#EF444420',
-          color: isRegistered ? '#22C55E' : '#EF4444',
-        }}
+        className={`ejari-badge ${isRegistered ? 'ejari-badge--registered' : 'ejari-badge--pending'}`}
       >
         {isRegistered ? '✓ Registered' : '⏳ Pending'}
       </span>
@@ -317,12 +309,22 @@ const ContractsTab: React.FC<ContractsTabProps> = ({ data, loading }) => {
       </div>
 
       <div className="filters-bar">
-        <select value={typeFilter} onChange={e => setTypeFilter(e.target.value)}>
+        <select
+          value={typeFilter}
+          onChange={e => setTypeFilter(e.target.value)}
+          aria-label="Filter contracts by type"
+          title="Filter contracts by type"
+        >
           <option value="all">All Types</option>
           <option value="tenancy">Tenancy</option>
           <option value="sale">Sale</option>
         </select>
-        <select value={statusFilter} onChange={e => setStatusFilter(e.target.value)}>
+        <select
+          value={statusFilter}
+          onChange={e => setStatusFilter(e.target.value)}
+          aria-label="Filter contracts by status"
+          title="Filter contracts by status"
+        >
           <option value="all">All Status</option>
           <option value="active">Active</option>
           <option value="pending">Pending</option>
@@ -445,6 +447,7 @@ const ContractsTab: React.FC<ContractsTabProps> = ({ data, loading }) => {
                   <label>Contract No.</label>
                   <input
                     type="text"
+                    title="Contract number"
                     value={form.contractNumber}
                     onChange={e => setForm(f => ({ ...f, contractNumber: e.target.value }))}
                   />
@@ -453,6 +456,7 @@ const ContractsTab: React.FC<ContractsTabProps> = ({ data, loading }) => {
                   <label>Type</label>
                   <select
                     value={form.type}
+                    title="Contract type"
                     onChange={e =>
                       setForm(f => ({ ...f, type: e.target.value as 'tenancy' | 'sale' }))
                     }
@@ -461,10 +465,11 @@ const ContractsTab: React.FC<ContractsTabProps> = ({ data, loading }) => {
                     <option value="sale">Sale</option>
                   </select>
                 </div>
-                <div className="form-group" style={{ gridColumn: '1 / -1' }}>
+                <div className="form-group form-group--full">
                   <label>Property *</label>
                   <input
                     type="text"
+                    title="Property"
                     value={form.property}
                     onChange={e => setForm(f => ({ ...f, property: e.target.value }))}
                     placeholder="Building, Unit..."
@@ -476,6 +481,7 @@ const ContractsTab: React.FC<ContractsTabProps> = ({ data, loading }) => {
                       <label>Tenant</label>
                       <input
                         type="text"
+                        title="Tenant"
                         value={form.tenant ?? ''}
                         onChange={e => setForm(f => ({ ...f, tenant: e.target.value }))}
                       />
@@ -484,6 +490,7 @@ const ContractsTab: React.FC<ContractsTabProps> = ({ data, loading }) => {
                       <label>Landlord</label>
                       <input
                         type="text"
+                        title="Landlord"
                         value={form.landlord ?? ''}
                         onChange={e => setForm(f => ({ ...f, landlord: e.target.value }))}
                       />
@@ -492,6 +499,7 @@ const ContractsTab: React.FC<ContractsTabProps> = ({ data, loading }) => {
                       <label>Start Date</label>
                       <input
                         type="date"
+                        title="Start date"
                         value={form.startDate ?? ''}
                         onChange={e => setForm(f => ({ ...f, startDate: e.target.value }))}
                       />
@@ -500,6 +508,7 @@ const ContractsTab: React.FC<ContractsTabProps> = ({ data, loading }) => {
                       <label>End Date</label>
                       <input
                         type="date"
+                        title="End date"
                         value={form.endDate ?? ''}
                         onChange={e => setForm(f => ({ ...f, endDate: e.target.value }))}
                       />
@@ -511,6 +520,7 @@ const ContractsTab: React.FC<ContractsTabProps> = ({ data, loading }) => {
                       <label>Buyer</label>
                       <input
                         type="text"
+                        title="Buyer"
                         value={form.buyer ?? ''}
                         onChange={e => setForm(f => ({ ...f, buyer: e.target.value }))}
                       />
@@ -519,6 +529,7 @@ const ContractsTab: React.FC<ContractsTabProps> = ({ data, loading }) => {
                       <label>Seller</label>
                       <input
                         type="text"
+                        title="Seller"
                         value={form.seller ?? ''}
                         onChange={e => setForm(f => ({ ...f, seller: e.target.value }))}
                       />
@@ -527,6 +538,7 @@ const ContractsTab: React.FC<ContractsTabProps> = ({ data, loading }) => {
                       <label>Completion Date</label>
                       <input
                         type="date"
+                        title="Completion date"
                         value={form.completionDate ?? ''}
                         onChange={e => setForm(f => ({ ...f, completionDate: e.target.value }))}
                       />
@@ -537,6 +549,7 @@ const ContractsTab: React.FC<ContractsTabProps> = ({ data, loading }) => {
                   <label>Amount (AED) *</label>
                   <input
                     type="number"
+                    title="Amount in AED"
                     value={form.amount || ''}
                     min={0}
                     onChange={e => setForm(f => ({ ...f, amount: Number(e.target.value) }))}
@@ -546,6 +559,7 @@ const ContractsTab: React.FC<ContractsTabProps> = ({ data, loading }) => {
                   <label>Status</label>
                   <select
                     value={form.status}
+                    title="Contract status"
                     onChange={e => setForm(f => ({ ...f, status: e.target.value }))}
                   >
                     <option value="pending">Pending</option>
@@ -560,6 +574,7 @@ const ContractsTab: React.FC<ContractsTabProps> = ({ data, loading }) => {
                     <label>Ejari Status</label>
                     <select
                       value={form.ejariStatus}
+                      title="Ejari status"
                       onChange={e => setForm(f => ({ ...f, ejariStatus: e.target.value }))}
                     >
                       <option value="pending">Pending</option>

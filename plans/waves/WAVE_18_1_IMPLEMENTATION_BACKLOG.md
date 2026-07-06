@@ -193,7 +193,7 @@ Weighted score per task:
 **Date Planned:** 2026-05-28
 **Entry Gate:** Session 2 evidence confirmed ✅ — PROJECT_PROGRESS.md updated ✅
 
-### Entry Gate Confirmation
+### Session 3 Entry Gate Confirmation
 
 - [x] W18.1-P0-001/002/003/009/011/012/013/017/019/020 — Session 2 delivery confirmed in PROJECT_PROGRESS.md (2026-05-27)
 - [x] W18.1-P0-004/005/006/007/008/015/016 — Session 1 delivery confirmed in PROJECT_PROGRESS.md
@@ -216,6 +216,11 @@ Weighted score per task:
 | B     | W18.1-P1-006 | Portal syndication baseline: Property Finder/Bayut push-API stub with `SYNDICATION_ENABLED` feature flag + sync-queue endpoint — **API baseline delivered**                                | @Mira + @Lea                | P1       | Syndication route tests + queue endpoint tests + feature-flag isolation tests + `npm run build`                                                                                                               |
 | B     | W18.1-P1-007 | CRM follow-up automation depth: multi-tier reminder escalation + template trigger builder (stage-based + time-based conditions)                                                            | @Mira + @Margaret           | P1       | Follow-up automation tests + cadence escalation tier tests + template trigger tests + `npm run build`                                                                                                         |
 | B     | W18.1-P1-008 | Ejari + rent collection completion: Ejari registration tracking UI + overdue rent collection queue with notification                                                                       | @Victoria + @Mira           | P1       | Ejari tracking route tests + overdue-collection queue tests + portal UI tests + `npm run build`                                                                                                               |
+
+#### Session 3 Checkpoint — W18.1-P1-004
+
+- Confidence-threshold hardening completed with policy-configurable gate (`NADIA_ESCALATION_CONFIDENCE_THRESHOLD`) and assistant response metadata exposure (`escalationPolicy.confidenceThreshold`).
+- Validation evidence: `server/services/nadia/whatsappAssistant.test.ts` + `server/routes/nadia.routes.test.ts` (**29/29 passing**) and `npm run build` green (2026-07-06).
 
 ### Session 3 Architectural Risks
 

@@ -1,5 +1,7 @@
 # UI/UX Specification — White Caves CRM Platform
 
+<!-- markdownlint-disable MD024 MD031 MD032 MD040 MD058 MD060 -->
+
 > **Document ID:** WC-UX-001  
 > **Version:** 1.0  
 > **Date:** March 2026
@@ -489,7 +491,7 @@ For each critical page, verify both LTR and RTL:
 --glass-border: rgba(200, 169, 110, 0.18);
 --glass-border-hover: rgba(200, 169, 110, 0.35);
 --glass-blur: blur(12px);
---glass-shadow: 0 4px 24px rgba(0, 0, 0, 0.45), 0 0 0 1px rgba(200, 169, 110, 0.10);
+--glass-shadow: 0 4px 24px rgba(0, 0, 0, 0.45), 0 0 0 1px rgba(200, 169, 110, 0.1);
 --glass-shadow-hover: 0 8px 32px rgba(0, 0, 0, 0.55), 0 0 0 1px rgba(200, 169, 110, 0.22);
 
 /* Progressive enhancement guard */
@@ -502,7 +504,7 @@ For each critical page, verify both LTR and RTL:
 
 ```css
 --color-gold-bright: #f0c050;
---color-gold-primary: #c8a96e;   /* unchanged */
+--color-gold-primary: #c8a96e; /* unchanged */
 --color-gold-muted: #9a7d50;
 --color-gold-dark: #6b5632;
 --color-gold-glow: rgba(200, 169, 110, 0.25);
@@ -512,7 +514,7 @@ For each critical page, verify both LTR and RTL:
 
 ```css
 --color-bg-glass: var(--glass-bg);
---color-bg-deep: #050505;         /* fullscreen overlays */
+--color-bg-deep: #050505; /* fullscreen overlays */
 --color-bg-surface-raised: #161616; /* elevated panels above surface */
 --color-divider: rgba(255, 255, 255, 0.06);
 ```
@@ -550,13 +552,13 @@ For each critical page, verify both LTR and RTL:
   <Routes key={location.pathname} location={location}>
     ...
   </Routes>
-</AnimatePresence>
+</AnimatePresence>;
 
 // Page wrapper variant
 const pageVariants = {
   initial: { opacity: 0, y: 8 },
   animate: { opacity: 1, y: 0, transition: { duration: 0.2, ease: 'easeOut' } },
-  exit:    { opacity: 0, y: -8, transition: { duration: 0.15, ease: 'easeIn' } },
+  exit: { opacity: 0, y: -8, transition: { duration: 0.15, ease: 'easeIn' } },
 };
 ```
 
@@ -575,9 +577,14 @@ const pageVariants = {
 
 ```tsx
 const modalVariants = {
-  hidden:  { opacity: 0, y: 20, scale: 0.97 },
-  visible: { opacity: 1, y: 0,  scale: 1,   transition: { duration: 0.2, ease: [0.34, 1.56, 0.64, 1] } },
-  exit:    { opacity: 0, y: 10, scale: 0.97, transition: { duration: 0.15 } },
+  hidden: { opacity: 0, y: 20, scale: 0.97 },
+  visible: {
+    opacity: 1,
+    y: 0,
+    scale: 1,
+    transition: { duration: 0.2, ease: [0.34, 1.56, 0.64, 1] },
+  },
+  exit: { opacity: 0, y: 10, scale: 0.97, transition: { duration: 0.15 } },
 };
 ```
 
@@ -611,13 +618,13 @@ function AnimatedCard({ children }: { children: React.ReactNode }) {
 
 > Extends Section 8. These are the authoritative breakpoints for Wave 17+.
 
-| Name | Viewport | Layout Changes |
-| --- | --- | --- |
-| **XS** | 320–374px | Extreme compact: minimum 12px padding; stacked everything; no split panels |
-| **Mobile** | 375–767px | Single column; bottom tab nav; full-width property cards; hamburger → bottom sheet |
-| **Tablet** | 768–1023px | Collapsible sidebar (icon-only 48px); 2-column property grid; touch targets 44px min |
-| **Desktop** | 1024–1439px | Fixed sidebar (240px); standard layout |
-| **Wide** | ≥ 1440px | Same as desktop; max-width 1400px centered |
+| Name        | Viewport    | Layout Changes                                                                       |
+| ----------- | ----------- | ------------------------------------------------------------------------------------ |
+| **XS**      | 320–374px   | Extreme compact: minimum 12px padding; stacked everything; no split panels           |
+| **Mobile**  | 375–767px   | Single column; bottom tab nav; full-width property cards; hamburger → bottom sheet   |
+| **Tablet**  | 768–1023px  | Collapsible sidebar (icon-only 48px); 2-column property grid; touch targets 44px min |
+| **Desktop** | 1024–1439px | Fixed sidebar (240px); standard layout                                               |
+| **Wide**    | ≥ 1440px    | Same as desktop; max-width 1400px centered                                           |
 
 ### Touch Target Rules (WCAG 2.5.8)
 
@@ -651,21 +658,26 @@ function AnimatedCard({ children }: { children: React.ReactNode }) {
   "icons": [
     { "src": "/icons/icon-192.png", "sizes": "192x192", "type": "image/png" },
     { "src": "/icons/icon-512.png", "sizes": "512x512", "type": "image/png" },
-    { "src": "/icons/icon-512-maskable.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+    {
+      "src": "/icons/icon-512-maskable.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
   ]
 }
 ```
 
 ### Service Worker Cache Strategy (Workbox via `vite-plugin-pwa`)
 
-| Route Pattern | Strategy | TTL |
-| --- | --- | --- |
-| Static assets (`/assets/**`) | Cache First | Immutable (hash-busted) |
-| Fonts (`/fonts/**`) | Cache First | 365 days |
-| Images (`/images/**`) | Stale While Revalidate | 30 days |
-| `/api/**` | Network First | 60 seconds stale fallback |
-| Property list page | StaleWhileRevalidate | 5 minutes |
-| Last 20 viewed property pages | Cache First (runtime) | 1 hour |
+| Route Pattern                 | Strategy               | TTL                       |
+| ----------------------------- | ---------------------- | ------------------------- |
+| Static assets (`/assets/**`)  | Cache First            | Immutable (hash-busted)   |
+| Fonts (`/fonts/**`)           | Cache First            | 365 days                  |
+| Images (`/images/**`)         | Stale While Revalidate | 30 days                   |
+| `/api/**`                     | Network First          | 60 seconds stale fallback |
+| Property list page            | StaleWhileRevalidate   | 5 minutes                 |
+| Last 20 viewed property pages | Cache First (runtime)  | 1 hour                    |
 
 ### `vite.config.ts` PWA Plugin Config (baseline)
 
@@ -673,15 +685,20 @@ function AnimatedCard({ children }: { children: React.ReactNode }) {
 VitePWA({
   registerType: 'autoUpdate',
   includeAssets: ['favicon.ico', 'icons/*.png'],
-  manifest: { /* see above */ },
+  manifest: {
+    /* see above */
+  },
   workbox: {
     globPatterns: ['**/*.{js,css,html,ico,png,svg,woff2}'],
     runtimeCaching: [
-      { urlPattern: /^\/api\//, handler: 'NetworkFirst',
-        options: { cacheName: 'api-cache', networkTimeoutSeconds: 10 } },
+      {
+        urlPattern: /^\/api\//,
+        handler: 'NetworkFirst',
+        options: { cacheName: 'api-cache', networkTimeoutSeconds: 10 },
+      },
     ],
   },
-})
+});
 ```
 
 ### PWA Acceptance Criteria
@@ -700,16 +717,16 @@ VitePWA({
 
 ### New WCAG 2.2 AA Success Criteria (beyond 2.1)
 
-| Criterion | ID | Requirement | Test Method |
-| --- | --- | --- | --- |
-| Focus Appearance | 2.4.11 | Focused element: minimum 2px solid outline, area ≥ perimeter×2px² | Axe + manual keyboard |
-| Focus Not Obscured (Minimum) | 2.4.12 | Focus indicator not fully hidden by sticky headers/toasts | Manual keyboard check |
-| Label in Name | 2.5.3 | Accessible name contains visible label text | Axe automated |
-| Dragging Movements | 2.5.7 | All drag interactions have a single-pointer alternative | Manual check (kanban drag) |
-| Target Size (Minimum) | 2.5.8 | Interactive elements: ≥ 24×24px (AA); ≥ 44×44px recommended | Axe + manual |
-| Consistent Help | 3.2.6 | Help mechanism (e.g., chat/support link) in consistent position | Manual audit |
-| Redundant Entry | 3.3.7 | No re-entering same info within single process (e.g., multi-step forms) | Manual audit |
-| Accessible Authentication (Minimum) | 3.3.8 | No cognitive test required for auth (no CAPTCHAs without alt) | Manual audit |
+| Criterion                           | ID     | Requirement                                                             | Test Method                |
+| ----------------------------------- | ------ | ----------------------------------------------------------------------- | -------------------------- |
+| Focus Appearance                    | 2.4.11 | Focused element: minimum 2px solid outline, area ≥ perimeter×2px²       | Axe + manual keyboard      |
+| Focus Not Obscured (Minimum)        | 2.4.12 | Focus indicator not fully hidden by sticky headers/toasts               | Manual keyboard check      |
+| Label in Name                       | 2.5.3  | Accessible name contains visible label text                             | Axe automated              |
+| Dragging Movements                  | 2.5.7  | All drag interactions have a single-pointer alternative                 | Manual check (kanban drag) |
+| Target Size (Minimum)               | 2.5.8  | Interactive elements: ≥ 24×24px (AA); ≥ 44×44px recommended             | Axe + manual               |
+| Consistent Help                     | 3.2.6  | Help mechanism (e.g., chat/support link) in consistent position         | Manual audit               |
+| Redundant Entry                     | 3.3.7  | No re-entering same info within single process (e.g., multi-step forms) | Manual audit               |
+| Accessible Authentication (Minimum) | 3.3.8  | No cognitive test required for auth (no CAPTCHAs without alt)           | Manual audit               |
 
 ### Automated Scan Integration (`@axe-core/playwright`)
 
@@ -720,9 +737,9 @@ import AxeBuilder from '@axe-core/playwright';
 test('homepage has no axe violations', async ({ page }) => {
   await page.goto('/');
   const results = await new AxeBuilder({ page }).analyze();
-  expect(results.violations.filter(v =>
-    v.impact === 'critical' || v.impact === 'serious'
-  )).toHaveLength(0);
+  expect(
+    results.violations.filter(v => v.impact === 'critical' || v.impact === 'serious')
+  ).toHaveLength(0);
 });
 ```
 

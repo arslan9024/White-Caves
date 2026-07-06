@@ -1,5 +1,7 @@
 # Tenant Portal — CRM Feature Specification
 
+<!-- markdownlint-disable MD024 MD031 MD032 MD040 MD058 MD060 -->
+
 > **Status:** 🟡 STUB — expand with @Annie (Google AI Studio, Gemini 2.0 Flash)
 > **Owner:** @Annie | **Target:** 14 sections | **Module:** TenantPortal (src/components/portal/tenant/)
 > **Module Owner:** Daisy (Leasing Manager AI) | **Last Updated:** May 2026 | **Priority:** High

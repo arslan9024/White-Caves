@@ -1,5 +1,7 @@
 # Handover Management — CRM Feature Specification
 
+<!-- markdownlint-disable MD024 MD031 MD032 MD040 MD058 MD060 -->
+
 > **Owner:** @Maya | **Tool:** Groq Console (Llama 3.1 70B)
 > **Purpose:** VestaHandoverCRM module for snagging checklists, punch list tracking and keys issuance log.
 > **Status:** ✅ Complete — full spec (May 2026)
@@ -13,6 +15,7 @@
 VestaHandoverCRM manages the end-to-end property handover workflow for off-plan units from developer to buyer. It covers snagging inspection, punch list tracking, keys and access issuance, DEWA utility connection, and the legally required handover completion certificate.
 
 **Key capabilities:**
+
 - Snagging checklist builder with photo evidence capture
 - Snagging report PDF sent to developer within RERA-mandated 30 days for defect resolution
 - Punch list with per-defect status tracking through to sign-off
@@ -27,17 +30,17 @@ VestaHandoverCRM manages the end-to-end property handover workflow for off-plan 
 
 ### 2.1 Checklist Categories
 
-| Category | Example Items |
-|----------|--------------|
-| Walls & Ceilings | Cracks, paint finish, damp patches, alignment |
-| Flooring | Tile chips, grout gaps, levelling, parquet scratches |
-| Doors & Windows | Alignment, locks, seals, glass scratches, handles |
-| Plumbing | Faucet pressure, drainage, leaks, water temperature |
-| Electrical | Socket function, RCCB trip test, light switches, MCB labels |
-| HVAC | AC cooling per spec, thermostat, duct sealing, airflow |
-| Kitchen Appliances | Hob ignition, oven function, extractor, dishwasher cycle |
-| Bathroom Fittings | Shower pressure, bath sealing, toilet flush, mirror fixing |
-| Common Areas | Lobby, elevator, parking allocation, mailbox |
+| Category           | Example Items                                               |
+| ------------------ | ----------------------------------------------------------- |
+| Walls & Ceilings   | Cracks, paint finish, damp patches, alignment               |
+| Flooring           | Tile chips, grout gaps, levelling, parquet scratches        |
+| Doors & Windows    | Alignment, locks, seals, glass scratches, handles           |
+| Plumbing           | Faucet pressure, drainage, leaks, water temperature         |
+| Electrical         | Socket function, RCCB trip test, light switches, MCB labels |
+| HVAC               | AC cooling per spec, thermostat, duct sealing, airflow      |
+| Kitchen Appliances | Hob ignition, oven function, extractor, dishwasher cycle    |
+| Bathroom Fittings  | Shower pressure, bath sealing, toilet flush, mirror fixing  |
+| Common Areas       | Lobby, elevator, parking allocation, mailbox                |
 
 ### 2.2 Item Status Values
 
@@ -79,13 +82,13 @@ SnaggingChecklist {
 
 ### 2.4 API Endpoints
 
-| Method | Path | Description |
-|--------|------|-------------|
-| `POST` | `/api/handover/checklists` | Create new snagging checklist |
-| `GET` | `/api/handover/checklists/:id` | Get checklist with all items |
-| `PATCH` | `/api/handover/checklists/:id/items/:itemId` | Update item status + photos |
-| `POST` | `/api/handover/checklists/:id/submit` | Submit to developer; lock items |
-| `POST` | `/api/handover/checklists/:id/signoff` | Buyer sign-off; generate certificate |
+| Method  | Path                                         | Description                          |
+| ------- | -------------------------------------------- | ------------------------------------ |
+| `POST`  | `/api/handover/checklists`                   | Create new snagging checklist        |
+| `GET`   | `/api/handover/checklists/:id`               | Get checklist with all items         |
+| `PATCH` | `/api/handover/checklists/:id/items/:itemId` | Update item status + photos          |
+| `POST`  | `/api/handover/checklists/:id/submit`        | Submit to developer; lock items      |
+| `POST`  | `/api/handover/checklists/:id/signoff`       | Buyer sign-off; generate certificate |
 
 ---
 
@@ -111,15 +114,16 @@ Checklist status → signed_off → unlock completion certificate
 
 ### 3.2 SLA Rules
 
-| Item Type | Developer Resolution Deadline | Escalation |
-|-----------|------------------------------|------------|
-| `fail` (structural) | 30 days from report submission | Escalate to RERA/DLD after 30 days |
-| `fail` (finishing) | 30 days from report submission | Buyer may withhold final payment |
-| `punch` (cosmetic) | 60 days from handover | Tracked but does not block certificate |
+| Item Type           | Developer Resolution Deadline  | Escalation                             |
+| ------------------- | ------------------------------ | -------------------------------------- |
+| `fail` (structural) | 30 days from report submission | Escalate to RERA/DLD after 30 days     |
+| `fail` (finishing)  | 30 days from report submission | Buyer may withhold final payment       |
+| `punch` (cosmetic)  | 60 days from handover          | Tracked but does not block certificate |
 
 ### 3.3 Escalation Path
 
 If developer fails to resolve `fail` items within 30 days:
+
 1. System auto-generates escalation letter PDF addressed to developer with outstanding items list
 2. Copy sent to RERA on buyer request (RERA complaint form pre-filled from CRM data)
 3. Case flagged in legal-management dispute workflow
@@ -131,6 +135,7 @@ If developer fails to resolve `fail` items within 30 days:
 ### 4.1 Multi-Party Scheduling
 
 Handover appointments require:
+
 - Buyer (or buyer's representative with POA)
 - White Caves Agent
 - Developer Representative
@@ -141,6 +146,7 @@ All parties receive calendar invites via `/api/viewings` (type: `property_handov
 ### 4.2 Appointment Preparation Checklist
 
 Before the handover appointment the agent must confirm:
+
 - [ ] All punch list items from pre-handover inspection are resolved or documented
 - [ ] DEWA No Objection received from developer
 - [ ] Original title deed or interim title deed available
@@ -149,12 +155,12 @@ Before the handover appointment the agent must confirm:
 
 ### 4.3 Reminder Schedule
 
-| Trigger | Notification | Channel |
-|---------|-------------|---------|
-| 7 days before | Appointment reminder | Email + WhatsApp |
-| 24 hours before | Full checklist reminder | Email |
-| 2 hours before | Location/access codes | WhatsApp |
-| Post-appointment | Feedback request + next steps | Email |
+| Trigger          | Notification                  | Channel          |
+| ---------------- | ----------------------------- | ---------------- |
+| 7 days before    | Appointment reminder          | Email + WhatsApp |
+| 24 hours before  | Full checklist reminder       | Email            |
+| 2 hours before   | Location/access codes         | WhatsApp         |
+| Post-appointment | Feedback request + next steps | Email            |
 
 ---
 
@@ -162,11 +168,11 @@ Before the handover appointment the agent must confirm:
 
 ### 5.1 Severity Levels
 
-| Severity | Definition | Effect on Handover |
-|----------|-----------|-------------------|
-| **Critical** | Structural crack, flooding risk, electrical safety hazard | Blocks handover; keys withheld |
-| **Major** | HVAC not functioning, water pressure below spec, appliance missing | Blocks certificate until resolved |
-| **Minor** | Paint scuff, tile grout gap < 2mm, door misalignment < 3mm | Punch list; certificate issued with outstanding items log |
+| Severity     | Definition                                                         | Effect on Handover                                        |
+| ------------ | ------------------------------------------------------------------ | --------------------------------------------------------- |
+| **Critical** | Structural crack, flooding risk, electrical safety hazard          | Blocks handover; keys withheld                            |
+| **Major**    | HVAC not functioning, water pressure below spec, appliance missing | Blocks certificate until resolved                         |
+| **Minor**    | Paint scuff, tile grout gap < 2mm, door misalignment < 3mm         | Punch list; certificate issued with outstanding items log |
 
 ### 5.2 Photo Evidence Requirements
 
@@ -246,13 +252,13 @@ AccessItem {
 
 ### 8.1 Required Documents for DEWA Application
 
-| Document | Source |
-|----------|--------|
-| Title Deed or Interim Title Deed | DLD |
-| No Objection Certificate (NOC) from developer | Developer |
-| Tenancy contract (rental) or sale agreement | White Caves |
-| Emirates ID of buyer/tenant | Buyer/Tenant |
-| DEWA plot number | From title deed / developer handover pack |
+| Document                                      | Source                                    |
+| --------------------------------------------- | ----------------------------------------- |
+| Title Deed or Interim Title Deed              | DLD                                       |
+| No Objection Certificate (NOC) from developer | Developer                                 |
+| Tenancy contract (rental) or sale agreement   | White Caves                               |
+| Emirates ID of buyer/tenant                   | Buyer/Tenant                              |
+| DEWA plot number                              | From title deed / developer handover pack |
 
 ### 8.2 DEWA Tracker Fields
 
@@ -273,29 +279,29 @@ DewaConnection {
 
 ### 8.3 Process Timeline
 
-| Step | Action | Typical Duration |
-|------|--------|-----------------|
-| 1 | Obtain NOC from developer | 5–10 working days |
-| 2 | Submit DEWA online application | Same day |
-| 3 | DEWA inspection (new connections) | 1–3 working days |
-| 4 | Meter activation | 1 working day after inspection |
-| **Total** | **New connection** | **7–14 working days** |
+| Step      | Action                            | Typical Duration               |
+| --------- | --------------------------------- | ------------------------------ |
+| 1         | Obtain NOC from developer         | 5–10 working days              |
+| 2         | Submit DEWA online application    | Same day                       |
+| 3         | DEWA inspection (new connections) | 1–3 working days               |
+| 4         | Meter activation                  | 1 working day after inspection |
+| **Total** | **New connection**                | **7–14 working days**          |
 
 ---
 
 ## 9. API Contract
 
-| Method | Path | Auth | Description |
-|--------|------|------|-------------|
-| `POST` | `/api/handover/checklists` | Agent+ | Create snagging checklist |
-| `GET` | `/api/handover/checklists/:id` | Agent+ | Get checklist |
-| `PATCH` | `/api/handover/checklists/:id/items/:itemId` | Agent | Update item |
-| `POST` | `/api/handover/checklists/:id/submit` | Agent | Submit to developer |
-| `POST` | `/api/handover/checklists/:id/signoff` | Agent | Buyer sign-off |
-| `GET` | `/api/handover/checklists/:id/report` | Agent+ | Download snagging PDF |
-| `GET` | `/api/handover/:propertyId/certificate` | Agent+ | Download completion certificate |
-| `PATCH` | `/api/handover/dewa/:propertyId` | Agent | Update DEWA tracker |
-| `POST` | `/api/handover/access-issuance` | Agent | Record keys/access issuance |
+| Method  | Path                                         | Auth   | Description                     |
+| ------- | -------------------------------------------- | ------ | ------------------------------- |
+| `POST`  | `/api/handover/checklists`                   | Agent+ | Create snagging checklist       |
+| `GET`   | `/api/handover/checklists/:id`               | Agent+ | Get checklist                   |
+| `PATCH` | `/api/handover/checklists/:id/items/:itemId` | Agent  | Update item                     |
+| `POST`  | `/api/handover/checklists/:id/submit`        | Agent  | Submit to developer             |
+| `POST`  | `/api/handover/checklists/:id/signoff`       | Agent  | Buyer sign-off                  |
+| `GET`   | `/api/handover/checklists/:id/report`        | Agent+ | Download snagging PDF           |
+| `GET`   | `/api/handover/:propertyId/certificate`      | Agent+ | Download completion certificate |
+| `PATCH` | `/api/handover/dewa/:propertyId`             | Agent  | Update DEWA tracker             |
+| `POST`  | `/api/handover/access-issuance`              | Agent  | Record keys/access issuance     |
 
 ---
 

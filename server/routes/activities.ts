@@ -50,7 +50,7 @@ function buildActivityWhere(params: Record<string, string | undefined>): Prisma.
 // Filterable by type, action, userId, leadId
 router.get(
   '/',
-  requirePermission('view_leads'),
+  requirePermission('view_audit_logs'),
   asyncHandler(async (req: Request, res: Response) => {
     ensureActivityAuditRole(req.user?.role);
 
@@ -231,7 +231,7 @@ router.get(
 // ─── GET /api/activities/:id ────────────────────────────────────────────
 router.get(
   '/:id',
-  requirePermission('view_leads'),
+  requirePermission('view_audit_logs'),
   asyncHandler(async (req: Request, res: Response) => {
     ensureActivityAuditRole(req.user?.role);
 
@@ -320,38 +320,12 @@ router.post(
 );
 
 // ─── PATCH /api/activities/:id ──────────────────────────────────────────
-// Update activity metadata/description
+// Immutable audit log policy: updates are disabled.
 router.patch(
   '/:id',
   requirePermission('manage_leads'),
-  asyncHandler(async (req: Request, res: Response) => {
-    const { id } = req.params as Record<string, string>;
-    validateIdParam(id, 'Activity ID');
-
-    const existing = await prisma.activity.findUnique({ where: { id } });
-    if (!existing) throw new AppError('Activity not found', 404);
-
-    const { description, metadata } = req.body;
-    const data: Record<string, unknown> = {};
-    if (description !== undefined) data.description = sanitizeString(String(description));
-    if (metadata !== undefined) data.metadata = metadata;
-
-    const updated = await prisma.activity.update({ where: { id }, data });
-    triggerLeadRescore(updated.leadId, 'activity_updated');
-
-    res.status(200).json({
-      success: true,
-      data: {
-        id: updated.id,
-        type: updated.type,
-        action: updated.action,
-        description: updated.description,
-        metadata: updated.metadata,
-        createdAt: updated.createdAt.toISOString(),
-        userId: updated.userId,
-        leadId: updated.leadId,
-      },
-    });
+  asyncHandler(async (_req: Request, _res: Response) => {
+    throw new AppError('Audit log is immutable — update is not allowed', 405);
   })
 );
 
@@ -359,23 +333,8 @@ router.patch(
 router.delete(
   '/:id',
   requirePermission('manage_leads'),
-  asyncHandler(async (req: Request, res: Response) => {
-    const { id } = req.params as Record<string, string>;
-    validateIdParam(id, 'Activity ID');
-
-    const existing = await prisma.activity.findUnique({ where: { id } });
-    if (!existing) throw new AppError('Activity not found', 404);
-
-    // Only managers+ can delete activities
-    const isAdmin = ['owner', 'manager', 'admin'].includes(req.user?.role || '');
-    if (!isAdmin) {
-      throw new AppError('Only managers can delete activity records', 403);
-    }
-
-    await prisma.activity.delete({ where: { id } });
-    triggerLeadRescore(existing.leadId, 'activity_deleted');
-
-    res.status(200).json({ success: true, message: 'Activity deleted' });
+  asyncHandler(async (_req: Request, _res: Response) => {
+    throw new AppError('Audit log is immutable — delete is not allowed', 405);
   })
 );
 

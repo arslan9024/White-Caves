@@ -29,6 +29,16 @@ import type { AuthRequest } from '../middleware/auth';
 
 const router = Router();
 
+const DEFAULT_NADIA_ESCALATION_CONFIDENCE_THRESHOLD = 0.6;
+
+const getNadiaEscalationConfidenceThreshold = (): number => {
+  const raw = Number(process.env.NADIA_ESCALATION_CONFIDENCE_THRESHOLD ?? '');
+  if (Number.isNaN(raw)) {
+    return DEFAULT_NADIA_ESCALATION_CONFIDENCE_THRESHOLD;
+  }
+  return Math.min(0.95, Math.max(0.2, raw));
+};
+
 const ALLOWED_CONVERSATION_STATUSES = ['active', 'assigned_to_agent', 'in_bot_flow', 'closed'];
 
 const canPerform = (req: Request, permission: string): boolean => {
@@ -717,7 +727,12 @@ router.post(
       throw new AppError('message is required', 400);
     }
 
-    const result = generateWhatsAppAutoResponse({ message, customerName });
+    const escalationConfidenceThreshold = getNadiaEscalationConfidenceThreshold();
+    const result = generateWhatsAppAutoResponse({
+      message,
+      customerName,
+      escalationConfidenceThreshold,
+    });
     res.status(200).json({ success: true, data: result });
   })
 );
@@ -746,7 +761,12 @@ router.post(
       throw new AppError('Conversation not found', 404);
     }
 
-    const assistant = generateWhatsAppAutoResponse({ message, customerName });
+    const escalationConfidenceThreshold = getNadiaEscalationConfidenceThreshold();
+    const assistant = generateWhatsAppAutoResponse({
+      message,
+      customerName,
+      escalationConfidenceThreshold,
+    });
 
     const inbound = await prisma.nadiaMessage.create({
       data: {
@@ -785,7 +805,20 @@ router.post(
     if (assistant.classification.shouldEscalate) {
       await queueConversationForAssignment(
         conversationId,
-        assistant.classification.escalationReason || 'assistant_escalation'
+        assistant.classification.escalationReason || 'assistant_escalation',
+        {
+          source: 'assistant/respond',
+          messagePreview: message.slice(0, 280),
+          classification: {
+            intent: assistant.classification.intent,
+            confidence: assistant.classification.confidence,
+            sentiment: assistant.classification.sentiment,
+            entities: assistant.classification.entities,
+            leadScore: assistant.classification.leadScore,
+            firstResponseState: assistant.classification.firstResponseState,
+            escalationReason: assistant.classification.escalationReason,
+          },
+        }
       );
     }
 
@@ -795,6 +828,9 @@ router.post(
         classification: assistant.classification,
         response: assistant.response,
         responseType: assistant.responseType,
+        escalationPolicy: {
+          confidenceThreshold: escalationConfidenceThreshold,
+        },
         messages: { inbound, outbound },
         conversation: updatedConversation,
       },

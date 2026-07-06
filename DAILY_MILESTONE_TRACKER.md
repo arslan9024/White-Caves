@@ -1,9 +1,9 @@
 # White Caves Daily Milestone Tracker
 
-**Date:** Jun 19, 2026  
+**Date:** Jul 06, 2026  
 **Owner:** @Margaret  
 **Status:** Active  
-**Last Updated:** 2026-06-19
+**Last Updated:** 2026-07-06
 
 > Roadmap: [plans/MASTER_PLAN.md](plans/MASTER_PLAN.md) · Queue: [plans/PENDING_TASKS_ONLY.md](plans/PENDING_TASKS_ONLY.md)
 
@@ -84,6 +84,50 @@
 ---
 
 ## Daily Entry
+
+- **Jul 06, 2026 — @Mira + @Katherine + @Margaret + @Copilot — Done**
+  - W18.1-P1-004 hardening completed for Nadia escalation confidence policy controls.
+  - Added configurable threshold support via `NADIA_ESCALATION_CONFIDENCE_THRESHOLD` in `server/routes/nadia.ts` and pass-through into assistant classification/response generation.
+  - Added assistant response policy visibility (`escalationPolicy.confidenceThreshold`) for operator/audit transparency.
+  - Validation evidence:
+    - focused tests: `server/services/nadia/whatsappAssistant.test.ts`, `server/routes/nadia.routes.test.ts` (**29/29 passing**)
+    - Session 3 adjacent regression confirmations: contracts/signatures/status UI tests (**35/35**), syndication tests (**5/5**), follow-up automation tests (**8/8**)
+    - `npm run typecheck` passed
+    - `npm run build` passed
+    - targeted lint passed for touched Nadia files
+
+- **Jul 06, 2026 — @Mira + @Katherine + @Margaret + @Copilot — Done**
+  - W18.1-P1-002 immutable audit log hardening completed.
+  - API hardening in `server/routes/activities.ts`:
+    - list/detail endpoints aligned to `view_audit_logs` permission
+    - update/delete endpoints converted to immutable policy responses (HTTP 405)
+  - CRM UI hardening in `src/pages/crm/AuditLogPage.tsx`:
+    - explicit read-only compliance note added
+    - inline-style lint debt removed via `AuditLogPage.css`
+  - Validation evidence:
+    - focused tests: `server/routes/activities.test.ts`, `src/pages/crm/AuditLogPage.test.tsx` (**40/40 passing**)
+    - `npm run typecheck` passed
+    - targeted lint passed for touched TS/TSX files (CSS file excluded by current ESLint config)
+
+- **Jul 06, 2026 — @Mira + @Katherine + @Margaret + @Copilot — Done**
+  - W18.1-P1-001 completed (lead import dedup + row error reporting).
+  - Enhanced `POST /api/leads/bulk-import` with:
+    - row-level validation (`missing_name`, `invalid_email`, `invalid_phone`)
+    - in-batch dedup detection (`duplicate_in_batch`)
+    - existing-record dedup detection (`duplicate_existing` via email/phone lookup)
+    - structured import summary payload (`imported`, `total`, `skipped`, `errors[]`)
+  - Updated `LeadImportModal` to merge backend skipped-row errors into result reporting so operators see server-side dedup/validation outcomes.
+  - Validation evidence:
+    - `server/routes/leads.test.ts` + `src/pages/crm/LeadImportModal.test.tsx` = **53/53 tests passed**
+    - targeted lint on touched lead-import files = **clean**
+
+- **Jul 06, 2026 — @Mira + @Katherine + @Margaret + @Copilot — Done**
+  - Wave 18.1 Session 3 progression advanced across Nadia handoff, follow-up automation normalization, and Ejari/rent collection reminder flows.
+  - Delivered Prisma JSON-safe Nadia escalation metadata normalization in `server/services/nadia/queueManager.ts` to preserve structured handoff context.
+  - Delivered cadence-rule normalization/validation expansion in `server/routes/follow-ups.ts` and updated tests in `server/routes/follow-ups.test.ts`.
+  - Delivered canonical overdue collection notify route in `server/routes/leases.ts` with compatibility alias retained, plus route tests in `server/routes/leases.test.ts`.
+  - Delivered landlord overdue collection queue/reminder UX in `src/pages/landlord/RentalManagementPage.tsx` with externalized styling in `src/pages/landlord/RentalManagementPage.css` and stabilized UI tests in `src/pages/landlord/RentalManagementPage.test.tsx`.
+  - Validation: focused suites green (`server/routes/leases.test.ts`, `src/pages/landlord/RentalManagementPage.test.tsx`), typecheck green (`npm run typecheck`), and targeted lint clean for changed TS/TSX files.
 
 - **Jun 19, 2026 — @Mira + @Margaret + @Copilot — Done**
   - Tracker markdown hardening completed for governance artifacts.

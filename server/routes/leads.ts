@@ -79,6 +79,46 @@ const importUpload = multer({
   },
 });
 
+interface BulkImportLeadInput {
+  name?: string | null;
+  email?: string | null;
+  phone?: string | null;
+  company?: string | null;
+  status?: string | null;
+  source?: string | null;
+  budget?: number | string | null;
+  score?: number | null;
+  notes?: string | null;
+  tags?: string[] | null;
+}
+
+interface BulkImportRowError {
+  row: number;
+  code:
+    | 'missing_name'
+    | 'invalid_email'
+    | 'invalid_phone'
+    | 'duplicate_in_batch'
+    | 'duplicate_existing';
+  message: string;
+}
+
+interface PreparedBulkLead {
+  row: number;
+  data: {
+    name: string;
+    email: string | null;
+    phone: string | null;
+    company: string | null;
+    status: string;
+    source: string;
+    budget: number | null;
+    score: number;
+    notes: string | null;
+    tags: string[];
+  };
+}
+
 const routeParamToString = (value: string | string[] | undefined): string | null => {
   if (typeof value === 'string' && value.trim().length > 0) {
     return value;
@@ -843,7 +883,6 @@ router.get(
   })
 );
 
-
 // ─── POST /api/leads/import/file ────────────────────────────────────────────
 // Accepts multipart CSV or XLSX upload.  Parses, validates, deduplicates by
 // email or phone against existing leads, and bulk-inserts new rows.
@@ -916,9 +955,7 @@ router.post(
       }
 
       const statusRaw = get('status', 'Status') ?? 'new';
-      const status = VALID_LEAD_STATUSES.includes(
-        statusRaw as (typeof VALID_LEAD_STATUSES)[number],
-      )
+      const status = VALID_LEAD_STATUSES.includes(statusRaw as (typeof VALID_LEAD_STATUSES)[number])
         ? statusRaw
         : 'new';
 
@@ -934,14 +971,12 @@ router.post(
         name: sanitizeString(name.slice(0, 200)),
         email,
         phone,
-        company:
-          sanitizeString((get('company', 'Company') ?? '').slice(0, 200)) || null,
+        company: sanitizeString((get('company', 'Company') ?? '').slice(0, 200)) || null,
         status,
         source: sanitizeString((get('source', 'Source') ?? 'import').slice(0, 100)),
         budget,
         score,
-        notes:
-          sanitizeString((get('notes', 'Notes') ?? '').slice(0, 5000)) || null,
+        notes: sanitizeString((get('notes', 'Notes') ?? '').slice(0, 5000)) || null,
         tags: [],
       });
     }
@@ -964,7 +999,7 @@ router.post(
     const existingPhones = new Set(existing.map(e => e.phone).filter(Boolean));
 
     const toInsert = candidates.filter(
-      c => !(c.email && existingEmails.has(c.email)) && !(c.phone && existingPhones.has(c.phone)),
+      c => !(c.email && existingEmails.has(c.email)) && !(c.phone && existingPhones.has(c.phone))
     );
     const duplicates = candidates.length - toInsert.length;
 
@@ -982,7 +1017,7 @@ router.post(
         total: rawRows.length,
       },
     });
-  }),
+  })
 );
 
 // ─── POST /api/leads/bulk-import ────────────────────────────────────────
@@ -995,47 +1030,180 @@ router.post(
       throw new AppError('Provide an array of leads', 400);
     if (leads.length > 500) throw new AppError('Maximum 500 leads per batch', 400);
 
-    // Validate email format
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    // Validate phone format (international E.164-ish)
     const phoneRegex = /^\+?[\d\s\-()]{7,20}$/;
 
-    const results = await prisma.lead.createMany({
-      data: leads.map((l: Record<string, string | number | string[] | null>) => ({
-        name: sanitizeString(
-          (typeof l.name === 'string' ? l.name.trim() : 'Unknown').slice(0, 200)
-        ),
-        email:
-          typeof l.email === 'string' && emailRegex.test(l.email.trim())
-            ? l.email.trim().toLowerCase().slice(0, 254)
-            : null,
-        phone:
-          typeof l.phone === 'string' && phoneRegex.test(l.phone.trim())
-            ? l.phone.trim().slice(0, 20)
-            : null,
-        company:
-          sanitizeString((typeof l.company === 'string' ? l.company.trim() : '').slice(0, 200)) ||
-          null,
-        status:
-          typeof l.status === 'string' &&
-          VALID_LEAD_STATUSES.includes(l.status as (typeof VALID_LEAD_STATUSES)[number])
-            ? l.status
-            : 'new',
-        source:
-          typeof l.source === 'string' ? sanitizeString(l.source.trim().slice(0, 100)) : 'direct',
-        budget:
-          typeof l.budget === 'number'
-            ? l.budget
-            : typeof l.budget === 'string'
-              ? parseFloat(l.budget) || null
-              : null,
-        score: typeof l.score === 'number' ? Math.min(Math.max(Math.round(l.score), 0), 100) : 0,
-        notes: sanitizeString((typeof l.notes === 'string' ? l.notes : '').slice(0, 5000)) || null,
-        tags: Array.isArray(l.tags) ? l.tags.slice(0, 20).map(t => String(t).slice(0, 50)) : [],
-      })),
-    });
+    const rowErrors: BulkImportRowError[] = [];
+    const preparedRows: PreparedBulkLead[] = [];
+    const batchEmailIndex = new Set<string>();
+    const batchPhoneIndex = new Set<string>();
 
-    res.status(201).json({ success: true, data: { imported: results.count, total: leads.length } });
+    for (let idx = 0; idx < leads.length; idx += 1) {
+      const raw = leads[idx] as BulkImportLeadInput;
+      const row = idx + 1;
+
+      const cleanNameRaw = typeof raw.name === 'string' ? raw.name.trim() : '';
+      const cleanName = sanitizeString(cleanNameRaw).slice(0, 200);
+
+      if (!cleanName) {
+        rowErrors.push({
+          row,
+          code: 'missing_name',
+          message: 'Missing required field: name',
+        });
+        continue;
+      }
+
+      const normalizedEmail =
+        typeof raw.email === 'string' && raw.email.trim().length > 0
+          ? raw.email.trim().toLowerCase().slice(0, 254)
+          : null;
+      const normalizedPhone =
+        typeof raw.phone === 'string' && raw.phone.trim().length > 0
+          ? raw.phone.trim().slice(0, 20)
+          : null;
+
+      if (normalizedEmail && !emailRegex.test(normalizedEmail)) {
+        rowErrors.push({
+          row,
+          code: 'invalid_email',
+          message: `Invalid email format: ${normalizedEmail}`,
+        });
+        continue;
+      }
+
+      if (normalizedPhone && !phoneRegex.test(normalizedPhone)) {
+        rowErrors.push({
+          row,
+          code: 'invalid_phone',
+          message: `Invalid phone format: ${normalizedPhone}`,
+        });
+        continue;
+      }
+
+      const duplicateKey = normalizedEmail ?? normalizedPhone;
+      if (duplicateKey) {
+        const duplicateInBatch =
+          (normalizedEmail && batchEmailIndex.has(normalizedEmail)) ||
+          (normalizedPhone && batchPhoneIndex.has(normalizedPhone));
+        if (duplicateInBatch) {
+          rowErrors.push({
+            row,
+            code: 'duplicate_in_batch',
+            message: 'Duplicate lead in this import batch (same email/phone)',
+          });
+          continue;
+        }
+      }
+
+      if (normalizedEmail) batchEmailIndex.add(normalizedEmail);
+      if (normalizedPhone) batchPhoneIndex.add(normalizedPhone);
+
+      const sanitizedSource =
+        typeof raw.source === 'string' ? sanitizeString(raw.source.trim().slice(0, 100)) : 'direct';
+
+      preparedRows.push({
+        row,
+        data: {
+          name: cleanName,
+          email: normalizedEmail,
+          phone: normalizedPhone,
+          company:
+            sanitizeString(
+              (typeof raw.company === 'string' ? raw.company.trim() : '').slice(0, 200)
+            ) || null,
+          status:
+            typeof raw.status === 'string' &&
+            VALID_LEAD_STATUSES.includes(raw.status as (typeof VALID_LEAD_STATUSES)[number])
+              ? raw.status
+              : 'new',
+          source: sanitizedSource.length > 0 ? sanitizedSource : 'direct',
+          budget:
+            typeof raw.budget === 'number'
+              ? raw.budget
+              : typeof raw.budget === 'string'
+                ? parseFloat(raw.budget) || null
+                : null,
+          score:
+            typeof raw.score === 'number' ? Math.min(Math.max(Math.round(raw.score), 0), 100) : 0,
+          notes:
+            sanitizeString((typeof raw.notes === 'string' ? raw.notes : '').slice(0, 5000)) || null,
+          tags: Array.isArray(raw.tags)
+            ? raw.tags
+                .slice(0, 20)
+                .map(t => String(t).slice(0, 50))
+                .filter(Boolean)
+            : [],
+        },
+      });
+    }
+
+    const incomingEmails = preparedRows
+      .map(row => row.data.email)
+      .filter((value): value is string => Boolean(value));
+    const incomingPhones = preparedRows
+      .map(row => row.data.phone)
+      .filter((value): value is string => Boolean(value));
+
+    const existing =
+      incomingEmails.length > 0 || incomingPhones.length > 0
+        ? await prisma.lead.findMany({
+            where: {
+              OR: [
+                ...(incomingEmails.length > 0 ? [{ email: { in: incomingEmails } }] : []),
+                ...(incomingPhones.length > 0 ? [{ phone: { in: incomingPhones } }] : []),
+              ],
+            },
+            select: { email: true, phone: true },
+          })
+        : [];
+
+    const existingEmails = new Set(
+      existing
+        .map(item => item.email)
+        .filter((value): value is string => typeof value === 'string' && value.length > 0)
+        .map(value => value.toLowerCase())
+    );
+    const existingPhones = new Set(
+      existing
+        .map(item => item.phone)
+        .filter((value): value is string => typeof value === 'string' && value.length > 0)
+    );
+
+    const importableRows: PreparedBulkLead[] = [];
+    for (const row of preparedRows) {
+      const isDuplicateExisting =
+        (row.data.email ? existingEmails.has(row.data.email.toLowerCase()) : false) ||
+        (row.data.phone ? existingPhones.has(row.data.phone) : false);
+
+      if (isDuplicateExisting) {
+        rowErrors.push({
+          row: row.row,
+          code: 'duplicate_existing',
+          message: 'Lead already exists (matching email/phone)',
+        });
+        continue;
+      }
+
+      importableRows.push(row);
+    }
+
+    const results =
+      importableRows.length > 0
+        ? await prisma.lead.createMany({
+            data: importableRows.map(row => row.data),
+          })
+        : { count: 0 };
+
+    res.status(201).json({
+      success: true,
+      data: {
+        imported: results.count,
+        total: leads.length,
+        skipped: leads.length - results.count,
+        errors: rowErrors.sort((a, b) => a.row - b.row),
+      },
+    });
   })
 );
 

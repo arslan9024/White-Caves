@@ -330,83 +330,39 @@ describe('Activities Routes — /api/activities', () => {
 
   // ── PATCH /:id ───────────────────────────────────────────────────
   describe('PATCH /api/activities/:id', () => {
-    it('updates an activity description', async () => {
+    it('returns 405 because audit log is immutable', async () => {
       const res = await request(createApp())
         .patch(`/api/activities/${VALID_ID}`)
         .send({ description: 'Updated description' });
 
-      expect(res.status).toBe(200);
-      expect(res.body.success).toBe(true);
+      expect(res.status).toBe(405);
+      expect(res.body.error).toMatch(/immutable/i);
     });
 
-    it('returns 404 when activity not found', async () => {
-      mockPrisma.activity.findUnique.mockResolvedValueOnce(null);
-
-      const res = await request(createApp())
-        .patch(`/api/activities/${VALID_ID}`)
-        .send({ description: 'Updated' });
-
-      expect(res.status).toBe(404);
-    });
-
-    it('returns 400 for invalid id format', async () => {
-      const res = await request(createApp())
-        .patch('/api/activities/bad-id')
-        .send({ description: 'Updated' });
-
-      expect(res.status).toBe(400);
-    });
-
-    it('passes metadata update to prisma', async () => {
-      const meta = { key: 'value' };
-      await request(createApp()).patch(`/api/activities/${VALID_ID}`).send({ metadata: meta });
-
-      const updateCall = mockPrisma.activity.update.mock.calls[0][0];
-      expect(updateCall.data.metadata).toEqual(meta);
-    });
-
-    it('triggers lead auto-rescore on patch', async () => {
+    it('does not call prisma.update or trigger rescore when patch is blocked', async () => {
       await request(createApp())
         .patch(`/api/activities/${VALID_ID}`)
         .send({ description: 'Updated' });
-      expect(triggerLeadRescore).toHaveBeenCalledWith(expect.anything(), 'activity_updated');
+
+      expect(mockPrisma.activity.update).not.toHaveBeenCalled();
+      expect(triggerLeadRescore).not.toHaveBeenCalledWith(expect.anything(), 'activity_updated');
     });
   });
 
   // ── DELETE /:id ──────────────────────────────────────────────────
   describe('DELETE /api/activities/:id', () => {
-    it('deletes activity for admin role', async () => {
+    it('returns 405 because audit log is immutable', async () => {
       const res = await request(createApp('owner')).delete(`/api/activities/${VALID_ID}`);
 
-      expect(res.status).toBe(200);
-      expect(res.body.success).toBe(true);
-      expect(res.body.message).toMatch(/deleted/i);
+      expect(res.status).toBe(405);
+      expect(res.body.error).toMatch(/immutable/i);
     });
 
-    it('returns 403 for non-admin role', async () => {
-      const res = await request(createApp('agent')).delete(`/api/activities/${VALID_ID}`);
-
-      expect(res.status).toBe(403);
-      expect(res.body.error).toMatch(/manager/i);
-    });
-
-    it('returns 404 when activity not found', async () => {
-      mockPrisma.activity.findUnique.mockResolvedValueOnce(null);
-
-      const res = await request(createApp('owner')).delete(`/api/activities/${VALID_ID}`);
-
-      expect(res.status).toBe(404);
-    });
-
-    it('returns 400 for invalid id format', async () => {
-      const res = await request(createApp('owner')).delete('/api/activities/bad-id');
-
-      expect(res.status).toBe(400);
-    });
-
-    it('triggers lead auto-rescore on delete', async () => {
+    it('does not call prisma.delete or trigger rescore when delete is blocked', async () => {
       await request(createApp('owner')).delete(`/api/activities/${VALID_ID}`);
-      expect(triggerLeadRescore).toHaveBeenCalledWith(expect.anything(), 'activity_deleted');
+
+      expect(mockPrisma.activity.delete).not.toHaveBeenCalled();
+      expect(triggerLeadRescore).not.toHaveBeenCalledWith(expect.anything(), 'activity_deleted');
     });
   });
 });
@@ -482,7 +438,7 @@ describe('W18.1-P1-002 — GET /api/activities/export/csv', () => {
   it('passes type query filter to prisma findMany', async () => {
     await request(createApp('admin')).get('/api/activities/export/csv?type=property');
     expect(mockPrisma.activity.findMany).toHaveBeenCalledWith(
-      expect.objectContaining({ where: expect.objectContaining({ type: 'property' }) }),
+      expect.objectContaining({ where: expect.objectContaining({ type: 'property' }) })
     );
   });
 
@@ -512,7 +468,7 @@ describe('W18.1-P1-002 — GET /api/activities/export/xlsx', () => {
     const res = await request(createApp('manager')).get('/api/activities/export/xlsx');
     expect(res.status).toBe(200);
     expect(res.headers['content-type']).toMatch(
-      /application\/vnd\.openxmlformats-officedocument\.spreadsheetml\.sheet/,
+      /application\/vnd\.openxmlformats-officedocument\.spreadsheetml\.sheet/
     );
     expect(res.headers['content-disposition']).toMatch(/audit-log\.xlsx/);
   });
@@ -531,7 +487,7 @@ describe('W18.1-P1-002 — GET /api/activities/export/xlsx', () => {
   it('passes action filter to prisma', async () => {
     await request(createApp('admin')).get('/api/activities/export/xlsx?action=signed');
     expect(mockPrisma.activity.findMany).toHaveBeenCalledWith(
-      expect.objectContaining({ where: expect.objectContaining({ action: 'signed' }) }),
+      expect.objectContaining({ where: expect.objectContaining({ action: 'signed' }) })
     );
   });
 });

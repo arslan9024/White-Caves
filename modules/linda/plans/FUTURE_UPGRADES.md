@@ -8,12 +8,12 @@
 
 ## 🏷️ Priority Legend
 
-| Label | Meaning |
-|-------|---------|
-| 🔴 P1 | Critical — blocks production or major feature |
-| 🟠 P2 | High — significant value, plan next sprint |
+| Label | Meaning                                        |
+| ----- | ---------------------------------------------- |
+| 🔴 P1 | Critical — blocks production or major feature  |
+| 🟠 P2 | High — significant value, plan next sprint     |
 | 🟡 P3 | Medium — useful, schedule when capacity allows |
-| 🟢 P4 | Low — nice-to-have or experimental |
+| 🟢 P4 | Low — nice-to-have or experimental             |
 
 ---
 
@@ -34,12 +34,14 @@
 ## 🤖 Bot & WhatsApp
 
 ### Multi-Account Improvements
+
 - [ ] 🟠 P2 Add web-based dashboard (React or plain HTML) for real-time account status and QR scanning
 - [ ] 🟠 P2 Per-account rate limit configuration (allow different limits per phone number)
 - [ ] 🟡 P3 Hot-add / hot-remove WhatsApp accounts without restarting the bot
 - [ ] 🟡 P3 Improve `TerminalHealthDashboard` — colour-coded status, last-message timestamps, reconnect history
 
 ### Messaging & Campaigns
+
 - [ ] 🟠 P2 Campaign A/B testing — send two message variants, track which gets better responses
 - [ ] 🟠 P2 Scheduled campaign calendar UI (via Express + simple HTML frontend)
 - [ ] 🟡 P3 Rich media campaign support — images, PDFs, and voice notes
@@ -47,6 +49,7 @@
 - [ ] 🟢 P4 AI-generated campaign message suggestions (OpenAI / local LLM)
 
 ### Command System
+
 - [ ] 🟡 P3 Interactive menu system — numbered menu replies for non-technical users
 - [ ] 🟡 P3 Multi-language support for bot commands (Arabic / English)
 - [ ] 🟢 P4 Conversation learning — store correction feedback in `LindaConversationLearner`
@@ -56,6 +59,7 @@
 ## 🏗️ API & Backend
 
 ### REST API
+
 - [ ] 🔴 P1 Add JWT authentication middleware to all API routes (currently open)
 - [ ] 🟠 P2 Centralised request validation using Zod or `express-validator`
 - [ ] 🟠 P2 API versioning strategy — plan migration from `/api/v1/` to `/api/v2/`
@@ -64,6 +68,7 @@
 - [ ] 🟢 P4 GraphQL layer as alternative to REST (optional, for complex data queries)
 
 ### Database
+
 - [ ] 🟠 P2 Add compound indexes on high-frequency queries (phone + status, property + date)
 - [ ] 🟠 P2 Data archival strategy — move records older than 2 years to cold storage
 - [ ] 🟡 P3 Soft-delete pattern across all Mongoose schemas (`deletedAt` field)
@@ -139,15 +144,15 @@
 
 > Move items here once done, with a completion date and brief note.
 
-| Feature | Completed | Notes |
-|---------|-----------|-------|
-| Phase 5 advanced features (890 tests) | Feb 2026 | Communication, Commission, Analytics, Invoice, Notifications |
-| Phase 31 WhatsApp Command Bridge | Feb 2026 | Remote terminal control via WhatsApp chat |
-| Phase 29d Circuit Breaker & Auto-Reconnect | Feb 2026 | Per-account circuit breaker with CLOSED/OPEN/HALF_OPEN states |
-| Phase 29e Analytics & SLA Monitoring | Feb 2026 | UptimeTracker, MetricsDashboard, ReportGenerator |
-| Phase 27 Auto-Session Restore | Feb 2026 | Sessions restored automatically on nodemon restart |
-| Phase 20 Secure Credential Management | Feb 2026 | Base64-encoded Google credentials in `.env` |
-| Multi-account bot support | Feb 2026 | AccountBootstrapManager, ConnectionManager per phone |
+| Feature                                    | Completed | Notes                                                         |
+| ------------------------------------------ | --------- | ------------------------------------------------------------- |
+| Phase 5 advanced features (890 tests)      | Feb 2026  | Communication, Commission, Analytics, Invoice, Notifications  |
+| Phase 31 WhatsApp Command Bridge           | Feb 2026  | Remote terminal control via WhatsApp chat                     |
+| Phase 29d Circuit Breaker & Auto-Reconnect | Feb 2026  | Per-account circuit breaker with CLOSED/OPEN/HALF_OPEN states |
+| Phase 29e Analytics & SLA Monitoring       | Feb 2026  | UptimeTracker, MetricsDashboard, ReportGenerator              |
+| Phase 27 Auto-Session Restore              | Feb 2026  | Sessions restored automatically on nodemon restart            |
+| Phase 20 Secure Credential Management      | Feb 2026  | Base64-encoded Google credentials in `.env`                   |
+| Multi-account bot support                  | Feb 2026  | AccountBootstrapManager, ConnectionManager per phone          |
 
 ---
 

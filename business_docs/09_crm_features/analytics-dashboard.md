@@ -1,5 +1,7 @@
 # Analytics & Business Intelligence Dashboard — CRM Feature Specification
 
+<!-- markdownlint-disable MD024 MD031 MD032 MD040 MD058 MD060 -->
+
 > **Status:** In Development  
 > **Module Owner:** Aisha (Analytics Specialist AI)  
 > **Last Updated:** April 2026  

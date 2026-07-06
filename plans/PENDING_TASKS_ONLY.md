@@ -20,29 +20,29 @@ Advance only when the prior wave is green, the readiness gate is satisfied, and 
 
 ## Wave Status Board
 
-| Stream | Wave    | Objective                                                                                        | Status         | Owners                                                 | Validation Gate                                                                              |
-| ------ | ------- | ------------------------------------------------------------------------------------------------ | -------------- | ------------------------------------------------------ | -------------------------------------------------------------------------------------------- |
-| S1     | 08      | TypeScript/errors stabilization                                                                  | ✅ Green       | @Mira + @Katherine                                     | TypeScript baseline confirmed green                                                          |
-| S2     | 09      | UX hardening — loading states, error boundaries, mobile, RTL                                     | ✅ Green       | @Una + @Lea + @Tracy + @Inas                           | Build + lint + targeted tests + tracker sync complete                                        |
-| S3     | 10      | Performance + SEO + security uplift                                                              | ✅ Green       | @Ruchi + @Rachel + @Radia + @Katherine                 | Lazy loading, SEO meta/structured-data, CSP, rate-limiting, vite chunks complete             |
-| S4     | 11      | Incomplete features + architecture refactor                                                      | ✅ Green       | @Ada + @Mira + @Barbara                                | SchedulerService, DocumentService, email triggers, export routes complete                    |
-| S5     | 12      | Automation engine (cron + docs + email)                                                          | ✅ Green       | @Cron + @Puppeteer + @Handlebars + @Mira               | Rent reminders, lease-expiry reminders, sitemap refresh, P&L report, export routes complete  |
-| S6     | 13      | Real-time notifications + media + virtual tour                                                   | ✅ Green       | @Socket + @Cloudinary + @Pannellum + @Mira             | Socket auth + notification service + media pipeline + virtual tour integration completed     |
-| S7     | 14      | Product features closure                                                                         | ✅ Green       | @LeadScore + @Mortgage + @Zod + @Mira                  | S6 green + readiness 60% + @Ada approval phrase                                              |
-| S8     | 15      | Cache + PWA readiness                                                                            | ✅ Green       | @Redis + @PWA + @Ruchi + @Una                          | S7 green + readiness 60% + @Ada approval phrase                                              |
-| S9     | 16      | Security hardening + API versioning                                                              | ✅ Green       | @S5 + @Radia + @Mira                                   | S8 green + readiness 60% + @Ada approval phrase                                              |
-| S10    | 17      | Full UI/UX luxury upgrade (design tokens + glassmorphism + animations + mobile + PWA + WCAG 2.2) | ✅ Green       | @Una + @Lea + @Tracy + @Africa + @Cyra + @Katherine    | Wave 17 implementation + CI Lighthouse thresholds + accessibility/mobile/PWA checks complete |
-| S11    | 18      | Workflow parity audit + benchmark gap backlog                                                    | ✅ Green       | @Ada + @Margaret + @Mira + @Katherine                  | Wave 18 parity matrix finalized + canonical queue updates + `npm run plans:validate`         |
-| S12    | 18.1    | Competitor parity execution — Session 1 ✅ complete, Session 2 ✅ complete                       | ✅ Complete    | @Ada + @Mira + @Una + @Tracy + @Katherine + @Sofia     | Session 1 + Session 2 tests green + build green + `npm run plans:validate`                   |
-| S13    | 18.1-S3 | Competitor parity execution — Session 3: 2 deferred P0s + top 8 P1s                              | ✅ Complete    | @Ada + @Mira + @Joelle + @Katherine + @Victoria + @Una | Session 3 tests green + build green + `npm run plans:validate`                               |
-| S14    | 18.2    | Profile-first post-login journey + Dashboard CTA alignment                                       | ✅ Complete    | @Ada + @Mira                                           | `useSignIn` tests green + build green                                                        |
-| S15    | 19      | Identity & Access v2, routing, MD workspace split, executive UX                                  | ✅ Complete    | @Ada + @Mira + @Una + @Katherine                       | W19-001…W19-015 complete; 142 auth/routing tests green; `npm run plans:validate`             |
-| S16    | 20      | RBAC hardening + audit export security + OWASP A01 superuser email fix                           | ✅ Complete    | @Mira + @Radia + @Katherine                            | 142 auth tests + 37 activities tests green; `npm run plans:validate`                         |
-| S17    | 21      | Finance, UAE VAT, commission engine & compliance reporting                                        | 📋 Planned     | @Mira + @Barbara + @Katherine                          | Wave 20 green + readiness 60% + @Ada approval phrase; [`WAVE_21_IMPLEMENTATION_BACKLOG.md`](./waves/WAVE_21_IMPLEMENTATION_BACKLOG.md) |
-| S18    | 22      | Market intelligence, off-plan projects, property valuation & advanced analytics                   | 📋 Planned     | @Mira + @Barbara + @Cassie                             | Wave 21 green + readiness 60% + @Ada approval phrase; [`WAVE_22_IMPLEMENTATION_BACKLOG.md`](./waves/WAVE_22_IMPLEMENTATION_BACKLOG.md) |
-| S19    | 23      | Mobile CRM, PWA offline mode & push notifications                                                 | 📋 Planned     | @Cyra + @Una + @Mira + @Katherine                      | Wave 22 green + readiness 60% + @Ada approval phrase; [`WAVE_23_IMPLEMENTATION_BACKLOG.md`](./waves/WAVE_23_IMPLEMENTATION_BACKLOG.md) |
-| S20    | 24      | WhatsApp automation, AI chat engine & in-app notification centre                                  | 📋 Planned     | @Mira + @Joelle + @Una                                 | Wave 23 green + readiness 60% + @Ada approval phrase; [`WAVE_24_IMPLEMENTATION_BACKLOG.md`](./waves/WAVE_24_IMPLEMENTATION_BACKLOG.md) |
-| S21    | 25      | Portal syndication, careers portal, community management & advanced SEO                           | 📋 Planned     | @Mira + @Barbara + @Una + @Rachel                      | Wave 24 green + readiness 60% + @Ada approval phrase; [`WAVE_25_IMPLEMENTATION_BACKLOG.md`](./waves/WAVE_25_IMPLEMENTATION_BACKLOG.md) |
+| Stream | Wave    | Objective                                                                                        | Status      | Owners                                                 | Validation Gate                                                                                                                        |
+| ------ | ------- | ------------------------------------------------------------------------------------------------ | ----------- | ------------------------------------------------------ | -------------------------------------------------------------------------------------------------------------------------------------- |
+| S1     | 08      | TypeScript/errors stabilization                                                                  | ✅ Green    | @Mira + @Katherine                                     | TypeScript baseline confirmed green                                                                                                    |
+| S2     | 09      | UX hardening — loading states, error boundaries, mobile, RTL                                     | ✅ Green    | @Una + @Lea + @Tracy + @Inas                           | Build + lint + targeted tests + tracker sync complete                                                                                  |
+| S3     | 10      | Performance + SEO + security uplift                                                              | ✅ Green    | @Ruchi + @Rachel + @Radia + @Katherine                 | Lazy loading, SEO meta/structured-data, CSP, rate-limiting, vite chunks complete                                                       |
+| S4     | 11      | Incomplete features + architecture refactor                                                      | ✅ Green    | @Ada + @Mira + @Barbara                                | SchedulerService, DocumentService, email triggers, export routes complete                                                              |
+| S5     | 12      | Automation engine (cron + docs + email)                                                          | ✅ Green    | @Cron + @Puppeteer + @Handlebars + @Mira               | Rent reminders, lease-expiry reminders, sitemap refresh, P&L report, export routes complete                                            |
+| S6     | 13      | Real-time notifications + media + virtual tour                                                   | ✅ Green    | @Socket + @Cloudinary + @Pannellum + @Mira             | Socket auth + notification service + media pipeline + virtual tour integration completed                                               |
+| S7     | 14      | Product features closure                                                                         | ✅ Green    | @LeadScore + @Mortgage + @Zod + @Mira                  | S6 green + readiness 60% + @Ada approval phrase                                                                                        |
+| S8     | 15      | Cache + PWA readiness                                                                            | ✅ Green    | @Redis + @PWA + @Ruchi + @Una                          | S7 green + readiness 60% + @Ada approval phrase                                                                                        |
+| S9     | 16      | Security hardening + API versioning                                                              | ✅ Green    | @S5 + @Radia + @Mira                                   | S8 green + readiness 60% + @Ada approval phrase                                                                                        |
+| S10    | 17      | Full UI/UX luxury upgrade (design tokens + glassmorphism + animations + mobile + PWA + WCAG 2.2) | ✅ Green    | @Una + @Lea + @Tracy + @Africa + @Cyra + @Katherine    | Wave 17 implementation + CI Lighthouse thresholds + accessibility/mobile/PWA checks complete                                           |
+| S11    | 18      | Workflow parity audit + benchmark gap backlog                                                    | ✅ Green    | @Ada + @Margaret + @Mira + @Katherine                  | Wave 18 parity matrix finalized + canonical queue updates + `npm run plans:validate`                                                   |
+| S12    | 18.1    | Competitor parity execution — Session 1 ✅ complete, Session 2 ✅ complete                       | ✅ Complete | @Ada + @Mira + @Una + @Tracy + @Katherine + @Sofia     | Session 1 + Session 2 tests green + build green + `npm run plans:validate`                                                             |
+| S13    | 18.1-S3 | Competitor parity execution — Session 3: 2 deferred P0s + top 8 P1s                              | ✅ Complete | @Ada + @Mira + @Joelle + @Katherine + @Victoria + @Una | Session 3 tests green + build green + `npm run plans:validate`                                                                         |
+| S14    | 18.2    | Profile-first post-login journey + Dashboard CTA alignment                                       | ✅ Complete | @Ada + @Mira                                           | `useSignIn` tests green + build green                                                                                                  |
+| S15    | 19      | Identity & Access v2, routing, MD workspace split, executive UX                                  | ✅ Complete | @Ada + @Mira + @Una + @Katherine                       | W19-001…W19-015 complete; 142 auth/routing tests green; `npm run plans:validate`                                                       |
+| S16    | 20      | RBAC hardening + audit export security + OWASP A01 superuser email fix                           | ✅ Complete | @Mira + @Radia + @Katherine                            | 142 auth tests + 37 activities tests green; `npm run plans:validate`                                                                   |
+| S17    | 21      | Finance, UAE VAT, commission engine & compliance reporting                                       | 📋 Planned  | @Mira + @Barbara + @Katherine                          | Wave 20 green + readiness 60% + @Ada approval phrase; [`WAVE_21_IMPLEMENTATION_BACKLOG.md`](./waves/WAVE_21_IMPLEMENTATION_BACKLOG.md) |
+| S18    | 22      | Market intelligence, off-plan projects, property valuation & advanced analytics                  | 📋 Planned  | @Mira + @Barbara + @Cassie                             | Wave 21 green + readiness 60% + @Ada approval phrase; [`WAVE_22_IMPLEMENTATION_BACKLOG.md`](./waves/WAVE_22_IMPLEMENTATION_BACKLOG.md) |
+| S19    | 23      | Mobile CRM, PWA offline mode & push notifications                                                | 📋 Planned  | @Cyra + @Una + @Mira + @Katherine                      | Wave 22 green + readiness 60% + @Ada approval phrase; [`WAVE_23_IMPLEMENTATION_BACKLOG.md`](./waves/WAVE_23_IMPLEMENTATION_BACKLOG.md) |
+| S20    | 24      | WhatsApp automation, AI chat engine & in-app notification centre                                 | 📋 Planned  | @Mira + @Joelle + @Una                                 | Wave 23 green + readiness 60% + @Ada approval phrase; [`WAVE_24_IMPLEMENTATION_BACKLOG.md`](./waves/WAVE_24_IMPLEMENTATION_BACKLOG.md) |
+| S21    | 25      | Portal syndication, careers portal, community management & advanced SEO                          | 📋 Planned  | @Mira + @Barbara + @Una + @Rachel                      | Wave 24 green + readiness 60% + @Ada approval phrase; [`WAVE_25_IMPLEMENTATION_BACKLOG.md`](./waves/WAVE_25_IMPLEMENTATION_BACKLOG.md) |
 
 ### Wave 19 Closeout (Complete)
 
@@ -80,29 +80,29 @@ Advance only when the prior wave is green, the readiness gate is satisfied, and 
 
 ## Completed Stream History
 
-| Phase  | Objective                                                                                                                                                                           | Status         |
-| ------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------- |
-| N+1    | Auth/login hardening + route consistency                                                                                                                                            | ✅ Complete    |
-| N+2    | Tenant portal live data parity                                                                                                                                                      | ✅ Complete    |
-| N+3    | Managing-director CRM critical tabs                                                                                                                                                 | ✅ Complete    |
-| N+4    | Convert top 3 revenue-impact stub endpoints                                                                                                                                         | ✅ Complete    |
-| N+5    | Test + release hardening                                                                                                                                                            | ✅ Complete    |
-| N+6    | UI architecture hardening + Arabic RTL readiness                                                                                                                                    | ✅ Complete    |
-| N+7    | Subagent upgrade: readiness + collaboration mesh                                                                                                                                    | ✅ Complete    |
-| N+8    | Google social auth hardening + dashboard redirect consistency                                                                                                                       | ✅ Complete    |
-| N+9    | UX loading-state hardening                                                                                                                                                          | ✅ Complete    |
-| Repo   | Archive/cleanup pass + canonical planning reset                                                                                                                                     | ✅ Complete    |
-| S1     | Wave 08 stabilization + governance baseline                                                                                                                                         | ✅ Complete    |
-| S2     | Wave 09 UX hardening + accessibility/mobile/RTL closeout                                                                                                                            | ✅ Complete    |
-| S3     | Wave 10 performance + SEO + security uplift                                                                                                                                         | ✅ Complete    |
-| S4     | Wave 11 incomplete features + architecture refactor                                                                                                                                 | ✅ Complete    |
-| S5     | Wave 12 automation engine (cron + docs + email)                                                                                                                                     | ✅ Complete    |
-| S6     | Wave 13 real-time notifications + media + virtual tour                                                                                                                              | ✅ Complete    |
-| S10    | Wave 17 full UI/UX luxury upgrade                                                                                                                                                   | ✅ Complete    |
-| S11    | Wave 18 workflow parity audit + gap backlog generation                                                                                                                              | ✅ Complete    |
-| S11-S1 | Wave 18.1 Session 1: Lead workflow automation + tenant/landlord portals                                                                                                             | ✅ Complete    |
-| S11-S2 | Wave 18.1 Session 2: Search ranking, facets, map sync, listing trust, WA→lead, funnel, KPI, KYC gate, mobile CRM                                                                    | ✅ Complete    |
-| S11-S3 | Wave 18.1 Session 3: Offline PWA drafts, cadence engine, lead import, audit log UI, agent report, Nina escalation, e-sign, syndication, follow-up automation, Ejari/rent collection | ✅ Complete    |
+| Phase  | Objective                                                                                                                                                                           | Status      |
+| ------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------- |
+| N+1    | Auth/login hardening + route consistency                                                                                                                                            | ✅ Complete |
+| N+2    | Tenant portal live data parity                                                                                                                                                      | ✅ Complete |
+| N+3    | Managing-director CRM critical tabs                                                                                                                                                 | ✅ Complete |
+| N+4    | Convert top 3 revenue-impact stub endpoints                                                                                                                                         | ✅ Complete |
+| N+5    | Test + release hardening                                                                                                                                                            | ✅ Complete |
+| N+6    | UI architecture hardening + Arabic RTL readiness                                                                                                                                    | ✅ Complete |
+| N+7    | Subagent upgrade: readiness + collaboration mesh                                                                                                                                    | ✅ Complete |
+| N+8    | Google social auth hardening + dashboard redirect consistency                                                                                                                       | ✅ Complete |
+| N+9    | UX loading-state hardening                                                                                                                                                          | ✅ Complete |
+| Repo   | Archive/cleanup pass + canonical planning reset                                                                                                                                     | ✅ Complete |
+| S1     | Wave 08 stabilization + governance baseline                                                                                                                                         | ✅ Complete |
+| S2     | Wave 09 UX hardening + accessibility/mobile/RTL closeout                                                                                                                            | ✅ Complete |
+| S3     | Wave 10 performance + SEO + security uplift                                                                                                                                         | ✅ Complete |
+| S4     | Wave 11 incomplete features + architecture refactor                                                                                                                                 | ✅ Complete |
+| S5     | Wave 12 automation engine (cron + docs + email)                                                                                                                                     | ✅ Complete |
+| S6     | Wave 13 real-time notifications + media + virtual tour                                                                                                                              | ✅ Complete |
+| S10    | Wave 17 full UI/UX luxury upgrade                                                                                                                                                   | ✅ Complete |
+| S11    | Wave 18 workflow parity audit + gap backlog generation                                                                                                                              | ✅ Complete |
+| S11-S1 | Wave 18.1 Session 1: Lead workflow automation + tenant/landlord portals                                                                                                             | ✅ Complete |
+| S11-S2 | Wave 18.1 Session 2: Search ranking, facets, map sync, listing trust, WA→lead, funnel, KPI, KYC gate, mobile CRM                                                                    | ✅ Complete |
+| S11-S3 | Wave 18.1 Session 3: Offline PWA drafts, cadence engine, lead import, audit log UI, agent report, Nina escalation, e-sign, syndication, follow-up automation, Ejari/rent collection | ✅ Complete |
 
 ## S2 — Wave 09: UX Hardening (Complete)
 
@@ -317,6 +317,10 @@ Key closures:
 - [ ] **W18.1-P1-007** — Multi-tier follow-up escalation and template trigger builder remain open.
 - [ ] **W18.1-P1-008** — Ejari tracking UI and overdue rent collection queue remain open.
 
+**Latest S13 checkpoint (2026-07-06):**
+
+- `W18.1-P1-004` hardening validated with focused confidence-gate test suite (`whatsappAssistant` + `nadia.routes`, 29/29 passing), targeted lint clean, `npm run typecheck` and `npm run build` green.
+
 ---
 
 ## S14 — Wave 18.2: Profile-First Post-Login Journey ✅ Complete
@@ -348,22 +352,22 @@ Mark an item complete only when:
 **Entry Gate:** Wave 19 closeout + readiness 60% + `@Ada — Context Ready (60% Readiness) — Coding Phase Approved`  
 **Readiness:** 65% (business rules + API contract complete; e-sign integration pending)
 
-| Task | Priority | Owner | Validation |
-|---|---|---|---|
-| W20-001 — Tenant application + KYC document upload + expiry-alert engine | P0 | @Mira + @Barbara | Unit: KYC rules; E2E: application submit |
-| W20-002 — Bilingual tenancy agreement PDF generator | P0 | @Mira | Integration: PDF output with all variable slots |
-| W20-003 — DocuSign/Adobe Sign e-signature webhook wiring | P0 | @Mira | Integration: webhook fires on mock signature |
-| W20-004 — Ejari registration status tracking | P0 | @Mira + @Una | Unit: status transitions; UI: badge rendering |
-| W20-005 — PDC schedule auto-generator | P0 | @Barbara + @Mira | Unit: schedule math all frequency variants |
-| W20-006 — Bounced cheque workflow → Form 12 legal notice | P0 | @Mira + @Katherine | Integration: bounce → notification → PDF |
-| W20-007 — PDC replacement flow | P1 | @Mira | Unit: replacement links to original |
-| W20-008 — Lease renewal workflow (90/60/30-day cron + Form 7) | P0 | @Mira + @Barbara | Integration: cron intervals; Unit: Form 7 content |
-| W20-009 — Early termination + RERA penalty calculator | P1 | @Mira | Unit: RERA Article 11 all cases |
-| W20-010 — Tenant Portal six-tab UI (all states) | P0 | @Una + @Lea | E2E: all tabs + states |
-| W20-011 — Landlord Portal (portfolio + PDC calendar + quarterly PDF) | P0 | @Una + @Mira | E2E: portfolio view; Unit: quarterly PDF |
-| W20-012 — Maintenance cost approval > AED 500 via WhatsApp | P1 | @Mira | Integration: approval flow |
-| W20-013 — RBAC enforcement for all tenancy roles | P0 | @Katherine + @Radia | Integration: boundary tests all roles |
-| W20-015 — Wave 20 closeout + `npm run plans:validate` | P0 | @Katherine | Validation green; trackers updated |
+| Task                                                                     | Priority | Owner               | Validation                                        |
+| ------------------------------------------------------------------------ | -------- | ------------------- | ------------------------------------------------- |
+| W20-001 — Tenant application + KYC document upload + expiry-alert engine | P0       | @Mira + @Barbara    | Unit: KYC rules; E2E: application submit          |
+| W20-002 — Bilingual tenancy agreement PDF generator                      | P0       | @Mira               | Integration: PDF output with all variable slots   |
+| W20-003 — DocuSign/Adobe Sign e-signature webhook wiring                 | P0       | @Mira               | Integration: webhook fires on mock signature      |
+| W20-004 — Ejari registration status tracking                             | P0       | @Mira + @Una        | Unit: status transitions; UI: badge rendering     |
+| W20-005 — PDC schedule auto-generator                                    | P0       | @Barbara + @Mira    | Unit: schedule math all frequency variants        |
+| W20-006 — Bounced cheque workflow → Form 12 legal notice                 | P0       | @Mira + @Katherine  | Integration: bounce → notification → PDF          |
+| W20-007 — PDC replacement flow                                           | P1       | @Mira               | Unit: replacement links to original               |
+| W20-008 — Lease renewal workflow (90/60/30-day cron + Form 7)            | P0       | @Mira + @Barbara    | Integration: cron intervals; Unit: Form 7 content |
+| W20-009 — Early termination + RERA penalty calculator                    | P1       | @Mira               | Unit: RERA Article 11 all cases                   |
+| W20-010 — Tenant Portal six-tab UI (all states)                          | P0       | @Una + @Lea         | E2E: all tabs + states                            |
+| W20-011 — Landlord Portal (portfolio + PDC calendar + quarterly PDF)     | P0       | @Una + @Mira        | E2E: portfolio view; Unit: quarterly PDF          |
+| W20-012 — Maintenance cost approval > AED 500 via WhatsApp               | P1       | @Mira               | Integration: approval flow                        |
+| W20-013 — RBAC enforcement for all tenancy roles                         | P0       | @Katherine + @Radia | Integration: boundary tests all roles             |
+| W20-015 — Wave 20 closeout + `npm run plans:validate`                    | P0       | @Katherine          | Validation green; trackers updated                |
 
 ---
 
@@ -373,23 +377,23 @@ Mark an item complete only when:
 **Entry Gate:** Wave 20 closeout + readiness 60% + `@Ada — Context Ready (60% Readiness) — Coding Phase Approved`  
 **Readiness:** 68% (UAE VAT rules + commission matrix complete; FTA format needs final confirmation)
 
-| Task | Priority | Owner | Validation |
-|---|---|---|---|
-| W21-001 — UAE VAT engine (5% taxable / 0% exempt) | P0 | @Mira + @Barbara | Unit: VAT calc all transaction types |
-| W21-002 — Quarterly VAT return (FTA-formatted PDF + Excel) | P1 | @Mira | Integration: VAT return verified against FTA format |
-| W21-003 — Tax Invoice generator (TRN, auto-numbering, Pro Forma, Credit Note) | P0 | @Mira | Unit: auto-number uniqueness; FTA fields present |
-| W21-004 — Commission auto-calculation + split sum validation | P0 | @Barbara + @Mira | Unit: rate matrix + split sum = 100% |
-| W21-005 — Commission approval workflow (agent → manager → finance) | P0 | @Mira + @Katherine | Integration: full chain; RBAC: self-approve blocked |
-| W21-006 — Commission clawback (30-day rule) | P1 | @Mira | Unit: clawback triggers at days 0, 29, 30, 31 |
-| W21-007 — Rolling 12-month cash-flow forecast | P0 | @Barbara + @Mira | Integration: forecast updates on transaction; UI: chart |
-| W21-008 — Monthly P&L + close-month lock | P0 | @Mira + @Barbara | Integration: close locks period; Unit: P&L math |
-| W21-009 — AR aging report (30/60/90/120+ buckets) | P1 | @Mira | Integration: buckets correct; Export: Excel columns |
-| W21-010 — Budget vs Actual variance report | P1 | @Barbara | Unit: variance calc; UI: colour-coded |
-| W21-011 — Immutable ledger (append-only, close-lock enforced) | P0 | @Katherine + @Mira | Integration: edit of locked entry returns 403 |
-| W21-012 — Multi-currency display (ExchangeRate-API, 4h cache) | P1 | @Mira | Unit: cache TTL + fallback |
-| W21-013 — Commission statement PDF per agent per period | P1 | @Mira | Integration: PDF totals correct |
-| W21-014 — Executive P&L dashboard (Owner/MD role-gated) | P1 | @Una + @Mira | E2E: Owner sees P&L; non-owner blocked |
-| W21-015 — Wave 21 closeout + `npm run plans:validate` | P0 | @Katherine | Validation green; trackers updated |
+| Task                                                                          | Priority | Owner              | Validation                                              |
+| ----------------------------------------------------------------------------- | -------- | ------------------ | ------------------------------------------------------- |
+| W21-001 — UAE VAT engine (5% taxable / 0% exempt)                             | P0       | @Mira + @Barbara   | Unit: VAT calc all transaction types                    |
+| W21-002 — Quarterly VAT return (FTA-formatted PDF + Excel)                    | P1       | @Mira              | Integration: VAT return verified against FTA format     |
+| W21-003 — Tax Invoice generator (TRN, auto-numbering, Pro Forma, Credit Note) | P0       | @Mira              | Unit: auto-number uniqueness; FTA fields present        |
+| W21-004 — Commission auto-calculation + split sum validation                  | P0       | @Barbara + @Mira   | Unit: rate matrix + split sum = 100%                    |
+| W21-005 — Commission approval workflow (agent → manager → finance)            | P0       | @Mira + @Katherine | Integration: full chain; RBAC: self-approve blocked     |
+| W21-006 — Commission clawback (30-day rule)                                   | P1       | @Mira              | Unit: clawback triggers at days 0, 29, 30, 31           |
+| W21-007 — Rolling 12-month cash-flow forecast                                 | P0       | @Barbara + @Mira   | Integration: forecast updates on transaction; UI: chart |
+| W21-008 — Monthly P&L + close-month lock                                      | P0       | @Mira + @Barbara   | Integration: close locks period; Unit: P&L math         |
+| W21-009 — AR aging report (30/60/90/120+ buckets)                             | P1       | @Mira              | Integration: buckets correct; Export: Excel columns     |
+| W21-010 — Budget vs Actual variance report                                    | P1       | @Barbara           | Unit: variance calc; UI: colour-coded                   |
+| W21-011 — Immutable ledger (append-only, close-lock enforced)                 | P0       | @Katherine + @Mira | Integration: edit of locked entry returns 403           |
+| W21-012 — Multi-currency display (ExchangeRate-API, 4h cache)                 | P1       | @Mira              | Unit: cache TTL + fallback                              |
+| W21-013 — Commission statement PDF per agent per period                       | P1       | @Mira              | Integration: PDF totals correct                         |
+| W21-014 — Executive P&L dashboard (Owner/MD role-gated)                       | P1       | @Una + @Mira       | E2E: Owner sees P&L; non-owner blocked                  |
+| W21-015 — Wave 21 closeout + `npm run plans:validate`                         | P0       | @Katherine         | Validation green; trackers updated                      |
 
 ---
 
@@ -399,27 +403,27 @@ Mark an item complete only when:
 **Entry Gate:** Wave 21 closeout + readiness 60% + `@Ada — Context Ready (60% Readiness) — Coding Phase Approved`  
 **Readiness:** 62% (analytics spec + off-plan rules complete; AVM data source needs confirmation)
 
-| Task | Priority | Owner | Validation |
-|---|---|---|---|
-| W22-001 — Property AVM (value + confidence + ≥3 comparables) | P0 | @Mira + @Barbara | Unit: AVM with known comparable set |
-| W22-002 — Manual valuation override + manager approval | P1 | @Mira | Integration: non-manager rejected 403 |
-| W22-003 — Rental yield calculator (gross + net + payback years) | P1 | @Barbara | Unit: known inputs → expected outputs |
-| W22-004 — Monthly AVM refresh cron | P1 | @Mira | Integration: cron updates all active properties |
-| W22-005 — Dubai area price index + RERA rental index by area | P0 | @Barbara + @Cassie | Integration: 30 neighborhoods present |
-| W22-006 — Price drop alert (>5% MoM) | P1 | @Mira | Integration: 6% drop fires; 4% does not |
-| W22-007 — Weekly market report PDF + Monday 08:00 email | P1 | @Mira | Integration: PDF has 3 chart sections; email received |
-| W22-008 — Off-plan project CRUD + unit state machine | P0 | @Mira + @Barbara | Unit: all state transitions; E2E: full lifecycle |
-| W22-009 — Oqood 60-day window tracking + breach escalation | P0 | @Mira + @Katherine | Unit: alert at day 45/59; breach creates manager task |
-| W22-010 — Payment milestone schedule + escrow compliance flag | P1 | @Mira | Unit: 3 payment plan templates; escrow flag triggers |
-| W22-011 — RERA Article 11 cancellation refund calculator | P1 | @Barbara | Unit: all 4 penalty tier boundaries |
-| W22-012 — ROI projection calculator | P1 | @Una + @Mira | Unit: known inputs produce expected ROI |
-| W22-013 — Nightly analytics aggregation cron → snapshots | P0 | @Mira + @Barbara | Integration: snapshot grows by 1/day |
-| W22-014 — Redis real-time counters (leads/viewings/maintenance) | P0 | @Mira | Integration: counters survive Redis restart |
-| W22-015 — Bulk data export async job (50K rows + email link) | P1 | @Mira | Integration: 10K test export; email with URL |
-| W22-016 — RERA license expiry guard + 90/30-day alerts | P0 | @Katherine + @Mira | Integration: expired agent cannot receive leads |
-| W22-017 — Agent PIP workflow | P1 | @Una + @Mira | E2E: PIP create → view → milestone complete |
-| W22-018 — Analytics dashboard UI (KPI tiles + charts + heatmap) | P1 | @Una + @Cassie | E2E: all widgets render for Owner role |
-| W22-019 — Wave 22 closeout + `npm run plans:validate` | P0 | @Katherine | Validation green; trackers updated |
+| Task                                                            | Priority | Owner              | Validation                                            |
+| --------------------------------------------------------------- | -------- | ------------------ | ----------------------------------------------------- |
+| W22-001 — Property AVM (value + confidence + ≥3 comparables)    | P0       | @Mira + @Barbara   | Unit: AVM with known comparable set                   |
+| W22-002 — Manual valuation override + manager approval          | P1       | @Mira              | Integration: non-manager rejected 403                 |
+| W22-003 — Rental yield calculator (gross + net + payback years) | P1       | @Barbara           | Unit: known inputs → expected outputs                 |
+| W22-004 — Monthly AVM refresh cron                              | P1       | @Mira              | Integration: cron updates all active properties       |
+| W22-005 — Dubai area price index + RERA rental index by area    | P0       | @Barbara + @Cassie | Integration: 30 neighborhoods present                 |
+| W22-006 — Price drop alert (>5% MoM)                            | P1       | @Mira              | Integration: 6% drop fires; 4% does not               |
+| W22-007 — Weekly market report PDF + Monday 08:00 email         | P1       | @Mira              | Integration: PDF has 3 chart sections; email received |
+| W22-008 — Off-plan project CRUD + unit state machine            | P0       | @Mira + @Barbara   | Unit: all state transitions; E2E: full lifecycle      |
+| W22-009 — Oqood 60-day window tracking + breach escalation      | P0       | @Mira + @Katherine | Unit: alert at day 45/59; breach creates manager task |
+| W22-010 — Payment milestone schedule + escrow compliance flag   | P1       | @Mira              | Unit: 3 payment plan templates; escrow flag triggers  |
+| W22-011 — RERA Article 11 cancellation refund calculator        | P1       | @Barbara           | Unit: all 4 penalty tier boundaries                   |
+| W22-012 — ROI projection calculator                             | P1       | @Una + @Mira       | Unit: known inputs produce expected ROI               |
+| W22-013 — Nightly analytics aggregation cron → snapshots        | P0       | @Mira + @Barbara   | Integration: snapshot grows by 1/day                  |
+| W22-014 — Redis real-time counters (leads/viewings/maintenance) | P0       | @Mira              | Integration: counters survive Redis restart           |
+| W22-015 — Bulk data export async job (50K rows + email link)    | P1       | @Mira              | Integration: 10K test export; email with URL          |
+| W22-016 — RERA license expiry guard + 90/30-day alerts          | P0       | @Katherine + @Mira | Integration: expired agent cannot receive leads       |
+| W22-017 — Agent PIP workflow                                    | P1       | @Una + @Mira       | E2E: PIP create → view → milestone complete           |
+| W22-018 — Analytics dashboard UI (KPI tiles + charts + heatmap) | P1       | @Una + @Cassie     | E2E: all widgets render for Owner role                |
+| W22-019 — Wave 22 closeout + `npm run plans:validate`           | P0       | @Katherine         | Validation green; trackers updated                    |
 
 ---
 

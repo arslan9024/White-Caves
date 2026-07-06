@@ -720,70 +720,70 @@ router.get(
   })
 );
 
-// ─── POST /api/leases/overdue-collection-queue/:pdcId/notify ───────────────
-// Records a collection notification attempt for auditability.
-router.post(
-  '/overdue-collection-queue/:pdcId/notify',
-  asyncHandler(async (req: AuthRequest, res: Response) => {
-    const userId = req.user?.id;
-    if (!userId) throw new AppError('Authentication required', 401);
+const notifyOverdueCollection = async (req: AuthRequest, res: Response) => {
+  const userId = req.user?.id;
+  if (!userId) throw new AppError('Authentication required', 401);
 
-    const { pdcId } = req.params as Record<string, string>;
-    const pdc = await prisma.pDCSchedule.findUnique({
-      where: { id: pdcId },
-      include: {
-        lease: { select: { id: true, leaseNumber: true, tenantId: true, landlordId: true } },
-      },
-    });
+  const { pdcId } = req.params as Record<string, string>;
+  const pdc = await prisma.pDCSchedule.findUnique({
+    where: { id: pdcId },
+    include: {
+      lease: { select: { id: true, leaseNumber: true, tenantId: true, landlordId: true } },
+    },
+  });
 
-    if (!pdc || !pdc.lease) {
-      throw new AppError('PDC record not found', 404);
-    }
+  if (!pdc || !pdc.lease) {
+    throw new AppError('PDC record not found', 404);
+  }
 
-    const role = req.user?.role;
-    const isOwner = role === 'owner';
-    if (!isOwner && pdc.lease.landlordId !== userId) {
-      throw new AppError(
-        'Access denied — only lease landlord or owner can notify collections',
-        403
-      );
-    }
+  const role = req.user?.role;
+  const isOwner = role === 'owner';
+  if (!isOwner && pdc.lease.landlordId !== userId) {
+    throw new AppError('Access denied — only lease landlord or owner can notify collections', 403);
+  }
 
-    const channel = typeof req.body?.channel === 'string' ? req.body.channel : 'whatsapp';
-    const note =
-      typeof req.body?.note === 'string'
-        ? req.body.note
-        : 'Automated overdue rent collection reminder';
+  const channel = typeof req.body?.channel === 'string' ? req.body.channel : 'whatsapp';
+  const note =
+    typeof req.body?.note === 'string'
+      ? req.body.note
+      : 'Automated overdue rent collection reminder';
 
-    const activity = await prisma.activity.create({
-      data: {
-        type: 'payment',
-        action: 'overdue_collection_notified',
-        description: `Collection reminder sent for cheque ${pdc.chequeNumber} (${channel})`,
-        userId,
-        metadata: {
-          pdcId: pdc.id,
-          leaseId: pdc.lease.id,
-          leaseNumber: pdc.lease.leaseNumber,
-          channel,
-          note,
-          status: pdc.status,
-        },
-      },
-    });
-
-    res.status(200).json({
-      success: true,
-      data: {
+  const activity = await prisma.activity.create({
+    data: {
+      type: 'payment',
+      action: 'overdue_collection_notified',
+      description: `Collection reminder sent for cheque ${pdc.chequeNumber} (${channel})`,
+      userId,
+      metadata: {
         pdcId: pdc.id,
         leaseId: pdc.lease.id,
+        leaseNumber: pdc.lease.leaseNumber,
         channel,
-        notifiedAt: activity.createdAt,
-        activityId: activity.id,
+        note,
+        status: pdc.status,
       },
-      message: 'Collection reminder logged',
-    });
-  })
-);
+    },
+  });
+
+  res.status(200).json({
+    success: true,
+    data: {
+      pdcId: pdc.id,
+      leaseId: pdc.lease.id,
+      channel,
+      notifiedAt: activity.createdAt,
+      activityId: activity.id,
+    },
+    message: 'Collection reminder logged',
+  });
+};
+
+// ─── POST /api/leases/collections/overdue-queue/:pdcId/notify ─────────────
+// Canonical route for overdue rent queue reminder logging.
+router.post('/collections/overdue-queue/:pdcId/notify', asyncHandler(notifyOverdueCollection));
+
+// ─── POST /api/leases/overdue-collection-queue/:pdcId/notify ───────────────
+// Backward-compatible alias for existing clients.
+router.post('/overdue-collection-queue/:pdcId/notify', asyncHandler(notifyOverdueCollection));
 
 export default router;

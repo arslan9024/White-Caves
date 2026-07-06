@@ -35,6 +35,27 @@ const { viRoleHasPermissionMock } = vi.hoisted(() => ({
   viRoleHasPermissionMock: vi.fn(() => true),
 }));
 
+const { viQueueConversationForAssignmentMock } = vi.hoisted(() => ({
+  viQueueConversationForAssignmentMock: vi.fn(async () => ({ id: 'q-1' })),
+}));
+
+const { viGenerateWhatsAppAutoResponseMock } = vi.hoisted(() => ({
+  viGenerateWhatsAppAutoResponseMock: vi.fn(() => ({
+    classification: {
+      intent: 'property_search',
+      confidence: 0.8,
+      sentiment: 'positive',
+      entities: [],
+      leadScore: 70,
+      shouldEscalate: false,
+      escalationReason: null,
+      firstResponseState: 'auto_reply',
+    },
+    response: 'Here are some options',
+    responseType: 'auto_reply',
+  })),
+}));
+
 vi.mock('../database.js', () => ({ prisma: mockPrisma }));
 
 vi.mock('../middleware/errorHandler.js', () => ({
@@ -68,7 +89,7 @@ vi.mock('../services/nadia/messageProcessor.js', () => ({
 vi.mock('../services/nadia/queueManager.js', () => ({
   getQueuedConversations: vi.fn(async () => []),
   assignFromQueue: vi.fn(async () => ({ id: 'q-1', status: 'assigned' })),
-  queueConversationForAssignment: vi.fn(async () => ({ id: 'q-1' })),
+  queueConversationForAssignment: viQueueConversationForAssignmentMock,
   getQueueStats: mockPrisma.getQueueStats,
 }));
 
@@ -82,19 +103,7 @@ vi.mock('../services/nadia/whatsappAssistant.js', () => ({
     shouldEscalate: false,
     escalationReason: null,
   })),
-  generateWhatsAppAutoResponse: vi.fn(() => ({
-    classification: {
-      intent: 'property_search',
-      confidence: 0.8,
-      sentiment: 'positive',
-      entities: [],
-      leadScore: 70,
-      shouldEscalate: false,
-      escalationReason: null,
-    },
-    response: 'Here are some options',
-    responseType: 'auto_reply',
-  })),
+  generateWhatsAppAutoResponse: viGenerateWhatsAppAutoResponseMock,
 }));
 
 vi.mock('../services/WhatsAppBotService.js', () => ({
@@ -135,8 +144,24 @@ describe('Nadia Routes — inbox wiring endpoints', () => {
 
   beforeEach(() => {
     vi.clearAllMocks();
+    delete process.env.NADIA_ESCALATION_CONFIDENCE_THRESHOLD;
     viSendMessageMock.mockResolvedValue('wa-msg-1');
     viRoleHasPermissionMock.mockReturnValue(true);
+    viQueueConversationForAssignmentMock.mockResolvedValue({ id: 'q-1' });
+    viGenerateWhatsAppAutoResponseMock.mockReturnValue({
+      classification: {
+        intent: 'property_search',
+        confidence: 0.8,
+        sentiment: 'positive',
+        entities: [],
+        leadScore: 70,
+        shouldEscalate: false,
+        escalationReason: null,
+        firstResponseState: 'auto_reply',
+      },
+      response: 'Here are some options',
+      responseType: 'auto_reply',
+    });
 
     mockPrisma.nadiaConversation.findUnique.mockResolvedValue(conversation);
     mockPrisma.nadiaConversation.update.mockResolvedValue({
@@ -327,5 +352,66 @@ describe('Nadia Routes — inbox wiring endpoints', () => {
         }),
       })
     );
+  });
+
+  it('queues escalation with structured handoff context on assistant/respond', async () => {
+    viGenerateWhatsAppAutoResponseMock.mockReturnValueOnce({
+      classification: {
+        intent: 'complaint',
+        confidence: 0.52,
+        sentiment: 'negative',
+        entities: ['issue:delay'],
+        leadScore: 41,
+        shouldEscalate: true,
+        escalationReason: 'low_intent_confidence',
+        firstResponseState: 'escalate_to_agent',
+      },
+      response: 'Connecting you to our specialist.',
+      responseType: 'escalate_to_agent',
+    });
+
+    const res = await request(createApp()).post('/api/nadia/assistant/respond').send({
+      conversationId: 'conv-1',
+      message: 'Please help me with this serious issue and delay',
+      customerName: 'Amina',
+    });
+
+    expect(res.status).toBe(200);
+    expect(res.body.success).toBe(true);
+    expect(viQueueConversationForAssignmentMock).toHaveBeenCalledWith(
+      'conv-1',
+      'low_intent_confidence',
+      expect.objectContaining({
+        source: 'assistant/respond',
+        messagePreview: 'Please help me with this serious issue and delay',
+        classification: expect.objectContaining({
+          intent: 'complaint',
+          confidence: 0.52,
+          sentiment: 'negative',
+          firstResponseState: 'escalate_to_agent',
+          escalationReason: 'low_intent_confidence',
+        }),
+      })
+    );
+  });
+
+  it('uses configured escalation confidence threshold from env in assistant/respond', async () => {
+    process.env.NADIA_ESCALATION_CONFIDENCE_THRESHOLD = '0.74';
+
+    const res = await request(createApp()).post('/api/nadia/assistant/respond').send({
+      conversationId: 'conv-1',
+      message: 'Need details for Marina apartment',
+      customerName: 'Amina',
+    });
+
+    expect(res.status).toBe(200);
+    expect(viGenerateWhatsAppAutoResponseMock).toHaveBeenCalledWith(
+      expect.objectContaining({
+        message: 'Need details for Marina apartment',
+        customerName: 'Amina',
+        escalationConfidenceThreshold: 0.74,
+      })
+    );
+    expect(res.body.data.escalationPolicy).toEqual({ confidenceThreshold: 0.74 });
   });
 });

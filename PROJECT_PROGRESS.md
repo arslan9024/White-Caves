@@ -2,7 +2,7 @@
 
 > **Agency:** White Caves Global Agency
 > **Orchestrator:** @Ada (Chief Architect)
-> **Last Updated:** 2026-06-19
+> **Last Updated:** 2026-07-06
 > **Policy Mode:** Dual-threshold readiness (60% unlock, 90% target) + policy-driven gating (Governance V2 active)
 > **Daily Report:** `PROJECT_PROGRESS_REPORT.md`
 
@@ -12,7 +12,7 @@
 
 - Canonical roadmap: **[plans/MASTER_PLAN.md](plans/MASTER_PLAN.md)**
 - Active queue: **[plans/PENDING_TASKS_ONLY.md](plans/PENDING_TASKS_ONLY.md)**
-- Last Updated (ISO): 2026-06-19
+- Last Updated (ISO): 2026-07-06
 
 ## 🚀 Wave 19 Planning Upgrade Evidence (Dashboard Hardening)
 
@@ -95,11 +95,57 @@
 
 - **W18.1-P0-010 (baseline)**: IndexedDB-backed offline draft persistence added for viewing feedback capture (`src/utils/indexedDraftStore.ts`, `src/components/ViewingFeedback.jsx`) ✅
 - **W18.1-P0-018 (backend progression)**: Fixed follow-up cadence-route registration bug (rules routes now mounted globally, not nested under `/cadences`) and enabled dynamic CadenceRule runtime selection in `startSequence` based on lead tier/source/dealType ✅
+- **W18.1-P1-001 (completion)**: Lead bulk import now enforces row-level validation + deduplication (in-batch and existing leads by email/phone) and returns structured per-row error payloads from `/api/leads/bulk-import`; `LeadImportModal` now surfaces backend skipped-row errors in the result state ✅
 - **W18.1-P1-002 (progression)**: Added audit log XLSX export parity (`GET /api/activities/export/xlsx`) and wired `Export XLSX` action in `AuditLogPage` alongside CSV ✅
+- **W18.1-P1-002 (completion hardening)**: Audit log immutability enforced on API (`PATCH /api/activities/:id` and `DELETE /api/activities/:id` now return 405), list/detail reads aligned to `view_audit_logs` permission, and `AuditLogPage` now presents explicit read-only compliance ledger messaging ✅
 - **W18.1-P1-004 (backend progression)**: Added structured Nadia escalation handoff context logging (`nadia_escalation_queued` / `nadia_escalation_requeued` activity metadata) during queueing ✅
+- **W18.1-P1-004 (hardening completion)**: Nadia assistant confidence gate is now policy-configurable via `NADIA_ESCALATION_CONFIDENCE_THRESHOLD` and surfaced in `/api/nadia/assistant/respond` response metadata (`escalationPolicy.confidenceThreshold`); route + service tests updated for threshold-policy behavior ✅
+- **W18.1-P1-004 (hardening)**: Normalized Prisma JSON-safe escalation metadata payload in `server/services/nadia/queueManager.ts` to preserve structured handoff context without type regressions ✅
 - **W18.1-P1-005 (progression)**: Added tokenized e-sign contract routes (`GET /api/contracts/signature/:token`, `POST /api/contracts/signature/:token/sign`) and aligned `SignContractPage` API wiring + tests ✅
 - **W18.1-P1-006 (baseline)**: Syndication queue API delivered with `SYNDICATION_ENABLED` gate (`/api/syndication/status`, `/api/syndication/sync-queue`) ✅
+- **W18.1-P1-007 (progression)**: Follow-up cadence rules now normalize channel sequence delay units (`delayMs`, `delayHours`, `delayMinutes`) with strict channel validation + route test coverage ✅
+- **W18.1-P1-008 (progression)**: Canonical overdue notify route shipped (`POST /api/leases/collections/overdue-queue/:pdcId/notify`) with legacy alias retained; landlord rental page now surfaces overdue collection queue and reminder action UI with focused tests ✅
 - Validation evidence: `npm run test:run -- src/pages/crm/AuditLogPage.test.tsx src/pages/SignContractPage.test.tsx` ✅, `npm run lint` ✅ (warnings only; baseline unchanged), `npm run build` ✅, `npm run plans:validate` ✅
+
+### Wave 18.1 Session 3 — July 6, 2026 Validation Checkpoint
+
+- Focused regression pack passed:
+  - `server/routes/leases.test.ts` (27/27)
+  - `src/pages/landlord/RentalManagementPage.test.tsx` (19/19)
+- Type safety gate passed: `npm run typecheck` ✅ (client + server)
+- Targeted changed-file lint run passed for route/service/page/test files (no blocking errors) ✅
+
+### Wave 18.1 Session 3 — P1-001 Validation Checkpoint (July 6, 2026)
+
+- Focused implementation tests passed:
+  - `server/routes/leads.test.ts` (42/42)
+  - `src/pages/crm/LeadImportModal.test.tsx` (11/11)
+- Focused lint passed for touched files:
+  - `server/routes/leads.ts`
+  - `server/routes/leads.test.ts`
+  - `src/pages/crm/LeadImportModal.tsx`
+  - `src/pages/crm/LeadImportModal.test.tsx`
+
+### Wave 18.1 Session 3 — P1-002 Validation Checkpoint (July 6, 2026)
+
+- Focused implementation tests passed:
+  - `server/routes/activities.test.ts` (34/34)
+  - `src/pages/crm/AuditLogPage.test.tsx` (6/6)
+- Type safety gate passed: `npm run typecheck` ✅
+- Targeted lint passed for TS/TSX touched files (`activities` route/tests + `AuditLogPage`) ✅
+
+### Wave 18.1 Session 3 — P1-004 Validation Checkpoint (July 6, 2026)
+
+- Focused implementation tests passed:
+  - `server/services/nadia/whatsappAssistant.test.ts` (17/17)
+  - `server/routes/nadia.routes.test.ts` (12/12)
+- Targeted lint passed for touched Nadia files (`whatsappAssistant`, `nadia` route/tests) ✅
+- Type safety gate passed: `npm run typecheck` ✅
+- Adjacent Session 3 P1 regression confirmations also green in this cycle:
+  - `server/routes/contracts.test.ts` + `server/routes/signatures.test.ts` + `src/components/owner/tabs/__tests__/SigningStatusBadge.test.tsx` + `src/pages/SignContractPage.test.tsx` (**35/35 passing**)
+  - `server/routes/syndication.test.ts` (**5/5 passing**)
+  - `server/routes/follow-ups.test.ts` (**8/8 passing**)
+  - `npm run build` ✅
 
 ## 🚀 Wave 18.1 Session 1 Delivery
 

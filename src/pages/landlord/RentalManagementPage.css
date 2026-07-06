@@ -1,0 +1,82 @@
+.rm-overdue-queue {
+  margin-bottom: 1.5rem;
+  padding: 1rem;
+  border: 1px solid #fecaca;
+  border-radius: 12px;
+  background: #fef2f2;
+}
+
+.rm-overdue-queue__title {
+  margin: 0 0 0.5rem 0;
+  font-size: 1.05rem;
+}
+
+.rm-overdue-queue__subtitle {
+  margin: 0 0 0.75rem 0;
+  color: #7f1d1d;
+}
+
+.rm-overdue-queue__list {
+  display: grid;
+  gap: 0.6rem;
+}
+
+.rm-overdue-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 0.75rem;
+  background: #fff;
+  border: 1px solid #fecaca;
+  border-radius: 8px;
+  padding: 0.65rem;
+}
+
+.rm-overdue-item__meta {
+  font-size: 0.9rem;
+}
+
+.rm-overdue-item__actions {
+  display: grid;
+  gap: 0.35rem;
+  justify-items: end;
+}
+
+.rm-overdue-item__result {
+  font-size: 0.78rem;
+}
+
+.rm-loading-state {
+  text-align: center;
+  padding: 3rem;
+  color: var(--text-secondary);
+}
+
+.rm-error-state {
+  padding: 1rem;
+  background: #fef2f2;
+  border: 1px solid #fecaca;
+  border-radius: 8px;
+  color: #b91c1c;
+  margin-bottom: 1rem;
+}
+
+.rm-empty-state {
+  text-align: center;
+  padding: 4rem 2rem;
+  border: 2px dashed var(--border-color, #e5e7eb);
+  border-radius: 12px;
+}
+
+.rm-empty-state__emoji {
+  font-size: 3rem;
+  margin-bottom: 1rem;
+}
+
+.rm-empty-state__title {
+  margin-bottom: 0.5rem;
+}
+
+.rm-empty-state__subtitle {
+  color: var(--text-secondary);
+}

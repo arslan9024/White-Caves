@@ -303,7 +303,7 @@
 
 ## 📊 DATA FLOW ARCHITECTURE
 
-```
+```text
 Customer Inquiry (WhatsApp)
     ↓
 Nina (Bot pre-qualification)
@@ -352,7 +352,7 @@ Zoe (Executive reporting & analytics)
 
 > **@Joelle — EXPAND task completed** | Model: Llama 3.1 70B via Groq (FREE)
 
-### Overview
+### Failure & Fallback Overview
 
 Every AI assistant in the White Caves ecosystem must degrade gracefully when external APIs fail, rate limits are hit, or unexpected inputs are received. This section defines the failure taxonomy, response protocol, and human handoff triggers for all 40 personas.
 
@@ -371,7 +371,7 @@ Every AI assistant in the White Caves ecosystem must degrade gracefully when ext
 
 ### Universal Fallback Rules (All Assistants)
 
-```
+```text
 RULE 1: NEVER SHOW RAW ERRORS TO END USERS
   → Show: "Something went wrong. Please try again or contact support."
   → Log: Full error details to server logs (error type, assistant name, timestamp, user ID)
@@ -451,7 +451,7 @@ RateLimitConfig {
 
 ### Infrastructure Failure Response
 
-```
+```text
 IF MongoDB connection fails:
   → Read operations: Serve cached response (Redis, max 5 min stale)
   → Write operations: Queue to retry buffer (max 1 hour)

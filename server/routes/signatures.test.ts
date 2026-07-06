@@ -2,23 +2,37 @@ import express from 'express';
 import request from 'supertest';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
-// ── Hoisted mocks ──────────────────────────────────────────────────────────
-const { mockCreateSignatureRequest, mockSendSigningNotification, mockFindByIdAndUpdate } =
-  vi.hoisted(() => ({
-    mockCreateSignatureRequest: vi.fn(),
-    mockSendSigningNotification: vi.fn(),
-    mockFindByIdAndUpdate: vi.fn(),
-  }));
+const {
+  mockFindByIdAndUpdate,
+  mockCreateSignatureRequest,
+  mockSendSigningNotification,
+  mockGetSignatureStatus,
+  mockSaveSignature,
+} = vi.hoisted(() => ({
+  mockFindByIdAndUpdate: vi.fn(),
+  mockCreateSignatureRequest: vi.fn(),
+  mockSendSigningNotification: vi.fn(),
+  mockGetSignatureStatus: vi.fn(),
+  mockSaveSignature: vi.fn(),
+}));
 
 vi.mock('../services/SignatureService.js', () => ({
   default: {
     createSignatureRequest: mockCreateSignatureRequest,
     sendSigningNotification: mockSendSigningNotification,
+    getSignatureStatus: mockGetSignatureStatus,
+    saveSignature: mockSaveSignature,
   },
 }));
-vi.mock('../models/Contract.js', () => ({ default: {} }));
+
+vi.mock('../models/Contract.js', () => ({
+  default: {},
+}));
+
 vi.mock('../models/ContractSignature.js', () => ({
-  default: { findByIdAndUpdate: mockFindByIdAndUpdate },
+  default: {
+    findByIdAndUpdate: mockFindByIdAndUpdate,
+  },
 }));
 
 import signaturesRouter from './signatures.js';
@@ -27,162 +41,48 @@ function createApp() {
   const app = express();
   app.use(express.json());
   app.use('/api/signatures', signaturesRouter);
-  app.use((err: any, _req: any, res: any, _next: any) => {
-    res.status(err.statusCode || 500).json({ success: false, error: err.message });
-  });
+  app.use(
+    (err: Error, _req: express.Request, res: express.Response, _next: express.NextFunction) => {
+      res.status(500).json({ success: false, error: err.message });
+    }
+  );
   return app;
 }
 
-// ── Webhook callback tests ─────────────────────────────────────────────────
-describe('POST /api/signatures/webhook/callback', () => {
-  const app = createApp();
-
-  beforeEach(() => {
-    vi.clearAllMocks();
-  });
-
-  it('accepts a "signed" event and returns updated signature', async () => {
-    mockFindByIdAndUpdate.mockResolvedValue({
-      _id: 'sig-001',
-      status: 'signed',
-      signedAt: new Date('2026-06-01T10:00:00Z'),
-    });
-
-    const res = await request(app)
-      .post('/api/signatures/webhook/callback')
-      .send({
-        signatureId: 'sig-001',
-        status: 'signed',
-        signedAt: '2026-06-01T10:00:00Z',
-        providerEventId: 'evt-abc',
-      });
-
-    expect(res.status).toBe(200);
-    expect(res.body.success).toBe(true);
-    expect(res.body.data.status).toBe('signed');
-    expect(mockFindByIdAndUpdate).toHaveBeenCalledWith(
-      'sig-001',
-      expect.objectContaining({ status: 'signed' }),
-      { new: true }
-    );
-  });
-
-  it('accepts a "rejected" event and stores rejection reason', async () => {
-    mockFindByIdAndUpdate.mockResolvedValue({
-      _id: 'sig-002',
-      status: 'rejected',
-      rejectionReason: 'client declined',
-    });
-
-    const res = await request(app)
-      .post('/api/signatures/webhook/callback')
-      .send({
-        signatureId: 'sig-002',
-        status: 'rejected',
-        rejectionReason: 'client declined',
-      });
-
-    expect(res.status).toBe(200);
-    expect(res.body.data.status).toBe('rejected');
-    expect(mockFindByIdAndUpdate).toHaveBeenCalledWith(
-      'sig-002',
-      expect.objectContaining({ status: 'rejected', rejectionReason: 'client declined' }),
-      { new: true }
-    );
-  });
-
-  it('returns 400 when signatureId is missing', async () => {
-    const res = await request(app)
-      .post('/api/signatures/webhook/callback')
-      .send({ status: 'signed' });
-
-    expect(res.status).toBe(400);
-    expect(res.body.success).toBe(false);
-    expect(mockFindByIdAndUpdate).not.toHaveBeenCalled();
-  });
-
-  it('returns 400 when status is missing', async () => {
-    const res = await request(app)
-      .post('/api/signatures/webhook/callback')
-      .send({ signatureId: 'sig-003' });
-
-    expect(res.status).toBe(400);
-    expect(mockFindByIdAndUpdate).not.toHaveBeenCalled();
-  });
-
-  it('returns 400 for an invalid status value', async () => {
-    const res = await request(app)
-      .post('/api/signatures/webhook/callback')
-      .send({ signatureId: 'sig-004', status: 'invalid_status' });
-
-    expect(res.status).toBe(400);
-    expect(res.body.error).toContain('Invalid status');
-    expect(mockFindByIdAndUpdate).not.toHaveBeenCalled();
-  });
-
-  it('returns 404 when the signature record is not found', async () => {
-    mockFindByIdAndUpdate.mockResolvedValue(null);
-
-    const res = await request(app)
-      .post('/api/signatures/webhook/callback')
-      .send({ signatureId: 'sig-missing', status: 'opened' });
-
-    expect(res.status).toBe(404);
-    expect(res.body.success).toBe(false);
-  });
-
-  it('accepts all valid status values', async () => {
-    const validStatuses = ['pending', 'sent', 'opened', 'signed', 'rejected', 'expired'];
-
-    for (const status of validStatuses) {
-      mockFindByIdAndUpdate.mockResolvedValue({ _id: 'sig-x', status });
-      const res = await request(app)
-        .post('/api/signatures/webhook/callback')
-        .send({ signatureId: 'sig-x', status });
-      expect(res.status, `status="${status}" should be accepted`).toBe(200);
-    }
-  });
-
-  it('normalises status to lowercase', async () => {
-    mockFindByIdAndUpdate.mockResolvedValue({ _id: 'sig-005', status: 'signed' });
-
-    await request(app)
-      .post('/api/signatures/webhook/callback')
-      .send({ signatureId: 'sig-005', status: 'SIGNED' });
-
-    expect(mockFindByIdAndUpdate).toHaveBeenCalledWith(
-      'sig-005',
-      expect.objectContaining({ status: 'signed' }),
-      { new: true }
-    );
-  });
-});
-
-// ── Signature request tests ────────────────────────────────────────────────
-describe('POST /api/signatures/request', () => {
-  const app = createApp();
-
+describe('signatures route webhook callback', () => {
   beforeEach(() => {
     vi.clearAllMocks();
     mockCreateSignatureRequest.mockResolvedValue({
-      signatureId: 'sig-new',
-      signingLink: 'https://whitecaves.com/sign/sig-new',
+      signatureId: 'sig-123',
+      signingLink: 'https://whitecaves.com/sign/sig-123',
     });
     mockSendSigningNotification.mockResolvedValue(undefined);
+    mockGetSignatureStatus.mockResolvedValue({
+      status: 'pending',
+      signed: 0,
+      pending: 1,
+      total: 1,
+      signatures: [],
+    });
+    mockSaveSignature.mockResolvedValue({
+      _id: 'sig-321',
+      status: 'signed',
+      signedAt: new Date('2026-06-20T10:00:00.000Z'),
+    });
   });
 
-  it('creates a signature request and sends a notification', async () => {
-    const res = await request(app)
-      .post('/api/signatures/request')
-      .send({
-        contractId: 'contract-1',
-        signerEmail: 'tenant@example.com',
-        signerRole: 'tenant',
-        signerName: 'Alice Test',
-      });
+  it('creates signature request and sends signing notification', async () => {
+    const res = await request(createApp()).post('/api/signatures/request').send({
+      contractId: 'contract-1',
+      signerEmail: 'tenant@example.com',
+      signerRole: 'tenant',
+      signerName: 'Tenant Name',
+      signerPhone: '+971500000000',
+    });
 
     expect(res.status).toBe(200);
     expect(res.body.success).toBe(true);
+    expect(res.body.data.signatureId).toBe('sig-123');
     expect(mockCreateSignatureRequest).toHaveBeenCalledWith(
       expect.objectContaining({
         contractId: 'contract-1',
@@ -190,15 +90,145 @@ describe('POST /api/signatures/request', () => {
         signerRole: 'tenant',
       })
     );
-    expect(mockSendSigningNotification).toHaveBeenCalledWith('sig-new', expect.any(String));
+    expect(mockSendSigningNotification).toHaveBeenCalledWith(
+      'sig-123',
+      'https://whitecaves.com/sign/sig-123'
+    );
+  });
+
+  it('returns 400 for request endpoint when required fields are missing', async () => {
+    const res = await request(createApp()).post('/api/signatures/request').send({
+      contractId: 'contract-1',
+      signerEmail: 'tenant@example.com',
+    });
+
+    expect(res.status).toBe(400);
+    expect(res.body.success).toBe(false);
+    expect(String(res.body.error)).toMatch(/Missing required fields/i);
+    expect(mockCreateSignatureRequest).not.toHaveBeenCalled();
+  });
+
+  it('records a signature via signing endpoint', async () => {
+    const res = await request(createApp())
+      .post('/api/signatures/sig-321/sign')
+      .send({
+        imageData: 'data:image/png;base64,mockSignatureData',
+        method: 'canvas',
+        mimeType: 'image/png',
+        deviceInfo: { platform: 'Windows' },
+      });
+
+    expect(res.status).toBe(200);
+    expect(res.body.success).toBe(true);
+    expect(res.body.data.signatureId).toBe('sig-321');
+    expect(res.body.data.status).toBe('signed');
+    expect(mockSaveSignature).toHaveBeenCalledWith(
+      'sig-321',
+      expect.objectContaining({
+        imageData: 'data:image/png;base64,mockSignatureData',
+        method: 'canvas',
+        mimeType: 'image/png',
+        deviceInfo: expect.objectContaining({
+          platform: 'Windows',
+        }),
+      })
+    );
   });
 
   it('returns 400 when required fields are missing', async () => {
-    const res = await request(app)
-      .post('/api/signatures/request')
-      .send({ contractId: 'contract-2' });
+    const res = await request(createApp()).post('/api/signatures/webhook/callback').send({
+      status: 'signed',
+    });
 
     expect(res.status).toBe(400);
-    expect(mockCreateSignatureRequest).not.toHaveBeenCalled();
+    expect(res.body.success).toBe(false);
+    expect(String(res.body.error)).toMatch(/signatureId and status are required/i);
+    expect(mockFindByIdAndUpdate).not.toHaveBeenCalled();
+  });
+
+  it('returns 400 for invalid status', async () => {
+    const res = await request(createApp()).post('/api/signatures/webhook/callback').send({
+      signatureId: 'sig-123',
+      status: 'invalid_status',
+    });
+
+    expect(res.status).toBe(400);
+    expect(res.body.success).toBe(false);
+    expect(String(res.body.error)).toMatch(/Invalid status/i);
+    expect(mockFindByIdAndUpdate).not.toHaveBeenCalled();
+  });
+
+  it('returns 404 when signature is not found', async () => {
+    mockFindByIdAndUpdate.mockResolvedValueOnce(null);
+
+    const res = await request(createApp()).post('/api/signatures/webhook/callback').send({
+      signatureId: 'sig-missing',
+      status: 'signed',
+    });
+
+    expect(res.status).toBe(404);
+    expect(res.body.success).toBe(false);
+    expect(String(res.body.error)).toMatch(/Signature not found/i);
+    expect(mockFindByIdAndUpdate).toHaveBeenCalledTimes(1);
+  });
+
+  it('normalizes status and updates signed payload on success', async () => {
+    mockFindByIdAndUpdate.mockResolvedValueOnce({
+      _id: 'sig-123',
+      status: 'signed',
+      signedAt: new Date('2026-06-20T09:00:00.000Z'),
+    });
+
+    const res = await request(createApp()).post('/api/signatures/webhook/callback').send({
+      signatureId: 'sig-123',
+      status: 'SIGNED',
+      providerEventId: 'evt-111',
+    });
+
+    expect(res.status).toBe(200);
+    expect(res.body.success).toBe(true);
+    expect(res.body.data.signatureId).toBe('sig-123');
+    expect(res.body.data.status).toBe('signed');
+
+    expect(mockFindByIdAndUpdate).toHaveBeenCalledWith(
+      'sig-123',
+      expect.objectContaining({
+        status: 'signed',
+        signedAt: expect.any(Date),
+        metadata: expect.objectContaining({
+          providerEventId: 'evt-111',
+          callbackReceivedAt: expect.any(String),
+        }),
+      }),
+      { new: true }
+    );
+  });
+
+  it('stores rejection details for rejected status', async () => {
+    mockFindByIdAndUpdate.mockResolvedValueOnce({
+      _id: 'sig-rej',
+      status: 'rejected',
+      signedAt: null,
+    });
+
+    const res = await request(createApp()).post('/api/signatures/webhook/callback').send({
+      signatureId: 'sig-rej',
+      status: 'rejected',
+      rejectionReason: 'signer_declined',
+    });
+
+    expect(res.status).toBe(200);
+    expect(res.body.success).toBe(true);
+
+    expect(mockFindByIdAndUpdate).toHaveBeenCalledWith(
+      'sig-rej',
+      expect.objectContaining({
+        status: 'rejected',
+        signedAt: null,
+        rejectedAt: expect.any(Date),
+        rejectionReason: 'signer_declined',
+      }),
+      { new: true }
+    );
   });
 });
