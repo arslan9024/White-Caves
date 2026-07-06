@@ -132,6 +132,11 @@ describe('Reporting / Dashboard Routes — /api/dashboard', () => {
       expect(res.body.data).toHaveProperty('role', 'manager');
       expect(Array.isArray(res.body.data.widgets)).toBe(true);
       expect(res.body.data.widgets.length).toBeGreaterThan(0);
+      expect(res.body.data.widgets).toEqual(
+        expect.arrayContaining([
+          expect.objectContaining({ id: 'team-kpis', title: 'Team KPIs', enabled: true }),
+        ])
+      );
     });
 
     it('returns 403 for unknown role due to permission guard', async () => {
@@ -178,6 +183,8 @@ describe('Reporting / Dashboard Routes — /api/dashboard', () => {
       expect(res.body.data.widgets).toEqual([
         { id: 'team-kpis', title: 'Team KPIs', enabled: true },
       ]);
+      expect(typeof res.body.data.updatedAt).toBe('string');
+      expect(Number.isNaN(Date.parse(res.body.data.updatedAt))).toBe(false);
     });
 
     it('returns 401 when user context is missing', async () => {
@@ -241,6 +248,33 @@ describe('Reporting / Dashboard Routes — /api/dashboard', () => {
     it('defaults layout to "default" when omitted', async () => {
       const payload = {
         widgets: [{ id: 'kpi-overview', title: 'KPI Overview', enabled: true }],
+      };
+
+      const res = await request(createApp('owner')).put('/api/dashboard/preferences').send(payload);
+
+      expect(res.status).toBe(200);
+      expect(res.body.success).toBe(true);
+      expect(res.body.data.layout).toBe('default');
+      expect(mockPrisma.userDashboardPreference.upsert).toHaveBeenCalledWith({
+        where: { userId: 'user-1' },
+        update: {
+          role: 'owner',
+          widgets: payload.widgets,
+          layout: 'default',
+        },
+        create: {
+          userId: 'user-1',
+          role: 'owner',
+          widgets: payload.widgets,
+          layout: 'default',
+        },
+      });
+    });
+
+    it('defaults layout to "default" when empty string is provided', async () => {
+      const payload = {
+        widgets: [{ id: 'kpi-overview', title: 'KPI Overview', enabled: true }],
+        layout: '',
       };
 
       const res = await request(createApp('owner')).put('/api/dashboard/preferences').send(payload);
