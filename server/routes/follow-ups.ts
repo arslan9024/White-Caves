@@ -45,6 +45,89 @@ type CadenceRulePayload = {
   cooldownHours?: unknown;
 };
 
+type RuleChannel = 'whatsapp' | 'email' | 'call' | 'sms';
+
+type NormalizedRuleStep = {
+  channel: RuleChannel;
+  delayMs: number;
+  templateName: string;
+  description: string;
+};
+
+function normalizeDelayMs(value: {
+  delayMs?: unknown;
+  delayHours?: unknown;
+  delayMinutes?: unknown;
+}): number {
+  if (typeof value.delayMs === 'number' && Number.isFinite(value.delayMs) && value.delayMs >= 0) {
+    return Math.trunc(value.delayMs);
+  }
+
+  if (
+    typeof value.delayHours === 'number' &&
+    Number.isFinite(value.delayHours) &&
+    value.delayHours >= 0
+  ) {
+    return Math.trunc(value.delayHours * 60 * 60 * 1000);
+  }
+
+  if (
+    typeof value.delayMinutes === 'number' &&
+    Number.isFinite(value.delayMinutes) &&
+    value.delayMinutes >= 0
+  ) {
+    return Math.trunc(value.delayMinutes * 60 * 1000);
+  }
+
+  return 0;
+}
+
+function normalizeChannelSequence(value: unknown): NormalizedRuleStep[] {
+  if (!Array.isArray(value)) return [];
+
+  const normalized = value
+    .map((item, index) => {
+      const step = item as {
+        channel?: unknown;
+        delayMs?: unknown;
+        delayHours?: unknown;
+        delayMinutes?: unknown;
+        templateName?: unknown;
+        description?: unknown;
+      };
+
+      const channelRaw = typeof step.channel === 'string' ? step.channel.trim().toLowerCase() : '';
+      const isValidChannel =
+        channelRaw === 'whatsapp' ||
+        channelRaw === 'email' ||
+        channelRaw === 'call' ||
+        channelRaw === 'sms';
+
+      if (!isValidChannel) {
+        return null;
+      }
+
+      const channel = channelRaw as RuleChannel;
+      const delayMs = normalizeDelayMs(step);
+
+      return {
+        channel,
+        delayMs,
+        templateName:
+          typeof step.templateName === 'string' && step.templateName.trim().length > 0
+            ? step.templateName.trim()
+            : `rule_${channel}_${index + 1}`,
+        description:
+          typeof step.description === 'string' && step.description.trim().length > 0
+            ? step.description.trim()
+            : `Rule step ${index + 1}`,
+      } satisfies NormalizedRuleStep;
+    })
+    .filter((step): step is NormalizedRuleStep => Boolean(step));
+
+  return normalized;
+}
+
 function normalizeStringArray(value: unknown): string[] {
   if (!Array.isArray(value)) return [];
   return value
@@ -59,7 +142,7 @@ function normalizeRulePayload(body: CadenceRulePayload) {
     throw new AppError('name is required', 400);
   }
 
-  const channelSequence = Array.isArray(body.channelSequence) ? body.channelSequence : [];
+  const channelSequence = normalizeChannelSequence(body.channelSequence);
   if (channelSequence.length === 0) {
     throw new AppError('channelSequence is required and must be a non-empty array', 400);
   }

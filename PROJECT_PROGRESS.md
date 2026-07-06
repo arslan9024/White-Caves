@@ -2,7 +2,7 @@
 
 > **Agency:** White Caves Global Agency
 > **Orchestrator:** @Ada (Chief Architect)
-> **Last Updated:** 2026-06-19
+> **Last Updated:** 2026-07-06
 > **Policy Mode:** Dual-threshold readiness (60% unlock, 90% target) + policy-driven gating (Governance V2 active)
 > **Daily Report:** `PROJECT_PROGRESS_REPORT.md`
 
@@ -12,7 +12,7 @@
 
 - Canonical roadmap: **[plans/MASTER_PLAN.md](plans/MASTER_PLAN.md)**
 - Active queue: **[plans/PENDING_TASKS_ONLY.md](plans/PENDING_TASKS_ONLY.md)**
-- Last Updated (ISO): 2026-06-19
+- Last Updated (ISO): 2026-07-06
 
 ## 🚀 Wave 19 Planning Upgrade Evidence (Dashboard Hardening)
 
@@ -97,9 +97,20 @@
 - **W18.1-P0-018 (backend progression)**: Fixed follow-up cadence-route registration bug (rules routes now mounted globally, not nested under `/cadences`) and enabled dynamic CadenceRule runtime selection in `startSequence` based on lead tier/source/dealType ✅
 - **W18.1-P1-002 (progression)**: Added audit log XLSX export parity (`GET /api/activities/export/xlsx`) and wired `Export XLSX` action in `AuditLogPage` alongside CSV ✅
 - **W18.1-P1-004 (backend progression)**: Added structured Nadia escalation handoff context logging (`nadia_escalation_queued` / `nadia_escalation_requeued` activity metadata) during queueing ✅
+- **W18.1-P1-004 (hardening)**: Normalized Prisma JSON-safe escalation metadata payload in `server/services/nadia/queueManager.ts` to preserve structured handoff context without type regressions ✅
 - **W18.1-P1-005 (progression)**: Added tokenized e-sign contract routes (`GET /api/contracts/signature/:token`, `POST /api/contracts/signature/:token/sign`) and aligned `SignContractPage` API wiring + tests ✅
 - **W18.1-P1-006 (baseline)**: Syndication queue API delivered with `SYNDICATION_ENABLED` gate (`/api/syndication/status`, `/api/syndication/sync-queue`) ✅
+- **W18.1-P1-007 (progression)**: Follow-up cadence rules now normalize channel sequence delay units (`delayMs`, `delayHours`, `delayMinutes`) with strict channel validation + route test coverage ✅
+- **W18.1-P1-008 (progression)**: Canonical overdue notify route shipped (`POST /api/leases/collections/overdue-queue/:pdcId/notify`) with legacy alias retained; landlord rental page now surfaces overdue collection queue and reminder action UI with focused tests ✅
 - Validation evidence: `npm run test:run -- src/pages/crm/AuditLogPage.test.tsx src/pages/SignContractPage.test.tsx` ✅, `npm run lint` ✅ (warnings only; baseline unchanged), `npm run build` ✅, `npm run plans:validate` ✅
+
+### Wave 18.1 Session 3 — July 6, 2026 Validation Checkpoint
+
+- Focused regression pack passed:
+  - `server/routes/leases.test.ts` (27/27)
+  - `src/pages/landlord/RentalManagementPage.test.tsx` (19/19)
+- Type safety gate passed: `npm run typecheck` ✅ (client + server)
+- Targeted changed-file lint run passed for route/service/page/test files (no blocking errors) ✅
 
 ## 🚀 Wave 18.1 Session 1 Delivery
 

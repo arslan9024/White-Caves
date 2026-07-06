@@ -156,12 +156,65 @@ describe('follow-ups routes — /api/follow-ups', () => {
           name: 'New Rule',
           isActive: true,
           priority: 0,
+          channelSequence: [
+            expect.objectContaining({
+              channel: 'whatsapp',
+              delayMs: 0,
+              templateName: 'rule_whatsapp_1',
+            }),
+          ],
           dailyCapPerLead: 3,
           cooldownHours: 24,
           createdById: 'user-1',
         }),
       })
     );
+  });
+
+  it('normalizes cadence rule channel step delayHours to delayMs', async () => {
+    const res = await request(createApp())
+      .post('/api/follow-ups/rules')
+      .send({
+        name: 'Email Follow Up',
+        channelSequence: [
+          {
+            channel: 'email',
+            delayHours: 24,
+            templateName: 'email_day_1',
+            description: 'Day 1 follow-up',
+          },
+        ],
+      });
+
+    expect(res.status).toBe(201);
+    expect(mockCadenceRuleCreate).toHaveBeenCalledWith(
+      expect.objectContaining({
+        data: expect.objectContaining({
+          channelSequence: [
+            expect.objectContaining({
+              channel: 'email',
+              delayMs: 24 * 60 * 60 * 1000,
+              templateName: 'email_day_1',
+              description: 'Day 1 follow-up',
+            }),
+          ],
+        }),
+      })
+    );
+  });
+
+  it('returns 400 when cadence rule channelSequence has invalid channels only', async () => {
+    const res = await request(createApp())
+      .post('/api/follow-ups/rules')
+      .send({
+        name: 'Invalid Rule',
+        channelSequence: [{ channel: 'push_notification', delayMinutes: 10 }],
+      });
+
+    expect(res.status).toBe(400);
+    expect(res.body.success).toBe(false);
+    expect(String(res.body.error)).toMatch(/channelSequence is required/i);
+    expect(mockCadenceRuleCreate).not.toHaveBeenCalled();
   });
 
   it('returns 400 when creating cadence rule with missing name', async () => {

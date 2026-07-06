@@ -1,9 +1,9 @@
 # White Caves Daily Milestone Tracker
 
-**Date:** Jun 19, 2026  
+**Date:** Jul 06, 2026  
 **Owner:** @Margaret  
 **Status:** Active  
-**Last Updated:** 2026-06-19
+**Last Updated:** 2026-07-06
 
 > Roadmap: [plans/MASTER_PLAN.md](plans/MASTER_PLAN.md) · Queue: [plans/PENDING_TASKS_ONLY.md](plans/PENDING_TASKS_ONLY.md)
 
@@ -84,6 +84,14 @@
 ---
 
 ## Daily Entry
+
+- **Jul 06, 2026 — @Mira + @Katherine + @Margaret + @Copilot — Done**
+  - Wave 18.1 Session 3 progression advanced across Nadia handoff, follow-up automation normalization, and Ejari/rent collection reminder flows.
+  - Delivered Prisma JSON-safe Nadia escalation metadata normalization in `server/services/nadia/queueManager.ts` to preserve structured handoff context.
+  - Delivered cadence-rule normalization/validation expansion in `server/routes/follow-ups.ts` and updated tests in `server/routes/follow-ups.test.ts`.
+  - Delivered canonical overdue collection notify route in `server/routes/leases.ts` with compatibility alias retained, plus route tests in `server/routes/leases.test.ts`.
+  - Delivered landlord overdue collection queue/reminder UX in `src/pages/landlord/RentalManagementPage.tsx` with externalized styling in `src/pages/landlord/RentalManagementPage.css` and stabilized UI tests in `src/pages/landlord/RentalManagementPage.test.tsx`.
+  - Validation: focused suites green (`server/routes/leases.test.ts`, `src/pages/landlord/RentalManagementPage.test.tsx`), typecheck green (`npm run typecheck`), and targeted lint clean for changed TS/TSX files.
 
 - **Jun 19, 2026 — @Mira + @Margaret + @Copilot — Done**
   - Tracker markdown hardening completed for governance artifacts.

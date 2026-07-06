@@ -785,7 +785,20 @@ router.post(
     if (assistant.classification.shouldEscalate) {
       await queueConversationForAssignment(
         conversationId,
-        assistant.classification.escalationReason || 'assistant_escalation'
+        assistant.classification.escalationReason || 'assistant_escalation',
+        {
+          source: 'assistant/respond',
+          messagePreview: message.slice(0, 280),
+          classification: {
+            intent: assistant.classification.intent,
+            confidence: assistant.classification.confidence,
+            sentiment: assistant.classification.sentiment,
+            entities: assistant.classification.entities,
+            leadScore: assistant.classification.leadScore,
+            firstResponseState: assistant.classification.firstResponseState,
+            escalationReason: assistant.classification.escalationReason,
+          },
+        }
       );
     }
 

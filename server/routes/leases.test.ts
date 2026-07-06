@@ -367,4 +367,30 @@ describe('Leases Routes — /api/leases', () => {
       expect(res.status).toBe(404);
     });
   });
+
+  describe('POST /api/leases/collections/overdue-queue/:pdcId/notify', () => {
+    it('logs reminder using canonical collections endpoint', async () => {
+      mockPrisma.pDCSchedule.findUnique.mockResolvedValueOnce({
+        id: 'pdc-2',
+        leaseId: 'lease-2',
+        chequeNumber: 'CHK-002',
+        status: 'bounced',
+        lease: {
+          id: 'lease-2',
+          leaseNumber: 'L-002',
+          tenantId: 'tenant-2',
+          landlordId: 'user-1',
+        },
+      });
+
+      const res = await request(app)
+        .post('/api/leases/collections/overdue-queue/pdc-2/notify')
+        .send({ channel: 'email', note: 'Please settle bounced cheque' });
+
+      expect(res.status).toBe(200);
+      expect(res.body.success).toBe(true);
+      expect(res.body.data.pdcId).toBe('pdc-2');
+      expect(mockPrisma.activity.create).toHaveBeenCalled();
+    });
+  });
 });
