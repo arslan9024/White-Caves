@@ -99,6 +99,7 @@
 - **W18.1-P1-002 (progression)**: Added audit log XLSX export parity (`GET /api/activities/export/xlsx`) and wired `Export XLSX` action in `AuditLogPage` alongside CSV ✅
 - **W18.1-P1-002 (completion hardening)**: Audit log immutability enforced on API (`PATCH /api/activities/:id` and `DELETE /api/activities/:id` now return 405), list/detail reads aligned to `view_audit_logs` permission, and `AuditLogPage` now presents explicit read-only compliance ledger messaging ✅
 - **W18.1-P1-004 (backend progression)**: Added structured Nadia escalation handoff context logging (`nadia_escalation_queued` / `nadia_escalation_requeued` activity metadata) during queueing ✅
+- **W18.1-P1-004 (hardening completion)**: Nadia assistant confidence gate is now policy-configurable via `NADIA_ESCALATION_CONFIDENCE_THRESHOLD` and surfaced in `/api/nadia/assistant/respond` response metadata (`escalationPolicy.confidenceThreshold`); route + service tests updated for threshold-policy behavior ✅
 - **W18.1-P1-004 (hardening)**: Normalized Prisma JSON-safe escalation metadata payload in `server/services/nadia/queueManager.ts` to preserve structured handoff context without type regressions ✅
 - **W18.1-P1-005 (progression)**: Added tokenized e-sign contract routes (`GET /api/contracts/signature/:token`, `POST /api/contracts/signature/:token/sign`) and aligned `SignContractPage` API wiring + tests ✅
 - **W18.1-P1-006 (baseline)**: Syndication queue API delivered with `SYNDICATION_ENABLED` gate (`/api/syndication/status`, `/api/syndication/sync-queue`) ✅
@@ -132,6 +133,14 @@
   - `src/pages/crm/AuditLogPage.test.tsx` (6/6)
 - Type safety gate passed: `npm run typecheck` ✅
 - Targeted lint passed for TS/TSX touched files (`activities` route/tests + `AuditLogPage`) ✅
+
+### Wave 18.1 Session 3 — P1-004 Validation Checkpoint (July 6, 2026)
+
+- Focused implementation tests passed:
+  - `server/services/nadia/whatsappAssistant.test.ts` (17/17)
+  - `server/routes/nadia.routes.test.ts` (12/12)
+- Targeted lint passed for touched Nadia files (`whatsappAssistant`, `nadia` route/tests) ✅
+- Type safety gate passed: `npm run typecheck` ✅
 
 ## 🚀 Wave 18.1 Session 1 Delivery
 

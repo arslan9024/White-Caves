@@ -86,6 +86,15 @@
 ## Daily Entry
 
 - **Jul 06, 2026 — @Mira + @Katherine + @Margaret + @Copilot — Done**
+  - W18.1-P1-004 hardening completed for Nadia escalation confidence policy controls.
+  - Added configurable threshold support via `NADIA_ESCALATION_CONFIDENCE_THRESHOLD` in `server/routes/nadia.ts` and pass-through into assistant classification/response generation.
+  - Added assistant response policy visibility (`escalationPolicy.confidenceThreshold`) for operator/audit transparency.
+  - Validation evidence:
+    - focused tests: `server/services/nadia/whatsappAssistant.test.ts`, `server/routes/nadia.routes.test.ts` (**29/29 passing**)
+    - `npm run typecheck` passed
+    - targeted lint passed for touched Nadia files
+
+- **Jul 06, 2026 — @Mira + @Katherine + @Margaret + @Copilot — Done**
   - W18.1-P1-002 immutable audit log hardening completed.
   - API hardening in `server/routes/activities.ts`:
     - list/detail endpoints aligned to `view_audit_logs` permission

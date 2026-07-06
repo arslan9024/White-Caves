@@ -139,4 +139,25 @@ describe('WhatsApp Assistant (Phase 4D)', () => {
       );
     }
   });
+
+  it('supports stricter configured confidence threshold for escalation', () => {
+    const defaultPolicy = classifyWhatsAppIntent('search');
+    const strictPolicy = classifyWhatsAppIntent('search', {
+      escalationConfidenceThreshold: 0.75,
+    });
+
+    expect(defaultPolicy.shouldEscalate).toBe(false);
+    expect(strictPolicy.shouldEscalate).toBe(true);
+    expect(strictPolicy.escalationReason).toBe('low_intent_confidence');
+  });
+
+  it('passes configured threshold through auto-response generation', () => {
+    const result = generateWhatsAppAutoResponse({
+      message: 'search',
+      escalationConfidenceThreshold: 0.75,
+    });
+
+    expect(result.responseType).toBe('escalate_to_agent');
+    expect(result.classification.shouldEscalate).toBe(true);
+  });
 });

@@ -144,6 +144,7 @@ describe('Nadia Routes — inbox wiring endpoints', () => {
 
   beforeEach(() => {
     vi.clearAllMocks();
+    delete process.env.NADIA_ESCALATION_CONFIDENCE_THRESHOLD;
     viSendMessageMock.mockResolvedValue('wa-msg-1');
     viRoleHasPermissionMock.mockReturnValue(true);
     viQueueConversationForAssignmentMock.mockResolvedValue({ id: 'q-1' });
@@ -392,5 +393,25 @@ describe('Nadia Routes — inbox wiring endpoints', () => {
         }),
       })
     );
+  });
+
+  it('uses configured escalation confidence threshold from env in assistant/respond', async () => {
+    process.env.NADIA_ESCALATION_CONFIDENCE_THRESHOLD = '0.74';
+
+    const res = await request(createApp()).post('/api/nadia/assistant/respond').send({
+      conversationId: 'conv-1',
+      message: 'Need details for Marina apartment',
+      customerName: 'Amina',
+    });
+
+    expect(res.status).toBe(200);
+    expect(viGenerateWhatsAppAutoResponseMock).toHaveBeenCalledWith(
+      expect.objectContaining({
+        message: 'Need details for Marina apartment',
+        customerName: 'Amina',
+        escalationConfidenceThreshold: 0.74,
+      })
+    );
+    expect(res.body.data.escalationPolicy).toEqual({ confidenceThreshold: 0.74 });
   });
 });
