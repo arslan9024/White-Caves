@@ -26,6 +26,7 @@ const { mockPrisma } = vi.hoisted(() => {
         findMany: fn().mockResolvedValue([]),
         findUnique: fn().mockResolvedValue(null),
         count: fn().mockResolvedValue(0),
+        createMany: fn().mockResolvedValue({ count: 0 }),
         create: fn().mockResolvedValue({
           id: 'lead-1',
           name: 'John Client',
@@ -63,6 +64,14 @@ const { triggerLeadRescore } = vi.hoisted(() => ({
 
 vi.mock('../database.js', () => ({ prisma: mockPrisma }));
 vi.mock('../services/ai/leadAutoRescore.js', () => ({ triggerLeadRescore }));
+vi.mock('../services/socketServer.js', () => ({
+  getSocketServer: vi.fn(() => null),
+}));
+vi.mock('../services/NotificationService.js', () => ({
+  notificationService: {
+    pushToUser: vi.fn().mockResolvedValue(undefined),
+  },
+}));
 vi.mock('../middleware/errorHandler', () => ({
   AppError: class extends Error {
     statusCode: number;
@@ -522,6 +531,60 @@ describe('Leads Routes — /api/leads', () => {
         .patch(`/api/leads/${VALID_ID}`)
         .send({ status: 'qualified' });
       expect(triggerLeadRescore).toHaveBeenCalledWith(VALID_ID, 'lead_status_changed');
+    });
+  });
+
+  // ── POST /bulk-import ────────────────────────────────────────────
+  describe('POST /api/leads/bulk-import', () => {
+    it('imports valid rows and returns import summary', async () => {
+      mockPrisma.lead.findMany.mockResolvedValueOnce([]);
+      mockPrisma.lead.createMany.mockResolvedValueOnce({ count: 2 });
+
+      const res = await request(createApp('owner'))
+        .post('/api/leads/bulk-import')
+        .send({
+          leads: [
+            { name: 'Alice', email: 'alice@test.ae', phone: '+971501111111' },
+            { name: 'Bob', email: 'bob@test.ae', phone: '+971502222222' },
+          ],
+        });
+
+      expect(res.status).toBe(201);
+      expect(res.body.success).toBe(true);
+      expect(res.body.data.imported).toBe(2);
+      expect(res.body.data.skipped).toBe(0);
+      expect(res.body.data.errors).toEqual([]);
+    });
+
+    it('skips invalid/duplicate rows and reports per-row errors', async () => {
+      mockPrisma.lead.findMany.mockResolvedValueOnce([{ email: 'existing@test.ae', phone: null }]);
+      mockPrisma.lead.createMany.mockResolvedValueOnce({ count: 1 });
+
+      const res = await request(createApp('owner'))
+        .post('/api/leads/bulk-import')
+        .send({
+          leads: [
+            { name: '', email: 'missing-name@test.ae' },
+            { name: 'Bad Email', email: 'bad-email-format' },
+            { name: 'Batch Dup A', email: 'dup@test.ae' },
+            { name: 'Batch Dup B', email: 'dup@test.ae' },
+            { name: 'Existing Dup', email: 'existing@test.ae' },
+            { name: 'Valid Lead', email: 'valid@test.ae', phone: '+971503333333' },
+          ],
+        });
+
+      expect(res.status).toBe(201);
+      expect(res.body.success).toBe(true);
+      expect(res.body.data.imported).toBe(1);
+      expect(res.body.data.skipped).toBe(5);
+      expect(res.body.data.errors).toEqual(
+        expect.arrayContaining([
+          expect.objectContaining({ row: 1, code: 'missing_name' }),
+          expect.objectContaining({ row: 2, code: 'invalid_email' }),
+          expect.objectContaining({ row: 4, code: 'duplicate_in_batch' }),
+          expect.objectContaining({ row: 5, code: 'duplicate_existing' }),
+        ])
+      );
     });
   });
 

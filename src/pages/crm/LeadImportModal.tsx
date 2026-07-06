@@ -36,6 +36,17 @@ type FieldKey =
 
 type RowError = { row: number; message: string };
 
+interface BulkImportApiResponse {
+  data?: {
+    imported?: number;
+    total?: number;
+    skipped?: number;
+    errors?: RowError[];
+  };
+  error?: string;
+  message?: string;
+}
+
 export interface LeadImportModalProps {
   onClose: () => void;
   onSuccess: (imported: number) => void;
@@ -175,12 +186,14 @@ const LeadImportModal: FC<LeadImportModalProps> = ({ onClose, onSuccess }) => {
         method: 'POST',
         body: JSON.stringify({ leads: payload }),
       });
-      const json = await response.json();
+      const json = (await response.json()) as BulkImportApiResponse;
       if (!response.ok) {
         throw new Error(json.error || json.message || 'Import failed');
       }
+
+      const apiErrors = Array.isArray(json.data?.errors) ? json.data.errors : [];
       setSuccessCount(json.data?.imported ?? payload.length);
-      setRowErrors(errors);
+      setRowErrors([...errors, ...apiErrors]);
       setStep('result');
       onSuccess(json.data?.imported ?? payload.length);
     } catch (err) {

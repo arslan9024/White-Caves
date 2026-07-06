@@ -95,6 +95,7 @@
 
 - **W18.1-P0-010 (baseline)**: IndexedDB-backed offline draft persistence added for viewing feedback capture (`src/utils/indexedDraftStore.ts`, `src/components/ViewingFeedback.jsx`) ✅
 - **W18.1-P0-018 (backend progression)**: Fixed follow-up cadence-route registration bug (rules routes now mounted globally, not nested under `/cadences`) and enabled dynamic CadenceRule runtime selection in `startSequence` based on lead tier/source/dealType ✅
+- **W18.1-P1-001 (completion)**: Lead bulk import now enforces row-level validation + deduplication (in-batch and existing leads by email/phone) and returns structured per-row error payloads from `/api/leads/bulk-import`; `LeadImportModal` now surfaces backend skipped-row errors in the result state ✅
 - **W18.1-P1-002 (progression)**: Added audit log XLSX export parity (`GET /api/activities/export/xlsx`) and wired `Export XLSX` action in `AuditLogPage` alongside CSV ✅
 - **W18.1-P1-004 (backend progression)**: Added structured Nadia escalation handoff context logging (`nadia_escalation_queued` / `nadia_escalation_requeued` activity metadata) during queueing ✅
 - **W18.1-P1-004 (hardening)**: Normalized Prisma JSON-safe escalation metadata payload in `server/services/nadia/queueManager.ts` to preserve structured handoff context without type regressions ✅
@@ -111,6 +112,17 @@
   - `src/pages/landlord/RentalManagementPage.test.tsx` (19/19)
 - Type safety gate passed: `npm run typecheck` ✅ (client + server)
 - Targeted changed-file lint run passed for route/service/page/test files (no blocking errors) ✅
+
+### Wave 18.1 Session 3 — P1-001 Validation Checkpoint (July 6, 2026)
+
+- Focused implementation tests passed:
+  - `server/routes/leads.test.ts` (42/42)
+  - `src/pages/crm/LeadImportModal.test.tsx` (11/11)
+- Focused lint passed for touched files:
+  - `server/routes/leads.ts`
+  - `server/routes/leads.test.ts`
+  - `src/pages/crm/LeadImportModal.tsx`
+  - `src/pages/crm/LeadImportModal.test.tsx`
 
 ## 🚀 Wave 18.1 Session 1 Delivery
 

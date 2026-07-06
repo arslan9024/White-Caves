@@ -122,6 +122,34 @@ describe('LeadImportModal — P1-001', () => {
     });
   });
 
+  it('shows server-side skipped row summary in result step', async () => {
+    mockAuthFetch.mockResolvedValueOnce({
+      ok: true,
+      json: async () => ({
+        data: {
+          imported: 1,
+          total: 2,
+          skipped: 1,
+          errors: [{ row: 2, message: 'Lead already exists (matching email/phone)' }],
+        },
+      }),
+    });
+
+    render(<LeadImportModal {...makeProps()} />);
+    const textarea = screen.getByLabelText('CSV data input');
+    fireEvent.change(textarea, {
+      target: { value: 'name,email\nAlice,alice@test.ae\nAlice Again,alice@test.ae' },
+    });
+    fireEvent.click(screen.getByText(/Next: Map Fields/i));
+    await waitFor(() => screen.getByText(/Import 2 Lead/i));
+    fireEvent.click(screen.getByText(/Import 2 Lead/i));
+
+    await waitFor(() => {
+      expect(screen.getByText(/1 lead\(s\) imported successfully/i)).toBeInTheDocument();
+      expect(screen.getByText(/1 row\(s\) skipped due to validation errors/i)).toBeInTheDocument();
+    });
+  });
+
   it('allows navigating back from mapping to input step', async () => {
     render(<LeadImportModal {...makeProps()} />);
     const textarea = screen.getByLabelText('CSV data input');

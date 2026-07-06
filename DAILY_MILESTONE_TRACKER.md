@@ -86,6 +86,18 @@
 ## Daily Entry
 
 - **Jul 06, 2026 — @Mira + @Katherine + @Margaret + @Copilot — Done**
+  - W18.1-P1-001 completed (lead import dedup + row error reporting).
+  - Enhanced `POST /api/leads/bulk-import` with:
+    - row-level validation (`missing_name`, `invalid_email`, `invalid_phone`)
+    - in-batch dedup detection (`duplicate_in_batch`)
+    - existing-record dedup detection (`duplicate_existing` via email/phone lookup)
+    - structured import summary payload (`imported`, `total`, `skipped`, `errors[]`)
+  - Updated `LeadImportModal` to merge backend skipped-row errors into result reporting so operators see server-side dedup/validation outcomes.
+  - Validation evidence:
+    - `server/routes/leads.test.ts` + `src/pages/crm/LeadImportModal.test.tsx` = **53/53 tests passed**
+    - targeted lint on touched lead-import files = **clean**
+
+- **Jul 06, 2026 — @Mira + @Katherine + @Margaret + @Copilot — Done**
   - Wave 18.1 Session 3 progression advanced across Nadia handoff, follow-up automation normalization, and Ejari/rent collection reminder flows.
   - Delivered Prisma JSON-safe Nadia escalation metadata normalization in `server/services/nadia/queueManager.ts` to preserve structured handoff context.
   - Delivered cadence-rule normalization/validation expansion in `server/routes/follow-ups.ts` and updated tests in `server/routes/follow-ups.test.ts`.
