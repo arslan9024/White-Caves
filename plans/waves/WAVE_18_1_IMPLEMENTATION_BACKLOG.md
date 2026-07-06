@@ -193,7 +193,7 @@ Weighted score per task:
 **Date Planned:** 2026-05-28
 **Entry Gate:** Session 2 evidence confirmed ✅ — PROJECT_PROGRESS.md updated ✅
 
-### Entry Gate Confirmation
+### Session 3 Entry Gate Confirmation
 
 - [x] W18.1-P0-001/002/003/009/011/012/013/017/019/020 — Session 2 delivery confirmed in PROJECT_PROGRESS.md (2026-05-27)
 - [x] W18.1-P0-004/005/006/007/008/015/016 — Session 1 delivery confirmed in PROJECT_PROGRESS.md

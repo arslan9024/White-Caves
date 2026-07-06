@@ -1,5 +1,7 @@
 # Legal Management — CRM Feature Specification
 
+<!-- markdownlint-disable MD024 MD031 MD032 MD040 MD060 -->
+
 **Owner:** @Timnit (Gemini 2.0 Flash — Google AI Studio)
 **Status:** ✅ Complete — full spec (May 2026)
 **Target:** 12 sections
@@ -27,14 +29,14 @@ EvangelineLegalCRM manages all legal documentation for White Caves: tenancy cont
 
 ### Template Library
 
-| Template ID | Name | Use Case | Required Variables |
-|-------------|------|----------|--------------------|
-| `TMPL-TENANCY-STD` | Standard Tenancy Agreement | Residential rental | landlordName, tenantName, unitAddress, annualRent, paymentSchedule, startDate, endDate, noOfCheques |
-| `TMPL-TENANCY-LUX` | Luxury Tenancy Agreement | Properties ≥ AED 30K/month or premium areas | All above + conciergeTerms, ndaClause, accessRestrictions |
-| `TMPL-TENANCY-SHORT` | Short-Term Holiday Tenancy | < 90 days, DTCM-licensed | landlordName, tenantName, dailyRate, checkInDate, checkOutDate, securityDeposit, dtcmPermitNumber |
-| `TMPL-COMMERCIAL` | Commercial Lease Agreement | Retail, office, warehouse | All standard + fitOutPeriod, permittedUse, renewalOption, serviceChargeRate |
-| `TMPL-MOU` | Memorandum of Understanding | Sale/purchase preliminary | buyerName, sellerName, propertyDetails, agreedPrice, depositAmount, completionDate, conditions |
-| `TMPL-SPA` | Sale and Purchase Agreement | Off-plan or secondary sale | All MOU fields + paymentPlan, spaDate, developerName, oqoodObligations |
+| Template ID          | Name                        | Use Case                                    | Required Variables                                                                                  |
+| -------------------- | --------------------------- | ------------------------------------------- | --------------------------------------------------------------------------------------------------- |
+| `TMPL-TENANCY-STD`   | Standard Tenancy Agreement  | Residential rental                          | landlordName, tenantName, unitAddress, annualRent, paymentSchedule, startDate, endDate, noOfCheques |
+| `TMPL-TENANCY-LUX`   | Luxury Tenancy Agreement    | Properties ≥ AED 30K/month or premium areas | All above + conciergeTerms, ndaClause, accessRestrictions                                           |
+| `TMPL-TENANCY-SHORT` | Short-Term Holiday Tenancy  | < 90 days, DTCM-licensed                    | landlordName, tenantName, dailyRate, checkInDate, checkOutDate, securityDeposit, dtcmPermitNumber   |
+| `TMPL-COMMERCIAL`    | Commercial Lease Agreement  | Retail, office, warehouse                   | All standard + fitOutPeriod, permittedUse, renewalOption, serviceChargeRate                         |
+| `TMPL-MOU`           | Memorandum of Understanding | Sale/purchase preliminary                   | buyerName, sellerName, propertyDetails, agreedPrice, depositAmount, completionDate, conditions      |
+| `TMPL-SPA`           | Sale and Purchase Agreement | Off-plan or secondary sale                  | All MOU fields + paymentPlan, spaDate, developerName, oqoodObligations                              |
 
 ### Template Versioning Rules
 
@@ -46,6 +48,7 @@ EvangelineLegalCRM manages all legal documentation for White Caves: tenancy cont
 ### Variable Slot Format
 
 Template variables use Handlebars syntax:
+
 ```
 {{landlordName}} — required
 {{#if mortgageClause}}...{{/if}} — conditional
@@ -60,14 +63,15 @@ Template variables use Handlebars syntax:
 
 **Legal basis:** Dubai Law No. 33 of 2008; RERA Rental Index (published annually)
 
-| Rule | Requirement |
-|------|------------|
-| Notice period | Minimum 90 days written notice before increase takes effect |
+| Rule               | Requirement                                                                                    |
+| ------------------ | ---------------------------------------------------------------------------------------------- |
+| Notice period      | Minimum 90 days written notice before increase takes effect                                    |
 | Maximum increase % | Per RERA Rental Index — calculated as: `RERA index for area - current rent / RERA index × 100` |
-| Exempt increases | Tenant waiving rights in writing (not recommended by RERA) |
-| Form required | RERA Form 7 (Rent Increase Notice) — must reference current RERA index |
+| Exempt increases   | Tenant waiving rights in writing (not recommended by RERA)                                     |
+| Form required      | RERA Form 7 (Rent Increase Notice) — must reference current RERA index                         |
 
 **CRM Workflow:**
+
 1. Agent opens lease record → "Generate Rent Increase Notice"
 2. System fetches current RERA Rental Index for the property's area
 3. System calculates maximum permissible increase % and maximum permitted new rent (AED)
@@ -77,13 +81,14 @@ Template variables use Handlebars syntax:
 
 ### Early Termination Addendum
 
-| Scenario | Required Elements |
-|----------|-----------------|
-| Mutual agreement | Both parties' consent, settlement amount (if any), surrender date, deposit return schedule |
-| Breach by tenant | Breach description, notice period given, outstanding amounts, forfeiture of deposit if applicable |
-| Breach by landlord | Compensation amount per RERA guidelines (1 month rent + reasonable moving costs) |
+| Scenario           | Required Elements                                                                                 |
+| ------------------ | ------------------------------------------------------------------------------------------------- |
+| Mutual agreement   | Both parties' consent, settlement amount (if any), surrender date, deposit return schedule        |
+| Breach by tenant   | Breach description, notice period given, outstanding amounts, forfeiture of deposit if applicable |
+| Breach by landlord | Compensation amount per RERA guidelines (1 month rent + reasonable moving costs)                  |
 
 **CRM Workflow:**
+
 1. Agent selects termination type → template auto-populated with lease details
 2. Settlement amount (if any) entered; linked to financial module for payment tracking
 3. DocuSign envelope sent to both landlord and tenant
@@ -91,11 +96,11 @@ Template variables use Handlebars syntax:
 
 ### Other Addendum Types
 
-| Addendum | Trigger | Key Fields |
-|----------|---------|------------|
-| Pet Permission | Tenant request | pet type, weight limit, deposit top-up AED |
-| Furniture/Fit-Out | Tenant improvement request | item list, approval date, reinstatement obligation |
-| Sub-Lease Approval | Tenant sub-let request | sub-tenant name, term, landlord consent |
+| Addendum             | Trigger                      | Key Fields                                             |
+| -------------------- | ---------------------------- | ------------------------------------------------------ |
+| Pet Permission       | Tenant request               | pet type, weight limit, deposit top-up AED             |
+| Furniture/Fit-Out    | Tenant improvement request   | item list, approval date, reinstatement obligation     |
+| Sub-Lease Approval   | Tenant sub-let request       | sub-tenant name, term, landlord consent                |
 | Name Change (Entity) | Corporate tenant restructure | old entity name, new entity name, trade license update |
 
 ---
@@ -116,16 +121,17 @@ Template variables use Handlebars syntax:
 
 Grounds for eviction (only valid grounds are accepted by the CRM):
 
-| Ground Code | Description | Notice Period Required |
-|------------|-------------|----------------------|
-| `GROUND_A` | Rent arrears | 30 days after formal written demand |
-| `GROUND_B` | Landlord or first-degree relative requires unit for own use | 12 months |
-| `GROUND_C` | Demolition / major renovation requiring vacant possession | 12 months |
-| `GROUND_D` | Property sale (buyer requires vacant possession) | 12 months |
-| `GROUND_E` | Tenant has subleased without permission | 30 days |
-| `GROUND_F` | Tenant is using property for illegal purposes | Immediate (court order) |
+| Ground Code | Description                                                 | Notice Period Required              |
+| ----------- | ----------------------------------------------------------- | ----------------------------------- |
+| `GROUND_A`  | Rent arrears                                                | 30 days after formal written demand |
+| `GROUND_B`  | Landlord or first-degree relative requires unit for own use | 12 months                           |
+| `GROUND_C`  | Demolition / major renovation requiring vacant possession   | 12 months                           |
+| `GROUND_D`  | Property sale (buyer requires vacant possession)            | 12 months                           |
+| `GROUND_E`  | Tenant has subleased without permission                     | 30 days                             |
+| `GROUND_F`  | Tenant is using property for illegal purposes               | Immediate (court order)             |
 
 **CRM Workflow:**
+
 1. Manager selects eviction ground → CRM validates notice period requirement
 2. Supporting evidence checklist displayed per ground (e.g., for GROUND_A: arrears statement, prior demand letter)
 3. Agent confirms all evidence uploaded → Form 12 generated
@@ -146,10 +152,10 @@ Grounds for eviction (only valid grounds are accepted by the CRM):
 
 ### Provider Options
 
-| Provider | Recommended For | Setup |
-|----------|----------------|-------|
-| DocuSign | Standard tenancy, commercial, MOU, SPA | OAuth 2.0 + JWT grant; envelopes API |
-| Adobe Sign | Alternative; good for bulk signing | OAuth 2.0 + REST API |
+| Provider   | Recommended For                        | Setup                                |
+| ---------- | -------------------------------------- | ------------------------------------ |
+| DocuSign   | Standard tenancy, commercial, MOU, SPA | OAuth 2.0 + JWT grant; envelopes API |
+| Adobe Sign | Alternative; good for bulk signing     | OAuth 2.0 + REST API                 |
 
 ### DocuSign Integration Spec
 
@@ -172,14 +178,14 @@ Signer {
 
 ### Webhook Events (DocuSign → CRM)
 
-| Event | CRM Action |
-|-------|-----------|
-| `envelope-sent` | Document status → `sent`; log timestamp |
-| `envelope-viewed` | Document status → `viewed`; log who viewed and when |
-| `envelope-completed` | Document status → `signed`; download signed PDF; store in lease documents |
-| `envelope-declined` | Document status → `declined`; alert agent; log reason |
-| `envelope-voided` | Document status → `voided`; alert agent |
-| `envelope-expired` | Document status → `expired` (after 30 days unsigned); alert agent to re-send |
+| Event                | CRM Action                                                                   |
+| -------------------- | ---------------------------------------------------------------------------- |
+| `envelope-sent`      | Document status → `sent`; log timestamp                                      |
+| `envelope-viewed`    | Document status → `viewed`; log who viewed and when                          |
+| `envelope-completed` | Document status → `signed`; download signed PDF; store in lease documents    |
+| `envelope-declined`  | Document status → `declined`; alert agent; log reason                        |
+| `envelope-voided`    | Document status → `voided`; alert agent                                      |
+| `envelope-expired`   | Document status → `expired` (after 30 days unsigned); alert agent to re-send |
 
 ### Signed Document Storage
 
@@ -196,17 +202,18 @@ The Rental Disputes Centre (RDC) is the Dubai-specific court for landlord-tenant
 
 ### Case Types
 
-| Case Type | Description | Filing Fee (AED) |
-|-----------|-------------|-----------------|
-| Rent arrears | Landlord sues tenant for unpaid rent | 3.5% of claim (min 500, max 20,000) |
-| Unlawful eviction | Tenant disputes landlord's eviction notice | 3.5% of annual rent |
-| Deposit dispute | Tenant disputes unfair deposit deduction | 500 flat fee |
-| Maintenance failure | Tenant claims landlord failed to maintain | 500 flat fee |
-| Rent increase dispute | Tenant challenges unlawful rent increase | 500 flat fee |
+| Case Type             | Description                                | Filing Fee (AED)                    |
+| --------------------- | ------------------------------------------ | ----------------------------------- |
+| Rent arrears          | Landlord sues tenant for unpaid rent       | 3.5% of claim (min 500, max 20,000) |
+| Unlawful eviction     | Tenant disputes landlord's eviction notice | 3.5% of annual rent                 |
+| Deposit dispute       | Tenant disputes unfair deposit deduction   | 500 flat fee                        |
+| Maintenance failure   | Tenant claims landlord failed to maintain  | 500 flat fee                        |
+| Rent increase dispute | Tenant challenges unlawful rent increase   | 500 flat fee                        |
 
 ### Evidence Checklist (Auto-Generated per Case Type)
 
 **Rent Arrears:**
+
 - [ ] Signed tenancy agreement
 - [ ] Ejari certificate
 - [ ] Bank statements showing unpaid cheques or lack of payment
@@ -214,6 +221,7 @@ The Rental Disputes Centre (RDC) is the Dubai-specific court for landlord-tenant
 - [ ] PDC cheques if applicable (originals)
 
 **Unlawful Eviction:**
+
 - [ ] Tenancy agreement (showing remaining term)
 - [ ] Eviction notice received
 - [ ] Proof of full rent payment up to eviction date
@@ -234,6 +242,7 @@ The Rental Disputes Centre (RDC) is the Dubai-specific court for landlord-tenant
 ### Legal Hold Flag
 
 When `legalHold: true`:
+
 - Eviction notices blocked (court handles eviction)
 - Automatic lease renewal blocked
 - Rent increase blocked until dispute resolved
@@ -243,35 +252,36 @@ When `legalHold: true`:
 
 ## API Endpoints
 
-| Method | Path | Auth | Description |
-|--------|------|------|-------------|
-| `GET` | `/api/documents/templates` | Agent+ | List available contract templates |
-| `POST` | `/api/documents/templates/:id/generate` | Agent | Generate document from template |
-| `POST` | `/api/documents/:id/sign` | Agent | Send document for e-signature |
-| `GET` | `/api/documents/:id/status` | Agent+ | Get signature status |
-| `GET` | `/api/documents/:id/download` | Agent+ | Download signed PDF |
-| `POST` | `/api/leases/:id/addendums` | Agent | Generate addendum |
-| `POST` | `/api/compliance/notices/form7` | Manager | Issue rent increase notice |
-| `POST` | `/api/compliance/notices/form12` | Manager | Issue eviction notice |
-| `POST` | `/api/compliance/notices/form6` | Agent | Issue non-renewal notice |
-| `POST` | `/api/compliance/rdc/cases` | Manager | Create RDC dispute case |
-| `GET` | `/api/compliance/rdc/cases/:leaseId` | Manager | Get dispute cases for lease |
-| `PATCH` | `/api/compliance/rdc/cases/:id` | Manager | Update case status/hearing dates |
+| Method  | Path                                    | Auth    | Description                       |
+| ------- | --------------------------------------- | ------- | --------------------------------- |
+| `GET`   | `/api/documents/templates`              | Agent+  | List available contract templates |
+| `POST`  | `/api/documents/templates/:id/generate` | Agent   | Generate document from template   |
+| `POST`  | `/api/documents/:id/sign`               | Agent   | Send document for e-signature     |
+| `GET`   | `/api/documents/:id/status`             | Agent+  | Get signature status              |
+| `GET`   | `/api/documents/:id/download`           | Agent+  | Download signed PDF               |
+| `POST`  | `/api/leases/:id/addendums`             | Agent   | Generate addendum                 |
+| `POST`  | `/api/compliance/notices/form7`         | Manager | Issue rent increase notice        |
+| `POST`  | `/api/compliance/notices/form12`        | Manager | Issue eviction notice             |
+| `POST`  | `/api/compliance/notices/form6`         | Agent   | Issue non-renewal notice          |
+| `POST`  | `/api/compliance/rdc/cases`             | Manager | Create RDC dispute case           |
+| `GET`   | `/api/compliance/rdc/cases/:leaseId`    | Manager | Get dispute cases for lease       |
+| `PATCH` | `/api/compliance/rdc/cases/:id`         | Manager | Update case status/hearing dates  |
 
 ---
 
 ## Permissions and Audit
 
-| Action | Required Role |
-|--------|--------------|
-| Generate tenancy agreement | Agent |
-| Issue Form 7 (rent increase) | Manager+ |
-| Issue Form 12 (eviction) | Manager + Owner sign-off |
-| Issue Form 6 (non-renewal) | Agent (with manager review) |
-| Create RDC dispute case | Manager+ |
-| Override legal hold | Owner only |
+| Action                       | Required Role               |
+| ---------------------------- | --------------------------- |
+| Generate tenancy agreement   | Agent                       |
+| Issue Form 7 (rent increase) | Manager+                    |
+| Issue Form 12 (eviction)     | Manager + Owner sign-off    |
+| Issue Form 6 (non-renewal)   | Agent (with manager review) |
+| Create RDC dispute case      | Manager+                    |
+| Override legal hold          | Owner only                  |
 
 All document events are written to the audit trail (append-only):
+
 - Template generated: `documentId`, `templateId`, `agentId`, `timestamp`
 - Sent for signature: `envelopeId`, `signers`, `timestamp`
 - Signed: `signedAt`, `envelopeId`, `signatories`
@@ -282,13 +292,13 @@ All document events are written to the audit trail (append-only):
 
 ## KPIs
 
-| Metric | Definition | Target |
-|--------|-----------|--------|
-| Notice compliance rate | % of rent increases with valid Form 7 | 100% |
-| Signature completion time | Average days from send to fully signed | < 3 days |
-| Dispute case cycle time | Average days from filing to outcome | < 60 days |
-| Rejected RDC filings | Count of filings rejected for incomplete evidence | < 5% |
-| Addendum turnaround | Average hours from request to signed addendum | < 48 hours |
+| Metric                    | Definition                                        | Target     |
+| ------------------------- | ------------------------------------------------- | ---------- |
+| Notice compliance rate    | % of rent increases with valid Form 7             | 100%       |
+| Signature completion time | Average days from send to fully signed            | < 3 days   |
+| Dispute case cycle time   | Average days from filing to outcome               | < 60 days  |
+| Rejected RDC filings      | Count of filings rejected for incomplete evidence | < 5%       |
+| Addendum turnaround       | Average hours from request to signed addendum     | < 48 hours |
 
 ---
 

@@ -1,5 +1,7 @@
 # Property Viewings — Business Specification
 
+<!-- markdownlint-disable MD024 MD031 MD032 MD040 MD058 MD060 -->
+
 **Owner:** @Booking (Llama 3.1 70B — Groq Console)
 **Status:** 🟡 STUB — awaiting @Booking Task 1
 **Target:** 10 sections

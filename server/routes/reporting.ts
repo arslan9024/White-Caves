@@ -11,6 +11,20 @@ import { prisma } from '../database.js';
 import { requirePermission } from '../middleware/rbac';
 import { documentService } from '../services/DocumentService.js';
 
+type OptionalReportGenerator = {
+  generateReport?: (input: {
+    type: 'agent_performance';
+    format: 'xlsx' | 'pdf';
+    filters: {
+      agentId?: string;
+      from?: string;
+      to?: string;
+      stage?: string;
+    };
+    jobId: string;
+  }) => Promise<unknown>;
+};
+
 const router = Router();
 
 // ─── GET /api/dashboard/summary  &  /api/dashboard/overview ─────────────
@@ -539,14 +553,17 @@ router.post(
     // Async export: delegate to document service if available, otherwise acknowledge
     setImmediate(async () => {
       try {
-        await documentService
-          .generateReport?.({
-            type: 'agent_performance',
-            format,
-            filters: { agentId, from, to, stage },
-            jobId,
-          })
-          .catch(() => null);
+        const reportGenerator = documentService as OptionalReportGenerator;
+        const reportPromise = reportGenerator.generateReport?.({
+          type: 'agent_performance',
+          format,
+          filters: { agentId, from, to, stage },
+          jobId,
+        });
+
+        if (reportPromise) {
+          await reportPromise.catch(() => null);
+        }
       } catch {
         // Non-blocking — export job is best-effort from route perspective
       }

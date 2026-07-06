@@ -1,5 +1,7 @@
 # Financial Reporting — CRM Feature Specification
 
+<!-- markdownlint-disable MD024 MD031 MD032 MD040 MD058 MD060 -->
+
 > **Status:** In Progress (Core reports active, advanced exports expanding)  
 > **Module Owner:** Theodora (Finance Director AI) + Zoe (Executive AI)  
 > **API Endpoints:** `/api/finance`, `/api/dashboard`, `/api/commissions`  

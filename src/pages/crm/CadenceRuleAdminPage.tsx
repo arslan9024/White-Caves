@@ -22,6 +22,7 @@ import {
   PrimaryButton,
   SecondaryButton,
 } from './styles/CrmPageStyles';
+import './CadenceRuleAdminPage.css';
 
 // ─── Types ───────────────────────────────────────────────────────────────
 
@@ -203,7 +204,7 @@ const CadenceRuleAdminPage: FC = () => {
       </PageHeader>
 
       {error && (
-        <div role="alert" style={{ color: '#ef4444', marginBottom: '1rem' }}>
+        <div role="alert" className="cadence-alert">
           {error}
         </div>
       )}
@@ -221,38 +222,42 @@ const CadenceRuleAdminPage: FC = () => {
       ) : rules.length === 0 ? (
         <div>No cadence rules yet. Create one to get started.</div>
       ) : (
-        <table aria-label="Cadence rules" style={{ width: '100%', borderCollapse: 'collapse' }}>
+        <table aria-label="Cadence rules" className="cadence-table">
           <thead>
             <tr>
-              <th style={{ textAlign: 'left', padding: '0.5rem' }}>Name</th>
-              <th style={{ textAlign: 'left', padding: '0.5rem' }}>Priority</th>
-              <th style={{ textAlign: 'left', padding: '0.5rem' }}>Tiers</th>
-              <th style={{ textAlign: 'left', padding: '0.5rem' }}>Steps</th>
-              <th style={{ textAlign: 'left', padding: '0.5rem' }}>Status</th>
-              <th style={{ textAlign: 'left', padding: '0.5rem' }}>Actions</th>
+              <th className="cadence-th">Name</th>
+              <th className="cadence-th">Priority</th>
+              <th className="cadence-th">Tiers</th>
+              <th className="cadence-th">Steps</th>
+              <th className="cadence-th">Status</th>
+              <th className="cadence-th">Actions</th>
             </tr>
           </thead>
           <tbody>
             {rules.map(rule => (
               <tr key={rule.id}>
-                <td style={{ padding: '0.5rem' }}>
+                <td className="cadence-td">
                   <strong>{rule.name}</strong>
                   {rule.description && (
-                    <div style={{ fontSize: '0.75rem', color: '#888' }}>{rule.description}</div>
+                    <div className="cadence-rule-description">{rule.description}</div>
                   )}
                 </td>
-                <td style={{ padding: '0.5rem' }}>{rule.priority}</td>
-                <td style={{ padding: '0.5rem' }}>{rule.leadTiers.join(', ') || '—'}</td>
-                <td style={{ padding: '0.5rem' }}>{rule.channelSequence.length}</td>
-                <td style={{ padding: '0.5rem' }}>
+                <td className="cadence-td">{rule.priority}</td>
+                <td className="cadence-td">{rule.leadTiers.join(', ') || '—'}</td>
+                <td className="cadence-td">{rule.channelSequence.length}</td>
+                <td className="cadence-td">
                   <span
-                    style={{ color: rule.isActive ? '#22c55e' : '#ef4444', fontWeight: 600 }}
+                    className={
+                      rule.isActive
+                        ? 'cadence-status cadence-status--active'
+                        : 'cadence-status cadence-status--inactive'
+                    }
                     aria-label={`Status: ${rule.isActive ? 'active' : 'inactive'}`}
                   >
                     {rule.isActive ? 'Active' : 'Inactive'}
                   </span>
                 </td>
-                <td style={{ padding: '0.5rem', display: 'flex', gap: '0.5rem' }}>
+                <td className="cadence-td cadence-actions-cell">
                   <SecondaryButton
                     onClick={() => openEdit(rule)}
                     aria-label={`Edit rule ${rule.name}`}
@@ -280,35 +285,15 @@ const CadenceRuleAdminPage: FC = () => {
           role="dialog"
           aria-modal="true"
           aria-labelledby="cadence-modal-title"
-          style={{
-            position: 'fixed',
-            inset: 0,
-            background: 'rgba(0,0,0,0.5)',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            zIndex: 1000,
-          }}
+          className="cadence-modal-overlay"
         >
-          <div
-            style={{
-              background: '#fff',
-              borderRadius: 12,
-              padding: '2rem',
-              width: 560,
-              maxHeight: '85vh',
-              overflowY: 'auto',
-            }}
-          >
-            <h2 id="cadence-modal-title" style={{ margin: '0 0 1.5rem' }}>
+          <div className="cadence-modal">
+            <h2 id="cadence-modal-title" className="cadence-modal-title">
               {editing ? 'Edit Cadence Rule' : 'New Cadence Rule'}
             </h2>
 
-            <div style={{ marginBottom: '1rem' }}>
-              <label
-                htmlFor="rule-name"
-                style={{ display: 'block', marginBottom: 4, fontWeight: 600 }}
-              >
+            <div className="cadence-field">
+              <label htmlFor="rule-name" className="cadence-label">
                 Rule Name *
               </label>
               <input
@@ -317,20 +302,12 @@ const CadenceRuleAdminPage: FC = () => {
                 placeholder="e.g. Hot Lead 3-day nurture"
                 value={form.name}
                 onChange={e => setForm(prev => ({ ...prev, name: e.target.value }))}
-                style={{
-                  width: '100%',
-                  padding: '0.5rem',
-                  borderRadius: 6,
-                  border: '1px solid #e2e8f0',
-                }}
+                className="cadence-input"
               />
             </div>
 
-            <div style={{ marginBottom: '1rem' }}>
-              <label
-                htmlFor="rule-desc"
-                style={{ display: 'block', marginBottom: 4, fontWeight: 600 }}
-              >
+            <div className="cadence-field">
+              <label htmlFor="rule-desc" className="cadence-label">
                 Description
               </label>
               <input
@@ -339,21 +316,13 @@ const CadenceRuleAdminPage: FC = () => {
                 placeholder="Optional description"
                 value={form.description ?? ''}
                 onChange={e => setForm(prev => ({ ...prev, description: e.target.value || null }))}
-                style={{
-                  width: '100%',
-                  padding: '0.5rem',
-                  borderRadius: 6,
-                  border: '1px solid #e2e8f0',
-                }}
+                className="cadence-input"
               />
             </div>
 
-            <div style={{ marginBottom: '1rem', display: 'flex', gap: '1rem' }}>
-              <div style={{ flex: 1 }}>
-                <label
-                  htmlFor="rule-priority"
-                  style={{ display: 'block', marginBottom: 4, fontWeight: 600 }}
-                >
+            <div className="cadence-row">
+              <div className="cadence-priority-col">
+                <label htmlFor="rule-priority" className="cadence-label">
                   Priority
                 </label>
                 <input
@@ -364,23 +333,11 @@ const CadenceRuleAdminPage: FC = () => {
                   onChange={e =>
                     setForm(prev => ({ ...prev, priority: parseInt(e.target.value) || 0 }))
                   }
-                  style={{
-                    width: '100%',
-                    padding: '0.5rem',
-                    borderRadius: 6,
-                    border: '1px solid #e2e8f0',
-                  }}
+                  className="cadence-input"
                 />
               </div>
-              <div style={{ display: 'flex', alignItems: 'flex-end', paddingBottom: '0.25rem' }}>
-                <label
-                  style={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: '0.5rem',
-                    cursor: 'pointer',
-                  }}
-                >
+              <div className="cadence-active-col">
+                <label className="cadence-checkbox-label">
                   <input
                     type="checkbox"
                     checked={form.isActive}
@@ -391,19 +348,11 @@ const CadenceRuleAdminPage: FC = () => {
               </div>
             </div>
 
-            <div style={{ marginBottom: '1rem' }}>
-              <p style={{ fontWeight: 600, marginBottom: '0.5rem' }}>Apply to lead tiers:</p>
-              <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.5rem' }}>
+            <div className="cadence-section">
+              <p className="cadence-section-title">Apply to lead tiers:</p>
+              <div className="cadence-check-grid">
                 {TIER_OPTIONS.map(tier => (
-                  <label
-                    key={tier}
-                    style={{
-                      display: 'flex',
-                      alignItems: 'center',
-                      gap: '0.25rem',
-                      cursor: 'pointer',
-                    }}
-                  >
+                  <label key={tier} className="cadence-check-label">
                     <input
                       type="checkbox"
                       checked={form.leadTiers.includes(tier)}
@@ -413,22 +362,14 @@ const CadenceRuleAdminPage: FC = () => {
                   </label>
                 ))}
               </div>
-              <small style={{ color: '#888' }}>Leave empty to match all tiers.</small>
+              <small className="cadence-help">Leave empty to match all tiers.</small>
             </div>
 
-            <div style={{ marginBottom: '1.5rem' }}>
-              <p style={{ fontWeight: 600, marginBottom: '0.5rem' }}>Apply to lead sources:</p>
-              <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.5rem' }}>
+            <div className="cadence-section cadence-section--lg">
+              <p className="cadence-section-title">Apply to lead sources:</p>
+              <div className="cadence-check-grid">
                 {SOURCE_OPTIONS.map(src => (
-                  <label
-                    key={src}
-                    style={{
-                      display: 'flex',
-                      alignItems: 'center',
-                      gap: '0.25rem',
-                      cursor: 'pointer',
-                    }}
-                  >
+                  <label key={src} className="cadence-check-label">
                     <input
                       type="checkbox"
                       checked={form.leadSources.includes(src)}
@@ -440,19 +381,11 @@ const CadenceRuleAdminPage: FC = () => {
               </div>
             </div>
 
-            <div style={{ marginBottom: '1.5rem' }}>
-              <p style={{ fontWeight: 600, marginBottom: '0.5rem' }}>Channel Sequence:</p>
+            <div className="cadence-section cadence-section--lg">
+              <p className="cadence-section-title">Channel Sequence:</p>
               {form.channelSequence.map((step, i) => (
-                <div
-                  key={i}
-                  style={{
-                    display: 'flex',
-                    gap: '0.5rem',
-                    marginBottom: '0.5rem',
-                    alignItems: 'center',
-                  }}
-                >
-                  <span style={{ minWidth: 20, color: '#888' }}>{i + 1}.</span>
+                <div key={i} className="cadence-step-row">
+                  <span className="cadence-step-index">{i + 1}.</span>
                   <label htmlFor={`step-channel-${i}`} className="sr-only">
                     Channel for step {i + 1}
                   </label>
@@ -461,7 +394,7 @@ const CadenceRuleAdminPage: FC = () => {
                     title={`Channel for step ${i + 1}`}
                     value={step.channel}
                     onChange={e => updateStep(i, 'channel', e.target.value)}
-                    style={{ padding: '0.35rem', borderRadius: 6, border: '1px solid #e2e8f0' }}
+                    className="cadence-step-select"
                   >
                     {CHANNEL_OPTIONS.map(c => (
                       <option key={c} value={c}>
@@ -482,25 +415,15 @@ const CadenceRuleAdminPage: FC = () => {
                     onChange={e =>
                       updateStep(i, 'delayMs', parseFloat(e.target.value) * 3600000 || 0)
                     }
-                    style={{
-                      width: 100,
-                      padding: '0.35rem',
-                      borderRadius: 6,
-                      border: '1px solid #e2e8f0',
-                    }}
+                    className="cadence-step-input"
                   />
-                  <span style={{ color: '#888', fontSize: '0.75rem' }}>hrs</span>
+                  <span className="cadence-step-unit">hrs</span>
                   {form.channelSequence.length > 1 && (
                     <button
                       type="button"
                       onClick={() => removeStep(i)}
                       aria-label={`Remove step ${i + 1}`}
-                      style={{
-                        background: 'none',
-                        border: 'none',
-                        cursor: 'pointer',
-                        color: '#ef4444',
-                      }}
+                      className="cadence-step-remove"
                     >
                       ✕
                     </button>
@@ -512,7 +435,7 @@ const CadenceRuleAdminPage: FC = () => {
               </SecondaryButton>
             </div>
 
-            <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '0.75rem' }}>
+            <div className="cadence-footer">
               <SecondaryButton onClick={() => setModalOpen(false)}>Cancel</SecondaryButton>
               <PrimaryButton
                 onClick={() => void handleSave()}

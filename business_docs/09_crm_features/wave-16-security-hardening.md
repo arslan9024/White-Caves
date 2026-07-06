@@ -3,7 +3,7 @@
 **Drafted by:** @S5  
 **Model:** Gemini 2.0 Flash  
 **Status:** ✅ READY (retrospective spec for implemented Wave 16)  
-**Last Updated:** 2026-05-25  
+**Last Updated:** 2026-05-25
 
 CONSUMES←@Radia: `business_docs/05_requirements/compliance-requirements.md#security`  
 FEEDS→@Katherine: `business_docs/05_requirements/non-functional-requirements.md#security-hardening`  
@@ -30,22 +30,23 @@ All existing `/api` routes continue to work unchanged. A new `/api/v1` prefix is
 ```typescript
 // /api/v1/leads → /api/leads (internal rewrite)
 app.use('/api/v1', (req, res, next) => {
-  req.url = req.url;  // routes mounted directly under /api/v1
+  req.url = req.url; // routes mounted directly under /api/v1
   next();
 });
 ```
 
 Route files are registered at both paths:
+
 ```typescript
 app.use('/api/leads', leadsRouter);
-app.use('/api/v1/leads', leadsRouter);  // same router, second mount
+app.use('/api/v1/leads', leadsRouter); // same router, second mount
 ```
 
 ### 2.2 Version Header
 
 All API responses include:
 
-```
+```http
 X-API-Version: 1
 ```
 
@@ -73,7 +74,7 @@ Setting `VITE_API_VERSION=v1` in `.env` migrates all frontend calls to `/api/v1/
 
 ### 3.1 Pattern: Double-Submit Cookie
 
-```
+```text
 1. On GET /api/csrf-token:
    → Server sets HttpOnly cookie `csrf-token={random-token}`
    → Server returns { csrfToken: "{random-token}" } in JSON body
@@ -98,22 +99,22 @@ Tokens are 64-character hex strings, single-use (regenerated per form session) o
 
 The following routes are CSRF-exempt (read-only or have their own auth mechanism):
 
-| Route | Reason |
-|-------|--------|
-| `GET /*` | Read-only; no state mutation |
-| `/api/auth/firebase-sync` | Bearer token auth (no cookie state) |
-| `/api/webhooks/*` | Webhook signature validation (separate HMAC) |
-| `/api/health` | Public health check |
+| Route                     | Reason                                       |
+| ------------------------- | -------------------------------------------- |
+| `GET /*`                  | Read-only; no state mutation                 |
+| `/api/auth/firebase-sync` | Bearer token auth (no cookie state)          |
+| `/api/webhooks/*`         | Webhook signature validation (separate HMAC) |
+| `/api/health`             | Public health check                          |
 
 ### 3.4 Frontend Integration
 
 ```typescript
 // On app init (App.tsx)
-const { csrfToken } = await fetch('/api/csrf-token').then(r => r.json());
+const { csrfToken } = await fetch('/api/csrf-token').then((r) => r.json());
 
 // In authFetch
 headers: {
-  'Authorization': `Bearer ${jwt}`,
+  Authorization: `Bearer ${jwt}`,
   'X-CSRF-Token': csrfToken,
 }
 ```
@@ -148,7 +149,7 @@ class AppError extends Error {
     public statusCode: number,
     public message: string,
     public code?: string,
-    public isOperational = true,
+    public isOperational = true
   ) {
     super(message);
   }
@@ -160,16 +161,16 @@ class AppError extends Error {
 
 ### 4.3 Error Code Registry
 
-| Code | Status | Meaning |
-|------|--------|---------|
-| `VALIDATION_ERROR` | 400 | Input validation failed |
-| `UNAUTHENTICATED` | 401 | Missing or invalid token |
-| `FORBIDDEN` | 403 | Insufficient role / CSRF violation |
-| `NOT_FOUND` | 404 | Entity does not exist |
-| `CONFLICT` | 409 | Duplicate entity / scheduling conflict |
-| `RATE_LIMITED` | 429 | Too many requests |
-| `INTERNAL_ERROR` | 500 | Unhandled server exception |
-| `CSRF_VIOLATION` | 403 | CSRF token mismatch |
+| Code               | Status | Meaning                                |
+| ------------------ | ------ | -------------------------------------- |
+| `VALIDATION_ERROR` | 400    | Input validation failed                |
+| `UNAUTHENTICATED`  | 401    | Missing or invalid token               |
+| `FORBIDDEN`        | 403    | Insufficient role / CSRF violation     |
+| `NOT_FOUND`        | 404    | Entity does not exist                  |
+| `CONFLICT`         | 409    | Duplicate entity / scheduling conflict |
+| `RATE_LIMITED`     | 429    | Too many requests                      |
+| `INTERNAL_ERROR`   | 500    | Unhandled server exception             |
+| `CSRF_VIOLATION`   | 403    | CSRF token mismatch                    |
 
 ---
 
@@ -177,7 +178,7 @@ class AppError extends Error {
 
 Managed by `server/middleware/csp.ts`. Key directives:
 
-```
+```http
 Content-Security-Policy:
   default-src 'self';
   script-src 'self' 'nonce-{nonce}';
@@ -192,34 +193,38 @@ Content-Security-Policy:
 
 ## 6. Rate Limiting
 
-| Endpoint Group | Limit | Window | Middleware |
-|---------------|-------|--------|-----------|
-| `/api/auth/*` | 10 req | 15 min | `rateLimiter.ts` (strict) |
-| `/api/*` (general) | 100 req | 1 min | `rateLimiter.ts` (standard) |
-| `/api/ai/*` | 20 req | 1 min | `rateLimiter.ts` (AI-specific) |
-| Public routes | 30 req | 1 min | `rateLimiter.ts` (public) |
+| Endpoint Group     | Limit   | Window | Middleware                     |
+| ------------------ | ------- | ------ | ------------------------------ |
+| `/api/auth/*`      | 10 req  | 15 min | `rateLimiter.ts` (strict)      |
+| `/api/*` (general) | 100 req | 1 min  | `rateLimiter.ts` (standard)    |
+| `/api/ai/*`        | 20 req  | 1 min  | `rateLimiter.ts` (AI-specific) |
+| Public routes      | 30 req  | 1 min  | `rateLimiter.ts` (public)      |
 
 ---
 
 ## 7. Acceptance Criteria
 
 ### API Versioning
+
 - [x] `/api/v1/{route}` responds identically to `/api/{route}`
 - [x] `X-API-Version: 1` header present on all API responses
 - [x] Frontend `authFetch` reads `VITE_API_VERSION` env var
 
 ### CSRF
+
 - [x] `GET /api/csrf-token` returns token and sets cookie
 - [x] POST/PUT/PATCH/DELETE without valid CSRF header returns `403`
 - [x] Webhook routes exempt from CSRF check
 - [x] Firebase sync route exempt from CSRF check
 
 ### AppError Envelope
+
 - [x] All errors return `{ success: false, error: { code, message, statusCode, requestId } }`
 - [x] Non-operational errors expose generic message only
 - [x] `requestId` present in all error responses (from `requestId.ts` middleware)
 
 ### CSP
+
 - [x] CSP header present on all HTML responses
 - [x] `frame-ancestors 'none'` prevents clickjacking
 - [x] `upgrade-insecure-requests` enforces HTTPS

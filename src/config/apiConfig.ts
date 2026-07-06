@@ -3,12 +3,22 @@
  * Centralized API endpoints and settings for all environments
  */
 
+const runtimeProcessEnv: Record<string, string | undefined> =
+  (globalThis as { process?: { env?: Record<string, string | undefined> } }).process?.env ?? {};
+
+const getEnv = (key: string): string | undefined => {
+  const viteEnv = import.meta.env as Record<string, string | boolean | undefined>;
+  const value = viteEnv[key];
+  if (typeof value === 'string') return value;
+  return runtimeProcessEnv[key];
+};
+
 export const API_CONFIG = {
   // Base URL - uses environment variable or defaults
-  BASE_URL: process.env.REACT_APP_API_URL || 'https://api.whitecaves.com',
+  BASE_URL: getEnv('VITE_API_URL') || getEnv('REACT_APP_API_URL') || 'https://api.whitecaves.com',
 
   // Request timeout (ms)
-  TIMEOUT: parseInt(process.env.REACT_APP_API_TIMEOUT || '30000', 10),
+  TIMEOUT: parseInt(getEnv('VITE_API_TIMEOUT') || getEnv('REACT_APP_API_TIMEOUT') || '30000', 10),
 
   // Retry configuration for failed requests
   RETRY: {
@@ -25,9 +35,9 @@ export const API_CONFIG = {
 
   // Feature flags
   FEATURES: {
-    useRealApi: process.env.REACT_APP_USE_REAL_API !== 'false',
-    useMockApi: process.env.REACT_APP_USE_MOCK_API === 'true',
-    logRequests: process.env.REACT_APP_LOG_LEVEL === 'debug',
+    useRealApi: (getEnv('VITE_USE_REAL_API') || getEnv('REACT_APP_USE_REAL_API')) !== 'false',
+    useMockApi: (getEnv('VITE_USE_MOCK_API') || getEnv('REACT_APP_USE_MOCK_API')) === 'true',
+    logRequests: (getEnv('VITE_LOG_LEVEL') || getEnv('REACT_APP_LOG_LEVEL')) === 'debug',
   },
 };
 
@@ -80,7 +90,7 @@ export const API_ENDPOINTS = {
  */
 export const API_HEADERS = {
   'Content-Type': 'application/json',
-  'Accept': 'application/json',
+  Accept: 'application/json',
 };
 
 /**
@@ -165,12 +175,10 @@ export interface FilterParams {
 /**
  * Query Parameters Builder
  */
-export const buildQueryParams = (
-  params: Record<string, any>
-): Record<string, any> => {
+export const buildQueryParams = (params: Record<string, any>): Record<string, any> => {
   const cleaned: Record<string, any> = {};
 
-  Object.keys(params).forEach((key) => {
+  Object.keys(params).forEach(key => {
     const value = params[key];
 
     // Skip null, undefined, and empty string values

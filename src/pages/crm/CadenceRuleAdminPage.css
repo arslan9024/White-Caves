@@ -1,0 +1,174 @@
+.cadence-alert {
+  color: #ef4444;
+  margin-bottom: 1rem;
+}
+
+.cadence-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.cadence-th,
+.cadence-td {
+  text-align: left;
+  padding: 0.5rem;
+  vertical-align: top;
+}
+
+.cadence-rule-description {
+  font-size: 0.75rem;
+  color: #888;
+}
+
+.cadence-status {
+  font-weight: 600;
+}
+
+.cadence-status--active {
+  color: #22c55e;
+}
+
+.cadence-status--inactive {
+  color: #ef4444;
+}
+
+.cadence-actions-cell {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.cadence-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.cadence-modal {
+  background: #fff;
+  border-radius: 12px;
+  padding: 2rem;
+  width: 560px;
+  max-height: 85vh;
+  overflow-y: auto;
+}
+
+.cadence-modal-title {
+  margin: 0 0 1.5rem;
+}
+
+.cadence-field {
+  margin-bottom: 1rem;
+}
+
+.cadence-label {
+  display: block;
+  margin-bottom: 4px;
+  font-weight: 600;
+}
+
+.cadence-input {
+  width: 100%;
+  padding: 0.5rem;
+  border-radius: 6px;
+  border: 1px solid #e2e8f0;
+}
+
+.cadence-row {
+  margin-bottom: 1rem;
+  display: flex;
+  gap: 1rem;
+}
+
+.cadence-priority-col {
+  flex: 1;
+}
+
+.cadence-active-col {
+  display: flex;
+  align-items: flex-end;
+  padding-bottom: 0.25rem;
+}
+
+.cadence-checkbox-label {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  cursor: pointer;
+}
+
+.cadence-section {
+  margin-bottom: 1rem;
+}
+
+.cadence-section--lg {
+  margin-bottom: 1.5rem;
+}
+
+.cadence-section-title {
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+}
+
+.cadence-check-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.cadence-check-label {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  cursor: pointer;
+}
+
+.cadence-help {
+  color: #888;
+}
+
+.cadence-step-row {
+  display: flex;
+  gap: 0.5rem;
+  margin-bottom: 0.5rem;
+  align-items: center;
+}
+
+.cadence-step-index {
+  min-width: 20px;
+  color: #888;
+}
+
+.cadence-step-select {
+  padding: 0.35rem;
+  border-radius: 6px;
+  border: 1px solid #e2e8f0;
+}
+
+.cadence-step-input {
+  width: 100px;
+  padding: 0.35rem;
+  border-radius: 6px;
+  border: 1px solid #e2e8f0;
+}
+
+.cadence-step-unit {
+  color: #888;
+  font-size: 0.75rem;
+}
+
+.cadence-step-remove {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: #ef4444;
+}
+
+.cadence-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.75rem;
+}
