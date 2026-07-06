@@ -29,9 +29,18 @@ import DashboardKpiStrip, { type KpiCardData } from '../components/dashboard/Das
 import DashboardProfileCompletion from '../components/dashboard/DashboardProfileCompletion';
 import DashboardCommandPalette from '../components/dashboard/DashboardCommandPalette';
 import DashboardModuleToolbar from '../components/dashboard/DashboardModuleToolbar';
+import DashboardConfigurator, {
+  type DashboardWidgetOption,
+} from '../components/dashboard/DashboardConfigurator';
 import CRMContextPanel from '../components/crm/CRMContextPanel';
 import { useUnifiedDashboard } from '../hooks/useUnifiedDashboard';
 import type { DashboardData, CRMModuleProps } from '../hooks/useUnifiedDashboard';
+import {
+  fetchDashboardPreferences,
+  fetchRoleDashboardConfig,
+  saveDashboardPreferences,
+} from '../services/dashboardPreferencesAPI';
+import { createLogger } from '../utils/logger';
 import { AI_ASSISTANTS_REGISTRY } from '../store/slices/aiAssistant/registry';
 import { selectSelectedAssistant } from '../store/slices/sidebarSlice';
 import { SUPERUSER_CRM_MODULE_ORDER, getCRMModule } from '../config/crmModuleRegistry';
@@ -160,6 +169,7 @@ const CRM_MODULES: Record<string, CRMModule> = {
 };
 
 const moduleEntries = Object.entries(CRM_MODULES);
+const dashboardPageLogger = createLogger('UnifiedDashboardPage');
 
 const getTimeGreeting = (date: Date): string => {
   const hour = date.getHours();
@@ -240,6 +250,9 @@ const UnifiedDashboardPage: FC = () => {
   const [departmentsExpanded, setDepartmentsExpanded] = useState(true);
   const [selectedContext, setSelectedContext] = useState<SearchItem | null>(null);
   const [isMobileDrawerOpen, setIsMobileDrawerOpen] = useState(false);
+  const [dashboardWidgets, setDashboardWidgets] = useState<DashboardWidgetOption[]>([]);
+  const [dashboardLayout, setDashboardLayout] = useState('default');
+  const [dashboardConfigError, setDashboardConfigError] = useState<string | null>(null);
   const globalSearchRef = useRef<HTMLDivElement | null>(null);
   const tabButtonRefs = useRef<Array<HTMLButtonElement | null>>([]);
   const lastFocusedElementRef = useRef<HTMLElement | null>(null);
@@ -303,6 +316,8 @@ const UnifiedDashboardPage: FC = () => {
   const isManagingDirector = currentRole === 'managing_director';
   const isExecutiveRole = isSuperUser || isManagingDirector;
   const currentTab = availableTabs.find(tab => tab.id === activeTab);
+  const showDashboardConfigurator =
+    isExecutiveRole && !selectedDepartment && !selectedCRMModule && !isLoading;
 
   const overview = (dashboardData?.overview ?? {}) as GenericEntity;
   const propertiesCount = dashboardData?.properties?.length ?? 0;
@@ -531,6 +546,123 @@ const UnifiedDashboardPage: FC = () => {
     setGlobalSearchQuery('');
     setIsCommandPaletteOpen(false);
     setIsGlobalSearchOpen(false);
+  };
+
+  useEffect(() => {
+    if (!showDashboardConfigurator) {
+      return;
+    }
+
+    let cancelled = false;
+
+    const loadDashboardPreferences = async () => {
+      try {
+        setDashboardConfigError(null);
+        const preferences = await fetchDashboardPreferences();
+
+        if (cancelled) {
+          return;
+        }
+
+        setDashboardLayout(preferences.layout || 'default');
+        setDashboardWidgets(
+          preferences.widgets.map(widget => ({
+            id: widget.id,
+            label: widget.title,
+            enabled: widget.enabled,
+            description: `Widget ${widget.enabled ? 'enabled' : 'disabled'} for ${preferences.role}`,
+          }))
+        );
+      } catch (error) {
+        if (cancelled) {
+          return;
+        }
+
+        setDashboardConfigError('Could not load dashboard preferences. Using role defaults.');
+        dashboardPageLogger.warn(
+          'Dashboard preferences fetch failed, loading role defaults',
+          error
+        );
+
+        try {
+          const defaults = await fetchRoleDashboardConfig();
+          if (cancelled) {
+            return;
+          }
+
+          setDashboardLayout(defaults.layout || 'default');
+          setDashboardWidgets(
+            defaults.widgets.map(widget => ({
+              id: widget.id,
+              label: widget.title,
+              enabled: widget.enabled,
+            }))
+          );
+        } catch (fallbackError) {
+          if (!cancelled) {
+            setDashboardWidgets([]);
+          }
+          dashboardPageLogger.error('Dashboard defaults fallback failed', fallbackError);
+        }
+      }
+    };
+
+    void loadDashboardPreferences();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [showDashboardConfigurator]);
+
+  const persistDashboardWidgets = async (nextWidgets: DashboardWidgetOption[]) => {
+    try {
+      const payload = nextWidgets.map(widget => ({
+        id: widget.id,
+        title: widget.label,
+        enabled: widget.enabled,
+      }));
+
+      await saveDashboardPreferences(payload, dashboardLayout);
+      setDashboardConfigError(null);
+    } catch (error) {
+      setDashboardConfigError('Could not save widget preferences. Please retry.');
+      dashboardPageLogger.warn('Dashboard preference save failed', error);
+    }
+  };
+
+  const handleToggleDashboardWidget = (id: string, enabled: boolean) => {
+    const nextWidgets = dashboardWidgets.map(widget =>
+      widget.id === id ? { ...widget, enabled } : widget
+    );
+
+    setDashboardWidgets(nextWidgets);
+    void persistDashboardWidgets(nextWidgets);
+  };
+
+  const handleResetDashboardConfig = async () => {
+    try {
+      const defaults = await fetchRoleDashboardConfig();
+      const nextWidgets = defaults.widgets.map(widget => ({
+        id: widget.id,
+        label: widget.title,
+        enabled: widget.enabled,
+      }));
+
+      setDashboardWidgets(nextWidgets);
+      setDashboardLayout('default');
+      await saveDashboardPreferences(
+        defaults.widgets.map(widget => ({
+          id: widget.id,
+          title: widget.title,
+          enabled: widget.enabled,
+        })),
+        'default'
+      );
+      setDashboardConfigError(null);
+    } catch (error) {
+      setDashboardConfigError('Could not reset dashboard configuration.');
+      dashboardPageLogger.warn('Dashboard config reset failed', error);
+    }
   };
 
   const openWorkspaceTab = (tabId: string, fallbackModule?: string) => {
@@ -932,6 +1064,25 @@ const UnifiedDashboardPage: FC = () => {
           )}
 
           {!selectedDepartment && !selectedCRMModule && <DashboardKpiStrip cards={kpiCards} />}
+
+          {showDashboardConfigurator && (
+            <section
+              className="dashboard-configurator-panel"
+              aria-label="Dashboard widget controls"
+            >
+              <DashboardConfigurator
+                title="Executive Widget Controls"
+                widgets={dashboardWidgets}
+                onToggleWidget={handleToggleDashboardWidget}
+                onReset={handleResetDashboardConfig}
+              />
+              {dashboardConfigError ? (
+                <p className="dashboard-configurator-panel__error" role="status" aria-live="polite">
+                  {dashboardConfigError}
+                </p>
+              ) : null}
+            </section>
+          )}
 
           {!selectedDepartment &&
             !selectedCRMModule &&

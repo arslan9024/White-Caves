@@ -1015,6 +1015,17 @@
   gap: 10px;
 }
 
+.dashboard-configurator-panel {
+  margin-bottom: 18px;
+}
+
+.dashboard-configurator-panel__error {
+  margin: 8px 0 0;
+  color: #b91c1c;
+  font-size: 0.86rem;
+  font-weight: 600;
+}
+
 .dashboard-kpi-strip {
   position: static;
   z-index: 1;
