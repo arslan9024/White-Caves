@@ -11,14 +11,26 @@ const CardWrapper = styled.div`
   background: var(--background);
 `;
 
+const SpacedLine = styled.div`
+  margin-top: 8px;
+`;
+
+const CardContent = styled.div`
+  padding: 0.75rem;
+`;
+
 export const SkeletonCard: React.FC<{ imageHeight?: number }> = ({ imageHeight = 220 }) => (
   <CardWrapper data-testid="skeleton-card">
     <Skeleton variant="rect" width="100%" height={imageHeight} animated />
-    <div style={{ padding: '0.75rem' }}>
+    <CardContent>
       <Skeleton width="60%" height={16} animated />
-      <Skeleton width="80%" height={14} style={{ marginTop: 8 }} animated />
-      <Skeleton width="40%" height={14} style={{ marginTop: 8 }} animated />
-    </div>
+      <SpacedLine>
+        <Skeleton width="80%" height={14} animated />
+      </SpacedLine>
+      <SpacedLine>
+        <Skeleton width="40%" height={14} animated />
+      </SpacedLine>
+    </CardContent>
   </CardWrapper>
 );
 

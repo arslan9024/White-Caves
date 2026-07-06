@@ -86,6 +86,14 @@
 ## Daily Entry
 
 - **Jul 06, 2026 — @Mira + @Katherine + @Margaret + @Copilot — Done**
+  - W18.1-P1-008 implementation advanced with Ejari compliance tracking hardening.
+  - Added `GET /api/leases/ejari/tracking` to return role-scoped Ejari lease rows plus summary counts (`pending`, `registered`, `expired`, `cancelled`, `expiringSoon`).
+  - Updated `RentalManagementPage` with an Ejari Compliance Summary section and resilient fallback summary calculation.
+  - Validation evidence:
+    - focused tests: `server/routes/leases.test.ts`, `src/pages/landlord/RentalManagementPage.test.tsx` (**49/49 passing**)
+    - `npm run typecheck` passed
+
+- **Jul 06, 2026 — @Mira + @Katherine + @Margaret + @Copilot — Done**
   - W18.1-P1-004 hardening completed for Nadia escalation confidence policy controls.
   - Added configurable threshold support via `NADIA_ESCALATION_CONFIDENCE_THRESHOLD` in `server/routes/nadia.ts` and pass-through into assistant classification/response generation.
   - Added assistant response policy visibility (`escalationPolicy.confidenceThreshold`) for operator/audit transparency.

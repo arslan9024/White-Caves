@@ -121,6 +121,69 @@ describe('Leases Routes — /api/leases', () => {
     });
   });
 
+  // ── EJARI TRACKING ──────────────────────────────────────────────
+  describe('GET /api/leases/ejari/tracking', () => {
+    it('returns ejari tracking summary and rows', async () => {
+      mockPrisma.lease.findMany.mockResolvedValueOnce([
+        {
+          id: 'lease-1',
+          leaseNumber: 'L-001',
+          ejariNumber: 'EJ-001',
+          ejariStatus: 'registered',
+          ejariRegistrationDate: new Date('2026-01-10T00:00:00.000Z'),
+          ejariExpiryDate: new Date(Date.now() + 10 * 86400000),
+          property: {
+            id: 'prop-1',
+            title: 'Marina Studio',
+            location: 'Dubai Marina',
+            type: 'Apartment',
+          },
+          tenant: {
+            id: 'tenant-1',
+            name: 'John',
+            email: 'john@test.ae',
+            phone: '+971500000001',
+          },
+        },
+        {
+          id: 'lease-2',
+          leaseNumber: 'L-002',
+          ejariNumber: null,
+          ejariStatus: 'pending',
+          ejariRegistrationDate: null,
+          ejariExpiryDate: null,
+          property: {
+            id: 'prop-2',
+            title: 'Downtown Studio',
+            location: 'Downtown Dubai',
+            type: 'Studio',
+          },
+          tenant: {
+            id: 'tenant-2',
+            name: 'Sarah',
+            email: 'sarah@test.ae',
+            phone: '+971500000002',
+          },
+        },
+      ]);
+
+      const res = await request(app).get('/api/leases/ejari/tracking?role=landlord&days=30');
+
+      expect(res.status).toBe(200);
+      expect(res.body.success).toBe(true);
+      expect(res.body.summary.total).toBe(2);
+      expect(res.body.summary.registered).toBe(1);
+      expect(res.body.summary.pending).toBe(1);
+      expect(res.body.summary.expiringSoon).toBe(1);
+    });
+
+    it('returns 400 for invalid ejari status filter', async () => {
+      const res = await request(app).get('/api/leases/ejari/tracking?status=invalid_status');
+      expect(res.status).toBe(400);
+      expect(res.body.success).toBe(false);
+    });
+  });
+
   // ── GET ONE ───────────────────────────────────────────────────────
   describe('GET /api/leases/:id', () => {
     it('returns 404 for non-existent lease', async () => {

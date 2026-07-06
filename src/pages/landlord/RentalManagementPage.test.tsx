@@ -76,6 +76,15 @@ const MOCK_OVERDUE_QUEUE = [
   },
 ];
 
+const MOCK_EJARI_SUMMARY = {
+  total: 3,
+  pending: 1,
+  registered: 2,
+  expired: 0,
+  cancelled: 0,
+  expiringSoon: 1,
+};
+
 const renderLoaded = async () => {
   render(<RentalManagementPage />);
   await screen.findAllByText('Marina View 2BR Apartment');
@@ -99,6 +108,13 @@ describe('RentalManagementPage', () => {
         return Promise.resolve({
           ok: true,
           json: () => Promise.resolve({ data: MOCK_OVERDUE_QUEUE }),
+        });
+      }
+
+      if (url.includes('/api/leases/ejari/tracking') && (!init || !init.method)) {
+        return Promise.resolve({
+          ok: true,
+          json: () => Promise.resolve({ data: MOCK_LEASES, summary: MOCK_EJARI_SUMMARY }),
         });
       }
 
@@ -294,5 +310,20 @@ describe('RentalManagementPage', () => {
     );
 
     expect(await screen.findByText('Reminder logged successfully.')).toBeInTheDocument();
+  });
+
+  it('renders Ejari compliance summary tiles', async () => {
+    await renderLoaded();
+
+    expect(screen.getByLabelText('Ejari compliance summary')).toBeInTheDocument();
+    expect(screen.getByText('Ejari Compliance Summary')).toBeInTheDocument();
+    expect(screen.getByText('Total leases')).toBeInTheDocument();
+    expect(screen.getByText('Registered')).toBeInTheDocument();
+    expect(screen.getByText('Pending')).toBeInTheDocument();
+    expect(screen.getByText('Expiring soon (30d)')).toBeInTheDocument();
+
+    expect(screen.getByText('3')).toBeInTheDocument();
+    expect(screen.getByText('2')).toBeInTheDocument();
+    expect(screen.getAllByText('1').length).toBeGreaterThanOrEqual(2);
   });
 });

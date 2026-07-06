@@ -80,3 +80,42 @@
 .rm-empty-state__subtitle {
   color: var(--text-secondary);
 }
+
+.rm-ejari-summary {
+  margin-bottom: 1.5rem;
+  padding: 1rem;
+  border: 1px solid #dbeafe;
+  border-radius: 12px;
+  background: #eff6ff;
+}
+
+.rm-ejari-summary__title {
+  margin: 0 0 0.75rem 0;
+  font-size: 1.05rem;
+}
+
+.rm-ejari-summary__grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(120px, 1fr));
+  gap: 0.65rem;
+}
+
+.rm-ejari-summary__tile {
+  border: 1px solid #bfdbfe;
+  border-radius: 8px;
+  background: #ffffff;
+  padding: 0.65rem;
+  display: grid;
+  gap: 0.25rem;
+}
+
+.rm-ejari-summary__label {
+  font-size: 0.8rem;
+  color: #1e40af;
+}
+
+@media (max-width: 900px) {
+  .rm-ejari-summary__grid {
+    grid-template-columns: repeat(2, minmax(120px, 1fr));
+  }
+}

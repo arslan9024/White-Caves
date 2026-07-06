@@ -105,6 +105,7 @@
 - **W18.1-P1-006 (baseline)**: Syndication queue API delivered with `SYNDICATION_ENABLED` gate (`/api/syndication/status`, `/api/syndication/sync-queue`) ✅
 - **W18.1-P1-007 (progression)**: Follow-up cadence rules now normalize channel sequence delay units (`delayMs`, `delayHours`, `delayMinutes`) with strict channel validation + route test coverage ✅
 - **W18.1-P1-008 (progression)**: Canonical overdue notify route shipped (`POST /api/leases/collections/overdue-queue/:pdcId/notify`) with legacy alias retained; landlord rental page now surfaces overdue collection queue and reminder action UI with focused tests ✅
+- **W18.1-P1-008 (hardening progression)**: Added dedicated Ejari compliance tracking API (`GET /api/leases/ejari/tracking`) with status validation, expiring-window summary, and landlord-side Ejari Compliance Summary UI cards in `RentalManagementPage` ✅
 - Validation evidence: `npm run test:run -- src/pages/crm/AuditLogPage.test.tsx src/pages/SignContractPage.test.tsx` ✅, `npm run lint` ✅ (warnings only; baseline unchanged), `npm run build` ✅, `npm run plans:validate` ✅
 
 ### Wave 18.1 Session 3 — July 6, 2026 Validation Checkpoint
@@ -146,6 +147,16 @@
   - `server/routes/syndication.test.ts` (**5/5 passing**)
   - `server/routes/follow-ups.test.ts` (**8/8 passing**)
   - `npm run build` ✅
+
+### Wave 18.1 Session 3 — P1-008 Validation Checkpoint (July 6, 2026)
+
+- Focused implementation tests passed:
+  - `server/routes/leases.test.ts` (29/29)
+  - `src/pages/landlord/RentalManagementPage.test.tsx` (20/20)
+- Type safety gate passed: `npm run typecheck` ✅
+- Ejari tracking scope delivered in this slice:
+  - `GET /api/leases/ejari/tracking` route with summary metadata
+  - Landlord `RentalManagementPage` Ejari compliance summary section
 
 ## 🚀 Wave 18.1 Session 1 Delivery
 

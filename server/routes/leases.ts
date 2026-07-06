@@ -115,6 +115,100 @@ router.get(
   })
 );
 
+// ─── GET /api/leases/ejari/tracking — Ejari compliance dashboard data ──────
+router.get(
+  '/ejari/tracking',
+  asyncHandler(async (req: AuthRequest, res: Response) => {
+    const userId = req.user?.id;
+    if (!userId) throw new AppError('Authentication required', 401);
+
+    const role = req.query.role as string | undefined; // tenant | landlord
+    const days = Math.max(1, parseInt(req.query.days as string) || 30);
+    const requestedStatus = req.query.status as string | undefined;
+    const validEjariStatuses = ['pending', 'registered', 'expired', 'cancelled'];
+
+    if (requestedStatus && !validEjariStatuses.includes(requestedStatus)) {
+      throw new AppError(
+        `Invalid Ejari status. Must be one of: ${validEjariStatuses.join(', ')}`,
+        400
+      );
+    }
+
+    const where: Record<string, unknown> = {};
+
+    if (role === 'tenant') {
+      where.tenantId = userId;
+    } else if (role === 'landlord') {
+      where.landlordId = userId;
+    } else {
+      where.OR = [{ tenantId: userId }, { landlordId: userId }];
+    }
+
+    if (requestedStatus) {
+      where.ejariStatus = requestedStatus;
+    }
+
+    const leases = await prisma.lease.findMany({
+      where,
+      include: {
+        property: {
+          select: { id: true, title: true, location: true, type: true },
+        },
+        tenant: {
+          select: { id: true, name: true, email: true, phone: true },
+        },
+      },
+      orderBy: [{ ejariExpiryDate: 'asc' }, { createdAt: 'desc' }],
+      take: 500,
+    });
+
+    const now = Date.now();
+    const expiryWindow = new Date();
+    expiryWindow.setDate(expiryWindow.getDate() + days);
+
+    const data = leases.map(lease => {
+      const expiry = lease.ejariExpiryDate ? lease.ejariExpiryDate.getTime() : null;
+      const daysToExpiry =
+        expiry !== null ? Math.ceil((expiry - now) / (1000 * 60 * 60 * 24)) : null;
+
+      return {
+        id: lease.id,
+        leaseNumber: lease.leaseNumber,
+        ejariNumber: lease.ejariNumber,
+        ejariStatus: lease.ejariStatus,
+        ejariRegistrationDate: lease.ejariRegistrationDate,
+        ejariExpiryDate: lease.ejariExpiryDate,
+        daysToExpiry,
+        isExpiringSoon:
+          lease.ejariStatus === 'registered' &&
+          Boolean(lease.ejariExpiryDate) &&
+          (lease.ejariExpiryDate as Date) >= new Date() &&
+          (lease.ejariExpiryDate as Date) <= expiryWindow,
+        property: lease.property,
+        tenant: lease.tenant,
+      };
+    });
+
+    const summary = {
+      total: data.length,
+      pending: data.filter(i => i.ejariStatus === 'pending').length,
+      registered: data.filter(i => i.ejariStatus === 'registered').length,
+      expired: data.filter(i => i.ejariStatus === 'expired').length,
+      cancelled: data.filter(i => i.ejariStatus === 'cancelled').length,
+      expiringSoon: data.filter(i => i.isExpiringSoon).length,
+    };
+
+    res.status(200).json({
+      success: true,
+      data,
+      summary,
+      meta: {
+        expiringWithinDays: days,
+      },
+    });
+  })
+);
+
 // ─── GET /api/leases/:id — Get lease detail ──────────────────────────────────
 router.get(
   '/:id',

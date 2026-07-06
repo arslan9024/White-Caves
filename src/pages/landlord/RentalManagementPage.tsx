@@ -47,13 +47,46 @@ interface OverdueQueueItem {
   };
 }
 
+interface EjariSummary {
+  total: number;
+  pending: number;
+  registered: number;
+  expired: number;
+  cancelled: number;
+  expiringSoon: number;
+}
+
+const defaultEjariSummary: EjariSummary = {
+  total: 0,
+  pending: 0,
+  registered: 0,
+  expired: 0,
+  cancelled: 0,
+  expiringSoon: 0,
+};
+
+const buildEjariSummaryFromLeases = (rawLeases: Lease[]): EjariSummary => {
+  return {
+    total: rawLeases.length,
+    pending: rawLeases.filter(lease => lease.ejariNumber == null || lease.ejariNumber === '')
+      .length,
+    registered: rawLeases.filter(lease => lease.ejariNumber != null && lease.ejariNumber !== '')
+      .length,
+    expired: rawLeases.filter(lease => lease.status.toLowerCase() === 'expired').length,
+    cancelled: rawLeases.filter(lease => lease.status.toLowerCase() === 'terminated').length,
+    expiringSoon: rawLeases.filter(lease => lease.status.toLowerCase() === 'expiring').length,
+  };
+};
+
 const RentalManagementPage: FC = () => {
   const [filter, setFilter] = useState<string>('all');
   const [leases, setLeases] = useState<Lease[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
   const [queueError, setQueueError] = useState<string | null>(null);
+  const [ejariError, setEjariError] = useState<string | null>(null);
   const [overdueQueue, setOverdueQueue] = useState<OverdueQueueItem[]>([]);
+  const [ejariSummary, setEjariSummary] = useState<EjariSummary>(defaultEjariSummary);
   const [sendingReminders, setSendingReminders] = useState<Record<string, boolean>>({});
   const [reminderResults, setReminderResults] = useState<Record<string, string>>({});
   const isMountedRef = useRef(true);
@@ -67,16 +100,22 @@ const RentalManagementPage: FC = () => {
         setLoading(true);
         setError(null);
         setQueueError(null);
+        setEjariError(null);
+        let leasesData: Lease[] = [];
 
-        const [leasesRes, queueRes] = await Promise.all([
+        const [leasesRes, queueRes, ejariRes] = await Promise.all([
           authFetch('/api/leases?role=landlord', { signal: controller.signal }),
           authFetch('/api/leases/collections/overdue-queue', { signal: controller.signal }),
+          authFetch('/api/leases/ejari/tracking?role=landlord&days=30', {
+            signal: controller.signal,
+          }),
         ]);
 
         if (!isMountedRef.current) return;
         if (leasesRes.ok) {
           const json = await leasesRes.json();
-          setLeases(json.data || []);
+          leasesData = json.data || [];
+          setLeases(leasesData);
         } else {
           setError('Failed to load leases.');
         }
@@ -86,6 +125,18 @@ const RentalManagementPage: FC = () => {
           setOverdueQueue(queueJson.data || []);
         } else {
           setQueueError('Unable to load overdue collection queue.');
+        }
+
+        if (ejariRes.ok) {
+          const ejariJson = await ejariRes.json();
+          const apiSummary = ejariJson.summary as EjariSummary | undefined;
+          const fallbackSource = Array.isArray(ejariJson.data)
+            ? (ejariJson.data as Lease[])
+            : leasesData;
+          setEjariSummary(apiSummary ?? buildEjariSummaryFromLeases(fallbackSource || []));
+        } else {
+          setEjariError('Unable to load Ejari tracking summary.');
+          setEjariSummary(buildEjariSummaryFromLeases(leasesData));
         }
       } catch (err) {
         if (!isMountedRef.current) return;
@@ -226,6 +277,31 @@ const RentalManagementPage: FC = () => {
                   </div>
                 </article>
               ))}
+            </div>
+          </section>
+        )}
+
+        {!loading && (
+          <section aria-label="Ejari compliance summary" className="rm-ejari-summary">
+            <h2 className="rm-ejari-summary__title">Ejari Compliance Summary</h2>
+            {ejariError && <p role="alert">{ejariError}</p>}
+            <div className="rm-ejari-summary__grid">
+              <div className="rm-ejari-summary__tile">
+                <span className="rm-ejari-summary__label">Total leases</span>
+                <strong>{ejariSummary.total}</strong>
+              </div>
+              <div className="rm-ejari-summary__tile">
+                <span className="rm-ejari-summary__label">Registered</span>
+                <strong>{ejariSummary.registered}</strong>
+              </div>
+              <div className="rm-ejari-summary__tile">
+                <span className="rm-ejari-summary__label">Pending</span>
+                <strong>{ejariSummary.pending}</strong>
+              </div>
+              <div className="rm-ejari-summary__tile">
+                <span className="rm-ejari-summary__label">Expiring soon (30d)</span>
+                <strong>{ejariSummary.expiringSoon}</strong>
+              </div>
             </div>
           </section>
         )}
