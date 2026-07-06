@@ -1,6 +1,6 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 
-interface UserKPI {
+export interface UserKPI {
   userId: string;
   leadsToday: number;
   leadsThisWeek: number;
@@ -12,7 +12,7 @@ interface UserKPI {
   timestamp: Date;
 }
 
-interface AnalyticsState {
+export interface AnalyticsState {
   realtimeKPIs: Record<string, UserKPI>;
   connectionStatus: 'connected' | 'disconnected' | 'reconnecting';
   lastUpdate: Date | null;

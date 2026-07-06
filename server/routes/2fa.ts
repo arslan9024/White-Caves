@@ -129,7 +129,7 @@ router.post(
     // Enable 2FA for user
     await prisma.user.update({
       where: { id: userId },
-      data: { twoFAEnabled: true },
+      data: { twoFactorEnabled: true },
     });
 
     const backupCodes = JSON.parse(setup.backupCodes) as string[];
@@ -234,7 +234,7 @@ router.post(
 
     await prisma.user.update({
       where: { id: userId },
-      data: { twoFAEnabled: false },
+      data: { twoFactorEnabled: false },
     });
 
     await prisma.twoFASetup.delete({

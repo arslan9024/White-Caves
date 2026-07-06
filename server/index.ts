@@ -107,6 +107,7 @@ import { startRERAExpiryScheduler } from './services/compliance/reraExpirySchedu
 import { startAutoRouting } from './services/ai/leadAutoRouter.js';
 import { cacheService } from './services/CacheService.js';
 import { schedulerService } from './services/SchedulerService.js';
+import { RealtimeService } from './websocket/realtimeService.js';
 
 const app: Express = express();
 const allowedCorsOrigins = buildAllowedCorsOrigins(CORS_ORIGINS, process.env.NODE_ENV);
@@ -1252,8 +1253,9 @@ const startServer = async () => {
   // Wrap Express in a raw http.Server so Socket.io can share the same port
   const httpServer = createServer(app);
 
-  // Socket server bootstrap intentionally disabled in this runtime profile.
-  // Re-enable once socket.io package/runtime is guaranteed in all environments.
+  // Phase 7 Day 1: realtime websocket service (KPIs, presence, comments)
+  realtimeService = new RealtimeService(httpServer);
+  logger.info('RealtimeService initialized');
 
   const activePort = await listenWithPortFallback(httpServer, preferredPort, {
     enableFallback: allowPortFallback,
@@ -1281,6 +1283,7 @@ const startServer = async () => {
 
 // Start the server
 let httpServer: ReturnType<typeof createServer> | null = null;
+let realtimeService: RealtimeService | null = null;
 startServer()
   .then(s => {
     httpServer = s;
@@ -1308,6 +1311,11 @@ process.on('uncaughtException', (error: Error) => {
 const gracefulShutdown = async (signal: string) => {
   logger.info(`${signal} received — shutting down gracefully`);
   // 1. Stop accepting new connections
+  if (realtimeService) {
+    realtimeService.stop();
+    realtimeService = null;
+    logger.info('RealtimeService stopped');
+  }
   if (httpServer) {
     httpServer.close(() => {
       logger.info('HTTP server closed — no new connections');

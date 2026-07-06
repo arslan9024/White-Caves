@@ -8,9 +8,11 @@ import {
   setActiveUsers,
   setError,
   selectConnectionStatus,
+  type UserKPI,
+  type AnalyticsState,
 } from '../store/slices/analyticsSlice';
 
-const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:5001';
+const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5001';
 
 interface UseRealTimeKPIsOptions {
   enabled?: boolean;
@@ -20,7 +22,9 @@ interface UseRealTimeKPIsOptions {
 export const useRealTimeKPIs = (options: UseRealTimeKPIsOptions = {}) => {
   const { enabled = true, departmentId = 'default' } = options;
   const dispatch = useDispatch();
-  const connectionStatus = useSelector(selectConnectionStatus);
+  const connectionStatus = useSelector((state: { analytics: AnalyticsState }) =>
+    selectConnectionStatus(state)
+  );
   const socketRef = useRef<Socket | null>(null);
   const reconnectAttemptsRef = useRef(0);
   const maxReconnectAttempts = 5;
@@ -51,26 +55,26 @@ export const useRealTimeKPIs = (options: UseRealTimeKPIsOptions = {}) => {
         reconnectionAttempts: maxReconnectAttempts,
       });
 
-      socketRef.current.on('connected', (data: Record<string, unknown>) => {
+      socketRef.current.on('connected', () => {
         reconnectAttemptsRef.current = 0;
         dispatch(setConnectionStatus('connected'));
         dispatch(setError(null));
 
         // Subscribe to KPI updates
         socketRef.current?.emit('subscribe:kpi');
+        socketRef.current?.emit('subscribe:activity');
+        socketRef.current?.emit('subscribe:comments', `department:${departmentId}`);
       });
 
       socketRef.current.on(
         'kpi:update',
-        (data: { kpis: Record<string, unknown>; timestamp: string }) => {
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          dispatch(setRealtimeKPIs(data.kpis as any));
+        (data: { kpis: Record<string, UserKPI>; timestamp: string }) => {
+          dispatch(setRealtimeKPIs(data.kpis));
         }
       );
 
-      socketRef.current.on('kpi:personal', (kpi: Record<string, unknown>) => {
-        const userId = kpi.userId as string;
-        dispatch(updateUserKPI({ userId, kpi: kpi as Partial<unknown> }));
+      socketRef.current.on('kpi:personal', (kpi: Partial<UserKPI> & { userId: string }) => {
+        dispatch(updateUserKPI({ userId: kpi.userId, kpi }));
       });
 
       socketRef.current.on('presence:update', (data: { activeUsers: number }) => {
@@ -100,7 +104,7 @@ export const useRealTimeKPIs = (options: UseRealTimeKPIsOptions = {}) => {
       dispatch(setError(errorMessage));
       dispatch(setConnectionStatus('disconnected'));
     }
-  }, [dispatch, getAuthToken]);
+  }, [departmentId, dispatch, getAuthToken]);
 
   const disconnect = useCallback(() => {
     if (socketRef.current) {
