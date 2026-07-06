@@ -2,6 +2,7 @@ import React, { FC, useCallback, useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useDocumentTitle } from '../../hooks/useDocumentTitle';
 import { authFetch } from '../../utils/authFetch';
+import './AuditLogPage.css';
 import {
   PageContainer,
   PageHeader,
@@ -149,7 +150,12 @@ const AuditLogPage: FC = () => {
   return (
     <PageContainer>
       <PageHeader>
-        <PageTitle>🧾 Audit Log</PageTitle>
+        <div className="audit-log-title-group">
+          <PageTitle>🧾 Audit Log</PageTitle>
+          <p className="audit-log-immutability-note" aria-label="Audit log immutability note">
+            Read-only compliance ledger — records cannot be edited or deleted.
+          </p>
+        </div>
         <Link to="/owner/crm">Back to CRM Hub</Link>
       </PageHeader>
 
@@ -211,7 +217,7 @@ const AuditLogPage: FC = () => {
         </SecondaryButton>
       </ActionBar>
 
-      {error && <EmptyState style={{ color: '#b91c1c' }}>{error}</EmptyState>}
+      {error && <EmptyState className="audit-log-error">{error}</EmptyState>}
 
       {!error && (
         <>
@@ -248,12 +254,15 @@ const AuditLogPage: FC = () => {
             </tbody>
           </Table>
 
-          <ActionBar style={{ marginTop: '1rem', justifyContent: 'space-between' }}>
+          <ActionBar className="audit-log-pagination-bar">
             <div>
               Page {page} of {totalPages} • Total records: {total}
             </div>
-            <div style={{ display: 'flex', gap: '0.5rem' }}>
-              <SecondaryButton onClick={() => setPage(p => Math.max(1, p - 1))} disabled={page <= 1}>
+            <div className="audit-log-pagination-controls">
+              <SecondaryButton
+                onClick={() => setPage(p => Math.max(1, p - 1))}
+                disabled={page <= 1}
+              >
                 Previous
               </SecondaryButton>
               <SecondaryButton

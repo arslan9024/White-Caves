@@ -97,6 +97,7 @@
 - **W18.1-P0-018 (backend progression)**: Fixed follow-up cadence-route registration bug (rules routes now mounted globally, not nested under `/cadences`) and enabled dynamic CadenceRule runtime selection in `startSequence` based on lead tier/source/dealType ✅
 - **W18.1-P1-001 (completion)**: Lead bulk import now enforces row-level validation + deduplication (in-batch and existing leads by email/phone) and returns structured per-row error payloads from `/api/leads/bulk-import`; `LeadImportModal` now surfaces backend skipped-row errors in the result state ✅
 - **W18.1-P1-002 (progression)**: Added audit log XLSX export parity (`GET /api/activities/export/xlsx`) and wired `Export XLSX` action in `AuditLogPage` alongside CSV ✅
+- **W18.1-P1-002 (completion hardening)**: Audit log immutability enforced on API (`PATCH /api/activities/:id` and `DELETE /api/activities/:id` now return 405), list/detail reads aligned to `view_audit_logs` permission, and `AuditLogPage` now presents explicit read-only compliance ledger messaging ✅
 - **W18.1-P1-004 (backend progression)**: Added structured Nadia escalation handoff context logging (`nadia_escalation_queued` / `nadia_escalation_requeued` activity metadata) during queueing ✅
 - **W18.1-P1-004 (hardening)**: Normalized Prisma JSON-safe escalation metadata payload in `server/services/nadia/queueManager.ts` to preserve structured handoff context without type regressions ✅
 - **W18.1-P1-005 (progression)**: Added tokenized e-sign contract routes (`GET /api/contracts/signature/:token`, `POST /api/contracts/signature/:token/sign`) and aligned `SignContractPage` API wiring + tests ✅
@@ -123,6 +124,14 @@
   - `server/routes/leads.test.ts`
   - `src/pages/crm/LeadImportModal.tsx`
   - `src/pages/crm/LeadImportModal.test.tsx`
+
+### Wave 18.1 Session 3 — P1-002 Validation Checkpoint (July 6, 2026)
+
+- Focused implementation tests passed:
+  - `server/routes/activities.test.ts` (34/34)
+  - `src/pages/crm/AuditLogPage.test.tsx` (6/6)
+- Type safety gate passed: `npm run typecheck` ✅
+- Targeted lint passed for TS/TSX touched files (`activities` route/tests + `AuditLogPage`) ✅
 
 ## 🚀 Wave 18.1 Session 1 Delivery
 

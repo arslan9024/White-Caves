@@ -86,6 +86,19 @@
 ## Daily Entry
 
 - **Jul 06, 2026 — @Mira + @Katherine + @Margaret + @Copilot — Done**
+  - W18.1-P1-002 immutable audit log hardening completed.
+  - API hardening in `server/routes/activities.ts`:
+    - list/detail endpoints aligned to `view_audit_logs` permission
+    - update/delete endpoints converted to immutable policy responses (HTTP 405)
+  - CRM UI hardening in `src/pages/crm/AuditLogPage.tsx`:
+    - explicit read-only compliance note added
+    - inline-style lint debt removed via `AuditLogPage.css`
+  - Validation evidence:
+    - focused tests: `server/routes/activities.test.ts`, `src/pages/crm/AuditLogPage.test.tsx` (**40/40 passing**)
+    - `npm run typecheck` passed
+    - targeted lint passed for touched TS/TSX files (CSS file excluded by current ESLint config)
+
+- **Jul 06, 2026 — @Mira + @Katherine + @Margaret + @Copilot — Done**
   - W18.1-P1-001 completed (lead import dedup + row error reporting).
   - Enhanced `POST /api/leads/bulk-import` with:
     - row-level validation (`missing_name`, `invalid_email`, `invalid_phone`)

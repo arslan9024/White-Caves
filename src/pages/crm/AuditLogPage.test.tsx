@@ -52,6 +52,7 @@ describe('AuditLogPage', () => {
     expect(screen.getByText('🧾 Audit Log')).toBeInTheDocument();
     await waitFor(() => expect(mockAuthFetch).toHaveBeenCalledTimes(1));
     expect(screen.getByPlaceholderText(/search description/i)).toBeInTheDocument();
+    expect(screen.getByLabelText('Audit log immutability note')).toBeInTheDocument();
     expect(screen.getByText('Export CSV')).toBeInTheDocument();
     expect(screen.getByText('Export XLSX')).toBeInTheDocument();
   });
