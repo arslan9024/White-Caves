@@ -86,6 +86,16 @@ function createApp(role: string = 'owner') {
   return app;
 }
 
+function createAppWithoutUser() {
+  const app = express();
+  app.use(express.json());
+  app.use('/api/dashboard', reportingRoutes);
+  app.use((err: any, _req: any, res: any, _next: any) => {
+    res.status(err.statusCode || 500).json({ success: false, error: err.message });
+  });
+  return app;
+}
+
 // ═════════════════════════════════════════════════════════════════════
 
 describe('Reporting / Dashboard Routes — /api/dashboard', () => {
@@ -122,6 +132,14 @@ describe('Reporting / Dashboard Routes — /api/dashboard', () => {
       expect(res.body.data).toHaveProperty('role', 'manager');
       expect(Array.isArray(res.body.data.widgets)).toBe(true);
       expect(res.body.data.widgets.length).toBeGreaterThan(0);
+    });
+
+    it('returns 403 for unknown role due to permission guard', async () => {
+      const res = await request(createApp('unknown-role')).get('/api/dashboard/config');
+
+      expect(res.status).toBe(403);
+      expect(res.body.success).toBe(false);
+      expect(res.body.error).toMatch(/access denied|forbidden/i);
     });
   });
 
@@ -160,6 +178,14 @@ describe('Reporting / Dashboard Routes — /api/dashboard', () => {
       expect(res.body.data.widgets).toEqual([
         { id: 'team-kpis', title: 'Team KPIs', enabled: true },
       ]);
+    });
+
+    it('returns 401 when user context is missing', async () => {
+      const res = await request(createAppWithoutUser()).get('/api/dashboard/preferences');
+
+      expect(res.status).toBe(401);
+      expect(res.body.success).toBe(false);
+      expect(res.body.error).toMatch(/authentication required/i);
     });
   });
 
@@ -210,6 +236,45 @@ describe('Reporting / Dashboard Routes — /api/dashboard', () => {
           layout: 'default',
         },
       });
+    });
+
+    it('defaults layout to "default" when omitted', async () => {
+      const payload = {
+        widgets: [{ id: 'kpi-overview', title: 'KPI Overview', enabled: true }],
+      };
+
+      const res = await request(createApp('owner')).put('/api/dashboard/preferences').send(payload);
+
+      expect(res.status).toBe(200);
+      expect(res.body.success).toBe(true);
+      expect(res.body.data.layout).toBe('default');
+      expect(mockPrisma.userDashboardPreference.upsert).toHaveBeenCalledWith({
+        where: { userId: 'user-1' },
+        update: {
+          role: 'owner',
+          widgets: payload.widgets,
+          layout: 'default',
+        },
+        create: {
+          userId: 'user-1',
+          role: 'owner',
+          widgets: payload.widgets,
+          layout: 'default',
+        },
+      });
+    });
+
+    it('returns 401 when user context is missing', async () => {
+      const res = await request(createAppWithoutUser())
+        .put('/api/dashboard/preferences')
+        .send({
+          widgets: [{ id: 'kpi-overview', title: 'KPI Overview', enabled: true }],
+          layout: 'default',
+        });
+
+      expect(res.status).toBe(401);
+      expect(res.body.success).toBe(false);
+      expect(res.body.error).toMatch(/authentication required/i);
     });
   });
 
