@@ -129,9 +129,11 @@ describe('Reporting / Dashboard Routes — /api/dashboard', () => {
 
       expect(res.status).toBe(200);
       expect(res.body.success).toBe(true);
+      expect(res.body).toHaveProperty('data');
       expect(res.body.data).toHaveProperty('role', 'manager');
       expect(Array.isArray(res.body.data.widgets)).toBe(true);
       expect(res.body.data.widgets.length).toBeGreaterThan(0);
+      expect(res.body.data).not.toHaveProperty('updatedAt');
       expect(res.body.data.widgets).toEqual(
         expect.arrayContaining([
           expect.objectContaining({ id: 'team-kpis', title: 'Team KPIs', enabled: true }),
@@ -157,9 +159,14 @@ describe('Reporting / Dashboard Routes — /api/dashboard', () => {
 
       expect(res.status).toBe(200);
       expect(res.body.success).toBe(true);
+      expect(res.body).toHaveProperty('data');
       expect(res.body.data.role).toBe('owner');
       expect(res.body.data.layout).toBe('default');
       expect(Array.isArray(res.body.data.widgets)).toBe(true);
+      expect(res.body.data).not.toHaveProperty('updatedAt');
+      expect(res.body.data.widgets[0]).toEqual(
+        expect.objectContaining({ id: expect.any(String), title: expect.any(String) })
+      );
       expect(mockPrisma.userDashboardPreference.findUnique).toHaveBeenCalledWith({
         where: { userId: 'user-1' },
       });
@@ -180,6 +187,7 @@ describe('Reporting / Dashboard Routes — /api/dashboard', () => {
       expect(res.body.success).toBe(true);
       expect(res.body.data.role).toBe('manager');
       expect(res.body.data.layout).toBe('compact');
+      expect(res.body.data).toHaveProperty('updatedAt');
       expect(res.body.data.widgets).toEqual([
         { id: 'team-kpis', title: 'Team KPIs', enabled: true },
       ]);
@@ -229,6 +237,8 @@ describe('Reporting / Dashboard Routes — /api/dashboard', () => {
       expect(res.body.data.role).toBe('owner');
       expect(res.body.data.layout).toBe('default');
       expect(res.body.data.widgets).toEqual(payload.widgets);
+      expect(typeof res.body.data.updatedAt).toBe('string');
+      expect(Number.isNaN(Date.parse(res.body.data.updatedAt))).toBe(false);
       expect(mockPrisma.userDashboardPreference.upsert).toHaveBeenCalledWith({
         where: { userId: 'user-1' },
         update: {
