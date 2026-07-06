@@ -216,6 +216,16 @@ describe('Reporting / Dashboard Routes — /api/dashboard', () => {
       expect(res.body.error).toMatch(/widgets must be an array/i);
     });
 
+    it('returns 400 when widgets payload is omitted', async () => {
+      const res = await request(createApp('owner'))
+        .put('/api/dashboard/preferences')
+        .send({ layout: 'default' });
+
+      expect(res.status).toBe(400);
+      expect(res.body.success).toBe(false);
+      expect(res.body.error).toMatch(/widgets must be an array/i);
+    });
+
     it('upserts and returns normalized preference payload', async () => {
       mockPrisma.userDashboardPreference.upsert.mockResolvedValueOnce({
         userId: 'user-1',
@@ -304,6 +314,34 @@ describe('Reporting / Dashboard Routes — /api/dashboard', () => {
           role: 'owner',
           widgets: payload.widgets,
           layout: 'default',
+        },
+      });
+    });
+
+    it('uses authenticated role even when client sends a different role', async () => {
+      const payload = {
+        widgets: [{ id: 'kpi-overview', title: 'KPI Overview', enabled: true }],
+        layout: 'compact',
+        role: 'admin',
+      };
+
+      const res = await request(createApp('owner')).put('/api/dashboard/preferences').send(payload);
+
+      expect(res.status).toBe(200);
+      expect(res.body.success).toBe(true);
+      expect(res.body.data.role).toBe('owner');
+      expect(mockPrisma.userDashboardPreference.upsert).toHaveBeenCalledWith({
+        where: { userId: 'user-1' },
+        update: {
+          role: 'owner',
+          widgets: payload.widgets,
+          layout: 'compact',
+        },
+        create: {
+          userId: 'user-1',
+          role: 'owner',
+          widgets: payload.widgets,
+          layout: 'compact',
         },
       });
     });
