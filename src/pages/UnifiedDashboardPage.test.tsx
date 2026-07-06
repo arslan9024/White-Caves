@@ -83,6 +83,9 @@ vi.mock('../components/crm/AIAssistantHub', () => ({
 vi.mock('../components/crm/AICommandCenter', () => ({
   default: () => <div data-testid="ai-command">AI Command</div>,
 }));
+vi.mock('../components/crm/AICommandCenter.tsx', () => ({
+  default: () => <div data-testid="ai-command">AI Command</div>,
+}));
 vi.mock('../components/crm/NadiaWhatsAppCRM', () => ({
   default: (_props: Record<string, unknown>) => <div data-testid="nadia-crm">Nadia</div>,
 }));
@@ -147,6 +150,7 @@ vi.mock('../components/crm/MarketAnalyticsModule', () => ({
 }));
 
 import UnifiedDashboardPage from './UnifiedDashboardPage';
+import { CREATOR_SUPERUSER_EMAIL } from '../utils/superUserAccess';
 import navigationReducer from '../store/navigationSlice';
 import userReducer from '../store/userSlice';
 import crmDataReducer from '../store/crmDataSlice';
@@ -155,6 +159,8 @@ import sidebarReducer from '../store/slices/sidebarSlice';
 // ── Helpers ──────────────────────────────────────────────────────
 
 const createMockStore = (overrides: Record<string, unknown> = {}) => {
+  const baseCrmDataState = crmDataReducer(undefined, { type: '@@INIT' });
+
   return configureStore({
     reducer: {
       navigation: navigationReducer,
@@ -173,6 +179,10 @@ const createMockStore = (overrides: Record<string, unknown> = {}) => {
         error: null,
         ...((overrides.user as object) || {}),
       } as unknown as ReturnType<typeof userReducer>,
+      crmData: {
+        ...baseCrmDataState,
+        ...((overrides.crmData as object) || {}),
+      } as unknown as ReturnType<typeof crmDataReducer>,
     },
   });
 };
@@ -188,7 +198,7 @@ const renderPage = (tab = 'overview', overrides: Record<string, unknown> = {}, e
     store,
     ...render(
       <Provider store={store}>
-        <MemoryRouter initialEntries={[`/owner/dashboard?tab=${tab}${extraQuery}`]}>
+        <MemoryRouter initialEntries={[`/crm?tab=${tab}${extraQuery}`]}>
           <LocationProbe />
           <UnifiedDashboardPage />
         </MemoryRouter>
@@ -233,8 +243,8 @@ describe('UnifiedDashboardPage', () => {
     it('should render the tab navigation inside the dashboard content area', async () => {
       renderPage();
       await waitFor(() => {
-        expect(screen.getByRole('button', { name: 'Overview' })).toBeInTheDocument();
-        expect(screen.getByRole('button', { name: 'Analytics' })).toBeInTheDocument();
+        expect(screen.getAllByRole('button', { name: 'Overview' }).length).toBeGreaterThan(0);
+        expect(screen.getAllByRole('button', { name: 'Analytics' }).length).toBeGreaterThan(0);
       });
     });
 
@@ -246,6 +256,38 @@ describe('UnifiedDashboardPage', () => {
         expect(within(highlights).getByText('Agents')).toBeInTheDocument();
         expect(within(highlights).getByText('Leads')).toBeInTheDocument();
       });
+    });
+
+    it('should render empty-state guidance when dashboard data is not yet available', async () => {
+      renderPage('overview', {
+        user: {
+          currentUser: {
+            id: 'u3',
+            name: 'Executive',
+            email: 'executive@wc.ae',
+            role: 'managing_director',
+            phone: '+971500000003',
+            photoURL: 'https://example.com/executive.jpg',
+          },
+        },
+        navigation: { activeRole: 'managing_director' },
+        crmData: {
+          leads: { items: [], selected: null, loading: false, error: null },
+          clients: { items: [], selected: null, loading: false, error: null },
+          agents: { items: [], selected: null, loading: false, error: null },
+          properties: { items: [], selected: null, loading: false, error: null },
+          commissions: { items: [], loading: false, error: null },
+          activities: { items: [], loading: false, error: null },
+          overview: null,
+        },
+      });
+
+      await waitFor(() => {
+        expect(screen.getByLabelText('Dashboard empty state')).toBeInTheDocument();
+      });
+
+      expect(screen.getByRole('button', { name: /Open command palette/i })).toBeInTheDocument();
+      expect(screen.getByRole('button', { name: /Open Unified CRM/i })).toBeInTheDocument();
     });
 
     it('should render profile completion guidance when profile fields are incomplete', async () => {
@@ -422,11 +464,73 @@ describe('UnifiedDashboardPage', () => {
       });
     });
 
+    it('renders exactly two top-level workspaces for managing director role', async () => {
+      renderPage('overview', {
+        navigation: { activeRole: 'managing_director' },
+        user: {
+          currentUser: {
+            id: 'u-md',
+            name: 'Managing Director',
+            email: 'md@wc.ae',
+            role: 'managing_director',
+          },
+        },
+      });
+
+      await waitFor(() => {
+        expect(
+          screen.getByRole('navigation', { name: /Workspace navigation/i })
+        ).toBeInTheDocument();
+      });
+
+      const workspaceNav = screen.getByRole('navigation', { name: /Workspace navigation/i });
+      const workspaceButtons = within(workspaceNav).getAllByRole('button');
+      expect(workspaceButtons).toHaveLength(2);
+      expect(screen.getByLabelText('Executive controls')).toBeInTheDocument();
+      expect(
+        within(workspaceNav).getByRole('button', {
+          name: /Company Structure & Business Process/i,
+        })
+      ).toBeInTheDocument();
+      expect(
+        within(workspaceNav).getByRole('button', { name: /AI Command Center/i })
+      ).toBeInTheDocument();
+    });
+
+    it('opens AI command center workspace from MD top-level workspace button', async () => {
+      renderPage('overview', {
+        navigation: { activeRole: 'managing_director' },
+        user: {
+          currentUser: {
+            id: 'u-md',
+            name: 'Managing Director',
+            email: 'md@wc.ae',
+            role: 'managing_director',
+          },
+        },
+      });
+
+      await waitFor(() => {
+        expect(screen.getByRole('button', { name: /AI Command Center/i })).toBeInTheDocument();
+      });
+
+      fireEvent.click(screen.getByRole('button', { name: /AI Command Center/i }));
+
+      await waitFor(() => {
+        expect(screen.getByTestId('ai-command')).toBeInTheDocument();
+      });
+    });
+
     it('shows superuser control strip for owner role', async () => {
       renderPage('overview', {
         navigation: { activeRole: 'owner' },
         user: {
-          currentUser: { id: 'u1', name: 'Admin', email: 'admin@wc.ae', role: 'owner' },
+          currentUser: {
+            id: 'u1',
+            name: 'Founder',
+            email: CREATOR_SUPERUSER_EMAIL,
+            role: 'owner',
+          },
         },
       });
 
@@ -435,6 +539,56 @@ describe('UnifiedDashboardPage', () => {
         expect(screen.getByRole('button', { name: /Refresh live data/i })).toBeInTheDocument();
         expect(screen.getByRole('button', { name: /Open command palette/i })).toBeInTheDocument();
       });
+    });
+
+    it('shows managing director cockpit banner when cockpit=md query is present', async () => {
+      renderPage(
+        'overview',
+        {
+          navigation: { activeRole: 'owner' },
+          user: {
+            currentUser: {
+              id: 'u1',
+              name: 'Founder',
+              email: CREATOR_SUPERUSER_EMAIL,
+              role: 'owner',
+            },
+          },
+        },
+        '&cockpit=md'
+      );
+
+      await waitFor(() => {
+        expect(screen.getByLabelText('Managing Director cockpit mode')).toBeInTheDocument();
+        expect(
+          screen.getByRole('heading', { name: /Executive cockpit engaged/i })
+        ).toBeInTheDocument();
+      });
+    });
+
+    it('navigates to /profile from cockpit banner action', async () => {
+      renderPage(
+        'overview',
+        {
+          navigation: { activeRole: 'owner' },
+          user: {
+            currentUser: {
+              id: 'u1',
+              name: 'Founder',
+              email: CREATOR_SUPERUSER_EMAIL,
+              role: 'owner',
+            },
+          },
+        },
+        '&cockpit=md'
+      );
+
+      await waitFor(() => {
+        expect(screen.getByRole('button', { name: /Back to profile/i })).toBeInTheDocument();
+      });
+
+      fireEvent.click(screen.getByRole('button', { name: /Back to profile/i }));
+      expect(mockNavigate).toHaveBeenCalledWith('/profile');
     });
 
     it('hides superuser control strip for buyer role', async () => {
@@ -450,6 +604,25 @@ describe('UnifiedDashboardPage', () => {
       });
 
       expect(screen.queryByLabelText('Superuser controls')).not.toBeInTheDocument();
+    });
+
+    it('removes cockpit query mode for non-superusers', async () => {
+      renderPage(
+        'overview',
+        {
+          navigation: { activeRole: 'buyer' },
+          user: {
+            currentUser: { id: 'u2', name: 'Buyer', email: 'buyer@wc.ae', role: 'buyer' },
+          },
+        },
+        '&cockpit=md'
+      );
+
+      await waitFor(() => {
+        const search = screen.getByTestId('location-search').textContent || '';
+        expect(search).toContain('tab=overview');
+        expect(search).not.toContain('cockpit=md');
+      });
     });
   });
 });

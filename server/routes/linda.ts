@@ -258,7 +258,7 @@ router.post(
   async (req: Request, res: Response) => {
     try {
       const { phoneNumber, message } = req.body;
-      const { conversationId } = req.params;
+      const { conversationId } = req.params as Record<string, string>;
 
       if (!phoneNumber || !message) {
         return res
@@ -444,7 +444,7 @@ router.post(
   requireRole('owner', 'admin'),
   async (req: Request, res: Response) => {
     try {
-      const { id } = req.params;
+      const { id } = req.params as Record<string, string>;
       const updated = await dispatchLindaCampaign(id);
       res.json({ success: true, data: updated });
     } catch (err) {
@@ -545,7 +545,7 @@ router.get(
   requirePermission('view_whatsapp_conversations'),
   async (req: Request, res: Response) => {
     try {
-      const { phoneNumber } = req.params;
+      const { phoneNumber } = req.params as Record<string, string>;
       const limit = req.query.limit ? parseInt(req.query.limit as string) : 50;
 
       const { messageBridge } = await getOrInitLindaRuntime();
@@ -567,7 +567,7 @@ router.get(
   requirePermission('view_whatsapp_conversations'),
   async (req: Request, res: Response) => {
     try {
-      const { phoneNumber } = req.params;
+      const { phoneNumber } = req.params as Record<string, string>;
       const cleanPhone = String(phoneNumber || '').replace(/\D/g, '');
 
       if (cleanPhone.length < 8) {
@@ -671,8 +671,9 @@ router.post('/nlp-route', async (req: Request, res: Response) => {
     const recommendedAction = ACTION_MAP[intent] ?? 'route_to_nadia_queue';
 
     // Emit orchestrator event — triggers Nina NLP handler + Nadia routing handler
-    const { assistantOrchestrator } =
-      await import('../services/orchestrator/AssistantOrchestrator.js');
+    const { assistantOrchestrator } = await import(
+      '../services/orchestrator/AssistantOrchestrator.js'
+    );
     assistantOrchestrator.emitEvent('linda:message_received', {
       from: phone,
       message,
@@ -727,8 +728,9 @@ router.post('/inventory-broadcast', async (req: Request, res: Response) => {
 
     const data = propertyData as Record<string, unknown>;
 
-    const { assistantOrchestrator } =
-      await import('../services/orchestrator/AssistantOrchestrator.js');
+    const { assistantOrchestrator } = await import(
+      '../services/orchestrator/AssistantOrchestrator.js'
+    );
     assistantOrchestrator.emitEvent('mary:property_status_changed', {
       propertyId,
       previousStatus: typeof data.previousStatus === 'string' ? data.previousStatus : 'unknown',
@@ -778,8 +780,9 @@ router.post('/henry-trigger', async (req: Request, res: Response) => {
     const VIEWING_KEYS = ['viewing_agreement', 'key_handover'];
     const OFFER_KEYS = ['offer_letter', 'booking_form', 'tenancy_contract', 'gov_employee_booking'];
 
-    const { assistantOrchestrator } =
-      await import('../services/orchestrator/AssistantOrchestrator.js');
+    const { assistantOrchestrator } = await import(
+      '../services/orchestrator/AssistantOrchestrator.js'
+    );
 
     if (VIEWING_KEYS.includes(templateKey)) {
       assistantOrchestrator.emitEvent('cross:viewing_booked', {
@@ -874,8 +877,9 @@ router.get(
   requirePermission('view_whatsapp_conversations'),
   async (req: Request, res: Response) => {
     try {
-      const { getAlerts, getAlertSummary } =
-        await import('../services/linda/sentimentAlertService.js');
+      const { getAlerts, getAlertSummary } = await import(
+        '../services/linda/sentimentAlertService.js'
+      );
       const onlyUnacked = req.query['unacknowledged'] === 'true';
       const limit = parseInt(String(req.query['limit'] ?? '50'), 10);
       const alerts = getAlerts(onlyUnacked, limit);

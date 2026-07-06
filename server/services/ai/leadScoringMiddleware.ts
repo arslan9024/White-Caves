@@ -177,10 +177,34 @@ const SCORING_TRIGGERS: Record<string, string[]> = {
  * Register Prisma middleware for real-time lead scoring.
  * Call once after PrismaClient initialization.
  *
- * @param prisma - PrismaClient instance to attach middleware to
+ * NOTE: Prisma 5+ removed $use middleware. Lead scoring is now triggered
+ * explicitly from route handlers via triggerLeadScoring(), and via the
+ * applyLeadScoringExtension() helper for new PrismaClient setups.
+ *
+ * @param _prisma - PrismaClient instance (kept for backward-compatible signature)
  */
 export function registerLeadScoringMiddleware(prisma: PrismaClient): void {
-  prisma.$use(async (params: Prisma.MiddlewareParams, next: (params: Prisma.MiddlewareParams) => Promise<unknown>) => {
+  const middlewareApi = prisma as PrismaClient & {
+    $use?: (
+      middleware: (
+          params: { model?: string; action: string; args: unknown; dataPath: string[]; runInTransaction: boolean },
+          next: (params: { model?: string; action: string; args: unknown; dataPath: string[]; runInTransaction: boolean }) => Promise<unknown>
+      ) => Promise<unknown>
+    ) => void;
+  };
+
+  if (typeof middlewareApi.$use !== 'function') {
+    const message = '[LeadScoringMiddleware] Prisma middleware API ($use) not available; skipping registration';
+    if (process.env.NODE_ENV === 'development') {
+      logger.info(message);
+    } else {
+      logger.warn(message);
+    }
+    return;
+  }
+
+  type MiddlewareParams = { model?: string; action: string; args: unknown; dataPath: string[]; runInTransaction: boolean };
+  middlewareApi.$use(async (params: MiddlewareParams, next: (params: MiddlewareParams) => Promise<unknown>) => {
     const model = params.model;
     const action = params.action;
 

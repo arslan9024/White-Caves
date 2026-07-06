@@ -1,0 +1,46 @@
+# Tuesday Recruitment Implementation Checklist
+
+**Updated:** May 22, 2026
+
+## Completed
+
+- [x] Phase 1A data model and recruitment API foundation
+- [x] Phase 1B resume parsing and candidate scoring service
+- [x] Phase 1C WhatsApp template service and messaging flow
+- [x] Screening status alignment to centralized score constants
+- [x] Backward-compatible analytics aliases preserved in recruitment metrics
+- [x] API and security specification documents added under `plans/technical-specs`
+- [x] Linda template catalog added under `plans/linda-templates`
+- [x] Zoe KPI framework added under `plans/zoe-dashboard`
+- [x] Recruitment router mounted in the main server
+- [x] Recruitment overview endpoint added for Zoe analytics
+- [x] Offer dispatch endpoint added for application workflows
+- [x] Onboarding start endpoint added for accepted candidates
+- [x] Zoe recruitment analytics slice added to the executive CRM
+- [x] Recruitment route helper tests added for metrics and onboarding contracts
+- [x] Live Express recruitment route tests added for score-candidate and screening-metrics (moderate_match/rejected)
+- [x] Offer workflow expanded with approval and acceptance response endpoints
+- [x] Recruitment audit logging added for scoring, offer, and onboarding transitions
+- [x] Zoe analytics wired to manager shortlist and manager review workflow endpoints
+- [x] Linda template production-readiness validation endpoint and tests added
+- [x] Recruitment overview and Zoe analytics now include time-to-hire and cost-per-hire trend views
+- [x] Executive KPI trend-history CSV export added for recruitment overview
+
+## In Progress
+
+- [x] Migrate all recruitment consumers to canonical status labels
+- [x] Expand Zoe recruitment analytics beyond the first executive slice
+- [x] Verify Linda workflows against production WhatsApp Business constraints
+
+## Pending
+
+- [x] Add manager self-service review and shortlist flow
+- [x] Add security-focused route tests for recruitment access control
+- [x] Remove legacy metric aliases after all consumers migrate
+
+## Exit Criteria
+
+- [ ] Canonical statuses are used end-to-end in backend and UI
+- [ ] Recruitment KPI dashboard renders live data
+- [ ] WhatsApp screening and interview flows are verified in staging
+- [ ] API docs match live endpoint behavior

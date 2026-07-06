@@ -9,6 +9,7 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import express from 'express';
 import request from 'supertest';
+import crypto from 'crypto';
 
 // ── Hoisted mocks ────────────────────────────────────────────────────
 const { mockPrisma, mockBcrypt, mockJwt } = vi.hoisted(() => {
@@ -41,8 +42,10 @@ const { mockPrisma, mockBcrypt, mockJwt } = vi.hoisted(() => {
       activity: {
         create: fn().mockResolvedValue({ id: 'act-1' }),
         findMany: fn().mockResolvedValue([]),
+        findUnique: fn().mockResolvedValue(null),
         count: fn().mockResolvedValue(0),
         findFirst: fn().mockResolvedValue(null),
+        update: fn().mockResolvedValue({ id: 'act-1' }),
         deleteMany: fn().mockResolvedValue({ count: 0 }),
       },
     },
@@ -52,6 +55,7 @@ const { mockPrisma, mockBcrypt, mockJwt } = vi.hoisted(() => {
     },
     mockJwt: {
       sign: fn().mockReturnValue('mock-jwt-token'),
+      verify: fn(),
     },
   };
 });
@@ -221,6 +225,35 @@ describe('Auth Routes — /api/auth', () => {
       expect(res.body.data.token).toBe('mock-jwt-token');
       expect(res.body.data.user.email).toBe('test@whitecaves.ae');
       expect(res.body.requiresTwoFactor).toBe(false);
+    });
+
+    it('returns role-aware profile completeness payload for login user', async () => {
+      mockPrisma.user.findUnique.mockResolvedValueOnce({
+        id: 'user-1',
+        email: 'test@whitecaves.ae',
+        name: 'Test User',
+        role: 'agent',
+        department: null,
+        phone: '+971500000000',
+        photoUrl: null,
+        status: 'active',
+        passwordHash: '$2a$10$validhash',
+      });
+      mockBcrypt.compare.mockResolvedValueOnce(true);
+
+      const res = await request(createApp())
+        .post('/api/auth/login')
+        .send({ email: 'test@whitecaves.ae', password: 'Test1234' });
+
+      expect(res.status).toBe(200);
+      expect(res.body.data.user.profileCompleted).toBe(false);
+      expect(res.body.data.user.profileCompletion).toEqual(
+        expect.objectContaining({
+          roleCategory: 'agent',
+          requiredFields: ['name', 'phone', 'department'],
+          missingFields: ['department'],
+        })
+      );
     });
 
     it('returns a 2FA challenge when the account has two-factor enabled', async () => {
@@ -884,19 +917,242 @@ describe('Auth Routes — /api/auth', () => {
       expect(res.body.data.token).toBe('mock-jwt-token');
       expect(res.body.data.user.email).toBe('devuser@whitecaves.ae');
     });
+
+    it('uses development fallback when NODE_ENV is unset', async () => {
+      delete process.env.NODE_ENV;
+      process.env.ALLOW_FIREBASE_SYNC_DEV_FALLBACK = 'true';
+
+      const adminInitError = new Error('Firebase Admin SDK has not been initialized');
+      adminInitError.name = 'FirebaseAdminInitError';
+      mockVerifyFirebaseIdToken.mockRejectedValueOnce(adminInitError);
+
+      mockPrisma.user.findUnique.mockResolvedValueOnce(null);
+      mockPrisma.user.create.mockResolvedValueOnce({
+        id: 'user-dev-2',
+        email: 'unsetenv@whitecaves.ae',
+        name: 'Unset Env User',
+        role: 'agent',
+        department: null,
+        photoUrl: null,
+        status: 'active',
+      });
+
+      const res = await request(createApp()).post('/api/auth/firebase-sync').send({
+        firebaseUid: 'firebase-dev-456',
+        firebaseToken: 'dev-token',
+        email: 'unsetenv@whitecaves.ae',
+        name: 'Unset Env User',
+      });
+
+      expect(res.status).toBe(200);
+      expect(res.body.success).toBe(true);
+      expect(res.body.data.token).toBe('mock-jwt-token');
+      expect(res.body.data.user.email).toBe('unsetenv@whitecaves.ae');
+    });
+  });
+
+  // ── POST /forgot-password/* ──────────────────────────────────────
+  describe('POST /api/auth/forgot-password', () => {
+    const hashResetToken = (token: string): string =>
+      crypto.createHash('sha256').update(token).digest('hex');
+
+    it('returns 200 and generic response when request is accepted', async () => {
+      mockPrisma.activity.count.mockResolvedValueOnce(0).mockResolvedValueOnce(0);
+      mockPrisma.user.findUnique.mockResolvedValueOnce(null);
+
+      const res = await request(createApp())
+        .post('/api/auth/forgot-password/request')
+        .send({ email: 'reset-user@whitecaves.ae' });
+
+      expect(res.status).toBe(200);
+      expect(res.body.success).toBe(true);
+      expect(res.body.data.requested).toBe(true);
+
+      const requestLog = mockPrisma.activity.create.mock.calls.find(
+        (c: any[]) => c[0]?.data?.action === 'password_reset_requested'
+      );
+      expect(requestLog).toBeDefined();
+      expect(requestLog[0].data.metadata).toEqual(
+        expect.objectContaining({ email: 'reset-user@whitecaves.ae', used: false })
+      );
+    });
+
+    it('returns 429 with Retry-After when reset requests exceed threshold', async () => {
+      mockPrisma.activity.count.mockResolvedValueOnce(999).mockResolvedValueOnce(0);
+      mockPrisma.activity.findFirst.mockResolvedValueOnce({
+        createdAt: new Date(Date.now() - 30 * 1000),
+      });
+
+      const res = await request(createApp())
+        .post('/api/auth/forgot-password/request')
+        .send({ email: 'reset-user@whitecaves.ae' });
+
+      expect(res.status).toBe(429);
+      expect(res.body.error).toMatch(/too many password reset attempts/i);
+      expect(res.headers['retry-after']).toBeDefined();
+
+      const limitedLog = mockPrisma.activity.create.mock.calls.find(
+        (c: any[]) => c[0]?.data?.action === 'password_reset_request_limited'
+      );
+      expect(limitedLog).toBeDefined();
+    });
+
+    it('returns 400 and records verify failure when token is invalid', async () => {
+      mockPrisma.activity.count.mockResolvedValueOnce(0).mockResolvedValueOnce(0);
+      mockPrisma.activity.findMany.mockResolvedValueOnce([]);
+
+      const res = await request(createApp()).post('/api/auth/forgot-password/verify').send({
+        email: 'reset-user@whitecaves.ae',
+        token: 'invalid-token',
+      });
+
+      expect(res.status).toBe(400);
+      expect(res.body.error).toMatch(/invalid or expired reset token/i);
+
+      const failedLog = mockPrisma.activity.create.mock.calls.find(
+        (c: any[]) => c[0]?.data?.action === 'password_reset_verify_failed'
+      );
+      expect(failedLog).toBeDefined();
+    });
+
+    it('returns 429 on verify lockout after repeated failures', async () => {
+      mockPrisma.activity.count.mockResolvedValueOnce(999).mockResolvedValueOnce(0);
+      mockPrisma.activity.findFirst.mockResolvedValueOnce({
+        createdAt: new Date(Date.now() - 45 * 1000),
+      });
+
+      const res = await request(createApp()).post('/api/auth/forgot-password/verify').send({
+        email: 'reset-user@whitecaves.ae',
+        token: 'any-token',
+      });
+
+      expect(res.status).toBe(429);
+      expect(res.body.error).toMatch(/reset verification is temporarily locked/i);
+      expect(res.headers['retry-after']).toBeDefined();
+    });
+
+    it('returns resetSessionToken when verify succeeds', async () => {
+      const rawToken = 'valid-reset-token';
+      const tokenHash = hashResetToken(rawToken);
+
+      mockPrisma.activity.count.mockResolvedValueOnce(0).mockResolvedValueOnce(0);
+      mockPrisma.activity.findMany.mockResolvedValueOnce([
+        {
+          id: 'reset-activity-1',
+          createdAt: new Date(),
+          metadata: {
+            email: 'reset-user@whitecaves.ae',
+            tokenHash,
+            used: false,
+            expiresAt: new Date(Date.now() + 10 * 60 * 1000).toISOString(),
+          },
+        },
+      ]);
+
+      const res = await request(createApp()).post('/api/auth/forgot-password/verify').send({
+        email: 'reset-user@whitecaves.ae',
+        token: rawToken,
+      });
+
+      expect(res.status).toBe(200);
+      expect(res.body.success).toBe(true);
+      expect(res.body.data.verified).toBe(true);
+      expect(res.body.data.resetSessionToken).toBe('mock-jwt-token');
+
+      const verifiedLog = mockPrisma.activity.create.mock.calls.find(
+        (c: any[]) => c[0]?.data?.action === 'password_reset_verified'
+      );
+      expect(verifiedLog).toBeDefined();
+    });
+
+    it('resets password successfully with a valid reset session token', async () => {
+      const tokenHash = hashResetToken('valid-reset-token');
+      mockJwt.verify.mockReturnValueOnce({
+        purpose: 'password_reset',
+        email: 'reset-user@whitecaves.ae',
+        tokenHash,
+        tokenActivityId: 'reset-activity-1',
+      });
+
+      mockPrisma.activity.findUnique.mockResolvedValueOnce({
+        id: 'reset-activity-1',
+        metadata: {
+          email: 'reset-user@whitecaves.ae',
+          tokenHash,
+          used: false,
+          expiresAt: new Date(Date.now() + 10 * 60 * 1000).toISOString(),
+        },
+      });
+      mockPrisma.user.findUnique.mockResolvedValueOnce({
+        id: 'user-1',
+        email: 'reset-user@whitecaves.ae',
+        passwordHash: '$2a$10$oldhash',
+      });
+
+      const res = await request(createApp()).post('/api/auth/forgot-password/reset').send({
+        resetSessionToken: 'valid-session-token',
+        newPassword: 'NewStrong123',
+      });
+
+      expect(res.status).toBe(200);
+      expect(res.body.success).toBe(true);
+      expect(res.body.data.reset).toBe(true);
+      expect(mockPrisma.user.update).toHaveBeenCalledWith(
+        expect.objectContaining({
+          where: { id: 'user-1' },
+          data: expect.objectContaining({ passwordHash: '$2a$10$newhashedpassword' }),
+        })
+      );
+      expect(mockPrisma.activity.update).toHaveBeenCalledWith(
+        expect.objectContaining({ where: { id: 'reset-activity-1' } })
+      );
+
+      const successLog = mockPrisma.activity.create.mock.calls.find(
+        (c: any[]) => c[0]?.data?.action === 'password_reset_success'
+      );
+      expect(successLog).toBeDefined();
+    });
+
+    it('returns 401 when reset session token is invalid', async () => {
+      mockJwt.verify.mockImplementationOnce(() => {
+        throw new Error('jwt malformed');
+      });
+
+      const res = await request(createApp()).post('/api/auth/forgot-password/reset').send({
+        resetSessionToken: 'broken-session-token',
+        newPassword: 'NewStrong123',
+      });
+
+      expect(res.status).toBe(401);
+      expect(res.body.error).toMatch(/reset session is invalid or expired/i);
+    });
   });
 
   // ── POST /logout ─────────────────────────────────────────────────
   describe('POST /api/auth/logout', () => {
-    it('returns 200 on successful logout', async () => {
+    const csrfToken = 'csrf-token-logout';
+
+    it('returns 403 when CSRF token is missing', async () => {
       const res = await request(createApp('owner')).post('/api/auth/logout');
+      expect(res.status).toBe(403);
+      expect(res.body.error).toMatch(/csrf token is required/i);
+    });
+
+    it('returns 200 on successful logout', async () => {
+      const res = await request(createApp('owner'))
+        .post('/api/auth/logout')
+        .set('Cookie', `csrf_token=${csrfToken}`)
+        .set('X-CSRF-Token', csrfToken);
       expect(res.status).toBe(200);
       expect(res.body.success).toBe(true);
       expect(res.body.message).toMatch(/logged out/i);
     });
 
     it('logs activity on logout', async () => {
-      await request(createApp('owner')).post('/api/auth/logout');
+      await request(createApp('owner'))
+        .post('/api/auth/logout')
+        .set('Cookie', `csrf_token=${csrfToken}`)
+        .set('X-CSRF-Token', csrfToken);
       expect(mockPrisma.activity.create).toHaveBeenCalledWith(
         expect.objectContaining({
           data: expect.objectContaining({ action: 'logout' }),
@@ -1297,6 +1553,7 @@ describe('Auth Routes — /api/auth', () => {
 
   // ── POST /refresh ─────────────────────────────────────────────────
   describe('POST /api/auth/refresh', () => {
+    const csrfToken = 'csrf-token-refresh';
     // vi.clearAllMocks() (outer beforeEach) clears .mock.calls but NOT the
     // onceImplementations queue. Stale once-values from earlier failing tests
     // can bleed into these tests. Reset findUnique fully before every refresh
@@ -1308,8 +1565,17 @@ describe('Auth Routes — /api/auth', () => {
       mockBcrypt.compare.mockReset();
       mockBcrypt.compare.mockResolvedValue(true);
     });
-    it('returns 401 when no cookie is provided', async () => {
+    it('returns 403 when CSRF token is missing', async () => {
       const res = await request(createApp()).post('/api/auth/refresh');
+      expect(res.status).toBe(403);
+      expect(res.body.error).toMatch(/csrf token is required/i);
+    });
+
+    it('returns 401 when refresh token cookie is missing', async () => {
+      const res = await request(createApp())
+        .post('/api/auth/refresh')
+        .set('Cookie', `csrf_token=${csrfToken}`)
+        .set('X-CSRF-Token', csrfToken);
       expect(res.status).toBe(401);
       expect(res.body.error).toMatch(/no refresh token provided/i);
     });
@@ -1317,7 +1583,8 @@ describe('Auth Routes — /api/auth', () => {
     it('returns 401 when cookie value has no colon separator', async () => {
       const res = await request(createApp())
         .post('/api/auth/refresh')
-        .set('Cookie', 'refresh_token=MALFORMEDTOKEN');
+        .set('Cookie', [`csrf_token=${csrfToken}`, 'refresh_token=MALFORMEDTOKEN'])
+        .set('X-CSRF-Token', csrfToken);
       expect(res.status).toBe(401);
       expect(res.body.error).toMatch(/no refresh token provided/i);
     });
@@ -1326,7 +1593,8 @@ describe('Auth Routes — /api/auth', () => {
       mockPrisma.user.findUnique.mockResolvedValueOnce(null);
       const res = await request(createApp())
         .post('/api/auth/refresh')
-        .set('Cookie', 'refresh_token=ghost-user-id:somerawtoken');
+        .set('Cookie', [`csrf_token=${csrfToken}`, 'refresh_token=ghost-user-id:somerawtoken'])
+        .set('X-CSRF-Token', csrfToken);
       expect(res.status).toBe(401);
       expect(res.body.error).toMatch(/invalid or expired/i);
     });
@@ -1344,7 +1612,8 @@ describe('Auth Routes — /api/auth', () => {
 
       const res = await request(createApp())
         .post('/api/auth/refresh')
-        .set('Cookie', 'refresh_token=user-1:stale-or-stolen-token');
+        .set('Cookie', [`csrf_token=${csrfToken}`, 'refresh_token=user-1:stale-or-stolen-token'])
+        .set('X-CSRF-Token', csrfToken);
 
       expect(res.status).toBe(401);
       expect(res.body.error).toMatch(/reuse detected/i);
@@ -1367,7 +1636,8 @@ describe('Auth Routes — /api/auth', () => {
       });
       const res = await request(createApp())
         .post('/api/auth/refresh')
-        .set('Cookie', 'refresh_token=user-1:sometoken');
+        .set('Cookie', [`csrf_token=${csrfToken}`, 'refresh_token=user-1:sometoken'])
+        .set('X-CSRF-Token', csrfToken);
       expect(res.status).toBe(401);
       expect(res.body.error).toMatch(/invalid or expired/i);
       expect(mockBcrypt.compare).not.toHaveBeenCalled();
@@ -1388,7 +1658,8 @@ describe('Auth Routes — /api/auth', () => {
 
       const res = await request(createApp())
         .post('/api/auth/refresh')
-        .set('Cookie', 'refresh_token=user-1:validrawtoken');
+        .set('Cookie', [`csrf_token=${csrfToken}`, 'refresh_token=user-1:validrawtoken'])
+        .set('X-CSRF-Token', csrfToken);
 
       expect(res.status).toBe(200);
       expect(res.body.success).toBe(true);

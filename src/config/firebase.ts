@@ -5,12 +5,20 @@ import {
   FacebookAuthProvider, 
   OAuthProvider,
   EmailAuthProvider,
+  browserLocalPersistence,
+  browserSessionPersistence,
+  onAuthStateChanged,
+  sendEmailVerification,
+  sendPasswordResetEmail,
+  setPersistence,
   signInWithPopup,
   signInWithEmailAndPassword,
   createUserWithEmailAndPassword,
   signOut as firebaseSignOut,
   RecaptchaVerifier,
   signInWithPhoneNumber,
+  updateEmail,
+  updatePassword,
   updateProfile,
   reauthenticateWithCredential,
   type Auth,
@@ -40,25 +48,50 @@ const firebaseConfig: FirebaseConfig = {
   appId: import.meta.env.VITE_FIREBASE_APP_ID
 };
 
-let app: FirebaseApp | null = null;
-// @ts-expect-error - auth is reassigned in init block and exported at bottom
-// eslint-disable-next-line prefer-const
-let auth: Auth | null = null;
+const firebaseRequiredConfigMap: Record<string, string | undefined> = {
+  VITE_FIREBASE_API_KEY: firebaseConfig.apiKey,
+  VITE_FIREBASE_AUTH_DOMAIN: firebaseConfig.authDomain,
+  VITE_FIREBASE_PROJECT_ID: firebaseConfig.projectId,
+  VITE_FIREBASE_APP_ID: firebaseConfig.appId,
+};
 
-if (firebaseConfig.apiKey) {
+const missingFirebaseConfigKeys = Object.entries(firebaseRequiredConfigMap)
+  .filter(([, value]) => !value)
+  .map(([key]) => key);
+
+let app: FirebaseApp | null = null;
+let authInstance: Auth | null = null;
+
+if (missingFirebaseConfigKeys.length === 0) {
   try {
     app = initializeApp(firebaseConfig);
-    auth = getAuth(app);
-  } catch (error: unknown) {
-    if (import.meta.env.DEV) log.warn('Init failed:', error instanceof Error ? error.message : String(error));
+    authInstance = getAuth(app);
+  } catch (error) {
+    log.error('Failed to initialize Firebase app', error);
   }
 } else {
-  if (import.meta.env.DEV) log.info('Not configured — auth features disabled');
+  log.warn(
+    `Firebase auth features are disabled. Missing configuration: ${missingFirebaseConfigKeys.join(', ')}`
+  );
 }
+
+export const auth: Auth | null = authInstance;
+export const isFirebaseAuthConfigured = Boolean(authInstance);
+export const firebaseAuthUnavailableReason =
+  missingFirebaseConfigKeys.length > 0
+    ? `Missing environment variables: ${missingFirebaseConfigKeys.join(', ')}`
+    : '';
 
 const googleProvider = new GoogleAuthProvider();
 const facebookProvider = new FacebookAuthProvider();
 const appleProvider = new OAuthProvider('apple.com');
+
+googleProvider.setCustomParameters({ prompt: 'select_account' });
+googleProvider.addScope('email');
+googleProvider.addScope('profile');
+
+facebookProvider.setCustomParameters({ display: 'popup' });
+appleProvider.setCustomParameters({ locale: 'en_US' });
 
 export const signInWithGoogle = async () => {
   if (!auth) throw new Error('Firebase not initialized');
@@ -95,7 +128,7 @@ export const createRecaptchaVerifier = (elementId: string) => {
   return new RecaptchaVerifier(auth, elementId, {
     size: 'invisible',
     callback: () => {
-      // reCAPTCHA verified — no action needed
+      
     }
   });
 };
@@ -110,7 +143,41 @@ export const updateUserProfile = async (user: User, updates: { displayName?: str
   return await updateProfile(user, updates);
 };
 
-export const saveBiometricSession = (user: User, token: string): void => {
+export const updateUserEmail = async (user: User, newEmail: string) => {
+  if (!auth) throw new Error('Firebase not initialized');
+  return await updateEmail(user, newEmail);
+};
+
+export const updateUserPassword = async (user: User, newPassword: string) => {
+  if (!auth) throw new Error('Firebase not initialized');
+  return await updatePassword(user, newPassword);
+};
+
+export const resetPassword = async (email: string) => {
+  if (!auth) throw new Error('Firebase not initialized');
+  return await sendPasswordResetEmail(auth, email);
+};
+
+export const verifyEmail = async (user: User) => {
+  if (!auth) throw new Error('Firebase not initialized');
+  return await sendEmailVerification(user);
+};
+
+export const setAuthPersistence = async (rememberMe = true) => {
+  if (!auth) throw new Error('Firebase not initialized');
+  const persistence = rememberMe ? browserLocalPersistence : browserSessionPersistence;
+  return await setPersistence(auth, persistence);
+};
+
+export const onAuthChange = (callback: (user: User | null) => void) => {
+  if (!auth) {
+    
+    return () => {};
+  }
+  return onAuthStateChanged(auth, callback);
+};
+
+export const saveBiometricSession = (user: User, token: string) => {
   const sessionData = {
     user: {
       uid: user.uid,
@@ -129,5 +196,5 @@ export const clearBiometricSession = (): void => {
   safeStorage.remove('biometric_session');
 };
 
-export { auth, EmailAuthProvider, reauthenticateWithCredential };
+export { EmailAuthProvider, reauthenticateWithCredential };
 export default app;

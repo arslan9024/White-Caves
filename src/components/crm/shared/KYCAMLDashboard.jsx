@@ -1,22 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import {
-  Shield,
-  AlertTriangle,
-  UserCheck,
-  Search,
-  FileText,
-  Clock,
-  CheckCircle,
-  Eye,
-  RefreshCw,
-  User,
-  Globe,
-  AlertCircle,
-  History,
-  FileWarning,
-  Scale,
-} from 'lucide-react';
-import { authFetch } from '../../../utils/authFetch';
+import { Shield, AlertTriangle, UserCheck, Search, FileText, Clock, CheckCircle, XCircle, Eye, RefreshCw, Filter, ChevronDown, User, Globe, Banknote, Building2, AlertCircle, History, FileWarning, Scale } from 'lucide-react';
 import './KYCAMLDashboard.css';
 
 const TABS = [
@@ -26,14 +9,14 @@ const TABS = [
   { id: 'pep', label: 'PEP Screening', icon: UserCheck },
   { id: 'sanctions', label: 'Sanctions Check', icon: Globe },
   { id: 'audit', label: 'Audit Trail', icon: History },
-  { id: 'reports', label: 'Reports', icon: FileText },
+  { id: 'reports', label: 'Reports', icon: FileText }
 ];
 
 const RISK_COLORS = {
   LOW: { bg: '#DCFCE7', text: '#166534', border: '#22C55E' },
   MEDIUM: { bg: '#FEF3C7', text: '#92400E', border: '#F59E0B' },
   HIGH: { bg: '#FEE2E2', text: '#991B1B', border: '#EF4444' },
-  PROHIBITED: { bg: '#F3E8FF', text: '#6B21A8', border: '#A855F7' },
+  PROHIBITED: { bg: '#F3E8FF', text: '#6B21A8', border: '#A855F7' }
 };
 
 const STATUS_COLORS = {
@@ -44,33 +27,33 @@ const STATUS_COLORS = {
   approved: { bg: '#DCFCE7', text: '#166534' },
   rejected: { bg: '#FEE2E2', text: '#991B1B' },
   suspended: { bg: '#F3F4F6', text: '#374151' },
-  expired: { bg: '#FEF3C7', text: '#92400E' },
+  expired: { bg: '#FEF3C7', text: '#92400E' }
 };
 
 const ALERT_SEVERITY_COLORS = {
   LOW: { bg: '#DCFCE7', text: '#166534' },
   MEDIUM: { bg: '#FEF3C7', text: '#92400E' },
   HIGH: { bg: '#FEE2E2', text: '#991B1B' },
-  CRITICAL: { bg: '#7C3AED', text: '#FFFFFF' },
+  CRITICAL: { bg: '#7C3AED', text: '#FFFFFF' }
 };
 
-const formatDate = date => {
+const formatDate = (date) => {
   if (!date) return '-';
   return new Date(date).toLocaleDateString('en-GB', {
     day: '2-digit',
     month: 'short',
-    year: 'numeric',
+    year: 'numeric'
   });
 };
 
-const formatDateTime = date => {
+const formatDateTime = (date) => {
   if (!date) return '-';
   return new Date(date).toLocaleString('en-GB', {
     day: '2-digit',
     month: 'short',
     year: 'numeric',
     hour: '2-digit',
-    minute: '2-digit',
+    minute: '2-digit'
   });
 };
 
@@ -85,18 +68,16 @@ const StatCard = ({ label, value, icon: Icon, color = '#B03737', trend }) => (
     </div>
     {trend && (
       <span className={`kyc-stat-trend ${trend > 0 ? 'up' : 'down'}`}>
-        {trend > 0 ? '+' : ''}
-        {trend}%
+        {trend > 0 ? '+' : ''}{trend}%
       </span>
     )}
   </div>
 );
 
 const RiskBadge = ({ category }) => {
-  // eslint-disable-next-line security/detect-object-injection
   const colors = RISK_COLORS[category] || RISK_COLORS.LOW;
   return (
-    <span
+    <span 
       className="kyc-risk-badge"
       style={{ backgroundColor: colors.bg, color: colors.text, borderColor: colors.border }}
     >
@@ -106,21 +87,25 @@ const RiskBadge = ({ category }) => {
 };
 
 const StatusBadge = ({ status }) => {
-  // eslint-disable-next-line security/detect-object-injection
   const colors = STATUS_COLORS[status] || STATUS_COLORS.pending;
   const label = status?.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
   return (
-    <span className="kyc-status-badge" style={{ backgroundColor: colors.bg, color: colors.text }}>
+    <span 
+      className="kyc-status-badge"
+      style={{ backgroundColor: colors.bg, color: colors.text }}
+    >
       {label}
     </span>
   );
 };
 
 const SeverityBadge = ({ severity }) => {
-  // eslint-disable-next-line security/detect-object-injection
   const colors = ALERT_SEVERITY_COLORS[severity] || ALERT_SEVERITY_COLORS.MEDIUM;
   return (
-    <span className="kyc-severity-badge" style={{ backgroundColor: colors.bg, color: colors.text }}>
+    <span 
+      className="kyc-severity-badge"
+      style={{ backgroundColor: colors.bg, color: colors.text }}
+    >
       {severity}
     </span>
   );
@@ -143,40 +128,33 @@ const VerificationQueueTab = ({ data, onViewProfile }) => (
         </thead>
         <tbody>
           {data.length === 0 ? (
-            <tr>
-              <td colSpan="7" className="kyc-empty">
-                No pending verifications
+            <tr><td colSpan="7" className="kyc-empty">No pending verifications</td></tr>
+          ) : data.map(profile => (
+            <tr key={profile.customerId}>
+              <td>
+                <div className="kyc-customer-cell">
+                  <User size={16} />
+                  <div>
+                    <span className="kyc-customer-name">{profile.personalInfo?.fullNameEn}</span>
+                    <span className="kyc-customer-id">{profile.customerId}</span>
+                  </div>
+                </div>
+              </td>
+              <td>{profile.customerType?.replace(/_/g, ' ')}</td>
+              <td><StatusBadge status={profile.kycStatus} /></td>
+              <td><RiskBadge category={profile.riskAssessment?.category} /></td>
+              <td>{profile.dueDiligenceLevel}</td>
+              <td>{formatDate(profile.createdAt)}</td>
+              <td>
+                <button 
+                  className="kyc-action-btn"
+                  onClick={() => onViewProfile(profile)}
+                >
+                  <Eye size={14} /> View
+                </button>
               </td>
             </tr>
-          ) : (
-            data.map(profile => (
-              <tr key={profile.customerId}>
-                <td>
-                  <div className="kyc-customer-cell">
-                    <User size={16} />
-                    <div>
-                      <span className="kyc-customer-name">{profile.personalInfo?.fullNameEn}</span>
-                      <span className="kyc-customer-id">{profile.customerId}</span>
-                    </div>
-                  </div>
-                </td>
-                <td>{profile.customerType?.replace(/_/g, ' ')}</td>
-                <td>
-                  <StatusBadge status={profile.kycStatus} />
-                </td>
-                <td>
-                  <RiskBadge category={profile.riskAssessment?.category} />
-                </td>
-                <td>{profile.dueDiligenceLevel}</td>
-                <td>{formatDate(profile.createdAt)}</td>
-                <td>
-                  <button className="kyc-action-btn" onClick={() => onViewProfile(profile)}>
-                    <Eye size={14} /> View
-                  </button>
-                </td>
-              </tr>
-            ))
-          )}
+          ))}
         </tbody>
       </table>
     </div>
@@ -187,7 +165,7 @@ const RiskProfilesTab = ({ data, onViewProfile }) => (
   <div className="kyc-tab-content">
     <div className="kyc-risk-summary">
       {Object.entries(RISK_COLORS).map(([category, colors]) => (
-        <div
+        <div 
           key={category}
           className="kyc-risk-summary-card"
           style={{ borderLeftColor: colors.border }}
@@ -214,52 +192,47 @@ const RiskProfilesTab = ({ data, onViewProfile }) => (
         </thead>
         <tbody>
           {data.length === 0 ? (
-            <tr>
-              <td colSpan="7" className="kyc-empty">
-                No risk profiles found
+            <tr><td colSpan="7" className="kyc-empty">No risk profiles found</td></tr>
+          ) : data.map(profile => (
+            <tr key={profile.customerId}>
+              <td>
+                <div className="kyc-customer-cell">
+                  <User size={16} />
+                  <span>{profile.personalInfo?.fullNameEn}</span>
+                </div>
+              </td>
+              <td>{profile.personalInfo?.nationality}</td>
+              <td>
+                <div className="kyc-score-bar">
+                  <div 
+                    className="kyc-score-fill"
+                    style={{ 
+                      width: `${profile.riskAssessment?.score || 0}%`,
+                      backgroundColor: RISK_COLORS[profile.riskAssessment?.category]?.border
+                    }}
+                  />
+                  <span>{profile.riskAssessment?.score || 0}</span>
+                </div>
+              </td>
+              <td><RiskBadge category={profile.riskAssessment?.category} /></td>
+              <td>
+                {profile.pepScreening?.isPEP ? (
+                  <span className="kyc-pep-badge pep">PEP</span>
+                ) : (
+                  <span className="kyc-pep-badge clear">Clear</span>
+                )}
+              </td>
+              <td>{formatDate(profile.nextReviewDate)}</td>
+              <td>
+                <button 
+                  className="kyc-action-btn"
+                  onClick={() => onViewProfile(profile)}
+                >
+                  <Eye size={14} /> View
+                </button>
               </td>
             </tr>
-          ) : (
-            data.map(profile => (
-              <tr key={profile.customerId}>
-                <td>
-                  <div className="kyc-customer-cell">
-                    <User size={16} />
-                    <span>{profile.personalInfo?.fullNameEn}</span>
-                  </div>
-                </td>
-                <td>{profile.personalInfo?.nationality}</td>
-                <td>
-                  <div className="kyc-score-bar">
-                    <div
-                      className="kyc-score-fill"
-                      style={{
-                        width: `${profile.riskAssessment?.score || 0}%`,
-                        backgroundColor: RISK_COLORS[profile.riskAssessment?.category]?.border,
-                      }}
-                    />
-                    <span>{profile.riskAssessment?.score || 0}</span>
-                  </div>
-                </td>
-                <td>
-                  <RiskBadge category={profile.riskAssessment?.category} />
-                </td>
-                <td>
-                  {profile.pepScreening?.isPEP ? (
-                    <span className="kyc-pep-badge pep">PEP</span>
-                  ) : (
-                    <span className="kyc-pep-badge clear">Clear</span>
-                  )}
-                </td>
-                <td>{formatDate(profile.nextReviewDate)}</td>
-                <td>
-                  <button className="kyc-action-btn" onClick={() => onViewProfile(profile)}>
-                    <Eye size={14} /> View
-                  </button>
-                </td>
-              </tr>
-            ))
-          )}
+          ))}
         </tbody>
       </table>
     </div>
@@ -306,36 +279,26 @@ const AMLAlertsTab = ({ data, onViewAlert }) => (
         </thead>
         <tbody>
           {data.length === 0 ? (
-            <tr>
-              <td colSpan="8" className="kyc-empty">
-                No AML alerts found
+            <tr><td colSpan="8" className="kyc-empty">No AML alerts found</td></tr>
+          ) : data.map(alert => (
+            <tr key={alert.alertId} className={alert.severity === 'CRITICAL' ? 'critical-row' : ''}>
+              <td className="kyc-alert-id">{alert.alertId}</td>
+              <td className="kyc-alert-title">{alert.title}</td>
+              <td>{alert.alertType?.replace(/_/g, ' ')}</td>
+              <td><SeverityBadge severity={alert.severity} /></td>
+              <td><StatusBadge status={alert.status} /></td>
+              <td>{alert.customerSnapshot?.name || '-'}</td>
+              <td>{formatDateTime(alert.createdAt)}</td>
+              <td>
+                <button 
+                  className="kyc-action-btn"
+                  onClick={() => onViewAlert(alert)}
+                >
+                  <Eye size={14} /> View
+                </button>
               </td>
             </tr>
-          ) : (
-            data.map(alert => (
-              <tr
-                key={alert.alertId}
-                className={alert.severity === 'CRITICAL' ? 'critical-row' : ''}
-              >
-                <td className="kyc-alert-id">{alert.alertId}</td>
-                <td className="kyc-alert-title">{alert.title}</td>
-                <td>{alert.alertType?.replace(/_/g, ' ')}</td>
-                <td>
-                  <SeverityBadge severity={alert.severity} />
-                </td>
-                <td>
-                  <StatusBadge status={alert.status} />
-                </td>
-                <td>{alert.customerSnapshot?.name || '-'}</td>
-                <td>{formatDateTime(alert.createdAt)}</td>
-                <td>
-                  <button className="kyc-action-btn" onClick={() => onViewAlert(alert)}>
-                    <Eye size={14} /> View
-                  </button>
-                </td>
-              </tr>
-            ))
-          )}
+          ))}
         </tbody>
       </table>
     </div>
@@ -348,18 +311,10 @@ const PEPScreeningTab = ({ data }) => (
       <div className="kyc-info-card">
         <h4>PEP Categories</h4>
         <ul>
-          <li>
-            <strong>Domestic PEP:</strong> Government officials, politicians, judges
-          </li>
-          <li>
-            <strong>Foreign PEP:</strong> Foreign government officials, diplomats
-          </li>
-          <li>
-            <strong>International PEP:</strong> UN, World Bank, IMF officials
-          </li>
-          <li>
-            <strong>Family/Associates:</strong> Close relatives and business associates
-          </li>
+          <li><strong>Domestic PEP:</strong> Government officials, politicians, judges</li>
+          <li><strong>Foreign PEP:</strong> Foreign government officials, diplomats</li>
+          <li><strong>International PEP:</strong> UN, World Bank, IMF officials</li>
+          <li><strong>Family/Associates:</strong> Close relatives and business associates</li>
         </ul>
       </div>
     </div>
@@ -378,28 +333,18 @@ const PEPScreeningTab = ({ data }) => (
         </thead>
         <tbody>
           {data.filter(p => p.pepScreening?.isPEP).length === 0 ? (
-            <tr>
-              <td colSpan="7" className="kyc-empty">
-                No PEP matches found
-              </td>
+            <tr><td colSpan="7" className="kyc-empty">No PEP matches found</td></tr>
+          ) : data.filter(p => p.pepScreening?.isPEP).map(profile => (
+            <tr key={profile.customerId}>
+              <td>{profile.personalInfo?.fullNameEn}</td>
+              <td><span className="kyc-pep-badge pep">PEP</span></td>
+              <td>{profile.pepScreening?.pepCategory}</td>
+              <td>{profile.pepScreening?.pepPosition}</td>
+              <td>{profile.pepScreening?.pepCountry}</td>
+              <td>{Math.round((profile.pepScreening?.matchConfidence || 0) * 100)}%</td>
+              <td>{formatDateTime(profile.pepScreening?.screenedAt)}</td>
             </tr>
-          ) : (
-            data
-              .filter(p => p.pepScreening?.isPEP)
-              .map(profile => (
-                <tr key={profile.customerId}>
-                  <td>{profile.personalInfo?.fullNameEn}</td>
-                  <td>
-                    <span className="kyc-pep-badge pep">PEP</span>
-                  </td>
-                  <td>{profile.pepScreening?.pepCategory}</td>
-                  <td>{profile.pepScreening?.pepPosition}</td>
-                  <td>{profile.pepScreening?.pepCountry}</td>
-                  <td>{Math.round((profile.pepScreening?.matchConfidence || 0) * 100)}%</td>
-                  <td>{formatDateTime(profile.pepScreening?.screenedAt)}</td>
-                </tr>
-              ))
-          )}
+          ))}
         </tbody>
       </table>
     </div>
@@ -433,33 +378,22 @@ const SanctionsCheckTab = ({ data }) => (
         </thead>
         <tbody>
           {data.length === 0 ? (
-            <tr>
-              <td colSpan="5" className="kyc-empty">
-                No sanctions data available
+            <tr><td colSpan="5" className="kyc-empty">No sanctions data available</td></tr>
+          ) : data.map(profile => (
+            <tr key={profile.customerId} className={profile.sanctionsCheck?.hasMatch ? 'match-row' : ''}>
+              <td>{profile.personalInfo?.fullNameEn}</td>
+              <td>
+                {profile.sanctionsCheck?.hasMatch ? (
+                  <span className="kyc-match-badge match">Match Found</span>
+                ) : (
+                  <span className="kyc-match-badge clear">No Match</span>
+                )}
               </td>
+              <td>{profile.sanctionsCheck?.listsChecked?.length || 0} lists</td>
+              <td><StatusBadge status={profile.sanctionsCheck?.clearanceStatus} /></td>
+              <td>{formatDateTime(profile.sanctionsCheck?.checkedAt)}</td>
             </tr>
-          ) : (
-            data.map(profile => (
-              <tr
-                key={profile.customerId}
-                className={profile.sanctionsCheck?.hasMatch ? 'match-row' : ''}
-              >
-                <td>{profile.personalInfo?.fullNameEn}</td>
-                <td>
-                  {profile.sanctionsCheck?.hasMatch ? (
-                    <span className="kyc-match-badge match">Match Found</span>
-                  ) : (
-                    <span className="kyc-match-badge clear">No Match</span>
-                  )}
-                </td>
-                <td>{profile.sanctionsCheck?.listsChecked?.length || 0} lists</td>
-                <td>
-                  <StatusBadge status={profile.sanctionsCheck?.clearanceStatus} />
-                </td>
-                <td>{formatDateTime(profile.sanctionsCheck?.checkedAt)}</td>
-              </tr>
-            ))
-          )}
+          ))}
         </tbody>
       </table>
     </div>
@@ -471,30 +405,26 @@ const AuditTrailTab = ({ data }) => (
     <div className="kyc-audit-timeline">
       {data.length === 0 ? (
         <div className="kyc-empty">No audit logs found</div>
-      ) : (
-        data.map((log, index) => (
-          <div key={log.auditId || index} className="kyc-audit-item">
-            <div className="kyc-audit-marker" />
-            <div className="kyc-audit-content">
-              <div className="kyc-audit-header">
-                <span className="kyc-audit-action">{log.action?.replace(/_/g, ' ')}</span>
-                <span className="kyc-audit-time">{formatDateTime(log.timestamp)}</span>
-              </div>
-              <div className="kyc-audit-details">
-                <span className="kyc-audit-entity">
-                  {log.entityType}: {log.entityId}
-                </span>
-                {log.actor?.username && (
-                  <span className="kyc-audit-actor">by {log.actor.username}</span>
-                )}
-              </div>
-              {log.details?.description && (
-                <p className="kyc-audit-description">{log.details.description}</p>
+      ) : data.map((log, index) => (
+        <div key={log.auditId || index} className="kyc-audit-item">
+          <div className="kyc-audit-marker" />
+          <div className="kyc-audit-content">
+            <div className="kyc-audit-header">
+              <span className="kyc-audit-action">{log.action?.replace(/_/g, ' ')}</span>
+              <span className="kyc-audit-time">{formatDateTime(log.timestamp)}</span>
+            </div>
+            <div className="kyc-audit-details">
+              <span className="kyc-audit-entity">{log.entityType}: {log.entityId}</span>
+              {log.actor?.username && (
+                <span className="kyc-audit-actor">by {log.actor.username}</span>
               )}
             </div>
+            {log.details?.description && (
+              <p className="kyc-audit-description">{log.details.description}</p>
+            )}
           </div>
-        ))
-      )}
+        </div>
+      ))}
     </div>
   </div>
 );
@@ -542,10 +472,10 @@ const ReportsTab = () => (
   </div>
 );
 
-const KYCAMLDashboard = ({
-  assistant: _assistant = 'henry',
+const KYCAMLDashboard = ({ 
+  assistant = 'henry',
   accessLevel = 'full',
-  showTabs = ['queue', 'profiles', 'alerts', 'pep', 'sanctions', 'audit', 'reports'],
+  showTabs = ['queue', 'profiles', 'alerts', 'pep', 'sanctions', 'audit', 'reports']
 }) => {
   const [activeTab, setActiveTab] = useState(showTabs[0] || 'queue');
   const [loading, setLoading] = useState(true);
@@ -565,10 +495,10 @@ const KYCAMLDashboard = ({
     setLoading(true);
     try {
       const [statsRes, pendingRes, alertsRes, auditRes] = await Promise.all([
-        authFetch('/api/compliance/stats').then(r => r.json()),
-        authFetch('/api/compliance/kyc/pending?limit=50').then(r => r.json()),
-        authFetch('/api/compliance/alerts/open?limit=50').then(r => r.json()),
-        authFetch('/api/compliance/audit?limit=50').then(r => r.json()),
+        fetch('/api/compliance/stats').then(r => r.json()),
+        fetch('/api/compliance/kyc/pending?limit=50').then(r => r.json()),
+        fetch('/api/compliance/alerts/open?limit=50').then(r => r.json()),
+        fetch('/api/compliance/audit?limit=50').then(r => r.json())
       ]);
 
       if (statsRes.success) setStats(statsRes.data);
@@ -579,7 +509,7 @@ const KYCAMLDashboard = ({
       if (alertsRes.success) setAlerts(alertsRes.data);
       if (auditRes.success) setAuditLogs(auditRes.logs || []);
     } catch (error) {
-      console.warn('KYC/AML dashboard data load failed:', error);
+      
     } finally {
       setLoading(false);
     }
@@ -627,26 +557,26 @@ const KYCAMLDashboard = ({
       </div>
 
       <div className="kyc-stats-bar">
-        <StatCard
-          label="Pending Verification"
+        <StatCard 
+          label="Pending Verification" 
           value={stats?.profiles?.pendingVerification || 0}
           icon={Clock}
           color="#F59E0B"
         />
-        <StatCard
-          label="High Risk Profiles"
+        <StatCard 
+          label="High Risk Profiles" 
           value={(stats?.profiles?.byRisk?.HIGH || 0) + (stats?.profiles?.byRisk?.PROHIBITED || 0)}
           icon={AlertTriangle}
           color="#EF4444"
         />
-        <StatCard
-          label="Open Alerts"
+        <StatCard 
+          label="Open Alerts" 
           value={stats?.alerts?.byStatus?.find(s => s._id === 'open')?.count || 0}
           icon={AlertCircle}
           color="#B03737"
         />
-        <StatCard
-          label="Approved Today"
+        <StatCard 
+          label="Approved Today" 
           value={stats?.profiles?.byStatus?.approved || 0}
           icon={CheckCircle}
           color="#10B981"
@@ -719,11 +649,7 @@ const KYCAMLDashboard = ({
               </div>
               <div className="kyc-profile-detail">
                 <label>PEP Status</label>
-                <span>
-                  {selectedProfile.pepScreening?.isPEP
-                    ? 'Yes - ' + selectedProfile.pepScreening?.pepCategory
-                    : 'No'}
-                </span>
+                <span>{selectedProfile.pepScreening?.isPEP ? 'Yes - ' + selectedProfile.pepScreening?.pepCategory : 'No'}</span>
               </div>
               <div className="kyc-profile-detail">
                 <label>Sanctions Status</label>
@@ -737,9 +663,7 @@ const KYCAMLDashboard = ({
                   <button className="kyc-reject-btn">Reject</button>
                 </>
               )}
-              <button className="kyc-close-btn" onClick={() => setSelectedProfile(null)}>
-                Close
-              </button>
+              <button className="kyc-close-btn" onClick={() => setSelectedProfile(null)}>Close</button>
             </div>
           </div>
         </div>
@@ -793,9 +717,7 @@ const KYCAMLDashboard = ({
                   <button className="kyc-escalate-btn">Escalate</button>
                 </>
               )}
-              <button className="kyc-close-btn" onClick={() => setSelectedAlert(null)}>
-                Close
-              </button>
+              <button className="kyc-close-btn" onClick={() => setSelectedAlert(null)}>Close</button>
             </div>
           </div>
         </div>

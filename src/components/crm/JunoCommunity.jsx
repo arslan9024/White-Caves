@@ -5,7 +5,6 @@ import {
   ArrowUp, ArrowDown, Filter, Search, Plus, Settings
 } from 'lucide-react';
 import AssistantDocsTab from './shared/AssistantDocsTab';
-import AssistantLifecycleTab from './shared/AssistantLifecycleTab';
 import './AssistantDashboard.css';
 
 const FACILITIES = [
@@ -111,7 +110,7 @@ const JunoCommunity = () => {
       </div>
 
       <div className="assistant-tabs">
-        {['facilities', 'iot', 'events', 'energy', 'lifecycle', 'docs'].map(tab => (
+        {['facilities', 'iot', 'events', 'energy', 'docs'].map(tab => (
           <button
             key={tab}
             className={`tab-btn ${activeTab === tab ? 'active' : ''}`}
@@ -233,10 +232,6 @@ const JunoCommunity = () => {
               ))}
             </div>
           </div>
-        )}
-
-        {activeTab === 'lifecycle' && (
-          <AssistantLifecycleTab assistantId="juno" color="#14B8A6" assistantName="Juno" />
         )}
 
         {activeTab === 'docs' && (

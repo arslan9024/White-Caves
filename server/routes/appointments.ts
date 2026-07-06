@@ -1,36 +1,161 @@
 /**
  * Appointments API Routes
- * ─────────────────────────────────────────────────────────────────────────
+ * â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
  * Full CRUD for appointment scheduling (viewings, meetings, calls, signings).
  *
- * GET    /api/appointments           — List appointments (filtered, paginated)
- * GET    /api/appointments/upcoming  — Next 30 days only
- * GET    /api/appointments/:id       — Single appointment
- * POST   /api/appointments           — Create appointment
- * PATCH  /api/appointments/:id       — Update / reschedule / cancel
- * DELETE /api/appointments/:id       — Delete (admin only)
+ * GET    /api/appointments           â€” List appointments (filtered, paginated)
+ * GET    /api/appointments/upcoming  â€” Next 30 days only
+ * GET    /api/appointments/:id       â€” Single appointment
+ * POST   /api/appointments           â€” Create appointment
+ * PATCH  /api/appointments/:id       â€” Update / reschedule / cancel
+ * DELETE /api/appointments/:id       â€” Delete (admin only)
  */
 
 import { Router, Response } from 'express';
 import type { Request } from 'express';
+type RouteRequest = Request<Record<string, string>>;
+import { Prisma } from '@prisma/client';
 import { asyncHandler, AppError } from '../middleware/errorHandler.js';
 import { prisma } from '../database.js';
 import { sanitizeString } from '../utils/sanitize.js';
 import { validate, rules, validateIdParam } from '../utils/validate.js';
 import { parsePagination } from '../config/pagination.js';
 import { requirePermission, requireRole } from '../middleware/rbac.js';
+import {
+  createGoogleCalendarEvent,
+  exchangeGoogleCalendarCode,
+  getGoogleCalendarAuthUrl,
+  type GoogleCalendarTokenSet,
+} from '../services/calendar/googleCalendarService.js';
+import { triggerLeadRescore } from '../services/ai/leadAutoRescore.js';
 
 const router = Router();
+
+const routeParamToString = (value: string | string[] | undefined): string | null => {
+  if (typeof value === 'string' && value.trim().length > 0) {
+    return value;
+  }
+  if (Array.isArray(value) && value.length > 0 && typeof value[0] === 'string') {
+    const first = value[0].trim();
+    return first.length > 0 ? first : null;
+  }
+  return null;
+};
 const db = prisma as any;
 
 const VALID_TYPES = ['viewing', 'meeting', 'call', 'inspection', 'signing'] as const;
 const VALID_STATUSES = ['scheduled', 'confirmed', 'completed', 'cancelled', 'no_show'] as const;
 
-// ─── GET /api/appointments ───────────────────────────────────────────────
+const GOOGLE_CALENDAR_SETTING_KEY = 'google_calendar_tokens';
+
+const getStoredGoogleCalendarTokens = async (): Promise<GoogleCalendarTokenSet | null> => {
+  const setting = await prisma.systemSetting.findUnique({
+    where: { key: GOOGLE_CALENDAR_SETTING_KEY },
+  });
+  if (!setting || typeof setting.value !== 'object' || setting.value === null) return null;
+  return setting.value as unknown as GoogleCalendarTokenSet;
+};
+
+const appendGoogleEventMetaToNotes = (
+  currentNotes: string | null,
+  eventId?: string | null
+): string => {
+  if (!eventId) return currentNotes ?? '';
+  const marker = `[GoogleEvent:${eventId}]`;
+  if (!currentNotes) return marker;
+  return currentNotes.includes(marker) ? currentNotes : `${currentNotes}\n${marker}`;
+};
+
+// â”€â”€â”€ GET /api/appointments/calendar/google/auth-url â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+router.get(
+  '/calendar/google/auth-url',
+  requirePermission('manage_appointments'),
+  asyncHandler(async (_req: RouteRequest, res: Response) => {
+    const authUrl = getGoogleCalendarAuthUrl();
+    res.status(200).json({ success: true, data: { authUrl } });
+  })
+);
+
+// â”€â”€â”€ GET /api/appointments/calendar/google/callback â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+router.get(
+  '/calendar/google/callback',
+  requirePermission('manage_appointments'),
+  asyncHandler(async (req: RouteRequest, res: Response) => {
+    const code = req.query.code as string | undefined;
+    if (!code) throw new AppError('Missing OAuth code', 400);
+
+    const tokens = await exchangeGoogleCalendarCode(code);
+    await prisma.systemSetting.upsert({
+      where: { key: GOOGLE_CALENDAR_SETTING_KEY },
+      update: {
+        value: tokens as unknown as Prisma.InputJsonValue,
+        category: 'integrations',
+        updatedBy: req.user?.id || null,
+      },
+      create: {
+        key: GOOGLE_CALENDAR_SETTING_KEY,
+        value: tokens as unknown as Prisma.InputJsonValue,
+        category: 'integrations',
+        updatedBy: req.user?.id || null,
+      },
+    });
+
+    res.status(200).json({
+      success: true,
+      data: { connected: true, scope: tokens.scope ?? null, expiry: tokens.expiry_date ?? null },
+    });
+  })
+);
+
+// â”€â”€â”€ POST /api/appointments/:id/calendar-sync/google â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+router.post(
+  '/:id/calendar-sync/google',
+  requirePermission('manage_appointments'),
+  asyncHandler(async (req: RouteRequest, res: Response) => {
+    const { id } = req.params as Record<string, string>;
+    validateIdParam(id, 'Appointment ID');
+
+    const appointment = await db.appointment.findUnique({ where: { id } });
+    if (!appointment) throw new AppError('Appointment not found', 404);
+
+    const tokens = await getStoredGoogleCalendarTokens();
+    if (!tokens?.access_token) {
+      throw new AppError('Google Calendar is not connected. Complete OAuth setup first.', 400);
+    }
+
+    const start = new Date(appointment.scheduledAt);
+    const end = new Date(start.getTime() + appointment.durationMins * 60 * 1000);
+    const googleEvent = await createGoogleCalendarEvent(tokens, {
+      summary: appointment.title,
+      description: appointment.notes || `White Caves appointment (${appointment.type})`,
+      location: appointment.location || undefined,
+      startISO: start.toISOString(),
+      endISO: end.toISOString(),
+    });
+
+    await db.appointment.update({
+      where: { id },
+      data: {
+        notes: appendGoogleEventMetaToNotes(appointment.notes, googleEvent.id),
+      },
+    });
+
+    res.status(200).json({
+      success: true,
+      data: {
+        appointmentId: id,
+        googleEventId: googleEvent.id ?? null,
+        googleEventUrl: googleEvent.htmlLink ?? null,
+      },
+    });
+  })
+);
+
+// â”€â”€â”€ GET /api/appointments â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 router.get(
   '/',
   requirePermission('view_appointments'),
-  asyncHandler(async (req: Request, res: Response) => {
+  asyncHandler(async (req: RouteRequest, res: Response) => {
     const { page, limit, skip } = parsePagination(req.query);
     const { status, type, agentId, propertyId, leadId, from, to } = req.query as Record<
       string,
@@ -71,11 +196,11 @@ router.get(
   })
 );
 
-// ─── GET /api/appointments/upcoming ─────────────────────────────────────
+// â”€â”€â”€ GET /api/appointments/upcoming â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 router.get(
   '/upcoming',
   requirePermission('view_appointments'),
-  asyncHandler(async (req: Request, res: Response) => {
+  asyncHandler(async (req: RouteRequest, res: Response) => {
     const { limit: limitParam } = req.query as Record<string, string>;
     const limit = Math.min(parseInt(limitParam || '20', 10), 100);
     const now = new Date();
@@ -94,23 +219,28 @@ router.get(
   })
 );
 
-// ─── GET /api/appointments/:id ───────────────────────────────────────────
+// â”€â”€â”€ GET /api/appointments/:id â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 router.get(
   '/:id',
   requirePermission('view_appointments'),
   asyncHandler(async (req: Request, res: Response) => {
-    validateIdParam(req.params.id, 'Appointment ID');
-    const appt = await db.appointment.findUnique({ where: { id: req.params.id } });
+    const appointmentId = routeParamToString(req.params.id);
+    if (!appointmentId) {
+      throw new AppError('Appointment ID is required', 400);
+    }
+
+    validateIdParam(appointmentId, 'Appointment ID');
+    const appt = await db.appointment.findUnique({ where: { id: appointmentId } });
     if (!appt) throw new AppError('Appointment not found', 404);
     res.status(200).json({ success: true, data: appt });
   })
 );
 
-// ─── POST /api/appointments ──────────────────────────────────────────────
+// â”€â”€â”€ POST /api/appointments â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 router.post(
   '/',
   requirePermission('manage_appointments'),
-  asyncHandler(async (req: Request, res: Response) => {
+  asyncHandler(async (req: RouteRequest, res: Response) => {
     const {
       title,
       type,
@@ -174,17 +304,18 @@ router.post(
         leadId: leadId || null,
       },
     });
+    triggerLeadRescore(appt.leadId, 'appointment_created');
 
     res.status(201).json({ success: true, data: appt });
   })
 );
 
-// ─── PATCH /api/appointments/:id ─────────────────────────────────────────
+// â”€â”€â”€ PATCH /api/appointments/:id â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 router.patch(
   '/:id',
   requirePermission('manage_appointments'),
-  asyncHandler(async (req: Request, res: Response) => {
-    const { id } = req.params;
+  asyncHandler(async (req: RouteRequest, res: Response) => {
+    const { id } = req.params as Record<string, string>;
     validateIdParam(id, 'Appointment ID');
 
     const existing = await db.appointment.findUnique({ where: { id } });
@@ -256,29 +387,34 @@ router.patch(
           description:
             scheduledAt !== undefined
               ? `Appointment "${updated.title}" rescheduled to ${new Date(scheduledAt).toLocaleDateString('en-AE')}`
-              : `Appointment "${updated.title}" status: ${existing.status} → ${status}`,
+              : `Appointment "${updated.title}" status: ${existing.status} â†’ ${status}`,
           userId: req.user?.id || null,
           leadId: updated.leadId || null,
         },
       });
     }
+    triggerLeadRescore(
+      updated.leadId,
+      statusChanged ? 'appointment_status_changed' : 'appointment_updated'
+    );
 
     res.status(200).json({ success: true, data: updated });
   })
 );
 
-// ─── DELETE /api/appointments/:id ────────────────────────────────────────
+// â”€â”€â”€ DELETE /api/appointments/:id â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 router.delete(
   '/:id',
   requireRole('owner', 'manager', 'admin'),
-  asyncHandler(async (req: Request, res: Response) => {
-    const { id } = req.params;
+  asyncHandler(async (req: RouteRequest, res: Response) => {
+    const { id } = req.params as Record<string, string>;
     validateIdParam(id, 'Appointment ID');
 
     const existing = await db.appointment.findUnique({ where: { id } });
     if (!existing) throw new AppError('Appointment not found', 404);
 
     await db.appointment.delete({ where: { id } });
+    triggerLeadRescore(existing.leadId, 'appointment_deleted');
 
     res.status(200).json({ success: true, message: `Appointment "${existing.title}" deleted` });
   })

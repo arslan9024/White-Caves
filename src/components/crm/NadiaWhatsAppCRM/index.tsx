@@ -12,7 +12,27 @@ import './NadiaWhatsAppCRM.css';
 
 const NadiaWhatsAppCRM = () => {
   const [activeTab, setActiveTab] = useState('conversations');
+  const [convertingLeadId, setConvertingLeadId] = useState<string | null>(null);
   const data = useWhatsAppData();
+
+  const handleConvertToLead = async (conversationId: string) => {
+    setConvertingLeadId(conversationId);
+    try {
+      const res = await fetch(`/api/nadia/conversations/${conversationId}/convert-to-lead`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+      });
+      const json = await res.json();
+      if (!res.ok) {
+        console.error('Convert to lead failed:', json.message ?? res.statusText);
+      }
+    } catch (err) {
+      console.error('Convert to lead error:', err);
+    } finally {
+      setConvertingLeadId(null);
+    }
+  };
 
   const tabs = [
     { id: 'conversations', label: 'Conversations', icon: '💬' },
@@ -27,7 +47,11 @@ const NadiaWhatsAppCRM = () => {
   const renderTab = () => {
     switch (activeTab) {
       case 'conversations':
-        return <ConversationsTab data={data} />;
+        return (
+          <ConversationsTab
+            data={{ ...data, onConvertToLead: handleConvertToLead, convertingLeadId }}
+          />
+        );
       case 'quick-replies':
         return <QuickRepliesTab data={data} />;
       case 'agents':
@@ -67,7 +91,12 @@ const NadiaWhatsAppCRM = () => {
           >
             {data.nadiaActive ? 'Pause Nadia' : 'Activate Nadia'}
           </button>
-          <button className="nadia-action-btn" aria-label="Refresh conversations">
+          <button
+            className="nadia-action-btn"
+            aria-label="Refresh conversations"
+            onClick={() => data.refreshConversations()}
+            disabled={data.loading}
+          >
             <RefreshCw size={18} />
           </button>
           <button className="nadia-action-btn" aria-label="Download chat export">
@@ -75,6 +104,18 @@ const NadiaWhatsAppCRM = () => {
           </button>
         </div>
       </div>
+
+      {data.loading ? (
+        <div className="nadia-status-banner" role="status" aria-live="polite">
+          Loading conversations…
+        </div>
+      ) : null}
+
+      {data.error ? (
+        <div className="nadia-status-banner nadia-status-banner--error" role="alert">
+          {data.error}
+        </div>
+      ) : null}
 
       {/* Tab Navigation */}
       <div className="tab-navigation">

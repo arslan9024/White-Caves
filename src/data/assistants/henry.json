@@ -7,10 +7,7 @@
       "actor": "Clara",
       "target": "Abdullah Al Maktoum",
       "description": "New hot lead created from website inquiry",
-      "metadata": {
-        "score": 92,
-        "source": "website"
-      }
+      "metadata": { "score": 92, "source": "website" }
     },
     {
       "id": "evt-2",
@@ -19,10 +16,7 @@
       "actor": "Mary",
       "target": "VH-A-101",
       "description": "Property status changed to Reserved",
-      "metadata": {
-        "previousStatus": "available",
-        "newStatus": "reserved"
-      }
+      "metadata": { "previousStatus": "available", "newStatus": "reserved" }
     },
     {
       "id": "evt-3",
@@ -31,10 +25,7 @@
       "actor": "Theodora",
       "target": "INV-2026-001",
       "description": "Payment of AED 105,000 received",
-      "metadata": {
-        "amount": 105000,
-        "method": "bank_transfer"
-      }
+      "metadata": { "amount": 105000, "method": "bank_transfer" }
     },
     {
       "id": "evt-4",
@@ -43,10 +34,7 @@
       "actor": "Evangeline",
       "target": "CONT-2026-045",
       "description": "Tenancy contract signed by all parties",
-      "metadata": {
-        "property": "AM-B-205",
-        "value": 95000
-      }
+      "metadata": { "property": "AM-B-205", "value": 95000 }
     },
     {
       "id": "evt-5",
@@ -55,10 +43,7 @@
       "actor": "Cipher",
       "target": "Zoe",
       "description": "Market opportunity suggestion submitted to executive",
-      "metadata": {
-        "priority": "high",
-        "confidence": 87
-      }
+      "metadata": { "priority": "high", "confidence": 87 }
     }
   ],
   "auditLogs": [
@@ -90,52 +75,14 @@
     }
   ],
   "reports": [
-    {
-      "id": "rep-1",
-      "name": "Monthly Activity Report",
-      "period": "December 2025",
-      "generated": "2026-01-02",
-      "status": "completed"
-    },
-    {
-      "id": "rep-2",
-      "name": "Compliance Audit",
-      "period": "Q4 2025",
-      "generated": "2026-01-05",
-      "status": "completed"
-    },
-    {
-      "id": "rep-3",
-      "name": "Security Assessment",
-      "period": "January 2026",
-      "generated": "2026-01-09",
-      "status": "in_progress"
-    }
+    { "id": "rep-1", "name": "Monthly Activity Report", "period": "December 2025", "generated": "2026-01-02", "status": "completed" },
+    { "id": "rep-2", "name": "Compliance Audit", "period": "Q4 2025", "generated": "2026-01-05", "status": "completed" },
+    { "id": "rep-3", "name": "Security Assessment", "period": "January 2026", "generated": "2026-01-09", "status": "in_progress" }
   ],
   "stats": {
     "eventsToday": 156,
     "eventsThisWeek": 1245,
     "criticalEvents": 3,
     "dataIntegrity": 99.98
-  },
-  "enhancements": {
-    "autoTriggers": [
-      "lease_signed",
-      "offer_accepted",
-      "compliance_check_required"
-    ],
-    "integrations": [
-      "nadia",
-      "linda",
-      "mary",
-      "nina"
-    ],
-    "futureFeatures": [
-      "AI document drafting via Groq",
-      "Biometric e-signature (UAE Pass)",
-      "Auto-Ejari submission to DLD API",
-      "Blockchain document notarization",
-      "Multi-language contract generation (AR/EN)"
-    ]
   }
 }

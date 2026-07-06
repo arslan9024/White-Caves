@@ -21,6 +21,7 @@ import {
 import { useDocumentTitle } from '../hooks/useDocumentTitle';
 import PublicLayout from '../components/layout/PublicLayout';
 import PageHeroBanner from '../components/layout/PageHeroBanner';
+import PageMeta from '../components/seo/PageMeta';
 import WhatsAppButton from '../components/WhatsAppButton';
 import { useToast } from '../components/Toast';
 import { authFetch } from '../utils/authFetch';
@@ -221,6 +222,12 @@ const ServicesPage: FC = () => {
   return (
     <PublicLayout>
       <div className="services-page">
+        <PageMeta
+          title="Real Estate Services | White Caves Dubai"
+          description="Discover White Caves buying, selling, and leasing services for Dubai luxury properties."
+          canonicalPath="/services"
+          ogType="website"
+        />
         {/* ── Hero banner ──────────────────────────────────────────────────── */}
         <PageHeroBanner
           badge="Real Estate Services"

@@ -5,6 +5,11 @@ import { setActiveRole } from '../store/navigationSlice';
 import * as S from './RoleGateway.styles';
 import { safeStorage } from '../utils/safeStorage';
 import type { AppDispatch } from '../store/store';
+import {
+  CANONICAL_SUPERUSER_ROLE,
+  normalizeRoleForUserContext,
+} from '../utils/superUserAccess';
+import { getPrivilegedRoleFromUser } from '../utils/authSession';
 
 interface RoleOption {
   id: string;
@@ -70,17 +75,23 @@ export default function RoleGateway({ user, onRoleSelect }: RoleGatewayProps) {
   const dispatch = useDispatch<AppDispatch>();
 
   useEffect(() => {
-    if (user?.role === 'owner' || user?.role === 'admin' || user?.role === 'managing_director') {
+    const normalizedUserRole = normalizeRoleForUserContext(user?.role, user?.email);
+    const privilegedRole = getPrivilegedRoleFromUser({
+      email: user?.email,
+      role: user?.role,
+    });
+
+    if (privilegedRole) {
       const ownerRole = {
-        role: 'owner',
+        role: privilegedRole,
         selectedAt: new Date().toISOString(),
         locked: true,
-        isOwner: true,
-        isSuperUser: true,
+        isOwner: privilegedRole === CANONICAL_SUPERUSER_ROLE,
+        isSuperUser: privilegedRole === CANONICAL_SUPERUSER_ROLE,
       };
       safeStorage.setJSON('userRole', ownerRole);
-      dispatch(setActiveRole('owner'));
-      navigate('/dashboard');
+      dispatch(setActiveRole(privilegedRole));
+      navigate('/profile');
     }
   }, [user, navigate, dispatch]);
 
@@ -104,7 +115,7 @@ export default function RoleGateway({ user, onRoleSelect }: RoleGatewayProps) {
       onRoleSelect(selectedRole);
     }
 
-    navigate('/dashboard');
+    navigate('/profile');
   };
 
   return (
@@ -132,7 +143,7 @@ export default function RoleGateway({ user, onRoleSelect }: RoleGatewayProps) {
               <S.RoleTitle>{role.label}</S.RoleTitle>
               <S.RoleDescription>{role.description}</S.RoleDescription>
               {selectedRole === role.id && (
-                <span style={{ fontSize: '1.5rem', marginTop: '1rem' }}>✔</span>
+                <S.RoleSelectedMark>✔</S.RoleSelectedMark>
               )}
             </S.RoleCard>
           ))}
@@ -140,9 +151,9 @@ export default function RoleGateway({ user, onRoleSelect }: RoleGatewayProps) {
 
         {selectedRole && (
           <S.ActionButtons>
-            <p style={{ gridColumn: '1 / -1', textAlign: 'center', marginBottom: '1rem' }}>
+            <S.RoleSelectionSummary>
               You selected: <strong>{ROLES.find(r => r.id === selectedRole)?.label}</strong>
-            </p>
+            </S.RoleSelectionSummary>
             <S.Button $variant="primary" onClick={handleConfirm}>
               Confirm Selection & Continue
             </S.Button>
@@ -184,7 +195,7 @@ export function RoleGuard({ allowedRoles, children }: RoleGuardProps) {
     }
 
     if (!allowedRoles.includes(userRole.role)) {
-      navigate(`/${userRole.role}/dashboard`);
+      navigate('/profile');
     }
   }, [userRole, allowedRoles, navigate]);
 

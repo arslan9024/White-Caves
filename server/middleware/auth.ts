@@ -13,8 +13,38 @@ export interface AuthRequest extends Request {
     id: string;
     email: string;
     role: string;
+    name?: string;
+    phone?: string;
   };
 }
+
+type JwtPayload = {
+  id: string;
+  email: string;
+  role: string;
+};
+
+const extractBearerToken = (authorizationHeader?: string): string | null => {
+  if (!authorizationHeader) return null;
+  if (!authorizationHeader.startsWith('Bearer ')) return null;
+  return authorizationHeader.slice('Bearer '.length);
+};
+
+const decodeJwt = (token: string): JwtPayload => {
+  return jwt.verify(token, JWT_SECRET) as JwtPayload;
+};
+
+const mapJwtErrorToAppError = (error: unknown): AppError => {
+  if (error instanceof jwt.TokenExpiredError) {
+    return new AppError('Token expired', 401);
+  }
+
+  if (error instanceof jwt.JsonWebTokenError) {
+    return new AppError('Invalid token', 401);
+  }
+
+  return new AppError('Authentication failed', 401);
+};
 
 /**
  * Verify a JWT token string and return the decoded payload, or null on failure.
@@ -22,7 +52,7 @@ export interface AuthRequest extends Request {
  */
 export function verifyJwt(token: string): { id: string; email: string; role: string } | null {
   try {
-    return jwt.verify(token, JWT_SECRET) as { id: string; email: string; role: string };
+    return decodeJwt(token);
   } catch {
     return null;
   }
@@ -30,32 +60,22 @@ export function verifyJwt(token: string): { id: string; email: string; role: str
 
 const authMiddleware = (
   req: AuthRequest,
-  res: Response,
+  _res: Response,
   next: NextFunction
 ) => {
   try {
-    const token = req.headers.authorization?.replace('Bearer ', '');
+    const token = extractBearerToken(req.headers.authorization);
 
     if (!token) {
       return next(new AppError('No token provided', 401));
     }
 
-    const decoded = jwt.verify(token, JWT_SECRET) as {
-      id: string;
-      email: string;
-      role: string;
-    };
+    const decoded = decodeJwt(token);
 
     req.user = decoded;
     next();
   } catch (error) {
-    if (error instanceof jwt.TokenExpiredError) {
-      return next(new AppError('Token expired', 401));
-    }
-    if (error instanceof jwt.JsonWebTokenError) {
-      return next(new AppError('Invalid token', 401));
-    }
-    return next(new AppError('Authentication failed', 401));
+    return next(mapJwtErrorToAppError(error));
   }
 };
 

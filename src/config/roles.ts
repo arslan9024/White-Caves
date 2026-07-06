@@ -25,6 +25,17 @@ export interface RoleDefinition {
   category: 'executive' | 'admin' | 'management' | 'agent' | 'specialist' | 'support' | 'client';
 }
 
+const getCanonicalDashboardPathByRole = (roleId: string): string => {
+  switch (roleId) {
+    case 'landlord':
+      return '/landlord-portal';
+    case 'tenant':
+      return '/tenant-portal';
+    default:
+      return '/crm';
+  }
+};
+
 export const REAL_ESTATE_ROLES: RoleDefinition[] = [
   {
     id: 'managing_director',
@@ -266,7 +277,10 @@ export const REAL_ESTATE_ROLES: RoleDefinition[] = [
     dashboardPath: '/agent/dashboard',
     category: 'agent'
   }
-];
+].map(role => ({
+  ...role,
+  dashboardPath: getCanonicalDashboardPathByRole(role.id),
+})) as RoleDefinition[];
 
 /** Map legacy/alternate role keys to canonical role IDs */
 export const ROLE_KEY_MAP: Record<string, string> = {

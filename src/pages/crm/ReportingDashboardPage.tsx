@@ -202,10 +202,11 @@ const ReportingDashboardPage: FC = () => {
           />
           <FilterSelect
             value={exportFormat}
-            onChange={e => setExportFormat(e.target.value as 'csv' | 'json')}
+            onChange={e => setExportFormat(e.target.value as 'csv' | 'json' | 'excel')}
           >
             <option value="csv">CSV</option>
             <option value="json">JSON</option>
+            <option value="excel">Excel</option>
           </FilterSelect>
           <PrimaryButton onClick={handleExport}>
             📥 Export Report

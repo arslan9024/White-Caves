@@ -137,6 +137,17 @@ export const RoleDescription = styled.p`
   line-height: 1.5;
 `;
 
+export const RoleSelectedMark = styled.span`
+  font-size: 1.5rem;
+  margin-top: 1rem;
+`;
+
+export const RoleSelectionSummary = styled.p`
+  grid-column: 1 / -1;
+  text-align: center;
+  margin-bottom: 1rem;
+`;
+
 export const ActionButtons = styled.div`
   display: flex;
   gap: 1rem;

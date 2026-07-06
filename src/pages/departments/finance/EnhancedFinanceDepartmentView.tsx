@@ -44,6 +44,11 @@ const MetricsGrid = styled.div`
   margin-top: 32px;
 `;
 
+const ProgressRingCenter = styled.div`
+  display: flex;
+  justify-content: center;
+`;
+
 interface FinanceDepartmentViewProps {
   serviceName?: string;
   subitemId?: string;
@@ -138,7 +143,7 @@ export const FinanceDepartmentView: React.FC<FinanceDepartmentViewProps> = ({
       <MetricsGrid>
         <ChartCard>
           <h3>Budget Utilization</h3>
-          <div style={{ display: 'flex', justifyContent: 'center' }}>
+          <ProgressRingCenter>
             <ProgressRing
               value={displayData.utilizationRate || mockFinanceData.utilizationRate}
               max={100}
@@ -146,7 +151,7 @@ export const FinanceDepartmentView: React.FC<FinanceDepartmentViewProps> = ({
               size={150}
               showLabel
             />
-          </div>
+          </ProgressRingCenter>
         </ChartCard>
 
         <ChartCard>

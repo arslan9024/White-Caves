@@ -10,7 +10,7 @@
     "**/*.test.ts",
     "**/*.spec.ts"
   ],
-  "exec": "tsx server/index.ts",
+  "exec": "node ./node_modules/tsx/dist/cli.mjs server/index.ts",
   "signal": "SIGTERM",
   "delay": "250"
 }

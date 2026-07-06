@@ -5,7 +5,6 @@ import {
   ArrowUp, ArrowDown, Filter, Eye, Zap, Activity
 } from 'lucide-react';
 import AssistantDocsTab from './shared/AssistantDocsTab';
-import AssistantLifecycleTab from './shared/AssistantLifecycleTab';
 import './AssistantDashboard.css';
 
 const PROSPECTS = [
@@ -102,7 +101,7 @@ const HunterProspectingCRM = () => {
       </div>
 
       <div className="assistant-tabs">
-        {['prospects', 'campaigns', 'patterns', 'enrichment', 'lifecycle', 'docs'].map(tab => (
+        {['prospects', 'campaigns', 'patterns', 'enrichment', 'docs'].map(tab => (
           <button
             key={tab}
             className={`tab-btn ${activeTab === tab ? 'active' : ''}`}
@@ -242,10 +241,6 @@ const HunterProspectingCRM = () => {
               <button className="add-btn"><Plus size={16} /> Bulk Enrich</button>
             </div>
           </div>
-        )}
-
-        {activeTab === 'lifecycle' && (
-          <AssistantLifecycleTab assistantId="hunter" color="#EF4444" assistantName="Hunter" />
         )}
 
         {activeTab === 'docs' && (

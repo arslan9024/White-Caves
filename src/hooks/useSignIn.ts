@@ -15,8 +15,11 @@ import {
   signInWithFacebook,
   signInWithApple,
   signInWithPhone,
+  auth as firebaseAuth,
   createRecaptchaVerifier,
   signOut as signOutFirebase,
+  isFirebaseAuthConfigured,
+  firebaseAuthUnavailableReason,
 } from '../config/firebase';
 import { TIMING } from '../constants';
 import {
@@ -24,8 +27,14 @@ import {
   registerWithEmail as backendRegister,
   syncFirebaseUser,
   completeSocialRegistration,
+  verifyTwoFactor as backendVerifyTwoFactor,
+  requestPasswordReset,
+  verifyPasswordResetToken,
+  resetPasswordWithToken,
+  type LoginSuccessData,
 } from '../services/authService';
 import { safeStorage } from '../utils/safeStorage';
+import { getPostLoginRoute } from '../utils/routing';
 
 // ─── Types ──────────────────────────────────────────────────────────
 
@@ -53,7 +62,123 @@ interface SocialSyncRecovery {
   reason: string;
 }
 
+type SupportedSocialProvider = 'google' | 'facebook' | 'apple';
+
+interface SocialAuthErrorLike {
+  code?: string;
+  message?: string;
+}
+
 const MAX_SOCIAL_RETRY_ATTEMPTS = 3;
+const SUPERUSER_EMAIL = (import.meta.env.VITE_CREATOR_SUPERUSER_EMAIL ?? '').toLowerCase().trim();
+const AUTH_ROUTE_BLOCKLIST = new Set(['/signin', '/signup', '/select-role', '/pending-approval']);
+const CLIENT_ROLE_KEYS = new Set(['buyer', 'seller', 'landlord', 'property-owner', 'tenant']);
+const LANDLORD_ROLE_KEYS = new Set(['landlord', 'property-owner']);
+
+const normalizeRoleKey = (role: string | null | undefined): string =>
+  (role || '').toLowerCase().trim();
+
+const toTitleCase = (value: string): string =>
+  value.length > 0 ? `${value[0].toUpperCase()}${value.slice(1)}` : value;
+
+const resolveSafeReturnPath = (path: string | undefined): string | null => {
+  if (!path || !path.startsWith('/')) {
+    return null;
+  }
+
+  const normalizedPath = path.toLowerCase().trim();
+  if (AUTH_ROUTE_BLOCKLIST.has(normalizedPath) || normalizedPath.startsWith('/auth')) {
+    return null;
+  }
+
+  return path;
+};
+
+const resolveCategoryFromRole = (role: string | null | undefined): 'client' | 'staff' => {
+  const normalizedRole = normalizeRoleKey(role);
+  return CLIENT_ROLE_KEYS.has(normalizedRole) ? 'client' : 'staff';
+};
+
+const isSuperuserEmail = (value: string | null | undefined): boolean =>
+  // Read env var lazily at call time so vi.stubEnv works correctly in tests
+  (() => {
+    const configured = (import.meta.env.VITE_CREATOR_SUPERUSER_EMAIL ?? '').toLowerCase().trim();
+    if (!configured) return false;
+    return (value || '').toLowerCase().trim() === configured;
+  })();
+
+const normalizeSocialAuthErrorMessage = (error: unknown, provider: string): string => {
+  const socialError = error as SocialAuthErrorLike;
+  const socialErrorCode = socialError?.code;
+
+  switch (socialErrorCode) {
+    case 'auth/popup-blocked':
+      return `Unable to open ${toTitleCase(provider)} sign-in popup. Please allow popups and try again.`;
+    case 'auth/popup-closed-by-user':
+      return `${toTitleCase(provider)} sign-in was cancelled before completion.`;
+    case 'auth/cancelled-popup-request':
+      return `Another sign-in request interrupted ${toTitleCase(provider)} authentication. Please retry.`;
+    case 'auth/network-request-failed':
+      return 'Network issue detected during social sign-in. Please check your connection and retry.';
+    case 'auth/unauthorized-domain':
+      return `${toTitleCase(provider)} sign-in is blocked for this domain. Please contact support to authorize this domain in Firebase.`;
+    case 'auth/operation-not-allowed':
+      return `${toTitleCase(provider)} sign-in is not enabled for this environment yet. Please use email sign-in or contact support.`;
+    case 'auth/account-exists-with-different-credential':
+      return 'This email is already registered with a different sign-in method. Try email sign-in to continue.';
+    default:
+      break;
+  }
+
+  if (error instanceof Error && error.message.trim()) {
+    return error.message.trim();
+  }
+
+  if (typeof socialError?.message === 'string' && socialError.message.trim()) {
+    return socialError.message.trim();
+  }
+
+  return `${toTitleCase(provider)} authentication failed. Please try again.`;
+};
+
+const isSupportedSocialProvider = (provider: string): provider is SupportedSocialProvider =>
+  provider === 'google' || provider === 'facebook' || provider === 'apple';
+
+const shouldClearFirebaseSessionAfterSyncFailure = (message: string): boolean =>
+  /uid mismatch|email mismatch|token verification failed|invalid firebase token|verified firebase email is required|authentication token is missing|firebase token is required/i.test(
+    message.toLowerCase()
+  );
+
+const deriveProfileCompletionSignal = (user: {
+  name?: string | null;
+  phone?: string | null;
+  profileCompleted?: boolean;
+  profileComplete?: boolean;
+  profileCompletion?: {
+    profileCompleted?: boolean;
+  };
+}): boolean | undefined => {
+  if (typeof user.profileCompleted === 'boolean') {
+    return user.profileCompleted;
+  }
+
+  if (typeof user.profileComplete === 'boolean') {
+    return user.profileComplete;
+  }
+
+  if (typeof user.profileCompletion?.profileCompleted === 'boolean') {
+    return user.profileCompletion.profileCompleted;
+  }
+
+  const hasPhoneField = Object.prototype.hasOwnProperty.call(user, 'phone');
+  if (!hasPhoneField) {
+    return undefined;
+  }
+
+  const hasName = typeof user.name === 'string' && user.name.trim().length > 0;
+  const hasPhone = typeof user.phone === 'string' && user.phone.trim().length > 0;
+  return hasName && hasPhone;
+};
 
 export interface UserCategory {
   id: string;
@@ -119,8 +244,18 @@ export function useSignIn() {
   const [step, setStep] = useState<number>(1);
   const [activeTab, setActiveTab] = useState<'email' | 'phone'>('email');
   const [loading, setLoading] = useState(false);
+  const [forgotPasswordLoading, setForgotPasswordLoading] = useState(false);
+  const [verifyResetLoading, setVerifyResetLoading] = useState(false);
+  const [completeResetLoading, setCompleteResetLoading] = useState(false);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
+  const [resetStage, setResetStage] = useState<
+    'request' | 'verify' | 'reset' | 'success' | 'locked'
+  >('request');
+  const [resetToken, setResetToken] = useState('');
+  const [resetSessionToken, setResetSessionToken] = useState('');
+  const [newPassword, setNewPassword] = useState('');
+  const [confirmNewPassword, setConfirmNewPassword] = useState('');
 
   // ── Form fields ────────────────────────────────────────────────
   const [email, setEmail] = useState('');
@@ -137,6 +272,10 @@ export function useSignIn() {
   const [showOtpInput, setShowOtpInput] = useState(false);
   const [confirmationResult, setConfirmationResult] = useState<ConfirmationResult | null>(null);
 
+  // ── 2FA verification ───────────────────────────────────────────
+  const [twoFactorEmail, setTwoFactorEmail] = useState('');
+  const [twoFactorCode, setTwoFactorCode] = useState('');
+
   // ── Post-auth pending user ─────────────────────────────────────
   const [pendingUser, setPendingUser] = useState<PendingUser | null>(null);
   const [socialSyncRecovery, setSocialSyncRecovery] = useState<SocialSyncRecovery | null>(null);
@@ -144,6 +283,11 @@ export function useSignIn() {
 
   // Ref for navigation timers
   const navTimerRef = useRef<ReturnType<typeof setTimeout>>();
+  const googleAuthUnavailableMessage =
+    'Google sign-in is temporarily unavailable because Firebase authentication is not configured in this environment.' +
+    (firebaseAuthUnavailableReason ? ` ${firebaseAuthUnavailableReason}` : '');
+
+  const hasResetTokenInUrl = useRef(false);
 
   useEffect(() => {
     return () => {
@@ -158,6 +302,25 @@ export function useSignIn() {
     }
   }, [location.pathname]);
 
+  useEffect(() => {
+    const params = new URLSearchParams(location.search);
+    const emailFromQuery = params.get('reset_email');
+    const tokenFromQuery = params.get('reset_token');
+
+    if (!emailFromQuery || !tokenFromQuery) {
+      return;
+    }
+
+    hasResetTokenInUrl.current = true;
+    setMode('signin');
+    setStep(1);
+    setActiveTab('email');
+    setEmail(emailFromQuery.trim().toLowerCase());
+    setResetToken(tokenFromQuery.trim());
+    setResetStage('verify');
+    setSuccess('Reset token detected. Verify token to continue with password reset.');
+  }, [location.search]);
+
   // ── Helpers ────────────────────────────────────────────────────
 
   const saveUserData = useCallback(
@@ -167,27 +330,74 @@ export function useSignIn() {
     []
   );
 
+  const resolvePostLoginRoute = useCallback(
+    (user: {
+      role?: string;
+      status?: string;
+      email?: string | null;
+      profileCompleted?: boolean;
+    }): string => {
+      const stateValue = location.state as { from?: string } | null;
+      const returnPath = resolveSafeReturnPath(stateValue?.from);
+      if (returnPath) {
+        return returnPath;
+      }
+
+      return getPostLoginRoute(user.role, user.email, {
+        status: user.status,
+        profileCompleted: user.profileCompleted,
+      });
+    },
+    [location.state]
+  );
+
   const handleSignInSuccess = useCallback(
     (user: {
       id: string;
       email: string | null;
       name: string | null;
+      displayName?: string | null;
       role?: string;
+      status?: string;
+      phone?: string | null;
       photoUrl?: string | null;
+      profileCompleted?: boolean;
+      profileComplete?: boolean;
     }): void => {
+      const resolvedStatus = user.status?.toLowerCase().trim() || 'active';
+      const normalizedRole = isSuperuserEmail(user.email)
+        ? 'managing_director'
+        : normalizeRoleKey(user.role);
+      const profileCompleted = deriveProfileCompletionSignal(user);
+      const fallbackRoute = resolvePostLoginRoute({
+        role: normalizedRole,
+        status: resolvedStatus,
+        email: user.email,
+        profileCompleted,
+      });
+
       dispatch(
         setUser({
           id: user.id,
           email: user.email || '',
-          name: user.name || undefined,
-          role: user.role,
+          name: user.name || user.displayName || undefined,
+          displayName: user.displayName || user.name || undefined,
+          role: normalizedRole || user.role,
+          status: resolvedStatus === 'pending' ? 'pending' : 'active',
           photoURL: user.photoUrl || undefined,
+          phone: user.phone || undefined,
+          profileCompleted,
         })
       );
+
+      if (normalizedRole) {
+        saveUserData(resolveCategoryFromRole(normalizedRole), normalizedRole, resolvedStatus);
+      }
+
       setSuccess('Sign in successful!');
-      navTimerRef.current = setTimeout(() => navigate('/dashboard'), TIMING.NAVIGATION_DELAY);
+      navTimerRef.current = setTimeout(() => navigate(fallbackRoute), TIMING.NAVIGATION_DELAY);
     },
-    [dispatch, navigate]
+    [dispatch, navigate, resolvePostLoginRoute, saveUserData]
   );
 
   const handleSignUpSuccess = useCallback(
@@ -255,16 +465,17 @@ export function useSignIn() {
       const backendUser = response.data.user;
       const resolvedRole =
         selectedCategory === 'staff' && !isSocialRegistration ? selectedRole : backendUser.role;
+      const normalizedRole = normalizeRoleKey(resolvedRole) || 'agent';
       dispatch(
         setUser({
           id: backendUser.id,
           email: backendUser.email,
           name: backendUser.name || undefined,
-          role: resolvedRole,
+          role: normalizedRole,
           status,
         })
       );
-      saveUserData(selectedCategory, resolvedRole, status);
+      saveUserData(selectedCategory, normalizedRole, status);
 
       if (selectedCategory === 'staff') {
         setSuccess('Registration submitted! Your account is pending approval.');
@@ -274,7 +485,10 @@ export function useSignIn() {
         );
       } else {
         setSuccess('Account created successfully!');
-        navTimerRef.current = setTimeout(() => navigate('/dashboard'), TIMING.NAVIGATION_DELAY);
+        navTimerRef.current = setTimeout(
+          () => navigate(getPostLoginRoute(resolvedRole, backendUser.email)),
+          TIMING.NAVIGATION_DELAY
+        );
       }
     } catch (err: unknown) {
       const message = err instanceof Error ? err.message : 'Registration failed';
@@ -292,12 +506,36 @@ export function useSignIn() {
     navigate,
     saveUserData,
     pendingUser,
+    resolvePostLoginRoute,
   ]);
 
   // ── Social auth ────────────────────────────────────────────────
 
   const handleSocialAuth = useCallback(
     async (provider: string, options?: { isRetry?: boolean }): Promise<void> => {
+      if (provider === 'google' && !isFirebaseAuthConfigured) {
+        setError(googleAuthUnavailableMessage);
+        return;
+      }
+      if (
+        provider === 'google' &&
+        !options?.isRetry &&
+        typeof window !== 'undefined' &&
+        import.meta.env.MODE !== 'test'
+      ) {
+        const popupProbe = window.open('', '_blank', 'noopener,noreferrer,width=1,height=1');
+        if (!popupProbe) {
+          setSocialSyncRecovery({
+            provider: 'google',
+            reason: 'Popup blocked by browser settings',
+          });
+          setError(
+            'Google sign-in popup was blocked by your browser. Allow popups for this site and press Try again.'
+          );
+          return;
+        }
+        popupProbe.close();
+      }
       setLoading(true);
       setError('');
       if (!options?.isRetry) {
@@ -305,6 +543,10 @@ export function useSignIn() {
         setSocialRetryAttempts(0);
       }
       try {
+        if (!isSupportedSocialProvider(provider)) {
+          throw new Error('Invalid provider');
+        }
+
         let result;
         switch (provider) {
           case 'google':
@@ -331,14 +573,41 @@ export function useSignIn() {
           setError('');
 
           if (mode === 'signup') {
-            handleSignUpSuccess(backendUser, { fromSocialProvider: provider });
+            if (isSuperuserEmail(backendUser.email)) {
+              handleSignInSuccess({
+                ...backendUser,
+                role: 'managing_director',
+                status: 'active',
+                photoUrl: backendUser.photoUrl || result.user.photoURL,
+                displayName: backendUser.name || result.user.displayName,
+              });
+            } else {
+              handleSignUpSuccess(
+                {
+                  ...backendUser,
+                  photoUrl: backendUser.photoUrl || result.user.photoURL,
+                },
+                { fromSocialProvider: provider }
+              );
+            }
           } else {
-            handleSignInSuccess(backendUser);
+            handleSignInSuccess(
+              isSuperuserEmail(backendUser.email)
+                ? {
+                    ...backendUser,
+                    role: 'managing_director',
+                    status: 'active',
+                    photoUrl: backendUser.photoUrl || result.user.photoURL,
+                    displayName: backendUser.name || result.user.displayName,
+                  }
+                : {
+                    ...backendUser,
+                    photoUrl: backendUser.photoUrl || result.user.photoURL,
+                    displayName: backendUser.name || result.user.displayName,
+                  }
+            );
           }
         } catch (syncError: unknown) {
-          await signOutFirebase().catch(() => {
-            // noop: firebase session cleanup is best effort here
-          });
           const syncMessage = (() => {
             if (syncError instanceof Error && syncError.message.trim()) {
               return syncError.message.trim();
@@ -356,6 +625,13 @@ export function useSignIn() {
             }
             return 'Unable to complete authentication sync';
           })();
+
+          if (shouldClearFirebaseSessionAfterSyncFailure(syncMessage)) {
+            await signOutFirebase().catch(() => {
+              // noop: firebase session cleanup is best effort here
+            });
+          }
+
           if (provider === 'google' || provider === 'facebook' || provider === 'apple') {
             setSocialSyncRecovery({ provider, reason: syncMessage });
             if (options?.isRetry) {
@@ -368,12 +644,12 @@ export function useSignIn() {
           setSuccess('');
         }
       } catch (err: unknown) {
-        setError(err instanceof Error ? err.message : 'Authentication failed');
+        setError(normalizeSocialAuthErrorMessage(err, provider));
       } finally {
         setLoading(false);
       }
     },
-    [mode, handleSignInSuccess, handleSignUpSuccess]
+    [mode, handleSignInSuccess, handleSignUpSuccess, googleAuthUnavailableMessage]
   );
 
   const retrySocialAuth = useCallback(async (): Promise<void> => {
@@ -386,8 +662,73 @@ export function useSignIn() {
       return;
     }
 
+    if (socialSyncRecovery.provider === 'google' && firebaseAuth?.currentUser) {
+      setLoading(true);
+      setError('');
+
+      try {
+        const backendResponse = await syncFirebaseUser(firebaseAuth.currentUser);
+        if (!backendResponse?.data?.user) {
+          throw new Error('Invalid backend response: missing user data');
+        }
+
+        const backendUser = backendResponse.data.user;
+        setSocialSyncRecovery(null);
+        setSocialRetryAttempts(0);
+        setError('');
+
+        if (mode === 'signup') {
+          if (isSuperuserEmail(backendUser.email)) {
+            handleSignInSuccess({
+              ...backendUser,
+              role: 'managing_director',
+              status: 'active',
+            });
+          } else {
+            handleSignUpSuccess(backendUser, { fromSocialProvider: 'google' });
+          }
+        } else {
+          handleSignInSuccess(
+            isSuperuserEmail(backendUser.email)
+              ? { ...backendUser, role: 'managing_director', status: 'active' }
+              : backendUser
+          );
+        }
+        return;
+      } catch (syncError: unknown) {
+        const syncMessage =
+          syncError instanceof Error && syncError.message.trim()
+            ? syncError.message.trim()
+            : 'Unable to complete authentication sync';
+
+        setSocialRetryAttempts(prev => prev + 1);
+        setSocialSyncRecovery({ provider: 'google', reason: syncMessage });
+
+        if (shouldClearFirebaseSessionAfterSyncFailure(syncMessage)) {
+          await signOutFirebase().catch(() => {
+            // noop
+          });
+        }
+
+        setError(
+          `Google authentication is active, but backend session setup still failed: ${syncMessage}. Please retry or use email login temporarily.`
+        );
+      } finally {
+        setLoading(false);
+      }
+
+      return;
+    }
+
     await handleSocialAuth(socialSyncRecovery.provider, { isRetry: true });
-  }, [handleSocialAuth, socialSyncRecovery, socialRetryAttempts]);
+  }, [
+    handleSignInSuccess,
+    handleSignUpSuccess,
+    handleSocialAuth,
+    mode,
+    socialSyncRecovery,
+    socialRetryAttempts,
+  ]);
 
   const clearSocialRecovery = useCallback((): void => {
     setSocialSyncRecovery(null);
@@ -428,6 +769,27 @@ export function useSignIn() {
 
       try {
         if (mode === 'signup') {
+          if (isSuperuserEmail(normalizedEmail)) {
+            const response = await backendRegister(
+              normalizedEmail,
+              password,
+              fullName || undefined,
+              undefined,
+              undefined,
+              'staff',
+              'managing_director'
+            );
+            if (!response?.data?.user) {
+              throw new Error('Invalid response: missing user data');
+            }
+            handleSignInSuccess({
+              ...response.data.user,
+              role: 'managing_director',
+              status: 'active',
+            });
+            return;
+          }
+
           handleSignUpSuccess({
             id: 'pending-signup',
             email: normalizedEmail,
@@ -435,8 +797,17 @@ export function useSignIn() {
           });
         } else {
           const response = await backendLogin(normalizedEmail, password);
-          if (!response?.data?.user) throw new Error('Invalid response: missing user data');
-          handleSignInSuccess(response.data.user);
+          if (response.requiresTwoFactor) {
+            // Advance to the 2FA code-entry step.
+            // The email is stored so handleTwoFactorSubmit can send it to the server.
+            setTwoFactorEmail(normalizedEmail);
+            setTwoFactorCode('');
+            setStep(4);
+          } else {
+            const data = response.data as LoginSuccessData;
+            if (!data?.user) throw new Error('Invalid response: missing user data');
+            handleSignInSuccess(data.user);
+          }
         }
       } catch (err: unknown) {
         const message = err instanceof Error ? err.message : 'Authentication failed';
@@ -446,6 +817,26 @@ export function useSignIn() {
       }
     },
     [mode, email, password, confirmPassword, fullName, handleSignInSuccess, handleSignUpSuccess]
+  );
+
+  // ── 2FA verification ──────────────────────────────────────────────
+
+  const handleTwoFactorSubmit = useCallback(
+    async (e: FormEvent<HTMLFormElement>): Promise<void> => {
+      e.preventDefault();
+      setLoading(true);
+      setError('');
+
+      try {
+        const user = await backendVerifyTwoFactor(twoFactorEmail, twoFactorCode);
+        handleSignInSuccess(user);
+      } catch (err: unknown) {
+        setError(err instanceof Error ? err.message : 'Verification failed');
+      } finally {
+        setLoading(false);
+      }
+    },
+    [twoFactorEmail, twoFactorCode, handleSignInSuccess]
   );
 
   // ── Phone auth ─────────────────────────────────────────────────
@@ -513,6 +904,122 @@ export function useSignIn() {
     [confirmationResult, otp, mode, handleSignInSuccess, handleSignUpSuccess]
   );
 
+  const handleForgotPassword = useCallback(async (): Promise<void> => {
+    const normalizedEmail = email.trim().toLowerCase();
+    setError('');
+    setSuccess('');
+
+    if (!normalizedEmail) {
+      setError('Please enter your email address first to receive a reset link.');
+      return;
+    }
+
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(normalizedEmail)) {
+      setError('Please enter a valid email address before requesting a reset link.');
+      return;
+    }
+
+    setForgotPasswordLoading(true);
+    try {
+      await requestPasswordReset(normalizedEmail);
+      setResetStage('verify');
+      setSuccess(
+        'Password reset requested. Check your inbox for the reset token, then verify it to continue.'
+      );
+    } catch (err: unknown) {
+      const message = err instanceof Error ? err.message : 'Failed to send reset email';
+      setError(message);
+      if (/rate-limit|too many|locked|retry/i.test(message.toLowerCase())) {
+        setResetStage('locked');
+      }
+    } finally {
+      setForgotPasswordLoading(false);
+    }
+  }, [email]);
+
+  const handleVerifyResetToken = useCallback(async (): Promise<void> => {
+    const normalizedEmail = email.trim().toLowerCase();
+    const normalizedToken = resetToken.trim();
+
+    setError('');
+    setSuccess('');
+
+    if (!normalizedEmail) {
+      setError('Please provide your email before verifying reset token.');
+      return;
+    }
+
+    if (!normalizedToken) {
+      setError('Please enter the reset token from your email.');
+      return;
+    }
+
+    setVerifyResetLoading(true);
+    try {
+      const response = await verifyPasswordResetToken(normalizedEmail, normalizedToken);
+      setResetSessionToken(response.data.resetSessionToken);
+      setResetStage('reset');
+      setSuccess('Reset token verified. You can now set a new password.');
+    } catch (err: unknown) {
+      const message = err instanceof Error ? err.message : 'Reset token verification failed';
+      setError(message);
+      if (/rate-limit|too many|locked|retry/i.test(message.toLowerCase())) {
+        setResetStage('locked');
+      }
+    } finally {
+      setVerifyResetLoading(false);
+    }
+  }, [email, resetToken]);
+
+  const handleCompletePasswordReset = useCallback(async (): Promise<void> => {
+    setError('');
+    setSuccess('');
+
+    if (!resetSessionToken) {
+      setError('Reset session is missing. Verify reset token again.');
+      return;
+    }
+
+    if (newPassword.length < 8) {
+      setError('Password must be at least 8 characters.');
+      return;
+    }
+
+    if (!/[a-zA-Z]/.test(newPassword) || !/[0-9]/.test(newPassword)) {
+      setError('Password must contain at least one letter and one number.');
+      return;
+    }
+
+    if (newPassword !== confirmNewPassword) {
+      setError('New password and confirmation do not match.');
+      return;
+    }
+
+    setCompleteResetLoading(true);
+    try {
+      await resetPasswordWithToken(resetSessionToken, newPassword);
+      setResetStage('success');
+      setResetSessionToken('');
+      setResetToken('');
+      setNewPassword('');
+      setConfirmNewPassword('');
+      if (hasResetTokenInUrl.current) {
+        navigate('/signin', { replace: true });
+        hasResetTokenInUrl.current = false;
+      }
+      setSuccess('Password reset successful. You can now sign in with your new password.');
+    } catch (err: unknown) {
+      const message = err instanceof Error ? err.message : 'Password reset failed';
+      setError(message);
+      if (/rate-limit|too many|locked|retry/i.test(message.toLowerCase())) {
+        setResetStage('locked');
+      }
+    } finally {
+      setCompleteResetLoading(false);
+    }
+  }, [confirmNewPassword, navigate, newPassword, resetSessionToken]);
+
   // ── Mode switch ────────────────────────────────────────────────
 
   const switchMode = useCallback((): void => {
@@ -532,7 +1039,11 @@ export function useSignIn() {
 
   const goBackToStep = useCallback((targetStep: number): void => {
     setStep(targetStep);
-    if (targetStep === 1) setSelectedCategory('');
+    if (targetStep === 1) {
+      setSelectedCategory('');
+      setTwoFactorEmail('');
+      setTwoFactorCode('');
+    }
     if (targetStep <= 2) setSelectedRole('');
   }, []);
 
@@ -548,12 +1059,25 @@ export function useSignIn() {
     activeTab,
     setActiveTab,
     loading,
+    forgotPasswordLoading,
+    verifyResetLoading,
+    completeResetLoading,
     error,
     setError,
     success,
+    resetStage,
+    setResetStage,
+    resetToken,
+    setResetToken,
+    newPassword,
+    setNewPassword,
+    confirmNewPassword,
+    setConfirmNewPassword,
     socialSyncRecovery,
     socialRetryAttempts,
     remainingSocialRetries,
+    isGoogleAuthAvailable: isFirebaseAuthConfigured,
+    googleAuthUnavailableMessage,
     switchMode,
     goBackToStep,
 
@@ -581,6 +1105,11 @@ export function useSignIn() {
     showOtpInput,
     resetOtp,
 
+    // 2FA verification
+    twoFactorCode,
+    setTwoFactorCode,
+    handleTwoFactorSubmit,
+
     // Post-auth user
     pendingUser,
 
@@ -590,6 +1119,9 @@ export function useSignIn() {
     retrySocialAuth,
     clearSocialRecovery,
     handleEmailSubmit,
+    handleForgotPassword,
+    handleVerifyResetToken,
+    handleCompletePasswordReset,
     handlePhoneSubmit,
     handleOtpVerify,
     proceedToRoleSelection,

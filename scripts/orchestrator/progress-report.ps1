@@ -153,7 +153,12 @@ if ($readyTasks.Count -gt 0) {
   Write-Host "  -- READY FOR FREE-AGENT WORK ($($readyTasks.Count) tasks) --" -ForegroundColor Cyan
   foreach ($t in $readyTasks) {
     $lane   = Get-Lane $t.agent
-    $prompt = if ($prompts.ContainsKey($t.taskId)) { $prompts[$t.taskId] } else { "(no prompt)" }
+    if ($prompts.ContainsKey($t.taskId)) {
+      $pv = $prompts[$t.taskId]
+      $prompt = if ($pv -is [string]) { [string]$pv } elseif ($null -ne $pv -and $pv.PSObject.Properties.Name -contains "prompt") { [string]$pv.prompt } else { [string]$pv }
+    } else {
+      $prompt = "(no prompt)"
+    }
     $short  = if ($prompt.Length -gt 90) { $prompt.Substring(0,87) + "..." } else { $prompt }
     Write-Host ("  [READY]  {0,-8} {1,-12} {2}" -f $t.taskId, $t.agent, $t.title) -ForegroundColor Cyan
     Write-Host ("           Lane: $lane  |  Prompt: $short") -ForegroundColor DarkGray

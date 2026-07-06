@@ -37,7 +37,6 @@ import {
   ASSISTANT_PROGRESS_SUMMARY,
   ASSISTANT_SEQUENCE_PLAN,
 } from '../../config/assistantImplementationProgress';
-import AIAssistantSelector from './AIAssistantSelector';
 import './AIAssistantHub.css';
 
 const ASSISTANT_ICONS: Record<string, LucideIcon> = {
@@ -479,9 +478,6 @@ const AIAssistantHub = ({ onSelectAssistant }: AIAssistantHubProps) => {
         <div className="header-left">
           <h1>AI Command Center</h1>
           <p>Unified dashboard for all AI assistants</p>
-        </div>
-        <div className="header-right">
-          <AIAssistantSelector onSelectAssistant={onSelectAssistant} compact />
         </div>
       </div>
 

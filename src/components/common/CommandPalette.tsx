@@ -307,7 +307,7 @@ const CommandPalette: React.FC = React.memo(function CommandPalette() {
         label: 'Dashboard',
         category: 'Navigation',
         icon: Home,
-        action: () => navigate('/dashboard'),
+        action: () => navigate('/crm'),
         keywords: ['home', 'overview'],
       },
       {
@@ -315,7 +315,7 @@ const CommandPalette: React.FC = React.memo(function CommandPalette() {
         label: 'Analytics',
         category: 'Navigation',
         icon: BarChart3,
-        action: () => navigate('/dashboard'),
+        action: () => navigate('/crm'),
         keywords: ['charts', 'reports', 'stats'],
       },
       {
@@ -323,7 +323,7 @@ const CommandPalette: React.FC = React.memo(function CommandPalette() {
         label: 'Clients',
         category: 'Navigation',
         icon: Users2,
-        action: () => navigate('/dashboard'),
+        action: () => navigate('/crm'),
         keywords: ['customers', 'contacts'],
       },
       {

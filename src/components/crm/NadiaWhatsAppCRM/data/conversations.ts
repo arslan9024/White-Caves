@@ -24,6 +24,7 @@ export interface Conversation {
   priority: string;
   tags: string[];
   messages: Message[];
+  leadId?: string | null;   // P0-017: set when conversation has been converted to a CRM lead
 }
 
 export interface QuickReply {

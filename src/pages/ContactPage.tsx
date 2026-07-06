@@ -12,6 +12,7 @@ import {
 import { TIMING } from '../constants';
 import PublicLayout from '../components/layout/PublicLayout';
 import PageHeroBanner from '../components/layout/PageHeroBanner';
+import PageMeta from '../components/seo/PageMeta';
 import { authFetch } from '../utils/authFetch';
 import './ContactPage.css';
 
@@ -153,6 +154,13 @@ const ContactPage: FC = () => {
   return (
     <PublicLayout>
       <div className="contact-page">
+        <PageMeta
+          title="Contact White Caves | Dubai Luxury Real Estate"
+          description="Contact White Caves Real Estate LLC in Dubai for property buying, selling, leasing, and investment support."
+          canonicalPath="/contact"
+          ogType="website"
+        />
+
         <PageHeroBanner
           badge="Get in Touch"
           title="Contact Us"

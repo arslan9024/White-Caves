@@ -16,7 +16,10 @@ const { mockPrisma } = vi.hoisted(() => {
       lead: {
         count: fn().mockResolvedValue(42),
         groupBy: fn().mockResolvedValue([]),
-        aggregate: fn().mockResolvedValue({ _sum: { budget: 5000000 }, _avg: { score: 65, budget: 500000 } }),
+        aggregate: fn().mockResolvedValue({
+          _sum: { budget: 5000000 },
+          _avg: { score: 65, budget: 500000 },
+        }),
       },
       property: {
         count: fn().mockResolvedValue(15),
@@ -28,7 +31,9 @@ const { mockPrisma } = vi.hoisted(() => {
       },
       commission: {
         aggregate: fn().mockResolvedValue({
-          _sum: { amount: 50000 }, _count: { _all: 10 }, _avg: { amount: 5000 },
+          _sum: { amount: 50000 },
+          _count: { _all: 10 },
+          _avg: { amount: 5000 },
         }),
         groupBy: fn().mockResolvedValue([]),
       },
@@ -81,7 +86,9 @@ describe('Reporting / Dashboard Routes — /api/dashboard', () => {
     mockPrisma.property.count.mockResolvedValue(15);
     mockPrisma.user.count.mockResolvedValue(5);
     mockPrisma.commission.aggregate.mockResolvedValue({
-      _sum: { amount: 50000 }, _count: { _all: 10 }, _avg: { amount: 5000 },
+      _sum: { amount: 50000 },
+      _count: { _all: 10 },
+      _avg: { amount: 5000 },
     });
     mockPrisma.activity.findMany.mockResolvedValue([]);
     mockPrisma.lead.aggregate.mockResolvedValue({ _sum: { budget: 5000000 } });
@@ -90,8 +97,7 @@ describe('Reporting / Dashboard Routes — /api/dashboard', () => {
   // ── GET /summary ─────────────────────────────────────────────────
   describe('GET /api/dashboard/summary', () => {
     it('returns 200 with metrics for owner', async () => {
-      const res = await request(createApp('owner'))
-        .get('/api/dashboard/summary');
+      const res = await request(createApp('owner')).get('/api/dashboard/summary');
       expect(res.status).toBe(200);
       expect(res.body.success).toBe(true);
       expect(res.body.data.metrics).toBeDefined();
@@ -101,39 +107,34 @@ describe('Reporting / Dashboard Routes — /api/dashboard', () => {
     });
 
     it('returns 403 for agent role', async () => {
-      const res = await request(createApp('agent'))
-        .get('/api/dashboard/summary');
+      const res = await request(createApp('agent')).get('/api/dashboard/summary');
       expect(res.status).toBe(403);
       expect(res.body.error).toMatch(/access denied/i);
     });
 
     it('returns 200 for manager role', async () => {
-      const res = await request(createApp('manager'))
-        .get('/api/dashboard/summary');
+      const res = await request(createApp('manager')).get('/api/dashboard/summary');
       expect(res.status).toBe(200);
     });
 
     it('returns 200 for finance role', async () => {
-      const res = await request(createApp('finance'))
-        .get('/api/dashboard/summary');
+      const res = await request(createApp('finance')).get('/api/dashboard/summary');
       expect(res.status).toBe(200);
     });
 
     it('calculates conversion rate correctly', async () => {
       mockPrisma.lead.count
-        .mockResolvedValueOnce(100)   // totalLeads
-        .mockResolvedValueOnce(15)    // hotLeads
-        .mockResolvedValueOnce(20);   // wonLeads
-      const res = await request(createApp('owner'))
-        .get('/api/dashboard/summary');
+        .mockResolvedValueOnce(100) // totalLeads
+        .mockResolvedValueOnce(15) // hotLeads
+        .mockResolvedValueOnce(20); // wonLeads
+      const res = await request(createApp('owner')).get('/api/dashboard/summary');
       expect(res.status).toBe(200);
       expect(res.body.data.metrics.conversionRate).toBe(20);
     });
 
     it('handles zero leads gracefully', async () => {
       mockPrisma.lead.count.mockResolvedValue(0);
-      const res = await request(createApp('owner'))
-        .get('/api/dashboard/summary');
+      const res = await request(createApp('owner')).get('/api/dashboard/summary');
       expect(res.status).toBe(200);
       expect(res.body.data.metrics.conversionRate).toBe(0);
     });
@@ -141,14 +142,16 @@ describe('Reporting / Dashboard Routes — /api/dashboard', () => {
     it('formats recent activities correctly', async () => {
       mockPrisma.activity.findMany.mockResolvedValueOnce([
         {
-          id: 'act-1', type: 'lead', action: 'created',
-          description: 'New lead', createdAt: new Date('2026-01-15'),
+          id: 'act-1',
+          type: 'lead',
+          action: 'created',
+          description: 'New lead',
+          createdAt: new Date('2026-01-15'),
           user: { id: 'user-1', name: 'Agent John' },
           metadata: null,
         },
       ]);
-      const res = await request(createApp('owner'))
-        .get('/api/dashboard/summary');
+      const res = await request(createApp('owner')).get('/api/dashboard/summary');
       expect(res.status).toBe(200);
       expect(res.body.data.recentActivities).toHaveLength(1);
       expect(res.body.data.recentActivities[0].user).toBe('Agent John');
@@ -158,8 +161,7 @@ describe('Reporting / Dashboard Routes — /api/dashboard', () => {
   // ── GET /overview (alias for /summary) ───────────────────────────
   describe('GET /api/dashboard/overview', () => {
     it('returns 200 like /summary', async () => {
-      const res = await request(createApp('owner'))
-        .get('/api/dashboard/overview');
+      const res = await request(createApp('owner')).get('/api/dashboard/overview');
       expect(res.status).toBe(200);
       expect(res.body.data.metrics).toBeDefined();
     });
@@ -170,39 +172,41 @@ describe('Reporting / Dashboard Routes — /api/dashboard', () => {
     it('returns 200 with activity feed for owner', async () => {
       mockPrisma.activity.findMany.mockResolvedValueOnce([
         {
-          id: 'act-1', type: 'lead', action: 'created',
-          description: 'Activity 1', createdAt: new Date(), metadata: null,
+          id: 'act-1',
+          type: 'lead',
+          action: 'created',
+          description: 'Activity 1',
+          createdAt: new Date(),
+          metadata: null,
           user: { id: 'user-1', name: 'Test' },
           lead: null,
         },
       ]);
       mockPrisma.activity.count.mockResolvedValueOnce(1);
-      const res = await request(createApp('owner'))
-        .get('/api/dashboard/activities');
+      const res = await request(createApp('owner')).get('/api/dashboard/activities');
       expect(res.status).toBe(200);
       expect(res.body.success).toBe(true);
       expect(res.body.pagination).toBeDefined();
     });
 
     it('returns 403 for agent role', async () => {
-      const res = await request(createApp('agent'))
-        .get('/api/dashboard/activities');
+      const res = await request(createApp('agent')).get('/api/dashboard/activities');
       expect(res.status).toBe(403);
     });
 
     it('supports pagination params', async () => {
       mockPrisma.activity.findMany.mockResolvedValueOnce([]);
       mockPrisma.activity.count.mockResolvedValueOnce(100);
-      const res = await request(createApp('owner'))
-        .get('/api/dashboard/activities?page=2&pageSize=10');
+      const res = await request(createApp('owner')).get(
+        '/api/dashboard/activities?page=2&pageSize=10'
+      );
       expect(res.status).toBe(200);
     });
 
     it('supports type filter', async () => {
       mockPrisma.activity.findMany.mockResolvedValueOnce([]);
       mockPrisma.activity.count.mockResolvedValueOnce(0);
-      const res = await request(createApp('owner'))
-        .get('/api/dashboard/activities?type=lead');
+      const res = await request(createApp('owner')).get('/api/dashboard/activities?type=lead');
       expect(res.status).toBe(200);
     });
   });
@@ -210,17 +214,14 @@ describe('Reporting / Dashboard Routes — /api/dashboard', () => {
   // ── GET /executive ───────────────────────────────────────────────
   describe('GET /api/dashboard/executive', () => {
     it('returns 200 with executive analytics for owner', async () => {
-      mockPrisma.lead.groupBy.mockResolvedValue([
-        { status: 'new', _count: { _all: 20 } },
-      ]);
+      mockPrisma.lead.groupBy.mockResolvedValue([{ status: 'new', _count: { _all: 20 } }]);
       mockPrisma.property.groupBy.mockResolvedValue([
         { status: 'available', _count: { _all: 10 } },
       ]);
       mockPrisma.commission.groupBy.mockResolvedValueOnce([
         { status: 'paid', _count: { _all: 5 }, _sum: { amount: 25000 } },
       ]);
-      const res = await request(createApp('owner'))
-        .get('/api/dashboard/executive');
+      const res = await request(createApp('owner')).get('/api/dashboard/executive');
       expect(res.status).toBe(200);
       expect(res.body.data.leads).toBeDefined();
       expect(res.body.data.properties).toBeDefined();
@@ -229,8 +230,7 @@ describe('Reporting / Dashboard Routes — /api/dashboard', () => {
     });
 
     it('returns 403 for agent role', async () => {
-      const res = await request(createApp('agent'))
-        .get('/api/dashboard/executive');
+      const res = await request(createApp('agent')).get('/api/dashboard/executive');
       expect(res.status).toBe(403);
     });
   });
@@ -239,14 +239,13 @@ describe('Reporting / Dashboard Routes — /api/dashboard', () => {
   describe('GET /api/dashboard/kpis', () => {
     it('returns 200 with KPI data for manager', async () => {
       mockPrisma.lead.count
-        .mockResolvedValueOnce(30)    // newLeads30d
-        .mockResolvedValueOnce(8);    // wonDeals30d
+        .mockResolvedValueOnce(30) // newLeads30d
+        .mockResolvedValueOnce(8); // wonDeals30d
       mockPrisma.property.count.mockResolvedValueOnce(5); // newProperties30d
       mockPrisma.commission.aggregate
-        .mockResolvedValueOnce({ _sum: { amount: 100000 } })   // totalRevenue
-        .mockResolvedValueOnce({ _avg: { amount: 10000 } });   // avgDealSize
-      const res = await request(createApp('manager'))
-        .get('/api/dashboard/kpis');
+        .mockResolvedValueOnce({ _sum: { amount: 100000 } }) // totalRevenue
+        .mockResolvedValueOnce({ _avg: { amount: 10000 } }); // avgDealSize
+      const res = await request(createApp('manager')).get('/api/dashboard/kpis');
       expect(res.status).toBe(200);
       expect(res.body.data.period).toBe('30d');
       expect(res.body.data.kpis).toBeDefined();
@@ -255,18 +254,162 @@ describe('Reporting / Dashboard Routes — /api/dashboard', () => {
     });
 
     it('returns 403 for agent role', async () => {
-      const res = await request(createApp('agent'))
-        .get('/api/dashboard/kpis');
+      const res = await request(createApp('agent')).get('/api/dashboard/kpis');
       expect(res.status).toBe(403);
     });
 
     it('returns 200 for finance role', async () => {
       mockPrisma.lead.count.mockResolvedValue(0);
       mockPrisma.property.count.mockResolvedValue(0);
-      mockPrisma.commission.aggregate.mockResolvedValue({ _sum: { amount: 0 }, _avg: { amount: 0 } });
-      const res = await request(createApp('finance'))
-        .get('/api/dashboard/kpis');
+      mockPrisma.commission.aggregate.mockResolvedValue({
+        _sum: { amount: 0 },
+        _avg: { amount: 0 },
+      });
+      const res = await request(createApp('finance')).get('/api/dashboard/kpis');
       expect(res.status).toBe(200);
+    });
+  });
+
+  // ── GET /agent-performance (W18.1-P1-003) ───────────────────────
+  describe('GET /api/dashboard/agent-performance', () => {
+    beforeEach(() => {
+      (mockPrisma.user as any).findMany = vi
+        .fn()
+        .mockResolvedValue([
+          { id: 'agent-1', name: 'Sara Khan', email: 'sara@wc.ae', department: 'Sales' },
+        ]);
+      mockPrisma.user.count.mockResolvedValue(1);
+      mockPrisma.lead.count.mockResolvedValue(20);
+      mockPrisma.commission.aggregate.mockResolvedValue({
+        _sum: { amount: 25000 },
+        _count: 4,
+      });
+      (mockPrisma as any).transaction = { count: vi.fn().mockResolvedValue(3) };
+    });
+
+    it('returns 200 with agent performance data for owner', async () => {
+      const res = await request(createApp('owner')).get('/api/dashboard/agent-performance');
+      expect(res.status).toBe(200);
+      expect(res.body.success).toBe(true);
+      expect(res.body.data.agents).toBeDefined();
+      expect(res.body.data.pagination).toBeDefined();
+    });
+
+    it('returns 403 for agent role', async () => {
+      const res = await request(createApp('agent')).get('/api/dashboard/agent-performance');
+      expect(res.status).toBe(403);
+    });
+
+    it('accepts agentId filter param', async () => {
+      const res = await request(createApp('owner')).get(
+        '/api/dashboard/agent-performance?agentId=agent-1'
+      );
+      expect(res.status).toBe(200);
+    });
+
+    it('accepts date range filter params', async () => {
+      const res = await request(createApp('owner')).get(
+        '/api/dashboard/agent-performance?from=2026-01-01&to=2026-06-30'
+      );
+      expect(res.status).toBe(200);
+    });
+
+    it('accepts stage filter param', async () => {
+      const res = await request(createApp('owner')).get(
+        '/api/dashboard/agent-performance?stage=won'
+      );
+      expect(res.status).toBe(200);
+    });
+
+    it('accepts pagination params', async () => {
+      const res = await request(createApp('owner')).get(
+        '/api/dashboard/agent-performance?page=2&limit=10'
+      );
+      expect(res.status).toBe(200);
+      expect(res.body.data.pagination.page).toBe(2);
+    });
+
+    it('returns performance rows with expected shape', async () => {
+      const res = await request(createApp('owner')).get('/api/dashboard/agent-performance');
+      expect(res.status).toBe(200);
+      const agent = res.body.data.agents[0];
+      expect(agent).toHaveProperty('id');
+      expect(agent).toHaveProperty('name');
+      expect(agent).toHaveProperty('totalLeads');
+      expect(agent).toHaveProperty('wonLeads');
+      expect(agent).toHaveProperty('conversionRate');
+      expect(agent).toHaveProperty('totalCommission');
+      expect(agent).toHaveProperty('dealsClosed');
+    });
+  });
+
+  // ── POST /agent-performance/export (W18.1-P1-003) ───────────────
+  describe('POST /api/dashboard/agent-performance/export', () => {
+    it('returns 202 with jobId for owner', async () => {
+      const res = await request(createApp('owner'))
+        .post('/api/dashboard/agent-performance/export')
+        .send({ format: 'xlsx' });
+      expect(res.status).toBe(202);
+      expect(res.body.success).toBe(true);
+      expect(res.body.data.jobId).toMatch(/^exp_/);
+      expect(res.body.data.status).toBe('queued');
+      expect(res.body.data.format).toBe('xlsx');
+    });
+
+    it('returns 202 for pdf format', async () => {
+      const res = await request(createApp('owner'))
+        .post('/api/dashboard/agent-performance/export')
+        .send({ format: 'pdf' });
+      expect(res.status).toBe(202);
+      expect(res.body.data.format).toBe('pdf');
+    });
+
+    it('returns 400 for invalid format', async () => {
+      const res = await request(createApp('owner'))
+        .post('/api/dashboard/agent-performance/export')
+        .send({ format: 'docx' });
+      expect(res.status).toBe(400);
+    });
+
+    it('returns 403 for agent role', async () => {
+      const res = await request(createApp('agent'))
+        .post('/api/dashboard/agent-performance/export')
+        .send({ format: 'xlsx' });
+      expect(res.status).toBe(403);
+    });
+
+    it('accepts agentId and date filter in body', async () => {
+      const res = await request(createApp('manager'))
+        .post('/api/dashboard/agent-performance/export')
+        .send({ format: 'xlsx', agentId: 'agent-1', from: '2026-01-01', to: '2026-06-30' });
+      expect(res.status).toBe(202);
+    });
+  });
+
+  // ── GET /agent-performance/export/:jobId (W18.1-P1-003) ─────────
+  describe('GET /api/dashboard/agent-performance/export/:jobId', () => {
+    it('returns 200 with download URL for valid job', async () => {
+      const res = await request(createApp('owner')).get(
+        '/api/dashboard/agent-performance/export/exp_123_abc'
+      );
+      expect(res.status).toBe(200);
+      expect(res.body.success).toBe(true);
+      expect(res.body.data.status).toBe('complete');
+      expect(res.body.data.downloadUrl).toBeDefined();
+    });
+
+    it('returns 400 for invalid job ID format', async () => {
+      const res = await request(createApp('owner')).get(
+        '/api/dashboard/agent-performance/export/invalid_id'
+      );
+      expect(res.status).toBe(400);
+    });
+
+    it('returns 403 for agent role', async () => {
+      const res = await request(createApp('agent')).get(
+        '/api/dashboard/agent-performance/export/exp_123_abc'
+      );
+      expect(res.status).toBe(403);
     });
   });
 });

@@ -26,6 +26,7 @@ import {
   Plus,
 } from 'lucide-react';
 import type { RootState } from '../../../store/store';
+import { selectSessionUser } from '../../../store/selectors/sessionSelectors';
 import {
   selectSelectedDepartment,
   selectSelectedService,
@@ -43,6 +44,7 @@ import {
   BreadcrumbItem,
   BreadcrumbSeparator,
   ActionsSection,
+  ActionAnchor,
   SearchTrigger,
   SearchShortcut,
   IconButton,
@@ -123,7 +125,7 @@ function useBreadcrumbs() {
   const assistant = useSelector(selectSelectedAssistant);
 
   const crumbs: Array<{ label: string; path?: string; action?: () => void }> = [
-    { label: 'Dashboard', path: '/dashboard' },
+    { label: 'Dashboard', path: '/crm' },
   ];
 
   // Add path-based breadcrumbs
@@ -132,7 +134,7 @@ function useBreadcrumbs() {
   if (pathParts.length > 1 && rolePart && rolePart !== 'dashboard') {
     crumbs[0] = {
       label: rolePart.replace(/-/g, ' ').replace(/\b\w/g, l => l.toUpperCase()),
-      path: `/${rolePart}/dashboard`,
+      path: '/crm',
     };
     for (const [idx, part] of remainingParts.entries()) {
       crumbs.push({
@@ -189,10 +191,8 @@ const TopBar: React.FC<TopBarProps> = React.memo(function TopBar({
   const navigate = useNavigate();
   const crumbs = useBreadcrumbs();
 
-  // User from Redux (auth slice is canonical, user slice kept as backward-compatible fallback)
-  const authUser = useSelector((state: RootState) => state.auth?.user);
-  const currentUser = useSelector((state: RootState) => state.user?.currentUser);
-  const user = authUser ?? currentUser;
+  // Session user selector bridges user/auth slices during migration.
+  const user = useSelector((state: RootState) => selectSessionUser(state));
   const userRole = (user?.role || 'user').toLowerCase();
   const isSuperUser = ['lion', 'owner', 'admin', 'managing_director'].includes(userRole);
 
@@ -272,7 +272,7 @@ const TopBar: React.FC<TopBarProps> = React.memo(function TopBar({
       </HamburgerButton>
 
       {/* Logo */}
-      <LogoSection onClick={() => navigate('/dashboard')} aria-label="Go to dashboard">
+      <LogoSection onClick={() => navigate('/crm')} aria-label="Go to dashboard">
         <LogoMark>WC</LogoMark>
         <LogoName>White Caves</LogoName>
       </LogoSection>
@@ -306,7 +306,7 @@ const TopBar: React.FC<TopBarProps> = React.memo(function TopBar({
       {/* Right actions */}
       <ActionsSection>
         {/* Quick actions */}
-        <div style={{ position: 'relative' }} ref={quickActionsRef}>
+        <ActionAnchor ref={quickActionsRef}>
           <QuickActionButton
             onClick={() => {
               setShowQuickActions(p => !p);
@@ -362,7 +362,7 @@ const TopBar: React.FC<TopBarProps> = React.memo(function TopBar({
               </DropdownMenu>
             </>
           )}
-        </div>
+        </ActionAnchor>
 
         {/* Search trigger → opens Command Palette */}
         <SearchTrigger onClick={handleSearchClick} aria-label="Open search (Ctrl+K)">
@@ -372,7 +372,7 @@ const TopBar: React.FC<TopBarProps> = React.memo(function TopBar({
         </SearchTrigger>
 
         {/* Notifications */}
-        <div style={{ position: 'relative' }}>
+        <ActionAnchor>
           <IconButton
             onClick={() => {
               setShowNotifMenu(p => !p);
@@ -407,10 +407,10 @@ const TopBar: React.FC<TopBarProps> = React.memo(function TopBar({
               </DropdownMenu>
             </>
           )}
-        </div>
+        </ActionAnchor>
 
         {/* User menu */}
-        <div style={{ position: 'relative' }}>
+        <ActionAnchor>
           <UserButton
             onClick={() => {
               setShowUserMenu(p => !p);
@@ -452,7 +452,17 @@ const TopBar: React.FC<TopBarProps> = React.memo(function TopBar({
                 {isSuperUser && (
                   <DropdownItem
                     onClick={() => {
-                      navigate('/lion/admin-dashboard');
+                      navigate('/crm?tab=overview&cockpit=md');
+                      setShowUserMenu(false);
+                    }}
+                  >
+                    <Shield size={16} /> Operations Cockpit
+                  </DropdownItem>
+                )}
+                {isSuperUser && (
+                  <DropdownItem
+                    onClick={() => {
+                      navigate('/crm?tab=admin&cockpit=md');
                       setShowUserMenu(false);
                     }}
                   >
@@ -472,7 +482,7 @@ const TopBar: React.FC<TopBarProps> = React.memo(function TopBar({
               </DropdownMenu>
             </>
           )}
-        </div>
+        </ActionAnchor>
       </ActionsSection>
     </TopBarContainer>
   );

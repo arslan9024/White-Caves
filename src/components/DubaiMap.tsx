@@ -1,7 +1,11 @@
-import React, { FC, useState, useCallback, useEffect } from 'react';
+import React, { FC, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import {
-  DUBAI_AREAS, SAMPLE_DUBAI_PROPERTIES, getMarkerColor,
-  type DubaiProperty, type DubaiArea,
+  DUBAI_AREAS,
+  SAMPLE_DUBAI_PROPERTIES,
+  getMarkerColor,
+  type DubaiProperty,
+  type DubaiArea,
 } from '../data/dubaiProperties';
 import {
   DubaiMapContainer,
@@ -15,6 +19,7 @@ import {
   DubaiBaseMap,
   InteractiveMapOverlay,
   MapSVG,
+  MarkerGroup,
   MapInfoWindow,
   InfoHeader,
   InfoTitle,
@@ -42,9 +47,9 @@ interface DubaiMapProps {
 }
 
 const DubaiMap: FC<DubaiMapProps> = ({ properties = [], onPropertySelect }) => {
+  const navigate = useNavigate();
   const [selectedMarker, setSelectedMarker] = useState<DubaiArea | null>(null);
   const [activeFilter, setActiveFilter] = useState('all');
-  const [mapLoaded, setMapLoaded] = useState(false);
 
   const sampleProperties = properties.length > 0 ? properties : SAMPLE_DUBAI_PROPERTIES;
 
@@ -52,9 +57,8 @@ const DubaiMap: FC<DubaiMapProps> = ({ properties = [], onPropertySelect }) => {
     return sampleProperties.filter(p => p.area === areaId);
   };
 
-  const filteredAreas = activeFilter === 'all' 
-    ? DUBAI_AREAS 
-    : DUBAI_AREAS.filter(a => a.type === activeFilter);
+  const filteredAreas =
+    activeFilter === 'all' ? DUBAI_AREAS : DUBAI_AREAS.filter(a => a.type === activeFilter);
 
   const handleMarkerClick = (area: DubaiArea) => {
     setSelectedMarker(area);
@@ -64,10 +68,13 @@ const DubaiMap: FC<DubaiMapProps> = ({ properties = [], onPropertySelect }) => {
     setSelectedMarker(null);
   };
 
-  useEffect(() => {
-    const timer = setTimeout(() => setMapLoaded(true), 500);
-    return () => clearTimeout(timer);
-  }, []);
+  const handleViewAllProperties = (): void => {
+    if (selectedMarker) {
+      navigate(`/properties?location=${encodeURIComponent(selectedMarker.name)}`);
+      return;
+    }
+    navigate('/properties');
+  };
 
   return (
     <DubaiMapContainer>
@@ -77,27 +84,24 @@ const DubaiMap: FC<DubaiMapProps> = ({ properties = [], onPropertySelect }) => {
       </MapHeader>
 
       <MapFilters>
-        <FilterButton 
-          $isActive={activeFilter === 'all'}
-          onClick={() => setActiveFilter('all')}
-        >
+        <FilterButton $isActive={activeFilter === 'all'} onClick={() => setActiveFilter('all')}>
           All Properties
         </FilterButton>
-        <FilterButton 
+        <FilterButton
           $isActive={activeFilter === 'residential'}
           $variant="residential"
           onClick={() => setActiveFilter('residential')}
         >
           Residential
         </FilterButton>
-        <FilterButton 
+        <FilterButton
           $isActive={activeFilter === 'commercial'}
           $variant="commercial"
           onClick={() => setActiveFilter('commercial')}
         >
           Commercial
         </FilterButton>
-        <FilterButton 
+        <FilterButton
           $isActive={activeFilter === 'luxury'}
           $variant="luxury"
           onClick={() => setActiveFilter('luxury')}
@@ -108,29 +112,18 @@ const DubaiMap: FC<DubaiMapProps> = ({ properties = [], onPropertySelect }) => {
 
       <MapWrapper>
         <MapBackground>
-          <DubaiBaseMap 
-            src="https://upload.wikimedia.org/wikipedia/commons/thumb/e/e5/Dubai_location.svg/1200px-Dubai_location.svg.png"
-            alt="Dubai Map"
-            style={{ opacity: 0.15 }}
-          />
-          
+          <DubaiBaseMap src="/company-logo.jpg" alt="Dubai Map" style={{ opacity: 0.15 }} />
+
           <InteractiveMapOverlay>
             <MapSVG viewBox="0 0 800 600">
               <g>
-                {filteredAreas.map((area) => {
+                {filteredAreas.map(area => {
                   const x = ((area.lng - 54.9) / (55.5 - 54.9)) * 800;
                   const y = 600 - ((area.lat - 24.8) / (25.5 - 24.8)) * 600;
                   const areaProperties = getPropertiesForArea(area.id);
-                  
+
                   return (
-                    <g 
-                      key={area.id}
-                      style={{
-                        cursor: 'pointer',
-                        transition: 'transform 0.2s ease',
-                      }}
-                      onClick={() => handleMarkerClick(area)}
-                    >
+                    <MarkerGroup key={area.id} onClick={() => handleMarkerClick(area)}>
                       <circle
                         cx={x}
                         cy={y}
@@ -166,7 +159,7 @@ const DubaiMap: FC<DubaiMapProps> = ({ properties = [], onPropertySelect }) => {
                       >
                         {area.name}
                       </text>
-                    </g>
+                    </MarkerGroup>
                   );
                 })}
               </g>
@@ -181,21 +174,34 @@ const DubaiMap: FC<DubaiMapProps> = ({ properties = [], onPropertySelect }) => {
                 </InfoHeader>
                 <InfoProperties>
                   {getPropertiesForArea(selectedMarker.id).length > 0 ? (
-                    getPropertiesForArea(selectedMarker.id).slice(0, 3).map(prop => (
-                      <PropertyPreview key={prop.id} onClick={onPropertySelect ? () => onPropertySelect(prop) : undefined}>
-                        <PropertyImage src={prop.image} alt={prop.title} />
-                        <PreviewInfo>
-                          <PreviewTitle>{prop.title}</PreviewTitle>
-                          <PreviewPrice>${(prop.price / 1000000).toFixed(1)}M</PreviewPrice>
-                          <PreviewDetails>{prop.beds} beds</PreviewDetails>
-                        </PreviewInfo>
-                      </PropertyPreview>
-                    ))
+                    getPropertiesForArea(selectedMarker.id)
+                      .slice(0, 3)
+                      .map(prop => (
+                        <PropertyPreview
+                          key={prop.id}
+                          onClick={() => {
+                            if (onPropertySelect) {
+                              onPropertySelect(prop);
+                              return;
+                            }
+                            navigate(`/property/${prop.id}`);
+                          }}
+                        >
+                          <PropertyImage src={prop.image} alt={prop.title} />
+                          <PreviewInfo>
+                            <PreviewTitle>{prop.title}</PreviewTitle>
+                            <PreviewPrice>AED {(prop.price / 1000000).toFixed(1)}M</PreviewPrice>
+                            <PreviewDetails>{prop.beds} beds</PreviewDetails>
+                          </PreviewInfo>
+                        </PropertyPreview>
+                      ))
                   ) : (
                     <NoProperties>No properties listed</NoProperties>
                   )}
                 </InfoProperties>
-                <ViewAllButton>View All Properties</ViewAllButton>
+                <ViewAllButton type="button" onClick={handleViewAllProperties}>
+                  View All Properties
+                </ViewAllButton>
               </MapInfoWindow>
             )}
           </InteractiveMapOverlay>

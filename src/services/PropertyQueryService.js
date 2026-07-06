@@ -4,8 +4,6 @@
  * Bridges natural language queries to structured database searches
  */
 
-import { authFetch } from '../utils/authFetch';
-
 class PropertyQueryService {
   constructor() {
     this.baseUrl = process.env.REACT_APP_API_URL || 'http://localhost:3000';
@@ -42,7 +40,7 @@ class PropertyQueryService {
       apartment: ['apartment', 'apt', 'flat', 'condo'],
       penthouse: ['penthouse', 'pent house'],
       duplex: ['duplex'],
-      plot: ['plot', 'land', 'vacant land'],
+      plot: ['plot', 'land', 'vacant land']
     };
 
     for (const [type, keywords] of Object.entries(propertyTypes)) {
@@ -54,18 +52,9 @@ class PropertyQueryService {
 
     // Location/Area extraction
     const areas = [
-      'arabian ranches',
-      'palm jumeirah',
-      'downtown dubai',
-      'marina',
-      'jbr',
-      'jlt',
-      'difc',
-      'creek harbour',
-      'emirates living',
-      'damac hills',
-      'jumeirah golf estates',
-      'the oasis',
+      'arabian ranches', 'palm jumeirah', 'downtown dubai', 'marina',
+      'jbr', 'jlt', 'difc', 'creek harbour', 'emirates living',
+      'damac hills', 'jumeirah golf estates', 'the oasis'
     ];
     for (const area of areas) {
       if (query.includes(area)) {
@@ -91,29 +80,21 @@ class PropertyQueryService {
     }
 
     // Price extraction (various formats: "under 2.5M", "2M to 3M", "min 500K")
-    // eslint-disable-next-line security/detect-unsafe-regex
-    const priceMatch = query.match(
-      /(?:under|below|max)\s+(?:aed\s+)?(\d+(?:\.\d+)?)\s*[mk](?:illions?)?|(\d+(?:\.\d+)?)\s*[km]\s+(?:to|until)\s+(?:aed\s+)?(\d+(?:\.\d+)?)\s*[mk]/i
-    );
-
+    const priceMatch = query.match(/(?:under|below|max)\s+(?:aed\s+)?(\d+(?:\.\d+)?)\s*[mk](?:illions?)?|(\d+(?:\.\d+)?)\s*[km]\s+(?:to|until)\s+(?:aed\s+)?(\d+(?:\.\d+)?)\s*[mk]/i);
+    
     if (priceMatch) {
       let maxPrice = 0;
       if (priceMatch[1]) {
         // "under X" format
-        maxPrice = this.parsePrice(
-          priceMatch[1] + (priceMatch[0].toLowerCase().includes('m') ? 'M' : 'K')
-        );
+        maxPrice = this.parsePrice(priceMatch[1] + (priceMatch[0].toLowerCase().includes('m') ? 'M' : 'K'));
       } else if (priceMatch[3]) {
         // "X to Y" format
-        maxPrice = this.parsePrice(
-          priceMatch[3] + (priceMatch[0].toLowerCase().includes('m') ? 'M' : 'K')
-        );
+        maxPrice = this.parsePrice(priceMatch[3] + (priceMatch[0].toLowerCase().includes('m') ? 'M' : 'K'));
       }
       if (maxPrice > 0) filters.maxPrice = maxPrice;
     }
 
     // Area size extraction (sqft/sqm)
-    // eslint-disable-next-line security/detect-unsafe-regex
     const areaMatch = query.match(/(\d+(?:\.\d+)?)\s*(?:sq\.?ft|sqft|sq\.?m|sqm)/i);
     if (areaMatch) {
       const area = parseInt(areaMatch[1]);
@@ -147,10 +128,10 @@ class PropertyQueryService {
   parsePrice(priceStr) {
     const str = priceStr.toLowerCase().trim();
     const num = parseFloat(str);
-
+    
     if (str.includes('m')) return num * 1000000;
     if (str.includes('k')) return num * 1000;
-
+    
     return num;
   }
 
@@ -172,7 +153,7 @@ class PropertyQueryService {
   async queryProperties(filters = {}) {
     try {
       const queryParams = new URLSearchParams();
-
+      
       // Add all filter parameters
       Object.entries(filters).forEach(([key, value]) => {
         if (value !== undefined && value !== null) {
@@ -184,9 +165,10 @@ class PropertyQueryService {
         }
       });
 
-      const response = await authFetch(`${this.baseUrl}/api/inventory/query?${queryParams}`, {
-        credentials: 'include',
-      });
+      const response = await fetch(
+        `${this.baseUrl}/api/inventory/query?${queryParams}`,
+        { credentials: 'include' }
+      );
 
       if (!response.ok) {
         throw new Error(`Query failed: ${response.statusText}`);
@@ -227,9 +209,9 @@ class PropertyQueryService {
             availability: p.marketAvailability,
             images: p.images,
             features: p.tags,
-            description: this.generatePropertyDescription(p),
+            description: this.generatePropertyDescription(p)
           })),
-          query_filters: filters,
+          query_filters: filters
         };
       }
 
@@ -238,7 +220,7 @@ class PropertyQueryService {
         count: 0,
         properties: [],
         query_filters: filters,
-        message: 'No properties found matching your criteria',
+        message: 'No properties found matching your criteria'
       };
     } catch (error) {
       console.error('Natural language search error:', error);
@@ -246,7 +228,7 @@ class PropertyQueryService {
         success: false,
         error: error.message,
         count: 0,
-        properties: [],
+        properties: []
       };
     }
   }
@@ -290,9 +272,10 @@ class PropertyQueryService {
    */
   async getPropertyDetails(propertyId) {
     try {
-      const response = await authFetch(`${this.baseUrl}/api/inventory/${propertyId}`, {
-        credentials: 'include',
-      });
+      const response = await fetch(
+        `${this.baseUrl}/api/inventory/${propertyId}`,
+        { credentials: 'include' }
+      );
 
       if (!response.ok) {
         throw new Error(`Failed to fetch property: ${response.statusText}`);
@@ -301,7 +284,7 @@ class PropertyQueryService {
       const data = await response.json();
       return {
         success: true,
-        property: data,
+        property: data
       };
     } catch (error) {
       console.error('Property detail fetch error:', error);
@@ -315,9 +298,10 @@ class PropertyQueryService {
    */
   async getInventoryStatistics() {
     try {
-      const response = await authFetch(`${this.baseUrl}/api/inventory/statistics`, {
-        credentials: 'include',
-      });
+      const response = await fetch(
+        `${this.baseUrl}/api/inventory/statistics`,
+        { credentials: 'include' }
+      );
 
       if (!response.ok) {
         throw new Error(`Failed to fetch statistics: ${response.statusText}`);
@@ -346,14 +330,12 @@ class PropertyQueryService {
         propertyType: leadProfile.preferredPropertyType,
         purpose: leadProfile.purpose,
         furnishingLevel: leadProfile.preferredFurnishing,
-        limit: 5,
+        limit: 5
       };
 
       // Remove undefined values
-      Object.keys(filters).forEach(
-        key =>
-          // eslint-disable-next-line security/detect-object-injection
-          filters[key] === undefined && delete filters[key]
+      Object.keys(filters).forEach(key => 
+        filters[key] === undefined && delete filters[key]
       );
 
       const result = await this.queryProperties(filters);
@@ -361,7 +343,7 @@ class PropertyQueryService {
       return {
         success: true,
         suggestions: result.data || [],
-        matchScore: this.calculateMatchScore(leadProfile, result.data || []),
+        matchScore: this.calculateMatchScore(leadProfile, result.data || [])
       };
     } catch (error) {
       console.error('Property suggestion error:', error);

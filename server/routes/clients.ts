@@ -5,6 +5,7 @@
  */
 
 import { Router, Request, Response } from 'express';
+type RouteRequest = Request<Record<string, string>>;
 import { Prisma } from '@prisma/client';
 import { asyncHandler } from '../middleware/errorHandler';
 import { prisma } from '../database.js';
@@ -14,20 +15,40 @@ import { requirePermission } from '../middleware/rbac';
 const VALID_CATEGORIES = ['buyer', 'seller', 'landlord', 'tenant', 'investor'] as const;
 const VALID_STATUSES = ['active', 'inactive', 'prospect', 'archived'] as const;
 const VALID_TYPES = ['individual', 'corporate', 'investment_firm'] as const;
-const VALID_RELATIONSHIPS = ['owner', 'tenant', 'buyer', 'interested', 'previous_owner', 'previous_tenant'] as const;
+const VALID_RELATIONSHIPS = [
+  'owner',
+  'tenant',
+  'buyer',
+  'interested',
+  'previous_owner',
+  'previous_tenant',
+] as const;
 const VALID_COMM_TYPES = ['call', 'email', 'whatsapp', 'meeting', 'note', 'sms'] as const;
 
 const router = Router();
 
-// ═══════════════════════════════════════════════════════════════════════
-// CLIENT CRUD
-// ═══════════════════════════════════════════════════════════════════════
+const getRouteParam = (value: string | string[] | undefined): string | null => {
+  if (typeof value === 'string' && value.trim().length > 0) {
+    return value;
+  }
 
-// ─── GET /api/clients ────────────────────────────────────────────────
+  if (Array.isArray(value) && value.length > 0 && typeof value[0] === 'string') {
+    const first = value[0].trim();
+    return first.length > 0 ? first : null;
+  }
+
+  return null;
+};
+
+// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+// CLIENT CRUD
+// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+
+// â”€â”€â”€ GET /api/clients â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 router.get(
   '/',
   requirePermission('view_leads'),
-  asyncHandler(async (req: Request, res: Response) => {
+  asyncHandler(async (req: RouteRequest, res: Response) => {
     const {
       status,
       category,
@@ -36,9 +57,13 @@ router.get(
       assignedTo,
       sortBy = 'createdAt',
       sortOrder = 'desc',
-    } = req.query;
+    } = req.query as Record<string, string | undefined>;
 
-    const { page: pageNum, limit, skip } = parsePagination({
+    const {
+      page: pageNum,
+      limit,
+      skip,
+    } = parsePagination({
       page: req.query.page as string,
       limit: req.query.pageSize as string,
     });
@@ -69,7 +94,9 @@ router.get(
 
     // Validate sort field
     const allowedSortFields = ['createdAt', 'name', 'totalValue', 'lastContact', 'dealsCount'];
-    const safeSortBy = allowedSortFields.includes(sortBy as string) ? (sortBy as string) : 'createdAt';
+    const safeSortBy = allowedSortFields.includes(sortBy as string)
+      ? (sortBy as string)
+      : 'createdAt';
     const safeSortOrder = sortOrder === 'asc' ? 'asc' : 'desc';
 
     const [clients, total] = await Promise.all([
@@ -96,16 +123,21 @@ router.get(
         totalPages: Math.ceil(total / limit),
       },
     });
-  }),
+  })
 );
 
-// ─── GET /api/clients/:id ────────────────────────────────────────────
+// â”€â”€â”€ GET /api/clients/:id â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 router.get(
   '/:id',
   requirePermission('view_leads'),
   asyncHandler(async (req: Request, res: Response) => {
+    const clientId = getRouteParam(req.params.id);
+    if (!clientId) {
+      return res.status(400).json({ success: false, error: 'Invalid client id' });
+    }
+
     const client = await prisma.client.findUnique({
-      where: { id: req.params.id },
+      where: { id: clientId },
       include: {
         clientProperties: true,
         communications: {
@@ -121,15 +153,28 @@ router.get(
     }
 
     res.json({ success: true, data: client });
-  }),
+  })
 );
 
-// ─── POST /api/clients ──────────────────────────────────────────────
+// â”€â”€â”€ POST /api/clients â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 router.post(
   '/',
   requirePermission('manage_leads'),
-  asyncHandler(async (req: Request, res: Response) => {
-    const { name, email, phone, company, category, status, type, nationality, notes, tags, assignedToId, convertedFromLeadId } = req.body;
+  asyncHandler(async (req: RouteRequest, res: Response) => {
+    const {
+      name,
+      email,
+      phone,
+      company,
+      category,
+      status,
+      type,
+      nationality,
+      notes,
+      tags,
+      assignedToId,
+      convertedFromLeadId,
+    } = req.body;
 
     if (!name || typeof name !== 'string' || name.trim().length === 0) {
       return res.status(400).json({ success: false, error: 'Client name is required' });
@@ -137,13 +182,20 @@ router.post(
 
     // Validate enums
     if (category && !VALID_CATEGORIES.includes(category)) {
-      return res.status(400).json({ success: false, error: `Invalid category. Must be: ${VALID_CATEGORIES.join(', ')}` });
+      return res.status(400).json({
+        success: false,
+        error: `Invalid category. Must be: ${VALID_CATEGORIES.join(', ')}`,
+      });
     }
     if (status && !VALID_STATUSES.includes(status)) {
-      return res.status(400).json({ success: false, error: `Invalid status. Must be: ${VALID_STATUSES.join(', ')}` });
+      return res
+        .status(400)
+        .json({ success: false, error: `Invalid status. Must be: ${VALID_STATUSES.join(', ')}` });
     }
     if (type && !VALID_TYPES.includes(type)) {
-      return res.status(400).json({ success: false, error: `Invalid type. Must be: ${VALID_TYPES.join(', ')}` });
+      return res
+        .status(400)
+        .json({ success: false, error: `Invalid type. Must be: ${VALID_TYPES.join(', ')}` });
     }
 
     const client = await prisma.client.create({
@@ -164,30 +216,57 @@ router.post(
     });
 
     res.status(201).json({ success: true, data: client });
-  }),
+  })
 );
 
-// ─── PATCH /api/clients/:id ─────────────────────────────────────────
+// â”€â”€â”€ PATCH /api/clients/:id â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 router.patch(
   '/:id',
   requirePermission('manage_leads'),
   asyncHandler(async (req: Request, res: Response) => {
-    const existing = await prisma.client.findUnique({ where: { id: req.params.id } });
+    const clientId = getRouteParam(req.params.id);
+    if (!clientId) {
+      return res.status(400).json({ success: false, error: 'Invalid client id' });
+    }
+
+    const existing = await prisma.client.findUnique({ where: { id: clientId } });
     if (!existing) {
       return res.status(404).json({ success: false, error: 'Client not found' });
     }
 
-    const { name, email, phone, company, category, status, type, nationality, totalValue, dealsCount, notes, tags, assignedToId, lastContact } = req.body;
+    const {
+      name,
+      email,
+      phone,
+      company,
+      category,
+      status,
+      type,
+      nationality,
+      totalValue,
+      dealsCount,
+      notes,
+      tags,
+      assignedToId,
+      lastContact,
+    } = req.body;
 
     // Validate enums if provided
     if (category && !VALID_CATEGORIES.includes(category)) {
-      return res.status(400).json({ success: false, error: `Invalid category. Must be: ${VALID_CATEGORIES.join(', ')}` });
+      return res.status(400).json({
+        success: false,
+        error: `Invalid category. Must be: ${VALID_CATEGORIES.join(', ')}`,
+      });
     }
     if (status && !VALID_STATUSES.includes(status)) {
-      return res.status(400).json({ success: false, error: `Invalid status. Must be: ${VALID_STATUSES.join(', ')}` });
+      return res
+        .status(400)
+        .json({ success: false, error: `Invalid status. Must be: ${VALID_STATUSES.join(', ')}` });
     }
     if (type && !VALID_TYPES.includes(type)) {
-      return res.status(400).json({ success: false, error: `Invalid type. Must be: ${VALID_TYPES.join(', ')}` });
+      return res
+        .status(400)
+        .json({ success: false, error: `Invalid type. Must be: ${VALID_TYPES.join(', ')}` });
     }
 
     const updateData: Prisma.ClientUpdateInput = {};
@@ -204,30 +283,36 @@ router.patch(
     if (notes !== undefined) updateData.notes = notes?.trim() || null;
     if (tags !== undefined) updateData.tags = Array.isArray(tags) ? tags : [];
     if (assignedToId !== undefined) updateData.assignedToId = assignedToId || null;
-    if (lastContact !== undefined) updateData.lastContact = lastContact ? new Date(lastContact) : null;
+    if (lastContact !== undefined)
+      updateData.lastContact = lastContact ? new Date(lastContact) : null;
 
     const client = await prisma.client.update({
-      where: { id: req.params.id },
+      where: { id: clientId },
       data: updateData,
     });
 
     res.json({ success: true, data: client });
-  }),
+  })
 );
 
-// ─── DELETE /api/clients/:id ────────────────────────────────────────
+// â”€â”€â”€ DELETE /api/clients/:id â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 router.delete(
   '/:id',
   requirePermission('manage_leads'),
   asyncHandler(async (req: Request, res: Response) => {
-    const existing = await prisma.client.findUnique({ where: { id: req.params.id } });
+    const clientId = getRouteParam(req.params.id);
+    if (!clientId) {
+      return res.status(400).json({ success: false, error: 'Invalid client id' });
+    }
+
+    const existing = await prisma.client.findUnique({ where: { id: clientId } });
     if (!existing) {
       return res.status(404).json({ success: false, error: 'Client not found' });
     }
 
     // Prevent deleting clients with active property links
     const activeLinks = await prisma.clientProperty.count({
-      where: { clientId: req.params.id, relationship: { in: ['owner', 'tenant', 'buyer'] } },
+      where: { clientId, relationship: { in: ['owner', 'tenant', 'buyer'] } },
     });
     if (activeLinks > 0) {
       return res.status(400).json({
@@ -238,43 +323,53 @@ router.delete(
 
     // Cascade: delete communications and property links, then client
     await prisma.$transaction([
-      prisma.communication.deleteMany({ where: { clientId: req.params.id } }),
-      prisma.clientProperty.deleteMany({ where: { clientId: req.params.id } }),
-      prisma.client.delete({ where: { id: req.params.id } }),
+      prisma.communication.deleteMany({ where: { clientId } }),
+      prisma.clientProperty.deleteMany({ where: { clientId } }),
+      prisma.client.delete({ where: { id: clientId } }),
     ]);
 
-    res.json({ success: true, data: { id: req.params.id } });
-  }),
+    res.json({ success: true, data: { id: clientId } });
+  })
 );
 
-// ═══════════════════════════════════════════════════════════════════════
-// CLIENT ↔ PROPERTY LINKING
-// ═══════════════════════════════════════════════════════════════════════
+// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+// CLIENT â†” PROPERTY LINKING
+// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
 
-// ─── GET /api/clients/:id/properties ────────────────────────────────
+// â”€â”€â”€ GET /api/clients/:id/properties â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 router.get(
   '/:id/properties',
   requirePermission('view_leads'),
   asyncHandler(async (req: Request, res: Response) => {
-    const client = await prisma.client.findUnique({ where: { id: req.params.id } });
+    const clientId = getRouteParam(req.params.id);
+    if (!clientId) {
+      return res.status(400).json({ success: false, error: 'Invalid client id' });
+    }
+
+    const client = await prisma.client.findUnique({ where: { id: clientId } });
     if (!client) {
       return res.status(404).json({ success: false, error: 'Client not found' });
     }
 
     const links = await prisma.clientProperty.findMany({
-      where: { clientId: req.params.id },
+      where: { clientId },
       orderBy: { createdAt: 'desc' },
     });
 
     res.json({ success: true, data: links });
-  }),
+  })
 );
 
-// ─── POST /api/clients/:id/properties ───────────────────────────────
+// â”€â”€â”€ POST /api/clients/:id/properties â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 router.post(
   '/:id/properties',
   requirePermission('manage_leads'),
   asyncHandler(async (req: Request, res: Response) => {
+    const clientId = getRouteParam(req.params.id);
+    if (!clientId) {
+      return res.status(400).json({ success: false, error: 'Invalid client id' });
+    }
+
     const { propertyId, relationship, notes } = req.body;
 
     if (!propertyId) {
@@ -290,7 +385,7 @@ router.post(
     }
 
     // Verify client exists
-    const client = await prisma.client.findUnique({ where: { id: req.params.id } });
+    const client = await prisma.client.findUnique({ where: { id: clientId } });
     if (!client) {
       return res.status(404).json({ success: false, error: 'Client not found' });
     }
@@ -303,15 +398,17 @@ router.post(
 
     // Check for duplicate link
     const existing = await prisma.clientProperty.findUnique({
-      where: { clientId_propertyId: { clientId: req.params.id, propertyId } },
+      where: { clientId_propertyId: { clientId, propertyId } },
     });
     if (existing) {
-      return res.status(409).json({ success: false, error: 'Client is already linked to this property' });
+      return res
+        .status(409)
+        .json({ success: false, error: 'Client is already linked to this property' });
     }
 
     const link = await prisma.clientProperty.create({
       data: {
-        clientId: req.params.id,
+        clientId,
         propertyId,
         relationship: relationship || 'interested',
         notes: notes?.trim() || null,
@@ -319,16 +416,24 @@ router.post(
     });
 
     res.status(201).json({ success: true, data: link });
-  }),
+  })
 );
 
-// ─── PATCH /api/clients/:id/properties/:propertyId ──────────────────
+// â”€â”€â”€ PATCH /api/clients/:id/properties/:propertyId â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 router.patch(
   '/:id/properties/:propertyId',
   requirePermission('manage_leads'),
   asyncHandler(async (req: Request, res: Response) => {
+    const clientId = getRouteParam(req.params.id);
+    const propertyId = getRouteParam(req.params.propertyId);
+    if (!clientId || !propertyId) {
+      return res.status(400).json({ success: false, error: 'Invalid client or property id' });
+    }
+
     const link = await prisma.clientProperty.findUnique({
-      where: { clientId_propertyId: { clientId: req.params.id, propertyId: req.params.propertyId } },
+      where: {
+        clientId_propertyId: { clientId, propertyId },
+      },
     });
     if (!link) {
       return res.status(404).json({ success: false, error: 'Property link not found' });
@@ -351,16 +456,24 @@ router.patch(
     });
 
     res.json({ success: true, data: updated });
-  }),
+  })
 );
 
-// ─── DELETE /api/clients/:id/properties/:propertyId ─────────────────
+// â”€â”€â”€ DELETE /api/clients/:id/properties/:propertyId â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 router.delete(
   '/:id/properties/:propertyId',
   requirePermission('manage_leads'),
   asyncHandler(async (req: Request, res: Response) => {
+    const clientId = getRouteParam(req.params.id);
+    const propertyId = getRouteParam(req.params.propertyId);
+    if (!clientId || !propertyId) {
+      return res.status(400).json({ success: false, error: 'Invalid client or property id' });
+    }
+
     const link = await prisma.clientProperty.findUnique({
-      where: { clientId_propertyId: { clientId: req.params.id, propertyId: req.params.propertyId } },
+      where: {
+        clientId_propertyId: { clientId, propertyId },
+      },
     });
     if (!link) {
       return res.status(404).json({ success: false, error: 'Property link not found' });
@@ -368,31 +481,42 @@ router.delete(
 
     await prisma.clientProperty.delete({ where: { id: link.id } });
 
-    res.json({ success: true, data: { clientId: req.params.id, propertyId: req.params.propertyId } });
-  }),
+    res.json({
+      success: true,
+      data: { clientId, propertyId },
+    });
+  })
 );
 
-// ═══════════════════════════════════════════════════════════════════════
+// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
 // COMMUNICATION LOGS
-// ═══════════════════════════════════════════════════════════════════════
+// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
 
-// ─── GET /api/clients/:id/communications ────────────────────────────
+// â”€â”€â”€ GET /api/clients/:id/communications â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 router.get(
   '/:id/communications',
   requirePermission('view_leads'),
   asyncHandler(async (req: Request, res: Response) => {
-    const client = await prisma.client.findUnique({ where: { id: req.params.id } });
+    const clientId = getRouteParam(req.params.id);
+    if (!clientId) {
+      return res.status(400).json({ success: false, error: 'Invalid client id' });
+    }
+
+    const client = await prisma.client.findUnique({ where: { id: clientId } });
     if (!client) {
       return res.status(404).json({ success: false, error: 'Client not found' });
     }
 
-    const { type: commType } = req.query;
-    const { page: pageNum, limit, skip } = parsePagination({
+    const { type: commType } = req.query as Record<string, string | undefined>;
+    const {
+      page: pageNum,
+      limit,
+      skip,
+    } = parsePagination({
       page: req.query.page as string,
       limit: req.query.pageSize as string,
     });
-
-    const where: Prisma.CommunicationWhereInput = { clientId: req.params.id };
+    const where: Prisma.CommunicationWhereInput = { clientId };
     if (commType && commType !== 'all') {
       where.type = commType as string;
     }
@@ -417,18 +541,23 @@ router.get(
         totalPages: Math.ceil(total / limit),
       },
     });
-  }),
+  })
 );
 
-// ─── POST /api/clients/:id/communications ───────────────────────────
+// â”€â”€â”€ POST /api/clients/:id/communications â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 router.post(
   '/:id/communications',
   requirePermission('manage_leads'),
   asyncHandler(async (req: Request, res: Response) => {
+    const clientId = getRouteParam(req.params.id);
+    if (!clientId) {
+      return res.status(400).json({ success: false, error: 'Invalid client id' });
+    }
+
     const { type, direction, subject, body, duration, outcome } = req.body;
 
     // Validate client exists
-    const client = await prisma.client.findUnique({ where: { id: req.params.id } });
+    const client = await prisma.client.findUnique({ where: { id: clientId } });
     if (!client) {
       return res.status(404).json({ success: false, error: 'Client not found' });
     }
@@ -443,13 +572,15 @@ router.post(
 
     // Validate direction
     if (direction && !['inbound', 'outbound'].includes(direction)) {
-      return res.status(400).json({ success: false, error: 'Invalid direction. Must be: inbound, outbound' });
+      return res
+        .status(400)
+        .json({ success: false, error: 'Invalid direction. Must be: inbound, outbound' });
     }
 
     const authReq = req as { user?: { id?: string } };
     const communication = await prisma.communication.create({
       data: {
-        clientId: req.params.id,
+        clientId,
         type: type || 'note',
         direction: direction || 'outbound',
         subject: subject?.trim() || null,
@@ -462,28 +593,33 @@ router.post(
 
     // Update client's lastContact timestamp
     await prisma.client.update({
-      where: { id: req.params.id },
+      where: { id: clientId },
       data: { lastContact: new Date() },
     });
 
     res.status(201).json({ success: true, data: communication });
-  }),
+  })
 );
 
-// ─── POST /api/clients/convert-lead/:leadId ─────────────────────────
+// â”€â”€â”€ POST /api/clients/convert-lead/:leadId â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 // Convert a qualified lead into a client
 router.post(
   '/convert-lead/:leadId',
   requirePermission('manage_leads'),
   asyncHandler(async (req: Request, res: Response) => {
-    const lead = await prisma.lead.findUnique({ where: { id: req.params.leadId } });
+    const leadId = getRouteParam(req.params.leadId);
+    if (!leadId) {
+      return res.status(400).json({ success: false, error: 'Invalid lead id' });
+    }
+
+    const lead = await prisma.lead.findUnique({ where: { id: leadId } });
     if (!lead) {
       return res.status(404).json({ success: false, error: 'Lead not found' });
     }
 
     // Check if already converted
     const alreadyConverted = await prisma.client.findFirst({
-      where: { convertedFromLeadId: req.params.leadId },
+      where: { convertedFromLeadId: leadId },
     });
     if (alreadyConverted) {
       return res.status(409).json({
@@ -506,7 +642,9 @@ router.post(
         type: type || 'individual',
         status: 'active',
         tags: lead.tags,
-        notes: lead.notes ? `Converted from lead. Original notes: ${lead.notes}` : 'Converted from lead',
+        notes: lead.notes
+          ? `Converted from lead. Original notes: ${lead.notes}`
+          : 'Converted from lead',
         assignedToId: lead.assignedToId,
         convertedFromLeadId: lead.id,
         totalValue: lead.budget || 0,
@@ -516,7 +654,7 @@ router.post(
 
     // Update lead status to "won"
     await prisma.lead.update({
-      where: { id: req.params.leadId },
+      where: { id: leadId },
       data: { status: 'won' },
     });
 
@@ -533,7 +671,7 @@ router.post(
     }
 
     res.status(201).json({ success: true, data: client });
-  }),
+  })
 );
 
 export default router;

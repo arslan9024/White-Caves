@@ -52,7 +52,7 @@ export const createLeasingProperty = asyncHandler(async (req: Request, res: Resp
 
 // 2. Upload Document (handled by multer in route, this just updates DB)
 export const uploadPropertyDocument = asyncHandler(async (req: Request, res: Response) => {
-  const { id } = req.params;
+  const { id } = req.params as Record<string, string>;
   const { documentType } = req.body; // 'titleDeed', 'passport', 'ejari'
 
   if (!req.file) {
@@ -60,7 +60,7 @@ export const uploadPropertyDocument = asyncHandler(async (req: Request, res: Res
   }
 
   const fileUrl = `/uploads/${req.file.filename}`;
-  
+
   let dataToUpdate: any = {};
   if (documentType === 'titleDeed') {
     dataToUpdate.titleDeedMissing = false;
@@ -95,10 +95,16 @@ export const uploadPropertyDocument = asyncHandler(async (req: Request, res: Res
 
 // 3. Transition Stage
 export const transitionPropertyStage = asyncHandler(async (req: Request, res: Response) => {
-  const { id } = req.params;
+  const { id } = req.params as Record<string, string>;
   const { newStage } = req.body;
 
-  const validStages = ['draft_collected', 'verified_active', 'under_offer', 'leased_sold', 'handed_over'];
+  const validStages = [
+    'draft_collected',
+    'verified_active',
+    'under_offer',
+    'leased_sold',
+    'handed_over',
+  ];
   if (!validStages.includes(newStage)) {
     throw new AppError('Invalid stage', 400);
   }
@@ -111,7 +117,10 @@ export const transitionPropertyStage = asyncHandler(async (req: Request, res: Re
   // Strict validation logic (@Mary's rules)
   if (newStage === 'verified_active') {
     if (property.titleDeedMissing || property.landlordPassportMissing) {
-      throw new AppError('Cannot move to Verified Active. Title Deed and Landlord Passport are required.', 400);
+      throw new AppError(
+        'Cannot move to Verified Active. Title Deed and Landlord Passport are required.',
+        400
+      );
     }
   }
 
@@ -155,7 +164,7 @@ export const getLeasingInventory = asyncHandler(async (req: Request, res: Respon
 
 // 5. Sign Contract
 export const signContract = asyncHandler(async (req: Request, res: Response) => {
-  const { id } = req.params;
+  const { id } = req.params as Record<string, string>;
 
   const property = await prisma.property.findUnique({ where: { id } });
   if (!property) {
@@ -192,7 +201,7 @@ export const signContract = asyncHandler(async (req: Request, res: Response) => 
 
 // 6. Register Ejari
 export const registerEjari = asyncHandler(async (req: Request, res: Response) => {
-  const { id } = req.params;
+  const { id } = req.params as Record<string, string>;
   const { ejariNumber } = req.body;
 
   if (!ejariNumber) throw new AppError('Ejari number is required', 400);
@@ -216,14 +225,14 @@ export const registerEjari = asyncHandler(async (req: Request, res: Response) =>
 
 // 7. Complete Handover
 export const completeHandover = asyncHandler(async (req: Request, res: Response) => {
-  const { id } = req.params;
+  const { id } = req.params as Record<string, string>;
 
   const property = await prisma.property.update({
     where: { id },
-    data: { 
+    data: {
       inventoryStage: 'handed_over',
       isLocked: true,
-      lockedAt: new Date()
+      lockedAt: new Date(),
     },
   });
 

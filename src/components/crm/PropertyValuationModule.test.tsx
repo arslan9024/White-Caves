@@ -193,6 +193,7 @@ describe('PropertyValuationModule', () => {
       // Fallback: 2000 * 1500 = 3,000,000. Low = 2,700,000
       expect(screen.getByText(/AED 2,700,000/)).toBeDefined();
       expect(screen.getByText(/Confidence Level: 60%/)).toBeDefined();
+      expect(screen.getByText(/Live valuation API is unavailable/i)).toBeDefined();
     });
   });
 
@@ -234,6 +235,7 @@ describe('PropertyValuationModule', () => {
     // Should still render, no crash
     await waitFor(() => {
       expect(screen.getByText('Property Valuation Calculator')).toBeDefined();
+      expect(screen.getByText(/Unable to estimate property value right now/i)).toBeDefined();
     });
   });
 

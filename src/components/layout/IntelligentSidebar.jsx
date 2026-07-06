@@ -66,7 +66,7 @@ const IntelligentSidebar = () => {
   const handleAssistantClick = (assistant) => {
     dispatch(setActiveAssistant(assistant.id));
     dispatch(setActiveWorkspace('ai-command'));
-    navigate('/md/dashboard');
+    navigate('/crm');
   };
 
   if (!isOpen && isMobile) return null;

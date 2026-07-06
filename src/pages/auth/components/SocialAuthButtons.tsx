@@ -7,6 +7,8 @@ interface SocialAuthButtonsProps {
   googleText: string;
   facebookText: string;
   appleText: string;
+  googleDisabled?: boolean;
+  helperText?: string;
 }
 
 export const SocialAuthButtons = memo(function SocialAuthButtons({
@@ -16,15 +18,24 @@ export const SocialAuthButtons = memo(function SocialAuthButtons({
   googleText,
   facebookText,
   appleText,
+  googleDisabled = false,
+  helperText,
 }: SocialAuthButtonsProps) {
   return (
     <div className="social-login-primary">
       <p className="social-login-label">{label}</p>
+      {helperText && (
+        <p className="social-login-helper" role="status" aria-live="polite">
+          {helperText}
+        </p>
+      )}
       <div className="social-buttons-primary">
         <button
-          className="social-btn google"
+          type="button"
+          className="social-btn social-btn--gmail google"
           onClick={() => onSocialAuth('google')}
-          disabled={loading}
+          disabled={loading || googleDisabled}
+          aria-label="Continue with Google or Gmail"
         >
           <svg viewBox="0 0 24 24" width="20" height="20">
             <path
@@ -46,7 +57,10 @@ export const SocialAuthButtons = memo(function SocialAuthButtons({
           </svg>
           {googleText}
         </button>
+      </div>
+      <div className="social-buttons-secondary">
         <button
+          type="button"
           className="social-btn facebook"
           onClick={() => onSocialAuth('facebook')}
           disabled={loading}
@@ -57,6 +71,7 @@ export const SocialAuthButtons = memo(function SocialAuthButtons({
           {facebookText}
         </button>
         <button
+          type="button"
           className="social-btn apple"
           onClick={() => onSocialAuth('apple')}
           disabled={loading}

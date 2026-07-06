@@ -342,6 +342,12 @@ router.delete('/:id', validatePlanIdParam, async (req, res) => {
       error: error.message,
       durationMs: durationMs(startedAt),
     });
+    if (String(error.message || '').includes('Deletion blocked')) {
+      return res.status(400).json({ error: error.message });
+    }
+    if (String(error.message || '').includes('Plan not found')) {
+      return res.status(404).json({ error: error.message });
+    }
     res.status(500).json({ error: error.message });
   }
 });

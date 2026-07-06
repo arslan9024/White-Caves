@@ -256,7 +256,7 @@ describe('SignContractPage', () => {
 
       await waitFor(() => {
         expect(mockAuthFetch).toHaveBeenCalledWith(
-          '/api/signature/validtoken123/sign',
+          '/api/contracts/signature/validtoken123/sign',
           expect.objectContaining({
             method: 'POST',
             body: expect.stringContaining('Ahmed Al-Rashid'),

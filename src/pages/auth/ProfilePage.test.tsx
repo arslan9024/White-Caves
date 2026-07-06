@@ -64,7 +64,7 @@ vi.mock('../../features/auth/components/BiometricLogin', () => ({
   BiometricSetup: () => <div data-testid="biometric-setup">BiometricSetup</div>,
 }));
 
-import ProfilePage from './ProfilePage';
+import ProfilePage from './ProfilePage.tsx';
 import { safeStorage } from '../../utils/safeStorage';
 
 // ── Store Factory ────────────────────────────────────────────────
@@ -181,10 +181,10 @@ describe('ProfilePage', () => {
   it('shows account information', () => {
     renderPage();
     expect(screen.getByText(/Account Information/i)).toBeDefined();
-    expect(screen.getByText(/Full Name/i)).toBeDefined();
-    expect(screen.getByText(/Email/i)).toBeDefined();
-    expect(screen.getByText(/Phone/i)).toBeDefined();
-    expect(screen.getByText(/Role/i)).toBeDefined();
+    expect(screen.getAllByText(/Full Name/i).length).toBeGreaterThan(0);
+    expect(screen.getAllByText(/Email/i).length).toBeGreaterThan(0);
+    expect(screen.getAllByText(/Phone/i).length).toBeGreaterThan(0);
+    expect(screen.getAllByText(/Role/i).length).toBeGreaterThan(0);
   });
 
   it('displays user details in overview', () => {
@@ -372,15 +372,34 @@ describe('ProfilePage', () => {
     expect(screen.getAllByText('Administrator').length).toBeGreaterThan(0);
   });
 
-  it('shows founder controls and owner dashboard link for lion role', () => {
+  it('shows founder controls and CRM dashboard link for lion role', () => {
     (safeStorage.getJSON as ReturnType<typeof vi.fn>).mockReturnValue({ role: 'lion' });
     renderPage();
 
     expect(screen.getAllByText(/Founder & Creator/i).length).toBeGreaterThan(0);
     expect(screen.getByText(/Founder Panel/i)).toBeDefined();
 
-    const dashboardLink = screen.getByText('Dashboard').closest('a');
-    expect(dashboardLink?.getAttribute('href')).toBe('/owner/dashboard');
+    fireEvent.click(screen.getByRole('button', { name: /^Dashboard$/i }));
+    expect(mockNavigate).toHaveBeenCalledWith('/crm?tab=overview&cockpit=md');
+  });
+
+  it('shows operations cockpit actions for managing_director and opens MD cockpit route', () => {
+    (safeStorage.getJSON as ReturnType<typeof vi.fn>).mockReturnValue({ role: 'managing_director' });
+    renderPage();
+
+    expect(screen.getAllByText(/Operations Cockpit/i).length).toBeGreaterThan(0);
+    expect(screen.getByText(/Executive Operations Cockpit/i)).toBeDefined();
+
+    fireEvent.click(screen.getByRole('button', { name: /Open Operations Cockpit/i }));
+    expect(mockNavigate).toHaveBeenCalledWith('/crm?tab=overview&cockpit=md');
+  });
+
+  it('opens executive KPI workspace for managing_director', () => {
+    (safeStorage.getJSON as ReturnType<typeof vi.fn>).mockReturnValue({ role: 'managing_director' });
+    renderPage();
+
+    fireEvent.click(screen.getByRole('button', { name: /Review Executive KPIs/i }));
+    expect(mockNavigate).toHaveBeenCalledWith('/crm?tab=analytics&cockpit=md');
   });
 
   it('shows correct role label for leasing-agent', () => {
@@ -395,11 +414,26 @@ describe('ProfilePage', () => {
     expect(screen.getByText('Dashboard')).toBeDefined();
   });
 
-  it('normalizes lion dashboard link to owner dashboard', () => {
+  it('continues to standard dashboard from profile onboarding for regular users', () => {
+    localStorage.removeItem('wc-profile-onboarding-seen');
+    renderPage();
+    fireEvent.click(screen.getByRole('button', { name: /Continue to Dashboard/i }));
+    expect(mockNavigate).toHaveBeenCalledWith('/crm');
+  });
+
+  it('continues to md cockpit dashboard from profile onboarding for managing_director', () => {
+    localStorage.removeItem('wc-profile-onboarding-seen');
+    (safeStorage.getJSON as ReturnType<typeof vi.fn>).mockReturnValue({ role: 'managing_director' });
+    renderPage();
+    fireEvent.click(screen.getByRole('button', { name: /Continue to (Company )?Dashboard/i }));
+    expect(mockNavigate).toHaveBeenCalledWith('/crm?tab=overview&cockpit=md');
+  });
+
+  it('normalizes lion dashboard link to CRM', () => {
     (safeStorage.getJSON as ReturnType<typeof vi.fn>).mockReturnValue({ role: 'lion' });
     renderPage();
-    const dashboardLink = screen.getByText('Dashboard').closest('a');
-    expect(dashboardLink?.getAttribute('href')).toBe('/owner/dashboard');
+    fireEvent.click(screen.getByRole('button', { name: /^Dashboard$/i }));
+    expect(mockNavigate).toHaveBeenCalledWith('/crm?tab=overview&cockpit=md');
   });
 
   it('shows Back button', () => {

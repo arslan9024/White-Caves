@@ -43,17 +43,7 @@ export const CURRENCIES: Record<SupportedCurrency, CurrencyInfo> = {
 // ─── STATIC EXCHANGE RATES (base: AED) ──────────────────────────────────
 // Last updated: 2026-01-20
 // Source: xe.com approximate rates
-// 1 AED = X foreign currency
-
-const STATIC_RATES_FROM_AED: Record<SupportedCurrency, number> = {
-  AED: 1,
-  USD: 0.2723,   // 1 AED ≈ 0.2723 USD (pegged ~3.6725)
-  EUR: 0.2510,   // 1 AED ≈ 0.2510 EUR
-  GBP: 0.2165,   // 1 AED ≈ 0.2165 GBP
-  INR: 22.85,    // 1 AED ≈ 22.85 INR
-};
-
-// Inverse: How many AED per 1 unit of foreign currency
+// 1 foreign unit = X AED
 const STATIC_RATES_TO_AED: Record<SupportedCurrency, number> = {
   AED: 1,
   USD: 3.6725,   // 1 USD ≈ 3.6725 AED (pegged)
@@ -122,9 +112,9 @@ export function convert(
 
   if (to === 'AED') return Math.round(amountInAED * 100) / 100;
 
-  // AED → target: divide by target's "to AED" rate = multiply by "from AED" rate
-  const fromAedRate = STATIC_RATES_FROM_AED[to];
-  const result = amountInAED * fromAedRate;
+  // AED → target using current to-AED rate (fallback to static)
+  const targetToAedRate = rates.rates[to] || STATIC_RATES_TO_AED[to];
+  const result = amountInAED / targetToAedRate;
   return Math.round(result * 100) / 100;
 }
 

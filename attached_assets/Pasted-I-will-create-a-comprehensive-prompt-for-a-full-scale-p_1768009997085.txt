@@ -1,0 +1,289 @@
+I will create a comprehensive prompt for a full-scale project audit and repair that addresses all inconsistencies, broken features, UI issues, and event handling problems.
+
+## **Comprehensive Project Audit & Repair Prompt**
+
+**Core Instruction:** You are now the **Chief Technical Auditor and Lead Developer** for the White Caves Real Estate platform. Your mission is to conduct a **COMPLETE, SYSTEM-WIDE AUDIT** of the entire application and fix ALL inconsistencies, broken features, UI problems, and non-functional components. This is not a partial fix - you must ensure every button, link, form, dashboard, and AI assistant works correctly with proper event handling and data flow.
+
+### **MANDATORY REQUIREMENTS:**
+1. **FULL COVERAGE:** Audit every component, service, route, model, and integration
+2. **END-TO-END TESTING:** Every button must show visible results when clicked
+3. **DATA FLOW VALIDATION:** Ensure all data moves correctly from UI → API → Database → UI
+4. **UI/UX CONSISTENCY:** Fix all design inconsistencies, broken layouts, unresponsive elements
+5. **EVENT SYSTEM VERIFICATION:** Confirm all event triggers work and propagate correctly
+
+---
+
+## **PHASE 1: COMPREHENSIVE CODEBASE ANALYSIS**
+
+**Step 1.1 - Project Structure Discovery**
+```
+1. Map ENTIRE project structure with command: find . -type f -name "*.js" -o -name "*.jsx" -o -name "*.ts" -o -name "*.tsx" -o -name "*.json" | grep -v node_modules | grep -v ".git"
+2. Document ALL directories and their purposes
+3. Identify dead/unused code and orphaned components
+```
+
+**Step 1.2 - Dependency & Configuration Audit**
+```
+1. Review ALL package.json files (root and server)
+2. Check for version conflicts, missing dependencies, deprecated packages
+3. Verify ALL environment variables in .env.example are properly implemented
+4. Audit configuration files: vite.config.js, vercel.json, replit configurations
+```
+
+**Step 1.3 - Architecture Consistency Check**
+```
+1. Verify database consistency: MongoDB ONLY (remove any PostgreSQL/Prisma remnants)
+2. Check authentication flow consistency across ALL components
+3. Validate Redux store structure and slice organization
+4. Confirm API route naming conventions are consistent
+```
+
+---
+
+## **PHASE 2: FUNCTIONALITY AUDIT & BREAKAGE DIAGNOSIS**
+
+**Step 2.1 - Create Interactive Testing Dashboard**
+```
+CREATE NEW COMPONENT: /src/components/audit/AuditControlCenter.jsx
+
+This dashboard must:
+1. Show REAL-TIME status of EVERY feature in the application
+2. Have TEST buttons for EVERY interactive element in the app
+3. Display LIVE results of each test (success/failure with details)
+4. Log ALL events, API calls, and state changes
+5. Categorize tests by: UI Components, API Endpoints, Database Operations, AI Assistants
+```
+
+**Step 2.2 - Systematic Component Testing**
+For EACH component in `/src/components/`:
+```
+1. Load component in isolation
+2. Test EVERY prop, EVERY event handler, EVERY conditional render
+3. Verify ALL buttons show visual feedback when clicked
+4. Check ALL forms validate and submit correctly
+5. Test ALL navigation links work
+6. Document EVERY failure with exact error message
+```
+
+**Step 2.3 - AI Assistant Dashboard Verification**
+For EACH of the 14+ AI assistants:
+```
+1. Load their dashboard component
+2. Test EVERY tab, filter, button, and control
+3. Verify data displays correctly (not static/mock data)
+4. Test ALL interactive features (sort, search, edit, delete)
+5. Confirm Redux connections work
+6. Validate API integrations are functional
+```
+
+**Step 2.4 - Backend Service & API Audit**
+For EACH file in `/server/`:
+```
+1. Test EVERY API endpoint with actual HTTP requests
+2. Verify ALL database operations (CRUD) work correctly
+3. Check ALL service classes instantiate and run without errors
+4. Validate ALL middleware functions execute properly
+5. Test ALL external integrations (WhatsApp, Stripe, Google, Firebase)
+```
+
+---
+
+## **PHASE 3: DATA FLOW & EVENT SYSTEM VALIDATION**
+
+**Step 3.1 - End-to-End Data Flow Testing**
+```
+CREATE TEST SCENARIOS:
+
+1. "New Lead Creation Flow":
+   UI Form → API POST /api/leads → MongoDB save → Redux update → Dashboard display
+   
+2. "AI Assistant Suggestion Flow":
+   Service analysis → Event trigger → Redux dispatch → Zoe dashboard display → User action → Status update
+   
+3. "Property Management Flow":
+   Property add → Image upload → Database save → Multiple dashboard updates → Search/index update
+```
+
+**Step 3.2 - Event Trigger Verification System**
+```
+IMPLEMENT: /src/utils/EventDebugger.js
+
+This utility must:
+1. Intercept ALL Redux actions and log them
+2. Capture ALL component events (clicks, changes, submits)
+3. Track ALL API requests and responses
+4. Monitor ALL WebSocket/real-time events
+5. Provide real-time visualization of event flow
+```
+
+**Step 3.3 - Real-time State Monitoring**
+```
+CREATE: /src/components/audit/StateInspector.jsx
+
+This component must:
+1. Show current Redux state tree
+2. Highlight state changes in real-time
+3. Allow state manipulation for testing
+4. Show component-specific state
+5. Log state change history
+```
+
+---
+
+## **PHASE 4: UI/UX CONSISTENCY AUDIT**
+
+**Step 4.1 - Design System Compliance Check**
+```
+1. Audit ALL components for design system violations:
+   - Color consistency (brand red #DC2626)
+   - Typography (Montserrat/Open Sans)
+   - Spacing and layout grids
+   - Responsive breakpoints (mobile/tablet/desktop)
+   - RTL Arabic support
+   
+2. Fix ALL inconsistencies:
+   - Standardize ALL button styles
+   - Unify ALL form controls
+   - Consistent card/dashboard layouts
+   - Standardized loading/error states
+```
+
+**Step 4.2 - Responsive Design Verification**
+```
+Test EVERY component at:
+1. Mobile (320px-768px)
+2. Tablet (768px-1024px)
+3. Desktop (1024px+)
+4. Check: Layout breaks, overflow issues, touch targets, zoom compatibility
+```
+
+**Step 4.3 - Accessibility Audit**
+```
+Check EVERY component for:
+1. Proper ARIA labels
+2. Keyboard navigation
+3. Screen reader compatibility
+4. Color contrast ratios
+5. Focus management
+```
+
+---
+
+## **PHASE 5: REPAIR & REFACTOR IMPLEMENTATION**
+
+**Step 5.1 - Prioritized Fix Implementation**
+```
+CRITICAL PRIORITY (Fix immediately):
+1. Database connection failures
+2. Authentication breaks
+3. Core navigation failures
+4. Data saving/loading failures
+
+HIGH PRIORITY:
+1. Broken AI assistant dashboards
+2. Non-functional forms
+3. Missing event handlers
+4. API endpoint failures
+
+MEDIUM PRIORITY:
+1. UI inconsistencies
+2. Performance issues
+3. Missing features
+4. Documentation gaps
+```
+
+**Step 5.2 - Systematic Repair Process**
+For EACH identified issue:
+```
+1. Document EXACT problem and location
+2. Determine root cause
+3. Implement fix with tests
+4. Verify fix in AuditControlCenter
+5. Update documentation
+```
+
+**Step 5.3 - Create Self-Healing Mechanisms**
+```
+IMPLEMENT: /src/utils/AutoRepair.js
+
+Features:
+1. Automatic detection of common failures
+2. One-click repair for identified issues
+3. Component health monitoring
+4. Performance optimization suggestions
+5. Dependency update management
+```
+
+---
+
+## **PHASE 6: VALIDATION & DELIVERABLES**
+
+**Step 6.1 - Comprehensive Test Suite Execution**
+```
+RUN FULL TEST BATTERY:
+
+1. Unit Tests: ALL components and utilities
+2. Integration Tests: ALL API endpoints and services
+3. End-to-End Tests: 10 critical user flows
+4. Performance Tests: Load testing on key pages
+5. Cross-browser Tests: Chrome, Firefox, Safari, Edge
+```
+
+**Step 6.2 - Create Final Audit Report**
+```
+GENERATE: /docs/COMPREHENSIVE_AUDIT_REPORT.md
+
+Must include:
+1. Executive summary of findings
+2. Detailed issue log (component-by-component)
+3. Fix implementation report
+4. Performance metrics (before/after)
+5. Remaining technical debt
+6. Recommendations for maintenance
+```
+
+**Step 6.3 - Deliver Working Demo**
+```
+DEMONSTRATE: Live working demo showing:
+
+1. ALL AI assistant dashboards functioning
+2. EVERY button producing visible results
+3. COMPLETE data flows working end-to-end
+4. RESPONSIVE design on all devices
+5. REAL-TIME event tracking visible
+```
+
+---
+
+## **FINAL DELIVERABLES REQUIREMENT:**
+
+You MUST provide:
+1. **AuditControlCenter.jsx** - Interactive testing dashboard
+2. **COMPREHENSIVE_AUDIT_REPORT.md** - Complete findings and fixes
+3. **Fixed code** for ALL broken components and features
+4. **Working demo** showing EVERY feature functional
+5. **Validation tests** proving all fixes work
+6. **Maintenance guide** for preventing future breakage
+
+**SUCCESS CRITERIA:**
+- Zero console errors in development tools
+- All API endpoints return 200 status with valid data
+- All buttons show immediate visual feedback
+- All forms submit and validate correctly
+- All dashboards display live (not mock) data
+- Application is fully responsive on all devices
+- All AI assistants are accessible and functional
+
+---
+
+**Begin the audit immediately. Follow the phases in order. Document EVERY finding. Fix EVERY issue. Provide COMPLETE deliverables. This is a FULL PROJECT RESCUE MISSION.**
+
+## **How to Use This Prompt:**
+
+1. **Copy the entire prompt** into a new Replit Agent conversation
+2. **Let the Agent run** - this will take time as it's comprehensive
+3. **Monitor progress** through the AuditControlCenter it creates
+4. **Verify fixes** by testing the repaired features
+5. **Use the final report** as your project health baseline
+
+This prompt forces systematic, thorough investigation and repair of your entire codebase, ensuring no broken feature is overlooked. The AuditControlCenter will give you immediate visibility into what's working and what's not.

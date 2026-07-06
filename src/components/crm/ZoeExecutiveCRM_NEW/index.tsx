@@ -72,7 +72,7 @@ const ZoeExecutiveCRM = () => {
       </div>
 
       <div className="quick-stats">
-        <div className="stat-card">
+        <div className="stat-card glass-kpi-tile">
           <div
             className="stat-icon"
             style={{ background: 'rgba(6, 182, 212, 0.2)', color: '#06B6D4' }}
@@ -87,7 +87,7 @@ const ZoeExecutiveCRM = () => {
             <ArrowUp size={14} /> 5
           </span>
         </div>
-        <div className="stat-card">
+        <div className="stat-card glass-kpi-tile">
           <div
             className="stat-icon"
             style={{ background: 'rgba(239, 68, 68, 0.2)', color: '#EF4444' }}
@@ -102,7 +102,7 @@ const ZoeExecutiveCRM = () => {
           </div>
           <span className="stat-change warning">Urgent</span>
         </div>
-        <div className="stat-card">
+        <div className="stat-card glass-kpi-tile">
           <div
             className="stat-icon"
             style={{ background: 'rgba(34, 197, 94, 0.2)', color: '#22C55E' }}
@@ -117,7 +117,7 @@ const ZoeExecutiveCRM = () => {
             <ArrowUp size={14} /> 2
           </span>
         </div>
-        <div className="stat-card">
+        <div className="stat-card glass-kpi-tile">
           <div
             className="stat-icon"
             style={{ background: 'rgba(59, 130, 246, 0.2)', color: '#3B82F6' }}
@@ -135,7 +135,7 @@ const ZoeExecutiveCRM = () => {
           </span>
         </div>
         {/* TASK-018 / Phase 27: Gold card for homepage search leads */}
-        <div className="stat-card">
+        <div className="stat-card glass-kpi-tile">
           <div
             className="stat-icon"
             style={{ background: 'rgba(201, 168, 76, 0.2)', color: '#C9A84C' }}

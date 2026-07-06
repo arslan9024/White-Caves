@@ -18,6 +18,7 @@ param(
   [string]$TaskId        = "",   # completed task to dispatch from (optional)
   [string]$WorkspaceRoot = ".",
   [switch]$OpenBrowser,          # open free tool URL in default browser
+  [switch]$ForceBrowserOpen,
   [switch]$ShowAll               # show all currently READY tasks (no TaskId needed)
 )
 
@@ -25,12 +26,52 @@ $ErrorActionPreference = "Continue"
 $root        = Resolve-Path $WorkspaceRoot
 $queueFile   = Join-Path $root "logs\orchestrator\task-queue.json"
 $promptsFile = Join-Path $root "scripts\orchestrator\prompts.json"
+$browserLaunchScript = Join-Path $root "scripts\orchestrator\browser-launch.ps1"
 $w           = 72
 
 if (-not (Test-Path $queueFile))   { Write-Host "[ERROR] queue not found"   -ForegroundColor Red; exit 1 }
 if (-not (Test-Path $promptsFile)) { Write-Host "[ERROR] prompts not found" -ForegroundColor Red; exit 1 }
+if (Test-Path $browserLaunchScript) { . $browserLaunchScript }
 
-$q       = Get-Content $queueFile   -Raw | ConvertFrom-Json
+$q = $null
+function Read-JsonFileSafe {
+  param(
+    [Parameter(Mandatory = $true)]
+    [string]$Path,
+    [long]$MaxBytes = 8MB,
+    [switch]$TryTmpRecovery
+  )
+
+  if (-not (Test-Path $Path)) { return $null }
+  $info = Get-Item -Path $Path -ErrorAction SilentlyContinue
+  if ($null -eq $info) { return $null }
+
+  function Try-ParseCandidate {
+    param([string]$CandidatePath)
+    try {
+      $raw = Get-Content -Path $CandidatePath -Raw -ErrorAction Stop
+      if ([string]::IsNullOrWhiteSpace($raw)) { return $null }
+      return ($raw | ConvertFrom-Json -ErrorAction Stop)
+    } catch { return $null }
+  }
+
+  if ($info.Length -gt $MaxBytes) {
+    if (-not $TryTmpRecovery) { return $null }
+    $dir = Split-Path -Parent $Path
+    $base = [System.IO.Path]::GetFileName($Path)
+    foreach ($tmp in @(Get-ChildItem -Path $dir -Filter ("{0}.tmp.*" -f $base) -File -ErrorAction SilentlyContinue | Sort-Object LastWriteTime -Descending)) {
+      if ($tmp.Length -gt $MaxBytes) { continue }
+      $parsed = Try-ParseCandidate -CandidatePath $tmp.FullName
+      if ($null -eq $parsed) { continue }
+      try { Copy-Item -Path $tmp.FullName -Destination $Path -Force } catch {}
+      return $parsed
+    }
+    return $null
+  }
+  return (Try-ParseCandidate -CandidatePath $Path)
+}
+
+$q       = Read-JsonFileSafe -Path $queueFile -MaxBytes 8MB -TryTmpRecovery
 $prompts = Get-Content $promptsFile -Raw | ConvertFrom-Json
 $tasks   = @($q.tasks)
 
@@ -79,7 +120,12 @@ $laneNames = @{ "A"="Lane A (Sofia->Timnit->Victoria->Annie->Marissa->Rachel->Jo
 # -- helpers ------------------------------------------------------------------
 function Get-Prompt([string]$id) {
   $keys = @($prompts | Get-Member -MemberType NoteProperty | Select-Object -ExpandProperty Name)
-  if ($keys -contains $id) { return $prompts.$id }
+  if ($keys -contains $id) {
+    $val = $prompts.$id
+    if ($val -is [string]) { return $val }
+    if ($null -ne $val -and $val.PSObject.Properties.Name -contains "prompt") { return [string]$val.prompt }
+    return [string]$val
+  }
   $t = @($tasks | Where-Object { $_.taskId -eq $id })[0]
   if ($null -ne $t) { return $t.title } else { return "(no prompt)" }
 }
@@ -91,6 +137,34 @@ function Test-AllDepsDone([array]$deps) {
     if ($null -eq $dep -or $dep.status -ne "done") { return $false }
   }
   return $true
+}
+
+function Get-NormalizedDeps {
+  param($deps)
+
+  $normalized = New-Object 'System.Collections.Generic.List[string]'
+
+  if ($null -eq $deps) { return ,$normalized.ToArray() }
+
+  foreach ($item in @($deps)) {
+    if ($null -eq $item) { continue }
+    if ($item -is [string]) {
+      if ([string]::IsNullOrWhiteSpace($item)) { continue }
+      [void]$normalized.Add($item)
+      continue
+    }
+
+    if ($null -ne $item.PSObject -and $item.PSObject.Properties.Count -eq 0) {
+      continue
+    }
+
+    $text = [string]$item
+    if (-not [string]::IsNullOrWhiteSpace($text)) {
+      [void]$normalized.Add($text)
+    }
+  }
+
+  return ,$normalized.ToArray()
 }
 
 # Returns tasks that become READY after $completedId moves to done
@@ -212,7 +286,14 @@ function Write-DispatchCard([object]$task, [int]$idx, [int]$total, [string]$trig
   Write-Host ("  npm run orchestrator:complete-advance -- -TaskId {0} -AgentName `"{1}`"" -f $id, $agent) -ForegroundColor Yellow
   if ($OpenBrowser) {
     Write-Host ("  [BROWSER] Opening {0} ..." -f $tool) -ForegroundColor Cyan
-    Start-Process $tool
+    if (Get-Command Invoke-AegisBrowserLaunch -ErrorAction SilentlyContinue) {
+      $launchResult = Invoke-AegisBrowserLaunch -Url $tool -WorkspaceRoot $root -Force:$ForceBrowserOpen
+      if (-not $launchResult.launched) {
+        Write-Host "  [SKIP] Browser launch skipped (recently opened). Use -ForceBrowserOpen to reopen." -ForegroundColor Yellow
+      }
+    } else {
+      Start-Process $tool
+    }
   } else {
     Write-Host ("  [TIP] Add -OpenBrowser flag to auto-open tool in browser") -ForegroundColor DarkGray
   }
@@ -230,7 +311,7 @@ Write-Host ""
 if ($ShowAll -or ($TaskId -eq "" -and -not $ShowAll)) {
   $readyTasks = @($tasks | Where-Object {
     ($_.status -eq "queued" -or $_.status -eq "retrying") -and
-    (Test-AllDepsDone @($_.dependsOn))
+    (Test-AllDepsDone (Get-NormalizedDeps $_.dependsOn))
   })
   if ($TaskId -eq "" -and -not $ShowAll) {
     # Auto-detect: find most recently done task
@@ -285,7 +366,7 @@ $unlocked = Get-Unlocked -completedId $TaskId
 $sameReady = @($tasks | Where-Object {
   ($_.status -eq "queued" -or $_.status -eq "retrying") -and
   $_.lane -eq $sourceTask.lane -and
-  (Test-AllDepsDone @($_.dependsOn))
+  (Test-AllDepsDone (Get-NormalizedDeps $_.dependsOn))
 })
 
 if ($unlocked.Count -eq 0 -and $sameReady.Count -eq 0) {
@@ -294,7 +375,7 @@ if ($unlocked.Count -eq 0 -and $sameReady.Count -eq 0) {
   Write-Host ""
   Write-Host ("  Currently READY in all lanes:") -ForegroundColor White
   $allReady = @($tasks | Where-Object {
-    ($_.status -eq "queued") -and (Test-AllDepsDone @($_.dependsOn))
+    ($_.status -eq "queued") -and (Test-AllDepsDone (Get-NormalizedDeps $_.dependsOn))
   })
   foreach ($rt in $allReady) {
     Write-Host ("    {0,-7} {1}" -f $rt.taskId, $rt.agent) -ForegroundColor DarkGray

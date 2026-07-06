@@ -14,25 +14,41 @@
  */
 
 import { Router, Request, Response } from 'express';
-import { asyncHandler } from '../middleware/errorHandler.js';
+type RouteRequest = Request<Record<string, string>>;
+import { asyncHandler, AppError } from '../middleware/errorHandler.js';
 import { requirePermission } from '../middleware/rbac.js';
+import {
+  requireDepartmentAccess,
+  requireDepartmentPermission,
+} from '../middleware/departmentAuth.js';
 import { prisma } from '../database.js';
 
 const router = Router();
 
-// ─── Supported departments ───────────────────────────────────────────────────
+const routeParamToString = (value: string | string[] | undefined): string | null => {
+  if (typeof value === 'string' && value.trim().length > 0) {
+    return value;
+  }
+  if (Array.isArray(value) && value.length > 0 && typeof value[0] === 'string') {
+    const first = value[0].trim();
+    return first.length > 0 ? first : null;
+  }
+  return null;
+};
+
+// â”€â”€â”€ Supported departments â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 const DEPARTMENTS = [
-  { code: 'SALES', name: 'Sales & Leasing', icon: '📈' },
-  { code: 'FINANCE', name: 'Finance', icon: '💰' },
-  { code: 'HR', name: 'Human Resources', icon: '👥' },
+  { code: 'SALES', name: 'Sales & Leasing', icon: 'ðŸ“ˆ' },
+  { code: 'FINANCE', name: 'Finance', icon: 'ðŸ’°' },
+  { code: 'HR', name: 'Human Resources', icon: 'ðŸ‘¥' },
 ];
 
-// ─── Colour palette for charts ───────────────────────────────────────────────
+// â”€â”€â”€ Colour palette for charts â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 const COLORS = ['#3498db', '#2ecc71', '#e74c3c', '#f39c12', '#9b59b6', '#1abc9c'];
 
-// ─── Helper: last N months as { label, startOf, endOf } ─────────────────────
+// â”€â”€â”€ Helper: last N months as { label, startOf, endOf } â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 function lastNMonths(n: number) {
   const months: { label: string; start: Date; end: Date }[] = [];
@@ -47,7 +63,7 @@ function lastNMonths(n: number) {
   return months;
 }
 
-// ─── Sales department aggregation ────────────────────────────────────────────
+// â”€â”€â”€ Sales department aggregation â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 async function getSalesData() {
   const months = lastNMonths(6);
@@ -123,6 +139,8 @@ async function getSalesData() {
   return {
     code: 'SALES',
     name: 'Sales & Leasing',
+    departmentCode: 'SALES',
+    departmentName: 'Sales & Leasing',
     totalLeads,
     activeDeals,
     conversionRate,
@@ -171,7 +189,7 @@ async function getSalesData() {
   };
 }
 
-// ─── Finance department aggregation ──────────────────────────────────────────
+// â”€â”€â”€ Finance department aggregation â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 async function getFinanceData() {
   const months = lastNMonths(6);
@@ -239,6 +257,8 @@ async function getFinanceData() {
   return {
     code: 'FINANCE',
     name: 'Finance',
+    departmentCode: 'FINANCE',
+    departmentName: 'Finance',
     totalBudget,
     spent,
     remaining,
@@ -281,7 +301,7 @@ async function getFinanceData() {
   };
 }
 
-// ─── HR department aggregation ────────────────────────────────────────────────
+// â”€â”€â”€ HR department aggregation â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 async function getHRData() {
   const months = lastNMonths(6);
@@ -329,7 +349,7 @@ async function getHRData() {
     color: COLORS[i % COLORS.length],
   }));
 
-  // Attendance trend — use a proxy: active leads per month as engagement metric
+  // Attendance trend â€” use a proxy: active leads per month as engagement metric
   const attendanceTrend = await Promise.all(
     months.map(async ({ label, start, end }) => {
       const count = await prisma.activity.count({
@@ -339,7 +359,7 @@ async function getHRData() {
     })
   );
 
-  // Quarterly hires — approximate from createdAt quarters
+  // Quarterly hires â€” approximate from createdAt quarters
   const now = new Date();
   const hiresLastQuarter = await Promise.all(
     [3, 2, 1].map(async (quarterAgo, idx) => {
@@ -353,7 +373,7 @@ async function getHRData() {
     })
   );
 
-  // Open positions — job applications with status 'received' or 'reviewed'
+  // Open positions â€” job applications with status 'received' or 'reviewed'
   const openPositions = await prisma.jobApplication.count({
     where: { status: { in: ['received', 'reviewed', 'shortlisted', 'interview'] } },
   });
@@ -361,9 +381,11 @@ async function getHRData() {
   return {
     code: 'HR',
     name: 'Human Resources',
+    departmentCode: 'HR',
+    departmentName: 'Human Resources',
     totalEmployees,
     activePositions: openPositions,
-    attendanceRate: 94.5, // Placeholder — no attendance system yet; will be replaced when timesheet module is built
+    attendanceRate: 94.5, // Placeholder â€” no attendance system yet; will be replaced when timesheet module is built
     turnoverRate: parseFloat(((recentHires / Math.max(1, totalEmployees)) * 100).toFixed(1)),
     employeesByDepartment,
     attendanceTrend,
@@ -410,12 +432,12 @@ async function getHRData() {
   };
 }
 
-// ─── Route: GET /api/departments ─────────────────────────────────────────────
+// â”€â”€â”€ Route: GET /api/departments â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 router.get(
   '/',
   requirePermission('view_analytics'),
-  asyncHandler(async (_req: Request, res: Response) => {
+  asyncHandler(async (_req: RouteRequest, res: Response) => {
     res.status(200).json({
       success: true,
       departments: DEPARTMENTS,
@@ -423,13 +445,19 @@ router.get(
   })
 );
 
-// ─── Route: GET /api/departments/:code/data ──────────────────────────────────
+// â”€â”€â”€ Route: GET /api/departments/:code/data â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 router.get(
   '/:code/data',
   requirePermission('view_analytics'),
+  requireDepartmentAccess,
+  requireDepartmentPermission('READ'),
   asyncHandler(async (req: Request, res: Response) => {
-    const code = req.params.code.toUpperCase();
+    const codeParam = routeParamToString(req.params.code);
+    if (!codeParam) {
+      throw new AppError('Department code is required', 400);
+    }
+    const code = codeParam.toUpperCase();
 
     let data: Record<string, unknown>;
 
@@ -452,13 +480,19 @@ router.get(
   })
 );
 
-// ─── Route: GET /api/departments/:code/kpis ──────────────────────────────────
+// â”€â”€â”€ Route: GET /api/departments/:code/kpis â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 router.get(
   '/:code/kpis',
   requirePermission('view_analytics'),
+  requireDepartmentAccess,
+  requireDepartmentPermission('READ'),
   asyncHandler(async (req: Request, res: Response) => {
-    const code = req.params.code.toUpperCase();
+    const codeParam = routeParamToString(req.params.code);
+    if (!codeParam) {
+      throw new AppError('Department code is required', 400);
+    }
+    const code = codeParam.toUpperCase();
     let data: Record<string, unknown>;
 
     switch (code) {
@@ -484,13 +518,19 @@ router.get(
   })
 );
 
-// ─── Route: GET /api/departments/:code/trends ────────────────────────────────
+// â”€â”€â”€ Route: GET /api/departments/:code/trends â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 router.get(
   '/:code/trends',
   requirePermission('view_analytics'),
+  requireDepartmentAccess,
+  requireDepartmentPermission('READ'),
   asyncHandler(async (req: Request, res: Response) => {
-    const code = req.params.code.toUpperCase();
+    const codeParam = routeParamToString(req.params.code);
+    if (!codeParam) {
+      throw new AppError('Department code is required', 400);
+    }
+    const code = codeParam.toUpperCase();
     let data: Record<string, unknown>;
 
     switch (code) {
@@ -516,13 +556,19 @@ router.get(
   })
 );
 
-// ─── Route: GET /api/departments/:code/summary ───────────────────────────────
+// â”€â”€â”€ Route: GET /api/departments/:code/summary â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 router.get(
   '/:code/summary',
   requirePermission('view_analytics'),
+  requireDepartmentAccess,
+  requireDepartmentPermission('READ'),
   asyncHandler(async (req: Request, res: Response) => {
-    const code = req.params.code.toUpperCase();
+    const codeParam = routeParamToString(req.params.code);
+    if (!codeParam) {
+      throw new AppError('Department code is required', 400);
+    }
+    const code = codeParam.toUpperCase();
     let data: Record<string, unknown>;
 
     switch (code) {

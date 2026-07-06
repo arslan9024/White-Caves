@@ -15,6 +15,10 @@ import { createLogger } from './logger';
 import { HttpError } from './HttpError';
 
 const log = createLogger('authFetch');
+const CSRF_HEADER_NAME = 'x-csrf-token';
+const CSRF_COOKIE_NAME = 'csrf_token';
+const AUTH_REFRESH_ENDPOINT = '/api/auth/refresh';
+let refreshInFlight: Promise<boolean> | null = null;
 
 // ─── Auto-Logout ────────────────────────────────────────────────────────
 
@@ -23,9 +27,81 @@ function handleUnauthorized(): void {
   safeStorage.remove('token');
   safeStorage.remove('userRole');
   // Navigate to sign-in; avoids importing router (keeps util pure)
-  if (window.location.pathname !== '/') {
-    window.location.href = '/';
+  if (window.location.pathname !== '/signin') {
+    window.location.href = '/signin';
   }
+}
+
+function getCookieValue(name: string): string | null {
+  if (typeof document === 'undefined') return null;
+  const entries = document.cookie ? document.cookie.split(';') : [];
+  for (const entry of entries) {
+    const [key, ...valueParts] = entry.trim().split('=');
+    if (key === name) {
+      return decodeURIComponent(valueParts.join('='));
+    }
+  }
+  return null;
+}
+
+function withCsrfHeader(headers: Headers, input: RequestInfo | URL, method: string): void {
+  const upperMethod = method.toUpperCase();
+  const isMutationMethod = !['GET', 'HEAD', 'OPTIONS'].includes(upperMethod);
+  if (!isMutationMethod || headers.has(CSRF_HEADER_NAME)) return;
+
+  const inputUrl = typeof input === 'string' ? input : input instanceof URL ? input.pathname : '';
+  const isAuthMutation = inputUrl.startsWith('/api/auth/');
+  if (!isAuthMutation) return;
+
+  const csrfToken = getCookieValue(CSRF_COOKIE_NAME);
+  if (csrfToken) {
+    headers.set(CSRF_HEADER_NAME, csrfToken);
+  }
+}
+
+async function attemptSessionRefresh(): Promise<boolean> {
+  if (!refreshInFlight) {
+    refreshInFlight = (async () => {
+      const csrfToken = getCookieValue(CSRF_COOKIE_NAME);
+      const headers = new Headers();
+      if (csrfToken) {
+        headers.set(CSRF_HEADER_NAME, csrfToken);
+      }
+      headers.set('Content-Type', 'application/json');
+
+      try {
+        const response = await fetch(AUTH_REFRESH_ENDPOINT, {
+          method: 'POST',
+          credentials: 'include',
+          headers,
+          body: JSON.stringify({}),
+        });
+
+        if (!response.ok) {
+          return false;
+        }
+
+        const payload = (await response.json()) as {
+          success?: boolean;
+          data?: { token?: string };
+        };
+        const rotatedToken = payload?.data?.token;
+        if (!rotatedToken) {
+          return false;
+        }
+
+        safeStorage.set('token', rotatedToken);
+        return true;
+      } catch (error) {
+        log.warn('Session refresh failed', error);
+        return false;
+      } finally {
+        refreshInFlight = null;
+      }
+    })();
+  }
+
+  return refreshInFlight;
 }
 
 // ─── Main Wrapper ───────────────────────────────────────────────────────
@@ -34,36 +110,53 @@ export async function authFetch(
   input: RequestInfo | URL,
   init?: RequestInit & { timeout?: number }
 ): Promise<Response> {
-  const token = safeStorage.get('token');
-  const headers = new Headers(init?.headers);
+  const requestMethod = init?.method ?? 'GET';
+  const runRequest = async (): Promise<Response> => {
+    const token = safeStorage.get('token');
+    const headers = new Headers(init?.headers);
 
-  if (token && !headers.has('Authorization')) {
-    headers.set('Authorization', `Bearer ${token}`);
-  }
+    if (token && !headers.has('Authorization')) {
+      headers.set('Authorization', `Bearer ${token}`);
+    }
 
-  // Ensure JSON content-type for requests with a body (skip FormData — browser sets multipart boundary)
-  if (init?.body && !headers.has('Content-Type') && !(init.body instanceof FormData)) {
-    headers.set('Content-Type', 'application/json');
-  }
+    withCsrfHeader(headers, input, requestMethod);
 
-  // ── Timeout guard (default 30s) ─────────────────────────────────────
-  const timeout = init?.timeout ?? 30_000;
-  const controller = new AbortController();
-  const timeoutId = timeout > 0 ? setTimeout(() => controller.abort(), timeout) : null;
-  // Respect caller-supplied signal (e.g. from AbortController in useEffect)
-  const signal = init?.signal
-    ? mergeAbortSignals(init.signal, controller.signal)
-    : controller.signal;
+    // Ensure JSON content-type for requests with a body (skip FormData — browser sets multipart boundary)
+    if (init?.body && !headers.has('Content-Type') && !(init.body instanceof FormData)) {
+      headers.set('Content-Type', 'application/json');
+    }
 
-  let response: Response;
-  try {
-    response = await fetch(input, { ...init, headers, signal });
-  } finally {
-    if (timeoutId) clearTimeout(timeoutId);
-  }
+    // ── Timeout guard (default 30s) ─────────────────────────────────────
+    const timeout = init?.timeout ?? 30_000;
+    const controller = new AbortController();
+    const timeoutId = timeout > 0 ? setTimeout(() => controller.abort(), timeout) : null;
+    // Respect caller-supplied signal (e.g. from AbortController in useEffect)
+    const signal = init?.signal
+      ? mergeAbortSignals(init.signal, controller.signal)
+      : controller.signal;
+
+    try {
+      return await fetch(input, { ...init, headers, signal, credentials: init?.credentials ?? 'include' });
+    } finally {
+      if (timeoutId) clearTimeout(timeoutId);
+    }
+  };
+
+  let response = await runRequest();
 
   // ── Centralized HTTP-status handling ───────────────────────────────
   if (response.status === 401) {
+    const normalizedUrl = typeof input === 'string' ? input : input instanceof URL ? input.pathname : '';
+    const isRefreshRequest = normalizedUrl.startsWith(AUTH_REFRESH_ENDPOINT);
+    if (!isRefreshRequest) {
+      const refreshed = await attemptSessionRefresh();
+      if (refreshed) {
+        response = await runRequest();
+        if (response.status !== 401) {
+          return response;
+        }
+      }
+    }
     handleUnauthorized();
     throw new HttpError('Session expired — please sign in again', 401, response.statusText);
   }

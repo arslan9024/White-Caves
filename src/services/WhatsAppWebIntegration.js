@@ -20,10 +20,6 @@ class WhatsAppWebIntegrationService {
     this.maxRetries = 3;
   }
 
-  getEventHandlerKeys() {
-    return Object.keys(this.eventHandlers);
-  }
-
   async initializeConnection() {
     try {
       if (this.client && this.isReady) {

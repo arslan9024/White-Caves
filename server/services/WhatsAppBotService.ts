@@ -67,7 +67,7 @@ class WhatsAppBotService {
 
         log.error(`${message} (continuing startup in degraded mode)`);
       } else {
-        log.warn('WhatsApp credentials not configured — message sending disabled');
+        log.info('WhatsApp credentials not configured — message sending disabled in development');
       }
     }
   }
@@ -103,7 +103,11 @@ class WhatsAppBotService {
 
     if (!this.isConfigured) {
       this.stats.skippedNoCredentials += 1;
-      log.warn(`sendMessage skipped (no credentials) to ${phoneNumber}`);
+      if (process.env.NODE_ENV === 'production') {
+        log.warn(`sendMessage skipped (no credentials) to ${phoneNumber}`);
+      } else {
+        log.info(`sendMessage skipped (no credentials) to ${phoneNumber}`);
+      }
       return undefined;
     }
     if (!this.client) {
@@ -193,7 +197,11 @@ class WhatsAppBotService {
 
     if (!this.isConfigured) {
       this.stats.skippedNoCredentials += 1;
-      log.warn(`sendTemplateMessage skipped (no credentials) to ${phoneNumber}`);
+      if (process.env.NODE_ENV === 'production') {
+        log.warn(`sendTemplateMessage skipped (no credentials) to ${phoneNumber}`);
+      } else {
+        log.info(`sendTemplateMessage skipped (no credentials) to ${phoneNumber}`);
+      }
       return undefined;
     }
     if (!this.client) {

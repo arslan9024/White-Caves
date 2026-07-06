@@ -92,7 +92,12 @@ export const Avatar: React.FC<AvatarProps> = memo(function Avatar({
   return (
     <AvatarContainer $size={size} className={className}>
       {src ? (
-        <AvatarImage src={src} alt={alt} />
+        <AvatarImage 
+          src={src} 
+          alt={alt}
+          loading="lazy"
+          decoding="async"
+        />
       ) : (
         <AvatarInitials $size={size} $variant={variant}>
           {initials}

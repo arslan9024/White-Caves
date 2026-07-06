@@ -20,6 +20,9 @@ const mockCompleteSocialRegistration = vi.fn();
 const mockSignInWithGoogle = vi.fn();
 const mockSignInWithFacebook = vi.fn();
 const mockSignInWithApple = vi.fn();
+const mockRequestPasswordReset = vi.fn();
+const mockVerifyPasswordResetToken = vi.fn();
+const mockResetPasswordWithToken = vi.fn();
 
 vi.mock('react-router-dom', async () => {
   const actual = await vi.importActual('react-router-dom');
@@ -32,6 +35,8 @@ vi.mock('react-router-dom', async () => {
 
 vi.mock('../config/firebase', () => ({
   auth: null,
+  isFirebaseAuthConfigured: true,
+  firebaseAuthUnavailableReason: '',
   signInWithGoogle: (...args: unknown[]) => mockSignInWithGoogle(...args),
   signInWithFacebook: (...args: unknown[]) => mockSignInWithFacebook(...args),
   signInWithApple: (...args: unknown[]) => mockSignInWithApple(...args),
@@ -45,6 +50,9 @@ vi.mock('../services/authService', () => ({
   registerWithEmail: vi.fn(),
   syncFirebaseUser: (...args: unknown[]) => mockSyncFirebaseUser(...args),
   completeSocialRegistration: (...args: unknown[]) => mockCompleteSocialRegistration(...args),
+  requestPasswordReset: (...args: unknown[]) => mockRequestPasswordReset(...args),
+  verifyPasswordResetToken: (...args: unknown[]) => mockVerifyPasswordResetToken(...args),
+  resetPasswordWithToken: (...args: unknown[]) => mockResetPasswordWithToken(...args),
 }));
 
 vi.mock('../utils/safeStorage', () => ({
@@ -113,6 +121,30 @@ const backendBuyerUser = {
 
 const backendTenantUser = { ...backendBuyerUser, id: 'backend-uuid-2', role: 'tenant' };
 const backendLandlordUser = { ...backendBuyerUser, id: 'backend-uuid-3', role: 'landlord' };
+const backendPendingStaffUser = {
+  ...backendBuyerUser,
+  id: 'backend-uuid-4',
+  role: 'agent',
+  status: 'pending',
+};
+const backendUnauthorizedRoleUser = {
+  ...backendBuyerUser,
+  id: 'backend-uuid-unauthorized',
+  role: 'unknown-role',
+  status: 'active',
+};
+const backendIncompleteAgentUser = {
+  ...backendBuyerUser,
+  id: 'backend-uuid-5',
+  role: 'agent',
+  profileCompleted: false,
+};
+const backendSuperuser = {
+  ...backendBuyerUser,
+  id: 'backend-uuid-super',
+  email: 'arslanmalikgoraha@gmail.com',
+  role: 'agent',
+};
 
 const successResponse = (user = backendBuyerUser) => ({
   success: true,
@@ -169,7 +201,7 @@ describe('useSignIn — handleSocialAuth (integration)', () => {
       expect(currentUser?.email).toBe(backendBuyerUser.email);
     });
 
-    it('navigates to /dashboard for a buyer role', async () => {
+    it('navigates to /profile for a buyer role', async () => {
       vi.useFakeTimers();
       const { result } = renderHook(() => useSignIn(), { wrapper: createWrapper(store) });
 
@@ -178,11 +210,11 @@ describe('useSignIn — handleSocialAuth (integration)', () => {
       });
       act(() => vi.runAllTimers());
 
-      expect(mockNavigate).toHaveBeenCalledWith('/dashboard');
+      expect(mockNavigate).toHaveBeenCalledWith('/crm');
       vi.useRealTimers();
     });
 
-    it('navigates to /dashboard for a tenant role', async () => {
+    it('navigates to /profile for a tenant role', async () => {
       vi.useFakeTimers();
       mockSyncFirebaseUser.mockResolvedValue(successResponse(backendTenantUser));
       const { result } = renderHook(() => useSignIn(), { wrapper: createWrapper(store) });
@@ -192,11 +224,11 @@ describe('useSignIn — handleSocialAuth (integration)', () => {
       });
       act(() => vi.runAllTimers());
 
-      expect(mockNavigate).toHaveBeenCalledWith('/dashboard');
+      expect(mockNavigate).toHaveBeenCalledWith('/tenant-portal');
       vi.useRealTimers();
     });
 
-    it('navigates to /dashboard for a landlord role', async () => {
+    it('navigates to /profile for a landlord role', async () => {
       vi.useFakeTimers();
       mockSyncFirebaseUser.mockResolvedValue(successResponse(backendLandlordUser));
       const { result } = renderHook(() => useSignIn(), { wrapper: createWrapper(store) });
@@ -206,7 +238,49 @@ describe('useSignIn — handleSocialAuth (integration)', () => {
       });
       act(() => vi.runAllTimers());
 
-      expect(mockNavigate).toHaveBeenCalledWith('/dashboard');
+      expect(mockNavigate).toHaveBeenCalledWith('/landlord-portal');
+      vi.useRealTimers();
+    });
+
+    it('routes incomplete CRM users to /profile before /crm', async () => {
+      vi.useFakeTimers();
+      mockSyncFirebaseUser.mockResolvedValue(successResponse(backendIncompleteAgentUser));
+      const { result } = renderHook(() => useSignIn(), { wrapper: createWrapper(store) });
+
+      await act(async () => {
+        await result.current.handleSocialAuth('google');
+      });
+      act(() => vi.runAllTimers());
+
+      expect(mockNavigate).toHaveBeenCalledWith('/profile');
+      vi.useRealTimers();
+    });
+
+    it('routes pending users to /pending-approval', async () => {
+      vi.useFakeTimers();
+      mockSyncFirebaseUser.mockResolvedValue(successResponse(backendPendingStaffUser));
+      const { result } = renderHook(() => useSignIn(), { wrapper: createWrapper(store) });
+
+      await act(async () => {
+        await result.current.handleSocialAuth('google');
+      });
+      act(() => vi.runAllTimers());
+
+      expect(mockNavigate).toHaveBeenCalledWith('/pending-approval');
+      vi.useRealTimers();
+    });
+
+    it('routes unauthorized role mappings to /pending-approval safe fallback', async () => {
+      vi.useFakeTimers();
+      mockSyncFirebaseUser.mockResolvedValue(successResponse(backendUnauthorizedRoleUser));
+      const { result } = renderHook(() => useSignIn(), { wrapper: createWrapper(store) });
+
+      await act(async () => {
+        await result.current.handleSocialAuth('google');
+      });
+      act(() => vi.runAllTimers());
+
+      expect(mockNavigate).toHaveBeenCalledWith('/pending-approval');
       vi.useRealTimers();
     });
   });
@@ -256,6 +330,26 @@ describe('useSignIn — handleSocialAuth (integration)', () => {
 
       expect(result.current.pendingUser?.email).toBe(backendBuyerUser.email);
     });
+
+    it('does not ask role selection for superuser signup and signs in immediately', async () => {
+      vi.stubEnv('VITE_CREATOR_SUPERUSER_EMAIL', 'arslanmalikgoraha@gmail.com');
+      vi.useFakeTimers();
+      mockSyncFirebaseUser.mockResolvedValue(successResponse(backendSuperuser));
+      const { result } = renderHook(() => useSignIn(), { wrapper: createWrapper(store) });
+
+      act(() => result.current.switchMode());
+
+      await act(async () => {
+        await result.current.handleSocialAuth('google');
+      });
+
+      act(() => vi.runAllTimers());
+
+      expect(result.current.step).toBe(1);
+      expect(result.current.pendingUser).toBeNull();
+      expect(mockNavigate).toHaveBeenCalledWith('/crm');
+      vi.useRealTimers();
+    });
   });
 
   // ── Firebase popup error ───────────────────────────────────────────────────
@@ -292,6 +386,41 @@ describe('useSignIn — handleSocialAuth (integration)', () => {
       });
 
       expect(result.current.loading).toBe(false);
+    });
+
+    it('surfaces a clear message when Google domain is not authorized', async () => {
+      mockSignInWithGoogle.mockRejectedValue({ code: 'auth/unauthorized-domain' });
+      const { result } = renderHook(() => useSignIn(), { wrapper: createWrapper(store) });
+
+      await act(async () => {
+        await result.current.handleSocialAuth('google');
+      });
+
+      expect(result.current.error).toContain('blocked for this domain');
+    });
+
+    it('surfaces a clear message when Google provider is disabled', async () => {
+      mockSignInWithGoogle.mockRejectedValue({ code: 'auth/operation-not-allowed' });
+      const { result } = renderHook(() => useSignIn(), { wrapper: createWrapper(store) });
+
+      await act(async () => {
+        await result.current.handleSocialAuth('google');
+      });
+
+      expect(result.current.error).toContain('not enabled for this environment');
+    });
+
+    it('surfaces guidance when account exists with another credential', async () => {
+      mockSignInWithGoogle.mockRejectedValue({
+        code: 'auth/account-exists-with-different-credential',
+      });
+      const { result } = renderHook(() => useSignIn(), { wrapper: createWrapper(store) });
+
+      await act(async () => {
+        await result.current.handleSocialAuth('google');
+      });
+
+      expect(result.current.error).toContain('already registered with a different sign-in method');
     });
   });
 
@@ -463,7 +592,7 @@ describe('useSignIn — handleSocialAuth (integration)', () => {
       act(() => vi.runAllTimers());
 
       expect(mockCompleteSocialRegistration).toHaveBeenCalledWith('client', 'tenant');
-      expect(mockNavigate).toHaveBeenCalledWith('/dashboard');
+      expect(mockNavigate).toHaveBeenCalledWith('/tenant-portal');
       vi.useRealTimers();
     });
 
@@ -556,6 +685,115 @@ describe('useSignIn — handleSocialAuth (integration)', () => {
       });
 
       expect(result.current.error).toBe('Invalid provider');
+    });
+  });
+
+  describe('forgot password flow', () => {
+    it('shows validation error when email is empty', async () => {
+      const { result } = renderHook(() => useSignIn(), { wrapper: createWrapper(store) });
+
+      await act(async () => {
+        await result.current.handleForgotPassword();
+      });
+
+      expect(result.current.error).toContain('Please enter your email address first');
+      expect(mockRequestPasswordReset).not.toHaveBeenCalled();
+    });
+
+    it('requests password reset and transitions to verify stage with valid email', async () => {
+      mockRequestPasswordReset.mockResolvedValue({
+        success: true,
+        data: { requested: true, expiresInMinutes: 30, message: 'ok' },
+      });
+      const { result } = renderHook(() => useSignIn(), { wrapper: createWrapper(store) });
+
+      act(() => {
+        result.current.setEmail('arslanmalikgoraha@gmail.com');
+      });
+
+      await act(async () => {
+        await result.current.handleForgotPassword();
+      });
+
+      expect(mockRequestPasswordReset).toHaveBeenCalledWith('arslanmalikgoraha@gmail.com');
+      expect(result.current.resetStage).toBe('verify');
+      expect(result.current.success).toContain('Password reset requested');
+    });
+
+    it('locks the reset stage when request is rate-limited', async () => {
+      mockRequestPasswordReset.mockRejectedValue(new Error('Too many password reset attempts'));
+      const { result } = renderHook(() => useSignIn(), { wrapper: createWrapper(store) });
+
+      act(() => {
+        result.current.setEmail('missing@example.com');
+      });
+
+      await act(async () => {
+        await result.current.handleForgotPassword();
+      });
+
+      expect(result.current.error).toContain('Too many password reset attempts');
+      expect(result.current.resetStage).toBe('locked');
+    });
+
+    it('verifies token and advances to reset stage', async () => {
+      mockVerifyPasswordResetToken.mockResolvedValue({
+        success: true,
+        data: { verified: true, resetSessionToken: 'reset-session-token' },
+      });
+
+      const { result } = renderHook(() => useSignIn(), { wrapper: createWrapper(store) });
+
+      act(() => {
+        result.current.setEmail('reset@example.com');
+        result.current.setResetToken('token-from-email');
+      });
+
+      await act(async () => {
+        await result.current.handleVerifyResetToken();
+      });
+
+      expect(mockVerifyPasswordResetToken).toHaveBeenCalledWith(
+        'reset@example.com',
+        'token-from-email'
+      );
+      expect(result.current.resetStage).toBe('reset');
+      expect(result.current.success).toContain('Reset token verified');
+    });
+
+    it('completes reset and moves to success stage', async () => {
+      mockVerifyPasswordResetToken.mockResolvedValue({
+        success: true,
+        data: { verified: true, resetSessionToken: 'reset-session-token' },
+      });
+      mockResetPasswordWithToken.mockResolvedValue({
+        success: true,
+        data: { reset: true, message: 'ok' },
+      });
+
+      const { result } = renderHook(() => useSignIn(), { wrapper: createWrapper(store) });
+
+      act(() => {
+        result.current.setEmail('reset@example.com');
+        result.current.setResetToken('token-from-email');
+      });
+
+      await act(async () => {
+        await result.current.handleVerifyResetToken();
+      });
+
+      act(() => {
+        result.current.setNewPassword('NewPass123');
+        result.current.setConfirmNewPassword('NewPass123');
+      });
+
+      await act(async () => {
+        await result.current.handleCompletePasswordReset();
+      });
+
+      expect(mockResetPasswordWithToken).toHaveBeenCalledWith('reset-session-token', 'NewPass123');
+      expect(result.current.resetStage).toBe('success');
+      expect(result.current.success).toContain('Password reset successful');
     });
   });
 });

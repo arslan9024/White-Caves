@@ -62,99 +62,21 @@
     }
   ],
   "clusters": [
-    {
-      "id": "veneto",
-      "name": "Veneto",
-      "units": 1250,
-      "available": 342,
-      "avgPrice": 2500000
-    },
-    {
-      "id": "amazonia",
-      "name": "Amazonia",
-      "units": 980,
-      "available": 189,
-      "avgPrice": 1800000
-    },
-    {
-      "id": "cleopatra",
-      "name": "Cleopatra",
-      "units": 1100,
-      "available": 267,
-      "avgPrice": 3200000
-    },
-    {
-      "id": "turia",
-      "name": "Turia",
-      "units": 850,
-      "available": 145,
-      "avgPrice": 1400000
-    },
-    {
-      "id": "olympus",
-      "name": "Olympus",
-      "units": 720,
-      "available": 98,
-      "avgPrice": 4200000
-    },
-    {
-      "id": "marbella",
-      "name": "Marbella",
-      "units": 1500,
-      "available": 412,
-      "avgPrice": 2100000
-    },
-    {
-      "id": "sahara",
-      "name": "Sahara",
-      "units": 890,
-      "available": 203,
-      "avgPrice": 1600000
-    },
-    {
-      "id": "morocco",
-      "name": "Morocco",
-      "units": 1088,
-      "available": 298,
-      "avgPrice": 1900000
-    }
+    { "id": "veneto", "name": "Veneto", "units": 1250, "available": 342, "avgPrice": 2500000 },
+    { "id": "amazonia", "name": "Amazonia", "units": 980, "available": 189, "avgPrice": 1800000 },
+    { "id": "cleopatra", "name": "Cleopatra", "units": 1100, "available": 267, "avgPrice": 3200000 },
+    { "id": "turia", "name": "Turia", "units": 850, "available": 145, "avgPrice": 1400000 },
+    { "id": "olympus", "name": "Olympus", "units": 720, "available": 98, "avgPrice": 4200000 },
+    { "id": "marbella", "name": "Marbella", "units": 1500, "available": 412, "avgPrice": 2100000 },
+    { "id": "sahara", "name": "Sahara", "units": 890, "available": 203, "avgPrice": 1600000 },
+    { "id": "morocco", "name": "Morocco", "units": 1088, "available": 298, "avgPrice": 1900000 }
   ],
   "owners": [
-    {
-      "id": "owner-1",
-      "name": "Mohammed Al Rashid",
-      "properties": 3,
-      "totalValue": 7500000,
-      "status": "active"
-    },
-    {
-      "id": "owner-2",
-      "name": "Sarah Williams",
-      "properties": 1,
-      "totalValue": 1650000,
-      "status": "active"
-    },
-    {
-      "id": "owner-3",
-      "name": "Ahmed Khalil",
-      "properties": 5,
-      "totalValue": 12000000,
-      "status": "vip"
-    },
-    {
-      "id": "owner-4",
-      "name": "John Smith",
-      "properties": 2,
-      "totalValue": 3200000,
-      "status": "inactive"
-    },
-    {
-      "id": "owner-5",
-      "name": "Maria Garcia",
-      "properties": 4,
-      "totalValue": 9500000,
-      "status": "active"
-    }
+    { "id": "owner-1", "name": "Mohammed Al Rashid", "properties": 3, "totalValue": 7500000, "status": "active" },
+    { "id": "owner-2", "name": "Sarah Williams", "properties": 1, "totalValue": 1650000, "status": "active" },
+    { "id": "owner-3", "name": "Ahmed Khalil", "properties": 5, "totalValue": 12000000, "status": "vip" },
+    { "id": "owner-4", "name": "John Smith", "properties": 2, "totalValue": 3200000, "status": "inactive" },
+    { "id": "owner-5", "name": "Maria Garcia", "properties": 4, "totalValue": 9500000, "status": "active" }
   ],
   "dataQuality": {
     "totalProperties": 9378,
@@ -171,17 +93,5 @@
     "soldUnits": 6901,
     "avgPricePerSqFt": 1250,
     "totalInventoryValue": 18750000000
-  },
-  "enhancements": {
-    "lindaIntegration": "Available unit changes trigger Linda WhatsApp broadcasts to hot leads",
-    "henryIntegration": "Sale/lease completions auto-generate Henry documents",
-    "ninaIntegration": "Property queries from Nina NLP return live inventory results",
-    "futureFeatures": [
-      "Automated AI valuation via DLD transaction data",
-      "Predictive availability forecasting",
-      "Portfolio ROI optimizer for investor clients",
-      "Real-time DLD Oqood registration sync",
-      "3D unit floor plan viewer integration"
-    ]
   }
 }

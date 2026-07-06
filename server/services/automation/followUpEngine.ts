@@ -71,6 +71,119 @@ export interface ProcessBatchResult {
   errors: string[];
 }
 
+type DynamicCadenceStep = {
+  channel?: string;
+  templateName?: string;
+  description?: string;
+  delayMs?: number;
+};
+
+type CadenceRuleRecord = {
+  id: string;
+  name: string;
+  description: string | null;
+  isActive: boolean;
+  priority: number;
+  leadTiers: string[];
+  leadSources: string[];
+  dealTypes: string[];
+  channelSequence: unknown;
+  createdAt: Date;
+};
+
+const cadenceRuleModel = prisma as typeof prisma & {
+  cadenceRule: {
+    findMany: (args: {
+      where: { isActive: boolean };
+      orderBy: Array<{ priority: 'desc' } | { createdAt: 'desc' }>;
+      take: number;
+    }) => Promise<CadenceRuleRecord[]>;
+  };
+};
+
+function normalizeDynamicCadenceSteps(value: unknown): CadenceStep[] {
+  if (!Array.isArray(value)) return [];
+
+  return value
+    .map((raw, index) => {
+      const step = raw as DynamicCadenceStep;
+      const channel = step.channel;
+      if (
+        channel !== 'whatsapp' &&
+        channel !== 'email' &&
+        channel !== 'call' &&
+        channel !== 'sms'
+      ) {
+        return null;
+      }
+
+      return {
+        stepNumber: index + 1,
+        channel,
+        delayMs:
+          typeof step.delayMs === 'number' && Number.isFinite(step.delayMs) && step.delayMs >= 0
+            ? step.delayMs
+            : index === 0
+              ? 5 * 60 * 1000
+              : 24 * 60 * 60 * 1000,
+        templateName:
+          typeof step.templateName === 'string' && step.templateName.trim().length > 0
+            ? step.templateName.trim()
+            : `dynamic_${channel}_${index + 1}`,
+        description:
+          typeof step.description === 'string' && step.description.trim().length > 0
+            ? step.description.trim()
+            : `Dynamic cadence ${channel} step ${index + 1}`,
+      } satisfies CadenceStep;
+    })
+    .filter((step): step is CadenceStep => Boolean(step));
+}
+
+async function resolveCadenceFromDynamicRules(lead: {
+  id: string;
+  scoreTier: string | null;
+  source: string | null;
+  dealType: string | null;
+}): Promise<CadenceTemplate | null> {
+  const rules = await cadenceRuleModel.cadenceRule.findMany({
+    where: { isActive: true },
+    orderBy: [{ priority: 'desc' }, { createdAt: 'desc' }],
+    take: 50,
+  });
+
+  for (const rule of rules) {
+    const tierMatch =
+      rule.leadTiers.length === 0 ||
+      (lead.scoreTier ? rule.leadTiers.includes(lead.scoreTier) : false);
+    const sourceMatch =
+      rule.leadSources.length === 0 ||
+      (lead.source ? rule.leadSources.includes(lead.source) : false);
+    const dealTypeMatch =
+      rule.dealTypes.length === 0 ||
+      (lead.dealType ? rule.dealTypes.includes(lead.dealType) : false);
+
+    if (!tierMatch || !sourceMatch || !dealTypeMatch) {
+      continue;
+    }
+
+    const steps = normalizeDynamicCadenceSteps(rule.channelSequence);
+    if (steps.length === 0) {
+      continue;
+    }
+
+    return {
+      cadenceType: `rule:${rule.id}`,
+      name: rule.name,
+      description: rule.description || `Dynamic cadence rule ${rule.name}`,
+      totalSteps: steps.length,
+      steps,
+      maxDurationDays: 30,
+    };
+  }
+
+  return null;
+}
+
 // ─── Start a sequence ───────────────────────────────────────────────────
 
 /**
@@ -83,12 +196,12 @@ export interface ProcessBatchResult {
  */
 export async function startSequence(
   leadId: string,
-  options?: { cadenceType?: string; createdById?: string },
+  options?: { cadenceType?: string; createdById?: string }
 ): Promise<StartSequenceResult> {
   // 1. Fetch lead
   const lead = await prisma.lead.findUnique({
     where: { id: leadId },
-    select: { id: true, name: true, scoreTier: true, status: true },
+    select: { id: true, name: true, scoreTier: true, status: true, source: true, dealType: true },
   });
   if (!lead) throw new Error(`Lead not found: ${leadId}`);
 
@@ -99,13 +212,22 @@ export async function startSequence(
   if (existingActive) {
     throw new Error(
       `Lead ${leadId} already has an active sequence (${existingActive.id}). ` +
-      `Cancel or complete it before starting a new one.`,
+        `Cancel or complete it before starting a new one.`
     );
   }
 
   // 3. Determine cadence
-  const cadenceType = options?.cadenceType || lead.scoreTier || 'cold';
-  const cadence: CadenceTemplate = getCadenceForTier(cadenceType);
+  const dynamicCadence = await resolveCadenceFromDynamicRules({
+    id: lead.id,
+    scoreTier: lead.scoreTier,
+    source: lead.source,
+    dealType: lead.dealType,
+  });
+  const cadenceType =
+    options?.cadenceType || dynamicCadence?.cadenceType || lead.scoreTier || 'cold';
+  const cadence: CadenceTemplate = options?.cadenceType
+    ? getCadenceForTier(options.cadenceType)
+    : dynamicCadence || getCadenceForTier(cadenceType);
   const now = new Date();
 
   // 4. Calculate step schedules (cumulative from now)
@@ -205,7 +327,7 @@ export async function processScheduledSteps(): Promise<ProcessBatchResult> {
 
     try {
       // Find the next pending step
-      const nextStep = sequence.steps.find((s) => s.status === 'pending');
+      const nextStep = sequence.steps.find(s => s.status === 'pending');
       if (!nextStep) {
         // No more steps → complete the sequence
         await completeSequence(sequence.id);
@@ -231,7 +353,7 @@ export async function processScheduledSteps(): Promise<ProcessBatchResult> {
 
       // Advance sequence
       const remainingSteps = sequence.steps.filter(
-        (s) => s.status === 'pending' && s.stepNumber > nextStep.stepNumber,
+        s => s.status === 'pending' && s.stepNumber > nextStep.stepNumber
       );
 
       if (remainingSteps.length === 0) {
@@ -255,7 +377,7 @@ export async function processScheduledSteps(): Promise<ProcessBatchResult> {
   if (result.processed > 0) {
     logger.info(
       `Follow-up batch processed: ${result.processed} sequences, ` +
-      `${result.sent} sent, ${result.failed} failed, ${result.skipped} skipped`,
+        `${result.sent} sent, ${result.failed} failed, ${result.skipped} skipped`
     );
   }
 
@@ -269,7 +391,7 @@ export async function processScheduledSteps(): Promise<ProcessBatchResult> {
  */
 export async function executeStep(
   stepId: string,
-  lead: { id: string; name: string; phone: string | null; email: string | null },
+  lead: { id: string; name: string; phone: string | null; email: string | null }
 ): Promise<StepExecutionResult> {
   const step = await prisma.followUpStep.findUnique({
     where: { id: stepId },
@@ -323,7 +445,11 @@ export async function executeStep(
               message = errorMessage;
               break;
             }
-            const metaClient = createMetaAPIClient({ accessToken, businessAccountId, phoneNumberId });
+            const metaClient = createMetaAPIClient({
+              accessToken,
+              businessAccountId,
+              phoneNumberId,
+            });
             const msgBody = resolved?.body || 'Hello from White Caves';
             const waMessageId = await metaClient.sendMessage(normalizedPhone, msgBody);
             message = `WhatsApp sent (${waMessageId})`;
@@ -351,7 +477,8 @@ export async function executeStep(
         try {
           const { sendEmailTracked, wrapInBrandedTemplate } = await import('../emailService.js');
           const subject = resolved?.subject || `Follow-up from White Caves — ${step.templateName}`;
-          const bodyText = resolved?.body || 'Thank you for your interest in White Caves properties.';
+          const bodyText =
+            resolved?.body || 'Thank you for your interest in White Caves properties.';
           const htmlContent = wrapInBrandedTemplate(`<p>${bodyText}</p>`);
 
           const emailResult = await sendEmailTracked({
@@ -511,7 +638,7 @@ export async function resumeSequence(sequenceId: string): Promise<void> {
   // Reschedule the next pending step from now (preserving original delays)
   if (nextPending) {
     const cadence = getCadenceForTier(sequence.cadenceType);
-    const stepDef = cadence.steps.find((s) => s.stepNumber === nextPending.stepNumber);
+    const stepDef = cadence.steps.find(s => s.stepNumber === nextPending.stepNumber);
     const newScheduledAt = new Date(now.getTime() + (stepDef?.delayMs || 3600000));
 
     await prisma.followUpStep.update({
@@ -619,7 +746,7 @@ export async function getSequenceSummary(sequenceId: string): Promise<SequenceSu
     startedAt: sequence.startedAt,
     nextStepAt: sequence.nextStepAt,
     completedAt: sequence.completedAt,
-    steps: sequence.steps.map((s) => ({
+    steps: sequence.steps.map(s => ({
       stepNumber: s.stepNumber,
       channel: s.channel,
       status: s.status,
@@ -638,7 +765,7 @@ export async function getLeadSequences(leadId: string): Promise<SequenceSummary[
     orderBy: { createdAt: 'desc' },
   });
 
-  return sequences.map((seq) => ({
+  return sequences.map(seq => ({
     id: seq.id,
     cadenceType: seq.cadenceType,
     status: seq.status,
@@ -647,7 +774,7 @@ export async function getLeadSequences(leadId: string): Promise<SequenceSummary[
     startedAt: seq.startedAt,
     nextStepAt: seq.nextStepAt,
     completedAt: seq.completedAt,
-    steps: seq.steps.map((s) => ({
+    steps: seq.steps.map(s => ({
       stepNumber: s.stepNumber,
       channel: s.channel,
       status: s.status,

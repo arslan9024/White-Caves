@@ -1,6 +1,8 @@
 import { prisma } from '../../database.js';
 import logger from '../../utils/logger.js';
 
+const db = prisma as any;
+
 export interface PermitAlertSummary {
   daysAhead: number;
   listingPermitIssues: number;
@@ -42,7 +44,7 @@ export async function getPermitAlerts(daysAhead = 30): Promise<PermitAlertResult
   const now = new Date();
   const cutoff = new Date(now.getTime() + parsedDaysAhead * 24 * 60 * 60 * 1000);
 
-  const listingPermitIssues = await prisma.property.findMany({
+  const listingPermitIssues = await db.property.findMany({
     where: {
       status: 'available',
       OR: [
@@ -64,7 +66,7 @@ export async function getPermitAlerts(daysAhead = 30): Promise<PermitAlertResult
     take: 200,
   });
 
-  const brnExpiringOrExpired = await prisma.user.findMany({
+  const brnExpiringOrExpired = await db.user.findMany({
     where: {
       role: { in: ['agent', 'owner'] },
       status: 'active',
@@ -83,7 +85,7 @@ export async function getPermitAlerts(daysAhead = 30): Promise<PermitAlertResult
     take: 200,
   });
 
-  const brnPermitAlerts = brnExpiringOrExpired.map(agent => {
+  const brnPermitAlerts = brnExpiringOrExpired.map((agent: any) => {
     const expiry = agent.brnExpiry as Date;
     const daysToExpiry = Math.ceil((expiry.getTime() - now.getTime()) / (24 * 60 * 60 * 1000));
     return {
@@ -97,8 +99,8 @@ export async function getPermitAlerts(daysAhead = 30): Promise<PermitAlertResult
     summary: {
       daysAhead: parsedDaysAhead,
       listingPermitIssues: listingPermitIssues.length,
-      brnExpired: brnPermitAlerts.filter(a => a.status === 'expired').length,
-      brnExpiringSoon: brnPermitAlerts.filter(a => a.status === 'expiring_soon').length,
+      brnExpired: brnPermitAlerts.filter((a: any) => a.status === 'expired').length,
+      brnExpiringSoon: brnPermitAlerts.filter((a: any) => a.status === 'expiring_soon').length,
     },
     listingPermitIssues,
     brnPermitAlerts,
@@ -120,7 +122,7 @@ export async function checkPermitAlertsAndLog(daysAhead = 30): Promise<PermitAle
     return result.summary;
   }
 
-  await prisma.activity.create({
+  await db.activity.create({
     data: {
       type: 'compliance',
       action: 'permit_alert_snapshot',

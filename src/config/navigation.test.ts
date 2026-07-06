@@ -212,17 +212,29 @@ describe('navigation config', () => {
   describe('getQuickActionsForRole', () => {
     it('returns client actions for buyer', () => {
       const actions = getQuickActionsForRole('buyer');
-      expect(actions).toEqual(QUICK_ACTIONS.client);
+      expect(actions).toEqual([
+        { label: 'My Dashboard', path: '/crm', icon: '📊', primary: true },
+        { label: 'Properties', path: '/properties', icon: '🏠' },
+        { label: 'Support', path: '/contact', icon: '💬' },
+      ]);
     });
 
     it('returns staff actions for leasing-agent', () => {
       const actions = getQuickActionsForRole('leasing-agent');
-      expect(actions).toEqual(QUICK_ACTIONS.staff);
+      expect(actions).toEqual([
+        { label: 'My Dashboard', path: '/crm', icon: '📊', primary: true },
+        { label: 'Leads', path: '/crm?tab=leads', icon: '📈' },
+        { label: 'Calendar', path: '/crm?tab=calendar', icon: '📅' },
+      ]);
     });
 
     it('returns admin actions for owner', () => {
       const actions = getQuickActionsForRole('owner');
-      expect(actions).toEqual(QUICK_ACTIONS.admin);
+      expect(actions).toEqual([
+        { label: 'Admin Panel', path: '/crm', icon: '👑', primary: true },
+        { label: 'Analytics', path: '/crm?tab=analytics', icon: '📊' },
+        { label: 'Users', path: '/crm?tab=users', icon: '👥' },
+      ]);
     });
 
     it('returns visitor actions for unknown role', () => {

@@ -87,13 +87,13 @@
 .contact-card:hover {
   transform: translateY(-4px);
   box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15);
-  border-color: #b03737;
+  border-color: #B03737;
 }
 
 .contact-icon {
   width: 48px;
   height: 48px;
-  background: linear-gradient(135deg, #b03737, #f4d03f);
+  background: linear-gradient(135deg, #B03737, #F4D03F);
   border-radius: 12px;
   display: flex;
   align-items: center;
@@ -152,7 +152,7 @@
 }
 
 .quick-link:hover {
-  background: linear-gradient(135deg, #b03737, #f4d03f);
+  background: linear-gradient(135deg, #B03737, #F4D03F);
   color: #1a1a2e;
   transform: translateY(-2px);
 }
@@ -251,8 +251,8 @@
 .form-group select:focus,
 .form-group textarea:focus {
   outline: none;
-  border-color: #b03737;
-  box-shadow: 0 0 0 3px rgba(227, 30, 36, 0.2);
+  border-color: #B03737;
+  box-shadow: 0 0 0 3px rgba(212, 175, 55, 0.2);
 }
 
 .form-group input::placeholder,
@@ -272,7 +272,7 @@
 
 .submit-btn {
   padding: 16px 40px;
-  background: linear-gradient(135deg, #b03737, #f4d03f);
+  background: linear-gradient(135deg, #B03737, #F4D03F);
   border: none;
   border-radius: 12px;
   color: #1a1a2e;

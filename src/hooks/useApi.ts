@@ -4,7 +4,6 @@
  */
 
 import { useEffect, useState } from 'react';
-import { useDispatch } from 'react-redux';
 import {
   fetchDepartmentDataFromApi,
   fetchDepartmentKPIs,
@@ -14,6 +13,7 @@ import {
   exportDepartmentData,
 } from '../mocks/apiHandler';
 import { DepartmentData } from '../mocks/departmentData';
+import { DepartmentKPI, DepartmentSummary, DepartmentSearchResult } from '../mocks/apiHandler';
 
 interface UseApiOptions {
   immediate?: boolean; // auto-fetch on mount
@@ -73,7 +73,7 @@ export const useFetchDepartmentKPIs = (
   departmentCode: string,
   options: UseApiOptions = { immediate: true }
 ) => {
-  const [data, setData] = useState<any[] | null>(null);
+  const [data, setData] = useState<DepartmentKPI[] | null>(null);
   const [loading, setLoading] = useState(options.immediate || false);
   const [error, setError] = useState<string | null>(null);
 
@@ -110,7 +110,7 @@ export const useFetchDepartmentSummary = (
   departmentCode: string,
   options: UseApiOptions = { immediate: true }
 ) => {
-  const [data, setData] = useState<any | null>(null);
+  const [data, setData] = useState<DepartmentSummary | null>(null);
   const [loading, setLoading] = useState(options.immediate || false);
   const [error, setError] = useState<string | null>(null);
 
@@ -147,7 +147,7 @@ export const useFetchDepartmentTrends = (
   departmentCode: string,
   options: UseApiOptions = { immediate: true }
 ) => {
-  const [data, setData] = useState<any | null>(null);
+  const [data, setData] = useState<Record<string, unknown> | null>(null);
   const [loading, setLoading] = useState(options.immediate || false);
   const [error, setError] = useState<string | null>(null);
 
@@ -181,7 +181,7 @@ export const useFetchDepartmentTrends = (
  * Hook to search department data
  */
 export const useSearchDepartmentData = (departmentCode: string) => {
-  const [results, setResults] = useState<any | null>(null);
+  const [results, setResults] = useState<DepartmentSearchResult | null>(null);
   const [searching, setSearching] = useState(false);
   const [error, setError] = useState<string | null>(null);
 

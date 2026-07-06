@@ -13,6 +13,7 @@ import { validate, rules, validateIdParam } from '../utils/validate';
 import { parsePagination } from '../config/pagination';
 import { sanitizeString } from '../utils/sanitize';
 import { requirePermission } from '../middleware/rbac';
+import { RISKY_AMOUNT_AED } from '../middleware/kycGate';
 
 const router = Router();
 const RISKY_TRANSACTION_AMOUNT_AED = 500000;
@@ -28,7 +29,12 @@ router.get(
       throw new AppError('Access denied — insufficient role for transaction data', 403);
     }
 
-    const { status, type, sortBy = 'createdAt', sortOrder = 'desc' } = req.query;
+    const {
+      status,
+      type,
+      sortBy = 'createdAt',
+      sortOrder = 'desc',
+    } = req.query as Record<string, string | undefined>;
 
     const {
       page: pageNum,
@@ -115,7 +121,8 @@ router.get(
   '/:id',
   requirePermission('view_payments'),
   asyncHandler(async (req: Request, res: Response) => {
-    validateIdParam(req.params.id, 'Transaction ID');
+    const { id } = req.params as Record<string, string>;
+    validateIdParam(id, 'Transaction ID');
 
     // AUTHORIZATION: Only managers/finance can view individual transaction details
     const allowedRoles = ['owner', 'manager', 'admin', 'finance'];
@@ -124,7 +131,7 @@ router.get(
     }
 
     const transaction = await prisma.transaction.findUnique({
-      where: { id: req.params.id },
+      where: { id },
     });
 
     if (!transaction) throw new AppError('Transaction not found', 404);
@@ -228,16 +235,24 @@ router.post(
 );
 
 // ─── PATCH /api/transactions/:id ────────────────────────────────────────
+// P0-013: KYC gate enforced for risky status transitions (sale ≥ AED 500k)
 router.patch(
   '/:id',
   requirePermission('process_payments'),
   asyncHandler(async (req: Request, res: Response) => {
-    const { id } = req.params;
+    const { id } = req.params as Record<string, string>;
     validateIdParam(id, 'Transaction ID');
     const { status, amount, type, closingDate, notes, documents } = req.body;
 
     validate(req.body, {
-      status: rules.oneOf('Status', ['draft', 'pending', 'active', 'completed', 'cancelled']),
+      status: rules.oneOf('Status', [
+        'draft',
+        'pending',
+        'active',
+        'in_progress',
+        'completed',
+        'cancelled',
+      ]),
       amount: rules.optionalPositiveNumber('Amount'),
       type: rules.oneOf('Transaction type', ['sale', 'lease', 'rental']),
       documents: rules.optionalArray('Documents'),
@@ -248,15 +263,45 @@ router.patch(
       const existing = await tx.transaction.findUnique({ where: { id } });
       if (!existing) throw new AppError('Transaction not found', 404);
 
-      // AUTHORIZATION: Only admins/managers/finance can update transactions
-      // Note: Transaction model has no userId field, so only role-based auth applies
-      const isAdmin = ['owner', 'manager', 'finance'].includes(req.user?.role || '');
-      if (!isAdmin) {
+      // AUTHORIZATION: Only admins/managers/finance/agents can update transactions
+      const allowedRoles = ['owner', 'manager', 'admin', 'finance', 'agent'];
+      if (!allowedRoles.includes(req.user?.role || '')) {
         throw new AppError('You do not have permission to update this transaction', 403);
       }
 
+      // P0-013: KYC gate — block risky status transitions without verified lead
+      const riskyStatuses = ['in_progress', 'completed'];
+      if (status && riskyStatuses.includes(status)) {
+        const effectiveType = type ?? existing.type;
+        const effectiveAmount = amount != null ? parseFloat(amount) : Number(existing.amount);
+        const isRisky = effectiveType === 'sale' || effectiveAmount >= RISKY_AMOUNT_AED;
+
+        if (isRisky) {
+          if (!existing.leadId) {
+            throw new AppError(
+              'KYC required: risky transactions must reference a verified lead (leadId missing)',
+              400
+            );
+          }
+          const lead = await tx.lead.findUnique({
+            where: { id: existing.leadId },
+            select: { id: true, tags: true },
+          });
+          if (!lead) throw new AppError('KYC check failed: lead not found', 400);
+          const hasKyc =
+            Array.isArray(lead.tags) &&
+            lead.tags.some((t: unknown) => String(t).toLowerCase() === 'kyc_verified');
+          if (!hasKyc) {
+            throw new AppError(
+              'KYC verification required: lead must be verified before this transaction can proceed',
+              403
+            );
+          }
+        }
+      }
+
       const data: Record<string, unknown> = {};
-      if (status !== undefined) data.status = status;
+      if (status !== undefined) data.status = sanitizeString(String(status));
       if (amount !== undefined) {
         const parsed = parseFloat(amount);
         if (isNaN(parsed)) throw new AppError('Amount must be a valid number', 400);
@@ -291,8 +336,10 @@ router.patch(
           data: {
             type: 'deal',
             action: 'status_changed',
-            description: `Transaction ${existing.status} \u2192 ${status} (AED ${updated.amount.toLocaleString()})`,
+            description: `Transaction ${existing.status} → ${status} (AED ${Number(updated.amount).toLocaleString()})`,
             userId: req.user?.id || null,
+            leadId: existing.leadId ?? null,
+            metadata: { transactionId: id, from: existing.status, to: status },
           },
         });
       }
@@ -309,7 +356,7 @@ router.delete(
   '/:id',
   requirePermission('process_payments'),
   asyncHandler(async (req: Request, res: Response) => {
-    const { id } = req.params;
+    const { id } = req.params as Record<string, string>;
     validateIdParam(id, 'Transaction ID');
     const existing = await prisma.transaction.findUnique({ where: { id } });
     if (!existing) throw new AppError('Transaction not found', 404);

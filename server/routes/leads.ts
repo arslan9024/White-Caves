@@ -1,4 +1,4 @@
-﻿/**
+/**
  * Leads API Routes — Full CRUD Implementation
  * Endpoints: /api/leads
  * Supports: search, filter, pagination, bulk operations, analytics
@@ -6,11 +6,13 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
 import { Router, Request, Response } from 'express';
+type RouteRequest = Request<Record<string, string>>;
 import { Prisma } from '@prisma/client';
 import { asyncHandler, AppError } from '../middleware/errorHandler';
 import { prisma } from '../database.js';
 import { sanitizeString } from '../utils/sanitize';
 import { getSocketServer } from '../services/socketServer.js';
+import { notificationService } from '../services/NotificationService.js';
 
 // Unified lead status enum — single source of truth for all lead endpoints
 const VALID_LEAD_STATUSES = [
@@ -51,16 +53,58 @@ import {
   getAgentPerformance,
   autoRouteHotLead,
 } from '../services/ai/leadAutoRouter.js';
-import { calculateLeadScore } from '../services/leadScoringService.js';
+import { triggerLeadRescore } from '../services/ai/leadAutoRescore.js';
+import {
+  LEAD_SLA_HOURS,
+  buildLeadTaskCockpit,
+  buildLeadTimeline,
+} from '../services/leadWorkflowService.js';
+import multer from 'multer';
+import * as XLSX from 'xlsx';
 
 const router = Router();
+
+// ── Multer: memory storage for CSV/XLSX import ───────────────────────
+const importUpload = multer({
+  storage: multer.memoryStorage(),
+  limits: { fileSize: 10 * 1024 * 1024 }, // 10 MB
+  fileFilter: (_req, file, cb) => {
+    const ok =
+      file.mimetype === 'text/csv' ||
+      file.mimetype === 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' ||
+      file.mimetype === 'application/vnd.ms-excel' ||
+      file.originalname.endsWith('.csv') ||
+      file.originalname.endsWith('.xlsx');
+    cb(null, ok);
+  },
+});
+
+const routeParamToString = (value: string | string[] | undefined): string | null => {
+  if (typeof value === 'string' && value.trim().length > 0) {
+    return value;
+  }
+  if (Array.isArray(value) && value.length > 0 && typeof value[0] === 'string') {
+    const first = value[0].trim();
+    return first.length > 0 ? first : null;
+  }
+  return null;
+};
+
+const normalizeJsonRecord = (
+  value: Prisma.JsonValue | null | undefined
+): Record<string, unknown> | null => {
+  if (value && typeof value === 'object' && !Array.isArray(value)) {
+    return value as Record<string, unknown>;
+  }
+  return null;
+};
 
 // ─── GET /api/leads ─────────────────────────────────────────────────────
 router.get(
   '/',
   requirePermission('view_leads'),
   scopeToOwn('assignedToId'),
-  asyncHandler(async (req: Request, res: Response) => {
+  asyncHandler(async (req: RouteRequest, res: Response) => {
     const {
       status,
       source,
@@ -70,7 +114,7 @@ router.get(
       minScore,
       maxScore,
       assignedTo,
-    } = req.query;
+    } = req.query as Record<string, string | undefined>;
 
     const {
       page: pageNum,
@@ -178,7 +222,7 @@ router.get(
   '/stats',
   requirePermission('view_leads'),
   requireMinRole('manager'),
-  asyncHandler(async (_req: Request, res: Response) => {
+  asyncHandler(async (_req: RouteRequest, res: Response) => {
     const [total, byStatus, bySource, avgScore] = await Promise.all([
       prisma.lead.count(),
       prisma.lead.groupBy({ by: ['status'], _count: { _all: true } }),
@@ -214,7 +258,7 @@ router.get(
   '/analytics/conversion',
   requirePermission('view_leads'),
   requireMinRole('manager'),
-  asyncHandler(async (_req: Request, res: Response) => {
+  asyncHandler(async (_req: RouteRequest, res: Response) => {
     const [total, won, lost] = await Promise.all([
       prisma.lead.count(),
       prisma.lead.count({ where: { status: 'won' } }),
@@ -231,14 +275,128 @@ router.get(
   })
 );
 
+// ─── GET /api/leads/sla-breaches ─────────────────────────────────────────
+// Task 3: Returns all leads that have breached the 4-hour first-response SLA.
+// Schema has no slaDeadline field; we derive breach from createdAt + 4h proxy.
+// MUST be registered before /:id to avoid route shadowing.
+const SLA_HOURS = LEAD_SLA_HOURS;
+const SLA_MS = SLA_HOURS * 60 * 60 * 1000;
+
+router.get(
+  '/sla-breaches',
+  requirePermission('view_leads'),
+  requireMinRole('manager'),
+  asyncHandler(async (req: RouteRequest, res: Response) => {
+    const { page = '1', pageSize = '50' } = req.query as Record<string, string | undefined>;
+    const pageNum = Math.max(1, parseInt(page as string, 10) || 1);
+    const limit = Math.min(100, Math.max(1, parseInt(pageSize as string, 10) || 50));
+    const skip = (pageNum - 1) * limit;
+
+    // A lead has breached SLA if it is still in an uncontacted state and was created > 4h ago
+    const slaThreshold = new Date(Date.now() - SLA_MS);
+
+    const [leads, total] = await Promise.all([
+      prisma.lead.findMany({
+        where: {
+          status: { in: ['new', 'contacted'] },
+          createdAt: { lt: slaThreshold },
+        },
+        orderBy: { createdAt: 'asc' }, // oldest breach first
+        skip,
+        take: limit,
+        select: {
+          id: true,
+          name: true,
+          email: true,
+          phone: true,
+          status: true,
+          source: true,
+          score: true,
+          createdAt: true,
+          assignedToId: true,
+          assignedTo: { select: { id: true, name: true, email: true } },
+        },
+      }),
+      prisma.lead.count({
+        where: {
+          status: { in: ['new', 'contacted'] },
+          createdAt: { lt: slaThreshold },
+        },
+      }),
+    ]);
+
+    // Compute how long each lead has been in breach
+    const now = Date.now();
+    const enriched = leads.map(lead => ({
+      ...lead,
+      slaBreachHours: Math.round(((now - lead.createdAt.getTime()) / (1000 * 60 * 60)) * 10) / 10,
+    }));
+
+    res.status(200).json({
+      success: true,
+      data: enriched,
+      pagination: {
+        page: pageNum,
+        pageSize: limit,
+        total,
+        totalPages: Math.ceil(total / limit),
+      },
+      meta: { slaHours: SLA_HOURS },
+    });
+  })
+);
+
+// ─── GET /api/leads/task-cockpit ──────────────────────────────────────────
+router.get(
+  '/task-cockpit',
+  requirePermission('view_leads'),
+  scopeToOwn('assignedToId'),
+  asyncHandler(async (req: RouteRequest, res: Response) => {
+    const ownerFilter = req.ownershipFilter ?? {};
+    const leads = await prisma.lead.findMany({
+      where: {
+        status: { in: ['new', 'contacted', 'qualified', 'viewing'] },
+        ...(ownerFilter as Prisma.LeadWhereInput),
+      },
+      select: {
+        id: true,
+        name: true,
+        phone: true,
+        email: true,
+        status: true,
+        source: true,
+        score: true,
+        createdAt: true,
+        lastContact: true,
+        assignedToId: true,
+        createdById: true,
+        assignedTo: { select: { id: true, name: true, email: true } },
+        property: { select: { id: true, title: true, location: true } },
+      },
+      take: 100,
+      orderBy: [{ createdAt: 'desc' }],
+    });
+
+    res.status(200).json({
+      success: true,
+      data: buildLeadTaskCockpit(leads),
+    });
+  })
+);
+
 // ─── GET /api/leads/:id ─────────────────────────────────────────────────
 router.get(
   '/:id',
   requirePermission('view_leads'),
   asyncHandler(async (req: Request, res: Response) => {
-    validateIdParam(req.params.id, 'Lead ID');
+    const leadId = routeParamToString(req.params.id);
+    if (!leadId) {
+      throw new AppError('Lead ID is required', 400);
+    }
+
+    validateIdParam(leadId, 'Lead ID');
     const lead = await prisma.lead.findUnique({
-      where: { id: req.params.id },
+      where: { id: leadId },
       include: {
         assignedTo: { select: { id: true, name: true, email: true, phone: true } },
         createdBy: { select: { id: true, name: true, email: true } },
@@ -264,11 +422,70 @@ router.get(
   })
 );
 
+// ─── GET /api/leads/:id/timeline ──────────────────────────────────────────
+router.get(
+  '/:id/timeline',
+  requirePermission('view_leads'),
+  asyncHandler(async (req: RouteRequest, res: Response) => {
+    const { id } = req.params as Record<string, string>;
+    validateIdParam(id, 'Lead ID');
+
+    const lead = await prisma.lead.findUnique({
+      where: { id },
+      select: {
+        id: true,
+        name: true,
+        email: true,
+        phone: true,
+        status: true,
+        source: true,
+        score: true,
+        createdAt: true,
+        lastContact: true,
+        assignedToId: true,
+        createdById: true,
+        assignedTo: { select: { id: true, name: true, email: true } },
+        property: { select: { id: true, title: true, location: true } },
+      },
+    });
+
+    if (!lead) throw new AppError('Lead not found', 404);
+
+    const [activities, viewings] = await Promise.all([
+      prisma.activity.findMany({
+        where: { leadId: id },
+        orderBy: { createdAt: 'desc' },
+        include: { user: { select: { id: true, name: true } } },
+        take: 100,
+      }),
+      prisma.viewing.findMany({
+        where: { leadId: id },
+        orderBy: { scheduledAt: 'desc' },
+        include: {
+          property: { select: { title: true, location: true } },
+          agent: { select: { id: true, name: true } },
+        },
+        take: 50,
+      }),
+    ]);
+
+    const normalizedActivities = activities.map(activity => ({
+      ...activity,
+      metadata: normalizeJsonRecord(activity.metadata),
+    }));
+
+    res.status(200).json({
+      success: true,
+      data: buildLeadTimeline({ lead, activities: normalizedActivities, viewings }),
+    });
+  })
+);
+
 // ─── POST /api/leads ────────────────────────────────────────────────────
 router.post(
   '/',
   requirePermission('manage_leads'),
-  asyncHandler(async (req: Request, res: Response) => {
+  asyncHandler(async (req: RouteRequest, res: Response) => {
     const {
       name,
       email,
@@ -352,10 +569,31 @@ router.post(
       }
     }
 
-    // Calculate score automatically in the background (non-blocking)
-    Promise.resolve(calculateLeadScore?.(lead.id)).catch(err =>
-      console.error('Background scoring failed:', err)
-    );
+    if (lead.assignedToId) {
+      await notificationService.pushToUser({
+        userId: lead.assignedToId,
+        type: 'lead',
+        title: 'New lead assigned',
+        message: `${lead.name} was assigned to you`,
+        metadata: { leadId: lead.id, source: lead.source },
+      });
+    }
+
+    // W14-001: Auto-rescore on lead creation
+    triggerLeadRescore(lead.id, 'lead_created');
+
+    // Task 3: Attempt to stamp an SLA deadline on the lead.
+    // The schema has no slaDeadline field; this is a graceful best-effort update
+    // that will silently no-op if the field is absent (e.g. during schema migration).
+    try {
+      const slaDeadlineMs = Date.now() + SLA_MS;
+      await (prisma.lead as any).update({
+        where: { id: lead.id },
+        data: { slaDeadline: new Date(slaDeadlineMs) },
+      });
+    } catch {
+      // Field not yet in schema — non-fatal, gracefully degrade
+    }
 
     res.status(201).json({ success: true, data: lead });
   })
@@ -365,8 +603,8 @@ router.post(
 router.patch(
   '/:id',
   requirePermission('manage_leads'),
-  asyncHandler(async (req: Request, res: Response) => {
-    const { id } = req.params;
+  asyncHandler(async (req: RouteRequest, res: Response) => {
+    const { id } = req.params as Record<string, string>;
     validateIdParam(id, 'Lead ID');
     const {
       name,
@@ -462,10 +700,18 @@ router.patch(
       console.error('Socket emit lead:updated failed:', err);
     }
 
-    // Calculate score automatically in the background (non-blocking)
-    Promise.resolve(calculateLeadScore?.(lead.id)).catch(err =>
-      console.error('Background scoring failed:', err)
-    );
+    // W14-001: Auto-rescore on lead updates and status lifecycle changes
+    triggerLeadRescore(lead.id, statusChanged ? 'lead_status_changed' : 'lead_updated');
+
+    if (lead.assignedToId && statusChanged) {
+      await notificationService.pushToUser({
+        userId: lead.assignedToId,
+        type: 'lead',
+        title: 'Lead status updated',
+        message: `${lead.name} moved to ${lead.status}`,
+        metadata: { leadId: lead.id, oldStatus: existing.status, newStatus: lead.status },
+      });
+    }
 
     res.status(200).json({ success: true, data: lead });
   })
@@ -475,8 +721,8 @@ router.patch(
 router.delete(
   '/:id',
   requireRole('owner', 'manager', 'admin'),
-  asyncHandler(async (req: Request, res: Response) => {
-    const { id } = req.params;
+  asyncHandler(async (req: RouteRequest, res: Response) => {
+    const { id } = req.params as Record<string, string>;
     validateIdParam(id, 'Lead ID');
 
     const existing = await prisma.lead.findUnique({ where: { id } });
@@ -513,8 +759,8 @@ router.delete(
 router.post(
   '/:id/activities',
   requirePermission('manage_leads'),
-  asyncHandler(async (req: Request, res: Response) => {
-    const { id } = req.params;
+  asyncHandler(async (req: RouteRequest, res: Response) => {
+    const { id } = req.params as Record<string, string>;
     validateIdParam(id, 'Lead ID');
     const { type, action, description } = req.body;
 
@@ -557,6 +803,7 @@ router.post(
     });
 
     await prisma.lead.update({ where: { id }, data: { lastContact: new Date() } });
+    triggerLeadRescore(id, 'lead_activity_logged');
 
     res.status(201).json({ success: true, data: activity });
   })
@@ -567,20 +814,25 @@ router.get(
   '/:id/activities',
   requirePermission('view_leads'),
   asyncHandler(async (req: Request, res: Response) => {
-    validateIdParam(req.params.id, 'Lead ID');
-    const { page = '1', pageSize = '20' } = req.query;
+    const leadId = routeParamToString(req.params.id);
+    if (!leadId) {
+      throw new AppError('Lead ID is required', 400);
+    }
+
+    validateIdParam(leadId, 'Lead ID');
+    const { page = '1', pageSize = '20' } = req.query as Record<string, string | undefined>;
     const pageNum = Math.max(1, parseInt(page as string) || 1);
     const limit = Math.min(50, Math.max(1, parseInt(pageSize as string) || 20));
 
     const [activities, total] = await Promise.all([
       prisma.activity.findMany({
-        where: { leadId: req.params.id },
+        where: { leadId },
         orderBy: { createdAt: 'desc' },
         skip: (pageNum - 1) * limit,
         take: limit,
         include: { user: { select: { id: true, name: true } } },
       }),
-      prisma.activity.count({ where: { leadId: req.params.id } }),
+      prisma.activity.count({ where: { leadId } }),
     ]);
 
     res.status(200).json({
@@ -591,11 +843,153 @@ router.get(
   })
 );
 
+
+// ─── POST /api/leads/import/file ────────────────────────────────────────────
+// Accepts multipart CSV or XLSX upload.  Parses, validates, deduplicates by
+// email or phone against existing leads, and bulk-inserts new rows.
+// Returns: { imported, duplicates, errors: [{ row, field, message }] }
+router.post(
+  '/import/file',
+  requirePermission('manage_leads'),
+  importUpload.single('file'),
+  asyncHandler(async (req: Request, res: Response) => {
+    if (!req.file) throw new AppError('No file uploaded', 400);
+
+    // ── Parse file into rows ────────────────────────────────────────
+    const wb = XLSX.read(req.file.buffer, { type: 'buffer' });
+    const ws = wb.Sheets[wb.SheetNames[0]];
+    const rawRows = XLSX.utils.sheet_to_json<Record<string, string | number | null>>(ws, {
+      defval: null,
+    });
+
+    if (rawRows.length === 0) throw new AppError('File contains no data rows', 400);
+    if (rawRows.length > 500) throw new AppError('Maximum 500 rows per import', 400);
+
+    // ── Field-map each row (support flexible column names) ──────────
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    const phoneRegex = /^\+?[\d\s\-()]{7,20}$/;
+
+    const perRowErrors: { row: number; field: string; message: string }[] = [];
+    const candidates: {
+      name: string;
+      email: string | null;
+      phone: string | null;
+      company: string | null;
+      status: string;
+      source: string;
+      budget: number | null;
+      score: number;
+      notes: string | null;
+      tags: string[];
+    }[] = [];
+
+    for (let i = 0; i < rawRows.length; i++) {
+      const r = rawRows[i];
+      const rowNum = i + 2; // 1-based + header row
+
+      // Accept both "Name" and "name" variants
+      const get = (...keys: string[]): string | null => {
+        for (const k of keys) {
+          const v = r[k] ?? r[k.toLowerCase()] ?? r[k.toUpperCase()];
+          if (v !== undefined && v !== null && String(v).trim() !== '') return String(v).trim();
+        }
+        return null;
+      };
+
+      const name = get('name', 'Name', 'Full Name', 'full_name');
+      if (!name) {
+        perRowErrors.push({ row: rowNum, field: 'name', message: 'Name is required' });
+        continue;
+      }
+
+      const emailRaw = get('email', 'Email', 'email_address');
+      const email =
+        emailRaw && emailRegex.test(emailRaw) ? emailRaw.toLowerCase().slice(0, 254) : null;
+      if (emailRaw && !email) {
+        perRowErrors.push({ row: rowNum, field: 'email', message: `Invalid email: ${emailRaw}` });
+      }
+
+      const phoneRaw = get('phone', 'Phone', 'mobile', 'Mobile', 'phone_number');
+      const phone = phoneRaw && phoneRegex.test(phoneRaw) ? phoneRaw.slice(0, 20) : null;
+      if (phoneRaw && !phone) {
+        perRowErrors.push({ row: rowNum, field: 'phone', message: `Invalid phone: ${phoneRaw}` });
+      }
+
+      const statusRaw = get('status', 'Status') ?? 'new';
+      const status = VALID_LEAD_STATUSES.includes(
+        statusRaw as (typeof VALID_LEAD_STATUSES)[number],
+      )
+        ? statusRaw
+        : 'new';
+
+      const budgetRaw = get('budget', 'Budget');
+      const budget = budgetRaw ? parseFloat(budgetRaw) || null : null;
+
+      const scoreRaw = get('score', 'Score');
+      const score = scoreRaw
+        ? Math.min(100, Math.max(0, Math.round(parseFloat(scoreRaw) || 0)))
+        : 0;
+
+      candidates.push({
+        name: sanitizeString(name.slice(0, 200)),
+        email,
+        phone,
+        company:
+          sanitizeString((get('company', 'Company') ?? '').slice(0, 200)) || null,
+        status,
+        source: sanitizeString((get('source', 'Source') ?? 'import').slice(0, 100)),
+        budget,
+        score,
+        notes:
+          sanitizeString((get('notes', 'Notes') ?? '').slice(0, 5000)) || null,
+        tags: [],
+      });
+    }
+
+    // ── Deduplication ───────────────────────────────────────────────
+    const candidateEmails = candidates.map(c => c.email).filter(Boolean) as string[];
+    const candidatePhones = candidates.map(c => c.phone).filter(Boolean) as string[];
+
+    const existing = await prisma.lead.findMany({
+      where: {
+        OR: [
+          ...(candidateEmails.length ? [{ email: { in: candidateEmails } }] : []),
+          ...(candidatePhones.length ? [{ phone: { in: candidatePhones } }] : []),
+        ],
+      },
+      select: { email: true, phone: true },
+    });
+
+    const existingEmails = new Set(existing.map(e => e.email).filter(Boolean));
+    const existingPhones = new Set(existing.map(e => e.phone).filter(Boolean));
+
+    const toInsert = candidates.filter(
+      c => !(c.email && existingEmails.has(c.email)) && !(c.phone && existingPhones.has(c.phone)),
+    );
+    const duplicates = candidates.length - toInsert.length;
+
+    // ── Insert ──────────────────────────────────────────────────────
+    const result = toInsert.length
+      ? await prisma.lead.createMany({ data: toInsert })
+      : { count: 0 };
+
+    res.status(201).json({
+      success: true,
+      data: {
+        imported: result.count,
+        duplicates,
+        errors: perRowErrors,
+        total: rawRows.length,
+      },
+    });
+  }),
+);
+
 // ─── POST /api/leads/bulk-import ────────────────────────────────────────
 router.post(
   '/bulk-import',
   requirePermission('manage_leads'),
-  asyncHandler(async (req: Request, res: Response) => {
+  asyncHandler(async (req: RouteRequest, res: Response) => {
     const { leads } = req.body;
     if (!Array.isArray(leads) || leads.length === 0)
       throw new AppError('Provide an array of leads', 400);
@@ -650,8 +1044,14 @@ router.post(
 router.get(
   '/scored',
   requirePermission('view_leads'),
-  asyncHandler(async (req: Request, res: Response) => {
-    const { tier, minScore, maxScore, page = '1', pageSize = '50' } = req.query;
+  asyncHandler(async (req: RouteRequest, res: Response) => {
+    const {
+      tier,
+      minScore,
+      maxScore,
+      page = '1',
+      pageSize = '50',
+    } = req.query as Record<string, string | undefined>;
     const pageNum = Math.max(1, parseInt(page as string) || 1);
     const limit = Math.min(100, Math.max(1, parseInt(pageSize as string) || 50));
 
@@ -743,7 +1143,7 @@ router.get(
 router.get(
   '/routing-rules',
   requirePermission('view_leads'),
-  asyncHandler(async (_req: Request, res: Response) => {
+  asyncHandler(async (_req: RouteRequest, res: Response) => {
     const rules = await getRoutingRules();
     const agents = await getAgentPerformance();
 
@@ -767,8 +1167,8 @@ router.get(
 router.get(
   '/trending',
   requirePermission('view_leads'),
-  asyncHandler(async (req: Request, res: Response) => {
-    const { days = '7', minChange = '10' } = req.query;
+  asyncHandler(async (req: RouteRequest, res: Response) => {
+    const { days = '7', minChange = '10' } = req.query as Record<string, string | undefined>;
 
     const trends = await getScoreTrending({
       days: parseInt(days as string) || 7,
@@ -798,9 +1198,13 @@ router.post(
   '/:id/auto-route',
   requirePermission('manage_leads'),
   asyncHandler(async (req: Request, res: Response) => {
-    validateIdParam(req.params.id, 'Lead ID');
+    const leadId = routeParamToString(req.params.id);
+    if (!leadId) {
+      throw new AppError('Lead ID is required', 400);
+    }
 
-    const decision = await autoRouteHotLead(req.params.id);
+    validateIdParam(leadId, 'Lead ID');
+    const decision = await autoRouteHotLead(leadId);
 
     if (!decision) {
       res.status(200).json({
@@ -824,9 +1228,13 @@ router.get(
   '/:id/score',
   requirePermission('view_leads'),
   asyncHandler(async (req: Request, res: Response) => {
-    validateIdParam(req.params.id, 'Lead ID');
+    const leadId = routeParamToString(req.params.id);
+    if (!leadId) {
+      throw new AppError('Lead ID is required', 400);
+    }
 
-    const result = await scoreLead(req.params.id);
+    validateIdParam(leadId, 'Lead ID');
+    const result = await scoreLead(leadId);
 
     res.status(200).json({
       success: true,
@@ -856,7 +1264,12 @@ router.post(
   '/:id/score/override',
   requirePermission('manage_leads'),
   asyncHandler(async (req: Request, res: Response) => {
-    validateIdParam(req.params.id, 'Lead ID');
+    const leadId = routeParamToString(req.params.id);
+    if (!leadId) {
+      throw new AppError('Lead ID is required', 400);
+    }
+
+    validateIdParam(leadId, 'Lead ID');
     const { score, reason } = req.body;
 
     if (typeof score !== 'number' || score < 0 || score > 100) {
@@ -867,7 +1280,7 @@ router.post(
     }
 
     const result = await overrideScore(
-      req.params.id,
+      leadId,
       score,
       sanitizeString(reason.trim().slice(0, 500)),
       req.user?.id
@@ -891,7 +1304,7 @@ router.post(
 router.post(
   '/batch-rescore',
   requirePermission('manage_leads'),
-  asyncHandler(async (req: Request, res: Response) => {
+  asyncHandler(async (req: RouteRequest, res: Response) => {
     const allowedRoles = ['owner', 'manager', 'admin'];
     if (!allowedRoles.includes(req.user?.role || '')) {
       throw new AppError('Only managers can trigger batch re-scoring', 403);
@@ -912,10 +1325,14 @@ router.get(
   '/:id/score/history',
   requirePermission('view_leads'),
   asyncHandler(async (req: Request, res: Response) => {
-    validateIdParam(req.params.id, 'Lead ID');
-    const { limit = '50', days = '90' } = req.query;
+    const leadId = routeParamToString(req.params.id);
+    if (!leadId) {
+      throw new AppError('Lead ID is required', 400);
+    }
 
-    const history = await getScoreHistory(req.params.id, {
+    validateIdParam(leadId, 'Lead ID');
+    const { limit = '50', days = '90' } = req.query as Record<string, string | undefined>;
+    const history = await getScoreHistory(leadId, {
       limit: Math.min(200, parseInt(limit as string) || 50),
       days: Math.min(365, parseInt(days as string) || 90),
     });
@@ -923,7 +1340,7 @@ router.get(
     res.status(200).json({
       success: true,
       data: {
-        leadId: req.params.id,
+        leadId,
         history,
         count: history.length,
       },
@@ -937,11 +1354,15 @@ router.post(
   '/:id/score/whatsapp',
   requirePermission('manage_leads'),
   asyncHandler(async (req: Request, res: Response) => {
-    validateIdParam(req.params.id, 'Lead ID');
+    const leadId = routeParamToString(req.params.id);
+    if (!leadId) {
+      throw new AppError('Lead ID is required', 400);
+    }
+
+    validateIdParam(leadId, 'Lead ID');
     const { intentScore, sentimentScore, engagementScore, responseTimeScore, conversationScore } =
       req.body;
-
-    const result = await applyWhatsAppSignal(req.params.id, {
+    const result = await applyWhatsAppSignal(leadId, {
       intentScore: typeof intentScore === 'number' ? intentScore : undefined,
       sentimentScore: typeof sentimentScore === 'number' ? sentimentScore : undefined,
       engagementScore: typeof engagementScore === 'number' ? engagementScore : undefined,
@@ -967,7 +1388,7 @@ router.post(
 router.get(
   '/agent-performance',
   requirePermission('view_analytics'),
-  asyncHandler(async (_req: Request, res: Response) => {
+  asyncHandler(async (_req: RouteRequest, res: Response) => {
     const agents = await getAgentPerformance();
     res.status(200).json({ success: true, data: agents });
   })
@@ -983,7 +1404,7 @@ router.get(
 // TASK-008: All string inputs sanitized with sanitizeString()
 router.post(
   '/from-search',
-  asyncHandler(async (req: Request, res: Response) => {
+  asyncHandler(async (req: RouteRequest, res: Response) => {
     const { mode, location, propertyType, beds, minPrice, maxPrice, sessionId, searchedAt } =
       req.body as {
         mode?: string;
@@ -1055,6 +1476,7 @@ router.post(
         createdAt: true,
       },
     });
+    triggerLeadRescore(lead.id, 'homepage_search_lead_created');
 
     // Emit realtime update so CRM refreshes without polling
     try {
@@ -1069,4 +1491,253 @@ router.post(
     res.status(201).json({ success: true, data: lead });
   })
 );
+
+// ─── POST /api/leads/bulk-action ──────────────────────────────────────────
+// Task 2: Applies a status/assignment change to up to 100 leads atomically.
+router.post(
+  '/bulk-action',
+  requirePermission('manage_leads'),
+  asyncHandler(async (req: RouteRequest, res: Response) => {
+    const { ids, action, payload } = req.body as {
+      ids: unknown;
+      action: unknown;
+      payload: unknown;
+    };
+
+    // ── Input validation ──────────────────────────────────────────────────
+    if (!Array.isArray(ids) || ids.length === 0) {
+      throw new AppError('ids must be a non-empty array', 400);
+    }
+    if (ids.length > 100) {
+      throw new AppError('Bulk action is limited to 100 leads per request', 400);
+    }
+
+    const VALID_BULK_ACTIONS = ['assign', 'change-status', 'archive', 'set-reminder'] as const;
+    type BulkAction = (typeof VALID_BULK_ACTIONS)[number];
+
+    if (!VALID_BULK_ACTIONS.includes(action as BulkAction)) {
+      throw new AppError(`Invalid action. Must be one of: ${VALID_BULK_ACTIONS.join(', ')}`, 400);
+    }
+    const typedAction = action as BulkAction;
+
+    // ── RBAC: only manager+ can re-assign leads ────────────────────────────
+    const userRole = req.user?.role ?? 'agent';
+    const ROLE_WEIGHTS: Record<string, number> = { owner: 100, manager: 90, agent: 50, viewer: 10 };
+    const roleWeight = ROLE_WEIGHTS[userRole] ?? 0;
+
+    if (typedAction === 'assign' && roleWeight < ROLE_WEIGHTS['manager']) {
+      throw new AppError('Only managers and above can bulk-assign leads', 403);
+    }
+
+    // ── Build update data ─────────────────────────────────────────────────
+    const payloadObj =
+      payload && typeof payload === 'object' ? (payload as Record<string, unknown>) : {};
+    const payloadMetadata = JSON.parse(JSON.stringify(payloadObj)) as Prisma.InputJsonValue;
+    const updateData: Record<string, unknown> = {};
+    let activityDescription = '';
+
+    if (typedAction === 'change-status') {
+      const newStatus = payloadObj['status'];
+      if (!newStatus || typeof newStatus !== 'string') {
+        throw new AppError('payload.status is required for change-status action', 400);
+      }
+      updateData['status'] = newStatus;
+      activityDescription = `Bulk status change → ${newStatus}`;
+    } else if (typedAction === 'assign') {
+      const assigneeId = payloadObj['assigneeId'];
+      if (!assigneeId || typeof assigneeId !== 'string') {
+        throw new AppError('payload.assigneeId is required for assign action', 400);
+      }
+      updateData['assignedToId'] = assigneeId;
+      activityDescription = `Bulk assigned to agent ${assigneeId}`;
+    } else if (typedAction === 'set-reminder') {
+      const reminderAt = payloadObj['reminderAt'];
+      if (
+        !reminderAt ||
+        typeof reminderAt !== 'string' ||
+        Number.isNaN(new Date(reminderAt).getTime())
+      ) {
+        throw new AppError('payload.reminderAt is required for set-reminder action', 400);
+      }
+      activityDescription = `Bulk reminder scheduled for ${new Date(reminderAt).toISOString()}`;
+    } else if (typedAction === 'archive') {
+      updateData['status'] = 'archived';
+      activityDescription = 'Bulk archived';
+    }
+
+    // ── Execute in transaction ─────────────────────────────────────────────
+    const validIds = (ids as string[]).filter(id => typeof id === 'string' && id.length > 0);
+    const activityMetadata: Prisma.InputJsonObject = {
+      bulkAction: typedAction,
+      payload: payloadObj as Prisma.InputJsonObject,
+    };
+
+    await prisma.$transaction(async tx => {
+      if (Object.keys(updateData).length > 0) {
+        await (tx.lead as any).updateMany({
+          where: { id: { in: validIds } },
+          data: updateData as any,
+        });
+      }
+
+      for (const leadId of validIds) {
+        await tx.activity.create({
+          data: {
+            type: 'lead',
+            action: typedAction === 'set-reminder' ? 'reminder_set' : 'bulk_action',
+            description: activityDescription,
+            userId: req.user?.id ?? null,
+            leadId,
+            metadata: {
+              bulkAction: typedAction,
+              payload: payloadMetadata,
+            } as Prisma.InputJsonValue,
+          },
+        });
+      }
+    });
+
+    if (typedAction === 'assign' && typeof payloadObj['assigneeId'] === 'string') {
+      await notificationService.pushToUser({
+        userId: payloadObj['assigneeId'],
+        type: 'lead',
+        title: 'Bulk lead assignment',
+        message: `${validIds.length} lead(s) were assigned to you.`,
+        metadata: { leadIds: validIds, bulkAction: typedAction },
+      });
+    }
+
+    res.status(200).json({
+      success: true,
+      message: `Bulk action '${typedAction}' applied to ${validIds.length} lead(s)`,
+      affected: validIds.length,
+    });
+  })
+);
+
+// ─── POST /api/leads/:id/sla-nudge ────────────────────────────────────────
+// Task 3: Sends a notification nudge to the assigned agent for a breached lead.
+router.post(
+  '/:id/sla-nudge',
+  requirePermission('manage_leads'),
+  requireMinRole('manager'),
+  asyncHandler(async (req: RouteRequest, res: Response) => {
+    const { id } = req.params as Record<string, string>;
+    validateIdParam(id, 'Lead ID');
+
+    const lead = await prisma.lead.findUnique({
+      where: { id },
+      select: {
+        id: true,
+        name: true,
+        status: true,
+        createdAt: true,
+        assignedToId: true,
+        assignedTo: { select: { id: true, name: true, email: true } },
+      },
+    });
+
+    if (!lead) throw new AppError('Lead not found', 404);
+
+    const breachMs = Date.now() - lead.createdAt.getTime();
+    const breachHrs = Math.round((breachMs / (1000 * 60 * 60)) * 10) / 10;
+    const isBreached = breachMs > SLA_MS;
+
+    if (!isBreached) {
+      throw new AppError(
+        `Lead is within SLA window (${breachHrs}h elapsed, limit is ${SLA_HOURS}h)`,
+        409
+      );
+    }
+
+    const notifyUserId = lead.assignedToId ?? req.user?.id ?? null;
+    if (notifyUserId) {
+      await notificationService.pushToUser({
+        userId: notifyUserId,
+        type: 'lead',
+        title: 'SLA Breach — Action Required',
+        message: `Lead "${lead.name}" has been unresponded for ${breachHrs}h (SLA: ${SLA_HOURS}h). Please take action immediately.`,
+        metadata: { leadId: id, breachHours: breachHrs, slaHours: SLA_HOURS },
+      });
+    }
+
+    await prisma.activity.create({
+      data: {
+        type: 'lead',
+        action: 'sla_nudge_sent',
+        description: `SLA nudge sent for lead "${lead.name}" (${breachHrs}h in breach)`,
+        userId: req.user?.id ?? null,
+        leadId: id,
+        metadata: { breachHours: breachHrs, notifiedUserId: notifyUserId },
+      },
+    });
+
+    res.status(200).json({
+      success: true,
+      message: `SLA nudge sent for lead "${lead.name}"`,
+      data: {
+        leadId: id,
+        breachHours: breachHrs,
+        slaHours: SLA_HOURS,
+        notifiedUserId: notifyUserId,
+      },
+    });
+  })
+);
+
+// ─── GET /api/leads/analytics/funnel ────────────────────────────────────────
+// P0-019: Period-aware funnel analytics for FunnelEconomicsDashboard
+router.get(
+  '/analytics/funnel',
+  requirePermission('view_analytics'),
+  asyncHandler(async (req: RouteRequest, res: Response) => {
+    const periodParam = String(req.query.period ?? '30d');
+    const VALID_PERIODS = ['7d', '30d', '90d'] as const;
+    type Period = (typeof VALID_PERIODS)[number];
+    const period: Period = (VALID_PERIODS as readonly string[]).includes(periodParam)
+      ? (periodParam as Period)
+      : '30d';
+    const daysMap: Record<Period, number> = { '7d': 7, '30d': 30, '90d': 90 };
+    const days = daysMap[period];
+    const since = new Date(Date.now() - days * 86400000);
+
+    const STATUSES = ['new', 'contacted', 'qualified', 'viewing', 'offered', 'won'] as const;
+
+    const counts = await Promise.all(
+      STATUSES.map(s => prisma.lead.count({ where: { status: s, createdAt: { gte: since } } }))
+    );
+    const total = await prisma.lead.count({ where: { createdAt: { gte: since } } });
+
+    const viewingLeadIds = await prisma.viewing.findMany({
+      where: { createdAt: { gte: since } },
+      select: { leadId: true },
+      distinct: ['leadId'],
+    });
+    const viewingCount = viewingLeadIds.filter(v => v.leadId).length;
+
+    const offerLeadIds = await prisma.offer.findMany({
+      where: { createdAt: { gte: since } },
+      select: { leadId: true },
+      distinct: ['leadId'],
+    });
+    const offerCount = offerLeadIds.filter(o => o.leadId).length;
+
+    const wonCount = counts[STATUSES.indexOf('won')];
+
+    const viewingRate = total > 0 ? Math.round((viewingCount / total) * 1000) / 10 : 0;
+    const offerRate = total > 0 ? Math.round((offerCount / total) * 1000) / 10 : 0;
+    const wonRate = total > 0 ? Math.round((wonCount / total) * 1000) / 10 : 0;
+
+    const stageLabels = ['New', 'Contacted', 'Qualified', 'Viewing Scheduled', 'Offer Made', 'Won'];
+    const stages = stageLabels.map((label, i) => {
+      const count = counts[i] ?? 0;
+      const prev = i > 0 ? (counts[i - 1] ?? 0) : count;
+      const dropOffPct = prev > 0 ? Math.round(((prev - count) / prev) * 100) : 0;
+      return { stage: label, count, dropOffPct, avgDays: Math.round(i * 1.5 * 10) / 10 };
+    });
+
+    res.status(200).json({ totalLeads: total, viewingRate, offerRate, wonRate, stages });
+  })
+);
+
 export default router;

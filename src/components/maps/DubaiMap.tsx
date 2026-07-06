@@ -10,7 +10,15 @@
  */
 
 import React, { FC, useMemo, useCallback, useRef, useEffect } from 'react';
-import { MapContainer, TileLayer, Marker, Popup, Circle, useMap } from 'react-leaflet';
+import {
+  MapContainer,
+  TileLayer,
+  Marker,
+  Popup,
+  Circle,
+  useMap,
+  useMapEvents,
+} from 'react-leaflet';
 import L from 'leaflet';
 import { useDispatch } from 'react-redux';
 import { setFilters } from '../../store/propertySlice';
@@ -31,8 +39,12 @@ import markerIcon2x from 'leaflet/dist/images/marker-icon-2x.png';
 import markerIcon from 'leaflet/dist/images/marker-icon.png';
 import markerShadow from 'leaflet/dist/images/marker-shadow.png';
 
-// @ts-expect-error — Leaflet Icon.Default._getIconUrl is private but needs patching for bundlers
-delete L.Icon.Default.prototype._getIconUrl;
+type LeafletDefaultIconPrototype = {
+  _getIconUrl?: unknown;
+};
+
+const defaultIconPrototype = L.Icon.Default.prototype as unknown as LeafletDefaultIconPrototype;
+delete defaultIconPrototype._getIconUrl;
 L.Icon.Default.mergeOptions({
   iconRetinaUrl: markerIcon2x,
   iconUrl: markerIcon,
@@ -61,6 +73,12 @@ interface DubaiMapProps {
   activePropertyId?: string | null;
   /** Called when user clicks a property marker */
   onPropertyClick?: (property: MapProperty) => void;
+  /** Called when map viewport changes */
+  onViewportChange?: (bounds: { north: number; south: number; east: number; west: number }) => void;
+  /** Default map center */
+  defaultCenter?: [number, number];
+  /** Default map zoom */
+  defaultZoom?: number;
   /** Show community boundary overlays */
   showCommunities?: boolean;
   /** Height of map container */
@@ -68,6 +86,24 @@ interface DubaiMapProps {
   /** Custom class name */
   className?: string;
 }
+
+const resolveHeightClass = (height: string): string => {
+  const value = height.trim().toLowerCase();
+  switch (value) {
+    case '300px':
+      return 'map-height-300';
+    case '350px':
+      return 'map-height-350';
+    case '400px':
+      return 'map-height-400';
+    case '450px':
+      return 'map-height-450';
+    case '500px':
+      return 'map-height-500';
+    default:
+      return 'map-height-600';
+  }
+};
 
 /* ─── Custom Marker Icon ────────────────────────────────────────── */
 
@@ -110,18 +146,40 @@ const FitBounds: FC<{ markers: [number, number][] }> = ({ markers }) => {
   return null;
 };
 
+const ViewportReporter: FC<{
+  onViewportChange: (bounds: { north: number; south: number; east: number; west: number }) => void;
+}> = ({ onViewportChange }) => {
+  useMapEvents({
+    moveend: map => {
+      const bounds = map.target.getBounds();
+      onViewportChange({
+        north: bounds.getNorth(),
+        south: bounds.getSouth(),
+        east: bounds.getEast(),
+        west: bounds.getWest(),
+      });
+    },
+  });
+
+  return null;
+};
+
 /* ─── Main Component ────────────────────────────────────────────── */
 
 const DubaiMap: FC<DubaiMapProps> = ({
   properties,
   activePropertyId,
   onPropertyClick,
+  onViewportChange,
+  defaultCenter = DUBAI_CENTER,
+  defaultZoom = DEFAULT_ZOOM,
   showCommunities = true,
   height = '600px',
   className = '',
 }) => {
   const dispatch = useDispatch();
   const mapRef = useRef<L.Map | null>(null);
+  const heightClass = resolveHeightClass(height);
 
   // Build marker positions
   const markers = useMemo(() => {
@@ -167,12 +225,14 @@ const DubaiMap: FC<DubaiMapProps> = ({
   );
 
   return (
-    <div className={`dubai-map-container ${className}`} style={{ height }} data-testid="dubai-map">
+    <div
+      className={`dubai-map-container ${heightClass} ${className}`.trim()}
+      data-testid="dubai-map"
+    >
       <MapContainer
-        center={DUBAI_CENTER}
-        zoom={DEFAULT_ZOOM}
+        center={defaultCenter}
+        zoom={defaultZoom}
         className="dubai-map-leaflet"
-        style={{ height: '100%', width: '100%' }}
         ref={mapRef}
         scrollWheelZoom={true}
         zoomControl={true}
@@ -185,6 +245,7 @@ const DubaiMap: FC<DubaiMapProps> = ({
 
         {/* Fit map to property markers */}
         <FitBounds markers={markerPositions} />
+        {onViewportChange ? <ViewportReporter onViewportChange={onViewportChange} /> : null}
 
         {/* Community boundary circles */}
         {showCommunities &&

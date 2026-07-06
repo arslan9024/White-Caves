@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import Pagination from '../../ui/Pagination';
 import type { ContractsTabProps, Contract } from './types';
+import SigningStatusBadge from './SigningStatusBadge';
 import './TabStyles.css';
 
 const MOCK_CONTRACTS: Contract[] = [
@@ -16,6 +17,7 @@ const MOCK_CONTRACTS: Contract[] = [
     amount: 120000,
     status: 'active',
     ejariStatus: 'registered',
+    signatureStatus: 'signed',
   },
   {
     id: 2,
@@ -28,6 +30,7 @@ const MOCK_CONTRACTS: Contract[] = [
     amount: 3500000,
     status: 'completed',
     ejariStatus: '',
+    signatureStatus: 'signed',
   },
   {
     id: 3,
@@ -41,6 +44,7 @@ const MOCK_CONTRACTS: Contract[] = [
     amount: 95000,
     status: 'active',
     ejariStatus: 'registered',
+    signatureStatus: 'signed',
   },
   {
     id: 4,
@@ -54,6 +58,7 @@ const MOCK_CONTRACTS: Contract[] = [
     amount: 180000,
     status: 'active',
     ejariStatus: 'pending',
+    signatureStatus: 'sent',
   },
   {
     id: 5,
@@ -66,6 +71,7 @@ const MOCK_CONTRACTS: Contract[] = [
     amount: 2200000,
     status: 'pending',
     ejariStatus: '',
+    signatureStatus: 'opened',
   },
   {
     id: 6,
@@ -79,6 +85,7 @@ const MOCK_CONTRACTS: Contract[] = [
     amount: 350000,
     status: 'expired',
     ejariStatus: 'registered',
+    signatureStatus: 'expired',
   },
   {
     id: 7,
@@ -91,6 +98,7 @@ const MOCK_CONTRACTS: Contract[] = [
     amount: 1850000,
     status: 'active',
     ejariStatus: '',
+    signatureStatus: 'rejected',
   },
   {
     id: 8,
@@ -104,6 +112,7 @@ const MOCK_CONTRACTS: Contract[] = [
     amount: 140000,
     status: 'active',
     ejariStatus: 'pending',
+    signatureStatus: 'pending',
   },
 ];
 
@@ -334,6 +343,7 @@ const ContractsTab: React.FC<ContractsTabProps> = ({ data, loading }) => {
               <th>Amount (AED)</th>
               <th>Status</th>
               <th>Ejari</th>
+              <th>E-Sign</th>
               <th>Actions</th>
             </tr>
           </thead>
@@ -377,6 +387,9 @@ const ContractsTab: React.FC<ContractsTabProps> = ({ data, loading }) => {
                 <td className="price-cell">AED {contract.amount.toLocaleString()}</td>
                 <td>{getStatusBadge(contract.status)}</td>
                 <td>{getEjariBadge(contract.ejariStatus)}</td>
+                <td>
+                  <SigningStatusBadge status={contract.signatureStatus} />
+                </td>
                 <td>
                   <div className="action-buttons">
                     <button

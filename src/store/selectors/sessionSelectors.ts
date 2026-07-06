@@ -1,5 +1,6 @@
 import type { RootState } from '../store';
 import type { AppUser } from '../userSlice';
+import { safeStorage } from '../../utils/safeStorage';
 
 /**
  * Canonical session user selector during auth/user slice convergence.
@@ -24,7 +25,7 @@ export const selectSessionToken = (state: RootState): string | null => {
     return null;
   }
 
-  return state.auth?.token ?? null;
+  return state.auth?.token ?? safeStorage.get('token');
 };
 
 /**

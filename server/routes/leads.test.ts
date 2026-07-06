@@ -57,7 +57,12 @@ const { mockPrisma } = vi.hoisted(() => {
   };
 });
 
+const { triggerLeadRescore } = vi.hoisted(() => ({
+  triggerLeadRescore: vi.fn(),
+}));
+
 vi.mock('../database.js', () => ({ prisma: mockPrisma }));
+vi.mock('../services/ai/leadAutoRescore.js', () => ({ triggerLeadRescore }));
 vi.mock('../middleware/errorHandler', () => ({
   AppError: class extends Error {
     statusCode: number;
@@ -126,6 +131,7 @@ const VALID_ID = 'aabbccddee11223344556677';
 describe('Leads Routes — /api/leads', () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    triggerLeadRescore.mockClear();
   });
 
   // ── GET / ────────────────────────────────────────────────────────
@@ -349,6 +355,20 @@ describe('Leads Routes — /api/leads', () => {
         })
       );
     });
+
+    it('triggers auto-rescore on lead creation', async () => {
+      mockPrisma.lead.create.mockResolvedValueOnce({
+        id: 'lead-rescore-1',
+        name: 'Rescore Lead',
+        status: 'new',
+        source: 'direct',
+        assignedTo: null,
+      });
+      await request(createApp('agent'))
+        .post('/api/leads')
+        .send({ name: 'Rescore Lead', status: 'new', source: 'direct' });
+      expect(triggerLeadRescore).toHaveBeenCalledWith('lead-rescore-1', 'lead_created');
+    });
   });
 
   // ── POST /from-search ───────────────────────────────────────────
@@ -484,6 +504,25 @@ describe('Leads Routes — /api/leads', () => {
         })
       );
     });
+
+    it('triggers auto-rescore with lifecycle context on status change', async () => {
+      mockPrisma.lead.findUnique.mockResolvedValueOnce({
+        id: VALID_ID,
+        name: 'Lifecycle Lead',
+        status: 'new',
+        createdById: 'user-1',
+      });
+      mockPrisma.lead.update.mockResolvedValueOnce({
+        id: VALID_ID,
+        name: 'Lifecycle Lead',
+        status: 'qualified',
+        assignedTo: null,
+      });
+      await request(createApp('owner'))
+        .patch(`/api/leads/${VALID_ID}`)
+        .send({ status: 'qualified' });
+      expect(triggerLeadRescore).toHaveBeenCalledWith(VALID_ID, 'lead_status_changed');
+    });
   });
 
   // ── DELETE /:id ──────────────────────────────────────────────────
@@ -581,5 +620,179 @@ describe('Leads Routes — /api/leads', () => {
         .send({ type: 'lead', action: 'email', description: 'Sent details' });
       expect(res.status).toBe(201);
     });
+
+    it('triggers auto-rescore when lead activity is logged', async () => {
+      mockPrisma.lead.findUnique.mockResolvedValueOnce({
+        id: VALID_ID,
+        name: 'Scoring Lead',
+        assignedToId: 'user-1',
+        createdById: 'other',
+      });
+      mockPrisma.lead.update = vi.fn().mockResolvedValueOnce({});
+      await request(createApp('agent', 'user-1'))
+        .post(`/api/leads/${VALID_ID}/activities`)
+        .send({ type: 'lead', action: 'call', description: 'Called lead' });
+      expect(triggerLeadRescore).toHaveBeenCalledWith(VALID_ID, 'lead_activity_logged');
+    });
+  });
+});
+
+// ─── W18.1-P1-001: /api/leads/import/file ────────────────────────────────
+// Note: multer + xlsx run as real code (memoryStorage + real CSV parsing).
+// Prisma calls are mocked via mockPrisma.
+describe('POST /api/leads/import/file (W18.1-P1-001)', () => {
+  // CSV helpers
+  const csvBuf = (rows: string[][]) => {
+    const header = rows[0].join(',');
+    const body = rows
+      .slice(1)
+      .map(r => r.join(','))
+      .join('\n');
+    return Buffer.from(`${header}\n${body}`);
+  };
+
+  beforeEach(() => {
+    // Provide createMany on the mock (may not be in the base mock setup)
+    (mockPrisma.lead as any).createMany = vi.fn().mockResolvedValue({ count: 0 });
+    // Default findMany for dedup: no existing leads
+    mockPrisma.lead.findMany.mockResolvedValue([]);
+  });
+
+  it('returns 400 when no file is attached', async () => {
+    const res = await request(createApp('owner')).post('/api/leads/import/file');
+    expect(res.status).toBe(400);
+  });
+
+  it('imports valid CSV rows and returns counts', async () => {
+    (mockPrisma.lead as any).createMany.mockResolvedValueOnce({ count: 2 });
+
+    const buf = csvBuf([
+      ['Name', 'Email', 'Phone', 'Status', 'Source'],
+      ['Alice', 'alice@test.com', '+971501234001', 'new', 'website'],
+      ['Bob', 'bob@test.com', '+971501234002', 'contacted', 'direct'],
+    ]);
+
+    const res = await request(createApp('owner'))
+      .post('/api/leads/import/file')
+      .attach('file', buf, { filename: 'leads.csv', contentType: 'text/csv' });
+
+    expect(res.status).toBe(201);
+    expect(res.body.data.imported).toBe(2);
+    expect(res.body.data.duplicates).toBe(0);
+    expect(res.body.data.errors).toHaveLength(0);
+  });
+
+  it('deduplicates by email — skips existing leads', async () => {
+    // Existing lead with alice@test.com
+    mockPrisma.lead.findMany.mockResolvedValueOnce([
+      { email: 'alice@test.com', phone: null },
+    ]);
+    (mockPrisma.lead as any).createMany.mockResolvedValueOnce({ count: 1 });
+
+    const buf = csvBuf([
+      ['Name', 'Email'],
+      ['Alice', 'alice@test.com'],
+      ['Bob', 'bob@test.com'],
+    ]);
+
+    const res = await request(createApp('owner'))
+      .post('/api/leads/import/file')
+      .attach('file', buf, { filename: 'leads.csv', contentType: 'text/csv' });
+
+    expect(res.status).toBe(201);
+    expect(res.body.data.duplicates).toBe(1);
+    expect(res.body.data.imported).toBe(1);
+  });
+
+  it('deduplicates by phone — skips existing leads', async () => {
+    // Use dashes so xlsx doesn't strip + sign from numeric-looking phone strings
+    mockPrisma.lead.findMany.mockResolvedValueOnce([
+      { email: null, phone: '050-123-4001' },
+    ]);
+    (mockPrisma.lead as any).createMany.mockResolvedValueOnce({ count: 1 });
+
+    const buf = csvBuf([
+      ['Name', 'Phone'],
+      ['Charlie', '050-123-4001'],
+      ['David', '050-123-4002'],
+    ]);
+
+    const res = await request(createApp('owner'))
+      .post('/api/leads/import/file')
+      .attach('file', buf, { filename: 'leads.csv', contentType: 'text/csv' });
+
+    expect(res.status).toBe(201);
+    expect(res.body.data.duplicates).toBe(1);
+    expect(res.body.data.imported).toBe(1);
+  });
+
+  it('reports per-row error for missing Name', async () => {
+    (mockPrisma.lead as any).createMany.mockResolvedValueOnce({ count: 1 });
+
+    const buf = csvBuf([
+      ['Name', 'Email'],
+      ['', 'noname@test.com'],      // row 2 — no name
+      ['Eve', 'eve@test.com'],
+    ]);
+
+    const res = await request(createApp('owner'))
+      .post('/api/leads/import/file')
+      .attach('file', buf, { filename: 'leads.csv', contentType: 'text/csv' });
+
+    expect(res.status).toBe(201);
+    const errors = res.body.data.errors as { row: number; field: string; message: string }[];
+    expect(errors.some(e => e.field === 'name')).toBe(true);
+    expect(errors[0].row).toBe(2);
+  });
+
+  it('reports per-row error for invalid email format', async () => {
+    (mockPrisma.lead as any).createMany.mockResolvedValueOnce({ count: 1 });
+
+    const buf = csvBuf([
+      ['Name', 'Email'],
+      ['Frank', 'not-an-email'],
+      ['Grace', 'grace@test.com'],
+    ]);
+
+    const res = await request(createApp('owner'))
+      .post('/api/leads/import/file')
+      .attach('file', buf, { filename: 'leads.csv', contentType: 'text/csv' });
+
+    expect(res.status).toBe(201);
+    const errors = res.body.data.errors as { row: number; field: string; message: string }[];
+    expect(errors.some(e => e.field === 'email')).toBe(true);
+  });
+
+  it('returns 400 when file has no data rows', async () => {
+    const buf = Buffer.from('Name,Email\n'); // header only, no data rows
+
+    const res = await request(createApp('owner'))
+      .post('/api/leads/import/file')
+      .attach('file', buf, { filename: 'empty.csv', contentType: 'text/csv' });
+
+    expect(res.status).toBe(400);
+    expect(res.body.error).toMatch(/no data rows/i);
+  });
+
+  it('uses default status=new and source=import when columns absent', async () => {
+    const captured: Record<string, unknown>[] = [];
+    (mockPrisma.lead as any).createMany.mockImplementationOnce(
+      async ({ data }: { data: Record<string, unknown>[] }) => {
+        captured.push(...data);
+        return { count: data.length };
+      },
+    );
+
+    const buf = csvBuf([
+      ['Name'],
+      ['Helen'],
+    ]);
+
+    await request(createApp('owner'))
+      .post('/api/leads/import/file')
+      .attach('file', buf, { filename: 'leads.csv', contentType: 'text/csv' });
+
+    expect(captured[0].status).toBe('new');
+    expect(captured[0].source).toBe('import');
   });
 });

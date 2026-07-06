@@ -27,6 +27,7 @@ import {
   DetailLabel,
   DetailValue,
   ProjectPrice,
+  ProjectFeatures,
   FeaturesChip,
   ActionButtons,
   ActionButton,
@@ -80,7 +81,7 @@ const STATIC_OFFPLAN_PROJECTS: OffPlanProject[] = [
     id: 1,
     name: 'Marina Vista',
     developer: 'Emaar Properties',
-    developerLogo: 'https://via.placeholder.com/60x60?text=Emaar',
+    developerLogo: '/white-caves-logo.png',
     location: 'Dubai Marina',
     type: 'Apartment',
     segment: 'luxury',
@@ -97,7 +98,7 @@ const STATIC_OFFPLAN_PROJECTS: OffPlanProject[] = [
     id: 2,
     name: 'Creek Harbour Tower',
     developer: 'Emaar Properties',
-    developerLogo: 'https://via.placeholder.com/60x60?text=Emaar',
+    developerLogo: '/white-caves-logo.png',
     location: 'Dubai Creek Harbour',
     type: 'Apartment',
     segment: 'luxury',
@@ -114,7 +115,7 @@ const STATIC_OFFPLAN_PROJECTS: OffPlanProject[] = [
     id: 3,
     name: 'Palm Residences II',
     developer: 'Nakheel',
-    developerLogo: 'https://via.placeholder.com/60x60?text=Nakheel',
+    developerLogo: '/white-caves-logo.png',
     location: 'Palm Jumeirah',
     type: 'Villa',
     segment: 'ultra-luxury',
@@ -131,7 +132,7 @@ const STATIC_OFFPLAN_PROJECTS: OffPlanProject[] = [
     id: 4,
     name: 'Business Bay Central',
     developer: 'DAMAC',
-    developerLogo: 'https://via.placeholder.com/60x60?text=DAMAC',
+    developerLogo: '/white-caves-logo.png',
     location: 'Business Bay',
     type: 'Apartment',
     segment: 'commercial',
@@ -148,7 +149,7 @@ const STATIC_OFFPLAN_PROJECTS: OffPlanProject[] = [
     id: 5,
     name: 'Dubai Hills Villas',
     developer: 'Meraas',
-    developerLogo: 'https://via.placeholder.com/60x60?text=Meraas',
+    developerLogo: '/white-caves-logo.png',
     location: 'Dubai Hills Estate',
     type: 'Villa',
     segment: 'residential',
@@ -180,13 +181,13 @@ function buildLiveOffPlanProjects(
   locationTrends: LocationTrend[] = [],
   featuredProperties: HomepageProperty[] = []
 ): OffPlanProject[] {
-  const leadImage = featuredProperties[0]?.images?.[0] || 'https://images.unsplash.com/photo-1512917774080-9991f1c750?w=600';
+  const leadImage = featuredProperties[0]?.images?.[0] || '/company-logo.jpg';
 
   return locationTrends.slice(0, 4).map((trend, index) => ({
     id: 8000 + index,
     name: `${trend.name} Signature Residences`,
     developer: ['Emaar Properties', 'Nakheel', 'Meraas', 'DAMAC'][index % 4],
-    developerLogo: `https://via.placeholder.com/60x60?text=${encodeURIComponent(['Emaar', 'Nakheel', 'Meraas', 'DAMAC'][index % 4])}`,
+    developerLogo: '/white-caves-logo.png',
     location: trend.name,
     type: featuredProperties[index]?.type || 'Apartment',
     segment:
@@ -339,11 +340,11 @@ const OffPlanTracker = ({
                 <PaymentPlan>Payment Plan: {project.paymentPlan}</PaymentPlan>
               </div>
 
-              <div style={{ margin: '12px 0' }}>
+              <ProjectFeatures>
                 {project.features.map((feature) => (
                   <FeaturesChip key={feature}>{feature}</FeaturesChip>
                 ))}
-              </div>
+              </ProjectFeatures>
 
               <Countdown>
                 <CountdownLabel>Launching In</CountdownLabel>
