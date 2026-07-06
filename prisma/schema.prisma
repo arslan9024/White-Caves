@@ -54,6 +54,9 @@ model User {
   valuationsCreated  PropertyValuation[] @relation("ValuationCreator")
   valuationsOverridden PropertyValuation[] @relation("ValuationOverrider")
   departmentAccess DepartmentAccess[]
+  rememberMeTokens RememberMeToken[]
+  twoFASetup       TwoFASetup?
+  dashboardPreference UserDashboardPreference?
 
   @@index([role])
   @@index([status])
@@ -1591,4 +1594,49 @@ model CadenceRule {
   @@index([isActive])
   @@index([isActive, priority])
   @@index([createdAt])
+}
+
+// --- REMEMBER ME TOKEN (Persistent Login) ------------------------------
+
+model RememberMeToken {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  userId    String   @db.ObjectId
+  token     String   @unique
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+  lastUsedAt DateTime @default(now())
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([expiresAt])
+}
+
+// --- TWO-FACTOR AUTHENTICATION SETUP ------------------------------------
+
+model TwoFASetup {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  userId    String   @unique @db.ObjectId
+  secret    String   // Base32-encoded TOTP secret (encrypted at app layer)
+  backupCodes String  // Comma-separated hashed backup codes
+  confirmed Boolean  @default(false)
+  createdAt DateTime @default(now())
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([confirmed])
+}
+
+// --- USER DASHBOARD PREFERENCES -----------------------------------------
+
+model UserDashboardPreference {
+  id         String   @id @default(auto()) @map("_id") @db.ObjectId
+  userId     String   @unique @db.ObjectId
+  role       String
+  widgets    Json
+  layout     String?  @default("default")
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([role])
+  @@index([updatedAt])
 }
