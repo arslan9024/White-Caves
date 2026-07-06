@@ -118,15 +118,15 @@ const allowedCorsOrigins = buildAllowedCorsOrigins(CORS_ORIGINS, process.env.NOD
 // Setting it on a server that is directly internet-facing allows clients to
 // spoof X-Forwarded-For and bypass IP-based rate limits.
 app.set('trust proxy', 1);
-// In development, keep API on 3001 to avoid colliding with Vite (5000).
+// In development, keep API on 5001 to avoid colliding with Vite (3000).
 // Use API_PORT when provided; in production/staging, respect PORT as platform-provided.
 const PREFERRED_PORT =
   process.env.API_PORT ||
-  (process.env.NODE_ENV === 'development' ? 3001 : process.env.PORT || 3001);
+  (process.env.NODE_ENV === 'development' ? 5001 : process.env.PORT || 5001);
 
 const parsePort = (value: string | number): number => {
   const parsed = Number(value);
-  return Number.isFinite(parsed) && parsed > 0 ? parsed : 3001;
+  return Number.isFinite(parsed) && parsed > 0 ? parsed : 5001;
 };
 
 const listenWithPortFallback = async (

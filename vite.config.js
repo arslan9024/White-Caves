@@ -108,7 +108,7 @@ export default defineConfig(async ({ command }) => {
     base: '/',
     server: {
       host: '0.0.0.0',
-      port: 5000,
+      port: 3000,
       strictPort: false,
       allowedHosts: true,
       watch: {
@@ -116,7 +116,7 @@ export default defineConfig(async ({ command }) => {
       },
       proxy: {
         '/api': {
-          target: 'http://localhost:3001',
+          target: 'http://localhost:5001',
           changeOrigin: true,
         },
       },
