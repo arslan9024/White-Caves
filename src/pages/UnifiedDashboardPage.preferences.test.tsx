@@ -215,4 +215,34 @@ describe('UnifiedDashboardPage dashboard preferences integration', () => {
     );
     expect(screen.getByRole('checkbox', { name: /Team KPIs/i })).toBeInTheDocument();
   });
+
+  it('falls back to role defaults when preferences fetch fails', async () => {
+    mockFetchDashboardPreferences.mockRejectedValueOnce(new Error('preferences failed'));
+
+    renderPage();
+
+    await waitFor(() => {
+      expect(mockFetchRoleDashboardConfig).toHaveBeenCalledTimes(1);
+    });
+
+    expect(
+      screen.getByText(/Could not load dashboard preferences. Using role defaults./i)
+    ).toBeInTheDocument();
+    expect(screen.getByRole('checkbox', { name: /Team KPIs/i })).toBeInTheDocument();
+  });
+
+  it('shows inline error when widget preference save fails', async () => {
+    mockSaveDashboardPreferences.mockRejectedValueOnce(new Error('save failed'));
+
+    renderPage();
+
+    const checkbox = await screen.findByRole('checkbox', { name: /KPI Overview/i });
+    fireEvent.click(checkbox);
+
+    await waitFor(() => {
+      expect(
+        screen.getByText(/Could not save widget preferences. Please retry./i)
+      ).toBeInTheDocument();
+    });
+  });
 });
