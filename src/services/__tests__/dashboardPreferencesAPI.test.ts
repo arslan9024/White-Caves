@@ -7,8 +7,21 @@ const { mockApiClient } = vi.hoisted(() => ({
   },
 }));
 
+const { mockLogger } = vi.hoisted(() => ({
+  mockLogger: {
+    debug: vi.fn(),
+    info: vi.fn(),
+    warn: vi.fn(),
+    error: vi.fn(),
+  },
+}));
+
 vi.mock('../../utils/apiClient', () => ({
   apiClient: mockApiClient,
+}));
+
+vi.mock('../../utils/logger', () => ({
+  createLogger: vi.fn(() => mockLogger),
 }));
 
 import {
@@ -54,6 +67,25 @@ describe('dashboardPreferencesAPI', () => {
       await expect(fetchDashboardPreferences()).rejects.toThrow(
         'Invalid dashboard preferences payload'
       );
+      expect(mockLogger.error).toHaveBeenCalled();
+    });
+
+    it('falls back to safe defaults when role/layout/widgets are missing', async () => {
+      mockApiClient.get.mockResolvedValueOnce({
+        success: true,
+        data: {
+          widgets: 'invalid-widgets-shape',
+        },
+      });
+
+      const result = await fetchDashboardPreferences();
+
+      expect(result).toEqual({
+        role: 'agent',
+        layout: 'default',
+        updatedAt: undefined,
+        widgets: [],
+      });
     });
   });
 
