@@ -41,6 +41,16 @@ const { mockPrisma } = vi.hoisted(() => {
         findMany: fn().mockResolvedValue([]),
         count: fn().mockResolvedValue(0),
       },
+      userDashboardPreference: {
+        findUnique: fn().mockResolvedValue(null),
+        upsert: fn().mockResolvedValue({
+          userId: 'user-1',
+          role: 'owner',
+          widgets: [{ id: 'kpi-overview', title: 'KPI Overview', enabled: true }],
+          layout: 'default',
+          updatedAt: new Date('2026-01-15T00:00:00.000Z'),
+        }),
+      },
     },
   };
 });
@@ -92,6 +102,115 @@ describe('Reporting / Dashboard Routes — /api/dashboard', () => {
     });
     mockPrisma.activity.findMany.mockResolvedValue([]);
     mockPrisma.lead.aggregate.mockResolvedValue({ _sum: { budget: 5000000 } });
+    mockPrisma.userDashboardPreference.findUnique.mockResolvedValue(null);
+    mockPrisma.userDashboardPreference.upsert.mockResolvedValue({
+      userId: 'user-1',
+      role: 'owner',
+      widgets: [{ id: 'kpi-overview', title: 'KPI Overview', enabled: true }],
+      layout: 'default',
+      updatedAt: new Date('2026-01-15T00:00:00.000Z'),
+    });
+  });
+
+  // ── GET /config ──────────────────────────────────────────────────
+  describe('GET /api/dashboard/config', () => {
+    it('returns role-based widget config', async () => {
+      const res = await request(createApp('manager')).get('/api/dashboard/config');
+
+      expect(res.status).toBe(200);
+      expect(res.body.success).toBe(true);
+      expect(res.body.data).toHaveProperty('role', 'manager');
+      expect(Array.isArray(res.body.data.widgets)).toBe(true);
+      expect(res.body.data.widgets.length).toBeGreaterThan(0);
+    });
+  });
+
+  // ── GET /preferences ─────────────────────────────────────────────
+  describe('GET /api/dashboard/preferences', () => {
+    it('returns fallback role config when preference does not exist', async () => {
+      mockPrisma.userDashboardPreference.findUnique.mockResolvedValueOnce(null);
+
+      const res = await request(createApp('owner')).get('/api/dashboard/preferences');
+
+      expect(res.status).toBe(200);
+      expect(res.body.success).toBe(true);
+      expect(res.body.data.role).toBe('owner');
+      expect(res.body.data.layout).toBe('default');
+      expect(Array.isArray(res.body.data.widgets)).toBe(true);
+      expect(mockPrisma.userDashboardPreference.findUnique).toHaveBeenCalledWith({
+        where: { userId: 'user-1' },
+      });
+    });
+
+    it('returns stored user preference when present', async () => {
+      mockPrisma.userDashboardPreference.findUnique.mockResolvedValueOnce({
+        userId: 'user-1',
+        role: 'manager',
+        widgets: [{ id: 'team-kpis', title: 'Team KPIs', enabled: true }],
+        layout: 'compact',
+        updatedAt: new Date('2026-02-01T00:00:00.000Z'),
+      });
+
+      const res = await request(createApp('manager')).get('/api/dashboard/preferences');
+
+      expect(res.status).toBe(200);
+      expect(res.body.success).toBe(true);
+      expect(res.body.data.role).toBe('manager');
+      expect(res.body.data.layout).toBe('compact');
+      expect(res.body.data.widgets).toEqual([
+        { id: 'team-kpis', title: 'Team KPIs', enabled: true },
+      ]);
+    });
+  });
+
+  // ── PUT /preferences ─────────────────────────────────────────────
+  describe('PUT /api/dashboard/preferences', () => {
+    it('returns 400 when widgets payload is not an array', async () => {
+      const res = await request(createApp('owner'))
+        .put('/api/dashboard/preferences')
+        .send({ widgets: { bad: true }, layout: 'default' });
+
+      expect(res.status).toBe(400);
+      expect(res.body.success).toBe(false);
+      expect(res.body.error).toMatch(/widgets must be an array/i);
+    });
+
+    it('upserts and returns normalized preference payload', async () => {
+      mockPrisma.userDashboardPreference.upsert.mockResolvedValueOnce({
+        userId: 'user-1',
+        role: 'owner',
+        widgets: [{ id: 'kpi-overview', title: 'KPI Overview', enabled: false }],
+        layout: 'default',
+        updatedAt: new Date('2026-03-01T00:00:00.000Z'),
+      });
+
+      const payload = {
+        widgets: [{ id: 'kpi-overview', title: 'KPI Overview', enabled: false }],
+        layout: 'default',
+      };
+
+      const res = await request(createApp('owner')).put('/api/dashboard/preferences').send(payload);
+
+      expect(res.status).toBe(200);
+      expect(res.body.success).toBe(true);
+      expect(res.body.data.role).toBe('owner');
+      expect(res.body.data.layout).toBe('default');
+      expect(res.body.data.widgets).toEqual(payload.widgets);
+      expect(mockPrisma.userDashboardPreference.upsert).toHaveBeenCalledWith({
+        where: { userId: 'user-1' },
+        update: {
+          role: 'owner',
+          widgets: payload.widgets,
+          layout: 'default',
+        },
+        create: {
+          userId: 'user-1',
+          role: 'owner',
+          widgets: payload.widgets,
+          layout: 'default',
+        },
+      });
+    });
   });
 
   // ── GET /summary ─────────────────────────────────────────────────
