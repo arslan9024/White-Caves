@@ -9,6 +9,14 @@ const mockUseSelector = vi.fn(() => null);
 const mockFetchDashboardPreferences = vi.fn();
 const mockSaveDashboardPreferences = vi.fn();
 const mockFetchRoleDashboardConfig = vi.fn();
+const { mockPageLogger } = vi.hoisted(() => ({
+  mockPageLogger: {
+    debug: vi.fn(),
+    info: vi.fn(),
+    warn: vi.fn(),
+    error: vi.fn(),
+  },
+}));
 
 vi.mock('react-redux', () => ({
   useSelector: (...args: unknown[]) => mockUseSelector(...args),
@@ -22,6 +30,10 @@ vi.mock('../services/dashboardPreferencesAPI', () => ({
   fetchDashboardPreferences: (...args: unknown[]) => mockFetchDashboardPreferences(...args),
   saveDashboardPreferences: (...args: unknown[]) => mockSaveDashboardPreferences(...args),
   fetchRoleDashboardConfig: (...args: unknown[]) => mockFetchRoleDashboardConfig(...args),
+}));
+
+vi.mock('../utils/logger', () => ({
+  createLogger: () => mockPageLogger,
 }));
 
 vi.mock('../components/common/SuspenseLoader', () => ({
