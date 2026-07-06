@@ -40,15 +40,19 @@ import type { RootState } from '../store/store';
 import './UnifiedDashboardPage.css';
 import '../styles/dashboard-tokens.css';
 
-import OverviewTab from '../components/owner/tabs/OverviewTab';
-import PropertiesTab from '../components/owner/tabs/PropertiesTab';
-import AgentsTab from '../components/owner/tabs/AgentsTab';
-import LeadsTab from '../components/owner/tabs/LeadsTab';
-import ContractsTab from '../components/owner/tabs/ContractsTab';
-import AnalyticsTab from '../components/owner/tabs/AnalyticsTab';
-import { CommissionsTab } from '../components/owner/tabs/CommissionsTab';
-import SettingsTab from '../components/owner/tabs/SettingsTab';
-import UsersTab from '../components/owner/tabs/UsersTab';
+const OverviewTab = lazy(() => import('../components/owner/tabs/OverviewTab'));
+const PropertiesTab = lazy(() => import('../components/owner/tabs/PropertiesTab'));
+const AgentsTab = lazy(() => import('../components/owner/tabs/AgentsTab'));
+const LeadsTab = lazy(() => import('../components/owner/tabs/LeadsTab'));
+const ContractsTab = lazy(() => import('../components/owner/tabs/ContractsTab'));
+const AnalyticsTab = lazy(() => import('../components/owner/tabs/AnalyticsTab'));
+const CommissionsTab = lazy(() =>
+  import('../components/owner/tabs/CommissionsTab').then(module => ({
+    default: module.CommissionsTab,
+  }))
+);
+const SettingsTab = lazy(() => import('../components/owner/tabs/SettingsTab'));
+const UsersTab = lazy(() => import('../components/owner/tabs/UsersTab'));
 import type {
   OverviewData,
   PropertiesData,
@@ -58,7 +62,7 @@ import type {
   AnalyticsData,
   SettingsData,
 } from '../components/owner/tabs/types';
-import AdminDashboard from '../components/admin/AdminDashboard';
+const AdminDashboard = lazy(() => import('../components/admin/AdminDashboard'));
 
 const AIAssistantHub = lazy(() => import('../components/crm/AIAssistantHub'));
 const AICommandCenter = lazy(() => import('../components/crm/AICommandCenter.tsx'));
@@ -587,49 +591,65 @@ const UnifiedDashboardPage: FC = () => {
       case 'overview':
         return (
           <RouteErrorBoundary section="Overview">
-            <OverviewTab data={tabData<OverviewData>(dataToRender)} />
+            <Suspense fallback={<TabLoadingFallback />}>
+              <OverviewTab data={tabData<OverviewData>(dataToRender)} />
+            </Suspense>
           </RouteErrorBoundary>
         );
       case 'properties':
         return (
           <RouteErrorBoundary section="Properties">
-            <PropertiesTab data={tabData<PropertiesData>(dataToRender)} />
+            <Suspense fallback={<TabLoadingFallback />}>
+              <PropertiesTab data={tabData<PropertiesData>(dataToRender)} />
+            </Suspense>
           </RouteErrorBoundary>
         );
       case 'agents':
         return (
           <RouteErrorBoundary section="Agents">
-            <AgentsTab data={tabData<AgentsData>(dataToRender)} />
+            <Suspense fallback={<TabLoadingFallback />}>
+              <AgentsTab data={tabData<AgentsData>(dataToRender)} />
+            </Suspense>
           </RouteErrorBoundary>
         );
       case 'leads':
         return (
           <RouteErrorBoundary section="Leads">
-            <LeadsTab data={tabData<LeadsData>(dataToRender)} />
+            <Suspense fallback={<TabLoadingFallback />}>
+              <LeadsTab data={tabData<LeadsData>(dataToRender)} />
+            </Suspense>
           </RouteErrorBoundary>
         );
       case 'contracts':
         return (
           <RouteErrorBoundary section="Contracts">
-            <ContractsTab data={tabData<ContractsData>(dataToRender)} />
+            <Suspense fallback={<TabLoadingFallback />}>
+              <ContractsTab data={tabData<ContractsData>(dataToRender)} />
+            </Suspense>
           </RouteErrorBoundary>
         );
       case 'analytics':
         return (
           <RouteErrorBoundary section="Analytics">
-            <AnalyticsTab data={tabData<AnalyticsData>(dataToRender)} />
+            <Suspense fallback={<TabLoadingFallback />}>
+              <AnalyticsTab data={tabData<AnalyticsData>(dataToRender)} />
+            </Suspense>
           </RouteErrorBoundary>
         );
       case 'commissions':
         return (
           <RouteErrorBoundary section="Commissions">
-            <CommissionsTab />
+            <Suspense fallback={<TabLoadingFallback />}>
+              <CommissionsTab />
+            </Suspense>
           </RouteErrorBoundary>
         );
       case 'admin':
         return (
           <RouteErrorBoundary section="Admin">
-            <AdminDashboard />
+            <Suspense fallback={<TabLoadingFallback />}>
+              <AdminDashboard />
+            </Suspense>
           </RouteErrorBoundary>
         );
       case 'ai-hub':
@@ -651,19 +671,25 @@ const UnifiedDashboardPage: FC = () => {
       case 'users':
         return (
           <RouteErrorBoundary section="Users">
-            <UsersTab />
+            <Suspense fallback={<TabLoadingFallback />}>
+              <UsersTab />
+            </Suspense>
           </RouteErrorBoundary>
         );
       case 'settings':
         return (
           <RouteErrorBoundary section="Settings">
-            <SettingsTab data={tabData<SettingsData>(dataToRender)} />
+            <Suspense fallback={<TabLoadingFallback />}>
+              <SettingsTab data={tabData<SettingsData>(dataToRender)} />
+            </Suspense>
           </RouteErrorBoundary>
         );
       default:
         return (
           <RouteErrorBoundary section="Overview">
-            <OverviewTab data={tabData<OverviewData>(dataToRender)} />
+            <Suspense fallback={<TabLoadingFallback />}>
+              <OverviewTab data={tabData<OverviewData>(dataToRender)} />
+            </Suspense>
           </RouteErrorBoundary>
         );
     }
