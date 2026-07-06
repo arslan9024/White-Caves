@@ -16,6 +16,7 @@ const { mockPrisma } = vi.hoisted(() => {
       lead: {
         count: fn().mockResolvedValue(42),
         groupBy: fn().mockResolvedValue([]),
+        findMany: fn().mockResolvedValue([]),
         aggregate: fn().mockResolvedValue({
           _sum: { budget: 5000000 },
           _avg: { score: 65, budget: 500000 },
@@ -24,6 +25,7 @@ const { mockPrisma } = vi.hoisted(() => {
       property: {
         count: fn().mockResolvedValue(15),
         groupBy: fn().mockResolvedValue([]),
+        findMany: fn().mockResolvedValue([]),
         aggregate: fn().mockResolvedValue({ _sum: { price: 10000000 } }),
       },
       user: {
@@ -36,6 +38,11 @@ const { mockPrisma } = vi.hoisted(() => {
           _avg: { amount: 5000 },
         }),
         groupBy: fn().mockResolvedValue([]),
+        findMany: fn().mockResolvedValue([]),
+      },
+      transaction: {
+        count: fn().mockResolvedValue(3),
+        findMany: fn().mockResolvedValue([]),
       },
       activity: {
         findMany: fn().mockResolvedValue([]),
@@ -105,6 +112,10 @@ describe('Reporting / Dashboard Routes — /api/dashboard', () => {
     mockPrisma.lead.count.mockResolvedValue(42);
     mockPrisma.property.count.mockResolvedValue(15);
     mockPrisma.user.count.mockResolvedValue(5);
+    mockPrisma.lead.findMany.mockResolvedValue([]);
+    mockPrisma.property.findMany.mockResolvedValue([]);
+    mockPrisma.transaction.findMany.mockResolvedValue([]);
+    mockPrisma.commission.findMany.mockResolvedValue([]);
     mockPrisma.commission.aggregate.mockResolvedValue({
       _sum: { amount: 50000 },
       _count: { _all: 10 },
@@ -536,6 +547,120 @@ describe('Reporting / Dashboard Routes — /api/dashboard', () => {
     });
   });
 
+  // ── GET /lead-funnel ─────────────────────────────────────────────
+  describe('GET /api/dashboard/lead-funnel', () => {
+    it('returns funnel and tier distribution payload', async () => {
+      mockPrisma.lead.count
+        .mockResolvedValueOnce(10)
+        .mockResolvedValueOnce(9)
+        .mockResolvedValueOnce(8)
+        .mockResolvedValueOnce(7)
+        .mockResolvedValueOnce(6)
+        .mockResolvedValueOnce(5)
+        .mockResolvedValueOnce(4)
+        .mockResolvedValueOnce(3)
+        .mockResolvedValueOnce(2)
+        .mockResolvedValueOnce(1)
+        .mockResolvedValueOnce(0);
+
+      const res = await request(createApp('owner')).get('/api/dashboard/lead-funnel');
+
+      expect(res.status).toBe(200);
+      expect(res.body.success).toBe(true);
+      expect(res.body.data.total).toBe(49);
+      expect(res.body.data.funnel).toHaveLength(7);
+      expect(res.body.data.funnel[0]).toEqual(
+        expect.objectContaining({
+          stage: 'new',
+          count: expect.any(Number),
+          percentage: expect.any(Number),
+        })
+      );
+      expect(res.body.data.tierDistribution).toHaveLength(4);
+    });
+  });
+
+  // ── GET /trends ──────────────────────────────────────────────────
+  describe('GET /api/dashboard/trends', () => {
+    it('returns daily series for requested period', async () => {
+      const now = new Date('2026-03-20T10:00:00.000Z');
+      mockPrisma.lead.findMany.mockResolvedValueOnce([
+        { createdAt: new Date('2026-03-16T09:00:00.000Z') },
+        { createdAt: new Date('2026-03-16T12:00:00.000Z') },
+      ]);
+      mockPrisma.transaction.findMany.mockResolvedValueOnce([
+        { createdAt: new Date('2026-03-18T09:00:00.000Z'), amount: 100000 },
+      ]);
+      mockPrisma.commission.findMany.mockResolvedValueOnce([
+        { createdAt: new Date('2026-03-19T09:00:00.000Z'), amount: 5000 },
+      ]);
+
+      vi.useFakeTimers();
+      vi.setSystemTime(now);
+
+      const res = await request(createApp('owner')).get('/api/dashboard/trends?days=5');
+
+      vi.useRealTimers();
+
+      expect(res.status).toBe(200);
+      expect(res.body.success).toBe(true);
+      expect(res.body.data.period).toBe('5d');
+      expect(res.body.data.series).toHaveLength(5);
+      expect(res.body.data.series[0]).toEqual(
+        expect.objectContaining({
+          date: expect.any(String),
+          leads: expect.any(Number),
+          transactions: expect.any(Number),
+          transactionValue: expect.any(Number),
+          commissions: expect.any(Number),
+          commissionValue: expect.any(Number),
+        })
+      );
+    });
+  });
+
+  // ── GET /property-aging ──────────────────────────────────────────
+  describe('GET /api/dashboard/property-aging', () => {
+    it('returns bucketed property aging summary', async () => {
+      const now = new Date('2026-03-20T10:00:00.000Z');
+      mockPrisma.property.findMany.mockResolvedValueOnce([
+        {
+          id: 'p-1',
+          title: 'Palm Jumeirah Villa',
+          createdAt: new Date('2026-03-18T10:00:00.000Z'),
+          price: 4200000,
+          location: 'Palm Jumeirah',
+        },
+        {
+          id: 'p-2',
+          title: 'Downtown Apartment',
+          createdAt: new Date('2025-11-15T10:00:00.000Z'),
+          price: 1800000,
+          location: 'Downtown Dubai',
+        },
+      ]);
+
+      vi.useFakeTimers();
+      vi.setSystemTime(now);
+
+      const res = await request(createApp('owner')).get('/api/dashboard/property-aging');
+
+      vi.useRealTimers();
+
+      expect(res.status).toBe(200);
+      expect(res.body.success).toBe(true);
+      expect(res.body.data.totalAvailable).toBe(2);
+      expect(Array.isArray(res.body.data.buckets)).toBe(true);
+      expect(res.body.data.buckets).toEqual(
+        expect.arrayContaining([
+          expect.objectContaining({ label: '0-7 days', count: expect.any(Number) }),
+          expect.objectContaining({ label: '90+ days', count: expect.any(Number) }),
+        ])
+      );
+      expect(Array.isArray(res.body.data.staleProperties)).toBe(true);
+    });
+  });
+
   // ── GET /agent-performance (W18.1-P1-003) ───────────────────────
   describe('GET /api/dashboard/agent-performance', () => {
     beforeEach(() => {
@@ -550,7 +675,7 @@ describe('Reporting / Dashboard Routes — /api/dashboard', () => {
         _sum: { amount: 25000 },
         _count: 4,
       });
-      (mockPrisma as any).transaction = { count: vi.fn().mockResolvedValue(3) };
+      mockPrisma.transaction.count.mockResolvedValue(3);
     });
 
     it('returns 200 with agent performance data for owner', async () => {
