@@ -1,6 +1,6 @@
 # White Caves Real Estate LLC - Global Expert Agency (All-Female Expert Team)
 
-## 📊 CURRENT SPRINT STATUS — Free Agent Planning Dashboard
+## 📊 CURRENT SPRINT STATUS — Free Agent Planning Dashboard (Free‑Model Transition)
 
 > **Updated by @Margaret after every session.** Senior coders MUST check this table before starting any premium coding sprint. If any gate is BLOCKED, route back to the relevant free agent before coding.
 
@@ -115,6 +115,18 @@ This file defines the White Caves multi-expert operating model for all agent-ass
 ## 🆓 FREE PLANNING AGENTS (Always-On — Zero Premium Tokens)
 
 > These 5 agents work 24/7 to continuously improve `business_docs/` and `plans/`. They **NEVER** write code and **NEVER** consume premium Copilot tokens. They use only free/unlimited models as specified.
+
+---
+
+## New Team E – Backlog Coordination & Ops
+
+| Agent      | Model            | Domain                                |
+| ---------- | ---------------- | ------------------------------------- |
+| **@Nova**  | Gemini 2.0 Flash | Backlog coordination, task triage     |
+| **@Orion** | Llama 3.1 70B    | CI/CD automation, ops monitoring      |
+| **@Pulse** | DeepSeek V3      | Data pipelines, monitoring dashboards |
+| **@Quark** | Gemini 2.0 Flash | Analytics export, CSV/Excel API       |
+| **@Zara**  | Llama 3.1 70B    | Security audits, compliance checks    |
 
 ---
 

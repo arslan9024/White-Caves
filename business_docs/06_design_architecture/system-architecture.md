@@ -388,4 +388,35 @@ Before marking a migration wave complete:
 
 ---
 
+## 9. Interactive Map Search
+
+### Overview
+
+The platform provides an interactive property map enabling users to explore listings geographically with high performance and rich UI features.
+
+### Frontend Component
+
+- **Library:** Leaflet.js v1.9 with `leaflet.markercluster` for clustering.
+- **Features:**
+  - Property pins display price labels.
+  - Cluster bubbles show count of pins; expand on zoom.
+  - Popup card shows property image carousel, price, status, and quick actions.
+  - **Tile Provider:** OpenStreetMap for development, Mapbox (production) for styled tiles.
+  - **Performance Guard:** Render up to **500** visible pins; clusters automatically when >50 pins in viewport.
+  - **Saved Search Spec:** Users can save radius or polygon searches; stored in user profile for quick access.
+
+### Backend Query
+
+- **Geospatial Index:** `properties.location` field indexed with MongoDB `2dsphere`.
+- **API Endpoint:** `GET /api/properties/search` accepts:
+  - `near` (lat, lng, radius in km) – uses `$geoNear`.
+  - `polygon` (GeoJSON) – uses `$geoWithin`.
+- Returns paginated results (max 500) with clustering metadata.
+
+### GeoJSON Boundaries
+
+- File `public/geojson/dubai-areas.geojson` contains **30** neighborhood polygons used for area‑based filtering and polygon searches.
+
+---
+
 **Version:** 1.0 | **Last Updated:** March 2026 | **Maintained By:** Technical Team
