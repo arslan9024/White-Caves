@@ -1082,6 +1082,71 @@ describe('Reporting / Dashboard Routes — /api/dashboard', () => {
         ])
       );
     });
+
+    it('computes KPI values from recent lead/activity/property data', async () => {
+      const now = new Date('2026-04-01T10:00:00.000Z');
+      const leadCreatedAt = new Date('2026-03-31T08:00:00.000Z');
+      const firstActionAt = new Date('2026-03-31T09:30:00.000Z');
+
+      mockPrisma.lead.findMany.mockResolvedValueOnce([{ id: 'lead-1', createdAt: leadCreatedAt }]);
+      mockPrisma.lead.count
+        .mockResolvedValueOnce(10) // totalLeads30d
+        .mockResolvedValueOnce(4); // organicLeads
+
+      (mockPrisma.activity as any).findFirst = vi.fn().mockResolvedValueOnce({
+        createdAt: firstActionAt,
+        leadId: 'lead-1',
+      });
+
+      (mockPrisma as any).viewing = {
+        findMany: vi.fn().mockResolvedValue([{ leadId: 'lead-1' }, { leadId: 'lead-2' }]),
+        count: vi.fn().mockResolvedValue(4),
+      };
+
+      (mockPrisma as any).offer = {
+        count: vi.fn().mockResolvedValue(1),
+      };
+
+      mockPrisma.property.findMany.mockResolvedValueOnce([
+        {
+          title: 'Palm Villa',
+          description: 'Luxury villa',
+          price: 5000000,
+          type: 'villa',
+          status: 'available',
+          location: 'Palm Jumeirah',
+          area: 'Palm',
+          bedrooms: 5,
+          bathrooms: 6,
+          sqft: 5200,
+          images: ['img-1'],
+          buildingPermitNumber: 'BP-001',
+        },
+      ]);
+
+      mockPrisma.user.count.mockResolvedValueOnce(30);
+
+      vi.useFakeTimers();
+      vi.setSystemTime(now);
+
+      const res = await request(createApp('manager')).get('/api/dashboard/analytics/kpi-baseline');
+
+      vi.useRealTimers();
+
+      expect(res.status).toBe(200);
+      expect(res.body.success).toBe(true);
+      expect(res.body.data.period).toBe('30d');
+      expect(res.body.data.kpis).toEqual(
+        expect.arrayContaining([
+          expect.objectContaining({ name: 'First Response Time', current: 1.5 }),
+          expect.objectContaining({ name: 'Viewing Conversion Rate', current: 20 }),
+          expect.objectContaining({ name: 'Offer-to-Viewing Ratio', current: 25 }),
+          expect.objectContaining({ name: 'Listing Completeness', current: 100 }),
+          expect.objectContaining({ name: 'Tenant Portal MAU', current: 30 }),
+          expect.objectContaining({ name: 'Organic Leads Share', current: 40 }),
+        ])
+      );
+    });
   });
 
   // ── GET /agent-performance (W18.1-P1-003) ───────────────────────
