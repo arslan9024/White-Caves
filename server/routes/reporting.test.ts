@@ -477,6 +477,18 @@ describe('Reporting / Dashboard Routes — /api/dashboard', () => {
       expect(res.status).toBe(200);
       expect(res.body.data.metrics).toBeDefined();
     });
+
+    it('returns 200 for /admin/summary alias', async () => {
+      const res = await request(createApp('owner')).get('/api/dashboard/admin/summary');
+      expect(res.status).toBe(200);
+      expect(res.body.data.metrics).toBeDefined();
+    });
+
+    it('returns 200 for /:role/summary alias path', async () => {
+      const res = await request(createApp('owner')).get('/api/dashboard/owner/summary');
+      expect(res.status).toBe(200);
+      expect(res.body.data.metrics).toBeDefined();
+    });
   });
 
   // ── GET /activities ──────────────────────────────────────────────
@@ -520,6 +532,25 @@ describe('Reporting / Dashboard Routes — /api/dashboard', () => {
       mockPrisma.activity.count.mockResolvedValueOnce(0);
       const res = await request(createApp('owner')).get('/api/dashboard/activities?type=lead');
       expect(res.status).toBe(200);
+    });
+
+    it('clamps page and pageSize to safe bounds', async () => {
+      mockPrisma.activity.findMany.mockResolvedValueOnce([]);
+      mockPrisma.activity.count.mockResolvedValueOnce(0);
+
+      const res = await request(createApp('owner')).get(
+        '/api/dashboard/activities?page=-3&pageSize=999'
+      );
+
+      expect(res.status).toBe(200);
+      expect(res.body.pagination.page).toBe(1);
+      expect(res.body.pagination.pageSize).toBe(50);
+      expect(mockPrisma.activity.findMany).toHaveBeenCalledWith(
+        expect.objectContaining({
+          skip: 0,
+          take: 50,
+        })
+      );
     });
   });
 
@@ -1228,6 +1259,22 @@ describe('Reporting / Dashboard Routes — /api/dashboard', () => {
       );
       expect(res.status).toBe(200);
       expect(res.body.data.pagination.page).toBe(2);
+    });
+
+    it('clamps invalid pagination values to safe defaults', async () => {
+      const res = await request(createApp('owner')).get(
+        '/api/dashboard/agent-performance?page=0&limit=999'
+      );
+
+      expect(res.status).toBe(200);
+      expect(res.body.data.pagination.page).toBe(1);
+      expect(res.body.data.pagination.limit).toBe(100);
+      expect((mockPrisma.user as any).findMany).toHaveBeenCalledWith(
+        expect.objectContaining({
+          skip: 0,
+          take: 100,
+        })
+      );
     });
 
     it('returns performance rows with expected shape', async () => {
