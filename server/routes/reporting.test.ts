@@ -424,6 +424,12 @@ describe('Reporting / Dashboard Routes — /api/dashboard', () => {
       expect(res.body.error).toMatch(/access denied/i);
     });
 
+    it('returns 403 for managing_director role (current allow-list contract)', async () => {
+      const res = await request(createApp('managing_director')).get('/api/dashboard/summary');
+      expect(res.status).toBe(403);
+      expect(res.body.error).toMatch(/access denied/i);
+    });
+
     it('returns 200 for manager role', async () => {
       const res = await request(createApp('manager')).get('/api/dashboard/summary');
       expect(res.status).toBe(200);
@@ -618,6 +624,12 @@ describe('Reporting / Dashboard Routes — /api/dashboard', () => {
     it('returns 403 for agent role', async () => {
       const res = await request(createApp('agent')).get('/api/dashboard/kpis');
       expect(res.status).toBe(403);
+    });
+
+    it('returns 403 for managing_director role (current allow-list contract)', async () => {
+      const res = await request(createApp('managing_director')).get('/api/dashboard/kpis');
+      expect(res.status).toBe(403);
+      expect(res.body.error).toMatch(/access denied/i);
     });
 
     it('returns 200 for finance role', async () => {
@@ -1106,6 +1118,16 @@ describe('Reporting / Dashboard Routes — /api/dashboard', () => {
   describe('GET /api/dashboard/analytics/kpi-baseline', () => {
     it('returns 403 for agent role', async () => {
       const res = await request(createApp('agent')).get('/api/dashboard/analytics/kpi-baseline');
+
+      expect(res.status).toBe(403);
+      expect(res.body.success).toBe(false);
+      expect(res.body.error).toMatch(/access denied/i);
+    });
+
+    it('returns 403 for managing_director role (current allow-list contract)', async () => {
+      const res = await request(createApp('managing_director')).get(
+        '/api/dashboard/analytics/kpi-baseline'
+      );
 
       expect(res.status).toBe(403);
       expect(res.body.success).toBe(false);
