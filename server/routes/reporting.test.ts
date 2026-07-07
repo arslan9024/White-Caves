@@ -916,6 +916,85 @@ describe('Reporting / Dashboard Routes — /api/dashboard', () => {
         })
       );
     });
+
+    it('returns 200 for manager role', async () => {
+      (mockPrisma as any).lease = {
+        findMany: vi.fn().mockResolvedValue([
+          {
+            id: 'lease-m1',
+            leaseNumber: 'LM-001',
+            monthlyRent: 12000,
+            currency: 'AED',
+            endDate: new Date('2026-10-01T00:00:00.000Z'),
+            ejariStatus: 'registered',
+            ejariNumber: 'EJ-M1',
+            property: { id: 'p-m1', title: 'Business Bay Unit', location: 'Business Bay' },
+            tenant: { id: 't-m1', name: 'Layla', email: 'layla@example.com' },
+            landlord: { id: 'l-m1', name: 'Landlord M1' },
+          },
+        ]),
+        count: vi
+          .fn()
+          .mockResolvedValueOnce(1)
+          .mockResolvedValueOnce(1)
+          .mockResolvedValueOnce(1)
+          .mockResolvedValueOnce(1),
+      };
+
+      (mockPrisma as any).offer = {
+        count: vi.fn().mockResolvedValueOnce(1).mockResolvedValueOnce(0),
+      };
+
+      (mockPrisma as any).pDCSchedule = {
+        aggregate: vi
+          .fn()
+          .mockResolvedValueOnce({ _sum: { amount: 12000 }, _count: { _all: 1 } })
+          .mockResolvedValueOnce({ _sum: { amount: 0 }, _count: { _all: 0 } })
+          .mockResolvedValueOnce({ _sum: { amount: 0 }, _count: { _all: 0 } }),
+      };
+
+      (mockPrisma as any).maintenance = {
+        aggregate: vi.fn().mockResolvedValue({ _sum: { cost: 0 } }),
+      };
+
+      mockPrisma.commission.findMany.mockResolvedValueOnce([]);
+
+      const res = await request(createApp('manager')).get('/api/dashboard/leasing');
+
+      expect(res.status).toBe(200);
+      expect(res.body.success).toBe(true);
+      expect(res.body.data.summary).toEqual(
+        expect.objectContaining({
+          totalLeases: 1,
+          activeLeases: 1,
+          mrr: 12000,
+          currency: 'AED',
+        })
+      );
+    });
+
+    it('returns 500 when leasing query pipeline fails', async () => {
+      (mockPrisma as any).lease = {
+        findMany: vi.fn().mockRejectedValueOnce(new Error('leasing pipeline failed')),
+        count: vi.fn().mockResolvedValue(0),
+      };
+      (mockPrisma as any).offer = {
+        count: vi.fn().mockResolvedValue(0),
+      };
+      (mockPrisma as any).pDCSchedule = {
+        aggregate: vi.fn().mockResolvedValue({ _sum: { amount: 0 }, _count: { _all: 0 } }),
+      };
+      (mockPrisma as any).maintenance = {
+        aggregate: vi.fn().mockResolvedValue({ _sum: { cost: 0 } }),
+      };
+      mockPrisma.commission.findMany.mockResolvedValue([]);
+
+      const res = await request(createApp('owner')).get('/api/dashboard/leasing');
+
+      expect(res.status).toBe(500);
+      expect(res.body.success).toBe(false);
+      expect(res.body.error).toMatch(/leasing pipeline failed/i);
+    });
   });
 
   // ── GET /analytics/kpi-baseline ─────────────────────────────────
