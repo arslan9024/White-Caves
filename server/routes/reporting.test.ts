@@ -9,7 +9,7 @@ import express from 'express';
 import request from 'supertest';
 
 // ── Hoisted mocks ────────────────────────────────────────────────────
-const { mockPrisma } = vi.hoisted(() => {
+const { mockPrisma, mockDocumentService } = vi.hoisted(() => {
   const fn = vi.fn;
   return {
     mockPrisma: {
@@ -59,6 +59,23 @@ const { mockPrisma } = vi.hoisted(() => {
         }),
       },
     },
+    mockDocumentService: {
+      generateLeadsExcel: fn().mockResolvedValue({
+        mimeType: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+        filename: 'leads-export.xlsx',
+        buffer: Buffer.from('leads-export'),
+      }),
+      generatePropertiesExcel: fn().mockResolvedValue({
+        mimeType: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+        filename: 'properties-export.xlsx',
+        buffer: Buffer.from('properties-export'),
+      }),
+      generateMonthlyPLReport: fn().mockResolvedValue({
+        mimeType: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+        filename: 'monthly-pl.xlsx',
+        buffer: Buffer.from('pl-export'),
+      }),
+    },
   };
 });
 
@@ -75,6 +92,9 @@ vi.mock('../middleware/errorHandler', () => ({
     Promise.resolve(fn(req, res, next)).catch(next),
 }));
 vi.mock('../middleware/auth', () => ({ default: null }));
+vi.mock('../services/DocumentService.js', () => ({
+  documentService: mockDocumentService,
+}));
 
 import reportingRoutes from './reporting';
 
@@ -130,6 +150,21 @@ describe('Reporting / Dashboard Routes — /api/dashboard', () => {
       widgets: [{ id: 'kpi-overview', title: 'KPI Overview', enabled: true }],
       layout: 'default',
       updatedAt: new Date('2026-01-15T00:00:00.000Z'),
+    });
+    mockDocumentService.generateLeadsExcel.mockResolvedValue({
+      mimeType: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+      filename: 'leads-export.xlsx',
+      buffer: Buffer.from('leads-export'),
+    });
+    mockDocumentService.generatePropertiesExcel.mockResolvedValue({
+      mimeType: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+      filename: 'properties-export.xlsx',
+      buffer: Buffer.from('properties-export'),
+    });
+    mockDocumentService.generateMonthlyPLReport.mockResolvedValue({
+      mimeType: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+      filename: 'monthly-pl.xlsx',
+      buffer: Buffer.from('pl-export'),
     });
   });
 
@@ -941,6 +976,66 @@ describe('Reporting / Dashboard Routes — /api/dashboard', () => {
         '/api/dashboard/agent-performance/export/exp_123_abc'
       );
       expect(res.status).toBe(403);
+    });
+  });
+
+  // ── GET /leads/excel ────────────────────────────────────────────
+  describe('GET /api/dashboard/leads/excel', () => {
+    it('returns 200 with attachment headers for owner', async () => {
+      const res = await request(createApp('owner')).get('/api/dashboard/leads/excel');
+
+      expect(res.status).toBe(200);
+      expect(res.headers['content-type']).toContain('application/vnd.openxmlformats');
+      expect(res.headers['content-disposition']).toContain('attachment;');
+      expect(res.headers['content-disposition']).toContain('leads-export.xlsx');
+      expect(mockDocumentService.generateLeadsExcel).toHaveBeenCalledTimes(1);
+    });
+
+    it('returns 403 for agent role', async () => {
+      const res = await request(createApp('agent')).get('/api/dashboard/leads/excel');
+
+      expect(res.status).toBe(403);
+      expect(res.body.success).toBe(false);
+    });
+  });
+
+  // ── GET /properties/excel ───────────────────────────────────────
+  describe('GET /api/dashboard/properties/excel', () => {
+    it('returns 200 with attachment headers for owner', async () => {
+      const res = await request(createApp('owner')).get('/api/dashboard/properties/excel');
+
+      expect(res.status).toBe(200);
+      expect(res.headers['content-type']).toContain('application/vnd.openxmlformats');
+      expect(res.headers['content-disposition']).toContain('attachment;');
+      expect(res.headers['content-disposition']).toContain('properties-export.xlsx');
+      expect(mockDocumentService.generatePropertiesExcel).toHaveBeenCalledTimes(1);
+    });
+
+    it('returns 403 for agent role', async () => {
+      const res = await request(createApp('agent')).get('/api/dashboard/properties/excel');
+
+      expect(res.status).toBe(403);
+      expect(res.body.success).toBe(false);
+    });
+  });
+
+  // ── GET /pl/excel ───────────────────────────────────────────────
+  describe('GET /api/dashboard/pl/excel', () => {
+    it('returns 200 with attachment headers for finance role', async () => {
+      const res = await request(createApp('finance')).get('/api/dashboard/pl/excel');
+
+      expect(res.status).toBe(200);
+      expect(res.headers['content-type']).toContain('application/vnd.openxmlformats');
+      expect(res.headers['content-disposition']).toContain('attachment;');
+      expect(res.headers['content-disposition']).toContain('monthly-pl.xlsx');
+      expect(mockDocumentService.generateMonthlyPLReport).toHaveBeenCalledTimes(1);
+    });
+
+    it('returns 403 for agent role', async () => {
+      const res = await request(createApp('agent')).get('/api/dashboard/pl/excel');
+
+      expect(res.status).toBe(403);
+      expect(res.body.success).toBe(false);
     });
   });
 });
