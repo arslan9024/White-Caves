@@ -779,6 +779,28 @@ describe('Reporting / Dashboard Routes — /api/dashboard', () => {
     });
   });
 
+  // ── GET /leasing ────────────────────────────────────────────────
+  describe('GET /api/dashboard/leasing', () => {
+    it('returns 403 for agent role', async () => {
+      const res = await request(createApp('agent')).get('/api/dashboard/leasing');
+
+      expect(res.status).toBe(403);
+      expect(res.body.success).toBe(false);
+      expect(res.body.error).toMatch(/access denied/i);
+    });
+  });
+
+  // ── GET /analytics/kpi-baseline ─────────────────────────────────
+  describe('GET /api/dashboard/analytics/kpi-baseline', () => {
+    it('returns 403 for agent role', async () => {
+      const res = await request(createApp('agent')).get('/api/dashboard/analytics/kpi-baseline');
+
+      expect(res.status).toBe(403);
+      expect(res.body.success).toBe(false);
+      expect(res.body.error).toMatch(/access denied/i);
+    });
+  });
+
   // ── GET /agent-performance (W18.1-P1-003) ───────────────────────
   describe('GET /api/dashboard/agent-performance', () => {
     beforeEach(() => {
