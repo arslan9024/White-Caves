@@ -997,6 +997,18 @@ describe('Reporting / Dashboard Routes — /api/dashboard', () => {
       expect(res.status).toBe(403);
       expect(res.body.success).toBe(false);
     });
+
+    it('returns 500 when leads export generation fails', async () => {
+      mockDocumentService.generateLeadsExcel.mockRejectedValueOnce(
+        new Error('leads export failed')
+      );
+
+      const res = await request(createApp('owner')).get('/api/dashboard/leads/excel');
+
+      expect(res.status).toBe(500);
+      expect(res.body.success).toBe(false);
+      expect(res.body.error).toMatch(/leads export failed/i);
+    });
   });
 
   // ── GET /properties/excel ───────────────────────────────────────
@@ -1017,6 +1029,18 @@ describe('Reporting / Dashboard Routes — /api/dashboard', () => {
       expect(res.status).toBe(403);
       expect(res.body.success).toBe(false);
     });
+
+    it('returns 500 when properties export generation fails', async () => {
+      mockDocumentService.generatePropertiesExcel.mockRejectedValueOnce(
+        new Error('properties export failed')
+      );
+
+      const res = await request(createApp('owner')).get('/api/dashboard/properties/excel');
+
+      expect(res.status).toBe(500);
+      expect(res.body.success).toBe(false);
+      expect(res.body.error).toMatch(/properties export failed/i);
+    });
   });
 
   // ── GET /pl/excel ───────────────────────────────────────────────
@@ -1036,6 +1060,18 @@ describe('Reporting / Dashboard Routes — /api/dashboard', () => {
 
       expect(res.status).toBe(403);
       expect(res.body.success).toBe(false);
+    });
+
+    it('returns 500 when P&L export generation fails', async () => {
+      mockDocumentService.generateMonthlyPLReport.mockRejectedValueOnce(
+        new Error('pl export failed')
+      );
+
+      const res = await request(createApp('finance')).get('/api/dashboard/pl/excel');
+
+      expect(res.status).toBe(500);
+      expect(res.body.success).toBe(false);
+      expect(res.body.error).toMatch(/pl export failed/i);
     });
   });
 });
