@@ -592,6 +592,13 @@ describe('Reporting / Dashboard Routes — /api/dashboard', () => {
         res.body.data.funnel.every((item: { percentage: number }) => item.percentage === 0)
       ).toBe(true);
     });
+
+    it('returns 200 for agent role', async () => {
+      const res = await request(createApp('agent')).get('/api/dashboard/lead-funnel');
+
+      expect(res.status).toBe(200);
+      expect(res.body.success).toBe(true);
+    });
   });
 
   // ── GET /trends ──────────────────────────────────────────────────
@@ -658,6 +665,13 @@ describe('Reporting / Dashboard Routes — /api/dashboard', () => {
       expect(res.body.success).toBe(true);
       expect(res.body.data.period).toBe('30d');
       expect(res.body.data.series).toHaveLength(30);
+    });
+
+    it('returns 200 for agent role', async () => {
+      const res = await request(createApp('agent')).get('/api/dashboard/trends');
+
+      expect(res.status).toBe(200);
+      expect(res.body.success).toBe(true);
     });
   });
 
@@ -755,6 +769,13 @@ describe('Reporting / Dashboard Routes — /api/dashboard', () => {
       expect(res.status).toBe(200);
       expect(res.body.success).toBe(true);
       expect(res.body.data.avgDaysOnMarket).toBe(4);
+    });
+
+    it('returns 200 for agent role', async () => {
+      const res = await request(createApp('agent')).get('/api/dashboard/property-aging');
+
+      expect(res.status).toBe(200);
+      expect(res.body.success).toBe(true);
     });
   });
 
