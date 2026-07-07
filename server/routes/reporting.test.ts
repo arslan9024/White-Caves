@@ -1004,6 +1004,37 @@ describe('Reporting / Dashboard Routes — /api/dashboard', () => {
       );
     });
 
+    it('returns 200 for managing_director role', async () => {
+      (mockPrisma as any).lease = {
+        findMany: vi.fn().mockResolvedValue([]),
+        count: vi
+          .fn()
+          .mockResolvedValueOnce(0)
+          .mockResolvedValueOnce(0)
+          .mockResolvedValueOnce(0)
+          .mockResolvedValueOnce(0),
+      };
+      (mockPrisma as any).offer = {
+        count: vi.fn().mockResolvedValueOnce(0).mockResolvedValueOnce(0),
+      };
+      (mockPrisma as any).pDCSchedule = {
+        aggregate: vi
+          .fn()
+          .mockResolvedValueOnce({ _sum: { amount: 0 }, _count: { _all: 0 } })
+          .mockResolvedValueOnce({ _sum: { amount: 0 }, _count: { _all: 0 } })
+          .mockResolvedValueOnce({ _sum: { amount: 0 }, _count: { _all: 0 } }),
+      };
+      (mockPrisma as any).maintenance = {
+        aggregate: vi.fn().mockResolvedValue({ _sum: { cost: 0 } }),
+      };
+      mockPrisma.commission.findMany.mockResolvedValueOnce([]);
+
+      const res = await request(createApp('managing_director')).get('/api/dashboard/leasing');
+
+      expect(res.status).toBe(200);
+      expect(res.body.success).toBe(true);
+    });
+
     it('returns 500 when leasing query pipeline fails', async () => {
       (mockPrisma as any).lease = {
         findMany: vi.fn().mockRejectedValueOnce(new Error('leasing pipeline failed')),
@@ -1232,6 +1263,16 @@ describe('Reporting / Dashboard Routes — /api/dashboard', () => {
       expect(res.status).toBe(403);
     });
 
+    it('returns 200 for managing_director role', async () => {
+      const res = await request(createApp('managing_director')).get(
+        '/api/dashboard/agent-performance'
+      );
+
+      expect(res.status).toBe(200);
+      expect(res.body.success).toBe(true);
+      expect(res.body.data.agents).toBeDefined();
+    });
+
     it('accepts agentId filter param', async () => {
       const res = await request(createApp('owner')).get(
         '/api/dashboard/agent-performance?agentId=agent-1'
@@ -1345,6 +1386,16 @@ describe('Reporting / Dashboard Routes — /api/dashboard', () => {
         .send({ format: 'xlsx', agentId: 'agent-1', from: '2026-01-01', to: '2026-06-30' });
       expect(res.status).toBe(202);
     });
+
+    it('returns 202 for managing_director role', async () => {
+      const res = await request(createApp('managing_director'))
+        .post('/api/dashboard/agent-performance/export')
+        .send({ format: 'xlsx' });
+
+      expect(res.status).toBe(202);
+      expect(res.body.success).toBe(true);
+      expect(res.body.data.jobId).toMatch(/^exp_/);
+    });
   });
 
   // ── GET /agent-performance/export/:jobId (W18.1-P1-003) ─────────
@@ -1368,6 +1419,16 @@ describe('Reporting / Dashboard Routes — /api/dashboard', () => {
       expect(res.status).toBe(200);
       expect(res.body.success).toBe(true);
       expect(res.body.data.jobId).toBe('exp_987_xyz');
+    });
+
+    it('returns 200 for managing_director role', async () => {
+      const res = await request(createApp('managing_director')).get(
+        '/api/dashboard/agent-performance/export/exp_md_001'
+      );
+
+      expect(res.status).toBe(200);
+      expect(res.body.success).toBe(true);
+      expect(res.body.data.jobId).toBe('exp_md_001');
     });
 
     it('returns 400 for invalid job ID format', async () => {
