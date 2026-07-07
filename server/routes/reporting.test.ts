@@ -578,6 +578,20 @@ describe('Reporting / Dashboard Routes — /api/dashboard', () => {
       );
       expect(res.body.data.tierDistribution).toHaveLength(4);
     });
+
+    it('returns 0 percentages when total funnel count is zero', async () => {
+      mockPrisma.lead.count.mockResolvedValue(0);
+
+      const res = await request(createApp('owner')).get('/api/dashboard/lead-funnel');
+
+      expect(res.status).toBe(200);
+      expect(res.body.success).toBe(true);
+      expect(res.body.data.total).toBe(0);
+      expect(res.body.data.funnel).toHaveLength(7);
+      expect(
+        res.body.data.funnel.every((item: { percentage: number }) => item.percentage === 0)
+      ).toBe(true);
+    });
   });
 
   // ── GET /trends ──────────────────────────────────────────────────
@@ -616,6 +630,20 @@ describe('Reporting / Dashboard Routes — /api/dashboard', () => {
           commissionValue: expect.any(Number),
         })
       );
+    });
+
+    it('falls back to 30-day period when days query is invalid', async () => {
+      vi.useFakeTimers();
+      vi.setSystemTime(new Date('2026-03-20T10:00:00.000Z'));
+
+      const res = await request(createApp('owner')).get('/api/dashboard/trends?days=abc');
+
+      vi.useRealTimers();
+
+      expect(res.status).toBe(200);
+      expect(res.body.success).toBe(true);
+      expect(res.body.data.period).toBe('30d');
+      expect(res.body.data.series).toHaveLength(30);
     });
   });
 
@@ -658,6 +686,30 @@ describe('Reporting / Dashboard Routes — /api/dashboard', () => {
         ])
       );
       expect(Array.isArray(res.body.data.staleProperties)).toBe(true);
+    });
+
+    it('caps stale properties list to 10 entries', async () => {
+      const now = new Date('2026-03-20T10:00:00.000Z');
+      const stale = Array.from({ length: 12 }, (_value, index) => ({
+        id: `p-${index + 1}`,
+        title: `Property ${index + 1}`,
+        createdAt: new Date('2025-01-01T10:00:00.000Z'),
+        price: 1000000 + index,
+        location: 'Dubai Marina',
+      }));
+      mockPrisma.property.findMany.mockResolvedValueOnce(stale);
+
+      vi.useFakeTimers();
+      vi.setSystemTime(now);
+
+      const res = await request(createApp('owner')).get('/api/dashboard/property-aging');
+
+      vi.useRealTimers();
+
+      expect(res.status).toBe(200);
+      expect(res.body.success).toBe(true);
+      expect(res.body.data.totalAvailable).toBe(12);
+      expect(res.body.data.staleProperties).toHaveLength(10);
     });
   });
 
