@@ -930,6 +930,19 @@ describe('Reporting / Dashboard Routes — /api/dashboard', () => {
       expect(res.body.data.format).toBe('pdf');
     });
 
+    it('defaults format to xlsx when omitted', async () => {
+      const res = await request(createApp('owner'))
+        .post('/api/dashboard/agent-performance/export')
+        .send({});
+
+      expect(res.status).toBe(202);
+      expect(res.body.success).toBe(true);
+      expect(res.body.data.format).toBe('xlsx');
+      expect(res.body.data.status).toBe('queued');
+      expect(res.body.data.estimatedSeconds).toBe(25);
+      expect(res.body.data.jobId).toMatch(/^exp_/);
+    });
+
     it('returns 400 for invalid format', async () => {
       const res = await request(createApp('owner'))
         .post('/api/dashboard/agent-performance/export')
@@ -960,8 +973,19 @@ describe('Reporting / Dashboard Routes — /api/dashboard', () => {
       );
       expect(res.status).toBe(200);
       expect(res.body.success).toBe(true);
+      expect(res.body.data.jobId).toBe('exp_123_abc');
       expect(res.body.data.status).toBe('complete');
       expect(res.body.data.downloadUrl).toBeDefined();
+    });
+
+    it('returns 200 for finance role', async () => {
+      const res = await request(createApp('finance')).get(
+        '/api/dashboard/agent-performance/export/exp_987_xyz'
+      );
+
+      expect(res.status).toBe(200);
+      expect(res.body.success).toBe(true);
+      expect(res.body.data.jobId).toBe('exp_987_xyz');
     });
 
     it('returns 400 for invalid job ID format', async () => {
