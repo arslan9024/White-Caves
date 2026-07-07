@@ -834,6 +834,35 @@ describe('Reporting / Dashboard Routes — /api/dashboard', () => {
       expect(res.body.success).toBe(false);
       expect(res.body.error).toMatch(/access denied/i);
     });
+
+    it('returns 200 with 8 KPI entries for manager role', async () => {
+      mockPrisma.lead.findMany.mockResolvedValueOnce([]);
+      mockPrisma.lead.count.mockResolvedValueOnce(0).mockResolvedValueOnce(0);
+      mockPrisma.property.findMany.mockResolvedValueOnce([]);
+      mockPrisma.user.count.mockResolvedValueOnce(45);
+
+      (mockPrisma as any).viewing = {
+        findMany: vi.fn().mockResolvedValue([]),
+        count: vi.fn().mockResolvedValue(0),
+      };
+      (mockPrisma as any).offer = {
+        count: vi.fn().mockResolvedValue(0),
+      };
+
+      const res = await request(createApp('manager')).get('/api/dashboard/analytics/kpi-baseline');
+
+      expect(res.status).toBe(200);
+      expect(res.body.success).toBe(true);
+      expect(res.body.data.period).toBe('30d');
+      expect(Array.isArray(res.body.data.kpis)).toBe(true);
+      expect(res.body.data.kpis).toHaveLength(8);
+      expect(res.body.data.kpis).toEqual(
+        expect.arrayContaining([
+          expect.objectContaining({ name: 'First Response Time', unit: 'h' }),
+          expect.objectContaining({ name: 'UX Regressions', higherIsBetter: false }),
+        ])
+      );
+    });
   });
 
   // ── GET /agent-performance (W18.1-P1-003) ───────────────────────
@@ -1077,6 +1106,14 @@ describe('Reporting / Dashboard Routes — /api/dashboard', () => {
       expect(res.headers['content-disposition']).toContain('attachment;');
       expect(res.headers['content-disposition']).toContain('monthly-pl.xlsx');
       expect(mockDocumentService.generateMonthlyPLReport).toHaveBeenCalledTimes(1);
+    });
+
+    it('returns 200 with attachment headers for manager role', async () => {
+      const res = await request(createApp('manager')).get('/api/dashboard/pl/excel');
+
+      expect(res.status).toBe(200);
+      expect(res.headers['content-type']).toContain('application/vnd.openxmlformats');
+      expect(res.headers['content-disposition']).toContain('monthly-pl.xlsx');
     });
 
     it('returns 403 for agent role', async () => {
