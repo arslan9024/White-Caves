@@ -434,6 +434,11 @@ describe('Reporting / Dashboard Routes — /api/dashboard', () => {
       expect(res.status).toBe(200);
     });
 
+    it('returns 200 for admin role', async () => {
+      const res = await request(createApp('admin')).get('/api/dashboard/summary');
+      expect(res.status).toBe(200);
+    });
+
     it('calculates conversion rate correctly', async () => {
       mockPrisma.lead.count
         .mockResolvedValueOnce(100) // totalLeads
@@ -576,6 +581,20 @@ describe('Reporting / Dashboard Routes — /api/dashboard', () => {
       const res = await request(createApp('agent')).get('/api/dashboard/executive');
       expect(res.status).toBe(403);
     });
+
+    it('returns 200 for admin role', async () => {
+      mockPrisma.lead.groupBy.mockResolvedValue([{ status: 'new', _count: { _all: 2 } }]);
+      mockPrisma.property.groupBy.mockResolvedValue([{ status: 'available', _count: { _all: 1 } }]);
+      mockPrisma.commission.groupBy.mockResolvedValueOnce([
+        { status: 'paid', _count: { _all: 1 }, _sum: { amount: 5000 } },
+      ]);
+
+      const res = await request(createApp('admin')).get('/api/dashboard/executive');
+
+      expect(res.status).toBe(200);
+      expect(res.body.success).toBe(true);
+      expect(res.body.data).toHaveProperty('portfolioValue');
+    });
   });
 
   // ── GET /kpis ────────────────────────────────────────────────────
@@ -610,6 +629,30 @@ describe('Reporting / Dashboard Routes — /api/dashboard', () => {
       });
       const res = await request(createApp('finance')).get('/api/dashboard/kpis');
       expect(res.status).toBe(200);
+    });
+
+    it('returns 200 for admin role', async () => {
+      mockPrisma.lead.count
+        .mockResolvedValueOnce(7) // newLeads30d
+        .mockResolvedValueOnce(2); // wonDeals30d
+      mockPrisma.property.count.mockResolvedValueOnce(3); // newProperties30d
+      mockPrisma.commission.aggregate
+        .mockResolvedValueOnce({ _sum: { amount: 45000 } }) // totalRevenue
+        .mockResolvedValueOnce({ _avg: { amount: 15000 } }); // avgDealSize
+
+      const res = await request(createApp('admin')).get('/api/dashboard/kpis');
+
+      expect(res.status).toBe(200);
+      expect(res.body.success).toBe(true);
+      expect(res.body.data.kpis).toEqual(
+        expect.objectContaining({
+          newLeads: 7,
+          wonDeals: 2,
+          newListings: 3,
+          totalRevenue: 45000,
+          avgDealSize: 15000,
+        })
+      );
     });
   });
 
