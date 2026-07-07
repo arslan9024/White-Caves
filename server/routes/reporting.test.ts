@@ -645,6 +645,20 @@ describe('Reporting / Dashboard Routes — /api/dashboard', () => {
       expect(res.body.data.period).toBe('30d');
       expect(res.body.data.series).toHaveLength(30);
     });
+
+    it('falls back to 30-day period when days query is zero', async () => {
+      vi.useFakeTimers();
+      vi.setSystemTime(new Date('2026-03-20T10:00:00.000Z'));
+
+      const res = await request(createApp('owner')).get('/api/dashboard/trends?days=0');
+
+      vi.useRealTimers();
+
+      expect(res.status).toBe(200);
+      expect(res.body.success).toBe(true);
+      expect(res.body.data.period).toBe('30d');
+      expect(res.body.data.series).toHaveLength(30);
+    });
   });
 
   // ── GET /property-aging ──────────────────────────────────────────
@@ -710,6 +724,37 @@ describe('Reporting / Dashboard Routes — /api/dashboard', () => {
       expect(res.body.success).toBe(true);
       expect(res.body.data.totalAvailable).toBe(12);
       expect(res.body.data.staleProperties).toHaveLength(10);
+    });
+
+    it('computes rounded avgDaysOnMarket from available properties', async () => {
+      const now = new Date('2026-03-20T10:00:00.000Z');
+      mockPrisma.property.findMany.mockResolvedValueOnce([
+        {
+          id: 'p-1',
+          title: 'JVC Apartment',
+          createdAt: new Date('2026-03-18T10:00:00.000Z'), // 2 days
+          price: 1100000,
+          location: 'JVC',
+        },
+        {
+          id: 'p-2',
+          title: 'Marina Tower Unit',
+          createdAt: new Date('2026-03-14T10:00:00.000Z'), // 6 days
+          price: 2100000,
+          location: 'Dubai Marina',
+        },
+      ]);
+
+      vi.useFakeTimers();
+      vi.setSystemTime(now);
+
+      const res = await request(createApp('owner')).get('/api/dashboard/property-aging');
+
+      vi.useRealTimers();
+
+      expect(res.status).toBe(200);
+      expect(res.body.success).toBe(true);
+      expect(res.body.data.avgDaysOnMarket).toBe(4);
     });
   });
 
