@@ -823,6 +823,99 @@ describe('Reporting / Dashboard Routes — /api/dashboard', () => {
       expect(res.body.success).toBe(false);
       expect(res.body.error).toMatch(/access denied/i);
     });
+
+    it('returns 200 with leasing summary and P&L metrics for owner', async () => {
+      (mockPrisma as any).lease = {
+        findMany: vi.fn().mockResolvedValue([
+          {
+            id: 'lease-1',
+            leaseNumber: 'L-001',
+            monthlyRent: 10000,
+            currency: 'AED',
+            endDate: new Date('2026-12-31T00:00:00.000Z'),
+            ejariStatus: 'registered',
+            ejariNumber: 'EJ-001',
+            property: { id: 'p-1', title: 'Marina Tower', location: 'Dubai Marina' },
+            tenant: { id: 't-1', name: 'Ahmed', email: 'ahmed@example.com' },
+            landlord: { id: 'l-1', name: 'Landlord 1' },
+          },
+          {
+            id: 'lease-2',
+            leaseNumber: 'L-002',
+            monthlyRent: 15000,
+            currency: 'AED',
+            endDate: new Date('2026-11-30T00:00:00.000Z'),
+            ejariStatus: 'registered',
+            ejariNumber: 'EJ-002',
+            property: { id: 'p-2', title: 'JVC Residence', location: 'JVC' },
+            tenant: { id: 't-2', name: 'Sara', email: 'sara@example.com' },
+            landlord: { id: 'l-2', name: 'Landlord 2' },
+          },
+        ]),
+        count: vi
+          .fn()
+          .mockResolvedValueOnce(2)
+          .mockResolvedValueOnce(1)
+          .mockResolvedValueOnce(2)
+          .mockResolvedValueOnce(2),
+      };
+
+      (mockPrisma as any).offer = {
+        count: vi.fn().mockResolvedValueOnce(3).mockResolvedValueOnce(1),
+      };
+
+      (mockPrisma as any).pDCSchedule = {
+        aggregate: vi
+          .fn()
+          .mockResolvedValueOnce({ _sum: { amount: 50000 }, _count: { _all: 5 } })
+          .mockResolvedValueOnce({ _sum: { amount: 10000 }, _count: { _all: 1 } })
+          .mockResolvedValueOnce({ _sum: { amount: 15000 }, _count: { _all: 2 } }),
+      };
+
+      (mockPrisma as any).maintenance = {
+        aggregate: vi.fn().mockResolvedValue({ _sum: { cost: 7000 } }),
+      };
+
+      mockPrisma.commission.findMany.mockResolvedValueOnce([
+        { amount: 3000, status: 'paid' },
+        { amount: 2000, status: 'pending' },
+      ]);
+
+      const res = await request(createApp('owner')).get('/api/dashboard/leasing');
+
+      expect(res.status).toBe(200);
+      expect(res.body.success).toBe(true);
+      expect(res.body.data.summary).toEqual(
+        expect.objectContaining({
+          totalLeases: 2,
+          activeLeases: 2,
+          mrr: 25000,
+          leasingLeads: 42,
+          pendingOffers: 3,
+          acceptedOffers: 1,
+        })
+      );
+      expect(res.body.data.renewalForecast).toEqual(
+        expect.objectContaining({ expiringIn30: 2, expiringIn60: 1, expiringIn90: 2 })
+      );
+      expect(res.body.data.pdc).toEqual(
+        expect.objectContaining({
+          cleared: { count: 5, amount: 50000 },
+          pending: { count: 2, amount: 15000 },
+          bounced: { count: 1, amount: 10000 },
+        })
+      );
+      expect(res.body.data.pnl).toEqual(
+        expect.objectContaining({
+          totalRentCollected: 50000,
+          totalCommission: 5000,
+          paidCommission: 3000,
+          pendingCommission: 2000,
+          maintenanceCost: 7000,
+          netProfit: 38000,
+        })
+      );
+    });
   });
 
   // ── GET /analytics/kpi-baseline ─────────────────────────────────
