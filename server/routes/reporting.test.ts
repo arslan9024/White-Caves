@@ -863,6 +863,53 @@ describe('Reporting / Dashboard Routes — /api/dashboard', () => {
         ])
       );
     });
+
+    it('returns 200 for finance role', async () => {
+      mockPrisma.lead.findMany.mockResolvedValueOnce([]);
+      mockPrisma.lead.count.mockResolvedValueOnce(0).mockResolvedValueOnce(0);
+      mockPrisma.property.findMany.mockResolvedValueOnce([]);
+      mockPrisma.user.count.mockResolvedValueOnce(45);
+
+      (mockPrisma as any).viewing = {
+        findMany: vi.fn().mockResolvedValue([]),
+        count: vi.fn().mockResolvedValue(0),
+      };
+      (mockPrisma as any).offer = {
+        count: vi.fn().mockResolvedValue(0),
+      };
+
+      const res = await request(createApp('finance')).get('/api/dashboard/analytics/kpi-baseline');
+
+      expect(res.status).toBe(200);
+      expect(res.body.success).toBe(true);
+      expect(res.body.data.period).toBe('30d');
+      expect(res.body.data.kpis).toHaveLength(8);
+    });
+
+    it('falls back to default tenant MAU when user count query fails', async () => {
+      mockPrisma.lead.findMany.mockResolvedValueOnce([]);
+      mockPrisma.lead.count.mockResolvedValueOnce(0).mockResolvedValueOnce(0);
+      mockPrisma.property.findMany.mockResolvedValueOnce([]);
+      mockPrisma.user.count.mockRejectedValueOnce(new Error('tenant count unavailable'));
+
+      (mockPrisma as any).viewing = {
+        findMany: vi.fn().mockResolvedValue([]),
+        count: vi.fn().mockResolvedValue(0),
+      };
+      (mockPrisma as any).offer = {
+        count: vi.fn().mockResolvedValue(0),
+      };
+
+      const res = await request(createApp('manager')).get('/api/dashboard/analytics/kpi-baseline');
+
+      expect(res.status).toBe(200);
+      expect(res.body.success).toBe(true);
+      expect(res.body.data.kpis).toEqual(
+        expect.arrayContaining([
+          expect.objectContaining({ name: 'Tenant Portal MAU', current: 45 }),
+        ])
+      );
+    });
   });
 
   // ── GET /agent-performance (W18.1-P1-003) ───────────────────────
