@@ -1058,6 +1058,28 @@ describe('Reporting / Dashboard Routes — /api/dashboard', () => {
       expect(res.body.data.kpis).toHaveLength(8);
     });
 
+    it('returns 200 for owner role', async () => {
+      mockPrisma.lead.findMany.mockResolvedValueOnce([]);
+      mockPrisma.lead.count.mockResolvedValueOnce(0).mockResolvedValueOnce(0);
+      mockPrisma.property.findMany.mockResolvedValueOnce([]);
+      mockPrisma.user.count.mockResolvedValueOnce(45);
+
+      (mockPrisma as any).viewing = {
+        findMany: vi.fn().mockResolvedValue([]),
+        count: vi.fn().mockResolvedValue(0),
+      };
+      (mockPrisma as any).offer = {
+        count: vi.fn().mockResolvedValue(0),
+      };
+
+      const res = await request(createApp('owner')).get('/api/dashboard/analytics/kpi-baseline');
+
+      expect(res.status).toBe(200);
+      expect(res.body.success).toBe(true);
+      expect(res.body.data.period).toBe('30d');
+      expect(res.body.data.kpis).toHaveLength(8);
+    });
+
     it('falls back to default tenant MAU when user count query fails', async () => {
       mockPrisma.lead.findMany.mockResolvedValueOnce([]);
       mockPrisma.lead.count.mockResolvedValueOnce(0).mockResolvedValueOnce(0);
@@ -1394,6 +1416,14 @@ describe('Reporting / Dashboard Routes — /api/dashboard', () => {
 
     it('returns 200 with attachment headers for manager role', async () => {
       const res = await request(createApp('manager')).get('/api/dashboard/pl/excel');
+
+      expect(res.status).toBe(200);
+      expect(res.headers['content-type']).toContain('application/vnd.openxmlformats');
+      expect(res.headers['content-disposition']).toContain('monthly-pl.xlsx');
+    });
+
+    it('returns 200 with attachment headers for owner role', async () => {
+      const res = await request(createApp('owner')).get('/api/dashboard/pl/excel');
 
       expect(res.status).toBe(200);
       expect(res.headers['content-type']).toContain('application/vnd.openxmlformats');
