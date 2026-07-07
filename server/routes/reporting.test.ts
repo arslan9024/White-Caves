@@ -529,6 +529,26 @@ describe('Reporting / Dashboard Routes — /api/dashboard', () => {
       expect(res.status).toBe(403);
     });
 
+    it('returns 200 for manager role', async () => {
+      mockPrisma.activity.findMany.mockResolvedValueOnce([]);
+      mockPrisma.activity.count.mockResolvedValueOnce(0);
+
+      const res = await request(createApp('manager')).get('/api/dashboard/activities');
+
+      expect(res.status).toBe(200);
+      expect(res.body.success).toBe(true);
+    });
+
+    it('returns 200 for admin role', async () => {
+      mockPrisma.activity.findMany.mockResolvedValueOnce([]);
+      mockPrisma.activity.count.mockResolvedValueOnce(0);
+
+      const res = await request(createApp('admin')).get('/api/dashboard/activities');
+
+      expect(res.status).toBe(200);
+      expect(res.body.success).toBe(true);
+    });
+
     it('supports pagination params', async () => {
       mockPrisma.activity.findMany.mockResolvedValueOnce([]);
       mockPrisma.activity.count.mockResolvedValueOnce(100);
@@ -601,6 +621,20 @@ describe('Reporting / Dashboard Routes — /api/dashboard', () => {
       expect(res.body.success).toBe(true);
       expect(res.body.data).toHaveProperty('portfolioValue');
     });
+
+    it('returns 200 for finance role', async () => {
+      mockPrisma.lead.groupBy.mockResolvedValue([{ status: 'new', _count: { _all: 3 } }]);
+      mockPrisma.property.groupBy.mockResolvedValue([{ status: 'available', _count: { _all: 2 } }]);
+      mockPrisma.commission.groupBy.mockResolvedValueOnce([
+        { status: 'paid', _count: { _all: 2 }, _sum: { amount: 12000 } },
+      ]);
+
+      const res = await request(createApp('finance')).get('/api/dashboard/executive');
+
+      expect(res.status).toBe(200);
+      expect(res.body.success).toBe(true);
+      expect(res.body.data).toHaveProperty('commissions');
+    });
   });
 
   // ── GET /kpis ────────────────────────────────────────────────────
@@ -641,6 +675,30 @@ describe('Reporting / Dashboard Routes — /api/dashboard', () => {
       });
       const res = await request(createApp('finance')).get('/api/dashboard/kpis');
       expect(res.status).toBe(200);
+    });
+
+    it('returns 200 for owner role', async () => {
+      mockPrisma.lead.count
+        .mockResolvedValueOnce(9) // newLeads30d
+        .mockResolvedValueOnce(4); // wonDeals30d
+      mockPrisma.property.count.mockResolvedValueOnce(6); // newProperties30d
+      mockPrisma.commission.aggregate
+        .mockResolvedValueOnce({ _sum: { amount: 88000 } }) // totalRevenue
+        .mockResolvedValueOnce({ _avg: { amount: 22000 } }); // avgDealSize
+
+      const res = await request(createApp('owner')).get('/api/dashboard/kpis');
+
+      expect(res.status).toBe(200);
+      expect(res.body.success).toBe(true);
+      expect(res.body.data.kpis).toEqual(
+        expect.objectContaining({
+          newLeads: 9,
+          wonDeals: 4,
+          newListings: 6,
+          totalRevenue: 88000,
+          avgDealSize: 22000,
+        })
+      );
     });
 
     it('returns 200 for admin role', async () => {
