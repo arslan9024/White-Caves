@@ -9,8 +9,20 @@ import express, { type NextFunction, type Request, type Response } from 'express
 import request from 'supertest';
 
 // ── Hoisted mocks ────────────────────────────────────────────────────
-const { mockPrisma } = vi.hoisted(() => {
+const { mockPrisma, mockLogger } = vi.hoisted(() => {
   const fn = vi.fn;
+  const mockLogger = {
+    createLogger: vi.fn(() => ({
+      info: vi.fn(),
+      debug: vi.fn(),
+      warn: vi.fn(),
+      error: vi.fn(),
+    })),
+    info: vi.fn(),
+    debug: vi.fn(),
+    warn: vi.fn(),
+    error: vi.fn(),
+  };
   return {
     mockPrisma: {
       property: {
@@ -46,10 +58,16 @@ const { mockPrisma } = vi.hoisted(() => {
         }),
       },
     },
+    mockLogger,
   };
 });
 
 vi.mock('../database.js', () => ({ prisma: mockPrisma }));
+vi.mock('../utils/logger.js', () => ({
+  default: mockLogger,
+  createLogger: mockLogger.createLogger,
+  logger: mockLogger,
+}));
 vi.mock('../middleware/errorHandler', () => ({
   AppError: class extends Error {
     statusCode: number;
@@ -66,6 +84,16 @@ vi.mock('../middleware/errorHandler', () => ({
 vi.mock('../middleware/auth', () => ({ default: null }));
 vi.mock('../utils/sanitize', () => ({
   sanitizeString: (s: string) => s,
+}));
+vi.mock('../middleware/rbac', () => ({
+  requirePermission: (_permission: string) => (req: Request, res: Response, next: NextFunction) => {
+    if (!req.user) return res.status(403).json({ success: false, error: 'Unauthorized' });
+    next();
+  },
+  requireMinRole: (_minRole: string) => (req: Request, res: Response, next: NextFunction) => {
+    if (!req.user) return res.status(403).json({ success: false, error: 'Unauthorized' });
+    next();
+  },
 }));
 vi.mock('../services/compliance/amlAdapter.js', () => ({
   screenAML: vi.fn(async () => ({
@@ -90,8 +118,28 @@ vi.mock('../services/compliance/propertyPermitEnforcementScheduler.js', () => ({
     affectedPropertyIds: ['prop-1'],
   })),
 }));
+vi.mock('../services/compliance/complianceService.js', () => ({
+  generateEjariExport: vi.fn(async () => 'csv_data'),
+  calculateVATSummary: vi.fn(async () => ({ totalVAT: 50000, breakdown: {} })),
+  getComplianceOverview: vi.fn(async () => ({ overallScore: 85, compliant: true })),
+  updateEjariStatus: vi.fn(async () => ({ id: 'lease-1', ejariStatus: 'registered' })),
+}));
+vi.mock('../services/compliance/permitAlertScheduler.js', () => ({
+  getPermitAlerts: vi.fn(async () => ({
+    summary: {
+      listingPermitIssues: 1,
+      brnExpiringSoon: 1,
+      brnExpired: 1,
+    },
+    listingPermitIssues: [{ id: 'prop-1', title: 'Marina Tower 1204' }],
+    brnPermitAlerts: [
+      { id: 'u-1', name: 'Agent One', type: 'expiring_soon' },
+      { id: 'u-2', name: 'Agent Two', type: 'expired' },
+    ],
+  })),
+}));
 
-import complianceRoutes from './compliance';
+import complianceRoutes from './compliance.js';
 import { enforcePropertyPermitCompliance } from '../services/compliance/propertyPermitEnforcementScheduler.js';
 import { checkBRNExpirations } from '../services/compliance/reraExpiryScheduler.js';
 
@@ -994,12 +1042,11 @@ describe('Compliance Routes — /api/compliance', () => {
           }),
         })
       );
+    });
 
-      it('returns 403 for agent on consent delete', async () => {
-        const res = await request(createApp('agent')).delete('/api/compliance/consent/consent-1');
-
-        expect(res.status).toBe(403);
-      });
+    it('returns 403 for agent on consent delete', async () => {
+      const res = await request(createApp('agent')).delete('/api/compliance/consent/consent-1');
+      expect(res.status).toBe(403);
     });
   });
 
