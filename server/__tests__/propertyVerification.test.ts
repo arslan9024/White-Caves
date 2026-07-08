@@ -13,31 +13,40 @@ const { mockPrisma, mockCacheService } = vi.hoisted(() => ({
   mockPrisma: {
     property: {
       findUnique: vi.fn(),
-      findMany:   vi.fn(),
-      count:      vi.fn(),
-      groupBy:    vi.fn(),
-      aggregate:  vi.fn(),
-      create:     vi.fn(),
-      update:     vi.fn(),
+      findMany: vi.fn(),
+      count: vi.fn(),
+      groupBy: vi.fn(),
+      aggregate: vi.fn(),
+      create: vi.fn(),
+      update: vi.fn(),
+    },
+    activity: {
+      create: vi.fn().mockResolvedValue({ id: 'activity-1', type: 'property' }),
     },
   },
   mockCacheService: { get: vi.fn(), set: vi.fn(), invalidate: vi.fn() },
 }));
 
-vi.mock('../database.js',              () => ({ prisma: mockPrisma }));
+vi.mock('../database.js', () => ({ prisma: mockPrisma }));
 vi.mock('../services/CacheService.js', () => ({ cacheService: mockCacheService }));
 vi.mock('../middleware/errorHandler', () => ({
   AppError: class extends Error {
     statusCode: number;
-    constructor(msg: string, code: number) { super(msg); this.statusCode = code; }
+    constructor(msg: string, code: number) {
+      super(msg);
+      this.statusCode = code;
+    }
   },
   asyncHandler: (fn: any) => (req: any, res: any, next: any) =>
     Promise.resolve(fn(req, res, next)).catch(next),
 }));
 vi.mock('../middleware/rbac', () => ({
   requirePermission: () => (_r: any, _s: any, n: any) => n(),
-  requireMinRole:    () => (_r: any, _s: any, n: any) => n(),
-  scopeToOwn:        () => (req: any, _s: any, n: any) => { req.ownershipFilter = {}; n(); },
+  requireMinRole: () => (_r: any, _s: any, n: any) => n(),
+  scopeToOwn: () => (req: any, _s: any, n: any) => {
+    req.ownershipFilter = {};
+    n();
+  },
 }));
 vi.mock('../utils/sanitize', () => ({ sanitizeString: (s: string) => s }));
 vi.mock('../utils/validate', () => ({
@@ -117,9 +126,7 @@ describe('PATCH /api/properties/:id — verification fields (W18.1-P0-012)', () 
 
   it('sets verifiedBy when PATCH body includes verifiedBy', async () => {
     mockPrisma.property.findUnique.mockResolvedValue(makeProperty());
-    mockPrisma.property.update.mockResolvedValue(
-      makeProperty({ verifiedBy: 'agent-xyz' }),
-    );
+    mockPrisma.property.update.mockResolvedValue(makeProperty({ verifiedBy: 'agent-xyz' }));
 
     const res = await request(createApp())
       .patch(`/api/properties/${PROPERTY_ID}`)
