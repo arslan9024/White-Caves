@@ -9,6 +9,7 @@ import React, {
   useRef,
   useState,
 } from 'react';
+import styled from 'styled-components';
 import { useSelector } from 'react-redux';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { AnimatePresence, motion, useReducedMotion } from 'framer-motion';
@@ -46,8 +47,7 @@ import { selectSelectedAssistant } from '../store/slices/sidebarSlice';
 import { SUPERUSER_CRM_MODULE_ORDER, getCRMModule } from '../config/crmModuleRegistry';
 import { ZONE_LABELS, groupModulesForMD } from '../config/crmNavigationSchema';
 import type { RootState } from '../store/store';
-import './UnifiedDashboardPage.css';
-import '../styles/dashboard-tokens.css';
+import { colors, spacing, typography, media, shadows, borderRadius } from '../design-tokens';
 
 const OverviewTab = lazy(() => import('../components/owner/tabs/OverviewTab'));
 const PropertiesTab = lazy(() => import('../components/owner/tabs/PropertiesTab'));
@@ -117,30 +117,27 @@ function tabData<T>(data: DashboardData | null | undefined): T {
 }
 
 const TabLoadingFallback: FC = () => (
-  <div className="tab-loading-fallback">
+  <TabLoadingFallbackContainer>
     <SuspenseLoader />
-  </div>
+  </TabLoadingFallbackContainer>
 );
 
 const DashboardSearchItem: FC<{ item: SearchItem; onSelect: (item: SearchItem) => void }> = ({
   item,
   onSelect,
 }) => (
-  <button
-    className="dashboard-search-result"
+  <DashboardSearchResultButton
     onMouseDown={event => {
       event.preventDefault();
       onSelect(item);
     }}
   >
-    <span className="dashboard-search-result__icon" aria-hidden="true">
-      {item.icon}
-    </span>
-    <span className="dashboard-search-result__copy">
+    <SearchResultIcon aria-hidden="true">{item.icon}</SearchResultIcon>
+    <SearchResultCopy>
       <strong>{item.label}</strong>
       <small>{item.meta}</small>
-    </span>
-  </button>
+    </SearchResultCopy>
+  </DashboardSearchResultButton>
 );
 
 const UnifiedCRMAdapter: FC<CRMModuleProps> = () => <UnifiedCRM />;
@@ -169,6 +166,304 @@ const CRM_MODULES: Record<string, CRMModule> = {
 };
 
 const moduleEntries = Object.entries(CRM_MODULES);
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// STYLED COMPONENTS
+// ═══════════════════════════════════════════════════════════════════════════════
+
+const UnifiedDashboardContainer = styled.div`
+  min-height: 100%;
+  background: ${colors.background.default};
+  color: ${colors.text.primary};
+  padding: ${spacing[5]};
+`;
+
+const UnifiedDashboardError = styled(UnifiedDashboardContainer)`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+`;
+
+const TabLoadingFallbackContainer = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 360px;
+`;
+
+const DashboardSearchResultButton = styled.button`
+  display: grid;
+  grid-template-columns: 32px 1fr;
+  align-items: center;
+  gap: ${spacing[3]};
+  width: 100%;
+  padding: ${spacing[2]} ${spacing[3]};
+  border: 0;
+  border-radius: ${borderRadius.lg};
+  background: transparent;
+  color: ${colors.text.primary};
+  text-align: start;
+  cursor: pointer;
+  transition: background 0.2s ease;
+
+  &:hover {
+    background: ${colors.background.hover};
+  }
+
+  &:focus-visible {
+    outline: 2px solid ${colors.primary[500]};
+    outline-offset: 2px;
+  }
+`;
+
+const SearchResultIcon = styled.span`
+  display: grid;
+  place-items: center;
+  width: 32px;
+  height: 32px;
+  border-radius: ${borderRadius.md};
+  background: ${colors.background.surface};
+`;
+
+const SearchResultCopy = styled.span`
+  display: flex;
+  flex-direction: column;
+  gap: ${spacing[1]};
+
+  strong {
+    ${typography.presets.label};
+    color: ${colors.text.primary};
+  }
+
+  small {
+    ${typography.presets.caption};
+    color: ${colors.text.secondary};
+  }
+`;
+
+const DashboardSearchResultsEmpty = styled.div`
+  padding: ${spacing[2]} ${spacing[3]};
+  border-radius: ${borderRadius.md};
+  color: ${colors.text.secondary};
+  ${typography.presets.caption};
+  background: ${colors.background.surface};
+`;
+
+const ErrorBanner = styled.div`
+  display: flex;
+  align-items: center;
+  gap: ${spacing[3]};
+  margin-bottom: ${spacing[4]};
+  padding: ${spacing[3]} ${spacing[4]};
+  background: ${colors.error[50]};
+  border: 1px solid ${colors.error[200]};
+  border-radius: ${borderRadius.md};
+  color: ${colors.error[700]};
+  box-shadow: ${shadows.sm};
+
+  p {
+    flex: 1;
+    margin: 0;
+    ${typography.presets.body};
+  }
+
+  button {
+    min-height: 38px;
+    padding: 0 ${spacing[3]};
+    border: 0;
+    border-radius: 999px;
+    background: ${colors.primary[500]};
+    color: white;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+
+    &:hover {
+      background: ${colors.primary[600]};
+      transform: translateY(-1px);
+    }
+
+    &:active {
+      transform: translateY(0);
+    }
+  }
+`;
+
+const ErrorIcon = styled.span`
+  font-size: 1.2rem;
+`;
+
+const DashboardWorkspaceShell = styled.div`
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) minmax(0, 300px);
+  gap: ${spacing[5]};
+  align-items: start;
+
+  ${media.lg} {
+    grid-template-columns: 1fr;
+  }
+`;
+
+const DashboardMainPanel = styled.main`
+  display: flex;
+  flex-direction: column;
+  gap: ${spacing[4]};
+`;
+
+const ExecutiveCockpitBannerSection = styled.section`
+  display: grid;
+  gap: ${spacing[3]};
+  margin-bottom: ${spacing[3]};
+  padding: ${spacing[4]};
+  border-radius: ${borderRadius.md};
+  border: 1px solid rgba(201, 168, 76, 0.34);
+  background: linear-gradient(135deg, rgba(38, 38, 46, 0.92), rgba(24, 24, 30, 0.95));
+  color: #f8f6ef;
+
+  h2 {
+    margin: 0;
+    font-size: 1.08rem;
+    font-weight: 600;
+  }
+
+  p {
+    margin: ${spacing[1]} 0 0;
+    color: rgba(248, 246, 239, 0.84);
+    ${typography.presets.body};
+  }
+`;
+
+const ExecutiveCockpitEyebrow = styled.p`
+  margin: 0;
+  color: rgba(255, 215, 140, 0.96);
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+`;
+
+const ExecutiveCockpitActions = styled.div`
+  display: flex;
+  flex-wrap: wrap;
+  gap: ${spacing[2]};
+`;
+
+const SuperuserButton = styled.button`
+  min-height: 38px;
+  padding: 0 ${spacing[3]};
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, 0.28);
+  background: rgba(255, 255, 255, 0.08);
+  color: #fff;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+
+  &:hover {
+    background: rgba(255, 255, 255, 0.12);
+    transform: translateY(-1px);
+  }
+
+  &:active {
+    transform: translateY(0);
+  }
+
+  &:focus-visible {
+    outline: 2px solid rgba(255, 215, 140, 0.95);
+    outline-offset: 2px;
+  }
+`;
+
+const SuperuserButtonPrimary = styled(SuperuserButton)`
+  background: linear-gradient(135deg, #bd8f2f, #e4b75e);
+  border-color: transparent;
+  color: #1f1300;
+
+  &:hover {
+    background: linear-gradient(135deg, #a87a28, #d4a84a);
+  }
+`;
+
+const ConfiguratorPanel = styled.section`
+  margin-bottom: ${spacing[4]};
+`;
+
+const ConfiguratorPanelError = styled.p`
+  margin: ${spacing[2]} 0 0;
+  color: ${colors.error[700]};
+  font-size: 0.86rem;
+  font-weight: 600;
+`;
+
+const EmptyState = styled.section`
+  display: grid;
+  gap: ${spacing[2]};
+  margin-bottom: ${spacing[4]};
+  padding: ${spacing[4]} ${spacing[5]};
+  border-radius: ${borderRadius.md};
+  border: 1px dashed ${colors.border.light};
+  background: ${colors.background.surface};
+
+  h2 {
+    margin: 0;
+    font-size: 1.06rem;
+    font-weight: 600;
+  }
+
+  p {
+    margin: 0;
+    color: ${colors.text.secondary};
+    ${typography.presets.body};
+  }
+`;
+
+const EmptyStateEyebrow = styled.p`
+  margin: 0;
+  color: ${colors.text.secondary};
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  font-size: 0.72rem;
+  font-weight: 700;
+`;
+
+const EmptyStateActions = styled.div`
+  display: flex;
+  flex-wrap: wrap;
+  gap: ${spacing[2]};
+`;
+
+const SurfacePanel = styled.div`
+  min-height: 460px;
+  padding: ${spacing[6]};
+  background: rgba(255, 255, 255, 0.94);
+  border: 1px solid rgba(255, 255, 255, 0.8);
+  border-radius: ${borderRadius.lg};
+  box-shadow: ${shadows.default};
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+`;
+
+const DashboardSubnavPanel = styled.div`
+  min-width: 0;
+  margin-bottom: ${spacing[2]};
+  padding: ${spacing[2]};
+  background: rgba(255, 255, 255, 0.72);
+  border: 1px solid rgba(255, 255, 255, 0.72);
+  border-radius: ${borderRadius.md};
+  box-shadow: ${shadows.default};
+`;
+
+const DashboardContentFrame = styled.div`
+  min-width: 0;
+`;
+
+const UnifiedDashboardContent = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: ${spacing[4]};
+`;
+
 const dashboardPageLogger = createLogger('UnifiedDashboardPage');
 
 const getTimeGreeting = (date: Date): string => {
@@ -861,9 +1156,9 @@ const UnifiedDashboardPage: FC = () => {
 
   if (!user) {
     return (
-      <div className="unified-dashboard unified-dashboard-error">
+      <UnifiedDashboardError>
         <p>Please log in to access the dashboard.</p>
-      </div>
+      </UnifiedDashboardError>
     );
   }
 
@@ -882,9 +1177,9 @@ const UnifiedDashboardPage: FC = () => {
               <DashboardSearchItem key={item.id} item={item} onSelect={executeSearchItem} />
             ))
           ) : (
-            <div className="dashboard-search-results__empty" role="status" aria-live="polite">
+            <DashboardSearchResultsEmpty role="status" aria-live="polite">
               No matches found. Try another lead, property, tab, or module keyword.
-            </div>
+            </DashboardSearchResultsEmpty>
           )
         }
         hotLeadsCount={hotLeadsCount}
@@ -905,18 +1200,16 @@ const UnifiedDashboardPage: FC = () => {
       />
 
       {error && (
-        <div className="unified-dashboard-error-banner" role="alert" aria-live="assertive">
-          <span className="error-icon" aria-hidden="true">
-            ⚠️
-          </span>
+        <ErrorBanner role="alert" aria-live="assertive">
+          <ErrorIcon aria-hidden="true">⚠️</ErrorIcon>
           <p>{error}</p>
           <button onClick={handleRetryAll} aria-label="Retry loading dashboard data">
             Retry
           </button>
-        </div>
+        </ErrorBanner>
       )}
 
-      <div className="dashboard-workspace-shell">
+      <DashboardWorkspaceShell>
         {!selectedDepartment && (
           <DashboardSideRail
             availableTabs={availableTabs}
@@ -937,7 +1230,7 @@ const UnifiedDashboardPage: FC = () => {
           />
         )}
 
-        <main id="dashboard-main" className="dashboard-main-panel">
+        <DashboardMainPanel id="dashboard-main">
           <DashboardPageHeader
             currentModule={currentModule ?? null}
             currentRole={currentRole}
@@ -950,79 +1243,53 @@ const UnifiedDashboardPage: FC = () => {
           />
 
           {isExecutiveCockpitMode && isSuperUser && !selectedDepartment && (
-            <section
-              className="dashboard-executive-cockpit-banner"
-              aria-label="Managing Director cockpit mode"
-            >
+            <ExecutiveCockpitBannerSection aria-label="Managing Director cockpit mode">
               <div>
-                <p className="dashboard-executive-cockpit-banner__eyebrow">
+                <ExecutiveCockpitEyebrow>
                   Managing Director · Full Company View
-                </p>
+                </ExecutiveCockpitEyebrow>
                 <h2>Executive cockpit engaged</h2>
                 <p>
                   Priority control over portfolio, pipeline, team, finance, compliance, and AI
                   modules. All company operations visible in one place.
                 </p>
               </div>
-              <div className="dashboard-executive-cockpit-banner__actions">
-                <button
-                  type="button"
-                  className="dashboard-superuser-btn dashboard-superuser-btn--primary"
-                  onClick={() => setIsCommandPaletteOpen(true)}
-                >
+              <ExecutiveCockpitActions>
+                <SuperuserButtonPrimary type="button" onClick={() => setIsCommandPaletteOpen(true)}>
                   Command palette
-                </button>
-                <button
+                </SuperuserButtonPrimary>
+                <SuperuserButton
                   type="button"
-                  className="dashboard-superuser-btn"
                   onClick={() => openWorkspaceTab('overview', 'unified')}
                 >
                   Overview
-                </button>
-                <button
+                </SuperuserButton>
+                <SuperuserButton
                   type="button"
-                  className="dashboard-superuser-btn"
                   onClick={() => openWorkspaceTab('analytics', 'analytics')}
                 >
                   Analytics
-                </button>
-                <button
-                  type="button"
-                  className="dashboard-superuser-btn"
-                  onClick={() => handleCRMModuleSelect('theodora')}
-                >
+                </SuperuserButton>
+                <SuperuserButton type="button" onClick={() => handleCRMModuleSelect('theodora')}>
                   Finance
-                </button>
-                <button
-                  type="button"
-                  className="dashboard-superuser-btn"
-                  onClick={() => handleCRMModuleSelect('laila')}
-                >
+                </SuperuserButton>
+                <SuperuserButton type="button" onClick={() => handleCRMModuleSelect('laila')}>
                   Compliance
-                </button>
-                <button
+                </SuperuserButton>
+                <SuperuserButton
                   type="button"
-                  className="dashboard-superuser-btn"
                   onClick={() => openWorkspaceTab('ai-hub', 'unified')}
                 >
                   AI modules
-                </button>
-                <button
-                  type="button"
-                  className="dashboard-superuser-btn"
-                  onClick={() => openWorkspaceTab('users', 'unified')}
-                >
+                </SuperuserButton>
+                <SuperuserButton type="button" onClick={() => openWorkspaceTab('users', 'unified')}>
                   Users
-                </button>
-                <button
-                  type="button"
-                  className="dashboard-superuser-btn"
-                  onClick={() => navigate('/profile')}
-                >
+                </SuperuserButton>
+                <SuperuserButton type="button" onClick={() => navigate('/profile')}>
                   Profile
-                </button>
-              </div>
-            </section>
+                </SuperuserButton>
+              </ExecutiveCockpitActions>
+            </ExecutiveCockpitBannerSection>
           )}
 
           {isExecutiveRole && !selectedDepartment && (
@@ -1066,10 +1333,7 @@ const UnifiedDashboardPage: FC = () => {
           {!selectedDepartment && !selectedCRMModule && <DashboardKpiStrip cards={kpiCards} />}
 
           {showDashboardConfigurator && (
-            <section
-              className="dashboard-configurator-panel"
-              aria-label="Dashboard widget controls"
-            >
+            <ConfiguratorPanel aria-label="Dashboard widget controls">
               <DashboardConfigurator
                 title="Executive Widget Controls"
                 widgets={dashboardWidgets}
@@ -1077,11 +1341,11 @@ const UnifiedDashboardPage: FC = () => {
                 onReset={handleResetDashboardConfig}
               />
               {dashboardConfigError ? (
-                <p className="dashboard-configurator-panel__error" role="status" aria-live="polite">
+                <ConfiguratorPanelError role="status" aria-live="polite">
                   {dashboardConfigError}
-                </p>
+                </ConfiguratorPanelError>
               ) : null}
-            </section>
+            </ConfiguratorPanel>
           )}
 
           {!selectedDepartment &&
@@ -1089,49 +1353,40 @@ const UnifiedDashboardPage: FC = () => {
             !isLoading &&
             !error &&
             isDashboardDataEmpty && (
-              <section
-                className="dashboard-empty-state"
-                aria-label="Dashboard empty state"
-                role="status"
-              >
-                <p className="dashboard-empty-state__eyebrow">No data yet</p>
+              <EmptyState aria-label="Dashboard empty state" role="status">
+                <EmptyStateEyebrow>No data yet</EmptyStateEyebrow>
                 <h2>Your executive dashboard is ready</h2>
                 <p>
                   Connect your first workflows to populate KPIs, activity timeline, and operations
                   intelligence.
                 </p>
-                <div className="dashboard-empty-state__actions">
-                  <button
+                <EmptyStateActions>
+                  <SuperuserButtonPrimary
                     type="button"
-                    className="dashboard-superuser-btn dashboard-superuser-btn--primary"
                     onClick={() => setIsCommandPaletteOpen(true)}
                   >
                     Open command palette
-                  </button>
-                  <button
-                    type="button"
-                    className="dashboard-superuser-btn"
-                    onClick={() => handleCRMModuleSelect('unified')}
-                  >
+                  </SuperuserButtonPrimary>
+                  <SuperuserButton type="button" onClick={() => handleCRMModuleSelect('unified')}>
                     Open Unified CRM
-                  </button>
-                </div>
-              </section>
+                  </SuperuserButton>
+                </EmptyStateActions>
+              </EmptyState>
             )}
 
           {selectedDepartment ? (
-            <div className="dashboard-surface-panel">
+            <SurfacePanel>
               <DepartmentContentPanel />
-            </div>
+            </SurfacePanel>
           ) : (
             <>
               {roleSubNavItems.length > 0 && (
-                <div className="dashboard-subnav-panel">
+                <DashboardSubnavPanel>
                   <SubNavBar moduleId={currentModule ?? currentRole} />
-                </div>
+                </DashboardSubnavPanel>
               )}
 
-              <div className="dashboard-content-frame">
+              <DashboardContentFrame>
                 {selectedCRMModuleConfig && isSuperUser && (
                   <DashboardModuleToolbar
                     label={selectedCRMModuleConfig.label}
@@ -1142,7 +1397,6 @@ const UnifiedDashboardPage: FC = () => {
                 <AnimatePresence mode="wait" initial={false}>
                   <motion.section
                     key={activeContentKey}
-                    className="unified-dashboard-content"
                     initial={
                       prefersReducedMotion
                         ? false
@@ -1163,10 +1417,10 @@ const UnifiedDashboardPage: FC = () => {
                     )}
                   </motion.section>
                 </AnimatePresence>
-              </div>
+              </DashboardContentFrame>
             </>
           )}
-        </main>
+        </DashboardMainPanel>
 
         {!selectedDepartment && (
           <CRMContextPanel
@@ -1191,7 +1445,7 @@ const UnifiedDashboardPage: FC = () => {
             onOpenQuickAction={() => setIsCommandPaletteOpen(true)}
           />
         )}
-      </div>
+      </DashboardWorkspaceShell>
 
       <DashboardCommandPalette
         isOpen={isCommandPaletteOpen}

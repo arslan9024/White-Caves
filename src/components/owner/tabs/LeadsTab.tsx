@@ -1,6 +1,51 @@
 ﻿import React, { useState, useCallback, useEffect } from 'react';
 import type { LeadsTabProps, Lead } from './types';
-import './TabStyles.css';
+import {
+  TabContainer,
+  TabHeader,
+  TabTitle,
+  HeaderActions,
+  PrimaryButton,
+  SecondaryButton,
+  TableContainer,
+  Table,
+  EmptyStateText,
+  FilterRow,
+  FilterSelect,
+  PaginationContainer,
+  PageButton,
+  ModalOverlay,
+  Modal,
+  ModalSmall,
+  ModalHeader,
+  ModalCloseButton,
+  ModalBody,
+  ModalFooter,
+  StatusBadge,
+  PriorityBadge,
+  SourceBadge,
+  UnassignedBadge,
+  Toast,
+  LoadingSpinner,
+  LoadingState,
+  ErrorState,
+  ErrorIcon,
+  IconButton,
+  ActionButtons,
+  LeadStatsRow,
+  LeadStat,
+  StatNumber,
+  StatLabelText,
+  TableFooter,
+  LeadCell,
+  ContactCell,
+  StatusSelect,
+  LinkButton,
+  WarningText,
+  DangerButton,
+  FormGrid,
+  FormGroup,
+} from './TabStylesComponents';
 
 const MOCK_LEADS: Lead[] = [
   {
@@ -143,10 +188,10 @@ const LeadsTab: React.FC<LeadsTabProps> = ({ data, loading, error }) => {
         ...prev,
         { id: nextId, createdAt: new Date().toISOString(), ...form },
       ]);
-      showToast('âœ… Lead added successfully');
+      showToast('✅ Lead added successfully');
     } else if (modalMode === 'edit' && editTarget) {
       setLocalLeads(prev => prev.map(l => (l.id === editTarget.id ? { ...l, ...form } : l)));
-      showToast('âœ… Lead updated successfully');
+      showToast('✅ Lead updated successfully');
     }
     closeModal();
   };
@@ -154,7 +199,7 @@ const LeadsTab: React.FC<LeadsTabProps> = ({ data, loading, error }) => {
   const handleDelete = () => {
     if (!editTarget) return;
     setLocalLeads(prev => prev.filter(l => l.id !== editTarget.id));
-    showToast('ðŸ—‘ï¸ Lead removed');
+    showToast('🗑️ Lead removed');
     closeModal();
   };
 
@@ -164,22 +209,22 @@ const LeadsTab: React.FC<LeadsTabProps> = ({ data, loading, error }) => {
 
   if (loading) {
     return (
-      <div className="leads-tab">
-        <div className="tab-loading-state" role="status" aria-label="Loading leads">
-          <div className="loading-spinner" />
+      <TabContainer>
+        <LoadingState role="status" aria-label="Loading leads">
+          <LoadingSpinner />
           <p>Loading leads...</p>
-        </div>
-      </div>
+        </LoadingState>
+      </TabContainer>
     );
   }
   if (error) {
     return (
-      <div className="leads-tab">
-        <div className="tab-error-state" role="alert">
-          <span className="error-icon">âš ï¸</span>
+      <TabContainer>
+        <ErrorState role="alert">
+          <ErrorIcon>⚠️</ErrorIcon>
           <p>Failed to load leads: {error}</p>
-        </div>
-      </div>
+        </ErrorState>
+      </TabContainer>
     );
   }
 
@@ -197,23 +242,12 @@ const LeadsTab: React.FC<LeadsTabProps> = ({ data, loading, error }) => {
   );
 
   const getSourceIcon = (source: string): string =>
-    ({ whatsapp: 'ðŸ’¬', website: 'ðŸŒ', chatbot: 'ðŸ¤–', referral: 'ðŸ¤', social: 'ðŸ“±' })[
-      source
-    ] ?? 'ðŸ“‹';
+    ({ whatsapp: '💬', website: '🌐', chatbot: '🤖', referral: '🤝', social: '📱' })[source] ??
+    '📋';
 
-  const getPriorityBadge = (priority: string) => {
-    const cfg: Record<string, { bg: string; color: string }> = {
-      high: { bg: '#FEE2E2', color: '#DC2626' },
-      medium: { bg: '#FEF3C7', color: '#D97706' },
-      low: { bg: '#F3F4F6', color: '#6B7280' },
-    };
-    const c = cfg[priority] ?? cfg.low;
-    return (
-      <span className="priority-badge-crm" style={{ backgroundColor: c.bg, color: c.color }}>
-        {priority}
-      </span>
-    );
-  };
+  const getPriorityBadge = (priority: string) => (
+    <PriorityBadge priority={priority}>{priority}</PriorityBadge>
+  );
 
   const getStatusColor = (status: string) =>
     ({ new: '#3B82F6', contacted: '#06B6D4', qualified: '#22C55E', lost: '#EF4444' })[status] ??
@@ -227,79 +261,72 @@ const LeadsTab: React.FC<LeadsTabProps> = ({ data, loading, error }) => {
   };
 
   return (
-    <div className="leads-tab">
-      {toast && (
-        <div className="crud-toast" role="status">
-          {toast}
-        </div>
-      )}
+    <TabContainer>
+      {toast && <Toast role="status">{toast}</Toast>}
 
-      <div className="tab-header">
-        <h3>Lead Management</h3>
-        <div className="header-actions">
-          <button className="primary-btn" onClick={openAdd}>
-            <span>âž•</span> Add Lead
-          </button>
-        </div>
-      </div>
+      <TabHeader>
+        <TabTitle>Lead Management</TabTitle>
+        <HeaderActions>
+          <PrimaryButton onClick={openAdd}>
+            <span>➕</span> Add Lead
+          </PrimaryButton>
+        </HeaderActions>
+      </TabHeader>
 
       {/* Stats row */}
-      <div className="lead-stats-row">
-        <div className="lead-stat">
-          <span className="stat-number">{leadStats.total}</span>
-          <span className="stat-label">Total Leads</span>
-        </div>
-        <div className="lead-stat new">
-          <span className="stat-number">{leadStats.new}</span>
-          <span className="stat-label">New</span>
-        </div>
-        <div className="lead-stat qualified">
-          <span className="stat-number">{leadStats.qualified}</span>
-          <span className="stat-label">Qualified</span>
-        </div>
-        <div className="lead-stat high">
-          <span className="stat-number">{leadStats.highPriority}</span>
-          <span className="stat-label">High Priority</span>
-        </div>
-      </div>
+      <LeadStatsRow>
+        <LeadStat>
+          <StatNumber>{leadStats.total}</StatNumber>
+          <StatLabelText>Total Leads</StatLabelText>
+        </LeadStat>
+        <LeadStat>
+          <StatNumber>{leadStats.new}</StatNumber>
+          <StatLabelText>New</StatLabelText>
+        </LeadStat>
+        <LeadStat>
+          <StatNumber>{leadStats.qualified}</StatNumber>
+          <StatLabelText>Qualified</StatLabelText>
+        </LeadStat>
+        <LeadStat>
+          <StatNumber>{leadStats.highPriority}</StatNumber>
+          <StatLabelText>High Priority</StatLabelText>
+        </LeadStat>
+      </LeadStatsRow>
 
       {/* Filters */}
-      <div className="filters-bar">
-        <select value={sourceFilter} onChange={e => setSourceFilter(e.target.value)}>
+      <FilterRow>
+        <FilterSelect value={sourceFilter} onChange={e => setSourceFilter(e.target.value)}>
           <option value="all">All Sources</option>
           <option value="whatsapp">WhatsApp</option>
           <option value="website">Website</option>
           <option value="chatbot">Chatbot</option>
           <option value="referral">Referral</option>
-        </select>
-        <select value={statusFilter} onChange={e => setStatusFilter(e.target.value)}>
+        </FilterSelect>
+        <FilterSelect value={statusFilter} onChange={e => setStatusFilter(e.target.value)}>
           <option value="all">All Status</option>
           <option value="new">New</option>
           <option value="contacted">Contacted</option>
           <option value="qualified">Qualified</option>
           <option value="lost">Lost</option>
-        </select>
-        <select value={priorityFilter} onChange={e => setPriorityFilter(e.target.value)}>
+        </FilterSelect>
+        <FilterSelect value={priorityFilter} onChange={e => setPriorityFilter(e.target.value)}>
           <option value="all">All Priority</option>
           <option value="high">High</option>
           <option value="medium">Medium</option>
           <option value="low">Low</option>
-        </select>
-      </div>
+        </FilterSelect>
+      </FilterRow>
 
       {/* Empty state */}
       {filteredLeads.length === 0 && (
-        <div className="empty-state-text" style={{ padding: '2rem', textAlign: 'center' }}>
-          No leads found.{' '}
-          <button className="link-btn" onClick={openAdd}>
-            Add your first lead â†’
-          </button>
-        </div>
+        <EmptyStateText style={{ padding: '2rem', textAlign: 'center' }}>
+          No leads found. <LinkButton onClick={openAdd}>Add your first lead →</LinkButton>
+        </EmptyStateText>
       )}
 
       {filteredLeads.length > 0 && (
-        <div className="data-table">
-          <table aria-label="Leads data">
+        <TableContainer>
+          <Table aria-label="Leads data">
             <thead>
               <tr>
                 <th>Lead</th>
@@ -316,32 +343,29 @@ const LeadsTab: React.FC<LeadsTabProps> = ({ data, loading, error }) => {
               {paginatedLeads.map(lead => (
                 <tr key={lead.id}>
                   <td>
-                    <div className="lead-cell">
+                    <LeadCell>
                       <strong>{lead.name}</strong>
                       <small>
                         {lead.createdAt ? new Date(lead.createdAt).toLocaleDateString() : 'N/A'}
                       </small>
-                    </div>
+                    </LeadCell>
                   </td>
                   <td>
-                    <div className="contact-cell">
+                    <ContactCell>
                       <span>{lead.phone}</span>
                       <small>{lead.email}</small>
-                    </div>
+                    </ContactCell>
                   </td>
                   <td>
-                    <span className="source-badge">
+                    <SourceBadge>
                       {getSourceIcon(lead.source)} {lead.source}
-                    </span>
+                    </SourceBadge>
                   </td>
                   <td>{lead.interest || 'N/A'}</td>
                   <td>{getPriorityBadge(lead.priority)}</td>
                   <td>
-                    <span className={`status-badge status-badge--${lead.status}`}>
-                      {lead.status}
-                    </span>
-                    <select
-                      className="status-select"
+                    <StatusBadge status={lead.status}>{lead.status}</StatusBadge>
+                    <StatusSelect
                       value={lead.status}
                       onChange={e => handleStatusChange(lead.id, e.target.value)}
                       style={{ color: getStatusColor(lead.status) }}
@@ -351,90 +375,78 @@ const LeadsTab: React.FC<LeadsTabProps> = ({ data, loading, error }) => {
                       <option value="contacted">Contacted</option>
                       <option value="qualified">Qualified</option>
                       <option value="lost">Lost</option>
-                    </select>
+                    </StatusSelect>
                   </td>
-                  <td>{lead.agent || <span className="unassigned">Unassigned</span>}</td>
+                  <td>{lead.agent || <UnassignedBadge>Unassigned</UnassignedBadge>}</td>
                   <td>
-                    <div className="action-buttons">
-                      <button
-                        className="icon-btn"
+                    <ActionButtons>
+                      <IconButton
                         title="Edit"
                         aria-label="Edit lead"
                         onClick={() => openEdit(lead)}
                       >
-                        âœï¸
-                      </button>
-                      <button
-                        className="icon-btn danger"
+                        ✏️
+                      </IconButton>
+                      <IconButton
+                        danger
                         title="Delete"
                         aria-label="Delete lead"
                         onClick={() => openDelete(lead)}
                       >
-                        ðŸ—‘ï¸
-                      </button>
-                    </div>
+                        🗑️
+                      </IconButton>
+                    </ActionButtons>
                   </td>
                 </tr>
               ))}
             </tbody>
-          </table>
-        </div>
+          </Table>
+        </TableContainer>
       )}
 
       {/* Pagination */}
       <nav role="navigation" aria-label="Pagination">
         {totalPages > 1 && (
-          <div className="table-footer">
+          <TableFooter>
             <span>
               Showing {paginatedLeads.length} of {filteredLeads.length} leads
             </span>
-            <div className="pagination">
-              <button
-                className="page-btn"
+            <PaginationContainer>
+              <PageButton
                 disabled={currentPage <= 1}
                 onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
               >
-                â†
-              </button>
+                ←
+              </PageButton>
               {Array.from({ length: totalPages }, (_, i) => i + 1).map(p => (
-                <button
-                  key={p}
-                  className={`page-btn ${p === currentPage ? 'active' : ''}`}
-                  onClick={() => setCurrentPage(p)}
-                >
+                <PageButton key={p} active={p === currentPage} onClick={() => setCurrentPage(p)}>
                   {p}
-                </button>
+                </PageButton>
               ))}
-              <button
-                className="page-btn"
+              <PageButton
                 disabled={currentPage >= totalPages}
                 onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
               >
-                â†’
-              </button>
-            </div>
-          </div>
+                →
+              </PageButton>
+            </PaginationContainer>
+          </TableFooter>
         )}
       </nav>
 
       {/* Add / Edit Modal */}
       {(modalMode === 'add' || modalMode === 'edit') && (
-        <div
-          className="crud-modal-overlay"
-          role="dialog"
-          aria-modal="true"
-          aria-labelledby="lead-modal-title"
-        >
-          <div className="crud-modal">
-            <div className="crud-modal__header">
+        <ModalOverlay role="dialog" aria-modal="true" aria-labelledby="lead-modal-title">
+          <Modal>
+            <ModalHeader>
               <h3 id="lead-modal-title">{modalMode === 'add' ? 'Add New Lead' : 'Edit Lead'}</h3>
-              <button className="crud-modal__close" onClick={closeModal} aria-label="Close">
-                âœ•
-              </button>
-            </div>
-            <div className="crud-modal__body">
-              <div className="crud-form-grid">
-                <div className="form-group">
+              <ModalCloseButton onClick={closeModal} aria-label="Close">
+                ✕
+              </ModalCloseButton>
+            </ModalHeader>
+            <ModalBody>
+              <FormGrid>
+                <FormGroup>
                   <label>Full Name *</label>
                   <input
                     type="text"
@@ -442,8 +454,8 @@ const LeadsTab: React.FC<LeadsTabProps> = ({ data, loading, error }) => {
                     onChange={e => setForm(f => ({ ...f, name: e.target.value }))}
                     placeholder="e.g. Khalid Al Maktoum"
                   />
-                </div>
-                <div className="form-group">
+                </FormGroup>
+                <FormGroup>
                   <label>Phone</label>
                   <input
                     type="tel"
@@ -451,8 +463,8 @@ const LeadsTab: React.FC<LeadsTabProps> = ({ data, loading, error }) => {
                     onChange={e => setForm(f => ({ ...f, phone: e.target.value }))}
                     placeholder="+971 50 000 0000"
                   />
-                </div>
-                <div className="form-group">
+                </FormGroup>
+                <FormGroup>
                   <label>Email</label>
                   <input
                     type="email"
@@ -460,8 +472,8 @@ const LeadsTab: React.FC<LeadsTabProps> = ({ data, loading, error }) => {
                     onChange={e => setForm(f => ({ ...f, email: e.target.value }))}
                     placeholder="email@example.com"
                   />
-                </div>
-                <div className="form-group">
+                </FormGroup>
+                <FormGroup>
                   <label>Source</label>
                   <select
                     value={form.source}
@@ -473,8 +485,8 @@ const LeadsTab: React.FC<LeadsTabProps> = ({ data, loading, error }) => {
                     <option value="referral">Referral</option>
                     <option value="social">Social Media</option>
                   </select>
-                </div>
-                <div className="form-group">
+                </FormGroup>
+                <FormGroup>
                   <label>Interest / Property Type</label>
                   <input
                     type="text"
@@ -482,8 +494,8 @@ const LeadsTab: React.FC<LeadsTabProps> = ({ data, loading, error }) => {
                     onChange={e => setForm(f => ({ ...f, interest: e.target.value }))}
                     placeholder="e.g. 3BR Villa in Palm Jumeirah"
                   />
-                </div>
-                <div className="form-group">
+                </FormGroup>
+                <FormGroup>
                   <label>Priority</label>
                   <select
                     value={form.priority}
@@ -493,8 +505,8 @@ const LeadsTab: React.FC<LeadsTabProps> = ({ data, loading, error }) => {
                     <option value="medium">Medium</option>
                     <option value="low">Low</option>
                   </select>
-                </div>
-                <div className="form-group">
+                </FormGroup>
+                <FormGroup>
                   <label>Status</label>
                   <select
                     value={form.status}
@@ -505,8 +517,8 @@ const LeadsTab: React.FC<LeadsTabProps> = ({ data, loading, error }) => {
                     <option value="qualified">Qualified</option>
                     <option value="lost">Lost</option>
                   </select>
-                </div>
-                <div className="form-group">
+                </FormGroup>
+                <FormGroup>
                   <label>Assigned Agent</label>
                   <input
                     type="text"
@@ -514,54 +526,43 @@ const LeadsTab: React.FC<LeadsTabProps> = ({ data, loading, error }) => {
                     onChange={e => setForm(f => ({ ...f, agent: e.target.value }))}
                     placeholder="Agent name (optional)"
                   />
-                </div>
-              </div>
-            </div>
-            <div className="crud-modal__footer">
-              <button className="secondary-btn" onClick={closeModal}>
-                Cancel
-              </button>
-              <button className="primary-btn" onClick={handleSave} disabled={!form.name.trim()}>
+                </FormGroup>
+              </FormGrid>
+            </ModalBody>
+            <ModalFooter>
+              <SecondaryButton onClick={closeModal}>Cancel</SecondaryButton>
+              <PrimaryButton onClick={handleSave} disabled={!form.name.trim()}>
                 {modalMode === 'add' ? 'Add Lead' : 'Save Changes'}
-              </button>
-            </div>
-          </div>
-        </div>
+              </PrimaryButton>
+            </ModalFooter>
+          </Modal>
+        </ModalOverlay>
       )}
 
       {/* Delete Confirm */}
       {modalMode === 'delete' && editTarget && (
-        <div
-          className="crud-modal-overlay"
-          role="dialog"
-          aria-modal="true"
-          aria-labelledby="del-lead-title"
-        >
-          <div className="crud-modal crud-modal--sm">
-            <div className="crud-modal__header">
+        <ModalOverlay role="dialog" aria-modal="true" aria-labelledby="del-lead-title">
+          <ModalSmall>
+            <ModalHeader>
               <h3 id="del-lead-title">Remove Lead</h3>
-              <button className="crud-modal__close" onClick={closeModal} aria-label="Close">
-                âœ•
-              </button>
-            </div>
-            <div className="crud-modal__body">
+              <ModalCloseButton onClick={closeModal} aria-label="Close">
+                ✕
+              </ModalCloseButton>
+            </ModalHeader>
+            <ModalBody>
               <p>
                 Remove <strong>{editTarget.name}</strong> from your leads?
               </p>
-              <p className="crud-warn">This action cannot be undone.</p>
-            </div>
-            <div className="crud-modal__footer">
-              <button className="secondary-btn" onClick={closeModal}>
-                Cancel
-              </button>
-              <button className="danger-btn" onClick={handleDelete}>
-                Remove
-              </button>
-            </div>
-          </div>
-        </div>
+              <WarningText>This action cannot be undone.</WarningText>
+            </ModalBody>
+            <ModalFooter>
+              <SecondaryButton onClick={closeModal}>Cancel</SecondaryButton>
+              <DangerButton onClick={handleDelete}>Remove</DangerButton>
+            </ModalFooter>
+          </ModalSmall>
+        </ModalOverlay>
       )}
-    </div>
+    </TabContainer>
   );
 };
 

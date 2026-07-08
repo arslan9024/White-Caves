@@ -1,7 +1,286 @@
 import React, { useState, useCallback } from 'react';
+import styled from 'styled-components';
 import { Badge, type BadgeVariant } from '../../../components/ui';
+import { colors, spacing, typography } from '@/design-tokens';
 import type { PropertiesTabProps, Property } from './types';
-import './TabStyles.css';
+import {
+  TabContainer,
+  TabHeader,
+  TabTitle,
+  HeaderActions,
+  PrimaryButton,
+  SecondaryButton,
+  DangerButton,
+  FilterRow,
+  FilterSelect,
+  TableContainer,
+  Table,
+  PageButton,
+  ModalOverlay,
+  FormGrid,
+  FormGroup,
+  LinkButton,
+} from './TabStylesComponents';
+
+// ── Local styled components for PropertiesTab ──
+const LoadingState = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 300px;
+  gap: ${spacing[3]};
+  color: ${colors.text.secondary};
+  ${typography.presets.body};
+`;
+
+const LoadingSpinner = styled.div`
+  width: 40px;
+  height: 40px;
+  border: 3px solid rgba(255, 255, 255, 0.2);
+  border-top-color: ${colors.primary[500]};
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+
+  @keyframes spin {
+    to {
+      transform: rotate(360deg);
+    }
+  }
+`;
+
+const ErrorState = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: ${spacing[3]};
+  padding: ${spacing[6]};
+  text-align: center;
+  color: ${colors.error[500]};
+
+  p {
+    ${typography.presets.body};
+    margin: 0;
+  }
+`;
+
+const ErrorIcon = styled.span`
+  font-size: 2rem;
+  opacity: 0.8;
+`;
+
+const SearchInputContainer = styled.div`
+  position: relative;
+  flex: 1;
+  min-width: 200px;
+`;
+
+const SearchInputIcon = styled.span`
+  position: absolute;
+  left: ${spacing[2]};
+  top: 50%;
+  transform: translateY(-50%);
+  color: ${colors.text.secondary};
+  pointer-events: none;
+`;
+
+const SearchInputField = styled.input`
+  width: 100%;
+  padding: ${spacing[2]} ${spacing[3]} ${spacing[2]} ${spacing[5]};
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 8px;
+  background: rgba(0, 0, 0, 0.2);
+  color: ${colors.text.inverse};
+  ${typography.presets.body};
+  transition: all 0.2s ease;
+
+  &:focus {
+    outline: none;
+    border-color: ${colors.primary[500]};
+    box-shadow: 0 0 0 3px rgba(196, 30, 58, 0.1);
+  }
+
+  &::placeholder {
+    color: ${colors.text.secondary};
+  }
+`;
+
+const PropertyCell = styled.div`
+  display: flex;
+  align-items: center;
+  gap: ${spacing[3]};
+`;
+
+const PropertyThumb = styled.div`
+  width: 40px;
+  height: 40px;
+  border-radius: 8px;
+  background: rgba(196, 30, 58, 0.1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.25rem;
+`;
+
+const PropertyInfo = styled.div`
+  display: flex;
+  flex-direction: column;
+
+  strong {
+    color: ${colors.text.inverse};
+    ${typography.presets.label};
+    margin: 0;
+  }
+
+  small {
+    color: ${colors.text.secondary};
+    ${typography.presets.caption};
+    margin: 0;
+  }
+`;
+
+const TypeTag = styled.span`
+  display: inline-block;
+  padding: ${spacing[1]} ${spacing[2]};
+  background: rgba(196, 30, 58, 0.1);
+  color: ${colors.primary[500]};
+  border-radius: 8px;
+  ${typography.presets.caption};
+  font-weight: 600;
+`;
+
+const UnassignedText = styled.span`
+  color: ${colors.text.secondary};
+  font-style: italic;
+`;
+
+const ActionButtonsRow = styled.div`
+  display: flex;
+  gap: ${spacing[1]};
+`;
+
+const IconBtn = styled.button<{ danger?: boolean }>`
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  border: none;
+  background: transparent;
+  font-size: 1rem;
+  cursor: pointer;
+  border-radius: 8px;
+  transition: all 0.2s ease;
+
+  &:hover {
+    background: rgba(196, 30, 58, 0.1);
+    ${props => props.danger && `color: ${colors.error[500]};`}
+  }
+
+  &:focus {
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(196, 30, 58, 0.1);
+  }
+`;
+
+const CrudToast = styled.div`
+  position: fixed;
+  bottom: ${spacing[4]};
+  right: ${spacing[4]};
+  padding: ${spacing[3]} ${spacing[4]};
+  background: ${colors.success[500]};
+  color: white;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
+  ${typography.presets.body};
+  z-index: 2000;
+  animation: slideInUp 0.3s ease-out;
+
+  @keyframes slideInUp {
+    from {
+      transform: translateY(100%);
+      opacity: 0;
+    }
+    to {
+      transform: translateY(0);
+      opacity: 1;
+    }
+  }
+`;
+
+const ModalContent = styled.div<{ small?: boolean }>`
+  background: rgba(0, 0, 0, 0.3);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+  max-width: ${props => (props.small ? '400px' : '600px')};
+  width: 100%;
+  max-height: 90vh;
+  overflow-y: auto;
+`;
+
+const ModalHeader = styled.div`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: ${spacing[5]};
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+
+  h3 {
+    margin: 0;
+    ${typography.presets.heading3};
+    color: ${colors.text.inverse};
+  }
+`;
+
+const ModalCloseButton = styled.button`
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  border: none;
+  background: transparent;
+  font-size: 1.5rem;
+  cursor: pointer;
+  color: ${colors.text.secondary};
+  transition: all 0.2s ease;
+
+  &:hover {
+    color: ${colors.text.inverse};
+  }
+`;
+
+const ModalBody = styled.div`
+  padding: ${spacing[5]};
+`;
+
+const ModalFooter = styled.div`
+  display: flex;
+  gap: ${spacing[3]};
+  justify-content: flex-end;
+  padding: ${spacing[5]};
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+`;
+
+const WarningText = styled.p`
+  color: ${colors.error[500]};
+  ${typography.presets.caption};
+  margin: ${spacing[2]} 0 0;
+`;
+
+const TableFooter = styled.div`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: ${spacing[4]} ${spacing[5]};
+  flex-wrap: wrap;
+  gap: ${spacing[3]};
+  ${typography.presets.body};
+  color: ${colors.text.secondary};
+`;
+
+const PaginationButtons = styled.div`
+  display: flex;
+  gap: ${spacing[1]};
+  align-items: center;
+`;
 
 // ── CRUD modal form state ────────────────────────────────────────────────────
 const EMPTY_FORM: Omit<Property, 'id' | 'code'> = {
@@ -196,27 +475,25 @@ const PropertiesTab: React.FC<PropertiesTabProps> = ({ data, loading, error, onA
   // Show loading state
   if (loading) {
     return (
-      <div className="properties-tab">
-        <div className="tab-loading-state" role="status" aria-label="Loading properties">
-          <div className="loading-spinner" />
+      <TabContainer>
+        <LoadingState role="status" aria-label="Loading properties">
+          <LoadingSpinner />
           <p>Loading properties...</p>
-        </div>
-      </div>
+        </LoadingState>
+      </TabContainer>
     );
   }
 
   // Show error state with retry
   if (error) {
     return (
-      <div className="properties-tab">
-        <div className="tab-error-state" role="alert">
-          <span className="error-icon">⚠️</span>
+      <TabContainer>
+        <ErrorState role="alert">
+          <ErrorIcon>⚠️</ErrorIcon>
           <p>Failed to load properties: {error}</p>
-          <button className="secondary-btn" onClick={() => onAction?.('retryFetch')}>
-            Retry
-          </button>
-        </div>
-      </div>
+          <SecondaryButton onClick={() => onAction?.('retryFetch')}>Retry</SecondaryButton>
+        </ErrorState>
+      </TabContainer>
     );
   }
 
@@ -256,65 +533,61 @@ const PropertiesTab: React.FC<PropertiesTabProps> = ({ data, loading, error, onA
   const isFormValid = form.title.trim() !== '' && form.location.trim() !== '' && form.price > 0;
 
   return (
-    <div className="properties-tab">
+    <TabContainer>
       {/* Toast */}
-      {toast && (
-        <div className="crud-toast" role="status">
-          {toast}
-        </div>
-      )}
+      {toast && <CrudToast role="status">{toast}</CrudToast>}
 
       {/* Header */}
-      <div className="tab-header">
-        <h3>Property Management</h3>
-        <button className="primary-btn" onClick={openAdd}>
-          <span>➕</span> Add Property
-        </button>
-      </div>
+      <TabHeader>
+        <TabTitle>Property Management</TabTitle>
+        <HeaderActions>
+          <PrimaryButton onClick={openAdd}>
+            <span>➕</span> Add Property
+          </PrimaryButton>
+        </HeaderActions>
+      </TabHeader>
 
       {/* Filters */}
-      <div className="filters-bar">
-        <div className="search-input">
-          <span className="search-icon">🔍</span>
-          <input
+      <FilterRow>
+        <SearchInputContainer>
+          <SearchInputIcon>🔍</SearchInputIcon>
+          <SearchInputField
             type="text"
             placeholder="Search properties..."
             value={searchQuery}
             onChange={e => setSearchQuery(e.target.value)}
           />
-        </div>
-        <select value={statusFilter} onChange={e => setStatusFilter(e.target.value)}>
+        </SearchInputContainer>
+        <FilterSelect value={statusFilter} onChange={e => setStatusFilter(e.target.value)}>
           <option value="all">All Status</option>
           <option value="available">Available</option>
           <option value="reserved">Reserved</option>
           <option value="under_contract">Under Contract</option>
           <option value="sold">Sold</option>
           <option value="off_market">Off Market</option>
-        </select>
-        <select value={typeFilter} onChange={e => setTypeFilter(e.target.value)}>
+        </FilterSelect>
+        <FilterSelect value={typeFilter} onChange={e => setTypeFilter(e.target.value)}>
           <option value="all">All Types</option>
           <option value="Apartment">Apartment</option>
           <option value="Villa">Villa</option>
           <option value="Townhouse">Townhouse</option>
           <option value="Commercial">Commercial</option>
           <option value="Land">Land</option>
-        </select>
-      </div>
+        </FilterSelect>
+      </FilterRow>
 
       {/* Empty state */}
       {filteredProperties.length === 0 && (
-        <div className="empty-state-text" style={{ padding: '2rem', textAlign: 'center' }}>
-          No properties found.{' '}
-          <button className="link-btn" onClick={openAdd}>
-            Add your first property →
-          </button>
-        </div>
+        <ErrorState>
+          <p>No properties found.</p>
+          <LinkButton onClick={openAdd}>Add your first property →</LinkButton>
+        </ErrorState>
       )}
 
       {/* Table */}
       {filteredProperties.length > 0 && (
-        <div className="data-table">
-          <table aria-label="Properties list">
+        <TableContainer>
+          <Table aria-label="Properties list">
             <thead>
               <tr>
                 <th>Property</th>
@@ -330,110 +603,105 @@ const PropertiesTab: React.FC<PropertiesTabProps> = ({ data, loading, error, onA
               {paginated.map(prop => (
                 <tr key={prop.id}>
                   <td>
-                    <div className="property-cell">
-                      <div className="property-thumb">🏠</div>
-                      <div className="property-info">
+                    <PropertyCell>
+                      <PropertyThumb>🏠</PropertyThumb>
+                      <PropertyInfo>
                         <strong>{prop.code}</strong>
                         <small>{prop.title}</small>
-                      </div>
-                    </div>
+                      </PropertyInfo>
+                    </PropertyCell>
                   </td>
                   <td>
-                    <span className="type-tag">{prop.type}</span>
+                    <TypeTag>{prop.type}</TypeTag>
                   </td>
                   <td>{prop.location}</td>
-                  <td className="price-cell">AED {prop.price.toLocaleString()}</td>
-                  <td>{getStatusBadge(prop.status)}</td>
-                  <td>{prop.agent ?? <span className="unassigned">Unassigned</span>}</td>
                   <td>
-                    <div className="action-buttons">
-                      <button
-                        className="icon-btn"
+                    <strong style={{ color: colors.success[500] }}>
+                      AED {prop.price.toLocaleString()}
+                    </strong>
+                  </td>
+                  <td>{getStatusBadge(prop.status)}</td>
+                  <td>{prop.agent ?? <UnassignedText>Unassigned</UnassignedText>}</td>
+                  <td>
+                    <ActionButtonsRow>
+                      <IconBtn
                         title="View"
                         aria-label="View property"
                         onClick={() => handleView(prop)}
                       >
                         👁️
-                      </button>
-                      <button
-                        className="icon-btn"
+                      </IconBtn>
+                      <IconBtn
                         title="Edit"
                         aria-label="Edit property"
                         onClick={() => openEdit(prop)}
                       >
                         ✏️
-                      </button>
-                      <button
-                        className="icon-btn danger"
+                      </IconBtn>
+                      <IconBtn
+                        danger
                         title="Delete"
                         aria-label="Delete property"
                         onClick={() => openDelete(prop)}
                       >
                         🗑️
-                      </button>
-                    </div>
+                      </IconBtn>
+                    </ActionButtonsRow>
                   </td>
                 </tr>
               ))}
             </tbody>
-          </table>
-        </div>
+          </Table>
+        </TableContainer>
       )}
 
       {/* Pagination */}
-      <div className="table-footer">
+      <TableFooter>
         <span>
           Showing {paginated.length} of {filteredProperties.length} properties
         </span>
         {totalPages > 1 && (
-          <div className="pagination">
-            <button
-              className="page-btn"
+          <PaginationButtons>
+            <PageButton
               disabled={currentPage <= 1}
               onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
             >
               ←
-            </button>
+            </PageButton>
             {Array.from({ length: totalPages }, (_, i) => i + 1).map(page => (
-              <button
+              <PageButton
                 key={page}
-                className={`page-btn ${page === currentPage ? 'active' : ''}`}
+                active={page === currentPage}
                 onClick={() => setCurrentPage(page)}
               >
                 {page}
-              </button>
+              </PageButton>
             ))}
-            <button
-              className="page-btn"
+            <PageButton
               disabled={currentPage >= totalPages}
               onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
             >
               →
-            </button>
-          </div>
+            </PageButton>
+          </PaginationButtons>
         )}
-      </div>
+      </TableFooter>
 
       {/* Add / Edit Modal */}
       {(modalMode === 'add' || modalMode === 'edit') && (
-        <div
-          className="crud-modal-overlay"
-          role="dialog"
-          aria-modal="true"
-          aria-labelledby="prop-modal-title"
-        >
-          <div className="crud-modal">
-            <div className="crud-modal__header">
+        <ModalOverlay role="dialog" aria-modal="true" aria-labelledby="prop-modal-title">
+          <ModalContent>
+            <ModalHeader>
               <h3 id="prop-modal-title">
                 {modalMode === 'add' ? 'Add New Property' : 'Edit Property'}
               </h3>
-              <button className="crud-modal__close" onClick={closeModal} aria-label="Close">
+              <ModalCloseButton onClick={closeModal} aria-label="Close">
                 ✕
-              </button>
-            </div>
-            <div className="crud-modal__body">
-              <div className="crud-form-grid">
-                <div className="form-group">
+              </ModalCloseButton>
+            </ModalHeader>
+            <ModalBody>
+              <FormGrid>
+                <FormGroup>
                   <label>Title *</label>
                   <input
                     type="text"
@@ -441,8 +709,8 @@ const PropertiesTab: React.FC<PropertiesTabProps> = ({ data, loading, error, onA
                     onChange={e => setForm(f => ({ ...f, title: e.target.value }))}
                     placeholder="e.g. Marina View Apartment"
                   />
-                </div>
-                <div className="form-group">
+                </FormGroup>
+                <FormGroup>
                   <label>Type</label>
                   <select
                     value={form.type}
@@ -454,8 +722,8 @@ const PropertiesTab: React.FC<PropertiesTabProps> = ({ data, loading, error, onA
                     <option>Commercial</option>
                     <option>Land</option>
                   </select>
-                </div>
-                <div className="form-group">
+                </FormGroup>
+                <FormGroup>
                   <label>Location *</label>
                   <input
                     type="text"
@@ -463,8 +731,8 @@ const PropertiesTab: React.FC<PropertiesTabProps> = ({ data, loading, error, onA
                     onChange={e => setForm(f => ({ ...f, location: e.target.value }))}
                     placeholder="e.g. Dubai Marina"
                   />
-                </div>
-                <div className="form-group">
+                </FormGroup>
+                <FormGroup>
                   <label>Price (AED) *</label>
                   <input
                     type="number"
@@ -473,8 +741,8 @@ const PropertiesTab: React.FC<PropertiesTabProps> = ({ data, loading, error, onA
                     onChange={e => setForm(f => ({ ...f, price: Number(e.target.value) }))}
                     placeholder="e.g. 3200000"
                   />
-                </div>
-                <div className="form-group">
+                </FormGroup>
+                <FormGroup>
                   <label>Status</label>
                   <select
                     value={form.status}
@@ -486,8 +754,8 @@ const PropertiesTab: React.FC<PropertiesTabProps> = ({ data, loading, error, onA
                     <option value="sold">Sold</option>
                     <option value="off_market">Off Market</option>
                   </select>
-                </div>
-                <div className="form-group">
+                </FormGroup>
+                <FormGroup>
                   <label>Agent</label>
                   <input
                     type="text"
@@ -495,8 +763,8 @@ const PropertiesTab: React.FC<PropertiesTabProps> = ({ data, loading, error, onA
                     onChange={e => setForm(f => ({ ...f, agent: e.target.value || null }))}
                     placeholder="Agent name (optional)"
                   />
-                </div>
-                <div className="form-group">
+                </FormGroup>
+                <FormGroup>
                   <label>Bedrooms</label>
                   <input
                     type="number"
@@ -504,8 +772,8 @@ const PropertiesTab: React.FC<PropertiesTabProps> = ({ data, loading, error, onA
                     value={form.bedrooms ?? ''}
                     onChange={e => setForm(f => ({ ...f, bedrooms: Number(e.target.value) }))}
                   />
-                </div>
-                <div className="form-group">
+                </FormGroup>
+                <FormGroup>
                   <label>Bathrooms</label>
                   <input
                     type="number"
@@ -513,8 +781,8 @@ const PropertiesTab: React.FC<PropertiesTabProps> = ({ data, loading, error, onA
                     value={form.bathrooms ?? ''}
                     onChange={e => setForm(f => ({ ...f, bathrooms: Number(e.target.value) }))}
                   />
-                </div>
-                <div className="form-group">
+                </FormGroup>
+                <FormGroup>
                   <label>Area (sqft)</label>
                   <input
                     type="number"
@@ -522,54 +790,43 @@ const PropertiesTab: React.FC<PropertiesTabProps> = ({ data, loading, error, onA
                     value={form.area ?? ''}
                     onChange={e => setForm(f => ({ ...f, area: Number(e.target.value) }))}
                   />
-                </div>
-              </div>
-            </div>
-            <div className="crud-modal__footer">
-              <button className="secondary-btn" onClick={closeModal}>
-                Cancel
-              </button>
-              <button className="primary-btn" onClick={handleSave} disabled={!isFormValid}>
+                </FormGroup>
+              </FormGrid>
+            </ModalBody>
+            <ModalFooter>
+              <SecondaryButton onClick={closeModal}>Cancel</SecondaryButton>
+              <PrimaryButton onClick={handleSave} disabled={!isFormValid}>
                 {modalMode === 'add' ? 'Add Property' : 'Save Changes'}
-              </button>
-            </div>
-          </div>
-        </div>
+              </PrimaryButton>
+            </ModalFooter>
+          </ModalContent>
+        </ModalOverlay>
       )}
 
       {/* Delete Confirm */}
       {modalMode === 'delete' && editTarget && (
-        <div
-          className="crud-modal-overlay"
-          role="dialog"
-          aria-modal="true"
-          aria-labelledby="del-modal-title"
-        >
-          <div className="crud-modal crud-modal--sm">
-            <div className="crud-modal__header">
+        <ModalOverlay role="dialog" aria-modal="true" aria-labelledby="del-modal-title">
+          <ModalContent small>
+            <ModalHeader>
               <h3 id="del-modal-title">Delete Property</h3>
-              <button className="crud-modal__close" onClick={closeModal} aria-label="Close">
+              <ModalCloseButton onClick={closeModal} aria-label="Close">
                 ✕
-              </button>
-            </div>
-            <div className="crud-modal__body">
+              </ModalCloseButton>
+            </ModalHeader>
+            <ModalBody>
               <p>
                 Are you sure you want to delete <strong>{editTarget.title}</strong>?
               </p>
-              <p className="crud-warn">This action cannot be undone.</p>
-            </div>
-            <div className="crud-modal__footer">
-              <button className="secondary-btn" onClick={closeModal}>
-                Cancel
-              </button>
-              <button className="danger-btn" onClick={handleDelete}>
-                Delete
-              </button>
-            </div>
-          </div>
-        </div>
+              <WarningText>This action cannot be undone.</WarningText>
+            </ModalBody>
+            <ModalFooter>
+              <SecondaryButton onClick={closeModal}>Cancel</SecondaryButton>
+              <DangerButton onClick={handleDelete}>Delete</DangerButton>
+            </ModalFooter>
+          </ModalContent>
+        </ModalOverlay>
       )}
-    </div>
+    </TabContainer>
   );
 };
 
