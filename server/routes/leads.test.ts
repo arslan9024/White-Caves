@@ -10,7 +10,7 @@ import express from 'express';
 import request from 'supertest';
 
 // ── Hoisted mocks ────────────────────────────────────────────────────
-const { mockPrisma } = vi.hoisted(() => {
+const { mockPrisma, mockLogger } = vi.hoisted(() => {
   const fn = vi.fn;
   const mockTx = {
     commission: { updateMany: fn().mockResolvedValue({ count: 0 }) },
@@ -19,6 +19,18 @@ const { mockPrisma } = vi.hoisted(() => {
       create: fn().mockResolvedValue({ id: 'act-1' }),
     },
     lead: { delete: fn().mockResolvedValue({}) },
+  };
+  const mockLogger = {
+    createLogger: vi.fn(() => ({
+      info: vi.fn(),
+      debug: vi.fn(),
+      warn: vi.fn(),
+      error: vi.fn(),
+    })),
+    info: vi.fn(),
+    debug: vi.fn(),
+    warn: vi.fn(),
+    error: vi.fn(),
   };
   return {
     mockPrisma: {
@@ -54,6 +66,7 @@ const { mockPrisma } = vi.hoisted(() => {
       },
       $transaction: fn().mockImplementation(async (cb: any) => cb(mockTx)),
     },
+    mockLogger,
   };
 });
 
@@ -62,6 +75,10 @@ const { triggerLeadRescore } = vi.hoisted(() => ({
 }));
 
 vi.mock('../database.js', () => ({ prisma: mockPrisma }));
+vi.mock('../utils/logger.js', () => ({
+  createLogger: mockLogger.createLogger,
+  logger: mockLogger,
+}));
 vi.mock('../services/ai/leadAutoRescore.js', () => ({ triggerLeadRescore }));
 vi.mock('../middleware/errorHandler', () => ({
   AppError: class extends Error {
@@ -684,9 +701,7 @@ describe('POST /api/leads/import/file (W18.1-P1-001)', () => {
 
   it('deduplicates by email — skips existing leads', async () => {
     // Existing lead with alice@test.com
-    mockPrisma.lead.findMany.mockResolvedValueOnce([
-      { email: 'alice@test.com', phone: null },
-    ]);
+    mockPrisma.lead.findMany.mockResolvedValueOnce([{ email: 'alice@test.com', phone: null }]);
     (mockPrisma.lead as any).createMany.mockResolvedValueOnce({ count: 1 });
 
     const buf = csvBuf([
@@ -706,9 +721,7 @@ describe('POST /api/leads/import/file (W18.1-P1-001)', () => {
 
   it('deduplicates by phone — skips existing leads', async () => {
     // Use dashes so xlsx doesn't strip + sign from numeric-looking phone strings
-    mockPrisma.lead.findMany.mockResolvedValueOnce([
-      { email: null, phone: '050-123-4001' },
-    ]);
+    mockPrisma.lead.findMany.mockResolvedValueOnce([{ email: null, phone: '050-123-4001' }]);
     (mockPrisma.lead as any).createMany.mockResolvedValueOnce({ count: 1 });
 
     const buf = csvBuf([
@@ -731,7 +744,7 @@ describe('POST /api/leads/import/file (W18.1-P1-001)', () => {
 
     const buf = csvBuf([
       ['Name', 'Email'],
-      ['', 'noname@test.com'],      // row 2 — no name
+      ['', 'noname@test.com'], // row 2 — no name
       ['Eve', 'eve@test.com'],
     ]);
 
@@ -780,13 +793,10 @@ describe('POST /api/leads/import/file (W18.1-P1-001)', () => {
       async ({ data }: { data: Record<string, unknown>[] }) => {
         captured.push(...data);
         return { count: data.length };
-      },
+      }
     );
 
-    const buf = csvBuf([
-      ['Name'],
-      ['Helen'],
-    ]);
+    const buf = csvBuf([['Name'], ['Helen']]);
 
     await request(createApp('owner'))
       .post('/api/leads/import/file')
