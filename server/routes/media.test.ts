@@ -4,8 +4,20 @@ import request from 'supertest';
 import mediaRoutes from './media';
 import { errorHandler } from '../middleware/errorHandler';
 
-const { mockPrisma, mockStorageService } = vi.hoisted(() => {
+const { mockPrisma, mockStorageService, mockLogger } = vi.hoisted(() => {
   const fn = vi.fn;
+  const logger = {
+    createLogger: vi.fn((name: string) => ({
+      debug: vi.fn(),
+      info: vi.fn(),
+      warn: vi.fn(),
+      error: vi.fn(),
+    })),
+    debug: vi.fn(),
+    info: vi.fn(),
+    warn: vi.fn(),
+    error: vi.fn(),
+  };
   return {
     mockPrisma: {
       property: {
@@ -14,7 +26,10 @@ const { mockPrisma, mockStorageService } = vi.hoisted(() => {
           userId: 'user-1',
           images: [],
         }),
-        update: fn().mockResolvedValue({ id: 'prop-1', images: ['/uploads/properties/transformed/a.webp'] }),
+        update: fn().mockResolvedValue({
+          id: 'prop-1',
+          images: ['/uploads/properties/transformed/a.webp'],
+        }),
       },
     },
     mockStorageService: {
@@ -26,11 +41,17 @@ const { mockPrisma, mockStorageService } = vi.hoisted(() => {
       }),
       deletePropertyImage: fn().mockResolvedValue(true),
     },
+    mockLogger: logger,
   };
 });
 
 vi.mock('../database.js', () => ({ prisma: mockPrisma }));
 vi.mock('../services/StorageService.js', () => ({ storageService: mockStorageService }));
+vi.mock('../utils/logger.js', () => ({
+  default: mockLogger,
+  createLogger: mockLogger.createLogger,
+  logger: mockLogger,
+}));
 
 function createApp(role = 'owner', userId = 'user-1') {
   const app = express();
