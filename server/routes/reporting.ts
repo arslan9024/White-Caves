@@ -10,6 +10,7 @@ import { asyncHandler, AppError } from '../middleware/errorHandler';
 import { prisma } from '../database.js';
 import { requirePermission } from '../middleware/rbac';
 import { documentService } from '../services/DocumentService.js';
+import { getDashboardRoleConfig } from '../../src/config/dashboardConfigs.js';
 
 type OptionalReportGenerator = {
   generateReport?: (input: {
@@ -26,6 +27,105 @@ type OptionalReportGenerator = {
 };
 
 const router = Router();
+
+// ─── GET /api/dashboard/config ─────────────────────────────────────────
+// Role-based widget configuration payload
+router.get(
+  '/config',
+  requirePermission('view_analytics'),
+  asyncHandler(async (req: Request, res: Response) => {
+    const role = req.user?.role || 'agent';
+    const config = getDashboardRoleConfig(role);
+
+    res.status(200).json({
+      success: true,
+      data: config,
+    });
+  })
+);
+
+// ─── GET /api/dashboard/preferences ────────────────────────────────────
+router.get(
+  '/preferences',
+  requirePermission('view_analytics'),
+  asyncHandler(async (req: Request, res: Response) => {
+    const userId = req.user?.id;
+    const role = req.user?.role || 'agent';
+
+    if (!userId) {
+      throw new AppError('User context missing', 401);
+    }
+
+    const preference = await prisma.userDashboardPreference.findUnique({
+      where: { userId },
+    });
+
+    const fallback = {
+      role,
+      widgets: getDashboardRoleConfig(role).widgets,
+      layout: 'default',
+    };
+
+    res.status(200).json({
+      success: true,
+      data: preference
+        ? {
+            role: preference.role,
+            widgets: preference.widgets,
+            layout: preference.layout,
+            updatedAt: preference.updatedAt,
+          }
+        : fallback,
+    });
+  })
+);
+
+// ─── PUT /api/dashboard/preferences ────────────────────────────────────
+router.put(
+  '/preferences',
+  requirePermission('view_analytics'),
+  asyncHandler(async (req: Request, res: Response) => {
+    const userId = req.user?.id;
+    const role = req.user?.role || 'agent';
+    const { widgets, layout } = req.body as {
+      widgets?: unknown;
+      layout?: string;
+    };
+
+    if (!userId) {
+      throw new AppError('User context missing', 401);
+    }
+
+    if (!Array.isArray(widgets)) {
+      throw new AppError('widgets must be an array', 400);
+    }
+
+    const updated = await prisma.userDashboardPreference.upsert({
+      where: { userId },
+      update: {
+        role,
+        widgets,
+        layout: layout || 'default',
+      },
+      create: {
+        userId,
+        role,
+        widgets,
+        layout: layout || 'default',
+      },
+    });
+
+    res.status(200).json({
+      success: true,
+      data: {
+        role: updated.role,
+        widgets: updated.widgets,
+        layout: updated.layout,
+        updatedAt: updated.updatedAt,
+      },
+    });
+  })
+);
 
 // ─── GET /api/dashboard/summary  &  /api/dashboard/overview ─────────────
 // Main dashboard overview used by CRM Hub  (frontend calls /summary)

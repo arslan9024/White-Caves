@@ -1,6 +1,6 @@
 import { defineConfig, devices } from '@playwright/test';
 
-const BASE_URL = process.env.TEST_BASE_URL || 'http://localhost:5000';
+const BASE_URL = process.env.TEST_BASE_URL || 'http://localhost:3000';
 
 const isLocalManagedBaseUrl = (() => {
   if (!process.env.TEST_BASE_URL) return true;
@@ -9,7 +9,7 @@ const isLocalManagedBaseUrl = (() => {
     const parsed = new URL(process.env.TEST_BASE_URL);
     const isLocalhost = parsed.hostname === 'localhost' || parsed.hostname === '127.0.0.1';
     const port = parsed.port || (parsed.protocol === 'https:' ? '443' : '80');
-    return isLocalhost && port === '5000';
+    return isLocalhost && port === '3000';
   } catch {
     return false;
   }

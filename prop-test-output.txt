@@ -1,0 +1,212 @@
+﻿
+> white-caves-real-estate@1.0.0 test:run
+> vitest run server/__tests__/propertyVerification.test.ts
+
+
+[1m[46m RUN [49m[22m [36mv3.2.6 [39m[90mC:/Users/HP/Documents/Projects/theWhiteCavesWeb[39m
+
+node.exe : [90mstderr[2m | server/__tests__/propertyVerification.test.ts[2m 
+> [22m[2mPATCH /api/properties/:id ΓÇö verification fields 
+(W18.1-P0-012)[2m > [22m[2msets verifiedAt when PATCH body includes 
+verifiedAt
+At line:1 char:1
++ & "C:\Program Files\nodejs/node.exe" "C:\Program Files\nodejs/node_mo ...
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: ([90mstderr[2m...udes verifiedAt 
+   :String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 
+[22m[39mERROR HANDLER: {
+  message: [32m"Cannot read properties of undefined (reading 'create')"[39m,
+  statusCode: [90mundefined[39m,
+  stack: [32m"TypeError: Cannot read properties of undefined (reading 
+'create')\n"[39m +
+    [32m'    at C:\\Users\\HP\\Documents\\Projects\\theWhiteCavesWeb\\server\\
+routes\\properties.ts:1028:27\n'[39m +
+    [32m'    at processTicksAndRejections 
+(node:internal/process/task_queues:103:5)'[39m
+}
+
+[90mstderr[2m | server/__tests__/propertyVerification.test.ts[2m > 
+[22m[2mPATCH /api/properties/:id ΓÇö verification fields (W18.1-P0-012)[2m 
+> [22m[2msets verifiedBy when PATCH body includes verifiedBy
+[22m[39mERROR HANDLER: {
+  message: [32m"Cannot read properties of undefined (reading 'create')"[39m,
+  statusCode: [90mundefined[39m,
+  stack: [32m"TypeError: Cannot read properties of undefined (reading 
+'create')\n"[39m +
+    [32m'    at C:\\Users\\HP\\Documents\\Projects\\theWhiteCavesWeb\\server\\
+routes\\properties.ts:1028:27\n'[39m +
+    [32m'    at processTicksAndRejections 
+(node:internal/process/task_queues:103:5)'[39m
+}
+
+[90mstdout[2m | server/__tests__/propertyVerification.test.ts[2m > [22m[2mPATCH /api/properties/:id ΓÇö verification fields (W18.1-P0-012)[2m > [22m[2msets verifiedBy when PATCH body includes verifiedBy
+[22m[39mPATCH response: {
+  status: [33m500[39m,
+  body: {
+    success: [33mfalse[39m,
+    error: [32m"Cannot read properties of undefined (reading 'create')"[39m
+  }
+}
+
+[90mstderr[2m | server/__tests__/propertyVerification.test.ts[2m > 
+[22m[2mPATCH /api/properties/:id ΓÇö verification fields (W18.1-P0-012)[2m 
+> [22m[2msets lastRefreshedAt when PATCH body includes lastRefreshedAt
+[22m[39mERROR HANDLER: {
+  message: [32m"Cannot read properties of undefined (reading 'create')"[39m,
+  statusCode: [90mundefined[39m,
+  stack: [32m"TypeError: Cannot read properties of undefined (reading 
+'create')\n"[39m +
+    [32m'    at C:\\Users\\HP\\Documents\\Projects\\theWhiteCavesWeb\\server\\
+routes\\properties.ts:1028:27\n'[39m +
+    [32m'    at processTicksAndRejections 
+(node:internal/process/task_queues:103:5)'[39m
+}
+
+[90mstderr[2m | server/__tests__/propertyVerification.test.ts[2m > 
+[22m[2mPATCH /api/properties/:id ΓÇö verification fields (W18.1-P0-012)[2m 
+> [22m[2mclears verifiedAt when null is sent
+[22m[39mERROR HANDLER: {
+  message: [32m"Cannot read properties of undefined (reading 'create')"[39m,
+  statusCode: [90mundefined[39m,
+  stack: [32m"TypeError: Cannot read properties of undefined (reading 
+'create')\n"[39m +
+    [32m'    at C:\\Users\\HP\\Documents\\Projects\\theWhiteCavesWeb\\server\\
+routes\\properties.ts:1028:27\n'[39m +
+    [32m'    at processTicksAndRejections 
+(node:internal/process/task_queues:103:5)'[39m
+}
+
+ [31mΓ¥»[39m server/__tests__/propertyVerification.test.ts [2m([22m[2m5 tests[22m[2m | [22m[31m4 failed[39m[2m)[22m[32m 73[2mms[22m[39m
+[31m   [31m├ù[31m PATCH /api/properties/:id ΓÇö verification fields (W18.1-P0-012)[2m > [22msets verifiedAt when PATCH body includes verifiedAt[39m[32m 50[2mms[22m[39m
+[31m     ΓåÆ expected 500 to be 200 // Object.is equality[39m
+[31m   [31m├ù[31m PATCH /api/properties/:id ΓÇö verification fields (W18.1-P0-012)[2m > [22msets verifiedBy when PATCH body includes verifiedBy[39m[32m 6[2mms[22m[39m
+[31m     ΓåÆ expected 500 to be 200 // Object.is equality[39m
+[31m   [31m├ù[31m PATCH /api/properties/:id ΓÇö verification fields (W18.1-P0-012)[2m > [22msets lastRefreshedAt when PATCH body includes lastRefreshedAt[39m[32m 4[2mms[22m[39m
+[31m     ΓåÆ expected 500 to be 200 // Object.is equality[39m
+[31m   [31m├ù[31m PATCH /api/properties/:id ΓÇö verification fields (W18.1-P0-012)[2m > [22mclears verifiedAt when null is sent[39m[32m 5[2mms[22m[39m
+[31m     ΓåÆ expected 500 to be 200 // Object.is equality[39m
+   [32mΓ£ô[39m GET /api/properties ΓÇö includes verifiedAt (W18.1-P0-012)[2m > [22mincludes verifiedAt in list response[32m 7[2mms[22m[39m
+
+[31mΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»[39m[1m[41m Failed Tests 4 
+[49m[22m[31mΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»[39m
+
+[41m[1m FAIL [22m[49m server/__tests__/propertyVerification.test.ts[2m > 
+[22mPATCH /api/properties/:id ΓÇö verification fields (W18.1-P0-012)[2m > 
+[22msets verifiedAt when PATCH body includes verifiedAt
+[31m[1mAssertionError[22m: expected 500 to be 200 // Object.is equality[39m
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[32m- 200[39m
+[31m+ 500[39m
+
+[36m [2mΓ¥»[22m 
+server/__tests__/propertyVerification.test.ts:[2m112:24[22m[39m
+    [90m110| [39m      [33m.[39m[34msend[39m({ verifiedAt[33m:[39m 
+now[33m,[39m verifiedBy[33m:[39m [32m'user-manager-1'[39m })[33m;[39m
+    [90m111| [39m
+    [90m112| [39m    [34mexpect[39m(res[33m.[39mstatus)[33m.[39m[34mto
+Be[39m([34m200[39m)[33m;[39m
+    [90m   | [39m                       [31m^[39m
+    [90m113| [39m    [34mexpect[39m(res[33m.[39mbody[33m.[39msuccess)[
+33m.[39m[34mtoBe[39m([35mtrue[39m)[33m;[39m
+    [90m114| [39m    [90m// Verify the prisma update was called with 
+verifiedAt[39m
+
+[31m[2mΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»Γ
+Ä»[1/4]ΓÄ»[22m[39m
+
+[41m[1m FAIL [22m[49m server/__tests__/propertyVerification.test.ts[2m > 
+[22mPATCH /api/properties/:id ΓÇö verification fields (W18.1-P0-012)[2m > 
+[22msets verifiedBy when PATCH body includes verifiedBy
+[31m[1mAssertionError[22m: expected 500 to be 200 // Object.is equality[39m
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[32m- 200[39m
+[31m+ 500[39m
+
+[36m [2mΓ¥»[22m 
+server/__tests__/propertyVerification.test.ts:[2m130:24[22m[39m
+    [90m128| [39m
+    [90m129| [39m    console.log('PATCH response:', { status: res.status, 
+body: res.bodΓÇª
+    [90m130| [39m    [34mexpect[39m(res[33m.[39mstatus)[33m.[39m[34mto
+Be[39m([34m200[39m)[33m;[39m
+    [90m   | [39m                       [31m^[39m
+    [90m131| [39m    [35mconst[39m updateCall [33m=[39m mockPrisma[33m.
+[39mproperty[33m.[39mupdate[33m.[39mmock[33m.[39mcalls[[34m0[39m][[34m
+0[39m][33m;[39m
+    [90m132| [39m    [34mexpect[39m(updateCall[33m.[39mdata[33m.[39mver
+ifiedBy)[33m.[39m[34mtoBe[39m([32m'agent-xyz'[39m)[33m;[39m
+
+[31m[2mΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»Γ
+Ä»[2/4]ΓÄ»[22m[39m
+
+[41m[1m FAIL [22m[49m server/__tests__/propertyVerification.test.ts[2m > 
+[22mPATCH /api/properties/:id ΓÇö verification fields (W18.1-P0-012)[2m > 
+[22msets lastRefreshedAt when PATCH body includes lastRefreshedAt
+[31m[1mAssertionError[22m: expected 500 to be 200 // Object.is equality[39m
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[32m- 200[39m
+[31m+ 500[39m
+
+[36m [2mΓ¥»[22m 
+server/__tests__/propertyVerification.test.ts:[2m144:24[22m[39m
+    [90m142| [39m      [33m.[39m[34msend[39m({ 
+lastRefreshedAt[33m:[39m now })[33m;[39m
+    [90m143| [39m
+    [90m144| [39m    [34mexpect[39m(res[33m.[39mstatus)[33m.[39m[34mto
+Be[39m([34m200[39m)[33m;[39m
+    [90m   | [39m                       [31m^[39m
+    [90m145| [39m    [35mconst[39m updateCall [33m=[39m mockPrisma[33m.
+[39mproperty[33m.[39mupdate[33m.[39mmock[33m.[39mcalls[[34m0[39m][[34m
+0[39m][33m;[39m
+    [90m146| [39m    [34mexpect[39m(updateCall[33m.[39mdata[33m.[39mlas
+tRefreshedAt)[33m.[39m[34mtoBeInstanceOf[39m([33mDate[39m)[33m;[39m
+
+[31m[2mΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»Γ
+Ä»[3/4]ΓÄ»[22m[39m
+
+[41m[1m FAIL [22m[49m server/__tests__/propertyVerification.test.ts[2m > 
+[22mPATCH /api/properties/:id ΓÇö verification fields (W18.1-P0-012)[2m > 
+[22mclears verifiedAt when null is sent
+[31m[1mAssertionError[22m: expected 500 to be 200 // Object.is equality[39m
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[32m- 200[39m
+[31m+ 500[39m
+
+[36m [2mΓ¥»[22m 
+server/__tests__/propertyVerification.test.ts:[2m157:24[22m[39m
+    [90m155| [39m      [33m.[39m[34msend[39m({ verifiedAt[33m:[39m 
+[35mnull[39m })[33m;[39m
+    [90m156| [39m
+    [90m157| [39m    [34mexpect[39m(res[33m.[39mstatus)[33m.[39m[34mto
+Be[39m([34m200[39m)[33m;[39m
+    [90m   | [39m                       [31m^[39m
+    [90m158| [39m    [35mconst[39m updateCall [33m=[39m mockPrisma[33m.
+[39mproperty[33m.[39mupdate[33m.[39mmock[33m.[39mcalls[[34m0[39m][[34m
+0[39m][33m;[39m
+    [90m159| [39m    [34mexpect[39m(updateCall[33m.[39mdata[33m.[39mver
+ifiedAt)[33m.[39m[34mtoBeNull[39m()[33m;[39m
+
+[31m[2mΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»Γ
+Ä»[4/4]ΓÄ»[22m[39m
+
+
+[2m Test Files [22m [1m[31m1 failed[39m[22m[90m (1)[39m
+[2m      Tests [22m [1m[31m4 failed[39m[22m[2m | [22m[1m[32m1 passed[39m[22m[90m (5)[39m
+[2m   Start at [22m 21:56:07
+[2m   Duration [22m 2.41s[2m (transform 81ms, setup 172ms, collect 299ms, tests 73ms, environment 1.33s, prepare 146ms)[22m
+
+

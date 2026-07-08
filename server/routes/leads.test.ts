@@ -10,7 +10,7 @@ import express from 'express';
 import request from 'supertest';
 
 // ── Hoisted mocks ────────────────────────────────────────────────────
-const { mockPrisma } = vi.hoisted(() => {
+const { mockPrisma, mockLogger } = vi.hoisted(() => {
   const fn = vi.fn;
   const mockTx = {
     commission: { updateMany: fn().mockResolvedValue({ count: 0 }) },
@@ -19,6 +19,18 @@ const { mockPrisma } = vi.hoisted(() => {
       create: fn().mockResolvedValue({ id: 'act-1' }),
     },
     lead: { delete: fn().mockResolvedValue({}) },
+  };
+  const mockLogger = {
+    createLogger: vi.fn(() => ({
+      info: vi.fn(),
+      debug: vi.fn(),
+      warn: vi.fn(),
+      error: vi.fn(),
+    })),
+    info: vi.fn(),
+    debug: vi.fn(),
+    warn: vi.fn(),
+    error: vi.fn(),
   };
   return {
     mockPrisma: {
@@ -55,6 +67,7 @@ const { mockPrisma } = vi.hoisted(() => {
       },
       $transaction: fn().mockImplementation(async (cb: any) => cb(mockTx)),
     },
+    mockLogger,
   };
 });
 
@@ -63,6 +76,10 @@ const { triggerLeadRescore } = vi.hoisted(() => ({
 }));
 
 vi.mock('../database.js', () => ({ prisma: mockPrisma }));
+vi.mock('../utils/logger.js', () => ({
+  createLogger: mockLogger.createLogger,
+  logger: mockLogger,
+}));
 vi.mock('../services/ai/leadAutoRescore.js', () => ({ triggerLeadRescore }));
 vi.mock('../services/socketServer.js', () => ({
   getSocketServer: vi.fn(() => null),

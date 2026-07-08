@@ -28,6 +28,11 @@ const DashboardContainer = styled.div`
   width: 100%;
   background: ${props => props.theme.colors.background || '#0a0a0a'};
   color: ${props => props.theme.colors.text || '#fff'};
+
+  @media (max-width: 768px) {
+    height: auto;
+    min-height: 100vh;
+  }
 `;
 
 const LeftSidebarWrapper = styled.div`
@@ -36,12 +41,24 @@ const LeftSidebarWrapper = styled.div`
   height: 100%;
   border-right: 1px solid ${props => props.theme.colors.border || '#333'};
   overflow: hidden;
+
+  @media (max-width: 1024px) {
+    width: 72px;
+  }
+
+  @media (max-width: 768px) {
+    display: none;
+  }
 `;
 
 const MainContentArea = styled.div`
   flex: 1;
   display: flex;
   overflow: hidden;
+
+  @media (max-width: 768px) {
+    overflow: visible;
+  }
 `;
 
 const DashboardContent = styled.div`
@@ -51,6 +68,14 @@ const DashboardContent = styled.div`
   padding: 24px;
   display: flex;
   flex-direction: column;
+
+  @media (max-width: 1024px) {
+    padding: 18px;
+  }
+
+  @media (max-width: 768px) {
+    padding: 12px;
+  }
 
   /* Custom scrollbar */
   &::-webkit-scrollbar {
@@ -103,6 +128,14 @@ const RightSidebarWrapper = styled.div`
   height: 100%;
   border-left: 1px solid ${props => props.theme.colors.border || '#333'};
   overflow: hidden;
+
+  @media (max-width: 1200px) {
+    width: 240px;
+  }
+
+  @media (max-width: 1024px) {
+    display: none;
+  }
 `;
 
 const LoadingState = styled.div`

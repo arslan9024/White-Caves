@@ -29,9 +29,18 @@ import DashboardKpiStrip, { type KpiCardData } from '../components/dashboard/Das
 import DashboardProfileCompletion from '../components/dashboard/DashboardProfileCompletion';
 import DashboardCommandPalette from '../components/dashboard/DashboardCommandPalette';
 import DashboardModuleToolbar from '../components/dashboard/DashboardModuleToolbar';
+import DashboardConfigurator, {
+  type DashboardWidgetOption,
+} from '../components/dashboard/DashboardConfigurator';
 import CRMContextPanel from '../components/crm/CRMContextPanel';
 import { useUnifiedDashboard } from '../hooks/useUnifiedDashboard';
 import type { DashboardData, CRMModuleProps } from '../hooks/useUnifiedDashboard';
+import {
+  fetchDashboardPreferences,
+  fetchRoleDashboardConfig,
+  saveDashboardPreferences,
+} from '../services/dashboardPreferencesAPI';
+import { createLogger } from '../utils/logger';
 import { AI_ASSISTANTS_REGISTRY } from '../store/slices/aiAssistant/registry';
 import { selectSelectedAssistant } from '../store/slices/sidebarSlice';
 import { SUPERUSER_CRM_MODULE_ORDER, getCRMModule } from '../config/crmModuleRegistry';
@@ -40,15 +49,19 @@ import type { RootState } from '../store/store';
 import './UnifiedDashboardPage.css';
 import '../styles/dashboard-tokens.css';
 
-import OverviewTab from '../components/owner/tabs/OverviewTab';
-import PropertiesTab from '../components/owner/tabs/PropertiesTab';
-import AgentsTab from '../components/owner/tabs/AgentsTab';
-import LeadsTab from '../components/owner/tabs/LeadsTab';
-import ContractsTab from '../components/owner/tabs/ContractsTab';
-import AnalyticsTab from '../components/owner/tabs/AnalyticsTab';
-import { CommissionsTab } from '../components/owner/tabs/CommissionsTab';
-import SettingsTab from '../components/owner/tabs/SettingsTab';
-import UsersTab from '../components/owner/tabs/UsersTab';
+const OverviewTab = lazy(() => import('../components/owner/tabs/OverviewTab'));
+const PropertiesTab = lazy(() => import('../components/owner/tabs/PropertiesTab'));
+const AgentsTab = lazy(() => import('../components/owner/tabs/AgentsTab'));
+const LeadsTab = lazy(() => import('../components/owner/tabs/LeadsTab'));
+const ContractsTab = lazy(() => import('../components/owner/tabs/ContractsTab'));
+const AnalyticsTab = lazy(() => import('../components/owner/tabs/AnalyticsTab'));
+const CommissionsTab = lazy(() =>
+  import('../components/owner/tabs/CommissionsTab').then(module => ({
+    default: module.CommissionsTab,
+  }))
+);
+const SettingsTab = lazy(() => import('../components/owner/tabs/SettingsTab'));
+const UsersTab = lazy(() => import('../components/owner/tabs/UsersTab'));
 import type {
   OverviewData,
   PropertiesData,
@@ -58,7 +71,7 @@ import type {
   AnalyticsData,
   SettingsData,
 } from '../components/owner/tabs/types';
-import AdminDashboard from '../components/admin/AdminDashboard';
+const AdminDashboard = lazy(() => import('../components/admin/AdminDashboard'));
 
 const AIAssistantHub = lazy(() => import('../components/crm/AIAssistantHub'));
 const AICommandCenter = lazy(() => import('../components/crm/AICommandCenter.tsx'));
@@ -156,6 +169,7 @@ const CRM_MODULES: Record<string, CRMModule> = {
 };
 
 const moduleEntries = Object.entries(CRM_MODULES);
+const dashboardPageLogger = createLogger('UnifiedDashboardPage');
 
 const getTimeGreeting = (date: Date): string => {
   const hour = date.getHours();
@@ -236,6 +250,9 @@ const UnifiedDashboardPage: FC = () => {
   const [departmentsExpanded, setDepartmentsExpanded] = useState(true);
   const [selectedContext, setSelectedContext] = useState<SearchItem | null>(null);
   const [isMobileDrawerOpen, setIsMobileDrawerOpen] = useState(false);
+  const [dashboardWidgets, setDashboardWidgets] = useState<DashboardWidgetOption[]>([]);
+  const [dashboardLayout, setDashboardLayout] = useState('default');
+  const [dashboardConfigError, setDashboardConfigError] = useState<string | null>(null);
   const globalSearchRef = useRef<HTMLDivElement | null>(null);
   const tabButtonRefs = useRef<Array<HTMLButtonElement | null>>([]);
   const lastFocusedElementRef = useRef<HTMLElement | null>(null);
@@ -299,6 +316,8 @@ const UnifiedDashboardPage: FC = () => {
   const isManagingDirector = currentRole === 'managing_director';
   const isExecutiveRole = isSuperUser || isManagingDirector;
   const currentTab = availableTabs.find(tab => tab.id === activeTab);
+  const showDashboardConfigurator =
+    isExecutiveRole && !selectedDepartment && !selectedCRMModule && !isLoading;
 
   const overview = (dashboardData?.overview ?? {}) as GenericEntity;
   const propertiesCount = dashboardData?.properties?.length ?? 0;
@@ -529,6 +548,123 @@ const UnifiedDashboardPage: FC = () => {
     setIsGlobalSearchOpen(false);
   };
 
+  useEffect(() => {
+    if (!showDashboardConfigurator) {
+      return;
+    }
+
+    let cancelled = false;
+
+    const loadDashboardPreferences = async () => {
+      try {
+        setDashboardConfigError(null);
+        const preferences = await fetchDashboardPreferences();
+
+        if (cancelled) {
+          return;
+        }
+
+        setDashboardLayout(preferences.layout || 'default');
+        setDashboardWidgets(
+          preferences.widgets.map(widget => ({
+            id: widget.id,
+            label: widget.title,
+            enabled: widget.enabled,
+            description: `Widget ${widget.enabled ? 'enabled' : 'disabled'} for ${preferences.role}`,
+          }))
+        );
+      } catch (error) {
+        if (cancelled) {
+          return;
+        }
+
+        setDashboardConfigError('Could not load dashboard preferences. Using role defaults.');
+        dashboardPageLogger.warn(
+          'Dashboard preferences fetch failed, loading role defaults',
+          error
+        );
+
+        try {
+          const defaults = await fetchRoleDashboardConfig();
+          if (cancelled) {
+            return;
+          }
+
+          setDashboardLayout(defaults.layout || 'default');
+          setDashboardWidgets(
+            defaults.widgets.map(widget => ({
+              id: widget.id,
+              label: widget.title,
+              enabled: widget.enabled,
+            }))
+          );
+        } catch (fallbackError) {
+          if (!cancelled) {
+            setDashboardWidgets([]);
+          }
+          dashboardPageLogger.error('Dashboard defaults fallback failed', fallbackError);
+        }
+      }
+    };
+
+    void loadDashboardPreferences();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [showDashboardConfigurator]);
+
+  const persistDashboardWidgets = async (nextWidgets: DashboardWidgetOption[]) => {
+    try {
+      const payload = nextWidgets.map(widget => ({
+        id: widget.id,
+        title: widget.label,
+        enabled: widget.enabled,
+      }));
+
+      await saveDashboardPreferences(payload, dashboardLayout);
+      setDashboardConfigError(null);
+    } catch (error) {
+      setDashboardConfigError('Could not save widget preferences. Please retry.');
+      dashboardPageLogger.warn('Dashboard preference save failed', error);
+    }
+  };
+
+  const handleToggleDashboardWidget = (id: string, enabled: boolean) => {
+    const nextWidgets = dashboardWidgets.map(widget =>
+      widget.id === id ? { ...widget, enabled } : widget
+    );
+
+    setDashboardWidgets(nextWidgets);
+    void persistDashboardWidgets(nextWidgets);
+  };
+
+  const handleResetDashboardConfig = async () => {
+    try {
+      const defaults = await fetchRoleDashboardConfig();
+      const nextWidgets = defaults.widgets.map(widget => ({
+        id: widget.id,
+        label: widget.title,
+        enabled: widget.enabled,
+      }));
+
+      setDashboardWidgets(nextWidgets);
+      setDashboardLayout('default');
+      await saveDashboardPreferences(
+        defaults.widgets.map(widget => ({
+          id: widget.id,
+          title: widget.title,
+          enabled: widget.enabled,
+        })),
+        'default'
+      );
+      setDashboardConfigError(null);
+    } catch (error) {
+      setDashboardConfigError('Could not reset dashboard configuration.');
+      dashboardPageLogger.warn('Dashboard config reset failed', error);
+    }
+  };
+
   const openWorkspaceTab = (tabId: string, fallbackModule?: string) => {
     if (availableTabIds.has(tabId)) {
       handleWorkspaceSelect(tabId);
@@ -587,49 +723,65 @@ const UnifiedDashboardPage: FC = () => {
       case 'overview':
         return (
           <RouteErrorBoundary section="Overview">
-            <OverviewTab data={tabData<OverviewData>(dataToRender)} />
+            <Suspense fallback={<TabLoadingFallback />}>
+              <OverviewTab data={tabData<OverviewData>(dataToRender)} />
+            </Suspense>
           </RouteErrorBoundary>
         );
       case 'properties':
         return (
           <RouteErrorBoundary section="Properties">
-            <PropertiesTab data={tabData<PropertiesData>(dataToRender)} />
+            <Suspense fallback={<TabLoadingFallback />}>
+              <PropertiesTab data={tabData<PropertiesData>(dataToRender)} />
+            </Suspense>
           </RouteErrorBoundary>
         );
       case 'agents':
         return (
           <RouteErrorBoundary section="Agents">
-            <AgentsTab data={tabData<AgentsData>(dataToRender)} />
+            <Suspense fallback={<TabLoadingFallback />}>
+              <AgentsTab data={tabData<AgentsData>(dataToRender)} />
+            </Suspense>
           </RouteErrorBoundary>
         );
       case 'leads':
         return (
           <RouteErrorBoundary section="Leads">
-            <LeadsTab data={tabData<LeadsData>(dataToRender)} />
+            <Suspense fallback={<TabLoadingFallback />}>
+              <LeadsTab data={tabData<LeadsData>(dataToRender)} />
+            </Suspense>
           </RouteErrorBoundary>
         );
       case 'contracts':
         return (
           <RouteErrorBoundary section="Contracts">
-            <ContractsTab data={tabData<ContractsData>(dataToRender)} />
+            <Suspense fallback={<TabLoadingFallback />}>
+              <ContractsTab data={tabData<ContractsData>(dataToRender)} />
+            </Suspense>
           </RouteErrorBoundary>
         );
       case 'analytics':
         return (
           <RouteErrorBoundary section="Analytics">
-            <AnalyticsTab data={tabData<AnalyticsData>(dataToRender)} />
+            <Suspense fallback={<TabLoadingFallback />}>
+              <AnalyticsTab data={tabData<AnalyticsData>(dataToRender)} />
+            </Suspense>
           </RouteErrorBoundary>
         );
       case 'commissions':
         return (
           <RouteErrorBoundary section="Commissions">
-            <CommissionsTab />
+            <Suspense fallback={<TabLoadingFallback />}>
+              <CommissionsTab />
+            </Suspense>
           </RouteErrorBoundary>
         );
       case 'admin':
         return (
           <RouteErrorBoundary section="Admin">
-            <AdminDashboard />
+            <Suspense fallback={<TabLoadingFallback />}>
+              <AdminDashboard />
+            </Suspense>
           </RouteErrorBoundary>
         );
       case 'ai-hub':
@@ -651,19 +803,25 @@ const UnifiedDashboardPage: FC = () => {
       case 'users':
         return (
           <RouteErrorBoundary section="Users">
-            <UsersTab />
+            <Suspense fallback={<TabLoadingFallback />}>
+              <UsersTab />
+            </Suspense>
           </RouteErrorBoundary>
         );
       case 'settings':
         return (
           <RouteErrorBoundary section="Settings">
-            <SettingsTab data={tabData<SettingsData>(dataToRender)} />
+            <Suspense fallback={<TabLoadingFallback />}>
+              <SettingsTab data={tabData<SettingsData>(dataToRender)} />
+            </Suspense>
           </RouteErrorBoundary>
         );
       default:
         return (
           <RouteErrorBoundary section="Overview">
-            <OverviewTab data={tabData<OverviewData>(dataToRender)} />
+            <Suspense fallback={<TabLoadingFallback />}>
+              <OverviewTab data={tabData<OverviewData>(dataToRender)} />
+            </Suspense>
           </RouteErrorBoundary>
         );
     }
@@ -906,6 +1064,25 @@ const UnifiedDashboardPage: FC = () => {
           )}
 
           {!selectedDepartment && !selectedCRMModule && <DashboardKpiStrip cards={kpiCards} />}
+
+          {showDashboardConfigurator && (
+            <section
+              className="dashboard-configurator-panel"
+              aria-label="Dashboard widget controls"
+            >
+              <DashboardConfigurator
+                title="Executive Widget Controls"
+                widgets={dashboardWidgets}
+                onToggleWidget={handleToggleDashboardWidget}
+                onReset={handleResetDashboardConfig}
+              />
+              {dashboardConfigError ? (
+                <p className="dashboard-configurator-panel__error" role="status" aria-live="polite">
+                  {dashboardConfigError}
+                </p>
+              ) : null}
+            </section>
+          )}
 
           {!selectedDepartment &&
             !selectedCRMModule &&

@@ -46,6 +46,41 @@ const mockCheckPhoneSavedInGoraha = vi.fn(async () => ({
   isSaved: false,
 }));
 
+const { mockDispatchLindaCampaign, mockDispatchDueLindaCampaigns } = vi.hoisted(() => {
+  return {
+    mockDispatchLindaCampaign: vi.fn(async (id: string) => {
+      // Simulate the dispatch service checking Prisma
+      const campaign = await mockPrisma.lindaBroadcastCampaign.findUnique();
+      if (!campaign) {
+        const err = new Error('Campaign not found');
+        (err as any).statusCode = 404;
+        throw err;
+      }
+      if (campaign.status !== 'scheduled') {
+        const err = new Error(`Campaign cannot be dispatched from status: ${campaign.status}`);
+        (err as any).statusCode = 409;
+        throw err;
+      }
+      // Simulate the dispatch service calling broadcastMessage
+      mockLinda.broadcastMessage(campaign.targetList);
+      return {
+        id,
+        status: 'dispatched',
+        messagesSent: campaign.targetList?.length || 0,
+      };
+    }),
+    mockDispatchDueLindaCampaigns: vi.fn(async () => {
+      // Simulate dispatching multiple campaigns
+      mockLinda.broadcastMessage(['+971501234567']);
+      return {
+        dispatched: 2,
+        successful: 2,
+        failed: 0,
+      };
+    }),
+  };
+});
+
 vi.mock('../database.js', () => ({ prisma: mockPrisma }));
 vi.mock('../config/env.js', () => ({ LINDA_ENABLED: true }));
 vi.mock('../middleware/rbac.js', () => ({
@@ -72,6 +107,10 @@ vi.mock('../services/whatsapp/lindaClient.js', () => ({
 }));
 vi.mock('../services/whatsapp/gorahaContactCheckService.js', () => ({
   checkPhoneSavedInGoraha: (...args: unknown[]) => mockCheckPhoneSavedInGoraha(...args),
+}));
+vi.mock('../services/whatsapp/lindaCampaignService.js', () => ({
+  dispatchLindaCampaign: mockDispatchLindaCampaign,
+  dispatchDueLindaCampaigns: mockDispatchDueLindaCampaigns,
 }));
 
 import lindaRoutes from './linda';

@@ -178,7 +178,14 @@ async function loadWorkbookFromFile(filePath) {
   }
 
   const workbook = new exceljsModule.default.Workbook();
-  await workbook.xlsx.readFile(filePath);
+
+  // Use csv.readFile for .csv files, xlsx.readFile for Excel files
+  if (filePath.toLowerCase().endsWith('.csv')) {
+    await workbook.csv.readFile(filePath);
+  } else {
+    await workbook.xlsx.readFile(filePath);
+  }
+
   return workbook;
 }
 

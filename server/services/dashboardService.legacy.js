@@ -18,7 +18,7 @@ class DashboardService {
       closedDeals: 0,
       whatsappContacts: 0,
       activeConversations: 0,
-      conversionRate: 0
+      conversionRate: 0,
     };
 
     try {
@@ -34,7 +34,7 @@ class DashboardService {
         pendingContractCount,
         closedDealCount,
         whatsappContactCount,
-        activeConvoCount
+        activeConvoCount,
       ] = await Promise.all([
         InventoryProperty.countDocuments({ isActive: true }),
         InventoryProperty.countDocuments({ purpose: 'sale', isActive: true }),
@@ -47,7 +47,7 @@ class DashboardService {
         Contract.countDocuments({ status: { $in: ['draft', 'partially_signed'] } }),
         Contract.countDocuments({ status: 'fully_signed' }),
         WhatsAppContact.countDocuments(),
-        WhatsAppContact.countDocuments({ conversationStatus: 'active' })
+        WhatsAppContact.countDocuments({ conversationStatus: 'active' }),
       ]);
 
       summary.totalProperties = propertyCount || 0;
@@ -76,11 +76,12 @@ class DashboardService {
 
   async getRecentProperties(limit = 10) {
     try {
-      const properties = await InventoryProperty
-        .find({ isActive: true })
+      const properties = await InventoryProperty.find({ isActive: true })
         .sort({ createdAt: -1 })
         .limit(limit)
-        .select('pNumber area project propertyType rooms actualArea status purpose askingPrice currency views inquiries featured')
+        .select(
+          'pNumber area project propertyType rooms actualArea status purpose askingPrice currency views inquiries featured'
+        )
         .populate('primaryOwner', 'name')
         .lean();
 
@@ -98,7 +99,7 @@ class DashboardService {
         views: p.views || 0,
         inquiries: p.inquiries || 0,
         featured: p.featured || false,
-        ownerName: p.primaryOwner?.name || 'Unknown'
+        ownerName: p.primaryOwner?.name || 'Unknown',
       }));
     } catch (error) {
       console.error('Error fetching recent properties:', error.message);
@@ -108,8 +109,7 @@ class DashboardService {
 
   async getRecentLeads(limit = 5) {
     try {
-      const leads = await Lead
-        .find({ isActive: true })
+      const leads = await Lead.find({ isActive: true })
         .sort({ createdAt: -1 })
         .limit(limit)
         .populate('propertyInterest', 'pNumber area project')
@@ -124,14 +124,16 @@ class DashboardService {
         status: lead.status,
         stage: lead.stage,
         score: lead.score,
-        propertyInterest: lead.propertyInterest ? {
-          pNumber: lead.propertyInterest.pNumber,
-          location: `${lead.propertyInterest.project || ''}, ${lead.propertyInterest.area || ''}`
-        } : null,
+        propertyInterest: lead.propertyInterest
+          ? {
+              pNumber: lead.propertyInterest.pNumber,
+              location: `${lead.propertyInterest.project || ''}, ${lead.propertyInterest.area || ''}`,
+            }
+          : null,
         assignedAgent: lead.assignedAgent,
         createdAt: lead.createdAt,
         lastContactDate: lead.lastContactDate,
-        nextFollowUp: lead.nextFollowUp
+        nextFollowUp: lead.nextFollowUp,
       }));
     } catch (error) {
       console.error('Error fetching recent leads:', error.message);
@@ -146,7 +148,7 @@ class DashboardService {
       leadsByStage: [],
       averageScore: 0,
       conversionRate: 0,
-      monthlyLeadTrend: []
+      monthlyLeadTrend: [],
     };
 
     try {
@@ -154,22 +156,22 @@ class DashboardService {
         Lead.aggregate([
           { $match: { isActive: true } },
           { $group: { _id: '$status', count: { $sum: 1 } } },
-          { $sort: { count: -1 } }
+          { $sort: { count: -1 } },
         ]),
         Lead.aggregate([
           { $match: { isActive: true } },
           { $group: { _id: '$source', count: { $sum: 1 } } },
-          { $sort: { count: -1 } }
+          { $sort: { count: -1 } },
         ]),
         Lead.aggregate([
           { $match: { isActive: true } },
           { $group: { _id: '$stage', count: { $sum: 1 } } },
-          { $sort: { count: -1 } }
+          { $sort: { count: -1 } },
         ]),
         Lead.aggregate([
           { $match: { isActive: true, score: { $gt: 0 } } },
-          { $group: { _id: null, avgScore: { $avg: '$score' } } }
-        ])
+          { $group: { _id: null, avgScore: { $avg: '$score' } } },
+        ]),
       ]);
 
       metrics.leadsByStatus = statusData.map(s => ({ name: s._id || 'unknown', value: s.count }));
@@ -179,28 +181,29 @@ class DashboardService {
 
       const totalLeads = await Lead.countDocuments({ isActive: true });
       const convertedLeads = await Lead.countDocuments({ status: 'converted', isActive: true });
-      metrics.conversionRate = totalLeads > 0 ? ((convertedLeads / totalLeads) * 100).toFixed(1) : 0;
+      metrics.conversionRate =
+        totalLeads > 0 ? ((convertedLeads / totalLeads) * 100).toFixed(1) : 0;
 
       const sixMonthsAgo = new Date();
       sixMonthsAgo.setMonth(sixMonthsAgo.getMonth() - 6);
-      
+
       const monthlyTrend = await Lead.aggregate([
         { $match: { createdAt: { $gte: sixMonthsAgo }, isActive: true } },
-        { 
-          $group: { 
-            _id: { 
-              year: { $year: '$createdAt' }, 
-              month: { $month: '$createdAt' } 
-            }, 
-            count: { $sum: 1 } 
-          } 
+        {
+          $group: {
+            _id: {
+              year: { $year: '$createdAt' },
+              month: { $month: '$createdAt' },
+            },
+            count: { $sum: 1 },
+          },
         },
-        { $sort: { '_id.year': 1, '_id.month': 1 } }
+        { $sort: { '_id.year': 1, '_id.month': 1 } },
       ]);
 
       metrics.monthlyLeadTrend = monthlyTrend.map(m => ({
         month: `${m._id.year}-${String(m._id.month).padStart(2, '0')}`,
-        leads: m.count
+        leads: m.count,
       }));
     } catch (error) {
       console.error('Error fetching performance metrics:', error.message);
@@ -214,7 +217,7 @@ class DashboardService {
       areaDistribution: [],
       propertyTypeDistribution: [],
       statusDistribution: [],
-      priceRangeDistribution: []
+      priceRangeDistribution: [],
     };
 
     try {
@@ -223,36 +226,45 @@ class DashboardService {
           { $match: { isActive: true } },
           { $group: { _id: '$area', count: { $sum: 1 } } },
           { $sort: { count: -1 } },
-          { $limit: 10 }
+          { $limit: 10 },
         ]),
         InventoryProperty.aggregate([
           { $match: { isActive: true } },
           { $group: { _id: '$propertyType', count: { $sum: 1 } } },
-          { $sort: { count: -1 } }
+          { $sort: { count: -1 } },
         ]),
         InventoryProperty.aggregate([
           { $match: { isActive: true } },
           { $group: { _id: '$status', count: { $sum: 1 } } },
-          { $sort: { count: -1 } }
-        ])
+          { $sort: { count: -1 } },
+        ]),
       ]);
 
-      analytics.areaDistribution = areaData.map(a => ({ name: a._id || 'Unknown', value: a.count }));
-      analytics.propertyTypeDistribution = typeData.map(t => ({ name: t._id || 'Unknown', value: t.count }));
-      analytics.statusDistribution = statusData.map(s => ({ name: s._id || 'Unknown', value: s.count }));
+      analytics.areaDistribution = areaData.map(a => ({
+        name: a._id || 'Unknown',
+        value: a.count,
+      }));
+      analytics.propertyTypeDistribution = typeData.map(t => ({
+        name: t._id || 'Unknown',
+        value: t.count,
+      }));
+      analytics.statusDistribution = statusData.map(s => ({
+        name: s._id || 'Unknown',
+        value: s.count,
+      }));
 
       const priceRanges = [
         { min: 0, max: 500000, label: 'Under 500K' },
         { min: 500000, max: 1000000, label: '500K - 1M' },
         { min: 1000000, max: 2000000, label: '1M - 2M' },
         { min: 2000000, max: 5000000, label: '2M - 5M' },
-        { min: 5000000, max: 999999999, label: 'Above 5M' }
+        { min: 5000000, max: 999999999, label: 'Above 5M' },
       ];
 
       for (const range of priceRanges) {
         const count = await InventoryProperty.countDocuments({
           askingPrice: { $gte: range.min, $lt: range.max },
-          isActive: true
+          isActive: true,
         });
         analytics.priceRangeDistribution.push({ name: range.label, value: count });
       }
@@ -282,7 +294,7 @@ class DashboardService {
           .sort({ createdAt: -1 })
           .limit(3)
           .select('contactName content createdAt')
-          .lean()
+          .lean(),
       ]);
 
       recentLeads.forEach(lead => {
@@ -290,7 +302,7 @@ class DashboardService {
           type: 'info',
           title: 'New Lead',
           description: `${lead.name} from ${lead.source}`,
-          timestamp: lead.createdAt
+          timestamp: lead.createdAt,
         });
       });
 
@@ -299,7 +311,7 @@ class DashboardService {
           type: contract.status === 'fully_signed' ? 'success' : 'warning',
           title: contract.status === 'fully_signed' ? 'Contract Signed' : 'Contract Pending',
           description: `${contract.contractNumber} - ${contract.tenantName || 'Unknown tenant'}`,
-          timestamp: contract.createdAt
+          timestamp: contract.createdAt,
         });
       });
 
@@ -308,7 +320,7 @@ class DashboardService {
           type: 'info',
           title: 'WhatsApp Message',
           description: `From ${msg.contactName || 'Unknown'}: ${(msg.content || '').substring(0, 50)}...`,
-          timestamp: msg.createdAt
+          timestamp: msg.createdAt,
         });
       });
 
@@ -322,13 +334,20 @@ class DashboardService {
 
   async getDashboardData() {
     try {
-      const [summary, recentProperties, recentLeads, performanceMetrics, marketAnalytics, recentActivities] = await Promise.all([
+      const [
+        summary,
+        recentProperties,
+        recentLeads,
+        performanceMetrics,
+        marketAnalytics,
+        recentActivities,
+      ] = await Promise.all([
         this.getSummary(),
         this.getRecentProperties(),
         this.getRecentLeads(),
         this.getPerformanceMetrics(),
         this.getMarketAnalytics(),
-        this.getRecentActivities()
+        this.getRecentActivities(),
       ]);
 
       return {
@@ -348,7 +367,7 @@ class DashboardService {
           successfulLeads: summary.qualifiedLeads,
           avgResponseTime: 2.3,
           satisfactionRate: 92,
-          messagesProcessed: 0
+          messagesProcessed: 0,
         },
         whatsappStats: {
           totalContacts: summary.whatsappContacts,
@@ -356,15 +375,15 @@ class DashboardService {
           messagesThisMonth: 0,
           responseRate: 94,
           avgResponseTime: '8 min',
-          leadsGenerated: summary.newLeads
+          leadsGenerated: summary.newLeads,
         },
         uaepassStats: {
           totalUsers: 0,
           verifiedUsers: 0,
           pendingVerification: 0,
           thisMonth: 0,
-          conversionRate: 0
-        }
+          conversionRate: 0,
+        },
       };
     } catch (error) {
       console.error('Error fetching dashboard data:', error.message);

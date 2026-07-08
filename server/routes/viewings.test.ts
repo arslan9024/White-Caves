@@ -18,8 +18,14 @@ const { mockPrisma } = vi.hoisted(() => {
         findUnique: fn().mockResolvedValue(null),
         count: fn().mockResolvedValue(0),
         create: fn().mockResolvedValue({
-          id: 'v-1', userId: 'user-1', propertyId: 'prop-1', scheduledAt: new Date('2026-06-15T10:00:00Z'),
-          type: 'in_person', status: 'scheduled', duration: 30, notes: null,
+          id: 'v-1',
+          userId: 'user-1',
+          propertyId: 'prop-1',
+          scheduledAt: new Date('2099-06-15T10:00:00Z'),
+          type: 'in_person',
+          status: 'scheduled',
+          duration: 30,
+          notes: null,
           property: { id: 'prop-1', title: 'Marina Apt', location: 'Dubai Marina', price: 1500000 },
         }),
         update: fn().mockResolvedValue({ id: 'v-1', status: 'confirmed' }),
@@ -56,13 +62,31 @@ vi.mock('../services/emailService.js', () => ({
   },
 }));
 
+vi.mock('../services/schedulingService.js', () => ({
+  getAvailableSlots: vi
+    .fn()
+    .mockResolvedValue([
+      { start: '2099-06-15T10:00:00Z', end: '2099-06-15T10:30:00Z', available: true },
+    ]),
+  detectConflicts: vi.fn().mockResolvedValue({ hasConflict: false }),
+  generateViewingICS: vi.fn().mockReturnValue('BEGIN:VCALENDAR...'),
+  generateIcsToken: vi.fn().mockReturnValue('token-123'),
+}));
+
+vi.mock('../services/ai/leadAutoRescore.js', () => ({
+  triggerLeadRescore: vi.fn(),
+}));
+
 import viewingsRoutes from './viewings';
 import { errorHandler } from '../middleware/errorHandler';
 
 function createApp(role = 'buyer') {
   const app = express();
   app.use(express.json());
-  app.use((req: any, _res, next) => { req.user = { id: 'user-1', email: 'test@wc.ae', role }; next(); });
+  app.use((req: any, _res, next) => {
+    req.user = { id: 'user-1', email: 'test@wc.ae', role };
+    next();
+  });
   app.use('/api/viewings', viewingsRoutes);
   app.use(errorHandler);
   return app;
@@ -79,14 +103,21 @@ describe('Viewings Routes — /api/viewings', () => {
     mockPrisma.viewing.findMany.mockReset().mockResolvedValue([]);
     mockPrisma.viewing.count.mockReset().mockResolvedValue(0);
     mockPrisma.viewing.create.mockReset().mockResolvedValue({
-      id: 'v-1', userId: 'user-1', propertyId: 'prop-1',
-      scheduledAt: new Date('2026-06-15T10:00:00Z'),
-      type: 'in_person', status: 'scheduled', duration: 30, notes: null,
+      id: 'v-1',
+      userId: 'user-1',
+      propertyId: 'prop-1',
+      scheduledAt: new Date('2099-06-15T10:00:00Z'),
+      type: 'in_person',
+      status: 'scheduled',
+      duration: 30,
+      notes: null,
       property: { id: 'prop-1', title: 'Marina Apt', location: 'Dubai Marina', price: 1500000 },
     });
     mockPrisma.viewing.update.mockReset().mockResolvedValue({ id: 'v-1', status: 'confirmed' });
     mockPrisma.viewing.delete.mockReset().mockResolvedValue({});
-    mockPrisma.property.findUnique.mockReset().mockResolvedValue({ id: 'prop-1', title: 'Marina Apt' });
+    mockPrisma.property.findUnique
+      .mockReset()
+      .mockResolvedValue({ id: 'prop-1', title: 'Marina Apt' });
     mockPrisma.lead.findFirst.mockReset().mockResolvedValue(null);
     mockPrisma.lead.create.mockReset().mockResolvedValue({ id: 'lead-1' });
     mockPrisma.activity.create.mockReset().mockResolvedValue({ id: 'activity-1' });
@@ -98,8 +129,8 @@ describe('Viewings Routes — /api/viewings', () => {
   // Without this, pending promises can consume the *next* test's queued
   // mockResolvedValueOnce values and cause intermittent 404/403 mismatches.
   afterEach(async () => {
-    await new Promise((resolve) => setImmediate(resolve));
-    await new Promise((resolve) => setImmediate(resolve));
+    await new Promise(resolve => setImmediate(resolve));
+    await new Promise(resolve => setImmediate(resolve));
   });
 
   describe('GET /api/viewings', () => {
@@ -137,7 +168,7 @@ describe('Viewings Routes — /api/viewings', () => {
     it('creates a viewing with valid data', async () => {
       const res = await request(app)
         .post('/api/viewings')
-        .send({ propertyId: 'prop-1', scheduledAt: '2026-06-15T10:00:00Z' });
+        .send({ propertyId: 'prop-1', scheduledAt: '2099-06-15T10:00:00Z' });
       expect(res.status).toBe(201);
       expect(res.body.success).toBe(true);
       expect(mockPrisma.viewing.create).toHaveBeenCalled();
@@ -146,7 +177,7 @@ describe('Viewings Routes — /api/viewings', () => {
     it('creates or links a lead when viewing request has no leadId', async () => {
       const res = await request(app)
         .post('/api/viewings')
-        .send({ propertyId: 'prop-1', scheduledAt: '2026-06-15T10:00:00Z' });
+        .send({ propertyId: 'prop-1', scheduledAt: '2099-06-15T10:00:00Z' });
 
       expect(res.status).toBe(201);
       expect(mockPrisma.lead.findFirst).toHaveBeenCalled();
@@ -156,7 +187,7 @@ describe('Viewings Routes — /api/viewings', () => {
           data: expect.objectContaining({
             leadId: 'lead-1',
           }),
-        }),
+        })
       );
       expect(mockPrisma.activity.create).toHaveBeenCalledWith(
         expect.objectContaining({
@@ -164,21 +195,19 @@ describe('Viewings Routes — /api/viewings', () => {
             action: 'viewing_requested',
             leadId: 'lead-1',
           }),
-        }),
+        })
       );
     });
 
     it('rejects missing propertyId', async () => {
       const res = await request(app)
         .post('/api/viewings')
-        .send({ scheduledAt: '2026-06-15T10:00:00Z' });
+        .send({ scheduledAt: '2099-06-15T10:00:00Z' });
       expect(res.status).toBe(400);
     });
 
     it('rejects missing scheduledAt', async () => {
-      const res = await request(app)
-        .post('/api/viewings')
-        .send({ propertyId: 'prop-1' });
+      const res = await request(app).post('/api/viewings').send({ propertyId: 'prop-1' });
       expect(res.status).toBe(400);
     });
 
@@ -186,7 +215,7 @@ describe('Viewings Routes — /api/viewings', () => {
       mockPrisma.property.findUnique.mockResolvedValueOnce(null);
       const res = await request(app)
         .post('/api/viewings')
-        .send({ propertyId: 'bad-id', scheduledAt: '2026-06-15T10:00:00Z' });
+        .send({ propertyId: 'bad-id', scheduledAt: '2099-06-15T10:00:00Z' });
       expect(res.status).toBe(404);
     });
   });
@@ -194,9 +223,7 @@ describe('Viewings Routes — /api/viewings', () => {
   describe('PATCH /api/viewings/:id', () => {
     it('updates a viewing owned by user', async () => {
       mockPrisma.viewing.findUnique.mockResolvedValueOnce({ id: 'v-1', userId: 'user-1' });
-      const res = await request(app)
-        .patch('/api/viewings/v-1')
-        .send({ status: 'confirmed' });
+      const res = await request(app).patch('/api/viewings/v-1').send({ status: 'confirmed' });
       expect(res.status).toBe(200);
       expect(mockPrisma.viewing.update).toHaveBeenCalled();
     });

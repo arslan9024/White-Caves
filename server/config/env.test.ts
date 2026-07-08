@@ -40,9 +40,9 @@ describe('server/config/env', () => {
 
   // ─── PORT ─────────────────────────────────────────────────────────
   describe('PORT', () => {
-    it('defaults to 3001 when not set', async () => {
+    it('defaults to 5001 when not set', async () => {
       const env = await importEnvFresh();
-      expect(env.PORT).toBe(3001);
+      expect(env.PORT).toBe(5001);
     });
 
     it('parses PORT from environment', async () => {
@@ -157,11 +157,14 @@ describe('server/config/env', () => {
 
   // ─── CORS_ORIGINS ─────────────────────────────────────────────────
   describe('CORS_ORIGINS', () => {
-    it('defaults to ["http://localhost:5000"] in development', async () => {
+    it('defaults to localhost dev origins in development', async () => {
       process.env.NODE_ENV = 'development';
       const warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
       const env = await importEnvFresh();
-      expect(env.CORS_ORIGINS).toEqual(['http://localhost:5000']);
+      // Default CORS includes all local dev origins
+      expect(env.CORS_ORIGINS).toContain('http://localhost:5000');
+      expect(env.CORS_ORIGINS).toContain('http://localhost:5001');
+      expect(Array.isArray(env.CORS_ORIGINS)).toBe(true);
       warnSpy.mockRestore();
     });
 

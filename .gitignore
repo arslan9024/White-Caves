@@ -79,6 +79,10 @@ web_modules/
 .env.production.local
 .env.local
 
+# environments/ folder — all files except the production example template
+environments/
+!environments/.env.production.example
+
 # Replit config (may contain secrets)
 .replit
 replit.nix

@@ -107,6 +107,7 @@ import { startRERAExpiryScheduler } from './services/compliance/reraExpirySchedu
 import { startAutoRouting } from './services/ai/leadAutoRouter.js';
 import { cacheService } from './services/CacheService.js';
 import { schedulerService } from './services/SchedulerService.js';
+import { RealtimeService } from './websocket/realtimeService.js';
 
 const app: Express = express();
 const allowedCorsOrigins = buildAllowedCorsOrigins(CORS_ORIGINS, process.env.NODE_ENV);
@@ -118,15 +119,15 @@ const allowedCorsOrigins = buildAllowedCorsOrigins(CORS_ORIGINS, process.env.NOD
 // Setting it on a server that is directly internet-facing allows clients to
 // spoof X-Forwarded-For and bypass IP-based rate limits.
 app.set('trust proxy', 1);
-// In development, keep API on 3001 to avoid colliding with Vite (5000).
+// In development, keep API on 5001 to avoid colliding with Vite (3000).
 // Use API_PORT when provided; in production/staging, respect PORT as platform-provided.
 const PREFERRED_PORT =
   process.env.API_PORT ||
-  (process.env.NODE_ENV === 'development' ? 3001 : process.env.PORT || 3001);
+  (process.env.NODE_ENV === 'development' ? 5001 : process.env.PORT || 5001);
 
 const parsePort = (value: string | number): number => {
   const parsed = Number(value);
-  return Number.isFinite(parsed) && parsed > 0 ? parsed : 3001;
+  return Number.isFinite(parsed) && parsed > 0 ? parsed : 5001;
 };
 
 const listenWithPortFallback = async (
@@ -1252,8 +1253,9 @@ const startServer = async () => {
   // Wrap Express in a raw http.Server so Socket.io can share the same port
   const httpServer = createServer(app);
 
-  // Socket server bootstrap intentionally disabled in this runtime profile.
-  // Re-enable once socket.io package/runtime is guaranteed in all environments.
+  // Phase 7 Day 1: realtime websocket service (KPIs, presence, comments)
+  realtimeService = new RealtimeService(httpServer);
+  logger.info('RealtimeService initialized');
 
   const activePort = await listenWithPortFallback(httpServer, preferredPort, {
     enableFallback: allowPortFallback,
@@ -1281,6 +1283,7 @@ const startServer = async () => {
 
 // Start the server
 let httpServer: ReturnType<typeof createServer> | null = null;
+let realtimeService: RealtimeService | null = null;
 startServer()
   .then(s => {
     httpServer = s;
@@ -1308,6 +1311,11 @@ process.on('uncaughtException', (error: Error) => {
 const gracefulShutdown = async (signal: string) => {
   logger.info(`${signal} received — shutting down gracefully`);
   // 1. Stop accepting new connections
+  if (realtimeService) {
+    realtimeService.stop();
+    realtimeService = null;
+    logger.info('RealtimeService stopped');
+  }
   if (httpServer) {
     httpServer.close(() => {
       logger.info('HTTP server closed — no new connections');

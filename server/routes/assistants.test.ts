@@ -32,6 +32,12 @@ const { mockReadFile, mockWriteFile, mockUnlink, mockAccess } = vi.hoisted(() =>
 }));
 
 vi.mock('fs/promises', () => ({
+  default: {
+    readFile: (...args: unknown[]) => mockReadFile(...args),
+    writeFile: (...args: unknown[]) => mockWriteFile(...args),
+    unlink: (...args: unknown[]) => mockUnlink(...args),
+    access: (...args: unknown[]) => mockAccess(...args),
+  },
   readFile: (...args: unknown[]) => mockReadFile(...args),
   writeFile: (...args: unknown[]) => mockWriteFile(...args),
   unlink: (...args: unknown[]) => mockUnlink(...args),
