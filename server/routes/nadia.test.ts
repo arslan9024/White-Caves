@@ -3,9 +3,43 @@
  * Comprehensive test suite for all NADIA conversation endpoints
  */
 
-import { describe, it, expect, beforeAll, afterAll } from 'vitest';
+import { describe, it, expect, beforeAll, afterAll, vi } from 'vitest';
 import request from 'supertest';
 import { Express } from 'express';
+
+// ── Logger mock (must be before imports that trigger logger) ──────────────────
+const mockLogger = {
+  info: vi.fn(),
+  warn: vi.fn(),
+  error: vi.fn(),
+  debug: vi.fn(),
+  createLogger: vi.fn(() => mockLogger),
+};
+
+vi.mock('../utils/logger.js', () => ({
+  default: mockLogger,
+  createLogger: mockLogger.createLogger,
+  logger: mockLogger,
+}));
+
+// ── Prisma mock ───────────────────────────────────────────────────────────────
+vi.mock('../database.js', () => ({
+  prisma: {
+    nadiaMessage: {
+      deleteMany: vi.fn().mockResolvedValue({}),
+      findMany: vi.fn().mockResolvedValue([]),
+    },
+    nadiaConversationQueue: {
+      deleteMany: vi.fn().mockResolvedValue({}),
+      findMany: vi.fn().mockResolvedValue([]),
+    },
+    nadiaConversation: {
+      delete: vi.fn().mockResolvedValue({}),
+      findMany: vi.fn().mockResolvedValue([]),
+    },
+  },
+}));
+
 import { prisma } from '../database.js';
 
 // These would be set up with your Express app in actual tests
@@ -330,7 +364,7 @@ describe('NADIA WhatsApp CRM API', () => {
       // expect(response.body.data).toHaveProperty('conversationCount');
       // expect(response.body.data).toHaveProperty('messageCount');
       // expect(response.body.data).toHaveProperty('queueCount');
-        expect(true).toBe(true); // Placeholder
+      expect(true).toBe(true); // Placeholder
     });
   });
 });
