@@ -12,7 +12,7 @@ class Logger {
     const timestamp = new Date().toISOString();
     const logEntry = { timestamp, level, message, ...data };
     const output = JSON.stringify(logEntry, null, 2);
-    
+
     if (level === this.ERROR) console.error(output);
     else if (level === this.WARN) console.warn(output);
     else console.log(output);
@@ -30,7 +30,7 @@ class Logger {
     this.log(this.ERROR, message, {
       error: error?.message,
       stack: error?.stack,
-      ...data
+      ...data,
     });
   }
 

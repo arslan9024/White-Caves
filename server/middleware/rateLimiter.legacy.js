@@ -14,7 +14,7 @@ export const loginLimiter = rateLimit({
   skip: (req, res) => {
     // Skip rate limiting in development
     return process.env.NODE_ENV === 'development';
-  }
+  },
 });
 
 // Password reset - moderate limiting
@@ -26,7 +26,7 @@ export const passwordResetLimiter = rateLimit({
   legacyHeaders: false,
   keyGenerator: (req, res) => {
     return `${req.ip}-${req.body?.email || 'unknown'}`;
-  }
+  },
 });
 
 // Payment endpoints - moderate limiting
@@ -38,7 +38,7 @@ export const paymentLimiter = rateLimit({
   legacyHeaders: false,
   keyGenerator: (req, res) => {
     return `${req.ip}-${req.user?.id || 'unknown'}`;
-  }
+  },
 });
 
 // General API endpoints - loose limiting
@@ -47,7 +47,7 @@ export const apiLimiter = rateLimit({
   max: 100, // Max 100 requests per 15 minutes
   message: 'Too many requests from this IP. Please try again later.',
   standardHeaders: true,
-  legacyHeaders: false
+  legacyHeaders: false,
 });
 
 // WhatsApp webhook - no limiting (use signature verification instead)
@@ -61,5 +61,5 @@ export const webhookLimiter = rateLimit({
     // Skip limiting if webhook signature is valid
     // This should be verified by middleware before this limiter
     return process.env.NODE_ENV === 'development';
-  }
+  },
 });
