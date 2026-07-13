@@ -10,7 +10,7 @@ import { asyncHandler, AppError } from '../middleware/errorHandler';
 import { prisma } from '../database.js';
 import { requirePermission } from '../middleware/rbac';
 import { documentService } from '../services/DocumentService.js';
-import { getDashboardRoleConfig } from '../../src/config/dashboardConfigs.js';
+import { getDashboardRoleConfig } from '../config/dashboardConfigs.js';
 
 type OptionalReportGenerator = {
   generateReport?: (input: {
