@@ -28,11 +28,19 @@ vi.mock('../config/firebase', () => ({
   createRecaptchaVerifier: vi.fn(),
 }));
 
+global.IntersectionObserver = vi.fn().mockImplementation(() => ({
+  observe: vi.fn(),
+  unobserve: vi.fn(),
+  disconnect: vi.fn(),
+}));
+(global as any).IntersectionObserver = global.IntersectionObserver;
+
 global.ResizeObserver = vi.fn().mockImplementation(() => ({
   observe: vi.fn(),
   unobserve: vi.fn(),
   disconnect: vi.fn(),
 }));
+(global as any).ResizeObserver = global.ResizeObserver;
 
 // Silence reselect dev-mode diagnostics in tests.
 // These checks are useful during selector authoring, but create noisy output

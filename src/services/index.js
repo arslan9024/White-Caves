@@ -7,14 +7,16 @@
 // Import all engine classes
 import { DynamicPricingEngine, ContextPreservationEngine } from './DynamicPricingEngine.js';
 import { LeadScoringEngine, AITaskRouterService } from './LeadScoringEngine.js';
-import { ServiceRecommendationEngine, AIOrchestrationEngine } from './ServiceRecommendationEngine.js';
+import {
+  ServiceRecommendationEngine,
+  AIOrchestrationEngine,
+} from './ServiceRecommendationEngine.js';
 
-// Import NEW Nina-Linda-Mary integration services
+// Import NEW Nina-Mary integration services
 import NinaMaryIntelligence from './NinaMaryIntelligence.js';
 import PropertyQueryService from './PropertyQueryService.js';
 import PropertyStatusEventService from './PropertyStatusEventService.js';
 import ComplianceValidationService from './ComplianceValidationService.js';
-import NinaLindaMaryIntegration from './NinaLindaMaryIntegration.js';
 
 // Import NEW Phase 2A Sourcing Services
 import ConversationAnalyzer from './ConversationAnalyzer.js';
@@ -29,12 +31,11 @@ export const aiTaskRouterService = new AITaskRouterService();
 export const serviceRecommendationEngine = new ServiceRecommendationEngine();
 export const aiOrchestrationEngine = new AIOrchestrationEngine();
 
-// NEW: Create singleton instances for Nina-Linda-Mary integration
+// NEW: Create singleton instances for Nina-Mary integration
 export const ninaMaryIntelligence = new NinaMaryIntelligence();
 export const propertyQueryService = new PropertyQueryService();
 export const propertyStatusEventService = new PropertyStatusEventService();
 export const complianceValidationService = new ComplianceValidationService();
-export const ninaLindaMaryIntegration = new NinaLindaMaryIntegration();
 
 // Also export classes for new instance creation
 export {
@@ -49,7 +50,6 @@ export {
   PropertyQueryService,
   PropertyStatusEventService,
   ComplianceValidationService,
-  NinaLindaMaryIntegration
 };
 
 // Service registry for easy access
@@ -61,12 +61,10 @@ export const SERVICE_REGISTRY = {
   routing: aiTaskRouterService,
   recommendations: serviceRecommendationEngine,
   orchestration: aiOrchestrationEngine,
-  
-  // NEW: Nina-Linda-Mary integration services
+
+  // NEW: Nina-Mary integration services
   ninaMary: ninaMaryIntelligence,
   propertyQuery: propertyQueryService,
   propertyStatusEvents: propertyStatusEventService,
   compliance: complianceValidationService,
-  integration: ninaLindaMaryIntegration
 };
-

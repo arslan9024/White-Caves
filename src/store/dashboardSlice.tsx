@@ -3,6 +3,14 @@ import { logout } from './authSlice';
 import { authFetch } from '../utils/authFetch';
 import { getErrorMessage } from '../constants';
 import * as favoritesApi from '../services/favoritesApi';
+import {
+  Property,
+  Lead,
+  RegulatoryContract,
+  mockProperties,
+  mockLeads,
+  mockRegulatoryContracts,
+} from '../mocks/dubaiRealEstateMocks';
 
 export interface FavoriteItem {
   id: string;
@@ -68,6 +76,10 @@ interface DashboardState {
     leasing: string[];
     sales: string[];
   };
+  properties: Property[];
+  leads: Lead[];
+  contracts: RegulatoryContract[];
+  isOfflineMode: boolean;
 }
 
 const initialState: DashboardState = {
@@ -108,6 +120,10 @@ const initialState: DashboardState = {
       'Closing',
     ],
   },
+  properties: mockProperties,
+  leads: mockLeads,
+  contracts: mockRegulatoryContracts,
+  isOfflineMode: true,
 };
 
 interface FetchMetricsPayload {
@@ -257,6 +273,25 @@ const dashboardSlice = createSlice({
     clearError: state => {
       state.error = null;
     },
+    setOfflineMode(state, action: PayloadAction<boolean>) {
+      state.isOfflineMode = action.payload;
+    },
+    refreshDashboardData(state) {
+      state.properties = mockProperties;
+      state.leads = mockLeads;
+      state.contracts = mockRegulatoryContracts;
+    },
+    updatePropertyStatus(state, action: PayloadAction<{ id: string; status: Property['status'] }>) {
+      const { id, status } = action.payload;
+      const prop = state.properties.find(p => p.id === id);
+      if (prop) {
+        prop.status = status;
+      }
+    },
+    filterLeadsByStatus(state, action: PayloadAction<Lead['status']>) {
+      const status = action.payload;
+      state.leads = mockLeads.filter(lead => lead.status === status);
+    },
   },
   extraReducers: builder => {
     builder
@@ -333,6 +368,10 @@ export const {
   setLoading,
   setError,
   clearError,
+  setOfflineMode,
+  refreshDashboardData,
+  updatePropertyStatus,
+  filterLeadsByStatus,
 } = dashboardSlice.actions;
 
 export const selectFavorites = createSelector(

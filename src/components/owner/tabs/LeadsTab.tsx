@@ -1,4 +1,4 @@
-﻿import React, { useState, useCallback, useEffect } from 'react';
+import React, { useState, useCallback, useEffect } from 'react';
 import type { LeadsTabProps, Lead } from './types';
 import {
   TabContainer,
@@ -246,7 +246,7 @@ const LeadsTab: React.FC<LeadsTabProps> = ({ data, loading, error }) => {
     '📋';
 
   const getPriorityBadge = (priority: string) => (
-    <PriorityBadge priority={priority}>{priority}</PriorityBadge>
+    <PriorityBadge $priority={priority}>{priority}</PriorityBadge>
   );
 
   const getStatusColor = (status: string) =>
@@ -364,7 +364,7 @@ const LeadsTab: React.FC<LeadsTabProps> = ({ data, loading, error }) => {
                   <td>{lead.interest || 'N/A'}</td>
                   <td>{getPriorityBadge(lead.priority)}</td>
                   <td>
-                    <StatusBadge status={lead.status}>{lead.status}</StatusBadge>
+                    <StatusBadge $status={lead.status}>{lead.status}</StatusBadge>
                     <StatusSelect
                       value={lead.status}
                       onChange={e => handleStatusChange(lead.id, e.target.value)}
@@ -419,7 +419,7 @@ const LeadsTab: React.FC<LeadsTabProps> = ({ data, loading, error }) => {
                 ←
               </PageButton>
               {Array.from({ length: totalPages }, (_, i) => i + 1).map(p => (
-                <PageButton key={p} active={p === currentPage} onClick={() => setCurrentPage(p)}>
+                <PageButton key={p} $active={p === currentPage} onClick={() => setCurrentPage(p)}>
                   {p}
                 </PageButton>
               ))}

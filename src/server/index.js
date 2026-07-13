@@ -1,4 +1,3 @@
-
 import express from 'express';
 import mongoose from 'mongoose';
 import cors from 'cors';
@@ -7,6 +6,8 @@ import fs from 'fs';
 import { fileURLToPath } from 'url';
 import { validateEnvironment } from './lib/validateEnv.js';
 import './config/firebaseAdmin.js';
+import { enabledServices } from './config/serviceConfig.js';
+import { authenticateToken } from './middleware/authMiddleware.js';
 import usersRouter from './routes/users.js';
 import propertiesRouter from './routes/properties.js';
 import appointmentsRouter from './routes/appointments.js';
@@ -18,6 +19,8 @@ import alertsRouter from './routes/alerts.js';
 import authRouter from './routes/auth.js';
 import recommendationsRouter from './routes/recommendations.js';
 import dashboardRouter from './routes/dashboard.js';
+import statusRouter from './routes/status.js';
+import currencyRouter from './routes/currency.js';
 import timelinesRouter from './routes/timelines.js';
 import { errorHandler, notFound } from './middleware/errorHandler.js';
 
@@ -44,6 +47,9 @@ app.get('/health', (req, res) => {
 });
 
 app.use(cors());
+// Apply authentication to all API routes after auth route registration
+app.use('/api/auth', authRouter);
+app.use('/api', authenticateToken);
 
 // Build MongoDB URI from credentials or use direct URI
 let mongoURI = process.env.MONGODB_URI;
@@ -53,15 +59,18 @@ if (process.env.DB_PASSWORD) {
 
 // Connect to MongoDB in background (non-blocking)
 if (mongoURI) {
-  mongoose.connect(mongoURI, {
-    serverSelectionTimeoutMS: 5000,
-    socketTimeoutMS: 45000,
-  }).then(() => {
-    isMongoDBConnected = true;
-    // MongoDB connection established
-  }).catch(err => {
-    // MongoDB connection failed - database features will be unavailable
-  });
+  mongoose
+    .connect(mongoURI, {
+      serverSelectionTimeoutMS: 5000,
+      socketTimeoutMS: 45000,
+    })
+    .then(() => {
+      isMongoDBConnected = true;
+      // MongoDB connection established
+    })
+    .catch(err => {
+      // MongoDB connection failed - database features will be unavailable
+    });
 } else {
   // WARNING: MongoDB credentials not set - database features will not work
 }
@@ -70,7 +79,7 @@ export { isMongoDBConnected };
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 
-app.use('/api/auth', authRouter);
+// auth route moved up
 app.use('/api/users', usersRouter);
 app.use('/api/properties', propertiesRouter);
 app.use('/api/appointments', appointmentsRouter);
@@ -82,12 +91,13 @@ app.use('/api/alerts', alertsRouter);
 app.use('/api/recommendations', recommendationsRouter);
 app.use('/api/dashboard', dashboardRouter);
 app.use('/api/timelines', timelinesRouter);
+app.use('/api/currency', currencyRouter);
 
 // Try multiple possible dist paths
 const possiblePaths = [
   path.resolve(__dirname, '../../dist'),
   path.join(process.cwd(), 'dist'),
-  '/home/runner/workspace/dist'
+  '/home/runner/workspace/dist',
 ];
 
 let distPath = null;
@@ -101,18 +111,20 @@ for (const p of possiblePaths) {
 
 if (distPath) {
   // Serve static files from dist
-  app.use(express.static(distPath, { 
-    index: 'index.html',
-    maxAge: '1d'
-  }));
-  
+  app.use(
+    express.static(distPath, {
+      index: 'index.html',
+      maxAge: '1d',
+    })
+  );
+
   // Serve index.html for all non-API routes (SPA routing)
   app.use((req, res, next) => {
     // Skip API routes and health check
     if (req.path.startsWith('/api') || req.path === '/health') {
       return next();
     }
-    
+
     const indexPath = path.join(distPath, 'index.html');
     if (fs.existsSync(indexPath)) {
       res.sendFile(indexPath);

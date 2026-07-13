@@ -25,6 +25,7 @@ interface ThemeToggleProps {
 
 const ThemeToggle: React.FC<ThemeToggleProps> = ({ className = '', compact = false, onToggle }) => {
   const { themeMode, setThemeMode, isDark } = useTheme();
+  // No defensive fallback needed; setThemeMode is always defined in context
 
   if (compact) {
     // Legacy single-button mode: click cycles through modes

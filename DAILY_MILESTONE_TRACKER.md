@@ -195,3 +195,6 @@
 - Reference report: `PROJECT_PROGRESS_REPORT.md`
 - Policy source: `scripts/orchestrator/policy.json`
 - Current approval phrase: `@Ada — Context Ready (60% Readiness) — Coding Phase Approved`
+- **Jul 13, 2026 — Strategic Guardrails Initialized**
+  - Added `strategies/` directory with core strategy markdown files.
+  - Updated `DAILY_MILESTONE_TRACKER.md` to record initialization.

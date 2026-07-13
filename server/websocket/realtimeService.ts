@@ -1,7 +1,6 @@
 import { Server as HTTPServer } from 'http';
 import { Server as SocketIOServer, Socket } from 'socket.io';
-import { verify } from 'jsonwebtoken';
-import type { JwtPayload } from 'jsonwebtoken';
+import { verify, JwtPayload } from 'jsonwebtoken';
 
 interface UserKPI {
   userId: string;

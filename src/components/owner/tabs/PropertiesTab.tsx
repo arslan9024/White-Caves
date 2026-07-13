@@ -671,7 +671,7 @@ const PropertiesTab: React.FC<PropertiesTabProps> = ({ data, loading, error, onA
             {Array.from({ length: totalPages }, (_, i) => i + 1).map(page => (
               <PageButton
                 key={page}
-                active={page === currentPage}
+                $active={page === currentPage}
                 onClick={() => setCurrentPage(page)}
               >
                 {page}

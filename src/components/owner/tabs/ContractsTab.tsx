@@ -382,7 +382,7 @@ const ContractsTab: React.FC<ContractsTabProps> = ({ data, loading }) => {
                     <strong>{contract.contractNumber}</strong>
                   </td>
                   <td>
-                    <TypeBadge type={contract.type as 'tenancy' | 'sale'}>
+                    <TypeBadge $type={contract.type as 'tenancy' | 'sale'}>
                       {contract.type === 'tenancy' ? '🏠 Tenancy' : '💰 Sale'}
                     </TypeBadge>
                   </td>
@@ -465,7 +465,7 @@ const ContractsTab: React.FC<ContractsTabProps> = ({ data, loading }) => {
                 ←
               </PageButton>
               {Array.from({ length: totalPages }, (_, i) => i + 1).map(p => (
-                <PageButton key={p} active={p === currentPage} onClick={() => setCurrentPage(p)}>
+                <PageButton key={p} $active={p === currentPage} onClick={() => setCurrentPage(p)}>
                   {p}
                 </PageButton>
               ))}

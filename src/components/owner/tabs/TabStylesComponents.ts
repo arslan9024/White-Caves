@@ -114,7 +114,7 @@ export const LinkButton = styled.button`
   }
 `;
 
-export const IconButton = styled.button`
+export const IconButton = styled.button<{ danger?: boolean }>`
   background: none;
   border: 1px solid ${colors.border.default};
   color: ${colors.text.secondary};
@@ -626,7 +626,7 @@ export const ContractStatsRow = styled.div`
   }
 `;
 
-export const ContractStat = styled.div`
+export const ContractStat = styled.div<{ variant?: string }>`
   background: ${colors.background.surface};
   padding: ${spacing[4]};
   border-radius: ${borderRadius.md};

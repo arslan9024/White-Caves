@@ -10,6 +10,7 @@ import { asyncHandler, AppError } from '../middleware/errorHandler';
 import { prisma } from '../database.js';
 import { requirePermission } from '../middleware/rbac';
 import { documentService } from '../services/DocumentService.js';
+// @ts-expect-error - Allow cross-boundary import for configuration
 import { getDashboardRoleConfig } from '../../src/config/dashboardConfigs.js';
 
 type OptionalReportGenerator = {

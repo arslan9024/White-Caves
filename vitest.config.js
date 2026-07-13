@@ -7,7 +7,7 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 export default defineConfig({
   resolve: {
     alias: {
-      // Manual mocks for uninstalled packages (nodemailer, winston)
+      '@': path.resolve(__dirname, 'src'),
       nodemailer: path.resolve(__dirname, '__mocks__/nodemailer.js'),
       winston: path.resolve(__dirname, '__mocks__/winston.js'),
     },

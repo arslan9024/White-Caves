@@ -45,15 +45,15 @@ export function usePublicFavorites() {
   const isAuthenticated = useSelector(
     (state: RootState) => state.auth?.session?.isLoggedIn ?? false
   );
-  const reduxFavorites = useSelector(selectFavorites);
+  const reduxFavorites = useSelector(selectFavorites) as FavoriteItem[];
 
   // On mount + auth change, merge localStorage favorites into Redux
   useEffect(() => {
     if (isAuthenticated) {
       const localFavs = readLocalFavorites();
       if (localFavs.length > 0) {
-        localFavs.forEach((fav) => {
-          const alreadyInRedux = reduxFavorites.some((rf) => rf.id === fav.id);
+        localFavs.forEach(fav => {
+          const alreadyInRedux = reduxFavorites.some(rf => rf.id === fav.id);
           if (!alreadyInRedux) {
             dispatch(addToFavorites(fav));
           }
@@ -75,13 +75,13 @@ export function usePublicFavorites() {
   }, [isAuthenticated, reduxFavorites]);
 
   const isFavorite = useCallback(
-    (propertyId: string) => favorites.some((f) => f.id === propertyId),
+    (propertyId: string) => favorites.some(f => f.id === propertyId),
     [favorites]
   );
 
   const toggleFavorite = useCallback(
     (item: FavoriteItem) => {
-      const isFav = favorites.some((f) => f.id === item.id);
+      const isFav = favorites.some(f => f.id === item.id);
 
       if (isAuthenticated) {
         // Redux-managed
@@ -94,7 +94,7 @@ export function usePublicFavorites() {
         // localStorage-managed for guests
         const current = readLocalFavorites();
         if (isFav) {
-          writeLocalFavorites(current.filter((f) => f.id !== item.id));
+          writeLocalFavorites(current.filter(f => f.id !== item.id));
         } else {
           writeLocalFavorites([...current, item]);
         }
