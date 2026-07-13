@@ -207,660 +207,389 @@ const SignInPage: FC = () => {
           event.stopPropagation();
         }}
       >
-        <div className="auth-container">
-          <button
-            type="button"
-            className="auth-close-btn"
-            onClick={() => {
-              closeAuthModal();
-            }}
-            aria-label="Close authentication popup"
-            ref={closeButtonRef}
-          >
-            ×
-          </button>
+        <button
+          type="button"
+          className="auth-close-btn"
+          onClick={() => {
+            closeAuthModal();
+          }}
+          aria-label="Close authentication popup"
+          ref={closeButtonRef}
+        >
+          ×
+        </button>
 
-          <Link to="/" className="auth-logo">
-            <img src="/company-logo.jpg" alt="White Caves" width={60} height={60} />
-            <span>White Caves</span>
-          </Link>
+        <Link to="/" className="auth-logo">
+          <img src="/company-logo.jpg" alt="White Caves" />
+          <span>White Caves</span>
+        </Link>
 
-          <div className="auth-card">
-            {step === 1 && (
-              <>
-                <div className="auth-intro">
-                  <p className="auth-eyebrow">
-                    {isSigningUp
-                      ? 'Create your secure White Caves account'
-                      : 'Sign in faster with Gmail'}
-                  </p>
-                  <h1>{mode === 'signup' ? copy.signUpTitle : copy.signInTitle}</h1>
-                  <p className="auth-subtitle">
-                    {mode === 'signup' ? copy.signUpSubtitle : copy.signInSubtitle}
-                  </p>
-                  <div className="auth-highlights" aria-label="Authentication benefits">
-                    {authHighlights.map(highlight => (
-                      <span key={highlight} className="auth-highlight-pill">
-                        {highlight}
-                      </span>
-                    ))}
-                  </div>
-                </div>
+        {step === 1 && (
+          <>
+            <div className="auth-intro">
+              <h1>{mode === 'signup' ? copy.signUpTitle : copy.signInTitle}</h1>
+              <p className="auth-subtitle">
+                {mode === 'signup' ? copy.signUpSubtitle : copy.signInSubtitle}
+              </p>
+            </div>
 
-                {error && <div className="auth-error">{error}</div>}
-                {socialSyncRecovery && (
-                  <div className="auth-recovery" role="status" aria-live="polite">
-                    <p className="auth-recovery__title">
-                      {socialSyncRecovery.provider[0].toUpperCase() +
-                        socialSyncRecovery.provider.slice(1)}{' '}
-                      sign-in needs one more step
-                    </p>
-                    <p className="auth-recovery__hint">
-                      We secured your authentication, but CRM session activation failed. Please
-                      retry once to finish sign-in.
-                    </p>
-                    <p className="auth-recovery__reason">Reason: {socialSyncRecovery.reason}</p>
-                    <p className="auth-recovery__hint">
-                      Retries remaining: {remainingSocialRetries}
-                    </p>
-                    <button
-                      type="button"
-                      className="btn btn-secondary btn-full"
-                      disabled={loading || retryLimitReached}
-                      onClick={() => {
-                        void retrySocialAuth();
-                      }}
-                    >
-                      {retryLimitReached
-                        ? 'Retry limit reached'
-                        : loading
-                          ? 'Retrying...'
-                          : `Retry ${socialSyncRecovery.provider[0].toUpperCase() + socialSyncRecovery.provider.slice(1)} sign-in`}
-                    </button>
-                    {retryLimitReached && (
-                      <p className="auth-recovery__hint">
-                        Too many retry attempts. Please continue with email sign-in or try again
-                        later.
-                      </p>
-                    )}
-                    <button
-                      type="button"
-                      className="btn btn-link auth-recovery__dismiss"
-                      disabled={loading}
-                      onClick={clearSocialRecovery}
-                    >
-                      Dismiss recovery notice
-                    </button>
-                  </div>
-                )}
-                {success && <div className="auth-success">{success}</div>}
+            {error && (
+              <div
+                style={{
+                  background: 'rgba(239,68,68,0.1)',
+                  color: '#ef4444',
+                  padding: '12px',
+                  borderRadius: '12px',
+                  fontSize: '13px',
+                  marginBottom: '24px',
+                  border: '1px solid rgba(239,68,68,0.2)',
+                }}
+              >
+                {error}
+              </div>
+            )}
 
-                {mode === 'signin' && (
-                  <BiometricLoginButton
-                    onSuccess={(user: unknown) => {
-                      const u = user as Record<string, unknown>;
-                      handleSignInSuccess({
-                        id: String(u.uid || u.id || ''),
-                        email: String(u.email || ''),
-                        name: String(u.displayName || u.name || ''),
-                        photoUrl: u.photoURL ? String(u.photoURL) : undefined,
-                      });
-                    }}
-                    onError={(error: unknown) =>
-                      setError(error instanceof Error ? error.message : 'Login failed')
-                    }
-                    disabled={loading}
-                  />
-                )}
+            {socialSyncRecovery && (
+              <div
+                style={{
+                  background: 'rgba(245,158,11,0.1)',
+                  color: '#f59e0b',
+                  padding: '16px',
+                  borderRadius: '12px',
+                  fontSize: '13px',
+                  marginBottom: '24px',
+                  border: '1px solid rgba(245,158,11,0.2)',
+                }}
+              >
+                <p style={{ fontWeight: 'bold', margin: '0 0 4px 0' }}>
+                  {socialSyncRecovery.provider.toUpperCase()} Sign-in interrupted
+                </p>
+                <p style={{ margin: '0 0 12px 0' }}>{socialSyncRecovery.reason}</p>
+                <button
+                  className="btn btn-secondary btn-full"
+                  disabled={loading || retryLimitReached}
+                  onClick={() => {
+                    void retrySocialAuth();
+                  }}
+                  style={{ background: 'rgba(245,158,11,0.2)', color: '#fbbf24', border: 'none' }}
+                >
+                  {loading ? 'Retrying...' : 'Retry Sign-in'}
+                </button>
+                <button
+                  className="auth-forgot-link"
+                  style={{
+                    marginTop: '12px',
+                    display: 'block',
+                    width: '100%',
+                    textAlign: 'center',
+                  }}
+                  onClick={clearSocialRecovery}
+                >
+                  Dismiss
+                </button>
+              </div>
+            )}
 
-                <SocialAuthButtons
-                  loading={loading}
-                  onSocialAuth={handleSocialAuth}
-                  label={copy.socialLabel}
-                  googleText={copy.google}
-                  facebookText={copy.facebook}
-                  appleText={copy.apple}
-                  googleDisabled={!isGoogleAuthAvailable}
-                  helperText={
-                    !isGoogleAuthAvailable
-                      ? googleAuthUnavailableMessage
-                      : 'Use the Gmail account linked to your White Caves profile for the fastest login.'
-                  }
-                />
+            <SocialAuthButtons
+              loading={loading}
+              onSocialAuth={handleSocialAuth}
+              label={copy.socialLabel}
+              googleText={copy.google}
+              facebookText={copy.facebook}
+              appleText={copy.apple}
+              googleDisabled={!isGoogleAuthAvailable}
+            />
 
-                {shouldShowGoogleHelp && (
-                  <div className="auth-google-help" role="region" aria-label="Google sign-in help">
-                    <p className="auth-google-help__title">Trouble signing in with Gmail?</p>
-                    <ul className="auth-google-help__list">
-                      <li>Allow popups and third-party cookies for this site.</li>
-                      <li>Pick the same Gmail account linked to your White Caves profile.</li>
-                      <li>If Google still fails, continue with Email + password below.</li>
-                    </ul>
-                    <div className="auth-google-help__actions">
-                      <button
-                        type="button"
-                        className="btn btn-secondary"
-                        onClick={() => {
-                          void handleSocialAuth('google');
-                        }}
-                        disabled={loading || !isGoogleAuthAvailable}
-                      >
-                        Try Gmail again
-                      </button>
-                      <button
-                        type="button"
-                        className="btn btn-link"
-                        onClick={() => {
-                          setActiveTab('email');
-                          window.setTimeout(() => {
-                            emailInputRef.current?.focus();
-                          }, 0);
-                        }}
-                      >
-                        Continue with Email
-                      </button>
-                    </div>
-                  </div>
-                )}
+            <div className="auth-divider">
+              <span>{copy.email}</span>
+            </div>
 
-                <div className="auth-divider">
-                  <span>or continue with</span>
-                </div>
+            <AuthMethodTabs
+              activeTab={activeTab}
+              onChange={setActiveTab}
+              emailLabel={copy.email}
+              phoneLabel={copy.phone}
+            />
 
-                <AuthMethodTabs
-                  activeTab={activeTab}
-                  onChange={setActiveTab}
-                  emailLabel={copy.email}
-                  phoneLabel={copy.phone}
-                />
-
-                <div className="auth-content">
-                  {activeTab === 'email' && (
-                    <form onSubmit={handleEmailSubmit} className="auth-form">
-                      {mode === 'signin' && resetStage !== 'request' && (
-                        <div
-                          className="auth-google-help"
-                          role="region"
-                          aria-label="Password reset flow"
-                        >
-                          <p className="auth-google-help__title">Password reset</p>
-                          {resetStage === 'verify' && (
-                            <>
-                              <p className="auth-google-help__list">
-                                Enter the reset token from your email, then verify to continue.
-                              </p>
-                              <div className="form-group auth-form-group-spaced">
-                                <label htmlFor="reset-token">Reset Token</label>
-                                <input
-                                  id="reset-token"
-                                  type="text"
-                                  value={resetToken}
-                                  onChange={(e: ChangeEvent<HTMLInputElement>) =>
-                                    setResetToken(e.target.value)
-                                  }
-                                  placeholder="Paste your reset token"
-                                  autoComplete="one-time-code"
-                                />
-                              </div>
-                              <div className="auth-google-help__actions">
-                                <button
-                                  type="button"
-                                  className="btn btn-secondary"
-                                  onClick={() => {
-                                    void handleVerifyResetToken();
-                                  }}
-                                  disabled={verifyResetLoading || loading}
-                                >
-                                  {verifyResetLoading ? 'Verifying token...' : 'Verify Reset Token'}
-                                </button>
-                                <button
-                                  type="button"
-                                  className="btn btn-link"
-                                  onClick={() => {
-                                    setResetStage('request');
-                                  }}
-                                >
-                                  Start Over
-                                </button>
-                              </div>
-                            </>
-                          )}
-
-                          {resetStage === 'reset' && (
-                            <>
-                              <p className="auth-google-help__list">
-                                Token verified. Set your new password to finish the reset journey.
-                              </p>
-                              <div className="form-group auth-form-group-spaced">
-                                <label htmlFor="new-password">New Password</label>
-                                <input
-                                  id="new-password"
-                                  type="password"
-                                  value={newPassword}
-                                  onChange={(e: ChangeEvent<HTMLInputElement>) =>
-                                    setNewPassword(e.target.value)
-                                  }
-                                  placeholder="Enter your new password"
-                                  autoComplete="new-password"
-                                />
-                              </div>
-                              <div className="form-group auth-form-group-spaced">
-                                <label htmlFor="confirm-new-password">Confirm New Password</label>
-                                <input
-                                  id="confirm-new-password"
-                                  type="password"
-                                  value={confirmNewPassword}
-                                  onChange={(e: ChangeEvent<HTMLInputElement>) =>
-                                    setConfirmNewPassword(e.target.value)
-                                  }
-                                  placeholder="Confirm your new password"
-                                  autoComplete="new-password"
-                                />
-                              </div>
-                              <button
-                                type="button"
-                                className="btn btn-primary btn-full"
-                                onClick={() => {
-                                  void handleCompletePasswordReset();
-                                }}
-                                disabled={completeResetLoading || loading}
-                              >
-                                {completeResetLoading
-                                  ? 'Resetting Password...'
-                                  : 'Complete Password Reset'}
-                              </button>
-                            </>
-                          )}
-
-                          {resetStage === 'success' && (
-                            <>
-                              <p className="auth-google-help__list">
-                                Password reset succeeded. Sign in below using your new password.
-                              </p>
-                              <button
-                                type="button"
-                                className="btn btn-link"
-                                onClick={() => {
-                                  setResetStage('request');
-                                }}
-                              >
-                                Dismiss
-                              </button>
-                            </>
-                          )}
-
-                          {resetStage === 'locked' && (
-                            <>
-                              <p className="auth-google-help__list">
-                                Too many reset attempts detected. Please wait and retry later.
-                              </p>
-                              <button
-                                type="button"
-                                className="btn btn-link"
-                                onClick={() => {
-                                  setResetStage('request');
-                                }}
-                              >
-                                Back to standard sign in
-                              </button>
-                            </>
-                          )}
-                        </div>
-                      )}
-
-                      {mode === 'signup' && (
-                        <div className="form-group">
-                          <label htmlFor="signin-fullname">Full Name</label>
-                          <input
-                            id="signin-fullname"
-                            type="text"
-                            value={fullName}
-                            onChange={(e: ChangeEvent<HTMLInputElement>) =>
-                              setFullName(e.target.value)
-                            }
-                            placeholder="Enter your full name"
-                            required
-                            autoComplete="name"
-                          />
-                        </div>
-                      )}
-                      <div className="form-group">
-                        <label htmlFor="signin-email">Email Address</label>
-                        {mode === 'signup' ? (
-                          <input
-                            ref={emailInputRef}
-                            id="signin-email"
-                            type="email"
-                            value={email}
-                            onChange={(e: ChangeEvent<HTMLInputElement>) =>
-                              setEmail(e.target.value)
-                            }
-                            placeholder="Enter your email"
-                            required
-                            autoComplete="email"
-                          />
-                        ) : (
-                          <input
-                            ref={emailInputRef}
-                            id="signin-email"
-                            type="email"
-                            value={email}
-                            onChange={(e: ChangeEvent<HTMLInputElement>) =>
-                              setEmail(e.target.value)
-                            }
-                            placeholder="Enter your email"
-                            required
-                            autoComplete="username"
-                          />
-                        )}
-                      </div>
-                      <div className="form-group">
-                        <label htmlFor="signin-password">Password</label>
-                        {mode === 'signup' ? (
-                          <input
-                            id="signin-password"
-                            type="password"
-                            value={password}
-                            onChange={(e: ChangeEvent<HTMLInputElement>) =>
-                              setPassword(e.target.value)
-                            }
-                            placeholder="Enter your password"
-                            required
-                            autoComplete="new-password"
-                          />
-                        ) : (
-                          <input
-                            id="signin-password"
-                            type="password"
-                            value={password}
-                            onChange={(e: ChangeEvent<HTMLInputElement>) =>
-                              setPassword(e.target.value)
-                            }
-                            placeholder="Enter your password"
-                            required
-                            autoComplete="current-password"
-                          />
-                        )}
-                      </div>
-                      {mode === 'signup' && (
-                        <div className="form-group">
-                          <label htmlFor="signin-confirm-password">Confirm Password</label>
-                          <input
-                            id="signin-confirm-password"
-                            type="password"
-                            value={confirmPassword}
-                            onChange={(e: ChangeEvent<HTMLInputElement>) =>
-                              setConfirmPassword(e.target.value)
-                            }
-                            placeholder="Confirm your password"
-                            required
-                            autoComplete="new-password"
-                          />
-                        </div>
-                      )}
-                      <button type="submit" className="btn btn-primary btn-full" disabled={loading}>
-                        {loading ? 'Please wait...' : mode === 'signup' ? 'Continue' : 'Sign In'}
-                      </button>
-                      {mode === 'signin' && (
-                        <button
-                          type="button"
-                          className="btn btn-link auth-forgot-link"
-                          onClick={() => {
-                            void handleForgotPassword();
-                          }}
-                          disabled={forgotPasswordLoading || loading}
-                        >
-                          {forgotPasswordLoading ? 'Sending reset link...' : 'Forgot password?'}
-                        </button>
-                      )}
-                    </form>
-                  )}
-
-                  {activeTab === 'phone' && (
-                    <div className="auth-form">
-                      {!showOtpInput ? (
-                        <form onSubmit={handlePhoneSubmit}>
-                          {mode === 'signup' && (
-                            <div className="form-group">
-                              <label htmlFor="phone-fullname">Full Name</label>
-                              <input
-                                id="phone-fullname"
-                                type="text"
-                                value={fullName}
-                                onChange={(e: ChangeEvent<HTMLInputElement>) =>
-                                  setFullName(e.target.value)
-                                }
-                                placeholder="Enter your full name"
-                                required
-                                autoComplete="name"
-                              />
-                            </div>
-                          )}
-                          <div className="form-group">
-                            <label htmlFor="phone-number">Phone Number</label>
-                            <input
-                              id="phone-number"
-                              type="tel"
-                              value={phone}
-                              onChange={(e: ChangeEvent<HTMLInputElement>) =>
-                                setPhone(e.target.value)
-                              }
-                              placeholder="+971 50 123 4567"
-                              required
-                              autoComplete="tel"
-                            />
-                            <span className="input-hint">Include country code (e.g., +971)</span>
-                          </div>
-                          <div id="recaptcha-container"></div>
-                          <button
-                            type="submit"
-                            className="btn btn-primary btn-full"
-                            disabled={loading}
-                          >
-                            {loading ? 'Sending OTP...' : 'Send OTP'}
-                          </button>
-                        </form>
-                      ) : (
-                        <form onSubmit={handleOtpVerify}>
-                          <div className="form-group">
-                            <label htmlFor="otp-code">Enter OTP</label>
-                            <input
-                              id="otp-code"
-                              type="text"
-                              value={otp}
-                              onChange={(e: ChangeEvent<HTMLInputElement>) =>
-                                setOtp(e.target.value)
-                              }
-                              placeholder="Enter 6-digit code"
-                              maxLength={6}
-                              required
-                              autoComplete="one-time-code"
-                              inputMode="numeric"
-                            />
-                            <span className="input-hint">Enter the code sent to {phone}</span>
-                          </div>
-                          <button
-                            type="submit"
-                            className="btn btn-primary btn-full"
-                            disabled={loading}
-                          >
-                            {loading ? 'Verifying...' : 'Verify OTP'}
-                          </button>
-                          <button type="button" className="btn btn-link" onClick={resetOtp}>
-                            Change Phone Number
-                          </button>
-                        </form>
-                      )}
+            <div className="auth-content" style={{ marginTop: '20px' }}>
+              {activeTab === 'email' && (
+                <form onSubmit={handleEmailSubmit} className="auth-form">
+                  {mode === 'signup' && (
+                    <div className="form-group">
+                      <label htmlFor="signin-fullname">Full Name</label>
+                      <input
+                        id="signin-fullname"
+                        type="text"
+                        value={fullName}
+                        onChange={e => setFullName(e.target.value)}
+                        placeholder="John Doe"
+                        required
+                        autoComplete="name"
+                      />
                     </div>
                   )}
-                </div>
-
-                <AuthModeSwitch
-                  mode={mode}
-                  onSwitch={switchMode}
-                  signInPromptText={copy.signInPromptText}
-                  signUpPromptText={copy.signUpPromptText}
-                />
-              </>
-            )}
-
-            {step === 2 && (
-              <>
-                <h1>I am a...</h1>
-                <p className="auth-subtitle">Select your account type</p>
-
-                {error && <div className="auth-error">{error}</div>}
-
-                <div className="category-selection">
-                  {USER_CATEGORIES.map(cat => (
-                    <button
-                      key={cat.id}
-                      className={`category-card category-card--${cat.id} ${selectedCategory === cat.id ? 'selected' : ''}`}
-                      onClick={() => setSelectedCategory(cat.id)}
-                      type="button"
-                    >
-                      <span className="category-icon">{cat.icon}</span>
-                      <div className="category-info">
-                        <span className="category-label">{cat.label}</span>
-                        <span className="category-desc">{cat.desc}</span>
-                      </div>
-                      {selectedCategory === cat.id && <span className="category-check">✓</span>}
-                    </button>
-                  ))}
-                </div>
-
-                {selectedCategory === 'staff' && (
-                  <div className="staff-notice">
-                    <span className="notice-icon">ℹ️</span>
-                    <p>
-                      Staff accounts require admin approval. You'll receive access once verified.
-                    </p>
-                  </div>
-                )}
-
-                <button
-                  className="btn btn-primary btn-full"
-                  onClick={proceedToRoleSelection}
-                  disabled={!selectedCategory}
-                >
-                  Continue
-                </button>
-
-                <button className="btn btn-link" onClick={() => goBackToStep(1)}>
-                  Go Back
-                </button>
-              </>
-            )}
-
-            {step === 3 && (
-              <>
-                <h1>Select Your Role</h1>
-                <p className="auth-subtitle">
-                  {selectedCategory === 'staff'
-                    ? 'Choose your position at White Caves'
-                    : 'How will you be using White Caves?'}
-                </p>
-
-                {error && <div className="auth-error">{error}</div>}
-                {success && <div className="auth-success">{success}</div>}
-
-                <div className="role-selection-grid">
-                  {getRolesForCategory().map(role => (
-                    <button
-                      key={role.id}
-                      className={`role-card ${selectedRole === role.id ? 'selected' : ''}`}
-                      onClick={() => setSelectedRole(role.id)}
-                    >
-                      <span className="role-icon">{role.icon}</span>
-                      <span className="role-label">{role.label}</span>
-                      <span className="role-desc">{role.desc}</span>
-                    </button>
-                  ))}
-                </div>
-
-                {selectedCategory === 'staff' && (
-                  <div className="form-group auth-form-group-spaced">
-                    <label htmlFor="employee-id">Employee ID (Optional)</label>
-                    <input
-                      id="employee-id"
-                      type="text"
-                      value={employeeId}
-                      onChange={(e: ChangeEvent<HTMLInputElement>) => setEmployeeId(e.target.value)}
-                      placeholder="Enter your employee ID"
-                    />
-                  </div>
-                )}
-
-                <button
-                  className="btn btn-primary btn-full"
-                  onClick={completeSignUp}
-                  disabled={!selectedRole || loading}
-                >
-                  {selectedCategory === 'staff' ? 'Submit for Approval' : 'Complete Registration'}
-                </button>
-
-                <button className="btn btn-link" onClick={() => goBackToStep(2)}>
-                  Go Back
-                </button>
-              </>
-            )}
-
-            {step === 4 && (
-              <>
-                <h1>Two-Factor Authentication</h1>
-                <p className="auth-subtitle">
-                  Enter the 6-digit code from your authenticator app (or an 8-character backup code)
-                </p>
-
-                {error && <div className="auth-error">{error}</div>}
-                {success && <div className="auth-success">{success}</div>}
-
-                <form onSubmit={handleTwoFactorSubmit} className="auth-form">
                   <div className="form-group">
-                    <label htmlFor="totp-code">Authentication Code</label>
+                    <label htmlFor="signin-email">Email Address</label>
                     <input
-                      id="totp-code"
-                      type="text"
-                      value={twoFactorCode}
-                      onChange={(e: ChangeEvent<HTMLInputElement>) =>
-                        setTwoFactorCode(e.target.value)
-                      }
-                      placeholder="000000"
-                      maxLength={8}
+                      ref={emailInputRef}
+                      id="signin-email"
+                      type="email"
+                      value={email}
+                      onChange={e => setEmail(e.target.value)}
+                      placeholder="you@example.com"
                       required
-                      autoComplete="one-time-code"
-                      inputMode="numeric"
-                      autoFocus
+                      autoComplete="username"
                     />
-                    <span className="input-hint">6-digit TOTP or 8-character backup code</span>
                   </div>
-                  <button
-                    type="submit"
-                    className="btn btn-primary btn-full"
-                    disabled={loading || twoFactorCode.trim().length === 0}
-                  >
-                    {loading ? 'Verifying...' : 'Verify'}
+                  <div className="form-group">
+                    <label htmlFor="signin-password">Password</label>
+                    <input
+                      id="signin-password"
+                      type="password"
+                      value={password}
+                      onChange={e => setPassword(e.target.value)}
+                      placeholder="••••••••"
+                      required
+                      autoComplete={mode === 'signup' ? 'new-password' : 'current-password'}
+                    />
+                  </div>
+                  {mode === 'signup' && (
+                    <div className="form-group">
+                      <label htmlFor="signin-confirm-password">Confirm Password</label>
+                      <input
+                        id="signin-confirm-password"
+                        type="password"
+                        value={confirmPassword}
+                        onChange={e => setConfirmPassword(e.target.value)}
+                        placeholder="••••••••"
+                        required
+                        autoComplete="new-password"
+                      />
+                    </div>
+                  )}
+                  <button type="submit" className="btn btn-primary btn-full" disabled={loading}>
+                    {loading ? 'Please wait...' : mode === 'signup' ? 'Create Account' : 'Sign In'}
                   </button>
+                  {mode === 'signin' && (
+                    <button
+                      type="button"
+                      className="auth-forgot-link"
+                      onClick={() => {
+                        void handleForgotPassword();
+                      }}
+                      disabled={forgotPasswordLoading || loading}
+                      style={{ textAlign: 'center', marginTop: '12px' }}
+                    >
+                      {forgotPasswordLoading ? 'Sending...' : 'Forgot password?'}
+                    </button>
+                  )}
                 </form>
+              )}
+            </div>
 
-                <button className="btn btn-link" onClick={() => goBackToStep(1)}>
-                  Back to Sign In
+            <AuthModeSwitch
+              mode={mode}
+              onSwitch={switchMode}
+              signInPromptText={copy.signInPromptText}
+              signUpPromptText={copy.signUpPromptText}
+            />
+          </>
+        )}
+
+        {step === 2 && (
+          <>
+            <div className="auth-intro">
+              <h1>I am a...</h1>
+              <p className="auth-subtitle">Select your account type</p>
+            </div>
+
+            <div
+              className="category-selection"
+              style={{
+                display: 'grid',
+                gridTemplateColumns: '1fr 1fr',
+                gap: '12px',
+                marginBottom: '24px',
+              }}
+            >
+              {USER_CATEGORIES.map(cat => (
+                <button
+                  key={cat.id}
+                  className={`category-card category-card--${cat.id} ${selectedCategory === cat.id ? 'selected' : ''}`}
+                  onClick={() => setSelectedCategory(cat.id)}
+                  type="button"
+                  style={{
+                    background:
+                      selectedCategory === cat.id ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.2)',
+                    border: `1px solid ${selectedCategory === cat.id ? '#3b82f6' : 'rgba(255,255,255,0.1)'}`,
+                    borderRadius: '12px',
+                    padding: '16px',
+                    color: '#fff',
+                    textAlign: 'left',
+                    cursor: 'pointer',
+                    transition: 'all 0.2s',
+                  }}
+                >
+                  <span style={{ fontSize: '24px', display: 'block', marginBottom: '8px' }}>
+                    {cat.icon}
+                  </span>
+                  <strong style={{ display: 'block', fontSize: '15px' }}>{cat.label}</strong>
+                  <span style={{ fontSize: '12px', color: '#94a3b8' }}>{cat.desc}</span>
                 </button>
-              </>
-            )}
-          </div>
+              ))}
+            </div>
 
-          <p className="auth-footer">
-            By continuing, you agree to our{' '}
-            <a href="/terms" target="_blank" rel="noopener noreferrer">
-              Terms of Service
-            </a>{' '}
-            and{' '}
-            <a href="/privacy" target="_blank" rel="noopener noreferrer">
-              Privacy Policy
-            </a>
-          </p>
-        </div>
+            <button
+              className="btn btn-primary btn-full"
+              onClick={proceedToRoleSelection}
+              disabled={!selectedCategory}
+            >
+              Continue
+            </button>
+            <button
+              className="auth-forgot-link"
+              style={{ width: '100%', textAlign: 'center', marginTop: '16px' }}
+              onClick={() => goBackToStep(1)}
+            >
+              Go Back
+            </button>
+          </>
+        )}
+
+        {step === 3 && (
+          <>
+            <div className="auth-intro">
+              <h1>Select Your Role</h1>
+              <p className="auth-subtitle">Choose your exact position</p>
+            </div>
+
+            <div
+              style={{
+                display: 'grid',
+                gridTemplateColumns: '1fr',
+                gap: '8px',
+                marginBottom: '24px',
+                maxHeight: '40vh',
+                overflowY: 'auto',
+                paddingRight: '8px',
+              }}
+            >
+              {getRolesForCategory().map(role => (
+                <button
+                  key={role.id}
+                  onClick={() => setSelectedRole(role.id)}
+                  style={{
+                    background:
+                      selectedRole === role.id ? 'rgba(59,130,246,0.1)' : 'rgba(0,0,0,0.2)',
+                    border: `1px solid ${selectedRole === role.id ? '#3b82f6' : 'rgba(255,255,255,0.1)'}`,
+                    borderRadius: '12px',
+                    padding: '12px 16px',
+                    color: '#fff',
+                    textAlign: 'left',
+                    cursor: 'pointer',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '12px',
+                    transition: 'all 0.2s',
+                  }}
+                >
+                  <span style={{ fontSize: '20px' }}>{role.icon}</span>
+                  <div>
+                    <strong style={{ display: 'block', fontSize: '14px' }}>{role.label}</strong>
+                    <span style={{ fontSize: '12px', color: '#94a3b8' }}>{role.desc}</span>
+                  </div>
+                </button>
+              ))}
+            </div>
+
+            <button
+              className="btn btn-primary btn-full"
+              onClick={completeSignUp}
+              disabled={!selectedRole || loading}
+            >
+              {loading ? 'Please wait...' : 'Complete Registration'}
+            </button>
+            <button
+              className="auth-forgot-link"
+              style={{ width: '100%', textAlign: 'center', marginTop: '16px' }}
+              onClick={() => goBackToStep(2)}
+            >
+              Go Back
+            </button>
+          </>
+        )}
+
+        {step === 4 && (
+          <>
+            <div className="auth-intro">
+              <h1>Two-Factor Authentication</h1>
+              <p className="auth-subtitle">Enter the 6-digit code from your authenticator app</p>
+            </div>
+
+            {error && (
+              <div
+                style={{
+                  background: 'rgba(239,68,68,0.1)',
+                  color: '#ef4444',
+                  padding: '12px',
+                  borderRadius: '12px',
+                  fontSize: '13px',
+                  marginBottom: '24px',
+                  border: '1px solid rgba(239,68,68,0.2)',
+                }}
+              >
+                {error}
+              </div>
+            )}
+
+            <form onSubmit={handleTwoFactorSubmit} className="auth-form">
+              <div className="form-group">
+                <label htmlFor="totp-code">Authentication Code</label>
+                <input
+                  id="totp-code"
+                  type="text"
+                  value={twoFactorCode}
+                  onChange={e => setTwoFactorCode(e.target.value)}
+                  placeholder="000000"
+                  maxLength={8}
+                  required
+                  autoComplete="one-time-code"
+                  inputMode="numeric"
+                  autoFocus
+                />
+              </div>
+              <button
+                type="submit"
+                className="btn btn-primary btn-full"
+                disabled={loading || twoFactorCode.trim().length === 0}
+              >
+                {loading ? 'Verifying...' : 'Verify'}
+              </button>
+            </form>
+
+            <button
+              className="auth-forgot-link"
+              style={{ width: '100%', textAlign: 'center', marginTop: '16px' }}
+              onClick={() => goBackToStep(1)}
+            >
+              Back to Sign In
+            </button>
+          </>
+        )}
+
+        <p
+          className="auth-footer"
+          style={{ textAlign: 'center', fontSize: '12px', color: '#64748b', marginTop: '32px' }}
+        >
+          By continuing, you agree to our{' '}
+          <a href="/terms" style={{ color: '#94a3b8' }}>
+            Terms of Service
+          </a>{' '}
+          and{' '}
+          <a href="/privacy" style={{ color: '#94a3b8' }}>
+            Privacy Policy
+          </a>
+        </p>
       </div>
     </div>
   );
