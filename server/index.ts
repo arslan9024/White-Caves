@@ -333,6 +333,18 @@ app.use('/api/contact', contactLimiter); // Public unauthenticated — stricter:
 // HEALTH CHECK ENDPOINT
 // ============================================================================
 
+// Performance timing middleware
+app.use((req, res, next) => {
+  const start = process.hrtime();
+  res.on('finish', () => {
+    const diff = process.hrtime(start);
+    const time = (diff[0] * 1e3 + diff[1] * 1e-6).toFixed(2);
+    // Add Server-Timing header for DevTools
+    res.append('Server-Timing', `total;dur=${time}`);
+  });
+  next();
+});
+
 app.get('/health', (req: Request, res: Response) => {
   res.status(200).json({
     status: 'OK',
@@ -378,6 +390,24 @@ app.get(
     }
   })
 );
+
+// System stats endpoint
+app.get('/api/system/stats', (req: Request, res: Response) => {
+  const memUsage = process.memoryUsage();
+  res.status(200).json({
+    success: true,
+    data: {
+      uptime: process.uptime(),
+      memory: {
+        rss: Math.round(memUsage.rss / 1024 / 1024) + ' MB',
+        heapTotal: Math.round(memUsage.heapTotal / 1024 / 1024) + ' MB',
+        heapUsed: Math.round(memUsage.heapUsed / 1024 / 1024) + ' MB',
+      },
+      nodeVersion: process.version,
+      platform: process.platform,
+    },
+  });
+});
 
 // Dynamic sitemap.xml (SEO)
 app.use('/', sitemapRoutes);

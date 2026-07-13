@@ -1,6 +1,6 @@
 import { Server as HTTPServer } from 'http';
 import { Server as SocketIOServer, Socket } from 'socket.io';
-import { verify, JwtPayload } from 'jsonwebtoken';
+import jwt from 'jsonwebtoken';
 
 interface UserKPI {
   userId: string;
@@ -51,7 +51,7 @@ export class RealtimeService {
       }
 
       try {
-        const decoded = verify(token, process.env.JWT_SECRET || 'secret') as JwtPayload;
+        const decoded = jwt.verify(token, process.env.JWT_SECRET || 'secret') as jwt.JwtPayload;
         (socket.data as Record<string, unknown>).userId = decoded.sub || decoded.id;
         (socket.data as Record<string, unknown>).userRole = decoded.role || 'user';
         (socket.data as Record<string, unknown>).departmentId = decoded.departmentId || 'default';
