@@ -403,7 +403,17 @@ if (process.env.NODE_ENV === 'production') {
 } else if (process.env.NODE_ENV === 'development') {
   logger.warn('⚠️  DEV AUTH BYPASS ACTIVE — Do NOT use in production!');
   logger.warn('   Set NODE_ENV=production to enforce JWT authentication');
-  let cachedDevUser: { id: string; email: string; role: string } | null = null;
+
+  // Lion Superuser: stable dev identity when DB is unreachable
+  const LION_SUPERUSER = {
+    id: 'lion-superuser-dev',
+    email: process.env.CREATOR_SUPERUSER_EMAIL || 'arslanmalikgoraha@gmail.com',
+    role: 'managing_director',
+    name: 'Arslan Malik (Lion)',
+  };
+
+  let cachedDevUser: { id: string; email: string; role: string; name?: string } | null = null;
+
   app.use('/api', async (req: Request, res: Response, next: NextFunction) => {
     const token = req.headers.authorization?.replace('Bearer ', '');
     if (token) {
@@ -412,18 +422,28 @@ if (process.env.NODE_ENV === 'production') {
     // Dev fallback: look up real owner user from DB (once, then cache)
     try {
       if (!cachedDevUser) {
-        const owner = await prisma.user.findFirst({ where: { email: 'owner@whitecaves.ae' } });
+        const owner = await prisma.user.findFirst({
+          where: { email: { in: ['owner@whitecaves.ae', LION_SUPERUSER.email] } },
+          orderBy: [{ role: 'asc' }],
+        });
         if (owner) {
-          cachedDevUser = { id: owner.id, email: owner.email, role: owner.role };
+          cachedDevUser = {
+            id: owner.id,
+            email: owner.email,
+            role: owner.role,
+            name: owner.name ?? undefined,
+          };
           logger.info(`Dev auth: using owner ${owner.name} (${owner.id})`);
         } else {
-          cachedDevUser = { id: 'dev-owner', email: 'owner@whitecaves.ae', role: 'owner' };
-          logger.warn('Dev auth: owner not found in DB, using placeholder');
+          cachedDevUser = LION_SUPERUSER;
+          logger.warn('Dev auth: owner not found in DB — using Lion superuser placeholder');
         }
       }
       req.user = { ...cachedDevUser };
     } catch {
-      req.user = { id: 'dev-owner', email: 'owner@whitecaves.ae', role: 'owner' };
+      // DB unreachable — fall back to Lion superuser so the app stays functional
+      req.user = { ...LION_SUPERUSER };
+      logger.warn('Dev auth: DB unreachable — Lion superuser identity applied');
     }
     next();
   });
