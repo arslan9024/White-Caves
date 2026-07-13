@@ -1,3 +1,4 @@
+/// <reference types="@testing-library/jest-dom" />
 /**
  * ThemeToggle.tsx — Comprehensive Unit Tests
  * Batch 37 | Dark/light theme toggle with localStorage + system pref detection
@@ -6,19 +7,27 @@ import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { render, screen, fireEvent } from '@testing-library/react';
 import React from 'react';
 import { ThemeProvider } from '../context/ThemeContext';
+import { safeStorage } from '../utils/safeStorage';
 
 /* ── Mocks ──────────────────────────────────────────────── */
 
-// Mock safeStorage
-let mockStorageData: Record<string, string | null> = {};
+// Use vi.hoisted so storageData is accessible inside vi.mock factory
+// (vi.mock calls are hoisted above all imports/let declarations)
+const { storageData } = vi.hoisted(() => {
+  const storageData: Record<string, string | null> = {};
+  return { storageData };
+});
+
 vi.mock('../utils/safeStorage', () => ({
   safeStorage: {
-    get: vi.fn((key: string) => mockStorageData[key] ?? null),
+    get: vi.fn((key: string) => storageData[key] ?? null),
     set: vi.fn((key: string, value: string) => {
-      mockStorageData[key] = value;
+      storageData[key] = value;
+      return true;
     }),
     remove: vi.fn((key: string) => {
-      delete mockStorageData[key];
+      delete storageData[key];
+      return true;
     }),
   },
 }));
@@ -35,21 +44,32 @@ vi.mock('./ThemeToggle.styles', () => ({
       {children}
     </button>
   ),
-  ToggleTrack: ({ children, ...p }: any) => <div data-testid="toggle-track">{children}</div>,
+  ToggleTrack: ({ children }: any) => <div data-testid="toggle-track">{children}</div>,
   ToggleIcons: ({ children }: any) => <div data-testid="toggle-icons">{children}</div>,
   IconSun: ({ children }: any) => <span data-testid="icon-sun">{children}</span>,
   IconMoon: ({ children }: any) => <span data-testid="icon-moon">{children}</span>,
-  ToggleThumb: (p: any) => <div data-testid="toggle-thumb" />,
+  ToggleThumb: (_p: any) => <div data-testid="toggle-thumb" />,
 }));
 
-// Mock matchMedia
-const mockMatchMedia = vi.fn().mockReturnValue({
-  matches: false,
+// Create a controllable matchMedia mock — set it BEFORE any imports so
+// ThemeProvider's useState initialiser (which calls window.matchMedia) picks it up.
+const createMediaMock = (matches: boolean) => ({
+  matches,
   addEventListener: vi.fn(),
   removeEventListener: vi.fn(),
 });
 
+let _mediaMatches = false;
+const mockMatchMedia = vi.fn(() => createMediaMock(_mediaMatches));
+Object.defineProperty(window, 'matchMedia', {
+  writable: true,
+  configurable: true,
+  value: mockMatchMedia,
+});
+
 import ThemeToggle from './ThemeToggle';
+
+/* ── Helpers ─────────────────────────────────────────────── */
 
 const renderThemeToggle = (props: React.ComponentProps<typeof ThemeToggle> = {}) =>
   render(
@@ -60,22 +80,39 @@ const renderThemeToggle = (props: React.ComponentProps<typeof ThemeToggle> = {})
 
 /* ── Tests ──────────────────────────────────────────────── */
 describe('ThemeToggle', () => {
-  let originalMatchMedia: typeof window.matchMedia;
-
   beforeEach(() => {
+    // Clear call records but keep implementations
     vi.clearAllMocks();
-    mockStorageData = {};
-    originalMatchMedia = window.matchMedia;
+
+    // Re-attach implementations (clearAllMocks wipes them)
+    vi.mocked(safeStorage.get).mockImplementation((key: string) => storageData[key] ?? null);
+    vi.mocked(safeStorage.set).mockImplementation((key: string, value: string) => {
+      storageData[key] = value;
+      return true;
+    });
+    vi.mocked(safeStorage.remove).mockImplementation((key: string) => {
+      delete storageData[key];
+      return true;
+    });
+
+    // Reset storage data
+    Object.keys(storageData).forEach(k => delete storageData[k]);
+
+    // Reset media mock to light (matches: false)
+    _mediaMatches = false;
+    mockMatchMedia.mockImplementation(() => createMediaMock(_mediaMatches));
     window.matchMedia = mockMatchMedia as any;
+
     // Clean DOM
     document.documentElement.removeAttribute('data-theme');
-    document.body.classList.remove('dark-mode');
+    document.documentElement.removeAttribute('data-theme-mode');
+    document.body.className = '';
   });
 
   afterEach(() => {
-    window.matchMedia = originalMatchMedia;
     document.documentElement.removeAttribute('data-theme');
-    document.body.classList.remove('dark-mode');
+    document.documentElement.removeAttribute('data-theme-mode');
+    document.body.className = '';
   });
 
   // ─────────────── Default Rendering ───────────────
@@ -147,18 +184,18 @@ describe('ThemeToggle', () => {
     it('saves "themeMode=dark" to storage when toggled to dark', () => {
       renderThemeToggle();
       fireEvent.click(screen.getByTestId('theme-btn'));
-      expect(mockStorageData['themeMode']).toBe('dark');
+      expect(storageData['themeMode']).toBe('dark');
     });
 
     it('saves "themeMode=light" to storage when toggled to light', () => {
       renderThemeToggle();
       fireEvent.click(screen.getByTestId('theme-btn'));
       fireEvent.click(screen.getByTestId('theme-btn'));
-      expect(mockStorageData['themeMode']).toBe('light');
+      expect(storageData['themeMode']).toBe('light');
     });
 
     it('restores dark mode from storage', () => {
-      mockStorageData['themeMode'] = 'dark';
+      storageData['themeMode'] = 'dark';
       renderThemeToggle();
       expect(screen.getByTestId('theme-btn')).toHaveAttribute(
         'aria-label',
@@ -168,7 +205,7 @@ describe('ThemeToggle', () => {
     });
 
     it('restores light mode from storage', () => {
-      mockStorageData['themeMode'] = 'light';
+      storageData['themeMode'] = 'light';
       renderThemeToggle();
       expect(screen.getByTestId('theme-btn')).toHaveAttribute(
         'aria-label',
@@ -180,32 +217,23 @@ describe('ThemeToggle', () => {
   // ─────────────── System Preference ───────────────
   describe('system preference detection', () => {
     it('uses dark mode when system prefers dark', () => {
-      mockMatchMedia.mockReturnValue({
-        matches: true,
-        addEventListener: vi.fn(),
-        removeEventListener: vi.fn(),
-      });
+      _mediaMatches = true;
+      mockMatchMedia.mockImplementation(() => createMediaMock(true));
       renderThemeToggle();
       expect(document.documentElement.getAttribute('data-theme')).toBe('dark');
     });
 
     it('uses light mode when system prefers light', () => {
-      mockMatchMedia.mockReturnValue({
-        matches: false,
-        addEventListener: vi.fn(),
-        removeEventListener: vi.fn(),
-      });
+      _mediaMatches = false;
+      mockMatchMedia.mockImplementation(() => createMediaMock(false));
       renderThemeToggle();
       expect(document.documentElement.getAttribute('data-theme')).toBe('light');
     });
 
     it('saved preference overrides system preference', () => {
-      mockMatchMedia.mockReturnValue({
-        matches: true,
-        addEventListener: vi.fn(),
-        removeEventListener: vi.fn(),
-      }); // system says dark
-      mockStorageData['themeMode'] = 'light'; // user saved light
+      _mediaMatches = true;
+      mockMatchMedia.mockImplementation(() => createMediaMock(true)); // system says dark
+      storageData['themeMode'] = 'light'; // user saved light
       renderThemeToggle();
       expect(document.documentElement.getAttribute('data-theme')).toBe('light');
     });

@@ -84,7 +84,7 @@ vi.mock('../middleware/rbac.js', () => ({
   requirePermission: requirePermissionMock,
 }));
 
-import commissionsRouter from './commissions';
+import commissionsRouter from './commissions.js';
 
 // ─── Test app factory ──────────────────────────────────────────────────
 function createApp(role: string = 'owner', userId = 'user-1') {

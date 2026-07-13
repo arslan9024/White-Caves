@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { buildAllowedCorsOrigins, isCorsOriginAllowed } from './cors';
+import { buildAllowedCorsOrigins, isCorsOriginAllowed } from './cors.js';
 
 describe('cors config helpers', () => {
   it('adds common localhost origins outside production', () => {

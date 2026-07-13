@@ -19,12 +19,12 @@
  */
 
 import { Router, Request, Response } from 'express';
-import { asyncHandler, AppError } from '../middleware/errorHandler';
-import type { AuthRequest } from '../middleware/auth';
+import { asyncHandler, AppError } from '../middleware/errorHandler.js';
+import type { AuthRequest } from '../middleware/auth.js';
 import { Prisma } from '@prisma/client';
 import { prisma } from '../database.js';
-import { sanitizeString } from '../utils/sanitize';
-import { requirePermission, requireMinRole } from '../middleware/rbac';
+import { sanitizeString } from '../utils/sanitize.js';
+import { requirePermission, requireMinRole } from '../middleware/rbac.js';
 import {
   getBRNExpiryReport,
   checkBRNExpirations,

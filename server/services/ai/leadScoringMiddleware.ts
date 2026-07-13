@@ -16,7 +16,7 @@
  *   - Tier change detection with event emission
  *
  * Usage:
- *   import { registerLeadScoringMiddleware } from './leadScoringMiddleware';
+ *   import { registerLeadScoringMiddleware } from './leadScoringMiddleware.js';
  *   registerLeadScoringMiddleware(prisma);
  */
 

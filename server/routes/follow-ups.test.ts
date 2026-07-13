@@ -72,7 +72,7 @@ vi.mock('../database.js', () => ({
   },
 }));
 
-import followUpsRoutes from './follow-ups';
+import followUpsRoutes from './follow-ups.js';
 import { errorHandler } from '../middleware/errorHandler.js';
 
 function createApp() {

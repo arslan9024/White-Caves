@@ -87,7 +87,7 @@ vi.mock('../utils/logger.js', () => ({
   createLogger: () => ({ info: vi.fn(), warn: vi.fn(), error: vi.fn() }),
 }));
 
-import assistantsRoutes from './assistants';
+import assistantsRoutes from './assistants.js';
 
 // ── Test app factory ──────────────────────────────────────────────────
 function createApp() {

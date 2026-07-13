@@ -152,7 +152,7 @@ describe('RoleGateway', () => {
     it('shows checkmark on selected card', () => {
       render(<RoleGateway user={defaultUser} />);
       fireEvent.click(screen.getByText('Landlord'));
-      expect(screen.getByText('✔')).toBeInTheDocument();
+      expect(screen.getByText('✓')).toBeInTheDocument();
     });
 
     it('can change selection before confirming', () => {
@@ -160,7 +160,7 @@ describe('RoleGateway', () => {
       fireEvent.click(screen.getByText('Buyer'));
       fireEvent.click(screen.getByText('Seller'));
       // Checkmark appears on the Seller card, not on Buyer
-      expect(screen.getByText('✔')).toBeInTheDocument();
+      expect(screen.getByText('✓')).toBeInTheDocument();
       expect(screen.getByText(/You selected:/)).toBeInTheDocument();
     });
   });
@@ -218,33 +218,30 @@ describe('RoleGateway', () => {
   });
 
   describe('admin/creator auto-redirect', () => {
-    it('redirects creator email to canonical lion dashboard', () => {
+    it('redirects creator email to canonical md dashboard', () => {
       render(<RoleGateway user={{ email: 'arslanmalikgoraha@gmail.com', role: 'owner' }} />);
 
       expect(mockSafeStorage.setJSON).toHaveBeenCalledWith(
         'userRole',
         expect.objectContaining({
-          role: 'lion',
+          role: 'md',
           locked: true,
-          isOwner: true,
-          isSuperUser: true,
+          isSuperAdmin: true,
         })
       );
       expect(mockDispatch).toHaveBeenCalledWith({
         type: 'navigation/setActiveRole',
-        payload: 'lion',
+        payload: 'md',
       });
       expect(mockNavigate).toHaveBeenCalledWith('/profile');
     });
 
-    it('redirects admin to canonical dashboard', () => {
+    it('does not auto-redirect non-superadmin user', () => {
       render(<RoleGateway user={{ email: 'admin@test.com', role: 'admin' }} />);
 
-      expect(mockNavigate).toHaveBeenCalledWith('/profile');
-      expect(mockDispatch).toHaveBeenCalledWith({
-        type: 'navigation/setActiveRole',
-        payload: 'admin',
-      });
+      // Non-superadmin users should NOT be auto-redirected
+      expect(mockNavigate).not.toHaveBeenCalled();
+      expect(mockDispatch).not.toHaveBeenCalled();
     });
 
     it('does not auto-redirect non-creator managing_director', () => {

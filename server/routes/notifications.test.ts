@@ -75,7 +75,7 @@ vi.mock('../config/pagination', () => ({
   }),
 }));
 
-import notificationRoutes from './notifications';
+import notificationRoutes from './notifications.js';
 
 // ── Test app factory ─────────────────────────────────────────────────
 function createApp(role: string = 'owner', userId = 'user-1') {

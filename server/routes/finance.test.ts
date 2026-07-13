@@ -39,6 +39,11 @@ const { mockPrisma } = vi.hoisted(() => {
       lead: {
         findUnique: fn().mockResolvedValue(null),
       },
+      invoice: {
+        aggregate: fn().mockResolvedValue({ _sum: { vatAmount: 500 } }),
+        create: fn().mockResolvedValue({ id: 'inv-1', pdfUrl: '/uploads/inv-1.pdf' }),
+        findUnique: fn().mockResolvedValue({ id: 'inv-1', pdfUrl: '/uploads/inv-1.pdf' }),
+      },
       activity: {
         create: fn().mockResolvedValue({ id: 'act-1' }),
       },
@@ -59,8 +64,11 @@ vi.mock('../middleware/errorHandler', () => ({
     Promise.resolve(fn(req, res, next)).catch(next),
 }));
 vi.mock('../middleware/auth', () => ({ default: null }));
+vi.mock('../services/invoiceService.js', () => ({
+  generateTaxInvoice: vi.fn().mockResolvedValue({ id: 'inv-1', pdfUrl: '/uploads/inv-1.pdf' })
+}));
 
-import financeRoutes from './finance';
+import financeRoutes from './finance.js';
 
 // ── Test helpers ─────────────────────────────────────────────────────
 function createApp(role: string = 'owner') {
@@ -175,6 +183,52 @@ describe('Finance Routes — /api/finance', () => {
     it('returns 403 for unauthorized role (seller)', async () => {
       const res = await request(createApp('seller')).get(`/api/finance/commissions/${VALID_MONGO_ID}`);
       expect(res.status).toBe(403);
+    });
+  });
+
+  // ─── VAT & Invoices ──────────────────────────────────────────────────
+  describe('GET /api/finance/vat-return', () => {
+    it('returns VAT return metrics', async () => {
+      const res = await request(createApp('owner')).get('/api/finance/vat-return');
+      expect(res.status).toBe(200);
+      expect(res.body.success).toBe(true);
+      expect(res.body.data).toHaveProperty('outputVAT', 500);
+      expect(res.body.data).toHaveProperty('inputVAT', 0);
+      expect(res.body.data).toHaveProperty('netVAT', 500);
+    });
+  });
+
+  describe('POST /api/finance/invoices/tax', () => {
+    it('validates missing fields', async () => {
+      const res = await request(createApp('owner')).post('/api/finance/invoices/tax').send({});
+      expect(res.status).toBe(400);
+      expect(res.body.error).toMatch(/client id/i);
+    });
+
+    it('generates a tax invoice', async () => {
+      const payload = {
+        clientId: 'client-1',
+        lineItems: [{ description: 'Commission', quantity: 1, unitPrice: 1000 }]
+      };
+      const res = await request(createApp('owner')).post('/api/finance/invoices/tax').send(payload);
+      expect(res.status).toBe(201);
+      expect(res.body.success).toBe(true);
+      expect(res.body.data).toHaveProperty('id', 'inv-1');
+    });
+  });
+
+  describe('GET /api/finance/invoices/:id/pdf', () => {
+    it('redirects to the PDF URL', async () => {
+      const res = await request(createApp('owner')).get(`/api/finance/invoices/${VALID_MONGO_ID}/pdf`);
+      // Express res.redirect returns 302 Found
+      expect(res.status).toBe(302);
+      expect(res.header.location).toBe('/uploads/inv-1.pdf');
+    });
+
+    it('returns 404 if invoice not found', async () => {
+      mockPrisma.invoice.findUnique.mockResolvedValueOnce(null);
+      const res = await request(createApp('owner')).get(`/api/finance/invoices/${VALID_MONGO_ID}/pdf`);
+      expect(res.status).toBe(404);
     });
   });
 

@@ -15,8 +15,8 @@
  */
 
 import { Response, NextFunction } from 'express';
-import { AuthRequest } from './auth';
-import { AppError } from './errorHandler';
+import { AuthRequest } from './auth.js';
+import { AppError } from './errorHandler.js';
 
 // ─── Role alias map ─────────────────────────────────────────────────────────
 // Maps frontend / UI role IDs (stored in JWT) to canonical backend roles.

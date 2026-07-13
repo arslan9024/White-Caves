@@ -91,7 +91,7 @@ vi.mock('../utils/logger.js', () => ({
   })),
 }));
 
-import homepageRoutes from './homepage';
+import homepageRoutes from './homepage.js';
 
 // ── Test App ──────────────────────────────────────────────────────────────────
 

@@ -3,8 +3,8 @@ import { verify, sign } from 'jsonwebtoken';
 import speakeasy from 'speakeasy';
 import QRCode from 'qrcode';
 import crypto from 'crypto';
-import { prisma } from '../database';
-import { asyncHandler, AppError } from '../middleware/errorHandler';
+import { prisma } from '../database.js';
+import { asyncHandler, AppError } from '../middleware/errorHandler.js';
 import authMiddleware from '../middleware/auth.js';
 import logger from '../utils/logger.js';
 

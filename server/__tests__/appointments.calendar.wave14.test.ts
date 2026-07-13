@@ -84,7 +84,7 @@ vi.mock('../config/pagination.js', () => ({
   parsePagination: () => ({ page: 1, limit: 20, skip: 0 }),
 }));
 
-import appointmentsRoutes from '../routes/appointments';
+import appointmentsRoutes from '../routes/appointments.js';
 
 const VALID_ID = 'aabbccddee11223344556677';
 

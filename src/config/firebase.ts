@@ -12,6 +12,8 @@ import {
   sendPasswordResetEmail,
   setPersistence,
   signInWithPopup,
+  signInWithRedirect,
+  getRedirectResult,
   signInWithEmailAndPassword,
   createUserWithEmailAndPassword,
   signOut as firebaseSignOut,
@@ -93,19 +95,31 @@ googleProvider.addScope('profile');
 facebookProvider.setCustomParameters({ display: 'popup' });
 appleProvider.setCustomParameters({ locale: 'en_US' });
 
-export const signInWithGoogle = async () => {
+/**
+ * Popup-first strategy: try signInWithPopup (no page reload, no blocked-popup
+ * issue on most browsers).  If the browser blocks the popup anyway, fall back
+ * to signInWithRedirect which does a full-page redirect instead.
+ */
+const popupFirst = async (provider: GoogleAuthProvider | FacebookAuthProvider | OAuthProvider) => {
   if (!auth) throw new Error('Firebase not initialized');
-  return await signInWithPopup(auth, googleProvider);
+  try {
+    return await signInWithPopup(auth, provider);
+  } catch (err: any) {
+    if (err?.code === 'auth/popup-blocked') {
+      // Graceful fallback — redirect flow never triggers a popup
+      return await signInWithRedirect(auth, provider);
+    }
+    throw err;
+  }
 };
 
-export const signInWithFacebook = async () => {
-  if (!auth) throw new Error('Firebase not initialized');
-  return await signInWithPopup(auth, facebookProvider);
-};
+export const signInWithGoogle = () => popupFirst(googleProvider);
+export const signInWithFacebook = () => popupFirst(facebookProvider);
+export const signInWithApple = () => popupFirst(appleProvider);
 
-export const signInWithApple = async () => {
+export const handleRedirectResult = async () => {
   if (!auth) throw new Error('Firebase not initialized');
-  return await signInWithPopup(auth, appleProvider);
+  return await getRedirectResult(auth);
 };
 
 export const signInWithEmail = async (email: string, password: string) => {

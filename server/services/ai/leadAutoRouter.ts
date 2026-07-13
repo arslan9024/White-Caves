@@ -13,7 +13,7 @@
  *   5. Budget-tier matching (luxury → luxury specialist)
  *
  * Usage:
- *   import { autoRouteHotLead, getRoutingRules, getAgentPerformance } from './leadAutoRouter';
+ *   import { autoRouteHotLead, getRoutingRules, getAgentPerformance } from './leadAutoRouter.js';
  */
 
 import { prisma } from '../../database.js';

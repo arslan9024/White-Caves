@@ -4,7 +4,7 @@
  */
 
 import { describe, it, expect } from 'vitest';
-import { sanitizeString, sanitizeObject, sanitizeDeep, truncateString } from './sanitize';
+import { sanitizeString, sanitizeObject, sanitizeDeep, truncateString } from './sanitize.js';
 
 // ─── sanitizeString ─────────────────────────────────────────────────────
 describe('sanitizeString', () => {

@@ -6,14 +6,14 @@
 
 import { Router, Request, Response } from 'express';
 import { Prisma } from '@prisma/client';
-import { asyncHandler, AppError } from '../middleware/errorHandler';
-import type { AuthRequest } from '../middleware/auth';
+import { asyncHandler, AppError } from '../middleware/errorHandler.js';
+import type { AuthRequest } from '../middleware/auth.js';
 import { prisma } from '../database.js';
-import { validate, rules, validateIdParam } from '../utils/validate';
-import { parsePagination } from '../config/pagination';
-import { sanitizeString } from '../utils/sanitize';
-import { requirePermission } from '../middleware/rbac';
-import { RISKY_AMOUNT_AED } from '../middleware/kycGate';
+import { validate, rules, validateIdParam } from '../utils/validate.js';
+import { parsePagination } from '../config/pagination.js';
+import { sanitizeString } from '../utils/sanitize.js';
+import { requirePermission } from '../middleware/rbac.js';
+import { RISKY_AMOUNT_AED } from '../middleware/kycGate.js';
 
 const router = Router();
 const RISKY_TRANSACTION_AMOUNT_AED = 500000;

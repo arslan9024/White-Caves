@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
 import { setActiveRole } from '../store/navigationSlice';
 import { SUPER_ADMIN, isSuperAdmin } from '../config/superAdmin';
+import { safeStorage } from '../utils/safeStorage';
 import './RoleGateway.css';
 
 const ROLES = [
@@ -32,7 +33,7 @@ export default function RoleGateway({ user, onRoleSelect }) {
         name: SUPER_ADMIN.name,
         title: SUPER_ADMIN.title
       };
-      localStorage.setItem('userRole', JSON.stringify(mdRole));
+      safeStorage.setJSON('userRole', mdRole);
       dispatch(setActiveRole('md'));
       navigate('/profile');
     }
@@ -51,7 +52,7 @@ export default function RoleGateway({ user, onRoleSelect }) {
       locked: true
     };
     
-    localStorage.setItem('userRole', JSON.stringify(userRole));
+    safeStorage.setJSON('userRole', userRole);
     dispatch(setActiveRole(selectedRole));
     
     if (onRoleSelect) {
@@ -104,14 +105,8 @@ export function useUserRole() {
   const [userRole, setUserRole] = useState(null);
   
   useEffect(() => {
-    const stored = localStorage.getItem('userRole');
-    if (stored) {
-      try {
-        setUserRole(JSON.parse(stored));
-      } catch (e) {
-        setUserRole(null);
-      }
-    }
+    const stored = safeStorage.getJSON('userRole');
+    setUserRole(stored);
   }, []);
   
   return userRole;

@@ -11,10 +11,7 @@ import { connectDB, Contract, SignatureToken, WhatsAppMessage, WhatsAppChatbotRu
 import WhatsAppSession from './models/WhatsAppSession.js';
 import * as googleCalendar from './lib/googleCalendar.js';
 import chatbotService from './services/ChatbotService.js';
-import uaePassRoutes from './routes/uaepass.routes.js';
-import webauthnRoutes from './routes/webauthn.routes.js';
 import dashboardRoutes from './routes/dashboard.routes.js';
-import inventoryRoutes from './routes/inventory.routes.js';
 import oliviaRoutes from './routes/olivia.routes.js';
 import zoeRoutes from './routes/zoe.routes.js';
 import recruitmentRoutes from './routes/recruitment.js';
@@ -65,11 +62,8 @@ const PORT = process.env.PORT || (isProduction ? 5000 : 3000);
 app.use(cors());
 app.use(express.json({ limit: '50mb' }));
 
-app.use('/api/auth/uaepass', uaePassRoutes);
-app.use('/api/auth/webauthn', webauthnRoutes);
 app.use('/api/errors', errorRoutes);
 app.use('/api/dashboard', dashboardRoutes);
-app.use('/api/inventory', inventoryRoutes);
 app.use('/api/featured-properties', oliviaRoutes);
 app.use('/api/zoe', zoeRoutes);
 app.use('/api/recruitment', recruitmentRoutes);
@@ -1488,6 +1482,18 @@ app.use((req, res, next) => {
   } else {
     next();
   }
+});
+
+// Global Error Handler Armor
+app.use((err, req, res, next) => {
+  console.error('[Global Error Armor]', err);
+  const status = err.status || err.statusCode || 500;
+  res.status(status).json({
+    success: false,
+    error: err.message || 'Internal Server Error',
+    code: err.code || 'UNKNOWN_ERROR',
+    stack: process.env.NODE_ENV === 'development' ? err.stack : undefined
+  });
 });
 
 app.listen(PORT, '0.0.0.0', () => {

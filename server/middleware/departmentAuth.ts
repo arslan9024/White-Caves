@@ -4,7 +4,7 @@
  */
 
 import { Request, Response, NextFunction } from 'express';
-import { AppError, asyncHandler } from './errorHandler';
+import { AppError, asyncHandler } from './errorHandler.js';
 import { prisma } from '../database.js';
 import type { PrismaClient } from '@prisma/client';
 

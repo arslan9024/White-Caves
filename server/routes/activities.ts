@@ -7,12 +7,12 @@
 import { Router, Request, Response } from 'express';
 import { Prisma } from '@prisma/client';
 import ExcelJS from 'exceljs';
-import { asyncHandler, AppError } from '../middleware/errorHandler';
+import { asyncHandler, AppError } from '../middleware/errorHandler.js';
 import { prisma } from '../database.js';
-import { validateIdParam } from '../utils/validate';
-import { parsePagination } from '../config/pagination';
-import { sanitizeString } from '../utils/sanitize';
-import { requirePermission } from '../middleware/rbac';
+import { validateIdParam } from '../utils/validate.js';
+import { parsePagination } from '../config/pagination.js';
+import { sanitizeString } from '../utils/sanitize.js';
+import { requirePermission } from '../middleware/rbac.js';
 import { triggerLeadRescore } from '../services/ai/leadAutoRescore.js';
 
 const router = Router();

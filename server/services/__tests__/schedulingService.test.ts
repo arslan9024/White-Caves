@@ -38,7 +38,7 @@ import {
   detectConflicts,
   generateICSContent,
   generateIcsToken,
-} from '../schedulingService';
+} from '../schedulingService.js';
 import { prisma } from '../../database.js';
 
 const mockPrisma = prisma as unknown as {

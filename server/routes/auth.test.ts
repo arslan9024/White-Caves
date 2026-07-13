@@ -111,7 +111,7 @@ vi.mock('../middleware/auth.js', () => ({
   },
 }));
 
-import authRoutes from './auth';
+import authRoutes from './auth.js';
 
 // ── Test app factory ─────────────────────────────────────────────────
 function createApp(role: string = 'owner', userId = 'user-1') {

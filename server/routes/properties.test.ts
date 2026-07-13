@@ -104,7 +104,7 @@ vi.mock('../config/pagination', () => ({
   }),
 }));
 
-import propertyRoutes from './properties';
+import propertyRoutes from './properties.js';
 
 // ── Test app factory ─────────────────────────────────────────────────
 function createApp(role: string = 'owner', userId = 'user-1') {

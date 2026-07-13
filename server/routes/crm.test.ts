@@ -54,7 +54,7 @@ vi.mock('../middleware/errorHandler', () => ({
 }));
 vi.mock('../middleware/auth', () => ({ default: null }));
 
-import crmRoutes from './crm';
+import crmRoutes from './crm.js';
 
 // ── Test app factory ─────────────────────────────────────────────────
 function createApp(role: string = 'owner') {

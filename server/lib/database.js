@@ -11,6 +11,8 @@ const getOrCreateModel = name => {
   return mongoose.model(name, schema);
 };
 
+let connectionPromise = null;
+
 export async function connectDB(
   uri = process.env.MONGODB_URI || 'mongodb://127.0.0.1:27017/white-caves'
 ) {
@@ -18,12 +20,19 @@ export async function connectDB(
     return mongoose.connection;
   }
 
-  await mongoose.connect(uri, {
+  if (connectionPromise) {
+    return connectionPromise;
+  }
+
+  connectionPromise = mongoose.connect(uri, {
     maxPoolSize: 10,
     serverSelectionTimeoutMS: 5000,
+  }).then(() => mongoose.connection).catch(err => {
+    connectionPromise = null;
+    throw err;
   });
 
-  return mongoose.connection;
+  return connectionPromise;
 }
 
 export { Contract, SignatureToken };

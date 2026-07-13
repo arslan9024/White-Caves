@@ -81,7 +81,7 @@ vi.mock('../config/pagination', () => ({
   }),
 }));
 
-import activitiesRoutes from './activities';
+import activitiesRoutes from './activities.js';
 
 // ── Test app factory ─────────────────────────────────────────────────
 function createApp(role = 'owner', userId = 'user-1') {

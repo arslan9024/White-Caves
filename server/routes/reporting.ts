@@ -5,10 +5,10 @@
  */
 
 import { Router, Request, Response } from 'express';
-import { asyncHandler, AppError } from '../middleware/errorHandler';
+import { asyncHandler, AppError } from '../middleware/errorHandler.js';
 
 import { prisma } from '../database.js';
-import { requirePermission } from '../middleware/rbac';
+import { requirePermission } from '../middleware/rbac.js';
 import { documentService } from '../services/DocumentService.js';
 import { getDashboardRoleConfig } from '../config/dashboardConfigs.js';
 

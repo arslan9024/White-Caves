@@ -15,7 +15,7 @@ vi.mock('../utils/logger.js', () => ({
   }),
 }));
 
-import { AppError, asyncHandler, errorHandler, errors } from './errorHandler';
+import { AppError, asyncHandler, errorHandler, errors } from './errorHandler.js';
 import type { Request, Response, NextFunction } from 'express';
 
 // ─── Helpers ────────────────────────────────────────────────────────────

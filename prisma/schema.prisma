@@ -415,6 +415,7 @@ model Commission {
   paidAt      DateTime?
   vatRate     Float?   @default(5)  // VAT percentage: 0% residential, 5% commercial, 5% on commission
   vatAmount   Float?   @default(0)  // Calculated VAT amount
+  netAmount   Float?                // Net amount after VAT
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 
@@ -425,6 +426,7 @@ model Commission {
   lead        Lead?    @relation(fields: [leadId], references: [id])
   propertyId  String?  @db.ObjectId
   property    Property? @relation(fields: [propertyId], references: [id])
+  splits      CommissionSplit[]
 
   @@index([agentId])
   @@index([status])
@@ -433,6 +435,20 @@ model Commission {
   @@index([agentId, status])  // Composite for agent performance queries
   @@index([propertyId])
   @@index([leadId])
+}
+
+model CommissionSplit {
+  id           String @id @default(auto()) @map("_id") @db.ObjectId
+  commissionId String @db.ObjectId
+  recipientId  String @db.ObjectId
+  recipientType String // agent | team_lead | company | referrer
+  percentage   Float
+  amount       Float
+  paidAt       DateTime?
+  commission   Commission @relation(fields: [commissionId], references: [id], onDelete: Cascade)
+
+  @@index([commissionId])
+  @@index([recipientId])
 }
 
 // ─── FAVORITE ───────────────────────────────────────────────────────────
@@ -750,10 +766,14 @@ model Communication {
 model Invoice {
   id            String   @id @default(auto()) @map("_id") @db.ObjectId
   invoiceNumber String   @unique           // "INV-2026-0001"
+  type          String   @default("tax_invoice") // tax_invoice, pro_forma, credit_note
   client        String                     // Client name
+  clientId      String?  @db.ObjectId
+  dealId        String?  @db.ObjectId
   property      String?                    // Property reference
   amount        Float
-  vatAmount     Float    @default(0)       // 5% VAT for commercial
+  vatRate       Float    @default(5)       // VAT percentage
+  vatAmount     Float    @default(0)       // Calculated VAT amount
   totalAmount   Float                      // amount + vatAmount
   currency      String   @default("AED")
   status        String   @default("draft") // draft, pending, paid, overdue, cancelled, refunded
@@ -762,6 +782,8 @@ model Invoice {
   paidAt        DateTime?
   notes         String?
   lineItems     Json?                      // [{ description, qty, unitPrice, total }]
+  invoiceLineItems InvoiceLineItem[]
+  pdfUrl        String?
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
 
@@ -772,6 +794,20 @@ model Invoice {
   @@index([client])
   @@index([dueDate])
   @@index([createdAt])
+  @@index([clientId])
+  @@index([dealId])
+}
+
+model InvoiceLineItem {
+  id          String   @id @default(auto()) @map("_id") @db.ObjectId
+  invoiceId   String   @db.ObjectId
+  description String
+  quantity    Int      @default(1)
+  unitPrice   Float
+  total       Float
+  invoice     Invoice  @relation(fields: [invoiceId], references: [id], onDelete: Cascade)
+
+  @@index([invoiceId])
 }
 
 // ─── EXPENSE ────────────────────────────────────────────────────────────

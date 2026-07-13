@@ -4,7 +4,7 @@
  */
 
 import { describe, it, expect, vi } from 'vitest';
-import { sendSuccess, sendCreated, sendError, buildPagination } from './apiResponse';
+import { sendSuccess, sendCreated, sendError, buildPagination } from './apiResponse.js';
 import type { Response } from 'express';
 
 // ─── Helpers ────────────────────────────────────────────────────────────

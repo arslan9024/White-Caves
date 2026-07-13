@@ -113,7 +113,7 @@ vi.mock('../services/whatsapp/lindaCampaignService.js', () => ({
   dispatchDueLindaCampaigns: mockDispatchDueLindaCampaigns,
 }));
 
-import lindaRoutes from './linda';
+import lindaRoutes from './linda.js';
 
 function createApp() {
   const app = express();

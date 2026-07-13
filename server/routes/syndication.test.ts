@@ -23,7 +23,7 @@ vi.mock('../middleware/rbac.js', () => ({
   requirePermission: () => (_req: unknown, _res: unknown, next: () => void) => next(),
 }));
 
-import syndicationRoutes from './syndication';
+import syndicationRoutes from './syndication.js';
 import { errorHandler } from '../middleware/errorHandler.js';
 
 function createApp() {

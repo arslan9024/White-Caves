@@ -10,7 +10,7 @@ const mockPrisma = vi.hoisted(() => ({
 
 vi.mock('../database.js', () => ({ prisma: mockPrisma }));
 
-import { requireKycForRiskyTransaction, RISKY_AMOUNT_AED } from '../middleware/kycGate';
+import { requireKycForRiskyTransaction, RISKY_AMOUNT_AED } from '../middleware/kycGate.js';
 
 function makeReq(body: Record<string, unknown>): Request {
   return { body, user: { id: 'u1', role: 'manager' } } as unknown as Request;

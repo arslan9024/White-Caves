@@ -133,7 +133,7 @@ vi.mock('../config/pagination', () => ({
   }),
 }));
 
-import leadRoutes from './leads';
+import leadRoutes from './leads.js';
 
 // ── Test app factory ─────────────────────────────────────────────────
 function createApp(role: string = 'owner', userId = 'user-1') {

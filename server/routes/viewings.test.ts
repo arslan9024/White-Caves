@@ -77,8 +77,8 @@ vi.mock('../services/ai/leadAutoRescore.js', () => ({
   triggerLeadRescore: vi.fn(),
 }));
 
-import viewingsRoutes from './viewings';
-import { errorHandler } from '../middleware/errorHandler';
+import viewingsRoutes from './viewings.js';
+import { errorHandler } from '../middleware/errorHandler.js';
 
 function createApp(role = 'buyer') {
   const app = express();

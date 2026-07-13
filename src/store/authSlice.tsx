@@ -63,12 +63,17 @@ const detectBrowser = (): string => {
   return 'Unknown';
 };
 
+import { safeStorage } from '../utils/safeStorage';
+
+const initialToken = safeStorage.get('token');
+const initialIsLoggedIn = !!initialToken;
+
 const initialState: AuthState = {
   user: null,
-  token: null,
-  refreshToken: null,
+  token: initialToken,
+  refreshToken: safeStorage.get('refreshToken'),
   session: {
-    isLoggedIn: false,
+    isLoggedIn: initialIsLoggedIn,
     lastActive: null,
     sessions: [],
     expiresAt: null,
@@ -79,8 +84,8 @@ const initialState: AuthState = {
     email: false,
     mobile: false,
   },
-  loginProvider: null,
-  rememberMe: false,
+  loginProvider: safeStorage.get('loginProvider'),
+  rememberMe: safeStorage.getJSON('rememberMe') || false,
   sessionTimeout: 30,
   loading: false,
   error: null,

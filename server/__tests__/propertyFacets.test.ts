@@ -51,7 +51,7 @@ vi.mock('../config/pagination', () => ({
   parsePagination: () => ({ page: 1, limit: 20, skip: 0 }),
 }));
 
-import propertiesRoutes from '../routes/properties';
+import propertiesRoutes from '../routes/properties.js';
 
 const createApp = () => {
   const app = express();

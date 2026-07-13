@@ -7,10 +7,10 @@
 import { Router, Request, Response } from 'express';
 type RouteRequest = Request<Record<string, string>>;
 import { Prisma } from '@prisma/client';
-import { asyncHandler } from '../middleware/errorHandler';
+import { asyncHandler } from '../middleware/errorHandler.js';
 import { prisma } from '../database.js';
-import { parsePagination } from '../config/pagination';
-import { requirePermission } from '../middleware/rbac';
+import { parsePagination } from '../config/pagination.js';
+import { requirePermission } from '../middleware/rbac.js';
 
 const VALID_CATEGORIES = ['buyer', 'seller', 'landlord', 'tenant', 'investor'] as const;
 const VALID_STATUSES = ['active', 'inactive', 'prospect', 'archived'] as const;

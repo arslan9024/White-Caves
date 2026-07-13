@@ -8,13 +8,13 @@ import { Prisma } from '@prisma/client';
 import jwt, { SignOptions } from 'jsonwebtoken';
 import bcrypt from 'bcryptjs';
 import crypto from 'node:crypto';
-import { asyncHandler, AppError } from '../middleware/errorHandler';
+import { asyncHandler, AppError } from '../middleware/errorHandler.js';
 import authMiddleware from '../middleware/auth.js';
 import { clearCsrfToken, issueCsrfToken, requireDoubleSubmitCsrf } from '../middleware/csrf.js';
-import type { AuthRequest } from '../middleware/auth';
-import { JWT_SECRET, JWT_EXPIRES_SECONDS, BCRYPT_ROUNDS } from '../config/env';
+import type { AuthRequest } from '../middleware/auth.js';
+import { JWT_SECRET, JWT_EXPIRES_SECONDS, BCRYPT_ROUNDS } from '../config/env.js';
 import { prisma } from '../database.js';
-import { sanitizeString } from '../utils/sanitize';
+import { sanitizeString } from '../utils/sanitize.js';
 import logger from '../utils/logger.js';
 import { verifyFirebaseIdToken, FirebaseAdminInitError } from '../config/firebaseAdmin.js';
 

@@ -18,8 +18,8 @@ import {
   ROLE_HIERARCHY,
   ROLE_PERMISSIONS,
   ROLE_RANK,
-} from './rbac';
-import type { AuthRequest } from './auth';
+} from './rbac.js';
+import type { AuthRequest } from './auth.js';
 
 // ─── Helper: create mock request/response/next ──────────────────────────────
 function createMocks(userOverrides?: { id?: string; email?: string; role?: string } | null) {

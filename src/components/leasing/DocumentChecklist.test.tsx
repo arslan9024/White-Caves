@@ -3,6 +3,17 @@ import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { DocumentChecklist } from './DocumentChecklist';
 
+// Mock safeStorage to return token for authFetch compatibility
+vi.mock('../../utils/safeStorage', () => ({
+  safeStorage: {
+    get: vi.fn((key: string) => (key === 'token' ? 'mock-jwt' : null)),
+    set: vi.fn(),
+    setJSON: vi.fn(),
+    getJSON: vi.fn(),
+    remove: vi.fn(),
+  },
+}));
+
 // ── helpers ──────────────────────────────────────────────────────────────────
 const makeProperty = (overrides = {}) => ({
   id: 'prop-5',
@@ -14,12 +25,6 @@ const makeProperty = (overrides = {}) => ({
   ...overrides,
 });
 
-const mockLocalStorage = () => {
-  vi.mocked(global.localStorage.getItem).mockImplementation((key: string) =>
-    key === 'token' ? 'mock-jwt' : null
-  );
-};
-
 // ── suite ─────────────────────────────────────────────────────────────────────
 describe('DocumentChecklist', () => {
   let fetchSpy: ReturnType<typeof vi.spyOn>;
@@ -30,7 +35,6 @@ describe('DocumentChecklist', () => {
     alertSpy = vi.spyOn(window, 'alert').mockImplementation(() => {});
     vi.spyOn(console, 'error').mockImplementation(() => {});
     vi.spyOn(console, 'warn').mockImplementation(() => {});
-    mockLocalStorage();
   });
 
   afterEach(() => {

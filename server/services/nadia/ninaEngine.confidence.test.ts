@@ -11,7 +11,7 @@ import {
   CONFIDENCE_GATE_THRESHOLD,
   type ConversationContext,
   type HandoffPayload,
-} from './ninaEngine';
+} from './ninaEngine.js';
 
 // ── Fixture ───────────────────────────────────────────────────────────────────
 function makeContext(overrides: Partial<ConversationContext> = {}): ConversationContext {

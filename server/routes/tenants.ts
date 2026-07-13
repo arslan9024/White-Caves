@@ -6,12 +6,12 @@
 
 import { Router, Request, Response } from 'express';
 type RouteRequest = Request<Record<string, string>>;
-import { asyncHandler, AppError } from '../middleware/errorHandler';
-import type { AuthRequest } from '../middleware/auth';
+import { asyncHandler, AppError } from '../middleware/errorHandler.js';
+import type { AuthRequest } from '../middleware/auth.js';
 import { prisma } from '../database.js';
-import { sanitizeString } from '../utils/sanitize';
-import { validateIdParam } from '../utils/validate';
-import { requirePermission, requireRole } from '../middleware/rbac';
+import { sanitizeString } from '../utils/sanitize.js';
+import { validateIdParam } from '../utils/validate.js';
+import { requirePermission, requireRole } from '../middleware/rbac.js';
 
 const router = Router();
 

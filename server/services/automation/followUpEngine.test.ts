@@ -56,8 +56,8 @@ vi.mock('../whatsapp/whatsappUtils.js', () => ({
   rateLimiter: { canSend: vi.fn(() => ({ allowed: true, retryAfterMs: 0 })) },
 }));
 
-import { startSequence } from './followUpEngine';
-import { getCadenceForTier } from './cadenceTemplates';
+import { startSequence } from './followUpEngine.js';
+import { getCadenceForTier } from './cadenceTemplates.js';
 
 describe('FollowUpEngine — P1-007 tier matching and cadence depth', () => {
   beforeEach(() => {

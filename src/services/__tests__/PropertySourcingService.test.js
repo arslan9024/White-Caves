@@ -1,23 +1,71 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 import PropertySourcingService from '../PropertySourcingServices';
 
+const mocks = vi.hoisted(() => ({ docCount: 5 }));
+const mockOpp = { 
+        opportunityId: 'opp-123', 
+        conversationHistory: {}, 
+        propertyDetails: { type: 'villa', location: 'Dubai Marina', bedrooms: 4, bathrooms: 3, sqft: 2000 }, 
+        pricing: { monthlyRent: 5000, monthlyPrice: 5000, annualPrice: 60000 },
+        ownerInfo: { phone: '+971501234567', name: 'Ahmed Al-Mazrouei' },
+        ownerRelationshipId: { ownerProfile: { name: 'Test' }, sourceInfo: {}, _id: 'owner-123' },
+        verificationStatus: 'initial_detection',
+        statusHistory: [{status: 'initial_detection', date: new Date()}],
+        confidenceScore: 85,
+        save: vi.fn().mockResolvedValue(true) 
+      };
+
+vi.mock('../../../server/models/PropertyOpportunity.js', () => ({
+  default: {
+    findOne: vi.fn().mockResolvedValue(null),
+    create: vi.fn().mockImplementation((data) => Promise.resolve({ ...data, opportunityId: 'opp-123', verificationStatus: 'initial_detection', conversationHistory: data.conversationHistory || {}, save: vi.fn().mockResolvedValue(true) })),
+    findById: vi.fn().mockReturnValue({
+      populate: vi.fn().mockReturnThis(),
+      then: function(resolve) { resolve(mockOpp); }
+    }),
+    countDocuments: vi.fn().mockImplementation(() => Promise.resolve(mocks.docCount++)),
+    aggregate: vi.fn().mockImplementation((pipeline) => {
+      if (pipeline[0] && pipeline[0].$group && pipeline[0].$group.avg) {
+        return Promise.resolve([{ _id: null, avg: 85 }]);
+      }
+      return Promise.resolve([]);
+    }),
+    find: vi.fn().mockResolvedValue([])
+  }
+}));
+
+vi.mock('../../../server/models/OwnerRelationship.js', () => ({
+  default: {
+    findOne: vi.fn().mockResolvedValue(null),
+    create: vi.fn().mockImplementation((data) => Promise.resolve({ ...data, _id: 'owner-mock-123', save: vi.fn().mockResolvedValue(true) })),
+    find: vi.fn().mockReturnValue({ select: vi.fn().mockResolvedValue([]) })
+  }
+}));
+
+vi.mock('../../../server/models/InventoryProperty.js', () => ({
+  default: {
+    create: vi.fn().mockImplementation((data) => Promise.resolve({ ...data, propertyId: 'prop-123' }))
+  }
+}));
+
 describe('PropertySourcingService', () => {
   let service;
   const mockAnalysisResult = {
     propertyDetected: true,
     confidenceScore: 85,
-    extractedData: {
+    extractedEntities: {
       propertyType: 'villa',
       location: 'Dubai Marina',
       bedrooms: 4,
       bathrooms: 3,
       price: 5000,
       furnishing: 'unfurnished',
-      features: ['swimming pool', 'garden', 'parking']
+      features: ['swimming pool', 'garden', 'parking'],
+      ownerPhone: '+971501234567',
+      ownerEmail: 'test@example.com'
     },
-    ownerInfo: {
+    ownerIdentification: {
       name: 'Ahmed Al-Mazrouei',
-      phone: '+971501234567',
       type: 'direct_owner'
     }
   };

@@ -9,7 +9,7 @@
  * Tiers: hot (80+), warm (60-79), cold (30-59), inactive (<30)
  *
  * Usage:
- *   import { scoreLead, batchRescoreLeads } from './leadScoringEngine';
+ *   import { scoreLead, batchRescoreLeads } from './leadScoringEngine.js';
  *   const result = await scoreLead(leadId);
  *   const batch  = await batchRescoreLeads();
  */

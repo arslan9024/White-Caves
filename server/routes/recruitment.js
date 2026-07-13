@@ -13,7 +13,6 @@ import { ConversationBatchProcessor } from '../services/ConversationBatchProcess
 import { LeadScoringIntegration } from '../utils/LeadScoringIntegration.js';
 
 const router = express.Router();
-let prisma = new PrismaClient();
 let scoringService = CandidateScoringService;
 let templateService = MessageTemplateService;
 let recruitmentAuditLogger = (eventType, payload) => {
@@ -33,7 +32,7 @@ export function __setRecruitmentTestDeps({ prismaClient, candidateScoringService
 }
 
 export function __resetRecruitmentTestDeps() {
-  prisma = new PrismaClient();
+  
   scoringService = CandidateScoringService;
   templateService = MessageTemplateService;
   recruitmentAuditLogger = (eventType, payload) => {

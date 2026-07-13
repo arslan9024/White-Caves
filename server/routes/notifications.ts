@@ -5,12 +5,12 @@
  */
 
 import { Router, Request, Response } from 'express';
-import { asyncHandler, AppError } from '../middleware/errorHandler';
-import type { AuthRequest } from '../middleware/auth';
+import { asyncHandler, AppError } from '../middleware/errorHandler.js';
+import type { AuthRequest } from '../middleware/auth.js';
 import { prisma } from '../database.js';
-import { sanitizeString } from '../utils/sanitize';
-import { validate, rules, validateIdParam } from '../utils/validate';
-import { parsePagination } from '../config/pagination';
+import { sanitizeString } from '../utils/sanitize.js';
+import { validate, rules, validateIdParam } from '../utils/validate.js';
+import { parsePagination } from '../config/pagination.js';
 
 const VALID_NOTIFICATION_TYPES = [
   'info',

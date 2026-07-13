@@ -35,7 +35,7 @@ vi.mock('./services/ai/leadScoringMiddleware.js', () => ({
   registerLeadScoringMiddleware: vi.fn(),
 }));
 
-import { prisma, connectDatabase, disconnectDatabase } from './database';
+import { prisma, connectDatabase, disconnectDatabase } from './database.js';
 
 // ─── Tests ──────────────────────────────────────────────────────────────
 describe('server/database', () => {

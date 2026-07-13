@@ -8,7 +8,7 @@ import { colors, spacing, typography, media, shadows, borderRadius } from '@/des
 // ── PAGE LAYOUT ──
 export const PageContainer = styled.div`
   min-height: 100%;
-  background: ${colors.background.default};
+  background: #0f1115;
   color: ${colors.text.primary};
   padding: ${spacing[5]};
 
@@ -31,7 +31,7 @@ export const SideRailBrandLogo = styled.div`
   width: 36px;
   height: 36px;
   border-radius: ${borderRadius.md};
-  background: linear-gradient(135deg, ${colors.primary[500]}, ${colors.primary[700]});
+  background: linear-gradient(135deg, #d4af37, #aa8529);
   color: ${colors.text.inverse};
   font-size: 0.72rem;
   font-weight: 800;
@@ -84,7 +84,7 @@ export const TopBar = styled.div`
   min-height: 64px;
   margin-bottom: ${spacing[5]};
   padding: ${spacing[3]} ${spacing[4]};
-  background: rgba(20, 20, 20, 0.95);
+  background: rgba(15, 17, 21, 0.95);
   border: 1px solid ${colors.border};
   border-radius: ${borderRadius.lg};
   box-shadow: ${shadows.md};
@@ -109,7 +109,7 @@ export const TopBarLogo = styled.div`
   width: 42px;
   height: 42px;
   border-radius: ${borderRadius.lg};
-  background: linear-gradient(135deg, ${colors.primary[500]}, ${colors.primary[700]});
+  background: linear-gradient(135deg, #d4af37, #aa8529);
   color: #fff;
   font-size: 0.9rem;
   font-weight: 700;
@@ -500,7 +500,7 @@ export const FormGroup = styled.div`
     padding: ${spacing[2]} ${spacing[3]};
     border: 1px solid ${colors.border};
     border-radius: ${borderRadius.default};
-    background: ${colors.background.default};
+    background: #0f1115;
     color: ${colors.text.primary};
     ${typography.presets.body};
     transition: all 0.2s ease;
@@ -531,7 +531,7 @@ export const PrimaryButton = styled.button`
   padding: ${spacing[2]} ${spacing[5]};
   border: none;
   border-radius: ${borderRadius.md};
-  background: linear-gradient(135deg, ${colors.primary[500]}, ${colors.primary[700]});
+  background: linear-gradient(135deg, #d4af37, #aa8529);
   color: ${colors.text.inverse};
   ${typography.presets.label};
   font-weight: 600;

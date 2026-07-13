@@ -61,8 +61,8 @@ vi.mock('../utils/logger.js', () => ({
   })),
 }));
 
-import savedSearchesRoutes from './saved-searches';
-import { errorHandler } from '../middleware/errorHandler';
+import savedSearchesRoutes from './saved-searches.js';
+import { errorHandler } from '../middleware/errorHandler.js';
 
 // ── Test app setup ───────────────────────────────────────────────────
 function createApp(role = 'buyer') {

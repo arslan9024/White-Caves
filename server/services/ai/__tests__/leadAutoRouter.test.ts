@@ -50,7 +50,7 @@ import {
   getRoutingRules,
   autoRouteHotLead,
   startAutoRouting,
-} from '../leadAutoRouter';
+} from '../leadAutoRouter.js';
 
 // ─── Tests ──────────────────────────────────────────────────────────────
 

@@ -80,7 +80,7 @@ vi.mock('../utils/logger.js', () => ({
   default: { info: vi.fn(), warn: vi.fn(), error: vi.fn() },
 }));
 
-import agentAvailabilityRoutes from './agentAvailability';
+import agentAvailabilityRoutes from './agentAvailability.js';
 
 // ── Test app factory ─────────────────────────────────────────────────
 function createApp(userId = 'user-1', role = 'agent') {

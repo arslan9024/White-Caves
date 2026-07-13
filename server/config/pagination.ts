@@ -5,7 +5,7 @@
  * Import and use these instead of hardcoding pagination values.
  *
  * Usage:
- *   import { PAGINATION } from '../config/pagination';
+ *   import { PAGINATION } from '../config/pagination.js';
  *   const page = parseInt(req.query.page as string) || 1;
  *   const limit = Math.min(parseInt(req.query.limit as string) || PAGINATION.DEFAULT_PAGE_SIZE, PAGINATION.MAX_PAGE_SIZE);
  *   const skip = (page - 1) * limit;

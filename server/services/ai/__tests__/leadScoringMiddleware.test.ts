@@ -45,7 +45,7 @@ import {
   getMiddlewareStats,
   clearDebounceCache,
   type TierChangeEvent,
-} from '../leadScoringMiddleware';
+} from '../leadScoringMiddleware.js';
 
 import { prisma } from '../../../database.js';
 

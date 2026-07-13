@@ -20,6 +20,7 @@ import {
   signOut as signOutFirebase,
   isFirebaseAuthConfigured,
   firebaseAuthUnavailableReason,
+  handleRedirectResult,
 } from '../config/firebase';
 import { TIMING } from '../constants';
 import {
@@ -509,60 +510,13 @@ export function useSignIn() {
     resolvePostLoginRoute,
   ]);
 
-  // ── Social auth ────────────────────────────────────────────────
-
-  const handleSocialAuth = useCallback(
-    async (provider: string, options?: { isRetry?: boolean }): Promise<void> => {
-      if (provider === 'google' && !isFirebaseAuthConfigured) {
-        setError(googleAuthUnavailableMessage);
-        return;
-      }
-      if (
-        provider === 'google' &&
-        !options?.isRetry &&
-        typeof window !== 'undefined' &&
-        import.meta.env.MODE !== 'test'
-      ) {
-        const popupProbe = window.open('', '_blank', 'noopener,noreferrer,width=1,height=1');
-        if (!popupProbe) {
-          setSocialSyncRecovery({
-            provider: 'google',
-            reason: 'Popup blocked by browser settings',
-          });
-          setError(
-            'Google sign-in popup was blocked by your browser. Allow popups for this site and press Try again.'
-          );
-          return;
-        }
-        popupProbe.close();
-      }
-      setLoading(true);
-      setError('');
-      if (!options?.isRetry) {
-        setSocialSyncRecovery(null);
-        setSocialRetryAttempts(0);
-      }
+  // ── Social auth redirect handling ──────────────────────────────
+  useEffect(() => {
+    const processRedirect = async () => {
       try {
-        if (!isSupportedSocialProvider(provider)) {
-          throw new Error('Invalid provider');
-        }
-
-        let result;
-        switch (provider) {
-          case 'google':
-            result = await signInWithGoogle();
-            break;
-          case 'facebook':
-            result = await signInWithFacebook();
-            break;
-          case 'apple':
-            result = await signInWithApple();
-            break;
-          default:
-            throw new Error('Invalid provider');
-        }
-
-        try {
+        const result = await handleRedirectResult();
+        if (result && result.user) {
+          setLoading(true);
           const backendResponse = await syncFirebaseUser(result.user);
           if (!backendResponse?.data?.user) {
             throw new Error('Invalid backend response: missing user data');
@@ -572,84 +526,64 @@ export function useSignIn() {
           setSocialRetryAttempts(0);
           setError('');
 
-          if (mode === 'signup') {
-            if (isSuperuserEmail(backendUser.email)) {
-              handleSignInSuccess({
-                ...backendUser,
-                role: 'managing_director',
-                status: 'active',
-                photoUrl: backendUser.photoUrl || result.user.photoURL,
-                displayName: backendUser.name || result.user.displayName,
-              });
-            } else {
-              handleSignUpSuccess(
-                {
+          handleSignInSuccess(
+            isSuperuserEmail(backendUser.email)
+              ? {
+                  ...backendUser,
+                  role: 'managing_director',
+                  status: 'active',
+                  photoUrl: backendUser.photoUrl || result.user.photoURL,
+                  displayName: backendUser.name || result.user.displayName,
+                }
+              : {
                   ...backendUser,
                   photoUrl: backendUser.photoUrl || result.user.photoURL,
-                },
-                { fromSocialProvider: provider }
-              );
-            }
-          } else {
-            handleSignInSuccess(
-              isSuperuserEmail(backendUser.email)
-                ? {
-                    ...backendUser,
-                    role: 'managing_director',
-                    status: 'active',
-                    photoUrl: backendUser.photoUrl || result.user.photoURL,
-                    displayName: backendUser.name || result.user.displayName,
-                  }
-                : {
-                    ...backendUser,
-                    photoUrl: backendUser.photoUrl || result.user.photoURL,
-                    displayName: backendUser.name || result.user.displayName,
-                  }
-            );
-          }
-        } catch (syncError: unknown) {
-          const syncMessage = (() => {
-            if (syncError instanceof Error && syncError.message.trim()) {
-              return syncError.message.trim();
-            }
-            if (
-              typeof syncError === 'object' &&
-              syncError !== null &&
-              'message' in syncError &&
-              typeof (syncError as { message?: unknown }).message === 'string'
-            ) {
-              const rawMessage = (syncError as { message: string }).message.trim();
-              if (rawMessage) {
-                return rawMessage;
-              }
-            }
-            return 'Unable to complete authentication sync';
-          })();
-
-          if (shouldClearFirebaseSessionAfterSyncFailure(syncMessage)) {
-            await signOutFirebase().catch(() => {
-              // noop: firebase session cleanup is best effort here
-            });
-          }
-
-          if (provider === 'google' || provider === 'facebook' || provider === 'apple') {
-            setSocialSyncRecovery({ provider, reason: syncMessage });
-            if (options?.isRetry) {
-              setSocialRetryAttempts(prev => prev + 1);
-            }
-          }
-          setError(
-            `Authentication succeeded with ${provider}, but backend session setup failed: ${syncMessage}. Please try again.`
+                  displayName: backendUser.name || result.user.displayName,
+                }
           );
-          setSuccess('');
         }
       } catch (err: unknown) {
-        setError(normalizeSocialAuthErrorMessage(err, provider));
+        const msg = err instanceof Error ? err.message : 'Redirect auth failed';
+        setError(msg);
       } finally {
         setLoading(false);
       }
+    };
+    void processRedirect();
+  }, [handleSignInSuccess]);
+
+  const handleSocialAuth = useCallback(
+    async (provider: string, options?: { isRetry?: boolean }): Promise<void> => {
+      if (provider === 'google' && !isFirebaseAuthConfigured) {
+        setError(googleAuthUnavailableMessage);
+        return;
+      }
+      setLoading(true);
+      setError('');
+      try {
+        if (!isSupportedSocialProvider(provider)) {
+          throw new Error('Invalid provider');
+        }
+
+        switch (provider) {
+          case 'google':
+            await signInWithGoogle();
+            break;
+          case 'facebook':
+            await signInWithFacebook();
+            break;
+          case 'apple':
+            await signInWithApple();
+            break;
+          default:
+            throw new Error('Invalid provider');
+        }
+      } catch (err: unknown) {
+        setError(normalizeSocialAuthErrorMessage(err, provider));
+        setLoading(false);
+      }
     },
-    [mode, handleSignInSuccess, handleSignUpSuccess, googleAuthUnavailableMessage]
+    [googleAuthUnavailableMessage]
   );
 
   const retrySocialAuth = useCallback(async (): Promise<void> => {

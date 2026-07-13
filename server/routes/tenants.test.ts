@@ -68,7 +68,7 @@ vi.mock('../utils/validate', () => ({
   },
 }));
 
-import tenantRoutes from './tenants';
+import tenantRoutes from './tenants.js';
 
 // ── Test app factory ─────────────────────────────────────────────────
 function createApp(role: string = 'owner') {

@@ -7,8 +7,8 @@
 import { describe, it, expect, vi, beforeAll, afterEach } from 'vitest';
 import request from 'supertest';
 import express, { Express } from 'express';
-import valuationRouter from './valuation';
-import { AppError, asyncHandler } from '../middleware/errorHandler';
+import valuationRouter from './valuation.js';
+import { AppError, asyncHandler } from '../middleware/errorHandler.js';
 
 // ─────────────────────────────────────────────────────────────────────────────
 // HOISTED MOCKS (vi.hoisted ensures import-time interception)

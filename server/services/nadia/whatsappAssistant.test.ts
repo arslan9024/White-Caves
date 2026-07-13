@@ -3,7 +3,7 @@
  */
 
 import { describe, it, expect } from 'vitest';
-import { classifyWhatsAppIntent, generateWhatsAppAutoResponse } from './whatsappAssistant';
+import { classifyWhatsAppIntent, generateWhatsAppAutoResponse } from './whatsappAssistant.js';
 
 describe('WhatsApp Assistant (Phase 4D)', () => {
   it('classifies property search intent with confidence', () => {

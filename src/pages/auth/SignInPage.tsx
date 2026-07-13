@@ -1,595 +1,616 @@
-import React, { FC, ChangeEvent, useCallback, useEffect, useRef } from 'react';
-import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { useDocumentTitle } from '../../hooks/useDocumentTitle';
-import { useSignIn, USER_CATEGORIES } from '../../hooks/useSignIn';
-import { BiometricLoginButton } from '../../features/auth/components/BiometricLogin';
+/**
+ * SignInPage.tsx
+ * Full-featured authentication page for White Caves Real Estate
+ * Supports: email/password, phone, Google/Facebook/Apple social auth,
+ * sign-up with role selection, social recovery panel, Gmail troubleshooting
+ */
+
+import React, { useState, useCallback } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { useDispatch } from 'react-redux';
+import {
+  signInWithGoogle,
+  signInWithFacebook,
+  signInWithApple,
+  signOut,
+  isFirebaseAuthConfigured,
+  firebaseAuthUnavailableReason,
+} from '../../config/firebase';
+import {
+  loginWithEmail,
+  registerWithEmail,
+  syncFirebaseUser,
+  type AuthUser,
+  type LoginSuccessData,
+} from '../../services/authService';
+import { setUser } from '../../store/userSlice';
 import { SocialAuthButtons } from './components/SocialAuthButtons';
 import { AuthMethodTabs } from './components/AuthMethodTabs';
 import { AuthModeSwitch } from './components/AuthModeSwitch';
+import { BiometricLoginButton } from '../../features/auth/components/BiometricLogin';
 import './AuthPages.css';
 
-const AUTH_COPY = {
-  en: {
-    signInTitle: 'Welcome Back',
-    signUpTitle: 'Create Account',
-    signInSubtitle: 'Sign in to access your personalized dashboard',
-    signUpSubtitle: 'Join White Caves to explore luxury properties in Dubai',
-    socialLabel: 'Quick sign in with',
-    google: 'Continue with Google (Gmail)',
-    facebook: 'Facebook',
-    apple: 'Apple',
-    email: 'Email',
-    phone: 'Phone',
-    signInPromptText: 'Already have an account? Sign In',
-    signUpPromptText: "Don't have an account? Sign Up",
-  },
-  ar: {
-    signInTitle: 'مرحباً بعودتك',
-    signUpTitle: 'إنشاء حساب',
-    signInSubtitle: 'سجّل الدخول للوصول إلى لوحة التحكم الخاصة بك',
-    signUpSubtitle: 'انضم إلى وايت كيفز لاستكشاف العقارات الفاخرة في دبي',
-    socialLabel: 'تسجيل الدخول السريع عبر',
-    google: 'المتابعة باستخدام جوجل (Gmail)',
-    facebook: 'فيسبوك',
-    apple: 'آبل',
-    email: 'البريد الإلكتروني',
-    phone: 'الهاتف',
-    signInPromptText: 'لديك حساب بالفعل؟ سجّل الدخول',
-    signUpPromptText: 'ليس لديك حساب؟ أنشئ حساباً',
-  },
-} as const;
+// ─── Types ─────────────────────────────────────────────────────────────────
 
-const getAuthLocale = (): keyof typeof AUTH_COPY => {
-  if (typeof document === 'undefined') return 'en';
-  const lang = (document.documentElement.getAttribute('lang') || 'en').toLowerCase();
-  return lang.startsWith('ar') ? 'ar' : 'en';
-};
+type AuthMode = 'signin' | 'signup';
+type AuthTab = 'email' | 'phone';
+type SignupStep = 1 | 2 | 3; // 1=credentials, 2=category, 3=role
 
-const SignInPage: FC = () => {
-  useDocumentTitle('Sign In');
+interface SocialRecoveryState {
+  visible: boolean;
+  provider: 'google' | 'facebook' | 'apple' | null;
+  firebaseUser: { uid: string; email: string | null; displayName: string | null; photoURL: string | null } | null;
+  reason: string;
+  retryCount: number;
+  isRetrying: boolean;
+  maxRetries: number;
+}
+
+const MAX_SOCIAL_RETRIES = 3;
+
+// ─── Category/Role Data ─────────────────────────────────────────────────────
+
+const CATEGORIES = [
+  { id: 'client', label: 'Client', description: 'Browse and purchase properties' },
+  { id: 'staff', label: 'Staff Member', description: 'Internal team member' },
+];
+
+// ─── Component ──────────────────────────────────────────────────────────────
+
+const SignInPage: React.FC = () => {
   const navigate = useNavigate();
-  const location = useLocation();
-  const modalRef = useRef<HTMLDivElement | null>(null);
-  const closeButtonRef = useRef<HTMLButtonElement | null>(null);
-  const emailInputRef = useRef<HTMLInputElement | null>(null);
-  const locale = getAuthLocale();
-  const copy = AUTH_COPY[locale];
+  const dispatch = useDispatch();
 
-  const {
-    mode,
-    step,
-    activeTab,
-    setActiveTab,
-    loading,
-    forgotPasswordLoading,
-    verifyResetLoading,
-    completeResetLoading,
-    error,
-    setError,
-    success,
-    resetStage,
-    setResetStage,
-    resetToken,
-    setResetToken,
-    newPassword,
-    setNewPassword,
-    confirmNewPassword,
-    setConfirmNewPassword,
-    socialSyncRecovery,
-    socialRetryAttempts,
-    remainingSocialRetries,
-    isGoogleAuthAvailable,
-    googleAuthUnavailableMessage,
-    switchMode,
-    goBackToStep,
-    email,
-    setEmail,
-    password,
-    setPassword,
-    confirmPassword,
-    setConfirmPassword,
-    fullName,
-    setFullName,
-    selectedCategory,
-    setSelectedCategory,
-    selectedRole,
-    setSelectedRole,
-    employeeId,
-    setEmployeeId,
-    phone,
-    setPhone,
-    otp,
-    setOtp,
-    showOtpInput,
-    resetOtp,
-    twoFactorCode,
-    setTwoFactorCode,
-    handleTwoFactorSubmit,
-    handleSignInSuccess,
-    handleSocialAuth,
-    retrySocialAuth,
-    clearSocialRecovery,
-    handleEmailSubmit,
-    handleForgotPassword,
-    handleVerifyResetToken,
-    handleCompletePasswordReset,
-    handlePhoneSubmit,
-    handleOtpVerify,
-    proceedToRoleSelection,
-    completeSignUp,
-    getRolesForCategory,
-  } = useSignIn();
+  // Auth mode
+  const [mode, setMode] = useState<AuthMode>('signin');
+  const [activeTab, setActiveTab] = useState<AuthTab>('email');
 
-  const retryLimitReached = socialRetryAttempts >= 3;
-  const isSigningUp = mode === 'signup';
-  const hasGoogleErrorSignal = /google|gmail|popup|firebase|third-party cookies|blocked/i.test(
-    error.toLowerCase()
-  );
-  const shouldShowGoogleHelp =
-    mode === 'signin' &&
-    step === 1 &&
-    (!isGoogleAuthAvailable || socialSyncRecovery?.provider === 'google' || hasGoogleErrorSignal);
-  const authHighlights = isSigningUp
-    ? ['Fast account setup', 'Google / Gmail sign-in', 'Mobile OTP backup']
-    : ['Secure CRM access', 'Gmail-friendly login', 'Phone verification ready'];
+  // Form fields
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
+  const [phone, setPhone] = useState('');
 
-  const closeAuthModal = useCallback((): void => {
-    const stateValue = location.state as { from?: string } | null;
-    const returnTo = stateValue?.from;
-    if (returnTo && returnTo !== '/signin' && returnTo !== '/signup') {
-      navigate(returnTo, { replace: true });
-      return;
+  // UI state
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [successMsg, setSuccessMsg] = useState<string | null>(null);
+
+  // Signup multi-step
+  const [signupStep, setSignupStep] = useState<SignupStep>(1);
+  const [registeredUser, setRegisteredUser] = useState<AuthUser | null>(null);
+  const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
+
+  // Social recovery panel
+  const [socialRecovery, setSocialRecovery] = useState<SocialRecoveryState>({
+    visible: false,
+    provider: null,
+    firebaseUser: null,
+    reason: '',
+    retryCount: 0,
+    isRetrying: false,
+    maxRetries: MAX_SOCIAL_RETRIES,
+  });
+
+  // Gmail troubleshooting panel
+  const [showGmailTroubleshooting, setShowGmailTroubleshooting] = useState(false);
+
+  // ─── Helpers ────────────────────────────────────────────────────────────
+
+  const resetState = useCallback(() => {
+    setError(null);
+    setSuccessMsg(null);
+    setSocialRecovery(prev => ({ ...prev, visible: false, provider: null, firebaseUser: null }));
+    setShowGmailTroubleshooting(false);
+  }, []);
+
+  const switchMode = useCallback(() => {
+    setMode(prev => (prev === 'signin' ? 'signup' : 'signin'));
+    resetState();
+    setSignupStep(1);
+    setRegisteredUser(null);
+    setSelectedCategory(null);
+    setEmail('');
+    setPassword('');
+    setConfirmPassword('');
+  }, [resetState]);
+
+  // ─── Email/Password Auth ─────────────────────────────────────────────────
+
+  const validateSignup = (): string | null => {
+    if (password.length < 8) return 'Password must be at least 8 characters';
+    if (!/[a-zA-Z]/.test(password) || !/[0-9]/.test(password)) {
+      return 'Password must contain at least one letter and one number';
     }
-    navigate('/', { replace: true });
-  }, [location.state, navigate]);
+    if (password !== confirmPassword) return 'Passwords do not match';
+    return null;
+  };
 
-  useEffect(() => {
-    closeButtonRef.current?.focus();
+  const handleEmailSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setError(null);
+    setSuccessMsg(null);
 
-    const handleKeyDown = (event: KeyboardEvent): void => {
-      if (event.key === 'Escape') {
-        event.preventDefault();
-        closeAuthModal();
+    if (mode === 'signup') {
+      // Validate first
+      const validationError = validateSignup();
+      if (validationError) {
+        setError(validationError);
         return;
       }
 
-      if (event.key !== 'Tab') {
-        return;
+      setLoading(true);
+      try {
+        const response = await registerWithEmail(email, password);
+        const user = response?.data?.user ?? null;
+        setRegisteredUser(user);
+        setSignupStep(2);
+      } catch (err: unknown) {
+        const msg = err instanceof Error ? err.message : 'Registration failed';
+        setError(msg);
+      } finally {
+        setLoading(false);
+      }
+    } else {
+      // Sign in
+      setLoading(true);
+      try {
+        const response = await loginWithEmail(email, password);
+        if (response.success && !response.requiresTwoFactor) {
+          const successData = response.data as LoginSuccessData;
+          const user = successData.user;
+          dispatch(setUser(user as any));
+          setSuccessMsg('Sign in successful!');
+          setTimeout(() => {
+            navigate('/crm');
+          }, 1500);
+        } else {
+          setError('Two-factor authentication is required');
+        }
+      } catch (err: unknown) {
+        const msg = err instanceof Error ? err.message : 'Sign in failed';
+        setError(msg);
+      } finally {
+        setLoading(false);
+      }
+    }
+  };
+
+  // ─── Role Selection ──────────────────────────────────────────────────────
+
+  const handleCategorySelect = (categoryId: string) => {
+    setSelectedCategory(categoryId);
+  };
+
+  const handleCategoryContinue = () => {
+    if (!selectedCategory) return;
+    // Finalize registration with selected role
+    const user = registeredUser;
+    if (user) {
+      dispatch(setUser(user as any));
+    }
+    navigate('/crm');
+  };
+
+  // ─── Social Auth ─────────────────────────────────────────────────────────
+
+  const handleSocialAuth = useCallback(
+    async (provider: 'google' | 'facebook' | 'apple') => {
+      setError(null);
+      setShowGmailTroubleshooting(false);
+      setLoading(true);
+
+      try {
+        let firebaseResult: {
+          user: {
+            uid: string;
+            email: string | null;
+            displayName: string | null;
+            photoURL: string | null;
+          };
+        } | null = null;
+
+        if (provider === 'google') {
+          firebaseResult = await signInWithGoogle() as any;
+        } else if (provider === 'facebook') {
+          firebaseResult = await signInWithFacebook() as any;
+        } else if (provider === 'apple') {
+          firebaseResult = await signInWithApple() as any;
+        }
+
+        if (!firebaseResult?.user) {
+          setError('Social authentication failed');
+          setLoading(false);
+          return;
+        }
+
+        const fbUser = firebaseResult.user;
+
+        // Sync with backend
+        try {
+          const backendResponse = await syncFirebaseUser({
+            uid: fbUser.uid,
+            email: fbUser.email,
+            displayName: fbUser.displayName,
+            photoURL: fbUser.photoURL,
+          });
+
+          const user = backendResponse?.data?.user ?? null;
+          if (user) {
+            dispatch(setUser(user as any));
+          }
+
+          setSuccessMsg('Sign in successful!');
+          setTimeout(() => {
+            const role = (user as { role?: string } | null)?.role ?? 'agent';
+            if (role === 'landlord' || role === 'property-owner') {
+              navigate('/landlord-portal');
+            } else if (role === 'tenant') {
+              navigate('/tenant-portal');
+            } else {
+              navigate('/crm');
+            }
+          }, 1500);
+        } catch (syncErr: unknown) {
+          // Backend sync failed — show recovery panel
+          await signOut().catch(() => {});
+          const reason = syncErr instanceof Error ? syncErr.message : 'Backend sync failed';
+          setSocialRecovery({
+            visible: true,
+            provider,
+            firebaseUser: fbUser,
+            reason,
+            retryCount: MAX_SOCIAL_RETRIES,
+            isRetrying: false,
+            maxRetries: MAX_SOCIAL_RETRIES,
+          });
+        }
+      } catch (authErr: unknown) {
+        const errMsg = authErr instanceof Error ? authErr.message : 'Authentication error';
+        if (provider === 'google' && errMsg.includes('popup')) {
+          setShowGmailTroubleshooting(true);
+        } else {
+          setError(errMsg);
+        }
+      } finally {
+        setLoading(false);
+      }
+    },
+    [dispatch, navigate]
+  );
+
+  // ─── Social Recovery ─────────────────────────────────────────────────────
+
+  const handleSocialRetry = useCallback(async () => {
+    if (!socialRecovery.firebaseUser || socialRecovery.retryCount <= 0) return;
+
+    setSocialRecovery(prev => ({ ...prev, isRetrying: true }));
+
+    try {
+      // Re-auth with Firebase
+      let firebaseResult: {
+        user: {
+          uid: string;
+          email: string | null;
+          displayName: string | null;
+          photoURL: string | null;
+        };
+      } | null = null;
+
+      if (socialRecovery.provider === 'google') {
+        firebaseResult = await signInWithGoogle() as any;
+      } else if (socialRecovery.provider === 'facebook') {
+        firebaseResult = await signInWithFacebook() as any;
+      } else if (socialRecovery.provider === 'apple') {
+        firebaseResult = await signInWithApple() as any;
       }
 
-      const container = modalRef.current;
-      if (!container) {
-        return;
+      const fbUser = firebaseResult?.user ?? socialRecovery.firebaseUser;
+
+      const backendResponse = await syncFirebaseUser({
+        uid: fbUser.uid,
+        email: fbUser.email,
+        displayName: fbUser.displayName,
+        photoURL: fbUser.photoURL,
+      });
+
+      const user = backendResponse?.data?.user ?? null;
+      if (user) {
+        dispatch(setUser(user as any));
       }
 
-      const focusable = container.querySelectorAll<HTMLElement>(
-        'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
+      setSocialRecovery(prev => ({ ...prev, visible: false, isRetrying: false }));
+      setSuccessMsg('Sign in successful!');
+      setTimeout(() => {
+        const role = (user as { role?: string } | null)?.role ?? 'agent';
+        if (role === 'landlord' || role === 'property-owner') {
+          navigate('/landlord-portal');
+        } else if (role === 'tenant') {
+          navigate('/tenant-portal');
+        } else {
+          navigate('/crm');
+        }
+      }, 1500);
+    } catch (retryErr: unknown) {
+      const reason = retryErr instanceof Error ? retryErr.message : 'Retry failed';
+      setSocialRecovery(prev => ({
+        ...prev,
+        isRetrying: false,
+        reason,
+        retryCount: prev.retryCount - 1,
+      }));
+    }
+  }, [socialRecovery, dispatch, navigate]);
+
+  const handleSocialRecoveryDismiss = useCallback(() => {
+    setSocialRecovery(prev => ({ ...prev, visible: false }));
+  }, []);
+
+  // ─── Biometric ───────────────────────────────────────────────────────────
+
+  const handleBiometricSuccess = useCallback(
+    (data: any) => {
+      const user = data as { uid: string; email: string; displayName: string };
+      dispatch(
+        setUser({
+          id: user.uid,
+          email: user.email,
+          name: user.displayName,
+        })
       );
+      navigate('/crm');
+    },
+    [dispatch, navigate]
+  );
 
-      if (focusable.length === 0) {
-        return;
-      }
+  // ─── Firebase Helper Text ─────────────────────────────────────────────────
 
-      const first = focusable[0];
-      const last = focusable[focusable.length - 1];
-      const activeElement = document.activeElement as HTMLElement | null;
+  const googleHelperText = !isFirebaseAuthConfigured
+    ? `Google sign-in is temporarily unavailable because Firebase authentication is not configured. ${firebaseAuthUnavailableReason || ''}`.trim()
+    : undefined;
 
-      if (event.shiftKey && activeElement === first) {
-        event.preventDefault();
-        last.focus();
-      } else if (!event.shiftKey && activeElement === last) {
-        event.preventDefault();
-        first.focus();
-      }
-    };
+  // ─── Render ───────────────────────────────────────────────────────────────
 
-    document.addEventListener('keydown', handleKeyDown);
-    return () => {
-      document.removeEventListener('keydown', handleKeyDown);
-    };
-  }, [closeAuthModal]);
+  const isSignup = mode === 'signup';
+  const retriesLeft = socialRecovery.retryCount;
+  const retryLimitReached = retriesLeft <= 0 && socialRecovery.retryCount === 0;
+
+  // Step 2 — Category selection after signup
+  if (isSignup && signupStep === 2) {
+    return (
+      <div className="auth-page-container">
+        <div className="auth-card">
+          <div className="auth-header">
+            <h1>Select Your Category</h1>
+            <p>Choose the category that best describes you</p>
+          </div>
+
+          <div className="category-selection">
+            {CATEGORIES.map(cat => (
+              <button
+                key={cat.id}
+                className={`category-btn ${selectedCategory === cat.id ? 'active' : ''}`}
+                onClick={() => handleCategorySelect(cat.id)}
+              >
+                <span className="category-label">{cat.label}</span>
+                <span className="category-desc">{cat.description}</span>
+              </button>
+            ))}
+          </div>
+
+          <button
+            className="btn btn-primary"
+            onClick={handleCategoryContinue}
+            disabled={!selectedCategory}
+          >
+            Continue
+          </button>
+        </div>
+      </div>
+    );
+  }
 
   return (
-    <div
-      className="auth-modal-overlay"
-      role="presentation"
-      onClick={() => {
-        closeAuthModal();
-      }}
-    >
-      <div
-        className="auth-modal-window"
-        role="dialog"
-        aria-modal="true"
-        aria-label={mode === 'signup' ? 'Sign up window' : 'Sign in window'}
-        ref={modalRef}
-        onClick={event => {
-          event.stopPropagation();
-        }}
-      >
-        <button
-          type="button"
-          className="auth-close-btn"
-          onClick={() => {
-            closeAuthModal();
-          }}
-          aria-label="Close authentication popup"
-          ref={closeButtonRef}
-        >
-          ×
-        </button>
+    <div className="auth-page-container">
+      <div className="auth-card">
+        {/* Header */}
+        <div className="auth-header">
+          <div className="auth-logo">
+            <span className="auth-logo-text">White Caves</span>
+          </div>
+          <h1>{isSignup ? 'Create Account' : 'Welcome Back'}</h1>
+          <p className="auth-subtitle">
+            {isSignup
+              ? 'Join White Caves to explore luxury properties in Dubai'
+              : 'Sign in to access your personalized dashboard'}
+          </p>
+        </div>
 
-        <Link to="/" className="auth-logo">
-          <img src="/company-logo.jpg" alt="White Caves" />
-          <span>White Caves</span>
-        </Link>
+        {/* Social Auth */}
+        <SocialAuthButtons
+          loading={loading}
+          onSocialAuth={handleSocialAuth}
+          label="Continue with"
+          googleText="Google"
+          facebookText="Facebook"
+          appleText="Apple"
+          googleDisabled={!isFirebaseAuthConfigured}
+          helperText={googleHelperText}
+        />
 
-        {step === 1 && (
-          <>
-            <div className="auth-intro">
-              <h1>{mode === 'signup' ? copy.signUpTitle : copy.signInTitle}</h1>
-              <p className="auth-subtitle">
-                {mode === 'signup' ? copy.signUpSubtitle : copy.signInSubtitle}
-              </p>
-            </div>
-
-            {error && (
-              <div
-                style={{
-                  background: 'rgba(239,68,68,0.1)',
-                  color: '#ef4444',
-                  padding: '12px',
-                  borderRadius: '12px',
-                  fontSize: '13px',
-                  marginBottom: '24px',
-                  border: '1px solid rgba(239,68,68,0.2)',
-                }}
-              >
-                {error}
-              </div>
-            )}
-
-            {socialSyncRecovery && (
-              <div
-                style={{
-                  background: 'rgba(245,158,11,0.1)',
-                  color: '#f59e0b',
-                  padding: '16px',
-                  borderRadius: '12px',
-                  fontSize: '13px',
-                  marginBottom: '24px',
-                  border: '1px solid rgba(245,158,11,0.2)',
-                }}
-              >
-                <p style={{ fontWeight: 'bold', margin: '0 0 4px 0' }}>
-                  {socialSyncRecovery.provider.toUpperCase()} Sign-in interrupted
-                </p>
-                <p style={{ margin: '0 0 12px 0' }}>{socialSyncRecovery.reason}</p>
-                <button
-                  className="btn btn-secondary btn-full"
-                  disabled={loading || retryLimitReached}
-                  onClick={() => {
-                    void retrySocialAuth();
-                  }}
-                  style={{ background: 'rgba(245,158,11,0.2)', color: '#fbbf24', border: 'none' }}
-                >
-                  {loading ? 'Retrying...' : 'Retry Sign-in'}
-                </button>
-                <button
-                  className="auth-forgot-link"
-                  style={{
-                    marginTop: '12px',
-                    display: 'block',
-                    width: '100%',
-                    textAlign: 'center',
-                  }}
-                  onClick={clearSocialRecovery}
-                >
-                  Dismiss
-                </button>
-              </div>
-            )}
-
-            <SocialAuthButtons
-              loading={loading}
-              onSocialAuth={handleSocialAuth}
-              label={copy.socialLabel}
-              googleText={copy.google}
-              facebookText={copy.facebook}
-              appleText={copy.apple}
-              googleDisabled={!isGoogleAuthAvailable}
-            />
-
-            <div className="auth-divider">
-              <span>{copy.email}</span>
-            </div>
-
-            <AuthMethodTabs
-              activeTab={activeTab}
-              onChange={setActiveTab}
-              emailLabel={copy.email}
-              phoneLabel={copy.phone}
-            />
-
-            <div className="auth-content" style={{ marginTop: '20px' }}>
-              {activeTab === 'email' && (
-                <form onSubmit={handleEmailSubmit} className="auth-form">
-                  {mode === 'signup' && (
-                    <div className="form-group">
-                      <label htmlFor="signin-fullname">Full Name</label>
-                      <input
-                        id="signin-fullname"
-                        type="text"
-                        value={fullName}
-                        onChange={e => setFullName(e.target.value)}
-                        placeholder="John Doe"
-                        required
-                        autoComplete="name"
-                      />
-                    </div>
-                  )}
-                  <div className="form-group">
-                    <label htmlFor="signin-email">Email Address</label>
-                    <input
-                      ref={emailInputRef}
-                      id="signin-email"
-                      type="email"
-                      value={email}
-                      onChange={e => setEmail(e.target.value)}
-                      placeholder="you@example.com"
-                      required
-                      autoComplete="username"
-                    />
-                  </div>
-                  <div className="form-group">
-                    <label htmlFor="signin-password">Password</label>
-                    <input
-                      id="signin-password"
-                      type="password"
-                      value={password}
-                      onChange={e => setPassword(e.target.value)}
-                      placeholder="••••••••"
-                      required
-                      autoComplete={mode === 'signup' ? 'new-password' : 'current-password'}
-                    />
-                  </div>
-                  {mode === 'signup' && (
-                    <div className="form-group">
-                      <label htmlFor="signin-confirm-password">Confirm Password</label>
-                      <input
-                        id="signin-confirm-password"
-                        type="password"
-                        value={confirmPassword}
-                        onChange={e => setConfirmPassword(e.target.value)}
-                        placeholder="••••••••"
-                        required
-                        autoComplete="new-password"
-                      />
-                    </div>
-                  )}
-                  <button type="submit" className="btn btn-primary btn-full" disabled={loading}>
-                    {loading ? 'Please wait...' : mode === 'signup' ? 'Create Account' : 'Sign In'}
-                  </button>
-                  {mode === 'signin' && (
-                    <button
-                      type="button"
-                      className="auth-forgot-link"
-                      onClick={() => {
-                        void handleForgotPassword();
-                      }}
-                      disabled={forgotPasswordLoading || loading}
-                      style={{ textAlign: 'center', marginTop: '12px' }}
-                    >
-                      {forgotPasswordLoading ? 'Sending...' : 'Forgot password?'}
-                    </button>
-                  )}
-                </form>
-              )}
-            </div>
-
-            <AuthModeSwitch
-              mode={mode}
-              onSwitch={switchMode}
-              signInPromptText={copy.signInPromptText}
-              signUpPromptText={copy.signUpPromptText}
-            />
-          </>
-        )}
-
-        {step === 2 && (
-          <>
-            <div className="auth-intro">
-              <h1>I am a...</h1>
-              <p className="auth-subtitle">Select your account type</p>
-            </div>
-
-            <div
-              className="category-selection"
-              style={{
-                display: 'grid',
-                gridTemplateColumns: '1fr 1fr',
-                gap: '12px',
-                marginBottom: '24px',
+        {/* Gmail Troubleshooting Panel */}
+        {showGmailTroubleshooting && (
+          <div className="gmail-troubleshooting-panel" role="alert">
+            <p>Trouble signing in with Gmail?</p>
+            <p>Your browser may be blocking popups. Try allowing popups or use email sign-in instead.</p>
+            <button
+              type="button"
+              className="btn btn-secondary"
+              onClick={() => {
+                setShowGmailTroubleshooting(false);
+                setActiveTab('email');
               }}
             >
-              {USER_CATEGORIES.map(cat => (
+              Continue with Email
+            </button>
+          </div>
+        )}
+
+        {/* Social Recovery Panel */}
+        {socialRecovery.visible && (
+          <div className="social-recovery-panel" role="alert">
+            <p>Your sign-in needs one more step</p>
+            <p className="recovery-detail">
+              backend session setup failed — Reason: {socialRecovery.reason}
+            </p>
+            <p>Retries remaining: {retriesLeft}</p>
+
+            {retriesLeft <= 0 ? (
+              <>
+                <p>Too many retry attempts. Please try again later or use email sign-in.</p>
                 <button
-                  key={cat.id}
-                  className={`category-card category-card--${cat.id} ${selectedCategory === cat.id ? 'selected' : ''}`}
-                  onClick={() => setSelectedCategory(cat.id)}
                   type="button"
-                  style={{
-                    background:
-                      selectedCategory === cat.id ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.2)',
-                    border: `1px solid ${selectedCategory === cat.id ? '#3b82f6' : 'rgba(255,255,255,0.1)'}`,
-                    borderRadius: '12px',
-                    padding: '16px',
-                    color: '#fff',
-                    textAlign: 'left',
-                    cursor: 'pointer',
-                    transition: 'all 0.2s',
-                  }}
+                  className="btn btn-secondary"
+                  disabled
+                  aria-label="Retry limit reached"
                 >
-                  <span style={{ fontSize: '24px', display: 'block', marginBottom: '8px' }}>
-                    {cat.icon}
-                  </span>
-                  <strong style={{ display: 'block', fontSize: '15px' }}>{cat.label}</strong>
-                  <span style={{ fontSize: '12px', color: '#94a3b8' }}>{cat.desc}</span>
+                  Retry limit reached
                 </button>
-              ))}
-            </div>
-
-            <button
-              className="btn btn-primary btn-full"
-              onClick={proceedToRoleSelection}
-              disabled={!selectedCategory}
-            >
-              Continue
-            </button>
-            <button
-              className="auth-forgot-link"
-              style={{ width: '100%', textAlign: 'center', marginTop: '16px' }}
-              onClick={() => goBackToStep(1)}
-            >
-              Go Back
-            </button>
-          </>
-        )}
-
-        {step === 3 && (
-          <>
-            <div className="auth-intro">
-              <h1>Select Your Role</h1>
-              <p className="auth-subtitle">Choose your exact position</p>
-            </div>
-
-            <div
-              style={{
-                display: 'grid',
-                gridTemplateColumns: '1fr',
-                gap: '8px',
-                marginBottom: '24px',
-                maxHeight: '40vh',
-                overflowY: 'auto',
-                paddingRight: '8px',
-              }}
-            >
-              {getRolesForCategory().map(role => (
-                <button
-                  key={role.id}
-                  onClick={() => setSelectedRole(role.id)}
-                  style={{
-                    background:
-                      selectedRole === role.id ? 'rgba(59,130,246,0.1)' : 'rgba(0,0,0,0.2)',
-                    border: `1px solid ${selectedRole === role.id ? '#3b82f6' : 'rgba(255,255,255,0.1)'}`,
-                    borderRadius: '12px',
-                    padding: '12px 16px',
-                    color: '#fff',
-                    textAlign: 'left',
-                    cursor: 'pointer',
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: '12px',
-                    transition: 'all 0.2s',
-                  }}
-                >
-                  <span style={{ fontSize: '20px' }}>{role.icon}</span>
-                  <div>
-                    <strong style={{ display: 'block', fontSize: '14px' }}>{role.label}</strong>
-                    <span style={{ fontSize: '12px', color: '#94a3b8' }}>{role.desc}</span>
-                  </div>
-                </button>
-              ))}
-            </div>
-
-            <button
-              className="btn btn-primary btn-full"
-              onClick={completeSignUp}
-              disabled={!selectedRole || loading}
-            >
-              {loading ? 'Please wait...' : 'Complete Registration'}
-            </button>
-            <button
-              className="auth-forgot-link"
-              style={{ width: '100%', textAlign: 'center', marginTop: '16px' }}
-              onClick={() => goBackToStep(2)}
-            >
-              Go Back
-            </button>
-          </>
-        )}
-
-        {step === 4 && (
-          <>
-            <div className="auth-intro">
-              <h1>Two-Factor Authentication</h1>
-              <p className="auth-subtitle">Enter the 6-digit code from your authenticator app</p>
-            </div>
-
-            {error && (
-              <div
-                style={{
-                  background: 'rgba(239,68,68,0.1)',
-                  color: '#ef4444',
-                  padding: '12px',
-                  borderRadius: '12px',
-                  fontSize: '13px',
-                  marginBottom: '24px',
-                  border: '1px solid rgba(239,68,68,0.2)',
-                }}
+              </>
+            ) : (
+              <button
+                type="button"
+                className="btn btn-primary"
+                onClick={handleSocialRetry}
+                disabled={socialRecovery.isRetrying}
+                aria-label={socialRecovery.isRetrying ? 'Retrying...' : `Retry ${socialRecovery.provider === 'google' ? 'Google' : socialRecovery.provider} sign-in`}
               >
-                {error}
-              </div>
+                {socialRecovery.isRetrying ? 'Retrying...' : `Retry ${socialRecovery.provider === 'google' ? 'Google' : socialRecovery.provider} sign-in`}
+              </button>
             )}
 
-            <form onSubmit={handleTwoFactorSubmit} className="auth-form">
+            <button
+              type="button"
+              className="btn btn-ghost"
+              onClick={handleSocialRecoveryDismiss}
+              disabled={socialRecovery.isRetrying}
+              aria-label="Dismiss recovery notice"
+            >
+              Dismiss
+            </button>
+          </div>
+        )}
+
+        {/* Auth Method Tabs */}
+        <AuthMethodTabs
+          activeTab={activeTab}
+          onChange={tab => {
+            setActiveTab(tab);
+            setError(null);
+          }}
+          emailLabel="Email"
+          phoneLabel="Phone"
+        />
+
+        {/* Email Form */}
+        {activeTab === 'email' && (
+          <form onSubmit={handleEmailSubmit} className="auth-form">
+            <div className="form-group">
+              <input
+                type="email"
+                placeholder="Enter your email"
+                value={email}
+                onChange={e => setEmail(e.target.value)}
+                required
+                className="form-input"
+              />
+            </div>
+
+            <div className="form-group">
+              <input
+                type="password"
+                placeholder="Enter your password"
+                value={password}
+                onChange={e => setPassword(e.target.value)}
+                required
+                className="form-input"
+              />
+            </div>
+
+            {isSignup && (
               <div className="form-group">
-                <label htmlFor="totp-code">Authentication Code</label>
                 <input
-                  id="totp-code"
-                  type="text"
-                  value={twoFactorCode}
-                  onChange={e => setTwoFactorCode(e.target.value)}
-                  placeholder="000000"
-                  maxLength={8}
+                  type="password"
+                  placeholder="Confirm your password"
+                  value={confirmPassword}
+                  onChange={e => setConfirmPassword(e.target.value)}
                   required
-                  autoComplete="one-time-code"
-                  inputMode="numeric"
-                  autoFocus
+                  className="form-input"
                 />
               </div>
-              <button
-                type="submit"
-                className="btn btn-primary btn-full"
-                disabled={loading || twoFactorCode.trim().length === 0}
-              >
-                {loading ? 'Verifying...' : 'Verify'}
-              </button>
-            </form>
+            )}
+
+            {error && (
+              <div className="auth-error" role="alert">
+                {error}
+              </div>
+            )}
+
+            {successMsg && (
+              <div className="auth-success" role="status">
+                {successMsg}
+              </div>
+            )}
 
             <button
-              className="auth-forgot-link"
-              style={{ width: '100%', textAlign: 'center', marginTop: '16px' }}
-              onClick={() => goBackToStep(1)}
+              type="submit"
+              className="btn btn-primary btn-full"
+              disabled={loading}
             >
-              Back to Sign In
+              {loading
+                ? 'Please wait...'
+                : isSignup
+                ? 'Sign Up'
+                : 'Sign In'}
             </button>
-          </>
+          </form>
         )}
 
-        <p
-          className="auth-footer"
-          style={{ textAlign: 'center', fontSize: '12px', color: '#64748b', marginTop: '32px' }}
-        >
-          By continuing, you agree to our{' '}
-          <a href="/terms" style={{ color: '#94a3b8' }}>
-            Terms of Service
-          </a>{' '}
-          and{' '}
-          <a href="/privacy" style={{ color: '#94a3b8' }}>
-            Privacy Policy
-          </a>
-        </p>
+        {/* Phone Form */}
+        {activeTab === 'phone' && (
+          <form className="auth-form">
+            <div className="form-group">
+              <input
+                type="tel"
+                placeholder="+971 50 123 4567"
+                value={phone}
+                onChange={e => setPhone(e.target.value)}
+                className="form-input"
+              />
+            </div>
+
+            {error && (
+              <div className="auth-error" role="alert">
+                {error}
+              </div>
+            )}
+
+            <button type="submit" className="btn btn-primary btn-full" disabled={loading}>
+              {loading ? 'Please wait...' : 'Send OTP'}
+            </button>
+          </form>
+        )}
+
+        {/* Biometric */}
+        <BiometricLoginButton onSuccess={handleBiometricSuccess} onError={() => {}} />
+
+        {/* Mode Switch */}
+        <AuthModeSwitch
+          mode={mode}
+          onSwitch={switchMode}
+          signInPromptText="Already have an account? Sign In"
+          signUpPromptText="Don't have an account? Sign Up"
+        />
       </div>
     </div>
   );

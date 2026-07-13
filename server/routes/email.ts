@@ -11,7 +11,7 @@
 
 import { Router, Request, Response } from 'express';
 import { requirePermission } from '../middleware/rbac.js';
-import { AppError, asyncHandler } from '../middleware/errorHandler';
+import { AppError, asyncHandler } from '../middleware/errorHandler.js';
 import {
   sendEmailTracked,
   EMAIL_TEMPLATES,

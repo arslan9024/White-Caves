@@ -10,27 +10,28 @@ import AppLayout from './components/layout/AppLayout';
 import PortalLayout from './components/portal/PortalLayout';
 import SuspenseLoader from './components/common/SuspenseLoader';
 import RouteErrorBoundary from './components/RouteErrorBoundary';
-const SignInPage = lazy(() => import('./pages/auth/SignInPage'));
+import { AuthModalProvider } from './components/auth/AuthModalProvider';
 import type { RootState, AppDispatch } from './store/store';
 import { selectSessionUser } from './store/selectors/sessionSelectors';
 import { safeStorage } from './utils/safeStorage';
 import { authFetch } from './utils/authFetch';
 import { finalizeAuthenticatedSession, getCurrentPathWithQuery } from './utils/authSession';
 import {
-  CANONICAL_SUPERUSER_ROLE,
   isCreatorSuperUserEmail,
   normalizeRoleForUserContext,
+  CANONICAL_SUPERUSER_ROLE,
 } from './utils/superUserAccess';
+import { lazyRetry } from './utils/lazyRetry';
 
 // Lazy-load components not needed for initial render (performance optimization)
-const UniversalComponents = lazy(() => import('./components/layout/UniversalComponents'));
-const RoleGateway = lazy(() => import('./components/RoleGateway'));
+const UniversalComponents = lazyRetry(() => import('./components/layout/UniversalComponents'));
+const RoleGateway = lazyRetry(() => import('./components/RoleGateway'));
 
 // All pages lazy-loaded for optimal bundle splitting
-const ProfilePage = lazy(() => import('./pages/auth/ProfilePage'));
-const PendingApprovalPage = lazy(() => import('./pages/auth/PendingApprovalPage'));
-const HomePage = lazy(() => import('./pages/HomePage.tsx'));
-const ServerStatusPage = lazy(() => import('./pages/ServerStatusPage'));
+const ProfilePage = lazyRetry(() => import('./pages/auth/ProfilePage'));
+const PendingApprovalPage = lazyRetry(() => import('./pages/auth/PendingApprovalPage'));
+const HomePage = lazyRetry(() => import('./pages/HomePage'));
+const ServerStatusPage = lazyRetry(() => import('./pages/ServerStatusPage'));
 
 // ─── Types ──────────────────────────────────────────────────────────────
 
@@ -103,16 +104,24 @@ function ProtectedRoute({ children, allowedRoles }: ProtectedRouteProps) {
   const [userData, setUserData] = useState<UserRoleData | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(true);
 
+  const hasLocalToken = !!safeStorage.get('token');
+
   useEffect(() => {
     // Wait until auth check completes before making redirect decisions
     if (isAuthLoading) return;
-    if (!user) {
-      // No authenticated user — skip role lookup
+    if (!user && !hasLocalToken) {
+      // No authenticated user and no local token — skip role lookup
       // eslint-disable-next-line react-hooks/set-state-in-effect
       setUserData(null);
       setIsLoading(false);
       return;
     }
+    
+    // If user is null but we have a token, wait for hydration (don't clear state)
+    if (!user && hasLocalToken) {
+      return; 
+    }
+
     // SECURITY: Use server-issued user.role as source of truth, not localStorage.
     // localStorage 'userRole' is only used for sub-role preference (e.g., which dashboard view),
     // but the server role must always gate access.
@@ -125,13 +134,17 @@ function ProtectedRoute({ children, allowedRoles }: ProtectedRouteProps) {
       setUserData(effectiveRole ? ({ role: effectiveRole } as UserRoleData) : null);
     }
     setIsLoading(false);
-  }, [user, isAuthLoading]);
+  }, [user, isAuthLoading, hasLocalToken]);
 
-  if (isLoading || isAuthLoading) {
+  // Prevent flicker: if we have a local token but user is null, we are implicitly loading
+  const isEffectivelyLoading = isLoading || isAuthLoading || (!user && hasLocalToken);
+
+  if (isEffectivelyLoading) {
+    // Show a layout skeleton or keep current state, for now use SuspenseLoader
     return <SuspenseLoader />;
   }
 
-  if (!user) {
+  if (!user && !hasLocalToken) {
     return (
       <Navigate
         to="/signin"
@@ -677,7 +690,8 @@ function App(): React.JSX.Element {
   ];
 
   return (
-    <ThemeProvider>
+    <AuthModalProvider>
+      <ThemeProvider>
       <StatusProvider>
         <LanguageProvider>
           <BrowserRouter>
@@ -711,10 +725,8 @@ function App(): React.JSX.Element {
                       element={renderPublicPage(route.page, route.section)}
                     />
                   ))}
-                  <Route path="/signin" element={renderGuestOnlyPage(<SignInPage />, 'Sign In')} />
-                  <Route path="/login" element={<Navigate to="/signin" replace />} />
-                  <Route path="/signup" element={renderGuestOnlyPage(<SignInPage />, 'Sign Up')} />
-                  <Route path="/auth/signin" element={<Navigate to="/signin" replace />} />
+                  <Route path="/forgot-password" element={<Navigate to="/" replace />} />
+                  <Route path="/reset-password" element={<Navigate to="/" replace />} />
                   <Route path="/profile" element={renderSignedInPage(<ProfilePage />, 'Profile')} />
                   <Route
                     path="/select-role"
@@ -855,6 +867,7 @@ function App(): React.JSX.Element {
         </LanguageProvider>
       </StatusProvider>
     </ThemeProvider>
+    </AuthModalProvider>
   );
 }
 

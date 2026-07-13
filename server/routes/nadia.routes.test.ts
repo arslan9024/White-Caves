@@ -112,7 +112,7 @@ vi.mock('../services/WhatsAppBotService.js', () => ({
   },
 }));
 
-import nadiaRoutes from './nadia';
+import nadiaRoutes from './nadia.js';
 
 function createApp() {
   const app = express();

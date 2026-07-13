@@ -4,7 +4,7 @@
 
 import { describe, it, expect, vi } from 'vitest';
 import type { Request, Response, NextFunction } from 'express';
-import { requestIdMiddleware } from './requestId';
+import { requestIdMiddleware } from './requestId.js';
 
 function mockReq(xRequestId?: string): Request {
   return {

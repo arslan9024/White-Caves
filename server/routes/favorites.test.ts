@@ -50,8 +50,8 @@ vi.mock('../utils/logger.js', () => ({
   })),
 }));
 
-import favoritesRoutes from './favorites';
-import { errorHandler } from '../middleware/errorHandler';
+import favoritesRoutes from './favorites.js';
+import { errorHandler } from '../middleware/errorHandler.js';
 
 // ── Test app setup ───────────────────────────────────────────────────
 function createApp(role = 'buyer') {

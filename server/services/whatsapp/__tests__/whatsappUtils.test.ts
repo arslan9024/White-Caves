@@ -11,7 +11,7 @@ import {
   rateLimiter,
   WHATSAPP_TEMPLATES,
   getTemplateParams,
-} from '../whatsappUtils';
+} from '../whatsappUtils.js';
 
 describe('normalizePhone', () => {
   it('normalizes UAE local number with 0 prefix', () => {

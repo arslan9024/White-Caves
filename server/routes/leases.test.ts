@@ -61,8 +61,8 @@ vi.mock('../utils/logger.js', () => ({
   createLogger: vi.fn(() => ({ info: vi.fn(), warn: vi.fn(), error: vi.fn(), debug: vi.fn() })),
 }));
 
-import leasesRoutes from './leases';
-import { errorHandler } from '../middleware/errorHandler';
+import leasesRoutes from './leases.js';
+import { errorHandler } from '../middleware/errorHandler.js';
 
 function createApp(role = 'landlord') {
   const app = express();

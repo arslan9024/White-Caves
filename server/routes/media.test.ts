@@ -1,8 +1,8 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import express from 'express';
 import request from 'supertest';
-import mediaRoutes from './media';
-import { errorHandler } from '../middleware/errorHandler';
+import mediaRoutes from './media.js';
+import { errorHandler } from '../middleware/errorHandler.js';
 
 const { mockPrisma, mockStorageService, mockLogger } = vi.hoisted(() => {
   const fn = vi.fn;

@@ -61,7 +61,7 @@ vi.mock('../utils/validate', () => ({
   },
 }));
 
-import agentRoutes from './agents';
+import agentRoutes from './agents.js';
 
 // ── Test app factory ─────────────────────────────────────────────────
 function createApp(role: string = 'owner', userId = 'user-1') {

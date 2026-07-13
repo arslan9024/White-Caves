@@ -6,12 +6,12 @@
 
 import { Router, Request, Response } from 'express';
 import { Prisma } from '@prisma/client';
-import { asyncHandler, AppError } from '../middleware/errorHandler';
+import { asyncHandler, AppError } from '../middleware/errorHandler.js';
 import { prisma } from '../database.js';
-import { sanitizeString } from '../utils/sanitize';
-import { validate, rules, validateIdParam } from '../utils/validate';
-import { parsePagination } from '../config/pagination';
-import { requirePermission, scopeToOwn, requireMinRole } from '../middleware/rbac';
+import { sanitizeString } from '../utils/sanitize.js';
+import { validate, rules, validateIdParam } from '../utils/validate.js';
+import { parsePagination } from '../config/pagination.js';
+import { requirePermission, scopeToOwn, requireMinRole } from '../middleware/rbac.js';
 import { cacheService } from '../services/CacheService.js';
 
 const router = Router();

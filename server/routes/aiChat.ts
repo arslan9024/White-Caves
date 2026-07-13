@@ -1,5 +1,5 @@
 import { Router, type Request, type Response } from 'express';
-import { AppError, asyncHandler } from '../middleware/errorHandler';
+import { AppError, asyncHandler } from '../middleware/errorHandler.js';
 import { createLogger } from '../utils/logger.js';
 
 const router = Router();

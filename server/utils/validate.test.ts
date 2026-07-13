@@ -16,8 +16,8 @@ vi.mock('../utils/logger.js', () => ({
   }),
 }));
 
-import { validate, rules, validateIdParam } from './validate';
-import { AppError } from '../middleware/errorHandler';
+import { validate, rules, validateIdParam } from './validate.js';
+import { AppError } from '../middleware/errorHandler.js';
 
 // ─── validate() Core Function ───────────────────────────────────────────
 describe('validate()', () => {

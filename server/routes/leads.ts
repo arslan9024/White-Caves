@@ -8,9 +8,9 @@
 import { Router, Request, Response } from 'express';
 type RouteRequest = Request<Record<string, string>>;
 import { Prisma } from '@prisma/client';
-import { asyncHandler, AppError } from '../middleware/errorHandler';
+import { asyncHandler, AppError } from '../middleware/errorHandler.js';
 import { prisma } from '../database.js';
-import { sanitizeString } from '../utils/sanitize';
+import { sanitizeString } from '../utils/sanitize.js';
 import { getSocketServer } from '../services/socketServer.js';
 import { notificationService } from '../services/NotificationService.js';
 
@@ -37,9 +37,9 @@ const VALID_LEAD_SOURCES = [
   // TASK-002 / Phase 27: anonymous homepage search leads (no auth required)
   'homepage_search',
 ] as const;
-import { validate, rules, validateIdParam } from '../utils/validate';
-import { parsePagination } from '../config/pagination';
-import { requirePermission, requireRole, scopeToOwn, requireMinRole } from '../middleware/rbac';
+import { validate, rules, validateIdParam } from '../utils/validate.js';
+import { parsePagination } from '../config/pagination.js';
+import { requirePermission, requireRole, scopeToOwn, requireMinRole } from '../middleware/rbac.js';
 import {
   scoreLead,
   overrideScore,

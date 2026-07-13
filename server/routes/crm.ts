@@ -5,10 +5,10 @@
  */
 
 import { Router, Request, Response } from 'express';
-import { asyncHandler, AppError } from '../middleware/errorHandler';
-import type { AuthRequest } from '../middleware/auth';
+import { asyncHandler, AppError } from '../middleware/errorHandler.js';
+import type { AuthRequest } from '../middleware/auth.js';
 import { prisma } from '../database.js';
-import { requirePermission } from '../middleware/rbac';
+import { requirePermission } from '../middleware/rbac.js';
 
 const router = Router();
 

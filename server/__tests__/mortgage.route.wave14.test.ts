@@ -33,7 +33,7 @@ vi.mock('../middleware/errorHandler.js', () => ({
     Promise.resolve(fn(req, res, next)).catch(next),
 }));
 
-import mortgageRoutes from '../routes/mortgage';
+import mortgageRoutes from '../routes/mortgage.js';
 
 const createApp = () => {
   const app = express();

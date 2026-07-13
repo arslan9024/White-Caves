@@ -5,10 +5,10 @@
  */
 
 import { Router, Request, Response } from 'express';
-import { asyncHandler, AppError } from '../middleware/errorHandler';
+import { asyncHandler, AppError } from '../middleware/errorHandler.js';
 import { prisma } from '../database.js';
-import { validateIdParam } from '../utils/validate';
-import { requirePermission } from '../middleware/rbac';
+import { validateIdParam } from '../utils/validate.js';
+import { requirePermission } from '../middleware/rbac.js';
 import { cacheService } from '../services/CacheService.js';
 
 const router = Router();

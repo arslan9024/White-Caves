@@ -71,7 +71,7 @@ vi.mock('../services/ai/leadAutoRouter.js', () => ({
 }));
 vi.mock('../services/ai/leadAutoRescore.js', () => ({ triggerLeadRescore: vi.fn() }));
 
-import leadsRoutes from '../routes/leads';
+import leadsRoutes from '../routes/leads.js';
 
 const createApp = (role = 'manager') => {
   const app = express();

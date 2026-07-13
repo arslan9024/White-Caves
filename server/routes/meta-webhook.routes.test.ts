@@ -67,7 +67,7 @@ vi.mock('../services/whatsapp/metaAPI.js', () => ({
   })),
 }));
 
-import metaWebhookRoutes from './meta-webhook';
+import metaWebhookRoutes from './meta-webhook.js';
 
 function createApp() {
   const app = express();

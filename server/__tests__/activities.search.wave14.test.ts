@@ -38,7 +38,7 @@ vi.mock('../config/pagination', () => ({
 }));
 vi.mock('../services/ai/leadAutoRescore.js', () => ({ triggerLeadRescore: vi.fn() }));
 
-import activitiesRoutes from '../routes/activities';
+import activitiesRoutes from '../routes/activities.js';
 
 const createApp = () => {
   const app = express();

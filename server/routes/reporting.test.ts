@@ -96,7 +96,7 @@ vi.mock('../services/DocumentService.js', () => ({
   documentService: mockDocumentService,
 }));
 
-import reportingRoutes from './reporting';
+import reportingRoutes from './reporting.js';
 
 // ── Test app factory ─────────────────────────────────────────────────
 function createApp(role: string = 'owner') {

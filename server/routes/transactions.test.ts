@@ -89,7 +89,7 @@ vi.mock('../middleware/errorHandler', () => ({
 }));
 vi.mock('../middleware/auth', () => ({ default: null }));
 
-import transactionsRoutes from './transactions';
+import transactionsRoutes from './transactions.js';
 
 // ── Test helpers ─────────────────────────────────────────────────────
 function createApp(role: string = 'owner') {

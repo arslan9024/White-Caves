@@ -9,7 +9,7 @@
  * appropriate documents.
  *
  * Usage:
- *   import { autoFillVariables, getAutoFillableEntities } from './documentAutoFill';
+ *   import { autoFillVariables, getAutoFillableEntities } from './documentAutoFill.js';
  *   const vars = await autoFillVariables('mou', { leadId, propertyId, transactionId });
  */
 

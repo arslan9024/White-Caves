@@ -14,8 +14,8 @@ import {
   passwordLimiter,
   apiLimiter,
   strictLimiter,
-} from './rateLimiter';
-import rateLimiterDefault from './rateLimiter';
+} from './rateLimiter.js';
+import rateLimiterDefault from './rateLimiter.js';
 
 // ─── Helper: All limiters are Express middleware ────────────────────────
 function isMiddleware(fn: unknown): boolean {

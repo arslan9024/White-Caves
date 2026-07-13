@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
 import { verify } from 'jsonwebtoken';
-import { prisma } from '../database';
+import { prisma } from '../database.js';
 import logger from '../utils/logger.js';
 
 interface TokenPayload {

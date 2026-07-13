@@ -25,7 +25,7 @@ vi.mock('../middleware/rbac', () => ({
   requireRole: () => (_req: any, _res: any, next: any) => next(),
 }));
 
-import orchestrationRoutes from './orchestration';
+import orchestrationRoutes from './orchestration.js';
 
 function createApp() {
   const app = express();

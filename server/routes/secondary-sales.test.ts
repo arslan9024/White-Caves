@@ -8,8 +8,8 @@ import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import request from 'supertest';
 import express, { Express, Request, Response, NextFunction } from 'express';
 import multer from 'multer';
-import secondarySalesRouter from './secondary-sales';
-import { AppError, asyncHandler } from '../middleware/errorHandler';
+import secondarySalesRouter from './secondary-sales.js';
+import { AppError, asyncHandler } from '../middleware/errorHandler.js';
 
 // ─────────────────────────────────────────────────────────────────────────────
 // HOISTED MOCKS (vi.hoisted ensures import-time interception)

@@ -39,7 +39,7 @@ vi.mock('../services/currencyService.js', () => ({
   isSupportedCurrency: vi.fn((code: string) => ['AED', 'USD', 'EUR', 'GBP', 'INR'].includes(code)),
 }));
 
-import currencyRoutes from './currency';
+import currencyRoutes from './currency.js';
 
 // ── Test app ─────────────────────────────────────────────────────────
 function createApp() {

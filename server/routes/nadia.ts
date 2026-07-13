@@ -24,8 +24,8 @@ import {
   generateWhatsAppAutoResponse,
 } from '../services/nadia/whatsappAssistant.js';
 import whatsAppBotService from '../services/WhatsAppBotService.js';
-import { requirePermission, resolveBackendRole, roleHasPermission } from '../middleware/rbac';
-import type { AuthRequest } from '../middleware/auth';
+import { requirePermission, resolveBackendRole, roleHasPermission } from '../middleware/rbac.js';
+import type { AuthRequest } from '../middleware/auth.js';
 
 const router = Router();
 

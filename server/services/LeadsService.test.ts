@@ -23,8 +23,8 @@ vi.mock('../database', () => ({
   prisma: mockPrisma,
 }));
 
-import { LeadsService } from './LeadsService';
-import leadsServiceDefault from './LeadsService';
+import { LeadsService } from './LeadsService.js';
+import leadsServiceDefault from './LeadsService.js';
 
 describe('LeadsService', () => {
   let service: LeadsService;
