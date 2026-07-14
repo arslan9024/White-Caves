@@ -6,7 +6,7 @@
  */
 
 import React, { useState, useCallback } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
 import {
   signInWithGoogle,
@@ -23,7 +23,11 @@ import {
   type AuthUser,
   type LoginSuccessData,
 } from '../../services/authService';
-import { setUser } from '../../store/userSlice';
+import {
+  finalizeAuthenticatedSession,
+  getReturnToFromLocationState,
+  navigateToPostLoginDestination,
+} from '../../utils/authSession';
 import { SocialAuthButtons } from './components/SocialAuthButtons';
 import { AuthMethodTabs } from './components/AuthMethodTabs';
 import { AuthModeSwitch } from './components/AuthModeSwitch';
@@ -39,7 +43,12 @@ type SignupStep = 1 | 2 | 3; // 1=credentials, 2=category, 3=role
 interface SocialRecoveryState {
   visible: boolean;
   provider: 'google' | 'facebook' | 'apple' | null;
-  firebaseUser: { uid: string; email: string | null; displayName: string | null; photoURL: string | null } | null;
+  firebaseUser: {
+    uid: string;
+    email: string | null;
+    displayName: string | null;
+    photoURL: string | null;
+  } | null;
   reason: string;
   retryCount: number;
   isRetrying: boolean;
@@ -59,6 +68,7 @@ const CATEGORIES = [
 
 const SignInPage: React.FC = () => {
   const navigate = useNavigate();
+  const location = useLocation();
   const dispatch = useDispatch();
 
   // Auth mode
@@ -159,10 +169,11 @@ const SignInPage: React.FC = () => {
         if (response.success && !response.requiresTwoFactor) {
           const successData = response.data as LoginSuccessData;
           const user = successData.user;
-          dispatch(setUser(user as any));
+          await finalizeAuthenticatedSession(dispatch, user);
           setSuccessMsg('Sign in successful!');
           setTimeout(() => {
-            navigate('/crm');
+            const returnTo = getReturnToFromLocationState(location);
+            navigateToPostLoginDestination(navigate, user, returnTo);
           }, 1500);
         } else {
           setError('Two-factor authentication is required');
@@ -211,11 +222,11 @@ const SignInPage: React.FC = () => {
         } | null = null;
 
         if (provider === 'google') {
-          firebaseResult = await signInWithGoogle() as any;
+          firebaseResult = (await signInWithGoogle()) as any;
         } else if (provider === 'facebook') {
-          firebaseResult = await signInWithFacebook() as any;
+          firebaseResult = (await signInWithFacebook()) as any;
         } else if (provider === 'apple') {
-          firebaseResult = await signInWithApple() as any;
+          firebaseResult = (await signInWithApple()) as any;
         }
 
         if (!firebaseResult?.user) {
@@ -237,19 +248,13 @@ const SignInPage: React.FC = () => {
 
           const user = backendResponse?.data?.user ?? null;
           if (user) {
-            dispatch(setUser(user as any));
+            await finalizeAuthenticatedSession(dispatch, user);
           }
 
           setSuccessMsg('Sign in successful!');
           setTimeout(() => {
-            const role = (user as { role?: string } | null)?.role ?? 'agent';
-            if (role === 'landlord' || role === 'property-owner') {
-              navigate('/landlord-portal');
-            } else if (role === 'tenant') {
-              navigate('/tenant-portal');
-            } else {
-              navigate('/crm');
-            }
+            const returnTo = getReturnToFromLocationState(location);
+            navigateToPostLoginDestination(navigate, user, returnTo);
           }, 1500);
         } catch (syncErr: unknown) {
           // Backend sync failed — show recovery panel
@@ -276,7 +281,7 @@ const SignInPage: React.FC = () => {
         setLoading(false);
       }
     },
-    [dispatch, navigate]
+    [dispatch, navigate, location]
   );
 
   // ─── Social Recovery ─────────────────────────────────────────────────────
@@ -298,11 +303,11 @@ const SignInPage: React.FC = () => {
       } | null = null;
 
       if (socialRecovery.provider === 'google') {
-        firebaseResult = await signInWithGoogle() as any;
+        firebaseResult = (await signInWithGoogle()) as any;
       } else if (socialRecovery.provider === 'facebook') {
-        firebaseResult = await signInWithFacebook() as any;
+        firebaseResult = (await signInWithFacebook()) as any;
       } else if (socialRecovery.provider === 'apple') {
-        firebaseResult = await signInWithApple() as any;
+        firebaseResult = (await signInWithApple()) as any;
       }
 
       const fbUser = firebaseResult?.user ?? socialRecovery.firebaseUser;
@@ -316,20 +321,14 @@ const SignInPage: React.FC = () => {
 
       const user = backendResponse?.data?.user ?? null;
       if (user) {
-        dispatch(setUser(user as any));
+        await finalizeAuthenticatedSession(dispatch, user);
       }
 
       setSocialRecovery(prev => ({ ...prev, visible: false, isRetrying: false }));
       setSuccessMsg('Sign in successful!');
       setTimeout(() => {
-        const role = (user as { role?: string } | null)?.role ?? 'agent';
-        if (role === 'landlord' || role === 'property-owner') {
-          navigate('/landlord-portal');
-        } else if (role === 'tenant') {
-          navigate('/tenant-portal');
-        } else {
-          navigate('/crm');
-        }
+        const returnTo = getReturnToFromLocationState(location);
+        navigateToPostLoginDestination(navigate, user, returnTo);
       }, 1500);
     } catch (retryErr: unknown) {
       const reason = retryErr instanceof Error ? retryErr.message : 'Retry failed';
@@ -340,7 +339,7 @@ const SignInPage: React.FC = () => {
         retryCount: prev.retryCount - 1,
       }));
     }
-  }, [socialRecovery, dispatch, navigate]);
+  }, [socialRecovery, dispatch, navigate, location]);
 
   const handleSocialRecoveryDismiss = useCallback(() => {
     setSocialRecovery(prev => ({ ...prev, visible: false }));
@@ -442,7 +441,9 @@ const SignInPage: React.FC = () => {
         {showGmailTroubleshooting && (
           <div className="gmail-troubleshooting-panel" role="alert">
             <p>Trouble signing in with Gmail?</p>
-            <p>Your browser may be blocking popups. Try allowing popups or use email sign-in instead.</p>
+            <p>
+              Your browser may be blocking popups. Try allowing popups or use email sign-in instead.
+            </p>
             <button
               type="button"
               className="btn btn-secondary"
@@ -483,9 +484,15 @@ const SignInPage: React.FC = () => {
                 className="btn btn-primary"
                 onClick={handleSocialRetry}
                 disabled={socialRecovery.isRetrying}
-                aria-label={socialRecovery.isRetrying ? 'Retrying...' : `Retry ${socialRecovery.provider === 'google' ? 'Google' : socialRecovery.provider} sign-in`}
+                aria-label={
+                  socialRecovery.isRetrying
+                    ? 'Retrying...'
+                    : `Retry ${socialRecovery.provider === 'google' ? 'Google' : socialRecovery.provider} sign-in`
+                }
               >
-                {socialRecovery.isRetrying ? 'Retrying...' : `Retry ${socialRecovery.provider === 'google' ? 'Google' : socialRecovery.provider} sign-in`}
+                {socialRecovery.isRetrying
+                  ? 'Retrying...'
+                  : `Retry ${socialRecovery.provider === 'google' ? 'Google' : socialRecovery.provider} sign-in`}
               </button>
             )}
 
@@ -562,16 +569,8 @@ const SignInPage: React.FC = () => {
               </div>
             )}
 
-            <button
-              type="submit"
-              className="btn btn-primary btn-full"
-              disabled={loading}
-            >
-              {loading
-                ? 'Please wait...'
-                : isSignup
-                ? 'Sign Up'
-                : 'Sign In'}
+            <button type="submit" className="btn btn-primary btn-full" disabled={loading}>
+              {loading ? 'Please wait...' : isSignup ? 'Sign Up' : 'Sign In'}
             </button>
           </form>
         )}

@@ -19,6 +19,7 @@ import { authFetch } from '../utils/authFetch';
 import { useToast } from '../components/Toast';
 import { signOut } from 'firebase/auth';
 import { logout as logoutBackendSession } from '../services/authService';
+import { completeClientLogout } from '../utils/authSession';
 
 const log = createLogger('useUserProfile');
 
@@ -87,15 +88,7 @@ export function useUserProfile() {
 
   const handleLogout = async (): Promise<void> => {
     try {
-      if (auth) {
-        await signOut(auth);
-      }
-      await logoutBackendSession();
-      safeStorage.remove('token');
-      safeStorage.remove('userRole');
-      dispatch(setUser(null));
-      dispatch(logoutAuthState(undefined));
-      navigate('/');
+      await completeClientLogout(dispatch, navigate, '/');
     } catch (error) {
       log.error('Logout error:', error);
     }
