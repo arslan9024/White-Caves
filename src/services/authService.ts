@@ -375,6 +375,12 @@ export async function syncFirebaseUser(firebaseUser: {
 
     try {
       const firebaseToken = await resolveFirebaseToken(forceRefresh);
+      console.log('Calling /auth/firebase-sync with payload:', {
+        firebaseUid: firebaseUser.uid,
+        email: firebaseUser.email,
+        name: firebaseUser.displayName,
+        photoUrl: firebaseUser.photoURL,
+      });
       response = (await apiClient.post('/auth/firebase-sync', {
         firebaseUid: firebaseUser.uid,
         email: firebaseUser.email,
@@ -382,8 +388,10 @@ export async function syncFirebaseUser(firebaseUser: {
         photoUrl: firebaseUser.photoURL,
         firebaseToken,
       })) as FirebaseSyncResponse;
+      console.log('Firebase sync response:', response);
       break;
     } catch (error: unknown) {
+      console.error('Error in syncFirebaseUser attempt', attempt, error);
       const canRetry = attempt < maxAttempts && isTransientFirebaseSyncError(error);
       if (canRetry) {
         await wait(400 * attempt);

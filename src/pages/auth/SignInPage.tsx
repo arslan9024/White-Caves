@@ -5,7 +5,7 @@
  * sign-up with role selection, social recovery panel, Gmail troubleshooting
  */
 
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
 import {
@@ -13,6 +13,7 @@ import {
   signInWithFacebook,
   signInWithApple,
   signOut,
+  handleRedirectResult,
   isFirebaseAuthConfigured,
   firebaseAuthUnavailableReason,
 } from '../../config/firebase';
@@ -72,6 +73,44 @@ const SignInPage: React.FC = () => {
   const location = useLocation();
   const dispatch = useDispatch();
   const returnTo = getReturnToFromLocationState(location.state);
+
+  // Handle redirect result from Firebase social auth
+  useEffect(() => {
+    const processRedirect = async () => {
+      try {
+        const result = await handleRedirectResult();
+        if (result?.user) {
+          console.log('Got redirect result user:', result.user);
+          const backendResponse = await syncFirebaseUser({
+            uid: result.user.uid,
+            email: result.user.email,
+            displayName: result.user.displayName,
+            photoURL: result.user.photoURL,
+            getIdToken: (forceRefresh?: boolean) => result.user.getIdToken(forceRefresh),
+          });
+          const user = backendResponse?.data?.user ?? null;
+          if (user && backendResponse.data.token) {
+            const destination = finalizeAuthenticatedSession({
+              dispatch,
+              user,
+              token: backendResponse.data.token,
+              provider: 'google',
+              rememberMe: false,
+              returnTo,
+            });
+            setSuccessMsg('Sign in successful!');
+            setTimeout(() => {
+              navigateToPostLoginDestination(navigate, destination);
+            }, 1500);
+          }
+        }
+      } catch (error: unknown) {
+        console.error('Error processing redirect result:', error);
+        setError('Error processing sign-in redirect. Please try again.');
+      }
+    };
+    processRedirect();
+  }, [dispatch, navigate, returnTo]);
 
   // Auth mode
   const [mode, setMode] = useState<AuthMode>('signin');
@@ -236,6 +275,7 @@ const SignInPage: React.FC = () => {
             email: string | null;
             displayName: string | null;
             photoURL: string | null;
+            getIdToken?: (forceRefresh?: boolean) => Promise<string>;
           };
         } | null = null;
 
@@ -247,8 +287,10 @@ const SignInPage: React.FC = () => {
           firebaseResult = (await signInWithApple()) as any;
         }
 
+        // If we did a redirect (firebaseResult is null), don't show error —
+        // useEffect will handle the redirect result when the component mounts again!
         if (!firebaseResult?.user) {
-          setError('Social authentication failed');
+          console.log('No firebaseResult.user, probably did a redirect.');
           setLoading(false);
           return;
         }
@@ -257,11 +299,13 @@ const SignInPage: React.FC = () => {
 
         // Sync with backend
         try {
+          console.log('Calling syncFirebaseUser with fbUser:', fbUser);
           const backendResponse = await syncFirebaseUser({
             uid: fbUser.uid,
             email: fbUser.email,
             displayName: fbUser.displayName,
             photoURL: fbUser.photoURL,
+            getIdToken: (forceRefresh?: boolean) => fbUser.getIdToken?.(forceRefresh),
           });
 
           const user = backendResponse?.data?.user ?? null;
@@ -296,6 +340,7 @@ const SignInPage: React.FC = () => {
           });
         }
       } catch (authErr: unknown) {
+        console.error('Social auth error:', authErr);
         const errMsg = authErr instanceof Error ? authErr.message : 'Authentication error';
         if (provider === 'google' && errMsg.includes('popup')) {
           setShowGmailTroubleshooting(true);
@@ -324,6 +369,7 @@ const SignInPage: React.FC = () => {
           email: string | null;
           displayName: string | null;
           photoURL: string | null;
+          getIdToken?: (forceRefresh?: boolean) => Promise<string>;
         };
       } | null = null;
 
@@ -342,6 +388,7 @@ const SignInPage: React.FC = () => {
         email: fbUser.email,
         displayName: fbUser.displayName,
         photoURL: fbUser.photoURL,
+        getIdToken: (forceRefresh?: boolean) => fbUser.getIdToken?.(forceRefresh),
       });
 
       const user = backendResponse?.data?.user ?? null;
