@@ -2,6 +2,7 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 import { fetchAnalytics } from '../../store/analyticsSlice';
+import { authFetch } from '../../utils/authFetch';
 import './SystemHealthPage.css';
 
 const OWNER_EMAIL = 'arslanmalikgoraha@gmail.com';
@@ -24,9 +25,7 @@ const WebVitalCard = ({ name, label, value, rating, unit, thresholds }) => {
     <div className={`web-vital-card ${getStatusClass()}`}>
       <div className="vital-header">
         <span className="vital-name">{name}</span>
-        <span className={`vital-rating ${rating || 'unknown'}`}>
-          {rating || 'Measuring...'}
-        </span>
+        <span className={`vital-rating ${rating || 'unknown'}`}>{rating || 'Measuring...'}</span>
       </div>
       <div className="vital-value">
         <span className="value">{formatValue()}</span>
@@ -35,8 +34,14 @@ const WebVitalCard = ({ name, label, value, rating, unit, thresholds }) => {
       <div className="vital-label">{label}</div>
       {thresholds && (
         <div className="vital-thresholds">
-          <span className="good">Good: ≤{thresholds.good}{unit}</span>
-          <span className="poor">Poor: ≥{thresholds.poor}{unit}</span>
+          <span className="good">
+            Good: ≤{thresholds.good}
+            {unit}
+          </span>
+          <span className="poor">
+            Poor: ≥{thresholds.poor}
+            {unit}
+          </span>
         </div>
       )}
     </div>
@@ -76,18 +81,23 @@ function SystemHealthPage() {
   }, [user, navigate]);
 
   const checkHealth = useCallback(async () => {
+    console.log('[DEBUG checkHealth] Start');
     setLoading(true);
     try {
-      const response = await fetch('/api/system/health');
+      console.log('[DEBUG checkHealth] Calling authFetch...');
+      const response = await authFetch('/api/system/health');
+      console.log('[DEBUG checkHealth] authFetch returned:', response);
       const data = await response.json();
+      console.log('[DEBUG checkHealth] data returned:', data);
       setHealthData(data);
       setLastChecked(new Date());
       dispatch(fetchAnalytics());
     } catch (error) {
-      
+      console.error('[DEBUG checkHealth] Caught error:', error);
       setHealthData({ error: 'Failed to fetch health status' });
     }
     setLoading(false);
+    console.log('[DEBUG checkHealth] End, loading set to false');
   }, [dispatch]);
 
   useEffect(() => {
@@ -102,7 +112,7 @@ function SystemHealthPage() {
     return () => clearInterval(interval);
   }, [autoRefresh, checkHealth]);
 
-  const getStatusIcon = (status) => {
+  const getStatusIcon = status => {
     switch (status) {
       case 'connected':
       case 'healthy':
@@ -120,7 +130,7 @@ function SystemHealthPage() {
     }
   };
 
-  const getStatusClass = (status) => {
+  const getStatusClass = status => {
     switch (status) {
       case 'connected':
       case 'healthy':
@@ -138,7 +148,7 @@ function SystemHealthPage() {
     }
   };
 
-  const getPerformanceScoreClass = (score) => {
+  const getPerformanceScoreClass = score => {
     if (score >= 90) return 'excellent';
     if (score >= 70) return 'good';
     if (score >= 50) return 'needs-improvement';
@@ -158,10 +168,10 @@ function SystemHealthPage() {
         </div>
         <div className="header-actions">
           <label className="auto-refresh-toggle">
-            <input 
-              type="checkbox" 
-              checked={autoRefresh} 
-              onChange={(e) => setAutoRefresh(e.target.checked)}
+            <input
+              type="checkbox"
+              checked={autoRefresh}
+              onChange={e => setAutoRefresh(e.target.checked)}
             />
             <span>Auto-refresh (30s)</span>
           </label>
@@ -172,29 +182,33 @@ function SystemHealthPage() {
       </div>
 
       {lastChecked && (
-        <p className="last-checked">
-          Last checked: {lastChecked.toLocaleTimeString()}
-        </p>
+        <p className="last-checked">Last checked: {lastChecked.toLocaleTimeString()}</p>
       )}
 
       <div className="web-traffic-section">
         <h2>Web Traffic Health</h2>
         <p className="section-description">Live performance metrics from Speed Insights</p>
-        
+
         <div className="performance-overview">
-          <div className={`performance-score ${getPerformanceScoreClass(analytics.performance.score)}`}>
+          <div
+            className={`performance-score ${getPerformanceScoreClass(analytics.performance.score)}`}
+          >
             <div className="score-ring">
               <svg viewBox="0 0 100 100">
-                <circle 
-                  cx="50" cy="50" r="45" 
-                  fill="none" 
-                  stroke="var(--bg-tertiary)" 
+                <circle
+                  cx="50"
+                  cy="50"
+                  r="45"
+                  fill="none"
+                  stroke="var(--bg-tertiary)"
                   strokeWidth="8"
                 />
-                <circle 
-                  cx="50" cy="50" r="45" 
-                  fill="none" 
-                  stroke="currentColor" 
+                <circle
+                  cx="50"
+                  cy="50"
+                  r="45"
+                  fill="none"
+                  stroke="currentColor"
                   strokeWidth="8"
                   strokeLinecap="round"
                   strokeDasharray={`${analytics.performance.score * 2.83} 283`}
@@ -210,27 +224,27 @@ function SystemHealthPage() {
           </div>
 
           <div className="traffic-metrics">
-            <TrafficMetricCard 
-              icon="👁" 
-              label="Page Views" 
+            <TrafficMetricCard
+              icon="👁"
+              label="Page Views"
               value={analytics.traffic.pageViews.toLocaleString()}
               trend="up"
               change="+12%"
             />
-            <TrafficMetricCard 
-              icon="👤" 
-              label="Active Users" 
+            <TrafficMetricCard
+              icon="👤"
+              label="Active Users"
               value={analytics.traffic.activeUsers || 1}
               trend="stable"
             />
-            <TrafficMetricCard 
-              icon="⏱" 
-              label="Avg. Session" 
+            <TrafficMetricCard
+              icon="⏱"
+              label="Avg. Session"
               value={`${Math.floor(analytics.traffic.avgSessionDuration / 60)}m`}
             />
-            <TrafficMetricCard 
-              icon="↩" 
-              label="Bounce Rate" 
+            <TrafficMetricCard
+              icon="↩"
+              label="Bounce Rate"
               value={`${analytics.traffic.bounceRate}%`}
               trend={analytics.traffic.bounceRate > 50 ? 'down' : 'up'}
             />
@@ -238,7 +252,7 @@ function SystemHealthPage() {
         </div>
 
         <div className="web-vitals-grid">
-          <WebVitalCard 
+          <WebVitalCard
             name="LCP"
             label="Largest Contentful Paint"
             value={analytics.webVitals.lcp?.value}
@@ -246,7 +260,7 @@ function SystemHealthPage() {
             unit="ms"
             thresholds={{ good: 2500, poor: 4000 }}
           />
-          <WebVitalCard 
+          <WebVitalCard
             name="INP"
             label="Interaction to Next Paint"
             value={analytics.webVitals.inp?.value}
@@ -254,7 +268,7 @@ function SystemHealthPage() {
             unit="ms"
             thresholds={{ good: 200, poor: 500 }}
           />
-          <WebVitalCard 
+          <WebVitalCard
             name="CLS"
             label="Cumulative Layout Shift"
             value={analytics.webVitals.cls?.value}
@@ -262,7 +276,7 @@ function SystemHealthPage() {
             unit=""
             thresholds={{ good: 0.1, poor: 0.25 }}
           />
-          <WebVitalCard 
+          <WebVitalCard
             name="FCP"
             label="First Contentful Paint"
             value={analytics.webVitals.fcp?.value}
@@ -270,7 +284,7 @@ function SystemHealthPage() {
             unit="ms"
             thresholds={{ good: 1800, poor: 3000 }}
           />
-          <WebVitalCard 
+          <WebVitalCard
             name="TTFB"
             label="Time to First Byte"
             value={analytics.webVitals.ttfb?.value}
@@ -302,7 +316,8 @@ function SystemHealthPage() {
             <div className="card-header">
               <h3>Server</h3>
               <span className={`status-badge ${getStatusClass(healthData?.server?.status)}`}>
-                {getStatusIcon(healthData?.server?.status)} {healthData?.server?.status || 'Unknown'}
+                {getStatusIcon(healthData?.server?.status)}{' '}
+                {healthData?.server?.status || 'Unknown'}
               </span>
             </div>
             <div className="card-details">
@@ -325,7 +340,8 @@ function SystemHealthPage() {
             <div className="card-header">
               <h3>MongoDB</h3>
               <span className={`status-badge ${getStatusClass(healthData?.mongodb?.status)}`}>
-                {getStatusIcon(healthData?.mongodb?.status)} {healthData?.mongodb?.status || 'Unknown'}
+                {getStatusIcon(healthData?.mongodb?.status)}{' '}
+                {healthData?.mongodb?.status || 'Unknown'}
               </span>
             </div>
             <div className="card-details">
@@ -350,7 +366,8 @@ function SystemHealthPage() {
             <div className="card-header">
               <h3>Firebase</h3>
               <span className={`status-badge ${getStatusClass(healthData?.firebase?.status)}`}>
-                {getStatusIcon(healthData?.firebase?.status)} {healthData?.firebase?.status || 'Unknown'}
+                {getStatusIcon(healthData?.firebase?.status)}{' '}
+                {healthData?.firebase?.status || 'Unknown'}
               </span>
             </div>
             <div className="card-details">
@@ -373,13 +390,16 @@ function SystemHealthPage() {
             <div className="card-header">
               <h3>Stripe</h3>
               <span className={`status-badge ${getStatusClass(healthData?.stripe?.status)}`}>
-                {getStatusIcon(healthData?.stripe?.status)} {healthData?.stripe?.status || 'Unknown'}
+                {getStatusIcon(healthData?.stripe?.status)}{' '}
+                {healthData?.stripe?.status || 'Unknown'}
               </span>
             </div>
             <div className="card-details">
               <div className="detail-row">
                 <span className="label">API Key</span>
-                <span className="value">{healthData?.stripe?.configured ? 'Configured' : 'Not Set'}</span>
+                <span className="value">
+                  {healthData?.stripe?.configured ? 'Configured' : 'Not Set'}
+                </span>
               </div>
               <div className="detail-row">
                 <span className="label">Mode</span>
@@ -392,13 +412,16 @@ function SystemHealthPage() {
             <div className="card-header">
               <h3>Google Drive</h3>
               <span className={`status-badge ${getStatusClass(healthData?.googleDrive?.status)}`}>
-                {getStatusIcon(healthData?.googleDrive?.status)} {healthData?.googleDrive?.status || 'Unknown'}
+                {getStatusIcon(healthData?.googleDrive?.status)}{' '}
+                {healthData?.googleDrive?.status || 'Unknown'}
               </span>
             </div>
             <div className="card-details">
               <div className="detail-row">
                 <span className="label">Credentials</span>
-                <span className="value">{healthData?.googleDrive?.configured ? 'Configured' : 'Not Set'}</span>
+                <span className="value">
+                  {healthData?.googleDrive?.configured ? 'Configured' : 'Not Set'}
+                </span>
               </div>
               {healthData?.googleDrive?.error && (
                 <div className="detail-row error">
@@ -413,13 +436,16 @@ function SystemHealthPage() {
             <div className="card-header">
               <h3>Google Maps</h3>
               <span className={`status-badge ${getStatusClass(healthData?.googleMaps?.status)}`}>
-                {getStatusIcon(healthData?.googleMaps?.status)} {healthData?.googleMaps?.status || 'Unknown'}
+                {getStatusIcon(healthData?.googleMaps?.status)}{' '}
+                {healthData?.googleMaps?.status || 'Unknown'}
               </span>
             </div>
             <div className="card-details">
               <div className="detail-row">
                 <span className="label">API Key</span>
-                <span className="value">{healthData?.googleMaps?.configured ? 'Configured' : 'Not Set'}</span>
+                <span className="value">
+                  {healthData?.googleMaps?.configured ? 'Configured' : 'Not Set'}
+                </span>
               </div>
             </div>
           </div>
@@ -428,40 +454,54 @@ function SystemHealthPage() {
 
       <div className="deployment-section">
         <h2>Production Deployment Readiness</h2>
-        
+
         {healthData?.productionReadiness && (
           <div className="readiness-overview">
-            <div className={`readiness-score ${healthData.productionReadiness.isDeployable ? 'deployable' : 'not-deployable'}`}>
+            <div
+              className={`readiness-score ${healthData.productionReadiness.isDeployable ? 'deployable' : 'not-deployable'}`}
+            >
               <div className="score-circle">
                 <span className="score-value">{healthData.productionReadiness.score}%</span>
                 <span className="score-label">Ready</span>
               </div>
               <div className="score-details">
                 <div className="score-stat">
-                  <span className="stat-value">{healthData.productionReadiness.passedChecks}/{healthData.productionReadiness.totalChecks}</span>
+                  <span className="stat-value">
+                    {healthData.productionReadiness.passedChecks}/
+                    {healthData.productionReadiness.totalChecks}
+                  </span>
                   <span className="stat-label">Checks Passed</span>
                 </div>
                 <div className="score-stat">
-                  <span className={`stat-value ${healthData.productionReadiness.criticalIssues > 0 ? 'critical' : ''}`}>
+                  <span
+                    className={`stat-value ${healthData.productionReadiness.criticalIssues > 0 ? 'critical' : ''}`}
+                  >
                     {healthData.productionReadiness.criticalIssues}
                   </span>
                   <span className="stat-label">Critical Issues</span>
                 </div>
-                <div className={`deploy-status ${healthData.productionReadiness.isDeployable ? 'ready' : 'not-ready'}`}>
-                  {healthData.productionReadiness.isDeployable ? '✓ Ready to Deploy' : '✗ Fix Critical Issues'}
+                <div
+                  className={`deploy-status ${healthData.productionReadiness.isDeployable ? 'ready' : 'not-ready'}`}
+                >
+                  {healthData.productionReadiness.isDeployable
+                    ? '✓ Ready to Deploy'
+                    : '✗ Fix Critical Issues'}
                 </div>
               </div>
             </div>
           </div>
         )}
-        
+
         <div className="deployment-checks">
           {healthData?.deploymentChecks?.map((check, index) => (
             <div key={index} className={`deployment-check ${check.status}`}>
               <div className="check-header">
                 <span className={`check-icon ${check.status}`}>
-                  {check.status === 'ready' || check.status === 'production' ? '✓' : 
-                   check.status === 'simulated' ? '○' : '✗'}
+                  {check.status === 'ready' || check.status === 'production'
+                    ? '✓'
+                    : check.status === 'simulated'
+                      ? '○'
+                      : '✗'}
                 </span>
                 <span className="check-name">{check.name}</span>
                 {check.critical && <span className="critical-badge">Critical</span>}
@@ -471,18 +511,21 @@ function SystemHealthPage() {
           ))}
         </div>
       </div>
-      
+
       <div className="health-card whatsapp-card">
         <div className="card-header">
           <h3>WhatsApp Business</h3>
           <span className={`status-badge ${getStatusClass(healthData?.whatsapp?.status)}`}>
-            {getStatusIcon(healthData?.whatsapp?.status)} {healthData?.whatsapp?.status || 'Unknown'}
+            {getStatusIcon(healthData?.whatsapp?.status)}{' '}
+            {healthData?.whatsapp?.status || 'Unknown'}
           </span>
         </div>
         <div className="card-details">
           <div className="detail-row">
             <span className="label">API Token</span>
-            <span className="value">{healthData?.whatsapp?.configured ? 'Configured' : 'Not Set (Simulated)'}</span>
+            <span className="value">
+              {healthData?.whatsapp?.configured ? 'Configured' : 'Not Set (Simulated)'}
+            </span>
           </div>
           <div className="detail-row">
             <span className="label">Phone Number ID</span>
@@ -490,15 +533,17 @@ function SystemHealthPage() {
           </div>
           <div className="detail-row">
             <span className="label">AI Chatbot</span>
-            <span className="value">{healthData?.whatsapp?.chatbotEnabled ? 'Enabled' : 'Disabled'}</span>
+            <span className="value">
+              {healthData?.whatsapp?.chatbotEnabled ? 'Enabled' : 'Disabled'}
+            </span>
           </div>
         </div>
       </div>
-      
+
       <div className="env-section">
         <h2>Environment Variables</h2>
         <div className="env-grid">
-          {healthData?.envVars?.map((env) => (
+          {healthData?.envVars?.map(env => (
             <div key={env.name} className={`env-item ${env.set ? 'set' : 'not-set'}`}>
               <span className="env-name">{env.name}</span>
               <span className={`env-status ${env.set ? 'configured' : 'missing'}`}>

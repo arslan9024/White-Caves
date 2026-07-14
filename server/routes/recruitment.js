@@ -13,6 +13,7 @@ import { ConversationBatchProcessor } from '../services/ConversationBatchProcess
 import { LeadScoringIntegration } from '../utils/LeadScoringIntegration.js';
 
 const router = express.Router();
+let prisma = new PrismaClient();
 let scoringService = CandidateScoringService;
 let templateService = MessageTemplateService;
 let recruitmentAuditLogger = (eventType, payload) => {
@@ -24,7 +25,12 @@ const RECRUITMENT_WRITE_ROLES = ['hr', 'admin'];
 const RECRUITMENT_MANAGER_REVIEW_ROLES = ['hiring_manager', 'hr', 'admin'];
 const OFFER_PIPELINE_STATUSES = ['offer', 'offer_approved', 'offer_accepted'];
 
-export function __setRecruitmentTestDeps({ prismaClient, candidateScoringService, messageTemplateService, auditLogger } = {}) {
+export function __setRecruitmentTestDeps({
+  prismaClient,
+  candidateScoringService,
+  messageTemplateService,
+  auditLogger,
+} = {}) {
   if (prismaClient) prisma = prismaClient;
   if (candidateScoringService) scoringService = candidateScoringService;
   if (messageTemplateService) templateService = messageTemplateService;
@@ -32,7 +38,7 @@ export function __setRecruitmentTestDeps({ prismaClient, candidateScoringService
 }
 
 export function __resetRecruitmentTestDeps() {
-  
+  prisma = new PrismaClient();
   scoringService = CandidateScoringService;
   templateService = MessageTemplateService;
   recruitmentAuditLogger = (eventType, payload) => {
@@ -44,11 +50,12 @@ function logRecruitmentAudit(req, eventType, payload = {}) {
   try {
     recruitmentAuditLogger(eventType, {
       at: new Date().toISOString(),
-      actor_role: req.recruitmentAccess?.role || req.headers['x-user-role'] || req.user?.role || 'unknown',
+      actor_role:
+        req.recruitmentAccess?.role || req.headers['x-user-role'] || req.user?.role || 'unknown',
       actor_id: req.user?.id || req.headers['x-user-id'] || null,
       route: req.originalUrl,
       method: req.method,
-      ...payload
+      ...payload,
     });
   } catch (auditError) {
     console.warn('Recruitment audit logging failed:', auditError.message);
@@ -67,14 +74,14 @@ export function requireRecruitmentAccess(level = 'read') {
 
     if (!userRole) {
       return res.status(401).json({
-        error: 'Authentication required for recruitment routes'
+        error: 'Authentication required for recruitment routes',
       });
     }
 
     const allowedRoles = level === 'write' ? RECRUITMENT_WRITE_ROLES : RECRUITMENT_READ_ROLES;
     if (!allowedRoles.includes(userRole)) {
       return res.status(403).json({
-        error: `Recruitment ${level} access denied for role: ${userRole}`
+        error: `Recruitment ${level} access denied for role: ${userRole}`,
       });
     }
 
@@ -94,13 +101,13 @@ export function requireManagerReviewAccess() {
 
     if (!userRole) {
       return res.status(401).json({
-        error: 'Authentication required for manager review routes'
+        error: 'Authentication required for manager review routes',
       });
     }
 
     if (!RECRUITMENT_MANAGER_REVIEW_ROLES.includes(userRole)) {
       return res.status(403).json({
-        error: `Manager review access denied for role: ${userRole}`
+        error: `Manager review access denied for role: ${userRole}`,
       });
     }
 
@@ -112,7 +119,7 @@ export function requireManagerReviewAccess() {
 export function computeScreeningMetrics(scores = [], options = {}) {
   const includeLegacyAliases = options.includeLegacyAliases === true;
 
-  const withOptionalLegacyAliases = (metrics) => {
+  const withOptionalLegacyAliases = metrics => {
     if (!includeLegacyAliases) {
       return metrics;
     }
@@ -121,7 +128,7 @@ export function computeScreeningMetrics(scores = [], options = {}) {
       ...metrics,
       good_matches: metrics.moderate_matches,
       potential_matches: metrics.weak_matches,
-      no_match: metrics.rejected_matches
+      no_match: metrics.rejected_matches,
     };
   };
 
@@ -139,15 +146,15 @@ export function computeScreeningMetrics(scores = [], options = {}) {
         experience: 0,
         education: 0,
         cultural_fit: 0,
-        location_match: 0
+        location_match: 0,
       },
       score_distribution: {
         very_high: 0,
         high: 0,
         medium: 0,
         low: 0,
-        very_low: 0
-      }
+        very_low: 0,
+      },
     });
   }
 
@@ -155,7 +162,7 @@ export function computeScreeningMetrics(scores = [], options = {}) {
     strong_match: 0,
     moderate_match: 0,
     weak_match: 0,
-    rejected: 0
+    rejected: 0,
   };
 
   let totalScore = 0;
@@ -170,9 +177,10 @@ export function computeScreeningMetrics(scores = [], options = {}) {
   });
 
   sortedScores.sort((a, b) => a - b);
-  const medianScore = sortedScores.length % 2 === 0
-    ? (sortedScores[sortedScores.length / 2 - 1] + sortedScores[sortedScores.length / 2]) / 2
-    : sortedScores[Math.floor(sortedScores.length / 2)];
+  const medianScore =
+    sortedScores.length % 2 === 0
+      ? (sortedScores[sortedScores.length / 2 - 1] + sortedScores[sortedScores.length / 2]) / 2
+      : sortedScores[Math.floor(sortedScores.length / 2)];
 
   return withOptionalLegacyAliases({
     total_candidates: scores.length,
@@ -184,18 +192,27 @@ export function computeScreeningMetrics(scores = [], options = {}) {
     median_score: Math.round(medianScore),
     factor_averages: {
       skills: Math.round(scores.reduce((sum, s) => sum + (s.skills_score || 0), 0) / scores.length),
-      experience: Math.round(scores.reduce((sum, s) => sum + (s.experience_score || 0), 0) / scores.length),
-      education: Math.round(scores.reduce((sum, s) => sum + (s.education_score || 0), 0) / scores.length),
-      cultural_fit: Math.round(scores.reduce((sum, s) => sum + (s.cultural_fit_score || 0), 0) / scores.length),
-      location_match: Math.round(scores.reduce((sum, s) => sum + (s.location_match_score || 0), 0) / scores.length)
+      experience: Math.round(
+        scores.reduce((sum, s) => sum + (s.experience_score || 0), 0) / scores.length
+      ),
+      education: Math.round(
+        scores.reduce((sum, s) => sum + (s.education_score || 0), 0) / scores.length
+      ),
+      cultural_fit: Math.round(
+        scores.reduce((sum, s) => sum + (s.cultural_fit_score || 0), 0) / scores.length
+      ),
+      location_match: Math.round(
+        scores.reduce((sum, s) => sum + (s.location_match_score || 0), 0) / scores.length
+      ),
     },
     score_distribution: {
       very_high: scores.filter(s => (s.overall_score || 0) >= 85).length,
       high: scores.filter(s => (s.overall_score || 0) >= 75 && (s.overall_score || 0) < 85).length,
-      medium: scores.filter(s => (s.overall_score || 0) >= 50 && (s.overall_score || 0) < 75).length,
+      medium: scores.filter(s => (s.overall_score || 0) >= 50 && (s.overall_score || 0) < 75)
+        .length,
       low: scores.filter(s => (s.overall_score || 0) >= 25 && (s.overall_score || 0) < 50).length,
-      very_low: scores.filter(s => (s.overall_score || 0) < 25).length
-    }
+      very_low: scores.filter(s => (s.overall_score || 0) < 25).length,
+    },
   });
 }
 
@@ -207,10 +224,12 @@ export function buildRecruitmentOverview(jobs = [], applications = [], scores = 
     totals: {
       jobs: jobs.length,
       open_jobs: openJobs.length,
-      active_applications: applications.filter(app => !['hired', 'rejected'].includes(app.status)).length,
+      active_applications: applications.filter(app => !['hired', 'rejected'].includes(app.status))
+        .length,
       interview_pipeline: applications.filter(app => app.status === 'interview').length,
-      offer_pipeline: applications.filter(app => OFFER_PIPELINE_STATUSES.includes(app.status)).length,
-      hired: applications.filter(app => app.status === 'hired').length
+      offer_pipeline: applications.filter(app => OFFER_PIPELINE_STATUSES.includes(app.status))
+        .length,
+      hired: applications.filter(app => app.status === 'hired').length,
     },
     screening: metrics,
     recent_jobs: jobs.slice(0, 5).map(job => ({
@@ -218,8 +237,8 @@ export function buildRecruitmentOverview(jobs = [], applications = [], scores = 
       title: job.title,
       department: job.department,
       status: job.status,
-      applications: job._count?.applications || 0
-    }))
+      applications: job._count?.applications || 0,
+    })),
   };
 }
 
@@ -229,41 +248,49 @@ export function buildKpiTrends(recruitmentMetrics = []) {
       latest: {
         avg_time_to_hire: 0,
         avg_cost_per_hire: 0,
-        automation_percentage: 0
+        automation_percentage: 0,
       },
       deltas: {
         time_to_hire_days: 0,
         cost_per_hire: 0,
-        automation_percentage: 0
+        automation_percentage: 0,
       },
-      points: []
+      points: [],
     };
   }
 
-  const sorted = [...recruitmentMetrics]
-    .sort((a, b) => new Date(a.metric_date || a.createdAt || 0) - new Date(b.metric_date || b.createdAt || 0));
+  const sorted = [...recruitmentMetrics].sort(
+    (a, b) =>
+      new Date(a.metric_date || a.createdAt || 0) - new Date(b.metric_date || b.createdAt || 0)
+  );
 
   const latest = sorted[sorted.length - 1];
   const previous = sorted.length > 1 ? sorted[sorted.length - 2] : null;
-  const toNumber = (value) => Number.isFinite(Number(value)) ? Number(value) : 0;
+  const toNumber = value => (Number.isFinite(Number(value)) ? Number(value) : 0);
 
   return {
     latest: {
       avg_time_to_hire: toNumber(latest.avg_time_to_hire),
       avg_cost_per_hire: toNumber(latest.avg_cost_per_hire),
-      automation_percentage: toNumber(latest.automation_percentage)
+      automation_percentage: toNumber(latest.automation_percentage),
     },
     deltas: {
-      time_to_hire_days: previous ? toNumber(latest.avg_time_to_hire) - toNumber(previous.avg_time_to_hire) : 0,
-      cost_per_hire: previous ? toNumber(latest.avg_cost_per_hire) - toNumber(previous.avg_cost_per_hire) : 0,
-      automation_percentage: previous ? toNumber(latest.automation_percentage) - toNumber(previous.automation_percentage) : 0
+      time_to_hire_days: previous
+        ? toNumber(latest.avg_time_to_hire) - toNumber(previous.avg_time_to_hire)
+        : 0,
+      cost_per_hire: previous
+        ? toNumber(latest.avg_cost_per_hire) - toNumber(previous.avg_cost_per_hire)
+        : 0,
+      automation_percentage: previous
+        ? toNumber(latest.automation_percentage) - toNumber(previous.automation_percentage)
+        : 0,
     },
     points: sorted.slice(-6).map(metric => ({
       date: metric.metric_date || metric.createdAt,
       avg_time_to_hire: toNumber(metric.avg_time_to_hire),
       avg_cost_per_hire: toNumber(metric.avg_cost_per_hire),
-      automation_percentage: toNumber(metric.automation_percentage)
-    }))
+      automation_percentage: toNumber(metric.automation_percentage),
+    })),
   };
 }
 
@@ -273,7 +300,7 @@ export function buildKpiTrendExportRows(kpiTrends = {}) {
     date: point.date,
     avg_time_to_hire: point.avg_time_to_hire,
     avg_cost_per_hire: point.avg_cost_per_hire,
-    automation_percentage: point.automation_percentage
+    automation_percentage: point.automation_percentage,
   }));
 }
 
@@ -283,13 +310,16 @@ export function toCsv(rows = []) {
   }
 
   const headers = Object.keys(rows[0]);
-  const escapeCell = (value) => `"${String(value ?? '').replace(/"/g, '""')}"`;
+  const escapeCell = value => `"${String(value ?? '').replace(/"/g, '""')}"`;
   const lines = rows.map(row => headers.map(header => escapeCell(row[header])).join(','));
   return `${headers.join(',')}\n${lines.join('\n')}\n`;
 }
 
 export function buildOnboardingChecklist(candidate, job, startDate) {
-  const fullName = [candidate.first_name, candidate.last_name].filter(Boolean).join(' ') || candidate.email || 'Candidate';
+  const fullName =
+    [candidate.first_name, candidate.last_name].filter(Boolean).join(' ') ||
+    candidate.email ||
+    'Candidate';
   return {
     candidate_name: fullName,
     company_name: 'White Caves Real Estate',
@@ -299,14 +329,14 @@ export function buildOnboardingChecklist(candidate, job, startDate) {
     training_modules: [
       'HR Orientation',
       'CRM Access Setup',
-      `${job.department || 'Department'} Workflow Training`
+      `${job.department || 'Department'} Workflow Training`,
     ],
     checklist_items: [
       'Bring Emirates ID and work authorization documents',
       'Sign HR and payroll documents',
       'Collect laptop and access credentials from IT',
-      'Attend manager introduction and workflow briefing'
-    ]
+      'Attend manager introduction and workflow briefing',
+    ],
   };
 }
 
@@ -321,9 +351,9 @@ const storage = multer.diskStorage({
     cb(null, uploadsDir);
   },
   filename: (req, file, cb) => {
-    const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
+    const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1e9);
     cb(null, file.fieldname + '-' + uniqueSuffix + path.extname(file.originalname));
-  }
+  },
 });
 
 const upload = multer({
@@ -334,15 +364,15 @@ const upload = multer({
       'application/pdf',
       'application/msword',
       'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
-      'text/plain'
+      'text/plain',
     ];
-    
+
     if (allowedTypes.includes(file.mimetype)) {
       cb(null, true);
     } else {
       cb(new Error('Invalid file type. Only PDF, DOCX, DOC, and TXT files are allowed.'));
     }
-  }
+  },
 });
 
 // ============= CANDIDATES ENDPOINTS =============
@@ -355,19 +385,19 @@ router.post('/candidates', async (req, res) => {
     // Validate required fields
     if (!email || !first_name || !last_name) {
       return res.status(400).json({
-        error: 'Missing required fields: email, first_name, last_name'
+        error: 'Missing required fields: email, first_name, last_name',
       });
     }
 
     // Check if candidate already exists
     const existingCandidate = await prisma.candidate.findUnique({
-      where: { email }
+      where: { email },
     });
 
     if (existingCandidate) {
       return res.status(409).json({
         error: 'Candidate with this email already exists',
-        candidate_id: existingCandidate.id
+        candidate_id: existingCandidate.id,
       });
     }
 
@@ -379,20 +409,20 @@ router.post('/candidates', async (req, res) => {
         last_name,
         location,
         linkedin_url,
-        source: source || 'manual_upload'
-      }
+        source: source || 'manual_upload',
+      },
     });
 
     res.status(201).json({
       success: true,
       message: 'Candidate created successfully',
-      candidate
+      candidate,
     });
   } catch (error) {
     console.error('Error creating candidate:', error);
     res.status(500).json({
       error: 'Failed to create candidate',
-      details: error.message
+      details: error.message,
     });
   }
 });
@@ -413,13 +443,13 @@ router.get('/candidates', async (req, res) => {
         include: {
           scores: { orderBy: { scored_at: 'desc' }, take: 1 },
           applications: true,
-          interviews: true
+          interviews: true,
         },
         orderBy: { createdAt: 'desc' },
         skip,
-        take: parseInt(limit)
+        take: parseInt(limit),
       }),
-      prisma.candidate.count({ where: filters })
+      prisma.candidate.count({ where: filters }),
     ]);
 
     res.json({
@@ -429,14 +459,14 @@ router.get('/candidates', async (req, res) => {
         page: parseInt(page),
         limit: parseInt(limit),
         total,
-        pages: Math.ceil(total / parseInt(limit))
-      }
+        pages: Math.ceil(total / parseInt(limit)),
+      },
     });
   } catch (error) {
     console.error('Error fetching candidates:', error);
     res.status(500).json({
       error: 'Failed to fetch candidates',
-      details: error.message
+      details: error.message,
     });
   }
 });
@@ -452,10 +482,10 @@ router.get('/candidates/:id', async (req, res) => {
         scores: { orderBy: { scored_at: 'desc' } },
         applications: {
           include: { job: true },
-          orderBy: { applied_at: 'desc' }
+          orderBy: { applied_at: 'desc' },
         },
-        interviews: { orderBy: { scheduled_at: 'desc' } }
-      }
+        interviews: { orderBy: { scheduled_at: 'desc' } },
+      },
     });
 
     if (!candidate) {
@@ -464,13 +494,13 @@ router.get('/candidates/:id', async (req, res) => {
 
     res.json({
       success: true,
-      candidate
+      candidate,
     });
   } catch (error) {
     console.error('Error fetching candidate:', error);
     res.status(500).json({
       error: 'Failed to fetch candidate',
-      details: error.message
+      details: error.message,
     });
   }
 });
@@ -491,20 +521,20 @@ router.put('/candidates/:id', async (req, res) => {
         location,
         linkedin_url,
         status,
-        notes
-      }
+        notes,
+      },
     });
 
     res.json({
       success: true,
       message: 'Candidate updated successfully',
-      candidate
+      candidate,
     });
   } catch (error) {
     console.error('Error updating candidate:', error);
     res.status(500).json({
       error: 'Failed to update candidate',
-      details: error.message
+      details: error.message,
     });
   }
 });
@@ -515,18 +545,18 @@ router.delete('/candidates/:id', async (req, res) => {
     const { id } = req.params;
 
     await prisma.candidate.delete({
-      where: { id }
+      where: { id },
     });
 
     res.json({
       success: true,
-      message: 'Candidate deleted successfully'
+      message: 'Candidate deleted successfully',
     });
   } catch (error) {
     console.error('Error deleting candidate:', error);
     res.status(500).json({
       error: 'Failed to delete candidate',
-      details: error.message
+      details: error.message,
     });
   }
 });
@@ -536,11 +566,20 @@ router.delete('/candidates/:id', async (req, res) => {
 // Create a new job posting
 router.post('/jobs', async (req, res) => {
   try {
-    const { title, description, department, location, salary_min, salary_max, required_skills, experience_years } = req.body;
+    const {
+      title,
+      description,
+      department,
+      location,
+      salary_min,
+      salary_max,
+      required_skills,
+      experience_years,
+    } = req.body;
 
     if (!title || !department) {
       return res.status(400).json({
-        error: 'Missing required fields: title, department'
+        error: 'Missing required fields: title, department',
       });
     }
 
@@ -553,20 +592,20 @@ router.post('/jobs', async (req, res) => {
         salary_min: salary_min ? parseFloat(salary_min) : null,
         salary_max: salary_max ? parseFloat(salary_max) : null,
         required_skills: required_skills || [],
-        experience_years: experience_years ? parseInt(experience_years) : null
-      }
+        experience_years: experience_years ? parseInt(experience_years) : null,
+      },
     });
 
     res.status(201).json({
       success: true,
       message: 'Job created successfully',
-      job
+      job,
     });
   } catch (error) {
     console.error('Error creating job:', error);
     res.status(500).json({
       error: 'Failed to create job',
-      details: error.message
+      details: error.message,
     });
   }
 });
@@ -584,13 +623,13 @@ router.get('/jobs', async (req, res) => {
       prisma.job.findMany({
         where: filters,
         include: {
-          applications: true
+          applications: true,
         },
         orderBy: { createdAt: 'desc' },
         skip,
-        take: parseInt(limit)
+        take: parseInt(limit),
       }),
-      prisma.job.count({ where: filters })
+      prisma.job.count({ where: filters }),
     ]);
 
     res.json({
@@ -600,14 +639,14 @@ router.get('/jobs', async (req, res) => {
         page: parseInt(page),
         limit: parseInt(limit),
         total,
-        pages: Math.ceil(total / parseInt(limit))
-      }
+        pages: Math.ceil(total / parseInt(limit)),
+      },
     });
   } catch (error) {
     console.error('Error fetching jobs:', error);
     res.status(500).json({
       error: 'Failed to fetch jobs',
-      details: error.message
+      details: error.message,
     });
   }
 });
@@ -622,9 +661,9 @@ router.get('/jobs/:id', async (req, res) => {
       include: {
         applications: {
           include: { candidate: true },
-          orderBy: { applied_at: 'desc' }
-        }
-      }
+          orderBy: { applied_at: 'desc' },
+        },
+      },
     });
 
     if (!job) {
@@ -633,13 +672,13 @@ router.get('/jobs/:id', async (req, res) => {
 
     res.json({
       success: true,
-      job
+      job,
     });
   } catch (error) {
     console.error('Error fetching job:', error);
     res.status(500).json({
       error: 'Failed to fetch job',
-      details: error.message
+      details: error.message,
     });
   }
 });
@@ -648,7 +687,17 @@ router.get('/jobs/:id', async (req, res) => {
 router.put('/jobs/:id', async (req, res) => {
   try {
     const { id } = req.params;
-    const { title, description, department, location, salary_min, salary_max, status, required_skills, experience_years } = req.body;
+    const {
+      title,
+      description,
+      department,
+      location,
+      salary_min,
+      salary_max,
+      status,
+      required_skills,
+      experience_years,
+    } = req.body;
 
     const job = await prisma.job.update({
       where: { id },
@@ -661,20 +710,20 @@ router.put('/jobs/:id', async (req, res) => {
         salary_max: salary_max ? parseFloat(salary_max) : undefined,
         status,
         required_skills,
-        experience_years: experience_years ? parseInt(experience_years) : undefined
-      }
+        experience_years: experience_years ? parseInt(experience_years) : undefined,
+      },
     });
 
     res.json({
       success: true,
       message: 'Job updated successfully',
-      job
+      job,
     });
   } catch (error) {
     console.error('Error updating job:', error);
     res.status(500).json({
       error: 'Failed to update job',
-      details: error.message
+      details: error.message,
     });
   }
 });
@@ -685,18 +734,18 @@ router.delete('/jobs/:id', async (req, res) => {
     const { id } = req.params;
 
     await prisma.job.delete({
-      where: { id }
+      where: { id },
     });
 
     res.json({
       success: true,
-      message: 'Job deleted successfully'
+      message: 'Job deleted successfully',
     });
   } catch (error) {
     console.error('Error deleting job:', error);
     res.status(500).json({
       error: 'Failed to delete job',
-      details: error.message
+      details: error.message,
     });
   }
 });
@@ -710,7 +759,7 @@ router.post('/applications', async (req, res) => {
 
     if (!candidate_id || !job_id) {
       return res.status(400).json({
-        error: 'Missing required fields: candidate_id, job_id'
+        error: 'Missing required fields: candidate_id, job_id',
       });
     }
 
@@ -718,14 +767,14 @@ router.post('/applications', async (req, res) => {
     const existingApp = await prisma.application.findFirst({
       where: {
         candidate_id,
-        job_id
-      }
+        job_id,
+      },
     });
 
     if (existingApp) {
       return res.status(409).json({
         error: 'Application already exists for this candidate and job',
-        application_id: existingApp.id
+        application_id: existingApp.id,
       });
     }
 
@@ -733,24 +782,24 @@ router.post('/applications', async (req, res) => {
       data: {
         candidate_id,
         job_id,
-        notes
+        notes,
       },
       include: {
         candidate: true,
-        job: true
-      }
+        job: true,
+      },
     });
 
     res.status(201).json({
       success: true,
       message: 'Application created successfully',
-      application
+      application,
     });
   } catch (error) {
     console.error('Error creating application:', error);
     res.status(500).json({
       error: 'Failed to create application',
-      details: error.message
+      details: error.message,
     });
   }
 });
@@ -771,13 +820,13 @@ router.get('/applications', async (req, res) => {
         where: filters,
         include: {
           candidate: true,
-          job: true
+          job: true,
         },
         orderBy: { applied_at: 'desc' },
         skip,
-        take: parseInt(limit)
+        take: parseInt(limit),
       }),
-      prisma.application.count({ where: filters })
+      prisma.application.count({ where: filters }),
     ]);
 
     res.json({
@@ -787,14 +836,14 @@ router.get('/applications', async (req, res) => {
         page: parseInt(page),
         limit: parseInt(limit),
         total,
-        pages: Math.ceil(total / parseInt(limit))
-      }
+        pages: Math.ceil(total / parseInt(limit)),
+      },
     });
   } catch (error) {
     console.error('Error fetching applications:', error);
     res.status(500).json({
       error: 'Failed to fetch applications',
-      details: error.message
+      details: error.message,
     });
   }
 });
@@ -808,8 +857,8 @@ router.get('/applications/:id', async (req, res) => {
       where: { id },
       include: {
         candidate: true,
-        job: true
-      }
+        job: true,
+      },
     });
 
     if (!application) {
@@ -818,13 +867,13 @@ router.get('/applications/:id', async (req, res) => {
 
     res.json({
       success: true,
-      application
+      application,
     });
   } catch (error) {
     console.error('Error fetching application:', error);
     res.status(500).json({
       error: 'Failed to fetch application',
-      details: error.message
+      details: error.message,
     });
   }
 });
@@ -838,25 +887,25 @@ router.put('/applications/:id/status', async (req, res) => {
     const validStatuses = ['applied', 'screening', 'interview', 'offer', 'hired', 'rejected'];
     if (!validStatuses.includes(status)) {
       return res.status(400).json({
-        error: `Invalid status. Must be one of: ${validStatuses.join(', ')}`
+        error: `Invalid status. Must be one of: ${validStatuses.join(', ')}`,
       });
     }
 
     const application = await prisma.application.update({
       where: { id },
-      data: { status }
+      data: { status },
     });
 
     res.json({
       success: true,
       message: 'Application status updated successfully',
-      application
+      application,
     });
   } catch (error) {
     console.error('Error updating application status:', error);
     res.status(500).json({
       error: 'Failed to update application status',
-      details: error.message
+      details: error.message,
     });
   }
 });
@@ -871,20 +920,20 @@ router.put('/applications/:id', async (req, res) => {
       where: { id },
       data: {
         status,
-        notes
-      }
+        notes,
+      },
     });
 
     res.json({
       success: true,
       message: 'Application updated successfully',
-      application
+      application,
     });
   } catch (error) {
     console.error('Error updating application:', error);
     res.status(500).json({
       error: 'Failed to update application',
-      details: error.message
+      details: error.message,
     });
   }
 });
@@ -895,18 +944,18 @@ router.delete('/applications/:id', async (req, res) => {
     const { id } = req.params;
 
     await prisma.application.delete({
-      where: { id }
+      where: { id },
     });
 
     res.json({
       success: true,
-      message: 'Application deleted successfully'
+      message: 'Application deleted successfully',
     });
   } catch (error) {
     console.error('Error deleting application:', error);
     res.status(500).json({
       error: 'Failed to delete application',
-      details: error.message
+      details: error.message,
     });
   }
 });
@@ -914,98 +963,102 @@ router.delete('/applications/:id', async (req, res) => {
 // ============= RESUME UPLOAD ENDPOINT =============
 
 // Upload resume for a candidate
-router.post('/candidates/:candidate_id/upload-resume', upload.single('resume'), async (req, res) => {
-  try {
-    const { candidate_id } = req.params;
+router.post(
+  '/candidates/:candidate_id/upload-resume',
+  upload.single('resume'),
+  async (req, res) => {
+    try {
+      const { candidate_id } = req.params;
 
-    if (!req.file) {
-      return res.status(400).json({
-        error: 'No file uploaded'
+      if (!req.file) {
+        return res.status(400).json({
+          error: 'No file uploaded',
+        });
+      }
+
+      // Create resume upload record
+      const resumeUpload = await prisma.resumeUpload.create({
+        data: {
+          candidate_id,
+          file_path: req.file.path,
+          file_name: req.file.originalname,
+          file_size: req.file.size,
+          mime_type: req.file.mimetype,
+        },
+      });
+
+      // Update candidate with resume URL
+      await prisma.candidate.update({
+        where: { id: candidate_id },
+        data: {
+          resume_url: req.file.path,
+        },
+      });
+
+      res.status(201).json({
+        success: true,
+        message: 'Resume uploaded successfully',
+        resume: resumeUpload,
+        note: 'Resume text extraction is queued for processing. Check status with extraction_status field.',
+      });
+    } catch (error) {
+      console.error('Error uploading resume:', error);
+      // Clean up uploaded file on error
+      if (req.file) {
+        fs.unlink(req.file.path, err => {
+          if (err) console.error('Error deleting uploaded file:', err);
+        });
+      }
+      res.status(500).json({
+        error: 'Failed to upload resume',
+        details: error.message,
       });
     }
-
-    // Create resume upload record
-    const resumeUpload = await prisma.resumeUpload.create({
-      data: {
-        candidate_id,
-        file_path: req.file.path,
-        file_name: req.file.originalname,
-        file_size: req.file.size,
-        mime_type: req.file.mimetype
-      }
-    });
-
-    // Update candidate with resume URL
-    await prisma.candidate.update({
-      where: { id: candidate_id },
-      data: {
-        resume_url: req.file.path
-      }
-    });
-
-    res.status(201).json({
-      success: true,
-      message: 'Resume uploaded successfully',
-      resume: resumeUpload,
-      note: 'Resume text extraction is queued for processing. Check status with extraction_status field.'
-    });
-  } catch (error) {
-    console.error('Error uploading resume:', error);
-    // Clean up uploaded file on error
-    if (req.file) {
-      fs.unlink(req.file.path, (err) => {
-        if (err) console.error('Error deleting uploaded file:', err);
-      });
-    }
-    res.status(500).json({
-      error: 'Failed to upload resume',
-      details: error.message
-    });
   }
-});
+);
 
 // ============= BATCH SCREENING ENDPOINTS (Phase 1B) =============
 
 // Score a single candidate for a job
-router.post('/jobs/:job_id/score-candidate', requireRecruitmentAccess('write'), async (req, res) => {
-  try {
-    const { job_id } = req.params;
-    const { candidate_id, weights } = req.body;
+router.post(
+  '/jobs/:job_id/score-candidate',
+  requireRecruitmentAccess('write'),
+  async (req, res) => {
+    try {
+      const { job_id } = req.params;
+      const { candidate_id, weights } = req.body;
 
-    // Validate input
-    if (!candidate_id) {
-      return res.status(400).json({
-        error: 'candidate_id is required'
+      // Validate input
+      if (!candidate_id) {
+        return res.status(400).json({
+          error: 'candidate_id is required',
+        });
+      }
+
+      // Score the candidate
+      const score = await scoringService.scoreCandidateForJob(candidate_id, job_id, weights);
+
+      logRecruitmentAudit(req, 'candidate_scored', {
+        job_id,
+        candidate_id,
+        screening_status: score.screening_status,
+        overall_score: score.overall_score,
+      });
+
+      res.status(201).json({
+        success: true,
+        message: 'Candidate scored successfully',
+        score,
+      });
+    } catch (error) {
+      console.error('Error scoring candidate:', error);
+      res.status(500).json({
+        error: 'Failed to score candidate',
+        details: error.message,
       });
     }
-
-    // Score the candidate
-    const score = await scoringService.scoreCandidateForJob(
-      candidate_id,
-      job_id,
-      weights
-    );
-
-    logRecruitmentAudit(req, 'candidate_scored', {
-      job_id,
-      candidate_id,
-      screening_status: score.screening_status,
-      overall_score: score.overall_score
-    });
-
-    res.status(201).json({
-      success: true,
-      message: 'Candidate scored successfully',
-      score
-    });
-  } catch (error) {
-    console.error('Error scoring candidate:', error);
-    res.status(500).json({
-      error: 'Failed to score candidate',
-      details: error.message
-    });
   }
-});
+);
 
 // Batch score all candidates for a job
 router.post('/jobs/:job_id/batch-score', async (req, res) => {
@@ -1014,10 +1067,7 @@ router.post('/jobs/:job_id/batch-score', async (req, res) => {
     const { weights } = req.body;
 
     // Batch score all candidates
-    const scores = await scoringService.batchScoreCandidatesForJob(
-      job_id,
-      weights
-    );
+    const scores = await scoringService.batchScoreCandidatesForJob(job_id, weights);
 
     res.status(200).json({
       success: true,
@@ -1033,15 +1083,15 @@ router.post('/jobs/:job_id/batch-score', async (req, res) => {
           experience: s.experience_score,
           education: s.education_score,
           cultural_fit: s.cultural_fit_score,
-          location_match: s.location_match_score
-        }
-      }))
+          location_match: s.location_match_score,
+        },
+      })),
     });
   } catch (error) {
     console.error('Error batch scoring candidates:', error);
     res.status(500).json({
       error: 'Failed to batch score candidates',
-      details: error.message
+      details: error.message,
     });
   }
 });
@@ -1071,7 +1121,7 @@ router.get('/jobs/:job_id/top-candidates', requireRecruitmentAccess('read'), asy
           email: score.candidate.email,
           phone: score.candidate.phone,
           location: score.candidate.location,
-          linkedin_url: score.candidate.linkedin_url
+          linkedin_url: score.candidate.linkedin_url,
         },
         score: {
           overall: score.overall_score,
@@ -1081,17 +1131,17 @@ router.get('/jobs/:job_id/top-candidates', requireRecruitmentAccess('read'), asy
             experience: score.experience_score,
             education: score.education_score,
             cultural_fit: score.cultural_fit_score,
-            location_match: score.location_match_score
+            location_match: score.location_match_score,
           },
-          feedback: score.feedback
-        }
-      }))
+          feedback: score.feedback,
+        },
+      })),
     });
   } catch (error) {
     console.error('Error fetching top candidates:', error);
     res.status(500).json({
       error: 'Failed to fetch top candidates',
-      details: error.message
+      details: error.message,
     });
   }
 });
@@ -1108,63 +1158,68 @@ router.get('/jobs/:job_id/manager-shortlist', requireManagerReviewAccess(), asyn
     const scores = await prisma.candidateScore.findMany({
       where: {
         job_id,
-        overall_score: { gte: threshold }
+        overall_score: { gte: threshold },
       },
       include: {
-        candidate: true
+        candidate: true,
       },
       orderBy: { overall_score: 'desc' },
-      take
+      take,
     });
 
     const candidateIds = scores.map(score => score.candidate_id);
     const applications = candidateIds.length
       ? await prisma.application.findMany({
-        where: {
-          job_id,
-          candidate_id: { in: candidateIds }
-        }
-      })
+          where: {
+            job_id,
+            candidate_id: { in: candidateIds },
+          },
+        })
       : [];
 
     const applicationByCandidate = new Map(applications.map(app => [app.candidate_id, app]));
 
     const shortlist = scores.map(score => {
       const application = applicationByCandidate.get(score.candidate_id);
-      const recommendation = score.screening_status === 'strong_match'
-        ? 'priority_shortlist'
-        : score.screening_status === 'moderate_match'
-          ? 'review_shortlist'
-          : 'manual_review';
+      const recommendation =
+        score.screening_status === 'strong_match'
+          ? 'priority_shortlist'
+          : score.screening_status === 'moderate_match'
+            ? 'review_shortlist'
+            : 'manual_review';
 
       return {
         candidate: {
           id: score.candidate.id,
-          name: `${score.candidate.first_name || ''} ${score.candidate.last_name || ''}`.trim() || score.candidate.email,
+          name:
+            `${score.candidate.first_name || ''} ${score.candidate.last_name || ''}`.trim() ||
+            score.candidate.email,
           email: score.candidate.email,
           phone: score.candidate.phone,
           location: score.candidate.location,
-          status: score.candidate.status
+          status: score.candidate.status,
         },
-        application: application ? {
-          id: application.id,
-          status: application.status,
-          applied_at: application.applied_at,
-          notes: application.notes
-        } : null,
+        application: application
+          ? {
+              id: application.id,
+              status: application.status,
+              applied_at: application.applied_at,
+              notes: application.notes,
+            }
+          : null,
         score: {
           overall: score.overall_score,
           screening_status: score.screening_status,
-          feedback: score.feedback
+          feedback: score.feedback,
         },
-        recommendation
+        recommendation,
       };
     });
 
     logRecruitmentAudit(req, 'manager_shortlist_viewed', {
       job_id,
       min_score: threshold,
-      results: shortlist.length
+      results: shortlist.length,
     });
 
     res.status(200).json({
@@ -1172,88 +1227,95 @@ router.get('/jobs/:job_id/manager-shortlist', requireManagerReviewAccess(), asyn
       job_id,
       min_score: threshold,
       total: shortlist.length,
-      shortlist
+      shortlist,
     });
   } catch (error) {
     console.error('Error building manager shortlist:', error);
     res.status(500).json({
       error: 'Failed to build manager shortlist',
-      details: error.message
+      details: error.message,
     });
   }
 });
 
 // Manager review decision for a candidate application
-router.post('/applications/:application_id/manager-review', requireManagerReviewAccess(), async (req, res) => {
-  try {
-    const { application_id } = req.params;
-    const { decision, review_note } = req.body;
+router.post(
+  '/applications/:application_id/manager-review',
+  requireManagerReviewAccess(),
+  async (req, res) => {
+    try {
+      const { application_id } = req.params;
+      const { decision, review_note } = req.body;
 
-    if (!decision || !['shortlist', 'hold', 'reject'].includes(decision)) {
-      return res.status(400).json({
-        error: 'decision is required and must be one of: shortlist, hold, reject'
+      if (!decision || !['shortlist', 'hold', 'reject'].includes(decision)) {
+        return res.status(400).json({
+          error: 'decision is required and must be one of: shortlist, hold, reject',
+        });
+      }
+
+      const application = await prisma.application.findUnique({
+        where: { id: application_id },
+        include: { candidate: true, job: true },
+      });
+
+      if (!application) {
+        return res.status(404).json({ error: 'Application not found' });
+      }
+
+      const decisionMap = {
+        shortlist: { applicationStatus: 'shortlisted', candidateStatus: 'under_review' },
+        hold: {
+          applicationStatus: 'manager_review',
+          candidateStatus: application.candidate.status || 'under_review',
+        },
+        reject: { applicationStatus: 'rejected', candidateStatus: 'rejected' },
+      };
+
+      const decisionConfig = decisionMap[decision];
+      const noteParts = [
+        `Manager review decision: ${decision} on ${new Date().toISOString()}`,
+        review_note ? `Note: ${review_note}` : null,
+      ].filter(Boolean);
+
+      const updatedApplication = await prisma.application.update({
+        where: { id: application_id },
+        data: {
+          status: decisionConfig.applicationStatus,
+          notes: [application.notes, ...noteParts].filter(Boolean).join(' | '),
+        },
+      });
+
+      await prisma.candidate.update({
+        where: { id: application.candidate_id },
+        data: { status: decisionConfig.candidateStatus },
+      });
+
+      logRecruitmentAudit(req, 'manager_review_submitted', {
+        application_id,
+        job_id: application.job_id,
+        candidate_id: application.candidate_id,
+        decision,
+        application_status: decisionConfig.applicationStatus,
+        candidate_status: decisionConfig.candidateStatus,
+      });
+
+      res.status(200).json({
+        success: true,
+        message: 'Manager review decision recorded',
+        application_id,
+        decision,
+        status: updatedApplication.status,
+        candidate_status: decisionConfig.candidateStatus,
+      });
+    } catch (error) {
+      console.error('Error recording manager review:', error);
+      res.status(500).json({
+        error: 'Failed to record manager review',
+        details: error.message,
       });
     }
-
-    const application = await prisma.application.findUnique({
-      where: { id: application_id },
-      include: { candidate: true, job: true }
-    });
-
-    if (!application) {
-      return res.status(404).json({ error: 'Application not found' });
-    }
-
-    const decisionMap = {
-      shortlist: { applicationStatus: 'shortlisted', candidateStatus: 'under_review' },
-      hold: { applicationStatus: 'manager_review', candidateStatus: application.candidate.status || 'under_review' },
-      reject: { applicationStatus: 'rejected', candidateStatus: 'rejected' }
-    };
-
-    const decisionConfig = decisionMap[decision];
-    const noteParts = [
-      `Manager review decision: ${decision} on ${new Date().toISOString()}`,
-      review_note ? `Note: ${review_note}` : null
-    ].filter(Boolean);
-
-    const updatedApplication = await prisma.application.update({
-      where: { id: application_id },
-      data: {
-        status: decisionConfig.applicationStatus,
-        notes: [application.notes, ...noteParts].filter(Boolean).join(' | ')
-      }
-    });
-
-    await prisma.candidate.update({
-      where: { id: application.candidate_id },
-      data: { status: decisionConfig.candidateStatus }
-    });
-
-    logRecruitmentAudit(req, 'manager_review_submitted', {
-      application_id,
-      job_id: application.job_id,
-      candidate_id: application.candidate_id,
-      decision,
-      application_status: decisionConfig.applicationStatus,
-      candidate_status: decisionConfig.candidateStatus
-    });
-
-    res.status(200).json({
-      success: true,
-      message: 'Manager review decision recorded',
-      application_id,
-      decision,
-      status: updatedApplication.status,
-      candidate_status: decisionConfig.candidateStatus
-    });
-  } catch (error) {
-    console.error('Error recording manager review:', error);
-    res.status(500).json({
-      error: 'Failed to record manager review',
-      details: error.message
-    });
   }
-});
+);
 
 // Get candidate screening details
 router.get('/candidates/:candidate_id/screening-scores', async (req, res) => {
@@ -1263,7 +1325,7 @@ router.get('/candidates/:candidate_id/screening-scores', async (req, res) => {
     const scores = await prisma.candidateScore.findMany({
       where: { candidate_id },
       include: { job: true },
-      orderBy: { created_at: 'desc' }
+      orderBy: { created_at: 'desc' },
     });
 
     res.status(200).json({
@@ -1275,7 +1337,7 @@ router.get('/candidates/:candidate_id/screening-scores', async (req, res) => {
           id: score.job.id,
           title: score.job.title,
           department: score.job.department,
-          location: score.job.location
+          location: score.job.location,
         },
         score: {
           overall: score.overall_score,
@@ -1285,18 +1347,18 @@ router.get('/candidates/:candidate_id/screening-scores', async (req, res) => {
             experience: score.experience_score,
             education: score.education_score,
             cultural_fit: score.cultural_fit_score,
-            location_match: score.location_match_score
+            location_match: score.location_match_score,
           },
-          feedback: score.feedback
+          feedback: score.feedback,
         },
-        scored_at: score.created_at
-      }))
+        scored_at: score.created_at,
+      })),
     });
   } catch (error) {
     console.error('Error fetching screening scores:', error);
     res.status(500).json({
       error: 'Failed to fetch screening scores',
-      details: error.message
+      details: error.message,
     });
   }
 });
@@ -1312,29 +1374,27 @@ router.post('/candidates/:candidate_id/extract-resume', async (req, res) => {
       include: {
         resumeUploads: {
           orderBy: { created_at: 'desc' },
-          take: 1
-        }
-      }
+          take: 1,
+        },
+      },
     });
 
     if (!candidate) {
       return res.status(404).json({
-        error: 'Candidate not found'
+        error: 'Candidate not found',
       });
     }
 
     if (!candidate.resumeUploads || candidate.resumeUploads.length === 0) {
       return res.status(400).json({
-        error: 'No resume found for this candidate'
+        error: 'No resume found for this candidate',
       });
     }
 
     const resumeUpload = candidate.resumeUploads[0];
 
     // Extract text from resume
-    const extracted = await ResumeParserService.extractTextFromResume(
-      resumeUpload.file_path
-    );
+    const extracted = await ResumeParserService.extractTextFromResume(resumeUpload.file_path);
 
     // Parse resume text to extract data
     const parsedData = ResumeParserService.parseResumeText(extracted.text);
@@ -1343,8 +1403,8 @@ router.post('/candidates/:candidate_id/extract-resume', async (req, res) => {
     const updated = await prisma.candidate.update({
       where: { id: candidate_id },
       data: {
-        resume_text: extracted.text
-      }
+        resume_text: extracted.text,
+      },
     });
 
     // Update extraction status
@@ -1352,8 +1412,8 @@ router.post('/candidates/:candidate_id/extract-resume', async (req, res) => {
       where: { id: resumeUpload.id },
       data: {
         extraction_status: 'completed',
-        extracted_data: JSON.stringify(parsedData)
-      }
+        extracted_data: JSON.stringify(parsedData),
+      },
     });
 
     res.status(200).json({
@@ -1362,56 +1422,60 @@ router.post('/candidates/:candidate_id/extract-resume', async (req, res) => {
       candidate_id,
       extraction: {
         method: extracted.method,
-        pages: extracted.pageCount || 1
+        pages: extracted.pageCount || 1,
       },
       parsed_data: {
         skills: parsedData.skills,
         experience: parsedData.experience,
         education: parsedData.education,
-        contact: parsedData.contact
-      }
+        contact: parsedData.contact,
+      },
     });
   } catch (error) {
     console.error('Error extracting resume:', error);
     res.status(500).json({
       error: 'Failed to extract resume',
-      details: error.message
+      details: error.message,
     });
   }
 });
 
 // Get screening metrics and insights
-router.get('/jobs/:job_id/screening-metrics', requireRecruitmentAccess('read'), async (req, res) => {
-  try {
-    const { job_id } = req.params;
-    const includeLegacyAliases = req.query.include_legacy_aliases === 'true';
+router.get(
+  '/jobs/:job_id/screening-metrics',
+  requireRecruitmentAccess('read'),
+  async (req, res) => {
+    try {
+      const { job_id } = req.params;
+      const includeLegacyAliases = req.query.include_legacy_aliases === 'true';
 
-    const scores = await prisma.candidateScore.findMany({
-      where: { job_id }
-    });
+      const scores = await prisma.candidateScore.findMany({
+        where: { job_id },
+      });
 
-    if (scores.length === 0) {
-      return res.status(200).json({
+      if (scores.length === 0) {
+        return res.status(200).json({
+          success: true,
+          job_id,
+          message: 'No candidates screened yet for this job',
+          metrics: computeScreeningMetrics([], { includeLegacyAliases }),
+        });
+      }
+
+      res.status(200).json({
         success: true,
         job_id,
-        message: 'No candidates screened yet for this job',
-        metrics: computeScreeningMetrics([], { includeLegacyAliases })
+        metrics: computeScreeningMetrics(scores, { includeLegacyAliases }),
+      });
+    } catch (error) {
+      console.error('Error fetching screening metrics:', error);
+      res.status(500).json({
+        error: 'Failed to fetch screening metrics',
+        details: error.message,
       });
     }
-
-    res.status(200).json({
-      success: true,
-      job_id,
-      metrics: computeScreeningMetrics(scores, { includeLegacyAliases })
-    });
-  } catch (error) {
-    console.error('Error fetching screening metrics:', error);
-    res.status(500).json({
-      error: 'Failed to fetch screening metrics',
-      details: error.message
-    });
   }
-});
+);
 
 // Recruitment overview for Zoe analytics
 router.get('/overview', requireRecruitmentAccess('read'), async (req, res) => {
@@ -1419,11 +1483,11 @@ router.get('/overview', requireRecruitmentAccess('read'), async (req, res) => {
     const [jobs, applications, scores, recruitmentMetrics] = await Promise.all([
       prisma.job.findMany({
         orderBy: { createdAt: 'desc' },
-        include: { _count: { select: { applications: true } } }
+        include: { _count: { select: { applications: true } } },
       }),
       prisma.application.findMany({ orderBy: { applied_at: 'desc' } }),
       prisma.candidateScore.findMany({ orderBy: { created_at: 'desc' } }),
-      prisma.recruitmentMetric.findMany({ orderBy: { metric_date: 'asc' }, take: 12 })
+      prisma.recruitmentMetric.findMany({ orderBy: { metric_date: 'asc' }, take: 12 }),
     ]);
 
     const overview = buildRecruitmentOverview(jobs, applications, scores);
@@ -1431,13 +1495,13 @@ router.get('/overview', requireRecruitmentAccess('read'), async (req, res) => {
 
     res.status(200).json({
       success: true,
-      overview
+      overview,
     });
   } catch (error) {
     console.error('Error fetching recruitment overview:', error);
     res.status(500).json({
       error: 'Failed to fetch recruitment overview',
-      details: error.message
+      details: error.message,
     });
   }
 });
@@ -1447,7 +1511,7 @@ router.get('/overview/export', requireRecruitmentAccess('read'), async (req, res
   try {
     const recruitmentMetrics = await prisma.recruitmentMetric.findMany({
       orderBy: { metric_date: 'asc' },
-      take: 12
+      take: 12,
     });
 
     const kpiTrends = buildKpiTrends(recruitmentMetrics);
@@ -1456,13 +1520,16 @@ router.get('/overview/export', requireRecruitmentAccess('read'), async (req, res
     const dateStamp = new Date().toISOString().split('T')[0];
 
     res.setHeader('Content-Type', 'text/csv; charset=utf-8');
-    res.setHeader('Content-Disposition', `attachment; filename=recruitment-kpi-trends-${dateStamp}.csv`);
+    res.setHeader(
+      'Content-Disposition',
+      `attachment; filename=recruitment-kpi-trends-${dateStamp}.csv`
+    );
     return res.status(200).send(csv);
   } catch (error) {
     console.error('Error exporting recruitment KPI trends:', error);
     return res.status(500).json({
       error: 'Failed to export recruitment KPI trends',
-      details: error.message
+      details: error.message,
     });
   }
 });
@@ -1477,7 +1544,7 @@ router.post('/jobs/:jobId/send-whatsapp-results', async (req, res) => {
 
     // Get job details
     const job = await prisma.job.findUnique({
-      where: { id: jobId }
+      where: { id: jobId },
     });
 
     if (!job) {
@@ -1488,15 +1555,13 @@ router.post('/jobs/:jobId/send-whatsapp-results', async (req, res) => {
     let scoredCandidates = await prisma.candidateScore.findMany({
       where: { job_id: jobId },
       include: {
-        candidate: true
-      }
+        candidate: true,
+      },
     });
 
     // Optional filter by screening status
     if (filter_status) {
-      scoredCandidates = scoredCandidates.filter(
-        score => score.screening_status === filter_status
-      );
+      scoredCandidates = scoredCandidates.filter(score => score.screening_status === filter_status);
     }
 
     // Send WhatsApp message to each candidate
@@ -1504,21 +1569,17 @@ router.post('/jobs/:jobId/send-whatsapp-results', async (req, res) => {
       total: scoredCandidates.length,
       sent: 0,
       failed: 0,
-      messages: []
+      messages: [],
     };
 
     for (const scoreRecord of scoredCandidates) {
       try {
-        await scoringService.sendScoringResultViaMeta(
-          scoreRecord.candidate,
-          job,
-          scoreRecord
-        );
+        await scoringService.sendScoringResultViaMeta(scoreRecord.candidate, job, scoreRecord);
         results.sent++;
         results.messages.push({
           candidate_id: scoreRecord.candidate_id,
           phone: scoreRecord.candidate.whatsapp_phone || scoreRecord.candidate.phone_number,
-          status: 'sent'
+          status: 'sent',
         });
       } catch (error) {
         results.failed++;
@@ -1526,7 +1587,7 @@ router.post('/jobs/:jobId/send-whatsapp-results', async (req, res) => {
           candidate_id: scoreRecord.candidate_id,
           phone: scoreRecord.candidate.whatsapp_phone || scoreRecord.candidate.phone_number,
           status: 'failed',
-          error: error.message
+          error: error.message,
         });
       }
     }
@@ -1535,13 +1596,13 @@ router.post('/jobs/:jobId/send-whatsapp-results', async (req, res) => {
       success: true,
       job_id: jobId,
       job_title: job.title,
-      results
+      results,
     });
   } catch (error) {
     console.error('Error sending WhatsApp results:', error);
     res.status(500).json({
       error: 'Failed to send WhatsApp messages',
-      details: error.message
+      details: error.message,
     });
   }
 });
@@ -1554,7 +1615,7 @@ router.post('/jobs/:jobId/batch-score-and-notify', async (req, res) => {
 
     // Get job details
     const job = await prisma.job.findUnique({
-      where: { id: jobId }
+      where: { id: jobId },
     });
 
     if (!job) {
@@ -1567,32 +1628,25 @@ router.post('/jobs/:jobId/batch-score-and-notify', async (req, res) => {
       scored: 0,
       messaged: 0,
       failed: 0,
-      candidates: []
+      candidates: [],
     };
 
     for (const candidateId of candidate_ids) {
       try {
         // Score the candidate
-        const scoreRecord = await scoringService.scoreCandidateForJob(
-          candidateId,
-          jobId
-        );
+        const scoreRecord = await scoringService.scoreCandidateForJob(candidateId, jobId);
 
         results.scored++;
 
         // Get candidate details
         const candidate = await prisma.candidate.findUnique({
-          where: { id: candidateId }
+          where: { id: candidateId },
         });
 
         // Send WhatsApp message
         if (candidate?.whatsapp_phone || candidate?.phone_number) {
           try {
-            await scoringService.sendScoringResultViaMeta(
-              candidate,
-              job,
-              scoreRecord
-            );
+            await scoringService.sendScoringResultViaMeta(candidate, job, scoreRecord);
             results.messaged++;
           } catch (msgError) {
             console.warn('Failed to send message for candidate:', candidateId);
@@ -1603,13 +1657,13 @@ router.post('/jobs/:jobId/batch-score-and-notify', async (req, res) => {
           candidate_id: candidateId,
           score: scoreRecord.overall_score,
           status: scoreRecord.screening_status,
-          message_sent: candidate?.whatsapp_phone ? true : false
+          message_sent: candidate?.whatsapp_phone ? true : false,
         });
       } catch (error) {
         results.failed++;
         results.candidates.push({
           candidate_id: candidateId,
-          error: error.message
+          error: error.message,
         });
       }
     }
@@ -1618,13 +1672,13 @@ router.post('/jobs/:jobId/batch-score-and-notify', async (req, res) => {
       success: true,
       job_id: jobId,
       job_title: job.title,
-      results
+      results,
     });
   } catch (error) {
     console.error('Error in batch score and notify:', error);
     res.status(500).json({
       error: 'Failed to process batch scoring',
-      details: error.message
+      details: error.message,
     });
   }
 });
@@ -1640,8 +1694,8 @@ router.get('/whatsapp/templates', async (req, res) => {
         name: t.name,
         category: t.category,
         variables: t.variables,
-        enabled: t.enabled
-      }))
+        enabled: t.enabled,
+      })),
     });
   } catch (error) {
     res.status(500).json({ error: 'Failed to fetch templates' });
@@ -1655,328 +1709,359 @@ router.get('/whatsapp/templates/:templateId/preview', async (req, res) => {
     res.json({
       success: true,
       template_id: req.params.templateId,
-      preview
+      preview,
     });
   } catch (error) {
     res.status(404).json({
       error: 'Template not found',
-      details: error.message
+      details: error.message,
     });
   }
 });
 
 // Validate WhatsApp templates against production readiness checks
-router.get('/whatsapp/templates/production-validation', requireRecruitmentAccess('read'), async (req, res) => {
-  try {
-    const { template_id } = req.query;
-    const maxBodyLength = req.query.max_body_length ? parseInt(req.query.max_body_length, 10) : undefined;
-    const options = Number.isFinite(maxBodyLength) ? { maxBodyLength } : {};
+router.get(
+  '/whatsapp/templates/production-validation',
+  requireRecruitmentAccess('read'),
+  async (req, res) => {
+    try {
+      const { template_id } = req.query;
+      const maxBodyLength = req.query.max_body_length
+        ? parseInt(req.query.max_body_length, 10)
+        : undefined;
+      const options = Number.isFinite(maxBodyLength) ? { maxBodyLength } : {};
 
-    if (template_id) {
-      const result = templateService.validateTemplateForProduction(template_id, options);
+      if (template_id) {
+        const result = templateService.validateTemplateForProduction(template_id, options);
+        return res.status(200).json({
+          success: true,
+          validation: result,
+        });
+      }
+
+      const result = templateService.validateAllTemplatesForProduction(options);
       return res.status(200).json({
         success: true,
-        validation: result
+        ...result,
+      });
+    } catch (error) {
+      const statusCode = error.message?.includes('Template not found') ? 404 : 500;
+      return res.status(statusCode).json({
+        error: 'Failed to validate templates for production',
+        details: error.message,
       });
     }
-
-    const result = templateService.validateAllTemplatesForProduction(options);
-    return res.status(200).json({
-      success: true,
-      ...result
-    });
-  } catch (error) {
-    const statusCode = error.message?.includes('Template not found') ? 404 : 500;
-    return res.status(statusCode).json({
-      error: 'Failed to validate templates for production',
-      details: error.message
-    });
   }
-});
+);
 
 // Send offer letter and move application to offer stage
-router.post('/applications/:application_id/send-offer', requireRecruitmentAccess('write'), async (req, res) => {
-  try {
-    const { application_id } = req.params;
-    const { salary, start_date, department, company_name = 'White Caves Real Estate' } = req.body;
+router.post(
+  '/applications/:application_id/send-offer',
+  requireRecruitmentAccess('write'),
+  async (req, res) => {
+    try {
+      const { application_id } = req.params;
+      const { salary, start_date, department, company_name = 'White Caves Real Estate' } = req.body;
 
-    if (!salary || !start_date) {
-      return res.status(400).json({
-        error: 'salary and start_date are required'
+      if (!salary || !start_date) {
+        return res.status(400).json({
+          error: 'salary and start_date are required',
+        });
+      }
+
+      const application = await prisma.application.findUnique({
+        where: { id: application_id },
+        include: { candidate: true, job: true },
+      });
+
+      if (!application) {
+        return res.status(404).json({ error: 'Application not found' });
+      }
+
+      const variables = {
+        candidate_name:
+          application.candidate.first_name || application.candidate.email || 'Candidate',
+        job_title: application.job.title,
+        company_name,
+        department: department || application.job.department || 'General',
+        start_date,
+        salary,
+      };
+
+      const message = await scoringService.sendTemplateMessageViaMeta(
+        application.candidate,
+        'offer_letter',
+        variables,
+        'offer_letter'
+      );
+
+      await prisma.application.update({
+        where: { id: application_id },
+        data: {
+          status: 'offer',
+          notes: `Offer sent on ${new Date().toISOString()} | Salary: ${salary} | Start: ${start_date}`,
+        },
+      });
+
+      await prisma.candidate.update({
+        where: { id: application.candidate_id },
+        data: { status: 'selected' },
+      });
+
+      logRecruitmentAudit(req, 'offer_sent', {
+        application_id,
+        candidate_id: application.candidate_id,
+        job_id: application.job_id,
+        salary,
+        start_date,
+        template_id: 'offer_letter',
+      });
+
+      res.status(200).json({
+        success: true,
+        message: 'Offer sent successfully',
+        application_id,
+        whatsapp_message_id: message?._id,
+        offer: variables,
+      });
+    } catch (error) {
+      console.error('Error sending offer:', error);
+      res.status(500).json({
+        error: 'Failed to send offer',
+        details: error.message,
       });
     }
-
-    const application = await prisma.application.findUnique({
-      where: { id: application_id },
-      include: { candidate: true, job: true }
-    });
-
-    if (!application) {
-      return res.status(404).json({ error: 'Application not found' });
-    }
-
-    const variables = {
-      candidate_name: application.candidate.first_name || application.candidate.email || 'Candidate',
-      job_title: application.job.title,
-      company_name,
-      department: department || application.job.department || 'General',
-      start_date,
-      salary
-    };
-
-    const message = await scoringService.sendTemplateMessageViaMeta(
-      application.candidate,
-      'offer_letter',
-      variables,
-      'offer_letter'
-    );
-
-    await prisma.application.update({
-      where: { id: application_id },
-      data: {
-        status: 'offer',
-        notes: `Offer sent on ${new Date().toISOString()} | Salary: ${salary} | Start: ${start_date}`
-      }
-    });
-
-    await prisma.candidate.update({
-      where: { id: application.candidate_id },
-      data: { status: 'selected' }
-    });
-
-    logRecruitmentAudit(req, 'offer_sent', {
-      application_id,
-      candidate_id: application.candidate_id,
-      job_id: application.job_id,
-      salary,
-      start_date,
-      template_id: 'offer_letter'
-    });
-
-    res.status(200).json({
-      success: true,
-      message: 'Offer sent successfully',
-      application_id,
-      whatsapp_message_id: message?._id,
-      offer: variables
-    });
-  } catch (error) {
-    console.error('Error sending offer:', error);
-    res.status(500).json({
-      error: 'Failed to send offer',
-      details: error.message
-    });
   }
-});
+);
 
 // Approve a sent offer before candidate acceptance
-router.post('/applications/:application_id/approve-offer', requireRecruitmentAccess('write'), async (req, res) => {
-  try {
-    const { application_id } = req.params;
-    const { approved_by = 'HR', approval_note } = req.body;
+router.post(
+  '/applications/:application_id/approve-offer',
+  requireRecruitmentAccess('write'),
+  async (req, res) => {
+    try {
+      const { application_id } = req.params;
+      const { approved_by = 'HR', approval_note } = req.body;
 
-    const application = await prisma.application.findUnique({
-      where: { id: application_id },
-      include: { candidate: true, job: true }
-    });
+      const application = await prisma.application.findUnique({
+        where: { id: application_id },
+        include: { candidate: true, job: true },
+      });
 
-    if (!application) {
-      return res.status(404).json({ error: 'Application not found' });
-    }
+      if (!application) {
+        return res.status(404).json({ error: 'Application not found' });
+      }
 
-    if (!['offer', 'offer_approved'].includes(application.status)) {
-      return res.status(409).json({
-        error: `Offer can only be approved from offer stage. Current status: ${application.status}`
+      if (!['offer', 'offer_approved'].includes(application.status)) {
+        return res.status(409).json({
+          error: `Offer can only be approved from offer stage. Current status: ${application.status}`,
+        });
+      }
+
+      const noteParts = [
+        `Offer approved on ${new Date().toISOString()} by ${approved_by}`,
+        approval_note ? `Note: ${approval_note}` : null,
+      ].filter(Boolean);
+
+      const updated = await prisma.application.update({
+        where: { id: application_id },
+        data: {
+          status: 'offer_approved',
+          notes: [application.notes, ...noteParts].filter(Boolean).join(' | '),
+        },
+      });
+
+      logRecruitmentAudit(req, 'offer_approved', {
+        application_id,
+        candidate_id: application.candidate_id,
+        job_id: application.job_id,
+        approved_by,
+        status: updated.status,
+      });
+
+      res.status(200).json({
+        success: true,
+        message: 'Offer approved successfully',
+        application_id,
+        status: updated.status,
+      });
+    } catch (error) {
+      console.error('Error approving offer:', error);
+      res.status(500).json({
+        error: 'Failed to approve offer',
+        details: error.message,
       });
     }
-
-    const noteParts = [
-      `Offer approved on ${new Date().toISOString()} by ${approved_by}`,
-      approval_note ? `Note: ${approval_note}` : null
-    ].filter(Boolean);
-
-    const updated = await prisma.application.update({
-      where: { id: application_id },
-      data: {
-        status: 'offer_approved',
-        notes: [application.notes, ...noteParts].filter(Boolean).join(' | ')
-      }
-    });
-
-    logRecruitmentAudit(req, 'offer_approved', {
-      application_id,
-      candidate_id: application.candidate_id,
-      job_id: application.job_id,
-      approved_by,
-      status: updated.status
-    });
-
-    res.status(200).json({
-      success: true,
-      message: 'Offer approved successfully',
-      application_id,
-      status: updated.status
-    });
-  } catch (error) {
-    console.error('Error approving offer:', error);
-    res.status(500).json({
-      error: 'Failed to approve offer',
-      details: error.message
-    });
   }
-});
+);
 
 // Record candidate response to an offer
-router.post('/applications/:application_id/respond-offer', requireRecruitmentAccess('write'), async (req, res) => {
-  try {
-    const { application_id } = req.params;
-    const { decision, response_note, confirmed_start_date } = req.body;
+router.post(
+  '/applications/:application_id/respond-offer',
+  requireRecruitmentAccess('write'),
+  async (req, res) => {
+    try {
+      const { application_id } = req.params;
+      const { decision, response_note, confirmed_start_date } = req.body;
 
-    if (!decision || !['accept', 'decline'].includes(decision)) {
-      return res.status(400).json({
-        error: 'decision is required and must be one of: accept, decline'
-      });
-    }
-
-    const application = await prisma.application.findUnique({
-      where: { id: application_id },
-      include: { candidate: true, job: true }
-    });
-
-    if (!application) {
-      return res.status(404).json({ error: 'Application not found' });
-    }
-
-    if (!['offer', 'offer_approved', 'offer_accepted', 'offer_declined'].includes(application.status)) {
-      return res.status(409).json({
-        error: `Offer response can only be recorded from offer stages. Current status: ${application.status}`
-      });
-    }
-
-    const accepted = decision === 'accept';
-    const nextStatus = accepted ? 'offer_accepted' : 'offer_declined';
-    const candidateStatus = accepted ? 'selected' : 'rejected';
-    const decisionTimestamp = new Date().toISOString();
-    const noteParts = [
-      `Offer ${accepted ? 'accepted' : 'declined'} on ${decisionTimestamp}`,
-      confirmed_start_date ? `Confirmed start: ${confirmed_start_date}` : null,
-      response_note ? `Response note: ${response_note}` : null
-    ].filter(Boolean);
-
-    await prisma.application.update({
-      where: { id: application_id },
-      data: {
-        status: nextStatus,
-        notes: [application.notes, ...noteParts].filter(Boolean).join(' | ')
+      if (!decision || !['accept', 'decline'].includes(decision)) {
+        return res.status(400).json({
+          error: 'decision is required and must be one of: accept, decline',
+        });
       }
-    });
 
-    await prisma.candidate.update({
-      where: { id: application.candidate_id },
-      data: { status: candidateStatus }
-    });
+      const application = await prisma.application.findUnique({
+        where: { id: application_id },
+        include: { candidate: true, job: true },
+      });
 
-    logRecruitmentAudit(req, 'offer_response_recorded', {
-      application_id,
-      candidate_id: application.candidate_id,
-      job_id: application.job_id,
-      decision,
-      application_status: nextStatus,
-      candidate_status: candidateStatus
-    });
+      if (!application) {
+        return res.status(404).json({ error: 'Application not found' });
+      }
 
-    res.status(200).json({
-      success: true,
-      message: `Offer ${accepted ? 'accepted' : 'declined'} successfully`,
-      application_id,
-      status: nextStatus,
-      candidate_status: candidateStatus
-    });
-  } catch (error) {
-    console.error('Error recording offer response:', error);
-    res.status(500).json({
-      error: 'Failed to record offer response',
-      details: error.message
-    });
+      if (
+        !['offer', 'offer_approved', 'offer_accepted', 'offer_declined'].includes(
+          application.status
+        )
+      ) {
+        return res.status(409).json({
+          error: `Offer response can only be recorded from offer stages. Current status: ${application.status}`,
+        });
+      }
+
+      const accepted = decision === 'accept';
+      const nextStatus = accepted ? 'offer_accepted' : 'offer_declined';
+      const candidateStatus = accepted ? 'selected' : 'rejected';
+      const decisionTimestamp = new Date().toISOString();
+      const noteParts = [
+        `Offer ${accepted ? 'accepted' : 'declined'} on ${decisionTimestamp}`,
+        confirmed_start_date ? `Confirmed start: ${confirmed_start_date}` : null,
+        response_note ? `Response note: ${response_note}` : null,
+      ].filter(Boolean);
+
+      await prisma.application.update({
+        where: { id: application_id },
+        data: {
+          status: nextStatus,
+          notes: [application.notes, ...noteParts].filter(Boolean).join(' | '),
+        },
+      });
+
+      await prisma.candidate.update({
+        where: { id: application.candidate_id },
+        data: { status: candidateStatus },
+      });
+
+      logRecruitmentAudit(req, 'offer_response_recorded', {
+        application_id,
+        candidate_id: application.candidate_id,
+        job_id: application.job_id,
+        decision,
+        application_status: nextStatus,
+        candidate_status: candidateStatus,
+      });
+
+      res.status(200).json({
+        success: true,
+        message: `Offer ${accepted ? 'accepted' : 'declined'} successfully`,
+        application_id,
+        status: nextStatus,
+        candidate_status: candidateStatus,
+      });
+    } catch (error) {
+      console.error('Error recording offer response:', error);
+      res.status(500).json({
+        error: 'Failed to record offer response',
+        details: error.message,
+      });
+    }
   }
-});
+);
 
 // Start onboarding after offer acceptance
-router.post('/applications/:application_id/start-onboarding', requireRecruitmentAccess('write'), async (req, res) => {
-  try {
-    const { application_id } = req.params;
-    const { start_date } = req.body;
+router.post(
+  '/applications/:application_id/start-onboarding',
+  requireRecruitmentAccess('write'),
+  async (req, res) => {
+    try {
+      const { application_id } = req.params;
+      const { start_date } = req.body;
 
-    if (!start_date) {
-      return res.status(400).json({
-        error: 'start_date is required'
-      });
-    }
-
-    const application = await prisma.application.findUnique({
-      where: { id: application_id },
-      include: { candidate: true, job: true }
-    });
-
-    if (!application) {
-      return res.status(404).json({ error: 'Application not found' });
-    }
-
-    if (!['offer_accepted', 'offer_approved'].includes(application.status)) {
-      return res.status(409).json({
-        error: `Onboarding can only start after offer approval/acceptance. Current status: ${application.status}`
-      });
-    }
-
-    const onboarding = buildOnboardingChecklist(application.candidate, application.job, start_date);
-
-    const message = await scoringService.sendTemplateMessageViaMeta(
-      application.candidate,
-      'onboarding_welcome',
-      {
-        ...onboarding,
-        checklist_items: onboarding.checklist_items.map(item => `• ${item}`).join('\n'),
-        training_modules: onboarding.training_modules.map(item => `• ${item}`).join('\n')
-      },
-      'onboarding_welcome'
-    );
-
-    await prisma.application.update({
-      where: { id: application_id },
-      data: {
-        status: 'hired',
-        notes: `Onboarding started on ${new Date().toISOString()} | Start: ${start_date}`
+      if (!start_date) {
+        return res.status(400).json({
+          error: 'start_date is required',
+        });
       }
-    });
 
-    await prisma.candidate.update({
-      where: { id: application.candidate_id },
-      data: { status: 'hired' }
-    });
+      const application = await prisma.application.findUnique({
+        where: { id: application_id },
+        include: { candidate: true, job: true },
+      });
 
-    logRecruitmentAudit(req, 'onboarding_started', {
-      application_id,
-      candidate_id: application.candidate_id,
-      job_id: application.job_id,
-      start_date,
-      template_id: 'onboarding_welcome'
-    });
+      if (!application) {
+        return res.status(404).json({ error: 'Application not found' });
+      }
 
-    res.status(200).json({
-      success: true,
-      message: 'Onboarding started successfully',
-      application_id,
-      whatsapp_message_id: message?._id,
-      onboarding
-    });
-  } catch (error) {
-    console.error('Error starting onboarding:', error);
-    res.status(500).json({
-      error: 'Failed to start onboarding',
-      details: error.message
-    });
+      if (!['offer_accepted', 'offer_approved'].includes(application.status)) {
+        return res.status(409).json({
+          error: `Onboarding can only start after offer approval/acceptance. Current status: ${application.status}`,
+        });
+      }
+
+      const onboarding = buildOnboardingChecklist(
+        application.candidate,
+        application.job,
+        start_date
+      );
+
+      const message = await scoringService.sendTemplateMessageViaMeta(
+        application.candidate,
+        'onboarding_welcome',
+        {
+          ...onboarding,
+          checklist_items: onboarding.checklist_items.map(item => `• ${item}`).join('\n'),
+          training_modules: onboarding.training_modules.map(item => `• ${item}`).join('\n'),
+        },
+        'onboarding_welcome'
+      );
+
+      await prisma.application.update({
+        where: { id: application_id },
+        data: {
+          status: 'hired',
+          notes: `Onboarding started on ${new Date().toISOString()} | Start: ${start_date}`,
+        },
+      });
+
+      await prisma.candidate.update({
+        where: { id: application.candidate_id },
+        data: { status: 'hired' },
+      });
+
+      logRecruitmentAudit(req, 'onboarding_started', {
+        application_id,
+        candidate_id: application.candidate_id,
+        job_id: application.job_id,
+        start_date,
+        template_id: 'onboarding_welcome',
+      });
+
+      res.status(200).json({
+        success: true,
+        message: 'Onboarding started successfully',
+        application_id,
+        whatsapp_message_id: message?._id,
+        onboarding,
+      });
+    } catch (error) {
+      console.error('Error starting onboarding:', error);
+      res.status(500).json({
+        error: 'Failed to start onboarding',
+        details: error.message,
+      });
+    }
   }
-});
+);
 
 // ============= INTERVIEW SCHEDULING ENDPOINTS =============
 
@@ -1988,11 +2073,13 @@ router.post('/candidates/:candidateId/interview/schedule', async (req, res) => {
 
     if (!jobId || !interviewerIds || !slotOptions) {
       return res.status(400).json({
-        error: 'Missing required fields: jobId, interviewerIds, slotOptions'
+        error: 'Missing required fields: jobId, interviewerIds, slotOptions',
       });
     }
 
-    const { InterviewSchedulingService } = await import('../services/InterviewSchedulingService.js');
+    const { InterviewSchedulingService } = await import(
+      '../services/InterviewSchedulingService.js'
+    );
 
     const result = await InterviewSchedulingService.createInterviewSession(
       candidateId,
@@ -2005,7 +2092,7 @@ router.post('/candidates/:candidateId/interview/schedule', async (req, res) => {
   } catch (error) {
     res.status(500).json({
       error: 'Failed to create interview session',
-      details: error.message
+      details: error.message,
     });
   }
 });
@@ -2017,11 +2104,13 @@ router.post('/interview/process-response', async (req, res) => {
 
     if (!waId || !phoneNumber || !messageContent || !sessionId) {
       return res.status(400).json({
-        error: 'Missing required fields: waId, phoneNumber, messageContent, sessionId'
+        error: 'Missing required fields: waId, phoneNumber, messageContent, sessionId',
       });
     }
 
-    const { InterviewSchedulingService } = await import('../services/InterviewSchedulingService.js');
+    const { InterviewSchedulingService } = await import(
+      '../services/InterviewSchedulingService.js'
+    );
 
     const result = await InterviewSchedulingService.processInterviewResponse(
       waId,
@@ -2034,7 +2123,7 @@ router.post('/interview/process-response', async (req, res) => {
   } catch (error) {
     res.status(500).json({
       error: 'Failed to process interview response',
-      details: error.message
+      details: error.message,
     });
   }
 });
@@ -2044,7 +2133,9 @@ router.post('/interview/:interviewId/send-reminder', async (req, res) => {
   try {
     const { interviewId } = req.params;
 
-    const { InterviewSchedulingService } = await import('../services/InterviewSchedulingService.js');
+    const { InterviewSchedulingService } = await import(
+      '../services/InterviewSchedulingService.js'
+    );
 
     const result = await InterviewSchedulingService.sendInterviewReminder(interviewId);
 
@@ -2052,7 +2143,7 @@ router.post('/interview/:interviewId/send-reminder', async (req, res) => {
   } catch (error) {
     res.status(500).json({
       error: 'Failed to send reminder',
-      details: error.message
+      details: error.message,
     });
   }
 });
@@ -2062,25 +2153,27 @@ router.get('/jobs/:jobId/interview-stats', async (req, res) => {
   try {
     const { jobId } = req.params;
 
-    const { InterviewSchedulingService } = await import('../services/InterviewSchedulingService.js');
+    const { InterviewSchedulingService } = await import(
+      '../services/InterviewSchedulingService.js'
+    );
 
     const stats = await InterviewSchedulingService.getInterviewStats(jobId);
 
     if (!stats) {
       return res.status(404).json({
-        error: 'No interviews found for this job'
+        error: 'No interviews found for this job',
       });
     }
 
     res.json({
       success: true,
       jobId,
-      stats
+      stats,
     });
   } catch (error) {
     res.status(500).json({
       error: 'Failed to get interview statistics',
-      details: error.message
+      details: error.message,
     });
   }
 });
@@ -2099,33 +2192,33 @@ router.get('/interview/sessions/:sessionId', async (req, res) => {
             first_name: true,
             email: true,
             phone_number: true,
-            whatsapp_phone: true
-          }
+            whatsapp_phone: true,
+          },
         },
         job: {
           select: {
             id: true,
             title: true,
-            company: true
-          }
-        }
-      }
+            company: true,
+          },
+        },
+      },
     });
 
     if (!session) {
       return res.status(404).json({
-        error: 'Interview session not found'
+        error: 'Interview session not found',
       });
     }
 
     res.json({
       success: true,
-      session
+      session,
     });
   } catch (error) {
     res.status(500).json({
       error: 'Failed to get interview session',
-      details: error.message
+      details: error.message,
     });
   }
 });
@@ -2142,29 +2235,29 @@ router.get('/candidates/:candidateId/interviews', async (req, res) => {
           select: {
             id: true,
             title: true,
-            company: true
-          }
+            company: true,
+          },
         },
         session: {
           select: {
             status: true,
-            createdAt: true
-          }
-        }
+            createdAt: true,
+          },
+        },
       },
-      orderBy: { scheduledAt: 'desc' }
+      orderBy: { scheduledAt: 'desc' },
     });
 
     res.json({
       success: true,
       candidateId,
       total: interviews.length,
-      interviews
+      interviews,
     });
   } catch (error) {
     res.status(500).json({
       error: 'Failed to get candidate interviews',
-      details: error.message
+      details: error.message,
     });
   }
 });
@@ -2175,11 +2268,18 @@ router.patch('/interview/:interviewId/status', async (req, res) => {
     const { interviewId } = req.params;
     const { status, feedback, notes } = req.body;
 
-    const validStatuses = ['scheduled', 'in-progress', 'completed', 'no_show', 'rescheduled', 'cancelled'];
+    const validStatuses = [
+      'scheduled',
+      'in-progress',
+      'completed',
+      'no_show',
+      'rescheduled',
+      'cancelled',
+    ];
 
     if (!validStatuses.includes(status)) {
       return res.status(400).json({
-        error: 'Invalid status. Must be one of: ' + validStatuses.join(', ')
+        error: 'Invalid status. Must be one of: ' + validStatuses.join(', '),
       });
     }
 
@@ -2190,18 +2290,18 @@ router.patch('/interview/:interviewId/status', async (req, res) => {
         feedback,
         notes,
         completedAt: status === 'completed' ? new Date() : null,
-        updatedAt: new Date()
-      }
+        updatedAt: new Date(),
+      },
     });
 
     res.json({
       success: true,
-      interview: updated
+      interview: updated,
     });
   } catch (error) {
     res.status(500).json({
       error: 'Failed to update interview status',
-      details: error.message
+      details: error.message,
     });
   }
 });
@@ -2220,7 +2320,7 @@ router.post('/conversations/:candidateId/analyze', async (req, res) => {
     if (!Array.isArray(messages)) {
       return res.status(400).json({
         error: 'Messages must be an array',
-        example: [{ content: 'text', timestamp: '2024-01-01T00:00:00Z', direction: 'incoming' }]
+        example: [{ content: 'text', timestamp: '2024-01-01T00:00:00Z', direction: 'incoming' }],
       });
     }
 
@@ -2242,14 +2342,14 @@ router.post('/conversations/:candidateId/analyze', async (req, res) => {
         intent,
         qualification,
         messageCount: messages.length,
-        analyzedAt: new Date()
-      }
+        analyzedAt: new Date(),
+      },
     });
   } catch (error) {
     console.error('Conversation analysis error:', error);
     return res.status(500).json({
       error: 'Failed to analyze conversation',
-      details: error.message
+      details: error.message,
     });
   }
 });
@@ -2265,7 +2365,7 @@ router.post('/leads/:candidateId/calculate-score', async (req, res) => {
 
     if (typeof resumeScore !== 'number' || !Array.isArray(conversationMessages)) {
       return res.status(400).json({
-        error: 'Invalid input. Require: resumeScore (number), conversationMessages (array)'
+        error: 'Invalid input. Require: resumeScore (number), conversationMessages (array)',
       });
     }
 
@@ -2274,7 +2374,7 @@ router.post('/leads/:candidateId/calculate-score', async (req, res) => {
     try {
       previousLeadScore = await prisma.leadScore.findFirst({
         where: { candidateId, jobId: jobId || null },
-        orderBy: { createdAt: 'desc' }
+        orderBy: { createdAt: 'desc' },
       });
     } catch (e) {
       // LeadScore table may not exist yet
@@ -2300,8 +2400,8 @@ router.post('/leads/:candidateId/calculate-score', async (req, res) => {
             scoreBreakdown: leadScore.scoreBreakdown,
             leadTemperature: leadScore.leadTemperature,
             qualificationLevel: leadScore.qualificationLevel,
-            recommendations: leadScore.recommendations
-          }
+            recommendations: leadScore.recommendations,
+          },
         });
       }
     } catch (dbError) {
@@ -2312,13 +2412,13 @@ router.post('/leads/:candidateId/calculate-score', async (req, res) => {
       success: true,
       candidateId,
       leadScore,
-      savedToDatabase: !!jobId
+      savedToDatabase: !!jobId,
     });
   } catch (error) {
     console.error('Lead score calculation error:', error);
     return res.status(500).json({
       error: 'Failed to calculate lead score',
-      details: error.message
+      details: error.message,
     });
   }
 });
@@ -2355,10 +2455,10 @@ router.get('/leads', async (req, res) => {
               firstName: true,
               lastName: true,
               phone: true,
-              location: true
-            }
-          }
-        }
+              location: true,
+            },
+          },
+        },
       });
     } catch (dbError) {
       console.warn('Could not query database:', dbError.message);
@@ -2372,14 +2472,14 @@ router.get('/leads', async (req, res) => {
       temperature: lead.leadTemperature,
       qualification: lead.qualificationLevel,
       recommendations: lead.recommendations,
-      scoredAt: lead.createdAt
+      scoredAt: lead.createdAt,
     }));
 
     // Get temperature breakdown
     const breakdown = {
       HOT: formattedLeads.filter(l => l.temperature === 'HOT').length,
       WARM: formattedLeads.filter(l => l.temperature === 'WARM').length,
-      COLD: formattedLeads.filter(l => l.temperature === 'COLD').length
+      COLD: formattedLeads.filter(l => l.temperature === 'COLD').length,
     };
 
     return res.json({
@@ -2387,13 +2487,13 @@ router.get('/leads', async (req, res) => {
       filters: { temperature, jobId, limit: parsedLimit },
       leadsCount: formattedLeads.length,
       breakdown,
-      leads: formattedLeads
+      leads: formattedLeads,
     });
   } catch (error) {
     console.error('Lead listing error:', error);
     return res.status(500).json({
       error: 'Failed to list leads',
-      details: error.message
+      details: error.message,
     });
   }
 });
@@ -2410,7 +2510,12 @@ router.patch('/leads/:candidateId/status', async (req, res) => {
     if (!newStatus) {
       return res.status(400).json({
         error: 'newStatus is required',
-        validStatuses: ['hot_interview_scheduled', 'warm_under_review', 'cold_archived', 'nurture_sequence']
+        validStatuses: [
+          'hot_interview_scheduled',
+          'warm_under_review',
+          'cold_archived',
+          'nurture_sequence',
+        ],
       });
     }
 
@@ -2419,7 +2524,7 @@ router.patch('/leads/:candidateId/status', async (req, res) => {
     try {
       leadData = await prisma.leadScore.findFirst({
         where: { candidateId, jobId: jobId || null },
-        orderBy: { createdAt: 'desc' }
+        orderBy: { createdAt: 'desc' },
       });
     } catch (e) {
       console.warn('Could not fetch lead data');
@@ -2439,7 +2544,7 @@ router.patch('/leads/:candidateId/status', async (req, res) => {
       newStatus,
       notes,
       updatedAt: new Date(),
-      integrationDecision: integrationResult.decision
+      integrationDecision: integrationResult.decision,
     };
 
     try {
@@ -2447,8 +2552,8 @@ router.patch('/leads/:candidateId/status', async (req, res) => {
         where: { id: candidateId },
         data: {
           lead_temperature: newStatus.split('_')[0].toUpperCase(),
-          updated_at: new Date()
-        }
+          updated_at: new Date(),
+        },
       });
     } catch (dbError) {
       console.warn('Could not update candidate record');
@@ -2461,14 +2566,14 @@ router.patch('/leads/:candidateId/status', async (req, res) => {
         status: newStatus,
         notes,
         integrationActions: integrationResult.decision?.autoActions || [],
-        timestamp: new Date()
-      }
+        timestamp: new Date(),
+      },
     });
   } catch (error) {
     console.error('Lead status update error:', error);
     return res.status(500).json({
       error: 'Failed to update lead status',
-      details: error.message
+      details: error.message,
     });
   }
 });
@@ -2496,8 +2601,8 @@ router.get('/analytics/lead-funnel', async (req, res) => {
           leadTemperature: true,
           qualificationLevel: true,
           scoreBreakdown: true,
-          createdAt: true
-        }
+          createdAt: true,
+        },
       });
     } catch (dbError) {
       console.warn('Could not fetch lead data from database');
@@ -2512,35 +2617,35 @@ router.get('/analytics/lead-funnel', async (req, res) => {
           temperatureDistribution: {
             HOT: 0,
             WARM: 0,
-            COLD: 0
+            COLD: 0,
           },
           qualificationDistribution: {
             Excellent: 0,
             Good: 0,
             Fair: 0,
             Weak: 0,
-            Poor: 0
+            Poor: 0,
           },
           scoreDistribution: {
             '80-100': 0,
             '60-79': 0,
             '40-59': 0,
-            '0-39': 0
+            '0-39': 0,
           },
           averageScores: {
             overall: 0,
             resume: 0,
             conversation: 0,
-            engagement: 0
+            engagement: 0,
           },
           kpis: {
             hotLeadPercentage: 0,
             averageQualification: 'Unknown',
-            conversionPotential: 'Unknown'
+            conversionPotential: 'Unknown',
           },
           jobId: jobId || 'all',
-          generatedAt: new Date()
-        }
+          generatedAt: new Date(),
+        },
       });
     }
 
@@ -2548,7 +2653,7 @@ router.get('/analytics/lead-funnel', async (req, res) => {
     const temperatureBreakdown = {
       HOT: allLeads.filter(l => l.leadTemperature === 'HOT').length,
       WARM: allLeads.filter(l => l.leadTemperature === 'WARM').length,
-      COLD: allLeads.filter(l => l.leadTemperature === 'COLD').length
+      COLD: allLeads.filter(l => l.leadTemperature === 'COLD').length,
     };
 
     const qualificationBreakdown = {
@@ -2556,20 +2661,30 @@ router.get('/analytics/lead-funnel', async (req, res) => {
       Good: allLeads.filter(l => l.qualificationLevel === 'Good').length,
       Fair: allLeads.filter(l => l.qualificationLevel === 'Fair').length,
       Weak: allLeads.filter(l => l.qualificationLevel === 'Weak').length,
-      Poor: allLeads.filter(l => l.qualificationLevel === 'Poor').length
+      Poor: allLeads.filter(l => l.qualificationLevel === 'Poor').length,
     };
 
     const scoreDistribution = {
       '80-100': allLeads.filter(l => l.overallScore >= 80).length,
       '60-79': allLeads.filter(l => l.overallScore >= 60 && l.overallScore < 80).length,
       '40-59': allLeads.filter(l => l.overallScore >= 40 && l.overallScore < 60).length,
-      '0-39': allLeads.filter(l => l.overallScore < 40).length
+      '0-39': allLeads.filter(l => l.overallScore < 40).length,
     };
 
-    const avgOverallScore = (allLeads.reduce((sum, l) => sum + l.overallScore, 0) / allLeads.length).toFixed(1);
-    const avgResumeScore = (allLeads.reduce((sum, l) => sum + (l.scoreBreakdown?.resumeScore || 0), 0) / allLeads.length).toFixed(1);
-    const avgConversationScore = (allLeads.reduce((sum, l) => sum + (l.scoreBreakdown?.conversationScore || 0), 0) / allLeads.length).toFixed(1);
-    const avgEngagementScore = (allLeads.reduce((sum, l) => sum + (l.scoreBreakdown?.engagementVelocity || 0), 0) / allLeads.length).toFixed(1);
+    const avgOverallScore = (
+      allLeads.reduce((sum, l) => sum + l.overallScore, 0) / allLeads.length
+    ).toFixed(1);
+    const avgResumeScore = (
+      allLeads.reduce((sum, l) => sum + (l.scoreBreakdown?.resumeScore || 0), 0) / allLeads.length
+    ).toFixed(1);
+    const avgConversationScore = (
+      allLeads.reduce((sum, l) => sum + (l.scoreBreakdown?.conversationScore || 0), 0) /
+      allLeads.length
+    ).toFixed(1);
+    const avgEngagementScore = (
+      allLeads.reduce((sum, l) => sum + (l.scoreBreakdown?.engagementVelocity || 0), 0) /
+      allLeads.length
+    ).toFixed(1);
 
     return res.json({
       success: true,
@@ -2582,26 +2697,31 @@ router.get('/analytics/lead-funnel', async (req, res) => {
           overall: parseFloat(avgOverallScore),
           resume: parseFloat(avgResumeScore),
           conversation: parseFloat(avgConversationScore),
-          engagement: parseFloat(avgEngagementScore)
+          engagement: parseFloat(avgEngagementScore),
         },
         kpis: {
           hotLeadPercentage: ((temperatureBreakdown.HOT / allLeads.length) * 100).toFixed(1),
           warmLeadPercentage: ((temperatureBreakdown.WARM / allLeads.length) * 100).toFixed(1),
           coldLeadPercentage: ((temperatureBreakdown.COLD / allLeads.length) * 100).toFixed(1),
-          averageQualification: Object.keys(qualificationBreakdown).reduce((a, b) => 
+          averageQualification: Object.keys(qualificationBreakdown).reduce((a, b) =>
             qualificationBreakdown[a] > qualificationBreakdown[b] ? a : b
           ),
-          conversionPotential: parseFloat(avgOverallScore) > 70 ? 'High' : parseFloat(avgOverallScore) > 50 ? 'Medium' : 'Low'
+          conversionPotential:
+            parseFloat(avgOverallScore) > 70
+              ? 'High'
+              : parseFloat(avgOverallScore) > 50
+                ? 'Medium'
+                : 'Low',
         },
         jobId: jobId || 'all',
-        generatedAt: new Date()
-      }
+        generatedAt: new Date(),
+      },
     });
   } catch (error) {
     console.error('Lead funnel analytics error:', error);
     return res.status(500).json({
       error: 'Failed to generate analytics',
-      details: error.message
+      details: error.message,
     });
   }
 });

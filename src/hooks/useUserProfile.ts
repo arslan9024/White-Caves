@@ -11,7 +11,6 @@ import { useNavigate } from 'react-router-dom';
 import type { RootState } from '../store/store';
 import { selectSessionUser } from '../store/selectors/sessionSelectors';
 import { setUser } from '../store/userSlice';
-import { logout as logoutAuthState } from '../store/authSlice';
 import { auth } from '../config/firebase';
 import { createLogger } from '../utils/logger';
 import { safeStorage } from '../utils/safeStorage';
@@ -88,9 +87,17 @@ export function useUserProfile() {
 
   const handleLogout = async (): Promise<void> => {
     try {
-      await completeClientLogout(dispatch, navigate, '/');
+      if (auth) {
+        await signOut(auth);
+      }
+      await logoutBackendSession();
+      completeClientLogout(dispatch);
+      navigate('/');
     } catch (error) {
       log.error('Logout error:', error);
+      // Still clean up state even if backend logout fails
+      completeClientLogout(dispatch);
+      navigate('/');
     }
   };
 

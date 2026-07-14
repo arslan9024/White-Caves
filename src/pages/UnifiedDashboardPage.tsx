@@ -62,6 +62,7 @@ const CommissionsTab = lazy(() =>
 );
 const SettingsTab = lazy(() => import('../components/owner/tabs/SettingsTab'));
 const UsersTab = lazy(() => import('../components/owner/tabs/UsersTab'));
+const LeaderboardTab = lazy(() => import('../components/owner/tabs/LeaderboardTab'));
 import type {
   OverviewData,
   PropertiesData,
@@ -1068,6 +1069,14 @@ const UnifiedDashboardPage: FC = () => {
           <RouteErrorBoundary section="Commissions">
             <Suspense fallback={<TabLoadingFallback />}>
               <CommissionsTab />
+            </Suspense>
+          </RouteErrorBoundary>
+        );
+      case 'leaderboard':
+        return (
+          <RouteErrorBoundary section="Leaderboard">
+            <Suspense fallback={<TabLoadingFallback />}>
+              <LeaderboardTab />
             </Suspense>
           </RouteErrorBoundary>
         );

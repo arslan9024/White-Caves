@@ -499,6 +499,7 @@ function UsersTab({ onAction }: UsersTabProps) {
           {Object.entries(ROLE_CATEGORIES).map(([key, label]) => (
             <CategoryCard
               key={key}
+              className="category-card"
               $isActive={selectedCategory === key}
               onClick={() => setSelectedCategory(selectedCategory === key ? 'all' : key)}
             >
@@ -567,7 +568,7 @@ function UsersTab({ onAction }: UsersTabProps) {
       )}
 
       <TableContainer>
-        <Table>
+        <Table aria-label="Team members and users">
           <thead>
             <TableRow>
               <TableHeader>
@@ -579,24 +580,40 @@ function UsersTab({ onAction }: UsersTabProps) {
                   onChange={handleSelectAll}
                 />
               </TableHeader>
-              <TableHeader style={{ cursor: 'pointer' }} onClick={() => handleSort('name')}>
+              <TableHeader
+                className="sortable"
+                style={{ cursor: 'pointer' }}
+                onClick={() => handleSort('name')}
+              >
                 User
                 {sortBy === 'name' &&
                   (sortOrder === 'asc' ? <ChevronUp size={14} /> : <ChevronDown size={14} />)}
               </TableHeader>
-              <TableHeader style={{ cursor: 'pointer' }} onClick={() => handleSort('role')}>
+              <TableHeader
+                className="sortable"
+                style={{ cursor: 'pointer' }}
+                onClick={() => handleSort('role')}
+              >
                 Role
                 {sortBy === 'role' &&
                   (sortOrder === 'asc' ? <ChevronUp size={14} /> : <ChevronDown size={14} />)}
               </TableHeader>
               <TableHeader>Contact</TableHeader>
               <TableHeader>Status</TableHeader>
-              <TableHeader style={{ cursor: 'pointer' }} onClick={() => handleSort('joinDate')}>
+              <TableHeader
+                className="sortable"
+                style={{ cursor: 'pointer' }}
+                onClick={() => handleSort('joinDate')}
+              >
                 Joined
                 {sortBy === 'joinDate' &&
                   (sortOrder === 'asc' ? <ChevronUp size={14} /> : <ChevronDown size={14} />)}
               </TableHeader>
-              <TableHeader style={{ cursor: 'pointer' }} onClick={() => handleSort('deals')}>
+              <TableHeader
+                className="sortable"
+                style={{ cursor: 'pointer' }}
+                onClick={() => handleSort('deals')}
+              >
                 Deals
                 {sortBy === 'deals' &&
                   (sortOrder === 'asc' ? <ChevronUp size={14} /> : <ChevronDown size={14} />)}
@@ -638,6 +655,7 @@ function UsersTab({ onAction }: UsersTabProps) {
                   </UserCell>
                   <TableCell>
                     <RoleBadge
+                      className="role-badge"
                       style={{
                         backgroundColor: `${roleInfo.color}20`,
                         color: roleInfo.color,
@@ -700,14 +718,24 @@ function UsersTab({ onAction }: UsersTabProps) {
         {paginatedUsers.length === 0 && (
           <div style={{ textAlign: 'center', padding: '40px', color: 'var(--text-secondary)' }}>
             <p>No users found matching your filters.</p>
+            <button
+              onClick={() => {
+                setSearchQuery('');
+                setSelectedRole('all');
+                setSelectedStatus('all');
+                setSelectedCategory('all');
+              }}
+              style={{ marginTop: 8, cursor: 'pointer' }}
+            >
+              Clear filters
+            </button>
           </div>
         )}
 
         {paginatedUsers.length > 0 && (
           <PaginationContainer>
             <PaginationInfo>
-              Showing {startIndex + 1} to {Math.min(endIndex, filteredUsers.length)} of{' '}
-              {filteredUsers.length} users
+              Showing {paginatedUsers.length} of {filteredUsers.length} users
             </PaginationInfo>
             <div style={{ display: 'flex', gap: '8px' }}>
               <PageButton

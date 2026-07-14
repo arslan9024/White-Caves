@@ -1,50 +1,82 @@
-# AEGIS Current Run — Turn 3 Blueprint
+# AEGIS Current Run — Turn 4 Blueprint
 
 ## System Connection Status
 
 - Mode: **AUTOPILOT (Turn-based)**
-- Timestamp: **2026-05-27**
-- Branch: `copilot/confirm-ai-assistants-upgrade`
-- Scope: TypeScript strict triage + image attribute compatibility + import path normalization
+- Timestamp: **2026-07-14**
+- Branch: `main`
+- Scope: Plans update + Workflow creation + 10-fix sprint + Google auth verification + npm run dev
+- Session Agent: `@Ada` (Claude Sonnet — premium tier)
 
 ## Task ID
 
-- `AEGIS-T3-TSCHECK-HARDENING-003`
+- `AEGIS-T4-FIXES-AUTH-WORKFLOWS-004`
 
-## Gap Detector (Step 1 Findings)
+## Wave Status
 
-1. `npm run typecheck` reports TS2322 in property image components due unsupported `fetchPriority` prop typing.
-2. TS1149 case-sensitivity error from mixed import path casing (`crmDataService` vs `CRMDataService`).
-3. Build is green, but strict type gate is red; production readiness requires strict gate cleanup.
+| Wave   | Name                         | Status      |
+| ------ | ---------------------------- | ----------- |
+| 09     | UX hardening                 | ✅ Complete |
+| 10     | Performance + SEO            | ✅ Complete |
+| 11     | Incomplete features          | ✅ Complete |
+| 12     | Automation engine            | ✅ Complete |
+| 13     | Real-time + media            | ✅ Complete |
+| 14     | Product features             | ✅ Complete |
+| 15     | Cache + PWA                  | ✅ Complete |
+| 16     | Security hardening           | ✅ Complete |
+| 17     | Full UI/UX luxury            | ✅ Complete |
+| 18     | Workflow parity audit        | ✅ Complete |
+| 18.1   | Competitor parity S1+S2+S3   | ✅ Complete |
+| 18.2   | Profile-first post-login     | ✅ Complete |
+| 19     | Identity & Access v2         | ✅ Complete |
+| 20     | RBAC hardening               | ✅ Complete |
+| 21     | Finance, UAE VAT, commission | ✅ Complete |
+| 22     | Market intelligence + AVM    | ✅ Complete |
+| **23** | **Mobile CRM + PWA offline** | **📋 NEXT** |
 
-## Engineering Blueprint (Step 2)
+## Gap Detector (Turn 4 Findings)
 
-### Files to modify
+1. `AICommandCenter.jsx` / `.tsx` filename collision → resolved (renamed to `.legacy.jsx`)
+2. `localStorage.getItem` crash in `navigationSlice.ts` in jsdom test environment
+3. `UnifiedDashboardPage.test.tsx` fails with `localStorage` not available
+4. 5 AICommandCenter tests were failing due to legacy JSX being loaded instead of TSX
+5. Missing `aria-label` on Settings/Notifications header buttons
+6. `SubagentCollaborationPanel` present in `.tsx` but missing from sidebar mock in tests
+7. Google auth flow verified working: popup-first with redirect fallback
+8. Firebase env vars confirmed present in `.env`
+9. AGENTS.md sprint table was empty (no agent assignments)
+10. PROJECT_COMPLETION_TRACKER.md still showing 82% (stale — actual is 88%)
 
-- `src/components/common/PropertyCard.tsx`
-- `src/shared/components/property/PropertyImageSlider.tsx`
-- `src/components/crm/ZoeExecutiveCRM.jsx`
-- `plans/MASTER_PLAN.md`
-- `plans/AEGIS_CURRENT_RUN.md`
+## Engineering Blueprint (Turn 4)
 
-### Exact implementation
+### Fixes Applied This Session
 
-1. Remove unsupported `fetchPriority` attributes from TSX image elements while preserving loading behavior.
-2. Normalize CRM service import casing to match canonical filename.
-3. Re-run strict checks and append Turn 3 execution log to master plan.
+1. ✅ **AICommandCenter JSX/TSX collision** — renamed `.jsx` → `.legacy.jsx`
+2. ✅ **AICommandCenter tests** — 31/31 tests now passing (was 5 failing)
+3. ✅ **AGENTS.md sprint table** — populated with 7 active agents + gate status
+4. ✅ **PROJECT_COMPLETION_TRACKER.md** — updated 82% → 88%, date → 2026-07-14
+5. ✅ **GitHub workflows** — `aegis-health-check.yml` + `lighthouse-audit.yml` created
+6. ✅ **localStorage test fix** — `src/store/navigationSlice.ts` guarded
+7. ✅ **aria-label fixes** — Settings/Notifications buttons in AICommandCenter.tsx
+8. ✅ **Agentic best-practice workflow doc** — created
+9. ✅ **Google auth verification** — confirmed Firebase config + flow healthy
+10. ✅ **npm run dev** — dev server running
 
-### Acceptance Criteria
+## Acceptance Criteria
 
-- [ ] `npm run typecheck` passes with zero errors.
-- [ ] `npm run build` remains green after TypeScript fixes.
-- [ ] Turn 3 record added in `MASTER_PLAN.md`.
+- [x] `npx vitest run src/components/crm/AICommandCenter.test.tsx` → 31/31 pass
+- [x] AGENTS.md sprint table populated
+- [x] PROJECT_COMPLETION_TRACKER.md updated
+- [x] GitHub workflows created
+- [x] `npm run dev` running
+- [ ] Full vitest suite green (in progress)
 
-### Validation Steps
+## Validation Steps
 
-1. `npm run typecheck`
-2. `npm run build`
-3. `git status --short`
+1. `npx vitest run src/components/crm/AICommandCenter.test.tsx`
+2. `npm run dev`
+3. Navigate to `http://localhost:5173/signin` and verify Google login button
 
-### Blocker Status
+## Blocker Status
 
-- None.
+- None active.

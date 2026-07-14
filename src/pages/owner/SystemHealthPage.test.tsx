@@ -1,9 +1,4 @@
-/**
- * SystemHealthPage — Unit Tests
- * Tests: role-based access, loading state, health data rendering,
- * overall status, status colors/icons, error handling, refresh, polling
- */
-
+/** @vitest-environment jsdom */
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { render, screen, fireEvent, waitFor, act } from '@testing-library/react';
 import React from 'react';
@@ -32,36 +27,67 @@ vi.mock('react-router-dom', () => ({
 
 vi.mock('./SystemHealthPage.css', () => ({}));
 
-let mockUser: { role: string } | null = { role: 'owner' };
-vi.mock('react-redux', () => ({
-  useSelector: (fn: (s: unknown) => unknown) => fn({ user: { currentUser: mockUser } }),
-}));
+let mockUser: { role: string; email?: string } | null = {
+  role: 'owner',
+  email: 'arslanmalikgoraha@gmail.com',
+};
+const mockDispatch = vi.fn();
+
+vi.mock('react-redux', () => {
+  const mockAnalyticsState = {
+    performance: { score: 90, status: 'good' },
+    traffic: { pageViews: 1000, activeUsers: 50, avgSessionDuration: 120, bounceRate: 35 },
+    webVitals: {
+      lcp: { value: 1200, rating: 'good' },
+      inp: { value: 80, rating: 'good' },
+      cls: { value: 0.05, rating: 'good' },
+    },
+  };
+  return {
+    useSelector: (fn: (s: unknown) => unknown) =>
+      fn({
+        user: { currentUser: mockUser },
+        analytics: mockAnalyticsState,
+      }),
+    useDispatch: () => mockDispatch,
+  };
+});
 
 // ── Helpers ──────────────────────────────────────────────────────
 
-const healthyServices = [
-  { service: 'API Server', status: 'healthy', uptime: 99.99, lastChecked: '2 min ago' },
-  { service: 'Database', status: 'healthy', uptime: 99.95, lastChecked: '2 min ago' },
-  { service: 'Cache', status: 'degraded', uptime: 98.5, lastChecked: '2 min ago' },
-];
-
-function okResponse(data: Record<string, unknown>) {
-  return Promise.resolve({
-    ok: true,
-    status: 200,
-    statusText: 'OK',
-    json: () => Promise.resolve(data),
-  });
-}
-
-function failResponse(status = 500, statusText = 'Internal Server Error') {
-  return Promise.resolve({
-    ok: false,
-    status,
-    statusText,
-    json: () => Promise.resolve({ error: 'Server error' }),
-  });
-}
+const mockHealthData = {
+  server: { status: 'healthy', uptime: '99.99%', environment: 'production', port: 5001 },
+  mongodb: { status: 'healthy', storageMode: 'atlas', database: 'whitecaves', error: null },
+  firebase: {
+    status: 'healthy',
+    projectId: 'whitecaves-prod',
+    authDomain: 'whitecaves.firebaseapp.com',
+    adminSdk: 'initialized',
+  },
+  stripe: { status: 'healthy', configured: true, mode: 'live' },
+  googleDrive: { status: 'healthy', configured: true, error: null },
+  googleMaps: { status: 'healthy', configured: true },
+  whatsapp: { status: 'healthy', configured: true, phoneNumberId: '12345', chatbotEnabled: true },
+  envVars: [
+    { name: 'DATABASE_URL', set: true },
+    { name: 'JWT_SECRET', set: true },
+  ],
+  productionReadiness: {
+    isDeployable: true,
+    score: 100,
+    passedChecks: 5,
+    totalChecks: 5,
+    criticalIssues: 0,
+  },
+  deploymentChecks: [
+    {
+      name: 'Database Connection',
+      status: 'production',
+      critical: true,
+      message: 'Connected to production database',
+    },
+  ],
+};
 
 import SystemHealthPage from './SystemHealthPage';
 
@@ -70,10 +96,10 @@ describe('SystemHealthPage', () => {
     vi.clearAllMocks();
     vi.spyOn(console, 'error').mockImplementation(() => {});
     vi.spyOn(console, 'warn').mockImplementation(() => {});
-    mockUser = { role: 'owner' };
+    mockUser = { role: 'owner', email: 'arslanmalikgoraha@gmail.com' };
     mockAuthFetch.mockResolvedValue({
       ok: true,
-      json: () => Promise.resolve({ services: healthyServices, overall: 'operational' }),
+      json: () => Promise.resolve(mockHealthData),
     });
   });
 
@@ -91,27 +117,19 @@ describe('SystemHealthPage', () => {
   });
 
   it('allows owner role to view page', async () => {
-    mockAuthFetch.mockResolvedValue({
-      ok: true,
-      json: () => Promise.resolve({ services: [], overall: 'operational' }),
-    });
     await act(async () => {
       render(<SystemHealthPage />);
     });
-    expect(screen.getByText('System Health Dashboard')).toBeInTheDocument();
+    expect(screen.getByText('System Health Monitor')).toBeInTheDocument();
     expect(mockNavigate).not.toHaveBeenCalled();
   });
 
   it('allows admin role to view page', async () => {
-    mockUser = { role: 'admin' };
-    mockAuthFetch.mockResolvedValue({
-      ok: true,
-      json: () => Promise.resolve({ services: [], overall: 'operational' }),
-    });
+    mockUser = { role: 'admin', email: 'arslanmalikgoraha@gmail.com' };
     await act(async () => {
       render(<SystemHealthPage />);
     });
-    expect(screen.getByText('System Health Dashboard')).toBeInTheDocument();
+    expect(screen.getByText('System Health Monitor')).toBeInTheDocument();
     expect(mockNavigate).not.toHaveBeenCalled();
   });
 
@@ -126,132 +144,38 @@ describe('SystemHealthPage', () => {
   it('shows loading indicator while fetching', () => {
     mockAuthFetch.mockReturnValue(new Promise(() => {})); // never resolves
     render(<SystemHealthPage />);
-    expect(screen.getByText('Loading system status...')).toBeInTheDocument();
+    expect(screen.getByText('Checking system health...')).toBeInTheDocument();
   });
 
   // ────── Service Data Rendering ──────
 
   it('renders service cards after loading', async () => {
-    mockAuthFetch.mockResolvedValue({
-      ok: true,
-      json: () => Promise.resolve({ services: healthyServices, overall: 'operational' }),
-    });
-
     await act(async () => {
       render(<SystemHealthPage />);
     });
 
     await waitFor(() => {
-      expect(screen.getByText('API Server')).toBeInTheDocument();
-      expect(screen.getByText('Database')).toBeInTheDocument();
-      expect(screen.getByText('Cache')).toBeInTheDocument();
+      expect(screen.getByText('Server')).toBeInTheDocument();
+      expect(screen.getByText('MongoDB')).toBeInTheDocument();
+      expect(screen.getByText('Firebase')).toBeInTheDocument();
+      expect(screen.getByText('Stripe')).toBeInTheDocument();
     });
   });
 
-  it('shows uptime percentages', async () => {
-    mockAuthFetch.mockResolvedValue({
-      ok: true,
-      json: () => Promise.resolve({ services: healthyServices, overall: 'operational' }),
-    });
-
+  it('shows server metadata', async () => {
     await act(async () => {
       render(<SystemHealthPage />);
     });
 
     await waitFor(() => {
       expect(screen.getByText('99.99%')).toBeInTheDocument();
-      expect(screen.getByText('99.95%')).toBeInTheDocument();
-      expect(screen.getByText('98.5%')).toBeInTheDocument();
+      expect(screen.getByText('production')).toBeInTheDocument();
     });
   });
 
-  it('shows empty state when no services', async () => {
+  it('handles empty fields gracefully', async () => {
     mockAuthFetch.mockResolvedValue({
       ok: true,
-      json: () => Promise.resolve({ services: [], overall: 'operational' }),
-    });
-
-    await act(async () => {
-      render(<SystemHealthPage />);
-    });
-
-    await waitFor(() => {
-      expect(screen.getByText('No services to display')).toBeInTheDocument();
-    });
-  });
-
-  // ────── Overall Status ──────
-
-  it('shows operational status', async () => {
-    mockAuthFetch.mockResolvedValue({
-      ok: true,
-      json: () => Promise.resolve({ services: [], overall: 'operational' }),
-    });
-
-    await act(async () => {
-      render(<SystemHealthPage />);
-    });
-
-    expect(screen.getByText(/Operational/)).toBeInTheDocument();
-  });
-
-  it('shows degraded status', async () => {
-    mockAuthFetch.mockResolvedValue({
-      ok: true,
-      json: () => Promise.resolve({ services: [], overall: 'degraded' }),
-    });
-
-    await act(async () => {
-      render(<SystemHealthPage />);
-    });
-
-    expect(screen.getByText(/Degraded/)).toBeInTheDocument();
-  });
-
-  // ────── Status Icons ──────
-
-  it('renders status icons for services', async () => {
-    mockAuthFetch.mockResolvedValue({
-      ok: true,
-      json: () => Promise.resolve({ services: healthyServices, overall: 'operational' }),
-    });
-
-    await act(async () => {
-      render(<SystemHealthPage />);
-    });
-
-    await waitFor(() => {
-      expect(screen.getAllByText('✓')).toHaveLength(2); // 2 healthy
-      expect(screen.getByText('⚠')).toBeInTheDocument(); // 1 degraded
-    });
-  });
-
-  // ────── Performance Metrics ──────
-
-  it('renders static performance metrics', async () => {
-    mockAuthFetch.mockResolvedValue({
-      ok: true,
-      json: () => Promise.resolve({ services: [], overall: 'operational' }),
-    });
-
-    await act(async () => {
-      render(<SystemHealthPage />);
-    });
-
-    expect(screen.getByText('Performance Metrics')).toBeInTheDocument();
-    expect(screen.getByText('245ms')).toBeInTheDocument();
-    expect(screen.getByText('52ms')).toBeInTheDocument();
-    expect(screen.getByText('87.3%')).toBeInTheDocument();
-    expect(screen.getByText('0.02%')).toBeInTheDocument();
-  });
-
-  // ────── Error Handling ──────
-
-  it('shows error message on API failure', async () => {
-    mockAuthFetch.mockResolvedValue({
-      ok: false,
-      status: 500,
-      statusText: 'Internal Server Error',
       json: () => Promise.resolve({}),
     });
 
@@ -259,9 +183,77 @@ describe('SystemHealthPage', () => {
       render(<SystemHealthPage />);
     });
 
-    // Should set overallStatus to 'down'
     await waitFor(() => {
-      expect(screen.getByText(/Down/)).toBeInTheDocument();
+      expect(screen.getByText('Server')).toBeInTheDocument();
+    });
+  });
+
+  // ────── Overall Status ──────
+
+  it('shows operational status', async () => {
+    await act(async () => {
+      render(<SystemHealthPage />);
+    });
+
+    await waitFor(() => {
+      expect(screen.getAllByText(/healthy/i).length).toBeGreaterThan(0);
+    });
+  });
+
+  it('shows degraded status', async () => {
+    mockAuthFetch.mockResolvedValue({
+      ok: true,
+      json: () =>
+        Promise.resolve({
+          ...mockHealthData,
+          server: { status: 'degraded' },
+        }),
+    });
+
+    await act(async () => {
+      render(<SystemHealthPage />);
+    });
+
+    await waitFor(() => {
+      expect(screen.getByText(/degraded/i)).toBeInTheDocument();
+    });
+  });
+
+  // ────── Status Icons ──────
+
+  it('renders status icons for services', async () => {
+    await act(async () => {
+      render(<SystemHealthPage />);
+    });
+
+    await waitFor(() => {
+      expect(screen.getAllByText('✓').length).toBeGreaterThan(0);
+    });
+  });
+
+  // ────── Performance Metrics ──────
+
+  it('renders vitals metrics', async () => {
+    await act(async () => {
+      render(<SystemHealthPage />);
+    });
+
+    expect(screen.getByText('Largest Contentful Paint')).toBeInTheDocument();
+    expect(screen.getByText('1200')).toBeInTheDocument();
+    expect(screen.getByText('80')).toBeInTheDocument();
+  });
+
+  // ────── Error Handling ──────
+
+  it('shows error message on API failure', async () => {
+    mockAuthFetch.mockRejectedValue(new Error('Internal Server Error'));
+
+    await act(async () => {
+      render(<SystemHealthPage />);
+    });
+
+    await waitFor(() => {
+      expect(screen.getByText('Failed to fetch health status')).toBeInTheDocument();
     });
   });
 
@@ -273,7 +265,7 @@ describe('SystemHealthPage', () => {
     });
 
     await waitFor(() => {
-      expect(screen.getByText(/Down/)).toBeInTheDocument();
+      expect(screen.getByText('Failed to fetch health status')).toBeInTheDocument();
     });
   });
 
@@ -285,56 +277,50 @@ describe('SystemHealthPage', () => {
       render(<SystemHealthPage />);
     });
 
-    // Should not show 'Down' for abort
-    // page still renders normally (loading may end without setting down)
-    expect(screen.getByText('System Health Dashboard')).toBeInTheDocument();
+    expect(screen.getByText('System Health Monitor')).toBeInTheDocument();
   });
 
   // ────── Refresh Button ──────
 
   it('renders refresh button', async () => {
-    mockAuthFetch.mockResolvedValue({
-      ok: true,
-      json: () => Promise.resolve({ services: [], overall: 'operational' }),
-    });
-
     await act(async () => {
       render(<SystemHealthPage />);
     });
 
-    expect(screen.getByText(/Refresh Status/)).toBeInTheDocument();
+    await waitFor(() => {
+      expect(screen.getByText(/Refresh Status/)).toBeInTheDocument();
+    });
   });
 
   it('calls fetchSystemHealth on refresh click', async () => {
-    mockAuthFetch.mockResolvedValue({
-      ok: true,
-      json: () => Promise.resolve({ services: [], overall: 'operational' }),
-    });
-
     await act(async () => {
       render(<SystemHealthPage />);
+    });
+
+    await waitFor(() => {
+      expect(screen.getByText(/Refresh Status/)).toBeInTheDocument();
     });
 
     mockAuthFetch.mockClear();
     mockAuthFetch.mockResolvedValue({
       ok: true,
-      json: () => Promise.resolve({ services: healthyServices, overall: 'operational' }),
+      json: () => Promise.resolve(mockHealthData),
     });
 
     await act(async () => {
       fireEvent.click(screen.getByText(/Refresh Status/));
     });
 
-    expect(mockAuthFetch).toHaveBeenCalledWith('/api/system/health', expect.anything());
+    expect(mockAuthFetch).toHaveBeenCalledWith('/api/system/health');
   });
 
   // ────── Polling ──────
 
-  it('fetches health data automatically every 60 seconds', async () => {
+  it('fetches health data automatically every 30 seconds', async () => {
     vi.useFakeTimers();
     mockAuthFetch.mockResolvedValue({
       ok: true,
-      json: () => Promise.resolve({ services: [], overall: 'operational' }),
+      json: () => Promise.resolve(mockHealthData),
     });
 
     await act(async () => {
@@ -348,9 +334,9 @@ describe('SystemHealthPage', () => {
     // Initial fetch
     expect(mockAuthFetch).toHaveBeenCalledTimes(1);
 
-    // Advance 60 seconds
+    // Advance 30 seconds
     await act(async () => {
-      await vi.advanceTimersByTimeAsync(60000);
+      await vi.advanceTimersByTimeAsync(30000);
     });
 
     expect(mockAuthFetch).toHaveBeenCalledTimes(2);

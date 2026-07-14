@@ -28,6 +28,7 @@
     "server/**",
     "src/**/*.backup.ts",
     "src/**/*.backup.tsx",
+    "src/**/*.legacy.jsx",
     "src/**/__tests__/**",
     "src/**/*.test.ts",
     "src/**/*.test.tsx",

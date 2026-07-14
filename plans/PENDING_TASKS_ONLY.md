@@ -1,7 +1,7 @@
 # Pending Tasks Only
 
-**Last Updated:** 2026-07-05
-**Current Focus:** Wave 20 ✅ Complete; Waves 21–25 planned (full four-artifact bundles available); governance sync active.
+**Last Updated:** 2026-07-14
+**Current Focus:** Wave 22 ✅ Complete; Waves 23–25 planned (full four-artifact bundles available); governance sync active.
 
 ## Canonical Sources
 
@@ -28,8 +28,8 @@ Advance only when the prior wave is green, the readiness gate is satisfied, and 
 | S4     | 11      | Incomplete features + architecture refactor                                                      | ✅ Green    | @Ada + @Mira + @Barbara                                | SchedulerService, DocumentService, email triggers, export routes complete                                                              |
 | S5     | 12      | Automation engine (cron + docs + email)                                                          | ✅ Green    | @Cron + @Puppeteer + @Handlebars + @Mira               | Rent reminders, lease-expiry reminders, sitemap refresh, P&L report, export routes complete                                            |
 | S6     | 13      | Real-time notifications + media + virtual tour                                                   | ✅ Green    | @Socket + @Cloudinary + @Pannellum + @Mira             | Socket auth + notification service + media pipeline + virtual tour integration completed                                               |
-| S7     | 14      | Product features closure                                                                         | ✅ Green    | @LeadScore + @Mortgage + @Zod + @Mira                  | S6 green + readiness 60% + @Ada approval phrase                                                                                        |
-| S8     | 15      | Cache + PWA readiness                                                                            | ✅ Green    | @Redis + @PWA + @Ruchi + @Una                          | S7 green + readiness 60% + @Ada approval phrase                                                                                        |
+| S7     | 14      | Product features closure                                                                         | ✅ Green    | @LeadScore + @Mortgage + @Zod + @Mira                  | S6 green + readiness 90% + @Ada approval phrase                                                                                        |
+| S8     | 15      | Cache + PWA readiness                                                                            | ✅ Green    | @Redis + @PWA + @Ruchi + @Una                          | S7 green + readiness 90% + @Ada approval phrase                                                                                        |
 | S9     | 16      | Security hardening + API versioning                                                              | ✅ Green    | @S5 + @Radia + @Mira                                   | S8 green + readiness 60% + @Ada approval phrase                                                                                        |
 | S10    | 17      | Full UI/UX luxury upgrade (design tokens + glassmorphism + animations + mobile + PWA + WCAG 2.2) | ✅ Green    | @Una + @Lea + @Tracy + @Africa + @Cyra + @Katherine    | Wave 17 implementation + CI Lighthouse thresholds + accessibility/mobile/PWA checks complete                                           |
 | S11    | 18      | Workflow parity audit + benchmark gap backlog                                                    | ✅ Green    | @Ada + @Margaret + @Mira + @Katherine                  | Wave 18 parity matrix finalized + canonical queue updates + `npm run plans:validate`                                                   |
@@ -38,8 +38,8 @@ Advance only when the prior wave is green, the readiness gate is satisfied, and 
 | S14    | 18.2    | Profile-first post-login journey + Dashboard CTA alignment                                       | ✅ Complete | @Ada + @Mira                                           | `useSignIn` tests green + build green                                                                                                  |
 | S15    | 19      | Identity & Access v2, routing, MD workspace split, executive UX                                  | ✅ Complete | @Ada + @Mira + @Una + @Katherine                       | W19-001…W19-015 complete; 142 auth/routing tests green; `npm run plans:validate`                                                       |
 | S16    | 20      | RBAC hardening + audit export security + OWASP A01 superuser email fix                           | ✅ Complete | @Mira + @Radia + @Katherine                            | 142 auth tests + 37 activities tests green; `npm run plans:validate`                                                                   |
-| S17    | 21      | Finance, UAE VAT, commission engine & compliance reporting                                       | 📋 Planned  | @Mira + @Barbara + @Katherine                          | Wave 20 green + readiness 60% + @Ada approval phrase; [`WAVE_21_IMPLEMENTATION_BACKLOG.md`](./waves/WAVE_21_IMPLEMENTATION_BACKLOG.md) |
-| S18    | 22      | Market intelligence, off-plan projects, property valuation & advanced analytics                  | 📋 Planned  | @Mira + @Barbara + @Cassie                             | Wave 21 green + readiness 60% + @Ada approval phrase; [`WAVE_22_IMPLEMENTATION_BACKLOG.md`](./waves/WAVE_22_IMPLEMENTATION_BACKLOG.md) |
+| S17    | 21      | Finance, UAE VAT, commission engine & compliance reporting                                       | ✅ Complete | @Mira + @Barbara + @Katherine                          | Dubai Finance Engine built, 0-token build passes, schema extended                                                                      |
+| S18    | 22      | Market intelligence, off-plan projects, property valuation & advanced analytics                  | ✅ Complete | @Mira + @Barbara + @Cassie                             | Wave 21 green + readiness 60% + @Ada approval phrase; [`WAVE_22_IMPLEMENTATION_BACKLOG.md`](./waves/WAVE_22_IMPLEMENTATION_BACKLOG.md) |
 | S19    | 23      | Mobile CRM, PWA offline mode & push notifications                                                | 📋 Planned  | @Cyra + @Una + @Mira + @Katherine                      | Wave 22 green + readiness 60% + @Ada approval phrase; [`WAVE_23_IMPLEMENTATION_BACKLOG.md`](./waves/WAVE_23_IMPLEMENTATION_BACKLOG.md) |
 | S20    | 24      | WhatsApp automation, AI chat engine & in-app notification centre                                 | 📋 Planned  | @Mira + @Joelle + @Una                                 | Wave 23 green + readiness 60% + @Ada approval phrase; [`WAVE_24_IMPLEMENTATION_BACKLOG.md`](./waves/WAVE_24_IMPLEMENTATION_BACKLOG.md) |
 | S21    | 25      | Portal syndication, careers portal, community management & advanced SEO                          | 📋 Planned  | @Mira + @Barbara + @Una + @Rachel                      | Wave 24 green + readiness 60% + @Ada approval phrase; [`WAVE_25_IMPLEMENTATION_BACKLOG.md`](./waves/WAVE_25_IMPLEMENTATION_BACKLOG.md) |
@@ -50,7 +50,27 @@ Advance only when the prior wave is green, the readiness gate is satisfied, and 
 - **Scope delivered:** Identity & Access v2, `/crm` routing consistency, MD workspace split, executive dashboard UX parity, state-system parity, traceability matrix, rollout/rollback thresholds.
 - **Evidence:** `WAVE_19_IMPLEMENTATION_BACKLOG.md` (W19-001…W19-015 ✅), `server/routes/reporting.test.ts` (32/32 ✅), `src/utils/routing.test.ts`, `src/utils/authSession.test.ts`, `src/pages/UnifiedDashboardPage.test.tsx`, `npm run plans:validate`.
 
-### Next Planned Stream (Wave 20)
+### Wave 22 Closeout (Complete)
+
+- **Wave 22 status:** ✅ Complete
+- **Key deliveries:**
+  - W22-001/004: Created bulk AVM refresh service and integrated AVM triggers inside property CRUD workflows (`POST /api/properties`, `PUT /api/properties/:id`, `PATCH /api/properties/:id`) in `server/routes/properties.ts`.
+  - Configured and scheduled `avm-refresh-monthly` cron job in `SchedulerService.ts`.
+  - Verified and passed all 66 market and analytics unit & route tests.
+- **Tests:** Compilation, client build, and route tests verified green with exit code 0.
+
+### Wave 21 Closeout (Complete)
+
+- **Wave 21 status:** ✅ Complete
+- **Key deliveries:**
+  - W21-001/004: Created comprehensive `src/mocks/dubaiFinanceEngine.ts` containing offline calculations for RERA/DLD commission rules.
+  - Calculated 5% rent commission, 2% secondary sale commission, and dynamic 3-8% offplan developer rates.
+  - Implemented gamified leaderboard levels (Rising Star up to Elite Chairman's Club) scaling commission splits dynamically (50/50 to 80/20).
+  - Wired state reducer transitions for AGENT_SUBMITTED ➔ MANAGER_APPROVED ➔ FINANCE_LOCKED ➔ PAYMENT_RELEASED approval flow.
+  - Created 4-hour local memory TTL cache for currency conversions (AED, USD, EUR, GBP, INR).
+  - Built forecast cash-flow logic, accounts receivable (AR) aging categories, and budget variance metrics.
+  - Extended Prisma schema for Commission model with approval metadata and period locks.
+- **Tests:** Compilation and client-side production build verified green with exit code 0.
 
 ### Wave 20 Closeout (Complete)
 

@@ -41,7 +41,7 @@ const areaBenchmarks: Record<string, { sale: number; rent: number }> = {
 };
 
 // ─── AVM Engine ─────────────────────────────────────────────────────────────
-interface AvmInput {
+export interface AvmInput {
   location: string;
   sqft: number;
   yearBuilt?: number;
@@ -49,7 +49,7 @@ interface AvmInput {
   serviceChargeAedPerYear?: number;
 }
 
-interface AvmResult {
+export interface AvmResult {
   estimatedValueAed: number;
   rentAnnualAed: number;
   grossYieldPct: number;
@@ -63,7 +63,7 @@ interface AvmResult {
   rentPerSqftPerYear: number;
 }
 
-function runAvm(input: AvmInput): AvmResult {
+export function runAvm(input: AvmInput): AvmResult {
   const locationKey = (input.location || '').toLowerCase().trim();
   const benchmark = areaBenchmarks[locationKey];
   const confidence = benchmark ? (input.sqft > 200 ? 'high' : 'medium') : 'low';

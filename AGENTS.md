@@ -4,8 +4,15 @@
 
 > **Updated by @Margaret after every session.** Senior coders MUST check this table before starting any premium coding sprint. If any gate is BLOCKED, route back to the relevant free agent before coding.
 
-| Agent | Model | Current Task | File | Sections | Gate Status | Last Updated |
-| ----- | ----- | ------------ | ---- | -------- | ----------- | ------------ |
+| Agent     | Model            | Current Task                                              | File                                                       | Sections | Gate Status    | Last Updated |
+| --------- | ---------------- | --------------------------------------------------------- | ---------------------------------------------------------- | -------- | -------------- | ------------ |
+| @Margaret | Gemini 2.0 Flash | Wave 23 planning — Mobile CRM + PWA backlog               | `plans/waves/WAVE_23_IMPLEMENTATION_BACKLOG.md`            | 8/12     | ✅ READY       | 2026-07-14   |
+| @Victoria | Gemini 2.0 Flash | REVIEW: tenancy-ejari.md → PDC tracking + bounced cheque  | `business_docs/09_crm_features/tenancy-ejari.md`           | 14/14    | ✅ GATE PASSED | 2026-07-14   |
+| @Invoice  | Llama 3.1 70B    | REVIEW: financial-reporting.md → VAT 5% + AED calcs       | `business_docs/09_crm_features/financial-reporting.md`     | 11/11    | ✅ GATE PASSED | 2026-07-14   |
+| @Sofia    | Gemini 2.0 Flash | REVIEW: compliance-requirements.md → RERA 2024 updates    | `business_docs/05_requirements/compliance-requirements.md` | 12/12    | ✅ GATE PASSED | 2026-07-14   |
+| @Cassie   | DeepSeek V3      | EXPAND: analytics-dashboard.md → mobile view + CSV export | `business_docs/09_crm_features/analytics-dashboard.md`     | 22/22    | ✅ GATE PASSED | 2026-07-14   |
+| @Joelle   | Llama 3.1 70B    | EXPAND: 03_ai_assistants/README.md → FEEDS_ACK Phase N+1  | `plans/ai_assistants/README.md`                            | 6/8      | 🟡 IN PROGRESS | 2026-07-14   |
+| @Ada      | Claude Sonnet    | AEGIS Turn 4 — 10-fix sprint + Google auth + Wave 23 gate | `plans/AEGIS_CURRENT_RUN.md`                               | —        | 🔵 ACTIVE      | 2026-07-14   |
 
 ### Wave Execution Roadmap (Subagent Upgrade V3)
 

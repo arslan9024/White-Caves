@@ -41,6 +41,7 @@ import {
   WarningText,
   FormGrid,
   FormGroup,
+  StatusBadge,
 } from './TabStylesComponents';
 
 const MOCK_CONTRACTS: Contract[] = [
@@ -416,13 +417,13 @@ const ContractsTab: React.FC<ContractsTabProps> = ({ data, loading }) => {
                   </td>
                   <PriceCell>AED {contract.amount.toLocaleString()}</PriceCell>
                   <td>
-                    <span style={{ color: getStatusColor(contract.status) }}>
+                    <StatusBadge className="status-badge" $status={contract.status}>
                       {contract.status}
-                    </span>
+                    </StatusBadge>
                   </td>
                   <td>{getEjariBadge(contract.ejariStatus)}</td>
                   <td>
-                    <SigningStatusBadge status={contract.signatureStatus} />
+                    <SigningStatusBadge status={contract.signatureStatus as any} />
                   </td>
                   <td>
                     <ActionButtons>

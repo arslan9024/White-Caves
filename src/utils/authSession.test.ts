@@ -1,3 +1,4 @@
+/** @vitest-environment jsdom */
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { loginSuccess, logout as logoutAuthState } from '../store/authSlice';
 import { setActiveRole } from '../store/navigationSlice';
@@ -13,13 +14,25 @@ import {
   sanitizeReturnToPath,
 } from './authSession';
 
-const { mockGet, mockGetJSON, mockSet, mockSetJSON, mockRemove } = vi.hoisted(() => ({
-  mockGet: vi.fn<(key: string, fallback?: string) => string | null>(),
-  mockGetJSON: vi.fn<(key: string) => unknown>(),
-  mockSet: vi.fn<(key: string, value: string) => void>(),
-  mockSetJSON: vi.fn<(key: string, value: unknown) => void>(),
-  mockRemove: vi.fn<(key: string) => boolean>(),
-}));
+const { mockGet, mockGetJSON, mockSet, mockSetJSON, mockRemove } = vi.hoisted(() => {
+  if (typeof global.localStorage === 'undefined' || !global.localStorage.getItem) {
+    global.localStorage = {
+      getItem: vi.fn().mockImplementation(() => null),
+      setItem: vi.fn(),
+      removeItem: vi.fn(),
+      clear: vi.fn(),
+      length: 0,
+      key: vi.fn(),
+    } as unknown as Storage;
+  }
+  return {
+    mockGet: vi.fn<(key: string, fallback?: string) => string | null>(),
+    mockGetJSON: vi.fn<(key: string) => unknown>(),
+    mockSet: vi.fn<(key: string, value: string) => void>(),
+    mockSetJSON: vi.fn<(key: string, value: unknown) => void>(),
+    mockRemove: vi.fn<(key: string) => boolean>(),
+  };
+});
 
 vi.mock('./safeStorage', () => ({
   safeStorage: {

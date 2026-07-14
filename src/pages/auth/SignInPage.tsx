@@ -27,6 +27,7 @@ import {
   finalizeAuthenticatedSession,
   getReturnToFromLocationState,
   navigateToPostLoginDestination,
+  resolvePostLoginDestination,
 } from '../../utils/authSession';
 import { SocialAuthButtons } from './components/SocialAuthButtons';
 import { AuthMethodTabs } from './components/AuthMethodTabs';
@@ -70,6 +71,7 @@ const SignInPage: React.FC = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const dispatch = useDispatch();
+  const returnTo = getReturnToFromLocationState(location.state);
 
   // Auth mode
   const [mode, setMode] = useState<AuthMode>('signin');
@@ -153,8 +155,18 @@ const SignInPage: React.FC = () => {
       try {
         const response = await registerWithEmail(email, password);
         const user = response?.data?.user ?? null;
-        setRegisteredUser(user);
-        setSignupStep(2);
+        if (user && response.data?.token) {
+          const destination = finalizeAuthenticatedSession({
+            dispatch,
+            user,
+            token: response.data.token,
+            provider: 'email',
+            rememberMe: false,
+            returnTo,
+          });
+          setRegisteredUser(user);
+          setSignupStep(2);
+        }
       } catch (err: unknown) {
         const msg = err instanceof Error ? err.message : 'Registration failed';
         setError(msg);
@@ -169,11 +181,17 @@ const SignInPage: React.FC = () => {
         if (response.success && !response.requiresTwoFactor) {
           const successData = response.data as LoginSuccessData;
           const user = successData.user;
-          await finalizeAuthenticatedSession(dispatch, user);
+          const destination = finalizeAuthenticatedSession({
+            dispatch,
+            user,
+            token: successData.token,
+            provider: 'email',
+            rememberMe: false,
+            returnTo,
+          });
           setSuccessMsg('Sign in successful!');
           setTimeout(() => {
-            const returnTo = getReturnToFromLocationState(location);
-            navigateToPostLoginDestination(navigate, user, returnTo);
+            navigateToPostLoginDestination(navigate, destination);
           }, 1500);
         } else {
           setError('Two-factor authentication is required');
@@ -198,9 +216,9 @@ const SignInPage: React.FC = () => {
     // Finalize registration with selected role
     const user = registeredUser;
     if (user) {
-      dispatch(setUser(user as any));
+      const destination = resolvePostLoginDestination({ user, returnTo });
+      navigateToPostLoginDestination(navigate, destination);
     }
-    navigate('/crm');
   };
 
   // ─── Social Auth ─────────────────────────────────────────────────────────
@@ -247,15 +265,22 @@ const SignInPage: React.FC = () => {
           });
 
           const user = backendResponse?.data?.user ?? null;
-          if (user) {
-            await finalizeAuthenticatedSession(dispatch, user);
+          if (user && backendResponse.data.token) {
+            const destination = finalizeAuthenticatedSession({
+              dispatch,
+              user,
+              token: backendResponse.data.token,
+              provider,
+              rememberMe: false,
+              returnTo,
+            });
+            setSuccessMsg('Sign in successful!');
+            setTimeout(() => {
+              navigateToPostLoginDestination(navigate, destination);
+            }, 1500);
+          } else {
+            throw new Error('Invalid response from backend');
           }
-
-          setSuccessMsg('Sign in successful!');
-          setTimeout(() => {
-            const returnTo = getReturnToFromLocationState(location);
-            navigateToPostLoginDestination(navigate, user, returnTo);
-          }, 1500);
         } catch (syncErr: unknown) {
           // Backend sync failed — show recovery panel
           await signOut().catch(() => {});
@@ -281,7 +306,7 @@ const SignInPage: React.FC = () => {
         setLoading(false);
       }
     },
-    [dispatch, navigate, location]
+    [dispatch, navigate, returnTo]
   );
 
   // ─── Social Recovery ─────────────────────────────────────────────────────
@@ -320,16 +345,23 @@ const SignInPage: React.FC = () => {
       });
 
       const user = backendResponse?.data?.user ?? null;
-      if (user) {
-        await finalizeAuthenticatedSession(dispatch, user);
+      if (user && backendResponse.data.token) {
+        const destination = finalizeAuthenticatedSession({
+          dispatch,
+          user,
+          token: backendResponse.data.token,
+          provider: socialRecovery.provider,
+          rememberMe: false,
+          returnTo,
+        });
+        setSocialRecovery(prev => ({ ...prev, visible: false, isRetrying: false }));
+        setSuccessMsg('Sign in successful!');
+        setTimeout(() => {
+          navigateToPostLoginDestination(navigate, destination);
+        }, 1500);
+      } else {
+        throw new Error('Invalid response from backend');
       }
-
-      setSocialRecovery(prev => ({ ...prev, visible: false, isRetrying: false }));
-      setSuccessMsg('Sign in successful!');
-      setTimeout(() => {
-        const returnTo = getReturnToFromLocationState(location);
-        navigateToPostLoginDestination(navigate, user, returnTo);
-      }, 1500);
     } catch (retryErr: unknown) {
       const reason = retryErr instanceof Error ? retryErr.message : 'Retry failed';
       setSocialRecovery(prev => ({
@@ -339,7 +371,7 @@ const SignInPage: React.FC = () => {
         retryCount: prev.retryCount - 1,
       }));
     }
-  }, [socialRecovery, dispatch, navigate, location]);
+  }, [socialRecovery, dispatch, navigate, returnTo]);
 
   const handleSocialRecoveryDismiss = useCallback(() => {
     setSocialRecovery(prev => ({ ...prev, visible: false }));
@@ -350,16 +382,10 @@ const SignInPage: React.FC = () => {
   const handleBiometricSuccess = useCallback(
     (data: any) => {
       const user = data as { uid: string; email: string; displayName: string };
-      dispatch(
-        setUser({
-          id: user.uid,
-          email: user.email,
-          name: user.displayName,
-        })
-      );
-      navigate('/crm');
+      const destination = resolvePostLoginDestination({ user, returnTo });
+      navigateToPostLoginDestination(navigate, destination);
     },
-    [dispatch, navigate]
+    [dispatch, navigate, returnTo]
   );
 
   // ─── Firebase Helper Text ─────────────────────────────────────────────────

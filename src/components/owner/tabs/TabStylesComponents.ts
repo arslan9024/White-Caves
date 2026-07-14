@@ -233,7 +233,7 @@ export const FilterSelect = styled.select`
 
 // ────── PAGINATION COMPONENTS ──────
 
-export const PaginationContainer = styled.div`
+export const PaginationContainer = styled.nav`
   display: flex;
   gap: ${spacing[2]};
   justify-content: center;
@@ -801,16 +801,28 @@ export const UsersToolbar = styled.div`
   }
 `;
 
-export const SearchBox = styled.input`
+export const SearchBox = styled.div`
   flex: 1;
+  display: flex;
+  align-items: center;
+  gap: ${spacing[2]};
   padding: ${spacing[2]} ${spacing[3]};
   border: 1px solid ${colors.border.default};
   border-radius: ${borderRadius.md};
   ${typography.presets.body};
   min-width: 200px;
+  background: ${colors.background.default};
 
-  &:focus {
+  & input {
+    flex: 1;
+    border: none;
     outline: none;
+    background: transparent;
+    ${typography.presets.body};
+    color: inherit;
+  }
+
+  &:focus-within {
     border-color: ${colors.primary[600]};
     box-shadow: 0 0 0 3px ${colors.primary[100]};
   }

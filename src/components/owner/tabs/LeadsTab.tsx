@@ -246,7 +246,9 @@ const LeadsTab: React.FC<LeadsTabProps> = ({ data, loading, error }) => {
     '📋';
 
   const getPriorityBadge = (priority: string) => (
-    <PriorityBadge $priority={priority}>{priority}</PriorityBadge>
+    <PriorityBadge className="priority-badge" $priority={priority}>
+      {priority}
+    </PriorityBadge>
   );
 
   const getStatusColor = (status: string) =>
@@ -357,14 +359,16 @@ const LeadsTab: React.FC<LeadsTabProps> = ({ data, loading, error }) => {
                     </ContactCell>
                   </td>
                   <td>
-                    <SourceBadge>
+                    <SourceBadge className="source-badge">
                       {getSourceIcon(lead.source)} {lead.source}
                     </SourceBadge>
                   </td>
                   <td>{lead.interest || 'N/A'}</td>
                   <td>{getPriorityBadge(lead.priority)}</td>
                   <td>
-                    <StatusBadge $status={lead.status}>{lead.status}</StatusBadge>
+                    <StatusBadge className="status-badge" $status={lead.status}>
+                      {lead.status}
+                    </StatusBadge>
                     <StatusSelect
                       value={lead.status}
                       onChange={e => handleStatusChange(lead.id, e.target.value)}

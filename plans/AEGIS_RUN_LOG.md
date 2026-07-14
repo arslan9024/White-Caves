@@ -695,3 +695,81 @@
 - **Blocker status:**
   - No synthetic evidence used.
   - Prevents noisy unauthorized polling after the stricter activity audit RBAC change.
+
+---
+
+## 2026-07-14 — Turn Delta (Wave 21 — Finance Module & Gamified Leaderboard Mocks)
+
+- **Task ID:** AEGIS-W21-FINANCE-LEADERBOARD-001
+- **Files touched:**
+  - `src/mocks/dubaiFinanceEngine.ts`
+  - `prisma/schema.prisma`
+  - `plans/PENDING_TASKS_ONLY.md`
+  - `plans/MASTER_PLAN.md`
+  - `plans/AEGIS_RUN_LOG.md`
+- **What changed:**
+  - Created `src/mocks/dubaiFinanceEngine.ts` containing offline core financial calculators (RERA/DLD commission rules), approval state transition, TTL cache wrapper for multi-currency conversion, AR aging calculations, 12-month cash-flow forecast, budget variance calculation, and seeded leaderboard metrics.
+  - Cleaned up duplicate `Commission` model in the Prisma schema and extended it with proper approval workflow fields.
+  - Performed TypeScript check and compiled the application successfully via zero-cost native vite compiler tool.
+  - Updated plan tracking arrays and roadmap check-markers in master plan and task ledgers.
+- **Acceptance checks:**
+  - Native `npm run build` succeeds without compiler errors: **exit code 0**
+  - Schema check: **verified**
+- **Validation steps run:**
+  - Local terminal compilation validation passed.
+- **Blocker status:**
+  - None. Runs fully offline and free.
+
+---
+
+## 2026-07-14 — Turn Delta (Wave 21 — Leaderboard Visual Tab & Redux Hooks Integration)
+
+- **Task ID:** AEGIS-W21-VISUAL-TAB-REDUX-002
+- **Files touched:**
+  - `src/store/crmDataSlice.tsx`
+  - `src/config/ROLE_TAB_MAPPING.ts`
+  - `src/components/owner/tabs/LeaderboardTab.tsx`
+  - `src/components/owner/tabs/index.tsx`
+  - `src/pages/UnifiedDashboardPage.tsx`
+  - `DAILY_MILESTONE_TRACKER.md`
+  - `plans/AEGIS_RUN_LOG.md`
+- **What changed:**
+  - Imported and hooked `dubaiFinanceEngine` calculations into `crmDataSlice.tsx` via `calculateAndAddCommissionOffline` and `transitionCommissionStatusOffline` actions.
+  - Destructured and exported these actions from `crmDataSlice`.
+  - Registered `leaderboard` tab configuration in `ROLE_TAB_MAPPING.ts` for all administrative, manager, and agent roles.
+  - Built the premium visual frontend view `LeaderboardTab.tsx` incorporating the gamified agent leaderboard, live DLD/RERA commission calculator with currency selector/converter, AR aging buckets, monthly cash-flow forecast, budget variance summary, and simulated approval workflow chain.
+  - Exported the tab from `src/components/owner/tabs/index.tsx` and integrated it with lazy-loading inside `UnifiedDashboardPage.tsx`.
+- **Acceptance checks:**
+  - Native `npm run build` succeeds with zero errors: **exit code 0**
+  - `npm run plans:validate` runs clean: **exit code 0**
+- **Validation steps run:**
+  - Local terminal compilation and governance validation both completed successfully.
+- **Blocker status:**
+  - None.
+
+---
+
+## 2026-07-14 — Turn Delta (Wave 22 — Property Valuation AVM & Monthly Refresh Cron)
+
+- **Task ID:** W22-avm-integration-001
+- **Files touched:**
+  - `server/routes/valuation.ts`
+  - `server/routes/properties.ts`
+  - `server/services/valuation/avmRefreshService.ts`
+  - `server/services/SchedulerService.ts`
+  - `plans/waves/WAVE_22_IMPLEMENTATION_BACKLOG.md`
+  - `DAILY_MILESTONE_TRACKER.md`
+  - `plans/AEGIS_RUN_LOG.md`
+- **What changed:**
+  - Exported `runAvm` and related types (`AvmInput`, `AvmResult`) from `valuation.ts`.
+  - Integrated synchronous AVM triggers inside property creation (`POST /`) and editing (`PUT /:id` and `PATCH /:id`) endpoints in `properties.ts` to automatically create updated `PropertyValuation` records whenever size, location, or amenities are updated.
+  - Implemented the bulk monthly AVM recalculation service in `avmRefreshService.ts`.
+  - Registered and scheduled the `avm-refresh-monthly` cron job in `SchedulerService.ts` running at 04:00 Dubai time on the 1st of every month.
+- **Acceptance checks:**
+  - Comprehensive vitest suite (`server/routes/valuation.test.ts`): **48 passed**, **0 failed**
+  - Native `npm run build` succeeds: **exit code 0**
+  - `npm run plans:validate` runs clean: **exit code 0**
+- **Validation steps run:**
+  - Local terminal compilation, test suite executions, and governance validation all passed successfully.
+- **Blocker status:**
+  - None. Runs fully offline and free.

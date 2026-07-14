@@ -25,6 +25,8 @@ export default defineConfig({
       'src/e2e/**',
       'src/__tests__/e2e/**',
       'node_modules/**',
+      '**/node_modules/**',
+      'modules/**',
       // Legacy custom test-runner files (not Vitest describe/it format)
       'server/tests/**',
     ],
