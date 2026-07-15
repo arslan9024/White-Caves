@@ -12,7 +12,7 @@
 
 import React from 'react';
 import AppLayout from '../AppLayout';
-import UnifiedDashboardPage from '../../../pages/UnifiedDashboardPage';
+import UnifiedDashboardPage from '../../../pages/crm/UnifiedDashboardPage';
 
 export interface DualSidebarLayoutProps {
   className?: string;

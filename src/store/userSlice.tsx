@@ -24,6 +24,7 @@ export interface AppUser {
     optionalFields: Array<'name' | 'phone' | 'department'>;
     missingFields: Array<'name' | 'phone' | 'department'>;
   };
+  accessLevel?: number;
   [key: string]: unknown; // Allow Firebase/provider extra fields
 }
 

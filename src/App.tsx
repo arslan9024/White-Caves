@@ -33,7 +33,7 @@ const PendingApprovalPage = lazyRetry(() => import('./pages/auth/PendingApproval
 const SignInPage = lazyRetry(() => import('./pages/auth/SignInPage'));
 const HomePage = lazyRetry(() => import('./pages/HomePage'));
 const ServerStatusPage = lazyRetry(() => import('./pages/ServerStatusPage'));
-const CompanyDashboard = lazyRetry(() => import('./pages/admin/CompanyDashboard'));
+// Removed CompanyDashboard
 
 // ─── Types ──────────────────────────────────────────────────────────────
 
@@ -289,7 +289,7 @@ const SalesPipelinePage = lazy(() => import('./pages/secondary-sales-agent/Sales
 const LeasingAcquisition = lazy(() => import('./pages/LeasingAcquisition'));
 
 // Unified Dashboard (replaces role-specific dashboards)
-const UnifiedDashboardPage = lazy(() => import('./pages/UnifiedDashboardPage'));
+const UnifiedDashboardPage = lazy(() => import('./pages/crm/UnifiedDashboardPage'));
 const NadiaPage = lazy(() => import('./pages/NadiaPage'));
 
 // Goals Pages
@@ -761,22 +761,7 @@ function App(): React.JSX.Element {
                         </ProtectedRoute>
                       }
                     />
-                    <Route
-                      path="/dashboard"
-                      element={
-                        <ProtectedRoute
-                          allowedRoles={[
-                            'admin',
-                            'superadmin',
-                            'managing_director',
-                            'executive',
-                            'owner',
-                          ]}
-                        >
-                          <CompanyDashboard />
-                        </ProtectedRoute>
-                      }
-                    />
+                    <Route path="/dashboard" element={<Navigate to="/crm" replace />} />
 
                     {/* ==================== ROLE-SPECIFIC SUB-PAGES ==================== */}
                     {roleSpecificAppRoutes.map(route => (
