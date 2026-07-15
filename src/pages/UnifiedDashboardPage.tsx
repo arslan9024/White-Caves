@@ -104,69 +104,29 @@ interface CRMModule {
 
 type GenericEntity = Record<string, unknown>;
 
-interface SearchItem {
-  id: string;
-  icon: string;
-  label: string;
-  meta: string;
-  type: 'tab' | 'module' | 'record';
-  target: string;
-}
+import TabLoadingFallback from '../components/dashboard/atoms/TabLoadingFallback';
+import DashboardSearchItem, { SearchItem } from '../components/dashboard/atoms/DashboardSearchItem';
+import DashboardErrorBanner from '../components/dashboard/atoms/DashboardErrorBanner';
+import ExecutiveCockpitBanner, {
+  ExecutiveCockpitActions,
+  SuperuserButton,
+  SuperuserButtonPrimary,
+} from '../components/dashboard/atoms/ExecutiveCockpitBanner';
+import { CRM_MODULE_REGISTRY } from '../config/crmModuleRegistry';
 
 function tabData<T>(data: DashboardData | null | undefined): T {
   return (data ?? {}) as unknown as T;
 }
 
-const TabLoadingFallback: FC = () => (
-  <TabLoadingFallbackContainer>
-    <SuspenseLoader />
-  </TabLoadingFallbackContainer>
-);
-
-const DashboardSearchItem: FC<{ item: SearchItem; onSelect: (item: SearchItem) => void }> = ({
-  item,
-  onSelect,
-}) => (
-  <DashboardSearchResultButton
-    onMouseDown={event => {
-      event.preventDefault();
-      onSelect(item);
-    }}
-  >
-    <SearchResultIcon aria-hidden="true">{item.icon}</SearchResultIcon>
-    <SearchResultCopy>
-      <strong>{item.label}</strong>
-      <small>{item.meta}</small>
-    </SearchResultCopy>
-  </DashboardSearchResultButton>
-);
-
 const UnifiedCRMAdapter: FC<CRMModuleProps> = () => <UnifiedCRM />;
 
-const CRM_MODULES: Record<string, CRMModule> = {
-  unified: { Component: UnifiedCRMAdapter, label: 'Unified CRM Dashboard' },
-  nadia: { Component: NadiaWhatsAppCRM, label: 'WhatsApp CRM' },
-  mary: { Component: MaryInventoryCRM, label: 'Inventory CRM' },
-  clara: { Component: ClaraLeadsCRM, label: 'Leads CRM' },
-  nina: { Component: NinaWhatsAppBotCRM, label: 'WhatsApp Bot CRM' },
-  nancy: { Component: NancyHRCRM, label: 'HR CRM' },
-  sophia: { Component: SophiaSalesCRM, label: 'Sales CRM' },
-  daisy: { Component: DaisyLeasingCRM, label: 'Leasing CRM' },
-  theodora: { Component: TheodoraFinanceCRM, label: 'Finance CRM' },
-  olivia: { Component: OliviaMarketingCRM, label: 'Marketing CRM' },
-  zoe: { Component: ZoeExecutiveCRM, label: 'Executive CRM' },
-  laila: { Component: LailaComplianceCRM, label: 'Compliance CRM' },
-  aurora: { Component: AuroraCTODashboard, label: 'CTO Dashboard' },
-  hazel: { Component: HazelFrontendCRM, label: 'Frontend CRM' },
-  willow: { Component: WillowBackendCRM, label: 'Backend CRM' },
-  rera: { Component: RERAComplianceModule, label: 'RERA Compliance' },
-  dld: { Component: DLDIntegrationModule, label: 'DLD Integration' },
-  leads: { Component: LeadScoringModule, label: 'Lead Scoring' },
-  valuation: { Component: PropertyValuationModule, label: 'Property Valuation' },
-  analytics: { Component: MarketAnalyticsModule, label: 'Market Analytics' },
-};
-
-const moduleEntries = Object.entries(CRM_MODULES);
+const moduleEntries = Object.entries(CRM_MODULE_REGISTRY).map(([key, def]) => [
+  key,
+  {
+    Component: key === 'unified' ? UnifiedCRMAdapter : def.Component,
+    label: def.label,
+  },
+]) as [string, CRMModule][];
 
 // ═══════════════════════════════════════════════════════════════════════════════
 // STYLED COMPONENTS
@@ -186,113 +146,12 @@ const UnifiedDashboardError = styled(UnifiedDashboardContainer)`
   min-height: 100vh;
 `;
 
-const TabLoadingFallbackContainer = styled.div`
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  min-height: 360px;
-`;
-
-const DashboardSearchResultButton = styled.button`
-  display: grid;
-  grid-template-columns: 32px 1fr;
-  align-items: center;
-  gap: ${spacing[3]};
-  width: 100%;
-  padding: ${spacing[2]} ${spacing[3]};
-  border: 0;
-  border-radius: ${borderRadius.lg};
-  background: transparent;
-  color: ${colors.text.primary};
-  text-align: start;
-  cursor: pointer;
-  transition: background 0.2s ease;
-
-  &:hover {
-    background: ${colors.background.hover};
-  }
-
-  &:focus-visible {
-    outline: 2px solid ${colors.primary[500]};
-    outline-offset: 2px;
-  }
-`;
-
-const SearchResultIcon = styled.span`
-  display: grid;
-  place-items: center;
-  width: 32px;
-  height: 32px;
-  border-radius: ${borderRadius.md};
-  background: ${colors.background.surface};
-`;
-
-const SearchResultCopy = styled.span`
-  display: flex;
-  flex-direction: column;
-  gap: ${spacing[1]};
-
-  strong {
-    ${typography.presets.label};
-    color: ${colors.text.primary};
-  }
-
-  small {
-    ${typography.presets.caption};
-    color: ${colors.text.secondary};
-  }
-`;
-
 const DashboardSearchResultsEmpty = styled.div`
   padding: ${spacing[2]} ${spacing[3]};
   border-radius: ${borderRadius.md};
   color: ${colors.text.secondary};
   ${typography.presets.caption};
   background: ${colors.background.surface};
-`;
-
-const ErrorBanner = styled.div`
-  display: flex;
-  align-items: center;
-  gap: ${spacing[3]};
-  margin-bottom: ${spacing[4]};
-  padding: ${spacing[3]} ${spacing[4]};
-  background: ${colors.error[50]};
-  border: 1px solid ${colors.error[200]};
-  border-radius: ${borderRadius.md};
-  color: ${colors.error[700]};
-  box-shadow: ${shadows.sm};
-
-  p {
-    flex: 1;
-    margin: 0;
-    ${typography.presets.body};
-  }
-
-  button {
-    min-height: 38px;
-    padding: 0 ${spacing[3]};
-    border: 0;
-    border-radius: 999px;
-    background: ${colors.primary[500]};
-    color: white;
-    font-weight: 600;
-    cursor: pointer;
-    transition: all 0.2s ease;
-
-    &:hover {
-      background: ${colors.primary[600]};
-      transform: translateY(-1px);
-    }
-
-    &:active {
-      transform: translateY(0);
-    }
-  }
-`;
-
-const ErrorIcon = styled.span`
-  font-size: 1.2rem;
 `;
 
 const DashboardWorkspaceShell = styled.div`
@@ -310,80 +169,6 @@ const DashboardMainPanel = styled.main`
   display: flex;
   flex-direction: column;
   gap: ${spacing[4]};
-`;
-
-const ExecutiveCockpitBannerSection = styled.section`
-  display: grid;
-  gap: ${spacing[3]};
-  margin-bottom: ${spacing[3]};
-  padding: ${spacing[4]};
-  border-radius: ${borderRadius.md};
-  border: 1px solid rgba(201, 168, 76, 0.34);
-  background: linear-gradient(135deg, rgba(38, 38, 46, 0.92), rgba(24, 24, 30, 0.95));
-  color: #f8f6ef;
-
-  h2 {
-    margin: 0;
-    font-size: 1.08rem;
-    font-weight: 600;
-  }
-
-  p {
-    margin: ${spacing[1]} 0 0;
-    color: rgba(248, 246, 239, 0.84);
-    ${typography.presets.body};
-  }
-`;
-
-const ExecutiveCockpitEyebrow = styled.p`
-  margin: 0;
-  color: rgba(255, 215, 140, 0.96);
-  font-size: 0.72rem;
-  font-weight: 700;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-`;
-
-const ExecutiveCockpitActions = styled.div`
-  display: flex;
-  flex-wrap: wrap;
-  gap: ${spacing[2]};
-`;
-
-const SuperuserButton = styled.button`
-  min-height: 38px;
-  padding: 0 ${spacing[3]};
-  border-radius: 999px;
-  border: 1px solid rgba(255, 255, 255, 0.28);
-  background: rgba(255, 255, 255, 0.08);
-  color: #fff;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.2s ease;
-
-  &:hover {
-    background: rgba(255, 255, 255, 0.12);
-    transform: translateY(-1px);
-  }
-
-  &:active {
-    transform: translateY(0);
-  }
-
-  &:focus-visible {
-    outline: 2px solid rgba(255, 215, 140, 0.95);
-    outline-offset: 2px;
-  }
-`;
-
-const SuperuserButtonPrimary = styled(SuperuserButton)`
-  background: linear-gradient(135deg, #bd8f2f, #e4b75e);
-  border-color: transparent;
-  color: #1f1300;
-
-  &:hover {
-    background: linear-gradient(135deg, #a87a28, #d4a84a);
-  }
 `;
 
 const ConfiguratorPanel = styled.section`
@@ -1208,15 +993,7 @@ const UnifiedDashboardPage: FC = () => {
         }}
       />
 
-      {error && (
-        <ErrorBanner role="alert" aria-live="assertive">
-          <ErrorIcon aria-hidden="true">⚠️</ErrorIcon>
-          <p>{error}</p>
-          <button onClick={handleRetryAll} aria-label="Retry loading dashboard data">
-            Retry
-          </button>
-        </ErrorBanner>
-      )}
+      {error && <DashboardErrorBanner message={error} onRetry={handleRetryAll} />}
 
       <DashboardWorkspaceShell>
         {!selectedDepartment && (
@@ -1252,53 +1029,41 @@ const UnifiedDashboardPage: FC = () => {
           />
 
           {isExecutiveCockpitMode && isSuperUser && !selectedDepartment && (
-            <ExecutiveCockpitBannerSection aria-label="Managing Director cockpit mode">
-              <div>
-                <ExecutiveCockpitEyebrow>
-                  Managing Director · Full Company View
-                </ExecutiveCockpitEyebrow>
-                <h2>Executive cockpit engaged</h2>
-                <p>
-                  Priority control over portfolio, pipeline, team, finance, compliance, and AI
-                  modules. All company operations visible in one place.
-                </p>
-              </div>
-              <ExecutiveCockpitActions>
-                <SuperuserButtonPrimary type="button" onClick={() => setIsCommandPaletteOpen(true)}>
-                  Command palette
-                </SuperuserButtonPrimary>
-                <SuperuserButton
-                  type="button"
-                  onClick={() => openWorkspaceTab('overview', 'unified')}
-                >
-                  Overview
-                </SuperuserButton>
-                <SuperuserButton
-                  type="button"
-                  onClick={() => openWorkspaceTab('analytics', 'analytics')}
-                >
-                  Analytics
-                </SuperuserButton>
-                <SuperuserButton type="button" onClick={() => handleCRMModuleSelect('theodora')}>
-                  Finance
-                </SuperuserButton>
-                <SuperuserButton type="button" onClick={() => handleCRMModuleSelect('laila')}>
-                  Compliance
-                </SuperuserButton>
-                <SuperuserButton
-                  type="button"
-                  onClick={() => openWorkspaceTab('ai-hub', 'unified')}
-                >
-                  AI modules
-                </SuperuserButton>
-                <SuperuserButton type="button" onClick={() => openWorkspaceTab('users', 'unified')}>
-                  Users
-                </SuperuserButton>
-                <SuperuserButton type="button" onClick={() => navigate('/profile')}>
-                  Profile
-                </SuperuserButton>
-              </ExecutiveCockpitActions>
-            </ExecutiveCockpitBannerSection>
+            <ExecutiveCockpitBanner
+              title="Executive cockpit engaged"
+              description="Priority control over portfolio, pipeline, team, finance, compliance, and AI modules. All company operations visible in one place."
+            >
+              <SuperuserButtonPrimary type="button" onClick={() => setIsCommandPaletteOpen(true)}>
+                Command palette
+              </SuperuserButtonPrimary>
+              <SuperuserButton
+                type="button"
+                onClick={() => openWorkspaceTab('overview', 'unified')}
+              >
+                Overview
+              </SuperuserButton>
+              <SuperuserButton
+                type="button"
+                onClick={() => openWorkspaceTab('analytics', 'analytics')}
+              >
+                Analytics
+              </SuperuserButton>
+              <SuperuserButton type="button" onClick={() => handleCRMModuleSelect('theodora')}>
+                Finance
+              </SuperuserButton>
+              <SuperuserButton type="button" onClick={() => handleCRMModuleSelect('laila')}>
+                Compliance
+              </SuperuserButton>
+              <SuperuserButton type="button" onClick={() => openWorkspaceTab('ai-hub', 'unified')}>
+                AI modules
+              </SuperuserButton>
+              <SuperuserButton type="button" onClick={() => openWorkspaceTab('users', 'unified')}>
+                Users
+              </SuperuserButton>
+              <SuperuserButton type="button" onClick={() => navigate('/profile')}>
+                Profile
+              </SuperuserButton>
+            </ExecutiveCockpitBanner>
           )}
 
           {isExecutiveRole && !selectedDepartment && (
