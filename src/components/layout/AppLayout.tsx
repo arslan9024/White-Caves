@@ -74,6 +74,8 @@ export function canReadCompanyActivityNotifications(role: string | null | undefi
   return hasPermission(role ?? null, PERMISSIONS.VIEW_AUDIT_LOGS);
 }
 
+import { MobileBottomNav } from './MobileBottomNav';
+
 const AppLayout: React.FC<AppLayoutProps> = ({ children, showNav = true, isSuperUser = false }) => {
   const location = useLocation();
   const dispatch = useDispatch();
@@ -156,6 +158,9 @@ const AppLayout: React.FC<AppLayoutProps> = ({ children, showNav = true, isSuper
           {children}
         </AppMain>
       </AppBody>
+
+      {/* ─── Mobile Bottom Nav (Wave 23) ─────────────────────────── */}
+      {showCrmChrome && <MobileBottomNav />}
     </AppLayoutContainer>
   );
 };

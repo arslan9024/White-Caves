@@ -67,6 +67,13 @@ export const PrimaryButton = styled.button`
   cursor: pointer;
   transition: all 0.2s;
 
+  /* Touch target size for mobile accessibility (W23-012) */
+  min-height: 44px;
+  min-width: 44px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
   &:hover:not(:disabled) {
     background: ${colors.primary[700]};
   }
@@ -125,6 +132,10 @@ export const IconButton = styled.button<{ danger?: boolean }>`
   align-items: center;
   justify-content: center;
   transition: all 0.2s;
+
+  /* Touch target size for mobile accessibility (W23-012) */
+  min-height: 44px;
+  min-width: 44px;
 
   &:hover {
     border-color: ${colors.primary[500]};
@@ -242,18 +253,21 @@ export const PaginationContainer = styled.nav`
 `;
 
 export const PageButton = styled.button<{ $active?: boolean }>`
+  background: ${({ $active }) => ($active ? colors.primary[600] : 'none')};
+  color: ${({ $active }) => ($active ? colors.text.inverse : colors.text.primary)};
+  border: 1px solid ${({ $active }) => ($active ? colors.primary[600] : colors.border.default)};
   padding: ${spacing[2]} ${spacing[3]};
-  border: 1px solid ${colors.border.default};
-  background: ${props => (props.$active ? colors.primary[600] : colors.background.default)};
-  color: ${props => (props.$active ? colors.text.inverse : colors.text.primary)};
-  border-radius: ${borderRadius.sm};
+  border-radius: ${borderRadius.md};
   cursor: pointer;
-  ${typography.presets.bodySmall};
   transition: all 0.2s;
+  ${typography.presets.bodySmall};
+
+  /* Touch target size for mobile accessibility (W23-012) */
+  min-height: 44px;
+  min-width: 44px;
 
   &:hover:not(:disabled) {
-    border-color: ${colors.primary[500]};
-    background: ${colors.primary[50]};
+    background: ${({ $active }) => ($active ? colors.primary[700] : colors.background.hover)};
   }
 
   &:disabled {

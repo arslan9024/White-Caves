@@ -46,6 +46,8 @@ import {
   FormGrid,
   FormGroup,
 } from './TabStylesComponents';
+import './TabStyles.css';
+import { MobileLeadCard } from './MobileLeadCard';
 
 const MOCK_LEADS: Lead[] = [
   {
@@ -327,85 +329,100 @@ const LeadsTab: React.FC<LeadsTabProps> = ({ data, loading, error }) => {
       )}
 
       {filteredLeads.length > 0 && (
-        <TableContainer>
-          <Table aria-label="Leads data">
-            <thead>
-              <tr>
-                <th>Lead</th>
-                <th>Contact</th>
-                <th>Source</th>
-                <th>Interest</th>
-                <th>Priority</th>
-                <th>Status</th>
-                <th>Agent</th>
-                <th>Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              {paginatedLeads.map(lead => (
-                <tr key={lead.id}>
-                  <td>
-                    <LeadCell>
-                      <strong>{lead.name}</strong>
-                      <small>
-                        {lead.createdAt ? new Date(lead.createdAt).toLocaleDateString() : 'N/A'}
-                      </small>
-                    </LeadCell>
-                  </td>
-                  <td>
-                    <ContactCell>
-                      <span>{lead.phone}</span>
-                      <small>{lead.email}</small>
-                    </ContactCell>
-                  </td>
-                  <td>
-                    <SourceBadge className="source-badge">
-                      {getSourceIcon(lead.source)} {lead.source}
-                    </SourceBadge>
-                  </td>
-                  <td>{lead.interest || 'N/A'}</td>
-                  <td>{getPriorityBadge(lead.priority)}</td>
-                  <td>
-                    <StatusBadge className="status-badge" $status={lead.status}>
-                      {lead.status}
-                    </StatusBadge>
-                    <StatusSelect
-                      value={lead.status}
-                      onChange={e => handleStatusChange(lead.id, e.target.value)}
-                      style={{ color: getStatusColor(lead.status) }}
-                      aria-label="Change lead status"
-                    >
-                      <option value="new">New</option>
-                      <option value="contacted">Contacted</option>
-                      <option value="qualified">Qualified</option>
-                      <option value="lost">Lost</option>
-                    </StatusSelect>
-                  </td>
-                  <td>{lead.agent || <UnassignedBadge>Unassigned</UnassignedBadge>}</td>
-                  <td>
-                    <ActionButtons>
-                      <IconButton
-                        title="Edit"
-                        aria-label="Edit lead"
-                        onClick={() => openEdit(lead)}
-                      >
-                        ✏️
-                      </IconButton>
-                      <IconButton
-                        danger
-                        title="Delete"
-                        aria-label="Delete lead"
-                        onClick={() => openDelete(lead)}
-                      >
-                        🗑️
-                      </IconButton>
-                    </ActionButtons>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </Table>
-        </TableContainer>
+        <>
+          <div className="desktop-only-table">
+            <TableContainer>
+              <Table aria-label="Leads data">
+                <thead>
+                  <tr>
+                    <th>Lead</th>
+                    <th>Contact</th>
+                    <th>Source</th>
+                    <th>Interest</th>
+                    <th>Priority</th>
+                    <th>Status</th>
+                    <th>Agent</th>
+                    <th>Actions</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {paginatedLeads.map(lead => (
+                    <tr key={lead.id}>
+                      <td>
+                        <LeadCell>
+                          <strong>{lead.name}</strong>
+                          <small>
+                            {lead.createdAt ? new Date(lead.createdAt).toLocaleDateString() : 'N/A'}
+                          </small>
+                        </LeadCell>
+                      </td>
+                      <td>
+                        <ContactCell>
+                          <span>{lead.phone}</span>
+                          <small>{lead.email}</small>
+                        </ContactCell>
+                      </td>
+                      <td>
+                        <SourceBadge className="source-badge">
+                          {getSourceIcon(lead.source)} {lead.source}
+                        </SourceBadge>
+                      </td>
+                      <td>{lead.interest || 'N/A'}</td>
+                      <td>{getPriorityBadge(lead.priority)}</td>
+                      <td>
+                        <StatusBadge className="status-badge" $status={lead.status}>
+                          {lead.status}
+                        </StatusBadge>
+                        <StatusSelect
+                          value={lead.status}
+                          onChange={e => handleStatusChange(lead.id, e.target.value)}
+                          style={{ color: getStatusColor(lead.status) }}
+                          aria-label="Change lead status"
+                        >
+                          <option value="new">New</option>
+                          <option value="contacted">Contacted</option>
+                          <option value="qualified">Qualified</option>
+                          <option value="lost">Lost</option>
+                        </StatusSelect>
+                      </td>
+                      <td>{lead.agent || <UnassignedBadge>Unassigned</UnassignedBadge>}</td>
+                      <td>
+                        <ActionButtons>
+                          <IconButton
+                            title="Edit"
+                            aria-label="Edit lead"
+                            onClick={() => openEdit(lead)}
+                          >
+                            ✏️
+                          </IconButton>
+                          <IconButton
+                            danger
+                            title="Delete"
+                            aria-label="Delete lead"
+                            onClick={() => openDelete(lead)}
+                          >
+                            🗑️
+                          </IconButton>
+                        </ActionButtons>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </Table>
+            </TableContainer>
+          </div>
+          <div className="mobile-only-cards">
+            {paginatedLeads.map(lead => (
+              <MobileLeadCard
+                key={lead.id}
+                lead={lead}
+                onSnooze={id => {
+                  showToast(`✅ Lead snoozed for 7 days.`);
+                }}
+              />
+            ))}
+          </div>
+        </>
       )}
 
       {/* Pagination */}

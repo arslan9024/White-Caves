@@ -31,3 +31,21 @@
 .action-button:hover {
   background-color: #0056b3;
 }
+
+.desktop-only-table {
+  display: block;
+}
+.mobile-only-cards {
+  display: none;
+}
+@media (max-width: 767px) {
+  .desktop-only-table {
+    display: none;
+  }
+  .mobile-only-cards {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    margin-top: 16px;
+  }
+}
