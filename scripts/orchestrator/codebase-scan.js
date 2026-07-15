@@ -22,26 +22,26 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 // ─── Config ────────────────────────────────────────────────────────────────
-const ROOT        = path.resolve(__dirname, '..', '..');
-const LOGS_DIR    = path.join(ROOT, 'logs', 'orchestrator');
-const OUT_FILE    = path.join(LOGS_DIR, 'codebase-scan-report.json');
-const BRIEF_MODE  = process.argv.includes('--brief');
+const ROOT = path.resolve(__dirname, '..', '..');
+const LOGS_DIR = path.join(ROOT, 'logs', 'orchestrator');
+const OUT_FILE = path.join(LOGS_DIR, 'codebase-scan-report.json');
+const BRIEF_MODE = process.argv.includes('--brief');
 const JSON_STDOUT = process.argv.includes('--json');
 
-const SCAN_DIRS   = ['src', 'server'];
-const PLAN_DIRS   = ['plans', 'business_docs'];
-const EXTS        = new Set(['.ts', '.tsx', '.js', '.jsx']);
+const SCAN_DIRS = ['src', 'server'];
+const PLAN_DIRS = ['plans', 'business_docs'];
+const EXTS = new Set(['.ts', '.tsx', '.js', '.jsx']);
 
 // Priority weights — higher = more urgent
 const PRIORITY = {
-  TODO_STUB:        10,  // TODO / FIXME / STUB comment in code
-  TS_ERROR:         25,  // TypeScript compile error
-  FAILING_BUILD:    50,  // build exit code non-zero
-  OPEN_WAVE:        15,  // wave listed as 🟢 Ready or 📋 Planned in PENDING_TASKS_ONLY
-  MISSING_TEST:      8,  // route/hook with no accompanying *.test.ts
-  EMPTY_HANDLER:    12,  // Express route handler with only a TODO or res.json stub
-  SECURITY_FLAG:    30,  // hardcoded secret or insecure pattern detected
-  DOC_INCOMPLETE:    5,  // business_doc below section threshold
+  TODO_STUB: 10, // TODO / FIXME / STUB comment in code
+  TS_ERROR: 25, // TypeScript compile error
+  FAILING_BUILD: 50, // build exit code non-zero
+  OPEN_WAVE: 15, // wave listed as 🟢 Ready or 📋 Planned in PENDING_TASKS_ONLY
+  MISSING_TEST: 8, // route/hook with no accompanying *.test.ts
+  EMPTY_HANDLER: 12, // Express route handler with only a TODO or res.json stub
+  SECURITY_FLAG: 30, // hardcoded secret or insecure pattern detected
+  DOC_INCOMPLETE: 5, // business_doc below section threshold
 };
 
 // ─── Helpers ───────────────────────────────────────────────────────────────
@@ -49,7 +49,12 @@ function walkDir(dir, collect) {
   if (!fs.existsSync(dir)) return;
   for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {
     const full = path.join(dir, entry.name);
-    if (entry.isDirectory() && !entry.name.startsWith('.') && entry.name !== 'node_modules' && entry.name !== 'dist') {
+    if (
+      entry.isDirectory() &&
+      !entry.name.startsWith('.') &&
+      entry.name !== 'node_modules' &&
+      entry.name !== 'dist'
+    ) {
       walkDir(full, collect);
     } else if (entry.isFile()) {
       collect(full);
@@ -58,8 +63,11 @@ function walkDir(dir, collect) {
 }
 
 function readFileSafe(fp) {
-  try { return fs.readFileSync(fp, 'utf8'); }
-  catch { return ''; }
+  try {
+    return fs.readFileSync(fp, 'utf8');
+  } catch {
+    return '';
+  }
 }
 
 function relPath(fp) {
@@ -72,33 +80,64 @@ function scanSourceCode() {
   const allFiles = [];
 
   for (const d of SCAN_DIRS) {
-    walkDir(path.join(ROOT, d), f => { if (EXTS.has(path.extname(f))) allFiles.push(f); });
+    walkDir(path.join(ROOT, d), f => {
+      if (EXTS.has(path.extname(f))) allFiles.push(f);
+    });
   }
 
   for (const fp of allFiles) {
-    const rel     = relPath(fp);
+    const rel = relPath(fp);
     const content = readFileSafe(fp);
-    const lines   = content.split('\n');
+    const lines = content.split('\n');
 
     lines.forEach((line, i) => {
       const ln = i + 1;
       const trimmed = line.trim();
 
       // TODO / FIXME / STUB
-      if (/\b(TODO|FIXME|STUB|PLACEHOLDER|NOT IMPLEMENTED)\b/i.test(trimmed)) {
-        findings.push({ type: 'TODO_STUB', file: rel, line: ln, snippet: trimmed.slice(0, 120), score: PRIORITY.TODO_STUB });
+      if (
+        /(?:\/\/|\/\*|\*|<!--|#)\s*(TODO|FIXME|STUB|PLACEHOLDER|NOT IMPLEMENTED)\b/i.test(trimmed)
+      ) {
+        findings.push({
+          type: 'TODO_STUB',
+          file: rel,
+          line: ln,
+          snippet: trimmed.slice(0, 120),
+          score: PRIORITY.TODO_STUB,
+        });
       }
 
       // Hardcoded secret patterns (basic)
-      if (/(?:password|secret|api_key|apikey|jwt_secret)\s*[:=]\s*['"][^'"]{4,}/i.test(trimmed) &&
-          !trimmed.startsWith('//') && !trimmed.startsWith('*')) {
-        findings.push({ type: 'SECURITY_FLAG', file: rel, line: ln, snippet: '[REDACTED — possible hardcoded secret]', score: PRIORITY.SECURITY_FLAG });
+      if (
+        /(?:password|secret|api_key|apikey|jwt_secret)\s*[:=]\s*['"][^'"]{4,}/i.test(trimmed) &&
+        !trimmed.startsWith('//') &&
+        !trimmed.startsWith('*') &&
+        !rel.includes('.test.') &&
+        !rel.includes('__tests__')
+      ) {
+        findings.push({
+          type: 'SECURITY_FLAG',
+          file: rel,
+          line: ln,
+          snippet: '[REDACTED — possible hardcoded secret]',
+          score: PRIORITY.SECURITY_FLAG,
+        });
       }
 
-      // Empty/stub Express route handlers
-      if (/res\.(json|send)\(\s*\{?\s*\}?\s*\)/.test(trimmed) &&
-          !rel.includes('.test.') && !rel.includes('__tests__')) {
-        findings.push({ type: 'EMPTY_HANDLER', file: rel, line: ln, snippet: trimmed.slice(0, 120), score: PRIORITY.EMPTY_HANDLER });
+      // Stub API Handlers
+      if (
+        /res\.(json|send)\(\s*\{\s*\}\s*\)/.test(trimmed) &&
+        rel.includes('server') &&
+        !rel.includes('.test.') &&
+        !rel.includes('__tests__')
+      ) {
+        findings.push({
+          type: 'EMPTY_HANDLER',
+          file: rel,
+          line: ln,
+          snippet: trimmed.slice(0, 120),
+          score: PRIORITY.EMPTY_HANDLER,
+        });
       }
     });
   }
@@ -106,11 +145,17 @@ function scanSourceCode() {
   // Missing test files — routes without matching *.test.ts
   const routeFiles = allFiles.filter(f => /server[\\/]routes[\\/].+(?<!test)\.(ts|js)$/.test(f));
   for (const rf of routeFiles) {
-    const base     = path.basename(rf, path.extname(rf));
+    const base = path.basename(rf, path.extname(rf));
     const testFile = path.join(path.dirname(rf), `${base}.test.ts`);
-    const altTest  = path.join(path.dirname(rf), `${base}.routes.test.ts`);
+    const altTest = path.join(path.dirname(rf), `${base}.routes.test.ts`);
     if (!fs.existsSync(testFile) && !fs.existsSync(altTest)) {
-      findings.push({ type: 'MISSING_TEST', file: relPath(rf), line: 0, snippet: `No test file found for ${base}`, score: PRIORITY.MISSING_TEST });
+      findings.push({
+        type: 'MISSING_TEST',
+        file: relPath(rf),
+        line: 0,
+        snippet: `No test file found for ${base}`,
+        score: PRIORITY.MISSING_TEST,
+      });
     }
   }
 
@@ -132,8 +177,11 @@ function checkTypeScript() {
       execSync(`node_modules/.bin/tsc --noEmit -p ${config}`, { cwd: ROOT, stdio: 'pipe' });
     } catch (err) {
       const output = (err.stdout || '') + (err.stderr || '');
-      const lines  = output.toString().split('\n').filter(l => /error TS\d+/.test(l));
-      const count  = lines.length;
+      const lines = output
+        .toString()
+        .split('\n')
+        .filter(l => /error TS\d+/.test(l));
+      const count = lines.length;
       result[`${label}Errors`] = count;
       result.total += count;
       lines.slice(0, 20).forEach(l => result.details.push({ label, message: l.trim() }));
@@ -149,7 +197,11 @@ function checkBuild() {
     execSync('npm run build', { cwd: ROOT, stdio: 'pipe', timeout: 120_000 });
     return { ok: true, exitCode: 0 };
   } catch (err) {
-    return { ok: false, exitCode: err.status || 1, stderr: (err.stderr || '').toString().slice(0, 500) };
+    return {
+      ok: false,
+      exitCode: err.status || 1,
+      stderr: (err.stderr || '').toString().slice(0, 500),
+    };
   }
 }
 
@@ -159,7 +211,7 @@ function scanOpenWaves() {
   if (!fs.existsSync(pendingFile)) return [];
 
   const content = readFileSafe(pendingFile);
-  const waves   = [];
+  const waves = [];
 
   // Match table rows with 🟢 Ready or 📋 Planned status
   const rowRe = /\|\s*(S\d+)\s*\|\s*(\d+)\s*\|([^|]+)\|\s*(🟢 Ready|📋 Planned)/g;
@@ -168,7 +220,7 @@ function scanOpenWaves() {
     const [, stream, wave, objective, status] = m;
     waves.push({
       stream: stream.trim(),
-      wave:   parseInt(wave, 10),
+      wave: parseInt(wave, 10),
       objective: objective.trim(),
       status: status.trim(),
       score: status.includes('🟢') ? PRIORITY.OPEN_WAVE * 2 : PRIORITY.OPEN_WAVE,
@@ -185,21 +237,23 @@ function scanDocCompleteness() {
   if (!fs.existsSync(docDir)) return incomplete;
 
   const mdFiles = [];
-  walkDir(docDir, f => { if (f.endsWith('.md')) mdFiles.push(f); });
+  walkDir(docDir, f => {
+    if (f.endsWith('.md')) mdFiles.push(f);
+  });
 
   for (const fp of mdFiles) {
     const content = readFileSafe(fp);
     const headings = (content.match(/^#{2,3} /gm) || []).length;
-    const hasTODO  = /\bTODO\b|\bTBD\b|\bPENDING\b/i.test(content);
+    const hasTODO = /\bTODO\b|\bTBD\b|\bPENDING\b/i.test(content);
     const wordCount = content.split(/\s+/).length;
 
     if (headings < 4 || hasTODO || wordCount < 200) {
       incomplete.push({
-        file:       relPath(fp),
+        file: relPath(fp),
         headings,
         wordCount,
         hasTODO,
-        score:      PRIORITY.DOC_INCOMPLETE,
+        score: PRIORITY.DOC_INCOMPLETE,
       });
     }
   }
@@ -220,7 +274,8 @@ function buildPriorityList(sourceFindings, tsCheck, buildCheck, openWaves, incom
       title: `Fix ${tsCheck.total} TypeScript error(s)`,
       detail: tsCheck.details.slice(0, 5).map(d => d.message),
       recommendedAgents: ['@Grace', '@Mira', '@Katherine'],
-      action: 'Run: node_modules/.bin/tsc --noEmit -p tsconfig.json && node_modules/.bin/tsc --noEmit -p tsconfig.server.json',
+      action:
+        'Run: node_modules/.bin/tsc --noEmit -p tsconfig.json && node_modules/.bin/tsc --noEmit -p tsconfig.server.json',
     });
   }
 
@@ -260,7 +315,10 @@ function buildPriorityList(sourceFindings, tsCheck, buildCheck, openWaves, incom
         priority: 'P1',
         score: w.score,
         title: `Execute ${w.stream} Wave ${w.wave}: ${w.objective}`,
-        detail: [`Status: ${w.status}`, `Gate: @Ada — Context Ready (60% Readiness) — Coding Phase Approved`],
+        detail: [
+          `Status: ${w.status}`,
+          `Gate: @Ada — Context Ready (60% Readiness) — Coding Phase Approved`,
+        ],
         recommendedAgents: ['@Ada', '@Mira', '@Una', '@Katherine'],
         action: `Review plans/waves/WAVE_0${w.wave}_IMPLEMENTATION_BACKLOG.md and begin execution`,
       });
@@ -272,8 +330,12 @@ function buildPriorityList(sourceFindings, tsCheck, buildCheck, openWaves, incom
   if (stubs.length > 0) {
     // Group by file
     const byFile = {};
-    stubs.forEach(s => { byFile[s.file] = (byFile[s.file] || 0) + 1; });
-    const topFiles = Object.entries(byFile).sort((a, b) => b[1] - a[1]).slice(0, 5);
+    stubs.forEach(s => {
+      byFile[s.file] = (byFile[s.file] || 0) + 1;
+    });
+    const topFiles = Object.entries(byFile)
+      .sort((a, b) => b[1] - a[1])
+      .slice(0, 5);
     items.push({
       category: 'stub-handlers',
       priority: 'P1',
@@ -289,8 +351,12 @@ function buildPriorityList(sourceFindings, tsCheck, buildCheck, openWaves, incom
   const todos = sourceFindings.findings.filter(f => f.type === 'TODO_STUB');
   if (todos.length > 0) {
     const byFile = {};
-    todos.forEach(t => { byFile[t.file] = (byFile[t.file] || 0) + 1; });
-    const topFiles = Object.entries(byFile).sort((a, b) => b[1] - a[1]).slice(0, 5);
+    todos.forEach(t => {
+      byFile[t.file] = (byFile[t.file] || 0) + 1;
+    });
+    const topFiles = Object.entries(byFile)
+      .sort((a, b) => b[1] - a[1])
+      .slice(0, 5);
     items.push({
       category: 'todos',
       priority: 'P2',
@@ -327,7 +393,7 @@ function buildPriorityList(sourceFindings, tsCheck, buildCheck, openWaves, incom
         title: `Prepare ${w.stream} Wave ${w.wave}: ${w.objective}`,
         detail: [`Status: ${w.status}`, 'Prerequisite: previous wave must be green'],
         recommendedAgents: ['@Margaret', '@Ada'],
-        action: `Review plans/waves/WAVE_${String(w.wave).padStart(2,'0')}_READINESS_PACKET.md`,
+        action: `Review plans/waves/WAVE_${String(w.wave).padStart(2, '0')}_READINESS_PACKET.md`,
       });
     });
   }
@@ -339,7 +405,12 @@ function buildPriorityList(sourceFindings, tsCheck, buildCheck, openWaves, incom
       priority: 'P3',
       score: incompleteDocs.length * PRIORITY.DOC_INCOMPLETE,
       title: `Complete ${incompleteDocs.length} under-specified business doc(s)`,
-      detail: incompleteDocs.slice(0, 8).map(d => `${d.file} (${d.headings} sections, ${d.wordCount} words${d.hasTODO ? ', has TODO' : ''})`),
+      detail: incompleteDocs
+        .slice(0, 8)
+        .map(
+          d =>
+            `${d.file} (${d.headings} sections, ${d.wordCount} words${d.hasTODO ? ', has TODO' : ''})`
+        ),
       recommendedAgents: ['@Victoria', '@Invoice', '@Sofia', '@Cassie', '@Joelle'],
       action: 'Assign each doc to its owning free agent via prompts.json task entries',
     });
@@ -353,13 +424,16 @@ function buildPriorityList(sourceFindings, tsCheck, buildCheck, openWaves, incom
 // ─── 7. Main ───────────────────────────────────────────────────────────────
 function main() {
   const startTime = Date.now();
-  const scanDate  = new Date().toISOString();
+  const scanDate = new Date().toISOString();
 
   if (!BRIEF_MODE) console.log('\n⟳  White Caves — Codebase Scan starting…\n');
 
   if (!BRIEF_MODE) process.stdout.write('  [1/5] Scanning source code…');
   const sourceFindings = scanSourceCode();
-  if (!BRIEF_MODE) console.log(` ${sourceFindings.findings.length} findings in ${sourceFindings.totalFiles} files`);
+  if (!BRIEF_MODE)
+    console.log(
+      ` ${sourceFindings.findings.length} findings in ${sourceFindings.totalFiles} files`
+    );
 
   if (!BRIEF_MODE) process.stdout.write('  [2/5] Running TypeScript check…');
   const tsCheck = checkTypeScript();
@@ -377,30 +451,36 @@ function main() {
   const incompleteDocs = scanDocCompleteness();
   if (!BRIEF_MODE) console.log(` ${incompleteDocs.length} incomplete doc(s)`);
 
-  const priorityList = buildPriorityList(sourceFindings, tsCheck, buildCheck, openWaves, incompleteDocs);
+  const priorityList = buildPriorityList(
+    sourceFindings,
+    tsCheck,
+    buildCheck,
+    openWaves,
+    incompleteDocs
+  );
 
   const report = {
     scanDate,
-    durationMs:       Date.now() - startTime,
+    durationMs: Date.now() - startTime,
     summary: {
       totalSourceFiles: sourceFindings.totalFiles,
-      totalFindings:    sourceFindings.findings.length,
-      tsErrors:         tsCheck.total,
-      buildOk:          buildCheck.ok,
-      openWaves:        openWaves.length,
-      readyWaves:       openWaves.filter(w => w.status.includes('🟢')).length,
-      incompleteDocs:   incompleteDocs.length,
-      priorityItems:    priorityList.length,
+      totalFindings: sourceFindings.findings.length,
+      tsErrors: tsCheck.total,
+      buildOk: buildCheck.ok,
+      openWaves: openWaves.length,
+      readyWaves: openWaves.filter(w => w.status.includes('🟢')).length,
+      incompleteDocs: incompleteDocs.length,
+      priorityItems: priorityList.length,
     },
-    topPriority:     priorityList[0] || null,
+    topPriority: priorityList[0] || null,
     priorityList,
     openWaves,
-    incompleteDocs:  incompleteDocs.slice(0, 20),
-    securityFlags:   sourceFindings.findings.filter(f => f.type === 'SECURITY_FLAG'),
-    stubHandlers:    sourceFindings.findings.filter(f => f.type === 'EMPTY_HANDLER').slice(0, 30),
-    todos:           sourceFindings.findings.filter(f => f.type === 'TODO_STUB').slice(0, 30),
-    missingTests:    sourceFindings.findings.filter(f => f.type === 'MISSING_TEST'),
-    tsDetails:       tsCheck.details,
+    incompleteDocs: incompleteDocs.slice(0, 20),
+    securityFlags: sourceFindings.findings.filter(f => f.type === 'SECURITY_FLAG'),
+    stubHandlers: sourceFindings.findings.filter(f => f.type === 'EMPTY_HANDLER').slice(0, 30),
+    todos: sourceFindings.findings.filter(f => f.type === 'TODO_STUB').slice(0, 30),
+    missingTests: sourceFindings.findings.filter(f => f.type === 'MISSING_TEST'),
+    tsDetails: tsCheck.details,
   };
 
   if (!JSON_STDOUT) {
@@ -423,13 +503,22 @@ function main() {
   console.log(`  Total findings       : ${report.summary.totalFindings}`);
   console.log(`  TypeScript errors    : ${report.summary.tsErrors}`);
   console.log(`  Build                : ${report.summary.buildOk ? '✓ PASS' : '✗ FAIL'}`);
-  console.log(`  Open waves           : ${report.summary.openWaves} (${report.summary.readyWaves} ready)`);
+  console.log(
+    `  Open waves           : ${report.summary.openWaves} (${report.summary.readyWaves} ready)`
+  );
   console.log(`  Incomplete docs      : ${report.summary.incompleteDocs}`);
   console.log(sep);
 
   console.log('\n  TOP PRIORITY ITEMS:\n');
   priorityList.slice(0, 8).forEach((item, i) => {
-    const badge = item.priority === 'P0' ? '🔴' : item.priority === 'P1' ? '🟠' : item.priority === 'P2' ? '🟡' : '🔵';
+    const badge =
+      item.priority === 'P0'
+        ? '🔴'
+        : item.priority === 'P1'
+          ? '🟠'
+          : item.priority === 'P2'
+            ? '🟡'
+            : '🔵';
     console.log(`  ${i + 1}. ${badge} [${item.priority}] ${item.title}`);
     console.log(`     Score: ${item.score} | Category: ${item.category}`);
     console.log(`     Agents: ${item.recommendedAgents.join(', ')}`);

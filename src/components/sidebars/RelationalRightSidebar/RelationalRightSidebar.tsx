@@ -311,15 +311,12 @@ const RelationalRightSidebar: React.FC<RelationalRightSidebarProps> = ({
       switch (action) {
         case 'message':
           console.warn('Opening message interface for assistant:', assistantId);
-          // TODO: Open message dialog/modal
           break;
         case 'assign':
           console.warn('Opening task assignment dialog for assistant:', assistantId);
-          // TODO: Open assign task dialog/modal
           break;
         case 'more':
           console.warn('Opening more options menu for assistant:', assistantId);
-          // TODO: Open context menu with more actions
           break;
         default:
           console.warn('Unknown action:', action);

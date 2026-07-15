@@ -71,7 +71,7 @@ export const API_ENDPOINTS = {
     profile: '/users/profile',
     settings: '/users/settings',
     update: '/users/update',
-    changePassword: '/users/change-password',
+    changePassword: `/users/change-password`,
   },
 
   // Analytics endpoints

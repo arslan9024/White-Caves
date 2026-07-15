@@ -20,10 +20,10 @@ const REQUIRED_VARS: string[] = [
 ];
 
 const OPTIONAL_VARS: Record<string, string> = {
-  VITE_FIREBASE_API_KEY: 'Firebase Auth',
-  VITE_FIREBASE_PROJECT_ID: 'Firebase Auth',
-  VITE_STRIPE_PUBLIC_KEY: 'Stripe Payments',
-  VITE_GOOGLE_MAPS_API_KEY: 'Google Maps',
+  VITE_FIREBASE_API_KEY: `Firebase Auth`,
+  VITE_FIREBASE_PROJECT_ID: `Firebase Auth`,
+  VITE_STRIPE_PUBLIC_KEY: `Stripe Payments`,
+  VITE_GOOGLE_MAPS_API_KEY: `Google Maps`,
   VITE_WHATSAPP_ENABLED: 'WhatsApp Integration',
 };
 
