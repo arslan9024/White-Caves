@@ -92,9 +92,9 @@ const SignInPage: React.FC = () => {
           if (user && backendResponse.data.token) {
             const destination = finalizeAuthenticatedSession({
               dispatch,
-              user,
+              user: user as any,
               token: backendResponse.data.token,
-              provider: 'google',
+              provider: 'google' as any,
               rememberMe: false,
               returnTo,
             });
@@ -197,7 +197,7 @@ const SignInPage: React.FC = () => {
         if (user && response.data?.token) {
           const destination = finalizeAuthenticatedSession({
             dispatch,
-            user,
+            user: user as any,
             token: response.data.token,
             provider: 'email',
             rememberMe: false,
@@ -222,7 +222,7 @@ const SignInPage: React.FC = () => {
           const user = successData.user;
           const destination = finalizeAuthenticatedSession({
             dispatch,
-            user,
+            user: user as any,
             token: successData.token,
             provider: 'email',
             rememberMe: false,
@@ -255,7 +255,7 @@ const SignInPage: React.FC = () => {
     // Finalize registration with selected role
     const user = registeredUser;
     if (user) {
-      const destination = resolvePostLoginDestination({ user, returnTo });
+      const destination = resolvePostLoginDestination({ user: user as any, returnTo });
       navigateToPostLoginDestination(navigate, destination);
     }
   };
@@ -290,7 +290,7 @@ const SignInPage: React.FC = () => {
         // If we did a redirect (firebaseResult is null), don't show error —
         // useEffect will handle the redirect result when the component mounts again!
         if (!firebaseResult?.user) {
-          console.log('No firebaseResult.user, probably did a redirect.');
+          console.log('No firebaseResult.user: user as any, probably did a redirect.');
           setLoading(false);
           return;
         }
@@ -305,14 +305,15 @@ const SignInPage: React.FC = () => {
             email: fbUser.email,
             displayName: fbUser.displayName,
             photoURL: fbUser.photoURL,
-            getIdToken: (forceRefresh?: boolean) => fbUser.getIdToken?.(forceRefresh),
+            getIdToken: ((forceRefresh?: boolean) =>
+              (fbUser as any).getIdToken?.(forceRefresh)) as any,
           });
 
           const user = backendResponse?.data?.user ?? null;
           if (user && backendResponse.data.token) {
             const destination = finalizeAuthenticatedSession({
               dispatch,
-              user,
+              user: user as any,
               token: backendResponse.data.token,
               provider,
               rememberMe: false,
@@ -388,16 +389,16 @@ const SignInPage: React.FC = () => {
         email: fbUser.email,
         displayName: fbUser.displayName,
         photoURL: fbUser.photoURL,
-        getIdToken: (forceRefresh?: boolean) => fbUser.getIdToken?.(forceRefresh),
+        getIdToken: ((forceRefresh?: boolean) => (fbUser as any).getIdToken?.(forceRefresh)) as any,
       });
 
       const user = backendResponse?.data?.user ?? null;
       if (user && backendResponse.data.token) {
         const destination = finalizeAuthenticatedSession({
           dispatch,
-          user,
+          user: user as any,
           token: backendResponse.data.token,
-          provider: socialRecovery.provider,
+          provider: socialRecovery.provider as any,
           rememberMe: false,
           returnTo,
         });
@@ -429,7 +430,7 @@ const SignInPage: React.FC = () => {
   const handleBiometricSuccess = useCallback(
     (data: any) => {
       const user = data as { uid: string; email: string; displayName: string };
-      const destination = resolvePostLoginDestination({ user, returnTo });
+      const destination = resolvePostLoginDestination({ user: user as any, returnTo });
       navigateToPostLoginDestination(navigate, destination);
     },
     [dispatch, navigate, returnTo]
