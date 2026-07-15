@@ -20,7 +20,7 @@ function Read-JsonFileSafe {
   param(
     [Parameter(Mandatory = $true)]
     [string]$Path,
-    [long]$MaxBytes = 8MB,
+    [long]$MaxBytes = 32MB,
     [switch]$TryTmpRecovery
   )
 
@@ -54,12 +54,12 @@ function Read-JsonFileSafe {
   return (Try-ParseCandidate -CandidatePath $Path)
 }
 
-$queue = Read-JsonFileSafe -Path $queueFile -MaxBytes 8MB -TryTmpRecovery
+$queue = Read-JsonFileSafe -Path $queueFile -MaxBytes 32MB -TryTmpRecovery
 if ($null -ne $queue) { $tasks = @($queue.tasks) }
 $cycleData = @()
 if (Test-Path $cycleFile) {
   try {
-    $cd = Read-JsonFileSafe -Path $cycleFile -MaxBytes 8MB
+    $cd = Read-JsonFileSafe -Path $cycleFile -MaxBytes 32MB
     if ($cd -is [System.Collections.IEnumerable]) { $cycleData = @($cd) }
     elseif ($null -ne $cd) { $cycleData = @($cd) }
   } catch { $cycleData = @() }
@@ -68,7 +68,7 @@ if (Test-Path $cycleFile) {
 $escalations = @()
 if (Test-Path $escalationFile) {
   try {
-    $ed = Read-JsonFileSafe -Path $escalationFile -MaxBytes 8MB
+    $ed = Read-JsonFileSafe -Path $escalationFile -MaxBytes 32MB
     if ($ed -is [System.Collections.IEnumerable]) { $escalations = @($ed) }
     elseif ($null -ne $ed) { $escalations = @($ed) }
   } catch { $escalations = @() }

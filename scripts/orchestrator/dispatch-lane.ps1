@@ -40,7 +40,7 @@ function Get-Queue {
   param([string]$Path)
   if (-not (Test-Path $Path)) { return $null }
 
-  $maxSafeQueueBytes = 8MB
+  $maxSafeQueueBytes = 32MB
   $fileInfo = Get-Item -Path $Path -ErrorAction SilentlyContinue
   if ($null -eq $fileInfo) { return $null }
 

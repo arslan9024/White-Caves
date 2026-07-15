@@ -78,6 +78,13 @@ The explicit Aegis control plane is now:
 - Non-trivial work is **plan-first**: prepare a short plan packet before premium execution and keep sessions compact enough for handoff summaries to stay reusable.
 - Minimal context is mandatory: load canonical roadmap files first, then only the active wave bundle, exact business-doc sections, and task-relevant instruction files.
 
+### SDLC Code Review & Risk Standards (New)
+
+- **Portable Goal Frames:** All major tasks MUST include a `goal_frame` injected into the prompt before execution to set strict contextual boundaries.
+- **Adversarial Reviews:** No code survives without challenge. All diffs pass through `adversarial-review.ps1` to detect architectural drift, security flaws, or unmaintainable complexity.
+- **Small Batches:** Diffs exceeding acceptable limits (e.g., 500 lines) will be automatically rejected. Tasks must be decomposed by `@Margaret` into smaller iterative batches.
+- **Technical Debt:** AEGIS will aggressively prune dead code and unused components using `dead-code-sweep.ps1`.
+
 ---
 
 ## ðŸš€ AEGIS vNEXT â€” ORCHESTRATOR UPGRADE (Active as of 2026-05-26)

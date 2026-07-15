@@ -4315,3 +4315,263 @@ Auto-discovered Aegis queue-empty upgrades are appended here when the orchestrat
 - Plan evidence: 5 keyword hits in planning docs
 - Scan evidence: 1 keyword hits in codebase scan signals
 - Prompt: @S5 -- EXPAND: wave-16-security-hardening.md -> add CSRF coverage plan for all mutation routes, token issuance, validation points, and rollout verification
+
+## 2026-07-15T10:30:53.584Z — Queue-empty discovery run
+
+### DU001 — Oqood registration workflow
+
+- Feature ID: compliance-oqood-registration
+- Agent: @Timnit
+- Target file: business_docs/09_crm_features/dld-integration.md
+- Research basis: DLD Oqood off-plan registration process expectations
+- Score: 135
+- Gap evidence: 1/2 signatures matched
+- Plan evidence: 6 keyword hits in planning docs
+- Scan evidence: 1 keyword hits in codebase scan signals
+- Prompt: @Timnit -- DRAFT: dld-integration.md -> add end-to-end Oqood registration workflow including payload schema, retries, exception handling, and settlement checkpoints
+
+## 2026-07-15T13:37:06.408Z — Queue-empty discovery run
+
+### DU002 — CSRF coverage for mutation routes
+
+- Feature ID: security-csrf-mutation-routes
+- Agent: @S5
+- Target file: business_docs/09_crm_features/wave-16-security-hardening.md
+- Research basis: OWASP CSRF mitigation requirement for session-backed mutation endpoints
+- Score: 130
+- Gap evidence: 0/2 signatures matched
+- Plan evidence: 5 keyword hits in planning docs
+- Scan evidence: 0 keyword hits in codebase scan signals
+- Prompt: @S5 -- EXPAND: wave-16-security-hardening.md -> add CSRF coverage plan for all mutation routes, token issuance, validation points, and rollout verification
+
+### DU003 — PDC bounce escalation
+
+- Feature ID: leasing-pdc-bounce-escalation
+- Agent: @Victoria
+- Target file: business_docs/09_crm_features/tenancy-ejari.md
+- Research basis: Dubai leasing ops norms for bounced cheque escalation and landlord notification
+- Score: 130
+- Gap evidence: 0/2 signatures matched
+- Plan evidence: 7 keyword hits in planning docs
+- Scan evidence: 0 keyword hits in codebase scan signals
+- Prompt: @Victoria -- EXPAND: tenancy-ejari.md -> add bounced PDC escalation flow including cheque-return capture, landlord alerting, grace-period rules, legal escalation checkpoints, and acceptance criteria
+
+### DU004 — VAT FTA filing workflow
+
+- Feature ID: finance-vat-fta-filing
+- Agent: @Invoice
+- Target file: business_docs/09_crm_features/financial-reporting.md
+- Research basis: UAE FTA real-estate VAT filing requirements and finance ops best practice
+- Score: 130
+- Gap evidence: 0/2 signatures matched
+- Plan evidence: 6 keyword hits in planning docs
+- Scan evidence: 0 keyword hits in codebase scan signals
+- Prompt: @Invoice -- EXPAND: financial-reporting.md -> add UAE FTA VAT filing workflow including taxable/exempt buckets, quarterly submission steps, reconciliation checkpoints, exception handling, and acceptance criteria
+
+## 2026-07-15T13:50:54.966Z — Queue-empty discovery run
+
+### DU005 — AI lead-score re-trigger automation
+
+- Feature ID: ai-lead-score-retrigger
+- Agent: @Joelle
+- Target file: business_docs/03_ai_assistants/README.md
+- Research basis: CRM AI scoring best practice for re-evaluating leads after behavior changes
+- Score: 125
+- Gap evidence: 0/2 signatures matched
+- Plan evidence: 6 keyword hits in planning docs
+- Scan evidence: 1 keyword hits in codebase scan signals
+- Prompt: @Joelle -- DRAFT: README.md -> add AI lead-score re-trigger automation covering behavior triggers, cooldowns, fallback handling, and audit visibility
+
+### DU006 — Tenant e-NOC generation
+
+- Feature ID: leasing-enoc-generation
+- Agent: @Victoria
+- Target file: business_docs/09_crm_features/landlord-portal.md
+- Research basis: Dubai tenant services benchmark for bank/visa NOC self-service
+- Score: 125
+- Gap evidence: 0/2 signatures matched
+- Plan evidence: 6 keyword hits in planning docs
+- Scan evidence: 1 keyword hits in codebase scan signals
+- Prompt: @Victoria -- DRAFT: landlord-portal.md -> add tenant e-NOC generation workflow for bank, visa, and move-out use cases with approval routing, PDF issuance, and audit trail requirements
+
+### DU007 — Tenant portal Playwright E2E suite
+
+- Feature ID: quality-tenant-portal-e2e
+- Agent: @Salma
+- Target file: plans/IMPROVEMENTS_UX.md
+- Research basis: Tenant self-service reliability benchmark for end-to-end coverage
+- Score: 125
+- Gap evidence: 0/2 signatures matched
+- Plan evidence: 6 keyword hits in planning docs
+- Scan evidence: 1 keyword hits in codebase scan signals
+- Prompt: @Salma -- DRAFT: IMPROVEMENTS_UX.md -> add a Playwright E2E suite plan for tenant portal login, documents, payments, and maintenance flows
+
+## 2026-07-15T15:22:17.004Z — Queue-empty discovery run
+
+### DU008 — WhatsApp chatbot fallback recovery
+
+- Feature ID: ai-whatsapp-fallback-recovery
+- Agent: @Jaime
+- Target file: business_docs/09_crm_features/whatsapp-integration.md
+- Research basis: Conversational CRM design pattern for bot fallback and human recovery
+- Score: 125
+- Gap evidence: 0/2 signatures matched
+- Plan evidence: 4 keyword hits in planning docs
+- Scan evidence: 1 keyword hits in codebase scan signals
+- Prompt: @Jaime -- EXPAND: whatsapp-integration.md -> add chatbot fallback recovery covering retry prompts, knowledge gaps, human-agent takeover, and conversation salvage KPIs
+
+## 2026-07-15T15:23:44.652Z — Queue-empty discovery run
+
+### DU009 — RERA Form 7 and Form 12 generation
+
+- Feature ID: compliance-form7-form12-generation
+- Agent: @Timnit
+- Target file: business_docs/09_crm_features/legal-management.md
+- Research basis: RERA notice generation compliance and dispute-readiness requirements
+- Score: 110
+- Gap evidence: 1/2 signatures matched
+- Plan evidence: 6 keyword hits in planning docs
+- Scan evidence: 0 keyword hits in codebase scan signals
+- Prompt: @Timnit -- DRAFT: legal-management.md -> add Form 7 and Form 12 generation workflow with notice grounds, deadlines, approval steps, evidence attachments, and delivery-proof requirements
+
+## 2026-07-15T15:25:16.464Z — Queue-empty discovery run
+
+### DU010 — Ejari renewal automation
+
+- Feature ID: leasing-ejari-renewal-automation
+- Agent: @Victoria
+- Target file: business_docs/09_crm_features/tenancy-ejari.md
+- Research basis: Dubai tenancy operations benchmark and Ejari renewal workflow expectations
+- Score: 105
+- Gap evidence: 1/2 signatures matched
+- Plan evidence: 6 keyword hits in planning docs
+- Scan evidence: 1 keyword hits in codebase scan signals
+- Prompt: @Victoria -- EXPAND: tenancy-ejari.md -> add Ejari renewal automation workflow including reminders, required document checklist, DLD/Ejari renewal submission steps, SLA tracking, and acceptance criteria
+
+### DU011 — Mobile analytics view
+
+- Feature ID: analytics-mobile-view
+- Agent: @Cassie
+- Target file: business_docs/09_crm_features/analytics-dashboard.md
+- Research basis: Field-agent mobile KPI access benchmark for broker CRMs
+- Score: 105
+- Gap evidence: 1/2 signatures matched
+- Plan evidence: 4 keyword hits in planning docs
+- Scan evidence: 1 keyword hits in codebase scan signals
+- Prompt: @Cassie -- EXPAND: analytics-dashboard.md -> add mobile analytics view with compact KPI cards, thumb-friendly filters, offline considerations, and validation criteria
+
+## 2026-07-15T15:28:17.206Z — Queue-empty discovery run
+
+### DU012 — Analytics CSV/Excel export API
+
+- Feature ID: analytics-export-api
+- Agent: @Cassie
+- Target file: business_docs/09_crm_features/analytics-dashboard.md
+- Research basis: Executive reporting expectation for exportable CRM metrics
+- Score: 100
+- Gap evidence: 0/2 signatures matched
+- Plan evidence: 3 keyword hits in planning docs
+- Scan evidence: 0 keyword hits in codebase scan signals
+- Prompt: @Cassie -- EXPAND: analytics-dashboard.md -> add CSV/Excel export API workflow including async jobs, download security, row limits, and delivery notifications
+
+### DU013 — Arabic RTL keyboard navigation audit
+
+- Feature ID: ux-arabic-rtl-keyboard-nav
+- Agent: @Marissa
+- Target file: business_docs/06_design_architecture/ui-ux-specification.md
+- Research basis: Arabic RTL usability expectations for MENA property portals
+- Score: 100
+- Gap evidence: 0/2 signatures matched
+- Plan evidence: 4 keyword hits in planning docs
+- Scan evidence: 0 keyword hits in codebase scan signals
+- Prompt: @Marissa -- EXPAND: ui-ux-specification.md -> add Arabic RTL keyboard navigation audit covering drawer direction, tab order, focus movement, and localization QA
+
+### DU014 — Document template registry
+
+- Feature ID: documents-template-registry
+- Agent: @Annie
+- Target file: business_docs/09_crm_features/document-generation.md
+- Research basis: Enterprise document ops requirement for governed template sets
+- Score: 100
+- Gap evidence: 0/2 signatures matched
+- Plan evidence: 6 keyword hits in planning docs
+- Scan evidence: 0 keyword hits in codebase scan signals
+- Prompt: @Annie -- EXPAND: document-generation.md -> add a document template registry with versioning, variable maps, approval controls, and deprecation workflow
+
+## 2026-07-15T15:32:28.381Z — Queue-empty discovery run
+
+### DU015 — Server route test coverage uplift
+
+- Feature ID: quality-server-route-test-coverage
+- Agent: @Salma
+- Target file: plans/IMPROVEMENTS_UX.md
+- Research basis: Backend reliability standard for critical route coverage in CRM systems
+- Score: 100
+- Gap evidence: 0/2 signatures matched
+- Plan evidence: 9 keyword hits in planning docs
+- Scan evidence: 0 keyword hits in codebase scan signals
+- Prompt: @Salma -- DRAFT: IMPROVEMENTS_UX.md -> add a server route test coverage uplift plan covering critical route inventory, risk ranking, and validation gates
+
+## 2026-07-15T15:33:54.279Z — Queue-empty discovery run
+
+### DU016 — Dark mode completeness audit
+
+- Feature ID: ux-dark-mode-completeness
+- Agent: @Marissa
+- Target file: business_docs/06_design_architecture/ui-ux-specification.md
+- Research basis: Luxury-brand consistency requirement for dark mode token parity
+- Score: 95
+- Gap evidence: 0/2 signatures matched
+- Plan evidence: 7 keyword hits in planning docs
+- Scan evidence: 1 keyword hits in codebase scan signals
+- Prompt: @Marissa -- EXPAND: ui-ux-specification.md -> add dark mode completeness audit covering tokens, contrast exceptions, fallback surfaces, and QA checkpoints
+
+### DU017 — Local business schema audit
+
+- Feature ID: seo-local-business-schema-audit
+- Agent: @Rachel
+- Target file: business_docs/09_crm_features/seo-strategy.md
+- Research basis: Google local SEO baseline for multilingual real estate brands
+- Score: 95
+- Gap evidence: 0/2 signatures matched
+- Plan evidence: 5 keyword hits in planning docs
+- Scan evidence: 1 keyword hits in codebase scan signals
+- Prompt: @Rachel -- EXPAND: seo-strategy.md -> add a local business schema audit covering JSON-LD completeness, branch details, Arabic metadata, and validation steps
+
+### DU018 — Notification preferences matrix
+
+- Feature ID: realtime-notification-preferences
+- Agent: @Socket
+- Target file: business_docs/09_crm_features/wave-13-realtime-notifications.md
+- Research basis: Broker productivity norm for channel-specific alert preferences
+- Score: 95
+- Gap evidence: 0/2 signatures matched
+- Plan evidence: 6 keyword hits in planning docs
+- Scan evidence: 1 keyword hits in codebase scan signals
+- Prompt: @Socket -- EXPAND: wave-13-realtime-notifications.md -> add notification preferences matrix covering in-app, email, push, and quiet hours by role
+
+## 2026-07-15T16:21:12.235Z — Queue-empty discovery run
+
+### DU019 — Product automation audit visibility
+
+- Feature ID: product-automation-audit-visibility
+- Agent: @LeadScore
+- Target file: business_docs/09_crm_features/wave-14-product-automation.md
+- Research basis: CRM automation governance standard for explainability and review
+- Score: 95
+- Gap evidence: 0/2 signatures matched
+- Plan evidence: 7 keyword hits in planning docs
+- Scan evidence: 1 keyword hits in codebase scan signals
+- Prompt: @LeadScore -- EXPAND: wave-14-product-automation.md -> add automation audit visibility including who/why logs, rollback controls, and operator review queue
+
+### DU020 — Redis cache layer planning
+
+- Feature ID: quality-redis-cache-layer
+- Agent: @Wafa
+- Target file: business_docs/09_crm_features/wave-15-cache-performance.md
+- Research basis: CRM performance benchmark for caching frequently-read data
+- Score: 95
+- Gap evidence: 0/2 signatures matched
+- Plan evidence: 6 keyword hits in planning docs
+- Scan evidence: 1 keyword hits in codebase scan signals
+- Prompt: @Wafa -- DRAFT: wave-15-cache-performance.md -> add Redis cache layer planning for keys, TTLs, invalidation, and rollout safeguards

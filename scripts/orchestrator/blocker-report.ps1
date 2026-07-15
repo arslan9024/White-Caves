@@ -30,7 +30,7 @@ if (-not (Test-Path $promptsFile)) { Write-Host "[ERROR] prompts not found" -For
 function Read-JsonFileSafe {
   param(
     [string]$Path,
-    [long]$MaxBytes = 8MB,
+    [long]$MaxBytes = 32MB,
     [switch]$TryTmpRecovery
   )
 
@@ -73,7 +73,7 @@ function Read-JsonFileSafe {
   return (Try-Parse -Candidate $Path)
 }
 
-$q = Read-JsonFileSafe -Path $queueFile -MaxBytes 8MB -TryTmpRecovery
+$q = Read-JsonFileSafe -Path $queueFile -MaxBytes 32MB -TryTmpRecovery
 if ($null -eq $q) {
   Write-Host "[ERROR] queue unreadable (possibly oversized/corrupt)" -ForegroundColor Red
   exit 1

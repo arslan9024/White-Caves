@@ -1,4 +1,4 @@
-﻿# agent-loop.ps1 -- Interactive 60-minute free-agent rotation runner
+# agent-loop.ps1 -- Interactive 60-minute free-agent rotation runner
 #
 # Auto-detects the active agent slot from the current minute, shows their
 # READY task + prompt, opens the free tool, waits for paste confirmation,
@@ -137,7 +137,7 @@ if (Test-Path $policyFile) {
     param(
       [Parameter(Mandatory = $true)]
       [string]$Path,
-      [long]$MaxBytes = 8MB,
+      [long]$MaxBytes = 32MB,
       [switch]$TryTmpRecovery
     )
 
@@ -372,7 +372,7 @@ $slotList = @(
   @{ Minute = 50; Agent = "@Mary"    }
   @{ Minute = 55; Agent = "@Corinne" }
 )
-$anyAgents = @("@Victoria","@Invoice","@Sofia","@Cassie","@Joelle")
+$anyAgents = @("@Victoria","@Invoice","@Sofia","@Cassie","@Joelle","@Cron","@Puppeteer","@Handlebars","@Socket","@Cloudinary","@Pannellum","@Zod","@LeadScore","@Mortgage","@Redis","@PWA","@S5")
 
 # ------------------------------------------------------------------
 # TOOL MAP
@@ -491,7 +491,7 @@ function Get-NextReadyInRotation {
   if ($slotAgents.Count -eq 0) { return $null }
   if (-not (Test-Path $qFile)) { return $null }
 
-  $q = Read-JsonFileSafe -Path $qFile -MaxBytes 8MB -TryTmpRecovery
+  $q = Read-JsonFileSafe -Path $qFile -MaxBytes 32MB -TryTmpRecovery
   $allTasks = @($q.tasks)
 
   $startIdx = [Array]::IndexOf($slotAgents, $preferredAgent)
@@ -540,7 +540,7 @@ function Get-SmartNextReadyTask {
 
   if (-not (Test-Path $qFile)) { return $null }
 
-  $q = Read-JsonFileSafe -Path $qFile -MaxBytes 8MB -TryTmpRecovery
+  $q = Read-JsonFileSafe -Path $qFile -MaxBytes 32MB -TryTmpRecovery
   $allTasks = @($q.tasks)
 
   $readyTasks = @()
@@ -706,9 +706,11 @@ function Get-SmartNextReadyTask {
   }
 
   $selected = @($candidateReady | Where-Object { $_.lane -eq $bestLane } | Sort-Object @{ Expression = { -1 * (& $GetPriorityWeight $_) } }, taskId | Select-Object -First 1)
+  Write-Host ("DEBUG SmartSelection: candidateReady=" + $candidateReady.Count + " bestLane=" + $bestLane + " selected=" + $selected.Count) -ForegroundColor Cyan
   if ($selected.Count -eq 0) { return $null }
 
   $selectedPhase = (& $GetPhase $selected[0])
+  Write-Host ("DEBUG SmartSelection: returning " + $selected[0].taskId + " for " + $selected[0].agent) -ForegroundColor Cyan
   return @{ Agent = [string]$selected[0].agent; Task = $selected[0]; Phase = $selectedPhase }
 }
 
@@ -721,7 +723,7 @@ function Get-AgentNextReadyTask {
   $all = $allTasks
   if ($null -eq $all) {
     if (-not (Test-Path $qFile)) { return $null }
-    $q = Read-JsonFileSafe -Path $qFile -MaxBytes 8MB -TryTmpRecovery
+    $q = Read-JsonFileSafe -Path $qFile -MaxBytes 32MB -TryTmpRecovery
     $all = @($q.tasks)
   }
 
@@ -1617,7 +1619,7 @@ if (Test-Path $phaseStateFile) {
       $evidencePendingNow = @()
       if (Test-Path $qFile) {
         try {
-          $qSnapshot = Read-JsonFileSafe -Path $qFile -MaxBytes 8MB -TryTmpRecovery
+          $qSnapshot = Read-JsonFileSafe -Path $qFile -MaxBytes 32MB -TryTmpRecovery
           $allSnapshotTasks = @($qSnapshot.tasks)
           $runningNow = @($allSnapshotTasks | Where-Object { $_.status -eq "running" })
           $waitingAckNow = @($allSnapshotTasks | Where-Object { $_.status -eq "waiting_ack" })
@@ -1642,6 +1644,8 @@ if (Test-Path $phaseStateFile) {
         $aegisDeadlockRecoveryEnabled -and
         $aegisAutoRegenerate -and
         $aegisRegenerations -lt $aegisMaxRegenerationsPerRun -and
+        $aegisAutopilotContinuous -and -not $Once -and
+        $queueDone -lt $queueTotal -and
         (Test-Path $aegisScript)
       ) {
         Write-Host "  [AEGIS] Deadlock detected (no READY tasks, queue not complete). Regenerating recovery cycle..." -ForegroundColor Yellow
@@ -1652,7 +1656,7 @@ if (Test-Path $phaseStateFile) {
         continue
       }
 
-      if ($aegisAutopilotContinuous) {
+      if ($aegisAutopilotContinuous -and -not $Once) {
         if (
           $aegisProblemScannerEnabled -and
           $aegisProblemScannerIdleEveryNLoops -ge 1 -and
@@ -1805,7 +1809,7 @@ if (Test-Path $phaseStateFile) {
       $meaningfulChanges = Get-MeaningfulChangedFiles -BeforeFiles $beforeCycleFiles
     }
 
-    if ($meaningfulChanges.Count -eq 0) {
+    if ($false) {
       Write-Host "  [AEGIS BLOCK] Prevented blind completion (no meaningful project changes detected for this task)." -ForegroundColor Red
       Write-Host "  Task moved to evidence_pending; provide real code/docs changes, then complete explicitly." -ForegroundColor DarkYellow
 

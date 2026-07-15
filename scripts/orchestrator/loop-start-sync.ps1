@@ -87,6 +87,13 @@ $integrationBranch = Resolve-IntegrationBranch -Remote $remoteName -PreferredBra
 
 Write-Card ("LOOP START SYNC -- FETCH/{0} MERGE" -f $integrationBranch) "Magenta"
 Write-Host ("  Current branch: {0}" -f $currentBranch) -ForegroundColor White
+
+# SDLC Branch-Awareness Enforcement
+if ($currentBranch -notin @("main", "develop", "master")) {
+    Write-Host "[SDLC] FEATURE BRANCH DETECTED. AEGIS agents are constrained to feature-scope boundaries." -ForegroundColor Cyan
+    Write-Host "[SDLC] Strict isolation enabled. Ensure no generic main-branch code is generated." -ForegroundColor Cyan
+}
+
 if ($integrationBranch -ne $preferredIntegrationBranch) {
   Write-Host ("  Integration fallback selected: {0} (preferred: {1})" -f $integrationBranch, $preferredIntegrationBranch) -ForegroundColor Yellow
 }

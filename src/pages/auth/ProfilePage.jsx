@@ -19,7 +19,7 @@ export default function ProfilePage() {
       navigate('/signin');
       return;
     }
-    
+
     const stored = localStorage.getItem('userRole');
     if (stored) {
       try {
@@ -36,26 +36,24 @@ export default function ProfilePage() {
       localStorage.removeItem('userRole');
       dispatch(setUser(null));
       navigate('/');
-    } catch (error) {
-      
-    }
+    } catch (error) {}
   };
 
-  const getRoleLabel = (role) => {
+  const getRoleLabel = role => {
     const labels = {
-      'buyer': 'Buyer',
-      'seller': 'Seller',
-      'landlord': 'Landlord',
+      buyer: 'Buyer',
+      seller: 'Seller',
+      landlord: 'Landlord',
       'leasing-agent': 'Leasing Agent',
       'secondary-sales-agent': 'Sales Agent',
       'leasing-team-leader': 'Leasing Team Leader',
       'sales-team-leader': 'Sales Team Leader',
-      'admin': 'Administrator'
+      admin: 'Administrator',
     };
     return labels[role] || role;
   };
 
-  const resolveDashboardHref = (role) => {
+  const resolveDashboardHref = role => {
     if (role === 'lion' || role === 'owner' || role === 'managing_director' || role === 'md') {
       return '/owner/dashboard';
     }
@@ -87,48 +85,46 @@ export default function ProfilePage() {
             </div>
             <h3>{user.name || 'User'}</h3>
             <p>{user.email}</p>
-            {userRole && (
-              <span className="role-badge">{getRoleLabel(userRole.role)}</span>
-            )}
+            {userRole && <span className="role-badge">{getRoleLabel(userRole.role)}</span>}
           </div>
 
           <nav className="profile-nav">
-            <button 
+            <button
               className={`nav-item ${activeTab === 'overview' ? 'active' : ''}`}
               onClick={() => setActiveTab('overview')}
             >
               <span className="nav-icon">📊</span>
               Overview
             </button>
-            <button 
+            <button
               className={`nav-item ${activeTab === 'settings' ? 'active' : ''}`}
               onClick={() => setActiveTab('settings')}
             >
               <span className="nav-icon">⚙️</span>
               Settings
             </button>
-            <button 
+            <button
               className={`nav-item ${activeTab === 'security' ? 'active' : ''}`}
               onClick={() => setActiveTab('security')}
             >
               <span className="nav-icon">🔒</span>
               Security
             </button>
-            
+
             <div className="nav-divider"></div>
-            
+
             {userRole && (
-              <Link to="/crm" className="nav-item">
+              <Link to="/dashboard" className="nav-item">
                 <span className="nav-icon">🏠</span>
                 Go to Dashboard
               </Link>
             )}
-            
+
             <Link to="/" className="nav-item">
               <span className="nav-icon">🏡</span>
               Home
             </Link>
-            
+
             <button className="nav-item logout" onClick={handleLogout}>
               <span className="nav-icon">🚪</span>
               Sign Out
@@ -160,7 +156,9 @@ export default function ProfilePage() {
                     </div>
                     <div className="info-row">
                       <span className="info-label">Role</span>
-                      <span className="info-value">{userRole ? getRoleLabel(userRole.role) : 'Not selected'}</span>
+                      <span className="info-value">
+                        {userRole ? getRoleLabel(userRole.role) : 'Not selected'}
+                      </span>
                     </div>
                   </div>
                 </div>
@@ -223,12 +221,21 @@ export default function ProfilePage() {
                 </div>
                 <div className="form-group">
                   <label>Email Address</label>
-                  <input type="email" defaultValue={user.email || ''} placeholder="Enter your email" disabled />
+                  <input
+                    type="email"
+                    defaultValue={user.email || ''}
+                    placeholder="Enter your email"
+                    disabled
+                  />
                   <span className="input-hint">Email cannot be changed</span>
                 </div>
                 <div className="form-group">
                   <label>Phone Number</label>
-                  <input type="tel" defaultValue={user.phone || ''} placeholder="+971 50 123 4567" />
+                  <input
+                    type="tel"
+                    defaultValue={user.phone || ''}
+                    placeholder="+971 50 123 4567"
+                  />
                 </div>
                 <div className="form-group">
                   <label>Preferred Language</label>

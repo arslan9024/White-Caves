@@ -1,37 +1,103 @@
 import React, { useState, useRef, useEffect, useMemo } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
-import { 
-  Search, Bell, User, Moon, Sun, Menu, LogOut, 
-  Settings, HelpCircle, ChevronDown, LayoutDashboard,
-  CreditCard, Bot, MessageSquare, Building2, Target, Users, TrendingUp,
-  Home, Wallet, Megaphone, Shield, Server, Palette, Database,
-  Scale, Eye, Zap, Activity, Clock, Command, FileText, BarChart3,
-  Lightbulb, Code, Wrench, Crown, PieChart, Map, Star, Heart, Send
+import {
+  Search,
+  Bell,
+  User,
+  Moon,
+  Sun,
+  Menu,
+  LogOut,
+  Settings,
+  HelpCircle,
+  ChevronDown,
+  LayoutDashboard,
+  CreditCard,
+  Bot,
+  MessageSquare,
+  Building2,
+  Target,
+  Users,
+  TrendingUp,
+  Home,
+  Wallet,
+  Megaphone,
+  Shield,
+  Server,
+  Palette,
+  Database,
+  Scale,
+  Eye,
+  Zap,
+  Activity,
+  Clock,
+  Command,
+  FileText,
+  BarChart3,
+  Lightbulb,
+  Code,
+  Wrench,
+  Crown,
+  PieChart,
+  Map,
+  Star,
+  Heart,
+  Send,
 } from 'lucide-react';
 import { setTheme } from '../../store/navigationSlice';
 import { setMainViewContent } from '../../store/appSlice';
+import { useTranslation, Text } from '../../context/TranslationContext';
 import './DashboardHeader.css';
 
 const ICON_MAP = {
-  LayoutDashboard, Lightbulb, BarChart3, FileText, MessageSquare, Users, 
-  Bot, Building2, Database, Target, Star, Heart, TrendingUp, Home,
-  Wallet, CreditCard, Shield, Megaphone, Eye, Wrench, Clock, Code,
-  Crown, PieChart, Map, Send, Activity, Server, Palette, Scale, Zap, Command
+  LayoutDashboard,
+  Lightbulb,
+  BarChart3,
+  FileText,
+  MessageSquare,
+  Users,
+  Bot,
+  Building2,
+  Database,
+  Target,
+  Star,
+  Heart,
+  TrendingUp,
+  Home,
+  Wallet,
+  CreditCard,
+  Shield,
+  Megaphone,
+  Eye,
+  Wrench,
+  Clock,
+  Code,
+  Crown,
+  PieChart,
+  Map,
+  Send,
+  Activity,
+  Server,
+  Palette,
+  Scale,
+  Zap,
+  Command,
 };
 
-const DashboardHeader = ({ 
+const DashboardHeader = ({
   activeAssistant,
   onFeatureSelect,
   onMenuToggle,
   notifications = [],
   user = null,
-  onLogout
+  onLogout,
 }) => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  const { t, language, setLanguage } = useTranslation();
   const theme = useSelector(state => state.navigation?.theme || 'light');
-  
+
   const [searchQuery, setSearchQuery] = useState('');
   const [showNotifications, setShowNotifications] = useState(false);
   const [showUserMenu, setShowUserMenu] = useState(false);
@@ -61,7 +127,7 @@ const DashboardHeader = ({
   }, [activeAssistant?.id]);
 
   useEffect(() => {
-    const handleClickOutside = (e) => {
+    const handleClickOutside = e => {
       if (notifRef.current && !notifRef.current.contains(e.target)) {
         setShowNotifications(false);
       }
@@ -74,7 +140,7 @@ const DashboardHeader = ({
   }, []);
 
   useEffect(() => {
-    const handleKeyPress = (e) => {
+    const handleKeyPress = e => {
       if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
         e.preventDefault();
         document.querySelector('.dashboard-search-input')?.focus();
@@ -89,19 +155,26 @@ const DashboardHeader = ({
     dispatch(setTheme(newTheme));
   };
 
-  const handleFeatureClick = (feature) => {
+  const handleFeatureClick = feature => {
     setActiveFeature(feature.id);
-    dispatch(setMainViewContent({
-      component: feature.component,
-      props: { assistantId: activeAssistant?.id }
-    }));
+    dispatch(
+      setMainViewContent({
+        component: feature.component,
+        props: { assistantId: activeAssistant?.id },
+      })
+    );
     onFeatureSelect?.(feature);
   };
 
   const getUserInitials = () => {
     if (!user) return 'WC';
     if (user.displayName) {
-      return user.displayName.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2);
+      return user.displayName
+        .split(' ')
+        .map(n => n[0])
+        .join('')
+        .toUpperCase()
+        .slice(0, 2);
     }
     if (user.email) {
       return user.email[0].toUpperCase();
@@ -109,7 +182,7 @@ const DashboardHeader = ({
     return 'WC';
   };
 
-  const handleProfileAction = (action) => {
+  const handleProfileAction = action => {
     setShowUserMenu(false);
     switch (action) {
       case 'profile':
@@ -132,7 +205,7 @@ const DashboardHeader = ({
     }
   };
 
-  const getFeatureIcon = (iconName) => {
+  const getFeatureIcon = iconName => {
     return ICON_MAP[iconName] || LayoutDashboard;
   };
 
@@ -145,7 +218,7 @@ const DashboardHeader = ({
 
         {activeAssistant && (
           <div className="active-assistant-context">
-            <div 
+            <div
               className="assistant-badge"
               style={{ background: `${activeAssistant.color}20`, color: activeAssistant.color }}
             >
@@ -181,19 +254,20 @@ const DashboardHeader = ({
             className="dashboard-search-input"
             placeholder={`Search ${activeAssistant?.name || 'assistants'}...`}
             value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
+            onChange={e => setSearchQuery(e.target.value)}
             onFocus={() => setSearchFocused(true)}
             onBlur={() => setSearchFocused(false)}
           />
           <div className="search-shortcut">
-            <kbd>⌘</kbd><kbd>K</kbd>
+            <kbd>⌘</kbd>
+            <kbd>K</kbd>
           </div>
         </div>
       </div>
 
       <div className="header-right">
-        <button 
-          className="header-icon-btn theme-toggle" 
+        <button
+          className="header-icon-btn theme-toggle"
           onClick={handleThemeToggle}
           title={theme === 'dark' ? 'Switch to Light Mode' : 'Switch to Dark Mode'}
         >
@@ -201,7 +275,7 @@ const DashboardHeader = ({
         </button>
 
         <div className="notifications-wrapper" ref={notifRef}>
-          <button 
+          <button
             className={`header-icon-btn ${unreadCount > 0 ? 'has-unread' : ''}`}
             onClick={() => setShowNotifications(!showNotifications)}
           >
@@ -210,7 +284,7 @@ const DashboardHeader = ({
               <span className="notification-badge">{unreadCount > 9 ? '9+' : unreadCount}</span>
             )}
           </button>
-          
+
           {showNotifications && (
             <div className="notifications-dropdown">
               <div className="dropdown-header">
@@ -220,7 +294,10 @@ const DashboardHeader = ({
               <div className="notifications-list">
                 {notifications.length > 0 ? (
                   notifications.slice(0, 5).map((notif, index) => (
-                    <div key={index} className={`notification-item ${!notif.isRead ? 'unread' : ''}`}>
+                    <div
+                      key={index}
+                      className={`notification-item ${!notif.isRead ? 'unread' : ''}`}
+                    >
                       <div className="notif-icon">
                         <Bell size={14} />
                       </div>
@@ -247,10 +324,7 @@ const DashboardHeader = ({
         </div>
 
         <div className="user-menu-wrapper" ref={userMenuRef}>
-          <button 
-            className="user-menu-btn"
-            onClick={() => setShowUserMenu(!showUserMenu)}
-          >
+          <button className="user-menu-btn" onClick={() => setShowUserMenu(!showUserMenu)}>
             <div className="user-avatar">
               {user?.photoURL ? (
                 <img src={user.photoURL} alt={user.displayName || 'User'} />
@@ -277,7 +351,9 @@ const DashboardHeader = ({
                 </div>
                 <div className="dropdown-user-info">
                   <span className="dropdown-user-name">{user?.displayName || 'Company Owner'}</span>
-                  <span className="dropdown-user-email">{user?.email || 'owner@whitecaves.ae'}</span>
+                  <span className="dropdown-user-email">
+                    {user?.email || 'owner@whitecaves.ae'}
+                  </span>
                 </div>
               </div>
               <div className="dropdown-divider" />
@@ -299,10 +375,20 @@ const DashboardHeader = ({
                   <HelpCircle size={18} />
                   <span>Help Center</span>
                 </button>
+                <button
+                  className="dropdown-item"
+                  onClick={() => setLanguage(language === 'en' ? 'ar' : 'en')}
+                >
+                  <Command size={18} />
+                  <span>{language === 'en' ? 'العربية' : 'English'}</span>
+                </button>
                 <div className="dropdown-divider" />
-                <button className="dropdown-item logout" onClick={() => handleProfileAction('logout')}>
+                <button
+                  className="dropdown-item logout"
+                  onClick={() => handleProfileAction('logout')}
+                >
                   <LogOut size={18} />
-                  <span>Log Out</span>
+                  <span>{t('dashboard.logout')}</span>
                 </button>
               </div>
             </div>

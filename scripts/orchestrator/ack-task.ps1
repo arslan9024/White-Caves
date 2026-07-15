@@ -15,7 +15,7 @@ function Read-JsonFileSafe {
   param(
     [Parameter(Mandatory = $true)]
     [string]$Path,
-    [long]$MaxBytes = 8MB,
+    [long]$MaxBytes = 32MB,
     [switch]$TryTmpRecovery
   )
 
@@ -51,7 +51,7 @@ function Read-JsonFileSafe {
 
 function Get-Queue {
   param([string]$Path)
-  return (Read-JsonFileSafe -Path $Path -MaxBytes 8MB -TryTmpRecovery)
+  return (Read-JsonFileSafe -Path $Path -MaxBytes 32MB -TryTmpRecovery)
 }
 
 function Save-Queue {

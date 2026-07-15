@@ -75,7 +75,7 @@ function Read-JsonFileSafe {
   param(
     [Parameter(Mandatory = $true)]
     [string]$Path,
-    [long]$MaxBytes = 8MB,
+    [long]$MaxBytes = 32MB,
     [switch]$TryTmpRecovery
   )
 
@@ -149,7 +149,7 @@ if (-not (Test-Path $queueFile)) {
   }
 }
 
-$q = Read-JsonFileSafe -Path $queueFile -MaxBytes 8MB -TryTmpRecovery
+$q = Read-JsonFileSafe -Path $queueFile -MaxBytes 32MB -TryTmpRecovery
 if ($null -eq $q) {
   Add-Error "Queue file is not valid JSON: $_"
   Write-Check "[XX]" "Queue JSON parse" "$_" "Red"

@@ -56,18 +56,18 @@ export function getPostLoginRoute(
   }
 
   if (rank === 1) {
-    return profileCompleted === true ? '/crm' : '/profile';
+    return profileCompleted === true ? '/dashboard' : '/profile';
   }
 
   if (rank === 2) {
-    return profileCompleted === false ? '/profile' : '/crm';
+    return profileCompleted === false ? '/profile' : '/dashboard';
   }
 
   if (rank === 3) {
     if (resolved === 'landlord') return '/landlord-portal';
     if (resolved === 'tenant') return '/tenant-portal';
     if (profileCompleted === false) return '/profile';
-    return '/crm';
+    return '/dashboard';
   }
 
   return '/pending-approval';

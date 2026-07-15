@@ -33,6 +33,7 @@ const PendingApprovalPage = lazyRetry(() => import('./pages/auth/PendingApproval
 const SignInPage = lazyRetry(() => import('./pages/auth/SignInPage'));
 const HomePage = lazyRetry(() => import('./pages/HomePage'));
 const ServerStatusPage = lazyRetry(() => import('./pages/ServerStatusPage'));
+const CompanyDashboard = lazyRetry(() => import('./pages/admin/CompanyDashboard'));
 
 // ─── Types ──────────────────────────────────────────────────────────────
 
@@ -760,7 +761,22 @@ function App(): React.JSX.Element {
                         </ProtectedRoute>
                       }
                     />
-                    <Route path="/dashboard" element={<Navigate to="/crm" replace />} />
+                    <Route
+                      path="/dashboard"
+                      element={
+                        <ProtectedRoute
+                          allowedRoles={[
+                            'admin',
+                            'superadmin',
+                            'managing_director',
+                            'executive',
+                            'owner',
+                          ]}
+                        >
+                          <CompanyDashboard />
+                        </ProtectedRoute>
+                      }
+                    />
 
                     {/* ==================== ROLE-SPECIFIC SUB-PAGES ==================== */}
                     {roleSpecificAppRoutes.map(route => (

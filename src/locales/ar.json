@@ -1,0 +1,22 @@
+{
+  "dashboard": {
+    "greeting": "مرحباً بعودتك",
+    "overview": "نظرة عامة",
+    "view_details": "عرض التفاصيل",
+    "net_profit": "صافي الربح",
+    "active_deals": "الصفقات النشطة",
+    "revenue": "الإيرادات",
+    "expenses": "المصروفات",
+    "total_leads": "إجمالي العملاء المحتملين",
+    "properties": "العقارات",
+    "settings": "الإعدادات",
+    "logout": "تسجيل الخروج"
+  },
+  "common": {
+    "loading": "جاري التحميل...",
+    "error": "حدث خطأ",
+    "save": "حفظ",
+    "cancel": "إلغاء",
+    "currency": "درهم"
+  }
+}

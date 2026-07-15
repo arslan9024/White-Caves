@@ -1,0 +1,22 @@
+{
+  "dashboard": {
+    "greeting": "Welcome back",
+    "overview": "Overview",
+    "view_details": "View Details",
+    "net_profit": "Net Profit",
+    "active_deals": "Active Deals",
+    "revenue": "Revenue",
+    "expenses": "Expenses",
+    "total_leads": "Total Leads",
+    "properties": "Properties",
+    "settings": "Settings",
+    "logout": "Log Out"
+  },
+  "common": {
+    "loading": "Loading...",
+    "error": "An error occurred",
+    "save": "Save",
+    "cancel": "Cancel",
+    "currency": "AED"
+  }
+}

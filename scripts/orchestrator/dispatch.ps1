@@ -36,7 +36,7 @@ function Read-JsonFileSafe {
   param(
     [Parameter(Mandatory = $true)]
     [string]$Path,
-    [long]$MaxBytes = 8MB,
+    [long]$MaxBytes = 32MB,
     [switch]$TryTmpRecovery
   )
 
@@ -72,7 +72,7 @@ function Read-JsonFileSafe {
 
 function Get-Queue {
   param([string]$Path)
-  return (Read-JsonFileSafe -Path $Path -MaxBytes 8MB -TryTmpRecovery)
+  return (Read-JsonFileSafe -Path $Path -MaxBytes 32MB -TryTmpRecovery)
 }
 
 function Save-Queue {
@@ -147,6 +147,15 @@ try {
     $out = @{ claimed = $false; reason = "no_ready_task" } | ConvertTo-Json -Depth 4
     Write-Output $out
     exit 0
+  }
+
+  # SDLC Task Decomposition Logic
+  if ($candidate.description.Length -gt 1000 -and $candidate.agent -ne "@Margaret") {
+      # Task is too complex. Route to Planning Agent for decomposition.
+      $candidate.agent = "@Margaret"
+      $candidate.objective = "[DECOMPOSE] " + $candidate.objective
+      $candidate.phase = "PLANNING"
+      Write-Host "[SDLC] Task $($candidate.taskId) is overly complex. Automatically routed to @Margaret for task decomposition."
   }
 
   $candidate.status = "running"

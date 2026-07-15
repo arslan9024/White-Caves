@@ -38,7 +38,7 @@ function Read-JsonFileSafe {
   param(
     [Parameter(Mandatory = $true)]
     [string]$Path,
-    [long]$MaxBytes = 8MB,
+    [long]$MaxBytes = 32MB,
     [switch]$TryTmpRecovery
   )
 
@@ -71,7 +71,7 @@ function Read-JsonFileSafe {
   return (Try-ParseCandidate -CandidatePath $Path)
 }
 
-$q       = Read-JsonFileSafe -Path $queueFile -MaxBytes 8MB -TryTmpRecovery
+$q       = Read-JsonFileSafe -Path $queueFile -MaxBytes 32MB -TryTmpRecovery
 $prompts = Get-Content $promptsFile -Raw | ConvertFrom-Json
 $tasks   = @($q.tasks)
 

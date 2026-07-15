@@ -21,7 +21,7 @@ function Read-JsonFileSafe {
   param(
     [Parameter(Mandatory = $true)]
     [string]$Path,
-    [long]$MaxBytes = 8MB,
+    [long]$MaxBytes = 32MB,
     [switch]$TryTmpRecovery
   )
 
@@ -78,7 +78,7 @@ if (-not (Test-Path $queueFile)) {
   Write-Host "[ERROR] Queue not found. Run: npm run orchestrator:queue:init" -ForegroundColor Red
   exit 1
 }
-$queue = Read-JsonFileSafe -Path $queueFile -MaxBytes 8MB -TryTmpRecovery
+$queue = Read-JsonFileSafe -Path $queueFile -MaxBytes 32MB -TryTmpRecovery
 $tasks = @($queue.tasks)
 
 function Test-DepsDone {

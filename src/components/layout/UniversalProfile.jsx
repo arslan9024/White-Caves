@@ -17,7 +17,7 @@ export default function UniversalProfile({ variant = 'default', showSignIn = tru
     const newTheme = theme === 'dark' ? 'light' : 'dark';
     dispatch(setTheme(newTheme));
   };
-  
+
   const [menuOpen, setMenuOpen] = useState(false);
   const menuRef = useRef(null);
 
@@ -33,7 +33,12 @@ export default function UniversalProfile({ variant = 'default', showSignIn = tru
 
   const getInitials = (name, email) => {
     if (name) {
-      return name.split(' ').map(n => n[0]).join('').toUpperCase().substring(0, 2);
+      return name
+        .split(' ')
+        .map(n => n[0])
+        .join('')
+        .toUpperCase()
+        .substring(0, 2);
     }
     if (email) {
       return email.charAt(0).toUpperCase();
@@ -41,15 +46,15 @@ export default function UniversalProfile({ variant = 'default', showSignIn = tru
     return '?';
   };
 
-  const getRoleInfo = (role) => {
+  const getRoleInfo = role => {
     const roles = {
-      'buyer': { label: 'Buyer', icon: '🏠', color: '#3b82f6' },
-      'seller': { label: 'Seller', icon: '💰', color: '#10b981' },
-      'landlord': { label: 'Landlord', icon: '🔑', color: '#8b5cf6' },
-      'tenant': { label: 'Tenant', icon: '🏡', color: '#06b6d4' },
+      buyer: { label: 'Buyer', icon: '🏠', color: '#3b82f6' },
+      seller: { label: 'Seller', icon: '💰', color: '#10b981' },
+      landlord: { label: 'Landlord', icon: '🔑', color: '#8b5cf6' },
+      tenant: { label: 'Tenant', icon: '🏡', color: '#06b6d4' },
       'leasing-agent': { label: 'Leasing Agent', icon: '📋', color: '#f59e0b' },
       'secondary-sales-agent': { label: 'Sales Agent', icon: '🏢', color: '#ef4444' },
-      'owner': { label: 'Owner', icon: '👑', color: '#ffd700' },
+      owner: { label: 'Owner', icon: '👑', color: '#ffd700' },
     };
     return roles[role] || null;
   };
@@ -63,16 +68,14 @@ export default function UniversalProfile({ variant = 'default', showSignIn = tru
       dispatch(setActiveRole(null));
       dispatch(closeAllMenus());
       navigate('/');
-    } catch (error) {
-      
-    }
+    } catch (error) {}
   };
 
   const roleInfo = getRoleInfo(activeRole);
 
   if (!user) {
     if (!showSignIn) return null;
-    
+
     return (
       <div className={`universal-profile ${variant}`}>
         <Link to="/signin" className="profile-signin-btn">
@@ -84,17 +87,17 @@ export default function UniversalProfile({ variant = 'default', showSignIn = tru
 
   return (
     <div className={`universal-profile ${variant}`} ref={menuRef}>
-      <button 
+      <button
         className="profile-trigger"
         onClick={() => setMenuOpen(!menuOpen)}
         aria-label="User menu"
       >
         <div className="profile-avatar">
           {user.photoURL || user.photo ? (
-            <img 
-              src={user.photoURL || user.photo} 
-              alt={user.displayName || user.name || 'User'} 
-              className="avatar-img" 
+            <img
+              src={user.photoURL || user.photo}
+              alt={user.displayName || user.name || 'User'}
+              className="avatar-img"
             />
           ) : (
             <span className="avatar-initials">
@@ -102,9 +105,7 @@ export default function UniversalProfile({ variant = 'default', showSignIn = tru
             </span>
           )}
         </div>
-        {variant !== 'compact' && (
-          <span className="profile-arrow">{menuOpen ? '▲' : '▼'}</span>
-        )}
+        {variant !== 'compact' && <span className="profile-arrow">{menuOpen ? '▲' : '▼'}</span>}
       </button>
 
       {menuOpen && (
@@ -112,10 +113,10 @@ export default function UniversalProfile({ variant = 'default', showSignIn = tru
           <div className="profile-dropdown-header">
             <div className="profile-avatar large">
               {user.photoURL || user.photo ? (
-                <img 
-                  src={user.photoURL || user.photo} 
-                  alt={user.displayName || user.name || 'User'} 
-                  className="avatar-img" 
+                <img
+                  src={user.photoURL || user.photo}
+                  alt={user.displayName || user.name || 'User'}
+                  className="avatar-img"
                 />
               ) : (
                 <span className="avatar-initials">
@@ -136,25 +137,18 @@ export default function UniversalProfile({ variant = 'default', showSignIn = tru
 
           <div className="profile-dropdown-divider"></div>
 
-          <button 
-            className="profile-dropdown-item theme-toggle-item"
-            onClick={toggleTheme}
-          >
+          <button className="profile-dropdown-item theme-toggle-item" onClick={toggleTheme}>
             <span className="dropdown-icon">{theme === 'dark' ? '☀️' : '🌙'}</span>
             {theme === 'dark' ? 'Light Mode' : 'Dark Mode'}
           </button>
 
-          <Link 
-            to="/profile" 
-            className="profile-dropdown-item"
-            onClick={() => setMenuOpen(false)}
-          >
+          <Link to="/profile" className="profile-dropdown-item" onClick={() => setMenuOpen(false)}>
             <span className="dropdown-icon">👤</span>
             My Profile
           </Link>
 
-          <Link 
-            to="/select-role" 
+          <Link
+            to="/select-role"
             className="profile-dropdown-item"
             onClick={() => setMenuOpen(false)}
           >
@@ -163,8 +157,8 @@ export default function UniversalProfile({ variant = 'default', showSignIn = tru
           </Link>
 
           {activeRole && (
-            <Link 
-              to="/crm"
+            <Link
+              to="/dashboard"
               className="profile-dropdown-item"
               onClick={() => setMenuOpen(false)}
             >
@@ -175,10 +169,7 @@ export default function UniversalProfile({ variant = 'default', showSignIn = tru
 
           <div className="profile-dropdown-divider"></div>
 
-          <button 
-            className="profile-dropdown-item logout"
-            onClick={handleLogout}
-          >
+          <button className="profile-dropdown-item logout" onClick={handleLogout}>
             <span className="dropdown-icon">🚪</span>
             Sign Out
           </button>

@@ -6,6 +6,7 @@ import App from './App.tsx';
 import ErrorBoundary from './components/ErrorBoundary';
 import { ToastProvider } from './components/Toast';
 import { ThemeProvider } from './context/ThemeContext';
+import { TranslationProvider } from './context/TranslationContext';
 import { validateEnvironment } from './config/validateEnv';
 import './styles/tokens.css';
 // Dubai Luxury design tokens — loaded globally so any component opting into
@@ -36,8 +37,7 @@ if (!envResult.valid) {
 // Find root element
 const rootElement = document.getElementById('root');
 if (!rootElement) {
-  document.body.innerHTML =
-    '<p style="color: red; padding: 20px;">Root element not found. Please check index.html.</p>';
+  log.error('Failed to find the root element');
 } else {
   try {
     const root = ReactDOM.createRoot(rootElement);
@@ -47,9 +47,11 @@ if (!rootElement) {
         <ErrorBoundary>
           <Provider store={store}>
             <ThemeProvider>
-              <ToastProvider>
-                <App />
-              </ToastProvider>
+              <TranslationProvider>
+                <ToastProvider>
+                  <App />
+                </ToastProvider>
+              </TranslationProvider>
             </ThemeProvider>
           </Provider>
         </ErrorBoundary>

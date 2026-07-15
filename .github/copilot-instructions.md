@@ -18,6 +18,13 @@ Always align implementations with these concrete technologies and existing scrip
 
 ## 2) Architecture Rules (MANDATORY)
 
+### 2.0 SDLC Code Standards (AEGIS Mode)
+
+- **Adversarial Integrity:** All code is subject to adversarial review. Assume your code will be actively challenged by a QA agent for robustness, security, and side-effects.
+- **Small Iterative Batches:** Do not rewrite massive files at once. Keep Diff sizes < 500 lines or risk automated rejection.
+- **Goal Frame Consistency:** Ensure your changes strictly align with the `goal_frame` set during the Automated Discovery phase. Do not inject out-of-scope features.
+- **Technical Debt:** Unused exports and dead code will be aggressively swept. Remove deprecated logic immediately when refactoring.
+
 ### 2.1 Frontend structure
 
 - Keep page-level composition in `src/pages/**`.
