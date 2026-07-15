@@ -12,7 +12,7 @@
  * @component
  */
 
-import React, { FC, useState } from 'react';
+import React, { FC, useState, useMemo } from 'react';
 import { useSelector } from 'react-redux';
 import type { RootState } from '../../store/store';
 import '../RolePages.css';
@@ -24,6 +24,8 @@ import LandlordPaymentsTab from '../../components/portal/landlord/LandlordPaymen
 import LandlordMaintenanceTab from '../../components/portal/landlord/LandlordMaintenanceTab';
 import LandlordDocumentsTab from '../../components/portal/landlord/LandlordDocumentsTab';
 import PortalProfileTab from '../../components/portal/PortalProfileTab';
+import PortalSidebarContainer from '../../components/portal/containers/PortalSidebarContainer';
+import { useTranslation, Text } from '../../context/TranslationContext';
 
 type TabKey =
   | 'home'
@@ -40,26 +42,32 @@ interface Tab {
   icon: string;
 }
 
-const tabs: Tab[] = [
-  { key: 'home', label: 'Dashboard', icon: '🏠' },
-  { key: 'properties', label: 'My Properties', icon: '🏢' },
-  { key: 'tenants', label: 'Tenants', icon: '👥' },
-  { key: 'payments', label: 'Rent Payments', icon: '💰' },
-  { key: 'maintenance', label: 'Maintenance', icon: '🔧' },
-  { key: 'documents', label: 'Documents', icon: '📄' },
-  { key: 'profile', label: 'My Profile', icon: '👤' },
-];
-
 const LandlordPortalPage: FC = () => {
   const [activeTab, setActiveTab] = useState<TabKey>('home');
   const currentUser = useSelector((state: RootState) => state.user.currentUser);
+  const { t } = useTranslation();
+
+  const tabs: Tab[] = useMemo(
+    () => [
+      { key: 'home', label: t('landlord.portal.tabs.home'), icon: '🏠' },
+      { key: 'properties', label: t('landlord.portal.tabs.properties'), icon: '🏢' },
+      { key: 'tenants', label: t('landlord.portal.tabs.tenants'), icon: '👥' },
+      { key: 'payments', label: t('landlord.portal.tabs.payments'), icon: '💰' },
+      { key: 'maintenance', label: t('landlord.portal.tabs.maintenance'), icon: '🔧' },
+      { key: 'documents', label: t('landlord.portal.tabs.documents'), icon: '📄' },
+      { key: 'profile', label: t('landlord.portal.tabs.profile'), icon: '👤' },
+    ],
+    [t]
+  );
 
   if (!currentUser) {
     return (
       <div className="role-page no-sidebar">
         <div className="role-page-content full-width">
           <div className="error-message">
-            <p>You must be logged in to access the Landlord Portal.</p>
+            <p>
+              <Text tid="landlord.portal.unauthorized" />
+            </p>
           </div>
         </div>
       </div>
@@ -92,31 +100,19 @@ const LandlordPortalPage: FC = () => {
       <div className="role-page no-sidebar">
         <div className="role-page-content full-width">
           <div className="page-header">
-            <h1>Landlord Portal</h1>
-            <p>Welcome, {currentUser.name}. Manage your properties and tenants.</p>
+            <h1>
+              <Text tid="landlord.portal.title" />
+            </h1>
+            <p>{t('landlord.portal.welcome').replace('{name}', currentUser.name)}</p>
           </div>
 
           {/* Tab Navigation */}
-          <div
-            className="portal-tab-navigation"
-            role="tablist"
-            aria-label="Landlord Portal Navigation"
-          >
-            {tabs.map(tab => (
-              <button
-                key={tab.key}
-                role="tab"
-                aria-selected={activeTab === tab.key}
-                aria-controls={`tabpanel-${tab.key}`}
-                className={`portal-tab ${activeTab === tab.key ? 'active' : ''}`}
-                onClick={() => setActiveTab(tab.key)}
-                data-testid={`tab-${tab.key}`}
-              >
-                <span className="tab-icon">{tab.icon}</span>
-                <span className="tab-label">{tab.label}</span>
-              </button>
-            ))}
-          </div>
+          <PortalSidebarContainer<TabKey>
+            tabs={tabs}
+            activeTab={activeTab}
+            onTabChange={setActiveTab}
+            ariaLabel={t('landlord.portal.title')}
+          />
 
           {/* Tab Content */}
           <div

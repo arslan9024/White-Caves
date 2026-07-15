@@ -339,8 +339,7 @@ app.use((req, res, next) => {
   res.on('finish', () => {
     const diff = process.hrtime(start);
     const time = (diff[0] * 1e3 + diff[1] * 1e-6).toFixed(2);
-    // Add Server-Timing header for DevTools
-    res.append('Server-Timing', `total;dur=${time}`);
+    // DevTools header removed to prevent "Cannot set headers" crash
   });
   next();
 });

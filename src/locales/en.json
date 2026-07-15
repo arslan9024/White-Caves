@@ -30,6 +30,38 @@
     "error": "An error occurred",
     "save": "Save",
     "cancel": "Cancel",
-    "currency": "AED"
+    "currency": "AED",
+    "navigation": "Navigation"
+  },
+  "tenant": {
+    "portal": {
+      "unauthorized": "You must be logged in to access the Tenant Portal.",
+      "title": "Tenant Portal",
+      "welcome": "Welcome, {name}. Manage your lease and requests.",
+      "tabs": {
+        "home": "Dashboard",
+        "lease": "My Lease",
+        "payments": "Payment History",
+        "maintenance": "Maintenance",
+        "documents": "Documents",
+        "profile": "My Profile"
+      }
+    }
+  },
+  "landlord": {
+    "portal": {
+      "unauthorized": "You must be logged in to access the Landlord Portal.",
+      "title": "Landlord Portal",
+      "welcome": "Welcome, {name}. Manage your properties and tenants.",
+      "tabs": {
+        "home": "Dashboard",
+        "properties": "My Properties",
+        "tenants": "Tenants",
+        "payments": "Rent Payments",
+        "maintenance": "Maintenance",
+        "documents": "Documents",
+        "profile": "My Profile"
+      }
+    }
   }
 }
