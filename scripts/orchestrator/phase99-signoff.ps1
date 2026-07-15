@@ -13,7 +13,7 @@ $root = Resolve-Path $WorkspaceRoot
 
 # Load policy-defined approval phrase (fallback to known default)
 $_policyFile = Join-Path $root "scripts\orchestrator\policy.json"
-$approvalPhrase = "@Ada — Context Ready (60% Readiness) — Coding Phase Approved"
+$approvalPhrase = "@Ada - Context Ready (90% Readiness) - High-Fidelity Coding Phase Approved"
 if (Test-Path $_policyFile) {
   try {
     $_pol = Get-Content $_policyFile -Raw | ConvertFrom-Json

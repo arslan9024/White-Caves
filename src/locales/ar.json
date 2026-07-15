@@ -12,6 +12,19 @@
     "settings": "الإعدادات",
     "logout": "تسجيل الخروج"
   },
+  "agent": {
+    "leasing": {
+      "pipeline": "مسار التأجير",
+      "active_transactions": "{count} معاملات نشطة",
+      "pending": "قيد الانتظار",
+      "inquiry": "استفسار",
+      "viewing": "معاينة",
+      "application": "طلب",
+      "contract": "عقد",
+      "signed": "موقع",
+      "active": "نشط"
+    }
+  },
   "common": {
     "loading": "جاري التحميل...",
     "error": "حدث خطأ",

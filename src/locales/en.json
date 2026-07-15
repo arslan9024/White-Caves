@@ -12,6 +12,19 @@
     "settings": "Settings",
     "logout": "Log Out"
   },
+  "agent": {
+    "leasing": {
+      "pipeline": "Leasing Pipeline",
+      "active_transactions": "{count} active transactions",
+      "pending": "Pending",
+      "inquiry": "inquiry",
+      "viewing": "viewing",
+      "application": "application",
+      "contract": "contract",
+      "signed": "signed",
+      "active": "active"
+    }
+  },
   "common": {
     "loading": "Loading...",
     "error": "An error occurred",

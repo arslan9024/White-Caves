@@ -548,5 +548,38 @@
     "lastUsed": "2026-07-15",
     "successCount": 0,
     "history": []
+  },
+  "DU021": {
+    "v": 1,
+    "agent": "@Sofia",
+    "action": "EXPAND",
+    "target": "compliance-requirements.md",
+    "prompt": "@Sofia -- EXPAND: compliance-requirements.md -> add AML risk scoring model covering source-of-funds triggers, PEP checks, sanctions screening, review cadence, and audit outputs",
+    "tags": ["compliance", "security"],
+    "lastUsed": "2026-07-15",
+    "successCount": 0,
+    "history": []
+  },
+  "DU022": {
+    "v": 1,
+    "agent": "@Invoice",
+    "action": "DRAFT",
+    "target": "financial-reporting.md",
+    "prompt": "@Invoice -- DRAFT: financial-reporting.md -> add commission split calculator covering agent, manager, referral, and company share waterfalls, overrides, and payout validation rules",
+    "tags": ["finance", "sales"],
+    "lastUsed": "2026-07-15",
+    "successCount": 0,
+    "history": []
+  },
+  "DU023": {
+    "v": 1,
+    "agent": "@S5",
+    "action": "DRAFT",
+    "target": "wave-16-security-hardening.md",
+    "prompt": "@S5 -- DRAFT: wave-16-security-hardening.md -> add CSP completeness audit covering script-src, connect-src, report-only rollout, and third-party exceptions",
+    "tags": ["security", "headers"],
+    "lastUsed": "2026-07-15",
+    "successCount": 0,
+    "history": []
   }
 }

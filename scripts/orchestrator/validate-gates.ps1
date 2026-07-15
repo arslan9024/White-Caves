@@ -1,4 +1,4 @@
-param(
+﻿param(
   [string]$WorkspaceRoot = ".",
   [string]$WaveId = "WAVE_01"
 )
@@ -15,7 +15,7 @@ $outputFile = Join-Path $WorkspaceRoot ("plans\waves\" + $WaveId + "_GATE_VALIDA
 $checks = @()
 
 $readinessThreshold = 60
-$approvalPhrase = "@Ada — Context Ready (60% Readiness) — Coding Phase Approved"
+$approvalPhrase = "@Ada - Context Ready (90% Readiness) - High-Fidelity Coding Phase Approved"
 if (Test-Path $policyFile) {
   try {
     $policy = Get-Content -Path $policyFile -Raw | ConvertFrom-Json

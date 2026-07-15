@@ -1,4 +1,4 @@
-# tracker-sync-check.ps1 -- Detect drift between queue evidence and tracker docs
+﻿# tracker-sync-check.ps1 -- Detect drift between queue evidence and tracker docs
 # Usage:
 #   npm run orchestrator:tracker-sync
 #   npm run orchestrator:tracker-sync:brief
@@ -52,7 +52,7 @@ $passes = [System.Collections.Generic.List[string]]::new()
 
 # Load policy to drive approval phrase check dynamically
 $policyFile = Join-Path $root "scripts\orchestrator\policy.json"
-$approvalPhrase = "@Ada — Context Ready (60% Readiness) — Coding Phase Approved"
+$approvalPhrase = "@Ada - Context Ready (90% Readiness) - High-Fidelity Coding Phase Approved"
 if (Test-Path $policyFile) {
   try {
     $pol = Get-Content $policyFile -Raw | ConvertFrom-Json
@@ -74,7 +74,7 @@ if ($daily -match $escapedPhrase) {
 }
 
 # Drift heuristic: queue fully done but pending still heavily not-started
-$notStartedCount = ([regex]::Matches($pending, '⬜\s+Not started')).Count
+$notStartedCount = ([regex]::Matches($pending, 'â¬œ\s+Not started')).Count
 if ($allDone -and $notStartedCount -ge 3) {
   $warnings.Add("Queue is 100% done ($done/$total) but PENDING still has many Not started entries ($notStartedCount) -- sync recommended")
 } else {

@@ -5,9 +5,11 @@
  * 10 agent sub-tab components (6 leasing-agent + 4 sales-agent), wired to backend APIs.
  */
 
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useMemo, FC } from 'react';
 import { authFetch } from '../../utils/authFetch';
 import { createLogger } from '../../utils/logger';
+import { useTranslation, Text } from '../../context/TranslationContext';
+import { CurrencyViewer } from '../ui/CurrencyViewer';
 import type {
   DashboardLease,
   DashboardProperty,
@@ -25,9 +27,12 @@ const log = createLogger('Dashboard');
 // LEASING AGENT — PIPELINE
 // ═══════════════════════════════════════════════════════════════════════
 
-export const LeasingPipeline: React.FC = () => {
+export interface LeasingPipelineProps {}
+
+export const LeasingPipeline: FC<LeasingPipelineProps> = () => {
   const [leases, setLeases] = useState<DashboardLease[]>([]);
   const [loading, setLoading] = useState(true);
+  const { t } = useTranslation();
 
   useEffect(() => {
     (async () => {
@@ -42,25 +47,31 @@ export const LeasingPipeline: React.FC = () => {
     })();
   }, []);
 
-  if (loading) return <div style={S.tabContainer}>{S.loadingState}</div>;
+  const grouped = useMemo(() => {
+    const stages = ['inquiry', 'viewing', 'application', 'contract', 'signed', 'active'];
+    return stages.map(s => ({
+      stage: s,
+      items: leases.filter(l => l.stage === s || l.status === s),
+    }));
+  }, [leases]);
 
-  const stages = ['inquiry', 'viewing', 'application', 'contract', 'signed', 'active'];
-  const grouped = stages.map(s => ({
-    stage: s,
-    items: leases.filter(l => l.stage === s || l.status === s),
-  }));
+  if (loading) return <div style={S.tabContainer}>{S.loadingState}</div>;
 
   return (
     <div style={S.tabContainer}>
       <div style={S.pageHeader}>
-        <h2 style={S.headerTitle}>📊 Leasing Pipeline</h2>
-        <p style={S.headerSubtitle}>{leases.length} active transactions</p>
+        <h2 style={S.headerTitle}>
+          📊 <Text tid="agent.leasing.pipeline" />
+        </h2>
+        <p style={S.headerSubtitle}>
+          {t('agent.leasing.active_transactions').replace('{count}', leases.length.toString())}
+        </p>
       </div>
 
       <div
         style={{
           display: 'grid',
-          gridTemplateColumns: `repeat(${stages.length}, minmax(200px, 1fr))`,
+          gridTemplateColumns: `repeat(${grouped.length}, minmax(200px, 1fr))`,
           gap: '0.75rem',
           overflowX: 'auto',
         }}
@@ -69,7 +80,7 @@ export const LeasingPipeline: React.FC = () => {
           <div
             key={g.stage}
             style={{
-              background: '#f9fafb',
+              background: 'var(--bg-secondary, #f9fafb)',
               borderRadius: '12px',
               padding: '0.75rem',
               minHeight: '200px',
@@ -80,18 +91,25 @@ export const LeasingPipeline: React.FC = () => {
                 textTransform: 'capitalize',
                 fontSize: '0.85rem',
                 marginBottom: '0.5rem',
-                color: '#6b7280',
+                color: 'var(--text-secondary, #6b7280)',
               }}
             >
-              {g.stage} ({g.items.length})
+              <Text tid={`agent.leasing.${g.stage}`} /> ({g.items.length})
             </h4>
             {g.items.map(l => (
               <div key={l.id} style={{ ...S.card, marginBottom: '0.5rem', padding: '0.75rem' }}>
                 <strong style={{ fontSize: '0.85rem' }}>
                   {l.property?.title ?? l.propertyId ?? '—'}
                 </strong>
-                <p style={{ fontSize: '0.8rem', color: '#6b7280', margin: '0.25rem 0 0 0' }}>
-                  {l.tenant?.name ?? 'Pending'} — {S.formatCurrency(l.monthlyRent)}
+                <p
+                  style={{
+                    fontSize: '0.8rem',
+                    color: 'var(--text-secondary, #6b7280)',
+                    margin: '0.25rem 0 0 0',
+                  }}
+                >
+                  {l.tenant?.name ?? <Text tid="agent.leasing.pending" />} —{' '}
+                  <CurrencyViewer value={l.monthlyRent ?? 0} />
                 </p>
               </div>
             ))}

@@ -6,7 +6,7 @@
   "largeWaveMinReadinessPct": 90,
   "microWaveMinReadinessPct": 60,
   "readinessChecksTotal": 30,
-  "approvalPhrase": "@Ada \u2014 Context Ready (60% Readiness) \u2014 Coding Phase Approved",
+  "approvalPhrase": "@Ada - Context Ready (90% Readiness) - High-Fidelity Coding Phase Approved",
   "depthGateLabel": "depth evidence",
   "modelRouting": {
     "freeModelOnlyMode": true,
@@ -408,25 +408,11 @@
   },
   "workflowGraph": {
     "enabled": true,
-    "steps": [
-      "plan",
-      "code",
-      "verify",
-      "merge-ready"
-    ],
+    "steps": ["plan", "code", "verify", "merge-ready"],
     "stepPatterns": {
-      "sequential": [
-        "plan",
-        "code",
-        "verify",
-        "merge-ready"
-      ],
+      "sequential": ["plan", "code", "verify", "merge-ready"],
       "parallel": {
-        "code": [
-          "frontend",
-          "backend",
-          "tests"
-        ]
+        "code": ["frontend", "backend", "tests"]
       },
       "handoff": {
         "plan\u2192code": "@Ada\u2192@Mira",
@@ -436,11 +422,7 @@
       "group-review": {
         "trigger": "high-risk",
         "minRiskScore": 70,
-        "reviewers": [
-          "@Ada",
-          "@Katherine",
-          "@Radia"
-        ],
+        "reviewers": ["@Ada", "@Katherine", "@Radia"],
         "requiredApprovals": 2
       }
     },
@@ -474,32 +456,19 @@
     },
     "tiers": {
       "security": {
-        "blockSeverities": [
-          "critical"
-        ]
+        "blockSeverities": ["critical"]
       },
       "auth": {
-        "blockSeverities": [
-          "critical",
-          "high"
-        ]
+        "blockSeverities": ["critical", "high"]
       },
       "database": {
-        "blockSeverities": [
-          "critical",
-          "high"
-        ]
+        "blockSeverities": ["critical", "high"]
       },
       "payment": {
-        "blockSeverities": [
-          "critical",
-          "high"
-        ]
+        "blockSeverities": ["critical", "high"]
       },
       "general": {
-        "blockSeverities": [
-          "critical"
-        ]
+        "blockSeverities": ["critical"]
       }
     },
     "exceptions": []
@@ -545,19 +514,10 @@
     "requireHumanApprovalMaxConfidence": 0.5,
     "riskScoreLowMax": 30,
     "riskScoreHighMin": 70,
-    "highRiskDomains": [
-      "security",
-      "auth",
-      "payment",
-      "database-migration"
-    ],
+    "highRiskDomains": ["security", "auth", "payment", "database-migration"],
     "routingStateDir": "logs/orchestrator/confidence",
     "fallbackDecision": "human-approval",
-    "fallbackChain": [
-      "human-approval",
-      "approval",
-      "escalate"
-    ],
+    "fallbackChain": ["human-approval", "approval", "escalate"],
     "requireReviewMetadataOnUncertain": true,
     "canaryPercentOverride": null
   },
@@ -599,11 +559,7 @@
   "planFirst": {
     "enabled": true,
     "defaultMode": "plan-before-agent",
-    "trivialExemptions": [
-      "formatting-only",
-      "comment-only",
-      "small-doc-fix"
-    ],
+    "trivialExemptions": ["formatting-only", "comment-only", "small-doc-fix"],
     "requiredPlanPacketFields": [
       "goal",
       "filesInScope",
@@ -644,11 +600,7 @@
   },
   "historyManagement": {
     "enabled": true,
-    "layers": [
-      "raw-logs",
-      "session-snapshot",
-      "handoff-summary"
-    ],
+    "layers": ["raw-logs", "session-snapshot", "handoff-summary"],
     "reuseLayer": "handoff-summary",
     "markStaleAsNonCanonical": true,
     "bootstrapFromMinimalPacket": true

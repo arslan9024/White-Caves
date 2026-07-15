@@ -1,4 +1,4 @@
-# sdd-generator.ps1 -- Generates WAVE_0N_SDD.md (System Design Document)
+﻿# sdd-generator.ps1 -- Generates WAVE_0N_SDD.md (System Design Document)
 # One section per agent with 10-evidence-layer stubs pulled from task queue + business_docs.
 param(
   [string]$WorkspaceRoot = ".",
@@ -13,7 +13,7 @@ $outFile   = Join-Path $wavesDir "$waveLabel`_SDD.md"
 
 # Load policy-defined approval phrase (fallback to known default)
 $_policyFile = Join-Path $WorkspaceRoot "scripts\orchestrator\policy.json"
-$approvalPhrase  = "@Ada — Context Ready (60% Readiness) — Coding Phase Approved"
+$approvalPhrase  = "@Ada - Context Ready (90% Readiness) - High-Fidelity Coding Phase Approved"
 $readinessPct    = 60
 if (Test-Path $_policyFile) {
   try {

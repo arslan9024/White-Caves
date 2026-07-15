@@ -1,4 +1,4 @@
-# phase-bundle.ps1 -- 5-phase coordinated implementation runner
+﻿# phase-bundle.ps1 -- 5-phase coordinated implementation runner
 # Purpose: execute a minimum 5-phase orchestration flow to accelerate progress toward completion targets.
 param(
   [string]$WorkspaceRoot = ".",
@@ -24,7 +24,7 @@ $root = Resolve-Path $WorkspaceRoot
 
 # Load policy-defined approval phrase (fallback to known default)
 $_policyFile = Join-Path $root "scripts\orchestrator\policy.json"
-$approvalPhrase = "@Ada — Context Ready (60% Readiness) — Coding Phase Approved"
+$approvalPhrase = "@Ada - Context Ready (90% Readiness) - High-Fidelity Coding Phase Approved"
 if (Test-Path $_policyFile) {
   try {
     $_pol = Get-Content $_policyFile -Raw | ConvertFrom-Json

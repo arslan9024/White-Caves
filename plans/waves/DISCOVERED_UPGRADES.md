@@ -4575,3 +4575,41 @@ Auto-discovered Aegis queue-empty upgrades are appended here when the orchestrat
 - Plan evidence: 6 keyword hits in planning docs
 - Scan evidence: 1 keyword hits in codebase scan signals
 - Prompt: @Wafa -- DRAFT: wave-15-cache-performance.md -> add Redis cache layer planning for keys, TTLs, invalidation, and rollout safeguards
+
+## 2026-07-15T22:38:51.317Z — Queue-empty discovery run
+
+### DU021 — AML risk scoring
+
+- Feature ID: compliance-aml-risk-scoring
+- Agent: @Sofia
+- Target file: business_docs/05_requirements/compliance-requirements.md
+- Research basis: UAE AML enhanced due diligence expectations for real-estate brokerages
+- Score: 80
+- Gap evidence: 1/2 signatures matched
+- Plan evidence: 4 keyword hits in planning docs
+- Scan evidence: 0 keyword hits in codebase scan signals
+- Prompt: @Sofia -- EXPAND: compliance-requirements.md -> add AML risk scoring model covering source-of-funds triggers, PEP checks, sanctions screening, review cadence, and audit outputs
+
+### DU022 — Commission split calculator
+
+- Feature ID: finance-commission-split-calculator
+- Agent: @Invoice
+- Target file: business_docs/09_crm_features/financial-reporting.md
+- Research basis: Brokerage finance standard for multi-agent commission waterfalls
+- Score: 80
+- Gap evidence: 1/2 signatures matched
+- Plan evidence: 6 keyword hits in planning docs
+- Scan evidence: 0 keyword hits in codebase scan signals
+- Prompt: @Invoice -- DRAFT: financial-reporting.md -> add commission split calculator covering agent, manager, referral, and company share waterfalls, overrides, and payout validation rules
+
+### DU023 — CSP header completeness audit
+
+- Feature ID: security-csp-completeness
+- Agent: @S5
+- Target file: business_docs/09_crm_features/wave-16-security-hardening.md
+- Research basis: OWASP and modern frontend deployment policy for CSP coverage
+- Score: 80
+- Gap evidence: 1/2 signatures matched
+- Plan evidence: 6 keyword hits in planning docs
+- Scan evidence: 0 keyword hits in codebase scan signals
+- Prompt: @S5 -- DRAFT: wave-16-security-hardening.md -> add CSP completeness audit covering script-src, connect-src, report-only rollout, and third-party exceptions
