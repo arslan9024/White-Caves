@@ -142,18 +142,20 @@ function scanSourceCode() {
     });
   }
 
-  // Missing test files — routes without matching *.test.ts
-  const routeFiles = allFiles.filter(f => /server[\\/]routes[\\/].+(?<!test)\.(ts|js)$/.test(f));
+  // Missing test files — routes without matching *.test.ts or *.test.js
+  const routeFiles = allFiles.filter(
+    f => /server[\\/]routes[\\/].+(?<!test)\.(ts|js)$/.test(f) && !f.endsWith('.d.ts')
+  );
   for (const rf of routeFiles) {
     const base = path.basename(rf, path.extname(rf));
-    const testFile = path.join(path.dirname(rf), `${base}.test.ts`);
-    const altTest = path.join(path.dirname(rf), `${base}.routes.test.ts`);
-    if (!fs.existsSync(testFile) && !fs.existsSync(altTest)) {
+    const testFileTs = path.join(path.dirname(rf), `${base}.test.ts`);
+    const testFileJs = path.join(path.dirname(rf), `${base}.test.js`);
+    if (!allFiles.includes(testFileTs) && !allFiles.includes(testFileJs)) {
       findings.push({
         type: 'MISSING_TEST',
         file: relPath(rf),
-        line: 0,
-        snippet: `No test file found for ${base}`,
+        line: 1,
+        snippet: `Missing test file for ${base}`,
         score: PRIORITY.MISSING_TEST,
       });
     }

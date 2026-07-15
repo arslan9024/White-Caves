@@ -34,7 +34,7 @@ router.post(
         console.warn('Stripe not configured or failed to init. Returning simulation payload.');
         return res.json({
           success: true,
-          clientSecret: 'mock_pi_secret_simulation_payload',
+          clientSecret: `mock_pi_secret_simulation_payload`,
           simulated: true,
         });
       }
@@ -57,7 +57,7 @@ router.post(
       // 503 Mitigation fallback
       res.json({
         success: true,
-        clientSecret: 'mock_pi_secret_simulation_payload',
+        clientSecret: `mock_pi_secret_simulation_payload`,
         simulated: true,
         errorFallback: error.message,
       });
