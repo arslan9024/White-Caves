@@ -10,13 +10,13 @@
 
 ## Entry Gate Checklist
 
-| Gate | Requirement | Status |
-| --- | --- | --- |
-| Canonical source stack available | `MASTER_PLAN` + `PENDING_TASKS_ONLY` + `waves/README` | ✅ |
-| Workflow docs available | `business_docs/04_workflows`, `business_docs/09_crm_features`, `functional-requirements` | ✅ |
-| Implementation inventory available | `crmModuleRegistry`, `server/index.ts`, `server/routes/*` | ✅ |
-| Baseline validation context captured | lint/build/test pre-check run | ✅ |
-| Drift targets identified | stale CRM README references identified | ✅ |
+| Gate                                 | Requirement                                                                              | Status |
+| ------------------------------------ | ---------------------------------------------------------------------------------------- | ------ |
+| Canonical source stack available     | `MASTER_PLAN` + `PENDING_TASKS_ONLY` + `waves/README`                                    | ✅     |
+| Workflow docs available              | `business_docs/04_workflows`, `business_docs/09_crm_features`, `functional-requirements` | ✅     |
+| Implementation inventory available   | `crmModuleRegistry`, `server/index.ts`, `server/routes/*`                                | ✅     |
+| Baseline validation context captured | lint/build/test pre-check run                                                            | ✅     |
+| Drift targets identified             | stale CRM README references identified                                                   | ✅     |
 
 ---
 
@@ -54,7 +54,7 @@ These are existing baseline issues and not part of Wave 18 planning-scope edits.
 ## Ready-to-Run Approval Phrase
 
 ```
-@Ada — Context Ready (60% Readiness) — Coding Phase Approved
+@Ada — Context Ready (90% Readiness) — High-Fidelity Coding Phase Approved
 ```
 
 (Required for any implementation wave that executes code changes beyond planning artifacts.)

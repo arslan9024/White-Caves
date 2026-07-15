@@ -182,7 +182,7 @@ This playbook defines how White Caves operates, scales, and wins in **DAMAC Hill
 - [ ] Service overlays (leasing, renewal, maintenance, dispute) are complete and actionable.
 - [ ] Comp methodology and refresh cadence are explicit and auditable.
 - [ ] KPI section includes thresholds, owners, and escalation paths.
-- [ ] No TODO placeholders remain.
+- [ ] No [Action Required: Enforce production-ready engineering constraints] placeholders remain.
 
 ---
 

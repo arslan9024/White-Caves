@@ -4,7 +4,7 @@
 **Focus:** Market Intelligence, Off-Plan Projects, Property Valuation & Advanced Analytics  
 **Status:** 📋 Planned  
 **Date:** 2026-06-17  
-**Entry Gate:** Wave 21 closeout + readiness 60% + `@Ada — Context Ready (60% Readiness) — Coding Phase Approved`
+**Entry Gate:** Wave 21 closeout + readiness 60% + `@Ada — Context Ready (90% Readiness) — High-Fidelity Coding Phase Approved`
 
 ---
 

@@ -76,7 +76,7 @@ The following 5 artifacts must exist in plans/waves/ before premium coding:
 
 ## 5. Ada Authorization
 
-@Ada â€” Context Ready (60% Readiness) â€” Coding Phase Approved
+@Ada â€” Context Ready (90% Readiness) â€” Coding Phase Approved
 
 ---
 

@@ -5,7 +5,7 @@
 **Status:** 📋 Planned  
 **Date:** 2026-05-24  
 **Owners:** @LeadScore + @Mortgage + @Zod + @Mira + @Katherine  
-**Entry Gate:** Wave 13 green + readiness specs from @LeadScore/@Mortgage + `@Ada — Context Ready (60% Readiness) — Coding Phase Approved`
+**Entry Gate:** Wave 13 green + readiness specs from @LeadScore/@Mortgage + `@Ada — Context Ready (90% Readiness) — High-Fidelity Coding Phase Approved`
 
 ---
 
@@ -21,8 +21,8 @@
 
 ## Free-Agent Spec Ownership
 
-| Agent | Model | Spec Output |
-| --- | --- | --- |
-| @LeadScore | DeepSeek V3 | `business_docs/09_crm_features/wave-14-product-automation.md` |
-| @Mortgage | Gemini 2.0 Flash | `business_docs/09_crm_features/wave-14-finance-features.md` |
-| @Zod | Llama 3.1 70B Groq | `business_docs/09_crm_features/wave-14-validation-architecture.md` |
+| Agent      | Model              | Spec Output                                                        |
+| ---------- | ------------------ | ------------------------------------------------------------------ |
+| @LeadScore | DeepSeek V3        | `business_docs/09_crm_features/wave-14-product-automation.md`      |
+| @Mortgage  | Gemini 2.0 Flash   | `business_docs/09_crm_features/wave-14-finance-features.md`        |
+| @Zod       | Llama 3.1 70B Groq | `business_docs/09_crm_features/wave-14-validation-architecture.md` |

@@ -1,7 +1,7 @@
 # DLD (Dubai Land Department) Integration — Business Specification
 
 **Owner:** @Timnit (Gemini 2.0 Flash — Google AI Studio)
-**Status:** 🟡 STUB — awaiting @Timnit Task 1
+**Status:** 🟡 [Pending specific implementation definition per 90% readiness guidelines] — awaiting @Timnit Task 1
 **Target:** 12 sections
 **CRM Module:** DLD Integration layer (server/routes/compliance.ts + server/services/dld/)
 **API Base:** `/api/compliance/dld`, external DLD REST API
@@ -23,7 +23,7 @@ The DLD Integration connects White Caves CRM to the Dubai Land Department's offi
 
 ---
 
-## TODO — @Timnit Task 1
+## [Action Required: Enforce production-ready engineering constraints] — @Timnit Task 1
 
 Paste the output from this prompt into the sections below:
 

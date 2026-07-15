@@ -73,7 +73,7 @@ Effective with `scripts/orchestrator/policy.json` version `2026.05.26-aegis-vnex
 1. **Free planning/research agents remain docs-only** and use free-tier models only. Approved: Gemini 2.0 Flash / 1.5 Flash, Groq Llama 3.1/3.3 70B, DeepSeek V3/R1, Mistral Small, Qwen2.5 72B.
 2. **Research preflight is mandatory:** @Elena (CRO) publishes a daily research preflight brief before any premium coding day. No preflight = no premium coding.
 3. **Premium coding/design requests** are blocked until the exact approval phrase exists:  
-   `@Ada — Context Ready (60% Readiness) — Coding Phase Approved`
+   `@Ada — Context Ready (90% Readiness) — High-Fidelity Coding Phase Approved`
 4. Every planning handoff must include:
    - `CONSUMES←@Agent: file#section`
    - `FEEDS→@Agent: file#section`
@@ -102,15 +102,15 @@ Effective with `scripts/orchestrator/policy.json` version `2026.05.26-aegis-170-
 
 ## Subagent Routing Matrix (Aegis 170 V3)
 
-| Work Type | Primary Agent(s) | Output Location | Promotion Rule |
-| --------- | ---------------- | --------------- | -------------- |
-| Research preflight briefs (daily) | @Elena + Research Division (#73–91) | `business_docs/` + daily preflight doc | Must publish before premium coding starts |
-| Business rules, legal, compliance, KPI specs | @Victoria, @Invoice, @Sofia, @Cassie, @Joelle + delivery teams | `business_docs/` | Must reach 60%+ planning evidence before coding (90% target) |
-| Sprint decomposition and queue maintenance | @Margaret + @Zoe | `plans/`, `PROJECT_PROGRESS.md`, `DAILY_MILESTONE_TRACKER.md` | Must align with `MASTER_PLAN.md` and `PENDING_TASKS_ONLY.md` |
-| Architecture and premium gate decision | @Ada | policy declaration in tracker/session | Must use exact approval phrase: `@Ada — Context Ready (60% Readiness) — Coding Phase Approved` |
-| Cross-team SLA and WIP enforcement | @Zoe (COO) | `DAILY_MILESTONE_TRACKER.md` | Continuous monitoring |
-| Coding implementation | Senior coding/design agents | codebase + tests | Allowed only after Gate approval |
-| QA/runtime guard | @Katherine + @Vera + @Gwynne | tests, runtime guard logs | Required after big premium wave commits |
+| Work Type                                    | Primary Agent(s)                                               | Output Location                                               | Promotion Rule                                                                                               |
+| -------------------------------------------- | -------------------------------------------------------------- | ------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------ |
+| Research preflight briefs (daily)            | @Elena + Research Division (#73–91)                            | `business_docs/` + daily preflight doc                        | Must publish before premium coding starts                                                                    |
+| Business rules, legal, compliance, KPI specs | @Victoria, @Invoice, @Sofia, @Cassie, @Joelle + delivery teams | `business_docs/`                                              | Must reach 60%+ planning evidence before coding (90% target)                                                 |
+| Sprint decomposition and queue maintenance   | @Margaret + @Zoe                                               | `plans/`, `PROJECT_PROGRESS.md`, `DAILY_MILESTONE_TRACKER.md` | Must align with `MASTER_PLAN.md` and `PENDING_TASKS_ONLY.md`                                                 |
+| Architecture and premium gate decision       | @Ada                                                           | policy declaration in tracker/session                         | Must use exact approval phrase: `@Ada — Context Ready (90% Readiness) — High-Fidelity Coding Phase Approved` |
+| Cross-team SLA and WIP enforcement           | @Zoe (COO)                                                     | `DAILY_MILESTONE_TRACKER.md`                                  | Continuous monitoring                                                                                        |
+| Coding implementation                        | Senior coding/design agents                                    | codebase + tests                                              | Allowed only after Gate approval                                                                             |
+| QA/runtime guard                             | @Katherine + @Vera + @Gwynne                                   | tests, runtime guard logs                                     | Required after big premium wave commits                                                                      |
 
 ---
 
@@ -120,7 +120,7 @@ Effective with `scripts/orchestrator/policy.json` version `2026.05.26-aegis-170-
 - [ ] Business docs exist with 60%+ planning evidence (90% target for large-wave execution)
 - [ ] Plan exists in canonical queue
 - [ ] @Margaret sign-off present
-- [ ] @Ada exact approval phrase present: `@Ada — Context Ready (60% Readiness) — Coding Phase Approved`
+- [ ] @Ada exact approval phrase present: `@Ada — Context Ready (90% Readiness) — High-Fidelity Coding Phase Approved`
 - [ ] Daily premium cap logged
 - [ ] FEEDS/CONSUMES/FEEDS_ACK chain complete for upstream planning outputs
 - [ ] Parallel team topology includes the additional team lane (6-team planning model Aegis 150)

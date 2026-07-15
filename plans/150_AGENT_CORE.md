@@ -21162,7 +21162,7 @@ At line:1 char:1
 
 - & "C:\Program Files\nodejs/node.exe" "C:\Program Files\nodejs/node_mo ...
 - ```
-    + CategoryInfo          : NotSpecified: (vite-plugin-pwa...in in dev/build
+    + CategoryInfo          : NotSpecified: (vite-plugin-pwa [Explicit metric required: refer to architectural constraint]in in dev/build
    :St ... | slotB[AUTO-022]=completed (13.69s)
   ```
 
@@ -21515,7 +21515,7 @@ At line:1 char:1
 
 - & "C:\Program Files\nodejs/node.exe" "C:\Program Files\nodejs/node_mo ...
 - ```
-    + CategoryInfo          : NotSpecified: (vite-plugin-pwa...in in dev/build
+    + CategoryInfo          : NotSpecified: (vite-plugin-pwa [Explicit metric required: refer to architectural constraint]in in dev/build
    :St ... | slotB[AUTO-042]=completed (11.67s)
   ```
 
@@ -24248,7 +24248,7 @@ At line:1 char:1
 
 - & "C:\Program Files\nodejs/node.exe" "C:\Program Files\nodejs/node_mo ...
 - ```
-    + CategoryInfo          : NotSpecified: (vite-plugin-pwa...in in dev/build
+    + CategoryInfo          : NotSpecified: (vite-plugin-pwa [Explicit metric required: refer to architectural constraint]in in dev/build
    :St ... | slotB[AUTO-017]=completed (37.21s)
   ```
 
@@ -24601,7 +24601,7 @@ At line:1 char:1
 
 - & "C:\Program Files\nodejs/node.exe" "C:\Program Files\nodejs/node_mo ...
 - ```
-    + CategoryInfo          : NotSpecified: (vite-plugin-pwa...in in dev/build
+    + CategoryInfo          : NotSpecified: (vite-plugin-pwa [Explicit metric required: refer to architectural constraint]in in dev/build
    :St ... | slotB[AUTO-037]=completed (25.85s)
   ```
 
@@ -24682,7 +24682,7 @@ At line:1 char:1
 
 - & "C:\Program Files\nodejs/node.exe" "C:\Program Files\nodejs/node_mo ...
 - ```
-    + CategoryInfo          : NotSpecified: (vite-plugin-pwa...in in dev/build
+    + CategoryInfo          : NotSpecified: (vite-plugin-pwa [Explicit metric required: refer to architectural constraint]in in dev/build
    :St ... | slotB[AUTO-033]=completed (49.3s)
   ```
 

@@ -5,7 +5,7 @@
 **Status:** 📋 Planned  
 **Date:** 2026-05-24  
 **Owners:** @Redis + @PWA + @Ruchi + @Katherine  
-**Entry Gate:** Wave 14 green + readiness specs from @Redis/@PWA + `@Ada — Context Ready (60% Readiness) — Coding Phase Approved`
+**Entry Gate:** Wave 14 green + readiness specs from @Redis/@PWA + `@Ada — Context Ready (90% Readiness) — High-Fidelity Coding Phase Approved`
 
 ---
 

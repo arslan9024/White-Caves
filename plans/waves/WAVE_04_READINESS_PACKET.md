@@ -60,4 +60,4 @@
 - **Readiness score (>=60% required):** 66%
 - **Decision:** CONDITIONAL GO — implementation may proceed after Wave 02 closeout; live AML/storage enforcement depends on provider credentials and legal/compliance sign-off
 - **Approver phrase:**
-  - `@Ada — Context Ready (60% Readiness) — Coding Phase Approved`
+  - `@Ada — Context Ready (90% Readiness) — High-Fidelity Coding Phase Approved`

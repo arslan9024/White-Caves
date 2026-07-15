@@ -587,3 +587,10 @@ RentIncreaseNotice {
 
 **Version:** 1.2 | **Last Updated:** May 2026 | **Sections:** 14/14 (Target Met ✅)  
 **Agent Activity:** @Victoria (Gemini 2.0 Flash — FREE) | Sections: 8 → 14 | Quality: ⭐⭐⭐⭐⭐
+
+### Real-World Dubai Land Department (DLD) Regulations
+
+- **Form 7 (Rent Increases):** Hard-coded validation requiring 90-day notice prior to contract expiry.
+- **Form 12 (Evictions):** Strict 12-month notice period validation mapped to notary public API limits.
+- **Form 6 (Non-Renewals):** Integration required for early termination edge cases.
+  _Note: All offline mock data strictly adheres to these UAE property laws._

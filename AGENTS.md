@@ -111,7 +111,7 @@ The explicit Aegis control plane is now:
 ## ðŸš€ AEGIS 170 V3 â€” ORCHESTRATOR MODEL (Active as of 2026-05-26)
 
 **TRANSFORMATION:** Aegis 150-agent mesh â†’ **Aegis 170-agent mesh (V3)** | **120 free planning specialists + 50 premium implementation agents** | **10 squads Ã— 17 agents**  
-**APPROVAL GATE:** `@Ada â€” Context Ready (60% Readiness) â€” Coding Phase Approved` (dual-threshold: 60% unlock, 90% target)  
+**APPROVAL GATE:** `@Ada â€” Context Ready (90% Readiness) â€” Coding Phase Approved` (dual-threshold: 60% unlock, 90% target)  
 **POLICY SOURCE:** `scripts/orchestrator/policy.json` | **REGISTRY:** `plans/SUBAGENT_REGISTRY_170.json`  
 **BACKGROUND MODE:** Free planning workers run via `npm run orchestrator:bg:start` (always free-model-only agents regardless of freeModelOnlyMode policy flag)  
 **STATUS:** Active â†’ previously Aegis 150; V3 (100-agent) and Aegis 150 registries retained for legacy compatibility
@@ -1430,7 +1430,7 @@ The legacy sections below are retained as historical roster/planning detail and 
 
 ## ðŸ¤– AUTOPILOT MODE V3 â€” CODING EXECUTION RULES (Effective 2026-05-24)
 
-**Definition:** after `@Ada â€” Context Ready (60% Readiness) â€” Coding Phase Approved` is issued for a wave, coding agents execute all tasks in that wave's `IMPLEMENTATION_BACKLOG.md` sequentially without waiting for per-task human confirmation.
+**Definition:** after `@Ada â€” Context Ready (90% Readiness) â€” Coding Phase Approved` is issued for a wave, coding agents execute all tasks in that wave's `IMPLEMENTATION_BACKLOG.md` sequentially without waiting for per-task human confirmation.
 
 ### Stop Conditions (only)
 
@@ -1625,7 +1625,7 @@ A task is not complete until it has:
 ## ðŸ”§ Subagent Upgrade Baseline (V3 â€” May 2026)
 
 - **Canonical Policy:** `plans/CUSTOM_AGENTS_PLAN.md` + `plans/AGENT_SKILLS_UPGRADE_V3.md`
-- **Premium Coding Gate Phrase (Exact):** `@Ada â€” Context Ready (60% Readiness) â€” Coding Phase Approved`
+- **Premium Coding Gate Phrase (Exact):** `@Ada â€” Context Ready (90% Readiness) â€” Coding Phase Approved`
 - **Research Preflight Phrase (Exact):** `@Elena â€” Research Preflight Ready â€” [DATE] â€” Approved for Premium Coding`
 - **Invocation Protocol (Exact):** `@[AgentName] â€” [ACTION]: [TARGET FILE or TOPIC]`
 - **Allowed Actions:** `EXPAND`, `DRAFT`, `REVIEW`, `AUDIT`, `SYNC`, `RESEARCH`, `BRIEF`, `SYNTHESIZE`, `BENCHMARK`

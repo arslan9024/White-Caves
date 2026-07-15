@@ -17,7 +17,7 @@
 ## 1) Policy Position (No Conflict with Existing Gate)
 
 - Keep **coding unlock gate** unchanged at **60%** with exact approval phrase:
-  - `@Ada — Context Ready (60% Readiness) — Coding Phase Approved`
+  - `@Ada — Context Ready (90% Readiness) — High-Fidelity Coding Phase Approved`
 - Add **execution target** for mature waves:
   - **90% readiness target** before large premium implementation bundles.
 - Result:

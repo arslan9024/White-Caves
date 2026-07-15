@@ -102,7 +102,7 @@ At line:1 char:1
 
 - & "C:\Program Files\nodejs/node.exe" "C:\Program Files\nodejs/node_mo ...
 - ```
-    + CategoryInfo          : NotSpecified: (vite-plugin-pwa...in in dev/build
+    + CategoryInfo          : NotSpecified: (vite-plugin-pwa [Explicit metric required: refer to architectural constraint]in in dev/build
    :St ... | slotB[AUTO-022]=completed (13.69s) | completion=71.88% delta=3.13% waveDelta=71.88% gate(>=1%)=True premiumUsed=True agentMode=mixed(100F+50P) bestAI={confidence=81% (min=60), validationCadence=not-run}
   ```
 
@@ -287,7 +287,7 @@ At line:1 char:1
 
 - & "C:\Program Files\nodejs/node.exe" "C:\Program Files\nodejs/node_mo ...
 - ```
-    + CategoryInfo          : NotSpecified: (vite-plugin-pwa...in in dev/build
+    + CategoryInfo          : NotSpecified: (vite-plugin-pwa [Explicit metric required: refer to architectural constraint]in in dev/build
    :St ... | slotB[AUTO-042]=completed (11.67s) | completion=71.15% delta=-14.56% waveDelta=71.15% gate(>=1%)=False premiumUsed=True agentMode=mixed(100F+50P) bestAI={confidence=81% (min=60), validationCadence=not-run}
   ```
 
@@ -1667,7 +1667,7 @@ At line:1 char:1
 
 - & "C:\Program Files\nodejs/node.exe" "C:\Program Files\nodejs/node_mo ...
 - ```
-    + CategoryInfo          : NotSpecified: (vite-plugin-pwa...in in dev/build
+    + CategoryInfo          : NotSpecified: (vite-plugin-pwa [Explicit metric required: refer to architectural constraint]in in dev/build
    :St ... | slotB[AUTO-017]=completed (37.21s) | completion=73.91% delta=4.34% waveDelta=73.91% gate(>=1%)=True premiumUsed=True agentMode=mixed(100F+50P) bestAI={confidence=81% (min=60), validationCadence=not-run}
   ```
 
@@ -1852,7 +1852,7 @@ At line:1 char:1
 
 - & "C:\Program Files\nodejs/node.exe" "C:\Program Files\nodejs/node_mo ...
 - ```
-    + CategoryInfo          : NotSpecified: (vite-plugin-pwa...in in dev/build
+    + CategoryInfo          : NotSpecified: (vite-plugin-pwa [Explicit metric required: refer to architectural constraint]in in dev/build
    :St ... | slotB[AUTO-037]=completed (25.85s) | completion=74.42% delta=-19.52% waveDelta=74.42% gate(>=1%)=False premiumUsed=True agentMode=mixed(100F+50P) bestAI={confidence=81% (min=60), validationCadence=not-run}
   ```
 
@@ -1899,7 +1899,7 @@ At line:1 char:1
 
 - & "C:\Program Files\nodejs/node.exe" "C:\Program Files\nodejs/node_mo ...
 - ```
-    + CategoryInfo          : NotSpecified: (vite-plugin-pwa...in in dev/build
+    + CategoryInfo          : NotSpecified: (vite-plugin-pwa [Explicit metric required: refer to architectural constraint]in in dev/build
    :St ... | slotB[AUTO-033]=completed (49.3s) | completion=81.4% delta=2.33% waveDelta=81.4% gate(>=1%)=True premiumUsed=True agentMode=mixed(100F+50P) bestAI={confidence=78% (min=60), validationCadence=not-run}
   ```
 

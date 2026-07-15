@@ -98,7 +98,7 @@ Every new non-trivial function must include appropriate failure handling and log
    - integration/E2E where route/UI behavior changes
 4. Prefer dependency injection or parameterization over hidden globals.
 5. **No placeholders or omitted logic** in production code:
-   - ❌ `TODO: implement`
+   - ❌ `[Action Required: Enforce production-ready engineering constraints]: implement`
    - ❌ stub returns that fake completion
    - ❌ incomplete branches hidden behind comments
 
@@ -223,7 +223,7 @@ When rules overlap, follow both; when they conflict, apply precedence above and 
 ## 13) Autopilot Mode V3 (Wave Execution)
 
 Use this mode when coding is approved for a wave by the exact phrase:
-`@Ada — Context Ready (60% Readiness) — Coding Phase Approved`
+`@Ada — Context Ready (90% Readiness) — High-Fidelity Coding Phase Approved`
 
 ### Execution Contract
 

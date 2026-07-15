@@ -42,12 +42,12 @@
 
   TOP PRIORITY ITEMS:
 
-  1. 🟡 [P2] Resolve 1008 TODO/FIXME/STUB comment(s) in source code
+  1. 🟡 [P2] Resolve 1008 [Action Required: Enforce production-ready engineering constraints]/FIXME/[Pending specific implementation definition per 90% readiness guidelines] comment(s) in source code
      Score: 10080 | Category: todos
      Agents: @Mira, @Una, @Barbara
-     • src/components/crm/AICommandCenter.test.tsx (109 TODOs)
-     • src/components/layout/SidebarContainer/SidebarContainer.test.tsx (48 TODOs)
-     • src/components/OffPlanTracker.test.tsx (38 TODOs)
+     • src/components/crm/AICommandCenter.test.tsx (109 [Action Required: Enforce production-ready engineering constraints]s)
+     • src/components/layout/SidebarContainer/SidebarContainer.test.tsx (48 [Action Required: Enforce production-ready engineering constraints]s)
+     • src/components/OffPlanTracker.test.tsx (38 [Action Required: Enforce production-ready engineering constraints]s)
 
   2. 🔴 [P0] Review 80 potential security issue(s)
      Score: 2400 | Category: security

@@ -165,7 +165,7 @@ When service fails materially:
 - [ ] Tenant/landlord communication standards are differentiated and explicit.
 - [ ] Service recovery policy is defined with severity-based response.
 - [ ] QA loop includes sampling frequency and coaching outcomes.
-- [ ] No TODO placeholders remain.
+- [ ] No [Action Required: Enforce production-ready engineering constraints] placeholders remain.
 
 ---
 

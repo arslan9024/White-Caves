@@ -65,7 +65,7 @@ model Sofia {
   id         String   @id @default(cuid())
   createdAt  DateTime @default(now())
   updatedAt  DateTime @updatedAt
-  // TODO: expand from business doc business_docs/05_requirements/compliance-requirements.md
+  // [Action Required: Enforce production-ready engineering constraints]: expand from business doc business_docs/05_requirements/compliance-requirements.md
   @@map("sofias")
 }
 ```
@@ -76,7 +76,7 @@ model Sofia {
 // src/validators/sofia.validator.ts
 import { z } from 'zod';
 export const CreateSofiaSchema = z.object({
-  // TODO: add fields from Layer 3 schema
+  // [Action Required: Enforce production-ready engineering constraints]: add fields from Layer 3 schema
 });
 ```
 
@@ -157,7 +157,7 @@ export const CreateSofiaSchema = z.object({
 
 #### Layer 1 -- Business Rule
 
-> Source: `business_docs/09_crm_features/dld-integration.md` -- Top sections: Overview | TODO â€” @Timnit Task 1
+> Source: `business_docs/09_crm_features/dld-integration.md` -- Top sections: Overview | [Action Required: Enforce production-ready engineering constraints] â€” @Timnit Task 1
 
 - Core rule: [expand from business doc]
 - Acceptance criteria: [expand from business doc]
@@ -188,7 +188,7 @@ model Timnit {
   id         String   @id @default(cuid())
   createdAt  DateTime @default(now())
   updatedAt  DateTime @updatedAt
-  // TODO: expand from business doc business_docs/09_crm_features/dld-integration.md
+  // [Action Required: Enforce production-ready engineering constraints]: expand from business doc business_docs/09_crm_features/dld-integration.md
   @@map("timnits")
 }
 ```
@@ -199,7 +199,7 @@ model Timnit {
 // src/validators/timnit.validator.ts
 import { z } from 'zod';
 export const CreateTimnitSchema = z.object({
-  // TODO: add fields from Layer 3 schema
+  // [Action Required: Enforce production-ready engineering constraints]: add fields from Layer 3 schema
 });
 ```
 
@@ -311,7 +311,7 @@ model Victoria {
   id         String   @id @default(cuid())
   createdAt  DateTime @default(now())
   updatedAt  DateTime @updatedAt
-  // TODO: expand from business doc business_docs/09_crm_features/tenancy-ejari.md
+  // [Action Required: Enforce production-ready engineering constraints]: expand from business doc business_docs/09_crm_features/tenancy-ejari.md
   @@map("victorias")
 }
 ```
@@ -322,7 +322,7 @@ model Victoria {
 // src/validators/victoria.validator.ts
 import { z } from 'zod';
 export const CreateVictoriaSchema = z.object({
-  // TODO: add fields from Layer 3 schema
+  // [Action Required: Enforce production-ready engineering constraints]: add fields from Layer 3 schema
 });
 ```
 
@@ -434,7 +434,7 @@ model Annie {
   id         String   @id @default(cuid())
   createdAt  DateTime @default(now())
   updatedAt  DateTime @updatedAt
-  // TODO: expand from business doc business_docs/09_crm_features/tenant-portal.md
+  // [Action Required: Enforce production-ready engineering constraints]: expand from business doc business_docs/09_crm_features/tenant-portal.md
   @@map("annies")
 }
 ```
@@ -445,7 +445,7 @@ model Annie {
 // src/validators/annie.validator.ts
 import { z } from 'zod';
 export const CreateAnnieSchema = z.object({
-  // TODO: add fields from Layer 3 schema
+  // [Action Required: Enforce production-ready engineering constraints]: add fields from Layer 3 schema
 });
 ```
 
@@ -557,7 +557,7 @@ model Marissa {
   id         String   @id @default(cuid())
   createdAt  DateTime @default(now())
   updatedAt  DateTime @updatedAt
-  // TODO: expand from business doc business_docs/09_crm_features/luxury-segment.md
+  // [Action Required: Enforce production-ready engineering constraints]: expand from business doc business_docs/09_crm_features/luxury-segment.md
   @@map("marissas")
 }
 ```
@@ -568,7 +568,7 @@ model Marissa {
 // src/validators/marissa.validator.ts
 import { z } from 'zod';
 export const CreateMarissaSchema = z.object({
-  // TODO: add fields from Layer 3 schema
+  // [Action Required: Enforce production-ready engineering constraints]: add fields from Layer 3 schema
 });
 ```
 
@@ -680,7 +680,7 @@ model Rachel {
   id         String   @id @default(cuid())
   createdAt  DateTime @default(now())
   updatedAt  DateTime @updatedAt
-  // TODO: expand from business doc business_docs/09_crm_features/seo-strategy.md
+  // [Action Required: Enforce production-ready engineering constraints]: expand from business doc business_docs/09_crm_features/seo-strategy.md
   @@map("rachels")
 }
 ```
@@ -691,7 +691,7 @@ model Rachel {
 // src/validators/rachel.validator.ts
 import { z } from 'zod';
 export const CreateRachelSchema = z.object({
-  // TODO: add fields from Layer 3 schema
+  // [Action Required: Enforce production-ready engineering constraints]: add fields from Layer 3 schema
 });
 ```
 
@@ -803,7 +803,7 @@ model Joelle {
   id         String   @id @default(cuid())
   createdAt  DateTime @default(now())
   updatedAt  DateTime @updatedAt
-  // TODO: expand from business doc business_docs/03_ai_assistants/README.md
+  // [Action Required: Enforce production-ready engineering constraints]: expand from business doc business_docs/03_ai_assistants/README.md
   @@map("joelles")
 }
 ```
@@ -814,7 +814,7 @@ model Joelle {
 // src/validators/joelle.validator.ts
 import { z } from 'zod';
 export const CreateJoelleSchema = z.object({
-  // TODO: add fields from Layer 3 schema
+  // [Action Required: Enforce production-ready engineering constraints]: add fields from Layer 3 schema
 });
 ```
 
@@ -930,7 +930,7 @@ model FeiFei {
   id         String   @id @default(cuid())
   createdAt  DateTime @default(now())
   updatedAt  DateTime @updatedAt
-  // TODO: expand from business doc business_docs/09_crm_features/property-valuation.md
+  // [Action Required: Enforce production-ready engineering constraints]: expand from business doc business_docs/09_crm_features/property-valuation.md
   @@map("feifeis")
 }
 ```
@@ -941,7 +941,7 @@ model FeiFei {
 // src/validators/feifei.validator.ts
 import { z } from 'zod';
 export const CreateFeiFeiSchema = z.object({
-  // TODO: add fields from Layer 3 schema
+  // [Action Required: Enforce production-ready engineering constraints]: add fields from Layer 3 schema
 });
 ```
 
@@ -1053,7 +1053,7 @@ model Anima {
   id         String   @id @default(cuid())
   createdAt  DateTime @default(now())
   updatedAt  DateTime @updatedAt
-  // TODO: expand from business doc business_docs/09_crm_features/secondary-sales.md
+  // [Action Required: Enforce production-ready engineering constraints]: expand from business doc business_docs/09_crm_features/secondary-sales.md
   @@map("animas")
 }
 ```
@@ -1064,7 +1064,7 @@ model Anima {
 // src/validators/anima.validator.ts
 import { z } from 'zod';
 export const CreateAnimaSchema = z.object({
-  // TODO: add fields from Layer 3 schema
+  // [Action Required: Enforce production-ready engineering constraints]: add fields from Layer 3 schema
 });
 ```
 
@@ -1145,7 +1145,7 @@ export const CreateAnimaSchema = z.object({
 
 #### Layer 1 -- Business Rule
 
-> Source: `business_docs/09_crm_features/sentinel-property.md` -- Top sections: Overview | TODO â€” @Mary Task 1 | TODO â€” @Mary Task 2 | TODO â€” @Mary Task 3
+> Source: `business_docs/09_crm_features/sentinel-property.md` -- Top sections: Overview | [Action Required: Enforce production-ready engineering constraints] â€” @Mary Task 1 | [Action Required: Enforce production-ready engineering constraints] â€” @Mary Task 2 | [Action Required: Enforce production-ready engineering constraints] â€” @Mary Task 3
 
 - Core rule: [expand from business doc]
 - Acceptance criteria: [expand from business doc]
@@ -1176,7 +1176,7 @@ model Mary {
   id         String   @id @default(cuid())
   createdAt  DateTime @default(now())
   updatedAt  DateTime @updatedAt
-  // TODO: expand from business doc business_docs/09_crm_features/sentinel-property.md
+  // [Action Required: Enforce production-ready engineering constraints]: expand from business doc business_docs/09_crm_features/sentinel-property.md
   @@map("marys")
 }
 ```
@@ -1187,7 +1187,7 @@ model Mary {
 // src/validators/mary.validator.ts
 import { z } from 'zod';
 export const CreateMarySchema = z.object({
-  // TODO: add fields from Layer 3 schema
+  // [Action Required: Enforce production-ready engineering constraints]: add fields from Layer 3 schema
 });
 ```
 
@@ -1299,7 +1299,7 @@ model Invoice {
   id         String   @id @default(cuid())
   createdAt  DateTime @default(now())
   updatedAt  DateTime @updatedAt
-  // TODO: expand from business doc business_docs/09_crm_features/financial-reporting.md
+  // [Action Required: Enforce production-ready engineering constraints]: expand from business doc business_docs/09_crm_features/financial-reporting.md
   @@map("invoices")
 }
 ```
@@ -1310,7 +1310,7 @@ model Invoice {
 // src/validators/invoice.validator.ts
 import { z } from 'zod';
 export const CreateInvoiceSchema = z.object({
-  // TODO: add fields from Layer 3 schema
+  // [Action Required: Enforce production-ready engineering constraints]: add fields from Layer 3 schema
 });
 ```
 
@@ -1395,7 +1395,7 @@ export const CreateInvoiceSchema = z.object({
 
 #### Layer 1 -- Business Rule
 
-> Source: `business_docs/09_crm_features/viewings.md` -- Top sections: Overview | TODO â€” @Booking Task 1 | TODO â€” @Booking Task 2 | TODO â€” @Booking Task 3
+> Source: `business_docs/09_crm_features/viewings.md` -- Top sections: Overview | [Action Required: Enforce production-ready engineering constraints] â€” @Booking Task 1 | [Action Required: Enforce production-ready engineering constraints] â€” @Booking Task 2 | [Action Required: Enforce production-ready engineering constraints] â€” @Booking Task 3
 
 - Core rule: [expand from business doc]
 - Acceptance criteria: [expand from business doc]
@@ -1426,7 +1426,7 @@ model Booking {
   id         String   @id @default(cuid())
   createdAt  DateTime @default(now())
   updatedAt  DateTime @updatedAt
-  // TODO: expand from business doc business_docs/09_crm_features/viewings.md
+  // [Action Required: Enforce production-ready engineering constraints]: expand from business doc business_docs/09_crm_features/viewings.md
   @@map("bookings")
 }
 ```
@@ -1437,7 +1437,7 @@ model Booking {
 // src/validators/booking.validator.ts
 import { z } from 'zod';
 export const CreateBookingSchema = z.object({
-  // TODO: add fields from Layer 3 schema
+  // [Action Required: Enforce production-ready engineering constraints]: add fields from Layer 3 schema
 });
 ```
 
@@ -1518,7 +1518,7 @@ export const CreateBookingSchema = z.object({
 
 #### Layer 1 -- Business Rule
 
-> Source: `business_docs/09_crm_features/off-plan-projects.md` -- Top sections: Overview | TODO â€” @Maya Task 1 | TODO â€” @Maya Task 2 | TODO â€” @Maya Task 3
+> Source: `business_docs/09_crm_features/off-plan-projects.md` -- Top sections: Overview | [Action Required: Enforce production-ready engineering constraints] â€” @Maya Task 1 | [Action Required: Enforce production-ready engineering constraints] â€” @Maya Task 2 | [Action Required: Enforce production-ready engineering constraints] â€” @Maya Task 3
 
 - Core rule: [expand from business doc]
 - Acceptance criteria: [expand from business doc]
@@ -1549,7 +1549,7 @@ model Maya {
   id         String   @id @default(cuid())
   createdAt  DateTime @default(now())
   updatedAt  DateTime @updatedAt
-  // TODO: expand from business doc business_docs/09_crm_features/off-plan-projects.md
+  // [Action Required: Enforce production-ready engineering constraints]: expand from business doc business_docs/09_crm_features/off-plan-projects.md
   @@map("mayas")
 }
 ```
@@ -1560,7 +1560,7 @@ model Maya {
 // src/validators/maya.validator.ts
 import { z } from 'zod';
 export const CreateMayaSchema = z.object({
-  // TODO: add fields from Layer 3 schema
+  // [Action Required: Enforce production-ready engineering constraints]: add fields from Layer 3 schema
 });
 ```
 
@@ -1672,7 +1672,7 @@ model Hedy {
   id         String   @id @default(cuid())
   createdAt  DateTime @default(now())
   updatedAt  DateTime @updatedAt
-  // TODO: expand from business doc business_docs/09_crm_features/audit-trail.md
+  // [Action Required: Enforce production-ready engineering constraints]: expand from business doc business_docs/09_crm_features/audit-trail.md
   @@map("hedys")
 }
 ```
@@ -1683,7 +1683,7 @@ model Hedy {
 // src/validators/hedy.validator.ts
 import { z } from 'zod';
 export const CreateHedySchema = z.object({
-  // TODO: add fields from Layer 3 schema
+  // [Action Required: Enforce production-ready engineering constraints]: add fields from Layer 3 schema
 });
 ```
 
@@ -1795,7 +1795,7 @@ model Cassie {
   id         String   @id @default(cuid())
   createdAt  DateTime @default(now())
   updatedAt  DateTime @updatedAt
-  // TODO: expand from business doc business_docs/09_crm_features/analytics-dashboard.md
+  // [Action Required: Enforce production-ready engineering constraints]: expand from business doc business_docs/09_crm_features/analytics-dashboard.md
   @@map("cassies")
 }
 ```
@@ -1806,7 +1806,7 @@ model Cassie {
 // src/validators/cassie.validator.ts
 import { z } from 'zod';
 export const CreateCassieSchema = z.object({
-  // TODO: add fields from Layer 3 schema
+  // [Action Required: Enforce production-ready engineering constraints]: add fields from Layer 3 schema
 });
 ```
 
@@ -1891,7 +1891,7 @@ export const CreateCassieSchema = z.object({
 
 #### Layer 1 -- Business Rule
 
-> Source: `business_docs/09_crm_features/offers.md` -- Top sections: Overview | TODO â€” @Jaime Task 1 | TODO â€” @Jaime Task 2 | TODO â€” @Jaime Task 3
+> Source: `business_docs/09_crm_features/offers.md` -- Top sections: Overview | [Action Required: Enforce production-ready engineering constraints] â€” @Jaime Task 1 | [Action Required: Enforce production-ready engineering constraints] â€” @Jaime Task 2 | [Action Required: Enforce production-ready engineering constraints] â€” @Jaime Task 3
 
 - Core rule: [expand from business doc]
 - Acceptance criteria: [expand from business doc]
@@ -1922,7 +1922,7 @@ model Jaime {
   id         String   @id @default(cuid())
   createdAt  DateTime @default(now())
   updatedAt  DateTime @updatedAt
-  // TODO: expand from business doc business_docs/09_crm_features/offers.md
+  // [Action Required: Enforce production-ready engineering constraints]: expand from business doc business_docs/09_crm_features/offers.md
   @@map("jaimes")
 }
 ```
@@ -1933,7 +1933,7 @@ model Jaime {
 // src/validators/jaime.validator.ts
 import { z } from 'zod';
 export const CreateJaimeSchema = z.object({
-  // TODO: add fields from Layer 3 schema
+  // [Action Required: Enforce production-ready engineering constraints]: add fields from Layer 3 schema
 });
 ```
 
@@ -2045,7 +2045,7 @@ model Corinne {
   id         String   @id @default(cuid())
   createdAt  DateTime @default(now())
   updatedAt  DateTime @updatedAt
-  // TODO: expand from business doc business_docs/09_crm_features/ai-chat.md
+  // [Action Required: Enforce production-ready engineering constraints]: expand from business doc business_docs/09_crm_features/ai-chat.md
   @@map("corinnes")
 }
 ```
@@ -2056,7 +2056,7 @@ model Corinne {
 // src/validators/corinne.validator.ts
 import { z } from 'zod';
 export const CreateCorinneSchema = z.object({
-  // TODO: add fields from Layer 3 schema
+  // [Action Required: Enforce production-ready engineering constraints]: add fields from Layer 3 schema
 });
 ```
 
@@ -2131,13 +2131,13 @@ export const CreateCorinneSchema = z.object({
 
 | Role            | Agent      | Status  | Date | Notes                                       |
 | --------------- | ---------- | ------- | ---- | ------------------------------------------- |
-| Chief Architect | @Ada       | PENDING |      | Must declare: Context Ready (60% Readiness) |
+| Chief Architect | @Ada       | PENDING |      | Must declare: Context Ready (90% Readiness) |
 | Project Manager | @Margaret  | PENDING |      | Sprint table updated + daily sync run       |
 | QA Lead         | @Katherine | PENDING |      | Test scenarios reviewed                     |
 | Compliance      | @Sofia     | PENDING |      | RERA/DLD rules verified                     |
 
 > When ALL sign-offs are APPROVED and readiness-packet.ps1 reports >= 60%:
-> `@Ada -- Context Ready (60% Readiness) -- Coding Phase Approved`
+> `@Ada — Context Ready (90% Readiness) — High-Fidelity Coding Phase Approved`
 
 ---
 

@@ -5,7 +5,7 @@
 **Status:** 📋 Planned  
 **Date:** 2026-05-24  
 **Owners:** @Cron + @Puppeteer + @Handlebars + @Mira + @Katherine  
-**Entry Gate:** Wave 11 green + 60% readiness from @Cron/@Puppeteer/@Handlebars + `@Ada — Context Ready (60% Readiness) — Coding Phase Approved`
+**Entry Gate:** Wave 11 green + 60% readiness from @Cron/@Puppeteer/@Handlebars + `@Ada — Context Ready (90% Readiness) — High-Fidelity Coding Phase Approved`
 
 ---
 
@@ -49,11 +49,11 @@ Source of truth: `plans/IMPROVEMENTS_INCOMPLETE_FEATURES.md`.
 
 ## Free-Agent Spec Ownership
 
-| Agent | Model | Spec Output | Backlog Coverage |
-| --- | --- | --- | --- |
-| @Cron | Llama 3.1 70B Groq | `business_docs/09_crm_features/wave-12-automation-engine.md` | Item 6 |
-| @Puppeteer | DeepSeek V3 | `business_docs/09_crm_features/wave-12-document-engine.md` | Item 7 |
-| @Handlebars | Gemini 2.0 Flash | `business_docs/09_crm_features/wave-12-email-wiring.md` | Item 8 |
+| Agent       | Model              | Spec Output                                                  | Backlog Coverage |
+| ----------- | ------------------ | ------------------------------------------------------------ | ---------------- |
+| @Cron       | Llama 3.1 70B Groq | `business_docs/09_crm_features/wave-12-automation-engine.md` | Item 6           |
+| @Puppeteer  | DeepSeek V3        | `business_docs/09_crm_features/wave-12-document-engine.md`   | Item 7           |
+| @Handlebars | Gemini 2.0 Flash   | `business_docs/09_crm_features/wave-12-email-wiring.md`      | Item 8           |
 
 Each spec must include API contracts, data schema touchpoints, acceptance criteria, and test scenarios before coding.
 

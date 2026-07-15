@@ -66,7 +66,7 @@ Wave 19 scope here is planning-artifact updates only.
 ## Required Approval Phrase for Implementation
 
 ```text
-@Ada — Context Ready (60% Readiness) — Coding Phase Approved
+@Ada — Context Ready (90% Readiness) — High-Fidelity Coding Phase Approved
 ```
 
 Wave 19 implementation (beyond planning docs) should not start without this gate.

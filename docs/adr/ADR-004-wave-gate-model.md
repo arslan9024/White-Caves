@@ -31,7 +31,7 @@ protocol with per-wave verification.
 
 The exact unlock phrase is:
 
-> `@Ada — Context Ready (60% Readiness) — Coding Phase Approved`
+> `@Ada — Context Ready (90% Readiness) — High-Fidelity Coding Phase Approved`
 
 No premium coding agent begins Wave N until this phrase appears in the session or
 wave readiness packet. The phrase may only be issued after:
@@ -42,14 +42,15 @@ wave readiness packet. The phrase may only be issued after:
 
 ### Dual-threshold model
 
-| Threshold | Meaning | Who gates |
-| --- | --- | --- |
-| **60%** | Coding unlock — sufficient context to start without rework risk | @Ada |
-| **90%** | Large-wave start — all acceptance criteria confirmed, dependency graph complete | @Ada + @Katherine |
+| Threshold | Meaning                                                                         | Who gates         |
+| --------- | ------------------------------------------------------------------------------- | ----------------- |
+| **60%**   | Coding unlock — sufficient context to start without rework risk                 | @Ada              |
+| **90%**   | Large-wave start — all acceptance criteria confirmed, dependency graph complete | @Ada + @Katherine |
 
 ### Wave artefact bundle (required before premium coding)
 
 Each wave must produce under `plans/waves/`:
+
 - `WAVE_##_SDD.md` — Software Design Document
 - `WAVE_##_FLOWCHARTS.md` — Data flow and state transition diagrams
 - `WAVE_##_READINESS_PACKET.md` — Readiness checklist with % score
@@ -69,12 +70,12 @@ compare session state against this string before advancing to premium tasks.
 
 ## Alternatives Considered
 
-| Alternative | Reason Rejected |
-| --- | --- |
+| Alternative                                    | Reason Rejected                                                                                                                                                                                                                                     |
+| ---------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | **Continuous trunk-based delivery (no gates)** | Acceptable for stable, fully-staffed teams; unsuitable when 120 free planning agents and 50 premium coding agents operate asynchronously. Without gates, premium agents repeatedly re-work features that planning agents later specify differently. |
-| **Feature flags only (no wave structure)** | Feature flags control runtime behaviour; they do not prevent a half-implemented feature from being committed. The wave model gates at the commit stage, not the runtime stage. |
-| **Single 100% readiness gate** | 100% readiness is frequently blocked by third-party API documentation gaps (DLD Sandbox, Ejari API). Waiting for 100% would stall the entire project for weeks. The 60%/90% dual threshold allows parallel progress. |
-| **Manual approval per PR** | Requires a human to review every PR before merge. At the velocity of 150-agent parallel work, this creates a merge-queue bottleneck. The wave gate front-loads human review at the planning stage rather than per-PR. |
+| **Feature flags only (no wave structure)**     | Feature flags control runtime behaviour; they do not prevent a half-implemented feature from being committed. The wave model gates at the commit stage, not the runtime stage.                                                                      |
+| **Single 100% readiness gate**                 | 100% readiness is frequently blocked by third-party API documentation gaps (DLD Sandbox, Ejari API). Waiting for 100% would stall the entire project for weeks. The 60%/90% dual threshold allows parallel progress.                                |
+| **Manual approval per PR**                     | Requires a human to review every PR before merge. At the velocity of 150-agent parallel work, this creates a merge-queue bottleneck. The wave gate front-loads human review at the planning stage rather than per-PR.                               |
 
 ---
 

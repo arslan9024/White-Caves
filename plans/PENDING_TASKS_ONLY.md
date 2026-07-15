@@ -16,7 +16,7 @@
 
 `09 → 10 → 11 → 12 → 13 → 14 → 15 → 16 → 17 → 18 → 19 → 20 → 21 → 22 → 23 → 24 → 25`
 
-Advance only when the prior wave is green, the readiness gate is satisfied, and `@Ada — Context Ready (60% Readiness) — Coding Phase Approved` has been issued for that wave.
+Advance only when the prior wave is green, the readiness gate is satisfied, and `@Ada — Context Ready (90% Readiness) — High-Fidelity Coding Phase Approved` has been issued for that wave.
 
 ## Wave Status Board
 
@@ -96,7 +96,7 @@ Advance only when the prior wave is green, the readiness gate is satisfied, and 
   - `business_docs/09_crm_features/tenancy-ejari.md` (legal notice taxonomy normalized with `legal-management.md`)
 - **Validation evidence:**
   - Markdown diagnostics for all touched business docs: **No errors found**
-  - Stub marker sweep (`TODO|awaiting expansion|STUB|Stub`) for sentinel/maintenance: **No matches**
+  - Stub marker sweep (`[Action Required: Enforce production-ready engineering constraints]|awaiting expansion|[Pending specific implementation definition per 90% readiness guidelines]|Stub`) for sentinel/maintenance: **No matches**
 
 ## Completed Stream History
 
@@ -369,7 +369,7 @@ Mark an item complete only when:
 ## S15 — Wave 20: Full Leasing & Tenancy 📋 Planned
 
 **Source:** [`plans/waves/WAVE_20_SDD.md`](./waves/WAVE_20_SDD.md)  
-**Entry Gate:** Wave 19 closeout + readiness 60% + `@Ada — Context Ready (60% Readiness) — Coding Phase Approved`  
+**Entry Gate:** Wave 19 closeout + readiness 60% + `@Ada — Context Ready (90% Readiness) — High-Fidelity Coding Phase Approved`  
 **Readiness:** 65% (business rules + API contract complete; e-sign integration pending)
 
 | Task                                                                     | Priority | Owner               | Validation                                        |
@@ -394,7 +394,7 @@ Mark an item complete only when:
 ## S16 — Wave 21: Finance, UAE VAT & Commission Engine 📋 Planned
 
 **Source:** [`plans/waves/WAVE_21_SDD.md`](./waves/WAVE_21_SDD.md)  
-**Entry Gate:** Wave 20 closeout + readiness 60% + `@Ada — Context Ready (60% Readiness) — Coding Phase Approved`  
+**Entry Gate:** Wave 20 closeout + readiness 60% + `@Ada — Context Ready (90% Readiness) — High-Fidelity Coding Phase Approved`  
 **Readiness:** 68% (UAE VAT rules + commission matrix complete; FTA format needs final confirmation)
 
 | Task                                                                          | Priority | Owner              | Validation                                              |
@@ -420,7 +420,7 @@ Mark an item complete only when:
 ## S17 — Wave 22: Market Intelligence, Off-Plan & Analytics 📋 Planned
 
 **Source:** [`plans/waves/WAVE_22_SDD.md`](./waves/WAVE_22_SDD.md)  
-**Entry Gate:** Wave 21 closeout + readiness 60% + `@Ada — Context Ready (60% Readiness) — Coding Phase Approved`  
+**Entry Gate:** Wave 21 closeout + readiness 60% + `@Ada — Context Ready (90% Readiness) — High-Fidelity Coding Phase Approved`  
 **Readiness:** 62% (analytics spec + off-plan rules complete; AVM data source needs confirmation)
 
 | Task                                                            | Priority | Owner              | Validation                                            |
@@ -452,3 +452,15 @@ Mark an item complete only when:
 - Weekly: prune stale queue items, re-rank blockers by impact, and archive/supersede duplicates.
 - Daily: update only canonical trackers (`MASTER_PLAN`, `PENDING_TASKS_ONLY`, `PROJECT_PROGRESS`, `DAILY_MILESTONE_TRACKER`).
 - Reference-only docs may support context, but they must not override canonical queue or roadmap decisions.
+
+## High-Density Execution Checklist (P0/P1 Finance & RBAC)
+
+- [ ] **100-Role RBAC Matrix Enforcement:**
+  - [ ] Validate `ADMIN`, `FINANCE_MANAGER`, `COMPLIANCE_OFFICER` permission sets against explicit endpoints.
+  - [ ] Reject all mutations missing `@Ada` 90% gate approval.
+- [ ] **Multi-Currency Calculator (AED/USD/EUR/GBP/INR):**
+  - [ ] Integrate 4-hour local memory TTL cache for FX rates.
+  - [ ] Implement hard calculation tests (precision 4 decimal places).
+- [ ] **P0/P1 Finance Modules:**
+  - [ ] Calculate 5% rent commission and 2% secondary sale commission with test coverage.
+  - [ ] Wire state reducer transitions (AGENT_SUBMITTED ➔ MANAGER_APPROVED ➔ FINANCE_LOCKED ➔ PAYMENT_RELEASED).

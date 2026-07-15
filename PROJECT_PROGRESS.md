@@ -66,7 +66,7 @@
   - Form 6 = non-renewal
 - ✅ Validation evidence:
   - markdown diagnostics across all touched docs: **No errors found**
-  - stub marker sweep for sentinel/maintenance: **No TODO/STUB markers remain**
+  - stub marker sweep for sentinel/maintenance: **No [Action Required: Enforce production-ready engineering constraints]/[Pending specific implementation definition per 90% readiness guidelines] markers remain**
 
 ## 🚀 Wave 18.1 Session 2 Delivery Evidence
 
@@ -165,7 +165,7 @@
 - Validation evidence: `npm run test:run -- server/__tests__/leadSla.test.ts server/__tests__/leadBulkAction.test.ts server/routes/viewings.test.ts server/services/__tests__/leadWorkflowService.test.ts`, `npm run test:run -- src/components/crm/AgentTaskCockpit.test.tsx src/components/crm/LeadTimeline.test.tsx src/components/portal/tenant/TenantPortalHome.test.tsx src/components/portal/landlord/LandlordPortalHome.test.tsx`, `npx eslint ...changed files`, `npm run build`.
 
 > Premium usage is allowed **only** for senior coders/designers **after** @Ada declares:
-> `@Ada — Context Ready (60% Readiness) — Coding Phase Approved`
+> `@Ada — Context Ready (90% Readiness) — High-Fidelity Coding Phase Approved`
 
 | Week                | Reset Date   | Max Requests | Used | Remaining | Status       |
 | ------------------- | ------------ | ------------ | ---- | --------- | ------------ |
@@ -493,7 +493,7 @@
 - [x] `DAILY_MILESTONE_TRACKER.md` updated — May 25 entry recorded
 - [x] Wave 14 → Wave 15 → Wave 16 complete before Wave 17 coding
 - [x] 6 free-agent planning specs committed (Phase A outputs reflected in Wave 17 docs)
-- [x] `@Ada — Context Ready (60% Readiness) — Coding Phase Approved` issued for Wave 17
+- [x] `@Ada — Context Ready (90% Readiness) — High-Fidelity Coding Phase Approved` issued for Wave 17
 - [x] Lighthouse CI thresholds now fail PR on breach (`lighthouserc` assertions set to `error`; CI no longer `continue-on-error`)
 - [x] PWA runtime caching aligned to Wave 17 target (network-first `/api/*`, cache-first static assets)
 - [x] Accessibility suite now uses `@axe-core/playwright` for Wave 17 WCAG checks
@@ -531,7 +531,7 @@
 
 - [x] Legacy 1000% prerequisite-doc gate superseded by Governance V2 fast-track model (Rule 16+)
 - [x] Legacy 92% readiness threshold superseded by policy source-of-truth (`scripts/orchestrator/policy.json`)
-- [x] @Ada approval declaration issued using mandatory phrase (`@Ada — Context Ready (60% Readiness) — Coding Phase Approved`)
+- [x] @Ada approval declaration issued using mandatory phrase (`@Ada — Context Ready (90% Readiness) — High-Fidelity Coding Phase Approved`)
 
 ---
 

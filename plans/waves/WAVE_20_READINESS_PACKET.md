@@ -23,7 +23,7 @@
 ## Approval Gate
 
 ```
-@Ada — Context Ready (60% Readiness) — Coding Phase Approved
+@Ada — Context Ready (90% Readiness) — High-Fidelity Coding Phase Approved
 ```
 
 Wave 20 implementation starts upon this phrase. The 92% readiness score satisfies the 60% entry threshold.

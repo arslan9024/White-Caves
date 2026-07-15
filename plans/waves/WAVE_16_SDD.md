@@ -5,7 +5,7 @@
 **Status:** 📋 Planned  
 **Date:** 2026-05-24  
 **Owners:** @S5 + @Radia + @Mira + @Katherine  
-**Entry Gate:** Wave 15 green + readiness spec from @S5 + `@Ada — Context Ready (60% Readiness) — Coding Phase Approved`
+**Entry Gate:** Wave 15 green + readiness spec from @S5 + `@Ada — Context Ready (90% Readiness) — High-Fidelity Coding Phase Approved`
 
 ---
 
