@@ -231,6 +231,9 @@ export const FilterSelect = styled.select`
   background: ${colors.background.default};
   cursor: pointer;
 
+  /* Touch target size for mobile accessibility (W23-012) */
+  min-height: 44px;
+
   &:hover {
     border-color: ${colors.primary[500]};
   }
