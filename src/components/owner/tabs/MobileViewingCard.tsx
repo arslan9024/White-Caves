@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { motion, useAnimation, PanInfo } from 'framer-motion';
+import { motion, useAnimation, PanInfo, useMotionValue, useTransform } from 'framer-motion';
 import styled from 'styled-components';
 import { colors, spacing, borderRadius, typography } from '@/design-tokens';
 
@@ -28,7 +28,7 @@ const CardContainer = styled.div`
   touch-action: pan-y;
 `;
 
-const BackgroundActions = styled.div`
+const BackgroundActions = styled(motion.div)`
   position: absolute;
   top: 0;
   left: 0;
@@ -38,15 +38,16 @@ const BackgroundActions = styled.div`
   justify-content: space-between;
   align-items: center;
   padding: 0 ${spacing[4]};
-  background: ${colors.neutral[200]};
   z-index: 0;
 `;
 
-const ActionLabel = styled.div<{ $align: 'left' | 'right'; $color: string }>`
+const ActionLabel = styled(motion.div)<{ $align: 'left' | 'right'; $color: string }>`
   color: ${({ $color }) => $color};
   font-weight: bold;
   ${typography.presets.bodySmall};
   text-align: ${({ $align }) => $align};
+  display: flex;
+  align-items: center;
 `;
 
 const ForegroundCard = styled(motion.div)`
@@ -110,6 +111,22 @@ export const MobileViewingCard: React.FC<MobileViewingCardProps> = ({
   const controls = useAnimation();
   const [currentStatus, setCurrentStatus] = useState(viewing.status);
 
+  const x = useMotionValue(0);
+
+  // Visual affordance transforms based on drag 'x' value
+  const bgOpacity = useTransform(x, [-100, 0, 100], [1, 0.3, 1]);
+  const bgColor = useTransform(
+    x,
+    [-100, 0, 100],
+    ['rgba(245, 158, 11, 0.2)', colors.neutral[200], 'rgba(34, 197, 94, 0.2)']
+  );
+
+  const confirmOpacity = useTransform(x, [0, 80], [0, 1]);
+  const confirmScale = useTransform(x, [0, 80], [0.8, 1]);
+
+  const rescheduleOpacity = useTransform(x, [0, -80], [0, 1]);
+  const rescheduleScale = useTransform(x, [0, -80], [0.8, 1]);
+
   const triggerHaptic = () => {
     if (typeof window !== 'undefined' && window.navigator && window.navigator.vibrate) {
       window.navigator.vibrate(50); // 50ms vibration feed
@@ -147,16 +164,25 @@ export const MobileViewingCard: React.FC<MobileViewingCardProps> = ({
 
   return (
     <CardContainer>
-      <BackgroundActions>
-        <ActionLabel $align="left" $color="#22c55e">
+      <BackgroundActions style={{ opacity: bgOpacity, background: bgColor }}>
+        <ActionLabel
+          $align="left"
+          $color="#22c55e"
+          style={{ opacity: confirmOpacity, scale: confirmScale }}
+        >
           Confirm ✓
         </ActionLabel>
-        <ActionLabel $align="right" $color="#f59e0b">
+        <ActionLabel
+          $align="right"
+          $color="#f59e0b"
+          style={{ opacity: rescheduleOpacity, scale: rescheduleScale }}
+        >
           Reschedule ✎
         </ActionLabel>
       </BackgroundActions>
 
       <ForegroundCard
+        style={{ x }}
         drag="x"
         dragConstraints={{ left: 0, right: 0 }}
         dragElastic={0.7}

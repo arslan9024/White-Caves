@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { motion, useAnimation, PanInfo } from 'framer-motion';
+import { motion, useAnimation, PanInfo, useMotionValue, useTransform } from 'framer-motion';
 import styled from 'styled-components';
 import { Lead } from './types';
 import { colors, spacing, borderRadius, typography } from '@/design-tokens';
@@ -15,7 +15,7 @@ const CardContainer = styled.div`
   touch-action: pan-y;
 `;
 
-const BackgroundActions = styled.div`
+const BackgroundActions = styled(motion.div)`
   position: absolute;
   top: 0;
   left: 0;
@@ -25,19 +25,24 @@ const BackgroundActions = styled.div`
   justify-content: space-between;
   align-items: center;
   padding: 0 ${spacing[4]};
-  background: ${colors.neutral[200]};
   z-index: 0;
 `;
 
-const CallAction = styled.div`
+const CallAction = styled(motion.div)`
   color: ${colors.primary[700]};
   font-weight: bold;
+  display: flex;
+  align-items: center;
+  gap: ${spacing[2]};
   ${typography.presets.bodySmall};
 `;
 
-const SnoozeAction = styled.div`
+const SnoozeAction = styled(motion.div)`
   color: ${colors.error[700]};
   font-weight: bold;
+  display: flex;
+  align-items: center;
+  gap: ${spacing[2]};
   ${typography.presets.bodySmall};
 `;
 
@@ -109,6 +114,22 @@ export const MobileLeadCard: React.FC<MobileLeadCardProps> = ({ lead, onSnooze }
   const controls = useAnimation();
   const [snoozed, setSnoozed] = useState(false);
 
+  const x = useMotionValue(0);
+
+  // Visual affordance transforms based on drag 'x' value
+  const bgOpacity = useTransform(x, [-100, 0, 100], [1, 0.3, 1]);
+  const bgColor = useTransform(
+    x,
+    [-100, 0, 100],
+    [colors.error[100], colors.neutral[200], colors.primary[100]]
+  );
+
+  const callOpacity = useTransform(x, [0, 80], [0, 1]);
+  const callScale = useTransform(x, [0, 80], [0.8, 1]);
+
+  const snoozeOpacity = useTransform(x, [0, -80], [0, 1]);
+  const snoozeScale = useTransform(x, [0, -80], [0.8, 1]);
+
   const handleDragEnd = async (e: MouseEvent | TouchEvent | PointerEvent, info: PanInfo) => {
     const offset = info.offset.x;
     const velocity = info.velocity.x;
@@ -142,12 +163,15 @@ export const MobileLeadCard: React.FC<MobileLeadCardProps> = ({ lead, onSnooze }
 
   return (
     <CardContainer>
-      <BackgroundActions>
-        <CallAction>Call</CallAction>
-        <SnoozeAction>Snooze</SnoozeAction>
+      <BackgroundActions style={{ opacity: bgOpacity, background: bgColor }}>
+        <CallAction style={{ opacity: callOpacity, scale: callScale }}>📞 Call</CallAction>
+        <SnoozeAction style={{ opacity: snoozeOpacity, scale: snoozeScale }}>
+          Snooze ⏱️
+        </SnoozeAction>
       </BackgroundActions>
 
       <ForegroundCard
+        style={{ x }}
         drag="x"
         dragConstraints={{ left: 0, right: 0 }}
         dragElastic={0.7}
