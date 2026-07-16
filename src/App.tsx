@@ -290,6 +290,7 @@ const LeasingAcquisition = lazy(() => import('./pages/LeasingAcquisition'));
 
 // Unified Dashboard (replaces role-specific dashboards)
 const UnifiedDashboardPage = lazy(() => import('./pages/crm/UnifiedDashboardPage'));
+const ViewingsPage = lazy(() => import('./pages/crm/ViewingsPage'));
 const NadiaPage = lazy(() => import('./pages/NadiaPage'));
 
 // Goals Pages
@@ -614,6 +615,12 @@ function App(): React.JSX.Element {
       section: 'Sales Pipeline',
       page: <SalesPipelinePage />,
       allowedRoles: ['secondary-sales-agent'],
+    },
+    {
+      path: '/crm/viewings',
+      section: 'Viewings',
+      page: <ViewingsPage />,
+      allowedRoles: ['leasing-agent', 'secondary-sales-agent', 'owner', 'admin'],
     },
   ];
 
