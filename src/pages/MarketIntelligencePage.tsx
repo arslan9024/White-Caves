@@ -1,7 +1,8 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, lazy, Suspense } from 'react';
 import { useLanguage, LANGUAGES } from '../context/LanguageContext';
 import 'leaflet/dist/leaflet.css';
-import MarketChoroplethMap from '../components/maps/MarketChoroplethMap';
+
+const MarketChoroplethMap = lazy(() => import('../components/maps/MarketChoroplethMap'));
 
 interface PriceIndexRow {
   area: string;
@@ -605,7 +606,11 @@ export default function MarketIntelligencePage() {
                     ? 'خريطة حرارية تقريبية تعتمد على متوسط السعر لكل قدم مربعة بحسب المنطقة.'
                     : 'Approximate choropleth heatmap based on average price per sqft by area.'}
                 </div>
-                <MarketChoroplethMap rows={sortedIndex} />
+                <Suspense
+                  fallback={<div className="text-center py-6 text-gray-500">{content.loading}</div>}
+                >
+                  <MarketChoroplethMap rows={sortedIndex} />
+                </Suspense>
               </div>
             )}
           </div>

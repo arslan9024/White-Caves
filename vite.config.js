@@ -7,6 +7,20 @@ export default defineConfig(async ({ command }) => {
 
   if (command === 'build') {
     try {
+      const { visualizer } = await import('rollup-plugin-visualizer');
+      plugins.push(
+        visualizer({
+          filename: 'dist/stats.html',
+          gzipSize: true,
+          brotliSize: true,
+          open: false,
+        })
+      );
+    } catch (e) {
+      console.warn('rollup-plugin-visualizer not available; continuing without visualizer');
+    }
+
+    try {
       const { VitePWA } = await import('vite-plugin-pwa');
       plugins.push(
         VitePWA({
