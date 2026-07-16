@@ -2,6 +2,7 @@ import React, { FC, lazy, Suspense } from 'react';
 import { useSelector } from 'react-redux';
 import { useDocumentTitle } from '../hooks/useDocumentTitle';
 import PublicLayout from '../components/layout/PublicLayout';
+import PageMeta from '../components/seo/PageMeta';
 import PageHeroBanner from '../components/layout/PageHeroBanner';
 import {
   selectMarketStats,
@@ -46,6 +47,11 @@ const ToolsPage: FC = () => {
 
   return (
     <PublicLayout>
+      <PageMeta
+        title="Interactive Property Tools & Market Insights Dubai"
+        description="Access interactive tools, neighborhood analyzer, virtual tours, and off-plan tracker to search, review, and analyze real estate in Dubai."
+        canonicalPath="/tools"
+      />
       <PageHeroBanner
         title="Property Tools & Market Insights"
         subtitle="Interactive calculators, maps, and research tools to make confident property decisions in Dubai."
