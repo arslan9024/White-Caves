@@ -7,6 +7,7 @@ import { dubaiFinanceEngine } from '../../mocks/dubaiFinanceEngine';
 import { colors, spacing, typography, borderRadius, shadows } from '../../design-tokens';
 import { CRM_MODULE_REGISTRY } from '../../config/crmModuleRegistry';
 import { useNavigate } from 'react-router-dom';
+import LeaderboardTab from '../../components/owner/tabs/LeaderboardTab';
 
 const CockpitLayout = styled.div`
   display: grid;
@@ -125,28 +126,6 @@ const Card = styled.div`
     margin-bottom: ${spacing[4]};
     font-size: 1.25rem;
     color: ${colors.text.primary};
-  }
-`;
-
-const LeaderboardTable = styled.table`
-  width: 100%;
-  border-collapse: collapse;
-
-  th,
-  td {
-    padding: ${spacing[3]} 0;
-    border-bottom: 1px solid ${colors.border.light};
-    text-align: left;
-  }
-
-  th {
-    color: ${colors.text.secondary};
-    font-size: 0.875rem;
-    font-weight: 600;
-  }
-
-  tr:last-child td {
-    border-bottom: none;
   }
 `;
 
@@ -293,44 +272,21 @@ export const UnifiedDashboardPage: FC = () => {
         )}
 
         <GridSection>
-          <Card>
-            <h2>Gamified Broker Leaderboard</h2>
-            <LeaderboardTable>
-              <thead>
-                <tr>
-                  <th>Rank</th>
-                  <th>Broker Name</th>
-                  <th>Tier Status</th>
-                  <th>Monthly Revenue</th>
-                  <th>Closed Deals</th>
-                </tr>
-              </thead>
-              <tbody>
-                {leaderboard.map((broker, i) => (
-                  <tr key={broker.id}>
-                    <td>#{i + 1}</td>
-                    <td>
-                      <strong>{broker.name}</strong>
-                    </td>
-                    <td>
-                      <span
-                        style={{
-                          background: '#fdf5e6',
-                          color: '#C9A84C',
-                          padding: '4px 8px',
-                          borderRadius: '4px',
-                          fontSize: '0.8rem',
-                        }}
-                      >
-                        {broker.tier}
-                      </span>
-                    </td>
-                    <td>{formatCurrency(broker.revenue)}</td>
-                    <td>{broker.deals}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </LeaderboardTable>
+          <Card style={{ padding: 0, overflow: 'hidden' }}>
+            <LeaderboardTab
+              data={{
+                agents: leaderboard.map((broker, idx) => ({
+                  id: broker.id,
+                  name: broker.name,
+                  rank: idx + 1,
+                  deals: broker.deals,
+                  revenue: broker.revenue,
+                  satisfaction: 98 - idx * 2, // Mapped mock satisfaction values
+                  badge: broker.tier,
+                })),
+                period: 'This Month',
+              }}
+            />
           </Card>
 
           <Card>
