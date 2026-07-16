@@ -17,6 +17,7 @@ const SettingsTab: React.FC<SettingsTabProps> = ({ data: _data, onAction, onSave
     uaepassEnabled: true,
     emailNotifications: true,
     smsNotifications: false,
+    pushNotifications: false,
     leadAutoAssign: true,
     darkMode: false,
   });
@@ -25,6 +26,28 @@ const SettingsTab: React.FC<SettingsTabProps> = ({ data: _data, onAction, onSave
   const handleChange = (key: string, value: string | boolean) => {
     setSettings(prev => ({ ...prev, [key]: value }));
     setSaved(false);
+  };
+
+  const handlePushToggle = async (checked: boolean) => {
+    if (checked) {
+      if (!('Notification' in window)) {
+        alert('This browser does not support push notifications.');
+        return;
+      }
+      try {
+        const permission = await Notification.requestPermission();
+        if (permission === 'granted') {
+          handleChange('pushNotifications', true);
+        } else {
+          alert('Notification permission denied.');
+          handleChange('pushNotifications', false);
+        }
+      } catch (error) {
+        console.error('Error requesting notification permission:', error);
+      }
+    } else {
+      handleChange('pushNotifications', false);
+    }
   };
 
   const handleSave = () => {
@@ -187,6 +210,65 @@ const SettingsTab: React.FC<SettingsTabProps> = ({ data: _data, onAction, onSave
                   type="checkbox"
                   checked={settings.leadAutoAssign}
                   onChange={e => handleChange('leadAutoAssign', e.target.checked)}
+                />
+                <span className="toggle-slider"></span>
+              </label>
+            </div>
+          </div>
+        </div>
+
+        <div className="settings-card">
+          <h4>Notification Settings</h4>
+          <div className="toggles-list">
+            <div className="toggle-item">
+              <div className="toggle-info">
+                <span className="toggle-icon">✉️</span>
+                <div>
+                  <span className="toggle-label">Email Notifications</span>
+                  <small>Receive updates via email</small>
+                </div>
+              </div>
+              <label className="toggle-switch">
+                <input
+                  type="checkbox"
+                  checked={settings.emailNotifications}
+                  onChange={e => handleChange('emailNotifications', e.target.checked)}
+                />
+                <span className="toggle-slider"></span>
+              </label>
+            </div>
+
+            <div className="toggle-item">
+              <div className="toggle-info">
+                <span className="toggle-icon">📱</span>
+                <div>
+                  <span className="toggle-label">SMS Alerts</span>
+                  <small>Receive critical updates via SMS</small>
+                </div>
+              </div>
+              <label className="toggle-switch">
+                <input
+                  type="checkbox"
+                  checked={settings.smsNotifications}
+                  onChange={e => handleChange('smsNotifications', e.target.checked)}
+                />
+                <span className="toggle-slider"></span>
+              </label>
+            </div>
+
+            <div className="toggle-item">
+              <div className="toggle-info">
+                <span className="toggle-icon">🔔</span>
+                <div>
+                  <span className="toggle-label">Push Notifications</span>
+                  <small>Enable PWA desktop push notifications</small>
+                </div>
+              </div>
+              <label className="toggle-switch">
+                <input
+                  type="checkbox"
+                  checked={settings.pushNotifications}
+                  onChange={e => handlePushToggle(e.target.checked)}
                 />
                 <span className="toggle-slider"></span>
               </label>
