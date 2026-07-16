@@ -31,6 +31,7 @@ export default defineConfig(async ({ command }) => {
           // Let the plugin generate the SW using Workbox (generateSW strategy)
           strategies: 'generateSW',
           workbox: {
+            importScripts: ['/custom-sw.js'],
             // Precache all static assets produced by the Vite build
             globPatterns: ['**/*.{js,css,html,ico,png,svg,woff,woff2}'],
             // Navigation fallback: serve offline.html when network is unreachable
@@ -40,7 +41,40 @@ export default defineConfig(async ({ command }) => {
             // Runtime cache strategies for high-traffic routes
             runtimeCaching: [
               {
-                // Wave 17 policy: all API calls use network-first with short fallback cache
+                urlPattern: /^https?:\/\/[^/]+\/api\/.*$/,
+                method: 'POST',
+                handler: 'NetworkOnly',
+                options: {
+                  backgroundSync: {
+                    name: 'crm-writes-queue',
+                    options: { maxRetentionTime: 24 * 60 },
+                  },
+                },
+              },
+              {
+                urlPattern: /^https?:\/\/[^/]+\/api\/.*$/,
+                method: 'PATCH',
+                handler: 'NetworkOnly',
+                options: {
+                  backgroundSync: {
+                    name: 'crm-writes-queue',
+                    options: { maxRetentionTime: 24 * 60 },
+                  },
+                },
+              },
+              {
+                urlPattern: /^https?:\/\/[^/]+\/api\/.*$/,
+                method: 'DELETE',
+                handler: 'NetworkOnly',
+                options: {
+                  backgroundSync: {
+                    name: 'crm-writes-queue',
+                    options: { maxRetentionTime: 24 * 60 },
+                  },
+                },
+              },
+              {
+                // Wave 17 policy: all API GET calls use network-first with short fallback cache
                 urlPattern: /^https?:\/\/[^/]+\/api\/.*$/,
                 handler: 'NetworkFirst',
                 options: {
