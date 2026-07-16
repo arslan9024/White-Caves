@@ -2,6 +2,7 @@ import { prisma } from '../database.js';
 import { Prisma } from '@prisma/client';
 import { getSocketServer } from './socketServer.js';
 import logger from '../utils/logger.js';
+import { PushNotificationService } from './PushNotificationService.js';
 
 export type NotificationKind =
   | 'info'
@@ -41,6 +42,24 @@ class NotificationService {
         type: notification.type as 'info' | 'success' | 'warning' | 'error',
         title: notification.title,
         message: notification.message,
+      });
+
+      // Fire FCM push notification
+      let pushUrl = '/';
+      if (input.type === 'lead' && input.metadata?.leadId) {
+        pushUrl = `crm/leads/${input.metadata.leadId}`;
+      } else if (input.type === 'property' && input.metadata?.propertyId) {
+        pushUrl = `crm/properties/${input.metadata.propertyId}`;
+      } else if (input.metadata?.viewingId) {
+        pushUrl = `crm/viewings`;
+      }
+
+      PushNotificationService.sendToUser(input.userId, {
+        title: input.title,
+        body: input.message,
+        url: pushUrl,
+      }).catch(err => {
+        logger.warn('FCM push notification failed', { error: err.message, userId: input.userId });
       });
     } catch (error) {
       logger.warn('Notification push failed', {
