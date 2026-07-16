@@ -99,7 +99,7 @@ export const MobileBottomNav: React.FC = () => {
 
   return (
     <BottomNavContainer aria-label="Mobile Navigation">
-      <NavItem to="/crm" className={location.pathname === '/crm' ? 'active' : ''}>
+      <NavItem to="/crm" end>
         <HomeIcon />
         <span>Home</span>
       </NavItem>
@@ -107,7 +107,7 @@ export const MobileBottomNav: React.FC = () => {
       <NavItem to="/crm/leads">
         <LeadsIcon />
         <span>Leads</span>
-        <span className="badge">3</span>
+        {/* TODO: Wire badge count to real unread leads from Redux store */}
       </NavItem>
 
       <NavItem to="/crm/properties">

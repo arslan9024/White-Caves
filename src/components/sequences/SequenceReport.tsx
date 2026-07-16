@@ -1,6 +1,14 @@
-import React, { useState, useEffect } from 'react';
-import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer } from 'recharts';
+import React, { useState, useEffect, lazy, Suspense } from 'react';
 import { Mail, MessageSquare, CheckCircle, Clock } from 'lucide-react';
+
+const RechartsBarChart = lazy(() => import('recharts').then(m => ({ default: m.BarChart })));
+const Bar = lazy(() => import('recharts').then(m => ({ default: m.Bar })));
+const XAxis = lazy(() => import('recharts').then(m => ({ default: m.XAxis })));
+const YAxis = lazy(() => import('recharts').then(m => ({ default: m.YAxis })));
+const Tooltip = lazy(() => import('recharts').then(m => ({ default: m.Tooltip })));
+const ResponsiveContainer = lazy(() =>
+  import('recharts').then(m => ({ default: m.ResponsiveContainer }))
+);
 
 export function SequenceReport() {
   const [metrics, setMetrics] = useState<any[]>([]);
@@ -79,16 +87,29 @@ export function SequenceReport() {
             </div>
 
             <div className="h-48 w-full">
-              <ResponsiveContainer width="100%" height="100%">
-                <BarChart data={[seq]}>
-                  <XAxis dataKey="name" hide />
-                  <YAxis />
-                  <Tooltip />
-                  <Bar dataKey="openRate" fill="#3b82f6" name="Open %" radius={[4, 4, 0, 0]} />
-                  <Bar dataKey="replyRate" fill="#8b5cf6" name="Reply %" radius={[4, 4, 0, 0]} />
-                  <Bar dataKey="closedRate" fill="#10b981" name="Success %" radius={[4, 4, 0, 0]} />
-                </BarChart>
-              </ResponsiveContainer>
+              <Suspense
+                fallback={
+                  <div className="flex justify-center items-center h-full text-gray-400">
+                    Loading chart...
+                  </div>
+                }
+              >
+                <ResponsiveContainer width="100%" height="100%">
+                  <RechartsBarChart data={[seq]}>
+                    <XAxis dataKey="name" hide />
+                    <YAxis />
+                    <Tooltip />
+                    <Bar dataKey="openRate" fill="#3b82f6" name="Open %" radius={[4, 4, 0, 0]} />
+                    <Bar dataKey="replyRate" fill="#8b5cf6" name="Reply %" radius={[4, 4, 0, 0]} />
+                    <Bar
+                      dataKey="closedRate"
+                      fill="#10b981"
+                      name="Success %"
+                      radius={[4, 4, 0, 0]}
+                    />
+                  </RechartsBarChart>
+                </ResponsiveContainer>
+              </Suspense>
             </div>
           </div>
         ))}

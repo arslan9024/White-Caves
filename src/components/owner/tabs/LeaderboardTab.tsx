@@ -1,4 +1,6 @@
 import React from 'react';
+import styled from 'styled-components';
+import { colors, spacing, borderRadius, typography, media } from '@/design-tokens';
 
 interface Agent {
   id: string;
@@ -19,116 +21,180 @@ interface LeaderboardTabProps {
 
 const MEDAL: Record<number, string> = { 1: '🥇', 2: '🥈', 3: '🥉' };
 
-/**
- * LeaderboardTab — Agent performance leaderboard for the owner dashboard
- */
+// ─── Styled Components ───────────────────────────────────────────
+
+const Container = styled.div`
+  padding: ${spacing[6]};
+  color: ${colors.text.primary};
+`;
+
+const Header = styled.div`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: ${spacing[6]};
+
+  ${media.sm} {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: ${spacing[2]};
+  }
+`;
+
+const Title = styled.h2`
+  margin: 0;
+  ${typography.presets.heading2};
+  color: ${colors.primary[400]};
+`;
+
+const PeriodBadge = styled.span`
+  background: rgba(212, 175, 55, 0.15);
+  color: ${colors.primary[400]};
+  border: 1px solid rgba(212, 175, 55, 0.3);
+  border-radius: 20px;
+  padding: 4px 14px;
+  ${typography.presets.bodySmall};
+`;
+
+const EmptyState = styled.div`
+  text-align: center;
+  padding: ${spacing[8]};
+  color: ${colors.text.disabled};
+  background: ${colors.background.surface};
+  border-radius: ${borderRadius.lg};
+  border: 1px dashed ${colors.border.default};
+`;
+
+const AgentList = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: ${spacing[3]};
+`;
+
+const AgentRow = styled.div<{ $isTop3: boolean }>`
+  display: flex;
+  align-items: center;
+  gap: ${spacing[4]};
+  background: ${({ $isTop3 }) =>
+    $isTop3 ? 'rgba(212, 175, 55, 0.08)' : colors.background.surface};
+  border: 1px solid
+    ${({ $isTop3 }) => ($isTop3 ? 'rgba(212, 175, 55, 0.25)' : colors.border.default)};
+  border-radius: ${borderRadius.lg};
+  padding: ${spacing[4]} ${spacing[5]};
+  transition:
+    transform 0.15s ease,
+    box-shadow 0.15s ease;
+
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  }
+
+  ${media.sm} {
+    flex-wrap: wrap;
+    gap: ${spacing[2]};
+    padding: ${spacing[3]};
+  }
+`;
+
+const RankBadge = styled.span`
+  font-size: 1.5rem;
+  min-width: 36px;
+  text-align: center;
+`;
+
+const AgentInfo = styled.div`
+  flex: 1;
+  min-width: 0;
+`;
+
+const AgentName = styled.div`
+  font-weight: 600;
+  color: ${colors.text.primary};
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+`;
+
+const AgentBadge = styled.div`
+  ${typography.presets.bodySmall};
+  color: ${colors.primary[400]};
+  margin-top: 2px;
+`;
+
+const StatsBlock = styled.div`
+  text-align: right;
+
+  ${media.sm} {
+    text-align: left;
+  }
+`;
+
+const DealCount = styled.div`
+  color: ${colors.primary[400]};
+  font-weight: 700;
+`;
+
+const RevenueText = styled.div`
+  color: ${colors.text.secondary};
+  ${typography.presets.bodySmall};
+`;
+
+const SatisfactionPill = styled.div`
+  min-width: 50px;
+  text-align: center;
+  background: rgba(34, 197, 94, 0.1);
+  color: #22c55e;
+  border-radius: ${borderRadius.md};
+  padding: 4px 8px;
+  ${typography.presets.bodySmall};
+  font-weight: 600;
+`;
+
+// ─── Component ───────────────────────────────────────────────────
+
 const LeaderboardTab: React.FC<LeaderboardTabProps> = ({ data }) => {
   const agents = data?.agents ?? [];
   const period = data?.period ?? 'This Month';
 
   return (
-    <div
-      style={{
-        padding: '1.5rem',
-        fontFamily: 'Inter, sans-serif',
-        color: '#fff',
-      }}
-    >
-      <div
-        style={{
-          display: 'flex',
-          justifyContent: 'space-between',
-          alignItems: 'center',
-          marginBottom: '1.5rem',
-        }}
-      >
-        <h2 style={{ margin: 0, fontSize: '1.5rem', fontWeight: 700, color: '#d4af37' }}>
-          🏆 Agent Leaderboard
-        </h2>
-        <span
-          style={{
-            background: 'rgba(212,175,55,0.15)',
-            color: '#d4af37',
-            border: '1px solid rgba(212,175,55,0.3)',
-            borderRadius: 20,
-            padding: '4px 14px',
-            fontSize: '0.85rem',
-          }}
-        >
-          {period}
-        </span>
-      </div>
+    <Container>
+      <Header>
+        <Title>🏆 Agent Leaderboard</Title>
+        <PeriodBadge>{period}</PeriodBadge>
+      </Header>
 
       {agents.length === 0 ? (
-        <div
-          style={{
-            textAlign: 'center',
-            padding: '3rem',
-            color: 'rgba(255,255,255,0.4)',
-            background: 'rgba(255,255,255,0.03)',
-            borderRadius: 12,
-            border: '1px dashed rgba(255,255,255,0.1)',
-          }}
-        >
+        <EmptyState>
           <p style={{ fontSize: '2rem', margin: '0 0 0.5rem' }}>🏆</p>
           <p>No leaderboard data available yet</p>
-        </div>
+        </EmptyState>
       ) : (
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+        <AgentList role="list" aria-label="Agent leaderboard rankings">
           {agents
             .sort((a, b) => a.rank - b.rank)
             .map(agent => (
-              <div
+              <AgentRow
                 key={agent.id}
-                style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '1rem',
-                  background: agent.rank <= 3 ? 'rgba(212,175,55,0.08)' : 'rgba(255,255,255,0.03)',
-                  border:
-                    agent.rank <= 3
-                      ? '1px solid rgba(212,175,55,0.25)'
-                      : '1px solid rgba(255,255,255,0.08)',
-                  borderRadius: 12,
-                  padding: '1rem 1.25rem',
-                }}
+                $isTop3={agent.rank <= 3}
+                role="listitem"
+                aria-label={`Rank ${agent.rank}: ${agent.name}, ${agent.deals} deals, ${agent.satisfaction}% satisfaction`}
               >
-                <span style={{ fontSize: '1.5rem', minWidth: 36 }}>
-                  {MEDAL[agent.rank] ?? `#${agent.rank}`}
-                </span>
-                <div style={{ flex: 1 }}>
-                  <div style={{ fontWeight: 600, color: '#fff' }}>{agent.name}</div>
-                  {agent.badge && (
-                    <div style={{ fontSize: '0.75rem', color: '#d4af37', marginTop: 2 }}>
-                      {agent.badge}
-                    </div>
-                  )}
-                </div>
-                <div style={{ textAlign: 'right' }}>
-                  <div style={{ color: '#d4af37', fontWeight: 700 }}>{agent.deals} Deals</div>
-                  <div style={{ color: 'rgba(255,255,255,0.5)', fontSize: '0.8rem' }}>
-                    AED {agent.revenue.toLocaleString()}
-                  </div>
-                </div>
-                <div
-                  style={{
-                    minWidth: 50,
-                    textAlign: 'center',
-                    background: 'rgba(34,197,94,0.1)',
-                    color: '#22c55e',
-                    borderRadius: 8,
-                    padding: '4px 8px',
-                    fontSize: '0.85rem',
-                    fontWeight: 600,
-                  }}
-                >
-                  {agent.satisfaction}%
-                </div>
-              </div>
+                <RankBadge aria-hidden="true">{MEDAL[agent.rank] ?? `#${agent.rank}`}</RankBadge>
+                <AgentInfo>
+                  <AgentName>{agent.name}</AgentName>
+                  {agent.badge && <AgentBadge>{agent.badge}</AgentBadge>}
+                </AgentInfo>
+                <StatsBlock>
+                  <DealCount>{agent.deals} Deals</DealCount>
+                  <RevenueText>AED {agent.revenue.toLocaleString()}</RevenueText>
+                </StatsBlock>
+                <SatisfactionPill>{agent.satisfaction}%</SatisfactionPill>
+              </AgentRow>
             ))}
-        </div>
+        </AgentList>
       )}
-    </div>
+    </Container>
   );
 };
 
