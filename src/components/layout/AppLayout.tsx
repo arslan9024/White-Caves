@@ -31,9 +31,11 @@ import React, { useEffect, ReactNode, lazy, Suspense, useState, useCallback } fr
 import { useLocation } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { setActiveRole } from '../../store/navigationSlice';
+import { setOfflineMode } from '../../store/dashboardSlice';
 import { TopBar } from './TopBar';
 import UnifiedSidebar from './UnifiedSidebar';
 import CommandPalette from '../common/CommandPalette';
+import styled, { keyframes } from 'styled-components';
 import { AppLayoutContainer, AppBody, AppMain } from './AppLayout/styles';
 import type { RootState } from '../../store/store';
 import { authFetch } from '../../utils/authFetch';
@@ -48,6 +50,28 @@ const BiometricReminder = lazy(() =>
     default: m.BiometricReminder,
   }))
 );
+
+const slideDown = keyframes`
+  from { transform: translateY(-100%); }
+  to { transform: translateY(0); }
+`;
+
+const OfflineBannerContainer = styled.div`
+  background: linear-gradient(90deg, #dc2626 0%, #b91c1c 100%);
+  color: white;
+  text-align: center;
+  padding: 8px 16px;
+  font-size: 0.875rem;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  animation: ${slideDown} 0.3s ease-out;
+  position: relative;
+  z-index: 10001;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+`;
 
 interface AppLayoutProps {
   children: ReactNode;
@@ -123,6 +147,33 @@ const AppLayout: React.FC<AppLayoutProps> = ({ children, showNav = true, isSuper
     return () => clearInterval(interval);
   }, [showCrmChrome, fetchNotifications]);
 
+  const isOfflineMode = useSelector((state: RootState) => state.dashboard?.isOfflineMode ?? false);
+
+  // Sync window online/offline events to Redux
+  useEffect(() => {
+    if (isJsDomTestEnvironment) return;
+
+    const handleOnline = () => {
+      dispatch(setOfflineMode(false));
+      log.info('Application is online. Reconnected.');
+    };
+    const handleOffline = () => {
+      dispatch(setOfflineMode(true));
+      log.warn('Application is offline. Switched to offline cache mode.');
+    };
+
+    // Initialize with current status
+    dispatch(setOfflineMode(!navigator.onLine));
+
+    window.addEventListener('online', handleOnline);
+    window.addEventListener('offline', handleOffline);
+
+    return () => {
+      window.removeEventListener('online', handleOnline);
+      window.removeEventListener('offline', handleOffline);
+    };
+  }, [dispatch]);
+
   // Detect role from URL and sync to Redux
   useEffect(() => {
     const pathParts = location.pathname.split('/');
@@ -134,6 +185,11 @@ const AppLayout: React.FC<AppLayoutProps> = ({ children, showNav = true, isSuper
 
   return (
     <AppLayoutContainer>
+      {isOfflineMode && (
+        <OfflineBannerContainer role="alert" aria-live="assertive">
+          <span>⚠️</span> You are currently offline. Viewing cached CRM data only.
+        </OfflineBannerContainer>
+      )}
       {/* ─── Skip Navigation (WCAG 2.4.1) ────────────────────────── */}
       <a href="#main-content" className="skip-to-content">
         Skip to main content
