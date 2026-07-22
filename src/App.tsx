@@ -6,7 +6,7 @@ import { setLoading } from './store/userSlice';
 import { setTheme, setActiveRole } from './store/navigationSlice';
 import { LanguageProvider } from './context/LanguageContext';
 import { ThemeProvider } from './styles/ThemeProvider';
-import AppLayout from './components/layout/AppLayout';
+import { UnifiedWorkspaceLayout } from './layouts/UnifiedWorkspaceLayout';
 import PortalLayout from './components/portal/PortalLayout';
 import SuspenseLoader from './components/common/SuspenseLoader';
 import RouteErrorBoundary from './components/RouteErrorBoundary';
@@ -239,13 +239,13 @@ function DashboardEntryRoute() {
   }
 
   return (
-    <AppLayout>
+    <UnifiedWorkspaceLayout>
       <RouteErrorBoundary section="Dashboard">
         <Suspense fallback={<SuspenseLoader />}>
           <UnifiedDashboardPage />
         </Suspense>
       </RouteErrorBoundary>
-    </AppLayout>
+    </UnifiedWorkspaceLayout>
   );
 }
 
@@ -462,11 +462,11 @@ function App(): React.JSX.Element {
     allowedRoles?: string[]
   ): ReactNode => (
     <ProtectedRoute allowedRoles={allowedRoles}>
-      <AppLayout>
+      <UnifiedWorkspaceLayout>
         <RouteErrorBoundary section={section}>
           <Suspense fallback={<SuspenseLoader />}>{page}</Suspense>
         </RouteErrorBoundary>
-      </AppLayout>
+      </UnifiedWorkspaceLayout>
     </ProtectedRoute>
   );
 
@@ -850,13 +850,13 @@ function App(): React.JSX.Element {
                         path="/owner/goals/argentina"
                         element={
                           <ProtectedRoute allowedRoles={['owner']}>
-                            <AppLayout>
+                            <UnifiedWorkspaceLayout>
                               <RouteErrorBoundary section="Argentina Goal">
                                 <Suspense fallback={<SuspenseLoader />}>
                                   <ArgentinaGoalPage />
                                 </Suspense>
                               </RouteErrorBoundary>
-                            </AppLayout>
+                            </UnifiedWorkspaceLayout>
                           </ProtectedRoute>
                         }
                       />
