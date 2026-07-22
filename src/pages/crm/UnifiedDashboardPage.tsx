@@ -2,7 +2,7 @@ import React, { FC, useState, useEffect } from 'react';
 import styled from 'styled-components';
 import { useDocumentTitle } from '../../hooks/useDocumentTitle';
 import { useUserProfile } from '../../hooks/useUserProfile';
-import { KPICard } from '../../components/dashboard/DashboardComponents';
+import { KPICard, ModuleCard } from '../../components/dashboard/DashboardComponents';
 import { dubaiFinanceEngine } from '../../mocks/dubaiFinanceEngine';
 import { colors, spacing, typography, borderRadius, shadows } from '../../design-tokens';
 import { CRM_MODULE_REGISTRY } from '../../config/crmModuleRegistry';
@@ -270,6 +270,44 @@ export const UnifiedDashboardPage: FC = () => {
             />
           </KPIGrid>
         )}
+
+        <div style={{ marginBottom: spacing[8] }}>
+          <h2 style={{ fontSize: '1.25rem', color: colors.text.primary, marginBottom: spacing[4] }}>
+            Strategic Operations
+          </h2>
+          <div
+            style={{
+              display: 'grid',
+              gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))',
+              gap: spacing[4],
+            }}
+          >
+            <ModuleCard
+              id="form7"
+              label="Form 7 (Buyer Agreement)"
+              description="Manage exclusive buyer agency agreements and DLD verifications."
+              icon="📄"
+              isGold
+              onClick={() => navigate('/crm/compliance/form7')}
+            />
+            <ModuleCard
+              id="form12"
+              label="Form 12 (Legal Notice)"
+              description="Draft, sign, and issue eviction or early termination notices."
+              icon="⚖️"
+              isGold
+              onClick={() => navigate('/crm/compliance/form12')}
+            />
+            <ModuleCard
+              id="commission-matrix"
+              label="Commission Matrix"
+              description="Track broker splits, external agent payouts, and VAT deductions."
+              icon="💰"
+              isGold
+              onClick={() => navigate('/crm/finance/commission')}
+            />
+          </div>
+        </div>
 
         <GridSection>
           <Card style={{ padding: 0, overflow: 'hidden' }}>

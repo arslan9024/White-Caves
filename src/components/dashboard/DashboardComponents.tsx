@@ -3,7 +3,7 @@ import React, { FC, ReactNode } from 'react';
 /**
  * KPICard Component
  * Displays a single key performance indicator with icon, value, and trend
- * 
+ *
  * Usage: <KPICard icon="📊" label="Revenue" value="AED 500K" trend="↑ 15%" />
  */
 export interface KPICardProps {
@@ -39,13 +39,13 @@ export const KPICard: FC<KPICardProps> = ({
     </div>
     <div className="kpi-card__content">
       <h3 className="kpi-card__label">{label}</h3>
-      <div className="kpi-card__value">
-        {isLoading ? '...' : value}
-      </div>
+      <div className="kpi-card__value">{isLoading ? '...' : value}</div>
       {subtext && <p className="kpi-card__subtext">{subtext}</p>}
     </div>
     {trend && (
-      <div className={`kpi-card__trend ${positive ? 'kpi-card__trend--positive' : 'kpi-card__trend--negative'}`}>
+      <div
+        className={`kpi-card__trend ${positive ? 'kpi-card__trend--positive' : 'kpi-card__trend--negative'}`}
+      >
         {trend}
       </div>
     )}
@@ -81,7 +81,11 @@ export const TabButton: FC<TabButtonProps> = ({
     onClick={onClick}
     disabled={disabled}
   >
-    {icon && <span className="tab-button__icon" aria-hidden="true">{icon}</span>}
+    {icon && (
+      <span className="tab-button__icon" aria-hidden="true">
+        {icon}
+      </span>
+    )}
     <span className="tab-button__label">{label}</span>
     {badge && <span className="tab-button__badge">{badge}</span>}
   </button>
@@ -101,6 +105,7 @@ export interface ModuleCardProps {
   onClick: () => void;
   isActive?: boolean;
   isLoading?: boolean;
+  isGold?: boolean;
 }
 
 export const ModuleCard: FC<ModuleCardProps> = ({
@@ -112,22 +117,25 @@ export const ModuleCard: FC<ModuleCardProps> = ({
   onClick,
   isActive,
   isLoading,
+  isGold,
 }) => (
   <button
-    className={`module-card ${isActive ? 'module-card--active' : ''}`}
+    className={`module-card ${isActive ? 'module-card--active' : ''} ${isGold ? 'gold-bordered-card' : ''}`}
     onClick={onClick}
     disabled={isLoading}
     aria-label={`Open ${label} ${itemCount !== undefined ? `(${itemCount} items)` : ''}`}
   >
-    {icon && <div className="module-card__icon" aria-hidden="true">{icon}</div>}
+    {icon && (
+      <div className="module-card__icon" aria-hidden="true">
+        {icon}
+      </div>
+    )}
     <div className="module-card__content">
       <h4 className="module-card__title">{label}</h4>
       {description && <p className="module-card__desc">{description}</p>}
       {zone && <span className="module-card__zone">{zone}</span>}
     </div>
-    {itemCount !== undefined && (
-      <div className="module-card__badge">{itemCount}</div>
-    )}
+    {itemCount !== undefined && <div className="module-card__badge">{itemCount}</div>}
   </button>
 );
 
@@ -161,7 +169,7 @@ export const ContentPanel: FC<ContentPanelProps> = ({
         {subtitle && <p className="content-panel__subtitle">{subtitle}</p>}
       </div>
     )}
-    
+
     {error ? (
       <div className="content-panel__error" role="alert">
         <p className="content-panel__error-text">{error}</p>
@@ -206,24 +214,19 @@ export const DashboardSection: FC<DashboardSectionProps> = ({
   variant = 'modules',
 }) => (
   <section className={`dashboard-section dashboard-section--${variant}`}>
-    <button
-      className="dashboard-section__header"
-      onClick={() => onToggleExpanded?.(!expanded)}
-    >
-      {icon && <span className="dashboard-section__icon" aria-hidden="true">{icon}</span>}
-      <span className="dashboard-section__title">{title}</span>
-      {itemCount !== undefined && (
-        <span className="dashboard-section__count">{itemCount}</span>
+    <button className="dashboard-section__header" onClick={() => onToggleExpanded?.(!expanded)}>
+      {icon && (
+        <span className="dashboard-section__icon" aria-hidden="true">
+          {icon}
+        </span>
       )}
+      <span className="dashboard-section__title">{title}</span>
+      {itemCount !== undefined && <span className="dashboard-section__count">{itemCount}</span>}
       <span className="dashboard-section__toggle" aria-hidden="true">
         {expanded ? '▼' : '▶'}
       </span>
     </button>
-    {expanded && (
-      <div className="dashboard-section__content">
-        {children}
-      </div>
-    )}
+    {expanded && <div className="dashboard-section__content">{children}</div>}
   </section>
 );
 
@@ -241,14 +244,11 @@ export interface EmptyStateProps {
   };
 }
 
-export const EmptyState: FC<EmptyStateProps> = ({
-  icon = '○',
-  title,
-  description,
-  action,
-}) => (
+export const EmptyState: FC<EmptyStateProps> = ({ icon = '○', title, description, action }) => (
   <div className="empty-state">
-    <div className="empty-state__icon" aria-hidden="true">{icon}</div>
+    <div className="empty-state__icon" aria-hidden="true">
+      {icon}
+    </div>
     <h3 className="empty-state__title">{title}</h3>
     {description && <p className="empty-state__desc">{description}</p>}
     {action && (
@@ -269,11 +269,7 @@ export interface GridLayoutProps {
   gap?: 'sm' | 'md' | 'lg';
 }
 
-export const GridLayout: FC<GridLayoutProps> = ({
-  children,
-  columns = 5,
-  gap = 'md',
-}) => (
+export const GridLayout: FC<GridLayoutProps> = ({ children, columns = 5, gap = 'md' }) => (
   <div
     className={`grid-layout grid-layout--${columns}col grid-layout--gap-${gap}`}
     role="presentation"

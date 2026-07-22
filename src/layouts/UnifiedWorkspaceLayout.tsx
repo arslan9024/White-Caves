@@ -103,6 +103,22 @@ export const UnifiedWorkspaceLayout: React.FC<LayoutProps> = ({ children }) => {
                 {location.pathname.split('/').pop()?.toUpperCase() || 'DASHBOARD'}
               </span>
             </div>
+            <div className="global-search-wrapper" style={{ marginLeft: '32px' }}>
+              <input
+                type="text"
+                placeholder="Global Search (Properties, Leads, Form 7...)"
+                className="global-search-input"
+                style={{
+                  background: 'var(--wc-surface-card)',
+                  border: '1px solid var(--wc-border)',
+                  color: 'var(--wc-text-primary)',
+                  padding: '6px 12px',
+                  borderRadius: '4px',
+                  width: '300px',
+                  fontSize: '0.875rem',
+                }}
+              />
+            </div>
           </div>
           <div className="header-right">
             <button className="ai-command-shortcut" onClick={() => navigate('/crm/ai-command')}>
@@ -115,11 +131,44 @@ export const UnifiedWorkspaceLayout: React.FC<LayoutProps> = ({ children }) => {
                 </div>
                 <div style={{ fontSize: '0.75rem', color: 'var(--wc-text-secondary)' }}>
                   {user?.role || 'Agent'}
-                  {isMaster && <span className="master-badge">LVL 5</span>}
+                  {isMaster && (
+                    <span
+                      className="master-badge"
+                      style={{ marginLeft: '6px', color: 'var(--wc-gold-metallic)' }}
+                    >
+                      LION LVL 5
+                    </span>
+                  )}
                 </div>
               </div>
-              <button className="user-profile-btn" onClick={handleLogout} title="Log Out">
+              <button
+                className="user-profile-btn"
+                onClick={() => navigate('/profile')}
+                title="Profile Settings"
+                style={{
+                  background: 'var(--wc-surface-card)',
+                  border: '1px solid var(--wc-gold-metallic)',
+                  color: 'var(--wc-gold-metallic)',
+                  width: '36px',
+                  height: '36px',
+                  borderRadius: '50%',
+                  cursor: 'pointer',
+                }}
+              >
                 {user?.displayName?.charAt(0) || user?.name?.charAt(0) || 'U'}
+              </button>
+              <button
+                onClick={handleLogout}
+                title="Log Out"
+                style={{
+                  background: 'transparent',
+                  border: 'none',
+                  color: 'var(--wc-text-muted)',
+                  cursor: 'pointer',
+                  fontSize: '0.875rem',
+                }}
+              >
+                Logout
               </button>
             </div>
           </div>
