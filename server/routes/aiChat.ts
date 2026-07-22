@@ -81,8 +81,7 @@ router.post(
     }
 
     const validMessages = messages.filter(
-      message =>
-        message && typeof message.role === 'string' && typeof message.content === 'string'
+      message => message && typeof message.role === 'string' && typeof message.content === 'string'
     );
 
     if (validMessages.length === 0) {
@@ -125,6 +124,52 @@ router.post(
         error: error instanceof Error ? error.message : String(error),
       });
       res.json({ reply: fallbackReply(validMessages), source: 'fallback' });
+    }
+  })
+);
+
+// W24-007: SSE Streaming Endpoint
+router.get(
+  '/stream/:sessionId',
+  asyncHandler(async (req: Request, res: Response) => {
+    const { sessionId } = req.params;
+    const assistantId = (req.query.assistantId as string) || 'nina-default';
+    const message = (req.query.message as string) || '';
+
+    // Set headers for SSE
+    res.setHeader('Content-Type', 'text/event-stream');
+    res.setHeader('Cache-Control', 'no-cache');
+    res.setHeader('Connection', 'keep-alive');
+
+    // Send initial connection event
+    res.write(`data: ${JSON.stringify({ type: 'connected' })}\n\n`);
+
+    if (!message) {
+      res.write(`data: ${JSON.stringify({ type: 'error', message: 'Message is required' })}\n\n`);
+      res.end();
+      return;
+    }
+
+    try {
+      // Import dynamically to avoid circular/init issues
+      const { NinaEngine } = await import('../services/ai/ninaEngine.js');
+
+      await NinaEngine.streamResponse(
+        sessionId,
+        assistantId,
+        message,
+        null, // Optional entity context
+        (token: string) => {
+          res.write(`data: ${JSON.stringify({ type: 'token', content: token })}\n\n`);
+        }
+      );
+
+      res.write(`data: ${JSON.stringify({ type: 'done' })}\n\n`);
+      res.end();
+    } catch (error) {
+      log.error('[NinaEngine] Streaming error:', error);
+      res.write(`data: ${JSON.stringify({ type: 'error', message: 'Internal Server Error' })}\n\n`);
+      res.end();
     }
   })
 );

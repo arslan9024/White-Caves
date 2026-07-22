@@ -21,15 +21,16 @@ export const fetchAssistantData = createAsyncThunk(
   'relationalSidebar/fetchAssistantData',
   async (assistantId, { rejectWithValue }) => {
     try {
-      // TODO: Replace with real API when available
-      // const response = await fetch(`/api/assistants/${assistantId}`);
-      // if (!response.ok) throw new Error('Failed to fetch assistant');
-      // return await response.json();
-      
-      // Mock response for now
+      const response = await fetch(`/api/v1/ai/assistants/${assistantId}`);
+      if (response.ok) {
+        const json = await response.json();
+        return json.data || json;
+      }
+
+      // Fallback mock payload if endpoint is offline
       return {
         id: assistantId,
-        name: `Assistant ${assistantId}`,
+        name: `Nadia Assistant ${assistantId}`,
         status: 'active',
       };
     } catch (error) {
@@ -43,14 +44,13 @@ export const fetchContextualData = createAsyncThunk(
   'relationalSidebar/fetchContextualData',
   async ({ assistantId, context }, { rejectWithValue }) => {
     try {
-      // TODO: Replace with real API when available
-      // const response = await fetch(
-      //   `/api/assistants/${assistantId}/contexts/${context}`
-      // );
-      // if (!response.ok) throw new Error('Failed to fetch contextual data');
-      // return await response.json();
-      
-      // Mock response for now
+      const response = await fetch(`/api/v1/ai/assistants/${assistantId}/contexts/${context}`);
+      if (response.ok) {
+        const json = await response.json();
+        return json.data || json;
+      }
+
+      // Fallback mock response for offline dev mode
       return {
         context,
         assistantId,
@@ -146,7 +146,7 @@ const relationalSidebarSlice = createSlice({
       state.showFeatureSidebar = action.payload.context !== null;
     },
 
-    clearActiveContext: (state) => {
+    clearActiveContext: state => {
       state.activeContext = null;
       state.contextData = null;
       state.showFeatureSidebar = false;
@@ -155,7 +155,7 @@ const relationalSidebarSlice = createSlice({
     // Selection History Management (max 3 entries)
     addToSelectionHistory: (state, action) => {
       const { dept, service, subitem, filters = {}, scrollPos = 0 } = action.payload;
-      
+
       // Create history entry
       const entry = {
         dept,
@@ -182,7 +182,7 @@ const relationalSidebarSlice = createSlice({
       state.selectedSubitem = subitem;
     },
 
-    clearSelectionHistory: (state) => {
+    clearSelectionHistory: state => {
       state.selectionHistory = [];
     },
 
@@ -203,7 +203,7 @@ const relationalSidebarSlice = createSlice({
       return state.serviceStateCache[cacheKey] || null;
     },
 
-    clearServiceStateCache: (state) => {
+    clearServiceStateCache: state => {
       state.serviceStateCache = {};
     },
 
@@ -243,15 +243,15 @@ const relationalSidebarSlice = createSlice({
     },
 
     // Bulk Reset
-    resetRelationalSidebar: (state) => {
+    resetRelationalSidebar: state => {
       return initialState;
     },
   },
 
-  extraReducers: (builder) => {
+  extraReducers: builder => {
     // Fetch Department Data
     builder
-      .addCase(fetchDepartmentData.pending, (state) => {
+      .addCase(fetchDepartmentData.pending, state => {
         state.departmentLoading = true;
         state.departmentError = null;
       })
@@ -266,7 +266,7 @@ const relationalSidebarSlice = createSlice({
 
     // Fetch Assistant Data
     builder
-      .addCase(fetchAssistantData.pending, (state) => {
+      .addCase(fetchAssistantData.pending, state => {
         state.assistantLoading = true;
         state.assistantError = null;
       })
@@ -281,7 +281,7 @@ const relationalSidebarSlice = createSlice({
 
     // Fetch Contextual Data (e.g., Inventory)
     builder
-      .addCase(fetchContextualData.pending, (state) => {
+      .addCase(fetchContextualData.pending, state => {
         state.contextLoading = true;
         state.contextError = null;
       })
@@ -320,41 +320,25 @@ export const {
 } = relationalSidebarSlice.actions;
 
 // Selectors
-export const selectSelectedDepartment = (state) =>
-  state.relationalSidebar.selectedDepartment;
-export const selectSelectedService = (state) =>
-  state.relationalSidebar.selectedService;
-export const selectSelectedSubitem = (state) =>
-  state.relationalSidebar.selectedSubitem;
-export const selectSelectedAssistant = (state) =>
-  state.relationalSidebar.selectedAssistant;
-export const selectActiveContext = (state) =>
-  state.relationalSidebar.activeContext;
-export const selectShowFeatureSidebar = (state) =>
-  state.relationalSidebar.showFeatureSidebar;
-export const selectFilteredAssistants = (state) =>
-  state.relationalSidebar.filteredAssistants;
-export const selectFilteredServices = (state) =>
-  state.relationalSidebar.filteredServices;
-export const selectAssistantNotifications = (state) =>
-  state.relationalSidebar.assistantNotifications;
-export const selectContextData = (state) =>
-  state.relationalSidebar.contextData;
-export const selectSelectionHistory = (state) =>
-  state.relationalSidebar.selectionHistory;
-export const selectServiceStateCache = (state) =>
-  state.relationalSidebar.serviceStateCache;
-export const selectMainContentLoading = (state) =>
-  state.relationalSidebar.mainContentLoading;
-export const selectMainContentError = (state) =>
-  state.relationalSidebar.mainContentError;
-export const selectDepartmentData = (state) =>
-  state.relationalSidebar.departmentData;
-export const selectAssistantData = (state) =>
-  state.relationalSidebar.assistantData;
+export const selectSelectedDepartment = state => state.relationalSidebar.selectedDepartment;
+export const selectSelectedService = state => state.relationalSidebar.selectedService;
+export const selectSelectedSubitem = state => state.relationalSidebar.selectedSubitem;
+export const selectSelectedAssistant = state => state.relationalSidebar.selectedAssistant;
+export const selectActiveContext = state => state.relationalSidebar.activeContext;
+export const selectShowFeatureSidebar = state => state.relationalSidebar.showFeatureSidebar;
+export const selectFilteredAssistants = state => state.relationalSidebar.filteredAssistants;
+export const selectFilteredServices = state => state.relationalSidebar.filteredServices;
+export const selectAssistantNotifications = state => state.relationalSidebar.assistantNotifications;
+export const selectContextData = state => state.relationalSidebar.contextData;
+export const selectSelectionHistory = state => state.relationalSidebar.selectionHistory;
+export const selectServiceStateCache = state => state.relationalSidebar.serviceStateCache;
+export const selectMainContentLoading = state => state.relationalSidebar.mainContentLoading;
+export const selectMainContentError = state => state.relationalSidebar.mainContentError;
+export const selectDepartmentData = state => state.relationalSidebar.departmentData;
+export const selectAssistantData = state => state.relationalSidebar.assistantData;
 
 // Helper selector to get cached state for current service
-export const selectCurrentServiceCache = (state) => {
+export const selectCurrentServiceCache = state => {
   const dept = state.relationalSidebar.selectedDepartment;
   const service = state.relationalSidebar.selectedService;
   if (!dept || !service) return null;

@@ -66,7 +66,7 @@ if ($stagedFiles.Count -eq 0) {
   Write-Host "  No staged files for security scan." -ForegroundColor DarkGray
   $checks.Add([pscustomobject]@{ name = "Security (staged)"; passed = $true; hardFail = $true; output = "No staged files" })
 } else {
-  $secretPattern = '(?i)(api[_-]?key|secret|token|password)\s*[:=]\s*["'"'][^"'"'\n]{8,}["'"']'
+  $secretPattern = '(?i)(api[_-]?key|secret|token|password)\s*[:=]\s*["''][^"'']{8,}["'']'
   $consoleSensitivePattern = '(?i)console\.log\(.*(token|secret|password|authorization)'
   $securityFail = $false
 

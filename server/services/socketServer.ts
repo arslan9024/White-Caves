@@ -187,6 +187,7 @@ export class SocketServer {
       if (user?.id) {
         // Join user-specific and role-specific rooms for targeted broadcasts
         socket.join(`user:${user.id}`);
+        socket.join(`notification:${user.id}`);
         if (user.role) {
           socket.join(`role:${user.role}`);
         }
@@ -205,16 +206,16 @@ export class SocketServer {
           timestamp: new Date(),
         } satisfies AgentPresencePayload);
         socket.on('disconnect', () => {
-        if (user?.id) {
-          this.io.to('crm').emit('agent:presence', {
-            agentId: user.id,
-            email: user.email ?? '',
-            online: false,
-            timestamp: new Date(),
-          } satisfies AgentPresencePayload);
-          log.debug(`Socket disconnected: ${user.email}`);
-        }
-      });
+          if (user?.id) {
+            this.io.to('crm').emit('agent:presence', {
+              agentId: user.id,
+              email: user.email ?? '',
+              online: false,
+              timestamp: new Date(),
+            } satisfies AgentPresencePayload);
+            log.debug(`Socket disconnected: ${user.email}`);
+          }
+        });
       }
 
       // Client can ping to keep the connection alive from behind proxies
@@ -245,9 +246,9 @@ export class SocketServer {
 
   // ─── CRM Emitters ─────────────────────────────────────────────────────────
 
-  /** Push a CRM notification to all authenticated users */
-  emitNotification(payload: CrmNotificationPayload): void {
-    this.io.to('crm').emit('notification:new', payload);
+  /** Push a CRM notification to a specific user's room */
+  emitNotification(userId: string, payload: CrmNotificationPayload): void {
+    this.io.to(`notification:${userId}`).emit('notification:new', payload);
   }
 
   /** Broadcast a lead-updated event to CRM users */

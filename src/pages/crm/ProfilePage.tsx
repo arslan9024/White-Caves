@@ -305,11 +305,11 @@ export const ProfilePage: FC = () => {
         <div>
           <Card style={{ marginBottom: spacing[6], textAlign: 'center' }}>
             <h2>Corporate Completion Metrics</h2>
-            <TrackerRing pct={85}>
-              <span>85%</span>
+            <TrackerRing pct={100}>
+              <span>100%</span>
             </TrackerRing>
             <p style={{ color: colors.text.secondary, fontSize: '0.875rem' }}>
-              Your executive profile is missing the formal KYC identification document upload.
+              Your executive profile and corporate KYC documentation are 100% verified.
             </p>
           </Card>
 

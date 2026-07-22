@@ -25,8 +25,9 @@ Each wave should be executed only in roadmap order.
 | 21   | Finance, UAE VAT, commission engine & compliance reporting                | ✅ Complete | [`SDD`](./WAVE_21_SDD.md) | [`Readiness`](./WAVE_21_READINESS_PACKET.md) | [`Backlog`](./WAVE_21_IMPLEMENTATION_BACKLOG.md) | —                                    |
 | 22   | Market intelligence, off-plan projects, property valuation & analytics    | ✅ Complete | [`SDD`](./WAVE_22_SDD.md) | [`Readiness`](./WAVE_22_READINESS_PACKET.md) | [`Backlog`](./WAVE_22_IMPLEMENTATION_BACKLOG.md) | —                                    |
 | 23   | Mobile CRM, PWA offline mode & push notifications                         | 📋 Planned  | [`SDD`](./WAVE_23_SDD.md) | [`Readiness`](./WAVE_23_READINESS_PACKET.md) | [`Backlog`](./WAVE_23_IMPLEMENTATION_BACKLOG.md) | [`Tests`](./WAVE_23_TEST_ROLLOUT.md) |
-| 24   | WhatsApp automation, AI chat engine & in-app notification centre          | 📋 Planned  | [`SDD`](./WAVE_24_SDD.md) | [`Readiness`](./WAVE_24_READINESS_PACKET.md) | [`Backlog`](./WAVE_24_IMPLEMENTATION_BACKLOG.md) | [`Tests`](./WAVE_24_TEST_ROLLOUT.md) |
-| 25   | Portal syndication, careers, community management & advanced SEO          | 📋 Planned  | [`SDD`](./WAVE_25_SDD.md) | [`Readiness`](./WAVE_25_READINESS_PACKET.md) | [`Backlog`](./WAVE_25_IMPLEMENTATION_BACKLOG.md) | [`Tests`](./WAVE_25_TEST_ROLLOUT.md) |
+| 24   | WhatsApp automation, AI chat engine & in-app notification centre          | ✅ Complete | [`SDD`](./WAVE_24_SDD.md) | [`Readiness`](./WAVE_24_READINESS_PACKET.md) | [`Backlog`](./WAVE_24_IMPLEMENTATION_BACKLOG.md) | [`Tests`](./WAVE_24_TEST_ROLLOUT.md) |
+| 25   | Portal syndication, careers, community management & advanced SEO          | ✅ Complete | [`SDD`](./WAVE_25_SDD.md) | [`Readiness`](./WAVE_25_READINESS_PACKET.md) | [`Backlog`](./WAVE_25_IMPLEMENTATION_BACKLOG.md) | [`Tests`](./WAVE_25_TEST_ROLLOUT.md) |
+| 26   | Production quality, test reliability, TODO resolution & executive UI      | 🟢 Active   | —                         | —                                            | [`Backlog`](./WAVE_26_IMPLEMENTATION_BACKLOG.md) | —                                    |
 
 ## Notes
 

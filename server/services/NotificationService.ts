@@ -26,18 +26,40 @@ interface PushNotificationInput {
 class NotificationService {
   async pushToUser(input: PushNotificationInput): Promise<void> {
     try {
+      // Fetch user notification preferences (W24-015)
+      const preferences = await prisma.notificationPreference.findUnique({
+        where: { userId: input.userId },
+      });
+
+      const channel = input.channel ?? 'in_app';
+
+      if (preferences) {
+        if (channel === 'in_app' && !preferences.inApp) {
+          logger.info(`In-app notification skipped for user ${input.userId} due to preferences`);
+          return;
+        }
+        if (channel === 'email' && !preferences.email) {
+          logger.info(`Email notification skipped for user ${input.userId} due to preferences`);
+          return;
+        }
+        if (channel === 'whatsapp' && !preferences.whatsapp) {
+          logger.info(`WhatsApp notification skipped for user ${input.userId} due to preferences`);
+          return;
+        }
+      }
+
       const notification = await prisma.notification.create({
         data: {
           userId: input.userId,
           title: input.title,
           message: input.message,
           type: input.type ?? 'info',
-          channel: input.channel ?? 'in_app',
+          channel,
           metadata: (input.metadata ?? null) as Prisma.InputJsonValue | null,
         },
       });
 
-      getSocketServer()?.emitNotification({
+      getSocketServer()?.emitNotification(notification.userId, {
         id: notification.id,
         type: notification.type as 'info' | 'success' | 'warning' | 'error',
         title: notification.title,
@@ -54,13 +76,17 @@ class NotificationService {
         pushUrl = `crm/viewings`;
       }
 
-      PushNotificationService.sendToUser(input.userId, {
-        title: input.title,
-        body: input.message,
-        url: pushUrl,
-      }).catch(err => {
-        logger.warn('FCM push notification failed', { error: err.message, userId: input.userId });
-      });
+      if (!preferences || preferences.push) {
+        PushNotificationService.sendToUser(input.userId, {
+          title: input.title,
+          body: input.message,
+          url: pushUrl,
+        }).catch(err => {
+          logger.warn('FCM push notification failed', { error: err.message, userId: input.userId });
+        });
+      } else {
+        logger.info(`FCM push notification skipped for user ${input.userId} due to preferences`);
+      }
     } catch (error) {
       logger.warn('Notification push failed', {
         userId: input.userId,

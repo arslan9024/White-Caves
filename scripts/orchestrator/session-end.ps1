@@ -219,14 +219,14 @@ Write-Step "GIT COMMIT"
 
 $dateTag = Get-Date -Format "yyyy-MM-dd"
 if ($Message -eq "") {
-  $Message = "chore(orchestrator): session-end $dateTag -- queue $qDone/$qTotal ($qPct%)$qReady"
+  $Message = ('chore(orchestrator): session-end {0} -- queue {1}/{2} ({3}%){4}' -f $dateTag, $qDone, $qTotal, $qPct, $qReady)
 }
 
 Push-Location $root
 # ── Loop-guard: skip commit when nothing is staged to prevent empty-commit loops
 $cachedStat = (git diff --cached --stat 2>$null).Trim()
 if ([string]::IsNullOrWhiteSpace($cachedStat)) {
-  Write-Host "  [AEGIS-SKIP] no changes staged — skipping commit to prevent empty-commit loop." -ForegroundColor DarkYellow
+  Write-Host "  [AEGIS-SKIP] no changes staged - skipping commit to prevent empty-commit loop." -ForegroundColor DarkYellow
   $commitHash = (git rev-parse --short HEAD 2>&1).Trim()
 } else {
   $commitOut = git commit --no-verify -m $Message 2>&1
@@ -240,7 +240,7 @@ Pop-Location
 # ------------------------------------------------------------------
 $activeBranchForPush = ""
 if (-not $SkipPush) {
-  Write-Step ("GIT PUSH -- {0}/<current-branch>" -f $pushRemote)
+  Write-Step ("GIT PUSH -- {0}/branch" -f $pushRemote)
   Push-Location $root
   $activeBranchForPush = (git rev-parse --abbrev-ref HEAD 2>&1).Trim()
   if ([string]::IsNullOrWhiteSpace($activeBranchForPush)) {
@@ -254,7 +254,7 @@ if (-not $SkipPush) {
 } else {
   Write-Host ""
   Write-Host "  [SKIP] git push (SkipPush flag set)" -ForegroundColor DarkGray
-  Write-Host ("  Run: git push {0} <current-branch>" -f $pushRemote) -ForegroundColor DarkGray
+  Write-Host ("  Run: git push {0} branch" -f $pushRemote) -ForegroundColor DarkGray
 }
 
 # ------------------------------------------------------------------
@@ -306,12 +306,12 @@ if ($SkipMainPush) {
 $elapsed = [math]::Round(((Get-Date) - $t0).TotalSeconds)
 
 Write-Host ""
-Write-Host ("=" * $w) -ForegroundColor Magenta
+Write-Host "========================================================================" -ForegroundColor Magenta
 Write-Host "  SESSION END COMPLETE" -ForegroundColor Magenta
-Write-Host ("=" * $w) -ForegroundColor Magenta
+Write-Host "========================================================================" -ForegroundColor Magenta
 Write-Host ("  Commit : $commitHash") -ForegroundColor White
 Write-Host ("  Files  : $changedCount staged and committed") -ForegroundColor White
-Write-Host ("  Queue  : $qDone / $qTotal done ($qPct%)$qReady") -ForegroundColor White
+Write-Host ('  Queue  : {0} / {1} done ({2}%){3}' -f $qDone, $qTotal, $qPct, $qReady) -ForegroundColor White
 Write-Host ("  Elapsed: $($elapsed)s") -ForegroundColor White
 if ($errors.Count -gt 0) {
   Write-Host ("  Errors : $($errors.Count)") -ForegroundColor Red
@@ -319,7 +319,7 @@ if ($errors.Count -gt 0) {
 } else {
   Write-Host ("  Status : All steps OK") -ForegroundColor Green
 }
-Write-Host ("=" * $w) -ForegroundColor Magenta
+Write-Host "========================================================================" -ForegroundColor Magenta
 Write-Host ""
 
 if ($errors.Count -gt 0) {

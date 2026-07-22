@@ -1,0 +1,88 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "policyTitle": "White Caves Real Estate LLC — Regulatory Compliance & Corporate Governance Bylaws",
+  "jurisdiction": "Dubai Land Department (DLD) & Real Estate Regulatory Agency (RERA)",
+  "effectiveDate": "2026-01-01",
+  "lastAudited": "2026-07-22",
+  "onboardingRules": {
+    "probationPeriodDays": 90,
+    "mandatoryReraCardWindowDays": 60,
+    "maxUnlicensedViewingAllowanceDays": 30,
+    "requiresBilingualContractSigning": true,
+    "kycRequirements": [
+      "EMIRATES_ID_FRONT_BACK",
+      "PASSPORT_COPY_WITH_VISA_PAGE",
+      "RERA_BROKER_CARD",
+      "GOOD_CONDUCT_CERTIFICATE_DUBAI_POLICE",
+      "SIGNED_NON_DISCLOSURE_AGREEMENT"
+    ]
+  },
+  "dataOwnershipGovernance": {
+    "firmOwnershipExclusivity": true,
+    "thirdPartyWebhookSources": [
+      "Property Finder",
+      "Bayut",
+      "Dubizzle",
+      "Official Website",
+      "WhatsApp Business API"
+    ],
+    "bylaw": "All client leads, contact records, viewing logs, and inquiry metadata generated via company-funded marketing webhooks or platform portals remain the 100% exclusive intellectual property of White Caves Real Estate LLC. Unauthorized export, copying, or personal retention upon contract termination constitutes a direct breach of UAE Data Protection Law (Federal Decree-Law No. 45 of 2021) and RERA Regulation No. 85 of 2006.",
+    "penaltyEnforcement": "Immediate revocation of Level 1-4 RBAC clearance, forfeiture of pending un-disbursed commissions, and formal escalation to RERA Legal Disciplinary Committee."
+  },
+  "commissionBylaws": {
+    "promotionalSalesSplit": {
+      "name": "Accelerated Agent Onboarding Support",
+      "agentPercentage": 0.7,
+      "companyPercentage": 0.3,
+      "validityWindowDays": 180,
+      "autoMigrationAction": "Transition agent to Standard Performance Slab Structure based on rolling 1-quarter run-rate"
+    },
+    "fixedStaticSplits": {
+      "residentialLeasingNewContracts": {
+        "agent": 0.5,
+        "company": 0.5,
+        "payoutCadence": "MONTHLY"
+      },
+      "residentialLeasingRenewals": { "agent": 0.5, "company": 0.5, "payoutCadence": "MONTHLY" },
+      "propertyManagementFees": { "agent": 0.5, "company": 0.5, "payoutCadence": "MILESTONE" }
+    },
+    "standardPerformanceSlabs": [
+      {
+        "tierLevel": 1,
+        "tierName": "Executive Consultant",
+        "agentPct": 0.5,
+        "companyPct": 0.5,
+        "monthlyRangeAed": { "min": 0, "max": 49999 },
+        "annualTargetAed": { "min": 0, "max": 599999 }
+      },
+      {
+        "tierLevel": 2,
+        "tierName": "Silver Producer",
+        "agentPct": 0.55,
+        "companyPct": 0.45,
+        "monthlyRangeAed": { "min": 50000, "max": 99999 },
+        "annualTargetAed": { "min": 600000, "max": 1199999 }
+      },
+      {
+        "tierLevel": 3,
+        "tierName": "Gold Producer",
+        "agentPct": 0.6,
+        "companyPct": 0.4,
+        "monthlyRangeAed": { "min": 100000, "max": 149999 },
+        "annualTargetAed": { "min": 1200000, "max": 1799999 }
+      },
+      {
+        "tierLevel": 4,
+        "tierName": "Platinum Elite",
+        "agentPct": 0.7,
+        "companyPct": 0.3,
+        "monthlyRangeAed": { "min": 150000, "max": 99999999 },
+        "annualTargetAed": { "min": 1800000, "max": 99999999 }
+      }
+    ],
+    "tierMigrationGracePeriod": {
+      "bufferDurationMonths": 3,
+      "ruleDescription": "A hardcoded 3-month (1-quarter) grace period buffer is enforced before any automatic downward tier reclassification is executed. During this window, the agent retains their higher tier split."
+    }
+  }
+}

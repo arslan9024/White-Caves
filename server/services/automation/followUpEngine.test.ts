@@ -33,6 +33,7 @@ const { mockPrisma } = vi.hoisted(() => {
       activity: {
         create: fn().mockResolvedValue({ id: 'act-1' }),
         count: fn().mockResolvedValue(0),
+        findFirst: fn(),
       },
       cadenceRule: {
         findMany: fn().mockResolvedValue([]),
@@ -56,7 +57,7 @@ vi.mock('../whatsapp/whatsappUtils.js', () => ({
   rateLimiter: { canSend: vi.fn(() => ({ allowed: true, retryAfterMs: 0 })) },
 }));
 
-import { startSequence } from './followUpEngine.js';
+import { startSequence, processScheduledSteps } from './followUpEngine.js';
 import { getCadenceForTier } from './cadenceTemplates.js';
 
 describe('FollowUpEngine — P1-007 tier matching and cadence depth', () => {
@@ -275,5 +276,97 @@ describe('FollowUpEngine — P1-007 tier matching and cadence depth', () => {
   it('throws when lead is not found', async () => {
     mockPrisma.lead.findUnique.mockResolvedValueOnce(null);
     await expect(startSequence('non-existent')).rejects.toThrow(/lead not found/i);
+  });
+
+  describe('W24-010 Auto-Pause Engine', () => {
+    it('auto-pauses follow-up when there is manual agent contact in the last 24h', async () => {
+      mockPrisma.followUpSequence.findMany.mockResolvedValueOnce([
+        {
+          id: 'seq-due',
+          cadenceType: 'hot',
+          status: 'active',
+          currentStep: 0,
+          totalSteps: 4,
+          nextStepAt: new Date(),
+          lead: {
+            id: 'lead-due',
+            name: 'John Doe',
+            phone: '+971500000000',
+            email: 'john@wc.ae',
+            status: 'new',
+          },
+          steps: [
+            {
+              id: 'step-due',
+              stepNumber: 1,
+              channel: 'whatsapp',
+              status: 'pending',
+              templateName: 'hot_initial_whatsapp',
+            },
+          ],
+        },
+      ]);
+
+      // Mock manual agent activity in last 24h
+      mockPrisma.activity.findFirst.mockResolvedValueOnce({
+        id: 'manual-act',
+        action: 'call',
+        userId: 'agent-123',
+      });
+
+      mockPrisma.followUpSequence.findUnique.mockResolvedValue({
+        id: 'seq-due',
+        status: 'active',
+        leadId: 'lead-due',
+      });
+
+      const batchResult = await processScheduledSteps();
+
+      expect(batchResult.processed).toBe(1);
+      expect(batchResult.skipped).toBe(1); // paused instead of executing
+      expect(mockPrisma.followUpSequence.update).toHaveBeenCalledWith(
+        expect.objectContaining({
+          where: { id: 'seq-due' },
+          data: expect.objectContaining({ status: 'paused' }),
+        })
+      );
+      expect(mockPrisma.activity.create).toHaveBeenCalledWith(
+        expect.objectContaining({
+          data: expect.objectContaining({
+            action: 'follow_up_autopause',
+          }),
+        })
+      );
+    });
+  });
+
+  describe('W24-011 Seeded Cadence Templates', () => {
+    it('seeds new lead 7day nurture template correctly', () => {
+      const nurture = getCadenceForTier('new_lead_7day_nurture');
+      expect(nurture).toBeDefined();
+      expect(nurture.cadenceType).toBe('new_lead_7day_nurture');
+      expect(nurture.totalSteps).toBe(3);
+      expect(nurture.steps[0]?.channel).toBe('whatsapp');
+      expect(nurture.steps[1]?.channel).toBe('email');
+      expect(nurture.steps[2]?.channel).toBe('call');
+    });
+
+    it('seeds lease renewal 90day template correctly', () => {
+      const renewal = getCadenceForTier('lease_renewal_90day');
+      expect(renewal).toBeDefined();
+      expect(renewal.cadenceType).toBe('lease_renewal_90day');
+      expect(renewal.totalSteps).toBe(4);
+      expect(renewal.steps[0]?.channel).toBe('email');
+      expect(renewal.steps[2]?.channel).toBe('whatsapp');
+    });
+
+    it('seeds post viewing 48h template correctly', () => {
+      const viewing = getCadenceForTier('post_viewing_48h');
+      expect(viewing).toBeDefined();
+      expect(viewing.cadenceType).toBe('post_viewing_48h');
+      expect(viewing.totalSteps).toBe(2);
+      expect(viewing.steps[0]?.channel).toBe('whatsapp');
+      expect(viewing.steps[1]?.channel).toBe('email');
+    });
   });
 });

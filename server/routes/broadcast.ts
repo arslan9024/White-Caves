@@ -46,7 +46,7 @@ router.post(
     const optOuts = await prisma.whatsAppConsent.findMany({
       where: {
         phone: { in: phones },
-        status: 'opted_out',
+        consent: false,
       },
     });
 

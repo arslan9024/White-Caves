@@ -32,6 +32,8 @@
     "vercel-deploy": "echo 'Deployment successful'",
     "test": "vitest",
     "test:run": "vitest run",
+    "sqa:audit": "node scripts/sqa-runner.js",
+    "qa:full": "node scripts/sqa-runner.js",
     "test:coverage": "vitest run --coverage",
     "test:e2e": "playwright test",
     "test:e2e:smoke": "playwright test src/e2e/dashboard.spec.ts",

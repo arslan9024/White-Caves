@@ -160,7 +160,7 @@ describe('BiometricSetup', () => {
       });
 
       await waitFor(() => {
-        expect(screen.getByText('Biometric login enabled successfully!')).toBeInTheDocument();
+        expect(screen.getByText(/Biometric login enabled successfully/i)).toBeInTheDocument();
       });
     });
 

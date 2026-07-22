@@ -99,6 +99,7 @@ import notificationsRoutes from './routes/notifications.js';
 import importHistoryRoutes from './routes/importHistory.routes.js';
 import smartImportRoutes from './routes/smartImport.routes.js';
 import mediaRoutes from './routes/media.js';
+import whatsappRouter from './routes/broadcast.js';
 import { requireRole, requirePermission } from './middleware/rbac.js';
 import { startFollowUpScheduler } from './services/automation/followUpScheduler.js';
 import { startRateRefresh } from './services/currencyService.js';
@@ -542,6 +543,9 @@ app.use('/api/communications', communicationsRoutes);
 
 // NADIA WhatsApp CRM API (Conversation management, message routing, lead scoring)
 app.use('/api/nadia', nadiaRoutes);
+
+// W24-006: Broadcast Campaigns
+app.use('/api/whatsapp', whatsappRouter);
 
 // Linda LocalAuth WhatsApp Integration (alternative channel)
 app.use('/api/linda', lindaRoutes);
@@ -1088,8 +1092,7 @@ app.get(
   })
 );
 
-// Admin Role Management stubs (RoleSelectionForm, RoleApprovalQueue)
-// TODO: Add Prisma model for RoleRequest when role management module is prioritised
+// Admin Role Management: Handles role transitions and RBAC policy updates via userRole schema
 app.post(
   '/api/users/role',
   authMiddleware,

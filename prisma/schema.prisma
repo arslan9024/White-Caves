@@ -57,6 +57,8 @@ model User {
   rememberMeTokens RememberMeToken[]
   twoFASetup       TwoFASetup?
   dashboardPreference UserDashboardPreference?
+  notificationPreference NotificationPreference?
+  pushTokens       UserPushToken[]
 
   @@index([role])
   @@index([status])
@@ -173,7 +175,6 @@ model FinancialPeriod {
 
   @@unique([year, month])
   @@index([status])
-  @@index([year, month])
 }
 
 // ─── BUDGET TARGET (W21-010: Budget vs Actual Variance) ───────────────────
@@ -1197,6 +1198,31 @@ model LindaBroadcastCampaign {
   @@index([createdById])
 }
 
+// ─── WHATSAPP CONSENT (W24-005) ─────────────────────────────────────────
+
+model WhatsAppConsent {
+  id           String   @id @default(auto()) @map("_id") @db.ObjectId
+  phone        String   @unique
+  consent      Boolean  @default(true)
+  optedOutAt   DateTime?
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+}
+
+// ─── BROADCAST STATS (W24-006) ──────────────────────────────────────────
+
+model BroadcastStat {
+  id             String   @id @default(auto()) @map("_id") @db.ObjectId
+  campaignId     String
+  totalSent      Int      @default(0)
+  totalFailed    Int      @default(0)
+  totalDelivered Int      @default(0)
+  totalRead      Int      @default(0)
+  totalReplied   Int      @default(0)
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+}
+
 // ─── LINDA: COMMISSION RULE ─────────────────────────────────────────────
 
 model CommissionRule {
@@ -1729,4 +1755,29 @@ model UserDashboardPreference {
 
   @@index([role])
   @@index([updatedAt])
+}
+
+// ─── NOTIFICATION PREFERENCES (W24-015) ──────────────────────────────────
+
+model NotificationPreference {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  userId    String   @unique @db.ObjectId
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  inApp     Boolean  @default(true)
+  push      Boolean  @default(true)
+  email     Boolean  @default(true)
+  whatsapp  Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+// ─── USER PUSH TOKENS (W23) ──────────────────────────────────────────────
+
+model UserPushToken {
+  id         String   @id @default(auto()) @map("_id") @db.ObjectId
+  userId     String   @db.ObjectId
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  token      String   @unique
+  deviceInfo String?
+  createdAt  DateTime @default(now())
 }

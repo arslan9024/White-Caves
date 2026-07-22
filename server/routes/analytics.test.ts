@@ -26,7 +26,7 @@ import Router from 'express';
 // HOISTED MOCKS — Import-time interception
 // ─────────────────────────────────────────────────────────────────────────
 
-const { mockMarketAnalyst, mockRbac, mockLogger, mockAsyncHandler } = vi.hoisted(() => {
+const { mockMarketAnalyst, mockRbac, mockLogger, mockAsyncHandler, mockPrisma } = vi.hoisted(() => {
   const mockMarketAnalyst = {
     getMarketOverview: vi.fn(),
     getPriceTrends: vi.fn(),
@@ -74,7 +74,13 @@ const { mockMarketAnalyst, mockRbac, mockLogger, mockAsyncHandler } = vi.hoisted
   // asyncHandler wraps async route handlers
   const mockAsyncHandler = (handler: any) => handler;
 
-  return { mockMarketAnalyst, mockRbac, mockLogger, mockAsyncHandler };
+  const mockPrisma = {
+    followUpSequence: {
+      findMany: vi.fn(),
+    },
+  };
+
+  return { mockMarketAnalyst, mockRbac, mockLogger, mockAsyncHandler, mockPrisma };
 });
 
 vi.mock('../services/ai/marketAnalyst.js', () => ({
@@ -93,6 +99,10 @@ vi.mock('../middleware/rbac.js', () => ({
 vi.mock('../utils/logger.js', () => ({
   createLogger: mockLogger.createLogger,
   logger: mockLogger,
+}));
+
+vi.mock('../database.js', () => ({
+  prisma: mockPrisma,
 }));
 
 vi.mock('../middleware/errorHandler.js', () => ({
@@ -515,6 +525,46 @@ describe('Analytics Routes — /api/analytics', () => {
 
     it('denies offer-spread to agents', async () => {
       const res = await request(createApp('agent')).get('/api/analytics/offer-spread');
+
+      expect(res.status).toBe(403);
+    });
+  });
+
+  // ════════════════════════════════════════════════════════════════════════
+  // GET /sequences
+  // ════════════════════════════════════════════════════════════════════════
+
+  describe('GET /sequences', () => {
+    it('returns sequence effectiveness metrics for owner', async () => {
+      // Mock sequences data in db
+      mockPrisma.followUpSequence.findMany.mockResolvedValueOnce([
+        {
+          id: 'seq-1',
+          lead: { status: 'won' },
+          steps: [
+            { status: 'sent', channel: 'email', result: 'opened' },
+            { status: 'sent', channel: 'whatsapp', result: 'replied' },
+          ],
+        },
+        {
+          id: 'seq-2',
+          lead: { status: 'contacted' },
+          steps: [{ status: 'sent', channel: 'email', result: 'delivered' }],
+        },
+      ] as any);
+
+      const res = await request(createApp('owner')).get('/api/analytics/sequences');
+
+      expect(res.status).toBe(200);
+      expect(res.body.success).toBe(true);
+      expect(res.body.data.totalSequences).toBe(2);
+      expect(res.body.data.openRate).toBe(0.5); // 1 opened / 2 emails sent
+      expect(res.body.data.replyRate).toBe(1 / 3); // 1 reply / 3 steps sent
+      expect(res.body.data.dealClosedRate).toBe(0.5); // 1 won / 2 sequences
+    });
+
+    it('denies sequences report to agents', async () => {
+      const res = await request(createApp('agent')).get('/api/analytics/sequences');
 
       expect(res.status).toBe(403);
     });

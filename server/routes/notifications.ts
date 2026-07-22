@@ -33,7 +33,7 @@ router.get(
     const userId = (req as AuthRequest).user?.id;
     if (!userId) throw new AppError('Authentication required', 401);
 
-    const { read } = req.query as Record<string, string | undefined>;
+    const { read, unread } = req.query as Record<string, string | undefined>;
 
     const {
       page: pageNum,
@@ -47,6 +47,8 @@ router.get(
     const where: Record<string, unknown> = { userId };
     if (read === 'true') where.read = true;
     if (read === 'false') where.read = false;
+    if (unread === 'true') where.read = false;
+    if (unread === 'false') where.read = true;
 
     const [notifications, total] = await Promise.all([
       prisma.notification.findMany({

@@ -4613,3 +4613,17 @@ Auto-discovered Aegis queue-empty upgrades are appended here when the orchestrat
 - Plan evidence: 6 keyword hits in planning docs
 - Scan evidence: 0 keyword hits in codebase scan signals
 - Prompt: @S5 -- DRAFT: wave-16-security-hardening.md -> add CSP completeness audit covering script-src, connect-src, report-only rollout, and third-party exceptions
+
+## 2026-07-22T14:42:24.600Z — Queue-empty discovery run
+
+### DU001 — Oqood registration workflow
+
+- Feature ID: compliance-oqood-registration
+- Agent: @Timnit
+- Target file: business_docs/09_crm_features/dld-integration.md
+- Research basis: DLD Oqood off-plan registration process expectations
+- Score: 135
+- Gap evidence: 1/2 signatures matched
+- Plan evidence: 6 keyword hits in planning docs
+- Scan evidence: 1 keyword hits in codebase scan signals
+- Prompt: @Timnit -- DRAFT: dld-integration.md -> add end-to-end Oqood registration workflow including payload schema, retries, exception handling, and settlement checkpoints

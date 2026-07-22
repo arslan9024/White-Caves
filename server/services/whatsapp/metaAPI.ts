@@ -131,6 +131,12 @@ export class MetaAPIClient {
    */
   public async sendMessage(toPhoneNumber: string, messageText: string): Promise<string> {
     try {
+      const { hasWhatsAppConsent } = await import('./consentManager.js');
+      if (!(await hasWhatsAppConsent(toPhoneNumber))) {
+        console.warn(`[Meta API] Blocked message to ${toPhoneNumber} due to opt-out status.`);
+        return 'blocked_no_consent';
+      }
+
       const payload: SendMessagePayload = {
         messaging_product: 'whatsapp',
         recipient_type: 'individual',

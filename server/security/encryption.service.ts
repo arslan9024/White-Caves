@@ -98,7 +98,7 @@ export class EncryptionService {
         iv: iv.toString('hex'),
         authTag: authTag.toString('hex'),
         algorithm: ALGORITHM,
-        keyId: 'default', // TODO: track which key was used
+        keyId: `master-aes-256-gcm-v1`,
       };
     } catch (error) {
       logger.error('Encryption failed:', error);

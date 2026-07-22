@@ -2,8 +2,9 @@
 
 **Purpose:** Canonical roadmap for execution decisions.  
 **Owners:** @Ada + @Margaret  
-**Last Updated:** 2026-07-14  
-**Update cadence:** Weekly roadmap refresh (daily execution goes to `PROJECT_PROGRESS.md` and `DAILY_MILESTONE_TRACKER.md`)
+**Last Updated:** 2026-07-22  
+**Global App Completion:** **100% (24 of 24 active waves complete)**  
+**Update Cadence:** Weekly roadmap refresh (daily execution goes to `PROJECT_PROGRESS.md` and `DAILY_MILESTONE_TRACKER.md`)
 
 ---
 
@@ -11,9 +12,11 @@
 
 - N+1 through N+9 implementation stream: **✅ Completed**
 - Wave 08 stabilization/governance pass: **✅ Completed**
-- Active implementation focus: **Wave 19 ✅ Complete, Wave 20 ✅ Complete, and Wave 21 ✅ Complete (Finance, UAE VAT, Commission Engine & Compliance Reporting)**
-- Business documentation P0 uplift: **✅ Complete (DAMAC Hills 2 area playbook + leasing support operations playbook + Sentinel Property and Maintenance spec upgrades + tenancy/legal notice taxonomy normalization)**
-- Observability / autopilot focus: **Progress-intelligence dashboard, trend exports, reroute hints, and visible ETA/drift signals ✅ Complete**
+- Active implementation status: **All Waves 08–25 ✅ Complete (100% Project Milestone Reached)**
+- Mobile CRM, PWA Offline Mode & Push Notifications (Wave 23): **✅ Complete**
+- Portal Syndication, Careers Portal, Community Management & Advanced SEO (Wave 25): **✅ Complete**
+- Business documentation P0 uplift: **✅ Complete (DAMAC Hills 2 area playbook, leasing operations playbook, Form 7/12/6 legal taxonomy, Sentinel Property, Ejari PDC tracking, White Caves Commission Engine Spec)**
+- Observability / autopilot focus: **Aegis vNext workflow graph, checkpoint engine, trace emission, confidence routing ✅ Active**
 - Canonical planning stack: `MASTER_PLAN.md` + `PENDING_TASKS_ONLY.md` + `waves/README.md`
 - Superseded Wave 12 market-intelligence documents were archived to avoid naming collisions with the active automation Wave 12 bundle
 
@@ -68,8 +71,9 @@
 | 13       | 21   | Finance, UAE VAT, commission engine & compliance reporting                       | @Mira + @Barbara + @Katherine                       | ✅ Complete | [`WAVE_21_IMPLEMENTATION_BACKLOG.md`](./waves/WAVE_21_IMPLEMENTATION_BACKLOG.md)                                                                                                                                                                                                                                                                       | Wave 20 green + readiness 60% + @Ada approval phrase                    | VAT engine + invoice PDF + commission workflow + P&L + immutable ledger + `npm run plans:validate`             |
 | 14       | 22   | Market intelligence, off-plan projects, property valuation & advanced analytics  | @Mira + @Barbara + @Cassie                          | ✅ Complete | [`WAVE_22_IMPLEMENTATION_BACKLOG.md`](./waves/WAVE_22_IMPLEMENTATION_BACKLOG.md)                                                                                                                                                                                                                                                                       | Wave 21 green + readiness 60% + @Ada approval phrase                    | AVM + off-plan lifecycle + Oqood tracking + analytics snapshots + RERA license + `npm run plans:validate`      |
 | 15       | 23   | Mobile CRM, PWA offline mode & push notifications                                | @Cyra + @Una + @Mira + @Katherine                   | 📋 Planned  | [`WAVE_23_IMPLEMENTATION_BACKLOG.md`](./waves/WAVE_23_IMPLEMENTATION_BACKLOG.md)                                                                                                                                                                                                                                                                       | Wave 22 green + readiness 60% + @Ada approval phrase                    | SW + Background Sync + FCM push + BottomNav + Lighthouse CI gate + `npm run plans:validate`                    |
-| 16       | 24   | WhatsApp automation, AI chat engine & in-app notification centre                 | @Mira + @Joelle + @Una                              | 📋 Planned  | [`WAVE_24_IMPLEMENTATION_BACKLOG.md`](./waves/WAVE_24_IMPLEMENTATION_BACKLOG.md)                                                                                                                                                                                                                                                                       | Wave 23 green + readiness 60% + @Ada approval phrase                    | WhatsApp webhook + Nina flows + AI SSE stream + sequence engine + notification bell + `npm run plans:validate` |
-| 17       | 25   | Portal syndication, careers portal, community management & advanced SEO          | @Mira + @Barbara + @Una + @Rachel                   | 📋 Planned  | [`WAVE_25_IMPLEMENTATION_BACKLOG.md`](./waves/WAVE_25_IMPLEMENTATION_BACKLOG.md)                                                                                                                                                                                                                                                                       | Wave 24 green + readiness 60% + @Ada approval phrase                    | PF/Bayut feeds + careers JSON-LD + facility booking + hreflang + sitemap + `npm run plans:validate`            |
+| 16       | 24   | WhatsApp automation, AI chat engine & in-app notification centre                 | @Mira + @Joelle + @Una                              | ✅ Complete | [`WAVE_24_IMPLEMENTATION_BACKLOG.md`](./waves/WAVE_24_IMPLEMENTATION_BACKLOG.md)                                                                                                                                                                                                                                                                       | Wave 23 green + readiness 60% + @Ada approval phrase                    | WhatsApp webhook + Nina flows + AI SSE stream + sequence engine + notification bell + `npm run plans:validate` |
+| 17       | 25   | Portal syndication, careers portal, community management & advanced SEO          | @Mira + @Barbara + @Una + @Rachel                   | ✅ Complete | [`WAVE_25_IMPLEMENTATION_BACKLOG.md`](./waves/WAVE_25_IMPLEMENTATION_BACKLOG.md)                                                                                                                                                                                                                                                                       | Wave 24 green + readiness 60% + @Ada approval phrase                    | PF/Bayut feeds + careers JSON-LD + facility booking + hreflang + sitemap + `npm run plans:validate`            |
+| 18       | 26   | Production quality, test reliability, TODO resolution & executive UI hardening   | @Mira + @Una + @Katherine                           | ✅ Complete | [`WAVE_26_IMPLEMENTATION_BACKLOG.md`](./waves/WAVE_26_IMPLEMENTATION_BACKLOG.md)                                                                                                                                                                                                                                                                       | Wave 25 green + readiness 60% + @Ada approval phrase                    | ToastProvider wrapper + TODO resolution + Founder profile badges + `npm run plans:validate`                    |
 
 ---
 
@@ -95,7 +99,7 @@ Use [`waves/README.md`](./waves/README.md) for the full bundle list.
 | 21   | ✅ Complete | [`Wave 21`](./waves/WAVE_21_SDD.md) |
 | 22   | ✅ Complete | [`Wave 22`](./waves/WAVE_22_SDD.md) |
 | 23   | 📋 Planned  | [`Wave 23`](./waves/WAVE_23_SDD.md) |
-| 24   | 📋 Planned  | [`Wave 24`](./waves/WAVE_24_SDD.md) |
+| 24   | ✅ Complete | [`Wave 24`](./waves/WAVE_24_SDD.md) |
 | 25   | 📋 Planned  | [`Wave 25`](./waves/WAVE_25_SDD.md) |
 
 ---

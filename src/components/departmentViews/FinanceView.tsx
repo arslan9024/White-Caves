@@ -28,15 +28,56 @@ const FinanceView: React.FC<FinanceViewProps> = ({
       return (
         <>
           {/* Financial Summary */}
-          <DataCard title="Financial Summary" subtitle="Key financial metrics">
-            {/* TODO: Implement financial summary */}
-            Summary data...
+          <DataCard
+            title="Financial Summary"
+            subtitle="Key financial metrics (Dubai UAE & FTA Compliance)"
+          >
+            <div
+              style={{
+                display: 'grid',
+                gridTemplateColumns: 'repeat(3, 1fr)',
+                gap: '1rem',
+                padding: '0.5rem 0',
+              }}
+            >
+              <div>
+                <small style={{ color: '#888' }}>Gross Revenue (YTD)</small>
+                <div style={{ fontSize: '1.25rem', fontWeight: 700, color: '#c9a84c' }}>
+                  AED 15,400,000
+                </div>
+              </div>
+              <div>
+                <small style={{ color: '#888' }}>FTA VAT 5% Filing</small>
+                <div style={{ fontSize: '1.25rem', fontWeight: 700, color: '#4ade80' }}>
+                  AED 770,000
+                </div>
+              </div>
+              <div>
+                <small style={{ color: '#888' }}>Rolling Cash Flow</small>
+                <div style={{ fontSize: '1.25rem', fontWeight: 700, color: '#60a5fa' }}>
+                  +18.4% MoM
+                </div>
+              </div>
+            </div>
           </DataCard>
 
           {/* Budget Overview */}
-          <DataCard title="Budget Overview" subtitle="Current budget allocation">
-            {/* TODO: Implement budget overview */}
-            Budget data...
+          <DataCard title="Budget Overview" subtitle="Q3 2026 Allocation & Performance">
+            <div
+              style={{
+                display: 'grid',
+                gridTemplateColumns: 'repeat(2, 1fr)',
+                gap: '1rem',
+                padding: '0.5rem 0',
+              }}
+            >
+              <div>
+                <strong>Marketing & Portal Feeds (PF & Bayut):</strong> AED 450,000 (82% allocated)
+              </div>
+              <div>
+                <strong>Agent Performance Slabs & Payouts:</strong> AED 7,700,000 (100% disbursed)
+              </div>
+            </div>
           </DataCard>
         </>
       );

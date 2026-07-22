@@ -271,6 +271,10 @@ export interface UsersTabProps {
   onAction?: (action: string, data?: Record<string, unknown>) => void;
 }
 
+export interface SQATabProps {
+  onAction?: (action: string, data?: Record<string, unknown>) => void;
+}
+
 // ─── Status/Badge Types ──────────────────────────────────────────────
 
 export type LeadPriority = 'high' | 'medium' | 'low';

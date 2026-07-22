@@ -341,6 +341,32 @@ export async function processScheduledSteps(): Promise<ProcessBatchResult> {
         continue;
       }
 
+      // Check for manual agent contact in last 24h (W24-010)
+      const cutoff = new Date(Date.now() - 24 * 60 * 60 * 1000);
+      const manualActivity = await prisma.activity.findFirst({
+        where: {
+          leadId: sequence.lead.id,
+          createdAt: { gte: cutoff },
+          type: 'lead',
+          action: { in: ['call', 'email', 'visit', 'manual_whatsapp', 'note_added'] },
+          userId: { not: null },
+        },
+      });
+
+      if (manualActivity) {
+        await pauseSequence(sequence.id);
+        await prisma.activity.create({
+          data: {
+            type: 'lead',
+            action: 'follow_up_autopause',
+            description: `Follow-up sequence auto-paused due to manual agent contact (Activity: ${manualActivity.action}) within 24h`,
+            leadId: sequence.lead.id,
+          },
+        });
+        result.skipped++;
+        continue;
+      }
+
       // Execute the step
       const stepResult = await executeStep(nextStep.id, sequence.lead);
       if (stepResult.status === 'sent') {

@@ -1,6 +1,7 @@
-import React from 'react';
+import React, { useState } from 'react';
 import styled from 'styled-components';
 import { colors, spacing, borderRadius, typography, media } from '@/design-tokens';
+import { dubaiFinanceEngine } from '@/mocks/dubaiFinanceEngine';
 
 interface Agent {
   id: string;
@@ -10,6 +11,9 @@ interface Agent {
   revenue: number;
   satisfaction: number;
   badge?: string;
+  milestoneBadge?: string;
+  voucherRewardAed?: number;
+  uncappedRateLock?: number;
 }
 
 interface LeaderboardTabProps {
@@ -56,13 +60,31 @@ const PeriodBadge = styled.span`
   ${typography.presets.bodySmall};
 `;
 
-const EmptyState = styled.div`
-  text-align: center;
-  padding: ${spacing[8]};
-  color: ${colors.text.disabled};
-  background: ${colors.background.surface};
+const TabToggle = styled.div`
+  display: flex;
+  gap: ${spacing[2]};
+  margin-bottom: ${spacing[6]};
+  background: rgba(255, 255, 255, 0.05);
+  padding: 4px;
   border-radius: ${borderRadius.lg};
-  border: 1px dashed ${colors.border.default};
+  border: 1px solid ${colors.border.default};
+`;
+
+const ToggleButton = styled.button<{ $active: boolean }>`
+  flex: 1;
+  padding: ${spacing[3]} ${spacing[4]};
+  border-radius: ${borderRadius.md};
+  border: none;
+  background: ${({ $active }) =>
+    $active ? 'linear-gradient(135deg, #c9a84c, #e4b75e)' : 'transparent'};
+  color: ${({ $active }) => ($active ? '#1f1300' : colors.text.secondary)};
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s ease;
+
+  &:hover {
+    color: ${({ $active }) => ($active ? '#1f1300' : '#fff')};
+  }
 `;
 
 const AgentList = styled.div`
@@ -114,6 +136,21 @@ const AgentName = styled.div`
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+  display: flex;
+  align-items: center;
+  gap: ${spacing[2]};
+`;
+
+const RewardPill = styled.span<{ $type?: 'voucher' | 'lock' }>`
+  font-size: 0.7rem;
+  font-weight: 700;
+  padding: 2px 8px;
+  border-radius: 999px;
+  background: ${({ $type }) =>
+    $type === 'lock' ? 'rgba(168, 85, 247, 0.2)' : 'rgba(34, 197, 94, 0.2)'};
+  color: ${({ $type }) => ($type === 'lock' ? '#c084fc' : '#4ade80')};
+  border: 1px solid
+    ${({ $type }) => ($type === 'lock' ? 'rgba(168, 85, 247, 0.4)' : 'rgba(34, 197, 94, 0.4)')};
 `;
 
 const AgentBadge = styled.div`
@@ -140,60 +177,89 @@ const RevenueText = styled.div`
   ${typography.presets.bodySmall};
 `;
 
-const SatisfactionPill = styled.div`
-  min-width: 50px;
-  text-align: center;
-  background: rgba(34, 197, 94, 0.1);
-  color: #22c55e;
-  border-radius: ${borderRadius.md};
-  padding: 4px 8px;
-  ${typography.presets.bodySmall};
-  font-weight: 600;
-`;
-
 // ─── Component ───────────────────────────────────────────────────
 
 const LeaderboardTab: React.FC<LeaderboardTabProps> = ({ data }) => {
-  const agents = data?.agents ?? [];
-  const period = data?.period ?? 'This Month';
+  const [activeTrack, setActiveTrack] = useState<'sales' | 'leasing'>('sales');
+  const dualTrack = dubaiFinanceEngine.getDualTrackLeaderboard();
+
+  const period = data?.period ?? 'July 2026';
+
+  const currentList =
+    activeTrack === 'sales'
+      ? dualTrack.trackASales.map((item, idx) => ({
+          id: item.id,
+          name: item.name,
+          rank: idx + 1,
+          deals: item.unitsTransacted,
+          revenue: item.gwcRevenue,
+          satisfaction: 99,
+          badge: item.tier,
+          milestoneBadge: item.milestoneBadge,
+          voucherRewardAed: item.voucherRewardAed,
+          uncappedRateLock: item.uncappedRateLock,
+        }))
+      : dualTrack.trackBLeasing.map((item, idx) => ({
+          id: item.id,
+          name: item.name,
+          rank: idx + 1,
+          deals: item.unitsTransacted,
+          revenue: item.gwcRevenue,
+          satisfaction: 98,
+          badge: item.tier,
+          milestoneBadge: item.milestoneBadge,
+        }));
 
   return (
     <Container>
       <Header>
-        <Title>🏆 Agent Leaderboard</Title>
+        <Title>🏆 White Caves Apex Champions Leaderboard</Title>
         <PeriodBadge>{period}</PeriodBadge>
       </Header>
 
-      {agents.length === 0 ? (
-        <EmptyState>
-          <p style={{ fontSize: '2rem', margin: '0 0 0.5rem' }}>🏆</p>
-          <p>No leaderboard data available yet</p>
-        </EmptyState>
-      ) : (
-        <AgentList role="list" aria-label="Agent leaderboard rankings">
-          {agents
-            .sort((a, b) => a.rank - b.rank)
-            .map(agent => (
-              <AgentRow
-                key={agent.id}
-                $isTop3={agent.rank <= 3}
-                role="listitem"
-                aria-label={`Rank ${agent.rank}: ${agent.name}, ${agent.deals} deals, ${agent.satisfaction}% satisfaction`}
-              >
-                <RankBadge aria-hidden="true">{MEDAL[agent.rank] ?? `#${agent.rank}`}</RankBadge>
-                <AgentInfo>
-                  <AgentName>{agent.name}</AgentName>
-                  {agent.badge && <AgentBadge>{agent.badge}</AgentBadge>}
-                </AgentInfo>
-                <StatsBlock>
-                  <DealCount>{agent.deals} Deals</DealCount>
-                  <RevenueText>AED {agent.revenue.toLocaleString()}</RevenueText>
-                </StatsBlock>
-                <SatisfactionPill>{agent.satisfaction}%</SatisfactionPill>
-              </AgentRow>
-            ))}
-        </AgentList>
-      )}
+      <TabToggle>
+        <ToggleButton $active={activeTrack === 'sales'} onClick={() => setActiveTrack('sales')}>
+          🥇 Track A: Sales Elite (GWC Revenue)
+        </ToggleButton>
+        <ToggleButton $active={activeTrack === 'leasing'} onClick={() => setActiveTrack('leasing')}>
+          🔑 Track B: Leasing Volume (Unit Density)
+        </ToggleButton>
+      </TabToggle>
+
+      <AgentList role="list" aria-label="Agent leaderboard rankings">
+        {currentList.map(agent => (
+          <AgentRow
+            key={agent.id}
+            $isTop3={agent.rank <= 3}
+            role="listitem"
+            aria-label={`Rank ${agent.rank}: ${agent.name}, ${agent.deals} deals, ${agent.revenue} AED`}
+          >
+            <RankBadge aria-hidden="true">{MEDAL[agent.rank] ?? `#${agent.rank}`}</RankBadge>
+            <AgentInfo>
+              <AgentName>
+                {agent.name}
+                {agent.voucherRewardAed && (
+                  <RewardPill $type="voucher">
+                    AED {agent.voucherRewardAed.toLocaleString()} Voucher
+                  </RewardPill>
+                )}
+                {agent.uncappedRateLock && (
+                  <RewardPill $type="lock">
+                    {(agent.uncappedRateLock * 100).toFixed(0)}% Chairman Lock
+                  </RewardPill>
+                )}
+              </AgentName>
+              <AgentBadge>
+                {agent.badge} {agent.milestoneBadge ? `· ${agent.milestoneBadge}` : ''}
+              </AgentBadge>
+            </AgentInfo>
+            <StatsBlock>
+              <DealCount>{agent.deals} Units</DealCount>
+              <RevenueText>AED {agent.revenue.toLocaleString()}</RevenueText>
+            </StatsBlock>
+          </AgentRow>
+        ))}
+      </AgentList>
     </Container>
   );
 };
