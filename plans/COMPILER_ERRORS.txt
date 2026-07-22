@@ -4,7 +4,7 @@ transforming...
 rendering chunks...
 computing gzip size...
 [2mdist/[22m[32mmanifest.webmanifest                          [39m[1m[2m  0.60 kB[22m[1m[22m
-[2mdist/[22m[32mindex.html                                    [39m[1m[2m 15.08 kB[22m[1m[22m[2m │ gzip:   4.29 kB[22m
+[2mdist/[22m[32mindex.html                                    [39m[1m[2m 15.08 kB[22m[1m[22m[2m │ gzip:   4.28 kB[22m
 [2mdist/[22m[35massets/crm-inventory-tn0RQdqM.css             [39m[1m[2m  0.00 kB[22m[1m[22m[2m │ gzip:   0.02 kB[22m
 [2mdist/[22m[35massets/ServerStatusPage-C6aWEe9j.css          [39m[1m[2m  0.78 kB[22m[1m[22m[2m │ gzip:   0.38 kB[22m
 [2mdist/[22m[35massets/InteractiveMap-CTvO5H1d.css            [39m[1m[2m  1.17 kB[22m[1m[22m[2m │ gzip:   0.57 kB[22m
@@ -63,14 +63,14 @@ computing gzip size...
 [2mdist/[22m[36massets/ToolsPage-BpFtMnir.js                  [39m[1m[2m  4.79 kB[22m[1m[22m[2m │ gzip:   1.39 kB[22m
 [2mdist/[22m[36massets/ViewingsPage-B_00rCVc.js               [39m[1m[2m  4.87 kB[22m[1m[22m[2m │ gzip:   1.63 kB[22m
 [2mdist/[22m[36massets/web-vitals-Cmsc-gW-.js                 [39m[1m[2m  6.11 kB[22m[1m[22m[2m │ gzip:   2.50 kB[22m
-[2mdist/[22m[36massets/PendingApprovalPage-BHCds21o.js        [39m[1m[2m  6.48 kB[22m[1m[22m[2m │ gzip:   1.38 kB[22m
+[2mdist/[22m[36massets/PendingApprovalPage-CUjOv01O.js        [39m[1m[2m  6.48 kB[22m[1m[22m[2m │ gzip:   1.38 kB[22m
 [2mdist/[22m[36massets/NewsletterSubscription-Bd7tSxNS.js     [39m[1m[2m  6.72 kB[22m[1m[22m[2m │ gzip:   1.99 kB[22m
 [2mdist/[22m[36massets/PropertyComparison-CLQ6EtY-.js         [39m[1m[2m  6.73 kB[22m[1m[22m[2m │ gzip:   1.51 kB[22m
 [2mdist/[22m[36massets/DesignSystemTest-CWKbNcWr.js           [39m[1m[2m  7.31 kB[22m[1m[22m[2m │ gzip:   1.05 kB[22m
 [2mdist/[22m[36massets/FavoriteListings-V62HqUVg.js           [39m[1m[2m  7.49 kB[22m[1m[22m[2m │ gzip:   1.98 kB[22m
 [2mdist/[22m[36massets/SalesPipelinePage-Bwf6pc23.js          [39m[1m[2m  7.84 kB[22m[1m[22m[2m │ gzip:   2.00 kB[22m
 [2mdist/[22m[36massets/DLDFeesPage-DpWClS4A.js                [39m[1m[2m  8.73 kB[22m[1m[22m[2m │ gzip:   1.46 kB[22m
-[2mdist/[22m[36massets/UAEPassSuccessPage-ZOCg2TDB.js         [39m[1m[2m  8.90 kB[22m[1m[22m[2m │ gzip:   1.90 kB[22m
+[2mdist/[22m[36massets/UAEPassSuccessPage-DDbP5YJG.js         [39m[1m[2m  8.90 kB[22m[1m[22m[2m │ gzip:   1.90 kB[22m
 [2mdist/[22m[36massets/RoleGateway-Bql6XfvU.js                [39m[1m[2m  8.92 kB[22m[1m[22m[2m │ gzip:   2.73 kB[22m
 [2mdist/[22m[36massets/WhatsAppAnalyticsPage-2n6X6tsQ.js      [39m[1m[2m  9.10 kB[22m[1m[22m[2m │ gzip:   1.52 kB[22m
 [2mdist/[22m[36massets/SystemHealthPage-CLcBA0hU.js           [39m[1m[2m  9.86 kB[22m[1m[22m[2m │ gzip:   1.79 kB[22m
@@ -85,9 +85,9 @@ computing gzip size...
 [2mdist/[22m[36massets/MortgageCalculatorPage-CVpVHpcK.js     [39m[1m[2m 11.99 kB[22m[1m[22m[2m │ gzip:   2.30 kB[22m
 [2mdist/[22m[36massets/TenantScreeningPage-t1kev1y9.js        [39m[1m[2m 12.11 kB[22m[1m[22m[2m │ gzip:   2.52 kB[22m
 [2mdist/[22m[36massets/OnboardingGateway-DPu1iopl.js          [39m[1m[2m 12.21 kB[22m[1m[22m[2m │ gzip:   3.13 kB[22m
-[2mdist/[22m[36massets/UnifiedDashboardPage-kvJqztVR.js       [39m[1m[2m 12.60 kB[22m[1m[22m[2m │ gzip:   3.70 kB[22m
-[2mdist/[22m[36massets/PortalSidebarContainer-Jkj0IEfz.js     [39m[1m[2m 14.77 kB[22m[1m[22m[2m │ gzip:   2.90 kB[22m
-[2mdist/[22m[36massets/SignInPage-B_tu2G-m.js                 [39m[1m[2m 15.48 kB[22m[1m[22m[2m │ gzip:   3.68 kB[22m
+[2mdist/[22m[36massets/UnifiedDashboardPage-Dfpzuv4g.js       [39m[1m[2m 12.60 kB[22m[1m[22m[2m │ gzip:   3.70 kB[22m
+[2mdist/[22m[36massets/PortalSidebarContainer-Bx2qgzE1.js     [39m[1m[2m 14.77 kB[22m[1m[22m[2m │ gzip:   2.90 kB[22m
+[2mdist/[22m[36massets/SignInPage-kd6BmDBI.js                 [39m[1m[2m 15.48 kB[22m[1m[22m[2m │ gzip:   3.68 kB[22m
 [2mdist/[22m[36massets/InteractiveMap-hlSGlPBv.js             [39m[1m[2m 15.78 kB[22m[1m[22m[2m │ gzip:   3.56 kB[22m
 [2mdist/[22m[36massets/NeighborhoodAnalyzer-ChRED1DA.js       [39m[1m[2m 16.32 kB[22m[1m[22m[2m │ gzip:   3.52 kB[22m
 [2mdist/[22m[36massets/DubaiMap-Bvnx80xQ.js                   [39m[1m[2m 16.42 kB[22m[1m[22m[2m │ gzip:   3.73 kB[22m
@@ -104,7 +104,7 @@ computing gzip size...
 [2mdist/[22m[36massets/CompanyProfile-CT6486qp.js             [39m[1m[2m 23.01 kB[22m[1m[22m[2m │ gzip:   3.85 kB[22m
 [2mdist/[22m[36massets/LeasingAcquisition-BCNm-ObE.js         [39m[1m[2m 24.55 kB[22m[1m[22m[2m │ gzip:   4.56 kB[22m
 [2mdist/[22m[36massets/LoginSecurityPage-2qN_F2E3.js          [39m[1m[2m 25.57 kB[22m[1m[22m[2m │ gzip:   4.17 kB[22m
-[2mdist/[22m[36massets/ProfilePage-VNtybiMT.js                [39m[1m[2m 25.73 kB[22m[1m[22m[2m │ gzip:   2.99 kB[22m
+[2mdist/[22m[36massets/ProfilePage-BybcCy2M.js                [39m[1m[2m 25.73 kB[22m[1m[22m[2m │ gzip:   2.99 kB[22m
 [2mdist/[22m[36massets/VirtualTourGallery-CBrYwp04.js         [39m[1m[2m 27.66 kB[22m[1m[22m[2m │ gzip:   4.84 kB[22m
 [2mdist/[22m[36massets/crm-sales-D3ykrV8j.js                  [39m[1m[2m 28.49 kB[22m[1m[22m[2m │ gzip:   4.32 kB[22m
 [2mdist/[22m[36massets/PropertyDetailPage-CJmW5ie5.js         [39m[1m[2m 28.90 kB[22m[1m[22m[2m │ gzip:   4.83 kB[22m
@@ -117,21 +117,21 @@ computing gzip size...
 [2mdist/[22m[36massets/HomePage-D9JG3b7i.js                   [39m[1m[2m 32.33 kB[22m[1m[22m[2m │ gzip:   8.50 kB[22m
 [2mdist/[22m[36massets/MarketIntelligencePage-j61pPlgt.js     [39m[1m[2m 32.43 kB[22m[1m[22m[2m │ gzip:   5.65 kB[22m
 [2mdist/[22m[36massets/PropertiesPage-BH3is52A.js             [39m[1m[2m 32.48 kB[22m[1m[22m[2m │ gzip:   5.65 kB[22m
-[2mdist/[22m[36massets/SignContractPage-CFrGKw53.js           [39m[1m[2m 34.94 kB[22m[1m[22m[2m │ gzip:  11.13 kB[22m
+[2mdist/[22m[36massets/SignContractPage-CtkNimku.js           [39m[1m[2m 34.94 kB[22m[1m[22m[2m │ gzip:  11.13 kB[22m
 [2mdist/[22m[36massets/crm-compliance-miOVnPGd.js             [39m[1m[2m 40.42 kB[22m[1m[22m[2m │ gzip:   4.76 kB[22m
 [2mdist/[22m[36massets/NadiaPage-BTjkKLeK.js                  [39m[1m[2m 40.85 kB[22m[1m[22m[2m │ gzip:   7.40 kB[22m
 [2mdist/[22m[36massets/styled-D3BOVcEd.js                     [39m[1m[2m 42.14 kB[22m[1m[22m[2m │ gzip:  17.41 kB[22m
 [2mdist/[22m[36massets/ServicesPage-yCq4D4bs.js               [39m[1m[2m 44.00 kB[22m[1m[22m[2m │ gzip:   6.93 kB[22m
 [2mdist/[22m[36massets/icons-vendor-BGhUU5D9.js               [39m[1m[2m 44.78 kB[22m[1m[22m[2m │ gzip:  14.58 kB[22m
 [2mdist/[22m[36massets/crm-executive-CJoqHqXH.js              [39m[1m[2m 49.81 kB[22m[1m[22m[2m │ gzip:   6.54 kB[22m
-[2mdist/[22m[36massets/TenantPortalPage-n5R9ngaL.js           [39m[1m[2m 59.55 kB[22m[1m[22m[2m │ gzip:   8.25 kB[22m
+[2mdist/[22m[36massets/TenantPortalPage-C0hOnYxO.js           [39m[1m[2m 59.56 kB[22m[1m[22m[2m │ gzip:   8.25 kB[22m
 [2mdist/[22m[36massets/crm-cto-r3nqiUip.js                    [39m[1m[2m 64.35 kB[22m[1m[22m[2m │ gzip:   8.45 kB[22m
 [2mdist/[22m[36massets/crm-marketing-BV8Q2geC.js              [39m[1m[2m 70.11 kB[22m[1m[22m[2m │ gzip:   8.49 kB[22m
 [2mdist/[22m[36massets/crm-hr-cZ4n06v-.js                     [39m[1m[2m 77.96 kB[22m[1m[22m[2m │ gzip:   9.98 kB[22m
 [2mdist/[22m[36massets/crm-finance-DBkmCHWc.js                [39m[1m[2m 82.48 kB[22m[1m[22m[2m │ gzip:   9.49 kB[22m
 [2mdist/[22m[36massets/crm-dev-Bsw2hAVN.js                    [39m[1m[2m 88.04 kB[22m[1m[22m[2m │ gzip:   9.76 kB[22m
 [2mdist/[22m[36massets/crm-leads-BXp5EhZ7.js                  [39m[1m[2m 88.16 kB[22m[1m[22m[2m │ gzip:  13.77 kB[22m
-[2mdist/[22m[36massets/LandlordPortalPage-Dx51QzTe.js         [39m[1m[2m103.62 kB[22m[1m[22m[2m │ gzip:  12.67 kB[22m
+[2mdist/[22m[36massets/LandlordPortalPage-CQ3zprYn.js         [39m[1m[2m103.63 kB[22m[1m[22m[2m │ gzip:  12.67 kB[22m
 [2mdist/[22m[36massets/crm-leasing-DFa9g1i2.js                [39m[1m[2m107.62 kB[22m[1m[22m[2m │ gzip:  15.16 kB[22m
 [2mdist/[22m[36massets/crm-inventory-DxcWo2O4.js              [39m[1m[2m110.32 kB[22m[1m[22m[2m │ gzip:  17.71 kB[22m
 [2mdist/[22m[36massets/crm-whatsapp-DIc_uIYa.js               [39m[1m[2m114.06 kB[22m[1m[22m[2m │ gzip:  14.13 kB[22m
@@ -139,7 +139,7 @@ computing gzip size...
 [2mdist/[22m[36massets/homepage-CNWP32xT.js                   [39m[1m[2m116.88 kB[22m[1m[22m[2m │ gzip:  20.17 kB[22m
 [2mdist/[22m[36massets/shared-ui-BK56G-uR.js                  [39m[1m[2m121.10 kB[22m[1m[22m[2m │ gzip:  25.10 kB[22m
 [2mdist/[22m[36massets/firebase-XPwnD-um.js                   [39m[1m[2m123.17 kB[22m[1m[22m[2m │ gzip:  36.68 kB[22m
-[2mdist/[22m[36massets/index-QQzRMfHm.js                      [39m[1m[2m151.00 kB[22m[1m[22m[2m │ gzip:  41.32 kB[22m
+[2mdist/[22m[36massets/index-Bsc0g67c.js                      [39m[1m[2m151.00 kB[22m[1m[22m[2m │ gzip:  41.31 kB[22m
 [2mdist/[22m[36massets/framer-motion-DwoK2Zlp.js              [39m[1m[2m151.36 kB[22m[1m[22m[2m │ gzip:  51.25 kB[22m
 [2mdist/[22m[36massets/TileLayer-DgfCRc2P.js                  [39m[1m[2m153.52 kB[22m[1m[22m[2m │ gzip:  44.81 kB[22m
 [2mdist/[22m[36massets/app-core-CtUbHQam.js                   [39m[1m[2m190.59 kB[22m[1m[22m[2m │ gzip:  35.68 kB[22m
@@ -147,11 +147,11 @@ computing gzip size...
 [2mdist/[22m[36massets/vendor-BAZi_tAa.js                     [39m[1m[2m416.91 kB[22m[1m[22m[2m │ gzip: 133.09 kB[22m
 [2mdist/[22m[36massets/app-foundation-VILzYJyX.js             [39m[1m[2m438.12 kB[22m[1m[22m[2m │ gzip: 118.94 kB[22m
 [2mdist/[22m[36massets/crm-shared-BbDy0MfO.js                 [39m[1m[2m702.56 kB[22m[1m[22m[2m │ gzip:  87.80 kB[22m
-[32m✓ built in 20.96s[39m
+[32m✓ built in 31.18s[39m
 
 PWA v1.3.0
 mode      generateSW
-precache  152 entries (7597.31 KiB)
+precache  152 entries (7597.33 KiB)
 files generated
   dist/sw.js
   dist/workbox-60b9b2d4.js

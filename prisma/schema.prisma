@@ -59,6 +59,8 @@ model User {
   dashboardPreference UserDashboardPreference?
   notificationPreference NotificationPreference?
   pushTokens       UserPushToken[]
+  eventRsvps       EventRSVP[]
+  facilityBookings FacilityBooking[]
 
   @@index([role])
   @@index([status])
@@ -258,6 +260,7 @@ model Property {
   leases       Lease[]
   maintenanceRequests Maintenance[]
   valuations   PropertyValuation[] @relation("PropertyValuations")
+  serviceCharges ServiceCharge[]
 
   @@index([status])
   @@index([type])
@@ -424,6 +427,17 @@ model Tenant {
   @@index([status])
   @@index([propertyId])
   @@index([createdAt])
+}
+
+// ─── AI CONVERSATION (NINA) ────────────────────────────────────────────────
+
+model AIConversation {
+  id          String   @id @default(auto()) @map("_id") @db.ObjectId
+  sessionId   String   @unique
+  assistantId String
+  messages    Json?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
 }
 
 // ─── NADIA: WHATSAPP WEBHOOK & ROUTING ──────────────────────────────────────
@@ -717,26 +731,65 @@ model Maintenance {
   @@index([createdAt])
 }
 
-// ─── JOB APPLICATION ────────────────────────────────────────────────────
+// ─── JOB POSTING & APPLICATION ────────────────────────────────────────────
+
+model JobPosting {
+  id          String   @id @default(auto()) @map("_id") @db.ObjectId
+  title       String
+  department  String?
+  location    String?
+  description String
+  type        String   @default("full_time") // full_time, part_time, contract
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  applications JobApplication[]
+}
 
 model JobApplication {
   id            String   @id @default(auto()) @map("_id") @db.ObjectId
-  name          String
+  jobId         String?   @db.ObjectId
+  job           JobPosting? @relation(fields: [jobId], references: [id])
+  name          String?  // Legacy field
+  firstName     String?
+  lastName      String?
   email         String
   phone         String?
-  position      String
-  experience    String?
-  resumeUrl     String?
-  coverLetter   String?
-  status        String   @default("received") // received, reviewed, shortlisted, interview, offered, hired, rejected
+  position      String?  // Legacy field
+  experience    String?  // Legacy field
+  coverLetter   String?  // Legacy field
+  resumeUrl     String?  // Legacy field
+  linkedinUrl   String?
+  reraBrn       String?
+  cvUrl         String?
+  status        String   @default("received") // applied, reviewed, shortlisted, interview, offered, hired, rejected
   notes         String?
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
 
   @@index([status])
-  @@index([position])
   @@index([email])
   @@index([createdAt])
+  @@index([jobId])
+}
+
+// ─── PORTAL SYNC LOG ────────────────────────────────────────────────────
+
+model PortalSyncLog {
+  id           String   @id @default(auto()) @map("_id") @db.ObjectId
+  portal       String
+  status       String
+  syncStart    DateTime
+  syncEnd      DateTime
+  totalSynced  Int
+  totalFailed  Int
+  totalSkipped Int
+  errors       Json?
+  createdAt    DateTime @default(now())
+
+  @@index([portal])
+  @@index([syncStart])
 }
 
 // ─── INVOICE ────────────────────────────────────────────────────────────
@@ -945,6 +998,26 @@ model FollowUpStep {
   @@index([stepNumber])
   @@index([scheduledAt])
   @@index([channel])
+}
+
+// ─── FOLLOW UP QUEUE (W24-010) ─────────────────────────────────────────
+
+model FollowUpQueue {
+  id          String   @id @default(auto()) @map("_id") @db.ObjectId
+  entityId    String
+  entityType  String
+  sequenceId  String
+  actionType  String
+  scheduledAt DateTime
+  payload     Json?
+  status      String   @default("pending") // pending, processed, failed, paused
+  processedAt DateTime?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([status])
+  @@index([scheduledAt])
+  @@index([entityId, entityType])
 }
 
 // ─── WEBAUTHN CREDENTIAL ────────────────────────────────────────────────
@@ -1780,4 +1853,82 @@ model UserPushToken {
   token      String   @unique
   deviceInfo String?
   createdAt  DateTime @default(now())
+}
+
+// ─── COMMUNITY EVENTS & SERVICE CHARGES ─────────────────────────────────
+
+model CommunityAnnouncement {
+  id          String   @id @default(auto()) @map("_id") @db.ObjectId
+  title       String
+  content     String
+  targetScope String?
+  status      String   @default("sent")
+  dispatchedAt DateTime?
+  priority    String   @default("normal") // normal, high
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model Facility {
+  id          String   @id @default(auto()) @map("_id") @db.ObjectId
+  name        String
+  description String?
+  capacity    Int?
+  status      String   @default("available")
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  
+  bookings    FacilityBooking[]
+}
+
+model FacilityBooking {
+  id          String   @id @default(auto()) @map("_id") @db.ObjectId
+  facilityId  String   @db.ObjectId
+  facility    Facility @relation(fields: [facilityId], references: [id])
+  unitId      String   @db.ObjectId
+  tenantId    String   @db.ObjectId
+  tenant      User     @relation(fields: [tenantId], references: [id])
+  startTime   DateTime
+  endTime     DateTime
+  status      String   @default("confirmed") // confirmed, pending, cancelled
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model ServiceCharge {
+  id          String   @id @default(auto()) @map("_id") @db.ObjectId
+  propertyId  String   @db.ObjectId
+  property    Property @relation(fields: [propertyId], references: [id])
+  amount      Float
+  currency    String   @default("AED")
+  dueDate     DateTime
+  status      String   @default("pending") // pending, paid, overdue
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model CommunityEvent {
+  id          String   @id @default(auto()) @map("_id") @db.ObjectId
+  title       String
+  description String?
+  location    String
+  startTime   DateTime
+  endTime     DateTime
+  maxAttendees Int?
+  currentRsvps Int      @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  
+  rsvps       EventRSVP[]
+}
+
+model EventRSVP {
+  id          String   @id @default(auto()) @map("_id") @db.ObjectId
+  eventId     String   @db.ObjectId
+  event       CommunityEvent @relation(fields: [eventId], references: [id])
+  tenantId    String   @db.ObjectId
+  tenant      User     @relation(fields: [tenantId], references: [id])
+  createdAt   DateTime @default(now())
+
+  @@unique([eventId, tenantId])
 }

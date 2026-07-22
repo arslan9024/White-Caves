@@ -19,7 +19,7 @@ router.post(
     }
 
     const announcement = await prisma.communityAnnouncement.create({
-      data: { title, body, targetScope, status: 'sent', dispatchedAt: new Date() },
+      data: { title, content: body, targetScope, status: 'sent', dispatchedAt: new Date() },
     });
 
     // Real implementation would trigger FCM and WhatsApp broadcasting here.
@@ -72,7 +72,7 @@ router.post(
     const facility = await prisma.facility.findUnique({ where: { id: facilityId } });
     if (!facility) return res.status(404).json({ success: false, error: 'Facility not found' });
 
-    if (overlapping >= facility.capacity) {
+    if (facility.capacity && overlapping >= facility.capacity) {
       return res
         .status(409)
         .json({ success: false, error: 'Facility capacity reached for this time slot' });
@@ -132,7 +132,7 @@ router.post(
 router.post(
   '/events/:id/rsvp',
   asyncHandler(async (req: Request, res: Response) => {
-    const { id } = req.params;
+    const id = req.params.id as string;
     const { tenantId } = req.body;
 
     const event = await prisma.communityEvent.findUnique({ where: { id } });

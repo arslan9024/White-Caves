@@ -132,9 +132,11 @@ router.post(
 router.get(
   '/stream/:sessionId',
   asyncHandler(async (req: Request, res: Response) => {
-    const { sessionId } = req.params;
-    const assistantId = (req.query.assistantId as string) || 'nina-default';
-    const message = (req.query.message as string) || '';
+    const sessionId = req.params.sessionId as string;
+    const assistantId =
+      typeof req.query.assistantId === 'string' ? req.query.assistantId : 'nina-default';
+    const userId = req.headers['x-user-id'] as string;
+    const message = typeof req.query.message === 'string' ? req.query.message : '';
 
     // Set headers for SSE
     res.setHeader('Content-Type', 'text/event-stream');

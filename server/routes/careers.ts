@@ -28,7 +28,17 @@ router.get(
 router.post(
   '/applications',
   asyncHandler(async (req: Request, res: Response) => {
-    const { jobId, firstName, lastName, email, phone, linkedinUrl, reraBrn, cvUrl } = req.body;
+    const {
+      jobId: rawJobId,
+      firstName,
+      lastName,
+      email,
+      phone,
+      linkedinUrl,
+      reraBrn,
+      cvUrl,
+    } = req.body;
+    const jobId = String(rawJobId);
 
     if (!jobId || !firstName || !lastName || !email || !cvUrl) {
       return res.status(400).json({ success: false, error: 'Missing required fields' });
@@ -97,7 +107,7 @@ router.patch(
   '/applications/:id/stage',
   requireRole('owner', 'managing_director', 'admin', 'hr'),
   asyncHandler(async (req: Request, res: Response) => {
-    const { id } = req.params;
+    const id = req.params.id as string;
     const { stage } = req.body; // applied, screening, interview, offer, hired, rejected
 
     if (!['applied', 'screening', 'interview', 'offer', 'hired', 'rejected'].includes(stage)) {

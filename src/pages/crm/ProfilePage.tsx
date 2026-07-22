@@ -141,7 +141,7 @@ const FormGroup = styled.div`
   input {
     width: 100%;
     padding: ${spacing[2]} ${spacing[3]};
-    border: 1px solid ${colors.border.main};
+    border: 1px solid ${colors.border.default};
     border-radius: ${borderRadius.md};
     ${typography.presets.body};
 
@@ -232,8 +232,8 @@ export const ProfilePage: FC = () => {
     setProfileName,
     profilePhone,
     setProfilePhone,
-    updateProfile,
-    isUpdating,
+    handleSaveProfile,
+    isSaving,
   } = useUserProfile();
 
   const isFounder = user?.email === 'arslanmalikgoraha@gmail.com';
@@ -276,8 +276,8 @@ export const ProfilePage: FC = () => {
               <label>Direct Contact Line</label>
               <input value={profilePhone} onChange={e => setProfilePhone(e.target.value)} />
             </FormGroup>
-            <SaveButton onClick={updateProfile} disabled={isUpdating}>
-              {isUpdating ? 'Synchronizing...' : 'Save Configuration'}
+            <SaveButton onClick={handleSaveProfile} disabled={isSaving}>
+              {isSaving ? 'Synchronizing...' : 'Save Configuration'}
             </SaveButton>
           </Card>
 

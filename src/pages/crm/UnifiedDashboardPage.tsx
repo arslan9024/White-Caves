@@ -133,7 +133,7 @@ const AIChatArea = styled.div`
   height: 300px;
   background: #f8fafc;
   border-radius: ${borderRadius.md};
-  border: 1px solid ${colors.border.main};
+  border: 1px solid ${colors.border.default};
   display: flex;
   flex-direction: column;
   justify-content: space-between;

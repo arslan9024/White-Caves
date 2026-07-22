@@ -91,7 +91,7 @@ const TenantPortalPage: FC = () => {
             <h1>
               <Text tid="tenant.portal.title" />
             </h1>
-            <p>{t('tenant.portal.welcome').replace('{name}', currentUser.name)}</p>
+            <p>{t('tenant.portal.welcome').replace('{name}', currentUser.name ?? 'User')}</p>
           </div>
 
           {/* Tab Navigation */}

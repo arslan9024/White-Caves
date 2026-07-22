@@ -185,7 +185,7 @@ const LeaderboardTab: React.FC<LeaderboardTabProps> = ({ data }) => {
 
   const period = data?.period ?? 'July 2026';
 
-  const currentList =
+  const currentList: Agent[] =
     activeTrack === 'sales'
       ? dualTrack.trackASales.map((item, idx) => ({
           id: item.id,

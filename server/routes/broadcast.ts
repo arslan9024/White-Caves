@@ -1,7 +1,8 @@
 import { Router, Request, Response } from 'express';
 import { prisma } from '../database.js';
 import { asyncHandler } from '../middleware/errorHandler.js';
-import { requireAuth, requireRole } from '../middleware/auth.js';
+import { requireRole } from '../middleware/rbac.js';
+import authMiddleware from '../middleware/auth.js';
 
 const router = Router();
 
@@ -11,8 +12,8 @@ const router = Router();
  */
 router.post(
   '/broadcast',
-  requireAuth,
-  requireRole(['owner', 'manager', 'agent']),
+  authMiddleware,
+  requireRole('owner', 'manager', 'agent'),
   asyncHandler(async (req: Request, res: Response) => {
     const { campaignId, audienceFilter, messageTemplate, templateParams } = req.body;
 

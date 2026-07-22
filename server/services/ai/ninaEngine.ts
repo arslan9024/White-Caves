@@ -80,7 +80,7 @@ export class NinaEngine {
   static async getHistory(sessionId: string): Promise<Message[]> {
     const conv = await prisma.aIConversation.findUnique({ where: { sessionId } });
     if (!conv || !conv.messages) return [];
-    return conv.messages as Message[];
+    return conv.messages as any as Message[];
   }
 
   static async saveHistory(sessionId: string, assistantId: string, messages: Message[]) {
@@ -88,8 +88,8 @@ export class NinaEngine {
     const recentMessages = messages.slice(-20);
     await prisma.aIConversation.upsert({
       where: { sessionId },
-      update: { messages: recentMessages, updatedAt: new Date() },
-      create: { sessionId, assistantId, messages: recentMessages },
+      update: { messages: recentMessages as any, updatedAt: new Date() },
+      create: { sessionId, assistantId, messages: recentMessages as any },
     });
   }
 

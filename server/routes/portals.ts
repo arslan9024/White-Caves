@@ -38,7 +38,7 @@ router.get(
     // Fetch active properties
     const properties = await prisma.property.findMany({
       where: { status: 'available' },
-      include: { agent: true },
+      include: { user: true },
     });
 
     let xml = '<?xml version="1.0" encoding="UTF-8"?>\n<list>\n';
@@ -46,9 +46,9 @@ router.get(
     for (const property of properties) {
       try {
         // Trakheesi Permit check (W25-001)
-        if (!property.trakheesiPermit) {
+        if (!property.buildingPermitNumber) {
           totalSkipped++;
-          errors.push({ id: property.id, error: 'Missing Trakheesi Permit' });
+          errors.push({ id: property.id, error: 'Missing Trakheesi/Building Permit' });
           continue;
         }
 
@@ -63,17 +63,17 @@ router.get(
         xml += `    <reference_number>${property.id}</reference_number>\n`;
         xml += `    <title>${property.title}</title>\n`;
         xml += `    <description><![CDATA[${property.description}]]></description>\n`;
-        xml += `    <property_type>${property.propertyType}</property_type>\n`;
+        xml += `    <property_type>${property.type}</property_type>\n`;
         xml += `    <price>${property.price}</price>\n`;
         xml += `    <city>Dubai</city>\n`;
-        xml += `    <community>${property.community || 'Unknown'}</community>\n`;
+        xml += `    <community>${property.area || 'Unknown'}</community>\n`;
         xml += `    <bedrooms>${property.bedrooms}</bedrooms>\n`;
         xml += `    <bathrooms>${property.bathrooms}</bathrooms>\n`;
-        xml += `    <size>${property.sizeSqft}</size>\n`;
-        xml += `    <permit_number>${property.trakheesiPermit}</permit_number>\n`;
+        xml += `    <size>${property.sqft}</size>\n`;
+        xml += `    <permit_number>${property.buildingPermitNumber}</permit_number>\n`;
         xml += `    <agent>\n`;
-        xml += `      <name>${property.agent?.name || 'White Caves Team'}</name>\n`;
-        xml += `      <email>${property.agent?.email || 'contact@whitecaves.ae'}</email>\n`;
+        xml += `      <name>${property.user?.name || 'White Caves Team'}</name>\n`;
+        xml += `      <email>${property.user?.email || 'contact@whitecaves.ae'}</email>\n`;
         xml += `    </agent>\n`;
         xml += `    <photo>\n        ${imageTags}\n    </photo>\n`;
         xml += `  </property>\n`;
@@ -124,16 +124,16 @@ router.get(
 
     const properties = await prisma.property.findMany({
       where: { status: 'available' },
-      include: { agent: true },
+      include: { user: true },
     });
 
     const feed: any[] = [];
 
     for (const property of properties) {
       try {
-        if (!property.trakheesiPermit) {
+        if (!property.buildingPermitNumber) {
           totalSkipped++;
-          errors.push({ id: property.id, error: 'Missing Trakheesi Permit' });
+          errors.push({ id: property.id, error: 'Missing Trakheesi/Building Permit' });
           continue;
         }
 
@@ -143,21 +143,21 @@ router.get(
           reference: property.id,
           title: property.title,
           description: property.description,
-          type: property.propertyType,
+          type: property.type,
           price: property.price,
           location: {
             city: 'Dubai',
-            community: property.community || 'Unknown',
+            community: property.area || 'Unknown',
           },
           attributes: {
             bedrooms: property.bedrooms,
             bathrooms: property.bathrooms,
-            sizeSqft: property.sizeSqft,
+            sizeSqft: property.sqft,
           },
-          permitNumber: property.trakheesiPermit,
+          permitNumber: property.buildingPermitNumber,
           agent: {
-            name: property.agent?.name || 'White Caves Team',
-            email: property.agent?.email || 'contact@whitecaves.ae',
+            name: property.user?.name || 'White Caves Team',
+            email: property.user?.email || 'contact@whitecaves.ae',
           },
           images: images.map(img => getOptimizedImageUrl(img)),
         });

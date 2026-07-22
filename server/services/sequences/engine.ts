@@ -1,6 +1,5 @@
 import { prisma } from '../../database.js';
 import { sendEmail } from '../emailService.js';
-import { getMetaClient } from '../../routes/meta-webhook.js'; // Assumes meta client is exported or similar
 import logger from '../../utils/logger.js';
 
 export interface SequenceTemplate {

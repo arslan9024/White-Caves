@@ -1,5 +1,5 @@
 import express from 'express';
-import { requireAuth } from '../middleware/auth.js';
+import authMiddleware from '../middleware/auth.js';
 import { prisma } from '../database.js';
 
 const router = express.Router();
@@ -9,10 +9,10 @@ const router = express.Router();
  * @desc Save FCM push token for user
  * @access Private
  */
-router.post('/subscribe', requireAuth, async (req, res) => {
+router.post('/subscribe', authMiddleware, async (req, res) => {
   try {
     const { token } = req.body;
-    const userId = req.user.id;
+    const userId = (req as any).user?.id;
 
     if (!token) {
       return res.status(400).json({ success: false, message: 'Token is required' });
@@ -46,10 +46,10 @@ router.post('/subscribe', requireAuth, async (req, res) => {
  * @desc Remove FCM push token for user
  * @access Private
  */
-router.delete('/token', requireAuth, async (req, res) => {
+router.delete('/token', authMiddleware, async (req, res) => {
   try {
     const { token } = req.body;
-    const userId = req.user.id;
+    const userId = (req as any).user?.id;
 
     if (!token) {
       return res.status(400).json({ success: false, message: 'Token is required' });

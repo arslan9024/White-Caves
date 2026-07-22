@@ -1,5 +1,5 @@
 import admin from 'firebase-admin';
-import { prisma } from '../lib/db.js';
+import { prisma } from '../database.js';
 
 export class PushNotificationService {
   /**
@@ -13,7 +13,7 @@ export class PushNotificationService {
 
       if (tokens.length === 0) return;
 
-      const messages = tokens.map(t => ({
+      const messages = tokens.map((t: { token: string }) => ({
         token: t.token,
         notification: {
           title: payload.title,
@@ -31,7 +31,7 @@ export class PushNotificationService {
         const response = await admin.messaging().sendEach(messages);
 
         // Remove stale tokens
-        const staleTokens = [];
+        const staleTokens: string[] = [];
         response.responses.forEach((res, idx) => {
           if (!res.success && res.error?.code === 'messaging/registration-token-not-registered') {
             staleTokens.push(tokens[idx].token);

@@ -1,6 +1,4 @@
 import { prisma } from '../../database.js';
-import { getMetaClient } from '../whatsapp/metaAPI.js'; // Wait, getMetaClient isn't exported from metaAPI.ts, it's defined in meta-webhook.ts.
-// Let's just create the logic and pass the client.
 
 export async function processHandoffTriggers(
   conversationId: string,
