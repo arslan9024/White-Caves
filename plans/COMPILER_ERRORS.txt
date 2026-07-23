@@ -125,7 +125,7 @@ computing gzip size...
 [2mdist/[22m[36massets/index-DpRPVJrc.js                      [39m[1m[2m162.55 kB[22m[1m[22m[2m │ gzip:  43.08 kB[22m
 [2mdist/[22m[36massets/app-foundation-N8GN_181.js             [39m[1m[2m337.95 kB[22m[1m[22m[2m │ gzip:  90.32 kB[22m
 [2mdist/[22m[36massets/vendor-aPIVReWF.js                     [39m[1m[2m397.22 kB[22m[1m[22m[2m │ gzip: 125.84 kB[22m
-[32m✓ built in 21.24s[39m
+[32m✓ built in 21.21s[39m
 
 PWA v1.3.0
 mode      generateSW
