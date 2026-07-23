@@ -1,4 +1,4 @@
-﻿# agent-loop.ps1 -- Interactive 60-minute free-agent rotation runner
+# agent-loop.ps1 -- Interactive 60-minute free-agent rotation runner
 #
 # Auto-detects the active agent slot from the current minute, shows their
 # READY task + prompt, opens the free tool, waits for paste confirmation,
@@ -23,7 +23,8 @@ param(
   [switch]$ShowSchedule,
   [switch]$NonInteractive,
   [switch]$Autopilot,
-  [switch]$Approval
+  [switch]$Approval,
+  [int]$AutoRefill       = 10
 )
 
 $w       = 72
@@ -64,6 +65,10 @@ if ($Autopilot) {
   $effectiveNonInteractive = $true
 } else {
   $effectiveNonInteractive = ($policyDefaultMode -eq "autopilot")
+}
+
+if ($Autopilot -or $effectiveNonInteractive) {
+  $NoBrowser = $true
 }
 
 # ------------------------------------------------------------------
@@ -332,23 +337,46 @@ $loopCount = 0
   if ($null -eq $task) {
     Write-Host ("  [{0}] {1} -- no READY task found (all done or blocked)" -f $slotLabel, $activeAgent) -ForegroundColor DarkYellow
     Write-Host ""
-    if ($Agent -ne "") {
-      Write-Host "  All tasks done or blocked for $activeAgent." -ForegroundColor DarkGray
-      Write-Host "  Tip: npm run orchestrator:blockers -- to see what is blocking" -ForegroundColor DarkGray
-      break
+
+    $refillScript = Join-Path $scripts "refill-queue.ps1"
+    if (Test-Path $refillScript) {
+      Write-Host "  Attempting to find and arrange new tasks from AGENTS.md..." -ForegroundColor Cyan
+      & powershell -ExecutionPolicy Bypass -File "$refillScript" -Count $AutoRefill -WorkspaceRoot $root 2>&1 | Out-String | Write-Host
+      
+      if ($Agent -ne "") {
+        $task = Get-AgentNextReadyTask -agentName $activeAgent
+      } elseif ($effectiveNonInteractive) {
+        $preferred = Get-CurrentSlotAgent
+        $nextReady = Get-NextReadyInRotation -preferredAgent $preferred
+        if ($null -ne $nextReady) {
+          $activeAgent = [string]$nextReady.Agent
+          $task        = $nextReady.Task
+          $slotLabel   = "auto"
+        }
+      } else {
+        $task = Get-AgentNextReadyTask -agentName $activeAgent
+      }
     }
-    if ($effectiveNonInteractive) {
-      Write-Host "  No READY tasks found across rotation. Autopilot exiting cleanly." -ForegroundColor DarkGray
-      break
-    }
-    # Auto-mode: skip to next slot
-    $skip = Get-NextSlotAgent
-    Write-Host ("  Skipping to next slot agent: {0}" -f $skip) -ForegroundColor DarkGray
-    $activeAgent = $skip
-    $task = Get-AgentNextReadyTask -agentName $activeAgent
+
     if ($null -eq $task) {
-      Write-Host "  Next slot also blocked. Run: npm run orchestrator:agent-loop -- -Agent @Name" -ForegroundColor DarkGray
-      break
+      if ($Agent -ne "") {
+        Write-Host "  All tasks done or blocked for $activeAgent." -ForegroundColor DarkGray
+        Write-Host "  Tip: npm run orchestrator:blockers -- to see what is blocking" -ForegroundColor DarkGray
+        break
+      }
+      if ($effectiveNonInteractive) {
+        Write-Host "  No READY tasks found across rotation. Autopilot exiting cleanly." -ForegroundColor DarkGray
+        break
+      }
+      # Auto-mode: skip to next slot
+      $skip = Get-NextSlotAgent
+      Write-Host ("  Skipping to next slot agent: {0}" -f $skip) -ForegroundColor DarkGray
+      $activeAgent = $skip
+      $task = Get-AgentNextReadyTask -agentName $activeAgent
+      if ($null -eq $task) {
+        Write-Host "  Next slot also blocked. Run: npm run orchestrator:agent-loop -- -Agent @Name" -ForegroundColor DarkGray
+        break
+      }
     }
   }
 
