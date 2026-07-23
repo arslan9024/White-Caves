@@ -258,7 +258,7 @@ const DubaiMap: FC<DubaiMapProps> = ({
                 radius={community.radius}
                 pathOptions={{
                   color: stats ? colors.primary : colors.secondary,
-                  fillColor: stats ? 'rgba(227, 30, 36, 0.08)' : 'rgba(46, 90, 79, 0.04)',
+                  fillColor: stats ? 'rgba(201, 168, 76, 0.08)' : 'rgba(16, 185, 129, 0.04)',
                   fillOpacity: 0.4,
                   weight: stats ? 2 : 1,
                   dashArray: stats ? undefined : '4 6',

@@ -128,9 +128,9 @@ const inputBaseStyles = css<{ $hasError: boolean; $isValid: boolean }>`
 
   &:focus {
     border-color: ${p =>
-      p.$hasError ? p.theme.colors?.error || '#B71C1C' : p.theme.colors?.primary || '#E31E24'};
+      p.$hasError ? p.theme.colors?.error || '#EF4444' : p.theme.colors?.primary || '#C9A84C'};
     box-shadow: 0 0 0 3px
-      ${p => (p.$hasError ? 'rgba(183, 28, 28, 0.15)' : 'rgba(227, 30, 36, 0.2)')};
+      ${p => (p.$hasError ? 'rgba(239, 68, 68, 0.15)' : 'rgba(201, 168, 76, 0.2)')};
   }
 
   &:disabled {

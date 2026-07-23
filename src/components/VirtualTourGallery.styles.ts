@@ -59,25 +59,23 @@ export const ViewControls = styled.div`
 
 export const ViewBtn = styled.button<{ $active?: boolean }>`
   padding: 0.5rem 1rem;
-  background: ${props => props.$active
-    ? 'var(--color-primary, #E31E24)'
-    : 'var(--bg-primary, #ffffff)'};
-  border: 1px solid ${props => props.$active ? 'var(--color-primary, #E31E24)' : '#e5e7eb'};
+  background: ${props =>
+    props.$active ? 'var(--color-primary, #C9A84C)' : 'var(--bg-primary, #ffffff)'};
+  border: 1px solid ${props => (props.$active ? 'var(--color-primary, #C9A84C)' : '#e5e7eb')};
   border-radius: 0.5rem;
   font-size: 0.85rem;
   font-weight: 600;
   cursor: pointer;
   transition: ${transitions.all};
-  color: ${props => props.$active
-    ? 'var(--text-on-primary, #ffffff)' 
-    : 'var(--text-primary, #1a202c)'};
+  color: ${props =>
+    props.$active ? 'var(--text-on-primary, #ffffff)' : 'var(--text-primary, #1a202c)'};
 
   &:hover {
-    border-color: var(--color-primary, #E31E24);
+    border-color: var(--color-primary, #c9a84c);
   }
 
   &:focus-visible {
-    outline: 2px solid var(--color-primary, #E31E24);
+    outline: 2px solid var(--color-primary, #c9a84c);
     outline-offset: 2px;
   }
 `;
@@ -133,7 +131,7 @@ export const FeaturedTourCard = styled.button`
   }
 
   &:focus-visible {
-    outline: 2px solid var(--color-primary, #E31E24);
+    outline: 2px solid var(--color-primary, #c9a84c);
     outline-offset: 2px;
   }
 `;
@@ -185,7 +183,7 @@ export const PlayButton = styled.div`
     font-family: ${typography.fontFamily.heading};
     font-size: 1.25rem;
     font-weight: ${typography.weights.bold};
-    color: var(--color-primary, #E31E24);
+    color: var(--color-primary, #c9a84c);
   }
 `;
 
@@ -205,9 +203,9 @@ export const Badge = styled.span<{ type?: 'drone' | 'video' }>`
   font-weight: ${typography.weights.semibold};
   text-transform: uppercase;
   background: ${props => {
-    switch(props.type) {
+    switch (props.type) {
       case 'drone':
-        return 'var(--color-primary, #E31E24)';
+        return 'var(--color-primary, #C9A84C)';
       case 'video':
         return '#111827';
       default:
@@ -255,14 +253,14 @@ export const SpecItem = styled.span`
   color: #111827;
 
   strong {
-    color: var(--color-primary, #E31E24);
+    color: var(--color-primary, #c9a84c);
   }
 `;
 
 export const TourPrice = styled.div`
   font-size: 1.4rem;
   font-weight: ${typography.weights.bold};
-  color: var(--color-primary, #E31E24);
+  color: var(--color-primary, #c9a84c);
   margin: 1rem 0;
 `;
 
@@ -303,7 +301,7 @@ export const TourCard = styled.button`
   }
 
   &:focus-visible {
-    outline: 2px solid var(--color-primary, #E31E24);
+    outline: 2px solid var(--color-primary, #c9a84c);
     outline-offset: 2px;
   }
 
@@ -403,7 +401,7 @@ export const CloseModalButton = styled.button`
   }
 
   &:focus-visible {
-    outline: 2px solid var(--color-primary, #E31E24);
+    outline: 2px solid var(--color-primary, #c9a84c);
     outline-offset: 2px;
   }
 `;
@@ -466,7 +464,7 @@ export const ControlIcon = styled.div`
   display: grid;
   place-items: center;
   background: rgba(255, 255, 255, 0.92);
-  color: var(--color-primary, #E31E24);
+  color: var(--color-primary, #c9a84c);
   font-weight: 800;
 `;
 
@@ -474,7 +472,7 @@ export const StartTourButton = styled.a`
   display: inline-block;
   padding: 0.65rem 1.1rem;
   border-radius: 0.6rem;
-  background: var(--color-primary, #E31E24);
+  background: var(--color-primary, #c9a84c);
   color: #fff;
   text-decoration: none;
   font-weight: 700;
@@ -519,7 +517,7 @@ export const InfoLabel = styled.span`
 
 export const InfoValue = styled.span<{ $price?: boolean }>`
   font-weight: 700;
-  color: ${props => props.$price ? 'var(--color-primary, #E31E24)' : '#111827'};
+  color: ${props => (props.$price ? 'var(--color-primary, #C9A84C)' : '#111827')};
 `;
 
 export const ModalActions = styled.div`
@@ -539,18 +537,18 @@ export const ActionButton = styled.button<{ $variant?: 'primary' | 'secondary' |
   background: ${props => {
     if (props.$variant === 'secondary') return '#111827';
     if (props.$variant === 'outline') return 'transparent';
-    return 'var(--color-primary, #E31E24)';
+    return 'var(--color-primary, #C9A84C)';
   }};
 
-  color: ${props => props.$variant === 'outline' ? '#111827' : '#fff'};
-  border-color: ${props => props.$variant === 'outline' ? '#d1d5db' : 'transparent'};
+  color: ${props => (props.$variant === 'outline' ? '#111827' : '#fff')};
+  border-color: ${props => (props.$variant === 'outline' ? '#d1d5db' : 'transparent')};
 
   &:hover {
     transform: translateY(-1px);
   }
 
   &:focus-visible {
-    outline: 2px solid var(--color-primary, #E31E24);
+    outline: 2px solid var(--color-primary, #c9a84c);
     outline-offset: 2px;
   }
 `;

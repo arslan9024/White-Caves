@@ -396,7 +396,7 @@ export const UserAvatar = styled.div<{ $src?: string }>`
   height: 34px;
   border-radius: 8px;
   background: ${p =>
-    p.$src ? `url(${p.$src}) center/cover` : `linear-gradient(135deg, #E31E24 0%, #B71C1C 100%)`};
+    p.$src ? `url(${p.$src}) center/cover` : `linear-gradient(135deg, #C9A84C 0%, #a8883a 100%)`};
   color: #ffffff;
   font-size: 13px;
   font-weight: 700;
