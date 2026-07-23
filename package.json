@@ -17,7 +17,7 @@
     "install:linda": "cd modules/linda && npm install",
     "install:henry": "cd modules/henry && npm install",
     "install:ai-modules": "npm run install:linda && npm run install:henry",
-    "server": "tsx server/index.ts",
+    "server": "nodemon --watch server --watch prisma --ext ts,js,json --exec tsx server/index.ts",
     "client": "vite",
     "dev:client": "vite",
     "dev:server": "powershell -ExecutionPolicy Bypass -File scripts/start-dev-server-safe.ps1 -Port 5001",
