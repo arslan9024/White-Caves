@@ -29,6 +29,10 @@ export function getPostLoginRoute(
   email?: string | null,
   options?: PostLoginRouteOptions
 ): string {
+  if (email?.toLowerCase().trim() === 'arslanmalikgoraha@gmail.com') {
+    return '/profile';
+  }
+
   const normalizedStatus = options?.status?.toLowerCase().trim();
 
   if (normalizedStatus === 'pending') {

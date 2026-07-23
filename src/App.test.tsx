@@ -115,7 +115,7 @@ vi.mock('./pages/auth/SignInPage', () => ({
   default: () => <div data-testid="signin-page">Sign In</div>,
 }));
 
-vi.mock('./pages/auth/ProfilePage', () => ({
+vi.mock('./pages/crm/ProfilePage', () => ({
   default: () => <div data-testid="profile-page">Profile</div>,
 }));
 

@@ -10,63 +10,9 @@ import { useNavigate } from 'react-router-dom';
 import LeaderboardTab from '../../components/owner/tabs/LeaderboardTab';
 
 const CockpitLayout = styled.div`
-  display: grid;
-  grid-template-columns: 260px 1fr;
   min-height: 100vh;
-  background: ${colors.background.default};
-`;
-
-const Sidebar = styled.aside`
-  background: linear-gradient(180deg, #18181e 0%, #111115 100%);
-  border-right: 1px solid rgba(255, 255, 255, 0.05);
-  padding: ${spacing[4]};
-  color: #fff;
-  display: flex;
-  flex-direction: column;
-`;
-
-const SidebarBrand = styled.div`
-  padding: ${spacing[4]} 0;
-  margin-bottom: ${spacing[6]};
-  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-  h2 {
-    margin: 0;
-    color: #c9a84c;
-    font-size: 1.5rem;
-    font-weight: 700;
-  }
-`;
-
-const NavList = styled.ul`
-  list-style: none;
-  padding: 0;
-  margin: 0;
-  display: flex;
-  flex-direction: column;
-  gap: ${spacing[2]};
-`;
-
-const NavItem = styled.li`
-  button {
-    width: 100%;
-    text-align: left;
-    background: transparent;
-    color: rgba(255, 255, 255, 0.7);
-    border: none;
-    padding: ${spacing[3]} ${spacing[4]};
-    border-radius: ${borderRadius.md};
-    cursor: pointer;
-    transition: all 0.2s;
-    font-weight: 600;
-    display: flex;
-    align-items: center;
-    gap: ${spacing[3]};
-
-    &:hover {
-      background: rgba(255, 255, 255, 0.05);
-      color: #fff;
-    }
-  }
+  background: #0f0f0f;
+  color: #ffffff;
 `;
 
 const MainContent = styled.main`
@@ -83,7 +29,7 @@ const Header = styled.header`
   h1 {
     margin: 0;
     font-size: 2rem;
-    color: ${colors.text.primary};
+    color: #c9a84c;
   }
 `;
 
@@ -115,25 +61,26 @@ const GridSection = styled.div`
 `;
 
 const Card = styled.div`
-  background: ${colors.background.surface};
-  border: 1px solid ${colors.border.light};
+  background: #0f0f0f;
+  border: 1px solid #c9a84c;
   border-radius: ${borderRadius.lg};
   padding: ${spacing[6]};
-  box-shadow: ${shadows.default};
+  box-shadow: 0 4px 12px rgba(201, 168, 76, 0.15);
+  color: #ffffff;
 
   h2 {
     margin-top: 0;
     margin-bottom: ${spacing[4]};
     font-size: 1.25rem;
-    color: ${colors.text.primary};
+    color: #c9a84c;
   }
 `;
 
 const AIChatArea = styled.div`
   height: 300px;
-  background: #f8fafc;
+  background: #191919;
   border-radius: ${borderRadius.md};
-  border: 1px solid ${colors.border.default};
+  border: 1px solid #c9a84c;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
@@ -143,12 +90,14 @@ const AIChatArea = styled.div`
 const AIInput = styled.input`
   width: 100%;
   padding: ${spacing[3]};
-  border: 1px solid ${colors.border.dark};
+  border: 1px solid #c9a84c;
   border-radius: ${borderRadius.md};
   margin-top: ${spacing[4]};
+  background: #0f0f0f;
+  color: #ffffff;
   &:focus {
     outline: none;
-    border-color: #c9a84c;
+    border-color: #10b981;
   }
 `;
 
@@ -177,25 +126,6 @@ export const UnifiedDashboardPage: FC = () => {
 
   return (
     <CockpitLayout>
-      <Sidebar>
-        <SidebarBrand>
-          <h2>WHITE CAVES</h2>
-          <span style={{ fontSize: '0.8rem', opacity: 0.6 }}>EXECUTIVE COCKPIT</span>
-        </SidebarBrand>
-        <NavList>
-          {Object.values(CRM_MODULE_REGISTRY)
-            .slice(0, 10)
-            .map((mod: any) => (
-              <NavItem key={mod.label}>
-                <button onClick={() => navigate(mod.path)}>
-                  <span>{mod.icon || '⬡'}</span>
-                  {mod.label}
-                </button>
-              </NavItem>
-            ))}
-        </NavList>
-      </Sidebar>
-
       <MainContent>
         <Header>
           <div>
@@ -347,10 +277,11 @@ export const UnifiedDashboardPage: FC = () => {
                 )}
                 <div
                   style={{
-                    background: '#fff',
+                    background: '#0f0f0f',
+                    color: '#ffffff',
                     padding: '10px',
                     borderRadius: '8px',
-                    border: '1px solid #eee',
+                    border: '1px solid #c9a84c',
                     marginTop: '10px',
                   }}
                 >

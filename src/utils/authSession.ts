@@ -94,7 +94,7 @@ export const finalizeAuthenticatedSession = (options: {
   const resolvedUser: AppUser = {
     ...options.user,
     role: resolvedRole ?? options.user.role,
-    ...(isManagingDirectorMaster ? { accessLevel: 5 } : {}),
+    accessLevel: isManagingDirectorMaster ? 5 : (options.user.accessLevel ?? 1),
   };
 
   options.dispatch(setUser(resolvedUser));

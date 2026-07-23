@@ -56,7 +56,8 @@
   width: 280px;
   min-width: 280px;
   height: 100%;
-  background: linear-gradient(180deg, var(--wc-emerald-dark) 0%, var(--wc-surface-card) 100%);
+  background: rgba(15, 15, 15, 0.85);
+  backdrop-filter: blur(12px);
   border-right: 1px solid var(--wc-border);
   display: flex;
   flex-direction: column;
@@ -164,7 +165,8 @@
 .workspace-header {
   height: 64px;
   min-height: 64px;
-  background-color: var(--wc-surface-card);
+  background-color: rgba(15, 15, 15, 0.8);
+  backdrop-filter: blur(8px);
   border-bottom: 1px solid var(--wc-border);
   display: flex;
   align-items: center;
@@ -253,4 +255,27 @@
   text-transform: uppercase;
   margin-left: 8px;
   box-shadow: 0 0 8px rgba(212, 175, 55, 0.4);
+}
+
+@media (max-width: 768px) {
+  .unified-sidebar {
+    display: none !important;
+  }
+
+  .workspace-header {
+    padding: 0 12px;
+  }
+
+  .global-search-input {
+    width: 140px !important;
+  }
+
+  .ai-command-shortcut {
+    display: none !important;
+  }
+
+  .workspace-viewport {
+    padding: 12px;
+    padding-bottom: 80px; /* Safe padding for BottomNav */
+  }
 }

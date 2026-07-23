@@ -29,7 +29,7 @@ const UniversalComponents = lazyRetry(() => import('./components/layout/Universa
 const RoleGateway = lazyRetry(() => import('./components/RoleGateway'));
 
 // All pages lazy-loaded for optimal bundle splitting
-const ProfilePage = lazyRetry(() => import('./pages/auth/ProfilePage'));
+const ProfilePage = lazyRetry(() => import('./pages/crm/ProfilePage'));
 const PendingApprovalPage = lazyRetry(() => import('./pages/auth/PendingApprovalPage'));
 const SignInPage = lazyRetry(() => import('./pages/auth/SignInPage'));
 const HomePage = lazyRetry(() => import('./pages/HomePage'));

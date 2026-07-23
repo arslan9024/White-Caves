@@ -2,6 +2,11 @@
  * Shared CRM Page Styled Components
  * Eliminates duplication across LeadManagementPage, PropertyManagementPage, and other CRM pages.
  *
+ * BRAND COLOR LAW:
+ *   Emerald Green: #10B981  — accents, focus rings, success states
+ *   Metallic Gold: #C9A84C  — headings, borders, primary buttons, badges
+ *   Obsidian Dark: #0f0f0f  — backgrounds, cards, surfaces
+ *
  * Usage:
  *   import { PageContainer, PageHeader, PrimaryButton, ... } from '../styles/CrmPageStyles';
  */
@@ -15,9 +20,9 @@ export const PageContainer = styled.div`
   margin: 0 auto;
   padding: 2rem;
   font-family: ${typography.fontFamily.primary};
-  background:
-    radial-gradient(circle at top right, rgba(227, 30, 36, 0.08), transparent 30%),
-    radial-gradient(circle at bottom left, rgba(46, 90, 79, 0.05), transparent 35%);
+  background: #0f0f0f;
+  color: #ffffff;
+  min-height: 100vh;
 `;
 
 export const PageHeader = styled.div`
@@ -32,7 +37,7 @@ export const PageHeader = styled.div`
 export const PageTitle = styled.h1`
   font-size: 1.5rem;
   font-weight: 700;
-  color: #1a1a2e;
+  color: #c9a84c;
   margin: 0;
   display: flex;
   align-items: center;
@@ -42,7 +47,7 @@ export const PageTitle = styled.h1`
 export const BackLink = styled.button`
   background: none;
   border: none;
-  color: #3b82f6;
+  color: #10b981;
   cursor: pointer;
   font-size: 0.85rem;
   font-weight: 500;
@@ -50,6 +55,7 @@ export const BackLink = styled.button`
 
   &:hover {
     text-decoration: underline;
+    color: #34d399;
   }
 `;
 
@@ -64,44 +70,51 @@ export const ActionBar = styled.div`
 `;
 
 export const SearchInput = styled.input`
-  border: 1px solid #ddd;
+  border: 1px solid #c9a84c;
   border-radius: 8px;
   padding: 0.6rem 1rem;
   font-size: 0.85rem;
   width: 280px;
   outline: none;
+  background: #1f1f1f;
+  color: #ffffff;
   transition: border-color 0.15s;
 
+  &::placeholder {
+    color: rgba(255, 255, 255, 0.4);
+  }
+
   &:focus {
-    border-color: #3b82f6;
-    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+    border-color: #10b981;
+    box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.15);
   }
 `;
 
 export const FilterSelect = styled.select`
-  border: 1px solid #ddd;
+  border: 1px solid #c9a84c;
   border-radius: 8px;
   padding: 0.6rem 0.75rem;
   font-size: 0.85rem;
   outline: none;
-  background: white;
+  background: #1f1f1f;
+  color: #ffffff;
   cursor: pointer;
 
   &:focus {
-    border-color: #3b82f6;
+    border-color: #10b981;
   }
 `;
 
 // ─── Buttons ────────────────────────────────────────────────────────────
 
 export const PrimaryButton = styled.button`
-  background: linear-gradient(135deg, #e31e24 0%, #b71c1c 100%);
-  color: #1a1a2e;
+  background: #c9a84c;
+  color: #0f0f0f;
   border: none;
   border-radius: 8px;
   padding: 0.6rem 1.25rem;
   font-size: 0.85rem;
-  font-weight: 500;
+  font-weight: 700;
   cursor: pointer;
   transition: all 0.15s;
   display: flex;
@@ -109,8 +122,8 @@ export const PrimaryButton = styled.button`
   gap: 0.4rem;
 
   &:hover {
-    background: linear-gradient(135deg, #e2c35a 0%, #e31e24 100%);
-    box-shadow: 0 8px 18px rgba(227, 30, 36, 0.28);
+    background: #e4b75e;
+    box-shadow: 0 8px 18px rgba(201, 168, 76, 0.25);
   }
 
   &:disabled {
@@ -120,9 +133,9 @@ export const PrimaryButton = styled.button`
 `;
 
 export const DangerButton = styled.button`
-  background: #ef4444;
-  color: white;
-  border: none;
+  background: rgba(239, 68, 68, 0.15);
+  color: #ef4444;
+  border: 1px solid rgba(239, 68, 68, 0.3);
   border-radius: 6px;
   padding: 0.35rem 0.75rem;
   font-size: 0.8rem;
@@ -130,14 +143,14 @@ export const DangerButton = styled.button`
   transition: all 0.15s;
 
   &:hover {
-    background: #dc2626;
+    background: rgba(239, 68, 68, 0.25);
   }
 `;
 
 export const SecondaryButton = styled.button`
-  background: white;
-  color: #555;
-  border: 1px solid #ddd;
+  background: #1f1f1f;
+  color: #c9a84c;
+  border: 1px solid #c9a84c;
   border-radius: 6px;
   padding: 0.35rem 0.75rem;
   font-size: 0.8rem;
@@ -145,8 +158,8 @@ export const SecondaryButton = styled.button`
   transition: all 0.15s;
 
   &:hover {
-    background: #f5f5f5;
-    border-color: #bbb;
+    background: #2c2c2c;
+    border-color: #e4b75e;
   }
 `;
 
@@ -156,31 +169,31 @@ export const Table = styled.table`
   width: 100%;
   border-collapse: separate;
   border-spacing: 0;
-  background: white;
+  background: #0f0f0f;
   border-radius: 12px;
   overflow: hidden;
-  border: 1px solid #e8e8e8;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+  border: 1px solid #c9a84c;
+  box-shadow: 0 4px 12px rgba(201, 168, 76, 0.1);
 `;
 
 export const Th = styled.th`
-  background: #fafafa;
+  background: #1a1a1a;
   padding: 0.75rem 1rem;
   text-align: left;
   font-size: 0.75rem;
   font-weight: 600;
-  color: #888;
+  color: #c9a84c;
   text-transform: uppercase;
   letter-spacing: 0.5px;
-  border-bottom: 1px solid #e8e8e8;
+  border-bottom: 1px solid rgba(201, 168, 76, 0.3);
   white-space: nowrap;
 `;
 
 export const Td = styled.td`
   padding: 0.75rem 1rem;
   font-size: 0.85rem;
-  color: #333;
-  border-bottom: 1px solid #f5f5f5;
+  color: rgba(255, 255, 255, 0.85);
+  border-bottom: 1px solid #2c2c2c;
   vertical-align: middle;
 `;
 
@@ -189,7 +202,7 @@ export const Tr = styled.tr`
   cursor: pointer;
 
   &:hover {
-    background: #f8f9ff;
+    background: rgba(201, 168, 76, 0.08);
   }
 
   &:last-child td {
@@ -200,7 +213,7 @@ export const Tr = styled.tr`
 export const EmptyState = styled.div`
   text-align: center;
   padding: 3rem;
-  color: #888;
+  color: rgba(255, 255, 255, 0.5);
 `;
 
 // ─── Form ───────────────────────────────────────────────────────────────
@@ -215,34 +228,39 @@ export const FormLabel = styled.label`
   font-weight: 600;
   letter-spacing: 0.04em;
   text-transform: uppercase;
-  color: #435467;
+  color: #c9a84c;
   margin-bottom: 0.45rem;
 `;
 
 export const FormInput = styled.input`
   width: 100%;
-  border: 1px solid #d8dee9;
+  border: 1px solid #c9a84c;
   border-radius: 10px;
   padding: 0.65rem 0.85rem;
   font-size: 0.85rem;
   outline: none;
   box-sizing: border-box;
-  background: rgba(255, 255, 255, 0.9);
+  background: #1f1f1f;
+  color: #ffffff;
   transition:
     border-color 0.18s ease,
     box-shadow 0.18s ease,
     background-color 0.18s ease;
 
+  &::placeholder {
+    color: rgba(255, 255, 255, 0.4);
+  }
+
   &:focus {
-    border-color: #e31e24;
-    box-shadow: 0 0 0 3px rgba(227, 30, 36, 0.2);
-    background: white;
+    border-color: #10b981;
+    box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.2);
+    background: #1a1a1a;
   }
 `;
 
 export const FormTextarea = styled.textarea`
   width: 100%;
-  border: 1px solid #d8dee9;
+  border: 1px solid #c9a84c;
   border-radius: 10px;
   padding: 0.65rem 0.85rem;
   font-size: 0.85rem;
@@ -250,35 +268,41 @@ export const FormTextarea = styled.textarea`
   resize: vertical;
   min-height: 80px;
   box-sizing: border-box;
-  background: rgba(255, 255, 255, 0.9);
+  background: #1f1f1f;
+  color: #ffffff;
   transition:
     border-color 0.18s ease,
     box-shadow 0.18s ease,
     background-color 0.18s ease;
 
+  &::placeholder {
+    color: rgba(255, 255, 255, 0.4);
+  }
+
   &:focus {
-    border-color: #e31e24;
-    box-shadow: 0 0 0 3px rgba(227, 30, 36, 0.2);
-    background: white;
+    border-color: #10b981;
+    box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.2);
+    background: #1a1a1a;
   }
 `;
 
 export const FormSelect = styled.select`
   width: 100%;
-  border: 1px solid #d8dee9;
+  border: 1px solid #c9a84c;
   border-radius: 10px;
   padding: 0.65rem 0.75rem;
   font-size: 0.85rem;
   outline: none;
-  background: white;
+  background: #1f1f1f;
+  color: #ffffff;
   box-sizing: border-box;
   transition:
     border-color 0.18s ease,
     box-shadow 0.18s ease;
 
   &:focus {
-    border-color: #e31e24;
-    box-shadow: 0 0 0 3px rgba(227, 30, 36, 0.2);
+    border-color: #10b981;
+    box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.2);
   }
 `;
 
@@ -304,23 +328,23 @@ export const PaginationWrapper = styled.div`
 // ─── Banners ────────────────────────────────────────────────────────────
 
 export const LoadingBanner = styled.div`
-  background: #eff6ff;
-  border: 1px solid #bfdbfe;
+  background: rgba(16, 185, 129, 0.1);
+  border: 1px solid rgba(16, 185, 129, 0.3);
   border-radius: 8px;
   padding: 0.75rem 1rem;
   margin-bottom: 1rem;
   font-size: 0.85rem;
-  color: #1d4ed8;
+  color: #10b981;
 `;
 
 export const ErrorBanner = styled.div`
-  background: #fef2f2;
-  border: 1px solid #fecaca;
+  background: rgba(239, 68, 68, 0.1);
+  border: 1px solid rgba(239, 68, 68, 0.3);
   border-radius: 8px;
   padding: 0.75rem 1rem;
   margin-bottom: 1rem;
   font-size: 0.85rem;
-  color: #dc2626;
+  color: #ef4444;
   display: flex;
   justify-content: space-between;
   align-items: center;

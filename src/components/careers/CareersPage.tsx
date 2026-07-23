@@ -76,7 +76,7 @@ export const CareersPage: React.FC = () => {
                     hiringOrganization: {
                       '@type': 'Organization',
                       name: 'White Caves Real Estate',
-                      sameAs: 'https://whitecaves.com',
+                      sameAs: 'https://www.whitecaves.com',
                     },
                     jobLocation: {
                       '@type': 'Place',
