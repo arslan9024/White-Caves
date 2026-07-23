@@ -56,7 +56,7 @@ router.get('/supported', (_req: Request, res: Response) => {
  */
 router.get('/convert', (req: Request, res: Response) => {
   try {
-    const { amount, from, to } = req.query;
+    const { amount, from, to } = req.query as Record<string, string | undefined>;
 
     if (!amount || !from || !to) {
       res.status(400).json({
@@ -107,7 +107,7 @@ router.get('/convert', (req: Request, res: Response) => {
  */
 router.get('/to-aed', (req: Request, res: Response) => {
   try {
-    const { amount, currency } = req.query;
+    const { amount, currency } = req.query as Record<string, string | undefined>;
 
     if (!amount || !currency) {
       res.status(400).json({

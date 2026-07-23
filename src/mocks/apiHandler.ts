@@ -16,7 +16,7 @@ interface ApiResponse<T> {
 interface ApiError {
   code: string;
   message: string;
-  details?: any;
+  details?: Record<string, unknown>;
 }
 
 // Simulate network delay
@@ -101,7 +101,24 @@ export const fetchAllDepartmentsDataFromApi = async (): Promise<
 /**
  * Fetch department KPIs
  */
-export const fetchDepartmentKPIs = async (departmentCode: string) => {
+export type DepartmentKPI = DepartmentData['kpis'][number];
+export type DepartmentSummary = DepartmentData['summary'];
+export interface DepartmentSearchResult {
+  kpis: DepartmentKPI[];
+}
+export interface DepartmentExportResult {
+  fileName: string;
+  content: DepartmentData;
+}
+export interface DepartmentTrendPoint {
+  label: string;
+  value: number;
+  trend: 'up' | 'down' | 'stable';
+}
+
+export const fetchDepartmentKPIs = async (
+  departmentCode: string
+): Promise<ApiResponse<DepartmentKPI[]>> => {
   await simulateApiDelay();
 
   const data = getMockDepartmentData(departmentCode);
@@ -123,7 +140,9 @@ export const fetchDepartmentKPIs = async (departmentCode: string) => {
 /**
  * Fetch department summary
  */
-export const fetchDepartmentSummary = async (departmentCode: string) => {
+export const fetchDepartmentSummary = async (
+  departmentCode: string
+): Promise<ApiResponse<DepartmentSummary>> => {
   await simulateApiDelay();
 
   const data = getMockDepartmentData(departmentCode);
@@ -145,7 +164,10 @@ export const fetchDepartmentSummary = async (departmentCode: string) => {
 /**
  * Search department data
  */
-export const searchDepartmentData = async (departmentCode: string, searchTerm: string) => {
+export const searchDepartmentData = async (
+  departmentCode: string,
+  searchTerm: string
+): Promise<ApiResponse<DepartmentSearchResult>> => {
   await simulateApiDelay();
 
   const data = getMockDepartmentData(departmentCode);
@@ -172,7 +194,9 @@ export const searchDepartmentData = async (departmentCode: string, searchTerm: s
 /**
  * Export/download department data
  */
-export const exportDepartmentData = async (departmentCode: string) => {
+export const exportDepartmentData = async (
+  departmentCode: string
+): Promise<ApiResponse<DepartmentExportResult>> => {
   await simulateApiDelay();
 
   const data = getMockDepartmentData(departmentCode);

@@ -134,8 +134,8 @@ const FullScreenDetailModal: React.FC<FullScreenDetailModalProps> = ({
             >
               <Heart
                 size={20}
-                fill={isFavorite ? '#E31E24' : 'none'}
-                color={isFavorite ? '#E31E24' : 'currentColor'}
+                fill={isFavorite ? '#C9A84C' : 'none'}
+                color={isFavorite ? '#C9A84C' : 'currentColor'}
               />
             </button>
             <button className="header-action-btn" aria-label="Share">

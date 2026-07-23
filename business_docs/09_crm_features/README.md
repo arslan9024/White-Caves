@@ -51,18 +51,31 @@ This folder contains comprehensive documentation of all CRM features, capabiliti
 3. **property-management.md** - Properties, listings, inventory
 4. **sales-pipeline.md** - Deal stages, forecasting, conversion controls
 
+### Compliance & Legal Features
+
+5. **trakheesi-integration.md** - Trakheesi permit validation, expiry tracking, publication gate (NEW May 2026)
+6. **legal-management.md** - Contract templates, legal notices (Forms 6/7/12), e-signature, RDC dispute filing
+7. **dld-integration.md** - DLD/Oqood off-plan registration, title deed transfer workflow
+8. **tenancy-ejari.md** - Ejari registration, PDC tracking, tenancy lifecycle
+
+### Portal & Listing Features
+
+9. **portal-syndication.md** - PropertyFinder/Bayut/Dubizzle XML feed engine + inbound lead capture (NEW May 2026)
+10. **sentinel-property.md** - Property lifecycle state machine, quality score, duplicate detection
+11. **off-plan-projects.md** - Off-plan project management, payment milestone tracking
+
 ### Advanced Features
 
-5. **whatsapp-integration.md** - WhatsApp bot, automation, templates
-6. **ai-assistants.md** - Overview of integrated AI assistants
-7. **analytics-dashboard.md** - Performance metrics and reporting
-8. **workflow-automation.md** - Automated task routing and management
+12. **whatsapp-integration.md** - WhatsApp bot, automation, templates
+13. **ai-chat.md** - AI chat flows, provider fallback, conversation lifecycle
+14. **analytics-dashboard.md** - KPI dashboards and analytics workflows
+15. **follow-up-automation.md** - Trigger-based automation and sequence execution
 
-### User Workflows
+### User Workflow References
 
-9. **agent-workflow.md** - Daily agent operations
-10. **manager-workflow.md** - Management and oversight
-11. **admin-workflow.md** - System administration
+9. **`business_docs/04_workflows/lead-to-sale-flowchart.md`** - Lead-to-close lifecycle
+10. **`business_docs/04_workflows/rental-management-flowchart.md`** - Lease and rental operations
+11. **`business_docs/04_workflows/finance-reconciliation-flowchart.md`** - Month-end finance workflow
 
 ---
 
@@ -188,7 +201,7 @@ For feature-specific questions:
 
 ## 🔗 Related Documentation
 
-- **Business Requirements**: `/business_docs/requirements/`
+- **Business Requirements**: `/business_docs/05_requirements/`
 - **Technical Architecture**: `/plans/ARCHITECTURE.md`
 - **API Documentation**: `/plans/API_DOCUMENTATION.md`
 - **UI Components**: Code repository `/src/components/`

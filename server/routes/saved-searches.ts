@@ -34,7 +34,7 @@ router.get(
       success: true,
       data: searches,
     });
-  }),
+  })
 );
 
 // ─── POST /api/saved-searches — Create a saved search ───────────────────────
@@ -78,7 +78,7 @@ router.post(
       success: true,
       data: search,
     });
-  }),
+  })
 );
 
 // ─── PATCH /api/saved-searches/:id — Update a saved search ──────────────────
@@ -88,7 +88,7 @@ router.patch(
     const userId = req.user?.id;
     if (!userId) throw new AppError('Authentication required', 401);
 
-    const { id } = req.params;
+    const { id } = req.params as Record<string, string>;
     const existing = await prisma.savedSearch.findUnique({ where: { id } });
     if (!existing) throw new AppError('Saved search not found', 404);
     if (existing.userId !== userId) throw new AppError('Access denied', 403);
@@ -122,7 +122,7 @@ router.patch(
       success: true,
       data: updated,
     });
-  }),
+  })
 );
 
 // ─── DELETE /api/saved-searches/:id — Delete a saved search ──────────────────
@@ -132,7 +132,7 @@ router.delete(
     const userId = req.user?.id;
     if (!userId) throw new AppError('Authentication required', 401);
 
-    const { id } = req.params;
+    const { id } = req.params as Record<string, string>;
     const existing = await prisma.savedSearch.findUnique({ where: { id } });
     if (!existing) throw new AppError('Saved search not found', 404);
     if (existing.userId !== userId) throw new AppError('Access denied', 403);
@@ -145,7 +145,7 @@ router.delete(
       success: true,
       message: 'Saved search deleted',
     });
-  }),
+  })
 );
 
 // ─── POST /api/saved-searches/:id/check — Check for new matches ─────────────
@@ -155,7 +155,7 @@ router.post(
     const userId = req.user?.id;
     if (!userId) throw new AppError('Authentication required', 401);
 
-    const { id } = req.params;
+    const { id } = req.params as Record<string, string>;
     const search = await prisma.savedSearch.findUnique({ where: { id } });
     if (!search) throw new AppError('Saved search not found', 404);
     if (search.userId !== userId) throw new AppError('Access denied', 403);
@@ -177,7 +177,7 @@ router.post(
         newMatches: Math.max(0, newMatchCount - previousCount),
       },
     });
-  }),
+  })
 );
 
 // ─── Helper: Build Prisma where clause from filters ──────────────────────────
@@ -195,8 +195,10 @@ async function countPropertyMatches(filters: Record<string, unknown>): Promise<n
   }
   if (typeof filters.minPrice === 'number' || typeof filters.maxPrice === 'number') {
     where.price = {};
-    if (typeof filters.minPrice === 'number') (where.price as Record<string, number>).gte = filters.minPrice;
-    if (typeof filters.maxPrice === 'number') (where.price as Record<string, number>).lte = filters.maxPrice;
+    if (typeof filters.minPrice === 'number')
+      (where.price as Record<string, number>).gte = filters.minPrice;
+    if (typeof filters.maxPrice === 'number')
+      (where.price as Record<string, number>).lte = filters.maxPrice;
   }
   if (typeof filters.bedrooms === 'number') {
     where.bedrooms = { gte: filters.bedrooms };

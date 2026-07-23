@@ -33,7 +33,7 @@ Historical snapshot file:
 - Scope: low-risk or isolated modules with clear rollback
 - Required artifacts: SDD + readiness packet + implementation backlog + test rollout
 - Approval phrase:
-  - `@Ada — Context Ready (60% Readiness) — Coding Phase Approved`
+  - `@Ada — Context Ready (90% Readiness) — High-Fidelity Coding Phase Approved`
 
 ### Gate 2 — Full premium-wave gate
 

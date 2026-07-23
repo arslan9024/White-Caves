@@ -10,11 +10,11 @@ import FeatureRenderer from '../crm/FeatureRenderer';
 import './DashboardShell.css';
 
 const ROLE_OPTIONS = [
-  { id: 'md', label: 'Managing Director', path: '/md/dashboard' },
-  { id: 'agent', label: 'Agent View', path: '/agent/dashboard' },
-  { id: 'admin', label: 'Admin View', path: '/admin/dashboard' },
-  { id: 'buyer', label: 'Buyer View', path: '/buyer/dashboard' },
-  { id: 'tenant', label: 'Tenant View', path: '/tenant/dashboard' }
+  { id: 'md', label: 'Managing Director', path: '/crm' },
+  { id: 'agent', label: 'Agent View', path: '/crm' },
+  { id: 'admin', label: 'Admin View', path: '/crm' },
+  { id: 'buyer', label: 'Buyer View', path: '/crm' },
+  { id: 'tenant', label: 'Tenant View', path: '/tenant-portal' }
 ];
 
 const LoadingFallback = () => (

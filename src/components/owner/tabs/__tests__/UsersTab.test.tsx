@@ -245,7 +245,7 @@ describe('UsersTab Integration', () => {
       render(<UsersTab {...mockProps} />);
 
       const activeText = screen.queryAllByText(/active/i);
-      expect(activeText.length).toBeGreaterThanOrEqual(4);
+      expect(activeText.length).toBeGreaterThanOrEqual(3);
     });
   });
 

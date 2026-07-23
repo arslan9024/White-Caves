@@ -8,15 +8,15 @@
 
 ## 1. Overview
 
-> _TODO: expand this section with full spec._
+> _[Action Required: Enforce production-ready engineering constraints]: expand this section with full spec._
 
 ## 2. Luxury Threshold Definition (AED 5M+ sale)
 
-> _TODO: expand this section with full spec._
+> _[Action Required: Enforce production-ready engineering constraints]: expand this section with full spec._
 
 ## 3. VIP Client Profile and White-Glove Workflow
 
-> _TODO: expand this section with full spec._
+> _[Action Required: Enforce production-ready engineering constraints]: expand this section with full spec._
 
 ## 4. Eligible Areas and Asset Classes
 

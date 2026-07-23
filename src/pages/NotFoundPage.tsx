@@ -1,10 +1,14 @@
-import React, { FC, useState, useEffect } from 'react'
+import React, { FC, useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useDocumentTitle } from '../hooks/useDocumentTitle';
+import { useSEO } from '../hooks/useSEO';
 import './NotFoundPage.css';
 
 const NotFoundPage: FC = () => {
-  useDocumentTitle('Page Not Found');
+  useSEO({
+    title: 'Page Not Found | White Caves Real Estate',
+    description: 'The page you are looking for does not exist.',
+    noIndex: true,
+  });
   const [countdown, setCountdown] = useState<number>(5);
   const navigate = useNavigate();
 

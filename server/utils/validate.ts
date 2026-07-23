@@ -5,7 +5,7 @@
  * Uses AppError for consistent 422 responses on invalid input.
  *
  * Usage:
- *   import { validate, rules } from '../utils/validate';
+ *   import { validate, rules } from '../utils/validate.js';
  *
  *   router.post('/', asyncHandler(async (req, res) => {
  *     validate(req.body, {
@@ -17,7 +17,7 @@
  *   }));
  */
 
-import { AppError } from '../middleware/errorHandler';
+import { AppError } from '../middleware/errorHandler.js';
 
 // ─── Validation Rule Type ────────────────────────────────────────────────
 interface ValidationError {

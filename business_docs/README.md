@@ -2,7 +2,7 @@
 
 > **Single Source of Truth** for all business documentation, domain knowledge, and strategic planning.
 >
-> Last updated: April 10, 2026 | **120+ documents across 15 sections**
+> Last updated: June 10, 2026 | **120+ documents across 15 sections**
 
 ---
 
@@ -18,6 +18,7 @@ These business docs now operate under the project-wide development system:
 - **92% Readiness Gate:** implementation is blocked until readiness score is >=92% with matrix evidence and approvals.
 - **Premium restriction:** premium Copilot requests are reserved for senior coders/designers only after gate approval.
 - **Free-agent lock:** junior/free planning agents use only Gemini 2.0 Flash, Llama 3.1 70B (Groq), DeepSeek V3.
+- **Plan sync:** keep the business docs aligned with `plans/ORCHESTRATION_UPGRADE_V4.md` and the canonical planning stack.
 
 ### Collaboration Handoff Format (Mandatory)
 
@@ -33,11 +34,11 @@ This ensures all subagents work as one pipeline rather than isolated documents.
 
 ## 📋 Folder Structure
 
-```
+```text
 business_docs/
 ├── 01_company_structure/     # Org chart, departments, roles, stakeholder register
 ├── 02_services/              # Core service offerings catalog (9 services)
-├── 03_ai_assistants/         # 24-persona AI assistant registry + integration map
+├── 03_ai_assistants/         # 40-persona AI assistant registry + integration map
 ├── 04_workflows/             # 9 critical business workflows + flowcharts
 ├── 05_requirements/          # 80+ requirements + business rules + risk register
 ├── 06_design_architecture/   # Architecture, API, database, UI/UX, data dictionary
@@ -78,7 +79,7 @@ business_docs/
 - **Company**: White Caves Real Estate LLC, Dubai, UAE
 - **Portfolio**: 9,378+ properties (DAMAC Hills 2 primary)
 - **Team**: 24+ employees across 10 departments
-- **AI Assistants**: 24 personas (5 critical, 9 core, 10 support)
+- **AI Assistants**: 40 documented personas across executive, core business, support, intelligence, and platform roles
 - **Revenue Target**: AED 39–100M annual (5 revenue streams)
 - **Market**: AED 180B Dubai real estate (TAM: AED 660M SaaS)
 - **Tech Stack**: React 18, TypeScript, Express, MongoDB/Prisma, Firebase
@@ -444,7 +445,7 @@ When adding new business documentation:
 
 ## 📊 Integration with Other Documentation
 
-```
+```text
 business_docs/          ← Business requirements & domain knowledge
 ├─ Links to ─→ /plans/   ← Technical implementation
                 ├─ MASTER_PLAN_UPDATED_FEB_2026.md

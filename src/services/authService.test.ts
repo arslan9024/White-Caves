@@ -4,6 +4,9 @@ import {
   loginWithEmail,
   registerWithEmail,
   syncFirebaseUser,
+  requestPasswordReset,
+  verifyPasswordResetToken,
+  resetPasswordWithToken,
   fetchProfile,
   changePassword,
   logout,
@@ -15,6 +18,7 @@ vi.mock('../utils/apiClient', () => ({
   apiClient: {
     post: vi.fn(),
     get: vi.fn(),
+    put: vi.fn(),
     setAuthToken: vi.fn(),
   },
 }));
@@ -27,8 +31,13 @@ vi.mock('../utils/safeStorage', () => ({
   },
 }));
 
+vi.mock('../utils/authFetch', () => ({
+  authFetch: vi.fn().mockResolvedValue({ ok: true }),
+}));
+
 import { apiClient } from '../utils/apiClient';
 import { safeStorage } from '../utils/safeStorage';
+import { authFetch } from '../utils/authFetch';
 
 const mApiPost = apiClient.post as ReturnType<typeof vi.fn>;
 const mApiGet = apiClient.get as ReturnType<typeof vi.fn>;
@@ -36,6 +45,7 @@ const mApiSetToken = apiClient.setAuthToken as ReturnType<typeof vi.fn>;
 const mStorageGet = safeStorage.get as ReturnType<typeof vi.fn>;
 const mStorageSet = safeStorage.set as ReturnType<typeof vi.fn>;
 const mStorageRemove = safeStorage.remove as ReturnType<typeof vi.fn>;
+const mAuthFetch = authFetch as ReturnType<typeof vi.fn>;
 
 const testUser = {
   id: 'u1',
@@ -48,6 +58,7 @@ const testUser = {
 describe('authService', () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    mAuthFetch.mockResolvedValue({ ok: true });
   });
 
   // ── restoreAuthToken ──────────────────────────────────────────────
@@ -251,6 +262,33 @@ describe('authService', () => {
 
       await expect(syncFirebaseUser(fbUser)).rejects.toThrow(/temporarily rate-limited/i);
     });
+
+    it('retries once on transient 503 error and succeeds on second attempt', async () => {
+      mApiPost
+        .mockRejectedValueOnce(new HttpError('', 503, 'Service Unavailable', null))
+        .mockResolvedValueOnce({
+          success: true,
+          data: { token: 'tok-retry', user: testUser },
+        });
+
+      const result = await syncFirebaseUser(fbUser);
+
+      expect(mApiPost).toHaveBeenCalledTimes(2);
+      expect(result.success).toBe(true);
+      expect(mStorageSet).toHaveBeenCalledWith('token', 'tok-retry');
+    });
+
+    it('stops after retry when transient errors persist', async () => {
+      mApiPost
+        .mockRejectedValueOnce(new HttpError('', 503, 'Service Unavailable', null))
+        .mockRejectedValueOnce(new HttpError('', 503, 'Service Unavailable', null))
+        .mockRejectedValueOnce(new HttpError('', 503, 'Service Unavailable', null));
+
+      await expect(syncFirebaseUser(fbUser)).rejects.toThrow(
+        /temporarily unavailable on the server/i
+      );
+      expect(mApiPost).toHaveBeenCalledTimes(3);
+    });
   });
 
   // ── fetchProfile ──────────────────────────────────────────────────
@@ -263,12 +301,62 @@ describe('authService', () => {
     });
   });
 
+  // ── forgot password lifecycle ─────────────────────────────────────
+  describe('forgot password lifecycle', () => {
+    it('requestPasswordReset calls forgot-password request endpoint', async () => {
+      mApiPost.mockResolvedValue({
+        success: true,
+        data: { requested: true, expiresInMinutes: 30, message: 'ok' },
+      });
+
+      const result = await requestPasswordReset('user@example.com');
+
+      expect(mApiPost).toHaveBeenCalledWith('/auth/forgot-password/request', {
+        email: 'user@example.com',
+      });
+      expect(result.success).toBe(true);
+      expect(result.data.requested).toBe(true);
+    });
+
+    it('verifyPasswordResetToken calls forgot-password verify endpoint', async () => {
+      mApiPost.mockResolvedValue({
+        success: true,
+        data: { verified: true, resetSessionToken: 'session-token' },
+      });
+
+      const result = await verifyPasswordResetToken('user@example.com', 'email-token');
+
+      expect(mApiPost).toHaveBeenCalledWith('/auth/forgot-password/verify', {
+        email: 'user@example.com',
+        token: 'email-token',
+      });
+      expect(result.data.verified).toBe(true);
+      expect(result.data.resetSessionToken).toBe('session-token');
+    });
+
+    it('resetPasswordWithToken calls forgot-password reset endpoint', async () => {
+      mApiPost.mockResolvedValue({
+        success: true,
+        data: { reset: true, message: 'done' },
+      });
+
+      const result = await resetPasswordWithToken('session-token', 'NewPass123');
+
+      expect(mApiPost).toHaveBeenCalledWith('/auth/forgot-password/reset', {
+        resetSessionToken: 'session-token',
+        newPassword: 'NewPass123',
+      });
+      expect(result.data.reset).toBe(true);
+    });
+  });
+
   // ── changePassword ────────────────────────────────────────────────
   describe('changePassword', () => {
-    it('calls POST /auth/change-password', async () => {
-      mApiPost.mockResolvedValue({ success: true });
+    it('calls PUT /auth/password', async () => {
+      const mApiPut = apiClient.put as ReturnType<typeof vi.fn>;
+      mApiPut.mockResolvedValue({ success: true });
       const result = await changePassword('old', 'new');
-      expect(mApiPost).toHaveBeenCalledWith('/auth/change-password', {
+      expect(mApiPut).toHaveBeenCalledWith('/auth/password', {
         currentPassword: 'old',
         newPassword: 'new',
       });
@@ -278,8 +366,8 @@ describe('authService', () => {
 
   // ── logout ────────────────────────────────────────────────────────
   describe('logout', () => {
-    it('clears token and userRole from storage', () => {
-      logout();
+    it('clears token and userRole from storage', async () => {
+      await logout();
       expect(mStorageRemove).toHaveBeenCalledWith('token');
       expect(mStorageRemove).toHaveBeenCalledWith('userRole');
       expect(mApiSetToken).toHaveBeenCalledWith(null);

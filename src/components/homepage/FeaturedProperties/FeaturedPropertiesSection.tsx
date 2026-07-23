@@ -45,7 +45,7 @@ interface FeaturedCardProps {
 
 const FeaturedCard: React.FC<FeaturedCardProps> = ({ property, index }) => {
   const navigate = useNavigate();
-  const fallbackImage = 'https://images.unsplash.com/photo-1512453979798-5ea266f8880c?w=800&q=80';
+  const fallbackImage = '/images/dubai-skyline.jpg';
   const image = property.images?.[0] ?? fallbackImage;
 
   const formattedPrice = new Intl.NumberFormat('en-AE', {

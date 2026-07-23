@@ -17,10 +17,14 @@ const mockAuthFetch = vi.fn();
 const mockDispatch = vi.fn();
 let mockSearchParams = new URLSearchParams('code=AUTH_CODE_123&state=STATE_456');
 
-vi.mock('react-router-dom', () => ({
-  useNavigate: () => mockNavigate,
-  useSearchParams: () => [mockSearchParams],
-}));
+vi.mock('react-router-dom', async () => {
+  const actual = await vi.importActual('react-router-dom');
+  return {
+    ...actual,
+    useNavigate: () => mockNavigate,
+    useSearchParams: () => [mockSearchParams],
+  };
+});
 
 vi.mock('react-redux', () => ({
   useSelector: (selector: (s: unknown) => unknown) =>
@@ -135,7 +139,7 @@ describe('UAEPassSuccessPage', () => {
 
     it('shows redirect message', async () => {
       render(<UAEPassSuccessPage />);
-      expect(await screen.findByText(/redirected to your dashboard/)).toBeInTheDocument();
+      expect(await screen.findByText(/redirected to your profile/)).toBeInTheDocument();
     });
 
     it('shows security notice', async () => {
@@ -143,19 +147,19 @@ describe('UAEPassSuccessPage', () => {
       expect(await screen.findByText(/Your Information is Secure/)).toBeInTheDocument();
     });
 
-    it('"Continue to Dashboard" button navigates immediately', async () => {
+    it('"Continue to Profile" button navigates immediately', async () => {
       render(<UAEPassSuccessPage />);
-      const btn = await screen.findByText('Continue to Dashboard');
+      const btn = await screen.findByText('Continue to Profile');
       fireEvent.click(btn);
-      expect(mockNavigate).toHaveBeenCalledWith('/dashboard');
+      expect(mockNavigate).toHaveBeenCalledWith('/profile');
     });
 
-    it('auto-redirects to dashboard after successful auth', async () => {
+    it('auto-redirects to profile after successful auth', async () => {
       render(<UAEPassSuccessPage />);
       await screen.findByText('Welcome!');
       // Wait for the 3-second redirect timer to fire
       await waitFor(() => {
-        expect(mockNavigate).toHaveBeenCalledWith('/dashboard');
+        expect(mockNavigate).toHaveBeenCalledWith('/profile');
       }, { timeout: 5000 });
     }, 10000);
   });
@@ -222,12 +226,12 @@ describe('UAEPassSuccessPage', () => {
       expect(await screen.findByText(/Authentication Failed/)).toBeInTheDocument();
     });
 
-    it('"Try Again" button navigates to login', async () => {
+    it('"Try Again" button navigates to signin', async () => {
       mockSearchParams = new URLSearchParams('');
       render(<UAEPassSuccessPage />);
       const btn = await screen.findByText('Try Again');
       fireEvent.click(btn);
-      expect(mockNavigate).toHaveBeenCalledWith('/auth/login');
+      expect(mockNavigate).toHaveBeenCalledWith('/signin');
     });
 
     it('shows fallback error on JSON parse failure', async () => {

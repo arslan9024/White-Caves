@@ -1,0 +1,67 @@
+{
+  "dashboard": {
+    "greeting": "Welcome back",
+    "overview": "Overview",
+    "view_details": "View Details",
+    "net_profit": "Net Profit",
+    "active_deals": "Active Deals",
+    "revenue": "Revenue",
+    "expenses": "Expenses",
+    "total_leads": "Total Leads",
+    "properties": "Properties",
+    "settings": "Settings",
+    "logout": "Log Out"
+  },
+  "agent": {
+    "leasing": {
+      "pipeline": "Leasing Pipeline",
+      "active_transactions": "{count} active transactions",
+      "pending": "Pending",
+      "inquiry": "inquiry",
+      "viewing": "viewing",
+      "application": "application",
+      "contract": "contract",
+      "signed": "signed",
+      "active": "active"
+    }
+  },
+  "common": {
+    "loading": "Loading...",
+    "error": "An error occurred",
+    "save": "Save",
+    "cancel": "Cancel",
+    "currency": "AED",
+    "navigation": "Navigation"
+  },
+  "tenant": {
+    "portal": {
+      "unauthorized": "You must be logged in to access the Tenant Portal.",
+      "title": "Tenant Portal",
+      "welcome": "Welcome, {name}. Manage your lease and requests.",
+      "tabs": {
+        "home": "Dashboard",
+        "lease": "My Lease",
+        "payments": "Payment History",
+        "maintenance": "Maintenance",
+        "documents": "Documents",
+        "profile": "My Profile"
+      }
+    }
+  },
+  "landlord": {
+    "portal": {
+      "unauthorized": "You must be logged in to access the Landlord Portal.",
+      "title": "Landlord Portal",
+      "welcome": "Welcome, {name}. Manage your properties and tenants.",
+      "tabs": {
+        "home": "Dashboard",
+        "properties": "My Properties",
+        "tenants": "Tenants",
+        "payments": "Rent Payments",
+        "maintenance": "Maintenance",
+        "documents": "Documents",
+        "profile": "My Profile"
+      }
+    }
+  }
+}

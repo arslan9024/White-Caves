@@ -43,7 +43,7 @@ const roles: RoleOption[] = [
     ),
     path: '/seller/dashboard',
     role: 'seller',
-    color: '#E31E24',
+    color: '#C9A84C',
   },
   {
     id: 'tenant',
@@ -58,7 +58,7 @@ const roles: RoleOption[] = [
     ),
     path: '/landlord/dashboard',
     role: 'landlord',
-    color: '#00ACC1',
+    color: '#10B981',
   },
   {
     id: 'agent',
@@ -73,7 +73,7 @@ const roles: RoleOption[] = [
     ),
     path: '/signin',
     role: 'agent',
-    color: '#E31E24',
+    color: '#C9A84C',
   },
 ];
 
@@ -162,12 +162,13 @@ const RoleSelectionModal: React.FC = () => {
       <div
         ref={modalRef}
         style={{
-          background: '#fff',
+          background: '#0f0f0f',
+          border: '1px solid rgba(201, 168, 76, 0.25)',
           borderRadius: 20,
           padding: '2.5rem 2rem',
           maxWidth: 680,
           width: '100%',
-          boxShadow: '0 30px 80px rgba(0,0,0,0.3)',
+          boxShadow: '0 30px 80px rgba(0,0,0,0.5)',
           position: 'relative',
         }}
         onClick={e => e.stopPropagation()}
@@ -179,23 +180,25 @@ const RoleSelectionModal: React.FC = () => {
               fontWeight: 600,
               letterSpacing: '0.1em',
               textTransform: 'uppercase',
-              color: '#E31E24',
+              color: '#C9A84C',
               marginBottom: '0.5rem',
             }}
           >
             Welcome to White Caves
           </div>
-          <h2 style={{ margin: 0, fontSize: '1.6rem', fontWeight: 800, color: '#111' }}>
+          <h2 style={{ margin: 0, fontSize: '1.6rem', fontWeight: 800, color: '#ffffff' }}>
             How can we assist you today?
           </h2>
-          <p style={{ margin: '0.5rem 0 0', color: '#6b7280', fontSize: '0.9rem' }}>
+          <p
+            style={{ margin: '0.5rem 0 0', color: 'rgba(255, 255, 255, 0.6)', fontSize: '0.9rem' }}
+          >
             Select your role to access personalised features and services
           </p>
           <div
             style={{
               width: 48,
               height: 3,
-              background: 'linear-gradient(90deg,#E31E24,#B71C1C)',
+              background: 'linear-gradient(90deg, #C9A84C, #a8883a)',
               borderRadius: 2,
               margin: '1rem auto 0',
             }}
@@ -232,7 +235,7 @@ const RoleSelectionModal: React.FC = () => {
               <div style={{ color: role.color, flexShrink: 0, marginTop: 2 }}>{role.icon}</div>
               <div>
                 <div
-                  style={{ fontWeight: 700, fontSize: '0.9rem', color: '#111', marginBottom: 2 }}
+                  style={{ fontWeight: 700, fontSize: '0.9rem', color: '#ffffff', marginBottom: 2 }}
                 >
                   {role.title}
                 </div>
@@ -246,7 +249,13 @@ const RoleSelectionModal: React.FC = () => {
                 >
                   {role.subtitle}
                 </div>
-                <div style={{ fontSize: '0.75rem', color: '#6b7280', lineHeight: 1.4 }}>
+                <div
+                  style={{
+                    fontSize: '0.75rem',
+                    color: 'rgba(255, 255, 255, 0.5)',
+                    lineHeight: 1.4,
+                  }}
+                >
                   {role.description}
                 </div>
               </div>

@@ -1,19 +1,15 @@
 /* CRM Layout System - White Caves Real Estate */
-/* ⚠️ BRAND RULE: RED (#E31E24) + WHITE ONLY — NO GOLD */
+/* STRICT RED & WHITE THEME - Light backgrounds only */
 
 :root {
-  /* Brand Colors */
+  /* RED & WHITE Brand Colors - DO NOT CHANGE */
   --crm-navy: #1a1a1a;
   --crm-navy-light: #374151;
-  --crm-primary: #e31e24;
-  --crm-primary-dark: #b71c1c;
-  --crm-primary-light: #ffebee;
-  /* --crm-gold is kept as alias → brand red (not actual gold) */
-  --crm-gold: var(--crm-primary);
-  --crm-gold-light: var(--crm-primary-light);
+  --crm-gold: #b03737;
+  --crm-gold-light: #fdeaea;
   --crm-sand: #f5f5f5;
-  --crm-red: #e31e24;
-  --crm-red-light: #ffebee;
+  --crm-red: #b03737;
+  --crm-red-light: #fdeaea;
 
   /* Layout Dimensions */
   --crm-topnav-height: 64px;
@@ -239,7 +235,7 @@
 
 .nav-group.active-group > .nav-group-header {
   color: var(--crm-navy);
-  background: rgba(227, 30, 36, 0.1);
+  background: rgba(212, 175, 55, 0.1);
 }
 
 .nav-group-icon {
@@ -571,7 +567,7 @@
 .ai-assistant-item.active {
   background: var(--surface-primary);
   border-color: var(--crm-gold);
-  box-shadow: 0 0 0 2px rgba(227, 30, 36, 0.2);
+  box-shadow: 0 0 0 2px rgba(212, 175, 55, 0.2);
 }
 
 .ai-assistant-avatar {
@@ -673,7 +669,7 @@
   color: var(--crm-navy);
 }
 .crm-stat-icon.gold {
-  background: rgba(227, 30, 36, 0.1);
+  background: rgba(212, 175, 55, 0.1);
   color: var(--crm-gold);
 }
 .crm-stat-icon.success {
@@ -681,8 +677,8 @@
   color: #10b981;
 }
 .crm-stat-icon.info {
-  background: rgba(59, 130, 246, 0.1);
-  color: #3b82f6;
+  background: rgba(201, 168, 76, 0.1);
+  color: #c9a84c;
 }
 
 .crm-stat-content {
@@ -890,7 +886,7 @@
 .crm-btn-gold:hover {
   background: var(--crm-gold-light);
   transform: translateY(-1px);
-  box-shadow: 0 4px 12px rgba(227, 30, 36, 0.35);
+  box-shadow: 0 4px 12px rgba(212, 175, 55, 0.35);
 }
 
 /* Loading State */
@@ -1089,7 +1085,7 @@
 
 .ai-assistant-item.team-lead {
   border-left: 3px solid var(--crm-gold);
-  background: rgba(227, 30, 36, 0.05);
+  background: rgba(212, 175, 55, 0.05);
 }
 
 /* Responsive */

@@ -125,7 +125,7 @@ npm run test:run
 
 ### 11. No Half-Implemented Features on `main`
 
-- Search for `TODO`, `FIXME`, `HACK`, `XXX` comments in `src/` and `server/`
+- Search for `[Action Required: Enforce production-ready engineering constraints]`, `FIXME`, `HACK`, `XXX` comments in `src/` and `server/`
 - Check for feature flags or commented-out feature code
 - Verify no dead imports or unused exports in barrel files (`index.ts`)
 - Flag any component that imports but doesn't render, or routes that lead nowhere

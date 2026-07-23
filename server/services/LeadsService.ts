@@ -3,8 +3,8 @@
  * Business logic for lead management
  */
 
-import { prisma } from '../database';
-import { sanitizeString } from '../utils/sanitize';
+import { prisma } from '../database.js';
+import { sanitizeString } from '../utils/sanitize.js';
 
 const DEFAULT_LEAD_STATUS = 'new';
 const DEFAULT_LEAD_SOURCE = 'direct';

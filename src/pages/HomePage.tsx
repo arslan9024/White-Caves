@@ -1,9 +1,11 @@
 import React, { FC, lazy, Suspense, useEffect, useMemo } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { useSEO, getCanonicalUrl } from '../hooks/useSEO';
+import { useNavigate } from 'react-router-dom';
 import { setProperties, type Property } from '../store/propertySlice';
 import {
+  clearError,
   fetchHomepageData,
+  selectHomepageError,
   selectMarketStats,
   selectTopAgents,
   selectLocationTrends,
@@ -13,9 +15,12 @@ import {
 } from '../store/slices/homepageSlice';
 import type { AppDispatch } from '../store/store';
 import { buildHomepageJsonLd } from './homepageSeo';
+import { buildOrganizationSchema } from '../utils/jsonLdSchemas';
 import ClickToChat from '../components/ClickToChat';
 import RoleSelectionModal from '../components/RoleSelectionModal';
 import PublicLayout from '../components/layout/PublicLayout';
+import PageMeta from '../components/seo/PageMeta';
+import StructuredData from '../components/seo/StructuredData';
 import { useRecentlyViewed } from '../components/RecentlyViewed';
 import { HOME_PROPERTIES } from '../data/homeProperties';
 import './HomePage.css';
@@ -40,7 +45,6 @@ const Team = lazy(() => import('../components/homepage/Team'));
 const Testimonials = lazy(() => import('../components/homepage/Testimonials'));
 const ContactCTA = lazy(() => import('../components/homepage/Contact'));
 const NewsletterSubscription = lazy(() => import('../components/NewsletterSubscription'));
-const InteractiveMap = lazy(() => import('../components/InteractiveMap'));
 const PropertyComparison = lazy(() => import('../components/PropertyComparison'));
 const OffPlanTracker = lazy(() => import('../components/OffPlanTracker'));
 const NeighborhoodAnalyzer = lazy(() => import('../components/NeighborhoodAnalyzer'));
@@ -53,25 +57,8 @@ const OnboardingGateway = lazy(() => import('../components/OnboardingGateway'));
 
 /** Minimal placeholder while lazy chunks load */
 const SectionLoader: FC = () => (
-  <div
-    style={{
-      minHeight: 200,
-      display: 'flex',
-      alignItems: 'center',
-      justifyContent: 'center',
-      opacity: 0.5,
-    }}
-  >
-    <div
-      style={{
-        width: 32,
-        height: 32,
-        border: '3px solid #e5e7eb',
-        borderTop: '3px solid #6366f1',
-        borderRadius: '50%',
-        animation: 'spin 0.8s linear infinite',
-      }}
-    />
+  <div className="home-page-section-loader" aria-hidden="true">
+    <div className="home-page-section-loader__spinner" />
   </div>
 );
 
@@ -96,6 +83,18 @@ const FALLBACK_FEATURED: HomepageProperty[] = HOME_PROPERTIES.slice(0, 6).map(p 
   featured: true,
 }));
 
+const HOME_PROPERTIES_FOR_STORE: Property[] = HOME_PROPERTIES.map(p => ({
+  id: p.id,
+  title: p.title,
+  location: p.location,
+  type: p.type,
+  price: p.price,
+  beds: p.beds,
+  baths: p.baths,
+  sqft: p.sqft,
+  amenities: p.amenities,
+}));
+
 const HomePage: FC = () => {
   const dispatch = useDispatch<AppDispatch>();
   const marketStats = useSelector(selectMarketStats);
@@ -103,6 +102,8 @@ const HomePage: FC = () => {
   const locationTrends = useSelector(selectLocationTrends);
   const featuredProperties = useSelector(selectFeaturedProperties);
   const isHomepageLoading = useSelector(selectIsHomepageLoading);
+  const homepageError = useSelector(selectHomepageError);
+  const navigate = useNavigate();
 
   // Use live data when available; fall back to static dummy data before API resolves
   const displayedFeatured = useMemo(
@@ -110,50 +111,140 @@ const HomePage: FC = () => {
     [featuredProperties]
   );
 
-  useSEO({
-    title: 'White Caves Real Estate — Dubai Luxury Properties',
-    description:
-      'Explore premium villas, penthouses, and investment-ready properties in Dubai with White Caves Real Estate. RERA-licensed agency serving luxury buyers and investors.',
-    keywords: [
-      'Dubai real estate',
-      'luxury properties Dubai',
-      'White Caves Real Estate',
-      'Dubai villas',
-      'RERA licensed',
+  const homepageJsonLd = useMemo(
+    () =>
+      buildHomepageJsonLd({
+        marketStats,
+        featuredProperties: displayedFeatured,
+        topAgents,
+        locationTrends,
+      }),
+    [marketStats, displayedFeatured, topAgents, locationTrends]
+  );
+  const structuredDataPayload = useMemo<Array<Record<string, unknown>>>(() => {
+    const homepageSchemas = Array.isArray(homepageJsonLd) ? homepageJsonLd : [homepageJsonLd];
+
+    return [...homepageSchemas, buildOrganizationSchema()].filter(
+      (entry): entry is Record<string, unknown> => Boolean(entry)
+    );
+  }, [homepageJsonLd]);
+  const trustHighlights = useMemo(
+    () => [
+      { label: 'Active Listings', value: marketStats.availableProperties.toLocaleString('en-US') },
+      {
+        label: 'Average Price',
+        value: `AED ${Math.round(marketStats.averagePrice).toLocaleString('en-US')}`,
+      },
+      { label: 'Top Agents', value: String(topAgents.length || 0) },
+      { label: 'Popular Areas', value: String(locationTrends.length || 0) },
     ],
-    canonicalUrl: getCanonicalUrl('/'),
-    ogType: 'website',
-    ogImage:
-      'https://images.unsplash.com/photo-1582268611958-ebfd161ef9cf?w=1200&h=630&fit=crop&q=80',
-    jsonLd: buildHomepageJsonLd({
-      marketStats,
-      featuredProperties,
-      topAgents,
-      locationTrends,
-    }),
-  });
+    [
+      marketStats.availableProperties,
+      marketStats.averagePrice,
+      topAgents.length,
+      locationTrends.length,
+    ]
+  );
   const { addToRecent } = useRecentlyViewed();
+
+  const pageTitle = 'White Caves Real Estate — Dubai Luxury Properties';
+  const pageDescription =
+    'Explore premium villas, penthouses, and investment-ready properties in Dubai with White Caves Real Estate. RERA-licensed agency serving luxury buyers and investors.';
+  const pageKeywords = [
+    'Dubai real estate',
+    'luxury properties Dubai',
+    'White Caves Real Estate',
+    'Dubai villas',
+    'RERA licensed',
+  ];
 
   const handlePropertyClick = (propertyId: number): void => {
     addToRecent(String(propertyId));
-    const element = document.getElementById(`property-${propertyId}`);
-    if (element) {
-      element.scrollIntoView({ behavior: 'smooth', block: 'center' });
-    }
+    navigate(`/property/${propertyId}`);
   };
 
   useEffect(() => {
     // Seed Redux property store with static fallback for /properties page
-    dispatch(setProperties(HOME_PROPERTIES as unknown as Property[]));
+    dispatch(setProperties(HOME_PROPERTIES_FOR_STORE));
     // Fetch live homepage data in the background (@Mira's aggregate endpoint)
     dispatch(fetchHomepageData());
   }, [dispatch]);
 
+  useEffect(() => {
+    const refreshIntervalMs = 120_000;
+    const refreshTimer = window.setInterval(() => {
+      dispatch(fetchHomepageData());
+    }, refreshIntervalMs);
+
+    const handleVisibilityChange = (): void => {
+      if (document.visibilityState === 'visible') {
+        dispatch(fetchHomepageData());
+      }
+    };
+
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+
+    return () => {
+      window.clearInterval(refreshTimer);
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
+    };
+  }, [dispatch]);
+
+  useEffect(() => {
+    if (!homepageError || isHomepageLoading) return;
+
+    const retryTimer = window.setTimeout(() => {
+      dispatch(fetchHomepageData());
+    }, 45_000);
+
+    return () => {
+      window.clearTimeout(retryTimer);
+    };
+  }, [dispatch, homepageError, isHomepageLoading]);
+
+  const handleHomepageRetry = (): void => {
+    dispatch(clearError());
+    dispatch(fetchHomepageData());
+  };
+
   return (
     <PublicLayout>
+      <PageMeta
+        title={pageTitle}
+        description={pageDescription}
+        keywords={pageKeywords}
+        canonicalPath="/"
+        ogType="website"
+        ogImage="https://images.unsplash.com/photo-1582268611958-ebfd161ef9cf?w=1200&h=630&fit=crop&q=80"
+        jsonLd={homepageJsonLd}
+      />
+      <StructuredData id="home-jsonld" data={structuredDataPayload} />
       <div className="home-page">
+        {homepageError && !isHomepageLoading ? (
+          <div role="status" aria-live="polite" className="homepage-live-data-alert">
+            <span>Live market data is temporarily unavailable. Showing trusted fallback data.</span>
+            <button
+              type="button"
+              onClick={handleHomepageRetry}
+              className="homepage-live-data-alert__retry"
+            >
+              Retry live data
+            </button>
+          </div>
+        ) : null}
+
         {/* Phase 25: Hero is the LCP element — NOT wrapped in Suspense so it renders on first paint */}
         <Hero marketStats={marketStats} isLoading={isHomepageLoading} />
+        <section className="home-page__trust-strip" aria-label="Market trust highlights">
+          <div className="home-page__trust-grid">
+            {trustHighlights.map(item => (
+              <article key={item.label} className="home-page__trust-card">
+                <span className="home-page__trust-label">{item.label}</span>
+                <span className="home-page__trust-value">{item.value}</span>
+              </article>
+            ))}
+          </div>
+        </section>
 
         {/* Above-fold companions lazy-loaded so they don't delay Hero render */}
         <Suspense fallback={<SectionLoader />}>
@@ -172,65 +263,24 @@ const HomePage: FC = () => {
           />
 
           {/* ── Tools & Insights ───────────────────────────────────────────────── */}
-          <div
-            id="tools-insights"
-            style={{
-              background: 'linear-gradient(180deg, #f8f9fa 0%, #ffffff 100%)',
-            }}
-          >
-            <div
-              style={{
-                maxWidth: 1200,
-                margin: '0 auto',
-                padding: '3.5rem 1.5rem 1rem',
-                textAlign: 'center',
-              }}
-            >
-              <p
-                style={{
-                  color: '#E31E24',
-                  fontWeight: 600,
-                  fontSize: '0.875rem',
-                  letterSpacing: '0.12em',
-                  textTransform: 'uppercase',
-                  marginBottom: '0.5rem',
-                }}
-              >
-                Expert Resources
-              </p>
-              <h2
-                style={{
-                  color: '#1a1a2e',
-                  fontSize: 'clamp(1.6rem, 3vw, 2.25rem)',
-                  fontWeight: 700,
-                  marginBottom: '0.75rem',
-                }}
-              >
-                Tools &amp; Insights
-              </h2>
-              <p
-                style={{
-                  color: '#6b7280',
-                  maxWidth: 560,
-                  margin: '0 auto 0.5rem',
-                  lineHeight: 1.65,
-                }}
-              >
+          <div id="tools-insights" className="home-page-tools-insights">
+            <div className="home-page-tools-insights__inner">
+              <p className="home-page-tools-insights__eyebrow">Expert Resources</p>
+              <h2 className="home-page-tools-insights__title">Tools & Insights</h2>
+              <p className="home-page-tools-insights__description">
                 Use our interactive calculators, market data, and research tools to make confident
                 property decisions in Dubai.
               </p>
             </div>
-
-            <InteractiveMap />
             <PropertyComparison />
             <RentVsBuyCalculator />
             <OffPlanTracker
               marketStats={marketStats}
               locationTrends={locationTrends}
-              featuredProperties={featuredProperties}
+              featuredProperties={displayedFeatured}
             />
             <NeighborhoodAnalyzer />
-            <VirtualTourGallery featuredProperties={featuredProperties} />
+            <VirtualTourGallery featuredProperties={displayedFeatured} />
           </div>
           {/* ── /Tools & Insights ─────────────────────────────────────────────── */}
 
@@ -239,7 +289,7 @@ const HomePage: FC = () => {
           <Testimonials />
           <BlogSection
             marketStats={marketStats}
-            featuredProperties={featuredProperties}
+            featuredProperties={displayedFeatured}
             locationTrends={locationTrends}
           />
           <NewsletterSubscription />

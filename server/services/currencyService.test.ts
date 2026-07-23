@@ -14,7 +14,7 @@ import {
   isSupportedCurrency,
   getExchangeRates,
   CURRENCIES,
-} from './currencyService';
+} from './currencyService.js';
 
 // ── getExchangeRates ─────────────────────────────────────────────────────────
 

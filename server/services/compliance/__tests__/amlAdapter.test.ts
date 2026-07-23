@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { screenAML } from '../amlAdapter';
+import { screenAML } from '../amlAdapter.js';
 
 describe('AML adapter baseline provider', () => {
   it('returns low risk for normal profile', async () => {

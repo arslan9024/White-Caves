@@ -6,29 +6,41 @@
  * Separate from /api/agents which is specific to agent performance data.
  *
  * Access control:
- *   GET /                  — requireMinRole('admin')
- *   GET /me                — any authenticated user
- *   GET /pending           — requireMinRole('admin')
- *   GET /:id               — requireMinRole('admin')
- *   PATCH /:id             — requireRole('owner') — change role / status
- *   PATCH /:id/status      — requireMinRole('admin') — activate / suspend
+ *   GET /                  â€” requireMinRole('admin')
+ *   GET /me                â€” any authenticated user
+ *   GET /pending           â€” requireMinRole('admin')
+ *   GET /:id               â€” requireMinRole('admin')
+ *   PATCH /:id             â€” requireRole('owner') â€” change role / status
+ *   PATCH /:id/status      â€” requireMinRole('admin') â€” activate / suspend
  */
 
 import { Router, Request, Response } from 'express';
-import { asyncHandler, AppError } from '../middleware/errorHandler';
-import type { AuthRequest } from '../middleware/auth';
+type RouteRequest = Request<Record<string, string>>;
+import { asyncHandler, AppError } from '../middleware/errorHandler.js';
+import type { AuthRequest } from '../middleware/auth.js';
 import { prisma } from '../database.js';
-import { sanitizeString } from '../utils/sanitize';
-import { validateIdParam } from '../utils/validate';
-import { parsePagination } from '../config/pagination';
+import { sanitizeString } from '../utils/sanitize.js';
+import { validateIdParam } from '../utils/validate.js';
+import { parsePagination } from '../config/pagination.js';
 import {
   requireRole,
   requireMinRole,
   ROLE_ALIAS_MAP,
   resolveBackendRole,
-} from '../middleware/rbac';
+} from '../middleware/rbac.js';
 
 const router = Router();
+
+const routeParamToString = (value: string | string[] | undefined): string | null => {
+  if (typeof value === 'string' && value.trim().length > 0) {
+    return value;
+  }
+  if (Array.isArray(value) && value.length > 0 && typeof value[0] === 'string') {
+    const first = value[0].trim();
+    return first.length > 0 ? first : null;
+  }
+  return null;
+};
 
 // All role strings accepted by the PATCH endpoint.
 // Includes both canonical backend roles and frontend UI aliases.
@@ -38,7 +50,7 @@ const ALL_VALID_ROLES = Object.keys(ROLE_ALIAS_MAP);
 const VALID_STATUSES = ['active', 'pending', 'inactive', 'suspended', 'rejected'] as const;
 type UserStatus = (typeof VALID_STATUSES)[number];
 
-// ─── GET /api/users ──────────────────────────────────────────────────────
+// â”€â”€â”€ GET /api/users â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 /**
  * List all users across all roles. Requires admin or above.
  * Supports: role, status, search, page, pageSize filters.
@@ -46,8 +58,8 @@ type UserStatus = (typeof VALID_STATUSES)[number];
 router.get(
   '/',
   requireMinRole('admin'),
-  asyncHandler(async (req: Request, res: Response) => {
-    const { role, status, search, department } = req.query;
+  asyncHandler(async (req: RouteRequest, res: Response) => {
+    const { role, status, search, department } = req.query as Record<string, string | undefined>;
 
     const {
       page: pageNum,
@@ -121,14 +133,14 @@ router.get(
   })
 );
 
-// ─── GET /api/users/me ───────────────────────────────────────────────────
+// â”€â”€â”€ GET /api/users/me â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 /**
  * Return the currently authenticated user's profile.
  * Any authenticated user can call this.
  */
 router.get(
   '/me',
-  asyncHandler(async (req: Request, res: Response) => {
+  asyncHandler(async (req: RouteRequest, res: Response) => {
     const userId = (req as AuthRequest).user?.id;
     if (!userId) throw new AppError('Not authenticated', 401);
 
@@ -155,7 +167,7 @@ router.get(
   })
 );
 
-// ─── GET /api/users/pending ──────────────────────────────────────────────
+// â”€â”€â”€ GET /api/users/pending â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 /**
  * List users whose status is 'pending' (awaiting admin approval).
  * Used by the managing director to approve or reject new staff sign-ups.
@@ -164,7 +176,7 @@ router.get(
 router.get(
   '/pending',
   requireMinRole('admin'),
-  asyncHandler(async (req: Request, res: Response) => {
+  asyncHandler(async (req: RouteRequest, res: Response) => {
     const {
       page: pageNum,
       limit,
@@ -207,7 +219,7 @@ router.get(
   })
 );
 
-// ─── GET /api/users/:id ──────────────────────────────────────────────────
+// â”€â”€â”€ GET /api/users/:id â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 /**
  * Get a single user by ID. Requires admin or above.
  */
@@ -215,10 +227,15 @@ router.get(
   '/:id',
   requireMinRole('admin'),
   asyncHandler(async (req: Request, res: Response) => {
-    validateIdParam(req.params.id, 'User ID');
+    const userId = routeParamToString(req.params.id);
+    if (!userId) {
+      throw new AppError('User ID is required', 400);
+    }
+
+    validateIdParam(userId, 'User ID');
 
     const user = await prisma.user.findUnique({
-      where: { id: req.params.id },
+      where: { id: userId },
       select: {
         id: true,
         email: true,
@@ -248,26 +265,30 @@ router.get(
   })
 );
 
-// ─── PATCH /api/users/:id ────────────────────────────────────────────────
+// â”€â”€â”€ PATCH /api/users/:id â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 /**
  * Update a user's role, status, department, name, or phone.
  * Only the owner (managing director) can change roles.
  * Admins can change status only.
  *
- * @body role?       — new role string (owner-only)
- * @body status?     — 'active' | 'pending' | 'inactive' | 'suspended' | 'rejected'
- * @body department? — department string
- * @body name?       — display name
- * @body phone?      — phone number
+ * @body role?       â€” new role string (owner-only)
+ * @body status?     â€” 'active' | 'pending' | 'inactive' | 'suspended' | 'rejected'
+ * @body department? â€” department string
+ * @body name?       â€” display name
+ * @body phone?      â€” phone number
  */
 router.patch(
   '/:id',
   requireRole('owner'),
   asyncHandler(async (req: Request, res: Response) => {
-    validateIdParam(req.params.id, 'User ID');
+    const targetId = routeParamToString(req.params.id);
+    if (!targetId) {
+      throw new AppError('User ID is required', 400);
+    }
+
+    validateIdParam(targetId, 'User ID');
 
     const requesterId = (req as AuthRequest).user?.id;
-    const targetId = req.params.id;
 
     // Owners cannot remove their own owner role (safety guard)
     if (
@@ -288,7 +309,7 @@ router.patch(
       if (!ALL_VALID_ROLES.includes(rawRole)) {
         throw new AppError(`Invalid role. Must be one of: ${ALL_VALID_ROLES.join(', ')}`, 400);
       }
-      // Resolve alias → canonical (e.g. 'managing_director' → 'owner')
+      // Resolve alias â†’ canonical (e.g. 'managing_director' â†’ 'owner')
       canonicalRole = resolveBackendRole(rawRole);
     }
 
@@ -318,7 +339,6 @@ router.patch(
     if (canonicalRole === undefined && Object.keys(data).length === 0) {
       throw new AppError('No valid fields provided to update', 400);
     }
-
     const target = await prisma.user.findUnique({ where: { id: targetId } });
     if (!target) throw new AppError('User not found', 404);
 
@@ -368,30 +388,34 @@ router.patch(
   })
 );
 
-// ─── PATCH /api/users/:id/status ─────────────────────────────────────────
+// â”€â”€â”€ PATCH /api/users/:id/status â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 /**
  * Activate, suspend, or reject a user. Requires admin or above.
- * The owner-only PATCH /:id endpoint also handles this — this is a
+ * The owner-only PATCH /:id endpoint also handles this â€” this is a
  * convenience endpoint for the approval flow (admin can approve pending users).
  *
- * @body status — 'active' | 'pending' | 'inactive' | 'suspended' | 'rejected'
+ * @body status â€” 'active' | 'pending' | 'inactive' | 'suspended' | 'rejected'
  */
 router.patch(
   '/:id/status',
   requireMinRole('admin'),
   asyncHandler(async (req: Request, res: Response) => {
-    validateIdParam(req.params.id, 'User ID');
+    const userId = routeParamToString(req.params.id);
+    if (!userId) {
+      throw new AppError('User ID is required', 400);
+    }
+
+    validateIdParam(userId, 'User ID');
 
     const { status } = req.body;
     if (!status || !VALID_STATUSES.includes(status as UserStatus)) {
       throw new AppError(`Invalid status. Must be one of: ${VALID_STATUSES.join(', ')}`, 400);
     }
-
-    const target = await prisma.user.findUnique({ where: { id: req.params.id } });
+    const target = await prisma.user.findUnique({ where: { id: userId } });
     if (!target) throw new AppError('User not found', 404);
 
     const updated = await prisma.user.update({
-      where: { id: req.params.id },
+      where: { id: userId },
       data: { status: status as string },
       select: {
         id: true,

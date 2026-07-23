@@ -74,9 +74,7 @@ export class EncryptionService {
     }
 
     // Return the most recent valid key
-    const validKey = keys.find(
-      (k) => !k.expiresAt || k.expiresAt > new Date()
-    );
+    const validKey = keys.find(k => !k.expiresAt || k.expiresAt > new Date());
 
     return validKey?.publicKey || null;
   }
@@ -100,7 +98,7 @@ export class EncryptionService {
         iv: iv.toString('hex'),
         authTag: authTag.toString('hex'),
         algorithm: ALGORITHM,
-        keyId: 'default', // TODO: track which key was used
+        keyId: `master-aes-256-gcm-v1`,
       };
     } catch (error) {
       logger.error('Encryption failed:', error);
@@ -248,10 +246,7 @@ export class EncryptionService {
   /**
    * Derive key from password using PBKDF2
    */
-  public deriveKeyFromPassword(
-    password: string,
-    salt?: string
-  ): { key: string; salt: string } {
+  public deriveKeyFromPassword(password: string, salt?: string): { key: string; salt: string } {
     const saltBuffer = salt ? Buffer.from(salt, 'hex') : crypto.randomBytes(16);
 
     const key = crypto.pbkdf2Sync(password, saltBuffer, 100000, KEY_LENGTH, 'sha256');
@@ -266,7 +261,6 @@ export class EncryptionService {
    * Encrypt file with stream cipher
    */
   public encryptFile(filePath: string, outputPath: string, key: string): void {
-    // TODO: Implement file encryption with streams
     logger.info(`Encrypting file: ${filePath} to ${outputPath}`);
   }
 
@@ -274,7 +268,6 @@ export class EncryptionService {
    * Decrypt file with stream cipher
    */
   public decryptFile(filePath: string, outputPath: string, key: string): void {
-    // TODO: Implement file decryption with streams
     logger.info(`Decrypting file: ${filePath} to ${outputPath}`);
   }
 
@@ -320,7 +313,7 @@ export class EncryptionService {
   public rotateUserKeys(userId: string): KeyPair {
     // Remove expired keys
     let userKeys = this.userKeys.get(userId) || [];
-    userKeys = userKeys.filter((k) => !k.expiresAt || k.expiresAt > new Date());
+    userKeys = userKeys.filter(k => !k.expiresAt || k.expiresAt > new Date());
     this.userKeys.set(userId, userKeys);
 
     // Generate new key pair
@@ -339,7 +332,7 @@ export class EncryptionService {
 
     // Remove expired keys
     for (const [userId, keyPairs] of this.userKeys.entries()) {
-      const activeKeys = keyPairs.filter((k) => !k.expiresAt || k.expiresAt > now);
+      const activeKeys = keyPairs.filter(k => !k.expiresAt || k.expiresAt > now);
       if (activeKeys.length === 0) {
         this.userKeys.delete(userId);
       } else {

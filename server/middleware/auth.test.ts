@@ -25,8 +25,8 @@ vi.mock('../config/env', () => ({
   PORT: 3001,
 }));
 
-import authMiddleware from './auth';
-import type { AuthRequest } from './auth';
+import authMiddleware from './auth.js';
+import type { AuthRequest } from './auth.js';
 import type { Response, NextFunction } from 'express';
 
 // ─── Helpers ────────────────────────────────────────────────────────────

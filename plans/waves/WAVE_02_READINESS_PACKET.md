@@ -77,4 +77,4 @@
   - Canonical readiness source document:
     - `plans/waves/WAVE_02_READINESS_SOURCE_OF_TRUTH.md`
   - Coding approval phrase for Gate 1:
-    - `@Ada — Context Ready (60% Readiness) — Coding Phase Approved`
+    - `@Ada — Context Ready (90% Readiness) — High-Fidelity Coding Phase Approved`

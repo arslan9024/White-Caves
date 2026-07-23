@@ -9,7 +9,13 @@ This project is organized into clear, logical sections for easy navigation:
 - **QUICK_ACCESS_GUIDE.md** - Start here for common tasks and shortcuts
 - **EMERGENCY_RESPONSE_PROCEDURES.md** - Critical incident response procedures
 
-### 📋 Strategic Planning & Operations
+#### White Caves Real Estate LLC
+
+- **Landline Phone**: +971 4 335 0592
+- **Contact**: +971 56 361 6136
+- **Email**: <mailto:admin@whitecaves.com>
+- **Website**: <https://www.whitecave.com>
+- **Location**: Dubai, United Arab Emirates
 
 All strategic documents are in `/plans/`:
 
@@ -45,26 +51,81 @@ Business requirements, features, and guidelines in `/business_docs/`:
 
 The source code is organized as follows:
 
+## Technology Stack
+
+### Frontend
+
+- React 18 with Vite
+- Redux Toolkit for state management
+- Framer Motion for animations
+- Custom CSS with dark/light themes
+
+### Backend
+
+- Node.js with Express
+- MongoDB with Mongoose ODM
+- Firebase Admin SDK
+
+### Design
+
+- Red (#DC2626) and White brand colors
+- Montserrat/Open Sans typography
+- Mobile-responsive design
+- RTL support for Arabic
+
+---
+
+## Deployment
+
+### Production Requirements
+
+- Node.js 20.x
+- MongoDB database
+- Firebase project with service account
+- Required environment variables configured
+
+### Supported Runtime Versions
+
+- Node.js: `>=20.x` (CI baseline: 20.x)
+- npm: `>=10.0.0`
+
+### Build Commands
+
+```bash
+# On Windows PowerShell, use npm.cmd instead of npm if you see script execution errors:
+npm.cmd install
+npm.cmd run build
+npm.cmd start
+# Or use Node directly for package binaries:
+node node_modules/vite/bin/vite.js
+node node_modules/vitest/vitest.mjs run
 ```
-/src
-  ├── /components       - React components
-  ├── /pages           - Page components
-  ├── /services        - Backend services
-  ├── /hooks           - Custom React hooks
-  ├── /types           - TypeScript types
-  ├── /utils           - Utility functions
-  ├── /store           - Redux store configuration
-  └── /styles          - Styled components and themes
+
+If you see an error like:
+
+> File C:\Program Files\nodejs\npm.ps1 cannot be loaded because running scripts is disabled on this system.
+
+This is a PowerShell security policy. Either use npm.cmd as above, or run:
+
+```powershell
+Set-ExecutionPolicy -Scope CurrentUser -ExecutionPolicy RemoteSigned
 ```
 
-### 🗂️ Archive & Historical Records
+to allow script execution for npm.ps1 (not recommended for most users).
 
-All completed work and historical documents are in `/archives/`:
+### Environment Variables
 
-- Session summaries and completion reports
-- Old deployment guides (for reference)
-- Historical status documents
-- Phase completion reports
+- `DATABASE_URL`: MongoDB connection string (canonical)
+- `FIREBASE_SERVICE_ACCOUNT`: Firebase admin credentials
+- `STRIPE_SECRET_KEY`: Stripe API key
+- `GOOGLE_CLIENT_ID`: Google OAuth client ID
+- `GOOGLE_CLIENT_SECRET`: Google OAuth secret
+- `JWT_SECRET`: Auth signing secret (required in production)
+- `CORS_ORIGIN`: Allowed origin(s) for server CORS (required in production)
+- `WHATSAPP_WEBHOOK_SECRET`: Webhook signature secret (required in production)
+- `WHATSAPP_ACCESS_TOKEN`: WhatsApp Business API token (optional)
+
+Legacy note: `MONGODB_URI` is supported as a fallback alias, but `DATABASE_URL` is the canonical key.
 
 ---
 
@@ -135,6 +196,8 @@ npm start                # Starts server with NODE_ENV=production
 npm run build            # Production build
 npm test                 # Run tests
 npm run lint             # Run linter
+npm run orchestrator:prmr:handoff        # PR/MR handoff checklist + command hints
+npm run orchestrator:prmr:handoff:checks # Same checklist + typecheck/lint/build run
 
 # Deployment verification
 npm run verify-deploy         # Run deployment readiness checks (endpoints/config/env/SEO files)

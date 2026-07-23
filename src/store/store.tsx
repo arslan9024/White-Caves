@@ -19,8 +19,10 @@ import roleReducer from './roleSlice';
 import featuresReducer from './featuresSlice';
 import savedSearchesReducer from './slices/savedSearchesSlice';
 import homepageReducer from './slices/homepageSlice';
+import departmentsReducer from './slices/departmentSlice';
 import searchLeadsReducer from './slices/searchLeadsSlice';
 import crmViewReducer from './slices/crmViewSlice';
+import propertySearchReducer from '../redux/slices/propertySlice';
 import eventBusMiddleware from './middleware/eventBusMiddleware';
 import { createLogger } from '../utils/logger';
 
@@ -60,8 +62,10 @@ export const store = configureStore({
     features: featuresReducer,
     savedSearches: savedSearchesReducer,
     homepage: homepageReducer,
+    departments: departmentsReducer,
     searchLeads: searchLeadsReducer,
     crmView: crmViewReducer,
+    propertySearch: propertySearchReducer,
   },
   middleware: getDefaultMiddleware =>
     getDefaultMiddleware({

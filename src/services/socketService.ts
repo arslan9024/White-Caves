@@ -140,7 +140,7 @@ class SocketService {
       this.setStatus('disconnected');
     });
 
-    this.socket.on('connect_error', (err) => {
+    this.socket.on('connect_error', (err: Error) => {
       console.warn('[SocketService] Connection error:', err.message);
       this.setStatus('error');
     });

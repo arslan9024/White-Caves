@@ -131,6 +131,12 @@ export class MetaAPIClient {
    */
   public async sendMessage(toPhoneNumber: string, messageText: string): Promise<string> {
     try {
+      const { hasWhatsAppConsent } = await import('./consentManager.js');
+      if (!(await hasWhatsAppConsent(toPhoneNumber))) {
+        console.warn(`[Meta API] Blocked message to ${toPhoneNumber} due to opt-out status.`);
+        return 'blocked_no_consent';
+      }
+
       const payload: SendMessagePayload = {
         messaging_product: 'whatsapp',
         recipient_type: 'individual',
@@ -286,7 +292,7 @@ export class MetaAPIClient {
   ): Promise<MediaUploadResponse> {
     try {
       const formData = new FormData();
-      const blob = new Blob([fileBuffer], { type: mimeType });
+      const blob = new Blob([fileBuffer as unknown as BlobPart], { type: mimeType });
       formData.append('file', blob, filename);
       formData.append('type', mimeType);
 

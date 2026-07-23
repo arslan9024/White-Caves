@@ -12,10 +12,10 @@ vi.hoisted(() => {
     process.env.DATABASE_URL || 'mongodb://localhost:27017/white-caves-test';
 });
 
-import { NinaEngine, Intent, ConversationContext } from './ninaEngine';
-import { ConversationMemory, ConversationMemoryState } from './conversationMemory';
-import { LindaClient, LindaStatus } from '../whatsapp/lindaClient';
-import { MetaAPIClient } from '../whatsapp/metaAPI';
+import { NinaEngine, Intent, ConversationContext } from './ninaEngine.js';
+import { ConversationMemory, ConversationMemoryState } from './conversationMemory.js';
+import { LindaClient, LindaStatus } from '../whatsapp/lindaClient.js';
+import { MetaAPIClient } from '../whatsapp/metaAPI.js';
 
 /**
  * Nina NLP Engine Tests

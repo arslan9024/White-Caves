@@ -1,98 +1,101 @@
 /**
- * Color Palette - White Caves Primary Brand System
- * All colors used throughout the application, organized by purpose.
- * Brand authority (2026-04-27): RED/WHITE primary identity.
+ * Color Palette - White Caves Brand System
+ * ═══════════════════════════════════════════════════
+ * BRAND COLOR LAW (STRICTLY ENFORCED):
+ *   Emerald Green : #10B981  — success, accents, focus
+ *   Metallic Gold : #C9A84C  — primary, headings, CTAs
+ *   Obsidian Dark : #0f0f0f  — backgrounds, surfaces
+ * ═══════════════════════════════════════════════════
  */
 
 export const colors = {
-  // Primary Brand Colors (RED / WHITE)
-  primary: '#E31E24',
-  primaryDark: '#B71C1C',
-  primaryLight: '#EF5350',
-  primaryVeryLight: '#FFEBEE',
+  // Primary Brand Colors — METALLIC GOLD
+  primary: '#C9A84C',
+  primaryDark: '#a8883a',
+  primaryLight: '#e4b75e',
+  primaryVeryLight: 'rgba(201, 168, 76, 0.08)',
 
-  // Secondary Colors (DARK GREEN)
-  secondary: '#2E5A4F',
-  secondaryDark: '#1E3A32',
-  secondaryLight: '#3D7A6B',
+  // Secondary Colors — EMERALD GREEN
+  secondary: '#10B981',
+  secondaryDark: '#064e3b',
+  secondaryLight: '#34d399',
 
-  // Brand Red Palette (50→900) — replaces legacy gold palette
-  // ⚠️ BRAND RULE: White Caves brand = Red (#E31E24) + White ONLY. No gold. No yellow. No amber.
+  // Gold Palette (50→900) — Metallic Gold brand scale
   gold: {
-    50: '#FFEBEE',
-    100: '#FFCDD2',
-    200: '#EF9A9A',
-    300: '#E57373',
-    400: '#E31E24',
-    500: '#B71C1C',
-    600: '#C62828',
-    700: '#B71C1C',
-    800: '#961818',
-    900: '#7B1414',
+    50: 'rgba(201, 168, 76, 0.05)',
+    100: 'rgba(201, 168, 76, 0.1)',
+    200: 'rgba(201, 168, 76, 0.2)',
+    300: 'rgba(201, 168, 76, 0.35)',
+    400: '#e4b75e',
+    500: '#C9A84C',
+    600: '#a8883a',
+    700: '#8a6e2e',
+    800: '#6b5422',
+    900: '#4a3a17',
   },
 
   // Green Palette (50→900)
   green: {
-    50: '#E8F0EE',
-    100: '#C5DAD5',
-    200: '#9EBFB7',
-    300: '#6FA396',
-    400: '#4D8676',
-    500: '#2E5A4F',
-    600: '#264B42',
-    700: '#1E3A32',
-    800: '#162B25',
-    900: '#0E1C18',
+    50: '#ecfdf5',
+    100: '#d1fae5',
+    200: '#a7f3d0',
+    300: '#6ee7b7',
+    400: '#34d399',
+    500: '#10B981',
+    600: '#059669',
+    700: '#047857',
+    800: '#065f46',
+    900: '#064e3b',
   },
 
-  // Luxury Gradients — all use brand RED, not gold
+  // Luxury Gradients — Gold/Emerald/Obsidian brand palette
   luxury: {
-    goldShimmer: 'linear-gradient(135deg, #E31E24 0%, #EF5350 50%, #E31E24 100%)',
-    goldToGreen: 'linear-gradient(135deg, #E31E24 0%, #2E5A4F 100%)',
-    darkGreen: 'linear-gradient(135deg, #2E5A4F 0%, #1E3A32 100%)',
-    goldDark: 'linear-gradient(180deg, #E31E24, #B71C1C)',
-    warmSand: 'linear-gradient(135deg, #F5E6D3 0%, #FDF8E8 100%)',
-    premiumDark: 'linear-gradient(135deg, #1A1A1A 0%, #2E5A4F 100%)',
+    goldShimmer: 'linear-gradient(135deg, #C9A84C 0%, #e4b75e 50%, #C9A84C 100%)',
+    goldToGreen: 'linear-gradient(135deg, #C9A84C 0%, #10B981 100%)',
+    darkGreen: 'linear-gradient(135deg, #10B981 0%, #064e3b 100%)',
+    goldDark: 'linear-gradient(180deg, #C9A84C, #a8883a)',
+    warmSand: 'linear-gradient(135deg, #1f1f1f 0%, #2c2c2c 100%)',
+    premiumDark: 'linear-gradient(135deg, #0f0f0f 0%, #1a1a1a 100%)',
   },
 
   // Semantic Colors
-  success: '#388E3C',
-  successLight: '#81C784',
-  warning: '#F57F17',
-  warningLight: '#FFB74D',
-  error: '#D32F2F',
-  errorLight: '#EF5350',
-  info: '#0288D1',
-  infoLight: '#4FC3F7',
+  success: '#10B981',
+  successLight: '#34d399',
+  warning: '#C9A84C',
+  warningLight: '#e4b75e',
+  error: '#EF4444',
+  errorLight: '#f87171',
+  info: '#C9A84C',
+  infoLight: '#e4b75e',
 
-  // Text Colors
+  // Text Colors (Obsidian Dark)
   text: {
-    primary: '#212121',
-    secondary: '#666666',
-    tertiary: '#999999',
-    disabled: '#BDBDBD',
-    inverse: '#FFFFFF',
+    primary: '#ffffff',
+    secondary: 'rgba(255, 255, 255, 0.7)',
+    tertiary: 'rgba(255, 255, 255, 0.45)',
+    disabled: 'rgba(255, 255, 255, 0.25)',
+    inverse: '#0f0f0f',
   },
 
-  // Background Colors
+  // Background Colors (Obsidian Dark)
   background: {
-    primary: '#F8F9FA',
-    secondary: '#FFFFFF',
-    tertiary: '#F5F5F5',
-    overlay: 'rgba(0, 0, 0, 0.5)',
-    dark: '#1A1A1A',
-    darkSecondary: '#2A2A2A',
+    primary: '#0f0f0f',
+    secondary: '#1a1a1a',
+    tertiary: '#1f1f1f',
+    overlay: 'rgba(0, 0, 0, 0.7)',
+    dark: '#0f0f0f',
+    darkSecondary: '#1a1a1a',
   },
 
   // Border Colors
-  border: '#E0E0E0',
-  borderLight: '#F0F0F0',
-  borderDark: '#CCCCCC',
+  border: '#2c2c2c',
+  borderLight: 'rgba(201, 168, 76, 0.15)',
+  borderDark: '#C9A84C',
 
   // Shadow & Effects
-  shadow: 'rgba(0, 0, 0, 0.1)',
-  shadowLight: 'rgba(0, 0, 0, 0.05)',
-  shadowDark: 'rgba(0, 0, 0, 0.15)',
+  shadow: 'rgba(0, 0, 0, 0.3)',
+  shadowLight: 'rgba(0, 0, 0, 0.15)',
+  shadowDark: 'rgba(0, 0, 0, 0.5)',
 
   // Departmental / Categorical Colors
   departments: {
@@ -170,57 +173,55 @@ export const colors = {
   },
 
   // Utility Aliases for Component Compatibility
-  surface: '#FFFFFF',
-  surfaceAlt: '#F5F5F5',
-  hover: '#F5F5F5',
-  cardBg: '#FFFFFF',
-  textColor: '#212121',
-  textPrimary: '#212121',
-  textSecondary: '#666666',
-  textMuted: '#999999',
-  borderColor: '#E0E0E0',
-  bgPrimary: '#F8F9FA',
-  bgSecondary: '#FFFFFF',
-  bgTertiary: '#F5F5F5',
-  danger: '#D32F2F',
-  dangerDark: '#B71C1C',
-  dangerLight: 'rgba(211, 47, 47, 0.15)',
-  accentGold: '#E31E24',
-  accentEmerald: '#2E5A4F',
-  accentSand: '#F5E6D3',
-  accentCharcoal: '#2C2C2C',
-  glassBackground: 'rgba(255, 255, 255, 0.7)',
-  glassBorder: 'rgba(0, 0, 0, 0.08)',
+  surface: '#1a1a1a',
+  surfaceAlt: '#1f1f1f',
+  hover: '#2c2c2c',
+  cardBg: '#0f0f0f',
+  textColor: '#ffffff',
+  textPrimary: '#ffffff',
+  textSecondary: 'rgba(255, 255, 255, 0.7)',
+  textMuted: 'rgba(255, 255, 255, 0.45)',
+  borderColor: '#2c2c2c',
+  bgPrimary: '#0f0f0f',
+  bgSecondary: '#1a1a1a',
+  bgTertiary: '#1f1f1f',
+  danger: '#EF4444',
+  dangerDark: '#DC2626',
+  dangerLight: 'rgba(239, 68, 68, 0.15)',
+  accentGold: '#C9A84C',
+  accentEmerald: '#10B981',
+  accentSand: '#2c2c2c',
+  accentCharcoal: '#1a1a1a',
+  glassBackground: 'rgba(15, 15, 15, 0.85)',
+  glassBorder: 'rgba(201, 168, 76, 0.15)',
   radiusMd: '8px',
   radiusLg: '12px',
   radiusSm: '6px',
 
-  // Legacy compat — components referencing old red brand
-  brandRed: '#E31E24',
+  // Legacy compat — brand primary now Gold
+  brandRed: '#C9A84C',
 
   // ═══════════════════════════════════════════════════════════════
   // WCAG AA CONTRAST-SAFE VARIANTS
-  // Kept key names for backward compatibility.
+  // Gold on dark backgrounds easily meets AA contrast thresholds.
   // ═══════════════════════════════════════════════════════════════
-
-  /** WCAG AA compliant gold for text on white backgrounds (4.5:1+) */
   a11y: {
-    /** Brand red darkened for text on white. */
-    goldText: '#B71C1C',
-    /** Brand red for large text. */
-    goldLargeText: '#C62828',
-    /** Brand red for UI elements (non-text). */
-    goldUI: '#C62828',
-    /** Focus ring color visible on light/dark backgrounds. */
-    focusRing: '#B71C1C',
-    /** Error text: 6.6:1 on white (darkened from #D32F2F to #B71C1C). */
-    errorText: '#B71C1C',
-    /** Warning text: 5.6:1 on white (deep orange 900, from #E65100 to #BF360C). */
-    warningText: '#BF360C',
-    /** Success text: 5.2:1 on white (green 800, from #388E3C to #2E7D32). */
-    successText: '#2E7D32',
-    /** Info text: 7.5:1 on white (light blue 900, from #0288D1 to #01579B). */
-    infoText: '#01579B',
+    /** Brand gold for text on dark backgrounds. */
+    goldText: '#C9A84C',
+    /** Brand gold for large text. */
+    goldLargeText: '#e4b75e',
+    /** Brand gold for UI elements (non-text). */
+    goldUI: '#C9A84C',
+    /** Focus ring — emerald green visible on dark backgrounds. */
+    focusRing: '#10B981',
+    /** Error text — semantic red exception. */
+    errorText: '#EF4444',
+    /** Warning text — gold on dark. */
+    warningText: '#C9A84C',
+    /** Success text — emerald green on dark. */
+    successText: '#10B981',
+    /** Info text — gold on dark. */
+    infoText: '#C9A84C',
   },
 };
 

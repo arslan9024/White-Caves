@@ -1,0 +1,137 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "company": "White Caves Real Estate LLC",
+  "jurisdiction": "Dubai, UAE",
+  "tradeLicense": "DLD-WCAG-2026",
+  "superUserEmail": "arslanmalikgoraha@gmail.com",
+  "departments": {
+    "DEPT_RES_LEASING": {
+      "id": "DEPT_RES_LEASING",
+      "name": "Residential Leasing",
+      "head": "Tariq Mansoor",
+      "primaryTargetArea": "DAMAC Hills 2, Dubailand",
+      "roles": [
+        "leasing_consultant",
+        "senior_leasing_advisor",
+        "leasing_specialist",
+        "leasing_manager"
+      ],
+      "defaultSplitRatio": {
+        "agent": 0.5,
+        "company": 0.5
+      },
+      "allowedActions": [
+        "CREATE_LEASE_CONTRACT",
+        "GENERATE_EJARI",
+        "COLLECT_PDC_CHEQUE",
+        "ISSUE_LEASE_RECEIPT",
+        "SCHEDULE_VIEWING"
+      ]
+    },
+    "DEPT_RES_SALES": {
+      "id": "DEPT_RES_SALES",
+      "name": "Residential Sales & Investment Advisory",
+      "head": "Sarah Al Maktoum",
+      "primaryTargetArea": "DAMAC Hills, Palm Jumeirah, Dubai Marina",
+      "roles": ["sales_executive", "gold_producer", "platinum_elite", "sales_director"],
+      "defaultSplitRatio": {
+        "onboardingPromoAgent": 0.7,
+        "onboardingPromoCompany": 0.3,
+        "standardTierFloor": 0.5
+      },
+      "allowedActions": [
+        "REGISTER_FORM_A",
+        "CREATE_FORM_F_MOU",
+        "OQOOD_OFFPLAN_REGISTRATION",
+        "CALCULATE_COMMISSION",
+        "GENERATE_BUYER_PASSPORT"
+      ]
+    },
+    "DEPT_PROP_MGMT": {
+      "id": "DEPT_PROP_MGMT",
+      "name": "Property Management",
+      "head": "Rania Al-Hassan",
+      "primaryTargetArea": "DAMAC Hills Cluster Portfolio",
+      "roles": ["property_manager", "tenant_relations_officer", "maintenance_coordinator"],
+      "defaultSplitRatio": {
+        "agent": 0.5,
+        "company": 0.5
+      },
+      "allowedActions": [
+        "LOG_MAINTENANCE_TICKET",
+        "COLLECT_RENT_PAYMENT",
+        "ISSUE_TENANCY_RENEWAL",
+        "INSPECT_PROPERTY",
+        "PROCESS_SECURITY_DEPOSIT_REFUND"
+      ]
+    },
+    "DEPT_ADMIN_CRM": {
+      "id": "DEPT_ADMIN_CRM",
+      "name": "Operations, CRM & Software Engineering",
+      "head": "Arsalan Malik (Managing Director)",
+      "primaryTargetArea": "Global Corporate HQ - DAMAC Hills",
+      "roles": ["crm_admin", "compliance_officer", "system_superuser", "managing_director"],
+      "defaultSplitRatio": {
+        "company": 1.0
+      },
+      "allowedActions": [
+        "MANAGE_USERS",
+        "OVERRIDE_COMMISSION_TIER",
+        "EXPORT_AUDIT_LOGS",
+        "CONFIG_AI_COMMAND_CENTER",
+        "GRANT_RBAC_CLEARANCE",
+        "EXECUTE_SYSTEM_BACKUP"
+      ]
+    }
+  },
+  "rbacMatrix": {
+    "LEVEL_1": {
+      "level": 1,
+      "title": "Junior Consultant / Trainee Broker",
+      "allowedRoles": ["trainee_broker", "junior_leasing_consultant"],
+      "clearanceScope": "OWN_LEADS_ONLY",
+      "canExportData": false,
+      "canOverridePricing": false,
+      "canApproveContracts": false
+    },
+    "LEVEL_2": {
+      "level": 2,
+      "title": "Certified Broker / Operations Specialist",
+      "allowedRoles": ["sales_executive", "leasing_consultant", "tenant_relations_officer"],
+      "clearanceScope": "DEPARTMENT_ASSIGNED_LEADS",
+      "canExportData": false,
+      "canOverridePricing": false,
+      "canApproveContracts": false
+    },
+    "LEVEL_3": {
+      "level": 3,
+      "title": "Senior Producer / Team Lead",
+      "allowedRoles": ["gold_producer", "senior_leasing_advisor", "property_manager"],
+      "clearanceScope": "TEAM_WIDE_DATA",
+      "canExportData": true,
+      "canOverridePricing": false,
+      "canApproveContracts": true
+    },
+    "LEVEL_4": {
+      "level": 4,
+      "title": "Department Director / Operations Manager",
+      "allowedRoles": ["sales_director", "leasing_manager", "compliance_officer"],
+      "clearanceScope": "DEPARTMENT_WIDE_ALL",
+      "canExportData": true,
+      "canOverridePricing": true,
+      "canApproveContracts": true
+    },
+    "LEVEL_5": {
+      "level": 5,
+      "title": "Managing Director / Principal Founder (Lion Superuser)",
+      "allowedRoles": ["managing_director", "system_superuser", "principal_founder"],
+      "superUserEmail": "arslanmalikgoraha@gmail.com",
+      "clearanceScope": "FULL_SYSTEM_ROOT_OMNIPRESENT",
+      "canExportData": true,
+      "canOverridePricing": true,
+      "canApproveContracts": true,
+      "hasUncappedCommissionOverride": true,
+      "bypassesApprovalGates": true
+    }
+  }
+}

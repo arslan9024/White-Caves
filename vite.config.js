@@ -2,184 +2,319 @@ import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
 import path from 'path';
 
-export default defineConfig({
-  plugins: [react()],
-  base: '/',
-  test: {
-    globals: true,
-    environment: 'jsdom',
-    setupFiles: ['./src/test/setup.ts'],
-    include: ['src/**/*.{test,spec}.{js,jsx,ts,tsx}', 'server/**/*.{test,spec}.{js,jsx,ts,tsx}'],
-    exclude: ['src/e2e/**', 'src/__tests__/e2e/**', 'node_modules/**'],
-    coverage: {
-      provider: 'v8',
-      reporter: ['text', 'json', 'html'],
-      include: ['src/**/*.{js,jsx,ts,tsx}'],
-      exclude: [
-        'src/test/**',
-        'src/e2e/**',
-        'src/**/*.test.*',
-        'src/**/*.spec.*',
-        'node_modules/**',
-      ],
-    },
-  },
-  server: {
-    host: '0.0.0.0',
-    port: 5000,
-    strictPort: false,
-    allowedHosts: true,
-    proxy: {
-      '/api': {
-        target: 'http://localhost:3001',
-        changeOrigin: true,
+export default defineConfig(async ({ command }) => {
+  const plugins = [react()];
+
+  if (command === 'build') {
+    try {
+      const { visualizer } = await import('rollup-plugin-visualizer');
+      plugins.push(
+        visualizer({
+          filename: 'dist/stats.html',
+          gzipSize: true,
+          brotliSize: true,
+          open: false,
+        })
+      );
+    } catch (e) {
+      console.warn('rollup-plugin-visualizer not available; continuing without visualizer');
+    }
+
+    try {
+      const { VitePWA } = await import('vite-plugin-pwa');
+      plugins.push(
+        VitePWA({
+          // Don't auto-inject registration script — registerServiceWorker.ts handles it
+          injectRegister: null,
+          // Auto-update: the new SW takes over without a prompt on next navigation
+          registerType: 'autoUpdate',
+          // Let the plugin generate the SW using Workbox (generateSW strategy)
+          strategies: 'generateSW',
+          workbox: {
+            importScripts: ['/custom-sw.js'],
+            // Precache all static assets produced by the Vite build
+            globPatterns: ['**/*.{js,css,html,ico,png,svg,woff,woff2}'],
+            // Navigation fallback: serve offline.html when network is unreachable
+            navigateFallback: '/offline.html',
+            // Don't apply the navigation fallback for API and asset requests
+            navigateFallbackDenylist: [/^\/api\//, /^\/favicon/, /^\/manifest/],
+            // Runtime cache strategies for high-traffic routes
+            runtimeCaching: [
+              {
+                urlPattern: /^https?:\/\/[^/]+\/api\/.*$/,
+                method: 'POST',
+                handler: 'NetworkOnly',
+                options: {
+                  backgroundSync: {
+                    name: 'crm-writes-queue',
+                    options: { maxRetentionTime: 24 * 60 },
+                  },
+                },
+              },
+              {
+                urlPattern: /^https?:\/\/[^/]+\/api\/.*$/,
+                method: 'PATCH',
+                handler: 'NetworkOnly',
+                options: {
+                  backgroundSync: {
+                    name: 'crm-writes-queue',
+                    options: { maxRetentionTime: 24 * 60 },
+                  },
+                },
+              },
+              {
+                urlPattern: /^https?:\/\/[^/]+\/api\/.*$/,
+                method: 'DELETE',
+                handler: 'NetworkOnly',
+                options: {
+                  backgroundSync: {
+                    name: 'crm-writes-queue',
+                    options: { maxRetentionTime: 24 * 60 },
+                  },
+                },
+              },
+              {
+                // Wave 17 policy: all API GET calls use network-first with short fallback cache
+                urlPattern: /^https?:\/\/[^/]+\/api\/.*$/,
+                handler: 'NetworkFirst',
+                options: {
+                  cacheName: 'api-network-first',
+                  networkTimeoutSeconds: 3,
+                  expiration: { maxEntries: 120, maxAgeSeconds: 300 },
+                  cacheableResponse: { statuses: [0, 200] },
+                },
+              },
+              {
+                // Cache static built assets
+                urlPattern: /\/assets\/.*\.(?:js|css|woff2?|png|svg|webp)$/i,
+                handler: 'CacheFirst',
+                options: {
+                  cacheName: 'static-assets',
+                  expiration: { maxEntries: 200, maxAgeSeconds: 604800 },
+                  cacheableResponse: { statuses: [0, 200] },
+                },
+              },
+              {
+                // Cache images (cache first, 7 days)
+                urlPattern: /\.(?:png|jpg|jpeg|svg|gif|webp)$/,
+                handler: 'CacheFirst',
+                options: {
+                  cacheName: 'images',
+                  expiration: { maxEntries: 200, maxAgeSeconds: 604800 },
+                  cacheableResponse: { statuses: [0, 200] },
+                },
+              },
+            ],
+            // Ignore dev service workers and vendor source maps
+            ignoreURLParametersMatching: [/^utm_/, /^fbclid$/],
+          },
+          manifest: {
+            name: 'White Caves Real Estate',
+            short_name: 'White Caves',
+            description: "Dubai's premier luxury real estate platform",
+            start_url: '/',
+            scope: '/',
+            display: 'standalone',
+            background_color: '#0a0a0f',
+            theme_color: '#C9A84C',
+            orientation: 'portrait-primary',
+            categories: ['real estate', 'property', 'lifestyle'],
+            icons: [
+              {
+                src: '/favicon.svg',
+                sizes: 'any',
+                type: 'image/svg+xml',
+                purpose: 'any maskable',
+              },
+              {
+                src: '/generated-icon.png',
+                sizes: '512x512',
+                type: 'image/png',
+                purpose: 'any maskable',
+              },
+              {
+                src: '/generated-icon.png',
+                sizes: '192x192',
+                type: 'image/png',
+                purpose: 'any maskable',
+              },
+            ],
+          },
+          // Better URL handling for app-like navigation
+          devOptions: {
+            enabled: false,
+          },
+        })
+      );
+    } catch (error) {
+      console.warn('vite-plugin-pwa not available; continuing without PWA plugin in dev/build');
+    }
+  }
+
+  return {
+    plugins,
+    base: '/',
+    server: {
+      host: '0.0.0.0',
+      port: 3000,
+      strictPort: false,
+      allowedHosts: true,
+      watch: {
+        ignored: ['**/logs/**', '**/.git/**'],
       },
-    },
-  },
-  resolve: {
-    alias: {
-      '@': path.resolve(__dirname, 'src'),
-      '@assets': path.resolve(__dirname, 'attached_assets'),
-      '@components': path.resolve(__dirname, 'src/components'),
-      '@pages': path.resolve(__dirname, 'src/pages'),
-      '@utils': path.resolve(__dirname, 'src/utils'),
-    },
-  },
-  build: {
-    outDir: 'dist',
-    assetsDir: 'assets',
-    sourcemap: false,
-    minify: 'esbuild',
-    target: 'es2020',
-    rollupOptions: {
-      output: {
-        manualChunks: id => {
-          if (id.includes('node_modules')) {
-            // Core React + Router + Redux (single vendor bundle to avoid circular deps)
-            if (
-              id.includes('react-dom') ||
-              id.includes('react-router') ||
-              id.includes('react-redux') ||
-              id.includes('@reduxjs/toolkit') ||
-              id.includes('redux') ||
-              id.includes('immer') ||
-              id.includes('reselect')
-            ) {
-              return 'vendor';
-            }
-            // Firebase (large, lazily used)
-            if (id.includes('firebase')) {
-              return 'firebase';
-            }
-            // Styled-components
-            if (id.includes('styled-components') || id.includes('stylis')) {
-              return 'styled';
-            }
-            // Vercel analytics
-            if (id.includes('@vercel')) {
-              return 'analytics';
-            }
-            // Framer Motion (large, only used on homepage + animations)
-            if (id.includes('framer-motion')) {
-              return 'framer-motion';
-            }
-            // Recharts (large charting library)
-            if (id.includes('recharts') || id.includes('d3-')) {
-              return 'charts-vendor';
-            }
-            // Lucide icons
-            if (id.includes('lucide-react')) {
-              return 'icons-vendor';
-            }
-          }
-          // Theme tokens: shared by design-system AND app-core — must be its own chunk
-          if (id.includes('src/styles/')) {
-            return 'theme-tokens';
-          }
-          // Foundational app runtime (single chunk to avoid app-utils <-> store circular cross-chunk refs)
-          if (
-            id.includes('src/store/') ||
-            id.includes('src/utils/') ||
-            id.includes('src/config/')
-          ) {
-            return 'app-foundation';
-          }
-          // Application code splitting by feature
-          // Charts: lazy-loaded, separate from app-core
-          if (id.includes('src/components/charts/')) {
-            return 'charts';
-          }
-          // Design-system: UI primitives, loaded on-demand by pages
-          if (id.includes('src/components/design-system/')) {
-            return 'design-system';
-          }
-          // CRM: split into sub-chunks by module to avoid a massive single chunk
-          if (id.includes('src/components/crm/')) {
-            if (id.includes('/inventory/')) return 'crm-inventory';
-            if (id.includes('/NancyHRCRM_NEW/')) return 'crm-hr';
-            if (id.includes('/ClaraLeadsCRM_NEW/')) return 'crm-leads';
-            if (id.includes('/AuroraCTODashboard_NEW/')) return 'crm-cto';
-            if (id.includes('/MaryInventoryCRM_NEW/')) return 'crm-mary';
-            if (id.includes('/OliviaMarketingCRM_NEW/')) return 'crm-marketing';
-            if (id.includes('/NadiaWhatsAppCRM/') || id.includes('/NinaWhatsAppBotCRM_NEW/'))
-              return 'crm-whatsapp';
-            if (id.includes('/WillowBackendCRM_NEW/') || id.includes('/HazelFrontendCRM_NEW/'))
-              return 'crm-dev';
-            if (id.includes('/TheodoraFinanceCRM_NEW/')) return 'crm-finance';
-            if (id.includes('/LailaComplianceCRM_NEW/')) return 'crm-compliance';
-            if (id.includes('/SophiaSalesCRM_NEW/')) return 'crm-sales';
-            if (id.includes('/DaisyLeasingCRM_NEW/')) return 'crm-leasing';
-            if (id.includes('/ZoeExecutiveCRM_NEW/')) return 'crm-executive';
-            // Split more CRM modules out of the catch-all
-            if (id.includes('/AIAssistant') || id.includes('/AICommand')) return 'crm-ai';
-            // CRM data files (pure data, no component deps)
-            if (id.includes('/data/')) return 'crm-data';
-            // Shared + standalone modules in one chunk (avoid circular deps)
-            return 'crm-shared';
-          }
-          if (
-            id.includes('src/components/dashboard/') ||
-            id.includes('src/components/dashboards/')
-          ) {
-            return 'dashboards';
-          }
-          // Owner tabs: heavy dashboard sub-components — split from dashboards
-          if (id.includes('src/components/owner/')) {
-            return 'owner-tabs';
-          }
-          // Shared UI & layout primitives
-          if (id.includes('src/shared/components/') || id.includes('src/components/ui/')) {
-            return 'shared-ui';
-          }
-          // Homepage components (lazy-loaded sections)
-          if (id.includes('src/components/homepage/')) {
-            return 'homepage';
-          }
-          // Auth features: biometric, social login, role selection — lazy-loaded, not needed at startup
-          if (id.includes('src/features/')) {
-            return 'auth-features';
-          }
-          // Core app shell: layout + common-ui (navbar, sidebar, status bar)
-          // Charts and design-system split into own lazy chunks above
-          if (id.includes('src/components/layout/') || id.includes('src/components/common/')) {
-            return 'app-core';
-          }
+      proxy: {
+        '/api': {
+          target: 'http://localhost:5001',
+          changeOrigin: true,
         },
       },
     },
-    chunkSizeWarningLimit: 1000,
-    // Suppress esbuild CSS nesting warnings from styled-components output
-    cssMinify: 'esbuild',
-  },
-  css: {
-    devSourcemap: true,
-  },
-  esbuild: {
-    logOverride: {
-      'css-syntax-error': 'silent',
+    resolve: {
+      extensions: ['.mjs', '.ts', '.tsx', '.js', '.jsx', '.json'],
+      alias: {
+        '@': path.resolve(__dirname, 'src'),
+        '@assets': path.resolve(__dirname, 'attached_assets'),
+        '@components': path.resolve(__dirname, 'src/components'),
+        '@pages': path.resolve(__dirname, 'src/pages'),
+        '@utils': path.resolve(__dirname, 'src/utils'),
+      },
     },
-  },
-  optimizeDeps: {
-    include: ['react', 'react-dom', 'react-router-dom'],
-  },
+    build: {
+      outDir: 'dist',
+      assetsDir: 'assets',
+      sourcemap: false,
+      minify: 'esbuild',
+      target: 'es2020',
+      rollupOptions: {
+        output: {
+          manualChunks: id => {
+            if (id.includes('node_modules')) {
+              // Core React + Router + Redux (single vendor bundle to avoid circular deps)
+              if (
+                id.includes('react-dom') ||
+                id.includes('react-router') ||
+                id.includes('react-redux') ||
+                id.includes('@reduxjs/toolkit') ||
+                id.includes('redux') ||
+                id.includes('immer') ||
+                id.includes('reselect')
+              ) {
+                return 'vendor';
+              }
+              // Firebase (large, lazily used)
+              if (id.includes('firebase')) {
+                return 'firebase';
+              }
+              // Styled-components
+              if (id.includes('styled-components') || id.includes('stylis')) {
+                return 'styled';
+              }
+              // Vercel analytics
+              if (id.includes('@vercel')) {
+                return 'analytics';
+              }
+              // Framer Motion (large, only used on homepage + animations)
+              if (id.includes('framer-motion')) {
+                return 'framer-motion';
+              }
+              // Recharts (large charting library)
+              if (id.includes('recharts') || id.includes('d3-')) {
+                return 'charts-vendor';
+              }
+              // Lucide icons
+              if (id.includes('lucide-react')) {
+                return 'icons-vendor';
+              }
+            }
+            // Theme tokens: shared by design-system AND app-core — must be its own chunk
+            if (id.includes('src/styles/')) {
+              return 'theme-tokens';
+            }
+            // Foundational app runtime (single chunk to avoid app-utils <-> store circular cross-chunk refs)
+            if (
+              id.includes('src/store/') ||
+              id.includes('src/utils/') ||
+              id.includes('src/config/')
+            ) {
+              return 'app-foundation';
+            }
+            // Application code splitting by feature
+            // Charts: lazy-loaded, separate from app-core
+            if (id.includes('src/components/charts/')) {
+              return 'charts';
+            }
+            // Design-system: UI primitives, loaded on-demand by pages
+            if (id.includes('src/components/design-system/')) {
+              return 'design-system';
+            }
+            // CRM: split into sub-chunks by module to avoid a massive single chunk
+            if (id.includes('src/components/crm/')) {
+              if (id.includes('/inventory/')) return 'crm-inventory';
+              if (id.includes('/NancyHRCRM_NEW/')) return 'crm-hr';
+              if (id.includes('/ClaraLeadsCRM_NEW/')) return 'crm-leads';
+              if (id.includes('/AuroraCTODashboard_NEW/')) return 'crm-cto';
+              if (id.includes('/MaryInventoryCRM_NEW/')) return 'crm-mary';
+              if (id.includes('/OliviaMarketingCRM_NEW/')) return 'crm-marketing';
+              if (id.includes('/NadiaWhatsAppCRM/') || id.includes('/NinaWhatsAppBotCRM_NEW/'))
+                return 'crm-whatsapp';
+              if (id.includes('/WillowBackendCRM_NEW/') || id.includes('/HazelFrontendCRM_NEW/'))
+                return 'crm-dev';
+              if (id.includes('/TheodoraFinanceCRM_NEW/')) return 'crm-finance';
+              if (id.includes('/LailaComplianceCRM_NEW/')) return 'crm-compliance';
+              if (id.includes('/SophiaSalesCRM_NEW/')) return 'crm-sales';
+              if (id.includes('/DaisyLeasingCRM_NEW/')) return 'crm-leasing';
+              if (id.includes('/ZoeExecutiveCRM_NEW/')) return 'crm-executive';
+              // Split more CRM modules out of the catch-all
+              if (id.includes('/AIAssistant') || id.includes('/AICommand')) return 'crm-ai';
+              // CRM data files (pure data, no component deps)
+              if (id.includes('/data/')) return 'crm-data';
+              // Shared + standalone modules in one chunk (avoid circular deps)
+              return 'crm-shared';
+            }
+            if (
+              id.includes('src/components/dashboard/') ||
+              id.includes('src/components/dashboards/')
+            ) {
+              return 'dashboards';
+            }
+            // Owner tabs: heavy dashboard sub-components — split from dashboards
+            if (id.includes('src/components/owner/')) {
+              return 'owner-tabs';
+            }
+            // Shared UI & layout primitives
+            if (id.includes('src/shared/components/') || id.includes('src/components/ui/')) {
+              return 'shared-ui';
+            }
+            // Homepage components (lazy-loaded sections)
+            if (id.includes('src/components/homepage/')) {
+              return 'homepage';
+            }
+            // Auth features: biometric, social login, role selection — lazy-loaded, not needed at startup
+            if (id.includes('src/features/')) {
+              return 'auth-features';
+            }
+            // Core app shell: layout + common-ui (navbar, sidebar, status bar)
+            // Charts and design-system split into own lazy chunks above
+            if (id.includes('src/components/layout/') || id.includes('src/components/common/')) {
+              return 'app-core';
+            }
+          },
+        },
+      },
+      chunkSizeWarningLimit: 1000,
+      // Suppress esbuild CSS nesting warnings from styled-components output
+      cssMinify: 'esbuild',
+    },
+    css: {
+      devSourcemap: true,
+    },
+    esbuild: {
+      logOverride: {
+        'css-syntax-error': 'silent',
+      },
+    },
+    optimizeDeps: {
+      include: ['react', 'react-dom', 'react-router-dom'],
+    },
+  };
 });

@@ -124,5 +124,5 @@ export const ASSISTANT_COLORS: Record<string, string> = {
   laila: '#6366F1',
   aurora: '#14B8A6',
   sophia: '#F97316',
-  apex: '#E31E24',
+  apex: '#C9A84C',
 };

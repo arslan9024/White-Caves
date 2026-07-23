@@ -3,6 +3,14 @@ import { logout } from './authSlice';
 import { authFetch } from '../utils/authFetch';
 import { getErrorMessage } from '../constants';
 import * as favoritesApi from '../services/favoritesApi';
+import {
+  Property,
+  Lead,
+  RegulatoryContract,
+  mockProperties,
+  mockLeads,
+  mockRegulatoryContracts,
+} from '../mocks/dubaiRealEstateMocks';
 
 export interface FavoriteItem {
   id: string;
@@ -68,6 +76,10 @@ interface DashboardState {
     leasing: string[];
     sales: string[];
   };
+  properties: Property[];
+  leads: Lead[];
+  contracts: RegulatoryContract[];
+  isOfflineMode: boolean;
 }
 
 const initialState: DashboardState = {
@@ -108,6 +120,10 @@ const initialState: DashboardState = {
       'Closing',
     ],
   },
+  properties: mockProperties,
+  leads: mockLeads,
+  contracts: mockRegulatoryContracts,
+  isOfflineMode: true,
 };
 
 interface FetchMetricsPayload {
@@ -118,8 +134,12 @@ interface FetchMetricsPayload {
 export const fetchDashboardMetrics = createAsyncThunk<
   FetchMetricsPayload,
   string,
-  { rejectValue: string }
->('dashboard/fetchMetrics', async (role, { rejectWithValue }) => {
+  { state: { dashboard: DashboardState }; rejectValue: string }
+>('dashboard/fetchMetrics', async (role, { getState, rejectWithValue }) => {
+  const isOfflineMode = getState().dashboard.isOfflineMode;
+  if (isOfflineMode) {
+    return { role, data: { offlineSimulated: true, generatedAt: new Date().toISOString() } };
+  }
   try {
     const response = await authFetch(`/api/dashboard/${role}/metrics`);
     if (!response.ok) {
@@ -135,9 +155,10 @@ export const fetchDashboardMetrics = createAsyncThunk<
 // ─── Favorites Async Thunks (API-backed) ─────────────────────────────────────
 
 /** Fetch all favorite IDs (lightweight — for heart toggle state) */
-export const fetchFavoriteIdsThunk = createAsyncThunk<string[], void, { rejectValue: string }>(
+export const fetchFavoriteIdsThunk = createAsyncThunk<string[], void, { state: { dashboard: DashboardState }; rejectValue: string }>(
   'dashboard/fetchFavoriteIds',
-  async (_, { rejectWithValue }) => {
+  async (_, { getState, rejectWithValue }) => {
+    if (getState().dashboard.isOfflineMode) return [];
     try {
       return await favoritesApi.fetchFavoriteIds();
     } catch (error: unknown) {
@@ -151,8 +172,9 @@ export const fetchFavoriteIdsThunk = createAsyncThunk<string[], void, { rejectVa
 export const fetchFavoritesThunk = createAsyncThunk<
   favoritesApi.PaginatedFavorites,
   { page?: number; pageSize?: number } | void,
-  { rejectValue: string }
->('dashboard/fetchFavorites', async (params, { rejectWithValue }) => {
+  { state: { dashboard: DashboardState }; rejectValue: string }
+>('dashboard/fetchFavorites', async (params, { getState, rejectWithValue }) => {
+  if (getState().dashboard.isOfflineMode) return { data: [], pagination: { page: 1, pageSize: 20, total: 0, totalPages: 0 } };
   try {
     const page = params && 'page' in params ? params.page : 1;
     const pageSize = params && 'pageSize' in params ? params.pageSize : 20;
@@ -167,8 +189,9 @@ export const fetchFavoritesThunk = createAsyncThunk<
 export const addFavoriteThunk = createAsyncThunk<
   { propertyId: string; item: FavoriteItem },
   FavoriteItem,
-  { rejectValue: string }
->('dashboard/addFavorite', async (item, { rejectWithValue }) => {
+  { state: { dashboard: DashboardState }; rejectValue: string }
+>('dashboard/addFavorite', async (item, { getState, rejectWithValue }) => {
+  if (getState().dashboard.isOfflineMode) return { propertyId: item.id, item };
   try {
     await favoritesApi.addFavorite(item.id);
     return { propertyId: item.id, item };
@@ -179,9 +202,10 @@ export const addFavoriteThunk = createAsyncThunk<
 });
 
 /** Remove a property from favorites via API */
-export const removeFavoriteThunk = createAsyncThunk<string, string, { rejectValue: string }>(
+export const removeFavoriteThunk = createAsyncThunk<string, string, { state: { dashboard: DashboardState }; rejectValue: string }>(
   'dashboard/removeFavorite',
-  async (propertyId, { rejectWithValue }) => {
+  async (propertyId, { getState, rejectWithValue }) => {
+    if (getState().dashboard.isOfflineMode) return propertyId;
     try {
       await favoritesApi.removeFavorite(propertyId);
       return propertyId;
@@ -214,6 +238,12 @@ const dashboardSlice = createSlice({
     setMetrics: (state, action: PayloadAction<{ role: string; data: Record<string, unknown> }>) => {
       const { role, data } = action.payload;
       state.metrics[role] = data;
+    },
+    toggleOfflineMode: (state) => {
+      state.isOfflineMode = !state.isOfflineMode;
+    },
+    setOfflineMode: (state, action: PayloadAction<boolean>) => {
+      state.isOfflineMode = action.payload;
     },
     addToFavorites: (state, action: PayloadAction<FavoriteItem>) => {
       const property = action.payload;
@@ -256,6 +286,22 @@ const dashboardSlice = createSlice({
     },
     clearError: state => {
       state.error = null;
+    },
+    refreshDashboardData(state) {
+      state.properties = mockProperties;
+      state.leads = mockLeads;
+      state.contracts = mockRegulatoryContracts;
+    },
+    updatePropertyStatus(state, action: PayloadAction<{ id: string; status: Property['status'] }>) {
+      const { id, status } = action.payload;
+      const prop = state.properties.find(p => p.id === id);
+      if (prop) {
+        prop.status = status;
+      }
+    },
+    filterLeadsByStatus(state, action: PayloadAction<Lead['status']>) {
+      const status = action.payload;
+      state.leads = mockLeads.filter(lead => lead.status === status);
     },
   },
   extraReducers: builder => {
@@ -333,6 +379,11 @@ export const {
   setLoading,
   setError,
   clearError,
+  toggleOfflineMode,
+  setOfflineMode,
+  refreshDashboardData,
+  updatePropertyStatus,
+  filterLeadsByStatus,
 } = dashboardSlice.actions;
 
 export const selectFavorites = createSelector(

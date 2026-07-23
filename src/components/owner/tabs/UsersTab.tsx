@@ -1,13 +1,67 @@
 import React, { useState } from 'react';
-import { 
-  Search, Filter, Plus, Edit2, Trash2, Eye, Mail, Phone,
-  ChevronDown, ChevronUp, MoreVertical, UserCheck, UserX,
-  Download, Upload, RefreshCw
+import {
+  Search,
+  Filter,
+  Plus,
+  Edit2,
+  Trash2,
+  Eye,
+  Mail,
+  Phone,
+  ChevronDown,
+  ChevronUp,
+  MoreVertical,
+  UserCheck,
+  UserX,
+  Download,
+  Upload,
+  RefreshCw,
 } from 'lucide-react';
 import { Pagination, Badge, type BadgeVariant } from '../../../components/ui';
 import { REAL_ESTATE_ROLES } from '../../../config/roles';
 import type { UsersTabProps } from './types';
-import './UsersTab.css';
+import {
+  UsersContainer,
+  UsersHeader,
+  HeaderLeft,
+  HeaderActions,
+  UsersStats,
+  UserStatCard,
+  StatValue,
+  StatLabel,
+  CategoryOverview,
+  CategoryGrid,
+  CategoryCard,
+  CategoryName,
+  CategoryCount,
+  UsersToolbar,
+  SearchBox,
+  ToolbarFilters,
+  UserCell,
+  UserAvatar,
+  UserInfo,
+  UserName,
+  UserEmail,
+  RoleBadge,
+  ContactCell,
+  DateCell,
+  DealsCell,
+  PrimaryButton,
+  SecondaryButton,
+  ActionButton,
+  DangerButton,
+  Table,
+  TableContainer,
+  TableRow,
+  TableHeader,
+  TableCell,
+  StatsGrid,
+  PageButton,
+  PaginationContainer,
+  PaginationInfo,
+  FormGrid,
+  SecondaryButton as CancelButton,
+} from './TabStylesComponents';
 
 const DUMMY_USERS = [
   {
@@ -21,7 +75,7 @@ const DUMMY_USERS = [
     lastActive: '2024-01-08',
     properties: 45,
     deals: 128,
-    avatar: 'https://randomuser.me/api/portraits/men/1.jpg'
+    avatar: 'https://randomuser.me/api/portraits/men/1.jpg',
   },
   {
     id: 2,
@@ -34,7 +88,7 @@ const DUMMY_USERS = [
     lastActive: '2024-01-08',
     properties: 0,
     deals: 87,
-    avatar: 'https://randomuser.me/api/portraits/women/2.jpg'
+    avatar: 'https://randomuser.me/api/portraits/women/2.jpg',
   },
   {
     id: 3,
@@ -47,7 +101,7 @@ const DUMMY_USERS = [
     lastActive: '2024-01-07',
     properties: 12,
     deals: 34,
-    avatar: 'https://randomuser.me/api/portraits/men/3.jpg'
+    avatar: 'https://randomuser.me/api/portraits/men/3.jpg',
   },
   {
     id: 4,
@@ -60,7 +114,7 @@ const DUMMY_USERS = [
     lastActive: '2024-01-08',
     properties: 8,
     deals: 45,
-    avatar: 'https://randomuser.me/api/portraits/women/4.jpg'
+    avatar: 'https://randomuser.me/api/portraits/women/4.jpg',
   },
   {
     id: 5,
@@ -73,7 +127,7 @@ const DUMMY_USERS = [
     lastActive: '2024-01-06',
     properties: 23,
     deals: 0,
-    avatar: 'https://randomuser.me/api/portraits/men/5.jpg'
+    avatar: 'https://randomuser.me/api/portraits/men/5.jpg',
   },
   {
     id: 6,
@@ -86,7 +140,7 @@ const DUMMY_USERS = [
     lastActive: '2024-01-08',
     properties: 0,
     deals: 56,
-    avatar: 'https://randomuser.me/api/portraits/women/6.jpg'
+    avatar: 'https://randomuser.me/api/portraits/women/6.jpg',
   },
   {
     id: 7,
@@ -99,7 +153,7 @@ const DUMMY_USERS = [
     lastActive: '2024-01-05',
     properties: 0,
     deals: 89,
-    avatar: 'https://randomuser.me/api/portraits/men/7.jpg'
+    avatar: 'https://randomuser.me/api/portraits/men/7.jpg',
   },
   {
     id: 8,
@@ -112,7 +166,7 @@ const DUMMY_USERS = [
     lastActive: '2024-01-07',
     properties: 0,
     deals: 67,
-    avatar: 'https://randomuser.me/api/portraits/men/8.jpg'
+    avatar: 'https://randomuser.me/api/portraits/men/8.jpg',
   },
   {
     id: 9,
@@ -125,7 +179,7 @@ const DUMMY_USERS = [
     lastActive: '2024-01-08',
     properties: 0,
     deals: 112,
-    avatar: 'https://randomuser.me/api/portraits/women/9.jpg'
+    avatar: 'https://randomuser.me/api/portraits/women/9.jpg',
   },
   {
     id: 10,
@@ -138,7 +192,7 @@ const DUMMY_USERS = [
     lastActive: '2024-01-08',
     properties: 0,
     deals: 0,
-    avatar: 'https://randomuser.me/api/portraits/men/10.jpg'
+    avatar: 'https://randomuser.me/api/portraits/men/10.jpg',
   },
   {
     id: 11,
@@ -151,7 +205,7 @@ const DUMMY_USERS = [
     lastActive: '2024-01-07',
     properties: 5,
     deals: 8,
-    avatar: 'https://randomuser.me/api/portraits/women/11.jpg'
+    avatar: 'https://randomuser.me/api/portraits/women/11.jpg',
   },
   {
     id: 12,
@@ -164,7 +218,7 @@ const DUMMY_USERS = [
     lastActive: '2024-01-08',
     properties: 0,
     deals: 1,
-    avatar: 'https://randomuser.me/api/portraits/men/12.jpg'
+    avatar: 'https://randomuser.me/api/portraits/men/12.jpg',
   },
   {
     id: 13,
@@ -177,7 +231,7 @@ const DUMMY_USERS = [
     lastActive: '2024-01-06',
     properties: 0,
     deals: 1,
-    avatar: 'https://randomuser.me/api/portraits/women/13.jpg'
+    avatar: 'https://randomuser.me/api/portraits/women/13.jpg',
   },
   {
     id: 14,
@@ -190,7 +244,7 @@ const DUMMY_USERS = [
     lastActive: '2024-01-05',
     properties: 0,
     deals: 12,
-    avatar: 'https://randomuser.me/api/portraits/men/14.jpg'
+    avatar: 'https://randomuser.me/api/portraits/men/14.jpg',
   },
   {
     id: 15,
@@ -203,7 +257,7 @@ const DUMMY_USERS = [
     lastActive: '2024-01-08',
     properties: 150,
     deals: 45,
-    avatar: 'https://randomuser.me/api/portraits/women/15.jpg'
+    avatar: 'https://randomuser.me/api/portraits/women/15.jpg',
   },
   {
     id: 16,
@@ -216,7 +270,7 @@ const DUMMY_USERS = [
     lastActive: '2024-01-08',
     properties: 2,
     deals: 0,
-    avatar: 'https://randomuser.me/api/portraits/men/16.jpg'
+    avatar: 'https://randomuser.me/api/portraits/men/16.jpg',
   },
   {
     id: 17,
@@ -229,7 +283,7 @@ const DUMMY_USERS = [
     lastActive: '2024-01-08',
     properties: 0,
     deals: 0,
-    avatar: 'https://randomuser.me/api/portraits/women/17.jpg'
+    avatar: 'https://randomuser.me/api/portraits/women/17.jpg',
   },
   {
     id: 18,
@@ -242,7 +296,7 @@ const DUMMY_USERS = [
     lastActive: '2024-01-07',
     properties: 0,
     deals: 156,
-    avatar: 'https://randomuser.me/api/portraits/men/18.jpg'
+    avatar: 'https://randomuser.me/api/portraits/men/18.jpg',
   },
   {
     id: 19,
@@ -255,7 +309,7 @@ const DUMMY_USERS = [
     lastActive: '2024-01-08',
     properties: 0,
     deals: 98,
-    avatar: 'https://randomuser.me/api/portraits/women/19.jpg'
+    avatar: 'https://randomuser.me/api/portraits/women/19.jpg',
   },
   {
     id: 20,
@@ -268,8 +322,8 @@ const DUMMY_USERS = [
     lastActive: '2023-12-20',
     properties: 0,
     deals: 0,
-    avatar: 'https://randomuser.me/api/portraits/men/20.jpg'
-  }
+    avatar: 'https://randomuser.me/api/portraits/men/20.jpg',
+  },
 ];
 
 const ROLE_CATEGORIES = {
@@ -279,56 +333,62 @@ const ROLE_CATEGORIES = {
   agent: 'Agents',
   specialist: 'Specialists',
   support: 'Support Staff',
-  client: 'Clients'
+  client: 'Clients',
 };
 
 function UsersTab({ onAction }: UsersTabProps) {
-  // Only use dummy data in development — production fetches from API
   const [users, setUsers] = useState(() => (import.meta.env.DEV ? DUMMY_USERS : []));
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedRole, setSelectedRole] = useState('all');
   const [selectedStatus, setSelectedStatus] = useState('all');
   const [selectedCategory, setSelectedCategory] = useState('all');
   const [sortBy, setSortBy] = useState('name');
-  const [sortOrder, setSortOrder] = useState('asc');
+  const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('asc');
   const [selectedUsers, setSelectedUsers] = useState<number[]>([]);
-  const [showFilters, setShowFilters] = useState(false);
-  const [viewMode, setViewMode] = useState('table');
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage] = useState(10);
 
   const getRoleInfo = (roleId: string) => {
-    return REAL_ESTATE_ROLES.find(r => r.id === roleId) || { name: roleId, color: '#666', category: 'support' as const };
+    return (
+      REAL_ESTATE_ROLES.find(r => r.id === roleId) || {
+        name: roleId,
+        color: '#666',
+        category: 'support' as const,
+      }
+    );
   };
 
-  const filteredUsers = users.filter(user => {
-    const matchesSearch = user.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      user.email.toLowerCase().includes(searchQuery.toLowerCase());
-    const matchesRole = selectedRole === 'all' || user.role === selectedRole;
-    const matchesStatus = selectedStatus === 'all' || user.status === selectedStatus;
-    const roleInfo = getRoleInfo(user.role);
-    const matchesCategory = selectedCategory === 'all' || roleInfo.category === selectedCategory;
-    return matchesSearch && matchesRole && matchesStatus && matchesCategory;
-  }).sort((a, b) => {
-    let comparison = 0;
-    switch (sortBy) {
-      case 'name':
-        comparison = a.name.localeCompare(b.name);
-        break;
-      case 'role':
-        comparison = a.role.localeCompare(b.role);
-        break;
-      case 'joinDate':
-        comparison = (new Date(a.joinDate || 0).getTime()) - (new Date(b.joinDate || 0).getTime());
-        break;
-      case 'deals':
-        comparison = a.deals - b.deals;
-        break;
-      default:
-        comparison = 0;
-    }
-    return sortOrder === 'asc' ? comparison : -comparison;
-  });
+  const filteredUsers = users
+    .filter(user => {
+      const matchesSearch =
+        user.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        user.email.toLowerCase().includes(searchQuery.toLowerCase());
+      const matchesRole = selectedRole === 'all' || user.role === selectedRole;
+      const matchesStatus = selectedStatus === 'all' || user.status === selectedStatus;
+      const roleInfo = getRoleInfo(user.role);
+      const matchesCategory = selectedCategory === 'all' || roleInfo.category === selectedCategory;
+      return matchesSearch && matchesRole && matchesStatus && matchesCategory;
+    })
+    .sort((a, b) => {
+      let comparison = 0;
+      switch (sortBy) {
+        case 'name':
+          comparison = a.name.localeCompare(b.name);
+          break;
+        case 'role':
+          comparison = a.role.localeCompare(b.role);
+          break;
+        case 'joinDate':
+          comparison = new Date(a.joinDate || 0).getTime() - new Date(b.joinDate || 0).getTime();
+          break;
+        case 'deals':
+          comparison = a.deals - b.deals;
+          break;
+        default:
+          comparison = 0;
+      }
+      return sortOrder === 'asc' ? comparison : -comparison;
+    });
 
   const handleSort = (field: string) => {
     if (sortBy === field) {
@@ -340,10 +400,10 @@ function UsersTab({ onAction }: UsersTabProps) {
   };
 
   const handleSelectAll = () => {
-    if (selectedUsers.length === filteredUsers.length) {
+    if (selectedUsers.length === paginatedUsers.length) {
       setSelectedUsers([]);
     } else {
-      setSelectedUsers(filteredUsers.map(u => u.id));
+      setSelectedUsers(paginatedUsers.map(u => u.id));
     }
   };
 
@@ -359,7 +419,7 @@ function UsersTab({ onAction }: UsersTabProps) {
     const statusVariants: Record<string, BadgeVariant> = {
       active: 'success',
       pending: 'warning',
-      inactive: 'error'
+      inactive: 'error',
     };
     return (
       <Badge variant={statusVariants[status] || 'secondary'} size="small">
@@ -381,7 +441,9 @@ function UsersTab({ onAction }: UsersTabProps) {
     setCurrentPage(1);
   }, [searchQuery, selectedRole, selectedStatus, selectedCategory]);
 
-  const usersByCategory = REAL_ESTATE_ROLES.reduce<Record<string, { count: number; roles: Array<Record<string, unknown>> }>>((acc, role) => {
+  const usersByCategory = REAL_ESTATE_ROLES.reduce<
+    Record<string, { count: number; roles: Array<Record<string, unknown>> }>
+  >((acc, role) => {
     const cat = role.category || 'other';
     if (!acc[cat]) acc[cat] = { count: 0, roles: [] };
     const roleUsers = users.filter(u => u.role === role.id);
@@ -393,220 +455,318 @@ function UsersTab({ onAction }: UsersTabProps) {
   }, {});
 
   return (
-    <div className="users-tab">
-      <div className="users-header">
-        <div className="header-left">
+    <UsersContainer>
+      <UsersHeader>
+        <HeaderLeft>
           <h2>User Management</h2>
           <p>Manage all users across {REAL_ESTATE_ROLES.length} different roles</p>
-        </div>
-        <div className="header-actions">
-          <button className="btn-secondary" disabled title="Export coming soon">
+        </HeaderLeft>
+        <HeaderActions>
+          <SecondaryButton disabled title="Export coming soon">
             <Download size={16} /> Export
-          </button>
-          <button className="btn-secondary" disabled title="Import coming soon">
+          </SecondaryButton>
+          <SecondaryButton disabled title="Import coming soon">
             <Upload size={16} /> Import
-          </button>
-          <button className="btn-primary" onClick={() => onAction?.('addUser')}>
+          </SecondaryButton>
+          <PrimaryButton onClick={() => onAction?.('addUser')}>
             <Plus size={16} /> Add User
-          </button>
-        </div>
-      </div>
+          </PrimaryButton>
+        </HeaderActions>
+      </UsersHeader>
 
-      <div className="users-stats">
-        <div className="stat-card">
-          <span className="stat-value">{users.length}</span>
-          <span className="stat-label">Total Users</span>
-        </div>
-        <div className="stat-card">
-          <span className="stat-value">{users.filter(u => u.status === 'active').length}</span>
-          <span className="stat-label">Active</span>
-        </div>
-        <div className="stat-card">
-          <span className="stat-value">{users.filter(u => u.status === 'pending').length}</span>
-          <span className="stat-label">Pending</span>
-        </div>
-        <div className="stat-card">
-          <span className="stat-value">{REAL_ESTATE_ROLES.length}</span>
-          <span className="stat-label">Role Types</span>
-        </div>
-      </div>
+      <UsersStats>
+        <UserStatCard>
+          <StatValue>{users.length}</StatValue>
+          <StatLabel>Total Users</StatLabel>
+        </UserStatCard>
+        <UserStatCard>
+          <StatValue>{users.filter(u => u.status === 'active').length}</StatValue>
+          <StatLabel>Active</StatLabel>
+        </UserStatCard>
+        <UserStatCard>
+          <StatValue>{users.filter(u => u.status === 'pending').length}</StatValue>
+          <StatLabel>Pending</StatLabel>
+        </UserStatCard>
+        <UserStatCard>
+          <StatValue>{REAL_ESTATE_ROLES.length}</StatValue>
+          <StatLabel>Role Types</StatLabel>
+        </UserStatCard>
+      </UsersStats>
 
-      <div className="category-overview">
+      <CategoryOverview>
         <h3>Users by Category</h3>
-        <div className="category-grid">
+        <CategoryGrid>
           {Object.entries(ROLE_CATEGORIES).map(([key, label]) => (
-            <div 
-              key={key} 
-              className={`category-card ${selectedCategory === key ? 'active' : ''}`}
+            <CategoryCard
+              key={key}
+              className="category-card"
+              $isActive={selectedCategory === key}
               onClick={() => setSelectedCategory(selectedCategory === key ? 'all' : key)}
             >
-              <span className="category-name">{label}</span>
-              <span className="category-count">{usersByCategory[key]?.count || 0}</span>
-            </div>
+              <CategoryName>{label}</CategoryName>
+              <CategoryCount>{usersByCategory[key]?.count || 0}</CategoryCount>
+            </CategoryCard>
           ))}
-        </div>
-      </div>
+        </CategoryGrid>
+      </CategoryOverview>
 
-      <div className="users-toolbar">
-        <div className="search-box">
+      <UsersToolbar>
+        <SearchBox>
           <Search size={18} />
           <input
             type="text"
             placeholder="Search users by name or email..."
             value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
+            onChange={e => setSearchQuery(e.target.value)}
           />
-        </div>
+        </SearchBox>
 
-        <div className="toolbar-filters">
-          <select value={selectedRole} onChange={(e) => setSelectedRole(e.target.value)}>
+        <ToolbarFilters>
+          <select value={selectedRole} onChange={e => setSelectedRole(e.target.value)}>
             <option value="all">All Roles</option>
             {REAL_ESTATE_ROLES.map(role => (
-              <option key={role.id} value={role.id}>{role.name}</option>
+              <option key={role.id} value={role.id}>
+                {role.name}
+              </option>
             ))}
           </select>
 
-          <select value={selectedStatus} onChange={(e) => setSelectedStatus(e.target.value)}>
+          <select value={selectedStatus} onChange={e => setSelectedStatus(e.target.value)}>
             <option value="all">All Status</option>
             <option value="active">Active</option>
             <option value="pending">Pending</option>
             <option value="inactive">Inactive</option>
           </select>
-
-          <button 
-            className={`filter-toggle ${showFilters ? 'active' : ''}`}
-            onClick={() => setShowFilters(!showFilters)}
-          >
-            <Filter size={16} />
-          </button>
-        </div>
-      </div>
+        </ToolbarFilters>
+      </UsersToolbar>
 
       {selectedUsers.length > 0 && (
-        <div className="bulk-actions">
-          <span>{selectedUsers.length} users selected</span>
-          <button className="btn-sm" onClick={() => onAction?.('bulkActivate', { userIds: selectedUsers })}>Activate</button>
-          <button className="btn-sm" onClick={() => onAction?.('bulkDeactivate', { userIds: selectedUsers })}>Deactivate</button>
-          <button className="btn-sm danger" onClick={() => { if (window.confirm(`Delete ${selectedUsers.length} selected user(s)? This cannot be undone.`)) onAction?.('bulkDelete', { userIds: selectedUsers }); }}>Delete</button>
-          <button className="btn-sm" onClick={() => setSelectedUsers([])}>Clear</button>
-        </div>
+        <StatsGrid
+          style={{ display: 'flex', gap: '8px', marginBottom: '16px', alignItems: 'center' }}
+        >
+          <span style={{ fontWeight: 600 }}>{selectedUsers.length} users selected</span>
+          <SecondaryButton onClick={() => onAction?.('bulkActivate', { userIds: selectedUsers })}>
+            Activate
+          </SecondaryButton>
+          <SecondaryButton onClick={() => onAction?.('bulkDeactivate', { userIds: selectedUsers })}>
+            Deactivate
+          </SecondaryButton>
+          <DangerButton
+            onClick={() => {
+              if (
+                window.confirm(
+                  `Delete ${selectedUsers.length} selected user(s)? This cannot be undone.`
+                )
+              )
+                onAction?.('bulkDelete', { userIds: selectedUsers });
+            }}
+          >
+            Delete
+          </DangerButton>
+          <CancelButton onClick={() => setSelectedUsers([])}>Clear</CancelButton>
+        </StatsGrid>
       )}
 
-      <div className="users-table-container">
-        <table className="users-table" aria-label="Team members and users">
+      <TableContainer>
+        <Table aria-label="Team members and users">
           <thead>
-            <tr>
-              <th>
+            <TableRow>
+              <TableHeader>
                 <input
                   type="checkbox"
-                  checked={selectedUsers.length === filteredUsers.length && filteredUsers.length > 0}
+                  checked={
+                    selectedUsers.length === paginatedUsers.length && paginatedUsers.length > 0
+                  }
                   onChange={handleSelectAll}
                 />
-              </th>
-              <th onClick={() => handleSort('name')} className="sortable">
+              </TableHeader>
+              <TableHeader
+                className="sortable"
+                style={{ cursor: 'pointer' }}
+                onClick={() => handleSort('name')}
+              >
                 User
-                {sortBy === 'name' && (sortOrder === 'asc' ? <ChevronUp size={14} /> : <ChevronDown size={14} />)}
-              </th>
-              <th onClick={() => handleSort('role')} className="sortable">
+                {sortBy === 'name' &&
+                  (sortOrder === 'asc' ? <ChevronUp size={14} /> : <ChevronDown size={14} />)}
+              </TableHeader>
+              <TableHeader
+                className="sortable"
+                style={{ cursor: 'pointer' }}
+                onClick={() => handleSort('role')}
+              >
                 Role
-                {sortBy === 'role' && (sortOrder === 'asc' ? <ChevronUp size={14} /> : <ChevronDown size={14} />)}
-              </th>
-              <th>Contact</th>
-              <th>Status</th>
-              <th onClick={() => handleSort('joinDate')} className="sortable">
+                {sortBy === 'role' &&
+                  (sortOrder === 'asc' ? <ChevronUp size={14} /> : <ChevronDown size={14} />)}
+              </TableHeader>
+              <TableHeader>Contact</TableHeader>
+              <TableHeader>Status</TableHeader>
+              <TableHeader
+                className="sortable"
+                style={{ cursor: 'pointer' }}
+                onClick={() => handleSort('joinDate')}
+              >
                 Joined
-                {sortBy === 'joinDate' && (sortOrder === 'asc' ? <ChevronUp size={14} /> : <ChevronDown size={14} />)}
-              </th>
-              <th onClick={() => handleSort('deals')} className="sortable">
+                {sortBy === 'joinDate' &&
+                  (sortOrder === 'asc' ? <ChevronUp size={14} /> : <ChevronDown size={14} />)}
+              </TableHeader>
+              <TableHeader
+                className="sortable"
+                style={{ cursor: 'pointer' }}
+                onClick={() => handleSort('deals')}
+              >
                 Deals
-                {sortBy === 'deals' && (sortOrder === 'asc' ? <ChevronUp size={14} /> : <ChevronDown size={14} />)}
-              </th>
-              <th>Actions</th>
-            </tr>
+                {sortBy === 'deals' &&
+                  (sortOrder === 'asc' ? <ChevronUp size={14} /> : <ChevronDown size={14} />)}
+              </TableHeader>
+              <TableHeader>Actions</TableHeader>
+            </TableRow>
           </thead>
           <tbody>
             {paginatedUsers.map(user => {
               const roleInfo = getRoleInfo(user.role);
               return (
-                <tr key={user.id} className={selectedUsers.includes(user.id) ? 'selected' : ''}>
-                  <td>
+                <TableRow
+                  key={user.id}
+                  style={{
+                    background: selectedUsers.includes(user.id)
+                      ? 'rgba(201, 168, 76, 0.05)'
+                      : undefined,
+                  }}
+                >
+                  <TableCell>
                     <input
                       type="checkbox"
                       checked={selectedUsers.includes(user.id)}
                       onChange={() => handleSelectUser(user.id)}
                     />
-                  </td>
-                  <td>
-                    <div className="user-cell">
-                      <img src={user.avatar} alt={user.name} className="user-avatar" loading="lazy" width={40} height={40} />
-                      <div className="user-info">
-                        <span className="user-name">{user.name}</span>
-                        <span className="user-email">{user.email}</span>
-                      </div>
-                    </div>
-                  </td>
-                  <td>
-                    <span 
+                  </TableCell>
+                  <UserCell>
+                    <UserAvatar
+                      src={user.avatar}
+                      alt={user.name}
+                      loading="lazy"
+                      width={40}
+                      height={40}
+                    />
+                    <UserInfo>
+                      <UserName>{user.name}</UserName>
+                      <UserEmail>{user.email}</UserEmail>
+                    </UserInfo>
+                  </UserCell>
+                  <TableCell>
+                    <RoleBadge
                       className="role-badge"
-                      style={{ 
+                      style={{
                         backgroundColor: `${roleInfo.color}20`,
                         color: roleInfo.color,
-                        borderColor: roleInfo.color
+                        borderColor: roleInfo.color,
                       }}
                     >
                       {roleInfo.name}
-                    </span>
-                  </td>
-                  <td>
-                    <div className="contact-cell">
-                      <a href={`mailto:${user.email}`} aria-label={`Email ${user.email}`} title={`Email ${user.email}`}><Mail size={14} /></a>
-                      <a href={`tel:${user.phone}`} aria-label={`Call ${user.phone}`} title={`Call ${user.phone}`}><Phone size={14} /></a>
-                    </div>
-                  </td>
-                  <td>{getStatusBadge(user.status)}</td>
-                  <td className="date-cell">{user.joinDate ? new Date(user.joinDate).toLocaleDateString() : 'N/A'}</td>
-                  <td className="deals-cell">{user.deals}</td>
-                  <td>
-                    <div className="action-buttons">
-                      <button className="action-btn" title="View" onClick={() => onAction?.('viewUser', { id: user.id })}>
+                    </RoleBadge>
+                  </TableCell>
+                  <ContactCell>
+                    <a
+                      href={`mailto:${user.email}`}
+                      aria-label={`Email ${user.email}`}
+                      title={`Email ${user.email}`}
+                    >
+                      <Mail size={14} />
+                    </a>
+                    <a
+                      href={`tel:${user.phone}`}
+                      aria-label={`Call ${user.phone}`}
+                      title={`Call ${user.phone}`}
+                    >
+                      <Phone size={14} />
+                    </a>
+                  </ContactCell>
+                  <TableCell>{getStatusBadge(user.status)}</TableCell>
+                  <DateCell>
+                    {user.joinDate ? new Date(user.joinDate).toLocaleDateString() : 'N/A'}
+                  </DateCell>
+                  <DealsCell>{user.deals}</DealsCell>
+                  <TableCell>
+                    <div style={{ display: 'flex', gap: '8px' }}>
+                      <ActionButton
+                        title="View"
+                        onClick={() => onAction?.('viewUser', { id: user.id })}
+                      >
                         <Eye size={14} />
-                      </button>
-                      <button className="action-btn" title="Edit" onClick={() => onAction?.('editUser', { id: user.id })}>
+                      </ActionButton>
+                      <ActionButton
+                        title="Edit"
+                        onClick={() => onAction?.('editUser', { id: user.id })}
+                      >
                         <Edit2 size={14} />
-                      </button>
-                      <button className="action-btn danger" title="Delete" onClick={() => onAction?.('deleteUser', { id: user.id })}>
+                      </ActionButton>
+                      <ActionButton
+                        title="Delete"
+                        onClick={() => onAction?.('deleteUser', { id: user.id })}
+                        style={{ color: '#EF4444' }}
+                      >
                         <Trash2 size={14} />
-                      </button>
+                      </ActionButton>
                     </div>
-                  </td>
-                </tr>
+                  </TableCell>
+                </TableRow>
               );
             })}
           </tbody>
-        </table>
+        </Table>
 
-        {filteredUsers.length === 0 && (
-          <div className="no-results">
-            <p>No users found matching your criteria</p>
-            <button onClick={() => { setSearchQuery(''); setSelectedRole('all'); setSelectedStatus('all'); setSelectedCategory('all'); }}>
-              Clear Filters
+        {paginatedUsers.length === 0 && (
+          <div style={{ textAlign: 'center', padding: '40px', color: 'var(--text-secondary)' }}>
+            <p>No users found matching your filters.</p>
+            <button
+              onClick={() => {
+                setSearchQuery('');
+                setSelectedRole('all');
+                setSelectedStatus('all');
+                setSelectedCategory('all');
+              }}
+              style={{ marginTop: 8, cursor: 'pointer' }}
+            >
+              Clear filters
             </button>
           </div>
         )}
-      </div>
 
-      <div className="table-footer">
-        <span>Showing {paginatedUsers.length} of {filteredUsers.length} users</span>
-        {totalPages > 1 && (
-          <Pagination 
-            currentPage={currentPage}
-            totalItems={filteredUsers.length}
-            itemsPerPage={itemsPerPage}
-            onPageChange={setCurrentPage}
-          />
+        {paginatedUsers.length > 0 && (
+          <PaginationContainer>
+            <PaginationInfo>
+              Showing {paginatedUsers.length} of {filteredUsers.length} users
+            </PaginationInfo>
+            <div style={{ display: 'flex', gap: '8px' }}>
+              <PageButton
+                disabled={currentPage === 1}
+                onClick={() => setCurrentPage(Math.max(1, currentPage - 1))}
+              >
+                Previous
+              </PageButton>
+              {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
+                const page = i + 1;
+                return (
+                  <PageButton
+                    key={page}
+                    $active={currentPage === page}
+                    onClick={() => setCurrentPage(page)}
+                  >
+                    {page}
+                  </PageButton>
+                );
+              })}
+              <PageButton
+                disabled={currentPage === totalPages}
+                onClick={() => setCurrentPage(Math.min(totalPages, currentPage + 1))}
+              >
+                Next
+              </PageButton>
+            </div>
+          </PaginationContainer>
         )}
-      </div>
-    </div>
+      </TableContainer>
+    </UsersContainer>
   );
 }
 

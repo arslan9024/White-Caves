@@ -51,25 +51,31 @@ const BiometricSetup = () => {
     setMessage(null);
 
     try {
-      const userId = user.id || user.email;
-      const userEmail = user.email || '';
-      const userName = user.displayName || user.name || user.email || 'User';
-      
+      // Use stable backend user ID (not Firebase UID) so credential lookup is consistent
+      const userId = (user.id as string | undefined) || user.email || '';
+      const userEmail = user.email ?? '';
+      const userName = (user.displayName as string | undefined) || (user.name as string | undefined) || userEmail;
+
       const result = await registerBiometric(userId, userEmail, userName);
 
       if (result.success) {
-        const sessionUser = {
-          id: userId,
-          email: userEmail,
-          name: userName,
-        };
-        saveBiometricSession(sessionUser, token || '');
+        saveBiometricSession({ id: userId, email: userEmail, name: userName }, token || '');
         setCredentials(getBiometricCredentials() as BiometricCredential[]);
-        setMessage({ type: 'success', text: 'Biometric login enabled successfully!' });
+        setMessage({ type: 'success', text: 'Biometric login enabled successfully! You can now sign in with Face ID or Touch ID.' });
       }
-    } catch (error: unknown) {
-      log.error('Biometric setup error:', error);
-      setMessage({ type: 'error', text: error instanceof Error ? error.message : 'Failed to enable biometric login' });
+    } catch (error) {
+      const err = error as Error;
+      // NotAllowedError = user cancelled — don't show an error, just silently reset
+      if (err.name === 'NotAllowedError' || err.message?.includes('cancelled')) {
+        setMessage(null);
+        return;
+      }
+      // AbortError = operation was aborted (e.g. navigated away)
+      if (err.name === 'AbortError') {
+        setMessage(null);
+        return;
+      }
+      setMessage({ type: 'error', text: err.message || 'Failed to enable biometric login. Please try again.' });
     } finally {
       setLoading(false);
     }
@@ -134,7 +140,7 @@ const BiometricSetup = () => {
         </div>
       ) : (
         <div className="biometric-credential-list">
-          <p style={{ fontSize: '14px', color: 'var(--text-secondary)', marginBottom: '12px' }}>
+          <p className="biometric-setup-details">
             Registered devices:
           </p>
           {credentials.map(cred => (
@@ -159,10 +165,9 @@ const BiometricSetup = () => {
             </div>
           ))}
           <button 
-            className="biometric-setup-btn secondary"
+            className="biometric-setup-btn secondary biometric-setup-btn--stacked"
             onClick={handleSetup}
             disabled={loading}
-            style={{ marginTop: '12px' }}
           >
             {loading ? 'Adding...' : 'Add Another Device'}
           </button>

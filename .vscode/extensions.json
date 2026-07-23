@@ -1,6 +1,8 @@
 {
-    "recommendations": [
-        "github.copilot-chat",
-        "github.copilot"
-    ]
+  "recommendations": [
+    "github.copilot-chat",
+    "github.copilot",
+    "ms-vscode.powershell",
+    "dbaeumer.vscode-eslint"
+  ]
 }

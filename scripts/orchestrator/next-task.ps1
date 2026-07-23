@@ -17,6 +17,43 @@ if (-not (Test-Path $promptFile)) {
 }
 $prompts = [System.IO.File]::ReadAllText($promptFile, [System.Text.Encoding]::UTF8) | ConvertFrom-Json
 
+function Read-JsonFileSafe {
+  param(
+    [Parameter(Mandatory = $true)]
+    [string]$Path,
+    [long]$MaxBytes = 32MB,
+    [switch]$TryTmpRecovery
+  )
+
+  if (-not (Test-Path $Path)) { return $null }
+  $info = Get-Item -Path $Path -ErrorAction SilentlyContinue
+  if ($null -eq $info) { return $null }
+
+  function Try-ParseCandidate {
+    param([string]$CandidatePath)
+    try {
+      $raw = Get-Content -Path $CandidatePath -Raw -ErrorAction Stop
+      if ([string]::IsNullOrWhiteSpace($raw)) { return $null }
+      return ($raw | ConvertFrom-Json -ErrorAction Stop)
+    } catch { return $null }
+  }
+
+  if ($info.Length -gt $MaxBytes) {
+    if (-not $TryTmpRecovery) { return $null }
+    $dir = Split-Path -Parent $Path
+    $base = [System.IO.Path]::GetFileName($Path)
+    foreach ($tmp in @(Get-ChildItem -Path $dir -Filter ("{0}.tmp.*" -f $base) -File -ErrorAction SilentlyContinue | Sort-Object LastWriteTime -Descending)) {
+      if ($tmp.Length -gt $MaxBytes) { continue }
+      $parsed = Try-ParseCandidate -CandidatePath $tmp.FullName
+      if ($null -eq $parsed) { continue }
+      try { Copy-Item -Path $tmp.FullName -Destination $Path -Force } catch {}
+      return $parsed
+    }
+    return $null
+  }
+  return (Try-ParseCandidate -CandidatePath $Path)
+}
+
 $toolMap = @{
   "@Sofia"    = "Google AI Studio (Gemini 2.0 Flash)  https://aistudio.google.com/"
   "@Timnit"   = "Google AI Studio (Gemini 2.0 Flash)  https://aistudio.google.com/"
@@ -41,7 +78,7 @@ if (-not (Test-Path $queueFile)) {
   Write-Host "[ERROR] Queue not found. Run: npm run orchestrator:queue:init" -ForegroundColor Red
   exit 1
 }
-$queue = Get-Content $queueFile -Raw | ConvertFrom-Json
+$queue = Read-JsonFileSafe -Path $queueFile -MaxBytes 32MB -TryTmpRecovery
 $tasks = @($queue.tasks)
 
 function Test-DepsDone {
@@ -53,6 +90,34 @@ function Test-DepsDone {
   return $true
 }
 
+function Get-NormalizedDeps {
+  param($deps)
+
+  $normalized = New-Object 'System.Collections.Generic.List[string]'
+
+  if ($null -eq $deps) { return ,$normalized.ToArray() }
+
+  foreach ($item in @($deps)) {
+    if ($null -eq $item) { continue }
+    if ($item -is [string]) {
+      if ([string]::IsNullOrWhiteSpace($item)) { continue }
+      [void]$normalized.Add($item)
+      continue
+    }
+
+    if ($null -ne $item.PSObject -and $item.PSObject.Properties.Count -eq 0) {
+      continue
+    }
+
+    $text = [string]$item
+    if (-not [string]::IsNullOrWhiteSpace($text)) {
+      [void]$normalized.Add($text)
+    }
+  }
+
+  return ,$normalized.ToArray()
+}
+
 $agentTasks = $tasks | Where-Object { $_.agent -eq $AgentName }
 if ($agentTasks.Count -eq 0) {
   Write-Host "[ERROR] No tasks for agent: $AgentName" -ForegroundColor Red
@@ -62,7 +127,7 @@ if ($agentTasks.Count -eq 0) {
 $nextTask = $agentTasks |
   Where-Object { $_.status -eq "queued" -or $_.status -eq "retrying" } |
   Sort-Object createdAt |
-  Where-Object { Test-DepsDone -deps @($_.dependsOn) -allTasks $tasks } |
+  Where-Object { Test-DepsDone -deps (Get-NormalizedDeps $_.dependsOn) -allTasks $tasks } |
   Select-Object -First 1
 
 if ($null -eq $nextTask) {
@@ -88,6 +153,7 @@ if ($null -eq $nextTask) {
 $taskId  = $nextTask.taskId
 $propVal = $prompts.PSObject.Properties | Where-Object { $_.Name -eq $taskId } | Select-Object -ExpandProperty Value
 if ($null -eq $propVal) { $propVal = "(no prompt for $taskId -- add to prompts.json)" }
+$promptText = if ($propVal -is [string]) { [string]$propVal } elseif ($null -ne $propVal -and $propVal.PSObject.Properties.Name -contains "prompt") { [string]$propVal.prompt } else { [string]$propVal }
 $tool = if ($toolMap.ContainsKey($AgentName)) { $toolMap[$AgentName] } else { "See AGENTS.md" }
 
 Write-Host ""
@@ -103,7 +169,7 @@ Write-Host ""
 Write-Host "  +--- PASTE THIS PROMPT ---+" -ForegroundColor Yellow
 Write-Host ""
 
-$words = $propVal -split " "
+$words = $promptText -split " "
 $line  = "  | "
 foreach ($word in $words) {
   if (($line + $word).Length -gt 88) {

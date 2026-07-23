@@ -125,7 +125,7 @@ vi.mock('../config/pagination', () => ({
   }),
 }));
 
-import clientsRoutes from './clients';
+import clientsRoutes from './clients.js';
 
 // ── Test app factory ─────────────────────────────────────────────────
 function createApp(role = 'owner', userId = 'user-1') {

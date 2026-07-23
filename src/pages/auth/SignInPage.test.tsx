@@ -1,3 +1,4 @@
+/// <reference types="@testing-library/jest-dom" />
 /**
  * SignInPage — Unit Tests
  * Tests: rendering, mode switching, form validation, email/phone tabs,
@@ -10,6 +11,8 @@ import React from 'react';
 import { Provider } from 'react-redux';
 import { configureStore } from '@reduxjs/toolkit';
 import { MemoryRouter } from 'react-router-dom';
+import { ThemeProvider } from '../../context/ThemeContext';
+
 
 // ── Mocks ────────────────────────────────────────────────────────
 
@@ -23,9 +26,35 @@ const mockSignInWithGoogle = vi.fn();
 const mockSignInWithFacebook = vi.fn();
 const mockSignInWithApple = vi.fn();
 const mockSignOut = vi.fn();
+const { mockFirebaseAuthConfigured, mockFirebaseAuthUnavailableReason, mockFirebaseAuthState } =
+  vi.hoisted(() => ({
+    mockFirebaseAuthConfigured: { value: true },
+    mockFirebaseAuthUnavailableReason: { value: '' },
+    mockFirebaseAuthState: { value: { currentUser: null as unknown } },
+  }));
 
 vi.mock('../../config/firebase', () => ({
-  signInWithGoogle: (...args: unknown[]) => mockSignInWithGoogle(...args),
+  get auth() {
+    return mockFirebaseAuthState.value;
+  },
+  get isFirebaseAuthConfigured() {
+    return mockFirebaseAuthConfigured.value;
+  },
+  get firebaseAuthUnavailableReason() {
+    return mockFirebaseAuthUnavailableReason.value;
+  },
+  signInWithGoogle: (...args: unknown[]) =>
+    Promise.resolve(mockSignInWithGoogle(...args)).then(result => {
+      if (
+        typeof result === 'object' &&
+        result !== null &&
+        'user' in result &&
+        (result as { user?: unknown }).user
+      ) {
+        mockFirebaseAuthState.value.currentUser = (result as { user: unknown }).user;
+      }
+      return result;
+    }),
   signInWithFacebook: (...args: unknown[]) => mockSignInWithFacebook(...args),
   signInWithApple: (...args: unknown[]) => mockSignInWithApple(...args),
   signOut: (...args: unknown[]) => mockSignOut(...args),
@@ -36,10 +65,16 @@ vi.mock('../../config/firebase', () => ({
 const mockBackendLogin = vi.fn();
 const mockBackendRegister = vi.fn();
 const mockSyncFirebaseUser = vi.fn();
+const mockRequestPasswordReset = vi.fn();
+const mockVerifyPasswordResetToken = vi.fn();
+const mockResetPasswordWithToken = vi.fn();
 vi.mock('../../services/authService', () => ({
   loginWithEmail: (...args: unknown[]) => mockBackendLogin(...args),
   registerWithEmail: (...args: unknown[]) => mockBackendRegister(...args),
   syncFirebaseUser: (...args: unknown[]) => mockSyncFirebaseUser(...args),
+  requestPasswordReset: (...args: unknown[]) => mockRequestPasswordReset(...args),
+  verifyPasswordResetToken: (...args: unknown[]) => mockVerifyPasswordResetToken(...args),
+  resetPasswordWithToken: (...args: unknown[]) => mockResetPasswordWithToken(...args),
 }));
 
 vi.mock('../../features/auth/components/BiometricLogin', () => ({
@@ -57,6 +92,8 @@ vi.mock('../../features/auth/components/BiometricLogin', () => ({
 
 vi.mock('../../utils/safeStorage', () => ({
   safeStorage: {
+    get: vi.fn(),
+    set: vi.fn(),
     setJSON: vi.fn(),
     getJSON: vi.fn(),
     remove: vi.fn(),
@@ -84,9 +121,11 @@ const renderPage = () => {
     store,
     ...render(
       <Provider store={store}>
-        <MemoryRouter>
-          <SignInPage />
-        </MemoryRouter>
+        <ThemeProvider>
+          <MemoryRouter>
+            <SignInPage />
+          </MemoryRouter>
+        </ThemeProvider>
       </Provider>
     ),
   };
@@ -97,6 +136,19 @@ const renderPage = () => {
 describe('SignInPage', () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    mockSignInWithGoogle.mockReset();
+    mockSignInWithFacebook.mockReset();
+    mockSignInWithApple.mockReset();
+    mockSignOut.mockReset();
+    mockBackendLogin.mockReset();
+    mockBackendRegister.mockReset();
+    mockSyncFirebaseUser.mockReset();
+    mockRequestPasswordReset.mockReset();
+    mockVerifyPasswordResetToken.mockReset();
+    mockResetPasswordWithToken.mockReset();
+    mockFirebaseAuthConfigured.value = true;
+    mockFirebaseAuthUnavailableReason.value = '';
+    mockFirebaseAuthState.value.currentUser = null;
     vi.useFakeTimers({ shouldAdvanceTime: true });
   });
 
@@ -132,6 +184,31 @@ describe('SignInPage', () => {
       expect(screen.getByText(/Google/)).toBeInTheDocument();
       expect(screen.getByText(/Facebook/)).toBeInTheDocument();
       expect(screen.getByText(/Apple/)).toBeInTheDocument();
+    });
+
+    it('should disable Google login with fallback message when Firebase auth is unavailable', () => {
+      mockFirebaseAuthConfigured.value = false;
+      renderPage();
+      expect(screen.getByRole('button', { name: /Google/i })).toBeDisabled();
+      expect(
+        screen.getByText(
+          /Google sign-in is temporarily unavailable because Firebase authentication/
+        )
+      ).toBeInTheDocument();
+    });
+
+    it('should include missing Firebase env diagnostics in fallback helper text', () => {
+      mockFirebaseAuthConfigured.value = false;
+      mockFirebaseAuthUnavailableReason.value =
+        'Missing environment variables: VITE_FIREBASE_API_KEY, VITE_FIREBASE_AUTH_DOMAIN';
+
+      renderPage();
+
+      expect(
+        screen.getByText(
+          /Missing environment variables: VITE_FIREBASE_API_KEY, VITE_FIREBASE_AUTH_DOMAIN/i
+        )
+      ).toBeInTheDocument();
     });
 
     it('should render biometric login button', () => {
@@ -198,6 +275,7 @@ describe('SignInPage', () => {
 
     it('should call backend login on email form submit', async () => {
       mockBackendLogin.mockResolvedValue({
+        success: true,
         data: { user: { id: 'u1', email: 'test@test.com', name: 'Test', role: 'agent' } },
       });
       renderPage();
@@ -218,6 +296,7 @@ describe('SignInPage', () => {
 
     it('should show success message on successful sign in', async () => {
       mockBackendLogin.mockResolvedValue({
+        success: true,
         data: { user: { id: 'u1', email: 'test@test.com', name: 'Test', role: 'agent' } },
       });
       renderPage();
@@ -485,7 +564,7 @@ describe('SignInPage', () => {
       });
 
       await waitFor(() => {
-        expect(mockNavigate).toHaveBeenCalledWith('/dashboard');
+        expect(mockNavigate).toHaveBeenCalledWith('/crm');
       });
     });
 
@@ -661,7 +740,7 @@ describe('SignInPage', () => {
       });
     });
 
-    it('should mark recovery panel as busy while retry is in progress', async () => {
+    it('should keep recovery panel visible while retry is in progress', async () => {
       mockSignInWithGoogle
         .mockResolvedValueOnce({
           user: {
@@ -684,7 +763,29 @@ describe('SignInPage', () => {
       fireEvent.click(retryButton);
 
       await waitFor(() => {
-        expect(screen.getByRole('status')).toHaveAttribute('aria-busy', 'true');
+        expect(screen.getByText(/sign-in needs one more step/i)).toBeInTheDocument();
+        expect(screen.getByRole('button', { name: /Retrying.../i })).toBeDisabled();
+      });
+    });
+
+    it('should render Gmail troubleshooting panel and allow fallback to email tab', async () => {
+      mockSignInWithGoogle.mockRejectedValue(new Error('auth/popup-blocked'));
+      renderPage();
+
+      fireEvent.click(screen.getByRole('button', { name: /Google/i }));
+
+      await waitFor(() => {
+        expect(screen.getByText(/Trouble signing in with Gmail\?/i)).toBeInTheDocument();
+        expect(screen.getByRole('button', { name: /Continue with Email/i })).toBeInTheDocument();
+      });
+
+      fireEvent.click(screen.getByText('Phone'));
+      expect(screen.getByPlaceholderText('+971 50 123 4567')).toBeInTheDocument();
+
+      fireEvent.click(screen.getByRole('button', { name: /Continue with Email/i }));
+
+      await waitFor(() => {
+        expect(screen.getByPlaceholderText('Enter your email')).toBeInTheDocument();
       });
     });
 

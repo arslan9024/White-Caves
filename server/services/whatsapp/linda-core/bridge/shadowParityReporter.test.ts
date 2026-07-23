@@ -17,7 +17,7 @@ import {
   buildLindaParitySnapshot,
   emitLindaParitySnapshot,
   emitLindaParityDelta,
-} from './shadowParityReporter';
+} from './shadowParityReporter.js';
 
 function createClient(overrides?: Partial<any>) {
   const baseStats = {

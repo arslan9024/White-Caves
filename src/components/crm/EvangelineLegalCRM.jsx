@@ -5,7 +5,6 @@ import {
   TrendingUp, ArrowUp, ArrowDown, Eye, Plus, AlertCircle
 } from 'lucide-react';
 import AssistantDocsTab from './shared/AssistantDocsTab';
-import AssistantLifecycleTab from './shared/AssistantLifecycleTab';
 import KYCAMLDashboard from './shared/KYCAMLDashboard';
 import './AssistantDashboard.css';
 
@@ -121,7 +120,7 @@ const EvangelineLegalCRM = () => {
       </div>
 
       <div className="assistant-tabs">
-        {['risks', 'contracts', 'compliance', 'regulations', 'library', 'lifecycle', 'docs'].map(tab => (
+        {['risks', 'contracts', 'compliance', 'regulations', 'library', 'docs'].map(tab => (
           <button
             key={tab}
             className={`tab-btn ${activeTab === tab ? 'active' : ''}`}
@@ -268,10 +267,6 @@ const EvangelineLegalCRM = () => {
               </div>
             </div>
           </div>
-        )}
-
-        {activeTab === 'lifecycle' && (
-          <AssistantLifecycleTab assistantId="evangeline" color="#8B5CF6" assistantName="Evangeline" />
         )}
 
         {activeTab === 'docs' && (

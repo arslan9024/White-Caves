@@ -1,0 +1,104 @@
+.ai-command-center {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.command-center-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+}
+
+.header-controls {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.view-toggle {
+  display: inline-flex;
+  gap: 0.25rem;
+}
+
+.toggle-btn,
+.header-action {
+  border: 1px solid #e5e7eb;
+  background: #fff;
+  border-radius: 0.5rem;
+  padding: 0.4rem 0.55rem;
+  cursor: pointer;
+}
+
+.toggle-btn.active {
+  border-color: var(--primary-color, #0ea5e9);
+  color: var(--primary-color, #0ea5e9);
+}
+
+.quick-stats-bar {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 0.75rem;
+}
+
+.command-center-main {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 320px;
+  gap: 1rem;
+}
+
+.dashboard-container,
+.activity-sidebar {
+  border: 1px solid #e5e7eb;
+  border-radius: 0.75rem;
+  background: #fff;
+  padding: 1rem;
+}
+
+.command-center-loading,
+.no-assistant-selected {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  min-height: 180px;
+}
+
+.spinner {
+  animation: ai-command-spin 1s linear infinite;
+}
+
+@keyframes ai-command-spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.notification {
+  position: relative;
+}
+
+.notification-badge {
+  position: absolute;
+  top: -0.4rem;
+  right: -0.3rem;
+  min-width: 1rem;
+  height: 1rem;
+  border-radius: 999px;
+  background: #ef4444;
+  color: #fff;
+  font-size: 0.65rem;
+  line-height: 1rem;
+  text-align: center;
+}
+
+@media (max-width: 1100px) {
+  .command-center-main {
+    grid-template-columns: 1fr;
+  }
+}

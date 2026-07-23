@@ -4,7 +4,7 @@
  * Features: Short-term context, long-term memory, pattern recognition, predictive
  */
 
-import { Intent, Entity, IntentResult } from './ninaEngine';
+import { Intent, Entity, IntentResult } from './ninaEngine.js';
 
 export interface Message {
   id: string;

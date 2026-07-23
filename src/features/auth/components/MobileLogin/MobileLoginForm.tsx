@@ -100,11 +100,11 @@ const MobileLoginForm: React.FC<MobileLoginFormProps> = ({ onSuccess, onError })
       setConfirmationResult(result);
       setStep('otp');
     } catch (error) {
-      const authError = error as FirebaseAuthError;
-      log.error('Send OTP error:', authError);
-      setError(authError.message || 'Failed to send OTP');
-      dispatch(loginFailure(authError.message || 'Failed to send OTP'));
-      onError?.(authError);
+      const authError = error as { message?: string };
+      
+      setError((error as Error).message || 'Failed to send OTP');
+      dispatch(loginFailure((error as Error).message));
+      onError?.(error);
       
       if (window.recaptchaVerifier) {
         window.recaptchaVerifier.clear();
@@ -147,11 +147,11 @@ const MobileLoginForm: React.FC<MobileLoginFormProps> = ({ onSuccess, onError })
       
       onSuccess?.(userData);
     } catch (error) {
-      const authError = error as FirebaseAuthError;
-      log.error('Verify OTP error:', authError);
+      const authError = error as { message?: string };
+      
       setError('Invalid OTP. Please try again.');
-      dispatch(loginFailure(authError.message || 'OTP verification failed'));
-      onError?.(authError);
+      dispatch(loginFailure((error as Error).message || 'OTP verification failed'));
+      onError?.(error);
     } finally {
       setLoading(false);
     }
@@ -186,6 +186,8 @@ const MobileLoginForm: React.FC<MobileLoginFormProps> = ({ onSuccess, onError })
           onChange={(e) => setCountryCode(e.target.value)}
           disabled={loading}
           className="country-code-select"
+          title="Country code"
+          aria-label="Country code"
         >
           {countryCodes.map(({ code, country }) => (
             <option key={code} value={code}>

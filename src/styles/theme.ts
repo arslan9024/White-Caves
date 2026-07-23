@@ -4,7 +4,7 @@
 export const lightTheme = {
   colors: {
     // Primary & Secondary
-    primary: '#C41E3A', // Red/Crimson
+    primary: '#C9A84C', // Metallic Gold
     secondary: '#0EA5E9', // Sky Blue
 
     // Backgrounds (nested structure for styled-components)
@@ -262,17 +262,17 @@ const legacyColors = {
   dark: {
     bg: '#111827',
   },
-  primaryDark: '#A81831',
-  primaryLight: '#FCE4E6',
-  primaryVeryLight: '#FFF5F5',
-  secondaryDark: '#0284C7',
+  primaryDark: '#a8883a',
+  primaryLight: 'rgba(201, 168, 76, 0.12)',
+  primaryVeryLight: 'rgba(201, 168, 76, 0.05)',
+  secondaryDark: '#064e3b',
   luxury: {
-    goldShimmer: 'linear-gradient(135deg, #E31E24 0%, #EF5350 50%, #E31E24 100%)',
-    goldToGreen: 'linear-gradient(135deg, #E31E24 0%, #2E5A4F 100%)',
-    darkGreen: 'linear-gradient(135deg, #2E5A4F 0%, #1E3A32 100%)',
-    goldDark: 'linear-gradient(180deg, #E31E24, #B71C1C)',
-    warmSand: 'linear-gradient(135deg, #F5E6D3 0%, #FDF8E8 100%)',
-    premiumDark: 'linear-gradient(135deg, #1A1A1A 0%, #2E5A4F 100%)',
+    goldShimmer: 'linear-gradient(135deg, #C9A84C 0%, #e4b75e 50%, #C9A84C 100%)',
+    goldToGreen: 'linear-gradient(135deg, #C9A84C 0%, #10B981 100%)',
+    darkGreen: 'linear-gradient(135deg, #10B981 0%, #064e3b 100%)',
+    goldDark: 'linear-gradient(180deg, #C9A84C, #a8883a)',
+    warmSand: 'linear-gradient(135deg, #1f1f1f 0%, #2c2c2c 100%)',
+    premiumDark: 'linear-gradient(135deg, #0f0f0f 0%, #1a1a1a 100%)',
   },
   border: lightTheme.colors.border.medium,
   borderDark: lightTheme.colors.border.dark,

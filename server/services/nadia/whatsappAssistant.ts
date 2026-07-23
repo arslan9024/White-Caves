@@ -33,6 +33,12 @@ export interface AutoResponseResult {
   responseType: 'bot' | 'escalate_to_agent';
 }
 
+export interface WhatsAppAssistantPolicyConfig {
+  escalationConfidenceThreshold?: number;
+}
+
+const DEFAULT_ESCALATION_CONFIDENCE_THRESHOLD = 0.6;
+
 const ESCALATION_KEYWORDS = [
   'agent',
   'human',
@@ -48,6 +54,13 @@ const ESCALATION_KEYWORDS = [
 function detectEscalationRequest(message: string): boolean {
   const lower = message.toLowerCase();
   return ESCALATION_KEYWORDS.some(kw => lower.includes(kw));
+}
+
+function normalizeThreshold(raw: unknown, fallback: number): number {
+  if (typeof raw !== 'number' || Number.isNaN(raw)) {
+    return fallback;
+  }
+  return Math.min(0.95, Math.max(0.2, raw));
 }
 
 /**
@@ -67,10 +80,20 @@ function resolveFirstResponseState(params: {
   confidence: number;
   sentiment: Sentiment;
   intent: string;
+  escalationConfidenceThreshold: number;
 }): 'auto_reply' | 'clarify' | 'escalate_to_agent' {
-  const { explicitEscalation, intentEscalation, confidence, sentiment, intent } = params;
+  const {
+    explicitEscalation,
+    intentEscalation,
+    confidence,
+    sentiment,
+    intent,
+    escalationConfidenceThreshold,
+  } = params;
 
-  if (explicitEscalation || intentEscalation || confidence < 0.6) {
+  const clarifyUpperBound = Math.min(0.95, escalationConfidenceThreshold + 0.12);
+
+  if (explicitEscalation || intentEscalation || confidence < escalationConfidenceThreshold) {
     if (intent === 'general_inquiry' && !explicitEscalation && !intentEscalation) {
       return 'clarify';
     }
@@ -79,8 +102,10 @@ function resolveFirstResponseState(params: {
 
   const needsClarification =
     intent === 'general_inquiry' ||
-    (confidence >= 0.6 && confidence < 0.72) ||
-    (sentiment === 'negative' && confidence >= 0.72 && confidence < 0.8);
+    (confidence >= escalationConfidenceThreshold && confidence < clarifyUpperBound) ||
+    (sentiment === 'negative' &&
+      confidence >= clarifyUpperBound &&
+      confidence < Math.min(0.98, clarifyUpperBound + 0.08));
 
   if (needsClarification) {
     return 'clarify';
@@ -89,7 +114,15 @@ function resolveFirstResponseState(params: {
   return 'auto_reply';
 }
 
-export function classifyWhatsAppIntent(message: string): IntentClassificationResult {
+export function classifyWhatsAppIntent(
+  message: string,
+  policy: WhatsAppAssistantPolicyConfig = {}
+): IntentClassificationResult {
+  const escalationConfidenceThreshold = normalizeThreshold(
+    policy.escalationConfidenceThreshold,
+    DEFAULT_ESCALATION_CONFIDENCE_THRESHOLD
+  );
+
   const intent = detectIntent(message);
   const sentiment = detectSentiment(message);
   const entities = extractEntities(message);
@@ -104,7 +137,7 @@ export function classifyWhatsAppIntent(message: string): IntentClassificationRes
   });
 
   const explicitEscalation = detectEscalationRequest(message);
-  const confidenceEscalation = confidence < 0.6;
+  const confidenceEscalation = confidence < escalationConfidenceThreshold;
   const intentEscalation = intent === 'complaint' || intent === 'legal_enquiry';
 
   const firstResponseState = resolveFirstResponseState({
@@ -113,6 +146,7 @@ export function classifyWhatsAppIntent(message: string): IntentClassificationRes
     confidence,
     sentiment,
     intent,
+    escalationConfidenceThreshold,
   });
 
   const shouldEscalate = firstResponseState === 'escalate_to_agent';
@@ -137,8 +171,11 @@ export function classifyWhatsAppIntent(message: string): IntentClassificationRes
 export function generateWhatsAppAutoResponse(input: {
   message: string;
   customerName?: string;
+  escalationConfidenceThreshold?: number;
 }): AutoResponseResult {
-  const classification = classifyWhatsAppIntent(input.message);
+  const classification = classifyWhatsAppIntent(input.message, {
+    escalationConfidenceThreshold: input.escalationConfidenceThreshold,
+  });
 
   if (classification.shouldEscalate) {
     return {

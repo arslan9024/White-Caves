@@ -65,7 +65,7 @@ import {
   dispatchLindaCampaign,
   dispatchDueLindaCampaigns,
   runLindaCampaignSchedulerTick,
-} from './lindaCampaignService';
+} from './lindaCampaignService.js';
 
 describe('lindaCampaignService', () => {
   beforeEach(() => {

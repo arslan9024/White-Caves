@@ -5,7 +5,7 @@
  * In development, runs every 30 minutes for testing (if enabled).
  *
  * Usage:
- *   import { startLeadScoringScheduler, stopLeadScoringScheduler } from './leadScoringScheduler';
+ *   import { startLeadScoringScheduler, stopLeadScoringScheduler } from './leadScoringScheduler.js';
  *   startLeadScoringScheduler();
  */
 

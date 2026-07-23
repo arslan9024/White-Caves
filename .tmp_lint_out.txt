@@ -1,0 +1,4 @@
+
+> white-caves-real-estate@1.0.0 lint
+> eslint . --ext .js,.jsx,.ts,.tsx
+

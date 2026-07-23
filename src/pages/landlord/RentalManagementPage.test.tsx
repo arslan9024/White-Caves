@@ -5,7 +5,7 @@
  */
 
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
-import { render, screen, fireEvent } from '@testing-library/react';
+import { render, screen, fireEvent, within } from '@testing-library/react';
 import React from 'react';
 
 vi.mock('../RolePages.css', () => ({}));
@@ -58,9 +58,44 @@ const MOCK_LEASES = [
   },
 ];
 
+const MOCK_OVERDUE_QUEUE = [
+  {
+    id: 'pdc-1',
+    chequeNumber: 'CHK-001',
+    amount: 8000,
+    currency: 'AED',
+    dueDate: '2026-06-01T00:00:00.000Z',
+    status: 'pending',
+    daysOverdue: 3,
+    lease: {
+      id: 'l1',
+      leaseNumber: 'L-001',
+      property: { id: 'p1', title: 'Marina View 2BR Apartment', location: 'Dubai Marina' },
+      tenant: { id: 't1', name: 'Ahmed Al-Rashid', email: 'ahmed@test.ae', phone: '+971501111111' },
+    },
+  },
+];
+
+const MOCK_EJARI_SUMMARY = {
+  total: 3,
+  pending: 1,
+  registered: 2,
+  expired: 0,
+  cancelled: 0,
+  expiringSoon: 1,
+};
+
 const renderLoaded = async () => {
   render(<RentalManagementPage />);
-  await screen.findByText('Marina View 2BR Apartment');
+  await screen.findAllByText('Marina View 2BR Apartment');
+};
+
+const getPropertiesGridQueries = () => {
+  const grid = document.querySelector('.properties-grid');
+  if (!(grid instanceof HTMLElement)) {
+    throw new Error('properties grid not found');
+  }
+  return within(grid);
 };
 
 describe('RentalManagementPage', () => {
@@ -68,9 +103,32 @@ describe('RentalManagementPage', () => {
     vi.spyOn(console, 'error').mockImplementation(() => {});
     vi.spyOn(console, 'warn').mockImplementation(() => {});
     vi.clearAllMocks();
-    mockAuthFetch.mockResolvedValue({
-      ok: true,
-      json: () => Promise.resolve({ data: MOCK_LEASES }),
+    mockAuthFetch.mockImplementation((url: string, init?: RequestInit) => {
+      if (url.includes('/api/leases/collections/overdue-queue') && (!init || !init.method)) {
+        return Promise.resolve({
+          ok: true,
+          json: () => Promise.resolve({ data: MOCK_OVERDUE_QUEUE }),
+        });
+      }
+
+      if (url.includes('/api/leases/ejari/tracking') && (!init || !init.method)) {
+        return Promise.resolve({
+          ok: true,
+          json: () => Promise.resolve({ data: MOCK_LEASES, summary: MOCK_EJARI_SUMMARY }),
+        });
+      }
+
+      if (url.includes('/api/leases/collections/overdue-queue/') && init?.method === 'POST') {
+        return Promise.resolve({
+          ok: true,
+          json: () => Promise.resolve({ success: true }),
+        });
+      }
+
+      return Promise.resolve({
+        ok: true,
+        json: () => Promise.resolve({ data: MOCK_LEASES }),
+      });
     });
   });
 
@@ -101,9 +159,10 @@ describe('RentalManagementPage', () => {
 
   it('shows all properties by default', async () => {
     await renderLoaded();
-    expect(screen.getByText('Marina View 2BR Apartment')).toBeInTheDocument();
-    expect(screen.getByText('Downtown Studio')).toBeInTheDocument();
-    expect(screen.getByText('JBR 3BR Apartment')).toBeInTheDocument();
+    const grid = getPropertiesGridQueries();
+    expect(grid.getByText('Marina View 2BR Apartment')).toBeInTheDocument();
+    expect(grid.getByText('Downtown Studio')).toBeInTheDocument();
+    expect(grid.getByText('JBR 3BR Apartment')).toBeInTheDocument();
   });
 
   // ────── Filter Logic ──────
@@ -111,51 +170,58 @@ describe('RentalManagementPage', () => {
   it('filters to occupied only', async () => {
     await renderLoaded();
     fireEvent.click(screen.getByRole('button', { name: 'Occupied' }));
+    const grid = getPropertiesGridQueries();
 
-    expect(screen.getByText('Marina View 2BR Apartment')).toBeInTheDocument();
-    expect(screen.getByText('Downtown Studio')).toBeInTheDocument();
-    expect(screen.queryByText('JBR 3BR Apartment')).not.toBeInTheDocument();
+    expect(grid.getByText('Marina View 2BR Apartment')).toBeInTheDocument();
+    expect(grid.getByText('Downtown Studio')).toBeInTheDocument();
+    expect(grid.queryByText('JBR 3BR Apartment')).not.toBeInTheDocument();
   });
 
   it('filters to available only', async () => {
     await renderLoaded();
     fireEvent.click(screen.getByRole('button', { name: 'Available' }));
+    const grid = getPropertiesGridQueries();
 
-    expect(screen.queryByText('Marina View 2BR Apartment')).not.toBeInTheDocument();
-    expect(screen.queryByText('Downtown Studio')).not.toBeInTheDocument();
-    expect(screen.getByText('JBR 3BR Apartment')).toBeInTheDocument();
+    expect(grid.queryByText('Marina View 2BR Apartment')).not.toBeInTheDocument();
+    expect(grid.queryByText('Downtown Studio')).not.toBeInTheDocument();
+    expect(grid.getByText('JBR 3BR Apartment')).toBeInTheDocument();
   });
 
   it('returns to all when clicking All Properties', async () => {
     await renderLoaded();
     fireEvent.click(screen.getByRole('button', { name: 'Available' }));
-    expect(screen.queryByText('Marina View 2BR Apartment')).not.toBeInTheDocument();
+    let grid = getPropertiesGridQueries();
+    expect(grid.queryByText('Marina View 2BR Apartment')).not.toBeInTheDocument();
 
     fireEvent.click(screen.getByRole('button', { name: 'All Properties' }));
-    expect(screen.getByText('Marina View 2BR Apartment')).toBeInTheDocument();
-    expect(screen.getByText('JBR 3BR Apartment')).toBeInTheDocument();
+    grid = getPropertiesGridQueries();
+    expect(grid.getByText('Marina View 2BR Apartment')).toBeInTheDocument();
+    expect(grid.getByText('JBR 3BR Apartment')).toBeInTheDocument();
   });
 
   // ────── Property Card Details ──────
 
   it('renders property locations', async () => {
     await renderLoaded();
-    expect(screen.getByText('Dubai Marina')).toBeInTheDocument();
-    expect(screen.getByText('Downtown Dubai')).toBeInTheDocument();
-    expect(screen.getByText('JBR')).toBeInTheDocument();
+    const grid = getPropertiesGridQueries();
+    expect(grid.getByText('Dubai Marina')).toBeInTheDocument();
+    expect(grid.getByText('Downtown Dubai')).toBeInTheDocument();
+    expect(grid.getByText('JBR')).toBeInTheDocument();
   });
 
   it('renders property types', async () => {
     await renderLoaded();
-    expect(screen.getAllByText('Apartment')).toHaveLength(2);
-    expect(screen.getByText('Studio')).toBeInTheDocument();
+    const grid = getPropertiesGridQueries();
+    expect(grid.getAllByText('Apartment')).toHaveLength(2);
+    expect(grid.getByText('Studio')).toBeInTheDocument();
   });
 
   it('renders rent amounts', async () => {
     await renderLoaded();
-    expect(screen.getByText(/AED 95,000/)).toBeInTheDocument();
-    expect(screen.getByText(/AED 65,000/)).toBeInTheDocument();
-    expect(screen.getByText('AED 180,000/yr')).toBeInTheDocument();
+    const grid = getPropertiesGridQueries();
+    expect(grid.getByText(/AED 95,000/)).toBeInTheDocument();
+    expect(grid.getByText(/AED 65,000/)).toBeInTheDocument();
+    expect(grid.getByText('AED 180,000/yr')).toBeInTheDocument();
   });
 
   // ────── Status Badges ──────
@@ -171,14 +237,16 @@ describe('RentalManagementPage', () => {
 
   it('shows tenant names for occupied properties', async () => {
     await renderLoaded();
-    expect(screen.getByText('Ahmed Al-Rashid')).toBeInTheDocument();
-    expect(screen.getByText('Sarah Johnson')).toBeInTheDocument();
+    const grid = getPropertiesGridQueries();
+    expect(grid.getByText('Ahmed Al-Rashid')).toBeInTheDocument();
+    expect(grid.getByText('Sarah Johnson')).toBeInTheDocument();
   });
 
   it('shows lease end dates for occupied properties', async () => {
     await renderLoaded();
-    expect(screen.getByText(/31 Dec 2024/)).toBeInTheDocument();
-    expect(screen.getByText(/30 Jun 2024/)).toBeInTheDocument();
+    const grid = getPropertiesGridQueries();
+    expect(grid.getByText(/31 Dec 2024/)).toBeInTheDocument();
+    expect(grid.getByText(/30 Jun 2024/)).toBeInTheDocument();
   });
 
   it('does not show tenant info for available properties', async () => {
@@ -186,21 +254,24 @@ describe('RentalManagementPage', () => {
     // JBR 3BR Apartment is available — no tenant shown
     // If we filter to available only, there should be no tenant rows
     fireEvent.click(screen.getByRole('button', { name: 'Available' }));
-    expect(screen.queryByText('Ahmed Al-Rashid')).not.toBeInTheDocument();
-    expect(screen.queryByText('Sarah Johnson')).not.toBeInTheDocument();
+    const grid = getPropertiesGridQueries();
+    expect(grid.queryByText('Ahmed Al-Rashid')).not.toBeInTheDocument();
+    expect(grid.queryByText('Sarah Johnson')).not.toBeInTheDocument();
   });
 
   // ────── Action Buttons ──────
 
   it('renders View Details buttons', async () => {
     await renderLoaded();
-    const viewBtns = screen.getAllByText('View Details');
+    const grid = getPropertiesGridQueries();
+    const viewBtns = grid.getAllByText('View Details');
     expect(viewBtns).toHaveLength(3); // one per property
   });
 
   it('renders Call Tenant links for occupied leases', async () => {
     await renderLoaded();
-    const callBtns = screen.getAllByText('Call Tenant');
+    const grid = getPropertiesGridQueries();
+    const callBtns = grid.getAllByText('Call Tenant');
     expect(callBtns.length).toBe(2);
   });
 
@@ -212,10 +283,47 @@ describe('RentalManagementPage', () => {
     fireEvent.click(screen.getByRole('button', { name: 'Occupied' }));
     fireEvent.click(screen.getByRole('button', { name: 'Available' }));
     fireEvent.click(screen.getByRole('button', { name: 'All Properties' }));
+    const grid = getPropertiesGridQueries();
 
     // After cycling through all filters, should show all 3 properties
-    expect(screen.getByText('Marina View 2BR Apartment')).toBeInTheDocument();
-    expect(screen.getByText('Downtown Studio')).toBeInTheDocument();
-    expect(screen.getByText('JBR 3BR Apartment')).toBeInTheDocument();
+    expect(grid.getByText('Marina View 2BR Apartment')).toBeInTheDocument();
+    expect(grid.getByText('Downtown Studio')).toBeInTheDocument();
+    expect(grid.getByText('JBR 3BR Apartment')).toBeInTheDocument();
+  });
+
+  it('renders overdue collection queue section when overdue items exist', async () => {
+    await renderLoaded();
+
+    expect(screen.getByLabelText('Overdue rent collection queue')).toBeInTheDocument();
+    expect(screen.getByText('Overdue Rent Collection Queue')).toBeInTheDocument();
+    expect(screen.getByText(/item\(s\) require collection follow-up/i)).toBeInTheDocument();
+    expect(
+      screen.getByRole('button', { name: /Send collection reminder for cheque CHK-001/i })
+    ).toBeInTheDocument();
+  });
+
+  it('sends overdue collection reminder and shows success state', async () => {
+    await renderLoaded();
+
+    fireEvent.click(
+      screen.getByRole('button', { name: /Send collection reminder for cheque CHK-001/i })
+    );
+
+    expect(await screen.findByText('Reminder logged successfully.')).toBeInTheDocument();
+  });
+
+  it('renders Ejari compliance summary tiles', async () => {
+    await renderLoaded();
+
+    expect(screen.getByLabelText('Ejari compliance summary')).toBeInTheDocument();
+    expect(screen.getByText('Ejari Compliance Summary')).toBeInTheDocument();
+    expect(screen.getByText('Total leases')).toBeInTheDocument();
+    expect(screen.getByText('Registered')).toBeInTheDocument();
+    expect(screen.getByText('Pending')).toBeInTheDocument();
+    expect(screen.getByText('Expiring soon (30d)')).toBeInTheDocument();
+
+    expect(screen.getByText('3')).toBeInTheDocument();
+    expect(screen.getByText('2')).toBeInTheDocument();
+    expect(screen.getAllByText('1').length).toBeGreaterThanOrEqual(2);
   });
 });

@@ -322,16 +322,17 @@ describe('PropertyDetailModal', () => {
     const propertyWithId: PropertyData = { ...sampleProperty, id: 'prop-abc-123' };
     const propsWithId: PropertyDetailModalProps = { ...defaultProps, property: propertyWithId };
 
-    // Helper: make localStorage.getItem return a token for this test
     const setAuthToken = (token: string | null): void => {
-      vi.mocked(global.localStorage.getItem).mockImplementation((key: string) =>
-        key === 'authToken' ? token : null
-      );
+      vi.stubGlobal('localStorage', {
+        getItem: vi.fn((key: string) => (key === 'authToken' || key === 'token' ? token : null)),
+        setItem: vi.fn(),
+        removeItem: vi.fn(),
+        clear: vi.fn(),
+      });
     };
 
     afterEach(() => {
-      vi.mocked(global.localStorage.getItem).mockReset();
-      vi.restoreAllMocks();
+      vi.unstubAllGlobals();
     });
 
     it('shows "Schedule a Viewing" heading', () => {
@@ -341,6 +342,7 @@ describe('PropertyDetailModal', () => {
 
     it('renders date input and time select', () => {
       render(<PropertyDetailModal {...propsWithId} />);
+      require('fs').writeFileSync('debug2.html', document.body.innerHTML);
       expect(screen.getByLabelText(/preferred date/i)).toBeInTheDocument();
       expect(screen.getByLabelText(/preferred time/i)).toBeInTheDocument();
     });
@@ -468,6 +470,7 @@ describe('PropertyDetailModal', () => {
         json: vi.fn().mockResolvedValue({ success: true }),
       } as unknown as Response);
       render(<PropertyDetailModal {...propsWithId} />);
+      require('fs').writeFileSync('debug.html', document.body.innerHTML);
       fireEvent.change(screen.getByLabelText(/preferred date/i), {
         target: { value: '2026-07-15' },
       });

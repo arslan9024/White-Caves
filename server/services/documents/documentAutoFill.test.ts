@@ -33,7 +33,7 @@ import {
   getAutoFillableEntities,
   getEntityRequirements,
   DOCUMENT_ENTITY_MAP,
-} from './documentAutoFill';
+} from './documentAutoFill.js';
 
 // ─── Test Data ──────────────────────────────────────────────────────────
 

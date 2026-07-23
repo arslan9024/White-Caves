@@ -9,7 +9,12 @@ import { useState, useEffect, useCallback, useMemo, ChangeEvent } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { useLocation } from 'react-router-dom';
 import { RootState, AppDispatch } from '../store/store';
-import { addToFavorites, removeFromFavorites, selectFavorites } from '../store/dashboardSlice';
+import {
+  addToFavorites,
+  removeFromFavorites,
+  selectFavorites,
+  FavoriteItem,
+} from '../store/dashboardSlice';
 import {
   selectAllProperties,
   selectPropertiesLoading,
@@ -102,7 +107,7 @@ function normalizeAreaParam(area?: string | null): string | undefined {
 export function usePropertyBrowser() {
   const dispatch = useDispatch<AppDispatch>();
   const location = useLocation();
-  const favorites = useSelector((state: RootState) => selectFavorites(state));
+  const favorites = useSelector((state: RootState) => selectFavorites(state)) as FavoriteItem[];
   const apiProperties = useSelector(selectAllProperties) as Record<string, unknown>[];
   const loading = useSelector(selectPropertiesLoading);
   const filters = useSelector((state: RootState) => state.properties.filters);

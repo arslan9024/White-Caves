@@ -23,6 +23,10 @@ const { mockPrisma } = vi.hoisted(() => {
       activity: {
         create: fn(),
       },
+      whatsAppConsent: {
+        findUnique: fn(),
+        upsert: fn(),
+      },
     },
   };
 });
@@ -67,7 +71,7 @@ vi.mock('../services/whatsapp/metaAPI.js', () => ({
   })),
 }));
 
-import metaWebhookRoutes from './meta-webhook';
+import metaWebhookRoutes from './meta-webhook.js';
 
 function createApp() {
   const app = express();
@@ -269,7 +273,7 @@ describe('Meta webhook routes — inbound lead auto-create', () => {
 
     const res = await request(createApp()).post('/api/webhooks/meta').send(inboundWebhookPayload);
 
-    expect(res.status).toBe(401);
+    expect(res.status).toBe(403);
     expect(res.body.success).toBe(false);
     expect(res.body.error).toMatch(/Missing signature/i);
     expect(mockVerifyWebhookSignature).not.toHaveBeenCalled();
@@ -284,7 +288,7 @@ describe('Meta webhook routes — inbound lead auto-create', () => {
       .set('x-hub-signature-256', 'sha256=bad')
       .send(inboundWebhookPayload);
 
-    expect(res.status).toBe(401);
+    expect(res.status).toBe(403);
     expect(res.body.success).toBe(false);
     expect(res.body.error).toMatch(/Invalid signature/i);
   });
@@ -319,5 +323,49 @@ describe('Meta webhook routes — inbound lead auto-create', () => {
     expect(res.status).toBe(200);
     expect(res.body.success).toBe(true);
     expect(mockPrisma.nadiaMessage.update).not.toHaveBeenCalled();
+  });
+
+  it('opts out of WhatsApp when receiving STOP', async () => {
+    const optOutPayload = JSON.parse(JSON.stringify(inboundWebhookPayload));
+    optOutPayload.entry[0].changes[0].value.messages[0].text.body = 'STOP';
+
+    mockParseWebhookEvent.mockReturnValueOnce(optOutPayload);
+
+    const res = await request(createApp()).post('/api/webhooks/meta').send(optOutPayload);
+
+    expect(res.status).toBe(200);
+    expect(mockPrisma.whatsAppConsent.upsert).toHaveBeenCalledWith(
+      expect.objectContaining({
+        where: { phone: '+971500000001' },
+        update: expect.objectContaining({ consent: false }),
+        create: expect.objectContaining({ consent: false, phone: '+971500000001' }),
+      })
+    );
+    expect(mockSendMessage).toHaveBeenCalledWith(
+      '+971500000001',
+      expect.stringContaining('opted out')
+    );
+  });
+
+  it('opts back in to WhatsApp when receiving START', async () => {
+    const optInPayload = JSON.parse(JSON.stringify(inboundWebhookPayload));
+    optInPayload.entry[0].changes[0].value.messages[0].text.body = 'START';
+
+    mockParseWebhookEvent.mockReturnValueOnce(optInPayload);
+
+    const res = await request(createApp()).post('/api/webhooks/meta').send(optInPayload);
+
+    expect(res.status).toBe(200);
+    expect(mockPrisma.whatsAppConsent.upsert).toHaveBeenCalledWith(
+      expect.objectContaining({
+        where: { phone: '+971500000001' },
+        update: expect.objectContaining({ consent: true }),
+        create: expect.objectContaining({ consent: true, phone: '+971500000001' }),
+      })
+    );
+    expect(mockSendMessage).toHaveBeenCalledWith(
+      '+971500000001',
+      expect.stringContaining('opted back in')
+    );
   });
 });

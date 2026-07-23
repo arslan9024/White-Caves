@@ -1,6 +1,10 @@
 import React, { useState } from 'react';
 import { useDispatch } from 'react-redux';
-import { signInWithEmailAndPassword, createUserWithEmailAndPassword, sendEmailVerification } from 'firebase/auth';
+import {
+  signInWithEmailAndPassword,
+  createUserWithEmailAndPassword,
+  sendEmailVerification,
+} from 'firebase/auth';
 import { auth } from '../../../../config/firebase';
 import { loginSuccess, loginStart, loginFailure } from '../../../../store/authSlice';
 import { createLogger } from '../../../../utils/logger';
@@ -31,7 +35,12 @@ interface FirebaseAuthError extends Error {
   code?: string;
 }
 
-const EmailLoginForm: React.FC<EmailLoginFormProps> = ({ mode = 'login', onSuccess, onError, onModeChange }) => {
+const EmailLoginForm: React.FC<EmailLoginFormProps> = ({
+  mode = 'login',
+  onSuccess,
+  onError,
+  onModeChange,
+}) => {
   const dispatch = useDispatch();
   const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState<FormData>({
@@ -43,25 +52,28 @@ const EmailLoginForm: React.FC<EmailLoginFormProps> = ({ mode = 'login', onSucce
 
   const validateForm = (): boolean => {
     const newErrors: FormErrors = {};
-    
+
     if (!formData.email) {
       newErrors.email = 'Email is required';
     } else if (!/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(formData.email)) {
       newErrors.email = 'Please enter a valid email';
     }
-    
+
     if (!formData.password) {
-      newErrors.password = 'Password is required';
+      newErrors.password = `Password is required`;
     } else if (formData.password.length < 8) {
-      newErrors.password = 'Password must be at least 8 characters';
-    } else if (mode === 'signup' && (!/[a-zA-Z]/.test(formData.password) || !/[0-9]/.test(formData.password))) {
-      newErrors.password = 'Password must contain at least one letter and one number';
+      newErrors.password = `Password must be at least 8 characters`;
+    } else if (
+      mode === 'signup' &&
+      (!/[a-zA-Z]/.test(formData.password) || !/[0-9]/.test(formData.password))
+    ) {
+      newErrors.password = `Password must contain at least one letter and one number`;
     }
-    
+
     if (mode === 'signup' && formData.password !== formData.confirmPassword) {
-      newErrors.confirmPassword = 'Passwords do not match';
+      newErrors.confirmPassword = `Passwords do not match`;
     }
-    
+
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
@@ -76,47 +88,50 @@ const EmailLoginForm: React.FC<EmailLoginFormProps> = ({ mode = 'login', onSucce
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>): Promise<void> => {
     e.preventDefault();
-    
+
     if (!validateForm()) return;
-    
+
     setLoading(true);
     dispatch(loginStart());
-    
+
     try {
       if (!auth) throw new Error('Authentication not initialized');
       let result;
-      
+
       if (mode === 'signup') {
         result = await createUserWithEmailAndPassword(auth, formData.email, formData.password);
         await sendEmailVerification(result.user);
       } else {
         result = await signInWithEmailAndPassword(auth, formData.email, formData.password);
       }
-      
+
       const user = result.user;
       const userData = {
-      id: user.uid,
+        id: user.uid,
         email: user.email || '',
         displayName: user.displayName || undefined,
         photoURL: user.photoURL || undefined,
         emailVerified: user.emailVerified,
         provider: 'email',
       };
-      
+
       const token = await user.getIdToken();
-      dispatch(loginSuccess({
-        user: userData,
-        token,
-        provider: 'email',
-      }));
-      
+      dispatch(
+        loginSuccess({
+          user: userData,
+          token,
+          provider: 'email',
+        })
+      );
+
       onSuccess?.(userData);
     } catch (error) {
-      const authError = error as FirebaseAuthError;
-      log.error('Email auth error:', authError);
+      const authError = error as { code?: string; message?: string };
+
       let errorMessage = 'Authentication failed';
-      
-      switch (authError.code) {
+
+      const authErr = error as { code?: string; message?: string };
+      switch (authErr.code) {
         case 'auth/user-not-found':
           errorMessage = 'No account found with this email';
           break;
@@ -133,11 +148,11 @@ const EmailLoginForm: React.FC<EmailLoginFormProps> = ({ mode = 'login', onSucce
           errorMessage = 'Invalid email address';
           break;
         default:
-          errorMessage = authError.message || 'Authentication failed';
+          errorMessage = authErr.message || 'Authentication failed';
       }
-      
+
       dispatch(loginFailure(errorMessage));
-      onError?.(authError);
+      onError?.(error);
     } finally {
       setLoading(false);
     }
@@ -160,7 +175,7 @@ const EmailLoginForm: React.FC<EmailLoginFormProps> = ({ mode = 'login', onSucce
         />
         {errors.email && <span className="error-message">{errors.email}</span>}
       </div>
-      
+
       <div className="form-group">
         <label htmlFor="password">Password</label>
         <input
@@ -176,7 +191,7 @@ const EmailLoginForm: React.FC<EmailLoginFormProps> = ({ mode = 'login', onSucce
         />
         {errors.password && <span className="error-message">{errors.password}</span>}
       </div>
-      
+
       {mode === 'signup' && (
         <div className="form-group">
           <label htmlFor="confirmPassword">Confirm Password</label>
@@ -191,18 +206,16 @@ const EmailLoginForm: React.FC<EmailLoginFormProps> = ({ mode = 'login', onSucce
             disabled={loading}
             className={errors.confirmPassword ? 'error' : ''}
           />
-          {errors.confirmPassword && <span className="error-message">{errors.confirmPassword}</span>}
+          {errors.confirmPassword && (
+            <span className="error-message">{errors.confirmPassword}</span>
+          )}
         </div>
       )}
-      
-      <button
-        type="submit"
-        className="email-submit-btn"
-        disabled={loading}
-      >
-        {loading ? 'Please wait...' : (mode === 'signup' ? 'Create Account' : 'Sign In')}
+
+      <button type="submit" className="email-submit-btn" disabled={loading}>
+        {loading ? 'Please wait...' : mode === 'signup' ? 'Create Account' : 'Sign In'}
       </button>
-      
+
       <div className="auth-switch">
         {mode === 'login' ? (
           <p>

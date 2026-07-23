@@ -8,7 +8,8 @@
 
 import React, { FC } from 'react';
 import styled from 'styled-components';
-import { Pagination } from '../../components/ui';
+import { EmptyState, Pagination } from '../../components/ui';
+import { SkeletonCard } from '../../components/ui/Skeleton';
 import { useDocumentTitle } from '../../hooks/useDocumentTitle';
 import {
   PageContainer,
@@ -19,9 +20,7 @@ import {
   SearchInput,
   DangerButton,
   SecondaryButton,
-  EmptyState,
   PaginationWrapper,
-  LoadingBanner,
   ErrorBanner,
 } from './styles/CrmPageStyles';
 import { useFavorites } from './hooks/useFavorites';
@@ -35,16 +34,24 @@ const Grid = styled.div`
   gap: 1.25rem;
 `;
 
+const LoadingSkeletonCard = styled.div`
+  border: 1px solid rgba(201, 168, 76, 0.2);
+  border-radius: 12px;
+  overflow: hidden;
+  background: #1a1a1a;
+`;
+
 const PropertyCard = styled.div`
-  background: white;
-  border: 1px solid #e8e8e8;
+  background: #0f0f0f;
+  border: 1px solid rgba(201, 168, 76, 0.25);
   border-radius: 12px;
   overflow: hidden;
   transition: all 0.2s;
 
   &:hover {
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+    box-shadow: 0 4px 20px rgba(201, 168, 76, 0.15);
     transform: translateY(-2px);
+    border-color: rgba(201, 168, 76, 0.5);
   }
 `;
 
@@ -53,15 +60,15 @@ const PropertyImage = styled.div<{ $type?: string }>`
   background: ${props => {
     switch (props.$type) {
       case 'villa':
-        return 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)';
+        return 'linear-gradient(135deg, #C9A84C 0%, #8a6e2e 100%)';
       case 'apartment':
-        return 'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)';
+        return 'linear-gradient(135deg, #10B981 0%, #064e3b 100%)';
       case 'penthouse':
-        return 'linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)';
+        return 'linear-gradient(135deg, #C9A84C 0%, #10B981 100%)';
       case 'commercial':
-        return 'linear-gradient(135deg, #43e97b 0%, #38f9d7 100%)';
+        return 'linear-gradient(135deg, #1f1f1f 0%, #C9A84C 100%)';
       default:
-        return 'linear-gradient(135deg, #a8edea 0%, #fed6e3 100%)';
+        return 'linear-gradient(135deg, #1a1a1a 0%, #2c2c2c 100%)';
     }
   }};
   display: flex;
@@ -77,13 +84,13 @@ const PropertyBody = styled.div`
 const PropertyTitle = styled.h3`
   font-size: 1rem;
   font-weight: 600;
-  color: #1a1a2e;
+  color: #ffffff;
   margin: 0 0 0.25rem;
 `;
 
 const PropertyLocation = styled.div`
   font-size: 0.8rem;
-  color: #888;
+  color: rgba(255, 255, 255, 0.5);
   margin-bottom: 0.75rem;
 `;
 
@@ -98,7 +105,7 @@ const PropertyMeta = styled.div`
   display: flex;
   gap: 1rem;
   font-size: 0.78rem;
-  color: #666;
+  color: rgba(255, 255, 255, 0.5);
   margin-bottom: 0.75rem;
 `;
 
@@ -106,12 +113,12 @@ const PropertyActions = styled.div`
   display: flex;
   gap: 0.5rem;
   padding-top: 0.75rem;
-  border-top: 1px solid #f0f0f0;
+  border-top: 1px solid #2c2c2c;
 `;
 
 const FavCount = styled.span`
   font-size: 0.8rem;
-  color: #888;
+  color: rgba(255, 255, 255, 0.45);
   margin-left: auto;
 `;
 
@@ -146,7 +153,6 @@ const FavoritesPage: FC = () => {
       </PageHeader>
 
       {/* Loading & Error States */}
-      {loading && <LoadingBanner>⏳ Loading favorites...</LoadingBanner>}
       {error && (
         <ErrorBanner>
           <span>⚠️ {error}</span>
@@ -168,7 +174,15 @@ const FavoritesPage: FC = () => {
       </ActionBar>
 
       {/* Property Grid */}
-      {paginatedFavorites.length > 0 ? (
+      {loading ? (
+        <Grid aria-label="Loading favorites">
+          {Array.from({ length: 6 }, (_, index) => (
+            <LoadingSkeletonCard key={`fav-skeleton-${index}`}>
+              <SkeletonCard imageHeight={180} />
+            </LoadingSkeletonCard>
+          ))}
+        </Grid>
+      ) : paginatedFavorites.length > 0 ? (
         <Grid>
           {paginatedFavorites.map((fav: FavoriteProperty) => (
             <PropertyCard key={fav.id}>
@@ -206,11 +220,15 @@ const FavoritesPage: FC = () => {
           ))}
         </Grid>
       ) : (
-        <EmptyState>
-          {search
-            ? 'No favorites match your search'
-            : 'No favorites yet — browse properties and add some!'}
-        </EmptyState>
+        <EmptyState
+          icon={search ? '🔎' : '❤️'}
+          title={search ? 'No favorites match your search' : 'No favorites yet'}
+          description={
+            search
+              ? 'Try a different search term.'
+              : 'Browse listings and add properties to favorites.'
+          }
+        />
       )}
 
       {/* Pagination */}

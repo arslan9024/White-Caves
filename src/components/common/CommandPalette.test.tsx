@@ -22,7 +22,10 @@ vi.mock('react-redux', async () => {
     useDispatch: () => mockDispatch,
     useSelector: (selector: any) => {
       // selectCommandPaletteOpen
-      if (selector.name?.includes?.('commandPalette') || selector.toString().includes('commandPaletteOpen')) {
+      if (
+        selector.name?.includes?.('commandPalette') ||
+        selector.toString().includes('commandPaletteOpen')
+      ) {
         return mockIsOpen;
       }
       return undefined;
@@ -63,7 +66,7 @@ describe('CommandPalette', () => {
       const { container } = render(
         <MemoryRouter>
           <CommandPalette />
-        </MemoryRouter>,
+        </MemoryRouter>
       );
       expect(container.firstChild).toBeNull();
     });
@@ -73,7 +76,7 @@ describe('CommandPalette', () => {
       render(
         <MemoryRouter>
           <CommandPalette />
-        </MemoryRouter>,
+        </MemoryRouter>
       );
       expect(screen.getByPlaceholderText(/search departments/i)).toBeInTheDocument();
     });
@@ -83,7 +86,7 @@ describe('CommandPalette', () => {
       render(
         <MemoryRouter>
           <CommandPalette />
-        </MemoryRouter>,
+        </MemoryRouter>
       );
       expect(screen.getByText('ESC')).toBeInTheDocument();
     });
@@ -93,7 +96,7 @@ describe('CommandPalette', () => {
       render(
         <MemoryRouter>
           <CommandPalette />
-        </MemoryRouter>,
+        </MemoryRouter>
       );
       // Should show navigation items
       expect(screen.getByText('Dashboard')).toBeInTheDocument();
@@ -105,7 +108,7 @@ describe('CommandPalette', () => {
       render(
         <MemoryRouter>
           <CommandPalette />
-        </MemoryRouter>,
+        </MemoryRouter>
       );
       expect(screen.getByText('Operations Department')).toBeInTheDocument();
       expect(screen.getByText('Finance Department')).toBeInTheDocument();
@@ -117,7 +120,7 @@ describe('CommandPalette', () => {
       render(
         <MemoryRouter>
           <CommandPalette />
-        </MemoryRouter>,
+        </MemoryRouter>
       );
       expect(screen.getByText(/navigate/)).toBeInTheDocument();
       expect(screen.getByText(/White Caves CRM/)).toBeInTheDocument();
@@ -131,7 +134,7 @@ describe('CommandPalette', () => {
       render(
         <MemoryRouter>
           <CommandPalette />
-        </MemoryRouter>,
+        </MemoryRouter>
       );
       const input = screen.getByPlaceholderText(/search departments/i);
       fireEvent.change(input, { target: { value: 'finance' } });
@@ -144,7 +147,7 @@ describe('CommandPalette', () => {
       render(
         <MemoryRouter>
           <CommandPalette />
-        </MemoryRouter>,
+        </MemoryRouter>
       );
       const input = screen.getByPlaceholderText(/search departments/i);
       fireEvent.change(input, { target: { value: 'zzz_nonexistent_zzz' } });
@@ -156,7 +159,7 @@ describe('CommandPalette', () => {
       render(
         <MemoryRouter>
           <CommandPalette />
-        </MemoryRouter>,
+        </MemoryRouter>
       );
       const input = screen.getByPlaceholderText(/search departments/i);
       fireEvent.change(input, { target: { value: 'charts' } });
@@ -171,7 +174,7 @@ describe('CommandPalette', () => {
       render(
         <MemoryRouter>
           <CommandPalette />
-        </MemoryRouter>,
+        </MemoryRouter>
       );
       const input = screen.getByPlaceholderText(/search departments/i);
       fireEvent.keyDown(input, { key: 'Escape' });
@@ -183,7 +186,7 @@ describe('CommandPalette', () => {
       const { container } = render(
         <MemoryRouter>
           <CommandPalette />
-        </MemoryRouter>,
+        </MemoryRouter>
       );
       // Click the overlay backdrop (first child)
       const overlay = container.firstChild as HTMLElement;
@@ -198,7 +201,7 @@ describe('CommandPalette', () => {
       render(
         <MemoryRouter>
           <CommandPalette />
-        </MemoryRouter>,
+        </MemoryRouter>
       );
       const input = screen.getByPlaceholderText(/search departments/i);
       // First item is "Dashboard" (navigation)
@@ -212,7 +215,7 @@ describe('CommandPalette', () => {
       render(
         <MemoryRouter>
           <CommandPalette />
-        </MemoryRouter>,
+        </MemoryRouter>
       );
       const input = screen.getByPlaceholderText(/search departments/i);
       fireEvent.keyDown(input, { key: 'ArrowDown' });
@@ -227,7 +230,7 @@ describe('CommandPalette', () => {
       render(
         <MemoryRouter>
           <CommandPalette />
-        </MemoryRouter>,
+        </MemoryRouter>
       );
       const input = screen.getByPlaceholderText(/search departments/i);
       fireEvent.keyDown(input, { key: 'ArrowDown' });
@@ -242,10 +245,10 @@ describe('CommandPalette', () => {
       render(
         <MemoryRouter>
           <CommandPalette />
-        </MemoryRouter>,
+        </MemoryRouter>
       );
       fireEvent.click(screen.getByText('Dashboard'));
-      expect(mockNavigate).toHaveBeenCalledWith('/dashboard');
+      expect(mockNavigate).toHaveBeenCalledWith('/crm');
       expect(mockDispatch).toHaveBeenCalledWith({ type: 'sidebar/closeCommandPalette' });
     });
 
@@ -254,10 +257,13 @@ describe('CommandPalette', () => {
       render(
         <MemoryRouter>
           <CommandPalette />
-        </MemoryRouter>,
+        </MemoryRouter>
       );
       fireEvent.click(screen.getByText('Finance Department'));
-      expect(mockDispatch).toHaveBeenCalledWith({ type: 'sidebar/selectDepartment', payload: 'finance' });
+      expect(mockDispatch).toHaveBeenCalledWith({
+        type: 'sidebar/selectDepartment',
+        payload: 'finance',
+      });
     });
   });
 });

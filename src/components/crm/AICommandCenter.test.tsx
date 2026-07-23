@@ -45,6 +45,32 @@ vi.mock('../../config/internalModuleArchitecture', () => ({
   getInternalModuleArchitecture: () => mockArchitecture,
 }));
 
+vi.mock('../../config/crmModuleRegistry', () => {
+  const MockDashboard = () => <div data-testid="mock-crm-dashboard">Mock CRM Dashboard</div>;
+  const knownAssistants = new Set([
+    'nadia',
+    'mary',
+    'clara',
+    'nina',
+    'nancy',
+    'sophia',
+    'daisy',
+    'theodora',
+    'olivia',
+    'zoe',
+    'laila',
+    'aurora',
+    'linda',
+    'henry',
+  ]);
+  return {
+    getCRMModule: (assistantId: string | undefined) =>
+      assistantId && knownAssistants.has(assistantId)
+        ? { id: assistantId, label: assistantId, Component: MockDashboard }
+        : null,
+  };
+});
+
 vi.mock('lucide-react', () => {
   const stub = (name: string) => {
     const IconStub = (_props: Record<string, unknown>) => (
@@ -53,108 +79,30 @@ vi.mock('lucide-react', () => {
     IconStub.displayName = name;
     return IconStub;
   };
-  return {
-    __esModule: true,
-    RefreshCw: stub('RefreshCw'),
-    Settings: stub('Settings'),
-    Bell: stub('Bell'),
-    LayoutGrid: stub('LayoutGrid'),
-    List: stub('List'),
-    Bot: stub('Bot'),
-    Send: stub('Send'),
-    MessageCircle: stub('MessageCircle'),
-    Phone: stub('Phone'),
-    Mail: stub('Mail'),
-    Video: stub('Video'),
-    Search: stub('Search'),
-    Plus: stub('Plus'),
-    Filter: stub('Filter'),
-    AlertCircle: stub('AlertCircle'),
-    CheckCircle: stub('CheckCircle'),
-    Clock: stub('Clock'),
-    TrendingUp: stub('TrendingUp'),
-    ArrowUp: stub('ArrowUp'),
-    ArrowDown: stub('ArrowDown'),
-    DollarSign: stub('DollarSign'),
-    Users: stub('Users'),
-    Home: stub('Home'),
-    Key: stub('Key'),
-    Calendar: stub('Calendar'),
-    FileText: stub('FileText'),
-    Shield: stub('Shield'),
-    AlertTriangle: stub('AlertTriangle'),
-    Eye: stub('Eye'),
-    Download: stub('Download'),
-    Package: stub('Package'),
-    Zap: stub('Zap'),
-    Accessibility: stub('Accessibility'),
-    BarChart3: stub('BarChart3'),
-    FolderOpen: stub('FolderOpen'),
-    Lightbulb: stub('Lightbulb'),
-    User: stub('User'),
-    Activity: stub('Activity'),
-    Target: stub('Target'),
-    Globe: stub('Globe'),
-    Inbox: stub('Inbox'),
-    Star: stub('Star'),
-    Edit: stub('Edit'),
-    Trash: stub('Trash'),
-    Copy: stub('Copy'),
-    ChevronDown: stub('ChevronDown'),
-    ChevronUp: stub('ChevronUp'),
-    ChevronLeft: stub('ChevronLeft'),
-    ChevronRight: stub('ChevronRight'),
-    MoreHorizontal: stub('MoreHorizontal'),
-    MoreVertical: stub('MoreVertical'),
-    ExternalLink: stub('ExternalLink'),
-    Loader: stub('Loader'),
-    Loader2: stub('Loader2'),
-    X: stub('X'),
-    Check: stub('Check'),
-    Info: stub('Info'),
-    Building: stub('Building'),
-    Building2: stub('Building2'),
-    MapPin: stub('MapPin'),
-    Wifi: stub('Wifi'),
-    WifiOff: stub('WifiOff'),
-    Power: stub('Power'),
-    Monitor: stub('Monitor'),
-    Cpu: stub('Cpu'),
-    Database: stub('Database'),
-    Server: stub('Server'),
-    HardDrive: stub('HardDrive'),
-    Cloud: stub('Cloud'),
-    Lock: stub('Lock'),
-    Unlock: stub('Unlock'),
-    Share2: stub('Share2'),
-    Bookmark: stub('Bookmark'),
-    Heart: stub('Heart'),
-    ThumbsUp: stub('ThumbsUp'),
-    ThumbsDown: stub('ThumbsDown'),
-    Mic: stub('Mic'),
-    Camera: stub('Camera'),
-    Image: stub('Image'),
-    File: stub('File'),
-    Folder: stub('Folder'),
-    Upload: stub('Upload'),
-    Link: stub('Link'),
-    Paperclip: stub('Paperclip'),
-    Briefcase: stub('Briefcase'),
-    Award: stub('Award'),
-    Flag: stub('Flag'),
-    Hash: stub('Hash'),
-    Tag: stub('Tag'),
-    Layers: stub('Layers'),
-    Grid: stub('Grid'),
-    Layout: stub('Layout'),
-    Sidebar: stub('Sidebar'),
-    Menu: stub('Menu'),
-    Sparkles: stub('Sparkles'),
-    Link2: stub('Link2'),
-    ShieldCheck: stub('ShieldCheck'),
-    type: stub('type') as unknown, // LucideIcon type
-    LucideIcon: stub('LucideIcon'),
-  };
+  return new Proxy(
+    {},
+    {
+      get: (target, prop) => {
+        if (prop === '__esModule') return true;
+        if (typeof prop === 'string' && prop[0] === prop[0].toUpperCase()) {
+          return stub(prop);
+        }
+        return undefined;
+      },
+      has: (target, prop) => {
+        if (typeof prop === 'string' && prop[0] === prop[0].toUpperCase()) {
+          return true;
+        }
+        return prop in target;
+      },
+      getOwnPropertyDescriptor: (target, prop) => {
+        if (typeof prop === 'string' && prop[0] === prop[0].toUpperCase()) {
+          return { enumerable: true, configurable: true, value: stub(prop) };
+        }
+        return undefined;
+      },
+    }
+  );
 });
 
 // Mock shared components
@@ -381,7 +329,7 @@ describe('AICommandCenter', () => {
     it('renders lazy-loaded CRM for selected assistant', async () => {
       mockCurrentAssistant = { id: 'nadia', name: 'Nadia', colorScheme: '#10B981' };
       render(<AICommandCenter />);
-      const dashboard = await screen.findByTestId('crm-nadia');
+      const dashboard = await screen.findByTestId('mock-crm-dashboard');
       expect(dashboard).toBeInTheDocument();
     });
 
@@ -512,6 +460,7 @@ describe('AICommandCenter', () => {
         mountMode: 'iframe',
         enabled: true,
         moduleUrl: 'http://localhost:5200',
+        displayName: 'Linda',
       };
 
       render(<AICommandCenter />);
@@ -525,6 +474,7 @@ describe('AICommandCenter', () => {
         assistantId: 'henry',
         mountMode: 'native',
         enabled: true,
+        displayName: 'Henry',
       };
       mockArchitecture = {
         moduleId: 'henry-records-core',
@@ -544,6 +494,7 @@ describe('AICommandCenter', () => {
         enabled: true,
         moduleUrl: 'http://localhost:5200',
         healthUrl: 'http://localhost:3005/health',
+        displayName: 'Linda',
       };
 
       const fetchMock = vi.fn().mockResolvedValue({ ok: true });
@@ -569,6 +520,7 @@ describe('AICommandCenter', () => {
         enabled: true,
         moduleUrl: 'http://localhost:5200',
         healthUrl: 'http://localhost:3005/health',
+        displayName: 'Linda',
       };
 
       const fetchMock = vi.fn().mockRejectedValue(new Error('connection refused'));

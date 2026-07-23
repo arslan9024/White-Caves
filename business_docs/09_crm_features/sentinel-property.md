@@ -1,85 +1,209 @@
 # Sentinel Property Management — Business Specification
 
-**Owner:** @Mary (DeepSeek V3 — DeepSeek Chat)
-**Status:** 🟡 STUB — awaiting @Mary Task 1
-**Target:** 12 sections
-**CRM Module:** SentinelPropertyCRM (src/components/crm/SentinelPropertyCRM/)
+**Owner:** @Mary (DeepSeek V3 — DeepSeek Chat)  
+**Status:** ✅ Implementation-ready (P0 inventory hardening)  
+**Target:** 12 sections  
+**CRM Module:** SentinelPropertyCRM (`src/components/crm/SentinelPropertyCRM/`)  
 **API Base:** `/api/properties`
 
 ---
 
-## Overview
+## 1) Overview
 
-SentinelPropertyCRM manages the complete lifecycle of every property in the White Caves inventory — from initial acquisition and listing through sale/lease and post-handover. It enforces RERA listing requirements, tracks property quality scores to optimize portal ranking, and provides bulk import for managing large inventory.
+SentinelPropertyCRM manages the full inventory lifecycle for White Caves, with DAMAC Hills 2 as a primary operational focus. The module ensures every listing is complete, compliant, priced with comp-backed logic, and operationally ready for leasing or sale.
 
-**Key Capabilities:**
+### Core outcomes
 
-- Property lifecycle state machine (Draft → Listed → Sold/Leased → Withdrawn)
-- RERA mandatory field enforcement before any listing goes live
-- Property quality score algorithm (drives PropertyFinder/Bayut ranking)
-- Duplicate property detection (same building + unit = warning)
-- Bulk CSV import with column mapping and validation
+- Reduce listing defects and compliance misses before publication.
+- Increase conversion through complete media and quality scoring.
+- Protect data integrity via duplicate controls and import validation.
+- Improve landlord confidence through transparent audit and status logs.
 
 ---
 
-## TODO — @Mary Task 1
+## 2) Property Lifecycle State Machine
 
-Paste the output from this prompt into the sections below:
+### States
 
-```
-@Mary — DRAFT: sentinel-property.md → spec SentinelPropertyCRM module: property lifecycle state machine (Draft → Pending Review → Listed → Under Offer → Reserved → Sold/Leased → Withdrawn → Re-listed — with allowed transitions and required fields per state), RERA mandatory fields before listing (permit number, DED approval for off-plan, NOC from developer if applicable, title deed number for resale, floor plan uploaded), property quality score algorithm (photos count ×10pts, description > 100 words ×15pts, floor plan ×20pts, virtual tour ×25pts, 360 video ×30pts — max 100pts, score drives portal ranking), duplicate detection (same community + building + unit number = duplicate warning, override with reason), bulk CSV import spec (column mapping: propertyType, area, community, building, unit, bedrooms, bathrooms, BUA, price, agentId — validation rules, error report with row numbers).
-```
+`draft -> pending_review -> listed -> under_offer -> reserved -> sold_or_leased -> withdrawn -> relisted`
 
-## TODO — @Mary Task 2
+### Transition rules
 
-```
-@Mary — DRAFT: investment-management.md → spec MavenInvestmentCRM module: investor profile, portfolio dashboard, ROI tools, investor quarterly report, deal flow pipeline, investment committee workflow for deals > AED 5M.
-```
+| From                            | To             | Gate Conditions                                   |
+| ------------------------------- | -------------- | ------------------------------------------------- |
+| draft                           | pending_review | Mandatory base fields complete                    |
+| pending_review                  | listed         | Compliance checks passed + manager approval       |
+| listed                          | under_offer    | Valid offer attached                              |
+| under_offer                     | reserved       | Offer accepted + reservation terms confirmed      |
+| reserved                        | sold_or_leased | Contract signed + transaction completion evidence |
+| listed / under_offer / reserved | withdrawn      | Withdrawal reason + owner/manager signoff         |
+| withdrawn                       | relisted       | Repricing + freshness checks complete             |
 
-## TODO — @Mary Task 3
+### State integrity
 
-```
-@Mary — DRAFT: prospecting-outbound.md → spec HunterProspectingCRM: prospect database, campaign workflow, call tracking, prospecting KPIs, post-call automation, DNC registry.
-```
+- No direct jumps that bypass compliance gates.
+- Every transition writes actor, timestamp, reason, and previous state.
 
-## Property State Machine
+---
 
-- States: draft, pending_review, listed, under_offer, reserved, sold, leased, withdrawn, relisted.
-- Transition rules enforce mandatory data before promotion.
+## 3) Mandatory Listing Data and Compliance Gates
 
-## Required Listing Fields
+### Universal mandatory fields
 
-- Permit number, title deed, floor plan, pricing, media pack.
-- Off-plan requires DED/developer compliance docs.
+- Property type, area, community, building, unit
+- Bedrooms, bathrooms, BUA, asking price/rent
+- Title deed or ownership evidence reference
+- Minimum media pack (photos + floor plan)
+- Assigned agent and listing intent (sale/lease)
 
-## Quality Score Model
+### Conditional compliance fields
 
-- Weighted scoring for photos, copy, media, plans.
-- Score thresholds drive listing quality badges.
+| Scenario         | Additional Required Data                                          |
+| ---------------- | ----------------------------------------------------------------- |
+| Resale listing   | Title deed number + ownership proof                               |
+| Off-plan listing | Permit/approval references + developer NOC/approval if applicable |
+| Lease listing    | Lease-ready fields and tenancy constraints                        |
 
-## Duplicate Detection
+### Publication gate
 
-- Match keys: community, building, unit number.
-- Override requires reason and manager approval.
+Listings cannot move to `listed` until all mandatory and conditional checks pass.
 
-## Bulk Import Rules
+---
 
-- CSV mapping with per-row validation errors.
-- Partial import allowed with reject report.
+## 4) Property Quality Score Model (0–100)
 
-## API Contract
+Quality score is used for internal ranking, activation confidence, and portal publishing readiness.
 
-- `POST /api/properties/import`
-- `PATCH /api/properties/:id/state`
-- `GET /api/properties/:id/quality-score`
+| Component           | Rule                                    | Weight |
+| ------------------- | --------------------------------------- | ------ |
+| Photos              | Sufficient high-quality photo set       | 10     |
+| Description quality | > 100 words and complete key details    | 15     |
+| Floor plan          | Valid floor plan attached               | 20     |
+| Virtual tour        | 3D/interactive tour provided            | 25     |
+| 360 media/video     | 360 media or equivalent rich tour media | 30     |
 
-## Compliance and Audit
+### Score policy
 
-- Every listing state change logged with actor/time/reason.
-- Compliance blockers surfaced in listing dashboard.
+- < 60: blocked for premium publication lanes.
+- 60–79: publishable with improvement prompts.
+- > = 80: premium-ready badge and distribution priority.
 
-## Acceptance Criteria and Tests
+---
 
-- Invalid listings blocked from publish.
-- Duplicate detection catches high-confidence collisions.
-- Bulk import produces deterministic success/failure report.
+## 5) Duplicate Detection and Override Controls
+
+### Match keys
+
+High-confidence duplicate detection uses:
+
+- community
+- building
+- unit number
+
+Secondary confidence signals:
+
+- title deed number
+- geolocation proximity + same BUA + same owner reference
+
+### Override policy
+
+- Overrides require mandatory reason code.
+- Manager approval required for high-confidence duplicate override.
+- Override decisions are fully auditable and reviewable.
+
+---
+
+## 6) Bulk CSV Import Specification
+
+### Required import columns
+
+`propertyType, area, community, building, unit, bedrooms, bathrooms, BUA, price, agentId`
+
+### Validation rules
+
+- Required fields cannot be null.
+- Numeric fields must be valid numeric ranges.
+- Enum fields must map to supported values.
+- Agent IDs must resolve to active users.
+- Duplicate checks run before commit.
+
+### Import behavior
+
+- Supports partial success with row-level reject report.
+- Reject report includes row number, field, and failure reason.
+- Import summary includes total, accepted, rejected, duplicate-flagged.
+
+---
+
+## 7) API Contract (Business-Level)
+
+- `POST /api/properties/import` — bulk ingestion with validation report
+- `PATCH /api/properties/:id/state` — state transition with gate checks
+- `GET /api/properties/:id/quality-score` — score breakdown and recommendations
+- `POST /api/properties/:id/duplicate-override` — controlled override path
+
+---
+
+## 8) Operational Views and Controls
+
+### Inventory manager dashboard
+
+- Listings by state
+- Listings blocked by compliance gate
+- Quality score distribution
+- Duplicate queue and override queue
+
+### Agent view
+
+- My listings by quality and readiness
+- Missing field prompts
+- Repricing and activity timeline
+
+---
+
+## 9) DAMAC Hills 2 Execution Rules
+
+- Every DAMAC Hills 2 listing must include cluster/segment tag.
+- Comp references must prioritize DAMAC Hills 2 equivalents.
+- Weekly pricing review required for all active DAMAC Hills 2 listings.
+- Stale listings (> configured threshold) auto-enter manager review queue.
+
+---
+
+## 10) Compliance, Audit, and Traceability
+
+- Every state change is append-only logged.
+- Every compliance block records exact failed rule and remediation hint.
+- Every duplicate override stores approver + reason + timestamp.
+- All import jobs store request metadata and immutable result summary.
+
+---
+
+## 11) KPIs and Quality Targets
+
+| KPI                                     | Target      |
+| --------------------------------------- | ----------- |
+| Listing completeness before publish     | >= 98%      |
+| Duplicate false negatives               | <= 1%       |
+| Average time draft to listed            | <= 48 hours |
+| Listings with quality score >= 80       | >= 70%      |
+| Import reject rate due to schema errors | <= 5%       |
+
+---
+
+## 12) Acceptance Criteria and Test Plan
+
+- [ ] Invalid listings are blocked from `listed` with explicit reasons.
+- [ ] Duplicate detection catches high-confidence collisions deterministically.
+- [ ] Duplicate override requires reason + manager approval at high confidence.
+- [ ] Bulk import produces row-level deterministic success/failure output.
+- [ ] Quality score endpoint returns reproducible scoring breakdown.
+- [ ] DAMAC Hills 2 listings enforce segment tag and comp-policy checks.
+
+### Test scenarios
+
+1. Publish attempt with missing required fields -> blocked.
+2. High-confidence duplicate import row -> flagged and held.
+3. Override without manager approval -> rejected.
+4. Mixed valid/invalid CSV -> partial success with reject report.
+5. Quality score recalc after media upload -> score updates correctly.

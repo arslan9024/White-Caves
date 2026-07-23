@@ -1,565 +1,689 @@
-import React, { FC, ChangeEvent, useCallback, useEffect, useRef } from 'react';
-import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { useDocumentTitle } from '../../hooks/useDocumentTitle';
-import { useSignIn, USER_CATEGORIES } from '../../hooks/useSignIn';
-import { BiometricLoginButton } from '../../features/auth/components/BiometricLogin';
+/**
+ * SignInPage.tsx
+ * Full-featured authentication page for White Caves Real Estate
+ * Supports: email/password, phone, Google/Facebook/Apple social auth,
+ * sign-up with role selection, social recovery panel, Gmail troubleshooting
+ */
+
+import React, { useState, useCallback, useEffect } from 'react';
+import { useNavigate, useLocation } from 'react-router-dom';
+import { useDispatch } from 'react-redux';
+import {
+  signInWithGoogle,
+  signInWithFacebook,
+  signInWithApple,
+  signOut,
+  handleRedirectResult,
+  isFirebaseAuthConfigured,
+  firebaseAuthUnavailableReason,
+} from '../../config/firebase';
+import {
+  loginWithEmail,
+  registerWithEmail,
+  syncFirebaseUser,
+  type AuthUser,
+  type LoginSuccessData,
+} from '../../services/authService';
+import {
+  finalizeAuthenticatedSession,
+  getReturnToFromLocationState,
+  navigateToPostLoginDestination,
+  resolvePostLoginDestination,
+} from '../../utils/authSession';
 import { SocialAuthButtons } from './components/SocialAuthButtons';
 import { AuthMethodTabs } from './components/AuthMethodTabs';
 import { AuthModeSwitch } from './components/AuthModeSwitch';
+import { BiometricLoginButton } from '../../features/auth/components/BiometricLogin';
 import './AuthPages.css';
 
-const AUTH_COPY = {
-  en: {
-    signInTitle: 'Welcome Back',
-    signUpTitle: 'Create Account',
-    signInSubtitle: 'Sign in to access your personalized dashboard',
-    signUpSubtitle: 'Join White Caves to explore luxury properties in Dubai',
-    socialLabel: 'Quick sign in with',
-    google: 'Google',
-    facebook: 'Facebook',
-    apple: 'Apple',
-    email: 'Email',
-    phone: 'Phone',
-    signInPromptText: 'Already have an account? Sign In',
-    signUpPromptText: "Don't have an account? Sign Up",
-  },
-  ar: {
-    signInTitle: 'مرحباً بعودتك',
-    signUpTitle: 'إنشاء حساب',
-    signInSubtitle: 'سجّل الدخول للوصول إلى لوحة التحكم الخاصة بك',
-    signUpSubtitle: 'انضم إلى وايت كيفز لاستكشاف العقارات الفاخرة في دبي',
-    socialLabel: 'تسجيل الدخول السريع عبر',
-    google: 'جوجل',
-    facebook: 'فيسبوك',
-    apple: 'آبل',
-    email: 'البريد الإلكتروني',
-    phone: 'الهاتف',
-    signInPromptText: 'لديك حساب بالفعل؟ سجّل الدخول',
-    signUpPromptText: 'ليس لديك حساب؟ أنشئ حساباً',
-  },
-} as const;
+// ─── Types ─────────────────────────────────────────────────────────────────
 
-const getAuthLocale = (): keyof typeof AUTH_COPY => {
-  if (typeof document === 'undefined') return 'en';
-  const lang = (document.documentElement.getAttribute('lang') || 'en').toLowerCase();
-  return lang.startsWith('ar') ? 'ar' : 'en';
-};
+type AuthMode = 'signin' | 'signup';
+type AuthTab = 'email' | 'phone';
+type SignupStep = 1 | 2 | 3; // 1=credentials, 2=category, 3=role
 
-const SignInPage: FC = () => {
-  useDocumentTitle('Sign In');
+interface SocialRecoveryState {
+  visible: boolean;
+  provider: 'google' | 'facebook' | 'apple' | null;
+  firebaseUser: {
+    uid: string;
+    email: string | null;
+    displayName: string | null;
+    photoURL: string | null;
+  } | null;
+  reason: string;
+  retryCount: number;
+  isRetrying: boolean;
+  maxRetries: number;
+}
+
+const MAX_SOCIAL_RETRIES = 3;
+
+// ─── Category/Role Data ─────────────────────────────────────────────────────
+
+const CATEGORIES = [
+  { id: 'client', label: 'Client', description: 'Browse and purchase properties' },
+  { id: 'staff', label: 'Staff Member', description: 'Internal team member' },
+];
+
+// ─── Component ──────────────────────────────────────────────────────────────
+
+const SignInPage: React.FC = () => {
   const navigate = useNavigate();
   const location = useLocation();
-  const modalRef = useRef<HTMLDivElement | null>(null);
-  const closeButtonRef = useRef<HTMLButtonElement | null>(null);
-  const locale = getAuthLocale();
-  const copy = AUTH_COPY[locale];
+  const dispatch = useDispatch();
+  const returnTo = getReturnToFromLocationState(location.state);
 
-  const {
-    mode,
-    step,
-    activeTab,
-    setActiveTab,
-    loading,
-    error,
-    setError,
-    success,
-    socialSyncRecovery,
-    socialRetryAttempts,
-    remainingSocialRetries,
-    switchMode,
-    goBackToStep,
-    email,
-    setEmail,
-    password,
-    setPassword,
-    confirmPassword,
-    setConfirmPassword,
-    fullName,
-    setFullName,
-    selectedCategory,
-    setSelectedCategory,
-    selectedRole,
-    setSelectedRole,
-    employeeId,
-    setEmployeeId,
-    phone,
-    setPhone,
-    otp,
-    setOtp,
-    showOtpInput,
-    resetOtp,
-    handleSignInSuccess,
-    handleSocialAuth,
-    retrySocialAuth,
-    clearSocialRecovery,
-    handleEmailSubmit,
-    handlePhoneSubmit,
-    handleOtpVerify,
-    proceedToRoleSelection,
-    completeSignUp,
-    getRolesForCategory,
-  } = useSignIn();
-
-  const retryLimitReached = socialRetryAttempts >= 3;
-  const closeAuthModal = useCallback((): void => {
-    const stateValue = location.state as { from?: string } | null;
-    const returnTo = stateValue?.from;
-    if (returnTo && returnTo !== '/signin' && returnTo !== '/signup') {
-      navigate(returnTo, { replace: true });
-      return;
-    }
-    navigate('/', { replace: true });
-  }, [location.state, navigate]);
-
+  // Handle redirect result from Firebase social auth
   useEffect(() => {
-    closeButtonRef.current?.focus();
-
-    const handleKeyDown = (event: KeyboardEvent): void => {
-      if (event.key === 'Escape') {
-        event.preventDefault();
-        closeAuthModal();
-        return;
-      }
-
-      if (event.key !== 'Tab') {
-        return;
-      }
-
-      const container = modalRef.current;
-      if (!container) {
-        return;
-      }
-
-      const focusable = container.querySelectorAll<HTMLElement>(
-        'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
-      );
-
-      if (focusable.length === 0) {
-        return;
-      }
-
-      const first = focusable[0];
-      const last = focusable[focusable.length - 1];
-      const activeElement = document.activeElement as HTMLElement | null;
-
-      if (event.shiftKey && activeElement === first) {
-        event.preventDefault();
-        last.focus();
-      } else if (!event.shiftKey && activeElement === last) {
-        event.preventDefault();
-        first.focus();
+    const processRedirect = async () => {
+      try {
+        const result = await handleRedirectResult();
+        if (result?.user) {
+          console.log('Got redirect result user:', result.user);
+          const backendResponse = await syncFirebaseUser({
+            uid: result.user.uid,
+            email: result.user.email,
+            displayName: result.user.displayName,
+            photoURL: result.user.photoURL,
+            getIdToken: (forceRefresh?: boolean) => result.user.getIdToken(forceRefresh),
+          });
+          const user = backendResponse?.data?.user ?? null;
+          if (user && backendResponse.data.token) {
+            const destination = finalizeAuthenticatedSession({
+              dispatch,
+              user: user as any,
+              token: backendResponse.data.token,
+              provider: 'google' as any,
+              rememberMe: false,
+              returnTo,
+            });
+            setSuccessMsg('Sign in successful!');
+            setTimeout(() => {
+              navigateToPostLoginDestination(navigate, destination);
+            }, 1500);
+          }
+        }
+      } catch (error: unknown) {
+        console.error('Error processing redirect result:', error);
+        setError('Error processing sign-in redirect. Please try again.');
       }
     };
+    processRedirect();
+  }, [dispatch, navigate, returnTo]);
 
-    document.addEventListener('keydown', handleKeyDown);
-    return () => {
-      document.removeEventListener('keydown', handleKeyDown);
-    };
-  }, [closeAuthModal]);
+  // Auth mode
+  const [mode, setMode] = useState<AuthMode>('signin');
+  const [activeTab, setActiveTab] = useState<AuthTab>('email');
 
-  return (
-    <div
-      className="auth-modal-overlay"
-      role="presentation"
-      onClick={() => {
-        closeAuthModal();
-      }}
-    >
-      <div
-        className="auth-modal-window"
-        role="dialog"
-        aria-modal="true"
-        aria-label={mode === 'signup' ? 'Sign up window' : 'Sign in window'}
-        ref={modalRef}
-        onClick={event => {
-          event.stopPropagation();
-        }}
-      >
-        <div className="auth-container">
-          <button
-            type="button"
-            className="auth-close-btn"
-            onClick={() => {
-              closeAuthModal();
-            }}
-            aria-label="Close authentication popup"
-            ref={closeButtonRef}
-          >
-            ×
-          </button>
+  // Form fields
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
+  const [phone, setPhone] = useState('');
 
-          <Link to="/" className="auth-logo">
-            <img src="/company-logo.jpg" alt="White Caves" width={60} height={60} />
-            <span>White Caves</span>
-          </Link>
+  // UI state
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [successMsg, setSuccessMsg] = useState<string | null>(null);
 
-          <div className="auth-card">
-            {step === 1 && (
-              <>
-                <h1>{mode === 'signup' ? copy.signUpTitle : copy.signInTitle}</h1>
-                <p className="auth-subtitle">
-                  {mode === 'signup' ? copy.signUpSubtitle : copy.signInSubtitle}
-                </p>
+  // Signup multi-step
+  const [signupStep, setSignupStep] = useState<SignupStep>(1);
+  const [registeredUser, setRegisteredUser] = useState<AuthUser | null>(null);
+  const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
 
-                {error && <div className="auth-error">{error}</div>}
-                {socialSyncRecovery && (
-                  <div
-                    className="auth-recovery"
-                    role="status"
-                    aria-live="polite"
-                    aria-busy={loading}
-                  >
-                    <p className="auth-recovery__title">
-                      {socialSyncRecovery.provider[0].toUpperCase() +
-                        socialSyncRecovery.provider.slice(1)}{' '}
-                      sign-in needs one more step
-                    </p>
-                    <p className="auth-recovery__hint">
-                      We secured your authentication, but CRM session activation failed. Please
-                      retry once to finish sign-in.
-                    </p>
-                    <p className="auth-recovery__reason">Reason: {socialSyncRecovery.reason}</p>
-                    <p className="auth-recovery__hint">
-                      Retries remaining: {remainingSocialRetries}
-                    </p>
-                    <button
-                      type="button"
-                      className="btn btn-secondary btn-full"
-                      disabled={loading || retryLimitReached}
-                      onClick={() => {
-                        void retrySocialAuth();
-                      }}
-                    >
-                      {retryLimitReached
-                        ? 'Retry limit reached'
-                        : loading
-                          ? 'Retrying...'
-                          : `Retry ${socialSyncRecovery.provider[0].toUpperCase() + socialSyncRecovery.provider.slice(1)} sign-in`}
-                    </button>
-                    {retryLimitReached && (
-                      <p className="auth-recovery__hint">
-                        Too many retry attempts. Please continue with email sign-in or try again
-                        later.
-                      </p>
-                    )}
-                    <button
-                      type="button"
-                      className="btn btn-link auth-recovery__dismiss"
-                      disabled={loading}
-                      onClick={clearSocialRecovery}
-                    >
-                      Dismiss recovery notice
-                    </button>
-                  </div>
-                )}
-                {success && <div className="auth-success">{success}</div>}
+  // Social recovery panel
+  const [socialRecovery, setSocialRecovery] = useState<SocialRecoveryState>({
+    visible: false,
+    provider: null,
+    firebaseUser: null,
+    reason: '',
+    retryCount: 0,
+    isRetrying: false,
+    maxRetries: MAX_SOCIAL_RETRIES,
+  });
 
-                {mode === 'signin' && (
-                  <BiometricLoginButton
-                    onSuccess={(user: unknown) => {
-                      const u = user as Record<string, unknown>;
-                      handleSignInSuccess({
-                        id: String(u.uid || u.id || ''),
-                        email: String(u.email || ''),
-                        name: String(u.displayName || u.name || ''),
-                        photoUrl: u.photoURL ? String(u.photoURL) : undefined,
-                      });
-                    }}
-                    onError={(error: unknown) =>
-                      setError(error instanceof Error ? error.message : 'Login failed')
-                    }
-                    disabled={loading}
-                  />
-                )}
+  // Gmail troubleshooting panel
+  const [showGmailTroubleshooting, setShowGmailTroubleshooting] = useState(false);
 
-                <SocialAuthButtons
-                  loading={loading}
-                  onSocialAuth={handleSocialAuth}
-                  label={copy.socialLabel}
-                  googleText={copy.google}
-                  facebookText={copy.facebook}
-                  appleText={copy.apple}
-                />
+  // ─── Helpers ────────────────────────────────────────────────────────────
 
-                <div className="auth-divider">
-                  <span>or continue with</span>
-                </div>
+  const resetState = useCallback(() => {
+    setError(null);
+    setSuccessMsg(null);
+    setSocialRecovery(prev => ({ ...prev, visible: false, provider: null, firebaseUser: null }));
+    setShowGmailTroubleshooting(false);
+  }, []);
 
-                <AuthMethodTabs
-                  activeTab={activeTab}
-                  onChange={setActiveTab}
-                  emailLabel={copy.email}
-                  phoneLabel={copy.phone}
-                />
+  const switchMode = useCallback(() => {
+    setMode(prev => (prev === 'signin' ? 'signup' : 'signin'));
+    resetState();
+    setSignupStep(1);
+    setRegisteredUser(null);
+    setSelectedCategory(null);
+    setEmail('');
+    setPassword('');
+    setConfirmPassword('');
+  }, [resetState]);
 
-                <div className="auth-content">
-                  {activeTab === 'email' && (
-                    <form onSubmit={handleEmailSubmit} className="auth-form">
-                      {mode === 'signup' && (
-                        <div className="form-group">
-                          <label htmlFor="signin-fullname">Full Name</label>
-                          <input
-                            id="signin-fullname"
-                            type="text"
-                            value={fullName}
-                            onChange={(e: ChangeEvent<HTMLInputElement>) =>
-                              setFullName(e.target.value)
-                            }
-                            placeholder="Enter your full name"
-                            required
-                            autoComplete="name"
-                          />
-                        </div>
-                      )}
-                      <div className="form-group">
-                        <label htmlFor="signin-email">Email Address</label>
-                        <input
-                          id="signin-email"
-                          type="email"
-                          value={email}
-                          onChange={(e: ChangeEvent<HTMLInputElement>) => setEmail(e.target.value)}
-                          placeholder="Enter your email"
-                          required
-                          autoComplete="email"
-                        />
-                      </div>
-                      <div className="form-group">
-                        <label htmlFor="signin-password">Password</label>
-                        <input
-                          id="signin-password"
-                          type="password"
-                          value={password}
-                          onChange={(e: ChangeEvent<HTMLInputElement>) =>
-                            setPassword(e.target.value)
-                          }
-                          placeholder="Enter your password"
-                          required
-                          autoComplete={mode === 'signup' ? 'new-password' : 'current-password'}
-                        />
-                      </div>
-                      {mode === 'signup' && (
-                        <div className="form-group">
-                          <label htmlFor="signin-confirm-password">Confirm Password</label>
-                          <input
-                            id="signin-confirm-password"
-                            type="password"
-                            value={confirmPassword}
-                            onChange={(e: ChangeEvent<HTMLInputElement>) =>
-                              setConfirmPassword(e.target.value)
-                            }
-                            placeholder="Confirm your password"
-                            required
-                            autoComplete="new-password"
-                          />
-                        </div>
-                      )}
-                      <button type="submit" className="btn btn-primary btn-full" disabled={loading}>
-                        {loading ? 'Please wait...' : mode === 'signup' ? 'Continue' : 'Sign In'}
-                      </button>
-                    </form>
-                  )}
+  // ─── Email/Password Auth ─────────────────────────────────────────────────
 
-                  {activeTab === 'phone' && (
-                    <div className="auth-form">
-                      {!showOtpInput ? (
-                        <form onSubmit={handlePhoneSubmit}>
-                          {mode === 'signup' && (
-                            <div className="form-group">
-                              <label htmlFor="phone-fullname">Full Name</label>
-                              <input
-                                id="phone-fullname"
-                                type="text"
-                                value={fullName}
-                                onChange={(e: ChangeEvent<HTMLInputElement>) =>
-                                  setFullName(e.target.value)
-                                }
-                                placeholder="Enter your full name"
-                                required
-                                autoComplete="name"
-                              />
-                            </div>
-                          )}
-                          <div className="form-group">
-                            <label htmlFor="phone-number">Phone Number</label>
-                            <input
-                              id="phone-number"
-                              type="tel"
-                              value={phone}
-                              onChange={(e: ChangeEvent<HTMLInputElement>) =>
-                                setPhone(e.target.value)
-                              }
-                              placeholder="+971 50 123 4567"
-                              required
-                              autoComplete="tel"
-                            />
-                            <span className="input-hint">Include country code (e.g., +971)</span>
-                          </div>
-                          <div id="recaptcha-container"></div>
-                          <button
-                            type="submit"
-                            className="btn btn-primary btn-full"
-                            disabled={loading}
-                          >
-                            {loading ? 'Sending OTP...' : 'Send OTP'}
-                          </button>
-                        </form>
-                      ) : (
-                        <form onSubmit={handleOtpVerify}>
-                          <div className="form-group">
-                            <label htmlFor="otp-code">Enter OTP</label>
-                            <input
-                              id="otp-code"
-                              type="text"
-                              value={otp}
-                              onChange={(e: ChangeEvent<HTMLInputElement>) =>
-                                setOtp(e.target.value)
-                              }
-                              placeholder="Enter 6-digit code"
-                              maxLength={6}
-                              required
-                              autoComplete="one-time-code"
-                              inputMode="numeric"
-                            />
-                            <span className="input-hint">Enter the code sent to {phone}</span>
-                          </div>
-                          <button
-                            type="submit"
-                            className="btn btn-primary btn-full"
-                            disabled={loading}
-                          >
-                            {loading ? 'Verifying...' : 'Verify OTP'}
-                          </button>
-                          <button type="button" className="btn btn-link" onClick={resetOtp}>
-                            Change Phone Number
-                          </button>
-                        </form>
-                      )}
-                    </div>
-                  )}
-                </div>
+  const validateSignup = (): string | null => {
+    if (password.length < 8) return 'Password must be at least 8 characters';
+    if (!/[a-zA-Z]/.test(password) || !/[0-9]/.test(password)) {
+      return 'Password must contain at least one letter and one number';
+    }
+    if (password !== confirmPassword) return 'Passwords do not match';
+    return null;
+  };
 
-                <AuthModeSwitch
-                  mode={mode}
-                  onSwitch={switchMode}
-                  signInPromptText={copy.signInPromptText}
-                  signUpPromptText={copy.signUpPromptText}
-                />
-              </>
-            )}
+  const handleEmailSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setError(null);
+    setSuccessMsg(null);
 
-            {step === 2 && (
-              <>
-                <h1>I am a...</h1>
-                <p className="auth-subtitle">Select your account type</p>
+    if (mode === 'signup') {
+      // Validate first
+      const validationError = validateSignup();
+      if (validationError) {
+        setError(validationError);
+        return;
+      }
 
-                {error && <div className="auth-error">{error}</div>}
+      setLoading(true);
+      try {
+        const response = await registerWithEmail(email, password);
+        const user = response?.data?.user ?? null;
+        if (user && response.data?.token) {
+          const destination = finalizeAuthenticatedSession({
+            dispatch,
+            user: user as any,
+            token: response.data.token,
+            provider: 'email',
+            rememberMe: false,
+            returnTo,
+          });
+          setRegisteredUser(user);
+          setSignupStep(2);
+        }
+      } catch (err: unknown) {
+        const msg = err instanceof Error ? err.message : 'Registration failed';
+        setError(msg);
+      } finally {
+        setLoading(false);
+      }
+    } else {
+      // Sign in
+      setLoading(true);
+      try {
+        const response = await loginWithEmail(email, password);
+        if (response.success && !response.requiresTwoFactor) {
+          const successData = response.data as LoginSuccessData;
+          const user = successData.user;
+          const destination = finalizeAuthenticatedSession({
+            dispatch,
+            user: user as any,
+            token: successData.token,
+            provider: 'email',
+            rememberMe: false,
+            returnTo,
+          });
+          setSuccessMsg('Sign in successful!');
+          setTimeout(() => {
+            navigateToPostLoginDestination(navigate, destination);
+          }, 1500);
+        } else {
+          setError('Two-factor authentication is required');
+        }
+      } catch (err: unknown) {
+        const msg = err instanceof Error ? err.message : 'Sign in failed';
+        setError(msg);
+      } finally {
+        setLoading(false);
+      }
+    }
+  };
 
-                <div className="category-selection">
-                  {USER_CATEGORIES.map(cat => (
-                    <button
-                      key={cat.id}
-                      className={`category-card ${selectedCategory === cat.id ? 'selected' : ''}`}
-                      onClick={() => setSelectedCategory(cat.id)}
-                      style={{ '--accent-color': cat.color } as React.CSSProperties}
-                    >
-                      <span className="category-icon">{cat.icon}</span>
-                      <div className="category-info">
-                        <span className="category-label">{cat.label}</span>
-                        <span className="category-desc">{cat.desc}</span>
-                      </div>
-                      {selectedCategory === cat.id && <span className="category-check">✓</span>}
-                    </button>
-                  ))}
-                </div>
+  // ─── Role Selection ──────────────────────────────────────────────────────
 
-                {selectedCategory === 'staff' && (
-                  <div className="staff-notice">
-                    <span className="notice-icon">ℹ️</span>
-                    <p>
-                      Staff accounts require admin approval. You'll receive access once verified.
-                    </p>
-                  </div>
-                )}
+  const handleCategorySelect = (categoryId: string) => {
+    setSelectedCategory(categoryId);
+  };
 
-                <button
-                  className="btn btn-primary btn-full"
-                  onClick={proceedToRoleSelection}
-                  disabled={!selectedCategory}
-                >
-                  Continue
-                </button>
+  const handleCategoryContinue = () => {
+    if (!selectedCategory) return;
+    // Finalize registration with selected role
+    const user = registeredUser;
+    if (user) {
+      const destination = resolvePostLoginDestination({ user: user as any, returnTo });
+      navigateToPostLoginDestination(navigate, destination);
+    }
+  };
 
-                <button className="btn btn-link" onClick={() => goBackToStep(1)}>
-                  Go Back
-                </button>
-              </>
-            )}
+  // ─── Social Auth ─────────────────────────────────────────────────────────
 
-            {step === 3 && (
-              <>
-                <h1>Select Your Role</h1>
-                <p className="auth-subtitle">
-                  {selectedCategory === 'staff'
-                    ? 'Choose your position at White Caves'
-                    : 'How will you be using White Caves?'}
-                </p>
+  const handleSocialAuth = useCallback(
+    async (provider: 'google' | 'facebook' | 'apple') => {
+      setError(null);
+      setShowGmailTroubleshooting(false);
+      setLoading(true);
 
-                {error && <div className="auth-error">{error}</div>}
-                {success && <div className="auth-success">{success}</div>}
+      try {
+        let firebaseResult: {
+          user: {
+            uid: string;
+            email: string | null;
+            displayName: string | null;
+            photoURL: string | null;
+            getIdToken?: (forceRefresh?: boolean) => Promise<string>;
+          };
+        } | null = null;
 
-                <div className="role-selection-grid">
-                  {getRolesForCategory().map(role => (
-                    <button
-                      key={role.id}
-                      className={`role-card ${selectedRole === role.id ? 'selected' : ''}`}
-                      onClick={() => setSelectedRole(role.id)}
-                    >
-                      <span className="role-icon">{role.icon}</span>
-                      <span className="role-label">{role.label}</span>
-                      <span className="role-desc">{role.desc}</span>
-                    </button>
-                  ))}
-                </div>
+        if (provider === 'google') {
+          firebaseResult = (await signInWithGoogle()) as any;
+        } else if (provider === 'facebook') {
+          firebaseResult = (await signInWithFacebook()) as any;
+        } else if (provider === 'apple') {
+          firebaseResult = (await signInWithApple()) as any;
+        }
 
-                {selectedCategory === 'staff' && (
-                  <div className="form-group" style={{ marginBottom: '1rem' }}>
-                    <label htmlFor="employee-id">Employee ID (Optional)</label>
-                    <input
-                      id="employee-id"
-                      type="text"
-                      value={employeeId}
-                      onChange={(e: ChangeEvent<HTMLInputElement>) => setEmployeeId(e.target.value)}
-                      placeholder="Enter your employee ID"
-                    />
-                  </div>
-                )}
+        // If we did a redirect (firebaseResult is null), don't show error —
+        // useEffect will handle the redirect result when the component mounts again!
+        if (!firebaseResult?.user) {
+          console.log('No firebaseResult.user: user as any, probably did a redirect.');
+          setLoading(false);
+          return;
+        }
 
-                <button
-                  className="btn btn-primary btn-full"
-                  onClick={completeSignUp}
-                  disabled={!selectedRole || loading}
-                >
-                  {selectedCategory === 'staff' ? 'Submit for Approval' : 'Complete Registration'}
-                </button>
+        const fbUser = firebaseResult.user;
 
-                <button className="btn btn-link" onClick={() => goBackToStep(2)}>
-                  Go Back
-                </button>
-              </>
-            )}
+        // Sync with backend
+        try {
+          console.log('Calling syncFirebaseUser with fbUser:', fbUser);
+          const backendResponse = await syncFirebaseUser({
+            uid: fbUser.uid,
+            email: fbUser.email,
+            displayName: fbUser.displayName,
+            photoURL: fbUser.photoURL,
+            getIdToken: ((forceRefresh?: boolean) =>
+              (fbUser as any).getIdToken?.(forceRefresh)) as any,
+          });
+
+          const user = backendResponse?.data?.user ?? null;
+          if (user && backendResponse.data.token) {
+            const destination = finalizeAuthenticatedSession({
+              dispatch,
+              user: user as any,
+              token: backendResponse.data.token,
+              provider,
+              rememberMe: false,
+              returnTo,
+            });
+            setSuccessMsg('Sign in successful!');
+            setTimeout(() => {
+              navigateToPostLoginDestination(navigate, destination);
+            }, 1500);
+          } else {
+            throw new Error('Invalid response from backend');
+          }
+        } catch (syncErr: unknown) {
+          // Backend sync failed — show recovery panel
+          await signOut().catch(() => {});
+          const reason = syncErr instanceof Error ? syncErr.message : 'Backend sync failed';
+          setSocialRecovery({
+            visible: true,
+            provider,
+            firebaseUser: fbUser,
+            reason,
+            retryCount: MAX_SOCIAL_RETRIES,
+            isRetrying: false,
+            maxRetries: MAX_SOCIAL_RETRIES,
+          });
+        }
+      } catch (authErr: unknown) {
+        console.error('Social auth error:', authErr);
+        const errMsg = authErr instanceof Error ? authErr.message : 'Authentication error';
+        if (provider === 'google' && errMsg.includes('popup')) {
+          setShowGmailTroubleshooting(true);
+        } else {
+          setError(errMsg);
+        }
+      } finally {
+        setLoading(false);
+      }
+    },
+    [dispatch, navigate, returnTo]
+  );
+
+  // ─── Social Recovery ─────────────────────────────────────────────────────
+
+  const handleSocialRetry = useCallback(async () => {
+    if (!socialRecovery.firebaseUser || socialRecovery.retryCount <= 0) return;
+
+    setSocialRecovery(prev => ({ ...prev, isRetrying: true }));
+
+    try {
+      // Re-auth with Firebase
+      let firebaseResult: {
+        user: {
+          uid: string;
+          email: string | null;
+          displayName: string | null;
+          photoURL: string | null;
+          getIdToken?: (forceRefresh?: boolean) => Promise<string>;
+        };
+      } | null = null;
+
+      if (socialRecovery.provider === 'google') {
+        firebaseResult = (await signInWithGoogle()) as any;
+      } else if (socialRecovery.provider === 'facebook') {
+        firebaseResult = (await signInWithFacebook()) as any;
+      } else if (socialRecovery.provider === 'apple') {
+        firebaseResult = (await signInWithApple()) as any;
+      }
+
+      const fbUser = firebaseResult?.user ?? socialRecovery.firebaseUser;
+
+      const backendResponse = await syncFirebaseUser({
+        uid: fbUser.uid,
+        email: fbUser.email,
+        displayName: fbUser.displayName,
+        photoURL: fbUser.photoURL,
+        getIdToken: ((forceRefresh?: boolean) => (fbUser as any).getIdToken?.(forceRefresh)) as any,
+      });
+
+      const user = backendResponse?.data?.user ?? null;
+      if (user && backendResponse.data.token) {
+        const destination = finalizeAuthenticatedSession({
+          dispatch,
+          user: user as any,
+          token: backendResponse.data.token,
+          provider: socialRecovery.provider as any,
+          rememberMe: false,
+          returnTo,
+        });
+        setSocialRecovery(prev => ({ ...prev, visible: false, isRetrying: false }));
+        setSuccessMsg('Sign in successful!');
+        setTimeout(() => {
+          navigateToPostLoginDestination(navigate, destination);
+        }, 1500);
+      } else {
+        throw new Error('Invalid response from backend');
+      }
+    } catch (retryErr: unknown) {
+      const reason = retryErr instanceof Error ? retryErr.message : 'Retry failed';
+      setSocialRecovery(prev => ({
+        ...prev,
+        isRetrying: false,
+        reason,
+        retryCount: prev.retryCount - 1,
+      }));
+    }
+  }, [socialRecovery, dispatch, navigate, returnTo]);
+
+  const handleSocialRecoveryDismiss = useCallback(() => {
+    setSocialRecovery(prev => ({ ...prev, visible: false }));
+  }, []);
+
+  // ─── Biometric ───────────────────────────────────────────────────────────
+
+  const handleBiometricSuccess = useCallback(
+    (data: any) => {
+      const user = data as { uid: string; email: string; displayName: string };
+      const destination = resolvePostLoginDestination({ user: user as any, returnTo });
+      navigateToPostLoginDestination(navigate, destination);
+    },
+    [dispatch, navigate, returnTo]
+  );
+
+  // ─── Firebase Helper Text ─────────────────────────────────────────────────
+
+  const googleHelperText = !isFirebaseAuthConfigured
+    ? `Google sign-in is temporarily unavailable because Firebase authentication is not configured. ${firebaseAuthUnavailableReason || ''}`.trim()
+    : undefined;
+
+  // ─── Render ───────────────────────────────────────────────────────────────
+
+  const isSignup = mode === 'signup';
+  const retriesLeft = socialRecovery.retryCount;
+  const retryLimitReached = retriesLeft <= 0 && socialRecovery.retryCount === 0;
+
+  // Step 2 — Category selection after signup
+  if (isSignup && signupStep === 2) {
+    return (
+      <div className="auth-page-container">
+        <div className="auth-card">
+          <div className="auth-header">
+            <h1>Select Your Category</h1>
+            <p>Choose the category that best describes you</p>
           </div>
 
-          <p className="auth-footer">
-            By continuing, you agree to our{' '}
-            <a href="/terms" target="_blank" rel="noopener noreferrer">
-              Terms of Service
-            </a>{' '}
-            and{' '}
-            <a href="/privacy" target="_blank" rel="noopener noreferrer">
-              Privacy Policy
-            </a>
+          <div className="category-selection">
+            {CATEGORIES.map(cat => (
+              <button
+                key={cat.id}
+                className={`category-btn ${selectedCategory === cat.id ? 'active' : ''}`}
+                onClick={() => handleCategorySelect(cat.id)}
+              >
+                <span className="category-label">{cat.label}</span>
+                <span className="category-desc">{cat.description}</span>
+              </button>
+            ))}
+          </div>
+
+          <button
+            className="btn btn-primary"
+            onClick={handleCategoryContinue}
+            disabled={!selectedCategory}
+          >
+            Continue
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="auth-page-container">
+      <div className="auth-card">
+        {/* Header */}
+        <div className="auth-header">
+          <div className="auth-logo">
+            <span className="auth-logo-text">White Caves</span>
+          </div>
+          <h1>{isSignup ? 'Create Account' : 'Welcome Back'}</h1>
+          <p className="auth-subtitle">
+            {isSignup
+              ? 'Join White Caves to explore luxury properties in Dubai'
+              : 'Sign in to access your personalized dashboard'}
           </p>
         </div>
+
+        {/* Social Auth */}
+        <SocialAuthButtons
+          loading={loading}
+          onSocialAuth={handleSocialAuth}
+          label="Continue with"
+          googleText="Google"
+          facebookText="Facebook"
+          appleText="Apple"
+          googleDisabled={!isFirebaseAuthConfigured}
+          helperText={googleHelperText}
+        />
+
+        {/* Gmail Troubleshooting Panel */}
+        {showGmailTroubleshooting && (
+          <div className="gmail-troubleshooting-panel" role="alert">
+            <p>Trouble signing in with Gmail?</p>
+            <p>
+              Your browser may be blocking popups. Try allowing popups or use email sign-in instead.
+            </p>
+            <button
+              type="button"
+              className="btn btn-secondary"
+              onClick={() => {
+                setShowGmailTroubleshooting(false);
+                setActiveTab('email');
+              }}
+            >
+              Continue with Email
+            </button>
+          </div>
+        )}
+
+        {/* Social Recovery Panel */}
+        {socialRecovery.visible && (
+          <div className="social-recovery-panel" role="alert">
+            <p>Your sign-in needs one more step</p>
+            <p className="recovery-detail">
+              backend session setup failed — Reason: {socialRecovery.reason}
+            </p>
+            <p>Retries remaining: {retriesLeft}</p>
+
+            {retriesLeft <= 0 ? (
+              <>
+                <p>Too many retry attempts. Please try again later or use email sign-in.</p>
+                <button
+                  type="button"
+                  className="btn btn-secondary"
+                  disabled
+                  aria-label="Retry limit reached"
+                >
+                  Retry limit reached
+                </button>
+              </>
+            ) : (
+              <button
+                type="button"
+                className="btn btn-primary"
+                onClick={handleSocialRetry}
+                disabled={socialRecovery.isRetrying}
+                aria-label={
+                  socialRecovery.isRetrying
+                    ? 'Retrying...'
+                    : `Retry ${socialRecovery.provider === 'google' ? 'Google' : socialRecovery.provider} sign-in`
+                }
+              >
+                {socialRecovery.isRetrying
+                  ? 'Retrying...'
+                  : `Retry ${socialRecovery.provider === 'google' ? 'Google' : socialRecovery.provider} sign-in`}
+              </button>
+            )}
+
+            <button
+              type="button"
+              className="btn btn-ghost"
+              onClick={handleSocialRecoveryDismiss}
+              disabled={socialRecovery.isRetrying}
+              aria-label="Dismiss recovery notice"
+            >
+              Dismiss
+            </button>
+          </div>
+        )}
+
+        {/* Auth Method Tabs */}
+        <AuthMethodTabs
+          activeTab={activeTab}
+          onChange={tab => {
+            setActiveTab(tab);
+            setError(null);
+          }}
+          emailLabel="Email"
+          phoneLabel="Phone"
+        />
+
+        {/* Email Form */}
+        {activeTab === 'email' && (
+          <form onSubmit={handleEmailSubmit} className="auth-form">
+            <div className="form-group">
+              <input
+                type="email"
+                placeholder="Enter your email"
+                value={email}
+                onChange={e => setEmail(e.target.value)}
+                required
+                className="form-input"
+              />
+            </div>
+
+            <div className="form-group">
+              <input
+                type="password"
+                placeholder="Enter your password"
+                value={password}
+                onChange={e => setPassword(e.target.value)}
+                required
+                className="form-input"
+              />
+            </div>
+
+            {isSignup && (
+              <div className="form-group">
+                <input
+                  type="password"
+                  placeholder="Confirm your password"
+                  value={confirmPassword}
+                  onChange={e => setConfirmPassword(e.target.value)}
+                  required
+                  className="form-input"
+                />
+              </div>
+            )}
+
+            {error && (
+              <div className="auth-error" role="alert">
+                {error}
+              </div>
+            )}
+
+            {successMsg && (
+              <div className="auth-success" role="status">
+                {successMsg}
+              </div>
+            )}
+
+            <button type="submit" className="btn btn-primary btn-full" disabled={loading}>
+              {loading ? 'Please wait...' : isSignup ? 'Sign Up' : 'Sign In'}
+            </button>
+          </form>
+        )}
+
+        {/* Phone Form */}
+        {activeTab === 'phone' && (
+          <form className="auth-form">
+            <div className="form-group">
+              <input
+                type="tel"
+                placeholder="+971 50 123 4567"
+                value={phone}
+                onChange={e => setPhone(e.target.value)}
+                className="form-input"
+              />
+            </div>
+
+            {error && (
+              <div className="auth-error" role="alert">
+                {error}
+              </div>
+            )}
+
+            <button type="submit" className="btn btn-primary btn-full" disabled={loading}>
+              {loading ? 'Please wait...' : 'Send OTP'}
+            </button>
+          </form>
+        )}
+
+        {/* Biometric */}
+        <BiometricLoginButton onSuccess={handleBiometricSuccess} onError={() => {}} />
+
+        {/* Mode Switch */}
+        <AuthModeSwitch
+          mode={mode}
+          onSwitch={switchMode}
+          signInPromptText="Already have an account? Sign In"
+          signUpPromptText="Don't have an account? Sign Up"
+        />
       </div>
     </div>
   );

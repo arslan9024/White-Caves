@@ -30,17 +30,25 @@ describe('roles config', () => {
         expect(Array.isArray(role.permissions)).toBe(true);
         expect(role.permissions.length).toBeGreaterThan(0);
         expect(role.dashboardPath).toMatch(/^\//);
-        expect(['executive', 'admin', 'management', 'agent', 'specialist', 'support', 'client']).toContain(role.category);
+        expect([
+          'executive',
+          'admin',
+          'management',
+          'agent',
+          'specialist',
+          'support',
+          'client',
+        ]).toContain(role.category);
       }
     });
 
     it('all role IDs are unique', () => {
-      const ids = REAL_ESTATE_ROLES.map((r) => r.id);
+      const ids = REAL_ESTATE_ROLES.map(r => r.id);
       expect(new Set(ids).size).toBe(ids.length);
     });
 
     it('managing_director has wildcard permissions', () => {
-      const md = REAL_ESTATE_ROLES.find((r) => r.id === 'managing_director');
+      const md = REAL_ESTATE_ROLES.find(r => r.id === 'managing_director');
       expect(md).toBeDefined();
       expect(md!.permissions).toContain('*');
     });
@@ -50,7 +58,7 @@ describe('roles config', () => {
       ['admin', ['super_admin']],
       ['management', ['branch_manager', 'sales_manager', 'leasing_manager']],
     ])('category %s contains expected roles', (category, expectedIds) => {
-      const rolesInCategory = REAL_ESTATE_ROLES.filter((r) => r.category === category).map((r) => r.id);
+      const rolesInCategory = REAL_ESTATE_ROLES.filter(r => r.category === category).map(r => r.id);
       for (const id of expectedIds) {
         expect(rolesInCategory).toContain(id);
       }
@@ -150,7 +158,7 @@ describe('roles config', () => {
     it('returns executive roles', () => {
       const roles = getRolesByCategory('executive');
       expect(roles.length).toBeGreaterThan(0);
-      expect(roles.every((r) => r.category === 'executive')).toBe(true);
+      expect(roles.every(r => r.category === 'executive')).toBe(true);
     });
 
     it('returns admin roles', () => {
@@ -185,8 +193,7 @@ describe('roles config', () => {
     });
 
     it('returns empty array for unknown category', () => {
-      // @ts-expect-error Testing invalid input
-      expect(getRolesByCategory('unknown')).toEqual([]);
+      expect(getRolesByCategory('unknown' as Parameters<typeof getRolesByCategory>[0])).toEqual([]);
     });
   });
 });

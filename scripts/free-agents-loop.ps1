@@ -37,6 +37,11 @@ $alwaysOn = @{
   "@Sofia"    = @{ Tool="Google AI Studio"; URL="https://aistudio.google.com/"; Model="Gemini 2.0 Flash";   Domain="Compliance, RERA/DLD regulations" }
   "@Cassie"   = @{ Tool="DeepSeek Chat";    URL="https://chat.deepseek.com/";   Model="DeepSeek V3";        Domain="Analytics dashboard, agent performance" }
   "@Joelle"   = @{ Tool="Groq Console";     URL="https://console.groq.com/";    Model="Llama 3.1 70B";      Domain="AI personas, integration map, lead scoring" }
+    "@Nova"    = @{ Tool="Google AI Studio"; URL="https://aistudio.google.com/"; Model="Gemini 2.0 Flash"; Domain="Backlog coordination, task triage" }
+    "@Orion"   = @{ Tool="Groq Console"; URL="https://console.groq.com/"; Model="Llama 3.1 70B"; Domain="CI/CD automation, ops monitoring" }
+    "@Pulse"   = @{ Tool="DeepSeek Chat"; URL="https://chat.deepseek.com/"; Model="DeepSeek V3"; Domain="Data pipelines, monitoring dashboards" }
+    "@Quark"   = @{ Tool="Google AI Studio"; URL="https://aistudio.google.com/"; Model="Gemini 2.0 Flash"; Domain="Analytics export, CSV/Excel API" }
+    "@Zara"    = @{ Tool="Groq Console"; URL="https://console.groq.com/"; Model="Llama 3.1 70B"; Domain="Security audits, compliance checks" }
 }
 
 # ---- Determine active agent ----

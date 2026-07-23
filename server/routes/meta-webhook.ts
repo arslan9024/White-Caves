@@ -21,6 +21,9 @@ import { requireRole } from '../middleware/rbac.js';
 import { prisma } from '../database.js';
 import { detectIntent, calculateLeadScore } from '../services/nadia/messageProcessor.js';
 import { getSocketServer } from '../services/socketServer.js';
+import { processHandoffTriggers } from '../services/nadia/handoffManager.js';
+import { processChatWithOpenAI, ChatMessage } from '../services/nadia/openaiProcessor.js';
+import { setWhatsAppConsent } from '../services/whatsapp/consentManager.js';
 
 const router = Router();
 
@@ -98,7 +101,7 @@ router.post('/', async (req: Request, res: Response) => {
       const signature = req.headers['x-hub-signature-256'] as string | undefined;
       if (!signature) {
         console.warn('[Meta Webhook] Missing x-hub-signature-256 header — rejecting');
-        res.status(401).json({ success: false, error: 'Missing signature header' });
+        res.status(403).json({ success: false, error: 'Missing signature header' });
         return;
       }
 
@@ -111,7 +114,7 @@ router.post('/', async (req: Request, res: Response) => {
 
       if (!verifyWebhookSignature(rawBody, signature, appSecret)) {
         console.warn('[Meta Webhook] Invalid signature — rejecting');
-        res.status(401).json({ success: false, error: 'Invalid signature' });
+        res.status(403).json({ success: false, error: 'Invalid signature' });
         return;
       }
     }
@@ -177,6 +180,33 @@ async function handleIncomingMessage(message: any, phoneNumberId: string): Promi
 
     const content = message.text?.body || '';
     const messageType = message.type || 'text';
+
+    // W24-005: Consent opt-in/opt-out keywords
+    const trimmed = content.trim().toUpperCase();
+    if (trimmed === 'STOP') {
+      await setWhatsAppConsent(customerPhone, false);
+      try {
+        await getMetaClient().sendMessage(
+          customerPhone,
+          'You have opted out of WhatsApp messages. Reply START to opt back in.'
+        );
+      } catch (err) {
+        console.error('[Meta Webhook] Failed to send opt-out confirmation message:', err);
+      }
+      return;
+    } else if (trimmed === 'START') {
+      await setWhatsAppConsent(customerPhone, true);
+      try {
+        await getMetaClient().sendMessage(
+          customerPhone,
+          'You have opted back in to WhatsApp messages.'
+        );
+      } catch (err) {
+        console.error('[Meta Webhook] Failed to send opt-in confirmation message:', err);
+      }
+      return;
+    }
+
     const timestampEpoch = Number.parseInt(String(message.timestamp || ''), 10);
     const timestamp = Number.isFinite(timestampEpoch)
       ? new Date(timestampEpoch * 1000)
@@ -267,41 +297,62 @@ async function handleIncomingMessage(message: any, phoneNumberId: string): Promi
       },
     });
 
-    // 3. Run NLP analysis (Nina)
-    let nlpResult: { intent?: string; score?: number } = {};
-    try {
-      const intent = detectIntent(content);
-      const score = calculateLeadScore({
-        messageCount: 1,
-        responseTime: 0,
-        intentClarity: intent !== 'general_inquiry' ? 1 : 0.3,
-        budgetMentioned:
-          content.toLowerCase().includes('budget') || content.toLowerCase().includes('aed'),
-        timelineMentioned:
-          content.toLowerCase().includes('asap') || content.toLowerCase().includes('urgent'),
-        propertyInterest:
-          content.toLowerCase().includes('property') || content.toLowerCase().includes('villa')
-            ? 1
-            : 0,
-      } as any);
-      nlpResult = { intent, score };
-    } catch (nlpErr) {
-      console.warn('[Meta Webhook] NLP processing failed:', nlpErr);
+    // 3. Check for handoff triggers first
+    const isHandoff = await processHandoffTriggers(
+      conversation.id,
+      customerPhone,
+      content,
+      1.0, // mock confidence since we don't have intent yet
+      0, // unresolved turns mock
+      leadId
+    );
+
+    if (isHandoff) {
+      await getMetaClient().sendMessage(customerPhone, 'I am connecting you to a human agent now.');
+    } else {
+      // 4. Run OpenAI property / maintenance processing
+      try {
+        // Fetch last 5 messages for context
+        const recentMessages = await prisma.nadiaMessage.findMany({
+          where: { conversationId: conversation.id },
+          orderBy: { timestamp: 'desc' },
+          take: 5,
+        });
+
+        const chatMessages = recentMessages.reverse().map(m => ({
+          role: m.direction === 'inbound' ? 'user' : 'assistant',
+          content: m.body,
+        })) as ChatMessage[];
+
+        const reply = await processChatWithOpenAI(chatMessages);
+
+        // Save AI reply to DB
+        await prisma.nadiaMessage.create({
+          data: {
+            conversationId: conversation.id,
+            waMessageId: `meta-out-${Date.now()}`,
+            direction: 'outbound',
+            body: reply,
+            messageType: 'text',
+            status: 'sent',
+            timestamp: new Date(),
+          },
+        });
+
+        // Send WhatsApp reply
+        await getMetaClient().sendMessage(customerPhone, reply);
+      } catch (err) {
+        console.error('[Meta Webhook] OpenAI processing error:', err);
+      }
     }
 
-    // 4. Update conversation with NLP results
-    if (nlpResult.intent || nlpResult.score) {
-      await prisma.nadiaConversation.update({
-        where: { id: conversation.id },
-        data: {
-          ...(nlpResult.intent && { intent: nlpResult.intent }),
-          ...(nlpResult.score && { leadScore: nlpResult.score }),
-          updatedAt: new Date(),
-        },
-      });
-    }
+    // 5. Update conversation timestamps
+    await prisma.nadiaConversation.update({
+      where: { id: conversation.id },
+      data: { updatedAt: new Date() },
+    });
 
-    // 5. Emit real-time event via Socket.io (Meta API channel — Nadia / Nina pipeline)
+    // 6. Emit real-time event via Socket.io
     getSocketServer()?.emitMetaMessage({
       id: storedMessage.id,
       conversationId: conversation.id,
@@ -310,7 +361,7 @@ async function handleIncomingMessage(message: any, phoneNumberId: string): Promi
       content,
       type: messageType,
       timestamp,
-      nlp: nlpResult,
+      nlp: {}, // Removing mock NLP
     } as any);
   } catch (error) {
     console.error('[Meta Webhook] Error handling message:', error);

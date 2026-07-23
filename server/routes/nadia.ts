@@ -24,10 +24,20 @@ import {
   generateWhatsAppAutoResponse,
 } from '../services/nadia/whatsappAssistant.js';
 import whatsAppBotService from '../services/WhatsAppBotService.js';
-import { requirePermission, resolveBackendRole, roleHasPermission } from '../middleware/rbac';
-import type { AuthRequest } from '../middleware/auth';
+import { requirePermission, resolveBackendRole, roleHasPermission } from '../middleware/rbac.js';
+import type { AuthRequest } from '../middleware/auth.js';
 
 const router = Router();
+
+const DEFAULT_NADIA_ESCALATION_CONFIDENCE_THRESHOLD = 0.6;
+
+const getNadiaEscalationConfidenceThreshold = (): number => {
+  const raw = Number(process.env.NADIA_ESCALATION_CONFIDENCE_THRESHOLD ?? '');
+  if (Number.isNaN(raw)) {
+    return DEFAULT_NADIA_ESCALATION_CONFIDENCE_THRESHOLD;
+  }
+  return Math.min(0.95, Math.max(0.2, raw));
+};
 
 const ALLOWED_CONVERSATION_STATUSES = ['active', 'assigned_to_agent', 'in_bot_flow', 'closed'];
 
@@ -128,7 +138,7 @@ router.get(
   '/conversations/:conversationId',
   requirePermission('view_whatsapp_conversations'),
   asyncHandler(async (req: Request, res: Response) => {
-    const { conversationId } = req.params;
+    const { conversationId } = req.params as Record<string, string>;
 
     const conversation = await prisma.nadiaConversation.findUnique({
       where: { id: conversationId },
@@ -166,7 +176,7 @@ router.get(
       limit = 20,
       offset = 0,
       agentPhone,
-    } = req.query;
+    } = req.query as Record<string, string | undefined>;
 
     // Build filter
     const filter: Record<string, unknown> = {};
@@ -224,7 +234,7 @@ router.patch(
   '/conversations/:conversationId',
   requirePermission('assign_whatsapp_conversations', 'close_whatsapp_conversations'),
   asyncHandler(async (req: Request, res: Response) => {
-    const { conversationId } = req.params;
+    const { conversationId } = req.params as Record<string, string>;
     const { status, agentPhone, closedReason } = req.body;
 
     const conversation = await prisma.nadiaConversation.findUnique({
@@ -315,7 +325,7 @@ router.patch(
   '/conversations/:conversationId/assign',
   requirePermission('assign_whatsapp_conversations'),
   asyncHandler(async (req: Request, res: Response) => {
-    const { conversationId } = req.params;
+    const { conversationId } = req.params as Record<string, string>;
     const { agentPhone } = req.body;
 
     if (!agentPhone || typeof agentPhone !== 'string') {
@@ -354,7 +364,7 @@ router.patch(
   '/conversations/:conversationId/close',
   requirePermission('close_whatsapp_conversations'),
   asyncHandler(async (req: Request, res: Response) => {
-    const { conversationId } = req.params;
+    const { conversationId } = req.params as Record<string, string>;
     const { reason } = req.body;
 
     const conversation = await prisma.nadiaConversation.findUnique({
@@ -389,7 +399,7 @@ router.delete(
   '/conversations/:conversationId',
   requirePermission('close_whatsapp_conversations'),
   asyncHandler(async (req: Request, res: Response) => {
-    const { conversationId } = req.params;
+    const { conversationId } = req.params as Record<string, string>;
     const { reason } = req.body;
 
     const conversation = await prisma.nadiaConversation.findUnique({
@@ -433,7 +443,7 @@ router.post(
   '/conversations/:conversationId/messages',
   requirePermission('reply_whatsapp_conversations'),
   asyncHandler(async (req: Request, res: Response) => {
-    const { conversationId } = req.params;
+    const { conversationId } = req.params as Record<string, string>;
     const { content, senderType = 'customer' } = req.body;
 
     if (!content) {
@@ -507,7 +517,7 @@ router.post(
   '/conversations/:conversationId/reply',
   requirePermission('reply_whatsapp_conversations'),
   asyncHandler(async (req: Request, res: Response) => {
-    const { conversationId } = req.params;
+    const { conversationId } = req.params as Record<string, string>;
     const { content } = req.body;
 
     if (!content || typeof content !== 'string' || !content.trim()) {
@@ -577,8 +587,8 @@ router.get(
   '/conversations/:conversationId/messages',
   requirePermission('view_whatsapp_conversations'),
   asyncHandler(async (req: Request, res: Response) => {
-    const { conversationId } = req.params;
-    const { limit = 50, offset = 0 } = req.query;
+    const { conversationId } = req.params as Record<string, string>;
+    const { limit = 50, offset = 0 } = req.query as Record<string, string | undefined>;
 
     const messages = await prisma.nadiaMessage.findMany({
       where: { conversationId },
@@ -615,7 +625,7 @@ router.get(
   '/queue',
   requirePermission('view_whatsapp_conversations'),
   asyncHandler(async (req: Request, res: Response) => {
-    const { limit = 10 } = req.query;
+    const { limit = 10 } = req.query as Record<string, string | undefined>;
 
     const queued = await getQueuedConversations(Math.min(parseInt(limit as string) || 10, 100));
 
@@ -662,7 +672,7 @@ router.patch(
   '/queue/:queueId/assign',
   requirePermission('assign_whatsapp_conversations'),
   asyncHandler(async (req: Request, res: Response) => {
-    const { queueId } = req.params;
+    const { queueId } = req.params as Record<string, string>;
     const { agentPhone } = req.body;
 
     if (!agentPhone) {
@@ -717,7 +727,12 @@ router.post(
       throw new AppError('message is required', 400);
     }
 
-    const result = generateWhatsAppAutoResponse({ message, customerName });
+    const escalationConfidenceThreshold = getNadiaEscalationConfidenceThreshold();
+    const result = generateWhatsAppAutoResponse({
+      message,
+      customerName,
+      escalationConfidenceThreshold,
+    });
     res.status(200).json({ success: true, data: result });
   })
 );
@@ -746,7 +761,12 @@ router.post(
       throw new AppError('Conversation not found', 404);
     }
 
-    const assistant = generateWhatsAppAutoResponse({ message, customerName });
+    const escalationConfidenceThreshold = getNadiaEscalationConfidenceThreshold();
+    const assistant = generateWhatsAppAutoResponse({
+      message,
+      customerName,
+      escalationConfidenceThreshold,
+    });
 
     const inbound = await prisma.nadiaMessage.create({
       data: {
@@ -785,7 +805,20 @@ router.post(
     if (assistant.classification.shouldEscalate) {
       await queueConversationForAssignment(
         conversationId,
-        assistant.classification.escalationReason || 'assistant_escalation'
+        assistant.classification.escalationReason || 'assistant_escalation',
+        {
+          source: 'assistant/respond',
+          messagePreview: message.slice(0, 280),
+          classification: {
+            intent: assistant.classification.intent,
+            confidence: assistant.classification.confidence,
+            sentiment: assistant.classification.sentiment,
+            entities: assistant.classification.entities,
+            leadScore: assistant.classification.leadScore,
+            firstResponseState: assistant.classification.firstResponseState,
+            escalationReason: assistant.classification.escalationReason,
+          },
+        }
       );
     }
 
@@ -795,6 +828,9 @@ router.post(
         classification: assistant.classification,
         response: assistant.response,
         responseType: assistant.responseType,
+        escalationPolicy: {
+          confidenceThreshold: escalationConfidenceThreshold,
+        },
         messages: { inbound, outbound },
         conversation: updatedConversation,
       },
@@ -1011,8 +1047,9 @@ router.post(
 
     const convId = typeof conversationId === 'string' ? conversationId : undefined;
 
-    const { assistantOrchestrator } =
-      await import('../services/orchestrator/AssistantOrchestrator.js');
+    const { assistantOrchestrator } = await import(
+      '../services/orchestrator/AssistantOrchestrator.js'
+    );
 
     if ((alertType as AlertType) === 'compliance_failed') {
       assistantOrchestrator.emitEvent('henry:compliance_failed', {
@@ -1052,8 +1089,9 @@ router.get(
   '/cross-status',
   requirePermission('view_whatsapp_conversations'),
   asyncHandler(async (_req: Request, res: Response) => {
-    const { getOrchestratorStatus } =
-      await import('../services/orchestrator/AssistantOrchestrator.js');
+    const { getOrchestratorStatus } = await import(
+      '../services/orchestrator/AssistantOrchestrator.js'
+    );
     const orchStatus = getOrchestratorStatus();
 
     res.status(200).json({
@@ -1161,6 +1199,77 @@ router.get(
         lastReviewedAt: new Date().toISOString(),
       },
     });
+  })
+);
+
+// ─── POST /api/nadia/conversations/:conversationId/convert-to-lead ──────────
+// P0-017: One-click WhatsApp conversation → CRM lead conversion
+// Idempotent: returns existing lead if already converted.
+router.post(
+  '/conversations/:conversationId/convert-to-lead',
+  requirePermission('manage_leads'),
+  asyncHandler(async (req: Request, res: Response) => {
+    const { conversationId } = req.params as { conversationId: string };
+
+    // 1. Fetch conversation
+    const conversation = await prisma.nadiaConversation.findUnique({
+      where: { id: conversationId },
+      include: { queue: true, messages: { orderBy: { timestamp: 'asc' }, take: 1 } },
+    });
+    if (!conversation) throw new AppError('Conversation not found', 404);
+
+    // 2. Idempotency: already converted
+    if (conversation.leadId) {
+      const existingLead = await prisma.lead.findUnique({ where: { id: conversation.leadId } });
+      return res.status(200).json({ success: true, data: existingLead, alreadyConverted: true });
+    }
+
+    // 3. Resolve ownership
+    let assignedToId: string | null = null;
+    if (conversation.agentPhone) {
+      const agent = await prisma.user.findFirst({ where: { phone: conversation.agentPhone } });
+      if (agent) assignedToId = agent.id;
+    }
+    if (!assignedToId && req.user?.id) assignedToId = req.user.id;
+
+    // 4. Create lead
+    const lead = await prisma.lead.create({
+      data: {
+        name: `WA: ${conversation.customerPhone}`,
+        phone: conversation.customerPhone,
+        source: 'whatsapp',
+        status: 'new',
+        score: conversation.leadScore,
+        tags: ['whatsapp_conversion'],
+        notes: `Converted from WhatsApp conversation ${conversationId}. Intent: ${conversation.intent ?? 'unknown'}`,
+        assignedToId,
+        createdById: req.user?.id ?? null,
+      },
+    });
+
+    // 5. Link lead back to conversation
+    await prisma.nadiaConversation.update({
+      where: { id: conversationId },
+      data: {
+        leadId: lead.id,
+        convertedAt: new Date(),
+        convertedByPhone: conversation.agentPhone ?? null,
+      },
+    });
+
+    // 6. Activity log
+    await prisma.activity.create({
+      data: {
+        type: 'lead',
+        action: 'created',
+        description: `Lead created from WhatsApp conversation (${conversation.customerPhone})`,
+        userId: req.user?.id ?? null,
+        leadId: lead.id,
+        metadata: { conversationId, source: 'whatsapp_conversion' },
+      },
+    });
+
+    res.status(201).json({ success: true, data: lead, alreadyConverted: false });
   })
 );
 

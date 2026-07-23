@@ -3,8 +3,8 @@ import { execSync, spawn } from 'node:child_process';
 import { mkdirSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
 
-const DEFAULT_APP_URL = process.env.APP_URL || 'http://localhost:5173';
-const DEFAULT_RUNTIME_URL = process.env.RUNTIME_VERIFY_URL || 'http://localhost:5000';
+const DEFAULT_APP_URL = process.env.APP_URL || 'http://localhost:5000';
+const DEFAULT_RUNTIME_URL = process.env.RUNTIME_VERIFY_URL || 'http://localhost:3001';
 const STARTUP_TIMEOUT_MS = Number(process.env.STARTUP_TIMEOUT_MS || 90000);
 const POLL_MS = Number(process.env.STARTUP_POLL_MS || 2000);
 
@@ -35,41 +35,57 @@ function getNpmBin() {
   return process.platform === 'win32' ? 'npm.cmd' : 'npm';
 }
 
+function spawnDevProcess() {
+  const npmBin = getNpmBin();
+
+  if (process.platform === 'win32') {
+    return spawn('cmd.exe', ['/c', npmBin, 'run', 'dev:all'], {
+      stdio: 'inherit',
+      shell: false,
+      windowsHide: true,
+    });
+  }
+
+  return spawn(npmBin, ['run', 'dev:all'], {
+    stdio: 'inherit',
+    shell: false,
+    detached: true,
+  });
+}
+
 async function runDevStartupProbe() {
   process.stdout.write('\n[STEP] Dev startup probe (npm run dev:all)\n');
 
-  const npmBin = getNpmBin();
-  const devProcess = spawn(npmBin, ['run', 'dev:all'], {
-    stdio: 'inherit',
-    shell: false,
-    detached: process.platform !== 'win32',
-  });
+  const devProcess = spawnDevProcess();
 
-  try {
-    const appReady = await waitForHttp(DEFAULT_APP_URL);
-    const apiReady = await waitForHttp(`${DEFAULT_RUNTIME_URL}/api/health`);
-
-    if (!appReady) {
-      throw new Error(`Frontend did not become ready at ${DEFAULT_APP_URL} within timeout.`);
-    }
-
-    if (!apiReady) {
-      throw new Error(
-        `Backend API did not become ready at ${DEFAULT_RUNTIME_URL}/api/health within timeout.`
-      );
-    }
-
-    process.stdout.write('Dev probe passed (frontend + backend reachable).\n');
-  } finally {
+  const stopDevProcess = () => {
     if (process.platform === 'win32') {
       spawn('taskkill', ['/pid', String(devProcess.pid), '/f', '/t'], {
         stdio: 'ignore',
         shell: false,
       });
-    } else {
-      process.kill(-devProcess.pid, 'SIGTERM');
+      return;
     }
+
+    process.kill(-devProcess.pid, 'SIGTERM');
+  };
+
+  const appReady = await waitForHttp(DEFAULT_APP_URL);
+  const apiReady = await waitForHttp(`${DEFAULT_RUNTIME_URL}/api/health`);
+
+  if (!appReady) {
+    throw new Error(`Frontend did not become ready at ${DEFAULT_APP_URL} within timeout.`);
   }
+
+  if (!apiReady) {
+    throw new Error(
+      `Backend API did not become ready at ${DEFAULT_RUNTIME_URL}/api/health within timeout.`
+    );
+  }
+
+  process.stdout.write('Dev probe passed (frontend + backend reachable).\n');
+
+  return stopDevProcess;
 }
 
 function writeReport(status, details) {
@@ -86,12 +102,14 @@ function writeReport(status, details) {
 }
 
 (async () => {
+  let stopDevProcess = null;
+
   try {
     runStep('npm run build', 'Build check');
     runStep('npm run quality:quick', 'Quick quality gate');
-    await runDevStartupProbe();
+    stopDevProcess = await runDevStartupProbe();
     runStep(
-      `npm run verify:runtime -- --url=${DEFAULT_RUNTIME_URL} --timeout=15000 --retries=2`,
+      `npm run verify:runtime -- --url=${DEFAULT_APP_URL} --timeout=15000 --retries=2`,
       'Runtime endpoint verification'
     );
 
@@ -102,5 +120,7 @@ function writeReport(status, details) {
     writeReport('FAIL', message);
     console.error('\n❌ Premium post-commit runtime checks failed.');
     process.exit(1);
+  } finally {
+    stopDevProcess?.();
   }
 })();

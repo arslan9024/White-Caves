@@ -27,7 +27,7 @@ import {
   calculateVATSummary,
   getComplianceOverview,
   updateEjariStatus,
-} from '../complianceService';
+} from '../complianceService.js';
 
 import { prisma } from '../../../database.js';
 

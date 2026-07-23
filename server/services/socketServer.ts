@@ -19,12 +19,41 @@
  *   getSocketServer().emitMetaMessage(payload);          // call anywhere
  */
 
-import { Server as SocketIOServer, Socket } from 'socket.io';
+import { createRequire } from 'module';
 import type { Server as HttpServer } from 'http';
 import { verifyJwt } from '../middleware/auth.js';
 import { createLogger } from '../utils/logger.js';
 
 const log = createLogger('SocketServer');
+const require = createRequire(import.meta.url);
+
+interface SocketLike {
+  id: string;
+  handshake: {
+    auth?: { token?: string };
+    headers?: { authorization?: string };
+  };
+  data: Record<string, unknown>;
+  join: (room: string) => void;
+  on: (event: string, handler: (...args: unknown[]) => void) => void;
+  emit: (event: string, payload?: unknown) => void;
+}
+
+interface IoLike {
+  to: (room: string) => { emit: (event: string, payload?: unknown) => void };
+  use: (handler: (socket: SocketLike, next: (error?: Error) => void) => void) => void;
+  on: (event: string, handler: (socket: SocketLike) => void) => void;
+  sockets: { sockets: Map<string, unknown> };
+}
+
+function createNoopIo(): IoLike {
+  return {
+    to: () => ({ emit: () => undefined }),
+    use: () => undefined,
+    on: () => undefined,
+    sockets: { sockets: new Map<string, unknown>() },
+  };
+}
 
 // ─── Event Payload Types ──────────────────────────────────────────────────────
 
@@ -97,21 +126,29 @@ export interface AgentPresencePayload {
 // ─── Socket Server Wrapper ────────────────────────────────────────────────────
 
 export class SocketServer {
-  private io: SocketIOServer;
+  private io: IoLike;
 
   constructor(httpServer: HttpServer) {
-    this.io = new SocketIOServer(httpServer, {
-      cors: {
-        origin: process.env.CORS_ORIGINS
-          ? process.env.CORS_ORIGINS.split(',')
-          : ['http://localhost:5000'],
-        credentials: true,
-      },
-      // Use both polling + WebSocket so the client can upgrade after first handshake
-      transports: ['polling', 'websocket'],
-      pingTimeout: 60_000,
-      pingInterval: 25_000,
-    });
+    try {
+      const socketIoModule = require('socket.io') as {
+        Server: new (server: HttpServer, options: Record<string, unknown>) => IoLike;
+      };
+      this.io = new socketIoModule.Server(httpServer, {
+        cors: {
+          origin: process.env.CORS_ORIGINS
+            ? process.env.CORS_ORIGINS.split(',')
+            : ['http://localhost:5000'],
+          credentials: true,
+        },
+        // Use both polling + WebSocket so the client can upgrade after first handshake
+        transports: ['polling', 'websocket'],
+        pingTimeout: 60_000,
+        pingInterval: 25_000,
+      });
+    } catch (error) {
+      this.io = createNoopIo();
+      log.warn('socket.io package not available; running with no-op realtime server');
+    }
 
     this.setupAuthentication();
     this.setupConnectionHandlers();
@@ -122,15 +159,13 @@ export class SocketServer {
   // ─── Authentication ───────────────────────────────────────────────────────
 
   private setupAuthentication(): void {
-    this.io.use((socket: Socket, next) => {
+    this.io.use((socket: SocketLike, next) => {
       const token =
         (socket.handshake.auth?.token as string | undefined) ||
         (socket.handshake.headers?.authorization as string | undefined)?.replace('Bearer ', '');
 
       if (!token) {
-        // Unauthenticated clients can only join public rooms
-        socket.data.user = null;
-        return next();
+        return next(new Error('Authentication required'));
       }
 
       const payload = verifyJwt(token);
@@ -146,12 +181,13 @@ export class SocketServer {
   // ─── Connection Handlers ──────────────────────────────────────────────────
 
   private setupConnectionHandlers(): void {
-    this.io.on('connection', (socket: Socket) => {
+    this.io.on('connection', (socket: SocketLike) => {
       const user = socket.data.user as { id?: string; email?: string; role?: string } | null;
 
       if (user?.id) {
         // Join user-specific and role-specific rooms for targeted broadcasts
         socket.join(`user:${user.id}`);
+        socket.join(`notification:${user.id}`);
         if (user.role) {
           socket.join(`role:${user.role}`);
         }
@@ -169,21 +205,18 @@ export class SocketServer {
           online: true,
           timestamp: new Date(),
         } satisfies AgentPresencePayload);
-      } else {
-        log.debug(`Socket connected: unauthenticated (${socket.id})`);
+        socket.on('disconnect', () => {
+          if (user?.id) {
+            this.io.to('crm').emit('agent:presence', {
+              agentId: user.id,
+              email: user.email ?? '',
+              online: false,
+              timestamp: new Date(),
+            } satisfies AgentPresencePayload);
+            log.debug(`Socket disconnected: ${user.email}`);
+          }
+        });
       }
-
-      socket.on('disconnect', () => {
-        if (user?.id) {
-          this.io.to('crm').emit('agent:presence', {
-            agentId: user.id,
-            email: user.email ?? '',
-            online: false,
-            timestamp: new Date(),
-          } satisfies AgentPresencePayload);
-          log.debug(`Socket disconnected: ${user.email}`);
-        }
-      });
 
       // Client can ping to keep the connection alive from behind proxies
       socket.on('ping', () => {
@@ -213,9 +246,9 @@ export class SocketServer {
 
   // ─── CRM Emitters ─────────────────────────────────────────────────────────
 
-  /** Push a CRM notification to all authenticated users */
-  emitNotification(payload: CrmNotificationPayload): void {
-    this.io.to('crm').emit('notification:new', payload);
+  /** Push a CRM notification to a specific user's room */
+  emitNotification(userId: string, payload: CrmNotificationPayload): void {
+    this.io.to(`notification:${userId}`).emit('notification:new', payload);
   }
 
   /** Broadcast a lead-updated event to CRM users */
@@ -231,7 +264,7 @@ export class SocketServer {
   // ─── Utility ──────────────────────────────────────────────────────────────
 
   /** Raw access to the underlying io instance when needed */
-  getIO(): SocketIOServer {
+  getIO(): IoLike {
     return this.io;
   }
 

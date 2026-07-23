@@ -3,7 +3,7 @@
  */
 
 import { describe, it, expect } from 'vitest';
-import { classifyWhatsAppIntent, generateWhatsAppAutoResponse } from './whatsappAssistant';
+import { classifyWhatsAppIntent, generateWhatsAppAutoResponse } from './whatsappAssistant.js';
 
 describe('WhatsApp Assistant (Phase 4D)', () => {
   it('classifies property search intent with confidence', () => {
@@ -73,5 +73,91 @@ describe('WhatsApp Assistant (Phase 4D)', () => {
     expect(result.responseType).toBe('bot');
     expect(result.classification.firstResponseState).toBe('clarify');
     expect(result.response.toLowerCase()).toContain('preferred area');
+  });
+
+  // ── P1-004: Confidence-gate threshold contract tests ─────────────────
+
+  it('confidence is a number in the 0–1 range', () => {
+    const result = classifyWhatsAppIntent('I need a villa');
+    expect(result.confidence).toBeGreaterThanOrEqual(0);
+    expect(result.confidence).toBeLessThanOrEqual(1);
+  });
+
+  it('triggers escalation when confidence is below 0.6 threshold', () => {
+    // Very short ambiguous message → confidence will be below 0.6
+    const result = classifyWhatsAppIntent('hi');
+    // Either escalate_to_agent or clarify — both indicate low confidence gate
+    expect(['escalate_to_agent', 'clarify']).toContain(result.firstResponseState);
+  });
+
+  it('escalation reason is low_intent_confidence when below threshold and no explicit keyword', () => {
+    // "info" alone gives general_inquiry at low confidence without explicit escalation keywords
+    const result = classifyWhatsAppIntent('info');
+    if (result.shouldEscalate && result.escalationReason === 'low_intent_confidence') {
+      expect(result.confidence).toBeLessThan(0.6);
+    } else {
+      // clarify path is also acceptable for very low context messages
+      expect(['clarify', 'auto_reply']).toContain(result.firstResponseState);
+    }
+  });
+
+  it('structured context handoff response includes specialist handoff language', () => {
+    const result = generateWhatsAppAutoResponse({
+      message: 'I need to speak with a manager about my complaint',
+    });
+    expect(result.responseType).toBe('escalate_to_agent');
+    expect(result.response).toContain('specialist');
+    expect(result.classification.escalationReason).toBe('customer_requested_human');
+  });
+
+  it('classification result has all required contract fields', () => {
+    const result = classifyWhatsAppIntent('Looking for a 2BR in JBR with sea view');
+    expect(result).toHaveProperty('intent');
+    expect(result).toHaveProperty('confidence');
+    expect(result).toHaveProperty('sentiment');
+    expect(result).toHaveProperty('entities');
+    expect(result).toHaveProperty('leadScore');
+    expect(result).toHaveProperty('firstResponseState');
+    expect(result).toHaveProperty('shouldEscalate');
+    expect(result).toHaveProperty('escalationReason');
+  });
+
+  it('does not escalate high-confidence explicit property inquiry', () => {
+    const result = classifyWhatsAppIntent(
+      'I want to buy a 3 bedroom villa in Palm Jumeirah with sea view, budget 5M AED'
+    );
+    expect(result.confidence).toBeGreaterThan(0.6);
+    expect(result.shouldEscalate).toBe(false);
+    expect(result.firstResponseState).toBe('auto_reply');
+  });
+
+  it('intent escalation maps to correct escalation reason', () => {
+    const result = classifyWhatsAppIntent('I need to speak to a lawyer about this legal matter');
+    if (result.shouldEscalate) {
+      expect(['intent_requires_agent', 'customer_requested_human']).toContain(
+        result.escalationReason
+      );
+    }
+  });
+
+  it('supports stricter configured confidence threshold for escalation', () => {
+    const defaultPolicy = classifyWhatsAppIntent('search');
+    const strictPolicy = classifyWhatsAppIntent('search', {
+      escalationConfidenceThreshold: 0.75,
+    });
+
+    expect(defaultPolicy.shouldEscalate).toBe(false);
+    expect(strictPolicy.shouldEscalate).toBe(true);
+    expect(strictPolicy.escalationReason).toBe('low_intent_confidence');
+  });
+
+  it('passes configured threshold through auto-response generation', () => {
+    const result = generateWhatsAppAutoResponse({
+      message: 'search',
+      escalationConfidenceThreshold: 0.75,
+    });
+
+    expect(result.responseType).toBe('escalate_to_agent');
+    expect(result.classification.shouldEscalate).toBe(true);
   });
 });

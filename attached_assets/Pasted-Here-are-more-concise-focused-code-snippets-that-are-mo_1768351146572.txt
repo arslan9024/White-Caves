@@ -1,0 +1,141 @@
+Here are more concise, focused code snippets that are most useful for the core parts of your White Caves Real Estate AI Platform (Dubai-focused). I've kept them short, clean, and production-ready style.1. Dubai Property Entity (TypeScript)ts
+
+interface DubaiProperty {
+  id: string;
+  type: string;              // villa | apartment | townhouse | penthouse etc.
+  community: string;         // Palm Jumeirah | Downtown | Dubai Marina...
+  bedrooms: number;
+  priceAED: number;
+  sizeSqFt: number;
+  status: 'available' | 'reserved' | 'sold' | 'rented';
+  reraPermit?: string;
+  media: { type: 'photo' | 'video' | '3d' | 'drone'; url: string }[];
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+2. Advanced Dubai Property Search (Core Query)ts
+
+async function searchDubaiProperties(filters: {
+  minPrice?: number;
+  maxPrice?: number;
+  bedrooms?: number;
+  community?: string[];
+  propertyType?: string[];
+  minSize?: number;
+}): Promise<DubaiProperty[]> {
+  return prisma.dubaiProperty.findMany({
+    where: {
+      priceAED: {
+        gte: filters.minPrice,
+        lte: filters.maxPrice,
+      },
+      bedrooms: filters.bedrooms,
+      community: { in: filters.community },
+      type: { in: filters.propertyType },
+      sizeSqFt: { gte: filters.minSize },
+      status: 'available',
+    },
+    orderBy: { priceAED: 'asc' },
+    take: 24,
+  });
+}
+
+3. AML Quick Risk Score (Very simplified version)ts
+
+function quickAMLRiskScore(tx: {
+  amountAED: number;
+  paymentMethod: string;
+  clientNationality: string;
+  isPEP: boolean;
+  propertyPriceDeviation: number; // % from market value
+}): number {
+  let score = 0;
+
+  if (tx.amountAED > 2_000_000) score += 30;
+  if (tx.paymentMethod === 'cash') score += 40;
+  if (['Russia', 'Iran', 'Syria'].includes(tx.clientNationality)) score += 35;
+  if (tx.isPEP) score += 25;
+  if (Math.abs(tx.propertyPriceDeviation) > 30) score += 20;
+
+  return Math.min(100, score); // 0–100 risk score
+}
+
+4. UAE PASS + Role Check (Express middleware)ts
+
+const requireVerifiedClient = async (req: Request, res: Response, next: NextFunction) => {
+  const token = req.headers['x-uaepass-token'] as string;
+
+  if (!token) return res.status(401).json({ error: 'UAE PASS token required' });
+
+  try {
+    const payload = await verifyUaePassToken(token); // your verification logic
+    if (payload.accessTier !== 'verified_client') {
+      return res.status(403).json({ error: 'Verified client access required' });
+    }
+    req.user = payload;
+    next();
+  } catch (err) {
+    res.status(401).json({ error: 'Invalid UAE PASS token' });
+  }
+};
+
+5. Minimal Service Catalog Entryts
+
+interface DubaiService {
+  id: string;
+  name: string;
+  category: string;
+  priceAED: number | 'on-request';
+  deliveryDays: number;
+  requiredTier: 'basic' | 'premium' | 'elite';
+  amlCheckRequired: boolean;
+}
+
+const sampleService: DubaiService = {
+  id: 'S001',
+  name: 'RERA Title Deed Transfer',
+  category: 'Legal & Compliance',
+  priceAED: 8500,
+  deliveryDays: 14,
+  requiredTier: 'premium',
+  amlCheckRequired: true
+};
+
+6. Fast AI Lead Scoring Stub (Future expansion)ts
+
+function scoreDubaiLead(lead: {
+  budgetAED: number;
+  urgency: 'immediate' | '3months' | '6months+';
+  viewedProperties: number;
+}): number {
+  let score = 0;
+
+  if (lead.budgetAED > 10_000_000) score += 40;
+  if (lead.urgency === 'immediate') score += 35;
+  if (lead.viewedProperties > 15) score += 25;
+
+  return Math.min(100, score);
+}
+
+7. Very Compact Property Status Updatets
+
+async function updatePropertyStatus(id: string, newStatus: string) {
+  await prisma.dubaiProperty.update({
+    where: { id },
+    data: {
+      status: newStatus,
+      updatedAt: new Date(),
+      ...(newStatus === 'sold' && { soldDate: new Date() }),
+      ...(newStatus === 'reserved' && { reservedUntil: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000) })
+    }
+  });
+}
+
+These snippets are intentionally short, readable, and focused on the most frequently needed parts of a Dubai luxury real estate platform.Which area would you like me to expand next with concise examples?Property media upload & CDN handling
+Commission & revenue split calculation
+RERA/Ejari document checklist generation
+Basic notification system (WhatsApp/Email/SMS)
+Client 360° view aggregation
+Or something else?
+

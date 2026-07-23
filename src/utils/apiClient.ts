@@ -2,22 +2,97 @@ import { ERROR_MESSAGES } from '@/constants';
 import { HttpError } from './HttpError';
 
 const API_BASE_URL = '/api';
+const CSRF_COOKIE_NAME = 'csrf_token';
+const CSRF_HEADER_NAME = 'x-csrf-token';
+const REFRESH_ENDPOINT = '/auth/refresh';
 
 interface RequestOptions extends RequestInit {
   headers?: Record<string, string>;
   /** Request timeout in milliseconds. Default: 30000 (30s). Set to 0 to disable. */
   timeout?: number;
+  skipRefresh?: boolean;
 }
 
 class ApiClient {
   private baseURL: string;
   private defaultHeaders: Record<string, string>;
+  private refreshInFlight: Promise<boolean> | null;
 
   constructor() {
     this.baseURL = API_BASE_URL;
     this.defaultHeaders = {
       'Content-Type': 'application/json',
     };
+    this.refreshInFlight = null;
+  }
+
+  private getCookieValue(name: string): string | null {
+    if (typeof document === 'undefined') return null;
+
+    const cookies = document.cookie ? document.cookie.split(';') : [];
+    for (const cookie of cookies) {
+      const [key, ...valueParts] = cookie.trim().split('=');
+      if (key === name) {
+        return decodeURIComponent(valueParts.join('='));
+      }
+    }
+
+    return null;
+  }
+
+  private isMutationMethod(method?: string): boolean {
+    const normalized = (method || 'GET').toUpperCase();
+    return !['GET', 'HEAD', 'OPTIONS'].includes(normalized);
+  }
+
+  private shouldAttachCsrf(endpoint: string, method?: string): boolean {
+    return endpoint.startsWith('/auth/') && this.isMutationMethod(method);
+  }
+
+  private async refreshAccessToken(): Promise<boolean> {
+    if (!this.refreshInFlight) {
+      this.refreshInFlight = (async () => {
+        const csrfToken = this.getCookieValue(CSRF_COOKIE_NAME);
+        const headers: Record<string, string> = {
+          'Content-Type': 'application/json',
+        };
+
+        if (csrfToken) {
+          headers[CSRF_HEADER_NAME] = csrfToken;
+        }
+
+        try {
+          const response = await fetch(`${this.baseURL}${REFRESH_ENDPOINT}`, {
+            method: 'POST',
+            credentials: 'include',
+            headers,
+            body: JSON.stringify({}),
+          });
+
+          if (!response.ok) {
+            return false;
+          }
+
+          const payload = (await response.json()) as {
+            success?: boolean;
+            data?: { token?: string };
+          };
+          const rotatedToken = payload?.data?.token;
+          if (!rotatedToken) {
+            return false;
+          }
+
+          this.setAuthToken(rotatedToken);
+          return true;
+        } catch {
+          return false;
+        } finally {
+          this.refreshInFlight = null;
+        }
+      })();
+    }
+
+    return this.refreshInFlight;
   }
 
   async request(endpoint: string, options: RequestOptions = {}): Promise<unknown> {
@@ -45,11 +120,19 @@ class ApiClient {
     const config: RequestInit = {
       ...restOptions,
       signal: controller.signal,
+      credentials: options.credentials ?? 'include',
       headers: {
         ...this.defaultHeaders,
         ...options.headers,
       },
     };
+
+    if (this.shouldAttachCsrf(endpoint, config.method)) {
+      const csrfToken = this.getCookieValue(CSRF_COOKIE_NAME);
+      if (csrfToken && config.headers) {
+        (config.headers as Record<string, string>)[CSRF_HEADER_NAME] = csrfToken;
+      }
+    }
 
     try {
       const response = await fetch(url, config);
@@ -65,6 +148,14 @@ class ApiClient {
       }
 
       if (!response.ok) {
+        if (response.status === 401 && !options.skipRefresh && endpoint !== REFRESH_ENDPOINT) {
+          const refreshed = await this.refreshAccessToken();
+          if (refreshed) {
+            return this.request(endpoint, { ...options, skipRefresh: true });
+          }
+          this.handleTokenExpired();
+        }
+
         let errorMessage = 'Request failed';
 
         if (typeof data === 'object' && data !== null) {
@@ -168,6 +259,16 @@ class ApiClient {
     } else {
       delete this.defaultHeaders['Authorization'];
     }
+  }
+
+  private handleTokenExpired(): void {
+    this.setAuthToken(null);
+
+    if (typeof window === 'undefined') {
+      return;
+    }
+
+    window.dispatchEvent(new CustomEvent('tokenExpired'));
   }
 }
 

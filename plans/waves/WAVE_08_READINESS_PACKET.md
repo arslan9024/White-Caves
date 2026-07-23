@@ -2,7 +2,7 @@
 
 **Date:** 2026-05-22  
 **Status:** Ready (>=60% gate)  
-**Approval Model:** `@Ada — Context Ready (60% Readiness) — Coding Phase Approved`
+**Approval Model:** `@Ada — Context Ready (90% Readiness) — High-Fidelity Coding Phase Approved`
 
 ## Readiness Summary
 

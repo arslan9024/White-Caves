@@ -5,12 +5,12 @@
  */
 
 import { Router, Request, Response } from 'express';
-import { asyncHandler, AppError } from '../middleware/errorHandler';
-import type { AuthRequest } from '../middleware/auth';
+import { asyncHandler, AppError } from '../middleware/errorHandler.js';
+import type { AuthRequest } from '../middleware/auth.js';
 import { prisma } from '../database.js';
-import { sanitizeString } from '../utils/sanitize';
-import { validate, rules, validateIdParam } from '../utils/validate';
-import { parsePagination } from '../config/pagination';
+import { sanitizeString } from '../utils/sanitize.js';
+import { validate, rules, validateIdParam } from '../utils/validate.js';
+import { parsePagination } from '../config/pagination.js';
 
 const VALID_NOTIFICATION_TYPES = [
   'info',
@@ -33,7 +33,7 @@ router.get(
     const userId = (req as AuthRequest).user?.id;
     if (!userId) throw new AppError('Authentication required', 401);
 
-    const { read } = req.query;
+    const { read, unread } = req.query as Record<string, string | undefined>;
 
     const {
       page: pageNum,
@@ -47,6 +47,8 @@ router.get(
     const where: Record<string, unknown> = { userId };
     if (read === 'true') where.read = true;
     if (read === 'false') where.read = false;
+    if (unread === 'true') where.read = false;
+    if (unread === 'false') where.read = true;
 
     const [notifications, total] = await Promise.all([
       prisma.notification.findMany({
@@ -110,7 +112,7 @@ router.patch(
 router.patch(
   '/:id/read',
   asyncHandler(async (req: Request, res: Response) => {
-    const { id } = req.params;
+    const { id } = req.params as Record<string, string>;
     validateIdParam(id, 'Notification ID');
     const userId = (req as AuthRequest).user?.id;
     if (!userId) throw new AppError('Authentication required', 401);
@@ -134,7 +136,7 @@ router.patch(
 router.delete(
   '/:id',
   asyncHandler(async (req: Request, res: Response) => {
-    const { id } = req.params;
+    const { id } = req.params as Record<string, string>;
     validateIdParam(id, 'Notification ID');
     const userId = (req as AuthRequest).user?.id;
     if (!userId) throw new AppError('Authentication required', 401);

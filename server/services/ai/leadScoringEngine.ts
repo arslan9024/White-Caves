@@ -9,7 +9,7 @@
  * Tiers: hot (80+), warm (60-79), cold (30-59), inactive (<30)
  *
  * Usage:
- *   import { scoreLead, batchRescoreLeads } from './leadScoringEngine';
+ *   import { scoreLead, batchRescoreLeads } from './leadScoringEngine.js';
  *   const result = await scoreLead(leadId);
  *   const batch  = await batchRescoreLeads();
  */
@@ -578,7 +578,9 @@ export async function batchRescoreLeads(): Promise<BatchScoreResult> {
   for (let i = 0; i < leads.length; i += BATCH_SIZE) {
     const batch = leads.slice(i, i + BATCH_SIZE);
 
-    const results = await Promise.allSettled(batch.map(lead => scoreLead(lead.id)));
+    const results = await Promise.allSettled(
+      batch.map((lead: (typeof leads)[number]) => scoreLead(lead.id))
+    );
 
     for (let j = 0; j < results.length; j++) {
       const result = results[j];

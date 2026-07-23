@@ -20,7 +20,7 @@ const { mockPrisma } = vi.hoisted(() => {
     metadata: null,
     createdAt: new Date('2026-01-15T10:00:00Z'),
     userId: 'user-1',
-    leadId: null,
+    leadId: 'lead-1',
     user: { id: 'user-1', name: 'Agent Smith', email: 'agent@whitecaves.ae' },
     lead: null,
     ...overrides,
@@ -41,7 +41,12 @@ const { mockPrisma } = vi.hoisted(() => {
   };
 });
 
+const { triggerLeadRescore } = vi.hoisted(() => ({
+  triggerLeadRescore: vi.fn(),
+}));
+
 vi.mock('../database.js', () => ({ prisma: mockPrisma }));
+vi.mock('../services/ai/leadAutoRescore.js', () => ({ triggerLeadRescore }));
 vi.mock('../middleware/errorHandler', () => ({
   AppError: class extends Error {
     statusCode: number;
@@ -76,7 +81,7 @@ vi.mock('../config/pagination', () => ({
   }),
 }));
 
-import activitiesRoutes from './activities';
+import activitiesRoutes from './activities.js';
 
 // ── Test app factory ─────────────────────────────────────────────────
 function createApp(role = 'owner', userId = 'user-1') {
@@ -98,10 +103,27 @@ const VALID_ID = 'aabbccddee11223344556677';
 // ═════════════════════════════════════════════════════════════════════
 
 describe('Activities Routes — /api/activities', () => {
-  beforeEach(() => vi.clearAllMocks());
+  beforeEach(() => {
+    vi.clearAllMocks();
+    triggerLeadRescore.mockClear();
+  });
 
   // ── GET / ────────────────────────────────────────────────────────
   describe('GET /api/activities', () => {
+    it('returns 403 for agent role', async () => {
+      const res = await request(createApp('agent')).get('/api/activities');
+
+      expect(res.status).toBe(403);
+      expect(res.body.error).toMatch(/manager or above/i);
+    });
+
+    it('returns 403 for landlord role', async () => {
+      const res = await request(createApp('landlord')).get('/api/activities');
+
+      expect(res.status).toBe(403);
+      expect(res.body.error).toMatch(/manager or above/i);
+    });
+
     it('returns a paginated list of activities', async () => {
       const res = await request(createApp()).get('/api/activities');
 
@@ -153,6 +175,17 @@ describe('Activities Routes — /api/activities', () => {
       expect(findManyCall.where.leadId).toBe('lead-123');
     });
 
+    it('passes search filter to prisma across fields', async () => {
+      mockPrisma.activity.findMany.mockResolvedValueOnce([]);
+      mockPrisma.activity.count.mockResolvedValueOnce(0);
+
+      await request(createApp()).get('/api/activities?search=smith');
+
+      const findManyCall = mockPrisma.activity.findMany.mock.calls[0][0];
+      expect(Array.isArray(findManyCall.where.OR)).toBe(true);
+      expect(findManyCall.where.OR).toHaveLength(6);
+    });
+
     it('defaults sortBy to createdAt, sortOrder to desc', async () => {
       mockPrisma.activity.findMany.mockResolvedValueOnce([]);
       mockPrisma.activity.count.mockResolvedValueOnce(0);
@@ -184,6 +217,13 @@ describe('Activities Routes — /api/activities', () => {
 
   // ── GET /:id ─────────────────────────────────────────────────────
   describe('GET /api/activities/:id', () => {
+    it('returns 403 for agent role', async () => {
+      const res = await request(createApp('agent')).get(`/api/activities/${VALID_ID}`);
+
+      expect(res.status).toBe(403);
+      expect(res.body.error).toMatch(/manager or above/i);
+    });
+
     it('returns a single activity by valid id', async () => {
       const res = await request(createApp()).get(`/api/activities/${VALID_ID}`);
 
@@ -265,75 +305,236 @@ describe('Activities Routes — /api/activities', () => {
       const createCall = mockPrisma.activity.create.mock.calls[0][0];
       expect(createCall.data.leadId).toBe('lead-99');
     });
+
+    it('triggers lead auto-rescore when leadId is present', async () => {
+      mockPrisma.activity.create.mockResolvedValueOnce({
+        id: 'act-aabbccddee11223344556677',
+        type: 'lead',
+        action: 'created',
+        description: 'Lead was created',
+        metadata: null,
+        createdAt: new Date('2026-01-15T10:00:00Z'),
+        userId: 'user-1',
+        leadId: 'lead-99',
+        user: { id: 'user-1', name: 'Agent Smith', email: 'agent@whitecaves.ae' },
+        lead: null,
+      });
+
+      await request(createApp())
+        .post('/api/activities')
+        .send({ type: 'lead', action: 'created', description: 'test', leadId: 'lead-99' });
+
+      expect(triggerLeadRescore).toHaveBeenCalledWith('lead-99', 'activity_created');
+    });
   });
 
   // ── PATCH /:id ───────────────────────────────────────────────────
   describe('PATCH /api/activities/:id', () => {
-    it('updates an activity description', async () => {
+    it('returns 405 because audit log is immutable', async () => {
       const res = await request(createApp())
         .patch(`/api/activities/${VALID_ID}`)
         .send({ description: 'Updated description' });
 
-      expect(res.status).toBe(200);
-      expect(res.body.success).toBe(true);
+      expect(res.status).toBe(405);
+      expect(res.body.error).toMatch(/immutable/i);
     });
 
-    it('returns 404 when activity not found', async () => {
-      mockPrisma.activity.findUnique.mockResolvedValueOnce(null);
-
-      const res = await request(createApp())
+    it('does not call prisma.update or trigger rescore when patch is blocked', async () => {
+      await request(createApp())
         .patch(`/api/activities/${VALID_ID}`)
         .send({ description: 'Updated' });
 
-      expect(res.status).toBe(404);
-    });
-
-    it('returns 400 for invalid id format', async () => {
-      const res = await request(createApp())
-        .patch('/api/activities/bad-id')
-        .send({ description: 'Updated' });
-
-      expect(res.status).toBe(400);
-    });
-
-    it('passes metadata update to prisma', async () => {
-      const meta = { key: 'value' };
-      await request(createApp()).patch(`/api/activities/${VALID_ID}`).send({ metadata: meta });
-
-      const updateCall = mockPrisma.activity.update.mock.calls[0][0];
-      expect(updateCall.data.metadata).toEqual(meta);
+      expect(mockPrisma.activity.update).not.toHaveBeenCalled();
+      expect(triggerLeadRescore).not.toHaveBeenCalledWith(expect.anything(), 'activity_updated');
     });
   });
 
   // ── DELETE /:id ──────────────────────────────────────────────────
   describe('DELETE /api/activities/:id', () => {
-    it('deletes activity for admin role', async () => {
+    it('returns 405 because audit log is immutable', async () => {
       const res = await request(createApp('owner')).delete(`/api/activities/${VALID_ID}`);
 
-      expect(res.status).toBe(200);
-      expect(res.body.success).toBe(true);
-      expect(res.body.message).toMatch(/deleted/i);
+      expect(res.status).toBe(405);
+      expect(res.body.error).toMatch(/immutable/i);
     });
 
-    it('returns 403 for non-admin role', async () => {
-      const res = await request(createApp('agent')).delete(`/api/activities/${VALID_ID}`);
+    it('does not call prisma.delete or trigger rescore when delete is blocked', async () => {
+      await request(createApp('owner')).delete(`/api/activities/${VALID_ID}`);
 
-      expect(res.status).toBe(403);
-      expect(res.body.error).toMatch(/manager/i);
+      expect(mockPrisma.activity.delete).not.toHaveBeenCalled();
+      expect(triggerLeadRescore).not.toHaveBeenCalledWith(expect.anything(), 'activity_deleted');
     });
+  });
+});
 
-    it('returns 404 when activity not found', async () => {
-      mockPrisma.activity.findUnique.mockResolvedValueOnce(null);
+// ─────────────────────────────────────────────────────────────────────────────
+// ─────────────────────────────────────────────────────────────────────────────
+// W18.1-P1-002 — Audit Log Export Route Tests (CSV + XLSX)
+// requirePermission is mocked to no-op in this file; RBAC permission contracts
+// are covered by the W20-001 block below.  These tests cover HTTP behaviour.
+// ─────────────────────────────────────────────────────────────────────────────
 
-      const res = await request(createApp('owner')).delete(`/api/activities/${VALID_ID}`);
+vi.mock('exceljs', () => {
+  const mockSheet = {
+    columns: [] as unknown[],
+    views: [] as unknown[],
+    autoFilter: null as unknown,
+    addRow: vi.fn(),
+    getRow: vi.fn(() => ({ font: {} })),
+  };
+  const mockWorkbook = {
+    addWorksheet: vi.fn(() => mockSheet),
+    xlsx: {
+      writeBuffer: vi.fn().mockResolvedValue(Buffer.from('XLSX_BINARY_STUB')),
+    },
+  };
+  // The route calls `new ExcelJS.Workbook()`, so the default export must be
+  // an object with a `Workbook` constructor property.
+  return { default: { Workbook: vi.fn(() => mockWorkbook) }, __esModule: true };
+});
 
-      expect(res.status).toBe(404);
-    });
+describe('W18.1-P1-002 — GET /api/activities/export/csv', () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+    mockPrisma.activity.findMany.mockResolvedValue([
+      {
+        id: 'act-export-001',
+        createdAt: new Date('2026-05-28T10:00:00Z'),
+        type: 'lead',
+        action: 'created',
+        description: 'Lead created for CSV test',
+        user: { name: 'Agent Smith', email: 'smith@wc.ae' },
+        lead: { name: 'Buyer Ali' },
+      },
+    ]);
+  });
 
-    it('returns 400 for invalid id format', async () => {
-      const res = await request(createApp('owner')).delete('/api/activities/bad-id');
+  it('returns CSV with Content-Type text/csv for owner', async () => {
+    const res = await request(createApp('owner')).get('/api/activities/export/csv');
+    expect(res.status).toBe(200);
+    expect(res.headers['content-type']).toMatch(/text\/csv/);
+    expect(res.headers['content-disposition']).toMatch(/audit-log\.csv/);
+  });
 
-      expect(res.status).toBe(400);
-    });
+  it('returns CSV with Content-Disposition header for manager', async () => {
+    const res = await request(createApp('manager')).get('/api/activities/export/csv');
+    expect(res.status).toBe(200);
+    expect(res.headers['content-disposition']).toMatch(/attachment/);
+    expect(res.headers['content-disposition']).toMatch(/audit-log\.csv/);
+  });
+
+  // CSV header row is lowercase (id,createdAt,type,action,description,user,email,lead)
+  it('includes header row and data row in CSV body', async () => {
+    const res = await request(createApp('owner')).get('/api/activities/export/csv');
+    expect(res.status).toBe(200);
+    const lines = (res.text as string).split('\n').filter(Boolean);
+    expect(lines[0]).toContain('id');
+    expect(lines[0]).toContain('type');
+    expect(lines[0]).toContain('action');
+    expect(lines[1]).toContain('act-export-001');
+    expect(lines[1]).toContain('lead');
+  });
+
+  it('passes type query filter to prisma findMany', async () => {
+    await request(createApp('admin')).get('/api/activities/export/csv?type=property');
+    expect(mockPrisma.activity.findMany).toHaveBeenCalledWith(
+      expect.objectContaining({ where: expect.objectContaining({ type: 'property' }) })
+    );
+  });
+
+  it('returns 200 for admin role', async () => {
+    const res = await request(createApp('admin')).get('/api/activities/export/csv');
+    expect(res.status).toBe(200);
+  });
+});
+
+describe('W18.1-P1-002 — GET /api/activities/export/xlsx', () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+    mockPrisma.activity.findMany.mockResolvedValue([
+      {
+        id: 'act-xlsx-001',
+        createdAt: new Date('2026-05-28T11:00:00Z'),
+        type: 'lease',
+        action: 'signed',
+        description: 'Lease signed for unit 401',
+        user: { name: 'Victoria', email: 'v@wc.ae' },
+        lead: null,
+      },
+    ]);
+  });
+
+  it('returns XLSX with correct content-type for manager', async () => {
+    const res = await request(createApp('manager')).get('/api/activities/export/xlsx');
+    expect(res.status).toBe(200);
+    expect(res.headers['content-type']).toMatch(
+      /application\/vnd\.openxmlformats-officedocument\.spreadsheetml\.sheet/
+    );
+    expect(res.headers['content-disposition']).toMatch(/audit-log\.xlsx/);
+  });
+
+  it('returns XLSX for admin role', async () => {
+    const res = await request(createApp('admin')).get('/api/activities/export/xlsx');
+    expect(res.status).toBe(200);
+  });
+
+  it('returns XLSX for owner role', async () => {
+    const res = await request(createApp('owner')).get('/api/activities/export/xlsx');
+    expect(res.status).toBe(200);
+    expect(mockPrisma.activity.findMany).toHaveBeenCalledTimes(1);
+  });
+
+  it('passes action filter to prisma', async () => {
+    await request(createApp('admin')).get('/api/activities/export/xlsx?action=signed');
+    expect(mockPrisma.activity.findMany).toHaveBeenCalledWith(
+      expect.objectContaining({ where: expect.objectContaining({ action: 'signed' }) })
+    );
+  });
+});
+
+// ─────────────────────────────────────────────────────────────────────────────
+// W20-001 — Audit Export RBAC Security Tests
+// Verifies the ROLE_PERMISSIONS contract: only manager+ roles can access audit
+// exports. Uses vi.importActual to bypass the module mock above.
+// ─────────────────────────────────────────────────────────────────────────────
+
+describe('W20-001 — Audit Export RBAC — ROLE_PERMISSIONS contract', () => {
+  let ROLE_PERMISSIONS: Record<string, string[]>;
+
+  beforeAll(async () => {
+    const actual = await vi.importActual<typeof import('../middleware/rbac')>('../middleware/rbac');
+    ROLE_PERMISSIONS = actual.ROLE_PERMISSIONS;
+  });
+
+  it('buyer does not have view_audit_logs permission', () => {
+    expect(ROLE_PERMISSIONS['buyer'] ?? []).not.toContain('view_audit_logs');
+  });
+
+  it('tenant does not have view_audit_logs permission', () => {
+    expect(ROLE_PERMISSIONS['tenant'] ?? []).not.toContain('view_audit_logs');
+  });
+
+  it('seller does not have view_audit_logs permission', () => {
+    expect(ROLE_PERMISSIONS['seller'] ?? []).not.toContain('view_audit_logs');
+  });
+
+  it('landlord does not have view_audit_logs permission', () => {
+    expect(ROLE_PERMISSIONS['landlord'] ?? []).not.toContain('view_audit_logs');
+  });
+
+  it('agent does not have view_audit_logs permission', () => {
+    expect(ROLE_PERMISSIONS['agent'] ?? []).not.toContain('view_audit_logs');
+  });
+
+  it('manager has view_audit_logs permission', () => {
+    expect(ROLE_PERMISSIONS['manager']).toContain('view_audit_logs');
+  });
+
+  it('admin has view_audit_logs permission', () => {
+    expect(ROLE_PERMISSIONS['admin']).toContain('view_audit_logs');
+  });
+
+  it('owner has view_audit_logs permission', () => {
+    expect(ROLE_PERMISSIONS['owner']).toContain('view_audit_logs');
   });
 });

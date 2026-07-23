@@ -46,7 +46,7 @@ import {
   getBRNExpiryReport,
   runRERAExpirySchedulerTick,
   startRERAExpiryScheduler,
-} from '../reraExpiryScheduler';
+} from '../reraExpiryScheduler.js';
 
 const mockPrisma = prisma as unknown as {
   user: { findMany: ReturnType<typeof vi.fn> };

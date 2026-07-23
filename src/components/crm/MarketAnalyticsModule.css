@@ -1,0 +1,61 @@
+.market-analytics__empty-kpi {
+  margin-bottom: 16px;
+}
+
+.market-analytics__kpi-value {
+  font-size: 24px;
+  font-weight: bold;
+  color: #0066cc;
+}
+
+.market-analytics__kpi-delta {
+  font-size: 12px;
+}
+
+.market-analytics__kpi-delta--success {
+  color: #22c55e;
+}
+
+.market-analytics__kpi-delta--warning {
+  color: #f59e0b;
+}
+
+.market-analytics__section-spacer-lg {
+  margin-top: 30px;
+}
+
+.market-analytics__section-spacer-md {
+  margin-top: 20px;
+}
+
+.market-analytics__agent-row--highlight {
+  background-color: #e6f2ff;
+}
+
+.market-analytics__overview-list {
+  line-height: 2;
+}
+
+.market-analytics__viewer-context {
+  margin-top: 8px;
+  font-size: 12px;
+  color: #6b7280;
+}
+
+.market-analytics__error-banner {
+  margin-top: 12px;
+  margin-bottom: 8px;
+  background-color: #fef2f2;
+  border: 1px solid #fecaca;
+  color: #991b1b;
+  border-radius: 8px;
+  padding: 10px 12px;
+}
+
+.market-analytics__date-range {
+  display: flex;
+  gap: 8px;
+  margin-top: 12px;
+  margin-bottom: 12px;
+  flex-wrap: wrap;
+}

@@ -1,5 +1,5 @@
 import fs from 'fs';
-import * as XLSX from '../../modules/linda/node_modules/xlsx/xlsx.mjs';
+import * as XLSX from 'xlsx';
 
 export const COLUMN_MAPPING = {
   'P-NUMBER': 'pNumber',
@@ -119,6 +119,45 @@ function buildColumnMapping(rows, headers = []) {
     if (mappedField && !mapping[mappedField]) {
       mapping[mappedField] = mappedField;
     }
+
+    function normalizeCellValue(cell) {
+      if (cell === null || cell === undefined) return '';
+      if (cell instanceof Date) return cell.toISOString();
+      return String(cell).trim();
+    }
+
+    async function loadWorkbookFromFile(filePath) {
+      const workbook = new ExcelJS.Workbook();
+      await workbook.xlsx.readFile(filePath);
+      return workbook;
+    }
+
+    function worksheetToObjects(worksheet) {
+      const headerRow = worksheet.getRow(1);
+      const headers = [];
+      for (let col = 1; col <= headerRow.cellCount; col += 1) {
+        headers.push(normalizeCellValue(headerRow.getCell(col).value));
+      }
+
+      const rows = [];
+      for (let rowNumber = 2; rowNumber <= worksheet.rowCount; rowNumber += 1) {
+        const row = worksheet.getRow(rowNumber);
+        const rowObject = {};
+        let hasValues = false;
+
+        for (let col = 1; col <= headers.length; col += 1) {
+          const header = headers[col - 1];
+          if (!header) continue;
+          const value = normalizeCellValue(row.getCell(col).value);
+          rowObject[header] = value;
+          if (value !== '') hasValues = true;
+        }
+
+        if (hasValues) rows.push(rowObject);
+      }
+
+      return { headers, rows };
+    }
   }
 
   for (const row of rows) {
@@ -130,6 +169,52 @@ function buildColumnMapping(rows, headers = []) {
   }
 
   return mapping;
+}
+
+async function loadWorkbookFromFile(filePath) {
+  const exceljsModule = await import('exceljs').catch(() => null);
+  if (!exceljsModule) {
+    throw new Error('ExcelJS is not available in this environment');
+  }
+
+  const workbook = new exceljsModule.default.Workbook();
+
+  // Use csv.readFile for .csv files, xlsx.readFile for Excel files
+  if (filePath.toLowerCase().endsWith('.csv')) {
+    await workbook.csv.readFile(filePath);
+  } else {
+    await workbook.xlsx.readFile(filePath);
+  }
+
+  return workbook;
+}
+
+function worksheetToObjects(worksheet) {
+  const headerRow = worksheet.getRow(1);
+  const headers = [];
+
+  for (let col = 1; col <= headerRow.cellCount; col += 1) {
+    headers.push(normalizeCellValue(headerRow.getCell(col).value));
+  }
+
+  const rows = [];
+  for (let rowNumber = 2; rowNumber <= worksheet.rowCount; rowNumber += 1) {
+    const row = worksheet.getRow(rowNumber);
+    const rowObject = {};
+    let hasValues = false;
+
+    for (let col = 1; col <= headers.length; col += 1) {
+      const header = headers[col - 1];
+      if (!header) continue;
+      const value = normalizeCellValue(row.getCell(col).value);
+      rowObject[header] = value;
+      if (value !== '') hasValues = true;
+    }
+
+    if (hasValues) rows.push(rowObject);
+  }
+
+  return { headers, rows };
 }
 
 export async function parseExcelFile(filePath, options = {}) {
@@ -146,9 +231,8 @@ export async function parseExcelFile(filePath, options = {}) {
     throw new Error(`Import file not found: ${filePath}`);
   }
 
-  const fileBuffer = fs.readFileSync(filePath);
-  const workbook = XLSX.read(fileBuffer, { type: 'buffer', cellDates: true });
-  const sheets = workbook.SheetNames || [];
+  const workbook = await loadWorkbookFromFile(filePath);
+  const sheets = workbook.worksheets.map(sheet => sheet.name);
 
   if (sheets.length === 0) {
     throw new Error('Import file does not contain any worksheets');
@@ -159,18 +243,13 @@ export async function parseExcelFile(filePath, options = {}) {
   }
 
   const selectedSheet = sheetName || sheets[0];
-  const worksheet = workbook.Sheets[selectedSheet];
+  const worksheet = workbook.getWorksheet(selectedSheet);
 
   if (!worksheet) {
     throw new Error(`Worksheet not found: ${selectedSheet}`);
   }
 
-  const rawHeaders = XLSX.utils.sheet_to_json(worksheet, { header: 1, defval: '' })[0] || [];
-  const rawRows = XLSX.utils.sheet_to_json(worksheet, {
-    defval: '',
-    raw: false,
-    blankrows: false,
-  });
+  const { headers: rawHeaders, rows: rawRows } = worksheetToObjects(worksheet);
 
   const data = rawRows.map(normalizeRow);
   const preview = data.slice(0, safePreviewLimit);
@@ -192,17 +271,19 @@ export async function getAllSheetData(filePath) {
     throw new Error(`Import file not found: ${filePath}`);
   }
 
-  const fileBuffer = fs.readFileSync(filePath);
-  const workbook = XLSX.read(fileBuffer, { type: 'buffer', cellDates: true });
+  const workbook = await loadWorkbookFromFile(filePath);
 
-  if (!Array.isArray(workbook.SheetNames) || workbook.SheetNames.length === 0) {
+  if (!Array.isArray(workbook.worksheets) || workbook.worksheets.length === 0) {
     throw new Error('Import file does not contain any worksheets');
   }
 
-  return workbook.SheetNames.map(name => ({
-    sheetName: name,
-    rows: XLSX.utils.sheet_to_json(workbook.Sheets[name], { defval: '', raw: false }),
-  }));
+  return workbook.worksheets.map(worksheet => {
+    const { rows } = worksheetToObjects(worksheet);
+    return {
+      sheetName: worksheet.name,
+      rows,
+    };
+  });
 }
 
 export async function validateData(rows = []) {

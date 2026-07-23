@@ -11,7 +11,7 @@ vi.mock('../database', () => ({
   prisma: {},
 }));
 
-import { PropertiesService } from './PropertiesService';
+import { PropertiesService } from './PropertiesService.js';
 
 describe('PropertiesService', () => {
   let service: PropertiesService;

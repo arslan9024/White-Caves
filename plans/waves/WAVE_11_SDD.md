@@ -5,7 +5,7 @@
 **Status:** 🔮 Backlog (activates when Wave 10 is green)  
 **Date:** 2026-05-22  
 **Owners:** @Ada + @Mira + @Barbara + @Katherine  
-**Entry Gate:** Wave 10 green + readiness ≥ 60% + `@Ada — Context Ready (60% Readiness) — Coding Phase Approved`
+**Entry Gate:** Wave 10 green + readiness ≥ 60% + `@Ada — Context Ready (90% Readiness) — High-Fidelity Coding Phase Approved`
 
 ---
 
@@ -98,8 +98,9 @@ class AppError extends Error {
 ## Validation Commands
 
 ```bash
-npm run build
+npm run typecheck
 npm run lint
-npm run quality:quick
+npm run build
+npm run plans:validate
 npm run test:run -- server/services
 ```

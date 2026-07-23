@@ -59,4 +59,4 @@
 - **Readiness score (>=60% required):** 68%
 - **Decision:** CONDITIONAL GO — implementation may proceed after Wave 02 closeout; live send verification is blocked until Meta credentials are available
 - **Approver phrase:**
-  - `@Ada — Context Ready (60% Readiness) — Coding Phase Approved`
+  - `@Ada — Context Ready (90% Readiness) — High-Fidelity Coding Phase Approved`

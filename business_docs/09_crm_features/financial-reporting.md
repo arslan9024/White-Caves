@@ -1,5 +1,7 @@
 # Financial Reporting — CRM Feature Specification
 
+<!-- markdownlint-disable MD024 MD031 MD032 MD040 MD058 MD060 -->
+
 > **Status:** In Progress (Core reports active, advanced exports expanding)  
 > **Module Owner:** Theodora (Finance Director AI) + Zoe (Executive AI)  
 > **API Endpoints:** `/api/finance`, `/api/dashboard`, `/api/commissions`  
@@ -192,6 +194,44 @@ All reports:
 - [ ] Schedule option: daily/weekly report digest emailed automatically
 
 ---
+
+## Commission Split Calculator
+
+### Split Calculator Purpose
+
+Automatically calculate how each commission should be split across the agent, team lead, referral partner, and company according to deal rules.
+
+### Split Inputs
+
+- Transaction type: sale, lease, renewal, management fee, consulting
+- Gross commission amount
+- Agent profile and split plan
+- Referral partner involvement
+- Manager override percentage when approved
+- Payment status and clawback flags
+
+### Default Waterfall
+
+| Layer    | Rule                                                |
+| -------- | --------------------------------------------------- |
+| Agent    | Base share from the approved commission plan        |
+| Manager  | Optional override share for team oversight          |
+| Referral | Only applied when a verified referral source exists |
+| Company  | Remaining balance after all approved splits         |
+
+### Validation Rules
+
+- Splits must total 100% before payout
+- Referral share cannot be applied twice
+- Manual overrides require manager approval and audit logging
+- Negative or overflow shares must be rejected at save time
+
+### Split Calculator Acceptance Criteria
+
+- Calculator produces identical totals in the UI and backend service
+- Payout preview shows each recipient before approval
+- Invalid split plans are blocked with a clear error message
+- Split outcomes are included in commission export reports
 
 ## UAE VAT Reporting (FTA Compliance)
 

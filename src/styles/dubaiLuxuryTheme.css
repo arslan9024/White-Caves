@@ -1,30 +1,30 @@
 /* ═══════════════════════════════════════════════════════════════════
    White Caves Brand Theme Tokens
-   BRAND RULE: Red (#E31E24) + White ONLY. NO gold. NO yellow. NO tan.
+   BRAND RULE: Metallic Gold (#C9A84C) + Obsidian Dark (#0f0f0f) + Emerald Green (#10B981) ONLY.
    ═══════════════════════════════════════════════════════════════════ */
 :root {
-  /* Brand primary — RED */
-  --brand-primary: #e31e24;
-  --brand-primary-dark: #b71c1c;
-  --brand-primary-soft: rgba(227, 30, 36, 0.2);
+  /* Brand primary — METALLIC GOLD */
+  --brand-primary: #c9a84c;
+  --brand-primary-dark: #a8883a;
+  --brand-primary-soft: rgba(201, 168, 76, 0.2);
 
-  /* Legacy variable names kept for backward-compat — all point to brand RED */
-  --dubai-luxury-gold: #e31e24;
-  --dubai-luxury-gold-dark: #b71c1c;
-  --dubai-luxury-gold-soft: rgba(227, 30, 36, 0.2);
+  /* Gold variables resolving to brand gold */
+  --dubai-luxury-gold: #c9a84c;
+  --dubai-luxury-gold-dark: #a8883a;
+  --dubai-luxury-gold-soft: rgba(201, 168, 76, 0.2);
 
-  --dubai-luxury-charcoal: #1f1f1f;
-  --dubai-luxury-glass: rgba(255, 255, 255, 0.12);
-  --dubai-luxury-glass-border: rgba(255, 255, 255, 0.2);
+  --dubai-luxury-charcoal: #0f0f0f;
+  --dubai-luxury-glass: rgba(15, 15, 15, 0.85);
+  --dubai-luxury-glass-border: rgba(201, 168, 76, 0.15);
 
-  /* --accent-gold always resolves to brand RED, never actual gold */
-  --accent-gold: #e31e24;
+  /* --accent-gold resolves to brand gold */
+  --accent-gold: #c9a84c;
 }
 
 .dubai-luxury-theme {
   --primary-color: var(--brand-primary);
   --luxury-cta-bg: linear-gradient(135deg, var(--brand-primary) 0%, var(--brand-primary-dark) 100%);
-  --luxury-cta-bg-hover: linear-gradient(135deg, #ef5350 0%, var(--brand-primary) 100%);
+  --luxury-cta-bg-hover: linear-gradient(135deg, #e4b75e 0%, var(--brand-primary) 100%);
   --luxury-text-dark: var(--dubai-luxury-charcoal);
   --luxury-glass-bg: var(--dubai-luxury-glass);
   --luxury-glass-border: var(--dubai-luxury-glass-border);

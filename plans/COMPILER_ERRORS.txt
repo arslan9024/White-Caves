@@ -1,0 +1,135 @@
+[36mvite v7.3.5 [32mbuilding client environment for production...[36m[39m
+transforming...
+[32m✓[39m 2600 modules transformed.
+rendering chunks...
+computing gzip size...
+[2mdist/[22m[32mmanifest.webmanifest                          [39m[1m[2m  0.60 kB[22m[1m[22m
+[2mdist/[22m[32mindex.html                                    [39m[1m[2m 15.08 kB[22m[1m[22m[2m │ gzip:   4.28 kB[22m
+[2mdist/[22m[35massets/PropertyComparison-tn0RQdqM.css        [39m[1m[2m  0.00 kB[22m[1m[22m[2m │ gzip:   0.02 kB[22m
+[2mdist/[22m[35massets/ServerStatusPage-C6aWEe9j.css          [39m[1m[2m  0.78 kB[22m[1m[22m[2m │ gzip:   0.38 kB[22m
+[2mdist/[22m[35massets/InteractiveMap-CTvO5H1d.css            [39m[1m[2m  1.17 kB[22m[1m[22m[2m │ gzip:   0.57 kB[22m
+[2mdist/[22m[35massets/RentalManagementPage-CIfwFIsI.css      [39m[1m[2m  1.62 kB[22m[1m[22m[2m │ gzip:   0.56 kB[22m
+[2mdist/[22m[35massets/NotFoundPage-Cjsk5KZw.css              [39m[1m[2m  1.66 kB[22m[1m[22m[2m │ gzip:   0.68 kB[22m
+[2mdist/[22m[35massets/DesignSystemTest-Dfsy-Qi6.css          [39m[1m[2m  1.68 kB[22m[1m[22m[2m │ gzip:   0.62 kB[22m
+[2mdist/[22m[35massets/LegalPages-UGpi_3YM.css                [39m[1m[2m  1.81 kB[22m[1m[22m[2m │ gzip:   0.61 kB[22m
+[2mdist/[22m[35massets/HomePage-BJX9Bcoq.css                  [39m[1m[2m  2.71 kB[22m[1m[22m[2m │ gzip:   0.98 kB[22m
+[2mdist/[22m[35massets/LandlordPortalPage-CH1hpAJG.css        [39m[1m[2m  3.55 kB[22m[1m[22m[2m │ gzip:   1.17 kB[22m
+[2mdist/[22m[35massets/DubaiMap-C_wd_sYp.css                  [39m[1m[2m  4.16 kB[22m[1m[22m[2m │ gzip:   1.23 kB[22m
+[2mdist/[22m[35massets/WhatsAppChatbotPage-dTCywpbd.css       [39m[1m[2m  5.09 kB[22m[1m[22m[2m │ gzip:   1.48 kB[22m
+[2mdist/[22m[35massets/WhatsAppAnalyticsPage-BLbydada.css     [39m[1m[2m  5.29 kB[22m[1m[22m[2m │ gzip:   1.38 kB[22m
+[2mdist/[22m[35massets/theme-tokens-DK-Ce63w.css              [39m[1m[2m  5.31 kB[22m[1m[22m[2m │ gzip:   1.46 kB[22m
+[2mdist/[22m[35massets/SignContractPage-HmQkypdy.css          [39m[1m[2m  5.45 kB[22m[1m[22m[2m │ gzip:   1.56 kB[22m
+[2mdist/[22m[35massets/LoginSecurityPage-B-_mXsE1.css         [39m[1m[2m  5.98 kB[22m[1m[22m[2m │ gzip:   1.62 kB[22m
+[2mdist/[22m[35massets/ContactPage-DhqtSVvZ.css               [39m[1m[2m  6.03 kB[22m[1m[22m[2m │ gzip:   1.77 kB[22m
+[2mdist/[22m[35massets/AboutPage-DU474Vp0.css                 [39m[1m[2m  6.59 kB[22m[1m[22m[2m │ gzip:   1.71 kB[22m
+[2mdist/[22m[35massets/auth-features-KGlfH5k8.css             [39m[1m[2m  8.68 kB[22m[1m[22m[2m │ gzip:   1.75 kB[22m
+[2mdist/[22m[35massets/WhatsAppDashboardPage-DUS3P8Lv.css     [39m[1m[2m  8.90 kB[22m[1m[22m[2m │ gzip:   2.04 kB[22m
+[2mdist/[22m[35massets/CareersPage--XsPiUlK.css               [39m[1m[2m  9.85 kB[22m[1m[22m[2m │ gzip:   2.40 kB[22m
+[2mdist/[22m[35massets/PropertyDetailPage-Ca3NOmKD.css        [39m[1m[2m 10.15 kB[22m[1m[22m[2m │ gzip:   2.45 kB[22m
+[2mdist/[22m[35massets/WhatsAppSettingsPage-CCcBGLoB.css      [39m[1m[2m 11.07 kB[22m[1m[22m[2m │ gzip:   2.40 kB[22m
+[2mdist/[22m[35massets/app-core-CaSpKQsL.css                  [39m[1m[2m 11.19 kB[22m[1m[22m[2m │ gzip:   2.71 kB[22m
+[2mdist/[22m[35massets/SystemHealthPage-kRXRKLFR.css          [39m[1m[2m 11.25 kB[22m[1m[22m[2m │ gzip:   2.56 kB[22m
+[2mdist/[22m[35massets/shared-ui-elXCiO2k.css                 [39m[1m[2m 11.86 kB[22m[1m[22m[2m │ gzip:   2.60 kB[22m
+[2mdist/[22m[35massets/index-CoejocgC.css                     [39m[1m[2m 14.81 kB[22m[1m[22m[2m │ gzip:   3.50 kB[22m
+[2mdist/[22m[35massets/ServicesPage-CTFXCDJV.css              [39m[1m[2m 14.93 kB[22m[1m[22m[2m │ gzip:   3.24 kB[22m
+[2mdist/[22m[35massets/leaflet-CIGW-MKW.css                   [39m[1m[2m 15.61 kB[22m[1m[22m[2m │ gzip:   6.46 kB[22m
+[2mdist/[22m[35massets/PropertiesPage-Cg5BC1IN.css            [39m[1m[2m 17.41 kB[22m[1m[22m[2m │ gzip:   3.49 kB[22m
+[2mdist/[22m[35massets/RolePages-BdPl8bCU.css                 [39m[1m[2m 32.11 kB[22m[1m[22m[2m │ gzip:   5.81 kB[22m
+[2mdist/[22m[35massets/homepage-BctnoYgw.css                  [39m[1m[2m 46.22 kB[22m[1m[22m[2m │ gzip:   9.38 kB[22m
+[2mdist/[22m[36massets/useDocumentTitle-h4j5yN2i.js           [39m[1m[2m  0.23 kB[22m[1m[22m[2m │ gzip:   0.19 kB[22m
+[2mdist/[22m[36massets/PageMeta-C_FVGmT5.js                   [39m[1m[2m  0.26 kB[22m[1m[22m[2m │ gzip:   0.19 kB[22m
+[2mdist/[22m[36massets/StructuredData-BIiwyt0X.js             [39m[1m[2m  0.38 kB[22m[1m[22m[2m │ gzip:   0.28 kB[22m
+[2mdist/[22m[36massets/useSEO-CryMPTGT.js                     [39m[1m[2m  0.43 kB[22m[1m[22m[2m │ gzip:   0.33 kB[22m
+[2mdist/[22m[36massets/assistantsService-J8nYRY7H.js          [39m[1m[2m  0.59 kB[22m[1m[22m[2m │ gzip:   0.33 kB[22m
+[2mdist/[22m[36massets/WebVitalsTracker-7yE3m_Ig.js           [39m[1m[2m  0.71 kB[22m[1m[22m[2m │ gzip:   0.43 kB[22m
+[2mdist/[22m[36massets/NotFoundPage-OL78mGXi.js               [39m[1m[2m  2.24 kB[22m[1m[22m[2m │ gzip:   0.76 kB[22m
+[2mdist/[22m[36massets/useUserProfile-CDl9Oqsd.js             [39m[1m[2m  2.26 kB[22m[1m[22m[2m │ gzip:   1.15 kB[22m
+[2mdist/[22m[36massets/analytics-C6Jwoym6.js                  [39m[1m[2m  2.39 kB[22m[1m[22m[2m │ gzip:   1.12 kB[22m
+[2mdist/[22m[36massets/MarketChoroplethMap-CurJNyrj.js        [39m[1m[2m  2.40 kB[22m[1m[22m[2m │ gzip:   1.22 kB[22m
+[2mdist/[22m[36massets/OffPlanPortalPage-BLZfX0ho.js          [39m[1m[2m  3.07 kB[22m[1m[22m[2m │ gzip:   1.11 kB[22m
+[2mdist/[22m[36massets/WhatsAppButton-CHsZT11w.js             [39m[1m[2m  3.11 kB[22m[1m[22m[2m │ gzip:   1.47 kB[22m
+[2mdist/[22m[36massets/ServerStatusPage-CPpGg2OQ.js           [39m[1m[2m  3.15 kB[22m[1m[22m[2m │ gzip:   0.95 kB[22m
+[2mdist/[22m[36massets/dashboards-BDLbE-gY.js                 [39m[1m[2m  3.33 kB[22m[1m[22m[2m │ gzip:   0.72 kB[22m
+[2mdist/[22m[36massets/usePropertyBrowser-CKk_6Mac.js         [39m[1m[2m  3.84 kB[22m[1m[22m[2m │ gzip:   1.60 kB[22m
+[2mdist/[22m[36massets/InteractiveMap-B1lit2_p.js             [39m[1m[2m  4.16 kB[22m[1m[22m[2m │ gzip:   1.35 kB[22m
+[2mdist/[22m[36massets/PWAInstallPrompt-CsazZ_r9.js           [39m[1m[2m  4.52 kB[22m[1m[22m[2m │ gzip:   1.65 kB[22m
+[2mdist/[22m[36massets/ToolsPage-Bc2KY_08.js                  [39m[1m[2m  4.79 kB[22m[1m[22m[2m │ gzip:   1.39 kB[22m
+[2mdist/[22m[36massets/ViewingsPage-CMYAABy9.js               [39m[1m[2m  4.86 kB[22m[1m[22m[2m │ gzip:   1.63 kB[22m
+[2mdist/[22m[36massets/web-vitals-Cmsc-gW-.js                 [39m[1m[2m  6.11 kB[22m[1m[22m[2m │ gzip:   2.50 kB[22m
+[2mdist/[22m[36massets/PendingApprovalPage-DcHRnpUl.js        [39m[1m[2m  6.48 kB[22m[1m[22m[2m │ gzip:   1.39 kB[22m
+[2mdist/[22m[36massets/NewsletterSubscription-DIfvgqMl.js     [39m[1m[2m  6.73 kB[22m[1m[22m[2m │ gzip:   1.98 kB[22m
+[2mdist/[22m[36massets/PropertyComparison-BPpB8t2L.js         [39m[1m[2m  6.73 kB[22m[1m[22m[2m │ gzip:   1.51 kB[22m
+[2mdist/[22m[36massets/DesignSystemTest-DkNSo5fn.js           [39m[1m[2m  7.31 kB[22m[1m[22m[2m │ gzip:   1.05 kB[22m
+[2mdist/[22m[36massets/FavoriteListings-CJkmsqFk.js           [39m[1m[2m  7.49 kB[22m[1m[22m[2m │ gzip:   1.97 kB[22m
+[2mdist/[22m[36massets/SalesPipelinePage-FvGPMxUh.js          [39m[1m[2m  7.84 kB[22m[1m[22m[2m │ gzip:   2.00 kB[22m
+[2mdist/[22m[36massets/DLDFeesPage-DCPklwKC.js                [39m[1m[2m  8.73 kB[22m[1m[22m[2m │ gzip:   1.45 kB[22m
+[2mdist/[22m[36massets/UAEPassSuccessPage-BhSgegmu.js         [39m[1m[2m  8.90 kB[22m[1m[22m[2m │ gzip:   1.89 kB[22m
+[2mdist/[22m[36massets/RoleGateway-By1wMEEk.js                [39m[1m[2m  8.92 kB[22m[1m[22m[2m │ gzip:   2.73 kB[22m
+[2mdist/[22m[36massets/WhatsAppAnalyticsPage-BcOi6ceA.js      [39m[1m[2m  9.10 kB[22m[1m[22m[2m │ gzip:   1.52 kB[22m
+[2mdist/[22m[36massets/UnifiedDashboardPage-xipoDXMN.js       [39m[1m[2m  9.86 kB[22m[1m[22m[2m │ gzip:   2.69 kB[22m
+[2mdist/[22m[36massets/SystemHealthPage-CB70n3vX.js           [39m[1m[2m  9.88 kB[22m[1m[22m[2m │ gzip:   1.80 kB[22m
+[2mdist/[22m[36massets/WhatsAppChatbotPage-Du_P0ABd.js        [39m[1m[2m  9.93 kB[22m[1m[22m[2m │ gzip:   1.99 kB[22m
+[2mdist/[22m[36massets/TermsPage-BPwPaGKf.js                  [39m[1m[2m 10.36 kB[22m[1m[22m[2m │ gzip:   2.29 kB[22m
+[2mdist/[22m[36massets/PricingToolsPage-Bg9Z-jv7.js           [39m[1m[2m 10.39 kB[22m[1m[22m[2m │ gzip:   1.64 kB[22m
+[2mdist/[22m[36massets/ContractManagementPage-DbR1YFji.js     [39m[1m[2m 10.52 kB[22m[1m[22m[2m │ gzip:   2.10 kB[22m
+[2mdist/[22m[36massets/TitleDeedRegistrationPage-DOlCbF44.js  [39m[1m[2m 10.74 kB[22m[1m[22m[2m │ gzip:   2.37 kB[22m
+[2mdist/[22m[36massets/VirtualTour-Bvw1QTGZ.js                [39m[1m[2m 10.90 kB[22m[1m[22m[2m │ gzip:   2.69 kB[22m
+[2mdist/[22m[36massets/PrivacyPolicyPage-Ccug1z8m.js          [39m[1m[2m 11.12 kB[22m[1m[22m[2m │ gzip:   2.13 kB[22m
+[2mdist/[22m[36massets/WhatsAppDashboardPage-CLNUkymO.js      [39m[1m[2m 11.22 kB[22m[1m[22m[2m │ gzip:   1.80 kB[22m
+[2mdist/[22m[36massets/MortgageCalculatorPage-CTiK8PEx.js     [39m[1m[2m 11.99 kB[22m[1m[22m[2m │ gzip:   2.30 kB[22m
+[2mdist/[22m[36massets/TenantScreeningPage-DBlaBfEt.js        [39m[1m[2m 12.11 kB[22m[1m[22m[2m │ gzip:   2.52 kB[22m
+[2mdist/[22m[36massets/OnboardingGateway-B8FRLxEB.js          [39m[1m[2m 12.21 kB[22m[1m[22m[2m │ gzip:   3.13 kB[22m
+[2mdist/[22m[36massets/ProfilePage-0fhEhuPV.js                [39m[1m[2m 12.65 kB[22m[1m[22m[2m │ gzip:   2.75 kB[22m
+[2mdist/[22m[36massets/PortalSidebarContainer-Bd_mx0pb.js     [39m[1m[2m 14.77 kB[22m[1m[22m[2m │ gzip:   2.90 kB[22m
+[2mdist/[22m[36massets/SignInPage-BVmIiNlt.js                 [39m[1m[2m 15.47 kB[22m[1m[22m[2m │ gzip:   3.68 kB[22m
+[2mdist/[22m[36massets/InteractiveMap-hFPUdFNJ.js             [39m[1m[2m 15.78 kB[22m[1m[22m[2m │ gzip:   3.56 kB[22m
+[2mdist/[22m[36massets/NeighborhoodAnalyzer-Bh_F0Z4N.js       [39m[1m[2m 16.32 kB[22m[1m[22m[2m │ gzip:   3.52 kB[22m
+[2mdist/[22m[36massets/DubaiMap-BfY7HDFd.js                   [39m[1m[2m 16.42 kB[22m[1m[22m[2m │ gzip:   3.73 kB[22m
+[2mdist/[22m[36massets/CareersPage-DT-MbIM_.js                [39m[1m[2m 16.47 kB[22m[1m[22m[2m │ gzip:   3.80 kB[22m
+[2mdist/[22m[36massets/BlogSection-p9pbfE_x.js                [39m[1m[2m 16.85 kB[22m[1m[22m[2m │ gzip:   4.15 kB[22m
+[2mdist/[22m[36massets/RentalManagementPage-CxRxyUbR.js       [39m[1m[2m 17.59 kB[22m[1m[22m[2m │ gzip:   3.07 kB[22m
+[2mdist/[22m[36massets/AboutPage-k9Wc-zmR.js                  [39m[1m[2m 17.91 kB[22m[1m[22m[2m │ gzip:   3.47 kB[22m
+[2mdist/[22m[36massets/SavedSearches-CCywQouG.js              [39m[1m[2m 18.61 kB[22m[1m[22m[2m │ gzip:   3.45 kB[22m
+[2mdist/[22m[36massets/RentVsBuyCalculator-CjcJty8I.js        [39m[1m[2m 19.19 kB[22m[1m[22m[2m │ gzip:   2.69 kB[22m
+[2mdist/[22m[36massets/DubaiMap-B26xrLOu.js                   [39m[1m[2m 19.31 kB[22m[1m[22m[2m │ gzip:   8.78 kB[22m
+[2mdist/[22m[36massets/icons-vendor-CuYdgFBF.js               [39m[1m[2m 19.77 kB[22m[1m[22m[2m │ gzip:   7.20 kB[22m
+[2mdist/[22m[36massets/ValuationPage-D1xhkI8F.js              [39m[1m[2m 20.38 kB[22m[1m[22m[2m │ gzip:   3.28 kB[22m
+[2mdist/[22m[36massets/OffPlanTracker-CZVXd1lm.js             [39m[1m[2m 20.51 kB[22m[1m[22m[2m │ gzip:   4.20 kB[22m
+[2mdist/[22m[36massets/AIIntelligencePage-D1gj1_9I.js         [39m[1m[2m 21.15 kB[22m[1m[22m[2m │ gzip:   4.35 kB[22m
+[2mdist/[22m[36massets/CompanyProfile-BsEdx0_q.js             [39m[1m[2m 23.01 kB[22m[1m[22m[2m │ gzip:   3.85 kB[22m
+[2mdist/[22m[36massets/LeasingAcquisition-DcrqinOT.js         [39m[1m[2m 24.55 kB[22m[1m[22m[2m │ gzip:   4.55 kB[22m
+[2mdist/[22m[36massets/LoginSecurityPage-BiZrGQ8U.js          [39m[1m[2m 25.57 kB[22m[1m[22m[2m │ gzip:   4.17 kB[22m
+[2mdist/[22m[36massets/VirtualTourGallery-DFNVlUyQ.js         [39m[1m[2m 27.66 kB[22m[1m[22m[2m │ gzip:   4.85 kB[22m
+[2mdist/[22m[36massets/PropertyDetailPage-DtvZeTiA.js         [39m[1m[2m 28.89 kB[22m[1m[22m[2m │ gzip:   4.82 kB[22m
+[2mdist/[22m[36massets/theme-tokens-C5opHcbN.js               [39m[1m[2m 29.38 kB[22m[1m[22m[2m │ gzip:  10.09 kB[22m
+[2mdist/[22m[36massets/auth-features-BdYtt9TX.js              [39m[1m[2m 29.42 kB[22m[1m[22m[2m │ gzip:   6.18 kB[22m
+[2mdist/[22m[36massets/ContactPage-CiJLeq9F.js                [39m[1m[2m 29.76 kB[22m[1m[22m[2m │ gzip:   4.87 kB[22m
+[2mdist/[22m[36massets/ArgentinaGoalPage-CIzeGwLg.js          [39m[1m[2m 30.00 kB[22m[1m[22m[2m │ gzip:   8.81 kB[22m
+[2mdist/[22m[36massets/WhatsAppSettingsPage-Bk6JVRCt.js       [39m[1m[2m 30.10 kB[22m[1m[22m[2m │ gzip:   4.74 kB[22m
+[2mdist/[22m[36massets/owner-tabs-X-VYDls3.js                 [39m[1m[2m 31.01 kB[22m[1m[22m[2m │ gzip:   6.53 kB[22m
+[2mdist/[22m[36massets/HomePage-Bb3D49lC.js                   [39m[1m[2m 32.42 kB[22m[1m[22m[2m │ gzip:   8.51 kB[22m
+[2mdist/[22m[36massets/MarketIntelligencePage-DbcWOnKd.js     [39m[1m[2m 32.43 kB[22m[1m[22m[2m │ gzip:   5.65 kB[22m
+[2mdist/[22m[36massets/PropertiesPage-NZSVUgPl.js             [39m[1m[2m 32.47 kB[22m[1m[22m[2m │ gzip:   5.64 kB[22m
+[2mdist/[22m[36massets/SignContractPage-8Pkjih4H.js           [39m[1m[2m 34.94 kB[22m[1m[22m[2m │ gzip:  11.13 kB[22m
+[2mdist/[22m[36massets/NadiaPage-Bs5URyqn.js                  [39m[1m[2m 40.85 kB[22m[1m[22m[2m │ gzip:   7.40 kB[22m
+[2mdist/[22m[36massets/styled-Bbj39Ei7.js                     [39m[1m[2m 42.14 kB[22m[1m[22m[2m │ gzip:  17.41 kB[22m
+[2mdist/[22m[36massets/ServicesPage-Bv6gJc0b.js               [39m[1m[2m 43.99 kB[22m[1m[22m[2m │ gzip:   6.93 kB[22m
+[2mdist/[22m[36massets/TenantPortalPage-DDPCSxRi.js           [39m[1m[2m 59.56 kB[22m[1m[22m[2m │ gzip:   8.25 kB[22m
+[2mdist/[22m[36massets/shared-ui-BApp-58U.js                  [39m[1m[2m 64.69 kB[22m[1m[22m[2m │ gzip:  14.03 kB[22m
+[2mdist/[22m[36massets/LandlordPortalPage-CWWaPXQz.js         [39m[1m[2m103.63 kB[22m[1m[22m[2m │ gzip:  12.67 kB[22m
+[2mdist/[22m[36massets/homepage-B6F7pUMP.js                   [39m[1m[2m116.87 kB[22m[1m[22m[2m │ gzip:  20.16 kB[22m
+[2mdist/[22m[36massets/app-core-4JnvMZ8Z.js                   [39m[1m[2m117.40 kB[22m[1m[22m[2m │ gzip:  22.61 kB[22m
+[2mdist/[22m[36massets/firebase-XPwnD-um.js                   [39m[1m[2m123.17 kB[22m[1m[22m[2m │ gzip:  36.68 kB[22m
+[2mdist/[22m[36massets/framer-motion-6bjqXi0Q.js              [39m[1m[2m151.36 kB[22m[1m[22m[2m │ gzip:  51.25 kB[22m
+[2mdist/[22m[36massets/TileLayer--KevbeNh.js                  [39m[1m[2m153.52 kB[22m[1m[22m[2m │ gzip:  44.81 kB[22m
+[2mdist/[22m[36massets/index-COHWS0My.js                      [39m[1m[2m162.55 kB[22m[1m[22m[2m │ gzip:  43.07 kB[22m
+[2mdist/[22m[36massets/app-foundation-H_bY8XyG.js             [39m[1m[2m337.95 kB[22m[1m[22m[2m │ gzip:  90.32 kB[22m
+[2mdist/[22m[36massets/vendor-aPIVReWF.js                     [39m[1m[2m397.22 kB[22m[1m[22m[2m │ gzip: 125.84 kB[22m
+[32m✓ built in 22.57s[39m
+
+PWA v1.3.0
+mode      generateSW
+precache  130 entries (4659.36 KiB)
+files generated
+  dist/sw.js
+  dist/workbox-60b9b2d4.js

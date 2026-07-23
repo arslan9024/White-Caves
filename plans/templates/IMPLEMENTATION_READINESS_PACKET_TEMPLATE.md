@@ -41,4 +41,4 @@
 - Readiness score (>=60% required):
 - Decision:
 - Approver phrase:
-  - `@Ada — Context Ready (60% Readiness) — Coding Phase Approved`
+  - `@Ada — Context Ready (90% Readiness) — High-Fidelity Coding Phase Approved`

@@ -12,12 +12,31 @@ import { Badge, Pagination } from '../../components/ui';
 import { Modal } from '../../shared/components/ui/Modal';
 import { useDocumentTitle } from '../../hooks/useDocumentTitle';
 import {
-  PageContainer, PageHeader, PageTitle, BackLink,
-  ActionBar, SearchInput, FilterSelect,
-  PrimaryButton, SecondaryButton, DangerButton,
-  Table, Th, Td, Tr, EmptyState,
-  FormGroup, FormLabel, FormInput, FormTextarea, FormSelect, FormRow,
-  PaginationWrapper, LoadingBanner, ErrorBanner, ModalFooter,
+  PageContainer,
+  PageHeader,
+  PageTitle,
+  BackLink,
+  ActionBar,
+  SearchInput,
+  FilterSelect,
+  PrimaryButton,
+  SecondaryButton,
+  DangerButton,
+  Table,
+  Th,
+  Td,
+  Tr,
+  EmptyState,
+  FormGroup,
+  FormLabel,
+  FormInput,
+  FormTextarea,
+  FormSelect,
+  FormRow,
+  PaginationWrapper,
+  LoadingBanner,
+  ErrorBanner,
+  ModalFooter,
 } from './styles/CrmPageStyles';
 import { useClientManagement, TYPE_CONFIG, STATUS_CONFIG } from './hooks/useClientManagement';
 import type { Client } from './hooks/useClientManagement';
@@ -32,9 +51,9 @@ const TabBar = styled.div`
 `;
 
 const Tab = styled.button<{ $active: boolean; $color: string }>`
-  background: ${props => props.$active ? props.$color : 'white'};
-  color: ${props => props.$active ? 'white' : '#555'};
-  border: 1px solid ${props => props.$active ? props.$color : '#ddd'};
+  background: ${props => (props.$active ? props.$color : '#1f1f1f')};
+  color: ${props => (props.$active ? '#0f0f0f' : 'rgba(255, 255, 255, 0.7)')};
+  border: 1px solid ${props => (props.$active ? props.$color : 'rgba(201, 168, 76, 0.3)')};
   border-radius: 20px;
   padding: 0.4rem 1rem;
   font-size: 0.8rem;
@@ -47,13 +66,13 @@ const Tab = styled.button<{ $active: boolean; $color: string }>`
 
   &:hover {
     border-color: ${props => props.$color};
-    background: ${props => props.$active ? props.$color : `${props.$color}10`};
+    background: ${props => (props.$active ? props.$color : `${props.$color}20`)};
   }
 `;
 
 const VipBadge = styled.span`
-  background: #F59E0B;
-  color: white;
+  background: #c9a84c;
+  color: #0f0f0f;
   font-size: 0.65rem;
   font-weight: 600;
   padding: 0.15rem 0.4rem;
@@ -68,8 +87,8 @@ const TagList = styled.div`
 `;
 
 const Tag = styled.span`
-  background: #f0f0f0;
-  color: #555;
+  background: #1f1f1f;
+  color: rgba(255, 255, 255, 0.7);
   font-size: 0.7rem;
   padding: 0.15rem 0.5rem;
   border-radius: 10px;
@@ -80,16 +99,40 @@ const Tag = styled.span`
 const ClientManagementPage: FC = () => {
   useDocumentTitle('Client Management');
   const {
-    filteredClients, paginatedClients, typeCounts,
-    loading, error,
-    search, typeFilter, statusFilter, currentPage,
-    showCreateModal, showEditModal, showDeleteConfirm, selectedClient,
-    formData, setFormData, ITEMS_PER_PAGE,
-    openCreateModal, closeCreateModal, closeEditModal, closeDeleteModal,
-    handleCreate, handleEdit, handleSaveEdit, handleDelete, confirmDelete,
-    handleSearchChange, handleTypeFilterChange, handleStatusFilterChange,
-    setCurrentPage, retryFetch, goBack,
-    getTypeBadgeVariant, getStatusBadgeVariant, formatDate,
+    filteredClients,
+    paginatedClients,
+    typeCounts,
+    loading,
+    error,
+    search,
+    typeFilter,
+    statusFilter,
+    currentPage,
+    showCreateModal,
+    showEditModal,
+    showDeleteConfirm,
+    selectedClient,
+    formData,
+    setFormData,
+    ITEMS_PER_PAGE,
+    openCreateModal,
+    closeCreateModal,
+    closeEditModal,
+    closeDeleteModal,
+    handleCreate,
+    handleEdit,
+    handleSaveEdit,
+    handleDelete,
+    confirmDelete,
+    handleSearchChange,
+    handleTypeFilterChange,
+    handleStatusFilterChange,
+    setCurrentPage,
+    retryFetch,
+    goBack,
+    getTypeBadgeVariant,
+    getStatusBadgeVariant,
+    formatDate,
   } = useClientManagement();
 
   const renderForm = () => (
@@ -142,7 +185,9 @@ const ClientManagementPage: FC = () => {
             onChange={e => setFormData({ ...formData, type: e.target.value })}
           >
             {Object.entries(TYPE_CONFIG).map(([key, cfg]) => (
-              <option key={key} value={key}>{cfg.icon} {cfg.label}</option>
+              <option key={key} value={key}>
+                {cfg.icon} {cfg.label}
+              </option>
             ))}
           </FormSelect>
         </FormGroup>
@@ -153,7 +198,9 @@ const ClientManagementPage: FC = () => {
             onChange={e => setFormData({ ...formData, status: e.target.value })}
           >
             {Object.entries(STATUS_CONFIG).map(([key, cfg]) => (
-              <option key={key} value={key}>{cfg.label}</option>
+              <option key={key} value={key}>
+                {cfg.label}
+              </option>
             ))}
           </FormSelect>
         </FormGroup>
@@ -202,7 +249,7 @@ const ClientManagementPage: FC = () => {
       <TabBar>
         <Tab
           $active={typeFilter === 'all'}
-          $color="#1a1a2e"
+          $color="#c9a84c"
           onClick={() => handleTypeFilterChange('all')}
         >
           All ({typeCounts.all || 0})
@@ -211,7 +258,15 @@ const ClientManagementPage: FC = () => {
           <Tab
             key={key}
             $active={typeFilter === key}
-            $color={cfg.badgeVariant === 'info' ? '#3B82F6' : cfg.badgeVariant === 'primary' ? '#8B5CF6' : cfg.badgeVariant === 'success' ? '#10B981' : '#F59E0B'}
+            $color={
+              cfg.badgeVariant === 'info'
+                ? '#c9a84c'
+                : cfg.badgeVariant === 'primary'
+                  ? '#c9a84c'
+                  : cfg.badgeVariant === 'success'
+                    ? '#10B981'
+                    : '#c9a84c'
+            }
             onClick={() => handleTypeFilterChange(key)}
           >
             {cfg.icon} {cfg.label} ({typeCounts[key] || 0})
@@ -227,16 +282,15 @@ const ClientManagementPage: FC = () => {
           value={search}
           onChange={e => handleSearchChange(e.target.value)}
         />
-        <FilterSelect
-          value={statusFilter}
-          onChange={e => handleStatusFilterChange(e.target.value)}
-        >
+        <FilterSelect value={statusFilter} onChange={e => handleStatusFilterChange(e.target.value)}>
           <option value="all">All Status</option>
           {Object.entries(STATUS_CONFIG).map(([key, cfg]) => (
-            <option key={key} value={key}>{cfg.label}</option>
+            <option key={key} value={key}>
+              {cfg.label}
+            </option>
           ))}
         </FilterSelect>
-        <span style={{ fontSize: '0.8rem', color: '#888' }}>
+        <span style={{ fontSize: '0.8rem', color: 'rgba(255, 255, 255, 0.5)' }}>
           {filteredClients.length} client{filteredClients.length !== 1 ? 's' : ''} found
         </span>
       </ActionBar>
@@ -268,7 +322,8 @@ const ClientManagementPage: FC = () => {
                   <Td>{client.phone || '—'}</Td>
                   <Td>
                     <Badge variant={getTypeBadgeVariant(client.type || '')} size="small">
-                      {TYPE_CONFIG[client.type || '']?.icon} {TYPE_CONFIG[client.type || '']?.label || client.type || '—'}
+                      {TYPE_CONFIG[client.type || '']?.icon}{' '}
+                      {TYPE_CONFIG[client.type || '']?.label || client.type || '—'}
                     </Badge>
                   </Td>
                   <Td>{client.company || '—'}</Td>
@@ -284,7 +339,9 @@ const ClientManagementPage: FC = () => {
                           <Tag key={idx}>{tag}</Tag>
                         ))}
                       </TagList>
-                    ) : '—'}
+                    ) : (
+                      '—'
+                    )}
                   </Td>
                   <Td onClick={e => e.stopPropagation()}>
                     <div style={{ display: 'flex', gap: '0.4rem' }}>
@@ -365,9 +422,9 @@ const ClientManagementPage: FC = () => {
           onClose={closeDeleteModal}
           size="small"
         >
-          <p style={{ color: '#555', fontSize: '0.9rem' }}>
-            Are you sure you want to delete <strong>{selectedClient.name}</strong>?
-            This action cannot be undone.
+          <p style={{ color: 'rgba(255, 255, 255, 0.7)', fontSize: '0.9rem' }}>
+            Are you sure you want to delete <strong>{selectedClient.name}</strong>? This action
+            cannot be undone.
           </p>
           <ModalFooter>
             <SecondaryButton onClick={closeDeleteModal}>Cancel</SecondaryButton>

@@ -18,11 +18,17 @@ const { mockPrisma } = vi.hoisted(() => {
         findUnique: fn().mockResolvedValue(null),
         count: fn().mockResolvedValue(0),
         create: fn().mockResolvedValue({
-          id: 'notif-1', userId: 'user-1', type: 'info',
-          channel: 'in_app', title: 'Test', message: 'Hello', read: false,
+          id: 'notif-1',
+          userId: 'user-1',
+          type: 'info',
+          channel: 'in_app',
+          title: 'Test',
+          message: 'Hello',
+          read: false,
         }),
         update: fn().mockResolvedValue({
-          id: 'notif-1', read: true,
+          id: 'notif-1',
+          read: true,
         }),
         updateMany: fn().mockResolvedValue({ count: 3 }),
         delete: fn().mockResolvedValue({}),
@@ -71,11 +77,13 @@ vi.mock('../config/pagination', () => ({
   parsePagination: ({ page, limit }: { page?: string; limit?: string }) => ({
     page: Math.max(1, parseInt(page || '1') || 1),
     limit: Math.min(100, Math.max(1, parseInt(limit || '20') || 20)),
-    skip: (Math.max(1, parseInt(page || '1') || 1) - 1) * Math.min(100, Math.max(1, parseInt(limit || '20') || 20)),
+    skip:
+      (Math.max(1, parseInt(page || '1') || 1) - 1) *
+      Math.min(100, Math.max(1, parseInt(limit || '20') || 20)),
   }),
 }));
 
-import notificationRoutes from './notifications';
+import notificationRoutes from './notifications.js';
 
 // ── Test app factory ─────────────────────────────────────────────────
 function createApp(role: string = 'owner', userId = 'user-1') {
@@ -108,8 +116,7 @@ describe('Notifications Routes — /api/notifications', () => {
         { id: 'notif-1', title: 'Welcome', message: 'Hello', read: false },
       ]);
       mockPrisma.notification.count.mockResolvedValueOnce(1);
-      const res = await request(createApp('agent'))
-        .get('/api/notifications');
+      const res = await request(createApp('agent')).get('/api/notifications');
       expect(res.status).toBe(200);
       expect(res.body.success).toBe(true);
       expect(res.body.data).toHaveLength(1);
@@ -119,9 +126,25 @@ describe('Notifications Routes — /api/notifications', () => {
     it('supports read filter', async () => {
       mockPrisma.notification.findMany.mockResolvedValueOnce([]);
       mockPrisma.notification.count.mockResolvedValueOnce(0);
-      const res = await request(createApp('agent'))
-        .get('/api/notifications?read=false');
+      const res = await request(createApp('agent')).get('/api/notifications?read=false');
       expect(res.status).toBe(200);
+      expect(mockPrisma.notification.findMany).toHaveBeenCalledWith(
+        expect.objectContaining({
+          where: expect.objectContaining({ read: false }),
+        })
+      );
+    });
+
+    it('supports unread filter', async () => {
+      mockPrisma.notification.findMany.mockResolvedValueOnce([]);
+      mockPrisma.notification.count.mockResolvedValueOnce(0);
+      const res = await request(createApp('agent')).get('/api/notifications?unread=true');
+      expect(res.status).toBe(200);
+      expect(mockPrisma.notification.findMany).toHaveBeenCalledWith(
+        expect.objectContaining({
+          where: expect.objectContaining({ read: false }),
+        })
+      );
     });
   });
 
@@ -129,8 +152,7 @@ describe('Notifications Routes — /api/notifications', () => {
   describe('GET /api/notifications/unread-count', () => {
     it('returns count', async () => {
       mockPrisma.notification.count.mockResolvedValueOnce(5);
-      const res = await request(createApp('agent'))
-        .get('/api/notifications/unread-count');
+      const res = await request(createApp('agent')).get('/api/notifications/unread-count');
       expect(res.status).toBe(200);
       expect(res.body.data.unreadCount).toBe(5);
     });
@@ -140,8 +162,7 @@ describe('Notifications Routes — /api/notifications', () => {
   describe('PATCH /api/notifications/read-all', () => {
     it('marks all as read', async () => {
       mockPrisma.notification.updateMany.mockResolvedValueOnce({ count: 3 });
-      const res = await request(createApp('agent'))
-        .patch('/api/notifications/read-all');
+      const res = await request(createApp('agent')).patch('/api/notifications/read-all');
       expect(res.status).toBe(200);
       expect(res.body.data.updated).toBe(3);
     });
@@ -151,30 +172,36 @@ describe('Notifications Routes — /api/notifications', () => {
   describe('PATCH /api/notifications/:id/read', () => {
     it('marks single as read', async () => {
       mockPrisma.notification.findUnique.mockResolvedValueOnce({
-        id: VALID_ID, userId: 'user-1', read: false,
+        id: VALID_ID,
+        userId: 'user-1',
+        read: false,
       });
       mockPrisma.notification.update.mockResolvedValueOnce({
-        id: VALID_ID, read: true,
+        id: VALID_ID,
+        read: true,
       });
-      const res = await request(createApp('agent', 'user-1'))
-        .patch(`/api/notifications/${VALID_ID}/read`);
+      const res = await request(createApp('agent', 'user-1')).patch(
+        `/api/notifications/${VALID_ID}/read`
+      );
       expect(res.status).toBe(200);
       expect(res.body.data.read).toBe(true);
     });
 
     it('returns 404 if not found', async () => {
       mockPrisma.notification.findUnique.mockResolvedValueOnce(null);
-      const res = await request(createApp('agent'))
-        .patch(`/api/notifications/${VALID_ID}/read`);
+      const res = await request(createApp('agent')).patch(`/api/notifications/${VALID_ID}/read`);
       expect(res.status).toBe(404);
     });
 
     it('returns 403 if not owner of notification', async () => {
       mockPrisma.notification.findUnique.mockResolvedValueOnce({
-        id: VALID_ID, userId: 'other-user', read: false,
+        id: VALID_ID,
+        userId: 'other-user',
+        read: false,
       });
-      const res = await request(createApp('agent', 'user-1'))
-        .patch(`/api/notifications/${VALID_ID}/read`);
+      const res = await request(createApp('agent', 'user-1')).patch(
+        `/api/notifications/${VALID_ID}/read`
+      );
       expect(res.status).toBe(403);
     });
   });
@@ -183,27 +210,30 @@ describe('Notifications Routes — /api/notifications', () => {
   describe('DELETE /api/notifications/:id', () => {
     it('deletes notification', async () => {
       mockPrisma.notification.findUnique.mockResolvedValueOnce({
-        id: VALID_ID, userId: 'user-1',
+        id: VALID_ID,
+        userId: 'user-1',
       });
-      const res = await request(createApp('agent', 'user-1'))
-        .delete(`/api/notifications/${VALID_ID}`);
+      const res = await request(createApp('agent', 'user-1')).delete(
+        `/api/notifications/${VALID_ID}`
+      );
       expect(res.status).toBe(200);
       expect(res.body.success).toBe(true);
     });
 
     it('returns 404 if not found', async () => {
       mockPrisma.notification.findUnique.mockResolvedValueOnce(null);
-      const res = await request(createApp('agent'))
-        .delete(`/api/notifications/${VALID_ID}`);
+      const res = await request(createApp('agent')).delete(`/api/notifications/${VALID_ID}`);
       expect(res.status).toBe(404);
     });
 
     it('returns 403 if not owner', async () => {
       mockPrisma.notification.findUnique.mockResolvedValueOnce({
-        id: VALID_ID, userId: 'other-user',
+        id: VALID_ID,
+        userId: 'other-user',
       });
-      const res = await request(createApp('agent', 'user-1'))
-        .delete(`/api/notifications/${VALID_ID}`);
+      const res = await request(createApp('agent', 'user-1')).delete(
+        `/api/notifications/${VALID_ID}`
+      );
       expect(res.status).toBe(403);
     });
   });
@@ -212,26 +242,32 @@ describe('Notifications Routes — /api/notifications', () => {
   describe('POST /api/notifications', () => {
     it('creates notification for admin', async () => {
       mockPrisma.notification.create.mockResolvedValueOnce({
-        id: 'notif-new', userId: 'user-2', type: 'info',
-        channel: 'in_app', title: 'Alert', message: 'Important',
+        id: 'notif-new',
+        userId: 'user-2',
+        type: 'info',
+        channel: 'in_app',
+        title: 'Alert',
+        message: 'Important',
       });
-      const res = await request(createApp('admin'))
-        .post('/api/notifications')
-        .send({
-          userId: VALID_ID, type: 'info', channel: 'in_app',
-          title: 'Alert', message: 'Important',
-        });
+      const res = await request(createApp('admin')).post('/api/notifications').send({
+        userId: VALID_ID,
+        type: 'info',
+        channel: 'in_app',
+        title: 'Alert',
+        message: 'Important',
+      });
       expect(res.status).toBe(201);
       expect(res.body.success).toBe(true);
     });
 
     it('returns 403 for agent', async () => {
-      const res = await request(createApp('agent'))
-        .post('/api/notifications')
-        .send({
-          userId: VALID_ID, type: 'info', channel: 'in_app',
-          title: 'Alert', message: 'Important',
-        });
+      const res = await request(createApp('agent')).post('/api/notifications').send({
+        userId: VALID_ID,
+        type: 'info',
+        channel: 'in_app',
+        title: 'Alert',
+        message: 'Important',
+      });
       expect(res.status).toBe(403);
     });
   });

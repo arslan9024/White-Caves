@@ -12,10 +12,19 @@ export interface AppUser {
   role?: string;
   photoURL?: string;
   phone?: string;
+  profileComplete?: boolean;
   createdAt?: string;
   lastLogin?: string;
   status?: 'active' | 'pending' | 'suspended';
   permissions?: string[];
+  profileCompleted?: boolean;
+  profileCompletion?: {
+    roleCategory: 'general' | 'client' | 'agent' | 'leadership';
+    requiredFields: Array<'name' | 'phone' | 'department'>;
+    optionalFields: Array<'name' | 'phone' | 'department'>;
+    missingFields: Array<'name' | 'phone' | 'department'>;
+  };
+  accessLevel?: number;
   [key: string]: unknown; // Allow Firebase/provider extra fields
 }
 
@@ -28,7 +37,7 @@ interface UserState {
 const initialState: UserState = {
   currentUser: null,
   isLoading: false,
-  error: null
+  error: null,
 };
 
 export const userSlice = createSlice({
@@ -47,13 +56,13 @@ export const userSlice = createSlice({
       state.error = action.payload;
       state.isLoading = false;
     },
-    clearUser: (state) => {
+    clearUser: state => {
       state.currentUser = null;
       state.isLoading = false;
       state.error = null;
-    }
+    },
   },
-  extraReducers: (builder) => {
+  extraReducers: builder => {
     builder.addCase(logout, () => initialState);
   },
 });

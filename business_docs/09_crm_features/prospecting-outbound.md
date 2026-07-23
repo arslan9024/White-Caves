@@ -8,15 +8,15 @@
 
 ## 1. Overview
 
-> _TODO: expand this section with full spec._
+> _[Action Required: Enforce production-ready engineering constraints]: expand this section with full spec._
 
 ## 2. Prospect Database Fields
 
-> _TODO: expand this section with full spec._
+> _[Action Required: Enforce production-ready engineering constraints]: expand this section with full spec._
 
 ## 3. Prospecting Campaign Workflow
 
-> _TODO: expand this section with full spec._
+> _[Action Required: Enforce production-ready engineering constraints]: expand this section with full spec._
 
 ## 4. Call Tracking and Outcome Tags
 

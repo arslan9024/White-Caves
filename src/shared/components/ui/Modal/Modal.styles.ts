@@ -118,12 +118,12 @@ export const ModalCloseButton = styled.button`
   }
 
   &:hover {
-    background: rgba(227, 30, 36, 0.1);
-    color: var(--primary-gold, #e31e24);
+    background: rgba(201, 168, 76, 0.1);
+    color: var(--primary-gold, #c9a84c);
   }
 
   &:focus {
-    outline: 2px solid var(--primary-gold, #e31e24);
+    outline: 2px solid var(--primary-gold, #c9a84c);
     outline-offset: 2px;
   }
 `;

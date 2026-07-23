@@ -3,7 +3,7 @@
  * Business logic for dashboard metrics, analytics, and KPIs
  */
 
-import { prisma } from '../database';
+import { prisma } from '../database.js';
 
 class DashboardService {
   /**

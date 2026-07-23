@@ -21,6 +21,7 @@ import {
 import { useDocumentTitle } from '../hooks/useDocumentTitle';
 import PublicLayout from '../components/layout/PublicLayout';
 import PageHeroBanner from '../components/layout/PageHeroBanner';
+import PageMeta from '../components/seo/PageMeta';
 import WhatsAppButton from '../components/WhatsAppButton';
 import { useToast } from '../components/Toast';
 import { authFetch } from '../utils/authFetch';
@@ -86,7 +87,7 @@ const services: Service[] = [
   {
     id: 'buying',
     icon: Key,
-    color: '#0A2463',
+    color: '#C9A84C',
     title: 'Buying Services',
     subtitle: 'Find Your Perfect Property',
     subServices: ['Off-plan purchases', 'Secondary market', 'New developments'],
@@ -95,7 +96,7 @@ const services: Service[] = [
   {
     id: 'selling',
     icon: TrendingUp,
-    color: '#E31E24',
+    color: '#10B981',
     title: 'Selling Services',
     subtitle: 'Maximize Your Property Value',
     subServices: ['Property valuation', 'Strategic marketing', 'Seamless closing'],
@@ -104,7 +105,7 @@ const services: Service[] = [
   {
     id: 'leasing',
     icon: FileText,
-    color: '#E31E24',
+    color: '#C9A84C',
     title: 'Leasing Services',
     subtitle: 'Hassle-Free Property Rental',
     subServices: ['Residential leasing', 'Commercial leasing', 'Property management'],
@@ -221,6 +222,12 @@ const ServicesPage: FC = () => {
   return (
     <PublicLayout>
       <div className="services-page">
+        <PageMeta
+          title="Real Estate Services | White Caves Dubai"
+          description="Discover White Caves buying, selling, and leasing services for Dubai luxury properties."
+          canonicalPath="/services"
+          ogType="website"
+        />
         {/* ── Hero banner ──────────────────────────────────────────────────── */}
         <PageHeroBanner
           badge="Real Estate Services"

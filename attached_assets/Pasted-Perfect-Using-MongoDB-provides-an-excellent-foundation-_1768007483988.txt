@@ -1,0 +1,108 @@
+Perfect. Using **MongoDB** provides an excellent foundation for this feature. Its document structure is ideal for property listings, and we can build a very efficient automated process for Olivia. Here's how to implement it.
+
+### 📁 Recommended MongoDB Schema for Inventory
+A well-designed schema is crucial for performance and clarity.
+
+```javascript
+// Property Collection Schema (Managed by Mary)
+{
+  "_id": ObjectId("..."),
+  "property_ref": "WC-BH-1001", // Unique internal reference
+  "title": "Luxury 3BR Apartment with Burj Khalifa View",
+  "status": "AVAILABLE", // CRITICAL: AVAILABLE, UNDER_OFFER, SOLD, LEASED
+  "price_aed": 5200000,
+  "location": {
+    "community": "Downtown Dubai",
+    "tower": "Burj Vista"
+  },
+  "features": ["Pool", "Gym", "Concierge"],
+  "media": {
+    "primary_image": "url_1.jpg",
+    "gallery": ["url_2.jpg", "url_3.jpg"]
+  },
+  "listed_date": ISODate("2024-10-01"),
+  "last_status_update": ISODate("2024-11-26"), // For tracking
+  "seo_description": "A stunning apartment..."
+}
+
+// Homepage Feature Collection (Managed by Olivia)
+{
+  "_id": ObjectId("..."),
+  "date_active": ISODate("2024-11-27"), // The day this list is live
+  "featured_properties": [ // Array of 10 selected property_refs
+    "WC-BH-1001", "WC-MA-2045", ...
+  ],
+  "generated_at": ISODate("2024-11-27T03:00:00Z")
+}
+```
+
+### 🔄 The Optimized Daily Workflow for Olivia (Using MongoDB)
+This process uses MongoDB's capabilities for efficiency.
+
+```javascript
+// Olivia's Daily Aggregation Pipeline (Core Logic)
+// This query finds 10 random AVAILABLE properties
+const dailySelectionPipeline = [
+  { $match: { status: "AVAILABLE" } }, // Step 1: Filter by Mary's status
+  { $sample: { size: 10 } },           // Step 2: Random selection
+  { $project: { property_ref: 1 } }    // Step 3: Keep only the IDs needed
+];
+```
+
+Here is the complete, automated daily sequence using MongoDB Atlas Triggers:
+
+```mermaid
+sequenceDiagram
+    participant Atlas Trigger
+    participant Olivia Logic
+    participant Property Collection
+    participant Featured Collection
+    participant Frontend App
+
+    Note over Atlas Trigger,Featured Collection: Daily Automated Cycle
+    Atlas Trigger->>Olivia Logic: Scheduled Daily (e.g., 3:00 AM)
+    activate Olivia Logic
+    
+    Olivia Logic->>Property Collection: Execute Aggregation Pipeline
+    activate Property Collection
+    Property Collection-->>Olivia Logic: Return 10 Random Property IDs
+    deactivate Property Collection
+    
+    Olivia Logic->>Featured Collection: Insert New Daily Document
+    activate Featured Collection
+    Featured Collection-->>Olivia Logic: Confirm Write
+    deactivate Featured Collection
+    
+    Olivia Logic-->>Atlas Trigger: Process Complete
+    deactivate Olivia Logic
+    
+    Frontend App->>Featured Collection: Query for Today's List
+    Featured Collection-->>Frontend App: Return 10 Property IDs
+    Frontend App->>Property Collection: Fetch Full Details for Display
+    Property Collection-->>Frontend App: Return Property Data
+```
+
+### ⚙️ Implementation Steps for Your Team
+
+1.  **Set Up the Collections**: Ensure your `properties` collection uses the schema above. Create a `homepage_features` collection for Olivia's output.
+2.  **Create the Scheduled Trigger**:
+    *   In **MongoDB Atlas**, go to "Triggers" and create a new "Scheduled Trigger."
+    *   Set the schedule (e.g., `0 3 * * *` for 3 AM daily Dubai time).
+    *   Link it to a function that runs the `dailySelectionPipeline` and inserts the result into `homepage_features`.
+3.  **Build the Frontend Query**: Your homepage app should:
+    *   Query the `homepage_features` collection for today's active list.
+    *   Use the array of `property_ref` IDs to fetch the full details from the `properties` collection in a single `$in` query for optimal performance.
+4.  **Add a Cleanup Job** (Optional): Create another scheduled trigger to archive or delete `homepage_features` documents older than 7-30 days to keep the collection small.
+
+### 💡 Key Advantages of This MongoDB Approach
+*   **Automatic Removal of Unavailable Listings**: Because Olivia's pipeline starts with `{ $match: { status: "AVAILABLE" } }`, sold properties are excluded at the source.
+*   **Performance**: The `$sample` stage is efficient for random selection. An index on `status` will make the initial filter very fast.
+*   **Audit Trail**: The `homepage_features` collection maintains a perfect history of what was displayed daily.
+*   **Decoupling**: Mary manages the source truth (`properties` collection). Olivia reads from it and writes to her own collection. The website reads from Olivia's collection. This prevents conflicts.
+
+### 🚀 Recommended Next Actions
+1.  **Review the Schema**: Share this proposed `properties` collection schema with your developer to ensure it aligns with your current data structure.
+2.  **Create a Test Pipeline**: Have your developer run the `dailySelectionPipeline` in a test environment to verify it returns correct results.
+3.  **Set Up the Atlas Trigger**: This is the key to automation. If you need help crafting the exact Atlas Function code, I can provide a template.
+
+This design creates a robust, scalable, and fully automated "self-updating" homepage feature. Would you like me to draft the exact JavaScript function for the MongoDB Atlas Trigger?

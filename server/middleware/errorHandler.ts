@@ -11,25 +11,40 @@ const log = createLogger('ErrorHandler');
 export interface CustomError extends Error {
   statusCode?: number;
   isOperational?: boolean;
+  code?: string;
+  errors?: Array<{ field?: string; message: string }>;
 }
 
-type AsyncRouteHandler = (req: Request, res: Response, next?: NextFunction) => Promise<unknown>;
+type AsyncRouteHandler<Req extends Request = Request> = (
+  req: Req,
+  res: Response,
+  next?: NextFunction
+) => Promise<unknown>;
 
 // Async handler wrapper to catch errors
 export const asyncHandler =
-  (fn: AsyncRouteHandler) => (req: Request, res: Response, next: NextFunction) => {
-    Promise.resolve(fn(req, res, next)).catch(next);
+  <Req extends Request = Request>(fn: AsyncRouteHandler<Req>) =>
+  (req: Request, res: Response, next: NextFunction) => {
+    Promise.resolve(fn(req as Req, res, next)).catch(next);
   };
 
 // Common error class
 export class AppError extends Error implements CustomError {
   statusCode: number;
   isOperational: boolean;
+  code?: string;
+  errors?: Array<{ field?: string; message: string }>;
 
-  constructor(message: string, statusCode: number = 500) {
+  constructor(
+    message: string,
+    statusCode: number = 500,
+    options?: { code?: string; errors?: Array<{ field?: string; message: string }> }
+  ) {
     super(message);
     this.statusCode = statusCode;
     this.isOperational = true;
+    this.code = options?.code;
+    this.errors = options?.errors;
     Error.captureStackTrace(this, this.constructor);
   }
 }
@@ -43,6 +58,8 @@ export const errorHandler = (
 ) => {
   const statusCode = (err as CustomError).statusCode || 500;
   const message = err.message || 'Internal Server Error';
+  const code = (err as CustomError).code;
+  const details = (err as CustomError).errors;
 
   log.error(`${statusCode}: ${message}`);
 
@@ -51,9 +68,13 @@ export const errorHandler = (
   }
 
   res.status(statusCode).json({
+    status: 'error',
     success: false,
+    message,
     error: message,
     statusCode,
+    ...(code && { code }),
+    ...(Array.isArray(details) && details.length > 0 && { errors: details }),
     ...(process.env.NODE_ENV === 'development' && { stack: err.stack }),
   });
 };

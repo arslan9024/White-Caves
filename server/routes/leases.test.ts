@@ -18,9 +18,16 @@ const { mockPrisma } = vi.hoisted(() => {
         findUnique: fn().mockResolvedValue(null),
         count: fn().mockResolvedValue(0),
         create: fn().mockResolvedValue({
-          id: 'lease-1', propertyId: 'prop-1', tenantId: 'tenant-1', landlordId: 'user-1',
-          startDate: new Date('2026-03-01'), endDate: new Date('2027-03-01'),
-          monthlyRent: 8000, depositAmount: 0, status: 'draft', createdAt: new Date(),
+          id: 'lease-1',
+          propertyId: 'prop-1',
+          tenantId: 'tenant-1',
+          landlordId: 'user-1',
+          startDate: new Date('2026-03-01'),
+          endDate: new Date('2027-03-01'),
+          monthlyRent: 8000,
+          depositAmount: 0,
+          status: 'draft',
+          createdAt: new Date(),
           property: { id: 'prop-1', title: 'Marina Studio', location: 'Dubai Marina' },
           tenant: { id: 'tenant-1', name: 'John', email: 'john@test.ae' },
         }),
@@ -28,10 +35,21 @@ const { mockPrisma } = vi.hoisted(() => {
         delete: fn().mockResolvedValue({}),
       },
       property: {
-        findUnique: fn().mockResolvedValue({ id: 'prop-1', title: 'Marina Studio', ownerId: 'user-1' }),
+        findUnique: fn().mockResolvedValue({
+          id: 'prop-1',
+          title: 'Marina Studio',
+          ownerId: 'user-1',
+        }),
       },
       user: {
         findUnique: fn().mockResolvedValue({ id: 'tenant-1', name: 'John', email: 'john@test.ae' }),
+      },
+      pDCSchedule: {
+        findMany: fn().mockResolvedValue([]),
+        findUnique: fn().mockResolvedValue(null),
+      },
+      activity: {
+        create: fn().mockResolvedValue({ id: 'act-1', createdAt: new Date() }),
       },
     },
   };
@@ -43,13 +61,16 @@ vi.mock('../utils/logger.js', () => ({
   createLogger: vi.fn(() => ({ info: vi.fn(), warn: vi.fn(), error: vi.fn(), debug: vi.fn() })),
 }));
 
-import leasesRoutes from './leases';
-import { errorHandler } from '../middleware/errorHandler';
+import leasesRoutes from './leases.js';
+import { errorHandler } from '../middleware/errorHandler.js';
 
 function createApp(role = 'landlord') {
   const app = express();
   app.use(express.json());
-  app.use((req: any, _res, next) => { req.user = { id: 'user-1', email: 'landlord@wc.ae', role }; next(); });
+  app.use((req: any, _res, next) => {
+    req.user = { id: 'user-1', email: 'landlord@wc.ae', role };
+    next();
+  });
   app.use('/api/leases', leasesRoutes);
   app.use(errorHandler);
   return app;
@@ -58,7 +79,10 @@ function createApp(role = 'landlord') {
 describe('Leases Routes — /api/leases', () => {
   let app: ReturnType<typeof createApp>;
 
-  beforeEach(() => { vi.clearAllMocks(); app = createApp(); });
+  beforeEach(() => {
+    vi.clearAllMocks();
+    app = createApp();
+  });
 
   // ── LIST ──────────────────────────────────────────────────────────
   describe('GET /api/leases', () => {
@@ -97,6 +121,69 @@ describe('Leases Routes — /api/leases', () => {
     });
   });
 
+  // ── EJARI TRACKING ──────────────────────────────────────────────
+  describe('GET /api/leases/ejari/tracking', () => {
+    it('returns ejari tracking summary and rows', async () => {
+      mockPrisma.lease.findMany.mockResolvedValueOnce([
+        {
+          id: 'lease-1',
+          leaseNumber: 'L-001',
+          ejariNumber: 'EJ-001',
+          ejariStatus: 'registered',
+          ejariRegistrationDate: new Date('2026-01-10T00:00:00.000Z'),
+          ejariExpiryDate: new Date(Date.now() + 10 * 86400000),
+          property: {
+            id: 'prop-1',
+            title: 'Marina Studio',
+            location: 'Dubai Marina',
+            type: 'Apartment',
+          },
+          tenant: {
+            id: 'tenant-1',
+            name: 'John',
+            email: 'john@test.ae',
+            phone: '+971500000001',
+          },
+        },
+        {
+          id: 'lease-2',
+          leaseNumber: 'L-002',
+          ejariNumber: null,
+          ejariStatus: 'pending',
+          ejariRegistrationDate: null,
+          ejariExpiryDate: null,
+          property: {
+            id: 'prop-2',
+            title: 'Downtown Studio',
+            location: 'Downtown Dubai',
+            type: 'Studio',
+          },
+          tenant: {
+            id: 'tenant-2',
+            name: 'Sarah',
+            email: 'sarah@test.ae',
+            phone: '+971500000002',
+          },
+        },
+      ]);
+
+      const res = await request(app).get('/api/leases/ejari/tracking?role=landlord&days=30');
+
+      expect(res.status).toBe(200);
+      expect(res.body.success).toBe(true);
+      expect(res.body.summary.total).toBe(2);
+      expect(res.body.summary.registered).toBe(1);
+      expect(res.body.summary.pending).toBe(1);
+      expect(res.body.summary.expiringSoon).toBe(1);
+    });
+
+    it('returns 400 for invalid ejari status filter', async () => {
+      const res = await request(app).get('/api/leases/ejari/tracking?status=invalid_status');
+      expect(res.status).toBe(400);
+      expect(res.body.success).toBe(false);
+    });
+  });
+
   // ── GET ONE ───────────────────────────────────────────────────────
   describe('GET /api/leases/:id', () => {
     it('returns 404 for non-existent lease', async () => {
@@ -106,7 +193,9 @@ describe('Leases Routes — /api/leases', () => {
 
     it('returns 200 when lease exists and user is authorized', async () => {
       mockPrisma.lease.findUnique.mockResolvedValueOnce({
-        id: 'lease-1', tenantId: 'user-1', landlordId: 'user-1',
+        id: 'lease-1',
+        tenantId: 'user-1',
+        landlordId: 'user-1',
         property: { id: 'prop-1', ownerId: 'user-1' },
       });
       const res = await request(app).get('/api/leases/lease-1');
@@ -151,14 +240,20 @@ describe('Leases Routes — /api/leases', () => {
     });
 
     it('rejects endDate before startDate', async () => {
-      const res = await request(app).post('/api/leases').send({
-        ...validPayload, startDate: '2027-01-01', endDate: '2026-01-01',
-      });
+      const res = await request(app)
+        .post('/api/leases')
+        .send({
+          ...validPayload,
+          startDate: '2027-01-01',
+          endDate: '2026-01-01',
+        });
       expect(res.status).toBe(400);
     });
 
     it('rejects non-positive monthlyRent', async () => {
-      const res = await request(app).post('/api/leases').send({ ...validPayload, monthlyRent: 0 });
+      const res = await request(app)
+        .post('/api/leases')
+        .send({ ...validPayload, monthlyRent: 0 });
       expect(res.status).toBe(400);
     });
 
@@ -179,7 +274,9 @@ describe('Leases Routes — /api/leases', () => {
   describe('PATCH /api/leases/:id', () => {
     it('updates status on authorized lease', async () => {
       mockPrisma.lease.findUnique.mockResolvedValueOnce({
-        id: 'lease-1', landlordId: 'user-1', property: { ownerId: 'user-1' },
+        id: 'lease-1',
+        landlordId: 'user-1',
+        property: { ownerId: 'user-1' },
       });
       const res = await request(app).patch('/api/leases/lease-1').send({ status: 'active' });
       expect(res.status).toBe(200);
@@ -192,7 +289,9 @@ describe('Leases Routes — /api/leases', () => {
 
     it('rejects invalid status value', async () => {
       mockPrisma.lease.findUnique.mockResolvedValueOnce({
-        id: 'lease-1', landlordId: 'user-1', property: { ownerId: 'user-1' },
+        id: 'lease-1',
+        landlordId: 'user-1',
+        property: { ownerId: 'user-1' },
       });
       const res = await request(app).patch('/api/leases/lease-1').send({ status: 'invalid' });
       expect(res.status).toBe(400);
@@ -200,7 +299,9 @@ describe('Leases Routes — /api/leases', () => {
 
     it('rejects unauthorized user', async () => {
       mockPrisma.lease.findUnique.mockResolvedValueOnce({
-        id: 'lease-1', landlordId: 'other-user', property: { ownerId: 'other-user' },
+        id: 'lease-1',
+        landlordId: 'other-user',
+        property: { ownerId: 'other-user' },
       });
       const res = await request(app).patch('/api/leases/lease-1').send({ status: 'active' });
       expect(res.status).toBe(403);
@@ -211,7 +312,10 @@ describe('Leases Routes — /api/leases', () => {
   describe('DELETE /api/leases/:id', () => {
     it('deletes draft lease owned by landlord', async () => {
       mockPrisma.lease.findUnique.mockResolvedValueOnce({
-        id: 'lease-1', landlordId: 'user-1', status: 'draft', property: { ownerId: 'user-1' },
+        id: 'lease-1',
+        landlordId: 'user-1',
+        status: 'draft',
+        property: { ownerId: 'user-1' },
       });
       const res = await request(app).delete('/api/leases/lease-1');
       expect(res.status).toBe(200);
@@ -220,7 +324,10 @@ describe('Leases Routes — /api/leases', () => {
 
     it('rejects deleting non-draft lease', async () => {
       mockPrisma.lease.findUnique.mockResolvedValueOnce({
-        id: 'lease-1', landlordId: 'user-1', status: 'active', property: { ownerId: 'user-1' },
+        id: 'lease-1',
+        landlordId: 'user-1',
+        status: 'active',
+        property: { ownerId: 'user-1' },
       });
       const res = await request(app).delete('/api/leases/lease-1');
       expect(res.status).toBe(400);
@@ -233,10 +340,120 @@ describe('Leases Routes — /api/leases', () => {
 
     it('rejects unauthorized user', async () => {
       mockPrisma.lease.findUnique.mockResolvedValueOnce({
-        id: 'lease-1', landlordId: 'other-user', status: 'draft', property: { ownerId: 'other-user' },
+        id: 'lease-1',
+        landlordId: 'other-user',
+        status: 'draft',
+        property: { ownerId: 'other-user' },
       });
       const res = await request(app).delete('/api/leases/lease-1');
       expect(res.status).toBe(403);
+    });
+  });
+
+  // ── OVERDUE COLLECTION QUEUE ─────────────────────────────────────
+  describe('GET /api/leases/collections/overdue-queue', () => {
+    it('returns overdue and bounced queue items', async () => {
+      mockPrisma.pDCSchedule.findMany.mockResolvedValueOnce([
+        {
+          id: 'pdc-1',
+          leaseId: 'lease-1',
+          chequeNumber: 'CHK-001',
+          bankName: 'ADCB',
+          amount: 8000,
+          dueDate: new Date(Date.now() - 2 * 86400000),
+          status: 'pending',
+          notes: null,
+          createdAt: new Date(),
+          lease: {
+            id: 'lease-1',
+            leaseNumber: 'L-001',
+            monthlyRent: 8000,
+            currency: 'AED',
+            property: { id: 'prop-1', title: 'Marina Studio', location: 'Dubai Marina' },
+            tenant: {
+              id: 'tenant-1',
+              name: 'John',
+              email: 'john@test.ae',
+              phone: '+971500000001',
+            },
+            landlord: {
+              id: 'user-1',
+              name: 'Owner',
+              email: 'owner@test.ae',
+              phone: '+971500000002',
+            },
+          },
+        },
+      ]);
+
+      const res = await request(app).get('/api/leases/collections/overdue-queue');
+
+      expect(res.status).toBe(200);
+      expect(res.body.success).toBe(true);
+      expect(res.body.data).toHaveLength(1);
+      expect(res.body.summary.total).toBe(1);
+    });
+  });
+
+  describe('POST /api/leases/overdue-collection-queue/:pdcId/notify', () => {
+    it('logs collection reminder notification for valid PDC', async () => {
+      mockPrisma.pDCSchedule.findUnique.mockResolvedValueOnce({
+        id: 'pdc-1',
+        leaseId: 'lease-1',
+        chequeNumber: 'CHK-001',
+        status: 'pending',
+        lease: {
+          id: 'lease-1',
+          leaseNumber: 'L-001',
+          tenantId: 'tenant-1',
+          landlordId: 'user-1',
+        },
+      });
+
+      const res = await request(app)
+        .post('/api/leases/overdue-collection-queue/pdc-1/notify')
+        .send({ channel: 'whatsapp', note: 'Payment overdue reminder' });
+
+      expect(res.status).toBe(200);
+      expect(res.body.success).toBe(true);
+      expect(res.body.data.pdcId).toBe('pdc-1');
+      expect(mockPrisma.activity.create).toHaveBeenCalled();
+    });
+
+    it('returns 404 when PDC does not exist', async () => {
+      mockPrisma.pDCSchedule.findUnique.mockResolvedValueOnce(null);
+
+      const res = await request(app)
+        .post('/api/leases/overdue-collection-queue/missing/notify')
+        .send({ channel: 'email' });
+
+      expect(res.status).toBe(404);
+    });
+  });
+
+  describe('POST /api/leases/collections/overdue-queue/:pdcId/notify', () => {
+    it('logs reminder using canonical collections endpoint', async () => {
+      mockPrisma.pDCSchedule.findUnique.mockResolvedValueOnce({
+        id: 'pdc-2',
+        leaseId: 'lease-2',
+        chequeNumber: 'CHK-002',
+        status: 'bounced',
+        lease: {
+          id: 'lease-2',
+          leaseNumber: 'L-002',
+          tenantId: 'tenant-2',
+          landlordId: 'user-1',
+        },
+      });
+
+      const res = await request(app)
+        .post('/api/leases/collections/overdue-queue/pdc-2/notify')
+        .send({ channel: 'email', note: 'Please settle bounced cheque' });
+
+      expect(res.status).toBe(200);
+      expect(res.body.success).toBe(true);
+      expect(res.body.data.pdcId).toBe('pdc-2');
+      expect(mockPrisma.activity.create).toHaveBeenCalled();
     });
   });
 });

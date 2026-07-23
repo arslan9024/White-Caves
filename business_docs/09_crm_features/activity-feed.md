@@ -8,15 +8,15 @@
 
 ## 1. Overview
 
-> _TODO: expand this section with full spec._
+> _[Action Required: Enforce production-ready engineering constraints]: expand this section with full spec._
 
 ## 2. Activity Event Types and Display Templates
 
-> _TODO: expand this section with full spec._
+> _[Action Required: Enforce production-ready engineering constraints]: expand this section with full spec._
 
 ## 3. Activity Card Component Spec
 
-> _TODO: expand this section with full spec._
+> _[Action Required: Enforce production-ready engineering constraints]: expand this section with full spec._
 
 ## 4. Feed Segmentation
 

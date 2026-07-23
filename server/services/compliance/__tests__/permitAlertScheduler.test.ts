@@ -24,7 +24,7 @@ import {
   getPermitAlerts,
   runPermitAlertSchedulerTick,
   startPermitAlertScheduler,
-} from '../permitAlertScheduler';
+} from '../permitAlertScheduler.js';
 
 const mockPrisma = prisma as unknown as {
   property: { findMany: ReturnType<typeof vi.fn> };

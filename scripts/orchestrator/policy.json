@@ -1,18 +1,206 @@
 {
-  "version": "2026.05.22-execution-mode-v2",
+  "version": "2026.06.17-aegis-control-plane-v1",
+  "schemaVersion": "2.1.0",
   "readinessThresholdPct": 60,
   "readinessTargetPct": 90,
   "largeWaveMinReadinessPct": 90,
   "microWaveMinReadinessPct": 60,
   "readinessChecksTotal": 30,
-  "approvalPhrase": "@Ada — Context Ready (60% Readiness) — Coding Phase Approved",
+  "approvalPhrase": "@Ada - Context Ready (90% Readiness) - High-Fidelity Coding Phase Approved",
   "depthGateLabel": "depth evidence",
   "modelRouting": {
-    "planningAgents": "free-unlimited-only",
-    "premiumAllowedFor": ["senior-coding", "senior-design"]
+    "freeModelOnlyMode": true,
+    "planningAgents": "170-agent-aegis-mesh-120-free-plus-50-premium",
+    "premiumAllowedFor": [
+      "squad-synthesis",
+      "senior-coding",
+      "senior-design",
+      "implementation-decision",
+      "architecture-review"
+    ],
+    "freePlanningAgents": [
+      "@Victoria",
+      "@Amina",
+      "@Samira",
+      "@Hala",
+      "@Rania",
+      "@Noor",
+      "@Hedy",
+      "@Sofia",
+      "@Timnit",
+      "@Zainab",
+      "@Invoice",
+      "@Amal",
+      "@Yasmin",
+      "@Lina",
+      "@Iman",
+      "@Anima",
+      "@Cassie",
+      "@Fei-Fei",
+      "@Ghada",
+      "@Mary",
+      "@Booking",
+      "@Maya",
+      "@Corinne",
+      "@Dina",
+      "@Layla",
+      "@Piper",
+      "@Wren",
+      "@Vera",
+      "@Manal",
+      "@Rehab",
+      "@Marissa",
+      "@Noura",
+      "@Sanaa",
+      "@Farah",
+      "@Basma",
+      "@Crest",
+      "@Lyra",
+      "@Orla",
+      "@Tala",
+      "@Violet",
+      "@Explore",
+      "@Atlas",
+      "@Cipher",
+      "@Nova",
+      "@Lumen",
+      "@Aster",
+      "@Selene",
+      "@Iris",
+      "@Rhea",
+      "@Flux",
+      "@Helia",
+      "@Orion",
+      "@Oracle",
+      "@Xena",
+      "@Yara",
+      "@Zara",
+      "@Quill",
+      "@Juno",
+      "@Vesta",
+      "@Kairos",
+      "@Reem",
+      "@Maha",
+      "@Nadia",
+      "@Mina",
+      "@Nora",
+      "@Sera",
+      "@Talya",
+      "@Uma",
+      "@Val",
+      "@Joy",
+      "@Huda",
+      "@Salma",
+      "@Priya",
+      "@Elena",
+      "@Carmen",
+      "@Bianca",
+      "@Mala",
+      "@Dena",
+      "@Rachel",
+      "@Jaime",
+      "@Annie",
+      "@Joelle",
+      "@Lara",
+      "@Tana",
+      "@Rima",
+      "@Safa",
+      "@Dela",
+      "@Mona",
+      "@Zina",
+      "@Banu",
+      "@Roda",
+      "@Syla",
+      "@Tera",
+      "@Vana",
+      "@Wana",
+      "@Xara",
+      "@Yona",
+      "@Zena",
+      "@Aira",
+      "@Bira",
+      "@Nara",
+      "@Kala",
+      "@Adara",
+      "@Bryn",
+      "@Celia",
+      "@Darya",
+      "@Eira",
+      "@Faris",
+      "@Galen",
+      "@Hani",
+      "@Ilya",
+      "@Jamal",
+      "@Kenza",
+      "@Liora",
+      "@Maaz",
+      "@Nadim",
+      "@Oriana",
+      "@Parisa",
+      "@Qamar",
+      "@Rahil",
+      "@Soraya",
+      "@Tariq"
+    ],
+    "premiumImplementationAgents": [
+      "@Ada",
+      "@Margaret",
+      "@Grace",
+      "@Mira",
+      "@Barbara",
+      "@Daniela",
+      "@Una",
+      "@guardian",
+      "@Ruchi",
+      "@Joelle",
+      "@Jaime",
+      "@Radia",
+      "@Ecem",
+      "@Katherine",
+      "@Lila",
+      "@Lisa",
+      "@Gwynne",
+      "@Lea",
+      "@Tracy",
+      "@Africa",
+      "@Petra",
+      "@Zoya",
+      "@Hana",
+      "@Kira",
+      "@Neva",
+      "@Clio",
+      "@Arya",
+      "@Willa",
+      "@Sana",
+      "@Dara",
+      "@Lysa",
+      "@Mera",
+      "@Fora",
+      "@Bria",
+      "@Elsa",
+      "@Nyla",
+      "@Reva",
+      "@Anya",
+      "@Pera",
+      "@Tova",
+      "@Finn",
+      "@Reid",
+      "@Skye",
+      "@Quinn",
+      "@Blake",
+      "@Drew",
+      "@Sage",
+      "@Avery",
+      "@River",
+      "@Rowan"
+    ],
+    "freeModelProviders": ["google-ai-studio", "groq", "deepseek"],
+    "premiumModelProviders": ["openai", "anthropic"],
+    "freeModels": ["Gemini 2.0 Flash", "Llama 3.1 70B", "DeepSeek V3"],
+    "premiumModels": ["GPT-4o", "claude-3.5-sonnet"]
   },
   "executionMode": {
-    "default": "approval",
+    "default": "autopilot",
     "autopilot": {
       "continuous": true,
       "useSubagents": true,
@@ -26,11 +214,395 @@
       "hardStopOnly": false
     }
   },
+  "aegis": {
+    "autoRegenerateWhenQueueComplete": true,
+    "maxRegenerationsPerRun": 100000,
+    "restartFromNextPhaseWhenQueueComplete": true,
+    "nextPhaseRoadmap": [
+      "Wave 19 - Identity & Access v2 + CRM Routing + MD Workspace Split",
+      "Wave 20 - Security Compliance Schema Blockers",
+      "Wave 21 - Backend Contract Hardening + Observability",
+      "Wave 22 - KPI Integrity + Executive Intelligence"
+    ],
+    "smartSelectionEnabled": true,
+    "phaseBalanceEnabled": true,
+    "targetImplementationSharePct": 60,
+    "preflightEnabled": true,
+    "autoUnblockSweepEnabled": true,
+    "queueHealthEveryNTasks": 3,
+    "problemScannerEnabled": false,
+    "problemScannerAutoFixEnabled": true,
+    "problemScannerEveryNTasks": 3,
+    "problemScannerIdleEveryNLoops": 6,
+    "developmentSweepEnabled": false,
+    "developmentSweepAutoFixEnabled": true,
+    "developmentSweepEveryNTasks": 5,
+    "developmentSweepIdleEveryNLoops": 10,
+    "developmentSweepIncludeE2E": false,
+    "developmentSweepIncludeAudit": false,
+    "developmentSweepTargetedChecksEnabled": true,
+    "developmentSweepTargetedMaxChecks": 4,
+    "developmentSweepRiskTierEnabled": true,
+    "developmentSweepRiskTierBlockOnMissingRequired": false,
+    "developmentSweepRiskProfiles": {
+      "security": {
+        "requiredChecks": ["test:run", "verify:runtime:dry", "audit"],
+        "optionalChecks": ["test:e2e:accessibility"]
+      },
+      "auth": {
+        "requiredChecks": ["test:run", "verify:runtime:dry", "test:assistant-contract"],
+        "optionalChecks": ["test:e2e:smoke"]
+      },
+      "database": {
+        "requiredChecks": ["test:run", "verify:runtime:dry", "build"],
+        "optionalChecks": []
+      },
+      "payment": {
+        "requiredChecks": ["test:run", "verify:runtime:dry", "build"],
+        "optionalChecks": ["audit"]
+      },
+      "general": {
+        "requiredChecks": ["test:run"],
+        "optionalChecks": []
+      }
+    },
+    "priorityOverride": {
+      "enabled": true,
+      "tasks": [
+        {
+          "agent": "@Mira",
+          "lane": "A",
+          "phase": "implementation",
+          "team": "premium-implementation",
+          "priority": "critical",
+          "priorityScore": 1000,
+          "title": "Wave 19 auth-routing-session foundation",
+          "prompt": "@Mira -- PRIORITY IMPLEMENT+VERIFY: Wave 19 auth-routing-session foundation. Execute this before any non-priority queue tasks. Align login success routing, profile completion gate behavior, CRM entry consistency, access-token refresh flow, and session hydration against the current Wave 19 bundle. Include strict validation evidence (typecheck/lint/build/tests), route regression notes, and rollback steps."
+        },
+        {
+          "agent": "@Mala",
+          "lane": "B",
+          "phase": "implementation",
+          "team": "premium-implementation",
+          "priority": "critical",
+          "priorityScore": 999,
+          "title": "Wave 19 superuser dashboard workspace split and executive UX",
+          "prompt": "@Mala -- PRIORITY IMPLEMENT+VERIFY: Wave 19 superuser dashboard workspace split and executive UX. Execute this before non-priority queue tasks. Deliver the current canonical MD workspace split, first-screen executive hierarchy, responsive behavior, accessibility states, and premium UX polish defined by the Wave 19 plan and UI/UX business docs. Include validation evidence and rollback notes."
+        },
+        {
+          "agent": "@S5",
+          "lane": "A",
+          "phase": "implementation",
+          "team": "premium-implementation",
+          "priority": "critical",
+          "priorityScore": 998,
+          "title": "Wave 20 P0 security, RBAC, and compliance blocker hardening",
+          "prompt": "@S5 -- PRIORITY IMPLEMENT+VERIFY: Wave 20 P0 security, RBAC, and compliance blocker hardening. Execute this before non-priority tasks. Remove known P0 auth/RBAC/compliance blockers from the active implementation path, including route protection mismatches, session security gaps, and enforcement controls required by the canonical plans. Include strict validation evidence, risk notes, and rollback steps."
+        }
+      ]
+    },
+    "devSmokeEnabled": true,
+    "devSmokeEveryNTasks": 3,
+    "devRuntimeCheckEnabled": false,
+    "devRuntimeCheckIntervalHours": 2,
+    "devRuntimeCheckMaxRunMinutes": 2,
+    "devRuntimeCheckRunProblemScan": true,
+    "progressIntelligenceEnabled": true,
+    "progressIntelligenceEveryNTasks": 1,
+    "minLoopImprovementPct": 2,
+    "targetProjectBoostPct": 30,
+    "progressDriftConsecutiveThreshold": 2,
+    "blockerAgingWarnHours": 4,
+    "autopilotRequireProducedRef": false,
+    "autopilotAutoResolveEvidencePending": false,
+    "realityExecutionGate": {
+      "enabled": true,
+      "minSelectionScore": 120,
+      "projectKeywords": [
+        "homepage",
+        "login",
+        "auth",
+        "api",
+        "ux",
+        "ui",
+        "performance",
+        "security",
+        "dashboard",
+        "crm",
+        "property",
+        "lead",
+        "tenant",
+        "automation"
+      ],
+      "qualityMarkers": [
+        "implement",
+        "verify",
+        "validation",
+        "rollback",
+        "best-practice",
+        "security",
+        "test",
+        "build",
+        "lint",
+        "typecheck"
+      ]
+    },
+    "deadlockRecoveryEnabled": true,
+    "idleSleepSeconds": 5
+  },
   "autonomousDefault": false,
+  "registryPath": "plans/SUBAGENT_REGISTRY_170.json",
+  "agentMesh": {
+    "totalAgents": 170,
+    "freeAgentCount": 120,
+    "premiumAgentCount": 50,
+    "squads": 10,
+    "squadSize": 12,
+    "squadLeads": 10,
+    "description": "120 junior/specialist free-model agents + 50 senior/decision-maker premium agents across 10 squads"
+  },
+  "wavePlanning": {
+    "formula": "(freeReadiness >= 100%) AND (squadSynthScore >= 85%)",
+    "freeAgentFanout": "All 120 free specialists contribute planning packets per turn",
+    "squadSynthPhase": "10 squad leads (premium GPT-4o) synthesize per-squad readiness with mandatory risk notes",
+    "waveSize": 10,
+    "minimumFreeReadinessPct": 100,
+    "minimumSquadSynthPct": 85,
+    "visibilityMode": "full-agent-activity"
+  },
+  "workflow": {
+    "planning": {
+      "model": "aegis-170-dual-threshold-v3",
+      "requiredEvidence": [
+        "business-rules",
+        "api-contract",
+        "data-schema",
+        "test-scenario",
+        "security-controls",
+        "rollback-plan"
+      ],
+      "validationOrder": [
+        "focused-diagnostics",
+        "scope-level-checks",
+        "workspace-checks",
+        "policy-diff-check"
+      ],
+      "syncCadenceHours": 2
+    },
+    "development": {
+      "deliveryStyle": "vertical-slice",
+      "requiredChecks": ["typecheck", "lint", "build", "plans:validate"],
+      "targetedTestsRequired": true,
+      "maxAutoFixRetries": 3,
+      "securityScanRequired": true
+    },
+    "git": {
+      "defaultRemote": "origin",
+      "integrationBranch": "develop",
+      "integrationFallbackBranches": ["development", "main"],
+      "releaseBranch": "main",
+      "featureBranchPrefix": "feature/",
+      "autoMergeReleaseBranch": false,
+      "requirePullRequestForRelease": true
+    }
+  },
+  "workflowGraph": {
+    "enabled": true,
+    "steps": ["plan", "code", "verify", "merge-ready"],
+    "stepPatterns": {
+      "sequential": ["plan", "code", "verify", "merge-ready"],
+      "parallel": {
+        "code": ["frontend", "backend", "tests"]
+      },
+      "handoff": {
+        "plan\u2192code": "@Ada\u2192@Mira",
+        "code\u2192verify": "@Mira\u2192@Katherine",
+        "verify\u2192merge-ready": "@Katherine\u2192@Gwynne"
+      },
+      "group-review": {
+        "trigger": "high-risk",
+        "minRiskScore": 70,
+        "reviewers": ["@Ada", "@Katherine", "@Radia"],
+        "requiredApprovals": 2
+      }
+    },
+    "stateDir": "logs/orchestrator/workflow-state"
+  },
+  "checkpoints": {
+    "enabled": true,
+    "saveOnStepTransition": true,
+    "maxCheckpoints": 20,
+    "checkpointDir": "logs/orchestrator/checkpoints",
+    "autoCheckpointOnHardStop": true
+  },
   "hardStops": {
     "stopOnTestFailure": true,
     "stopOnLintFailure": true,
     "stopOnBuildFailure": true,
-    "stopOnPolicyMismatch": true
+    "stopOnPolicyMismatch": true,
+    "stopOnSecurityScanFailure": true,
+    "stopOnHighDiffRisk": true,
+    "diffRiskScoreThreshold": 80,
+    "flakyTestDetection": {
+      "enabled": true,
+      "failOnFlaky": false,
+      "warnThreshold": 2
+    }
+  },
+  "verification": {
+    "diffRiskWeights": {
+      "linesChangedScale": 500,
+      "highRiskPathWeight": 10
+    },
+    "tiers": {
+      "security": {
+        "blockSeverities": ["critical"]
+      },
+      "auth": {
+        "blockSeverities": ["critical", "high"]
+      },
+      "database": {
+        "blockSeverities": ["critical", "high"]
+      },
+      "payment": {
+        "blockSeverities": ["critical", "high"]
+      },
+      "general": {
+        "blockSeverities": ["critical"]
+      }
+    },
+    "exceptions": []
+  },
+  "rollback": {
+    "enabled": true,
+    "maxRetriesBeforeRollback": 2,
+    "autoRollbackOnMaxRetries": true,
+    "fallbackOwner": "@Grace",
+    "rollbackPlanDir": "logs/orchestrator/rollback-plans",
+    "requireRollbackPlanBeforeExecution": true
+  },
+  "observability": {
+    "tracing": {
+      "enabled": true,
+      "traceDir": "logs/orchestrator/traces",
+      "format": "jsonl",
+      "emitOnAgentTurn": true,
+      "emitOnHandoff": true,
+      "emitOnHardStop": true,
+      "retainDays": 30
+    },
+    "budgetLimits": {
+      "enabled": true,
+      "maxEstimatedTokensPerSession": 500000,
+      "maxRuntimeSeconds": 3600,
+      "maxRetriesPerSession": 10,
+      "hardCap": true,
+      "budgetDir": "logs/orchestrator/budget"
+    }
+  },
+  "benchmark": {
+    "enabled": true,
+    "cadence": "weekly",
+    "metricsDir": "logs/orchestrator/benchmarks",
+    "baselineFile": "logs/orchestrator/benchmarks/baseline.json",
+    "metrics": ["taskSuccessRate", "passRate", "reworkRate", "cycleTimeSec", "rollbackRate"],
+    "regressionAlertThreshold": 0.1
+  },
+  "confidenceRouting": {
+    "enabled": true,
+    "autoApproveMinConfidence": 0.8,
+    "requireHumanApprovalMaxConfidence": 0.5,
+    "riskScoreLowMax": 30,
+    "riskScoreHighMin": 70,
+    "highRiskDomains": ["security", "auth", "payment", "database-migration"],
+    "routingStateDir": "logs/orchestrator/confidence",
+    "fallbackDecision": "human-approval",
+    "fallbackChain": ["human-approval", "approval", "escalate"],
+    "requireReviewMetadataOnUncertain": true,
+    "canaryPercentOverride": null
+  },
+  "artifactSchemasDir": "scripts/orchestrator/schemas",
+  "changeLog": [
+    {
+      "date": "2026-06-17",
+      "summary": "Added control-plane ownership, free-first task-class routing, plan-first packets, context budgets, and session compaction governance."
+    },
+    {
+      "date": "2026-05-27",
+      "summary": "Aegis vNext v2 baseline policy."
+    }
+  ],
+  "controlPlane": {
+    "authoritativeFiles": [
+      ".github/copilot-instructions.md",
+      "AGENTS.md",
+      ".github/instructions/agentic-workflow.instructions.md",
+      "scripts/orchestrator/policy.json"
+    ],
+    "ownership": {
+      ".github/copilot-instructions.md": "engineering-and-model-usage-rules",
+      "AGENTS.md": "roster-routing-and-operating-lanes",
+      ".github/instructions/agentic-workflow.instructions.md": "handoff-contract-and-dispatch-shape",
+      "scripts/orchestrator/policy.json": "machine-readable-runtime-truth"
+    },
+    "changeControl": {
+      "requireVersionBump": true,
+      "requireChangelogEntry": true,
+      "validationCommands": [
+        "npm run plans:validate",
+        "npm run aegis:health",
+        "npm run aegis:context:validate"
+      ],
+      "forbidSilentDrift": true
+    }
+  },
+  "planFirst": {
+    "enabled": true,
+    "defaultMode": "plan-before-agent",
+    "trivialExemptions": ["formatting-only", "comment-only", "small-doc-fix"],
+    "requiredPlanPacketFields": [
+      "goal",
+      "filesInScope",
+      "validationPath",
+      "recommendedModelTier",
+      "contextSizeExpectation"
+    ],
+    "enforceBeforePremiumExecution": true
+  },
+  "contextBudget": {
+    "enabled": true,
+    "defaultMaxFiles": 12,
+    "defaultMaxInstructionFiles": 4,
+    "defaultMaxWaveBundles": 1,
+    "defaultMaxBusinessDocSections": 6,
+    "warnAfterTurns": 16,
+    "hardStopAfterTurns": 28,
+    "warnAfterApproxTokens": 120000,
+    "hardStopAfterApproxTokens": 220000,
+    "preferStructuredSummaries": true,
+    "agentTierBudgetKB": {
+      "free": 32,
+      "premium": 128,
+      "description": "Per-turn file-read budget in KB per agent tier. Agent-loop scripts must check this before opening files."
+    }
+  },
+  "sessionManagement": {
+    "oneObjectivePerSession": true,
+    "oneWaveOrBugFamilyPerSession": true,
+    "mandatoryEndOfSessionSummary": true,
+    "requireCarryForwardList": true,
+    "newChatTriggers": [
+      "objective-changed",
+      "file-scope-widened",
+      "turn-threshold-exceeded",
+      "handoff-no-longer-compact"
+    ]
+  },
+  "historyManagement": {
+    "enabled": true,
+    "layers": ["raw-logs", "session-snapshot", "handoff-summary"],
+    "reuseLayer": "handoff-summary",
+    "markStaleAsNonCanonical": true,
+    "bootstrapFromMinimalPacket": true
   }
 }

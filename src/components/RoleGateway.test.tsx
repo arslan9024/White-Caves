@@ -152,7 +152,7 @@ describe('RoleGateway', () => {
     it('shows checkmark on selected card', () => {
       render(<RoleGateway user={defaultUser} />);
       fireEvent.click(screen.getByText('Landlord'));
-      expect(screen.getByText('✔')).toBeInTheDocument();
+      expect(screen.getByText('✓')).toBeInTheDocument();
     });
 
     it('can change selection before confirming', () => {
@@ -160,7 +160,7 @@ describe('RoleGateway', () => {
       fireEvent.click(screen.getByText('Buyer'));
       fireEvent.click(screen.getByText('Seller'));
       // Checkmark appears on the Seller card, not on Buyer
-      expect(screen.getByText('✔')).toBeInTheDocument();
+      expect(screen.getByText('✓')).toBeInTheDocument();
       expect(screen.getByText(/You selected:/)).toBeInTheDocument();
     });
   });
@@ -192,12 +192,12 @@ describe('RoleGateway', () => {
       });
     });
 
-    it('navigates to /dashboard', () => {
+    it('navigates to /profile', () => {
       render(<RoleGateway user={defaultUser} />);
       fireEvent.click(screen.getByText('Buyer'));
       fireEvent.click(screen.getByText('Confirm Selection & Continue'));
 
-      expect(mockNavigate).toHaveBeenCalledWith('/dashboard');
+      expect(mockNavigate).toHaveBeenCalledWith('/profile');
     });
 
     it('calls onRoleSelect callback if provided', () => {
@@ -217,43 +217,40 @@ describe('RoleGateway', () => {
     });
   });
 
-  describe('admin/owner auto-redirect', () => {
-    it('redirects owner to canonical dashboard', () => {
-      render(<RoleGateway user={{ email: 'owner@test.com', role: 'owner' }} />);
+  describe('admin/creator auto-redirect', () => {
+    it('redirects creator email to canonical md dashboard', () => {
+      render(<RoleGateway user={{ email: 'arslanmalikgoraha@gmail.com', role: 'owner' }} />);
 
       expect(mockSafeStorage.setJSON).toHaveBeenCalledWith(
         'userRole',
         expect.objectContaining({
-          role: 'owner',
+          role: 'md',
           locked: true,
-          isOwner: true,
-          isSuperUser: true,
+          isSuperAdmin: true,
         })
       );
       expect(mockDispatch).toHaveBeenCalledWith({
         type: 'navigation/setActiveRole',
-        payload: 'owner',
+        payload: 'md',
       });
-      expect(mockNavigate).toHaveBeenCalledWith('/dashboard');
+      expect(mockNavigate).toHaveBeenCalledWith('/profile');
     });
 
-    it('redirects admin to canonical dashboard', () => {
+    it('does not auto-redirect non-superadmin user', () => {
       render(<RoleGateway user={{ email: 'admin@test.com', role: 'admin' }} />);
 
-      expect(mockNavigate).toHaveBeenCalledWith('/dashboard');
-      expect(mockDispatch).toHaveBeenCalledWith({
-        type: 'navigation/setActiveRole',
-        payload: 'owner',
-      });
+      // Non-superadmin users should NOT be auto-redirected
+      expect(mockNavigate).not.toHaveBeenCalled();
+      expect(mockDispatch).not.toHaveBeenCalled();
     });
 
-    it('redirects managing_director to canonical dashboard', () => {
+    it('does not auto-redirect non-creator managing_director', () => {
       render(<RoleGateway user={{ email: 'md@test.com', role: 'managing_director' }} />);
 
-      expect(mockNavigate).toHaveBeenCalledWith('/dashboard');
-      expect(mockDispatch).toHaveBeenCalledWith({
+      expect(mockNavigate).not.toHaveBeenCalledWith('/profile');
+      expect(mockDispatch).not.toHaveBeenCalledWith({
         type: 'navigation/setActiveRole',
-        payload: 'owner',
+        payload: 'managing_director',
       });
     });
   });
@@ -285,7 +282,7 @@ describe('RoleGuard', () => {
     expect(mockNavigate).toHaveBeenCalledWith('/select-role');
   });
 
-  it('redirects to role dashboard when role not allowed', () => {
+  it('redirects to profile when role not allowed', () => {
     mockSafeStorage.getJSON.mockReturnValue({
       role: 'admin',
       selectedAt: '2024-01-01',
@@ -297,6 +294,6 @@ describe('RoleGuard', () => {
       </RoleGuard>
     );
     expect(screen.queryByText('Secret')).not.toBeInTheDocument();
-    expect(mockNavigate).toHaveBeenCalledWith('/admin/dashboard');
+    expect(mockNavigate).toHaveBeenCalledWith('/profile');
   });
 });

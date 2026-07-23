@@ -5,7 +5,7 @@
  */
 
 import { describe, it, expect } from 'vitest';
-import { evaluateCompliance, getRulesForTemplate, getComplianceSummary } from './complianceEngine';
+import { evaluateCompliance, getRulesForTemplate, getComplianceSummary } from './complianceEngine.js';
 
 // ─── tenancy_contract ───────────────────────────────────────────────────────
 

@@ -38,8 +38,8 @@ vi.mock('../utils/logger.js', () => ({
   createLogger: vi.fn(() => ({ info: vi.fn(), warn: vi.fn(), error: vi.fn(), debug: vi.fn() })),
 }));
 
-import offersRoutes from './offers';
-import { errorHandler } from '../middleware/errorHandler';
+import offersRoutes from './offers.js';
+import { errorHandler } from '../middleware/errorHandler.js';
 
 function createApp(role = 'buyer') {
   const app = express();

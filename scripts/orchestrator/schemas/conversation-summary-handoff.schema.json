@@ -1,0 +1,68 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Aegis Conversation Summary Handoff",
+  "type": "object",
+  "required": [
+    "sessionId",
+    "objective",
+    "summary",
+    "carryForward",
+    "bootstrapFiles"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "type": "string"
+    },
+    "sessionId": {
+      "type": "string",
+      "minLength": 1
+    },
+    "objective": {
+      "type": "string",
+      "minLength": 1
+    },
+    "status": {
+      "type": "string"
+    },
+    "summary": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "blockers": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "carryForward": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "bootstrapFiles": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "historyPolicy": {
+      "type": "object",
+      "properties": {
+        "reuseLayer": {
+          "type": "string"
+        },
+        "staleHistoryIsCanonical": {
+          "type": "boolean"
+        }
+      },
+      "additionalProperties": true
+    },
+    "stale": {
+      "type": "boolean"
+    }
+  },
+  "additionalProperties": true
+}

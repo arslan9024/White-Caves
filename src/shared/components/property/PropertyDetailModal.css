@@ -85,13 +85,15 @@
 }
 
 .badge.featured {
-  background: linear-gradient(135deg, #e31e24 0%, #b71c1c 100%);
-  color: white;
+  background: linear-gradient(135deg, #c9a84c 0%, #a8883a 100%);
+  color: #0f0f0f;
+  font-weight: 700;
 }
 
 .badge.purpose.buy {
-  background: rgba(220, 38, 38, 0.9);
-  color: white;
+  background: rgba(201, 168, 76, 0.9);
+  color: #0f0f0f;
+  font-weight: 700;
 }
 
 .badge.purpose.rent {

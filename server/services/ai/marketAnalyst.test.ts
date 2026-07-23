@@ -29,7 +29,7 @@ vi.mock('../../utils/logger.js', () => ({
   logger: { info: vi.fn(), warn: vi.fn(), error: vi.fn(), debug: vi.fn() },
 }));
 
-import * as marketAnalyst from './marketAnalyst';
+import * as marketAnalyst from './marketAnalyst.js';
 
 function setupMock(model: string, data: unknown) {
   mockFindMany.mockImplementation((calledModel: string) => {

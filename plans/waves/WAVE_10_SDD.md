@@ -5,7 +5,7 @@
 **Status:** 📋 Planned (unlocks when Wave 09 is green)  
 **Date:** 2026-05-22  
 **Owners:** @Ruchi + @Rachel + @Radia + @Katherine  
-**Entry Gate:** Wave 09 green + readiness ≥ 60% + `@Ada — Context Ready (60% Readiness) — Coding Phase Approved`
+**Entry Gate:** Wave 09 green + readiness ≥ 60% + `@Ada — Context Ready (90% Readiness) — High-Fidelity Coding Phase Approved`
 
 ---
 

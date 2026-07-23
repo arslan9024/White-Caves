@@ -69,13 +69,13 @@ const SystemHealthPage: FC = () => {
   const getStatusColor = (status: string): string => {
     switch (status) {
       case 'healthy':
-        return '#4CAF50';
+        return '#10B981';
       case 'degraded':
-        return '#E31E24';
+        return '#C9A84C';
       case 'down':
-        return '#F44336';
+        return '#EF4444';
       default:
-        return '#999';
+        return 'rgba(255, 255, 255, 0.4)';
     }
   };
 

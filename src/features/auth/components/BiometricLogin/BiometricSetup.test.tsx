@@ -32,7 +32,12 @@ vi.mock('../../../../services/webAuthnService', () => ({
 }));
 
 // Mock Redux
-const mockUser = { id: 'user-1', email: 'test@whitecaves.com', displayName: 'John Doe', name: 'John Doe' };
+const mockUser = {
+  id: 'user-1',
+  email: 'test@whitecaves.com',
+  displayName: 'John Doe',
+  name: 'John Doe',
+};
 let mockState: any = {
   user: { currentUser: mockUser },
   auth: { user: mockUser, token: 'jwt-token-123' },
@@ -94,7 +99,7 @@ describe('BiometricSetup', () => {
       });
       await waitFor(() => {
         expect(
-          screen.getByText("Sign in quickly using your device's biometric authentication"),
+          screen.getByText("Sign in quickly using your device's biometric authentication")
         ).toBeInTheDocument();
       });
     });
@@ -138,7 +143,7 @@ describe('BiometricSetup', () => {
         expect(mockRegisterBiometric).toHaveBeenCalledWith(
           'user-1',
           'test@whitecaves.com',
-          'John Doe',
+          'John Doe'
         );
       });
     });
@@ -155,7 +160,7 @@ describe('BiometricSetup', () => {
       });
 
       await waitFor(() => {
-        expect(screen.getByText('Biometric login enabled successfully!')).toBeInTheDocument();
+        expect(screen.getByText(/Biometric login enabled successfully/i)).toBeInTheDocument();
       });
     });
 
@@ -172,7 +177,7 @@ describe('BiometricSetup', () => {
       await waitFor(() => {
         expect(mockSaveBiometricSession).toHaveBeenCalledWith(
           expect.objectContaining({ id: 'user-1', email: 'test@whitecaves.com' }),
-          'jwt-token-123',
+          'jwt-token-123'
         );
       });
     });
@@ -205,7 +210,9 @@ describe('BiometricSetup', () => {
       });
 
       await waitFor(() => {
-        expect(screen.getByText('Failed to enable biometric login')).toBeInTheDocument();
+        expect(
+          screen.getByText('Failed to enable biometric login. Please try again.')
+        ).toBeInTheDocument();
       });
     });
 
@@ -223,7 +230,10 @@ describe('BiometricSetup', () => {
     it('shows "Setting up..." while loading', async () => {
       let resolveRegister: any;
       mockRegisterBiometric.mockImplementation(
-        () => new Promise((res) => { resolveRegister = res; }),
+        () =>
+          new Promise(res => {
+            resolveRegister = res;
+          })
       );
 
       await act(async () => {
@@ -246,9 +256,7 @@ describe('BiometricSetup', () => {
   // ─────────────── Credentials List ───────────────
   describe('credentials list', () => {
     it('shows credential list when credentials exist', async () => {
-      mockGetCredentials.mockReturnValue([
-        { id: 'cred-1', createdAt: '2026-01-15T10:00:00Z' },
-      ]);
+      mockGetCredentials.mockReturnValue([{ id: 'cred-1', createdAt: '2026-01-15T10:00:00Z' }]);
       await act(async () => {
         render(<BiometricSetup />);
       });
@@ -259,9 +267,7 @@ describe('BiometricSetup', () => {
     });
 
     it('shows Remove button for each credential', async () => {
-      mockGetCredentials.mockReturnValue([
-        { id: 'cred-1', createdAt: '2026-01-15T10:00:00Z' },
-      ]);
+      mockGetCredentials.mockReturnValue([{ id: 'cred-1', createdAt: '2026-01-15T10:00:00Z' }]);
       await act(async () => {
         render(<BiometricSetup />);
       });
@@ -271,9 +277,7 @@ describe('BiometricSetup', () => {
     });
 
     it('removes credential on Remove click', async () => {
-      mockGetCredentials.mockReturnValue([
-        { id: 'cred-1', createdAt: '2026-01-15T10:00:00Z' },
-      ]);
+      mockGetCredentials.mockReturnValue([{ id: 'cred-1', createdAt: '2026-01-15T10:00:00Z' }]);
       await act(async () => {
         render(<BiometricSetup />);
       });
@@ -287,9 +291,7 @@ describe('BiometricSetup', () => {
     });
 
     it('shows "Add Another Device" button when credentials exist', async () => {
-      mockGetCredentials.mockReturnValue([
-        { id: 'cred-1', createdAt: '2026-01-15T10:00:00Z' },
-      ]);
+      mockGetCredentials.mockReturnValue([{ id: 'cred-1', createdAt: '2026-01-15T10:00:00Z' }]);
       await act(async () => {
         render(<BiometricSetup />);
       });
@@ -299,9 +301,7 @@ describe('BiometricSetup', () => {
     });
 
     it('shows formatted date for credential', async () => {
-      mockGetCredentials.mockReturnValue([
-        { id: 'cred-1', createdAt: '2026-01-15T10:00:00Z' },
-      ]);
+      mockGetCredentials.mockReturnValue([{ id: 'cred-1', createdAt: '2026-01-15T10:00:00Z' }]);
       await act(async () => {
         render(<BiometricSetup />);
       });

@@ -18,22 +18,34 @@ import { Router, Request, Response } from 'express';
 import { asyncHandler } from '../middleware/errorHandler.js';
 import { prisma } from '../database.js';
 import logger from '../utils/logger.js';
+import { cacheService } from '../services/CacheService.js';
 
 const router = Router();
 
+const CACHE_KEY_HOMEPAGE = 'homepage:data';
+const CACHE_TTL_HOMEPAGE = 3600; // 1 hour
+
 // ─── Location areas to track for trends ──────────────────────────────────────
-const TRACKED_LOCATIONS = [
-  'Palm Jumeirah',
-  'Downtown Dubai',
-  'Emirates Hills',
-  'Dubai Marina',
-];
+const TRACKED_LOCATIONS = ['Palm Jumeirah', 'Downtown Dubai', 'Emirates Hills', 'Dubai Marina'];
 
 // ─── GET /api/homepage/data ───────────────────────────────────────────────────
 router.get(
   '/data',
   asyncHandler(async (_req: Request, res: Response) => {
     const startTime = Date.now();
+
+    // Serve from Redis cache when available (treat Redis failure as cache miss)
+    let cached: unknown = null;
+    try {
+      cached = await cacheService.get(CACHE_KEY_HOMEPAGE);
+    } catch {
+      logger.warn('Homepage cache read failed (non-fatal) — falling through to DB');
+    }
+    if (cached !== null) {
+      res.setHeader('X-Cache', 'HIT');
+      res.setHeader('Cache-Control', 'public, max-age=60, stale-while-revalidate=300');
+      return res.status(200).json(cached);
+    }
 
     try {
       // ── Run all DB queries in parallel ──────────────────────────────────────
@@ -90,7 +102,7 @@ router.get(
 
         // 6. Property counts per tracked location
         Promise.all(
-          TRACKED_LOCATIONS.map((loc) =>
+          TRACKED_LOCATIONS.map(loc =>
             prisma.property.count({
               where: { location: { contains: loc, mode: 'insensitive' } },
             })
@@ -118,7 +130,7 @@ router.get(
 
       // ── Commission sums per agent ───────────────────────────────────────────
       const agentRevenue = await Promise.all(
-        topAgentsRaw.map((agent) =>
+        topAgentsRaw.map(agent =>
           prisma.commission.aggregate({
             where: { agentId: agent.id, status: 'paid' },
             _sum: { amount: true },
@@ -178,7 +190,7 @@ router.get(
       // 60s browser cache + CDN stale-while-revalidate
       res.setHeader('Cache-Control', 'public, max-age=60, stale-while-revalidate=300');
 
-      res.status(200).json({
+      const payload = {
         success: true,
         data: {
           featuredProperties,
@@ -187,11 +199,22 @@ router.get(
           locationTrends,
         },
         meta: { duration, fetchedAt: new Date().toISOString() },
-      });
+      };
+
+      // Store in Redis for subsequent requests (fire-and-forget — never crash the response)
+      cacheService
+        .set(CACHE_KEY_HOMEPAGE, payload, CACHE_TTL_HOMEPAGE)
+        .catch((cacheErr: unknown) => {
+          logger.warn('Homepage cache write failed (non-fatal)', { cacheErr });
+        });
+
+      res.setHeader('X-Cache', 'MISS');
+      return res.status(200).json(payload);
     } catch (err) {
       logger.error('Homepage data fetch error:', err);
       // Return static fallback so the homepage never shows a hard error
-      res.status(200).json({
+      if (res.headersSent) return;
+      return res.status(200).json({
         success: true,
         data: {
           featuredProperties: [],
@@ -204,10 +227,34 @@ router.get(
           },
           topAgents: [],
           locationTrends: [
-            { name: 'Palm Jumeirah',  propertyCount: 120, avgPrice: 15_000_000, trendPercent: 12, trendDirection: 'up' },
-            { name: 'Downtown Dubai', propertyCount: 200, avgPrice:  8_000_000, trendPercent:  8, trendDirection: 'up' },
-            { name: 'Emirates Hills', propertyCount:  45, avgPrice: 35_000_000, trendPercent: 15, trendDirection: 'up' },
-            { name: 'Dubai Marina',   propertyCount: 180, avgPrice:  5_000_000, trendPercent: 10, trendDirection: 'up' },
+            {
+              name: 'Palm Jumeirah',
+              propertyCount: 120,
+              avgPrice: 15_000_000,
+              trendPercent: 12,
+              trendDirection: 'up',
+            },
+            {
+              name: 'Downtown Dubai',
+              propertyCount: 200,
+              avgPrice: 8_000_000,
+              trendPercent: 8,
+              trendDirection: 'up',
+            },
+            {
+              name: 'Emirates Hills',
+              propertyCount: 45,
+              avgPrice: 35_000_000,
+              trendPercent: 15,
+              trendDirection: 'up',
+            },
+            {
+              name: 'Dubai Marina',
+              propertyCount: 180,
+              avgPrice: 5_000_000,
+              trendPercent: 10,
+              trendDirection: 'up',
+            },
           ],
         },
         meta: { duration: 0, fetchedAt: new Date().toISOString(), fallback: true },

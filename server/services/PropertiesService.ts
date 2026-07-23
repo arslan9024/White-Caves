@@ -3,7 +3,7 @@
  * Business logic for property management
  */
 
-import { prisma } from '../database';
+import { prisma } from '../database.js';
 
 /** Input for creating a property listing */
 interface CreatePropertyInput {

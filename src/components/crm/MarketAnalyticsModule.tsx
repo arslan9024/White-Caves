@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import type { CRMModuleProps } from './types';
+import './MarketAnalyticsModule.css';
 
 /**
  * Market Analytics & Reporting Module
@@ -13,44 +14,167 @@ import type { CRMModuleProps } from './types';
  * - Customizable reports
  */
 
+interface MarketKpi {
+  title: string;
+  value: string;
+  delta: string;
+  deltaTone: 'success' | 'warning';
+}
+
+interface PropertyTypeRow {
+  type: string;
+  salesCount: number;
+  totalValue: string;
+  marketShare: string;
+}
+
+interface AgentPerformanceRow {
+  agentName: string;
+  totalDeals: number;
+  avgDealSize: string;
+  commissionYtd: string;
+  closeRate: string;
+  avgDaysToClose: string;
+  highlight?: boolean;
+}
+
+interface RentalYieldRow {
+  location: string;
+  avgMonthlyRent: string;
+  avgPropertyPrice: string;
+  annualYield: string;
+}
+
+interface MarketAnalyticsModuleData {
+  error?: string;
+  kpis?: MarketKpi[];
+  propertyTypeRows?: PropertyTypeRow[];
+  agentRows?: AgentPerformanceRow[];
+  rentalYieldRows?: RentalYieldRow[];
+}
+
+type DateRange = 'week' | 'month' | 'quarter' | 'year';
+
 export default function MarketAnalyticsModule({ role, user, data }: CRMModuleProps) {
   const [activeTab, setActiveTab] = useState('dashboard');
-  const [dateRange, setDateRange] = useState('month');
+  const [dateRange, setDateRange] = useState<DateRange>('month');
+
+  const moduleData = (data ?? {}) as MarketAnalyticsModuleData;
+  const roleLabel = typeof role === 'string' && role.length > 0 ? role : 'viewer';
+  const userName =
+    user && typeof user === 'object' && 'name' in user && typeof user.name === 'string'
+      ? user.name
+      : 'CRM User';
+  const kpis = moduleData.kpis ?? [
+    {
+      title: 'Total Sales (Month)',
+      value: '45 deals',
+      delta: '↑ 12% from last month',
+      deltaTone: 'success',
+    },
+    {
+      title: 'Total Sales Value',
+      value: 'AED 450M',
+      delta: '↑ 8% from last month',
+      deltaTone: 'success',
+    },
+    {
+      title: 'Rental Transactions',
+      value: '32 deals',
+      delta: '→ 0% from last month',
+      deltaTone: 'warning',
+    },
+    {
+      title: 'Average Price/sqft',
+      value: 'AED 1,450',
+      delta: '↑ 2% from last month',
+      deltaTone: 'success',
+    },
+  ];
+
+  const propertyTypeRows = moduleData.propertyTypeRows ?? [
+    { type: 'Apartments', salesCount: 28, totalValue: 'AED 280M', marketShare: '62%' },
+    { type: 'Villas', salesCount: 12, totalValue: 'AED 150M', marketShare: '33%' },
+    { type: 'Commercial', salesCount: 5, totalValue: 'AED 20M', marketShare: '5%' },
+  ];
+
+  const agentRows = moduleData.agentRows ?? [
+    {
+      agentName: 'Ahmed Al-Mansouri',
+      totalDeals: 15,
+      avgDealSize: 'AED 12.5M',
+      commissionYtd: 'AED 375K',
+      closeRate: '85%',
+      avgDaysToClose: '18 days',
+      highlight: true,
+    },
+    {
+      agentName: 'Fatima Al-Naqbi',
+      totalDeals: 12,
+      avgDealSize: 'AED 10.2M',
+      commissionYtd: 'AED 306K',
+      closeRate: '78%',
+      avgDaysToClose: '22 days',
+    },
+    {
+      agentName: 'Mohammed Al-Ketbi',
+      totalDeals: 10,
+      avgDealSize: 'AED 9.8M',
+      commissionYtd: 'AED 294K',
+      closeRate: '72%',
+      avgDaysToClose: '25 days',
+    },
+    {
+      agentName: 'Zainab Al-Moradi',
+      totalDeals: 8,
+      avgDealSize: 'AED 8.5M',
+      commissionYtd: 'AED 255K',
+      closeRate: '68%',
+      avgDaysToClose: '28 days',
+    },
+  ];
+
+  const rentalYieldRows = moduleData.rentalYieldRows ?? [
+    {
+      location: 'Marina',
+      avgMonthlyRent: 'AED 5,500',
+      avgPropertyPrice: 'AED 1.5M',
+      annualYield: '4.4%',
+    },
+    {
+      location: 'Downtown',
+      avgMonthlyRent: 'AED 6,200',
+      avgPropertyPrice: 'AED 1.8M',
+      annualYield: '4.1%',
+    },
+    {
+      location: 'JBR',
+      avgMonthlyRent: 'AED 4,800',
+      avgPropertyPrice: 'AED 1.2M',
+      annualYield: '4.8%',
+    },
+  ];
 
   const renderDashboard = () => (
     <div className="module-dashboard">
+      {kpis.length === 0 ? (
+        <div role="status" aria-live="polite" className="market-analytics__empty-kpi">
+          No KPI data available for the selected period.
+        </div>
+      ) : null}
       <div className="kpi-grid">
-        <div className="kpi-card">
-          <h4>Total Sales (Month)</h4>
-          <p style={{ fontSize: '24px', fontWeight: 'bold', color: '#0066cc' }}>
-            45 deals
-          </p>
-          <span style={{ color: '#22c55e', fontSize: '12px' }}>↑ 12% from last month</span>
-        </div>
-        <div className="kpi-card">
-          <h4>Total Sales Value</h4>
-          <p style={{ fontSize: '24px', fontWeight: 'bold', color: '#0066cc' }}>
-            AED 450M
-          </p>
-          <span style={{ color: '#22c55e', fontSize: '12px' }}>↑ 8% from last month</span>
-        </div>
-        <div className="kpi-card">
-          <h4>Rental Transactions</h4>
-          <p style={{ fontSize: '24px', fontWeight: 'bold', color: '#0066cc' }}>
-            32 deals
-          </p>
-          <span style={{ color: '#f59e0b', fontSize: '12px' }}>→ 0% from last month</span>
-        </div>
-        <div className="kpi-card">
-          <h4>Average Price/sqft</h4>
-          <p style={{ fontSize: '24px', fontWeight: 'bold', color: '#0066cc' }}>
-            AED 1,450
-          </p>
-          <span style={{ color: '#22c55e', fontSize: '12px' }}>↑ 2% from last month</span>
-        </div>
+        {kpis.map(kpi => (
+          <div className="kpi-card" key={kpi.title}>
+            <h4>{kpi.title}</h4>
+            <p className="market-analytics__kpi-value">{kpi.value}</p>
+            <span className={`market-analytics__kpi-delta market-analytics__kpi-delta--${kpi.deltaTone}`}>
+              {kpi.delta}
+            </span>
+          </div>
+        ))}
       </div>
 
-      <div style={{ marginTop: '30px' }}>
+      <div className="market-analytics__section-spacer-lg">
         <h3>Sales by Property Type</h3>
         <div className="chart-placeholder">
           <table>
@@ -63,24 +187,14 @@ export default function MarketAnalyticsModule({ role, user, data }: CRMModulePro
               </tr>
             </thead>
             <tbody>
-              <tr>
-                <td>Apartments</td>
-                <td>28</td>
-                <td>AED 280M</td>
-                <td>62%</td>
-              </tr>
-              <tr>
-                <td>Villas</td>
-                <td>12</td>
-                <td>AED 150M</td>
-                <td>33%</td>
-              </tr>
-              <tr>
-                <td>Commercial</td>
-                <td>5</td>
-                <td>AED 20M</td>
-                <td>5%</td>
-              </tr>
+              {propertyTypeRows.map(row => (
+                <tr key={row.type}>
+                  <td>{row.type}</td>
+                  <td>{row.salesCount}</td>
+                  <td>{row.totalValue}</td>
+                  <td>{row.marketShare}</td>
+                </tr>
+              ))}
             </tbody>
           </table>
         </div>
@@ -103,38 +217,19 @@ export default function MarketAnalyticsModule({ role, user, data }: CRMModulePro
           </tr>
         </thead>
         <tbody>
-          <tr style={{ backgroundColor: '#e6f2ff' }}>
-            <td><strong>Ahmed Al-Mansouri</strong></td>
-            <td>15</td>
-            <td>AED 12.5M</td>
-            <td>AED 375K</td>
-            <td>85%</td>
-            <td>18 days</td>
-          </tr>
-          <tr>
-            <td>Fatima Al-Naqbi</td>
-            <td>12</td>
-            <td>AED 10.2M</td>
-            <td>AED 306K</td>
-            <td>78%</td>
-            <td>22 days</td>
-          </tr>
-          <tr>
-            <td>Mohammed Al-Ketbi</td>
-            <td>10</td>
-            <td>AED 9.8M</td>
-            <td>AED 294K</td>
-            <td>72%</td>
-            <td>25 days</td>
-          </tr>
-          <tr>
-            <td>Zainab Al-Moradi</td>
-            <td>8</td>
-            <td>AED 8.5M</td>
-            <td>AED 255K</td>
-            <td>68%</td>
-            <td>28 days</td>
-          </tr>
+          {agentRows.map(agent => (
+            <tr
+              key={agent.agentName}
+              className={agent.highlight ? 'market-analytics__agent-row--highlight' : undefined}
+            >
+              <td>{agent.highlight ? <strong>{agent.agentName}</strong> : agent.agentName}</td>
+              <td>{agent.totalDeals}</td>
+              <td>{agent.avgDealSize}</td>
+              <td>{agent.commissionYtd}</td>
+              <td>{agent.closeRate}</td>
+              <td>{agent.avgDaysToClose}</td>
+            </tr>
+          ))}
         </tbody>
       </table>
     </div>
@@ -143,9 +238,9 @@ export default function MarketAnalyticsModule({ role, user, data }: CRMModulePro
   const renderMarketTrends = () => (
     <div className="module-section">
       <h3>Market Trends & Forecasts</h3>
-      <div style={{ marginTop: '20px' }}>
+      <div className="market-analytics__section-spacer-md">
         <h4>Dubai Real Estate Market Overview</h4>
-        <ul style={{ lineHeight: '2' }}>
+        <ul className="market-analytics__overview-list">
           <li><strong>Current Market Status:</strong> Stable with moderate growth</li>
           <li><strong>Rental Yield (Average):</strong> 4-5% per annum</li>
           <li><strong>Price Growth (YoY):</strong> +2.8%</li>
@@ -155,7 +250,7 @@ export default function MarketAnalyticsModule({ role, user, data }: CRMModulePro
         </ul>
       </div>
 
-      <div style={{ marginTop: '20px' }}>
+      <div className="market-analytics__section-spacer-md">
         <h4>Rental Yields by Location</h4>
         <table>
           <thead>
@@ -167,35 +262,49 @@ export default function MarketAnalyticsModule({ role, user, data }: CRMModulePro
             </tr>
           </thead>
           <tbody>
-            <tr>
-              <td>Marina</td>
-              <td>AED 5,500</td>
-              <td>AED 1.5M</td>
-              <td>4.4%</td>
-            </tr>
-            <tr>
-              <td>Downtown</td>
-              <td>AED 6,200</td>
-              <td>AED 1.8M</td>
-              <td>4.1%</td>
-            </tr>
-            <tr>
-              <td>JBR</td>
-              <td>AED 4,800</td>
-              <td>AED 1.2M</td>
-              <td>4.8%</td>
-            </tr>
+            {rentalYieldRows.map(row => (
+              <tr key={row.location}>
+                <td>{row.location}</td>
+                <td>{row.avgMonthlyRent}</td>
+                <td>{row.avgPropertyPrice}</td>
+                <td>{row.annualYield}</td>
+              </tr>
+            ))}
           </tbody>
         </table>
       </div>
     </div>
   );
 
+  const periodButtons: DateRange[] = ['week', 'month', 'quarter', 'year'];
+
   return (
-    <div className="dubai-crm-module market-analytics-module">
+    <div className="dubai-crm-module market-analytics-module" data-date-range={dateRange}>
       <div className="module-header">
         <h1>Market Analytics & Reporting</h1>
         <p>Real estate market insights, agent performance tracking, and trend analysis</p>
+        <p className="market-analytics__viewer-context">
+          Viewing as <strong>{roleLabel}</strong> • {userName}
+        </p>
+      </div>
+
+      {moduleData.error ? (
+        <div role="alert" className="market-analytics__error-banner">
+          {moduleData.error}
+        </div>
+      ) : null}
+
+      <div className="market-analytics__date-range" aria-label="Date range selector">
+        {periodButtons.map(period => (
+          <button
+            key={period}
+            type="button"
+            className="tab"
+            onClick={() => setDateRange(period)}
+          >
+            {period.charAt(0).toUpperCase() + period.slice(1)}
+          </button>
+        ))}
       </div>
 
       <div className="module-tabs">

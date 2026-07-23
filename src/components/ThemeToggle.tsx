@@ -25,6 +25,8 @@ interface ThemeToggleProps {
 
 const ThemeToggle: React.FC<ThemeToggleProps> = ({ className = '', compact = false, onToggle }) => {
   const { themeMode, setThemeMode, isDark } = useTheme();
+  // Defensive guard for environments where context value may not be fully initialised
+  const safeSetThemeMode = typeof setThemeMode === 'function' ? setThemeMode : () => {};
 
   if (compact) {
     // Legacy single-button mode: click cycles through modes
@@ -36,7 +38,7 @@ const ThemeToggle: React.FC<ThemeToggleProps> = ({ className = '', compact = fal
       <S.ThemeToggleButton
         className={className}
         onClick={() => {
-          setThemeMode(nextMode);
+          safeSetThemeMode(nextMode);
           onToggle?.();
         }}
         aria-label={`Theme: ${themeMode}. Click to switch to ${nextMode} mode`}
@@ -83,7 +85,7 @@ const ThemeToggle: React.FC<ThemeToggleProps> = ({ className = '', compact = fal
             key={mode}
             type="button"
             onClick={() => {
-              setThemeMode(mode);
+              safeSetThemeMode(mode);
               onToggle?.();
             }}
             aria-pressed={active}

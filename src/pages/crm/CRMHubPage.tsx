@@ -4,22 +4,14 @@
  * Routes: /owner/crm, /lion/crm
  */
 
-import React, { FC, memo, useState, useEffect, lazy, Suspense, useCallback } from 'react';
+import React, { FC, memo, useState, useEffect, Suspense, useCallback } from 'react';
 import ErrorBoundary from '../../components/ErrorBoundary';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import styled from 'styled-components';
 import { Badge } from '../../components/ui';
 import SuspenseLoader from '../../components/common/SuspenseLoader';
 import { useCRMHubData } from '../../hooks/crm/useCRMHubData';
-
-// Lazy-load CRM modules
-const ClaraLeadsCRM = lazy(() => import('../../components/crm/ClaraLeadsCRM_NEW'));
-const MaryInventoryCRM = lazy(() => import('../../components/crm/MaryInventoryCRM_NEW'));
-const SophiaSalesCRM = lazy(() => import('../../components/crm/SophiaSalesCRM_NEW'));
-const ZoeExecutiveCRM = lazy(() => import('../../components/crm/ZoeExecutiveCRM_NEW'));
-const TheodoraFinanceCRM = lazy(() => import('../../components/crm/TheodoraFinanceCRM_NEW'));
-const DaisyLeasingCRM = lazy(() => import('../../components/crm/DaisyLeasingCRM_NEW'));
-const NadiaWhatsAppCRM = lazy(() => import('../../components/crm/NadiaWhatsAppCRM'));
+import { CRM_HUB_MODULE_ORDER, resolveCRMModules } from '../../config/crmModuleRegistry';
 
 // ─── Types ──────────────────────────────────────────────────────────────
 
@@ -28,7 +20,7 @@ interface CRMModuleDef {
   label: string;
   icon: string;
   description: string;
-  Component: FC<Record<string, unknown>>;
+  Component: React.ComponentType<Record<string, unknown>>;
   color: string;
 }
 
@@ -48,12 +40,12 @@ const HubHeader = styled.div`
 const HubTitle = styled.h1`
   font-size: 1.75rem;
   font-weight: 700;
-  color: #1a1a2e;
+  color: #c9a84c;
   margin: 0 0 0.25rem 0;
 `;
 
 const HubSubtitle = styled.p`
-  color: #666;
+  color: rgba(255, 255, 255, 0.6);
   font-size: 0.95rem;
   margin: 0;
 `;
@@ -66,17 +58,17 @@ const StatsGrid = styled.div`
 `;
 
 const StatCard = styled.div<{ $color: string }>`
-  background: white;
+  background: #0f0f0f;
   border-radius: 12px;
   padding: 1.25rem;
-  border: 1px solid #e8e8e8;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+  border: 1px solid rgba(201, 168, 76, 0.2);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
   transition: all 0.2s ease;
   cursor: pointer;
 
   &:hover {
     border-color: ${props => props.$color};
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    box-shadow: 0 4px 12px rgba(201, 168, 76, 0.15);
     transform: translateY(-2px);
   }
 `;
@@ -84,7 +76,7 @@ const StatCard = styled.div<{ $color: string }>`
 const StatLabel = styled.div`
   font-size: 0.8rem;
   font-weight: 500;
-  color: #888;
+  color: rgba(255, 255, 255, 0.5);
   text-transform: uppercase;
   letter-spacing: 0.5px;
   margin-bottom: 0.5rem;
@@ -104,10 +96,10 @@ const ModulesGrid = styled.div`
 `;
 
 const ModuleCard = styled.div<{ $color: string; $active: boolean }>`
-  background: ${props => (props.$active ? `${props.$color}08` : 'white')};
+  background: ${props => (props.$active ? `${props.$color}12` : '#0f0f0f')};
   border-radius: 12px;
   padding: 1.25rem;
-  border: 2px solid ${props => (props.$active ? props.$color : '#e8e8e8')};
+  border: 2px solid ${props => (props.$active ? props.$color : '#2c2c2c')};
   cursor: pointer;
   transition: all 0.2s ease;
 
@@ -126,21 +118,21 @@ const ModuleIcon = styled.div<{ $color: string }>`
 const ModuleName = styled.h3`
   font-size: 1rem;
   font-weight: 600;
-  color: #1a1a2e;
+  color: #ffffff;
   margin: 0 0 0.25rem 0;
 `;
 
 const ModuleDesc = styled.p`
   font-size: 0.8rem;
-  color: #888;
+  color: rgba(255, 255, 255, 0.5);
   margin: 0;
   line-height: 1.4;
 `;
 
 const ContentArea = styled.div`
-  background: white;
+  background: #0f0f0f;
   border-radius: 12px;
-  border: 1px solid #e8e8e8;
+  border: 1px solid #2c2c2c;
   min-height: 500px;
   overflow: hidden;
 `;
@@ -150,17 +142,17 @@ const ContentHeader = styled.div`
   align-items: center;
   justify-content: space-between;
   padding: 1rem 1.5rem;
-  border-bottom: 1px solid #f0f0f0;
-  background: #fafafa;
+  border-bottom: 1px solid #2c2c2c;
+  background: #1a1a1a;
 `;
 
 const BackButton = styled.button`
   background: none;
-  border: 1px solid #ddd;
+  border: 1px solid #2c2c2c;
   border-radius: 8px;
   padding: 0.5rem 1rem;
   font-size: 0.85rem;
-  color: #555;
+  color: rgba(255, 255, 255, 0.7);
   cursor: pointer;
   display: flex;
   align-items: center;
@@ -168,15 +160,15 @@ const BackButton = styled.button`
   transition: all 0.15s ease;
 
   &:hover {
-    background: #f5f5f5;
-    border-color: #bbb;
+    background: #1f1f1f;
+    border-color: rgba(201, 168, 76, 0.4);
   }
 `;
 
 const ActivityFeed = styled.div`
-  background: white;
+  background: #0f0f0f;
   border-radius: 12px;
-  border: 1px solid #e8e8e8;
+  border: 1px solid #2c2c2c;
   padding: 1.25rem;
   margin-top: 1.5rem;
 `;
@@ -184,7 +176,7 @@ const ActivityFeed = styled.div`
 const ActivityTitle = styled.h3`
   font-size: 1rem;
   font-weight: 600;
-  color: #1a1a2e;
+  color: #c9a84c;
   margin: 0 0 1rem 0;
 `;
 
@@ -193,7 +185,7 @@ const ActivityItem = styled.div`
   align-items: flex-start;
   gap: 0.75rem;
   padding: 0.75rem 0;
-  border-bottom: 1px solid #f5f5f5;
+  border-bottom: 1px solid #1f1f1f;
 
   &:last-child {
     border-bottom: none;
@@ -211,13 +203,13 @@ const ActivityDot = styled.div<{ $color: string }>`
 
 const ActivityText = styled.div`
   font-size: 0.85rem;
-  color: #444;
+  color: rgba(255, 255, 255, 0.7);
   line-height: 1.4;
 `;
 
 const ActivityTime = styled.div`
   font-size: 0.75rem;
-  color: #aaa;
+  color: rgba(255, 255, 255, 0.4);
   margin-top: 2px;
 `;
 
@@ -253,12 +245,14 @@ interface CRMQuickActionsProps {
   leadManagementLabel: string;
   propertyPortfolioLabel: string;
   agentPerformanceLabel: string;
+  auditLogLabel: string;
   whatsappLabel: string;
   financeLabel: string;
   executiveLabel: string;
   onOpenLeads: () => void;
   onOpenProperties: () => void;
   onOpenAgents: () => void;
+  onOpenAuditLog: () => void;
   onOpenNadia: () => void;
   onOpenTheodora: () => void;
   onOpenZoe: () => void;
@@ -268,34 +262,39 @@ const CRMQuickActions = memo(function CRMQuickActions({
   leadManagementLabel,
   propertyPortfolioLabel,
   agentPerformanceLabel,
+  auditLogLabel,
   whatsappLabel,
   financeLabel,
   executiveLabel,
   onOpenLeads,
   onOpenProperties,
   onOpenAgents,
+  onOpenAuditLog,
   onOpenNadia,
   onOpenTheodora,
   onOpenZoe,
 }: CRMQuickActionsProps) {
   return (
     <QuickActions>
-      <QuickAction $color="#3B82F6" onClick={onOpenLeads}>
+      <QuickAction $color="#C9A84C" onClick={onOpenLeads}>
         🎯 {leadManagementLabel}
       </QuickAction>
       <QuickAction $color="#10B981" onClick={onOpenProperties}>
         🏠 {propertyPortfolioLabel}
       </QuickAction>
-      <QuickAction $color="#F59E0B" onClick={onOpenAgents}>
+      <QuickAction $color="#C9A84C" onClick={onOpenAgents}>
         👥 {agentPerformanceLabel}
       </QuickAction>
-      <QuickAction $color="#25D366" onClick={onOpenNadia}>
+      <QuickAction $color="#C9A84C" onClick={onOpenAuditLog}>
+        🧾 {auditLogLabel}
+      </QuickAction>
+      <QuickAction $color="#10B981" onClick={onOpenNadia}>
         💬 {whatsappLabel}
       </QuickAction>
-      <QuickAction $color="#8B5CF6" onClick={onOpenTheodora}>
+      <QuickAction $color="#C9A84C" onClick={onOpenTheodora}>
         💰 {financeLabel}
       </QuickAction>
-      <QuickAction $color="#E31E24" onClick={onOpenZoe}>
+      <QuickAction $color="#C9A84C" onClick={onOpenZoe}>
         👑 {executiveLabel}
       </QuickAction>
     </QuickActions>
@@ -307,6 +306,7 @@ const CRM_HUB_COPY = {
     leadManagementLabel: 'Lead Management',
     propertyPortfolioLabel: 'Property Portfolio',
     agentPerformanceLabel: 'Agent Performance',
+    auditLogLabel: 'Audit Log',
     whatsappLabel: 'WhatsApp CRM',
     financeLabel: 'Finance & Commissions',
     executiveLabel: 'Executive View',
@@ -315,6 +315,7 @@ const CRM_HUB_COPY = {
     leadManagementLabel: 'إدارة العملاء المحتملين',
     propertyPortfolioLabel: 'محفظة العقارات',
     agentPerformanceLabel: 'أداء الوكلاء',
+    auditLogLabel: 'سجل التدقيق',
     whatsappLabel: 'واتساب CRM',
     financeLabel: 'المالية والعمولات',
     executiveLabel: 'الرؤية التنفيذية',
@@ -329,64 +330,14 @@ const getCRMHubLocale = (): keyof typeof CRM_HUB_COPY => {
 
 // ─── Module Definitions ─────────────────────────────────────────────────
 
-const CRM_MODULES: CRMModuleDef[] = [
-  {
-    id: 'clara',
-    label: 'Lead Management',
-    icon: '🎯',
-    description: 'Track prospects, score leads, manage pipeline',
-    Component: ClaraLeadsCRM,
-    color: '#3B82F6',
-  },
-  {
-    id: 'mary',
-    label: 'Property Inventory',
-    icon: '🏠',
-    description: 'Property listings, availability, owner tracking',
-    Component: MaryInventoryCRM,
-    color: '#10B981',
-  },
-  {
-    id: 'sophia',
-    label: 'Sales Pipeline',
-    icon: '💰',
-    description: 'Deals, pipeline stages, agent performance',
-    Component: SophiaSalesCRM,
-    color: '#F59E0B',
-  },
-  {
-    id: 'theodora',
-    label: 'Finance & Commissions',
-    icon: '📊',
-    description: 'Revenue tracking, commissions, payments',
-    Component: TheodoraFinanceCRM,
-    color: '#8B5CF6',
-  },
-  {
-    id: 'daisy',
-    label: 'Leasing Management',
-    icon: '📋',
-    description: 'Tenants, lease agreements, renewals',
-    Component: DaisyLeasingCRM,
-    color: '#EC4899',
-  },
-  {
-    id: 'nadia',
-    label: 'WhatsApp CRM',
-    icon: '💬',
-    description: 'WhatsApp conversations, templates, campaigns',
-    Component: NadiaWhatsAppCRM,
-    color: '#25D366',
-  },
-  {
-    id: 'zoe',
-    label: 'Executive Dashboard',
-    icon: '👑',
-    description: 'KPIs, compliance, strategic overview',
-    Component: ZoeExecutiveCRM,
-    color: '#E31E24',
-  },
-];
+const CRM_MODULES: CRMModuleDef[] = resolveCRMModules(CRM_HUB_MODULE_ORDER).map(module => ({
+  id: module.id,
+  label: module.label,
+  icon: module.icon,
+  description: module.description,
+  color: module.color,
+  Component: module.Component as React.ComponentType<Record<string, unknown>>,
+}));
 
 const formatTimeAgo = (timestamp: string) => {
   if (!timestamp) return 'Recently';
@@ -440,6 +391,7 @@ const CRMHubPage: FC = () => {
   const handleOpenLeads = useCallback(() => navigate('/owner/crm/leads'), [navigate]);
   const handleOpenProperties = useCallback(() => navigate('/owner/crm/properties'), [navigate]);
   const handleOpenAgents = useCallback(() => navigate('/owner/crm/agents'), [navigate]);
+  const handleOpenAuditLog = useCallback(() => navigate('/owner/crm/audit-log'), [navigate]);
   const handleOpenNadia = useCallback(() => handleModuleSelect('nadia'), []);
   const handleOpenTheodora = useCallback(() => handleModuleSelect('theodora'), []);
   const handleOpenZoe = useCallback(() => handleModuleSelect('zoe'), []);
@@ -456,7 +408,7 @@ const CRMHubPage: FC = () => {
               <BackButton onClick={handleBackToHub}>← Back to CRM Hub</BackButton>
               <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
                 <span style={{ fontSize: '1.25rem' }}>{moduleDef.icon}</span>
-                <span style={{ fontWeight: 600, color: '#1a1a2e' }}>{moduleDef.label}</span>
+                <span style={{ fontWeight: 600, color: '#ffffff' }}>{moduleDef.label}</span>
               </div>
               <Badge variant="success" size="small">
                 Active
@@ -499,12 +451,14 @@ const CRMHubPage: FC = () => {
         leadManagementLabel={copy.leadManagementLabel}
         propertyPortfolioLabel={copy.propertyPortfolioLabel}
         agentPerformanceLabel={copy.agentPerformanceLabel}
+        auditLogLabel={copy.auditLogLabel}
         whatsappLabel={copy.whatsappLabel}
         financeLabel={copy.financeLabel}
         executiveLabel={copy.executiveLabel}
         onOpenLeads={handleOpenLeads}
         onOpenProperties={handleOpenProperties}
         onOpenAgents={handleOpenAgents}
+        onOpenAuditLog={handleOpenAuditLog}
         onOpenNadia={handleOpenNadia}
         onOpenTheodora={handleOpenTheodora}
         onOpenZoe={handleOpenZoe}

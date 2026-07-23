@@ -5,19 +5,53 @@
  */
 
 import { Router, Request, Response } from 'express';
-import { asyncHandler, AppError } from '../middleware/errorHandler';
+import { asyncHandler, AppError } from '../middleware/errorHandler.js';
 import { prisma } from '../database.js';
-import { validateIdParam } from '../utils/validate';
-import { requirePermission } from '../middleware/rbac';
+import { validateIdParam } from '../utils/validate.js';
+import { requirePermission } from '../middleware/rbac.js';
+import { cacheService } from '../services/CacheService.js';
 
 const router = Router();
+
+type RouteRequest = Request<Record<string, string>>;
+
+const CACHE_TTL_AGENTS = 300; // 5 minutes
+
+const routeParamToString = (value: string | string[] | undefined): string | null => {
+  if (typeof value === 'string' && value.trim().length > 0) {
+    return value;
+  }
+  if (Array.isArray(value) && value.length > 0 && typeof value[0] === 'string') {
+    const first = value[0].trim();
+    return first.length > 0 ? first : null;
+  }
+  return null;
+};
 
 // ─── GET /api/agents ────────────────────────────────────────────────────
 router.get(
   '/',
   requirePermission('manage_agents'),
-  asyncHandler(async (req: Request, res: Response) => {
-    const { status, department, search, page = '1', pageSize = '50' } = req.query;
+  asyncHandler(async (req: RouteRequest, res: Response) => {
+    const {
+      status,
+      department,
+      search,
+      page = '1',
+      pageSize = '50',
+    } = req.query as Record<string, string | undefined>;
+
+    // Build cache key from stable query params
+    const queryKey = Object.keys(req.query)
+      .sort()
+      .map(k => `${k}=${req.query[k]}`)
+      .join('&');
+    const cacheKey = `agents:list:${queryKey}`;
+    const cached = await cacheService.get(cacheKey);
+    if (cached !== null) {
+      res.setHeader('X-Cache', 'HIT');
+      return res.status(200).json(cached);
+    }
 
     const pageNum = Math.max(1, parseInt(page as string) || 1);
     const limit = Math.min(100, Math.max(1, parseInt(pageSize as string) || 50));
@@ -122,11 +156,15 @@ router.get(
       };
     });
 
-    res.status(200).json({
+    const payload = {
       success: true,
       data: enriched,
       pagination: { page: pageNum, pageSize: limit, total, totalPages: Math.ceil(total / limit) },
-    });
+    };
+
+    await cacheService.set(cacheKey, payload, CACHE_TTL_AGENTS);
+    res.setHeader('X-Cache', 'MISS');
+    res.status(200).json(payload);
   })
 );
 
@@ -134,7 +172,7 @@ router.get(
 router.get(
   '/stats',
   requirePermission('manage_agents'),
-  asyncHandler(async (req: Request, res: Response) => {
+  asyncHandler(async (req: RouteRequest, res: Response) => {
     // AUTHORIZATION: Only managers+ can view aggregated agent statistics
     const allowedRoles = ['owner', 'manager', 'admin'];
     if (!allowedRoles.includes(req.user?.role || '')) {
@@ -167,18 +205,22 @@ router.get(
 router.get(
   '/:id',
   asyncHandler(async (req: Request, res: Response) => {
-    validateIdParam(req.params.id, 'Agent ID');
+    const agentId = routeParamToString(req.params.id);
+    if (!agentId) {
+      throw new AppError('Agent ID is required', 400);
+    }
+    validateIdParam(agentId, 'Agent ID');
 
     // IDOR protection: agents can only view their own profile; managers+ can view any
     const userRole = req.user?.role || '';
     const userId = req.user?.id || '';
     const isManagerOrAbove = ['owner', 'manager', 'admin'].includes(userRole);
-    if (!isManagerOrAbove && userId !== req.params.id) {
+    if (!isManagerOrAbove && userId !== agentId) {
       throw new AppError('Access denied — you can only view your own agent profile', 403);
     }
 
     const agent = await prisma.user.findUnique({
-      where: { id: req.params.id },
+      where: { id: agentId },
       select: {
         id: true,
         name: true,
@@ -217,8 +259,8 @@ router.get(
 // AUTHORIZATION: Only the agent themselves, or a manager/owner, can view performance
 router.get(
   '/:id/performance',
-  asyncHandler(async (req: Request, res: Response) => {
-    const { id } = req.params;
+  asyncHandler(async (req: RouteRequest, res: Response) => {
+    const { id } = req.params as Record<string, string>;
     validateIdParam(id, 'Agent ID');
 
     // IDOR protection: agents can only view their own performance
@@ -278,21 +320,25 @@ router.get(
 router.get(
   '/:id/commissions',
   asyncHandler(async (req: Request, res: Response) => {
-    validateIdParam(req.params.id, 'Agent ID');
+    const agentId = routeParamToString(req.params.id);
+    if (!agentId) {
+      throw new AppError('Agent ID is required', 400);
+    }
+    validateIdParam(agentId, 'Agent ID');
 
     // IDOR protection: agents can only view their own commission data
     const userRole = req.user?.role || '';
     const userId = req.user?.id || '';
     const isManagerOrAbove = ['owner', 'manager', 'admin'].includes(userRole);
-    if (!isManagerOrAbove && userId !== req.params.id) {
+    if (!isManagerOrAbove && userId !== agentId) {
       throw new AppError('Access denied — you can only view your own commission data', 403);
     }
 
-    const { status, page = '1', pageSize = '50' } = req.query;
+    const { status, page = '1', pageSize = '50' } = req.query as Record<string, string | undefined>;
     const pageNum = Math.max(1, parseInt(page as string) || 1);
     const limit = Math.min(100, Math.max(1, parseInt(pageSize as string) || 50));
 
-    const where: Record<string, unknown> = { agentId: req.params.id };
+    const where: Record<string, unknown> = { agentId };
     if (status) where.status = status as string;
 
     const [commissions, total] = await Promise.all([

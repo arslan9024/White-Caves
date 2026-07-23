@@ -11,11 +11,19 @@ import styled from 'styled-components';
 import { Badge, Pagination } from '../../components/ui';
 import { useDocumentTitle } from '../../hooks/useDocumentTitle';
 import {
-  PageContainer, PageHeader, PageTitle, BackLink,
-  ActionBar, FilterSelect,
-  PrimaryButton, SecondaryButton, DangerButton,
+  PageContainer,
+  PageHeader,
+  PageTitle,
+  BackLink,
+  ActionBar,
+  FilterSelect,
+  PrimaryButton,
+  SecondaryButton,
+  DangerButton,
   EmptyState,
-  PaginationWrapper, LoadingBanner, ErrorBanner,
+  PaginationWrapper,
+  LoadingBanner,
+  ErrorBanner,
 } from './styles/CrmPageStyles';
 import { useNotifications, TYPE_CONFIG } from './hooks/useNotifications';
 import type { Notification } from './hooks/useNotifications';
@@ -23,8 +31,8 @@ import type { Notification } from './hooks/useNotifications';
 // ─── Notifications-Specific Styled Components ───────────────────────────
 
 const UnreadBadge = styled.span`
-  background: #EF4444;
-  color: white;
+  background: #c9a84c;
+  color: #0f0f0f;
   font-size: 0.7rem;
   font-weight: 700;
   padding: 0.2rem 0.6rem;
@@ -39,8 +47,8 @@ const NotificationList = styled.div`
 `;
 
 const NotificationItem = styled.div<{ $unread: boolean }>`
-  background: ${props => props.$unread ? '#F0F7FF' : 'white'};
-  border: 1px solid ${props => props.$unread ? '#BFDBFE' : '#e8e8e8'};
+  background: ${props => (props.$unread ? '#1a1a1a' : '#0f0f0f')};
+  border: 1px solid ${props => (props.$unread ? 'rgba(201, 168, 76, 0.5)' : '#2c2c2c')};
   border-radius: 10px;
   padding: 1rem 1.25rem;
   display: flex;
@@ -50,7 +58,8 @@ const NotificationItem = styled.div<{ $unread: boolean }>`
   cursor: pointer;
 
   &:hover {
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+    box-shadow: 0 2px 12px rgba(201, 168, 76, 0.12);
+    border-color: rgba(201, 168, 76, 0.4);
   }
 `;
 
@@ -62,7 +71,7 @@ const NotificationIcon = styled.div`
   display: flex;
   align-items: center;
   justify-content: center;
-  background: #f5f5f5;
+  background: #1f1f1f;
   border-radius: 10px;
 `;
 
@@ -73,14 +82,14 @@ const NotificationContent = styled.div`
 
 const NotificationTitle = styled.div<{ $unread: boolean }>`
   font-size: 0.9rem;
-  font-weight: ${props => props.$unread ? 600 : 400};
-  color: #1a1a2e;
+  font-weight: ${props => (props.$unread ? 600 : 400)};
+  color: ${props => (props.$unread ? '#ffffff' : 'rgba(255, 255, 255, 0.7)')};
   margin-bottom: 0.25rem;
 `;
 
 const NotificationMessage = styled.div`
   font-size: 0.8rem;
-  color: #666;
+  color: rgba(255, 255, 255, 0.55);
   line-height: 1.4;
 `;
 
@@ -93,7 +102,7 @@ const NotificationMeta = styled.div`
 
 const TimeAgo = styled.span`
   font-size: 0.75rem;
-  color: #999;
+  color: rgba(255, 255, 255, 0.4);
 `;
 
 const NotificationActions = styled.div`
@@ -108,13 +117,23 @@ const NotificationActions = styled.div`
 const NotificationsPage: FC = () => {
   useDocumentTitle('Notifications');
   const {
-    filteredNotifications, paginatedNotifications,
+    filteredNotifications,
+    paginatedNotifications,
     unreadCount,
-    loading, error,
-    typeFilter, readFilter, currentPage, ITEMS_PER_PAGE,
-    handleMarkAsRead, handleMarkAllAsRead, handleDelete,
-    handleTypeFilterChange, handleReadFilterChange,
-    setCurrentPage, retryFetch, goBack,
+    loading,
+    error,
+    typeFilter,
+    readFilter,
+    currentPage,
+    ITEMS_PER_PAGE,
+    handleMarkAsRead,
+    handleMarkAllAsRead,
+    handleDelete,
+    handleTypeFilterChange,
+    handleReadFilterChange,
+    setCurrentPage,
+    retryFetch,
+    goBack,
     getTimeAgo,
   } = useNotifications();
 
@@ -130,9 +149,7 @@ const NotificationsPage: FC = () => {
           </PageTitle>
         </div>
         {unreadCount > 0 && (
-          <PrimaryButton onClick={handleMarkAllAsRead}>
-            ✓ Mark All as Read
-          </PrimaryButton>
+          <PrimaryButton onClick={handleMarkAllAsRead}>✓ Mark All as Read</PrimaryButton>
         )}
       </PageHeader>
 
@@ -147,13 +164,12 @@ const NotificationsPage: FC = () => {
 
       {/* Filters */}
       <ActionBar>
-        <FilterSelect
-          value={typeFilter}
-          onChange={e => handleTypeFilterChange(e.target.value)}
-        >
+        <FilterSelect value={typeFilter} onChange={e => handleTypeFilterChange(e.target.value)}>
           <option value="all">All Types</option>
           {Object.entries(TYPE_CONFIG).map(([key, cfg]) => (
-            <option key={key} value={key}>{cfg.icon} {cfg.label}</option>
+            <option key={key} value={key}>
+              {cfg.icon} {cfg.label}
+            </option>
           ))}
         </FilterSelect>
         <FilterSelect
@@ -164,7 +180,7 @@ const NotificationsPage: FC = () => {
           <option value="unread">Unread</option>
           <option value="read">Read</option>
         </FilterSelect>
-        <span style={{ fontSize: '0.8rem', color: '#888' }}>
+        <span style={{ fontSize: '0.8rem', color: 'rgba(255, 255, 255, 0.5)' }}>
           {filteredNotifications.length} notification{filteredNotifications.length !== 1 ? 's' : ''}
         </span>
       </ActionBar>
@@ -178,16 +194,12 @@ const NotificationsPage: FC = () => {
               $unread={!notif.read}
               onClick={() => !notif.read && handleMarkAsRead(notif.id)}
             >
-              <NotificationIcon>
-                {TYPE_CONFIG[notif.type || '']?.icon || 'ℹ️'}
-              </NotificationIcon>
+              <NotificationIcon>{TYPE_CONFIG[notif.type || '']?.icon || 'ℹ️'}</NotificationIcon>
               <NotificationContent>
                 <NotificationTitle $unread={!notif.read}>
                   {notif.title || 'Notification'}
                 </NotificationTitle>
-                <NotificationMessage>
-                  {notif.message || 'No details available'}
-                </NotificationMessage>
+                <NotificationMessage>{notif.message || 'No details available'}</NotificationMessage>
                 <NotificationMeta>
                   <TimeAgo>{getTimeAgo(notif.created_at)}</TimeAgo>
                   <Badge
@@ -200,17 +212,21 @@ const NotificationsPage: FC = () => {
               </NotificationContent>
               <NotificationActions>
                 {!notif.read && (
-                  <SecondaryButton onClick={(e: React.MouseEvent) => {
-                    e.stopPropagation();
-                    handleMarkAsRead(notif.id);
-                  }}>
+                  <SecondaryButton
+                    onClick={(e: React.MouseEvent) => {
+                      e.stopPropagation();
+                      handleMarkAsRead(notif.id);
+                    }}
+                  >
                     ✓ Read
                   </SecondaryButton>
                 )}
-                <DangerButton onClick={(e: React.MouseEvent) => {
-                  e.stopPropagation();
-                  handleDelete(notif.id);
-                }}>
+                <DangerButton
+                  onClick={(e: React.MouseEvent) => {
+                    e.stopPropagation();
+                    handleDelete(notif.id);
+                  }}
+                >
                   ✕
                 </DangerButton>
               </NotificationActions>
@@ -221,7 +237,7 @@ const NotificationsPage: FC = () => {
         <EmptyState>
           {typeFilter !== 'all' || readFilter !== 'all'
             ? 'No notifications match your filters'
-            : 'No notifications yet — you\'re all caught up!'}
+            : "No notifications yet — you're all caught up!"}
         </EmptyState>
       )}
 

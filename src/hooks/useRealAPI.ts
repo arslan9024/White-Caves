@@ -18,11 +18,16 @@ import {
   selectDepartmentTrends,
   selectDepartmentSummaries,
   selectDepartmentLoading,
-  selectDepartmentError,
+  selectDepartmentsFetchError,
+  selectDepartmentDataError,
+  selectDepartmentKPIsError,
+  selectDepartmentTrendsError,
+  selectDepartmentSummaryError,
   setSelectedDepartment,
   clearError,
 } from '../store/slices/departmentSlice';
 import { DateRange } from '../services/departmentService';
+import type { RootState } from '../store/store';
 
 /**
  * Hook to fetch and manage all departments
@@ -31,8 +36,8 @@ import { DateRange } from '../services/departmentService';
 export const useDepartments = () => {
   const dispatch = useDispatch();
   const departments = useSelector(selectDepartments);
-  const loading = useSelector((state: any) => selectDepartmentLoading(state).departments);
-  const error = useSelector((state: any) => selectDepartmentError(state).departments);
+  const loading = useSelector((state: RootState) => selectDepartmentLoading(state).departments);
+  const error = useSelector(selectDepartmentsFetchError);
 
   useEffect(() => {
     // Only fetch if we don't have departments yet
@@ -63,8 +68,8 @@ export const useDepartmentData = (code: string | null) => {
   const dispatch = useDispatch();
   const departmentData = useSelector(selectDepartmentData);
   const data = code ? departmentData[code] : null;
-  const loading = useSelector((state: any) => selectDepartmentLoading(state).data);
-  const error = useSelector((state: any) => selectDepartmentError(state).data);
+  const loading = useSelector((state: RootState) => selectDepartmentLoading(state).data);
+  const error = useSelector(selectDepartmentDataError);
 
   useEffect(() => {
     // Fetch data when code changes and data not already loaded
@@ -96,8 +101,8 @@ export const useDepartmentKPIs = (code: string | null, dateRange?: DateRange) =>
   const dispatch = useDispatch();
   const kpisMap = useSelector(selectDepartmentKPIs);
   const kpis = code ? kpisMap[code] || [] : [];
-  const loading = useSelector((state: any) => selectDepartmentLoading(state).kpis);
-  const error = useSelector((state: any) => selectDepartmentError(state).kpis);
+  const loading = useSelector((state: RootState) => selectDepartmentLoading(state).kpis);
+  const error = useSelector(selectDepartmentKPIsError);
 
   useEffect(() => {
     // Fetch KPIs when code changes
@@ -135,8 +140,8 @@ export const useDepartmentTrends = (
   const dispatch = useDispatch();
   const trendsMap = useSelector(selectDepartmentTrends);
   const trends = code ? trendsMap[code] || [] : [];
-  const loading = useSelector((state: any) => selectDepartmentLoading(state).trends);
-  const error = useSelector((state: any) => selectDepartmentError(state).trends);
+  const loading = useSelector((state: RootState) => selectDepartmentLoading(state).trends);
+  const error = useSelector(selectDepartmentTrendsError);
 
   useEffect(() => {
     // Fetch trends when code or timeframe changes
@@ -167,8 +172,8 @@ export const useDepartmentSummary = (code: string | null) => {
   const dispatch = useDispatch();
   const summariesMap = useSelector(selectDepartmentSummaries);
   const summary = code ? summariesMap[code] : null;
-  const loading = useSelector((state: any) => selectDepartmentLoading(state).summary);
-  const error = useSelector((state: any) => selectDepartmentError(state).summary);
+  const loading = useSelector((state: RootState) => selectDepartmentLoading(state).summary);
+  const error = useSelector(selectDepartmentSummaryError);
 
   useEffect(() => {
     // Fetch summary when code changes
@@ -197,7 +202,9 @@ export const useDepartmentSummary = (code: string | null) => {
  */
 export const useSelectDepartment = (initialCode?: string) => {
   const dispatch = useDispatch();
-  const selectedDepartment = useSelector((state: any) => state.departments.selectedDepartment);
+  const selectedDepartment = useSelector(
+    (state: RootState) => state.departments.selectedDepartment
+  );
 
   const selectDepartment = useCallback(
     (code: string | null) => {

@@ -4,7 +4,7 @@
  */
 
 import { describe, it, expect } from 'vitest';
-import { PAGINATION, parsePagination } from './pagination';
+import { PAGINATION, parsePagination } from './pagination.js';
 
 // ─── PAGINATION Constants ───────────────────────────────────────────────
 describe('PAGINATION constants', () => {

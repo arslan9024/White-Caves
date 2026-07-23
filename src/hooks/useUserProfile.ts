@@ -17,6 +17,8 @@ import { safeStorage } from '../utils/safeStorage';
 import { authFetch } from '../utils/authFetch';
 import { useToast } from '../components/Toast';
 import { signOut } from 'firebase/auth';
+import { logout as logoutBackendSession } from '../services/authService';
+import { completeClientLogout } from '../utils/authSession';
 
 const log = createLogger('useUserProfile');
 
@@ -34,7 +36,15 @@ interface ProfilePageUser {
   photoURL?: string;
   photoUrl?: string;
   role?: string;
+  displayName?: string;
+  profileComplete?: boolean;
 }
+
+const isProfileComplete = (user: {
+  name?: string;
+  displayName?: string;
+  phone?: string;
+}): boolean => Boolean((user.name || user.displayName || '').trim() && (user.phone || '').trim());
 
 export function useUserProfile() {
   const navigate = useNavigate();
@@ -80,12 +90,14 @@ export function useUserProfile() {
       if (auth) {
         await signOut(auth);
       }
-      safeStorage.remove('token');
-      safeStorage.remove('userRole');
-      dispatch(setUser(null));
+      await logoutBackendSession();
+      completeClientLogout(dispatch);
       navigate('/');
     } catch (error) {
       log.error('Logout error:', error);
+      // Still clean up state even if backend logout fails
+      completeClientLogout(dispatch);
+      navigate('/');
     }
   };
 
@@ -110,18 +122,28 @@ export function useUserProfile() {
           log.debug('Non-JSON error response:', e);
           return {};
         });
-        throw new Error((errorData as Record<string, string>).error || 'Failed to save profile');
+        const parsedErrorData = errorData as Record<string, string>;
+        throw new Error(
+          parsedErrorData.error ||
+            parsedErrorData.message ||
+            parsedErrorData.details ||
+            'Failed to save profile'
+        );
       }
       await response.json();
       // Update Redux user state with new data
       if (user?.id && user?.email) {
+        const nextName = profileName.trim();
+        const nextPhone = profilePhone.trim() || undefined;
         dispatch(
           setUser({
             ...user,
             id: user.id,
             email: user.email,
-            name: profileName.trim(),
-            phone: profilePhone.trim() || undefined,
+            name: nextName,
+            displayName: nextName,
+            phone: nextPhone,
+            profileComplete: isProfileComplete({ name: nextName, phone: nextPhone }),
           })
         );
       }

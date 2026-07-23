@@ -29,16 +29,21 @@ export const AdminContainer = styled.div`
 `;
 
 export const AdminHeader = styled.div`
+  position: sticky;
+  top: 64px;
+  z-index: 3;
   display: flex;
   align-items: center;
   justify-content: space-between;
   padding: ${spacing.xl} ${spacing.lg};
   background: ${colors.background.secondary};
   border-bottom: 1px solid ${colors.border};
+  backdrop-filter: blur(10px);
 
   ${mediaQueries.tablet} {
     flex-direction: column;
     gap: 1rem;
+    align-items: flex-start;
   }
 `;
 
@@ -62,6 +67,20 @@ export const AdminUserInfo = styled.div`
   flex-direction: column;
   align-items: flex-end;
   gap: ${spacing.xs};
+
+  ${mediaQueries.tablet} {
+    align-items: flex-start;
+  }
+`;
+
+export const HeaderMeta = styled.span`
+  font-size: ${typeSizes.xs};
+  color: ${colors.text.tertiary};
+  text-align: right;
+
+  ${mediaQueries.tablet} {
+    text-align: left;
+  }
 `;
 
 export const UserName = styled.span`
@@ -83,6 +102,23 @@ export const AdminTabs = styled.div`
   background: ${colors.background.secondary};
   border-bottom: 1px solid ${colors.border};
   overflow-x: auto;
+  position: sticky;
+  top: calc(64px + 96px);
+  z-index: 2;
+
+  &::-webkit-scrollbar {
+    height: 6px;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background: ${colors.border};
+    border-radius: 999px;
+  }
+
+  ${mediaQueries.mobile} {
+    padding: 0 ${spacing.md};
+    top: calc(64px + 88px);
+  }
 `;
 
 export const Tab = styled.button<{ $active?: boolean }>`
@@ -105,8 +141,19 @@ export const Tab = styled.button<{ $active?: boolean }>`
     border-bottom-color: ${props => (props.$active ? colors.primary : colors.border)};
   }
 
+  &:focus-visible {
+    outline: 2px solid ${colors.primary};
+    outline-offset: -2px;
+    border-radius: ${radius.sm} ${radius.sm} 0 0;
+  }
+
   ${reducedMotion} {
     transition: none;
+  }
+
+  ${mediaQueries.mobile} {
+    padding: ${spacing.sm} ${spacing.md};
+    font-size: ${typeSizes.sm};
   }
 `;
 
@@ -114,6 +161,13 @@ export const AdminContent = styled.div`
   flex: 1;
   padding: ${spacing.xl} ${spacing.lg};
   overflow-y: auto;
+  max-width: 1440px;
+  width: 100%;
+  margin: 0 auto;
+
+  ${mediaQueries.mobile} {
+    padding: ${spacing.lg} ${spacing.md};
+  }
 `;
 
 export const AdminOverview = styled.div`
@@ -126,6 +180,10 @@ export const MetricsGrid = styled.div`
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
   gap: 20px;
+
+  ${mediaQueries.mobile} {
+    grid-template-columns: 1fr;
+  }
 `;
 
 export const MetricCard = styled.div`
@@ -266,6 +324,12 @@ export const SectionHeader = styled.div`
     &:hover {
       color: ${colors.text.primary};
     }
+  }
+
+  ${mediaQueries.mobile} {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: ${spacing.sm};
   }
 `;
 
@@ -410,11 +474,12 @@ export const AdminUsers = styled.div`
 export const UsersTable = styled.div`
   background: ${colors.background.secondary};
   border-radius: ${radius.lg};
-  overflow: hidden;
+  overflow: auto;
   box-shadow: ${shadows.sm};
 
   table {
     width: 100%;
+    min-width: 760px;
     border-collapse: collapse;
 
     thead {
@@ -484,8 +549,12 @@ export const StatusBadge = styled.span<{ $status?: string }>`
 `;
 
 export const ActionBtn = styled.button<{ $danger?: boolean }>`
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   padding: ${spacing.sm} ${spacing.md};
-  margin-right: ${spacing.sm};
+  margin-right: ${spacing.xs};
+  margin-bottom: ${spacing.xs};
   border: none;
   border-radius: ${radius.sm};
   font-size: ${typography.sizes.sm};
@@ -516,6 +585,10 @@ export const StatusGrid = styled.div`
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
   gap: ${spacing.md};
+
+  ${mediaQueries.mobile} {
+    grid-template-columns: 1fr;
+  }
 `;
 
 export const StatusItem = styled.div`
@@ -631,9 +704,20 @@ export const BtnSecondary = styled.button`
   align-items: center;
   gap: ${spacing.sm};
   transition: ${transitions.hover};
+  white-space: nowrap;
 
   &:hover {
     background: ${colors.border};
+  }
+
+  &:disabled {
+    cursor: wait;
+    opacity: 0.8;
+  }
+
+  ${mediaQueries.mobile} {
+    width: 100%;
+    justify-content: center;
   }
 `;
 
@@ -655,12 +739,21 @@ export const FilterSelect = styled.select`
     outline: none;
     border-color: ${colors.primary};
   }
+
+  ${mediaQueries.tablet} {
+    margin-left: 0;
+    width: 100%;
+  }
 `;
 
 export const AnalyticsCharts = styled.div`
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
   gap: ${spacing.lg};
+
+  ${mediaQueries.mobile} {
+    grid-template-columns: 1fr;
+  }
 `;
 
 export const ChartContainer = styled.div`
@@ -683,6 +776,10 @@ export const ChartPlaceholder = styled.div`
   justify-content: space-around;
   height: 200px;
   padding: ${spacing.md} 0;
+
+  ${mediaQueries.mobile} {
+    height: 160px;
+  }
 `;
 
 export const ChartBar = styled.div<{ $height?: string }>`
@@ -699,12 +796,18 @@ export const ChartBar = styled.div<{ $height?: string }>`
 
 export const PaginationContainer = styled.div`
   margin-top: 1rem;
-  text-align: right;
+  display: flex;
+  justify-content: flex-end;
+
+  ${mediaQueries.mobile} {
+    justify-content: center;
+  }
 `;
 
 export const ReportActions = styled.div`
   display: flex;
   gap: ${spacing.md};
+  flex-wrap: wrap;
 `;
 
 export const AlertIcon = styled.div`
@@ -751,5 +854,10 @@ export const SaveBtn = styled.button`
   &:hover {
     background: ${colors.primaryDark};
     box-shadow: ${shadows.luxuryGlow};
+  }
+
+  ${mediaQueries.mobile} {
+    width: 100%;
+    justify-content: center;
   }
 `;

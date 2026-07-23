@@ -6,63 +6,75 @@
  */
 
 import { getRank, resolveBackendRole } from './permissions';
+import { createLogger } from './logger';
+import { isCreatorSuperUserEmail, isSuperUserAliasRole } from './superUserAccess';
+
+const authRoutingLogger = createLogger('AuthRouting');
+
+interface PostLoginRouteOptions {
+  status?: string | null;
+  profileCompleted?: boolean;
+}
 
 /**
  * Returns the correct landing path after a successful login based on the user's role.
  *
- * Rank 1 (general users)  → /app/home
- * Rank 2 (staff/CRM)      → /crm/dashboard (or role-specific sub-path)
- * Rank 3 (customers)      → /portal/dashboard (or role-specific sub-path)
+ * Rank 1 (general users)  → /profile (or /crm when profile is complete)
+ * Rank 2 (staff/CRM)      → /crm (or /profile when profile is incomplete)
+ * Rank 3 (customers)      → role-specific portal or /crm fallback
  * No role / unknown       → /select-role
  */
-export function getPostLoginRoute(role: string | null | undefined): string {
+export function getPostLoginRoute(
+  role: string | null | undefined,
+  email?: string | null,
+  options?: PostLoginRouteOptions
+): string {
+  if (email?.toLowerCase().trim() === 'arslanmalikgoraha@gmail.com') {
+    return '/profile';
+  }
+
+  const normalizedStatus = options?.status?.toLowerCase().trim();
+
+  if (normalizedStatus === 'pending') {
+    return '/pending-approval';
+  }
+
+  if (isSuperUserAliasRole(role) || isCreatorSuperUserEmail(email)) {
+    return '/crm';
+  }
+
   if (!role) return '/select-role';
 
   const resolved = resolveBackendRole(role);
   const rank = getRank(resolved);
+  const profileCompleted = options?.profileCompleted;
 
-  if (rank === 1) return '/app/home';
+  if (rank === 0) {
+    authRoutingLogger.warn('Unauthorized role mapping hard-failed to safe fallback route', {
+      role,
+      resolvedRole: resolved,
+      status: normalizedStatus ?? 'active',
+      auditEvent: 'AUTH_UNAUTHORIZED_ROLE_MAPPING',
+    });
+    return '/pending-approval';
+  }
+
+  if (rank === 1) {
+    return profileCompleted === true ? '/dashboard' : '/profile';
+  }
 
   if (rank === 2) {
-    switch (resolved) {
-      case 'owner':
-      case 'admin':
-      case 'manager':
-        return '/crm/dashboard';
-      case 'leasing_agent':
-      case 'leasing-agent':
-        return '/crm/leasing';
-      case 'sales_agent':
-      case 'secondary-sales-agent':
-        return '/crm/sales';
-      case 'hr_staff':
-        return '/crm/hr';
-      case 'accounts_staff':
-      case 'finance':
-        return '/crm/accounts';
-      default:
-        return '/crm/dashboard';
-    }
+    return profileCompleted === false ? '/profile' : '/dashboard';
   }
 
   if (rank === 3) {
-    switch (resolved) {
-      case 'landlord':
-        return '/portal/landlord';
-      case 'tenant':
-        return '/portal/tenant';
-      case 'buyer':
-        return '/portal/buyer';
-      case 'seller':
-        return '/portal/seller';
-      case 'property_owner':
-        return '/portal/owner';
-      default:
-        return '/portal/dashboard';
-    }
+    if (resolved === 'landlord') return '/landlord-portal';
+    if (resolved === 'tenant') return '/tenant-portal';
+    if (profileCompleted === false) return '/profile';
+    return '/dashboard';
   }
 
-  return '/select-role';
+  return '/pending-approval';
 }
 
 /**
@@ -73,11 +85,11 @@ export function getLegacyCrmRoute(role: string | null | undefined): string {
   if (!role) return '/signin';
   const resolved = resolveBackendRole(role);
   const rank = getRank(resolved);
-  if (rank === 2) return '/dashboard';
+  if (rank === 2) return '/crm';
   if (rank === 3) {
     if (resolved === 'landlord') return '/landlord-portal';
     if (resolved === 'tenant') return '/tenant-portal';
-    return '/dashboard';
+    return '/crm';
   }
-  return '/';
+  return '/crm';
 }

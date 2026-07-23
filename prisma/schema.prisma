@@ -51,12 +51,148 @@ model User {
   leasesAsLandlord Lease[]   @relation("LeaseLandlord")
   maintenanceRequests Maintenance[] @relation("MaintenanceRequester")
   pdcCheques    PDCSchedule[] @relation("PDCTenant")
+  valuationsCreated  PropertyValuation[] @relation("ValuationCreator")
+  valuationsOverridden PropertyValuation[] @relation("ValuationOverrider")
+  departmentAccess DepartmentAccess[]
+  rememberMeTokens RememberMeToken[]
+  twoFASetup       TwoFASetup?
+  dashboardPreference UserDashboardPreference?
+  notificationPreference NotificationPreference?
+  pushTokens       UserPushToken[]
+  eventRsvps       EventRSVP[]
+  facilityBookings FacilityBooking[]
 
   @@index([role])
   @@index([status])
   @@index([department])
   @@index([createdAt])
   @@index([firebaseUid])
+}
+
+// ─── DEPARTMENT ACCESS & AUTHORIZATION ──────────────────────────────────
+
+model DepartmentAccess {
+  id              String   @id @default(auto()) @map("_id") @db.ObjectId
+  userId          String   @db.ObjectId
+  departmentCode  String   // e.g. "sales", "operations", "finance"
+  role            String   @default("VIEWER") // VIEWER, CONTRIBUTOR, ANALYST, MANAGER
+  permissions     String[] // READ, WRITE, DELETE, APPROVE, ADMIN
+  isActive        Boolean  @default(true)
+  grantedBy       String?  @db.ObjectId // Admin user who granted access
+  grantedAt       DateTime @default(now())
+  expiresAt       DateTime? // Optional: auto-revoke after date
+  revokedAt       DateTime? // When access was revoked
+  reason          String? // Reason for granting/revoking access
+  
+  user            User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, departmentCode])
+  @@index([departmentCode])
+  @@index([role])
+  @@index([isActive])
+  @@index([userId])
+}
+
+// ─── COMMISSION ─────────────────────────────────────────────────────────
+
+model Commission {
+  id          String   @id @default(auto()) @map("_id") @db.ObjectId
+  amount      Float
+  currency    String   @default("AED")  // AED, USD, EUR, GBP, INR
+  percentage  Float?   // Commission percentage (0-100), optional
+  type        String   @default("sale")      // sale, rental, referral, management_fee
+  status      String   @default("pending")   // pending, approved, paid, cancelled, clawback_pending, clawed_back
+  notes       String?
+  paidAt      DateTime?
+  vatRate     Float?   @default(5)  // VAT percentage: 0% residential, 5% commercial, 5% on commission
+  vatAmount   Float?   @default(0)  // Calculated VAT amount
+  netAmount   Float?                // Net amount after VAT
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // W21: Approval workflow (agent → manager → finance)
+  approvedBy      String?  @db.ObjectId  // manager/finance userId who approved
+  approvedAt      DateTime?
+
+  // W21: Clawback rules — deal cancelled within 30 days of payment
+  clawbackDate    DateTime?
+  clawbackReason  String?
+  isClawback      Boolean  @default(false)  // true = this is a clawback deduction entry
+
+  // W21: Deal metadata for rate matrix auto-calc
+  dealValue       Float?   // Gross deal value the commission is derived from
+  dealType        String?  // sale | rental | referral | management_fee (mirrors type, explicit)
+
+  // W21: Period tracking for immutable ledger
+  periodMonth     Int?     // 1-12
+  periodYear      Int?     // e.g. 2026
+  periodLocked    Boolean  @default(false)  // true = period closed, no edits allowed
+
+  // Relations
+  agentId     String   @db.ObjectId
+  agent       User     @relation(fields: [agentId], references: [id])
+  leadId      String?  @db.ObjectId
+  lead        Lead?    @relation(fields: [leadId], references: [id])
+  propertyId  String?  @db.ObjectId
+  property    Property? @relation(fields: [propertyId], references: [id])
+  splits      CommissionSplit[]
+
+  @@index([agentId])
+  @@index([status])
+  @@index([type])
+  @@index([createdAt])
+  @@index([agentId, status])  // Composite for agent performance queries
+  @@index([propertyId])
+  @@index([leadId])
+  @@index([periodYear, periodMonth])
+  @@index([periodLocked])
+}
+
+model CommissionSplit {
+  id           String @id @default(auto()) @map("_id") @db.ObjectId
+  commissionId String @db.ObjectId
+  recipientId  String @db.ObjectId
+  recipientType String // agent | team_lead | company | referrer
+  percentage   Float
+  amount       Float
+  paidAt       DateTime?
+  commission   Commission @relation(fields: [commissionId], references: [id], onDelete: Cascade)
+
+  @@index([commissionId])
+  @@index([recipientId])
+}
+
+// ─── FINANCIAL PERIOD (W21-011: Immutable Ledger Close-Lock) ──────────────
+
+model FinancialPeriod {
+  id          String   @id @default(auto()) @map("_id") @db.ObjectId
+  year        Int
+  month       Int      // 1-12
+  status      String   @default("open")  // open, closing, locked
+  lockedAt    DateTime?
+  lockedById  String?  @db.ObjectId  // who closed the period
+  notes       String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@unique([year, month])
+  @@index([status])
+}
+
+// ─── BUDGET TARGET (W21-010: Budget vs Actual Variance) ───────────────────
+
+model BudgetTarget {
+  id          String   @id @default(auto()) @map("_id") @db.ObjectId
+  year        Int
+  month       Int      // 1-12
+  stream      String   // sales_commission | rental_commission | management_fee | referral | total_revenue | total_expenses
+  targetAED   Float    // budgeted amount in AED
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@unique([year, month, stream])
+  @@index([year, month])
+  @@index([stream])
 }
 
 // ─── PROPERTY ───────────────────────────────────────────────────────────
@@ -105,6 +241,12 @@ model Property {
   rentIndexRef        String? // RERA Rent Index reference (for rent increase calculations)
   furnished           Boolean @default(false) // affects max deposit calculation
 
+  // Verification evidence fields (P0-012)
+  verifiedAt        DateTime?  // when listing was verified
+  verifiedBy        String?    @db.ObjectId  // userId who verified
+  verificationNotes String?    // evidence notes
+  lastRefreshedAt   DateTime?  // when agent last confirmed details are current
+
   // Relations
   userId      String   @db.ObjectId
   user        User     @relation(fields: [userId], references: [id])
@@ -117,6 +259,8 @@ model Property {
   offers       Offer[]
   leases       Lease[]
   maintenanceRequests Maintenance[]
+  valuations   PropertyValuation[] @relation("PropertyValuations")
+  serviceCharges ServiceCharge[]
 
   @@index([status])
   @@index([type])
@@ -285,6 +429,17 @@ model Tenant {
   @@index([createdAt])
 }
 
+// ─── AI CONVERSATION (NINA) ────────────────────────────────────────────────
+
+model AIConversation {
+  id          String   @id @default(auto()) @map("_id") @db.ObjectId
+  sessionId   String   @unique
+  assistantId String
+  messages    Json?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
 // ─── NADIA: WHATSAPP WEBHOOK & ROUTING ──────────────────────────────────────
 
 model NadiaConversation {
@@ -307,7 +462,12 @@ model NadiaConversation {
   routedAt    DateTime?
   closedAt    DateTime?
   closedReason String?  // why conversation closed
-  
+
+  // P0-017: CRM lead linkage (unique: one lead per conversation)
+  leadId           String?   @db.ObjectId @unique
+  convertedAt      DateTime? // when convert-to-lead was triggered
+  convertedByPhone String?   // agent phone who triggered conversion
+
   // Metadata
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
@@ -358,39 +518,6 @@ model NadiaConversationQueue {
   @@index([status])
   @@index([priority])
   @@index([queuedAt])
-}
-
-// ─── COMMISSION ─────────────────────────────────────────────────────────
-
-model Commission {
-  id          String   @id @default(auto()) @map("_id") @db.ObjectId
-  amount      Float
-  currency    String   @default("AED")  // AED, USD, EUR, GBP, INR
-  percentage  Float?   // Commission percentage (0-100), optional
-  type        String   @default("sale")      // sale, rental, referral
-  status      String   @default("pending")   // pending, approved, paid, cancelled
-  notes       String?
-  paidAt      DateTime?
-  vatRate     Float?   @default(5)  // VAT percentage: 0% residential, 5% commercial, 5% on commission
-  vatAmount   Float?   @default(0)  // Calculated VAT amount
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-
-  // Relations
-  agentId     String   @db.ObjectId
-  agent       User     @relation(fields: [agentId], references: [id])
-  leadId      String?  @db.ObjectId
-  lead        Lead?    @relation(fields: [leadId], references: [id])
-  propertyId  String?  @db.ObjectId
-  property    Property? @relation(fields: [propertyId], references: [id])
-
-  @@index([agentId])
-  @@index([status])
-  @@index([type])
-  @@index([createdAt])
-  @@index([agentId, status])  // Composite for agent performance queries
-  @@index([propertyId])
-  @@index([leadId])
 }
 
 // ─── FAVORITE ───────────────────────────────────────────────────────────
@@ -604,26 +731,65 @@ model Maintenance {
   @@index([createdAt])
 }
 
-// ─── JOB APPLICATION ────────────────────────────────────────────────────
+// ─── JOB POSTING & APPLICATION ────────────────────────────────────────────
+
+model JobPosting {
+  id          String   @id @default(auto()) @map("_id") @db.ObjectId
+  title       String
+  department  String?
+  location    String?
+  description String
+  type        String   @default("full_time") // full_time, part_time, contract
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  applications JobApplication[]
+}
 
 model JobApplication {
   id            String   @id @default(auto()) @map("_id") @db.ObjectId
-  name          String
+  jobId         String?   @db.ObjectId
+  job           JobPosting? @relation(fields: [jobId], references: [id])
+  name          String?  // Legacy field
+  firstName     String?
+  lastName      String?
   email         String
   phone         String?
-  position      String
-  experience    String?
-  resumeUrl     String?
-  coverLetter   String?
-  status        String   @default("received") // received, reviewed, shortlisted, interview, offered, hired, rejected
+  position      String?  // Legacy field
+  experience    String?  // Legacy field
+  coverLetter   String?  // Legacy field
+  resumeUrl     String?  // Legacy field
+  linkedinUrl   String?
+  reraBrn       String?
+  cvUrl         String?
+  status        String   @default("received") // applied, reviewed, shortlisted, interview, offered, hired, rejected
   notes         String?
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
 
   @@index([status])
-  @@index([position])
   @@index([email])
   @@index([createdAt])
+  @@index([jobId])
+}
+
+// ─── PORTAL SYNC LOG ────────────────────────────────────────────────────
+
+model PortalSyncLog {
+  id           String   @id @default(auto()) @map("_id") @db.ObjectId
+  portal       String
+  status       String
+  syncStart    DateTime
+  syncEnd      DateTime
+  totalSynced  Int
+  totalFailed  Int
+  totalSkipped Int
+  errors       Json?
+  createdAt    DateTime @default(now())
+
+  @@index([portal])
+  @@index([syncStart])
 }
 
 // ─── INVOICE ────────────────────────────────────────────────────────────
@@ -708,10 +874,14 @@ model Communication {
 model Invoice {
   id            String   @id @default(auto()) @map("_id") @db.ObjectId
   invoiceNumber String   @unique           // "INV-2026-0001"
+  type          String   @default("tax_invoice") // tax_invoice, pro_forma, credit_note
   client        String                     // Client name
+  clientId      String?  @db.ObjectId
+  dealId        String?  @db.ObjectId
   property      String?                    // Property reference
   amount        Float
-  vatAmount     Float    @default(0)       // 5% VAT for commercial
+  vatRate       Float    @default(5)       // VAT percentage
+  vatAmount     Float    @default(0)       // Calculated VAT amount
   totalAmount   Float                      // amount + vatAmount
   currency      String   @default("AED")
   status        String   @default("draft") // draft, pending, paid, overdue, cancelled, refunded
@@ -720,6 +890,8 @@ model Invoice {
   paidAt        DateTime?
   notes         String?
   lineItems     Json?                      // [{ description, qty, unitPrice, total }]
+  invoiceLineItems InvoiceLineItem[]
+  pdfUrl        String?
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
 
@@ -730,6 +902,20 @@ model Invoice {
   @@index([client])
   @@index([dueDate])
   @@index([createdAt])
+  @@index([clientId])
+  @@index([dealId])
+}
+
+model InvoiceLineItem {
+  id          String   @id @default(auto()) @map("_id") @db.ObjectId
+  invoiceId   String   @db.ObjectId
+  description String
+  quantity    Int      @default(1)
+  unitPrice   Float
+  total       Float
+  invoice     Invoice  @relation(fields: [invoiceId], references: [id], onDelete: Cascade)
+
+  @@index([invoiceId])
 }
 
 // ─── EXPENSE ────────────────────────────────────────────────────────────
@@ -812,6 +998,26 @@ model FollowUpStep {
   @@index([stepNumber])
   @@index([scheduledAt])
   @@index([channel])
+}
+
+// ─── FOLLOW UP QUEUE (W24-010) ─────────────────────────────────────────
+
+model FollowUpQueue {
+  id          String   @id @default(auto()) @map("_id") @db.ObjectId
+  entityId    String
+  entityType  String
+  sequenceId  String
+  actionType  String
+  scheduledAt DateTime
+  payload     Json?
+  status      String   @default("pending") // pending, processed, failed, paused
+  processedAt DateTime?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([status])
+  @@index([scheduledAt])
+  @@index([entityId, entityType])
 }
 
 // ─── WEBAUTHN CREDENTIAL ────────────────────────────────────────────────
@@ -1065,6 +1271,31 @@ model LindaBroadcastCampaign {
   @@index([createdById])
 }
 
+// ─── WHATSAPP CONSENT (W24-005) ─────────────────────────────────────────
+
+model WhatsAppConsent {
+  id           String   @id @default(auto()) @map("_id") @db.ObjectId
+  phone        String   @unique
+  consent      Boolean  @default(true)
+  optedOutAt   DateTime?
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+}
+
+// ─── BROADCAST STATS (W24-006) ──────────────────────────────────────────
+
+model BroadcastStat {
+  id             String   @id @default(auto()) @map("_id") @db.ObjectId
+  campaignId     String
+  totalSent      Int      @default(0)
+  totalFailed    Int      @default(0)
+  totalDelivered Int      @default(0)
+  totalRead      Int      @default(0)
+  totalReplied   Int      @default(0)
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+}
+
 // ─── LINDA: COMMISSION RULE ─────────────────────────────────────────────
 
 model CommissionRule {
@@ -1205,10 +1436,16 @@ model HenryRecord {
   templateLabel    String                         // Human-readable template name
   fileName         String                         // Original file name
   recordPath       String                         // Relative path under uploads/henry/
+  departmentTag    String?                        // sales, leasing, finance, compliance, legal, operations
+  ownerUserId      String?  @db.ObjectId          // User primarily responsible for this record
+  ownerUserEmail   String?                        // Denormalized owner email for filtering/inspection
   unit             String?                        // Unit number / apartment
   community        String?                        // Community / building name
   tenantName       String?                        // For quick display without parsing JSON
   isDraft          Boolean  @default(false)
+  status           String   @default("draft")     // draft, pending_signature, signed, archived
+  signedAt         DateTime?                      // When all required signatures were completed
+  archivedAt       DateTime?                      // When moved to archived state
   copyNumber       Int      @default(1)
   documentSnapshot Json                           // Flat key-value snapshot of document fields at time of archive
                                                    // e.g. {landlordName, tenantName, annualRent, leaseStartDate, ...}
@@ -1219,7 +1456,479 @@ model HenryRecord {
   @@index([templateKey])
   @@index([community])
   @@index([tenantName])
+  @@index([departmentTag])
+  @@index([ownerUserId])
+  @@index([ownerUserEmail])
+  @@index([status])
+  @@index([signedAt])
   @@index([isDraft])
   @@index([createdBy])
   @@index([createdAt])
+}
+
+// ===== RECRUITMENT MODELS (Phase 1C Part 3) =====
+
+model Job {
+  id                  String   @id @default(uuid()) @map("_id")
+  title               String
+  description         String?
+  department          String?
+  location            String?
+  salary_min          Float?
+  salary_max          Float?
+  required_skills     String[]
+  experience_years    Int?
+  status              String   @default("open") // open, closed, on_hold
+  source              String?  // linkedin, internal, job_board
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @updatedAt
+
+  // Relations
+  applications        Application[]
+  interviews          Interview[]
+  candidateScores     CandidateScore[]
+  leadScores          LeadScore[]
+  conversationMetrics ConversationMetric[]
+  interviewSchedules  InterviewSchedule[]
+}
+
+model Candidate {
+  id                  String   @id @default(uuid()) @map("_id")
+  email               String   @unique
+  phone               String?
+  first_name          String?
+  last_name           String?
+  location            String?
+  linkedin_url        String?
+  resume_url          String?
+  resume_text         String?
+  source              String?  // linkedin, indeed, manual_upload, etc.
+  status              String   @default("new") // new, under_review, rejected, selected, hired
+  notes               String?
+  
+  // Phase 1C Part 3 Fields
+  conversation_score  Float    @default(0) // 0-100
+  lead_temperature    String   @default("WARM") // HOT, WARM, COLD
+  engagement_score    Float    @default(0) // 0-100
+  last_analyzed_at    DateTime?
+  whatsapp_phone      String?  // For WhatsApp tracking
+  opt_in_messaging    Boolean  @default(false)
+  
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @updatedAt
+
+  // Relations
+  applications        Application[]
+  scores              CandidateScore[]
+  interviews          Interview[]
+  leadScores          LeadScore[]
+  conversationMetrics ConversationMetric[]
+  interviewSchedules  InterviewSchedule[]
+}
+
+model Application {
+  id                  String   @id @default(uuid()) @map("_id")
+  candidate_id        String
+  job_id              String
+  status              String   @default("applied") // applied, screening, interview, offer, hired, rejected
+  applied_at          DateTime @default(now())
+  notes               String?
+  
+  // WhatsApp Integration
+  whatsapp_sent       Boolean  @default(false)
+  whatsapp_msg_id     String?
+  whatsapp_sent_at    DateTime?
+  
+  // Phase 1C Part 3 Fields
+  conversation_score  Float?   // 0-100
+  intent_type         String?  // detected primary intent
+  engagement_metrics  Json?    // store metrics object
+  lead_temperature    String?  // HOT, WARM, COLD
+  score_updated_at    DateTime?
+  
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @updatedAt
+
+  // Relations
+  candidate           Candidate @relation(fields: [candidate_id], references: [id], onDelete: Cascade)
+  job                 Job       @relation(fields: [job_id], references: [id], onDelete: Cascade)
+  interviews          Interview[]
+  interviewSchedules  InterviewSchedule[]
+}
+
+model CandidateScore {
+  id                  String   @id @default(uuid()) @map("_id")
+  candidate_id        String
+  job_id              String?
+  overall_score       Float    @default(0) // 0-100
+  skills_score        Float    @default(0)
+  experience_score    Float    @default(0)
+  cultural_fit        Float    @default(0)
+  education_score     Float    @default(0)
+  location_match      Float    @default(0)
+  scoring_method      String   @default("rule_based") // rule_based, ml_model
+  feedback            String?
+  scored_at           DateTime @default(now())
+
+  // Relations
+  candidate           Candidate @relation(fields: [candidate_id], references: [id], onDelete: Cascade)
+  job                 Job?      @relation(fields: [job_id], references: [id], onDelete: SetNull)
+}
+
+model Interview {
+  id                  String   @id @default(uuid()) @map("_id")
+  candidate_id        String
+  job_id              String
+  application_id      String?
+  interview_type      String   // phone_screening, technical, hr, final
+  scheduled_at        DateTime?
+  completed_at        DateTime?
+  interviewer         String?
+  rating              Float?   // 0-10
+  feedback            String?
+  status              String   @default("scheduled") // scheduled, completed, cancelled, no_show
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @updatedAt
+
+  // Relations
+  candidate           Candidate @relation(fields: [candidate_id], references: [id], onDelete: Cascade)
+  job                 Job       @relation(fields: [job_id], references: [id], onDelete: Cascade)
+  application         Application? @relation(fields: [application_id], references: [id], onDelete: SetNull)
+}
+
+model InterviewSchedule {
+  id                  String   @id @default(uuid()) @map("_id")
+  candidate_id        String
+  job_id              String
+  application_id      String?
+  interview_date      DateTime?
+  interview_time      String?  // "14:00"
+  duration_minutes    Int      @default(30)
+  timezone            String   @default("Asia/Dubai")
+  interview_type      String   // phone_screening, technical, hr, final
+  interviewer_ids     String[] // Array of interviewer IDs
+  
+  // Session Status
+  session_status      String   @default("pending_scheduling") // pending_scheduling, scheduled, completed, declined
+  available_slots     Json?    // Array of slot options
+  selected_slot       Json?    // Selected slot object
+  decline_reason      String?
+  
+  // WhatsApp Integration
+  whatsapp_sent       Boolean  @default(false)
+  whatsapp_msg_id     String?
+  reminder_sent_at    DateTime?
+  
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @updatedAt
+
+  // Relations
+  candidate           Candidate @relation(fields: [candidate_id], references: [id], onDelete: Cascade)
+  job                 Job       @relation(fields: [job_id], references: [id], onDelete: Cascade)
+  application         Application? @relation(fields: [application_id], references: [id], onDelete: SetNull)
+}
+
+model LeadScore {
+  id                  String   @id @default(uuid()) @map("_id")
+  candidate_id        String
+  job_id              String
+  overall_score       Float    // 0-100 - Main lead quality score
+  score_breakdown     Json     // {resumeScore, conversationScore, intentScore, engagementVelocity, sentimentScore}
+  lead_temperature    String   // HOT, WARM, COLD
+  qualification_level String   // Excellent, Good, Fair, Weak, Poor
+  recommendations     Json     // Array of recommendation objects
+  
+  // Trend Tracking
+  score_history       Json?    // Array of historical scores for trend analysis
+  engagement_velocity Float?   // Rate of change in engagement (positive/negative/stable)
+  qualified_for_roles String[] // Roles this lead is qualified for
+  
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @updatedAt
+
+  // Relations
+  candidate           Candidate @relation(fields: [candidate_id], references: [id], onDelete: Cascade)
+  job                 Job       @relation(fields: [job_id], references: [id], onDelete: Cascade)
+
+  @@index([lead_temperature])
+  @@index([overall_score])
+  @@index([job_id])
+}
+
+model ConversationMetric {
+  id                  String   @id @default(uuid()) @map("_id")
+  candidate_id        String
+  job_id              String
+  message_count       Int
+  avg_response_time   Float    // in minutes
+  avg_message_length  Int      // in characters
+  engagement_score    Float    // 0-100
+  sentiment_avg       Float    // -1 to 1
+  conversation_duration Json   // {days, hours, minutes, totalMinutes}
+  activity_trend      String   // Increasing, Decreasing, Stable
+  
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @updatedAt
+
+  // Relations
+  candidate           Candidate @relation(fields: [candidate_id], references: [id], onDelete: Cascade)
+  job                 Job       @relation(fields: [job_id], references: [id], onDelete: Cascade)
+
+  @@index([candidate_id])
+  @@index([job_id])
+}
+
+model RecruitmentMetric {
+  id                  String   @id @default(uuid()) @map("_id")
+  metric_date         DateTime @default(now())
+  total_applications  Int      @default(0)
+  applications_screened Int    @default(0)
+  applications_rejected Int    @default(0)
+  interviews_scheduled Int    @default(0)
+  interviews_completed Int    @default(0)
+  offers_made         Int      @default(0)
+  hires               Int      @default(0)
+  avg_time_to_hire    Float?   // in days
+  avg_cost_per_hire   Float?
+  automation_percentage Float? // 0-100
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @updatedAt
+}
+
+  // ─── Wave 12: Property Valuation ─────────────────────────────────────────────
+  model PropertyValuation {
+    id                String    @id @default(auto()) @map("_id") @db.ObjectId
+    propertyId        String    @db.ObjectId
+    estimatedValueAed Float
+    rentAnnualAed     Float
+    grossYieldPct     Float
+    netYieldPct       Float
+    confidence        String    // high | medium | low
+    method            String    // avm | manual_override | bank
+    comparables       Json      @default("[]")
+    ageDiscount       Float     @default(0)
+    amenityPremium    Float     @default(0)
+    priceRangeLow     Float?
+    priceRangeHigh    Float?
+    overrideReason    String?
+    overriddenById    String?   @db.ObjectId
+    bankRequestStatus String?   // pending | submitted | received
+    bankResponseAed   Float?
+    bankRequestedAt   DateTime?
+    bankRespondedAt   DateTime?
+    createdById       String    @db.ObjectId
+    createdAt         DateTime  @default(now())
+    updatedAt         DateTime  @updatedAt
+
+    property     Property @relation("PropertyValuations", fields: [propertyId], references: [id], onDelete: Cascade)
+    createdBy    User     @relation("ValuationCreator", fields: [createdById], references: [id])
+    overriddenBy User?    @relation("ValuationOverrider", fields: [overriddenById], references: [id])
+
+    @@index([propertyId])
+    @@index([createdAt])
+    @@index([method])
+  }
+
+  // ─── Wave 12: Market Snapshot ─────────────────────────────────────────────────
+  model MarketSnapshot {
+    id               String   @id @default(auto()) @map("_id") @db.ObjectId
+    snapshotDate     DateTime @default(now())
+    area             String
+    propertyType     String   // apartment | villa | townhouse | penthouse | all
+    avgPricePerSqft  Float
+    avgSalePrice     Float
+    avgAnnualRent    Float
+    grossYield       Float
+    transactionVol   Int      @default(0)
+    daysOnMarket     Float    @default(0)
+    absorptionRate   Float    @default(0)
+    newListings      Int      @default(0)
+    activeListings   Int      @default(0)
+    source           String   @default("dld")
+    notes            String?
+    createdAt        DateTime @default(now())
+
+    @@index([area, snapshotDate])
+    @@index([snapshotDate])
+    @@index([area])
+  }
+
+// ─── CADENCE RULE ────────────────────────────────────────────────────────────
+
+model CadenceRule {
+  id              String    @id @default(auto()) @map("_id") @db.ObjectId
+  name            String
+  description     String?
+  isActive        Boolean   @default(true)
+  priority        Int       @default(0)
+
+  // Matching conditions (empty = match all)
+  leadTiers       String[]  // e.g. ["hot","warm"]
+  leadSources     String[]  // e.g. ["whatsapp","website"]
+  dealTypes       String[]  // e.g. ["sale","lease"]
+
+  // Channel sequence — JSON array of CadenceRuleStep
+  channelSequence Json
+
+  // Guard rails (times in HH:mm, GST = UTC+4)
+  quietHoursStart String?
+  quietHoursEnd   String?
+  dailyCapPerLead Int       @default(3)
+  cooldownHours   Int       @default(24)
+
+  createdById     String?   @db.ObjectId
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+
+  @@index([isActive])
+  @@index([isActive, priority])
+  @@index([createdAt])
+}
+
+// --- REMEMBER ME TOKEN (Persistent Login) ------------------------------
+
+model RememberMeToken {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  userId    String   @db.ObjectId
+  token     String   @unique
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+  lastUsedAt DateTime @default(now())
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([expiresAt])
+}
+
+// --- TWO-FACTOR AUTHENTICATION SETUP ------------------------------------
+
+model TwoFASetup {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  userId    String   @unique @db.ObjectId
+  secret    String   // Base32-encoded TOTP secret (encrypted at app layer)
+  backupCodes String  // Comma-separated hashed backup codes
+  confirmed Boolean  @default(false)
+  createdAt DateTime @default(now())
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([confirmed])
+}
+
+// --- USER DASHBOARD PREFERENCES -----------------------------------------
+
+model UserDashboardPreference {
+  id         String   @id @default(auto()) @map("_id") @db.ObjectId
+  userId     String   @unique @db.ObjectId
+  role       String
+  widgets    Json
+  layout     String?  @default("default")
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([role])
+  @@index([updatedAt])
+}
+
+// ─── NOTIFICATION PREFERENCES (W24-015) ──────────────────────────────────
+
+model NotificationPreference {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  userId    String   @unique @db.ObjectId
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  inApp     Boolean  @default(true)
+  push      Boolean  @default(true)
+  email     Boolean  @default(true)
+  whatsapp  Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+// ─── USER PUSH TOKENS (W23) ──────────────────────────────────────────────
+
+model UserPushToken {
+  id         String   @id @default(auto()) @map("_id") @db.ObjectId
+  userId     String   @db.ObjectId
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  token      String   @unique
+  deviceInfo String?
+  createdAt  DateTime @default(now())
+}
+
+// ─── COMMUNITY EVENTS & SERVICE CHARGES ─────────────────────────────────
+
+model CommunityAnnouncement {
+  id          String   @id @default(auto()) @map("_id") @db.ObjectId
+  title       String
+  content     String
+  targetScope String?
+  status      String   @default("sent")
+  dispatchedAt DateTime?
+  priority    String   @default("normal") // normal, high
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model Facility {
+  id          String   @id @default(auto()) @map("_id") @db.ObjectId
+  name        String
+  description String?
+  capacity    Int?
+  status      String   @default("available")
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  
+  bookings    FacilityBooking[]
+}
+
+model FacilityBooking {
+  id          String   @id @default(auto()) @map("_id") @db.ObjectId
+  facilityId  String   @db.ObjectId
+  facility    Facility @relation(fields: [facilityId], references: [id])
+  unitId      String   @db.ObjectId
+  tenantId    String   @db.ObjectId
+  tenant      User     @relation(fields: [tenantId], references: [id])
+  startTime   DateTime
+  endTime     DateTime
+  status      String   @default("confirmed") // confirmed, pending, cancelled
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model ServiceCharge {
+  id          String   @id @default(auto()) @map("_id") @db.ObjectId
+  propertyId  String   @db.ObjectId
+  property    Property @relation(fields: [propertyId], references: [id])
+  amount      Float
+  currency    String   @default("AED")
+  dueDate     DateTime
+  status      String   @default("pending") // pending, paid, overdue
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model CommunityEvent {
+  id          String   @id @default(auto()) @map("_id") @db.ObjectId
+  title       String
+  description String?
+  location    String
+  startTime   DateTime
+  endTime     DateTime
+  maxAttendees Int?
+  currentRsvps Int      @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  
+  rsvps       EventRSVP[]
+}
+
+model EventRSVP {
+  id          String   @id @default(auto()) @map("_id") @db.ObjectId
+  eventId     String   @db.ObjectId
+  event       CommunityEvent @relation(fields: [eventId], references: [id])
+  tenantId    String   @db.ObjectId
+  tenant      User     @relation(fields: [tenantId], references: [id])
+  createdAt   DateTime @default(now())
+
+  @@unique([eventId, tenantId])
 }

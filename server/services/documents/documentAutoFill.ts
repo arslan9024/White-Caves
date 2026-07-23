@@ -9,12 +9,13 @@
  * appropriate documents.
  *
  * Usage:
- *   import { autoFillVariables, getAutoFillableEntities } from './documentAutoFill';
+ *   import { autoFillVariables, getAutoFillableEntities } from './documentAutoFill.js';
  *   const vars = await autoFillVariables('mou', { leadId, propertyId, transactionId });
  */
 
 import { prisma } from '../../database.js';
 import logger from '../../utils/logger.js';
+const db = prisma as any;
 
 // ─── Types ──────────────────────────────────────────────────────────────
 
@@ -109,7 +110,7 @@ function safe(value: string | number | null | undefined): string {
 // ─── DB Query Helpers ───────────────────────────────────────────────────
 
 async function fetchLead(leadId: string) {
-  return prisma.lead.findUnique({
+  return db.lead.findUnique({
     where: { id: leadId },
     include: {
       assignedTo: { select: { id: true, name: true, email: true, phone: true } },
@@ -119,13 +120,13 @@ async function fetchLead(leadId: string) {
 }
 
 async function fetchProperty(propertyId: string) {
-  return prisma.property.findUnique({
+  return db.property.findUnique({
     where: { id: propertyId },
   });
 }
 
 async function fetchTransaction(transactionId: string) {
-  return prisma.transaction.findUnique({
+  return db.transaction.findUnique({
     where: { id: transactionId },
     include: {
       lead: { select: { name: true, phone: true, email: true } },
@@ -135,7 +136,7 @@ async function fetchTransaction(transactionId: string) {
 }
 
 async function fetchCommission(commissionId: string) {
-  return prisma.commission.findUnique({
+  return db.commission.findUnique({
     where: { id: commissionId },
     include: {
       agent: { select: { name: true, email: true } },
@@ -146,7 +147,7 @@ async function fetchCommission(commissionId: string) {
 }
 
 async function fetchViewing(viewingId: string) {
-  return prisma.viewing.findUnique({
+  return db.viewing.findUnique({
     where: { id: viewingId },
     include: {
       lead: { select: { name: true, phone: true, budget: true, budgetCurrency: true, score: true } },
@@ -156,7 +157,7 @@ async function fetchViewing(viewingId: string) {
 }
 
 async function fetchLease(leaseId: string) {
-  return prisma.lease.findUnique({
+  return db.lease.findUnique({
     where: { id: leaseId },
     include: {
       tenant: { select: { id: true, name: true, email: true, phone: true } },
@@ -166,7 +167,7 @@ async function fetchLease(leaseId: string) {
 }
 
 async function fetchOffer(offerId: string) {
-  return prisma.offer.findUnique({
+  return db.offer.findUnique({
     where: { id: offerId },
     include: {
       lead: { select: { name: true, phone: true, email: true } },

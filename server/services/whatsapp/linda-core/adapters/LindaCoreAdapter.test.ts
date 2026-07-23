@@ -52,7 +52,7 @@ vi.mock('../../../../utils/logger.js', () => ({
   },
 }));
 
-import { getLindaClientForMode, getLindaCoreMode } from './LindaCoreAdapter';
+import { getLindaClientForMode, getLindaCoreMode } from './LindaCoreAdapter.js';
 
 const originalMode = process.env.LINDA_CORE_MODE;
 

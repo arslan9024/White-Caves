@@ -21,7 +21,7 @@ import {
   enforcePropertyPermitCompliance,
   runPropertyPermitEnforcementTick,
   startPropertyPermitEnforcementScheduler,
-} from '../propertyPermitEnforcementScheduler';
+} from '../propertyPermitEnforcementScheduler.js';
 
 const mockPrisma = prisma as unknown as {
   property: {

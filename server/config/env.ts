@@ -18,7 +18,7 @@ if (!isTestRuntime && runtimeEnv === 'production') {
 }
 
 // ─── Server ──────────────────────────────────────────────────────────────
-export const PORT = parseInt(process.env.PORT || '3001', 10);
+export const PORT = parseInt(process.env.PORT || '5001', 10);
 export const NODE_ENV = process.env.NODE_ENV || 'development';
 export const IS_PRODUCTION = NODE_ENV === 'production';
 
@@ -40,12 +40,28 @@ export const BCRYPT_ROUNDS = 12;
 // ─── Database ────────────────────────────────────────────────────────────
 const _databaseUrl = process.env.DATABASE_URL;
 const _legacyMongoUri = process.env.MONGODB_URI;
+const _isMongoConnectionString = (value: string | undefined): boolean =>
+  typeof value === 'string' && /^mongodb(\+srv)?:\/\//i.test(value.trim());
+
+const _databaseUrlLooksMongo = _isMongoConnectionString(_databaseUrl);
+const _legacyMongoUriLooksMongo = _isMongoConnectionString(_legacyMongoUri);
 const _usingLegacyMongoAlias = !_databaseUrl && Boolean(_legacyMongoUri);
-const _resolvedDatabaseUrl = _databaseUrl || _legacyMongoUri || '';
+const _usingLegacyBecauseCanonicalInvalid =
+  Boolean(_databaseUrl) && !_databaseUrlLooksMongo && _legacyMongoUriLooksMongo;
+
+const _resolvedDatabaseUrl = _usingLegacyBecauseCanonicalInvalid
+  ? (_legacyMongoUri as string)
+  : _databaseUrl || _legacyMongoUri || '';
 
 if (_usingLegacyMongoAlias && !isTestRuntime) {
   console.warn(
     '⚠️  MONGODB_URI is deprecated. Please migrate to DATABASE_URL (canonical) as soon as possible.'
+  );
+}
+
+if (_usingLegacyBecauseCanonicalInvalid && !isTestRuntime) {
+  console.warn(
+    `⚠️  DATABASE_URL does not look like a MongoDB URL for this runtime (${_databaseUrl}). Falling back to MONGODB_URI.`
   );
 }
 
@@ -55,6 +71,12 @@ if (!_resolvedDatabaseUrl && IS_PRODUCTION) {
 if (!_resolvedDatabaseUrl) {
   console.warn('⚠️  DATABASE_URL not set — Prisma will fail to connect. Set it in .env');
 }
+
+// Keep Prisma runtime resolution deterministic even when shell-level DATABASE_URL is stale.
+if (_resolvedDatabaseUrl) {
+  process.env.DATABASE_URL = _resolvedDatabaseUrl;
+}
+
 export const DATABASE_URL = _resolvedDatabaseUrl;
 
 // ─── CORS ────────────────────────────────────────────────────────────────
@@ -102,3 +124,8 @@ export const LINDA_CORE_MODE = process.env.LINDA_CORE_MODE || 'legacy';
 export const HENRY_UPLOADS_PATH = process.env.HENRY_UPLOADS_PATH || './uploads/henry';
 export const GROQ_API_KEY = process.env.GROQ_API_KEY || '';
 export const OLLAMA_HOST = process.env.OLLAMA_HOST || 'http://localhost:11434';
+
+// ─── Redis (Wave 15 — Response Cache) ────────────────────────────────────
+// Optional: set REDIS_URL to enable response caching. If absent, the server
+// falls through to MongoDB for every request (safe but slower at scale).
+export const REDIS_URL = process.env.REDIS_URL || '';

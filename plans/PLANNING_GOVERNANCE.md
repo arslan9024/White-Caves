@@ -1,97 +1,63 @@
-# Planning Governance — Single Source of Truth
+# AEGIS 2.0 Planning Governance & 90% Readiness Standard
 
-**Version:** 1.2  
-**Last Updated:** 2026-05-22  
-**Owner:** Product + Technical Planning
-
----
-
-## Scope
-
-This governance applies to:
-
-- `plans/*`
-- `business_docs/*` (planning-linked strategic docs)
-- `server/routes/plans.js` and `src/server/services/PlanService.js`
+**Version:** 2026.07-AEGIS-V2  
+**Control Plane Policy:** `scripts/orchestrator/policy.json`  
+**Governance Authority:** Executive Council (@Ada, @Margaret, @Grace, @Elena, @Zoe)
 
 ---
 
-## Authority Hierarchy (Canonical Sources)
+## 🛡️ The 90% Readiness Checkpoint Framework (Immutable Law)
 
-1. **Portfolio Roadmap (canonical):** `plans/MASTER_PLAN.md`
-2. **Active sprint/phase execution (canonical):** latest active `plans/PHASE_*.md`
-3. **Pending queue (canonical):** `plans/PENDING_TASKS_ONLY.md`
-4. **Operational dashboard (canonical):** `PROJECT_PROGRESS.md`
-5. **Daily execution log:** `DAILY_MILESTONE_TRACKER.md`
-6. **Historical records:** `archives/plans/completed/` and `archives/plans/superseded/`
+Under AEGIS 2.0 operational rules, **no AI sub-agent or implementation agent is permitted to write or modify application code (.ts, .tsx, .css)** until the target feature or module achieves the **90% Readiness Gate**.
 
-If two files disagree, the higher file in this hierarchy wins.
-
----
-
-## Ownership and Update Cadence
-
-| File                          | Primary Owner          | Update Trigger                 | Cadence                       |
-| ----------------------------- | ---------------------- | ------------------------------ | ----------------------------- |
-| `plans/MASTER_PLAN.md`        | Architecture + Product | Priority/order/status change   | Weekly or on phase transition |
-| `plans/PENDING_TASKS_ONLY.md` | Planning               | Task completion or new blocker | Daily                         |
-| `PROJECT_PROGRESS.md`         | Planning               | Milestone state change         | Daily                         |
-| `DAILY_MILESTONE_TRACKER.md`  | Execution lead         | End-of-day execution log       | Daily                         |
-| `plans/INDEX.md`              | Planning               | Active/superseded list changes | Per change                    |
-
----
-
-## Active vs Archived Rules
-
-- Active execution docs remain in `plans/`.
-- Completed phase plans move to `archives/plans/completed/`.
-- Superseded/duplicate/ad-hoc artifacts move to `archives/plans/superseded/`.
-- `plans/` must not contain `Pasted-*` files.
+```
+[Phase 1: Free Agent Planning]
+          │
+          ▼
+[90% Readiness Checkpoint Audit] ──► [Unmet (<90%)] ──► [Route to Free Agents for Expansion]
+          │
+          ├────────────────────────┐
+          ▼ (≥90% Passed)          ▼
+[Dual Threshold Unlock (60%)]  [Target Readiness (90%)]
+          │                        │
+          └───────────┬────────────┘
+                      │
+                      ▼
+[Executive Council (@Ada) Sign-Off]
+                      │
+                      ▼
+[Phase 2: Premium Implementation Coding Sprint]
+```
 
 ---
 
-## Required Metadata for Active Phase Files
+## 📋 The 6-Point Readiness Criteria
 
-Every active `PHASE_*.md` must contain:
+Before any code modification turn, the following six criteria must be documented on disk within `plans/` or `business_docs/`:
 
-- Date or Last Updated
-- Status
-- Objective
-- Deliverables
-- Exit Criteria
-- Dependencies
-- Owners
-- Validation Gates
-
-Use `plans/PHASE_PLAN_TEMPLATE.md` for new phase files.
+1. **Target File Paths Defined**: Exact relative file paths for all new or modified components, hooks, styles, and routes.
+2. **TypeScript Interface & Schema Definitions**: Complete type contracts, props, state objects, and database models.
+3. **Component Hierarchy & Layout Wireframes**: Visual ASCII wireframes detailing container bounds, flex grids, and styling tokens.
+4. **Quiet Luxury Design Token Mapping**: Explicit binding to Obsidian Dark (`#0f0f0f`), Metallic Gold (`#C9A84C`), and Emerald Green (`#10B981`).
+5. **Mock & Synthetic Data Fallbacks**: Direct alignment with `src/mocks/dubaiRealEstateMocks.ts` and `src/mocks/dubaiFinanceEngine.ts`.
+6. **Acceptance Criteria & Test Matrix**: Quantitative testable definitions for pass/fail verification via `npm run build` and unit test specs.
 
 ---
 
-## Status Source Pointers (Mandatory)
+## ⚖️ Executive Clearance Matrix
 
-All tracker files must include a `Status Source Pointers` section linking:
-
-- `plans/MASTER_PLAN.md`
-- `plans/PENDING_TASKS_ONLY.md`
-- `PROJECT_PROGRESS.md` (operational dashboard)
-- active `plans/PHASE_*.md` (current execution stream)
+| Clearance Level          | Role Class                                   | Permission Boundary                                      | Gate Gatekeeper |
+| ------------------------ | -------------------------------------------- | -------------------------------------------------------- | --------------- |
+| **Level 5 (Master)**     | Founder & MD (`arslanmalikgoraha@gmail.com`) | Unrestricted administrative bypass, instant profile land | Auto-injected   |
+| **Level 4 (Dept Head)**  | CSO, VP Sales, Finance Director              | Full department modification & transaction sign-off      | @Ada Sign-Off   |
+| **Level 3 (Power User)** | Senior Brokers, Account Directors            | Managed record mutations & pipeline updates              | Standard RBAC   |
+| **Level 2 (Restricted)** | Mid Brokers, Coordinators                    | Assigned record view/edit only                           | Standard RBAC   |
+| **Level 1 (Read Only)**  | Interns, External Vendors                    | Public portfolio metrics & read-only views               | Standard RBAC   |
 
 ---
 
-## Validation and Hygiene
+## 🔄 Anti-Wastage & Context Preservation Rules
 
-Run:
-
-- `npm run plans:validate`
-
-Hard gate:
-
-- Every planning/tracker update must pass `npm run plans:validate` before being considered complete.
-- If validation fails, treat status updates as invalid until corrected and revalidated.
-
-Schedule:
-
-- Weekly active-file metadata/link review
-- Monthly archive sweep for superseded files
-- Weekly planning hygiene cycle: prune stale queue items, re-rank blockers by impact, and de-activate legacy docs from active status paths
-- Daily rule: update canonical trackers only (`MASTER_PLAN`, `PENDING_TASKS_ONLY`, `PROJECT_PROGRESS`, `DAILY_MILESTONE_TRACKER`)
+- **Single-File Isolation**: Edits during code implementation turns must target ONLY the precise file assigned. Global re-scans are strictly prohibited.
+- **Zero-Token Local Verification**: All syntax, linting, and type checking MUST be executed locally on the machine via `npm run build`.
+- **Deduplication Enforcement**: Any redundant navigation layout, duplicate component, or conflicting style file MUST be shredded immediately upon discovery.

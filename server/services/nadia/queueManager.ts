@@ -4,6 +4,60 @@
  */
 
 import { prisma } from '../../database.js';
+import type { Prisma } from '@prisma/client';
+
+export interface EscalationHandoffContext {
+  source?: string;
+  messagePreview?: string;
+  classification?: {
+    intent?: string;
+    confidence?: number;
+    sentiment?: string;
+    entities?: string[];
+    leadScore?: number;
+    firstResponseState?: string;
+    escalationReason?: string | null;
+  };
+}
+
+function buildEscalationMetadata(
+  conversationId: string,
+  reason: string,
+  intent: string | null,
+  leadScore: number,
+  customerPhone: string,
+  handoffContext?: EscalationHandoffContext
+): Prisma.InputJsonObject {
+  const classification = handoffContext?.classification;
+
+  const normalizedHandoffContext: Prisma.InputJsonObject | null = handoffContext
+    ? {
+        source: handoffContext.source ?? null,
+        messagePreview: handoffContext.messagePreview ?? null,
+        classification: classification
+          ? {
+              intent: classification.intent ?? null,
+              confidence: classification.confidence ?? null,
+              sentiment: classification.sentiment ?? null,
+              entities: classification.entities ?? [],
+              leadScore: classification.leadScore ?? null,
+              firstResponseState: classification.firstResponseState ?? null,
+              escalationReason: classification.escalationReason ?? null,
+            }
+          : null,
+      }
+    : null;
+
+  return {
+    conversationId,
+    reason,
+    intent,
+    leadScore,
+    customerPhone,
+    queuedAt: new Date().toISOString(),
+    handoffContext: normalizedHandoffContext,
+  };
+}
 
 // ============================================================================
 // QUEUE OPERATIONS
@@ -98,7 +152,8 @@ export function calculateQueuePriority(
  */
 export async function queueConversationForAssignment(
   conversationId: string,
-  reason: string = 'awaiting_assignment'
+  reason: string = 'awaiting_assignment',
+  handoffContext?: EscalationHandoffContext
 ) {
   const conversation = await prisma.nadiaConversation.findUnique({
     where: { id: conversationId },
@@ -120,9 +175,18 @@ export async function queueConversationForAssignment(
     where: { conversationId },
   });
 
+  const escalationContext = buildEscalationMetadata(
+    conversationId,
+    reason,
+    conversation.intent,
+    conversation.leadScore,
+    conversation.customerPhone,
+    handoffContext
+  );
+
   if (existing) {
     // Update priority if conversation state has changed
-    return await prisma.nadiaConversationQueue.update({
+    const updated = await prisma.nadiaConversationQueue.update({
       where: { id: existing.id },
       data: {
         priority,
@@ -132,10 +196,21 @@ export async function queueConversationForAssignment(
         conversation: true,
       },
     });
+
+    await prisma.activity.create({
+      data: {
+        type: 'system',
+        action: 'nadia_escalation_requeued',
+        description: `Nadia conversation re-queued for handoff (${reason})`,
+        metadata: escalationContext,
+      },
+    });
+
+    return updated;
   }
 
   // Create new queue entry
-  return await prisma.nadiaConversationQueue.create({
+  const created = await prisma.nadiaConversationQueue.create({
     data: {
       conversationId,
       priority,
@@ -146,6 +221,17 @@ export async function queueConversationForAssignment(
       conversation: true,
     },
   });
+
+  await prisma.activity.create({
+    data: {
+      type: 'system',
+      action: 'nadia_escalation_queued',
+      description: `Nadia conversation queued for handoff (${reason})`,
+      metadata: escalationContext,
+    },
+  });
+
+  return created;
 }
 
 /**

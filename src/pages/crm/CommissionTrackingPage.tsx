@@ -12,12 +12,30 @@ import { Badge, Pagination } from '../../components/ui';
 import { Modal } from '../../shared/components/ui/Modal';
 import { useDocumentTitle } from '../../hooks/useDocumentTitle';
 import {
-  PageContainer, PageHeader, PageTitle, BackLink,
-  ActionBar, SearchInput, FilterSelect,
-  PrimaryButton, SecondaryButton,
-  Table, Th, Td, Tr, EmptyState,
-  FormGroup, FormLabel, FormInput, FormTextarea, FormSelect, FormRow,
-  PaginationWrapper, LoadingBanner, ErrorBanner, ModalFooter,
+  PageContainer,
+  PageHeader,
+  PageTitle,
+  BackLink,
+  ActionBar,
+  SearchInput,
+  FilterSelect,
+  PrimaryButton,
+  SecondaryButton,
+  Table,
+  Th,
+  Td,
+  Tr,
+  EmptyState,
+  FormGroup,
+  FormLabel,
+  FormInput,
+  FormTextarea,
+  FormSelect,
+  FormRow,
+  PaginationWrapper,
+  LoadingBanner,
+  ErrorBanner,
+  ModalFooter,
 } from './styles/CrmPageStyles';
 import { useCommissionTracking, STATUS_CONFIG, TYPE_LABELS } from './hooks/useCommissionTracking';
 import type { Commission } from './hooks/useCommissionTracking';
@@ -32,8 +50,8 @@ const StatsRow = styled.div`
 `;
 
 const StatCard = styled.div<{ $color: string }>`
-  background: white;
-  border: 1px solid #e8e8e8;
+  background: #0f0f0f;
+  border: 1px solid #c9a84c;
   border-radius: 12px;
   padding: 1.25rem;
   border-left: 4px solid ${props => props.$color};
@@ -42,12 +60,12 @@ const StatCard = styled.div<{ $color: string }>`
 const StatValue = styled.div`
   font-size: 1.75rem;
   font-weight: 700;
-  color: #1a1a2e;
+  color: #ffffff;
 `;
 
 const StatLabel = styled.div`
   font-size: 0.75rem;
-  color: #888;
+  color: rgba(255, 255, 255, 0.5);
   text-transform: uppercase;
   letter-spacing: 0.5px;
   margin-top: 0.25rem;
@@ -58,16 +76,36 @@ const StatLabel = styled.div`
 const CommissionTrackingPage: FC = () => {
   useDocumentTitle('Commission Tracking');
   const {
-    filteredCommissions, paginatedCommissions, summaryStats,
-    loading, error,
-    search, statusFilter, typeFilter, currentPage,
-    showCreateModal, showEditModal, selectedCommission,
-    formData, setFormData, ITEMS_PER_PAGE,
-    openCreateModal, closeCreateModal, closeEditModal,
-    handleCreate, handleEdit, handleSaveEdit,
-    handleSearchChange, handleStatusFilterChange, handleTypeFilterChange,
-    setCurrentPage, retryFetch, goBack,
-    getStatusBadgeVariant, formatCurrency, formatDate,
+    filteredCommissions,
+    paginatedCommissions,
+    summaryStats,
+    loading,
+    error,
+    search,
+    statusFilter,
+    typeFilter,
+    currentPage,
+    showCreateModal,
+    showEditModal,
+    selectedCommission,
+    formData,
+    setFormData,
+    ITEMS_PER_PAGE,
+    openCreateModal,
+    closeCreateModal,
+    closeEditModal,
+    handleCreate,
+    handleEdit,
+    handleSaveEdit,
+    handleSearchChange,
+    handleStatusFilterChange,
+    handleTypeFilterChange,
+    setCurrentPage,
+    retryFetch,
+    goBack,
+    getStatusBadgeVariant,
+    formatCurrency,
+    formatDate,
   } = useCommissionTracking();
 
   const renderForm = () => (
@@ -120,7 +158,9 @@ const CommissionTrackingPage: FC = () => {
             onChange={e => setFormData({ ...formData, type: e.target.value })}
           >
             {Object.entries(TYPE_LABELS).map(([key, label]) => (
-              <option key={key} value={key}>{label}</option>
+              <option key={key} value={key}>
+                {label}
+              </option>
             ))}
           </FormSelect>
         </FormGroup>
@@ -131,7 +171,9 @@ const CommissionTrackingPage: FC = () => {
             onChange={e => setFormData({ ...formData, status: e.target.value })}
           >
             {Object.entries(STATUS_CONFIG).map(([key, cfg]) => (
-              <option key={key} value={key}>{cfg.label}</option>
+              <option key={key} value={key}>
+                {cfg.label}
+              </option>
             ))}
           </FormSelect>
         </FormGroup>
@@ -169,11 +211,11 @@ const CommissionTrackingPage: FC = () => {
 
       {/* Summary Stats */}
       <StatsRow>
-        <StatCard $color="#F59E0B">
+        <StatCard $color="#c9a84c">
           <StatValue>{formatCurrency(summaryStats.pending)}</StatValue>
           <StatLabel>Pending</StatLabel>
         </StatCard>
-        <StatCard $color="#3B82F6">
+        <StatCard $color="#c9a84c">
           <StatValue>{formatCurrency(summaryStats.approved)}</StatValue>
           <StatLabel>Approved</StatLabel>
         </StatCard>
@@ -191,25 +233,23 @@ const CommissionTrackingPage: FC = () => {
           value={search}
           onChange={e => handleSearchChange(e.target.value)}
         />
-        <FilterSelect
-          value={statusFilter}
-          onChange={e => handleStatusFilterChange(e.target.value)}
-        >
+        <FilterSelect value={statusFilter} onChange={e => handleStatusFilterChange(e.target.value)}>
           <option value="all">All Status</option>
           {Object.entries(STATUS_CONFIG).map(([key, cfg]) => (
-            <option key={key} value={key}>{cfg.label}</option>
+            <option key={key} value={key}>
+              {cfg.label}
+            </option>
           ))}
         </FilterSelect>
-        <FilterSelect
-          value={typeFilter}
-          onChange={e => handleTypeFilterChange(e.target.value)}
-        >
+        <FilterSelect value={typeFilter} onChange={e => handleTypeFilterChange(e.target.value)}>
           <option value="all">All Types</option>
           {Object.entries(TYPE_LABELS).map(([key, label]) => (
-            <option key={key} value={key}>{label}</option>
+            <option key={key} value={key}>
+              {label}
+            </option>
           ))}
         </FilterSelect>
-        <span style={{ fontSize: '0.8rem', color: '#888' }}>
+        <span style={{ fontSize: '0.8rem', color: 'rgba(255, 255, 255, 0.5)' }}>
           {filteredCommissions.length} commission{filteredCommissions.length !== 1 ? 's' : ''} found
         </span>
       </ActionBar>
@@ -287,7 +327,10 @@ const CommissionTrackingPage: FC = () => {
           {renderForm()}
           <ModalFooter>
             <SecondaryButton onClick={closeCreateModal}>Cancel</SecondaryButton>
-            <PrimaryButton onClick={handleCreate} disabled={!formData.agent_name.trim() || !formData.amount || loading}>
+            <PrimaryButton
+              onClick={handleCreate}
+              disabled={!formData.agent_name.trim() || !formData.amount || loading}
+            >
               {loading ? '⏳ Creating...' : 'Create Commission'}
             </PrimaryButton>
           </ModalFooter>
@@ -305,7 +348,10 @@ const CommissionTrackingPage: FC = () => {
           {renderForm()}
           <ModalFooter>
             <SecondaryButton onClick={closeEditModal}>Cancel</SecondaryButton>
-            <PrimaryButton onClick={handleSaveEdit} disabled={!formData.agent_name.trim() || loading}>
+            <PrimaryButton
+              onClick={handleSaveEdit}
+              disabled={!formData.agent_name.trim() || loading}
+            >
               {loading ? '⏳ Saving...' : 'Save Changes'}
             </PrimaryButton>
           </ModalFooter>

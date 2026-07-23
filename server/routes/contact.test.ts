@@ -50,7 +50,7 @@ vi.mock('../utils/logger', () => ({
   default: { info: vi.fn(), warn: vi.fn(), error: vi.fn() },
 }));
 
-import contactRoutes from './contact';
+import contactRoutes from './contact.js';
 
 // ── Test app factory ─────────────────────────────────────────────────
 function createApp() {

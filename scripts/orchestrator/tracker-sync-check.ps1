@@ -1,4 +1,4 @@
-# tracker-sync-check.ps1 -- Detect drift between queue evidence and tracker docs
+﻿# tracker-sync-check.ps1 -- Detect drift between queue evidence and tracker docs
 # Usage:
 #   npm run orchestrator:tracker-sync
 #   npm run orchestrator:tracker-sync:brief
@@ -50,20 +50,31 @@ $daily = Get-Content $dailyFile -Raw
 $warnings = [System.Collections.Generic.List[string]]::new()
 $passes = [System.Collections.Generic.List[string]]::new()
 
-# Phase 27 linkage checks
-if ($pending -match 'PHASE_27_SUBAGENT_NEXT_LEVEL_90_READINESS') { $passes.Add('PENDING links Phase 27 plan') } else { $warnings.Add('PENDING missing Phase 27 link') }
-if ($progress -match 'MILESTONE-PHASE-27') { $passes.Add('PROJECT_PROGRESS has Phase 27 milestone') } else { $warnings.Add('PROJECT_PROGRESS missing Phase 27 milestone') }
-if ($agents -match 'PHASE 27 ADDENDUM') { $passes.Add('AGENTS includes Phase 27 addendum') } else { $warnings.Add('AGENTS missing Phase 27 addendum') }
+# Load policy to drive approval phrase check dynamically
+$policyFile = Join-Path $root "scripts\orchestrator\policy.json"
+$approvalPhrase = "@Ada - Context Ready (90% Readiness) - High-Fidelity Coding Phase Approved"
+if (Test-Path $policyFile) {
+  try {
+    $pol = Get-Content $policyFile -Raw | ConvertFrom-Json
+    if ($pol.approvalPhrase) { $approvalPhrase = [string]$pol.approvalPhrase }
+  } catch { <# keep default #> }
+}
 
-# Approval phrase check in daily tracker
-if ($daily -match '@Ada\s+—\s+Context Ready \(100% Planning Readiness\)\s+—\s+Coding Phase Approved') {
+# Aegis 150 linkage checks (replaces legacy Phase 27 specific checks)
+$escapedPhrase = [regex]::Escape($approvalPhrase)
+if ($pending -match $escapedPhrase) { $passes.Add('PENDING references Aegis approval phrase') } else { $warnings.Add('PENDING missing Aegis approval phrase reference') }
+if ($progress -match '60% Readiness|daily_cap|readinessThresholdPct|Aegis') { $passes.Add('PROJECT_PROGRESS references readiness gate') } else { $warnings.Add('PROJECT_PROGRESS missing readiness gate evidence') }
+if ($agents -match 'PHASE 27 ADDENDUM|Aegis|AEGIS') { $passes.Add('AGENTS includes Aegis or Phase 27 addendum') } else { $warnings.Add('AGENTS missing Aegis/Phase 27 addendum') }
+
+# Approval phrase check in daily tracker (dynamic from policy)
+if ($daily -match $escapedPhrase) {
   $passes.Add('DAILY tracker contains mandatory approval phrase')
 } else {
   $warnings.Add('DAILY tracker missing mandatory approval phrase entry')
 }
 
 # Drift heuristic: queue fully done but pending still heavily not-started
-$notStartedCount = ([regex]::Matches($pending, '⬜\s+Not started')).Count
+$notStartedCount = ([regex]::Matches($pending, 'â¬œ\s+Not started')).Count
 if ($allDone -and $notStartedCount -ge 3) {
   $warnings.Add("Queue is 100% done ($done/$total) but PENDING still has many Not started entries ($notStartedCount) -- sync recommended")
 } else {

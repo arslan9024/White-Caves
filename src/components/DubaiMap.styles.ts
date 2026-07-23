@@ -171,7 +171,7 @@ export const MarkerGroup = styled.g`
   }
 
   &.active .marker-dot {
-    stroke: var(--primary-color, #e31e24);
+    stroke: var(--primary-color, #c9a84c);
     stroke-width: 3;
   }
 `;

@@ -1,15 +1,19 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 import { Provider } from 'react-redux';
-import { store } from './store/store';
-import App from './App';
+import { store } from './store/store.tsx';
+import App from './App.tsx';
 import ErrorBoundary from './components/ErrorBoundary';
 import { ToastProvider } from './components/Toast';
 import { ThemeProvider } from './context/ThemeContext';
+import { TranslationProvider } from './context/TranslationContext';
 import { validateEnvironment } from './config/validateEnv';
+import './styles/tokens.css';
 // Dubai Luxury design tokens — loaded globally so any component opting into
 // the `dubai-luxury-theme` class inherits --luxury-cta-bg / --primary-color etc.
 import './styles/dubaiLuxuryTheme.css';
+// W17-001: Glassmorphism tokens + .glass-surface utility class + dark-mode vars
+import './styles/tokens.css';
 // RTL utility overrides — applied automatically when dir="rtl" is set on <html>
 import './styles/rtl.css';
 import { createLogger } from './utils/logger';
@@ -33,8 +37,7 @@ if (!envResult.valid) {
 // Find root element
 const rootElement = document.getElementById('root');
 if (!rootElement) {
-  document.body.innerHTML =
-    '<p style="color: red; padding: 20px;">Root element not found. Please check index.html.</p>';
+  log.error('Failed to find the root element');
 } else {
   try {
     const root = ReactDOM.createRoot(rootElement);
@@ -44,9 +47,11 @@ if (!rootElement) {
         <ErrorBoundary>
           <Provider store={store}>
             <ThemeProvider>
-              <ToastProvider>
-                <App />
-              </ToastProvider>
+              <TranslationProvider>
+                <ToastProvider>
+                  <App />
+                </ToastProvider>
+              </TranslationProvider>
             </ThemeProvider>
           </Provider>
         </ErrorBoundary>

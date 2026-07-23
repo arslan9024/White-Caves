@@ -1,68 +1,104 @@
-# White Caves Real Estate — Master Plan (Canonical)
+# White Caves Real Estate — 300% Expanded Master Execution Plan
 
-**Purpose:** Canonical roadmap for execution decisions.  
-**Owners:** @Ada + @Margaret  
-**Last Updated:** 2026-05-22  
-**Update cadence:** Weekly roadmap refresh (daily progress in `PROJECT_PROGRESS.md`)
-
----
-
-## Status Snapshot
-
-- N+1 through N+9 implementation stream: **✅ Completed**
-- Repo cleanup: **✅ Completed** — 293 legacy docs archived to `plans/archives/` and root cleaned
-- Wave 08 (S1): **✅ Completed** — TypeScript baseline 0 errors (client + server, confirmed May 22, 2026)
-- Active execution focus: **Wave 09** (UX hardening) → **Wave 10** (performance/SEO/security) → **Wave 11** (incomplete features)
-- Planning authority centralized in `MASTER_PLAN.md` + `PENDING_TASKS_ONLY.md`
-- All wave bundles (09–11) authored and ready
+**Version:** 2026.07-TITAN-V3  
+**Governance Standard:** [plans/PLANNING_GOVERNANCE.md](./PLANNING_GOVERNANCE.md)  
+**Owners:** @Ada (Chief Architect) + @Margaret (Strategic Planner)  
+**Last Updated:** 2026-07-23  
+**Readiness Threshold:** **90% Target Gate Passed — Execution Unlocked**
 
 ---
 
-## Active Streams (Now)
+## 🎯 Strategic Core Directive & Brand Mandate
 
-| Stream | Objective                                                    | Owners                       | Status      | Entry Gate                                                      | Exit Criteria                                                                      |
-| ------ | ------------------------------------------------------------ | ---------------------------- | ----------- | --------------------------------------------------------------- | ---------------------------------------------------------------------------------- |
-| S1     | Wave 08 — TypeScript/errors stabilization (fast/medium/deep) | @Mira + @Katherine           | ✅ Complete | `npm run plans:validate` + baseline clean                       | TypeScript 0 errors confirmed May 22                                               |
-| S2     | Wave 09 — UX loading-state & interaction hardening           | @Una + @Lea + @Tracy + @Inas | 🟢 Ready    | S1 green ✅ + readiness 72% ✅ + @Ada approval phrase           | IMPROVEMENTS_UX.md items 30–33 delivered; `quality:quick` pass                     |
-| S3     | Wave 10 — Performance, SEO & security uplift                 | @Ruchi + @Rachel + @Radia    | 📋 Planned  | S2 green + readiness 65% ✅ bundle ready + @Ada approval phrase | IMPROVEMENTS_PERFORMANCE + IMPROVEMENTS_SEO + IMPROVEMENTS_SECURITY items closed   |
-| S4     | Wave 11 — Incomplete features + architecture refactor        | @Ada + @Mira + @Barbara      | 📋 Planned  | S3 green + readiness 60% ✅ bundle ready + @Ada approval phrase | All Items 6/7/8 in IMPROVEMENTS_INCOMPLETE_FEATURES.md closed; arch refactors done |
+White Caves Real Estate LLC is Dubai's ultra-luxury digital property agency platform. All visual and technical interfaces MUST strictly adhere to the **Quiet Luxury Brand Law**:
 
----
-
-## Micro-Wave Execution Target
-
-| Wave | Focus                                                | Status      | Bundle                                                                                                                                                                                                                                                           |
-| ---- | ---------------------------------------------------- | ----------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| 08   | Errors stabilization + planning governance hard-gate | ✅ Complete | [`WAVE_08_SDD.md`](./waves/WAVE_08_SDD.md), [`WAVE_08_READINESS_PACKET.md`](./waves/WAVE_08_READINESS_PACKET.md), [`WAVE_08_IMPLEMENTATION_BACKLOG.md`](./waves/WAVE_08_IMPLEMENTATION_BACKLOG.md), [`WAVE_08_TEST_ROLLOUT.md`](./waves/WAVE_08_TEST_ROLLOUT.md) |
-| 09   | UX hardening — skeleton screens, a11y, mobile, RTL   | 🟢 Ready    | [`WAVE_09_SDD.md`](./waves/WAVE_09_SDD.md), [`WAVE_09_READINESS_PACKET.md`](./waves/WAVE_09_READINESS_PACKET.md), [`WAVE_09_IMPLEMENTATION_BACKLOG.md`](./waves/WAVE_09_IMPLEMENTATION_BACKLOG.md), [`WAVE_09_TEST_ROLLOUT.md`](./waves/WAVE_09_TEST_ROLLOUT.md) |
-| 10   | Performance + SEO + security uplift                  | 📋 Planned  | [`WAVE_10_SDD.md`](./waves/WAVE_10_SDD.md), [`WAVE_10_READINESS_PACKET.md`](./waves/WAVE_10_READINESS_PACKET.md), [`WAVE_10_IMPLEMENTATION_BACKLOG.md`](./waves/WAVE_10_IMPLEMENTATION_BACKLOG.md), [`WAVE_10_TEST_ROLLOUT.md`](./waves/WAVE_10_TEST_ROLLOUT.md) |
-| 11   | Incomplete features closure + architecture refactor  | 📋 Planned  | [`WAVE_11_SDD.md`](./waves/WAVE_11_SDD.md), [`WAVE_11_READINESS_PACKET.md`](./waves/WAVE_11_READINESS_PACKET.md), [`WAVE_11_IMPLEMENTATION_BACKLOG.md`](./waves/WAVE_11_IMPLEMENTATION_BACKLOG.md)                                                               |
+- **Obsidian Dark (`#0f0f0f`)**: Deep luxury canvas, card backgrounds, and drawer surfaces.
+- **Metallic Gold (`#C9A84C`)**: Hairline borders, active state highlights, icons, and executive accents.
+- **Emerald Green (`#10B981`)**: Positive metrics, conversion indicators, and online status beacons.
 
 ---
 
-## Governance Hard Gate
+## 🗺️ Master Phase Architecture & ASCII Workflow Maps
 
-1. Every planning update must run `npm run plans:validate`.
-2. Active queue changes must be mirrored in:
-   - `plans/PENDING_TASKS_ONLY.md`
-   - `PROJECT_PROGRESS.md`
-   - `DAILY_MILESTONE_TRACKER.md`
-3. Completion claims require verification command evidence.
-4. No new standalone plan docs — update existing files or create a wave bundle under `plans/waves/`.
+```
+[User Login / Hydration] ──► [Founder Email Check: arslanmalikgoraha@gmail.com]
+                                       │
+                    ┌──────────────────┴──────────────────┐
+                    ▼ (Match)                             ▼ (Standard)
+      [Force Level 5 Master Access]             [Hydrate RBAC Level 1-4]
+                    │                                     │
+                    └──────────────────┬──────────────────┘
+                                       │
+                                       ▼
+                       [UnifiedWorkspaceLayout Render]
+                                       │
+       ┌───────────────────────────────┼───────────────────────────────┐
+       ▼                               ▼                               ▼
+[Fixed Left Sidebar]          [Top Navbar Header]           [Main Content Area]
+ (280px Grid Shell)           (Glassmorphism Gold)          (GPU View-Swapping)
+       │                               │                               │
+       ▼                               ▼                               ▼
+[10 Department Nodes]        [Global Ctrl+K Search]         [100 Sector Viewports]
+```
 
 ---
 
-## Canonical Links
+## 📂 Phase Bucket 1: Master Navigation & Structural Layout (Views 01 - 20)
 
-- Queue: [`PENDING_TASKS_ONLY.md`](./PENDING_TASKS_ONLY.md)
-- Operational dashboard: [`../PROJECT_PROGRESS.md`](../PROJECT_PROGRESS.md)
-- Governance policy: [`PLANNING_GOVERNANCE.md`](./PLANNING_GOVERNANCE.md)
-- Active index: [`INDEX.md`](./INDEX.md)
-- Improvements backlogs: [`IMPROVEMENTS_BACKLOG.md`](./IMPROVEMENTS_BACKLOG.md), [`IMPROVEMENTS_UX.md`](./IMPROVEMENTS_UX.md), [`IMPROVEMENTS_CRITICAL.md`](./IMPROVEMENTS_CRITICAL.md)
+### Visual Specification & Layout Bounds
+
+- **Container**: Fixed left-anchored sidebar (`width: 280px`), top glassmorphism bar (`height: 64px`), viewport flex-1 (`background: #0f0f0f`).
+- **Styling Tokens**: Border hairline `1px solid rgba(201, 168, 76, 0.25)`, scrollbar width `4px`, thumb background `#C9A84C`.
+- **Responsive Media**: Below `768px`, sidebar collapses automatically, mounting `MobileBottomNav` and `MobileMenuDrawer`.
+
+### ASCII Navigation Workflow
+
+```
+[Sidebar Item Click] ➔ [React Router Navigate] ➔ [Check Offline/Online Mode]
+                                                         │
+                                    ┌────────────────────┴────────────────────┐
+                                    ▼                                         ▼
+                        [Offline: Hydrate Mock]                   [Online: Redux Fetch]
+                                    │                                         │
+                                    └────────────────────┬────────────────────┘
+                                                         │
+                                                         ▼
+                                             [Render Component View]
+```
 
 ---
 
-## Archive Policy
+## 📂 Phase Bucket 2: 10-Department High-Density Control Dashboards (Views 21 - 50)
 
-Historical/superseded plan documents live in `plans/archives/`.  
-New active planning docs must update an existing file or be created as a wave bundle under `plans/waves/` (no ad-hoc plan bloat in `plans/`).
+### 10 Registered Corporate Domains
+
+1. **Sales & Leasing**: Inbound lead management, broker conversion matrices, deal pipeline.
+2. **Operations**: 9,378-unit DAMAC Hills 2 spatial unit tracking, maintenance SLA dispatches.
+3. **Communications**: 23+ WhatsApp lines unified stream, Nadia AI routing, 15-min SLA clocks.
+4. **Finance**: AED/USD/EUR multi-currency conversion, Escrow balances, UAE FTA 5% VAT.
+5. **Marketing**: Paid advertising campaign ROI attribution scoreboards, CPL density maps.
+6. **Executive**: Full cross-department flight deck deck exclusively for Level 5 Founder account.
+7. **Compliance**: RERA broker license tracking, DLD regulatory card verifications, AML screens.
+8. **Technology**: System uptime telemetry, local cache memory metrics (`plans/AEGIS_CACHE.json`).
+9. **Legal**: DLD Form 7 (Rent Notice 90-day), Form 12 (Eviction 12-mo), Form 6 (Ejari non-renewal).
+10. **Intelligence**: Sentinel predictive neighborhood pricing index and building IoT heatmaps.
+
+---
+
+## 📂 Phase Bucket 3: Compensation Engines, Leaderboards & Workflows (Views 51 - 80)
+
+### Gamified Broker Production & Leaderboard
+
+- **Apex Podium**: Top 3 brokers with crown emblems, volume accelerator badges (70/30 split unlock).
+- **Accounts Receivable Aging**: 30 / 60 / 90 / 120+ days aging columns for developer payouts.
+- **Form 7 / 12 Workflow**: Chronological execution trackers with automated deadline notifications.
+
+---
+
+## 📂 Phase Bucket 4: AI Command Center & Security Middlewares (Views 81 - 100)
+
+### AI Assistant Registry & Routing
+
+- **Zoe (Investment & Strategy)**: Global executive query bar and P&L variance reports.
+- **Nadia (Lead Qualifier & WhatsApp Router)**: Automated 15-minute SLA enforcement.
+- **Sentinel (Security & IoT Telemetry)**: Building sensor anomaly heatmap monitors.

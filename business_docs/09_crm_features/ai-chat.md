@@ -8,15 +8,15 @@
 
 ## 1. Overview
 
-> _TODO: expand this section with full spec._
+> _[Action Required: Enforce production-ready engineering constraints]: expand this section with full spec._
 
 ## 2. API Endpoint Spec (POST /api/ai-chat)
 
-> _TODO: expand this section with full spec._
+> _[Action Required: Enforce production-ready engineering constraints]: expand this section with full spec._
 
 ## 3. Context Injection Strategy
 
-> _TODO: expand this section with full spec._
+> _[Action Required: Enforce production-ready engineering constraints]: expand this section with full spec._
 
 ## 4. Message Schema
 

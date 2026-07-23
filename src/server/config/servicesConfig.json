@@ -1,0 +1,17 @@
+{
+  "essential": [
+    "auth",
+    "users",
+    "properties",
+    "appointments",
+    "payments",
+    "tenancy-agreements",
+    "favorites",
+    "saved-searches",
+    "alerts",
+    "recommendations",
+    "dashboard",
+    "timelines"
+  ],
+  "optional": []
+}

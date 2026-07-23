@@ -1,0 +1,7 @@
+/* Design system shim: keep import stable until full token pipeline is restored */
+:root {
+  --color-border: #2a2a2a;
+  --color-surface: #141414;
+  --color-text: #f5f5f0;
+  --radius-md: 12px;
+}

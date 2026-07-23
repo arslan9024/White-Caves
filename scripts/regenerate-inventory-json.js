@@ -1,4 +1,4 @@
-import XLSX from 'xlsx';
+import ExcelJS from 'exceljs';
 import fs from 'fs';
 import path from 'path';
 
@@ -79,7 +79,8 @@ function parseRow(row, headers) {
 
 async function regenerateJSON() {
   console.log('Reading Excel file...');
-  const workbook = XLSX.readFile(EXCEL_PATH);
+  const workbook = new ExcelJS.Workbook();
+  await workbook.xlsx.readFile(EXCEL_PATH);
   
   const propertiesById = {};
   const ownersById = {};
@@ -98,9 +99,19 @@ async function regenerateJSON() {
   
   const sheets = [];
   
-  for (const sheetName of workbook.SheetNames) {
-    const sheet = workbook.Sheets[sheetName];
-    const rawData = XLSX.utils.sheet_to_json(sheet, { header: 1 });
+  for (const worksheet of workbook.worksheets) {
+    const sheetName = worksheet.name;
+    const rawData = [];
+
+    for (let rowNumber = 1; rowNumber <= worksheet.rowCount; rowNumber += 1) {
+      const row = worksheet.getRow(rowNumber);
+      const values = [];
+      for (let col = 1; col <= row.cellCount; col += 1) {
+        const cellValue = row.getCell(col).value;
+        values.push(cellValue === null || cellValue === undefined ? '' : String(cellValue));
+      }
+      rawData.push(values);
+    }
     
     if (rawData.length < 2) continue;
     

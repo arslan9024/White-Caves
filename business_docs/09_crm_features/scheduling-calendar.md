@@ -8,15 +8,15 @@
 
 ## 1. Overview
 
-> _TODO: expand this section with full spec._
+> _[Action Required: Enforce production-ready engineering constraints]: expand this section with full spec._
 
 ## 2. Availability Configuration and Appointment Types
 
-> _TODO: expand this section with full spec._
+> _[Action Required: Enforce production-ready engineering constraints]: expand this section with full spec._
 
 ## 3. Google Calendar and Outlook Sync Spec
 
-> _TODO: expand this section with full spec._
+> _[Action Required: Enforce production-ready engineering constraints]: expand this section with full spec._
 
 ## 4. Calendar Views
 

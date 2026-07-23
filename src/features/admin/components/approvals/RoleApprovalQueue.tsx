@@ -5,7 +5,11 @@ const log = createLogger('RoleApprovalQueue');
 import { useDispatch, useSelector } from 'react-redux';
 import type { RootState } from '../../../../store/store';
 import type { RoleRequest } from '../../../../store/roleSlice';
-import { approveRoleRequest, rejectRoleRequest, setPendingRequests } from '../../../../store/roleSlice';
+import {
+  approveRoleRequest,
+  rejectRoleRequest,
+  setPendingRequests,
+} from '../../../../store/roleSlice';
 import { apiClient } from '../../../../utils/apiClient';
 import { useToast } from '../../../../components/Toast';
 import './Approvals.css';
@@ -25,15 +29,16 @@ const RoleApprovalQueue = () => {
 
   const fetchPendingRequests = useCallback(async () => {
     if (!token) return;
-    
+
     try {
       setFetchError(null);
       apiClient.setAuthToken(token);
-      const data = await apiClient.get('/admin/role-requests') as { requests?: RoleRequest[] };
+      const data = (await apiClient.get('/admin/role-requests')) as { requests?: RoleRequest[] };
       dispatch(setPendingRequests(data.requests || []));
-    } catch (error: unknown) {
-      log.error('Failed to fetch role requests:', error);
-      setFetchError(error instanceof Error ? error.message : 'Failed to load role requests');
+    } catch (error) {
+      const err = error as { message?: string };
+
+      setFetchError((error as Error).message || 'Failed to load role requests');
     } finally {
       setInitialLoading(false);
     }
@@ -43,7 +48,7 @@ const RoleApprovalQueue = () => {
     fetchPendingRequests();
   }, [fetchPendingRequests]);
 
-  const filteredRequests = pendingRequests.filter((req) => {
+  const filteredRequests = pendingRequests.filter(req => {
     if (filter === 'all') return true;
     return req.status === filter;
   });
@@ -53,18 +58,20 @@ const RoleApprovalQueue = () => {
     setLoading(true);
     try {
       apiClient.setAuthToken(token);
-      await apiClient.post(`/admin/role-requests/${request.id}/approve`, { 
-        reviewedBy: user?.id 
+      await apiClient.post(`/admin/role-requests/${request.id}/approve`, {
+        reviewedBy: user?.id,
       });
-      
-      dispatch(approveRoleRequest({
-        requestId: request.id,
-        reviewedBy: user?.id ?? '',
-      }));
-      toast.success(`Role request for ${request.displayName || request.userName || 'user'} approved successfully`);
-    } catch (error: unknown) {
-      log.error('Approval error:', error);
-      toast.error(error instanceof Error ? error.message : 'Failed to approve request');
+
+      dispatch(
+        approveRoleRequest({
+          requestId: request.id,
+          reviewedBy: user?.id ?? '',
+        })
+      );
+      toast.success('Role request approved successfully');
+    } catch (error) {
+      const message = (error as Error).message || 'Failed to approve request';
+      toast.error(message);
     } finally {
       setLoading(false);
     }
@@ -81,22 +88,26 @@ const RoleApprovalQueue = () => {
     setLoading(true);
     try {
       apiClient.setAuthToken(token);
-      await apiClient.post(`/admin/role-requests/${request.id}/reject`, { 
+      await apiClient.post(`/admin/role-requests/${request.id}/reject`, {
         reviewedBy: user?.id,
         reason: rejectionReason,
       });
-      
-      dispatch(rejectRoleRequest({
-        requestId: request.id,
-        reviewedBy: user?.id ?? '',
-        reason: rejectionReason,
-      }));
+
+      dispatch(
+        rejectRoleRequest({
+          requestId: request.id,
+          reviewedBy: user?.id ?? '',
+          reason: rejectionReason,
+        })
+      );
 
       setSelectedRequest(null);
       setRejectionReason('');
-    } catch (error: unknown) {
-      log.error('Rejection error:', error);
-      toast.error(error instanceof Error ? error.message : 'Failed to reject request');
+      toast.success('Role request rejected');
+    } catch (error) {
+      const err = error as { message?: string };
+
+      alert((error as Error).message || 'Failed to reject request');
     } finally {
       setLoading(false);
     }
@@ -123,31 +134,33 @@ const RoleApprovalQueue = () => {
     return badges[status] || badges.pending;
   };
 
-  const formatDate = (dateString: string): string => formatDateUtil(dateString, {
-    month: 'short',
-    day: 'numeric',
-    year: 'numeric',
-    hour: '2-digit',
-    minute: '2-digit',
-  });
+  const formatDate = (dateString: string): string =>
+    formatDateUtil(dateString, {
+      month: 'short',
+      day: 'numeric',
+      year: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit',
+    });
 
   return (
     <div className="role-approval-queue">
       <div className="queue-header">
         <h2>Role Approval Queue</h2>
         <div className="queue-filters">
-          {['all', 'pending', 'approved', 'rejected'].map((f) => (
+          {['all', 'pending', 'approved', 'rejected'].map(f => (
             <button
               key={f}
               className={`filter-btn ${filter === f ? 'active' : ''}`}
               onClick={() => setFilter(f)}
             >
               {f.charAt(0).toUpperCase() + f.slice(1)}
-              {f === 'pending' && pendingRequests.filter(r => r.status === 'pending').length > 0 && (
-                <span className="count-badge">
-                  {pendingRequests.filter(r => r.status === 'pending').length}
-                </span>
-              )}
+              {f === 'pending' &&
+                pendingRequests.filter(r => r.status === 'pending').length > 0 && (
+                  <span className="count-badge">
+                    {pendingRequests.filter(r => r.status === 'pending').length}
+                  </span>
+                )}
             </button>
           ))}
         </div>
@@ -161,23 +174,19 @@ const RoleApprovalQueue = () => {
         </div>
       ) : (
         <div className="requests-list">
-          {filteredRequests.map((request) => {
+          {filteredRequests.map(request => {
             const statusBadge = getStatusBadge(request.status);
             return (
               <div key={request.id} className="request-card">
                 <div className="request-header">
                   <div className="user-info">
-                    <div className="user-avatar">
-                      {request.userName?.[0] || '?'}
-                    </div>
+                    <div className="user-avatar">{request.userName?.[0] || '?'}</div>
                     <div className="user-details">
                       <span className="user-name">{request.userName || 'Unknown User'}</span>
                       <span className="user-email">{request.userEmail || request.userId}</span>
                     </div>
                   </div>
-                  <span className={`status-badge ${statusBadge.class}`}>
-                    {statusBadge.label}
-                  </span>
+                  <span className={`status-badge ${statusBadge.class}`}>{statusBadge.label}</span>
                 </div>
 
                 <div className="request-body">
@@ -191,9 +200,7 @@ const RoleApprovalQueue = () => {
                       <strong>Reason:</strong> {request.reason}
                     </p>
                   )}
-                  <span className="request-date">
-                    Requested: {formatDate(request.requestedAt)}
-                  </span>
+                  <span className="request-date">Requested: {formatDate(request.requestedAt)}</span>
                 </div>
 
                 {request.status === 'pending' && (
@@ -230,22 +237,35 @@ const RoleApprovalQueue = () => {
       )}
 
       {selectedRequest && (
-        <div className="rejection-modal-overlay" onClick={() => setSelectedRequest(null)} role="presentation">
-          <div className="rejection-modal" role="alertdialog" aria-modal="true" aria-label="Reject role request" onClick={(e) => e.stopPropagation()} onKeyDown={(e) => { if (e.key === 'Escape') setSelectedRequest(null); }}>
+        <div
+          className="rejection-modal-overlay"
+          onClick={() => setSelectedRequest(null)}
+          role="presentation"
+        >
+          <div
+            className="rejection-modal"
+            role="alertdialog"
+            aria-modal="true"
+            aria-label="Reject role request"
+            onClick={e => e.stopPropagation()}
+            onKeyDown={e => {
+              if (e.key === 'Escape') setSelectedRequest(null);
+            }}
+          >
             <h3>Reject Role Request</h3>
             <p>
-              Please provide a reason for rejecting {selectedRequest.userName || 'this user'}'s 
+              Please provide a reason for rejecting {selectedRequest.userName || 'this user'}'s
               request to become a {getRoleLabel(selectedRequest.requestedRole)}.
             </p>
             <textarea
               value={rejectionReason}
-              onChange={(e) => setRejectionReason(e.target.value)}
+              onChange={e => setRejectionReason(e.target.value)}
               placeholder="Enter rejection reason..."
               rows={4}
             />
             <div className="modal-actions">
-              <button 
-                className="cancel-btn" 
+              <button
+                className="cancel-btn"
                 onClick={() => {
                   setSelectedRequest(null);
                   setRejectionReason('');

@@ -1,7 +1,21 @@
 import { defineConfig, devices } from '@playwright/test';
 
-const BASE_URL = process.env.TEST_BASE_URL || 'http://localhost:5000';
-const USE_EXTERNAL_BASE_URL = Boolean(process.env.TEST_BASE_URL);
+const BASE_URL = process.env.TEST_BASE_URL || 'http://localhost:3000';
+
+const isLocalManagedBaseUrl = (() => {
+  if (!process.env.TEST_BASE_URL) return true;
+
+  try {
+    const parsed = new URL(process.env.TEST_BASE_URL);
+    const isLocalhost = parsed.hostname === 'localhost' || parsed.hostname === '127.0.0.1';
+    const port = parsed.port || (parsed.protocol === 'https:' ? '443' : '80');
+    return isLocalhost && port === '3000';
+  } catch {
+    return false;
+  }
+})();
+
+const USE_EXTERNAL_BASE_URL = !isLocalManagedBaseUrl;
 
 export default defineConfig({
   testDir: './src/e2e',

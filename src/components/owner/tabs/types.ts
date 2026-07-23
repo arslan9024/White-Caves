@@ -89,6 +89,7 @@ export interface Contract {
   amount: number;
   status: string;
   ejariStatus: string;
+  signatureStatus?: 'pending' | 'sent' | 'opened' | 'signed' | 'rejected' | 'expired';
 }
 
 export interface ContractsData {
@@ -267,6 +268,10 @@ export interface SettingsTabProps {
 }
 
 export interface UsersTabProps {
+  onAction?: (action: string, data?: Record<string, unknown>) => void;
+}
+
+export interface SQATabProps {
   onAction?: (action: string, data?: Record<string, unknown>) => void;
 }
 

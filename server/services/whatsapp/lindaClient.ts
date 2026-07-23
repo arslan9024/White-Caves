@@ -15,7 +15,12 @@
 
 import { EventEmitter } from 'events';
 import path from 'path';
-import { LINDA_SESSIONS_PATH, LINDA_HEADLESS, LINDA_RECONNECT_DELAY, LINDA_MAX_RECONNECT_ATTEMPTS } from '../../config/env.js';
+import {
+  LINDA_SESSIONS_PATH,
+  LINDA_HEADLESS,
+  LINDA_RECONNECT_DELAY,
+  LINDA_MAX_RECONNECT_ATTEMPTS,
+} from '../../config/env.js';
 
 export interface WhatsAppMessage {
   id: string;
@@ -102,6 +107,7 @@ export class LindaClient extends EventEmitter {
 
       const sessionDir = path.resolve(this.config.sessionPath);
 
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       this.client = new Client({
         authStrategy: new LocalAuth({
           clientId: 'linda',
@@ -122,7 +128,7 @@ export class LindaClient extends EventEmitter {
         },
         restartOnAuthFail: true,
         takeoverOnConflict: true,
-      });
+      } as any);
 
       this.setupEventListeners();
       await this.client.initialize();
@@ -169,7 +175,8 @@ export class LindaClient extends EventEmitter {
     });
 
     // Incoming message
-    this.client.on('message', async (message: any) => { // eslint-disable-line @typescript-eslint/no-explicit-any
+    this.client.on('message', async (message: any) => {
+      // eslint-disable-line @typescript-eslint/no-explicit-any
       await this.handleIncomingMessage(message);
     });
 
@@ -191,7 +198,8 @@ export class LindaClient extends EventEmitter {
   /**
    * Normalise an incoming whatsapp-web.js message into our WhatsAppMessage shape.
    */
-  private async handleIncomingMessage(message: any): Promise<void> { // eslint-disable-line @typescript-eslint/no-explicit-any
+  private async handleIncomingMessage(message: any): Promise<void> {
+    // eslint-disable-line @typescript-eslint/no-explicit-any
     try {
       const wrapped: WhatsAppMessage = {
         id: message.id?.id ?? `msg_${Date.now()}`,
@@ -217,13 +225,15 @@ export class LindaClient extends EventEmitter {
   /**
    * Detect message type from MIME type or hasMedia flag.
    */
-  private detectMessageType(message: any): WhatsAppMessage['type'] { // eslint-disable-line @typescript-eslint/no-explicit-any
+  private detectMessageType(message: any): WhatsAppMessage['type'] {
+    // eslint-disable-line @typescript-eslint/no-explicit-any
     if (!message.hasMedia) return 'text';
     const mime: string = message.mimetype ?? '';
     if (mime.startsWith('image/')) return 'image';
     if (mime.startsWith('audio/')) return 'audio';
     if (mime.startsWith('video/')) return 'video';
-    if (mime.includes('pdf') || mime.includes('document') || mime.startsWith('application/')) return 'document';
+    if (mime.includes('pdf') || mime.includes('document') || mime.startsWith('application/'))
+      return 'document';
     return 'text';
   }
 
@@ -240,7 +250,8 @@ export class LindaClient extends EventEmitter {
     }
     const chatId = phoneNumber.includes('@') ? phoneNumber : `${phoneNumber}@c.us`;
     const sent = await this.client.sendMessage(chatId, message);
-    const messageId: string = sent?.id?.id ?? `msg_${Date.now()}_${Math.random().toString(36).slice(2)}`;
+    const messageId: string =
+      sent?.id?.id ?? `msg_${Date.now()}_${Math.random().toString(36).slice(2)}`;
     this.messagesSent += 1;
     this.emit('message_sent', { to: phoneNumber, message, messageId, timestamp: new Date() });
     console.log(`[Linda] → to ${phoneNumber}: ${message.substring(0, 60)}`);
@@ -282,10 +293,13 @@ export class LindaClient extends EventEmitter {
   /**
    * List active chats/conversations.
    */
-  public async getConversations(): Promise<Array<{ id: string; name: string; unreadCount: number; lastMessage?: string }>> {
+  public async getConversations(): Promise<
+    Array<{ id: string; name: string; unreadCount: number; lastMessage?: string }>
+  > {
     if (!this.sessionActive || !this.client) return [];
     const chats = await this.client.getChats();
-    return chats.slice(0, 50).map((c: any) => ({ // eslint-disable-line @typescript-eslint/no-explicit-any
+    return chats.slice(0, 50).map((c: any) => ({
+      // eslint-disable-line @typescript-eslint/no-explicit-any
       id: c.id?._serialized ?? String(c.id),
       name: c.name ?? c.id?._serialized ?? 'Unknown',
       unreadCount: c.unreadCount ?? 0,
@@ -301,16 +315,19 @@ export class LindaClient extends EventEmitter {
     const chatId = phoneNumber.includes('@') ? phoneNumber : `${phoneNumber}@c.us`;
     const chat = await this.client.getChatById(chatId);
     const messages = await chat.fetchMessages({ limit });
-    return messages.map((m: any): WhatsAppMessage => ({ // eslint-disable-line @typescript-eslint/no-explicit-any
-      id: m.id?.id ?? String(Date.now()),
-      from: m.from ?? phoneNumber,
-      to: m.to,
-      body: m.body ?? '',
-      timestamp: new Date((m.timestamp ?? 0) * 1000),
-      isFromMe: m.fromMe ?? false,
-      hasMedia: m.hasMedia ?? false,
-      type: this.detectMessageType(m),
-    }));
+    return messages.map(
+      (m: any): WhatsAppMessage => ({
+        // eslint-disable-line @typescript-eslint/no-explicit-any
+        id: m.id?.id ?? String(Date.now()),
+        from: m.from ?? phoneNumber,
+        to: m.to,
+        body: m.body ?? '',
+        timestamp: new Date((m.timestamp ?? 0) * 1000),
+        isFromMe: m.fromMe ?? false,
+        hasMedia: m.hasMedia ?? false,
+        type: this.detectMessageType(m),
+      })
+    );
   }
 
   /**
@@ -378,8 +395,13 @@ export class LindaClient extends EventEmitter {
 
     this.reconnectAttempts += 1;
     // Exponential back-off capped at 5 minutes
-    const delay = Math.min(this.config.reconnectDelay * Math.pow(2, this.reconnectAttempts - 1), 300_000);
-    console.log(`[Linda] Reconnect attempt ${this.reconnectAttempts}/${this.config.maxReconnectAttempts} in ${delay}ms`);
+    const delay = Math.min(
+      this.config.reconnectDelay * Math.pow(2, this.reconnectAttempts - 1),
+      300_000
+    );
+    console.log(
+      `[Linda] Reconnect attempt ${this.reconnectAttempts}/${this.config.maxReconnectAttempts} in ${delay}ms`
+    );
     this.setStatus(LindaStatus.RECONNECTING);
 
     setTimeout(async () => {
@@ -417,4 +439,3 @@ export function createLindaClient(config?: LindaConfig): LindaClient {
 export function resetLindaClient(): void {
   lindaInstance = null;
 }
-

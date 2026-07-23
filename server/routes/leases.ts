@@ -115,6 +115,100 @@ router.get(
   })
 );
 
+// ─── GET /api/leases/ejari/tracking — Ejari compliance dashboard data ──────
+router.get(
+  '/ejari/tracking',
+  asyncHandler(async (req: AuthRequest, res: Response) => {
+    const userId = req.user?.id;
+    if (!userId) throw new AppError('Authentication required', 401);
+
+    const role = req.query.role as string | undefined; // tenant | landlord
+    const days = Math.max(1, parseInt(req.query.days as string) || 30);
+    const requestedStatus = req.query.status as string | undefined;
+    const validEjariStatuses = ['pending', 'registered', 'expired', 'cancelled'];
+
+    if (requestedStatus && !validEjariStatuses.includes(requestedStatus)) {
+      throw new AppError(
+        `Invalid Ejari status. Must be one of: ${validEjariStatuses.join(', ')}`,
+        400
+      );
+    }
+
+    const where: Record<string, unknown> = {};
+
+    if (role === 'tenant') {
+      where.tenantId = userId;
+    } else if (role === 'landlord') {
+      where.landlordId = userId;
+    } else {
+      where.OR = [{ tenantId: userId }, { landlordId: userId }];
+    }
+
+    if (requestedStatus) {
+      where.ejariStatus = requestedStatus;
+    }
+
+    const leases = await prisma.lease.findMany({
+      where,
+      include: {
+        property: {
+          select: { id: true, title: true, location: true, type: true },
+        },
+        tenant: {
+          select: { id: true, name: true, email: true, phone: true },
+        },
+      },
+      orderBy: [{ ejariExpiryDate: 'asc' }, { createdAt: 'desc' }],
+      take: 500,
+    });
+
+    const now = Date.now();
+    const expiryWindow = new Date();
+    expiryWindow.setDate(expiryWindow.getDate() + days);
+
+    const data = leases.map(lease => {
+      const expiry = lease.ejariExpiryDate ? lease.ejariExpiryDate.getTime() : null;
+      const daysToExpiry =
+        expiry !== null ? Math.ceil((expiry - now) / (1000 * 60 * 60 * 24)) : null;
+
+      return {
+        id: lease.id,
+        leaseNumber: lease.leaseNumber,
+        ejariNumber: lease.ejariNumber,
+        ejariStatus: lease.ejariStatus,
+        ejariRegistrationDate: lease.ejariRegistrationDate,
+        ejariExpiryDate: lease.ejariExpiryDate,
+        daysToExpiry,
+        isExpiringSoon:
+          lease.ejariStatus === 'registered' &&
+          Boolean(lease.ejariExpiryDate) &&
+          (lease.ejariExpiryDate as Date) >= new Date() &&
+          (lease.ejariExpiryDate as Date) <= expiryWindow,
+        property: lease.property,
+        tenant: lease.tenant,
+      };
+    });
+
+    const summary = {
+      total: data.length,
+      pending: data.filter(i => i.ejariStatus === 'pending').length,
+      registered: data.filter(i => i.ejariStatus === 'registered').length,
+      expired: data.filter(i => i.ejariStatus === 'expired').length,
+      cancelled: data.filter(i => i.ejariStatus === 'cancelled').length,
+      expiringSoon: data.filter(i => i.isExpiringSoon).length,
+    };
+
+    res.status(200).json({
+      success: true,
+      data,
+      summary,
+      meta: {
+        expiringWithinDays: days,
+      },
+    });
+  })
+);
+
 // ─── GET /api/leases/:id — Get lease detail ──────────────────────────────────
 router.get(
   '/:id',
@@ -122,7 +216,7 @@ router.get(
     const userId = req.user?.id;
     if (!userId) throw new AppError('Authentication required', 401);
 
-    const { id } = req.params;
+    const { id } = req.params as Record<string, string>;
     const lease = await prisma.lease.findUnique({
       where: { id },
       include: {
@@ -219,7 +313,7 @@ router.patch(
     const userId = req.user?.id;
     if (!userId) throw new AppError('Authentication required', 401);
 
-    const { id } = req.params;
+    const { id } = req.params as Record<string, string>;
     const existing = await prisma.lease.findUnique({ where: { id } });
     if (!existing) throw new AppError('Lease not found', 404);
 
@@ -314,7 +408,7 @@ router.delete(
     const userId = req.user?.id;
     if (!userId) throw new AppError('Authentication required', 401);
 
-    const { id } = req.params;
+    const { id } = req.params as Record<string, string>;
     const existing = await prisma.lease.findUnique({ where: { id } });
     if (!existing) throw new AppError('Lease not found', 404);
 
@@ -343,7 +437,7 @@ router.post(
     const userId = req.user?.id;
     if (!userId) throw new AppError('Authentication required', 401);
 
-    const { id } = req.params;
+    const { id } = req.params as Record<string, string>;
     const existing = await prisma.lease.findUnique({ where: { id } });
     if (!existing) throw new AppError('Lease not found', 404);
 
@@ -377,7 +471,7 @@ router.get(
     const userId = req.user?.id;
     if (!userId) throw new AppError('Authentication required', 401);
 
-    const { id } = req.params;
+    const { id } = req.params as Record<string, string>;
     const lease = await prisma.lease.findUnique({
       where: { id },
       select: { tenantId: true, landlordId: true },
@@ -405,7 +499,7 @@ router.post(
     const userId = req.user?.id;
     if (!userId) throw new AppError('Authentication required', 401);
 
-    const { id } = req.params;
+    const { id } = req.params as Record<string, string>;
     const existing = await prisma.lease.findUnique({ where: { id } });
     if (!existing) throw new AppError('Lease not found', 404);
 
@@ -453,7 +547,7 @@ router.get(
     const userId = req.user?.id;
     if (!userId) throw new AppError('Authentication required', 401);
 
-    const { id } = req.params;
+    const { id } = req.params as Record<string, string>;
     const lease = await prisma.lease.findUnique({
       where: { id },
       include: {
@@ -554,7 +648,7 @@ router.get(
     const userId = req.user?.id;
     if (!userId) throw new AppError('Authentication required', 401);
 
-    const { id } = req.params;
+    const { id } = req.params as Record<string, string>;
     const lease = await prisma.lease.findUnique({
       where: { id },
       select: { tenantId: true, landlordId: true },
@@ -582,7 +676,7 @@ router.post(
     const userId = req.user?.id;
     if (!userId) throw new AppError('Authentication required', 401);
 
-    const { id } = req.params;
+    const { id } = req.params as Record<string, string>;
     const lease = await prisma.lease.findUnique({ where: { id } });
     if (!lease) throw new AppError('Lease not found', 404);
 
@@ -629,7 +723,7 @@ router.patch(
     const userId = req.user?.id;
     if (!userId) throw new AppError('Authentication required', 401);
 
-    const { id, pdcId } = req.params;
+    const { id, pdcId } = req.params as Record<string, string>;
     const lease = await prisma.lease.findUnique({
       where: { id },
       select: { landlordId: true, tenantId: true },
@@ -659,5 +753,131 @@ router.patch(
     res.json({ success: true, data: updated });
   })
 );
+
+// ─── GET /api/leases/overdue-collection-queue ──────────────────────────────
+// Returns bounced/overdue rent cheque queue for collections workflow.
+router.get(
+  '/collections/overdue-queue',
+  asyncHandler(async (req: AuthRequest, res: Response) => {
+    const userId = req.user?.id;
+    if (!userId) throw new AppError('Authentication required', 401);
+
+    const role = req.user?.role;
+    const isOwner = role === 'owner';
+
+    const overdueItems = await prisma.pDCSchedule.findMany({
+      where: {
+        OR: [{ status: 'bounced' }, { status: 'pending', dueDate: { lt: new Date() } }],
+        ...(isOwner ? {} : { lease: { landlordId: userId } }),
+      },
+      include: {
+        lease: {
+          select: {
+            id: true,
+            leaseNumber: true,
+            monthlyRent: true,
+            currency: true,
+            property: { select: { id: true, title: true, location: true } },
+            tenant: { select: { id: true, name: true, email: true, phone: true } },
+            landlord: { select: { id: true, name: true, email: true, phone: true } },
+          },
+        },
+      },
+      orderBy: [{ dueDate: 'asc' }, { createdAt: 'asc' }],
+      take: 300,
+    });
+
+    const now = Date.now();
+    const data = overdueItems.map(item => ({
+      id: item.id,
+      leaseId: item.leaseId,
+      chequeNumber: item.chequeNumber,
+      bankName: item.bankName,
+      amount: item.amount,
+      currency: item.lease?.currency || 'AED',
+      dueDate: item.dueDate,
+      status: item.status,
+      daysOverdue: Math.max(0, Math.floor((now - item.dueDate.getTime()) / 86400000)),
+      notes: item.notes,
+      lease: item.lease,
+    }));
+
+    res.status(200).json({
+      success: true,
+      data,
+      summary: {
+        total: data.length,
+        bounced: data.filter(i => i.status === 'bounced').length,
+        overduePending: data.filter(i => i.status === 'pending').length,
+      },
+    });
+  })
+);
+
+const notifyOverdueCollection = async (req: AuthRequest, res: Response) => {
+  const userId = req.user?.id;
+  if (!userId) throw new AppError('Authentication required', 401);
+
+  const { pdcId } = req.params as Record<string, string>;
+  const pdc = await prisma.pDCSchedule.findUnique({
+    where: { id: pdcId },
+    include: {
+      lease: { select: { id: true, leaseNumber: true, tenantId: true, landlordId: true } },
+    },
+  });
+
+  if (!pdc || !pdc.lease) {
+    throw new AppError('PDC record not found', 404);
+  }
+
+  const role = req.user?.role;
+  const isOwner = role === 'owner';
+  if (!isOwner && pdc.lease.landlordId !== userId) {
+    throw new AppError('Access denied — only lease landlord or owner can notify collections', 403);
+  }
+
+  const channel = typeof req.body?.channel === 'string' ? req.body.channel : 'whatsapp';
+  const note =
+    typeof req.body?.note === 'string'
+      ? req.body.note
+      : 'Automated overdue rent collection reminder';
+
+  const activity = await prisma.activity.create({
+    data: {
+      type: 'payment',
+      action: 'overdue_collection_notified',
+      description: `Collection reminder sent for cheque ${pdc.chequeNumber} (${channel})`,
+      userId,
+      metadata: {
+        pdcId: pdc.id,
+        leaseId: pdc.lease.id,
+        leaseNumber: pdc.lease.leaseNumber,
+        channel,
+        note,
+        status: pdc.status,
+      },
+    },
+  });
+
+  res.status(200).json({
+    success: true,
+    data: {
+      pdcId: pdc.id,
+      leaseId: pdc.lease.id,
+      channel,
+      notifiedAt: activity.createdAt,
+      activityId: activity.id,
+    },
+    message: 'Collection reminder logged',
+  });
+};
+
+// ─── POST /api/leases/collections/overdue-queue/:pdcId/notify ─────────────
+// Canonical route for overdue rent queue reminder logging.
+router.post('/collections/overdue-queue/:pdcId/notify', asyncHandler(notifyOverdueCollection));
+
+// ─── POST /api/leases/overdue-collection-queue/:pdcId/notify ───────────────
+// Backward-compatible alias for existing clients.
+router.post('/overdue-collection-queue/:pdcId/notify', asyncHandler(notifyOverdueCollection));
 
 export default router;

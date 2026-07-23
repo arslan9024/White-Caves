@@ -11,7 +11,7 @@
  * @component
  */
 
-import React, { FC, useState } from 'react';
+import React, { FC, useState, useMemo } from 'react';
 import { useSelector } from 'react-redux';
 import type { RootState } from '../../store/store';
 import '../RolePages.css';
@@ -22,6 +22,8 @@ import TenantPaymentHistoryTab from '../../components/portal/tenant/TenantPaymen
 import TenantMaintenanceTab from '../../components/portal/tenant/TenantMaintenanceTab';
 import TenantDocumentsTab from '../../components/portal/tenant/TenantDocumentsTab';
 import PortalProfileTab from '../../components/portal/PortalProfileTab';
+import PortalSidebarContainer from '../../components/portal/containers/PortalSidebarContainer';
+import { useTranslation, Text } from '../../context/TranslationContext';
 
 type TabKey = 'home' | 'lease' | 'payments' | 'maintenance' | 'documents' | 'profile';
 
@@ -31,25 +33,31 @@ interface Tab {
   icon: string;
 }
 
-const tabs: Tab[] = [
-  { key: 'home', label: 'Dashboard', icon: '🏠' },
-  { key: 'lease', label: 'My Lease', icon: '📋' },
-  { key: 'payments', label: 'Payment History', icon: '💳' },
-  { key: 'maintenance', label: 'Maintenance', icon: '🔧' },
-  { key: 'documents', label: 'Documents', icon: '📄' },
-  { key: 'profile', label: 'My Profile', icon: '👤' },
-];
-
 const TenantPortalPage: FC = () => {
   const [activeTab, setActiveTab] = useState<TabKey>('home');
   const currentUser = useSelector((state: RootState) => state.user.currentUser);
+  const { t } = useTranslation();
+
+  const tabs: Tab[] = useMemo(
+    () => [
+      { key: 'home', label: t('tenant.portal.tabs.home'), icon: '🏠' },
+      { key: 'lease', label: t('tenant.portal.tabs.lease'), icon: '📋' },
+      { key: 'payments', label: t('tenant.portal.tabs.payments'), icon: '💳' },
+      { key: 'maintenance', label: t('tenant.portal.tabs.maintenance'), icon: '🔧' },
+      { key: 'documents', label: t('tenant.portal.tabs.documents'), icon: '📄' },
+      { key: 'profile', label: t('tenant.portal.tabs.profile'), icon: '👤' },
+    ],
+    [t]
+  );
 
   if (!currentUser) {
     return (
       <div className="role-page no-sidebar">
         <div className="role-page-content full-width">
           <div className="error-message">
-            <p>You must be logged in to access the Tenant Portal.</p>
+            <p>
+              <Text tid="tenant.portal.unauthorized" />
+            </p>
           </div>
         </div>
       </div>
@@ -80,31 +88,19 @@ const TenantPortalPage: FC = () => {
       <div className="role-page no-sidebar">
         <div className="role-page-content full-width">
           <div className="page-header">
-            <h1>Tenant Portal</h1>
-            <p>Welcome, {currentUser.name}. Manage your lease and requests.</p>
+            <h1>
+              <Text tid="tenant.portal.title" />
+            </h1>
+            <p>{t('tenant.portal.welcome').replace('{name}', currentUser.name ?? 'User')}</p>
           </div>
 
           {/* Tab Navigation */}
-          <div
-            className="portal-tab-navigation"
-            role="tablist"
-            aria-label="Tenant Portal Navigation"
-          >
-            {tabs.map(tab => (
-              <button
-                key={tab.key}
-                role="tab"
-                aria-selected={activeTab === tab.key}
-                aria-controls={`tabpanel-${tab.key}`}
-                className={`portal-tab ${activeTab === tab.key ? 'active' : ''}`}
-                onClick={() => setActiveTab(tab.key)}
-                data-testid={`tab-${tab.key}`}
-              >
-                <span className="tab-icon">{tab.icon}</span>
-                <span className="tab-label">{tab.label}</span>
-              </button>
-            ))}
-          </div>
+          <PortalSidebarContainer<TabKey>
+            tabs={tabs}
+            activeTab={activeTab}
+            onTabChange={setActiveTab}
+            ariaLabel={t('tenant.portal.title')}
+          />
 
           {/* Tab Content */}
           <div

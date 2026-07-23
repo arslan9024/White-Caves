@@ -5,10 +5,10 @@
  */
 
 import { Router, Request, Response } from 'express';
-import { asyncHandler, AppError } from '../middleware/errorHandler';
-import type { AuthRequest } from '../middleware/auth';
+import { asyncHandler, AppError } from '../middleware/errorHandler.js';
+import type { AuthRequest } from '../middleware/auth.js';
 import { prisma } from '../database.js';
-import { requirePermission } from '../middleware/rbac';
+import { requirePermission } from '../middleware/rbac.js';
 
 const router = Router();
 
@@ -100,7 +100,7 @@ router.get(
       throw new AppError('Access denied — global search requires manager or above role', 403);
     }
 
-    const { q } = req.query;
+    const { q } = req.query as Record<string, string | undefined>;
     if (!q || (q as string).trim().length < 2) {
       return res.status(200).json({ success: true, data: { leads: [], properties: [], agents: [] } });
     }

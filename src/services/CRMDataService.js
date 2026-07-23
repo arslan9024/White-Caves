@@ -1,5 +1,3 @@
-import { authFetch } from '../utils/authFetch';
-
 const API_BASE = '/api';
 
 class CRMDataService {
@@ -11,19 +9,24 @@ class CRMDataService {
   async fetchWithAuth(endpoint, options = {}) {
     const headers = {
       'Content-Type': 'application/json',
-      ...options.headers,
+      ...options.headers
     };
 
-    const response = await authFetch(`${API_BASE}${endpoint}`, {
-      ...options,
-      headers,
-    });
+    try {
+      const response = await fetch(`${API_BASE}${endpoint}`, {
+        ...options,
+        headers
+      });
 
-    if (!response.ok) {
-      throw new Error(`API Error: ${response.status} ${response.statusText}`);
+      if (!response.ok) {
+        throw new Error(`API Error: ${response.status} ${response.statusText}`);
+      }
+
+      return await response.json();
+    } catch (error) {
+      
+      throw error;
     }
-
-    return response.json();
   }
 
   getCached(key) {
@@ -123,6 +126,60 @@ class CRMDataService {
 
   async getZoeServices() {
     return this.fetchWithAuth('/zoe/services');
+  }
+
+  async getRecruitmentOverview() {
+    const cacheKey = 'recruitment-overview';
+    const cached = this.getCached(cacheKey);
+    if (cached) return cached;
+
+    const data = await this.fetchWithAuth('/recruitment/overview');
+    this.setCache(cacheKey, data);
+    return data;
+  }
+
+  async exportRecruitmentKpiTrends(role = 'executive') {
+    const response = await fetch(`${API_BASE}/recruitment/overview/export`, {
+      headers: {
+        'x-user-role': role
+      }
+    });
+
+    if (!response.ok) {
+      throw new Error(`API Error: ${response.status} ${response.statusText}`);
+    }
+
+    return {
+      blob: await response.blob(),
+      filename: response.headers.get('content-disposition') || 'recruitment-kpi-trends.csv'
+    };
+  }
+
+  async getManagerShortlist(jobId, options = {}) {
+    const { minScore = 70, limit = 20, role = 'hiring_manager' } = options;
+    const query = new URLSearchParams({
+      min_score: String(minScore),
+      limit: String(limit)
+    });
+
+    return this.fetchWithAuth(`/recruitment/jobs/${jobId}/manager-shortlist?${query.toString()}`, {
+      headers: {
+        'x-user-role': role
+      }
+    });
+  }
+
+  async submitManagerReview(applicationId, decision, reviewNote = '', role = 'hiring_manager') {
+    return this.fetchWithAuth(`/recruitment/applications/${applicationId}/manager-review`, {
+      method: 'POST',
+      headers: {
+        'x-user-role': role
+      },
+      body: JSON.stringify({
+        decision,
+        review_note: reviewNote
+      })
+    });
   }
 
   async getOliviaFeaturedProperties() {

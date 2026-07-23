@@ -1,0 +1,32 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "Aegis Health",
+      "type": "node",
+      "request": "launch",
+      "program": "${workspaceFolder}/scripts/orchestrator/aegis-health.js",
+      "cwd": "${workspaceFolder}"
+    },
+    {
+      "name": "Aegis Context Bootstrap",
+      "type": "node",
+      "request": "launch",
+      "program": "${workspaceFolder}/scripts/orchestrator/context-manager.js",
+      "args": [
+        "--bootstrap"
+      ],
+      "cwd": "${workspaceFolder}"
+    },
+    {
+      "name": "Aegis Autopilot Session JSON",
+      "type": "node",
+      "request": "launch",
+      "program": "${workspaceFolder}/scripts/orchestrator/autopilot-session.js",
+      "args": [
+        "--json"
+      ],
+      "cwd": "${workspaceFolder}"
+    }
+  ]
+}

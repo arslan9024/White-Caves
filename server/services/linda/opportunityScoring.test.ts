@@ -3,7 +3,7 @@
  */
 
 import { describe, it, expect } from 'vitest';
-import { scoreOpportunity, classifyMessage, scoreOpportunityBatch } from './opportunityScoring';
+import { scoreOpportunity, classifyMessage, scoreOpportunityBatch } from './opportunityScoring.js';
 
 describe('opportunityScoring - scoreOpportunity', () => {
   it('returns cold score for negative signals', () => {

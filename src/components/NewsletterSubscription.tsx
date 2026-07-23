@@ -54,11 +54,11 @@ const NewsletterSubscription: React.FC = () => {
               width: 56,
               height: 56,
               borderRadius: '50%',
-              background: 'rgba(227, 30, 36, 0.15)',
+              background: 'rgba(201, 168, 76, 0.15)',
               marginBottom: '1.25rem',
             }}
           >
-            <Mail size={26} color="#E31E24" />
+            <Mail size={26} color="#C9A84C" />
           </div>
 
           <h2
@@ -164,8 +164,8 @@ const NewsletterSubscription: React.FC = () => {
                 style={{
                   padding: '0.75rem 1.5rem',
                   borderRadius: 8,
-                  background: '#E31E24',
-                  color: '#fff',
+                  background: '#C9A84C',
+                  color: '#0f0f0f',
                   fontWeight: 600,
                   border: 'none',
                   cursor: isSubmitting ? 'not-allowed' : 'pointer',

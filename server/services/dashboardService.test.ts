@@ -11,7 +11,7 @@ vi.mock('../database', () => ({
   prisma: {},
 }));
 
-import DashboardService from './dashboardService';
+import DashboardService from './dashboardService.js';
 
 describe('DashboardService', () => {
   let service: DashboardService;

@@ -48,7 +48,7 @@ vi.mock('../utils/logger', () => ({
   }),
 }));
 
-import communicationsRoutes from './communications';
+import communicationsRoutes from './communications.js';
 
 // ── Test app factory ─────────────────────────────────────────────────
 function createApp(role: string = 'owner', userId = 'user-1') {

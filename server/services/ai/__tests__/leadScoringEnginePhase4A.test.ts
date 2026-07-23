@@ -50,7 +50,7 @@ import {
   getTier,
   getScoreHistory,
   getScoreTrending,
-} from '../leadScoringEngine';
+} from '../leadScoringEngine.js';
 
 // ─── Tests ──────────────────────────────────────────────────────────────
 
