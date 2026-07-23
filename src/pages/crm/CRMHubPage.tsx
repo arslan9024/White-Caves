@@ -276,22 +276,22 @@ const CRMQuickActions = memo(function CRMQuickActions({
 }: CRMQuickActionsProps) {
   return (
     <QuickActions>
-      <QuickAction $color="#3B82F6" onClick={onOpenLeads}>
+      <QuickAction $color="#C9A84C" onClick={onOpenLeads}>
         🎯 {leadManagementLabel}
       </QuickAction>
       <QuickAction $color="#10B981" onClick={onOpenProperties}>
         🏠 {propertyPortfolioLabel}
       </QuickAction>
-      <QuickAction $color="#F59E0B" onClick={onOpenAgents}>
+      <QuickAction $color="#C9A84C" onClick={onOpenAgents}>
         👥 {agentPerformanceLabel}
       </QuickAction>
-      <QuickAction $color="#0EA5E9" onClick={onOpenAuditLog}>
+      <QuickAction $color="#C9A84C" onClick={onOpenAuditLog}>
         🧾 {auditLogLabel}
       </QuickAction>
-      <QuickAction $color="#25D366" onClick={onOpenNadia}>
+      <QuickAction $color="#10B981" onClick={onOpenNadia}>
         💬 {whatsappLabel}
       </QuickAction>
-      <QuickAction $color="#8B5CF6" onClick={onOpenTheodora}>
+      <QuickAction $color="#C9A84C" onClick={onOpenTheodora}>
         💰 {financeLabel}
       </QuickAction>
       <QuickAction $color="#C9A84C" onClick={onOpenZoe}>
@@ -408,7 +408,7 @@ const CRMHubPage: FC = () => {
               <BackButton onClick={handleBackToHub}>← Back to CRM Hub</BackButton>
               <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
                 <span style={{ fontSize: '1.25rem' }}>{moduleDef.icon}</span>
-                <span style={{ fontWeight: 600, color: '#1a1a2e' }}>{moduleDef.label}</span>
+                <span style={{ fontWeight: 600, color: '#ffffff' }}>{moduleDef.label}</span>
               </div>
               <Badge variant="success" size="small">
                 Active
