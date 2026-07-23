@@ -67,26 +67,26 @@
   --text-tertiary: #6b7280;
   --text-muted: #9ca3af;
   --text-inverse: #ffffff;
-  --text-link: #b03737;
-  --text-link-hover: #8b2c2c;
+  --text-link: #c9a84c;
+  --text-link-hover: #a8883a;
 
   /* Border Colors */
   --border-color: #e5e7eb;
   --border-light: #f3f4f6;
   --border-dark: #d1d5db;
-  --border-focus: #b03737;
+  --border-focus: #10b981;
 
   /* Shadow Colors */
   --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
   --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.07);
   --shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.1);
   --shadow-xl: 0 20px 25px rgba(0, 0, 0, 0.1);
-  --shadow-glow: 0 0 20px rgba(176, 55, 55, 0.3);
+  --shadow-glow: 0 0 20px rgba(201, 168, 76, 0.2);
 
   /* Input Colors */
   --input-bg: #ffffff;
   --input-border: #d1d5db;
-  --input-focus-border: #b03737;
+  --input-focus-border: #c9a84c;
   --input-placeholder: #9ca3af;
 
   /* Table Colors */
@@ -97,8 +97,8 @@
   /* Sidebar/Nav Colors */
   --nav-bg: #ffffff;
   --nav-text: #374151;
-  --nav-text-active: #b03737;
-  --nav-bg-active: #fdeaea;
+  --nav-text-active: #c9a84c;
+  --nav-bg-active: rgba(201, 168, 76, 0.08);
 
   /* Badge/Tag Colors */
   --badge-bg: #f3f4f6;
@@ -113,58 +113,58 @@
    DARK THEME
    ========================================== */
 [data-theme='dark'] {
-  /* Backgrounds */
-  --bg-primary: #0f172a;
-  --bg-secondary: #1e293b;
-  --bg-tertiary: #334155;
-  --bg-card: #1e293b;
-  --bg-hover: #334155;
-  --bg-active: #475569;
+  /* Backgrounds (Obsidian Dark palette) */
+  --bg-primary: #0f0f0f;
+  --bg-secondary: #1a1a1a;
+  --bg-tertiary: #1f1f1f;
+  --bg-card: #1a1a1a;
+  --bg-hover: #1f1f1f;
+  --bg-active: #2c2c2c;
   --bg-overlay: rgba(0, 0, 0, 0.7);
-  --bg-glass: rgba(30, 41, 59, 0.9);
+  --bg-glass: rgba(26, 26, 26, 0.9);
 
   /* Text Colors - High Contrast for Dark Mode */
-  --text-primary: #f8fafc;
-  --text-secondary: #cbd5e1;
-  --text-tertiary: #94a3b8;
-  --text-muted: #64748b;
-  --text-inverse: #0f172a;
-  --text-link: #f87171;
-  --text-link-hover: #fca5a5;
+  --text-primary: #ffffff;
+  --text-secondary: rgba(255, 255, 255, 0.7);
+  --text-tertiary: rgba(255, 255, 255, 0.45);
+  --text-muted: rgba(255, 255, 255, 0.3);
+  --text-inverse: #0f0f0f;
+  --text-link: #c9a84c;
+  --text-link-hover: #e4b75e;
 
   /* Border Colors */
-  --border-color: #334155;
-  --border-light: #475569;
-  --border-dark: #1e293b;
-  --border-focus: #f87171;
+  --border-color: #2c2c2c;
+  --border-light: #1f1f1f;
+  --border-dark: #2c2c2c;
+  --border-focus: #10b981;
 
   /* Shadow Colors */
-  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.3);
-  --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.4);
-  --shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.5);
-  --shadow-xl: 0 20px 25px rgba(0, 0, 0, 0.6);
-  --shadow-glow: 0 0 20px rgba(248, 113, 113, 0.4);
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.5);
+  --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.6);
+  --shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.7);
+  --shadow-xl: 0 20px 25px rgba(0, 0, 0, 0.8);
+  --shadow-glow: 0 0 20px rgba(201, 168, 76, 0.15);
 
   /* Input Colors */
-  --input-bg: #1e293b;
-  --input-border: #475569;
-  --input-focus-border: #f87171;
-  --input-placeholder: #64748b;
+  --input-bg: #1a1a1a;
+  --input-border: #2c2c2c;
+  --input-focus-border: #c9a84c;
+  --input-placeholder: rgba(255, 255, 255, 0.3);
 
   /* Table Colors */
-  --table-header-bg: #1e293b;
-  --table-row-hover: #334155;
-  --table-border: #334155;
+  --table-header-bg: #1a1a1a;
+  --table-row-hover: #1f1f1f;
+  --table-border: #2c2c2c;
 
   /* Sidebar/Nav Colors */
-  --nav-bg: #1e293b;
-  --nav-text: #cbd5e1;
-  --nav-text-active: #f87171;
-  --nav-bg-active: rgba(248, 113, 113, 0.1);
+  --nav-bg: #1a1a1a;
+  --nav-text: rgba(255, 255, 255, 0.7);
+  --nav-text-active: #c9a84c;
+  --nav-bg-active: rgba(201, 168, 76, 0.08);
 
   /* Badge/Tag Colors */
-  --badge-bg: #334155;
-  --badge-text: #e2e8f0;
+  --badge-bg: #2c2c2c;
+  --badge-text: #ffffff;
 
   /* Chart Colors */
   --chart-grid: #334155;
