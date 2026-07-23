@@ -4,18 +4,18 @@
 
 // PRIMARY BRAND COLORS
 export const colors = {
-  // Brand Colors (formerly 6 different reds)
+  // Brand Colors — METALLIC GOLD (White Caves Brand Color Law)
   primary: {
-    50: '#FDF2F2', // Lightest
-    100: '#FCE4E4',
-    200: '#F8C8C8',
-    300: '#F5ADAD',
-    400: '#E88B8B',
-    500: '#C41E3A', // Brand Red (canonical)
-    600: '#A01729',
-    700: '#7A101E',
-    800: '#540B15',
-    900: '#2D060C', // Darkest
+    50: 'rgba(201, 168, 76, 0.05)',
+    100: 'rgba(201, 168, 76, 0.1)',
+    200: 'rgba(201, 168, 76, 0.2)',
+    300: 'rgba(201, 168, 76, 0.35)',
+    400: '#e4b75e',
+    500: '#C9A84C', // Metallic Gold (canonical brand primary)
+    600: '#a8883a',
+    700: '#8a6e2e',
+    800: '#6b5422',
+    900: '#4a3a17',
   },
 
   // SEMANTIC COLORS
@@ -71,51 +71,51 @@ export const colors = {
     900: '#171717',
   },
 
-  // TEXT COLORS
+  // TEXT COLORS (Obsidian Dark mode)
   text: {
-    primary: '#171717', // neutral-900
-    secondary: '#525252', // neutral-600
-    tertiary: '#A3A3A3', // neutral-400
-    inverse: '#FAFAFA', // For dark backgrounds
+    primary: '#ffffff',
+    secondary: 'rgba(255, 255, 255, 0.7)',
+    tertiary: 'rgba(255, 255, 255, 0.45)',
+    inverse: '#0f0f0f',
   },
 
-  // BACKGROUND COLORS
+  // BACKGROUND COLORS (Obsidian Dark palette)
   background: {
-    default: '#FFFFFF',
-    surface: '#F5F5F5',
-    hover: '#E5E5E5',
-    active: '#D4D4D4',
+    default: '#0f0f0f',
+    surface: '#1a1a1a',
+    hover: '#1f1f1f',
+    active: '#2c2c2c',
   },
 
-  // BORDER COLORS
+  // BORDER COLORS (Obsidian Dark palette)
   border: {
-    light: '#E5E5E5',
-    default: '#D4D4D4',
-    dark: '#A3A3A3',
+    light: '#2c2c2c',
+    default: 'rgba(201, 168, 76, 0.3)',
+    dark: '#C9A84C',
   },
 
   // STATUS SPECIFIC (used in badges, alerts)
   status: {
-    success: '#22C55E',
-    warning: '#F59E0B',
+    success: '#10B981',
+    warning: '#C9A84C',
     error: '#EF4444',
-    info: '#3B82F6',
+    info: '#C9A84C',
   },
 };
 
 // SEMANTIC ALIASES (use these for maintainability)
 export const semanticColors = {
-  brand: colors.primary[500], // #C41E3A
+  brand: colors.primary[500], // #C9A84C — Metallic Gold
   success: colors.success[500], // #22C55E
   warning: colors.warning[500], // #F59E0B
   error: colors.error[500], // #EF4444
-  info: colors.error[500], // #3B82F6
+  info: '#C9A84C', // Metallic Gold (no blue allowed per Brand Color Law)
 
   // UI-specific
   buttonPrimary: colors.primary[500],
-  buttonHover: colors.primary[600],
-  buttonActive: colors.primary[700],
-  buttonDisabled: colors.neutral[200],
+  buttonHover: colors.primary[400],
+  buttonActive: colors.primary[600],
+  buttonDisabled: colors.neutral[700],
 
   // Text
   textPrimary: colors.text.primary,
