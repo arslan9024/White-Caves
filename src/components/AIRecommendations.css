@@ -16,7 +16,7 @@
 .ai-icon {
   width: 48px;
   height: 48px;
-  background: linear-gradient(135deg, #B03737, #F4D03F);
+  background: linear-gradient(135deg, #c9a84c, #a8883a);
   border-radius: 12px;
   display: flex;
   align-items: center;
@@ -28,7 +28,8 @@
 }
 
 @keyframes pulse {
-  0%, 100% {
+  0%,
+  100% {
     box-shadow: 0 0 0 0 rgba(212, 175, 55, 0.4);
   }
   50% {
@@ -69,8 +70,8 @@
 }
 
 .refresh-btn:hover {
-  background: #B03737;
-  border-color: #B03737;
+  background: #c9a84c;
+  border-color: #c9a84c;
 }
 
 .refresh-btn:hover svg {
@@ -95,24 +96,26 @@
   width: 40px;
   height: 40px;
   border: 3px solid var(--border-color);
-  border-top-color: #B03737;
+  border-top-color: #c9a84c;
   border-radius: 50%;
   margin: 0 auto 20px;
   animation: spin 1s linear infinite;
 }
 
 @keyframes spin {
-  to { transform: rotate(360deg); }
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 .error-state button,
 .empty-state button {
   margin-top: 15px;
   padding: 10px 25px;
-  background: #B03737;
+  background: #c9a84c;
   border: none;
   border-radius: 8px;
-  color: #1a1a2e;
+  color: #0f0f0f;
   font-weight: 600;
   cursor: pointer;
 }
@@ -151,7 +154,7 @@
 .recommendation-card:hover {
   transform: translateY(-8px);
   box-shadow: 0 20px 50px rgba(0, 0, 0, 0.2);
-  border-color: #B03737;
+  border-color: #c9a84c;
 }
 
 .match-score {
@@ -159,7 +162,7 @@
   top: 15px;
   right: 15px;
   z-index: 2;
-  background: linear-gradient(135deg, #B03737, #F4D03F);
+  background: linear-gradient(135deg, #10b981, #064e3b);
   border-radius: 10px;
   padding: 8px 12px;
   text-align: center;
@@ -170,14 +173,14 @@
   display: block;
   font-size: 1.1rem;
   font-weight: 700;
-  color: #1a1a2e;
+  color: #ffffff;
   line-height: 1;
 }
 
 .match-score .label {
   display: block;
   font-size: 0.65rem;
-  color: #1a1a2e;
+  color: #ffffff;
   opacity: 0.8;
   text-transform: uppercase;
   margin-top: 2px;
@@ -214,7 +217,7 @@
 .card-content .price {
   font-size: 1.35rem;
   font-weight: 700;
-  color: #B03737;
+  color: #10b981;
   margin-bottom: 8px;
 }
 
