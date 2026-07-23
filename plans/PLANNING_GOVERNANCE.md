@@ -1,87 +1,63 @@
-# Planning Governance — Single Source of Truth
+# AEGIS 2.0 Planning Governance & 90% Readiness Standard
 
-**Version:** 1.4  
-**Last Updated:** 2026-06-10  
-**Owner:** Product + Technical Planning
-
----
-
-## Scope
-
-This governance applies to:
-
-- `plans/*`
-- `plans/waves/*`
-- planning-linked trackers: `PROJECT_PROGRESS.md`, `DAILY_MILESTONE_TRACKER.md`
+**Version:** 2026.07-AEGIS-V2  
+**Control Plane Policy:** `scripts/orchestrator/policy.json`  
+**Governance Authority:** Executive Council (@Ada, @Margaret, @Grace, @Elena, @Zoe)
 
 ---
 
-## Folder Layout
+## 🛡️ The 90% Readiness Checkpoint Framework (Immutable Law)
 
-| Location                            | Role                                                         |
-| ----------------------------------- | ------------------------------------------------------------ |
-| `plans/MASTER_PLAN.md`              | Canonical roadmap and execution order                        |
-| `plans/PENDING_TASKS_ONLY.md`       | Canonical live queue                                         |
-| `plans/ORCHESTRATION_UPGRADE_V4.md` | Current observability/autopilot upgrade plan                 |
-| `plans/waves/`                      | Active implementation bundles                                |
-| `plans/INDEX.md`, `plans/README.md` | Navigation only                                              |
-| `plans/archives/`                   | Superseded/completed docs                                    |
-| other `plans/*` folders             | Reference-only context unless promoted by canonical trackers |
+Under AEGIS 2.0 operational rules, **no AI sub-agent or implementation agent is permitted to write or modify application code (.ts, .tsx, .css)** until the target feature or module achieves the **90% Readiness Gate**.
 
----
-
-## Authority Hierarchy (Canonical Sources)
-
-1. **Portfolio roadmap:** `plans/MASTER_PLAN.md`
-2. **Active implementation queue:** `plans/PENDING_TASKS_ONLY.md`
-3. **Active wave bundle:** linked `plans/waves/WAVE_##_*` files for the current wave
-4. **Operational dashboard:** `PROJECT_PROGRESS.md`
-5. **Daily execution log:** `DAILY_MILESTONE_TRACKER.md`
-6. **Reference docs:** phase docs, improvement deep-dives, and archived material
-
-If two files disagree, the higher file in this hierarchy wins.
+```
+[Phase 1: Free Agent Planning]
+          │
+          ▼
+[90% Readiness Checkpoint Audit] ──► [Unmet (<90%)] ──► [Route to Free Agents for Expansion]
+          │
+          ├────────────────────────┐
+          ▼ (≥90% Passed)          ▼
+[Dual Threshold Unlock (60%)]  [Target Readiness (90%)]
+          │                        │
+          └───────────┬────────────┘
+                      │
+                      ▼
+[Executive Council (@Ada) Sign-Off]
+                      │
+                      ▼
+[Phase 2: Premium Implementation Coding Sprint]
+```
 
 ---
 
-## Ownership and Update Cadence
+## 📋 The 6-Point Readiness Criteria
 
-| File                                 | Primary Owner          | Update Trigger                          | Cadence                      |
-| ------------------------------------ | ---------------------- | --------------------------------------- | ---------------------------- |
-| `plans/MASTER_PLAN.md`               | Architecture + Product | sequence/order/status changes           | Weekly or on wave transition |
-| `plans/PENDING_TASKS_ONLY.md`        | Planning               | task completion, gate changes, blockers | Daily                        |
-| `plans/waves/README.md`              | Planning               | bundle added/removed/renamed            | Per change                   |
-| `PROJECT_PROGRESS.md`                | Planning               | milestone state change                  | Daily                        |
-| `DAILY_MILESTONE_TRACKER.md`         | Execution lead         | execution log updates                   | Daily                        |
-| `plans/INDEX.md` / `plans/README.md` | Planning               | navigation changes                      | Per change                   |
+Before any code modification turn, the following six criteria must be documented on disk within `plans/` or `business_docs/`:
 
----
-
-## Active vs Archived Rules
-
-- Active execution bundles live in `plans/waves/`.
-- Canonical status lives only in `MASTER_PLAN.md`, `PENDING_TASKS_ONLY.md`, `PROJECT_PROGRESS.md`, and `DAILY_MILESTONE_TRACKER.md`.
-- Autopilot observability lives in `scripts/orchestrator/progress-intelligence.ps1` and `scripts/orchestrator/dashboard.ps1`; plan updates must keep those outputs reflected in the planning stack.
-- Completed, superseded, or renamed planning docs move to `plans/archives/`.
-- Reference docs may remain in `plans/` root for context, but they are not live status sources unless explicitly linked from the canonical stack.
-- `plans/` must not contain ad-hoc `Pasted-*` files.
+1. **Target File Paths Defined**: Exact relative file paths for all new or modified components, hooks, styles, and routes.
+2. **TypeScript Interface & Schema Definitions**: Complete type contracts, props, state objects, and database models.
+3. **Component Hierarchy & Layout Wireframes**: Visual ASCII wireframes detailing container bounds, flex grids, and styling tokens.
+4. **Quiet Luxury Design Token Mapping**: Explicit binding to Obsidian Dark (`#0f0f0f`), Metallic Gold (`#C9A84C`), and Emerald Green (`#10B981`).
+5. **Mock & Synthetic Data Fallbacks**: Direct alignment with `src/mocks/dubaiRealEstateMocks.ts` and `src/mocks/dubaiFinanceEngine.ts`.
+6. **Acceptance Criteria & Test Matrix**: Quantitative testable definitions for pass/fail verification via `npm run build` and unit test specs.
 
 ---
 
-## Required Metadata for Active Wave Files
+## ⚖️ Executive Clearance Matrix
 
-Every active wave document should contain:
+| Clearance Level          | Role Class                                   | Permission Boundary                                      | Gate Gatekeeper |
+| ------------------------ | -------------------------------------------- | -------------------------------------------------------- | --------------- |
+| **Level 5 (Master)**     | Founder & MD (`arslanmalikgoraha@gmail.com`) | Unrestricted administrative bypass, instant profile land | Auto-injected   |
+| **Level 4 (Dept Head)**  | CSO, VP Sales, Finance Director              | Full department modification & transaction sign-off      | @Ada Sign-Off   |
+| **Level 3 (Power User)** | Senior Brokers, Account Directors            | Managed record mutations & pipeline updates              | Standard RBAC   |
+| **Level 2 (Restricted)** | Mid Brokers, Coordinators                    | Assigned record view/edit only                           | Standard RBAC   |
+| **Level 1 (Read Only)**  | Interns, External Vendors                    | Public portfolio metrics & read-only views               | Standard RBAC   |
 
-- `Wave`
-- `Date` or `Last Updated`
-- `Status`
-- `Focus` or `Objective`
-- `Owners`
-- entry gate or dependencies
-- validation or closeout rules
+---
 
-## Status Source Pointers (Mandatory)
+## 🔄 Anti-Wastage & Context Preservation Rules
 
-- Canonical tracker files must link back to `plans/MASTER_PLAN.md` and `plans/PENDING_TASKS_ONLY.md`.
-- Wave bundles should be reachable from `plans/PENDING_TASKS_ONLY.md` and `plans/waves/README.md`.
-- Validation and Hygiene: run `npm run plans:validate` after every planning or tracker change; keep `PROJECT_PROGRESS.md` and `DAILY_MILESTONE_TRACKER.md` aligned with the canonical roadmap and live queue; avoid broken links or stale dates; preserve ETA/velocity/drift/blocker-aging signals in the dashboard; and retain a downstream FEEDS/FEEDS_ACK trail for autopilot-ready planning bundles.
-- Weekly hygiene reviews should cover roadmap order, queue integrity, archive sweeps, and daily canonical tracker sync.
+- **Single-File Isolation**: Edits during code implementation turns must target ONLY the precise file assigned. Global re-scans are strictly prohibited.
+- **Zero-Token Local Verification**: All syntax, linting, and type checking MUST be executed locally on the machine via `npm run build`.
+- **Deduplication Enforcement**: Any redundant navigation layout, duplicate component, or conflicting style file MUST be shredded immediately upon discovery.
