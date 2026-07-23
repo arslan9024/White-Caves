@@ -552,7 +552,7 @@ export const AI_ASSISTANTS_REGISTRY: Record<string, AIAssistant> = {
     title: 'Legal Risk Analyst',
     department: 'legal',
     icon: 'Scale',
-    colorScheme: '#E31E24',
+    colorScheme: '#C9A84C',
     avatar: '👩‍⚖️',
     description:
       'Evangeline is the proactive legal risk officer who keeps White Caves ahead of contractual and regulatory threats. She monitors every live SPA, MOU, and tenancy contract for risk clauses — penalty provisions, unilateral cancellation rights, incomplete disclosure obligations — and flags them before signing. She tracks changes in UAE property law, RERA circulars, and DLD fee structures, maintains an internal best-practices library so agents always work with current compliant templates, logs identified risks on a severity-graded risk register, and drafts recommended contract amendments for legal-manager review.',
@@ -1405,7 +1405,7 @@ export const DEPARTMENT_COLORS: Record<string, string> = {
   communications: 'linear-gradient(135deg, #25D366 0%, #128C7E 100%)',
   sales: 'linear-gradient(135deg, #8B5CF6 0%, #D946EF 100%)',
   technology: 'linear-gradient(135deg, #0EA5E9 0%, #06B6D4 100%)',
-  legal: 'linear-gradient(135deg, #E31E24 0%, #B71C1C 100%)',
+  legal: 'linear-gradient(135deg, #C9A84C 0%, #a8883a 100%)',
   intelligence: 'linear-gradient(135deg, #0D9488 0%, #0F766E 100%)',
   customer_experience: 'linear-gradient(135deg, #8B5CF6 0%, #7C3AED 100%)',
   data_and_ai: 'linear-gradient(135deg, #F97316 0%, #EA580C 100%)',

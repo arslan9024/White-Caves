@@ -40,12 +40,12 @@ const HubHeader = styled.div`
 const HubTitle = styled.h1`
   font-size: 1.75rem;
   font-weight: 700;
-  color: #1a1a2e;
+  color: #c9a84c;
   margin: 0 0 0.25rem 0;
 `;
 
 const HubSubtitle = styled.p`
-  color: #666;
+  color: rgba(255, 255, 255, 0.6);
   font-size: 0.95rem;
   margin: 0;
 `;
@@ -58,17 +58,17 @@ const StatsGrid = styled.div`
 `;
 
 const StatCard = styled.div<{ $color: string }>`
-  background: white;
+  background: #0f0f0f;
   border-radius: 12px;
   padding: 1.25rem;
-  border: 1px solid #e8e8e8;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+  border: 1px solid rgba(201, 168, 76, 0.2);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
   transition: all 0.2s ease;
   cursor: pointer;
 
   &:hover {
     border-color: ${props => props.$color};
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    box-shadow: 0 4px 12px rgba(201, 168, 76, 0.15);
     transform: translateY(-2px);
   }
 `;
@@ -76,7 +76,7 @@ const StatCard = styled.div<{ $color: string }>`
 const StatLabel = styled.div`
   font-size: 0.8rem;
   font-weight: 500;
-  color: #888;
+  color: rgba(255, 255, 255, 0.5);
   text-transform: uppercase;
   letter-spacing: 0.5px;
   margin-bottom: 0.5rem;
@@ -96,10 +96,10 @@ const ModulesGrid = styled.div`
 `;
 
 const ModuleCard = styled.div<{ $color: string; $active: boolean }>`
-  background: ${props => (props.$active ? `${props.$color}08` : 'white')};
+  background: ${props => (props.$active ? `${props.$color}12` : '#0f0f0f')};
   border-radius: 12px;
   padding: 1.25rem;
-  border: 2px solid ${props => (props.$active ? props.$color : '#e8e8e8')};
+  border: 2px solid ${props => (props.$active ? props.$color : '#2c2c2c')};
   cursor: pointer;
   transition: all 0.2s ease;
 
@@ -118,21 +118,21 @@ const ModuleIcon = styled.div<{ $color: string }>`
 const ModuleName = styled.h3`
   font-size: 1rem;
   font-weight: 600;
-  color: #1a1a2e;
+  color: #ffffff;
   margin: 0 0 0.25rem 0;
 `;
 
 const ModuleDesc = styled.p`
   font-size: 0.8rem;
-  color: #888;
+  color: rgba(255, 255, 255, 0.5);
   margin: 0;
   line-height: 1.4;
 `;
 
 const ContentArea = styled.div`
-  background: white;
+  background: #0f0f0f;
   border-radius: 12px;
-  border: 1px solid #e8e8e8;
+  border: 1px solid #2c2c2c;
   min-height: 500px;
   overflow: hidden;
 `;
@@ -142,17 +142,17 @@ const ContentHeader = styled.div`
   align-items: center;
   justify-content: space-between;
   padding: 1rem 1.5rem;
-  border-bottom: 1px solid #f0f0f0;
-  background: #fafafa;
+  border-bottom: 1px solid #2c2c2c;
+  background: #1a1a1a;
 `;
 
 const BackButton = styled.button`
   background: none;
-  border: 1px solid #ddd;
+  border: 1px solid #2c2c2c;
   border-radius: 8px;
   padding: 0.5rem 1rem;
   font-size: 0.85rem;
-  color: #555;
+  color: rgba(255, 255, 255, 0.7);
   cursor: pointer;
   display: flex;
   align-items: center;
@@ -160,15 +160,15 @@ const BackButton = styled.button`
   transition: all 0.15s ease;
 
   &:hover {
-    background: #f5f5f5;
-    border-color: #bbb;
+    background: #1f1f1f;
+    border-color: rgba(201, 168, 76, 0.4);
   }
 `;
 
 const ActivityFeed = styled.div`
-  background: white;
+  background: #0f0f0f;
   border-radius: 12px;
-  border: 1px solid #e8e8e8;
+  border: 1px solid #2c2c2c;
   padding: 1.25rem;
   margin-top: 1.5rem;
 `;
@@ -176,7 +176,7 @@ const ActivityFeed = styled.div`
 const ActivityTitle = styled.h3`
   font-size: 1rem;
   font-weight: 600;
-  color: #1a1a2e;
+  color: #c9a84c;
   margin: 0 0 1rem 0;
 `;
 
@@ -185,7 +185,7 @@ const ActivityItem = styled.div`
   align-items: flex-start;
   gap: 0.75rem;
   padding: 0.75rem 0;
-  border-bottom: 1px solid #f5f5f5;
+  border-bottom: 1px solid #1f1f1f;
 
   &:last-child {
     border-bottom: none;
@@ -203,13 +203,13 @@ const ActivityDot = styled.div<{ $color: string }>`
 
 const ActivityText = styled.div`
   font-size: 0.85rem;
-  color: #444;
+  color: rgba(255, 255, 255, 0.7);
   line-height: 1.4;
 `;
 
 const ActivityTime = styled.div`
   font-size: 0.75rem;
-  color: #aaa;
+  color: rgba(255, 255, 255, 0.4);
   margin-top: 2px;
 `;
 
@@ -294,7 +294,7 @@ const CRMQuickActions = memo(function CRMQuickActions({
       <QuickAction $color="#8B5CF6" onClick={onOpenTheodora}>
         💰 {financeLabel}
       </QuickAction>
-      <QuickAction $color="#E31E24" onClick={onOpenZoe}>
+      <QuickAction $color="#C9A84C" onClick={onOpenZoe}>
         👑 {executiveLabel}
       </QuickAction>
     </QuickActions>

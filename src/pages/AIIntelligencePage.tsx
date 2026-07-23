@@ -39,7 +39,7 @@ const PageTitle = styled.h1`
   color: #fafafa;
   margin: 0 0 0.4rem;
   span {
-    color: #c41e3a;
+    color: #c9a84c;
   }
 `;
 
@@ -54,7 +54,7 @@ const SectionTitle = styled.h2`
   font-weight: 600;
   letter-spacing: 0.12em;
   text-transform: uppercase;
-  color: #c41e3a;
+  color: #c9a84c;
   margin: 2rem 0 0.75rem;
 `;
 
@@ -170,7 +170,7 @@ const PerfBar = styled.div<{ $score: number }>`
     width: ${({ $score }) => $score}%;
     border-radius: 3px;
     background: ${({ $score }) =>
-      $score >= 90 ? '#22c55e' : $score >= 50 ? '#eab308' : '#c41e3a'};
+      $score >= 90 ? '#10B981' : $score >= 50 ? '#C9A84C' : '#EF4444'};
     transition: width 0.6s ease;
   }
 `;

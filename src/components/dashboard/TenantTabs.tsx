@@ -172,7 +172,7 @@ export const TenantLease: React.FC = () => {
             <p
               style={{
                 ...S.headerSubtitle,
-                color: 'var(--color-primary, #E31E24)',
+                color: 'var(--color-primary, #C9A84C)',
                 fontWeight: 600,
               }}
             >

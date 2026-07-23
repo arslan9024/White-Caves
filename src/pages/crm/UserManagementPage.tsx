@@ -11,11 +11,23 @@ import styled from 'styled-components';
 import { Badge, Pagination } from '../../components/ui';
 import { useDocumentTitle } from '../../hooks/useDocumentTitle';
 import {
-  PageContainer, PageHeader, PageTitle, BackLink,
-  ActionBar, SearchInput, FilterSelect,
-  PrimaryButton, SecondaryButton,
-  Table, Th, Td, Tr, EmptyState,
-  PaginationWrapper, LoadingBanner, ErrorBanner,
+  PageContainer,
+  PageHeader,
+  PageTitle,
+  BackLink,
+  ActionBar,
+  SearchInput,
+  FilterSelect,
+  PrimaryButton,
+  SecondaryButton,
+  Table,
+  Th,
+  Td,
+  Tr,
+  EmptyState,
+  PaginationWrapper,
+  LoadingBanner,
+  ErrorBanner,
 } from './styles/CrmPageStyles';
 import { useUserManagement, ROLE_CONFIG, STATUS_CONFIG } from './hooks/useUserManagement';
 import type { User } from './hooks/useUserManagement';
@@ -30,8 +42,8 @@ const StatsRow = styled.div`
 `;
 
 const StatCard = styled.div<{ $color: string }>`
-  background: white;
-  border: 1px solid #e8e8e8;
+  background: #0f0f0f;
+  border: 1px solid #2c2c2c;
   border-radius: 12px;
   padding: 1.25rem;
   border-left: 4px solid ${props => props.$color};
@@ -40,12 +52,12 @@ const StatCard = styled.div<{ $color: string }>`
 const StatValue = styled.div`
   font-size: 1.75rem;
   font-weight: 700;
-  color: #1a1a2e;
+  color: #ffffff;
 `;
 
 const StatLabel = styled.div`
   font-size: 0.75rem;
-  color: #888;
+  color: rgba(255, 255, 255, 0.5);
   text-transform: uppercase;
   letter-spacing: 0.5px;
   margin-top: 0.25rem;
@@ -59,9 +71,9 @@ const TabBar = styled.div`
 `;
 
 const Tab = styled.button<{ $active: boolean; $color: string }>`
-  background: ${props => props.$active ? props.$color : 'white'};
-  color: ${props => props.$active ? 'white' : '#555'};
-  border: 1px solid ${props => props.$active ? props.$color : '#ddd'};
+  background: ${props => (props.$active ? props.$color : '#1a1a1a')};
+  color: ${props => (props.$active ? '#0f0f0f' : 'rgba(255, 255, 255, 0.7)')};
+  border: 1px solid ${props => (props.$active ? props.$color : '#2c2c2c')};
   border-radius: 20px;
   padding: 0.4rem 1rem;
   font-size: 0.8rem;
@@ -74,21 +86,22 @@ const Tab = styled.button<{ $active: boolean; $color: string }>`
 
   &:hover {
     border-color: ${props => props.$color};
-    background: ${props => props.$active ? props.$color : `${props.$color}10`};
+    background: ${props => (props.$active ? props.$color : `${props.$color}20`)};
   }
 `;
 
 const RoleSelect = styled.select`
-  border: 1px solid #ddd;
+  border: 1px solid #2c2c2c;
   border-radius: 6px;
   padding: 0.3rem 0.5rem;
   font-size: 0.78rem;
   outline: none;
-  background: white;
+  background: #1a1a1a;
+  color: rgba(255, 255, 255, 0.8);
   cursor: pointer;
 
   &:focus {
-    border-color: #3B82F6;
+    border-color: #c9a84c;
   }
 `;
 
@@ -97,14 +110,28 @@ const RoleSelect = styled.select`
 const UserManagementPage: FC = () => {
   useDocumentTitle('User Management');
   const {
-    filteredUsers, paginatedUsers, stats, roleCounts,
-    loading, error,
-    search, roleFilter, statusFilter, currentPage,
+    filteredUsers,
+    paginatedUsers,
+    stats,
+    roleCounts,
+    loading,
+    error,
+    search,
+    roleFilter,
+    statusFilter,
+    currentPage,
     ITEMS_PER_PAGE,
-    handleChangeRole, handleToggleStatus,
-    handleSearchChange, handleRoleFilterChange, handleStatusFilterChange,
-    setCurrentPage, retryFetch, goBack,
-    getRoleBadgeVariant, getStatusBadgeVariant, formatDate,
+    handleChangeRole,
+    handleToggleStatus,
+    handleSearchChange,
+    handleRoleFilterChange,
+    handleStatusFilterChange,
+    setCurrentPage,
+    retryFetch,
+    goBack,
+    getRoleBadgeVariant,
+    getStatusBadgeVariant,
+    formatDate,
   } = useUserManagement();
 
   return (
@@ -136,12 +163,14 @@ const UserManagementPage: FC = () => {
           <StatValue>{stats.active}</StatValue>
           <StatLabel>Active Users</StatLabel>
         </StatCard>
-        {Object.entries(ROLE_CONFIG).slice(0, 3).map(([role, cfg]) => (
-          <StatCard key={role} $color={cfg.color}>
-            <StatValue>{stats.roleCounts[role] || 0}</StatValue>
-            <StatLabel>{cfg.label}s</StatLabel>
-          </StatCard>
-        ))}
+        {Object.entries(ROLE_CONFIG)
+          .slice(0, 3)
+          .map(([role, cfg]) => (
+            <StatCard key={role} $color={cfg.color}>
+              <StatValue>{stats.roleCounts[role] || 0}</StatValue>
+              <StatLabel>{cfg.label}s</StatLabel>
+            </StatCard>
+          ))}
       </StatsRow>
 
       {/* Role Tabs */}
@@ -173,16 +202,15 @@ const UserManagementPage: FC = () => {
           value={search}
           onChange={e => handleSearchChange(e.target.value)}
         />
-        <FilterSelect
-          value={statusFilter}
-          onChange={e => handleStatusFilterChange(e.target.value)}
-        >
+        <FilterSelect value={statusFilter} onChange={e => handleStatusFilterChange(e.target.value)}>
           <option value="all">All Status</option>
           {Object.entries(STATUS_CONFIG).map(([key, cfg]) => (
-            <option key={key} value={key}>{cfg.label}</option>
+            <option key={key} value={key}>
+              {cfg.label}
+            </option>
           ))}
         </FilterSelect>
-        <span style={{ fontSize: '0.8rem', color: '#888' }}>
+        <span style={{ fontSize: '0.8rem', color: 'rgba(255, 255, 255, 0.5)' }}>
           {filteredUsers.length} user{filteredUsers.length !== 1 ? 's' : ''} found
         </span>
       </ActionBar>
@@ -226,7 +254,9 @@ const UserManagementPage: FC = () => {
                         onChange={e => handleChangeRole(user.id, e.target.value)}
                       >
                         {Object.entries(ROLE_CONFIG).map(([key, cfg]) => (
-                          <option key={key} value={key}>{cfg.label}</option>
+                          <option key={key} value={key}>
+                            {cfg.label}
+                          </option>
                         ))}
                       </RoleSelect>
                       {user.status === 'active' ? (

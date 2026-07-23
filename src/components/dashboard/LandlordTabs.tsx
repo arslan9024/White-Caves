@@ -76,7 +76,7 @@ export const LandlordProperties: React.FC = () => {
               <div style={{ display: 'flex', gap: '1rem', fontSize: '0.85rem', color: '#6b7280' }}>
                 <span>🛏️ {p.bedrooms ?? 0} BR</span>
                 <span>📐 {p.sqft ?? '—'} sqft</span>
-                <span style={{ fontWeight: 600, color: 'var(--color-primary, #E31E24)' }}>
+                <span style={{ fontWeight: 600, color: 'var(--color-primary, #C9A84C)' }}>
                   {S.formatCurrency(p.price)}/yr
                 </span>
               </div>

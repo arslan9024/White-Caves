@@ -12,16 +12,37 @@ import { Badge, Pagination } from '../../components/ui';
 import { Modal } from '../../shared/components/ui/Modal';
 import { useDocumentTitle } from '../../hooks/useDocumentTitle';
 import {
-  PageContainer, PageHeader, PageTitle, BackLink,
-  ActionBar, SearchInput, FilterSelect,
-  PrimaryButton, SecondaryButton, DangerButton,
-  Table, Th, Td, Tr, EmptyState,
-  FormGroup, FormLabel, FormInput, FormTextarea, FormSelect, FormRow,
-  PaginationWrapper, LoadingBanner, ErrorBanner, ModalFooter,
+  PageContainer,
+  PageHeader,
+  PageTitle,
+  BackLink,
+  ActionBar,
+  SearchInput,
+  FilterSelect,
+  PrimaryButton,
+  SecondaryButton,
+  DangerButton,
+  Table,
+  Th,
+  Td,
+  Tr,
+  EmptyState,
+  FormGroup,
+  FormLabel,
+  FormInput,
+  FormTextarea,
+  FormSelect,
+  FormRow,
+  PaginationWrapper,
+  LoadingBanner,
+  ErrorBanner,
+  ModalFooter,
 } from './styles/CrmPageStyles';
 import {
   useTransactionManagement,
-  STATUS_CONFIG, TYPE_LABELS, PIPELINE_STAGES,
+  STATUS_CONFIG,
+  TYPE_LABELS,
+  PIPELINE_STAGES,
 } from './hooks/useTransactionManagement';
 import type { Transaction } from './hooks/useTransactionManagement';
 
@@ -35,8 +56,8 @@ const StatsRow = styled.div`
 `;
 
 const StatCard = styled.div<{ $color: string }>`
-  background: white;
-  border: 1px solid #e8e8e8;
+  background: #0f0f0f;
+  border: 1px solid #2c2c2c;
   border-radius: 12px;
   padding: 1.25rem;
   border-left: 4px solid ${props => props.$color};
@@ -45,12 +66,12 @@ const StatCard = styled.div<{ $color: string }>`
 const StatValue = styled.div`
   font-size: 1.75rem;
   font-weight: 700;
-  color: #1a1a2e;
+  color: #ffffff;
 `;
 
 const StatLabel = styled.div`
   font-size: 0.75rem;
-  color: #888;
+  color: rgba(255, 255, 255, 0.5);
   text-transform: uppercase;
   letter-spacing: 0.5px;
   margin-top: 0.25rem;
@@ -60,15 +81,16 @@ const PipelineBar = styled.div`
   display: flex;
   gap: 0.25rem;
   margin-bottom: 1.5rem;
-  background: #f5f5f5;
+  background: #1a1a1a;
   border-radius: 12px;
   padding: 0.5rem;
+  border: 1px solid #2c2c2c;
 `;
 
 const PipelineStage = styled.button<{ $active: boolean; $color: string }>`
   flex: 1;
-  background: ${props => props.$active ? props.$color : 'transparent'};
-  color: ${props => props.$active ? 'white' : '#555'};
+  background: ${props => (props.$active ? props.$color : 'transparent')};
+  color: ${props => (props.$active ? '#0f0f0f' : 'rgba(255, 255, 255, 0.7)')};
   border: none;
   border-radius: 8px;
   padding: 0.6rem 0.75rem;
@@ -82,7 +104,7 @@ const PipelineStage = styled.button<{ $active: boolean; $color: string }>`
   gap: 0.2rem;
 
   &:hover {
-    background: ${props => props.$active ? props.$color : '#e8e8e8'};
+    background: ${props => (props.$active ? props.$color : '#2c2c2c')};
   }
 `;
 
@@ -103,17 +125,41 @@ const PipelineArrow = styled.span`
 const TransactionManagementPage: FC = () => {
   useDocumentTitle('Transaction Management');
   const {
-    filteredTransactions, paginatedTransactions,
-    summaryStats, pipelineCounts,
-    loading, error,
-    search, statusFilter, typeFilter, currentPage,
-    showCreateModal, showEditModal, showDeleteConfirm, selectedTransaction,
-    formData, setFormData, ITEMS_PER_PAGE,
-    openCreateModal, closeCreateModal, closeEditModal, closeDeleteModal,
-    handleCreate, handleEdit, handleSaveEdit, handleDelete, confirmDelete,
-    handleSearchChange, handleStatusFilterChange, handleTypeFilterChange,
-    setCurrentPage, retryFetch, goBack,
-    getStatusBadgeVariant, formatCurrency, formatDate,
+    filteredTransactions,
+    paginatedTransactions,
+    summaryStats,
+    pipelineCounts,
+    loading,
+    error,
+    search,
+    statusFilter,
+    typeFilter,
+    currentPage,
+    showCreateModal,
+    showEditModal,
+    showDeleteConfirm,
+    selectedTransaction,
+    formData,
+    setFormData,
+    ITEMS_PER_PAGE,
+    openCreateModal,
+    closeCreateModal,
+    closeEditModal,
+    closeDeleteModal,
+    handleCreate,
+    handleEdit,
+    handleSaveEdit,
+    handleDelete,
+    confirmDelete,
+    handleSearchChange,
+    handleStatusFilterChange,
+    handleTypeFilterChange,
+    setCurrentPage,
+    retryFetch,
+    goBack,
+    getStatusBadgeVariant,
+    formatCurrency,
+    formatDate,
   } = useTransactionManagement();
 
   const renderForm = () => (
@@ -126,7 +172,9 @@ const TransactionManagementPage: FC = () => {
             onChange={e => setFormData({ ...formData, type: e.target.value })}
           >
             {Object.entries(TYPE_LABELS).map(([key, label]) => (
-              <option key={key} value={key}>{label}</option>
+              <option key={key} value={key}>
+                {label}
+              </option>
             ))}
           </FormSelect>
         </FormGroup>
@@ -137,7 +185,9 @@ const TransactionManagementPage: FC = () => {
             onChange={e => setFormData({ ...formData, status: e.target.value })}
           >
             {Object.entries(STATUS_CONFIG).map(([key, cfg]) => (
-              <option key={key} value={key}>{cfg.label}</option>
+              <option key={key} value={key}>
+                {cfg.label}
+              </option>
             ))}
           </FormSelect>
         </FormGroup>
@@ -266,26 +316,25 @@ const TransactionManagementPage: FC = () => {
           value={search}
           onChange={e => handleSearchChange(e.target.value)}
         />
-        <FilterSelect
-          value={statusFilter}
-          onChange={e => handleStatusFilterChange(e.target.value)}
-        >
+        <FilterSelect value={statusFilter} onChange={e => handleStatusFilterChange(e.target.value)}>
           <option value="all">All Status</option>
           {Object.entries(STATUS_CONFIG).map(([key, cfg]) => (
-            <option key={key} value={key}>{cfg.label}</option>
+            <option key={key} value={key}>
+              {cfg.label}
+            </option>
           ))}
         </FilterSelect>
-        <FilterSelect
-          value={typeFilter}
-          onChange={e => handleTypeFilterChange(e.target.value)}
-        >
+        <FilterSelect value={typeFilter} onChange={e => handleTypeFilterChange(e.target.value)}>
           <option value="all">All Types</option>
           {Object.entries(TYPE_LABELS).map(([key, label]) => (
-            <option key={key} value={key}>{label}</option>
+            <option key={key} value={key}>
+              {label}
+            </option>
           ))}
         </FilterSelect>
-        <span style={{ fontSize: '0.8rem', color: '#888' }}>
-          {filteredTransactions.length} transaction{filteredTransactions.length !== 1 ? 's' : ''} found
+        <span style={{ fontSize: '0.8rem', color: 'rgba(255, 255, 255, 0.5)' }}>
+          {filteredTransactions.length} transaction{filteredTransactions.length !== 1 ? 's' : ''}{' '}
+          found
         </span>
       </ActionBar>
 
@@ -321,7 +370,9 @@ const TransactionManagementPage: FC = () => {
                   <Td>{formatDate(transaction.closing_date)}</Td>
                   <Td onClick={e => e.stopPropagation()}>
                     <div style={{ display: 'flex', gap: '0.4rem' }}>
-                      <SecondaryButton onClick={() => handleEdit(transaction)}>Edit</SecondaryButton>
+                      <SecondaryButton onClick={() => handleEdit(transaction)}>
+                        Edit
+                      </SecondaryButton>
                       <DangerButton onClick={() => confirmDelete(transaction)}>Delete</DangerButton>
                     </div>
                   </Td>
@@ -398,9 +449,8 @@ const TransactionManagementPage: FC = () => {
           onClose={closeDeleteModal}
           size="small"
         >
-          <p style={{ color: '#555', fontSize: '0.9rem' }}>
-            Are you sure you want to delete this transaction?
-            This action cannot be undone.
+          <p style={{ color: 'rgba(255, 255, 255, 0.7)', fontSize: '0.9rem' }}>
+            Are you sure you want to delete this transaction? This action cannot be undone.
           </p>
           <ModalFooter>
             <SecondaryButton onClick={closeDeleteModal}>Cancel</SecondaryButton>

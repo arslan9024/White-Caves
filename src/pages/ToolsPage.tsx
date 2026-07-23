@@ -30,7 +30,7 @@ const ToolLoader: FC = () => (
         width: 32,
         height: 32,
         border: '3px solid #e5e7eb',
-        borderTop: '3px solid #E31E24',
+        borderTop: '3px solid #C9A84C',
         borderRadius: '50%',
         animation: 'spin 0.8s linear infinite',
       }}

@@ -87,7 +87,7 @@ const services: Service[] = [
   {
     id: 'buying',
     icon: Key,
-    color: '#0A2463',
+    color: '#C9A84C',
     title: 'Buying Services',
     subtitle: 'Find Your Perfect Property',
     subServices: ['Off-plan purchases', 'Secondary market', 'New developments'],
@@ -96,7 +96,7 @@ const services: Service[] = [
   {
     id: 'selling',
     icon: TrendingUp,
-    color: '#E31E24',
+    color: '#10B981',
     title: 'Selling Services',
     subtitle: 'Maximize Your Property Value',
     subServices: ['Property valuation', 'Strategic marketing', 'Seamless closing'],
@@ -105,7 +105,7 @@ const services: Service[] = [
   {
     id: 'leasing',
     icon: FileText,
-    color: '#E31E24',
+    color: '#C9A84C',
     title: 'Leasing Services',
     subtitle: 'Hassle-Free Property Rental',
     subServices: ['Residential leasing', 'Commercial leasing', 'Property management'],

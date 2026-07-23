@@ -19,7 +19,7 @@ interface AssistantLifecycleTabProps {
  * for the given assistant, using tasks stored in Redux.
  */
 const AssistantLifecycleTab = memo(
-  ({ assistantId, color = '#E31E24', assistantName }: AssistantLifecycleTabProps) => (
+  ({ assistantId, color = '#C9A84C', assistantName }: AssistantLifecycleTabProps) => (
     <div className="alt-wrapper">
       {assistantName && (
         <div className="alt-section-header">
@@ -31,13 +31,9 @@ const AssistantLifecycleTab = memo(
           </span>
         </div>
       )}
-      <TaskLifecycleBoard
-        assistantId={assistantId}
-        color={color}
-        showNotificationFeed
-      />
+      <TaskLifecycleBoard assistantId={assistantId} color={color} showNotificationFeed />
     </div>
-  ),
+  )
 );
 
 AssistantLifecycleTab.displayName = 'AssistantLifecycleTab';

@@ -167,8 +167,8 @@ export const DEPARTMENTS: Record<DepartmentId, Department> = {
   legal: {
     id: 'legal',
     label: 'Legal',
-    color: '#E31E24',
-    gradient: 'linear-gradient(135deg, #E31E24 0%, #B71C1C 100%)',
+    color: '#C9A84C',
+    gradient: 'linear-gradient(135deg, #C9A84C 0%, #a8883a 100%)',
     icon: 'Scale',
   },
   intelligence: {
@@ -597,7 +597,7 @@ export const AI_ASSISTANTS: Record<AssistantId, Assistant> = {
     title: 'Legal Risk Analyst',
     department: 'legal',
     icon: 'Scale',
-    color: '#E31E24',
+    color: '#C9A84C',
     avatar: '👩‍⚖️',
     description:
       'Evangeline is the proactive legal risk officer who keeps White Caves ahead of contractual and regulatory threats. She monitors every live SPA, MOU, and tenancy contract for risk clauses — penalty provisions, unilateral cancellation rights, incomplete disclosure obligations — and flags them before signing. She tracks changes in UAE property law, RERA circulars, and DLD fee structures, updating an internal best-practices library so agents always work with current, compliant templates. Evangeline logs all identified risks on a severity-graded risk register, liaises with Laila on compliance implications, and drafts recommended contract amendments for legal-manager review.',
