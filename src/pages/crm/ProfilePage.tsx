@@ -16,11 +16,11 @@ const ExecutiveHeader = styled.header`
   align-items: flex-start;
   gap: ${spacing[6]};
   padding: ${spacing[6]};
-  background: linear-gradient(135deg, rgba(38, 38, 46, 0.98), rgba(24, 24, 30, 0.98));
-  border: 1px solid rgba(201, 168, 76, 0.3);
+  background: #0f0f0f;
+  border: 1px solid #c9a84c;
   border-radius: ${borderRadius.xl};
-  box-shadow: ${shadows.lg};
-  color: #f8f6ef;
+  box-shadow: 0 4px 12px rgba(201, 168, 76, 0.15);
+  color: #ffffff;
   margin-bottom: ${spacing[6]};
 
   @media (max-width: 768px) {
@@ -83,20 +83,21 @@ const SecurityBadge = styled.span<{ $type?: 'founder' | 'admin' | 'system' }>`
     switch ($type) {
       case 'founder':
         return `
-          background: linear-gradient(135deg, #bd8f2f, #e4b75e);
-          color: #1f1300;
+          background: #0f0f0f;
+          color: #c9a84c;
+          border: 1px solid #c9a84c;
         `;
       case 'admin':
         return `
-          background: rgba(255, 68, 68, 0.15);
-          color: #ff6b6b;
-          border: 1px solid rgba(255, 68, 68, 0.3);
+          background: #0f0f0f;
+          color: #c9a84c;
+          border: 1px solid #c9a84c;
         `;
       default:
         return `
-          background: rgba(255, 255, 255, 0.1);
-          color: #fff;
-          border: 1px solid rgba(255, 255, 255, 0.2);
+          background: #0f0f0f;
+          color: #10b981;
+          border: 1px solid #10b981;
         `;
     }
   }}
@@ -113,17 +114,18 @@ const Grid = styled.div`
 `;
 
 const Card = styled.div`
-  background: ${colors.background.surface};
-  border: 1px solid ${colors.border.light};
+  background: #0f0f0f;
+  border: 1px solid #c9a84c;
   border-radius: ${borderRadius.lg};
   padding: ${spacing[6]};
-  box-shadow: ${shadows.default};
+  box-shadow: 0 4px 12px rgba(201, 168, 76, 0.15);
+  color: #ffffff;
 
   h2 {
     margin-top: 0;
     margin-bottom: ${spacing[4]};
     font-size: 1.25rem;
-    color: ${colors.text.primary};
+    color: #c9a84c;
   }
 `;
 
@@ -134,36 +136,39 @@ const FormGroup = styled.div`
     display: block;
     margin-bottom: ${spacing[1]};
     font-weight: 600;
-    color: ${colors.text.secondary};
+    color: #c9a84c;
     font-size: 0.875rem;
   }
 
-  input {
+  input,
+  select {
     width: 100%;
     padding: ${spacing[2]} ${spacing[3]};
-    border: 1px solid ${colors.border.default};
+    border: 1px solid #c9a84c;
     border-radius: ${borderRadius.md};
+    background: #1f1f1f;
+    color: #ffffff;
     ${typography.presets.body};
 
     &:focus {
-      outline: 2px solid ${colors.primary[500]};
+      outline: 2px solid #10b981;
       border-color: transparent;
     }
   }
 `;
 
 const SaveButton = styled.button`
-  background: ${colors.primary[600]};
-  color: white;
+  background: #c9a84c;
+  color: #0f0f0f;
   border: none;
   border-radius: ${borderRadius.md};
   padding: ${spacing[2]} ${spacing[4]};
-  font-weight: 600;
+  font-weight: 700;
   cursor: pointer;
   transition: background 0.2s;
 
   &:hover {
-    background: ${colors.primary[700]};
+    background: #e4b75e;
   }
 `;
 
@@ -171,7 +176,7 @@ const TrackerRing = styled.div<{ pct: number }>`
   width: 120px;
   height: 120px;
   border-radius: 50%;
-  background: conic-gradient(#4ade80 ${({ pct }) => pct}%, #e5e7eb 0);
+  background: conic-gradient(#10b981 ${({ pct }) => pct}%, #2c2c2c 0);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -182,7 +187,7 @@ const TrackerRing = styled.div<{ pct: number }>`
     content: '';
     position: absolute;
     inset: 8px;
-    background: ${colors.background.surface};
+    background: #0f0f0f;
     border-radius: 50%;
   }
 
@@ -190,7 +195,7 @@ const TrackerRing = styled.div<{ pct: number }>`
     position: relative;
     font-size: 1.5rem;
     font-weight: 700;
-    color: ${colors.text.primary};
+    color: #ffffff;
   }
 `;
 
@@ -202,7 +207,7 @@ const SessionList = styled.ul`
 
 const SessionItem = styled.li`
   padding: ${spacing[3]} 0;
-  border-bottom: 1px solid ${colors.border.light};
+  border-bottom: 1px solid rgba(201, 168, 76, 0.2);
 
   &:last-child {
     border-bottom: none;
@@ -215,12 +220,12 @@ const SessionItem = styled.li`
   }
 
   strong {
-    color: ${colors.text.primary};
+    color: #ffffff;
   }
 
   span {
     font-size: 0.875rem;
-    color: ${colors.text.secondary};
+    color: rgba(255, 255, 255, 0.7);
   }
 `;
 
@@ -232,6 +237,8 @@ export const ProfilePage: FC = () => {
     setProfileName,
     profilePhone,
     setProfilePhone,
+    profileLanguage,
+    setProfileLanguage,
     handleSaveProfile,
     isSaving,
   } = useUserProfile();
@@ -256,9 +263,10 @@ export const ProfilePage: FC = () => {
           <h1>{user?.name || 'Executive User'}</h1>
           <p>{user?.email}</p>
           <BadgeContainer>
-            {isFounder && <SecurityBadge $type="founder">Principal Founder</SecurityBadge>}
-            {isFounder && <SecurityBadge $type="system">System Superuser</SecurityBadge>}
-            {isFounder && <SecurityBadge $type="admin">Level 5 Admin</SecurityBadge>}
+            {isFounder && (
+              <SecurityBadge $type="founder">LION LVL 5 (Principal Founder)</SecurityBadge>
+            )}
+            {isFounder && <SecurityBadge $type="admin">System Superuser</SecurityBadge>}
             {!isFounder && <SecurityBadge>{user?.role || 'Agent'}</SecurityBadge>}
           </BadgeContainer>
         </HeaderContent>
@@ -276,6 +284,13 @@ export const ProfilePage: FC = () => {
               <label>Direct Contact Line</label>
               <input value={profilePhone} onChange={e => setProfilePhone(e.target.value)} />
             </FormGroup>
+            <FormGroup>
+              <label>Language Preference</label>
+              <select value={profileLanguage} onChange={e => setProfileLanguage(e.target.value)}>
+                <option value="en">English (US)</option>
+                <option value="ar">Arabic (AE)</option>
+              </select>
+            </FormGroup>
             <SaveButton onClick={handleSaveProfile} disabled={isSaving}>
               {isSaving ? 'Synchronizing...' : 'Save Configuration'}
             </SaveButton>
@@ -287,7 +302,7 @@ export const ProfilePage: FC = () => {
               <SessionItem>
                 <div>
                   <strong>Current Session (Desktop)</strong>
-                  <span style={{ color: '#4ade80' }}>Active Now</span>
+                  <span style={{ color: '#10b981' }}>Active Now</span>
                 </div>
                 <span>IP: 192.168.1.1 · Dubai, UAE</span>
               </SessionItem>
@@ -308,7 +323,7 @@ export const ProfilePage: FC = () => {
             <TrackerRing pct={100}>
               <span>100%</span>
             </TrackerRing>
-            <p style={{ color: colors.text.secondary, fontSize: '0.875rem' }}>
+            <p style={{ color: 'rgba(255, 255, 255, 0.7)', fontSize: '0.875rem' }}>
               Your executive profile and corporate KYC documentation are 100% verified.
             </p>
           </Card>
