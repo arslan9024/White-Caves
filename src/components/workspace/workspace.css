@@ -8,29 +8,31 @@
 
 /* ─── Design Tokens ─────────────────────────────────────────────────── */
 :root {
-  --ws-bg-base: #08080c;
-  --ws-bg-surface: #0e0e14;
-  --ws-bg-card: #12121a;
-  --ws-bg-card-hover: #1a1a24;
-  --ws-bg-elevated: #16161f;
-  --ws-bg-input: #0c0c12;
+  /* White Caves Brand Palette */
+  --ws-bg-base: #FFFFFF;
+  --ws-bg-surface: #F8FAFC;
+  --ws-bg-card: #FFFFFF;
+  --ws-bg-card-hover: #F1F5F9;
+  --ws-bg-elevated: #FFFFFF;
+  --ws-bg-input: #F8FAFC;
 
-  --ws-gold: #c9a84c;
-  --ws-gold-light: #ddc06a;
-  --ws-gold-dim: rgba(201, 168, 76, 0.15);
-  --ws-gold-glow: rgba(201, 168, 76, 0.25);
-  --ws-gold-border: rgba(201, 168, 76, 0.3);
+  --ws-gold: #EF4444;
+  --ws-gold-light: #F87171;
+  --ws-gold-dim: rgba(239, 68, 68, 0.15);
+  --ws-gold-glow: rgba(239, 68, 68, 0.25);
+  --ws-gold-border: rgba(239, 68, 68, 0.3);
 
-  --ws-emerald: #10b981;
-  --ws-emerald-dim: rgba(16, 185, 129, 0.15);
+  --ws-emerald: #EF4444;
+  --ws-emerald-dim: rgba(239, 68, 68, 0.15);
 
-  --ws-text-primary: #f0ece4;
-  --ws-text-secondary: #a09882;
-  --ws-text-muted: #5c5648;
-  --ws-text-gold: #c9a84c;
+  --ws-text-primary: #1E293B;
+  --ws-text-secondary: #64748B;
+  --ws-text-muted: #94A3B8;
+  --ws-text-gold: #EF4444;
 
-  --ws-border: rgba(201, 168, 76, 0.12);
-  --ws-border-strong: rgba(201, 168, 76, 0.25);
+  --ws-border: rgba(226, 232, 240, 1);
+  --ws-border-strong: rgba(203, 213, 225, 1);
+  --ws-border-focus: #EF4444;
 
   --ws-danger: #ef4444;
   --ws-danger-dim: rgba(239, 68, 68, 0.12);

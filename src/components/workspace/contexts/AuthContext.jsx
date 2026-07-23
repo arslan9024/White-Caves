@@ -59,11 +59,33 @@ const MOCK_PROFILES = {
       conversion_rate: 18.5,
     },
     permissions: [
-      'view_own_leads',
-      'view_own_deals',
-      'view_leaderboard',
+      'view_my_leads',
+      'view_my_deals',
+      'view_my_ledger',
     ],
   },
+  founder: {
+    id: 'founder_001',
+    name: 'Arslan Goraha',
+    email: 'arslanmalikgoraha@gmail.com',
+    role: 'managing_director',
+    title: 'Managing Director',
+    clearance_level: 5,
+    accessLevel: 5,
+    department: 'DEPT_ADMIN_CRM',
+    department_label: 'Executive',
+    avatar_initials: 'AG',
+    tier: 'LEVEL_5_MASTER',
+    performance: {
+      current_gwc: 9999999,
+      target_gwc: 10000000,
+      tier: 'Master',
+      deals_closed: 99,
+      deals_pipeline: 99,
+      conversion_rate: 100,
+    },
+    permissions: ['*'],
+  }
 };
 
 // Mock credentials for login form

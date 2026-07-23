@@ -1,18 +1,18 @@
 :root {
-  --wc-emerald-dark: #10b981;
-  --wc-emerald-main: #10b981;
-  --wc-emerald-light: #10b981;
-  --wc-gold-metallic: #c9a84c;
-  --wc-gold-light: #c9a84c;
-  --wc-gold-dark: #c9a84c;
-  --wc-surface-dark: #0f0f0f;
-  --wc-surface-card: #0f0f0f;
-  --wc-surface-hover: #1f1f1f;
-  --wc-text-primary: #ffffff;
-  --wc-text-secondary: #c9a84c;
-  --wc-text-muted: #808080;
-  --wc-border: rgba(201, 168, 76, 0.3);
-  --wc-glow: rgba(201, 168, 76, 0.15);
+  --wc-emerald-dark: #EF4444;
+  --wc-emerald-main: #EF4444;
+  --wc-emerald-light: #EF4444;
+  --wc-gold-metallic: #EF4444;
+  --wc-gold-light: #F87171;
+  --wc-gold-dark: #DC2626;
+  --wc-surface-dark: #FFFFFF;
+  --wc-surface-card: #F8FAFC;
+  --wc-surface-hover: #F1F5F9;
+  --wc-text-primary: #1E293B;
+  --wc-text-secondary: #64748B;
+  --wc-text-muted: #94A3B8;
+  --wc-border: rgba(239, 68, 68, 0.2);
+  --wc-glow: rgba(239, 68, 68, 0.1);
 }
 
 .gold-bordered-card {

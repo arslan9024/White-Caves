@@ -1347,16 +1347,21 @@ startServer()
     process.exit(1);
   });
 
-// Handle unhandled promise rejections
+// FIX 05 (AEGIS): Process handlers — log+continue in dev, exit in production
 process.on('unhandledRejection', (reason: Error) => {
   logger.error('Unhandled Rejection', { reason: reason?.message || reason });
-  prisma.$disconnect().finally(() => process.exit(1));
+  if (IS_PRODUCTION) {
+    prisma.$disconnect().finally(() => process.exit(1));
+  }
+  // In development: log and continue — don't kill the process
 });
 
-// Handle uncaught exceptions
 process.on('uncaughtException', (error: Error) => {
   logger.error('Uncaught Exception', { error: error?.message || error });
-  prisma.$disconnect().finally(() => process.exit(1));
+  if (IS_PRODUCTION) {
+    prisma.$disconnect().finally(() => process.exit(1));
+  }
+  // In development: log and continue — don't kill the process
 });
 
 // Graceful shutdown

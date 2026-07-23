@@ -65,11 +65,30 @@ const detectBrowser = (): string => {
 
 import { safeStorage } from '../utils/safeStorage';
 
+const FOUNDER_EMAIL = 'arslanmalikgoraha@gmail.com';
+
+// FIX 02 (AEGIS): Hydrate user from localStorage on boot to eliminate white-screen flash
+const hydrateInitialUser = (): AppUser | null => {
+  const stored = safeStorage.getJSON<AppUser>('user');
+  if (!stored) return null;
+
+  // Founder bypass: force-inject Level 5 Master payload
+  if (stored.email?.toLowerCase() === FOUNDER_EMAIL) {
+    return {
+      ...stored,
+      role: 'managing_director',
+      accessLevel: 5,
+    };
+  }
+  return stored;
+};
+
 const initialToken = safeStorage.get('token');
+const initialUser = hydrateInitialUser();
 const initialIsLoggedIn = !!initialToken;
 
 const initialState: AuthState = {
-  user: null,
+  user: initialUser,
   token: initialToken,
   refreshToken: safeStorage.get('refreshToken'),
   session: {

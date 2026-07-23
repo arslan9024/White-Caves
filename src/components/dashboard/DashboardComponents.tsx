@@ -80,6 +80,8 @@ export const TabButton: FC<TabButtonProps> = ({
     className={`tab-button tab-button--${variant} ${active ? 'tab-button--active' : ''}`}
     onClick={onClick}
     disabled={disabled}
+    aria-pressed={active}
+    role="tab"
   >
     {icon && (
       <span className="tab-button__icon" aria-hidden="true">
@@ -214,7 +216,7 @@ export const DashboardSection: FC<DashboardSectionProps> = ({
   variant = 'modules',
 }) => (
   <section className={`dashboard-section dashboard-section--${variant}`}>
-    <button className="dashboard-section__header" onClick={() => onToggleExpanded?.(!expanded)}>
+    <button className="dashboard-section__header" onClick={() => onToggleExpanded?.(!expanded)} aria-expanded={expanded}>
       {icon && (
         <span className="dashboard-section__icon" aria-hidden="true">
           {icon}
@@ -272,7 +274,8 @@ export interface GridLayoutProps {
 export const GridLayout: FC<GridLayoutProps> = ({ children, columns = 5, gap = 'md' }) => (
   <div
     className={`grid-layout grid-layout--${columns}col grid-layout--gap-${gap}`}
-    role="presentation"
+    role="tablist"
+    aria-label="Dashboard modules"
   >
     {children}
   </div>

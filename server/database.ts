@@ -88,20 +88,38 @@ declare global {
 
 /**
  * Connect to MongoDB database
+ * FIX 09 (AEGIS): Retry with exponential backoff (max 3 attempts)
  */
 export const connectDatabase = async (): Promise<void> => {
-  try {
-    await prisma.$connect();
-    log.info('Prisma connected to database');
-    log.info('Database health check passed');
-  } catch (error) {
-    const errorCode = getPrismaErrorCode(error);
-    if (errorCode === 'P1001') {
-      log.warn('Database server unreachable (P1001)');
-    } else {
-      log.error('Database connection failed', error);
+  const MAX_RETRIES = 3;
+  let attempt = 0;
+
+  while (attempt < MAX_RETRIES) {
+    try {
+      await prisma.$connect();
+      log.info('Prisma connected to database');
+      log.info('Database health check passed');
+      return;
+    } catch (error) {
+      attempt++;
+      const errorCode = getPrismaErrorCode(error);
+
+      if (errorCode === 'P1001') {
+        log.warn(`Database server unreachable (P1001) — attempt ${attempt}/${MAX_RETRIES}`);
+      } else {
+        log.error(`Database connection failed — attempt ${attempt}/${MAX_RETRIES}`, error);
+      }
+
+      if (attempt >= MAX_RETRIES) {
+        log.error(`All ${MAX_RETRIES} connection attempts exhausted — giving up`);
+        throw error;
+      }
+
+      // Exponential backoff: 1s, 2s, 4s
+      const delayMs = Math.pow(2, attempt - 1) * 1000;
+      log.info(`Retrying database connection in ${delayMs}ms...`);
+      await new Promise(resolve => setTimeout(resolve, delayMs));
     }
-    throw error;
   }
 };
 

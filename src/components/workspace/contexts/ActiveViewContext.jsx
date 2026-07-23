@@ -3,14 +3,20 @@ import React, { createContext, useContext, useState, useCallback, useMemo } from
 // ─── View Registry ──────────────────────────────────────────────────────────
 // All valid view keys in the workspace. Adding a new view is as simple as
 // adding a string here and a corresponding render branch in MainLayout.
+// STAGE 2 (AEGIS): View keys for the 10 new departments
 export const VIEW_KEYS = {
-  DASHBOARD:   'dashboard',
-  LEADS:       'leads',
-  DEALS:       'deals',
-  LEADERBOARD: 'leaderboard',
-  COMPLIANCE:  'compliance',
-  LEDGERS:     'ledgers',
-  AI_COMMAND:  'ai-command',
+  DASHBOARD: 'dashboard',
+  // 10 Departments
+  SALES: 'sales',
+  OPERATIONS: 'operations',
+  COMMUNICATIONS: 'communications',
+  FINANCE: 'finance',
+  MARKETING: 'marketing',
+  EXECUTIVE: 'executive',
+  COMPLIANCE: 'compliance',
+  TECHNOLOGY: 'technology',
+  LEGAL: 'legal',
+  INTELLIGENCE: 'intelligence',
 };
 
 // ─── Context ────────────────────────────────────────────────────────────────
