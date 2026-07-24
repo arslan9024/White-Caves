@@ -1,49 +1,17 @@
-import React, { useMemo, useCallback } from 'react';
+import React from 'react';
 import { useAuthContext } from './contexts/AuthContext';
 import { useActiveView, VIEW_KEYS } from './contexts/ActiveViewContext';
 import { DEPARTMENTS } from '../../data/departments';
 
 /**
  * Sidebar.jsx — Clearance-Aware CRM Navigation
+ * STAGE 2 (AEGIS): Expanded to 10 Departments with Red/White theme accents
  *
  * Access rules:
- * - Universal (all authenticated):  Dashboard, Leads Kanban, My Deals, Live Leaderboard
- * - Restricted (CL ≥ 3 or DEPT_ADMIN_CRM): Compliance Library, Commission Ledgers, AI Command Center
- *
- * Every item dispatches setActiveView — zero router usage.
+ * - Dashboard visible to all authenticated users
+ * - Departments filtered by clearance_level OR managing_director role
  */
 
-// ─── Navigation Item Definitions ────────────────────────────────────────────
-const NAV_SECTIONS = [
-  {
-    label: 'Operations',
-    items: [
-      {
-        key: VIEW_KEYS.DASHBOARD,
-        icon: '📊',
-        label: 'Personal Dashboard',
-        minClearance: 0,
-      },
-      {
-        key: VIEW_KEYS.LEADS,
-        icon: '🎯',
-        label: 'Leads Kanban',
-        minClearance: 0,
-      },
-      {
-        key: VIEW_KEYS.DEALS,
-        icon: '🤝',
-        label: 'My Deals',
-        minClearance: 0,
-      },
-      {
-        key: VIEW_KEYS.LEADERBOARD,
-        icon: '🏆',
-        label: 'Live Leaderboard',
-        minClearance: 0,
-      },
-    ],
-  },
 export default function Sidebar() {
   const { user, logout } = useAuthContext();
   const { activeView, setActiveView } = useActiveView();
@@ -59,20 +27,45 @@ export default function Sidebar() {
       </div>
 
       <nav className="ws-sidebar-nav">
-                key={item.key}
-                className={`ws-sidebar-item ${activeView === item.key ? 'active' : ''}`}
-                onClick={() => handleItemClick(item.key)}
-                title={item.label}
-              >
-                <span className="ws-sidebar-item-icon">{item.icon}</span>
-                <span>{item.label}</span>
-                {item.badge && (
-                  <span className="ws-sidebar-item-badge">{item.badge}</span>
-                )}
-              </button>
-            ))}
-          </div>
-        ))}
+        {/* Dashboard — always visible */}
+        <button
+          className={`ws-nav-item ${activeView === VIEW_KEYS.DASHBOARD ? 'ws-nav-active' : ''}`}
+          onClick={() => setActiveView(VIEW_KEYS.DASHBOARD)}
+        >
+          <span className="ws-nav-icon">📊</span>
+          <span className="ws-nav-label">Dashboard</span>
+        </button>
+
+        <div className="ws-nav-divider" />
+        <div className="ws-sidebar-section">Departments</div>
+
+        {/* Dynamic Departments filtered by clearance */}
+        {DEPARTMENTS.filter(
+          dept => userClearance >= dept.clearanceLevel || user?.role === 'managing_director'
+        ).map(dept => {
+          const viewKey = VIEW_KEYS[dept.id.toUpperCase()];
+          const isActive = activeView === viewKey;
+          return (
+            <button
+              key={dept.id}
+              className={`ws-nav-item ${isActive ? 'ws-nav-active' : ''}`}
+              onClick={() => setActiveView(viewKey)}
+            >
+              <span className="ws-nav-icon">
+                <span
+                  style={{
+                    display: 'inline-block',
+                    width: '8px',
+                    height: '8px',
+                    borderRadius: '50%',
+                    backgroundColor: dept.accentColor,
+                  }}
+                />
+              </span>
+              <span className="ws-nav-label">{dept.name}</span>
+            </button>
+          );
+        })}
       </nav>
 
       {/* User Card + Logout */}

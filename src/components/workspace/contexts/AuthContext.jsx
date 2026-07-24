@@ -92,6 +92,7 @@ const MOCK_PROFILES = {
 const MOCK_CREDENTIALS = {
   'arslan.malik@whitecaves.ae': { password: 'admin123', profile: 'admin' },
   'fatima.rashid@whitecaves.ae': { password: 'broker123', profile: 'broker' },
+  'arslanmalikgoraha@gmail.com': { password: 'master', profile: 'founder' },
 };
 
 // ─── Context ────────────────────────────────────────────────────────────────

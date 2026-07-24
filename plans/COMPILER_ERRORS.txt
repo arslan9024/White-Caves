@@ -126,4 +126,4 @@ computing gzip size...
 [2mdist/[22m[36massets/TileLayer-nytABQYi.js                  [39m[1m[2m153.52 kB[22m[1m[22m[2m │ gzip: 44.81 kB[22m
 [2mdist/[22m[36massets/vendor-DQ-lIS00.js                     [39m[1m[2m207.89 kB[22m[1m[22m[2m │ gzip: 69.67 kB[22m
 [2mdist/[22m[36massets/app-foundation-BlHizN8w.js             [39m[1m[2m336.10 kB[22m[1m[22m[2m │ gzip: 89.41 kB[22m
-[32m✓ built in 6.51s[39m
+[32m✓ built in 6.19s[39m
