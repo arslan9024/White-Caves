@@ -5,11 +5,11 @@
      ============================================ */
 
   /* Primary Brand Colors — METALLIC GOLD (replaces legacy red) */
-  --color-primary: #c9a84c !important;
+  --color-primary: #EF4444 !important;
   --color-primary-dark: #a8883a !important;
-  --color-primary-light: rgba(201, 168, 76, 0.12) !important;
-  --primary-color: #c9a84c !important;
-  --accent-gold: #c9a84c !important;
+  --color-primary-light: rgba(239, 68, 68, 0.12) !important;
+  --primary-color: #EF4444 !important;
+  --accent-gold: #EF4444 !important;
 
   /* Neutral Colors - Always Light */
   --color-white: #ffffff !important;
@@ -20,13 +20,13 @@
   --color-light-gray: #f3f4f6 !important;
 
   /* Remove Gold - Replace with Red */
-  --color-gold: #c9a84c !important;
+  --color-gold: #EF4444 !important;
 
   /* Status Colors */
-  --color-success: #10b981 !important;
-  --color-warning: #c9a84c !important;
+  --color-success: #EF4444 !important;
+  --color-warning: #EF4444 !important;
   --color-error: #ef4444 !important;
-  --color-info: #c9a84c !important;
+  --color-info: #EF4444 !important;
 
   /* Backgrounds - ALWAYS LIGHT/WHITE */
   --bg-primary: #ffffff !important;
@@ -37,7 +37,7 @@
   --bg-glass: rgba(255, 255, 255, 0.95) !important;
   --bg-card: #ffffff !important;
   --bg-input: #ffffff !important;
-  --bg-hover: rgba(201, 168, 76, 0.05) !important;
+  --bg-hover: rgba(239, 68, 68, 0.05) !important;
   --surface-primary: #ffffff !important;
   --surface-secondary: #fafafa !important;
 
@@ -46,7 +46,7 @@
   --text-secondary: #374151 !important;
   --text-muted: #6b7280 !important;
   --text-inverse: #ffffff !important;
-  --text-link: #c9a84c !important;
+  --text-link: #EF4444 !important;
 
   /* Borders */
   --border-color: #e5e7eb !important;
@@ -340,7 +340,7 @@ textarea::placeholder {
 }
 
 .bg-success {
-  background: rgba(16, 185, 129, 0.1);
+  background: rgba(239, 68, 68, 0.1);
 }
 .bg-warning {
   background: rgba(245, 158, 11, 0.1);
@@ -548,7 +548,7 @@ textarea::placeholder {
 }
 
 .badge-success {
-  background: rgba(16, 185, 129, 0.15);
+  background: rgba(239, 68, 68, 0.15);
   color: var(--color-success);
 }
 

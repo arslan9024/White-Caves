@@ -240,12 +240,12 @@
 }
 
 .approve-btn {
-  background: #10b981;
+  background: #EF4444;
   color: #ffffff;
 }
 
 .approve-btn:hover:not(:disabled) {
-  background: #059669;
+  background: #DC2626;
 }
 
 .reject-btn {

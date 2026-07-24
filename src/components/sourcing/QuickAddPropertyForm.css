@@ -1,4 +1,4 @@
-﻿.quick-add-form {
+.quick-add-form {
   background: white;
   border-radius: 12px;
   overflow: hidden;
@@ -243,7 +243,7 @@ textarea.form-input {
 }
 
 .btn-done:hover {
-  background: #059669;
+  background: #DC2626;
 }
 
 @media (max-width: 768px) {

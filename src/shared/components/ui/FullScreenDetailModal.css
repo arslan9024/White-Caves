@@ -94,8 +94,8 @@
 
 .header-action-btn:hover {
   background: var(--bg-hover, #f3f4f6);
-  color: var(--primary-color, #c9a84c);
-  border-color: var(--primary-color, #c9a84c);
+  color: var(--primary-color, #EF4444);
+  border-color: var(--primary-color, #EF4444);
 }
 
 .close-btn {
@@ -172,7 +172,7 @@
 }
 
 .gallery-nav:hover {
-  background: var(--primary-color, #c9a84c);
+  background: var(--primary-color, #EF4444);
   color: white;
 }
 
@@ -219,7 +219,7 @@
 }
 
 .thumbnail.active {
-  border-color: var(--primary-color, #c9a84c);
+  border-color: var(--primary-color, #EF4444);
 }
 
 .thumbnail img {
@@ -264,7 +264,7 @@
 }
 
 .modal-tab.active {
-  background: var(--primary-color, #c9a84c);
+  background: var(--primary-color, #EF4444);
   color: white;
 }
 
@@ -313,9 +313,9 @@
 }
 
 .footer-action-btn.primary {
-  background: var(--primary-color, #c9a84c);
+  background: var(--primary-color, #EF4444);
   color: white;
-  border-color: var(--primary-color, #c9a84c);
+  border-color: var(--primary-color, #EF4444);
 }
 
 .footer-action-btn.primary:hover {

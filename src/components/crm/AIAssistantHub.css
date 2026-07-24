@@ -254,7 +254,7 @@
 
 .status-dot.optimal {
   background: #10B981;
-  box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.2);
+  box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.2);
 }
 
 .status-dot.degraded {
@@ -434,7 +434,7 @@
 }
 
 .automation-badge.full {
-  background: rgba(16, 185, 129, 0.1);
+  background: rgba(239, 68, 68, 0.1);
   color: #10B981;
 }
 

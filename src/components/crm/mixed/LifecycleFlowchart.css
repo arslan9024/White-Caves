@@ -60,7 +60,7 @@
 }
 
 .stage-node.completed .stage-icon {
-  background: linear-gradient(135deg, #10B981 0%, #059669 100%);
+  background: linear-gradient(135deg, #10B981 0%, #DC2626 100%);
   color: white;
 }
 

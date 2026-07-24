@@ -57,7 +57,7 @@
   color: var(--tlb-accent, #0EA5E9);
 }
 .tlb-pill.completed {
-  background: rgba(16, 185, 129, 0.12);
+  background: rgba(239, 68, 68, 0.12);
   color: #10B981;
 }
 

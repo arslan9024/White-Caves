@@ -241,7 +241,7 @@
 }
 
 .status-badge.status-healthy {
-  background: rgba(16, 185, 129, 0.2);
+  background: rgba(239, 68, 68, 0.2);
   color: #4ade80;
 }
 
@@ -260,7 +260,7 @@
 }
 
 .perf-badge.healthy {
-  background: rgba(16, 185, 129, 0.2);
+  background: rgba(239, 68, 68, 0.2);
   color: #4ade80;
 }
 
@@ -305,7 +305,7 @@
 .no-alerts {
   text-align: center;
   padding: 2rem;
-  background: rgba(16, 185, 129, 0.1);
+  background: rgba(239, 68, 68, 0.1);
   border-radius: 8px;
   color: #4ade80;
   font-weight: 600;

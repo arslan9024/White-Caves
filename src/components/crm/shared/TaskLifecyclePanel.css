@@ -79,7 +79,7 @@
 
 /* Stage states */
 .lc-stage-node.stage-done .stage-icon {
-  background: rgba(16, 185, 129, 0.15);
+  background: rgba(239, 68, 68, 0.15);
   border-color: #10B981;
   color: #10B981;
 }
@@ -283,7 +283,7 @@
   letter-spacing: 0.4px;
 }
 .action-status-badge.success {
-  background: rgba(16, 185, 129, 0.15);
+  background: rgba(239, 68, 68, 0.15);
   color: #10B981;
 }
 .action-status-badge.failed {
@@ -327,7 +327,7 @@
 
 .result-card.outcome-success {
   border-left-color: #10B981;
-  background: rgba(16, 185, 129, 0.06);
+  background: rgba(239, 68, 68, 0.06);
 }
 .result-card.outcome-partial {
   border-left-color: #F59E0B;

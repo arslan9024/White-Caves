@@ -5,8 +5,8 @@
   --dashboard-surface-muted: #111111;
   --dashboard-surface-alt: #1a1a1a;
   --dashboard-surface-raised: #1f1f1f;
-  --dashboard-border: rgba(201, 168, 76, 0.12);
-  --dashboard-border-strong: rgba(201, 168, 76, 0.25);
+  --dashboard-border: rgba(239, 68, 68, 0.12);
+  --dashboard-border-strong: rgba(239, 68, 68, 0.25);
   --dashboard-border-subtle: rgba(255, 255, 255, 0.06);
   --dashboard-text: #f5f5f0;
   --dashboard-text-muted: #9e9e9e;
@@ -14,11 +14,11 @@
   --dashboard-text-inverse: #0a0a0a;
 
   /* ── Gold Brand Palette ── */
-  --dashboard-brand: #c9a84c;
+  --dashboard-brand: #EF4444;
   --dashboard-brand-strong: #e8c56d;
-  --dashboard-brand-soft: rgba(201, 168, 76, 0.12);
-  --dashboard-brand-dim: rgba(201, 168, 76, 0.06);
-  --dashboard-focus: rgba(201, 168, 76, 0.3);
+  --dashboard-brand-soft: rgba(239, 68, 68, 0.12);
+  --dashboard-brand-dim: rgba(239, 68, 68, 0.06);
+  --dashboard-focus: rgba(239, 68, 68, 0.3);
 
   /* ── Status ── */
   --dashboard-success: #4ade80;
@@ -32,9 +32,9 @@
 
   /* ── Shadows ── */
   --shadow-card: 0 4px 16px rgba(0, 0, 0, 0.4), 0 1px 4px rgba(0, 0, 0, 0.3);
-  --shadow-hover: 0 8px 32px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(201, 168, 76, 0.2);
-  --shadow-gold: 0 0 0 1px rgba(201, 168, 76, 0.3), 0 4px 20px rgba(201, 168, 76, 0.1);
-  --shadow-modal: 0 24px 64px rgba(0, 0, 0, 0.8), 0 0 0 1px rgba(201, 168, 76, 0.15);
+  --shadow-hover: 0 8px 32px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(239, 68, 68, 0.2);
+  --shadow-gold: 0 0 0 1px rgba(239, 68, 68, 0.3), 0 4px 20px rgba(239, 68, 68, 0.1);
+  --shadow-modal: 0 24px 64px rgba(0, 0, 0, 0.8), 0 0 0 1px rgba(239, 68, 68, 0.15);
 
   /* ── Layout ── */
   --sidebar-width: 64px;

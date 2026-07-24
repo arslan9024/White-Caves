@@ -68,8 +68,8 @@
   align-items: center;
   gap: 8px;
   padding: 8px 16px;
-  background: rgba(16, 185, 129, 0.15);
-  border: 1px solid rgba(16, 185, 129, 0.3);
+  background: rgba(239, 68, 68, 0.15);
+  border: 1px solid rgba(239, 68, 68, 0.3);
   border-radius: 20px;
   color: #10B981;
   font-size: 13px;
@@ -150,7 +150,7 @@
 
 .stat-change.positive {
   color: #10B981;
-  background: rgba(16, 185, 129, 0.1);
+  background: rgba(239, 68, 68, 0.1);
 }
 
 .stat-change.negative {
@@ -284,7 +284,7 @@
 }
 
 .status-badge.active, .status-badge.verified, .status-badge.paid, .status-badge.completed, .status-badge.approved, .status-badge.passed {
-  background: rgba(16, 185, 129, 0.15);
+  background: rgba(239, 68, 68, 0.15);
   color: #10B981;
 }
 
@@ -309,7 +309,7 @@
 }
 
 .status-badge.cleared {
-  background: rgba(16, 185, 129, 0.15);
+  background: rgba(239, 68, 68, 0.15);
   color: #10B981;
 }
 
@@ -322,7 +322,7 @@
 }
 
 .risk-badge.low {
-  background: rgba(16, 185, 129, 0.15);
+  background: rgba(239, 68, 68, 0.15);
   color: #10B981;
 }
 
@@ -355,7 +355,7 @@
 }
 
 .priority-badge.low {
-  background: rgba(16, 185, 129, 0.15);
+  background: rgba(239, 68, 68, 0.15);
   color: #10B981;
 }
 
@@ -636,7 +636,7 @@
 }
 
 .task-status.completed {
-  background: rgba(16, 185, 129, 0.15);
+  background: rgba(239, 68, 68, 0.15);
   color: #10B981;
 }
 

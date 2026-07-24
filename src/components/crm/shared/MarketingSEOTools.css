@@ -40,7 +40,7 @@
   width: 70px;
   height: 70px;
   border-radius: 50%;
-  background: linear-gradient(135deg, #10b981, #059669);
+  background: linear-gradient(135deg, #EF4444, #DC2626);
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -165,7 +165,7 @@
 }
 
 .volume {
-  color: #10b981;
+  color: #EF4444;
   font-weight: 600;
 }
 
@@ -255,7 +255,7 @@
 }
 
 .checklist-item.pass {
-  border-left-color: #10b981;
+  border-left-color: #EF4444;
 }
 
 .checklist-item.warning {
@@ -266,7 +266,7 @@
   border-left-color: #ef4444;
 }
 
-.checklist-item .status-pass { color: #10b981; }
+.checklist-item .status-pass { color: #EF4444; }
 .checklist-item .status-warning { color: #f59e0b; }
 .checklist-item .status-fail { color: #ef4444; }
 
@@ -339,7 +339,7 @@
 
 .idea-score {
   font-size: 0.75rem;
-  color: #10b981;
+  color: #EF4444;
   font-weight: 600;
 }
 

@@ -1,4 +1,4 @@
-﻿
+
 .nina-crm-container {
   background: var(--bg-primary);
   border-radius: 12px;
@@ -35,7 +35,7 @@
 }
 
 .nina-status.active {
-  background: rgba(16, 185, 129, 0.3);
+  background: rgba(239, 68, 68, 0.3);
 }
 
 .nina-toggle {
@@ -174,7 +174,7 @@
 
 .status-badge.connected {
   background: var(--rgba-success-15);
-  color: #10b981;
+  color: #EF4444;
 }
 
 .status-badge.disconnected {
@@ -624,7 +624,7 @@
 
 .card-icon.green {
   background: var(--rgba-success-15);
-  color: #10b981;
+  color: #EF4444;
 }
 
 .card-icon.blue {
@@ -661,7 +661,7 @@
 }
 
 .card-change.positive {
-  color: #10b981;
+  color: #EF4444;
 }
 
 .analytics-charts {
@@ -850,8 +850,8 @@
 }
 
 .stat-icon.running {
-  background: rgba(16, 185, 129, 0.15);
-  color: #10b981;
+  background: rgba(239, 68, 68, 0.15);
+  color: #EF4444;
 }
 
 .stat-icon.paused {
@@ -982,7 +982,7 @@
 }
 
 .action-btn.play {
-  color: #10b981;
+  color: #EF4444;
 }
 
 .contacts-actions {
@@ -1134,8 +1134,8 @@
 }
 
 .project-category.campaign {
-  background: rgba(16, 185, 129, 0.15);
-  color: #10b981;
+  background: rgba(239, 68, 68, 0.15);
+  color: #EF4444;
 }
 
 .project-meta {
@@ -1275,8 +1275,8 @@
 }
 
 .template-lang.ar {
-  background: rgba(16, 185, 129, 0.15);
-  color: #10b981;
+  background: rgba(239, 68, 68, 0.15);
+  color: #EF4444;
 }
 
 .template-lang.bilingual {
@@ -1351,7 +1351,7 @@
 }
 
 .status-indicator.connected {
-  background: #10b981;
+  background: #EF4444;
 }
 
 .category-badge {
@@ -1368,8 +1368,8 @@
 }
 
 .category-badge.campaign {
-  background: rgba(16, 185, 129, 0.15);
-  color: #10b981;
+  background: rgba(239, 68, 68, 0.15);
+  color: #EF4444;
 }
 
 @media (max-width: 1024px) {
@@ -1423,7 +1423,7 @@
 .status-indicator.active {
   width: 10px;
   height: 10px;
-  background: #10b981;
+  background: #EF4444;
   border-radius: 50%;
   animation: pulse 2s infinite;
 }
@@ -1468,7 +1468,7 @@
 
 .model-icon.intent { background: rgba(124, 58, 237, 0.15); color: #7c3aed; }
 .model-icon.scoring { background: rgba(245, 158, 11, 0.15); color: #f59e0b; }
-.model-icon.sentiment { background: rgba(16, 185, 129, 0.15); color: #10b981; }
+.model-icon.sentiment { background: rgba(239, 68, 68, 0.15); color: #EF4444; }
 .model-icon.language { background: rgba(59, 130, 246, 0.15); color: #3b82f6; }
 .model-icon.response { background: rgba(236, 72, 153, 0.15); color: #ec4899; }
 .model-icon.entity { background: rgba(239, 68, 68, 0.15); color: #ef4444; }
@@ -1482,7 +1482,7 @@
 
 .open-source-badge {
   padding: 0.375rem 0.75rem;
-  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+  background: linear-gradient(135deg, #EF4444 0%, #DC2626 100%);
   color: white;
   border-radius: 16px;
   font-size: 0.75rem;
@@ -1491,8 +1491,8 @@
 }
 
 .model-stats .stat.free-badge {
-  background: rgba(16, 185, 129, 0.15);
-  color: #10b981;
+  background: rgba(239, 68, 68, 0.15);
+  color: #EF4444;
 }
 
 .ai-architecture-note {
@@ -1501,10 +1501,10 @@
   gap: 0.75rem;
   margin-top: 1.5rem;
   padding: 1rem 1.25rem;
-  background: linear-gradient(135deg, rgba(16, 185, 129, 0.1) 0%, rgba(5, 150, 105, 0.1) 100%);
-  border: 1px solid rgba(16, 185, 129, 0.3);
+  background: linear-gradient(135deg, rgba(239, 68, 68, 0.1) 0%, rgba(5, 150, 105, 0.1) 100%);
+  border: 1px solid rgba(239, 68, 68, 0.3);
   border-radius: 12px;
-  color: #10b981;
+  color: #EF4444;
   font-size: 0.875rem;
   font-weight: 500;
 }
@@ -1556,8 +1556,8 @@
 }
 
 .model-badge.active {
-  background: rgba(16, 185, 129, 0.15);
-  color: #10b981;
+  background: rgba(239, 68, 68, 0.15);
+  color: #EF4444;
 }
 
 .ai-test-section {
@@ -1634,7 +1634,7 @@
   color: var(--text-primary);
 }
 
-.result-item .value.positive { color: #10b981; }
+.result-item .value.positive { color: #EF4444; }
 .result-item .value.negative { color: #ef4444; }
 
 .result-item .confidence {
@@ -1674,7 +1674,7 @@
 .status-indicator.secure {
   width: 10px;
   height: 10px;
-  background: #10b981;
+  background: #EF4444;
   border-radius: 50%;
 }
 
@@ -1696,7 +1696,7 @@
 }
 
 .security-card:hover {
-  border-color: #10b981;
+  border-color: #EF4444;
 }
 
 .security-icon {
@@ -1712,7 +1712,7 @@
 .security-icon.encryption { background: rgba(239, 68, 68, 0.15); color: #ef4444; }
 .security-icon.audit { background: rgba(59, 130, 246, 0.15); color: #3b82f6; }
 .security-icon.access { background: rgba(245, 158, 11, 0.15); color: #f59e0b; }
-.security-icon.session { background: rgba(16, 185, 129, 0.15); color: #10b981; }
+.security-icon.session { background: rgba(239, 68, 68, 0.15); color: #EF4444; }
 
 .security-info {
   flex: 1;
@@ -1741,8 +1741,8 @@
 }
 
 .security-badge.active {
-  background: rgba(16, 185, 129, 0.15);
-  color: #10b981;
+  background: rgba(239, 68, 68, 0.15);
+  color: #EF4444;
 }
 
 .audit-log-section {
@@ -1794,7 +1794,7 @@
 }
 
 .audit-row .status.success {
-  color: #10b981;
+  color: #EF4444;
 }
 
 .audit-row .status.failed {
@@ -1859,7 +1859,7 @@
 }
 
 .schedule-icon.timezone { background: rgba(59, 130, 246, 0.15); color: #3b82f6; }
-.schedule-icon.local { background: rgba(16, 185, 129, 0.15); color: #10b981; }
+.schedule-icon.local { background: rgba(239, 68, 68, 0.15); color: #EF4444; }
 .schedule-icon.strict { background: rgba(245, 158, 11, 0.15); color: #f59e0b; }
 .schedule-icon.behavior { background: rgba(124, 58, 237, 0.15); color: #7c3aed; }
 
@@ -1924,8 +1924,8 @@
 }
 
 .timeline-block.active {
-  background: rgba(16, 185, 129, 0.1);
-  border: 1px solid rgba(16, 185, 129, 0.3);
+  background: rgba(239, 68, 68, 0.1);
+  border: 1px solid rgba(239, 68, 68, 0.3);
 }
 
 .timeline-block.current {

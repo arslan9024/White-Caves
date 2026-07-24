@@ -152,8 +152,8 @@
 }
 
 .feature-status.active {
-  background: rgba(16, 185, 129, 0.15);
-  color: #10b981;
+  background: rgba(239, 68, 68, 0.15);
+  color: #EF4444;
 }
 
 .feature-status.beta {
@@ -174,7 +174,7 @@
 }
 
 .status-active {
-  color: #10b981;
+  color: #EF4444;
 }
 
 .status-beta {
@@ -281,8 +281,8 @@
 }
 
 .dataflow-badge.output {
-  background: rgba(16, 185, 129, 0.1);
-  color: #10b981;
+  background: rgba(239, 68, 68, 0.1);
+  color: #EF4444;
 }
 
 .dataflow-empty {

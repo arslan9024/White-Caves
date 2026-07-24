@@ -153,7 +153,7 @@
 }
 
 .kpi-card.success {
-  border-left-color: #10b981;
+  border-left-color: #EF4444;
 }
 
 .kpi-card.warning {
@@ -335,7 +335,7 @@
 
 .activity-value {
   display: block;
-  color: #059669;
+  color: #DC2626;
   font-weight: 600;
   font-size: 0.875rem;
   margin-bottom: 0.25rem;
@@ -528,7 +528,7 @@
 
 .alert-item.alert-success {
   background: #f0fdf4;
-  border-left-color: #10b981;
+  border-left-color: #EF4444;
 }
 
 .alert-item.alert-info {
@@ -549,7 +549,7 @@
 }
 
 .alert-item.alert-success .alert-icon {
-  color: #10b981;
+  color: #EF4444;
 }
 
 .alert-item.alert-info .alert-icon {

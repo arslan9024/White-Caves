@@ -47,7 +47,7 @@
 }
 
 .property-status-updater .btn-edit {
-  background: #10b981;
+  background: #EF4444;
   color: white;
   border: none;
   border-radius: 8px;
@@ -59,8 +59,8 @@
 }
 
 .property-status-updater .btn-edit:hover {
-  background: #059669;
-  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+  background: #DC2626;
+  box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
 }
 
 /* Alert Messages */
@@ -107,7 +107,7 @@
 }
 
 .property-status-updater .status-group label svg {
-  color: #10b981;
+  color: #EF4444;
 }
 
 .property-status-updater .button-group {
@@ -130,9 +130,9 @@
 }
 
 .property-status-updater .status-button:hover:not(.selected) {
-  border-color: #10b981;
+  border-color: #EF4444;
   background: #f0fdf4;
-  color: #10b981;
+  color: #EF4444;
 }
 
 .property-status-updater .status-button.selected {
@@ -164,13 +164,13 @@
 }
 
 .property-status-updater .btn-primary {
-  background: #10b981;
+  background: #EF4444;
   color: white;
 }
 
 .property-status-updater .btn-primary:hover:not(:disabled) {
-  background: #059669;
-  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+  background: #DC2626;
+  box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
 }
 
 .property-status-updater .btn-secondary {
@@ -219,7 +219,7 @@
 }
 
 .property-status-updater .status-label svg {
-  color: #10b981;
+  color: #EF4444;
 }
 
 .property-status-updater .status-badge {

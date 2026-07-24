@@ -46,7 +46,7 @@
   font-weight: 700;
 }
 .ls-summary-success {
-  border-left: 4px solid #10b981;
+  border-left: 4px solid #EF4444;
 }
 .ls-summary-failed {
   border-left: 4px solid #ef4444;
@@ -284,7 +284,7 @@
   background: rgba(239, 68, 68, 0.04);
 }
 .ls-row-account_unlocked {
-  background: rgba(16, 185, 129, 0.05);
+  background: rgba(239, 68, 68, 0.05);
 }
 .ls-empty {
   text-align: center;

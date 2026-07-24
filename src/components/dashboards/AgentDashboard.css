@@ -111,7 +111,7 @@
 }
 
 .kpi-card.conversion {
-  border-left-color: #10b981;
+  border-left-color: #EF4444;
   background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%);
 }
 
@@ -538,7 +538,7 @@
 }
 
 .card-budget {
-  color: #059669;
+  color: #DC2626;
   font-weight: 600;
 }
 
@@ -671,7 +671,7 @@
 }
 
 .perf-status {
-  color: #10b981;
+  color: #EF4444;
   font-size: 18px;
 }
 

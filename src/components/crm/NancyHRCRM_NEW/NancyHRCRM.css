@@ -1,4 +1,4 @@
-﻿
+
 .nancy-crm-container {
   background: var(--bg-primary);
   border-radius: 12px;
@@ -35,7 +35,7 @@
 }
 
 .nancy-status.active {
-  background: rgba(16, 185, 129, 0.3);
+  background: rgba(239, 68, 68, 0.3);
 }
 
 .nancy-toggle {
@@ -519,7 +519,7 @@
 
 .att-icon.green {
   background: var(--rgba-success-15);
-  color: #10b981;
+  color: #EF4444;
 }
 
 .att-icon.blue {

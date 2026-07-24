@@ -109,8 +109,8 @@
 }
 
 .feature-icon-wrapper--green {
-  background: rgba(16, 185, 129, 0.14);
-  color: #10b981;
+  background: rgba(239, 68, 68, 0.14);
+  color: #EF4444;
 }
 
 .feature-icon-wrapper--blue {
@@ -185,7 +185,7 @@
 }
 
 .feature-detail-content--green {
-  border-top-color: rgba(16, 185, 129, 0.35);
+  border-top-color: rgba(239, 68, 68, 0.35);
 }
 
 .feature-detail-content--blue {
@@ -231,7 +231,7 @@
 }
 
 .feature-detail-cta--green {
-  background: #10b981;
+  background: #EF4444;
 }
 
 .feature-detail-cta--blue {

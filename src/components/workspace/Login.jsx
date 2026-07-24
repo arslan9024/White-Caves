@@ -116,6 +116,17 @@ export default function Login() {
             Fatima Al-Rashid
             <span className="ws-qp-label">Broker · CL1</span>
           </button>
+
+          <button
+            type="button"
+            className="ws-quick-profile-btn"
+            onClick={() => handleQuickLogin('founder')}
+            style={{ borderColor: '#EF4444' }}
+          >
+            <span className="ws-qp-icon">👑</span>
+            Arslan Goraha
+            <span className="ws-qp-label">Founder · CL5</span>
+          </button>
         </div>
       </div>
     </div>

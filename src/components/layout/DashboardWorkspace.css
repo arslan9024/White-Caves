@@ -322,12 +322,12 @@
 
 .pipeline-stat.highlight,
 .property-stat.highlight {
-  background: rgba(16, 185, 129, 0.1);
+  background: rgba(239, 68, 68, 0.1);
 }
 
 [data-theme="dark"] .pipeline-stat.highlight,
 [data-theme="dark"] .property-stat.highlight {
-  background: rgba(16, 185, 129, 0.15);
+  background: rgba(239, 68, 68, 0.15);
 }
 
 .stat-label {

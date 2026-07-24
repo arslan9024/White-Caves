@@ -80,7 +80,7 @@
 }
 
 .careers-success-message {
-  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+  background: linear-gradient(135deg, #EF4444 0%, #DC2626 100%);
   padding: 2rem;
 }
 
@@ -98,7 +98,7 @@
   width: 60px;
   height: 60px;
   background: white;
-  color: #10b981;
+  color: #EF4444;
   border-radius: 50%;
   font-size: 2rem;
   font-weight: bold;

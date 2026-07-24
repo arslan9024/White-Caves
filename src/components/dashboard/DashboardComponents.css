@@ -46,8 +46,8 @@
 }
 
 .kpi-card:hover:not(:disabled) {
-  border-color: var(--gold-accent, #c9a84c);
-  box-shadow: 0 4px 12px rgba(201, 168, 76, 0.15);
+  border-color: var(--gold-accent, #EF4444);
+  box-shadow: 0 4px 12px rgba(239, 68, 68, 0.15);
   transform: translateY(-2px);
 }
 
@@ -129,15 +129,15 @@
 }
 
 .tab-button:hover:not(:disabled) {
-  background: rgba(201, 168, 76, 0.05);
+  background: rgba(239, 68, 68, 0.05);
   border-color: var(--border-color, #2a2a2a);
   color: var(--text-primary, #f5f5f0);
 }
 
 .tab-button--active {
-  background: rgba(201, 168, 76, 0.1);
-  border-color: var(--gold-accent, #c9a84c);
-  color: var(--gold-accent, #c9a84c);
+  background: rgba(239, 68, 68, 0.1);
+  border-color: var(--gold-accent, #EF4444);
+  color: var(--gold-accent, #EF4444);
 }
 
 .tab-button:disabled {
@@ -165,7 +165,7 @@
   min-width: 20px;
   height: 20px;
   padding: 0 0.375rem;
-  background: var(--gold-accent, #c9a84c);
+  background: var(--gold-accent, #EF4444);
   color: var(--text-dark, #0f0f0f);
   font-size: 0.75rem;
   font-weight: 700;
@@ -193,14 +193,14 @@
 }
 
 .module-card:hover:not(:disabled) {
-  border-color: var(--gold-accent, #c9a84c);
-  box-shadow: 0 8px 24px rgba(201, 168, 76, 0.15);
+  border-color: var(--gold-accent, #EF4444);
+  box-shadow: 0 8px 24px rgba(239, 68, 68, 0.15);
   transform: translateY(-4px);
 }
 
 .module-card--active {
-  background: rgba(201, 168, 76, 0.1);
-  border-color: var(--gold-accent, #c9a84c);
+  background: rgba(239, 68, 68, 0.1);
+  border-color: var(--gold-accent, #EF4444);
 }
 
 .module-card:disabled {
@@ -254,7 +254,7 @@
   min-width: 24px;
   height: 24px;
   padding: 0 0.5rem;
-  background: var(--gold-accent, #c9a84c);
+  background: var(--gold-accent, #EF4444);
   color: var(--text-dark, #0f0f0f);
   font-size: 0.8rem;
   font-weight: 700;
@@ -361,7 +361,7 @@
 }
 
 .dashboard-section__header:hover {
-  background: rgba(201, 168, 76, 0.05);
+  background: rgba(239, 68, 68, 0.05);
 }
 
 .dashboard-section__icon {
@@ -433,7 +433,7 @@
 
 .empty-state__action {
   padding: 0.75rem 1.5rem;
-  background: var(--gold-accent, #c9a84c);
+  background: var(--gold-accent, #EF4444);
   color: var(--text-dark, #0f0f0f);
   border: none;
   border-radius: 6px;
@@ -444,7 +444,7 @@
 
 .empty-state__action:hover {
   transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(201, 168, 76, 0.25);
+  box-shadow: 0 4px 12px rgba(239, 68, 68, 0.25);
 }
 
 /* ── Grid Layout ─────────────────────────────────────────────────────────────── */

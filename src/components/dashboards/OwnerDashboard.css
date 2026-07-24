@@ -17,7 +17,7 @@
   align-items: center;
   margin-bottom: 32px;
   padding-bottom: 24px;
-  border-bottom: 2px solid rgba(16, 185, 129, 0.2);
+  border-bottom: 2px solid rgba(239, 68, 68, 0.2);
 }
 
 .dashboard-header h1 {
@@ -53,20 +53,20 @@
 }
 
 .btn-action.btn-primary {
-  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+  background: linear-gradient(135deg, #EF4444 0%, #DC2626 100%);
   color: white;
-  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+  box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
 }
 
 .btn-action.btn-primary:hover {
   transform: translateY(-2px);
-  box-shadow: 0 6px 16px rgba(16, 185, 129, 0.4);
+  box-shadow: 0 6px 16px rgba(239, 68, 68, 0.4);
 }
 
 .btn-action.btn-secondary {
   background: white;
-  color: #10b981;
-  border: 2px solid #10b981;
+  color: #EF4444;
+  border: 2px solid #EF4444;
 }
 
 .btn-action.btn-secondary:hover {
@@ -86,7 +86,7 @@
   padding: 20px;
   border-radius: 12px;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
-  border-left: 4px solid #10b981;
+  border-left: 4px solid #EF4444;
   transition: all 0.3s ease;
 }
 
@@ -101,7 +101,7 @@
 }
 
 .kpi-card.occupancy {
-  border-left-color: #10b981;
+  border-left-color: #EF4444;
   background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%);
 }
 
@@ -171,12 +171,12 @@
 }
 
 .tab-btn:hover {
-  color: #10b981;
+  color: #EF4444;
 }
 
 .tab-btn.active {
-  color: #10b981;
-  border-bottom-color: #10b981;
+  color: #EF4444;
+  border-bottom-color: #EF4444;
 }
 
 /* Tab Content */
@@ -234,7 +234,7 @@
   overflow: hidden;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
   transition: all 0.3s ease;
-  border-top: 4px solid #10b981;
+  border-top: 4px solid #EF4444;
   display: flex;
   flex-direction: column;
 }
@@ -339,7 +339,7 @@
 }
 
 .status-badge.status-occupied {
-  background: #10b981;
+  background: #EF4444;
 }
 
 .status-badge.status-vacant {
@@ -380,7 +380,7 @@
 }
 
 .action-btn:hover {
-  background: #10b981;
+  background: #EF4444;
   color: white;
 }
 
@@ -397,7 +397,7 @@
   padding: 20px;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
   transition: all 0.3s ease;
-  border-top: 4px solid #10b981;
+  border-top: 4px solid #EF4444;
 }
 
 .tenant-card.payment-overdue {
@@ -460,13 +460,13 @@
 
 .contact-link {
   font-size: 12px;
-  color: #10b981;
+  color: #EF4444;
   text-decoration: none;
   transition: color 0.3s ease;
 }
 
 .contact-link:hover {
-  color: #059669;
+  color: #DC2626;
   text-decoration: underline;
 }
 
@@ -516,7 +516,7 @@
 }
 
 .tenant-actions .action-btn:hover {
-  background: #10b981;
+  background: #EF4444;
   color: white;
 }
 
@@ -531,7 +531,7 @@
   background: white;
   padding: 20px;
   border-radius: 12px;
-  border-left: 4px solid #10b981;
+  border-left: 4px solid #EF4444;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
   transition: all 0.3s ease;
 }
@@ -653,7 +653,7 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  border-left: 4px solid #10b981;
+  border-left: 4px solid #EF4444;
   transition: all 0.3s ease;
 }
 
@@ -697,7 +697,7 @@
 .days-value {
   font-size: 20px;
   font-weight: 700;
-  color: #10b981;
+  color: #EF4444;
 }
 
 .expiry-date {
@@ -708,7 +708,7 @@
 
 .renewal-action {
   padding: 8px 16px;
-  background: #10b981;
+  background: #EF4444;
   color: white;
   border: none;
   border-radius: 6px;
@@ -719,7 +719,7 @@
 }
 
 .renewal-action:hover {
-  background: #059669;
+  background: #DC2626;
   transform: translateY(-2px);
 }
 
@@ -751,7 +751,7 @@
 }
 
 .summary-item .value.highlight {
-  color: #10b981;
+  color: #EF4444;
 }
 
 .summary-item .value.large {
@@ -759,7 +759,7 @@
 }
 
 .summary-item .value.success {
-  color: #059669;
+  color: #DC2626;
 }
 
 .summary-divider {
@@ -886,7 +886,7 @@
 .tab-btn:focus,
 .btn-action:focus,
 .action-btn:focus {
-  outline: 2px solid #10b981;
+  outline: 2px solid #EF4444;
   outline-offset: 2px;
 }
 

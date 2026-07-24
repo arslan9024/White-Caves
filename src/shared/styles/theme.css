@@ -8,15 +8,15 @@
 :root {
   /* ═══════════════════════════════════════════════════
    * WHITE CAVES BRAND COLOR LAW — STRICTLY ENFORCED
-   * Emerald Green : #10B981  — success, accents, focus
-   * Metallic Gold : #C9A84C  — primary, headings, CTAs
+   * Emerald Green : #EF4444  — success, accents, focus
+   * Metallic Gold : #EF4444  — primary, headings, CTAs
    * Obsidian Dark : #0f0f0f  — backgrounds, surfaces
    * ═══════════════════════════════════════════════════ */
 
   /* Primary Brand Colors — METALLIC GOLD (replaces legacy red) */
-  --primary-color: #c9a84c;
+  --primary-color: #EF4444;
   --primary-hover: #e4b75e;
-  --primary-light: rgba(201, 168, 76, 0.12);
+  --primary-light: rgba(239, 68, 68, 0.12);
   --primary-dark: #a8883a;
 
   /* Secondary Colors */
@@ -24,26 +24,26 @@
   --secondary-hover: #2c2c2c;
 
   /* Brand Accent — Emerald Green */
-  --accent-gold: #c9a84c;
-  --accent-green: #10b981;
+  --accent-gold: #EF4444;
+  --accent-green: #EF4444;
   --accent-emerald-hover: #34d399;
 
   /* Status Colors — semantic only, never decorative */
-  --success-color: #10b981;
-  --success-bg: rgba(16, 185, 129, 0.1);
-  --success-border: rgba(16, 185, 129, 0.3);
+  --success-color: #EF4444;
+  --success-bg: rgba(239, 68, 68, 0.1);
+  --success-border: rgba(239, 68, 68, 0.3);
 
-  --warning-color: #c9a84c;
-  --warning-bg: rgba(201, 168, 76, 0.1);
-  --warning-border: rgba(201, 168, 76, 0.3);
+  --warning-color: #EF4444;
+  --warning-bg: rgba(239, 68, 68, 0.1);
+  --warning-border: rgba(239, 68, 68, 0.3);
 
   --error-color: #ef4444;
   --error-bg: rgba(239, 68, 68, 0.08);
   --error-border: rgba(239, 68, 68, 0.25);
 
-  --info-color: #c9a84c;
-  --info-bg: rgba(201, 168, 76, 0.1);
-  --info-border: rgba(201, 168, 76, 0.3);
+  --info-color: #EF4444;
+  --info-bg: rgba(239, 68, 68, 0.1);
+  --info-border: rgba(239, 68, 68, 0.3);
 }
 
 /* ==========================================
@@ -67,26 +67,26 @@
   --text-tertiary: #6b7280;
   --text-muted: #9ca3af;
   --text-inverse: #ffffff;
-  --text-link: #c9a84c;
+  --text-link: #EF4444;
   --text-link-hover: #a8883a;
 
   /* Border Colors */
   --border-color: #e5e7eb;
   --border-light: #f3f4f6;
   --border-dark: #d1d5db;
-  --border-focus: #10b981;
+  --border-focus: #EF4444;
 
   /* Shadow Colors */
   --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
   --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.07);
   --shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.1);
   --shadow-xl: 0 20px 25px rgba(0, 0, 0, 0.1);
-  --shadow-glow: 0 0 20px rgba(201, 168, 76, 0.2);
+  --shadow-glow: 0 0 20px rgba(239, 68, 68, 0.2);
 
   /* Input Colors */
   --input-bg: #ffffff;
   --input-border: #d1d5db;
-  --input-focus-border: #c9a84c;
+  --input-focus-border: #EF4444;
   --input-placeholder: #9ca3af;
 
   /* Table Colors */
@@ -97,8 +97,8 @@
   /* Sidebar/Nav Colors */
   --nav-bg: #ffffff;
   --nav-text: #374151;
-  --nav-text-active: #c9a84c;
-  --nav-bg-active: rgba(201, 168, 76, 0.08);
+  --nav-text-active: #EF4444;
+  --nav-bg-active: rgba(239, 68, 68, 0.08);
 
   /* Badge/Tag Colors */
   --badge-bg: #f3f4f6;
@@ -129,26 +129,26 @@
   --text-tertiary: rgba(255, 255, 255, 0.45);
   --text-muted: rgba(255, 255, 255, 0.3);
   --text-inverse: #0f0f0f;
-  --text-link: #c9a84c;
+  --text-link: #EF4444;
   --text-link-hover: #e4b75e;
 
   /* Border Colors */
   --border-color: #2c2c2c;
   --border-light: #1f1f1f;
   --border-dark: #2c2c2c;
-  --border-focus: #10b981;
+  --border-focus: #EF4444;
 
   /* Shadow Colors */
   --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.5);
   --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.6);
   --shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.7);
   --shadow-xl: 0 20px 25px rgba(0, 0, 0, 0.8);
-  --shadow-glow: 0 0 20px rgba(201, 168, 76, 0.15);
+  --shadow-glow: 0 0 20px rgba(239, 68, 68, 0.15);
 
   /* Input Colors */
   --input-bg: #1a1a1a;
   --input-border: #2c2c2c;
-  --input-focus-border: #c9a84c;
+  --input-focus-border: #EF4444;
   --input-placeholder: rgba(255, 255, 255, 0.3);
 
   /* Table Colors */
@@ -159,8 +159,8 @@
   /* Sidebar/Nav Colors */
   --nav-bg: #1a1a1a;
   --nav-text: rgba(255, 255, 255, 0.7);
-  --nav-text-active: #c9a84c;
-  --nav-bg-active: rgba(201, 168, 76, 0.08);
+  --nav-text-active: #EF4444;
+  --nav-bg-active: rgba(239, 68, 68, 0.08);
 
   /* Badge/Tag Colors */
   --badge-bg: #2c2c2c;

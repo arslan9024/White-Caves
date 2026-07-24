@@ -70,7 +70,7 @@
 }
 
 .step-header .icon.success {
-  color: #10b981;
+  color: #EF4444;
 }
 
 .step-header .icon.warning {
@@ -268,7 +268,7 @@
 }
 
 .validation-box.success {
-  border-left-color: #10b981;
+  border-left-color: #EF4444;
   background-color: #f0fdf4;
 }
 
@@ -431,7 +431,7 @@
   padding: 16px;
   background: #f0fdf4;
   border-radius: 8px;
-  border-left: 4px solid #10b981;
+  border-left: 4px solid #EF4444;
 }
 
 .document-status-box h4 {
@@ -454,7 +454,7 @@
 }
 
 .status-info span.valid {
-  color: #10b981;
+  color: #EF4444;
   font-weight: 600;
 }
 
@@ -472,7 +472,7 @@
 .status-message {
   margin: 4px 0;
   font-size: 13px;
-  color: #059669;
+  color: #DC2626;
 }
 
 /* Responsive */

@@ -54,7 +54,7 @@
 }
 
 .owner-information-card .header-title svg {
-  color: #10b981;
+  color: #EF4444;
   flex-shrink: 0;
 }
 
@@ -63,7 +63,7 @@
   align-items: center;
   gap: 6px;
   font-size: 12px;
-  color: #10b981;
+  color: #EF4444;
   font-weight: 500;
 }
 
@@ -88,7 +88,7 @@
 .owner-information-card .btn-edit:hover {
   background: #f3f4f6;
   border-color: #d1d5db;
-  color: #10b981;
+  color: #EF4444;
 }
 
 /* Alert Messages */
@@ -135,7 +135,7 @@
 }
 
 .owner-information-card .form-group label svg {
-  color: #10b981;
+  color: #EF4444;
   flex-shrink: 0;
 }
 
@@ -161,8 +161,8 @@
 .owner-information-card select:focus,
 .owner-information-card textarea:focus {
   outline: none;
-  border-color: #10b981;
-  box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.1);
+  border-color: #EF4444;
+  box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.1);
 }
 
 .owner-information-card input.input-error,
@@ -201,7 +201,7 @@
 }
 
 .owner-information-card .btn-add {
-  background: #10b981;
+  background: #EF4444;
   color: white;
   border: none;
   border-radius: 8px;
@@ -215,8 +215,8 @@
 }
 
 .owner-information-card .btn-add:hover {
-  background: #059669;
-  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+  background: #DC2626;
+  box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
 }
 
 /* Contact List */
@@ -239,7 +239,7 @@
 }
 
 .owner-information-card .contact-item svg {
-  color: #10b981;
+  color: #EF4444;
   flex-shrink: 0;
 }
 
@@ -276,14 +276,14 @@
   border: 1px solid #e5e7eb;
   border-radius: 8px;
   font-size: 14px;
-  color: #10b981;
+  color: #EF4444;
   text-decoration: none;
   transition: all 0.2s ease;
 }
 
 .owner-information-card .contact-link:hover {
   background: #ecfdf5;
-  border-color: #10b981;
+  border-color: #EF4444;
 }
 
 .owner-information-card .contact-link svg {
@@ -313,13 +313,13 @@
 }
 
 .owner-information-card .btn-primary {
-  background: #10b981;
+  background: #EF4444;
   color: white;
 }
 
 .owner-information-card .btn-primary:hover:not(:disabled) {
-  background: #059669;
-  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+  background: #DC2626;
+  box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
 }
 
 .owner-information-card .btn-secondary {
@@ -376,7 +376,7 @@
 }
 
 .owner-information-card .info-label svg {
-  color: #10b981;
+  color: #EF4444;
 }
 
 .owner-information-card .info-value {

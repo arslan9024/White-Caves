@@ -65,14 +65,14 @@
 }
 
 .status-indicator.online {
-  background: #059669;
+  background: #DC2626;
   box-shadow: 0 0 0 2px rgba(5, 150, 105, 0.2);
 }
 
 .status-text {
   font-size: 12px;
   font-weight: 600;
-  color: #059669;
+  color: #DC2626;
 }
 
 .assistant-stats {
@@ -184,7 +184,7 @@
   font-weight: 600;
   padding: 3px 8px;
   background: #D1FAE5;
-  color: #059669;
+  color: #DC2626;
   border-radius: 4px;
 }
 

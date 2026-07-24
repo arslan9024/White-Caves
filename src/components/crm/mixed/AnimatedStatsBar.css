@@ -64,7 +64,7 @@
 
 .stat-change.positive {
   color: #10B981;
-  background: rgba(16, 185, 129, 0.1);
+  background: rgba(239, 68, 68, 0.1);
 }
 
 .stat-change.negative {
@@ -150,7 +150,7 @@
 
 .mini-stat-trend.up {
   color: #10B981;
-  background: rgba(16, 185, 129, 0.1);
+  background: rgba(239, 68, 68, 0.1);
 }
 
 .mini-stat-trend.down {

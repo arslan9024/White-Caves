@@ -605,7 +605,7 @@
   width: 8px;
   height: 8px;
   border-radius: 50%;
-  background: #10b981;
+  background: #EF4444;
 }
 
 /* Cards */
@@ -673,12 +673,12 @@
   color: var(--crm-gold);
 }
 .crm-stat-icon.success {
-  background: rgba(16, 185, 129, 0.1);
-  color: #10b981;
+  background: rgba(239, 68, 68, 0.1);
+  color: #EF4444;
 }
 .crm-stat-icon.info {
-  background: rgba(201, 168, 76, 0.1);
-  color: #c9a84c;
+  background: rgba(239, 68, 68, 0.1);
+  color: #EF4444;
 }
 
 .crm-stat-content {
@@ -1001,7 +1001,7 @@
 }
 
 .ai-assistant-status.online {
-  background: #10b981;
+  background: #EF4444;
 }
 
 .ai-assistant-status.offline {

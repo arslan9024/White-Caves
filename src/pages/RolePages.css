@@ -229,8 +229,8 @@
 
 .item-status.available,
 .item-status.new {
-  background: rgba(16, 185, 129, 0.15);
-  color: #10b981;
+  background: rgba(239, 68, 68, 0.15);
+  color: #EF4444;
 }
 
 .item-status.occupied,
@@ -455,12 +455,12 @@
 }
 
 .result-highlight.net {
-  background: rgba(16, 185, 129, 0.15);
-  border-color: #10b981;
+  background: rgba(239, 68, 68, 0.15);
+  border-color: #EF4444;
 }
 
 .result-highlight.net .result-value {
-  color: #10b981;
+  color: #EF4444;
 }
 
 .results-grid {
@@ -1142,14 +1142,14 @@
 }
 
 .status-badge.available {
-  background: rgba(16, 185, 129, 0.15);
-  color: #10b981;
+  background: rgba(239, 68, 68, 0.15);
+  color: #EF4444;
 }
 
 .status-badge.received,
 .status-badge.approved {
-  background: rgba(16, 185, 129, 0.15);
-  color: #10b981;
+  background: rgba(239, 68, 68, 0.15);
+  color: #EF4444;
 }
 
 .property-details {
@@ -1399,13 +1399,13 @@
 }
 
 .next-payment-card {
-  border-color: var(--accent-gold, #c9a84c);
+  border-color: var(--accent-gold, #EF4444);
 }
 
 .next-payment-amount {
   font-size: 1.25rem;
   font-weight: 700;
-  color: var(--accent-gold, #c9a84c);
+  color: var(--accent-gold, #EF4444);
 }
 
 .pay-now-wrapper {
@@ -1552,7 +1552,7 @@
 
 .deal-commission {
   font-size: 0.75rem;
-  color: #10b981;
+  color: #EF4444;
 }
 
 .deal-modal-overlay {

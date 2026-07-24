@@ -105,7 +105,7 @@
 
 .stat-change.up {
   color: #10B981;
-  background: rgba(16, 185, 129, 0.1);
+  background: rgba(239, 68, 68, 0.1);
 }
 
 .stat-change.down {
@@ -338,7 +338,7 @@
 .status-badge.verified,
 .status-badge.registered,
 .status-badge.connected {
-  background: rgba(16, 185, 129, 0.1);
+  background: rgba(239, 68, 68, 0.1);
   color: #10B981;
 }
 
@@ -484,7 +484,7 @@
 }
 
 .property-status.active {
-  background: rgba(16, 185, 129, 0.9);
+  background: rgba(239, 68, 68, 0.9);
   color: white;
 }
 
@@ -747,7 +747,7 @@
 }
 
 .campaign-status.active {
-  background: rgba(16, 185, 129, 0.1);
+  background: rgba(239, 68, 68, 0.1);
   color: #10B981;
 }
 

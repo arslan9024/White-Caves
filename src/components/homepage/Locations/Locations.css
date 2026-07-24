@@ -73,12 +73,12 @@
 }
 
 .stat-badge.trend {
-  background: rgba(16, 185, 129, 0.95);
+  background: rgba(239, 68, 68, 0.95);
   color: white;
 }
 
 /* Trend direction variants */
-.stat-badge.trend--up   { background: rgba(16, 185, 129, 0.95); color: #fff; }
+.stat-badge.trend--up   { background: rgba(239, 68, 68, 0.95); color: #fff; }
 .stat-badge.trend--down { background: rgba(239, 68, 68, 0.92);  color: #fff; }
 
 /* Skeleton shimmer for live data slots */

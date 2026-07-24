@@ -59,8 +59,8 @@
 }
 
 .stat-pill.active {
-  background: rgba(16, 185, 129, 0.15);
-  color: #10b981;
+  background: rgba(239, 68, 68, 0.15);
+  color: #EF4444;
 }
 
 .stat-pill.beta {
@@ -244,8 +244,8 @@
 }
 
 .status-badge.active {
-  background: rgba(16, 185, 129, 0.15);
-  color: #10b981;
+  background: rgba(239, 68, 68, 0.15);
+  color: #EF4444;
 }
 
 .status-badge.beta {
@@ -263,7 +263,7 @@
   color: #3b82f6;
 }
 
-.status-icon.active { color: #10b981; }
+.status-icon.active { color: #EF4444; }
 .status-icon.beta { color: #f59e0b; }
 .status-icon.planned { color: #6b7280; }
 .status-icon.development { color: #3b82f6; }
@@ -339,7 +339,7 @@
 }
 
 .capabilities li svg {
-  color: #10b981;
+  color: #EF4444;
   flex-shrink: 0;
 }
 

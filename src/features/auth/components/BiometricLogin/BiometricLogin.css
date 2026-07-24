@@ -230,9 +230,9 @@
 }
 
 .biometric-message.success {
-  background: rgba(16, 185, 129, 0.1);
-  color: #10b981;
-  border: 1px solid rgba(16, 185, 129, 0.2);
+  background: rgba(239, 68, 68, 0.1);
+  color: #EF4444;
+  border: 1px solid rgba(239, 68, 68, 0.2);
 }
 
 .biometric-message.error {
@@ -434,8 +434,8 @@
 }
 
 .biometric-prompt-modal .prompt-message.success {
-  background: rgba(16, 185, 129, 0.1);
-  color: #10b981;
+  background: rgba(239, 68, 68, 0.1);
+  color: #EF4444;
 }
 
 .biometric-prompt-modal .prompt-message.error {

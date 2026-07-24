@@ -52,7 +52,7 @@
   justify-content: center;
   width: 32px;
   height: 32px;
-  background: #10b981;
+  background: #EF4444;
   color: white;
   border-radius: 50%;
   font-size: 14px;
@@ -210,8 +210,8 @@
 }
 
 .owner-follow-up-list .owner-item:hover {
-  border-color: #10b981;
-  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.1);
+  border-color: #EF4444;
+  box-shadow: 0 4px 12px rgba(239, 68, 68, 0.1);
 }
 
 /* Owner Header */
@@ -345,7 +345,7 @@
 }
 
 .owner-follow-up-list .contact-item svg {
-  color: #10b981;
+  color: #EF4444;
   flex-shrink: 0;
   margin-top: 2px;
 }
@@ -367,7 +367,7 @@
 
 .owner-follow-up-list .contact-content a {
   font-size: 14px;
-  color: #10b981;
+  color: #EF4444;
   text-decoration: none;
   word-break: break-all;
 }
@@ -398,7 +398,7 @@
 }
 
 .owner-follow-up-list .history-item svg {
-  color: #10b981;
+  color: #EF4444;
   flex-shrink: 0;
   margin-top: 2px;
 }
@@ -423,7 +423,7 @@
 
 .owner-follow-up-list .history-outcome {
   font-size: 12px;
-  color: #059669;
+  color: #DC2626;
   font-style: italic;
 }
 
@@ -444,13 +444,13 @@
 }
 
 .owner-follow-up-list .btn-primary {
-  background: #10b981;
+  background: #EF4444;
   color: white;
 }
 
 .owner-follow-up-list .btn-primary:hover {
-  background: #059669;
-  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+  background: #DC2626;
+  box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
 }
 
 .owner-follow-up-list .btn-secondary {

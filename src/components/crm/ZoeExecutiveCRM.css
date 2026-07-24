@@ -221,7 +221,7 @@
 }
 
 .priority-badge.low {
-  background: rgba(16, 185, 129, 0.2);
+  background: rgba(239, 68, 68, 0.2);
   color: #10B981;
 }
 
@@ -288,7 +288,7 @@
 }
 
 .status-badge.acknowledged {
-  background: rgba(16, 185, 129, 0.2);
+  background: rgba(239, 68, 68, 0.2);
   color: #10B981;
 }
 
@@ -533,8 +533,8 @@
   margin-bottom: 1rem;
   padding: 0.875rem 1rem;
   border-radius: 10px;
-  background: rgba(16, 185, 129, 0.1);
-  border: 1px solid rgba(16, 185, 129, 0.25);
+  background: rgba(239, 68, 68, 0.1);
+  border: 1px solid rgba(239, 68, 68, 0.25);
   color: #86efac;
 }
 
@@ -1382,7 +1382,7 @@
 }
 
 .action-btn.primary {
-  background: linear-gradient(135deg, #10B981 0%, #059669 100%);
+  background: linear-gradient(135deg, #10B981 0%, #DC2626 100%);
   color: white;
   border: none;
   border-radius: 6px;
@@ -1439,7 +1439,7 @@
   font-size: 0.625rem;
   text-transform: uppercase;
   font-weight: 600;
-  background: rgba(16, 185, 129, 0.15);
+  background: rgba(239, 68, 68, 0.15);
   color: #10B981;
 }
 

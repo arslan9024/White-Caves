@@ -106,7 +106,7 @@
 }
 
 .kpi-card.gain {
-  border-left-color: #10b981;
+  border-left-color: #EF4444;
   background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%);
 }
 
@@ -304,7 +304,7 @@
 }
 
 .asset-card.gain-positive {
-  border-top-color: #10b981;
+  border-top-color: #EF4444;
 }
 
 .asset-card.gain-negative {
@@ -419,11 +419,11 @@
 }
 
 .investment-item.status-excellent {
-  border-left-color: #059669;
+  border-left-color: #DC2626;
 }
 
 .investment-item.status-performing {
-  border-left-color: #10b981;
+  border-left-color: #EF4444;
 }
 
 .investment-item.status-underperforming {
@@ -714,7 +714,7 @@
 }
 
 .summary-stat .value.success {
-  color: #059669;
+  color: #DC2626;
 }
 
 .summary-stat .value.warning {

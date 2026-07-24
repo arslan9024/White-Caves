@@ -155,7 +155,7 @@
 
 .status-indicator.online {
   background: #10B981;
-  box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.2);
+  box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.2);
 }
 
 .status-indicator.offline {
