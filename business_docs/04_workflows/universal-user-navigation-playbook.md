@@ -123,7 +123,7 @@ if (isClient) → render Variant 3 (Portal Shield)
 
 | Purpose                  | File Path                                               |
 |--------------------------|---------------------------------------------------------|
-| Layout Shell             | `src/layouts/UnifiedWorkspaceLayout.tsx`                |
+| Flowcharts               | `software_docs/architecture/UNIVERSAL_NAVIGATION_FLOWCHARTS.md` |
 | Dashboard Entry Page     | `src/pages/crm/UnifiedDashboardPage.tsx`                |
 | RBAC Config              | `src/config/rbacConfiguration.ts`                       |
 | Top Nav Component        | `src/components/navigation/TopNavbar.tsx`               |

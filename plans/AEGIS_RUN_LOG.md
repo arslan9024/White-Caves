@@ -25,9 +25,17 @@
 1. **`plans/PLANNING_GOVERNANCE.md`**: Created canonical 90% Readiness Checkpoint Framework defining 6-point readiness criteria.
 2. **`plans/MASTER_PLAN.md`**: 300% expanded detail overhaul with Quiet Luxury visual specs & ASCII workflow flowcharts.
 3. **`plans/PENDING_TASKS_ONLY.md`**: Itemized master backlog covering 5 core asset classes, 12 finance modules, and 100-role RBAC gates.
-4. **`docs/architecture/CRM_NAV_FLOWCHARTS.md`**: ASCII navigation specification mapping user actions down to synthetic arrays.
+4. **`software_docs/architecture/CRM_NAV_FLOWCHARTS.md`**: ASCII navigation specification mapping user actions down to synthetic arrays.
+5. **`software_docs/architecture/UNIVERSAL_NAVIGATION_FLOWCHARTS.md`**: Text-based ASCII navigation flowcharts and session redirection loops.
+6. **`plans/HISTORICAL_REQUESTS_AND_ACHIEVEMENTS.md`**: Master historical prompt log and 200-point audit matrix mapping 80 fixes, 70 UI/UX upgrades, and 50 business features.
 
 ---
+
+## 🚀 Turn 8 Run Log — 3-Folder Relational Strategy & 200-Point Audit
+- **Renamed `docs/` → `software_docs/`**: Clean distinction between `business_docs/` (RERA, workflows, business models), `software_docs/` (ADRs, tech specs, flowcharts), and `plans/` (roadmaps & historical prompt logs).
+- **Compliance Docs Re-location**: Moved business compliance checklists to `business_docs/05_requirements/` and tenancy templates to `business_docs/04_workflows/`.
+- **Zero-Error Build Verification**: Executed `npx vite build` — **Passed in 20.60s (Exit Code 0)**.
+- **Git Production Release**: Pushed to `origin main` cleanly.
 
 ## 📊 Token Preservation & Efficiency Statistics
 
