@@ -215,7 +215,7 @@ computing gzip size...
 [2mdist/[22m[36massets/store-C3rfpG0s.js                                         [39m[1m[2m204.21 kB[22m[1m[22m[2m │ gzip: 55.09 kB[22m
 [2mdist/[22m[36massets/index-IRE3p4LS.js                                         [39m[1m[2m216.29 kB[22m[1m[22m[2m │ gzip: 53.35 kB[22m
 [2mdist/[22m[36massets/index-C9jzvzOW.js                                         [39m[1m[2m285.06 kB[22m[1m[22m[2m │ gzip: 87.18 kB[22m
-[32m✓ built in 20.45s[39m
+[32m✓ built in 16.69s[39m
 
 PWA v1.3.0
 mode      generateSW
