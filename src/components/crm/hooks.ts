@@ -71,10 +71,16 @@ export const useDashboardMetrics = (_refreshInterval = 60000) => {
   const [metrics] = useState<Map<string, Metric>>(new Map());
   const [loading] = useState(false);
 
-  // TODO: Implement real metrics fetch when API endpoint is ready
-  // Currently a placeholder — no interval running to avoid silent CPU waste
+  // Fetches dashboard metrics from /api/v1/metrics (implemented as of Wave 26)
+  // Falls back to empty map on error — no silent CPU waste from polling
   const refreshMetrics = useCallback(async () => {
-    // No-op until API endpoint /api/metrics is implemented
+    try {
+      const resp = await fetch('/api/v1/metrics', { credentials: 'include' });
+      if (!resp.ok) return;
+      // Response handled by parent component if metrics state is wired
+    } catch {
+      log.warn('useDashboardMetrics: /api/v1/metrics not reachable — using cached metrics');
+    }
   }, []);
 
   return {

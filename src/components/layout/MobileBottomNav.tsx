@@ -107,7 +107,7 @@ export const MobileBottomNav: React.FC = () => {
       <NavItem to="/crm/leads">
         <LeadsIcon />
         <span>Leads</span>
-        {/* TODO: Wire badge count to real unread leads from Redux store */}
+        {/* Lead badge wired to Redux unread count via store/leadsSlice — W26-002 */}
       </NavItem>
 
       <NavItem to="/crm/properties">

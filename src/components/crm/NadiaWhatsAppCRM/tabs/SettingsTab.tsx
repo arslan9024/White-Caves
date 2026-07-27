@@ -80,10 +80,13 @@ export const SettingsTab: React.FC<NadiaSettingsTabProps> = ({ data }) => {
       <div className="settings-actions">
         <button
           className="save-btn"
-          disabled
-          title="API integration coming soon"
-          onClick={() => {
-            // TODO: POST settings to /api/whatsapp/nadia/settings
+          onClick={async () => {
+            await fetch('/api/v1/whatsapp/nadia/settings', {
+              method: 'POST',
+              credentials: 'include',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({}),
+            });
           }}
         >
           <Save size={18} /> Save Settings

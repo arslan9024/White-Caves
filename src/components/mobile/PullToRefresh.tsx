@@ -32,6 +32,8 @@ const PullToRefresh: React.FC<PullToRefreshProps> = ({
 }) => {
   const [pullDistance, setPullDistance] = useState(0);
   const [isRefreshing, setIsRefreshing] = useState(false);
+  // isPullingState mirrors isPulling.current for render-time transitions (ref reads during render are disallowed)
+  const [isPullingState, setIsPullingState] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
   const startY = useRef(0);
   const isPulling = useRef(false);
@@ -44,6 +46,7 @@ const PullToRefresh: React.FC<PullToRefreshProps> = ({
 
     startY.current = e.touches[0].clientY;
     isPulling.current = true;
+    setIsPullingState(true);
   }, [isRefreshing]);
 
   const handleTouchMove = useCallback(
@@ -53,6 +56,7 @@ const PullToRefresh: React.FC<PullToRefreshProps> = ({
       const container = containerRef.current;
       if (!container || container.scrollTop > 0) {
         isPulling.current = false;
+        setIsPullingState(false);
         setPullDistance(0);
         return;
       }
@@ -71,6 +75,7 @@ const PullToRefresh: React.FC<PullToRefreshProps> = ({
   const handleTouchEnd = useCallback(async () => {
     if (!isPulling.current || isRefreshing) return;
     isPulling.current = false;
+    setIsPullingState(false);
 
     if (pullDistance >= threshold) {
       setIsRefreshing(true);
@@ -111,7 +116,7 @@ const PullToRefresh: React.FC<PullToRefreshProps> = ({
             justifyContent: 'center',
             height: pullDistance,
             overflow: 'hidden',
-            transition: isPulling.current ? 'none' : 'height 0.3s ease',
+            transition: isPullingState ? 'none' : 'height 0.3s ease',
           }}
         >
           <div
@@ -123,7 +128,7 @@ const PullToRefresh: React.FC<PullToRefreshProps> = ({
               justifyContent: 'center',
               opacity: progress,
               transform: `rotate(${progress * 360}deg)`,
-              transition: isPulling.current ? 'none' : 'transform 0.3s ease',
+              transition: isPullingState ? 'none' : 'transform 0.3s ease',
             }}
           >
             <RefreshCw

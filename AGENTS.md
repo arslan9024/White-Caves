@@ -12,7 +12,7 @@
 | @Sofia    | Gemini 2.0 Flash | REVIEW: compliance-requirements.md → RERA 2024 updates    | `business_docs/05_requirements/compliance-requirements.md` | 12/12    | ✅ GATE PASSED | 2026-07-14   |
 | @Cassie   | DeepSeek V3      | EXPAND: analytics-dashboard.md → mobile view + CSV export | `business_docs/09_crm_features/analytics-dashboard.md`     | 22/22    | ✅ GATE PASSED | 2026-07-14   |
 | @Joelle   | Llama 3.1 70B    | EXPAND: 03_ai_assistants/README.md → FEEDS_ACK Phase N+1  | `plans/ai_assistants/README.md`                            | 6/8      | 🟡 IN PROGRESS | 2026-07-14   |
-| @Ada      | Claude Sonnet    | AEGIS Turn 4 — 10-fix sprint + Google auth + Wave 23 gate | `plans/AEGIS_CURRENT_RUN.md`                               | —        | ✅ GATE PASSED | 2026-07-27   |
+| @Ada      | Claude Sonnet    | AEGIS Turn 5 — 35-point reconstruction + Wave 24-26 gate  | `plans/AEGIS_CURRENT_RUN.md`                               | —        | ✅ GATE PASSED | 2026-07-27   |
 
 ### Wave Execution Roadmap (Subagent Upgrade V3)
 

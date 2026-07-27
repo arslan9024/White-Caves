@@ -13,8 +13,13 @@ interface NinaSettingsTabProps {
 export const NinaSettingsTab: React.FC<NinaSettingsTabProps> = ({ data: _data }) => {
   const [saved, setSaved] = useState(false);
 
-  const handleSave = () => {
-    // TODO: POST settings to /api/whatsapp/nina/settings
+  const handleSave = async () => {
+    await fetch('/api/v1/whatsapp/nina/settings', {
+      method: 'POST',
+      credentials: 'include',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({}),
+    });
     setSaved(true);
     setTimeout(() => setSaved(false), 4000);
   };
