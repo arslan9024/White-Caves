@@ -39,7 +39,7 @@ Before any code modification turn, the following six criteria must be documented
 1. **Target File Paths Defined**: Exact relative file paths for all new or modified components, hooks, styles, and routes.
 2. **TypeScript Interface & Schema Definitions**: Complete type contracts, props, state objects, and database models.
 3. **Component Hierarchy & Layout Wireframes**: Visual ASCII wireframes detailing container bounds, flex grids, and styling tokens.
-4. **Quiet Luxury Design Token Mapping**: Explicit binding to Obsidian Dark (`#0f0f0f`), Metallic Gold (`#C9A84C`), and Emerald Green (`#10B981`).
+4. **Corporate Brand Palette Token Mapping**: Explicit binding to White Caves Red (`#EF4444`) for primary success badges, active menu highlights, and buttons; Brilliant Crisp White (`#FFFFFF`) for backdrop canvas; and Deep Slate Gray (`#1E293B`) for typography. Deprecates emerald, gold, or dark obsidian schemes.
 5. **Mock & Synthetic Data Fallbacks**: Direct alignment with `src/mocks/dubaiRealEstateMocks.ts` and `src/mocks/dubaiFinanceEngine.ts`.
 6. **Acceptance Criteria & Test Matrix**: Quantitative testable definitions for pass/fail verification via `npm run build` and unit test specs.
 

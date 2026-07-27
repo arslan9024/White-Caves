@@ -127,7 +127,14 @@ If full matrix is too expensive, run focused scope checks first and clearly repo
 - Keep responses consistent with existing API envelope conventions.
 - Never bypass security checks for convenience.
 
----
+### 7.1 Dual-Model Orchestration & Multi-Turn Memory (AEGIS 2.0 Directive)
+
+- **Multi-Turn Memory Checking:** Agents MUST inspect session history, `plans/AEGIS_CURRENT_RUN.md`, `plans/AUTOPILOT_QUEUE.md`, and `plans/MASTER_PLAN.md` before initiating any work to ensure context continuity.
+- **Gemini Context & Research Loop:** Use Gemini models for high-capacity context ingestion, mapping backend schemas, parsing large business specification files (`/business_docs/`), and drafting structural architecture documents (`/docs/`).
+- **Claude Tactical Implementation Engine:** Use Claude models for single-file isolation edits, type-safe React/TypeScript component updates, bug fixes, and targeted refactoring.
+- **3-Folder Knowledge Hierarchy:** All business operational logic MUST live in `/business_docs/`. All software architecture decision records MUST live in `/docs/`. All chronological execution checklists MUST live in `/plans/`. Always update `/plans/` first before editing application code.
+- **Corporate Brand Palette Lockdown:** Use ONLY White Caves Red (`#EF4444`) for primary badges, buttons, and active menu states, Crisp White (`#FFFFFF`) for canvas background, and Deep Slate Gray (`#1E293B`) for typography. Emerald green, gold, and dark obsidian themes are strictly banned.
+- **Founder Short-Circuit Law:** Email `arslanmalikgoraha@gmail.com` MUST automatically inject `accessLevel: 5` (`LEVEL_5_MASTER`), bypassing lower-tier department gates and landing directly on `ProfilePage.tsx` before mounting `UnifiedWorkspaceLayout.tsx`.
 
 - Free-planning agents MUST use only approved free models: Gemini 2.0 Flash / 1.5 Flash (Google AI Studio), Llama 3.1 70B / 3.3 70B (Groq), DeepSeek V3 / R1 (DeepSeek Chat), Mistral Small (Mistral Le Chat), Qwen2.5 72B (HuggingFace / Together.ai). See `plans/AGENT_SKILLS_UPGRADE_V3.md` for the full model assignment matrix by role type.
 - Senior coding/design agents use GPT-4o by default for coding and verification.

@@ -1,22 +1,30 @@
-# AEGIS Workforce Map
+# AEGIS Workforce Map & Dual-Model Credit Protection Strategy
 
 **Purpose:** Maps the six AEGIS vectors to concrete agent assignments from the Aegis 170 V3 roster.  
-**Authority:** Aegis 170 V3 — 120 free planning specialists + 50 premium implementation agents.  
+**Authority:** Aegis 170 V3 — 100 free planning specialists (Gemini Context Driver) + 50 premium implementation agents (Claude Tactical Engine).  
 **Source:** `AGENTS.md` + `.github/copilot-instructions.md` roster sections.  
 **Owner:** @Ada (Chief Architect) + @Zoe (COO — WIP enforcement)
 
 ---
 
+## 🛡️ Dual-Model Architecture & Credit Preservation Rules
+
+1. **Gemini Context & Research Driver (100 Free Workers)**: Executes zero-cost high-capacity context ingestion, updates specification manuals in `/business_docs/`, drafts technical ADRs in `/docs/`, synthesizes market intelligence, and maintains preflight briefs.
+2. **Claude Tactical Implementation Engine (50 Premium Architects)**: Executes precise, single-file isolation edits across application source code (`src/`, `server/`), enforces type contracts, and resolves compilation errors.
+3. **Token Budget Protection**: Free agents handle 100% of discovery, planning, and documentation drafting before invoking premium agents for code edits, preserving up to 75% of monthly credit caps.
+
+---
+
 ## Quick Reference
 
-| Vector | Name                      | Lead      | Deputy     | Free-Agent Research                              |
-| ------ | ------------------------- | --------- | ---------- | ------------------------------------------------ |
-| V1     | Runtime Blocker Hardening | @Mira     | @Petra     | @Iris (tech trends), @Dalia (perf benchmarks)    |
-| V2     | Superuser Auth            | @Daniela  | @Radia     | @Chloe (threat intel), @Priya (legal/compliance) |
-| V3     | MD Dashboard Design       | @Una      | @Cyra      | @Yara (UX research), @Rana (mobile UX)           |
-| V4     | Dedup & Dead-Code         | @Grace    | @Katherine | @Iris (tooling), @Hana (SEO/build perf)          |
-| V5     | Plans & Business Docs     | @Margaret | @Elena     | @Aisha (market data), @Nour (product discovery)  |
-| V6     | AEGIS Infrastructure      | @Ada      | @Zoe       | @Wafa (DevOps/cloud), @Rima (BI/strategic)       |
+| Vector | Name                      | Lead      | Deputy     | Free-Agent Research (Gemini Driver)              | Premium Executor (Claude Engine) |
+| ------ | ------------------------- | --------- | ---------- | ------------------------------------------------ | -------------------------------- |
+| V1     | Runtime Blocker Hardening | @Mira     | @Petra     | @Iris (tech trends), @Dalia (perf benchmarks)    | Coder / Architect agent          |
+| V2     | Superuser Auth            | @Daniela  | @Radia     | @Chloe (threat intel), @Priya (legal/compliance) | Security / Coder agent           |
+| V3     | MD Dashboard Design       | @Una      | @Cyra      | @Yara (UX research), @Rana (mobile UX)           | Designer / UI agent              |
+| V4     | Dedup & Dead-Code         | @Grace    | @Katherine | @Iris (tooling), @Hana (SEO/build perf)          | Lead Coder agent                 |
+| V5     | Plans & Business Docs     | @Margaret | @Elena     | @Aisha (market data), @Nour (product discovery)  | Planner / Docs agent             |
+| V6     | AEGIS Infrastructure      | @Ada      | @Zoe       | @Wafa (DevOps/cloud), @Rima (BI/strategic)       | Chief Architect agent            |
 
 ---
 
