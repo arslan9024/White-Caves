@@ -71,10 +71,21 @@ router.post(
       throw new AppError('Too many requests. Please try again in a minute.', 429);
     }
 
-    const { messages } = req.body as {
+    const { messages, sessionId, assistantId } = req.body as {
       messages?: ChatMessage[];
       sessionId?: string;
+      assistantId?: string;
     };
+
+    const targetAssistantId = assistantId || 'zoe-default';
+    const { NinaEngine } = await import('../services/ai/ninaEngine.js');
+    if (!(await NinaEngine.checkCap(targetAssistantId))) {
+      res.status(429).json({
+        error: 'Daily token cap exceeded for this assistant. Please try again tomorrow.',
+        resetTime: new Date(new Date().setHours(24, 0, 0, 0)).toISOString(),
+      });
+      return;
+    }
 
     if (!Array.isArray(messages) || messages.length === 0) {
       throw new AppError('messages array is required', 400);
@@ -137,6 +148,15 @@ router.get(
       typeof req.query.assistantId === 'string' ? req.query.assistantId : 'nina-default';
     const userId = req.headers['x-user-id'] as string;
     const message = typeof req.query.message === 'string' ? req.query.message : '';
+
+    const { NinaEngine } = await import('../services/ai/ninaEngine.js');
+    if (!(await NinaEngine.checkCap(assistantId))) {
+      res.status(429).json({
+        error: 'Daily token cap exceeded for this assistant. Please try again tomorrow.',
+        resetTime: new Date(new Date().setHours(24, 0, 0, 0)).toISOString(),
+      });
+      return;
+    }
 
     // Set headers for SSE
     res.setHeader('Content-Type', 'text/event-stream');

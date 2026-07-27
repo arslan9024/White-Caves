@@ -63,9 +63,9 @@ export class NinaEngine {
   // W24-009: Session persistence and token caps
   static async checkCap(assistantId: string): Promise<boolean> {
     const key = `ai_cap:${assistantId}:${new Date().toISOString().split('T')[0]}`;
-    const currentTokens = (await cacheService.get(key)) || 0;
-    if (Number(currentTokens) > 10000) {
-      // arbitrary cap
+    const currentTokens = (await cacheService.get<number>(key)) || 0;
+    if (Number(currentTokens) >= 10000) {
+      // 10,000 daily token cap
       return false;
     }
     return true;
@@ -73,18 +73,31 @@ export class NinaEngine {
 
   static async incrementCap(assistantId: string, tokens: number) {
     const key = `ai_cap:${assistantId}:${new Date().toISOString().split('T')[0]}`;
-    const current = (await cacheService.get(key)) || 0;
-    await cacheService.set(key, Number(current) + tokens, 60 * 60 * 24); // 24h TTL
+    await cacheService.incrby(key, tokens, 60 * 60 * 24); // 24h TTL
   }
 
   static async getHistory(sessionId: string): Promise<Message[]> {
+    // 30-day TTL programmatic cleanup in MongoDB
+    const thirtyDaysAgo = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000);
+    try {
+      await prisma.aIConversation.deleteMany({
+        where: {
+          updatedAt: {
+            lt: thirtyDaysAgo,
+          },
+        },
+      });
+    } catch (err) {
+      logger.warn('[NinaEngine] Failed programmatic 30-day TTL conversation pruning:', err);
+    }
+
     const conv = await prisma.aIConversation.findUnique({ where: { sessionId } });
     if (!conv || !conv.messages) return [];
     return conv.messages as any as Message[];
   }
 
   static async saveHistory(sessionId: string, assistantId: string, messages: Message[]) {
-    // Keep last 20 messages
+    // Store only the last 20 messages to keep the session size compact
     const recentMessages = messages.slice(-20);
     await prisma.aIConversation.upsert({
       where: { sessionId },

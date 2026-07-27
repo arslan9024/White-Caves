@@ -6,6 +6,7 @@ import { NinaEngine } from '../services/ai/ninaEngine.js';
 
 vi.mock('../services/ai/ninaEngine.js', () => ({
   NinaEngine: {
+    checkCap: vi.fn(async () => true),
     streamResponse: vi.fn(async (sessionId, assistantId, message, entityContext, onToken) => {
       onToken('Hello ');
       onToken('world');
@@ -40,5 +41,14 @@ describe('W24-007 AI Chat SSE Endpoint', () => {
 
     expect(response.status).toBe(200);
     expect(response.text).toContain('Message is required');
+  });
+
+  it('returns 429 if checkCap returns false', async () => {
+    vi.spyOn(NinaEngine, 'checkCap').mockResolvedValueOnce(false);
+    const response = await request(app).get('/api/v1/ai-chat/stream/session-123?message=Hi');
+
+    expect(response.status).toBe(429);
+    expect(response.body.error).toContain('Daily token cap exceeded');
+    expect(response.body.resetTime).toBeDefined();
   });
 });

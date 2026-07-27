@@ -2,7 +2,8 @@
 
 **Version:** 2026.07-AEGIS-V2  
 **Control Plane Policy:** `scripts/orchestrator/policy.json`  
-**Governance Authority:** Executive Council (@Ada, @Margaret, @Grace, @Elena, @Zoe)
+**Governance Authority:** Executive Council (@Ada, @Margaret, @Grace, @Elena, @Zoe)  
+**Last Updated:** 2026-07-27
 
 ---
 

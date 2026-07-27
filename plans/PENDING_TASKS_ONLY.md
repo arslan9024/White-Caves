@@ -2,6 +2,8 @@
 
 **Version:** 2026.07-TITAN-V3  
 **Governance Authority:** [plans/PLANNING_GOVERNANCE.md](./PLANNING_GOVERNANCE.md)  
+**Master Plan:** [plans/MASTER_PLAN.md](./MASTER_PLAN.md)  
+**Last Updated:** 2026-07-27  
 **Readiness Checkpoint:** **90% Gate Passed**
 
 ---
@@ -70,3 +72,9 @@
 - **Zoe**: Chief Operations & Investment Advisor Node.
 - **Nadia**: Inbound WhatsApp Lead Qualifier & 15-Min SLA Monitor.
 - **Sentinel**: Security, Fraud Audit & Property IoT Telemetry Monitor.
+
+---
+
+## 🟢 Wave 26 Backlog (Production Quality, Test Reliability & TODO Resolution)
+
+- **Task**: Address codebase cleanup, test suite reliability, developer TODO resolutions, and final executive UI validation.
