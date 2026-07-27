@@ -39,15 +39,13 @@ describe('ViewingReminderCron', () => {
         reminderSent: false,
         property: {
           title: 'Luxury Villa Palm Jumeirah',
-          address: 'Palm Jumeirah Signature Villa',
-          latitude: 25.123,
-          longitude: 55.456,
+          location: 'Palm Jumeirah Signature Villa',
         },
         agent: {
           id: 'agent-123',
           name: 'Victoria',
         },
-        client: {
+        lead: {
           name: 'Hamdan Al Maktoum',
         },
       },
@@ -69,8 +67,6 @@ describe('ViewingReminderCron', () => {
         propertyTitle: 'Luxury Villa Palm Jumeirah',
         clientName: 'Hamdan Al Maktoum',
         scheduledAt: scheduledTime,
-        lat: '25.123',
-        lng: '55.456',
       }
     );
 

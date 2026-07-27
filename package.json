@@ -323,6 +323,7 @@
     "@eslint/js": "^9.39.1",
     "@faker-js/faker": "^10.3.0",
     "@lhci/cli": "^0.15.1",
+    "@originjs/vite-plugin-federation": "^1.4.1",
     "@playwright/test": "^1.58.2",
     "@testing-library/dom": "^10.4.1",
     "@testing-library/jest-dom": "^6.9.1",

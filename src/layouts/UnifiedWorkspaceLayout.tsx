@@ -230,8 +230,6 @@ export const UnifiedWorkspaceLayout: React.FC<LayoutProps> = ({ children }) => {
 
         {/* Mobile Bottom Navigation Bar */}
         <MobileBottomNav
-          activeTab={getActiveTab()}
-          onTabChange={handleTabChange}
           onMenuOpen={() => setIsDrawerOpen(true)}
         />
 

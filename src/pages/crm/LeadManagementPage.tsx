@@ -348,7 +348,7 @@ const LeadManagementPage: FC = () => {
                       name: lead.name || '',
                       phone: lead.phone,
                       email: lead.email,
-                      area: lead.area || '',
+                      area: typeof lead.area === 'string' ? lead.area : '',
                       budget: lead.budget ? formatCurrency(lead.budget) : undefined,
                       status: lead.status || 'new',
                       source: lead.source || 'direct',

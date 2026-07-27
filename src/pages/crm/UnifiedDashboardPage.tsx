@@ -8,12 +8,12 @@ import {
   mockProperties,
   mockLeads,
   mockRegulatoryContracts,
-  AED_TO_USD,
-  AED_TO_EUR,
-  AED_TO_GBP,
   Property,
   Lead
 } from '../../mocks/dubaiRealEstateMocks';
+
+const OperationsDepartmentView = React.lazy(() => import('./OperationsDepartmentView'));
+const FinanceDepartmentView = React.lazy(() => import('./FinanceDepartmentView'));
 
 // --- STYLING CONSTANTS (WHITE CAVES CORPORATE PALETTE) ---
 const RED = '#EF4444';
@@ -45,9 +45,6 @@ export const UnifiedDashboardPage: FC = () => {
   const [leadsList, setLeadsList] = useState<Lead[]>(mockLeads);
   const [propertiesList, setPropertiesList] = useState<Property[]>(mockProperties);
   const [selectedCluster, setSelectedCluster] = useState<string>('All');
-  
-  // Multi-Currency Converter State
-  const [conversionAmount, setConversionAmount] = useState<number>(1000000); // 1,000,000 AED
   
   // Kanban Lead Drag / Update Modal State
   const [selectedLeadForModal, setSelectedLeadForModal] = useState<Lead | null>(null);
@@ -85,17 +82,6 @@ export const UnifiedDashboardPage: FC = () => {
       setActiveDepartment('sales');
     }
   }, [params.department]);
-
-  // Currency Converter helper
-  const convertCurrency = (aed: number, currency: 'USD' | 'EUR' | 'GBP' | 'INR') => {
-    switch (currency) {
-      case 'USD': return aed * AED_TO_USD;
-      case 'EUR': return aed * AED_TO_EUR;
-      case 'GBP': return aed * AED_TO_GBP;
-      case 'INR': return aed * 22.75; // Pre-calculated local cache rate
-      default: return aed;
-    }
-  };
 
   // Onboarding click
   const triggerOnboardingCheck = (name: string) => {
@@ -403,40 +389,9 @@ export const UnifiedDashboardPage: FC = () => {
 
       {/* 2. OPERATIONS DEPARTMENT WORKSPACE */}
       {activeDepartment === 'operations' && (
-        <div style={{ background: CARD_BG, padding: '20px', borderRadius: '8px', border: `1px solid ${BORDER_COLOR}` }}>
-          <h3 style={{ color: RED, marginTop: 0 }}>High-Density Tabular Viewport (Managed Units)</h3>
-          <p>Total Managed Portfolios in DAMAC Hills 2: <strong>9,378+ Managed Units</strong></p>
-          <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.875rem' }}>
-            <thead>
-              <tr style={{ background: '#E2E8F0', borderBottom: `2px solid ${RED}` }}>
-                <th style={{ textAlign: 'left', padding: '8px' }}>Unit Reference</th>
-                <th style={{ textAlign: 'left', padding: '8px' }}>Cluster Block</th>
-                <th style={{ textAlign: 'left', padding: '8px' }}>Occupancy State</th>
-                <th style={{ textAlign: 'left', padding: '8px' }}>Active Tenant</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr style={{ borderBottom: '1px solid #E2E8F0' }}>
-                <td style={{ padding: '8px' }}>DH2-VL-9421</td>
-                <td style={{ padding: '8px' }}>Vardon Cluster</td>
-                <td style={{ padding: '8px', color: RED, fontWeight: 'bold' }}>Leased (Occupied)</td>
-                <td style={{ padding: '8px' }}>Alex Rivera</td>
-              </tr>
-              <tr style={{ borderBottom: '1px solid #E2E8F0' }}>
-                <td style={{ padding: '8px' }}>DH2-TH-0284</td>
-                <td style={{ padding: '8px' }}>Amazonia Cluster</td>
-                <td style={{ padding: '8px', fontWeight: 'bold' }}>Vacant (Available)</td>
-                <td style={{ padding: '8px' }}>-</td>
-              </tr>
-              <tr style={{ borderBottom: '1px solid #E2E8F0' }}>
-                <td style={{ padding: '8px' }}>DH2-AP-1049</td>
-                <td style={{ padding: '8px' }}>Claret Block B</td>
-                <td style={{ padding: '8px', fontWeight: 'bold' }}>Maintenance Underway</td>
-                <td style={{ padding: '8px' }}>-</td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
+        <React.Suspense fallback={<div style={{ padding: '20px', color: RED }}>Loading Operations Viewport...</div>}>
+          <OperationsDepartmentView />
+        </React.Suspense>
       )}
 
       {/* 3. COMMUNICATIONS DEPARTMENT WORKSPACE */}
@@ -463,43 +418,9 @@ export const UnifiedDashboardPage: FC = () => {
 
       {/* 4. FINANCE DEPARTMENT WORKSPACE */}
       {activeDepartment === 'finance' && (
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '24px' }}>
-          <div style={{ background: CARD_BG, padding: '20px', borderRadius: '8px', border: `1px solid ${BORDER_COLOR}` }}>
-            <h3 style={{ color: RED, marginTop: 0 }}>Zero-Overhead Client Currency Conversion</h3>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-              <label style={{ fontSize: '0.875rem', fontWeight: 600 }}>Amount in AED:</label>
-              <input
-                type="number"
-                value={conversionAmount}
-                onChange={(e) => setConversionAmount(Number(e.target.value))}
-                style={{ padding: '8px', border: `1px solid ${BORDER_COLOR}`, borderRadius: '4px' }}
-              />
-              <div style={{ marginTop: '12px', fontSize: '0.875rem', display: 'flex', flexDirection: 'column', gap: '8px' }}>
-                <div>USD Equivalent: <strong>${convertCurrency(conversionAmount, 'USD').toLocaleString()} USD</strong></div>
-                <div>EUR Equivalent: <strong>€{convertCurrency(conversionAmount, 'EUR').toLocaleString()} EUR</strong></div>
-                <div>GBP Equivalent: <strong>£{convertCurrency(conversionAmount, 'GBP').toLocaleString()} GBP</strong></div>
-                <div>INR Equivalent: <strong>₹{convertCurrency(conversionAmount, 'INR').toLocaleString()} INR</strong></div>
-              </div>
-            </div>
-          </div>
-
-          <div style={{ background: CARD_BG, padding: '20px', borderRadius: '8px', border: `1px solid ${BORDER_COLOR}` }}>
-            <h3 style={{ color: RED, marginTop: 0 }}>Escrow Accounts & Milestone Trackers</h3>
-            <div style={{ fontSize: '0.875rem', display: 'flex', flexDirection: 'column', gap: '12px' }}>
-              <div style={{ padding: '10px', background: WHITE, borderRadius: '4px', borderLeft: `4px solid ${RED}` }}>
-                <strong>Escrow Account A (DAMAC Hills 2 Tower):</strong> Active
-                <br />
-                Escrow Balance: <strong>142,500,000 AED</strong>
-              </div>
-              <div style={{ padding: '10px', background: WHITE, borderRadius: '4px', borderLeft: `4px solid ${RED}` }}>
-                <strong>Milestone 1 (Foundation Poured):</strong> Completed & Released (12M AED)
-              </div>
-              <div style={{ padding: '10px', background: WHITE, borderRadius: '4px', borderLeft: `4px solid ${RED}` }}>
-                <strong>Milestone 2 (Superstructure 50%):</strong> Verification Pending DLD inspection
-              </div>
-            </div>
-          </div>
-        </div>
+        <React.Suspense fallback={<div style={{ padding: '20px', color: RED }}>Loading Finance Viewport...</div>}>
+          <FinanceDepartmentView />
+        </React.Suspense>
       )}
 
       {/* 5. MARKETING DEPARTMENT WORKSPACE */}
@@ -633,7 +554,7 @@ export const UnifiedDashboardPage: FC = () => {
       {activeDepartment === 'intelligence' && (
         <div style={{ background: CARD_BG, padding: '20px', borderRadius: '8px', border: `1px solid ${BORDER_COLOR}` }}>
           <h3 style={{ color: RED, marginTop: 0 }}>Sentinel IoT Property Alerts Heatmap</h3>
-          <div style={{ height: '200px', background: WHITE, borderRadius: '6px', border: '1px solid #E2E8F0', display: 'flex', alignItems: 'center', justify: 'center' }}>
+          <div style={{ height: '200px', background: WHITE, borderRadius: '6px', border: '1px solid #E2E8F0', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
             <div style={{ textAlign: 'center' }}>
               <div style={{ fontSize: '2rem' }}>🗺️</div>
               <strong>Downtown Dubai Block A Zone 1:</strong> IoT sensors status - <span style={{ color: RED }}>Nominal</span>
@@ -778,7 +699,7 @@ export const UnifiedDashboardPage: FC = () => {
 
       {/* --- KANBAN ACTION DETAIL MODAL --- */}
       {selectedLeadForModal && (
-        <div style={{ position: 'fixed', top: 0, left: 0, width: '100vw', height: '100vh', background: 'rgba(0,0,0,0.5)', display: 'flex', alignItems: 'center', justify: 'center', zIndex: 1000 }}>
+        <div style={{ position: 'fixed', top: 0, left: 0, width: '100vw', height: '100vh', background: 'rgba(0,0,0,0.5)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1000 }}>
           <div style={{ background: WHITE, padding: '24px', borderRadius: '8px', width: '400px', border: `2px solid ${RED}` }}>
             <h3 style={{ color: RED, marginTop: 0 }}>Kanban Action Details Modal</h3>
             <div>Lead Name: <strong>{selectedLeadForModal.name}</strong></div>

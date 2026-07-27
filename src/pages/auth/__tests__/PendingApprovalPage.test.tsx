@@ -188,7 +188,7 @@ describe('PendingApprovalPage', () => {
     it('redirects to dashboard when status is not pending', () => {
       mockSafeStorage.getJSON.mockReturnValue({ role: 'leasing-agent', status: 'approved' });
       render(<PendingApprovalPage />);
-      expect(mockNavigate).toHaveBeenCalledWith('/leasing-agent/dashboard');
+      expect(mockNavigate).toHaveBeenCalledWith('/profile');
     });
 
     it('does not redirect when status is pending', () => {

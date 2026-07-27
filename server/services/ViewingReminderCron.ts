@@ -45,9 +45,7 @@ async function processViewingReminders(): Promise<void> {
         property: {
           select: {
             title: true,
-            address: true,
-            latitude: true,
-            longitude: true,
+            location: true,
           },
         },
         agent: {
@@ -56,7 +54,7 @@ async function processViewingReminders(): Promise<void> {
             name: true,
           },
         },
-        client: {
+        lead: {
           select: {
             name: true,
           },
@@ -77,10 +75,8 @@ async function processViewingReminders(): Promise<void> {
             {
               id: viewing.id,
               propertyTitle: viewing.property?.title || 'Property Viewing',
-              clientName: viewing.client?.name || 'Client',
+              clientName: viewing.lead?.name || 'Client',
               scheduledAt: viewing.scheduledAt,
-              lat: viewing.property?.latitude?.toString(),
-              lng: viewing.property?.longitude?.toString(),
             }
           );
         }
