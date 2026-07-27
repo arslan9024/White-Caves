@@ -16,16 +16,6 @@ export default defineConfig({
     globals: true,
     environment: 'jsdom',
     setupFiles: ['./src/test/setup.ts'],
-    // Use forks pool to prevent heap OOM on large test suite (prevents ERR_IPC_CHANNEL_CLOSED)
-    pool: 'forks',
-    poolOptions: {
-      forks: {
-        // Give each fork 4 GB; use at most 2 parallel workers on this machine
-        execArgv: ['--max-old-space-size=4096'],
-        maxForks: 2,
-        minForks: 1,
-      },
-    },
     include: [
       'src/**/*.{test,spec}.{js,jsx,ts,tsx}',
       'server/**/*.{test,spec}.{js,jsx,ts,tsx}',
