@@ -5,6 +5,7 @@ import { SpeedInsights } from '@vercel/speed-insights/react';
 import { setLoading } from './store/userSlice';
 import { setTheme, setActiveRole } from './store/navigationSlice';
 import { LanguageProvider } from './context/LanguageContext';
+import { WorkspaceProvider } from './context/WorkspaceContext';
 import { ThemeProvider } from './styles/ThemeProvider';
 import { UnifiedWorkspaceLayout } from './layouts/UnifiedWorkspaceLayout';
 import PortalLayout from './components/portal/PortalLayout';
@@ -721,7 +722,8 @@ function App(): React.JSX.Element {
         <ThemeProvider>
           <StatusProvider>
             <LanguageProvider>
-              <BrowserRouter>
+              <WorkspaceProvider>
+                <BrowserRouter>
                 <FounderRedirectGuard />
                 {/* Accessibility: skip-to-content link (WCAG 2.1 Level A) */}
                 <a href="#main-content" className="skip-to-content">
@@ -899,11 +901,12 @@ function App(): React.JSX.Element {
                   </LocationKeyWrapper>
                 </main>
               </BrowserRouter>
-            </LanguageProvider>
-          </StatusProvider>
-        </ThemeProvider>
-      </AuthModalProvider>
-    </SQAErrorBoundary>
+            </WorkspaceProvider>
+          </LanguageProvider>
+        </StatusProvider>
+      </ThemeProvider>
+    </AuthModalProvider>
+  </SQAErrorBoundary>
   );
 }
 

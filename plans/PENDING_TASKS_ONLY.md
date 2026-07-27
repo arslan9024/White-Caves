@@ -8,6 +8,18 @@
 
 ---
 
+## 🔱 AEGIS 2.0: Universal Navigation & RBAC Dashboard Overhaul
+
+| Task ID | Component Target | Description | Status |
+| ------- | ---------------- | ----------- | ------ |
+| NAV-001 | `business_docs/04_workflows/universal-user-navigation-playbook.md` | User navigation workflows, persona taxonomy & branding guidelines | ✅ Complete |
+| NAV-002 | `docs/architecture/UNIVERSAL_NAVIGATION_FLOWCHARTS.md` | ASCII navigation flowcharts, session routing & impersonation diagrams | ✅ Complete |
+| NAV-003 | `src/components/navigation/TopNavbar.tsx` | Universal Top Nav component with global search, DLD ticker, MD impersonation | ✅ Complete |
+| NAV-004 | `src/context/WorkspaceContext.tsx` | Hydration context system loading 100x100 ledger for instant tab switches | ✅ Complete |
+| NAV-005 | `src/pages/crm/UnifiedDashboardPage.tsx` | Role-filtered RBAC dashboard variants (Lion Deck, Broker View, Client Portal) | ✅ Complete |
+
+---
+
 ## 🏛️ Asset Class 1: 10 Corporate Departments & Domain Views
 
 | Task ID | Component Target                | Description                                                               | Status      |

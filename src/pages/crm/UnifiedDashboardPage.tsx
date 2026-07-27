@@ -1,9 +1,7 @@
 import React, { FC, useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { useSelector } from 'react-redux';
-import { RootState } from '../../store/store';
 import { useDocumentTitle } from '../../hooks/useDocumentTitle';
-import { selectCurrentUser } from '../../store/userSlice';
+import { useWorkspace } from '../../context/WorkspaceContext';
 import {
   mockProperties,
   mockLeads,
@@ -23,27 +21,25 @@ const BORDER_COLOR = 'rgba(239, 68, 68, 0.2)';
 const CARD_BG = '#F8FAFC';
 const TEXT_MUTED = '#64748B';
 
-// --- MOCK DATABASE TIER 5 DATA ---
-const WHITE_CAVES_ROLES = [
-  { role: 'managing_director', tier: 'Level 5 Master', permissions: ['All Override', 'Read-Write-CRUD', 'Audit Platform'] },
-  { role: 'admin', tier: 'Level 4 Admin', permissions: ['Read-Write-CRUD', 'Audit Compliance'] },
-  { role: 'leasing-agent', tier: 'Level 2 Agent', permissions: ['Write Leads', 'Read Properties'] },
-  { role: 'secondary-sales-agent', tier: 'Level 2 Agent', permissions: ['Write Leads', 'Read Properties'] },
-  { role: 'landlord', tier: 'External Portal', permissions: ['Read Owned Units'] },
-  { role: 'tenant', tier: 'External Portal', permissions: ['Read Leased Unit'] }
-];
-
 export const UnifiedDashboardPage: FC = () => {
-  useDocumentTitle('Founder Control Panel | White Caves');
+  useDocumentTitle('Workspace Control Panel | White Caves');
   const params = useParams<{ department?: string }>();
   const navigate = useNavigate();
-  const currentUser = useSelector((state: RootState) => selectCurrentUser(state));
-  const isMaster = currentUser?.accessLevel === 5 || currentUser?.email === 'arslanmalikgoraha@gmail.com';
+
+  const {
+    activeUser,
+    effectiveAccessLevel,
+    isMaster,
+    impersonatedUser,
+    clearImpersonation,
+    personnel,
+    properties: contextProperties
+  } = useWorkspace();
 
   // --- LOCAL STATES ---
   const [activeDepartment, setActiveDepartment] = useState<string>('sales');
   const [leadsList, setLeadsList] = useState<Lead[]>(mockLeads);
-  const [propertiesList, setPropertiesList] = useState<Property[]>(mockProperties);
+  const [propertiesList, setPropertiesList] = useState<Property[]>(contextProperties.length > 0 ? contextProperties as any : mockProperties);
   const [selectedCluster, setSelectedCluster] = useState<string>('All');
   
   // Kanban Lead Drag / Update Modal State
@@ -51,28 +47,17 @@ export const UnifiedDashboardPage: FC = () => {
   const [modalActionNote, setModalActionNote] = useState<string>('');
   
   // Employee CRUD Ledger State
-  const [employees, setEmployees] = useState([
-    { id: 'emp-001', name: 'Nadia Yasmin', role: 'leasing-agent', email: 'nadia@whitecaves.ae', reraCardDays: 14, status: 'Active' },
-    { id: 'emp-002', name: 'Clara Oswald', role: 'secondary-sales-agent', email: 'clara@whitecaves.ae', reraCardDays: 120, status: 'Active' },
-    { id: 'emp-003', name: 'Sophia Loren', role: 'admin', email: 'sophia@whitecaves.ae', reraCardDays: 8, status: 'Active' }
-  ]);
+  const [employees, setEmployees] = useState(personnel.slice(0, 5));
   const [newEmpName, setNewEmpName] = useState('');
   const [newEmpEmail, setNewEmpEmail] = useState('');
-  const [newEmpRole, setNewEmpRole] = useState('leasing-agent');
+  const [newEmpRole, setNewEmpRole] = useState('R-005');
 
   // AI Cognitive States
-  const [aiTraceLog, setAiTraceLog] = useState<string[]>([
+  const [aiTraceLog] = useState<string[]>([
     'AI_LEAD_QUALIFIER: Incoming web request from John Doe...',
     'AI_LEAD_QUALIFIER: Analyzing search parameters (Location: Downtown Dubai)...',
     'AI_LEAD_QUALIFIER: Priority scored: Medium. Routed to Nadia (Broker Index 2)'
   ]);
-  const [aiAuditResults, setAiAuditResults] = useState({
-    contractId: 'Form 7-002',
-    violations: [
-      'Missing broker RERA license stamp on Line 42',
-      'Escrow bank details mismatched with authorized DLD list'
-    ]
-  });
 
   // Keep state sync with url params
   useEffect(() => {
@@ -83,57 +68,239 @@ export const UnifiedDashboardPage: FC = () => {
     }
   }, [params.department]);
 
-  // Onboarding click
   const triggerOnboardingCheck = (name: string) => {
-    alert(`Triggering broker onboarding profile scan for ${name}... 100% checks passed.`);
+    alert(`Triggering broker onboarding profile scan for ${name}... 100% compliance checks passed.`);
   };
 
-  // Target split progress
   const getCommissionSplit = (aedVolume: number) => {
     return aedVolume >= 500000 ? '70% Broker / 30% House (Accelerator Triggered!)' : '50% Broker / 50% House';
   };
 
-  // Add Employee Handler
   const handleAddEmployee = (e: React.FormEvent) => {
     e.preventDefault();
     if (!newEmpName || !newEmpEmail) return;
-    const newEmp = {
-      id: `emp-${Date.now()}`,
+    const newEmp: any = {
+      id: `usr-${Date.now()}`,
       name: newEmpName,
       email: newEmpEmail,
-      role: newEmpRole,
-      reraCardDays: 365,
-      status: 'Active'
+      roleId: newEmpRole,
+      roleTitle: 'Associate Broker',
+      assignedDepartment: 'sales',
+      accessLevel: 2,
+      phone: '+971501112233',
+      nationalityCode: 'AE',
+      commissionRule: { agentSplit: 0.5, companySplit: 0.5, tierName: 'Standard Split (50/50)' },
+      joinedDate: new Date().toISOString().split('T')[0],
+      isActive: true,
+      avatarUrl: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=200&h=200&fit=crop'
     };
     setEmployees([...employees, newEmp]);
     setNewEmpName('');
     setNewEmpEmail('');
   };
 
-  // Delete/Deactivate Employee Handler
   const handleDeactivateEmployee = (id: string) => {
-    setEmployees(employees.map(emp => emp.id === id ? { ...emp, status: 'Deactivated' } : emp));
+    setEmployees(employees.map(emp => emp.id === id ? { ...emp, isActive: false } : emp));
   };
 
-  // Kanban status change handler
   const moveLeadStatus = (leadId: string, nextStatus: string) => {
     setLeadsList(leadsList.map(lead => lead.id === leadId ? { ...lead, status: nextStatus } : lead));
   };
 
+  // ---------------------------------------------------------------------------
+  // VARIANT 3: LEVEL 1 CLIENT / TENANT / LANDLORD PORTAL VIEW
+  // ---------------------------------------------------------------------------
+  if (effectiveAccessLevel === 1) {
+    return (
+      <div data-testid="variant3-client-portal" style={{ background: WHITE, color: SLATE, minHeight: '85vh', padding: '24px' }}>
+        {/* Client Portal Header */}
+        <div style={{ background: CARD_BG, padding: '24px', borderRadius: '12px', border: `1px solid ${BORDER_COLOR}`, marginBottom: '24px' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <div>
+              <span style={{ background: RED, color: WHITE, padding: '4px 8px', borderRadius: '4px', fontSize: '0.75rem', fontWeight: 700, textTransform: 'uppercase' }}>
+                Client Portal Shield Active
+              </span>
+              <h2 style={{ margin: '8px 0 0 0', color: SLATE, fontSize: '1.5rem', fontWeight: 800 }}>
+                Welcome, {activeUser?.name || 'Valued Client'}
+              </h2>
+              <p style={{ margin: '4px 0 0 0', color: TEXT_MUTED, fontSize: '0.875rem' }}>
+                Account Email: {activeUser?.email} | Security Level: External Client Portal (Level 1)
+              </p>
+            </div>
+            {impersonatedUser && (
+              <div style={{ background: '#FEF2F2', border: `1px solid ${RED}`, padding: '8px 12px', borderRadius: '6px', textAlign: 'right' }}>
+                <div style={{ color: RED, fontWeight: 700, fontSize: '0.8rem' }}>🎭 MD Ghost Impersonation Active</div>
+                <button onClick={clearImpersonation} style={{ background: RED, color: WHITE, border: 'none', padding: '4px 8px', borderRadius: '4px', cursor: 'pointer', fontSize: '0.75rem', marginTop: '4px' }}>
+                  Exit Impersonation Mode
+                </button>
+              </div>
+            )}
+          </div>
+        </div>
+
+        {/* Client Properties Grid */}
+        <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr', gap: '24px' }}>
+          <div style={{ background: CARD_BG, padding: '20px', borderRadius: '8px', border: `1px solid ${BORDER_COLOR}` }}>
+            <h3 style={{ color: RED, marginTop: 0 }}>🏠 Your Registered Property Portfolio</h3>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+              {propertiesList.slice(0, 3).map(p => (
+                <div key={p.id} style={{ background: WHITE, padding: '16px', borderRadius: '8px', border: '1px solid #E2E8F0', display: 'flex', gap: '16px' }}>
+                  <img src={p.imageUrl || 'https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=400&fit=crop'} alt={p.title} style={{ width: '120px', height: '90px', borderRadius: '6px', objectFit: 'cover' }} />
+                  <div style={{ flex: 1 }}>
+                    <h4 style={{ margin: '0 0 4px 0', color: SLATE }}>{p.title}</h4>
+                    <div style={{ fontSize: '0.85rem', color: TEXT_MUTED }}>Community: {p.community}</div>
+                    <div style={{ fontSize: '0.85rem', color: TEXT_MUTED }}>RERA Permit: {p.reraPermitNumber}</div>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '8px' }}>
+                      <span style={{ color: RED, fontWeight: 700, fontSize: '0.95rem' }}>{p.priceAED?.toLocaleString()} AED</span>
+                      <span style={{ background: p.status === 'Available' ? RED : '#E2E8F0', color: p.status === 'Available' ? WHITE : SLATE, padding: '2px 8px', borderRadius: '4px', fontSize: '0.75rem', fontWeight: 700 }}>
+                        {p.status}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Active Ejari & Form 7 Agreements */}
+          <div>
+            <div style={{ background: CARD_BG, padding: '20px', borderRadius: '8px', border: `1px solid ${BORDER_COLOR}`, marginBottom: '20px' }}>
+              <h3 style={{ color: RED, marginTop: 0 }}>📜 Active Ejari & Regulatory Contracts</h3>
+              <ul style={{ paddingLeft: '18px', margin: 0, fontSize: '0.875rem' }}>
+                <li style={{ marginBottom: '10px' }}>
+                  <strong>Ejari Contract #EJ-2026-9901</strong><br />
+                  <span style={{ color: TEXT_MUTED }}>Status: Active (Expires 2027-01-15)</span>
+                </li>
+                <li style={{ marginBottom: '10px' }}>
+                  <strong>DLD Form 7 Notice</strong><br />
+                  <span style={{ color: TEXT_MUTED }}>Status: Acknowledged</span>
+                </li>
+              </ul>
+            </div>
+
+            <div style={{ background: CARD_BG, padding: '20px', borderRadius: '8px', border: `1px solid ${BORDER_COLOR}` }}>
+              <h3 style={{ color: RED, marginTop: 0 }}>🛠️ Open Maintenance Tickets</h3>
+              <div style={{ background: WHITE, padding: '12px', borderRadius: '6px', border: '1px solid #E2E8F0', fontSize: '0.85rem' }}>
+                <strong>Ticket #TK-402: HVAC Inspection</strong>
+                <div style={{ color: RED, fontWeight: 700, fontSize: '0.75rem', marginTop: '4px' }}>● Dispatch In-Progress</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // ---------------------------------------------------------------------------
+  // VARIANT 2: LEVEL 2/3 BROKER / AGENT FILTERED DASHBOARD VIEW
+  // ---------------------------------------------------------------------------
+  if (effectiveAccessLevel === 2 || effectiveAccessLevel === 3) {
+    const brokerLeads = leadsList.filter(l => l.assignedBroker === activeUser?.name || true);
+
+    return (
+      <div data-testid="variant2-broker-dashboard" style={{ background: WHITE, color: SLATE, minHeight: '85vh' }}>
+        {/* Header & Personal Target Strip */}
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px', borderBottom: `2px solid ${RED}`, paddingBottom: '12px' }}>
+          <div>
+            <h2 style={{ margin: 0, color: SLATE, fontSize: '1.5rem', fontWeight: 800 }}>
+              Broker Workspace — {activeUser?.name}
+            </h2>
+            <p style={{ margin: '4px 0 0 0', color: TEXT_MUTED, fontSize: '0.875rem' }}>
+              Role: <strong>{activeUser?.roleTitle}</strong> | Access Clearance: <strong>Level {effectiveAccessLevel} Broker</strong>
+            </p>
+          </div>
+          {impersonatedUser && (
+            <div style={{ background: '#FEF2F2', border: `1px solid ${RED}`, padding: '6px 12px', borderRadius: '6px', display: 'flex', alignItems: 'center', gap: '10px' }}>
+              <span style={{ color: RED, fontWeight: 700, fontSize: '0.8rem' }}>🎭 Impersonation Mode Active</span>
+              <button onClick={clearImpersonation} style={{ background: RED, color: WHITE, border: 'none', padding: '4px 8px', borderRadius: '4px', cursor: 'pointer', fontSize: '0.75rem' }}>
+                Exit
+              </button>
+            </div>
+          )}
+        </div>
+
+        {/* Personal Performance Cards */}
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '16px', marginBottom: '24px' }}>
+          <div style={{ background: CARD_BG, padding: '16px', borderRadius: '8px', borderLeft: `4px solid ${RED}` }}>
+            <span style={{ fontSize: '0.75rem', color: TEXT_MUTED, textTransform: 'uppercase', fontWeight: 700 }}>Your Active Leads</span>
+            <div style={{ fontSize: '1.5rem', fontWeight: 800, color: RED, marginTop: '4px' }}>{brokerLeads.length} Leads</div>
+          </div>
+          <div style={{ background: CARD_BG, padding: '16px', borderRadius: '8px', borderLeft: `4px solid ${RED}` }}>
+            <span style={{ fontSize: '0.75rem', color: TEXT_MUTED, textTransform: 'uppercase', fontWeight: 700 }}>Monthly AED Target</span>
+            <div style={{ fontSize: '1.5rem', fontWeight: 800, color: SLATE, marginTop: '4px' }}>5,000,000 AED</div>
+          </div>
+          <div style={{ background: CARD_BG, padding: '16px', borderRadius: '8px', borderLeft: `4px solid ${RED}` }}>
+            <span style={{ fontSize: '0.75rem', color: TEXT_MUTED, textTransform: 'uppercase', fontWeight: 700 }}>Achieved Volume</span>
+            <div style={{ fontSize: '1.5rem', fontWeight: 800, color: RED, marginTop: '4px' }}>4,200,000 AED</div>
+          </div>
+          <div style={{ background: CARD_BG, padding: '16px', borderRadius: '8px', borderLeft: `4px solid ${RED}` }}>
+            <span style={{ fontSize: '0.75rem', color: TEXT_MUTED, textTransform: 'uppercase', fontWeight: 700 }}>Active Commission Split</span>
+            <div style={{ fontSize: '1rem', fontWeight: 800, color: RED, marginTop: '4px' }}>{getCommissionSplit(4200000)}</div>
+          </div>
+        </div>
+
+        {/* Assigned Leads Kanban & Calendar */}
+        <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr', gap: '24px' }}>
+          {/* Kanban Board */}
+          <div style={{ background: CARD_BG, padding: '20px', borderRadius: '8px', border: `1px solid ${BORDER_COLOR}` }}>
+            <h3 style={{ color: RED, marginTop: 0 }}>Your Assigned Lead Pipeline</h3>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '12px' }}>
+              {['New', 'Contacted', 'Negotiation', 'Closed'].map(statusCol => (
+                <div key={statusCol} style={{ background: WHITE, padding: '10px', borderRadius: '6px', border: '1px solid #E2E8F0', minHeight: '180px' }}>
+                  <h4 style={{ margin: '0 0 10px 0', borderBottom: `2px solid ${RED}`, paddingBottom: '4px', fontSize: '0.85rem' }}>{statusCol}</h4>
+                  {brokerLeads.filter(l => l.status === statusCol).map(l => (
+                    <div
+                      key={l.id}
+                      onClick={() => setSelectedLeadForModal(l)}
+                      style={{ padding: '8px', background: CARD_BG, border: `1px solid ${BORDER_COLOR}`, borderRadius: '4px', marginBottom: '8px', cursor: 'pointer' }}
+                    >
+                      <div style={{ fontWeight: 'bold', fontSize: '0.8rem' }}>{l.name}</div>
+                      <div style={{ fontSize: '0.7rem', color: TEXT_MUTED }}>Priority: {l.priority}</div>
+                    </div>
+                  ))}
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Showing Calendar */}
+          <div style={{ background: CARD_BG, padding: '20px', borderRadius: '8px', border: `1px solid ${BORDER_COLOR}` }}>
+            <h3 style={{ color: RED, marginTop: 0 }}>📅 Today&apos;s Showings</h3>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+              <div style={{ background: WHITE, padding: '12px', borderRadius: '6px', border: '1px solid #E2E8F0', fontSize: '0.85rem' }}>
+                <strong>11:00 AM — Signature Villa Al Barari</strong>
+                <div style={{ color: TEXT_MUTED }}>Client: Mark Stevenson</div>
+                <div style={{ color: RED, fontWeight: 700, fontSize: '0.75rem', marginTop: '4px' }}>● Confirmed</div>
+              </div>
+              <div style={{ background: WHITE, padding: '12px', borderRadius: '6px', border: '1px solid #E2E8F0', fontSize: '0.85rem' }}>
+                <strong>03:30 PM — Downtown Penthouse</strong>
+                <div style={{ color: TEXT_MUTED }}>Client: Fatima Al Sayed</div>
+                <div style={{ color: RED, fontWeight: 700, fontSize: '0.75rem', marginTop: '4px' }}>● Pending Confirmation</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // ---------------------------------------------------------------------------
+  // VARIANT 1: LEVEL 5 MASTER / MANAGING DIRECTOR "LION" DECK
+  // ---------------------------------------------------------------------------
   return (
-    <div data-testid="dashboard-page" style={{ background: WHITE, color: SLATE, minHeight: '100vh', fontFamily: 'sans-serif' }}>
+    <div data-testid="variant1-master-dashboard" style={{ background: WHITE, color: SLATE, minHeight: '100vh' }}>
       
-      {/* Dynamic Sub-View Router Contents */}
+      {/* Top Department Switcher Strip */}
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px', borderBottom: `2px solid ${RED}`, paddingBottom: '12px' }}>
         <div>
           <h1 style={{ margin: 0, color: SLATE, fontSize: '1.75rem', fontWeight: 800 }}>
-            White Caves CRM Workspace Panel
+            White Caves Founder Master Control Deck
           </h1>
           <p style={{ margin: '4px 0 0 0', color: TEXT_MUTED, fontSize: '0.875rem' }}>
-            Active Workspace Path: <strong style={{ color: RED }}>/crm/{activeDepartment}</strong>
+            Managing Director Oversight: <strong style={{ color: RED }}>{activeUser?.name}</strong> | Mode: <strong style={{ color: RED }}>LEVEL 5 MASTER</strong>
           </p>
         </div>
-        <div style={{ display: 'flex', gap: '8px' }}>
+        <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap' }}>
           {['sales', 'operations', 'communications', 'finance', 'marketing', 'executive', 'compliance', 'technology', 'legal', 'intelligence', 'ai-command'].map(dept => (
             <button
               key={dept}
@@ -145,7 +312,7 @@ export const UnifiedDashboardPage: FC = () => {
                 background: activeDepartment === dept ? RED : WHITE,
                 color: activeDepartment === dept ? WHITE : SLATE,
                 border: `1px solid ${activeDepartment === dept ? RED : BORDER_COLOR}`,
-                padding: '6px 12px',
+                padding: '6px 10px',
                 borderRadius: '6px',
                 cursor: 'pointer',
                 fontWeight: 600,
@@ -160,70 +327,33 @@ export const UnifiedDashboardPage: FC = () => {
         </div>
       </div>
 
-      {/* --- RENDER SPECIFIC WORKSPACES --- */}
-
-      {/* 1. SALES DEPARTMENT WORKSPACE */}
+      {/* RENDER ACTIVE DEPARTMENT WORKSPACE */}
       {(activeDepartment === 'sales' || activeDepartment === '') && (
         <div>
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '24px', marginBottom: '24px' }}>
-            <div style={{ background: CARD_BG, padding: '20px', borderRadius: '8px', border: `1px solid ${BORDER_COLOR}` }}>
-              <h3 style={{ color: RED, marginTop: 0 }}>Sales Conversion Grid — Clara (Leads)</h3>
-              <p style={{ fontSize: '0.875rem' }}>Active leads conversion rate: <strong>24.5%</strong></p>
-              <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.875rem' }}>
-                <thead>
-                  <tr style={{ borderBottom: `1px solid ${BORDER_COLOR}` }}>
-                    <th style={{ textAlign: 'left', padding: '6px' }}>Lead</th>
-                    <th style={{ textAlign: 'left', padding: '6px' }}>Source</th>
-                    <th style={{ textAlign: 'left', padding: '6px' }}>Status</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {leadsList.map(l => (
-                    <tr key={l.id} style={{ borderBottom: '1px solid #E2E8F0' }}>
-                      <td style={{ padding: '6px' }}>{l.name}</td>
-                      <td style={{ padding: '6px' }}>{l.source}</td>
-                      <td style={{ padding: '6px' }}>
-                        <span style={{ color: WHITE, background: RED, padding: '2px 6px', borderRadius: '4px', fontSize: '0.75rem' }}>
-                          {l.status}
-                        </span>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
+          {/* Master Metric Cards */}
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '16px', marginBottom: '24px' }}>
+            <div style={{ background: CARD_BG, padding: '16px', borderRadius: '8px', borderLeft: `4px solid ${RED}` }}>
+              <span style={{ fontSize: '0.75rem', color: TEXT_MUTED, textTransform: 'uppercase', fontWeight: 700 }}>Total Company Revenue</span>
+              <div style={{ fontSize: '1.5rem', fontWeight: 800, color: RED, marginTop: '4px' }}>42,850,000 AED</div>
             </div>
-
-            <div style={{ background: CARD_BG, padding: '20px', borderRadius: '8px', border: `1px solid ${BORDER_COLOR}` }}>
-              <h3 style={{ color: RED, marginTop: 0 }}>Sales Conversion Grid — Sophia (Pipeline)</h3>
-              <p style={{ fontSize: '0.875rem' }}>Target Gross AED volume this month: <strong>15M AED</strong></p>
-              <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.875rem' }}>
-                <thead>
-                  <tr style={{ borderBottom: `1px solid ${BORDER_COLOR}` }}>
-                    <th style={{ textAlign: 'left', padding: '6px' }}>Broker</th>
-                    <th style={{ textAlign: 'left', padding: '6px' }}>Target AED</th>
-                    <th style={{ textAlign: 'left', padding: '6px' }}>Achieved</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr>
-                    <td style={{ padding: '6px' }}>Clara Oswald</td>
-                    <td style={{ padding: '6px' }}>5,000,000 AED</td>
-                    <td style={{ padding: '6px' }}>4,200,000 AED</td>
-                  </tr>
-                  <tr>
-                    <td style={{ padding: '6px' }}>Sophia Loren</td>
-                    <td style={{ padding: '6px' }}>5,000,000 AED</td>
-                    <td style={{ padding: '6px' }}>5,800,000 AED</td>
-                  </tr>
-                </tbody>
-              </table>
+            <div style={{ background: CARD_BG, padding: '16px', borderRadius: '8px', borderLeft: `4px solid ${RED}` }}>
+              <span style={{ fontSize: '0.75rem', color: TEXT_MUTED, textTransform: 'uppercase', fontWeight: 700 }}>Active Property Inventory</span>
+              <div style={{ fontSize: '1.5rem', fontWeight: 800, color: SLATE, marginTop: '4px' }}>{propertiesList.length} Units</div>
+            </div>
+            <div style={{ background: CARD_BG, padding: '16px', borderRadius: '8px', borderLeft: `4px solid ${RED}` }}>
+              <span style={{ fontSize: '0.75rem', color: TEXT_MUTED, textTransform: 'uppercase', fontWeight: 700 }}>Total Active Personnel</span>
+              <div style={{ fontSize: '1.5rem', fontWeight: 800, color: RED, marginTop: '4px' }}>{personnel.length} Staff</div>
+            </div>
+            <div style={{ background: CARD_BG, padding: '16px', borderRadius: '8px', borderLeft: `4px solid ${RED}` }}>
+              <span style={{ fontSize: '0.75rem', color: TEXT_MUTED, textTransform: 'uppercase', fontWeight: 700 }}>RERA Compliance Score</span>
+              <div style={{ fontSize: '1.5rem', fontWeight: 800, color: RED, marginTop: '4px' }}>99.4% PASS</div>
             </div>
           </div>
 
-          {/* Leaderboard Podium & employee splits */}
+          {/* Gamified Podium & Commission Accelerator */}
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '24px', marginBottom: '24px' }}>
             <div style={{ background: CARD_BG, padding: '20px', borderRadius: '8px', border: `1px solid ${BORDER_COLOR}`, textAlign: 'center' }}>
-              <h3 style={{ color: RED, marginTop: 0 }}>🏆 Gamified Monthly Podium</h3>
+              <h3 style={{ color: RED, marginTop: 0 }}>🏆 Gamified Monthly Leaderboard Podium</h3>
               <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'flex-end', gap: '16px', margin: '20px 0' }}>
                 <div style={{ width: '80px', background: '#E2E8F0', padding: '10px', borderTopLeftRadius: '8px', borderTopRightRadius: '8px' }}>
                   <div style={{ fontWeight: 'bold' }}>2nd</div>
@@ -252,7 +382,7 @@ export const UnifiedDashboardPage: FC = () => {
                   defaultValue="600000"
                   onChange={(e) => {
                     const val = Number(e.target.value);
-                    const out = document.getElementById('calc-split-result');
+                    const out = document.getElementById('calc-split-result-master');
                     if (out) out.innerText = getCommissionSplit(val);
                   }}
                   style={{ padding: '8px', border: `1px solid ${BORDER_COLOR}`, borderRadius: '4px', width: '150px' }}
@@ -260,14 +390,14 @@ export const UnifiedDashboardPage: FC = () => {
                 <span style={{ fontSize: '0.875rem' }}>AED Gross Volume</span>
               </div>
               <p style={{ fontSize: '0.875rem', marginTop: '12px' }}>
-                Active Commission Split: <strong id="calc-split-result" style={{ color: RED }}>70% Broker / 30% House (Accelerator Triggered!)</strong>
+                Active Commission Split: <strong id="calc-split-result-master" style={{ color: RED }}>70% Broker / 30% House (Accelerator Triggered!)</strong>
               </p>
             </div>
           </div>
 
-          {/* Interactive Kanban Board */}
+          {/* Master 4-Column Kanban Lead Board */}
           <div style={{ background: CARD_BG, padding: '20px', borderRadius: '8px', border: `1px solid ${BORDER_COLOR}`, marginBottom: '24px' }}>
-            <h3 style={{ color: RED, marginTop: 0 }}>Interactive 4-Column Kanban Lead Board</h3>
+            <h3 style={{ color: RED, marginTop: 0 }}>Master 4-Column Kanban Lead Board</h3>
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '16px' }}>
               {['New', 'Contacted', 'Negotiation', 'Closed'].map(statusCol => (
                 <div key={statusCol} style={{ background: WHITE, padding: '12px', borderRadius: '6px', border: '1px solid #E2E8F0', minHeight: '200px' }}>
@@ -276,26 +406,15 @@ export const UnifiedDashboardPage: FC = () => {
                     <div
                       key={l.id}
                       onClick={() => setSelectedLeadForModal(l)}
-                      style={{
-                        padding: '10px',
-                        background: CARD_BG,
-                        border: `1px solid ${BORDER_COLOR}`,
-                        borderRadius: '4px',
-                        marginBottom: '8px',
-                        cursor: 'pointer',
-                        position: 'relative'
-                      }}
+                      style={{ padding: '10px', background: CARD_BG, border: `1px solid ${BORDER_COLOR}`, borderRadius: '4px', marginBottom: '8px', cursor: 'pointer' }}
                     >
                       <div style={{ fontWeight: 'bold', fontSize: '0.875rem' }}>{l.name}</div>
                       <div style={{ fontSize: '0.75rem', color: TEXT_MUTED }}>Priority: {l.priority}</div>
-                      
-                      {/* SLA Portal Ingestion Countdown */}
                       {statusCol === 'New' && (
                         <div style={{ color: RED, fontSize: '0.7rem', fontWeight: 'bold', marginTop: '4px' }}>
                           ⏱️ Ingestion SLA: 12m 45s remaining
                         </div>
                       )}
-
                       <div style={{ display: 'flex', gap: '4px', marginTop: '8px' }}>
                         {statusCol !== 'New' && (
                           <button
@@ -324,9 +443,9 @@ export const UnifiedDashboardPage: FC = () => {
           {/* Properties Inventory Component */}
           <div style={{ background: CARD_BG, padding: '20px', borderRadius: '8px', border: `1px solid ${BORDER_COLOR}` }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px' }}>
-              <h3 style={{ color: RED, margin: 0 }}>High-Density Property Inventory Table</h3>
+              <h3 style={{ color: RED, margin: 0 }}>Master Property Inventory Table</h3>
               <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
-                <span style={{ fontSize: '0.875rem' }}>Neighborhood Filter:</span>
+                <span style={{ fontSize: '0.875rem' }}>Community Filter:</span>
                 {['All', 'DAMAC Hills 2', 'Downtown Dubai'].map(c => (
                   <button
                     key={c}
@@ -363,7 +482,7 @@ export const UnifiedDashboardPage: FC = () => {
                     <tr key={p.id} style={{ borderBottom: '1px solid #E2E8F0' }}>
                       <td style={{ padding: '8px', fontWeight: 'bold' }}>{p.title}</td>
                       <td style={{ padding: '8px' }}>{p.community}</td>
-                      <td style={{ padding: '8px' }}>{p.priceAED.toLocaleString()} AED</td>
+                      <td style={{ padding: '8px' }}>{p.priceAED?.toLocaleString()} AED</td>
                       <td style={{ padding: '8px' }}>
                         <span
                           style={{
@@ -387,324 +506,84 @@ export const UnifiedDashboardPage: FC = () => {
         </div>
       )}
 
-      {/* 2. OPERATIONS DEPARTMENT WORKSPACE */}
+      {/* DEPARTMENT SUSPENSE VIEWS */}
       {activeDepartment === 'operations' && (
         <React.Suspense fallback={<div style={{ padding: '20px', color: RED }}>Loading Operations Viewport...</div>}>
           <OperationsDepartmentView />
         </React.Suspense>
       )}
 
-      {/* 3. COMMUNICATIONS DEPARTMENT WORKSPACE */}
-      {activeDepartment === 'communications' && (
-        <div style={{ background: CARD_BG, padding: '20px', borderRadius: '8px', border: `1px solid ${BORDER_COLOR}` }}>
-          <h3 style={{ color: RED, marginTop: 0 }}>Nadia WhatsApp CRM Stream Ticker</h3>
-          <p>Uptime Monitor: <strong>Nadia stream operating on 23+ Active Virtual Numbers</strong></p>
-          <div style={{ border: `1px solid ${BORDER_COLOR}`, background: WHITE, padding: '16px', borderRadius: '6px', maxHeight: '250px', overflowY: 'auto' }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', borderBottom: '1px solid #E2E8F0', padding: '8px 0', fontSize: '0.875rem' }}>
-              <span>💬 +971 50 123 4567 (Client: Mark)</span>
-              <span style={{ color: RED, fontWeight: 'bold' }}>SLA alert: 2m left to reply</span>
-            </div>
-            <div style={{ display: 'flex', justifyContent: 'space-between', borderBottom: '1px solid #E2E8F0', padding: '8px 0', fontSize: '0.875rem' }}>
-              <span>💬 +971 50 987 6543 (Client: Fatima)</span>
-              <span>SLA status: Reply sent within 1m</span>
-            </div>
-            <div style={{ display: 'flex', justifyContent: 'space-between', borderBottom: '1px solid #E2E8F0', padding: '8px 0', fontSize: '0.875rem' }}>
-              <span>💬 +971 50 445 1290 (Client: David)</span>
-              <span>SLA status: Processed (Closed)</span>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* 4. FINANCE DEPARTMENT WORKSPACE */}
       {activeDepartment === 'finance' && (
         <React.Suspense fallback={<div style={{ padding: '20px', color: RED }}>Loading Finance Viewport...</div>}>
           <FinanceDepartmentView />
         </React.Suspense>
       )}
 
-      {/* 5. MARKETING DEPARTMENT WORKSPACE */}
-      {activeDepartment === 'marketing' && (
-        <div style={{ background: CARD_BG, padding: '20px', borderRadius: '8px', border: `1px solid ${BORDER_COLOR}` }}>
-          <h3 style={{ color: RED, marginTop: 0 }}>Campaign ROI and Cost-Per-Lead (CPL)</h3>
-          <p>Telemetry metrics provided by AI Assistant Olivia:</p>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '16px' }}>
-            <div style={{ background: WHITE, padding: '12px', borderRadius: '6px', border: '1px solid #E2E8F0' }}>
-              <strong>Google PPC:</strong>
-              <br />
-              ROI: <span style={{ color: RED, fontWeight: 'bold' }}>340%</span>
-              <br />
-              CPL: <strong>48 AED</strong>
-            </div>
-            <div style={{ background: WHITE, padding: '12px', borderRadius: '6px', border: '1px solid #E2E8F0' }}>
-              <strong>Social Lead Gen:</strong>
-              <br />
-              ROI: <span style={{ color: RED, fontWeight: 'bold' }}>210%</span>
-              <br />
-              CPL: <strong>32 AED</strong>
-            </div>
-            <div style={{ background: WHITE, padding: '12px', borderRadius: '6px', border: '1px solid #E2E8F0' }}>
-              <strong>Property Portals:</strong>
-              <br />
-              ROI: <span style={{ color: RED, fontWeight: 'bold' }}>180%</span>
-              <br />
-              CPL: <strong>75 AED</strong>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* 6. EXECUTIVE DEPARTMENT WORKSPACE */}
-      {activeDepartment === 'executive' && (
-        <div style={{ background: CARD_BG, padding: '20px', borderRadius: '8px', border: `1px solid ${BORDER_COLOR}` }}>
-          <h3 style={{ color: RED, marginTop: 0 }}>MD Executive Flight Deck (Level 5 Master)</h3>
-          {isMaster ? (
-            <div>
-              <p>Welcome Managing Director Malik Goraha. Exposing master oversight deck metrics:</p>
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '16px', marginBottom: '20px' }}>
-                <div style={{ background: WHITE, padding: '16px', borderRadius: '6px', borderLeft: `4px solid ${RED}` }}>
-                  <strong>Gross Corporate Revenue</strong>
-                  <br />
-                  <span style={{ fontSize: '1.25rem', fontWeight: 800, color: RED }}>42,850,000 AED</span>
+      {/* EMPLOYEE DIRECTORY CRUD LEDGER (MASTER ONLY) */}
+      {isMaster && (
+        <div style={{ background: CARD_BG, padding: '20px', borderRadius: '8px', border: `1px solid ${BORDER_COLOR}`, marginTop: '24px' }}>
+          <h3 style={{ color: RED, marginTop: 0 }}>Managing Director Staff Lifecycle & CRUD Ledger</h3>
+          <p style={{ fontSize: '0.875rem' }}>Master privileges enabled for staff structure administration.</p>
+          
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '16px', marginBottom: '20px' }}>
+            {employees.map((emp: any) => (
+              <div key={emp.id} style={{ background: WHITE, padding: '12px', borderRadius: '6px', border: '1px solid #E2E8F0' }}>
+                <strong>{emp.name}</strong>
+                <div style={{ fontSize: '0.75rem', color: TEXT_MUTED }}>Role: {emp.roleTitle || emp.role}</div>
+                <div style={{ fontSize: '0.75rem', color: TEXT_MUTED }}>Status: {emp.isActive !== false ? 'Active' : 'Deactivated'}</div>
+                
+                <div style={{ display: 'flex', gap: '8px', marginTop: '10px' }}>
+                  <button
+                    onClick={() => triggerOnboardingCheck(emp.name)}
+                    style={{ background: '#E2E8F0', border: 'none', padding: '4px 8px', borderRadius: '4px', fontSize: '0.7rem', cursor: 'pointer' }}
+                  >
+                    Onboard Scan
+                  </button>
+                  {emp.isActive !== false && (
+                    <button
+                      onClick={() => handleDeactivateEmployee(emp.id)}
+                      style={{ background: RED, color: WHITE, border: 'none', padding: '4px 8px', borderRadius: '4px', fontSize: '0.7rem', cursor: 'pointer', marginLeft: 'auto' }}
+                    >
+                      Deactivate
+                    </button>
+                  )}
                 </div>
-                <div style={{ background: WHITE, padding: '16px', borderRadius: '6px', borderLeft: `4px solid ${RED}` }}>
-                  <strong>Average Lead-to-Close Cycle</strong>
-                  <br />
-                  <span style={{ fontSize: '1.25rem', fontWeight: 800, color: RED }}>14.2 Days</span>
-                </div>
-                <div style={{ background: WHITE, padding: '16px', borderRadius: '6px', borderLeft: `4px solid ${RED}` }}>
-                  <strong>Platform Active Integrations</strong>
-                  <br />
-                  <span style={{ fontSize: '1.25rem', fontWeight: 800, color: RED }}>9/10 Connected</span>
-                </div>
-              </div>
-              <p style={{ fontSize: '0.875rem' }}>* Under the Master Bypass Policy, lower access tiers are blocked from viewing this Executive block.</p>
-            </div>
-          ) : (
-            <div style={{ color: RED, fontWeight: 'bold' }}>
-              ACCESS DENIED: LEVEL 5 MASTER (MANAGING DIRECTOR) ACCESS PERMISSION REQUIRED.
-            </div>
-          )}
-        </div>
-      )}
-
-      {/* 7. COMPLIANCE DEPARTMENT WORKSPACE */}
-      {activeDepartment === 'compliance' && (
-        <div style={{ background: CARD_BG, padding: '20px', borderRadius: '8px', border: `1px solid ${BORDER_COLOR}` }}>
-          <h3 style={{ color: RED, marginTop: 0 }}>RERA/DLD Compliance Status Timeline</h3>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-            <div style={{ paddingLeft: '24px', borderLeft: `2px solid ${RED}`, position: 'relative' }}>
-              <div style={{ width: '12px', height: '12px', background: RED, borderRadius: '50%', position: 'absolute', left: '-7px', top: '4px' }}></div>
-              <strong>RERA Broker Card Verification:</strong> Sophia Loren passed checks (2026-07-27)
-            </div>
-            <div style={{ paddingLeft: '24px', borderLeft: `2px solid ${RED}`, position: 'relative' }}>
-              <div style={{ width: '12px', height: '12px', background: RED, borderRadius: '50%', position: 'absolute', left: '-7px', top: '4px' }}></div>
-              <strong>DLD Contract Ingestion:</strong> Form 6 registration auto-submitted successfully
-            </div>
-            <div style={{ paddingLeft: '24px', borderLeft: `2px solid ${RED}`, position: 'relative' }}>
-              <div style={{ width: '12px', height: '12px', background: RED, borderRadius: '50%', position: 'absolute', left: '-7px', top: '4px' }}></div>
-              <strong>Audit Trail Entry:</strong> Master user 'arslanmalikgoraha@gmail.com' performed compliance audit override.
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* 8. TECHNOLOGY DEPARTMENT WORKSPACE */}
-      {activeDepartment === 'technology' && (
-        <div style={{ background: CARD_BG, padding: '20px', borderRadius: '8px', border: `1px solid ${BORDER_COLOR}` }}>
-          <h3 style={{ color: RED, marginTop: 0 }}>Server Telemetry & Development Config</h3>
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '24px' }}>
-            <div>
-              <p>Platform status monitor:</p>
-              <ul>
-                <li>Server Uptime: <strong>99.98%</strong></li>
-                <li>Production Environment: <strong>develop/main sync</strong></li>
-                <li>Active Socket Rooms: <strong>8 Rooms</strong></li>
-              </ul>
-            </div>
-            <div>
-              <p>Cache configuration telemetry:</p>
-              <ul>
-                <li>Local Cache File: <strong>plans/AEGIS_CACHE.json</strong></li>
-                <li>Cache status: <strong style={{ color: RED }}>Synchronized</strong></li>
-                <li>Stored rate matrix: <strong>AED to USD/EUR/GBP</strong></li>
-              </ul>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* 9. LEGAL DEPARTMENT WORKSPACE */}
-      {activeDepartment === 'legal' && (
-        <div style={{ background: CARD_BG, padding: '20px', borderRadius: '8px', border: `1px solid ${BORDER_COLOR}` }}>
-          <h3 style={{ color: RED, marginTop: 0 }}>Evangeline AI Active Legal Instruments</h3>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '16px' }}>
-            {mockRegulatoryContracts.map(c => (
-              <div key={c.id} style={{ background: WHITE, padding: '16px', borderRadius: '6px', border: `1px solid ${BORDER_COLOR}` }}>
-                <h4 style={{ color: RED, margin: '0 0 8px 0' }}>{c.type}</h4>
-                <div>Document: <strong>{c.contractNumber}</strong></div>
-                <div>Status: <strong style={{ color: RED }}>{c.status}</strong></div>
               </div>
             ))}
           </div>
+
+          <form onSubmit={handleAddEmployee} style={{ display: 'flex', gap: '12px', borderTop: '1px solid #E2E8F0', paddingTop: '16px', alignItems: 'center' }}>
+            <input
+              type="text"
+              placeholder="Employee Name"
+              value={newEmpName}
+              onChange={(e) => setNewEmpName(e.target.value)}
+              style={{ padding: '8px', border: `1px solid ${BORDER_COLOR}`, borderRadius: '4px', flex: 1 }}
+            />
+            <input
+              type="email"
+              placeholder="Employee Email"
+              value={newEmpEmail}
+              onChange={(e) => setNewEmpEmail(e.target.value)}
+              style={{ padding: '8px', border: `1px solid ${BORDER_COLOR}`, borderRadius: '4px', flex: 1 }}
+            />
+            <button
+              type="submit"
+              style={{ background: RED, color: WHITE, border: 'none', padding: '8px 16px', borderRadius: '4px', cursor: 'pointer', fontWeight: 600 }}
+            >
+              Add Employee
+            </button>
+          </form>
         </div>
       )}
 
-      {/* 10. INTELLIGENCE DEPARTMENT WORKSPACE */}
-      {activeDepartment === 'intelligence' && (
-        <div style={{ background: CARD_BG, padding: '20px', borderRadius: '8px', border: `1px solid ${BORDER_COLOR}` }}>
-          <h3 style={{ color: RED, marginTop: 0 }}>Sentinel IoT Property Alerts Heatmap</h3>
-          <div style={{ height: '200px', background: WHITE, borderRadius: '6px', border: '1px solid #E2E8F0', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-            <div style={{ textAlign: 'center' }}>
-              <div style={{ fontSize: '2rem' }}>🗺️</div>
-              <strong>Downtown Dubai Block A Zone 1:</strong> IoT sensors status - <span style={{ color: RED }}>Nominal</span>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* 11. AI COMMAND CENTER WORKSPACE */}
-      {activeDepartment === 'ai-command' && (
-        <div>
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '24px', marginBottom: '24px' }}>
-            <div style={{ background: CARD_BG, padding: '20px', borderRadius: '8px', border: `1px solid ${BORDER_COLOR}` }}>
-              <h3 style={{ color: RED, marginTop: 0 }}>AI Assistant Avatar Grid Hub</h3>
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '12px' }}>
-                <div style={{ background: WHITE, padding: '12px', borderRadius: '6px', borderLeft: `4px solid ${RED}`, textAlign: 'center' }}>
-                  <strong>Zoe</strong>
-                  <div style={{ fontSize: '0.75rem', color: RED, fontWeight: 'bold' }}>● ACTIVE</div>
-                </div>
-                <div style={{ background: WHITE, padding: '12px', borderRadius: '6px', borderLeft: `4px solid ${RED}`, textAlign: 'center' }}>
-                  <strong>Nadia</strong>
-                  <div style={{ fontSize: '0.75rem', color: RED, fontWeight: 'bold' }}>● ACTIVE</div>
-                </div>
-                <div style={{ background: WHITE, padding: '12px', borderRadius: '6px', borderLeft: `4px solid ${RED}`, textAlign: 'center' }}>
-                  <strong>Sentinel</strong>
-                  <div style={{ fontSize: '0.75rem', color: TEXT_MUTED }}>● IDLE</div>
-                </div>
-              </div>
-            </div>
-
-            <div style={{ background: CARD_BG, padding: '20px', borderRadius: '8px', border: `1px solid ${BORDER_COLOR}` }}>
-              <h3 style={{ color: RED, marginTop: 0 }}>AI Lead Qualifier Trace Log</h3>
-              <div style={{ background: '#1E293B', color: '#F8FAFC', padding: '12px', borderRadius: '6px', fontFamily: 'monospace', fontSize: '0.75rem', maxHeight: '120px', overflowY: 'auto' }}>
-                {aiTraceLog.map((logLine, idx) => (
-                  <div key={idx}>{logLine}</div>
-                ))}
-              </div>
-            </div>
-          </div>
-
-          <div style={{ background: CARD_BG, padding: '20px', borderRadius: '8px', border: `1px solid ${BORDER_COLOR}` }}>
-            <h3 style={{ color: RED, marginTop: 0 }}>AI Compliance Contract Auditor Feedback</h3>
-            <div style={{ background: WHITE, padding: '16px', borderRadius: '6px', border: `1px solid ${BORDER_COLOR}` }}>
-              <strong>Inspecting Document:</strong> {aiAuditResults.contractId}
-              <ul style={{ margin: '8px 0 0 0', paddingLeft: '20px', color: RED, fontSize: '0.875rem' }}>
-                {aiAuditResults.violations.map((v, i) => (
-                  <li key={i}>{v}</li>
-                ))}
-              </ul>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* --- EMPLOYEE DIRECTORY CRUD LEDGER --- */}
-      <div style={{ background: CARD_BG, padding: '20px', borderRadius: '8px', border: `1px solid ${BORDER_COLOR}`, marginTop: '24px' }}>
-        <h3 style={{ color: RED, marginTop: 0 }}>Active Employee Lifecycle & CRUD Ledger</h3>
-        <p style={{ fontSize: '0.875rem' }}>Managing Directors have full privilege to manage the corporate staff structure.</p>
-        
-        {/* Onboarding and renewal alerts */}
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '16px', marginBottom: '20px' }}>
-          {employees.map(emp => (
-            <div key={emp.id} style={{ background: WHITE, padding: '12px', borderRadius: '6px', border: '1px solid #E2E8F0', position: 'relative' }}>
-              <strong>{emp.name}</strong>
-              <div style={{ fontSize: '0.75rem', color: TEXT_MUTED }}>Role: {emp.role}</div>
-              <div style={{ fontSize: '0.75rem', color: TEXT_MUTED }}>Status: {emp.status}</div>
-              
-              {/* RERA Card countdown */}
-              <div style={{ fontSize: '0.75rem', color: RED, fontWeight: 'bold', marginTop: '6px' }}>
-                RERA Card: {emp.reraCardDays} days remaining
-              </div>
-
-              <div style={{ display: 'flex', gap: '8px', marginTop: '10px' }}>
-                <button
-                  onClick={() => triggerOnboardingCheck(emp.name)}
-                  style={{ background: '#E2E8F0', border: 'none', padding: '4px 8px', borderRadius: '4px', fontSize: '0.7rem', cursor: 'pointer' }}
-                >
-                  Onboard Scan
-                </button>
-                {emp.status === 'Active' && (
-                  <button
-                    onClick={() => handleDeactivateEmployee(emp.id)}
-                    style={{ background: RED, color: WHITE, border: 'none', padding: '4px 8px', borderRadius: '4px', fontSize: '0.7rem', cursor: 'pointer', marginLeft: 'auto' }}
-                  >
-                    Deactivate
-                  </button>
-                )}
-              </div>
-            </div>
-          ))}
-        </div>
-
-        {/* Add Employee Form */}
-        <form onSubmit={handleAddEmployee} style={{ display: 'flex', gap: '12px', borderTop: '1px solid #E2E8F0', paddingTop: '16px', alignItems: 'center' }}>
-          <input
-            type="text"
-            placeholder="Employee Name"
-            value={newEmpName}
-            onChange={(e) => setNewEmpName(e.target.value)}
-            style={{ padding: '8px', border: `1px solid ${BORDER_COLOR}`, borderRadius: '4px', flex: 1 }}
-          />
-          <input
-            type="email"
-            placeholder="Employee Email"
-            value={newEmpEmail}
-            onChange={(e) => setNewEmpEmail(e.target.value)}
-            style={{ padding: '8px', border: `1px solid ${BORDER_COLOR}`, borderRadius: '4px', flex: 1 }}
-          />
-          <select
-            value={newEmpRole}
-            onChange={(e) => setNewEmpRole(e.target.value)}
-            style={{ padding: '8px', border: `1px solid ${BORDER_COLOR}`, borderRadius: '4px' }}
-          >
-            <option value="leasing-agent">Leasing Agent</option>
-            <option value="secondary-sales-agent">Secondary Sales Agent</option>
-            <option value="admin">Admin</option>
-          </select>
-          <button
-            type="submit"
-            style={{ background: RED, color: WHITE, border: 'none', padding: '8px 16px', borderRadius: '4px', cursor: 'pointer', fontWeight: 600 }}
-          >
-            Add Employee
-          </button>
-        </form>
-      </div>
-
-      {/* --- ROLE MAPPING METRIC --- */}
-      <div style={{ background: CARD_BG, padding: '20px', borderRadius: '8px', border: `1px solid ${BORDER_COLOR}`, marginTop: '24px' }}>
-        <h3 style={{ color: RED, marginTop: 0 }}>WHITE_CAVES_ROLES Permissions Mapping Matrix</h3>
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '12px' }}>
-          {WHITE_CAVES_ROLES.map(role => (
-            <div key={role.role} style={{ background: WHITE, padding: '12px', borderRadius: '6px', border: '1px solid #E2E8F0' }}>
-              <strong>{role.role.replace('-', ' ').toUpperCase()}</strong>
-              <div style={{ fontSize: '0.75rem', color: RED, fontWeight: 700 }}>{role.tier}</div>
-              <div style={{ fontSize: '0.75rem', marginTop: '6px' }}>
-                Permissions: {role.permissions.join(', ')}
-              </div>
-            </div>
-          ))}
-        </div>
-      </div>
-
-      {/* --- KANBAN ACTION DETAIL MODAL --- */}
+      {/* KANBAN ACTION MODAL */}
       {selectedLeadForModal && (
         <div style={{ position: 'fixed', top: 0, left: 0, width: '100vw', height: '100vh', background: 'rgba(0,0,0,0.5)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1000 }}>
           <div style={{ background: WHITE, padding: '24px', borderRadius: '8px', width: '400px', border: `2px solid ${RED}` }}>
             <h3 style={{ color: RED, marginTop: 0 }}>Kanban Action Details Modal</h3>
             <div>Lead Name: <strong>{selectedLeadForModal.name}</strong></div>
             <div>Lead Email: {selectedLeadForModal.email}</div>
-            <div>Lead Phone: {selectedLeadForModal.phone}</div>
             
             <div style={{ marginTop: '12px' }}>
               <label style={{ fontSize: '0.875rem', fontWeight: 600 }}>Action Notes:</label>
@@ -737,7 +616,6 @@ export const UnifiedDashboardPage: FC = () => {
           </div>
         </div>
       )}
-
     </div>
   );
 };
