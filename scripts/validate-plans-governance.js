@@ -168,6 +168,15 @@ function getLinkedPlanFilesFromPending(pattern) {
   'docs/adr/ADR-003-crm-module-registry.md',
   'docs/adr/ADR-004-wave-gate-model.md',
   'docs/adr/ADR-005-superuser-lion-pattern.md',
+  // Wave 25 syndication services (V6.6)
+  'server/services/syndication/propertyFinderService.ts',
+  'server/services/syndication/bayutService.ts',
+  // Wave 25/26 backlogs (V6.6)
+  'plans/waves/WAVE_25_IMPLEMENTATION_BACKLOG.md',
+  'plans/waves/WAVE_26_IMPLEMENTATION_BACKLOG.md',
+  // DLD/Ejari mock services (V1.3)
+  'server/services/mock/dldMockService.ts',
+  'server/services/mock/ejariMockService.ts',
 ].forEach(assertExists);
 
 assertNoPastedArtifacts();

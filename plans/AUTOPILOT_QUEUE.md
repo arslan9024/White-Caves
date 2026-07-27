@@ -97,11 +97,11 @@
 | T04 | 5 | V5.1-ADR | Create `docs/adr/` + 5 ADR files | Done | No | V5:+5% | — |
 | T04 | 5 | V5.4-run-log | Create `plans/AEGIS_RUN_LOG.md` | Done | No | V5:+1% | — |
 | T04 | 6 | V6.1-autopilot-queue | Extend `plans/AUTOPILOT_QUEUE.md` | Done | No | V6:+1% | — |
-| T04 | 6 | V6.2-workforce | Create `plans/AEGIS_WORKFORCE.md` | Pending | No | V6:+1% | — |
-| T04 | 1 | V1.2-stripe-flag | Upgrade Stripe stub with STRIPE_ENABLED flag + mock PaymentIntent | Pending | No | V1:+2% | — |
-| T04 | 1 | V1.3-dld-mock | Create `server/services/mock/dldMockService.ts` + `ejariMockService.ts` | Pending | No | V1:+2% | — |
-| T04 | 5 | V5.2-master-plan | Expand `plans/MASTER_PLAN.md` (dep graph + Multi-Currency + RERA 2025/26) | Pending | No | V5:+2% | — |
-| T04 | 6 | V6.6-gov-validator | Register new files in `scripts/validate-plans-governance.js` | Pending | No | V6:+1% | — |
+| T04 | 6 | V6.2-workforce | Create `plans/AEGIS_WORKFORCE.md` | Done | No | V6:+1% | — |
+| T04 | 1 | V1.2-stripe-flag | Upgrade Stripe stub with STRIPE_ENABLED flag + mock PaymentIntent | Done | No | V1:+2% | — |
+| T04 | 1 | V1.3-dld-mock | Create `server/services/mock/dldMockService.ts` + `ejariMockService.ts` | Done | No | V1:+2% | — |
+| T04 | 5 | V5.2-master-plan | Expand `plans/MASTER_PLAN.md` (dep graph + Multi-Currency + RERA 2025/26) | Done | No | V5:+2% | — |
+| T04 | 6 | V6.6-gov-validator | Register new files in `scripts/validate-plans-governance.js` | Done | No | V6:+1% | — |
 | T05 | 2 | V2.1–V2.4 | Auth hardening (token refresh, authReady, lion fast-path, forgot-password) | Blocked | Yes | V2:+10% | Wave 19 gate |
 | T05 | 3 | V3.1–V3.6 | MD Dashboard (workspace split, KPI bar, charts, right panel) | Blocked | Yes | V3:+13% | Wave 19 gate |
 | T06 | 4 | V4.1–V4.5 | Dedup audit, Linda+Henry merge, Tailwind audit, Prisma normalize, dead-imports | Pending | No | V4:+6% | — |
