@@ -152,14 +152,14 @@ export const UnifiedWorkspaceLayout: React.FC<LayoutProps> = ({ children }) => {
             </div>
           </div>
           <div className="header-right">
-            {/* Gold-accented Local Offline Status Indicator */}
+            {/* Red-accented Local Offline Status Indicator */}
             {!isOnline && (
               <div
                 className="offline-status-indicator"
                 style={{
-                  color: 'var(--wc-gold-metallic)',
-                  border: '1px solid var(--wc-gold-metallic)',
-                  background: 'rgba(201, 168, 76, 0.1)',
+                  color: '#EF4444',
+                  border: '1px solid #EF4444',
+                  background: 'rgba(239, 68, 68, 0.1)',
                   padding: '4px 8px',
                   borderRadius: '4px',
                   fontSize: '0.75rem',
@@ -185,9 +185,9 @@ export const UnifiedWorkspaceLayout: React.FC<LayoutProps> = ({ children }) => {
                   {isMaster && (
                     <span
                       className="master-badge"
-                      style={{ marginLeft: '6px', color: 'var(--wc-gold-metallic)' }}
+                      style={{ marginLeft: '6px', color: '#FFFFFF', background: '#EF4444' }}
                     >
-                      LION LVL 5
+                      LEVEL 5 MASTER
                     </span>
                   )}
                 </div>
@@ -197,9 +197,9 @@ export const UnifiedWorkspaceLayout: React.FC<LayoutProps> = ({ children }) => {
                 onClick={() => navigate('/profile')}
                 title="Profile Settings"
                 style={{
-                  background: 'var(--wc-surface-card)',
-                  border: '1px solid var(--wc-gold-metallic)',
-                  color: 'var(--wc-gold-metallic)',
+                  background: '#EF4444',
+                  border: '1px solid #EF4444',
+                  color: '#FFFFFF',
                   width: '36px',
                   height: '36px',
                   borderRadius: '50%',

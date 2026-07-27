@@ -14,7 +14,7 @@
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
-  background: linear-gradient(135deg, #10B981 0%, #DC2626 100%);
+  background: linear-gradient(135deg, #EF4444 0%, #DC2626 100%);
   color: white;
   padding: 24px;
   border-radius: 12px;
@@ -95,7 +95,7 @@
 
 .search-box:focus-within {
   background: white;
-  border-color: #10B981;
+  border-color: #EF4444;
   box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.1);
 }
 
@@ -135,14 +135,14 @@
 
 .filter-toggle:hover {
   background: white;
-  border-color: #10B981;
-  color: #10B981;
+  border-color: #EF4444;
+  color: #EF4444;
 }
 
 .filter-toggle.active {
-  background: #10B981;
+  background: #EF4444;
   color: white;
-  border-color: #10B981;
+  border-color: #EF4444;
 }
 
 /* Filter Panel */
@@ -182,7 +182,7 @@
 }
 
 .filter-select:focus {
-  border-color: #10B981;
+  border-color: #EF4444;
   box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.1);
 }
 
@@ -209,7 +209,7 @@
   width: 18px;
   height: 18px;
   border-radius: 50%;
-  background: #10B981;
+  background: #EF4444;
   cursor: pointer;
   box-shadow: 0 2px 4px rgba(239, 68, 68, 0.3);
 }
@@ -218,7 +218,7 @@
   width: 18px;
   height: 18px;
   border-radius: 50%;
-  background: #10B981;
+  background: #EF4444;
   cursor: pointer;
   border: none;
   box-shadow: 0 2px 4px rgba(239, 68, 68, 0.3);
@@ -278,7 +278,7 @@
 
 .opportunity-card:hover {
   box-shadow: 0 12px 24px rgba(0, 0, 0, 0.1);
-  border-color: #10B981;
+  border-color: #EF4444;
   transform: translateY(-4px);
 }
 
@@ -371,7 +371,7 @@
 
 .percentage {
   font-weight: 700;
-  color: #10B981;
+  color: #EF4444;
 }
 
 .progress-bar {
@@ -456,7 +456,7 @@
 }
 
 .action-verify {
-  background: #10B981;
+  background: #EF4444;
   color: white;
 }
 

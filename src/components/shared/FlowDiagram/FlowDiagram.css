@@ -44,7 +44,7 @@
 }
 
 .flow-node.completed {
-  border-color: #10B981;
+  border-color: #EF4444;
   background: rgba(239, 68, 68, 0.1);
 }
 
@@ -74,7 +74,7 @@
 }
 
 .flow-node.completed .node-icon {
-  background: #10B981;
+  background: #EF4444;
   color: white;
 }
 
@@ -114,7 +114,7 @@
 }
 
 .flow-connector.completed {
-  color: #10B981;
+  color: #EF4444;
 }
 
 .flow-diagram.vertical .flow-connector {

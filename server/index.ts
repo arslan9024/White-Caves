@@ -100,6 +100,8 @@ import importHistoryRoutes from './routes/importHistory.routes.js';
 import smartImportRoutes from './routes/smartImport.routes.js';
 import mediaRoutes from './routes/media.js';
 import whatsappRouter from './routes/broadcast.js';
+import { pushRoutes } from './routes/push.js';
+import { startViewingReminderCron } from './services/ViewingReminderCron.js';
 import { requireRole, requirePermission } from './middleware/rbac.js';
 import { startFollowUpScheduler } from './services/automation/followUpScheduler.js';
 import { startRateRefresh } from './services/currencyService.js';
@@ -600,6 +602,9 @@ app.use('/api/leasing-inventory', leasingInventoryRoutes);
 
 // Secondary Sales API
 app.use('/api/secondary-sales', secondarySalesRoutes);
+
+// Push API (FCM Push Notifications)
+app.use('/api/push', pushRoutes);
 
 // Commissions API (Phase 35 - Dubai Real Estate Commission Tracker)
 app.use('/api/commissions', commissionsRoutes);
@@ -1250,6 +1255,7 @@ const startServer = async () => {
     startFollowUpScheduler();
     startRateRefresh(); // Phase 2E: refresh exchange rates every 6h
     startViewingReminderScheduler(); // Phase 3C: viewing reminders every 15 min
+    startViewingReminderCron(); // Wave 23: FCM push viewing reminders every 5 min
     startRERAExpiryScheduler(); // Phase 3D: RERA BRN expiry checks daily
     startAutoRouting(); // Phase 4A: auto-route hot leads to best agents
     schedulerService.start(); // Wave 12: cron automation engine

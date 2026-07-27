@@ -47,7 +47,7 @@ export default defineConfig(async ({ command }) => {
                 options: {
                   backgroundSync: {
                     name: 'crm-writes-queue',
-                    options: { maxRetentionTime: 24 * 60 },
+                    options: { maxRetentionTime: 48 * 60 },
                   },
                 },
               },
@@ -58,7 +58,7 @@ export default defineConfig(async ({ command }) => {
                 options: {
                   backgroundSync: {
                     name: 'crm-writes-queue',
-                    options: { maxRetentionTime: 24 * 60 },
+                    options: { maxRetentionTime: 48 * 60 },
                   },
                 },
               },
@@ -69,7 +69,7 @@ export default defineConfig(async ({ command }) => {
                 options: {
                   backgroundSync: {
                     name: 'crm-writes-queue',
-                    options: { maxRetentionTime: 24 * 60 },
+                    options: { maxRetentionTime: 48 * 60 },
                   },
                 },
               },
@@ -79,7 +79,7 @@ export default defineConfig(async ({ command }) => {
                 handler: 'NetworkFirst',
                 options: {
                   cacheName: 'api-network-first',
-                  networkTimeoutSeconds: 3,
+                  networkTimeoutSeconds: 5,
                   expiration: { maxEntries: 120, maxAgeSeconds: 300 },
                   cacheableResponse: { statuses: [0, 200] },
                 },

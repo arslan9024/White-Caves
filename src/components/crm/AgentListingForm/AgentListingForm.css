@@ -79,7 +79,7 @@
 }
 
 .progress-step.completed .step-icon {
-  background: #10B981;
+  background: #EF4444;
   color: #ffffff;
 }
 
@@ -96,7 +96,7 @@
 }
 
 .progress-step.completed .step-label {
-  color: #10B981;
+  color: #EF4444;
 }
 
 .progress-line {
@@ -442,7 +442,7 @@
 }
 
 .package-features li svg {
-  color: #10B981;
+  color: #EF4444;
 }
 
 .form-range {

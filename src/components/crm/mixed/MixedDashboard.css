@@ -43,7 +43,7 @@
 .assistant-dot {
   width: 8px;
   height: 8px;
-  background: #10B981;
+  background: #EF4444;
   border-radius: 50%;
   animation: pulse-dot 2s infinite;
 }

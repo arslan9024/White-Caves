@@ -5,7 +5,7 @@
  * Shared styles imported from CrmPageStyles.
  * Route: /owner/crm/leads
  */
-import React, { FC } from 'react';
+import React, { FC, useCallback } from 'react';
 import styled from 'styled-components';
 import { Badge, Pagination, EmptyState } from '../../components/ui';
 import { SkeletonTable } from '../../components/ui/Skeleton';
@@ -38,6 +38,10 @@ import {
 } from './styles/CrmPageStyles';
 import { useLeadManagement, STATUS_CONFIG, SOURCE_LABELS } from './hooks/useLeadManagement';
 import type { Lead } from './hooks/useLeadManagement';
+import { useIsTablet } from '../../hooks/useMediaQuery';
+import SwipeableLeadCard from '../../components/mobile/SwipeableLeadCard';
+import PullToRefresh from '../../components/mobile/PullToRefresh';
+import FloatingActionButton from '../../components/mobile/FloatingActionButton';
 
 // ─── Lead-Specific Styled Components ────────────────────────────────────
 
@@ -110,6 +114,45 @@ const LeadManagementPage: FC = () => {
     formatCurrency,
     formatDate,
   } = useLeadManagement();
+
+  const isTablet = useIsTablet();
+  const [snoozedLeads, setSnoozedLeads] = React.useState<Record<string, number>>(() => {
+    try {
+      const stored = localStorage.getItem('wc-snoozed-leads');
+      return stored ? JSON.parse(stored) : {};
+    } catch {
+      return {};
+    }
+  });
+
+  const handleSnooze = useCallback((lead: Lead) => {
+    const leadId = String(lead.id);
+    const snoozeUntil = Date.now() + 7 * 24 * 60 * 60 * 1000; // 7 days from now
+    setSnoozedLeads(prev => {
+      const updated = { ...prev, [leadId]: snoozeUntil };
+      try {
+        localStorage.setItem('wc-snoozed-leads', JSON.stringify(updated));
+      } catch (err) {
+        console.error('Failed to save snoozed leads:', err);
+      }
+      return updated;
+    });
+  }, []);
+
+  const activeFilteredLeads = React.useMemo(() => {
+    const now = Date.now();
+    return filteredLeads.filter(lead => {
+      const snoozeUntil = snoozedLeads[String(lead.id)];
+      return !snoozeUntil || now >= snoozeUntil;
+    });
+  }, [filteredLeads, snoozedLeads]);
+
+  const activePaginatedLeads = React.useMemo(() => {
+    return activeFilteredLeads.slice(
+      (currentPage - 1) * ITEMS_PER_PAGE,
+      currentPage * ITEMS_PER_PAGE
+    );
+  }, [activeFilteredLeads, currentPage, ITEMS_PER_PAGE]);
 
   // Lead form modal content
   const renderForm = () => (
@@ -291,107 +334,157 @@ const LeadManagementPage: FC = () => {
         </span>
       </ActionBar>
 
-      {/* Leads Table */}
+      {/* Leads List / Table */}
       {!loading && (
-        <div style={{ marginTop: '1rem', overflowX: 'auto' }}>
-          <Table aria-label="Leads list">
-            <thead>
-              <tr>
-                <Th>Name</Th>
-                <Th>Score</Th>
-                <Th>Company</Th>
-                <Th>Status</Th>
-                <Th>Source</Th>
-                <Th>Budget</Th>
-                <Th>Contact</Th>
-                <Th>Created</Th>
-                <Th>Actions</Th>
-              </tr>
-            </thead>
-            <tbody>
-              {paginatedLeads.length > 0 ? (
-                paginatedLeads.map((lead: Lead) => {
-                  const score = lead.score ?? undefined;
-                  const scoreVariant =
-                    score === undefined
-                      ? undefined
-                      : score >= 80
-                        ? 'error'
-                        : score >= 50
-                          ? 'warning'
-                          : 'secondary';
-                  const scoreEmoji =
-                    score === undefined ? '' : score >= 80 ? '🔥' : score >= 50 ? '⚡' : '❄️';
-                  return (
-                    <Tr key={lead.id} onClick={() => handleEdit(lead)}>
-                      <Td style={{ fontWeight: 500 }}>{lead.name || '—'}</Td>
-                      <Td>
-                        {score !== undefined ? (
-                          <Badge variant={scoreVariant} size="small">
-                            {scoreEmoji} {score}
-                          </Badge>
-                        ) : (
-                          '—'
-                        )}
-                      </Td>
-                      <Td>{lead.company || '—'}</Td>
-                      <Td>
-                        <Badge variant={getStatusBadgeVariant(lead.status || '')} size="small">
-                          {STATUS_CONFIG[lead.status || '']?.label || lead.status || '—'}
-                        </Badge>
-                      </Td>
-                      <Td>{SOURCE_LABELS[lead.source || ''] || lead.source || '—'}</Td>
-                      <Td>{formatCurrency(lead.budget || lead.value)}</Td>
-                      <Td>
-                        <div style={{ fontSize: '0.8rem' }}>
-                          {lead.email && <div>{lead.email}</div>}
-                          {lead.phone && <div style={{ color: '#888' }}>{lead.phone}</div>}
-                        </div>
-                      </Td>
-                      <Td>{formatDate(lead.created_at)}</Td>
-                      <Td onClick={e => e.stopPropagation()}>
-                        <div style={{ display: 'flex', gap: '0.4rem' }}>
-                          <SecondaryButton onClick={() => handleEdit(lead)}>Edit</SecondaryButton>
-                          <DangerButton onClick={() => confirmDelete(lead)}>Delete</DangerButton>
-                        </div>
-                      </Td>
-                    </Tr>
-                  );
-                })
+        isTablet ? (
+          <PullToRefresh onRefresh={async () => { retryFetch(); }}>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem', marginTop: '1rem', paddingBottom: '2rem' }}>
+              {activePaginatedLeads.length > 0 ? (
+                activePaginatedLeads.map((lead: Lead) => (
+                  <SwipeableLeadCard
+                    key={lead.id}
+                    lead={{
+                      id: String(lead.id),
+                      name: lead.name || '',
+                      phone: lead.phone,
+                      email: lead.email,
+                      area: lead.area || '',
+                      budget: lead.budget ? formatCurrency(lead.budget) : undefined,
+                      status: lead.status || 'new',
+                      source: lead.source || 'direct',
+                      createdAt: lead.created_at,
+                    }}
+                    onCall={() => {}}
+                    onSnooze={() => handleSnooze(lead)}
+                    onClick={() => handleEdit(lead)}
+                  />
+                ))
               ) : (
-                <tr>
-                  <Td colSpan={9}>
-                    <EmptyState
-                      icon={search || statusFilter !== 'all' || sourceFilter !== 'all' ? '🔎' : '🧭'}
-                      title={
-                        search || statusFilter !== 'all' || sourceFilter !== 'all'
-                          ? 'No leads match your filters'
-                          : 'No leads yet'
-                      }
-                      description={
-                        search || statusFilter !== 'all' || sourceFilter !== 'all'
-                          ? 'Try changing search text or resetting filters.'
-                          : 'Create your first lead to start filling your pipeline.'
-                      }
-                    />
-                  </Td>
-                </tr>
+                <EmptyState
+                  icon={search || statusFilter !== 'all' || sourceFilter !== 'all' ? '🔎' : '🧭'}
+                  title={
+                    search || statusFilter !== 'all' || sourceFilter !== 'all'
+                      ? 'No leads match your filters'
+                      : 'No leads yet'
+                  }
+                  description={
+                    search || statusFilter !== 'all' || sourceFilter !== 'all'
+                      ? 'Try changing search text or resetting filters.'
+                      : 'Create your first lead to start filling your pipeline.'
+                  }
+                />
               )}
-            </tbody>
-          </Table>
-        </div>
+            </div>
+          </PullToRefresh>
+        ) : (
+          <div style={{ marginTop: '1rem', overflowX: 'auto' }}>
+            <Table aria-label="Leads list">
+              <thead>
+                <tr>
+                  <Th>Name</Th>
+                  <Th>Score</Th>
+                  <Th>Company</Th>
+                  <Th>Status</Th>
+                  <Th>Source</Th>
+                  <Th>Budget</Th>
+                  <Th>Contact</Th>
+                  <Th>Created</Th>
+                  <Th>Actions</Th>
+                </tr>
+              </thead>
+              <tbody>
+                {activePaginatedLeads.length > 0 ? (
+                  activePaginatedLeads.map((lead: Lead) => {
+                    const score = lead.score ?? undefined;
+                    const scoreVariant =
+                      score === undefined
+                        ? undefined
+                        : score >= 80
+                          ? 'error'
+                          : score >= 50
+                            ? 'warning'
+                            : 'secondary';
+                    const scoreEmoji =
+                      score === undefined ? '' : score >= 80 ? '🔥' : score >= 50 ? '⚡' : '❄️';
+                    return (
+                      <Tr key={lead.id} onClick={() => handleEdit(lead)}>
+                        <Td style={{ fontWeight: 500 }}>{lead.name || '—'}</Td>
+                        <Td>
+                          {score !== undefined ? (
+                            <Badge variant={scoreVariant} size="small">
+                              {scoreEmoji} {score}
+                            </Badge>
+                          ) : (
+                            '—'
+                          )}
+                        </Td>
+                        <Td>{lead.company || '—'}</Td>
+                        <Td>
+                          <Badge variant={getStatusBadgeVariant(lead.status || '')} size="small">
+                            {STATUS_CONFIG[lead.status || '']?.label || lead.status || '—'}
+                          </Badge>
+                        </Td>
+                        <Td>{SOURCE_LABELS[lead.source || ''] || lead.source || '—'}</Td>
+                        <Td>{formatCurrency(lead.budget || lead.value)}</Td>
+                        <Td>
+                          <div style={{ fontSize: '0.8rem' }}>
+                            {lead.email && <div>{lead.email}</div>}
+                            {lead.phone && <div style={{ color: '#888' }}>{lead.phone}</div>}
+                          </div>
+                        </Td>
+                        <Td>{formatDate(lead.created_at)}</Td>
+                        <Td onClick={e => e.stopPropagation()}>
+                          <div style={{ display: 'flex', gap: '0.4rem' }}>
+                            <SecondaryButton onClick={() => handleEdit(lead)}>Edit</SecondaryButton>
+                            <DangerButton onClick={() => confirmDelete(lead)}>Delete</DangerButton>
+                          </div>
+                        </Td>
+                      </Tr>
+                    );
+                  })
+                ) : (
+                  <tr>
+                    <Td colSpan={9}>
+                      <EmptyState
+                        icon={search || statusFilter !== 'all' || sourceFilter !== 'all' ? '🔎' : '🧭'}
+                        title={
+                          search || statusFilter !== 'all' || sourceFilter !== 'all'
+                            ? 'No leads match your filters'
+                            : 'No leads yet'
+                        }
+                        description={
+                          search || statusFilter !== 'all' || sourceFilter !== 'all'
+                            ? 'Try changing search text or resetting filters.'
+                            : 'Create your first lead to start filling your pipeline.'
+                        }
+                      />
+                    </Td>
+                  </tr>
+                )}
+              </tbody>
+            </Table>
+          </div>
+        )
       )}
 
       {/* Pagination */}
-      {filteredLeads.length > ITEMS_PER_PAGE && (
+      {activeFilteredLeads.length > ITEMS_PER_PAGE && (
         <PaginationWrapper>
           <Pagination
             currentPage={currentPage}
-            totalItems={filteredLeads.length}
+            totalItems={activeFilteredLeads.length}
             itemsPerPage={ITEMS_PER_PAGE}
             onPageChange={setCurrentPage}
           />
         </PaginationWrapper>
+      )}
+
+      {/* Context-aware Floating Action Button */}
+      {isTablet && (
+        <FloatingActionButton
+          context="leads"
+          onAddLead={openCreateModal}
+        />
       )}
 
       {/* Create Lead Modal */}

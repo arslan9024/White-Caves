@@ -67,7 +67,7 @@
 }
 
 .status-indicator.success {
-  border-color: #10B981;
+  border-color: #EF4444;
   background: #f0fdf4;
 }
 
@@ -90,7 +90,7 @@
 }
 
 .status-content.success {
-  color: #10B981;
+  color: #EF4444;
 }
 
 .status-content.error {

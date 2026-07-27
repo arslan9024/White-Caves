@@ -58,7 +58,7 @@
 }
 .tlb-pill.completed {
   background: rgba(239, 68, 68, 0.12);
-  color: #10B981;
+  color: #EF4444;
 }
 
 .tlb-header-actions {
@@ -171,7 +171,7 @@
 .tlb-column.col-pending   .tlb-col-header { border-top: 2px solid #F59E0B; }
 .tlb-column.col-inprogress .tlb-col-header { border-top: 2px solid var(--tlb-accent, #0EA5E9); }
 .tlb-column.col-review    .tlb-col-header { border-top: 2px solid #A78BFA; }
-.tlb-column.col-completed .tlb-col-header { border-top: 2px solid #10B981; }
+.tlb-column.col-completed .tlb-col-header { border-top: 2px solid #EF4444; }
 .tlb-column.col-failed    .tlb-col-header { border-top: 2px solid #EF4444; }
 
 .tlb-col-icon {
@@ -180,7 +180,7 @@
 .col-pending   .tlb-col-icon { color: #F59E0B; }
 .col-inprogress .tlb-col-icon { color: var(--tlb-accent, #0EA5E9); }
 .col-review    .tlb-col-icon { color: #A78BFA; }
-.col-completed .tlb-col-icon { color: #10B981; }
+.col-completed .tlb-col-icon { color: #EF4444; }
 .col-failed    .tlb-col-icon { color: #EF4444; }
 
 .tlb-col-body {

@@ -253,7 +253,7 @@
 }
 
 .status-dot.optimal {
-  background: #10B981;
+  background: #EF4444;
   box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.2);
 }
 
@@ -435,7 +435,7 @@
 
 .automation-badge.full {
   background: rgba(239, 68, 68, 0.1);
-  color: #10B981;
+  color: #EF4444;
 }
 
 .automation-badge.semi-auto {

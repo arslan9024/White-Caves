@@ -174,7 +174,7 @@
 .task-checkbox {
   width: 24px;
   height: 24px;
-  color: #10B981;
+  color: #EF4444;
 }
 
 .task-checkbox .checkbox {
@@ -216,7 +216,7 @@
 
 .task-status.completed {
   background: rgba(239, 68, 68, 0.15);
-  color: #10B981;
+  color: #EF4444;
 }
 
 .task-status.in_progress {
@@ -246,7 +246,7 @@
 }
 
 .compliance-item.passed {
-  color: #10B981;
+  color: #EF4444;
 }
 
 .compliance-item.warning {
@@ -306,7 +306,7 @@
 
 .forecast-progress .progress-fill {
   height: 100%;
-  background: linear-gradient(90deg, #10B981 0%, #34D399 100%);
+  background: linear-gradient(90deg, #EF4444 0%, #34D399 100%);
   border-radius: 4px;
 }
 

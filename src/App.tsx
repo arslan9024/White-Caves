@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef, lazy, Suspense, type ReactNode } from 'react';
-import { BrowserRouter, Routes, Route, Navigate, useLocation } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, Navigate, useLocation, useNavigate } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 import { SpeedInsights } from '@vercel/speed-insights/react';
 import { setLoading } from './store/userSlice';
@@ -392,6 +392,22 @@ function LocationKeyWrapper({ children }: PageTransitionProps): React.JSX.Elemen
   );
 }
 
+function FounderRedirectGuard(): React.JSX.Element | null {
+  const navigate = useNavigate();
+  const location = useLocation();
+  const user = useSelector((state: RootState) => selectSessionUser(state));
+
+  useEffect(() => {
+    if (user?.email?.toLowerCase().trim() === 'arslanmalikgoraha@gmail.com') {
+      if (location.pathname !== '/profile') {
+        navigate('/profile', { replace: true });
+      }
+    }
+  }, [user, location.pathname, navigate]);
+
+  return null;
+}
+
 function App(): React.JSX.Element {
   const dispatch = useDispatch<AppDispatch>();
   const user = useSelector((state: RootState) => selectSessionUser(state));
@@ -654,7 +670,6 @@ function App(): React.JSX.Element {
 
   const publicRoutes: Array<{ path: string; section: string; page: ReactNode }> = [
     { path: '/', section: 'Home', page: <HomePage /> },
-    { path: '/signin', section: 'Sign In', page: <SignInPage /> },
     { path: '/properties', section: 'Properties', page: <PropertiesPage /> },
     { path: '/property/:id', section: 'PropertyDetail', page: <PropertyDetailPage /> },
     { path: '/about', section: 'About', page: <AboutPage /> },
@@ -707,6 +722,7 @@ function App(): React.JSX.Element {
           <StatusProvider>
             <LanguageProvider>
               <BrowserRouter>
+                <FounderRedirectGuard />
                 {/* Accessibility: skip-to-content link (WCAG 2.1 Level A) */}
                 <a href="#main-content" className="skip-to-content">
                   Skip to main content
@@ -737,6 +753,10 @@ function App(): React.JSX.Element {
                           element={renderPublicPage(route.page, route.section)}
                         />
                       ))}
+                      <Route path="/signin" element={renderGuestOnlyPage(<SignInPage />, 'Sign In')} />
+                      <Route path="/signup" element={renderGuestOnlyPage(<SignInPage />, 'Sign Up')} />
+                      <Route path="/login" element={<Navigate to="/signin" replace />} />
+                      <Route path="/auth/signin" element={<Navigate to="/signin" replace />} />
                       <Route path="/forgot-password" element={<Navigate to="/" replace />} />
                       <Route path="/reset-password" element={<Navigate to="/" replace />} />
                       <Route
@@ -763,7 +783,7 @@ function App(): React.JSX.Element {
 
                       {/* ==================== UNIFIED DASHBOARD ==================== */}
                       <Route
-                        path="/crm"
+                        path="/crm/:department?"
                         element={
                           <ProtectedRoute>
                             <DashboardEntryRoute />

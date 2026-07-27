@@ -65,7 +65,7 @@
 }
 
 .bot-card.connected {
-  border-left: 3px solid #10B981;
+  border-left: 3px solid #EF4444;
 }
 
 .bot-card.disconnected {
@@ -135,7 +135,7 @@
 }
 
 .status-icon.connected {
-  color: #10B981;
+  color: #EF4444;
 }
 
 .status-icon.disconnected {

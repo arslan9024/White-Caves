@@ -164,7 +164,7 @@
 }
 
 .suggestion-card.priority-low::before {
-  background: #10B981;
+  background: #EF4444;
 }
 
 .suggestion-card:hover {
@@ -222,7 +222,7 @@
 
 .priority-badge.low {
   background: rgba(239, 68, 68, 0.2);
-  color: #10B981;
+  color: #EF4444;
 }
 
 .priority-badge.large {
@@ -289,7 +289,7 @@
 
 .status-badge.acknowledged {
   background: rgba(239, 68, 68, 0.2);
-  color: #10B981;
+  color: #EF4444;
 }
 
 .status-badge.escalated {
@@ -1037,7 +1037,7 @@
 
 .org-status.available {
   background: rgba(5, 150, 105, 0.15);
-  color: #10B981;
+  color: #EF4444;
 }
 
 .org-status.in_meeting {
@@ -1052,7 +1052,7 @@
 
 .org-status.active {
   background: rgba(5, 150, 105, 0.15);
-  color: #10B981;
+  color: #EF4444;
 }
 
 .org-status .status-dot {
@@ -1382,7 +1382,7 @@
 }
 
 .action-btn.primary {
-  background: linear-gradient(135deg, #10B981 0%, #DC2626 100%);
+  background: linear-gradient(135deg, #EF4444 0%, #DC2626 100%);
   color: white;
   border: none;
   border-radius: 6px;
@@ -1440,7 +1440,7 @@
   text-transform: uppercase;
   font-weight: 600;
   background: rgba(239, 68, 68, 0.15);
-  color: #10B981;
+  color: #EF4444;
 }
 
 .kpi-bar {

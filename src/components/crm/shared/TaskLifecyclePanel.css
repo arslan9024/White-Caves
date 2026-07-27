@@ -80,11 +80,11 @@
 /* Stage states */
 .lc-stage-node.stage-done .stage-icon {
   background: rgba(239, 68, 68, 0.15);
-  border-color: #10B981;
-  color: #10B981;
+  border-color: #EF4444;
+  color: #EF4444;
 }
 .lc-stage-node.stage-done .stage-label {
-  color: #10B981;
+  color: #EF4444;
 }
 
 .lc-stage-node.stage-active .stage-icon {
@@ -249,7 +249,7 @@
 .action-icon {
   display: block;
 }
-.action-icon.success { color: #10B981; }
+.action-icon.success { color: #EF4444; }
 .action-icon.failed  { color: #EF4444; }
 .action-icon.pending { color: #F59E0B; }
 
@@ -284,7 +284,7 @@
 }
 .action-status-badge.success {
   background: rgba(239, 68, 68, 0.15);
-  color: #10B981;
+  color: #EF4444;
 }
 .action-status-badge.failed {
   background: rgba(239, 68, 68, 0.15);
@@ -326,7 +326,7 @@
 }
 
 .result-card.outcome-success {
-  border-left-color: #10B981;
+  border-left-color: #EF4444;
   background: rgba(239, 68, 68, 0.06);
 }
 .result-card.outcome-partial {

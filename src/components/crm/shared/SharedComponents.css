@@ -84,7 +84,7 @@
 
 .stat-change.positive {
   background: rgba(239, 68, 68, 0.15);
-  color: #10B981;
+  color: #EF4444;
 }
 
 .stat-change.negative {
@@ -201,7 +201,7 @@
   margin-top: 8px;
 }
 
-.status-success { color: #10B981; }
+.status-success { color: #EF4444; }
 .status-warning { color: #F59E0B; }
 .status-error { color: #EF4444; }
 .status-active { color: var(--timeline-accent, #0EA5E9); }

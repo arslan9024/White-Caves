@@ -131,4 +131,29 @@ export const disconnectDatabase = async (): Promise<void> => {
   log.info('Prisma disconnected from MongoDB');
 };
 
+// Connection Pooling Guard: clean disconnect on nodemon SIGUSR2 / exit signals
+const cleanupDb = async (signal: string) => {
+  try {
+    await prisma.$disconnect();
+    log.info(`Cleaned up Prisma database connection on ${signal}.`);
+  } catch (err) {
+    log.error(`Failed to disconnect Prisma on ${signal}`, err);
+  }
+};
+
+process.once('SIGUSR2', async () => {
+  await cleanupDb('SIGUSR2');
+  process.kill(process.pid, 'SIGUSR2');
+});
+
+process.on('SIGINT', async () => {
+  await cleanupDb('SIGINT');
+  process.exit(0);
+});
+
+process.on('SIGTERM', async () => {
+  await cleanupDb('SIGTERM');
+  process.exit(0);
+});
+
 export { prisma };

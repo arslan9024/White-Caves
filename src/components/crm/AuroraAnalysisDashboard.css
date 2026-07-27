@@ -270,7 +270,7 @@
 }
 
 .provider-stats .stat.success {
-  color: #10B981;
+  color: #EF4444;
 }
 
 .provider-stats .stat.failure {
@@ -746,7 +746,7 @@
 }
 
 .actions-stats .success {
-  color: #10B981;
+  color: #EF4444;
 }
 
 .actions-stats .warning {

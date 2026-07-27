@@ -60,7 +60,7 @@
 }
 
 .stage-node.completed .stage-icon {
-  background: linear-gradient(135deg, #10B981 0%, #DC2626 100%);
+  background: linear-gradient(135deg, #EF4444 0%, #DC2626 100%);
   color: white;
 }
 
@@ -130,7 +130,7 @@
 }
 
 .stage-connector.completed .connector-line {
-  background: #10B981;
+  background: #EF4444;
 }
 
 .connector-arrow {
@@ -138,7 +138,7 @@
 }
 
 .stage-connector.completed .connector-arrow {
-  color: #10B981;
+  color: #EF4444;
 }
 
 .stage-legend {
@@ -165,7 +165,7 @@
 }
 
 .legend-dot.completed {
-  background: #10B981;
+  background: #EF4444;
 }
 
 .legend-dot.active {
@@ -221,7 +221,7 @@
 }
 
 .connector-dot.completed {
-  background: #10B981;
+  background: #EF4444;
 }
 
 .connector-dot.active {
@@ -242,7 +242,7 @@
 }
 
 .vertical-connector .connector-line.completed {
-  background: #10B981;
+  background: #EF4444;
 }
 
 .vertical-content {

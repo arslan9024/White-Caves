@@ -16,7 +16,7 @@
 }
 
 .stage-card.completed {
-  border-left: 4px solid #10B981;
+  border-left: 4px solid #EF4444;
 }
 
 .stage-card.in_progress {
@@ -51,7 +51,7 @@
 
 .status-badge.completed {
   background: rgba(239, 68, 68, 0.15);
-  color: #10B981;
+  color: #EF4444;
 }
 
 .status-badge.in_progress {
@@ -144,7 +144,7 @@
 
 .progress-fill {
   height: 100%;
-  background: linear-gradient(90deg, #D32F2F, #10B981);
+  background: linear-gradient(90deg, #D32F2F, #EF4444);
   border-radius: 2px;
   transition: width 0.3s;
 }
@@ -190,8 +190,8 @@
 }
 
 .task-checkbox.checked {
-  background: #10B981;
-  border-color: #10B981;
+  background: #EF4444;
+  border-color: #EF4444;
   color: white;
 }
 

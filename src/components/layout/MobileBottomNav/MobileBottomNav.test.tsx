@@ -7,6 +7,8 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen, fireEvent } from '@testing-library/react';
 import { Provider } from 'react-redux';
 import { configureStore } from '@reduxjs/toolkit';
+import { MemoryRouter } from 'react-router-dom';
+import React from 'react';
 import MobileBottomNav from './MobileBottomNav';
 
 // ─── Mock store ───────────────────────────────────────────────────────────
@@ -34,10 +36,12 @@ describe('MobileBottomNav', () => {
   it('renders 5 tab buttons', () => {
     render(
       <Provider store={store}>
-        <MobileBottomNav />
-      </Provider>,
+        <MemoryRouter initialEntries={['/crm']}>
+          <MobileBottomNav />
+        </MemoryRouter>
+      </Provider>
     );
-    const nav = screen.getByLabelText('Mobile navigation');
+    const nav = screen.getByLabelText('CRM mobile navigation');
     const tabs = nav.querySelectorAll('button');
     expect(tabs.length).toBe(5);
   });
@@ -45,95 +49,76 @@ describe('MobileBottomNav', () => {
   it('renders correct labels', () => {
     render(
       <Provider store={store}>
-        <MobileBottomNav />
-      </Provider>,
+        <MemoryRouter initialEntries={['/crm']}>
+          <MobileBottomNav />
+        </MemoryRouter>
+      </Provider>
     );
     expect(screen.getByLabelText('Home')).toBeDefined();
-    expect(screen.getByLabelText('Analytics')).toBeDefined();
-    expect(screen.getByLabelText('Messages')).toBeDefined();
-    expect(screen.getByLabelText('AI')).toBeDefined();
-    expect(screen.getByLabelText('Menu')).toBeDefined();
+    expect(screen.getByLabelText('Leads')).toBeDefined();
+    expect(screen.getByLabelText('Properties')).toBeDefined();
+    expect(screen.getByLabelText('Viewings')).toBeDefined();
+    expect(screen.getByLabelText('More')).toBeDefined();
   });
 
-  it('marks the active tab with aria-current', () => {
+  it('marks the active tab based on route with aria-current', () => {
     render(
       <Provider store={store}>
-        <MobileBottomNav activeTab="analytics" />
-      </Provider>,
+        <MemoryRouter initialEntries={['/crm/leads']}>
+          <MobileBottomNav />
+        </MemoryRouter>
+      </Provider>
     );
-    const analyticsTab = screen.getByLabelText('Analytics');
-    expect(analyticsTab.getAttribute('aria-current')).toBe('page');
+    const leadsTab = screen.getByLabelText('Leads');
+    expect(leadsTab.getAttribute('aria-current')).toBe('page');
 
     // Other tabs should NOT have aria-current
     const homeTab = screen.getByLabelText('Home');
     expect(homeTab.getAttribute('aria-current')).toBeNull();
   });
 
-  it('calls onTabChange when non-menu tab is clicked', () => {
-    const onChange = vi.fn();
-    render(
-      <Provider store={store}>
-        <MobileBottomNav onTabChange={onChange} />
-      </Provider>,
-    );
-    fireEvent.click(screen.getByLabelText('Analytics'));
-    expect(onChange).toHaveBeenCalledWith('analytics');
-  });
-
-  it('calls onMenuOpen when Menu tab is clicked', () => {
+  it('calls onMenuOpen when More tab is clicked', () => {
     const onMenu = vi.fn();
     render(
       <Provider store={store}>
-        <MobileBottomNav onMenuOpen={onMenu} />
-      </Provider>,
+        <MemoryRouter initialEntries={['/crm']}>
+          <MobileBottomNav onMenuOpen={onMenu} />
+        </MemoryRouter>
+      </Provider>
     );
-    fireEvent.click(screen.getByLabelText('Menu'));
+    fireEvent.click(screen.getByLabelText('More'));
     expect(onMenu).toHaveBeenCalledTimes(1);
   });
 
-  it('does NOT call onTabChange when Menu tab is clicked', () => {
-    const onChange = vi.fn();
-    const onMenu = vi.fn();
+  it('shows badge when there are unread leads', () => {
     render(
       <Provider store={store}>
-        <MobileBottomNav onTabChange={onChange} onMenuOpen={onMenu} />
-      </Provider>,
+        <MemoryRouter initialEntries={['/crm']}>
+          <MobileBottomNav unreadLeadCount={5} />
+        </MemoryRouter>
+      </Provider>
     );
-    fireEvent.click(screen.getByLabelText('Menu'));
-    expect(onChange).not.toHaveBeenCalled();
-    expect(onMenu).toHaveBeenCalledTimes(1);
-  });
-
-  it('shows badge when there are queued messages', () => {
-    const storeWithBadge = configureStore({
-      reducer: {
-        nadia: () => ({
-          queue: [{ id: '1' }, { id: '2' }, { id: '3' }],
-        }),
-      },
-    });
-    render(
-      <Provider store={storeWithBadge}>
-        <MobileBottomNav />
-      </Provider>,
-    );
-    expect(screen.getByText('3')).toBeDefined();
+    expect(screen.getByText('5')).toBeDefined();
   });
 
   it('has mobile navigation aria-label', () => {
     render(
       <Provider store={store}>
-        <MobileBottomNav />
-      </Provider>,
+        <MemoryRouter initialEntries={['/crm']}>
+          <MobileBottomNav />
+        </MemoryRouter>
+      </Provider>
     );
-    expect(screen.getByLabelText('Mobile navigation')).toBeDefined();
+    expect(screen.getByLabelText('CRM mobile navigation')).toBeDefined();
   });
 
-  it('defaults activeTab to "home"', () => {
+  it('defaults activeTab to "home" when route is /crm', () => {
     render(
       <Provider store={store}>
-        <MobileBottomNav />
-      </Provider>,
+        <MemoryRouter initialEntries={['/crm']}>
+          <MobileBottomNav />
+        </MemoryRouter>
+      </Provider>
     );
     const homeTab = screen.getByLabelText('Home');
     expect(homeTab.getAttribute('aria-current')).toBe('page');

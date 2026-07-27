@@ -49,7 +49,7 @@
   background: rgba(239, 68, 68, 0.15);
   border: 1px solid rgba(239, 68, 68, 0.3);
   border-radius: 20px;
-  color: #10B981;
+  color: #EF4444;
   font-size: 13px;
   font-weight: 500;
 }
@@ -57,7 +57,7 @@
 .assistant-status .status-dot {
   width: 8px;
   height: 8px;
-  background: #10B981;
+  background: #EF4444;
   border-radius: 50%;
   animation: pulse 2s infinite;
 }
@@ -127,7 +127,7 @@
 }
 
 .stat-change.positive {
-  color: #10B981;
+  color: #EF4444;
   background: rgba(239, 68, 68, 0.1);
 }
 
@@ -263,7 +263,7 @@
 
 .status-badge.active, .status-badge.verified, .status-badge.paid, .status-badge.completed, .status-badge.approved, .status-badge.passed {
   background: rgba(239, 68, 68, 0.15);
-  color: #10B981;
+  color: #EF4444;
 }
 
 .status-badge.pending, .status-badge.pending_review, .status-badge.in_progress, .status-badge.investigating {
@@ -288,7 +288,7 @@
 
 .status-badge.cleared {
   background: rgba(239, 68, 68, 0.15);
-  color: #10B981;
+  color: #EF4444;
 }
 
 .risk-badge {
@@ -301,7 +301,7 @@
 
 .risk-badge.low {
   background: rgba(239, 68, 68, 0.15);
-  color: #10B981;
+  color: #EF4444;
 }
 
 .risk-badge.medium {
@@ -334,7 +334,7 @@
 
 .priority-badge.low {
   background: rgba(239, 68, 68, 0.15);
-  color: #10B981;
+  color: #EF4444;
 }
 
 .pipeline-stages {
@@ -381,7 +381,7 @@
 
 .stage-value {
   font-size: 14px;
-  color: #10B981;
+  color: #EF4444;
   margin-bottom: 12px;
 }
 
@@ -573,7 +573,7 @@
 .task-checkbox {
   width: 24px;
   height: 24px;
-  color: #10B981;
+  color: #EF4444;
 }
 
 .task-checkbox .checkbox {
@@ -615,7 +615,7 @@
 
 .task-status.completed {
   background: rgba(239, 68, 68, 0.15);
-  color: #10B981;
+  color: #EF4444;
 }
 
 .task-status.in_progress {
@@ -645,7 +645,7 @@
 }
 
 .compliance-item.passed {
-  color: #10B981;
+  color: #EF4444;
 }
 
 .compliance-item.warning {
@@ -705,7 +705,7 @@
 
 .forecast-progress .progress-fill {
   height: 100%;
-  background: linear-gradient(90deg, #10B981 0%, #34D399 100%);
+  background: linear-gradient(90deg, #EF4444 0%, #34D399 100%);
   border-radius: 4px;
 }
 

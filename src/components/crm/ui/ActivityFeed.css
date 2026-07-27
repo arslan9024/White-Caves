@@ -57,7 +57,7 @@
   flex-shrink: 0;
 }
 
-.status-success { color: #10B981; }
+.status-success { color: #EF4444; }
 .status-warning { color: #F59E0B; }
 .status-pending { color: #94A3B8; }
 .status-error { color: #EF4444; }

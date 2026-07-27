@@ -743,6 +743,8 @@ router.patch(
     // W14-001: Auto-rescore on lead updates and status lifecycle changes
     triggerLeadRescore(lead.id, statusChanged ? 'lead_status_changed' : 'lead_updated');
 
+    const agentChanged = assignedToId !== undefined && assignedToId !== existing.assignedToId;
+
     if (lead.assignedToId && statusChanged) {
       await notificationService.pushToUser({
         userId: lead.assignedToId,
@@ -750,6 +752,16 @@ router.patch(
         title: 'Lead status updated',
         message: `${lead.name} moved to ${lead.status}`,
         metadata: { leadId: lead.id, oldStatus: existing.status, newStatus: lead.status },
+      });
+    }
+
+    if (lead.assignedToId && agentChanged) {
+      await notificationService.pushToUser({
+        userId: lead.assignedToId,
+        type: 'lead',
+        title: 'New lead assigned',
+        message: `${lead.name} was assigned to you`,
+        metadata: { leadId: lead.id, source: lead.source },
       });
     }
 

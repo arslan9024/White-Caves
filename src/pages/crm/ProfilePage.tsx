@@ -16,11 +16,11 @@ const ExecutiveHeader = styled.header`
   align-items: flex-start;
   gap: ${spacing[6]};
   padding: ${spacing[6]};
-  background: #0f0f0f;
-  border: 1px solid #c9a84c;
+  background: #FFFFFF;
+  border: 1px solid rgba(239, 68, 68, 0.2);
   border-radius: ${borderRadius.xl};
-  box-shadow: 0 4px 12px rgba(201, 168, 76, 0.15);
-  color: #ffffff;
+  box-shadow: 0 4px 12px rgba(239, 68, 68, 0.05);
+  color: #1E293B;
   margin-bottom: ${spacing[6]};
 
   @media (max-width: 768px) {
@@ -34,7 +34,7 @@ const AvatarContainer = styled.div`
   width: 120px;
   height: 120px;
   border-radius: 50%;
-  border: 3px solid #c9a84c;
+  border: 3px solid #EF4444;
   overflow: hidden;
   img {
     width: 100%;
@@ -49,13 +49,13 @@ const HeaderContent = styled.div`
   h1 {
     margin: 0;
     font-size: 2rem;
-    font-weight: 700;
-    color: #fff;
+    font-weight: 800;
+    color: #1E293B;
   }
 
   p {
     margin: ${spacing[1]} 0 ${spacing[3]};
-    color: rgba(255, 255, 255, 0.8);
+    color: #64748B;
     font-size: 1.1rem;
   }
 `;
@@ -83,21 +83,21 @@ const SecurityBadge = styled.span<{ $type?: 'founder' | 'admin' | 'system' }>`
     switch ($type) {
       case 'founder':
         return `
-          background: #0f0f0f;
-          color: #c9a84c;
-          border: 1px solid #c9a84c;
+          background: rgba(239, 68, 68, 0.1);
+          color: #EF4444;
+          border: 1px solid #EF4444;
         `;
       case 'admin':
         return `
-          background: #0f0f0f;
-          color: #c9a84c;
-          border: 1px solid #c9a84c;
+          background: rgba(239, 68, 68, 0.1);
+          color: #EF4444;
+          border: 1px solid #EF4444;
         `;
       default:
         return `
-          background: #0f0f0f;
-          color: #10b981;
-          border: 1px solid #10b981;
+          background: rgba(239, 68, 68, 0.1);
+          color: #EF4444;
+          border: 1px solid #EF4444;
         `;
     }
   }}
@@ -114,18 +114,18 @@ const Grid = styled.div`
 `;
 
 const Card = styled.div`
-  background: #0f0f0f;
-  border: 1px solid #c9a84c;
+  background: #F8FAFC;
+  border: 1px solid rgba(239, 68, 68, 0.2);
   border-radius: ${borderRadius.lg};
   padding: ${spacing[6]};
-  box-shadow: 0 4px 12px rgba(201, 168, 76, 0.15);
-  color: #ffffff;
+  box-shadow: 0 4px 12px rgba(239, 68, 68, 0.05);
+  color: #1E293B;
 
   h2 {
     margin-top: 0;
     margin-bottom: ${spacing[4]};
     font-size: 1.25rem;
-    color: #c9a84c;
+    color: #EF4444;
   }
 `;
 
@@ -135,8 +135,8 @@ const FormGroup = styled.div`
   label {
     display: block;
     margin-bottom: ${spacing[1]};
-    font-weight: 600;
-    color: #c9a84c;
+    font-weight: 700;
+    color: #1E293B;
     font-size: 0.875rem;
   }
 
@@ -144,22 +144,22 @@ const FormGroup = styled.div`
   select {
     width: 100%;
     padding: ${spacing[2]} ${spacing[3]};
-    border: 1px solid #c9a84c;
+    border: 1px solid rgba(239, 68, 68, 0.2);
     border-radius: ${borderRadius.md};
-    background: #1f1f1f;
-    color: #ffffff;
+    background: #FFFFFF;
+    color: #1E293B;
     ${typography.presets.body};
 
     &:focus {
-      outline: 2px solid #10b981;
+      outline: 2px solid #EF4444;
       border-color: transparent;
     }
   }
 `;
 
 const SaveButton = styled.button`
-  background: #c9a84c;
-  color: #0f0f0f;
+  background: #EF4444;
+  color: #FFFFFF;
   border: none;
   border-radius: ${borderRadius.md};
   padding: ${spacing[2]} ${spacing[4]};
@@ -168,7 +168,7 @@ const SaveButton = styled.button`
   transition: background 0.2s;
 
   &:hover {
-    background: #e4b75e;
+    background: #DC2626;
   }
 `;
 
@@ -176,7 +176,7 @@ const TrackerRing = styled.div<{ pct: number }>`
   width: 120px;
   height: 120px;
   border-radius: 50%;
-  background: conic-gradient(#10b981 ${({ pct }) => pct}%, #2c2c2c 0);
+  background: conic-gradient(#EF4444 ${({ pct }) => pct}%, #E2E8F0 0);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -187,7 +187,7 @@ const TrackerRing = styled.div<{ pct: number }>`
     content: '';
     position: absolute;
     inset: 8px;
-    background: #0f0f0f;
+    background: #FFFFFF;
     border-radius: 50%;
   }
 
@@ -195,7 +195,7 @@ const TrackerRing = styled.div<{ pct: number }>`
     position: relative;
     font-size: 1.5rem;
     font-weight: 700;
-    color: #ffffff;
+    color: #EF4444;
   }
 `;
 
@@ -207,7 +207,7 @@ const SessionList = styled.ul`
 
 const SessionItem = styled.li`
   padding: ${spacing[3]} 0;
-  border-bottom: 1px solid rgba(201, 168, 76, 0.2);
+  border-bottom: 1px solid rgba(239, 68, 68, 0.2);
 
   &:last-child {
     border-bottom: none;
@@ -220,12 +220,12 @@ const SessionItem = styled.li`
   }
 
   strong {
-    color: #ffffff;
+    color: #1E293B;
   }
 
   span {
     font-size: 0.875rem;
-    color: rgba(255, 255, 255, 0.7);
+    color: #64748B;
   }
 `;
 
@@ -254,7 +254,7 @@ export const ProfilePage: FC = () => {
               user?.photoURL ||
               'https://ui-avatars.com/api/?name=' +
                 (user?.name || 'A') +
-                '&background=C9A84C&color=fff'
+                '&background=EF4444&color=fff'
             }
             alt="Profile"
           />
@@ -264,7 +264,7 @@ export const ProfilePage: FC = () => {
           <p>{user?.email}</p>
           <BadgeContainer>
             {isFounder && (
-              <SecurityBadge $type="founder">LION LVL 5 (Principal Founder)</SecurityBadge>
+              <SecurityBadge $type="founder">LEVEL 5 MASTER (Principal Founder)</SecurityBadge>
             )}
             {isFounder && <SecurityBadge $type="admin">System Superuser</SecurityBadge>}
             {!isFounder && <SecurityBadge>{user?.role || 'Agent'}</SecurityBadge>}
@@ -302,7 +302,7 @@ export const ProfilePage: FC = () => {
               <SessionItem>
                 <div>
                   <strong>Current Session (Desktop)</strong>
-                  <span style={{ color: '#10b981' }}>Active Now</span>
+                  <span style={{ color: '#EF4444', fontWeight: 'bold' }}>Active Now</span>
                 </div>
                 <span>IP: 192.168.1.1 · Dubai, UAE</span>
               </SessionItem>
@@ -323,7 +323,7 @@ export const ProfilePage: FC = () => {
             <TrackerRing pct={100}>
               <span>100%</span>
             </TrackerRing>
-            <p style={{ color: 'rgba(255, 255, 255, 0.7)', fontSize: '0.875rem' }}>
+            <p style={{ color: '#64748B', fontSize: '0.875rem' }}>
               Your executive profile and corporate KYC documentation are 100% verified.
             </p>
           </Card>

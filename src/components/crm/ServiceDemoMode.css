@@ -389,7 +389,7 @@
 }
 
 .detail-card.actions svg {
-  color: #10B981;
+  color: #EF4444;
 }
 
 .assigned-assistants h4 {
@@ -557,7 +557,7 @@
 
 .log-success {
   background: rgba(239, 68, 68, 0.1);
-  color: #10B981;
+  color: #EF4444;
   font-weight: 500;
 }
 

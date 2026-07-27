@@ -78,8 +78,8 @@
 }
 
 .stage-indicator.completed {
-  background: #10B981;
-  border-color: #10B981;
+  background: #EF4444;
+  border-color: #EF4444;
   color: white;
 }
 
@@ -108,7 +108,7 @@
 }
 
 .stage-connector.completed {
-  background: #10B981;
+  background: #EF4444;
 }
 
 .vertical-connector {
@@ -121,7 +121,7 @@
 }
 
 .vertical-connector.completed {
-  background: #10B981;
+  background: #EF4444;
 }
 
 .stage-content {

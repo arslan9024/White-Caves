@@ -129,7 +129,7 @@
 .sev-critical { color: #EF4444; }
 .sev-warning  { color: #F59E0B; }
 .sev-info     { color: #0EA5E9; }
-.sev-success  { color: #10B981; }
+.sev-success  { color: #EF4444; }
 
 .lnf-item-icon {
   flex-shrink: 0;

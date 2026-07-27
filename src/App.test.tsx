@@ -265,6 +265,24 @@ vi.mock('react-redux', () => ({
         theme: 'light',
         activeRole: null,
       },
+      sidebar: {
+        selectedDepartment: null,
+        selectedService: null,
+        globalSearch: '',
+        commandPaletteOpen: false,
+        mobileSheetOpen: false,
+        aiCommandOpen: false,
+      },
+      nadia: {
+        queue: [],
+      },
+      crmData: {
+        leads: [],
+        properties: [],
+      },
+      properties: {
+        all: [],
+      },
     };
     return selector(state);
   },
@@ -274,6 +292,7 @@ vi.mock('react-redux', () => ({
 vi.mock('./store/userSlice', () => ({
   setUser: vi.fn((data: any) => ({ type: 'user/setUser', payload: data })),
   setLoading: vi.fn((val: boolean) => ({ type: 'user/setLoading', payload: val })),
+  selectCurrentUser: (state: any) => state.user.currentUser,
 }));
 
 vi.mock('./store/navigationSlice', () => ({

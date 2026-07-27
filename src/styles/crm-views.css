@@ -104,7 +104,7 @@
 }
 
 .stat-change.up {
-  color: #10B981;
+  color: #EF4444;
   background: rgba(239, 68, 68, 0.1);
 }
 
@@ -194,7 +194,7 @@
 }
 
 .announcement-item.low {
-  border-left-color: #10B981;
+  border-left-color: #EF4444;
 }
 
 .announcement-title {
@@ -339,7 +339,7 @@
 .status-badge.registered,
 .status-badge.connected {
   background: rgba(239, 68, 68, 0.1);
-  color: #10B981;
+  color: #EF4444;
 }
 
 .status-badge.pending,
@@ -748,7 +748,7 @@
 
 .campaign-status.active {
   background: rgba(239, 68, 68, 0.1);
-  color: #10B981;
+  color: #EF4444;
 }
 
 .campaign-status.scheduled {
@@ -852,7 +852,7 @@
 }
 
 .integration-status.connected {
-  color: #10B981;
+  color: #EF4444;
 }
 
 .integration-status.pending {
@@ -1165,7 +1165,7 @@
 }
 
 .health-card.healthy {
-  border-left: 4px solid #10B981;
+  border-left: 4px solid #EF4444;
 }
 
 .health-card.warning {
@@ -1191,7 +1191,7 @@
 .health-status {
   font-size: 0.8rem;
   font-weight: 500;
-  color: #10B981;
+  color: #EF4444;
   display: block;
   margin-bottom: 4px;
 }

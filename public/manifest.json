@@ -1,11 +1,12 @@
 {
-  "name": "White Caves Real Estate",
-  "short_name": "White Caves",
-  "description": "Dubai's premier luxury real estate platform",
-  "start_url": "/",
+  "name": "White Caves CRM",
+  "short_name": "WC CRM",
+  "description": "Dubai's premier luxury real estate CRM platform",
+  "start_url": "/crm/?utm_source=pwa",
+  "scope": "/",
   "display": "standalone",
   "background_color": "#0a0a0f",
-  "theme_color": "#E31E24",
+  "theme_color": "#C9A84C",
   "orientation": "portrait-primary",
   "icons": [
     {
@@ -27,17 +28,32 @@
       "purpose": "any"
     }
   ],
-  "categories": ["real estate", "property", "lifestyle"],
-  "screenshots": [],
+  "categories": ["real estate", "property", "business"],
   "shortcuts": [
     {
-      "name": "Browse Properties",
-      "url": "/#properties",
-      "description": "View all available properties"
+      "name": "My Leads",
+      "short_name": "Leads",
+      "url": "/crm/leads?utm_source=pwa_shortcut",
+      "description": "View your assigned leads",
+      "icons": [{ "src": "/favicon.svg", "sizes": "96x96" }]
     },
     {
-      "name": "Contact Us",
-      "url": "/contact",
+      "name": "Today's Viewings",
+      "short_name": "Viewings",
+      "url": "/crm/viewings?filter=today&utm_source=pwa_shortcut",
+      "description": "See today's scheduled property viewings",
+      "icons": [{ "src": "/favicon.svg", "sizes": "96x96" }]
+    },
+    {
+      "name": "Properties",
+      "short_name": "Properties",
+      "url": "/crm/properties?utm_source=pwa_shortcut",
+      "description": "Browse property inventory"
+    },
+    {
+      "name": "Contact Agent",
+      "short_name": "Contact",
+      "url": "/contact?utm_source=pwa_shortcut",
       "description": "Get in touch with our team"
     }
   ]
