@@ -28,7 +28,7 @@ interface NavigationState {
 }
 
 const getInitialSidebarWidth = () => {
-  const stored = localStorage.getItem('sidebarWidth');
+  const stored = safeStorage.get('sidebarWidth');
   return stored ? parseInt(stored, 10) : 40;
 };
 
@@ -141,7 +141,7 @@ const navigationSlice = createSlice({
     setSidebarWidth: (state, action) => {
       const width = Math.min(Math.max(action.payload, 25), 50);
       state.sidebarWidth = width;
-      localStorage.setItem('sidebarWidth', width.toString());
+      safeStorage.set('sidebarWidth', width.toString());
     },
     setActiveNavItem: (state, action) => {
       state.activeNavItem = action.payload;

@@ -394,18 +394,7 @@ function LocationKeyWrapper({ children }: PageTransitionProps): React.JSX.Elemen
 }
 
 function FounderRedirectGuard(): React.JSX.Element | null {
-  const navigate = useNavigate();
-  const location = useLocation();
-  const user = useSelector((state: RootState) => selectSessionUser(state));
-
-  useEffect(() => {
-    if (user?.email?.toLowerCase().trim() === 'arslanmalikgoraha@gmail.com') {
-      if (location.pathname !== '/profile') {
-        navigate('/profile', { replace: true });
-      }
-    }
-  }, [user, location.pathname, navigate]);
-
+  // Previously forced founder email to /profile; removed to allow full site access.
   return null;
 }
 

@@ -1,5 +1,6 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { logout } from '../authSlice';
+import { safeStorage } from '../../utils/safeStorage';
 
 interface SidebarState {
   /** Icon-rail flyout open state */
@@ -36,11 +37,7 @@ interface SidebarState {
 
 /** Read initial collapse state from localStorage (SSR-safe). */
 function readCollapsedFromStorage(): boolean {
-  try {
-    return localStorage.getItem('wc-sidebar-collapsed') === 'true';
-  } catch {
-    return false;
-  }
+  return safeStorage.get('wc-sidebar-collapsed') === 'true';
 }
 
 const initialState: SidebarState = {
