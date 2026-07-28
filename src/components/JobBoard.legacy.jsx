@@ -37,7 +37,6 @@ export default function JobBoard() {
       });
       
       if (response.ok) {
-        alert('Application submitted successfully!');
         setApplicationForm({
           role: '',
           resume: null,

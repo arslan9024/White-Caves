@@ -443,7 +443,7 @@ const UnifiedCRM: React.FC<UnifiedCRMProps> = ({
 
       {/* Content Area */}
       {loading ? (
-        <LoadingSpinner />
+        <LoadingSpinner data-testid="unified-crm-loading-skeleton" />
       ) : (
         <ContentArea>
           {/* Metrics Section */}

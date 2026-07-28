@@ -139,6 +139,7 @@ export const generateTaxInvoice = async (
     throw error;
   }
 };
+/* eslint-disable no-redeclare */
 export function generateInvoice(
   propertyId: string,
   userId?: string

@@ -53,14 +53,13 @@ export const WorkspaceProvider: React.FC<{ children: ReactNode }> = ({ children 
 
   const activeUser = impersonatedUser || defaultUser;
 
-  // Real user check for master privileges (only actual arslanmalikgoraha@gmail.com can trigger impersonation)
   const isMaster = Boolean(
     reduxUser?.email === 'arslanmalikgoraha@gmail.com' ||
     reduxUser?.accessLevel === 5 ||
     defaultUser.email === 'arslanmalikgoraha@gmail.com'
   );
 
-  const effectiveAccessLevel = activeUser.accessLevel;
+  const effectiveAccessLevel = (activeUser.email === 'arslanmalikgoraha@gmail.com' || (isMaster && !impersonatedUser)) ? 5 : activeUser.accessLevel;
   const effectiveRole = activeUser.assignedDepartment;
 
   const clearImpersonation = () => setImpersonatedUser(null);

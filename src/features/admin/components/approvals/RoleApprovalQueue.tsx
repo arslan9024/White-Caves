@@ -107,7 +107,7 @@ const RoleApprovalQueue = () => {
     } catch (error) {
       const err = error as { message?: string };
 
-      alert((error as Error).message || 'Failed to reject request');
+      toast.error((error as Error).message || 'Failed to reject request');
     } finally {
       setLoading(false);
     }

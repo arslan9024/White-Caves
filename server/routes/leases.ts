@@ -24,6 +24,42 @@ import { AuthRequest } from '../middleware/auth.js';
 import { prisma } from '../database.js';
 import logger from '../utils/logger.js';
 
+interface ChequeScheduleItem {
+  chequeNumber: string;
+  bankName: string;
+  dueDate: string;
+  amountAED: number;
+  status: string;
+}
+
+function createPdcSchedule(
+  _leaseId: string,
+  startDate: Date,
+  endDate: Date,
+  monthlyRent: number,
+  bankName = 'Emirates NBD'
+): ChequeScheduleItem[] {
+  const months = Math.max(1, Math.round((endDate.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24 * 30)));
+  const chequeCount = Math.min(12, Math.max(1, months));
+  const annualRent = monthlyRent * 12;
+  const installmentAmount = Math.round(annualRent / chequeCount);
+  const items: ChequeScheduleItem[] = [];
+  const intervalMonths = 12 / chequeCount;
+
+  for (let i = 0; i < chequeCount; i++) {
+    const dueDate = new Date(startDate);
+    dueDate.setMonth(startDate.getMonth() + Math.round(intervalMonths * i));
+    items.push({
+      chequeNumber: `CHQ-${100001 + i}`,
+      bankName,
+      dueDate: dueDate.toISOString().split('T')[0],
+      amountAED: installmentAmount,
+      status: 'Pending',
+    });
+  }
+  return items;
+}
+
 const router = Router();
 
 // ─── GET /api/leases — List leases for current user ─────────────────────────
@@ -306,6 +342,94 @@ router.post(
   })
 );
 
+// ─── POST /api/leases/intake — Full intake wizard (draft + Ejari + PDC) ───────────────────────────────────
+router.post(
+  '/intake',
+  asyncHandler(async (req: AuthRequest, res: Response) => {
+    const userId = req.user?.id;
+    if (!userId) throw new AppError('Authentication required', 401);
+
+    const {
+      propertyId,
+      tenantId,
+      landlordId,
+      startDate,
+      endDate,
+      monthlyRent,
+      depositAmount,
+      ejariNumber,
+      ejariStatus,
+      pdcSchedule,
+    } = req.body;
+
+    if (!propertyId) throw new AppError('propertyId is required', 400);
+    if (!tenantId) throw new AppError('tenantId is required', 400);
+    if (!startDate) throw new AppError('startDate is required', 400);
+    if (!endDate) throw new AppError('endDate is required', 400);
+    if (!monthlyRent || typeof monthlyRent !== 'number' || monthlyRent <= 0) {
+      throw new AppError('monthlyRent must be a positive number', 400);
+    }
+
+    const [property, tenant] = await Promise.all([
+      prisma.property.findUnique({ where: { id: propertyId } }),
+      prisma.user.findUnique({ where: { id: tenantId } }),
+    ]);
+    if (!property) throw new AppError('Property not found', 404);
+    if (!tenant) throw new AppError('Tenant not found', 404);
+
+    const lease = await prisma.lease.create({
+      data: {
+        propertyId,
+        tenantId,
+        landlordId: landlordId || userId,
+        startDate: new Date(startDate),
+        endDate: new Date(endDate),
+        monthlyRent,
+        depositAmount: depositAmount || 0,
+        leaseNumber: null,
+        status: 'draft',
+        documents: [],
+      },
+      include: { property: true, tenant: true, landlord: true },
+    });
+
+    // Auto‑draft Ejari (mock implementation)
+    let ejariResult = null;
+    try {
+      const { ejariMockService } = await import('../services/mock/ejariMockService.js');
+      const activationPayload = {
+        leaseId: lease.id,
+        landlordEmiratesId: ejariNumber || 'LANDLORD‑ID',
+        tenantEmiratesId: 'TENANT‑ID',
+        propertyAddress: property.title + ', ' + property.location,
+        annualRentAED: monthlyRent * 12,
+        leaseStartDate: startDate,
+        leaseEndDate: endDate,
+        paymentFrequency: 'monthly' as const,
+        numberOfCheques: pdcSchedule?.length || 0,
+      };
+      ejariResult = ejariMockService.activateContract(activationPayload);
+    } catch (e) {
+      const { ejariMockService } = await import('../services/mock/ejariMockService.js');
+      ejariResult = ejariMockService.activateContract({
+        leaseId: lease.id,
+        landlordEmiratesId: ejariNumber || 'LANDLORD‑ID',
+        tenantEmiratesId: 'TENANT‑ID',
+        propertyAddress: property.title + ', ' + property.location,
+        annualRentAED: monthlyRent * 12,
+        leaseStartDate: startDate,
+        leaseEndDate: endDate,
+        paymentFrequency: 'monthly' as const,
+        numberOfCheques: pdcSchedule?.length || 0,
+      });
+    }
+
+    logger.info('Lease intake wizard completed', { leaseId: lease.id, userId });
+    res.status(201).json({ success: true, lease, ejari: ejariResult });
+  })
+);
+
+
 // ─── PATCH /api/leases/:id — Update a lease ─────────────────────────────────
 router.patch(
   '/:id',
@@ -400,6 +524,112 @@ router.patch(
     res.json({ success: true, data: updated });
   })
 );
+
+// ─── PATCH /api/leases/:id/renew — Renew a lease
+router.patch(
+  '/:id/renew',
+  asyncHandler(async (req: AuthRequest, res: Response) => {
+    const userId = req.user?.id;
+    if (!userId) throw new AppError('Authentication required', 401);
+
+    const { id } = req.params as Record<string, string>;
+    const { newEndDate, bankName } = req.body as { newEndDate: string; bankName?: string };
+    if (!newEndDate) throw new AppError('newEndDate is required', 400);
+
+    const lease = await prisma.lease.findUnique({ where: { id } });
+    if (!lease) throw new AppError('Lease not found', 404);
+
+    const userRole = req.user?.role;
+    if (lease.landlordId !== userId && userRole !== 'owner') {
+      throw new AppError('Access denied — only landlord or owner can renew lease', 403);
+    }
+
+    const newEnd = new Date(newEndDate);
+    if (isNaN(newEnd.getTime())) throw new AppError('Invalid newEndDate', 400);
+    if (newEnd <= lease.startDate) throw new AppError('newEndDate must be after startDate', 400);
+
+    const schedule = createPdcSchedule(
+      lease.id,
+      lease.startDate,
+      newEnd,
+      lease.monthlyRent,
+      bankName ?? 'Emirates NBD'
+    );
+
+    await prisma.pDCSchedule.createMany({
+      data: schedule.map((item: ChequeScheduleItem) => ({
+        leaseId: lease.id,
+        tenantId: lease.tenantId,
+        chequeNumber: item.chequeNumber,
+        bankName: item.bankName,
+        amount: item.amountAED,
+        dueDate: new Date(item.dueDate),
+        status: item.status.toLowerCase() as any,
+      })),
+    });
+
+    const updated = await prisma.lease.update({
+      where: { id },
+      data: { endDate: newEnd, status: 'renewed' },
+    });
+
+    await prisma.activity.create({
+      data: {
+        userId,
+        type: 'lease',
+        action: 'renew',
+        description: `Lease ${id} renewed to ${newEndDate}`,
+        metadata: { leaseId: id, newEndDate },
+      },
+    });
+
+    logger.info('Lease renewed', { userId, leaseId: id, newEndDate });
+    res.json({ success: true, data: updated, schedule });
+  })
+);
+
+// ─── PATCH /api/leases/:id/terminate — Terminate a lease
+router.patch(
+  '/:id/terminate',
+  asyncHandler(async (req: AuthRequest, res: Response) => {
+    const userId = req.user?.id;
+    if (!userId) throw new AppError('Authentication required', 401);
+
+    const { id } = req.params as Record<string, string>;
+    const { terminationReason } = req.body as { terminationReason?: string };
+
+    const lease = await prisma.lease.findUnique({ where: { id } });
+    if (!lease) throw new AppError('Lease not found', 404);
+
+    const userRole = req.user?.role;
+    if (lease.landlordId !== userId && userRole !== 'owner') {
+      throw new AppError('Access denied — only landlord or owner can terminate lease', 403);
+    }
+
+    const updated = await prisma.lease.update({
+      where: { id },
+      data: {
+        status: 'terminated',
+        terminationDate: new Date(),
+        terminationReason: terminationReason ?? null,
+      },
+    });
+
+    await prisma.activity.create({
+      data: {
+        userId,
+        type: 'lease',
+        action: 'terminate',
+        description: `Lease ${id} terminated${terminationReason ? ': ' + terminationReason : ''}`,
+        metadata: { leaseId: id, terminationReason },
+      },
+    });
+
+    logger.info('Lease terminated', { userId, leaseId: id, terminationReason });
+    res.json({ success: true, data: updated });
+  })
+);
+
 
 // ─── DELETE /api/leases/:id — Delete a lease (draft only) ───────────────────
 router.delete(

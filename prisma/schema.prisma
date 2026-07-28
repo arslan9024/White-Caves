@@ -664,6 +664,8 @@ model Lease {
   depositAmount Float    @default(0)
   currency      String   @default("AED")  // AED, USD, EUR, GBP, INR
   status        String   @default("draft") // draft, active, expiring, expired, terminated, renewed
+  terminationDate DateTime? // Date lease was terminated
+  terminationReason String?  // Reason for termination
   terms         String?
   documents     String[]
   nextPaymentDue DateTime?

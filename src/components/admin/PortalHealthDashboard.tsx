@@ -1,5 +1,11 @@
 import React, { useEffect, useState } from 'react';
 
+interface SyncLogError {
+  listingId?: string;
+  code?: string;
+  message?: string;
+}
+
 interface SyncLog {
   id: string;
   portal: string;
@@ -9,20 +15,26 @@ interface SyncLog {
   totalSynced: number;
   totalFailed: number;
   totalSkipped: number;
-  errors: any;
+  errors: SyncLogError[] | string | null;
 }
+
+type PortalSyncStatus = {
+  propertyfinder?: SyncLog;
+  bayut?: SyncLog;
+};
 
 export const PortalHealthDashboard: React.FC = () => {
   const [logs, setLogs] = useState<SyncLog[]>([]);
-  const [latest, setLatest] = useState<{ propertyfinder?: SyncLog; bayut?: SyncLog }>({});
+  const [latest, setLatest] = useState<PortalSyncStatus>({});
   const [loading, setLoading] = useState(true);
   const [syncing, setSyncing] = useState<string | null>(null);
 
   const fetchHealth = async () => {
     try {
+      const token = typeof localStorage !== 'undefined' && localStorage?.getItem ? localStorage.getItem('token') : null;
       const res = await fetch('/api/v1/portals/health', {
         headers: {
-          Authorization: `Bearer ${localStorage.getItem('token')}`,
+          Authorization: `Bearer ${token}`,
         },
       });
       const data = await res.json();
@@ -156,11 +168,11 @@ export const PortalHealthDashboard: React.FC = () => {
                   {log.totalSynced} / {log.totalSkipped} / {log.totalFailed}
                 </td>
                 <td className="px-6 py-4">
-                  {log.errors && log.errors.length > 0 ? (
+                  {log.errors && Array.isArray(log.errors) && log.errors.length > 0 ? (
                     <div className="max-h-20 overflow-y-auto text-xs text-red-600">
-                      {log.errors.map((e: any, i: number) => (
+                      {(log.errors as SyncLogError[]).map((e: SyncLogError, i: number) => (
                         <div key={i}>
-                          {e.id}: {e.reason}
+                          {e.listingId}: {e.message ?? e.code}
                         </div>
                       ))}
                     </div>

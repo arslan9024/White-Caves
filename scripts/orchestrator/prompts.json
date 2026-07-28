@@ -1,15 +1,15 @@
 {
   "DU001": {
     "v": 1,
-    "agent": "@Timnit",
-    "action": "DRAFT",
-    "target": "dld-integration.md",
-    "prompt": "@Timnit -- DRAFT: dld-integration.md -> add end-to-end Oqood registration workflow including payload schema, retries, exception handling, and settlement checkpoints",
+    "agent": "@S5",
+    "action": "EXPAND",
+    "target": "wave-16-security-hardening.md",
+    "prompt": "@S5 -- EXPAND: wave-16-security-hardening.md -> add CSRF coverage plan for all mutation routes, token issuance, validation points, and rollout verification",
     "tags": [
-      "compliance",
+      "security",
       "api"
     ],
-    "lastUsed": "2026-07-22",
+    "lastUsed": "2026-07-28",
     "successCount": 0,
     "history": []
   },

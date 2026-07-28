@@ -8,6 +8,7 @@ export default function AppointmentScheduler({ propertyId, agentId }) {
   const [selectedDate, setSelectedDate] = useState(null);
   const [isRescheduling, setIsRescheduling] = useState(false);
   const [existingAppointment, setExistingAppointment] = useState(null);
+  const [statusMsg, setStatusMsg] = useState(null);
 
   const handleSchedule = async () => {
     try {
@@ -24,13 +25,12 @@ export default function AppointmentScheduler({ propertyId, agentId }) {
       });
       
       if (response.ok) {
-        alert(isRescheduling ? 'Appointment rescheduled successfully!' : 'Appointment scheduled successfully!');
+        setStatusMsg(isRescheduling ? 'Appointment rescheduled successfully!' : 'Appointment scheduled successfully!');
         setSelectedDate(null);
         setIsRescheduling(false);
       }
     } catch (error) {
-      
-      alert('Failed to schedule appointment');
+      setStatusMsg('Failed to schedule appointment');
     }
   };
 

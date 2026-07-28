@@ -187,7 +187,7 @@ const LeaderboardTab: React.FC<LeaderboardTabProps> = ({ data }) => {
 
   const currentList: Agent[] =
     activeTrack === 'sales'
-      ? dualTrack.trackASales.map((item, idx) => ({
+      ? dualTrack.trackASales.map((item: any, idx: number) => ({
           id: item.id,
           name: item.name,
           rank: idx + 1,
@@ -199,7 +199,7 @@ const LeaderboardTab: React.FC<LeaderboardTabProps> = ({ data }) => {
           voucherRewardAed: item.voucherRewardAed,
           uncappedRateLock: item.uncappedRateLock,
         }))
-      : dualTrack.trackBLeasing.map((item, idx) => ({
+      : dualTrack.trackBLeasing.map((item: any, idx: number) => ({
           id: item.id,
           name: item.name,
           rank: idx + 1,

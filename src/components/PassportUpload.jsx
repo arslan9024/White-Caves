@@ -5,6 +5,7 @@ import Loading from './Loading';
 
 export default function PassportUpload({ userId, onUploadComplete }) {
   const [loading, setLoading] = useState(false);
+  const [statusMsg, setStatusMsg] = useState('');
   const [passportData, setPassportData] = useState({
     documentNumber: '',
     expiryDate: '',
@@ -21,11 +22,12 @@ export default function PassportUpload({ userId, onUploadComplete }) {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
+    setStatusMsg('');
 
     const formData = new FormData();
-    formData.append('passportFile', passportData.file);
     formData.append('documentNumber', passportData.documentNumber);
     formData.append('expiryDate', passportData.expiryDate);
+    formData.append('file', passportData.file);
 
     try {
       const response = await fetch(`/api/users/${userId}/passport`, {
@@ -35,13 +37,12 @@ export default function PassportUpload({ userId, onUploadComplete }) {
 
       if (response.ok) {
         onUploadComplete && onUploadComplete();
-        alert('Passport uploaded successfully!');
+        setStatusMsg('Passport uploaded successfully!');
       } else {
-        alert('Failed to upload passport');
+        setStatusMsg('Failed to upload passport');
       }
     } catch (error) {
-      
-      alert('Error uploading passport');
+      setStatusMsg('Error uploading passport');
     } finally {
       setLoading(false);
     }
@@ -53,6 +54,7 @@ export default function PassportUpload({ userId, onUploadComplete }) {
     <div className="passport-upload">
       <h3>Upload Passport</h3>
       <p>Please upload your passport to verify your profile</p>
+      {statusMsg && <div className="status-msg">{statusMsg}</div>}
       
       <form onSubmit={handleSubmit} className="passport-form">
         <input

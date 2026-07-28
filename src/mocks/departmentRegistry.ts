@@ -1,5 +1,5 @@
 // Department registry for White Caves Real Estate LLC
-export type DepartmentID = 'sales' | 'operations' | 'communications' | 'finance' | 'marketing' | 'executive' | 'compliance' | 'technology' | 'legal' | 'intelligence';
+export type DepartmentID = 'sales' | 'operations' | 'communications' | 'finance' | 'marketing' | 'executive' | 'compliance' | 'technology' | 'legal' | 'intelligence' | 'leasing' | 'maintenance';
 
 export type AIAssistantName = 'Clara' | 'Sophia' | 'Nadia' | 'Mary' | 'Nancy' | 'Daisy' | 'Sentinel' | 'Nina' | 'Theodora' | 'Olivia' | 'Zoe' | 'Laila' | 'Aurora' | 'Hazel' | 'Willow' | 'Evangeline';
 
@@ -364,6 +364,60 @@ export const DEPARTMENT_REGISTRY: Record<DepartmentID, DepartmentRegistryEntry> 
     primaryTools: ['Sentinel Deep Intelligence Hub', 'Data Ingestion Engines'],
     kpis: ['Insight Accuracy', 'Prediction Success Rate', 'Market Intelligence Timeliness'],
     apiIntegrationPoints: ['/api/intelligence', '/api/iot', '/api/analytics'],
+  },
+  leasing: {
+    id: 'leasing',
+    name: 'Leasing & Tenancy Department',
+    colorHex: '#EF4444',
+    leadAIAssistants: [
+      {
+        name: 'Daisy',
+        roleTitle: 'Leasing Lifecycle Administrator',
+        primaryFocus: 'Ejari registration, PDC cheque tracking, and renewal cycles',
+        capabilities: ['ejari_registration', 'pdc_tracking', 'renewal_automation', 'tenant_vetting'],
+        isPremiumModel: true,
+        contextMemoryTokenLimit: 128000,
+      },
+    ],
+    keyResponsibilities: [
+      'Ejari registration & RERA tenancy contracts',
+      'Post-dated cheque (PDC) management',
+      'Tenant onboarding & KYC verification',
+      'Lease renewal & early termination processing',
+      'Bounced cheque & eviction workflows (Form 12)',
+      'Rental yield reporting',
+    ],
+    teamSizeHumanAgents: 9,
+    primaryTools: ['Daisy Leasing Hub', 'Ejari Registration Portal', 'PDC Tracker'],
+    kpis: ['Ejari Completion Rate', 'PDC Default Rate', 'Renewal Rate', 'Tenant Satisfaction Score'],
+    apiIntegrationPoints: ['/api/leasing', '/api/tenancy', '/api/ejari'],
+  },
+  maintenance: {
+    id: 'maintenance',
+    name: 'Maintenance & Facilities Department',
+    colorHex: '#EF4444',
+    leadAIAssistants: [
+      {
+        name: 'Sentinel',
+        roleTitle: 'IoT Asset & Maintenance Telemetry Watcher',
+        primaryFocus: 'Real-time structural health monitoring and maintenance ticket triage',
+        capabilities: ['anomaly_detection', 'maintenance_triggers', 'vendor_dispatch', 'sla_monitoring'],
+        isPremiumModel: false,
+        contextMemoryTokenLimit: 64000,
+      },
+    ],
+    keyResponsibilities: [
+      'Maintenance ticket management & triage',
+      'Facility inspection scheduling',
+      'Vendor coordination & SLA enforcement',
+      'IoT sensor monitoring (DAMAC Hills 2)',
+      'Preventive maintenance planning',
+      'Common area upkeep & handover inspections',
+    ],
+    teamSizeHumanAgents: 9,
+    primaryTools: ['Sentinel IoT Monitor', 'Maintenance Ticket System', 'Vendor Management Portal'],
+    kpis: ['Ticket Resolution Time', 'First-Call Fix Rate', 'Tenant Satisfaction Score', 'SLA Compliance %'],
+    apiIntegrationPoints: ['/api/maintenance', '/api/facilities', '/api/iot'],
   },
 } as const;
 

@@ -76,9 +76,8 @@ const PropertyDetailPage = () => {
       } catch (err) {
         
       }
-    } else {
       navigator.clipboard.writeText(window.location.href);
-      alert('Link copied to clipboard!');
+      // Link copied to clipboard
     }
   };
 

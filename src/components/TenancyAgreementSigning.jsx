@@ -14,6 +14,7 @@ export default function TenancyAgreementSigning() {
   const [signing, setSigning] = useState(false);
   const [rejectionReason, setRejectionReason] = useState('');
   const [userEmail, setUserEmail] = useState('');
+  const [feedbackMsg, setFeedbackMsg] = useState('');
   const signatureRef = useRef(null);
 
   useEffect(() => {
@@ -38,6 +39,7 @@ export default function TenancyAgreementSigning() {
     setSelectedAgreement(agreement);
     setUserRole(role);
     setUserEmail(currentUser?.email || '');
+    setFeedbackMsg('');
     setShowSignatureModal(true);
   };
 
@@ -45,6 +47,7 @@ export default function TenancyAgreementSigning() {
     setSelectedAgreement(agreement);
     setUserRole(role);
     setRejectionReason('');
+    setFeedbackMsg('');
     setShowRejectModal(true);
   };
 
@@ -53,25 +56,23 @@ export default function TenancyAgreementSigning() {
     setShowRejectModal(false);
     setSelectedAgreement(null);
     setUserRole(null);
-    setUserEmail('');
     setRejectionReason('');
-    if (signatureRef.current) {
-      signatureRef.current.clear();
-    }
+    setFeedbackMsg('');
   };
 
   const handleSign = async () => {
     if (!signatureRef.current || signatureRef.current.isEmpty()) {
-      alert('Please provide a signature');
+      setFeedbackMsg('Please provide a signature');
       return;
     }
 
     if (!userEmail || !userEmail.includes('@')) {
-      alert('Please enter a valid email address');
+      setFeedbackMsg('Please enter a valid email address');
       return;
     }
 
     setSigning(true);
+    setFeedbackMsg('');
     const signatureData = signatureRef.current.toDataURL();
 
     try {
@@ -94,15 +95,14 @@ export default function TenancyAgreementSigning() {
         setAgreements(agreements.map(a => 
           a._id === updatedAgreement._id ? updatedAgreement : a
         ));
-        alert('Agreement signed successfully! ✓');
         closeModals();
       } else {
         const error = await response.json();
-        alert(error.error || 'Failed to sign agreement');
+        setFeedbackMsg(error.error || 'Failed to sign agreement');
       }
     } catch (error) {
       
-      alert('Failed to sign agreement');
+      setFeedbackMsg('Failed to sign agreement');
     } finally {
       setSigning(false);
     }
@@ -110,11 +110,12 @@ export default function TenancyAgreementSigning() {
 
   const handleReject = async () => {
     if (!rejectionReason.trim()) {
-      alert('Please provide a reason for rejection');
+      setFeedbackMsg('Please provide a reason for rejection');
       return;
     }
 
     setSigning(true);
+    setFeedbackMsg('');
 
     try {
       const response = await fetch(`/api/tenancy-agreements/${selectedAgreement._id}/reject`, {
@@ -134,15 +135,14 @@ export default function TenancyAgreementSigning() {
         setAgreements(agreements.map(a => 
           a._id === updatedAgreement._id ? updatedAgreement : a
         ));
-        alert('Agreement rejected');
         closeModals();
       } else {
         const error = await response.json();
-        alert(error.error || 'Failed to reject agreement');
+        setFeedbackMsg(error.error || 'Failed to reject agreement');
       }
     } catch (error) {
       
-      alert('Failed to reject agreement');
+      setFeedbackMsg('Failed to reject agreement');
     } finally {
       setSigning(false);
     }

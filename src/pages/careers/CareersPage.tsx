@@ -5,6 +5,7 @@ export function CareersPage() {
   const [jobs, setJobs] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [selectedJob, setSelectedJob] = useState<any | null>(null);
+  const [submitStatus, setSubmitStatus] = useState<{ type: 'success' | 'error'; message: string } | null>(null);
 
   useEffect(() => {
     fetch('/api/v1/careers')
@@ -40,6 +41,7 @@ export function CareersPage() {
 
   const handleApply = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    setSubmitStatus(null);
     const formData = new FormData(e.currentTarget);
     try {
       const res = await fetch('/api/v1/careers/applications', {
@@ -58,11 +60,13 @@ export function CareersPage() {
       });
       const data = await res.json();
       if (data.success) {
-        alert('Application submitted successfully! Check your email for acknowledgement.');
+        setSubmitStatus({ type: 'success', message: 'Application submitted successfully! Check your email for acknowledgement.' });
         setSelectedJob(null);
+      } else {
+        setSubmitStatus({ type: 'error', message: data.message || 'Failed to submit application' });
       }
     } catch (err) {
-      alert('Failed to submit application');
+      setSubmitStatus({ type: 'error', message: 'Failed to submit application' });
     }
   };
 
@@ -73,6 +77,12 @@ export function CareersPage() {
       <h1 className="text-4xl font-bold mb-8 text-center text-gray-900">
         Join White Caves Real Estate
       </h1>
+
+      {submitStatus && (
+        <div className={`mb-6 p-4 rounded-lg font-medium text-center ${submitStatus.type === 'success' ? 'bg-green-100 text-green-800 border border-green-300' : 'bg-red-100 text-red-800 border border-red-300'}`}>
+          {submitStatus.message}
+        </div>
+      )}
 
       {/* W25-013: JSON-LD Structured Data */}
       {jobs.map(job => (

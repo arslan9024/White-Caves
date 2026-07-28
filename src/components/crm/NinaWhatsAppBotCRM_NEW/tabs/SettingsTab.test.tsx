@@ -1,6 +1,6 @@
 import React from 'react';
 import { render, screen, fireEvent, act } from '@testing-library/react';
-import { describe, it, expect, vi, afterEach } from 'vitest';
+import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { NinaSettingsTab } from './SettingsTab';
 
 // ── helpers ──────────────────────────────────────────────────────────────────
@@ -12,9 +12,17 @@ const makeData = () => ({
 // ── suite ─────────────────────────────────────────────────────────────────────
 describe('NinaSettingsTab', () => {
   let alertSpy: ReturnType<typeof vi.spyOn>;
+  let fetchMock: ReturnType<typeof vi.fn>;
+
+  beforeEach(() => {
+    // Mock fetch to avoid jsdom "Invalid URL" for relative paths
+    fetchMock = vi.fn().mockResolvedValue(new Response(JSON.stringify({ ok: true })));
+    vi.stubGlobal('fetch', fetchMock);
+  });
 
   afterEach(() => {
     vi.restoreAllMocks();
+    vi.unstubAllGlobals();
   });
 
   // ── 1 ──────────────────────────────────────────────────────────────────────
@@ -47,10 +55,15 @@ describe('NinaSettingsTab', () => {
   });
 
   // ── 5 ──────────────────────────────────────────────────────────────────────
-  it('saved banner auto-hides after 4 seconds', () => {
+  it('saved banner auto-hides after 4 seconds', async () => {
     vi.useFakeTimers();
     render(<NinaSettingsTab data={makeData()} />);
-    fireEvent.click(screen.getByRole('button', { name: /Save Settings/i }));
+
+    await act(async () => {
+      fireEvent.click(screen.getByRole('button', { name: /Save Settings/i }));
+      // Flush the fetch promise
+      await fetchMock.mock.results[0]?.value;
+    });
 
     expect(screen.getByRole('status')).toBeInTheDocument();
 

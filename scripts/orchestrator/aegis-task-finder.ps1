@@ -11,6 +11,10 @@ Write-Host "=============================================" -ForegroundColor Cyan
 Write-Host "  AEGIS Autopilot Task Finder & Planner" -ForegroundColor Cyan
 Write-Host "=============================================" -ForegroundColor Cyan
 
+# 0. Execute AEGIS Autonomous Issue Discovery Engine
+Write-Host "Running AEGIS Autonomous Issue & Gap Discovery Engine..." -ForegroundColor Yellow
+node scripts/orchestrator/aegis-autopilot-scanner.js
+
 # 1. Scan plans/waves for pending tasks
 Write-Host "Scanning Wave Backlogs for pending tasks..." -ForegroundColor Yellow
 

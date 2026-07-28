@@ -90,3 +90,28 @@
 ## 🟢 Wave 26 Backlog (Production Quality, Test Reliability & TODO Resolution)
 
 - **Task**: Address codebase cleanup, test suite reliability, developer TODO resolutions, and final executive UI validation.
+
+---
+
+## 🟢 Wave 27 Backlog (Autonomous Unit Test Expansion & Verification)
+
+- **Task**: [`WAVE_27_IMPLEMENTATION_BACKLOG.md`](./waves/WAVE_27_IMPLEMENTATION_BACKLOG.md) — Create test suites for `PropertySearchPanel`, `DocumentGenerationPanel`, and `SubagentCollaborationPanel`.
+
+---
+
+## 🟢 Wave 28 Backlog (Admin Cockpit & Portal Health Unit Test Suites + Strict Type Refactoring)
+
+- **Task**: [`WAVE_28_IMPLEMENTATION_BACKLOG.md`](./waves/WAVE_28_IMPLEMENTATION_BACKLOG.md) — Create test suites for `PortalHealthDashboard`, `useAdminDashboardData`, and refactor strict types.
+
+---
+
+## 🟢 Wave 29 Backlog (Advanced PWA Offline Write & Conflict-Free Replicated Data Engine)
+
+- **Task**: [`WAVE_29_IMPLEMENTATION_BACKLOG.md`](./waves/WAVE_29_IMPLEMENTATION_BACKLOG.md) — Implement CRDT state engine, offline viewing notes hook, and conflict toast.
+
+---
+
+## 🟢 Wave 30 Backlog (AI Predictive UX & Mouse Trajectory Pre-Fetch Engine)
+
+- **Task**: [`WAVE_30_IMPLEMENTATION_BACKLOG.md`](./waves/WAVE_30_IMPLEMENTATION_BACKLOG.md) — Implement mouse trajectory vector calculation and predictive prefetch hook.
+

@@ -52,22 +52,25 @@ export default function ServiceTracker({ userId, userRole }) {
     return { valid: true };
   };
 
+  const [errorMsg, setErrorMsg] = useState('');
+
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setErrorMsg('');
 
     const validation = await validateServiceDependencies(newService.serviceType);
     if (!validation.valid) {
-      alert(validation.message);
+      setErrorMsg(validation.message);
       return;
     }
 
     if (newService.serviceType === 'FORM_F') {
       // Validate security cheque
-      const offerPrice = property.price; // Needs to be fetched from somewhere
+      const offerPrice = property?.price || 0; // Needs to be fetched from somewhere
       const requiredAmount = offerPrice * 0.1;
 
       if (securityCheque.amount < requiredAmount || securityCheque.chequeNumber === '' || securityCheque.bankName === '') {
-        alert(`Security cheque must be at least 10% of offer price (${requiredAmount} AED), and all fields must be filled.`);
+        setErrorMsg(`Security cheque must be at least 10% of offer price (${requiredAmount} AED), and all fields must be filled.`);
         return;
       }
       // Add securityCheque to the request body
@@ -95,6 +98,7 @@ export default function ServiceTracker({ userId, userRole }) {
   return (
     <div className="service-tracker">
       <h2>Service History</h2>
+      {errorMsg && <div className="error-banner" style={{ color: '#EF4444', marginBottom: '12px', fontWeight: 600 }}>{errorMsg}</div>}
 
       <form onSubmit={handleSubmit} className="service-form">
         <select

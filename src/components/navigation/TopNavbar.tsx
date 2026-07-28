@@ -1,4 +1,4 @@
-import React, { FC, useState } from 'react';
+import React, { FC, useState, useEffect } from 'react';
 import { useNavigate, Link, useLocation } from 'react-router-dom';
 import { Search, Bell, Shield, User as UserIcon, LogOut, Home, LayoutDashboard } from 'lucide-react';
 import { useWorkspace } from '../../context/WorkspaceContext';
@@ -18,6 +18,18 @@ export const TopNavbar: FC = () => {
   } = useWorkspace();
 
   const [searchQuery, setSearchQuery] = useState('');
+  const searchInputRef = React.useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'k') {
+        e.preventDefault();
+        searchInputRef.current?.focus();
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, []);
 
   const handleImpersonationChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const selectedId = e.target.value;
@@ -51,9 +63,10 @@ export const TopNavbar: FC = () => {
         <form onSubmit={handleSearchSubmit} className="top-navbar-search">
           <Search size={15} className="top-navbar-search-icon" />
           <input
+            ref={searchInputRef}
             type="text"
             className="top-navbar-search-input"
-            placeholder="Global Search (Properties, Leads, Form 7...)"
+            placeholder="Global Search (Ctrl+K to focus)..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
           />

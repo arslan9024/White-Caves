@@ -30,7 +30,6 @@ export default function JobApplicants() {
       });
       
       if (response.ok) {
-        alert('Application status updated successfully!');
         fetchApplications();
         setSelectedApplication(null);
       }

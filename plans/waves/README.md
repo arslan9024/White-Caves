@@ -28,9 +28,10 @@ Each wave should be executed only in roadmap order.
 | 24   | WhatsApp automation, AI chat engine & in-app notification centre          | ✅ Complete | [`SDD`](./WAVE_24_SDD.md) | [`Readiness`](./WAVE_24_READINESS_PACKET.md) | [`Backlog`](./WAVE_24_IMPLEMENTATION_BACKLOG.md) | [`Tests`](./WAVE_24_TEST_ROLLOUT.md) |
 | 25   | Portal syndication, careers, community management & advanced SEO          | ✅ Complete | [`SDD`](./WAVE_25_SDD.md) | [`Readiness`](./WAVE_25_READINESS_PACKET.md) | [`Backlog`](./WAVE_25_IMPLEMENTATION_BACKLOG.md) | [`Tests`](./WAVE_25_TEST_ROLLOUT.md) |
 | 26   | Production quality, test reliability, TODO resolution & executive UI      | ✅ Complete | —                         | —                                            | [`Backlog`](./WAVE_26_IMPLEMENTATION_BACKLOG.md) | —                                    |
-| 27   | Micro-Frontend Module Federation & Isolation                              | ✅ Complete | —                         | —                                            | —                                    | —                                    |
-| 28   | Multi-Agent Real-Time Co-Browsing Canvas                                  | ✅ Complete | —                         | —                                            | —                                    | —                                    |
-| 29   | Advanced PWA Offline Write & Conflict-Free Replicated Data (CRDT)        | ✅ Complete | —                         | —                                            | —                                    | —                                    |
+| 27   | Autonomous unit test expansion, design token standardization & verification | ✅ Complete  | —                         | —                                            | [`Backlog`](./WAVE_27_IMPLEMENTATION_BACKLOG.md) | —                                    |
+| 28   | Admin Cockpit & Portal Health Unit Test Suites + Strict Type Refactoring   | ✅ Complete | —                         | —                                            | [`Backlog`](./WAVE_28_IMPLEMENTATION_BACKLOG.md) | —                                    |
+| 29   | Advanced PWA Offline Write & Conflict-Free Replicated Data Engine         | ✅ Complete | —                         | —                                            | [`Backlog`](./WAVE_29_IMPLEMENTATION_BACKLOG.md) | —                                    |
+| 30   | AI Predictive UX & Auto-Form Pre-Fill Engine                                | 🟢 Active   | —                         | —                                            | [`Backlog`](./WAVE_30_IMPLEMENTATION_BACKLOG.md) | —                                    |
 
 ## Notes
 

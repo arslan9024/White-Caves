@@ -24,7 +24,7 @@ export const ApplicationKanban: React.FC = () => {
 
   useEffect(() => {
     fetch('/api/v1/careers/applications', {
-      headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
+      headers: { Authorization: `Bearer ${localStorage?.getItem?.('token')}` },
     })
       .then(res => res.json())
       .then(data => {
@@ -50,7 +50,7 @@ export const ApplicationKanban: React.FC = () => {
         method: 'PATCH',
         headers: {
           'Content-Type': 'application/json',
-          Authorization: `Bearer ${localStorage.getItem('token')}`,
+          Authorization: `Bearer ${localStorage?.getItem?.('token')}`,
         },
         body: JSON.stringify({ stage }),
       });

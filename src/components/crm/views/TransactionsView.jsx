@@ -43,6 +43,13 @@ export default function TransactionsView() {
   const [modalMode, setModalMode] = useState('view');
   const [editForm, setEditForm] = useState({});
   const [importing, setImporting] = useState(false);
+  const [toasts, setToasts] = useState([]);
+
+  const showToast = useCallback((message, color = '#EF4444') => {
+    const id = Date.now();
+    setToasts(prev => [...prev, { id, message, color }]);
+    setTimeout(() => setToasts(prev => prev.filter(t => t.id !== id)), 3200);
+  }, []);
 
   const fetchTransactions = useCallback(async () => {
     setLoading(true);
@@ -157,8 +164,7 @@ export default function TransactionsView() {
       fetchTransactions();
       fetchStats();
     } catch (error) {
-      
-      alert('Failed to save transaction');
+      showToast('Failed to save transaction', '#EF4444');
     }
   };
 
@@ -186,13 +192,12 @@ export default function TransactionsView() {
         headers: { 'Content-Type': 'multipart/form-data' }
       });
       if (response.data.success) {
-        alert(`Successfully imported ${response.data.imported} transactions`);
+        showToast(`Successfully imported ${response.data.imported} transactions`, '#10B981');
         fetchTransactions();
         fetchStats();
       }
     } catch (error) {
-      
-      alert('Failed to import file');
+      showToast('Failed to import file', '#EF4444');
     } finally {
       setImporting(false);
       e.target.value = '';
@@ -1145,6 +1150,20 @@ export default function TransactionsView() {
           }
         }
       `}</style>
+      {toasts.length > 0 && (
+        <div style={{ position: 'fixed', bottom: '24px', right: '24px', zIndex: 9999, display: 'flex', flexDirection: 'column', gap: '10px', pointerEvents: 'none' }}>
+          {toasts.map(t => (
+            <div
+              key={t.id}
+              role={t.color === '#10B981' ? 'status' : 'alert'}
+              data-testid="transactions-status-banner"
+              style={{ background: t.color, color: '#FFFFFF', padding: '12px 18px', borderRadius: '10px', fontWeight: 600, fontSize: '0.85rem', boxShadow: '0 4px 20px rgba(0,0,0,0.18)', maxWidth: '360px' }}
+            >
+              {t.message}
+            </div>
+          ))}
+        </div>
+      )}
     </div>
   );
 }

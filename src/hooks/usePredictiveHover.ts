@@ -1,59 +1,77 @@
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useCallback, useState } from 'react';
 
-type ImportFn = () => Promise<any>;
-const prefetchRegistry = new Map<string, ImportFn>();
+export interface PredictivePoint {
+  x: number;
+  y: number;
+  time: number;
+}
 
-/**
- * Registers a route dynamic import function for pre-fetching.
- */
-export const registerPrefetch = (route: string, importFn: ImportFn) => {
-  prefetchRegistry.set(route, importFn);
-};
-
-/**
- * Manually trigger the dynamic import of a registered route.
- */
-export const prefetchRoute = (route: string) => {
-  const importFn = prefetchRegistry.get(route);
-  if (importFn) {
-    importFn().catch(() => {});
-  }
-};
+export interface PredictiveTarget {
+  id: string;
+  bounds: { left: number; top: number; right: number; bottom: number };
+  onPrefetch: () => void;
+}
 
 /**
- * Custom hook to pre-load route dynamic imports when user hovers over a link
- * for more than 80ms, indicating a high-probability click intent.
+ * Hook that calculates mouse velocity & trajectory to trigger predictive prefetching
+ * before hover completes.
  */
-export const usePredictiveHover = () => {
-  const hoverTimeoutRef = useRef<number | null>(null);
+export function usePredictiveHover(targets: PredictiveTarget[] = [], minVelocity: number = 0.5) {
+  const lastMousePos = useRef<PredictivePoint | null>(null);
+  const [prefetchedIds, setPrefetchedIds] = useState<string[]>([]);
 
-  const handleMouseEnter = (route: string) => {
-    if (hoverTimeoutRef.current) {
-      clearTimeout(hoverTimeoutRef.current);
-    }
-    // Hover duration >= 80ms indicates high navigation intent
-    hoverTimeoutRef.current = window.setTimeout(() => {
-      prefetchRoute(route);
-    }, 80);
-  };
+  const checkTrajectoryIntersection = useCallback(
+    (current: PredictivePoint, previous: PredictivePoint) => {
+      const dx = current.x - previous.x;
+      const dy = current.y - previous.y;
+      const dt = current.time - previous.time || 1;
 
-  const handleMouseLeave = () => {
-    if (hoverTimeoutRef.current) {
-      clearTimeout(hoverTimeoutRef.current);
-      hoverTimeoutRef.current = null;
-    }
-  };
+      const velocity = Math.sqrt(dx * dx + dy * dy) / dt;
+      if (velocity < minVelocity) return;
+
+      // Project mouse position 200ms into the future
+      const projectedX = current.x + dx * 5;
+      const projectedY = current.y + dy * 5;
+
+      targets.forEach((target) => {
+        if (prefetchedIds.includes(target.id)) return;
+
+        const { left, top, right, bottom } = target.bounds;
+        const isProjectedInside =
+          projectedX >= left && projectedX <= right && projectedY >= top && projectedY <= bottom;
+
+        if (isProjectedInside) {
+          target.onPrefetch();
+          setPrefetchedIds((prev) => [...prev, target.id]);
+        }
+      });
+    },
+    [targets, minVelocity, prefetchedIds]
+  );
 
   useEffect(() => {
-    return () => {
-      if (hoverTimeoutRef.current) {
-        clearTimeout(hoverTimeoutRef.current);
+    const handleMouseMove = (e: MouseEvent) => {
+      const currentPoint: PredictivePoint = { x: e.clientX, y: e.clientY, time: Date.now() };
+
+      if (lastMousePos.current) {
+        checkTrajectoryIntersection(currentPoint, lastMousePos.current);
       }
+
+      lastMousePos.current = currentPoint;
     };
+
+    window.addEventListener('mousemove', handleMouseMove);
+    return () => {
+      window.removeEventListener('mousemove', handleMouseMove);
+    };
+  }, [checkTrajectoryIntersection]);
+
+  const clearPrefetched = useCallback(() => {
+    setPrefetchedIds([]);
   }, []);
 
   return {
-    onMouseEnter: handleMouseEnter,
-    onMouseLeave: handleMouseLeave,
+    prefetchedIds,
+    clearPrefetched,
   };
-};
+}

@@ -22,6 +22,12 @@ const SettingsTab: React.FC<SettingsTabProps> = ({ data: _data, onAction, onSave
     darkMode: false,
   });
   const [saved, setSaved] = useState(false);
+  const [notificationError, setNotificationError] = useState<string | null>(null);
+
+  const showNotifError = (msg: string) => {
+    setNotificationError(msg);
+    setTimeout(() => setNotificationError(null), 4000);
+  };
 
   const handleChange = (key: string, value: string | boolean) => {
     setSettings(prev => ({ ...prev, [key]: value }));
@@ -31,7 +37,7 @@ const SettingsTab: React.FC<SettingsTabProps> = ({ data: _data, onAction, onSave
   const handlePushToggle = async (checked: boolean) => {
     if (checked) {
       if (!('Notification' in window)) {
-        alert('This browser does not support push notifications.');
+        showNotifError('This browser does not support push notifications.');
         return;
       }
       try {
@@ -39,7 +45,7 @@ const SettingsTab: React.FC<SettingsTabProps> = ({ data: _data, onAction, onSave
         if (permission === 'granted') {
           handleChange('pushNotifications', true);
         } else {
-          alert('Notification permission denied.');
+          showNotifError('Notification permission denied.');
           handleChange('pushNotifications', false);
         }
       } catch (error) {
@@ -77,6 +83,11 @@ const SettingsTab: React.FC<SettingsTabProps> = ({ data: _data, onAction, onSave
       {saved && (
         <div className="crud-toast" role="status">
           ✅ Settings saved successfully
+        </div>
+      )}
+      {notificationError && (
+        <div className="crud-toast error" role="status" style={{ background: '#EF4444' }}>
+          ⚠️ {notificationError}
         </div>
       )}
       <div className="tab-header">

@@ -206,33 +206,35 @@ export const AdminUsersPanel = ({
     </S.SectionHeader>
 
     <S.UsersTable>
-      <thead>
-        <tr>
-          <th>User</th>
-          <th>Role</th>
-          <th>Status</th>
-          <th>Last Active</th>
-          <th>Actions</th>
-        </tr>
-      </thead>
-      <tbody>
-        {paginatedUsers.map(user => (
-          <tr key={user.id}>
-            <td>{user.name}</td>
-            <td>
-              <S.RoleBadge $role={user.role}>{user.role}</S.RoleBadge>
-            </td>
-            <td>
-              <S.StatusBadge $status={user.status}>{user.status}</S.StatusBadge>
-            </td>
-            <td>{user.lastActive}</td>
-            <td>
-              <S.ActionBtn>Edit</S.ActionBtn>
-              {user.status === 'active' && <S.ActionBtn $danger>Suspend</S.ActionBtn>}
-            </td>
+      <table>
+        <thead>
+          <tr>
+            <th>User</th>
+            <th>Role</th>
+            <th>Status</th>
+            <th>Last Active</th>
+            <th>Actions</th>
           </tr>
-        ))}
-      </tbody>
+        </thead>
+        <tbody>
+          {paginatedUsers.map(user => (
+            <tr key={user.id}>
+              <td>{user.name}</td>
+              <td>
+                <S.RoleBadge $role={user.role}>{user.role}</S.RoleBadge>
+              </td>
+              <td>
+                <S.StatusBadge $status={user.status}>{user.status}</S.StatusBadge>
+              </td>
+              <td>{user.lastActive}</td>
+              <td>
+                <S.ActionBtn>Edit</S.ActionBtn>
+                {user.status === 'active' && <S.ActionBtn $danger>Suspend</S.ActionBtn>}
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
     </S.UsersTable>
 
     {usersTotalPages > 1 && (

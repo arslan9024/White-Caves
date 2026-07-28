@@ -40,6 +40,7 @@ interface InvoiceRecord extends Invoice {
   totalAmount?: number;
   notes?: string;
   vatAmount?: number;
+  createdAt?: string | Date;
 }
 
 interface ExpenseRecord extends Expense {

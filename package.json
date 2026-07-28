@@ -79,6 +79,8 @@
     "orchestrator:aegis:regenerate": "powershell -ExecutionPolicy Bypass -File scripts/orchestrator/aegis-regenerate.ps1",
     "orchestrator:aegis:one-prompt": "node scripts/orchestrator/aegis-one-prompt.js",
     "orchestrator:aegis:one-prompt:dry": "node scripts/orchestrator/aegis-one-prompt.js --dry-run",
+    "orchestrator:aegis:scan-issues": "node scripts/orchestrator/aegis-autopilot-scanner.js",
+    "orchestrator:aegis:find-tasks": "powershell -ExecutionPolicy Bypass -File scripts/orchestrator/aegis-task-finder.ps1",
     "orchestrator:queue:status": "powershell -ExecutionPolicy Bypass -File scripts/orchestrator/status.ps1",
     "orchestrator:queue:ack": "powershell -ExecutionPolicy Bypass -File scripts/orchestrator/ack-task.ps1",
     "orchestrator:watchdog": "powershell -ExecutionPolicy Bypass -File scripts/orchestrator/watchdog.ps1",

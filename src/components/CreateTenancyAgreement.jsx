@@ -20,6 +20,7 @@ export default function CreateTenancyAgreement() {
     propertyAddress: '',
     terms: ''
   });
+  const [statusMsg, setStatusMsg] = useState(null);
 
   useEffect(() => {
     if (currentUser && (currentUser.roles.includes('EMPLOYEE') || currentUser.roles.includes('AGENT'))) {
@@ -107,7 +108,7 @@ export default function CreateTenancyAgreement() {
       });
 
       if (response.ok) {
-        alert('Tenancy agreement created successfully! Email notifications sent to landlord and tenant.');
+        setStatusMsg({ type: 'success', text: 'Tenancy agreement created successfully! Email notifications sent to landlord and tenant.' });
         setFormData({
           propertyId: '',
           landlordId: '',
@@ -123,11 +124,10 @@ export default function CreateTenancyAgreement() {
         });
       } else {
         const error = await response.json();
-        alert(error.error || 'Failed to create tenancy agreement');
+        setStatusMsg({ type: 'error', text: error.error || 'Failed to create tenancy agreement' });
       }
     } catch (error) {
-      
-      alert('Failed to create tenancy agreement');
+      setStatusMsg({ type: 'error', text: 'Failed to create tenancy agreement' });
     } finally {
       setLoading(false);
     }

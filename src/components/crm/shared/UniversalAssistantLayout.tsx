@@ -7,6 +7,7 @@ import NotificationBadge from './NotificationBadge';
 import {
   selectCurrentAssistant,
   selectNotificationsByAssistant,
+  selectPendingActionsCount,
 } from '../../../store/slices/aiAssistantDashboardSlice';
 import type { RootState } from '../../../store/store';
 import './UniversalAssistantLayout.css';
@@ -98,10 +99,9 @@ const UniversalAssistantLayout = memo(
   }: UniversalAssistantLayoutProps) => {
     const [sidebarCollapsed, setSidebarCollapsed] = React.useState(collapsedSidebar);
     const currentAssistant = useSelector(selectCurrentAssistant);
-    // const pendingCount = useSelector((state: RootState) =>
-    //   currentAssistant ? selectPendingActionsCount(currentAssistant.id)(state) : 0,
-    // );
-    const pendingCount = 0; // Placeholder until selector is implemented
+    const pendingCount = useSelector((state: RootState) =>
+      currentAssistant ? selectPendingActionsCount(currentAssistant.id)(state) : 0
+    );
     const notifications = useSelector((state: RootState) =>
       currentAssistant ? selectNotificationsByAssistant(currentAssistant.id)(state) : []
     );

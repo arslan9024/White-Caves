@@ -162,21 +162,32 @@ function getLinkedPlanFilesFromPending(pattern) {
   'plans/AUTOPILOT_QUEUE.md',
   'plans/AEGIS_WORKFORCE.md',
   // Architecture Decision Records (Vector 5.1)
-  'docs/adr/README.md',
-  'docs/adr/ADR-001-auth-dual-provider.md',
-  'docs/adr/ADR-002-mongodb-prisma.md',
-  'docs/adr/ADR-003-crm-module-registry.md',
-  'docs/adr/ADR-004-wave-gate-model.md',
-  'docs/adr/ADR-005-superuser-lion-pattern.md',
+  'software_docs/adr/README.md',
+  'software_docs/adr/ADR-001-auth-dual-provider.md',
+  'software_docs/adr/ADR-002-mongodb-prisma.md',
+  'software_docs/adr/ADR-003-crm-module-registry.md',
+  'software_docs/adr/ADR-004-wave-gate-model.md',
+  'software_docs/adr/ADR-005-superuser-lion-pattern.md',
   // Wave 25 syndication services (V6.6)
   'server/services/syndication/propertyFinderService.ts',
   'server/services/syndication/bayutService.ts',
   // Wave 25/26 backlogs (V6.6)
   'plans/waves/WAVE_25_IMPLEMENTATION_BACKLOG.md',
   'plans/waves/WAVE_26_IMPLEMENTATION_BACKLOG.md',
+  'plans/waves/WAVE_28_IMPLEMENTATION_BACKLOG.md',
+  'plans/waves/WAVE_29_IMPLEMENTATION_BACKLOG.md',
+  'plans/waves/WAVE_30_IMPLEMENTATION_BACKLOG.md',
   // DLD/Ejari mock services (V1.3)
   'server/services/mock/dldMockService.ts',
   'server/services/mock/ejariMockService.ts',
+  // 3-Folder Strategy Architecture (Turn 6 Autopilot)
+  'business_docs/04_workflows/md-operations-workflows.md',
+  'business_docs/02_services/dubai-agency-services.md',
+  'business_docs/01_company_structure/department-handbook.md',
+  'business_docs/01_company_structure/employee-payroll-handbook.md',
+  'software_docs/sdd-md-operations.md',
+  'software_docs/property-inventory-schema.md',
+  'src/components/crm/EmployeeLeaderboardPanel.tsx',
 ].forEach(assertExists);
 
 assertNoPastedArtifacts();

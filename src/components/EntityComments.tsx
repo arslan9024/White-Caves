@@ -22,10 +22,10 @@ interface EntityCommentsProps {
 }
 
 const Container = styled.div`
-  background: rgba(20, 20, 20, 0.5);
-  border: 1px solid rgba(201, 168, 76, 0.2);
+  background: #f8fafc;
+  border: 1px solid rgba(239, 68, 68, 0.2);
   border-radius: 12px;
-  padding: 24px;
+  padding: 20px;
   max-width: 600px;
 `;
 
@@ -36,7 +36,7 @@ const Header = styled.div`
   margin-bottom: 20px;
   font-size: 16px;
   font-weight: 600;
-  color: #ffffff;
+  color: #1e293b;
 `;
 
 const CommentThread = styled.div`
@@ -52,16 +52,16 @@ const CommentThread = styled.div`
   }
 
   &::-webkit-scrollbar-track {
-    background: rgba(201, 168, 76, 0.1);
+    background: rgba(239, 68, 68, 0.05);
     border-radius: 3px;
   }
 
   &::-webkit-scrollbar-thumb {
-    background: rgba(201, 168, 76, 0.3);
+    background: rgba(239, 68, 68, 0.2);
     border-radius: 3px;
 
     &:hover {
-      background: rgba(201, 168, 76, 0.5);
+      background: rgba(239, 68, 68, 0.4);
     }
   }
 `;
@@ -71,8 +71,8 @@ const CommentBubble = styled(motion.div)<{ $isOwn: boolean }>`
   flex-direction: column;
   gap: 8px;
   padding: 12px 16px;
-  background: ${props => (props.$isOwn ? 'rgba(201, 168, 76, 0.15)' : 'rgba(255, 255, 255, 0.05)')};
-  border-left: 3px solid ${props => (props.$isOwn ? '#c9a84c' : 'rgba(201, 168, 76, 0.3)')};
+  background: ${props => (props.$isOwn ? 'rgba(239, 68, 68, 0.08)' : 'rgba(15, 23, 42, 0.04)')};
+  border-left: 3px solid ${props => (props.$isOwn ? '#ef4444' : 'rgba(15, 23, 42, 0.2)')};
   border-radius: 8px;
   align-self: ${props => (props.$isOwn ? 'flex-end' : 'flex-start')};
   max-width: 85%;
@@ -87,18 +87,18 @@ const CommentHeader = styled.div`
 
 const Author = styled.span`
   font-weight: 600;
-  color: #c9a84c;
+  color: #1e293b;
 `;
 
 const Timestamp = styled.span`
-  color: rgba(255, 255, 255, 0.5);
+  color: #64748b;
   font-size: 11px;
 `;
 
 const DeleteButton = styled.button`
   background: none;
   border: none;
-  color: rgba(255, 255, 255, 0.5);
+  color: #64748b;
   cursor: pointer;
   padding: 0;
   display: flex;
@@ -113,7 +113,7 @@ const DeleteButton = styled.button`
 `;
 
 const CommentText = styled.p`
-  color: #ffffff;
+  color: #334155;
   font-size: 14px;
   line-height: 1.4;
   margin: 0;
@@ -124,16 +124,16 @@ const InputContainer = styled.form`
   display: flex;
   gap: 12px;
   padding-top: 16px;
-  border-top: 1px solid rgba(201, 168, 76, 0.2);
+  border-top: 1px solid rgba(239, 68, 68, 0.2);
 `;
 
 const Input = styled.textarea`
   flex: 1;
-  background: rgba(255, 255, 255, 0.05);
-  border: 1px solid rgba(201, 168, 76, 0.3);
+  background: #ffffff;
+  border: 1px solid rgba(239, 68, 68, 0.3);
   border-radius: 8px;
   padding: 12px;
-  color: #ffffff;
+  color: #1e293b;
   font-size: 14px;
   font-family: inherit;
   resize: vertical;
@@ -142,12 +142,12 @@ const Input = styled.textarea`
 
   &:focus {
     outline: none;
-    border-color: rgba(201, 168, 76, 0.6);
-    background: rgba(255, 255, 255, 0.08);
+    border-color: #ef4444;
+    background: #ffffff;
   }
 
   &::placeholder {
-    color: rgba(255, 255, 255, 0.4);
+    color: #94a3b8;
   }
 `;
 
@@ -155,18 +155,18 @@ const SendButton = styled(motion.button)`
   display: flex;
   align-items: center;
   gap: 8px;
-  background: linear-gradient(135deg, #c9a84c 0%, #d4af76 100%);
+  background: #ef4444;
   border: none;
   border-radius: 8px;
   padding: 12px 16px;
-  color: #0a0a0a;
+  color: #ffffff;
   font-weight: 600;
   cursor: pointer;
   transition: all 0.3s;
 
   &:hover {
     transform: translateY(-2px);
-    box-shadow: 0 6px 20px rgba(201, 168, 76, 0.3);
+    box-shadow: 0 6px 20px rgba(239, 68, 68, 0.3);
   }
 
   &:active {
@@ -182,7 +182,7 @@ const SendButton = styled(motion.button)`
 const EmptyState = styled.div`
   text-align: center;
   padding: 32px 16px;
-  color: rgba(255, 255, 255, 0.5);
+  color: #64748b;
 `;
 
 export const EntityComments: React.FC<EntityCommentsProps> = ({
