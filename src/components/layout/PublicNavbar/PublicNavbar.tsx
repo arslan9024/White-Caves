@@ -1,8 +1,11 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { Link, NavLink, useLocation } from 'react-router-dom';
+import { Link, NavLink, useLocation, useNavigate } from 'react-router-dom';
+import { useSelector, useDispatch } from 'react-redux';
 import { PUBLIC_NAV } from '../../../config/navigation';
 import type { NavItem } from '../../../config/navigation';
 import { useLanguage } from '../../../context/LanguageContext';
+import { selectSessionUser } from '../../../store/selectors/sessionSelectors';
+import { logout } from '../../../store/authSlice';
 import LanguageSwitcher from '../../ui/LanguageSwitcher';
 import './PublicNavbar.css';
 
@@ -118,7 +121,14 @@ const DropdownNavItem: React.FC<DropdownNavItemProps> = ({ group }) => {
 // ---------------------------------------------------------------------------
 const PublicNavbar = (): React.JSX.Element => {
   const location = useLocation();
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
+  const user = useSelector(selectSessionUser);
   const [isMobileOpen, setIsMobileOpen] = useState(false);
+  const [currency, setCurrency] = useState<'AED' | 'USD' | 'EUR' | 'GBP'>('AED');
+  const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
+  const userMenuRef = useRef<HTMLDivElement>(null);
+
   const baseUrl = import.meta.env.BASE_URL || '/';
   const logoSrc = `${baseUrl}company-logo.jpg`.replace('//', '/');
   const { t } = useLanguage();
@@ -197,13 +207,111 @@ const PublicNavbar = (): React.JSX.Element => {
 
         {/* Desktop CTA actions */}
         <div className="public-navbar__actions">
+          {/* Quick Search Button */}
+          <button
+            type="button"
+            onClick={() => navigate('/properties')}
+            className="public-navbar__search-btn"
+            title="Search properties across Dubai"
+          >
+            <span>🔍</span>
+            <span className="public-navbar__search-label">Search</span>
+          </button>
+
+          {/* Currency Switcher */}
+          <div className="public-navbar__currency-selector">
+            <select
+              value={currency}
+              onChange={e => setCurrency(e.target.value as any)}
+              className="public-navbar__currency-select"
+              aria-label="Select currency"
+            >
+              <option value="AED">🇦🇪 AED</option>
+              <option value="USD">🇺🇸 USD</option>
+              <option value="EUR">🇪🇺 EUR</option>
+              <option value="GBP">🇬🇧 GBP</option>
+            </select>
+          </div>
+
           <LanguageSwitcher />
+
+          {/* WhatsApp Live Agent Hotline */}
+          <a
+            href="https://wa.me/971500000000?text=Hello%20White%20Caves%2C%20I%20am%20interested%20in%20Dubai%20Luxury%20Properties"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="public-navbar__whatsapp-btn"
+            title="Direct WhatsApp Hotline"
+          >
+            <span className="public-navbar__whatsapp-dot" />
+            💬 VIP Hotline
+          </a>
+
           <Link to="/services#sell" className="public-navbar__list-btn">
             {t('nav.listProperty')}
           </Link>
-          <Link to="/signin" className="public-navbar__signin">
-            {t('nav.signIn')}
-          </Link>
+
+          {/* User Account / Sign In State */}
+          {user ? (
+            <div className="public-navbar__user-menu-wrap" ref={userMenuRef}>
+              <button
+                type="button"
+                className="public-navbar__user-btn"
+                onClick={() => setIsUserMenuOpen(!isUserMenuOpen)}
+              >
+                <img
+                  src={
+                    user.photoURL ||
+                    `https://ui-avatars.com/api/?name=${encodeURIComponent(
+                      user.name || user.email || 'A'
+                    )}&background=EF4444&color=fff`
+                  }
+                  alt={user.name || 'User Avatar'}
+                  className="public-navbar__user-avatar"
+                />
+                <span className="public-navbar__user-name">{user.name?.split(' ')[0] || 'Account'}</span>
+              </button>
+
+              {isUserMenuOpen && (
+                <div className="public-navbar__user-dropdown">
+                  <div className="public-navbar__user-info">
+                    <p className="public-navbar__user-fullname">{user.name || 'Executive User'}</p>
+                    <p className="public-navbar__user-email">{user.email}</p>
+                  </div>
+                  <hr className="public-navbar__user-divider" />
+                  <Link
+                    to="/profile"
+                    className="public-navbar__user-dropdown-item"
+                    onClick={() => setIsUserMenuOpen(false)}
+                  >
+                    👤 My Profile
+                  </Link>
+                  <Link
+                    to="/crm"
+                    className="public-navbar__user-dropdown-item"
+                    onClick={() => setIsUserMenuOpen(false)}
+                  >
+                    🚀 CRM Cockpit
+                  </Link>
+                  <button
+                    type="button"
+                    className="public-navbar__user-dropdown-item public-navbar__user-dropdown-item--logout"
+                    onClick={() => {
+                      setIsUserMenuOpen(false);
+                      dispatch(logout());
+                      navigate('/');
+                    }}
+                  >
+                    🚪 Sign Out
+                  </button>
+                </div>
+              )}
+            </div>
+          ) : (
+            <Link to="/signin" className="public-navbar__signin">
+              {t('nav.signIn')}
+            </Link>
+          )}
 
           {/* Hamburger — mobile only */}
           <button
