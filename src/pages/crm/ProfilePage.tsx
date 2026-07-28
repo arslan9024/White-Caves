@@ -1,8 +1,10 @@
-import React, { FC, useState } from 'react';
+import React, { FC } from 'react';
 import styled from 'styled-components';
+import { useNavigate } from 'react-router-dom';
+import PublicLayout from '../../components/layout/PublicLayout';
 import { useUserProfile } from '../../hooks/useUserProfile';
 import { useDocumentTitle } from '../../hooks/useDocumentTitle';
-import { colors, spacing, typography, borderRadius, shadows } from '../../design-tokens';
+import { spacing, typography, borderRadius } from '../../design-tokens';
 import { BiometricSetup } from '../../features/auth/components/BiometricLogin';
 
 const ProfileWrapper = styled.div`
@@ -60,9 +62,31 @@ const HeaderContent = styled.div`
   }
 `;
 
+const CRMButton = styled.button`
+  background: linear-gradient(135deg, #EF4444 0%, #DC2626 100%);
+  color: #FFFFFF;
+  border: none;
+  border-radius: ${borderRadius.md};
+  padding: 10px 20px;
+  font-weight: 800;
+  font-size: 0.9rem;
+  cursor: pointer;
+  box-shadow: 0 4px 14px rgba(239, 68, 68, 0.35);
+  transition: transform 0.2s, box-shadow 0.2s;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(239, 68, 68, 0.45);
+  }
+`;
+
 const BadgeContainer = styled.div`
   display: flex;
   flex-wrap: wrap;
+  align-items: center;
   gap: ${spacing[2]};
   margin-top: ${spacing[3]};
 
@@ -231,6 +255,7 @@ const SessionItem = styled.li`
 
 export const ProfilePage: FC = () => {
   useDocumentTitle('Executive Profile | White Caves');
+  const navigate = useNavigate();
   const {
     user,
     profileName,
@@ -246,31 +271,35 @@ export const ProfilePage: FC = () => {
   const isFounder = user?.email === 'arslanmalikgoraha@gmail.com';
 
   return (
-    <ProfileWrapper>
-      <ExecutiveHeader>
-        <AvatarContainer>
-          <img
-            src={
-              user?.photoURL ||
-              'https://ui-avatars.com/api/?name=' +
-                (user?.name || 'A') +
-                '&background=EF4444&color=fff'
-            }
-            alt="Profile"
-          />
-        </AvatarContainer>
-        <HeaderContent>
-          <h1>{user?.name || 'Executive User'}</h1>
-          <p>{user?.email}</p>
-          <BadgeContainer>
-            {isFounder && (
-              <SecurityBadge $type="founder">LEVEL 5 MASTER (Principal Founder)</SecurityBadge>
-            )}
-            {isFounder && <SecurityBadge $type="admin">System Superuser</SecurityBadge>}
-            {!isFounder && <SecurityBadge>{user?.role || 'Agent'}</SecurityBadge>}
-          </BadgeContainer>
-        </HeaderContent>
-      </ExecutiveHeader>
+    <PublicLayout>
+      <ProfileWrapper>
+        <ExecutiveHeader>
+          <AvatarContainer>
+            <img
+              src={
+                user?.photoURL ||
+                'https://ui-avatars.com/api/?name=' +
+                  (user?.name || 'A') +
+                  '&background=EF4444&color=fff'
+              }
+              alt="Profile"
+            />
+          </AvatarContainer>
+          <HeaderContent>
+            <h1>{user?.name || 'Executive User'}</h1>
+            <p>{user?.email}</p>
+            <BadgeContainer>
+              {isFounder && (
+                <SecurityBadge $type="founder">LEVEL 5 MASTER (Principal Founder)</SecurityBadge>
+              )}
+              {isFounder && <SecurityBadge $type="admin">System Superuser</SecurityBadge>}
+              {!isFounder && <SecurityBadge>{user?.role || 'Agent'}</SecurityBadge>}
+              <CRMButton onClick={() => navigate('/crm')}>
+                <span>🚀 Launch CRM Cockpit</span>
+              </CRMButton>
+            </BadgeContainer>
+          </HeaderContent>
+        </ExecutiveHeader>
 
       <Grid>
         <div>
@@ -335,6 +364,7 @@ export const ProfilePage: FC = () => {
         </div>
       </Grid>
     </ProfileWrapper>
+  </PublicLayout>
   );
 };
 

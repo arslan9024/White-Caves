@@ -76,39 +76,71 @@ const DubaiMap: FC<DubaiMapProps> = ({ properties = [], onPropertySelect }) => {
     navigate('/properties');
   };
 
+  const [searchQuery, setSearchQuery] = useState('');
+
+  const searchFilteredAreas = filteredAreas.filter(a =>
+    a.name.toLowerCase().includes(searchQuery.toLowerCase())
+  );
+
   return (
     <DubaiMapContainer>
       <MapHeader>
-        <MapTitle>Explore Dubai Properties</MapTitle>
-        <MapSubtitle>Interactive map with all our listed properties across Dubai</MapSubtitle>
+        <div style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', padding: '6px 14px', borderRadius: '9999px', background: 'rgba(239, 68, 68, 0.08)', color: '#EF4444', fontWeight: 800, fontSize: '0.8rem', marginBottom: '12px' }}>
+          <span>🗺️ DLD GEOSPATIAL INTELLIGENCE</span>
+        </div>
+        <MapTitle>Interactive Dubai Prime Communities Map</MapTitle>
+        <MapSubtitle>Click on any community hotspot to view available inventory, average ROI, and price benchmarks</MapSubtitle>
       </MapHeader>
 
-      <MapFilters>
-        <FilterButton $isActive={activeFilter === 'all'} onClick={() => setActiveFilter('all')}>
-          All Properties
-        </FilterButton>
-        <FilterButton
-          $isActive={activeFilter === 'residential'}
-          $variant="residential"
-          onClick={() => setActiveFilter('residential')}
-        >
-          Residential
-        </FilterButton>
-        <FilterButton
-          $isActive={activeFilter === 'commercial'}
-          $variant="commercial"
-          onClick={() => setActiveFilter('commercial')}
-        >
-          Commercial
-        </FilterButton>
-        <FilterButton
-          $isActive={activeFilter === 'luxury'}
-          $variant="luxury"
-          onClick={() => setActiveFilter('luxury')}
-        >
-          Luxury
-        </FilterButton>
-      </MapFilters>
+      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '16px', marginBottom: '24px' }}>
+        <MapFilters>
+          <FilterButton $isActive={activeFilter === 'all'} onClick={() => setActiveFilter('all')}>
+            🌟 All Communities ({DUBAI_AREAS.length})
+          </FilterButton>
+          <FilterButton
+            $isActive={activeFilter === 'residential'}
+            $variant="residential"
+            onClick={() => setActiveFilter('residential')}
+          >
+            🏠 Residential
+          </FilterButton>
+          <FilterButton
+            $isActive={activeFilter === 'commercial'}
+            $variant="commercial"
+            onClick={() => setActiveFilter('commercial')}
+          >
+            🏢 Commercial Hubs
+          </FilterButton>
+          <FilterButton
+            $isActive={activeFilter === 'luxury'}
+            $variant="luxury"
+            onClick={() => setActiveFilter('luxury')}
+          >
+            💎 Ultra-Luxury
+          </FilterButton>
+        </MapFilters>
+
+        {/* Search & Quick-Select Chips */}
+        <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap', justifyContent: 'center', maxWidth: '800px', width: '100%' }}>
+          <input
+            type="text"
+            placeholder="🔍 Search community (e.g. Downtown, Marina, Palm)..."
+            value={searchQuery}
+            onChange={e => setSearchQuery(e.target.value)}
+            style={{
+              padding: '10px 18px',
+              borderRadius: '9999px',
+              border: '1px solid #E2E8F0',
+              background: '#FFFFFF',
+              fontSize: '0.875rem',
+              width: '100%',
+              maxWidth: '360px',
+              boxShadow: '0 2px 8px rgba(0,0,0,0.04)',
+              outline: 'none',
+            }}
+          />
+        </div>
+      </div>
 
       <MapWrapper>
         <MapBackground>
@@ -117,7 +149,7 @@ const DubaiMap: FC<DubaiMapProps> = ({ properties = [], onPropertySelect }) => {
           <InteractiveMapOverlay>
             <MapSVG viewBox="0 0 800 600">
               <g>
-                {filteredAreas.map(area => {
+                {searchFilteredAreas.map(area => {
                   const x = ((area.lng - 54.9) / (55.5 - 54.9)) * 800;
                   const y = 600 - ((area.lat - 24.8) / (25.5 - 24.8)) * 600;
                   const areaProperties = getPropertiesForArea(area.id);

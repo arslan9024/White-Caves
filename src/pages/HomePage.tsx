@@ -105,6 +105,10 @@ const HomePage: FC = () => {
   const homepageError = useSelector(selectHomepageError);
   const navigate = useNavigate();
 
+  const [activeToolTab, setActiveToolTab] = useState<
+    'all' | 'rentvsbuy' | 'offplan' | 'comparison' | 'neighborhood' | 'virtualtour'
+  >('all');
+
   // Use live data when available; fall back to static dummy data before API resolves
   const displayedFeatured = useMemo(
     () => (featuredProperties.length > 0 ? featuredProperties : FALLBACK_FEATURED),
@@ -263,24 +267,67 @@ const HomePage: FC = () => {
           />
 
           {/* ── Tools & Insights ───────────────────────────────────────────────── */}
-          <div id="tools-insights" className="home-page-tools-insights">
-            <div className="home-page-tools-insights__inner">
-              <p className="home-page-tools-insights__eyebrow">Expert Resources</p>
-              <h2 className="home-page-tools-insights__title">Tools & Insights</h2>
-              <p className="home-page-tools-insights__description">
-                Use our interactive calculators, market data, and research tools to make confident
-                property decisions in Dubai.
+          <div id="tools-insights" className="home-page-tools-insights" style={{ padding: '40px 20px', background: '#F8FAFC', borderRadius: '24px', border: '1px solid #E2E8F0', margin: '40px auto', maxWidth: '1400px' }}>
+            <div className="home-page-tools-insights__inner" style={{ textCenter: 'center', marginBottom: '32px' }}>
+              <div style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', padding: '6px 14px', borderRadius: '9999px', background: 'rgba(239, 68, 68, 0.1)', color: '#EF4444', fontWeight: 800, fontSize: '0.8rem', marginBottom: '12px' }}>
+                <span>⚡ REAL ESTATE FINTECH & AI SUITE</span>
+              </div>
+              <h2 className="home-page-tools-insights__title" style={{ fontSize: '2.25rem', fontWeight: 800, color: '#0F172A', margin: '0 0 12px' }}>Interactive Tools & Market Insights</h2>
+              <p className="home-page-tools-insights__description" style={{ color: '#64748B', maxWidth: '640px', margin: '0 auto', fontSize: '1rem' }}>
+                Make data-backed investment decisions with our live calculators, off-plan intelligence, property comparison, and 360° virtual tour suite.
               </p>
+
+              {/* Interactive Tool Switcher Pills */}
+              <div style={{ display: 'flex', gap: '10px', justifyContent: 'center', flexWrap: 'wrap', marginTop: '24px' }}>
+                {[
+                  { id: 'all', label: '🌟 All Tools', desc: 'Complete Suite' },
+                  { id: 'rentvsbuy', label: '🧮 Rent vs Buy Calculator', desc: 'ROI & Mortgage' },
+                  { id: 'offplan', label: '🏗️ Off-Plan Investment Tracker', desc: 'DLD Developers' },
+                  { id: 'comparison', label: '⚖️ Property Comparison', desc: 'Side-by-side' },
+                  { id: 'neighborhood', label: '🏙️ Neighborhood AI', desc: 'Dubai Amenities' },
+                  { id: 'virtualtour', label: '🥽 360° Virtual Tours', desc: 'VR Experience' },
+                ].map(tool => {
+                  const isActive = activeToolTab === tool.id;
+                  return (
+                    <button
+                      key={tool.id}
+                      onClick={() => setActiveToolTab(tool.id as any)}
+                      style={{
+                        padding: '10px 18px',
+                        borderRadius: '12px',
+                        border: isActive ? '2px solid #EF4444' : '1px solid #E2E8F0',
+                        background: isActive ? '#FFFFFF' : 'rgba(255, 255, 255, 0.7)',
+                        color: isActive ? '#EF4444' : '#334155',
+                        fontWeight: isActive ? 800 : 600,
+                        fontSize: '0.85rem',
+                        cursor: 'pointer',
+                        boxShadow: isActive ? '0 4px 14px rgba(239, 68, 68, 0.15)' : 'none',
+                        transition: 'all 200ms ease',
+                      }}
+                    >
+                      {tool.label}
+                    </button>
+                  );
+                })}
+              </div>
             </div>
-            <PropertyComparison />
-            <RentVsBuyCalculator />
-            <OffPlanTracker
-              marketStats={marketStats}
-              locationTrends={locationTrends}
-              featuredProperties={displayedFeatured}
-            />
-            <NeighborhoodAnalyzer />
-            <VirtualTourGallery featuredProperties={displayedFeatured} />
+
+            {/* Rendered Tool Viewports */}
+            <div style={{ transition: 'all 300ms ease' }}>
+              {(activeToolTab === 'all' || activeToolTab === 'rentvsbuy') && <RentVsBuyCalculator />}
+              {(activeToolTab === 'all' || activeToolTab === 'offplan') && (
+                <OffPlanTracker
+                  marketStats={marketStats}
+                  locationTrends={locationTrends}
+                  featuredProperties={displayedFeatured}
+                />
+              )}
+              {(activeToolTab === 'all' || activeToolTab === 'comparison') && <PropertyComparison />}
+              {(activeToolTab === 'all' || activeToolTab === 'neighborhood') && <NeighborhoodAnalyzer />}
+              {(activeToolTab === 'all' || activeToolTab === 'virtualtour') && (
+                <VirtualTourGallery featuredProperties={displayedFeatured} />
+              )}
+            </div>
           </div>
           {/* ── /Tools & Insights ─────────────────────────────────────────────── */}
 
