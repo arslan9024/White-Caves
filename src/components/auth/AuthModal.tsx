@@ -266,7 +266,7 @@ const AuthModal: FC<AuthModalProps> = ({ mode: initialMode = 'signin', onClose }
                   onClick={() => {
                     void retrySocialAuth();
                   }}
-                  style={{ background: 'rgba(245,158,11,0.2)', color: '#fbbf24', border: 'none' }}
+                  style={{ background: 'rgba(245,158,11,0.2)', color: 'var(--amber-400, #fbbf24)', border: 'none' }}
                 >
                   {loading ? 'Retrying...' : 'Retry Sign-in'}
                 </button>
@@ -429,7 +429,7 @@ const AuthModal: FC<AuthModalProps> = ({ mode: initialMode = 'signin', onClose }
                     {cat.icon}
                   </span>
                   <strong style={{ display: 'block', fontSize: '15px' }}>{cat.label}</strong>
-                  <span style={{ fontSize: '12px', color: '#94a3b8' }}>{cat.desc}</span>
+                  <span style={{ fontSize: '12px', color: 'var(--text-muted, #94a3b8)' }}>{cat.desc}</span>
                 </button>
               ))}
             </div>
@@ -469,7 +469,7 @@ const AuthModal: FC<AuthModalProps> = ({ mode: initialMode = 'signin', onClose }
                 paddingRight: '8px',
               }}
             >
-              {getRolesForCategory().map((role: any) => (
+              {getRolesForCategory().map((role: { id: string; label: string; desc: string; icon: string }) => (
                 <button
                   key={role.id}
                   onClick={() => setSelectedRole(role.id)}
@@ -491,7 +491,7 @@ const AuthModal: FC<AuthModalProps> = ({ mode: initialMode = 'signin', onClose }
                   <span style={{ fontSize: '20px' }}>{role.icon}</span>
                   <div>
                     <strong style={{ display: 'block', fontSize: '14px' }}>{role.label}</strong>
-                    <span style={{ fontSize: '12px', color: '#94a3b8' }}>{role.desc}</span>
+                    <span style={{ fontSize: '12px', color: 'var(--text-muted, #94a3b8)' }}>{role.desc}</span>
                   </div>
                 </button>
               ))}
@@ -574,14 +574,14 @@ const AuthModal: FC<AuthModalProps> = ({ mode: initialMode = 'signin', onClose }
 
         <p
           className="auth-footer"
-          style={{ textAlign: 'center', fontSize: '12px', color: '#64748b', marginTop: '32px' }}
+          style={{ textAlign: 'center', fontSize: '12px', color: 'var(--text-secondary, #64748b)', marginTop: '32px' }}
         >
           By continuing, you agree to our{' '}
-          <a href="/terms" style={{ color: '#94a3b8' }}>
+          <a href="/terms" style={{ color: 'var(--text-muted, #94a3b8)' }}>
             Terms of Service
           </a>{' '}
           and{' '}
-          <a href="/privacy" style={{ color: '#94a3b8' }}>
+          <a href="/privacy" style={{ color: 'var(--text-muted, #94a3b8)' }}>
             Privacy Policy
           </a>
         </p>
