@@ -268,7 +268,7 @@ const HomePage: FC = () => {
 
           {/* ── Tools & Insights ───────────────────────────────────────────────── */}
           <div id="tools-insights" className="home-page-tools-insights" style={{ padding: '40px 20px', background: '#F8FAFC', borderRadius: '24px', border: '1px solid #E2E8F0', margin: '40px auto', maxWidth: '1400px' }}>
-            <div className="home-page-tools-insights__inner" style={{ textCenter: 'center', marginBottom: '32px' }}>
+            <div className="home-page-tools-insights__inner" style={{ textAlign: 'center', marginBottom: '32px' }}>
               <div style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', padding: '6px 14px', borderRadius: '9999px', background: 'rgba(239, 68, 68, 0.1)', color: '#EF4444', fontWeight: 800, fontSize: '0.8rem', marginBottom: '12px' }}>
                 <span>⚡ REAL ESTATE FINTECH & AI SUITE</span>
               </div>
