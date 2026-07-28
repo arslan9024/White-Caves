@@ -1,187 +1,305 @@
-import React, { FC, useState } from 'react';
+import React, { FC, lazy, Suspense, useEffect, useMemo } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
-import { useSelector } from 'react-redux';
-import { RootState } from '../store/store';
-import { LuxuryHeroSection } from '../components/homepage/Hero/LuxuryHeroSection';
-import MarketStatsBanner from '../components/homepage/MarketStats/MarketStatsBanner';
-import RentVsBuyCalculator from '../components/RentVsBuyCalculator';
-import DubaiMap from '../components/DubaiMap';
-import OffPlanTracker from '../components/OffPlanTracker';
+import { setProperties, type Property } from '../store/propertySlice';
+import {
+  clearError,
+  fetchHomepageData,
+  selectHomepageError,
+  selectMarketStats,
+  selectTopAgents,
+  selectLocationTrends,
+  selectFeaturedProperties,
+  selectIsHomepageLoading,
+  type HomepageProperty,
+} from '../store/slices/homepageSlice';
+import type { AppDispatch } from '../store/store';
+import { buildHomepageJsonLd } from './homepageSeo';
+import { buildOrganizationSchema } from '../utils/jsonLdSchemas';
+import ClickToChat from '../components/ClickToChat';
+import RoleSelectionModal from '../components/RoleSelectionModal';
+import PublicLayout from '../components/layout/PublicLayout';
+import PageMeta from '../components/seo/PageMeta';
+import StructuredData from '../components/seo/StructuredData';
+import { useRecentlyViewed } from '../components/RecentlyViewed';
+import { HOME_PROPERTIES } from '../data/homeProperties';
 import './HomePage.css';
 
-const RED = '#EF4444';
-const SLATE = '#1E293B';
-const CARD_BG = '#F8FAFC';
+// Above-the-fold: Hero is the LCP element — import directly (NOT lazy) so the
+// browser can start rendering immediately without a waterfall.
+// @Una: Using LuxuryHeroSection (Red/White/Black) as the primary hero
+import { LuxuryHeroSection as Hero } from '../components/homepage/Hero/LuxuryHeroSection';
 
-export const HomePage: FC = () => {
+// P1 above-fold companions: lazy-loaded so they don't block hero render
+const Features = lazy(() => import('../components/homepage/Features'));
+const MarketStatsBanner = lazy(
+  () => import('../components/homepage/MarketStats/MarketStatsBanner')
+);
+
+// Below-the-fold: lazy-loaded for faster initial paint
+const Locations = lazy(() => import('../components/homepage/Locations'));
+const FeaturedPropertiesSection = lazy(
+  () => import('../components/homepage/FeaturedProperties/FeaturedPropertiesSection')
+);
+const Team = lazy(() => import('../components/homepage/Team'));
+const Testimonials = lazy(() => import('../components/homepage/Testimonials'));
+const ContactCTA = lazy(() => import('../components/homepage/Contact'));
+const NewsletterSubscription = lazy(() => import('../components/NewsletterSubscription'));
+const PropertyComparison = lazy(() => import('../components/PropertyComparison'));
+const OffPlanTracker = lazy(() => import('../components/OffPlanTracker'));
+const NeighborhoodAnalyzer = lazy(() => import('../components/NeighborhoodAnalyzer'));
+const RentVsBuyCalculator = lazy(() => import('../components/RentVsBuyCalculator'));
+const VirtualTourGallery = lazy(() => import('../components/VirtualTourGallery'));
+const DubaiMap = lazy(() => import('../components/DubaiMap'));
+const CompanyProfile = lazy(() => import('../components/CompanyProfile'));
+const BlogSection = lazy(() => import('../components/BlogSection'));
+const OnboardingGateway = lazy(() => import('../components/OnboardingGateway'));
+
+/** Minimal placeholder while lazy chunks load */
+const SectionLoader: FC = () => (
+  <div className="home-page-section-loader" aria-hidden="true">
+    <div className="home-page-section-loader__spinner" />
+  </div>
+);
+
+/**
+ * Static fallback featured properties mapped from HOME_PROPERTIES.
+ * Displayed instantly before the API resolves so the section never shows "coming soon".
+ */
+const FALLBACK_FEATURED: HomepageProperty[] = HOME_PROPERTIES.slice(0, 6).map(p => ({
+  id: String(p.id),
+  title: p.title,
+  description: p.description,
+  type: p.type,
+  status: 'available',
+  price: p.price,
+  currency: 'AED',
+  bedrooms: p.beds,
+  bathrooms: p.baths,
+  sqft: p.sqft,
+  location: p.location,
+  amenities: p.amenities,
+  images: [],
+  featured: true,
+}));
+
+const HOME_PROPERTIES_FOR_STORE: Property[] = HOME_PROPERTIES.map(p => ({
+  id: p.id,
+  title: p.title,
+  location: p.location,
+  type: p.type,
+  price: p.price,
+  beds: p.beds,
+  baths: p.baths,
+  sqft: p.sqft,
+  amenities: p.amenities,
+}));
+
+const HomePage: FC = () => {
+  const dispatch = useDispatch<AppDispatch>();
+  const marketStats = useSelector(selectMarketStats);
+  const topAgents = useSelector(selectTopAgents);
+  const locationTrends = useSelector(selectLocationTrends);
+  const featuredProperties = useSelector(selectFeaturedProperties);
+  const isHomepageLoading = useSelector(selectIsHomepageLoading);
+  const homepageError = useSelector(selectHomepageError);
   const navigate = useNavigate();
-  const user = useSelector((state: RootState) => state.user.currentUser);
-  const isMD = user?.email === 'arslanmalikgoraha@gmail.com' || user?.role === 'managing-director';
 
-  // React Event Toggles
-  const [showStats, setShowStats] = useState<boolean>(true);
-  const [showCalculator, setShowCalculator] = useState<boolean>(false);
-  const [showMap, setShowMap] = useState<boolean>(false);
-  const [showOffPlan, setShowOffPlan] = useState<boolean>(false);
+  // Use live data when available; fall back to static dummy data before API resolves
+  const displayedFeatured = useMemo(
+    () => (featuredProperties.length > 0 ? featuredProperties : FALLBACK_FEATURED),
+    [featuredProperties]
+  );
+
+  const homepageJsonLd = useMemo(
+    () =>
+      buildHomepageJsonLd({
+        marketStats,
+        featuredProperties: displayedFeatured,
+        topAgents,
+        locationTrends,
+      }),
+    [marketStats, displayedFeatured, topAgents, locationTrends]
+  );
+  const structuredDataPayload = useMemo<Array<Record<string, unknown>>>(() => {
+    const homepageSchemas = Array.isArray(homepageJsonLd) ? homepageJsonLd : [homepageJsonLd];
+
+    return [...homepageSchemas, buildOrganizationSchema()].filter(
+      (entry): entry is Record<string, unknown> => Boolean(entry)
+    );
+  }, [homepageJsonLd]);
+  const trustHighlights = useMemo(
+    () => [
+      { label: 'Active Listings', value: marketStats.availableProperties.toLocaleString('en-US') },
+      {
+        label: 'Average Price',
+        value: `AED ${Math.round(marketStats.averagePrice).toLocaleString('en-US')}`,
+      },
+      { label: 'Top Agents', value: String(topAgents.length || 0) },
+      { label: 'Popular Areas', value: String(locationTrends.length || 0) },
+    ],
+    [
+      marketStats.availableProperties,
+      marketStats.averagePrice,
+      topAgents.length,
+      locationTrends.length,
+    ]
+  );
+  const { addToRecent } = useRecentlyViewed();
+
+  const pageTitle = 'White Caves Real Estate — Dubai Luxury Properties';
+  const pageDescription =
+    'Explore premium villas, penthouses, and investment-ready properties in Dubai with White Caves Real Estate. RERA-licensed agency serving luxury buyers and investors.';
+  const pageKeywords = [
+    'Dubai real estate',
+    'luxury properties Dubai',
+    'White Caves Real Estate',
+    'Dubai villas',
+    'RERA licensed',
+  ];
+
+  const handlePropertyClick = (propertyId: number): void => {
+    addToRecent(String(propertyId));
+    navigate(`/property/${propertyId}`);
+  };
+
+  useEffect(() => {
+    // Seed Redux property store with static fallback for /properties page
+    dispatch(setProperties(HOME_PROPERTIES_FOR_STORE));
+    // Fetch live homepage data in the background (@Mira's aggregate endpoint)
+    dispatch(fetchHomepageData());
+  }, [dispatch]);
+
+  useEffect(() => {
+    const refreshIntervalMs = 120_000;
+    const refreshTimer = window.setInterval(() => {
+      dispatch(fetchHomepageData());
+    }, refreshIntervalMs);
+
+    const handleVisibilityChange = (): void => {
+      if (document.visibilityState === 'visible') {
+        dispatch(fetchHomepageData());
+      }
+    };
+
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+
+    return () => {
+      window.clearInterval(refreshTimer);
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
+    };
+  }, [dispatch]);
+
+  useEffect(() => {
+    if (!homepageError || isHomepageLoading) return;
+
+    const retryTimer = window.setTimeout(() => {
+      dispatch(fetchHomepageData());
+    }, 45_000);
+
+    return () => {
+      window.clearTimeout(retryTimer);
+    };
+  }, [dispatch, homepageError, isHomepageLoading]);
+
+  const handleHomepageRetry = (): void => {
+    dispatch(clearError());
+    dispatch(fetchHomepageData());
+  };
 
   return (
-    <div className="home-page-container" style={{ background: '#FFFFFF', minHeight: '100vh' }}>
-      {/* Persistent Managing Director Access Bar when Logged In */}
-      {isMD && (
-        <div
-          style={{
-            background: 'linear-gradient(135deg, #1E293B 0%, #0F172A 100%)',
-            color: '#FFFFFF',
-            padding: '12px 24px',
-            display: 'flex',
-            justifyContent: 'space-between',
-            alignItems: 'center',
-            borderBottom: '2px solid #EF4444',
-            position: 'sticky',
-            top: 0,
-            zIndex: 1000,
-          }}
-        >
-          <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-            <span style={{ background: RED, color: '#FFF', padding: '4px 8px', borderRadius: '4px', fontSize: '0.75rem', fontWeight: 800 }}>
-              LEVEL 5 MASTER MD
-            </span>
-            <span style={{ fontSize: '0.875rem', fontWeight: 600 }}>
-              Arslan Malik — Managing Director Cockpit
-            </span>
-          </div>
-
-          <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+    <PublicLayout>
+      <PageMeta
+        title={pageTitle}
+        description={pageDescription}
+        keywords={pageKeywords}
+        canonicalPath="/"
+        ogType="website"
+        ogImage="https://images.unsplash.com/photo-1582268611958-ebfd161ef9cf?w=1200&h=630&fit=crop&q=80"
+        jsonLd={homepageJsonLd}
+      />
+      <StructuredData id="home-jsonld" data={structuredDataPayload} />
+      <div className="home-page">
+        {homepageError && !isHomepageLoading ? (
+          <div role="status" aria-live="polite" className="homepage-live-data-alert">
+            <span>Live market data is temporarily unavailable. Showing trusted fallback data.</span>
             <button
-              onClick={() => navigate('/crm')}
-              style={{
-                background: RED,
-                color: '#FFF',
-                border: 'none',
-                padding: '6px 16px',
-                borderRadius: '8px',
-                fontWeight: 700,
-                fontSize: '0.85rem',
-                cursor: 'pointer',
-                boxShadow: '0 4px 12px rgba(239, 68, 68, 0.3)',
-              }}
+              type="button"
+              onClick={handleHomepageRetry}
+              className="homepage-live-data-alert__retry"
             >
-              Open 14-Step CRM Deck →
+              Retry live data
             </button>
           </div>
-        </div>
-      )}
+        ) : null}
 
-      {/* Main Luxury Hero Section */}
-      <LuxuryHeroSection />
-
-      {/* Dynamic React Trigger Event Controls */}
-      <div style={{ padding: '24px', maxWidth: '1400px', margin: '0 auto' }}>
-        <div style={{ display: 'flex', gap: '12px', justifyContent: 'center', flexWrap: 'wrap', marginBottom: '32px' }}>
-          <button
-            onClick={() => setShowStats(!showStats)}
-            style={{
-              padding: '12px 20px',
-              borderRadius: '12px',
-              border: showStats ? `2px solid ${RED}` : '1px solid #E2E8F0',
-              background: showStats ? 'rgba(239, 68, 68, 0.08)' : CARD_BG,
-              color: showStats ? RED : SLATE,
-              fontWeight: 700,
-              cursor: 'pointer',
-            }}
-          >
-            📊 {showStats ? 'Hide Market Stats' : 'Show Market Stats'}
-          </button>
-          <button
-            onClick={() => setShowCalculator(!showCalculator)}
-            style={{
-              padding: '12px 20px',
-              borderRadius: '12px',
-              border: showCalculator ? `2px solid ${RED}` : '1px solid #E2E8F0',
-              background: showCalculator ? 'rgba(239, 68, 68, 0.08)' : CARD_BG,
-              color: showCalculator ? RED : SLATE,
-              fontWeight: 700,
-              cursor: 'pointer',
-            }}
-          >
-            🧮 {showCalculator ? 'Close Rent vs Buy' : 'Open Rent vs Buy Calculator'}
-          </button>
-          <button
-            onClick={() => setShowMap(!showMap)}
-            style={{
-              padding: '12px 20px',
-              borderRadius: '12px',
-              border: showMap ? `2px solid ${RED}` : '1px solid #E2E8F0',
-              background: showMap ? 'rgba(239, 68, 68, 0.08)' : CARD_BG,
-              color: showMap ? RED : SLATE,
-              fontWeight: 700,
-              cursor: 'pointer',
-            }}
-          >
-            🗺️ {showMap ? 'Close Dubai Map' : 'Explore Dubai Map'}
-          </button>
-          <button
-            onClick={() => setShowOffPlan(!showOffPlan)}
-            style={{
-              padding: '12px 20px',
-              borderRadius: '12px',
-              border: showOffPlan ? `2px solid ${RED}` : '1px solid #E2E8F0',
-              background: showOffPlan ? 'rgba(239, 68, 68, 0.08)' : CARD_BG,
-              color: showOffPlan ? RED : SLATE,
-              fontWeight: 700,
-              cursor: 'pointer',
-            }}
-          >
-            🏗️ {showOffPlan ? 'Close Off-Plan Tracker' : 'Open Off-Plan Tracker'}
-          </button>
-        </div>
-
-        {/* Dynamic Toggled Components */}
-        {showStats && (
-          <div style={{ marginBottom: '32px', animation: 'fadeIn 300ms ease' }}>
-            <MarketStatsBanner
-              marketStats={{
-                totalProperties: 9378,
-                availableProperties: 4250,
-                averagePrice: 2450000,
-                portfolioValue: 18500000000,
-                activeAgents: 60,
-              }}
-            />
+        {/* Phase 25: Hero is the LCP element — NOT wrapped in Suspense so it renders on first paint */}
+        <Hero marketStats={marketStats} isLoading={isHomepageLoading} />
+        <section className="home-page__trust-strip" aria-label="Market trust highlights">
+          <div className="home-page__trust-grid">
+            {trustHighlights.map(item => (
+              <article key={item.label} className="home-page__trust-card">
+                <span className="home-page__trust-label">{item.label}</span>
+                <span className="home-page__trust-value">{item.value}</span>
+              </article>
+            ))}
           </div>
-        )}
+        </section>
 
-        {showCalculator && (
-          <div style={{ marginBottom: '32px', padding: '24px', background: CARD_BG, borderRadius: '16px', border: '1px solid #E2E8F0' }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '16px' }}>
-              <h3 style={{ margin: 0 }}>Rent vs. Buy Calculator</h3>
-              <button onClick={() => setShowCalculator(false)} style={{ border: 'none', background: 'none', cursor: 'pointer', fontWeight: 700 }}>✕ Close</button>
+        {/* Above-fold companions lazy-loaded so they don't delay Hero render */}
+        <Suspense fallback={<SectionLoader />}>
+          <Features />
+          <MarketStatsBanner marketStats={marketStats} isLoading={isHomepageLoading} />
+        </Suspense>
+
+        {/* Below the fold — lazy-loaded for faster initial paint */}
+        <Suspense fallback={<SectionLoader />}>
+          {/* Locations first so the map has context */}
+          <Locations locationTrends={locationTrends} isLoading={isHomepageLoading} />
+          <DubaiMap onPropertySelect={property => handlePropertyClick(property.id)} />
+          <FeaturedPropertiesSection
+            featuredProperties={displayedFeatured}
+            isLoading={isHomepageLoading}
+          />
+
+          {/* ── Tools & Insights ───────────────────────────────────────────────── */}
+          <div id="tools-insights" className="home-page-tools-insights">
+            <div className="home-page-tools-insights__inner">
+              <p className="home-page-tools-insights__eyebrow">Expert Resources</p>
+              <h2 className="home-page-tools-insights__title">Tools & Insights</h2>
+              <p className="home-page-tools-insights__description">
+                Use our interactive calculators, market data, and research tools to make confident
+                property decisions in Dubai.
+              </p>
             </div>
+            <PropertyComparison />
             <RentVsBuyCalculator />
+            <OffPlanTracker
+              marketStats={marketStats}
+              locationTrends={locationTrends}
+              featuredProperties={displayedFeatured}
+            />
+            <NeighborhoodAnalyzer />
+            <VirtualTourGallery featuredProperties={displayedFeatured} />
           </div>
-        )}
+          {/* ── /Tools & Insights ─────────────────────────────────────────────── */}
 
-        {showMap && (
-          <div style={{ marginBottom: '32px', padding: '24px', background: CARD_BG, borderRadius: '16px', border: '1px solid #E2E8F0' }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '16px' }}>
-              <h3 style={{ margin: 0 }}>Interactive Dubai Community Map</h3>
-              <button onClick={() => setShowMap(false)} style={{ border: 'none', background: 'none', cursor: 'pointer', fontWeight: 700 }}>✕ Close</button>
-            </div>
-            <DubaiMap />
-          </div>
-        )}
-
-        {showOffPlan && (
-          <div style={{ marginBottom: '32px', padding: '24px', background: CARD_BG, borderRadius: '16px', border: '1px solid #E2E8F0' }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '16px' }}>
-              <h3 style={{ margin: 0 }}>Off-Plan Developer Investment Tracker</h3>
-              <button onClick={() => setShowOffPlan(false)} style={{ border: 'none', background: 'none', cursor: 'pointer', fontWeight: 700 }}>✕ Close</button>
-            </div>
-            <OffPlanTracker />
-          </div>
-        )}
+          <CompanyProfile />
+          <Team topAgents={topAgents} isLoading={isHomepageLoading} />
+          <Testimonials />
+          <BlogSection
+            marketStats={marketStats}
+            featuredProperties={displayedFeatured}
+            locationTrends={locationTrends}
+          />
+          <NewsletterSubscription />
+          <ContactCTA />
+          <OnboardingGateway />
+        </Suspense>
+        <ClickToChat />
+        <RoleSelectionModal />
       </div>
-    </div>
+    </PublicLayout>
   );
 };
 
