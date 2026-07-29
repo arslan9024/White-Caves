@@ -19,7 +19,11 @@ export { useWorkspaceEngine, type Currency, type UseWorkspaceEngineOptions } fro
 export { CavesTooltip, type CavesTooltipProps } from './CavesTooltip';
 export { CavesToggle, type CavesToggleProps } from './CavesToggle';
 
-// Legacy exports
+// Skeleton & Feedback exports
+export { default as Skeleton, type SkeletonProps } from '../ui/Skeleton/Skeleton';
+export { SkeletonText, SkeletonKPI, SkeletonCard, SkeletonTable } from '../ui/Skeleton/SkeletonVariants';
 export { LoadingState } from './LoadingState';
 export { ErrorState } from './ErrorState';
 export { EmptyState } from './EmptyState';
+
+

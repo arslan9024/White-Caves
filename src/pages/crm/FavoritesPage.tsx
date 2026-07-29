@@ -9,7 +9,7 @@
 import React, { FC } from 'react';
 import styled from 'styled-components';
 import { EmptyState, Pagination } from '../../components/ui';
-import { SkeletonCard } from '../../components/ui/Skeleton';
+import { SkeletonCard } from '../../components/shared';
 import { useDocumentTitle } from '../../hooks/useDocumentTitle';
 import {
   PageContainer,

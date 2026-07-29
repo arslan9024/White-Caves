@@ -16,7 +16,7 @@ import PageMeta from '../components/seo/PageMeta';
 import StructuredData from '../components/seo/StructuredData';
 import { buildPropertyDetailPageSchemas } from '../utils/jsonLdSchemas';
 import { PropertyImageSlider } from '../shared/components/property';
-import Skeleton from '../components/ui/Skeleton/Skeleton';
+import { Skeleton } from '../components/shared';
 import {
   ArrowLeft,
   Heart,

@@ -8,7 +8,7 @@
 import React, { FC, useCallback } from 'react';
 import styled from 'styled-components';
 import { Badge, Pagination, EmptyState } from '../../components/ui';
-import { SkeletonTable } from '../../components/ui/Skeleton';
+import { SkeletonTable } from '../../components/shared';
 import { Modal } from '../../shared/components/ui/Modal';
 import { useDocumentTitle } from '../../hooks/useDocumentTitle';
 import {
