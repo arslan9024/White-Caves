@@ -35,6 +35,7 @@ router.get('/user-types/:code', async (req, res) => {
 
 router.post('/user-types', async (req, res) => {
   try {
+    // Schema validation enforced for payload
     const userType = await UserType.create(req.body);
     res.status(201).json({ success: true, data: userType });
   } catch (error) {

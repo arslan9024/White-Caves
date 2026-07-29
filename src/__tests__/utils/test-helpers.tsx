@@ -223,7 +223,7 @@ export function createTestError(
   statusCode = 500,
   details = {}
 ) {
-  const error: any = new Error(message);
+  const error = new Error(message) as Error & { statusCode: number; details: unknown };
   error.statusCode = statusCode;
   error.details = details;
   return error;

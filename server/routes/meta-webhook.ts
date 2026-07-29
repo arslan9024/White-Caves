@@ -372,7 +372,7 @@ async function handleIncomingMessage(message: { from: string }, phoneNumberId: s
  * Handle message status update — FULL PIPELINE
  * Updates NadiaMessage.status in DB when Meta reports delivery/read/failed.
  */
-async function handleStatusUpdate(status: any): Promise<void> {
+async function handleStatusUpdate(status: { id?: string; status?: string }): Promise<void> {
   try {
     const waMessageId = status.id;
     const newStatus = status.status; // sent, delivered, read, failed

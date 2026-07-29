@@ -393,8 +393,8 @@ router.get(
       data,
       summary: {
         total: data.length,
-        totalNotified: data.reduce((sum: number, run: any) => sum + run.summary.notified, 0),
-        totalErrors: data.reduce((sum: number, run: any) => sum + run.summary.errors, 0),
+        totalNotified: data.reduce((sum: number, run: { summary: { notified: number } }) => sum + run.summary.notified, 0),
+        totalErrors: data.reduce((sum: number, run: { summary: { errors: number } }) => sum + run.summary.errors, 0),
       },
     });
   })

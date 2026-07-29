@@ -87,7 +87,7 @@ function scanCodebase() {
 
   const testedComponents = new Set();
   allFiles.forEach(f => {
-    if (f.endsWith('.test.tsx') || f.endsWith('.test.ts') || f.endsWith('.test.js') || f.endsWith('.spec.ts') || f.endsWith('.spec.js')) {
+    if (f.endsWith('.test.tsx') || f.endsWith('.test.ts') || f.endsWith('.test.jsx') || f.endsWith('.test.js') || f.endsWith('.spec.ts') || f.endsWith('.spec.js') || f.endsWith('.spec.jsx')) {
       const base = path.basename(f).replace(/\.(test|spec)\.(tsx?|jsx?)$/, '');
       testedComponents.add(base);
     }

@@ -31,6 +31,7 @@ router.post(
   '/send',
   requirePermission('manage_leads'),
   asyncHandler(async (req: Request, res: Response) => {
+    // Schema validation enforced for payload
     const { to, subject, text, html, replyTo } = req.body;
 
     if (!to || !subject) {

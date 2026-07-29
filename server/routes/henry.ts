@@ -97,14 +97,14 @@ const createMockHenryRecordModel = () => ({
     return created;
   },
   findUnique: async ({ where }: { where: { id: string } }) => mockHenryRecords.find(r => r.id === where.id) ?? null,
-  update: async ({ where, data }: any) => {
+  update: async ({ where, data }: { where: { id: string }; data: Record<string, unknown> }) => {
     const idx = mockHenryRecords.findIndex(r => r.id === where.id);
     if (idx < 0) return null;
     const updated = { ...mockHenryRecords[idx], ...data, updatedAt: new Date() };
-    mockHenryRecords[idx] = updated;
+    mockHenryRecords[idx] = updated as unknown as HenryRecord;
     return updated;
   },
-  delete: async ({ where }: any) => {
+  delete: async ({ where }: { where: { id: string } }) => {
     const idx = mockHenryRecords.findIndex(r => r.id === where.id);
     if (idx < 0) return null;
     const [deleted] = mockHenryRecords.splice(idx, 1);

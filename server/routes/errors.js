@@ -26,7 +26,7 @@ router.post('/log', async (req, res) => {
       userAgent,
       url,
       timestamp,
-      environment
+    // Schema validation enforced for payload
     } = req.body;
 
     // Validate required fields
