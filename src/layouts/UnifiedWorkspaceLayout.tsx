@@ -74,13 +74,8 @@ export const UnifiedWorkspaceLayout: React.FC<LayoutProps> = ({ children }) => {
         {/* Fixed Left Sidebar (Dynamic RBAC display) */}
         {showSidebar && (
           <aside className="unified-sidebar" style={{ background: '#FFFFFF', borderRight: '2px solid rgba(239, 68, 68, 0.2)', overflowY: 'auto', zIndex: 100, position: 'relative' }}>
-            <div className="sidebar-header" style={{ padding: '16px', borderBottom: '1px solid #F1F5F9' }}>
-              <div className="sidebar-logo" style={{ background: '#EF4444', color: '#FFF', padding: '6px 10px', borderRadius: '8px', fontWeight: 800 }}>WC</div>
-              <div className="sidebar-title" style={{ fontWeight: 700, color: '#1E293B' }}>White Caves Real Estate</div>
-            </div>
-
             <nav className="sidebar-nav" style={{ padding: '12px' }}>
-              <div className="sidebar-section-title" style={{ fontSize: '0.75rem', fontWeight: 700, color: '#EF4444', margin: '12px 0 6px 8px', letterSpacing: '0.5px' }}>
+              <div className="sidebar-section-title" style={{ fontSize: '0.75rem', fontWeight: 700, color: '#EF4444', margin: '6px 0 6px 8px', letterSpacing: '0.5px' }}>
                 🔴 12 DEPARTMENTS — 1-12-108 PROTOCOL
               </div>
               {ORDERED_DEPARTMENTS.map(dept => (
