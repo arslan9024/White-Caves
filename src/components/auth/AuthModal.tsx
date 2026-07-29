@@ -266,7 +266,7 @@ const AuthModal: FC<AuthModalProps> = ({ mode: initialMode = 'signin', onClose }
                   onClick={() => {
                     void retrySocialAuth();
                   }}
-                  style={{ background: 'rgba(245,158,11,0.2)', color: 'var(--amber-400, #fbbf24)', border: 'none' }}
+                  style={{ background: 'var(--amber-500-10, rgba(245, 158, 11, 0.15))', color: 'var(--amber-400, #fbbf24)', border: 'none' }}
                 >
                   {loading ? 'Retrying...' : 'Retry Sign-in'}
                 </button>
