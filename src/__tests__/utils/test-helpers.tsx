@@ -56,7 +56,7 @@ export function mockDate(date = new Date('2024-01-01')) {
 /**
  * Create mock function with call tracking
  */
-export function createSpyFunction<T extends (...args: any[]) => any>(
+export function createSpyFunction<T extends (...args: unknown[]) => unknown>(
   implementation?: T
 ) {
   const fn = vi.fn(implementation);
@@ -67,7 +67,7 @@ export function createSpyFunction<T extends (...args: any[]) => any>(
     lastCall: () => fn.mock.calls[fn.mock.calls.length - 1],
     args: () => fn.mock.calls.map((call) => call[0]),
     wasCalled: () => fn.mock.calls.length > 0,
-    wasCalledWith: (...args: any[]) =>
+    wasCalledWith: (...args: unknown[]) =>
       fn.mock.calls.some((call) => JSON.stringify(call) === JSON.stringify(args)),
     reset: () => fn.mockClear(),
   };
@@ -78,7 +78,7 @@ export function createSpyFunction<T extends (...args: any[]) => any>(
  */
 export function renderWithRedux(
   component: ReactElement,
-  { store, ...renderOptions }: { store?: any } & Omit<RenderOptions, 'wrapper'> = {}
+  { store, ...renderOptions }: { store?: Record<string, unknown> } & Omit<RenderOptions, 'wrapper'> = {}
 ) {
   const mockStore =
     store ||
@@ -115,7 +115,7 @@ export function renderWithRouter(
  */
 export function renderWithProviders(
   component: ReactElement,
-  { store, ...renderOptions }: { store?: any } & Omit<RenderOptions, 'wrapper'> = {}
+  { store, ...renderOptions }: { store?: Record<string, unknown> } & Omit<RenderOptions, 'wrapper'> = {}
 ) {
   const mockStore =
     store ||

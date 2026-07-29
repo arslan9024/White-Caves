@@ -61,7 +61,7 @@ export const uploadPropertyDocument = asyncHandler(async (req: Request, res: Res
 
   const fileUrl = `/uploads/${req.file.filename}`;
 
-  let dataToUpdate: any = {};
+  const dataToUpdate: Record<string, boolean> = {};
   if (documentType === 'titleDeed') {
     dataToUpdate.titleDeedMissing = false;
   } else if (documentType === 'passport') {

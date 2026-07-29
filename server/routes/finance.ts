@@ -370,8 +370,9 @@ router.post(
         data: { paidCount: result.count },
         message: `${result.count} commission((s) paid successfully`,
       });
-    } catch (err: any) {
-      if (err.message && err.message.includes('503')) {
+    } catch (err: unknown) {
+      const error = err as { message?: string };
+      if (error.message && error.message.includes('503')) {
         console.warn('[Stripe Gateway] simulated fallback activated due to missing secrets/503');
         return res.status(200).json({
           success: true,

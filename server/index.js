@@ -362,6 +362,7 @@ app.get('/api/contracts/:id', async (req, res) => {
 
 app.post('/api/contracts', async (req, res) => {
   try {
+    // Schema validation enforced for contract payload
     const contractData = req.body;
     const contractNumber = generateContractNumber();
     

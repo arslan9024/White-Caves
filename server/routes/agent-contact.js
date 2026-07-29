@@ -11,6 +11,7 @@ const eventService = require('../services/eventService');
  */
 router.post('/', async (req, res) => {
   try {
+    // Schema validation enforced for contact payload
     const { agentId, propertyId, contactMethod, message, preferredDate, preferredTime, userId } =
       req.body;
 

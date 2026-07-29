@@ -1,4 +1,4 @@
-﻿/**
+/**
  * CRM Data Redux Slice
  * Manages: leads, clients, agents, commissions, activities
  * Now with async thunks for backend API integration
@@ -3411,13 +3411,13 @@ export const selectActivitiesByUser = (state: RootState, userId: string) =>
 // ---------------------------------------------------------------------------
 // Legacy compatibility aliases for older CRM hooks/pages
 // ---------------------------------------------------------------------------
-export const fetchClientsAPI: any = fetchClientsFromAPI;
-export const fetchCommissionsAPI: any = fetchCommissionsFromAPI;
-export const fetchNotificationsAPI: any = fetchActivitiesFromAPI;
-export const markNotificationReadAPI: any = updateActivityAPI;
-export const markAllNotificationsReadAPI: any = updateActivityAPI;
-export const fetchFavoritesAPI: any = fetchActivitiesFromAPI;
-export const removeFavoriteAPI: any = deleteActivityAPI;
+export const fetchClientsAPI: typeof fetchClientsFromAPI = fetchClientsFromAPI;
+export const fetchCommissionsAPI: typeof fetchCommissionsFromAPI = fetchCommissionsFromAPI;
+export const fetchNotificationsAPI: typeof fetchActivitiesFromAPI = fetchActivitiesFromAPI;
+export const markNotificationReadAPI: typeof updateActivityAPI = updateActivityAPI;
+export const markAllNotificationsReadAPI: typeof updateActivityAPI = updateActivityAPI;
+export const fetchFavoritesAPI: typeof fetchActivitiesFromAPI = fetchActivitiesFromAPI;
+export const removeFavoriteAPI: typeof deleteActivityAPI = deleteActivityAPI;
 export const selectAllFavorites = selectAllActivities;
 export const selectFavoritesLoading = selectActivitiesLoading;
 export const selectFavoritesError = selectActivitiesError;

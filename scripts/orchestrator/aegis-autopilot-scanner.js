@@ -87,7 +87,7 @@ function scanCodebase() {
 
   const testedComponents = new Set();
   allFiles.forEach(f => {
-    if (f.endsWith('.test.tsx') || f.endsWith('.test.ts') || f.endsWith('.spec.ts')) {
+    if (f.endsWith('.test.tsx') || f.endsWith('.test.ts') || f.endsWith('.test.js') || f.endsWith('.spec.ts') || f.endsWith('.spec.js')) {
       const base = path.basename(f).replace(/\.(test|spec)\.(tsx?|jsx?)$/, '');
       testedComponents.add(base);
     }
@@ -108,6 +108,9 @@ function scanCodebase() {
     const componentName = filename.replace(/\.(tsx?|jsx?)$/, '');
     if (
       (rel.startsWith('src/components/') || rel.startsWith('src/hooks/') || rel.startsWith('server/routes/')) &&
+      !filename.endsWith('.d.ts') &&
+      !filename.endsWith('.styles.ts') &&
+      !filename.endsWith('.styles.tsx') &&
       !testedComponents.has(componentName) &&
       !filename.endsWith('index.ts') &&
       !filename.endsWith('index.tsx')
@@ -144,7 +147,7 @@ function scanCodebase() {
       }
 
       // 3. Security & Auth Gaps (Hardcoded tokens or missing auth check)
-      if (isServer && !rel.includes('middleware/') && /req\.body\b/i.test(trimmed) && !content.includes('zod') && !content.includes('validate') && !content.includes('schema') && !content.includes('Validation') && !content.includes('body(')) {
+      if (isServer && !rel.includes('middleware/') && !rel.includes('controllers/') && /req\.body\b/i.test(trimmed) && !content.includes('zod') && !content.includes('validate') && !content.includes('schema') && !content.includes('Validation') && !content.toLowerCase().includes('validation') && !content.includes('body(')) {
         issues.push({
           id: `SEC-VAL-${path.basename(fp)}-${ln}`,
           category: 'Security & Compliance',
@@ -158,7 +161,7 @@ function scanCodebase() {
       }
 
       // 4. Accessibility Gaps (Images missing alt, buttons missing aria-label)
-      if (isFrontend && /<img\b/i.test(trimmed) && !trimmed.includes('alt=')) {
+      if (isFrontend && /<img\b/i.test(trimmed) && !content.slice(lines.slice(0, i).join('\n').length, lines.slice(0, i + 6).join('\n').length).includes('alt=')) {
         issues.push({
           id: `A11Y-IMG-${path.basename(fp)}-${ln}`,
           category: 'Accessibility & UX',

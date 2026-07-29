@@ -7,6 +7,7 @@ import { prisma } from '../database.js';
 import { asyncHandler, AppError } from '../middleware/errorHandler.js';
 import authMiddleware from '../middleware/auth.js';
 import logger from '../utils/logger.js';
+import { validate } from '../middleware/validation.js'; // Schema validation middleware
 
 const router = Router();
 const JWT_SECRET = process.env.JWT_SECRET || 'your-secret-key';

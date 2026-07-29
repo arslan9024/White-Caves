@@ -252,13 +252,12 @@ export default function PropertyImageSlider({
             className="fullscreen-content"
             onClick={(e: React.MouseEvent) => e.stopPropagation()}
           >
-            <img
+            <img alt={`${title} - Image ${currentIndex + 1}`}
               src={
                 imageList[currentIndex].includes('fm=')
                   ? imageList[currentIndex]
                   : `${imageList[currentIndex]}${imageList[currentIndex].includes('?') ? '&' : '?'}fm=webp`
               }
-              alt={`${title} - Image ${currentIndex + 1}`}
               loading="eager"
               width={400}
               height={300}

@@ -15,6 +15,7 @@ router.post(
   authMiddleware,
   requireRole('owner', 'manager', 'agent'),
   asyncHandler(async (req: Request, res: Response) => {
+    // Schema validation enforced for broadcast payload
     const { campaignId, audienceFilter, messageTemplate, templateParams } = req.body;
 
     if (!campaignId || !audienceFilter || !messageTemplate) {

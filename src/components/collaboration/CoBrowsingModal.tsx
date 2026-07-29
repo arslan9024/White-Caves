@@ -229,11 +229,7 @@ export const CoBrowsingModal: FC<CoBrowsingModalProps> = ({
             onClearAnnotations={clearAnnotations}
             height="560px"
           >
-            <img
-              src={floorPlanUrl}
-              alt="Floor plan"
-              style={{ width: '100%', height: '100%', objectFit: 'cover', opacity: 0.85 }}
-            />
+            <img src={floorPlanUrl} alt="Floor plan" style={{ width: '100%', height: '100%', objectFit: 'cover', opacity: 0.85 }} />
           </AnnotationLayer>
         </div>
       </div>

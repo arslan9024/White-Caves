@@ -99,7 +99,7 @@ const normalizeIntent = (intent: unknown): Message['intent'] | undefined => {
   return INTENT_MAP[intent] ?? undefined;
 };
 
-const normalizeConversation = (raw: any): Conversation => {
+const normalizeConversation = (raw: Record<string, unknown>): Conversation => {
   const messages = Array.isArray(raw?.messages) ? raw.messages : [];
   const latestMessage = messages[0] ?? null;
   const leadScore = Number(raw?.leadScore ?? 0);
@@ -121,7 +121,7 @@ const normalizeConversation = (raw: any): Conversation => {
   };
 };
 
-const normalizeMessage = (raw: any): Message => ({
+const normalizeMessage = (raw: Record<string, unknown>): Message => ({
   id: String(raw?.id ?? ''),
   conversationId: String(raw?.conversationId ?? ''),
   sender: normalizeSender(raw?.direction),
@@ -134,7 +134,7 @@ const normalizeMessage = (raw: any): Message => ({
   createdAt: raw?.createdAt ?? undefined,
 });
 
-const normalizeQueuedConversation = (raw: any, sortOrder = 0): QueuedConversation => ({
+const normalizeQueuedConversation = (raw: Record<string, unknown>, sortOrder = 0): QueuedConversation => ({
   queueId: String(raw?.queueId ?? raw?.id ?? ''),
   conversationId: String(raw?.conversationId ?? raw?.conversation?.id ?? ''),
   customerPhone: String(raw?.customerPhone ?? raw?.conversation?.customerPhone ?? ''),

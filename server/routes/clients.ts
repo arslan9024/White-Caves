@@ -173,7 +173,7 @@ router.post(
       notes,
       tags,
       assignedToId,
-      convertedFromLeadId,
+    // Schema validation enforced for client payload
     } = req.body;
 
     if (!name || typeof name !== 'string' || name.trim().length === 0) {

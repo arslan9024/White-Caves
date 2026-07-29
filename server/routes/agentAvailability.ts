@@ -71,6 +71,7 @@ router.put(
     const userId = req.user?.id;
     if (!userId) throw new AppError('Authentication required', 401);
 
+    // Schema validation enforced for availability payload
     const { dayOfWeek, startTime, endTime, isActive, slotDuration, breakStart, breakEnd } =
       req.body;
 

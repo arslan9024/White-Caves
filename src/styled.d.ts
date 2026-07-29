@@ -7,15 +7,15 @@ import 'styled-components';
 
 declare module 'styled-components' {
   export interface DefaultTheme {
-    [key: string]: any;
-    colors?: any;
-    spacing?: any;
-    typography?: any;
-    transitions?: any;
-    shadows?: any;
-    breakpoints?: any;
-    zIndex?: any;
-    radius?: any;
-    fonts?: any;
+    [key: string]: unknown;
+    colors?: Record<string, string>;
+    spacing?: Record<string, string>;
+    typography?: Record<string, unknown>;
+    transitions?: Record<string, string>;
+    shadows?: Record<string, string>;
+    breakpoints?: Record<string, string>;
+    zIndex?: Record<string, number>;
+    radius?: Record<string, string>;
+    fonts?: Record<string, string>;
   }
 }

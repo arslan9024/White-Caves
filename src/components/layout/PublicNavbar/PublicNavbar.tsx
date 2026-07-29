@@ -247,14 +247,13 @@ const PublicNavbar = (): React.JSX.Element => {
                 className="public-navbar__user-btn"
                 onClick={() => setIsUserMenuOpen(!isUserMenuOpen)}
               >
-                <img
+                <img alt={user.name || 'User Avatar'}
                   src={
                     user.photoURL ||
                     `https://ui-avatars.com/api/?name=${encodeURIComponent(
                       user.name || user.email || 'A'
                     )}&background=EF4444&color=fff`
                   }
-                  alt={user.name || 'User Avatar'}
                   className="public-navbar__user-avatar"
                 />
                 <span className="public-navbar__user-name">{user.name?.split(' ')[0] || 'Account'}</span>

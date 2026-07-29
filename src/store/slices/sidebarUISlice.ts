@@ -204,7 +204,7 @@ const sidebarUISlice = createSlice({
       action: PayloadAction<{
         sidebar: string;
         filterKey: string;
-        filterValue: any;
+        filterValue: unknown;
       }>
     ) => {
       const { sidebar, filterKey, filterValue } = action.payload;
@@ -260,7 +260,7 @@ export const {
 } = sidebarUISlice.actions;
 
 // Selectors
-const selectSidebarState = (state: any) => state.sidebarUI || initialState;
+const selectSidebarState = (state: { sidebarUI?: SidebarUIState }) => state.sidebarUI || initialState;
 
 export const selectSidebarConfig = (sidebarName: string) =>
   createSelector(

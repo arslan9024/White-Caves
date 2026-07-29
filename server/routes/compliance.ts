@@ -218,7 +218,7 @@ router.get(
 
     res.status(200).json({
       success: true,
-      data: logs.map((l: any) => ({
+      data: logs.map((l: Record<string, unknown>) => ({
         id: l.id,
         type: l.type,
         action: l.action,

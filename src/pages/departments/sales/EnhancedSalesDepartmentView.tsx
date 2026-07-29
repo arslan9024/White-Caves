@@ -1,4 +1,4 @@
-﻿/* eslint-disable @typescript-eslint/no-unused-vars, @typescript-eslint/no-explicit-any */
+/* eslint-disable @typescript-eslint/no-unused-vars, @typescript-eslint/no-explicit-any */
 /**
  * Sales Department View - Fully Optimized with Caching and Performance Monitoring
  * Uses optimized API hooks with automatic caching, deduplication, and monitoring
@@ -107,7 +107,7 @@ export const SalesDepartmentView: React.FC<SalesDepartmentViewProps> = ({
     );
   }
 
-  const contentRenderer = (data: any) => (
+  const contentRenderer = (data: Record<string, unknown>) => (
     <SalesContentWrapper>
       <ChartCard>
         <h3>Leads by Source</h3>

@@ -1,10 +1,19 @@
 import React, { useEffect, useState } from 'react';
 import { Helmet } from 'react-helmet';
 
+interface JobPostingData {
+  id: string;
+  title: string;
+  description: string;
+  department: string;
+  location: string;
+  createdAt: string;
+}
+
 export function CareersPage() {
-  const [jobs, setJobs] = useState<any[]>([]);
+  const [jobs, setJobs] = useState<JobPostingData[]>([]);
   const [loading, setLoading] = useState(true);
-  const [selectedJob, setSelectedJob] = useState<any | null>(null);
+  const [selectedJob, setSelectedJob] = useState<JobPostingData | null>(null);
   const [submitStatus, setSubmitStatus] = useState<{ type: 'success' | 'error'; message: string } | null>(null);
 
   useEffect(() => {
@@ -16,7 +25,7 @@ export function CareersPage() {
       .finally(() => setLoading(false));
   }, []);
 
-  const generateJobJSONLD = (job: any) => {
+  const generateJobJSONLD = (job: JobPostingData) => {
     return {
       '@context': 'https://schema.org/',
       '@type': 'JobPosting',

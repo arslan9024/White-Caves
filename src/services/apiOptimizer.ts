@@ -171,7 +171,7 @@ class RequestDeduplicator {
   /**
    * Get hash of request
    */
-  private getRequestHash(method: string, url: string, data?: any): string {
+  private getRequestHash(method: string, url: string, data?: unknown): string {
     const dataStr = data ? JSON.stringify(data) : '';
     return `${method.toUpperCase()}-${url}-${dataStr}`;
   }
@@ -182,7 +182,7 @@ class RequestDeduplicator {
   async execute<T>(
     method: string,
     url: string,
-    data: any,
+    data: unknown,
     executor: () => Promise<T>
   ): Promise<T> {
     const hash = this.getRequestHash(method, url, data);
@@ -296,7 +296,7 @@ export class APIOptimizer {
   async executeWithDedup<T>(
     method: string,
     url: string,
-    data: any,
+    data: unknown,
     executor: () => Promise<T>
   ): Promise<T> {
     if (!this.config.enableDedup) {

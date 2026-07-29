@@ -195,7 +195,7 @@ export class OptimizedDepartmentService {
   /**
    * Get cache statistics
    */
-  getCacheStats(): any {
+  getCacheStats(): Record<string, unknown> {
     return apiOptimizer.getCacheStats();
   }
 

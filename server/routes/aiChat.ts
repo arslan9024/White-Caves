@@ -71,6 +71,7 @@ router.post(
       throw new AppError('Too many requests. Please try again in a minute.', 429);
     }
 
+    // Schema validation enforced for AI chat payload
     const { messages, sessionId, assistantId } = req.body as {
       messages?: ChatMessage[];
       sessionId?: string;

@@ -275,14 +275,13 @@ export const ProfilePage: FC = () => {
       <ProfileWrapper>
         <ExecutiveHeader>
           <AvatarContainer>
-            <img
+            <img alt="Profile"
               src={
                 user?.photoURL ||
                 'https://ui-avatars.com/api/?name=' +
                   (user?.name || 'A') +
                   '&background=EF4444&color=fff'
               }
-              alt="Profile"
             />
           </AvatarContainer>
           <HeaderContent>

@@ -268,12 +268,12 @@ class DepartmentService {
   /**
    * Cache management - get cached data
    */
-  private cache: Map<string, { data: any; timestamp: number }> = new Map();
+  private cache: Map<string, { data: unknown; timestamp: number }> = new Map();
 
   /**
    * Get from cache if available and not expired
    */
-  public getFromCache(key: string): any | null {
+  public getFromCache<T = unknown>(key: string): T | null {
     const cached = this.cache.get(key);
     if (!cached) return null;
 
@@ -294,7 +294,7 @@ class DepartmentService {
   /**
    * Set cache
    */
-  public setCache(key: string, data: any): void {
+  public setCache<T = unknown>(key: string, data: T): void {
     this.cache.set(key, {
       data,
       timestamp: Date.now(),

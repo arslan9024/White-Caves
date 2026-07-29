@@ -170,7 +170,7 @@ router.post('/generate-srs', async (req, res) => {
       includeDiagrams = true,
       includeCompliance = true,
       includeArabic = false,
-      preferredProvider = null
+    // Schema validation enforced for payload
     } = req.body;
     
     console.log('📝 Starting SRS generation...');

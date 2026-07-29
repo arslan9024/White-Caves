@@ -5,7 +5,7 @@ import logger from '../utils/logger.js';
 interface QueueTask {
   id: string;
   type: string;
-  data: any;
+  data: unknown;
   priority: 'low' | 'normal' | 'high';
   createdAt: Date;
   attempts: number;
@@ -17,7 +17,7 @@ interface QueueTask {
 
 interface QueueWorker {
   type: string;
-  handler: (data: any) => Promise<void>;
+  handler: (data: unknown) => Promise<void>;
   concurrency: number;
 }
 
@@ -38,7 +38,7 @@ export class MessageQueueService extends EventEmitter {
    */
   public registerWorker(
     type: string,
-    handler: (data: any) => Promise<void>,
+    handler: (data: unknown) => Promise<void>,
     concurrency: number = 5
   ): void {
     this.workers.set(type, { type, handler, concurrency });
