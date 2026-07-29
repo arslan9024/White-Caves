@@ -241,24 +241,42 @@ function scanCodebase() {
 }
 
 function selectTop12Targets(issues) {
-  // Ensure balanced representation between Server and Frontend
+  // DIVERSITY RULE: Max 4 items per category to ensure cross-layer coverage
+  const MAX_PER_CATEGORY = 4;
+  const MAX_PER_LAYER = 8; // No more than 8 from Server or Frontend alone
   const top12 = [];
   const seenFiles = new Set();
+  const categoryCount = {};
+  const layerCount = { Server: 0, Frontend: 0 };
 
   for (const iss of issues) {
     if (top12.length >= 12) break;
-    if (!seenFiles.has(iss.file)) {
-      top12.push(iss);
-      seenFiles.add(iss.file);
-    }
+
+    const catKey = iss.category;
+    const layerKey = iss.layer || 'Frontend';
+
+    // Skip if we already have this file
+    if (seenFiles.has(iss.file)) continue;
+
+    // Skip if this category already hit its cap
+    if ((categoryCount[catKey] || 0) >= MAX_PER_CATEGORY) continue;
+
+    // Skip if this layer already hit its cap
+    if ((layerCount[layerKey] || 0) >= MAX_PER_LAYER) continue;
+
+    top12.push(iss);
+    seenFiles.add(iss.file);
+    categoryCount[catKey] = (categoryCount[catKey] || 0) + 1;
+    layerCount[layerKey] = (layerCount[layerKey] || 0) + 1;
   }
 
-  // If unique file count was < 12, fill remaining
+  // If diversity constraints left us under 12, fill remaining from highest-score uncapped items
   if (top12.length < 12) {
     for (const iss of issues) {
       if (top12.length >= 12) break;
-      if (!top12.includes(iss)) {
+      if (!seenFiles.has(iss.file)) {
         top12.push(iss);
+        seenFiles.add(iss.file);
       }
     }
   }
