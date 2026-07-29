@@ -23,6 +23,11 @@ import PageMeta from '../components/seo/PageMeta';
 import StructuredData from '../components/seo/StructuredData';
 import { useRecentlyViewed } from '../components/RecentlyViewed';
 import { HOME_PROPERTIES } from '../data/homeProperties';
+import { SearchCommandTrigger, SearchCommandModal } from '../components/homepage/SearchCommand';
+import { MapContainer } from '../components/homepage/MapContainer';
+import { ToolsDashboard } from '../components/homepage/ToolsDashboard';
+import { AreaGuideGrid } from '../components/homepage/AreaGuideGrid';
+import { TestimonialPodium } from '../components/homepage/TestimonialPodium';
 import './HomePage.css';
 
 // Above-the-fold: Hero is the LCP element — import directly (NOT lazy) so the
@@ -45,12 +50,6 @@ const Team = lazy(() => import('../components/homepage/Team'));
 const Testimonials = lazy(() => import('../components/homepage/Testimonials'));
 const ContactCTA = lazy(() => import('../components/homepage/Contact'));
 const NewsletterSubscription = lazy(() => import('../components/NewsletterSubscription'));
-const PropertyComparison = lazy(() => import('../components/PropertyComparison'));
-const OffPlanTracker = lazy(() => import('../components/OffPlanTracker'));
-const NeighborhoodAnalyzer = lazy(() => import('../components/NeighborhoodAnalyzer'));
-const RentVsBuyCalculator = lazy(() => import('../components/RentVsBuyCalculator'));
-const VirtualTourGallery = lazy(() => import('../components/VirtualTourGallery'));
-const DubaiMap = lazy(() => import('../components/DubaiMap'));
 const CompanyProfile = lazy(() => import('../components/CompanyProfile'));
 const BlogSection = lazy(() => import('../components/BlogSection'));
 const OnboardingGateway = lazy(() => import('../components/OnboardingGateway'));
@@ -105,9 +104,18 @@ const HomePage: FC = () => {
   const homepageError = useSelector(selectHomepageError);
   const navigate = useNavigate();
 
-  const [activeToolTab, setActiveToolTab] = useState<
-    'all' | 'rentvsbuy' | 'offplan' | 'comparison' | 'neighborhood' | 'virtualtour'
-  >('all');
+  const [isSearchOpen, setIsSearchOpen] = useState(false);
+
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'k') {
+        e.preventDefault();
+        setIsSearchOpen(prev => !prev);
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, []);
 
   // Use live data when available; fall back to static dummy data before API resolves
   const displayedFeatured = useMemo(
@@ -237,8 +245,15 @@ const HomePage: FC = () => {
           </div>
         ) : null}
 
+        {/* Floating Search Pill Trigger */}
+        <div style={{ textAlign: 'center', margin: '-24px auto 32px', position: 'relative', zIndex: 100 }}>
+          <SearchCommandTrigger onClick={() => setIsSearchOpen(true)} />
+        </div>
+        <SearchCommandModal isOpen={isSearchOpen} onClose={() => setIsSearchOpen(false)} />
+
         {/* Phase 25: Hero is the LCP element — NOT wrapped in Suspense so it renders on first paint */}
         <Hero marketStats={marketStats} isLoading={isHomepageLoading} />
+
         <section className="home-page__trust-strip" aria-label="Market trust highlights">
           <div className="home-page__trust-grid">
             {trustHighlights.map(item => (
@@ -250,90 +265,36 @@ const HomePage: FC = () => {
           </div>
         </section>
 
-        {/* Above-fold companions lazy-loaded so they don't delay Hero render */}
+        {/* Above-fold companions */}
         <Suspense fallback={<SectionLoader />}>
           <Features />
           <MarketStatsBanner marketStats={marketStats} isLoading={isHomepageLoading} />
         </Suspense>
 
-        {/* Below the fold — lazy-loaded for faster initial paint */}
+        {/* STAGE 3: Area Guide Grid (Life in DAMAC Hills 2, Palm Jumeirah, Downtown) */}
+        <AreaGuideGrid />
+
+        {/* STAGE 2: Real Geospatial Map Engine with Red Markers */}
+        <MapContainer />
+
+        {/* Featured Properties */}
         <Suspense fallback={<SectionLoader />}>
-          {/* Locations first so the map has context */}
-          <Locations locationTrends={locationTrends} isLoading={isHomepageLoading} />
-          <DubaiMap onPropertySelect={property => handlePropertyClick(property.id)} />
           <FeaturedPropertiesSection
             featuredProperties={displayedFeatured}
             isLoading={isHomepageLoading}
           />
+        </Suspense>
 
-          {/* ── Tools & Insights ───────────────────────────────────────────────── */}
-          <div id="tools-insights" className="home-page-tools-insights" style={{ padding: '40px 20px', background: '#F8FAFC', borderRadius: '24px', border: '1px solid #E2E8F0', margin: '40px auto', maxWidth: '1400px' }}>
-            <div className="home-page-tools-insights__inner" style={{ textAlign: 'center', marginBottom: '32px' }}>
-              <div style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', padding: '6px 14px', borderRadius: '9999px', background: 'rgba(239, 68, 68, 0.1)', color: '#EF4444', fontWeight: 800, fontSize: '0.8rem', marginBottom: '12px' }}>
-                <span>⚡ REAL ESTATE FINTECH & AI SUITE</span>
-              </div>
-              <h2 className="home-page-tools-insights__title" style={{ fontSize: '2.25rem', fontWeight: 800, color: '#0F172A', margin: '0 0 12px' }}>Interactive Tools & Market Insights</h2>
-              <p className="home-page-tools-insights__description" style={{ color: '#64748B', maxWidth: '640px', margin: '0 auto', fontSize: '1rem' }}>
-                Make data-backed investment decisions with our live calculators, off-plan intelligence, property comparison, and 360° virtual tour suite.
-              </p>
+        {/* STAGE 1: Gamified ROI & Mortgage Tools Dashboard (Styled Components) */}
+        <ToolsDashboard />
 
-              {/* Interactive Tool Switcher Pills */}
-              <div style={{ display: 'flex', gap: '10px', justifyContent: 'center', flexWrap: 'wrap', marginTop: '24px' }}>
-                {[
-                  { id: 'all', label: '🌟 All Tools', desc: 'Complete Suite' },
-                  { id: 'rentvsbuy', label: '🧮 Rent vs Buy Calculator', desc: 'ROI & Mortgage' },
-                  { id: 'offplan', label: '🏗️ Off-Plan Investment Tracker', desc: 'DLD Developers' },
-                  { id: 'comparison', label: '⚖️ Property Comparison', desc: 'Side-by-side' },
-                  { id: 'neighborhood', label: '🏙️ Neighborhood AI', desc: 'Dubai Amenities' },
-                  { id: 'virtualtour', label: '🥽 360° Virtual Tours', desc: 'VR Experience' },
-                ].map(tool => {
-                  const isActive = activeToolTab === tool.id;
-                  return (
-                    <button
-                      key={tool.id}
-                      onClick={() => setActiveToolTab(tool.id as any)}
-                      style={{
-                        padding: '10px 18px',
-                        borderRadius: '12px',
-                        border: isActive ? '2px solid #EF4444' : '1px solid #E2E8F0',
-                        background: isActive ? '#FFFFFF' : 'rgba(255, 255, 255, 0.7)',
-                        color: isActive ? '#EF4444' : '#334155',
-                        fontWeight: isActive ? 800 : 600,
-                        fontSize: '0.85rem',
-                        cursor: 'pointer',
-                        boxShadow: isActive ? '0 4px 14px rgba(239, 68, 68, 0.15)' : 'none',
-                        transition: 'all 200ms ease',
-                      }}
-                    >
-                      {tool.label}
-                    </button>
-                  );
-                })}
-              </div>
-            </div>
+        {/* STAGE 3: 5-Star Investor Testimonial Podium */}
+        <TestimonialPodium />
 
-            {/* Rendered Tool Viewports */}
-            <div style={{ transition: 'all 300ms ease' }}>
-              {(activeToolTab === 'all' || activeToolTab === 'rentvsbuy') && <RentVsBuyCalculator />}
-              {(activeToolTab === 'all' || activeToolTab === 'offplan') && (
-                <OffPlanTracker
-                  marketStats={marketStats}
-                  locationTrends={locationTrends}
-                  featuredProperties={displayedFeatured}
-                />
-              )}
-              {(activeToolTab === 'all' || activeToolTab === 'comparison') && <PropertyComparison />}
-              {(activeToolTab === 'all' || activeToolTab === 'neighborhood') && <NeighborhoodAnalyzer />}
-              {(activeToolTab === 'all' || activeToolTab === 'virtualtour') && (
-                <VirtualTourGallery featuredProperties={displayedFeatured} />
-              )}
-            </div>
-          </div>
-          {/* ── /Tools & Insights ─────────────────────────────────────────────── */}
-
+        {/* Below the fold companion sections */}
+        <Suspense fallback={<SectionLoader />}>
           <CompanyProfile />
           <Team topAgents={topAgents} isLoading={isHomepageLoading} />
-          <Testimonials />
           <BlogSection
             marketStats={marketStats}
             featuredProperties={displayedFeatured}

@@ -235,18 +235,6 @@ const PublicNavbar = (): React.JSX.Element => {
 
           <LanguageSwitcher />
 
-          {/* WhatsApp Live Agent Hotline */}
-          <a
-            href="https://wa.me/971500000000?text=Hello%20White%20Caves%2C%20I%20am%20interested%20in%20Dubai%20Luxury%20Properties"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="public-navbar__whatsapp-btn"
-            title="Direct WhatsApp Hotline"
-          >
-            <span className="public-navbar__whatsapp-dot" />
-            💬 VIP Hotline
-          </a>
-
           <Link to="/services#sell" className="public-navbar__list-btn">
             {t('nav.listProperty')}
           </Link>
