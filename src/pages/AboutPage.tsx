@@ -16,7 +16,6 @@ import { useDocumentTitle } from '../hooks/useDocumentTitle';
 import PublicLayout from '../components/layout/PublicLayout';
 import PageHeroBanner from '../components/layout/PageHeroBanner';
 import PageMeta from '../components/seo/PageMeta';
-import WhatsAppButton from '../components/WhatsAppButton';
 import './AboutPage.css';
 
 const fadeUp: Variants = {
@@ -366,8 +365,6 @@ const AboutPage: FC = () => {
             </motion.div>
           </div>
         </section>
-
-        <WhatsAppButton />
       </div>
     </PublicLayout>
   );

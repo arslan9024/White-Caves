@@ -101,9 +101,8 @@ describe('AboutPage', () => {
     });
   });
 
-  it('renders Footer and WhatsApp components', () => {
+  it('renders Footer component', () => {
     renderPage();
     expect(screen.getByTestId('footer')).toBeTruthy();
-    expect(screen.getByTestId('whatsapp-btn')).toBeTruthy();
   });
 });

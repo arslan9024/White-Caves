@@ -22,7 +22,6 @@ import { useDocumentTitle } from '../hooks/useDocumentTitle';
 import PublicLayout from '../components/layout/PublicLayout';
 import PageHeroBanner from '../components/layout/PageHeroBanner';
 import PageMeta from '../components/seo/PageMeta';
-import WhatsAppButton from '../components/WhatsAppButton';
 import { useToast } from '../components/Toast';
 import { authFetch } from '../utils/authFetch';
 import './ServicesPage.css';
@@ -819,8 +818,6 @@ const ServicesPage: FC = () => {
             </div>
           </div>
         </section>
-
-        <WhatsAppButton />
       </div>
     </PublicLayout>
   );
