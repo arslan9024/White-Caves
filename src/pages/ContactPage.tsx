@@ -213,15 +213,21 @@ const ContactPage: FC = () => {
                     </svg>
                   </div>
                   <div className="contact-details">
-                    <h3>Phone Numbers</h3>
+                    <h3>Contact Number</h3>
                     <p>
-                      <strong>Office:</strong> +971 56 361 6136
+                      <a href="tel:+971563616136" style={{ color: '#1E293B', textDecoration: 'none', fontWeight: 700 }}>
+                        +971 56 361 6136
+                      </a>
                     </p>
-                    <p>
-                      <strong>Mobile:</strong> +971 56 361 6136
-                    </p>
-                    <p>
-                      <strong>WhatsApp:</strong> +971 56 361 6136
+                    <p style={{ marginTop: '6px' }}>
+                      <a
+                        href="https://wa.me/971563616136?text=Hello%20White%20Caves%20Real%20Estate%2C%20I%20would%20like%20to%20inquire%20about%20a%20property."
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        style={{ color: '#25D366', textDecoration: 'none', fontWeight: 700 }}
+                      >
+                        💬 WhatsApp Direct ↗
+                      </a>
                     </p>
                   </div>
                 </div>

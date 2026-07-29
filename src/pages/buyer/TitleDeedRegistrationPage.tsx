@@ -1,8 +1,8 @@
 import React, { FC } from 'react';
 import '../RolePages.css';
 
-const AGENT_PHONE = '+971563616136';
-const AGENT_WHATSAPP_URL = `https://wa.me/971563616136?text=Hi%2C%20I%20would%20like%20to%20start%20my%20title%20deed%20registration.`;
+import { WC_PHONE, WC_WHATSAPP_URL } from '../../constants/contact';
+
 
 interface Step {
   number: number;
@@ -154,13 +154,13 @@ const TitleDeedRegistrationPage: FC = () => {
           </p>
           <div style={{ display: 'flex', gap: '1rem', justifyContent: 'center', flexWrap: 'wrap' }}>
             <a
-              href={`tel:${AGENT_PHONE}`}
+              href={`tel:${WC_PHONE}`}
               style={{ padding: '0.75rem 1.5rem', background: 'var(--color-primary, #C6A84B)', color: '#fff', borderRadius: '8px', fontWeight: 600, textDecoration: 'none' }}
             >
               📞 Call Us Now
             </a>
             <a
-              href={AGENT_WHATSAPP_URL}
+              href={WC_WHATSAPP_URL('Hi, I would like to start my title deed registration.')}
               target="_blank"
               rel="noopener noreferrer"
               style={{ padding: '0.75rem 1.5rem', background: '#25D366', color: '#fff', borderRadius: '8px', fontWeight: 600, textDecoration: 'none' }}

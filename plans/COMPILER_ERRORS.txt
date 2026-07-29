@@ -1,6 +1,6 @@
 [36mvite v7.3.5 [32mbuilding client environment for production...[36m[39m
 transforming...
-[32m✓[39m 2631 modules transformed.
+[32m✓[39m 2632 modules transformed.
 rendering chunks...
 computing gzip size...
 [2mdist/[22m[32mmanifest.webmanifest                                             [39m[1m[2m  0.60 kB[22m[1m[22m
@@ -149,7 +149,7 @@ computing gzip size...
 [2mdist/[22m[36massets/ContractManagementPage-tZrqwnWO.js                        [39m[1m[2m 11.66 kB[22m[1m[22m[2m │ gzip:  2.12 kB[22m
 [2mdist/[22m[36massets/PricingToolsPage-Dxa0_JIv.js                              [39m[1m[2m 11.89 kB[22m[1m[22m[2m │ gzip:  1.66 kB[22m
 [2mdist/[22m[36massets/VirtualTour-CPo0O6gV.js                                   [39m[1m[2m 11.96 kB[22m[1m[22m[2m │ gzip:  2.74 kB[22m
-[2mdist/[22m[36massets/TitleDeedRegistrationPage-WUroNCSx.js                     [39m[1m[2m 11.96 kB[22m[1m[22m[2m │ gzip:  2.37 kB[22m
+[2mdist/[22m[36massets/TitleDeedRegistrationPage-BSahbvS6.js                     [39m[1m[2m 11.99 kB[22m[1m[22m[2m │ gzip:  2.38 kB[22m
 [2mdist/[22m[36massets/PrivacyPolicyPage-C1dgv-P6.js                             [39m[1m[2m 12.52 kB[22m[1m[22m[2m │ gzip:  2.03 kB[22m
 [2mdist/[22m[36massets/jsx-dev-runtime-BOBRwlIn.js                               [39m[1m[2m 12.80 kB[22m[1m[22m[2m │ gzip:  5.12 kB[22m
 [2mdist/[22m[36massets/WhatsAppDashboardPage-CwP3BWZQ.js                         [39m[1m[2m 12.90 kB[22m[1m[22m[2m │ gzip:  1.86 kB[22m
@@ -184,7 +184,7 @@ computing gzip size...
 [2mdist/[22m[36massets/TechnologyDepartmentView-CryXAoD5.js                      [39m[1m[2m 25.15 kB[22m[1m[22m[2m │ gzip:  4.23 kB[22m
 [2mdist/[22m[36massets/LegalDepartmentView-CUwJmUdi.js                           [39m[1m[2m 25.16 kB[22m[1m[22m[2m │ gzip:  4.86 kB[22m
 [2mdist/[22m[36massets/MarketingDepartmentView-BUjtunvD.js                       [39m[1m[2m 25.66 kB[22m[1m[22m[2m │ gzip:  4.52 kB[22m
-[2mdist/[22m[36massets/CompanyProfile-DSoKHMh1.js                                [39m[1m[2m 26.16 kB[22m[1m[22m[2m │ gzip:  3.96 kB[22m
+[2mdist/[22m[36massets/CompanyProfile-DZpOuiwK.js                                [39m[1m[2m 26.58 kB[22m[1m[22m[2m │ gzip:  4.14 kB[22m
 [2mdist/[22m[36massets/index-BSAyIQgj.js                                         [39m[1m[2m 26.76 kB[22m[1m[22m[2m │ gzip:  9.70 kB[22m
 [2mdist/[22m[36massets/LeasingAcquisition-6h9uGgij.js                            [39m[1m[2m 26.82 kB[22m[1m[22m[2m │ gzip:  4.65 kB[22m
 [2mdist/[22m[36massets/ViewingsPage-L8kTn4xE.js                                  [39m[1m[2m 27.01 kB[22m[1m[22m[2m │ gzip:  5.51 kB[22m
@@ -195,7 +195,7 @@ computing gzip size...
 [2mdist/[22m[36massets/index-Du7dNl0o.js                                         [39m[1m[2m 32.18 kB[22m[1m[22m[2m │ gzip:  6.39 kB[22m
 [2mdist/[22m[36massets/WhatsAppSettingsPage-ARKYEnvc.js                          [39m[1m[2m 33.90 kB[22m[1m[22m[2m │ gzip:  4.85 kB[22m
 [2mdist/[22m[36massets/PropertyDetailPage-DegrnuJt.js                            [39m[1m[2m 34.21 kB[22m[1m[22m[2m │ gzip:  5.46 kB[22m
-[2mdist/[22m[36massets/ContactPage-Bc0_onCP.js                                   [39m[1m[2m 34.79 kB[22m[1m[22m[2m │ gzip:  5.12 kB[22m
+[2mdist/[22m[36massets/ContactPage-TaTbrLSr.js                                   [39m[1m[2m 34.73 kB[22m[1m[22m[2m │ gzip:  5.27 kB[22m
 [2mdist/[22m[36massets/AIAssistantHub-C9QnLG0L.js                                [39m[1m[2m 35.38 kB[22m[1m[22m[2m │ gzip:  5.17 kB[22m
 [2mdist/[22m[36massets/SignContractPage-D7EvOoaC.js                              [39m[1m[2m 35.78 kB[22m[1m[22m[2m │ gzip: 11.14 kB[22m
 [2mdist/[22m[36massets/MarketIntelligencePage-mP7JJ7zE.js                        [39m[1m[2m 36.13 kB[22m[1m[22m[2m │ gzip:  5.71 kB[22m
@@ -215,19 +215,19 @@ computing gzip size...
 [2mdist/[22m[36massets/store-B7zrNvdM.js                                         [39m[1m[2m 85.45 kB[22m[1m[22m[2m │ gzip: 24.41 kB[22m
 [2mdist/[22m[36massets/LandlordPortalPage-BW8Jtkfn.js                            [39m[1m[2m116.26 kB[22m[1m[22m[2m │ gzip: 13.03 kB[22m
 [2mdist/[22m[36massets/aiAssistantDashboardSlice-D6A7RYPl.js                     [39m[1m[2m119.14 kB[22m[1m[22m[2m │ gzip: 31.08 kB[22m
-[2mdist/[22m[36massets/HomePage-Cp4Uckl2.js                                      [39m[1m[2m119.85 kB[22m[1m[22m[2m │ gzip: 23.99 kB[22m
+[2mdist/[22m[36massets/HomePage-D0mfBE1Q.js                                      [39m[1m[2m119.85 kB[22m[1m[22m[2m │ gzip: 23.99 kB[22m
 [2mdist/[22m[36massets/firebase-B6_21Y0L.js                                      [39m[1m[2m124.83 kB[22m[1m[22m[2m │ gzip: 37.39 kB[22m
 [2mdist/[22m[36massets/proxy-DkIuAswp.js                                         [39m[1m[2m138.15 kB[22m[1m[22m[2m │ gzip: 46.40 kB[22m
 [2mdist/[22m[36massets/index-ByBnhmXF.js                                         [39m[1m[2m151.45 kB[22m[1m[22m[2m │ gzip: 31.96 kB[22m
 [2mdist/[22m[36massets/TileLayer-CWQta3nb.js                                     [39m[1m[2m153.80 kB[22m[1m[22m[2m │ gzip: 45.00 kB[22m
-[2mdist/[22m[36massets/index-CT1X7JHU.js                                         [39m[1m[2m177.53 kB[22m[1m[22m[2m │ gzip: 39.72 kB[22m
+[2mdist/[22m[36massets/index-DOtabjAt.js                                         [39m[1m[2m177.53 kB[22m[1m[22m[2m │ gzip: 39.72 kB[22m
 [2mdist/[22m[36massets/__federation_shared_react-router-dom-CkKRZ9W1.js          [39m[1m[2m199.74 kB[22m[1m[22m[2m │ gzip: 65.30 kB[22m
 [2mdist/[22m[36massets/index-C9jzvzOW.js                                         [39m[1m[2m285.06 kB[22m[1m[22m[2m │ gzip: 87.18 kB[22m
-[32m✓ built in 21.25s[39m
+[32m✓ built in 14.62s[39m
 
 PWA v1.3.0
 mode      generateSW
-precache  228 entries (5282.84 KiB)
+precache  228 entries (5283.66 KiB)
 files generated
   dist/sw.js
   dist/workbox-60b9b2d4.js
