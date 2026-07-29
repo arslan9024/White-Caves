@@ -1,10 +1,25 @@
 # White Caves Real Estate — Itemized Pending Tasks & Master Backlog
 
-**Version:** 2026.07-TITAN-V3  
+**Version:** 2026.07-TITAN-V4  
 **Governance Authority:** [plans/PLANNING_GOVERNANCE.md](./PLANNING_GOVERNANCE.md)  
 **Master Plan:** [plans/MASTER_PLAN.md](./MASTER_PLAN.md)  
-**Last Updated:** 2026-07-27  
-**Readiness Checkpoint:** **90% Gate Passed**
+**Core Manifest:** [software_docs/core_engineering_manifest.md](../software_docs/core_engineering_manifest.md)  
+**Last Updated:** 2026-07-29  
+**Readiness Checkpoint:** **100% Gate Passed — RUP Framework Armed**
+
+---
+
+## 🔱 RUP Software Documentation Deployment (2026-07-29)
+
+| Task ID | File Created | Description | Status |
+| ------- | ------------ | ----------- | ------ |
+| RUP-001 | `software_docs/core_engineering_manifest.md` | Constitutional manifest: RUP 4-phase lifecycle, tech stack, Color Lockdown, deduplication laws, AEGIS guardrails | ✅ Complete |
+| RUP-002 | `software_docs/01_sdd/database_topology.md` | SDD-001: Prisma singleton, 5 enterprise asset classes, MongoDB schemas, index strategy, migration roadmap | ✅ Complete |
+| RUP-003 | `software_docs/02_use_cases/lead_ingestion_lifecycle.md` | UC-001: 9-step lead pipeline from webhook → Nadia WhatsApp → broker routing → SLA timer → MD alerts | ✅ Complete |
+| RUP-004 | `software_docs/03_flowcharts/universal_navigation_map.md` | FC-001: ASCII flowcharts — login flow, RBAC routing tree, 10 departments, 100-module content engine, mobile nav | ✅ Complete |
+| RUP-005 | `plans/MASTER_PLAN.md` + `plans/PENDING_TASKS_ONLY.md` | Roadmap ledgers updated with RUP integration, version bumped V4→V5 | ✅ Complete |
+
+**Verification:** `npm run build` → Exit code 0 ✅
 
 ---
 

@@ -160,7 +160,7 @@ export const useSidebarState = (sidebarName: string) => {
 
   // Filters
   const addFilter = useCallback(
-    (filterKey: string, filterValue: any) => {
+    (filterKey: string, filterValue: unknown) => {
       dispatch(setFilter({ sidebar: sidebarName, filterKey, filterValue }));
     },
     [dispatch, sidebarName]
@@ -243,10 +243,10 @@ export const useSidebarState = (sidebarName: string) => {
 /**
  * Hook for filtering and sorting items in a sidebar
  */
-export const useSidebarFiltering = (
-  items: any[],
+export const useSidebarFiltering = <T extends Record<string, unknown>>(
+  items: T[],
   sidebarName: string,
-  filterFn?: (item: any, filters: Record<string, any>, search: string) => boolean
+  filterFn?: (item: T, filters: Record<string, unknown>, search: string) => boolean
 ) => {
   const { searchQuery, filters, sortBy } = useSidebarState(sidebarName);
 
@@ -301,8 +301,8 @@ export const useSidebarFiltering = (
 /**
  * Hook for sidebar pagination
  */
-export const useSidebarPagination = (
-  items: any[],
+export const useSidebarPagination = <T>(
+  items: T[],
   sidebarName: string
 ) => {
   const { currentPage, itemsPerPage, setPage, setPageSize } =
