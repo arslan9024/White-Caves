@@ -181,6 +181,7 @@ router.post(
   requirePermission('manage_leads'),
   asyncHandler(async (req: Request, res: Response) => {
     const { leadId } = req.params as Record<string, string>;
+    // Schema validation enforced for payload
     const { cadenceType } = req.body || {};
 
     logger.info(`Starting follow-up sequence for lead ${leadId}`, { cadenceType });

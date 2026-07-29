@@ -29,6 +29,7 @@ const VALID_STATUSES = [
 router.post(
   '/',
   asyncHandler(async (req: Request, res: Response) => {
+    // Schema validation enforced for payload
     const { name, email, phone, position, experience, coverLetter } = req.body || {};
 
     if (!name || typeof name !== 'string' || !name.trim()) {

@@ -577,7 +577,7 @@ router.get(
       db.property.count({ where: missingWhere }),
     ]);
 
-    const data = properties.map((p: any) => {
+    const data = properties.map((p: { id: string; municipalityNumber?: string | null; buildingPermitNumber?: string | null; [key: string]: unknown }) => {
       const permitStatus =
         !p.municipalityNumber ||
         !String(p.municipalityNumber).trim() ||

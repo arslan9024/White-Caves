@@ -232,7 +232,7 @@ export function createTestError(
 /**
  * Assert function was called with arguments
  */
-export function assertCalledWith(fn: any, expectedArgs: any[]) {
+export function assertCalledWith(fn: { mock: { calls: unknown[][] } }, expectedArgs: unknown[]) {
   const calls = fn.mock.calls;
   const found = calls.some((call: unknown[]) =>
     JSON.stringify(call) === JSON.stringify(expectedArgs)

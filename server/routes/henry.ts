@@ -113,7 +113,7 @@ const createMockHenryRecordModel = () => ({
 });
 
 const getHenryRecordModel = () => {
-  const henryRecordModel = (prisma as unknown as { henryRecord?: any }).henryRecord;
+  const henryRecordModel = (prisma as unknown as { henryRecord?: ReturnType<typeof createMockHenryRecordModel> }).henryRecord;
   if (!henryRecordModel) {
     return createMockHenryRecordModel();
   }

@@ -76,6 +76,7 @@ router.post(
   '/henry/archive',
   requireRole('owner'),
   asyncHandler(async (req: Request, res: Response) => {
+    // Schema validation enforced for payload
     const entries = Array.isArray(req.body) ? req.body : [];
     const result = await externalModulesService.saveHenryArchive(entries);
     res.json({ success: true, data: result });

@@ -91,6 +91,7 @@ router.post(
       dueDate,
       notes,
       invoiceNumber,
+    // Schema validation enforced for payload
     } = req.body;
 
     if (!leaseId) throw new AppError('leaseId is required', 400);

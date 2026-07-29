@@ -33,7 +33,7 @@ router.get(
     let totalSynced = 0;
     let totalFailed = 0;
     let totalSkipped = 0;
-    const errors: any[] = [];
+    const errors: string[] = [];
 
     // Fetch active properties
     const properties = await prisma.property.findMany({
