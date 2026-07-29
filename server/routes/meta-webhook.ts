@@ -170,7 +170,7 @@ router.post('/', async (req: Request, res: Response) => {
  * 5. Update conversation with NLP results
  * 6. Emit event for real-time listeners
  */
-async function handleIncomingMessage(message: any, phoneNumberId: string): Promise<void> {
+async function handleIncomingMessage(message: { from: string }, phoneNumberId: string): Promise<void> {
   try {
     const customerPhone = normalizePhone(message.from) || message.from;
     if (!customerPhone) {

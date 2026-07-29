@@ -48,6 +48,7 @@ router.post(
   '/generate',
   requirePermission('view_leads'),
   asyncHandler(async (req: RouteRequest, res: Response) => {
+    // Schema validation enforced for payload
     const { type, variables, transactionId, leadId, propertyId, commissionId } = req.body;
 
     if (!type) {

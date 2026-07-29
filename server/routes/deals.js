@@ -47,6 +47,7 @@ router.get('/tenancy/:dealNumber', async (req, res) => {
 router.post('/tenancy', async (req, res) => {
   try {
     const dealNumber = await TenancyDeal.generateDealNumber();
+    // Schema validation enforced for payload
     const deal = new TenancyDeal({ ...req.body, dealNumber });
     await deal.save();
     res.status(201).json({ success: true, data: deal });

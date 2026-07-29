@@ -152,8 +152,8 @@ export function dispatchAction(store: Record<string, unknown>, action: Record<st
 /**
  * Select from Redux store
  */
-export function selectFromStore(store: any, selector: (state: any) => any) {
-  const state = getReduxState(store);
+export function selectFromStore(store: Record<string, unknown>, selector: (state: Record<string, unknown>) => unknown) {
+  const state = getReduxState(store) as Record<string, unknown>;
   return selector(state);
 }
 

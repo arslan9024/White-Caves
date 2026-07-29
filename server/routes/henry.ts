@@ -86,17 +86,17 @@ const createMockHenryRecordModel = () => ({
     );
   },
   count: async () => mockHenryRecords.length,
-  create: async ({ data }: any) => {
+  create: async ({ data }: { data: Record<string, unknown> }) => {
     const created = {
       id: normalizeId(),
       createdAt: new Date(),
       updatedAt: new Date(),
       ...data,
     };
-    mockHenryRecords.push(created);
+    mockHenryRecords.push(created as unknown as HenryRecord);
     return created;
   },
-  findUnique: async ({ where }: any) => mockHenryRecords.find(r => r.id === where.id) ?? null,
+  findUnique: async ({ where }: { where: { id: string } }) => mockHenryRecords.find(r => r.id === where.id) ?? null,
   update: async ({ where, data }: any) => {
     const idx = mockHenryRecords.findIndex(r => r.id === where.id);
     if (idx < 0) return null;

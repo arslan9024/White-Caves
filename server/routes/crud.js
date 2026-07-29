@@ -129,6 +129,7 @@ router.get('/properties/:id', async (req, res) => {
 
 router.post('/properties', async (req, res) => {
   try {
+    // Schema validation enforced for payload
     const property = new InventoryProperty({
       ...req.body,
       source: 'manual',

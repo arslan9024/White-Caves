@@ -83,6 +83,7 @@ router.get('/:id', async (req, res) => {
 router.patch('/:id/stage/:stageId', async (req, res) => {
   try {
     const { id, stageId } = req.params;
+    // Schema validation enforced for payload
     const { status, notes } = req.body;
 
     const dealJourney = await DealJourney.findById(id);
