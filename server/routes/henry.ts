@@ -44,7 +44,7 @@ type HenryRecordStatus = (typeof VALID_HENRY_STATUSES)[number];
 const normalizeId = () => Math.random().toString(36).slice(2, 10) + Date.now().toString(36);
 
 const createMockHenryRecordModel = () => ({
-  findMany: async ({ where, orderBy, skip = 0, take = 50, select }: any = {}) => {
+  findMany: async ({ where, orderBy, skip = 0, take = 50, select }: Record<string, unknown> = {}) => {
     let rows = [...mockHenryRecords];
     if (where) {
       rows = rows.filter(row => {

@@ -50,7 +50,7 @@ export class MessageQueueService extends EventEmitter {
    */
   public async addTask(
     type: string,
-    data: any,
+    data: unknown,
     priority: 'low' | 'normal' | 'high' = 'normal',
     maxAttempts: number = 3
   ): Promise<string> {

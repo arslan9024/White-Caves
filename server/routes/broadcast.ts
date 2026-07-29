@@ -27,7 +27,7 @@ router.post(
 
     // 1. Find leads matching audienceFilter
     // Example filter: { stage: 'new', area: 'Downtown Dubai' }
-    const whereClause: any = {};
+    const whereClause: Record<string, unknown> = {};
     if (audienceFilter.stage) whereClause.status = audienceFilter.stage;
     if (audienceFilter.budgetMin) whereClause.budget = { gte: audienceFilter.budgetMin };
 

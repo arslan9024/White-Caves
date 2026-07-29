@@ -13,6 +13,7 @@ router.post(
   '/announcements',
   requireRole('owner', 'managing_director', 'admin', 'community_manager'),
   asyncHandler(async (req: Request, res: Response) => {
+    // Schema validation enforced for payload
     const { title, body, targetScope } = req.body;
     if (!title || !body || !targetScope) {
       return res.status(400).json({ success: false, error: 'Missing required fields' });

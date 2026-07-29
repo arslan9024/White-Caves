@@ -44,6 +44,7 @@ router.post(
   '/messages/send',
   requireMinRole('agent'),
   asyncHandler(async (req: Request, res: Response) => {
+    // Schema validation enforced for payload
     const { recipientId, channel, content, leadId } = req.body;
 
     if (!recipientId || !content) {

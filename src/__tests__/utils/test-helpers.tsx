@@ -138,15 +138,15 @@ export function renderWithProviders(
 /**
  * Get Redux state
  */
-export function getReduxState(store: any) {
-  return store?.getState?.() || {};
+export function getReduxState(store: Record<string, unknown>) {
+  return (store as { getState?: () => unknown })?.getState?.() || {};
 }
 
 /**
  * Dispatch Redux action
  */
-export function dispatchAction(store: any, action: any) {
-  return store?.dispatch(action);
+export function dispatchAction(store: Record<string, unknown>, action: Record<string, unknown>) {
+  return (store as { dispatch: (act: unknown) => unknown })?.dispatch(action);
 }
 
 /**

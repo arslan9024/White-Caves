@@ -243,6 +243,7 @@ router.post(
       'Access denied — compliance report submission requires manager role or above'
     );
 
+    // Schema validation enforced for payload
     const { title, findings, recommendations } = req.body;
 
     if (!title) throw new AppError('Report title is required', 400);

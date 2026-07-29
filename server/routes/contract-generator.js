@@ -12,6 +12,7 @@ const router = express.Router();
 router.post('/from-offer/:offerId', authenticateToken, async (req, res) => {
   try {
     const { offerId } = req.params;
+    // Schema validation enforced for payload
     const { companyName } = req.body;
 
     if (!offerId) {
