@@ -56,7 +56,7 @@ vi.mock('../../store/propertySlice', () => ({
   applyFilters: vi.fn(() => ({ type: 'properties/applyFilters' })),
 }));
 
-vi.mock('../../components/homepage/Hero/HeroSearchBar', () => ({
+vi.mock('../../data/dubaiSearchConstants', () => ({
   DUBAI_LOCATIONS: ['All Locations', 'Palm Jumeirah', 'Downtown Dubai', 'Dubai Marina'],
   PROPERTY_TYPES: ['All Types', 'Apartment', 'Villa', 'Penthouse'],
   BED_OPTIONS: [

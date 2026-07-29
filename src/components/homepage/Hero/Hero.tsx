@@ -4,7 +4,7 @@ import { ArrowRight, Play, ChevronDown } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import type { MarketStats } from '../../../store/slices/homepageSlice';
 import { useLanguage } from '../../../context/LanguageContext';
-import HeroSearchBar from './HeroSearchBar';
+import { Search } from 'lucide-react';
 import './Hero.css';
 
 interface AnimatedCounterProps {
@@ -242,8 +242,41 @@ const Hero = ({ marketStats, isLoading = false }: HeroProps) => {
           {t('hero.description')}
         </motion.p>
 
-        <motion.div variants={itemVariants}>
-          <HeroSearchBar />
+        <motion.div variants={itemVariants} style={{ cursor: 'pointer' }}>
+          <div
+            style={{
+              background: 'rgba(255, 255, 255, 0.1)',
+              backdropFilter: 'blur(10px)',
+              border: '2px solid rgba(239, 68, 68, 0.4)',
+              borderRadius: '9999px',
+              padding: '12px 28px',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              gap: '12px',
+              color: '#FFFFFF',
+              fontWeight: 800,
+              fontSize: '0.95rem',
+              boxShadow: '0 10px 30px rgba(0,0,0,0.2)',
+              margin: '0 auto',
+              maxWidth: '480px',
+            }}
+          >
+            <span
+              style={{
+                background: '#EF4444',
+                color: '#FFFFFF',
+                padding: '6px',
+                borderRadius: '50%',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+              }}
+            >
+              <Search size={16} />
+            </span>
+            <span>Click to Search Dubai Luxury Properties...</span>
+          </div>
         </motion.div>
 
         <motion.div className="hero-cta-group" variants={itemVariants}>

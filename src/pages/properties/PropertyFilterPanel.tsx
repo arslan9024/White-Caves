@@ -24,7 +24,7 @@ import {
   PROPERTY_TYPES,
   BED_OPTIONS,
   PRICE_RANGES,
-} from '../../components/homepage/Hero/HeroSearchBar';
+} from '../../data/dubaiSearchConstants';
 import './PropertyFilterPanel.css';
 
 /* ─── Sort Options ──────────────────────────────────────────────────── */

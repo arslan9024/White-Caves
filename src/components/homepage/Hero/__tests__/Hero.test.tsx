@@ -42,12 +42,6 @@ vi.mock('lucide-react', async () => {
 
 // Mock CSS module
 vi.mock('../Hero.css', () => ({}));
-vi.mock('../HeroSearchBar.css', () => ({}));
-
-// Mock HeroSearchBar to isolate Hero rendering tests
-vi.mock('../HeroSearchBar', () => ({
-  default: () => <div data-testid="hero-search-bar" />,
-}));
 
 // Mock LanguageContext — return English translations via t()
 vi.mock('../../../../context/LanguageContext', () => ({

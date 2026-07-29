@@ -23,7 +23,7 @@ import PageMeta from '../components/seo/PageMeta';
 import StructuredData from '../components/seo/StructuredData';
 import { useRecentlyViewed } from '../components/RecentlyViewed';
 import { HOME_PROPERTIES } from '../data/homeProperties';
-import { SearchCommandTrigger, SearchCommandModal } from '../components/homepage/SearchCommand';
+import { FloatingSearchPill } from '../components/homepage/FloatingSearchPill';
 import { MapContainer } from '../components/homepage/MapContainer';
 import { ToolsDashboard } from '../components/homepage/ToolsDashboard';
 import { AreaGuideGrid } from '../components/homepage/AreaGuideGrid';
@@ -42,12 +42,12 @@ const MarketStatsBanner = lazy(
 );
 
 // Below-the-fold: lazy-loaded for faster initial paint
-const Locations = lazy(() => import('../components/homepage/Locations'));
+// Locations replaced by AreaGuideGrid (AEGIS 2.0)
 const FeaturedPropertiesSection = lazy(
   () => import('../components/homepage/FeaturedProperties/FeaturedPropertiesSection')
 );
 const Team = lazy(() => import('../components/homepage/Team'));
-const Testimonials = lazy(() => import('../components/homepage/Testimonials'));
+// Testimonials replaced by TestimonialPodium (AEGIS 2.0)
 const ContactCTA = lazy(() => import('../components/homepage/Contact'));
 const NewsletterSubscription = lazy(() => import('../components/NewsletterSubscription'));
 const CompanyProfile = lazy(() => import('../components/CompanyProfile'));
@@ -245,14 +245,19 @@ const HomePage: FC = () => {
           </div>
         ) : null}
 
-        {/* Floating Search Pill Trigger */}
-        <div style={{ textAlign: 'center', margin: '-24px auto 32px', position: 'relative', zIndex: 100 }}>
-          <SearchCommandTrigger onClick={() => setIsSearchOpen(true)} />
-        </div>
-        <SearchCommandModal isOpen={isSearchOpen} onClose={() => setIsSearchOpen(false)} />
+        {/* AEGIS 2.0: Floating Search Pill — fixed position at top: 80px */}
+        <FloatingSearchPill
+          isOpen={isSearchOpen}
+          onOpen={() => setIsSearchOpen(true)}
+          onClose={() => setIsSearchOpen(false)}
+        />
 
         {/* Phase 25: Hero is the LCP element — NOT wrapped in Suspense so it renders on first paint */}
-        <Hero marketStats={marketStats} isLoading={isHomepageLoading} />
+        <Hero
+          marketStats={marketStats}
+          isLoading={isHomepageLoading}
+          onSearchClick={() => setIsSearchOpen(true)}
+        />
 
         <section className="home-page__trust-strip" aria-label="Market trust highlights">
           <div className="home-page__trust-grid">

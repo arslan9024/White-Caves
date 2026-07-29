@@ -1,4 +1,4 @@
-﻿/**
+/**
  * @component LuxuryHeroSection
  * @agent @Una (Luxury UI/UX Specialist)
  * @milestone MILESTONE-HERO
@@ -13,7 +13,6 @@ import { motion, useScroll, useTransform, useReducedMotion, type Variants } from
 import { ArrowRight, Search, Phone, Star, Shield, Award } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import type { MarketStats } from '../../../store/slices/homepageSlice';
-import HeroSearchBar from './HeroSearchBar';
 import { trackHomepageEvent } from '../../../utils/homepageTracking';
 import './LuxuryHeroSection.css';
 
@@ -38,6 +37,7 @@ interface LuxuryStatCard {
 export interface LuxuryHeroSectionProps {
   marketStats?: MarketStats;
   isLoading?: boolean;
+  onSearchClick?: () => void;
 }
 
 // --- Animated Gold Counter ---------------------------------------------------
@@ -151,6 +151,7 @@ const orbVariants: Variants = {
 export const LuxuryHeroSection: React.FC<LuxuryHeroSectionProps> = ({
   marketStats,
   isLoading = false,
+  onSearchClick,
 }) => {
   const navigate = useNavigate();
   const { scrollY } = useScroll();
@@ -377,8 +378,43 @@ export const LuxuryHeroSection: React.FC<LuxuryHeroSectionProps> = ({
           className="luxury-hero__search-wrapper"
           variants={itemVariants}
           aria-label="Property search section"
+          onClick={onSearchClick}
+          style={{ cursor: 'pointer' }}
         >
-          <HeroSearchBar />
+          <div
+            style={{
+              background: 'rgba(255, 255, 255, 0.1)',
+              backdropFilter: 'blur(10px)',
+              border: '2px solid rgba(239, 68, 68, 0.4)',
+              borderRadius: '9999px',
+              padding: '14px 32px',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              gap: '12px',
+              color: '#FFFFFF',
+              fontWeight: 800,
+              fontSize: '1rem',
+              boxShadow: '0 10px 30px rgba(0,0,0,0.2)',
+              margin: '0 auto',
+              maxWidth: '500px',
+            }}
+          >
+            <span
+              style={{
+                background: '#EF4444',
+                color: '#FFFFFF',
+                padding: '6px',
+                borderRadius: '50%',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+              }}
+            >
+              <Search size={16} />
+            </span>
+            <span>Click to Search Dubai Luxury Properties...</span>
+          </div>
         </motion.div>
 
         {/* -- CTA Buttons -- */}
