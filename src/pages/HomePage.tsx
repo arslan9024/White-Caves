@@ -16,7 +16,6 @@ import {
 import type { AppDispatch } from '../store/store';
 import { buildHomepageJsonLd } from './homepageSeo';
 import { buildOrganizationSchema } from '../utils/jsonLdSchemas';
-import ClickToChat from '../components/ClickToChat';
 import RoleSelectionModal from '../components/RoleSelectionModal';
 import PublicLayout from '../components/layout/PublicLayout';
 import PageMeta from '../components/seo/PageMeta';
@@ -309,7 +308,6 @@ const HomePage: FC = () => {
           <ContactCTA />
           <OnboardingGateway />
         </Suspense>
-        <ClickToChat />
         <RoleSelectionModal />
       </div>
     </PublicLayout>

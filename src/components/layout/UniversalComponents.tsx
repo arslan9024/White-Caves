@@ -2,7 +2,7 @@ import React, { useEffect, useState, useCallback } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { setOnlineStatus } from '../../store/navigationSlice';
 import { TIMING } from '../../constants/app';
-import ClickToChat from '../ClickToChat';
+import { CavesFloatingWidget } from '../shared';
 import { TimeDisplayContainer, ConnectionStatus } from './UniversalComponents/styles';
 
 // ---------------------------------------------------------------------------
@@ -68,7 +68,8 @@ export default function UniversalComponents(): React.ReactElement {
 
   return (
     <>
-      <ClickToChat />
+      <CavesFloatingWidget />
+
       
       <TimeDisplayContainer 
         $isVisible={isVisible}

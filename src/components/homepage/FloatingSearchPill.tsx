@@ -25,7 +25,9 @@ export const FloatingSearchPill: React.FC<FloatingSearchPillProps> = ({ isOpen, 
   const [maxPrice, setMaxPrice] = useState(15000000);
   const [beds, setBeds] = useState('any');
 
-  // Trigger Session ID if not present
+  const [showPill, setShowPill] = useState(false);
+
+  // Trigger Session ID if not present & Scroll listener for Single-Responsibility Search
   useEffect(() => {
     if (!sessionStorage.getItem('wc_session_id')) {
       sessionStorage.setItem(
@@ -33,9 +35,22 @@ export const FloatingSearchPill: React.FC<FloatingSearchPillProps> = ({ isOpen, 
         `wc_${Date.now()}_${Math.random().toString(36).slice(2, 10)}`
       );
     }
+
+    const handleScroll = () => {
+      if (window.scrollY > 350) {
+        setShowPill(true);
+      } else {
+        setShowPill(false);
+      }
+    };
+
+    window.addEventListener('scroll', handleScroll);
+    handleScroll();
+    return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
   const handleSearchSubmit = (e: React.FormEvent) => {
+
     e.preventDefault();
     dispatch(clearFilters());
 
@@ -83,53 +98,62 @@ export const FloatingSearchPill: React.FC<FloatingSearchPillProps> = ({ isOpen, 
 
   return (
     <>
-      {/* Floating Pill Trigger */}
-      <div
-        style={{
-          position: 'fixed',
-          top: '80px',
-          left: '50%',
-          transform: 'translateX(-50%)',
-          zIndex: 999,
-          pointerEvents: 'auto',
-        }}
-      >
-        <motion.button
-          whileHover={{ scale: 1.03, boxShadow: '0 12px 30px rgba(239, 68, 68, 0.25)' }}
-          whileTap={{ scale: 0.98 }}
-          onClick={onOpen}
-          style={{
-            display: 'flex',
-            alignItems: 'center',
-            gap: '12px',
-            background: '#FFFFFF',
-            color: SLATE,
-            border: '2px solid #EF4444',
-            borderRadius: '9999px',
-            padding: '10px 24px',
-            boxShadow: '0 8px 24px rgba(15, 23, 42, 0.08)',
-            cursor: 'pointer',
-            fontWeight: 800,
-            fontSize: '0.85rem',
-            whiteSpace: 'nowrap',
-          }}
-        >
-          <Search size={16} color={RED} strokeWidth={3} />
-          <span>Search Dubai Luxury Properties...</span>
-          <kbd
+      {/* Floating Pill Trigger (Single-Responsibility: renders ONLY when scrolled past Hero search) */}
+      <AnimatePresence>
+        {showPill && (
+          <motion.div
+            initial={{ opacity: 0, y: -20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -20 }}
+            transition={{ duration: 0.2 }}
             style={{
-              background: '#F1F5F9',
-              color: '#64748B',
-              padding: '2px 8px',
-              borderRadius: '6px',
-              fontSize: '0.7rem',
-              border: '1px solid #E2E8F0',
+              position: 'fixed',
+              top: '80px',
+              left: '50%',
+              transform: 'translateX(-50%)',
+              zIndex: 999,
+              pointerEvents: 'auto',
             }}
           >
-            Ctrl+K
-          </kbd>
-        </motion.button>
-      </div>
+            <motion.button
+              whileHover={{ scale: 1.03, boxShadow: '0 12px 30px rgba(239, 68, 68, 0.25)' }}
+              whileTap={{ scale: 0.98 }}
+              onClick={onOpen}
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: '12px',
+                background: '#FFFFFF',
+                color: SLATE,
+                border: '2px solid #EF4444',
+                borderRadius: '9999px',
+                padding: '10px 24px',
+                boxShadow: '0 8px 24px rgba(15, 23, 42, 0.08)',
+                cursor: 'pointer',
+                fontWeight: 800,
+                fontSize: '0.85rem',
+                whiteSpace: 'nowrap',
+              }}
+            >
+              <Search size={16} color={RED} strokeWidth={3} />
+              <span>Search Dubai Luxury Properties...</span>
+              <kbd
+                style={{
+                  background: '#F1F5F9',
+                  color: '#64748B',
+                  padding: '2px 8px',
+                  borderRadius: '6px',
+                  fontSize: '0.7rem',
+                  border: '1px solid #E2E8F0',
+                }}
+              >
+                Ctrl+K
+              </kbd>
+            </motion.button>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
 
       {/* Modal Search Overlay */}
       <AnimatePresence>
