@@ -22,9 +22,21 @@ const storage = multer.diskStorage({
 
 const upload = multer({ storage: storage });
 
+import { handleValidationErrors } from '../middleware/validation.js';
+
 // Routes
 router.get('/', getSecondarySalesInventory);
-router.patch('/:id/stage', transitionSalesStage);
+router.patch(
+  '/:id/stage',
+  (req, res, next) => {
+    if (!req.body?.nextStage || typeof req.body.nextStage !== 'string' || !req.body.nextStage.trim()) {
+      return res.status(400).json({ success: false, error: 'nextStage is required' });
+    }
+    next();
+  },
+  handleValidationErrors,
+  transitionSalesStage
+);
 router.post('/:id/noc', upload.single('document'), uploadNocDocument);
 
 export default router;

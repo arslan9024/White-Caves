@@ -104,8 +104,8 @@ const popupFirst = async (provider: GoogleAuthProvider | FacebookAuthProvider | 
   if (!auth) throw new Error('Firebase not initialized');
   try {
     return await signInWithPopup(auth, provider);
-  } catch (err: any) {
-    if (err?.code === 'auth/popup-blocked') {
+  } catch (err: unknown) {
+    if ((err as { code?: string })?.code === 'auth/popup-blocked') {
       // Graceful fallback — redirect flow never triggers a popup
       return await signInWithRedirect(auth, provider);
     }

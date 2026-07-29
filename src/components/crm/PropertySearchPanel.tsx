@@ -1,6 +1,9 @@
 import React, { FC, useState, useMemo, useCallback } from 'react';
 import { mockProperties, Property } from '../../mocks/dubaiRealEstateMocks';
 
+/** Property record enriched with display-only fields added locally */
+type EnrichedProperty = Property & { propType: string; imageUrl: string };
+
 const RED = '#EF4444';
 const WHITE = '#FFFFFF';
 const SLATE = '#1E293B';
@@ -273,11 +276,11 @@ export const PropertySearchPanel: FC = () => {
           {/* GRID VIEW */}
           {viewMode === 'grid' && (
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '16px', marginBottom: '20px' }}>
-              {paged.map((p: any) => (
+              {paged.map((p: EnrichedProperty) => (
                 <div key={p.id} onClick={() => setSelectedProperty(p === selectedProperty ? null : p)}
                   style={{ background: WHITE, borderRadius: '12px', border: selectedProperty?.id === p.id ? `2px solid ${RED}` : `1px solid ${BORDER}`, overflow: 'hidden', cursor: 'pointer', transition: 'box-shadow 0.2s', boxShadow: selectedProperty?.id === p.id ? `0 4px 16px ${RED}30` : '0 1px 4px rgba(0,0,0,0.06)' }}>
                   <div style={{ position: 'relative' }}>
-                    <img src={p.imageUrl} alt={p.title} style={{ width: '100%', height: '160px', objectFit: 'cover' }} onError={(e: any) => { e.target.style.display = 'none'; }} />
+                    <img src={p.imageUrl} alt={p.title} style={{ width: '100%', height: '160px', objectFit: 'cover' }} onError={(e: React.SyntheticEvent<HTMLImageElement>) => { (e.currentTarget as HTMLImageElement).style.display = 'none'; }} />
                     <span style={{ position: 'absolute', top: '10px', right: '10px', background: statusBadge[p.status]?.bg || CARD_BG, color: statusBadge[p.status]?.color || TEXT_MUTED, padding: '3px 8px', borderRadius: '20px', fontSize: '0.7rem', fontWeight: 700 }}>
                       {p.status}
                     </span>
@@ -317,7 +320,7 @@ export const PropertySearchPanel: FC = () => {
                   </tr>
                 </thead>
                 <tbody>
-                  {paged.map((p: any, idx: number) => {
+                  {paged.map((p: EnrichedProperty, idx: number) => {
                     const sc = statusBadge[p.status] || { bg: CARD_BG, color: TEXT_MUTED };
                     return (
                       <tr key={p.id} onClick={() => setSelectedProperty(p === selectedProperty ? null : p)}

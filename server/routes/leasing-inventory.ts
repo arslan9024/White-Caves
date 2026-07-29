@@ -26,9 +26,11 @@ const storage = multer.diskStorage({
 
 const upload = multer({ storage: storage });
 
+import { validatePropertyDetails, handleValidationErrors } from '../middleware/validation.js';
+
 // Routes
 router.get('/', getLeasingInventory);
-router.post('/', createLeasingProperty);
+router.post('/', validatePropertyDetails, handleValidationErrors, createLeasingProperty);
 router.post('/:id/upload', upload.single('document'), uploadPropertyDocument);
 router.patch('/:id/stage', transitionPropertyStage);
 router.post('/:id/sign', signContract);

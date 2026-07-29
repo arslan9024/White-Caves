@@ -8,10 +8,10 @@ import React from 'react';
 
 export type FeatureComponentProps = {
   featureId: string;
-  featureData?: any;
+  featureData?: Record<string, unknown>;
   isActive?: boolean;
   onClose?: () => void;
-  [key: string]: any;
+  [key: string]: unknown;
 };
 
 export interface Feature {
@@ -22,11 +22,11 @@ export interface Feature {
   description?: string;
   category: 'crm' | 'inventory' | 'analytics' | 'whatsapp' | 'admin' | 'tools' | 'other';
   component: React.ComponentType<FeatureComponentProps>;
-  lazyComponent?: () => Promise<any>;
+  lazyComponent?: () => Promise<{ default: React.ComponentType<FeatureComponentProps> }>;
   permissions?: string[];
   disabled?: boolean;
   badge?: string;
-  metadata?: Record<string, any>;
+  metadata?: Record<string, unknown>;
 }
 
 class FeatureRegistry {

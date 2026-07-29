@@ -1,4 +1,4 @@
-﻿/* eslint-disable @typescript-eslint/no-unused-vars, @typescript-eslint/no-explicit-any */
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import React, { useEffect, useState, ReactNode } from 'react';
 import styled from 'styled-components';
 import { DashboardShell, DataCardGrid } from '../shared/dashboard';
@@ -20,15 +20,18 @@ interface DepartmentViewConfig {
   icon?: string;
 }
 
+/** Generic department data payload — strongly typed as a JSON-safe record */
+type DepartmentPayload = Record<string, unknown>;
+
 interface BaseDepartmentViewProps {
   config: DepartmentViewConfig;
   serviceName?: string;
   subitemId?: string;
-  departmentData?: any; // Data from Redux
+  departmentData?: DepartmentPayload; // Data from Redux
   children?: ReactNode;
-  kpiRenderer?: (data: any) => ReactNode;
-  contentRenderer?: (data: any) => ReactNode;
-  onDataLoaded?: (data: any) => void;
+  kpiRenderer?: (data: DepartmentPayload) => ReactNode;
+  contentRenderer?: (data: DepartmentPayload) => ReactNode;
+  onDataLoaded?: (data: DepartmentPayload) => void;
   isLoading?: boolean;
   error?: string | null;
 }
@@ -67,7 +70,7 @@ export const BaseDepartmentView: React.FC<BaseDepartmentViewProps> = ({
 }) => {
   // Use departmentData from Redux (passed as prop)
   const [loading, setLoading] = useState(isLoading ?? !departmentData);
-  const [data, setData] = useState<any>(departmentData);
+  const [data, setData] = useState<DepartmentPayload | undefined>(departmentData);
   const [error, setError] = useState<string | null>(externalError ?? null);
 
   // Update local state when departmentData changes

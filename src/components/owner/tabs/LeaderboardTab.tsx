@@ -177,6 +177,18 @@ const RevenueText = styled.div`
   ${typography.presets.bodySmall};
 `;
 
+interface TrackLeaderboardItem {
+  id: string;
+  name: string;
+  unitsTransacted: number;
+  gwcRevenue: number;
+  tier: string;
+  milestoneBadge?: string;
+  voucherRewardAed?: number;
+  uncappedRateLock?: boolean | number;
+  commissionCapWaived?: boolean;
+}
+
 // ─── Component ───────────────────────────────────────────────────
 
 const LeaderboardTab: React.FC<LeaderboardTabProps> = ({ data }) => {
@@ -187,7 +199,7 @@ const LeaderboardTab: React.FC<LeaderboardTabProps> = ({ data }) => {
 
   const currentList: Agent[] =
     activeTrack === 'sales'
-      ? dualTrack.trackASales.map((item: any, idx: number) => ({
+      ? dualTrack.trackASales.map((item: TrackLeaderboardItem, idx: number) => ({
           id: item.id,
           name: item.name,
           rank: idx + 1,
@@ -197,9 +209,9 @@ const LeaderboardTab: React.FC<LeaderboardTabProps> = ({ data }) => {
           badge: item.tier,
           milestoneBadge: item.milestoneBadge,
           voucherRewardAed: item.voucherRewardAed,
-          uncappedRateLock: item.uncappedRateLock,
+          uncappedRateLock: Boolean(item.uncappedRateLock),
         }))
-      : dualTrack.trackBLeasing.map((item: any, idx: number) => ({
+      : dualTrack.trackBLeasing.map((item: TrackLeaderboardItem, idx: number) => ({
           id: item.id,
           name: item.name,
           rank: idx + 1,

@@ -169,29 +169,17 @@ export interface FilterParams {
   status?: string;
   category?: string;
   department?: string;
-  [key: string]: any;
+  [key: string]: unknown;
 }
 
-/**
- * Query Parameters Builder
- */
-export const buildQueryParams = (params: Record<string, any>): Record<string, any> => {
-  const cleaned: Record<string, any> = {};
+export const buildQueryParams = (params: Record<string, unknown>): Record<string, string> => {
+  const cleaned: Record<string, string> = {};
 
-  Object.keys(params).forEach(key => {
-    const value = params[key];
-
-    // Skip null, undefined, and empty string values
-    if (value === null || value === undefined || value === '') {
-      return;
+  Object.entries(params).forEach(([key, value]) => {
+    if (value !== undefined && value !== null && value !== '') {
+      if (Array.isArray(value) && value.length === 0) return;
+      cleaned[key] = String(value);
     }
-
-    // Skip empty arrays
-    if (Array.isArray(value) && value.length === 0) {
-      return;
-    }
-
-    cleaned[key] = value;
   });
 
   return cleaned;

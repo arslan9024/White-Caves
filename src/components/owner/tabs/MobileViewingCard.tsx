@@ -133,7 +133,7 @@ export const MobileViewingCard: React.FC<MobileViewingCardProps> = ({
     }
   };
 
-  const handleDragEnd = async (e: any, info: PanInfo) => {
+  const handleDragEnd = async (e: MouseEvent | TouchEvent | PointerEvent, info: PanInfo) => {
     const offset = info.offset.x;
     const velocity = info.velocity.x;
 

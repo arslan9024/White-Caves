@@ -103,7 +103,7 @@ const DistributionChart: React.FC<DistributionChartProps> = ({
             layout="vertical"
             align="right"
             verticalAlign="middle"
-            formatter={(value: string | number, entry: any) => {
+            formatter={(value: string | number, entry: { payload?: { value?: number } }) => {
               const total = chartData.reduce((sum, item) => sum + item.value, 0);
               const payload = entry.payload as { value?: number } | undefined;
               const percentage = total > 0 ? (((payload?.value ?? 0) / total) * 100).toFixed(1) : '0.0';

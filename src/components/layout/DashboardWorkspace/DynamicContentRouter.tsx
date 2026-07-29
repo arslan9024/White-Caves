@@ -6,7 +6,7 @@ import { featureRegistry, Feature } from './FeatureRegistry';
 
 interface DynamicContentRouterProps {
   activeFeatureId: string | null;
-  featureData?: any;
+  featureData?: Record<string, unknown>;
   onClose?: () => void;
   isLoading?: boolean;
   fallback?: React.ReactNode;
@@ -210,7 +210,7 @@ class ErrorBoundary extends React.Component<ErrorBoundaryProps, ErrorBoundarySta
     return { hasError: true, error };
   }
 
-  componentDidCatch(error: Error, errorInfo: any) {
+  componentDidCatch(error: Error, errorInfo: React.ErrorInfo) {
     console.error('Feature rendering error:', error, errorInfo);
   }
 

@@ -7,7 +7,7 @@ interface SEOHeadProps {
   url: string;
   image?: string;
   type?: 'website' | 'article' | 'RealEstateListing' | 'LocalBusiness' | 'JobPosting' | 'FAQPage';
-  jsonLd?: any;
+  jsonLd?: Record<string, unknown> | Array<Record<string, unknown>>;
 }
 
 export function SEOHead({

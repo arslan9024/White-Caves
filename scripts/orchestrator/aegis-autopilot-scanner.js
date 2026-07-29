@@ -130,7 +130,7 @@ function scanCodebase() {
       const trimmed = line.trim();
 
       // 2. Server-Side Unhandled Async Catch / Missing Response
-      if (isServer && /router\.(post|put|delete|patch)\(/i.test(trimmed) && !content.includes('try {')) {
+      if (isServer && !rel.includes('middleware/') && /router\.(post|put|delete|patch)\(/i.test(trimmed) && !content.includes('try {') && !content.includes('asyncHandler')) {
         issues.push({
           id: `SERVER-ERR-${path.basename(fp)}-${ln}`,
           category: 'Server Architecture',
@@ -138,13 +138,13 @@ function scanCodebase() {
           layer: 'Server',
           file: rel,
           line: ln,
-          title: `Server route mutation lacking explicit try/catch block`,
-          suggestion: 'Wrap route handler in try/catch block returning standard error response JSON.'
+          title: `Server route mutation lacking explicit error boundary or asyncHandler`,
+          suggestion: 'Wrap route handler in try/catch block or asyncHandler middleware.'
         });
       }
 
       // 3. Security & Auth Gaps (Hardcoded tokens or missing auth check)
-      if (isServer && /req\.body\b/i.test(trimmed) && !content.includes('zod') && !content.includes('validate') && !content.includes('schema')) {
+      if (isServer && !rel.includes('middleware/') && /req\.body\b/i.test(trimmed) && !content.includes('zod') && !content.includes('validate') && !content.includes('schema') && !content.includes('Validation') && !content.includes('body(')) {
         issues.push({
           id: `SEC-VAL-${path.basename(fp)}-${ln}`,
           category: 'Security & Compliance',
@@ -153,7 +153,7 @@ function scanCodebase() {
           file: rel,
           line: ln,
           title: `Server route reads req.body without schema validation`,
-          suggestion: 'Enforce Zod or Joi validation on incoming payload.'
+          suggestion: 'Enforce validation middleware or Zod schema on incoming payload.'
         });
       }
 

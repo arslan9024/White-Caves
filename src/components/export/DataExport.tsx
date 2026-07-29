@@ -93,7 +93,7 @@ const LoadingSpinner = styled.span`
 `;
 
 interface DataExportProps {
-  data: any[];
+  data: Record<string, unknown>[];
   filename?: string;
   onExportStart?: () => void;
   onExportComplete?: (format: string) => void;
@@ -173,7 +173,7 @@ export const DataExport: React.FC<DataExportProps> = ({
     }
   };
 
-  const convertToCSV = (data: any[]): string => {
+  const convertToCSV = (data: Record<string, unknown>[]): string => {
     if (!Array.isArray(data) || data.length === 0) {
       return '';
     }
@@ -190,7 +190,7 @@ export const DataExport: React.FC<DataExportProps> = ({
           if (typeof value === 'string' && value.includes(',')) {
             return `"${value}"`;
           }
-          return value;
+          return String(value);
         }).join(',')
       ),
     ].join('\n');
@@ -198,7 +198,7 @@ export const DataExport: React.FC<DataExportProps> = ({
     return csv;
   };
 
-  const convertToHTML = (data: any[]): string => {
+  const convertToHTML = (data: Record<string, unknown>[]): string => {
     const headers = Array.isArray(data) && data.length > 0 ? Object.keys(data[0]) : [];
     const html = `
       <html>
@@ -218,7 +218,7 @@ export const DataExport: React.FC<DataExportProps> = ({
               <tr>${headers.map((h) => `<th>${h}</th>`).join('')}</tr>
             </thead>
             <tbody>
-              ${data.map((row) => `<tr>${headers.map((h) => `<td>${row[h]}</td>`).join('')}</tr>`).join('')}
+              ${data.map((row) => `<tr>${headers.map((h) => `<td>${String(row[h] ?? '')}</td>`).join('')}</tr>`).join('')}
             </tbody>
           </table>
         </body>

@@ -42,7 +42,7 @@ const GaugeChart: React.FC<GaugeChartProps> = ({
       <h3>{title}</h3>
       <ResponsiveContainer width="100%" height={height}>
         <PieChart>
-          <Tooltip formatter={(v: any) => [`${v}`, 'Value']} />
+          <Tooltip formatter={(v) => [`${v}`, 'Value']} />
           <Pie
             dataKey="value"
             data={[
