@@ -428,9 +428,8 @@ const SignInPage: React.FC = () => {
   // ─── Biometric ───────────────────────────────────────────────────────────
 
   const handleBiometricSuccess = useCallback(
-    (data: any) => {
-      const user = data as { uid: string; email: string; displayName: string };
-      const destination = resolvePostLoginDestination({ user: user as any, returnTo });
+    (data: { uid: string; email: string; displayName: string }) => {
+      const destination = resolvePostLoginDestination({ user: data, returnTo });
       navigateToPostLoginDestination(navigate, destination);
     },
     [dispatch, navigate, returnTo]

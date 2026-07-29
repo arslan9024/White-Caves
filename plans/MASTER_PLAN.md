@@ -1,12 +1,13 @@
 # White Caves Real Estate — 300% Expanded Master Execution Plan
 
-**Version:** 2026.07-TITAN-V4  
+**Version:** 2026.07-TITAN-V5  
 **Governance Standard:** [plans/PLANNING_GOVERNANCE.md](./PLANNING_GOVERNANCE.md)  
 **Historical Log:** [plans/HISTORICAL_REQUESTS_AND_ACHIEVEMENTS.md](./HISTORICAL_REQUESTS_AND_ACHIEVEMENTS.md)  
 **Three-Folder Knowledge Hierarchy:** `business_docs/` (Business Models & RERA) | `software_docs/` (Architecture & ADRs) | `plans/` (Roadmaps & History)  
+**Core Engineering Manifest:** [software_docs/core_engineering_manifest.md](../software_docs/core_engineering_manifest.md)  
 **Owners:** @Ada (Chief Architect) + @Margaret (Strategic Planner)  
 **Last Updated:** 2026-07-29  
-**Readiness Threshold:** **100% Target Gate Passed — 15 Shared Components Live & Pushed**
+**Readiness Threshold:** **100% Target Gate Passed — RUP Framework Instituted | software_docs/ Architecture Armed**
 
 ---
 

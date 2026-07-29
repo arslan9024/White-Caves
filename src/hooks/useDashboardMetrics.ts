@@ -169,7 +169,10 @@ export interface SearchItem {
   target: string;
 }
 
-export function useSearchItems(modules: any[], workspaces: any[]): SearchItem[] {
+export function useSearchItems(
+  modules: Array<{ id: string; label: string; icon?: string; zone?: string }>,
+  workspaces: Array<{ id: string; label: string; meta?: string }>
+): SearchItem[] {
   return useMemo(() => {
     const items: SearchItem[] = [];
 
