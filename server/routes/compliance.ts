@@ -1153,7 +1153,7 @@ router.get(
       take,
     });
 
-    const filtered = alerts.filter((a: any) => {
+    const filtered = alerts.filter((a: { metadata: unknown }) => {
       const metadata = normalizeMetadata(a.metadata);
       const alertStatus = String(metadata.status || 'open');
       return status === 'all' ? true : alertStatus === status;

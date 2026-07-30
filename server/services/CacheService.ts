@@ -75,8 +75,8 @@ class CacheService {
       try {
         await this.client.set(key, stringValue, 'EX', ttlSeconds);
         return;
-      } catch (err: any) {
-        this.log.warn(`Redis set failed for key ${key}:`, err.message);
+      } catch (err: unknown) {
+        this.log.warn(`Redis set failed for key ${key}:`, (err as Error).message);
       }
     }
     // Memory cache fallback

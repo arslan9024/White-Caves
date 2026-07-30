@@ -221,7 +221,7 @@ export async function listDocuments(filters?: {
   ]);
 
   return {
-    data: documents.map((d: any) => ({
+    data: documents.map((d: { id: string; type: string; title: string; version: number; status: string; metadata: unknown; createdAt: Date }) => ({
       id: d.id,
       type: d.type,
       title: d.title,

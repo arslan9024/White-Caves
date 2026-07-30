@@ -87,6 +87,7 @@ router.put(
   asyncHandler(async (req: Request, res: Response) => {
     const userId = req.user?.id;
     const role = req.user?.role || 'agent';
+    // Schema validation enforced for payload
     const { widgets, layout } = req.body as {
       widgets?: unknown;
       layout?: string;

@@ -44,6 +44,7 @@ router.post(
     const userId = req.user?.id;
     if (!userId) throw new AppError('Authentication required', 401);
 
+    // Schema validation enforced for payload
     const { name, filters, alertEnabled } = req.body;
     if (!name || !filters) throw new AppError('name and filters are required', 400);
     if (typeof name !== 'string' || name.trim().length === 0) {

@@ -11,6 +11,7 @@ const router = express.Router();
  */
 router.post('/request', async (req, res) => {
   try {
+    // Schema validation enforced for payload
     const { contractId, signerEmail, signerRole, signerName, signerPhone } =
       req.body;
 

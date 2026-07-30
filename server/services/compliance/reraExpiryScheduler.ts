@@ -245,7 +245,7 @@ export async function getBRNExpiryReport(): Promise<
 
   const now = new Date();
 
-  return agents.map((agent: any) => {
+  return agents.map((agent: { brnNumber: string | null; brnExpiry: Date | null }) => {
     if (!agent.brnNumber || !agent.brnExpiry) {
       return { ...agent, daysUntilExpiry: null, status: 'not_set' as const };
     }

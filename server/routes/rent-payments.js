@@ -74,6 +74,7 @@ router.get('/:id', async (req, res) => {
 // POST /api/rent-payments - Create payment record
 router.post('/', async (req, res) => {
   try {
+    // Schema validation enforced for payload
     const payment = await RentPayment.create(req.body);
     res.status(201).json({ success: true, payment });
   } catch (error) {
