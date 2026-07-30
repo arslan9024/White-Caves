@@ -5,7 +5,7 @@ export interface ChatMessage {
   role: 'system' | 'user' | 'assistant' | 'tool';
   content: string | null;
   name?: string;
-  tool_calls?: any[];
+  tool_calls?: Record<string, unknown>[];
   tool_call_id?: string;
 }
 
@@ -15,7 +15,7 @@ export interface ChatMessage {
 export async function searchProperties(args: { area?: string; budget?: number; beds?: number }) {
   const { area, budget, beds } = args;
 
-  const where: any = { status: 'available' };
+  const where: Record<string, unknown> = { status: 'available' };
 
   if (area) {
     where.OR = [

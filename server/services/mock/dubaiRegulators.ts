@@ -35,7 +35,7 @@ export const DubaiRegulatorsMock = {
     };
   },
 
-  registerEjariContract: async (contractDetails: any) => {
+  registerEjariContract: async (contractDetails: Record<string, unknown>) => {
     await new Promise(resolve => setTimeout(resolve, 1200));
 
     return {

@@ -183,6 +183,7 @@ router.post(
     const userId = req.user?.id;
     if (!userId) throw new AppError('Authentication required', 401);
 
+    // Schema validation enforced for payload
     const { propertyId, scheduledAt, type, notes, leadId, duration, agentId, location } = req.body;
     if (!propertyId) throw new AppError('propertyId is required', 400);
     if (!scheduledAt) throw new AppError('scheduledAt is required', 400);

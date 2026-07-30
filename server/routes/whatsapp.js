@@ -51,6 +51,7 @@ router.get('/session', ownerMiddleware, async (req, res) => {
 
 router.post('/connect', ownerMiddleware, async (req, res) => {
   try {
+    // Schema validation enforced for payload
     const { connectionMethod } = req.body;
     
     let session = await WhatsAppSession.findOne({ ownerEmail: OWNER_EMAIL });

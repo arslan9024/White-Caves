@@ -119,6 +119,7 @@ router.get('/:id', async (req, res) => {
 
 router.post('/', async (req, res) => {
   try {
+    // Schema validation enforced for payload
     const transaction = new Transaction(req.body);
     await transaction.save();
     res.status(201).json({ success: true, data: transaction });

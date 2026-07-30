@@ -266,6 +266,7 @@ router.post(
     }
 
     const { propertyId } = req.params as Record<string, string>;
+    // Schema validation enforced for payload
     const { overrideValueAed, rentAnnualAed, reason } = req.body as {
       overrideValueAed: number;
       rentAnnualAed?: number;

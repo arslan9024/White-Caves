@@ -1372,7 +1372,7 @@ router.get(
       take,
     });
 
-    const mapped = records.map((r: any) => {
+    const mapped = records.map((r: { id: string; leadId: string | null; metadata: unknown; createdAt: Date }) => {
       const metadata = normalizeMetadata(r.metadata);
       return {
         id: r.id,
