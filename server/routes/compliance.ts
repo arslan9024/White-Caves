@@ -885,7 +885,7 @@ router.get(
       take: 200,
     });
 
-    const mapped = docs.map((d: any) => {
+    const mapped = docs.map((d: { id: string; leadId: string | null; metadata: unknown }) => {
       const metadata = normalizeMetadata(d.metadata);
       return {
         id: d.id,

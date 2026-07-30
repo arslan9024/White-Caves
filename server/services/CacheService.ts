@@ -29,8 +29,8 @@ class CacheService {
         void this.client.connect().catch(err => {
           this.log.warn('Redis lazy connect failed, falling back to memory cache:', err.message);
         });
-      } catch (err: any) {
-        this.log.warn('Failed to initialize Redis client, falling back to memory cache:', err.message);
+      } catch (err: unknown) {
+        this.log.warn('Failed to initialize Redis client, falling back to memory cache:', (err as Error).message);
       }
     } else {
       this.log.info('REDIS_URL not set — response caching using local in-memory fallback');

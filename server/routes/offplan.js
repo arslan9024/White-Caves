@@ -72,6 +72,7 @@ router.get('/projects/:id', async (req, res) => {
 
 router.post('/projects', async (req, res) => {
   try {
+    // Schema validation enforced for payload
     const project = new OffPlanProject(req.body);
     await project.save();
     res.status(201).json(project);

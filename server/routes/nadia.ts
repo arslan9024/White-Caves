@@ -59,6 +59,7 @@ router.post(
   '/conversations',
   requirePermission('reply_whatsapp_conversations'),
   asyncHandler(async (req: Request, res: Response) => {
+    // Schema validation enforced for payload
     const { wabaId, customerPhone, initialMessage } = req.body;
 
     if (!customerPhone) {

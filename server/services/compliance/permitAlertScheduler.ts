@@ -85,7 +85,7 @@ export async function getPermitAlerts(daysAhead = 30): Promise<PermitAlertResult
     take: 200,
   });
 
-  const brnPermitAlerts = brnExpiringOrExpired.map((agent: any) => {
+  const brnPermitAlerts = brnExpiringOrExpired.map((agent: { brnExpiry: Date; id: string; name: string; email: string; role: string; brnNumber?: string | null }) => {
     const expiry = agent.brnExpiry as Date;
     const daysToExpiry = Math.ceil((expiry.getTime() - now.getTime()) / (24 * 60 * 60 * 1000));
     return {

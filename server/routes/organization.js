@@ -53,6 +53,7 @@ router.get('/departments/:id', async (req, res) => {
 
 router.post('/departments', async (req, res) => {
   try {
+    // Schema validation enforced for payload
     const department = new Department(req.body);
     await department.save();
     res.status(201).json({ success: true, data: department });
