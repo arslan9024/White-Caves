@@ -73,8 +73,8 @@ export class PushNotificationService {
             where: { token: { in: staleTokens } },
           });
         }
-      } catch (err: any) {
-        if (err.code === 'app/no-app') {
+      } catch (err: unknown) {
+        if ((err as NodeJS.ErrnoException).code === 'app/no-app') {
           console.warn('[Push] Firebase Admin not initialized. Logging push:', payload.title);
         } else {
           throw err;

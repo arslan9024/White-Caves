@@ -283,7 +283,7 @@ export async function reassignQueuedConversation(
   newPriority?: number,
   reason?: string
 ) {
-  const updateData: any = {};
+  const updateData: Record<string, unknown> = {};
 
   if (newPriority !== undefined) {
     updateData.priority = Math.max(1, Math.min(10, newPriority));

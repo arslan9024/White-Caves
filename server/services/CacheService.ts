@@ -150,8 +150,8 @@ class CacheService {
           await this.client.del(...keys);
         }
         return;
-      } catch (err: any) {
-        this.log.warn(`Redis invalidate failed for pattern ${pattern}:`, err.message);
+      } catch (err: unknown) {
+        this.log.warn(`Redis invalidate failed for pattern ${pattern}:`, (err as Error).message);
       }
     }
     // Memory cache fallback: clear matching keys

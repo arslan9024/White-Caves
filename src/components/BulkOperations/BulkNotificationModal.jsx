@@ -93,7 +93,7 @@ const BulkNotificationModal = ({
           />
 
           <div style={{ marginTop: '10px' }}>
-            <label style={{ fontSize: '13px', fontWeight: '600', color: 'var(--text-primary, #374151)', display: 'block', marginBottom: '8px' }}>
+            <label style={{ fontSize: '13px', fontWeight: '600', color: 'var(--text-primary)', display: 'block', marginBottom: '8px' }}>
               Notification Type:
             </label>
             <select

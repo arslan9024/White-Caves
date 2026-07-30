@@ -1388,7 +1388,7 @@ router.get(
       };
     });
 
-    const filtered = mapped.filter((row: any) => {
+    const filtered = mapped.filter((row: { status: unknown; entityType: unknown; entityId: unknown }) => {
       if (status !== 'all' && String(row.status) !== status) return false;
       if (entityType && String(row.entityType) !== entityType) return false;
       if (entityId && String(row.entityId) !== entityId) return false;

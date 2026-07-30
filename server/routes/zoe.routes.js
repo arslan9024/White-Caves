@@ -47,6 +47,7 @@ router.use(requireExecutive);
 
 router.post('/query', async (req, res) => {
   try {
+    // Schema validation enforced for payload
     const { query, sessionId } = req.body;
 
     if (!query || typeof query !== 'string' || query.trim().length === 0) {

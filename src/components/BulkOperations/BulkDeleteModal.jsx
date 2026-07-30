@@ -60,7 +60,7 @@ const BulkDeleteModal = ({
             />
           </div>
 
-          <p style={{ fontSize: '12px', color: 'var(--text-secondary, #6b7280)', margin: '10px 0 0 0' }}>
+          <p style={{ fontSize: '12px', color: 'var(--text-secondary)', margin: '10px 0 0 0' }}>
             Properties will be soft-deleted and can be recovered from trash within 30 days.
           </p>
         </div>
