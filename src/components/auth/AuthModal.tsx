@@ -491,7 +491,7 @@ const AuthModal: FC<AuthModalProps> = ({ mode: initialMode = 'signin', onClose }
                   <span style={{ fontSize: '20px' }}>{role.icon}</span>
                   <div>
                     <strong style={{ display: 'block', fontSize: '14px' }}>{role.label}</strong>
-                    <span style={{ fontSize: '12px', color: 'var(--text-muted, #94a3b8)' }}>{role.desc}</span>
+                    <span style={{ fontSize: '12px', color: 'var(--text-muted)' }}>{role.desc}</span>
                   </div>
                 </button>
               ))}

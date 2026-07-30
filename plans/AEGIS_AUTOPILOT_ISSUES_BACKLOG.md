@@ -1,4 +1,4 @@
-# 🛡️ AEGIS Autopilot Backlog (1592 Items)
+# 🛡️ AEGIS Autopilot Backlog (1580 Items)
 
-Total cataloged items across codebase: 1592.
+Total cataloged items across codebase: 1580.
 Top 12 items actively targeted for continuous upgrade.

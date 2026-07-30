@@ -1529,7 +1529,7 @@ router.get(
           amlOpenAlerts: openAml.length,
         },
         permitIssues: permitIssues.slice(0, 20),
-        kycPendingReview: pendingKyc.slice(0, 20).map((d: any) => {
+        kycPendingReview: pendingKyc.slice(0, 20).map((d: { id: string; leadId: string | null; lead: unknown; metadata: unknown; createdAt: Date }) => {
           const metadata = normalizeMetadata(d.metadata);
           return {
             id: d.id,
@@ -1539,7 +1539,7 @@ router.get(
             uploadedAt: metadata.uploadedAt || d.createdAt.toISOString(),
           };
         }),
-        amlOpenAlerts: openAml.slice(0, 20).map((a: any) => {
+        amlOpenAlerts: openAml.slice(0, 20).map((a: { id: string; metadata: unknown }) => {
           const metadata = normalizeMetadata(a.metadata);
           return {
             id: a.id,

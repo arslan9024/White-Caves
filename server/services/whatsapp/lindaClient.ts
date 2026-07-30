@@ -74,8 +74,7 @@ export class LindaClient extends EventEmitter {
   private qrCode: string | null = null;
   private messagesSent = 0;
   private messagesReceived = 0;
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  private client: any = null; // whatsapp-web.js Client instance
+  private client: unknown = null; // whatsapp-web.js Client instance
 
   constructor(config: LindaConfig = {}) {
     super();

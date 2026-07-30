@@ -20,7 +20,7 @@ const getTimeAgo = (timestamp) => {
 const ActivityItem = ({ activity }) => {
   return (
     <div className={`activity-item ${activity.type || 'default'}`}>
-      <div className="activity-icon-wrapper" style={{ backgroundColor: activity.color || '#3B82F6' }}>
+      <div className="activity-icon-wrapper" style={{ backgroundColor: activity.color || 'var(--primary-color)' }}>
         {activity.icon}
       </div>
       <div className="activity-content">

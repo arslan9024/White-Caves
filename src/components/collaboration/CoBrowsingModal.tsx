@@ -217,7 +217,7 @@ export const CoBrowsingModal: FC<CoBrowsingModalProps> = ({
         </div>
 
         {/* Viewport & Canvas Area */}
-        <div style={{ padding: '24px', backgroundColor: '#0F172A' }}>
+        <div style={{ padding: '24px', backgroundColor: 'var(--slate-900)' }}>
           <AnnotationLayer
             participants={participants}
             annotations={annotations}

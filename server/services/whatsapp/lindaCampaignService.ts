@@ -79,7 +79,7 @@ export async function dispatchLindaCampaign(campaignId: string) {
   });
 
   const recipients = (campaign.targetList || [])
-    .map((p: any) => String(p).replace(/\D/g, ''))
+    .map((p: unknown) => String(p).replace(/\D/g, ''))
     .filter(Boolean);
 
   if (recipients.length === 0) {

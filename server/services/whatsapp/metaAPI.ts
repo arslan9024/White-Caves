@@ -347,14 +347,14 @@ export class MetaAPIClient {
   /**
    * Parse webhook event
    */
-  public parseWebhookEvent(body: any): WebhookEvent {
+  public parseWebhookEvent(body: unknown): WebhookEvent {
     return body as WebhookEvent;
   }
 
   /**
    * Get business account info
    */
-  public async getAccountInfo(): Promise<any> {
+  public async getAccountInfo(): Promise<unknown> {
     try {
       if (!this.config.businessAccountId) {
         throw new Error('businessAccountId is required for getAccountInfo()');

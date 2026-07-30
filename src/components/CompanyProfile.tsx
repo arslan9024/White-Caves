@@ -206,7 +206,7 @@ export default function CompanyProfile() {
                     href="https://wa.me/971563616136?text=Hello%20White%20Caves%20Real%20Estate%2C%20I%20would%20like%20to%20inquire%20about%20a%20property."
                     target="_blank"
                     rel="noopener noreferrer"
-                    style={{ color: '#25D366', textDecoration: 'none', fontWeight: 700 }}
+                    style={{ color: 'var(--whatsapp-color, #25D366)', textDecoration: 'none', fontWeight: 700 }}
                   >
                     Chat on WhatsApp ↗
                   </a>
