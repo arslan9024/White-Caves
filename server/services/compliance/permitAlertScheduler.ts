@@ -99,8 +99,8 @@ export async function getPermitAlerts(daysAhead = 30): Promise<PermitAlertResult
     summary: {
       daysAhead: parsedDaysAhead,
       listingPermitIssues: listingPermitIssues.length,
-      brnExpired: brnPermitAlerts.filter((a: any) => a.status === 'expired').length,
-      brnExpiringSoon: brnPermitAlerts.filter((a: any) => a.status === 'expiring_soon').length,
+      brnExpired: brnPermitAlerts.filter((a: { status: string }) => a.status === 'expired').length,
+      brnExpiringSoon: brnPermitAlerts.filter((a: { status: string }) => a.status === 'expiring_soon').length,
     },
     listingPermitIssues,
     brnPermitAlerts,

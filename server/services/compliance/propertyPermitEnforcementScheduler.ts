@@ -67,11 +67,11 @@ export async function enforcePropertyPermitCompliance(
   if (dryRun) {
     logger.info('Property permit enforcement dry-run complete', {
       scanned: summary.scanned,
-      ids: nonCompliantListings.map((p: any) => p.id),
+      ids: nonCompliantListings.map((p: { id: string }) => p.id),
     });
     return {
       ...summary,
-      affectedPropertyIds: nonCompliantListings.map((p: any) => p.id),
+      affectedPropertyIds: nonCompliantListings.map((p: { id: string }) => p.id),
     };
   }
 

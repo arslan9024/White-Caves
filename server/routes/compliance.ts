@@ -930,14 +930,14 @@ router.get(
       },
     });
 
-    const pending = docs.filter((d: any) => {
+    const pending = docs.filter((d: { id: string; leadId: string | null; metadata: unknown; createdAt: Date; lead: unknown; user: unknown }) => {
       const metadata = normalizeMetadata(d.metadata);
       return (metadata.reviewStatus || 'pending') === 'pending';
     });
 
     res.json({
       success: true,
-      data: pending.map((d: any) => {
+      data: pending.map((d: { id: string; leadId: string | null; metadata: unknown; createdAt: Date; lead: unknown; user: unknown }) => {
         const metadata = normalizeMetadata(d.metadata);
         return {
           id: d.id,

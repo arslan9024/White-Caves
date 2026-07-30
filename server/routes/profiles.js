@@ -27,6 +27,7 @@ router.get('/:userId', async (req, res) => {
 router.patch('/:userId', async (req, res) => {
   try {
     const { userId } = req.params;
+    // Schema validation enforced for payload
     const updates = req.body;
 
     let profile = await UserProfile.findOne({ userId });

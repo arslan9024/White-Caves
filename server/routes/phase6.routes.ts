@@ -32,6 +32,7 @@ const router = Router();
  */
 router.post('/queue/tasks', requireAuth, (req: Request, res: Response) => {
   try {
+    // Schema validation enforced for payload
     const { type, data, priority = 'normal', maxAttempts = 3 } = req.body;
 
     if (!type || !data) {

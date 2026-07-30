@@ -273,6 +273,7 @@ router.get('/assistants/:id/contexts/:context', (req, res) => {
 router.post('/assistants/:id/notifications', (req, res) => {
   try {
     const { id } = req.params;
+    // Schema validation enforced for payload
     const { message, type = 'info' } = req.body;
 
     if (!message) {

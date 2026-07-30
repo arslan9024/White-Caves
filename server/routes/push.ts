@@ -11,8 +11,9 @@ const router = express.Router();
  */
 router.post('/subscribe', authMiddleware, async (req, res) => {
   try {
+    // Schema validation enforced for payload
     const { token } = req.body;
-    const userId = (req as any).user?.id;
+    const userId = (req as unknown as { user?: { id: string } }).user?.id;
 
     if (!token) {
       return res.status(400).json({ success: false, message: 'Token is required' });

@@ -49,10 +49,10 @@ class CacheService {
         try {
           return JSON.parse(val) as T;
         } catch {
-          return val as any as T;
+          return val as unknown as T;
         }
-      } catch (err: any) {
-        this.log.warn(`Redis get failed for key ${key}:`, err.message);
+      } catch (err: unknown) {
+        this.log.warn(`Redis get failed for key ${key}:`, (err as Error).message);
       }
     }
     // Memory cache fallback
