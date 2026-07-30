@@ -134,7 +134,7 @@ export async function generateEjariExport(filters?: {
     orderBy: { startDate: 'desc' },
   });
 
-  const rows: EjariExportRow[] = leases.map((lease: any) => ({
+  const rows: EjariExportRow[] = leases.map((lease: { leaseNumber?: string; tenant?: { name?: string; email?: string; phone?: string }; landlord?: { name?: string }; property?: { title?: string; location?: string; type?: string } }) => ({
     leaseNumber: lease.leaseNumber || '',
     tenantName: lease.tenant?.name || '',
     tenantEmail: lease.tenant?.email || '',

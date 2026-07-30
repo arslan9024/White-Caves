@@ -44,7 +44,7 @@ const PROVIDER_CHAIN: AIProvider[] = [new MockOpenAIProvider(), new MockAnthropi
 
 export class NinaEngine {
   // W24-008: Context Injection
-  static async buildContext(assistantId: string, entityContext?: any): Promise<Message> {
+  static async buildContext(assistantId: string, entityContext?: Record<string, unknown>): Promise<Message> {
     let baseContext = 'You are Nina, a helpful AI assistant.';
 
     if (entityContext) {

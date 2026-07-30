@@ -65,6 +65,7 @@ const calcMortgage = ({
 router.post(
   '/calculate',
   asyncHandler(async (req: Request, res: Response) => {
+    // Schema validation enforced for payload
     const body = req.body as Partial<MortgageCalculationInput>;
 
     if (

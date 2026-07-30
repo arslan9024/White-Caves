@@ -6,7 +6,7 @@ type CacheValue = string | object | unknown[] | number | boolean;
 
 class CacheService {
   private client: Redis | null = null;
-  private memoryCache = new Map<string, { value: any; expiresAt: number }>();
+  private memoryCache = new Map<string, { value: CacheValue; expiresAt: number }>();
   private connected = false;
   private readonly log = logger;
 

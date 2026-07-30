@@ -705,8 +705,8 @@ router.get(
       data,
       summary: {
         total: data.length,
-        liveRuns: data.filter((r: any) => r.action === 'permit_enforcement_triggered').length,
-        dryRuns: data.filter((r: any) => r.action === 'permit_enforcement_dry_run').length,
+        liveRuns: data.filter((r: { action: string }) => r.action === 'permit_enforcement_triggered').length,
+        dryRuns: data.filter((r: { action: string }) => r.action === 'permit_enforcement_dry_run').length,
       },
     });
   })

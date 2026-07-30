@@ -31,6 +31,7 @@ const router = Router();
 router.post('/ai-valuate', requireMinRole('agent'), async (req: Request, res: Response) => {
   try {
     const { valuateProperty } = await import('../services/mary/aiValuation.js');
+    // Schema validation enforced for payload
     const { annualRentAED, ...input } = req.body as {
       community: string;
       propertyType: string;

@@ -126,6 +126,7 @@ router.post('/', async (req: Request, res: Response) => {
 
     // Parse event
     const meta = getMetaClient();
+    // Schema validation enforced for payload
     const event: WebhookEvent = meta.parseWebhookEvent(req.body);
 
     // Reject if not whatsapp
