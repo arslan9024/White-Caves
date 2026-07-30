@@ -341,7 +341,7 @@ const ClickToChat: FC = () => {
           <ChatBody>
             {/* Tab switcher */}
             <div
-              style={{ display: 'flex', borderBottom: '1px solid #e5e7eb', marginBottom: '0.5rem' }}
+              style={{ display: 'flex', borderBottom: '1px solid var(--border-color)', marginBottom: '0.5rem' }}
             >
               <button
                 onClick={() => setActiveTab('ai')}

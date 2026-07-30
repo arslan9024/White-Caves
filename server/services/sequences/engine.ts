@@ -8,7 +8,7 @@ export interface SequenceTemplate {
   steps: {
     dayDelay: number;
     actionType: 'whatsapp' | 'email' | 'task';
-    payload: any;
+    payload: Record<string, unknown>;
   }[];
 }
 

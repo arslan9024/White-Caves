@@ -85,10 +85,10 @@ export const CoBrowsingModal: FC<CoBrowsingModalProps> = ({
           }}
         >
           <div>
-            <h2 style={{ fontSize: '1.125rem', fontWeight: 700, color: '#1E293B', margin: 0 }}>
+            <h2 style={{ fontSize: '1.125rem', fontWeight: 700, color: 'var(--text-primary)', margin: 0 }}>
               {propertyTitle}
             </h2>
-            <p style={{ fontSize: '0.875rem', color: '#64748B', margin: '2px 0 0 0' }}>
+            <p style={{ fontSize: '0.875rem', color: 'var(--text-muted)', margin: '2px 0 0 0' }}>
               Real-time Multi-Agent Co-Browsing Canvas
             </p>
           </div>

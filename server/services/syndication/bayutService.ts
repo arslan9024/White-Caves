@@ -32,7 +32,7 @@ export function generateBayutJsonFeed(properties: SyndicationProperty[]): {
   syncLog: BayutSyncLogEntry;
 } {
   const details: BayutSyncLogEntry['details'] = [];
-  const validItems: any[] = [];
+  const validItems: Record<string, unknown>[] = [];
 
   let syncedCount = 0;
   let failedCount = 0;

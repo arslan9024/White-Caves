@@ -101,7 +101,7 @@ export const BarChart: React.FC<BarChartProps> = ({ data, maxValue, animated = t
               $height={(item.value / max) * 100}
               $color={item.color}
               data-label={`${item.label}: ${item.value}`}
-              style={{ background: item.color || '#3498db' }}
+              style={{ background: item.color || 'var(--primary-color)' }}
             />
             <ChartLabel>{item.label}</ChartLabel>
           </div>

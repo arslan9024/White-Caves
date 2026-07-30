@@ -131,8 +131,8 @@ export class PushNotificationService {
         }
 
         console.log(`[Push] CRM notification '${data.type}' sent to user ${userId} (${tokens.length} devices)`);
-      } catch (err: any) {
-        if (err.code === 'app/no-app') {
+      } catch (err: unknown) {
+        if ((err as NodeJS.ErrnoException).code === 'app/no-app') {
           console.warn(`[Push] Firebase Admin not initialized. Would send '${data.type}' to user ${userId}:`, payload.title);
         } else {
           throw err;

@@ -429,7 +429,7 @@ const AuthModal: FC<AuthModalProps> = ({ mode: initialMode = 'signin', onClose }
                     {cat.icon}
                   </span>
                   <strong style={{ display: 'block', fontSize: '15px' }}>{cat.label}</strong>
-                  <span style={{ fontSize: '12px', color: 'var(--text-muted, #94a3b8)' }}>{cat.desc}</span>
+                  <span style={{ fontSize: '12px', color: 'var(--text-muted)' }}>{cat.desc}</span>
                 </button>
               ))}
             </div>

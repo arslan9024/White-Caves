@@ -1510,12 +1510,12 @@ router.get(
       }),
     ]);
 
-    const pendingKyc = kycDocs.filter((d: any) => {
+    const pendingKyc = kycDocs.filter((d: { metadata: unknown }) => {
       const metadata = normalizeMetadata(d.metadata);
       return (metadata.reviewStatus || 'pending') === 'pending';
     });
 
-    const openAml = amlAlerts.filter((a: any) => {
+    const openAml = amlAlerts.filter((a: { metadata: unknown }) => {
       const metadata = normalizeMetadata(a.metadata);
       return String(metadata.status || 'open') === 'open';
     });
