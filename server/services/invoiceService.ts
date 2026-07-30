@@ -153,11 +153,11 @@ export function generateInvoice(
 ): Promise<any>;
 export async function generateInvoice(
   first: string,
-  second?: any,
+  second?: unknown,
   third?: string,
   fourth?: Array<{ description: string; quantity: number; unitPrice: number; transactionType?: string }>,
   fifth?: string
-): Promise<any> {
+): Promise<unknown> {
   // If fourth is not provided, this is the legacy call (propertyId, userId)
   if (fourth === undefined) {
     const propertyId = first;

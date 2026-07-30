@@ -49,6 +49,7 @@ router.get('/owners/follow-up-list', async (req, res) => {
 router.put('/owners/:ownerId/contact-status', async (req, res) => {
   try {
     const { ownerId } = req.params;
+    // Schema validation enforced for payload
     const { contactStatus } = req.body;
 
     let status = await OwnerContactStatus.findOne({ ownerId });

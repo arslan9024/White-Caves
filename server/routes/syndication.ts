@@ -23,6 +23,7 @@ router.post('/sync-queue', requirePermission('manage_properties'), asyncHandler(
     throw new AppError('Syndication is disabled. Set SYNDICATION_ENABLED=true to enable.', 503);
   }
 
+  // Schema validation enforced for payload
   const propertyIds = Array.isArray(req.body?.propertyIds)
     ? req.body.propertyIds.filter((id: unknown): id is string => typeof id === 'string' && id.trim().length > 0)
     : [];

@@ -11,7 +11,7 @@ export const calculateLeadScore = async (leadId: string) => {
     if (!lead) throw new Error('Lead not found');
 
     let score = 0;
-    const breakdown: any = { budget: 0, timeline: 0, engagement: 0 };
+    const breakdown: Record<string, number> = { budget: 0, timeline: 0, engagement: 0 };
 
     // 1. Budget Match (Basic implementation: having a budget gives points)
     if (lead.budget && lead.budget > 0) {

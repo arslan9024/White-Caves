@@ -1161,7 +1161,7 @@ router.get(
 
     res.json({
       success: true,
-      data: filtered.map((a: any) => {
+      data: filtered.map((a: { id: string; leadId: string | null; lead: unknown; user: unknown; metadata: unknown }) => {
         const metadata = normalizeMetadata(a.metadata);
         return {
           id: a.id,

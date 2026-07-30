@@ -98,8 +98,8 @@ class CacheService {
           await this.client.expire(key, ttlSeconds);
         }
         return count;
-      } catch (err: any) {
-        this.log.warn(`Redis incr failed for key ${key}:`, err.message);
+      } catch (err: unknown) {
+        this.log.warn(`Redis incr failed for key ${key}:`, (err as Error).message);
       }
     }
     // Memory cache fallback

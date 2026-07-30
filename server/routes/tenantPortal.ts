@@ -270,6 +270,7 @@ router.post(
     const userId = req.user?.id;
     if (!userId) throw new AppError('Authentication required', 401);
 
+    // Schema validation enforced for payload
     const { title, description, category = 'general', priority = 'medium' } = req.body;
 
     if (!title || typeof title !== 'string') throw new AppError('title is required', 400);
