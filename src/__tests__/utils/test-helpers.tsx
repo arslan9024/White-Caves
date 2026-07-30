@@ -251,15 +251,15 @@ export function assertCalledWith(fn: { mock: { calls: unknown[][] } }, expectedA
  * Mock console methods to prevent noise in tests
  */
 export function mockConsole(methods = ['log', 'warn', 'error']) {
-  const mocks: any = {};
+  const mocks: Record<string, unknown> = {};
 
   methods.forEach((method) => {
-    mocks[method] = vi.spyOn(console, method as any).mockImplementation(() => {});
+    mocks[method] = vi.spyOn(console, method as 'log' | 'warn' | 'error').mockImplementation(() => {});
   });
 
   return {
     mocks,
-    restore: () => Object.values(mocks).forEach((m: any) => m.mockRestore()),
+    restore: () => Object.values(mocks).forEach((m) => (m as { mockRestore: () => void }).mockRestore()),
   };
 }
 

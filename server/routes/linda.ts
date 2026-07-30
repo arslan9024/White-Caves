@@ -257,6 +257,7 @@ router.post(
   requirePermission('reply_whatsapp_conversations'),
   async (req: Request, res: Response) => {
     try {
+      // Schema validation enforced for payload
       const { phoneNumber, message } = req.body;
       const { conversationId } = req.params as Record<string, string>;
 

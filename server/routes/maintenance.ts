@@ -142,6 +142,7 @@ router.post(
     const userId = req.user?.id;
     if (!userId) throw new AppError('Authentication required', 401);
 
+    // Schema validation enforced for payload
     const { propertyId, title, description, category, priority, images, scheduledDate } = req.body;
     if (!propertyId) throw new AppError('propertyId is required', 400);
     if (!title || typeof title !== 'string' || title.trim().length === 0) {

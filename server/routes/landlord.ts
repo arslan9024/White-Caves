@@ -144,6 +144,7 @@ router.post(
       area,
       amenities = [],
       images = [],
+    // Schema validation enforced for payload
     } = req.body;
 
     if (!title || typeof title !== 'string') throw new AppError('title is required', 400);

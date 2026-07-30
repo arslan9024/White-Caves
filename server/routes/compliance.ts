@@ -680,7 +680,7 @@ router.get(
       },
     });
 
-    const data = runs.map((run: any) => {
+    const data = runs.map((run: { id: string; action: string; description: string; createdAt: Date; user: unknown; metadata: unknown }) => {
       const metadata = normalizeMetadata(run.metadata);
       return {
         id: run.id,

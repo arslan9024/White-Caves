@@ -120,14 +120,14 @@ router.get(
     let totalSynced = 0;
     let totalFailed = 0;
     let totalSkipped = 0;
-    const errors: any[] = [];
+    const errors: string[] = [];
 
     const properties = await prisma.property.findMany({
       where: { status: 'available' },
       include: { user: true },
     });
 
-    const feed: any[] = [];
+    const feed: Record<string, unknown>[] = [];
 
     for (const property of properties) {
       try {

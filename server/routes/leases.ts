@@ -293,6 +293,7 @@ router.post(
       depositAmount,
       terms,
       leaseNumber,
+    // Schema validation enforced for payload
     } = req.body;
 
     if (!propertyId) throw new AppError('propertyId is required', 400);

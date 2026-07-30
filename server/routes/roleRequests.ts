@@ -116,14 +116,14 @@ adminRoleRequestRouter.get(
     });
 
     // Enrich with requester info
-    const userIds = [...new Set(requests.map((r: any) => r.userId))] as string[];
+    const userIds = [...new Set(requests.map((r: { userId: string }) => r.userId))] as string[];
     const users = await db.user.findMany({
       where: { id: { in: userIds } },
       select: { id: true, name: true, email: true, role: true },
     });
-    const userMap = new Map(users.map((u: any) => [u.id, u]));
+    const userMap = new Map(users.map((u: { id: string; name: string; email: string; role: string }) => [u.id, u]));
 
-    const enriched = requests.map((r: any) => ({
+    const enriched = requests.map((r: Record<string, unknown> & { userId: string }) => ({
       ...r,
       user: userMap.get(r.userId) || null,
     }));
