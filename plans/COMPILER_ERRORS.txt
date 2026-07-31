@@ -2,6 +2,7 @@
 transforming...
 [32m✓[39m 2626 modules transformed.
 rendering chunks...
+<<<<<<< HEAD
 computing gzip size...
 [2mdist/[22m[32mmanifest.webmanifest                                             [39m[1m[2m  0.60 kB[22m[1m[22m
 [2mdist/[22m[32mindex.html                                                       [39m[1m[2m 17.74 kB[22m[1m[22m[2m │ gzip:  4.82 kB[22m
@@ -229,3 +230,5 @@ precache  226 entries (5259.41 KiB)
 files generated
   dist/sw.js
   dist/workbox-60b9b2d4.js
+=======
+>>>>>>> develop
