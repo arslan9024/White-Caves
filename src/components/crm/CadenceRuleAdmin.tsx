@@ -163,7 +163,7 @@ function RuleRow({
   return (
     <tr style={{ borderBottom: '1px solid rgba(255,255,255,0.06)' }}>
       <td style={{ padding: '10px 12px' }}>
-        <strong style={{ color: rule.isActive ? '#f5f5f0' : '#6b7280' }}>{rule.name}</strong>
+        <strong style={{ color: rule.isActive ? 'var(--text-primary)' : 'var(--text-secondary)' }}>{rule.name}</strong>
         {rule.description && (
           <div style={{ fontSize: 12, color: '#9ca3af', marginTop: 2 }}>{rule.description}</div>
         )}

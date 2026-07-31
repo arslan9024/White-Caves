@@ -60,7 +60,7 @@ const OverviewTab: React.FC<OverviewTabProps> = ({ stats, systemStatus }) => {
         </div>
 
         <div className="metric-card">
-          <div className="metric-icon" style={{ background: 'rgba(34, 197, 94, 0.2)', color: '#22C55E' }}>
+          <div className="metric-icon" style={{ background: 'var(--success-light)', color: 'var(--success-color)' }}>
             <CheckCircle size={20} />
           </div>
           <div className="metric-content">
