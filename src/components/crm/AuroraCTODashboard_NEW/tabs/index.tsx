@@ -55,7 +55,7 @@ const AuroraCTODashboard = () => {
     <div className="crm-container aurora-cto">
       <div className="crm-header">
         <div className="header-title">
-          <div className="avatar" style={{ background: 'linear-gradient(135deg, #A78BFA 0%, #DDD6FE 100%)' }}>
+          <div className="avatar" style={{ background: 'var(--primary-gradient)' }}>
             <span>🏛️</span>
           </div>
           <div>

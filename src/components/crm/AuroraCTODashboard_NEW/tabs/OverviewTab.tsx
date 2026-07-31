@@ -38,7 +38,7 @@ const OverviewTab: React.FC<OverviewTabProps> = ({ stats, systemStatus }) => {
 
       <div className="overview-metrics">
         <div className="metric-card">
-          <div className="metric-icon" style={{ background: 'rgba(59, 130, 246, 0.2)', color: '#3B82F6' }}>
+          <div className="metric-icon" style={{ background: 'var(--info-light)', color: 'var(--info-color)' }}>
             <Users size={20} />
           </div>
           <div className="metric-content">
@@ -49,7 +49,7 @@ const OverviewTab: React.FC<OverviewTabProps> = ({ stats, systemStatus }) => {
         </div>
 
         <div className="metric-card">
-          <div className="metric-icon" style={{ background: 'rgba(16, 185, 129, 0.2)', color: '#10B981' }}>
+          <div className="metric-icon" style={{ background: 'var(--success-light)', color: 'var(--success-color)' }}>
             <Box size={20} />
           </div>
           <div className="metric-content">
