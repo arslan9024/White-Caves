@@ -626,7 +626,7 @@ const AuroraCTODashboard = () => {
                     <h4>{app.name}</h4>
                     <span className={`env-badge ${app.environment}`}>{app.environment}</span>
                   </div>
-                  <div className="health-indicator" style={{ color: app.health >= 95 ? '#10B981' : app.health >= 80 ? '#F59E0B' : '#EF4444' }}>
+                  <div className="health-indicator" style={{ color: app.health >= 95 ? 'var(--success-color)' : app.health >= 80 ? 'var(--warning-color)' : 'var(--error-color)' }}>
                     {app.health}%
                   </div>
                 </div>

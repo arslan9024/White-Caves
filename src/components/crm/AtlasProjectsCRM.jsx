@@ -89,7 +89,7 @@ const AtlasProjectsCRM = () => {
           <span className="stat-change">High opportunity</span>
         </div>
         <div className="stat-card">
-          <div className="stat-icon" style={{ background: 'rgba(139, 92, 246, 0.2)', color: '#8B5CF6' }}>
+          <div className="stat-icon" style={{ background: 'var(--accent-light)', color: 'var(--accent-color)' }}>
             <TrendingUp size={20} />
           </div>
           <div className="stat-content">
