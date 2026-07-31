@@ -384,9 +384,9 @@ export class MetaAPIClient {
   /**
    * Handle API errors
    */
-  private handleError(error: any): Error {
+  private handleError(error: unknown): Error {
     if (axios.isAxiosError(error)) {
-      const axiosError = error as AxiosError<any>;
+      const axiosError = error as AxiosError<{ error?: { code?: number; message?: string } }>;
 
       if (axiosError.response?.data?.error) {
         const errorData = axiosError.response.data.error;

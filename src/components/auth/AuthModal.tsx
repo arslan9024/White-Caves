@@ -574,10 +574,10 @@ const AuthModal: FC<AuthModalProps> = ({ mode: initialMode = 'signin', onClose }
 
         <p
           className="auth-footer"
-          style={{ textAlign: 'center', fontSize: '12px', color: 'var(--text-secondary, #64748b)', marginTop: '32px' }}
+          style={{ textAlign: 'center', fontSize: '12px', color: 'var(--text-secondary)', marginTop: '32px' }}
         >
           By continuing, you agree to our{' '}
-          <a href="/terms" style={{ color: 'var(--text-muted, #94a3b8)' }}>
+          <a href="/terms" style={{ color: 'var(--text-muted)' }}>
             Terms of Service
           </a>{' '}
           and{' '}

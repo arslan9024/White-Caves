@@ -1,4 +1,4 @@
 declare module 'exceljs' {
-  const ExcelJS: any;
+  const ExcelJS: unknown;
   export default ExcelJS;
 }

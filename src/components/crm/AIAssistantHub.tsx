@@ -347,7 +347,7 @@ const AIAssistantHub = ({ onSelectAssistant }: AIAssistantHubProps) => {
             <div key={activity.id} className="activity-item">
               <div
                 className="activity-icon"
-                style={{ background: assistant?.colorScheme || '#64748B' }}
+                style={{ background: assistant?.colorScheme || 'var(--text-secondary)' }}
               >
                 <Icon size={14} />
               </div>

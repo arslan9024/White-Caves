@@ -174,8 +174,7 @@ export class LindaClient extends EventEmitter {
     });
 
     // Incoming message
-    this.client.on('message', async (message: any) => {
-      // eslint-disable-line @typescript-eslint/no-explicit-any
+    this.client.on('message', async (message: { body?: string; from?: string; type?: string; id?: { id: string } }) => {
       await this.handleIncomingMessage(message);
     });
 

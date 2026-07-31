@@ -86,7 +86,7 @@ export class StorageService {
 
     // Generate thumbnail if image
     let thumbnailUrl: string | undefined;
-    const metadata: any = {};
+    const metadata: { width?: number; height?: number } = {};
 
     if (mimetype.startsWith('image/')) {
       thumbnailUrl = await this.generateThumbnail(fileBuffer, fileId);

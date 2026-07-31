@@ -121,7 +121,7 @@ const AssistantPlanEditor: React.FC = () => {
 
   return (
     <div style={{ padding: '24px', maxWidth: '900px', fontFamily: 'Inter, system-ui, sans-serif' }}>
-      <h2 style={{ fontSize: '18px', fontWeight: 600, marginBottom: '16px', color: '#111827' }}>
+      <h2 style={{ fontSize: '18px', fontWeight: 600, marginBottom: '16px', color: 'var(--text-primary)' }}>
         AI Assistant Plan Editor
       </h2>
 
