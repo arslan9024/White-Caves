@@ -79,7 +79,7 @@ const AtlasProjectsCRM = () => {
           <span className="stat-change positive">Industry avg: 78%</span>
         </div>
         <div className="stat-card">
-          <div className="stat-icon" style={{ background: 'rgba(245, 158, 11, 0.2)', color: '#F59E0B' }}>
+          <div className="stat-icon" style={{ background: 'var(--warning-light)', color: 'var(--warning-color)' }}>
             <Target size={20} />
           </div>
           <div className="stat-content">
