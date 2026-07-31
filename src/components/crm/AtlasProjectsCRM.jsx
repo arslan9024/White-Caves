@@ -44,7 +44,7 @@ const AtlasProjectsCRM = () => {
   return (
     <div className="assistant-dashboard atlas">
       <div className="assistant-header">
-        <div className="assistant-avatar" style={{ background: 'linear-gradient(135deg, #6366F1 0%, #4F46E5 100%)' }}>
+        <div className="assistant-avatar" style={{ background: 'var(--primary-gradient)' }}>
           <Map size={28} />
         </div>
         <div className="assistant-info">

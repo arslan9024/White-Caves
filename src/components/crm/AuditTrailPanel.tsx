@@ -252,7 +252,7 @@ export const AuditTrailPanel: FC = () => {
                     <td style={{ padding: '10px 12px', fontFamily: 'monospace', color: TEXT_MUTED, fontSize: '0.75rem' }}>{event.timestamp}</td>
                     <td style={{ padding: '10px 12px', fontWeight: 600 }}>{event.actor}</td>
                     <td style={{ padding: '10px 12px' }}>
-                      <code style={{ background: '#F1F5F9', padding: '2px 6px', borderRadius: '4px', fontSize: '0.72rem', color: '#475569' }}>
+                      <code style={{ background: 'var(--bg-secondary)', padding: '2px 6px', borderRadius: '4px', fontSize: '0.72rem', color: 'var(--text-secondary)' }}>
                         {event.action}
                       </code>
                     </td>
