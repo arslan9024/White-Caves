@@ -343,7 +343,7 @@ const AuroraCTODashboard = () => {
                       <div className="progress-bar">
                         <div 
                           className="progress-fill" 
-                          style={{ width: `${component.metrics.cpu}%`, backgroundColor: component.metrics.cpu > 80 ? '#EF4444' : '#10B981' }}
+                          style={{ width: `${component.metrics.cpu}%`, backgroundColor: component.metrics.cpu > 80 ? 'var(--error-color)' : 'var(--success-color)' }}
                         />
                       </div>
                       <span className="value">{component.metrics.cpu}%</span>

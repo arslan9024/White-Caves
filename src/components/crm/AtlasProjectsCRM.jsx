@@ -69,7 +69,7 @@ const AtlasProjectsCRM = () => {
           <span className="stat-change positive"><ArrowUp size={14} /> 12 new</span>
         </div>
         <div className="stat-card">
-          <div className="stat-icon" style={{ background: 'rgba(16, 185, 129, 0.2)', color: '#10B981' }}>
+          <div className="stat-icon" style={{ background: 'var(--success-light)', color: 'var(--success-color)' }}>
             <CheckCircle size={20} />
           </div>
           <div className="stat-content">
