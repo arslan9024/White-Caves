@@ -1,0 +1,30 @@
+/* White Caves Real Estate LLC - Brand Palette Enforcement */
+:root {
+  --brand-red: #EF4444;
+  --brand-white: #FFFFFF;
+  --brand-slate: #1E293B;
+
+  /* Primary Brand Overrides */
+  --primary-color: var(--brand-red);
+  --primary-hover: #DC2626;
+  --primary-light: rgba(239, 68, 68, 0.1);
+
+  /* Background Canvas */
+  --bg-canvas: var(--brand-white);
+  --bg-card: #FFFFFF;
+  --bg-secondary: #F8FAFC;
+
+  /* Typography */
+  --text-header: var(--brand-slate);
+  --text-primary: #334155;
+  --text-secondary: #64748B;
+  --text-muted: #94A3B8;
+
+  /* Borders & Accents */
+  --border-color: #E2E8F0;
+  --border-light: #F1F5F9;
+
+  /* Status Tokens mapped to Brand Compliance */
+  --status-active: var(--brand-red);
+  --status-active-bg: rgba(239, 68, 68, 0.08);
+}

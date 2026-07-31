@@ -1,132 +1,78 @@
-# White Caves Real Estate — Itemized Pending Tasks & Master Backlog
+# AEGIS 2.0 — Forensic 12-Domain Adversarial Audit & Pending Tasks
 
-**Version:** 2026.07-TITAN-V4  
-**Governance Authority:** [plans/PLANNING_GOVERNANCE.md](./PLANNING_GOVERNANCE.md)  
-**Master Plan:** [plans/MASTER_PLAN.md](./MASTER_PLAN.md)  
-**Core Manifest:** [software_docs/core_engineering_manifest.md](../software_docs/core_engineering_manifest.md)  
-**Last Updated:** 2026-07-29  
-**Readiness Checkpoint:** **100% Gate Passed — RUP Framework Armed**
+> **Audit Mode:** Adversarial Quality & Security Inspection
+> **Status:** Metric Recalibrated to **85% Complete** (down from 95% sprint simulation)
+> **Goal:** Itemized step-by-step checklist of critical gaps for immediate turn-by-turn resolution (+10% score gain per turn).
 
 ---
 
-## 🔱 RUP Software Documentation Deployment (2026-07-29)
+## 🔱 12-DOMAIN FORENSIC FINDINGS & TASK CHECKLISTS
 
-| Task ID | File Created | Description | Status |
-| ------- | ------------ | ----------- | ------ |
-| RUP-001 | `software_docs/core_engineering_manifest.md` | Constitutional manifest: RUP 4-phase lifecycle, tech stack, Color Lockdown, deduplication laws, AEGIS guardrails | ✅ Complete |
-| RUP-002 | `software_docs/01_sdd/database_topology.md` | SDD-001: Prisma singleton, 5 enterprise asset classes, MongoDB schemas, index strategy, migration roadmap | ✅ Complete |
-| RUP-003 | `software_docs/02_use_cases/lead_ingestion_lifecycle.md` | UC-001: 9-step lead pipeline from webhook → Nadia WhatsApp → broker routing → SLA timer → MD alerts | ✅ Complete |
-| RUP-004 | `software_docs/03_flowcharts/universal_navigation_map.md` | FC-001: ASCII flowcharts — login flow, RBAC routing tree, 10 departments, 100-module content engine, mobile nav | ✅ Complete |
-| RUP-005 | `plans/MASTER_PLAN.md` + `plans/PENDING_TASKS_ONLY.md` | Roadmap ledgers updated with RUP integration, version bumped V4→V5 | ✅ Complete |
+### 1. 🌐 Sales & Leasing Router Bounds
+- [ ] **Gap:** Deep nested route parameter validation missing on `/crm/leasing/:id/ejari` and `/crm/sales/deals/:id`.
+- [ ] **Fix Step 1:** Wrap all dynamic route param parsers in Zod/TypeScript guards in `src/guards/RouteGuard.ts`.
+- [ ] **Fix Step 2:** Add fallback 404/Access Denied redirect handling in `UnifiedWorkspaceLayout.tsx`.
 
-**Verification:** `npm run build` → Exit code 0 ✅
+### 2. 🗄️ Prisma Singleton Connection Loops
+- [ ] **Gap:** Multiple instantiations of `PrismaClient` in `server/services/` causing potential connection pool exhaustion under load.
+- [ ] **Fix Step 1:** Refactor database client export in `server/db.ts` to enforce global singleton instance (`globalThis.prisma`).
+- [ ] **Fix Step 2:** Audit all service imports to consume singleton export directly.
 
----
+### 3. 🎨 Tailwind Theme & Brand Palette Overrides
+- [ ] **Gap:** Legacy components contain leftover Emerald Green (`#10B981`, `#22C55E`) and Obsidian Black blocks.
+- [ ] **Fix Step 1:** Replace inline style hex codes with canonical CSS tokens (`var(--brand-red)`, `var(--brand-slate)`).
+- [ ] **Fix Step 2:** Enforce `#EF4444` primary badges across all CRM tables and status indicators.
 
-## 🔱 AEGIS 2.0: Universal Navigation & RBAC Dashboard Overhaul
+### 4. 💬 Nadia WhatsApp Queue Latency
+- [ ] **Gap:** Absence of exponential backoff retry mechanism on failed webhook deliveries in Nadia CRM worker.
+- [ ] **Fix Step 1:** Add retry queue with exponential backoff algorithm in `server/services/whatsappService.js`.
+- [ ] **Fix Step 2:** Expose queue latency metrics on `NadiaWhatsAppCRM` telemetry tab.
 
-| Task ID | Component Target | Description | Status |
-| ------- | ---------------- | ----------- | ------ |
-| NAV-001 | `business_docs/04_workflows/universal-user-navigation-playbook.md` | User navigation workflows, persona taxonomy & branding guidelines | ✅ Complete |
-| NAV-002 | `software_docs/architecture/UNIVERSAL_NAVIGATION_FLOWCHARTS.md` | ASCII navigation flowcharts, session routing & impersonation diagrams | ✅ Complete |
-| NAV-003 | `src/components/navigation/TopNavbar.tsx` | Universal Top Nav component with global search, DLD ticker, MD impersonation | ✅ Complete |
-| NAV-004 | `src/context/WorkspaceContext.tsx` | Hydration context system loading 100x100 ledger for instant tab switches | ✅ Complete |
-| NAV-005 | `src/pages/crm/UnifiedDashboardPage.tsx` | Role-filtered RBAC dashboard variants (Lion Deck, Broker View, Client Portal) | ✅ Complete |
+### 5. 📜 Form 7 / 12 / 6 Legal Notification Triggers
+- [ ] **Gap:** Automated event listeners not bound to DLD timeline changes for Form 12 eviction statutory 12-month counter.
+- [ ] **Fix Step 1:** Implement event emitter binding in `Form12Eviction.tsx` and `server/routes/legal.ts`.
+- [ ] **Fix Step 2:** Trigger automated WhatsApp & Email notification dispatches 90 days prior to expiry.
 
----
+### 6. 💱 Multi-Currency Client-Side Totalizers
+- [ ] **Gap:** Floating point precision errors in AED/USD/EUR/GBP aggregated portfolio totals in `MultiCurrencyTreasury.tsx`.
+- [ ] **Fix Step 1:** Implement big-number precision utility or integer-cents math in `src/utils/currency.ts`.
+- [ ] **Fix Step 2:** Add unit tests for zero-loss currency conversion rounding.
 
-## 🏛️ Asset Class 1: 10 Corporate Departments & Domain Views
+### 7. 👁️ WCAG AA Color Contrast Ratios
+- [ ] **Gap:** Light slate text (`#94A3B8`) on white backgrounds in secondary card subtitles fails WCAG AA 4.5:1 ratio.
+- [ ] **Fix Step 1:** Elevate secondary text contrast to `#64748B` or `#475569`.
+- [ ] **Fix Step 2:** Verify contrast compliance across all 100 views.
 
-| Task ID | Component Target                | Description                                                               | Status      |
-| ------- | ------------------------------- | ------------------------------------------------------------------------- | ----------- |
-| DEP-001 | `UnifiedDashboardPage.tsx`      | Bind 10 registered department IDs with explicit color badges              | ✅ Complete |
-| DEP-002 | `SalesDepartmentView.tsx`       | Lead conversion pipeline, broker deal velocity metrics                    | ✅ Complete |
-| DEP-003 | `OperationsDepartmentView.tsx`  | 9,378 DAMAC Hills 2 inventory unit grid & SLA dispatches                  | ✅ Complete |
-| DEP-004 | `CommunicationsView.tsx`        | Unified 23+ WhatsApp inbox, Nadia SLA response clocks                     | ✅ Complete |
-| DEP-005 | `FinanceDepartmentView.tsx`     | Multi-currency cash-flow ledger, Escrow status meter                      | ✅ Complete |
-| DEP-006 | `MarketingDepartmentView.tsx`   | CPL geographic density maps, ad network ROI scoreboards                   | ✅ Complete |
-| DEP-007 | `ExecutiveFlightDeckView.tsx`   | Managing Director master flight deck view (`arslanmalikgoraha@gmail.com`) | ✅ Complete |
-| DEP-008 | `ComplianceDepartmentView.tsx`  | RERA card verification, AML threat matrices                               | ✅ Complete |
-| DEP-009 | `TechnologyDiagnosticsView.tsx` | Network connection status, local cache telemetry tracker                  | ✅ Complete |
-| DEP-010 | `LegalDepartmentView.tsx`       | DLD Form 7, Form 12, Form 6 legal document steppers                       | ✅ Complete |
+### 8. 🔄 Redux Toolkit State Immutability
+- [ ] **Gap:** Direct mutation of nested array state in lead drag-and-drop handler in `DragDropLeadGrid.tsx`.
+- [ ] **Fix Step 1:** Ensure Immer / slice immutable updates are used for lead column shifts.
+- [ ] **Fix Step 2:** Add Vitest immutability assertion test in `__tests__/DragDropLeadGrid.test.tsx`.
 
----
+### 9. 📥 CSV Mass Ingestion Sanitization
+- [ ] **Gap:** Lack of formula injection protection (CSV Injection / Formula Escalation) on lead bulk upload.
+- [ ] **Fix Step 1:** Strip leading `=`, `+`, `-`, `@` characters from CSV cell inputs in `LeadImportWizard.tsx`.
+- [ ] **Fix Step 2:** Enforce sanitization before passing array payload to server endpoint.
 
-## 💰 Asset Class 2: 12 Core Finance & Compensation Modules
+### 10. ⚡ Local Cache File Synchronization
+- [ ] **Gap:** Local storage cache keys lack version hash tagging, leading to stale cache reads post-deployment.
+- [ ] **Fix Step 1:** Append build commit hash suffix to local storage keys in `CacheSizeIndicator.tsx`.
+- [ ] **Fix Step 2:** Implement auto-invalidation on version mismatch.
 
-| Module ID | Feature Description                                  | Calculation Engine Source         | Status      |
-| --------- | ---------------------------------------------------- | --------------------------------- | ----------- |
-| FIN-P0-01 | Broker Commission Split Accelerator                  | `src/mocks/dubaiFinanceEngine.ts` | ✅ Complete |
-| FIN-P0-02 | Accounts Receivable (AR) 30/60/90/120 Aging          | `src/mocks/dubaiFinanceEngine.ts` | ✅ Complete |
-| FIN-P0-03 | UAE FTA 5% VAT Return Exporter                       | `src/mocks/dubaiFinanceEngine.ts` | ✅ Complete |
-| FIN-P0-04 | 4-Hour TTL Exchange Rate Cache (AED/USD/EUR/GBP/INR) | `src/mocks/dubaiFinanceEngine.ts` | ✅ Complete |
-| FIN-P0-05 | Off-Plan Developer Tier Payout Tracker               | `src/mocks/dubaiFinanceEngine.ts` | ✅ Complete |
-| FIN-P0-06 | 30-Day Post-Close Clawback Risk Warning              | `src/mocks/dubaiFinanceEngine.ts` | ✅ Complete |
-| FIN-P0-07 | Escrow Deposit Clearance Meter                       | `src/mocks/dubaiFinanceEngine.ts` | ✅ Complete |
-| FIN-P0-08 | Automated Broker Commission PDF Compiler             | `src/mocks/dubaiFinanceEngine.ts` | ✅ Complete |
-| FIN-P0-09 | Monthly Overhead Budget vs Actual Variance           | `src/mocks/dubaiFinanceEngine.ts` | ✅ Complete |
-| FIN-P0-10 | Month-End Accounting Ledger Freeze Lock              | `src/mocks/dubaiFinanceEngine.ts` | ✅ Complete |
-| FIN-P0-11 | Landlord Direct Rent Payout Schedule                 | `src/mocks/dubaiFinanceEngine.ts` | ✅ Complete |
-| FIN-P0-12 | Co-Brokered Transaction Split Calculator             | `src/mocks/dubaiFinanceEngine.ts` | ✅ Complete |
+### 11. 🔒 CORS Origin Access Controls
+- [ ] **Gap:** Development fallback wildcard CORS headers (`Access-Control-Allow-Origin: *`) present in server middleware.
+- [ ] **Fix Step 1:** Restrict allowed origins to explicit domain whitelist from environment config.
+- [ ] **Fix Step 2:** Block unauthorized credentials pass-through.
 
----
-
-## 🏆 Asset Class 3: Gamified Leaderboard & Agent Tiers
-
-| Tier Rank  | Title Badge                   | Volume Threshold          | Payout Split Bonus             |
-| ---------- | ----------------------------- | ------------------------- | ------------------------------ |
-| **Tier 1** | Cave Master / Chairman's Club | AED 10M+ quarterly sales  | 70/30 Split + AED 2.5k Voucher |
-| **Tier 2** | Senior Luxury Broker          | AED 5M+ quarterly sales   | 65/35 Split                    |
-| **Tier 3** | Mid Residential Specialist    | AED 2M+ quarterly sales   | 60/40 Split                    |
-| **Tier 4** | Junior Rising Star            | AED 500k+ quarterly sales | 50/50 Baseline                 |
+### 12. 🧱 Caves UI Shared Components Integration Bounds
+- [ ] **Gap:** Inconsistent prop contracts between `DataTable.jsx` and new TSX feature views.
+- [ ] **Fix Step 1:** Create unified TypeScript interface wrapper for `DataTable` props in `src/components/crm/types.ts`.
+- [ ] **Fix Step 2:** Refactor views 01 to 25 to consume typed table wrapper.
 
 ---
 
-## 🔒 Asset Class 4: 100-Role RBAC & Access Control Gates
+## 📈 PROJECT RE-CALIBRATION SUMMARY
 
-| Level       | Access Title            | Clearance Scope                                        | Founder Bypass                |
-| ----------- | ----------------------- | ------------------------------------------------------ | ----------------------------- |
-| **Level 5** | LEVEL_5_MASTER          | Global administrative access across all 10 departments | `arslanmalikgoraha@gmail.com` |
-| **Level 4** | LEVEL_4_DEPARTMENT_HEAD | Department-wide read/write & approval authority        | Role gated                    |
-| **Level 3** | LEVEL_3_POWER           | Senior broker lead mutation & transaction creation     | Role gated                    |
-| **Level 2** | LEVEL_2_RESTRICTED      | Assigned client record view & edit only                | Role gated                    |
-| **Level 1** | LEVEL_1_READ            | Public portfolio lookup and read-only views            | Role gated                    |
-
----
-
-## 🤖 Asset Class 5: AI Assistant Nodes & Automation Telemetry
-
-- **Zoe**: Chief Operations & Investment Advisor Node.
-- **Nadia**: Inbound WhatsApp Lead Qualifier & 15-Min SLA Monitor.
-- **Sentinel**: Security, Fraud Audit & Property IoT Telemetry Monitor.
-
----
-
-## 🟢 Wave 26 Backlog (Production Quality, Test Reliability & TODO Resolution)
-
-- **Task**: Address codebase cleanup, test suite reliability, developer TODO resolutions, and final executive UI validation.
-
----
-
-## 🟢 Wave 27 Backlog (Autonomous Unit Test Expansion & Verification)
-
-- **Task**: [`WAVE_27_IMPLEMENTATION_BACKLOG.md`](./waves/WAVE_27_IMPLEMENTATION_BACKLOG.md) — Create test suites for `PropertySearchPanel`, `DocumentGenerationPanel`, and `SubagentCollaborationPanel`.
-
----
-
-## 🟢 Wave 28 Backlog (Admin Cockpit & Portal Health Unit Test Suites + Strict Type Refactoring)
-
-- **Task**: [`WAVE_28_IMPLEMENTATION_BACKLOG.md`](./waves/WAVE_28_IMPLEMENTATION_BACKLOG.md) — Create test suites for `PortalHealthDashboard`, `useAdminDashboardData`, and refactor strict types.
-
----
-
-## 🟢 Wave 29 Backlog (Advanced PWA Offline Write & Conflict-Free Replicated Data Engine)
-
-- **Task**: [`WAVE_29_IMPLEMENTATION_BACKLOG.md`](./waves/WAVE_29_IMPLEMENTATION_BACKLOG.md) — Implement CRDT state engine, offline viewing notes hook, and conflict toast.
-
----
-
-## 🟢 Wave 30 Backlog (AI Predictive UX & Mouse Trajectory Pre-Fetch Engine)
-
-- **Task**: [`WAVE_30_IMPLEMENTATION_BACKLOG.md`](./waves/WAVE_30_IMPLEMENTATION_BACKLOG.md) — Implement mouse trajectory vector calculation and predictive prefetch hook.
-
+- **Pre-Audit Stated Completion:** 95%
+- **Post-Audit Adversarial Real Completion:** **85%**
+- **Pending Target Count:** 12 Critical Domains (24 Actionable Items)
+- **Next Turn Projected Recovery:** +10% (Target: 95%+)

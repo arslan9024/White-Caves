@@ -1,348 +1,152 @@
-# Flowchart: Universal Navigation Map — Role-Filtered Dashboard Routing
+# Universal Navigation Flowchart Map — 100 Enterprise Views
 
-**Document Class:** FC-001 (Flowchart Specification)  
-**Module:** Navigation Architecture — Top Nav → RBAC Dashboard Routing  
-**Version:** 2026.07-FC-V1  
-**Owner:** @Una (CSS Specialist) + @Tracy (Responsive Expert)  
-**RUP Phase:** Elaboration Gate Document  
-**Last Updated:** 2026-07-29  
-**Status:** ✅ Active — Production Aligned
+This document contains full ASCII flowchart mappings for White Caves Real Estate LLC's 100 enterprise views across 7 core functional groups.
 
 ---
 
-## 1. System Entry Point Map
-
-Every session begins at the Login barrier. The Universal Top Nav Bar is the persistent anchor across all authenticated viewports.
+## 🔱 GROUP 1: EXECUTIVE FLIGHT DECK (VIEWS 01 - 10)
 
 ```
-═══════════════════════════════════════════════════════════════════════
-                    WHITE CAVES — SESSION FLOW MASTER MAP
-═══════════════════════════════════════════════════════════════════════
-
-  [Browser URL: whitecaves.com]
-           │
-           ▼
-  ┌────────────────────┐
-  │   /login (Guest)   │  ◄── Unauthenticated users land here
-  │   SignInPage.tsx   │
-  └────────────────────┘
-           │
-           │  [Firebase Auth: Email / Google / 2FA]
-           │
-           ▼
-  ┌────────────────────────────────────────────────────────────────┐
-  │                    AUTH HYDRATION LAYER                        │
-  │                                                                │
-  │   1. Firebase UID extracted from JWT                           │
-  │   2. User record fetched from MongoDB → /api/auth/me           │
-  │   3. RBAC level loaded: accessLevel (1–5)                      │
-  │   4. Founder check: arslanmalikgoraha@gmail.com                │
-  │      └─ YES → force accessLevel = 5, bypass all gates          │
-  │      └─ NO  → use DB-stored level                              │
-  │   5. Redux store hydrated: authSlice + workspaceSlice          │
-  │                                                                │
-  └────────────────────────────────────────────────────────────────┘
-           │
-           ▼
-  ┌────────────────────────────────────────────────────────────────┐
-  │           UNIVERSAL AUTHENTICATED SHELL LAYOUT                 │
-  │                 UnifiedWorkspaceLayout.tsx                     │
-  │  ┌─────────────────────────────────────────────────────────┐   │
-  │  │             FIXED TOP NAV BAR (100% width)              │   │
-  │  │  [White Caves Logo] [Ctrl+K Search] [DLD Ticker]        │   │
-  │  │  [Notifications Bell] [User Avatar] [Department Tabs]   │   │
-  │  └─────────────────────────────────────────────────────────┘   │
-  │  ┌──────────────┐  ┌───────────────────────────────────────┐   │
-  │  │  FIXED LEFT  │  │         MAIN CONTENT AREA             │   │
-  │  │  SIDEBAR     │  │         (GPU View Swapping)           │   │
-  │  │  (280px)     │  │                                       │   │
-  │  │              │  │   Renders one of:                     │   │
-  │  │  Department  │  │   • Dashboard viewport                │   │
-  │  │  Navigation  │  │   • Detail page                      │   │
-  │  │  Nodes       │  │   • Module workspace                  │   │
-  │  │              │  │                                       │   │
-  │  └──────────────┘  └───────────────────────────────────────┘   │
-  └────────────────────────────────────────────────────────────────┘
+[ Top Navbar Profile ] ──► [ VIEW-01: MD Profile CRUD ] ──► [ Update Profile ] ──► [ ✅ Saved ]
+[ Sidebar: Executive ] ──► [ VIEW-02: Global Aggregator ] ──► [ Select Dept ] ──► [ Render KPI Matrix ]
+[ Sidebar: Finance   ] ──► [ VIEW-03: Treasury Panel ]   ──► [ Convert FX ] ──► [ Treasury Balance ]
+[ Sidebar: Executive ] ──► [ VIEW-04: Activity Stream ]  ──► [ Filter Events] ──► [ Audit Event Trail ]
+[ Sidebar: System    ] ──► [ VIEW-05: Cache Indicator ]  ──► [ Purge Cache ] ──► [ Storage Recalculated ]
+[ Sidebar: AI Center ] ──► [ VIEW-06: Agent Telemetry ]  ──► [ Ping Agents ] ──► [ Agent Health Status ]
+[ Sidebar: System    ] ──► [ VIEW-07: CI/CD Pipeline ]   ──► [ Trigger Build] ──► [ Deployment Log ]
+[ Sidebar: System    ] ──► [ VIEW-08: Debug Trace ]      ──► [ Inspect Logs] ──► [ 0-Token Analysis ]
+[ Sidebar: Executive ] ──► [ VIEW-09: Corp Library ]     ──► [ Search Doc  ] ──► [ Download Vault Asset ]
+[ Sidebar: System    ] ──► [ VIEW-10: Anomaly Board ]    ──► [ Acknowledge ] ──► [ Alert Cleared ]
 ```
 
 ---
 
-## 2. Top Nav Bar — Component Interaction Map
+## 🔱 GROUP 2: RESIDENTIAL BROKERAGE SALES HUB (VIEWS 11 - 25)
 
 ```
-┌─────────────────────────────────────────────────────────────────────┐
-│                    TOP NAV BAR COMPONENT TREE                       │
-│                    TopNavbar.tsx (fixed, z-index: 50)               │
-├─────────────────────────────────────────────────────────────────────┤
-│                                                                     │
-│  [Logo: White Caves ■]    ←──── src/components/shared/CavesLogo.tsx │
-│                                                                     │
-│  [Ctrl+K Global Search]   ←──── GlobalSearchModal.tsx              │
-│    │                             Opens spotlight overlay            │
-│    └─ Queries:                   useSearchItems(modules, workspaces) │
-│        • Department tabs                                            │
-│        • CRM modules (100 nodes)                                    │
-│        • Recent records                                             │
-│                                                                     │
-│  [DLD Live Ticker]        ←──── DLDTickerBar.tsx                   │
-│    └─ Data: /api/market/dld-feed (cached, 4hr TTL)                  │
-│                                                                     │
-│  [🔔 Notifications]       ←──── NotificationBell.tsx               │
-│    └─ WebSocket: /ws/notifications                                  │
-│    └─ Badge: unread count (Red #EF4444)                             │
-│                                                                     │
-│  [Avatar + Role Badge]    ←──── UserAvatarMenu.tsx                 │
-│    └─ Shows: displayName, role, accessLevel badge                   │
-│    └─ Menu: Profile / Settings / Logout                             │
-│                                                                     │
-│  [MD Impersonation]       ←──── ImpersonationBar.tsx               │
-│    └─ ONLY visible if: accessLevel === 5                            │
-│    └─ Allows: view-as any role (Level 1–4)                          │
-│                                                                     │
-└─────────────────────────────────────────────────────────────────────┘
+[ Sidebar: Sales ] ──► [ VIEW-11: 4-Column Drag Grid ] ──► [ Move Lead Card ] ──► [ Stage Updated ]
+[ Sidebar: Sales ] ──► [ VIEW-12: Client Registry ]    ──► [ Search Client ] ──► [ Profile Unmasked ]
+[ Sidebar: Sales ] ──► [ VIEW-13: Conversion Flow ]    ──► [ Filter Range  ] ──► [ Funnel Rendered ]
+[ Sidebar: Sales ] ──► [ VIEW-14: Broker Portfolio ]   ──► [ Select Broker ] ──► [ Active Listings ]
+[ Sidebar: Sales ] ──► [ VIEW-15: Secondary Matcher ]  ──► [ Run Match Alg ] ──► [ Matched Units ]
+[ Sidebar: Sales ] ──► [ VIEW-16: VIP Screening ]      ──► [ Run KYC Scan ] ──► [ Verified Passport ]
+[ Sidebar: Sales ] ──► [ VIEW-17: Viewing Agenda ]     ──► [ Book Calendar ] ──► [ Viewing Scheduled ]
+[ Sidebar: Sales ] ──► [ VIEW-18: Target Allocator ]   ──► [ Input Quota   ] ──► [ Targets Locked ]
+[ Sidebar: Sales ] ──► [ VIEW-19: Deal Negotiation ]   ──► [ Submit Offer  ] ──► [ Counter/Accepted ]
+[ Sidebar: Sales ] ──► [ VIEW-20: Leaderboard ]        ──► [ Sort Revenue  ] ──► [ Ranked Brokers ]
+[ Sidebar: Sales ] ──► [ VIEW-21: Commission Statement]─► [ View Split    ] ──► [ Payout Approval ]
+[ Sidebar: Sales ] ──► [ VIEW-22: Showcase Gallery ]   ──► [ Launch Tour   ] ──► [ Client Presentation ]
+[ Sidebar: Sales ] ──► [ VIEW-23: Mortgage Calc ]     ──► [ Enter Loan Amt] ──► [ EMI Calculated ]
+[ Sidebar: Sales ] ──► [ VIEW-24: Referral Network ]   ──► [ Register Agent] ──► [ Referral Tracking ]
+[ Sidebar: Sales ] ──► [ VIEW-25: Sales Reports ]     ──► [ Generate PDF  ] ──► [ Export Downloaded ]
 ```
 
 ---
 
-## 3. RBAC Dashboard Routing — The Five-Level Filter
+## 🔱 GROUP 3: STRATEGIC OFF-PLAN & DEVELOPMENT (VIEWS 26 - 40)
 
 ```
-═══════════════════════════════════════════════════════════════════════
-             RBAC DASHBOARD ROUTER — 5-LEVEL ACCESS TREE
-═══════════════════════════════════════════════════════════════════════
-
-                    [accessLevel loaded from Redux]
-                              │
-          ┌───────────────────┼───────────────────┐
-          │                   │                   │
-          ▼                   ▼                   ▼
-       Level 5             Level 4           Level 3
-   MANAGING DIRECTOR      DIRECTOR          SENIOR BROKER
-          │                   │                   │
-          ▼                   ▼                   ▼
-  ExecutiveFlightDeck   DeptHeadView      SeniorBrokerView
-       View.tsx            .tsx               .tsx
-          │                   │                   │
-          │  All 10 depts      │  Own dept +        │  Own leads +
-          │  All data          │  team reports      │  team KPIs
-          │  Impersonation     │  No impersonation  │
-          │  MD alerts         │                   │
-          │                   │                   │
-          └───────────────────┤                   │
-                              │                   │
-                    ┌─────────┘                   │
-                    │                             │
-                    ▼                             ▼
-                Level 2                       Level 1
-              STD BROKER                      CLIENT
-                    │                             │
-                    ▼                             ▼
-           BrokerDashboard              ClientPortalView
-               .tsx                          .tsx
-                    │                             │
-                    │  Own leads only              │  Own contracts
-                    │  Own pipeline                │  Own viewings
-                    │  Own commission              │  Own documents
-                    │                             │
+[ Sidebar: Off-Plan ] ──► [ VIEW-26: Dev Relations ]    ──► [ Select Dev    ] ──► [ Project Portfolio ]
+[ Sidebar: Off-Plan ] ──► [ VIEW-27: Launch Carousel ]  ──► [ Set Launch Date]──► [ Countdown Active ]
+[ Sidebar: Off-Plan ] ──► [ VIEW-28: Tier Matrix ]      ──► [ Select Tier   ] ──► [ Pricing Unlocked ]
+[ Sidebar: Off-Plan ] ──► [ VIEW-29: Unit Allocation ]  ──► [ Reserve Unit  ] ──► [ Unit Locked ]
+[ Sidebar: Off-Plan ] ──► [ VIEW-30: Comm Accelerator ] ──► [ Hit Target    ] ──► [ Bonus Bonus Commission ]
+[ Sidebar: Off-Plan ] ──► [ VIEW-31: Payment Builder ]  ──► [ Custom Milestones]► [ Plan Generated ]
+[ Sidebar: Off-Plan ] ──► [ VIEW-32: Construction ]     ──► [ Audit Progress] ──► [ Inspection Log ]
+[ Sidebar: Off-Plan ] ──► [ VIEW-33: Buyer Reservation ]──► [ Collect Deposit] ──► [ Receipt Issued ]
+[ Sidebar: Off-Plan ] ──► [ VIEW-34: SPA Generator ]    ──► [ Draft Terms   ] ──► [ E-Sign Dispatched ]
+[ Sidebar: Off-Plan ] ──► [ VIEW-35: Handover Schedule] ──► [ Book Slot     ] ──► [ Handover Confirmed ]
+[ Sidebar: Off-Plan ] ──► [ VIEW-36: Snagging List ]    ──► [ Log Defect    ] ──► [ Work Order Issued ]
+[ Sidebar: Off-Plan ] ──► [ VIEW-37: Escrow Monitor ]   ──► [ Audit Escrow  ] ──► [ Compliance Verified ]
+[ Sidebar: Off-Plan ] ──► [ VIEW-38: Oqood Tracker ]    ──► [ Submit DLD    ] ──► [ Oqood Issued ]
+[ Sidebar: Off-Plan ] ──► [ VIEW-39: ROI Comparator ]   ──► [ Enter Capital ] ──► [ Yield Comparison ]
+[ Sidebar: Off-Plan ] ──► [ VIEW-40: Off-Plan Reports ] ──► [ Export Data   ] ──► [ Executive Summary ]
 ```
 
 ---
 
-## 4. Left Sidebar — 10 Department Navigation Nodes
+## 🔱 GROUP 4: PORTFOLIO MANAGEMENT & LEASING (VIEWS 41 - 55)
 
 ```
-┌──────────────────────────────────────┐
-│         FIXED LEFT SIDEBAR           │
-│         (280px — Dark #1E293B)       │
-├──────────────────────────────────────┤
-│  🔱 White Caves CRM                  │  ← Logo / workspace name
-├──────────────────────────────────────┤
-│                                      │
-│  [●] SALES & LEASING          DEP-01 │  ← Active state: Red #EF4444
-│  [○] OPERATIONS               DEP-02 │
-│  [○] COMMUNICATIONS           DEP-03 │
-│  [○] FINANCE & ACCOUNTING     DEP-04 │
-│  [○] MARKETING                DEP-05 │
-│  [○] EXECUTIVE FLIGHT DECK    DEP-06 │  ← Level 5 only visible
-│  [○] COMPLIANCE & LEGAL       DEP-07 │
-│  [○] TECHNOLOGY               DEP-08 │
-│  [○] LEGAL DEPARTMENT         DEP-09 │
-│  [○] HR & PEOPLE              DEP-10 │
-│                                      │
-├──────────────────────────────────────┤
-│  [Settings]  [Help]  [Logout]        │
-└──────────────────────────────────────┘
-
-VISIBILITY RULES:
-  DEP-06 (Executive Flight Deck) → accessLevel === 5 ONLY
-  DEP-07 (Compliance) → accessLevel >= 3
-  DEP-08 (Technology) → accessLevel >= 4
-  All others → accessLevel >= 2
+[ Sidebar: Leasing ] ──► [ VIEW-41: Rental Dashboard ] ──► [ Filter Units  ] ──► [ Active Tenancies ]
+[ Sidebar: Leasing ] ──► [ VIEW-42: Ejari Lifecycle ]  ──► [ Submit Contract]──► [ Ejari Certificate ]
+[ Sidebar: Leasing ] ──► [ VIEW-43: Renewal Grid ]     ──► [ Send Notice   ] ──► [ Form 7 Dispatched ]
+[ Sidebar: Leasing ] ──► [ VIEW-44: Tenant Comms ]     ──► [ Reply Ticket  ] ──► [ Resolution Logged ]
+[ Sidebar: Leasing ] ──► [ VIEW-45: Landlord Drawer ]  ──► [ Add Property  ] ──► [ Listing Live ]
+[ Sidebar: Leasing ] ──► [ VIEW-46: Move In/Out ]      ──► [ Schedule Lift ] ──► [ Permit Approved ]
+[ Sidebar: Leasing ] ──► [ VIEW-47: PDC Tracker ]       ──► [ Deposit Cheque] ──► [ Bank Clearing ]
+[ Sidebar: Leasing ] ──► [ VIEW-48: Agreement Wizard ] ──► [ Fill Clauses  ] ──► [ Draft Ready ]
+[ Sidebar: Leasing ] ──► [ VIEW-49: Deposit Ledger ]   ──► [ Deduct Damage ] ──► [ Refund Issued ]
+[ Sidebar: Leasing ] ──► [ VIEW-50: Rent Matrix ]      ──► [ Mark Paid     ] ──► [ Ledger Updated ]
+[ Sidebar: Leasing ] ──► [ VIEW-51: Eviction Workflow ] ──► [ Issue Form 12 ] ──► [ Legal Timeline ]
+[ Sidebar: Leasing ] ──► [ VIEW-52: Tenant Onboard ]   ──► [ Upload ID     ] ──► [ Access Granted ]
+[ Sidebar: Leasing ] ──► [ VIEW-53: Condition Inspect ] ──► [ Take Photos   ] ──► [ Inspection Signed ]
+[ Sidebar: Leasing ] ──► [ VIEW-54: Early Terminate ]  ──► [ Calculate Penalty]► [ Release Agreement ]
+[ Sidebar: Leasing ] ──► [ VIEW-55: Leasing Reports ]  ──► [ Run Vacancy   ] ──► [ Yield Report ]
 ```
 
 ---
 
-## 5. Main Content Area — The 100-Module View Switch
+## 🔱 GROUP 5: ASSET MANAGEMENT & FACILITIES (VIEWS 56 - 70)
 
 ```
-═══════════════════════════════════════════════════════════════════════
-                    MAIN CONTENT VIEWPORT ENGINE
-            DynamicContentRouter.tsx (GPU-accelerated swap)
-═══════════════════════════════════════════════════════════════════════
-
-  User clicks Department Node in Sidebar
-         │
-         ▼
-  [WorkspaceContext.setActiveDepartment(deptId)]
-         │
-         ▼
-  [DynamicContentRouter resolves component]
-         │
-         ├─ SALES      → SalesDepartmentView.tsx
-         │    └─ Modules: Pipeline Board, Lead List, Commission Tracker
-         │                ViewingsCalendar, OffersManager, ContractStepper
-         │
-         ├─ OPERATIONS → OperationsDepartmentView.tsx
-         │    └─ Modules: 9,378-unit Inventory Grid, SLA Dispatch Board
-         │                Maintenance Tickets, Property Stages
-         │
-         ├─ FINANCE    → FinanceDepartmentView.tsx
-         │    └─ Modules: P&L Dashboard, Cash Flow Ledger
-         │                VAT Return Exporter, Multi-Currency FX Board
-         │                Escrow Clearance Meter, AR Aging Grid
-         │
-         ├─ COMMS      → CommunicationsView.tsx
-         │    └─ Modules: 23+ WhatsApp Inbox, Broadcast Centre
-         │                Nadia SLA Clock, Campaign Manager
-         │
-         ├─ MARKETING  → MarketingDepartmentView.tsx
-         │    └─ Modules: CPL Density Maps, Ad ROI Scoreboard
-         │                SEO Rankings, Social Media Metrics
-         │
-         ├─ EXECUTIVE  → ExecutiveFlightDeckView.tsx [Level 5 only]
-         │    └─ Modules: MD Summary Tiles, Hot Lead Alerts
-         │                Revenue KPI Gauges, Market Intelligence
-         │                Team Performance Leaderboard
-         │
-         ├─ COMPLIANCE → ComplianceDepartmentView.tsx [Level 3+]
-         │    └─ Modules: RERA Card Verification, AML Matrices
-         │                DLD Registration Status, EJARI Queue
-         │
-         ├─ TECHNOLOGY → TechnologyDiagnosticsView.tsx [Level 4+]
-         │    └─ Modules: System Health, API Latency, Error Logs
-         │                DB Connection Status, Import Queue
-         │
-         ├─ LEGAL      → LegalDepartmentView.tsx
-         │    └─ Modules: Form 7 Generator, Form 12 Generator
-         │                Form 6 Stepper, Contract Archive
-         │
-         └─ HR         → HRDepartmentView.tsx
-              └─ Modules: Employee Directory, Payroll Overview
-                          Recruitment Pipeline, Onboarding Tracker
+[ Sidebar: Assets ]    ──► [ VIEW-56: 9,378 Matrix ]    ──► [ Search Unit   ] ──► [ Master Record ]
+[ Sidebar: Assets ]    ──► [ VIEW-57: Cluster Tiles ]   ──► [ Select Area   ] ──► [ Cluster Metrics ]
+[ Sidebar: Assets ]    ──► [ VIEW-58: Occupancy Badges ]──► [ Filter Red/Green]► [ Vacant List ]
+[ Sidebar: Facilities] ──► [ VIEW-59: Maintenance List ]──► [ Assign Tech   ] ──► [ Ticket Dispatched ]
+[ Sidebar: Facilities] ──► [ VIEW-60: Contractor Board] ──► [ Allocate Work ] ──► [ Work Order Live ]
+[ Sidebar: Facilities] ──► [ VIEW-61: Building Health ] ──► [ Check HVAC    ] ──► [ Status Normal ]
+[ Sidebar: Facilities] ──► [ VIEW-62: Utility Tracker ] ──► [ Upload Dewa   ] ──► [ Consumption Graph ]
+[ Sidebar: Assets ]    ──► [ VIEW-63: Parking Manager ] ──► [ Assign Bay    ] ──► [ Permit Printed ]
+[ Sidebar: Facilities] ──► [ VIEW-64: Amenity Booking ] ──► [ Reserve Gym   ] ──► [ Access Badge ]
+[ Sidebar: Assets ]    ──► [ VIEW-65: Insurance Vault ] ──► [ Renew Policy  ] ──► [ Certificate Logged ]
+[ Sidebar: Facilities] ──► [ VIEW-66: Warranty Log ]    ──► [ File Claim    ] ──► [ Service Scheduled ]
+[ Sidebar: Facilities] ──► [ VIEW-67: Vendor Scorecard] ──► [ Rate Vendor   ] ──► [ SLA Score Updated ]
+[ Sidebar: Facilities] ──► [ VIEW-68: Work Order Kanban]──► [ Drag to Done  ] ──► [ Invoice Pending ]
+[ Sidebar: Assets ]    ──► [ VIEW-69: Asset Depreciate] ──► [ Calculate Rate] ──► [ Net Book Value ]
+[ Sidebar: Facilities] ──► [ VIEW-70: Facilities Audit] ──► [ Audit Building] ──► [ Audit Certificate ]
 ```
 
 ---
 
-## 6. Global Search (Ctrl+K) — Spotlight Navigation Flow
+## 🔱 GROUP 6: REVENUE, FINANCE & TREASURY (VIEWS 71 - 85)
 
 ```
-  User presses [Ctrl+K] anywhere in the application
-         │
-         ▼
-  ┌─────────────────────────────────────┐
-  │  GlobalSearchModal.tsx (overlay)    │
-  │  ┌───────────────────────────────┐  │
-  │  │ 🔍 Search modules, leads...   │  │  ← Input focused immediately
-  │  └───────────────────────────────┘  │
-  │                                     │
-  │  RECENT                             │
-  │  ● Sales Pipeline Board             │
-  │  ● Finance P&L Dashboard            │
-  │  ● Lead #L-2847 (Ahmed Al Rashidi)  │
-  │                                     │
-  │  MODULES                            │
-  │  ◎ Operations → Inventory Grid      │
-  │  ◎ Finance → VAT Return Exporter    │
-  │  ◎ Compliance → RERA Verification   │
-  └─────────────────────────────────────┘
-         │
-         │  [User selects result]
-         ▼
-  [WorkspaceContext navigation call]
-         │
-         ├─ Module result → setActiveDepartment() + setActiveModule()
-         ├─ Record result → navigate("/crm/leads/:id")
-         └─ Department result → setActiveDepartment()
+[ Sidebar: Finance ] ──► [ VIEW-71: Commission Split ] ──► [ Input Gross   ] ──► [ Net Split Calculated ]
+[ Sidebar: Finance ] ──► [ VIEW-72: 4-Step Approval ]  ──► [ Approve Step 3 ] ──► [ Finance Locked ]
+[ Sidebar: Finance ] ──► [ VIEW-73: AR Aging Columns ]  ──► [ Filter >90 Days] ──► [ Dunning Notice ]
+[ Sidebar: Finance ] ──► [ VIEW-74: Budget vs Actual ]  ──► [ Compare Q3    ] ──► [ Variance Graph ]
+[ Sidebar: Finance ] ──► [ VIEW-75: VAT Return Export ] ──► [ Generate FTA  ] ──► [ XML/CSV Download ]
+[ Sidebar: Finance ] ──► [ VIEW-76: Cashflow Forecast ] ──► [ Run Model     ] ──► [ 12-Month Pro-Forma ]
+[ Sidebar: Finance ] ──► [ VIEW-77: Payout Schedule ]   ──► [ Release Funds ] ──► [ Bank Transfer File ]
+[ Sidebar: Finance ] ──► [ VIEW-78: Tax Invoice Gen ]   ──► [ Input TRN     ] ──► [ Tax Invoice Issued ]
+[ Sidebar: Finance ] ──► [ VIEW-79: Expense Claims ]    ──► [ Attach Receipt] ──► [ Manager Approval ]
+[ Sidebar: Finance ] ──► [ VIEW-80: Pro-Forma P&L ]    ──► [ Select Year   ] ──► [ Net Income Summary ]
+[ Sidebar: Finance ] ──► [ VIEW-81: Bank Reconciler ]   ──► [ Match Cheque  ] ──► [ Reconciled State ]
+[ Sidebar: Finance ] ──► [ VIEW-82: Corporate Tax ]     ──► [ Calculate 9%  ] ──► [ Tax Provision Logged ]
+[ Sidebar: Finance ] ──► [ VIEW-83: Financial Summary]  ──► [ Executive Review]► [ Board Pack ]
+[ Sidebar: Finance ] ──► [ VIEW-84: Auditor Export ]    ──► [ Zip All Vaults] ──► [ Secure Download ]
+[ Sidebar: Finance ] ──► [ VIEW-85: Financial Reports]  ──► [ Custom Query  ] ──► [ Financial Statement ]
 ```
 
 ---
 
-## 7. Client Portal — Level 1 Simplified Navigation
+## 🔱 GROUP 7: MARKETING, COMMS, COMPLIANCE, LEGAL & INTEL (VIEWS 86 - 100)
 
 ```
-═══════════════════════════════════════════════════════════════════════
-                 CLIENT PORTAL NAVIGATION (Level 1)
-═══════════════════════════════════════════════════════════════════════
-
-  [Top Nav: Logo | Notifications | Avatar]   ← Simplified (no dept tabs)
-  │
-  ├── [My Properties]    → Listed / Reserved / Sold properties
-  │      └─ Property Cards → Price, Status, Agent Contact
-  │
-  ├── [My Contracts]     → Active Tenancy & Sale Contracts
-  │      └─ EJARI Number, Rent Schedule, PDC Cheques
-  │
-  ├── [Viewings]         → Upcoming + Past Viewing Appointments
-  │      └─ Calendar view, Reschedule button, Agent info
-  │
-  ├── [Documents]        → Title Deed, NOC, Form 6/7/12
-  │      └─ Download PDF, Upload acknowledgment
-  │
-  ├── [Payments]         → Rent due, Cheque status, Payment history
-  │      └─ PDC tracker: Pending / Cleared / Bounced badges
-  │
-  └── [Support]          → WhatsApp Nadia, Email broker, Raise ticket
+[ Sidebar: Marketing ] ──► [ VIEW-86: Marketing ROI ]   ──► [ Calculate CPL ] ──► [ Campaign ROI Score ]
+[ Sidebar: Comms     ] ──► [ VIEW-87: WhatsApp Pool ]   ──► [ Route Lead    ] ──► [ Agent Assigned ]
+[ Sidebar: Comms     ] ──► [ VIEW-88: SLA Ticker ]      ──► [ Monitor Queue ] ──► [ 0 Violations ]
+[ Sidebar: AI Center ] ──► [ VIEW-89: AI Avatar Hub ]   ──► [ Select Agent  ] ──► [ Persona Active ]
+[ Sidebar: Compliance] ──► [ VIEW-90: RERA Checklist ]  ──► [ Audit License ] ──► [ 100% Compliant ]
+[ Sidebar: Legal     ] ──► [ VIEW-91: Form 7 Notice ]   ──► [ Enter % Increase]► [ Notice Served ]
+[ Sidebar: Legal     ] ──► [ VIEW-92: Form 12 Timeline] ──► [ Track 12 Mo   ] ──► [ Notary Recorded ]
+[ Sidebar: Legal     ] ──► [ VIEW-93: Form 6 Lease Log ]──► [ Sign Agreement] ──► [ Registered Log ]
+[ Sidebar: Intel     ] ──► [ VIEW-94: Pricing Map ]     ──► [ Heatmap Area  ] ──► [ Sqft Valuation ]
+[ Sidebar: Intel     ] ──► [ VIEW-95: IoT Sensor Map ]  ──► [ Detect Leak   ] ──► [ Emergency Shutoff ]
+[ Sidebar: Marketing ] ──► [ VIEW-96: Social Publisher ]──► [ Schedule Post ] ──► [ Published to Meta ]
+[ Sidebar: Marketing ] ──► [ VIEW-97: Email Builder ]   ──► [ Drag Template ] ──► [ Campaign Sent ]
+[ Sidebar: Marketing ] ──► [ VIEW-98: Content Calendar] ──► [ Drag Post Slot] ──► [ Schedule Locked ]
+[ Sidebar: Intel     ] ──► [ VIEW-99: Competitor Share] ──► [ Track Emaar/Damac]► Market Share Chart ]
+[ Sidebar: Compliance] ──► [ VIEW-100: PDPL Audit ]    ──► [ Run Privacy Audit]► PDPL Compliance Cert ]
 ```
-
----
-
-## 8. Navigation Transition Rules
-
-| Action | Animation | Duration | Trigger |
-|---|---|---|---|
-| Department switch | Fade + slide-up | 200ms | Click sidebar node |
-| Module switch within dept | Fade | 150ms | Click module tab |
-| Global search open | Blur backdrop + scale-in | 180ms | Ctrl+K |
-| Global search close | Fade-out | 120ms | Esc / backdrop click |
-| Notification panel | Slide-in from right | 200ms | Bell click |
-| MD impersonation banner | Slide-down | 250ms | Role switch toggle |
-| Page-level route change | Cross-fade | 300ms | Router `<Link>` |
-
-All transitions use CSS custom properties: `var(--transition-speed-fast: 150ms)` and `var(--transition-speed-normal: 200ms)`.
-
----
-
-## 9. Mobile Responsive Navigation Rules (≤ 768px)
-
-```
-MOBILE LAYOUT (≤ 768px)
-─────────────────────────
-Top Nav:
-  [Hamburger ☰]  [Logo]  [Bell]  [Avatar]
-       │
-       └─ Opens: MobileSidebar.tsx (full-screen overlay, dark #1E293B)
-                 Renders: same 10 department nodes in list format
-                 Close: swipe-right or tap backdrop
-
-Sidebar: Hidden by default (useSidebarState.isMobileOpen)
-Content: Full width (0px left margin)
-Search: Bottom-fixed FAB → opens GlobalSearchModal
-
-Bottom Nav Bar (Mobile only):
-  [Home] [Pipeline] [Leads] [Finance] [Profile]
-  Colors: Active = #EF4444, Inactive = #6B7280
-```
-
----
-
-*This flowchart is governed by `software_docs/core_engineering_manifest.md`. Implementation files: `src/components/navigation/TopNavbar.tsx`, `src/layouts/UnifiedWorkspaceLayout.tsx`, `src/router/DynamicContentRouter.tsx`, `src/context/WorkspaceContext.tsx`.*

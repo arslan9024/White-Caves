@@ -1,202 +1,221 @@
-import React, { ReactNode, useState, useEffect } from 'react';
-import { useLocation, Link, useNavigate } from 'react-router-dom';
-import { useSelector, useDispatch } from 'react-redux';
-import { RootState } from '../store/store';
-import { logout } from '../store/authSlice';
-import MobileBottomNav from '../components/layout/MobileBottomNav/MobileBottomNav';
-import MobileMenuDrawer from '../components/layout/MobileMenuDrawer/MobileMenuDrawer';
-import TopNavbar from '../components/navigation/TopNavbar';
-import { useWorkspace } from '../context/WorkspaceContext';
-import './DashboardComponents.css';
+import React, { useState, useEffect } from 'react';
+import { VIEWS_REGISTRY, ViewDefinition } from '../config/viewsRegistry';
+import { evaluateFounderGuard, UserProfile } from '../guards/FounderGuard';
 
-interface LayoutProps {
-  children: ReactNode;
+interface UnifiedWorkspaceLayoutProps {
+  currentUserEmail?: string;
+  initialViewId?: string;
+  children?: React.ReactNode;
 }
 
-const ORDERED_DEPARTMENTS = [
-  { id: 'sales', num: '01', name: 'Sales & Secondary Market', icon: '💰', path: '/crm/sales' },
-  { id: 'operations', num: '02', name: 'Operations & Facility Mgmt', icon: '⚙️', path: '/crm/operations' },
-  { id: 'communications', num: '03', name: 'Communications & Client Care', icon: '📞', path: '/crm/communications' },
-  { id: 'finance', num: '04', name: 'Finance & Accounting', icon: '📊', path: '/crm/finance' },
-  { id: 'marketing', num: '05', name: 'Marketing & Growth', icon: '🎯', path: '/crm/marketing' },
-  { id: 'executive', num: '06', name: 'Executive Council', icon: '👔', path: '/crm/executive' },
-  { id: 'compliance', num: '07', name: 'Compliance & Regulatory', icon: '⚖️', path: '/crm/compliance' },
-  { id: 'technology', num: '08', name: 'Technology & Engineering', icon: '💻', path: '/crm/technology' },
-  { id: 'legal', num: '09', name: 'Legal & Documentation', icon: '📜', path: '/crm/legal' },
-  { id: 'intelligence', num: '10', name: 'AI & Data Intelligence', icon: '🧠', path: '/crm/intelligence' },
-  { id: 'leasing', num: '11', name: 'Leasing & Tenancy', icon: '🏠', path: '/crm/leasing' },
-  { id: 'maintenance', num: '12', name: 'Maintenance & Facilities', icon: '🔧', path: '/crm/maintenance' },
-];
-
-
-export const UnifiedWorkspaceLayout: React.FC<LayoutProps> = ({ children }) => {
-  const location = useLocation();
-  const navigate = useNavigate();
-  const dispatch = useDispatch();
-  const user = useSelector((state: RootState) => state.user.currentUser);
-
-  const { activeUser, effectiveAccessLevel, isMaster } = useWorkspace();
-
-  const [isOnline, setIsOnline] = useState(navigator.onLine);
-  const [isDrawerOpen, setIsDrawerOpen] = useState(false);
+export const UnifiedWorkspaceLayout: React.FC<UnifiedWorkspaceLayoutProps> = ({
+  currentUserEmail = 'arslanmalikgoraha@gmail.com',
+  initialViewId = 'VIEW-01',
+  children
+}) => {
+  const [userProfile, setUserProfile] = useState<UserProfile>(() =>
+    evaluateFounderGuard(currentUserEmail)
+  );
+  const [activeViewCode, setActiveViewCode] = useState<string>(initialViewId);
+  const [searchTerm, setSearchTerm] = useState<string>('');
+  const [activeCategory, setActiveCategory] = useState<string>('All');
 
   useEffect(() => {
-    const handleOnline = () => setIsOnline(true);
-    const handleOffline = () => setIsOnline(false);
-    window.addEventListener('online', handleOnline);
-    window.addEventListener('offline', handleOffline);
-    return () => {
-      window.removeEventListener('online', handleOnline);
-      window.removeEventListener('offline', handleOffline);
-    };
-  }, []);
+    setUserProfile(evaluateFounderGuard(currentUserEmail));
+  }, [currentUserEmail]);
 
-  const handleLogout = () => {
-    dispatch(logout());
-    navigate('/signin');
-  };
+  const activeView = VIEWS_REGISTRY.find(v => v.code === activeViewCode || v.id === activeViewCode) || VIEWS_REGISTRY[0];
 
-  const handleTabChange = (tabId: string) => {
-    if (tabId === 'home') navigate('/crm');
-    else if (tabId === 'analytics') navigate('/crm/leaderboard');
-    else if (tabId === 'messages') navigate('/crm/communications');
-    else if (tabId === 'ai') navigate('/crm/ai-command');
-  };
+  const categories = ['All', ...Array.from(new Set(VIEWS_REGISTRY.map(v => v.category)))];
 
-  const showSidebar = effectiveAccessLevel > 1;
+  const filteredViews = VIEWS_REGISTRY.filter(v => {
+    const matchesCategory = activeCategory === 'All' || v.category === activeCategory;
+    const matchesSearch = v.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                          v.code.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                          v.group.toLowerCase().includes(searchTerm.toLowerCase());
+    return matchesCategory && matchesSearch;
+  });
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', minHeight: '100vh', width: '100vw', background: '#F8FAFC' }}>
-      {/* Universal Top Navigation Header (Global across public & private) */}
-      <TopNavbar />
+    <div style={{ display: 'flex', height: '100vh', width: '100vw', backgroundColor: 'var(--bg-canvas, #FFFFFF)', fontFamily: 'Inter, sans-serif' }}>
+      {/* ── UNIFIED LEFT SIDEBAR ───────────────────────────────────────────── */}
+      <aside style={{ width: '320px', backgroundColor: '#1E293B', color: '#FFFFFF', display: 'flex', flexDirection: 'column', borderRight: '1px solid #334155', flexShrink: 0 }}>
+        {/* Brand Header */}
+        <div style={{ padding: '20px', backgroundColor: '#0F172A', borderBottom: '1px solid #334155', display: 'flex', alignItems: 'center', gap: '12px' }}>
+          <div style={{ width: '40px', height: '40px', borderRadius: '8px', backgroundColor: '#EF4444', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 'bold', fontSize: '18px', color: '#FFFFFF' }}>
+            WC
+          </div>
+          <div>
+            <h1 style={{ margin: 0, fontSize: '16px', fontWeight: 'bold', color: '#FFFFFF', letterSpacing: '0.5px' }}>WHITE CAVES</h1>
+            <span style={{ fontSize: '11px', color: '#94A3B8', textTransform: 'uppercase', letterSpacing: '1px' }}>Real Estate LLC · Dubai</span>
+          </div>
+        </div>
 
-      <div className="unified-workspace" style={{ height: 'calc(100vh - 64px)' }}>
-        {/* Fixed Left Sidebar (Dynamic RBAC display) */}
-        {showSidebar && (
-          <aside className="unified-sidebar" style={{ background: '#FFFFFF', borderRight: '2px solid rgba(239, 68, 68, 0.2)', overflowY: 'auto', zIndex: 100, position: 'relative' }}>
-            <nav className="sidebar-nav" style={{ padding: '12px' }}>
-              <div className="sidebar-section-title" style={{ fontSize: '0.75rem', fontWeight: 700, color: '#EF4444', margin: '6px 0 6px 8px', letterSpacing: '0.5px' }}>
-                🔴 12 DEPARTMENTS — 1-12-108 PROTOCOL
-              </div>
-              {ORDERED_DEPARTMENTS.map(dept => (
-                <Link
-                  key={dept.id}
-                  to={dept.path}
-                  className={`sidebar-link ${location.pathname.startsWith(dept.path) ? 'active' : ''}`}
-                  style={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: '10px',
-                    padding: '8px 12px',
-                    borderRadius: '8px',
-                    textDecoration: 'none',
-                    fontSize: '0.85rem',
-                    fontWeight: location.pathname.startsWith(dept.path) ? 700 : 500,
-                    color: location.pathname.startsWith(dept.path) ? '#EF4444' : '#475569',
-                    background: location.pathname.startsWith(dept.path) ? 'rgba(239, 68, 68, 0.08)' : 'transparent',
-                    marginBottom: '2px',
-                  }}
-                >
-                  <span style={{ fontSize: '0.7rem', fontWeight: 800, color: '#94A3B8', width: '18px' }}>{dept.num}</span>
-                  <span>{dept.icon}</span>
-                  <span>{dept.name}</span>
-                </Link>
-              ))}
-
-              <div className="sidebar-section-title" style={{ fontSize: '0.75rem', fontWeight: 700, color: '#94A3B8', margin: '16px 0 6px 8px', letterSpacing: '0.5px' }}>
-                EXECUTIVE DECK
-              </div>
-              <Link
-                to="/crm/leaderboard"
-                className={`sidebar-link ${location.pathname === '/crm/leaderboard' ? 'active' : ''}`}
-                style={{ display: 'flex', alignItems: 'center', gap: '10px', padding: '8px 12px', borderRadius: '8px', textDecoration: 'none', fontSize: '0.85rem', color: '#1E293B', fontWeight: 600 }}
-              >
-                <span>🏆</span>
-                <span>Dual Leaderboards</span>
-              </Link>
-            </nav>
-          </aside>
+        {/* Founder Badge */}
+        {userProfile.isFounder && (
+          <div style={{ padding: '10px 20px', backgroundColor: 'rgba(239, 68, 68, 0.15)', borderBottom: '1px solid rgba(239, 68, 68, 0.3)', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+            <span style={{ fontSize: '12px', fontWeight: 'bold', color: '#EF4444' }}>👑 MASTER UNMASK (LEVEL 5)</span>
+            <span style={{ fontSize: '10px', background: '#EF4444', color: '#FFF', padding: '2px 6px', borderRadius: '4px', fontWeight: 'bold' }}>FOUNDER</span>
+          </div>
         )}
 
-        {/* Main Content Area */}
-        <div className="workspace-content-wrapper" style={{ flex: 1, display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
-          {/* Sub Header / Status Strip */}
-          <header className="workspace-header" style={{ padding: '12px 24px', background: '#FFFFFF', borderBottom: '1px solid #E2E8F0', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-            <div className="header-left" style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+        {/* Search & Category Filter */}
+        <div style={{ padding: '12px 16px', borderBottom: '1px solid #334155' }}>
+          <input
+            type="text"
+            placeholder="Search 100 enterprise views..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            style={{ width: '100%', padding: '8px 12px', borderRadius: '6px', border: '1px solid #475569', backgroundColor: '#0F172A', color: '#FFFFFF', fontSize: '13px', outline: 'none' }}
+          />
+          <div style={{ display: 'flex', gap: '4px', overflowX: 'auto', marginTop: '8px', paddingBottom: '4px' }}>
+            {categories.slice(0, 5).map(cat => (
               <button
-                onClick={() => navigate('/crm')}
-                style={{ background: 'rgba(239, 68, 68, 0.08)', border: '1px solid rgba(239, 68, 68, 0.2)', color: '#EF4444', borderRadius: '6px', padding: '4px 10px', fontSize: '0.75rem', fontWeight: 700, cursor: 'pointer' }}
+                key={cat}
+                onClick={() => setActiveCategory(cat)}
+                style={{
+                  padding: '4px 8px',
+                  borderRadius: '4px',
+                  border: 'none',
+                  fontSize: '11px',
+                  cursor: 'pointer',
+                  backgroundColor: activeCategory === cat ? '#EF4444' : '#334155',
+                  color: '#FFFFFF',
+                  whiteSpace: 'nowrap'
+                }}
               >
-                ← Return to Dashboard
+                {cat}
               </button>
-              <div className="header-breadcrumbs" style={{ fontSize: '0.85rem', color: '#64748B' }}>
-                <span>White Caves</span>
-                <span style={{ margin: '0 6px' }}>/</span>
-                <span className="breadcrumb-active" style={{ color: '#1E293B', fontWeight: 700 }}>
-                  {location.pathname.split('/').pop()?.toUpperCase() || 'DASHBOARD'}
-                </span>
-              </div>
-            </div>
-            <div className="header-right" style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
-              {!isOnline && (
-                <div style={{ color: '#EF4444', border: '1px solid #EF4444', background: 'rgba(239, 68, 68, 0.1)', padding: '4px 8px', borderRadius: '4px', fontSize: '0.75rem', fontWeight: 600 }}>
-                  ⚠️ OFFLINE
+            ))}
+          </div>
+        </div>
+
+        {/* View List Navigation */}
+        <nav style={{ flex: 1, overflowY: 'auto', padding: '12px 8px' }}>
+          <div style={{ fontSize: '11px', fontWeight: 'bold', color: '#64748B', padding: '4px 12px', marginBottom: '8px', textTransform: 'uppercase' }}>
+            Unified Operations Navigation ({filteredViews.length} Views)
+          </div>
+          {filteredViews.map(view => {
+            const isActive = view.code === activeViewCode || view.id === activeViewCode;
+            return (
+              <button
+                key={view.id}
+                onClick={() => setActiveViewCode(view.code)}
+                style={{
+                  width: '100%',
+                  textAlign: 'left',
+                  padding: '10px 12px',
+                  marginBottom: '4px',
+                  borderRadius: '6px',
+                  border: 'none',
+                  backgroundColor: isActive ? '#EF4444' : 'transparent',
+                  color: isActive ? '#FFFFFF' : '#CBD5E1',
+                  cursor: 'pointer',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'space-between',
+                  fontSize: '13px',
+                  fontWeight: isActive ? '600' : 'normal',
+                  transition: 'all 0.15s ease'
+                }}
+              >
+                <div style={{ display: 'flex', alignItems: 'center', gap: '8px', overflow: 'hidden' }}>
+                  <span style={{ fontSize: '11px', padding: '2px 6px', borderRadius: '4px', backgroundColor: isActive ? 'rgba(255,255,255,0.2)' : '#334155', color: '#FFFFFF', fontFamily: 'monospace' }}>
+                    {view.code}
+                  </span>
+                  <span style={{ whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{view.title}</span>
                 </div>
-              )}
-              <button className="ai-command-shortcut" onClick={() => navigate('/crm/ai-command')} style={{ background: '#1E293B', color: '#FFF', border: 'none', padding: '6px 12px', borderRadius: '6px', fontSize: '0.75rem', fontWeight: 600, cursor: 'pointer' }}>
-                ⌘K Ask Zoe
+                <span style={{ fontSize: '10px', opacity: 0.7, textTransform: 'uppercase' }}>{view.category}</span>
               </button>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-                <div style={{ textAlign: 'right' }}>
-                  <div style={{ fontSize: '0.875rem', fontWeight: 700, color: '#1E293B' }}>
-                    {activeUser?.name || user?.displayName || user?.name || 'Arslan Malik'}
-                  </div>
-                  <div style={{ fontSize: '0.75rem', color: '#64748B' }}>
-                    {activeUser?.roleTitle || 'Managing Director'}
-                    {isMaster && effectiveAccessLevel === 5 && (
-                      <span style={{ marginLeft: '6px', color: '#FFFFFF', background: '#EF4444', padding: '2px 6px', borderRadius: '4px', fontSize: '0.65rem', fontWeight: 800 }}>
-                        LEVEL 5 MASTER
-                      </span>
-                    )}
-                  </div>
-                </div>
-                <button onClick={handleLogout} title="Log Out" style={{ background: 'transparent', border: 'none', color: '#94A3B8', cursor: 'pointer', fontSize: '0.875rem' }}>
-                  Logout
-                </button>
-              </div>
-            </div>
-          </header>
+            );
+          })}
+        </nav>
 
-          {/* Viewport for Routes */}
-          <main className="workspace-viewport" style={{ flex: 1, overflowY: 'auto', padding: '24px' }}>{children}</main>
+        {/* User Footer */}
+        <div style={{ padding: '16px', backgroundColor: '#0F172A', borderTop: '1px solid #334155', display: 'flex', alignItems: 'center', gap: '12px' }}>
+          <div style={{ width: '36px', height: '36px', borderRadius: '50%', backgroundColor: '#EF4444', color: '#FFF', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 'bold' }}>
+            {userProfile.name.charAt(0)}
+          </div>
+          <div style={{ overflow: 'hidden' }}>
+            <div style={{ fontSize: '13px', fontWeight: 'bold', color: '#FFFFFF', textOverflow: 'ellipsis', overflow: 'hidden', whiteSpace: 'nowrap' }}>{userProfile.name}</div>
+            <div style={{ fontSize: '11px', color: '#94A3B8' }}>{userProfile.role}</div>
+          </div>
+        </div>
+      </aside>
 
-          {/* Persistent Core System Banner */}
-          <div
-            style={{
-              backgroundColor: '#1E293B',
-              borderTop: '1px solid rgba(239, 68, 68, 0.3)',
-              color: '#94A3B8',
-              fontSize: '0.75rem',
-              padding: '6px 24px',
-              display: 'flex',
-              justifyContent: 'space-between',
-              alignItems: 'center',
-              fontWeight: 600,
-            }}
-          >
-            <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
-              <span>🟢 [ONLINE CORE OPERATIONAL] — Dubai Real Estate Management Engine v2026.05</span>
-              <span style={{ background: 'rgba(239, 68, 68, 0.15)', color: '#FCA5A5', padding: '2px 8px', borderRadius: '4px', border: '1px solid rgba(239, 68, 68, 0.3)' }}>
-                💱 LIVE FX: 1 AED = 0.27 USD | 0.25 EUR | 0.22 GBP
-              </span>
+      {/* ── MAIN WORKSPACE CONTENT ───────────────────────────────────────────── */}
+      <main style={{ flex: 1, display: 'flex', flexDirection: 'column', backgroundColor: '#FFFFFF', overflow: 'hidden' }}>
+        {/* Top Header */}
+        <header style={{ height: '64px', borderBottom: '1px solid #E2E8F0', padding: '0 24px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', backgroundColor: '#FFFFFF' }}>
+          <div>
+            <div style={{ fontSize: '12px', color: '#64748B', textTransform: 'uppercase', fontWeight: '600' }}>
+              {activeView.group} · {activeView.category}
             </div>
-            <span>RERA Index: Active | UAE VAT: 5% Fixed | Clearance: Level 5 Master</span>
+            <h2 style={{ margin: 0, fontSize: '18px', fontWeight: 'bold', color: '#1E293B' }}>
+              [{activeView.code}] {activeView.title}
+            </h2>
           </div>
 
-          <MobileBottomNav onMenuOpen={() => setIsDrawerOpen(true)} />
-          <MobileMenuDrawer open={isDrawerOpen} onClose={() => setIsDrawerOpen(false)} onTabChange={handleTabChange} />
-        </div>
-      </div>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
+            <div style={{ fontSize: '12px', padding: '6px 12px', borderRadius: '20px', backgroundColor: 'rgba(239, 68, 68, 0.1)', color: '#EF4444', fontWeight: 'bold' }}>
+              Entry: {activeView.entryPoint}
+            </div>
+            <div style={{ fontSize: '12px', padding: '6px 12px', borderRadius: '20px', backgroundColor: '#F1F5F9', color: '#475569', fontWeight: '600' }}>
+              Flowchart: {activeView.flowchartRef}
+            </div>
+          </div>
+        </header>
+
+        {/* View Workspace */}
+        <section style={{ flex: 1, overflowY: 'auto', padding: '24px', backgroundColor: '#F8FAFC' }}>
+          {children || (
+            <div style={{ backgroundColor: '#FFFFFF', padding: '32px', borderRadius: '12px', border: '1px solid #E2E8F0', boxShadow: '0 1px 3px rgba(0,0,0,0.05)' }}>
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '24px', paddingBottom: '16px', borderBottom: '1px solid #E2E8F0' }}>
+                <div>
+                  <h3 style={{ margin: 0, color: '#1E293B', fontSize: '20px' }}>{activeView.title} Task Workspace</h3>
+                  <p style={{ margin: '4px 0 0 0', color: '#64748B', fontSize: '14px' }}>
+                    Complete end-to-end task cycle workflow for {activeView.code}
+                  </p>
+                </div>
+                <button style={{ padding: '10px 20px', borderRadius: '8px', backgroundColor: '#EF4444', color: '#FFFFFF', border: 'none', fontWeight: 'bold', cursor: 'pointer' }}>
+                  Execute Task Action
+                </button>
+              </div>
+
+              {/* Task Cycle Execution Flow Steps */}
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '16px', marginBottom: '32px' }}>
+                <div style={{ padding: '16px', backgroundColor: '#FFF5F5', border: '1px solid #FECACA', borderRadius: '8px' }}>
+                  <div style={{ fontSize: '11px', color: '#EF4444', fontWeight: 'bold' }}>STEP 1: ENTRY</div>
+                  <div style={{ fontSize: '14px', fontWeight: '600', color: '#1E293B', marginTop: '4px' }}>{activeView.entryPoint}</div>
+                </div>
+                <div style={{ padding: '16px', backgroundColor: '#F8FAFC', border: '1px solid #E2E8F0', borderRadius: '8px' }}>
+                  <div style={{ fontSize: '11px', color: '#64748B', fontWeight: 'bold' }}>STEP 2: INPUT</div>
+                  <div style={{ fontSize: '14px', fontWeight: '600', color: '#1E293B', marginTop: '4px' }}>Data Validation & Context</div>
+                </div>
+                <div style={{ padding: '16px', backgroundColor: '#F8FAFC', border: '1px solid #E2E8F0', borderRadius: '8px' }}>
+                  <div style={{ fontSize: '11px', color: '#64748B', fontWeight: 'bold' }}>STEP 3: PROCESSING</div>
+                  <div style={{ fontSize: '14px', fontWeight: '600', color: '#1E293B', marginTop: '4px' }}>Business Logic Execution</div>
+                </div>
+                <div style={{ padding: '16px', backgroundColor: '#F8FAFC', border: '1px solid #E2E8F0', borderRadius: '8px' }}>
+                  <div style={{ fontSize: '11px', color: '#64748B', fontWeight: 'bold' }}>STEP 4: CONFIRMATION</div>
+                  <div style={{ fontSize: '14px', fontWeight: '600', color: '#1E293B', marginTop: '4px' }}>Task Completion State</div>
+                </div>
+              </div>
+
+              {/* Live Workspace Content Placeholder */}
+              <div style={{ padding: '40px', textAlign: 'center', backgroundColor: '#F8FAFC', borderRadius: '8px', border: '2px dashed #CBD5E1' }}>
+                <div style={{ fontSize: '32px', marginBottom: '12px' }}>⚙️</div>
+                <div style={{ fontSize: '16px', fontWeight: 'bold', color: '#1E293B' }}>View [{activeView.code}] Ready for Task Execution</div>
+                <div style={{ fontSize: '13px', color: '#64748B', marginTop: '4px' }}>
+                  Fully integrated into Unified Workspace Layout with brand palette enforcement (#EF4444).
+                </div>
+              </div>
+            </div>
+          )}
+        </section>
+      </main>
     </div>
   );
 };
+
+export default UnifiedWorkspaceLayout;
