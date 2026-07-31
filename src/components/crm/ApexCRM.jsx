@@ -121,7 +121,7 @@ const ApexCRM = () => {
           <div className="stat-card" key={m.label}>
             <div
               className="stat-icon"
-              style={{ background: 'rgba(249,115,22,0.15)', color: '#F97316' }}
+              style={{ background: 'var(--primary-light)', color: 'var(--primary-color)' }}
             >
               <m.icon size={20} />
             </div>

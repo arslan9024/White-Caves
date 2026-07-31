@@ -180,7 +180,7 @@ const ArcherCRM = () => {
         <div className="stat-card">
           <div
             className="stat-icon"
-            style={{ background: 'rgba(34,197,94,0.15)', color: '#22C55E' }}
+            style={{ background: 'var(--success-light)', color: 'var(--success-color)' }}
           >
             <TrendingUp size={20} />
           </div>

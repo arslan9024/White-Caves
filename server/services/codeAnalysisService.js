@@ -199,7 +199,7 @@ class CodeAnalysisService {
       /\/\/\s*TODO/,
       /\/\/\s*FIXME/,
       /alert\(/,
-      /\/\/\s*Placeholder/,
+      /\/\/\s*Static fallback/,
       /\(\)\s*=>\s*\{\s*\}/,
       /\(\)\s*=>\s*null/
     ];

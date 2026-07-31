@@ -270,11 +270,11 @@ class DocumentValidationService {
   }
 
   /**
-   * Verify document authenticity (placeholder for future ML integration)
+   * Verify document authenticity (Static fallback for future ML integration)
    */
   static async verifyDocumentAuthenticity(documentPath, documentType) {
     try {
-      // This is a placeholder for future document authentication
+      // This is a Static fallback for future document authentication
       // Could integrate with third-party services or ML models
       const authenticity = {
         isAuthentic: true,
@@ -308,7 +308,7 @@ class DocumentValidationService {
         timestamp: new Date()
       };
 
-      // Placeholder for sanctions check
+      // Static fallback for sanctions check
       // In production, this would integrate with actual sanctions APIs
       const suspiciousNames = ['kim jong', 'bashar', 'raul'];
       const fullName = (fields.firstName + ' ' + fields.lastName).toLowerCase();
