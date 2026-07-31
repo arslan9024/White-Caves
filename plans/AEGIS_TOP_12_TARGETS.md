@@ -1,7 +1,7 @@
 # 🛡️ AEGIS Autopilot — Top 12 Critical Target Upgrades
 
 > **Rule of Continuous Perfection**: Each turn dynamically isolates and resolves the 12 most critical system targets across Server, Frontend, Security, and Quality.
-> **Timestamp**: 2026-07-31T17:16:34.205Z
+> **Timestamp**: 2026-07-31T17:17:51.670Z
 > **Total Active Targets**: 12 / 12
 
 ---
@@ -10,80 +10,80 @@
 
 | # | Layer | Category | File | Criticality | Target Action |
 |---|-------|----------|------|-------------|---------------|
-| **1** | `Frontend` | Test Coverage Gap | [`PropertiesMixedDashboard.jsx`](file:///C:\Users\HP\Documents\My Web Sites\AntigravityWC\White-Caves\src\components\crm\mixed\PropertiesMixedDashboard.jsx) | **MEDIUM** (Score: 75) | Create test file for src/components/crm/mixed/PropertiesMixedDashboard.jsx with Vitest/Supertest assertions. |
-| **2** | `Frontend` | Test Coverage Gap | [`SalesMixedDashboard.jsx`](file:///C:\Users\HP\Documents\My Web Sites\AntigravityWC\White-Caves\src\components\crm\mixed\SalesMixedDashboard.jsx) | **MEDIUM** (Score: 75) | Create test file for src/components/crm/mixed/SalesMixedDashboard.jsx with Vitest/Supertest assertions. |
-| **3** | `Frontend` | Test Coverage Gap | [`ServicesMixedDashboard.jsx`](file:///C:\Users\HP\Documents\My Web Sites\AntigravityWC\White-Caves\src\components\crm\mixed\ServicesMixedDashboard.jsx) | **MEDIUM** (Score: 75) | Create test file for src/components/crm/mixed/ServicesMixedDashboard.jsx with Vitest/Supertest assertions. |
-| **4** | `Frontend` | Test Coverage Gap | [`conversations.ts`](file:///C:\Users\HP\Documents\My Web Sites\AntigravityWC\White-Caves\src\components\crm\NadiaWhatsAppCRM\data\conversations.ts) | **MEDIUM** (Score: 75) | Create test file for src/components/crm/NadiaWhatsAppCRM/data/conversations.ts with Vitest/Supertest assertions. |
+| **1** | `Frontend` | Test Coverage Gap | [`ApplicantsTab.tsx`](file:///C:\Users\HP\Documents\My Web Sites\AntigravityWC\White-Caves\src\components\crm\NancyHRCRM_NEW\tabs\ApplicantsTab.tsx) | **MEDIUM** (Score: 75) | Create test file for src/components/crm/NancyHRCRM_NEW/tabs/ApplicantsTab.tsx with Vitest/Supertest assertions. |
+| **2** | `Frontend` | Test Coverage Gap | [`AttendanceTab.tsx`](file:///C:\Users\HP\Documents\My Web Sites\AntigravityWC\White-Caves\src\components\crm\NancyHRCRM_NEW\tabs\AttendanceTab.tsx) | **MEDIUM** (Score: 75) | Create test file for src/components/crm/NancyHRCRM_NEW/tabs/AttendanceTab.tsx with Vitest/Supertest assertions. |
+| **3** | `Frontend` | Test Coverage Gap | [`EmployeesTab.tsx`](file:///C:\Users\HP\Documents\My Web Sites\AntigravityWC\White-Caves\src\components\crm\NancyHRCRM_NEW\tabs\EmployeesTab.tsx) | **MEDIUM** (Score: 75) | Create test file for src/components/crm/NancyHRCRM_NEW/tabs/EmployeesTab.tsx with Vitest/Supertest assertions. |
+| **4** | `Frontend` | Test Coverage Gap | [`JobBoardTab.tsx`](file:///C:\Users\HP\Documents\My Web Sites\AntigravityWC\White-Caves\src\components\crm\NancyHRCRM_NEW\tabs\JobBoardTab.tsx) | **MEDIUM** (Score: 75) | Create test file for src/components/crm/NancyHRCRM_NEW/tabs/JobBoardTab.tsx with Vitest/Supertest assertions. |
 | **5** | `Frontend` | Design System | [`ApexCRM.jsx`](file:///C:\Users\HP\Documents\My Web Sites\AntigravityWC\White-Caves\src\components\crm\ApexCRM.jsx) | **LOW** (Score: 40) | Use tokens.css variables or established color constants. |
 | **6** | `Frontend` | Design System | [`ArcherCRM.jsx`](file:///C:\Users\HP\Documents\My Web Sites\AntigravityWC\White-Caves\src\components\crm\ArcherCRM.jsx) | **LOW** (Score: 40) | Use tokens.css variables or established color constants. |
-| **7** | `Server` | Technical Debt | [`codeAnalysisService.js`](file:///C:\Users\HP\Documents\My Web Sites\AntigravityWC\White-Caves\server\services\codeAnalysisService.js) | **LOW** (Score: 35) | Resolve placeholder code with concrete implementation. |
-| **8** | `Frontend` | Test Coverage Gap | [`AgentAssignmentTab.tsx`](file:///C:\Users\HP\Documents\My Web Sites\AntigravityWC\White-Caves\src\components\crm\NadiaWhatsAppCRM\tabs\AgentAssignmentTab.tsx) | **MEDIUM** (Score: 75) | Create test file for src/components/crm/NadiaWhatsAppCRM/tabs/AgentAssignmentTab.tsx with Vitest/Supertest assertions. |
-| **9** | `Frontend` | Test Coverage Gap | [`QuickRepliesTab.tsx`](file:///C:\Users\HP\Documents\My Web Sites\AntigravityWC\White-Caves\src\components\crm\NadiaWhatsAppCRM\tabs\QuickRepliesTab.tsx) | **MEDIUM** (Score: 75) | Create test file for src/components/crm/NadiaWhatsAppCRM/tabs/QuickRepliesTab.tsx with Vitest/Supertest assertions. |
-| **10** | `Frontend` | Test Coverage Gap | [`applicants.ts`](file:///C:\Users\HP\Documents\My Web Sites\AntigravityWC\White-Caves\src\components\crm\NancyHRCRM_NEW\data\applicants.ts) | **MEDIUM** (Score: 75) | Create test file for src/components/crm/NancyHRCRM_NEW/data/applicants.ts with Vitest/Supertest assertions. |
-| **11** | `Frontend` | Test Coverage Gap | [`employees.ts`](file:///C:\Users\HP\Documents\My Web Sites\AntigravityWC\White-Caves\src\components\crm\NancyHRCRM_NEW\data\employees.ts) | **MEDIUM** (Score: 75) | Create test file for src/components/crm/NancyHRCRM_NEW/data/employees.ts with Vitest/Supertest assertions. |
-| **12** | `Frontend` | Test Coverage Gap | [`jobs.ts`](file:///C:\Users\HP\Documents\My Web Sites\AntigravityWC\White-Caves\src\components\crm\NancyHRCRM_NEW\data\jobs.ts) | **MEDIUM** (Score: 75) | Create test file for src/components/crm/NancyHRCRM_NEW/data/jobs.ts with Vitest/Supertest assertions. |
+| **7** | `Frontend` | Test Coverage Gap | [`PostJobTab.tsx`](file:///C:\Users\HP\Documents\My Web Sites\AntigravityWC\White-Caves\src\components\crm\NancyHRCRM_NEW\tabs\PostJobTab.tsx) | **MEDIUM** (Score: 75) | Create test file for src/components/crm/NancyHRCRM_NEW/tabs/PostJobTab.tsx with Vitest/Supertest assertions. |
+| **8** | `Frontend` | Test Coverage Gap | [`NinaWhatsAppBotCRM.jsx`](file:///C:\Users\HP\Documents\My Web Sites\AntigravityWC\White-Caves\src\components\crm\NinaWhatsAppBotCRM.jsx) | **MEDIUM** (Score: 75) | Create test file for src/components/crm/NinaWhatsAppBotCRM.jsx with Vitest/Supertest assertions. |
+| **9** | `Frontend` | Test Coverage Gap | [`bots.ts`](file:///C:\Users\HP\Documents\My Web Sites\AntigravityWC\White-Caves\src\components\crm\NinaWhatsAppBotCRM_NEW\data\bots.ts) | **MEDIUM** (Score: 75) | Create test file for src/components/crm/NinaWhatsAppBotCRM_NEW/data/bots.ts with Vitest/Supertest assertions. |
+| **10** | `Frontend` | Test Coverage Gap | [`BotsTab.tsx`](file:///C:\Users\HP\Documents\My Web Sites\AntigravityWC\White-Caves\src\components\crm\NinaWhatsAppBotCRM_NEW\tabs\BotsTab.tsx) | **MEDIUM** (Score: 75) | Create test file for src/components/crm/NinaWhatsAppBotCRM_NEW/tabs/BotsTab.tsx with Vitest/Supertest assertions. |
+| **11** | `Frontend` | Test Coverage Gap | [`CodeModulesTab.tsx`](file:///C:\Users\HP\Documents\My Web Sites\AntigravityWC\White-Caves\src\components\crm\NinaWhatsAppBotCRM_NEW\tabs\CodeModulesTab.tsx) | **MEDIUM** (Score: 75) | Create test file for src/components/crm/NinaWhatsAppBotCRM_NEW/tabs/CodeModulesTab.tsx with Vitest/Supertest assertions. |
+| **12** | `Frontend` | Test Coverage Gap | [`SessionsTab.tsx`](file:///C:\Users\HP\Documents\My Web Sites\AntigravityWC\White-Caves\src\components\crm\NinaWhatsAppBotCRM_NEW\tabs\SessionsTab.tsx) | **MEDIUM** (Score: 75) | Create test file for src/components/crm/NinaWhatsAppBotCRM_NEW/tabs/SessionsTab.tsx with Vitest/Supertest assertions. |
 
 ---
 
 ## 🔍 Target Breakdown & Specs
 
-### 1. [Frontend] Frontend Component/Hook 'PropertiesMixedDashboard' missing unit test file
-- **Target File**: [`src/components/crm/mixed/PropertiesMixedDashboard.jsx:1`](file:///C:\Users\HP\Documents\My Web Sites\AntigravityWC\White-Caves\src\components\crm\mixed\PropertiesMixedDashboard.jsx#L1)
+### 1. [Frontend] Frontend Component/Hook 'ApplicantsTab' missing unit test file
+- **Target File**: [`src/components/crm/NancyHRCRM_NEW/tabs/ApplicantsTab.tsx:1`](file:///C:\Users\HP\Documents\My Web Sites\AntigravityWC\White-Caves\src\components\crm\NancyHRCRM_NEW\tabs\ApplicantsTab.tsx#L1)
 - **Layer**: Frontend | **Category**: Test Coverage Gap | **Score**: 75
-- **Required Refactor**: Create test file for src/components/crm/mixed/PropertiesMixedDashboard.jsx with Vitest/Supertest assertions.
+- **Required Refactor**: Create test file for src/components/crm/NancyHRCRM_NEW/tabs/ApplicantsTab.tsx with Vitest/Supertest assertions.
 
-### 2. [Frontend] Frontend Component/Hook 'SalesMixedDashboard' missing unit test file
-- **Target File**: [`src/components/crm/mixed/SalesMixedDashboard.jsx:1`](file:///C:\Users\HP\Documents\My Web Sites\AntigravityWC\White-Caves\src\components\crm\mixed\SalesMixedDashboard.jsx#L1)
+### 2. [Frontend] Frontend Component/Hook 'AttendanceTab' missing unit test file
+- **Target File**: [`src/components/crm/NancyHRCRM_NEW/tabs/AttendanceTab.tsx:1`](file:///C:\Users\HP\Documents\My Web Sites\AntigravityWC\White-Caves\src\components\crm\NancyHRCRM_NEW\tabs\AttendanceTab.tsx#L1)
 - **Layer**: Frontend | **Category**: Test Coverage Gap | **Score**: 75
-- **Required Refactor**: Create test file for src/components/crm/mixed/SalesMixedDashboard.jsx with Vitest/Supertest assertions.
+- **Required Refactor**: Create test file for src/components/crm/NancyHRCRM_NEW/tabs/AttendanceTab.tsx with Vitest/Supertest assertions.
 
-### 3. [Frontend] Frontend Component/Hook 'ServicesMixedDashboard' missing unit test file
-- **Target File**: [`src/components/crm/mixed/ServicesMixedDashboard.jsx:1`](file:///C:\Users\HP\Documents\My Web Sites\AntigravityWC\White-Caves\src\components\crm\mixed\ServicesMixedDashboard.jsx#L1)
+### 3. [Frontend] Frontend Component/Hook 'EmployeesTab' missing unit test file
+- **Target File**: [`src/components/crm/NancyHRCRM_NEW/tabs/EmployeesTab.tsx:1`](file:///C:\Users\HP\Documents\My Web Sites\AntigravityWC\White-Caves\src\components\crm\NancyHRCRM_NEW\tabs\EmployeesTab.tsx#L1)
 - **Layer**: Frontend | **Category**: Test Coverage Gap | **Score**: 75
-- **Required Refactor**: Create test file for src/components/crm/mixed/ServicesMixedDashboard.jsx with Vitest/Supertest assertions.
+- **Required Refactor**: Create test file for src/components/crm/NancyHRCRM_NEW/tabs/EmployeesTab.tsx with Vitest/Supertest assertions.
 
-### 4. [Frontend] Frontend Component/Hook 'conversations' missing unit test file
-- **Target File**: [`src/components/crm/NadiaWhatsAppCRM/data/conversations.ts:1`](file:///C:\Users\HP\Documents\My Web Sites\AntigravityWC\White-Caves\src\components\crm\NadiaWhatsAppCRM\data\conversations.ts#L1)
+### 4. [Frontend] Frontend Component/Hook 'JobBoardTab' missing unit test file
+- **Target File**: [`src/components/crm/NancyHRCRM_NEW/tabs/JobBoardTab.tsx:1`](file:///C:\Users\HP\Documents\My Web Sites\AntigravityWC\White-Caves\src\components\crm\NancyHRCRM_NEW\tabs\JobBoardTab.tsx#L1)
 - **Layer**: Frontend | **Category**: Test Coverage Gap | **Score**: 75
-- **Required Refactor**: Create test file for src/components/crm/NadiaWhatsAppCRM/data/conversations.ts with Vitest/Supertest assertions.
+- **Required Refactor**: Create test file for src/components/crm/NancyHRCRM_NEW/tabs/JobBoardTab.tsx with Vitest/Supertest assertions.
 
-### 5. [Frontend] Hardcoded hex color in style prop: "<div style={{ fontSize: 12, color: '#9ca3af' }}>Due: {p.dueD"
-- **Target File**: [`src/components/crm/ApexCRM.jsx:248`](file:///C:\Users\HP\Documents\My Web Sites\AntigravityWC\White-Caves\src\components\crm\ApexCRM.jsx#L248)
+### 5. [Frontend] Hardcoded hex color in style prop: "<span className="status-badge" style={{ background: '#f0fdf4"
+- **Target File**: [`src/components/crm/ApexCRM.jsx:264`](file:///C:\Users\HP\Documents\My Web Sites\AntigravityWC\White-Caves\src\components\crm\ApexCRM.jsx#L264)
 - **Layer**: Frontend | **Category**: Design System | **Score**: 40
 - **Required Refactor**: Use tokens.css variables or established color constants.
 
-### 6. [Frontend] Hardcoded hex color in style prop: "<p style={{ fontSize: 12, color: '#6b7280', marginTop: 6 }}>"
-- **Target File**: [`src/components/crm/ArcherCRM.jsx:341`](file:///C:\Users\HP\Documents\My Web Sites\AntigravityWC\White-Caves\src\components\crm\ArcherCRM.jsx#L341)
+### 6. [Frontend] Hardcoded hex color in style prop: "<p style={{ fontSize: 12, color: '#991B1B', margin: 0 }}>"
+- **Target File**: [`src/components/crm/ArcherCRM.jsx:357`](file:///C:\Users\HP\Documents\My Web Sites\AntigravityWC\White-Caves\src\components\crm\ArcherCRM.jsx#L357)
 - **Layer**: Frontend | **Category**: Design System | **Score**: 40
 - **Required Refactor**: Use tokens.css variables or established color constants.
 
-### 7. [Server] Unresolved TODO/STUB tag: "content.includes('// TODO') ||"
-- **Target File**: [`server/services/codeAnalysisService.js:261`](file:///C:\Users\HP\Documents\My Web Sites\AntigravityWC\White-Caves\server\services\codeAnalysisService.js#L261)
-- **Layer**: Server | **Category**: Technical Debt | **Score**: 35
-- **Required Refactor**: Resolve placeholder code with concrete implementation.
-
-### 8. [Frontend] Frontend Component/Hook 'AgentAssignmentTab' missing unit test file
-- **Target File**: [`src/components/crm/NadiaWhatsAppCRM/tabs/AgentAssignmentTab.tsx:1`](file:///C:\Users\HP\Documents\My Web Sites\AntigravityWC\White-Caves\src\components\crm\NadiaWhatsAppCRM\tabs\AgentAssignmentTab.tsx#L1)
+### 7. [Frontend] Frontend Component/Hook 'PostJobTab' missing unit test file
+- **Target File**: [`src/components/crm/NancyHRCRM_NEW/tabs/PostJobTab.tsx:1`](file:///C:\Users\HP\Documents\My Web Sites\AntigravityWC\White-Caves\src\components\crm\NancyHRCRM_NEW\tabs\PostJobTab.tsx#L1)
 - **Layer**: Frontend | **Category**: Test Coverage Gap | **Score**: 75
-- **Required Refactor**: Create test file for src/components/crm/NadiaWhatsAppCRM/tabs/AgentAssignmentTab.tsx with Vitest/Supertest assertions.
+- **Required Refactor**: Create test file for src/components/crm/NancyHRCRM_NEW/tabs/PostJobTab.tsx with Vitest/Supertest assertions.
 
-### 9. [Frontend] Frontend Component/Hook 'QuickRepliesTab' missing unit test file
-- **Target File**: [`src/components/crm/NadiaWhatsAppCRM/tabs/QuickRepliesTab.tsx:1`](file:///C:\Users\HP\Documents\My Web Sites\AntigravityWC\White-Caves\src\components\crm\NadiaWhatsAppCRM\tabs\QuickRepliesTab.tsx#L1)
+### 8. [Frontend] Frontend Component/Hook 'NinaWhatsAppBotCRM' missing unit test file
+- **Target File**: [`src/components/crm/NinaWhatsAppBotCRM.jsx:1`](file:///C:\Users\HP\Documents\My Web Sites\AntigravityWC\White-Caves\src\components\crm\NinaWhatsAppBotCRM.jsx#L1)
 - **Layer**: Frontend | **Category**: Test Coverage Gap | **Score**: 75
-- **Required Refactor**: Create test file for src/components/crm/NadiaWhatsAppCRM/tabs/QuickRepliesTab.tsx with Vitest/Supertest assertions.
+- **Required Refactor**: Create test file for src/components/crm/NinaWhatsAppBotCRM.jsx with Vitest/Supertest assertions.
 
-### 10. [Frontend] Frontend Component/Hook 'applicants' missing unit test file
-- **Target File**: [`src/components/crm/NancyHRCRM_NEW/data/applicants.ts:1`](file:///C:\Users\HP\Documents\My Web Sites\AntigravityWC\White-Caves\src\components\crm\NancyHRCRM_NEW\data\applicants.ts#L1)
+### 9. [Frontend] Frontend Component/Hook 'bots' missing unit test file
+- **Target File**: [`src/components/crm/NinaWhatsAppBotCRM_NEW/data/bots.ts:1`](file:///C:\Users\HP\Documents\My Web Sites\AntigravityWC\White-Caves\src\components\crm\NinaWhatsAppBotCRM_NEW\data\bots.ts#L1)
 - **Layer**: Frontend | **Category**: Test Coverage Gap | **Score**: 75
-- **Required Refactor**: Create test file for src/components/crm/NancyHRCRM_NEW/data/applicants.ts with Vitest/Supertest assertions.
+- **Required Refactor**: Create test file for src/components/crm/NinaWhatsAppBotCRM_NEW/data/bots.ts with Vitest/Supertest assertions.
 
-### 11. [Frontend] Frontend Component/Hook 'employees' missing unit test file
-- **Target File**: [`src/components/crm/NancyHRCRM_NEW/data/employees.ts:1`](file:///C:\Users\HP\Documents\My Web Sites\AntigravityWC\White-Caves\src\components\crm\NancyHRCRM_NEW\data\employees.ts#L1)
+### 10. [Frontend] Frontend Component/Hook 'BotsTab' missing unit test file
+- **Target File**: [`src/components/crm/NinaWhatsAppBotCRM_NEW/tabs/BotsTab.tsx:1`](file:///C:\Users\HP\Documents\My Web Sites\AntigravityWC\White-Caves\src\components\crm\NinaWhatsAppBotCRM_NEW\tabs\BotsTab.tsx#L1)
 - **Layer**: Frontend | **Category**: Test Coverage Gap | **Score**: 75
-- **Required Refactor**: Create test file for src/components/crm/NancyHRCRM_NEW/data/employees.ts with Vitest/Supertest assertions.
+- **Required Refactor**: Create test file for src/components/crm/NinaWhatsAppBotCRM_NEW/tabs/BotsTab.tsx with Vitest/Supertest assertions.
 
-### 12. [Frontend] Frontend Component/Hook 'jobs' missing unit test file
-- **Target File**: [`src/components/crm/NancyHRCRM_NEW/data/jobs.ts:1`](file:///C:\Users\HP\Documents\My Web Sites\AntigravityWC\White-Caves\src\components\crm\NancyHRCRM_NEW\data\jobs.ts#L1)
+### 11. [Frontend] Frontend Component/Hook 'CodeModulesTab' missing unit test file
+- **Target File**: [`src/components/crm/NinaWhatsAppBotCRM_NEW/tabs/CodeModulesTab.tsx:1`](file:///C:\Users\HP\Documents\My Web Sites\AntigravityWC\White-Caves\src\components\crm\NinaWhatsAppBotCRM_NEW\tabs\CodeModulesTab.tsx#L1)
 - **Layer**: Frontend | **Category**: Test Coverage Gap | **Score**: 75
-- **Required Refactor**: Create test file for src/components/crm/NancyHRCRM_NEW/data/jobs.ts with Vitest/Supertest assertions.
+- **Required Refactor**: Create test file for src/components/crm/NinaWhatsAppBotCRM_NEW/tabs/CodeModulesTab.tsx with Vitest/Supertest assertions.
+
+### 12. [Frontend] Frontend Component/Hook 'SessionsTab' missing unit test file
+- **Target File**: [`src/components/crm/NinaWhatsAppBotCRM_NEW/tabs/SessionsTab.tsx:1`](file:///C:\Users\HP\Documents\My Web Sites\AntigravityWC\White-Caves\src\components\crm\NinaWhatsAppBotCRM_NEW\tabs\SessionsTab.tsx#L1)
+- **Layer**: Frontend | **Category**: Test Coverage Gap | **Score**: 75
+- **Required Refactor**: Create test file for src/components/crm/NinaWhatsAppBotCRM_NEW/tabs/SessionsTab.tsx with Vitest/Supertest assertions.
 

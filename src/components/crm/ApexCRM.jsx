@@ -245,7 +245,7 @@ const ApexCRM = () => {
                 <span style={{ color: 'var(--text-secondary)' }}>Action: </span>
                 {p.action}
               </div>
-              <div style={{ fontSize: 12, color: '#9ca3af' }}>Due: {p.dueDate}</div>
+              <div style={{ fontSize: 12, color: 'var(--text-muted)' }}>Due: {p.dueDate}</div>
             </div>
           ))}
           {AGENTS.filter(a => !COACHING_PLANS.find(p => p.agent === a.name)).map(a => (

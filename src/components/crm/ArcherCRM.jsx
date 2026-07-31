@@ -338,7 +338,7 @@ const ArcherCRM = () => {
                   }}
                 />
               </div>
-              <p style={{ fontSize: 12, color: '#6b7280', marginTop: 6 }}>{f.description}</p>
+              <p style={{ fontSize: 12, color: 'var(--text-secondary)', marginTop: 6 }}>{f.description}</p>
             </div>
           ))}
           <div
@@ -400,7 +400,7 @@ const ArcherCRM = () => {
                 </div>
                 <div style={{ flex: 1 }}>
                   <strong>{l.name}</strong>
-                  <div style={{ fontSize: 12, color: '#6b7280' }}>
+                  <div style={{ fontSize: 12, color: 'var(--text-secondary)' }}>
                     {l.interest} · {l.budget}
                   </div>
                 </div>
