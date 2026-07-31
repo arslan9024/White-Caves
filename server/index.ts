@@ -654,7 +654,7 @@ app.use('/api/integrations', integrationsRoutes);
 app.use('/api/orchestration', orchestrationRoutes);
 
 // ============================================================================
-// STUB ROUTES — Placeholder APIs for frontend pages not yet backed by full CRUD
+// STUB ROUTES — Static APIs for frontend pages not yet backed by full CRUD
 // These prevent 404 errors and return meaningful empty/default data
 // ============================================================================
 

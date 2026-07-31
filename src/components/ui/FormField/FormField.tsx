@@ -20,7 +20,7 @@ export interface FormFieldProps {
   label?: string;
   /** Input type */
   type?: 'text' | 'email' | 'password' | 'tel' | 'number' | 'textarea' | 'select';
-  /** Placeholder */
+  /** The placeholder text for the input */
   placeholder?: string;
   /** Current value */
   value: string | number;

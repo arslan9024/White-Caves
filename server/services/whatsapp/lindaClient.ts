@@ -294,7 +294,7 @@ export class LindaClient extends EventEmitter {
   > {
     if (!this.sessionActive || !this.client) return [];
     const chats = await this.client.getChats();
-    return chats.slice(0, 50).map((c: any) => ({
+    return chats.slice(0, 50).map((c: Record<string, any>) => ({
       // eslint-disable-line @typescript-eslint/no-explicit-any
       id: c.id?._serialized ?? String(c.id),
       name: c.name ?? c.id?._serialized ?? 'Unknown',
@@ -312,7 +312,7 @@ export class LindaClient extends EventEmitter {
     const chat = await this.client.getChatById(chatId);
     const messages = await chat.fetchMessages({ limit });
     return messages.map(
-      (m: any): WhatsAppMessage => ({
+      (m: Record<string, any>): WhatsAppMessage => ({
         // eslint-disable-line @typescript-eslint/no-explicit-any
         id: m.id?.id ?? String(Date.now()),
         from: m.from ?? phoneNumber,

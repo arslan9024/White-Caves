@@ -117,21 +117,21 @@ export class WebSocketService {
       });
 
       // Handle read receipts
-      socket.on('message-read', (data: any) => {
+      socket.on('message-read', (data: Record<string, any>) => {
         this.handleMessageRead(socket, data);
       });
 
       // Handle typing indicators
-      socket.on('typing-start', (data: any) => {
+      socket.on('typing-start', (data: Record<string, any>) => {
         this.handleTypingStart(socket, data);
       });
 
-      socket.on('typing-stop', (data: any) => {
+      socket.on('typing-stop', (data: Record<string, any>) => {
         this.handleTypingStop(socket, data);
       });
 
       // Handle presence updates
-      socket.on('presence-update', (data: any) => {
+      socket.on('presence-update', (data: Record<string, any>) => {
         this.handlePresenceUpdate(socket, data);
       });
 
@@ -190,7 +190,7 @@ export class WebSocketService {
   /**
    * Handle new message
    */
-  private handleNewMessage(socket: Socket, data: any): void {
+  private handleNewMessage(socket: Socket, data: Record<string, any>): void {
     const { conversationId, content, contentType } = data;
 
     logger.info(`New message in conversation ${conversationId}`);
@@ -216,7 +216,7 @@ export class WebSocketService {
   /**
    * Handle message update
    */
-  private handleMessageUpdate(socket: Socket, data: any): void {
+  private handleMessageUpdate(socket: Socket, data: Record<string, any>): void {
     const { conversationId, messageId, content } = data;
 
     logger.info(`Message ${messageId} updated`);
@@ -233,7 +233,7 @@ export class WebSocketService {
   /**
    * Handle message deletion
    */
-  private handleMessageDelete(socket: Socket, data: any): void {
+  private handleMessageDelete(socket: Socket, data: Record<string, any>): void {
     const { conversationId, messageId } = data;
 
     logger.info(`Message ${messageId} deleted`);
@@ -249,7 +249,7 @@ export class WebSocketService {
   /**
    * Handle message read receipt
    */
-  private handleMessageRead(socket: Socket, data: any): void {
+  private handleMessageRead(socket: Socket, data: Record<string, any>): void {
     const { conversationId, messageId } = data;
 
     this.io.to(`conversation:${conversationId}`).emit('message-read', {
@@ -263,7 +263,7 @@ export class WebSocketService {
   /**
    * Handle typing start
    */
-  private handleTypingStart(socket: Socket, data: any): void {
+  private handleTypingStart(socket: Socket, data: Record<string, any>): void {
     const { conversationId } = data;
     const userId = socket.data.userId;
 
@@ -283,7 +283,7 @@ export class WebSocketService {
   /**
    * Handle typing stop
    */
-  private handleTypingStop(socket: Socket, data: any): void {
+  private handleTypingStop(socket: Socket, data: Record<string, any>): void {
     const { conversationId } = data;
     const userId = socket.data.userId;
 
@@ -299,7 +299,7 @@ export class WebSocketService {
   /**
    * Handle presence update
    */
-  private handlePresenceUpdate(socket: Socket, data: any): void {
+  private handlePresenceUpdate(socket: Socket, data: Record<string, any>): void {
     const userId = socket.data.userId;
     const { status, lastSeen } = data;
 

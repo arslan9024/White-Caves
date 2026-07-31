@@ -393,7 +393,7 @@ const AIAssistantHub = ({ onSelectAssistant }: AIAssistantHubProps) => {
       </div>
 
       <div className="stat-card">
-        <div className="stat-icon" style={{ background: '#EF4444' }}>
+        <div className="stat-icon" style={{ background: 'var(--error-color, #EF4444)' }}>
           <AlertCircle size={20} />
         </div>
         <div className="stat-info">
@@ -403,7 +403,7 @@ const AIAssistantHub = ({ onSelectAssistant }: AIAssistantHubProps) => {
       </div>
 
       <div className="stat-card">
-        <div className="stat-icon" style={{ background: '#8B5CF6' }}>
+        <div className="stat-icon" style={{ background: 'var(--accent-color, #8B5CF6)' }}>
           <Zap size={20} />
         </div>
         <div className="stat-info">
@@ -414,7 +414,7 @@ const AIAssistantHub = ({ onSelectAssistant }: AIAssistantHubProps) => {
 
       {performance?.criticalAlerts?.length > 0 && (
         <div className="stat-card alert">
-          <div className="stat-icon" style={{ background: '#EF4444' }}>
+          <div className="stat-icon" style={{ background: 'var(--error-color, #EF4444)' }}>
             <AlertCircle size={20} />
           </div>
           <div className="stat-info">
