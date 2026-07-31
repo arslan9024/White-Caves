@@ -408,7 +408,7 @@ const ArcherCRM = () => {
                   <div style={{ fontWeight: 700, color: getScoreColor(l.score), fontSize: 18 }}>
                     {l.score}
                   </div>
-                  <div style={{ fontSize: 11, color: '#9ca3af' }}>score</div>
+                  <div style={{ fontSize: 11, color: 'var(--text-muted)' }}>score</div>
                 </div>
                 <button
                   className="action-btn primary"

@@ -289,7 +289,7 @@ const ApexCRM = () => {
             >
               <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 8 }}>
                 <strong>{a.name}</strong>
-                <span style={{ color: '#F97316', fontWeight: 700 }}>{a.revenue}</span>
+                <span style={{ color: 'var(--primary-color)', fontWeight: 700 }}>{a.revenue}</span>
               </div>
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 8 }}>
                 {[
