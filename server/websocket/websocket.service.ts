@@ -386,7 +386,7 @@ export class WebSocketService {
   /**
    * Broadcast message to conversation
    */
-  public emitToConversation(conversationId: string, event: string, data: any): void {
+  public emitToConversation(conversationId: string, event: string, data: Record<string, any>): void {
     this.io.to(`conversation:${conversationId}`).emit(event, {
       ...data,
       timestamp: new Date(),
@@ -396,7 +396,7 @@ export class WebSocketService {
   /**
    * Emit to specific user
    */
-  public emitToUser(userId: string, event: string, data: any): void {
+  public emitToUser(userId: string, event: string, data: Record<string, any>): void {
     const sockets = this.userSockets.get(userId);
     if (sockets) {
       sockets.forEach(socketId => {

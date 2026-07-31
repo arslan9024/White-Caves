@@ -385,7 +385,7 @@ async function getHRData() {
     departmentName: 'Human Resources',
     totalEmployees,
     activePositions: openPositions,
-    attendanceRate: 94.5, // Placeholder â€” no attendance system yet; will be replaced when timesheet module is built
+    attendanceRate: 94.5, // Static fallback â€” no attendance system yet; will be replaced when timesheet module is built
     turnoverRate: parseFloat(((recentHires / Math.max(1, totalEmployees)) * 100).toFixed(1)),
     employeesByDepartment,
     attendanceTrend,

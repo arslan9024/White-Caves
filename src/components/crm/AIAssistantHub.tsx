@@ -440,7 +440,7 @@ const AIAssistantHub = ({ onSelectAssistant }: AIAssistantHubProps) => {
               <div className="assistant-header">
                 <div
                   className="assistant-avatar"
-                  style={{ background: assistant?.colorScheme || '#E31E24' }}
+                  style={{ background: assistant?.colorScheme || 'var(--primary-color, #E31E24)' }}
                 >
                   {index + 1}
                 </div>

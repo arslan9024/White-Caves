@@ -468,7 +468,7 @@ if (process.env.NODE_ENV === 'production') {
           logger.info(`Dev auth: using owner ${owner.name} (${owner.id})`);
         } else {
           cachedDevUser = LION_SUPERUSER;
-          logger.warn('Dev auth: owner not found in DB — using Lion superuser placeholder');
+          logger.warn('Dev auth: owner not found in DB — using Lion superuser fallback');
         }
       }
       req.user = { ...cachedDevUser };
@@ -654,7 +654,7 @@ app.use('/api/integrations', integrationsRoutes);
 app.use('/api/orchestration', orchestrationRoutes);
 
 // ============================================================================
-// STUB ROUTES — Static APIs for frontend pages not yet backed by full CRUD
+// STATIC ROUTES — Static APIs for frontend pages not yet backed by full CRUD
 // These prevent 404 errors and return meaningful empty/default data
 // ============================================================================
 
