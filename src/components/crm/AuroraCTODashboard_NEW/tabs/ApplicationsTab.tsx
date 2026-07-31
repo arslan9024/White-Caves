@@ -87,7 +87,7 @@ const ApplicationsTab: React.FC<ApplicationsTabProps> = ({ systemComponents }) =
           {[...applications].sort((a, b) => new Date(b.deployedAt).getTime() - new Date(a.deployedAt).getTime()).slice(0, 3).map(app => (
             <div key={app.id} className="timeline-item">
               <div className="timeline-marker">
-                <CheckCircle size={16} style={{ color: '#10B981' }} />
+                <CheckCircle size={16} style={{ color: 'var(--success-color)' }} />
               </div>
               <div className="timeline-content">
                 <span className="app-name">{app.name}</span>

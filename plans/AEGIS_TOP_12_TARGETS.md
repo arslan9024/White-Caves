@@ -1,7 +1,7 @@
 # 🛡️ AEGIS Autopilot — Top 12 Critical Target Upgrades
 
 > **Rule of Continuous Perfection**: Each turn dynamically isolates and resolves the 12 most critical system targets across Server, Frontend, Security, and Quality.
-> **Timestamp**: 2026-07-31T17:31:38.591Z
+> **Timestamp**: 2026-07-31T17:32:52.712Z
 > **Total Active Targets**: 12 / 12
 
 ---
@@ -10,80 +10,80 @@
 
 | # | Layer | Category | File | Criticality | Target Action |
 |---|-------|----------|------|-------------|---------------|
-| **1** | `Frontend` | Test Coverage Gap | [`ServicesView.jsx`](file:///C:\Users\HP\Documents\My Web Sites\AntigravityWC\White-Caves\src\components\crm\views\ServicesView.jsx) | **MEDIUM** (Score: 75) | Create test file for src/components/crm/views/ServicesView.jsx with Vitest/Supertest assertions. |
-| **2** | `Frontend` | Test Coverage Gap | [`WillowBackendCRM.jsx`](file:///C:\Users\HP\Documents\My Web Sites\AntigravityWC\White-Caves\src\components\crm\WillowBackendCRM.jsx) | **MEDIUM** (Score: 75) | Create test file for src/components/crm/WillowBackendCRM.jsx with Vitest/Supertest assertions. |
-| **3** | `Frontend` | Test Coverage Gap | [`backend.ts`](file:///C:\Users\HP\Documents\My Web Sites\AntigravityWC\White-Caves\src\components\crm\WillowBackendCRM_NEW\data\backend.ts) | **MEDIUM** (Score: 75) | Create test file for src/components/crm/WillowBackendCRM_NEW/data/backend.ts with Vitest/Supertest assertions. |
-| **4** | `Frontend` | Test Coverage Gap | [`APIsTab.tsx`](file:///C:\Users\HP\Documents\My Web Sites\AntigravityWC\White-Caves\src\components\crm\WillowBackendCRM_NEW\tabs\APIsTab.tsx) | **MEDIUM** (Score: 75) | Create test file for src/components/crm/WillowBackendCRM_NEW/tabs/APIsTab.tsx with Vitest/Supertest assertions. |
-| **5** | `Frontend` | Design System | [`ApplicationsTab.tsx`](file:///C:\Users\HP\Documents\My Web Sites\AntigravityWC\White-Caves\src\components\crm\AuroraCTODashboard_NEW\tabs\ApplicationsTab.tsx) | **LOW** (Score: 40) | Use tokens.css variables or established color constants. |
-| **6** | `Frontend` | Design System | [`ArchitectureTab.tsx`](file:///C:\Users\HP\Documents\My Web Sites\AntigravityWC\White-Caves\src\components\crm\AuroraCTODashboard_NEW\tabs\ArchitectureTab.tsx) | **LOW** (Score: 40) | Use tokens.css variables or established color constants. |
-| **7** | `Frontend` | Test Coverage Gap | [`CachingTab.tsx`](file:///C:\Users\HP\Documents\My Web Sites\AntigravityWC\White-Caves\src\components\crm\WillowBackendCRM_NEW\tabs\CachingTab.tsx) | **MEDIUM** (Score: 75) | Create test file for src/components/crm/WillowBackendCRM_NEW/tabs/CachingTab.tsx with Vitest/Supertest assertions. |
-| **8** | `Frontend` | Test Coverage Gap | [`RealtimeTab.tsx`](file:///C:\Users\HP\Documents\My Web Sites\AntigravityWC\White-Caves\src\components\crm\WillowBackendCRM_NEW\tabs\RealtimeTab.tsx) | **MEDIUM** (Score: 75) | Create test file for src/components/crm/WillowBackendCRM_NEW/tabs/RealtimeTab.tsx with Vitest/Supertest assertions. |
-| **9** | `Frontend` | Test Coverage Gap | [`SecurityTab.tsx`](file:///C:\Users\HP\Documents\My Web Sites\AntigravityWC\White-Caves\src\components\crm\WillowBackendCRM_NEW\tabs\SecurityTab.tsx) | **MEDIUM** (Score: 75) | Create test file for src/components/crm/WillowBackendCRM_NEW/tabs/SecurityTab.tsx with Vitest/Supertest assertions. |
-| **10** | `Frontend` | Test Coverage Gap | [`ZoeConsole.jsx`](file:///C:\Users\HP\Documents\My Web Sites\AntigravityWC\White-Caves\src\components\crm\ZoeConsole.jsx) | **MEDIUM** (Score: 75) | Create test file for src/components/crm/ZoeConsole.jsx with Vitest/Supertest assertions. |
-| **11** | `Frontend` | Test Coverage Gap | [`executive.ts`](file:///C:\Users\HP\Documents\My Web Sites\AntigravityWC\White-Caves\src\components\crm\ZoeExecutiveCRM_NEW\data\executive.ts) | **MEDIUM** (Score: 75) | Create test file for src/components/crm/ZoeExecutiveCRM_NEW/data/executive.ts with Vitest/Supertest assertions. |
-| **12** | `Frontend` | Test Coverage Gap | [`useExecutiveData.ts`](file:///C:\Users\HP\Documents\My Web Sites\AntigravityWC\White-Caves\src\components\crm\ZoeExecutiveCRM_NEW\hooks\useExecutiveData.ts) | **MEDIUM** (Score: 75) | Create test file for src/components/crm/ZoeExecutiveCRM_NEW/hooks/useExecutiveData.ts with Vitest/Supertest assertions. |
+| **1** | `Frontend` | Test Coverage Gap | [`CalendarTab.tsx`](file:///C:\Users\HP\Documents\My Web Sites\AntigravityWC\White-Caves\src\components\crm\ZoeExecutiveCRM_NEW\tabs\CalendarTab.tsx) | **MEDIUM** (Score: 75) | Create test file for src/components/crm/ZoeExecutiveCRM_NEW/tabs/CalendarTab.tsx with Vitest/Supertest assertions. |
+| **2** | `Frontend` | Test Coverage Gap | [`ExecutivesTab.tsx`](file:///C:\Users\HP\Documents\My Web Sites\AntigravityWC\White-Caves\src\components\crm\ZoeExecutiveCRM_NEW\tabs\ExecutivesTab.tsx) | **MEDIUM** (Score: 75) | Create test file for src/components/crm/ZoeExecutiveCRM_NEW/tabs/ExecutivesTab.tsx with Vitest/Supertest assertions. |
+| **3** | `Frontend` | Test Coverage Gap | [`SuggestionsTab.tsx`](file:///C:\Users\HP\Documents\My Web Sites\AntigravityWC\White-Caves\src\components\crm\ZoeExecutiveCRM_NEW\tabs\SuggestionsTab.tsx) | **MEDIUM** (Score: 75) | Create test file for src/components/crm/ZoeExecutiveCRM_NEW/tabs/SuggestionsTab.tsx with Vitest/Supertest assertions. |
+| **4** | `Frontend` | Test Coverage Gap | [`CurrencyViewer.tsx`](file:///C:\Users\HP\Documents\My Web Sites\AntigravityWC\White-Caves\src\components\CurrencyViewer.tsx) | **MEDIUM** (Score: 75) | Create test file for src/components/CurrencyViewer.tsx with Vitest/Supertest assertions. |
+| **5** | `Frontend` | Design System | [`index.tsx`](file:///C:\Users\HP\Documents\My Web Sites\AntigravityWC\White-Caves\src\components\crm\AuroraCTODashboard_NEW\tabs\index.tsx) | **LOW** (Score: 40) | Use tokens.css variables or established color constants. |
+| **6** | `Frontend` | Design System | [`OverviewTab.tsx`](file:///C:\Users\HP\Documents\My Web Sites\AntigravityWC\White-Caves\src\components\crm\AuroraCTODashboard_NEW\tabs\OverviewTab.tsx) | **LOW** (Score: 40) | Use tokens.css variables or established color constants. |
+| **7** | `Frontend` | Test Coverage Gap | [`AIAssistantGrid.tsx`](file:///C:\Users\HP\Documents\My Web Sites\AntigravityWC\White-Caves\src\components\dashboard\AIAssistantGrid.tsx) | **MEDIUM** (Score: 75) | Create test file for src/components/dashboard/AIAssistantGrid.tsx with Vitest/Supertest assertions. |
+| **8** | `Frontend` | Test Coverage Gap | [`MetricCard.jsx`](file:///C:\Users\HP\Documents\My Web Sites\AntigravityWC\White-Caves\src\components\dashboard\AnalyticsDashboard\MetricCard.jsx) | **MEDIUM** (Score: 75) | Create test file for src/components/dashboard/AnalyticsDashboard/MetricCard.jsx with Vitest/Supertest assertions. |
+| **9** | `Frontend` | Test Coverage Gap | [`OccupancyChart.jsx`](file:///C:\Users\HP\Documents\My Web Sites\AntigravityWC\White-Caves\src\components\dashboard\AnalyticsDashboard\OccupancyChart.jsx) | **MEDIUM** (Score: 75) | Create test file for src/components/dashboard/AnalyticsDashboard/OccupancyChart.jsx with Vitest/Supertest assertions. |
+| **10** | `Frontend` | Test Coverage Gap | [`PricingAnalyticsChart.jsx`](file:///C:\Users\HP\Documents\My Web Sites\AntigravityWC\White-Caves\src\components\dashboard\AnalyticsDashboard\PricingAnalyticsChart.jsx) | **MEDIUM** (Score: 75) | Create test file for src/components/dashboard/AnalyticsDashboard/PricingAnalyticsChart.jsx with Vitest/Supertest assertions. |
+| **11** | `Frontend` | Test Coverage Gap | [`PropertyDistributionChart.jsx`](file:///C:\Users\HP\Documents\My Web Sites\AntigravityWC\White-Caves\src\components\dashboard\AnalyticsDashboard\PropertyDistributionChart.jsx) | **MEDIUM** (Score: 75) | Create test file for src/components/dashboard/AnalyticsDashboard/PropertyDistributionChart.jsx with Vitest/Supertest assertions. |
+| **12** | `Frontend` | Test Coverage Gap | [`DashboardErrorBanner.tsx`](file:///C:\Users\HP\Documents\My Web Sites\AntigravityWC\White-Caves\src\components\dashboard\atoms\DashboardErrorBanner.tsx) | **MEDIUM** (Score: 75) | Create test file for src/components/dashboard/atoms/DashboardErrorBanner.tsx with Vitest/Supertest assertions. |
 
 ---
 
 ## 🔍 Target Breakdown & Specs
 
-### 1. [Frontend] Frontend Component/Hook 'ServicesView' missing unit test file
-- **Target File**: [`src/components/crm/views/ServicesView.jsx:1`](file:///C:\Users\HP\Documents\My Web Sites\AntigravityWC\White-Caves\src\components\crm\views\ServicesView.jsx#L1)
+### 1. [Frontend] Frontend Component/Hook 'CalendarTab' missing unit test file
+- **Target File**: [`src/components/crm/ZoeExecutiveCRM_NEW/tabs/CalendarTab.tsx:1`](file:///C:\Users\HP\Documents\My Web Sites\AntigravityWC\White-Caves\src\components\crm\ZoeExecutiveCRM_NEW\tabs\CalendarTab.tsx#L1)
 - **Layer**: Frontend | **Category**: Test Coverage Gap | **Score**: 75
-- **Required Refactor**: Create test file for src/components/crm/views/ServicesView.jsx with Vitest/Supertest assertions.
+- **Required Refactor**: Create test file for src/components/crm/ZoeExecutiveCRM_NEW/tabs/CalendarTab.tsx with Vitest/Supertest assertions.
 
-### 2. [Frontend] Frontend Component/Hook 'WillowBackendCRM' missing unit test file
-- **Target File**: [`src/components/crm/WillowBackendCRM.jsx:1`](file:///C:\Users\HP\Documents\My Web Sites\AntigravityWC\White-Caves\src\components\crm\WillowBackendCRM.jsx#L1)
+### 2. [Frontend] Frontend Component/Hook 'ExecutivesTab' missing unit test file
+- **Target File**: [`src/components/crm/ZoeExecutiveCRM_NEW/tabs/ExecutivesTab.tsx:1`](file:///C:\Users\HP\Documents\My Web Sites\AntigravityWC\White-Caves\src\components\crm\ZoeExecutiveCRM_NEW\tabs\ExecutivesTab.tsx#L1)
 - **Layer**: Frontend | **Category**: Test Coverage Gap | **Score**: 75
-- **Required Refactor**: Create test file for src/components/crm/WillowBackendCRM.jsx with Vitest/Supertest assertions.
+- **Required Refactor**: Create test file for src/components/crm/ZoeExecutiveCRM_NEW/tabs/ExecutivesTab.tsx with Vitest/Supertest assertions.
 
-### 3. [Frontend] Frontend Component/Hook 'backend' missing unit test file
-- **Target File**: [`src/components/crm/WillowBackendCRM_NEW/data/backend.ts:1`](file:///C:\Users\HP\Documents\My Web Sites\AntigravityWC\White-Caves\src\components\crm\WillowBackendCRM_NEW\data\backend.ts#L1)
+### 3. [Frontend] Frontend Component/Hook 'SuggestionsTab' missing unit test file
+- **Target File**: [`src/components/crm/ZoeExecutiveCRM_NEW/tabs/SuggestionsTab.tsx:1`](file:///C:\Users\HP\Documents\My Web Sites\AntigravityWC\White-Caves\src\components\crm\ZoeExecutiveCRM_NEW\tabs\SuggestionsTab.tsx#L1)
 - **Layer**: Frontend | **Category**: Test Coverage Gap | **Score**: 75
-- **Required Refactor**: Create test file for src/components/crm/WillowBackendCRM_NEW/data/backend.ts with Vitest/Supertest assertions.
+- **Required Refactor**: Create test file for src/components/crm/ZoeExecutiveCRM_NEW/tabs/SuggestionsTab.tsx with Vitest/Supertest assertions.
 
-### 4. [Frontend] Frontend Component/Hook 'APIsTab' missing unit test file
-- **Target File**: [`src/components/crm/WillowBackendCRM_NEW/tabs/APIsTab.tsx:1`](file:///C:\Users\HP\Documents\My Web Sites\AntigravityWC\White-Caves\src\components\crm\WillowBackendCRM_NEW\tabs\APIsTab.tsx#L1)
+### 4. [Frontend] Frontend Component/Hook 'CurrencyViewer' missing unit test file
+- **Target File**: [`src/components/CurrencyViewer.tsx:1`](file:///C:\Users\HP\Documents\My Web Sites\AntigravityWC\White-Caves\src\components\CurrencyViewer.tsx#L1)
 - **Layer**: Frontend | **Category**: Test Coverage Gap | **Score**: 75
-- **Required Refactor**: Create test file for src/components/crm/WillowBackendCRM_NEW/tabs/APIsTab.tsx with Vitest/Supertest assertions.
+- **Required Refactor**: Create test file for src/components/CurrencyViewer.tsx with Vitest/Supertest assertions.
 
-### 5. [Frontend] Hardcoded hex color in style prop: "<CheckCircle size={16} style={{ color: '#10B981' }} />"
-- **Target File**: [`src/components/crm/AuroraCTODashboard_NEW/tabs/ApplicationsTab.tsx:90`](file:///C:\Users\HP\Documents\My Web Sites\AntigravityWC\White-Caves\src\components\crm\AuroraCTODashboard_NEW\tabs\ApplicationsTab.tsx#L90)
+### 5. [Frontend] Hardcoded hex color in style prop: "<div className="avatar" style={{ background: 'linear-gradien"
+- **Target File**: [`src/components/crm/AuroraCTODashboard_NEW/tabs/index.tsx:58`](file:///C:\Users\HP\Documents\My Web Sites\AntigravityWC\White-Caves\src\components\crm\AuroraCTODashboard_NEW\tabs\index.tsx#L58)
 - **Layer**: Frontend | **Category**: Design System | **Score**: 40
 - **Required Refactor**: Use tokens.css variables or established color constants.
 
-### 6. [Frontend] Hardcoded hex color in style prop: "<CheckCircle size={14} style={{ color: '#10B981' }} />"
-- **Target File**: [`src/components/crm/AuroraCTODashboard_NEW/tabs/ArchitectureTab.tsx:38`](file:///C:\Users\HP\Documents\My Web Sites\AntigravityWC\White-Caves\src\components\crm\AuroraCTODashboard_NEW\tabs\ArchitectureTab.tsx#L38)
+### 6. [Frontend] Hardcoded hex color in style prop: "<div className="metric-icon" style={{ background: 'rgba(59, "
+- **Target File**: [`src/components/crm/AuroraCTODashboard_NEW/tabs/OverviewTab.tsx:41`](file:///C:\Users\HP\Documents\My Web Sites\AntigravityWC\White-Caves\src\components\crm\AuroraCTODashboard_NEW\tabs\OverviewTab.tsx#L41)
 - **Layer**: Frontend | **Category**: Design System | **Score**: 40
 - **Required Refactor**: Use tokens.css variables or established color constants.
 
-### 7. [Frontend] Frontend Component/Hook 'CachingTab' missing unit test file
-- **Target File**: [`src/components/crm/WillowBackendCRM_NEW/tabs/CachingTab.tsx:1`](file:///C:\Users\HP\Documents\My Web Sites\AntigravityWC\White-Caves\src\components\crm\WillowBackendCRM_NEW\tabs\CachingTab.tsx#L1)
+### 7. [Frontend] Frontend Component/Hook 'AIAssistantGrid' missing unit test file
+- **Target File**: [`src/components/dashboard/AIAssistantGrid.tsx:1`](file:///C:\Users\HP\Documents\My Web Sites\AntigravityWC\White-Caves\src\components\dashboard\AIAssistantGrid.tsx#L1)
 - **Layer**: Frontend | **Category**: Test Coverage Gap | **Score**: 75
-- **Required Refactor**: Create test file for src/components/crm/WillowBackendCRM_NEW/tabs/CachingTab.tsx with Vitest/Supertest assertions.
+- **Required Refactor**: Create test file for src/components/dashboard/AIAssistantGrid.tsx with Vitest/Supertest assertions.
 
-### 8. [Frontend] Frontend Component/Hook 'RealtimeTab' missing unit test file
-- **Target File**: [`src/components/crm/WillowBackendCRM_NEW/tabs/RealtimeTab.tsx:1`](file:///C:\Users\HP\Documents\My Web Sites\AntigravityWC\White-Caves\src\components\crm\WillowBackendCRM_NEW\tabs\RealtimeTab.tsx#L1)
+### 8. [Frontend] Frontend Component/Hook 'MetricCard' missing unit test file
+- **Target File**: [`src/components/dashboard/AnalyticsDashboard/MetricCard.jsx:1`](file:///C:\Users\HP\Documents\My Web Sites\AntigravityWC\White-Caves\src\components\dashboard\AnalyticsDashboard\MetricCard.jsx#L1)
 - **Layer**: Frontend | **Category**: Test Coverage Gap | **Score**: 75
-- **Required Refactor**: Create test file for src/components/crm/WillowBackendCRM_NEW/tabs/RealtimeTab.tsx with Vitest/Supertest assertions.
+- **Required Refactor**: Create test file for src/components/dashboard/AnalyticsDashboard/MetricCard.jsx with Vitest/Supertest assertions.
 
-### 9. [Frontend] Frontend Component/Hook 'SecurityTab' missing unit test file
-- **Target File**: [`src/components/crm/WillowBackendCRM_NEW/tabs/SecurityTab.tsx:1`](file:///C:\Users\HP\Documents\My Web Sites\AntigravityWC\White-Caves\src\components\crm\WillowBackendCRM_NEW\tabs\SecurityTab.tsx#L1)
+### 9. [Frontend] Frontend Component/Hook 'OccupancyChart' missing unit test file
+- **Target File**: [`src/components/dashboard/AnalyticsDashboard/OccupancyChart.jsx:1`](file:///C:\Users\HP\Documents\My Web Sites\AntigravityWC\White-Caves\src\components\dashboard\AnalyticsDashboard\OccupancyChart.jsx#L1)
 - **Layer**: Frontend | **Category**: Test Coverage Gap | **Score**: 75
-- **Required Refactor**: Create test file for src/components/crm/WillowBackendCRM_NEW/tabs/SecurityTab.tsx with Vitest/Supertest assertions.
+- **Required Refactor**: Create test file for src/components/dashboard/AnalyticsDashboard/OccupancyChart.jsx with Vitest/Supertest assertions.
 
-### 10. [Frontend] Frontend Component/Hook 'ZoeConsole' missing unit test file
-- **Target File**: [`src/components/crm/ZoeConsole.jsx:1`](file:///C:\Users\HP\Documents\My Web Sites\AntigravityWC\White-Caves\src\components\crm\ZoeConsole.jsx#L1)
+### 10. [Frontend] Frontend Component/Hook 'PricingAnalyticsChart' missing unit test file
+- **Target File**: [`src/components/dashboard/AnalyticsDashboard/PricingAnalyticsChart.jsx:1`](file:///C:\Users\HP\Documents\My Web Sites\AntigravityWC\White-Caves\src\components\dashboard\AnalyticsDashboard\PricingAnalyticsChart.jsx#L1)
 - **Layer**: Frontend | **Category**: Test Coverage Gap | **Score**: 75
-- **Required Refactor**: Create test file for src/components/crm/ZoeConsole.jsx with Vitest/Supertest assertions.
+- **Required Refactor**: Create test file for src/components/dashboard/AnalyticsDashboard/PricingAnalyticsChart.jsx with Vitest/Supertest assertions.
 
-### 11. [Frontend] Frontend Component/Hook 'executive' missing unit test file
-- **Target File**: [`src/components/crm/ZoeExecutiveCRM_NEW/data/executive.ts:1`](file:///C:\Users\HP\Documents\My Web Sites\AntigravityWC\White-Caves\src\components\crm\ZoeExecutiveCRM_NEW\data\executive.ts#L1)
+### 11. [Frontend] Frontend Component/Hook 'PropertyDistributionChart' missing unit test file
+- **Target File**: [`src/components/dashboard/AnalyticsDashboard/PropertyDistributionChart.jsx:1`](file:///C:\Users\HP\Documents\My Web Sites\AntigravityWC\White-Caves\src\components\dashboard\AnalyticsDashboard\PropertyDistributionChart.jsx#L1)
 - **Layer**: Frontend | **Category**: Test Coverage Gap | **Score**: 75
-- **Required Refactor**: Create test file for src/components/crm/ZoeExecutiveCRM_NEW/data/executive.ts with Vitest/Supertest assertions.
+- **Required Refactor**: Create test file for src/components/dashboard/AnalyticsDashboard/PropertyDistributionChart.jsx with Vitest/Supertest assertions.
 
-### 12. [Frontend] Frontend Component/Hook 'useExecutiveData' missing unit test file
-- **Target File**: [`src/components/crm/ZoeExecutiveCRM_NEW/hooks/useExecutiveData.ts:1`](file:///C:\Users\HP\Documents\My Web Sites\AntigravityWC\White-Caves\src\components\crm\ZoeExecutiveCRM_NEW\hooks\useExecutiveData.ts#L1)
+### 12. [Frontend] Frontend Component/Hook 'DashboardErrorBanner' missing unit test file
+- **Target File**: [`src/components/dashboard/atoms/DashboardErrorBanner.tsx:1`](file:///C:\Users\HP\Documents\My Web Sites\AntigravityWC\White-Caves\src\components\dashboard\atoms\DashboardErrorBanner.tsx#L1)
 - **Layer**: Frontend | **Category**: Test Coverage Gap | **Score**: 75
-- **Required Refactor**: Create test file for src/components/crm/ZoeExecutiveCRM_NEW/hooks/useExecutiveData.ts with Vitest/Supertest assertions.
+- **Required Refactor**: Create test file for src/components/dashboard/atoms/DashboardErrorBanner.tsx with Vitest/Supertest assertions.
 

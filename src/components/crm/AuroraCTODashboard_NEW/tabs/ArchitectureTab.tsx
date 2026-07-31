@@ -35,7 +35,7 @@ const ArchitectureTab: React.FC<ArchitectureTabProps> = ({ modules, techStack, s
                   <div key={module.name} className={`module-item status-${module.status}`}>
                     <div className="module-icon">
                       {module.status === 'production' ? (
-                        <CheckCircle size={14} style={{ color: '#10B981' }} />
+                        <CheckCircle size={14} style={{ color: 'var(--success-color)' }} />
                       ) : (
                         <AlertCircle size={14} />
                       )}
