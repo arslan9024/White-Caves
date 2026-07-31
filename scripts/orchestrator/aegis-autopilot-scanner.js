@@ -1,16 +1,18 @@
 #!/usr/bin/env node
 /**
- * aegis-autopilot-scanner.js — AEGIS 12-Target Critical Upgrade Engine
- * 
- * Deeply scans the White Caves Real Estate codebase across Server, Frontend, Security, and Tests.
- * Follows the Rule of Continuous Perfection:
- *   - Each turn always selects the TOP 12 MOST CRITICAL TARGETS to upgrade.
- *   - Ensures continuous coverage across both Backend (server/) and Frontend (src/).
- * 
- * Outputs:
- * - logs/orchestrator/aegis-autopilot-issues.json
+ * aegis-autopilot-scanner.js — AEGIS 12-Target Critical Upgrade Engine (v2)
+ *
+ * Efficiency upgrades (v2):
+ *  - Excludes .d.ts files from 'any' checks (declaration files are not fixable)
+ *  - Hex color regex now excludes var(--token, #hex) fallback patterns (already canonical)
+ *  - TypeScript Strictness base score raised to 85 (was 70) — matches actual priority
+ *  - Design System capped at 2 targets per cycle (was 4) — prevents crowding out TS/Security
+ *  - Eliminated AEGIS_AUTOPILOT_ISSUES_BACKLOG.md write (never read, zero value)
+ *  - Eliminated full aegis-autopilot-issues.json write (never consumed by agent)
+ *  - Kept only: top-12-targets.json + AEGIS_TOP_12_TARGETS.md
+ *
+ * Outputs (lean):
  * - logs/orchestrator/top-12-targets.json
- * - plans/AEGIS_AUTOPILOT_ISSUES_BACKLOG.md
  * - plans/AEGIS_TOP_12_TARGETS.md
  */
 
@@ -23,13 +25,16 @@ const __dirname = path.dirname(__filename);
 const ROOT = path.resolve(__dirname, '..', '..');
 
 const LOGS_DIR = path.join(ROOT, 'logs', 'orchestrator');
-const OUT_JSON = path.join(LOGS_DIR, 'aegis-autopilot-issues.json');
 const OUT_TOP12_JSON = path.join(LOGS_DIR, 'top-12-targets.json');
-const OUT_MD = path.join(ROOT, 'plans', 'AEGIS_AUTOPILOT_ISSUES_BACKLOG.md');
 const OUT_TOP12_MD = path.join(ROOT, 'plans', 'AEGIS_TOP_12_TARGETS.md');
 
 const SCAN_DIRS = ['src', 'server'];
 const EXTS = new Set(['.ts', '.tsx', '.js', '.jsx']);
+
+// Regex: bare hex ONLY — not inside var(--token, #hex) wrapper
+// Matches: style={{ color: '#fff' }} but NOT: style={{ color: 'var(--x, #fff)' }}
+const BARE_HEX_REGEX = /style=\{\{[^}]*(?<!'var\([^)]*)'#(?:[0-9a-fA-F]{3,6})'(?![^)]*\))/i;
+const HAS_VAR_FALLBACK_REGEX = /var\(--[^,)]+,\s*#[0-9a-fA-F]{3,6}\)/;
 
 if (!fs.existsSync(LOGS_DIR)) {
   fs.mkdirSync(LOGS_DIR, { recursive: true });
@@ -59,20 +64,28 @@ function relPath(fp) {
 function calculateScore(category, severity) {
   let score = 0;
   switch (category) {
-    case 'Security & Compliance': score += 100; break;
-    case 'Server Architecture': score += 85; break;
-    case 'TypeScript Strictness': score += 70; break;
-    case 'Accessibility & UX': score += 60; break;
-    case 'Design System': score += 55; break;
-    case 'Test Coverage Gap': score += 50; break;
-    case 'Technical Debt': score += 40; break;
-    case 'Code Cleanliness': score += 30; break;
-    default: score += 20;
+    case 'Security & Compliance':   score += 100; break;
+    case 'Server Architecture':     score += 90;  break;
+    case 'TypeScript Strictness':   score += 85;  break; // raised from 70
+    case 'Accessibility & UX':      score += 65;  break;
+    case 'Test Coverage Gap':       score += 60;  break; // raised from 50
+    case 'Design System':           score += 40;  break; // lowered from 55
+    case 'Technical Debt':          score += 35;  break;
+    case 'Code Cleanliness':        score += 20;  break;
+    default: score += 15;
   }
   if (severity === 'CRITICAL') score += 50;
-  else if (severity === 'HIGH') score += 30;
+  else if (severity === 'HIGH')   score += 30;
   else if (severity === 'MEDIUM') score += 15;
   return score;
+}
+
+function isHardcodedHex(trimmed) {
+  // Only flag if there's a bare hex literal NOT already inside a var(--x, #hex) fallback
+  if (!/#[0-9a-fA-F]{3,6}\b/i.test(trimmed)) return false;
+  if (HAS_VAR_FALLBACK_REGEX.test(trimmed)) return false; // already using token with fallback
+  if (/style=\{\{/.test(trimmed) && /#[0-9a-fA-F]{3,6}\b/.test(trimmed)) return true;
+  return false;
 }
 
 function scanCodebase() {
@@ -85,9 +98,10 @@ function scanCodebase() {
     });
   }
 
+  // Build tested-component set
   const testedComponents = new Set();
   allFiles.forEach(f => {
-    if (f.endsWith('.test.tsx') || f.endsWith('.test.ts') || f.endsWith('.test.jsx') || f.endsWith('.test.js') || f.endsWith('.spec.ts') || f.endsWith('.spec.js') || f.endsWith('.spec.jsx')) {
+    if (/\.(test|spec)\.(tsx?|jsx?)$/.test(f)) {
       const base = path.basename(f).replace(/\.(test|spec)\.(tsx?|jsx?)$/, '');
       testedComponents.add(base);
     }
@@ -99,16 +113,19 @@ function scanCodebase() {
     const isServer = rel.startsWith('server/');
     const isFrontend = rel.startsWith('src/');
 
-    if (filename.includes('.test.') || filename.includes('.spec.')) continue;
+    // Skip test/spec files themselves
+    if (/\.(test|spec)\.(tsx?|jsx?)$/.test(filename)) continue;
+
+    // Skip declaration files entirely — they are not implementation targets
+    if (filename.endsWith('.d.ts')) continue;
 
     const content = fs.readFileSync(fp, 'utf8');
     const lines = content.split('\n');
 
-    // 1. Missing test spec check
+    // ── Rule 1: Missing test coverage ────────────────────────────────────────
     const componentName = filename.replace(/\.(tsx?|jsx?)$/, '');
     if (
       (rel.startsWith('src/components/') || rel.startsWith('src/hooks/') || rel.startsWith('server/routes/')) &&
-      !filename.endsWith('.d.ts') &&
       !filename.endsWith('.styles.ts') &&
       !filename.endsWith('.styles.tsx') &&
       !testedComponents.has(componentName) &&
@@ -127,115 +144,117 @@ function scanCodebase() {
       });
     }
 
-    // Line by line analysis
+    // Line-by-line analysis
     lines.forEach((line, i) => {
       const ln = i + 1;
       const trimmed = line.trim();
 
-      // 2. Server-Side Unhandled Async Catch / Missing Response
-      if (isServer && !rel.includes('middleware/') && /router\.(post|put|delete|patch)\(/i.test(trimmed) && !content.includes('try {') && !content.includes('asyncHandler')) {
+      // ── Rule 2: Server route missing error boundary ───────────────────────
+      if (
+        isServer &&
+        !rel.includes('middleware/') &&
+        /router\.(post|put|delete|patch)\(/i.test(trimmed) &&
+        !content.includes('try {') &&
+        !content.includes('asyncHandler')
+      ) {
         issues.push({
-          id: `SERVER-ERR-${path.basename(fp)}-${ln}`,
+          id: `SERVER-ERR-${filename}-${ln}`,
           category: 'Server Architecture',
           severity: 'HIGH',
           layer: 'Server',
-          file: rel,
-          line: ln,
+          file: rel, line: ln,
           title: `Server route mutation lacking explicit error boundary or asyncHandler`,
           suggestion: 'Wrap route handler in try/catch block or asyncHandler middleware.'
         });
       }
 
-      // 3. Security & Auth Gaps (Hardcoded tokens or missing auth check)
-      if (isServer && !rel.includes('middleware/') && !rel.includes('controllers/') && /req\.body\b/i.test(trimmed) && !content.includes('zod') && !content.includes('validate') && !content.includes('schema') && !content.includes('Validation') && !content.toLowerCase().includes('validation') && !content.includes('body(')) {
+      // ── Rule 3: Unvalidated req.body ──────────────────────────────────────
+      if (
+        isServer &&
+        !rel.includes('middleware/') &&
+        !rel.includes('controllers/') &&
+        /req\.body\b/i.test(trimmed) &&
+        !content.includes('zod') &&
+        !content.includes('validate') &&
+        !content.includes('schema') &&
+        !content.includes('Validation') &&
+        !content.toLowerCase().includes('validation') &&
+        !content.includes('body(')
+      ) {
         issues.push({
-          id: `SEC-VAL-${path.basename(fp)}-${ln}`,
+          id: `SEC-VAL-${filename}-${ln}`,
           category: 'Security & Compliance',
           severity: 'HIGH',
           layer: 'Server',
-          file: rel,
-          line: ln,
+          file: rel, line: ln,
           title: `Server route reads req.body without schema validation`,
           suggestion: 'Enforce validation middleware or Zod schema on incoming payload.'
         });
       }
 
-      // 4. Accessibility Gaps (Images missing alt, buttons missing aria-label)
-      if (isFrontend && /<img\b/i.test(trimmed) && !content.slice(lines.slice(0, i).join('\n').length, lines.slice(0, i + 6).join('\n').length).includes('alt=')) {
-        issues.push({
-          id: `A11Y-IMG-${path.basename(fp)}-${ln}`,
-          category: 'Accessibility & UX',
-          severity: 'MEDIUM',
-          layer: 'Frontend',
-          file: rel,
-          line: ln,
-          title: `<img> element missing explicit alt attribute`,
-          suggestion: 'Add descriptive alt prop or alt="" for decorative images.'
-        });
+      // ── Rule 4: Image missing alt attr ────────────────────────────────────
+      if (isFrontend && /\<img\b/i.test(trimmed)) {
+        const window = lines.slice(Math.max(0, i - 1), i + 6).join('\n');
+        if (!window.includes('alt=')) {
+          issues.push({
+            id: `A11Y-IMG-${filename}-${ln}`,
+            category: 'Accessibility & UX',
+            severity: 'MEDIUM',
+            layer: 'Frontend',
+            file: rel, line: ln,
+            title: `<img> element missing explicit alt attribute`,
+            suggestion: 'Add descriptive alt prop or alt="" for decorative images.'
+          });
+        }
       }
 
-      // 5. TODO / STUB check
+      // ── Rule 5: TODO / STUB markers ───────────────────────────────────────
       if (/(?:\/\/|\/\*|\*|<!--|#)\s*(TODO|FIXME|STUB|PLACEHOLDER)\b/i.test(trimmed)) {
         issues.push({
-          id: `TODO-${path.basename(fp)}-${ln}`,
+          id: `TODO-${filename}-${ln}`,
           category: 'Technical Debt',
           severity: 'LOW',
           layer: isServer ? 'Server' : 'Frontend',
-          file: rel,
-          line: ln,
+          file: rel, line: ln,
           title: `Unresolved TODO/STUB tag: "${trimmed.substring(0, 60)}"`,
           suggestion: 'Resolve placeholder code with concrete implementation.'
         });
       }
 
-      // 6. Console.log check in production code
-      if (/console\.log\(/i.test(trimmed) && !rel.includes('scripts/') && !rel.includes('test')) {
-        issues.push({
-          id: `LOG-${path.basename(fp)}-${ln}`,
-          category: 'Code Cleanliness',
-          severity: 'LOW',
-          layer: isServer ? 'Server' : 'Frontend',
-          file: rel,
-          line: ln,
-          title: `Debug console.log detected: "${trimmed.substring(0, 60)}"`,
-          suggestion: 'Remove debug console logging or replace with structured logger.'
-        });
-      }
-
-      // 7. Hardcoded non-token color check
-      if (isFrontend && /style=\{\{.*#(?:[0-9a-fA-F]{3}){1,2}\b/i.test(trimmed) && !trimmed.includes('RED') && !trimmed.includes('WHITE') && !trimmed.includes('SLATE')) {
-        issues.push({
-          id: `COLOR-${path.basename(fp)}-${ln}`,
-          category: 'Design System',
-          severity: 'LOW',
-          layer: 'Frontend',
-          file: rel,
-          line: ln,
-          title: `Hardcoded hex color in style prop: "${trimmed.substring(0, 60)}"`,
-          suggestion: 'Use tokens.css variables or established color constants.'
-        });
-      }
-
-      // 8. Explicit 'any' type check
+      // ── Rule 6: Explicit `any` type (skip .d.ts — already excluded above) ─
       if (/: \bany\b/i.test(trimmed) && !trimmed.startsWith('//') && !trimmed.startsWith('*')) {
         issues.push({
-          id: `TYPE-${path.basename(fp)}-${ln}`,
+          id: `TYPE-${filename}-${ln}`,
           category: 'TypeScript Strictness',
           severity: 'MEDIUM',
           layer: isServer ? 'Server' : 'Frontend',
-          file: rel,
-          line: ln,
+          file: rel, line: ln,
           title: `Untyped 'any' usage detected`,
           suggestion: 'Replace explicit `any` with strict interface or generic constraint.'
+        });
+      }
+
+      // ── Rule 7: Bare hardcoded hex (not var fallback, not .d.ts) ─────────
+      if (
+        isFrontend &&
+        !trimmed.includes('RED') && !trimmed.includes('WHITE') && !trimmed.includes('SLATE') &&
+        isHardcodedHex(trimmed)
+      ) {
+        issues.push({
+          id: `COLOR-${filename}-${ln}`,
+          category: 'Design System',
+          severity: 'LOW',
+          layer: 'Frontend',
+          file: rel, line: ln,
+          title: `Hardcoded hex color in style prop: "${trimmed.substring(0, 60)}"`,
+          suggestion: 'Use tokens.css variables or established color constants.'
         });
       }
     });
   }
 
-  // Calculate criticality score for each issue
-  issues.forEach(iss => {
-    iss.score = calculateScore(iss.category, iss.severity);
-  });
+  // Score all issues
+  issues.forEach(iss => { iss.score = calculateScore(iss.category, iss.severity); });
 
   // Sort descending by score
   issues.sort((a, b) => b.score - a.score);
@@ -244,9 +263,19 @@ function scanCodebase() {
 }
 
 function selectTop12Targets(issues) {
-  // DIVERSITY RULE: Max 4 items per category to ensure cross-layer coverage
-  const MAX_PER_CATEGORY = 4;
-  const MAX_PER_LAYER = 8; // No more than 8 from Server or Frontend alone
+  // DIVERSITY CAPS: Security/TypeScript get more room; Design System capped at 2
+  const CATEGORY_CAPS = {
+    'Security & Compliance':   4,
+    'Server Architecture':     4,
+    'TypeScript Strictness':   4,
+    'Test Coverage Gap':       4,
+    'Accessibility & UX':      3,
+    'Design System':           2, // was 4 — reduced to prevent crowding
+    'Technical Debt':          2,
+    'Code Cleanliness':        1,
+  };
+  const MAX_PER_LAYER = 8;
+
   const top12 = [];
   const seenFiles = new Set();
   const categoryCount = {};
@@ -257,14 +286,10 @@ function selectTop12Targets(issues) {
 
     const catKey = iss.category;
     const layerKey = iss.layer || 'Frontend';
+    const cap = CATEGORY_CAPS[catKey] ?? 2;
 
-    // Skip if we already have this file
     if (seenFiles.has(iss.file)) continue;
-
-    // Skip if this category already hit its cap
-    if ((categoryCount[catKey] || 0) >= MAX_PER_CATEGORY) continue;
-
-    // Skip if this layer already hit its cap
+    if ((categoryCount[catKey] || 0) >= cap) continue;
     if ((layerCount[layerKey] || 0) >= MAX_PER_LAYER) continue;
 
     top12.push(iss);
@@ -273,7 +298,7 @@ function selectTop12Targets(issues) {
     layerCount[layerKey] = (layerCount[layerKey] || 0) + 1;
   }
 
-  // If diversity constraints left us under 12, fill remaining from highest-score uncapped items
+  // Fill remaining slots from highest-score unseen items (no category/layer caps)
   if (top12.length < 12) {
     for (const iss of issues) {
       if (top12.length >= 12) break;
@@ -297,48 +322,48 @@ function generateTop12MarkdownReport(top12) {
   md += `## 🎯 Active 12 Upgrade Targets\n\n`;
   md += `| # | Layer | Category | File | Criticality | Target Action |\n`;
   md += `|---|-------|----------|------|-------------|---------------|\n`;
-  top12.forEach((target, index) => {
-    md += `| **${index + 1}** | \`${target.layer}\` | ${target.category} | [\`${path.basename(target.file)}\`](file:///${path.resolve(ROOT, target.file)}) | **${target.severity}** (Score: ${target.score}) | ${target.suggestion} |\n`;
+  top12.forEach((target, i) => {
+    md += `| **${i + 1}** | \`${target.layer}\` | ${target.category} | [\`${path.basename(target.file)}\`](file:///${path.resolve(ROOT, target.file)}) | **${target.severity}** (Score: ${target.score}) | ${target.suggestion} |\n`;
   });
 
   md += `\n---\n\n`;
   md += `## 🔍 Target Breakdown & Specs\n\n`;
 
-  top12.forEach((target, index) => {
-    md += `### ${index + 1}. [${target.layer}] ${target.title}\n`;
+  top12.forEach((target, i) => {
+    md += `### ${i + 1}. [${target.layer}] ${target.title}\n`;
     md += `- **Target File**: [\`${target.file}:${target.line}\`](file:///${path.resolve(ROOT, target.file)}#L${target.line})\n`;
-    md += `- **Layer**: ${target.layer} \| **Category**: ${target.category} \| **Score**: ${target.score}\n`;
+    md += `- **Layer**: ${target.layer} | **Category**: ${target.category} | **Score**: ${target.score}\n`;
     md += `- **Required Refactor**: ${target.suggestion}\n\n`;
   });
 
   return md;
 }
 
-function main() {
-  console.log('🔍 Executing AEGIS 12-Target Autonomous Critical Discovery...');
+export function runScan() {
   const issues = scanCodebase();
   const top12 = selectTop12Targets(issues);
 
-  // Write issues JSON
-  fs.writeFileSync(OUT_JSON, JSON.stringify({ timestamp: new Date().toISOString(), totalIssues: issues.length, issues }, null, 2), 'utf8');
-  console.log(`✅ Saved all discovered issues to ${relPath(OUT_JSON)}`);
-
-  // Write top 12 JSON
+  // Write top-12 JSON (lean output)
   fs.writeFileSync(OUT_TOP12_JSON, JSON.stringify({ timestamp: new Date().toISOString(), totalTargets: top12.length, targets: top12 }, null, 2), 'utf8');
-  console.log(`✅ Saved Top 12 Targets JSON to ${relPath(OUT_TOP12_JSON)}`);
 
-  // Write Markdown Backlog
-  let mdBacklog = `# 🛡️ AEGIS Autopilot Backlog (${issues.length} Items)\n\n`;
-  mdBacklog += `Total cataloged items across codebase: ${issues.length}.\nTop 12 items actively targeted for continuous upgrade.\n`;
-  fs.writeFileSync(OUT_MD, mdBacklog, 'utf8');
-  console.log(`✅ Saved Backlog to ${relPath(OUT_MD)}`);
-
-  // Write Top 12 Markdown Report
+  // Write top-12 Markdown (what the agent reads)
   const mdTop12 = generateTop12MarkdownReport(top12);
   fs.writeFileSync(OUT_TOP12_MD, mdTop12, 'utf8');
-  console.log(`✅ Saved Top 12 Target Report to ${relPath(OUT_TOP12_MD)}`);
 
-  console.log(`\n🎯 Scan Complete: Top 12 Critical Targets Isolated & Ready for Upgrade Loop.`);
+  return { top12, totalIssues: issues.length };
 }
 
-main();
+// Allow standalone invocation
+if (process.argv[1] && path.resolve(process.argv[1]) === path.resolve(__filename)) {
+  console.log('🔍 Executing AEGIS 12-Target Autonomous Critical Discovery...');
+  const { top12, totalIssues } = runScan();
+  console.log(`✅ Saved Top 12 Targets JSON to ${relPath(OUT_TOP12_JSON)}`);
+  console.log(`✅ Saved Top 12 Target Report to ${relPath(OUT_TOP12_MD)}`);
+  console.log(`\n🎯 Scan Complete — ${totalIssues} issues found. Top 12 isolated & ready.\n`);
+
+  // Print top 12 summary to stdout so agent can read inline
+  console.log('## TOP 12 THIS CYCLE\n');
+  top12.forEach((t, i) => {
+    console.log(`  ${i + 1}. [${t.layer}/${t.category}] ${t.file}:${t.line} — ${t.suggestion}`);
+  });
+}

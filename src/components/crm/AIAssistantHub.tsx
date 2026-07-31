@@ -373,7 +373,7 @@ const AIAssistantHub = ({ onSelectAssistant }: AIAssistantHubProps) => {
   const renderQuickStats = () => (
     <div className="quick-stats-bar">
       <div className="stat-card">
-        <div className="stat-icon" style={{ background: '#3B82F6' }}>
+        <div className="stat-icon" style={{ background: 'var(--primary-color)' }}>
           <Users size={20} />
         </div>
         <div className="stat-info">

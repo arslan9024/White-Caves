@@ -59,7 +59,7 @@ export const AnalyticsDashboardPanel: FC = () => {
             Real-time lead conversions · Channel metrics · Rolling revenue projection model
           </p>
         </div>
-        <div style={{ background: '#EFF6FF', border: `1px solid ${BLUE}`, padding: '10px 16px', borderRadius: '8px', textAlign: 'center' }}>
+        <div style={{ background: 'var(--blue-50, rgba(239, 246, 255, 0.7))', border: `1px solid ${BLUE}`, padding: '10px 16px', borderRadius: '8px', textAlign: 'center' }}>
           <div style={{ fontSize: '0.72rem', color: BLUE, fontWeight: 800, textTransform: 'uppercase' }}>Avg Close Cycle</div>
           <div style={{ fontSize: '1.8rem', fontWeight: 900, color: BLUE }}>18.2 Days</div>
           <div style={{ fontSize: '0.72rem', color: TEXT_MUTED }}>Industry standard: 28 Days</div>

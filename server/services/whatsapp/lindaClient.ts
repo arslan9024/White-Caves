@@ -196,8 +196,7 @@ export class LindaClient extends EventEmitter {
   /**
    * Normalise an incoming whatsapp-web.js message into our WhatsAppMessage shape.
    */
-  private async handleIncomingMessage(message: any): Promise<void> {
-    // eslint-disable-line @typescript-eslint/no-explicit-any
+  private async handleIncomingMessage(message: { id?: { id: string }; from?: string; to?: string; body?: string; hasMedia?: boolean; downloadMedia?: () => Promise<unknown> }): Promise<void> {
     try {
       const wrapped: WhatsAppMessage = {
         id: message.id?.id ?? `msg_${Date.now()}`,

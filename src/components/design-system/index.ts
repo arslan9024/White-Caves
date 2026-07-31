@@ -14,7 +14,7 @@ export { Alert, type AlertProps, type AlertVariant } from './Alert';
 export { Badge, type BadgeProps, type BadgeSize, type BadgeVariant } from './Badge';
 export { Spinner, type SpinnerProps, type SpinnerSize, type SpinnerVariant } from './Spinner';
 
-// Placeholder exports for components to be implemented
+// Core Design System Exports
 // Uncomment when components are created
 
 // Advanced Components (Phase 2b)

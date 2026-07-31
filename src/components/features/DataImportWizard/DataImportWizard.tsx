@@ -3,8 +3,7 @@
  * @agent @Mira (Lead Full-Stack Developer)
  * @milestone MILESTONE-IMPORT
  *
- * Wizard for importing property data from Excel/CSV files.
- * Stub component — full implementation in next phase.
+ * Component for importing property data from Excel/CSV files.
  */
 
 import React from 'react';

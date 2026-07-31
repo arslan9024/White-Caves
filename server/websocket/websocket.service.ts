@@ -43,7 +43,7 @@ export class WebSocketService {
    * Setup authentication middleware
    */
   private setupMiddleware(): void {
-    this.io.use((socket: any, next: any) => {
+    this.io.use((socket: { handshake: { auth: { token?: string } }; user?: unknown }, next: (err?: Error) => void) => {
       try {
         const token = socket.handshake.auth.token;
         if (!token) {
