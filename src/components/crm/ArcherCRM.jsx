@@ -354,7 +354,7 @@ const ArcherCRM = () => {
             }}
           >
             <AlertCircle size={16} color="#E31E24" />
-            <p style={{ fontSize: 12, color: '#991B1B', margin: 0 }}>
+            <p style={{ fontSize: 12, color: 'var(--error-color)', margin: 0 }}>
               Model is retrained weekly against closed/lost deal outcomes. Seasonal adjustments
               applied for Ramadan & summer markets.
             </p>

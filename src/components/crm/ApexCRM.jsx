@@ -261,7 +261,7 @@ const ApexCRM = () => {
             >
               <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                 <strong>{a.name}</strong>
-                <span className="status-badge" style={{ background: '#f0fdf4', color: '#16a34a' }}>
+                <span className="status-badge" style={{ background: 'var(--success-light)', color: 'var(--success-color)' }}>
                   On Track
                 </span>
               </div>
