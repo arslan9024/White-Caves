@@ -112,7 +112,7 @@ const SCORING_FACTORS = [
 ];
 
 const QUEUE_STATS = [
-  { label: 'Hot Leads (80+)', value: 2, color: '#E31E24' },
+  { label: 'Hot Leads (80+)', value: 2, color: 'var(--error-color)' },
   { label: 'Warm Leads (60–79)', value: 3, color: '#F97316' },
   { label: 'Cold Leads (<60)', value: 2, color: '#6B7280' },
 ];
@@ -326,14 +326,14 @@ const ArcherCRM = () => {
             >
               <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 6 }}>
                 <strong>{f.factor}</strong>
-                <span style={{ color: '#E31E24', fontWeight: 700 }}>{f.weight}%</span>
+                <span style={{ color: 'var(--error-color)', fontWeight: 700 }}>{f.weight}%</span>
               </div>
               <div style={{ width: '100%', height: 6, background: '#e5e7eb', borderRadius: 4 }}>
                 <div
                   style={{
                     width: `${f.weight * 4}%`,
                     height: '100%',
-                    background: '#E31E24',
+                    background: 'var(--error-color)',
                     borderRadius: 4,
                   }}
                 />

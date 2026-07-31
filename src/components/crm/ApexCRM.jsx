@@ -180,7 +180,7 @@ const ApexCRM = () => {
               </div>
               <div style={{ flex: 1 }}>
                 <strong>{a.name}</strong>
-                <div style={{ fontSize: 12, color: '#6b7280', marginTop: 2 }}>
+                <div style={{ fontSize: 12, color: 'var(--text-secondary)', marginTop: 2 }}>
                   {a.deals} deals · {a.revenue} · {a.calls} calls · {a.convRate} conv.
                 </div>
               </div>
@@ -238,11 +238,11 @@ const ApexCRM = () => {
                 </span>
               </div>
               <div style={{ fontSize: 13, marginBottom: 6 }}>
-                <span style={{ color: '#6b7280' }}>Focus: </span>
+                <span style={{ color: 'var(--text-secondary)' }}>Focus: </span>
                 {p.focus}
               </div>
               <div style={{ fontSize: 13, marginBottom: 6 }}>
-                <span style={{ color: '#6b7280' }}>Action: </span>
+                <span style={{ color: 'var(--text-secondary)' }}>Action: </span>
                 {p.action}
               </div>
               <div style={{ fontSize: 12, color: '#9ca3af' }}>Due: {p.dueDate}</div>
@@ -265,7 +265,7 @@ const ApexCRM = () => {
                   On Track
                 </span>
               </div>
-              <div style={{ fontSize: 12, color: '#6b7280', marginTop: 4 }}>
+              <div style={{ fontSize: 12, color: 'var(--text-secondary)', marginTop: 4 }}>
                 No coaching intervention needed · {a.convRate} conversion rate
               </div>
             </div>
@@ -308,7 +308,7 @@ const ApexCRM = () => {
                     }}
                   >
                     <div style={{ fontSize: 15, fontWeight: 700 }}>{v}</div>
-                    <div style={{ fontSize: 11, color: '#6b7280' }}>{k}</div>
+                    <div style={{ fontSize: 11, color: 'var(--text-secondary)' }}>{k}</div>
                   </div>
                 ))}
               </div>

@@ -1,7 +1,7 @@
 # 🛡️ AEGIS Autopilot — Top 12 Critical Target Upgrades
 
 > **Rule of Continuous Perfection**: Each turn dynamically isolates and resolves the 12 most critical system targets across Server, Frontend, Security, and Quality.
-> **Timestamp**: 2026-07-31T17:13:29.391Z
+> **Timestamp**: 2026-07-31T17:14:46.562Z
 > **Total Active Targets**: 12 / 12
 
 ---
@@ -10,80 +10,80 @@
 
 | # | Layer | Category | File | Criticality | Target Action |
 |---|-------|----------|------|-------------|---------------|
-| **1** | `Frontend` | Test Coverage Gap | [`MaryDetailsTab.tsx`](file:///C:\Users\HP\Documents\My Web Sites\AntigravityWC\White-Caves\src\components\crm\MaryInventoryCRM_NEW\tabs\MaryDetailsTab.tsx) | **MEDIUM** (Score: 75) | Create test file for src/components/crm/MaryInventoryCRM_NEW/tabs/MaryDetailsTab.tsx with Vitest/Supertest assertions. |
-| **2** | `Frontend` | Test Coverage Gap | [`MaryFeaturesTab.tsx`](file:///C:\Users\HP\Documents\My Web Sites\AntigravityWC\White-Caves\src\components\crm\MaryInventoryCRM_NEW\tabs\MaryFeaturesTab.tsx) | **MEDIUM** (Score: 75) | Create test file for src/components/crm/MaryInventoryCRM_NEW/tabs/MaryFeaturesTab.tsx with Vitest/Supertest assertions. |
-| **3** | `Frontend` | Test Coverage Gap | [`MaryPipelineTab.tsx`](file:///C:\Users\HP\Documents\My Web Sites\AntigravityWC\White-Caves\src\components\crm\MaryInventoryCRM_NEW\tabs\MaryPipelineTab.tsx) | **MEDIUM** (Score: 75) | Create test file for src/components/crm/MaryInventoryCRM_NEW/tabs/MaryPipelineTab.tsx with Vitest/Supertest assertions. |
-| **4** | `Frontend` | Test Coverage Gap | [`MavenInvestmentCRM.jsx`](file:///C:\Users\HP\Documents\My Web Sites\AntigravityWC\White-Caves\src\components\crm\MavenInvestmentCRM.jsx) | **MEDIUM** (Score: 75) | Create test file for src/components/crm/MavenInvestmentCRM.jsx with Vitest/Supertest assertions. |
+| **1** | `Frontend` | Test Coverage Gap | [`ComplianceMixedDashboard.jsx`](file:///C:\Users\HP\Documents\My Web Sites\AntigravityWC\White-Caves\src\components\crm\mixed\ComplianceMixedDashboard.jsx) | **MEDIUM** (Score: 75) | Create test file for src/components/crm/mixed/ComplianceMixedDashboard.jsx with Vitest/Supertest assertions. |
+| **2** | `Frontend` | Test Coverage Gap | [`ExecutiveMixedDashboard.jsx`](file:///C:\Users\HP\Documents\My Web Sites\AntigravityWC\White-Caves\src\components\crm\mixed\ExecutiveMixedDashboard.jsx) | **MEDIUM** (Score: 75) | Create test file for src/components/crm/mixed/ExecutiveMixedDashboard.jsx with Vitest/Supertest assertions. |
+| **3** | `Frontend` | Test Coverage Gap | [`FinanceMixedDashboard.jsx`](file:///C:\Users\HP\Documents\My Web Sites\AntigravityWC\White-Caves\src\components\crm\mixed\FinanceMixedDashboard.jsx) | **MEDIUM** (Score: 75) | Create test file for src/components/crm/mixed/FinanceMixedDashboard.jsx with Vitest/Supertest assertions. |
+| **4** | `Frontend` | Test Coverage Gap | [`LeasingMixedDashboard.jsx`](file:///C:\Users\HP\Documents\My Web Sites\AntigravityWC\White-Caves\src\components\crm\mixed\LeasingMixedDashboard.jsx) | **MEDIUM** (Score: 75) | Create test file for src/components/crm/mixed/LeasingMixedDashboard.jsx with Vitest/Supertest assertions. |
 | **5** | `Frontend` | Design System | [`ApexCRM.jsx`](file:///C:\Users\HP\Documents\My Web Sites\AntigravityWC\White-Caves\src\components\crm\ApexCRM.jsx) | **LOW** (Score: 40) | Use tokens.css variables or established color constants. |
 | **6** | `Frontend` | Design System | [`ArcherCRM.jsx`](file:///C:\Users\HP\Documents\My Web Sites\AntigravityWC\White-Caves\src\components\crm\ArcherCRM.jsx) | **LOW** (Score: 40) | Use tokens.css variables or established color constants. |
 | **7** | `Server` | Technical Debt | [`codeAnalysisService.js`](file:///C:\Users\HP\Documents\My Web Sites\AntigravityWC\White-Caves\server\services\codeAnalysisService.js) | **LOW** (Score: 35) | Resolve placeholder code with concrete implementation. |
-| **8** | `Frontend` | Test Coverage Gap | [`MiraCRM.jsx`](file:///C:\Users\HP\Documents\My Web Sites\AntigravityWC\White-Caves\src\components\crm\MiraCRM.jsx) | **MEDIUM** (Score: 75) | Create test file for src/components/crm/MiraCRM.jsx with Vitest/Supertest assertions. |
-| **9** | `Frontend` | Test Coverage Gap | [`AdminMixedDashboard.jsx`](file:///C:\Users\HP\Documents\My Web Sites\AntigravityWC\White-Caves\src\components\crm\mixed\AdminMixedDashboard.jsx) | **MEDIUM** (Score: 75) | Create test file for src/components/crm/mixed/AdminMixedDashboard.jsx with Vitest/Supertest assertions. |
-| **10** | `Frontend` | Test Coverage Gap | [`AIQuickActions.jsx`](file:///C:\Users\HP\Documents\My Web Sites\AntigravityWC\White-Caves\src\components\crm\mixed\AIQuickActions.jsx) | **MEDIUM** (Score: 75) | Create test file for src/components/crm/mixed/AIQuickActions.jsx with Vitest/Supertest assertions. |
-| **11** | `Frontend` | Test Coverage Gap | [`AnalyticsMixedDashboard.jsx`](file:///C:\Users\HP\Documents\My Web Sites\AntigravityWC\White-Caves\src\components\crm\mixed\AnalyticsMixedDashboard.jsx) | **MEDIUM** (Score: 75) | Create test file for src/components/crm/mixed/AnalyticsMixedDashboard.jsx with Vitest/Supertest assertions. |
-| **12** | `Frontend` | Test Coverage Gap | [`AnimatedStatsBar.jsx`](file:///C:\Users\HP\Documents\My Web Sites\AntigravityWC\White-Caves\src\components\crm\mixed\AnimatedStatsBar.jsx) | **MEDIUM** (Score: 75) | Create test file for src/components/crm/mixed/AnimatedStatsBar.jsx with Vitest/Supertest assertions. |
+| **8** | `Frontend` | Test Coverage Gap | [`LifecycleFlowchart.jsx`](file:///C:\Users\HP\Documents\My Web Sites\AntigravityWC\White-Caves\src\components\crm\mixed\LifecycleFlowchart.jsx) | **MEDIUM** (Score: 75) | Create test file for src/components/crm/mixed/LifecycleFlowchart.jsx with Vitest/Supertest assertions. |
+| **9** | `Frontend` | Test Coverage Gap | [`LiveActivityFeed.jsx`](file:///C:\Users\HP\Documents\My Web Sites\AntigravityWC\White-Caves\src\components\crm\mixed\LiveActivityFeed.jsx) | **MEDIUM** (Score: 75) | Create test file for src/components/crm/mixed/LiveActivityFeed.jsx with Vitest/Supertest assertions. |
+| **10** | `Frontend` | Test Coverage Gap | [`MarketingMixedDashboard.jsx`](file:///C:\Users\HP\Documents\My Web Sites\AntigravityWC\White-Caves\src\components\crm\mixed\MarketingMixedDashboard.jsx) | **MEDIUM** (Score: 75) | Create test file for src/components/crm/mixed/MarketingMixedDashboard.jsx with Vitest/Supertest assertions. |
+| **11** | `Frontend` | Test Coverage Gap | [`MixedDashboard.jsx`](file:///C:\Users\HP\Documents\My Web Sites\AntigravityWC\White-Caves\src\components\crm\mixed\MixedDashboard.jsx) | **MEDIUM** (Score: 75) | Create test file for src/components/crm/mixed/MixedDashboard.jsx with Vitest/Supertest assertions. |
+| **12** | `Frontend` | Test Coverage Gap | [`OperationsMixedDashboard.jsx`](file:///C:\Users\HP\Documents\My Web Sites\AntigravityWC\White-Caves\src\components\crm\mixed\OperationsMixedDashboard.jsx) | **MEDIUM** (Score: 75) | Create test file for src/components/crm/mixed/OperationsMixedDashboard.jsx with Vitest/Supertest assertions. |
 
 ---
 
 ## 🔍 Target Breakdown & Specs
 
-### 1. [Frontend] Frontend Component/Hook 'MaryDetailsTab' missing unit test file
-- **Target File**: [`src/components/crm/MaryInventoryCRM_NEW/tabs/MaryDetailsTab.tsx:1`](file:///C:\Users\HP\Documents\My Web Sites\AntigravityWC\White-Caves\src\components\crm\MaryInventoryCRM_NEW\tabs\MaryDetailsTab.tsx#L1)
+### 1. [Frontend] Frontend Component/Hook 'ComplianceMixedDashboard' missing unit test file
+- **Target File**: [`src/components/crm/mixed/ComplianceMixedDashboard.jsx:1`](file:///C:\Users\HP\Documents\My Web Sites\AntigravityWC\White-Caves\src\components\crm\mixed\ComplianceMixedDashboard.jsx#L1)
 - **Layer**: Frontend | **Category**: Test Coverage Gap | **Score**: 75
-- **Required Refactor**: Create test file for src/components/crm/MaryInventoryCRM_NEW/tabs/MaryDetailsTab.tsx with Vitest/Supertest assertions.
+- **Required Refactor**: Create test file for src/components/crm/mixed/ComplianceMixedDashboard.jsx with Vitest/Supertest assertions.
 
-### 2. [Frontend] Frontend Component/Hook 'MaryFeaturesTab' missing unit test file
-- **Target File**: [`src/components/crm/MaryInventoryCRM_NEW/tabs/MaryFeaturesTab.tsx:1`](file:///C:\Users\HP\Documents\My Web Sites\AntigravityWC\White-Caves\src\components\crm\MaryInventoryCRM_NEW\tabs\MaryFeaturesTab.tsx#L1)
+### 2. [Frontend] Frontend Component/Hook 'ExecutiveMixedDashboard' missing unit test file
+- **Target File**: [`src/components/crm/mixed/ExecutiveMixedDashboard.jsx:1`](file:///C:\Users\HP\Documents\My Web Sites\AntigravityWC\White-Caves\src\components\crm\mixed\ExecutiveMixedDashboard.jsx#L1)
 - **Layer**: Frontend | **Category**: Test Coverage Gap | **Score**: 75
-- **Required Refactor**: Create test file for src/components/crm/MaryInventoryCRM_NEW/tabs/MaryFeaturesTab.tsx with Vitest/Supertest assertions.
+- **Required Refactor**: Create test file for src/components/crm/mixed/ExecutiveMixedDashboard.jsx with Vitest/Supertest assertions.
 
-### 3. [Frontend] Frontend Component/Hook 'MaryPipelineTab' missing unit test file
-- **Target File**: [`src/components/crm/MaryInventoryCRM_NEW/tabs/MaryPipelineTab.tsx:1`](file:///C:\Users\HP\Documents\My Web Sites\AntigravityWC\White-Caves\src\components\crm\MaryInventoryCRM_NEW\tabs\MaryPipelineTab.tsx#L1)
+### 3. [Frontend] Frontend Component/Hook 'FinanceMixedDashboard' missing unit test file
+- **Target File**: [`src/components/crm/mixed/FinanceMixedDashboard.jsx:1`](file:///C:\Users\HP\Documents\My Web Sites\AntigravityWC\White-Caves\src\components\crm\mixed\FinanceMixedDashboard.jsx#L1)
 - **Layer**: Frontend | **Category**: Test Coverage Gap | **Score**: 75
-- **Required Refactor**: Create test file for src/components/crm/MaryInventoryCRM_NEW/tabs/MaryPipelineTab.tsx with Vitest/Supertest assertions.
+- **Required Refactor**: Create test file for src/components/crm/mixed/FinanceMixedDashboard.jsx with Vitest/Supertest assertions.
 
-### 4. [Frontend] Frontend Component/Hook 'MavenInvestmentCRM' missing unit test file
-- **Target File**: [`src/components/crm/MavenInvestmentCRM.jsx:1`](file:///C:\Users\HP\Documents\My Web Sites\AntigravityWC\White-Caves\src\components\crm\MavenInvestmentCRM.jsx#L1)
+### 4. [Frontend] Frontend Component/Hook 'LeasingMixedDashboard' missing unit test file
+- **Target File**: [`src/components/crm/mixed/LeasingMixedDashboard.jsx:1`](file:///C:\Users\HP\Documents\My Web Sites\AntigravityWC\White-Caves\src\components\crm\mixed\LeasingMixedDashboard.jsx#L1)
 - **Layer**: Frontend | **Category**: Test Coverage Gap | **Score**: 75
-- **Required Refactor**: Create test file for src/components/crm/MavenInvestmentCRM.jsx with Vitest/Supertest assertions.
+- **Required Refactor**: Create test file for src/components/crm/mixed/LeasingMixedDashboard.jsx with Vitest/Supertest assertions.
 
-### 5. [Frontend] Hardcoded hex color in style prop: "<div style={{ fontSize: 12, color: '#6b7280', marginTop: 2 }"
-- **Target File**: [`src/components/crm/ApexCRM.jsx:183`](file:///C:\Users\HP\Documents\My Web Sites\AntigravityWC\White-Caves\src\components\crm\ApexCRM.jsx#L183)
+### 5. [Frontend] Hardcoded hex color in style prop: "style={{ color: a.trend > 0 ? '#22C55E' : a.trend < 0 ? '#EF"
+- **Target File**: [`src/components/crm/ApexCRM.jsx:194`](file:///C:\Users\HP\Documents\My Web Sites\AntigravityWC\White-Caves\src\components\crm\ApexCRM.jsx#L194)
 - **Layer**: Frontend | **Category**: Design System | **Score**: 40
 - **Required Refactor**: Use tokens.css variables or established color constants.
 
-### 6. [Frontend] Hardcoded hex color in style prop: "<span style={{ color: '#E31E24', fontWeight: 700 }}>{f.weigh"
-- **Target File**: [`src/components/crm/ArcherCRM.jsx:329`](file:///C:\Users\HP\Documents\My Web Sites\AntigravityWC\White-Caves\src\components\crm\ArcherCRM.jsx#L329)
+### 6. [Frontend] Hardcoded hex color in style prop: "<div style={{ width: '100%', height: 6, background: '#e5e7eb"
+- **Target File**: [`src/components/crm/ArcherCRM.jsx:331`](file:///C:\Users\HP\Documents\My Web Sites\AntigravityWC\White-Caves\src\components\crm\ArcherCRM.jsx#L331)
 - **Layer**: Frontend | **Category**: Design System | **Score**: 40
 - **Required Refactor**: Use tokens.css variables or established color constants.
 
-### 7. [Server] Unresolved TODO/STUB tag: "/\/\/\s*TODO/,"
+### 7. [Server] Unresolved TODO/STUB tag: "new RegExp('\\/\\/\\s*TODO'),"
 - **Target File**: [`server/services/codeAnalysisService.js:199`](file:///C:\Users\HP\Documents\My Web Sites\AntigravityWC\White-Caves\server\services\codeAnalysisService.js#L199)
 - **Layer**: Server | **Category**: Technical Debt | **Score**: 35
 - **Required Refactor**: Resolve placeholder code with concrete implementation.
 
-### 8. [Frontend] Frontend Component/Hook 'MiraCRM' missing unit test file
-- **Target File**: [`src/components/crm/MiraCRM.jsx:1`](file:///C:\Users\HP\Documents\My Web Sites\AntigravityWC\White-Caves\src\components\crm\MiraCRM.jsx#L1)
+### 8. [Frontend] Frontend Component/Hook 'LifecycleFlowchart' missing unit test file
+- **Target File**: [`src/components/crm/mixed/LifecycleFlowchart.jsx:1`](file:///C:\Users\HP\Documents\My Web Sites\AntigravityWC\White-Caves\src\components\crm\mixed\LifecycleFlowchart.jsx#L1)
 - **Layer**: Frontend | **Category**: Test Coverage Gap | **Score**: 75
-- **Required Refactor**: Create test file for src/components/crm/MiraCRM.jsx with Vitest/Supertest assertions.
+- **Required Refactor**: Create test file for src/components/crm/mixed/LifecycleFlowchart.jsx with Vitest/Supertest assertions.
 
-### 9. [Frontend] Frontend Component/Hook 'AdminMixedDashboard' missing unit test file
-- **Target File**: [`src/components/crm/mixed/AdminMixedDashboard.jsx:1`](file:///C:\Users\HP\Documents\My Web Sites\AntigravityWC\White-Caves\src\components\crm\mixed\AdminMixedDashboard.jsx#L1)
+### 9. [Frontend] Frontend Component/Hook 'LiveActivityFeed' missing unit test file
+- **Target File**: [`src/components/crm/mixed/LiveActivityFeed.jsx:1`](file:///C:\Users\HP\Documents\My Web Sites\AntigravityWC\White-Caves\src\components\crm\mixed\LiveActivityFeed.jsx#L1)
 - **Layer**: Frontend | **Category**: Test Coverage Gap | **Score**: 75
-- **Required Refactor**: Create test file for src/components/crm/mixed/AdminMixedDashboard.jsx with Vitest/Supertest assertions.
+- **Required Refactor**: Create test file for src/components/crm/mixed/LiveActivityFeed.jsx with Vitest/Supertest assertions.
 
-### 10. [Frontend] Frontend Component/Hook 'AIQuickActions' missing unit test file
-- **Target File**: [`src/components/crm/mixed/AIQuickActions.jsx:1`](file:///C:\Users\HP\Documents\My Web Sites\AntigravityWC\White-Caves\src\components\crm\mixed\AIQuickActions.jsx#L1)
+### 10. [Frontend] Frontend Component/Hook 'MarketingMixedDashboard' missing unit test file
+- **Target File**: [`src/components/crm/mixed/MarketingMixedDashboard.jsx:1`](file:///C:\Users\HP\Documents\My Web Sites\AntigravityWC\White-Caves\src\components\crm\mixed\MarketingMixedDashboard.jsx#L1)
 - **Layer**: Frontend | **Category**: Test Coverage Gap | **Score**: 75
-- **Required Refactor**: Create test file for src/components/crm/mixed/AIQuickActions.jsx with Vitest/Supertest assertions.
+- **Required Refactor**: Create test file for src/components/crm/mixed/MarketingMixedDashboard.jsx with Vitest/Supertest assertions.
 
-### 11. [Frontend] Frontend Component/Hook 'AnalyticsMixedDashboard' missing unit test file
-- **Target File**: [`src/components/crm/mixed/AnalyticsMixedDashboard.jsx:1`](file:///C:\Users\HP\Documents\My Web Sites\AntigravityWC\White-Caves\src\components\crm\mixed\AnalyticsMixedDashboard.jsx#L1)
+### 11. [Frontend] Frontend Component/Hook 'MixedDashboard' missing unit test file
+- **Target File**: [`src/components/crm/mixed/MixedDashboard.jsx:1`](file:///C:\Users\HP\Documents\My Web Sites\AntigravityWC\White-Caves\src\components\crm\mixed\MixedDashboard.jsx#L1)
 - **Layer**: Frontend | **Category**: Test Coverage Gap | **Score**: 75
-- **Required Refactor**: Create test file for src/components/crm/mixed/AnalyticsMixedDashboard.jsx with Vitest/Supertest assertions.
+- **Required Refactor**: Create test file for src/components/crm/mixed/MixedDashboard.jsx with Vitest/Supertest assertions.
 
-### 12. [Frontend] Frontend Component/Hook 'AnimatedStatsBar' missing unit test file
-- **Target File**: [`src/components/crm/mixed/AnimatedStatsBar.jsx:1`](file:///C:\Users\HP\Documents\My Web Sites\AntigravityWC\White-Caves\src\components\crm\mixed\AnimatedStatsBar.jsx#L1)
+### 12. [Frontend] Frontend Component/Hook 'OperationsMixedDashboard' missing unit test file
+- **Target File**: [`src/components/crm/mixed/OperationsMixedDashboard.jsx:1`](file:///C:\Users\HP\Documents\My Web Sites\AntigravityWC\White-Caves\src\components\crm\mixed\OperationsMixedDashboard.jsx#L1)
 - **Layer**: Frontend | **Category**: Test Coverage Gap | **Score**: 75
-- **Required Refactor**: Create test file for src/components/crm/mixed/AnimatedStatsBar.jsx with Vitest/Supertest assertions.
+- **Required Refactor**: Create test file for src/components/crm/mixed/OperationsMixedDashboard.jsx with Vitest/Supertest assertions.
 

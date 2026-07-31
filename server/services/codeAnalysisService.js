@@ -196,8 +196,8 @@ class CodeAnalysisService {
   isPlaceholderHandler(handlerCode) {
     const placeholderPatterns = [
       /console\.log/,
-      /\/\/\s*TODO/,
-      /\/\/\s*FIXME/,
+      new RegExp('\\/\\/\\s*TODO'),
+      new RegExp('\\/\\/\\s*FIXME'),
       /alert\(/,
       /\/\/\s*Static fallback/,
       /\(\)\s*=>\s*\{\s*\}/,
