@@ -15,7 +15,7 @@ export default function ServiceTracker({ userId, userRole }) {
     amount: '',
     bankName: ''
   });
-  const [property, setProperty] = useState(null); // Placeholder for property details
+  const [property, setProperty] = useState(null); // Selected property reference
 
   useEffect(() => {
     fetchServices();

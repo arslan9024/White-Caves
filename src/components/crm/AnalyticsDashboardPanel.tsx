@@ -155,7 +155,7 @@ export const AnalyticsDashboardPanel: FC = () => {
                     <span style={{ color: SLATE }}>{f.month}</span>
                     <span style={{ color: RED, fontWeight: 800 }}>AED {f.projectedAED.toLocaleString()}</span>
                   </div>
-                  <div style={{ background: '#E2E8F0', borderRadius: '99px', height: '8px' }}>
+                  <div style={{ background: 'var(--slate-200, #E2E8F0)', borderRadius: '99px', height: '8px' }}>
                     {/* Width scale based on max forecasted item */}
                     <div style={{
                       background: RED,

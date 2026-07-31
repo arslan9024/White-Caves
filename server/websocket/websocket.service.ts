@@ -102,17 +102,17 @@ export class WebSocketService {
       });
 
       // Handle new messages
-      socket.on('message', (data: any) => {
+      socket.on('message', (data: Record<string, unknown>) => {
         this.handleNewMessage(socket, data);
       });
 
       // Handle message updates
-      socket.on('message-update', (data: any) => {
+      socket.on('message-update', (data: Record<string, unknown>) => {
         this.handleMessageUpdate(socket, data);
       });
 
       // Handle message deletion
-      socket.on('message-delete', (data: any) => {
+      socket.on('message-delete', (data: Record<string, unknown>) => {
         this.handleMessageDelete(socket, data);
       });
 

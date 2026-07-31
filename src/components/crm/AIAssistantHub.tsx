@@ -383,7 +383,7 @@ const AIAssistantHub = ({ onSelectAssistant }: AIAssistantHubProps) => {
       </div>
 
       <div className="stat-card">
-        <div className="stat-icon" style={{ background: '#10B981' }}>
+        <div className="stat-icon" style={{ background: 'var(--green-500, #10B981)' }}>
           <Activity size={20} />
         </div>
         <div className="stat-info">

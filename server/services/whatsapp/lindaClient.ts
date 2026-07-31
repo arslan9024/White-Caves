@@ -222,8 +222,7 @@ export class LindaClient extends EventEmitter {
   /**
    * Detect message type from MIME type or hasMedia flag.
    */
-  private detectMessageType(message: any): WhatsAppMessage['type'] {
-    // eslint-disable-line @typescript-eslint/no-explicit-any
+  private detectMessageType(message: { hasMedia?: boolean; mimetype?: string }): WhatsAppMessage['type'] {
     if (!message.hasMedia) return 'text';
     const mime: string = message.mimetype ?? '';
     if (mime.startsWith('image/')) return 'image';

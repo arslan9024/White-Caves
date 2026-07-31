@@ -4,7 +4,6 @@
  * @milestone MILESTONE-IMPORT
  *
  * View and manage past property data import sessions.
- * Stub component — full implementation in next phase.
  */
 
 import React from 'react';
