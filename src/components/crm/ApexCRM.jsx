@@ -191,7 +191,7 @@ const ApexCRM = () => {
                   <ArrowDown size={12} color="#EF4444" />
                 ) : null}
                 <span
-                  style={{ color: a.trend > 0 ? '#22C55E' : a.trend < 0 ? '#EF4444' : '#6b7280' }}
+                  style={{ color: a.trend > 0 ? 'var(--success-color)' : a.trend < 0 ? 'var(--error-color)' : 'var(--text-secondary)' }}
                 >
                   {a.trend === 0
                     ? 'Stable'

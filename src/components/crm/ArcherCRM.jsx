@@ -328,7 +328,7 @@ const ArcherCRM = () => {
                 <strong>{f.factor}</strong>
                 <span style={{ color: 'var(--error-color)', fontWeight: 700 }}>{f.weight}%</span>
               </div>
-              <div style={{ width: '100%', height: 6, background: '#e5e7eb', borderRadius: 4 }}>
+              <div style={{ width: '100%', height: 6, background: 'var(--border-color)', borderRadius: 4 }}>
                 <div
                   style={{
                     width: `${f.weight * 4}%`,
