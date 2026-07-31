@@ -227,7 +227,7 @@ export const AuditTrailPanel: FC = () => {
                     key={event.id}
                     onClick={() => setSelectedEvent(event)}
                     style={{
-                      borderBottom: '1px solid #E2E8F0',
+                      borderBottom: '1px solid var(--border-color)',
                       background: selectedEvent?.id === event.id ? '#FEF2F2' : (idx % 2 === 0 ? WHITE : CARD_BG),
                       cursor: 'pointer',
                       transition: 'background 0.15s',
@@ -294,7 +294,7 @@ export const AuditTrailPanel: FC = () => {
                 { label: 'Entity ID', value: selectedEvent.entityId },
                 { label: 'IP Address', value: selectedEvent.ipAddress },
               ].map(row => (
-                <div key={row.label} style={{ display: 'flex', justifyContent: 'space-between', borderBottom: '1px solid #E2E8F0', paddingBottom: '8px' }}>
+                <div key={row.label} style={{ display: 'flex', justifyContent: 'space-between', borderBottom: '1px solid var(--border-color)', paddingBottom: '8px' }}>
                   <span style={{ fontSize: '0.78rem', color: TEXT_MUTED, fontWeight: 600 }}>{row.label}</span>
                   <span style={{ fontSize: '0.78rem', fontWeight: 600, color: SLATE, fontFamily: row.label === 'Event ID' || row.label === 'IP Address' || row.label === 'Entity ID' ? 'monospace' : undefined }}>
                     {row.value}

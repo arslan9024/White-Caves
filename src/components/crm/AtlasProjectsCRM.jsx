@@ -59,7 +59,7 @@ const AtlasProjectsCRM = () => {
 
       <div className="quick-stats">
         <div className="stat-card">
-          <div className="stat-icon" style={{ background: 'rgba(99, 102, 241, 0.2)', color: '#6366F1' }}>
+          <div className="stat-icon" style={{ background: 'var(--primary-light)', color: 'var(--primary-color)' }}>
             <Building size={20} />
           </div>
           <div className="stat-content">
