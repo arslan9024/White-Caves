@@ -187,7 +187,7 @@ export const CrossIntegrationPanel: FC<CrossIntegrationPanelProps> = ({ classNam
             </span>
           )}
           {!loading && fetchError && (
-            <span role="alert" style={{ fontSize: '12px', color: '#f87171' }}>
+            <span role="alert" style={{ fontSize: '12px', color: 'var(--color-f87171, #f87171)' }}>
               ⚠ {fetchError}
             </span>
           )}
@@ -255,7 +255,7 @@ export const CrossIntegrationPanel: FC<CrossIntegrationPanelProps> = ({ classNam
               <div style={{ fontSize: '26px', marginBottom: '10px', lineHeight: 1 }} aria-hidden="true">
                 {a.emoji}
               </div>
-              <div style={{ fontWeight: 700, fontSize: '16px', color: '#fff', marginBottom: '2px' }}>
+              <div style={{ fontWeight: 700, fontSize: '16px', color: 'var(--white, #fff)', marginBottom: '2px' }}>
                 {a.name}
               </div>
               <div style={{ fontSize: '11px', color: GOLD, marginBottom: '4px', fontWeight: 500 }}>
@@ -371,7 +371,7 @@ export const CrossIntegrationPanel: FC<CrossIntegrationPanelProps> = ({ classNam
           <p style={{ margin: 0, fontSize: '12px', color: TEXT_MUTED }}>
             No events recorded yet. Use{' '}
             <code
-              style={{ fontSize: '11px', background: '#1e1e1e', padding: '1px 5px', borderRadius: '3px', color: GOLD }}
+              style={{ fontSize: '11px', background: 'var(--color-1e1e1e, #1e1e1e)', padding: '1px 5px', borderRadius: '3px', color: GOLD }}
             >
               POST /api/orchestrator/emit
             </code>{' '}

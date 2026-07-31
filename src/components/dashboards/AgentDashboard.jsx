@@ -388,7 +388,7 @@ export default function AgentDashboard({ user }) {
                       <span className="stage">{item.stage}</span>
                       <span className="count">{item.count}</span>
                     </div>
-                    <div className="funnel-bar" style={{ width: '100%', height: '40px', background: `linear-gradient(90deg, #8B5CF6 0%, #3B82F6 100%)`, borderRadius: '4px' }}></div>
+                    <div className="funnel-bar" style={{ width: '100%', height: '40px', background: `linear-gradient(90deg, var(--accent-purple, #8B5CF6) 0%, var(--accent-blue, #3B82F6) 100%)`, borderRadius: '4px' }}></div>
                   </div>
                 ))}
               </div>
@@ -579,22 +579,22 @@ export default function AgentDashboard({ user }) {
               <div className="source-list">
                 <div className="source-item">
                   <span className="source-name">Bayut</span>
-                  <div className="source-bar"><div style={{ width: '35%', background: '#8B5CF6' }}></div></div>
+                  <div className="source-bar"><div style={{ width: '35%', background: 'var(--accent-purple, #8B5CF6)' }}></div></div>
                   <span className="source-count">120 leads</span>
                 </div>
                 <div className="source-item">
                   <span className="source-name">PropertyFinder</span>
-                  <div className="source-bar"><div style={{ width: '28%', background: '#3B82F6' }}></div></div>
+                  <div className="source-bar"><div style={{ width: '28%', background: 'var(--accent-blue, #3B82F6)' }}></div></div>
                   <span className="source-count">95 leads</span>
                 </div>
                 <div className="source-item">
                   <span className="source-name">Dubizzle</span>
-                  <div className="source-bar"><div style={{ width: '22%', background: '#F59E0B' }}></div></div>
+                  <div className="source-bar"><div style={{ width: '22%', background: 'var(--accent-gold, #F59E0B)' }}></div></div>
                   <span className="source-count">75 leads</span>
                 </div>
                 <div className="source-item">
                   <span className="source-name">Direct</span>
-                  <div className="source-bar"><div style={{ width: '15%', background: '#10B981' }}></div></div>
+                  <div className="source-bar"><div style={{ width: '15%', background: 'var(--accent-green, #10B981)' }}></div></div>
                   <span className="source-count">52 leads</span>
                 </div>
               </div>

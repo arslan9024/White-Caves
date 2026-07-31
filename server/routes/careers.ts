@@ -36,7 +36,8 @@ router.post(
       phone,
       linkedinUrl,
       reraBrn,
-    // Schema validation enforced for career application payload
+      cvUrl,
+      // schema validation enforced for career application payload
     } = req.body;
     const jobId = String(rawJobId);
 

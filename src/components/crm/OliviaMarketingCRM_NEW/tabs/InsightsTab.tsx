@@ -43,7 +43,7 @@ export default function InsightsTab({ state }: InsightsTabProps) {
         <div className="insight-card">
           <h4>Price Index</h4>
           <div className="metric-value">{marketInsights.priceIndex}</div>
-          <div className="metric-change" style={{ color: marketInsights.priceChange > 0 ? '#10b981' : '#ef4444' }}>
+          <div className="metric-change" style={{ color: marketInsights.priceChange > 0 ? 'var(--accent-green, #10b981)' : 'var(--accent-red, #ef4444)' }}>
             {marketInsights.priceChange > 0 ? <TrendingUp size={16} /> : <TrendingDown size={16} />}
             {Math.abs(marketInsights.priceChange)}% change
           </div>
@@ -73,7 +73,7 @@ export default function InsightsTab({ state }: InsightsTabProps) {
               </div>
               <div className="hotspot-metrics">
                 <span>Avg Price: {(spot.avgPrice / 1000000).toFixed(1)}M AED</span>
-                <span style={{ color: spot.priceChange > 0 ? '#10b981' : '#ef4444' }}>
+                <span style={{ color: spot.priceChange > 0 ? 'var(--accent-green, #10b981)' : 'var(--accent-red, #ef4444)' }}>
                   {spot.priceChange > 0 ? '+' : ''}{spot.priceChange}%
                 </span>
               </div>

@@ -215,7 +215,7 @@ const ContactPage: FC = () => {
                   <div className="contact-details">
                     <h3>Contact Number</h3>
                     <p>
-                      <a href="tel:+971563616136" style={{ color: '#1E293B', textDecoration: 'none', fontWeight: 700 }}>
+                      <a href="tel:+971563616136" style={{ color: 'var(--color-1e293b, #1E293B)', textDecoration: 'none', fontWeight: 700 }}>
                         +971 56 361 6136
                       </a>
                     </p>
@@ -224,7 +224,7 @@ const ContactPage: FC = () => {
                         href="https://wa.me/971563616136?text=Hello%20White%20Caves%20Real%20Estate%2C%20I%20would%20like%20to%20inquire%20about%20a%20property."
                         target="_blank"
                         rel="noopener noreferrer"
-                        style={{ color: '#25D366', textDecoration: 'none', fontWeight: 700 }}
+                        style={{ color: 'var(--color-25d366, #25D366)', textDecoration: 'none', fontWeight: 700 }}
                       >
                         💬 WhatsApp Direct ↗
                       </a>

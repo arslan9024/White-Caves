@@ -32,27 +32,27 @@ interface DocAlertSummary {
 
 const DashboardContainer = styled.div`
   padding: 24px;
-  background: ${props => props.theme.colors.background};
+  background: ${props => (props.theme as any)?.colors?.background};
   border-radius: 8px;
   height: 100%;
   overflow-y: auto;
 
   h1 {
-    color: ${props => props.theme.colors.text};
+    color: ${props => (props.theme as any)?.colors?.text};
     margin-bottom: 20px;
     font-size: 28px;
     font-weight: 600;
   }
 
   h2 {
-    color: ${props => props.theme.colors.text};
+    color: ${props => (props.theme as any)?.colors?.text};
     font-size: 18px;
     font-weight: 600;
     margin-bottom: 12px;
   }
 
   p {
-    color: ${props => props.theme.colors.textSecondary};
+    color: ${props => (props.theme as any)?.colors?.textSecondary};
     line-height: 1.6;
   }
 `;
@@ -65,8 +65,8 @@ const StatsGrid = styled.div`
 `;
 
 const StatCard = styled.div`
-  background: ${props => props.theme.colors.cardBg};
-  border: 1px solid ${props => props.theme.colors.border};
+  background: ${props => (props.theme as any)?.colors?.cardBg};
+  border: 1px solid ${props => (props.theme as any)?.colors?.border};
   border-radius: 8px;
   padding: 20px;
   text-align: center;
@@ -74,13 +74,13 @@ const StatCard = styled.div`
   .stat-value {
     font-size: 32px;
     font-weight: 700;
-    color: ${props => props.theme.colors.primary};
+    color: ${props => (props.theme as any)?.colors?.primary};
     margin: 10px 0;
   }
 
   .stat-label {
     font-size: 13px;
-    color: ${props => props.theme.colors.textSecondary};
+    color: ${props => (props.theme as any)?.colors?.textSecondary};
     text-transform: uppercase;
     letter-spacing: 0.5px;
   }
@@ -94,7 +94,7 @@ const PipelineGrid = styled.div`
 `;
 
 const StageCard = styled.div<{ $color: string }>`
-  background: ${props => props.theme.colors.cardBg};
+  background: ${props => (props.theme as any)?.colors?.cardBg};
   border: 2px solid ${props => props.$color}44;
   border-radius: 10px;
   padding: 16px;
@@ -126,13 +126,13 @@ const StageCard = styled.div<{ $color: string }>`
   .stage-label {
     font-size: 13px;
     font-weight: 600;
-    color: ${props => props.theme.colors.text};
+    color: ${props => (props.theme as any)?.colors?.text || '#1f2937'};
     margin: 4px 0 2px;
   }
 
   .stage-desc {
     font-size: 11px;
-    color: ${props => props.theme.colors.textSecondary};
+    color: ${props => (props.theme as any)?.colors?.textSecondary || '#6b7280'};
   }
 `;
 

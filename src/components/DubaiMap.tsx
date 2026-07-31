@@ -85,7 +85,7 @@ const DubaiMap: FC<DubaiMapProps> = ({ properties = [], onPropertySelect }) => {
   return (
     <DubaiMapContainer>
       <MapHeader>
-        <div style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', padding: '6px 14px', borderRadius: '9999px', background: 'rgba(239, 68, 68, 0.08)', color: '#EF4444', fontWeight: 800, fontSize: '0.8rem', marginBottom: '12px' }}>
+        <div style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', padding: '6px 14px', borderRadius: '9999px', background: 'rgba(239, 68, 68, 0.08)', color: 'var(--accent-red, #EF4444)', fontWeight: 800, fontSize: '0.8rem', marginBottom: '12px' }}>
           <span>🗺️ DLD GEOSPATIAL INTELLIGENCE</span>
         </div>
         <MapTitle>Interactive Dubai Prime Communities Map</MapTitle>
@@ -142,7 +142,7 @@ const DubaiMap: FC<DubaiMapProps> = ({ properties = [], onPropertySelect }) => {
         </div>
       </div>
 
-      <MapWrapper style={{ background: '#0F172A', borderRadius: '20px', border: '1px solid rgba(239, 68, 68, 0.3)', boxShadow: '0 16px 40px rgba(15, 23, 42, 0.25)' }}>
+      <MapWrapper style={{ background: 'var(--color-0f172a, #0F172A)', borderRadius: '20px', border: '1px solid rgba(239, 68, 68, 0.3)', boxShadow: '0 16px 40px rgba(15, 23, 42, 0.25)' }}>
         <MapBackground>
           <InteractiveMapOverlay>
             <MapSVG viewBox="0 0 800 500">

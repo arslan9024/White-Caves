@@ -71,7 +71,7 @@ export default function ListingsTab({ state }: ListingsTabProps) {
           <div key={listing.id} className="listing-card">
             <div className="card-header">
               <h4>{listing.property}</h4>
-              <span className="quality-score" style={{ backgroundColor: listing.quality >= 90 ? '#10b981' : '#f59e0b' }}>
+              <span className="quality-score" style={{ backgroundColor: listing.quality >= 90 ? 'var(--accent-green, #10b981)' : 'var(--accent-gold, #f59e0b)' }}>
                 {listing.quality}%
               </span>
             </div>

@@ -113,7 +113,7 @@ export const ExecutiveDepartmentView: FC = () => {
                 { label: 'Marketing & Portal Fees', value: '(212,000)', type: 'expense' },
                 { label: 'Net Operating Profit', value: '1,576,000', type: 'net' },
               ].map(row => (
-                <div key={row.label} style={{ display: 'flex', justifyContent: 'space-between', padding: '8px 0', borderBottom: '1px solid #E2E8F0', fontSize: '0.85rem' }}>
+                <div key={row.label} style={{ display: 'flex', justifyContent: 'space-between', padding: '8px 0', borderBottom: '1px solid var(--text-secondary, #E2E8F0)', fontSize: '0.85rem' }}>
                   <span style={{ color: SLATE }}>{row.label}</span>
                   <span style={{ fontWeight: 700, color: row.type === 'income' ? GREEN : row.type === 'expense' ? RED : BLUE }}>
                     AED {row.value}
@@ -138,7 +138,7 @@ export const ExecutiveDepartmentView: FC = () => {
                       {kpi.current} / {kpi.target} ({kpi.pct}%)
                     </span>
                   </div>
-                  <div style={{ background: '#E2E8F0', borderRadius: '99px', height: '6px' }}>
+                  <div style={{ background: 'var(--color-e2e8f0, #E2E8F0)', borderRadius: '99px', height: '6px' }}>
                     <div style={{ background: kpi.pct >= 100 ? GREEN : kpi.pct >= 75 ? ORANGE : RED, width: `${Math.min(kpi.pct, 100)}%`, height: '100%', borderRadius: '99px', transition: 'width 0.4s' }} />
                   </div>
                 </div>
@@ -185,7 +185,7 @@ export const ExecutiveDepartmentView: FC = () => {
                   { name: '⭐ White Caves (Us)', share: '2.3%', txn: 184, avg: '3.8M', trend: '↑↑', highlight: true },
                   { name: 'Haus & Haus', share: '1.9%', txn: 151, avg: '5.1M', trend: '→' },
                 ].map(row => (
-                  <tr key={row.name} style={{ borderBottom: '1px solid #E2E8F0', background: row.highlight ? '#FEF2F2' : 'transparent' }}>
+                  <tr key={row.name} style={{ borderBottom: '1px solid var(--text-secondary, #E2E8F0)', background: row.highlight ? 'var(--color-fef2f2, #FEF2F2)' : 'transparent' }}>
                     <td style={{ padding: '10px 12px', fontWeight: row.highlight ? 800 : 600, color: row.highlight ? RED : SLATE }}>{row.name}</td>
                     <td style={{ padding: '10px 12px', textAlign: 'right', fontWeight: 700 }}>{row.share}</td>
                     <td style={{ padding: '10px 12px', textAlign: 'right' }}>{row.txn}</td>
@@ -236,7 +236,7 @@ export const ExecutiveDepartmentView: FC = () => {
                     </div>
                     <span style={{ fontWeight: 700, color: person.color }}>{person.readiness}%</span>
                   </div>
-                  <div style={{ background: '#E2E8F0', borderRadius: '99px', height: '8px' }}>
+                  <div style={{ background: 'var(--color-e2e8f0, #E2E8F0)', borderRadius: '99px', height: '8px' }}>
                     <div style={{ background: person.color, width: `${person.readiness}%`, height: '100%', borderRadius: '99px' }} />
                   </div>
                 </div>

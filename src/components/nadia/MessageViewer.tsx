@@ -129,7 +129,7 @@ const MessageViewer: React.FC<MessageViewerProps> = ({
           <LoadingSpinner />
         ) : messages.length === 0 ? (
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', flex: 1 }}>
-            <p style={{ color: '#9CA3AF' }}>No messages yet</p>
+            <p style={{ color: 'var(--text-secondary, #9CA3AF)' }}>No messages yet</p>
           </div>
         ) : (
           messages.map((message) => (

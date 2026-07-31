@@ -54,7 +54,7 @@ const SentinelPropertyCRM = () => {
   return (
     <div className="assistant-dashboard sentinel">
       <div className="assistant-header">
-        <div className="assistant-avatar" style={{ background: 'linear-gradient(135deg, #7C3AED 0%, #5B21B6 100%)' }}>
+        <div className="assistant-avatar" style={{ background: 'linear-gradient(135deg, var(--accent-purple, #7C3AED) 0%, var(--color-5b21b6, #5B21B6) 100%)' }}>
           <Eye size={28} />
         </div>
         <div className="assistant-info">
@@ -69,7 +69,7 @@ const SentinelPropertyCRM = () => {
 
       <div className="quick-stats">
         <div className="stat-card">
-          <div className="stat-icon" style={{ background: 'rgba(124, 58, 237, 0.2)', color: '#7C3AED' }}>
+          <div className="stat-icon" style={{ background: 'rgba(124, 58, 237, 0.2)', color: 'var(--accent-purple, #7C3AED)' }}>
             <Activity size={20} />
           </div>
           <div className="stat-content">
@@ -79,7 +79,7 @@ const SentinelPropertyCRM = () => {
           <span className="stat-change positive">98% uptime</span>
         </div>
         <div className="stat-card highlight">
-          <div className="stat-icon" style={{ background: 'rgba(239, 68, 68, 0.2)', color: '#EF4444' }}>
+          <div className="stat-icon" style={{ background: 'rgba(239, 68, 68, 0.2)', color: 'var(--accent-red, #EF4444)' }}>
             <AlertCircle size={20} />
           </div>
           <div className="stat-content">
@@ -89,7 +89,7 @@ const SentinelPropertyCRM = () => {
           <span className="stat-change warning">2 critical</span>
         </div>
         <div className="stat-card">
-          <div className="stat-icon" style={{ background: 'rgba(245, 158, 11, 0.2)', color: '#F59E0B' }}>
+          <div className="stat-icon" style={{ background: 'rgba(245, 158, 11, 0.2)', color: 'var(--accent-gold, #F59E0B)' }}>
             <Wrench size={20} />
           </div>
           <div className="stat-content">
@@ -99,7 +99,7 @@ const SentinelPropertyCRM = () => {
           <span className="stat-change">12 in progress</span>
         </div>
         <div className="stat-card">
-          <div className="stat-icon" style={{ background: 'rgba(16, 185, 129, 0.2)', color: '#10B981' }}>
+          <div className="stat-icon" style={{ background: 'rgba(16, 185, 129, 0.2)', color: 'var(--accent-green, #10B981)' }}>
             <CheckCircle size={20} />
           </div>
           <div className="stat-content">
@@ -128,9 +128,9 @@ const SentinelPropertyCRM = () => {
             <div className="view-header">
               <h3>Real-Time Property Status</h3>
               <div className="status-legend">
-                <span className="legend-item"><span style={{ background: '#10B981' }}></span> Healthy</span>
-                <span className="legend-item"><span style={{ background: '#F59E0B' }}></span> Warning</span>
-                <span className="legend-item"><span style={{ background: '#EF4444' }}></span> Critical</span>
+                <span className="legend-item"><span style={{ background: 'var(--accent-green, #10B981)' }}></span> Healthy</span>
+                <span className="legend-item"><span style={{ background: 'var(--accent-gold, #F59E0B)' }}></span> Warning</span>
+                <span className="legend-item"><span style={{ background: 'var(--accent-red, #EF4444)' }}></span> Critical</span>
               </div>
             </div>
             <div className="property-grid">

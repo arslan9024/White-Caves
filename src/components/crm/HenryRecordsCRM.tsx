@@ -21,8 +21,8 @@ const HenryRecordsCRM = memo(() => {
           padding: 16,
         }}
       >
-        <h2 style={{ margin: 0, color: '#F5F3FF' }}>Henry — Record Keeper & Compliance</h2>
-        <p style={{ margin: '8px 0 0 0', color: '#DDD6FE', fontSize: 13 }}>
+        <h2 style={{ margin: 0, color: 'var(--color-f5f3ff, #F5F3FF)' }}>Henry — Record Keeper & Compliance</h2>
+        <p style={{ margin: '8px 0 0 0', color: 'var(--color-ddd6fe, #DDD6FE)', fontSize: 13 }}>
           Internal compliance cockpit for audit trails, document integrity checks, and timeline risk signals.
           Runs as a native White Caves module.
         </p>
@@ -31,23 +31,23 @@ const HenryRecordsCRM = memo(() => {
       <div style={{ display: 'grid', gap: 12, gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))' }}>
         <div style={cardStyle}>
           <BookOpenCheck size={18} color="#A78BFA" />
-          <p style={{ margin: '8px 0 0 0', color: '#E2E8F0', fontWeight: 600 }}>Audit Events</p>
-          <strong style={{ color: '#C4B5FD', fontSize: 24 }}>12,847</strong>
+          <p style={{ margin: '8px 0 0 0', color: 'var(--color-e2e8f0, #E2E8F0)', fontWeight: 600 }}>Audit Events</p>
+          <strong style={{ color: 'var(--color-c4b5fd, #C4B5FD)', fontSize: 24 }}>12,847</strong>
         </div>
         <div style={cardStyle}>
           <FileSearch size={18} color="#A78BFA" />
-          <p style={{ margin: '8px 0 0 0', color: '#E2E8F0', fontWeight: 600 }}>Compliance Reviews</p>
-          <strong style={{ color: '#C4B5FD', fontSize: 24 }}>286</strong>
+          <p style={{ margin: '8px 0 0 0', color: 'var(--color-e2e8f0, #E2E8F0)', fontWeight: 600 }}>Compliance Reviews</p>
+          <strong style={{ color: 'var(--color-c4b5fd, #C4B5FD)', fontSize: 24 }}>286</strong>
         </div>
         <div style={cardStyle}>
           <TimerReset size={18} color="#A78BFA" />
-          <p style={{ margin: '8px 0 0 0', color: '#E2E8F0', fontWeight: 600 }}>SLA-safe Turnaround</p>
-          <strong style={{ color: '#C4B5FD', fontSize: 24 }}>98.7%</strong>
+          <p style={{ margin: '8px 0 0 0', color: 'var(--color-e2e8f0, #E2E8F0)', fontWeight: 600 }}>SLA-safe Turnaround</p>
+          <strong style={{ color: 'var(--color-c4b5fd, #C4B5FD)', fontSize: 24 }}>98.7%</strong>
         </div>
         <div style={cardStyle}>
           <ShieldAlert size={18} color="#A78BFA" />
-          <p style={{ margin: '8px 0 0 0', color: '#E2E8F0', fontWeight: 600 }}>Open Risk Flags</p>
-          <strong style={{ color: '#C4B5FD', fontSize: 24 }}>3</strong>
+          <p style={{ margin: '8px 0 0 0', color: 'var(--color-e2e8f0, #E2E8F0)', fontWeight: 600 }}>Open Risk Flags</p>
+          <strong style={{ color: 'var(--color-c4b5fd, #C4B5FD)', fontSize: 24 }}>3</strong>
         </div>
       </div>
 
@@ -59,8 +59,8 @@ const HenryRecordsCRM = memo(() => {
           padding: 14,
         }}
       >
-        <h3 style={{ marginTop: 0, color: '#E2E8F0' }}>Cross-Assistant Governance</h3>
-        <ul style={{ margin: 0, paddingLeft: 18, color: '#CBD5E1', fontSize: 13, lineHeight: 1.6 }}>
+        <h3 style={{ marginTop: 0, color: 'var(--color-e2e8f0, #E2E8F0)' }}>Cross-Assistant Governance</h3>
+        <ul style={{ margin: 0, paddingLeft: 18, color: 'var(--color-cbd5e1, #CBD5E1)', fontSize: 13, lineHeight: 1.6 }}>
           <li>CONSUMES ← Linda message events, Daisy tenancy updates, Theodora finance logs</li>
           <li>FEEDS → Katherine QA runtime checks, Sofia compliance packet, Margaret sprint sign-off</li>
           <li>All critical anomalies create immutable timeline items with owner visibility</li>

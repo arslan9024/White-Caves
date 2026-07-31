@@ -58,7 +58,7 @@ const ToolsPage: FC = () => {
         backgroundImage="https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?ixlib=rb-4.0.3&auto=format&fit=crop&w=2000&q=80"
       />
 
-      <div style={{ background: 'linear-gradient(180deg, #f8f9fa 0%, #ffffff 100%)' }}>
+      <div style={{ background: 'linear-gradient(180deg, var(--color-f8f9fa, #f8f9fa) 0%, var(--white, #ffffff) 100%)' }}>
         <Suspense fallback={<ToolLoader />}>
           <InteractiveMap />
         </Suspense>

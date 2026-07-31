@@ -62,7 +62,7 @@ const HenryAuditCRM = () => {
   return (
     <div className="assistant-dashboard henry">
       <div className="assistant-header">
-        <div className="assistant-avatar" style={{ background: 'linear-gradient(135deg, #7C3AED 0%, #5B21B6 100%)' }}>
+        <div className="assistant-avatar" style={{ background: 'linear-gradient(135deg, var(--accent-purple, #7C3AED) 0%, var(--color-5b21b6, #5B21B6) 100%)' }}>
           <BookOpen size={28} />
         </div>
         <div className="assistant-info">
@@ -77,7 +77,7 @@ const HenryAuditCRM = () => {
 
       <div className="quick-stats">
         <div className="stat-card">
-          <div className="stat-icon" style={{ background: 'rgba(124, 58, 237, 0.2)', color: '#7C3AED' }}>
+          <div className="stat-icon" style={{ background: 'rgba(124, 58, 237, 0.2)', color: 'var(--accent-purple, #7C3AED)' }}>
             <Activity size={20} />
           </div>
           <div className="stat-content">
@@ -87,7 +87,7 @@ const HenryAuditCRM = () => {
           <span className="stat-change positive"><ArrowUp size={14} /> 342 today</span>
         </div>
         <div className="stat-card">
-          <div className="stat-icon" style={{ background: 'rgba(16, 185, 129, 0.2)', color: '#10B981' }}>
+          <div className="stat-icon" style={{ background: 'rgba(16, 185, 129, 0.2)', color: 'var(--accent-green, #10B981)' }}>
             <Shield size={20} />
           </div>
           <div className="stat-content">
@@ -97,7 +97,7 @@ const HenryAuditCRM = () => {
           <span className="stat-change positive">Verified</span>
         </div>
         <div className="stat-card">
-          <div className="stat-icon" style={{ background: 'rgba(245, 158, 11, 0.2)', color: '#F59E0B' }}>
+          <div className="stat-icon" style={{ background: 'rgba(245, 158, 11, 0.2)', color: 'var(--accent-gold, #F59E0B)' }}>
             <Clock size={20} />
           </div>
           <div className="stat-content">
@@ -107,7 +107,7 @@ const HenryAuditCRM = () => {
           <span className="stat-change">All monitored</span>
         </div>
         <div className="stat-card">
-          <div className="stat-icon" style={{ background: 'rgba(239, 68, 68, 0.2)', color: '#EF4444' }}>
+          <div className="stat-icon" style={{ background: 'rgba(239, 68, 68, 0.2)', color: 'var(--accent-red, #EF4444)' }}>
             <AlertCircle size={20} />
           </div>
           <div className="stat-content">
@@ -173,7 +173,7 @@ const HenryAuditCRM = () => {
                 <div key={event.id} className="timeline-event">
                   <div className="event-time">{event.timestamp.split(' ')[1]}</div>
                   <div className="event-line">
-                    <div className="event-dot" style={{ background: ASSISTANT_COLORS[event.assistant] || '#6B7280' }}>
+                    <div className="event-dot" style={{ background: ASSISTANT_COLORS[event.assistant] || 'var(--text-secondary, #6B7280)' }}>
                       {getEventIcon(event.type)}
                     </div>
                   </div>

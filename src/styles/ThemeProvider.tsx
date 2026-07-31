@@ -14,7 +14,7 @@ interface ThemeProviderProps {
 
 export const ThemeProvider: React.FC<ThemeProviderProps> = ({ children }) => {
   return (
-    <StyledThemeProvider theme={theme}>
+    <StyledThemeProvider theme={theme as any}>
       <GlobalStyles />
       {children}
     </StyledThemeProvider>

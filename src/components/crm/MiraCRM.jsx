@@ -101,7 +101,7 @@ const MiraCRM = () => {
       <div className="assistant-header">
         <div
           className="assistant-avatar"
-          style={{ background: 'linear-gradient(135deg, #10B981 0%, #047857 100%)' }}
+          style={{ background: 'linear-gradient(135deg, var(--accent-green, #10B981) 0%, var(--color-047857, #047857) 100%)' }}
         >
           <Globe size={28} />
         </div>
@@ -118,7 +118,7 @@ const MiraCRM = () => {
         <div className="stat-card">
           <div
             className="stat-icon"
-            style={{ background: 'rgba(16,185,129,0.15)', color: '#10B981' }}
+            style={{ background: 'rgba(16,185,129,0.15)', color: 'var(--accent-green, #10B981)' }}
           >
             <FileText size={20} />
           </div>
@@ -130,7 +130,7 @@ const MiraCRM = () => {
         <div className="stat-card">
           <div
             className="stat-icon"
-            style={{ background: 'rgba(34,197,94,0.15)', color: '#22C55E' }}
+            style={{ background: 'rgba(34,197,94,0.15)', color: 'var(--accent-green, #22C55E)' }}
           >
             <CheckCircle size={20} />
           </div>
@@ -144,7 +144,7 @@ const MiraCRM = () => {
         <div className="stat-card">
           <div
             className="stat-icon"
-            style={{ background: 'rgba(227,30,36,0.15)', color: '#E31E24' }}
+            style={{ background: 'rgba(227,30,36,0.15)', color: 'var(--color-e31e24, #E31E24)' }}
           >
             <Globe size={20} />
           </div>
@@ -156,7 +156,7 @@ const MiraCRM = () => {
         <div className="stat-card">
           <div
             className="stat-icon"
-            style={{ background: 'rgba(59,130,246,0.15)', color: '#3B82F6' }}
+            style={{ background: 'rgba(59,130,246,0.15)', color: 'var(--accent-blue, #3B82F6)' }}
           >
             <Clock size={20} />
           </div>
@@ -210,7 +210,7 @@ const MiraCRM = () => {
                   <td>{t.to}</td>
                   <td>{t.pages}</td>
                   <td>{t.requestedBy}</td>
-                  <td style={{ fontSize: 12, color: '#6b7280' }}>{t.time}</td>
+                  <td style={{ fontSize: 12, color: 'var(--text-secondary, #6b7280)' }}>{t.time}</td>
                   <td>
                     <span
                       className="status-badge"
@@ -234,7 +234,7 @@ const MiraCRM = () => {
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
             <div>
               <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 8 }}>
-                <label style={{ fontSize: 13, color: '#6b7280' }}>From:</label>
+                <label style={{ fontSize: 13, color: 'var(--text-secondary, #6b7280)' }}>From:</label>
                 <select
                   value={fromLang}
                   onChange={e => setFromLang(e.target.value)}
@@ -267,7 +267,7 @@ const MiraCRM = () => {
             </div>
             <div>
               <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 8 }}>
-                <label style={{ fontSize: 13, color: '#6b7280' }}>To:</label>
+                <label style={{ fontSize: 13, color: 'var(--text-secondary, #6b7280)' }}>To:</label>
                 <select
                   value={toLang}
                   onChange={e => setToLang(e.target.value)}
@@ -301,7 +301,7 @@ const MiraCRM = () => {
               </div>
             </div>
           </div>
-          <div style={{ marginTop: 12, fontSize: 11, color: '#9ca3af', textAlign: 'center' }}>
+          <div style={{ marginTop: 12, fontSize: 11, color: 'var(--text-secondary, #9ca3af)', textAlign: 'center' }}>
             Demo translation. Production uses DeepL + custom real-estate terminology dictionary.
           </div>
         </div>
@@ -329,7 +329,7 @@ const MiraCRM = () => {
               >
                 <div style={{ fontSize: 36, marginBottom: 8 }}>{l.flag}</div>
                 <div style={{ fontWeight: 700, fontSize: 15 }}>{l.name}</div>
-                <div style={{ fontSize: 12, color: '#6b7280', marginTop: 4 }}>
+                <div style={{ fontSize: 12, color: 'var(--text-secondary, #6b7280)', marginTop: 4 }}>
                   {l.docs} documents this month
                 </div>
                 {l.rtl && (

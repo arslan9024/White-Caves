@@ -280,14 +280,14 @@ export const useSidebarFiltering = <T extends Record<string, unknown>>(
       });
     } else if (sortBy === 'newest') {
       result.sort((a, b) => {
-        const aDate = new Date(a.createdAt || a.date || 0).getTime();
-        const bDate = new Date(b.createdAt || b.date || 0).getTime();
+        const aDate = new Date((a.createdAt || a.date || 0) as any).getTime();
+        const bDate = new Date((b.createdAt || b.date || 0) as any).getTime();
         return bDate - aDate;
       });
     } else if (sortBy === 'oldest') {
       result.sort((a, b) => {
-        const aDate = new Date(a.createdAt || a.date || 0).getTime();
-        const bDate = new Date(b.createdAt || b.date || 0).getTime();
+        const aDate = new Date((a.createdAt || a.date || 0) as any).getTime();
+        const bDate = new Date((b.createdAt || b.date || 0) as any).getTime();
         return aDate - bDate;
       });
     }

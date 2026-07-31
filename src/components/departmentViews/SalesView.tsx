@@ -49,8 +49,8 @@ const SalesView: React.FC<SalesViewProps> = ({
                   borderRadius: '8px',
                 }}
               >
-                <small style={{ color: '#888' }}>New Inquiries</small>
-                <div style={{ fontSize: '1.1rem', fontWeight: 700, color: '#fff' }}>142 Leads</div>
+                <small style={{ color: 'var(--color-888, #888)' }}>New Inquiries</small>
+                <div style={{ fontSize: '1.1rem', fontWeight: 700, color: 'var(--white, #fff)' }}>142 Leads</div>
               </div>
               <div
                 style={{
@@ -59,8 +59,8 @@ const SalesView: React.FC<SalesViewProps> = ({
                   borderRadius: '8px',
                 }}
               >
-                <small style={{ color: '#888' }}>Viewing Scheduled</small>
-                <div style={{ fontSize: '1.1rem', fontWeight: 700, color: '#60a5fa' }}>
+                <small style={{ color: 'var(--color-888, #888)' }}>Viewing Scheduled</small>
+                <div style={{ fontSize: '1.1rem', fontWeight: 700, color: 'var(--color-60a5fa, #60a5fa)' }}>
                   48 Viewings
                 </div>
               </div>
@@ -71,8 +71,8 @@ const SalesView: React.FC<SalesViewProps> = ({
                   borderRadius: '8px',
                 }}
               >
-                <small style={{ color: '#888' }}>Negotiation (MOU/Form F)</small>
-                <div style={{ fontSize: '1.1rem', fontWeight: 700, color: '#c9a84c' }}>
+                <small style={{ color: 'var(--color-888, #888)' }}>Negotiation (MOU/Form F)</small>
+                <div style={{ fontSize: '1.1rem', fontWeight: 700, color: 'var(--color-c9a84c, #c9a84c)' }}>
                   18 Deals
                 </div>
               </div>
@@ -83,8 +83,8 @@ const SalesView: React.FC<SalesViewProps> = ({
                   borderRadius: '8px',
                 }}
               >
-                <small style={{ color: '#888' }}>Closing & DLD Oqood</small>
-                <div style={{ fontSize: '1.1rem', fontWeight: 700, color: '#4ade80' }}>
+                <small style={{ color: 'var(--color-888, #888)' }}>Closing & DLD Oqood</small>
+                <div style={{ fontSize: '1.1rem', fontWeight: 700, color: 'var(--color-4ade80, #4ade80)' }}>
                   12 Closed
                 </div>
               </div>
@@ -113,7 +113,7 @@ const SalesView: React.FC<SalesViewProps> = ({
                 }}
               >
                 <span>DAMAC Hills 2 — 5 BR Vardon Villa (Form F Signed)</span>
-                <strong style={{ color: '#c9a84c' }}>AED 3,850,000</strong>
+                <strong style={{ color: 'var(--color-c9a84c, #c9a84c)' }}>AED 3,850,000</strong>
               </div>
               <div
                 style={{
@@ -124,7 +124,7 @@ const SalesView: React.FC<SalesViewProps> = ({
                 }}
               >
                 <span>Dubailand — 3 BR Townhouse (Deposit Received)</span>
-                <strong style={{ color: '#c9a84c' }}>AED 2,400,000</strong>
+                <strong style={{ color: 'var(--color-c9a84c, #c9a84c)' }}>AED 2,400,000</strong>
               </div>
             </div>
           </DataCard>

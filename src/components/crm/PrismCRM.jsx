@@ -136,7 +136,7 @@ const PrismCRM = () => {
       <div className="assistant-header">
         <div
           className="assistant-avatar"
-          style={{ background: 'linear-gradient(135deg, #8B5CF6 0%, #6D28D9 100%)' }}
+          style={{ background: 'linear-gradient(135deg, var(--accent-purple, #8B5CF6) 0%, var(--accent-purple, #6D28D9) 100%)' }}
         >
           <Layers size={28} />
         </div>
@@ -154,7 +154,7 @@ const PrismCRM = () => {
         <div className="stat-card">
           <div
             className="stat-icon"
-            style={{ background: 'rgba(139,92,246,0.15)', color: '#8B5CF6' }}
+            style={{ background: 'rgba(139,92,246,0.15)', color: 'var(--accent-purple, #8B5CF6)' }}
           >
             <CheckCircle size={20} />
           </div>
@@ -166,7 +166,7 @@ const PrismCRM = () => {
         <div className="stat-card">
           <div
             className="stat-icon"
-            style={{ background: 'rgba(34,197,94,0.15)', color: '#22C55E' }}
+            style={{ background: 'rgba(34,197,94,0.15)', color: 'var(--accent-green, #22C55E)' }}
           >
             <TrendingUp size={20} />
           </div>
@@ -178,7 +178,7 @@ const PrismCRM = () => {
         <div className="stat-card">
           <div
             className="stat-icon"
-            style={{ background: 'rgba(59,130,246,0.15)', color: '#3B82F6' }}
+            style={{ background: 'rgba(59,130,246,0.15)', color: 'var(--accent-blue, #3B82F6)' }}
           >
             <Home size={20} />
           </div>
@@ -190,7 +190,7 @@ const PrismCRM = () => {
         <div className="stat-card">
           <div
             className="stat-icon"
-            style={{ background: 'rgba(227,30,36,0.15)', color: '#E31E24' }}
+            style={{ background: 'rgba(227,30,36,0.15)', color: 'var(--color-e31e24, #E31E24)' }}
           >
             <Star size={20} />
           </div>
@@ -228,7 +228,7 @@ const PrismCRM = () => {
                 ))}
               </select>
             </div>
-            <span style={{ fontSize: 12, color: '#6b7280' }}>{filtered.length} matches</span>
+            <span style={{ fontSize: 12, color: 'var(--text-secondary, #6b7280)' }}>{filtered.length} matches</span>
           </div>
           {filtered.map(m => (
             <div
@@ -251,7 +251,7 @@ const PrismCRM = () => {
               >
                 <div>
                   <div style={{ fontWeight: 700, fontSize: 15 }}>{m.property}</div>
-                  <div style={{ fontSize: 12, color: '#6b7280', marginTop: 2 }}>For: {m.lead}</div>
+                  <div style={{ fontSize: 12, color: 'var(--text-secondary, #6b7280)', marginTop: 2 }}>For: {m.lead}</div>
                 </div>
                 <div
                   style={{
@@ -271,7 +271,7 @@ const PrismCRM = () => {
                   >
                     {m.matchScore}
                   </div>
-                  <div style={{ fontSize: 10, color: '#6b7280' }}>match</div>
+                  <div style={{ fontSize: 10, color: 'var(--text-secondary, #6b7280)' }}>match</div>
                 </div>
               </div>
               <div
@@ -354,7 +354,7 @@ const PrismCRM = () => {
               </div>
               <div>
                 <strong>{s.title}</strong>
-                <p style={{ fontSize: 13, color: '#6b7280', margin: '4px 0 0' }}>{s.desc}</p>
+                <p style={{ fontSize: 13, color: 'var(--text-secondary, #6b7280)', margin: '4px 0 0' }}>{s.desc}</p>
               </div>
             </div>
           ))}
@@ -402,8 +402,8 @@ const PrismCRM = () => {
                 </div>
                 <div style={{ padding: 14 }}>
                   <div style={{ fontWeight: 700, fontSize: 14, marginBottom: 4 }}>{m.property}</div>
-                  <div style={{ fontSize: 13, color: '#E31E24', fontWeight: 600 }}>{m.price}</div>
-                  <div style={{ fontSize: 12, color: '#6b7280', marginTop: 4 }}>
+                  <div style={{ fontSize: 13, color: 'var(--color-e31e24, #E31E24)', fontWeight: 600 }}>{m.price}</div>
+                  <div style={{ fontSize: 12, color: 'var(--text-secondary, #6b7280)', marginTop: 4 }}>
                     {m.area} · {m.beds || 'Studio'} bed
                   </div>
                 </div>

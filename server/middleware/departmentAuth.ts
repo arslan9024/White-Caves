@@ -27,7 +27,7 @@ const getDepartmentAccessDelegate = (
     select: { role: true; permissions: true };
   }) => Promise<{ role: string; permissions: string[] } | null>;
 } => {
-  return (client as unknown as { departmentAccess: Record<string, unknown> }).departmentAccess;
+  return (client as any).departmentAccess;
 };
 
 declare module 'express-serve-static-core' {

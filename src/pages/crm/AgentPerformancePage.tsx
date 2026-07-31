@@ -412,7 +412,7 @@ const AgentPerformancePage: FC = () => {
           }}
         >
           <div style={{ fontSize: '2rem', marginBottom: '0.5rem' }}>👥</div>
-          <div style={{ fontWeight: 600, color: '#c9a84c', marginBottom: '0.25rem' }}>
+          <div style={{ fontWeight: 600, color: 'var(--color-c9a84c, #c9a84c)', marginBottom: '0.25rem' }}>
             No Agents Found
           </div>
           <div style={{ fontSize: '0.85rem', color: 'rgba(255, 255, 255, 0.6)' }}>

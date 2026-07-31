@@ -246,7 +246,7 @@ const SearchableDropdown = ({
                   <div key={groupKey} className="option-group">
                     <div 
                       className="group-header"
-                      style={{ '--group-color': groupColors[groupKey] || '#64748b' }}
+                      style={{ '--group-color': groupColors[groupKey] || 'var(--text-secondary, #64748b)' }}
                     >
                       <span>{groupLabels[groupKey] || groupKey}</span>
                       <span className="group-count">{groupOptions.length}</span>

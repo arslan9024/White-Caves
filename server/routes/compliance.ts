@@ -223,8 +223,8 @@ router.get(
         type: l.type,
         action: l.action,
         description: l.description,
-        user: l.user ? { id: l.user.id, name: l.user.name, role: l.user.role } : null,
-        timestamp: l.createdAt.toISOString(),
+        user: (l as any).user ? { id: (l as any).user.id, name: (l as any).user.name, role: (l as any).user.role } : null,
+        timestamp: (l as any).createdAt?.toISOString ? (l as any).createdAt.toISOString() : new Date().toISOString(),
         metadata: l.metadata,
       })),
       pagination: { page: pageNum, pageSize: limit, total, totalPages: Math.ceil(total / limit) },
@@ -898,7 +898,7 @@ router.get(
         reviewComments: metadata.reviewComments || null,
         reviewedBy: metadata.reviewedBy || null,
         reviewedAt: metadata.reviewedAt || null,
-        uploadedAt: metadata.uploadedAt || d.createdAt.toISOString(),
+        uploadedAt: metadata.uploadedAt || (d as any).createdAt?.toISOString?.() || new Date().toISOString(),
       };
     });
 
@@ -1174,7 +1174,7 @@ router.get(
           screening: metadata.screening || null,
           resolvedAt: metadata.resolvedAt || null,
           resolvedBy: metadata.resolvedBy || null,
-          createdAt: a.createdAt,
+          createdAt: (a as any).createdAt,
         };
       }),
       summary: {
@@ -1381,10 +1381,10 @@ router.get(
         purpose: metadata.purpose || null,
         channel: metadata.channel || null,
         status: metadata.status || 'active',
-        consentedAt: metadata.consentedAt || r.createdAt.toISOString(),
+        consentedAt: metadata.consentedAt || (r as any).createdAt?.toISOString?.() || new Date().toISOString(),
         revokedAt: metadata.revokedAt || null,
-        createdBy: r.user,
-        lead: r.lead,
+        createdBy: (r as any).user,
+        lead: (r as any).lead,
       };
     });
 
@@ -1542,12 +1542,12 @@ router.get(
         amlOpenAlerts: openAml.slice(0, 20).map((a: { id: string; metadata: unknown }) => {
           const metadata = normalizeMetadata(a.metadata);
           return {
-            id: a.id,
-            leadId: a.leadId,
-            lead: a.lead,
+            id: (a as any).id,
+            leadId: (a as any).leadId,
+            lead: (a as any).lead,
             severity: metadata.severity || 'medium',
             flags: metadata.flags || [],
-            createdAt: a.createdAt,
+            createdAt: (a as any).createdAt,
           };
         }),
       },

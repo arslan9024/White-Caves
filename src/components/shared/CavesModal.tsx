@@ -95,7 +95,7 @@ export const CavesModal: React.FC<CavesModalProps> = ({
                   {title}
                 </h2>
                 {subtitle && (
-                  <p style={{ fontSize: '0.85rem', color: '#64748B', margin: '4px 0 0' }}>{subtitle}</p>
+                  <p style={{ fontSize: '0.85rem', color: 'var(--text-secondary, #64748B)', margin: '4px 0 0' }}>{subtitle}</p>
                 )}
               </div>
               <CloseBtn onClick={onClose} aria-label="Close modal">

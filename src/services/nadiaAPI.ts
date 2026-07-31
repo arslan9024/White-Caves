@@ -112,9 +112,9 @@ const normalizeConversation = (raw: Record<string, unknown>): Conversation => {
     priority: normalizePriority(leadScore),
     leadScore,
     assignedAgent: raw?.agentPhone ? String(raw.agentPhone) : undefined,
-    createdAt: raw?.createdAt ?? new Date().toISOString(),
-    updatedAt: raw?.updatedAt ?? raw?.createdAt ?? new Date().toISOString(),
-    closedAt: raw?.closedAt ?? undefined,
+    createdAt: (raw?.createdAt ? (raw.createdAt as string | Date) : new Date().toISOString()),
+    updatedAt: (raw?.updatedAt ? (raw.updatedAt as string | Date) : (raw?.createdAt ? (raw.createdAt as string | Date) : new Date().toISOString())),
+    closedAt: raw?.closedAt ? (raw.closedAt as string | Date) : undefined,
     lastMessage: latestMessage?.body ? String(latestMessage.body) : undefined,
     unreadCount: Number(raw?.unreadCount ?? 0),
     messageCount: messages.length || Number(raw?.messageCount ?? 0),
@@ -126,27 +126,30 @@ const normalizeMessage = (raw: Record<string, unknown>): Message => ({
   conversationId: String(raw?.conversationId ?? ''),
   sender: normalizeSender(raw?.direction),
   content: String(raw?.body ?? raw?.content ?? ''),
-  sentiment: raw?.sentiment ?? undefined,
+  sentiment: (raw?.sentiment as any) ?? undefined,
   intent: normalizeIntent(raw?.intent),
-  entities: raw?.entities ?? undefined,
+  entities: (raw?.entities as any) ?? undefined,
   leadScore: raw?.leadScore !== undefined ? Number(raw.leadScore) : undefined,
-  timestamp: raw?.timestamp ?? raw?.createdAt ?? new Date().toISOString(),
-  createdAt: raw?.createdAt ?? undefined,
+  timestamp: (raw?.timestamp ? (raw.timestamp as string | Date) : (raw?.createdAt ? (raw.createdAt as string | Date) : new Date().toISOString())),
+  createdAt: raw?.createdAt ? (raw.createdAt as string | Date) : undefined,
 });
 
-const normalizeQueuedConversation = (raw: Record<string, unknown>, sortOrder = 0): QueuedConversation => ({
-  queueId: String(raw?.queueId ?? raw?.id ?? ''),
-  conversationId: String(raw?.conversationId ?? raw?.conversation?.id ?? ''),
-  customerPhone: String(raw?.customerPhone ?? raw?.conversation?.customerPhone ?? ''),
-  customerName: raw?.customerName ?? raw?.conversation?.customerName ?? undefined,
-  priority:
-    Number(raw?.priority ?? 0) <= 3 ? 'URGENT' : Number(raw?.priority ?? 0) <= 6 ? 'NORMAL' : 'LOW',
-  leadScore: Number(raw?.leadScore ?? raw?.conversation?.leadScore ?? 0),
-  createdAt: raw?.queuedAt ?? raw?.createdAt ?? new Date().toISOString(),
-  waitTimeMinutes: Number(raw?.waitTimeMinutes ?? 0),
-  sortOrder,
-  status: normalizeConversationStatus(raw?.status ?? raw?.conversation?.status),
-});
+const normalizeQueuedConversation = (raw: Record<string, unknown>, sortOrder = 0): QueuedConversation => {
+  const conv = (raw?.conversation as Record<string, unknown>) || {};
+  return {
+    queueId: String(raw?.queueId ?? raw?.id ?? ''),
+    conversationId: String(raw?.conversationId ?? conv?.id ?? ''),
+    customerPhone: String(raw?.customerPhone ?? conv?.customerPhone ?? ''),
+    customerName: (raw?.customerName ?? conv?.customerName) ? String(raw?.customerName ?? conv?.customerName) : undefined,
+    priority:
+      Number(raw?.priority ?? 0) <= 3 ? 'URGENT' : Number(raw?.priority ?? 0) <= 6 ? 'NORMAL' : 'LOW',
+    leadScore: Number(raw?.leadScore ?? conv?.leadScore ?? 0),
+    createdAt: (raw?.queuedAt ? (raw.queuedAt as string | Date) : (raw?.createdAt ? (raw.createdAt as string | Date) : new Date().toISOString())),
+    waitTimeMinutes: Number(raw?.waitTimeMinutes ?? 0),
+    sortOrder,
+    status: normalizeConversationStatus(raw?.status ?? conv?.status),
+  };
+};
 
 /**
  * Generic fetch wrapper with error handling

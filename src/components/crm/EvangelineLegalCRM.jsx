@@ -63,7 +63,7 @@ const EvangelineLegalCRM = () => {
   return (
     <div className="assistant-dashboard evangeline">
       <div className="assistant-header">
-        <div className="assistant-avatar" style={{ background: 'linear-gradient(135deg, #DC2626 0%, #B91C1C 100%)' }}>
+        <div className="assistant-avatar" style={{ background: 'linear-gradient(135deg, var(--accent-red, #DC2626) 0%, var(--accent-red, #B91C1C) 100%)' }}>
           <Scale size={28} />
         </div>
         <div className="assistant-info">
@@ -78,7 +78,7 @@ const EvangelineLegalCRM = () => {
 
       <div className="quick-stats">
         <div className="stat-card highlight">
-          <div className="stat-icon" style={{ background: 'rgba(220, 38, 38, 0.2)', color: '#DC2626' }}>
+          <div className="stat-icon" style={{ background: 'rgba(220, 38, 38, 0.2)', color: 'var(--accent-red, #DC2626)' }}>
             <AlertTriangle size={20} />
           </div>
           <div className="stat-content">
@@ -88,7 +88,7 @@ const EvangelineLegalCRM = () => {
           <span className="stat-change warning">3 critical</span>
         </div>
         <div className="stat-card">
-          <div className="stat-icon" style={{ background: 'rgba(139, 92, 246, 0.2)', color: '#8B5CF6' }}>
+          <div className="stat-icon" style={{ background: 'rgba(139, 92, 246, 0.2)', color: 'var(--accent-purple, #8B5CF6)' }}>
             <FileText size={20} />
           </div>
           <div className="stat-content">
@@ -98,7 +98,7 @@ const EvangelineLegalCRM = () => {
           <span className="stat-change">8 this week</span>
         </div>
         <div className="stat-card">
-          <div className="stat-icon" style={{ background: 'rgba(16, 185, 129, 0.2)', color: '#10B981' }}>
+          <div className="stat-icon" style={{ background: 'rgba(16, 185, 129, 0.2)', color: 'var(--accent-green, #10B981)' }}>
             <Shield size={20} />
           </div>
           <div className="stat-content">
@@ -108,7 +108,7 @@ const EvangelineLegalCRM = () => {
           <span className="stat-change positive"><ArrowUp size={14} /> 2%</span>
         </div>
         <div className="stat-card">
-          <div className="stat-icon" style={{ background: 'rgba(245, 158, 11, 0.2)', color: '#F59E0B' }}>
+          <div className="stat-icon" style={{ background: 'rgba(245, 158, 11, 0.2)', color: 'var(--accent-gold, #F59E0B)' }}>
             <Clock size={20} />
           </div>
           <div className="stat-content">

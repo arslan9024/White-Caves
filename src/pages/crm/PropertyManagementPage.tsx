@@ -424,7 +424,7 @@ const PropertyManagementPage: FC = () => {
             List
           </ToggleButton>
         </ViewToggle>
-        <span style={{ fontSize: '0.8rem', color: '#888', marginLeft: 'auto' }}>
+        <span style={{ fontSize: '0.8rem', color: 'var(--color-888, #888)', marginLeft: 'auto' }}>
           {filteredProperties.length} propert{filteredProperties.length !== 1 ? 'ies' : 'y'}
         </span>
       </ActionBar>
@@ -457,7 +457,7 @@ const PropertyManagementPage: FC = () => {
                   {property.sqft && <span>📐 {property.sqft.toLocaleString()} sqft</span>}
                 </PropertyMeta>
                 {property.agent_name && (
-                  <div style={{ fontSize: '0.78rem', color: '#888', marginBottom: '0.5rem' }}>
+                  <div style={{ fontSize: '0.78rem', color: 'var(--color-888, #888)', marginBottom: '0.5rem' }}>
                     👤 {property.agent_name}
                   </div>
                 )}
@@ -536,7 +536,7 @@ const PropertyManagementPage: FC = () => {
           onClose={closeDeleteModal}
           size="small"
         >
-          <p style={{ color: '#555', fontSize: '0.9rem' }}>
+          <p style={{ color: 'var(--color-555, #555)', fontSize: '0.9rem' }}>
             Are you sure you want to delete <strong>{selectedProperty.title}</strong>? This action
             cannot be undone.
           </p>

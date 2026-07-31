@@ -98,7 +98,7 @@ export default function ServiceTracker({ userId, userRole }) {
   return (
     <div className="service-tracker">
       <h2>Service History</h2>
-      {errorMsg && <div className="error-banner" style={{ color: '#EF4444', marginBottom: '12px', fontWeight: 600 }}>{errorMsg}</div>}
+      {errorMsg && <div className="error-banner" style={{ color: 'var(--accent-red, #EF4444)', marginBottom: '12px', fontWeight: 600 }}>{errorMsg}</div>}
 
       <form onSubmit={handleSubmit} className="service-form">
         <select

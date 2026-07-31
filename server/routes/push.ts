@@ -18,6 +18,9 @@ router.post('/subscribe', authMiddleware, async (req, res) => {
     if (!token) {
       return res.status(400).json({ success: false, message: 'Token is required' });
     }
+    if (!userId) {
+      return res.status(401).json({ success: false, message: 'User authentication required' });
+    }
 
     // Upsert: if token exists for this user, update; otherwise create
     const existingToken = await prisma.userPushToken.findFirst({

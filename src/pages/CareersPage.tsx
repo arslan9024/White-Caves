@@ -331,7 +331,7 @@ const CareersPage: FC = () => {
                 <CheckCircle2
                   size={52}
                   strokeWidth={1.5}
-                  style={{ color: '#22c55e', marginBottom: '1rem' }}
+                  style={{ color: 'var(--accent-green, #22c55e)', marginBottom: '1rem' }}
                 />
                 <h3>Application Submitted!</h3>
                 <p style={{ color: 'var(--text-secondary)', marginBottom: '1.5rem' }}>

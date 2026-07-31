@@ -318,9 +318,9 @@ export const ViewingSchedule: React.FC = () => {
             {saving ? 'Scheduling…' : 'Schedule'}
           </button>
         </div>
-        {scheduleError && <p style={{ color: '#dc2626', marginTop: '0.5rem' }}>{scheduleError}</p>}
+        {scheduleError && <p style={{ color: 'var(--accent-red, #dc2626)', marginTop: '0.5rem' }}>{scheduleError}</p>}
         {scheduleSuccess && (
-          <p style={{ color: '#16a34a', marginTop: '0.5rem' }}>{scheduleSuccess}</p>
+          <p style={{ color: 'var(--accent-green, #16a34a)', marginTop: '0.5rem' }}>{scheduleSuccess}</p>
         )}
       </div>
 

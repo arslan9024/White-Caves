@@ -218,7 +218,7 @@ export async function generateInvoice(
               type: 'system',
               action: 'created',
               description: `Tax Invoice ${invoiceNumber} generated for commission on ${property.unitNumber || property.title}`,
-              userId: userId || null,
+              userId: (userId as string) || null,
               metadata: { fileUrl: `/uploads/${fileName}` },
             },
           });
@@ -241,6 +241,6 @@ export async function generateInvoice(
   }
 
   // Otherwise, it is the new call (clientId, dealId, propertyTitle, lineItems, userId)
-  return generateTaxInvoice(first, second, third, fourth, fifth);
+  return generateTaxInvoice(first as any, second as any, third as any, fourth as any, fifth as any);
 }
 

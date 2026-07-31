@@ -73,7 +73,7 @@ export const LandlordProperties: React.FC = () => {
                   {S.formatStatus(p.status)}
                 </span>
               </div>
-              <div style={{ display: 'flex', gap: '1rem', fontSize: '0.85rem', color: '#6b7280' }}>
+              <div style={{ display: 'flex', gap: '1rem', fontSize: '0.85rem', color: 'var(--text-secondary, #6b7280)' }}>
                 <span>🛏️ {p.bedrooms ?? 0} BR</span>
                 <span>📐 {p.sqft ?? '—'} sqft</span>
                 <span style={{ fontWeight: 600, color: 'var(--color-primary, #C9A84C)' }}>
@@ -407,7 +407,7 @@ export const LeaseManagement: React.FC = () => {
       </div>
 
       {expiring.length > 0 && (
-        <div style={{ ...S.card, borderColor: '#fbbf24', background: '#fffbeb' }}>
+        <div style={{ ...S.card, borderColor: 'var(--color-fbbf24, #fbbf24)', background: 'var(--color-fffbeb, #fffbeb)' }}>
           <h3 style={S.cardTitle}>⚠️ Expiring Soon ({expiring.length})</h3>
           {expiring.map(l => (
             <div
@@ -422,7 +422,7 @@ export const LeaseManagement: React.FC = () => {
               <span>
                 {l.property?.title ?? '—'} — {l.tenant?.name ?? '—'}
               </span>
-              <span style={{ fontWeight: 600, color: '#d97706' }}>
+              <span style={{ fontWeight: 600, color: 'var(--accent-gold, #d97706)' }}>
                 Expires {S.formatDate(l.endDate)}
               </span>
             </div>

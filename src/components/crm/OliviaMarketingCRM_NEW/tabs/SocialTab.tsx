@@ -65,7 +65,7 @@ export default function SocialTab({ state }: SocialTabProps) {
             <div className="platform-metrics">
               <div className="metric">
                 <span className="label">Growth</span>
-                <span className="value" style={{ color: '#10b981' }}>+{platform.growth}%</span>
+                <span className="value" style={{ color: 'var(--accent-green, #10b981)' }}>+{platform.growth}%</span>
               </div>
               <div className="metric">
                 <span className="label">Engagement</span>

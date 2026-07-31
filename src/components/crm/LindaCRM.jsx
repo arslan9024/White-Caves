@@ -95,7 +95,7 @@ const LindaCRM = () => {
       <div className="assistant-header">
         <div
           className="assistant-avatar"
-          style={{ background: 'linear-gradient(135deg, #25D366 0%, #128C7E 100%)' }}
+          style={{ background: 'linear-gradient(135deg, var(--color-25d366, #25D366) 0%, var(--color-128c7e, #128C7E) 100%)' }}
         >
           <Smartphone size={28} />
         </div>
@@ -113,7 +113,7 @@ const LindaCRM = () => {
         <div className="stat-card">
           <div
             className="stat-icon"
-            style={{ background: 'rgba(37,211,102,0.15)', color: '#25D366' }}
+            style={{ background: 'rgba(37,211,102,0.15)', color: 'var(--color-25d366, #25D366)' }}
           >
             <Wifi size={20} />
           </div>
@@ -125,7 +125,7 @@ const LindaCRM = () => {
         <div className="stat-card">
           <div
             className="stat-icon"
-            style={{ background: 'rgba(227,30,36,0.15)', color: '#E31E24' }}
+            style={{ background: 'rgba(227,30,36,0.15)', color: 'var(--color-e31e24, #E31E24)' }}
           >
             <WifiOff size={20} />
           </div>
@@ -139,7 +139,7 @@ const LindaCRM = () => {
         <div className="stat-card">
           <div
             className="stat-icon"
-            style={{ background: 'rgba(59,130,246,0.15)', color: '#3B82F6' }}
+            style={{ background: 'rgba(59,130,246,0.15)', color: 'var(--accent-blue, #3B82F6)' }}
           >
             <MessageSquare size={20} />
           </div>
@@ -151,7 +151,7 @@ const LindaCRM = () => {
         <div className="stat-card">
           <div
             className="stat-icon"
-            style={{ background: 'rgba(139,92,246,0.15)', color: '#8B5CF6' }}
+            style={{ background: 'rgba(139,92,246,0.15)', color: 'var(--accent-purple, #8B5CF6)' }}
           >
             <Users size={20} />
           </div>
@@ -209,13 +209,13 @@ const LindaCRM = () => {
                 </div>
                 <div style={{ flex: 1 }}>
                   <strong>{s.agent}</strong>
-                  <div style={{ fontSize: 12, color: '#6b7280', marginTop: 2 }}>
+                  <div style={{ fontSize: 12, color: 'var(--text-secondary, #6b7280)', marginTop: 2 }}>
                     {s.phone} · Linked {s.qrLinked}
                   </div>
                 </div>
                 <div style={{ textAlign: 'right', fontSize: 12 }}>
                   <div style={{ fontWeight: 600, color: cfg.color }}>{cfg.label}</div>
-                  <div style={{ color: '#9ca3af' }}>
+                  <div style={{ color: 'var(--text-secondary, #9ca3af)' }}>
                     {s.messages} msgs · {s.lastMsg}
                   </div>
                 </div>
@@ -265,7 +265,7 @@ const LindaCRM = () => {
                 >
                   {c.cmd}
                 </code>
-                <p style={{ margin: '6px 0 0', fontSize: 13, color: '#6b7280' }}>{c.desc}</p>
+                <p style={{ margin: '6px 0 0', fontSize: 13, color: 'var(--text-secondary, #6b7280)' }}>{c.desc}</p>
               </div>
             ))}
           </div>
@@ -301,14 +301,14 @@ const LindaCRM = () => {
               )}
               <div style={{ flex: 1 }}>
                 <strong>{s.name}</strong>
-                <div style={{ fontSize: 12, color: '#6b7280', marginTop: 2 }}>
+                <div style={{ fontSize: 12, color: 'var(--text-secondary, #6b7280)', marginTop: 2 }}>
                   {s.uptime ? `Uptime: ${s.uptime}` : ''}
                   {s.version ? `Version: ${s.version}` : ''}
                   {s.collections ? `${s.collections} collections` : ''}
                   {s.events ? `${s.events} events today` : ''}
                 </div>
               </div>
-              <span className="status-badge" style={{ background: '#f0fdf4', color: '#16a34a' }}>
+              <span className="status-badge" style={{ background: 'var(--color-f0fdf4, #f0fdf4)', color: 'var(--accent-green, #16a34a)' }}>
                 {s.status}
               </span>
             </div>

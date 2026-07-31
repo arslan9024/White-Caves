@@ -166,7 +166,7 @@ const InquiriesTab: React.FC<InquiriesTabProps> = ({ inquiries }) => {
                   <span style={{ fontSize: '11px', color: 'var(--color-text-secondary)' }}>
                     Stage {inq.leasingStage}: {stageLabel}
                   </span>
-                  <span style={{ fontSize: '11px', color: '#14B8A6', fontWeight: 600 }}>
+                  <span style={{ fontSize: '11px', color: 'var(--accent-teal, #14B8A6)', fontWeight: 600 }}>
                     {stagePct}%
                   </span>
                 </div>

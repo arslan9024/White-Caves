@@ -98,7 +98,7 @@ const NovaCRM = () => {
       <div className="assistant-header">
         <div
           className="assistant-avatar"
-          style={{ background: 'linear-gradient(135deg, #F59E0B 0%, #B45309 100%)' }}
+          style={{ background: 'linear-gradient(135deg, var(--accent-gold, #F59E0B) 0%, var(--color-b45309, #B45309) 100%)' }}
         >
           <Rocket size={28} />
         </div>
@@ -116,7 +116,7 @@ const NovaCRM = () => {
         <div className="stat-card">
           <div
             className="stat-icon"
-            style={{ background: 'rgba(245,158,11,0.15)', color: '#F59E0B' }}
+            style={{ background: 'rgba(245,158,11,0.15)', color: 'var(--accent-gold, #F59E0B)' }}
           >
             <Building2 size={20} />
           </div>
@@ -128,7 +128,7 @@ const NovaCRM = () => {
         <div className="stat-card">
           <div
             className="stat-icon"
-            style={{ background: 'rgba(59,130,246,0.15)', color: '#3B82F6' }}
+            style={{ background: 'rgba(59,130,246,0.15)', color: 'var(--accent-blue, #3B82F6)' }}
           >
             <Rocket size={20} />
           </div>
@@ -140,7 +140,7 @@ const NovaCRM = () => {
         <div className="stat-card">
           <div
             className="stat-icon"
-            style={{ background: 'rgba(34,197,94,0.15)', color: '#22C55E' }}
+            style={{ background: 'rgba(34,197,94,0.15)', color: 'var(--accent-green, #22C55E)' }}
           >
             <TrendingUp size={20} />
           </div>
@@ -152,7 +152,7 @@ const NovaCRM = () => {
         <div className="stat-card">
           <div
             className="stat-icon"
-            style={{ background: 'rgba(227,30,36,0.15)', color: '#E31E24' }}
+            style={{ background: 'rgba(227,30,36,0.15)', color: 'var(--color-e31e24, #E31E24)' }}
           >
             <Star size={20} />
           </div>
@@ -204,7 +204,7 @@ const NovaCRM = () => {
               <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 10 }}>
                 <div>
                   <strong style={{ fontSize: 15 }}>{d.name}</strong>
-                  <div style={{ fontSize: 12, color: '#6b7280', marginTop: 2 }}>
+                  <div style={{ fontSize: 12, color: 'var(--text-secondary, #6b7280)', marginTop: 2 }}>
                     {d.developer} · <MapPin size={11} style={{ display: 'inline' }} /> {d.location}
                   </div>
                 </div>
@@ -240,10 +240,10 @@ const NovaCRM = () => {
               </div>
               <div>
                 <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 4 }}>
-                  <span style={{ fontSize: 12, color: '#6b7280' }}>Sold</span>
+                  <span style={{ fontSize: 12, color: 'var(--text-secondary, #6b7280)' }}>Sold</span>
                   <span style={{ fontSize: 12, fontWeight: 700 }}>{d.soldPct}%</span>
                 </div>
-                <div style={{ height: 8, background: '#e5e7eb', borderRadius: 4 }}>
+                <div style={{ height: 8, background: 'var(--color-e5e7eb, #e5e7eb)', borderRadius: 4 }}>
                   <div
                     style={{
                       width: `${d.soldPct}%`,
@@ -292,7 +292,7 @@ const NovaCRM = () => {
               </div>
               <div style={{ flex: 1 }}>
                 <strong>{p.name}</strong>
-                <div style={{ fontSize: 12, color: '#6b7280', marginTop: 2 }}>
+                <div style={{ fontSize: 12, color: 'var(--text-secondary, #6b7280)', marginTop: 2 }}>
                   {p.developer} · {p.units} units · Est. {p.est}
                 </div>
               </div>
@@ -320,11 +320,11 @@ const NovaCRM = () => {
             >
               <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 8 }}>
                 <strong>{d.name}</strong>
-                <span style={{ fontWeight: 700, color: d.soldPct >= 80 ? '#E31E24' : '#22C55E' }}>
+                <span style={{ fontWeight: 700, color: d.soldPct >= 80 ? 'var(--color-e31e24, #E31E24)' : 'var(--accent-green, #22C55E)' }}>
                   {d.soldPct}% sold
                 </span>
               </div>
-              <div style={{ height: 10, background: '#e5e7eb', borderRadius: 5 }}>
+              <div style={{ height: 10, background: 'var(--color-e5e7eb, #e5e7eb)', borderRadius: 5 }}>
                 <div
                   style={{
                     width: `${d.soldPct}%`,
@@ -334,7 +334,7 @@ const NovaCRM = () => {
                   }}
                 />
               </div>
-              <div style={{ fontSize: 11, color: '#9ca3af', marginTop: 6 }}>
+              <div style={{ fontSize: 11, color: 'var(--text-secondary, #9ca3af)', marginTop: 6 }}>
                 {Math.round((d.units * d.soldPct) / 100)} / {d.units} units
               </div>
             </div>

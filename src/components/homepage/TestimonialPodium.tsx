@@ -70,12 +70,12 @@ export const TestimonialPodium: React.FC = () => {
         <h2 style={{ fontSize: '2.25rem', fontWeight: 800, color: SLATE, margin: '0 0 10px' }}>
           Global Investor Testimonial Podium
         </h2>
-        <p style={{ color: '#64748B', maxWidth: '640px', margin: '0 auto', fontSize: '1rem' }}>
+        <p style={{ color: 'var(--text-secondary, #64748B)', maxWidth: '640px', margin: '0 auto', fontSize: '1rem' }}>
           Hear directly from high-net-worth investors, family offices, and buyers served by White Caves.
         </p>
       </div>
 
-      <div style={{ background: '#FFFFFF', borderRadius: '24px', padding: '40px', border: '2px solid rgba(239, 68, 68, 0.25)', boxShadow: '0 20px 40px rgba(239, 68, 68, 0.08)', position: 'relative' }}>
+      <div style={{ background: 'var(--white, #FFFFFF)', borderRadius: '24px', padding: '40px', border: '2px solid rgba(239, 68, 68, 0.25)', boxShadow: '0 20px 40px rgba(239, 68, 68, 0.08)', position: 'relative' }}>
         <AnimatePresence mode="wait">
           <motion.div
             key={t.id}
@@ -87,7 +87,7 @@ export const TestimonialPodium: React.FC = () => {
           >
             <div style={{ display: 'flex', gap: '4px', marginBottom: '16px' }}>
               {Array.from({ length: t.rating }).map((_, i) => (
-                <span key={i} style={{ color: '#F59E0B', fontSize: '1.25rem' }}>★</span>
+                <span key={i} style={{ color: 'var(--accent-gold, #F59E0B)', fontSize: '1.25rem' }}>★</span>
               ))}
             </div>
 
@@ -104,7 +104,7 @@ export const TestimonialPodium: React.FC = () => {
             <h4 style={{ fontSize: '1.15rem', fontWeight: 800, color: SLATE, margin: '0 0 4px' }}>
               {t.name}
             </h4>
-            <p style={{ fontSize: '0.85rem', color: '#64748B', margin: '0 0 8px' }}>
+            <p style={{ fontSize: '0.85rem', color: 'var(--text-secondary, #64748B)', margin: '0 0 8px' }}>
               {t.role} · {t.location}
             </p>
             <span style={{ background: 'rgba(239, 68, 68, 0.1)', color: RED, fontWeight: 700, fontSize: '0.75rem', padding: '4px 12px', borderRadius: '9999px' }}>

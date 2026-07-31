@@ -43,7 +43,7 @@ const CipherMarketCRM = () => {
   return (
     <div className="assistant-dashboard cipher">
       <div className="assistant-header">
-        <div className="assistant-avatar" style={{ background: 'linear-gradient(135deg, #0D9488 0%, #0F766E 100%)' }}>
+        <div className="assistant-avatar" style={{ background: 'linear-gradient(135deg, var(--accent-teal, #0D9488) 0%, var(--accent-teal-dark, #0F766E) 100%)' }}>
           <LineChart size={28} />
         </div>
         <div className="assistant-info">
@@ -58,7 +58,7 @@ const CipherMarketCRM = () => {
 
       <div className="quick-stats">
         <div className="stat-card">
-          <div className="stat-icon" style={{ background: 'rgba(13, 148, 136, 0.2)', color: '#0D9488' }}>
+          <div className="stat-icon" style={{ background: 'rgba(13, 148, 136, 0.2)', color: 'var(--accent-teal, #0D9488)' }}>
             <TrendingUp size={20} />
           </div>
           <div className="stat-content">
@@ -68,7 +68,7 @@ const CipherMarketCRM = () => {
           <span className="stat-change positive">YoY</span>
         </div>
         <div className="stat-card">
-          <div className="stat-icon" style={{ background: 'rgba(245, 158, 11, 0.2)', color: '#F59E0B' }}>
+          <div className="stat-icon" style={{ background: 'rgba(245, 158, 11, 0.2)', color: 'var(--accent-gold, #F59E0B)' }}>
             <Activity size={20} />
           </div>
           <div className="stat-content">
@@ -78,7 +78,7 @@ const CipherMarketCRM = () => {
           <span className="stat-change positive"><ArrowUp size={14} /> 12%</span>
         </div>
         <div className="stat-card">
-          <div className="stat-icon" style={{ background: 'rgba(139, 92, 246, 0.2)', color: '#8B5CF6' }}>
+          <div className="stat-icon" style={{ background: 'rgba(139, 92, 246, 0.2)', color: 'var(--accent-purple, #8B5CF6)' }}>
             <DollarSign size={20} />
           </div>
           <div className="stat-content">
@@ -88,7 +88,7 @@ const CipherMarketCRM = () => {
           <span className="stat-change positive"><ArrowUp size={14} /> 5%</span>
         </div>
         <div className="stat-card">
-          <div className="stat-icon" style={{ background: 'rgba(16, 185, 129, 0.2)', color: '#10B981' }}>
+          <div className="stat-icon" style={{ background: 'rgba(16, 185, 129, 0.2)', color: 'var(--accent-green, #10B981)' }}>
             <Target size={20} />
           </div>
           <div className="stat-content">
@@ -142,7 +142,7 @@ const CipherMarketCRM = () => {
                     <span className="trend-type">{trend.type}</span>
                   </div>
                   <div className="trend-price">{trend.avgPrice}</div>
-                  <div className="trend-change" style={{ color: trend.trend === 'up' ? '#10B981' : '#EF4444' }}>
+                  <div className="trend-change" style={{ color: trend.trend === 'up' ? 'var(--accent-green, #10B981)' : 'var(--accent-red, #EF4444)' }}>
                     {trend.trend === 'up' ? <TrendingUp size={16} /> : <TrendingDown size={16} />}
                     {trend.change > 0 ? '+' : ''}{trend.change}%
                   </div>

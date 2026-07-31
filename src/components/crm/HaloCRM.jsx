@@ -85,7 +85,7 @@ const HaloCRM = () => {
       <div className="assistant-header">
         <div
           className="assistant-avatar"
-          style={{ background: 'linear-gradient(135deg, #EC4899 0%, #9D174D 100%)' }}
+          style={{ background: 'linear-gradient(135deg, var(--color-ec4899, #EC4899) 0%, var(--color-9d174d, #9D174D) 100%)' }}
         >
           <Heart size={28} />
         </div>
@@ -103,12 +103,12 @@ const HaloCRM = () => {
         <div className="stat-card">
           <div
             className="stat-icon"
-            style={{ background: 'rgba(34,197,94,0.15)', color: '#22C55E' }}
+            style={{ background: 'rgba(34,197,94,0.15)', color: 'var(--accent-green, #22C55E)' }}
           >
             <TrendingUp size={20} />
           </div>
           <div className="stat-content">
-            <span className="stat-value" style={{ color: npsScore >= 50 ? '#22C55E' : '#F59E0B' }}>
+            <span className="stat-value" style={{ color: npsScore >= 50 ? 'var(--accent-green, #22C55E)' : 'var(--accent-gold, #F59E0B)' }}>
               {npsScore}
             </span>
             <span className="stat-label">NPS Score</span>
@@ -117,7 +117,7 @@ const HaloCRM = () => {
         <div className="stat-card">
           <div
             className="stat-icon"
-            style={{ background: 'rgba(236,72,153,0.15)', color: '#EC4899' }}
+            style={{ background: 'rgba(236,72,153,0.15)', color: 'var(--color-ec4899, #EC4899)' }}
           >
             <Star size={20} />
           </div>
@@ -129,7 +129,7 @@ const HaloCRM = () => {
         <div className="stat-card">
           <div
             className="stat-icon"
-            style={{ background: 'rgba(227,30,36,0.15)', color: '#E31E24' }}
+            style={{ background: 'rgba(227,30,36,0.15)', color: 'var(--color-e31e24, #E31E24)' }}
           >
             <AlertCircle size={20} />
           </div>
@@ -143,7 +143,7 @@ const HaloCRM = () => {
         <div className="stat-card">
           <div
             className="stat-icon"
-            style={{ background: 'rgba(59,130,246,0.15)', color: '#3B82F6' }}
+            style={{ background: 'rgba(59,130,246,0.15)', color: 'var(--accent-blue, #3B82F6)' }}
           >
             <Users size={20} />
           </div>
@@ -186,8 +186,8 @@ const HaloCRM = () => {
             >
               {npsScore}
             </div>
-            <div style={{ fontSize: 16, color: '#6b7280', marginTop: 8 }}>Net Promoter Score</div>
-            <div style={{ fontSize: 13, color: '#9ca3af', marginTop: 4 }}>
+            <div style={{ fontSize: 16, color: 'var(--text-secondary, #6b7280)', marginTop: 8 }}>Net Promoter Score</div>
+            <div style={{ fontSize: 13, color: 'var(--text-secondary, #9ca3af)', marginTop: 4 }}>
               World-class: 70+ · Excellent: 50–69 · Good: 30–49
             </div>
           </div>
@@ -205,7 +205,7 @@ const HaloCRM = () => {
                   </span>
                 </div>
                 <div
-                  style={{ height: 8, background: '#e5e7eb', borderRadius: 4, overflow: 'hidden' }}
+                  style={{ height: 8, background: 'var(--color-e5e7eb, #e5e7eb)', borderRadius: 4, overflow: 'hidden' }}
                 >
                   <div
                     style={{
@@ -251,13 +251,13 @@ const HaloCRM = () => {
                   <span style={{ fontWeight: 700, fontSize: 14 }}>{r.score}/10</span>
                 </div>
               </div>
-              <p style={{ margin: '0 0 8px', fontSize: 13, fontStyle: 'italic', color: '#374151' }}>
+              <p style={{ margin: '0 0 8px', fontSize: 13, fontStyle: 'italic', color: 'var(--text-secondary, #374151)' }}>
                 &ldquo;{r.comment}&rdquo;
               </p>
               <div
                 style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}
               >
-                <span style={{ fontSize: 11, color: '#9ca3af' }}>{r.date}</span>
+                <span style={{ fontSize: 11, color: 'var(--text-secondary, #9ca3af)' }}>{r.date}</span>
                 <span
                   className="status-badge"
                   style={{
@@ -288,10 +288,10 @@ const HaloCRM = () => {
               }}
             >
               <div style={{ display: 'flex', gap: 10, alignItems: 'flex-start' }}>
-                <AlertCircle size={18} color="#E31E24" style={{ flexShrink: 0, marginTop: 2 }} />
+                <AlertCircle size={18} color="var(--color-e31e24, #E31E24)" style={{ flexShrink: 0, marginTop: 2 }} />
                 <div>
                   <strong>{r.client}</strong> — Score {r.score}/10
-                  <p style={{ margin: '4px 0', fontSize: 13, color: '#374151' }}>
+                  <p style={{ margin: '4px 0', fontSize: 13, color: 'var(--text-secondary, #374151)' }}>
                     &ldquo;{r.comment}&rdquo;
                   </p>
                   <button

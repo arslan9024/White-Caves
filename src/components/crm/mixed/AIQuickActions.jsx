@@ -128,7 +128,7 @@ export function AIActionPanel({
         <div className="assistant-info">
           <div 
             className="assistant-avatar"
-            style={{ background: assistant?.color || '#B03737' }}
+            style={{ background: assistant?.color || 'var(--color-b03737, #B03737)' }}
           >
             {assistant?.name?.charAt(0) || 'A'}
           </div>

@@ -72,10 +72,10 @@ export const CavesKanbanCard: React.FC<CavesKanbanCardProps> = ({
       </div>
 
       <h4 style={{ fontSize: '0.95rem', fontWeight: 900, color: SLATE, margin: '0 0 4px' }}>{name}</h4>
-      {phone && <p style={{ fontSize: '0.78rem', color: '#64748B', margin: '0 0 10px' }}>📞 {phone}</p>}
+      {phone && <p style={{ fontSize: '0.78rem', color: 'var(--text-secondary, #64748B)', margin: '0 0 10px' }}>📞 {phone}</p>}
 
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', paddingTop: '8px', borderTop: '1px solid #F1F5F9' }}>
-        <span style={{ fontSize: '0.72rem', color: '#94A3B8', fontWeight: 700 }}>Broker: {assignedBroker}</span>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', paddingTop: '8px', borderTop: '1px solid var(--color-f1f5f9, #F1F5F9)' }}>
+        <span style={{ fontSize: '0.72rem', color: 'var(--color-94a3b8, #94A3B8)', fontWeight: 700 }}>Broker: {assignedBroker}</span>
         {stage && <CavesBadge status={stage}>{stage}</CavesBadge>}
       </div>
     </CardContainer>

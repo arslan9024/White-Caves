@@ -525,7 +525,7 @@ export const LeaseRenewals: React.FC = () => {
                 <tr key={l.id}>
                   <td style={S.td}>{l.property?.title ?? '—'}</td>
                   <td style={S.td}>{l.tenant?.name ?? '—'}</td>
-                  <td style={{ ...S.td, color: '#d97706', fontWeight: 600 }}>
+                  <td style={{ ...S.td, color: 'var(--accent-gold, #d97706)', fontWeight: 600 }}>
                     {S.formatDate(l.endDate)}
                   </td>
                   <td style={S.td}>{S.formatCurrency(l.monthlyRent)}</td>
@@ -615,7 +615,7 @@ export const SalesPipeline: React.FC = () => {
             {g.items.map(o => (
               <div key={o.id} style={{ ...S.card, marginBottom: '0.5rem', padding: '0.75rem' }}>
                 <strong style={{ fontSize: '0.85rem' }}>{o.property?.title ?? '—'}</strong>
-                <p style={{ fontSize: '0.8rem', color: '#6b7280', margin: '0.25rem 0 0 0' }}>
+                <p style={{ fontSize: '0.8rem', color: 'var(--text-secondary, #6b7280)', margin: '0.25rem 0 0 0' }}>
                   {S.formatCurrency(o.amount)}
                 </p>
               </div>
@@ -854,7 +854,7 @@ export const AgentPerformance: React.FC = () => {
             }}
           />
         </div>
-        <p style={{ fontSize: '0.85rem', color: '#6b7280', marginTop: '0.5rem' }}>
+        <p style={{ fontSize: '0.85rem', color: 'var(--text-secondary, #6b7280)', marginTop: '0.5rem' }}>
           {stats?.closedThisMonth ?? 0} / {stats?.monthlyTarget ?? 10} deals closed
         </p>
       </div>

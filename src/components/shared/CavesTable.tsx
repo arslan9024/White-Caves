@@ -84,7 +84,7 @@ export function CavesTable<T extends { id?: string | number }>({
         <tbody>
           {data.length === 0 ? (
             <tr>
-              <Td colSpan={columns.length} style={{ textAlign: 'center', padding: '32px', color: '#94A3B8' }}>
+              <Td colSpan={columns.length} style={{ textAlign: 'center', padding: '32px', color: 'var(--color-94a3b8, #94A3B8)' }}>
                 {emptyText}
               </Td>
             </tr>

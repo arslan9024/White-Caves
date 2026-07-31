@@ -111,8 +111,8 @@ export class NinaEngine {
     sessionId: string,
     assistantId: string,
     userMessage: string,
-    entityContext?: Record<string, unknown>,
-    onToken: (token: string) => void
+    entityContext: Record<string, unknown> = {},
+    onToken: (token: string) => void = () => {}
   ) {
     if (!(await this.checkCap(assistantId))) {
       onToken('Rate limit exceeded for today.');

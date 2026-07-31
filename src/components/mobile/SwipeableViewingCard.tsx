@@ -114,7 +114,7 @@ const SwipeableViewingCard: React.FC<SwipeableViewingCardProps> = ({
         }}
       >
         <Check size={24} color="#fff" />
-        <span style={{ color: '#fff', fontWeight: 600, marginLeft: 8, fontSize: 14 }}>
+        <span style={{ color: 'var(--white, #fff)', fontWeight: 600, marginLeft: 8, fontSize: 14 }}>
           Confirm
         </span>
       </div>
@@ -133,7 +133,7 @@ const SwipeableViewingCard: React.FC<SwipeableViewingCardProps> = ({
           transition: isSwiping ? 'none' : 'opacity 0.2s',
         }}
       >
-        <span style={{ color: '#fff', fontWeight: 600, marginRight: 8, fontSize: 14 }}>
+        <span style={{ color: 'var(--white, #fff)', fontWeight: 600, marginRight: 8, fontSize: 14 }}>
           Reschedule
         </span>
         <CalendarClock size={24} color="#fff" />
@@ -188,7 +188,7 @@ const SwipeableViewingCard: React.FC<SwipeableViewingCardProps> = ({
             >
               {viewing.propertyTitle}
             </div>
-            <div style={{ fontSize: 13, color: '#888', marginTop: 2 }}>
+            <div style={{ fontSize: 13, color: 'var(--color-888, #888)', marginTop: 2 }}>
               with {viewing.clientName}
             </div>
           </div>
@@ -255,11 +255,11 @@ const SwipeableViewingCard: React.FC<SwipeableViewingCardProps> = ({
               textAlign: 'center',
             }}
           >
-            <CalendarClock size={32} color="#3B82F6" style={{ marginBottom: 12 }} />
-            <h3 style={{ color: '#f5f5f0', fontSize: 16, marginBottom: 8 }}>
+            <CalendarClock size={32} color="var(--accent-blue, #3B82F6)" style={{ marginBottom: 12 }} />
+            <h3 style={{ color: 'var(--color-f5f5f0, #f5f5f0)', fontSize: 16, marginBottom: 8 }}>
               Reschedule Viewing
             </h3>
-            <p style={{ color: '#888', fontSize: 14, marginBottom: 16, lineHeight: 1.5 }}>
+            <p style={{ color: 'var(--color-888, #888)', fontSize: 14, marginBottom: 16, lineHeight: 1.5 }}>
               <strong>{viewing.propertyTitle}</strong> with {viewing.clientName}
             </p>
             <input

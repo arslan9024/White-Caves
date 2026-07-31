@@ -1,80 +1,68 @@
-# AEGIS 2.0 — Forensic 12-Domain Adversarial Audit & Pending Tasks
+# AEGIS 2.0 — 35-Point Strategic Quality Audit & RUP Roadmap
 
-> **Audit Mode:** Adversarial Quality & Security Inspection
-> **Status:** Metric Recovered to **98.5% Complete** (+13.5% total recovery loop active)
-> **Goal:** Itemized step-by-step checklist of critical gaps for immediate turn-by-turn resolution (+10% score gain per turn).
-
----
-
-## 🔱 12-DOMAIN FORENSIC FINDINGS & TASK CHECKLISTS
-
-### 1. 🌐 Sales & Leasing Router Bounds
-- [x] **Gap:** Deep nested route parameter validation missing on `/crm/leasing/:id/ejari` and `/crm/sales/deals/:id`.
-- [x] **Fix Step 1:** Created `src/guards/RouteGuard.ts` providing `validateViewCode` and `validateEntityId` bounds.
-- [x] **Fix Step 2:** Integrated route validation guards into `UnifiedWorkspaceLayout.tsx`.
-
-### 2. 🗄️ Prisma Singleton Connection Loops
-- [x] **Gap:** Multiple instantiations of `PrismaClient` in `server/services/` causing potential connection pool exhaustion under load.
-- [x] **Fix Step 1:** Created `server/db.ts` to enforce global singleton instance (`globalThis.prisma`).
-- [x] **Fix Step 2:** Provided `safeDbQuery` try/catch fallback wrapper for local testing.
-
-### 3. 🎨 Tailwind Theme & Brand Palette Overrides
-- [x] **Gap:** Legacy components contain leftover Emerald Green (`#10B981`, `#22C55E`) and Obsidian Black blocks.
-- [x] **Fix Step 1:** Replaced inline hex codes with canonical CSS tokens (`var(--brand-red)`, `var(--brand-slate)`).
-- [x] **Fix Step 2:** Enforced `#EF4444` primary badges across all CRM views (`src/styles/brand-palette.css`).
-
-### 4. 💬 Nadia WhatsApp Queue Latency
-- [x] **Gap:** Absence of exponential backoff retry mechanism on failed webhook deliveries in Nadia CRM worker.
-- [x] **Fix Step 1:** Implemented `server/services/whatsappQueue.js` with exponential backoff algorithm (1s, 2s, 4s, 8s, 16s).
-- [x] **Fix Step 2:** Exposed queue metrics API (`getMetrics()`).
-
-### 5. 📜 Form 7 / 12 / 6 Legal Notification Triggers
-- [x] **Gap:** Automated event listeners not bound to DLD timeline changes for Form 12 eviction statutory 12-month counter.
-- [x] **Fix Step 1:** Implemented `Form12Eviction.tsx` with statutory 12-month countdown timeline tracking.
-- [x] **Fix Step 2:** Triggered automated WhatsApp & Email notification dispatches on action clicks.
-
-### 6. 💱 Multi-Currency Client-Side Totalizers
-- [x] **Gap:** Floating point precision errors in AED/USD/EUR/GBP aggregated portfolio totals in `MultiCurrencyTreasury.tsx`.
-- [x] **Fix Step 1:** Created `src/utils/currency.ts` with fixed-decimal integer-cents FX conversion math.
-- [x] **Fix Step 2:** Provided clean `formatCurrency` and `aggregatePortfolioTotals` helpers.
-
-
-
-### 7. 👁️ WCAG AA Color Contrast Ratios
-- [ ] **Gap:** Light slate text (`#94A3B8`) on white backgrounds in secondary card subtitles fails WCAG AA 4.5:1 ratio.
-- [ ] **Fix Step 1:** Elevate secondary text contrast to `#64748B` or `#475569`.
-- [ ] **Fix Step 2:** Verify contrast compliance across all 100 views.
-
-### 8. 🔄 Redux Toolkit State Immutability
-- [ ] **Gap:** Direct mutation of nested array state in lead drag-and-drop handler in `DragDropLeadGrid.tsx`.
-- [ ] **Fix Step 1:** Ensure Immer / slice immutable updates are used for lead column shifts.
-- [ ] **Fix Step 2:** Add Vitest immutability assertion test in `__tests__/DragDropLeadGrid.test.tsx`.
-
-### 9. 📥 CSV Mass Ingestion Sanitization
-- [ ] **Gap:** Lack of formula injection protection (CSV Injection / Formula Escalation) on lead bulk upload.
-- [ ] **Fix Step 1:** Strip leading `=`, `+`, `-`, `@` characters from CSV cell inputs in `LeadImportWizard.tsx`.
-- [ ] **Fix Step 2:** Enforce sanitization before passing array payload to server endpoint.
-
-### 10. ⚡ Local Cache File Synchronization
-- [ ] **Gap:** Local storage cache keys lack version hash tagging, leading to stale cache reads post-deployment.
-- [ ] **Fix Step 1:** Append build commit hash suffix to local storage keys in `CacheSizeIndicator.tsx`.
-- [ ] **Fix Step 2:** Implement auto-invalidation on version mismatch.
-
-### 11. 🔒 CORS Origin Access Controls
-- [ ] **Gap:** Development fallback wildcard CORS headers (`Access-Control-Allow-Origin: *`) present in server middleware.
-- [ ] **Fix Step 1:** Restrict allowed origins to explicit domain whitelist from environment config.
-- [ ] **Fix Step 2:** Block unauthorized credentials pass-through.
-
-### 12. 🧱 Caves UI Shared Components Integration Bounds
-- [ ] **Gap:** Inconsistent prop contracts between `DataTable.jsx` and new TSX feature views.
-- [ ] **Fix Step 1:** Create unified TypeScript interface wrapper for `DataTable` props in `src/components/crm/types.ts`.
-- [ ] **Fix Step 2:** Refactor views 01 to 25 to consume typed table wrapper.
+> **Audit Mode:** 35-Point Strategic Core Quality & Quality Audit Matrix  
+> **Status:** RUP Realignment Phase Active  
+> **Active Wave Backlog:** [WAVE_30_IMPLEMENTATION_BACKLOG.md](./waves/WAVE_30_IMPLEMENTATION_BACKLOG.md) (Wave 30)  
+> **Last Updated:** 2026-08-01  
 
 ---
 
-## 📈 PROJECT RE-CALIBRATION SUMMARY
+## 🏗️ Pillar 1: Unified Workspace Shell & Universal Navigation (Items 01 - 07)
 
-- **Pre-Audit Stated Completion:** 95%
-- **Post-Audit Adversarial Real Completion:** **85%**
-- **Pending Target Count:** 12 Critical Domains (24 Actionable Items)
-- **Next Turn Projected Recovery:** +10% (Target: 95%+)
+- [ ] **01. Universal Navigation Merger:** Consolidate competing legacy sidebars into single high-density left column inside `src/layouts/UnifiedWorkspaceLayout.tsx`.
+- [ ] **02. Fixed Top Navbar Alignment:** Apply `position: fixed; top: 0; z-index: 1000;` to `TopNavbar.tsx` with 2px `#EF4444` bottom border.
+- [ ] **03. Content Overlap Padding:** Inject `padding-top: 64px` (`pt-16`) on primary content canvas to prevent content sliding under fixed navbar.
+- [ ] **04. Floating Search Command Pill:** Build `FloatingSearchPill.tsx` fixed at `top: 80px` centered to trigger search modal overlay.
+- [ ] **05. True Red & White Branding Lockdown:** Purge unapproved blues, golds, greens, obsidian black. Lock to `#EF4444` Red, `#FFFFFF` White, `#1E293B` Slate.
+- [ ] **06. Recursive Sidebar Data Rendering:** Render 12 primary department items dynamically from config rather than hardcoded text elements.
+- [ ] **07. Hardware-Accelerated Content Swapping:** Apply GPU-optimized transform/opacity transit animations to view transitions without white-screen flickers.
+
+---
+
+## 👥 Pillar 2: Gating, Profiling, & Post-Login System Behavior (Items 08 - 14)
+
+- [ ] **08. Managing Director 'God-Mode' Bypass:** If logged email matches `arslanmalikgoraha@gmail.com`, force-inject `accessLevel: 5` (`LEVEL_5_MASTER`).
+- [ ] **09. Instant Session Hydration:** Patch frontend route guards to check local storage tokens before route load, removing transient layout flashes.
+- [ ] **10. Ghost Session Impersonation Selector:** Integrate administrative dropdown in top navbar (visible to Level 5) to simulate any employee/tenant/landlord viewport.
+- [ ] **11. Profile Update Interface CRUD:** Build fully interactive editable profile fields inside `ProfilePage.tsx` for Managing Director credential & parameter updates.
+- [ ] **12. Defensive Session-Handshake Exceptions:** Wrap Google OAuth and multi-provider token verification loops in try-catch blocks.
+- [ ] **13. Session Expiry Warning Alerts:** Render red warning banners inside dashboard frame if credentials require quick reloads.
+- [ ] **14. Bypass Guard Security Floor:** Default securely to master profile session if identity authorization systems drop out.
+
+---
+
+## 🗮 Pillar 3: 12 Professional Departments & 108 Squad Layouts (Items 15 - 21)
+
+- [ ] **15. 12 Revenue-Centric Pillars Structuring:** Register official domain names: Brokerage Sales, Off-Plan Developments, Leasing, Asset Management, Finance, Marketing, Executive Office, Compliance, Technology, Legal, Conveyancing, Intelligence.
+- [ ] **16. 1-12-108 Hierarchy Data Mapping:** Seed `src/mocks/companyMasterLedger.json` with 12 Managers (Level 4) and 108 Supervisors (Level 3) in squads of 9 per department.
+- [ ] **17. High-Density Inventory Spreadsheet Table:** Display status badges (Available, Leased, UnderMaintenance) for 9,378+ managed properties in Dubai.
+- [ ] **18. DAMAC Hills 2 Neighborhood Cluster Sorters:** Upgrade search interfaces with quick-toggle filter pills to group units by cluster.
+- [ ] **19. Interactive 4-Column Kanban Lead Board:** Build drag-and-drop workflow tracking cards from New Ingestion to Negotiation/Closing.
+- [ ] **20. Portal Ingestion SLA Counter Tickers:** Mount live countdown timers on incoming customer rows to enforce 15-minute round-robin routing deadline.
+- [ ] **21. Gamified Sales Leaderboard Podium:** Build animated 3-tier podium view displaying top monthly producing brokers sorted by gross AED volume.
+
+---
+
+## 🤖 Pillar 4: AI Command Center & Real Google Maps Integration (Items 22 - 28)
+
+- [ ] **22. Real Google Maps JavaScript API Connection:** Connect mapping components to `@googlemaps/js-api-loader` to load live map of Dubai.
+- [ ] **23. Custom Red Marker Styling:** Apply silver skin to Google Map and plot property coordinates using White Caves Red (`#EF4444`) markers.
+- [ ] **24. AI Assistant Avatar Hub:** Design permanent configuration viewport housing active AI avatar nodes (Zoe, Nadia, Sentinel, Clara, Sophia).
+- [ ] **25. WhatsApp SLA Response Clocks:** Mount live countdown timers next to unresolved threads to enforce agent reply speed parameters.
+- [ ] **26. Live AI Text Ingestion Trace Tickers:** Embed console view widgets tracking real-time unformatted text strings being analyzed.
+- [ ] **27. AI Compliance Contract Audit Feedback Blocks:** Render responsive side-by-side error tracking boxes highlighting policy violations.
+- [ ] **28. Zero-Overhead Client Currency Conversion Engines:** Create local client-side display modules linked to 4-hour exchange cache.
+
+---
+
+## 🧹 Pillar 5: RUP Folder Infrastructure & Component Isolation (Items 29 - 35)
+
+- [ ] **29. RUP 4-Tier Documentation Structure:** Format `/software_docs` into `/01_requirements_engineering/`, `/02_software_design/`, `/03_use_cases/`, and `/04_flowcharts/`.
+- [ ] **30. Tech Replacement Rules Manifest:** Create `software_docs/tech_replacement_rules.md` to track architectural upgrades & local fallbacks.
+- [ ] **31. Dynamic Plan Reflection Loop:** Update physical files inside `/plans/` (`plans/MASTER_PLAN.md` & `plans/PENDING_TASKS_ONLY.md`) on start of every turn.
+- [ ] **32. Pure Presentation/Logic File Separation:** Move dataset computation out of view scripts into custom hooks (`src/hooks/useWorkspaceEngine.ts`).
+- [ ] **33. Localization JSON Translation Sheets:** Move raw text strings into localization files (`src/locales/en.json`, `src/locales/ar.json`).
+- [ ] **34. Elimination of Inline Styles:** Purge floating inline styles and consolidate layout rules in BEM stylesheet (`DashboardComponents.css`).
+- [ ] **35. 0-Token Local Debugging Pipeline:** Pipe build traces into `plans/COMPILER_ERRORS.txt` to prevent token burn.
+
+

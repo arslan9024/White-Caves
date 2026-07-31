@@ -253,10 +253,10 @@ export const CommissionManagementPanel: FC = () => {
                     <td style={{ padding: '10px 12px', textAlign: 'right', fontWeight: 900 }}>
                       {filtered.reduce((a, r) => a + r.grossCommissionAED, 0).toLocaleString()}
                     </td>
-                    <td style={{ padding: '10px 12px', textAlign: 'right', fontWeight: 900, color: '#6EE7B7' }}>
+                    <td style={{ padding: '10px 12px', textAlign: 'right', fontWeight: 900, color: 'var(--color-6ee7b7, #6EE7B7)' }}>
                       {filtered.reduce((a, r) => a + r.agentEarningsAED, 0).toLocaleString()}
                     </td>
-                    <td style={{ padding: '10px 12px', textAlign: 'right', fontWeight: 900, color: '#FCD34D' }}>
+                    <td style={{ padding: '10px 12px', textAlign: 'right', fontWeight: 900, color: 'var(--color-fcd34d, #FCD34D)' }}>
                       {filtered.reduce((a, r) => a + r.vatAED, 0).toLocaleString()}
                     </td>
                     <td />
@@ -284,7 +284,7 @@ export const CommissionManagementPanel: FC = () => {
                     { label: 'VAT 5%', value: `AED ${selectedRecord.vatAED.toLocaleString()}`, bold: false, color: ORANGE },
                     { label: 'Total Payable to Agent', value: `AED ${selectedRecord.totalPayableAED.toLocaleString()}`, bold: true, color: RED },
                   ].map(row => (
-                    <div key={row.label} style={{ display: 'flex', justifyContent: 'space-between', padding: '6px 0', borderBottom: '1px dashed #E2E8F0', fontSize: '0.8rem' }}>
+                    <div key={row.label} style={{ display: 'flex', justifyContent: 'space-between', padding: '6px 0', borderBottom: '1px dashed var(--text-secondary, #E2E8F0)', fontSize: '0.8rem' }}>
                       <span style={{ color: TEXT_MUTED }}>{row.label}</span>
                       <span style={{ fontWeight: row.bold ? 900 : 600, color: (row as any).color || SLATE }}>{row.value}</span>
                     </div>
@@ -332,7 +332,7 @@ export const CommissionManagementPanel: FC = () => {
                   <h3 style={{ margin: 0, color: SLATE, fontSize: '1rem', fontWeight: 800 }}>{a.agent}</h3>
                   <div style={{ fontSize: '0.78rem', color: TEXT_MUTED }}>{a.role} · {a.deals} deals closed</div>
                 </div>
-                <div style={{ background: '#FEF2F2', padding: '6px 12px', borderRadius: '8px', textAlign: 'center' }}>
+                <div style={{ background: 'var(--color-fef2f2, #FEF2F2)', padding: '6px 12px', borderRadius: '8px', textAlign: 'center' }}>
                   <div style={{ fontSize: '0.7rem', color: RED, fontWeight: 700 }}>SPLIT</div>
                   <div style={{ fontSize: '1.1rem', fontWeight: 900, color: RED }}>{a.avgSplit}%</div>
                 </div>
@@ -344,7 +344,7 @@ export const CommissionManagementPanel: FC = () => {
                 { label: 'Paid Out', value: `AED ${a.paid.toLocaleString()}`, color: GREEN },
                 { label: 'Pending', value: `AED ${a.pending.toLocaleString()}`, color: ORANGE },
               ].map(row => (
-                <div key={row.label} style={{ display: 'flex', justifyContent: 'space-between', padding: '7px 0', borderBottom: '1px solid #E2E8F0', fontSize: '0.82rem' }}>
+                <div key={row.label} style={{ display: 'flex', justifyContent: 'space-between', padding: '7px 0', borderBottom: '1px solid var(--text-secondary, #E2E8F0)', fontSize: '0.82rem' }}>
                   <span style={{ color: TEXT_MUTED, fontWeight: 600 }}>{row.label}</span>
                   <span style={{ fontWeight: 700, color: row.color }}>{row.value}</span>
                 </div>
@@ -355,7 +355,7 @@ export const CommissionManagementPanel: FC = () => {
                 <div style={{ fontSize: '0.72rem', color: TEXT_MUTED, fontWeight: 700, marginBottom: '4px' }}>
                   Payout Progress: {Math.round((a.paid / (a.totalEarnings || 1)) * 100)}% paid
                 </div>
-                <div style={{ background: '#E2E8F0', borderRadius: '99px', height: '8px' }}>
+                <div style={{ background: 'var(--color-e2e8f0, #E2E8F0)', borderRadius: '99px', height: '8px' }}>
                   <div style={{ background: GREEN, width: `${Math.min(100, Math.round((a.paid / (a.totalEarnings || 1)) * 100))}%`, height: '100%', borderRadius: '99px', transition: 'width 0.4s' }} />
                 </div>
               </div>

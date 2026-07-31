@@ -83,7 +83,7 @@ export const OwnerOverview: React.FC = () => {
               { name: 'Nina — NLP Engine', status: 'online', icon: '🧠' },
               { name: 'Linda — WhatsApp LocalAuth', status: 'standby', icon: '🔐' },
             ].map((bot) => (
-              <div key={bot.name} style={{ display: 'flex', justifyContent: 'space-between', padding: '0.5rem 0', borderBottom: '1px solid #f3f4f6' }}>
+              <div key={bot.name} style={{ display: 'flex', justifyContent: 'space-between', padding: '0.5rem 0', borderBottom: '1px solid var(--color-f3f4f6, #f3f4f6)' }}>
                 <span>{bot.icon} {bot.name}</span>
                 <span style={S.badge(
                   bot.status === 'online' ? '#16a34a' : '#d97706',
@@ -97,11 +97,11 @@ export const OwnerOverview: React.FC = () => {
         <div style={S.card}>
           <h3 style={S.cardTitle}>📈 Quick Stats</h3>
           <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', padding: '0.5rem 0', borderBottom: '1px solid #f3f4f6' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', padding: '0.5rem 0', borderBottom: '1px solid var(--color-f3f4f6, #f3f4f6)' }}>
               <span>Properties Listed</span>
               <strong>{stats?.properties ?? 0}</strong>
             </div>
-            <div style={{ display: 'flex', justifyContent: 'space-between', padding: '0.5rem 0', borderBottom: '1px solid #f3f4f6' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', padding: '0.5rem 0', borderBottom: '1px solid var(--color-f3f4f6, #f3f4f6)' }}>
               <span>Active Leads</span>
               <strong>{stats?.leads ?? 0}</strong>
             </div>
@@ -165,7 +165,7 @@ export const BusinessAnalytics: React.FC = () => {
 
       <div style={S.card}>
         <h3 style={S.cardTitle}>📊 Key Metrics</h3>
-        <p style={{ color: '#6b7280' }}>
+        <p style={{ color: 'var(--text-secondary, #6b7280)' }}>
           Detailed revenue charts and market analysis will render here when chart library integration is enabled.
           Data is available via <code>/api/finance/analytics</code>.
         </p>
@@ -241,7 +241,7 @@ export const WhatsAppDashboard: React.FC = () => {
                 bot.status === 'online' ? '#dcfce7' : '#fffbeb',
               )}>{S.formatStatus(bot.status)}</span>
             </div>
-            <div style={{ display: 'flex', gap: '1rem', fontSize: '0.85rem', color: '#6b7280' }}>
+            <div style={{ display: 'flex', gap: '1rem', fontSize: '0.85rem', color: 'var(--text-secondary, #6b7280)' }}>
               <span>💬 {bot.messages24h} messages</span>
               <span>🎯 {bot.leadsGenerated} leads</span>
             </div>
@@ -307,7 +307,7 @@ export const SystemHealth: React.FC = () => {
 
       <div style={{ ...S.card, marginTop: '1rem' }}>
         <h3 style={S.cardTitle}>📋 Environment</h3>
-        <div style={{ fontSize: '0.85rem', color: '#6b7280', display: 'flex', flexDirection: 'column', gap: '0.25rem' }}>
+        <div style={{ fontSize: '0.85rem', color: 'var(--text-secondary, #6b7280)', display: 'flex', flexDirection: 'column', gap: '0.25rem' }}>
           <span>Runtime: Node.js</span>
           <span>Framework: Express 5 + React 18</span>
           <span>DB: MongoDB (Prisma 6.6)</span>
@@ -335,12 +335,12 @@ export const SystemSettings: React.FC = () => {
           <h3 style={S.cardTitle}>🏢 Organization</h3>
           <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
             <div>
-              <label style={{ display: 'block', fontSize: '0.85rem', color: '#6b7280', marginBottom: '0.25rem' }}>Company Name</label>
-              <input defaultValue="White Caves Real Estate LLC" style={{ width: '100%', padding: '0.5rem', borderRadius: '8px', border: '1px solid #e5e7eb', fontSize: '0.9rem' }} />
+              <label style={{ display: 'block', fontSize: '0.85rem', color: 'var(--text-secondary, #6b7280)', marginBottom: '0.25rem' }}>Company Name</label>
+              <input defaultValue="White Caves Real Estate LLC" style={{ width: '100%', padding: '0.5rem', borderRadius: '8px', border: '1px solid var(--color-e5e7eb, #e5e7eb)', fontSize: '0.9rem' }} />
             </div>
             <div>
-              <label style={{ display: 'block', fontSize: '0.85rem', color: '#6b7280', marginBottom: '0.25rem' }}>Support Email</label>
-              <input defaultValue="support@whitecaves.ae" style={{ width: '100%', padding: '0.5rem', borderRadius: '8px', border: '1px solid #e5e7eb', fontSize: '0.9rem' }} />
+              <label style={{ display: 'block', fontSize: '0.85rem', color: 'var(--text-secondary, #6b7280)', marginBottom: '0.25rem' }}>Support Email</label>
+              <input defaultValue="support@whitecaves.ae" style={{ width: '100%', padding: '0.5rem', borderRadius: '8px', border: '1px solid var(--color-e5e7eb, #e5e7eb)', fontSize: '0.9rem' }} />
             </div>
           </div>
         </div>
@@ -349,19 +349,19 @@ export const SystemSettings: React.FC = () => {
           <h3 style={S.cardTitle}>💬 WhatsApp Config</h3>
           <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
             <div>
-              <label style={{ display: 'block', fontSize: '0.85rem', color: '#6b7280', marginBottom: '0.25rem' }}>Meta Business ID</label>
-              <input defaultValue="••••••••••" type="password" style={{ width: '100%', padding: '0.5rem', borderRadius: '8px', border: '1px solid #e5e7eb', fontSize: '0.9rem' }} />
+              <label style={{ display: 'block', fontSize: '0.85rem', color: 'var(--text-secondary, #6b7280)', marginBottom: '0.25rem' }}>Meta Business ID</label>
+              <input defaultValue="••••••••••" type="password" style={{ width: '100%', padding: '0.5rem', borderRadius: '8px', border: '1px solid var(--color-e5e7eb, #e5e7eb)', fontSize: '0.9rem' }} />
             </div>
             <div>
-              <label style={{ display: 'block', fontSize: '0.85rem', color: '#6b7280', marginBottom: '0.25rem' }}>Phone Number ID</label>
-              <input defaultValue="••••••••••" type="password" style={{ width: '100%', padding: '0.5rem', borderRadius: '8px', border: '1px solid #e5e7eb', fontSize: '0.9rem' }} />
+              <label style={{ display: 'block', fontSize: '0.85rem', color: 'var(--text-secondary, #6b7280)', marginBottom: '0.25rem' }}>Phone Number ID</label>
+              <input defaultValue="••••••••••" type="password" style={{ width: '100%', padding: '0.5rem', borderRadius: '8px', border: '1px solid var(--color-e5e7eb, #e5e7eb)', fontSize: '0.9rem' }} />
             </div>
           </div>
         </div>
 
         <div style={S.card}>
           <h3 style={S.cardTitle}>🗄️ Database</h3>
-          <div style={{ fontSize: '0.85rem', color: '#6b7280', display: 'flex', flexDirection: 'column', gap: '0.25rem' }}>
+          <div style={{ fontSize: '0.85rem', color: 'var(--text-secondary, #6b7280)', display: 'flex', flexDirection: 'column', gap: '0.25rem' }}>
             <span>Provider: MongoDB Atlas</span>
             <span>ORM: Prisma 6.6</span>
             <span>Connection: ••••••••••</span>

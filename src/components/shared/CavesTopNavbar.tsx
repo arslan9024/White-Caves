@@ -124,7 +124,7 @@ export const CavesTopNavbar: React.FC<CavesTopNavbarProps> = ({
       <SearchPill onClick={onSearchClick}>
         <Search size={15} color={RED} />
         <span>Search properties, deals & leads...</span>
-        <kbd style={{ background: '#E2E8F0', padding: '2px 6px', borderRadius: '4px', fontSize: '0.7rem' }}>
+        <kbd style={{ background: 'var(--color-e2e8f0, #E2E8F0)', padding: '2px 6px', borderRadius: '4px', fontSize: '0.7rem' }}>
           Ctrl+K
         </kbd>
       </SearchPill>

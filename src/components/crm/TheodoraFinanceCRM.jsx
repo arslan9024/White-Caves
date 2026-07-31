@@ -35,7 +35,7 @@ const TheodoraFinanceCRM = () => {
   return (
     <div className="assistant-dashboard theodora">
       <div className="assistant-header">
-        <div className="assistant-avatar" style={{ background: 'linear-gradient(135deg, #F093FB 0%, #F5576C 100%)' }}>
+        <div className="assistant-avatar" style={{ background: 'linear-gradient(135deg, var(--color-f093fb, #F093FB) 0%, var(--color-f5576c, #F5576C) 100%)' }}>
           <DollarSign size={28} />
         </div>
         <div className="assistant-info">
@@ -50,7 +50,7 @@ const TheodoraFinanceCRM = () => {
 
       <div className="quick-stats">
         <div className="stat-card">
-          <div className="stat-icon" style={{ background: 'rgba(16, 185, 129, 0.2)', color: '#10B981' }}>
+          <div className="stat-icon" style={{ background: 'rgba(16, 185, 129, 0.2)', color: 'var(--accent-green, #10B981)' }}>
             <TrendingUp size={20} />
           </div>
           <div className="stat-content">
@@ -60,7 +60,7 @@ const TheodoraFinanceCRM = () => {
           <span className="stat-change positive"><ArrowUp size={14} /> 18%</span>
         </div>
         <div className="stat-card">
-          <div className="stat-icon" style={{ background: 'rgba(245, 158, 11, 0.2)', color: '#F59E0B' }}>
+          <div className="stat-icon" style={{ background: 'rgba(245, 158, 11, 0.2)', color: 'var(--accent-gold, #F59E0B)' }}>
             <Clock size={20} />
           </div>
           <div className="stat-content">
@@ -70,7 +70,7 @@ const TheodoraFinanceCRM = () => {
           <span className="stat-change">12 invoices</span>
         </div>
         <div className="stat-card">
-          <div className="stat-icon" style={{ background: 'rgba(239, 68, 68, 0.2)', color: '#EF4444' }}>
+          <div className="stat-icon" style={{ background: 'rgba(239, 68, 68, 0.2)', color: 'var(--accent-red, #EF4444)' }}>
             <AlertCircle size={20} />
           </div>
           <div className="stat-content">
@@ -80,7 +80,7 @@ const TheodoraFinanceCRM = () => {
           <span className="stat-change negative">3 invoices</span>
         </div>
         <div className="stat-card">
-          <div className="stat-icon" style={{ background: 'rgba(139, 92, 246, 0.2)', color: '#8B5CF6' }}>
+          <div className="stat-icon" style={{ background: 'rgba(139, 92, 246, 0.2)', color: 'var(--accent-purple, #8B5CF6)' }}>
             <PieChart size={20} />
           </div>
           <div className="stat-content">

@@ -66,13 +66,13 @@ export async function enqueueSequence(
       sequenceId,
       actionType: step.actionType,
       scheduledAt,
-      payload: step.payload,
+      payload: step.payload as any,
       status: 'pending',
     };
   });
 
   await prisma.followUpQueue.createMany({
-    data: queueEntries,
+    data: queueEntries as any,
   });
 
   logger.info(`[Sequences] Enqueued ${queueEntries.length} steps for ${sequenceId} on ${entityId}`);

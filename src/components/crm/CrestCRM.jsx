@@ -116,7 +116,7 @@ const CrestCRM = () => {
       <div className="assistant-header">
         <div
           className="assistant-avatar"
-          style={{ background: 'linear-gradient(135deg, #E31E24 0%, #9B1C1C 100%)' }}
+          style={{ background: 'linear-gradient(135deg, var(--accent-red, #E31E24) 0%, var(--accent-red, #9B1C1C) 100%)' }}
         >
           <Home size={28} />
         </div>
@@ -134,7 +134,7 @@ const CrestCRM = () => {
         <div className="stat-card">
           <div
             className="stat-icon"
-            style={{ background: 'rgba(227,30,36,0.15)', color: '#E31E24' }}
+            style={{ background: 'rgba(227,30,36,0.15)', color: 'var(--color-e31e24, #E31E24)' }}
           >
             <Home size={20} />
           </div>
@@ -146,7 +146,7 @@ const CrestCRM = () => {
         <div className="stat-card">
           <div
             className="stat-icon"
-            style={{ background: 'rgba(34,197,94,0.15)', color: '#22C55E' }}
+            style={{ background: 'rgba(34,197,94,0.15)', color: 'var(--accent-green, #22C55E)' }}
           >
             <CheckCircle size={20} />
           </div>
@@ -158,7 +158,7 @@ const CrestCRM = () => {
         <div className="stat-card">
           <div
             className="stat-icon"
-            style={{ background: 'rgba(59,130,246,0.15)', color: '#3B82F6' }}
+            style={{ background: 'rgba(59,130,246,0.15)', color: 'var(--accent-blue, #3B82F6)' }}
           >
             <BarChart2 size={20} />
           </div>
@@ -170,7 +170,7 @@ const CrestCRM = () => {
         <div className="stat-card">
           <div
             className="stat-icon"
-            style={{ background: 'rgba(245,158,11,0.15)', color: '#F59E0B' }}
+            style={{ background: 'rgba(245,158,11,0.15)', color: 'var(--accent-gold, #F59E0B)' }}
           >
             <TrendingUp size={20} />
           </div>
@@ -209,20 +209,20 @@ const CrestCRM = () => {
               <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 10 }}>
                 <div>
                   <strong style={{ fontSize: 15 }}>{v.property}</strong>
-                  <div style={{ fontSize: 12, color: '#6b7280', marginTop: 2 }}>
+                  <div style={{ fontSize: 12, color: 'var(--text-secondary, #6b7280)', marginTop: 2 }}>
                     <MapPin size={11} style={{ display: 'inline' }} /> {v.area} ·{' '}
                     {v.beds || 'Studio'} bed · {v.sqft.toLocaleString()} sqft
                   </div>
                 </div>
                 <div style={{ textAlign: 'right' }}>
-                  <div style={{ fontSize: 18, fontWeight: 800, color: '#E31E24' }}>
+                  <div style={{ fontSize: 18, fontWeight: 800, color: 'var(--color-e31e24, #E31E24)' }}>
                     {v.estimate}
                   </div>
-                  <div style={{ fontSize: 11, color: '#6b7280' }}>{v.range}</div>
+                  <div style={{ fontSize: 11, color: 'var(--text-secondary, #6b7280)' }}>{v.range}</div>
                 </div>
               </div>
               <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 8 }}>
-                <span style={{ fontSize: 12, color: '#6b7280' }}>Confidence:</span>
+                <span style={{ fontSize: 12, color: 'var(--text-secondary, #6b7280)' }}>Confidence:</span>
                 <div
                   style={{
                     flex: 1,
@@ -252,7 +252,7 @@ const CrestCRM = () => {
                   {v.confidence}%
                 </span>
               </div>
-              <div style={{ fontSize: 12, color: '#6b7280' }}>
+              <div style={{ fontSize: 12, color: 'var(--text-secondary, #6b7280)' }}>
                 {v.comparable} comparable sales · Requested {v.requested}
               </div>
             </div>
@@ -297,7 +297,7 @@ const CrestCRM = () => {
                   <td>{c.sold}</td>
                   <td>{c.sqft.toLocaleString()}</td>
                   <td>{c.psf.toLocaleString()}</td>
-                  <td style={{ fontSize: 12, color: '#6b7280' }}>{c.date}</td>
+                  <td style={{ fontSize: 12, color: 'var(--text-secondary, #6b7280)' }}>{c.date}</td>
                 </tr>
               ))}
             </tbody>
@@ -310,7 +310,7 @@ const CrestCRM = () => {
           <h3 style={{ marginBottom: 16 }}>Quick Valuation Estimator</h3>
           <div style={{ display: 'grid', gap: 14, marginBottom: 20 }}>
             <div>
-              <label style={{ fontSize: 13, color: '#6b7280', marginBottom: 6, display: 'block' }}>
+              <label style={{ fontSize: 13, color: 'var(--text-secondary, #6b7280)', marginBottom: 6, display: 'block' }}>
                 Area
               </label>
               <select
@@ -330,7 +330,7 @@ const CrestCRM = () => {
               </select>
             </div>
             <div>
-              <label style={{ fontSize: 13, color: '#6b7280', marginBottom: 6, display: 'block' }}>
+              <label style={{ fontSize: 13, color: 'var(--text-secondary, #6b7280)', marginBottom: 6, display: 'block' }}>
                 Size (sqft)
               </label>
               <input
@@ -347,7 +347,7 @@ const CrestCRM = () => {
               />
             </div>
             <div>
-              <label style={{ fontSize: 13, color: '#6b7280', marginBottom: 6, display: 'block' }}>
+              <label style={{ fontSize: 13, color: 'var(--text-secondary, #6b7280)', marginBottom: 6, display: 'block' }}>
                 Bedrooms
               </label>
               <select
@@ -378,11 +378,11 @@ const CrestCRM = () => {
               textAlign: 'center',
             }}
           >
-            <div style={{ fontSize: 12, color: '#6b7280', marginBottom: 8 }}>Estimated Value</div>
-            <div style={{ fontSize: 32, fontWeight: 900, color: '#E31E24' }}>
+            <div style={{ fontSize: 12, color: 'var(--text-secondary, #6b7280)', marginBottom: 8 }}>Estimated Value</div>
+            <div style={{ fontSize: 32, fontWeight: 900, color: 'var(--color-e31e24, #E31E24)' }}>
               AED {estVal.toLocaleString()}
             </div>
-            <div style={{ fontSize: 12, color: '#9ca3af', marginTop: 6 }}>
+            <div style={{ fontSize: 12, color: 'var(--text-secondary, #9ca3af)', marginTop: 6 }}>
               {/* eslint-disable-next-line security/detect-object-injection */}
               Based on {areaRates[calcArea]} AED/sqft avg for {calcArea}
             </div>

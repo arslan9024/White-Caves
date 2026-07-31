@@ -302,7 +302,7 @@ const SalesDashboard: React.FC<SalesDashboardProps> = ({
                 >
                   <div>
                     <strong>{deal.client}</strong>
-                    <p style={{ margin: '4px 0 0 0', color: '#6B7280', fontSize: '14px' }}>
+                    <p style={{ margin: '4px 0 0 0', color: 'var(--text-secondary, #6B7280)', fontSize: '14px' }}>
                       {deal.property}
                     </p>
                   </div>
@@ -372,17 +372,17 @@ const SalesDashboard: React.FC<SalesDashboardProps> = ({
                   </div>
                   <TeamMemberStats>
                     <div>
-                      <span style={{ color: '#6B7280', fontSize: '12px' }}>Deals</span>
+                      <span style={{ color: 'var(--text-secondary, #6B7280)', fontSize: '12px' }}>Deals</span>
                       <div style={{ fontWeight: 600, fontSize: '18px' }}>{member.deals}</div>
                     </div>
                     <div>
-                      <span style={{ color: '#6B7280', fontSize: '12px' }}>Revenue</span>
+                      <span style={{ color: 'var(--text-secondary, #6B7280)', fontSize: '12px' }}>Revenue</span>
                       <div style={{ fontWeight: 600, fontSize: '14px' }}>
                         {formatCurrency(member.revenue)}
                       </div>
                     </div>
                     <div>
-                      <span style={{ color: '#6B7280', fontSize: '12px' }}>Conv Rate</span>
+                      <span style={{ color: 'var(--text-secondary, #6B7280)', fontSize: '12px' }}>Conv Rate</span>
                       <div style={{ fontWeight: 600, fontSize: '18px' }}>{member.conversion}%</div>
                     </div>
                   </TeamMemberStats>
@@ -403,7 +403,7 @@ const SalesDashboard: React.FC<SalesDashboardProps> = ({
                   borderLeft: '4px solid #3B82F6',
                 }}
               >
-                <div style={{ color: '#6B7280', fontSize: '12px', marginBottom: '4px' }}>
+                <div style={{ color: 'var(--text-secondary, #6B7280)', fontSize: '12px', marginBottom: '4px' }}>
                   Closed Deals This Month
                 </div>
                 <div style={{ fontSize: '24px', fontWeight: 700 }}>{metrics.closedDeals}</div>
@@ -416,7 +416,7 @@ const SalesDashboard: React.FC<SalesDashboardProps> = ({
                   borderLeft: '4px solid #10B981',
                 }}
               >
-                <div style={{ color: '#6B7280', fontSize: '12px', marginBottom: '4px' }}>
+                <div style={{ color: 'var(--text-secondary, #6B7280)', fontSize: '12px', marginBottom: '4px' }}>
                   Avg Deal Size
                 </div>
                 <div style={{ fontSize: '20px', fontWeight: 700 }}>
@@ -431,7 +431,7 @@ const SalesDashboard: React.FC<SalesDashboardProps> = ({
                   borderLeft: '4px solid #EF4444',
                 }}
               >
-                <div style={{ color: '#6B7280', fontSize: '12px', marginBottom: '4px' }}>
+                <div style={{ color: 'var(--text-secondary, #6B7280)', fontSize: '12px', marginBottom: '4px' }}>
                   Win Probability Avg
                 </div>
                 <div style={{ fontSize: '24px', fontWeight: 700 }}>62%</div>
@@ -453,31 +453,31 @@ const SalesDashboard: React.FC<SalesDashboardProps> = ({
           <SectionTitle>Deal Details: {selectedDeal.client}</SectionTitle>
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
             <div>
-              <span style={{ color: '#6B7280', fontSize: '12px' }}>Property</span>
+              <span style={{ color: 'var(--text-secondary, #6B7280)', fontSize: '12px' }}>Property</span>
               <p style={{ fontWeight: 600, margin: '4px 0 0 0' }}>{selectedDeal.property}</p>
             </div>
             <div>
-              <span style={{ color: '#6B7280', fontSize: '12px' }}>Deal Value</span>
+              <span style={{ color: 'var(--text-secondary, #6B7280)', fontSize: '12px' }}>Deal Value</span>
               <p style={{ fontWeight: 600, margin: '4px 0 0 0' }}>
                 {formatCurrency(selectedDeal.value)}
               </p>
             </div>
             <div>
-              <span style={{ color: '#6B7280', fontSize: '12px' }}>Current Stage</span>
+              <span style={{ color: 'var(--text-secondary, #6B7280)', fontSize: '12px' }}>Current Stage</span>
               <p style={{ fontWeight: 600, margin: '4px 0 0 0', textTransform: 'capitalize' }}>
                 {selectedDeal.stage}
               </p>
             </div>
             <div>
-              <span style={{ color: '#6B7280', fontSize: '12px' }}>Win Probability</span>
+              <span style={{ color: 'var(--text-secondary, #6B7280)', fontSize: '12px' }}>Win Probability</span>
               <p style={{ fontWeight: 600, margin: '4px 0 0 0' }}>{selectedDeal.probability}%</p>
             </div>
             <div>
-              <span style={{ color: '#6B7280', fontSize: '12px' }}>Assigned Agent</span>
+              <span style={{ color: 'var(--text-secondary, #6B7280)', fontSize: '12px' }}>Assigned Agent</span>
               <p style={{ fontWeight: 600, margin: '4px 0 0 0' }}>{selectedDeal.agent}</p>
             </div>
             <div>
-              <span style={{ color: '#6B7280', fontSize: '12px' }}>Created Date</span>
+              <span style={{ color: 'var(--text-secondary, #6B7280)', fontSize: '12px' }}>Created Date</span>
               <p style={{ fontWeight: 600, margin: '4px 0 0 0' }}>{selectedDeal.createdAt}</p>
             </div>
           </div>

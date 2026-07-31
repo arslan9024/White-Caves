@@ -53,7 +53,7 @@ const OracleCRM = () => {
       <div className="assistant-header">
         <div
           className="assistant-avatar"
-          style={{ background: 'linear-gradient(135deg, #0D9488 0%, #0F766E 100%)' }}
+          style={{ background: 'linear-gradient(135deg, var(--accent-teal, #0D9488) 0%, var(--accent-teal, #0F766E) 100%)' }}
         >
           <Eye size={28} />
         </div>
@@ -71,7 +71,7 @@ const OracleCRM = () => {
         <div className="stat-card">
           <div
             className="stat-icon"
-            style={{ background: 'rgba(13,148,136,0.15)', color: '#0D9488' }}
+            style={{ background: 'rgba(13,148,136,0.15)', color: 'var(--accent-teal, #0D9488)' }}
           >
             <BarChart2 size={20} />
           </div>
@@ -83,7 +83,7 @@ const OracleCRM = () => {
         <div className="stat-card">
           <div
             className="stat-icon"
-            style={{ background: 'rgba(34,197,94,0.15)', color: '#22C55E' }}
+            style={{ background: 'rgba(34,197,94,0.15)', color: 'var(--accent-green, #22C55E)' }}
           >
             <TrendingUp size={20} />
           </div>
@@ -95,7 +95,7 @@ const OracleCRM = () => {
         <div className="stat-card">
           <div
             className="stat-icon"
-            style={{ background: 'rgba(227,30,36,0.15)', color: '#E31E24' }}
+            style={{ background: 'rgba(227,30,36,0.15)', color: 'var(--color-e31e24, #E31E24)' }}
           >
             <DollarSign size={20} />
           </div>
@@ -107,7 +107,7 @@ const OracleCRM = () => {
         <div className="stat-card">
           <div
             className="stat-icon"
-            style={{ background: 'rgba(245,158,11,0.15)', color: '#F59E0B' }}
+            style={{ background: 'rgba(245,158,11,0.15)', color: 'var(--accent-gold, #F59E0B)' }}
           >
             <AlertCircle size={20} />
           </div>
@@ -226,7 +226,7 @@ const OracleCRM = () => {
                       }}
                     />
                   </div>
-                  <div style={{ fontSize: 11, color: '#9ca3af', marginTop: 4 }}>
+                  <div style={{ fontSize: 11, color: 'var(--text-secondary, #9ca3af)', marginTop: 4 }}>
                     {p.confidence}% confidence
                   </div>
                 </div>
@@ -263,9 +263,9 @@ const OracleCRM = () => {
               }}
             >
               {a.type === 'warning' ? (
-                <AlertCircle size={18} color="#F59E0B" style={{ flexShrink: 0 }} />
+                <AlertCircle size={18} color="var(--accent-gold, #F59E0B)" style={{ flexShrink: 0 }} />
               ) : (
-                <TrendingUp size={18} color="#22C55E" style={{ flexShrink: 0 }} />
+                <TrendingUp size={18} color="var(--accent-green, #22C55E)" style={{ flexShrink: 0 }} />
               )}
               <p style={{ margin: 0, fontSize: 13 }}>{a.msg}</p>
             </div>

@@ -64,7 +64,7 @@ const DaisyLeasingCRM = () => {
       <div className="assistant-header">
         <div
           className="assistant-avatar"
-          style={{ background: 'linear-gradient(135deg, #14B8A6 0%, #10B981 100%)' }}
+          style={{ background: 'linear-gradient(135deg, var(--accent-teal, #14B8A6) 0%, var(--accent-green, #10B981) 100%)' }}
         >
           <Home size={28} />
         </div>
@@ -85,7 +85,7 @@ const DaisyLeasingCRM = () => {
         <div className="stat-card">
           <div
             className="stat-icon"
-            style={{ background: 'rgba(20, 184, 166, 0.2)', color: '#14B8A6' }}
+            style={{ background: 'rgba(20, 184, 166, 0.2)', color: 'var(--accent-teal, #14B8A6)' }}
           >
             <FileText size={20} />
           </div>
@@ -101,7 +101,7 @@ const DaisyLeasingCRM = () => {
         <div className="stat-card">
           <div
             className="stat-icon"
-            style={{ background: 'rgba(16, 185, 129, 0.2)', color: '#10B981' }}
+            style={{ background: 'rgba(16, 185, 129, 0.2)', color: 'var(--accent-green, #10B981)' }}
           >
             <TrendingUp size={20} />
           </div>
@@ -117,7 +117,7 @@ const DaisyLeasingCRM = () => {
         <div className="stat-card">
           <div
             className="stat-icon"
-            style={{ background: 'rgba(245, 158, 11, 0.2)', color: '#F59E0B' }}
+            style={{ background: 'rgba(245, 158, 11, 0.2)', color: 'var(--accent-gold, #F59E0B)' }}
           >
             <RefreshCw size={20} />
           </div>
@@ -131,7 +131,7 @@ const DaisyLeasingCRM = () => {
         <div className="stat-card">
           <div
             className="stat-icon"
-            style={{ background: 'rgba(239, 68, 68, 0.2)', color: '#EF4444' }}
+            style={{ background: 'rgba(239, 68, 68, 0.2)', color: 'var(--accent-red, #EF4444)' }}
           >
             <AlertCircle size={20} />
           </div>
@@ -139,7 +139,7 @@ const DaisyLeasingCRM = () => {
             <span className="stat-value">{bouncedPDC}</span>
             <span className="stat-label">Bounced PDC</span>
           </div>
-          <span className="stat-change" style={{ color: bouncedPDC > 0 ? '#EF4444' : '#10B981' }}>
+          <span className="stat-change" style={{ color: bouncedPDC > 0 ? 'var(--accent-red, #EF4444)' : 'var(--accent-green, #10B981)' }}>
             {bouncedPDC > 0 ? 'Follow up' : 'All clear'}
           </span>
         </div>

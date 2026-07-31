@@ -38,7 +38,7 @@ const LailaComplianceCRM = () => {
   return (
     <div className="assistant-dashboard laila">
       <div className="assistant-header">
-        <div className="assistant-avatar" style={{ background: 'linear-gradient(135deg, #6366F1 0%, #8B5CF6 100%)' }}>
+        <div className="assistant-avatar" style={{ background: 'linear-gradient(135deg, var(--color-6366f1, #6366F1) 0%, var(--accent-purple, #8B5CF6) 100%)' }}>
           <Shield size={28} />
         </div>
         <div className="assistant-info">
@@ -53,7 +53,7 @@ const LailaComplianceCRM = () => {
 
       <div className="quick-stats">
         <div className="stat-card">
-          <div className="stat-icon" style={{ background: 'rgba(16, 185, 129, 0.2)', color: '#10B981' }}>
+          <div className="stat-icon" style={{ background: 'rgba(16, 185, 129, 0.2)', color: 'var(--accent-green, #10B981)' }}>
             <CheckCircle size={20} />
           </div>
           <div className="stat-content">
@@ -63,7 +63,7 @@ const LailaComplianceCRM = () => {
           <span className="stat-change positive"><ArrowUp size={14} /> This week</span>
         </div>
         <div className="stat-card">
-          <div className="stat-icon" style={{ background: 'rgba(245, 158, 11, 0.2)', color: '#F59E0B' }}>
+          <div className="stat-icon" style={{ background: 'rgba(245, 158, 11, 0.2)', color: 'var(--accent-gold, #F59E0B)' }}>
             <Clock size={20} />
           </div>
           <div className="stat-content">
@@ -73,7 +73,7 @@ const LailaComplianceCRM = () => {
           <span className="stat-change warning">Review needed</span>
         </div>
         <div className="stat-card">
-          <div className="stat-icon" style={{ background: 'rgba(239, 68, 68, 0.2)', color: '#EF4444' }}>
+          <div className="stat-icon" style={{ background: 'rgba(239, 68, 68, 0.2)', color: 'var(--accent-red, #EF4444)' }}>
             <AlertTriangle size={20} />
           </div>
           <div className="stat-content">
@@ -83,7 +83,7 @@ const LailaComplianceCRM = () => {
           <span className="stat-change negative">Needs attention</span>
         </div>
         <div className="stat-card">
-          <div className="stat-icon" style={{ background: 'rgba(99, 102, 241, 0.2)', color: '#6366F1' }}>
+          <div className="stat-icon" style={{ background: 'rgba(99, 102, 241, 0.2)', color: 'var(--color-6366f1, #6366F1)' }}>
             <FileText size={20} />
           </div>
           <div className="stat-content">

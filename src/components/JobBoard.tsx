@@ -231,7 +231,7 @@ export default function JobBoard() {
                 {isSubmitting ? 'Submitting...' : 'Submit Application'}
               </button>
               {submitError && (
-                <div className="error-message" role="alert" style={{ color: '#dc3545', marginTop: '0.5rem' }}>
+                <div className="error-message" role="alert" style={{ color: 'var(--color-dc3545, #dc3545)', marginTop: '0.5rem' }}>
                   {submitError}
                 </div>
               )}

@@ -80,7 +80,7 @@ const IrisCRM = () => {
       <div className="assistant-header">
         <div
           className="assistant-avatar"
-          style={{ background: 'linear-gradient(135deg, #EC4899 0%, #BE185D 100%)' }}
+          style={{ background: 'linear-gradient(135deg, var(--color-ec4899, #EC4899) 0%, var(--color-be185d, #BE185D) 100%)' }}
         >
           <Image size={28} />
         </div>
@@ -98,7 +98,7 @@ const IrisCRM = () => {
         <div className="stat-card">
           <div
             className="stat-icon"
-            style={{ background: 'rgba(236,72,153,0.15)', color: '#EC4899' }}
+            style={{ background: 'rgba(236,72,153,0.15)', color: 'var(--color-ec4899, #EC4899)' }}
           >
             <Image size={20} />
           </div>
@@ -110,7 +110,7 @@ const IrisCRM = () => {
         <div className="stat-card">
           <div
             className="stat-icon"
-            style={{ background: 'rgba(34,197,94,0.15)', color: '#22C55E' }}
+            style={{ background: 'rgba(34,197,94,0.15)', color: 'var(--accent-green, #22C55E)' }}
           >
             <CheckCircle size={20} />
           </div>
@@ -124,7 +124,7 @@ const IrisCRM = () => {
         <div className="stat-card">
           <div
             className="stat-icon"
-            style={{ background: 'rgba(59,130,246,0.15)', color: '#3B82F6' }}
+            style={{ background: 'rgba(59,130,246,0.15)', color: 'var(--accent-blue, #3B82F6)' }}
           >
             <Clock size={20} />
           </div>
@@ -136,7 +136,7 @@ const IrisCRM = () => {
         <div className="stat-card">
           <div
             className="stat-icon"
-            style={{ background: 'rgba(227,30,36,0.15)', color: '#E31E24' }}
+            style={{ background: 'rgba(227,30,36,0.15)', color: 'var(--color-e31e24, #E31E24)' }}
           >
             <Star size={20} />
           </div>
@@ -186,7 +186,7 @@ const IrisCRM = () => {
                   <td>{j.type}</td>
                   <td>{j.rooms}</td>
                   <td>{j.style}</td>
-                  <td style={{ fontSize: 12, color: '#6b7280' }}>{j.time}</td>
+                  <td style={{ fontSize: 12, color: 'var(--text-secondary, #6b7280)' }}>{j.time}</td>
                   <td>
                     <span
                       className="status-badge"
@@ -244,7 +244,7 @@ const IrisCRM = () => {
                     </span>
                   )}
                 </div>
-                <p style={{ fontSize: 12, color: '#6b7280', margin: 0 }}>{s.desc}</p>
+                <p style={{ fontSize: 12, color: 'var(--text-secondary, #6b7280)', margin: 0 }}>{s.desc}</p>
               </div>
             ))}
           </div>
@@ -284,7 +284,7 @@ const IrisCRM = () => {
                 </div>
                 <div style={{ flex: 1 }}>
                   <strong>{j.property}</strong>
-                  <div style={{ fontSize: 12, color: '#6b7280', marginTop: 4 }}>
+                  <div style={{ fontSize: 12, color: 'var(--text-secondary, #6b7280)', marginTop: 4 }}>
                     {j.rooms} rooms · {j.style} style
                   </div>
                 </div>

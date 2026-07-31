@@ -105,7 +105,7 @@ interface DashboardSubTabRendererProps {
 }
 
 const DefaultFallback = () => (
-  <div style={{ textAlign: 'center', padding: '3rem 0', color: '#6b7280' }}>Loading…</div>
+  <div style={{ textAlign: 'center', padding: '3rem 0', color: 'var(--text-secondary, #6b7280)' }}>Loading…</div>
 );
 
 /**
@@ -131,8 +131,8 @@ export const DashboardSubTabRenderer: React.FC<DashboardSubTabRendererProps> = (
         }}
       >
         <div style={{ fontSize: '3rem', marginBottom: '1rem' }}>🚧</div>
-        <h3 style={{ marginBottom: '0.5rem', color: '#111827' }}>Coming Soon</h3>
-        <p style={{ color: '#6b7280', maxWidth: '420px', margin: '0 auto' }}>
+        <h3 style={{ marginBottom: '0.5rem', color: 'var(--color-111827, #111827)' }}>Coming Soon</h3>
+        <p style={{ color: 'var(--text-secondary, #6b7280)', maxWidth: '420px', margin: '0 auto' }}>
           The <strong>{componentName}</strong> module is under development.
         </p>
       </div>

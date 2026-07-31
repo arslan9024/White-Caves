@@ -186,7 +186,7 @@ const RoleSelectionModal: React.FC = () => {
           >
             Welcome to White Caves
           </div>
-          <h2 style={{ margin: 0, fontSize: '1.6rem', fontWeight: 800, color: '#ffffff' }}>
+          <h2 style={{ margin: 0, fontSize: '1.6rem', fontWeight: 800, color: 'var(--white, #ffffff)' }}>
             How can we assist you today?
           </h2>
           <p
@@ -235,7 +235,7 @@ const RoleSelectionModal: React.FC = () => {
               <div style={{ color: role.color, flexShrink: 0, marginTop: 2 }}>{role.icon}</div>
               <div>
                 <div
-                  style={{ fontWeight: 700, fontSize: '0.9rem', color: '#ffffff', marginBottom: 2 }}
+                  style={{ fontWeight: 700, fontSize: '0.9rem', color: 'var(--white, #ffffff)', marginBottom: 2 }}
                 >
                   {role.title}
                 </div>

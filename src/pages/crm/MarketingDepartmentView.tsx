@@ -164,7 +164,7 @@ export const MarketingDepartmentView: FC = () => {
                   </select>
                 </div>
                 <button onClick={handleAddCampaign} style={{ background: RED, color: WHITE, border: 'none', padding: '8px 16px', borderRadius: '6px', cursor: 'pointer', fontWeight: 700, whiteSpace: 'nowrap' }}>Add Draft</button>
-                <button onClick={() => setShowNewCampaign(false)} style={{ background: '#E2E8F0', border: 'none', padding: '8px 16px', borderRadius: '6px', cursor: 'pointer' }}>Cancel</button>
+                <button onClick={() => setShowNewCampaign(false)} style={{ background: 'var(--color-e2e8f0, #E2E8F0)', border: 'none', padding: '8px 16px', borderRadius: '6px', cursor: 'pointer' }}>Cancel</button>
               </div>
             </div>
           )}
@@ -204,7 +204,7 @@ export const MarketingDepartmentView: FC = () => {
                       </td>
                       <td style={{ padding: '12px 14px', textAlign: 'center' }}>
                         <button onClick={() => showToast(`📋 Campaign duplicated: ${c.name}`, BLUE)}
-                          style={{ background: '#E2E8F0', border: 'none', padding: '4px 8px', borderRadius: '4px', cursor: 'pointer', fontSize: '0.72rem', fontWeight: 600 }}>
+                          style={{ background: 'var(--color-e2e8f0, #E2E8F0)', border: 'none', padding: '4px 8px', borderRadius: '4px', cursor: 'pointer', fontSize: '0.72rem', fontWeight: 600 }}>
                           Duplicate
                         </button>
                       </td>

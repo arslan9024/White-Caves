@@ -160,7 +160,7 @@ export class DocumentService {
       };
     }
 
-    const ExcelJS = exceljsModule.default;
+    const ExcelJS = (exceljsModule as any)?.default || (exceljsModule as any);
     const workbook = new ExcelJS.Workbook();
     const sheet = workbook.addWorksheet('Leads');
     sheet.columns = [
@@ -233,7 +233,7 @@ export class DocumentService {
       };
     }
 
-    const ExcelJS = exceljsModule.default;
+    const ExcelJS = (exceljsModule as any)?.default || (exceljsModule as any);
     const workbook = new ExcelJS.Workbook();
     const sheet = workbook.addWorksheet('Properties');
     sheet.columns = [
@@ -325,7 +325,7 @@ export class DocumentService {
       };
     }
 
-    const ExcelJS = exceljsModule.default;
+    const ExcelJS = (exceljsModule as any)?.default || (exceljsModule as any);
     const workbook = new ExcelJS.Workbook();
 
     // ─── Summary sheet ───

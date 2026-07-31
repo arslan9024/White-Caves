@@ -283,7 +283,7 @@ class DepartmentService {
     // Return if still fresh (5 minutes)
     if (age < 5 * 60 * 1000) {
       console.log(`[DepartmentService] Cache hit for: ${key}`);
-      return cached.data;
+      return cached.data as T;
     }
 
     // Remove stale cache

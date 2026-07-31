@@ -58,7 +58,7 @@ const MavenInvestmentCRM = () => {
   return (
     <div className="assistant-dashboard maven">
       <div className="assistant-header">
-        <div className="assistant-avatar" style={{ background: 'linear-gradient(135deg, #8B5CF6 0%, #7C3AED 100%)' }}>
+        <div className="assistant-avatar" style={{ background: 'linear-gradient(135deg, var(--accent-purple, #8B5CF6) 0%, var(--accent-purple, #7C3AED) 100%)' }}>
           <PieChart size={28} />
         </div>
         <div className="assistant-info">
@@ -73,7 +73,7 @@ const MavenInvestmentCRM = () => {
 
       <div className="quick-stats">
         <div className="stat-card">
-          <div className="stat-icon" style={{ background: 'rgba(139, 92, 246, 0.2)', color: '#8B5CF6' }}>
+          <div className="stat-icon" style={{ background: 'rgba(139, 92, 246, 0.2)', color: 'var(--accent-purple, #8B5CF6)' }}>
             <DollarSign size={20} />
           </div>
           <div className="stat-content">
@@ -83,7 +83,7 @@ const MavenInvestmentCRM = () => {
           <span className="stat-change positive"><ArrowUp size={14} /> 8.5%</span>
         </div>
         <div className="stat-card">
-          <div className="stat-icon" style={{ background: 'rgba(16, 185, 129, 0.2)', color: '#10B981' }}>
+          <div className="stat-icon" style={{ background: 'rgba(16, 185, 129, 0.2)', color: 'var(--accent-green, #10B981)' }}>
             <Percent size={20} />
           </div>
           <div className="stat-content">
@@ -93,7 +93,7 @@ const MavenInvestmentCRM = () => {
           <span className="stat-change positive">Above market</span>
         </div>
         <div className="stat-card">
-          <div className="stat-icon" style={{ background: 'rgba(245, 158, 11, 0.2)', color: '#F59E0B' }}>
+          <div className="stat-icon" style={{ background: 'rgba(245, 158, 11, 0.2)', color: 'var(--accent-gold, #F59E0B)' }}>
             <TrendingUp size={20} />
           </div>
           <div className="stat-content">
@@ -103,7 +103,7 @@ const MavenInvestmentCRM = () => {
           <span className="stat-change positive">YTD</span>
         </div>
         <div className="stat-card">
-          <div className="stat-icon" style={{ background: 'rgba(59, 130, 246, 0.2)', color: '#3B82F6' }}>
+          <div className="stat-icon" style={{ background: 'rgba(59, 130, 246, 0.2)', color: 'var(--accent-blue, #3B82F6)' }}>
             <Target size={20} />
           </div>
           <div className="stat-content">
@@ -152,7 +152,7 @@ const MavenInvestmentCRM = () => {
                       <td>{item.type}</td>
                       <td>{item.value}</td>
                       <td>{item.yield}</td>
-                      <td style={{ color: item.appreciation.startsWith('+') ? '#10B981' : '#EF4444' }}>
+                      <td style={{ color: item.appreciation.startsWith('+') ? 'var(--accent-green, #10B981)' : 'var(--accent-red, #EF4444)' }}>
                         {item.appreciation}
                       </td>
                       <td>
@@ -191,7 +191,7 @@ const MavenInvestmentCRM = () => {
                       <span className="label">Market Rent</span>
                       <span className="value">{item.marketRent}/yr</span>
                     </div>
-                    <div className="yield-upside" style={{ color: item.upside.startsWith('+') ? '#10B981' : '#EF4444' }}>
+                    <div className="yield-upside" style={{ color: item.upside.startsWith('+') ? 'var(--accent-green, #10B981)' : 'var(--accent-red, #EF4444)' }}>
                       {item.upside}
                     </div>
                   </div>

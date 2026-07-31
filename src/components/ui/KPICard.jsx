@@ -186,13 +186,13 @@ const KPICard = ({
                 {formattedDisplay}
               </span>
               {!unitPrefix && unit && (
-                <span style={{ fontSize: '14px', fontWeight: 600, color: '#64748b' }}>{unit}</span>
+                <span style={{ fontSize: '14px', fontWeight: 600, color: 'var(--text-secondary, #64748b)' }}>{unit}</span>
               )}
             </div>
           )}
 
           {subtitle && !loading && (
-            <p style={{ fontSize: '12px', color: '#64748b', marginTop: '4px' }}>{subtitle}</p>
+            <p style={{ fontSize: '12px', color: 'var(--text-secondary, #64748b)', marginTop: '4px' }}>{subtitle}</p>
           )}
         </div>
 
@@ -235,7 +235,7 @@ const KPICard = ({
             <span>{isPositive ? '↑' : '↓'}</span>
             <span>{Math.abs(trend).toFixed(1)}%</span>
           </span>
-          <span style={{ fontSize: '11px', color: '#94a3b8' }}>vs last period</span>
+          <span style={{ fontSize: '11px', color: 'var(--color-94a3b8, #94a3b8)' }}>vs last period</span>
         </div>
       )}
 

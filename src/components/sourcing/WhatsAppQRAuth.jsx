@@ -137,14 +137,14 @@ export default function WhatsAppQRAuth({ onSuccess, onClose, isModal = false }) 
 
           {status === 'authenticated' && (
             <div className="status-content success">
-              <CheckCircle size={24} style={{ color: '#10B981' }} />
+              <CheckCircle size={24} style={{ color: 'var(--accent-green, #10B981)' }} />
               <span>{statusMessage}</span>
             </div>
           )}
 
           {status === 'error' && (
             <div className="status-content error">
-              <AlertCircle size={24} style={{ color: '#EF4444' }} />
+              <AlertCircle size={24} style={{ color: 'var(--accent-red, #EF4444)' }} />
               <span>{errorMessage || statusMessage}</span>
             </div>
           )}

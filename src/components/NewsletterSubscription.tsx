@@ -107,7 +107,7 @@ const NewsletterSubscription: React.FC = () => {
           <p
             style={{ color: 'rgba(255,255,255,0.5)', fontSize: '0.82rem', marginBottom: '1.25rem' }}
           >
-            Join <strong style={{ color: '#C9A84C' }}>12,000+</strong> subscribers
+            Join <strong style={{ color: 'var(--color-c9a84c, #C9A84C)' }}>12,000+</strong> subscribers
           </p>
 
           {submitted ? (
@@ -187,7 +187,7 @@ const NewsletterSubscription: React.FC = () => {
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               role="alert"
-              style={{ color: '#f87171', marginTop: '0.5rem', fontSize: '0.875rem' }}
+              style={{ color: 'var(--color-f87171, #f87171)', marginTop: '0.5rem', fontSize: '0.875rem' }}
             >
               {error}
             </motion.p>

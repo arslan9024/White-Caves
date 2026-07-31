@@ -41,20 +41,20 @@ const FinanceView: React.FC<FinanceViewProps> = ({
               }}
             >
               <div>
-                <small style={{ color: '#888' }}>Gross Revenue (YTD)</small>
-                <div style={{ fontSize: '1.25rem', fontWeight: 700, color: '#c9a84c' }}>
+                <small style={{ color: 'var(--color-888, #888)' }}>Gross Revenue (YTD)</small>
+                <div style={{ fontSize: '1.25rem', fontWeight: 700, color: 'var(--color-c9a84c, #c9a84c)' }}>
                   AED 15,400,000
                 </div>
               </div>
               <div>
-                <small style={{ color: '#888' }}>FTA VAT 5% Filing</small>
-                <div style={{ fontSize: '1.25rem', fontWeight: 700, color: '#4ade80' }}>
+                <small style={{ color: 'var(--color-888, #888)' }}>FTA VAT 5% Filing</small>
+                <div style={{ fontSize: '1.25rem', fontWeight: 700, color: 'var(--color-4ade80, #4ade80)' }}>
                   AED 770,000
                 </div>
               </div>
               <div>
-                <small style={{ color: '#888' }}>Rolling Cash Flow</small>
-                <div style={{ fontSize: '1.25rem', fontWeight: 700, color: '#60a5fa' }}>
+                <small style={{ color: 'var(--color-888, #888)' }}>Rolling Cash Flow</small>
+                <div style={{ fontSize: '1.25rem', fontWeight: 700, color: 'var(--color-60a5fa, #60a5fa)' }}>
                   +18.4% MoM
                 </div>
               </div>

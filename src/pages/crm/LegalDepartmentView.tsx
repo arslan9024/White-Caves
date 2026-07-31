@@ -206,7 +206,7 @@ export const LegalDepartmentView: FC = () => {
                   { label: 'Counsel Assigned', value: selectedCase.counselAssigned },
                   { label: 'Value at Risk', value: selectedCase.valueAtRisk },
                 ].map(row => (
-                  <div key={row.label} style={{ display: 'flex', justifyContent: 'space-between', borderBottom: '1px solid #E2E8F0', padding: '7px 0', fontSize: '0.8rem' }}>
+                  <div key={row.label} style={{ display: 'flex', justifyContent: 'space-between', borderBottom: '1px solid var(--text-secondary, #E2E8F0)', padding: '7px 0', fontSize: '0.8rem' }}>
                     <span style={{ color: TEXT_MUTED, fontWeight: 600 }}>{row.label}</span>
                     <span style={{ fontWeight: 700, color: SLATE, textAlign: 'right', maxWidth: '55%' }}>{row.value}</span>
                   </div>
@@ -243,7 +243,7 @@ export const LegalDepartmentView: FC = () => {
               <div style={{ fontWeight: 800, fontSize: '0.95rem', color: SLATE, marginBottom: '4px' }}>{tmpl.name}</div>
               <div style={{ fontSize: '0.78rem', color: TEXT_MUTED, lineHeight: 1.5, marginBottom: '12px' }}>{tmpl.description}</div>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                <span style={{ background: '#EFF6FF', color: BLUE, padding: '2px 8px', borderRadius: '8px', fontSize: '0.72rem', fontWeight: 700 }}>
+                <span style={{ background: 'var(--color-eff6ff, #EFF6FF)', color: BLUE, padding: '2px 8px', borderRadius: '8px', fontSize: '0.72rem', fontWeight: 700 }}>
                   {tmpl.reraForm}
                 </span>
                 <span style={{ fontSize: '0.78rem', color: RED, fontWeight: 700 }}>Generate →</span>
@@ -270,8 +270,8 @@ export const LegalDepartmentView: FC = () => {
             ].map(o => {
               const pColor = o.priority === 'HIGH' ? RED : o.priority === 'MEDIUM' ? ORANGE : GREEN;
               return (
-                <div key={o.date + o.obligation} style={{ display: 'flex', gap: '16px', alignItems: 'flex-start', padding: '12px 0', borderBottom: '1px solid #E2E8F0' }}>
-                  <div style={{ minWidth: '80px', textAlign: 'center', background: o.priority === 'HIGH' ? '#FEF2F2' : CARD_BG, padding: '6px 8px', borderRadius: '6px', border: `1px solid ${pColor}30` }}>
+                <div key={o.date + o.obligation} style={{ display: 'flex', gap: '16px', alignItems: 'flex-start', padding: '12px 0', borderBottom: '1px solid var(--text-secondary, #E2E8F0)' }}>
+                  <div style={{ minWidth: '80px', textAlign: 'center', background: o.priority === 'HIGH' ? 'var(--color-fef2f2, #FEF2F2)' : CARD_BG, padding: '6px 8px', borderRadius: '6px', border: `1px solid ${pColor}30` }}>
                     <div style={{ fontSize: '0.65rem', fontWeight: 700, color: pColor, textTransform: 'uppercase' }}>{o.date.slice(5)}</div>
                     <div style={{ fontSize: '0.6rem', color: TEXT_MUTED }}>{o.date.slice(0, 4)}</div>
                   </div>

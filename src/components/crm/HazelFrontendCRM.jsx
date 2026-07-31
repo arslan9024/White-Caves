@@ -56,7 +56,7 @@ const HazelFrontendCRM = () => {
   return (
     <div className="assistant-dashboard hazel">
       <div className="assistant-header">
-        <div className="assistant-avatar" style={{ background: 'linear-gradient(135deg, #F472B6 0%, #EC4899 100%)' }}>
+        <div className="assistant-avatar" style={{ background: 'linear-gradient(135deg, var(--color-f472b6, #F472B6) 0%, var(--color-ec4899, #EC4899) 100%)' }}>
           <Palette size={28} />
         </div>
         <div className="assistant-info">
@@ -71,7 +71,7 @@ const HazelFrontendCRM = () => {
 
       <div className="quick-stats">
         <div className="stat-card highlight">
-          <div className="stat-icon" style={{ background: 'rgba(244, 114, 182, 0.2)', color: '#F472B6' }}>
+          <div className="stat-icon" style={{ background: 'rgba(244, 114, 182, 0.2)', color: 'var(--color-f472b6, #F472B6)' }}>
             <Package size={20} />
           </div>
           <div className="stat-content">
@@ -81,7 +81,7 @@ const HazelFrontendCRM = () => {
           <span className="stat-change positive">+{componentStats.new} new</span>
         </div>
         <div className="stat-card">
-          <div className="stat-icon" style={{ background: 'rgba(34, 197, 94, 0.2)', color: '#22C55E' }}>
+          <div className="stat-icon" style={{ background: 'rgba(34, 197, 94, 0.2)', color: 'var(--accent-green, #22C55E)' }}>
             <Accessibility size={20} />
           </div>
           <div className="stat-content">
@@ -91,7 +91,7 @@ const HazelFrontendCRM = () => {
           <span className="stat-change positive">AAA</span>
         </div>
         <div className="stat-card">
-          <div className="stat-icon" style={{ background: 'rgba(251, 146, 60, 0.2)', color: '#FB923C' }}>
+          <div className="stat-icon" style={{ background: 'rgba(251, 146, 60, 0.2)', color: 'var(--color-fb923c, #FB923C)' }}>
             <Zap size={20} />
           </div>
           <div className="stat-content">
@@ -101,7 +101,7 @@ const HazelFrontendCRM = () => {
           <span className="stat-change positive">+2</span>
         </div>
         <div className="stat-card">
-          <div className="stat-icon" style={{ background: 'rgba(139, 92, 246, 0.2)', color: '#8B5CF6' }}>
+          <div className="stat-icon" style={{ background: 'rgba(139, 92, 246, 0.2)', color: 'var(--accent-purple, #8B5CF6)' }}>
             <Box size={20} />
           </div>
           <div className="stat-content">

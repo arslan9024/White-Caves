@@ -112,7 +112,7 @@ const RexCRM = () => {
       <div className="assistant-header">
         <div
           className="assistant-avatar"
-          style={{ background: 'linear-gradient(135deg, #6366F1 0%, #4338CA 100%)' }}
+          style={{ background: 'linear-gradient(135deg, var(--color-6366f1, #6366F1) 0%, var(--color-4338ca, #4338CA) 100%)' }}
         >
           <ShieldCheck size={28} />
         </div>
@@ -130,7 +130,7 @@ const RexCRM = () => {
         <div className="stat-card">
           <div
             className="stat-icon"
-            style={{ background: 'rgba(99,102,241,0.15)', color: '#6366F1' }}
+            style={{ background: 'rgba(99,102,241,0.15)', color: 'var(--color-6366f1, #6366F1)' }}
           >
             <FileText size={20} />
           </div>
@@ -142,7 +142,7 @@ const RexCRM = () => {
         <div className="stat-card">
           <div
             className="stat-icon"
-            style={{ background: 'rgba(34,197,94,0.15)', color: '#22C55E' }}
+            style={{ background: 'rgba(34,197,94,0.15)', color: 'var(--accent-green, #22C55E)' }}
           >
             <CheckCircle size={20} />
           </div>
@@ -156,7 +156,7 @@ const RexCRM = () => {
         <div className="stat-card">
           <div
             className="stat-icon"
-            style={{ background: 'rgba(227,30,36,0.15)', color: '#E31E24' }}
+            style={{ background: 'rgba(227,30,36,0.15)', color: 'var(--color-e31e24, #E31E24)' }}
           >
             <AlertTriangle size={20} />
           </div>
@@ -168,7 +168,7 @@ const RexCRM = () => {
         <div className="stat-card">
           <div
             className="stat-icon"
-            style={{ background: 'rgba(245,158,11,0.15)', color: '#F59E0B' }}
+            style={{ background: 'rgba(245,158,11,0.15)', color: 'var(--accent-gold, #F59E0B)' }}
           >
             <Clock size={20} />
           </div>
@@ -282,11 +282,11 @@ const RexCRM = () => {
               )}
               <div style={{ flex: 1 }}>
                 <div style={{ fontWeight: 600, fontSize: 14 }}>{c.rule}</div>
-                <div style={{ fontSize: 12, color: '#6b7280' }}>
+                <div style={{ fontSize: 12, color: 'var(--text-secondary, #6b7280)' }}>
                   {c.pass} passed · {c.fail} failed
                 </div>
               </div>
-              <span style={{ fontWeight: 700, color: c.fail === 0 ? '#22C55E' : '#F59E0B' }}>
+              <span style={{ fontWeight: 700, color: c.fail === 0 ? 'var(--accent-green, #22C55E)' : 'var(--accent-gold, #F59E0B)' }}>
                 {c.fail === 0 ? '100%' : `${Math.round((c.pass / (c.pass + c.fail)) * 100)}%`}
               </span>
             </div>
@@ -297,7 +297,7 @@ const RexCRM = () => {
       {activeTab === 'alerts' && (
         <div className="tab-content">
           {flagged.length === 0 ? (
-            <div style={{ textAlign: 'center', padding: 40, color: '#22C55E' }}>
+            <div style={{ textAlign: 'center', padding: 40, color: 'var(--accent-green, #22C55E)' }}>
               <CheckCircle size={48} />
               <p style={{ marginTop: 12 }}>No active alerts — all documents in order.</p>
             </div>
@@ -324,7 +324,7 @@ const RexCRM = () => {
                   <strong>
                     {d.client} — {d.type}
                   </strong>
-                  <p style={{ margin: '4px 0 0', fontSize: 13, color: '#6b7280' }}>
+                  <p style={{ margin: '4px 0 0', fontSize: 13, color: 'var(--text-secondary, #6b7280)' }}>
                     {d.status === 'flagged'
                       ? 'Document flagged for manual review — possible inconsistency detected'
                       : `Expiring on ${d.expiry} — renewal required`}

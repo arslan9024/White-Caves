@@ -165,7 +165,7 @@ function RuleRow({
       <td style={{ padding: '10px 12px' }}>
         <strong style={{ color: rule.isActive ? 'var(--text-primary)' : 'var(--text-secondary)' }}>{rule.name}</strong>
         {rule.description && (
-          <div style={{ fontSize: 12, color: '#9ca3af', marginTop: 2 }}>{rule.description}</div>
+          <div style={{ fontSize: 12, color: 'var(--text-secondary)', marginTop: 2 }}>{rule.description}</div>
         )}
       </td>
       <td style={{ padding: '10px 12px', textAlign: 'center' }}>
@@ -185,7 +185,7 @@ function RuleRow({
       <td style={{ padding: '10px 12px' }}>
         {rule.leadTiers.length > 0
           ? rule.leadTiers.map(t => <TierBadge key={t} tier={t} />)
-          : <span style={{ color: '#6b7280', fontSize: 12 }}>all tiers</span>}
+          : <span style={{ color: 'var(--text-secondary, #6b7280)', fontSize: 12 }}>all tiers</span>}
       </td>
       <td style={{ padding: '10px 12px', textAlign: 'center' }}>{rule.channelSequence.length} steps</td>
       <td style={{ padding: '10px 12px' }}>
@@ -271,7 +271,7 @@ function RuleForm({
   return (
     <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
       <div>
-        <label style={{ fontSize: 12, color: '#9ca3af', display: 'block', marginBottom: 4 }}>
+        <label style={{ fontSize: 12, color: 'var(--text-secondary, #9ca3af)', display: 'block', marginBottom: 4 }}>
           Name *
         </label>
         <input
@@ -285,7 +285,7 @@ function RuleForm({
       </div>
 
       <div>
-        <label style={{ fontSize: 12, color: '#9ca3af', display: 'block', marginBottom: 4 }}>
+        <label style={{ fontSize: 12, color: 'var(--text-secondary, #9ca3af)', display: 'block', marginBottom: 4 }}>
           Description
         </label>
         <input
@@ -299,7 +299,7 @@ function RuleForm({
 
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
         <div>
-          <label style={{ fontSize: 12, color: '#9ca3af', display: 'block', marginBottom: 4 }}>
+          <label style={{ fontSize: 12, color: 'var(--text-secondary, #9ca3af)', display: 'block', marginBottom: 4 }}>
             Priority (higher = runs first)
           </label>
           <input
@@ -319,14 +319,14 @@ function RuleForm({
             onChange={e => onChange('isActive', e.target.checked)}
             aria-label="Active"
           />
-          <label htmlFor="isActive" style={{ fontSize: 13, color: '#f5f5f0' }}>
+          <label htmlFor="isActive" style={{ fontSize: 13, color: 'var(--color-f5f5f0, #f5f5f0)' }}>
             Active
           </label>
         </div>
       </div>
 
       <div>
-        <label style={{ fontSize: 12, color: '#9ca3af', display: 'block', marginBottom: 4 }}>
+        <label style={{ fontSize: 12, color: 'var(--text-secondary, #9ca3af)', display: 'block', marginBottom: 4 }}>
           Lead Tiers (comma-separated: hot, warm, cold, inactive)
         </label>
         <input
@@ -339,7 +339,7 @@ function RuleForm({
       </div>
 
       <div>
-        <label style={{ fontSize: 12, color: '#9ca3af', display: 'block', marginBottom: 4 }}>
+        <label style={{ fontSize: 12, color: 'var(--text-secondary, #9ca3af)', display: 'block', marginBottom: 4 }}>
           Channel Sequence (JSON array of steps)
         </label>
         <textarea
@@ -349,12 +349,12 @@ function RuleForm({
           style={{ ...inputStyle, fontFamily: 'monospace', resize: 'vertical' }}
           aria-label="Channel sequence JSON"
         />
-        {seqError && <div style={{ color: '#f87171', fontSize: 12, marginTop: 4 }}>{seqError}</div>}
+        {seqError && <div style={{ color: 'var(--color-f87171, #f87171)', fontSize: 12, marginTop: 4 }}>{seqError}</div>}
       </div>
 
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
         <div>
-          <label style={{ fontSize: 12, color: '#9ca3af', display: 'block', marginBottom: 4 }}>
+          <label style={{ fontSize: 12, color: 'var(--text-secondary, #9ca3af)', display: 'block', marginBottom: 4 }}>
             Daily cap per lead
           </label>
           <input
@@ -367,7 +367,7 @@ function RuleForm({
           />
         </div>
         <div>
-          <label style={{ fontSize: 12, color: '#9ca3af', display: 'block', marginBottom: 4 }}>
+          <label style={{ fontSize: 12, color: 'var(--text-secondary, #9ca3af)', display: 'block', marginBottom: 4 }}>
             Cooldown hours
           </label>
           <input
@@ -382,7 +382,7 @@ function RuleForm({
       </div>
 
       {submitError && (
-        <div style={{ color: '#f87171', fontSize: 13, padding: '6px 10px', background: 'rgba(239,68,68,0.1)', borderRadius: 6 }}>
+        <div style={{ color: 'var(--color-f87171, #f87171)', fontSize: 13, padding: '6px 10px', background: 'rgba(239,68,68,0.1)', borderRadius: 6 }}>
           {submitError}
         </div>
       )}
@@ -565,10 +565,10 @@ export default function CadenceRuleAdmin() {
     >
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20 }}>
         <div>
-          <h2 style={{ color: '#f5f5f0', fontSize: 18, fontWeight: 700, margin: 0 }}>
+          <h2 style={{ color: 'var(--color-f5f5f0, #f5f5f0)', fontSize: 18, fontWeight: 700, margin: 0 }}>
             Cadence Rule Admin
           </h2>
-          <p style={{ color: '#9ca3af', fontSize: 13, margin: '4px 0 0' }}>
+          <p style={{ color: 'var(--text-secondary, #9ca3af)', fontSize: 13, margin: '4px 0 0' }}>
             Manage dynamic follow-up cadence rules. Active rules are evaluated each scheduler cycle.
           </p>
         </div>
@@ -604,7 +604,7 @@ export default function CadenceRuleAdmin() {
           }}
           aria-label={formMode === 'creating' ? 'Create cadence rule form' : 'Edit cadence rule form'}
         >
-          <h3 style={{ color: '#c9a84c', fontSize: 15, fontWeight: 700, marginTop: 0, marginBottom: 16 }}>
+          <h3 style={{ color: 'var(--color-c9a84c, #c9a84c)', fontSize: 15, fontWeight: 700, marginTop: 0, marginBottom: 16 }}>
             {formMode === 'creating' ? 'New Cadence Rule' : `Editing: ${form.name}`}
           </h3>
           <RuleForm
@@ -621,7 +621,7 @@ export default function CadenceRuleAdmin() {
 
       {/* ── Loading ── */}
       {loading && (
-        <div style={{ textAlign: 'center', color: '#9ca3af', padding: 40 }} aria-label="Loading cadence rules">
+        <div style={{ textAlign: 'center', color: 'var(--text-secondary, #9ca3af)', padding: 40 }} aria-label="Loading cadence rules">
           Loading cadence rules…
         </div>
       )}
@@ -629,7 +629,7 @@ export default function CadenceRuleAdmin() {
       {/* ── Load error ── */}
       {!loading && loadError && (
         <div
-          style={{ color: '#f87171', background: 'rgba(239,68,68,0.1)', borderRadius: 8, padding: 14 }}
+          style={{ color: 'var(--color-f87171, #f87171)', background: 'rgba(239,68,68,0.1)', borderRadius: 8, padding: 14 }}
           role="alert"
         >
           {loadError}
@@ -638,7 +638,7 @@ export default function CadenceRuleAdmin() {
 
       {/* ── Empty state ── */}
       {!loading && !loadError && rules.length === 0 && (
-        <div style={{ textAlign: 'center', color: '#6b7280', padding: 48 }}>
+        <div style={{ textAlign: 'center', color: 'var(--text-secondary, #6b7280)', padding: 48 }}>
           <div style={{ fontSize: 32, marginBottom: 8 }}>📋</div>
           <div>No cadence rules yet. Create your first rule to get started.</div>
         </div>

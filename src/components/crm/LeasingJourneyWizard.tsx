@@ -91,7 +91,7 @@ export const LeasingJourneyWizard: React.FC<LeasingJourneyWizardProps> = ({ tran
                 )}
               </div>
               <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                <button onClick={prevStep} style={{ background: '#E2E8F0', border: 'none', padding: '10px 20px', borderRadius: '6px', cursor: 'pointer' }}>Back</button>
+                <button onClick={prevStep} style={{ background: 'var(--color-e2e8f0, #E2E8F0)', border: 'none', padding: '10px 20px', borderRadius: '6px', cursor: 'pointer' }}>Back</button>
                 <button onClick={nextStep} disabled={!kycUploaded} style={{ background: kycUploaded ? RED : '#ccc', color: WHITE, border: 'none', padding: '10px 20px', borderRadius: '6px', cursor: kycUploaded ? 'pointer' : 'not-allowed', fontWeight: 'bold' }}>Continue to Signature</button>
               </div>
             </div>
@@ -109,7 +109,7 @@ export const LeasingJourneyWizard: React.FC<LeasingJourneyWizardProps> = ({ tran
                 </label>
               </div>
               <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                <button onClick={prevStep} style={{ background: '#E2E8F0', border: 'none', padding: '10px 20px', borderRadius: '6px', cursor: 'pointer' }}>Back</button>
+                <button onClick={prevStep} style={{ background: 'var(--color-e2e8f0, #E2E8F0)', border: 'none', padding: '10px 20px', borderRadius: '6px', cursor: 'pointer' }}>Back</button>
                 <button onClick={handleComplete} disabled={!signature || isSubmitting} style={{ background: signature ? RED : '#ccc', color: WHITE, border: 'none', padding: '10px 20px', borderRadius: '6px', cursor: signature ? 'pointer' : 'not-allowed', fontWeight: 'bold' }}>
                   {isSubmitting ? 'Submitting...' : 'Complete & Send to Agent'}
                 </button>

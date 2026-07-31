@@ -111,12 +111,12 @@ export const TechnologyDepartmentView: FC = () => {
           </p>
         </div>
         <div style={{ display: 'flex', gap: '10px' }}>
-          <div style={{ background: '#DEF7EC', border: `1px solid ${GREEN}`, padding: '8px 14px', borderRadius: '8px', textAlign: 'center' }}>
-            <div style={{ fontSize: '0.7rem', color: '#065F46', fontWeight: 700 }}>SYSTEM UPTIME</div>
+          <div style={{ background: 'var(--color-def7ec, #DEF7EC)', border: `1px solid ${GREEN}`, padding: '8px 14px', borderRadius: '8px', textAlign: 'center' }}>
+            <div style={{ fontSize: '0.7rem', color: 'var(--color-065f46, #065F46)', fontWeight: 700 }}>SYSTEM UPTIME</div>
             <div style={{ fontSize: '1rem', fontWeight: 900, color: GREEN }}>{formatUptime(uptimeSeconds)}</div>
           </div>
-          <div style={{ background: wsStatus === 'Connected' ? '#DEF7EC' : '#FFFBEB', border: `1px solid ${wsStatus === 'Connected' ? GREEN : ORANGE}`, padding: '8px 14px', borderRadius: '8px', textAlign: 'center' }}>
-            <div style={{ fontSize: '0.7rem', color: wsStatus === 'Connected' ? '#065F46' : '#92400E', fontWeight: 700 }}>WEBSOCKET</div>
+          <div style={{ background: wsStatus === 'Connected' ? 'var(--color-def7ec, #DEF7EC)' : 'var(--color-fffbeb, #FFFBEB)', border: `1px solid ${wsStatus === 'Connected' ? GREEN : ORANGE}`, padding: '8px 14px', borderRadius: '8px', textAlign: 'center' }}>
+            <div style={{ fontSize: '0.7rem', color: wsStatus === 'Connected' ? 'var(--color-065f46, #065F46)' : 'var(--color-92400e, #92400E)', fontWeight: 700 }}>WEBSOCKET</div>
             <div style={{ fontSize: '1rem', fontWeight: 900, color: wsStatus === 'Connected' ? GREEN : ORANGE }}>
               {wsStatus === 'Connected' ? '● Live' : '⟳ Reconnecting'}
             </div>
@@ -163,7 +163,7 @@ export const TechnologyDepartmentView: FC = () => {
               { service: 'Meta WhatsApp API', status: 'DEGRADED', latency: '840ms', region: 'EU West' },
               { service: 'Vercel Deployment', status: 'UP', latency: '32ms', region: 'Global Edge' },
             ].map(svc => (
-              <div key={svc.service} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '9px 0', borderBottom: '1px solid #E2E8F0', fontSize: '0.83rem' }}>
+              <div key={svc.service} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '9px 0', borderBottom: '1px solid var(--text-secondary, #E2E8F0)', fontSize: '0.83rem' }}>
                 <div>
                   <span style={{ fontWeight: 600, color: SLATE }}>{svc.service}</span>
                   <span style={{ color: TEXT_MUTED, marginLeft: '8px', fontSize: '0.72rem' }}>{svc.region}</span>
@@ -186,7 +186,7 @@ export const TechnologyDepartmentView: FC = () => {
                 { room: 'room:brokers', label: 'Broker Team Room', clients: 7, events: 134 },
                 { room: 'room:clients', label: 'Client Portal Room', clients: 12, events: 48 },
               ].map(room => (
-                <div key={room.room} style={{ display: 'flex', justifyContent: 'space-between', padding: '8px 0', borderBottom: '1px solid #E2E8F0', fontSize: '0.83rem' }}>
+                <div key={room.room} style={{ display: 'flex', justifyContent: 'space-between', padding: '8px 0', borderBottom: '1px solid var(--text-secondary, #E2E8F0)', fontSize: '0.83rem' }}>
                   <div>
                     <div style={{ fontWeight: 600 }}>{room.label}</div>
                     <div style={{ fontFamily: 'monospace', fontSize: '0.7rem', color: TEXT_MUTED }}>{room.room}</div>
@@ -198,8 +198,8 @@ export const TechnologyDepartmentView: FC = () => {
                 </div>
               ))}
             </div>
-            <div style={{ background: '#0F172A', padding: '16px', borderRadius: '10px' }}>
-              <div style={{ fontSize: '0.72rem', color: '#64748B', fontWeight: 700, marginBottom: '8px', fontFamily: 'monospace' }}>LIVE SERVER LOG</div>
+            <div style={{ background: 'var(--color-0f172a, #0F172A)', padding: '16px', borderRadius: '10px' }}>
+              <div style={{ fontSize: '0.72rem', color: 'var(--text-secondary, #64748B)', fontWeight: 700, marginBottom: '8px', fontFamily: 'monospace' }}>LIVE SERVER LOG</div>
               {[
                 { ts: '04:27:11', msg: 'GET /api/properties 200 87ms', color: GREEN },
                 { ts: '04:27:09', msg: 'POST /api/auth/refresh 200 42ms', color: GREEN },
@@ -208,7 +208,7 @@ export const TechnologyDepartmentView: FC = () => {
                 { ts: '04:27:04', msg: 'CRON ViewingReminder dispatched 3 msgs', color: PURPLE },
               ].map((log, i) => (
                 <div key={i} style={{ fontFamily: 'monospace', fontSize: '0.72rem', marginBottom: '4px', color: log.color }}>
-                  <span style={{ color: '#475569' }}>[{log.ts}]</span> {log.msg}
+                  <span style={{ color: 'var(--color-475569, #475569)' }}>[{log.ts}]</span> {log.msg}
                 </div>
               ))}
             </div>

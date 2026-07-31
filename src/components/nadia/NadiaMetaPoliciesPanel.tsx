@@ -34,12 +34,12 @@ const NadiaMetaPoliciesPanel: React.FC = () => {
         padding: '12px',
       }}
     >
-      <h4 style={{ margin: '0 0 8px', fontSize: '13px', color: '#1F2937' }}>
+      <h4 style={{ margin: '0 0 8px', fontSize: '13px', color: 'var(--color-1f2937, #1F2937)' }}>
         📘 Meta Policies (Nadia Knowledge)
       </h4>
       <ul style={{ margin: 0, paddingLeft: '16px', display: 'grid', gap: '6px' }}>
         {META_POLICY_SECTIONS.map(section => (
-          <li key={section.title} style={{ fontSize: '12px', color: '#374151' }}>
+          <li key={section.title} style={{ fontSize: '12px', color: 'var(--text-secondary, #374151)' }}>
             <strong>{section.title}:</strong> {section.description}
           </li>
         ))}

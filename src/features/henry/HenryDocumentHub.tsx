@@ -504,7 +504,7 @@ const HenryDocumentHub: React.FC<HenryDocumentHubProps> = () => {
             {t.label}
           </button>
         ))}
-        <hr style={{ borderColor: '#2a2a2a', margin: '12px 16px' }} />
+        <hr style={{ borderColor: 'var(--color-2a2a2a, #2a2a2a)', margin: '12px 16px' }} />
         <button
           onClick={() => setActivePanel('archive')}
           style={{
@@ -524,14 +524,14 @@ const HenryDocumentHub: React.FC<HenryDocumentHubProps> = () => {
       </aside>
 
       {/* ── Main Content ── */}
-      <main style={{ flex: 1, overflowY: 'auto', background: '#0f0f0f', padding: 24 }}>
+      <main style={{ flex: 1, overflowY: 'auto', background: 'var(--color-0f0f0f, #0f0f0f)', padding: 24 }}>
         {/* Header */}
         {activeTemplate && (
           <div style={{ marginBottom: 20 }}>
-            <h2 style={{ color: '#fff', margin: '0 0 6px', fontSize: 20 }}>
+            <h2 style={{ color: 'var(--white, #fff)', margin: '0 0 6px', fontSize: 20 }}>
               {activeTemplate.icon} {activeTemplate.label}
             </h2>
-            <p style={{ color: '#888', margin: 0, fontSize: 13 }}>{activeTemplate.description}</p>
+            <p style={{ color: 'var(--color-888, #888)', margin: 0, fontSize: 13 }}>{activeTemplate.description}</p>
 
             {/* Tab bar */}
             <div style={{ display: 'flex', gap: 8, marginTop: 16 }}>
@@ -613,7 +613,7 @@ const HenryDocumentHub: React.FC<HenryDocumentHubProps> = () => {
           <CompliancePanel report={complianceReport} />
         )}
         {activePanel === 'compliance' && !complianceReport && activeTemplate && (
-          <div style={{ color: '#888', padding: 24, textAlign: 'center' }}>
+          <div style={{ color: 'var(--color-888, #888)', padding: 24, textAlign: 'center' }}>
             Fill in the document fields then click "Check Compliance" to run RERA/DLD validation.
           </div>
         )}
@@ -631,12 +631,12 @@ const HenryDocumentHub: React.FC<HenryDocumentHubProps> = () => {
 
         {/* No template selected */}
         {!activeTemplate && activePanel === 'editor' && (
-          <div style={{ textAlign: 'center', padding: '60px 0', color: '#555' }}>
+          <div style={{ textAlign: 'center', padding: '60px 0', color: 'var(--color-555, #555)' }}>
             <div style={{ fontSize: 48, marginBottom: 16 }}>📄</div>
-            <div style={{ fontSize: 16, color: '#888' }}>
+            <div style={{ fontSize: 16, color: 'var(--color-888, #888)' }}>
               Select a document template from the left panel
             </div>
-            <div style={{ fontSize: 13, color: '#555', marginTop: 8 }}>
+            <div style={{ fontSize: 13, color: 'var(--color-555, #555)', marginTop: 8 }}>
               Henry generates RERA/DLD-compliant documents for Dubai real estate transactions
             </div>
           </div>
@@ -704,7 +704,7 @@ const DocumentEditor: React.FC<DocumentEditorProps> = ({
             marginBottom: showPaste ? 12 : 0,
           }}
         >
-          <span style={{ color: '#9b8ff5', fontWeight: 600, fontSize: 13 }}>
+          <span style={{ color: 'var(--color-9b8ff5, #9b8ff5)', fontWeight: 600, fontSize: 13 }}>
             🤖 AI Field Extraction
           </span>
           <button
@@ -775,9 +775,9 @@ const DocumentEditor: React.FC<DocumentEditorProps> = ({
       >
         {template.fields.map(field => (
           <div key={field.name}>
-            <label style={{ display: 'block', color: '#aaa', fontSize: 12, marginBottom: 4 }}>
+            <label style={{ display: 'block', color: 'var(--color-aaa, #aaa)', fontSize: 12, marginBottom: 4 }}>
               {field.label}
-              {field.required && <span style={{ color: '#E31E24' }}> *</span>}
+              {field.required && <span style={{ color: 'var(--color-e31e24, #E31E24)' }}> *</span>}
             </label>
             {field.type === 'textarea' ? (
               <textarea
@@ -829,7 +829,7 @@ const DocumentEditor: React.FC<DocumentEditorProps> = ({
                 />
                 <label
                   htmlFor={field.name}
-                  style={{ color: '#ccc', fontSize: 13, cursor: 'pointer' }}
+                  style={{ color: 'var(--color-ccc, #ccc)', fontSize: 13, cursor: 'pointer' }}
                 >
                   Yes
                 </label>
@@ -870,7 +870,7 @@ const DocumentEditor: React.FC<DocumentEditorProps> = ({
       {/* Action Buttons */}
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12, marginTop: 24 }}>
         <div>
-          <label style={{ display: 'block', color: '#aaa', fontSize: 12, marginBottom: 4 }}>
+          <label style={{ display: 'block', color: 'var(--color-aaa, #aaa)', fontSize: 12, marginBottom: 4 }}>
             Department Tag
           </label>
           <select
@@ -905,7 +905,7 @@ const DocumentEditor: React.FC<DocumentEditorProps> = ({
           </select>
         </div>
         <div>
-          <label style={{ display: 'block', color: '#aaa', fontSize: 12, marginBottom: 4 }}>
+          <label style={{ display: 'block', color: 'var(--color-aaa, #aaa)', fontSize: 12, marginBottom: 4 }}>
             Owner User Email (optional)
           </label>
           <input
@@ -994,7 +994,7 @@ const CompliancePanel: React.FC<CompliancePanelProps> = ({ report }) => {
             }}
           >
             <div style={{ color: stat.color, fontSize: 24, fontWeight: 700 }}>{stat.value}</div>
-            <div style={{ color: '#888', fontSize: 12 }}>{stat.label}</div>
+            <div style={{ color: 'var(--color-888, #888)', fontSize: 12 }}>{stat.label}</div>
           </div>
         ))}
       </div>
@@ -1040,18 +1040,18 @@ const CompliancePanel: React.FC<CompliancePanelProps> = ({ report }) => {
               >
                 <div>
                   <span style={{ marginRight: 8 }}>{severityIcon[result.severity]}</span>
-                  <strong style={{ color: '#fff', fontSize: 13 }}>{result.title}</strong>
+                  <strong style={{ color: 'var(--white, #fff)', fontSize: 13 }}>{result.title}</strong>
                   {result.uaeLawReference && (
-                    <span style={{ marginLeft: 8, color: '#666', fontSize: 11 }}>
+                    <span style={{ marginLeft: 8, color: 'var(--color-666, #666)', fontSize: 11 }}>
                       ({result.uaeLawReference})
                     </span>
                   )}
                 </div>
-                <span style={{ color: '#666', fontSize: 11, whiteSpace: 'nowrap', marginLeft: 8 }}>
+                <span style={{ color: 'var(--color-666, #666)', fontSize: 11, whiteSpace: 'nowrap', marginLeft: 8 }}>
                   {result.ruleId}
                 </span>
               </div>
-              <p style={{ color: '#aaa', margin: '6px 0 0 24px', fontSize: 12 }}>
+              <p style={{ color: 'var(--color-aaa, #aaa)', margin: '6px 0 0 24px', fontSize: 12 }}>
                 {result.message}
               </p>
             </div>
@@ -1071,7 +1071,7 @@ const CompliancePanel: React.FC<CompliancePanelProps> = ({ report }) => {
               }}
             >
               <span style={{ marginRight: 8 }}>✅</span>
-              <strong style={{ color: '#666', fontSize: 12 }}>{result.title}</strong>
+              <strong style={{ color: 'var(--color-666, #666)', fontSize: 12 }}>{result.title}</strong>
             </div>
           ))}
       </div>
@@ -1103,7 +1103,7 @@ const ArchivePanel: React.FC<ArchivePanelProps> = ({
         marginBottom: 16,
       }}
     >
-      <h3 style={{ color: '#fff', margin: 0 }}>📁 Document Archive ({records.length})</h3>
+      <h3 style={{ color: 'var(--white, #fff)', margin: 0 }}>📁 Document Archive ({records.length})</h3>
       <button
         onClick={onRefresh}
         style={{
@@ -1121,16 +1121,16 @@ const ArchivePanel: React.FC<ArchivePanelProps> = ({
     </div>
 
     {isLoading ? (
-      <div style={{ color: '#888', textAlign: 'center', padding: 40 }}>Loading records...</div>
+      <div style={{ color: 'var(--color-888, #888)', textAlign: 'center', padding: 40 }}>Loading records...</div>
     ) : records.length === 0 ? (
-      <div style={{ color: '#555', textAlign: 'center', padding: 40 }}>
+      <div style={{ color: 'var(--color-555, #555)', textAlign: 'center', padding: 40 }}>
         No archived documents yet. Generate and save a document to start the archive.
       </div>
     ) : (
       <div style={{ overflowX: 'auto' }}>
         <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 13 }}>
           <thead>
-            <tr style={{ borderBottom: '1px solid #333' }}>
+            <tr style={{ borderBottom: '1px solid var(--color-333, #333)' }}>
               {[
                 'Template',
                 'File Name',
@@ -1146,7 +1146,7 @@ const ArchivePanel: React.FC<ArchivePanelProps> = ({
               ].map(h => (
                 <th
                   key={h}
-                  style={{ color: '#888', fontWeight: 600, padding: '8px 12px', textAlign: 'left' }}
+                  style={{ color: 'var(--color-888, #888)', fontWeight: 600, padding: '8px 12px', textAlign: 'left' }}
                 >
                   {h}
                 </th>
@@ -1155,8 +1155,8 @@ const ArchivePanel: React.FC<ArchivePanelProps> = ({
           </thead>
           <tbody>
             {records.map(r => (
-              <tr key={r.id} style={{ borderBottom: '1px solid #1a1a1a' }}>
-                <td style={{ color: '#C9A84C', padding: '8px 12px' }}>{r.templateLabel}</td>
+              <tr key={r.id} style={{ borderBottom: '1px solid var(--color-1a1a1a, #1a1a1a)' }}>
+                <td style={{ color: 'var(--color-c9a84c, #C9A84C)', padding: '8px 12px' }}>{r.templateLabel}</td>
                 <td
                   style={{
                     color: '#ccc',
@@ -1169,11 +1169,11 @@ const ArchivePanel: React.FC<ArchivePanelProps> = ({
                 >
                   {r.fileName}
                 </td>
-                <td style={{ color: '#aaa', padding: '8px 12px' }}>{r.departmentTag ?? '—'}</td>
-                <td style={{ color: '#aaa', padding: '8px 12px' }}>{r.ownerUserEmail ?? '—'}</td>
-                <td style={{ color: '#aaa', padding: '8px 12px' }}>{r.unit ?? '—'}</td>
-                <td style={{ color: '#aaa', padding: '8px 12px' }}>{r.community ?? '—'}</td>
-                <td style={{ color: '#aaa', padding: '8px 12px' }}>{r.tenantName ?? '—'}</td>
+                <td style={{ color: 'var(--color-aaa, #aaa)', padding: '8px 12px' }}>{r.departmentTag ?? '—'}</td>
+                <td style={{ color: 'var(--color-aaa, #aaa)', padding: '8px 12px' }}>{r.ownerUserEmail ?? '—'}</td>
+                <td style={{ color: 'var(--color-aaa, #aaa)', padding: '8px 12px' }}>{r.unit ?? '—'}</td>
+                <td style={{ color: 'var(--color-aaa, #aaa)', padding: '8px 12px' }}>{r.community ?? '—'}</td>
+                <td style={{ color: 'var(--color-aaa, #aaa)', padding: '8px 12px' }}>{r.tenantName ?? '—'}</td>
                 <td style={{ padding: '8px 12px' }}>
                   <span
                     style={{
@@ -1193,10 +1193,10 @@ const ArchivePanel: React.FC<ArchivePanelProps> = ({
                     {r.status ?? (r.isDraft ? 'draft' : 'signed')}
                   </span>
                 </td>
-                <td style={{ color: '#666', padding: '8px 12px', whiteSpace: 'nowrap' }}>
+                <td style={{ color: 'var(--color-666, #666)', padding: '8px 12px', whiteSpace: 'nowrap' }}>
                   {r.signedAt ? new Date(r.signedAt).toLocaleString() : '—'}
                 </td>
-                <td style={{ color: '#666', padding: '8px 12px', whiteSpace: 'nowrap' }}>
+                <td style={{ color: 'var(--color-666, #666)', padding: '8px 12px', whiteSpace: 'nowrap' }}>
                   {new Date(r.createdAt).toLocaleDateString()}
                 </td>
                 <td style={{ padding: '8px 12px' }}>

@@ -66,7 +66,7 @@ export const MapContainer: React.FC = () => {
         <h2 style={{ fontSize: '2.25rem', fontWeight: 800, color: SLATE, margin: '0 0 10px' }}>
           Interactive Dubai Real Estate Map
         </h2>
-        <p style={{ color: '#64748B', maxWidth: '640px', margin: '0 auto', fontSize: '1rem' }}>
+        <p style={{ color: 'var(--text-secondary, #64748B)', maxWidth: '640px', margin: '0 auto', fontSize: '1rem' }}>
           Explore 100+ verified listings across Dubai&apos;s top master developments with live pricing benchmarks.
         </p>
 
@@ -140,14 +140,14 @@ export const MapContainer: React.FC = () => {
                     <h4 style={{ fontSize: '0.9rem', fontWeight: 800, color: SLATE, margin: '0 0 4px', lineHeight: 1.3 }}>
                       {prop.title}
                     </h4>
-                    <p style={{ fontSize: '0.75rem', color: '#64748B', margin: '0 0 8px' }}>
+                    <p style={{ fontSize: '0.75rem', color: 'var(--text-secondary, #64748B)', margin: '0 0 8px' }}>
                       📍 {prop.community} · {prop.developer}
                     </p>
-                    <div style={{ background: '#F8FAFC', padding: '8px 10px', borderRadius: '8px', marginBottom: '10px' }}>
+                    <div style={{ background: 'var(--color-f8fafc, #F8FAFC)', padding: '8px 10px', borderRadius: '8px', marginBottom: '10px' }}>
                       <div style={{ fontWeight: 900, color: RED, fontSize: '0.95rem' }}>
                         AED {prop.priceAED.toLocaleString()}
                       </div>
-                      <div style={{ fontSize: '0.7rem', color: '#64748B', marginTop: '2px' }}>
+                      <div style={{ fontSize: '0.7rem', color: 'var(--text-secondary, #64748B)', marginTop: '2px' }}>
                         🛏️ {prop.beds} Beds | 🚿 {prop.baths} Baths | 📐 {prop.sqft.toLocaleString()} sqft
                       </div>
                     </div>

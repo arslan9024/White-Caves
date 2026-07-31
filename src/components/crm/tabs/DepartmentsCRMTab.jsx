@@ -144,7 +144,7 @@ export default function DepartmentsCRMTab() {
               <button className="crm-btn crm-btn-secondary" style={{ flex: 1, justifyContent: 'center', padding: '8px' }}>
                 <Edit2 size={14} /> Edit
               </button>
-              <button className="crm-btn crm-btn-secondary" style={{ padding: '8px', color: '#EF4444' }}>
+              <button className="crm-btn crm-btn-secondary" style={{ padding: '8px', color: 'var(--accent-red, #EF4444)' }}>
                 <Trash2 size={14} />
               </button>
             </div>

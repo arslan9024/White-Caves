@@ -117,7 +117,7 @@ const EjariTracker: React.FC<EjariTrackerProps> = ({ leases: initialLeases }) =>
   return (
     <div aria-label="Ejari Tracker">
       {updateError && (
-        <div role="alert" aria-label="Update error" style={{ color: '#ef4444', marginBottom: 8 }}>
+        <div role="alert" aria-label="Update error" style={{ color: 'var(--accent-red, #ef4444)', marginBottom: 8 }}>
           {updateError}
         </div>
       )}
@@ -161,7 +161,7 @@ const EjariTracker: React.FC<EjariTrackerProps> = ({ leases: initialLeases }) =>
                 <td>
                   {lease.ejariExpiryDate ? (
                     <span
-                      style={{ color: expiring ? '#ef4444' : 'inherit' }}
+                      style={{ color: expiring ? 'var(--accent-red, #ef4444)' : 'inherit' }}
                       aria-label={expiring ? `Expiring in ${days} days` : undefined}
                     >
                       {new Date(lease.ejariExpiryDate).toLocaleDateString('en-AE')}

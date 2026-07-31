@@ -123,7 +123,7 @@ const EchoCRM = () => {
       <div className="assistant-header">
         <div
           className="assistant-avatar"
-          style={{ background: 'linear-gradient(135deg, #06B6D4 0%, #0891B2 100%)' }}
+          style={{ background: 'linear-gradient(135deg, var(--color-06b6d4, #06B6D4) 0%, var(--color-0891b2, #0891B2) 100%)' }}
         >
           <MessageSquare size={28} />
         </div>
@@ -141,7 +141,7 @@ const EchoCRM = () => {
         <div className="stat-card">
           <div
             className="stat-icon"
-            style={{ background: 'rgba(6,182,212,0.15)', color: '#06B6D4' }}
+            style={{ background: 'rgba(6,182,212,0.15)', color: 'var(--color-06b6d4, #06B6D4)' }}
           >
             <MessageSquare size={20} />
           </div>
@@ -153,7 +153,7 @@ const EchoCRM = () => {
         <div className="stat-card">
           <div
             className="stat-icon"
-            style={{ background: 'rgba(227,30,36,0.15)', color: '#E31E24' }}
+            style={{ background: 'rgba(227,30,36,0.15)', color: 'var(--color-e31e24, #E31E24)' }}
           >
             <User size={20} />
           </div>
@@ -165,7 +165,7 @@ const EchoCRM = () => {
         <div className="stat-card">
           <div
             className="stat-icon"
-            style={{ background: 'rgba(34,197,94,0.15)', color: '#22C55E' }}
+            style={{ background: 'rgba(34,197,94,0.15)', color: 'var(--accent-green, #22C55E)' }}
           >
             <Clock size={20} />
           </div>
@@ -177,7 +177,7 @@ const EchoCRM = () => {
         <div className="stat-card">
           <div
             className="stat-icon"
-            style={{ background: 'rgba(139,92,246,0.15)', color: '#8B5CF6' }}
+            style={{ background: 'rgba(139,92,246,0.15)', color: 'var(--accent-purple, #8B5CF6)' }}
           >
             <Calendar size={20} />
           </div>
@@ -273,10 +273,10 @@ const EchoCRM = () => {
                       >
                         <Icon size={12} /> {cfg.label}
                       </span>
-                      <span style={{ fontSize: 11, color: '#9ca3af' }}>{e.time}</span>
+                      <span style={{ fontSize: 11, color: 'var(--text-secondary, #9ca3af)' }}>{e.time}</span>
                     </div>
                     <p style={{ margin: 0, fontSize: 13 }}>{e.content}</p>
-                    <div style={{ fontSize: 11, color: '#6b7280', marginTop: 6 }}>
+                    <div style={{ fontSize: 11, color: 'var(--text-secondary, #6b7280)', marginTop: 6 }}>
                       via {e.agent}
                     </div>
                   </div>
@@ -378,7 +378,7 @@ const EchoCRM = () => {
               <div style={{ flex: 1 }}>
                 <div style={{ fontWeight: 600, marginBottom: 4 }}>{ch.label}</div>
                 <div
-                  style={{ height: 6, background: '#e5e7eb', borderRadius: 4, overflow: 'hidden' }}
+                  style={{ height: 6, background: 'var(--color-e5e7eb, #e5e7eb)', borderRadius: 4, overflow: 'hidden' }}
                 >
                   <div
                     style={{

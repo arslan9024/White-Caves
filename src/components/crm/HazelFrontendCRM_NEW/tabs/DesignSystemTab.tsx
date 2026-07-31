@@ -56,7 +56,7 @@ const DesignSystemTab: React.FC<DesignSystemTabProps> = ({ designTokens, themeMo
             <div key={value} className="spacing-token">
               <div 
                 className="spacing-demo" 
-                style={{ width: value, height: '20px', background: '#6366F1' }}
+                style={{ width: value, height: '20px', background: 'var(--color-6366f1, #6366F1)' }}
               ></div>
               <span className="token-value">{value}</span>
             </div>

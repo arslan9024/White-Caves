@@ -109,48 +109,48 @@ const CommissionsTab: React.FC<CommissionsTabProps> = ({
     <div className="commissions-view">
       {/* Summary Cards */}
       <div className="stats-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '16px', marginBottom: '24px' }}>
-        <div className="stat-card" style={{ background: '#f0fdf4', borderRadius: '12px', padding: '16px' }}>
+        <div className="stat-card" style={{ background: 'var(--color-f0fdf4, #f0fdf4)', borderRadius: '12px', padding: '16px' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '8px' }}>
             <DollarSign size={18} color="#16a34a" />
-            <span style={{ fontSize: '13px', color: '#666' }}>Total Commissions</span>
+            <span style={{ fontSize: '13px', color: 'var(--color-666, #666)' }}>Total Commissions</span>
           </div>
-          <div style={{ fontSize: '24px', fontWeight: 700, color: '#16a34a' }}>
+          <div style={{ fontSize: '24px', fontWeight: 700, color: 'var(--accent-green, #16a34a)' }}>
             AED {stats.total.toLocaleString()}
           </div>
-          <div style={{ fontSize: '12px', color: '#888', marginTop: '4px' }}>{commissions.length} total</div>
+          <div style={{ fontSize: '12px', color: 'var(--color-888, #888)', marginTop: '4px' }}>{commissions.length} total</div>
         </div>
 
-        <div className="stat-card" style={{ background: '#fef3c7', borderRadius: '12px', padding: '16px' }}>
+        <div className="stat-card" style={{ background: 'var(--color-fef3c7, #fef3c7)', borderRadius: '12px', padding: '16px' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '8px' }}>
             <Clock size={18} color="#d97706" />
-            <span style={{ fontSize: '13px', color: '#666' }}>Pending</span>
+            <span style={{ fontSize: '13px', color: 'var(--color-666, #666)' }}>Pending</span>
           </div>
-          <div style={{ fontSize: '24px', fontWeight: 700, color: '#d97706' }}>
+          <div style={{ fontSize: '24px', fontWeight: 700, color: 'var(--accent-gold, #d97706)' }}>
             AED {stats.pendingTotal.toLocaleString()}
           </div>
-          <div style={{ fontSize: '12px', color: '#888', marginTop: '4px' }}>{pendingCommissions.length} awaiting approval</div>
+          <div style={{ fontSize: '12px', color: 'var(--color-888, #888)', marginTop: '4px' }}>{pendingCommissions.length} awaiting approval</div>
         </div>
 
-        <div className="stat-card" style={{ background: '#dbeafe', borderRadius: '12px', padding: '16px' }}>
+        <div className="stat-card" style={{ background: 'var(--color-dbeafe, #dbeafe)', borderRadius: '12px', padding: '16px' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '8px' }}>
             <CheckCircle size={18} color="#2563eb" />
-            <span style={{ fontSize: '13px', color: '#666' }}>Approved</span>
+            <span style={{ fontSize: '13px', color: 'var(--color-666, #666)' }}>Approved</span>
           </div>
-          <div style={{ fontSize: '24px', fontWeight: 700, color: '#2563eb' }}>
+          <div style={{ fontSize: '24px', fontWeight: 700, color: 'var(--accent-blue, #2563eb)' }}>
             AED {stats.approvedTotal.toLocaleString()}
           </div>
-          <div style={{ fontSize: '12px', color: '#888', marginTop: '4px' }}>{approvedCommissions.length} ready to pay</div>
+          <div style={{ fontSize: '12px', color: 'var(--color-888, #888)', marginTop: '4px' }}>{approvedCommissions.length} ready to pay</div>
         </div>
 
-        <div className="stat-card" style={{ background: '#f0fdf4', borderRadius: '12px', padding: '16px' }}>
+        <div className="stat-card" style={{ background: 'var(--color-f0fdf4, #f0fdf4)', borderRadius: '12px', padding: '16px' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '8px' }}>
             <CreditCard size={18} color="#059669" />
-            <span style={{ fontSize: '13px', color: '#666' }}>Paid</span>
+            <span style={{ fontSize: '13px', color: 'var(--color-666, #666)' }}>Paid</span>
           </div>
-          <div style={{ fontSize: '24px', fontWeight: 700, color: '#059669' }}>
+          <div style={{ fontSize: '24px', fontWeight: 700, color: 'var(--accent-green, #059669)' }}>
             AED {stats.paidTotal.toLocaleString()}
           </div>
-          <div style={{ fontSize: '12px', color: '#888', marginTop: '4px' }}>{paidCommissions.length} completed</div>
+          <div style={{ fontSize: '12px', color: 'var(--color-888, #888)', marginTop: '4px' }}>{paidCommissions.length} completed</div>
         </div>
       </div>
 
@@ -166,7 +166,7 @@ const CommissionsTab: React.FC<CommissionsTabProps> = ({
           <select
             value={typeFilter}
             onChange={(e) => setTypeFilter(e.target.value)}
-            style={{ padding: '6px 12px', borderRadius: '8px', border: '1px solid #ddd', fontSize: '13px' }}
+            style={{ padding: '6px 12px', borderRadius: '8px', border: '1px solid var(--color-ddd, #ddd)', fontSize: '13px' }}
           >
             <option value="all">All Types</option>
             <option value="sale">Sale</option>
@@ -180,7 +180,7 @@ const CommissionsTab: React.FC<CommissionsTabProps> = ({
             <button
               className="btn-approve"
               onClick={handleBulkPay}
-              style={{ display: 'flex', alignItems: 'center', gap: '4px', padding: '8px 16px', borderRadius: '8px', background: '#059669', color: '#fff', border: 'none', cursor: 'pointer', fontSize: '13px', fontWeight: 600 }}
+              style={{ display: 'flex', alignItems: 'center', gap: '4px', padding: '8px 16px', borderRadius: '8px', background: 'var(--accent-green, #059669)', color: 'var(--white, #fff)', border: 'none', cursor: 'pointer', fontSize: '13px', fontWeight: 600 }}
             >
               <CreditCard size={14} />
               Pay Selected ({selectedIds.size})
@@ -189,7 +189,7 @@ const CommissionsTab: React.FC<CommissionsTabProps> = ({
           {onRefresh && (
             <button
               onClick={onRefresh}
-              style={{ padding: '8px 12px', borderRadius: '8px', border: '1px solid #ddd', background: '#fff', cursor: 'pointer', fontSize: '13px' }}
+              style={{ padding: '8px 12px', borderRadius: '8px', border: '1px solid var(--color-ddd, #ddd)', background: 'var(--white, #fff)', cursor: 'pointer', fontSize: '13px' }}
             >
               ↻ Refresh
             </button>
@@ -197,7 +197,7 @@ const CommissionsTab: React.FC<CommissionsTabProps> = ({
           {onCreate && (
             <button
               onClick={() => setShowCreateForm(!showCreateForm)}
-              style={{ display: 'flex', alignItems: 'center', gap: '4px', padding: '8px 16px', borderRadius: '8px', background: '#7c3aed', color: '#fff', border: 'none', cursor: 'pointer', fontSize: '13px', fontWeight: 600 }}
+              style={{ display: 'flex', alignItems: 'center', gap: '4px', padding: '8px 16px', borderRadius: '8px', background: 'var(--accent-purple, #7c3aed)', color: 'var(--white, #fff)', border: 'none', cursor: 'pointer', fontSize: '13px', fontWeight: 600 }}
             >
               <Plus size={14} />
               New Commission
@@ -208,10 +208,10 @@ const CommissionsTab: React.FC<CommissionsTabProps> = ({
 
       {/* Commissions Table */}
       {loading ? (
-        <div style={{ textAlign: 'center', padding: '40px', color: '#888' }}>Loading commissions...</div>
+        <div style={{ textAlign: 'center', padding: '40px', color: 'var(--color-888, #888)' }}>Loading commissions...</div>
       ) : filtered.length === 0 ? (
-        <div style={{ textAlign: 'center', padding: '40px', color: '#888' }}>
-          <DollarSign size={32} color="#ccc" style={{ marginBottom: '8px' }} />
+        <div style={{ textAlign: 'center', padding: '40px', color: 'var(--color-888, #888)' }}>
+          <DollarSign size={32} color="var(--color-ccc, #ccc)" style={{ marginBottom: '8px' }} />
           <p>No commissions found</p>
           <p style={{ fontSize: '13px' }}>Try changing filters or create a new commission</p>
         </div>
@@ -266,10 +266,10 @@ const CommissionsTab: React.FC<CommissionsTabProps> = ({
                 <td style={{ fontWeight: 600 }}>
                   AED {Number(commission.amount).toLocaleString()}
                 </td>
-                <td style={{ color: '#888', fontSize: '13px' }}>
+                <td style={{ color: 'var(--color-888, #888)', fontSize: '13px' }}>
                   {commission.percentage ? `${commission.percentage}%` : '—'}
                 </td>
-                <td style={{ fontSize: '13px', color: '#666' }}>
+                <td style={{ fontSize: '13px', color: 'var(--color-666, #666)' }}>
                   {formatDate(commission.createdAt)}
                 </td>
                 <td>
@@ -297,7 +297,7 @@ const CommissionsTab: React.FC<CommissionsTabProps> = ({
                         className="btn-approve"
                         onClick={() => onApprove(String(commission.id))}
                         title="Approve commission"
-                        style={{ background: '#2563eb', color: '#fff', border: 'none', borderRadius: '6px', padding: '4px 8px', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '4px', fontSize: '12px' }}
+                        style={{ background: 'var(--accent-blue, #2563eb)', color: 'var(--white, #fff)', border: 'none', borderRadius: '6px', padding: '4px 8px', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '4px', fontSize: '12px' }}
                       >
                         <CheckCircle size={14} />
                         Approve
@@ -308,7 +308,7 @@ const CommissionsTab: React.FC<CommissionsTabProps> = ({
                         className="btn-reject"
                         onClick={() => onReject(String(commission.id))}
                         title="Cancel commission"
-                        style={{ background: '#fee2e2', color: '#991b1b', border: 'none', borderRadius: '6px', padding: '4px 8px', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '4px', fontSize: '12px' }}
+                        style={{ background: 'var(--color-fee2e2, #fee2e2)', color: 'var(--color-991b1b, #991b1b)', border: 'none', borderRadius: '6px', padding: '4px 8px', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '4px', fontSize: '12px' }}
                       >
                         <X size={14} />
                       </button>
@@ -317,14 +317,14 @@ const CommissionsTab: React.FC<CommissionsTabProps> = ({
                       <button
                         onClick={() => onBulkPay([String(commission.id)])}
                         title="Pay commission"
-                        style={{ background: '#059669', color: '#fff', border: 'none', borderRadius: '6px', padding: '4px 8px', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '4px', fontSize: '12px' }}
+                        style={{ background: 'var(--accent-green, #059669)', color: 'var(--white, #fff)', border: 'none', borderRadius: '6px', padding: '4px 8px', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '4px', fontSize: '12px' }}
                       >
                         <CreditCard size={14} />
                         Pay
                       </button>
                     )}
                     {commission.status === 'paid' && (
-                      <span style={{ color: '#059669', fontSize: '12px', fontWeight: 600, display: 'flex', alignItems: 'center', gap: '4px' }}>
+                      <span style={{ color: 'var(--accent-green, #059669)', fontSize: '12px', fontWeight: 600, display: 'flex', alignItems: 'center', gap: '4px' }}>
                         <CheckCircle size={14} />
                         {formatDate(commission.paidAt)}
                       </span>
@@ -339,7 +339,7 @@ const CommissionsTab: React.FC<CommissionsTabProps> = ({
 
       {/* Summary footer */}
       {filtered.length > 0 && (
-        <div style={{ display: 'flex', justifyContent: 'space-between', padding: '12px 0', borderTop: '1px solid #eee', marginTop: '8px', fontSize: '13px', color: '#666' }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', padding: '12px 0', borderTop: '1px solid var(--color-eee, #eee)', marginTop: '8px', fontSize: '13px', color: 'var(--color-666, #666)' }}>
           <span>Showing {filtered.length} of {commissions.length} commissions</span>
           <span style={{ fontWeight: 600 }}>
             Filtered total: AED {filtered.reduce((s, c) => s + (Number(c.amount) || 0), 0).toLocaleString()}

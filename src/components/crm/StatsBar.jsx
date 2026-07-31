@@ -10,7 +10,7 @@ const StatCard = ({ stat, onClick }) => {
       className={`stat-card ${onClick ? 'clickable' : ''}`}
       onClick={onClick}
     >
-      <div className="stat-icon-wrapper" style={{ backgroundColor: stat.color || '#3B82F6' }}>
+      <div className="stat-icon-wrapper" style={{ backgroundColor: stat.color || 'var(--accent-blue, #3B82F6)' }}>
         {stat.icon}
       </div>
       <div className="stat-content">

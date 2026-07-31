@@ -242,7 +242,7 @@ export const ViewingSchedulerPanel: FC = () => {
               placeholder="Any special instructions, language preferences, or property access notes..."
               style={{ width: '100%', height: '70px', padding: '8px 12px', border: `1px solid ${BORDER}`, borderRadius: '6px', fontSize: '0.875rem', boxSizing: 'border-box', resize: 'vertical' }} />
           </div>
-          <div style={{ background: '#EFF6FF', padding: '10px 14px', borderRadius: '8px', marginBottom: '16px', fontSize: '0.8rem', color: BLUE }}>
+          <div style={{ background: 'var(--color-eff6ff, #EFF6FF)', padding: '10px 14px', borderRadius: '8px', marginBottom: '16px', fontSize: '0.8rem', color: BLUE }}>
             💬 <strong>Auto-notification:</strong> WhatsApp confirmation + calendar invite will be sent to client and agent upon booking.
           </div>
           <button onClick={handleAddViewing}
@@ -286,8 +286,8 @@ export const ViewingSchedulerPanel: FC = () => {
               </thead>
               <tbody>
                 {SLOT_SUBSET.map(slot => (
-                  <tr key={slot} style={{ borderBottom: '1px solid #E2E8F0' }}>
-                    <td style={{ padding: '8px 10px', fontSize: '0.75rem', color: TEXT_MUTED, fontWeight: 700, background: CARD_BG, borderRight: '1px solid #E2E8F0' }}>{slot}</td>
+                  <tr key={slot} style={{ borderBottom: '1px solid var(--text-secondary, #E2E8F0)' }}>
+                    <td style={{ padding: '8px 10px', fontSize: '0.75rem', color: TEXT_MUTED, fontWeight: 700, background: CARD_BG, borderRight: '1px solid var(--text-secondary, #E2E8F0)' }}>{slot}</td>
                     {weekDays.map((d, i) => {
                       const dayStr = fmt(d);
                       const cells = getViewingsForCell(dayStr, slot);
@@ -330,7 +330,7 @@ export const ViewingSchedulerPanel: FC = () => {
                   { label: 'Type', value: selectedViewing.type },
                   { label: 'Status', value: `${statusConfig[selectedViewing.status].icon} ${selectedViewing.status}` },
                 ].map(row => (
-                  <div key={row.label} style={{ display: 'flex', justifyContent: 'space-between', borderBottom: '1px solid #E2E8F0', padding: '7px 0', fontSize: '0.82rem' }}>
+                  <div key={row.label} style={{ display: 'flex', justifyContent: 'space-between', borderBottom: '1px solid var(--text-secondary, #E2E8F0)', padding: '7px 0', fontSize: '0.82rem' }}>
                     <span style={{ color: TEXT_MUTED, fontWeight: 600 }}>{row.label}</span>
                     <span style={{ fontWeight: 700, color: SLATE }}>{row.value}</span>
                   </div>
@@ -406,7 +406,7 @@ export const ViewingSchedulerPanel: FC = () => {
                     </td>
                     <td style={{ padding: '10px 14px', textAlign: 'center' }}>
                       <button onClick={() => { setSelectedViewing(v); setActiveView('week'); }}
-                        style={{ background: '#E2E8F0', border: 'none', padding: '4px 10px', borderRadius: '6px', cursor: 'pointer', fontSize: '0.72rem', fontWeight: 600 }}>
+                        style={{ background: 'var(--color-e2e8f0, #E2E8F0)', border: 'none', padding: '4px 10px', borderRadius: '6px', cursor: 'pointer', fontSize: '0.72rem', fontWeight: 600 }}>
                         Details
                       </button>
                     </td>

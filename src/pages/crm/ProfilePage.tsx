@@ -330,7 +330,7 @@ export const ProfilePage: FC = () => {
               <SessionItem>
                 <div>
                   <strong>Current Session (Desktop)</strong>
-                  <span style={{ color: '#EF4444', fontWeight: 'bold' }}>Active Now</span>
+                  <span style={{ color: 'var(--accent-red, #EF4444)', fontWeight: 'bold' }}>Active Now</span>
                 </div>
                 <span>IP: 192.168.1.1 · Dubai, UAE</span>
               </SessionItem>
@@ -351,7 +351,7 @@ export const ProfilePage: FC = () => {
             <TrackerRing pct={100}>
               <span>100%</span>
             </TrackerRing>
-            <p style={{ color: '#64748B', fontSize: '0.875rem' }}>
+            <p style={{ color: 'var(--text-secondary, #64748B)', fontSize: '0.875rem' }}>
               Your executive profile and corporate KYC documentation are 100% verified.
             </p>
           </Card>

@@ -114,21 +114,21 @@ export default function RERAComplianceModule({ role, user, data }: CRMModuleProp
           <h3>Total Agents</h3>
           <p className="summary-value">{agents.length}</p>
         </div>
-        <div className="summary-card" style={{ borderColor: '#22c55e' }}>
+        <div className="summary-card" style={{ borderColor: 'var(--accent-green, #22c55e)' }}>
           <h3>Licenses Valid</h3>
-          <p className="summary-value" style={{ color: '#22c55e' }}>
+          <p className="summary-value" style={{ color: 'var(--accent-green, #22c55e)' }}>
             {agents.filter(a => a.status === 'valid').length}
           </p>
         </div>
-        <div className="summary-card" style={{ borderColor: '#ef4444' }}>
+        <div className="summary-card" style={{ borderColor: 'var(--accent-red, #ef4444)' }}>
           <h3>Licenses Expired</h3>
-          <p className="summary-value" style={{ color: '#ef4444' }}>
+          <p className="summary-value" style={{ color: 'var(--accent-red, #ef4444)' }}>
             {agents.filter(a => a.status === 'expired').length}
           </p>
         </div>
-        <div className="summary-card" style={{ borderColor: '#f59e0b' }}>
+        <div className="summary-card" style={{ borderColor: 'var(--accent-gold, #f59e0b)' }}>
           <h3>Pending Registration</h3>
-          <p className="summary-value" style={{ color: '#f59e0b' }}>
+          <p className="summary-value" style={{ color: 'var(--accent-gold, #f59e0b)' }}>
             {agents.filter(a => a.status === 'pending').length}
           </p>
         </div>
@@ -233,9 +233,9 @@ export default function RERAComplianceModule({ role, user, data }: CRMModuleProp
         {isLoading ? (
           <div className="loading">Loading RERA data...</div>
         ) : fetchError ? (
-          <div style={{ padding: '1.5rem', background: '#FEF2F2', border: '1px solid #FECACA', borderRadius: '8px', color: '#B91C1C', textAlign: 'center' }}>
+          <div style={{ padding: '1.5rem', background: 'var(--color-fef2f2, #FEF2F2)', border: '1px solid var(--color-fecaca, #FECACA)', borderRadius: '8px', color: 'var(--accent-red, #B91C1C)', textAlign: 'center' }}>
             <p style={{ marginBottom: '1rem' }}>{fetchError}</p>
-            <button onClick={fetchRERAStatus} style={{ padding: '0.5rem 1rem', background: '#B91C1C', color: '#fff', border: 'none', borderRadius: '6px', cursor: 'pointer' }}>
+            <button onClick={fetchRERAStatus} style={{ padding: '0.5rem 1rem', background: 'var(--accent-red, #B91C1C)', color: 'var(--white, #fff)', border: 'none', borderRadius: '6px', cursor: 'pointer' }}>
               Retry
             </button>
           </div>

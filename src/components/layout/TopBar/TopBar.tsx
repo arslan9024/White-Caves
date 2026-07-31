@@ -393,7 +393,7 @@ const TopBar: React.FC<TopBarProps> = React.memo(function TopBar({
                 </DropdownHeader>
                 <DropdownDivider />
                 {notifications.length === 0 ? (
-                  <DropdownItem disabled style={{ color: '#9CA3AF', cursor: 'default' }}>
+                  <DropdownItem disabled style={{ color: 'var(--text-secondary, #9CA3AF)', cursor: 'default' }}>
                     No new notifications
                   </DropdownItem>
                 ) : (
@@ -421,7 +421,7 @@ const TopBar: React.FC<TopBarProps> = React.memo(function TopBar({
           >
             <UserAvatar>{getInitials(user?.name || user?.email)}</UserAvatar>
             <UserName>{user?.name || user?.email || 'User'}</UserName>
-            <ChevronDown size={14} style={{ color: '#9CA3AF' }} />
+            <ChevronDown size={14} style={{ color: 'var(--text-secondary, #9CA3AF)' }} />
           </UserButton>
           {showUserMenu && (
             <>

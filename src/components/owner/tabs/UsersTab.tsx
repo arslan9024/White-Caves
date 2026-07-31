@@ -703,7 +703,7 @@ function UsersTab({ onAction }: UsersTabProps) {
                       <ActionButton
                         title="Delete"
                         onClick={() => onAction?.('deleteUser', { id: user.id })}
-                        style={{ color: '#EF4444' }}
+                        style={{ color: 'var(--accent-red, #EF4444)' }}
                       >
                         <Trash2 size={14} />
                       </ActionButton>

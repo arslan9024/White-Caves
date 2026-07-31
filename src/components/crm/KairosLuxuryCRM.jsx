@@ -61,7 +61,7 @@ const KairosLuxuryCRM = () => {
   return (
     <div className="assistant-dashboard kairos">
       <div className="assistant-header">
-        <div className="assistant-avatar" style={{ background: 'linear-gradient(135deg, #D97706 0%, #B45309 100%)' }}>
+        <div className="assistant-avatar" style={{ background: 'linear-gradient(135deg, var(--accent-gold, #D97706) 0%, var(--color-b45309, #B45309) 100%)' }}>
           <Crown size={28} />
         </div>
         <div className="assistant-info">
@@ -76,7 +76,7 @@ const KairosLuxuryCRM = () => {
 
       <div className="quick-stats">
         <div className="stat-card">
-          <div className="stat-icon" style={{ background: 'rgba(139, 92, 246, 0.2)', color: '#8B5CF6' }}>
+          <div className="stat-icon" style={{ background: 'rgba(139, 92, 246, 0.2)', color: 'var(--accent-purple, #8B5CF6)' }}>
             <Crown size={20} />
           </div>
           <div className="stat-content">
@@ -86,7 +86,7 @@ const KairosLuxuryCRM = () => {
           <span className="stat-change positive">8 Platinum</span>
         </div>
         <div className="stat-card">
-          <div className="stat-icon" style={{ background: 'rgba(245, 158, 11, 0.2)', color: '#F59E0B' }}>
+          <div className="stat-icon" style={{ background: 'rgba(245, 158, 11, 0.2)', color: 'var(--accent-gold, #F59E0B)' }}>
             <Gift size={20} />
           </div>
           <div className="stat-content">
@@ -96,7 +96,7 @@ const KairosLuxuryCRM = () => {
           <span className="stat-change">4 this week</span>
         </div>
         <div className="stat-card">
-          <div className="stat-icon" style={{ background: 'rgba(16, 185, 129, 0.2)', color: '#10B981' }}>
+          <div className="stat-icon" style={{ background: 'rgba(16, 185, 129, 0.2)', color: 'var(--accent-green, #10B981)' }}>
             <Star size={20} />
           </div>
           <div className="stat-content">
@@ -106,7 +106,7 @@ const KairosLuxuryCRM = () => {
           <span className="stat-change positive"><ArrowUp size={14} /> 15%</span>
         </div>
         <div className="stat-card">
-          <div className="stat-icon" style={{ background: 'rgba(217, 119, 6, 0.2)', color: '#D97706' }}>
+          <div className="stat-icon" style={{ background: 'rgba(217, 119, 6, 0.2)', color: 'var(--accent-gold, #D97706)' }}>
             <Heart size={20} />
           </div>
           <div className="stat-content">

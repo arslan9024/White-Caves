@@ -181,7 +181,7 @@ router.get(
         sessionId,
         assistantId,
         message,
-        null, // Optional entity context
+        undefined, // Optional entity context
         (token: string) => {
           res.write(`data: ${JSON.stringify({ type: 'token', content: token })}\n\n`);
         }

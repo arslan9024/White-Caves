@@ -43,7 +43,7 @@ export class WebSocketService {
    * Setup authentication middleware
    */
   private setupMiddleware(): void {
-    this.io.use((socket: { handshake: { auth: { token?: string } }; user?: unknown }, next: (err?: Error) => void) => {
+    this.io.use((socket: Socket, next: (err?: Error) => void) => {
       try {
         const token = socket.handshake.auth.token;
         if (!token) {
@@ -54,7 +54,7 @@ export class WebSocketService {
         if (!payload) {
           return next(new Error('Invalid token'));
         }
-        socket.data.userId = payload.id;
+        (socket.data as any).userId = payload.id;
         next();
       } catch (error) {
         logger.error('WebSocket auth error:', error);

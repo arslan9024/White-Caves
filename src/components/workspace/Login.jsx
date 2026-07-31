@@ -121,7 +121,7 @@ export default function Login() {
             type="button"
             className="ws-quick-profile-btn"
             onClick={() => handleQuickLogin('founder')}
-            style={{ borderColor: '#EF4444' }}
+            style={{ borderColor: 'var(--accent-red, #EF4444)' }}
           >
             <span className="ws-qp-icon">👑</span>
             Arslan Goraha

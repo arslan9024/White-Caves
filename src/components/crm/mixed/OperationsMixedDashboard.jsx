@@ -85,7 +85,7 @@ export default function OperationsMixedDashboard({ subItem = 'departments', sele
               }}>
                 <h5 style={{ margin: '0 0 4px 0', fontSize: '0.9rem', fontWeight: 600 }}>{dept.name}</h5>
                 <p style={{ margin: '0 0 8px 0', fontSize: '0.75rem', color: 'var(--text-muted)' }}>Head: {dept.head}</p>
-                <span style={{ fontSize: '1.25rem', fontWeight: 700, color: '#B03737' }}>{dept.members}</span>
+                <span style={{ fontSize: '1.25rem', fontWeight: 700, color: 'var(--color-b03737, #B03737)' }}>{dept.members}</span>
                 <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)', marginLeft: '4px' }}>members</span>
               </div>
             ))}

@@ -1,67 +1,32 @@
 {
-  "dashboard": {
-    "greeting": "مرحباً بعودتك",
-    "overview": "نظرة عامة",
-    "view_details": "عرض التفاصيل",
-    "net_profit": "صافي الربح",
-    "active_deals": "الصفقات النشطة",
-    "revenue": "الإيرادات",
-    "expenses": "المصروفات",
-    "total_leads": "إجمالي العملاء المحتملين",
-    "properties": "العقارات",
-    "settings": "الإعدادات",
-    "logout": "تسجيل الخروج"
+  "app": {
+    "title": "وايت كيفز للعقارات ش.ذ.م.م",
+    "subtitle": "عقارات دبي الرائدة",
+    "founderTag": "المدير التنفيذي (المستوى الخامس)",
+    "founderRole": "المدير التنفيذي والمؤسس",
+    "searchPlaceholder": "البحث في 100 شاشة للعمليات...",
+    "globalSearchPlaceholder": "البحث الشامل (Ctrl+K)...",
+    "reraLive": "مباشر ريرا: دائرة الأراضي والأملاك ب دبي متصلة 2026"
   },
-  "agent": {
-    "leasing": {
-      "pipeline": "مسار التأجير",
-      "active_transactions": "{count} معاملات نشطة",
-      "pending": "قيد الانتظار",
-      "inquiry": "استفسار",
-      "viewing": "معاينة",
-      "application": "طلب",
-      "contract": "عقد",
-      "signed": "موقع",
-      "active": "نشط"
-    }
+  "nav": {
+    "home": "الرئيسية",
+    "dashboard": "لوحة التحكم",
+    "profile": "الملف الشخصي",
+    "impersonateMode": "وضع محاكاة المستخدم",
+    "revertMaster": "العودة للوضع الرئيسي"
   },
-  "common": {
-    "loading": "جاري التحميل...",
-    "error": "حدث خطأ",
-    "save": "حفظ",
-    "cancel": "إلغاء",
-    "currency": "درهم",
-    "navigation": "التنقل"
-  },
-  "tenant": {
-    "portal": {
-      "unauthorized": "يجب تسجيل الدخول للوصول إلى بوابة المستأجر.",
-      "title": "بوابة المستأجر",
-      "welcome": "مرحباً {name}. يمكنك إدارة عقد الإيجار والطلبات الخاصة بك.",
-      "tabs": {
-        "home": "لوحة القيادة",
-        "lease": "عقد الإيجار",
-        "payments": "سجل المدفوعات",
-        "maintenance": "الصيانة",
-        "documents": "المستندات",
-        "profile": "ملفي الشخصي"
-      }
-    }
-  },
-  "landlord": {
-    "portal": {
-      "unauthorized": "يجب تسجيل الدخول للوصول إلى بوابة المالك.",
-      "title": "بوابة المالك",
-      "welcome": "مرحباً {name}. يمكنك إدارة عقاراتك والمستأجرين.",
-      "tabs": {
-        "home": "لوحة القيادة",
-        "properties": "عقاراتي",
-        "tenants": "المستأجرين",
-        "payments": "مدفوعات الإيجار",
-        "maintenance": "الصيانة",
-        "documents": "المستندات",
-        "profile": "ملفي الشخصي"
-      }
-    }
+  "pillars": {
+    "sales": "المبيعات والسوق الثانوي",
+    "offplan": "مشاريع قيد الإنشاء",
+    "leasing": "الإيجارات والعقود",
+    "assetManagement": "إدارة الأصول (داماك هيلز 2)",
+    "finance": "المالية والخزينة",
+    "marketing": "التسويق والنمو",
+    "executive": "المكتب التنفيذي",
+    "compliance": "الامتثال والقوانين",
+    "technology": "التكنولوجيا والهندسة",
+    "legal": "الشؤون القانونية",
+    "conveyancing": "المبايعات ونقل الملكية",
+    "intelligence": "الذكاء الاصطناعي والبيانات"
   }
 }

@@ -98,8 +98,8 @@ const LindaWhatsAppCRM = memo(() => {
           padding: 16,
         }}
       >
-        <h2 style={{ margin: 0, color: '#ECFDF5' }}>Linda — WhatsApp Command Hub</h2>
-        <p style={{ margin: '8px 0 0 0', color: '#A7F3D0', fontSize: 13 }}>
+        <h2 style={{ margin: 0, color: 'var(--color-ecfdf5, #ECFDF5)' }}>Linda — WhatsApp Command Hub</h2>
+        <p style={{ margin: '8px 0 0 0', color: 'var(--color-a7f3d0, #A7F3D0)', fontSize: 13 }}>
           Internal command center for chat routing, lead intake quality, and conversation handoffs.
           Mounted directly in White Caves with no external runtime dependency.
         </p>
@@ -116,7 +116,7 @@ const LindaWhatsAppCRM = memo(() => {
           <span
             role="status"
             aria-live="polite"
-            style={{ color: isConnected ? '#86EFAC' : '#FCA5A5', fontSize: 12, fontWeight: 700 }}
+            style={{ color: isConnected ? 'var(--color-86efac, #86EFAC)' : 'var(--color-fca5a5, #FCA5A5)', fontSize: 12, fontWeight: 700 }}
           >
             Linda Runtime: {isConnected ? 'CONNECTED' : lindaStatus.toUpperCase()}
           </span>
@@ -151,7 +151,7 @@ const LindaWhatsAppCRM = memo(() => {
         </div>
 
         {controlError && (
-          <p style={{ margin: '8px 0 0 0', color: '#FCA5A5', fontSize: 12 }}>{controlError}</p>
+          <p style={{ margin: '8px 0 0 0', color: 'var(--color-fca5a5, #FCA5A5)', fontSize: 12 }}>{controlError}</p>
         )}
       </header>
 
@@ -164,29 +164,29 @@ const LindaWhatsAppCRM = memo(() => {
       >
         <div style={statCardStyle}>
           <MessageSquare size={18} color="#34D399" />
-          <p style={{ margin: '8px 0 0 0', color: '#E2E8F0', fontWeight: 600 }}>
+          <p style={{ margin: '8px 0 0 0', color: 'var(--color-e2e8f0, #E2E8F0)', fontWeight: 600 }}>
             Active Conversations
           </p>
-          <strong style={{ color: '#86EFAC', fontSize: 24 }}>42</strong>
+          <strong style={{ color: 'var(--color-86efac, #86EFAC)', fontSize: 24 }}>42</strong>
         </div>
         <div style={statCardStyle}>
           <PhoneCall size={18} color="#34D399" />
-          <p style={{ margin: '8px 0 0 0', color: '#E2E8F0', fontWeight: 600 }}>
+          <p style={{ margin: '8px 0 0 0', color: 'var(--color-e2e8f0, #E2E8F0)', fontWeight: 600 }}>
             Handoffs to Sales
           </p>
-          <strong style={{ color: '#86EFAC', fontSize: 24 }}>17</strong>
+          <strong style={{ color: 'var(--color-86efac, #86EFAC)', fontSize: 24 }}>17</strong>
         </div>
         <div style={statCardStyle}>
           <Workflow size={18} color="#34D399" />
-          <p style={{ margin: '8px 0 0 0', color: '#E2E8F0', fontWeight: 600 }}>Automation Flows</p>
-          <strong style={{ color: '#86EFAC', fontSize: 24 }}>11</strong>
+          <p style={{ margin: '8px 0 0 0', color: 'var(--color-e2e8f0, #E2E8F0)', fontWeight: 600 }}>Automation Flows</p>
+          <strong style={{ color: 'var(--color-86efac, #86EFAC)', fontSize: 24 }}>11</strong>
         </div>
         <div style={statCardStyle}>
           <ShieldCheck size={18} color="#34D399" />
-          <p style={{ margin: '8px 0 0 0', color: '#E2E8F0', fontWeight: 600 }}>
+          <p style={{ margin: '8px 0 0 0', color: 'var(--color-e2e8f0, #E2E8F0)', fontWeight: 600 }}>
             Policy Compliance
           </p>
-          <strong style={{ color: '#86EFAC', fontSize: 24 }}>99.1%</strong>
+          <strong style={{ color: 'var(--color-86efac, #86EFAC)', fontSize: 24 }}>99.1%</strong>
         </div>
       </div>
 
@@ -198,8 +198,8 @@ const LindaWhatsAppCRM = memo(() => {
           padding: 14,
         }}
       >
-        <h3 style={{ marginTop: 0, color: '#E2E8F0' }}>Collaboration Contracts</h3>
-        <ul style={{ margin: 0, paddingLeft: 18, color: '#CBD5E1', fontSize: 13, lineHeight: 1.6 }}>
+        <h3 style={{ marginTop: 0, color: 'var(--color-e2e8f0, #E2E8F0)' }}>Collaboration Contracts</h3>
+        <ul style={{ margin: 0, paddingLeft: 18, color: 'var(--color-cbd5e1, #CBD5E1)', fontSize: 13, lineHeight: 1.6 }}>
           <li>CONSUMES ← Nina conversation intents, Mary inventory snapshots</li>
           <li>FEEDS → Clara lead qualification stream, Henry immutable audit events</li>
           <li>

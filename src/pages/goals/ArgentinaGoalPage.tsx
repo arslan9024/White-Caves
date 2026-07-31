@@ -279,7 +279,7 @@ const ArgentinaGoalPage: React.FC = () => {
   // ─── Render ───────────────────────────────────────────────────────────────
 
   return (
-    <div style={{ minHeight: '100vh', background: '#F9FAFB', padding: '24px' }}>
+    <div style={{ minHeight: '100vh', background: 'var(--color-f9fafb, #F9FAFB)', padding: '24px' }}>
       {/* Header */}
       <div style={{ maxWidth: 900, margin: '0 auto' }}>
         <button
@@ -318,7 +318,7 @@ const ArgentinaGoalPage: React.FC = () => {
               <h1 style={{ margin: 0, fontSize: 22, fontWeight: 700, letterSpacing: '-0.3px' }}>
                 Argentina Master Immigration Blueprint
               </h1>
-              <p style={{ margin: '4px 0 0', fontSize: 13, color: '#94A3B8' }}>
+              <p style={{ margin: '4px 0 0', fontSize: 13, color: 'var(--color-94a3b8, #94A3B8)' }}>
                 Track your 100 action items across document processing, university enrollment, visa
                 protocols, and the 2-year federal court naturalization suit in Córdoba.
               </p>
@@ -370,12 +370,12 @@ const ArgentinaGoalPage: React.FC = () => {
             }}
           >
             <div>
-              <p style={{ margin: 0, fontSize: 12, color: '#6B7280', textTransform: 'uppercase', letterSpacing: '0.8px', fontWeight: 600 }}>
+              <p style={{ margin: 0, fontSize: 12, color: 'var(--text-secondary, #6B7280)', textTransform: 'uppercase', letterSpacing: '0.8px', fontWeight: 600 }}>
                 Overall Completion
               </p>
-              <p style={{ margin: '2px 0 0', fontSize: 24, fontWeight: 700, color: '#0F172A' }}>
+              <p style={{ margin: '2px 0 0', fontSize: 24, fontWeight: 700, color: 'var(--color-0f172a, #0F172A)' }}>
                 {progressPercentage}%{' '}
-                <span style={{ fontSize: 14, color: '#6B7280', fontWeight: 400 }}>
+                <span style={{ fontSize: 14, color: 'var(--text-secondary, #6B7280)', fontWeight: 400 }}>
                   ({totalCompleted} / 100 Milestones)
                 </span>
               </p>
@@ -494,11 +494,11 @@ const ArgentinaGoalPage: React.FC = () => {
                 <div>
                   <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
                     <span style={{ fontSize: 22 }}>{phase.emoji}</span>
-                    <h2 style={{ margin: 0, fontSize: 16, fontWeight: 700, color: '#0F172A' }}>
+                    <h2 style={{ margin: 0, fontSize: 16, fontWeight: 700, color: 'var(--color-0f172a, #0F172A)' }}>
                       Phase {phase.id}: {phase.title}
                     </h2>
                   </div>
-                  <p style={{ margin: '4px 0 0', fontSize: 12, color: '#6B7280' }}>
+                  <p style={{ margin: '4px 0 0', fontSize: 12, color: 'var(--text-secondary, #6B7280)' }}>
                     Steps {(phase.id - 1) * 20 + 1}–{phase.id * 20} ·{' '}
                     <span style={{ color, fontWeight: 600 }}>
                       {stats.completed}/{stats.total} complete ({stats.percent}%)
@@ -671,7 +671,7 @@ const ArgentinaGoalPage: React.FC = () => {
             <h2 style={{ margin: '0 0 6px', fontSize: 20, fontWeight: 700 }}>
               All 100 milestones complete!
             </h2>
-            <p style={{ margin: 0, fontSize: 14, color: '#A7F3D0' }}>
+            <p style={{ margin: 0, fontSize: 14, color: 'var(--color-a7f3d0, #A7F3D0)' }}>
               Welcome to Argentina. Your blue passport awaits. 🌍
             </p>
           </div>

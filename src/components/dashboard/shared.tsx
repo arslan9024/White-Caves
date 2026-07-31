@@ -156,7 +156,7 @@ export const emptyState = (icon: string, title: string, subtitle: string): React
     <div style={{ fontSize: '3rem', marginBottom: '1rem' }}>{icon}</div>
     <h3 style={{ marginBottom: '0.5rem', color: 'var(--color-text, #111827)' }}>{title}</h3>
     <p
-      style={{ color: 'var(--color-text-secondary, #6b7280)', maxWidth: '420px', margin: '0 auto' }}
+      style={{ color: 'var(--color-text-secondary, var(--text-secondary, #6b7280))', maxWidth: '420px', margin: '0 auto' }}
     >
       {subtitle}
     </p>
@@ -186,7 +186,7 @@ export const errorState = (message: string, onRetry?: () => void): React.ReactNo
     }}
   >
     <div style={{ fontSize: '2rem', marginBottom: '0.5rem' }}>⚠️</div>
-    <p style={{ color: '#dc2626', marginBottom: '1rem' }}>{message}</p>
+    <p style={{ color: 'var(--accent-red, #dc2626)', marginBottom: '1rem' }}>{message}</p>
     {onRetry && (
       <button onClick={onRetry} style={btnPrimary}>
         Retry

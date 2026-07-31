@@ -197,14 +197,14 @@ export default function DLDIntegrationModule({ role, user, data }: CRMModuleProp
             <td>Marina Tower 1, P123</td>
             <td>Purchase</td>
             <td>AED 2,500,000</td>
-            <td><span className="status-badge" style={{ backgroundColor: '#22c55e' }}>Completed</span></td>
+            <td><span className="status-badge" style={{ backgroundColor: 'var(--accent-green, #22c55e)' }}>Completed</span></td>
           </tr>
           <tr>
             <td>2024-02-15</td>
             <td>Downtown Dubai, P456</td>
             <td>Sale</td>
             <td>AED 1,800,000</td>
-            <td><span className="status-badge" style={{ backgroundColor: '#f59e0b' }}>Pending</span></td>
+            <td><span className="status-badge" style={{ backgroundColor: 'var(--accent-gold, #f59e0b)' }}>Pending</span></td>
           </tr>
         </tbody>
       </table>

@@ -65,31 +65,31 @@ const RenewalsTab: React.FC<RenewalsTabProps> = ({
 
       <div className="renewal-summary" style={{ marginBottom: '24px' }}>
         <div className="renewal-stat">
-          <span className="value" style={{ color: '#EF4444' }}>
+          <span className="value" style={{ color: 'var(--accent-red, #EF4444)' }}>
             {dueThisMonth}
           </span>
           <span className="label">Due in 30 Days</span>
         </div>
         <div className="renewal-stat">
-          <span className="value" style={{ color: '#14B8A6' }}>
+          <span className="value" style={{ color: 'var(--accent-teal, #14B8A6)' }}>
             {noticeSent}
           </span>
           <span className="label">Notices Sent</span>
         </div>
         <div className="renewal-stat">
-          <span className="value" style={{ color: '#10B981' }}>
+          <span className="value" style={{ color: 'var(--accent-green, #10B981)' }}>
             {confirmed}
           </span>
           <span className="label">Confirmed</span>
         </div>
         <div className="renewal-stat">
-          <span className="value" style={{ color: '#60A5FA' }}>
+          <span className="value" style={{ color: 'var(--color-60a5fa, #60A5FA)' }}>
             {negotiating}
           </span>
           <span className="label">Negotiating</span>
         </div>
         <div className="renewal-stat">
-          <span className="value" style={{ color: '#EF4444' }}>
+          <span className="value" style={{ color: 'var(--accent-red, #EF4444)' }}>
             {rejected}
           </span>
           <span className="label">Rejected</span>
@@ -231,10 +231,10 @@ const RenewalsTab: React.FC<RenewalsTabProps> = ({
                   >
                     Proposed Rent
                   </div>
-                  <div style={{ fontSize: '16px', fontWeight: 600, color: '#14B8A6' }}>
+                  <div style={{ fontSize: '16px', fontWeight: 600, color: 'var(--accent-teal, #14B8A6)' }}>
                     AED {renewal.proposedRent.toLocaleString()}
                   </div>
-                  <div style={{ fontSize: '11px', color: '#14B8A6' }}>
+                  <div style={{ fontSize: '11px', color: 'var(--accent-teal, #14B8A6)' }}>
                     +{rentIncreasePct}% increase
                   </div>
                 </div>
@@ -342,7 +342,7 @@ const RenewalsTab: React.FC<RenewalsTabProps> = ({
           color: 'var(--color-text-secondary)',
         }}
       >
-        📊 <strong style={{ color: '#14B8A6' }}>Occupancy Forecast:</strong>{' '}
+        📊 <strong style={{ color: 'var(--accent-teal, #14B8A6)' }}>Occupancy Forecast:</strong>{' '}
         {localRenewals.filter(r => r.tenantResponse === 'accepted').length} renewals confirmed ·{' '}
         {localRenewals.filter(r => r.tenantResponse === 'rejected').length} units may become vacant
         · Monitor market rates for competitive pricing.

@@ -67,7 +67,7 @@ const FavoriteListings: React.FC = () => {
             gap: '1rem',
           }}
         >
-          <span style={{ color: 'var(--color-text-secondary, #6b7280)', fontSize: '0.95rem' }}>
+          <span style={{ color: 'var(--color-text-secondary, var(--text-secondary, #6b7280))', fontSize: '0.95rem' }}>
             {favorites.length} saved {favorites.length === 1 ? 'property' : 'properties'}
           </span>
           <select
@@ -91,7 +91,7 @@ const FavoriteListings: React.FC = () => {
         {/* Loading */}
         {loading && (
           <div
-            style={{ textAlign: 'center', padding: '3rem 0', color: 'var(--color-text-secondary, #6b7280)' }}
+            style={{ textAlign: 'center', padding: '3rem 0', color: 'var(--color-text-secondary, var(--text-secondary, #6b7280))' }}
           >
             Loading your favorites…
           </div>
@@ -112,7 +112,7 @@ const FavoriteListings: React.FC = () => {
             <h3 style={{ marginBottom: '0.5rem', color: 'var(--color-text, #111827)' }}>
               No favorites yet
             </h3>
-            <p style={{ color: 'var(--color-text-secondary, #6b7280)', maxWidth: '400px', margin: '0 auto 1.5rem' }}>
+            <p style={{ color: 'var(--color-text-secondary, var(--text-secondary, #6b7280))', maxWidth: '400px', margin: '0 auto 1.5rem' }}>
               Browse properties and tap the heart icon to save them here for quick access.
             </p>
             <Link
@@ -197,7 +197,7 @@ const FavoriteListings: React.FC = () => {
             >
               ← Previous
             </button>
-            <span style={{ padding: '0.5rem 1rem', color: 'var(--color-text-secondary, #6b7280)' }}>
+            <span style={{ padding: '0.5rem 1rem', color: 'var(--color-text-secondary, var(--text-secondary, #6b7280))' }}>
               Page {page}
             </span>
             <button

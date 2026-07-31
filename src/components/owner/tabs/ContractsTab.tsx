@@ -291,7 +291,7 @@ const ContractsTab: React.FC<ContractsTabProps> = ({ data, loading }) => {
     if (!status) return null;
     const isRegistered = status === 'registered';
     return (
-      <span style={{ color: isRegistered ? '#22C55E' : '#F59E0B' }}>
+      <span style={{ color: isRegistered ? 'var(--accent-green, #22C55E)' : 'var(--accent-gold, #F59E0B)' }}>
         {isRegistered ? '✓ Registered' : '⏳ Pending'}
       </span>
     );

@@ -38,7 +38,7 @@ const AssistantPlanView: React.FC<AssistantPlanViewProps> = ({ assistantId, assi
 
   if (loading || plan === undefined) {
     return (
-      <div style={{ padding: '24px', textAlign: 'center', color: '#9CA3AF' }}>
+      <div style={{ padding: '24px', textAlign: 'center', color: 'var(--text-secondary, #9CA3AF)' }}>
         <div style={{ fontSize: '14px' }}>Loading {assistantName}&apos;s plan…</div>
       </div>
     );

@@ -387,14 +387,14 @@ export const PropertySearchPanel: FC = () => {
                   { label: 'Bedrooms', value: `${selectedProperty.beds} beds · ${selectedProperty.baths} baths` },
                   { label: 'Area', value: `${selectedProperty.sqft.toLocaleString()} sqft` },
                 ].map(row => (
-                  <div key={row.label} style={{ display: 'flex', justifyContent: 'space-between', borderBottom: '1px solid #E2E8F0', padding: '7px 0', fontSize: '0.85rem' }}>
+                  <div key={row.label} style={{ display: 'flex', justifyContent: 'space-between', borderBottom: '1px solid var(--text-secondary, #E2E8F0)', padding: '7px 0', fontSize: '0.85rem' }}>
                     <span style={{ color: TEXT_MUTED, fontWeight: 600 }}>{row.label}</span>
                     <span style={{ fontWeight: 700, color: SLATE }}>{row.value}</span>
                   </div>
                 ))}
               </div>
               <div>
-                <div style={{ background: '#FEF2F2', padding: '16px', borderRadius: '10px', marginBottom: '12px' }}>
+                <div style={{ background: 'var(--color-fef2f2, #FEF2F2)', padding: '16px', borderRadius: '10px', marginBottom: '12px' }}>
                   <div style={{ fontSize: '0.75rem', color: RED, fontWeight: 700, textTransform: 'uppercase', marginBottom: '4px' }}>Multi-Currency Pricing</div>
                   {['AED', 'USD', 'EUR', 'GBP'].map(cur => {
                     const key = currencyKey[cur] as keyof Property;
@@ -408,7 +408,7 @@ export const PropertySearchPanel: FC = () => {
                   })}
                 </div>
                 {dldVerifiedResult && (
-                  <div style={{ background: '#ECFDF5', border: '1px solid #A7F3D0', padding: '12px', borderRadius: '8px', marginBottom: '12px', fontSize: '0.8rem', color: '#065F46' }}>
+                  <div style={{ background: 'var(--color-ecfdf5, #ECFDF5)', border: '1px solid var(--color-a7f3d0, #A7F3D0)', padding: '12px', borderRadius: '8px', marginBottom: '12px', fontSize: '0.8rem', color: 'var(--color-065f46, #065F46)' }}>
                     <div style={{ fontWeight: 800, color: GREEN, display: 'flex', alignItems: 'center', gap: '6px' }}>
                       <span>✓ DLD REST API VERIFIED</span>
                     </div>

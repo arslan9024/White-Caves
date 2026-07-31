@@ -108,15 +108,15 @@ const ReportsTab: React.FC<ReportsTabProps> = ({ invoices, expenses }) => {
               <div className="report-data">
                 <div className="data-row">
                   <span>Total Revenue:</span>
-                  <strong style={{ color: '#10B981' }}>AED {totalRevenue.toLocaleString()}</strong>
+                  <strong style={{ color: 'var(--accent-green, #10B981)' }}>AED {totalRevenue.toLocaleString()}</strong>
                 </div>
                 <div className="data-row">
                   <span>Total Expenses:</span>
-                  <strong style={{ color: '#EF4444' }}>AED {totalExpenses.toLocaleString()}</strong>
+                  <strong style={{ color: 'var(--accent-red, #EF4444)' }}>AED {totalExpenses.toLocaleString()}</strong>
                 </div>
                 <div className="data-row highlight">
                   <span>Net Profit:</span>
-                  <strong style={{ color: netProfit >= 0 ? '#10B981' : '#EF4444' }}>
+                  <strong style={{ color: netProfit >= 0 ? 'var(--accent-green, #10B981)' : 'var(--accent-red, #EF4444)' }}>
                     AED {netProfit.toLocaleString()}
                   </strong>
                 </div>
@@ -138,11 +138,11 @@ const ReportsTab: React.FC<ReportsTabProps> = ({ invoices, expenses }) => {
               <div className="report-data">
                 <div className="data-row">
                   <span>Cash Inflow (Paid):</span>
-                  <strong style={{ color: '#10B981' }}>AED {totalRevenue.toLocaleString()}</strong>
+                  <strong style={{ color: 'var(--accent-green, #10B981)' }}>AED {totalRevenue.toLocaleString()}</strong>
                 </div>
                 <div className="data-row">
                   <span>Cash Outflow (Expenses):</span>
-                  <strong style={{ color: '#EF4444' }}>AED {totalExpenses.toLocaleString()}</strong>
+                  <strong style={{ color: 'var(--accent-red, #EF4444)' }}>AED {totalExpenses.toLocaleString()}</strong>
                 </div>
                 <div className="data-row">
                   <span>Pending Inflow:</span>

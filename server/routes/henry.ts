@@ -44,24 +44,26 @@ type HenryRecordStatus = (typeof VALID_HENRY_STATUSES)[number];
 const normalizeId = () => Math.random().toString(36).slice(2, 10) + Date.now().toString(36);
 
 const createMockHenryRecordModel = () => ({
-  findMany: async ({ where, orderBy, skip = 0, take = 50, select }: Record<string, unknown> = {}) => {
+  findMany: async (args: Record<string, unknown> = {}) => {
+    const { where, orderBy, skip = 0, take = 50, select } = args as any;
     let rows = [...mockHenryRecords];
     if (where) {
-      rows = rows.filter(row => {
+      rows = rows.filter((row: Record<string, unknown>) => {
+        const r = row as any;
         if (where.templateKey && row.templateKey !== where.templateKey) return false;
         if (where.departmentTag && row.departmentTag !== where.departmentTag) return false;
         if (where.ownerUserId && row.ownerUserId !== where.ownerUserId) return false;
         if (where.ownerUserEmail && row.ownerUserEmail !== where.ownerUserEmail) return false;
         if (where.status && row.status !== where.status) return false;
-        if (where.signedAt?.gte) {
-          const rowSignedAt = row.signedAt ? new Date(row.signedAt).getTime() : NaN;
-          if (Number.isNaN(rowSignedAt) || rowSignedAt < new Date(where.signedAt.gte).getTime()) {
+        if (where.signedAt && typeof where.signedAt === 'object' && (where.signedAt as Record<string, unknown>).gte) {
+          const rowSignedAt = row.signedAt ? new Date(row.signedAt as string | number | Date).getTime() : NaN;
+          if (Number.isNaN(rowSignedAt) || rowSignedAt < new Date((where.signedAt as Record<string, unknown>).gte as string | number | Date).getTime()) {
             return false;
           }
         }
-        if (where.signedAt?.lte) {
-          const rowSignedAt = row.signedAt ? new Date(row.signedAt).getTime() : NaN;
-          if (Number.isNaN(rowSignedAt) || rowSignedAt > new Date(where.signedAt.lte).getTime()) {
+        if (where.signedAt && typeof where.signedAt === 'object' && (where.signedAt as Record<string, unknown>).lte) {
+          const rowSignedAt = row.signedAt ? new Date(row.signedAt as string | number | Date).getTime() : NaN;
+          if (Number.isNaN(rowSignedAt) || rowSignedAt > new Date((where.signedAt as Record<string, unknown>).lte as string | number | Date).getTime()) {
             return false;
           }
         }
@@ -69,19 +71,19 @@ const createMockHenryRecordModel = () => ({
       });
     }
     if (orderBy?.createdAt) {
-      rows.sort((a, b) => {
-        const av = new Date(a.createdAt).getTime();
-        const bv = new Date(b.createdAt).getTime();
+      rows.sort((a: Record<string, unknown>, b: Record<string, unknown>) => {
+        const av = new Date(a.createdAt as string | Date).getTime();
+        const bv = new Date(b.createdAt as string | Date).getTime();
         return orderBy.createdAt === 'asc' ? av - bv : bv - av;
       });
     }
     const sliced = rows.slice(skip, skip + take);
     if (!select) return sliced;
-    return sliced.map(row =>
+    return sliced.map((row: Record<string, unknown>) =>
       Object.fromEntries(
         Object.keys(select)
-          .filter(k => select[k])
-          .map(k => [k, row[k]])
+          .filter((k: string) => select[k])
+          .map((k: string) => [k, row[k]])
       )
     );
   },
@@ -93,7 +95,7 @@ const createMockHenryRecordModel = () => ({
       updatedAt: new Date(),
       ...data,
     };
-    mockHenryRecords.push(created as unknown as HenryRecord);
+    mockHenryRecords.push(created as any);
     return created;
   },
   findUnique: async ({ where }: { where: { id: string } }) => mockHenryRecords.find(r => r.id === where.id) ?? null,
@@ -101,7 +103,7 @@ const createMockHenryRecordModel = () => ({
     const idx = mockHenryRecords.findIndex(r => r.id === where.id);
     if (idx < 0) return null;
     const updated = { ...mockHenryRecords[idx], ...data, updatedAt: new Date() };
-    mockHenryRecords[idx] = updated as unknown as HenryRecord;
+    mockHenryRecords[idx] = updated as any;
     return updated;
   },
   delete: async ({ where }: { where: { id: string } }) => {

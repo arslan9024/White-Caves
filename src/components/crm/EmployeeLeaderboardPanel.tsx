@@ -71,13 +71,13 @@ export const EmployeeLeaderboardPanel: FC = () => {
           <h2 style={{ fontSize: '1.5rem', fontWeight: 800, color: SLATE, margin: 0, fontFamily: 'Outfit, sans-serif' }}>
             🏆 1-12-108 Hierarchy Leaderboard
           </h2>
-          <p style={{ fontSize: '0.875rem', color: '#64748B', margin: '4px 0 0 0' }}>
+          <p style={{ fontSize: '0.875rem', color: 'var(--text-secondary, #64748B)', margin: '4px 0 0 0' }}>
             1 Managing Director · 12 Department Managers · 108 Supervisors
           </p>
         </div>
 
         {/* View Mode Toggle */}
-        <div style={{ display: 'flex', background: '#E2E8F0', padding: '4px', borderRadius: '12px', gap: '4px' }}>
+        <div style={{ display: 'flex', background: 'var(--color-e2e8f0, #E2E8F0)', padding: '4px', borderRadius: '12px', gap: '4px' }}>
           <button
             onClick={() => setViewMode('department')}
             style={{
@@ -106,7 +106,7 @@ export const EmployeeLeaderboardPanel: FC = () => {
       {viewMode === 'global' ? (
         /* ── GLOBAL: All 12 Department Managers ── */
         <div>
-          <div style={{ fontSize: '0.75rem', fontWeight: 700, color: '#94A3B8', letterSpacing: '0.5px', marginBottom: '12px' }}>
+          <div style={{ fontSize: '0.75rem', fontWeight: 700, color: 'var(--color-94a3b8, #94A3B8)', letterSpacing: '0.5px', marginBottom: '12px' }}>
             LEVEL 4 DEPARTMENT HEADS — 12 MANAGERS
           </div>
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: '12px' }}>
@@ -133,10 +133,10 @@ export const EmployeeLeaderboardPanel: FC = () => {
                       <div style={{ fontSize: '0.875rem', fontWeight: 700, color: SLATE }}>{dept.name}</div>
                     </div>
                   </div>
-                  <div style={{ fontSize: '0.8rem', color: '#64748B', marginBottom: '4px' }}>
+                  <div style={{ fontSize: '0.8rem', color: 'var(--text-secondary, #64748B)', marginBottom: '4px' }}>
                     <span style={{ fontWeight: 600, color: RED }}>Manager: </span>{mgr?.name || 'Unassigned'}
                   </div>
-                  <div style={{ fontSize: '0.75rem', color: '#94A3B8' }}>
+                  <div style={{ fontSize: '0.75rem', color: 'var(--color-94a3b8, #94A3B8)' }}>
                     {supervisorCount} of 9 Supervisors Filled · Click to view
                   </div>
                 </div>
@@ -183,20 +183,20 @@ export const EmployeeLeaderboardPanel: FC = () => {
             </div>
             <div style={{ display: 'flex', gap: '20px', textAlign: 'center' }}>
               <div>
-                <div style={{ fontSize: '0.65rem', color: '#94A3B8', fontWeight: 600 }}>MANAGERS</div>
+                <div style={{ fontSize: '0.65rem', color: 'var(--color-94a3b8, #94A3B8)', fontWeight: 600 }}>MANAGERS</div>
                 <div style={{ fontSize: '1.25rem', fontWeight: 800, color: RED }}>{manager ? 1 : 0}</div>
               </div>
               <div>
-                <div style={{ fontSize: '0.65rem', color: '#94A3B8', fontWeight: 600 }}>SUPERVISORS</div>
-                <div style={{ fontSize: '1.25rem', fontWeight: 800, color: '#A78BFA' }}>{supervisors.length}</div>
+                <div style={{ fontSize: '0.65rem', color: 'var(--color-94a3b8, #94A3B8)', fontWeight: 600 }}>SUPERVISORS</div>
+                <div style={{ fontSize: '1.25rem', fontWeight: 800, color: 'var(--color-a78bfa, #A78BFA)' }}>{supervisors.length}</div>
               </div>
               <div>
-                <div style={{ fontSize: '0.65rem', color: '#94A3B8', fontWeight: 600 }}>JUNIORS</div>
-                <div style={{ fontSize: '1.25rem', fontWeight: 800, color: '#38BDF8' }}>{juniors.length}</div>
+                <div style={{ fontSize: '0.65rem', color: 'var(--color-94a3b8, #94A3B8)', fontWeight: 600 }}>JUNIORS</div>
+                <div style={{ fontSize: '1.25rem', fontWeight: 800, color: 'var(--color-38bdf8, #38BDF8)' }}>{juniors.length}</div>
               </div>
               <div>
-                <div style={{ fontSize: '0.65rem', color: '#94A3B8', fontWeight: 600 }}>INTERNS</div>
-                <div style={{ fontSize: '1.25rem', fontWeight: 800, color: '#94A3B8' }}>{interns.length}</div>
+                <div style={{ fontSize: '0.65rem', color: 'var(--color-94a3b8, #94A3B8)', fontWeight: 600 }}>INTERNS</div>
+                <div style={{ fontSize: '1.25rem', fontWeight: 800, color: 'var(--color-94a3b8, #94A3B8)' }}>{interns.length}</div>
               </div>
             </div>
           </div>
@@ -230,7 +230,7 @@ export const EmployeeLeaderboardPanel: FC = () => {
                     <td style={{ padding: '11px 16px', fontWeight: person.accessLevel >= 3 ? 700 : 500, color: SLATE }}>
                       {person.name}
                     </td>
-                    <td style={{ padding: '11px 16px', color: '#64748B', fontSize: '0.8rem' }}>
+                    <td style={{ padding: '11px 16px', color: 'var(--text-secondary, #64748B)', fontSize: '0.8rem' }}>
                       {person.roleTitle}
                     </td>
                     <td style={{ padding: '11px 16px' }}>
@@ -243,7 +243,7 @@ export const EmployeeLeaderboardPanel: FC = () => {
                         L{person.accessLevel} · {LEVEL_LABELS[person.accessLevel] || 'STAFF'}
                       </span>
                     </td>
-                    <td style={{ padding: '11px 16px', fontFamily: 'monospace', fontSize: '0.8rem', color: '#059669', fontWeight: 600 }}>
+                    <td style={{ padding: '11px 16px', fontFamily: 'monospace', fontSize: '0.8rem', color: 'var(--accent-green, #059669)', fontWeight: 600 }}>
                       {person.commissionRule
                         ? `${Math.round(person.commissionRule.agentSplit * 100)}% / ${Math.round(person.commissionRule.companySplit * 100)}%`
                         : '—'}
@@ -252,7 +252,7 @@ export const EmployeeLeaderboardPanel: FC = () => {
                 ))}
                 {deptStaff.length === 0 && (
                   <tr>
-                    <td colSpan={5} style={{ padding: '32px', textAlign: 'center', color: '#94A3B8' }}>
+                    <td colSpan={5} style={{ padding: '32px', textAlign: 'center', color: 'var(--color-94a3b8, #94A3B8)' }}>
                       No personnel assigned to this department yet.
                     </td>
                   </tr>

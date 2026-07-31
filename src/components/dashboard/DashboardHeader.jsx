@@ -236,7 +236,7 @@ const DashboardHeader = ({
                 key={feature.id}
                 className={`header-tab ${activeFeature === feature.id ? 'active' : ''}`}
                 onClick={() => handleFeatureClick(feature)}
-                style={{ '--tab-color': activeAssistant?.color || '#D32F2F' }}
+                style={{ '--tab-color': activeAssistant?.color || 'var(--accent-red, #D32F2F)' }}
               >
                 <Icon size={18} />
                 <span>{feature.label}</span>

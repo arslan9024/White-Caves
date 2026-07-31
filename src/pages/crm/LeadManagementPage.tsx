@@ -329,7 +329,7 @@ const LeadManagementPage: FC = () => {
             </option>
           ))}
         </FilterSelect>
-        <span style={{ fontSize: '0.8rem', color: '#888' }}>
+        <span style={{ fontSize: '0.8rem', color: 'var(--color-888, #888)' }}>
           {filteredLeads.length} lead{filteredLeads.length !== 1 ? 's' : ''} found
         </span>
       </ActionBar>
@@ -429,7 +429,7 @@ const LeadManagementPage: FC = () => {
                         <Td>
                           <div style={{ fontSize: '0.8rem' }}>
                             {lead.email && <div>{lead.email}</div>}
-                            {lead.phone && <div style={{ color: '#888' }}>{lead.phone}</div>}
+                            {lead.phone && <div style={{ color: 'var(--color-888, #888)' }}>{lead.phone}</div>}
                           </div>
                         </Td>
                         <Td>{formatDate(lead.created_at)}</Td>
@@ -531,7 +531,7 @@ const LeadManagementPage: FC = () => {
           onClose={closeDeleteModal}
           size="small"
         >
-          <p style={{ color: '#555', fontSize: '0.9rem' }}>
+          <p style={{ color: 'var(--color-555, #555)', fontSize: '0.9rem' }}>
             Are you sure you want to delete <strong>{selectedLead.name}</strong>? This action cannot
             be undone.
           </p>

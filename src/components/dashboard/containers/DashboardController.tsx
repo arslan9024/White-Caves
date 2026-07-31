@@ -17,7 +17,7 @@ export const DashboardController: FC<DashboardControllerProps> = ({
     return (
       <div
         className="dashboard-controller loading-state"
-        style={{ padding: '2rem', textAlign: 'center', color: '#888' }}
+        style={{ padding: '2rem', textAlign: 'center', color: 'var(--color-888, #888)' }}
       >
         <p>Loading...</p>
       </div>

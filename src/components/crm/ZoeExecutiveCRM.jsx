@@ -321,7 +321,7 @@ const ZoeExecutiveCRM = ({ activeFeature }) => {
   return (
     <div className="assistant-dashboard zoe">
       <div className="assistant-header">
-        <div className="assistant-avatar" style={{ background: 'linear-gradient(135deg, #43E97B 0%, #38F9D7 100%)' }}>
+        <div className="assistant-avatar" style={{ background: 'linear-gradient(135deg, var(--color-43e97b, #43E97B) 0%, var(--color-38f9d7, #38F9D7) 100%)' }}>
           <Briefcase size={28} />
         </div>
         <div className="assistant-info">
@@ -336,7 +336,7 @@ const ZoeExecutiveCRM = ({ activeFeature }) => {
 
       <div className="quick-stats">
         <div className="stat-card highlight">
-          <div className="stat-icon" style={{ background: 'rgba(239, 68, 68, 0.2)', color: '#EF4444' }}>
+          <div className="stat-icon" style={{ background: 'rgba(239, 68, 68, 0.2)', color: 'var(--accent-red, #EF4444)' }}>
             <Inbox size={20} />
           </div>
           <div className="stat-content">
@@ -348,7 +348,7 @@ const ZoeExecutiveCRM = ({ activeFeature }) => {
           )}
         </div>
         <div className="stat-card">
-          <div className="stat-icon" style={{ background: 'rgba(67, 233, 123, 0.2)', color: '#43E97B' }}>
+          <div className="stat-icon" style={{ background: 'rgba(67, 233, 123, 0.2)', color: 'var(--color-43e97b, #43E97B)' }}>
             <Calendar size={20} />
           </div>
           <div className="stat-content">
@@ -358,7 +358,7 @@ const ZoeExecutiveCRM = ({ activeFeature }) => {
           <span className="stat-change">3 remaining</span>
         </div>
         <div className="stat-card">
-          <div className="stat-icon" style={{ background: 'rgba(245, 158, 11, 0.2)', color: '#F59E0B' }}>
+          <div className="stat-icon" style={{ background: 'rgba(245, 158, 11, 0.2)', color: 'var(--accent-gold, #F59E0B)' }}>
             <CheckCircle size={20} />
           </div>
           <div className="stat-content">
@@ -368,7 +368,7 @@ const ZoeExecutiveCRM = ({ activeFeature }) => {
           <span className="stat-change warning">4 urgent</span>
         </div>
         <div className="stat-card">
-          <div className="stat-icon" style={{ background: 'rgba(139, 92, 246, 0.2)', color: '#8B5CF6' }}>
+          <div className="stat-icon" style={{ background: 'rgba(139, 92, 246, 0.2)', color: 'var(--accent-purple, #8B5CF6)' }}>
             <Bot size={20} />
           </div>
           <div className="stat-content">
@@ -378,7 +378,7 @@ const ZoeExecutiveCRM = ({ activeFeature }) => {
           <span className="stat-change positive">{orgStats?.onlineAssistants || apiAssistants.filter(a => a.status === 'online').length} online</span>
         </div>
         <div className="stat-card">
-          <div className="stat-icon" style={{ background: 'rgba(6, 182, 212, 0.2)', color: '#06B6D4' }}>
+          <div className="stat-icon" style={{ background: 'rgba(6, 182, 212, 0.2)', color: 'var(--color-06b6d4, #06B6D4)' }}>
             <Users size={20} />
           </div>
           <div className="stat-content">
@@ -391,7 +391,7 @@ const ZoeExecutiveCRM = ({ activeFeature }) => {
 
       <div className="quick-stats secondary">
         <div className="stat-card">
-          <div className="stat-icon" style={{ background: 'rgba(99, 102, 241, 0.2)', color: '#6366F1' }}>
+          <div className="stat-icon" style={{ background: 'rgba(99, 102, 241, 0.2)', color: 'var(--color-6366f1, #6366F1)' }}>
             <Shield size={20} />
           </div>
           <div className="stat-content">
@@ -403,7 +403,7 @@ const ZoeExecutiveCRM = ({ activeFeature }) => {
           </span>
         </div>
         <div className="stat-card">
-          <div className="stat-icon" style={{ background: 'rgba(236, 72, 153, 0.2)', color: '#EC4899' }}>
+          <div className="stat-icon" style={{ background: 'rgba(236, 72, 153, 0.2)', color: 'var(--color-ec4899, #EC4899)' }}>
             <TrendingUp size={20} />
           </div>
           <div className="stat-content">
@@ -415,7 +415,7 @@ const ZoeExecutiveCRM = ({ activeFeature }) => {
           </span>
         </div>
         <div className="stat-card">
-          <div className="stat-icon" style={{ background: 'rgba(20, 184, 166, 0.2)', color: '#14B8A6' }}>
+          <div className="stat-icon" style={{ background: 'rgba(20, 184, 166, 0.2)', color: 'var(--accent-teal, #14B8A6)' }}>
             <Archive size={20} />
           </div>
           <div className="stat-content">
@@ -427,7 +427,7 @@ const ZoeExecutiveCRM = ({ activeFeature }) => {
           </span>
         </div>
         <div className="stat-card">
-          <div className="stat-icon" style={{ background: 'rgba(251, 146, 60, 0.2)', color: '#FB923C' }}>
+          <div className="stat-icon" style={{ background: 'rgba(251, 146, 60, 0.2)', color: 'var(--color-fb923c, #FB923C)' }}>
             <Zap size={20} />
           </div>
           <div className="stat-content">
@@ -437,7 +437,7 @@ const ZoeExecutiveCRM = ({ activeFeature }) => {
           <span className="stat-change">Pipeline split</span>
         </div>
         <div className="stat-card highlight">
-          <div className="stat-icon" style={{ background: 'rgba(99, 102, 241, 0.2)', color: '#6366F1' }}>
+          <div className="stat-icon" style={{ background: 'rgba(99, 102, 241, 0.2)', color: 'var(--color-6366f1, #6366F1)' }}>
             <TrendingUp size={20} />
           </div>
           <div className="stat-content">
@@ -447,7 +447,7 @@ const ZoeExecutiveCRM = ({ activeFeature }) => {
           <span className="stat-change positive">All services</span>
         </div>
         <div className="stat-card">
-          <div className="stat-icon" style={{ background: 'rgba(34, 197, 94, 0.2)', color: '#22C55E' }}>
+          <div className="stat-icon" style={{ background: 'rgba(34, 197, 94, 0.2)', color: 'var(--accent-green, #22C55E)' }}>
             <Workflow size={20} />
           </div>
           <div className="stat-content">
@@ -521,7 +521,7 @@ const ZoeExecutiveCRM = ({ activeFeature }) => {
 
             <div className="quick-stats recruitment-overview-grid">
               <div className="stat-card highlight">
-                <div className="stat-icon" style={{ background: 'rgba(16, 185, 129, 0.2)', color: '#10B981' }}>
+                <div className="stat-icon" style={{ background: 'rgba(16, 185, 129, 0.2)', color: 'var(--accent-green, #10B981)' }}>
                   <Briefcase size={20} />
                 </div>
                 <div className="stat-content">
@@ -531,7 +531,7 @@ const ZoeExecutiveCRM = ({ activeFeature }) => {
                 <span className="stat-change positive">{recruitmentOverview?.totals?.jobs ?? 0} total</span>
               </div>
               <div className="stat-card">
-                <div className="stat-icon" style={{ background: 'rgba(6, 182, 212, 0.2)', color: '#06B6D4' }}>
+                <div className="stat-icon" style={{ background: 'rgba(6, 182, 212, 0.2)', color: 'var(--color-06b6d4, #06B6D4)' }}>
                   <Users size={20} />
                 </div>
                 <div className="stat-content">
@@ -541,7 +541,7 @@ const ZoeExecutiveCRM = ({ activeFeature }) => {
                 <span className="stat-change">Pipeline live</span>
               </div>
               <div className="stat-card">
-                <div className="stat-icon" style={{ background: 'rgba(245, 158, 11, 0.2)', color: '#F59E0B' }}>
+                <div className="stat-icon" style={{ background: 'rgba(245, 158, 11, 0.2)', color: 'var(--accent-gold, #F59E0B)' }}>
                   <Calendar size={20} />
                 </div>
                 <div className="stat-content">
@@ -551,7 +551,7 @@ const ZoeExecutiveCRM = ({ activeFeature }) => {
                 <span className="stat-change">Ready to schedule</span>
               </div>
               <div className="stat-card">
-                <div className="stat-icon" style={{ background: 'rgba(139, 92, 246, 0.2)', color: '#8B5CF6' }}>
+                <div className="stat-icon" style={{ background: 'rgba(139, 92, 246, 0.2)', color: 'var(--accent-purple, #8B5CF6)' }}>
                   <FileText size={20} />
                 </div>
                 <div className="stat-content">
@@ -1229,7 +1229,7 @@ const ZoeExecutiveCRM = ({ activeFeature }) => {
                         <div key={service._id} className="service-card">
                           <div className="service-header">
                             <div className="service-icon-wrap" style={{ backgroundColor: 'rgba(99, 102, 241, 0.15)' }}>
-                              <Workflow size={18} style={{ color: '#6366F1' }} />
+                              <Workflow size={18} style={{ color: 'var(--color-6366f1, #6366F1)' }} />
                             </div>
                             <div className="service-info">
                               <h5>{service.name}</h5>

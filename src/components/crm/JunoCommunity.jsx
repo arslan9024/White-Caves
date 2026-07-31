@@ -53,7 +53,7 @@ const JunoCommunity = () => {
   return (
     <div className="assistant-dashboard juno">
       <div className="assistant-header">
-        <div className="assistant-avatar" style={{ background: 'linear-gradient(135deg, #14B8A6 0%, #0D9488 100%)' }}>
+        <div className="assistant-avatar" style={{ background: 'linear-gradient(135deg, var(--accent-teal, #14B8A6) 0%, var(--accent-teal, #0D9488) 100%)' }}>
           <Building size={28} />
         </div>
         <div className="assistant-info">
@@ -68,7 +68,7 @@ const JunoCommunity = () => {
 
       <div className="quick-stats">
         <div className="stat-card">
-          <div className="stat-icon" style={{ background: 'rgba(20, 184, 166, 0.2)', color: '#14B8A6' }}>
+          <div className="stat-icon" style={{ background: 'rgba(20, 184, 166, 0.2)', color: 'var(--accent-teal, #14B8A6)' }}>
             <Building size={20} />
           </div>
           <div className="stat-content">
@@ -78,7 +78,7 @@ const JunoCommunity = () => {
           <span className="stat-change positive">4 open</span>
         </div>
         <div className="stat-card">
-          <div className="stat-icon" style={{ background: 'rgba(139, 92, 246, 0.2)', color: '#8B5CF6' }}>
+          <div className="stat-icon" style={{ background: 'rgba(139, 92, 246, 0.2)', color: 'var(--accent-purple, #8B5CF6)' }}>
             <Wifi size={20} />
           </div>
           <div className="stat-content">
@@ -88,7 +88,7 @@ const JunoCommunity = () => {
           <span className="stat-change warning">36 online</span>
         </div>
         <div className="stat-card">
-          <div className="stat-icon" style={{ background: 'rgba(16, 185, 129, 0.2)', color: '#10B981' }}>
+          <div className="stat-icon" style={{ background: 'rgba(16, 185, 129, 0.2)', color: 'var(--accent-green, #10B981)' }}>
             <Zap size={20} />
           </div>
           <div className="stat-content">
@@ -98,7 +98,7 @@ const JunoCommunity = () => {
           <span className="stat-change positive">This month</span>
         </div>
         <div className="stat-card">
-          <div className="stat-icon" style={{ background: 'rgba(245, 158, 11, 0.2)', color: '#F59E0B' }}>
+          <div className="stat-icon" style={{ background: 'rgba(245, 158, 11, 0.2)', color: 'var(--accent-gold, #F59E0B)' }}>
             <Calendar size={20} />
           </div>
           <div className="stat-content">
@@ -224,7 +224,7 @@ const JunoCommunity = () => {
                     <span className={`energy-status ${zone.status}`}>{zone.status.replace('_', ' ')}</span>
                   </div>
                   <div className="energy-usage">{zone.usage}</div>
-                  <div className="energy-change" style={{ color: zone.change < 0 ? '#10B981' : '#EF4444' }}>
+                  <div className="energy-change" style={{ color: zone.change < 0 ? 'var(--accent-green, #10B981)' : 'var(--accent-red, #EF4444)' }}>
                     {zone.change < 0 ? <ArrowDown size={14} /> : <ArrowUp size={14} />}
                     {Math.abs(zone.change)}% vs last month
                   </div>

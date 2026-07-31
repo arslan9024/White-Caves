@@ -276,7 +276,7 @@ export default function ServicesCRMTab() {
                   <span style={{ display: 'flex', alignItems: 'center', gap: '4px', color: 'var(--text-muted)' }}>
                     <Users size={14} /> {service.clients}
                   </span>
-                  <span style={{ display: 'flex', alignItems: 'center', gap: '4px', color: '#10B981' }}>
+                  <span style={{ display: 'flex', alignItems: 'center', gap: '4px', color: 'var(--accent-green, #10B981)' }}>
                     <Star size={14} /> {service.rating}%
                   </span>
                 </div>
@@ -350,7 +350,7 @@ export default function ServicesCRMTab() {
                     <td style={{ color: 'var(--crm-gold)', fontWeight: '500' }}>{service.price}</td>
                     <td>{service.clients}</td>
                     <td>
-                      <span style={{ color: '#10B981', fontWeight: '500' }}>{service.rating}%</span>
+                      <span style={{ color: 'var(--accent-green, #10B981)', fontWeight: '500' }}>{service.rating}%</span>
                     </td>
                     <td style={{ fontWeight: '500' }}>{formatRevenue(service.revenue)}</td>
                   </tr>

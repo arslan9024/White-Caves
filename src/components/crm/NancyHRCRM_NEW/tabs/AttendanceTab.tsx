@@ -126,15 +126,15 @@ export default function AttendanceTab({ state }: AttendanceTabProps) {
 
       <div className="attendance-legend">
         <div className="legend-item">
-          <div className="legend-color" style={{ backgroundColor: '#10b981' }} />
+          <div className="legend-color" style={{ backgroundColor: 'var(--accent-green, #10b981)' }} />
           <span>95% or higher</span>
         </div>
         <div className="legend-item">
-          <div className="legend-color" style={{ backgroundColor: '#f59e0b' }} />
+          <div className="legend-color" style={{ backgroundColor: 'var(--accent-gold, #f59e0b)' }} />
           <span>90% - 95%</span>
         </div>
         <div className="legend-item">
-          <div className="legend-color" style={{ backgroundColor: '#ef4444' }} />
+          <div className="legend-color" style={{ backgroundColor: 'var(--accent-red, #ef4444)' }} />
           <span>Below 90%</span>
         </div>
       </div>

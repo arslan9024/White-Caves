@@ -168,7 +168,7 @@ const MortgageCalculatorPage: FC = () => {
             </select>
             {isApiLoading && <small>Syncing live calculation…</small>}
           </div>
-          {apiError && <small style={{ color: '#b91c1c' }}>{apiError}</small>}
+          {apiError && <small style={{ color: 'var(--accent-red, #b91c1c)' }}>{apiError}</small>}
         </div>
 
         <div className="calculator-layout">

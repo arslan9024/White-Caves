@@ -55,7 +55,7 @@ const VestaHandoverCRM = () => {
   return (
     <div className="assistant-dashboard vesta">
       <div className="assistant-header">
-        <div className="assistant-avatar" style={{ background: 'linear-gradient(135deg, #F97316 0%, #EA580C 100%)' }}>
+        <div className="assistant-avatar" style={{ background: 'linear-gradient(135deg, var(--color-f97316, #F97316) 0%, var(--color-ea580c, #EA580C) 100%)' }}>
           <ClipboardCheck size={28} />
         </div>
         <div className="assistant-info">
@@ -70,7 +70,7 @@ const VestaHandoverCRM = () => {
 
       <div className="quick-stats">
         <div className="stat-card">
-          <div className="stat-icon" style={{ background: 'rgba(249, 115, 22, 0.2)', color: '#F97316' }}>
+          <div className="stat-icon" style={{ background: 'rgba(249, 115, 22, 0.2)', color: 'var(--color-f97316, #F97316)' }}>
             <Flag size={20} />
           </div>
           <div className="stat-content">
@@ -80,7 +80,7 @@ const VestaHandoverCRM = () => {
           <span className="stat-change positive">12 on track</span>
         </div>
         <div className="stat-card highlight">
-          <div className="stat-icon" style={{ background: 'rgba(239, 68, 68, 0.2)', color: '#EF4444' }}>
+          <div className="stat-icon" style={{ background: 'rgba(239, 68, 68, 0.2)', color: 'var(--accent-red, #EF4444)' }}>
             <AlertCircle size={20} />
           </div>
           <div className="stat-content">
@@ -90,7 +90,7 @@ const VestaHandoverCRM = () => {
           <span className="stat-change warning">5 critical</span>
         </div>
         <div className="stat-card">
-          <div className="stat-icon" style={{ background: 'rgba(16, 185, 129, 0.2)', color: '#10B981' }}>
+          <div className="stat-icon" style={{ background: 'rgba(16, 185, 129, 0.2)', color: 'var(--accent-green, #10B981)' }}>
             <Key size={20} />
           </div>
           <div className="stat-content">
@@ -100,7 +100,7 @@ const VestaHandoverCRM = () => {
           <span className="stat-change positive">4 tomorrow</span>
         </div>
         <div className="stat-card">
-          <div className="stat-icon" style={{ background: 'rgba(139, 92, 246, 0.2)', color: '#8B5CF6' }}>
+          <div className="stat-icon" style={{ background: 'rgba(139, 92, 246, 0.2)', color: 'var(--accent-purple, #8B5CF6)' }}>
             <CheckCircle size={20} />
           </div>
           <div className="stat-content">

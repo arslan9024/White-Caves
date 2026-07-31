@@ -291,7 +291,7 @@ export default function CRMShell({ children, activeTab, onTabChange }) {
                 <button 
                   onClick={handleLogout}
                   className="crm-nav-item"
-                  style={{ width: '100%', margin: 0, color: '#EF4444' }}
+                  style={{ width: '100%', margin: 0, color: 'var(--accent-red, #EF4444)' }}
                 >
                   <LogOut size={16} /> Logout
                 </button>

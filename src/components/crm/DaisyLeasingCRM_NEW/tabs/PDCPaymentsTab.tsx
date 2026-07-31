@@ -327,7 +327,7 @@ const PDCPaymentsTab: React.FC<PDCPaymentsTabProps> = ({ pdcCheques, onUpdateSta
                   {cheque.notes && (
                     <span
                       title={cheque.notes}
-                      style={{ fontSize: '11px', color: '#64748B', cursor: 'help' }}
+                      style={{ fontSize: '11px', color: 'var(--text-secondary, #64748B)', cursor: 'help' }}
                     >
                       📝
                     </span>

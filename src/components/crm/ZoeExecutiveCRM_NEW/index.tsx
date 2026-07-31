@@ -54,7 +54,7 @@ const ZoeExecutiveCRM = () => {
       <div className="assistant-header">
         <div
           className="assistant-avatar"
-          style={{ background: 'linear-gradient(135deg, #06B6D4 0%, #0891B2 100%)' }}
+          style={{ background: 'linear-gradient(135deg, var(--color-06b6d4, #06B6D4) 0%, var(--color-0891b2, #0891B2) 100%)' }}
         >
           <Briefcase size={28} />
         </div>
@@ -75,7 +75,7 @@ const ZoeExecutiveCRM = () => {
         <div className="stat-card glass-kpi-tile">
           <div
             className="stat-icon"
-            style={{ background: 'rgba(6, 182, 212, 0.2)', color: '#06B6D4' }}
+            style={{ background: 'rgba(6, 182, 212, 0.2)', color: 'var(--color-06b6d4, #06B6D4)' }}
           >
             <Inbox size={20} />
           </div>
@@ -90,7 +90,7 @@ const ZoeExecutiveCRM = () => {
         <div className="stat-card glass-kpi-tile">
           <div
             className="stat-icon"
-            style={{ background: 'rgba(239, 68, 68, 0.2)', color: '#EF4444' }}
+            style={{ background: 'rgba(239, 68, 68, 0.2)', color: 'var(--accent-red, #EF4444)' }}
           >
             <AlertCircle size={20} />
           </div>
@@ -105,7 +105,7 @@ const ZoeExecutiveCRM = () => {
         <div className="stat-card glass-kpi-tile">
           <div
             className="stat-icon"
-            style={{ background: 'rgba(34, 197, 94, 0.2)', color: '#22C55E' }}
+            style={{ background: 'rgba(34, 197, 94, 0.2)', color: 'var(--accent-green, #22C55E)' }}
           >
             <Calendar size={20} />
           </div>
@@ -120,7 +120,7 @@ const ZoeExecutiveCRM = () => {
         <div className="stat-card glass-kpi-tile">
           <div
             className="stat-icon"
-            style={{ background: 'rgba(59, 130, 246, 0.2)', color: '#3B82F6' }}
+            style={{ background: 'rgba(59, 130, 246, 0.2)', color: 'var(--accent-blue, #3B82F6)' }}
           >
             <CheckCircle size={20} />
           </div>
@@ -138,7 +138,7 @@ const ZoeExecutiveCRM = () => {
         <div className="stat-card glass-kpi-tile">
           <div
             className="stat-icon"
-            style={{ background: 'rgba(201, 168, 76, 0.2)', color: '#C9A84C' }}
+            style={{ background: 'rgba(201, 168, 76, 0.2)', color: 'var(--color-c9a84c, #C9A84C)' }}
           >
             <Search size={20} />
           </div>
@@ -148,7 +148,7 @@ const ZoeExecutiveCRM = () => {
           </div>
           <span
             className="stat-change"
-            style={{ color: homepageSearchLeads > 0 ? '#C9A84C' : '#6B7280' }}
+            style={{ color: homepageSearchLeads > 0 ? 'var(--color-c9a84c, #C9A84C)' : 'var(--text-secondary, #6B7280)' }}
           >
             {homepageSearchLeads > 0 ? `+${homepageSearchLeads}` : 'None yet'}
           </span>

@@ -203,7 +203,7 @@ const OliviaMarketingCRM = () => {
   return (
     <div className="assistant-dashboard olivia">
       <div className="assistant-header">
-        <div className="assistant-avatar" style={{ background: 'linear-gradient(135deg, #4FACFE 0%, #00F2FE 100%)' }}>
+        <div className="assistant-avatar" style={{ background: 'linear-gradient(135deg, var(--color-4facfe, #4FACFE) 0%, var(--color-00f2fe, #00F2FE) 100%)' }}>
           <Megaphone size={28} />
         </div>
         <div className="assistant-info">
@@ -218,7 +218,7 @@ const OliviaMarketingCRM = () => {
 
       <div className="quick-stats">
         <div className="stat-card">
-          <div className="stat-icon" style={{ background: 'rgba(79, 172, 254, 0.2)', color: '#4FACFE' }}>
+          <div className="stat-icon" style={{ background: 'rgba(79, 172, 254, 0.2)', color: 'var(--color-4facfe, #4FACFE)' }}>
             <Target size={20} />
           </div>
           <div className="stat-content">
@@ -228,7 +228,7 @@ const OliviaMarketingCRM = () => {
           <span className="stat-change positive"><ArrowUp size={14} /> 24%</span>
         </div>
         <div className="stat-card">
-          <div className="stat-icon" style={{ background: 'rgba(16, 185, 129, 0.2)', color: '#10B981' }}>
+          <div className="stat-icon" style={{ background: 'rgba(16, 185, 129, 0.2)', color: 'var(--accent-green, #10B981)' }}>
             <Database size={20} />
           </div>
           <div className="stat-content">
@@ -238,7 +238,7 @@ const OliviaMarketingCRM = () => {
           <span className="stat-change positive"><Link2 size={14} /> Mary</span>
         </div>
         <div className="stat-card">
-          <div className="stat-icon" style={{ background: 'rgba(245, 158, 11, 0.2)', color: '#F59E0B' }}>
+          <div className="stat-icon" style={{ background: 'rgba(245, 158, 11, 0.2)', color: 'var(--accent-gold, #F59E0B)' }}>
             <TrendingUp size={20} />
           </div>
           <div className="stat-content">
@@ -248,7 +248,7 @@ const OliviaMarketingCRM = () => {
           <span className="stat-change positive"><ArrowUp size={14} /> {MARKET_INSIGHTS.priceChange}%</span>
         </div>
         <div className="stat-card">
-          <div className="stat-icon" style={{ background: 'rgba(139, 92, 246, 0.2)', color: '#8B5CF6' }}>
+          <div className="stat-icon" style={{ background: 'rgba(139, 92, 246, 0.2)', color: 'var(--accent-purple, #8B5CF6)' }}>
             <Activity size={20} />
           </div>
           <div className="stat-content">

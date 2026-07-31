@@ -123,7 +123,7 @@ const TestimonialsCarousel: React.FC = () => {
             }}
           >
             {/* Stars */}
-            <div style={{ marginBottom: '1rem', color: '#d4af37' }}>
+            <div style={{ marginBottom: '1rem', color: 'var(--color-d4af37, #d4af37)' }}>
               {Array.from({ length: t.rating }).map((_, i) => (
                 <span key={i}>★</span>
               ))}
@@ -140,7 +140,7 @@ const TestimonialsCarousel: React.FC = () => {
             </p>
 
             <div style={{ marginTop: '1.5rem' }}>
-              <strong style={{ color: '#d4af37' }}>{t.name}</strong>
+              <strong style={{ color: 'var(--color-d4af37, #d4af37)' }}>{t.name}</strong>
               <span style={{ color: 'rgba(255,255,255,0.5)', marginLeft: 8 }}>
                 {t.role} · {t.location}
               </span>
@@ -216,7 +216,7 @@ const TestimonialsCarousel: React.FC = () => {
       >
         {TRUST_INDICATORS.map(ind => (
           <div key={ind.value}>
-            <div style={{ fontSize: '2rem', fontWeight: 700, color: '#d4af37' }}>{ind.value}</div>
+            <div style={{ fontSize: '2rem', fontWeight: 700, color: 'var(--color-d4af37, #d4af37)' }}>{ind.value}</div>
             <div style={{ color: 'rgba(255,255,255,0.6)', fontSize: '0.85rem' }}>{ind.label}</div>
           </div>
         ))}

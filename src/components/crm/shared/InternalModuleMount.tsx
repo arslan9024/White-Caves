@@ -36,8 +36,8 @@ const renderIframeMount = (config: InternalModuleMountConfig) => {
         }}
       >
         <div>
-          <h3 style={{ margin: 0, color: '#E2E8F0', fontSize: 14 }}>{config.displayName}</h3>
-          <p style={{ margin: '4px 0 0 0', color: '#94A3B8', fontSize: 12 }}>{config.description}</p>
+          <h3 style={{ margin: 0, color: 'var(--color-e2e8f0, #E2E8F0)', fontSize: 14 }}>{config.displayName}</h3>
+          <p style={{ margin: '4px 0 0 0', color: 'var(--color-94a3b8, #94A3B8)', fontSize: 12 }}>{config.description}</p>
         </div>
         <a
           href={config.moduleUrl}

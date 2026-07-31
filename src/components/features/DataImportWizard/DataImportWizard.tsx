@@ -38,7 +38,7 @@ export const DataImportWizard: React.FC<DataImportWizardProps> = ({ onComplete, 
         📥
       </span>
       <h2
-        style={{ fontSize: '1.5rem', fontFamily: "'Cormorant Garamond', serif", color: '#FAFAFA' }}
+        style={{ fontSize: '1.5rem', fontFamily: "'Cormorant Garamond', serif", color: 'var(--color-fafafa, #FAFAFA)' }}
       >
         Data Import Wizard
       </h2>

@@ -2,7 +2,7 @@ import styled from 'styled-components';
 
 export const Container = styled.div`
   padding: 32px;
-  background: ${({ theme }) => theme.colors.background};
+  background: ${props => (props.theme as any)?.colors.background};
   min-height: 100vh;
   max-width: 1600px;
   margin: 0 auto;
@@ -14,19 +14,19 @@ export const Header = styled.div`
   align-items: center;
   margin-bottom: 32px;
   padding-bottom: 24px;
-  border-bottom: 1px solid ${({ theme }) => theme.colors.border};
+  border-bottom: 1px solid ${props => (props.theme as any)?.colors.border};
 `;
 
 export const HeaderTitle = styled.h1`
   font-size: 32px;
   font-weight: 700;
-  color: ${({ theme }) => theme.colors.textPrimary};
+  color: ${props => (props.theme as any)?.colors.textPrimary};
   margin: 0;
 `;
 
 export const HeaderSubtitle = styled.p`
   font-size: 14px;
-  color: ${({ theme }) => theme.colors.textSecondary};
+  color: ${props => (props.theme as any)?.colors.textSecondary};
   margin: 8px 0 0 0;
 `;
 
@@ -43,8 +43,8 @@ export const MetricsGrid = styled.div`
 `;
 
 export const MetricCard = styled.div`
-  background: ${({ theme }) => theme.colors.cardBg};
-  border: 1px solid ${({ theme }) => theme.colors.border};
+  background: ${props => (props.theme as any)?.colors.cardBg};
+  border: 1px solid ${props => (props.theme as any)?.colors.border};
   border-radius: 12px;
   padding: 24px;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
@@ -52,14 +52,14 @@ export const MetricCard = styled.div`
 
   &:hover {
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-    border-color: ${({ theme }) => theme.colors.primary};
+    border-color: ${props => (props.theme as any)?.colors.primary};
   }
 `;
 
 export const MetricLabel = styled.div`
   font-size: 12px;
   font-weight: 500;
-  color: ${({ theme }) => theme.colors.textSecondary};
+  color: ${props => (props.theme as any)?.colors.textSecondary};
   text-transform: uppercase;
   letter-spacing: 0.5px;
   margin-bottom: 8px;
@@ -68,7 +68,7 @@ export const MetricLabel = styled.div`
 export const MetricValue = styled.div`
   font-size: 28px;
   font-weight: 700;
-  color: ${({ theme }) => theme.colors.textPrimary};
+  color: ${props => (props.theme as any)?.colors.textPrimary};
   margin-bottom: 8px;
 `;
 
@@ -78,8 +78,8 @@ interface MetricChangeProps {
 
 export const MetricChange = styled.div<MetricChangeProps>`
   font-size: 12px;
-  color: ${({ theme, positive }) =>
-    positive ? theme.colors.success : theme.colors.textSecondary};
+  color: (props: Record<string, unknown>) =>
+    (props as any).positive ? (props as any).theme?.colors?.success || '#10b981' : (props as any).theme?.colors?.textSecondary || '#6b7280';
   font-weight: 500;
 `;
 
@@ -107,8 +107,8 @@ export const RightColumn = styled.div`
 `;
 
 export const SectionCard = styled.div`
-  background: ${({ theme }) => theme.colors.cardBg};
-  border: 1px solid ${({ theme }) => theme.colors.border};
+  background: ${props => (props.theme as any)?.colors.cardBg};
+  border: 1px solid ${props => (props.theme as any)?.colors.border};
   border-radius: 12px;
   padding: 24px;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
@@ -117,7 +117,7 @@ export const SectionCard = styled.div`
 export const SectionTitle = styled.h2`
   font-size: 18px;
   font-weight: 600;
-  color: ${({ theme }) => theme.colors.textPrimary};
+  color: ${props => (props.theme as any)?.colors.textPrimary};
   margin: 0 0 20px 0;
 `;
 
@@ -129,7 +129,7 @@ export const PipelineContainer = styled.div`
 
 export const PipelineStage = styled.div`
   padding: 16px;
-  background: ${({ theme }) => theme.colors.backgroundAlt};
+  background: ${props => (props.theme as any)?.colors.backgroundAlt};
   border-radius: 8px;
   border-left: 4px solid;
   transition: all 0.3s ease;
@@ -143,20 +143,20 @@ export const PipelineStage = styled.div`
 export const PipelineStageName = styled.div`
   font-size: 14px;
   font-weight: 600;
-  color: ${({ theme }) => theme.colors.textPrimary};
+  color: ${props => (props.theme as any)?.colors.textPrimary};
   margin-bottom: 8px;
 `;
 
 export const PipelineCount = styled.div`
   font-size: 24px;
   font-weight: 700;
-  color: ${({ theme }) => theme.colors.primary};
+  color: ${props => (props.theme as any)?.colors.primary};
   margin-bottom: 4px;
 `;
 
 export const PipelineValue = styled.div`
   font-size: 12px;
-  color: ${({ theme }) => theme.colors.textSecondary};
+  color: ${props => (props.theme as any)?.colors.textSecondary};
   font-weight: 500;
 `;
 
@@ -176,18 +176,18 @@ export const ListContainer = styled.div`
   }
 
   &::-webkit-scrollbar-thumb {
-    background: ${({ theme }) => theme.colors.border};
+    background: ${props => (props.theme as any)?.colors.border};
     border-radius: 3px;
 
     &:hover {
-      background: ${({ theme }) => theme.colors.textSecondary};
+      background: ${props => (props.theme as any)?.colors.textSecondary};
     }
   }
 `;
 
 export const ListItem = styled.div`
   padding: 16px;
-  background: ${({ theme }) => theme.colors.backgroundAlt};
+  background: ${props => (props.theme as any)?.colors.backgroundAlt};
   border-radius: 8px;
   display: flex;
   justify-content: space-between;
@@ -196,7 +196,7 @@ export const ListItem = styled.div`
   transition: all 0.3s ease;
 
   &:hover {
-    background: ${({ theme }) => theme.colors.hover};
+    background: ${props => (props.theme as any)?.colors.hover};
     transform: translateX(4px);
   }
 `;
@@ -209,26 +209,26 @@ export const TeamGrid = styled.div`
 
 export const TeamMember = styled.div`
   padding: 16px;
-  background: ${({ theme }) => theme.colors.backgroundAlt};
+  background: ${props => (props.theme as any)?.colors.backgroundAlt};
   border-radius: 8px;
-  border: 1px solid ${({ theme }) => theme.colors.border};
+  border: 1px solid ${props => (props.theme as any)?.colors.border};
   transition: all 0.3s ease;
 
   &:hover {
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-    border-color: ${({ theme }) => theme.colors.primary};
+    border-color: ${props => (props.theme as any)?.colors.primary};
   }
 `;
 
 export const TeamMemberName = styled.div`
   font-size: 14px;
   font-weight: 600;
-  color: ${({ theme }) => theme.colors.textPrimary};
+  color: ${props => (props.theme as any)?.colors.textPrimary};
 `;
 
 export const TeamMemberRole = styled.div`
   font-size: 11px;
-  color: ${({ theme }) => theme.colors.textSecondary};
+  color: ${props => (props.theme as any)?.colors.textSecondary};
   margin-top: 2px;
 `;
 
@@ -238,7 +238,7 @@ export const TeamMemberStats = styled.div`
   gap: 8px;
   margin-top: 12px;
   padding-top: 12px;
-  border-top: 1px solid ${({ theme }) => theme.colors.border};
+  border-top: 1px solid ${props => (props.theme as any)?.colors.border};
   text-align: center;
 `;
 
@@ -247,9 +247,9 @@ export const ChartContainer = styled.div`
   display: flex;
   align-items: center;
   justify-content: center;
-  background: ${({ theme }) => theme.colors.backgroundAlt};
+  background: ${props => (props.theme as any)?.colors.backgroundAlt};
   border-radius: 8px;
-  color: ${({ theme }) => theme.colors.textSecondary};
+  color: ${props => (props.theme as any)?.colors.textSecondary};
 `;
 
 export const Badge = styled.span`
@@ -258,8 +258,8 @@ export const Badge = styled.span`
   border-radius: 4px;
   font-size: 11px;
   font-weight: 600;
-  background: ${({ theme }) => theme.colors.backgroundAlt};
-  color: ${({ theme }) => theme.colors.textSecondary};
+  background: ${props => (props.theme as any)?.colors.backgroundAlt};
+  color: ${props => (props.theme as any)?.colors.textSecondary};
 `;
 
 export const BadgeSuccess = styled(Badge)`
@@ -283,8 +283,8 @@ export const StatusIndicator = styled.div`
   gap: 8px;
   font-size: 12px;
   font-weight: 600;
-  color: ${({ theme }) => theme.colors.textSecondary};
+  color: ${props => (props.theme as any)?.colors.textSecondary};
   padding: 8px 12px;
-  background: ${({ theme }) => theme.colors.backgroundAlt};
+  background: ${props => (props.theme as any)?.colors.backgroundAlt};
   border-radius: 8px;
 `;

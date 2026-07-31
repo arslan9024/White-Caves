@@ -1,4 +1,4 @@
-﻿// src/components/features/SearchProperties/SearchProperties.tsx
+// src/components/features/SearchProperties/SearchProperties.tsx
 /**
  * Property Search Feature Component
  * Example of a second feature to demonstrate the pattern
@@ -52,23 +52,23 @@ const SearchInput = styled.input`
   border-radius: 6px;
   background: ${({ theme }) => String((theme as any)?.colors?.cardBg ?? '#ffffff')};
   color: ${({ theme }) => String((theme as any)?.colors?.textPrimary ?? '#1f2937')};
-  font-family: ${props => props.theme.fonts?.family ?? 'inherit'};
+  font-family: ${props => (props.theme as any)?.fonts?.family ?? 'inherit'};
   font-size: 14px;
 
   &:focus {
     outline: none;
-    border-color: ${props => props.theme.colors.primary};
-    box-shadow: 0 0 0 3px ${props => props.theme.colors.primary}20;
+    border-color: ${props => (props.theme as any)?.colors?.primary || '#3b82f6'};
+    box-shadow: 0 0 0 3px ${props => (props.theme as any)?.colors?.primary || '#3b82f6'}20;
   }
 
   &::placeholder {
-    color: ${props => props.theme.colors.textSecondary};
+    color: ${props => (props.theme as any)?.colors?.textSecondary || '#6b7280'};
   }
 `;
 
 const SearchButton = styled.button`
   padding: 10px 20px;
-  background: ${props => props.theme.colors.primary};
+  background: ${props => (props.theme as any)?.colors?.primary || '#3b82f6'};
   color: white;
   border: none;
   border-radius: 6px;
@@ -86,11 +86,9 @@ const SearchButton = styled.button`
 `;
 
 const FilterSection = styled.div`
-  background: ${({ theme }) => String((theme as any)?.colors?.cardBg ?? '#ffffff')};
-  border: 1px solid ${({ theme }) => String((theme as any)?.colors?.border ?? '#e5e7eb')};
-  border-radius: 8px;
-  padding: 16px;
-  margin-bottom: 24px;
+  margin-top: 16px;
+  padding-top: 16px;
+  border-top: 1px solid ${({ theme }) => String((theme as any)?.colors?.border ?? '#e5e7eb')};
 
   h3 {
     margin: 0 0 12px 0;
@@ -98,7 +96,7 @@ const FilterSection = styled.div`
     font-weight: 600;
     text-transform: uppercase;
     letter-spacing: 0.5px;
-    color: ${props => props.theme.colors.textSecondary};
+    color: ${props => (props.theme as any)?.colors?.textSecondary || '#6b7280'};
   }
 `;
 
@@ -121,7 +119,7 @@ const FilterCheckbox = styled.label`
   }
 
   &:hover {
-    color: ${props => props.theme.colors.primary};
+    color: ${props => (props.theme as any)?.colors?.primary || '#3b82f6'};
   }
 `;
 
@@ -150,8 +148,8 @@ const ResultCard = styled.div`
   transition: all 0.2s;
 
   &:hover {
-    border-color: ${props => props.theme.colors.primary};
-    box-shadow: 0 2px 8px ${props => props.theme.colors.primary}20;
+    border-color: ${props => (props.theme as any)?.colors?.primary || '#3b82f6'};
+    box-shadow: 0 2px 8px ${props => (props.theme as any)?.colors?.primary || '#3b82f6'}20;
   }
 
   .property-name {
@@ -171,20 +169,20 @@ const ResultCard = styled.div`
     grid-template-columns: repeat(3, 1fr);
     gap: 12px;
     padding-top: 12px;
-    border-top: 1px solid ${props => props.theme.colors.border};
+    border-top: 1px solid ${props => (props.theme as any)?.colors?.border || '#e5e7eb'};
   }
 
   .detail {
     font-size: 13px;
 
     .label {
-      color: ${props => props.theme.colors.textSecondary};
+      color: ${props => (props.theme as any)?.colors?.textSecondary || '#6b7280'};
       display: block;
       margin-bottom: 2px;
     }
 
     .value {
-      color: ${props => props.theme.colors.primary};
+      color: ${props => (props.theme as any)?.colors?.primary || '#3b82f6'};
       font-weight: 600;
     }
   }

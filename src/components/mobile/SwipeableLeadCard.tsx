@@ -84,7 +84,7 @@ const SwipeableLeadCard: React.FC<SwipeableLeadCardProps> = ({
         }}
       >
         <Phone size={24} color="#fff" />
-        <span style={{ color: '#fff', fontWeight: 600, marginLeft: 8, fontSize: 14 }}>
+        <span style={{ color: 'var(--white, #fff)', fontWeight: 600, marginLeft: 8, fontSize: 14 }}>
           Call
         </span>
       </div>
@@ -102,7 +102,7 @@ const SwipeableLeadCard: React.FC<SwipeableLeadCardProps> = ({
           transition: isSwiping ? 'none' : 'opacity 0.2s',
         }}
       >
-        <span style={{ color: '#fff', fontWeight: 600, marginRight: 8, fontSize: 14 }}>
+        <span style={{ color: 'var(--white, #fff)', fontWeight: 600, marginRight: 8, fontSize: 14 }}>
           Snooze
         </span>
         <Clock size={24} color="#fff" />
@@ -157,7 +157,7 @@ const SwipeableLeadCard: React.FC<SwipeableLeadCardProps> = ({
             >
               {lead.name}
             </div>
-            <div style={{ fontSize: 13, color: '#888', marginTop: 2 }}>
+            <div style={{ fontSize: 13, color: 'var(--color-888, #888)', marginTop: 2 }}>
               {lead.source || 'Direct'} • {lead.status}
             </div>
           </div>
@@ -224,11 +224,11 @@ const SwipeableLeadCard: React.FC<SwipeableLeadCardProps> = ({
               textAlign: 'center',
             }}
           >
-            <Clock size={32} color="#F59E0B" style={{ marginBottom: 12 }} />
-            <h3 style={{ color: '#f5f5f0', fontSize: 16, marginBottom: 8 }}>
+            <Clock size={32} color="var(--accent-gold, #F59E0B)" style={{ marginBottom: 12 }} />
+            <h3 style={{ color: 'var(--color-f5f5f0, #f5f5f0)', fontSize: 16, marginBottom: 8 }}>
               Snooze Lead?
             </h3>
-            <p style={{ color: '#888', fontSize: 14, marginBottom: 20, lineHeight: 1.5 }}>
+            <p style={{ color: 'var(--color-888, #888)', fontSize: 14, marginBottom: 20, lineHeight: 1.5 }}>
               <strong>{lead.name}</strong> will be hidden for 7 days and reappear in your active leads.
             </p>
             <div style={{ display: 'flex', gap: 12, justifyContent: 'center' }}>

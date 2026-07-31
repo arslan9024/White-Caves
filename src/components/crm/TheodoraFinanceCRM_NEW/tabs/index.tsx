@@ -82,7 +82,7 @@ const TheodoraFinanceCRM = () => {
     <div className="crm-container finance-crm">
       <div className="crm-header">
         <div className="header-title">
-          <div className="avatar" style={{ background: 'linear-gradient(135deg, #F093FB 0%, #F5576C 100%)' }}>
+          <div className="avatar" style={{ background: 'linear-gradient(135deg, var(--color-f093fb, #F093FB) 0%, var(--color-f5576c, #F5576C) 100%)' }}>
             <span>💰</span>
           </div>
           <div>

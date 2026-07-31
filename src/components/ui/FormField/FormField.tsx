@@ -78,22 +78,22 @@ const LabelRow = styled.div`
 `;
 
 const Label = styled.label`
-  font-family: ${p => p.theme.typography?.fontFamily?.primary || '"Inter", sans-serif'};
-  font-size: ${p => p.theme.typography?.sizes?.sm || '14px'};
-  font-weight: ${p => p.theme.typography?.weights?.medium || 500};
-  color: ${p => p.theme.colors?.text?.primary || '#1a1a1a'};
+  font-family: ${p => (p.theme as any)?.typography?.fontFamily?.primary || '"Inter", sans-serif'};
+  font-size: ${p => (p.theme as any)?.typography?.sizes?.sm || '14px'};
+  font-weight: ${p => (p.theme as any)?.typography?.weights?.medium || 500};
+  color: ${p => (p.theme as any)?.colors?.text?.primary || '#1a1a1a'};
   line-height: 1.4;
 `;
 
 const RequiredStar = styled.span`
-  color: ${p => p.theme.colors?.error || '#B71C1C'};
+  color: ${p => (p.theme as any)?.colors?.error || '#B71C1C'};
   margin-left: 2px;
 `;
 
 const CharCount = styled.span<{ $over: boolean }>`
   font-size: 12px;
   color: ${p =>
-    p.$over ? p.theme.colors?.error || '#B71C1C' : p.theme.colors?.text?.tertiary || '#999'};
+    p.$over ? (p.theme as any)?.colors?.error || '#B71C1C' : (p.theme as any)?.colors?.text?.tertiary || '#999'};
 `;
 
 const InputWrapper = styled.div`
@@ -104,31 +104,31 @@ const InputWrapper = styled.div`
 
 const inputBaseStyles = css<{ $hasError: boolean; $isValid: boolean }>`
   width: 100%;
-  padding: ${p => p.theme.spacing?.sm || '8px'} ${p => p.theme.spacing?.md || '16px'};
-  font-family: ${p => p.theme.typography?.fontFamily?.primary || '"Inter", sans-serif'};
-  font-size: ${p => p.theme.typography?.sizes?.base || '16px'};
-  color: ${p => p.theme.colors?.text?.primary || '#1a1a1a'};
-  background: ${p => p.theme.colors?.background?.primary || '#fff'};
+  padding: ${p => (p.theme as any)?.spacing?.sm || '8px'} ${p => (p.theme as any)?.spacing?.md || '16px'};
+  font-family: ${p => (p.theme as any)?.typography?.fontFamily?.primary || '"Inter", sans-serif'};
+  font-size: ${p => (p.theme as any)?.typography?.sizes?.base || '16px'};
+  color: ${p => (p.theme as any)?.colors?.text?.primary || '#1a1a1a'};
+  background: ${p => (p.theme as any)?.colors?.background?.primary || '#fff'};
   border: 1.5px solid
     ${p =>
       p.$hasError
-        ? p.theme.colors?.error || '#B71C1C'
+        ? (p.theme as any)?.colors?.error || '#B71C1C'
         : p.$isValid
-          ? p.theme.colors?.success || '#2E7D32'
-          : p.theme.colors?.border || '#d0d0d0'};
-  border-radius: ${p => p.theme.radius?.input || '6px'};
+          ? (p.theme as any)?.colors?.success || '#2E7D32'
+          : (p.theme as any)?.colors?.border || '#d0d0d0'};
+  border-radius: ${p => (p.theme as any)?.radius?.input || '6px'};
   transition:
     border-color 0.2s ease,
     box-shadow 0.2s ease;
   outline: none;
 
   &::placeholder {
-    color: ${p => p.theme.colors?.text?.disabled || '#bbb'};
+    color: ${p => (p.theme as any)?.colors?.text?.disabled || '#bbb'};
   }
 
   &:focus {
     border-color: ${p =>
-      p.$hasError ? p.theme.colors?.error || '#EF4444' : p.theme.colors?.primary || '#C9A84C'};
+      p.$hasError ? (p.theme as any)?.colors?.error || '#EF4444' : (p.theme as any)?.colors?.primary || '#C9A84C'};
     box-shadow: 0 0 0 3px
       ${p => (p.$hasError ? 'rgba(239, 68, 68, 0.15)' : 'rgba(201, 168, 76, 0.2)')};
   }
@@ -136,7 +136,7 @@ const inputBaseStyles = css<{ $hasError: boolean; $isValid: boolean }>`
   &:disabled {
     opacity: 0.55;
     cursor: not-allowed;
-    background: ${p => p.theme.colors?.background?.secondary || '#f5f5f5'};
+    background: ${p => (p.theme as any)?.colors?.background?.secondary || '#f5f5f5'};
   }
 
   ${p =>
@@ -169,13 +169,13 @@ const TogglePasswordBtn = styled.button`
   background: none;
   border: none;
   cursor: pointer;
-  color: ${p => p.theme.colors?.text?.tertiary || '#999'};
+  color: ${p => (p.theme as any)?.colors?.text?.tertiary || '#999'};
   padding: ${spacing.xs};
   display: flex;
   align-items: center;
 
   &:hover {
-    color: ${p => p.theme.colors?.text?.primary || '#1a1a1a'};
+    color: ${p => (p.theme as any)?.colors?.text?.primary || '#1a1a1a'};
   }
 `;
 
@@ -183,14 +183,14 @@ const ErrorRow = styled.div`
   display: flex;
   align-items: center;
   gap: ${spacing.xs};
-  color: ${p => p.theme.colors?.error || '#B71C1C'};
+  color: ${p => (p.theme as any)?.colors?.error || '#B71C1C'};
   font-size: 13px;
   min-height: 20px;
 `;
 
 const HintText = styled.span`
   font-size: 12px;
-  color: ${p => p.theme.colors?.text?.tertiary || '#999'};
+  color: ${p => (p.theme as any)?.colors?.text?.tertiary || '#999'};
 `;
 
 const ValidIcon = styled.span`

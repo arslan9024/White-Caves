@@ -400,7 +400,7 @@ export const AccountLink: React.FC<AccountLinkProps> = ({ onSuccess, onCancel })
             <QRCodeText>
               Scan this QR code with your WhatsApp mobile app to link this account.
             </QRCodeText>
-            <QRCodeText style={{ marginTop: '24px', fontSize: '12px', color: '#999' }}>
+            <QRCodeText style={{ marginTop: '24px', fontSize: '12px', color: 'var(--color-999, #999)' }}>
               Trouble scanning? Enter your 6-digit authentication code below instead.
             </QRCodeText>
             <ButtonGroup>

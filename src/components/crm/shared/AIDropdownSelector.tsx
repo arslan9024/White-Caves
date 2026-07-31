@@ -141,7 +141,7 @@ const AIDropdownSelector = memo(({
       <button 
         className="dropdown-trigger"
         onClick={handleToggle}
-        style={{ '--accent-color': currentAssistant?.colorScheme || '#0EA5E9' } as React.CSSProperties}
+        style={{ '--accent-color': currentAssistant?.colorScheme || 'var(--color-0ea5e9, #0EA5E9)' } as React.CSSProperties}
       >
         {currentAssistant ? (
           <>

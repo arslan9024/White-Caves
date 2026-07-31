@@ -1157,7 +1157,7 @@ export default function TransactionsView() {
               key={t.id}
               role={t.color === '#10B981' ? 'status' : 'alert'}
               data-testid="transactions-status-banner"
-              style={{ background: t.color, color: '#FFFFFF', padding: '12px 18px', borderRadius: '10px', fontWeight: 600, fontSize: '0.85rem', boxShadow: '0 4px 20px rgba(0,0,0,0.18)', maxWidth: '360px' }}
+              style={{ background: t.color, color: 'var(--white, #FFFFFF)', padding: '12px 18px', borderRadius: '10px', fontWeight: 600, fontSize: '0.85rem', boxShadow: '0 4px 20px rgba(0,0,0,0.18)', maxWidth: '360px' }}
             >
               {t.message}
             </div>

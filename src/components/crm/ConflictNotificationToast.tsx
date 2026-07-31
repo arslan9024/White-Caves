@@ -61,7 +61,7 @@ export const ConflictNotificationToast: FC<ConflictNotificationToastProps> = ({
         </button>
       </div>
 
-      <p style={{ fontSize: '0.8rem', color: '#CBD5E1', margin: '0 0 12px 0' }}>
+      <p style={{ fontSize: '0.8rem', color: 'var(--color-cbd5e1, #CBD5E1)', margin: '0 0 12px 0' }}>
         {conflicts.length} field conflict{conflicts.length > 1 ? 's' : ''} auto-merged using Vector Timestamps (LWW).
       </p>
 
@@ -78,11 +78,11 @@ export const ConflictNotificationToast: FC<ConflictNotificationToastProps> = ({
             }}
           >
             <div style={{ fontWeight: 700, color: GOLD, marginBottom: '2px' }}>Field: {c.key}</div>
-            <div style={{ color: '#E2E8F0' }}>
+            <div style={{ color: 'var(--color-e2e8f0, #E2E8F0)' }}>
               <strong>Winning Value:</strong>{' '}
               {typeof c.winningValue === 'object' ? JSON.stringify(c.winningValue) : String(c.winningValue)}
             </div>
-            <div style={{ color: '#94A3B8', fontSize: '0.7rem', marginTop: '2px' }}>
+            <div style={{ color: 'var(--color-94a3b8, #94A3B8)', fontSize: '0.7rem', marginTop: '2px' }}>
               Winner: {c.winningClient} · {new Date(c.timestamp).toLocaleTimeString()}
             </div>
           </div>

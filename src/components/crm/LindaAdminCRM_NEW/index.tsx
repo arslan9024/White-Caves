@@ -82,8 +82,8 @@ const KpiTile: React.FC<{ label: string; value: string | number; icon: React.Rea
       {icon}
     </div>
     <div>
-      <div style={{ color: '#fff', fontSize: 22, fontWeight: 700 }}>{value}</div>
-      <div style={{ color: '#888', fontSize: 12 }}>{label}</div>
+      <div style={{ color: 'var(--white, #fff)', fontSize: 22, fontWeight: 700 }}>{value}</div>
+      <div style={{ color: 'var(--color-888, #888)', fontSize: 12 }}>{label}</div>
     </div>
   </div>
 );
@@ -235,22 +235,22 @@ const LindaAdminCRM: React.FC<CRMModuleProps> = () => {
   };
 
   return (
-    <div style={{ background: '#0f0f0f', minHeight: '100%', fontFamily: 'system-ui, sans-serif' }}>
+    <div style={{ background: 'var(--color-0f0f0f, #0f0f0f)', minHeight: '100%', fontFamily: 'system-ui, sans-serif' }}>
       {/* Header */}
-      <div style={{ padding: '20px 24px 0', borderBottom: '1px solid #1a1a1a' }}>
+      <div style={{ padding: '20px 24px 0', borderBottom: '1px solid var(--color-1a1a1a, #1a1a1a)' }}>
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 16 }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-            <div style={{ background: '#C9A84C20', borderRadius: 10, padding: 10, color: '#C9A84C' }}>
+            <div style={{ background: '#C9A84C20', borderRadius: 10, padding: 10, color: 'var(--color-c9a84c, #C9A84C)' }}>
               <MessageSquare size={22} />
             </div>
             <div>
-              <h2 style={{ color: '#fff', margin: 0, fontSize: 20, fontWeight: 700 }}>Linda — WhatsApp Bot Manager</h2>
-              <div style={{ color: '#888', fontSize: 13, marginTop: 2 }}>LocalAuth WhatsApp automation channel</div>
+              <h2 style={{ color: 'var(--white, #fff)', margin: 0, fontSize: 20, fontWeight: 700 }}>Linda — WhatsApp Bot Manager</h2>
+              <div style={{ color: 'var(--color-888, #888)', fontSize: 13, marginTop: 2 }}>LocalAuth WhatsApp automation channel</div>
             </div>
           </div>
           <div style={{ display: 'flex', gap: 10, alignItems: 'center' }}>
             {stats && <StatusBadge status={stats.status} isConnected={stats.isConnected} />}
-            <button onClick={loadStats} style={{ background: '#1a1a1a', border: '1px solid #333', borderRadius: 6, padding: '8px 12px', color: '#aaa', cursor: 'pointer' }}>
+            <button onClick={loadStats} style={{ background: 'var(--color-1a1a1a, #1a1a1a)', border: '1px solid var(--color-333, #333)', borderRadius: 6, padding: '8px 12px', color: 'var(--color-aaa, #aaa)', cursor: 'pointer' }}>
               <RefreshCw size={14} />
             </button>
           </div>
@@ -277,8 +277,8 @@ const LindaAdminCRM: React.FC<CRMModuleProps> = () => {
       {/* Content */}
       <div style={{ padding: 24 }}>
         {error && (
-          <div style={{ background: '#3a1a1a', border: '1px solid #E31E24', borderRadius: 6, padding: '10px 14px', marginBottom: 16, color: '#f88', fontSize: 13 }}>
-            ❌ {error} <button onClick={() => setError(null)} style={{ float: 'right', background: 'none', border: 'none', color: '#f88', cursor: 'pointer' }}>✕</button>
+          <div style={{ background: 'var(--color-3a1a1a, #3a1a1a)', border: '1px solid var(--accent-red, #E31E24)', borderRadius: 6, padding: '10px 14px', marginBottom: 16, color: 'var(--color-f88, #f88)', fontSize: 13 }}>
+            ❌ {error} <button onClick={() => setError(null)} style={{ float: 'right', background: 'none', border: 'none', color: 'var(--color-f88, #f88)', cursor: 'pointer' }}>✕</button>
           </div>
         )}
 
@@ -295,25 +295,25 @@ const LindaAdminCRM: React.FC<CRMModuleProps> = () => {
                 </div>
 
                 {/* Sessions Table */}
-                <h3 style={{ color: '#fff', marginBottom: 12 }}>Bot Sessions</h3>
-                <div style={{ background: '#1a1a1a', borderRadius: 8, border: '1px solid #2a2a2a', overflow: 'hidden' }}>
+                <h3 style={{ color: 'var(--white, #fff)', marginBottom: 12 }}>Bot Sessions</h3>
+                <div style={{ background: 'var(--color-1a1a1a, #1a1a1a)', borderRadius: 8, border: '1px solid var(--color-2a2a2a, #2a2a2a)', overflow: 'hidden' }}>
                   <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 13 }}>
-                    <thead style={{ background: '#111' }}>
+                    <thead style={{ background: 'var(--color-111, #111)' }}>
                       <tr>
                         {['Bot ID', 'Role', 'Status', 'Connected', 'Sent', 'Received'].map(h => (
-                          <th key={h} style={{ color: '#888', fontWeight: 600, padding: '10px 14px', textAlign: 'left' }}>{h}</th>
+                          <th key={h} style={{ color: 'var(--color-888, #888)', fontWeight: 600, padding: '10px 14px', textAlign: 'left' }}>{h}</th>
                         ))}
                       </tr>
                     </thead>
                     <tbody>
                       {sessions.map(s => (
-                        <tr key={s.botId} style={{ borderTop: '1px solid #222' }}>
-                          <td style={{ color: '#C9A84C', padding: '10px 14px', fontWeight: 600 }}>{s.botId}</td>
-                          <td style={{ color: '#aaa', padding: '10px 14px' }}>{s.role}</td>
+                        <tr key={s.botId} style={{ borderTop: '1px solid var(--color-222, #222)' }}>
+                          <td style={{ color: 'var(--color-c9a84c, #C9A84C)', padding: '10px 14px', fontWeight: 600 }}>{s.botId}</td>
+                          <td style={{ color: 'var(--color-aaa, #aaa)', padding: '10px 14px' }}>{s.role}</td>
                           <td style={{ padding: '10px 14px' }}><StatusBadge status={s.status} isConnected={s.isConnected} /></td>
-                          <td style={{ padding: '10px 14px', color: s.isConnected ? '#22c55e' : '#E31E24' }}>{s.isConnected ? '✓ Yes' : '✗ No'}</td>
-                          <td style={{ color: '#aaa', padding: '10px 14px' }}>{s.messagesSent}</td>
-                          <td style={{ color: '#aaa', padding: '10px 14px' }}>{s.messagesReceived}</td>
+                          <td style={{ padding: '10px 14px', color: s.isConnected ? 'var(--accent-green, #22c55e)' : 'var(--color-e31e24, #E31E24)' }}>{s.isConnected ? '✓ Yes' : '✗ No'}</td>
+                          <td style={{ color: 'var(--color-aaa, #aaa)', padding: '10px 14px' }}>{s.messagesSent}</td>
+                          <td style={{ color: 'var(--color-aaa, #aaa)', padding: '10px 14px' }}>{s.messagesReceived}</td>
                         </tr>
                       ))}
                     </tbody>
@@ -327,14 +327,14 @@ const LindaAdminCRM: React.FC<CRMModuleProps> = () => {
                       {isConnecting ? '⏳ Connecting...' : <><Wifi size={14} style={{ marginRight: 6 }} />Initialize Linda</>}
                     </button>
                   ) : (
-                    <button onClick={handleDisconnect} disabled={isLoading} style={{ padding: '10px 20px', background: '#3a1a1a', border: '1px solid #E31E24', borderRadius: 6, color: '#f88', cursor: 'pointer', fontSize: 14, opacity: isLoading ? 0.6 : 1 }}>
+                    <button onClick={handleDisconnect} disabled={isLoading} style={{ padding: '10px 20px', background: 'var(--color-3a1a1a, #3a1a1a)', border: '1px solid var(--accent-red, #E31E24)', borderRadius: 6, color: 'var(--color-f88, #f88)', cursor: 'pointer', fontSize: 14, opacity: isLoading ? 0.6 : 1 }}>
                       {isLoading ? '⏳ Disconnecting...' : <><WifiOff size={14} style={{ marginRight: 6 }} />Disconnect</>}
                     </button>
                   )}
                 </div>
               </>
             ) : (
-              <div style={{ color: '#888', padding: 40, textAlign: 'center' }}>Loading Linda status...</div>
+              <div style={{ color: 'var(--color-888, #888)', padding: 40, textAlign: 'center' }}>Loading Linda status...</div>
             )}
           </div>
         )}
@@ -342,34 +342,34 @@ const LindaAdminCRM: React.FC<CRMModuleProps> = () => {
         {/* QR / Auth Tab */}
         {activeTab === 'qr' && (
           <div style={{ maxWidth: 480 }}>
-            <h3 style={{ color: '#fff', marginBottom: 8 }}>📲 WhatsApp QR Authentication</h3>
-            <p style={{ color: '#888', fontSize: 13, marginBottom: 20 }}>
+            <h3 style={{ color: 'var(--white, #fff)', marginBottom: 8 }}>📲 WhatsApp QR Authentication</h3>
+            <p style={{ color: 'var(--color-888, #888)', fontSize: 13, marginBottom: 20 }}>
               Scan this QR code with WhatsApp to authenticate the Linda bot.
               The QR refreshes automatically. Once scanned, Linda will be operational.
             </p>
             {qrCode ? (
               <div>
-                <div style={{ background: '#fff', padding: 20, borderRadius: 12, display: 'inline-block', marginBottom: 12 }}>
+                <div style={{ background: 'var(--white, #fff)', padding: 20, borderRadius: 12, display: 'inline-block', marginBottom: 12 }}>
                   {/* Render QR as text — client can integrate a QR library if needed */}
-                  <pre style={{ margin: 0, fontSize: 8, lineHeight: 1, color: '#000', fontFamily: 'monospace' }}>
+                  <pre style={{ margin: 0, fontSize: 8, lineHeight: 1, color: 'var(--black, #000)', fontFamily: 'monospace' }}>
                     {qrCode.substring(0, 200)}...
                   </pre>
                 </div>
-                <div style={{ color: '#888', fontSize: 12, marginTop: 8 }}>
+                <div style={{ color: 'var(--color-888, #888)', fontSize: 12, marginTop: 8 }}>
                   ℹ️ Install a QR code library (e.g. qrcode.react) to render this as a scannable image.
-                  Raw QR data: <code style={{ color: '#C9A84C', wordBreak: 'break-all', fontSize: 10 }}>{qrCode.substring(0, 50)}...</code>
+                  Raw QR data: <code style={{ color: 'var(--color-c9a84c, #C9A84C)', wordBreak: 'break-all', fontSize: 10 }}>{qrCode.substring(0, 50)}...</code>
                 </div>
-                <button onClick={loadQR} style={{ marginTop: 12, padding: '8px 16px', background: '#222', border: '1px solid #444', borderRadius: 6, color: '#aaa', cursor: 'pointer', fontSize: 13 }}>
+                <button onClick={loadQR} style={{ marginTop: 12, padding: '8px 16px', background: 'var(--color-222, #222)', border: '1px solid var(--color-444, #444)', borderRadius: 6, color: 'var(--color-aaa, #aaa)', cursor: 'pointer', fontSize: 13 }}>
                   🔄 Refresh QR
                 </button>
               </div>
             ) : stats?.isConnected ? (
-              <div style={{ background: '#1a3a1a', border: '1px solid #2e7d32', borderRadius: 8, padding: 20, color: '#8f8' }}>
+              <div style={{ background: 'var(--color-1a3a1a, #1a3a1a)', border: '1px solid var(--color-2e7d32, #2e7d32)', borderRadius: 8, padding: 20, color: 'var(--color-8f8, #8f8)' }}>
                 ✅ Linda is already authenticated and connected — no QR needed.
               </div>
             ) : (
               <div>
-                <div style={{ background: '#1a1a2e', border: '1px solid #2a2a4a', borderRadius: 8, padding: 20, color: '#888', marginBottom: 16 }}>
+                <div style={{ background: 'var(--color-1a1a2e, #1a1a2e)', border: '1px solid var(--color-2a2a4a, #2a2a4a)', borderRadius: 8, padding: 20, color: 'var(--color-888, #888)', marginBottom: 16 }}>
                   QR not yet generated. Click "Initialize Linda" to start the authentication process.
                 </div>
                 <button onClick={handleConnect} disabled={isConnecting} style={{ ...btnPrimary, opacity: isConnecting ? 0.6 : 1 }}>
@@ -383,12 +383,12 @@ const LindaAdminCRM: React.FC<CRMModuleProps> = () => {
         {/* Broadcast Tab */}
         {activeTab === 'broadcast' && (
           <div style={{ maxWidth: 600 }}>
-            <h3 style={{ color: '#fff', marginBottom: 8 }}>📢 Broadcast Campaign</h3>
-            <p style={{ color: '#888', fontSize: 13, marginBottom: 20 }}>
+            <h3 style={{ color: 'var(--white, #fff)', marginBottom: 8 }}>📢 Broadcast Campaign</h3>
+            <p style={{ color: 'var(--color-888, #888)', fontSize: 13, marginBottom: 20 }}>
               Send a message to multiple WhatsApp numbers. Anti-spam delays (2–8s between messages) are applied automatically.
             </p>
             <div style={{ marginBottom: 16 }}>
-              <label style={{ display: 'block', color: '#aaa', fontSize: 13, marginBottom: 6 }}>Phone Numbers (one per line)</label>
+              <label style={{ display: 'block', color: 'var(--color-aaa, #aaa)', fontSize: 13, marginBottom: 6 }}>Phone Numbers (one per line)</label>
               <textarea
                 value={broadcast.phones}
                 onChange={e => setBroadcast(p => ({ ...p, phones: e.target.value }))}
@@ -398,7 +398,7 @@ const LindaAdminCRM: React.FC<CRMModuleProps> = () => {
               />
             </div>
             <div style={{ marginBottom: 20 }}>
-              <label style={{ display: 'block', color: '#aaa', fontSize: 13, marginBottom: 6 }}>Message</label>
+              <label style={{ display: 'block', color: 'var(--color-aaa, #aaa)', fontSize: 13, marginBottom: 6 }}>Message</label>
               <textarea
                 value={broadcast.message}
                 onChange={e => setBroadcast(p => ({ ...p, message: e.target.value }))}
@@ -408,7 +408,7 @@ const LindaAdminCRM: React.FC<CRMModuleProps> = () => {
               />
             </div>
             {broadcast.lastResult && (
-              <div style={{ padding: '10px 14px', borderRadius: 6, marginBottom: 16, background: broadcast.lastResult.startsWith('✅') ? '#1a3a1a' : '#3a1a1a', color: broadcast.lastResult.startsWith('✅') ? '#8f8' : '#f88', fontSize: 13 }}>
+              <div style={{ padding: '10px 14px', borderRadius: 6, marginBottom: 16, background: broadcast.lastResult.startsWith('✅') ? 'var(--color-1a3a1a, #1a3a1a)' : 'var(--color-3a1a1a, #3a1a1a)', color: broadcast.lastResult.startsWith('✅') ? 'var(--color-8f8, #8f8)' : 'var(--color-f88, #f88)', fontSize: 13 }}>
                 {broadcast.lastResult}
               </div>
             )}
@@ -421,17 +421,17 @@ const LindaAdminCRM: React.FC<CRMModuleProps> = () => {
         {/* Send Tab */}
         {activeTab === 'send' && (
           <div style={{ maxWidth: 480 }}>
-            <h3 style={{ color: '#fff', marginBottom: 8 }}>💬 Send Single Message</h3>
+            <h3 style={{ color: 'var(--white, #fff)', marginBottom: 8 }}>💬 Send Single Message</h3>
             <div style={{ marginBottom: 16 }}>
-              <label style={{ display: 'block', color: '#aaa', fontSize: 13, marginBottom: 6 }}>Phone Number (E.164 without +)</label>
+              <label style={{ display: 'block', color: 'var(--color-aaa, #aaa)', fontSize: 13, marginBottom: 6 }}>Phone Number (E.164 without +)</label>
               <input type="text" value={sendMsg.phone} onChange={e => setSendMsg(p => ({ ...p, phone: e.target.value }))} placeholder="971501234567" style={inputStyle} />
             </div>
             <div style={{ marginBottom: 20 }}>
-              <label style={{ display: 'block', color: '#aaa', fontSize: 13, marginBottom: 6 }}>Message</label>
+              <label style={{ display: 'block', color: 'var(--color-aaa, #aaa)', fontSize: 13, marginBottom: 6 }}>Message</label>
               <textarea value={sendMsg.message} onChange={e => setSendMsg(p => ({ ...p, message: e.target.value }))} rows={4} style={{ ...inputStyle, resize: 'vertical' }} />
             </div>
             {sendMsg.lastResult && (
-              <div style={{ padding: '10px 14px', borderRadius: 6, marginBottom: 16, background: sendMsg.lastResult.startsWith('✅') ? '#1a3a1a' : '#3a1a1a', color: sendMsg.lastResult.startsWith('✅') ? '#8f8' : '#f88', fontSize: 13 }}>
+              <div style={{ padding: '10px 14px', borderRadius: 6, marginBottom: 16, background: sendMsg.lastResult.startsWith('✅') ? 'var(--color-1a3a1a, #1a3a1a)' : 'var(--color-3a1a1a, #3a1a1a)', color: sendMsg.lastResult.startsWith('✅') ? 'var(--color-8f8, #8f8)' : 'var(--color-f88, #f88)', fontSize: 13 }}>
                 {sendMsg.lastResult}
               </div>
             )}
@@ -444,15 +444,15 @@ const LindaAdminCRM: React.FC<CRMModuleProps> = () => {
         {/* Commands Reference Tab */}
         {activeTab === 'commands' && (
           <div>
-            <h3 style={{ color: '#fff', marginBottom: 16 }}>📖 Linda Bot Command Reference</h3>
+            <h3 style={{ color: 'var(--white, #fff)', marginBottom: 16 }}>📖 Linda Bot Command Reference</h3>
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(320px, 1fr))', gap: 12 }}>
               {BOT_COMMANDS.map(group => (
-                <div key={group.category} style={{ background: '#1a1a1a', border: '1px solid #2a2a2a', borderRadius: 8, padding: 16 }}>
-                  <div style={{ color: '#C9A84C', fontWeight: 700, fontSize: 13, marginBottom: 10 }}>{group.category}</div>
+                <div key={group.category} style={{ background: 'var(--color-1a1a1a, #1a1a1a)', border: '1px solid var(--color-2a2a2a, #2a2a2a)', borderRadius: 8, padding: 16 }}>
+                  <div style={{ color: 'var(--color-c9a84c, #C9A84C)', fontWeight: 700, fontSize: 13, marginBottom: 10 }}>{group.category}</div>
                   {group.commands.map(cmd => (
-                    <div key={cmd.cmd} style={{ display: 'flex', justifyContent: 'space-between', padding: '5px 0', borderTop: '1px solid #111' }}>
-                      <code style={{ color: '#9b8ff5', fontSize: 12 }}>{cmd.cmd}</code>
-                      <span style={{ color: '#888', fontSize: 11, textAlign: 'right', maxWidth: '60%' }}>{cmd.desc}</span>
+                    <div key={cmd.cmd} style={{ display: 'flex', justifyContent: 'space-between', padding: '5px 0', borderTop: '1px solid var(--color-111, #111)' }}>
+                      <code style={{ color: 'var(--color-9b8ff5, #9b8ff5)', fontSize: 12 }}>{cmd.cmd}</code>
+                      <span style={{ color: 'var(--color-888, #888)', fontSize: 11, textAlign: 'right', maxWidth: '60%' }}>{cmd.desc}</span>
                     </div>
                   ))}
                 </div>

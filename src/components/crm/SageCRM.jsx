@@ -127,7 +127,7 @@ const SageCRM = () => {
       <div className="assistant-header">
         <div
           className="assistant-avatar"
-          style={{ background: 'linear-gradient(135deg, #0EA5E9 0%, #0369A1 100%)' }}
+          style={{ background: 'linear-gradient(135deg, var(--color-0ea5e9, #0EA5E9) 0%, var(--color-0369a1, #0369A1) 100%)' }}
         >
           <PiggyBank size={28} />
         </div>
@@ -145,7 +145,7 @@ const SageCRM = () => {
         <div className="stat-card">
           <div
             className="stat-icon"
-            style={{ background: 'rgba(14,165,233,0.15)', color: '#0EA5E9' }}
+            style={{ background: 'rgba(14,165,233,0.15)', color: 'var(--color-0ea5e9, #0EA5E9)' }}
           >
             <FileText size={20} />
           </div>
@@ -157,7 +157,7 @@ const SageCRM = () => {
         <div className="stat-card">
           <div
             className="stat-icon"
-            style={{ background: 'rgba(34,197,94,0.15)', color: '#22C55E' }}
+            style={{ background: 'rgba(34,197,94,0.15)', color: 'var(--accent-green, #22C55E)' }}
           >
             <CheckCircle size={20} />
           </div>
@@ -171,7 +171,7 @@ const SageCRM = () => {
         <div className="stat-card">
           <div
             className="stat-icon"
-            style={{ background: 'rgba(227,30,36,0.15)', color: '#E31E24' }}
+            style={{ background: 'rgba(227,30,36,0.15)', color: 'var(--color-e31e24, #E31E24)' }}
           >
             <DollarSign size={20} />
           </div>
@@ -183,7 +183,7 @@ const SageCRM = () => {
         <div className="stat-card">
           <div
             className="stat-icon"
-            style={{ background: 'rgba(245,158,11,0.15)', color: '#F59E0B' }}
+            style={{ background: 'rgba(245,158,11,0.15)', color: 'var(--accent-gold, #F59E0B)' }}
           >
             <Percent size={20} />
           </div>
@@ -295,7 +295,7 @@ const SageCRM = () => {
             ].map(f => (
               <div key={f.key}>
                 <label
-                  style={{ fontSize: 13, color: '#6b7280', marginBottom: 4, display: 'block' }}
+                  style={{ fontSize: 13, color: 'var(--text-secondary, #6b7280)', marginBottom: 4, display: 'block' }}
                 >
                   {f.label}
                 </label>
@@ -325,7 +325,7 @@ const SageCRM = () => {
               padding: 20,
             }}
           >
-            <h4 style={{ marginBottom: 16, color: '#0369A1' }}>Results</h4>
+            <h4 style={{ marginBottom: 16, color: 'var(--color-0369a1, #0369A1)' }}>Results</h4>
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 16 }}>
               {[
                 { label: 'Loan Amount', value: `AED ${Math.round(loanAmt).toLocaleString()}` },
@@ -342,8 +342,8 @@ const SageCRM = () => {
                     border: '1px solid #e0f2fe',
                   }}
                 >
-                  <div style={{ fontSize: 18, fontWeight: 800, color: '#0EA5E9' }}>{r.value}</div>
-                  <div style={{ fontSize: 12, color: '#6b7280', marginTop: 4 }}>{r.label}</div>
+                  <div style={{ fontSize: 18, fontWeight: 800, color: 'var(--color-0ea5e9, #0EA5E9)' }}>{r.value}</div>
+                  <div style={{ fontSize: 12, color: 'var(--text-secondary, #6b7280)', marginTop: 4 }}>{r.label}</div>
                 </div>
               ))}
             </div>
@@ -382,7 +382,7 @@ const SageCRM = () => {
                     </span>
                   )}
                 </div>
-                <span style={{ color: '#E31E24', fontWeight: 700 }}>From {b.minRate}</span>
+                <span style={{ color: 'var(--color-e31e24, #E31E24)', fontWeight: 700 }}>From {b.minRate}</span>
               </div>
               <div
                 style={{

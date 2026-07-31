@@ -33,7 +33,7 @@ const DaisyLeasingCRM = () => {
   return (
     <div className="assistant-dashboard daisy">
       <div className="assistant-header">
-        <div className="assistant-avatar" style={{ background: 'linear-gradient(135deg, #14B8A6 0%, #10B981 100%)' }}>
+        <div className="assistant-avatar" style={{ background: 'linear-gradient(135deg, var(--accent-teal, #14B8A6) 0%, var(--accent-green, #10B981) 100%)' }}>
           <Home size={28} />
         </div>
         <div className="assistant-info">
@@ -48,7 +48,7 @@ const DaisyLeasingCRM = () => {
 
       <div className="quick-stats">
         <div className="stat-card">
-          <div className="stat-icon" style={{ background: 'rgba(20, 184, 166, 0.2)', color: '#14B8A6' }}>
+          <div className="stat-icon" style={{ background: 'rgba(20, 184, 166, 0.2)', color: 'var(--accent-teal, #14B8A6)' }}>
             <FileText size={20} />
           </div>
           <div className="stat-content">
@@ -58,7 +58,7 @@ const DaisyLeasingCRM = () => {
           <span className="stat-change positive"><ArrowUp size={14} /> 8</span>
         </div>
         <div className="stat-card">
-          <div className="stat-icon" style={{ background: 'rgba(245, 158, 11, 0.2)', color: '#F59E0B' }}>
+          <div className="stat-icon" style={{ background: 'rgba(245, 158, 11, 0.2)', color: 'var(--accent-gold, #F59E0B)' }}>
             <Clock size={20} />
           </div>
           <div className="stat-content">
@@ -68,7 +68,7 @@ const DaisyLeasingCRM = () => {
           <span className="stat-change warning">30 days</span>
         </div>
         <div className="stat-card">
-          <div className="stat-icon" style={{ background: 'rgba(16, 185, 129, 0.2)', color: '#10B981' }}>
+          <div className="stat-icon" style={{ background: 'rgba(16, 185, 129, 0.2)', color: 'var(--accent-green, #10B981)' }}>
             <DollarSign size={20} />
           </div>
           <div className="stat-content">
@@ -78,7 +78,7 @@ const DaisyLeasingCRM = () => {
           <span className="stat-change positive"><ArrowUp size={14} /> 5%</span>
         </div>
         <div className="stat-card">
-          <div className="stat-icon" style={{ background: 'rgba(239, 68, 68, 0.2)', color: '#EF4444' }}>
+          <div className="stat-icon" style={{ background: 'rgba(239, 68, 68, 0.2)', color: 'var(--accent-red, #EF4444)' }}>
             <AlertCircle size={20} />
           </div>
           <div className="stat-content">

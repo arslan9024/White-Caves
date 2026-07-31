@@ -112,9 +112,9 @@ export const ChatInterface: React.FC<ChatInterfaceProps> = ({
       <div role="status" aria-live="polite" style={{ position: 'absolute', left: '-9999px' }} />
 
       {/* Header */}
-      <div className="chat-header" style={{ padding: '12px 16px', borderBottom: '1px solid #e0e0e0', background: '#f5f5f5' }}>
+      <div className="chat-header" style={{ padding: '12px 16px', borderBottom: '1px solid var(--color-e0e0e0, #e0e0e0)', background: 'var(--color-f5f5f5, #f5f5f5)' }}>
         <div className="contact-name" style={{ fontWeight: 600 }}>{contactName}</div>
-        <div className="contact-number" style={{ fontSize: 12, color: '#666' }}>{contactNumber}</div>
+        <div className="contact-number" style={{ fontSize: 12, color: 'var(--color-666, #666)' }}>{contactNumber}</div>
       </div>
 
       {/* Loading indicator */}
@@ -126,14 +126,14 @@ export const ChatInterface: React.FC<ChatInterfaceProps> = ({
 
       {/* External error */}
       {error && (
-        <div role="alert" style={{ padding: '8px 16px', background: '#f8d7da', color: '#721c24' }}>
+        <div role="alert" style={{ padding: '8px 16px', background: 'var(--color-f8d7da, #f8d7da)', color: 'var(--color-721c24, #721c24)' }}>
           {error}
         </div>
       )}
 
       {/* Send error + retry */}
       {sendError && (
-        <div role="alert" style={{ padding: '8px 16px', background: '#fff3cd', color: '#856404', display: 'flex', gap: 8, alignItems: 'center' }}>
+        <div role="alert" style={{ padding: '8px 16px', background: 'var(--color-fff3cd, #fff3cd)', color: 'var(--color-856404, #856404)', display: 'flex', gap: 8, alignItems: 'center' }}>
           <span>{sendError}</span>
           <button type="button" aria-label="Retry" onClick={handleRetry} style={{ background: 'none', border: '1px solid currentColor', borderRadius: 4, padding: '2px 8px', cursor: 'pointer' }}>
             Retry
@@ -173,13 +173,13 @@ export const ChatInterface: React.FC<ChatInterfaceProps> = ({
                 style={{ display: 'flex', justifyContent: msg.fromMe ? 'flex-end' : 'flex-start', marginBottom: 8 }}
               >
                 <div>
-                  <div style={{ background: msg.fromMe ? '#25d366' : '#e5e5ea', padding: '8px 12px', borderRadius: 8 }}>
+                  <div style={{ background: msg.fromMe ? 'var(--color-25d366, #25d366)' : 'var(--color-e5e5ea, #e5e5ea)', padding: '8px 12px', borderRadius: 8 }}>
                     {msg.content}
                   </div>
-                  <div style={{ fontSize: 11, color: '#999', marginTop: 2 }}>
+                  <div style={{ fontSize: 11, color: 'var(--color-999, #999)', marginTop: 2 }}>
                     {timeStr}
                   </div>
-                  <div data-testid="message-status" style={{ fontSize: 11, color: '#aaa' }}>
+                  <div data-testid="message-status" style={{ fontSize: 11, color: 'var(--color-aaa, #aaa)' }}>
                     {msg.status || 'sent'}
                   </div>
                 </div>
@@ -193,7 +193,7 @@ export const ChatInterface: React.FC<ChatInterfaceProps> = ({
       {/* Composer */}
       <form
         onSubmit={(e) => { e.preventDefault(); handleSend(); }}
-        style={{ display: 'flex', gap: 8, padding: '12px 16px', borderTop: '1px solid #e0e0e0', background: '#f5f5f5', alignItems: 'center' }}
+        style={{ display: 'flex', gap: 8, padding: '12px 16px', borderTop: '1px solid var(--color-e0e0e0, #e0e0e0)', background: 'var(--color-f5f5f5, #f5f5f5)', alignItems: 'center' }}
       >
         {/* Hidden file input */}
         <input
@@ -223,14 +223,14 @@ export const ChatInterface: React.FC<ChatInterfaceProps> = ({
           onKeyDown={handleKeyDown}
           disabled={isLoading}
           autoFocus
-          style={{ flex: 1, padding: '8px 12px', borderRadius: 20, border: '1px solid #ddd', fontSize: 14, outline: 'none' }}
+          style={{ flex: 1, padding: '8px 12px', borderRadius: 20, border: '1px solid var(--color-ddd, #ddd)', fontSize: 14, outline: 'none' }}
         />
 
         <button
           type="submit"
           aria-label="Send"
           disabled={!messageText.trim() || isLoading}
-          style={{ width: 40, height: 40, borderRadius: '50%', border: 'none', background: '#25d366', color: 'white', cursor: 'pointer', fontSize: 18 }}
+          style={{ width: 40, height: 40, borderRadius: '50%', border: 'none', background: 'var(--color-25d366, #25d366)', color: 'white', cursor: 'pointer', fontSize: 18 }}
         >
           ➤
         </button>

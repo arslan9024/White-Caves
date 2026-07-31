@@ -263,7 +263,7 @@ export const ToolsDashboard: React.FC = () => {
 
           <MetricBox>
             <MetricLabel>Estimated Net ROI Yield</MetricLabel>
-            <MetricValue style={{ color: '#059669' }}>{netRoiPct}% Net</MetricValue>
+            <MetricValue style={{ color: 'var(--accent-green, #059669)' }}>{netRoiPct}% Net</MetricValue>
           </MetricBox>
 
           <MetricBox style={{ background: 'rgba(239, 68, 68, 0.08)' }}>

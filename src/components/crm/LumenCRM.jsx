@@ -65,7 +65,7 @@ const LumenCRM = () => {
       <div className="assistant-header">
         <div
           className="assistant-avatar"
-          style={{ background: 'linear-gradient(135deg, #F59E0B 0%, #D97706 100%)' }}
+          style={{ background: 'linear-gradient(135deg, var(--accent-gold, #F59E0B) 0%, var(--accent-gold, #D97706) 100%)' }}
         >
           <BarChart2 size={28} />
         </div>
@@ -84,7 +84,7 @@ const LumenCRM = () => {
           <div className="stat-card" key={m.label}>
             <div
               className="stat-icon"
-              style={{ background: 'rgba(245,158,11,0.15)', color: '#F59E0B' }}
+              style={{ background: 'rgba(245,158,11,0.15)', color: 'var(--accent-gold, #F59E0B)' }}
             >
               <TrendingUp size={20} />
             </div>
@@ -140,7 +140,7 @@ const LumenCRM = () => {
           >
             <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 12 }}>
               <strong>Monthly Revenue (AED M)</strong>
-              <span style={{ fontSize: 12, color: '#6b7280' }}>Jan – Dec 2024</span>
+              <span style={{ fontSize: 12, color: 'var(--text-secondary, #6b7280)' }}>Jan – Dec 2024</span>
             </div>
             <div style={{ display: 'flex', gap: 6, alignItems: 'flex-end', height: 100 }}>
               {CHARTS[0].data.map((v, i) => (
@@ -164,7 +164,7 @@ const LumenCRM = () => {
                     }}
                   />
                   {/* eslint-disable-next-line security/detect-object-injection */}
-                  <span style={{ fontSize: 9, color: '#9ca3af' }}>{CHARTS[0].labels[i]}</span>
+                  <span style={{ fontSize: 9, color: 'var(--text-secondary, #9ca3af)' }}>{CHARTS[0].labels[i]}</span>
                 </div>
               ))}
             </div>
@@ -295,7 +295,7 @@ const LumenCRM = () => {
               <BarChart2 size={18} color="#F59E0B" />
               <div style={{ flex: 1 }}>
                 <strong>{r.name}</strong>
-                <div style={{ fontSize: 12, color: '#6b7280', marginTop: 2 }}>
+                <div style={{ fontSize: 12, color: 'var(--text-secondary, #6b7280)', marginTop: 2 }}>
                   {r.type} · {r.format} · {r.created}
                 </div>
               </div>

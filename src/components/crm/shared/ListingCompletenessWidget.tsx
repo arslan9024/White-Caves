@@ -161,7 +161,7 @@ export const ListingCompletenessWidget: React.FC<ListingCompletenessWidgetProps>
       {loading && <SkeletonRing />}
 
       {!loading && error && (
-        <p data-testid="completeness-error" style={{ color: '#ef4444', fontSize: '0.875rem' }}>
+        <p data-testid="completeness-error" style={{ color: 'var(--accent-red, #ef4444)', fontSize: '0.875rem' }}>
           Score unavailable
         </p>
       )}
@@ -174,10 +174,10 @@ export const ListingCompletenessWidget: React.FC<ListingCompletenessWidgetProps>
             </div>
             {!compact && (
               <div>
-                <p style={{ fontSize: '0.875rem', color: '#888', margin: 0 }}>
+                <p style={{ fontSize: '0.875rem', color: 'var(--color-888, #888)', margin: 0 }}>
                   Completeness
                 </p>
-                <p style={{ fontSize: '1rem', fontWeight: 700, color: '#c9a84c', margin: 0 }}>
+                <p style={{ fontSize: '1rem', fontWeight: 700, color: 'var(--color-c9a84c, #c9a84c)', margin: 0 }}>
                   {data.passed.length} / {data.totalCriteria} criteria met
                 </p>
               </div>
@@ -197,10 +197,10 @@ export const ListingCompletenessWidget: React.FC<ListingCompletenessWidgetProps>
               ))}
               {data.failed.map(item => (
                 <li key={item.key} style={{ display: 'flex', alignItems: 'flex-start', gap: 6, fontSize: '0.8125rem' }}>
-                  <XCircle size={14} color="#ef4444" style={{ flexShrink: 0, marginTop: 1 }} />
+                  <XCircle size={14} color="var(--accent-red, #ef4444)" style={{ flexShrink: 0, marginTop: 1 }} />
                   <span>
                     <strong>{item.label}</strong>
-                    {item.hint && <span style={{ color: '#888', marginLeft: 4 }}>— {item.hint}</span>}
+                    {item.hint && <span style={{ color: 'var(--color-888, #888)', marginLeft: 4 }}>— {item.hint}</span>}
                   </span>
                 </li>
               ))}

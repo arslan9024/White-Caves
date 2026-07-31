@@ -44,7 +44,7 @@ const HunterProspectingCRM = () => {
   return (
     <div className="assistant-dashboard hunter">
       <div className="assistant-header">
-        <div className="assistant-avatar" style={{ background: 'linear-gradient(135deg, #0D9488 0%, #0F766E 100%)' }}>
+        <div className="assistant-avatar" style={{ background: 'linear-gradient(135deg, var(--accent-teal, #0D9488) 0%, var(--accent-teal, #0F766E) 100%)' }}>
           <Target size={28} />
         </div>
         <div className="assistant-info">
@@ -59,7 +59,7 @@ const HunterProspectingCRM = () => {
 
       <div className="quick-stats">
         <div className="stat-card">
-          <div className="stat-icon" style={{ background: 'rgba(13, 148, 136, 0.2)', color: '#0D9488' }}>
+          <div className="stat-icon" style={{ background: 'rgba(13, 148, 136, 0.2)', color: 'var(--accent-teal, #0D9488)' }}>
             <Users size={20} />
           </div>
           <div className="stat-content">
@@ -69,7 +69,7 @@ const HunterProspectingCRM = () => {
           <span className="stat-change positive"><ArrowUp size={14} /> 89 this week</span>
         </div>
         <div className="stat-card highlight">
-          <div className="stat-icon" style={{ background: 'rgba(239, 68, 68, 0.2)', color: '#EF4444' }}>
+          <div className="stat-icon" style={{ background: 'rgba(239, 68, 68, 0.2)', color: 'var(--accent-red, #EF4444)' }}>
             <Zap size={20} />
           </div>
           <div className="stat-content">
@@ -79,7 +79,7 @@ const HunterProspectingCRM = () => {
           <span className="stat-change warning">12 uncontacted</span>
         </div>
         <div className="stat-card">
-          <div className="stat-icon" style={{ background: 'rgba(245, 158, 11, 0.2)', color: '#F59E0B' }}>
+          <div className="stat-icon" style={{ background: 'rgba(245, 158, 11, 0.2)', color: 'var(--accent-gold, #F59E0B)' }}>
             <Send size={20} />
           </div>
           <div className="stat-content">
@@ -89,7 +89,7 @@ const HunterProspectingCRM = () => {
           <span className="stat-change">23% response rate</span>
         </div>
         <div className="stat-card">
-          <div className="stat-icon" style={{ background: 'rgba(139, 92, 246, 0.2)', color: '#8B5CF6' }}>
+          <div className="stat-icon" style={{ background: 'rgba(139, 92, 246, 0.2)', color: 'var(--accent-purple, #8B5CF6)' }}>
             <Radar size={20} />
           </div>
           <div className="stat-content">

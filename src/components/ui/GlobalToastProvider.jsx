@@ -144,7 +144,7 @@ const ToastItem = ({ id, type, message, duration, title, onDismiss }) => {
       {/* Content */}
       <div style={{ flex: 1, minWidth: 0 }}>
         {title && (
-          <p style={{ fontSize: '13px', fontWeight: 700, color: '#f1f5f9', margin: '0 0 2px 0' }}>
+          <p style={{ fontSize: '13px', fontWeight: 700, color: 'var(--color-f1f5f9, #f1f5f9)', margin: '0 0 2px 0' }}>
             {title}
           </p>
         )}

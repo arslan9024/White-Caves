@@ -62,7 +62,7 @@ const MaintenanceTab: React.FC<MaintenanceTabProps> = ({ requests, onUpdateStatu
         </div>
         <button
           className="add-btn"
-          style={{ background: 'linear-gradient(135deg, #14B8A6 0%, #10B981 100%)' }}
+          style={{ background: 'linear-gradient(135deg, var(--accent-teal, #14B8A6) 0%, var(--accent-green, #10B981) 100%)' }}
         >
           + New Request
         </button>
@@ -274,7 +274,7 @@ const MaintenanceTab: React.FC<MaintenanceTabProps> = ({ requests, onUpdateStatu
               <div
                 style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}
               >
-                <span style={{ fontSize: '12px', color: req.assignedTo ? '#14B8A6' : '#F59E0B' }}>
+                <span style={{ fontSize: '12px', color: req.assignedTo ? 'var(--accent-teal, #14B8A6)' : 'var(--accent-gold, #F59E0B)' }}>
                   {req.assignedTo ? `👷 ${req.assignedTo}` : '⚠️ Unassigned'}
                 </span>
                 <div style={{ display: 'flex', gap: '6px' }}>

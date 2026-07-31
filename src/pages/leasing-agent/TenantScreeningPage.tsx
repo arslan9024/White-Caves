@@ -147,7 +147,7 @@ const TenantScreeningPage: FC = () => {
             )}
 
             {tenantsError && (
-              <div style={{ padding: '1rem', background: '#FEF2F2', border: '1px solid #FECACA', borderRadius: '8px', color: '#B91C1C', marginBottom: '1rem' }}>
+              <div style={{ padding: '1rem', background: 'var(--color-fef2f2, #FEF2F2)', border: '1px solid var(--color-fecaca, #FECACA)', borderRadius: '8px', color: 'var(--accent-red, #B91C1C)', marginBottom: '1rem' }}>
                 {tenantsError}
               </div>
             )}

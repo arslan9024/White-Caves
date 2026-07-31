@@ -223,7 +223,7 @@ export const DocumentGenerationPanel: FC = () => {
           </p>
         </div>
         <div style={{ display: 'flex', gap: '8px' }}>
-          <span style={{ background: '#DEF7EC', color: GREEN, fontWeight: 700, fontSize: '0.75rem', padding: '4px 10px', borderRadius: '20px' }}>
+          <span style={{ background: 'var(--color-def7ec, #DEF7EC)', color: GREEN, fontWeight: 700, fontSize: '0.75rem', padding: '4px 10px', borderRadius: '20px' }}>
             ● {generatedDocs.length} Documents Ready
           </span>
           <span style={{ background: '#FEF2F2', color: RED, fontWeight: 700, fontSize: '0.75rem', padding: '4px 10px', borderRadius: '20px' }}>
@@ -307,8 +307,8 @@ export const DocumentGenerationPanel: FC = () => {
               </div>
 
               {/* Auto-fill from transactions */}
-              <div style={{ background: '#EFF6FF', border: '1px solid #BFDBFE', padding: '10px 14px', borderRadius: '8px', marginBottom: '16px' }}>
-                <div style={{ fontSize: '0.78rem', color: '#1D4ED8', fontWeight: 600 }}>⚡ Quick-fill from Active Transactions</div>
+              <div style={{ background: 'var(--color-eff6ff, #EFF6FF)', border: '1px solid var(--color-bfdbfe, #BFDBFE)', padding: '10px 14px', borderRadius: '8px', marginBottom: '16px' }}>
+                <div style={{ fontSize: '0.78rem', color: 'var(--accent-blue, #1D4ED8)', fontWeight: 600 }}>⚡ Quick-fill from Active Transactions</div>
                 <div style={{ display: 'flex', gap: '8px', marginTop: '8px', flexWrap: 'wrap' }}>
                   {mockLeasingTransactions.slice(0, 3).map(tx => (
                     <button
@@ -359,10 +359,10 @@ export const DocumentGenerationPanel: FC = () => {
 
               {/* VAT Preview (for financial docs) */}
               {(selectedTemplate.type === 'COMMISSION_STATEMENT' || selectedTemplate.type === 'MOU_SALE') && (
-                <div style={{ background: '#FFFBEB', border: '1px solid #FCD34D', padding: '12px', borderRadius: '8px', marginBottom: '16px' }}>
-                  <div style={{ fontSize: '0.8rem', fontWeight: 700, color: '#92400E' }}>🧮 VAT 5% Preview (Auto-calculated)</div>
+                <div style={{ background: 'var(--color-fffbeb, #FFFBEB)', border: '1px solid var(--color-fcd34d, #FCD34D)', padding: '12px', borderRadius: '8px', marginBottom: '16px' }}>
+                  <div style={{ fontSize: '0.8rem', fontWeight: 700, color: 'var(--color-92400e, #92400E)' }}>🧮 VAT 5% Preview (Auto-calculated)</div>
                   {formValues.transactionValue || formValues.salePrice ? (
-                    <div style={{ marginTop: '6px', fontSize: '0.8rem', color: '#78350F' }}>
+                    <div style={{ marginTop: '6px', fontSize: '0.8rem', color: 'var(--color-78350f, #78350F)' }}>
                       Subtotal: AED {Number(formValues.transactionValue || formValues.salePrice || 0).toLocaleString()}<br />
                       VAT (5%): AED {(Number(formValues.transactionValue || formValues.salePrice || 0) * 0.05).toLocaleString()}<br />
                       <strong>Total: AED {(Number(formValues.transactionValue || formValues.salePrice || 0) * 1.05).toLocaleString()}</strong>
@@ -403,8 +403,8 @@ export const DocumentGenerationPanel: FC = () => {
               </button>
 
               {genStatus === 'done' && (
-                <div style={{ background: '#DEF7EC', border: '1px solid #6EE7B7', padding: '12px', borderRadius: '8px', marginTop: '12px', textAlign: 'center' }}>
-                  <div style={{ fontWeight: 700, color: '#065F46', fontSize: '0.875rem' }}>
+                <div style={{ background: 'var(--color-def7ec, #DEF7EC)', border: '1px solid var(--color-6ee7b7, #6EE7B7)', padding: '12px', borderRadius: '8px', marginTop: '12px', textAlign: 'center' }}>
+                  <div style={{ fontWeight: 700, color: 'var(--color-065f46, #065F46)', fontSize: '0.875rem' }}>
                     ✅ Document generated successfully! View it in Document Library.
                   </div>
                   <button
@@ -543,7 +543,7 @@ export const DocumentGenerationPanel: FC = () => {
       {previewDoc && (
         <div style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, background: 'rgba(15, 23, 42, 0.75)', backdropFilter: 'blur(4px)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1000 }}>
           <div style={{ background: WHITE, width: '90%', maxWidth: '750px', maxHeight: '90vh', overflowY: 'auto', borderRadius: '16px', border: `2px solid ${RED}`, padding: '28px', boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25)' }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '2px solid #E2E8F0', paddingBottom: '16px', marginBottom: '20px' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '2px solid var(--text-secondary, #E2E8F0)', paddingBottom: '16px', marginBottom: '20px' }}>
               <div>
                 <span style={{ background: '#FEE2E2', color: RED, padding: '2px 8px', borderRadius: '12px', fontSize: '0.7rem', fontWeight: 800 }}>RERA OFFICIAL PREVIEW</span>
                 <h3 style={{ margin: '4px 0 0 0', color: SLATE, fontSize: '1.25rem' }}>{previewDoc.title}</h3>
@@ -551,8 +551,8 @@ export const DocumentGenerationPanel: FC = () => {
               <button onClick={() => setPreviewDoc(null)} style={{ background: 'none', border: 'none', cursor: 'pointer', color: TEXT_MUTED, fontSize: '1.4rem' }}>✕</button>
             </div>
 
-            <div style={{ background: '#FAFAFA', border: '1px solid #CBD5E1', padding: '24px', borderRadius: '8px', fontFamily: 'Georgia, serif', color: '#334155' }}>
-              <div style={{ textAlign: 'center', borderBottom: '2px double #94A3B8', paddingBottom: '16px', marginBottom: '16px' }}>
+            <div style={{ background: 'var(--color-fafafa, #FAFAFA)', border: '1px solid var(--text-secondary, #CBD5E1)', padding: '24px', borderRadius: '8px', fontFamily: 'Georgia, serif', color: 'var(--color-334155, #334155)' }}>
+              <div style={{ textAlign: 'center', borderBottom: '2px double var(--color-94a3b8, #94A3B8)', paddingBottom: '16px', marginBottom: '16px' }}>
                 <div style={{ fontSize: '1.1rem', fontWeight: 'bold', color: SLATE, textTransform: 'uppercase', letterSpacing: '1px' }}>WHITE CAVES REAL ESTATE LLC</div>
                 <div style={{ fontSize: '0.75rem', color: TEXT_MUTED }}>ORN: 29481 | RERA Licensed Brokerage | Dubai, UAE</div>
                 <div style={{ fontSize: '0.9rem', fontWeight: 700, color: RED, marginTop: '8px', textTransform: 'uppercase' }}>OFFICIAL CONTRACT DOCUMENT PREVIEW</div>
@@ -570,7 +570,7 @@ export const DocumentGenerationPanel: FC = () => {
                 <p>All clauses contained herein comply with Dubai Law No. 26 of 2007 (as amended by Law No. 33 of 2008) governing relationships between Landlords and Tenants in the Emirate of Dubai.</p>
               </div>
 
-              <div style={{ marginTop: '24px', display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', paddingTop: '16px', borderTop: '1px dashed #CBD5E1' }}>
+              <div style={{ marginTop: '24px', display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', paddingTop: '16px', borderTop: '1px dashed var(--text-secondary, #CBD5E1)' }}>
                 <div>
                   <div style={{ fontSize: '0.7rem', color: TEXT_MUTED }}>STAMP & DIGITAL SEAL</div>
                   <div style={{ display: 'inline-block', border: `2px solid ${RED}`, color: RED, padding: '6px 12px', borderRadius: '50%', fontWeight: 900, fontSize: '0.75rem', transform: 'rotate(-5deg)', marginTop: '4px' }}>

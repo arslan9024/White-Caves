@@ -38,7 +38,7 @@ const SophiaSalesCRM = () => {
   return (
     <div className="assistant-dashboard sophia">
       <div className="assistant-header">
-        <div className="assistant-avatar" style={{ background: 'linear-gradient(135deg, #8B5CF6 0%, #D946EF 100%)' }}>
+        <div className="assistant-avatar" style={{ background: 'linear-gradient(135deg, var(--accent-purple, #8B5CF6) 0%, var(--color-d946ef, #D946EF) 100%)' }}>
           <Users size={28} />
         </div>
         <div className="assistant-info">
@@ -53,7 +53,7 @@ const SophiaSalesCRM = () => {
 
       <div className="quick-stats">
         <div className="stat-card">
-          <div className="stat-icon" style={{ background: 'rgba(139, 92, 246, 0.2)', color: '#8B5CF6' }}>
+          <div className="stat-icon" style={{ background: 'rgba(139, 92, 246, 0.2)', color: 'var(--accent-purple, #8B5CF6)' }}>
             <Target size={20} />
           </div>
           <div className="stat-content">
@@ -63,7 +63,7 @@ const SophiaSalesCRM = () => {
           <span className="stat-change positive"><ArrowUp size={14} /> 12%</span>
         </div>
         <div className="stat-card">
-          <div className="stat-icon" style={{ background: 'rgba(16, 185, 129, 0.2)', color: '#10B981' }}>
+          <div className="stat-icon" style={{ background: 'rgba(16, 185, 129, 0.2)', color: 'var(--accent-green, #10B981)' }}>
             <DollarSign size={20} />
           </div>
           <div className="stat-content">
@@ -73,7 +73,7 @@ const SophiaSalesCRM = () => {
           <span className="stat-change positive"><ArrowUp size={14} /> 8%</span>
         </div>
         <div className="stat-card">
-          <div className="stat-icon" style={{ background: 'rgba(245, 158, 11, 0.2)', color: '#F59E0B' }}>
+          <div className="stat-icon" style={{ background: 'rgba(245, 158, 11, 0.2)', color: 'var(--accent-gold, #F59E0B)' }}>
             <TrendingUp size={20} />
           </div>
           <div className="stat-content">
@@ -83,7 +83,7 @@ const SophiaSalesCRM = () => {
           <span className="stat-change positive"><ArrowUp size={14} /> 5%</span>
         </div>
         <div className="stat-card">
-          <div className="stat-icon" style={{ background: 'rgba(239, 68, 68, 0.2)', color: '#EF4444' }}>
+          <div className="stat-icon" style={{ background: 'rgba(239, 68, 68, 0.2)', color: 'var(--accent-red, #EF4444)' }}>
             <Clock size={20} />
           </div>
           <div className="stat-content">

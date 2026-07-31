@@ -260,7 +260,7 @@ export const {
 } = sidebarUISlice.actions;
 
 // Selectors
-const selectSidebarState = (state: { sidebarUI?: SidebarUIState }) => state.sidebarUI || initialState;
+const selectSidebarState = (state: { sidebarUI?: SidebarState }) => state.sidebarUI || initialState;
 
 export const selectSidebarConfig = (sidebarName: string) =>
   createSelector(

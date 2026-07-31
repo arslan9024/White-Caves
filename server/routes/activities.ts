@@ -184,7 +184,7 @@ router.get(
       },
     });
 
-    const workbook = new ExcelJS.Workbook();
+    const workbook = new (ExcelJS as any).Workbook();
     const sheet = workbook.addWorksheet('Audit Log');
 
     sheet.columns = [

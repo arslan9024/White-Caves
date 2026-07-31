@@ -175,7 +175,7 @@ export const ComplianceDepartmentView: FC = () => {
               { label: 'Last Checked', value: selectedCheck.lastChecked },
               { label: 'Due Date', value: selectedCheck.dueDate },
             ].map(row => (
-              <div key={row.label} style={{ display: 'flex', justifyContent: 'space-between', borderBottom: '1px solid #E2E8F0', padding: '8px 0', fontSize: '0.8rem' }}>
+              <div key={row.label} style={{ display: 'flex', justifyContent: 'space-between', borderBottom: '1px solid var(--text-secondary, #E2E8F0)', padding: '8px 0', fontSize: '0.8rem' }}>
                 <span style={{ color: TEXT_MUTED, fontWeight: 600 }}>{row.label}</span>
                 <span style={{ fontWeight: 700, color: SLATE }}>{row.value}</span>
               </div>

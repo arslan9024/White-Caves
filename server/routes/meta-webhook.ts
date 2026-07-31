@@ -173,14 +173,15 @@ router.post('/', async (req: Request, res: Response) => {
  */
 async function handleIncomingMessage(message: { from: string }, phoneNumberId: string): Promise<void> {
   try {
-    const customerPhone = normalizePhone(message.from) || message.from;
+    const msg = message as any;
+    const customerPhone = normalizePhone(msg.from) || msg.from;
     if (!customerPhone) {
       console.warn('[Meta Webhook] Ignoring inbound message with missing sender phone');
       return;
     }
 
-    const content = message.text?.body || '';
-    const messageType = message.type || 'text';
+    const content = msg.text?.body || '';
+    const messageType = msg.type || 'text';
 
     // W24-005: Consent opt-in/opt-out keywords
     const trimmed = content.trim().toUpperCase();
@@ -208,15 +209,15 @@ async function handleIncomingMessage(message: { from: string }, phoneNumberId: s
       return;
     }
 
-    const timestampEpoch = Number.parseInt(String(message.timestamp || ''), 10);
+    const timestampEpoch = Number.parseInt(String(msg.timestamp || ''), 10);
     const timestamp = Number.isFinite(timestampEpoch)
       ? new Date(timestampEpoch * 1000)
       : new Date();
 
     const contentHash = crypto.createHash('sha256').update(content).digest('hex').slice(0, 16);
     const waMessageId =
-      (message.id as string | undefined) ||
-      `meta-${customerPhone}-${messageType}-${String(message.timestamp || 'na')}-${contentHash}`;
+      (msg.id as string | undefined) ||
+      `meta-${customerPhone}-${messageType}-${String(msg.timestamp || 'na')}-${contentHash}`;
 
     console.log(`[Meta Webhook] Message from ${customerPhone}: ${content.substring(0, 80)}`);
 
@@ -402,9 +403,10 @@ async function handleStatusUpdate(status: { id?: string; status?: string }): Pro
       });
     }
 
+    const st = status as any;
     // If failed, log the error detail
-    if (newStatus === 'failed' && status.errors?.length) {
-      console.error(`[Meta Webhook] Message ${waMessageId} failed:`, status.errors);
+    if (newStatus === 'failed' && st.errors?.length) {
+      console.error(`[Meta Webhook] Message ${waMessageId} failed:`, st.errors);
     }
 
     // Emit real-time status update via Socket.io (Meta API channel)
@@ -412,9 +414,9 @@ async function handleStatusUpdate(status: { id?: string; status?: string }): Pro
       messageId: waMessageId,
       dbId: existing?.id,
       status: newStatus,
-      timestamp: new Date(parseInt(status.timestamp) * 1000),
-      recipientId: status.recipient_id,
-      errors: status.errors,
+      timestamp: new Date(parseInt(st.timestamp || '0') * 1000),
+      recipientId: st.recipient_id,
+      errors: st.errors,
     });
   } catch (error) {
     console.error('[Meta Webhook] Error handling status:', error);

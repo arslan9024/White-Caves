@@ -54,7 +54,7 @@ const Services: React.FC = () => {
             border: '1px solid rgba(212,175,55,0.2)',
           }}
         >
-          <h3 style={{ color: '#d4af37', marginBottom: '0.5rem' }}>For Tenants</h3>
+          <h3 style={{ color: 'var(--color-d4af37, #d4af37)', marginBottom: '0.5rem' }}>For Tenants</h3>
           <p style={{ color: 'rgba(255,255,255,0.7)', marginBottom: '1rem', fontSize: '0.9rem' }}>
             We help tenants find and rent their ideal home in Dubai with ease and confidence.
           </p>
@@ -75,7 +75,7 @@ const Services: React.FC = () => {
             border: '1px solid rgba(212,175,55,0.2)',
           }}
         >
-          <h3 style={{ color: '#d4af37', marginBottom: '0.5rem' }}>For Buyers</h3>
+          <h3 style={{ color: 'var(--color-d4af37, #d4af37)', marginBottom: '0.5rem' }}>For Buyers</h3>
           <p style={{ color: 'rgba(255,255,255,0.7)', marginBottom: '1rem', fontSize: '0.9rem' }}>
             We assist buyers in purchasing their dream home or investment property in Dubai.
           </p>

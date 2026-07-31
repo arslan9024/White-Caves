@@ -74,7 +74,7 @@ export class LindaClient extends EventEmitter {
   private qrCode: string | null = null;
   private messagesSent = 0;
   private messagesReceived = 0;
-  private client: unknown = null; // whatsapp-web.js Client instance
+  private client = null as any; // whatsapp-web.js Client instance
 
   constructor(config: LindaConfig = {}) {
     super();
@@ -196,17 +196,18 @@ export class LindaClient extends EventEmitter {
   /**
    * Normalise an incoming whatsapp-web.js message into our WhatsAppMessage shape.
    */
-  private async handleIncomingMessage(message: { id?: { id: string }; from?: string; to?: string; body?: string; hasMedia?: boolean; downloadMedia?: () => Promise<unknown> }): Promise<void> {
+  private async handleIncomingMessage(message: unknown): Promise<void> {
+    const msg = message as any;
     try {
       const wrapped: WhatsAppMessage = {
-        id: message.id?.id ?? `msg_${Date.now()}`,
-        from: message.from ?? '',
-        to: message.to,
-        body: message.body ?? '',
-        timestamp: new Date((message.timestamp ?? Date.now() / 1000) * 1000),
-        isFromMe: message.fromMe ?? false,
-        hasMedia: message.hasMedia ?? false,
-        type: this.detectMessageType(message),
+        id: msg.id?.id ?? `msg_${Date.now()}`,
+        from: msg.from ?? '',
+        to: msg.to,
+        body: msg.body ?? '',
+        timestamp: new Date((msg.timestamp ?? Date.now() / 1000) * 1000),
+        isFromMe: msg.fromMe ?? false,
+        hasMedia: msg.hasMedia ?? false,
+        type: this.detectMessageType(msg),
       };
 
       this.messageQueue.push(wrapped);

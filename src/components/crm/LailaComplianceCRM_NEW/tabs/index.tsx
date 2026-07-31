@@ -50,7 +50,7 @@ const LailaComplianceCRM = () => {
     <div className="crm-container compliance-crm">
       <div className="crm-header">
         <div className="header-title">
-          <div className="avatar" style={{ background: 'linear-gradient(135deg, #6366F1 0%, #8B5CF6 100%)' }}>
+          <div className="avatar" style={{ background: 'linear-gradient(135deg, var(--color-6366f1, #6366F1) 0%, var(--accent-purple, #8B5CF6) 100%)' }}>
             <span>🔒</span>
           </div>
           <div>

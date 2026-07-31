@@ -439,12 +439,12 @@ const SubagentCollaborationPanel = memo(
         <div style={cardStyle}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 10 }}>
             <Sparkles size={16} color="#FBBF24" />
-            <strong style={{ color: '#E2E8F0', fontSize: 13 }}>Subagent Collaboration</strong>
+            <strong style={{ color: 'var(--color-e2e8f0, #E2E8F0)', fontSize: 13 }}>Subagent Collaboration</strong>
           </div>
 
           {profile ? (
             <>
-              <p style={{ color: '#E2E8F0', margin: '0 0 8px 0', fontSize: 13 }}>
+              <p style={{ color: 'var(--color-e2e8f0, #E2E8F0)', margin: '0 0 8px 0', fontSize: 13 }}>
                 <strong>{profile.role}</strong>
               </p>
               <p style={mutedTextStyle}>
@@ -474,14 +474,14 @@ const SubagentCollaborationPanel = memo(
             <p style={{ ...mutedTextStyle, marginTop: 8 }}>Loading orchestration status…</p>
           ) : null}
           {statusError ? (
-            <p style={{ color: '#FCA5A5', fontSize: 12, marginTop: 8 }}>{statusError}</p>
+            <p style={{ color: 'var(--color-fca5a5, #FCA5A5)', fontSize: 12, marginTop: 8 }}>{statusError}</p>
           ) : null}
         </div>
 
         <div style={cardStyle}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 10 }}>
             <ShieldCheck size={16} color="#34D399" />
-            <strong style={{ color: '#E2E8F0', fontSize: 13 }}>Premium Quota Guard</strong>
+            <strong style={{ color: 'var(--color-e2e8f0, #E2E8F0)', fontSize: 13 }}>Premium Quota Guard</strong>
           </div>
           <p style={mutedTextStyle}>
             Weekly remaining:{' '}
@@ -489,7 +489,7 @@ const SubagentCollaborationPanel = memo(
             Business days left:{' '}
             <strong>{statusData?.quota.businessDaysRemaining ?? businessDaysRemaining}</strong>
           </p>
-          <p style={{ color: '#E2E8F0', margin: '6px 0 0 0', fontSize: 12 }}>
+          <p style={{ color: 'var(--color-e2e8f0, #E2E8F0)', margin: '6px 0 0 0', fontSize: 12 }}>
             Daily premium cap: <strong>{dailyPremiumCap}</strong> · Consumed:{' '}
             <strong>{premiumConsumedToday}</strong> · Remaining:{' '}
             <strong>{premiumRemainingToday}</strong>
@@ -500,9 +500,9 @@ const SubagentCollaborationPanel = memo(
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 10 }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
               <ShieldCheck size={16} color="#60A5FA" />
-              <strong style={{ color: '#E2E8F0', fontSize: 13 }}>Runtime Task Metrics & AI Telemetry</strong>
+              <strong style={{ color: 'var(--color-e2e8f0, #E2E8F0)', fontSize: 13 }}>Runtime Task Metrics & AI Telemetry</strong>
             </div>
-            <div style={{ background: 'rgba(16, 185, 129, 0.2)', border: '1px solid #10B981', color: '#34D399', padding: '2px 8px', borderRadius: '12px', fontSize: '0.7rem', fontWeight: 700 }}>
+            <div style={{ background: 'rgba(16, 185, 129, 0.2)', border: '1px solid var(--accent-green, #10B981)', color: 'var(--color-34d399, #34D399)', padding: '2px 8px', borderRadius: '12px', fontSize: '0.7rem', fontWeight: 700 }}>
               ⚡ 240ms Avg Latency
             </div>
           </div>
@@ -511,18 +511,18 @@ const SubagentCollaborationPanel = memo(
             <strong>{runtimeMetrics.runningTasks}</strong> · Blocked:{' '}
             <strong>{runtimeMetrics.blockedTasks}</strong>
           </p>
-          <p style={{ color: '#E2E8F0', margin: '6px 0 10px 0', fontSize: 12 }}>
+          <p style={{ color: 'var(--color-e2e8f0, #E2E8F0)', margin: '6px 0 10px 0', fontSize: 12 }}>
             Done: <strong>{runtimeMetrics.doneTasks}</strong> · Failed:{' '}
             <strong>{runtimeMetrics.failedTasks}</strong> · Premium tasks:{' '}
             <strong>{runtimeMetrics.premiumTasks}</strong>
           </p>
           <div style={{ background: 'rgba(15, 23, 42, 0.9)', padding: '10px', borderRadius: 8, border: '1px solid rgba(255, 255, 255, 0.08)' }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.75rem', color: '#94A3B8', fontWeight: 600, marginBottom: 4 }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.75rem', color: 'var(--color-94a3b8, #94A3B8)', fontWeight: 600, marginBottom: 4 }}>
               <span>AI Command Confidence Index</span>
-              <span style={{ color: '#34D399', fontWeight: 800 }}>98.4% Optimal</span>
+              <span style={{ color: 'var(--color-34d399, #34D399)', fontWeight: 800 }}>98.4% Optimal</span>
             </div>
             <div style={{ width: '100%', height: 6, background: 'rgba(255, 255, 255, 0.1)', borderRadius: 3, overflow: 'hidden' }}>
-              <div style={{ width: '98.4%', height: '100%', background: 'linear-gradient(90deg, #10B981, #34D399)', borderRadius: 3 }}></div>
+              <div style={{ width: '98.4%', height: '100%', background: 'linear-gradient(90deg, var(--accent-green, #10B981), var(--color-34d399, #34D399))', borderRadius: 3 }}></div>
             </div>
           </div>
         </div>
@@ -530,7 +530,7 @@ const SubagentCollaborationPanel = memo(
         <div style={cardStyle}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 10 }}>
             <Sparkles size={16} color="#A78BFA" />
-            <strong style={{ color: '#E2E8F0', fontSize: 13 }}>Persistence Snapshots</strong>
+            <strong style={{ color: 'var(--color-e2e8f0, #E2E8F0)', fontSize: 13 }}>Persistence Snapshots</strong>
           </div>
           <div style={{ display: 'flex', gap: 8, marginBottom: 10 }}>
             <button
@@ -677,7 +677,7 @@ const SubagentCollaborationPanel = memo(
           ) : null}
 
           {snapshots.length > 0 ? (
-            <ul style={{ margin: 0, paddingLeft: 16, color: '#CBD5E1', fontSize: 12 }}>
+            <ul style={{ margin: 0, paddingLeft: 16, color: 'var(--color-cbd5e1, #CBD5E1)', fontSize: 12 }}>
               {snapshots.map(snapshot => (
                 <li key={snapshot.fileName} style={{ marginBottom: 6 }}>
                   <strong>
@@ -848,7 +848,7 @@ const SubagentCollaborationPanel = memo(
                 paddingTop: 10,
               }}
             >
-              <p style={{ color: '#E2E8F0', margin: '0 0 4px 0', fontSize: 12 }}>
+              <p style={{ color: 'var(--color-e2e8f0, #E2E8F0)', margin: '0 0 4px 0', fontSize: 12 }}>
                 <strong>Snapshot detail:</strong> {selectedSnapshotDetail.fileName}
               </p>
               {selectedSnapshotDetail.label ? (
@@ -875,7 +875,7 @@ const SubagentCollaborationPanel = memo(
                 paddingTop: 10,
               }}
             >
-              <p style={{ color: '#E2E8F0', margin: '0 0 4px 0', fontSize: 12 }}>
+              <p style={{ color: 'var(--color-e2e8f0, #E2E8F0)', margin: '0 0 4px 0', fontSize: 12 }}>
                 <strong>Restore preview:</strong> {selectedSnapshotPreview.snapshot.fileName}
               </p>
               <p style={mutedTextStyle}>
@@ -898,7 +898,7 @@ const SubagentCollaborationPanel = memo(
                 paddingTop: 10,
               }}
             >
-              <p style={{ color: '#E2E8F0', margin: '0 0 4px 0', fontSize: 12 }}>
+              <p style={{ color: 'var(--color-e2e8f0, #E2E8F0)', margin: '0 0 4px 0', fontSize: 12 }}>
                 <strong>Snapshot compare:</strong>{' '}
                 {selectedSnapshotCompare.source.snapshot.fileName} →{' '}
                 {selectedSnapshotCompare.target.kind === 'current'
@@ -925,7 +925,7 @@ const SubagentCollaborationPanel = memo(
                 paddingTop: 10,
               }}
             >
-              <p style={{ color: '#E2E8F0', margin: '0 0 4px 0', fontSize: 12 }}>
+              <p style={{ color: 'var(--color-e2e8f0, #E2E8F0)', margin: '0 0 4px 0', fontSize: 12 }}>
                 <strong>Restore recommendation:</strong>{' '}
                 {selectedSnapshotRecommendation.source.fileName} →{' '}
                 {selectedSnapshotRecommendation.target}
@@ -944,13 +944,13 @@ const SubagentCollaborationPanel = memo(
         <div style={cardStyle}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 10 }}>
             <Link2 size={16} color="#60A5FA" />
-            <strong style={{ color: '#E2E8F0', fontSize: 13 }}>Routing Chain</strong>
+            <strong style={{ color: 'var(--color-e2e8f0, #E2E8F0)', fontSize: 13 }}>Routing Chain</strong>
           </div>
 
           {collaborations.length === 0 ? (
             <p style={mutedTextStyle}>No chain available for the selected assistant.</p>
           ) : (
-            <ul style={{ margin: 0, paddingLeft: 16, color: '#CBD5E1', fontSize: 12 }}>
+            <ul style={{ margin: 0, paddingLeft: 16, color: 'var(--color-cbd5e1, #CBD5E1)', fontSize: 12 }}>
               {collaborations.map(edge => (
                 <li key={`${edge.from}-${edge.to}`} style={{ marginBottom: 6 }}>
                   <strong>{edge.from}</strong> → <strong>{edge.to}</strong>
@@ -965,7 +965,7 @@ const SubagentCollaborationPanel = memo(
         <div style={cardStyle}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 10 }}>
             <Bot size={16} color="#22D3EE" />
-            <strong style={{ color: '#E2E8F0', fontSize: 13 }}>Task Assignment</strong>
+            <strong style={{ color: 'var(--color-e2e8f0, #E2E8F0)', fontSize: 13 }}>Task Assignment</strong>
           </div>
 
           {assistantId ? (
@@ -1050,7 +1050,7 @@ const SubagentCollaborationPanel = memo(
               ) : null}
 
               {!tierPolicyResult.allowed && tierPolicyResult.reason ? (
-                <p style={{ color: '#FCA5A5', fontSize: 12, margin: '0 0 8px 0' }}>
+                <p style={{ color: 'var(--color-fca5a5, #FCA5A5)', fontSize: 12, margin: '0 0 8px 0' }}>
                   {tierPolicyResult.reason}
                 </p>
               ) : null}
@@ -1077,7 +1077,7 @@ const SubagentCollaborationPanel = memo(
 
               {assistantTasks.length > 0 ? (
                 <ul
-                  style={{ margin: '10px 0 0 0', paddingLeft: 16, color: '#CBD5E1', fontSize: 12 }}
+                  style={{ margin: '10px 0 0 0', paddingLeft: 16, color: 'var(--color-cbd5e1, #CBD5E1)', fontSize: 12 }}
                 >
                   {assistantTasks.map(task => (
                     <li key={task.id} style={{ marginBottom: 6 }}>

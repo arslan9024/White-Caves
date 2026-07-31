@@ -80,7 +80,7 @@ export const AreaGuideGrid: React.FC = () => {
         <h2 style={{ fontSize: '2.25rem', fontWeight: 800, color: SLATE, margin: '0 0 10px' }}>
           Curated Dubai Area Guides
         </h2>
-        <p style={{ color: '#64748B', maxWidth: '640px', margin: '0 auto', fontSize: '1rem' }}>
+        <p style={{ color: 'var(--text-secondary, #64748B)', maxWidth: '640px', margin: '0 auto', fontSize: '1rem' }}>
           Discover lifestyle highlights, rental returns, and neighborhood vibes in Dubai's premier enclaves.
         </p>
       </div>
@@ -124,21 +124,21 @@ export const AreaGuideGrid: React.FC = () => {
             )}
 
             {/* Bottom Content Box */}
-            <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, padding: '24px', color: '#FFFFFF' }}>
+            <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, padding: '24px', color: 'var(--white, #FFFFFF)' }}>
               <h3 style={{ fontSize: '1.4rem', fontWeight: 800, margin: '0 0 6px' }}>
                 {area.name}
               </h3>
-              <p style={{ fontSize: '0.85rem', color: '#CBD5E1', margin: '0 0 14px' }}>
+              <p style={{ fontSize: '0.85rem', color: 'var(--color-cbd5e1, #CBD5E1)', margin: '0 0 14px' }}>
                 {area.tagline}
               </p>
 
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderTop: '1px solid rgba(255,255,255,0.2)', paddingTop: '12px' }}>
                 <div>
-                  <span style={{ fontSize: '0.7rem', color: '#94A3B8', display: 'block' }}>Avg Benchmark</span>
-                  <strong style={{ fontSize: '0.9rem', color: '#FFFFFF', fontWeight: 700 }}>{area.avgPrice}</strong>
+                  <span style={{ fontSize: '0.7rem', color: 'var(--color-94a3b8, #94A3B8)', display: 'block' }}>Avg Benchmark</span>
+                  <strong style={{ fontSize: '0.9rem', color: 'var(--white, #FFFFFF)', fontWeight: 700 }}>{area.avgPrice}</strong>
                 </div>
                 <div style={{ textAlign: 'right' }}>
-                  <span style={{ fontSize: '0.7rem', color: '#94A3B8', display: 'block' }}>Est. Performance</span>
+                  <span style={{ fontSize: '0.7rem', color: 'var(--color-94a3b8, #94A3B8)', display: 'block' }}>Est. Performance</span>
                   <strong style={{ fontSize: '0.9rem', color: RED, fontWeight: 800, background: '#FFFFFF', padding: '2px 8px', borderRadius: '6px' }}>
                     {area.roi}
                   </strong>

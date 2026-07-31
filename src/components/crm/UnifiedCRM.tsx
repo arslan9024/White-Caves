@@ -464,7 +464,7 @@ const UnifiedCRM: React.FC<UnifiedCRMProps> = ({
 
           {/* Features Section */}
           <Card>
-            <h3 style={{ marginTop: 0, marginBottom: 12, color: '#333' }}>Available Features</h3>
+            <h3 style={{ marginTop: 0, marginBottom: 12, color: 'var(--color-333, #333)' }}>Available Features</h3>
             <FeatureList>
               {currentConfig.features.map(feature => (
                 <li key={feature}>{feature.replace(/_/g, ' ').toUpperCase()}</li>

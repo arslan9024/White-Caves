@@ -489,14 +489,14 @@ export const CommissionsTab: React.FC<CommissionsTabProps> = ({ onAction }) => {
             </StatCard>
             <StatCard>
               <StatLabel>Pending</StatLabel>
-              <StatValue style={{ color: '#fde047', textShadow: '0 0 18px rgba(253,224,71,0.3)' }}>
+              <StatValue style={{ color: 'var(--color-fde047, #fde047)', textShadow: '0 0 18px rgba(253,224,71,0.3)' }}>
                 {formatAED(summary.pendingAmount)}
               </StatValue>
               <StatSub>Awaiting approval</StatSub>
             </StatCard>
             <StatCard>
               <StatLabel>Paid Out</StatLabel>
-              <StatValue style={{ color: '#4ade80', textShadow: '0 0 18px rgba(74,222,128,0.3)' }}>
+              <StatValue style={{ color: 'var(--color-4ade80, #4ade80)', textShadow: '0 0 18px rgba(74,222,128,0.3)' }}>
                 {formatAED(summary.paidAmount)}
               </StatValue>
               <StatSub>Settled to agents</StatSub>
@@ -577,7 +577,7 @@ export const CommissionsTab: React.FC<CommissionsTabProps> = ({ onAction }) => {
               {filtered.map(commission => (
                 <Tr key={commission._id}>
                   <Td>
-                    <div style={{ fontWeight: 600, color: '#fafafa' }}>
+                    <div style={{ fontWeight: 600, color: 'var(--color-fafafa, #fafafa)' }}>
                       {commission.propertyTitle}
                     </div>
                     <div
@@ -607,7 +607,7 @@ export const CommissionsTab: React.FC<CommissionsTabProps> = ({ onAction }) => {
                   <Td style={{ fontSize: '0.78rem', color: 'rgba(250,250,250,0.5)' }}>
                     {formatDate(commission.createdAt)}
                     {commission.paidAt && (
-                      <div style={{ color: '#4ade80', fontSize: '0.72rem' }}>
+                      <div style={{ color: 'var(--color-4ade80, #4ade80)', fontSize: '0.72rem' }}>
                         Paid {formatDate(commission.paidAt)}
                       </div>
                     )}

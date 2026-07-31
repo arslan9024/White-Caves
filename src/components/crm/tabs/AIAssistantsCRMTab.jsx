@@ -165,7 +165,7 @@ export default function AIAssistantsCRMTab() {
                 <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>Tasks</div>
               </div>
               <div style={{ flex: 1, background: 'var(--surface-secondary)', padding: '10px', borderRadius: '8px', textAlign: 'center' }}>
-                <div style={{ fontSize: '1.25rem', fontWeight: '700', color: '#10B981' }}>{assistant.accuracy}%</div>
+                <div style={{ fontSize: '1.25rem', fontWeight: '700', color: 'var(--accent-green, #10B981)' }}>{assistant.accuracy}%</div>
                 <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>Accuracy</div>
               </div>
             </div>

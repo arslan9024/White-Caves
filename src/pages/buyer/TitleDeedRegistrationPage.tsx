@@ -155,7 +155,7 @@ const TitleDeedRegistrationPage: FC = () => {
           <div style={{ display: 'flex', gap: '1rem', justifyContent: 'center', flexWrap: 'wrap' }}>
             <a
               href={`tel:${WC_PHONE}`}
-              style={{ padding: '0.75rem 1.5rem', background: 'var(--color-primary, #C6A84B)', color: '#fff', borderRadius: '8px', fontWeight: 600, textDecoration: 'none' }}
+              style={{ padding: '0.75rem 1.5rem', background: 'var(--color-primary, #C6A84B)', color: 'var(--white, #fff)', borderRadius: '8px', fontWeight: 600, textDecoration: 'none' }}
             >
               📞 Call Us Now
             </a>
@@ -163,7 +163,7 @@ const TitleDeedRegistrationPage: FC = () => {
               href={WC_WHATSAPP_URL('Hi, I would like to start my title deed registration.')}
               target="_blank"
               rel="noopener noreferrer"
-              style={{ padding: '0.75rem 1.5rem', background: '#25D366', color: '#fff', borderRadius: '8px', fontWeight: 600, textDecoration: 'none' }}
+              style={{ padding: '0.75rem 1.5rem', background: 'var(--color-25d366, #25D366)', color: 'var(--white, #fff)', borderRadius: '8px', fontWeight: 600, textDecoration: 'none' }}
             >
               💬 WhatsApp Us
             </a>

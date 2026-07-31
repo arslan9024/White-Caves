@@ -100,10 +100,10 @@ export const ConflictResolutionToast: FC<ConflictResolutionToastProps> = ({
       </div>
 
       <div style={{ flex: 1 }}>
-        <h4 style={{ margin: 0, fontSize: '0.9375rem', fontWeight: 700, color: '#1E293B' }}>
+        <h4 style={{ margin: 0, fontSize: '0.9375rem', fontWeight: 700, color: 'var(--color-1e293b, #1E293B)' }}>
           {conflicts.length > 0 ? 'Offline Edits Reconciled' : 'Offline Changes Synced'}
         </h4>
-        <p style={{ margin: '4px 0 0 0', fontSize: '0.8125rem', color: '#475569', lineHeight: 1.4 }}>
+        <p style={{ margin: '4px 0 0 0', fontSize: '0.8125rem', color: 'var(--color-475569, #475569)', lineHeight: 1.4 }}>
           {syncedCount} offline action{syncedCount > 1 ? 's' : ''} synchronized with cloud servers.
           {conflicts.length > 0 &&
             ` Auto-resolved ${conflicts.length} concurrent field conflict${conflicts.length > 1 ? 's' : ''} using vector timestamping.`}

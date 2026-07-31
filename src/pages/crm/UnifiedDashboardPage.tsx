@@ -105,29 +105,29 @@ export const UnifiedDashboardPage: FC = () => {
               LEVEL 5 MASTER MD
             </span>
           </div>
-          <p style={{ margin: 0, color: '#94A3B8', fontSize: '0.9rem' }}>
+          <p style={{ margin: 0, color: 'var(--color-94a3b8, #94A3B8)', fontSize: '0.9rem' }}>
             White Caves Real Estate LLC — 14-Step Operational CRM Deck & Enterprise Dashboard
           </p>
         </div>
 
         <div style={{ display: 'flex', gap: '20px', textAlign: 'right' }}>
           <div>
-            <div style={{ fontSize: '0.75rem', color: '#94A3B8' }}>Active Inventory</div>
-            <div style={{ fontSize: '1.25rem', fontWeight: 800, color: '#38BDF8' }}>{propertiesList.length} Units</div>
+            <div style={{ fontSize: '0.75rem', color: 'var(--color-94a3b8, #94A3B8)' }}>Active Inventory</div>
+            <div style={{ fontSize: '1.25rem', fontWeight: 800, color: 'var(--color-38bdf8, #38BDF8)' }}>{propertiesList.length} Units</div>
           </div>
           <div>
-            <div style={{ fontSize: '0.75rem', color: '#94A3B8' }}>Total Workforce</div>
-            <div style={{ fontSize: '1.25rem', fontWeight: 800, color: '#4ADE80' }}>{employees.length} Staff</div>
+            <div style={{ fontSize: '0.75rem', color: 'var(--color-94a3b8, #94A3B8)' }}>Total Workforce</div>
+            <div style={{ fontSize: '1.25rem', fontWeight: 800, color: 'var(--color-4ade80, #4ADE80)' }}>{employees.length} Staff</div>
           </div>
           <div>
-            <div style={{ fontSize: '0.75rem', color: '#94A3B8' }}>Pipeline Value</div>
-            <div style={{ fontSize: '1.25rem', fontWeight: 800, color: '#FACC15' }}>AED 148.5M</div>
+            <div style={{ fontSize: '0.75rem', color: 'var(--color-94a3b8, #94A3B8)' }}>Pipeline Value</div>
+            <div style={{ fontSize: '1.25rem', fontWeight: 800, color: 'var(--color-facc15, #FACC15)' }}>AED 148.5M</div>
           </div>
         </div>
       </div>
 
       {/* High-Density 14-Step Numbered Operations Tab Bar */}
-      <div style={{ display: 'flex', gap: '8px', overflowX: 'auto', paddingBottom: '8px', borderBottom: '1px solid #E2E8F0' }}>
+      <div style={{ display: 'flex', gap: '8px', overflowX: 'auto', paddingBottom: '8px', borderBottom: '1px solid var(--text-secondary, #E2E8F0)' }}>
         {ORDERED_TABS.map(tab => {
           const isActive = activeDepartment === tab.id;
           return (
@@ -159,12 +159,12 @@ export const UnifiedDashboardPage: FC = () => {
       </div>
 
       {/* Department Viewport Area */}
-      <React.Suspense fallback={<div style={{ padding: '40px', textAlign: 'center', color: '#64748B' }}>Loading Department Viewport...</div>}>
+      <React.Suspense fallback={<div style={{ padding: '40px', textAlign: 'center', color: 'var(--text-secondary, #64748B)' }}>Loading Department Viewport...</div>}>
         {activeDepartment === 'sales' && (
           <div style={{ background: WHITE, borderRadius: '16px', padding: '24px', border: '1px solid #E2E8F0' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '20px' }}>
               <h2 style={{ fontSize: '1.25rem', fontWeight: 700, margin: 0 }}>01. Sales Kanban Pipeline (100 Active Leads)</h2>
-              <button onClick={() => navigate('/crm')} style={{ background: CARD_BG, border: '1px solid #E2E8F0', padding: '6px 12px', borderRadius: '8px', fontSize: '0.8rem', cursor: 'pointer' }}>
+              <button onClick={() => navigate('/crm')} style={{ background: CARD_BG, border: '1px solid var(--text-secondary, #E2E8F0)', padding: '6px 12px', borderRadius: '8px', fontSize: '0.8rem', cursor: 'pointer' }}>
                 ← Return to Dashboard
               </button>
             </div>
@@ -172,7 +172,7 @@ export const UnifiedDashboardPage: FC = () => {
               {['New', 'Contacted', 'ViewingScheduled', 'Negotiating', 'Closed'].map(stage => {
                 const stageLeads = leadsList.filter(l => l.status === stage);
                 return (
-                  <div key={stage} style={{ background: CARD_BG, borderRadius: '12px', padding: '16px', border: '1px solid #E2E8F0' }}>
+                  <div key={stage} style={{ background: CARD_BG, borderRadius: '12px', padding: '16px', border: '1px solid var(--text-secondary, #E2E8F0)' }}>
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px' }}>
                       <div style={{ fontSize: '0.875rem', fontWeight: 700, color: SLATE }}>
                         {stage} ({stageLeads.length})
@@ -198,8 +198,8 @@ export const UnifiedDashboardPage: FC = () => {
                         }}
                       >
                         <div style={{ fontWeight: 600, fontSize: '0.85rem' }}>{lead.name}</div>
-                        <div style={{ fontSize: '0.75rem', color: '#64748B' }}>Budget: AED {lead.budgetAED?.toLocaleString()}</div>
-                        <div style={{ fontSize: '0.7rem', color: '#059669', marginTop: '4px' }}>Nadia Score: {lead.aiConfidenceScore}/100</div>
+                        <div style={{ fontSize: '0.75rem', color: 'var(--text-secondary, #64748B)' }}>Budget: AED {lead.budgetAED?.toLocaleString()}</div>
+                        <div style={{ fontSize: '0.7rem', color: 'var(--accent-green, #059669)', marginTop: '4px' }}>Nadia Score: {lead.aiConfidenceScore}/100</div>
                       </div>
                     ))}
                   </div>
@@ -226,10 +226,10 @@ export const UnifiedDashboardPage: FC = () => {
             <h2 style={{ fontSize: '1.25rem', fontWeight: 700, marginBottom: '16px' }}>14. Employee Directory (100 Staff Members)</h2>
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '12px' }}>
               {employees.slice(0, 15).map(emp => (
-                <div key={emp.id} style={{ background: CARD_BG, padding: '12px', borderRadius: '8px', border: '1px solid #E2E8F0' }}>
+                <div key={emp.id} style={{ background: CARD_BG, padding: '12px', borderRadius: '8px', border: '1px solid var(--text-secondary, #E2E8F0)' }}>
                   <div style={{ fontWeight: 700 }}>{emp.name}</div>
                   <div style={{ fontSize: '0.8rem', color: RED }}>{emp.roleTitle} ({emp.department})</div>
-                  <div style={{ fontSize: '0.75rem', color: '#64748B', fontFamily: 'monospace' }}>IBAN: {emp.iban.slice(0, 12)}...</div>
+                  <div style={{ fontSize: '0.75rem', color: 'var(--text-secondary, #64748B)', fontFamily: 'monospace' }}>IBAN: {emp.iban.slice(0, 12)}...</div>
                 </div>
               ))}
             </div>

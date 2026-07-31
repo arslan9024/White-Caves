@@ -86,7 +86,7 @@ const SettingsTab: React.FC<SettingsTabProps> = ({ data: _data, onAction, onSave
         </div>
       )}
       {notificationError && (
-        <div className="crud-toast error" role="status" style={{ background: '#EF4444' }}>
+        <div className="crud-toast error" role="status" style={{ background: 'var(--accent-red, #EF4444)' }}>
           ⚠️ {notificationError}
         </div>
       )}

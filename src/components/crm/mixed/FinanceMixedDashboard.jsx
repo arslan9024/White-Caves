@@ -87,7 +87,7 @@ export default function FinanceMixedDashboard({ subItem = 'payments', selectedAs
                 <tr key={i} style={{ borderBottom: '1px solid var(--border-color)' }}>
                   <td style={{ padding: '12px', fontSize: '0.85rem', fontWeight: 500 }}>{tx.invoice}</td>
                   <td style={{ padding: '12px', fontSize: '0.85rem', color: 'var(--text-muted)' }}>{tx.client}</td>
-                  <td style={{ padding: '12px', fontSize: '0.85rem', fontWeight: 600, color: '#B03737' }}>{tx.amount}</td>
+                  <td style={{ padding: '12px', fontSize: '0.85rem', fontWeight: 600, color: 'var(--color-b03737, #B03737)' }}>{tx.amount}</td>
                   <td style={{ padding: '12px' }}>
                     <span style={{ 
                       padding: '4px 10px', borderRadius: '12px', fontSize: '0.75rem', fontWeight: 500,

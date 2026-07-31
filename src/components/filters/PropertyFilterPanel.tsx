@@ -87,7 +87,7 @@ function RadioGroup<T extends string>({
                     ? `${groupLabel}: ${opt.label} (${opt.count})`
                     : `${groupLabel}: ${opt.label}`
                 }
-                style={{ accentColor: '#C9A84C', width: 16, height: 16, cursor: 'pointer', flexShrink: 0 }}
+                style={{ accentColor: 'var(--color-c9a84c, #C9A84C)', width: 16, height: 16, cursor: 'pointer', flexShrink: 0 }}
               />
               <span>{opt.label}</span>
               {opt.count !== undefined && (
@@ -154,7 +154,7 @@ export const PropertyFilterPanel: FC<PropertyFilterPanelProps> = ({
     <aside
       className={className}
       aria-label="Property filters"
-      style={{ padding: 20, backgroundColor: '#fff', borderRadius: 12, border: '1px solid #e8e4dc' }}
+      style={{ padding: 20, backgroundColor: 'var(--white, #fff)', borderRadius: 12, border: '1px solid var(--color-e8e4dc, #e8e4dc)' }}
     >
       <RadioGroup
         groupLabel="Furnishing"

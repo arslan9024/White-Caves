@@ -89,7 +89,7 @@ const FluxCRM = () => {
       <div className="assistant-header">
         <div
           className="assistant-avatar"
-          style={{ background: 'linear-gradient(135deg, #7C3AED 0%, #5B21B6 100%)' }}
+          style={{ background: 'linear-gradient(135deg, var(--accent-purple, #7C3AED) 0%, var(--color-5b21b6, #5B21B6) 100%)' }}
         >
           <Activity size={28} />
         </div>
@@ -108,7 +108,7 @@ const FluxCRM = () => {
           <div className="stat-card" key={c.name}>
             <div
               className="stat-icon"
-              style={{ background: 'rgba(124,58,237,0.15)', color: '#7C3AED' }}
+              style={{ background: 'rgba(124,58,237,0.15)', color: 'var(--accent-purple, #7C3AED)' }}
             >
               <Wifi size={20} />
             </div>
@@ -212,7 +212,7 @@ const FluxCRM = () => {
                 </div>
                 <div style={{ flex: 1 }}>
                   <p style={{ margin: 0, fontSize: 13 }}>{e.msg}</p>
-                  <span style={{ fontSize: 11, color: '#9ca3af' }}>{e.time}</span>
+                  <span style={{ fontSize: 11, color: 'var(--text-secondary, #9ca3af)' }}>{e.time}</span>
                 </div>
                 {e.change && (
                   <span
@@ -247,7 +247,7 @@ const FluxCRM = () => {
             >
               <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 12 }}>
                 <strong>{c.name}</strong>
-                <span style={{ fontWeight: 800, fontSize: 20, color: '#7C3AED' }}>
+                <span style={{ fontWeight: 800, fontSize: 20, color: 'var(--accent-purple, #7C3AED)' }}>
                   {c.value}
                   {c.unit && ` ${c.unit}`}
                 </span>
@@ -319,7 +319,7 @@ const FluxCRM = () => {
                   }}
                 />
               </div>
-              <span style={{ fontSize: 13, color: a.active ? '#111827' : '#9ca3af' }}>
+              <span style={{ fontSize: 13, color: a.active ? 'var(--color-111827, #111827)' : 'var(--text-secondary, #9ca3af)' }}>
                 {a.rule}
               </span>
             </div>

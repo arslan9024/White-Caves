@@ -54,7 +54,7 @@ const HazelFrontendCRM = () => {
     <div className="crm-container frontend-crm">
       <div className="crm-header">
         <div className="header-title">
-          <div className="avatar" style={{ background: 'linear-gradient(135deg, #F472B6 0%, #EC4899 100%)' }}>
+          <div className="avatar" style={{ background: 'linear-gradient(135deg, var(--color-f472b6, #F472B6) 0%, var(--color-ec4899, #EC4899) 100%)' }}>
             <span>🎨</span>
           </div>
           <div>

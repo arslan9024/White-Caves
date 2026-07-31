@@ -113,7 +113,7 @@ export const LeasingIntakeModal: React.FC<LeasingIntakeModalProps> = ({ isOpen, 
       case 1:
         return (
           <div>
-            <h3 style={{ color: '#ff6b6b', marginTop: 0, marginBottom: '16px' }}>Step 1 – Core Lease Details</h3>
+            <h3 style={{ color: 'var(--color-ff6b6b, #ff6b6b)', marginTop: 0, marginBottom: '16px' }}>Step 1 – Core Lease Details</h3>
             <input placeholder="Property ID" value={propertyId} onChange={(e: React.ChangeEvent<HTMLInputElement>) => setPropertyId(e.target.value)} style={inputStyle} />
             <input placeholder="Tenant ID" value={tenantId} onChange={(e: React.ChangeEvent<HTMLInputElement>) => setTenantId(e.target.value)} style={inputStyle} />
             <input type="date" value={startDate} onChange={(e: React.ChangeEvent<HTMLInputElement>) => setStartDate(e.target.value)} style={inputStyle} />
@@ -128,7 +128,7 @@ export const LeasingIntakeModal: React.FC<LeasingIntakeModalProps> = ({ isOpen, 
       case 2:
         return (
           <div>
-            <h3 style={{ color: '#ff6b6b', marginTop: 0, marginBottom: '16px' }}>Step 2 – Ejari Compliance</h3>
+            <h3 style={{ color: 'var(--color-ff6b6b, #ff6b6b)', marginTop: 0, marginBottom: '16px' }}>Step 2 – Ejari Compliance</h3>
             <input placeholder="Ejari Number" value={ejariNumber} onChange={(e: React.ChangeEvent<HTMLInputElement>) => setEjariNumber(e.target.value)} style={inputStyle} />
             <select value={ejariStatus} onChange={(e: React.ChangeEvent<HTMLSelectElement>) => setEjariStatus(e.target.value as any)} style={inputStyle}>
               <option value="Pending">Pending</option>
@@ -145,7 +145,7 @@ export const LeasingIntakeModal: React.FC<LeasingIntakeModalProps> = ({ isOpen, 
       case 3:
         return (
           <div>
-            <h3 style={{ color: '#ff6b6b', marginTop: 0, marginBottom: '16px' }}>Step 3 – PDC Cheque Schedule</h3>
+            <h3 style={{ color: 'var(--color-ff6b6b, #ff6b6b)', marginTop: 0, marginBottom: '16px' }}>Step 3 – PDC Cheque Schedule</h3>
             <select value={chequeCount} onChange={(e: React.ChangeEvent<HTMLSelectElement>) => setChequeCount(Number(e.target.value) as any)} style={inputStyle}>
               <option value={1}>1 – Annual</option>
               <option value={2}>2 – Bi‑annual</option>
@@ -153,11 +153,11 @@ export const LeasingIntakeModal: React.FC<LeasingIntakeModalProps> = ({ isOpen, 
               <option value={6}>6 – Bi‑monthly</option>
               <option value={12}>12 – Monthly</option>
             </select>
-            <button style={{ ...buttonStyle, backgroundColor: '#3b82f6', marginBottom: '16px' }} onClick={handleGenerateSchedule}>Generate Schedule</button>
+            <button style={{ ...buttonStyle, backgroundColor: 'var(--accent-blue, #3b82f6)', marginBottom: '16px' }} onClick={handleGenerateSchedule}>Generate Schedule</button>
             {pdcSchedule.length > 0 && (
-              <table style={{ width: '100%', borderCollapse: 'collapse', color: '#fff', fontSize: '0.85rem', marginBottom: '16px' }}>
+              <table style={{ width: '100%', borderCollapse: 'collapse', color: 'var(--white, #fff)', fontSize: '0.85rem', marginBottom: '16px' }}>
                 <thead>
-                  <tr style={{ borderBottom: '1px solid #333', textAlign: 'left' }}>
+                  <tr style={{ borderBottom: '1px solid var(--color-333, #333)', textAlign: 'left' }}>
                     <th style={{ padding: '8px' }}>Cheque #</th>
                     <th style={{ padding: '8px' }}>Bank</th>
                     <th style={{ padding: '8px' }}>Due Date</th>
@@ -167,7 +167,7 @@ export const LeasingIntakeModal: React.FC<LeasingIntakeModalProps> = ({ isOpen, 
                 </thead>
                 <tbody>
                   {pdcSchedule.map((c) => (
-                    <tr key={c.chequeNumber} style={{ borderBottom: '1px solid #222' }}>
+                    <tr key={c.chequeNumber} style={{ borderBottom: '1px solid var(--color-222, #222)' }}>
                       <td style={{ padding: '8px' }}>{c.chequeNumber}</td>
                       <td style={{ padding: '8px' }}>{c.bankName}</td>
                       <td style={{ padding: '8px' }}>{c.dueDate}</td>
@@ -187,17 +187,17 @@ export const LeasingIntakeModal: React.FC<LeasingIntakeModalProps> = ({ isOpen, 
       case 4:
         return (
           <div>
-            <h3 style={{ color: '#ff6b6b', marginTop: 0, marginBottom: '16px' }}>Step 4 – Review & Submit</h3>
-            <pre style={{ background: '#111', padding: '1rem', borderRadius: '4px', color: '#00ffcc', fontSize: '0.8rem', overflowX: 'auto', maxHeight: '200px' }}>
+            <h3 style={{ color: 'var(--color-ff6b6b, #ff6b6b)', marginTop: 0, marginBottom: '16px' }}>Step 4 – Review & Submit</h3>
+            <pre style={{ background: 'var(--color-111, #111)', padding: '1rem', borderRadius: '4px', color: 'var(--color-00ffcc, #00ffcc)', fontSize: '0.8rem', overflowX: 'auto', maxHeight: '200px' }}>
 {JSON.stringify({ propertyId, tenantId, startDate, endDate, monthlyRent, depositAmount, ejariNumber, ejariStatus, chequeCount: chequeCountToFrequencyLabel(chequeCount), pdcSchedule }, null, 2)}
             </pre>
-            <label style={{ display: 'flex', alignItems: 'center', gap: '8px', color: '#fff', margin: '16px 0', cursor: 'pointer' }}>
+            <label style={{ display: 'flex', alignItems: 'center', gap: '8px', color: 'var(--white, #fff)', margin: '16px 0', cursor: 'pointer' }}>
               <input type="checkbox" checked={finalize} onChange={(e: React.ChangeEvent<HTMLInputElement>) => setFinalize(e.target.checked)} />
               Confirm I have verified all data
             </label>
             <div style={{ textAlign: 'right', marginTop: '16px' }}>
               <button style={secondaryBtnStyle} onClick={back}>← Back</button>
-              <button style={{ ...buttonStyle, backgroundColor: finalize ? '#10b981' : '#555', cursor: finalize ? 'pointer' : 'not-allowed' }} disabled={!finalize || loading} onClick={handleSubmit}>
+              <button style={{ ...buttonStyle, backgroundColor: finalize ? 'var(--accent-green, #10b981)' : 'var(--color-555, #555)', cursor: finalize ? 'pointer' : 'not-allowed' }} disabled={!finalize || loading} onClick={handleSubmit}>
                 {loading ? 'Creating...' : 'Create Lease'}
               </button>
             </div>
@@ -208,10 +208,10 @@ export const LeasingIntakeModal: React.FC<LeasingIntakeModalProps> = ({ isOpen, 
 
   return (
     <div style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: 'rgba(0,0,0,0.85)', backdropFilter: 'blur(8px)', display: 'flex', justifyContent: 'center', alignItems: 'center', zIndex: 1000 }}>
-      <div style={{ backgroundColor: '#0d0d1a', border: '1px solid #333', borderRadius: '12px', padding: '24px', width: '90%', maxWidth: '700px', maxHeight: '90vh', overflowY: 'auto', color: '#fff' }}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid #222', paddingBottom: '12px', marginBottom: '20px' }}>
+      <div style={{ backgroundColor: 'var(--color-0d0d1a, #0d0d1a)', border: '1px solid var(--color-333, #333)', borderRadius: '12px', padding: '24px', width: '90%', maxWidth: '700px', maxHeight: '90vh', overflowY: 'auto', color: 'var(--white, #fff)' }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid var(--color-222, #222)', paddingBottom: '12px', marginBottom: '20px' }}>
           <h2 style={{ margin: 0, fontSize: '1.25rem' }}>Leasing Intake Wizard</h2>
-          <button onClick={onClose} style={{ background: 'none', border: 'none', color: '#888', fontSize: '1.5rem', cursor: 'pointer' }}>×</button>
+          <button onClick={onClose} style={{ background: 'none', border: 'none', color: 'var(--color-888, #888)', fontSize: '1.5rem', cursor: 'pointer' }}>×</button>
         </div>
         {renderStep()}
       </div>

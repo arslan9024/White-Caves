@@ -122,7 +122,7 @@ const QuillCRM = () => {
       <div className="assistant-header">
         <div
           className="assistant-avatar"
-          style={{ background: 'linear-gradient(135deg, #64748B 0%, #334155 100%)' }}
+          style={{ background: 'linear-gradient(135deg, var(--text-secondary, #64748B) 0%, var(--color-334155, #334155) 100%)' }}
         >
           <FileEdit size={28} />
         </div>
@@ -140,7 +140,7 @@ const QuillCRM = () => {
         <div className="stat-card">
           <div
             className="stat-icon"
-            style={{ background: 'rgba(100,116,139,0.15)', color: '#64748B' }}
+            style={{ background: 'rgba(100,116,139,0.15)', color: 'var(--text-secondary, #64748B)' }}
           >
             <FileText size={20} />
           </div>
@@ -152,7 +152,7 @@ const QuillCRM = () => {
         <div className="stat-card">
           <div
             className="stat-icon"
-            style={{ background: 'rgba(34,197,94,0.15)', color: '#22C55E' }}
+            style={{ background: 'rgba(34,197,94,0.15)', color: 'var(--accent-green, #22C55E)' }}
           >
             <CheckCircle size={20} />
           </div>
@@ -166,7 +166,7 @@ const QuillCRM = () => {
         <div className="stat-card">
           <div
             className="stat-icon"
-            style={{ background: 'rgba(59,130,246,0.15)', color: '#3B82F6' }}
+            style={{ background: 'rgba(59,130,246,0.15)', color: 'var(--accent-blue, #3B82F6)' }}
           >
             <Layers size={20} />
           </div>
@@ -178,7 +178,7 @@ const QuillCRM = () => {
         <div className="stat-card">
           <div
             className="stat-icon"
-            style={{ background: 'rgba(245,158,11,0.15)', color: '#F59E0B' }}
+            style={{ background: 'rgba(245,158,11,0.15)', color: 'var(--accent-gold, #F59E0B)' }}
           >
             <Clock size={20} />
           </div>
@@ -229,7 +229,7 @@ const QuillCRM = () => {
                   <td>
                     <span className="status-badge">{d.type}</span>
                   </td>
-                  <td style={{ fontSize: 12, color: '#6b7280' }}>{d.created}</td>
+                  <td style={{ fontSize: 12, color: 'var(--text-secondary, #6b7280)' }}>{d.created}</td>
                   <td>
                     <span
                       className="status-badge"
@@ -309,11 +309,11 @@ const QuillCRM = () => {
               <FileText size={18} color="#64748B" />
               <div style={{ flex: 1 }}>
                 <strong>{t.name}</strong>
-                <div style={{ fontSize: 12, color: '#6b7280', marginTop: 2 }}>
+                <div style={{ fontSize: 12, color: 'var(--text-secondary, #6b7280)', marginTop: 2 }}>
                   {t.category} · {t.lang} · {t.uses} uses
                 </div>
               </div>
-              <span style={{ fontSize: 11, color: '#9ca3af' }}>Used {t.lastUsed}</span>
+              <span style={{ fontSize: 11, color: 'var(--text-secondary, #9ca3af)' }}>Used {t.lastUsed}</span>
               <button className="action-btn primary" style={{ fontSize: 12, padding: '6px 14px' }}>
                 <Plus size={12} /> Generate
               </button>
@@ -339,7 +339,7 @@ const QuillCRM = () => {
             ].map(f => (
               <div key={f.label}>
                 <label
-                  style={{ fontSize: 13, color: '#6b7280', marginBottom: 6, display: 'block' }}
+                  style={{ fontSize: 13, color: 'var(--text-secondary, #6b7280)', marginBottom: 6, display: 'block' }}
                 >
                   {f.label}
                 </label>

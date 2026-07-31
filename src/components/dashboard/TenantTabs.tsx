@@ -202,7 +202,7 @@ export const TenantLease: React.FC = () => {
       {lease.terms && (
         <div style={S.card}>
           <h3 style={S.cardTitle}>📋 Lease Terms</h3>
-          <p style={{ color: '#6b7280', lineHeight: 1.6, whiteSpace: 'pre-wrap' }}>{lease.terms}</p>
+          <p style={{ color: 'var(--text-secondary, #6b7280)', lineHeight: 1.6, whiteSpace: 'pre-wrap' }}>{lease.terms}</p>
         </div>
       )}
     </div>
@@ -376,7 +376,7 @@ export const TenantMaintenance: React.FC = () => {
                 </span>
               </div>
               {r.description && (
-                <p style={{ color: '#6b7280', fontSize: '0.85rem', margin: '0 0 0.5rem 0' }}>
+                <p style={{ color: 'var(--text-secondary, #6b7280)', fontSize: '0.85rem', margin: '0 0 0.5rem 0' }}>
                   {r.description}
                 </p>
               )}

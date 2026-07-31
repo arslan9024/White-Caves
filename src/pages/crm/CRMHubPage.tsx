@@ -408,7 +408,7 @@ const CRMHubPage: FC = () => {
               <BackButton onClick={handleBackToHub}>← Back to CRM Hub</BackButton>
               <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
                 <span style={{ fontSize: '1.25rem' }}>{moduleDef.icon}</span>
-                <span style={{ fontWeight: 600, color: '#ffffff' }}>{moduleDef.label}</span>
+                <span style={{ fontWeight: 600, color: 'var(--white, #ffffff)' }}>{moduleDef.label}</span>
               </div>
               <Badge variant="success" size="small">
                 Active

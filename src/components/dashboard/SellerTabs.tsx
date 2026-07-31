@@ -65,7 +65,7 @@ export const SellerListings: React.FC = () => {
                     <td style={S.td}>
                       <strong>{p.title}</strong>
                       <br />
-                      <span style={{ fontSize: '0.8rem', color: '#6b7280' }}>📍 {p.location}</span>
+                      <span style={{ fontSize: '0.8rem', color: 'var(--text-secondary, #6b7280)' }}>📍 {p.location}</span>
                     </td>
                     <td style={S.td}>{S.formatStatus(p.type ?? '—')}</td>
                     <td style={{ ...S.td, fontWeight: 600 }}>{S.formatCurrency(p.price)}</td>
@@ -136,7 +136,7 @@ export const SellerInquiries: React.FC = () => {
                     <td style={S.td}>
                       <strong>{l.name || l.contactName || '—'}</strong>
                       <br />
-                      <span style={{ fontSize: '0.8rem', color: '#6b7280' }}>{l.email || l.phone || '—'}</span>
+                      <span style={{ fontSize: '0.8rem', color: 'var(--text-secondary, #6b7280)' }}>{l.email || l.phone || '—'}</span>
                     </td>
                     <td style={S.td}>{l.property?.title ?? l.propertyId ?? '—'}</td>
                     <td style={S.td}>
@@ -217,7 +217,7 @@ export const MarketInsights: React.FC = () => {
                       {a.demand}
                     </span>
                   </td>
-                  <td style={{ ...S.td, color: '#16a34a', fontWeight: 600 }}>{a.change}</td>
+                  <td style={{ ...S.td, color: 'var(--accent-green, #16a34a)', fontWeight: 600 }}>{a.change}</td>
                 </tr>
               ))}
             </tbody>

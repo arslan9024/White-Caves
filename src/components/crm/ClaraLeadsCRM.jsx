@@ -465,21 +465,21 @@ const ClaraLeadsCRM = ({ activeFeature }) => {
         <div className="stat-card">
           <span className="stat-icon">🔥</span>
           <div className="stat-content">
-            <span className="stat-value" style={{ color: '#ef4444' }}>{stats.hot}</span>
+            <span className="stat-value" style={{ color: 'var(--accent-red, #ef4444)' }}>{stats.hot}</span>
             <span className="stat-label">Hot Leads</span>
           </div>
         </div>
         <div className="stat-card">
           <span className="stat-icon">☀️</span>
           <div className="stat-content">
-            <span className="stat-value" style={{ color: '#f59e0b' }}>{stats.warm}</span>
+            <span className="stat-value" style={{ color: 'var(--accent-gold, #f59e0b)' }}>{stats.warm}</span>
             <span className="stat-label">Warm Leads</span>
           </div>
         </div>
         <div className="stat-card">
           <span className="stat-icon">❄️</span>
           <div className="stat-content">
-            <span className="stat-value" style={{ color: '#3b82f6' }}>{stats.cold}</span>
+            <span className="stat-value" style={{ color: 'var(--accent-blue, #3b82f6)' }}>{stats.cold}</span>
             <span className="stat-label">Cold Leads</span>
           </div>
         </div>

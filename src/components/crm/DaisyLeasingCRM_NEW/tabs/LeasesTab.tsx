@@ -30,7 +30,7 @@ const FILTER_OPTIONS = ['all', 'active', 'expiring_soon', 'renewal_pending', 'ex
 const EjariBadge: React.FC<{ status?: 'registered' | 'pending' | 'expired' | null }> = ({
   status,
 }) => {
-  if (!status) return <span style={{ color: '#64748B', fontSize: '12px' }}>—</span>;
+  if (!status) return <span style={{ color: 'var(--text-secondary, #64748B)', fontSize: '12px' }}>—</span>;
   const config = {
     registered: { dot: '#10B981', label: 'Registered' },
     pending: { dot: '#F59E0B', label: 'Pending' },
@@ -155,17 +155,17 @@ const LeasesTab: React.FC<LeasesTabProps> = ({ leases, searchQuery, onSearchChan
             <span>
               {lease.pdcCount !== undefined ? (
                 <span style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
-                  <span style={{ fontSize: '12px', color: '#10B981' }}>
+                  <span style={{ fontSize: '12px', color: 'var(--accent-green, #10B981)' }}>
                     {lease.pdcCleared}/{lease.pdcCount}
                   </span>
                   {(lease.pdcBounced ?? 0) > 0 && (
-                    <span style={{ color: '#EF4444', fontSize: '11px' }} title="Bounced PDC">
+                    <span style={{ color: 'var(--accent-red, #EF4444)', fontSize: '11px' }} title="Bounced PDC">
                       🔴
                     </span>
                   )}
                 </span>
               ) : (
-                <span style={{ color: '#64748B', fontSize: '12px' }}>—</span>
+                <span style={{ color: 'var(--text-secondary, #64748B)', fontSize: '12px' }}>—</span>
               )}
             </span>
             <span style={{ display: 'flex', alignItems: 'center', gap: '6px', flexWrap: 'wrap' }}>

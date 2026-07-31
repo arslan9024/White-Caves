@@ -57,7 +57,7 @@ export function CareersPage() {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          jobId: selectedJob.id,
+          jobId: selectedJob?.id || '',
           firstName: formData.get('firstName'),
           lastName: formData.get('lastName'),
           email: formData.get('email'),

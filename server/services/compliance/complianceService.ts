@@ -143,14 +143,14 @@ export async function generateEjariExport(filters?: {
     propertyTitle: lease.property?.title || '',
     propertyLocation: lease.property?.location || '',
     propertyType: lease.property?.type || '',
-    startDate: lease.startDate.toISOString().split('T')[0],
-    endDate: lease.endDate.toISOString().split('T')[0],
-    monthlyRent: lease.monthlyRent,
-    currency: lease.currency,
-    ejariNumber: lease.ejariNumber || '',
-    ejariStatus: lease.ejariStatus || 'pending',
-    ejariRegistrationDate: lease.ejariRegistrationDate?.toISOString().split('T')[0] || '',
-    ejariExpiryDate: lease.ejariExpiryDate?.toISOString().split('T')[0] || '',
+    startDate: (lease as any).startDate ? new Date((lease as any).startDate).toISOString().split('T')[0] : '',
+    endDate: (lease as any).endDate ? new Date((lease as any).endDate).toISOString().split('T')[0] : '',
+    monthlyRent: (lease as any).monthlyRent || 0,
+    currency: (lease as any).currency || 'AED',
+    ejariNumber: (lease as any).ejariNumber || '',
+    ejariStatus: (lease as any).ejariStatus || 'pending',
+    ejariRegistrationDate: (lease as any).ejariRegistrationDate ? new Date((lease as any).ejariRegistrationDate).toISOString().split('T')[0] : '',
+    ejariExpiryDate: (lease as any).ejariExpiryDate ? new Date((lease as any).ejariExpiryDate).toISOString().split('T')[0] : '',
   }));
 
   // Generate CSV

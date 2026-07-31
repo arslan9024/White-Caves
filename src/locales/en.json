@@ -1,67 +1,32 @@
 {
-  "dashboard": {
-    "greeting": "Welcome back",
-    "overview": "Overview",
-    "view_details": "View Details",
-    "net_profit": "Net Profit",
-    "active_deals": "Active Deals",
-    "revenue": "Revenue",
-    "expenses": "Expenses",
-    "total_leads": "Total Leads",
-    "properties": "Properties",
-    "settings": "Settings",
-    "logout": "Log Out"
+  "app": {
+    "title": "White Caves Real Estate LLC",
+    "subtitle": "Real Estate LLC · Dubai",
+    "founderTag": "MASTER UNMASK (LEVEL 5)",
+    "founderRole": "Managing Director & Founder",
+    "searchPlaceholder": "Search 100 enterprise views...",
+    "globalSearchPlaceholder": "Global Search (Ctrl+K to focus)...",
+    "reraLive": "RERA Live: Dubai Land Dept 2026 API Connected"
   },
-  "agent": {
-    "leasing": {
-      "pipeline": "Leasing Pipeline",
-      "active_transactions": "{count} active transactions",
-      "pending": "Pending",
-      "inquiry": "inquiry",
-      "viewing": "viewing",
-      "application": "application",
-      "contract": "contract",
-      "signed": "signed",
-      "active": "active"
-    }
+  "nav": {
+    "home": "Home",
+    "dashboard": "Dashboard",
+    "profile": "Profile",
+    "impersonateMode": "Impersonate User Mode",
+    "revertMaster": "Reset to Master Mode"
   },
-  "common": {
-    "loading": "Loading...",
-    "error": "An error occurred",
-    "save": "Save",
-    "cancel": "Cancel",
-    "currency": "AED",
-    "navigation": "Navigation"
-  },
-  "tenant": {
-    "portal": {
-      "unauthorized": "You must be logged in to access the Tenant Portal.",
-      "title": "Tenant Portal",
-      "welcome": "Welcome, {name}. Manage your lease and requests.",
-      "tabs": {
-        "home": "Dashboard",
-        "lease": "My Lease",
-        "payments": "Payment History",
-        "maintenance": "Maintenance",
-        "documents": "Documents",
-        "profile": "My Profile"
-      }
-    }
-  },
-  "landlord": {
-    "portal": {
-      "unauthorized": "You must be logged in to access the Landlord Portal.",
-      "title": "Landlord Portal",
-      "welcome": "Welcome, {name}. Manage your properties and tenants.",
-      "tabs": {
-        "home": "Dashboard",
-        "properties": "My Properties",
-        "tenants": "Tenants",
-        "payments": "Rent Payments",
-        "maintenance": "Maintenance",
-        "documents": "Documents",
-        "profile": "My Profile"
-      }
-    }
+  "pillars": {
+    "sales": "Brokerage Sales",
+    "offplan": "Off-Plan Developments",
+    "leasing": "Leasing & Tenancy",
+    "assetManagement": "Asset Management (DH2)",
+    "finance": "Finance & Treasury",
+    "marketing": "Marketing & Growth",
+    "executive": "Executive Office",
+    "compliance": "Compliance & Legal",
+    "technology": "Technology & Engineering",
+    "legal": "Legal & Conveyancing",
+    "conveyancing": "Conveyancing",
+    "intelligence": "AI & Intelligence"
   }
 }

@@ -20,19 +20,19 @@ export const OperationsDepartmentView: FC = () => {
           </tr>
         </thead>
         <tbody>
-          <tr style={{ borderBottom: '1px solid #E2E8F0' }}>
+          <tr style={{ borderBottom: '1px solid var(--text-secondary, #E2E8F0)' }}>
             <td style={{ padding: '8px' }}>DH2-VL-9421</td>
             <td style={{ padding: '8px' }}>Vardon Cluster</td>
             <td style={{ padding: '8px', color: RED, fontWeight: 'bold' }}>Leased (Occupied)</td>
             <td style={{ padding: '8px' }}>Alex Rivera</td>
           </tr>
-          <tr style={{ borderBottom: '1px solid #E2E8F0' }}>
+          <tr style={{ borderBottom: '1px solid var(--text-secondary, #E2E8F0)' }}>
             <td style={{ padding: '8px' }}>DH2-TH-0284</td>
             <td style={{ padding: '8px' }}>Amazonia Cluster</td>
             <td style={{ padding: '8px', fontWeight: 'bold' }}>Vacant (Available)</td>
             <td style={{ padding: '8px' }}>-</td>
           </tr>
-          <tr style={{ borderBottom: '1px solid #E2E8F0' }}>
+          <tr style={{ borderBottom: '1px solid var(--text-secondary, #E2E8F0)' }}>
             <td style={{ padding: '8px' }}>DH2-AP-1049</td>
             <td style={{ padding: '8px' }}>Claret Block B</td>
             <td style={{ padding: '8px', fontWeight: 'bold' }}>Maintenance Underway</td>
