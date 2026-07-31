@@ -102,7 +102,7 @@ const ApexCRM = () => {
       <div className="assistant-header">
         <div
           className="assistant-avatar"
-          style={{ background: 'var(--apex-gradient, linear-gradient(135deg, #F97316 0%, #C2410C 100%))' }}
+          style={{ background: 'var(--primary-gradient)' }}
         >
           <Award size={28} />
         </div>

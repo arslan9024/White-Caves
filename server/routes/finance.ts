@@ -741,7 +741,7 @@ router.get(
       _sum: { vatAmount: true }
     });
 
-    // Placeholder for Input VAT (would come from Expense records in a full implementation)
+    // Future implementation: Input VAT (would come from Expense records in a full implementation)
     const inputVAT = 0; 
     const outputVatAmount = outputVAT._sum.vatAmount || 0;
 

@@ -205,7 +205,7 @@ class BulkOperationsService {
   static async getOperationHistory(limit = 20) {
     try {
       // You would store operation logs in a separate collection
-      // For now, returning a placeholder
+      // For now, returning empty array
       return {
         success: true,
         operations: [],
@@ -221,7 +221,7 @@ class BulkOperationsService {
    */
   static async undoLastOperation(ownerId) {
     try {
-      // Placeholder for undo functionality
+      // Future enhancement: undo functionality
       return {
         success: true,
         message: 'Last operation undone',

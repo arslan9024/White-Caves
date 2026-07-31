@@ -151,7 +151,7 @@ const ArcherCRM = () => {
       <div className="assistant-header">
         <div
           className="assistant-avatar"
-          style={{ background: 'linear-gradient(135deg, #EF4444 0%, #B91C1C 100%)' }}
+          style={{ background: 'var(--error-gradient)' }}
         >
           <Target size={28} />
         </div>
