@@ -50,9 +50,9 @@ export const TopNavbar: FC = () => {
   };
 
   return (
-    <header className="top-navbar-container" data-testid="top-navbar">
+    <header className="top-navbar-container" data-testid="top-navbar" role="banner" aria-label="Global Header Navigation">
       <div className="top-navbar-left">
-        <Link to="/" className="top-navbar-brand">
+        <Link to="/" className="top-navbar-brand" aria-label="White Caves Real Estate Home">
           <div className="top-navbar-logo-badge">WC</div>
           <div className="top-navbar-title">
             White <span>Caves</span>
@@ -60,13 +60,15 @@ export const TopNavbar: FC = () => {
         </Link>
 
         {/* Global Search Bar */}
-        <form onSubmit={handleSearchSubmit} className="top-navbar-search">
-          <Search size={15} className="top-navbar-search-icon" />
+        <form onSubmit={handleSearchSubmit} className="top-navbar-search" role="search" aria-label="Global Search">
+          <Search size={15} className="top-navbar-search-icon" aria-hidden="true" />
           <input
             ref={searchInputRef}
+            id="global-search-input"
             type="text"
             className="top-navbar-search-input"
             placeholder="Global Search (Ctrl+K to focus)..."
+            aria-label="Global Search Property or Lead Input"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
           />

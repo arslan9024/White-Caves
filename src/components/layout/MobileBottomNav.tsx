@@ -44,7 +44,7 @@ const NavItem = styled(NavLink)`
   }
 
   &.active {
-    color: var(--brand-primary, #1e3a8a);
+    color: var(--wc-red-primary, #EF4444);
   }
 
   /* Badge styling */
