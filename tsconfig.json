@@ -20,7 +20,9 @@
     "sourceMap": false,
     "jsx": "react-jsx",
     "paths": {
-      "@/*": ["./src/*"]
+      "@/*": ["./src/*"],
+      "@/components/*": ["./src/components/*"],
+      "@/atoms/*": ["./src/components/atoms/*"]
     },
     "types": ["vite/client"]
   },
