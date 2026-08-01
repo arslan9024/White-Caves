@@ -1,10 +1,23 @@
-# AEGIS 2.0 — 100-Point Master UI/UX & Graphic Refactoring Backlog
-
-> **Audit Mode:** 100-Point Master UI/UX & Graphic Refactoring Audit Matrix  
-> **Status:** ✅ 100% COMPLETED & DEPLOYED TO REMOTE MAIN  
+> **Audit Mode:** White Caves 2.0 Sovereign Feature Upgrades (Wave 31 & 32)  
+> **Status:** ✅ Wave 31 In Progress — Predictive Retention & NOC Pipeline Deployed  
 > **Active Roadmap:** [MASTER_PLAN.md](./MASTER_PLAN.md)  
-> **Active Wave Backlog:** [WAVE_30_IMPLEMENTATION_BACKLOG.md](./waves/WAVE_30_IMPLEMENTATION_BACKLOG.md) (Wave 30)  
+> **Active Wave Backlog:** [WAVE_30_IMPLEMENTATION_BACKLOG.md](./waves/WAVE_30_IMPLEMENTATION_BACKLOG.md) (Wave 30 / Wave 31)  
 > **Last Updated:** 2026-08-01  
+
+---
+
+## 🔱 Wave 31 & 32 Sovereign Feature Upgrades
+
+- [x] **31.01. Predictive Tenant Churn & Retention Engine:** 95-day Ejari expiration churn forecasting module with Nadia WhatsApp call dispatch (`PredictiveTenantRetention.tsx`).
+- [x] **31.02. NOC Express Developer Conveyancing Pipeline:** Developer No Objection Certificate tracking (Emaar, DAMAC, Nakheel) with 5-day grace escalation timer (`NOCExpressPipeline.tsx`).
+- [ ] **31.03. Real-Time Market Pulse Heatmap:** Homepage DLD open data map overlay displaying transaction density vs asking prices.
+- [ ] **31.04. Biometric & Smart Lock Security Log (Sentinel AI):** Viewing entry logging across 9,378+ managed DAMAC Hills 2 units.
+- [ ] **31.05. Ghost Negotiation Stealth Oversight:** Executive read-only WhatsApp oversight panel with Founder hint injection.
+- [ ] **31.06. Five-Star Acquisition & Gift Dispatch Pipeline:** Automated gift hamper dispatch + 24-hr Nadia CSAT social review trigger on transfer.
+- [ ] **31.07. Global Investor Portfolio Yield Dashboard:** Client portal yield calculator showing total ROI, appreciation %, and market matches.
+- [ ] **31.08. AI-Generated Property Storytelling (Olivia AI):** Automated marketing copy generation for Property Finder and Bayut listings.
+- [ ] **31.09. Corporate RAG Knowledge Brain:** Natural language Q&A engine across `software_docs/` and `business_docs/`.
+- [ ] **31.10. Instant Multi-Currency True Landing Cost Calculator:** FX exchange currency cache with DLD 4%, Trustee AED 4,200, and VAT 5% calculations.
 
 ---
 
