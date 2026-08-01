@@ -16,7 +16,7 @@ interface KPITileProps {
 
 const Container = styled(motion.div)<{ $color: string }>`
   background: linear-gradient(135deg, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0.05) 100%);
-  border: 1px solid rgba(201, 168, 76, 0.2);
+  border: 1px solid var(--wc-red-primary, #EF4444);
   border-radius: 12px;
   padding: 24px;
   backdrop-filter: blur(10px);
@@ -24,13 +24,13 @@ const Container = styled(motion.div)<{ $color: string }>`
   cursor: pointer;
 
   &:hover {
-    border-color: rgba(201, 168, 76, 0.5);
+    border-color: var(--wc-red-primary, #EF4444);
     background: linear-gradient(
       135deg,
       rgba(255, 255, 255, 0.15) 0%,
       rgba(255, 255, 255, 0.08) 100%
     );
-    box-shadow: 0 8px 32px rgba(201, 168, 76, 0.1);
+    box-shadow: 0 8px 32px rgba(239, 68, 68, 0.15);
   }
 
   @media (max-width: 768px) {
