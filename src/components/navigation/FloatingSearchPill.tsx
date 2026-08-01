@@ -1,150 +1,139 @@
-import React, { FC, useState, useEffect } from 'react';
-import { Search, Command, X } from 'lucide-react';
-import { useNavigate } from 'react-router-dom';
+import React, { FC, useState } from 'react';
+import { Search, SlidersHorizontal, X } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
 
-interface FloatingSearchPillProps {
-  onSearch?: (query: string) => void;
+export interface FloatingSearchPillProps {
+  onSearchSubmit?: (query: string) => void;
 }
 
-export const FloatingSearchPill: FC<FloatingSearchPillProps> = ({ onSearch }) => {
+export const FloatingSearchPill: FC<FloatingSearchPillProps> = ({ onSearchSubmit }) => {
   const [isOpen, setIsOpen] = useState(false);
-  const [query, setQuery] = useState('');
-  const navigate = useNavigate();
+  const [searchQuery, setSearchQuery] = useState('');
 
-  useEffect(() => {
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'k') {
-        e.preventDefault();
-        setIsOpen(prev => !prev);
-      }
-      if (e.key === 'Escape' && isOpen) {
-        setIsOpen(false);
-      }
-    };
-    window.addEventListener('keydown', handleKeyDown);
-    return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [isOpen]);
-
-  const handleSearchSubmit = (e: React.FormEvent) => {
+  const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!query.trim()) return;
-    if (onSearch) {
-      onSearch(query);
-    } else {
-      navigate(`/properties?search=${encodeURIComponent(query)}`);
+    if (onSearchSubmit) {
+      onSearchSubmit(searchQuery);
     }
     setIsOpen(false);
   };
 
   return (
     <>
-      {/* Centered Floating Trigger Pill */}
+      {/* Floating Centered Pill Button */}
       <div
         style={{
           position: 'fixed',
           top: '80px',
           left: '50%',
           transform: 'translateX(-50%)',
-          zIndex: 999,
+          zIndex: 990,
           display: 'flex',
           alignItems: 'center',
-          gap: '8px',
-          padding: '6px 16px',
-          backgroundColor: 'rgba(255, 255, 255, 0.95)',
-          backdropFilter: 'blur(12px)',
-          border: '1px solid rgba(239, 68, 68, 0.3)',
-          borderRadius: '24px',
-          boxShadow: '0 4px 20px rgba(239, 68, 68, 0.12), 0 2px 6px rgba(0, 0, 0, 0.05)',
-          cursor: 'pointer',
-          transition: 'all 0.2s ease',
-          userSelect: 'none',
         }}
-        onClick={() => setIsOpen(true)}
-        title="Quick Search (Ctrl+K)"
         data-testid="floating-search-pill"
       >
-        <Search size={14} color="var(--brand-red, #EF4444)" />
-        <span style={{ fontSize: '12px', fontWeight: '600', color: 'var(--wc-text-primary, #1E293B)', letterSpacing: '0.2px' }}>
-          Search Properties, Leads & Departments
-        </span>
-        <span
+        <button
+          onClick={() => setIsOpen(true)}
           style={{
-            fontSize: '10px',
-            fontWeight: '700',
-            backgroundColor: 'rgba(239, 68, 68, 0.1)',
-            color: 'var(--brand-red, #EF4444)',
-            padding: '2px 6px',
-            borderRadius: '10px',
             display: 'flex',
             alignItems: 'center',
-            gap: '2px',
+            gap: '10px',
+            padding: '10px 20px',
+            backgroundColor: 'var(--wc-bg-card, #FFFFFF)',
+            color: 'var(--wc-text-primary, #1E293B)',
+            border: '1px solid var(--wc-border-light, #CBD5E1)',
+            borderRadius: '30px',
+            boxShadow: '0 4px 20px rgba(0, 0, 0, 0.08)',
+            cursor: 'pointer',
+            fontSize: '13px',
+            fontWeight: '600',
+            transition: 'all 0.25s ease-in-out',
           }}
         >
-          <Command size={10} /> K
-        </span>
+          <Search size={16} color="var(--wc-red-primary, #EF4444)" />
+          <span>Search DAMAC Hills 2, Ejari, Investors, Leads...</span>
+          <span
+            style={{
+              fontSize: '11px',
+              backgroundColor: 'var(--wc-bg-subtle, #F1F5F9)',
+              color: 'var(--wc-text-secondary, #64748B)',
+              padding: '2px 8px',
+              borderRadius: '12px',
+              border: '1px solid #E2E8F0',
+            }}
+          >
+            ⌘K
+          </span>
+        </button>
       </div>
 
-      {/* Glassmorphic Search Modal Overlay */}
-      {isOpen && (
-        <div
-          style={{
-            position: 'fixed',
-            inset: 0,
-            backgroundColor: 'rgba(15, 23, 42, 0.6)',
-            backdropFilter: 'blur(8px)',
-            zIndex: 1100,
-            display: 'flex',
-            alignItems: 'flex-start',
-            justifyContent: 'center',
-            paddingTop: '120px',
-          }}
-          onClick={() => setIsOpen(false)}
-        >
+      {/* Framer Motion Overlay Modal */}
+      <AnimatePresence>
+        {isOpen && (
           <div
             style={{
-              width: '100%',
-              maxWidth: '560px',
-              backgroundColor: 'var(--wc-surface-dark, #FFFFFF)',
-              borderRadius: '16px',
-              border: '2px solid var(--brand-red, #EF4444)',
-              boxShadow: '0 20px 40px rgba(0, 0, 0, 0.2)',
-              overflow: 'hidden',
+              position: 'fixed',
+              top: 0,
+              left: 0,
+              width: '100vw',
+              height: '100vh',
+              backgroundColor: 'rgba(30, 41, 59, 0.5)',
+              backdropFilter: 'blur(4px)',
+              zIndex: 1100,
+              display: 'flex',
+              alignItems: 'flex-start',
+              justifyContent: 'center',
+              paddingTop: '120px',
             }}
-            onClick={e => e.stopPropagation()}
+            onClick={() => setIsOpen(false)}
+            data-testid="search-overlay"
           >
-            <form onSubmit={handleSearchSubmit} style={{ display: 'flex', alignItems: 'center', padding: '16px 20px', borderBottom: '1px solid var(--wc-border, #E2E8F0)' }}>
-              <Search size={20} color="var(--brand-red, #EF4444)" style={{ marginRight: '12px' }} />
-              <input
-                type="text"
-                autoFocus
-                placeholder="Search by property ID, cluster, tenant name, or lead..."
-                value={query}
-                onChange={e => setQuery(e.target.value)}
-                style={{
-                  flex: 1,
-                  border: 'none',
-                  outline: 'none',
-                  fontSize: '16px',
-                  color: 'var(--wc-text-primary, #1E293B)',
-                  backgroundColor: 'transparent',
-                }}
-              />
-              <button
-                type="button"
-                onClick={() => setIsOpen(false)}
-                style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--wc-text-secondary, #64748B)' }}
-              >
-                <X size={20} />
-              </button>
-            </form>
+            <motion.div
+              initial={{ opacity: 0, y: -20, scale: 0.95 }}
+              animate={{ opacity: 1, y: 0, scale: 1 }}
+              exit={{ opacity: 0, y: -20, scale: 0.95 }}
+              transition={{ duration: 0.2 }}
+              style={{
+                width: '100%',
+                maxWidth: '600px',
+                backgroundColor: 'var(--wc-bg-card, #FFFFFF)',
+                borderRadius: '16px',
+                border: '1px solid var(--wc-red-primary, #EF4444)',
+                boxShadow: '0 20px 40px rgba(0, 0, 0, 0.15)',
+                overflow: 'hidden',
+              }}
+              onClick={e => e.stopPropagation()}
+            >
+              <form onSubmit={handleSearch} style={{ display: 'flex', alignItems: 'center', padding: '16px 20px', borderBottom: '1px solid var(--wc-border-light, #E2E8F0)' }}>
+                <Search size={20} color="var(--wc-red-primary, #EF4444)" style={{ marginRight: '12px' }} />
+                <input
+                  type="text"
+                  placeholder="Search properties, Ejari contracts, leads, brokers..."
+                  value={searchQuery}
+                  onChange={e => setSearchQuery(e.target.value)}
+                  autoFocus
+                  style={{
+                    width: '100%',
+                    border: 'none',
+                    outline: 'none',
+                    fontSize: '15px',
+                    color: 'var(--wc-text-primary, #1E293B)',
+                    backgroundColor: 'transparent',
+                  }}
+                />
+                <button type="button" onClick={() => setIsOpen(false)} style={{ background: 'none', border: 'none', cursor: 'pointer' }}>
+                  <X size={18} color="var(--wc-text-secondary, #64748B)" />
+                </button>
+              </form>
 
-            <div style={{ padding: '16px 20px', backgroundColor: 'var(--wc-surface-card, #F8FAFC)', fontSize: '12px', color: 'var(--wc-text-secondary, #64748B)', display: 'flex', justifyContent: 'space-between' }}>
-              <span>Press <strong>Enter</strong> to search</span>
-              <span>Press <strong>Esc</strong> to exit</span>
-            </div>
+              <div style={{ padding: '16px 20px', fontSize: '12px', color: 'var(--wc-text-secondary, #64748B)' }}>
+                Press <strong>Enter</strong> to execute unified search across 12 White Caves departments.
+              </div>
+            </motion.div>
           </div>
-        </div>
-      )}
+        )}
+      </AnimatePresence>
     </>
   );
 };
