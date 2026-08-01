@@ -17,7 +17,8 @@ software_docs/
 ├── tech_replacement_rules.md          <-- 12-Domain Technical Replacement Matrix
 ├── 01_requirements_engineering/
 │   ├── functional_specifications.md   <-- SRS Docs, 12 Dept Bounds, 100-Role RBAC
-│   └── change_log_v2026.md            <-- Historical Requirements Evolution Tracker
+│   ├── change_log_v2026.md            <-- Historical Requirements Evolution Tracker
+│   └── 100_point_ui_ux_audit.md       <-- 100-Point UI/UX & Graphic Refactoring Audit Manifest
 ├── 02_software_design/
 │   ├── database_architecture.md       <-- SDD Docs, Prisma Singleton, Compound Indexes
 │   └── rbac_state_gating.md           <-- Role Levels & Founder Short-Circuit
@@ -31,98 +32,112 @@ software_docs/
 
 ---
 
-## 🔱 35-Point Core Quality & Refactoring Audit Pillars
+## 🔱 100-Point UI/UX & Graphic Refactoring Audit Pillars
 
-### Pillar 1: Unified Workspace Shell & Universal Navigation (Items 01 - 07)
-- [x] 01. Universal Navigation Merger (`UnifiedWorkspaceLayout.tsx` left column)
-- [x] 02. Fixed Top Navbar Alignment (`position: fixed; top: 0; z-index: 1000;` in `TopNavbar.tsx`)
-- [x] 03. Content Overlap Padding (`padding-top: 64px` / `pt-16` on main viewport canvas)
-- [x] 04. Floating Search Command Pill (`FloatingSearchPill.tsx` at `top: 80px`, centered)
-- [x] 05. True Red & White Branding Lockdown (Red `#EF4444`, White `#FFFFFF`, Slate `#1E293B`)
-- [x] 06. Recursive Sidebar Data Rendering (Dynamic 12 departments configuration)
-- [x] 07. Hardware-Accelerated Content Swapping (GPU-optimized view transit animations)
+### 🎨 Layer 1: Universal Design Tokens & Branding Safeguards (Items 01 - 15)
+- [ ] 01. Strict Color Lockdown (`#EF4444` Red, `#FFFFFF` White, `#1E293B` Slate)
+- [ ] 02. BEM-Contained CSS Isolation (`src/styles/DashboardComponents.css`)
+- [ ] 03. Elimination of Inline Styles (Purge floating `style={{...}}`)
+- [ ] 04. Unified Typography Scale (Inter/Roboto font scale hierarchy)
+- [ ] 05. Consistent Corner Radii (Standardize cards/inputs/buttons to `8px`)
+- [ ] 06. Smooth Interaction Easings (`transition: all 0.25s ease-in-out`)
+- [ ] 07. Hardware-Accelerated Hovers (`transform: translateY(-2px)`)
+- [ ] 08. Z-Index Layer Matrix (TopNav: 1000, Sidebar: 900, Modals: 2000)
+- [ ] 09. Standardized Element Spacing Multipliers (`0.5rem` / `1rem` / `1.5rem`)
+- [ ] 10. High-Contrast Input Focus Rings (High-visibility Red ring outline)
+- [ ] 11. Soft Micro-Dropshadow Vectors (`0 4px 12px rgba(0,0,0,0.05)`)
+- [ ] 12. Compact Metadata Text Baselines (Micro-typography tracking logs)
+- [ ] 13. Horizontal Section Hairline Dividers (`1px solid #E2E8F0`)
+- [ ] 14. Skeleton Screen Placeholder Cards (Initial data loading cards)
+- [ ] 15. Auto-Generated UI Evidence Specs (Automated validation script logs)
 
-### Pillar 2: Gating, Profiling, & Post-Login System Behavior (Items 08 - 14)
-- [x] 08. Managing Director 'God-Mode' Bypass (`arslanmalikgoraha@gmail.com` ➔ `accessLevel: 5`)
-- [x] 09. Instant Session Hydration (Token check before route load, remove white screens)
-- [x] 10. Ghost Session Impersonation Selector (Top navbar admin dropdown for Level 5)
-- [x] 11. Profile Update Interface CRUD (`ProfilePage.tsx` full interactive fields)
-- [x] 12. Defensive Session-Handshake Exceptions (Try-catch error bounds on token verify)
-- [x] 13. Session Expiry Warning Alerts (Red warning banners inside dashboard frame)
-- [x] 14. Bypass Guard Security Floor (Master fallback profile on auth system drops)
+### 🏡 Layer 2: Public Homepage Visual Transformation (Items 16 - 40)
+- [ ] 16. Cinematic Parallax Hero Section (Full-bleed Dubai drone video/carousel)
+- [ ] 17. Universal Fixed Top Navbar Shell (`position: fixed; top: 0; z-index: 1000`)
+- [ ] 18. Content Overlap Padding Correction (`padding-top: 64px` / `pt-16`)
+- [ ] 19. Floating Search Command Pill (`FloatingSearchPill.tsx` at `top: 80px`, `Ctrl+K`)
+- [ ] 20. Framer Motion Property Search Modal (Full-screen overlay search modal)
+- [ ] 21. Real Google Maps API Integration (`@googlemaps/js-api-loader` live Dubai map)
+- [ ] 22. Minimalist Silver Map Custom Skin (Monochrome silver skin for water/land)
+- [ ] 23. Custom Red Property Marker Assets (`#EF4444` property pins)
+- [ ] 24. Glassmorphic Property Quick-View Popups (Map popups with AED price & WhatsApp)
+- [ ] 25. Advanced Marker Clustering Array (`MarkerClusterer` for 9,378+ units)
+- [ ] 26. Gamified Tools & Insights Section Layout (3-column dashboard matrix)
+- [ ] 27. Interactive ROI Delta Gauges (Circular SVG progress indicators)
+- [ ] 28. Mortgage Flight Slider (Interactive Red anchor handle payment calculator)
+- [ ] 29. Neighborhood Pulse Carousel Cards (Compact 7-day Dubai price trend cards)
+- [ ] 30. Testimonial Podium Component (Animated 3D rotating review slider)
+- [ ] 31. High-Density Area Guide Grid (Master community guides with Unsplash media)
+- [ ] 32. Frictionless WhatsApp Contact Integration (Single floating contact orb)
+- [ ] 33. Open-Source Villa Picture Hydration (Unsplash CDN high-res real estate photos)
+- [ ] 34. Bilingual Language Toggle Control (English/Arabic header toggle)
+- [ ] 35. Smooth Image Fading Transits (Soft opacity transit filters on listing photos)
+- [ ] 36. Refactored Public Footer (4-column corporate footer with RERA license badge)
+- [ ] 37. Contact Capture Widgets (Inline lead capture with phone validation)
+- [ ] 38. Newsletter Input Field (Single-line email box with submit state)
+- [ ] 39. Corporate Asset Listings (High-density luxury villa feature cards)
+- [ ] 40. Community Info Layouts (Amenity tags for pools, schools, metro)
 
-### Pillar 3: 12 Professional Departments & 108 Squad Layouts (Items 15 - 21)
-- [x] 15. 12 Revenue-Centric Pillars Structuring (12 official domain names registered)
-- [x] 16. 1-12-108 Hierarchy Data Mapping (`companyMasterLedger.json`: 12 Managers, 108 Supervisors)
-- [x] 17. High-Density Inventory Spreadsheet Table (9,378+ managed properties with status badges)
-- [x] 18. DAMAC Hills 2 Neighborhood Cluster Sorters (Quick-toggle filter pills)
-- [x] 19. Interactive 4-Column Kanban Lead Board (New Ingestion ➔ Closing)
-- [x] 20. Portal Ingestion SLA Counter Tickers (Live 15-min round-robin timers)
-- [x] 21. Gamified Sales Leaderboard Podium (3-tier animated podium sorted by AED volume)
+### 👤 Layer 3: Auth Module & Profile Page Modernization (Items 41 - 60)
+- [ ] 41. Luxury Split-Screen Login Shell (Modern split-screen presentation card)
+- [ ] 42. Floating Form Labels (Floating placeholder labels on input focus)
+- [ ] 43. Google OAuth Exception Safety Wrapper (Try-catch bounds on Google OAuth)
+- [ ] 44. Instant Post-Login Routing Guard (Token check before mounting routes)
+- [ ] 45. Founder Landing Short-Circuit (`arslanmalikgoraha@gmail.com` ➔ `LEVEL_5_MASTER`)
+- [ ] 46. Direct Profile Page Landing (Land MD directly onto `ProfilePage.tsx`)
+- [ ] 47. Executive Profile CRUD Editor (`ProfilePage.tsx` full interactive fields)
+- [ ] 48. Level 5 Administrative Overrides Button (Quick-action button to workspace)
+- [ ] 49. Bypass Guard Security Floor (Default to master session if auth drops)
+- [ ] 50. Defensive Password Reset Viewport (Dark-slate container with floating alerts)
+- [ ] 51. Multi-Factor Verification Views (6-digit OTP code input boxes)
+- [ ] 52. Profile Picture Upload Crop Box (Circular crop preview modal)
+- [ ] 53. Security Log History Tables (Audit log showing IP, device, and timestamps)
+- [ ] 54. Active Role Verification Badges (`LEVEL_5_MASTER`, `LEVEL_4_MANAGER` rank tags)
+- [ ] 55. Session Timeout Warning Modals (60-second countdown session warning)
+- [ ] 56. Single Sign-On Enterprise Connectors (Azure AD & Okta SAML 2.0 auth hooks)
+- [ ] 57. Biometric WebAuthn Support (TouchID/FaceID passkey trigger)
+- [ ] 58. Impersonation Audit Trail Banner (Yellow banner during Ghost Session)
+- [ ] 59. Password Strength Meter Indicator (4-stage visual passphrase color bar)
+- [ ] 60. Account Lockout Escalation Routine (5-attempt failed login lock)
 
-### Pillar 4: AI Command Center & Real Google Maps Integration (Items 22 - 28)
-- [x] 22. Real Google Maps API Connection (`@googlemaps/js-api-loader` integration)
-- [x] 23. Custom Red Marker Styling (Monochrome skin + `#EF4444` pins)
-- [x] 24. AI Assistant Avatar Hub (Zoe, Nadia, Sentinel, Clara, Sophia node viewports)
-- [x] 25. WhatsApp SLA Response Clocks (Live ticking response timers on threads)
-- [x] 26. Live AI Text Ingestion Trace Tickers (Console widgets tracking raw ingestion)
-- [x] 27. AI Compliance Contract Audit Feedback Blocks (Side-by-side violation boxes)
-- [x] 28. Zero-Overhead Client Currency Conversion Engines (4-hour FX cache in browser)
-
-### Pillar 5: RUP Folder Infrastructure & Component Isolation (Items 29 - 35)
-- [x] 29. RUP 4-Tier Documentation Structure (`01_requirements/`, `02_design/`, `03_use_cases/`, `04_flowcharts/`)
-- [x] 30. Tech Replacement Rules Manifest (`software_docs/tech_replacement_rules.md`)
-- [x] 31. Dynamic Plan Reflection Loop (Sync `/plans/` files on start of turn)
-- [x] 32. Pure Presentation/Logic File Separation (`useWorkspaceEngine.ts` custom hooks)
-- [x] 33. Localization JSON Translation Sheets (`src/locales/en.json`, `src/locales/ar.json`)
-- [x] 34. Elimination of Inline Styles (`DashboardComponents.css` BEM stylesheet)
-- [x] 35. 0-Token Local Debugging Pipeline (Pipe build traces to `plans/COMPILER_ERRORS.txt`)
-
----
-
-## 🔱 Master Architecture Deliverables Status
-
-| Deliverable | Location | Status | Summary |
-|-------------|----------|--------|---------|
-| **Core Engineering Manifest** | `software_docs/core_engineering_manifest.md` | ✅ ACTIVE | Master Tech Stack, RUP Rules, Color Lockdown |
-| **Functional Specifications** | `software_docs/01_requirements_engineering/functional_specifications.md` | 🔄 REFACTORING | SRS Specs, 12 Departments, RBAC Hierarchy |
-| **Requirements Change Log** | `software_docs/01_requirements_engineering/change_log_v2026.md` | 🔄 REFACTORING | Append-only transaction ledger across turns |
-| **Database Architecture** | `software_docs/02_software_design/database_architecture.md` | 🔄 REFACTORING | Prisma singleton connection caching & guards |
-| **RBAC State Gating** | `software_docs/02_software_design/rbac_state_gating.md` | 🔄 REFACTORING | Access level 1-5 matrix & founder bypass |
-| **MD Impersonation Matrix** | `software_docs/03_use_cases/md_impersonation_matrix.md` | 🔄 REFACTORING | Ghost Session use case step-sequence |
-| **Lead Distribution SLA** | `software_docs/03_use_cases/lead_distribution_sla.md` | ✅ ACTIVE | Nadia 15-min speed-to-lead SLA workflow |
-| **Universal Navigation Map** | `software_docs/04_flowcharts/universal_navigation_map.md` | 🔄 REFACTORING | ASCII interaction diagrams for 100 views |
-| **Tech Replacement Rules** | `software_docs/tech_replacement_rules.md` | 🔄 REFACTORING | 12-Domain Technical Replacement Matrix |
-| **Unified Workspace Layout** | `src/layouts/UnifiedWorkspaceLayout.tsx` | 🔄 REFACTORING | Single left sidebar navigation frame |
-| **Top Navbar Component** | `src/components/navigation/TopNavbar.tsx` | 🔄 REFACTORING | Fixed position header with impersonation selector |
-
----
-
-## 🎯 Active Execution Roadmap
-
-1. **Phase 1: RUP Documentation Deployment & Planning Reflection Loop** — 🔄 IN PROGRESS
-   - Deploy 4-tier `software_docs/` taxonomy (`01_requirements_engineering/`, `02_software_design/`, `03_use_cases/`, `04_flowcharts/`).
-   - Create `software_docs/tech_replacement_rules.md`.
-   - Synchronize `plans/MASTER_PLAN.md` and `plans/PENDING_TASKS_ONLY.md`.
-
-2. **Phase 2: Universal Shell, Fixed Top Navbar & Red/White Branding Lockdown** — 🎯 PENDING APPROVAL
-   - Apply `fixed top-0 left-0 w-full z-1000` to `TopNavbar.tsx`.
-   - Apply `pt-16` (64px top padding) to content container in `UnifiedWorkspaceLayout.tsx`.
-   - Build `FloatingSearchPill.tsx` centered at `top: 80px`.
-   - Enforce `#EF4444` Red, `#FFFFFF` White, `#1E293B` Slate palette; purge banned blues, golds, greens, obsidian black.
-
-3. **Phase 3: Gating, MD God-Mode Short-Circuit & Ghost Session Impersonation** — 🎯 PENDING APPROVAL
-   - `arslanmalikgoraha@gmail.com` ➔ `accessLevel: 5` (LEVEL_5_MASTER).
-   - Instant token hydration, land MD on `ProfilePage.tsx` with full CRUD.
-   - Top navbar impersonation dropdown for Level 5.
-
-4. **Phase 4: 12 Departments & 108 Squad Layouts** — 🎯 PENDING APPROVAL
-   - 12 revenue pillars, `companyMasterLedger.json` seed (12 Managers, 108 Supervisors).
-   - High-density property table (9,378 properties, status badges).
-   - DAMAC Hills 2 cluster sorter, 4-column lead Kanban, 15-min SLA ticker, AED sales podium.
-
-5. **Phase 5: AI Command Center & Real Google Maps Integration** — 🎯 PENDING APPROVAL
-   - Real Google Maps (`@googlemaps/js-api-loader`) with silver theme & `#EF4444` custom pins.
-   - AI Avatar Hub, WhatsApp SLA clocks, AI text ingestion trace tickers, compliance audit feedback blocks, FX conversion engine.
-
-
+### 💼 Layer 4: The 12-Department "Sovereign" CRM Cockpit (Items 61 - 100)
+- [ ] 61. 1-12-108 Management Navigator Sidebar (Left command panel for 12 depts)
+- [ ] 62. Recursive Department Links Generation (Read parameters from `companyMasterLedger.json`)
+- [ ] 63. "Ghost Session" Impersonation Selector (Top navbar admin dropdown for Level 5)
+- [ ] 64. 1-12-108 Hierarchy Data Mapping (12 Managers & 108 Supervisors in 9-person squads)
+- [ ] 65. High-Density Inventory Spreadsheet Grid (Data-dense status badges for 9,378+ units)
+- [ ] 66. Interactive 4-Column Kanban Lead Board (Drag-and-drop workflow kanban)
+- [ ] 67. Kanban Card Action Trigger Modals (Single-click popups on lead cards)
+- [ ] 68. Portal Ingestion SLA Counter Tickers (Live countdown timers for 15-min SLA)
+- [ ] 69. WhatsApp SLA Response Clocks (Live response speed timers on threads)
+- [ ] 70. Gamified Sales Leaderboard Podium (Animated 3-tier podium sorted by volume)
+- [ ] 71. Automated Commission Rate Matrix Instance (Tier lookup matrix for AED deals)
+- [ ] 72. State-Driven Commission Approval Workflow (`SUBMITTED` ➔ `RELEASED` workflow)
+- [ ] 73. Immutable Accounting Ledger Enforcement Operator (`lockLedgerPeriod(monthIndex)` freeze)
+- [ ] 74. Rolling 12-Month Cash-Flow Forecast Chart (Predictive modeling cash flow array)
+- [ ] 75. Monthly P&L Ingestor with Close-Month Lock (Revenue calculator with month freeze)
+- [ ] 76. Automated Commission Clawback Risk Monitor (30-day deal review algorithm)
+- [ ] 77. Accounts Receivable Chronological Aging Sorter (Invoice aging 30/60/90/120+ days)
+- [ ] 78. Budget vs Actual Variance Data Aggregator (Aggregator comparing budget vs actuals)
+- [ ] 79. One-Click Commission Statement PDF Simulator (Printable agent commission statement compiler)
+- [ ] 80. UAE FTA VAT Return Formatter Routine (5% UAE VAT tax processor & FTA schema)
+- [ ] 81. 4-Hour TTL Local Memory Cache Timer (Exchange rate API payload cache wrapper)
+- [ ] 82. AI Assistant Avatar Active Status Hub (Node viewports for Zoe, Nadia, Sentinel, Clara, Sophia)
+- [ ] 83. Live AI Text Ingestion Trace Tickers (Console widgets tracking raw ingestion)
+- [ ] 84. AI Compliance Contract Audit Feedback Blocks (Side-by-side violation boxes)
+- [ ] 85. 5-Star Social Review Invitation Flow View (Automated CSAT social review link flow)
+- [ ] 86. RUP 4-Tier Documentation Structure (`01_requirements/`, `02_design/`, `03_use_cases/`, `04_flowcharts/`)
+- [ ] 87. Tech Replacement Rules Manifest (`software_docs/tech_replacement_rules.md`)
+- [ ] 88. Dynamic Plan Reflection Loop (Update `/plans/` files at turn start)
+- [ ] 89. Pure Presentation/Logic File Separation (`useWorkspaceEngine.ts` custom hooks)
+- [ ] 90. Nodemon Backend Hot-Reload Integration (`package.json` linked to nodemon)
+- [ ] 91. Corporate Onboarding Guide View (5-step broker RERA onboarding stepper)
+- [ ] 92. Tenant Communication Log Panel (Ejari renewal & SMS dispatch table)
+- [ ] 93. Vendor Performance Rating Matrix (5-star evaluation grid for contractors)
+- [ ] 94. Security Audit Logging Input View (System event logger filtered by role/IP)
+- [ ] 95. Automated Document Approval Chips (`DRAFT`, `PENDING_RERA`, `EXECUTED` chips)
+- [ ] 96. DAMAC Hills 2 Cluster Filter Bar (Akoya, Basswood, Camelia cluster pills)
+- [ ] 97. Off-Plan Payment Plan Schedule Visualizer (10% booking, 40% construction, 50% handover timeline)
+- [ ] 98. Ejari Contract Expiry Warning Ticker (90-day Ejari expiration alert strip)
+- [ ] 99. PDC Post-Dated Cheque Vault Manager (PDC clearance & deposit status ledger)
+- [ ] 100. Executive Performance Export Pipeline (Single-click CSV/PDF KPI exporter)

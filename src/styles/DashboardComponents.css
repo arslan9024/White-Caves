@@ -1,0 +1,141 @@
+/**
+ * White Caves Real Estate LLC — Sovereign Enterprise Design System Tokens
+ * BEM-Contained CSS Isolation & Quiet Luxury Design Tokens
+ * Brand Palette: White Caves Red (#EF4444) | Brilliant Crisp White (#FFFFFF) | Deep Slate Gray (#1E293B)
+ */
+
+:root {
+  /* Core Brand Colors */
+  --wc-red-primary: #EF4444;
+  --wc-red-hover: #DC2626;
+  --wc-red-active: #B91C1C;
+  --wc-red-light: #FEE2E2;
+  --wc-red-glow: rgba(239, 68, 68, 0.15);
+
+  /* Surface & Canvas Colors */
+  --wc-surface-canvas: #FFFFFF;
+  --wc-surface-card: #F8FAFC;
+  --wc-surface-hover: #F1F5F9;
+  --wc-surface-active: #E2E8F0;
+  --wc-surface-dark: #1E293B;
+
+  /* Typography Contrast Palette */
+  --wc-text-primary: #1E293B;
+  --wc-text-secondary: #64748B;
+  --wc-text-muted: #94A3B8;
+  --wc-text-inverse: #FFFFFF;
+
+  /* Borders & Dividers */
+  --wc-border-light: #E2E8F0;
+  --wc-border-red: rgba(239, 68, 68, 0.25);
+  --wc-hairline-divider: 1px solid rgba(226, 232, 240, 0.8);
+
+  /* Z-Index Layer Scale Matrix */
+  --wc-z-base: 1;
+  --wc-z-sidebar: 900;
+  --wc-z-floating-pill: 999;
+  --wc-z-topnav: 1000;
+  --wc-z-modal: 2000;
+  --wc-z-toast: 3000;
+
+  /* Corner Radii Standard */
+  --wc-radius-sm: 4px;
+  --wc-radius-md: 8px;
+  --wc-radius-lg: 12px;
+  --wc-radius-xl: 16px;
+  --wc-radius-pill: 9999px;
+
+  /* Spacing Multipliers */
+  --wc-space-xs: 0.25rem; /* 4px */
+  --wc-space-sm: 0.5rem;  /* 8px */
+  --wc-space-md: 1.0rem;  /* 16px */
+  --wc-space-lg: 1.5rem;  /* 24px */
+  --wc-space-xl: 2.0rem;  /* 32px */
+
+  /* Smooth Interaction Easings */
+  --wc-transition-fast: all 0.15s ease-in-out;
+  --wc-transition-standard: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  --wc-transition-slow: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+
+  /* Dropshadow Vectors */
+  --wc-shadow-sm: 0 2px 4px rgba(15, 23, 42, 0.04);
+  --wc-shadow-md: 0 4px 12px rgba(15, 23, 42, 0.06);
+  --wc-shadow-lg: 0 12px 24px rgba(15, 23, 42, 0.1);
+  --wc-shadow-red: 0 4px 16px rgba(239, 68, 68, 0.2);
+}
+
+/* Global Reset & Base Typography */
+body {
+  margin: 0;
+  padding: 0;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  background-color: var(--wc-surface-canvas);
+  color: var(--wc-text-primary);
+  -webkit-font-smoothing: antialiased;
+}
+
+/* High-Contrast Input Focus Rings (Item 10) */
+input:focus, select:focus, textarea:focus, button:focus-visible {
+  outline: 2px solid var(--wc-red-primary);
+  outline-offset: 2px;
+}
+
+/* BEM Component Wrappers */
+.wc-card {
+  background: var(--wc-surface-canvas);
+  border: 1px solid var(--wc-border-light);
+  border-radius: var(--wc-radius-md);
+  box-shadow: var(--wc-shadow-sm);
+  padding: var(--wc-space-md);
+  transition: var(--wc-transition-standard);
+}
+
+/* Hardware-Accelerated Hovers (Item 07) */
+.wc-card--interactive:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--wc-shadow-md);
+  border-color: var(--wc-border-red);
+}
+
+.wc-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--wc-space-sm) var(--wc-space-md);
+  border-radius: var(--wc-radius-md);
+  font-weight: 600;
+  font-size: 14px;
+  border: none;
+  cursor: pointer;
+  transition: var(--wc-transition-fast);
+}
+
+.wc-button--primary {
+  background-color: var(--wc-red-primary);
+  color: var(--wc-text-inverse);
+}
+
+.wc-button--primary:hover {
+  background-color: var(--wc-red-hover);
+  box-shadow: var(--wc-shadow-red);
+}
+
+/* Hairline Dividers (Item 13) */
+.wc-divider {
+  height: 1px;
+  background-color: var(--wc-border-light);
+  margin: var(--wc-space-md) 0;
+}
+
+/* Skeleton Pulse Animation (Item 14) */
+@keyframes wc-skeleton-pulse {
+  0% { opacity: 0.6; }
+  50% { opacity: 1.0; }
+  100% { opacity: 0.6; }
+}
+
+.wc-skeleton {
+  background-color: #E2E8F0;
+  border-radius: var(--wc-radius-sm);
+  animation: wc-skeleton-pulse 1.5s infinite ease-in-out;
+}
