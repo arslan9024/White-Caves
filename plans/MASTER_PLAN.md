@@ -4,8 +4,8 @@
 > **Framework:** Rational Unified Process (RUP) 4-Tier Software Docs Isolation  
 > **Brand Palette Lockdown:** White Caves Red (`#EF4444`) | Crisp White (`#FFFFFF`) | Deep Slate Gray (`#1E293B`)  
 > **Architecture Pattern:** View-Logic-Style 3-Folder Component Isolation (`*.tsx`, `*.logic.ts`, `*.style.ts`)  
-> **Active Wave Backlog:** [WAVE_30_IMPLEMENTATION_BACKLOG.md](plans/waves/WAVE_30_IMPLEMENTATION_BACKLOG.md) (Wave 30)  
-> **Last Updated:** 2026-08-02  
+> **Active Wave Backlog:** [WAVE_31_IMPLEMENTATION_BACKLOG.md](plans/waves/WAVE_31_IMPLEMENTATION_BACKLOG.md) (Wave 31 - planned)  
+> **Last Updated:** 2026-08-02
 
 ---
 
@@ -35,15 +35,16 @@ software_docs/
 ## 🔱 100-Point UI/UX & Graphic Refactoring Audit Pillars
 
 ### 🎨 Layer 1: Universal Design Tokens & Branding Safeguards (Items 01 - 15)
-- [x] 01. Strict Color Lockdown (`#EF4444` Red, `#FFFFFF` White, `#1E293B` Slate)
-- [x] 02. BEM-Contained CSS Isolation (`src/styles/DashboardComponents.css`)
-- [x] 03. Elimination of Inline Styles (Purge floating `style={{...}}`)
-- [x] 04. Unified Typography Scale (Inter/Roboto font scale hierarchy)
-- [x] 05. Consistent Corner Radii (Standardize cards/inputs/buttons to `8px`)
-- [x] 06. Smooth Interaction Easings (`transition: all 0.25s ease-in-out`)
-- [x] 07. Hardware-Accelerated Hovers (`transform: translateY(-2px)`)
-- [x] 08. Z-Index Layer Matrix (TopNav: 1000, Sidebar: 900, Modals: 2000)
-- [x] 09. Standardized Element Spacing Multipliers (`0.5rem` / `1rem` / `1.5rem`)
+
+- [x] 1.  Strict Color Lockdown (`#EF4444` Red, `#FFFFFF` White, `#1E293B` Slate)
+- [x] 2.  BEM-Contained CSS Isolation (`src/styles/DashboardComponents.css`)
+- [x] 3.  Elimination of Inline Styles (Purge floating `style={{...}}`)
+- [x] 4.  Unified Typography Scale (Inter/Roboto font scale hierarchy)
+- [x] 5.  Consistent Corner Radii (Standardize cards/inputs/buttons to `8px`)
+- [x] 6.  Smooth Interaction Easings (`transition: all 0.25s ease-in-out`)
+- [x] 7.  Hardware-Accelerated Hovers (`transform: translateY(-2px)`)
+- [x] 8.  Z-Index Layer Matrix (TopNav: 1000, Sidebar: 900, Modals: 2000)
+- [x] 9.  Standardized Element Spacing Multipliers (`0.5rem` / `1rem` / `1.5rem`)
 - [x] 10. High-Contrast Input Focus Rings (High-visibility Red ring outline)
 - [x] 11. Soft Micro-Dropshadow Vectors (`0 4px 12px rgba(0,0,0,0.05)`)
 - [x] 12. Compact Metadata Text Baselines (Micro-typography tracking logs)
@@ -52,6 +53,7 @@ software_docs/
 - [x] 15. Auto-Generated UI Evidence Specs (Automated validation script logs)
 
 ### 🏡 Layer 2: Public Homepage Visual Transformation (Items 16 - 40)
+
 - [x] 16. Cinematic Parallax Hero Section (Full-bleed Dubai drone video/carousel)
 - [x] 17. Universal Fixed Top Navbar Shell (`position: fixed; top: 0; z-index: 1000`)
 - [x] 18. Content Overlap Padding Correction (`padding-top: 64px` / `pt-16`)
@@ -79,6 +81,7 @@ software_docs/
 - [x] 40. Community Info Layouts (Amenity tags for pools, schools, metro)
 
 ### 👤 Layer 3: Auth Module & Profile Page Modernization (Items 41 - 60)
+
 - [x] 41. Luxury Split-Screen Login Shell (Modern split-screen presentation card)
 - [x] 42. Floating Form Labels (Floating placeholder labels on input focus)
 - [x] 43. Google OAuth Exception Safety Wrapper (Try-catch bounds on Google OAuth)
@@ -101,6 +104,7 @@ software_docs/
 - [x] 60. Account Lockout Escalation Routine (5-attempt failed login lock)
 
 ### 💼 Layer 4: The 12-Department "Sovereign" CRM Cockpit (Items 61 - 100)
+
 - [x] 61. 1-12-108 Management Navigator Sidebar (Left command panel for 12 depts)
 - [x] 62. Recursive Department Links Generation (Read parameters from `companyMasterLedger.json`)
 - [x] 63. "Ghost Session" Impersonation Selector (Top navbar admin dropdown for Level 5)

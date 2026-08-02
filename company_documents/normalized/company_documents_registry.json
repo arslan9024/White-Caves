@@ -1,0 +1,67 @@
+{
+  "generatedAt": "2026-08-02",
+  "company": {
+    "name": "WHITE CAVES REAL ESTATE L.L.C",
+    "arabicName": "وايت كيفز للعقارات ذ.م.م",
+    "licenseNo": "1388443",
+    "commercialRegisterNo": "2365938",
+    "dcciMembershipNo": "553199",
+    "reraOfficeRegNo": "44483",
+    "owner": "ARSLAN MALIK BASHIR AHMAD",
+    "mobile": "056-3616136",
+    "email": "the.white.caves@gmail.com",
+    "address": "Office D-72, Port Saeed, Dubai"
+  },
+  "documents": [
+    {
+      "id": "ejari_certificate",
+      "title": "Tenancy Contract Information Registration Certificate",
+      "authority": "Dubai Land Department / Ejari",
+      "referenceNumber": "0120250814005322",
+      "registrationDate": "2025-08-14",
+      "startDate": "2025-08-14",
+      "endDate": "2026-08-13",
+      "status": "reference-stored",
+      "parsedTextFile": "company_documents/parsed_text/ejari_tenancy_contract_registration_certificate.txt",
+      "pdfFile": "company_documents/pdf/ejari_tenancy_contract_registration_certificate.pdf"
+    },
+    {
+      "id": "det_license_package",
+      "title": "DET Commercial License Package",
+      "authority": "Dubai Department of Economy and Tourism",
+      "licenseNo": "1388443",
+      "issueDate": "2024-07-31",
+      "expiryDate": "2026-07-30",
+      "status": "reference-stored",
+      "parsedTextFile": "company_documents/parsed_text/det_commercial_license_package.txt",
+      "pdfFile": "company_documents/pdf/det_commercial_license_package.pdf"
+    },
+    {
+      "id": "gdrfa_establishment_card",
+      "title": "eEstablishment Card",
+      "authority": "GDRFA Dubai",
+      "establishmentNo": "2/1/1192499",
+      "molNo": "08937537",
+      "expiryDate": "2026-08-31",
+      "status": "reference-stored",
+      "parsedTextFile": "company_documents/parsed_text/gdrfa_establishment_card.txt",
+      "pdfFile": "company_documents/pdf/gdrfa_establishment_card.pdf"
+    },
+    {
+      "id": "rera_office_registration",
+      "title": "Real Estate Office Registration Certificate",
+      "authority": "RERA / Dubai Land Department",
+      "licenseNo": "1388443",
+      "reraNumber": "44483",
+      "registrationDate": "2024-07-31",
+      "expiryDate": "2026-07-30",
+      "status": "reference-stored",
+      "parsedTextFile": "company_documents/parsed_text/rera_office_registration_certificate.txt",
+      "pdfFile": "company_documents/pdf/rera_office_registration_certificate.pdf"
+    }
+  ],
+  "notes": [
+    "PDF paths are prepared for storage reference.",
+    "If original PDFs are not yet present in workspace, place them at the listed paths."
+  ]
+}

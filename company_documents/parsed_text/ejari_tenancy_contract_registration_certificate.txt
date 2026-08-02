@@ -1,0 +1,60 @@
+Document: Tenancy Contract Information Registration Certificate (Ejari)
+Source: User-provided parsed text + images
+Date stored: 2026-08-02
+
+=== PAGE 1/2 ===
+Owner
+- Owner Name: ALSHAYA PROPERTY ONE PERSON COMPANY LLC
+- Owner Number: 5324276
+- Trade License No: 807944
+
+Lessor
+- Lessor Name: STELLAR NEXUS BUSINESS CENTER L.L.C
+- License Number: 1472571
+- License Issuer: DED-Dubai
+
+Tenancy Contract Details
+- Contract No: 0120250814005322 (v.1)
+- Registration Date: 14-08-2025
+- Start Date: 14-08-2025
+- End Date: 13-08-2026
+- Discount: 0.00 AED
+- Security Deposit: 0.00 AED
+- Contract Amount: 15,000.00 AED
+- Annual Amount: 15,000.00 AED
+- Actual Contract Amount: 15,000.00 AED
+- Actual Annual Amount: 15,000.00 AED
+
+Tenant
+- Tenant Name: WHITE CAVES REAL ESTATE L.L.C
+- Tenant No: 0420240716005332
+- License/Expiry: 1388443 / 30-07-2025
+- License Issuer: DED-Dubai
+
+Leased Unit (Sub-Unit)
+- Building Name/No: EL SHAYE - 4
+- Land Area: Port Saeed
+- Plot Number: 65-0
+- Land DM No (Affection Plan): 129-388
+- Makani No: 32250 94856
+- Property No: D-72
+- Type/Subtype: Office / Office
+- Usage: Commercial
+- Size: 10.00 Sq.m
+
+Registered by: STELLAR NEXUS BUSINESS CENTER L.L.C, SHERYAR KIANI ASHFAQUE
+Printed on: 14/8/2025 04:10 PM
+
+=== PAGE 2/2 ===
+Tax Receipt Details
+- Receipt Number: 25081458223826
+- Rent Registration Fee: 100.00 AED
+- Ejari License: 50.00 AED
+- Knowledge Fee: 10.00 AED
+- Innovation Fee: 10.00 AED
+- EJARI License VAT 5% (ID: 104273289900003): 2.50 AED
+- Total Fees: 172.50 AED
+
+Contract No: 0120250814005322 (v.1)
+Registration Date: 14-08-2025
+Printed on: 14/8/2025 04:10 PM

@@ -1,0 +1,12 @@
+Document: Real Estate Office Registration Certificate (RERA / DLD)
+Source: User-provided parsed text + image
+Date stored: 2026-08-02
+
+- Trade Name: WHITE CAVES REAL ESTATE L.L.C
+- License No: 1388443
+- Registration Date: 31/7/2024
+- Expiry Date: 30/7/2026
+- Activities:
+  - Leasing Property Brokerage Agents
+  - Real Estate Brokerage Selling & Buying
+- Registered at Real Estate Regulatory Agency (RERA) under number: 44483

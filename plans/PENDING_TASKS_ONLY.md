@@ -3,7 +3,7 @@
 > **System Version:** 2.0.26  
 > **Last Updated:** 2026-08-02  
 > **Active Stream:** `MASTER_PLAN.md`  
-> **Active Wave Bundle:** Wave 30 (Mobile CRM & Corporate System Infrastructure)  
+> **Active Wave Bundle:** Wave 31 (Corporate credentials & compliance automation)  
 > **Engineering Model:** Rational Unified Process (RUP)  
 > **Hierarchy:** 1 Managing Director (Arsalan Malik) | 12 Department Managers | 108 Supervisors  
 > **Brand Palette:** Red (`#EF4444`) | White (`#FFFFFF`) | Slate (`#1E293B`)  
@@ -14,12 +14,12 @@
 
 ## 🏛️ Master Company Credentials Ledger (`src/mocks/companyMasterLedger.json`)
 
-| Document Type | Document No. | Issue Date | Expiry Date | 90-Day Alert | 30-Day Alert | Governing Authority |
-|---|---|---|---|---|---|---|
-| **DET License** | `1388443` | 31-07-2024 | 30-07-2026 | 01-05-2026 | 30-06-2026 | Dubai Economy & Tourism (DET) |
-| **RERA ORN** | `44483` | 31-07-2024 | 30-07-2026 | 01-05-2026 | 30-06-2026 | Real Estate Regulatory Agency (RERA) |
-| **HQ Ejari** | `0120250814005322` | 14-08-2025 | 13-08-2026 | 15-05-2026 | 14-07-2026 | Dubai Land Department (DLD) |
-| **ICP Est Card** | `2/1/1192499` | 31-07-2024 | 31-08-2026 | 02-06-2026 | 01-08-2026 | Federal Authority for Identity & Citizenship |
+| Document Type    | Document No.       | Issue Date | Expiry Date | 90-Day Alert | 30-Day Alert | Governing Authority                          |
+| ---------------- | ------------------ | ---------- | ----------- | ------------ | ------------ | -------------------------------------------- |
+| **DET License**  | `1388443`          | 31-07-2024 | 30-07-2026  | 01-05-2026   | 30-06-2026   | Dubai Economy & Tourism (DET)                |
+| **RERA ORN**     | `44483`            | 31-07-2024 | 30-07-2026  | 01-05-2026   | 30-06-2026   | Real Estate Regulatory Agency (RERA)         |
+| **HQ Ejari**     | `0120250814005322` | 14-08-2025 | 13-08-2026  | 15-05-2026   | 14-07-2026   | Dubai Land Department (DLD)                  |
+| **ICP Est Card** | `2/1/1192499`      | 31-07-2024 | 31-08-2026  | 02-06-2026   | 01-08-2026   | Federal Authority for Identity & Citizenship |
 
 ---
 
