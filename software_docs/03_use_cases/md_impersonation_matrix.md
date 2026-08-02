@@ -6,6 +6,21 @@
 
 ---
 
+## 🎨 Brand Palette Compliance
+
+- Primary Red (`#EF4444`): Impersonation alert banner, master override button.
+- Pure White (`#FFFFFF`): User selector dropdown panel, profile cards.
+- Slate Text (`#1E293B`): Agent rank text, department name typography.
+
+---
+
+## 🔗 Inter-Linked Navigation References
+
+- [RBAC Design](../02_software_design/rbac_state_gating_sdd.md) — 5-level role-based access control, security guards, and gating parameters.
+- [Navigation Map](../04_flowcharts/universal_navigation_map.md) — Universal ASCII navigation flowchart tracing workspace canvas views.
+
+---
+
 ## 🎯 Use Case Overview
 
 The Managing Director requires zero-friction ability to inspect and operationalize the workspace viewport of any agent, manager, or executive across all 12 corporate departments without invalidating security credentials or logging out.

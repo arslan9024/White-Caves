@@ -34,7 +34,7 @@ const InputWrapper = styled.div<{ $isFocused: boolean; $hasError: boolean }>`
   align-items: center;
   gap: 10px;
   background: #FFFFFF;
-  border: 1.5px solid ${props => (props.$hasError ? '#DC2626' : props.$isFocused ? RED : '#E2E8F0')};
+  border: 1.5px solid ${props => (props.$hasError ? '#EF4444' : props.$isFocused ? RED : '#E2E8F0')};
   border-radius: 12px;
   padding: 10px 14px;
   box-shadow: ${props => (props.$isFocused ? '0 0 0 3px rgba(239, 68, 68, 0.15)' : 'none')};
@@ -58,7 +58,7 @@ const StyledInput = styled.input`
 
 const ErrorText = styled.span`
   font-size: 0.75rem;
-  color: #DC2626;
+  color: #EF4444;
   font-weight: 700;
 `;
 

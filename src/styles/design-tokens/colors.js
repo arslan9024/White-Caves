@@ -72,7 +72,7 @@ export const COLOR_TOKENS = {
       light: '#E0F2FE',
     },
     legal: {
-      primary: '#DC2626',
+      primary: '#EF4444',
       red: '#C41E3A',
       light: '#FEE2E2',
     },

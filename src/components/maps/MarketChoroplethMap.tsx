@@ -43,7 +43,7 @@ const squarePolygon = (center: AreaCenter, delta = 0.012): number[][][] => {
 const getColor = (pricePerSqft: number): string => {
   if (pricePerSqft >= 3500) return '#7f1d1d';
   if (pricePerSqft >= 2800) return '#b91c1c';
-  if (pricePerSqft >= 2200) return '#dc2626';
+  if (pricePerSqft >= 2200) return '#EF4444';
   if (pricePerSqft >= 1700) return '#f97316';
   return '#facc15';
 };

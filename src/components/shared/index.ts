@@ -20,6 +20,8 @@ export { CavesTooltip, type CavesTooltipProps } from './CavesTooltip';
 export { CavesToggle, type CavesToggleProps } from './CavesToggle';
 
 export { CavesFloatingWidget, type CavesFloatingWidgetProps } from './CavesFloatingWidget';
+export { CavesFloatingSearch, type CavesFloatingSearchProps } from './CavesFloatingSearch';
+export { useCavesFloatingSearch } from './CavesFloatingSearch.logic';
 
 // Skeleton & Feedback exports
 

@@ -59,7 +59,7 @@
 }
 
 .property-status-updater .btn-edit:hover {
-  background: #DC2626;
+  background: #EF4444;
   box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
 }
 
@@ -169,7 +169,7 @@
 }
 
 .property-status-updater .btn-primary:hover:not(:disabled) {
-  background: #DC2626;
+  background: #EF4444;
   box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
 }
 

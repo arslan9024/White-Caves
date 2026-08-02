@@ -31,7 +31,7 @@
   background: linear-gradient(180deg, #111827 0%, #0a0f1e 100%);
   color: rgba(255, 255, 255, 0.7);
   border-top: 3px solid transparent;
-  border-image: linear-gradient(90deg, #dc2626, #d97706) 1;
+  border-image: linear-gradient(90deg, #EF4444, #d97706) 1;
   text-align: center;
   font-size: 0.875rem;
   margin-top: auto;

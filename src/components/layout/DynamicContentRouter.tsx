@@ -173,7 +173,7 @@ const LockIcon = styled.div`
 const AccessDeniedTitle = styled.h3`
   font-size: 1.25rem;
   font-weight: 600;
-  color: #dc2626;
+  color: #EF4444;
   margin: 0 0 0.5rem 0;
 `;
 

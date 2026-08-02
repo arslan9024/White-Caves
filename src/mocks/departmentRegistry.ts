@@ -314,7 +314,7 @@ export const DEPARTMENT_REGISTRY: Record<DepartmentID, DepartmentRegistryEntry> 
   legal: {
     id: 'legal',
     name: 'Legal Department',
-    colorHex: '#DC2626',
+    colorHex: '#EF4444',
     leadAIAssistants: [
       {
         name: 'Evangeline',

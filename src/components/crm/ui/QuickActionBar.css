@@ -87,7 +87,7 @@
 }
 
 .qab-action.primary {
-  background: var(--primary-color, #DC2626);
+  background: var(--primary-color, #EF4444);
   color: white;
 }
 
@@ -101,7 +101,7 @@
 }
 
 .qab-action.success:hover {
-  background: #DC2626;
+  background: #EF4444;
 }
 
 .qab-action.loading svg.spinning {

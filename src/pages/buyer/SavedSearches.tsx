@@ -66,7 +66,7 @@ const btnSecondary: React.CSSProperties = {
 
 const btnDanger: React.CSSProperties = {
   ...btnSecondary,
-  color: '#dc2626',
+  color: '#EF4444',
   borderColor: '#fecaca',
 };
 
@@ -351,7 +351,7 @@ const SavedSearchesPage: React.FC = () => {
               border: '1px solid #fecaca',
               borderRadius: '8px',
               padding: '0.75rem 1rem',
-              color: '#dc2626',
+              color: '#EF4444',
               marginBottom: '1rem',
               display: 'flex',
               justifyContent: 'space-between',

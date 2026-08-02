@@ -1,6 +1,14 @@
 {
   "version": "2026.07.29-AEGIS-1-12-108-V1",
-  "lastUpdated": "2026-07-29",
+  "lastUpdated": "2026-08-02",
+  "corporateName": "White Caves Real Estate LLC",
+  "founderMD": { "name": "Arsalan Malik", "email": "arslanmalikgoraha@gmail.com" },
+  "credentials": [
+    { "type": "DET_License", "documentNo": "1388443", "issueDate": "31-07-2024", "expiryDate": "30-07-2026", "alert90Days": "01-05-2026", "alert30Days": "30-06-2026", "authority": "Dubai Economy & Tourism (DET)" },
+    { "type": "RERA_ORN", "documentNo": "44483", "issueDate": "31-07-2024", "expiryDate": "30-07-2026", "alert90Days": "01-05-2026", "alert30Days": "30-06-2026", "authority": "Real Estate Regulatory Agency (RERA)" },
+    { "type": "HQ_Ejari", "documentNo": "0120250814005322", "issueDate": "14-08-2025", "expiryDate": "13-08-2026", "alert90Days": "15-05-2026", "alert30Days": "14-07-2026", "authority": "Dubai Land Department (DLD)" },
+    { "type": "ICP_Est_Card", "documentNo": "2/1/1192499", "issueDate": "31-07-2024", "expiryDate": "31-08-2026", "alert90Days": "02-06-2026", "alert30Days": "01-08-2026", "authority": "Federal Authority for Identity & Citizenship" }
+  ],
   "hierarchyProtocol": "1-12-108",
   "managingDirector": { "count": 1, "accessLevel": 5, "email": "arslanmalikgoraha@gmail.com" },
   "departmentManagers": { "count": 12, "accessLevel": 4 },
@@ -21,7 +29,7 @@
   ],
 
   "personnel": [
-    { "id": "usr-001", "name": "Arsalan Malik Goraha", "email": "arslanmalikgoraha@gmail.com", "roleId": "R-001", "roleTitle": "Founder & Managing Director", "assignedDepartment": "executive", "accessLevel": 5, "phone": "+971501000001", "nationalityCode": "PK", "commissionRule": { "agentSplit": 1.0, "companySplit": 0.0, "tierName": "Principal Founder (100%)" }, "joinedDate": "2020-01-01", "isActive": true, "avatarUrl": "https://images.unsplash.com/photo-1560250097-0b93528c311a?w=200&h=200&fit=crop" },
+    { "id": "usr-001", "name": "Arsalan Malik Bashir Ahmad", "email": "arslanmalikgoraha@gmail.com", "roleId": "R-001", "roleTitle": "Founder & Managing Director", "assignedDepartment": "executive", "accessLevel": 5, "phone": "+971563616136", "nationalityCode": "PK", "commissionRule": { "agentSplit": 1.0, "companySplit": 0.0, "tierName": "Principal Founder (100%)" }, "joinedDate": "2020-01-01", "isActive": true, "avatarUrl": "https://images.unsplash.com/photo-1560250097-0b93528c311a?w=200&h=200&fit=crop", "emiratesId": "784-1993-1805733-0", "emiratesIdExpiry": "2026-11-22", "documents": [ { "type": "DET_License", "docNo": "1388443", "authority": "Dubai Economy & Tourism (DET)", "issueDate": "2024-07-31", "expiryDate": "2026-07-30", "alert90Days": "2026-05-01", "alert30Days": "2026-06-30" }, { "type": "RERA_ORN", "docNo": "44483", "authority": "Real Estate Regulatory Agency (RERA)", "issueDate": "2024-07-31", "expiryDate": "2026-07-30", "alert90Days": "2026-05-01", "alert30Days": "2026-06-30" }, { "type": "HQ_Ejari", "docNo": "0120250814005322", "authority": "Dubai Land Department (DLD)", "issueDate": "2025-08-14", "expiryDate": "2026-08-13", "alert90Days": "2026-05-15", "alert30Days": "2026-07-14" }, { "type": "ICP_Est_Card", "docNo": "2/1/1192499", "authority": "Federal Authority for Identity & Citizenship", "issueDate": "2024-07-31", "expiryDate": "2026-08-31", "alert90Days": "2026-06-02", "alert30Days": "2026-08-01" } ] },
     { "id": "usr-002", "name": "Sarah Al Maktoum", "email": "sarah.almaktoum@whitecaves.ae", "roleId": "R-002", "roleTitle": "VP of Luxury Sales", "assignedDepartment": "sales", "accessLevel": 4, "phone": "+971501000002", "nationalityCode": "AE", "commissionRule": { "agentSplit": 0.7, "companySplit": 0.3, "tierName": "Platinum Elite (70/30)" }, "joinedDate": "2021-03-15", "isActive": true, "avatarUrl": "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=200&h=200&fit=crop" },
     { "id": "usr-003", "name": "Omar Zayed Al Fahim", "email": "omar.zayed@whitecaves.ae", "roleId": "R-003", "roleTitle": "Senior Director — Commercial", "assignedDepartment": "sales", "accessLevel": 3, "phone": "+971501000003", "nationalityCode": "AE", "commissionRule": { "agentSplit": 0.7, "companySplit": 0.3, "tierName": "Platinum Elite (70/30)" }, "joinedDate": "2021-06-01", "isActive": true, "avatarUrl": "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=200&h=200&fit=crop" },
     { "id": "usr-004", "name": "Laila Hassan Al Rashidi", "email": "laila.hassan@whitecaves.ae", "roleId": "R-004", "roleTitle": "Senior Luxury Broker", "assignedDepartment": "sales", "accessLevel": 3, "phone": "+971501000004", "nationalityCode": "AE", "commissionRule": { "agentSplit": 0.6, "companySplit": 0.4, "tierName": "Gold Producer (60/40)" }, "joinedDate": "2022-01-10", "isActive": true, "avatarUrl": "https://images.unsplash.com/photo-1580489944761-15a19d654956?w=200&h=200&fit=crop" },

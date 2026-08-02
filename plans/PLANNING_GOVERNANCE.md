@@ -62,3 +62,29 @@ Before any code modification turn, the following six criteria must be documented
 - **Single-File Isolation**: Edits during code implementation turns must target ONLY the precise file assigned. Global re-scans are strictly prohibited.
 - **Zero-Token Local Verification**: All syntax, linting, and type checking MUST be executed locally on the machine via `npm run build`.
 - **Deduplication Enforcement**: Any redundant navigation layout, duplicate component, or conflicting style file MUST be shredded immediately upon discovery.
+
+---
+
+## 🔁 5. The 6-Stage RUP Operational Cycle (Absolute Engineering Law)
+
+```
+┌─────────────────┐    ┌──────────────────┐    ┌──────────────────┐
+│ 1_ANALYZE_GAP   ├───►│ 2_RESEARCH_BEST  ├───►│ 3_PLAN_Backlog   │
+│ (Gemini)        │    │ (Gemini)         │    │ (Gemini)         │
+└─────────────────┘    └──────────────────┘    └────────┬─────────┘
+                                                        │
+┌─────────────────┐    ┌──────────────────┐             │
+│ 6_REMOTE_SYNC   │◄───┤ 5_LOCAL_VALIDATE │◄────────────┘
+│ (Git Engine)    │    │ (Laptop CPU)     │  4_CODE_REFACTOR (Claude)
+└─────────────────┘    └──────────────────┘
+```
+
+| Cycle Stage | Execution Engine | Algorithmic Directive | Token Preservation Rule |
+|---|---|---|---|
+| **`1_ANALYZE_GAP`** | Gemini | Scan codebase locally to compare actual frontend component state against `software_docs/` functional requirements specifications | Zero-overhead local static folder comparison |
+| **`2_RESEARCH_BEST`**| Gemini | Perform deep search query sweeps across global SaaS and Dubai real estate frameworks to pull latest design layouts | Filter out conversational padding text |
+| **`3_PLAN_Backlog`** | Gemini | Dynamically rewrite `plans/PENDING_TASKS_ONLY.md` adding itemized wireframe constraints and RUP use cases before touching code files | Immutable disk state snapshot preservation |
+| **`4_CODE_REFACTOR`**| Claude | Execute surgical Single-File Isolation refactors using the 3-folder component split (`.tsx` View \| `.logic.ts` Hook \| `.style.ts` Style) | Omit truncated blocks or incomplete stubs |
+| **`5_LOCAL_VALIDATE`**| Laptop CPU | Execute local machine build verification gates: `npm run build` and verify hot-reloading stability via `nodemon` thread | 0-token loop termination on compilation errors |
+| **`6_REMOTE_SYNC`** | Git Engine | Run `git checkout main` ➔ `git pull origin main` ➔ `git checkout develop` ➔ `git rebase main` ➔ `git merge develop` ➔ `git push origin main` | Automated secure deployment webhook firing |
+

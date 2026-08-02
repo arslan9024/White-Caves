@@ -435,7 +435,7 @@ const PropertyDetailPage: FC = () => {
                 className={`action-btn favorite ${isFavorite(property.id) ? 'active' : ''}`}
                 onClick={() => favoriteItem && toggleFavorite(favoriteItem)}
               >
-                <Heart size={18} fill={isFavorite(property.id) ? '#DC2626' : 'none'} />
+                <Heart size={18} fill={isFavorite(property.id) ? '#EF4444' : 'none'} />
                 {isFavorite(property.id) ? 'Saved' : 'Save'}
               </button>
 

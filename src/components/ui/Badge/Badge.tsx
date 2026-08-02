@@ -113,7 +113,7 @@ interface RoleBadgeProps extends Omit<BadgeProps, 'color' | 'size'> {
 
 const RoleBadge: React.FC<RoleBadgeProps> = ({ role, ...props }) => {
   const roleConfig: Record<string, { label: string; color: string }> = {
-    owner: { label: 'Owner', color: '#DC2626' },
+    owner: { label: 'Owner', color: '#EF4444' },
     admin: { label: 'Admin', color: '#8B5CF6' },
     agent: { label: 'Agent', color: '#3B82F6' },
     tenant: { label: 'Tenant', color: '#10B981' },
@@ -132,7 +132,7 @@ interface PriorityBadgeProps extends Omit<BadgeProps, 'color' | 'pulse' | 'size'
 
 const PriorityBadge: React.FC<PriorityBadgeProps> = ({ priority, ...props }) => {
   const priorityConfig: Record<string, { label: string; color: string; pulse?: boolean }> = {
-    critical: { label: 'Critical', color: '#DC2626', pulse: true },
+    critical: { label: 'Critical', color: '#EF4444', pulse: true },
     high: { label: 'High', color: '#F59E0B' },
     medium: { label: 'Medium', color: '#3B82F6' },
     low: { label: 'Low', color: '#10B981' }

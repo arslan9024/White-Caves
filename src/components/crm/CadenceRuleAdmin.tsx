@@ -127,7 +127,7 @@ function formToPayload(form: RuleFormState): Record<string, unknown> {
 
 function TierBadge({ tier }: { tier: string }) {
   const colours: Record<string, string> = {
-    hot: '#dc2626',
+    hot: '#EF4444',
     warm: '#d97706',
     cold: '#2563eb',
     inactive: '#6b7280',

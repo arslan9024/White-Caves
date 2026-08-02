@@ -104,7 +104,7 @@ const ErrorText = styled.p`
 
 const ErrorDetail = styled.pre`
   font-size: 0.8rem;
-  color: #dc2626;
+  color: #EF4444;
   background: #fef2f2;
   border: 1px solid #fecaca;
   border-radius: 8px;

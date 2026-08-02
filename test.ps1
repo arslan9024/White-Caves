@@ -1,1 +1,0 @@
- = @([pscustomobject]@{taskId='DU018';lane='A'});  = 'A';  = @( | Where-Object { .lane -eq  } | Sort-Object @{ Expression = { -1 * 50 } }, taskId | Select-Object -First 1); Write-Host 'Count:' .Count; Write-Host 'taskId:' [0].taskId;

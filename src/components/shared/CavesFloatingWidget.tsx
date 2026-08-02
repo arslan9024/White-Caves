@@ -64,7 +64,7 @@ const MainFAB = styled.button<{ $open: boolean }>`
   width: 56px;
   height: 56px;
   border-radius: 50%;
-  background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+  background: linear-gradient(135deg, #ef4444 0%, #EF4444 100%);
   color: #ffffff;
   border: none;
   cursor: pointer;

@@ -63,7 +63,7 @@
 .tcb-logo-icon {
   width: 36px;
   height: 36px;
-  background: linear-gradient(135deg, #DC2626 0%, #991B1B 100%);
+  background: linear-gradient(135deg, #EF4444 0%, #991B1B 100%);
   border-radius: 10px;
   display: flex;
   align-items: center;
@@ -99,7 +99,7 @@
 
 .tcb-search.focused {
   background: var(--surface-primary, #ffffff);
-  border-color: var(--primary-color, #DC2626);
+  border-color: var(--primary-color, #EF4444);
   box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.1);
 }
 
@@ -189,7 +189,7 @@
   right: 4px;
   min-width: 18px;
   height: 18px;
-  background: #DC2626;
+  background: #EF4444;
   color: white;
   font-size: 11px;
   font-weight: 600;
@@ -234,7 +234,7 @@
 .profile-avatar {
   width: 32px;
   height: 32px;
-  background: linear-gradient(135deg, #DC2626 0%, #991B1B 100%);
+  background: linear-gradient(135deg, #EF4444 0%, #991B1B 100%);
   border-radius: 8px;
   display: flex;
   align-items: center;
@@ -338,7 +338,7 @@
 
 .mark-read-btn {
   font-size: 12px;
-  color: var(--primary-color, #DC2626);
+  color: var(--primary-color, #EF4444);
   background: none;
   border: none;
   cursor: pointer;
@@ -496,7 +496,7 @@
 }
 
 .dropdown-item.danger {
-  color: #DC2626;
+  color: #EF4444;
 }
 
 .dropdown-divider {

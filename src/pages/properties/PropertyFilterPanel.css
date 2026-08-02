@@ -286,7 +286,7 @@
 .filter-reset-btn:hover {
   background: rgba(220, 38, 38, 0.06);
   border-color: rgba(220, 38, 38, 0.3);
-  color: #dc2626;
+  color: #EF4444;
 }
 
 /* ─── Results Bar ───────────────────────────────────────────────────── */
@@ -366,7 +366,7 @@
 }
 
 .filter-clear-all-btn:hover {
-  color: #dc2626;
+  color: #EF4444;
 }
 
 /* ════════════════════════════════════════════════════════════════════════

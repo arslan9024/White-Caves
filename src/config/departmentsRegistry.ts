@@ -180,7 +180,7 @@ export const DEPARTMENTS: Record<string, Department> = {
     name: 'Security & Audit',
     fullName: 'Security & Audit',
     icon: '🔐',
-    color: '#DC2626',
+    color: '#EF4444',
     head: 'Hassan Al-Mansouri',
     headTitle: 'Security Officer',
     email: 'security@whitecaves.ae',

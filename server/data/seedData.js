@@ -129,7 +129,7 @@ export const DEPARTMENTS_SEED = [
     name: 'Legal',
     code: 'LEGAL',
     description: 'Contract management, legal reviews, and dispute resolution',
-    color: '#DC2626',
+    color: '#EF4444',
     icon: 'Scale',
     head: { name: 'Aisha Al Ketbi', email: 'aisha@whitecaves.ae', title: 'Director of Legal' },
     kpis: [
@@ -270,7 +270,7 @@ export const ASSISTANTS_SEED = [
     role: 'Lead Hunter',
     departmentCode: 'SALES',
     avatar: '/avatars/hunter.png',
-    color: '#DC2626',
+    color: '#EF4444',
     description: 'Actively prospects new leads, runs outreach campaigns, and enriches lead data.',
     capabilities: ['Lead Prospecting', 'Outreach Campaigns', 'Pattern Detection', 'Lead Enrichment'],
     features: [
@@ -546,7 +546,7 @@ export const ASSISTANTS_SEED = [
     role: 'Legal Risk',
     departmentCode: 'LEGAL',
     avatar: '/avatars/evangeline.png',
-    color: '#DC2626',
+    color: '#EF4444',
     description: 'Analyzes legal risks, reviews contracts, and ensures regulatory compliance.',
     capabilities: ['Risk Analysis', 'Contract Review', 'Regulatory Compliance', 'Best Practices'],
     features: [

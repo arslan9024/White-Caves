@@ -1,56 +1,44 @@
-import React, { FC, useState, useEffect } from 'react';
-import { useNavigate, Link, useLocation } from 'react-router-dom';
-import { Search, Bell, Shield, User as UserIcon, LogOut, Home, LayoutDashboard } from 'lucide-react';
-import { useWorkspace } from '../../context/WorkspaceContext';
-import { Personnel } from '../../types/companyCore';
+/**
+ * TopNavbar.tsx — View Layer (Atomic 3-Folder Pattern)
+ *
+ * Pure render shell — all business logic delegated to useTopNavbarLogic().
+ * Styles delegated to TopNavbar.css.
+ */
+
+import React, { FC } from 'react';
+import { Link } from 'react-router-dom';
+import { Search, Bell } from 'lucide-react';
+import { useTopNavbarLogic } from './TopNavbar.logic';
+import { useProfileScheduler } from '../../hooks/useProfileScheduler';
 import './TopNavbar.css';
 
+// ─── Component ────────────────────────────────────────────────────────────────
+
 export const TopNavbar: FC = () => {
-  const navigate = useNavigate();
-  const location = useLocation();
+  const scheduler = useProfileScheduler();
   const {
+    searchQuery,
+    searchInputRef,
+    handleSearchChange,
+    handleSearchSubmit,
+    handleImpersonationChange,
+    handleNotificationsClick,
+    handleProfileClick,
     activeUser,
     impersonatedUser,
-    setImpersonatedUser,
-    clearImpersonation,
     isMaster,
-    personnel
-  } = useWorkspace();
-
-  const [searchQuery, setSearchQuery] = useState('');
-  const searchInputRef = React.useRef<HTMLInputElement>(null);
-
-  useEffect(() => {
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'k') {
-        e.preventDefault();
-        searchInputRef.current?.focus();
-      }
-    };
-    window.addEventListener('keydown', handleKeyDown);
-    return () => window.removeEventListener('keydown', handleKeyDown);
-  }, []);
-
-  const handleImpersonationChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    const selectedId = e.target.value;
-    if (!selectedId) {
-      clearImpersonation();
-      return;
-    }
-    const found = personnel.find(p => p.id === selectedId);
-    if (found) {
-      setImpersonatedUser(found);
-    }
-  };
-
-  const handleSearchSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!searchQuery.trim()) return;
-    navigate(`/properties?search=${encodeURIComponent(searchQuery)}`);
-  };
+    personnel,
+    clearImpersonation,
+  } = useTopNavbarLogic();
 
   return (
-    <header className="top-navbar-container" data-testid="top-navbar" role="banner" aria-label="Global Header Navigation">
+    <header
+      className="top-navbar-container"
+      data-testid="top-navbar"
+      role="banner"
+      aria-label="Global Header Navigation"
+    >
+      {/* ── Left Section ────────────────────────────────────── */}
       <div className="top-navbar-left">
         <Link to="/" className="top-navbar-brand" aria-label="White Caves Real Estate Home">
           <div className="top-navbar-logo-badge">WC</div>
@@ -60,7 +48,12 @@ export const TopNavbar: FC = () => {
         </Link>
 
         {/* Global Search Bar */}
-        <form onSubmit={handleSearchSubmit} className="top-navbar-search" role="search" aria-label="Global Search">
+        <form
+          onSubmit={handleSearchSubmit}
+          className="top-navbar-search"
+          role="search"
+          aria-label="Global Search"
+        >
           <Search size={15} className="top-navbar-search-icon" aria-hidden="true" />
           <input
             ref={searchInputRef}
@@ -70,30 +63,26 @@ export const TopNavbar: FC = () => {
             placeholder="Global Search (Ctrl+K to focus)..."
             aria-label="Global Search Property or Lead Input"
             value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
+            onChange={handleSearchChange}
           />
         </form>
 
-        {/* DLD / RERA Realtime Ticker */}
-        <div className="top-navbar-ticker">
-          <span className="ticker-dot"></span>
-          <span><strong>RERA Live:</strong> Dubai Land Dept 2026 API Connected</span>
+        {/* DLD / RERA Realtime Ticker & Credential Expiry Banner */}
+        <div className={`top-navbar-ticker ${scheduler.highestSeverity !== 'CLEAR' ? 'ticker-alert-active' : ''}`} style={scheduler.highestSeverity !== 'CLEAR' ? { backgroundColor: 'rgba(239, 68, 68, 0.12)', border: '1px solid #EF4444', color: '#EF4444', fontWeight: 'bold' } : {}}>
+          <span className={`ticker-dot ${scheduler.highestSeverity !== 'CLEAR' ? 'ticker-dot-pulse' : ''}`} style={scheduler.highestSeverity !== 'CLEAR' ? { backgroundColor: '#EF4444' } : {}} />
+          <span>
+            {scheduler.primaryTickerMessage}
+          </span>
         </div>
       </div>
 
+      {/* ── Right Section ───────────────────────────────────── */}
       <div className="top-navbar-right">
-        {/* Navigation Quick Links */}
-        <Link to="/" className="nav-link-btn" title="Homepage View">
-          Home
-        </Link>
-        <Link to="/crm" className="nav-link-btn" title="CRM Dashboard">
-          Dashboard
-        </Link>
-        <Link to="/profile" className="nav-link-btn" title="Profile & Security">
-          Profile
-        </Link>
+        <Link to="/" className="nav-link-btn" title="Homepage View">Home</Link>
+        <Link to="/crm" className="nav-link-btn" title="CRM Dashboard">Dashboard</Link>
+        <Link to="/profile" className="nav-link-btn" title="Profile & Security">Profile</Link>
 
-        {/* Managing Director Ghost Impersonation Dropdown (Level 5 Master Exclusive) */}
+        {/* MD Ghost Impersonation — Master Level Only */}
         {isMaster && (
           <div className="impersonation-panel" data-testid="md-impersonation-panel">
             <select
@@ -104,31 +93,39 @@ export const TopNavbar: FC = () => {
             >
               <option value="">🎭 Impersonate User Mode</option>
               <optgroup label="Core Leadership">
-                {personnel.filter(p => p.accessLevel >= 4).map(p => (
-                  <option key={p.id} value={p.id}>
-                    {p.name} ({p.roleTitle} - Level {p.accessLevel})
-                  </option>
-                ))}
+                {personnel
+                  .filter((p) => p.accessLevel >= 4)
+                  .map((p) => (
+                    <option key={p.id} value={p.id}>
+                      {p.name} ({p.roleTitle} - Level {p.accessLevel})
+                    </option>
+                  ))}
               </optgroup>
               <optgroup label="Sales & Leasing Brokers">
-                {personnel.filter(p => p.accessLevel === 2 || p.accessLevel === 3).map(p => (
-                  <option key={p.id} value={p.id}>
-                    {p.name} ({p.roleTitle} - Level {p.accessLevel})
-                  </option>
-                ))}
+                {personnel
+                  .filter((p) => p.accessLevel === 2 || p.accessLevel === 3)
+                  .map((p) => (
+                    <option key={p.id} value={p.id}>
+                      {p.name} ({p.roleTitle} - Level {p.accessLevel})
+                    </option>
+                  ))}
               </optgroup>
               <optgroup label="External Portals">
-                {personnel.filter(p => p.accessLevel === 1).map(p => (
-                  <option key={p.id} value={p.id}>
-                    {p.name} ({p.roleTitle} - External)
-                  </option>
-                ))}
+                {personnel
+                  .filter((p) => p.accessLevel === 1)
+                  .map((p) => (
+                    <option key={p.id} value={p.id}>
+                      {p.name} ({p.roleTitle} - External)
+                    </option>
+                  ))}
               </optgroup>
             </select>
 
             {impersonatedUser && (
               <div className="impersonation-badge-active">
-                <span>VIEWING AS: {impersonatedUser.name.split(' ')[0]} (L{impersonatedUser.accessLevel})</span>
+                <span>
+                  VIEWING AS: {impersonatedUser.name.split(' ')[0]} (L{impersonatedUser.accessLevel})
+                </span>
                 <button
                   onClick={clearImpersonation}
                   className="clear-impersonation-btn"
@@ -141,12 +138,13 @@ export const TopNavbar: FC = () => {
           </div>
         )}
 
-        {/* Notification Indicator */}
+        {/* Notification Bell */}
         <button
           className="nav-link-btn"
           style={{ padding: '6px', borderRadius: '50%', display: 'flex', alignItems: 'center' }}
-          onClick={() => navigate('/crm/communications')}
+          onClick={handleNotificationsClick}
           title="Notifications & WhatsApp Queue"
+          aria-label="Open Notifications"
         >
           <Bell size={18} color="#EF4444" />
         </button>
@@ -154,8 +152,9 @@ export const TopNavbar: FC = () => {
         {/* Active User Avatar */}
         <button
           className="top-navbar-profile-btn"
-          onClick={() => navigate('/profile')}
+          onClick={handleProfileClick}
           title={`${activeUser?.name} (${activeUser?.roleTitle})`}
+          aria-label="Open User Profile"
         >
           {activeUser?.avatarUrl ? (
             <img

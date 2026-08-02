@@ -154,6 +154,13 @@ git merge develop && git push origin main
 
 ---
 
+## 🔗 Inter-Linked Navigation References
+
+- [Database Design](./02_software_design/database_architecture_sdd.md) — Core database schema, Prisma singleton connection, and MongoDB index topology.
+- [Navigation Map](./04_flowcharts/universal_navigation_map.md) — ASCII visual interaction maps tracing user routing and canvas views.
+
+---
+
 ## 📂 6. The Three-Folder Knowledge Hierarchy
 
 ```

@@ -376,7 +376,7 @@ body.light-mode .env-name {
 }
 
 .score-stat .stat-value.critical {
-  color: #dc2626;
+  color: #EF4444;
 }
 
 .score-stat .stat-label {
@@ -397,7 +397,7 @@ body.light-mode .env-name {
 
 .deploy-status.not-ready {
   background: rgba(220, 38, 38, 0.2);
-  color: #dc2626;
+  color: #EF4444;
 }
 
 .deployment-checks {
@@ -424,7 +424,7 @@ body.light-mode .env-name {
 
 .deployment-check.not_ready,
 .deployment-check.development {
-  border-left-color: #dc2626;
+  border-left-color: #EF4444;
 }
 
 .check-header {
@@ -449,7 +449,7 @@ body.light-mode .env-name {
 
 .check-icon.not_ready,
 .check-icon.development {
-  color: #dc2626;
+  color: #EF4444;
 }
 
 .check-name {
@@ -459,7 +459,7 @@ body.light-mode .env-name {
 
 .critical-badge {
   background: rgba(220, 38, 38, 0.2);
-  color: #dc2626;
+  color: #EF4444;
   padding: 2px 8px;
   border-radius: 4px;
   font-size: 0.7rem;

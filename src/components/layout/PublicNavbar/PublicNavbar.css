@@ -112,12 +112,12 @@
 }
 
 .public-navbar__link:hover {
-  color: #dc2626;
+  color: #EF4444;
   background: rgba(220, 38, 38, 0.07);
 }
 
 .public-navbar__link.active {
-  color: #dc2626;
+  color: #EF4444;
   background: rgba(220, 38, 38, 0.1);
 }
 
@@ -184,7 +184,7 @@
 
 .public-navbar__dropdown-item:hover {
   background: rgba(220, 38, 38, 0.07);
-  color: #dc2626;
+  color: #EF4444;
 }
 
 .public-navbar__dropdown-icon {
@@ -205,7 +205,7 @@
 /* "List Property" outlined button */
 .public-navbar__list-btn {
   text-decoration: none;
-  color: #dc2626;
+  color: #EF4444;
   border: 1.5px solid rgba(220, 38, 38, 0.4);
   border-radius: 0.55rem;
   padding: 0.46rem 0.82rem;
@@ -217,7 +217,7 @@
 
 .public-navbar__list-btn:hover {
   background: rgba(220, 38, 38, 0.08);
-  border-color: #dc2626;
+  border-color: #EF4444;
 }
 
 /* "Sign In" solid button */
@@ -255,7 +255,7 @@
 }
 
 .public-navbar__menu-btn:hover {
-  border-color: #dc2626;
+  border-color: #EF4444;
 }
 
 .public-navbar__menu-btn span {
@@ -395,12 +395,12 @@
 .public-navbar__mobile-link:hover {
   background: rgba(220, 38, 38, 0.05);
   border-color: rgba(220, 38, 38, 0.2);
-  color: #dc2626;
+  color: #EF4444;
 }
 
 .public-navbar__mobile-link.active {
   border-color: rgba(220, 38, 38, 0.35);
-  color: #dc2626;
+  color: #EF4444;
   background: rgba(220, 38, 38, 0.06);
 }
 
@@ -434,7 +434,7 @@
   border: 1.5px solid rgba(220, 38, 38, 0.4);
   border-radius: 0.65rem;
   padding: 0.75rem;
-  color: #dc2626;
+  color: #EF4444;
   font-weight: 700;
   font-size: 0.9rem;
   transition: all 0.18s ease;
@@ -442,7 +442,7 @@
 
 .public-navbar__mobile-list-btn:hover {
   background: rgba(220, 38, 38, 0.07);
-  border-color: #dc2626;
+  border-color: #EF4444;
 }
 
 .public-navbar__mobile-signin {
@@ -648,12 +648,12 @@
 
 .public-navbar__user-dropdown-item--logout:hover {
   background: #fef2f2;
-  color: #dc2626;
+  color: #EF4444;
 }
 
 /* ── Focus Styles (accessibility) ───────────────────────────── */
 .public-navbar :is(a, button):focus-visible {
-  outline: 2px solid #dc2626;
+  outline: 2px solid #EF4444;
   outline-offset: 2px;
   border-radius: 4px;
 }

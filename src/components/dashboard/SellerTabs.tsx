@@ -211,7 +211,7 @@ export const MarketInsights: React.FC = () => {
                   <td style={S.td}>{a.price}</td>
                   <td style={S.td}>
                     <span style={S.badge(
-                      a.demand === 'Very High' ? '#dc2626' : '#d97706',
+                      a.demand === 'Very High' ? '#EF4444' : '#d97706',
                       a.demand === 'Very High' ? '#fef2f2' : '#fffbeb',
                     )}>
                       {a.demand}
@@ -251,7 +251,7 @@ export const ReceivedOffers: React.FC = () => {
 
   const statusColor = (s: string) => {
     if (s === 'accepted') return { c: '#16a34a', bg: '#dcfce7' };
-    if (s === 'rejected' || s === 'expired') return { c: '#dc2626', bg: '#fef2f2' };
+    if (s === 'rejected' || s === 'expired') return { c: '#EF4444', bg: '#fef2f2' };
     if (s === 'countered') return { c: '#d97706', bg: '#fffbeb' };
     return { c: '#2563eb', bg: '#dbeafe' };
   };

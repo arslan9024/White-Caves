@@ -222,8 +222,8 @@ const AssistantPlanEditor: React.FC = () => {
               style={{
                 padding: '8px 20px',
                 background: 'transparent',
-                color: '#DC2626',
-                border: '1px solid #DC2626',
+                color: '#EF4444',
+                border: '1px solid #EF4444',
                 borderRadius: '6px',
                 fontSize: '14px',
                 cursor: busy || !planExists ? 'not-allowed' : 'pointer',

@@ -6,11 +6,11 @@
 :root {
   /* ── Corporate White Caves Brand Palette ───────────────────────────── */
   --wc-red:                 #EF4444;
-  --wc-red-dark:            #DC2626;
+  --wc-red-dark:            #EF4444;
   --wc-red-light:           #FCA5A5;
   --wc-red-soft:            rgba(239, 68, 68, 0.08);
   --wc-red-glow:            0 0 16px rgba(239, 68, 68, 0.35);
-  --wc-red-gradient:        linear-gradient(135deg, #EF4444 0%, #DC2626 100%);
+  --wc-red-gradient:        linear-gradient(135deg, #EF4444 0%, #EF4444 100%);
   --wc-gold:               #D4AF37;
   --wc-gold-gradient:       linear-gradient(135deg, #D4AF37 0%, #AA7C11 100%);
 
@@ -100,7 +100,7 @@
 
 .wc-badge-red {
   background: rgba(239, 68, 68, 0.1);
-  color: #DC2626;
+  color: #EF4444;
   border: 1px solid rgba(239, 68, 68, 0.3);
 }
 

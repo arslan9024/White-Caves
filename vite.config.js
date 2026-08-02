@@ -187,8 +187,18 @@ export default defineConfig(async ({ command }) => {
         '@': path.resolve(__dirname, 'src'),
         '@assets': path.resolve(__dirname, 'attached_assets'),
         '@components': path.resolve(__dirname, 'src/components'),
+        '@atoms': path.resolve(__dirname, 'src/components/atoms'),
+        '@molecules': path.resolve(__dirname, 'src/components/molecules'),
         '@pages': path.resolve(__dirname, 'src/pages'),
         '@utils': path.resolve(__dirname, 'src/utils'),
+        '@shared': path.resolve(__dirname, 'src/components/shared'),
+        '@layouts': path.resolve(__dirname, 'src/layouts'),
+        '@context': path.resolve(__dirname, 'src/context'),
+        '@locales': path.resolve(__dirname, 'src/locales'),
+        '@mocks': path.resolve(__dirname, 'src/mocks'),
+        '@store': path.resolve(__dirname, 'src/store'),
+        '@hooks': path.resolve(__dirname, 'src/hooks'),
+        '@server': path.resolve(__dirname, 'server')
       },
     },
     build: {

@@ -291,7 +291,7 @@
 
 .error-label {
   margin: 0 0 8px 0;
-  color: #dc2626;
+  color: #EF4444;
   font-weight: 600;
   font-size: 13px;
 }
@@ -459,7 +459,7 @@
 }
 
 .status-info span.expired {
-  color: #dc2626;
+  color: #EF4444;
   font-weight: 600;
 }
 
@@ -472,7 +472,7 @@
 .status-message {
   margin: 4px 0;
   font-size: 13px;
-  color: #DC2626;
+  color: #EF4444;
 }
 
 /* Responsive */

@@ -33,7 +33,7 @@
 }
 
 .map-toggle-btn:hover {
-  background: #DC2626;
+  background: #EF4444;
   transform: translateY(-1px);
   box-shadow: 0 4px 12px rgba(239, 68, 68, 0.35);
 }

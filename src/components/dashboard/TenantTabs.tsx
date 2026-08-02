@@ -288,7 +288,7 @@ export const TenantPayments: React.FC = () => {
                         p.status === 'paid'
                           ? '#16a34a'
                           : p.status === 'overdue'
-                            ? '#dc2626'
+                            ? '#EF4444'
                             : '#d97706',
                         p.status === 'paid'
                           ? '#dcfce7'
@@ -361,7 +361,7 @@ export const TenantMaintenance: React.FC = () => {
                 <span
                   style={S.badge(
                     r.priority === 'emergency'
-                      ? '#dc2626'
+                      ? '#EF4444'
                       : r.priority === 'high'
                         ? '#d97706'
                         : '#2563eb',

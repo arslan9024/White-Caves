@@ -186,7 +186,7 @@ export const errorState = (message: string, onRetry?: () => void): React.ReactNo
     }}
   >
     <div style={{ fontSize: '2rem', marginBottom: '0.5rem' }}>⚠️</div>
-    <p style={{ color: 'var(--accent-red, #dc2626)', marginBottom: '1rem' }}>{message}</p>
+    <p style={{ color: 'var(--accent-red, #EF4444)', marginBottom: '1rem' }}>{message}</p>
     {onRetry && (
       <button onClick={onRetry} style={btnPrimary}>
         Retry

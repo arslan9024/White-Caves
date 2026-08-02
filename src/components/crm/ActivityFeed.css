@@ -101,7 +101,7 @@
 
 .activity-badge.success {
   background: rgba(5, 150, 105, 0.1);
-  color: #DC2626;
+  color: #EF4444;
 }
 
 .activity-badge.warning {
@@ -111,7 +111,7 @@
 
 .activity-badge.error {
   background: rgba(220, 38, 38, 0.1);
-  color: #dc2626;
+  color: #EF4444;
 }
 
 .activity-badge.info {

@@ -51,13 +51,13 @@
 
 .auth-error span {
   font-size: 14px;
-  color: #dc2626;
+  color: #EF4444;
 }
 
 .auth-error button {
   background: none;
   border: none;
-  color: #dc2626;
+  color: #EF4444;
   font-size: 20px;
   cursor: pointer;
   padding: 0;

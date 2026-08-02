@@ -13,7 +13,7 @@ const ASSISTANT_METADATA = {
   aurora: { name: 'Aurora', color: '#14B8A6' },
   hazel: { name: 'Hazel', color: '#EC4899' },
   willow: { name: 'Willow', color: '#3B82F6' },
-  evangeline: { name: 'Evangeline', color: '#DC2626' },
+  evangeline: { name: 'Evangeline', color: '#EF4444' },
   sentinel: { name: 'Sentinel', color: '#059669' },
   hunter: { name: 'Hunter', color: '#F59E0B' },
   henry: { name: 'Henry', color: '#6366F1' },

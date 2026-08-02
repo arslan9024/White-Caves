@@ -7,7 +7,7 @@
 :root {
   /* Core Brand Colors */
   --wc-red-primary: #EF4444;
-  --wc-red-hover: #DC2626;
+  --wc-red-hover: #EF4444;
   --wc-red-active: #B91C1C;
   --wc-red-light: #FEE2E2;
   --wc-red-glow: rgba(239, 68, 68, 0.15);

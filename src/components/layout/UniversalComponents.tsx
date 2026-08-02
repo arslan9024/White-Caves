@@ -2,8 +2,9 @@ import React, { useEffect, useState, useCallback } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { setOnlineStatus } from '../../store/navigationSlice';
 import { TIMING } from '../../constants/app';
-import { CavesFloatingWidget } from '../shared';
+import { CavesFloatingWidget, CavesFloatingSearch } from '../shared';
 import { TimeDisplayContainer, ConnectionStatus } from './UniversalComponents/styles';
+
 
 // ---------------------------------------------------------------------------
 // Types
@@ -68,7 +69,9 @@ export default function UniversalComponents(): React.ReactElement {
 
   return (
     <>
+      <CavesFloatingSearch />
       <CavesFloatingWidget />
+
 
       
       <TimeDisplayContainer 

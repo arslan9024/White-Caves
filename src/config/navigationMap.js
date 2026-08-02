@@ -44,7 +44,7 @@ export const DEPARTMENTS = {
   executive: {
     id: 'executive',
     name: 'Executive',
-    color: '#DC2626',
+    color: '#EF4444',
     icon: Briefcase,
     description: 'Strategic decisions and company oversight'
   },
@@ -79,7 +79,7 @@ export const DEPARTMENTS = {
 };
 
 export const AI_ASSISTANTS = {
-  zoe: { id: 'zoe', name: 'Zoe', department: 'executive', role: 'MD Executive Assistant', color: '#DC2626', status: 'active' },
+  zoe: { id: 'zoe', name: 'Zoe', department: 'executive', role: 'MD Executive Assistant', color: '#EF4444', status: 'active' },
   mary: { id: 'mary', name: 'Mary', department: 'operations', role: 'Inventory Manager', color: '#3B82F6', status: 'active' },
   daisy: { id: 'daisy', name: 'Daisy', department: 'operations', role: 'Property Coordinator', color: '#10B981', status: 'active' },
   sentinel: { id: 'sentinel', name: 'Sentinel', department: 'operations', role: 'Quality Control', color: '#F97316', status: 'active' },

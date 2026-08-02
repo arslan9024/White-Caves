@@ -1425,7 +1425,7 @@
 
 .ws-ai-execute-btn {
   padding: 10px 24px;
-  background: linear-gradient(135deg, var(--ws-emerald), #DC2626);
+  background: linear-gradient(135deg, var(--ws-emerald), #EF4444);
   border: none;
   border-radius: var(--ws-radius-sm);
   color: white;

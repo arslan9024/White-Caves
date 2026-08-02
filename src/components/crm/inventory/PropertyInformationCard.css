@@ -124,7 +124,7 @@
 }
 
 .property-information-card .error-text {
-  color: #dc2626;
+  color: #EF4444;
   font-size: 12px;
   margin-left: auto;
   font-weight: normal;
@@ -152,7 +152,7 @@
 .property-information-card input.input-error,
 .property-information-card select.input-error,
 .property-information-card textarea.input-error {
-  border-color: #dc2626;
+  border-color: #EF4444;
   background: #fef2f2;
 }
 
@@ -238,7 +238,7 @@
 }
 
 .property-information-card .btn-primary:hover:not(:disabled) {
-  background: #DC2626;
+  background: #EF4444;
   box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
 }
 

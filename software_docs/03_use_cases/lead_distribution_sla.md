@@ -6,6 +6,21 @@
 
 ---
 
+## 🎨 Brand Palette Compliance
+
+- Primary Red (`#EF4444`): SLA countdown timers, breached SLA alerts, escalation badges.
+- Pure White (`#FFFFFF`): Lead detail cards, contact attempt forms.
+- Slate Text (`#1E293B`): Lead score text, phone number annotations.
+
+---
+
+## 🔗 Inter-Linked Navigation References
+
+- [Sales SRS](../01_requirements_engineering/srs_sales_brokerage.md) — Software Requirements Specification for Sales & Luxury Brokerage.
+- [Navigation Map](../04_flowcharts/universal_navigation_map.md) — Universal ASCII navigation flowchart tracing workspace canvas views.
+
+---
+
 ## 🎯 Use Case Overview
 
 When a new lead inquires via WhatsApp, Website Portal, or Property Finder, the system MUST route the lead via round-robin allocation to an available licensed broker and start a strict 15-minute speed-to-lead SLA countdown timer.

@@ -152,7 +152,7 @@
 }
 
 .owner-follow-up-list .stat-value.warning {
-  color: #dc2626;
+  color: #EF4444;
 }
 
 .owner-follow-up-list .stat-value.alert {
@@ -278,7 +278,7 @@
 }
 
 .owner-follow-up-list .follow-up-days.overdue {
-  color: #dc2626;
+  color: #EF4444;
   font-weight: 600;
 }
 
@@ -423,7 +423,7 @@
 
 .owner-follow-up-list .history-outcome {
   font-size: 12px;
-  color: #DC2626;
+  color: #EF4444;
   font-style: italic;
 }
 
@@ -449,7 +449,7 @@
 }
 
 .owner-follow-up-list .btn-primary:hover {
-  background: #DC2626;
+  background: #EF4444;
   box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
 }
 

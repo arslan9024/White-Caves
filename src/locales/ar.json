@@ -1,32 +1,106 @@
 {
-  "app": {
-    "title": "وايت كيفز للعقارات ش.ذ.م.م",
-    "subtitle": "عقارات دبي الرائدة",
-    "founderTag": "المدير التنفيذي (المستوى الخامس)",
-    "founderRole": "المدير التنفيذي والمؤسس",
-    "searchPlaceholder": "البحث في 100 شاشة للعمليات...",
-    "globalSearchPlaceholder": "البحث الشامل (Ctrl+K)...",
-    "reraLive": "مباشر ريرا: دائرة الأراضي والأملاك ب دبي متصلة 2026"
+  "hero": {
+    "title": "إعادة تعريف العقارات الفاخرة في دبي",
+    "subtitle": "اكتشف الفلل الفاخرة في داماك هيلز 2، ونخلة جميرا، ووسط مدينة دبي مع وايت كيفز العقارية.",
+    "cta_explore": "استكشف العقارات المميزة",
+    "cta_contact": "تحدث مع وسيط خبير"
+  },
+  "search": {
+    "placeholder": "البحث في داماك هيلز 2، إيجاري، المستثمرين، العملاء المحتملين...",
+    "btn_search": "البحث في السوق",
+    "no_results": "لم يتم العثور على عقارات تطابق معاييرك.",
+    "loading": "جارٍ البحث في العقارات...",
+    "filter_bedrooms": "غرف النوم",
+    "filter_price_min": "أدنى سعر (درهم)",
+    "filter_price_max": "أعلى سعر (درهم)",
+    "filter_community": "المجمع السكني",
+    "filter_type": "نوع العقار",
+    "filter_clear": "مسح الفلاتر",
+    "filter_apply": "تطبيق الفلاتر"
+  },
+  "map": {
+    "title": "خريطة عقارات دبي التفاعلية",
+    "subtitle": "مخزون السوق المباشر عبر المجمعات الرئيسية في دبي.",
+    "badge": "مخزون دائرة الأراضي والأملاك مباشرة"
   },
   "nav": {
     "home": "الرئيسية",
     "dashboard": "لوحة التحكم",
     "profile": "الملف الشخصي",
-    "impersonateMode": "وضع محاكاة المستخدم",
-    "revertMaster": "العودة للوضع الرئيسي"
+    "properties": "العقارات",
+    "crm": "إدارة العملاء",
+    "logout": "تسجيل الخروج",
+    "global_search_placeholder": "البحث العالمي (Ctrl+K للتركيز)...",
+    "global_search_label": "بحث في العقارات أو العملاء المحتملين",
+    "rera_live_badge": "ريرا مباشر:",
+    "rera_live_message": "متصل بنظام دائرة الأراضي والأملاك 2026",
+    "notifications": "الإشعارات وقائمة انتظار واتساب",
+    "impersonate_placeholder": "🎭 وضع انتحال الهوية",
+    "impersonate_group_leadership": "القيادة الأساسية",
+    "impersonate_group_brokers": "وسطاء المبيعات والإيجار",
+    "impersonate_group_external": "البوابات الخارجية",
+    "impersonate_viewing_as": "تتصفح باسم",
+    "impersonate_reset": "العودة إلى وضع المدير"
   },
-  "pillars": {
-    "sales": "المبيعات والسوق الثانوي",
-    "offplan": "مشاريع قيد الإنشاء",
-    "leasing": "الإيجارات والعقود",
-    "assetManagement": "إدارة الأصول (داماك هيلز 2)",
-    "finance": "المالية والخزينة",
-    "marketing": "التسويق والنمو",
-    "executive": "المكتب التنفيذي",
-    "compliance": "الامتثال والقوانين",
-    "technology": "التكنولوجيا والهندسة",
-    "legal": "الشؤون القانونية",
-    "conveyancing": "المبايعات ونقل الملكية",
-    "intelligence": "الذكاء الاصطناعي والبيانات"
+  "workspace": {
+    "welcome": "مرحباً بعودتك",
+    "loading": "جارٍ تحميل مساحة العمل...",
+    "error_boundary_title": "حدث خطأ ما",
+    "error_boundary_message": "حدث خطأ غير متوقع. يرجى تحديث الصفحة.",
+    "error_boundary_retry": "إعادة المحاولة",
+    "session_expired": "انتهت صلاحية جلستك. يرجى تسجيل الدخول مرة أخرى.",
+    "permission_denied": "ليس لديك صلاحية الوصول إلى هذا القسم."
+  },
+  "property": {
+    "badge_featured": "مميز",
+    "badge_new": "جديد",
+    "badge_sold": "تم البيع",
+    "badge_rented": "مؤجر",
+    "label_bedrooms": "غرف النوم",
+    "label_bathrooms": "دورات المياه",
+    "label_area": "المساحة (قدم مربع)",
+    "label_price": "السعر (درهم)",
+    "label_community": "المجمع",
+    "label_type": "النوع",
+    "label_status": "الحالة",
+    "label_agent": "وكيل الإدراج",
+    "action_view": "عرض العقار",
+    "action_save": "حفظ العقار",
+    "action_contact": "تواصل مع الوكيل",
+    "action_whatsapp": "واتساب الوكيل",
+    "action_schedule": "جدولة معاينة"
+  },
+  "crm": {
+    "leads_title": "إدارة العملاء المحتملين",
+    "lead_status_new": "جديد",
+    "lead_status_active": "نشط",
+    "lead_status_hot": "ساخن",
+    "lead_status_cold": "بارد",
+    "lead_status_converted": "تم التحويل",
+    "lead_status_lost": "خسر",
+    "action_assign": "تعيين عميل محتمل",
+    "action_follow_up": "متابعة",
+    "action_note": "إضافة ملاحظة",
+    "pipeline_title": "خط أنابيب المبيعات"
+  },
+  "auth": {
+    "login_title": "تسجيل الدخول إلى وايت كيفز CRM",
+    "login_subtitle": "أدخل بيانات اعتمادك للوصول إلى المنصة.",
+    "label_email": "عنوان البريد الإلكتروني",
+    "label_password": "كلمة المرور",
+    "btn_login": "تسجيل الدخول",
+    "btn_forgot": "نسيت كلمة المرور؟",
+    "btn_biometric": "استخدام تسجيل الدخول البيومتري",
+    "error_invalid": "البريد الإلكتروني أو كلمة المرور غير صحيحة. حاول مرة أخرى.",
+    "error_locked": "الحساب مقفل. تواصل مع المسؤول.",
+    "success_login": "مرحباً بعودتك! جارٍ التوجيه..."
+  },
+  "footer": {
+    "brand_tagline": "متخصصون في العقارات الفاخرة — دبي، الإمارات",
+    "copyright": "© 2026 وايت كيفز العقارية. جميع الحقوق محفوظة.",
+    "links_privacy": "سياسة الخصوصية",
+    "links_terms": "شروط الخدمة",
+    "links_rera": "رخصة ريرا",
+    "links_contact": "تواصل معنا"
   }
 }

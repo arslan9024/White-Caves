@@ -21,9 +21,8 @@ import PublicLayout from '../components/layout/PublicLayout';
 import PageMeta from '../components/seo/PageMeta';
 import StructuredData from '../components/seo/StructuredData';
 import { useRecentlyViewed } from '../components/RecentlyViewed';
-import { HOME_PROPERTIES } from '../data/homeProperties';
-import { FloatingSearchPill } from '../components/homepage/FloatingSearchPill';
 import { MapContainer } from '../components/homepage/MapContainer';
+
 import { ToolsDashboard } from '../components/homepage/ToolsDashboard';
 import { AreaGuideGrid } from '../components/homepage/AreaGuideGrid';
 import { TestimonialPodium } from '../components/homepage/TestimonialPodium';
@@ -244,12 +243,7 @@ const HomePage: FC = () => {
           </div>
         ) : null}
 
-        {/* AEGIS 2.0: Floating Search Pill — fixed position at top: 80px */}
-        <FloatingSearchPill
-          isOpen={isSearchOpen}
-          onOpen={() => setIsSearchOpen(true)}
-          onClose={() => setIsSearchOpen(false)}
-        />
+
 
         {/* Phase 25: Hero is the LCP element — NOT wrapped in Suspense so it renders on first paint */}
         <Hero

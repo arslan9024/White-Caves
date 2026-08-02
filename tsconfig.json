@@ -2,7 +2,11 @@
   "compilerOptions": {
     "target": "ESNext",
     "useDefineForClassFields": true,
-    "lib": ["DOM", "DOM.Iterable", "ESNext"],
+    "lib": [
+      "DOM",
+      "DOM.Iterable",
+      "ESNext"
+    ],
     "allowJs": true,
     "checkJs": false,
     "skipLibCheck": true,
@@ -18,15 +22,59 @@
     "noEmit": true,
     "allowImportingTsExtensions": true,
     "sourceMap": false,
-    "jsx": "react-jsx",
+    "jsx": "preserve",
+    "baseUrl": ".",
     "paths": {
-      "@/*": ["./src/*"],
-      "@/components/*": ["./src/components/*"],
-      "@/atoms/*": ["./src/components/atoms/*"]
+      "@/*": [
+        "src/*"
+      ],
+      "@/components/*": [
+        "src/components/*"
+      ],
+      "@/shared/*": [
+        "src/components/shared/*"
+      ],
+      "@/layouts/*": [
+        "src/layouts/*"
+      ],
+      "@/context/*": [
+        "src/context/*"
+      ],
+      "@/locales/*": [
+        "src/locales/*"
+      ],
+      "@/mocks/*": [
+        "src/mocks/*"
+      ],
+      "@/store/*": [
+        "src/store/*"
+      ],
+      "@/hooks/*": [
+        "src/hooks/*"
+      ],
+      "@/server/*": [
+        "server/*"
+      ],
+      "@/lib/*": [
+        "src/lib/*"
+      ]
     },
-    "types": ["vite/client"]
+    "types": [
+      "vite/client"
+    ],
+    "incremental": true,
+    "plugins": [
+      {
+        "name": "next"
+      }
+    ]
   },
-  "include": ["src"],
+  "include": [
+    "app",
+    "next-env.d.ts",
+    "src",
+    ".next/types/**/*.ts"
+  ],
   "exclude": [
     "server/**",
     "src/**/*.backup.ts",

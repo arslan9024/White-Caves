@@ -15,7 +15,7 @@ vi.mock('../../styles/theme', () => ({
     spacing: { xs: '4px', sm: '8px', md: '16px', lg: '24px' },
     colors: {
       primary: '#c8a45a',
-      error: '#dc2626',
+      error: '#EF4444',
       background: { primary: '#fff', secondary: '#f5f5f5' },
       text: { primary: '#1a1a2e', secondary: '#6b7280' },
       border: '#e5e7eb',

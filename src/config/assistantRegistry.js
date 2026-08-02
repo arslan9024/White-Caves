@@ -58,8 +58,8 @@ export const DEPARTMENTS = {
   legal: {
     id: 'legal',
     label: 'Legal',
-    color: '#DC2626',
-    gradient: 'linear-gradient(135deg, #DC2626 0%, #B91C1C 100%)',
+    color: '#EF4444',
+    gradient: 'linear-gradient(135deg, #EF4444 0%, #B91C1C 100%)',
     icon: 'Scale'
   },
   intelligence: {
@@ -377,7 +377,7 @@ export const AI_ASSISTANTS = {
     title: 'Legal Risk Analyst',
     department: 'legal',
     icon: 'Scale',
-    color: '#DC2626',
+    color: '#EF4444',
     avatar: '👩‍⚖️',
     description: 'Proactively identifies, documents, and helps resolve legal issues. Monitors contracts, regulations, and transaction compliance',
     capabilities: ['legal_risk_analysis', 'contract_monitoring', 'regulatory_tracking', 'dispute_prevention', 'best_practices_library'],

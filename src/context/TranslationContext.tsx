@@ -1,72 +1,82 @@
-// @refresh reset
-import React, { createContext, useState, useContext, ReactNode, useEffect } from 'react';
+import React, { createContext, useContext, useState, FC, ReactNode, memo } from 'react';
 import en from '../locales/en.json';
 import ar from '../locales/ar.json';
+import es from '../locales/es.json';
 
-export type Language = 'en' | 'ar';
+export type SupportedLanguage = 'en' | 'ar' | 'es';
 
-type Translations = typeof en;
+const dictionaryMap: Record<SupportedLanguage, Record<string, unknown>> = {
+  en: en as Record<string, unknown>,
+  ar: ar as Record<string, unknown>,
+  es: es as Record<string, unknown>,
+};
 
 interface TranslationContextType {
-  language: Language;
-  setLanguage: (lang: Language) => void;
-  t: (key: string) => string;
+  language: SupportedLanguage;
+  setLanguage: (lang: SupportedLanguage) => void;
+  t: (keyPath: string) => string;
 }
-
-const translations: Record<Language, any> = {
-  en,
-  ar,
-};
 
 const TranslationContext = createContext<TranslationContextType | undefined>(undefined);
 
-export const TranslationProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
-  const [language, setLanguage] = useState<Language>('en');
+export const TranslationProvider: FC<{ children: ReactNode }> = ({ children }) => {
+  const [language, setLanguage] = useState<SupportedLanguage>('en');
 
-  useEffect(() => {
-    // Check local storage or browser language preference
-    const savedLang = localStorage.getItem('language') as Language;
-    if (savedLang && (savedLang === 'en' || savedLang === 'ar')) {
-      setLanguage(savedLang);
-    }
-  }, []);
+  const t = (keyPath: string): string => {
+    const keys = keyPath.split('.');
+    let current: unknown = dictionaryMap[language] || dictionaryMap['en'];
 
-  const handleSetLanguage = (lang: Language) => {
-    setLanguage(lang);
-    localStorage.setItem('language', lang);
-    document.documentElement.dir = lang === 'ar' ? 'rtl' : 'ltr';
-    document.documentElement.lang = lang;
-  };
-
-  const t = (key: string): string => {
-    const keys = key.split('.');
-    let value = translations[language];
-    for (const k of keys) {
-      if (value && typeof value === 'object' && k in value) {
-        value = value[k];
+    for (const key of keys) {
+      if (current && typeof current === 'object' && key in current) {
+        current = (current as Record<string, unknown>)[key];
       } else {
-        return key; // Fallback to key if not found
+        return keyPath; // Fallback to key string if missing
       }
     }
-    return typeof value === 'string' ? value : key;
+
+    return typeof current === 'string' ? current : keyPath;
   };
 
   return (
-    <TranslationContext.Provider value={{ language, setLanguage: handleSetLanguage, t }}>
+    <TranslationContext.Provider value={{ language, setLanguage, t }}>
       {children}
     </TranslationContext.Provider>
   );
 };
 
-export const useTranslation = () => {
+export function useTranslation() {
   const context = useContext(TranslationContext);
-  if (context === undefined) {
-    throw new Error('useTranslation must be used within a TranslationProvider');
+  if (!context) {
+    // Fallback if component is rendered outside TranslationProvider
+    return {
+      language: 'en' as SupportedLanguage,
+      setLanguage: () => {},
+      t: (keyPath: string) => {
+        const keys = keyPath.split('.');
+        let current: unknown = en;
+        for (const key of keys) {
+          if (current && typeof current === 'object' && key in current) {
+            current = (current as Record<string, unknown>)[key];
+          } else {
+            return keyPath;
+          }
+        }
+        return typeof current === 'string' ? current : keyPath;
+      },
+    };
   }
   return context;
-};
+}
 
-export const Text: React.FC<{ tid: string }> = ({ tid }) => {
+/**
+ * Convenience JSX component for inline translated text.
+ * Usage: <Text tid="key.path" />
+ */
+export const Text: FC<{ tid: string }> = memo(({ tid }) => {
   const { t } = useTranslation();
   return <>{t(tid)}</>;
-};
+});
+
+Text.displayName = 'Text';
+
+export default TranslationContext;

@@ -318,7 +318,7 @@ export const ViewingSchedule: React.FC = () => {
             {saving ? 'Scheduling…' : 'Schedule'}
           </button>
         </div>
-        {scheduleError && <p style={{ color: 'var(--accent-red, #dc2626)', marginTop: '0.5rem' }}>{scheduleError}</p>}
+        {scheduleError && <p style={{ color: 'var(--accent-red, #EF4444)', marginTop: '0.5rem' }}>{scheduleError}</p>}
         {scheduleSuccess && (
           <p style={{ color: 'var(--accent-green, #16a34a)', marginTop: '0.5rem' }}>{scheduleSuccess}</p>
         )}
@@ -458,7 +458,7 @@ export const BuyerOffers: React.FC = () => {
 
   const statusColor = (s: string) => {
     if (s === 'accepted') return { c: '#16a34a', bg: '#dcfce7' };
-    if (s === 'rejected' || s === 'expired') return { c: '#dc2626', bg: '#fef2f2' };
+    if (s === 'rejected' || s === 'expired') return { c: '#EF4444', bg: '#fef2f2' };
     if (s === 'countered') return { c: '#d97706', bg: '#fffbeb' };
     return { c: '#2563eb', bg: '#dbeafe' };
   };

@@ -382,7 +382,7 @@
 }
 
 .btn.danger {
-  background: linear-gradient(135deg, #EF4444 0%, #DC2626 100%);
+  background: linear-gradient(135deg, #EF4444 0%, #EF4444 100%);
   border: none;
   color: #fff;
 }

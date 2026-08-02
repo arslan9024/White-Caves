@@ -242,7 +242,7 @@ const ASSISTANT_REGISTRY: Record<
     title: 'Lead Generation Specialist',
     department: 'sales',
     icon: 'Target',
-    colorScheme: '#DC2626',
+    colorScheme: '#EF4444',
     avatar: '🎯',
   },
   juno: {

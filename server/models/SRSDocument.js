@@ -1,4 +1,9 @@
 /**
+ * @deprecated PRISMA MIGRATION — This Mongoose model is scheduled for removal.
+ * Replacement: prisma/schema.prisma + src/lib/prisma.ts
+ * Do NOT add new fields here. Use Prisma schema instead.
+ */
+/**
  * SRS Document Model
  * Stores generated Software Requirements Specification documents with version history
  */

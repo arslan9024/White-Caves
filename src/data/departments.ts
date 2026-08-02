@@ -72,7 +72,7 @@ export const DEPARTMENTS = [
   {
     id: 'legal',
     name: 'Legal',
-    accentColor: '#DC2626',
+    accentColor: '#EF4444',
     aiAssistant: 'Evangeline',
     description: 'Forms 6, 7 & 12',
     clearanceLevel: 3,

@@ -9,7 +9,7 @@
 
 /* Header */
 .linda-header {
-  background: linear-gradient(135deg, #DC2626 0%, #991b1b 100%);
+  background: linear-gradient(135deg, #EF4444 0%, #991b1b 100%);
   color: white;
   padding: 24px;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
@@ -114,13 +114,13 @@
 
 .filter-tab:hover {
   background: #f9fafb;
-  border-color: #DC2626;
+  border-color: #EF4444;
 }
 
 .filter-tab.active {
-  background: #DC2626;
+  background: #EF4444;
   color: white;
-  border-color: #DC2626;
+  border-color: #EF4444;
 }
 
 /* Conversations List */
@@ -148,7 +148,7 @@
 
 .conversation-item.active {
   background: #fef2f2;
-  border-left-color: #DC2626;
+  border-left-color: #EF4444;
 }
 
 .conversation-item.has-opportunity {
@@ -159,7 +159,7 @@
   width: 40px;
   height: 40px;
   border-radius: 50%;
-  background: linear-gradient(135deg, #DC2626 0%, #991b1b 100%);
+  background: linear-gradient(135deg, #EF4444 0%, #991b1b 100%);
   color: white;
   display: flex;
   align-items: center;
@@ -207,7 +207,7 @@
 .unread-badge {
   width: 20px;
   height: 20px;
-  background: #DC2626;
+  background: #EF4444;
   color: white;
   border-radius: 50%;
   display: flex;
@@ -267,7 +267,7 @@
   width: 40px;
   height: 40px;
   border-radius: 50%;
-  background: linear-gradient(135deg, #DC2626 0%, #991b1b 100%);
+  background: linear-gradient(135deg, #EF4444 0%, #991b1b 100%);
   color: white;
   display: flex;
   align-items: center;
@@ -309,8 +309,8 @@
 
 .action-btn:hover {
   background: #f9fafb;
-  border-color: #DC2626;
-  color: #DC2626;
+  border-color: #EF4444;
+  color: #EF4444;
 }
 
 /* Messages Thread */
@@ -348,7 +348,7 @@
 }
 
 .message.outgoing .message-bubble {
-  background: #DC2626;
+  background: #EF4444;
   color: white;
 }
 
@@ -448,7 +448,7 @@
 .quick-add-btn {
   width: 100%;
   padding: 10px;
-  background: #DC2626;
+  background: #EF4444;
   color: white;
   border: none;
   border-radius: 6px;
@@ -489,14 +489,14 @@
 }
 
 .message-input:focus {
-  border-color: #DC2626;
+  border-color: #EF4444;
   box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.1);
 }
 
 .send-btn {
   width: 36px;
   height: 36px;
-  background: #DC2626;
+  background: #EF4444;
   color: white;
   border: none;
   border-radius: 6px;
@@ -658,7 +658,7 @@
 }
 
 .form-input:focus {
-  border-color: #DC2626;
+  border-color: #EF4444;
   box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.1);
 }
 
@@ -698,7 +698,7 @@
 }
 
 .btn-confirm {
-  background: #DC2626;
+  background: #EF4444;
   color: white;
 }
 

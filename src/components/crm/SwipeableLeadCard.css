@@ -1,0 +1,76 @@
+/* SwipeableLeadCard.css — Touch gesture styles for mobile CRM cards (W23-010 / REQ-MOB-011) */
+
+.swipe-card-wrapper {
+  position: relative;
+  overflow: hidden;
+  border-radius: 12px;
+  margin-bottom: 12px;
+  user-select: none;
+  touch-action: pan-y;
+}
+
+.swipe-bg-layer {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 20px;
+  border-radius: 12px;
+  font-weight: 700;
+  font-size: 0.9rem;
+  color: #FFFFFF;
+}
+
+.swipe-bg-layer.call-bg {
+  background-color: #22C55E; /* Green call intent */
+  justify-content: flex-start;
+}
+
+.swipe-bg-layer.snooze-bg {
+  background-color: #EF4444; /* Red snooze intent */
+  justify-content: flex-end;
+}
+
+.swipe-card-content {
+  position: relative;
+  background-color: #FFFFFF;
+  border: 1px solid #E2E8F0;
+  border-radius: 12px;
+  padding: 16px;
+  z-index: 2;
+  transition: transform 0.2s cubic-bezier(0.1, 0.9, 0.2, 1);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+}
+
+.swipe-card-content.dragging {
+  transition: none;
+}
+
+/* Modal Overlay */
+.snooze-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(15, 23, 42, 0.7);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10000;
+  padding: 20px;
+}
+
+.snooze-modal-card {
+  background: #FFFFFF;
+  border-radius: 16px;
+  padding: 24px;
+  max-width: 360px;
+  width: 100%;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+  text-align: center;
+}

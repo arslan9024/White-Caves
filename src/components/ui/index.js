@@ -26,3 +26,15 @@ export { default as Chart } from './Chart';
 export { default as Pagination } from './Pagination';
 export { default as Alert } from './Alert';
 export { default as ProgressBar } from './ProgressBar';
+// Missing exports — added to sync with index.ts
+export { default as EmptyState } from './EmptyState';
+export { default as ErrorBoundary } from './ErrorBoundary';
+export { default as Spinner } from './Spinner';
+export { default as Toast } from './Toast';
+export { ToastContainer } from './ToastContainer';
+export { default as Dropdown } from './Dropdown';
+export { default as Popover } from './Popover';
+export { default as Tabs } from './Tabs';
+export { default as SkeletonLoaders } from './SkeletonLoaders';
+export { default as GlobalToastProvider } from './GlobalToastProvider';
+

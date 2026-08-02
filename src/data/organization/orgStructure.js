@@ -356,7 +356,7 @@ export const DEPARTMENTS_CONFIG = {
     description: 'Contract management, legal reviews, and dispute resolution',
     director: 'dir-9',
     assistants: ['evangeline'],
-    color: '#DC2626',
+    color: '#EF4444',
     icon: 'Scale',
     kpis: {
       activeContracts: 156,

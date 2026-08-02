@@ -36,13 +36,13 @@ const sizeStyles = {
 
 const variantStyles = {
   primary: css`
-    background: linear-gradient(135deg, ${RED} 0%, #DC2626 100%);
+    background: linear-gradient(135deg, ${RED} 0%, #EF4444 100%);
     color: #FFFFFF;
     border: none;
     box-shadow: 0 4px 14px rgba(239, 68, 68, 0.3);
 
     &:hover:not(:disabled) {
-      background: linear-gradient(135deg, #DC2626 0%, #B91C1C 100%);
+      background: linear-gradient(135deg, #EF4444 0%, #B91C1C 100%);
       box-shadow: 0 6px 20px rgba(239, 68, 68, 0.4);
       transform: translateY(-1px);
     }
@@ -55,7 +55,7 @@ const variantStyles = {
 
     &:hover:not(:disabled) {
       background: rgba(239, 68, 68, 0.05);
-      border-color: #DC2626;
+      border-color: #EF4444;
       transform: translateY(-1px);
     }
   `,

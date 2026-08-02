@@ -335,7 +335,7 @@ const Team = ({ topAgents, isLoading: _isLoading = false }: TeamProps) => {
                 <a href={selectedMember.social.linkedin} target="_blank" rel="noopener noreferrer" style={{ display: 'flex', alignItems: 'center', gap: 4, padding: '0.35rem 0.7rem', borderRadius: 8, background: 'var(--color-e7f3ff, #e7f3ff)', color: 'var(--color-0077b5, #0077b5)', fontSize: '0.8rem', textDecoration: 'none', fontWeight: 600 }}>
                   <Linkedin size={14} /> LinkedIn
                 </a>
-                <a href={`mailto:${selectedMember.social.email}`} style={{ display: 'flex', alignItems: 'center', gap: 4, padding: '0.35rem 0.7rem', borderRadius: 8, background: 'var(--color-fef2f2, #fef2f2)', color: 'var(--accent-red, #dc2626)', fontSize: '0.8rem', textDecoration: 'none', fontWeight: 600 }}>
+                <a href={`mailto:${selectedMember.social.email}`} style={{ display: 'flex', alignItems: 'center', gap: 4, padding: '0.35rem 0.7rem', borderRadius: 8, background: 'var(--color-fef2f2, #fef2f2)', color: 'var(--accent-red, #EF4444)', fontSize: '0.8rem', textDecoration: 'none', fontWeight: 600 }}>
                   <Mail size={14} /> Email
                 </a>
                 <a href={selectedMember.social.twitter} target="_blank" rel="noopener noreferrer" style={{ display: 'flex', alignItems: 'center', gap: 4, padding: '0.35rem 0.7rem', borderRadius: 8, background: 'var(--color-eff6ff, #eff6ff)', color: 'var(--color-1d9bf0, #1d9bf0)', fontSize: '0.8rem', textDecoration: 'none', fontWeight: 600 }}>

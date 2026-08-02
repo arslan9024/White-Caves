@@ -63,7 +63,7 @@ const HeaderContent = styled.div`
 `;
 
 const CRMButton = styled.button`
-  background: linear-gradient(135deg, #EF4444 0%, #DC2626 100%);
+  background: linear-gradient(135deg, #EF4444 0%, #EF4444 100%);
   color: #FFFFFF;
   border: none;
   border-radius: ${borderRadius.md};
@@ -192,7 +192,7 @@ const SaveButton = styled.button`
   transition: background 0.2s;
 
   &:hover {
-    background: #DC2626;
+    background: #EF4444;
   }
 `;
 

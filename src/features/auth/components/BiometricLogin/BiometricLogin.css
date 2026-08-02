@@ -185,16 +185,16 @@
 .biometric-remove-btn {
   padding: 6px 12px;
   font-size: 12px;
-  color: #dc2626;
+  color: #EF4444;
   background: transparent;
-  border: 1px solid #dc2626;
+  border: 1px solid #EF4444;
   border-radius: 6px;
   cursor: pointer;
   transition: all 0.2s ease;
 }
 
 .biometric-remove-btn:hover {
-  background: #dc2626;
+  background: #EF4444;
   color: white;
 }
 

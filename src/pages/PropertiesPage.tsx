@@ -212,8 +212,8 @@ const PropertiesPage: FC = () => {
                     >
                       <Heart
                         size={18}
-                        fill={isFavorite(property.id) ? '#DC2626' : 'none'}
-                        stroke={isFavorite(property.id) ? '#DC2626' : 'white'}
+                        fill={isFavorite(property.id) ? '#EF4444' : 'none'}
+                        stroke={isFavorite(property.id) ? '#EF4444' : 'white'}
                       />
                     </button>
                   </div>

@@ -1,3 +1,8 @@
+/**
+ * @deprecated PRISMA MIGRATION — This Mongoose model is scheduled for removal.
+ * Replacement: prisma/schema.prisma + src/lib/prisma.ts
+ * Do NOT add new fields here. Use Prisma schema instead.
+ */
 import mongoose from 'mongoose';
 
 const riskFactorSchema = new mongoose.Schema({

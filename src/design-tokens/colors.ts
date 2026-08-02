@@ -52,7 +52,7 @@ export const colors = {
     300: '#FCA5A5',
     400: '#F87171',
     500: '#EF4444', // Use this (not #E74C3C or others)
-    600: '#DC2626',
+    600: '#EF4444',
     700: '#B91C1C',
     800: '#991B1B',
     900: '#7F1D1D',

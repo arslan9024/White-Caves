@@ -1,32 +1,106 @@
 {
-  "app": {
-    "title": "White Caves Real Estate LLC",
-    "subtitle": "Real Estate LLC · Dubai",
-    "founderTag": "MASTER UNMASK (LEVEL 5)",
-    "founderRole": "Managing Director & Founder",
-    "searchPlaceholder": "Search 100 enterprise views...",
-    "globalSearchPlaceholder": "Global Search (Ctrl+K to focus)...",
-    "reraLive": "RERA Live: Dubai Land Dept 2026 API Connected"
+  "hero": {
+    "title": "Luxury Dubai Real Estate Redefined",
+    "subtitle": "Discover ultra-exclusive villas in DAMAC Hills 2, Palm Jumeirah, and Downtown Dubai with White Caves Real Estate LLC.",
+    "cta_explore": "Explore Featured Properties",
+    "cta_contact": "Speak with an Expert Broker"
+  },
+  "search": {
+    "placeholder": "Search DAMAC Hills 2, Ejari, Investors, Leads...",
+    "btn_search": "Search Marketplace",
+    "no_results": "No properties found matching your criteria.",
+    "loading": "Searching properties...",
+    "filter_bedrooms": "Bedrooms",
+    "filter_price_min": "Min Price (AED)",
+    "filter_price_max": "Max Price (AED)",
+    "filter_community": "Community",
+    "filter_type": "Property Type",
+    "filter_clear": "Clear Filters",
+    "filter_apply": "Apply Filters"
+  },
+  "map": {
+    "title": "Interactive Dubai Real Estate Map",
+    "subtitle": "Live market inventory across prime Dubai master communities.",
+    "badge": "Live DLD Inventory"
   },
   "nav": {
     "home": "Home",
     "dashboard": "Dashboard",
     "profile": "Profile",
-    "impersonateMode": "Impersonate User Mode",
-    "revertMaster": "Reset to Master Mode"
+    "properties": "Properties",
+    "crm": "CRM",
+    "logout": "Logout",
+    "global_search_placeholder": "Global Search (Ctrl+K to focus)...",
+    "global_search_label": "Global Search Property or Lead Input",
+    "rera_live_badge": "RERA Live:",
+    "rera_live_message": "Dubai Land Dept 2026 API Connected",
+    "notifications": "Notifications & WhatsApp Queue",
+    "impersonate_placeholder": "🎭 Impersonate User Mode",
+    "impersonate_group_leadership": "Core Leadership",
+    "impersonate_group_brokers": "Sales & Leasing Brokers",
+    "impersonate_group_external": "External Portals",
+    "impersonate_viewing_as": "VIEWING AS",
+    "impersonate_reset": "Reset to Master Mode"
   },
-  "pillars": {
-    "sales": "Brokerage Sales",
-    "offplan": "Off-Plan Developments",
-    "leasing": "Leasing & Tenancy",
-    "assetManagement": "Asset Management (DH2)",
-    "finance": "Finance & Treasury",
-    "marketing": "Marketing & Growth",
-    "executive": "Executive Office",
-    "compliance": "Compliance & Legal",
-    "technology": "Technology & Engineering",
-    "legal": "Legal & Conveyancing",
-    "conveyancing": "Conveyancing",
-    "intelligence": "AI & Intelligence"
+  "workspace": {
+    "welcome": "Welcome back",
+    "loading": "Loading workspace...",
+    "error_boundary_title": "Something went wrong",
+    "error_boundary_message": "An unexpected error occurred. Please refresh the page.",
+    "error_boundary_retry": "Retry",
+    "session_expired": "Your session has expired. Please log in again.",
+    "permission_denied": "You do not have permission to access this section."
+  },
+  "property": {
+    "badge_featured": "Featured",
+    "badge_new": "New",
+    "badge_sold": "Sold",
+    "badge_rented": "Rented",
+    "label_bedrooms": "Bedrooms",
+    "label_bathrooms": "Bathrooms",
+    "label_area": "Area (sqft)",
+    "label_price": "Price (AED)",
+    "label_community": "Community",
+    "label_type": "Type",
+    "label_status": "Status",
+    "label_agent": "Listing Agent",
+    "action_view": "View Property",
+    "action_save": "Save Property",
+    "action_contact": "Contact Agent",
+    "action_whatsapp": "WhatsApp Agent",
+    "action_schedule": "Schedule Viewing"
+  },
+  "crm": {
+    "leads_title": "Lead Management",
+    "lead_status_new": "New",
+    "lead_status_active": "Active",
+    "lead_status_hot": "Hot",
+    "lead_status_cold": "Cold",
+    "lead_status_converted": "Converted",
+    "lead_status_lost": "Lost",
+    "action_assign": "Assign Lead",
+    "action_follow_up": "Follow Up",
+    "action_note": "Add Note",
+    "pipeline_title": "Sales Pipeline"
+  },
+  "auth": {
+    "login_title": "Sign In to White Caves CRM",
+    "login_subtitle": "Enter your credentials to access the platform.",
+    "label_email": "Email Address",
+    "label_password": "Password",
+    "btn_login": "Sign In",
+    "btn_forgot": "Forgot Password?",
+    "btn_biometric": "Use Biometric Login",
+    "error_invalid": "Invalid email or password. Please try again.",
+    "error_locked": "Account locked. Contact your administrator.",
+    "success_login": "Welcome back! Redirecting..."
+  },
+  "footer": {
+    "brand_tagline": "Luxury Real Estate Specialists — Dubai, UAE",
+    "copyright": "© 2026 White Caves Real Estate LLC. All rights reserved.",
+    "links_privacy": "Privacy Policy",
+    "links_terms": "Terms of Service",
+    "links_rera": "RERA License",
+    "links_contact": "Contact Us"
   }
 }

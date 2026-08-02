@@ -42,7 +42,7 @@ const Change = styled.span<{ $trend: 'positive' | 'negative' | 'neutral' }>`
   font-size: 0.875rem;
   font-weight: 600;
   color: ${props =>
-    props.$trend === 'positive' ? '#059669' : props.$trend === 'negative' ? '#dc2626' : '#6b7280'};
+    props.$trend === 'positive' ? '#059669' : props.$trend === 'negative' ? '#EF4444' : '#6b7280'};
 `;
 
 const KPI: React.FC<KPIProps> = ({ label, value, change, icon, trend = 'neutral' }) => {

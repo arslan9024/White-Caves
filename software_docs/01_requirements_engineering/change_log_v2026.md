@@ -6,7 +6,18 @@
 
 ---
 
+## 🔗 Inter-Linked Navigation References
+
+- [Vision](../project_vision_manifest.md) — Link to Project Vision Manifest to log multi-turn requirements evolution tracking entries.
+
+---
+
 ## 📜 Chronological Evolution Log
+
+### [2026-08-01] — RUP 12-Document Hierarchy Instantiation
+- **Requirement Introduced**: Instantiate 12-document RUP software documentation hierarchy across `software_docs/` with explicit inter-linked markdown references.
+- **Cross-Linking Ledger Enforcement**: Applied relative markdown hyperlinks across all 12 documents to ensure zero broken paths.
+- **Build Verification Gate**: Verified clean local compilation via `npm run build`.
 
 ### [2026-07-31] — RUP 4-Tier software_docs Architecture & Dynamic Plan-Reflector Loop
 - **Requirement Introduced**: Complete instantiate and version-control 4 RUP subdomains (`01_requirements_engineering/`, `02_software_design/`, `03_use_cases/`, `04_flowcharts/`).

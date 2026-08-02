@@ -186,7 +186,7 @@ export const colors = {
   bgSecondary: '#1a1a1a',
   bgTertiary: '#1f1f1f',
   danger: '#EF4444',
-  dangerDark: '#DC2626',
+  dangerDark: '#EF4444',
   dangerLight: 'rgba(239, 68, 68, 0.15)',
   accentGold: '#C9A84C',
   accentEmerald: '#10B981',

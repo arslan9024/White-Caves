@@ -44,7 +44,7 @@ const variantStyles = {
     }
   `,
   primary: css`
-    background: #dc2626;
+    background: #EF4444;
     color: white;
   `,
   secondary: css`
@@ -70,7 +70,7 @@ const variantStyles = {
   `,
   error: css`
     background: rgba(239, 68, 68, 0.1);
-    color: #dc2626;
+    color: #EF4444;
     border-color: rgba(239, 68, 68, 0.3);
   `,
   info: css`

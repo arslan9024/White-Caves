@@ -245,7 +245,7 @@ export const LeaseContracts: React.FC = () => {
                         l.status === 'active'
                           ? '#16a34a'
                           : l.status === 'expired'
-                            ? '#dc2626'
+                            ? '#EF4444'
                             : '#d97706',
                         l.status === 'active'
                           ? '#dcfce7'
@@ -365,7 +365,7 @@ export const LeasingViewings: React.FC = () => {
                         v.status === 'confirmed'
                           ? '#16a34a'
                           : v.status === 'cancelled'
-                            ? '#dc2626'
+                            ? '#EF4444'
                             : '#d97706',
                         v.status === 'confirmed'
                           ? '#dcfce7'
@@ -449,7 +449,7 @@ export const TenantApplications: React.FC = () => {
                         a.status === 'approved'
                           ? '#16a34a'
                           : a.status === 'rejected'
-                            ? '#dc2626'
+                            ? '#EF4444'
                             : '#d97706',
                         a.status === 'approved'
                           ? '#dcfce7'
@@ -684,7 +684,7 @@ export const SalesLeads: React.FC = () => {
                     <span
                       style={S.badge(
                         l.status === 'hot'
-                          ? '#dc2626'
+                          ? '#EF4444'
                           : l.status === 'warm'
                             ? '#d97706'
                             : '#16a34a',

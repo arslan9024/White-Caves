@@ -140,7 +140,7 @@
 }
 
 .owner-information-card .error-text {
-  color: #dc2626;
+  color: #EF4444;
   font-size: 12px;
   margin-left: auto;
   font-weight: normal;
@@ -168,7 +168,7 @@
 .owner-information-card input.input-error,
 .owner-information-card select.input-error,
 .owner-information-card textarea.input-error {
-  border-color: #dc2626;
+  border-color: #EF4444;
   background: #fef2f2;
 }
 
@@ -215,7 +215,7 @@
 }
 
 .owner-information-card .btn-add:hover {
-  background: #DC2626;
+  background: #EF4444;
   box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
 }
 
@@ -251,7 +251,7 @@
 .owner-information-card .btn-remove {
   background: none;
   border: none;
-  color: #dc2626;
+  color: #EF4444;
   cursor: pointer;
   padding: 4px;
   display: flex;
@@ -318,7 +318,7 @@
 }
 
 .owner-information-card .btn-primary:hover:not(:disabled) {
-  background: #DC2626;
+  background: #EF4444;
   box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
 }
 

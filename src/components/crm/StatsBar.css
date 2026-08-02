@@ -73,12 +73,12 @@
 }
 
 .stat-trend.positive {
-  color: #DC2626;
+  color: #EF4444;
   background: rgba(5, 150, 105, 0.1);
 }
 
 .stat-trend.negative {
-  color: #dc2626;
+  color: #EF4444;
   background: rgba(220, 38, 38, 0.1);
 }
 

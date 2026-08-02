@@ -1482,7 +1482,7 @@
 
 .open-source-badge {
   padding: 0.375rem 0.75rem;
-  background: linear-gradient(135deg, #EF4444 0%, #DC2626 100%);
+  background: linear-gradient(135deg, #EF4444 0%, #EF4444 100%);
   color: white;
   border-radius: 16px;
   font-size: 0.75rem;

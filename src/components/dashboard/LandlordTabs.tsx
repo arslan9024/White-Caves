@@ -197,7 +197,7 @@ export const MaintenanceRequests: React.FC = () => {
   if (loading) return <div style={S.tabContainer}>{S.loadingState}</div>;
 
   const priorityColor = (p: string) => {
-    if (p === 'emergency') return { c: '#dc2626', bg: '#fef2f2' };
+    if (p === 'emergency') return { c: '#EF4444', bg: '#fef2f2' };
     if (p === 'high') return { c: '#d97706', bg: '#fffbeb' };
     if (p === 'medium') return { c: '#2563eb', bg: '#dbeafe' };
     return { c: '#6b7280', bg: '#f3f4f6' };
@@ -459,7 +459,7 @@ export const LeaseManagement: React.FC = () => {
                         l.status === 'active'
                           ? '#16a34a'
                           : l.status === 'expired'
-                            ? '#dc2626'
+                            ? '#EF4444'
                             : '#d97706',
                         l.status === 'active'
                           ? '#dcfce7'

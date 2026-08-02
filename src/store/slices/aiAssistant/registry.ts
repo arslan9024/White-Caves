@@ -1048,7 +1048,7 @@ export const AI_ASSISTANTS_REGISTRY: Record<string, AIAssistant> = {
     title: 'Regulatory Document Verifier',
     department: 'compliance',
     icon: 'FileCheck',
-    colorScheme: '#DC2626',
+    colorScheme: '#EF4444',
     avatar: '📋',
     description:
       'Rex is the fraud-prevention and document-authenticity layer for every transaction White Caves processes. Before any SPA is signed or any commission is paid, Rex verifies the key documents: checks title deeds against the DLD blockchain registry, validates NOC letters against issuing authority records, cross-references Emirates IDs and passports with the ICA database, and runs layout-integrity analysis on uploaded PDFs to detect tampering or forgery. Rex assigns a verification confidence score to each document, flags anomalies for manual legal-team review, and maintains an audit log of every verification outcome.',
