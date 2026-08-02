@@ -1,0 +1,191 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Aegis Session Context Manifest",
+  "type": "object",
+  "required": [
+    "sessionId",
+    "objective",
+    "canonicalSources",
+    "filesInScope",
+    "planPacket",
+    "historyLayers"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "type": "string"
+    },
+    "sessionId": {
+      "type": "string",
+      "minLength": 1
+    },
+    "objective": {
+      "type": "string",
+      "minLength": 1
+    },
+    "canonicalSources": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "string"
+      }
+    },
+    "filesInScope": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "instructionFiles": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "waveBundles": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "businessDocSections": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "contextBudget": {
+      "type": "object",
+      "required": [
+        "maxFiles",
+        "maxInstructionFiles",
+        "maxWaveBundles",
+        "maxBusinessDocSections"
+      ],
+      "properties": {
+        "maxFiles": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "maxInstructionFiles": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "maxWaveBundles": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "maxBusinessDocSections": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "warnAfterTurns": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "hardStopAfterTurns": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "warnAfterApproxTokens": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "hardStopAfterApproxTokens": {
+          "type": "integer",
+          "minimum": 1
+        }
+      },
+      "additionalProperties": true
+    },
+    "planPacket": {
+      "type": "object",
+      "required": [
+        "goal",
+        "filesInScope",
+        "validationPath",
+        "recommendedModelTier",
+        "contextSizeExpectation"
+      ],
+      "properties": {
+        "goal": {
+          "type": "string",
+          "minLength": 1
+        },
+        "filesInScope": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "validationPath": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "recommendedModelTier": {
+          "type": "string",
+          "enum": [
+            "free",
+            "premium"
+          ]
+        },
+        "contextSizeExpectation": {
+          "type": "string",
+          "enum": [
+            "small",
+            "medium",
+            "large"
+          ]
+        },
+        "taskClass": {
+          "type": "string"
+        },
+        "riskLevel": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": true
+    },
+    "historyLayers": {
+      "type": "object",
+      "required": [
+        "rawLogs",
+        "sessionSnapshot",
+        "handoffSummary"
+      ],
+      "properties": {
+        "rawLogs": {
+          "type": "string"
+        },
+        "sessionSnapshot": {
+          "type": "string"
+        },
+        "handoffSummary": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": true
+    },
+    "newChatRecommendation": {
+      "type": "object",
+      "required": [
+        "needed",
+        "reasons"
+      ],
+      "properties": {
+        "needed": {
+          "type": "boolean"
+        },
+        "reasons": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      },
+      "additionalProperties": true
+    }
+  },
+  "additionalProperties": true
+}
