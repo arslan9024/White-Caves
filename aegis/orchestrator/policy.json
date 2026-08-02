@@ -521,7 +521,7 @@
     "requireReviewMetadataOnUncertain": true,
     "canaryPercentOverride": null
   },
-  "artifactSchemasDir": "scripts/orchestrator/schemas",
+  "artifactSchemasDir": "aegis/orchestrator/schemas",
   "changeLog": [
     {
       "date": "2026-06-17",

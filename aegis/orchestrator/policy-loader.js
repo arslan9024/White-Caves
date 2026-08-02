@@ -8,10 +8,10 @@ import { dirname, join } from 'path';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
-const ROOT = join(__dirname, '..', '..');
+const ROOT = process.cwd();
 const POLICY_PATH = join(__dirname, 'policy.json');
-const BASELINE_PATH = join(ROOT, 'logs', 'orchestrator', 'policy-baseline.json');
-const ACK_PATH = join(ROOT, 'logs', 'orchestrator', 'POLICY_DIFF_ACK');
+const BASELINE_PATH = join(ROOT, 'aegis', 'logs', 'policy-baseline.json');
+const ACK_PATH = join(ROOT, 'aegis', 'logs', 'POLICY_DIFF_ACK');
 
 function deepClone(value) {
   return JSON.parse(JSON.stringify(value));
@@ -51,7 +51,7 @@ function normalizePolicy(rawPolicy) {
   policy.rollout.autoRollbackOnRegression = policy.rollout.autoRollbackOnRegression ?? true;
   policy.rollout.regressionThresholdPct = policy.rollout.regressionThresholdPct ?? 10;
 
-  policy.artifactSchemasDir = policy.artifactSchemasDir ?? 'scripts/orchestrator/schemas';
+  policy.artifactSchemasDir = policy.artifactSchemasDir ?? 'aegis/orchestrator/schemas';
   policy.changeLog = policy.changeLog ?? [];
 
   policy.controlPlane = policy.controlPlane ?? {};
