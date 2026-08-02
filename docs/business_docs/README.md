@@ -4,6 +4,18 @@
 >
 > Last updated: June 10, 2026 | **120+ documents across 15 sections**
 
+## ✅ Canonical Structure Confirmation (2026-08-02)
+
+This repository now treats `docs/business_docs/` as the canonical business layer.
+Use this folder as the primary source of truth for business profile, organization, services, operations, finance/accounts, HR policy, compliance, and Dubai trend alignment.
+
+New governance artifacts:
+
+- [`BUSINESS_DOCS_COVERAGE_MATRIX_2026-08-02.md`](./BUSINESS_DOCS_COVERAGE_MATRIX_2026-08-02.md)
+- [`BUSINESS_DOCS_UPGRADE_ROADMAP_2026-Q3.md`](./BUSINESS_DOCS_UPGRADE_ROADMAP_2026-Q3.md)
+- [`COMPANY_PROFILE_AND_BUSINESS_BASELINE_2026.md`](./COMPANY_PROFILE_AND_BUSINESS_BASELINE_2026.md)
+- [`HR_POLICY_AND_WORKFORCE_INDEX_2026.md`](./HR_POLICY_AND_WORKFORCE_INDEX_2026.md)
+
 ---
 
 ## 🧭 Documentation Governance (May 2026 Policy)

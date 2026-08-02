@@ -126,6 +126,8 @@ Role policy:
 - Existing activity logging patterns.
 - Existing scheduler/cron infrastructure.
 - Existing notification service abstraction.
+- Business documentation governance sources in `docs/business_docs/`.
+- Software PM governance sources in `docs/software_docs/`.
 
 ---
 

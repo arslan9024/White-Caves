@@ -4,14 +4,26 @@
 > **Framework:** Rational Unified Process (RUP) 4-Tier Software Docs Isolation  
 > **Brand Palette Lockdown:** White Caves Red (`#EF4444`) | Crisp White (`#FFFFFF`) | Deep Slate Gray (`#1E293B`)  
 > **Architecture Pattern:** View-Logic-Style 3-Folder Component Isolation (`*.tsx`, `*.logic.ts`, `*.style.ts`)  
-> **Active Wave Backlog:** [WAVE_31_IMPLEMENTATION_BACKLOG.md](plans/waves/WAVE_31_IMPLEMENTATION_BACKLOG.md) (Wave 31 - planned)  
+> **Active Wave Backlog:** [WAVE_31_IMPLEMENTATION_BACKLOG.md](./waves/WAVE_31_IMPLEMENTATION_BACKLOG.md) (Wave 31 - planned)  
 > **Last Updated:** 2026-08-02
+
+---
+
+## 📁 Canonical Folder Structure Confirmation (2026-08-02)
+
+Documentation structure is confirmed and normalized to:
+
+- `docs/plans/` (planning authority)
+- `docs/business_docs/` (business/domain authority)
+- `docs/software_docs/` (software architecture + PM authority)
+
+Legacy root-level `plans/`, `business_docs/`, and `software_docs/` are treated as non-canonical unless explicitly restored for compatibility. All roadmap and readiness updates must be written to the `docs/` hierarchy first.
 
 ---
 
 ## 🏛️ RUP Software Documentation Repository Topology
 
-```
+```text
 software_docs/
 ├── core_engineering_manifest.md       <-- Master Tech Stack, RUP Rules & Workflows
 ├── tech_replacement_rules.md          <-- 12-Domain Technical Replacement Matrix

@@ -1,6 +1,6 @@
 # Plans Index
 
-**Last Updated:** 2026-07-14
+**Last Updated:** 2026-08-02
 
 ## Start Here (Canonical)
 
@@ -13,50 +13,37 @@
 
 ## Current Execution Ladder
 
-| Order | Wave | Focus                                       | Status     | Bundle                                     |
-| ----- | ---- | ------------------------------------------- | ---------- | ------------------------------------------ |
-| 1     | 09   | UX hardening                                | 🟢 Ready   | [`Wave 09 bundle`](./waves/WAVE_09_SDD.md) |
-| 2     | 10   | Performance + SEO + security                | 📋 Planned | [`Wave 10 bundle`](./waves/WAVE_10_SDD.md) |
-| 3     | 11   | Incomplete features + architecture refactor | 📋 Planned | [`Wave 11 bundle`](./waves/WAVE_11_SDD.md) |
-| 4     | 12   | Automation engine                           | 📋 Planned | [`Wave 12 bundle`](./waves/WAVE_12_SDD.md) |
-| 5     | 13   | Real-time + media pipeline                  | 📋 Planned | [`Wave 13 bundle`](./waves/WAVE_13_SDD.md) |
-| 6     | 14   | Product feature closure                     | 📋 Planned | [`Wave 14 bundle`](./waves/WAVE_14_SDD.md) |
-| 7     | 15   | Cache + PWA readiness                       | 📋 Planned | [`Wave 15 bundle`](./waves/WAVE_15_SDD.md) |
-| 8     | 16   | Security hardening + API versioning         | 📋 Planned | [`Wave 16 bundle`](./waves/WAVE_16_SDD.md) |
+| Order | Wave | Focus                                                                | Status      | Bundle                                                 |
+| ----- | ---- | -------------------------------------------------------------------- | ----------- | ------------------------------------------------------ |
+| 1     | 20   | RBAC hardening + audit export security + compliance mutation guards  | ✅ Complete | [`Wave 20`](./waves/WAVE_20_IMPLEMENTATION_BACKLOG.md) |
+| 2     | 21   | Finance, UAE VAT, commission engine & compliance reporting           | ✅ Complete | [`Wave 21`](./waves/WAVE_21_IMPLEMENTATION_BACKLOG.md) |
+| 3     | 22   | Market intelligence, off-plan, valuation & analytics                 | ✅ Complete | [`Wave 22`](./waves/WAVE_22_IMPLEMENTATION_BACKLOG.md) |
+| 4     | 23   | Mobile CRM, PWA offline mode & push notifications                    | 📋 Planned  | [`Wave 23`](./waves/WAVE_23_IMPLEMENTATION_BACKLOG.md) |
+| 5     | 24   | WhatsApp automation, AI chat engine & in-app notification centre     | ✅ Complete | [`Wave 24`](./waves/WAVE_24_IMPLEMENTATION_BACKLOG.md) |
+| 6     | 25   | Portal syndication, careers, community management & advanced SEO     | ✅ Complete | [`Wave 25`](./waves/WAVE_25_IMPLEMENTATION_BACKLOG.md) |
+| 7     | 26   | Production quality, test reliability, TODO resolution & executive UI | ✅ Complete | [`Wave 26`](./waves/WAVE_26_IMPLEMENTATION_BACKLOG.md) |
+| 8     | 27   | Autonomous unit test expansion + token standardization               | ✅ Complete | [`Wave 27`](./waves/WAVE_27_IMPLEMENTATION_BACKLOG.md) |
+| 9     | 28   | Admin cockpit test suites + strict type refactoring                  | ✅ Complete | [`Wave 28`](./waves/WAVE_28_IMPLEMENTATION_BACKLOG.md) |
+| 10    | 29   | Advanced PWA offline write + conflict resilience                     | ✅ Complete | [`Wave 29`](./waves/WAVE_29_IMPLEMENTATION_BACKLOG.md) |
+| 11    | 30   | AI predictive UX + auto-form pre-fill                                | ✅ Complete | [`Wave 30`](./waves/WAVE_30_IMPLEMENTATION_BACKLOG.md) |
+| 12    | 31   | Corporate credentials & compliance automation                        | 📋 Planned  | [`Wave 31`](./waves/WAVE_31_IMPLEMENTATION_BACKLOG.md) |
 
 ---
 
-## Source Backlog Mapping
+## Canonical Structure (Confirmed)
 
-| Wave | Source backlog(s)                                                                                                                                                        |
-| ---- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| 09   | [`IMPROVEMENTS_UX.md`](./IMPROVEMENTS_UX.md)                                                                                                                             |
-| 10   | [`IMPROVEMENTS_PERFORMANCE.md`](./IMPROVEMENTS_PERFORMANCE.md), [`IMPROVEMENTS_SEO.md`](./IMPROVEMENTS_SEO.md), [`IMPROVEMENTS_SECURITY.md`](./IMPROVEMENTS_SECURITY.md) |
-| 11   | [`IMPROVEMENTS_INCOMPLETE_FEATURES.md`](./IMPROVEMENTS_INCOMPLETE_FEATURES.md), [`IMPROVEMENTS_ARCHITECTURE.md`](./IMPROVEMENTS_ARCHITECTURE.md)                         |
-| 12   | [`IMPROVEMENTS_INCOMPLETE_FEATURES.md`](./IMPROVEMENTS_INCOMPLETE_FEATURES.md) items 6–8                                                                                 |
-| 13   | [`IMPROVEMENTS_INCOMPLETE_FEATURES.md`](./IMPROVEMENTS_INCOMPLETE_FEATURES.md) items 10–12                                                                               |
-| 14   | [`IMPROVEMENTS_PRODUCT.md`](./IMPROVEMENTS_PRODUCT.md) items 34–38                                                                                                       |
-| 15   | [`IMPROVEMENTS_PERFORMANCE.md`](./IMPROVEMENTS_PERFORMANCE.md), [`IMPROVEMENTS_UX.md`](./IMPROVEMENTS_UX.md)                                                             |
-| 16   | [`IMPROVEMENTS_SECURITY.md`](./IMPROVEMENTS_SECURITY.md), [`IMPROVEMENTS_ARCHITECTURE.md`](./IMPROVEMENTS_ARCHITECTURE.md)                                               |
+| Folder                 | Role                                                       |
+| ---------------------- | ---------------------------------------------------------- |
+| `docs/plans/`          | Canonical planning trackers + governance                   |
+| `docs/plans/waves/`    | Wave execution bundles (SDD / readiness / backlog / tests) |
+| `docs/plans/archives/` | Historical or superseded planning artifacts                |
+| `docs/business_docs/`  | Business and domain source-of-truth documents              |
+| `docs/software_docs/`  | Software architecture and project-management documentation |
 
 ---
 
-## Folder Map
+## Active Dependencies for Planning Quality
 
-| Folder                                                           | Role                                              |
-| ---------------------------------------------------------------- | ------------------------------------------------- |
-| `plans/`                                                         | Canonical trackers + governance + source backlogs |
-| `plans/waves/`                                                   | Active execution bundles                          |
-| `plans/archives/`                                                | Superseded/completed planning docs                |
-| `plans/improvements/`                                            | Legacy reference packs                            |
-| `plans/implementation/`, `plans/status/`, `plans/documentation/` | Historical supporting references                  |
-
----
-
-## Reference-Only Docs
-
-These documents provide context but are not live status authorities:
-
-- Phase references: [`PHASE_1_HOMEPAGE.md`](./PHASE_1_HOMEPAGE.md), [`PHASE_2_LANDLORD_TENANT.md`](./PHASE_2_LANDLORD_TENANT.md), [`PHASE_3_CRM_SUPERUSER.md`](./PHASE_3_CRM_SUPERUSER.md), [`PHASE_3_AND_BEYOND.md`](./PHASE_3_AND_BEYOND.md)
-- Governance / orchestration: [`CUSTOM_AGENTS_PLAN.md`](./CUSTOM_AGENTS_PLAN.md), [`AGENT_SKILLS_UPGRADE_V3.md`](./AGENT_SKILLS_UPGRADE_V3.md)
-- Historical material: [`archives/`](./archives)
+- Business completeness source: [`../business_docs/README.md`](../business_docs/README.md)
+- Software project-management source: [`../software_docs/INDEX.md`](../software_docs/INDEX.md)
+- Governance validation: `npm run plans:validate`

@@ -31,6 +31,8 @@ Our engineering workflow follows the **Rational Unified Process (RUP)** framewor
 
 - [Engineering Manifest](./core_engineering_manifest.md) — Technical stack, architectural rules, and credit preservation laws.
 - [SRS Backlog](./01_requirements_engineering/srs_sales_brokerage.md) — Software Requirements Specification for Sales & Luxury Brokerage.
+- [PM Governance Index](./PROJECT_MANAGEMENT_GOVERNANCE_INDEX_2026-08-02.md) — SDLC governance, quality gates, and traceability navigation.
+- [Software Docs Upgrade Roadmap](./SOFTWARE_DOCS_UPGRADE_ROADMAP_2026-Q3.md) — Q3 documentation modernization execution plan.
 
 ---
 

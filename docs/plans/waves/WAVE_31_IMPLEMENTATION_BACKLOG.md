@@ -29,6 +29,23 @@
 2. Expiry engine + scheduler + notifications (`W31-004` to `W31-006`)
 3. Audit guarantees + UI/Executive surfaces (`W31-007` to `W31-009`)
 4. Governance closeout (`W31-010`)
+5. Documentation governance hardening (`W31-011` to `W31-013`)
+
+---
+
+## Documentation Governance Hardening Tasks
+
+- **W31-011 (P0)** — Confirm canonical docs structure and normalize planning references to `docs/*` paths.
+  - **Owner:** @Ada + @Margaret
+  - **Validation:** Index/tracker consistency review + `npm run plans:validate`
+
+- **W31-012 (P1)** — Publish business documentation coverage matrix + roadmap (profile/org/services/inventory/finance/HR/policies/trends).
+  - **Owner:** @Dena + @Victoria
+  - **Validation:** Coverage matrix + roadmap linked from business docs README
+
+- **W31-013 (P1)** — Publish software PM governance index + software docs upgrade roadmap for SDLC/traceability/quality gates.
+  - **Owner:** @Mala + @Gwynne
+  - **Validation:** Governance index/roadmap linked from software docs index
 
 ---
 

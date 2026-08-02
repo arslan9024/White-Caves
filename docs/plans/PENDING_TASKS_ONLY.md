@@ -48,3 +48,18 @@
 - [x] **SYNC_04 (4_TERMINAL_CHECK):** Zero-token local compilation checks via `npm run build` and `npm run next:build`
 - [x] **SYNC_05 (5_HOT_RELOAD):** Runtime stability verification with zero log exceptions
 - [x] **SYNC_06 (6_REMOTE_RELEASE):** Remote release workflow ready for Vercel deployment hooks
+
+---
+
+## 📚 Documentation Modernization Queue (Docs-First, 2026-08-02)
+
+| Task ID    | Priority | Stream        | Task                                                                                                                                        | Status      |
+| ---------- | -------- | ------------- | ------------------------------------------------------------------------------------------------------------------------------------------- | ----------- |
+| DOC-31-001 | P0       | plans         | Confirm canonical docs folder structure and normalize all plan references to `docs/plans/*`                                                 | ✅ Complete |
+| DOC-31-002 | P0       | plans         | Reorganize planning index + wave index to reflect current wave ordering and canonical ownership                                             | ✅ Complete |
+| DOC-31-003 | P0       | business_docs | Publish company-wide coverage matrix (profile, org, services, inventory, finance/accounts, HR, policies, vision) with Dubai trend alignment | ✅ Complete |
+| DOC-31-004 | P1       | business_docs | Add business docs upgrade roadmap with section owners, due windows, and compliance evidence expectations                                    | ✅ Complete |
+| DOC-31-005 | P0       | software_docs | Upgrade software docs index for project management governance (SDLC, RACI, quality gates, release discipline, traceability)                 | ✅ Complete |
+| DOC-31-006 | P1       | software_docs | Add software documentation upgrade roadmap tied to Wave 31/Wave 32 planning dependency chain                                                | ✅ Complete |
+
+**Dependency Note:** Wave 31 implementation execution should continue only against canonical documents under `docs/` after DOC-31-001..006 are complete and validated.

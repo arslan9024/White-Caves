@@ -24,6 +24,15 @@
 | 7   | Operational ownership clear         | ✅     | Compliance + Finance + Executive owners in backlog                         |
 | 8   | External dependency blockers absent | 🟡     | Government API verification deferred (non-blocking)                        |
 
+### Documentation Modernization Inputs (2026-08-02)
+
+- Business coverage baseline: `docs/business_docs/BUSINESS_DOCS_COVERAGE_MATRIX_2026-08-02.md`
+- Business roadmap: `docs/business_docs/BUSINESS_DOCS_UPGRADE_ROADMAP_2026-Q3.md`
+- Software PM governance baseline: `docs/software_docs/PROJECT_MANAGEMENT_GOVERNANCE_INDEX_2026-08-02.md`
+- Software docs roadmap: `docs/software_docs/SOFTWARE_DOCS_UPGRADE_ROADMAP_2026-Q3.md`
+
+These artifacts are now prerequisite references for Wave 31 tracker sync and subsequent planning upgrades.
+
 ---
 
 ## Key Risks & Mitigations

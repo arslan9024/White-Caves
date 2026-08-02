@@ -39,3 +39,6 @@
 - Scheduler boundary test output
 - UI screenshot for expiring/expired states
 - Governance pass log
+- Documentation structure confirmation snapshot (`docs/plans`, `docs/business_docs`, `docs/software_docs`)
+- Updated business coverage matrix + roadmap links
+- Updated software PM governance index + roadmap links
