@@ -6,8 +6,9 @@ import {
   sendEmailVerification,
 } from 'firebase/auth';
 import { auth } from '../../../../config/firebase';
-import { loginSuccess, loginStart, loginFailure } from '../../../../store/authSlice';
+import { loginStart, loginFailure } from '../../../../store/authSlice';
 import { createLogger } from '../../../../utils/logger';
+import { finalizeAuthenticatedSession } from '../../../../utils/authSession';
 
 const log = createLogger('EmailAuth');
 import './EmailLogin.css';
@@ -116,13 +117,12 @@ const EmailLoginForm: React.FC<EmailLoginFormProps> = ({
       };
 
       const token = await user.getIdToken();
-      dispatch(
-        loginSuccess({
-          user: userData,
-          token,
-          provider: 'email',
-        })
-      );
+      finalizeAuthenticatedSession({
+        dispatch,
+        user: userData as any,
+        token,
+        provider: 'email',
+      });
 
       onSuccess?.(userData);
     } catch (error) {

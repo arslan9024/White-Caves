@@ -27,6 +27,7 @@ import {
 } from 'lucide-react';
 import type { RootState } from '../../../store/store';
 import { selectSessionUser } from '../../../store/selectors/sessionSelectors';
+import { isAdminOrAbove } from '../../../utils/roleHelpers';
 import {
   selectSelectedDepartment,
   selectSelectedService,
@@ -194,7 +195,7 @@ const TopBar: React.FC<TopBarProps> = React.memo(function TopBar({
   // Session user selector bridges user/auth slices during migration.
   const user = useSelector((state: RootState) => selectSessionUser(state));
   const userRole = (user?.role || 'user').toLowerCase();
-  const isSuperUser = ['lion', 'owner', 'admin', 'managing_director'].includes(userRole);
+  const isSuperUser = isAdminOrAbove(userRole);
 
   // Dropdown state
   const [showUserMenu, setShowUserMenu] = useState(false);

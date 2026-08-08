@@ -371,6 +371,81 @@ model Activity {
   @@index([createdAt])
 }
 
+// ─── CORPORATE DOCUMENT COMPLIANCE (W31) ────────────────────────────────
+
+model CorporateDocument {
+  id                  String   @id @default(auto()) @map("_id") @db.ObjectId
+  registryDocumentId  String?
+  title               String
+  authority           String
+  referenceNumber     String?
+  licenseNumber       String?
+  establishmentNumber String?
+  issueDate           DateTime?
+  expiryDate          DateTime?
+  registrationDate    DateTime?
+  startDate           DateTime?
+  endDate             DateTime?
+  status              String   @default("active") // active, expiring_soon, expired, archived, reference_stored
+  parsedTextFile      String?
+  pdfFile             String?
+  sourcePath          String?
+  lastImportedAt      DateTime?
+  metadata            Json?
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @updatedAt
+
+  alerts              CorporateDocumentAlert[]
+  auditLogs           CorporateDocumentAuditLog[]
+
+  @@index([status])
+  @@index([authority])
+  @@index([expiryDate])
+  @@index([referenceNumber])
+  @@index([licenseNumber])
+  @@index([registryDocumentId])
+  @@index([updatedAt])
+}
+
+model CorporateDocumentAlert {
+  id              String   @id @default(auto()) @map("_id") @db.ObjectId
+  documentId      String   @db.ObjectId
+  document        CorporateDocument @relation(fields: [documentId], references: [id], onDelete: Cascade)
+  alertType       String   // expiry_warning, expiry_expired, missing_file, renewal_required
+  status          String   @default("open") // open, acknowledged, resolved
+  message         String
+  dueDate         DateTime?
+  acknowledgedById String? @db.ObjectId
+  acknowledgedAt  DateTime?
+  resolvedById    String?  @db.ObjectId
+  resolvedAt      DateTime?
+  metadata        Json?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  @@index([documentId])
+  @@index([status])
+  @@index([alertType])
+  @@index([dueDate])
+  @@index([createdAt])
+}
+
+model CorporateDocumentAuditLog {
+  id          String   @id @default(auto()) @map("_id") @db.ObjectId
+  documentId  String?  @db.ObjectId
+  document    CorporateDocument? @relation(fields: [documentId], references: [id], onDelete: SetNull)
+  action      String   // created, updated, imported, alert_acknowledged, alert_resolved
+  message     String
+  actorUserId String?  @db.ObjectId
+  metadata    Json?
+  createdAt   DateTime @default(now())
+
+  @@index([documentId])
+  @@index([action])
+  @@index([actorUserId])
+  @@index([createdAt])
+}
+
 // ─── TRANSACTION ────────────────────────────────────────────────────────
 
 model Transaction {

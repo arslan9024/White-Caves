@@ -6,6 +6,7 @@ const log = createLogger('SystemHealth');
 import { useNavigate } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import type { RootState } from '../../store/store';
+import { isAdminOrAbove } from '../../utils/roleHelpers';
 import './SystemHealthPage.css';
 
 interface HealthStatus {
@@ -26,7 +27,7 @@ const SystemHealthPage: FC = () => {
   const [_fetchError, setFetchError] = useState<string | null>(null);
 
   useEffect(() => {
-    if (!user || (user.role !== 'owner' && user.role !== 'admin')) {
+    if (!user || !isAdminOrAbove(user.role)) {
       navigate('/');
     }
   }, [user, navigate]);

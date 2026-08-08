@@ -10,6 +10,7 @@ import React from 'react';
 import styled from 'styled-components';
 import { theme } from '../../styles/theme';
 import NotificationCenter from './NotificationCenter';
+import { isAdminOrAbove } from '../../utils/roleHelpers';
 import UserProfileMenu from './UserProfileMenu';
 import AdminControls from './AdminControls';
 import ThemeToggle from '../ThemeToggle';
@@ -131,7 +132,7 @@ export const UnifiedNavbar: React.FC<UnifiedNavbarProps> = ({
   onUserManagement,
   className = '',
 }) => {
-  const isAdmin = user?.role === 'admin' || user?.role === 'super_user';
+  const isAdmin = isAdminOrAbove(user?.role ?? 'user');
 
   return (
     <NavbarContainer className={className} role="navigation" aria-label="Main navigation">

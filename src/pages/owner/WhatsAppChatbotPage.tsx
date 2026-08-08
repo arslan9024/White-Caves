@@ -5,6 +5,7 @@ import { authFetch } from '../../utils/authFetch';
 import { useSelector } from 'react-redux';
 import type { RootState } from '../../store/store';
 import { useToast } from '../../components/Toast';
+import { isAdminOrAbove } from '../../utils/roleHelpers';
 import './WhatsAppChatbotPage.css';
 
 const log = createLogger('WhatsAppChatbot');
@@ -27,7 +28,7 @@ const WhatsAppChatbotPage: FC = () => {
   const [newResponse, setNewResponse] = useState<string>('');
 
   useEffect(() => {
-    if (!user || (user.role !== 'owner' && user.role !== 'admin')) {
+    if (!user || !isAdminOrAbove(user.role)) {
       navigate('/');
     }
   }, [user, navigate]);

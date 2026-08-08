@@ -47,6 +47,7 @@ const { mockPrisma } = vi.hoisted(() => {
       pDCSchedule: {
         findMany: fn().mockResolvedValue([]),
         findUnique: fn().mockResolvedValue(null),
+        createMany: fn().mockResolvedValue({ count: 0 }),
       },
       activity: {
         create: fn().mockResolvedValue({ id: 'act-1', createdAt: new Date() }),
@@ -213,6 +214,22 @@ describe('Leases Routes — /api/leases', () => {
       endDate: '2027-03-01',
       monthlyRent: 8000,
     };
+
+    it('creates intake records for Ejari and PDC schedule when provided', async () => {
+      const res = await request(app)
+        .post('/api/leases/intake')
+        .send({
+          ...validPayload,
+          landlordId: 'user-1',
+          ejariNumber: 'EJ-1001',
+          ejariStatus: 'registered',
+          pdcSchedule: [{ chequeNumber: 'CHQ-001', bankName: 'Emirates NBD', amount: 8000, dueDate: '2026-04-01' }],
+        });
+
+      expect(res.status).toBe(201);
+      expect(mockPrisma.pDCSchedule.createMany).toHaveBeenCalled();
+      expect(mockPrisma.lease.create).toHaveBeenCalled();
+    });
 
     it('creates a lease with valid data', async () => {
       const res = await request(app).post('/api/leases').send(validPayload);

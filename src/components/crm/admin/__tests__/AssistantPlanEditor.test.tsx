@@ -5,19 +5,33 @@ import { AssistantPlanEditor } from '../AssistantPlanEditor';
 import { Provider } from 'react-redux';
 import { configureStore } from '@reduxjs/toolkit';
 
-const mockStore = configureStore({
-  reducer: {
-    user: () => ({ currentUser: { id: 'u1', role: 'owner', token: 'tok' } }),
-  },
-});
+const createMockStore = (role: string) =>
+  configureStore({
+    reducer: {
+      auth: () => ({ user: { id: 'u1', role, token: 'tok' } }),
+    },
+  });
 
 describe('AssistantPlanEditor Component', () => {
-  it('renders assistant plan editor for super user', () => {
-    const { container } = render(
-      <Provider store={mockStore}>
+  it('renders assistant plan editor for executive-management roles', () => {
+    const store = createMockStore('managing_director');
+    render(
+      <Provider store={store}>
         <AssistantPlanEditor />
       </Provider>
     );
-    expect(container).toBeDefined();
+
+    expect(screen.getByText('AI Assistant Plan Editor')).toBeTruthy();
+  });
+
+  it('blocks access for non-management roles', () => {
+    const store = createMockStore('agent');
+    render(
+      <Provider store={store}>
+        <AssistantPlanEditor />
+      </Provider>
+    );
+
+    expect(screen.getByRole('alert')).toHaveTextContent('Access denied');
   });
 });

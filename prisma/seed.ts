@@ -70,6 +70,48 @@ async function main() {
     },
   });
 
+  await prisma.user.upsert({
+    where: { email: 'director@whitecaves.ae' },
+    update: {
+      name: 'Nora Al-Suwaidi',
+      role: 'director',
+      phone: '+971501111222',
+      department: 'Sales',
+      status: 'active',
+      passwordHash: defaultHash,
+    },
+    create: {
+      email: 'director@whitecaves.ae',
+      name: 'Nora Al-Suwaidi',
+      role: 'director',
+      phone: '+971501111222',
+      department: 'Sales',
+      status: 'active',
+      passwordHash: defaultHash,
+    },
+  });
+
+  await prisma.user.upsert({
+    where: { email: 'supervisor@whitecaves.ae' },
+    update: {
+      name: 'Rami Haddad',
+      role: 'supervisor',
+      phone: '+971501111333',
+      department: 'Leasing',
+      status: 'active',
+      passwordHash: defaultHash,
+    },
+    create: {
+      email: 'supervisor@whitecaves.ae',
+      name: 'Rami Haddad',
+      role: 'supervisor',
+      phone: '+971501111333',
+      department: 'Leasing',
+      status: 'active',
+      passwordHash: defaultHash,
+    },
+  });
+
   // Seed owner account — dummy data only (not the primary super user)
   const owner = await prisma.user.upsert({
     where: { email: 'owner@whitecaves.ae' },

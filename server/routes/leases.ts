@@ -371,6 +371,19 @@ router.post(
       throw new AppError('monthlyRent must be a positive number', 400);
     }
 
+    const start = new Date(startDate);
+    const end = new Date(endDate);
+    if (isNaN(start.getTime()) || isNaN(end.getTime())) throw new AppError('Invalid date format', 400);
+    if (end <= start) throw new AppError('endDate must be after startDate', 400);
+
+    const validEjariStatuses = ['pending', 'registered', 'expired', 'cancelled'];
+    if (ejariStatus && !validEjariStatuses.includes(ejariStatus)) {
+      throw new AppError(
+        `Invalid ejariStatus. Must be one of: ${validEjariStatuses.join(', ')}`,
+        400
+      );
+    }
+
     const [property, tenant] = await Promise.all([
       prisma.property.findUnique({ where: { id: propertyId } }),
       prisma.user.findUnique({ where: { id: tenantId } }),
@@ -383,16 +396,36 @@ router.post(
         propertyId,
         tenantId,
         landlordId: landlordId || userId,
-        startDate: new Date(startDate),
-        endDate: new Date(endDate),
+        startDate: start,
+        endDate: end,
         monthlyRent,
         depositAmount: depositAmount || 0,
         leaseNumber: null,
         status: 'draft',
         documents: [],
+        ejariNumber: ejariNumber || null,
+        ejariStatus: ejariStatus || 'pending',
+        ejariRegistrationDate: ejariStatus === 'registered' ? new Date() : null,
+        ejariExpiryDate: ejariStatus === 'registered' ? end : null,
       },
       include: { property: true, tenant: true, landlord: true },
     });
+
+    const normalizedPdcSchedule = Array.isArray(pdcSchedule) ? pdcSchedule : [];
+    if (normalizedPdcSchedule.length > 0) {
+      await prisma.pDCSchedule.createMany({
+        data: normalizedPdcSchedule.map((item: Record<string, unknown>, index: number) => ({
+          leaseId: lease.id,
+          tenantId,
+          chequeNumber: String(item.chequeNumber || `CHQ-${index + 1}`),
+          bankName: String(item.bankName || 'Emirates NBD'),
+          amount: typeof item.amount === 'number' ? item.amount : monthlyRent,
+          dueDate: item.dueDate ? new Date(String(item.dueDate)) : start,
+          status: 'pending',
+          notes: typeof item.notes === 'string' ? item.notes : null,
+        })),
+      });
+    }
 
     // Auto‑draft Ejari (mock implementation)
     let ejariResult = null;

@@ -386,6 +386,104 @@ describe('Henry routes — records CRUD', () => {
   });
 });
 
+describe('Henry routes — workflow queue', () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+  });
+
+  it('POST /workflows creates a workflow item and GET /workflows returns it', async () => {
+    const app = await createApp();
+    const createRes = await request(app).post('/api/henry/workflows').send({
+      title: 'Review tenancy contract',
+      templateKey: 'tenancy_contract',
+      ownerUserEmail: 'owner@whitecaves.ae',
+      priority: 'high',
+    });
+
+    expect(createRes.status).toBe(201);
+    expect(createRes.body.success).toBe(true);
+
+    const listRes = await request(app).get('/api/henry/workflows');
+    expect(listRes.status).toBe(200);
+    expect(listRes.body.success).toBe(true);
+    expect(listRes.body.data.items.length).toBeGreaterThan(0);
+  });
+
+  it('POST /workflows/:id/transition updates the queue item status', async () => {
+    const app = await createApp();
+    const created = await request(app).post('/api/henry/workflows').send({
+      title: 'Approve handover package',
+      templateKey: 'key_handover',
+      ownerUserEmail: 'owner@whitecaves.ae',
+      priority: 'medium',
+    });
+
+    const res = await request(app)
+      .post(`/api/henry/workflows/${created.body.data.id}/transition`)
+      .send({ status: 'approved', notes: 'Ready for signature' });
+
+    expect(res.status).toBe(200);
+    expect(res.body.success).toBe(true);
+    expect(res.body.data.status).toBe('approved');
+    expect(res.body.data.notes).toBe('Ready for signature');
+  });
+
+  it('POST /workflows accepts null ownerUserEmail and keeps the item queued', async () => {
+    const app = await createApp();
+    const res = await request(app).post('/api/henry/workflows').send({
+      title: 'Review invoice package',
+      templateKey: 'invoice',
+      ownerUserEmail: null,
+      priority: 'medium',
+    });
+
+    expect(res.status).toBe(201);
+    expect(res.body.success).toBe(true);
+    expect(res.body.data.status).toBe('queued');
+    expect(res.body.data.ownerUserEmail).toBeNull();
+  });
+
+  it('POST /workflows stores assignee and dueDate metadata', async () => {
+    const app = await createApp();
+    const res = await request(app).post('/api/henry/workflows').send({
+      title: 'Review handover package',
+      templateKey: 'key_handover',
+      ownerUserEmail: 'ops@whitecaves.ae',
+      assigneeUserEmail: 'reviewer@whitecaves.ae',
+      dueDate: '2026-08-20T00:00:00.000Z',
+      priority: 'high',
+    });
+
+    expect(res.status).toBe(201);
+    expect(res.body.success).toBe(true);
+    expect(res.body.data.assigneeUserEmail).toBe('reviewer@whitecaves.ae');
+    expect(res.body.data.dueDate).toBe('2026-08-20T00:00:00.000Z');
+  });
+
+  it('tracks workflow history when items are created and transitioned', async () => {
+    const app = await createApp();
+    const created = await request(app).post('/api/henry/workflows').send({
+      title: 'Review signed invoice',
+      templateKey: 'invoice',
+      ownerUserEmail: 'ops@whitecaves.ae',
+      priority: 'medium',
+    });
+
+    expect(created.status).toBe(201);
+    expect(created.body.data.history).toHaveLength(1);
+    expect(created.body.data.history[0].type).toBe('created');
+
+    const transitioned = await request(app)
+      .post(`/api/henry/workflows/${created.body.data.id}/transition`)
+      .send({ status: 'approved', notes: 'Ready for filing' });
+
+    expect(transitioned.status).toBe(200);
+    expect(transitioned.body.data.history).toHaveLength(2);
+    expect(transitioned.body.data.history[1].type).toBe('status_changed');
+    expect(transitioned.body.data.history[1].message).toContain('approved');
+  });
+});
+
 describe('Henry routes — file upload and download', () => {
   beforeEach(() => {
     vi.clearAllMocks();

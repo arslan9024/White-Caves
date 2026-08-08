@@ -1,4 +1,5 @@
-import React, { FC, useState } from 'react';
+import React, { FC, useEffect, useState } from 'react';
+import { useCompliance } from '../../hooks/crm/useCompliance';
 
 const RED = '#EF4444';
 const WHITE = '#FFFFFF';
@@ -27,6 +28,18 @@ const maxRev = Math.max(...monthlyRevenue.map(m => m.aed));
 
 export const ExecutiveDepartmentView: FC = () => {
   const [activeSection, setActiveSection] = useState<'board' | 'market' | 'pipeline'>('board');
+  const {
+    corporateSummary,
+    documentsLoading,
+    documentsError,
+    fetchCorporateDocuments,
+    fetchCorporateAlerts,
+  } = useCompliance();
+
+  useEffect(() => {
+    void fetchCorporateDocuments({ limit: 250 });
+    void fetchCorporateAlerts(100);
+  }, [fetchCorporateAlerts, fetchCorporateDocuments]);
 
   return (
     <div style={{ padding: '24px', background: WHITE, minHeight: '80vh' }}>
@@ -78,6 +91,47 @@ export const ExecutiveDepartmentView: FC = () => {
                 <div style={{ fontSize: '0.75rem', color: TEXT_MUTED, marginTop: '4px' }}>{m.sub}</div>
               </div>
             ))}
+          </div>
+
+          <div style={{ display: 'grid', gridTemplateColumns: '1.3fr 1fr', gap: '16px', marginBottom: '20px' }}>
+            <div style={{ background: CARD_BG, padding: '20px', borderRadius: '10px', border: `1px solid ${BORDER}` }}>
+              <h3 style={{ margin: '0 0 12px 0', color: SLATE }}>🪪 Corporate Credential Exposure</h3>
+              {documentsError ? (
+                <div style={{ background: '#FEF2F2', color: '#991B1B', border: '1px solid #FCA5A5', borderRadius: '8px', padding: '12px', fontSize: '0.82rem', fontWeight: 600 }}>
+                  {documentsError}
+                </div>
+              ) : documentsLoading && corporateSummary.total === 0 ? (
+                <div style={{ color: TEXT_MUTED, fontSize: '0.82rem' }}>Loading corporate credential metrics…</div>
+              ) : (
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '12px' }}>
+                  {[
+                    { label: 'Tracked', value: corporateSummary.total, color: SLATE },
+                    { label: 'Expiring Soon', value: corporateSummary.expiringSoon, color: ORANGE },
+                    { label: 'Expired', value: corporateSummary.expired, color: RED },
+                    { label: 'Open Alerts', value: corporateSummary.openAlerts, color: BLUE },
+                  ].map(metric => (
+                    <div key={metric.label} style={{ background: WHITE, borderRadius: '10px', padding: '14px', borderLeft: `4px solid ${metric.color}` }}>
+                      <div style={{ fontSize: '0.72rem', color: TEXT_MUTED, textTransform: 'uppercase', fontWeight: 700 }}>{metric.label}</div>
+                      <div style={{ fontSize: '1.55rem', fontWeight: 900, color: metric.color, marginTop: '6px' }}>{metric.value}</div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+
+            <div style={{ background: CARD_BG, padding: '20px', borderRadius: '10px', border: `1px solid ${BORDER}` }}>
+              <h3 style={{ margin: '0 0 12px 0', color: SLATE }}>Authority Breakdown</h3>
+              {corporateSummary.authorityBreakdown.length === 0 ? (
+                <div style={{ color: TEXT_MUTED, fontSize: '0.82rem' }}>No authority counts published yet.</div>
+              ) : (
+                corporateSummary.authorityBreakdown.slice(0, 5).map(item => (
+                  <div key={item.authority} style={{ display: 'flex', justifyContent: 'space-between', padding: '8px 0', borderBottom: '1px solid #E2E8F0', fontSize: '0.82rem' }}>
+                    <span style={{ color: SLATE }}>{item.authority}</span>
+                    <strong style={{ color: RED }}>{item.count}</strong>
+                  </div>
+                ))
+              )}
+            </div>
           </div>
 
           {/* Revenue Bar Chart */}

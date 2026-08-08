@@ -134,6 +134,12 @@ describe('WhatsAppSettingsPage', () => {
       expect(screen.getByText('WhatsApp Business Integration')).toBeInTheDocument();
     });
 
+    it('allows manager-level users', () => {
+      renderPage({ currentUser: { id: 'u4', name: 'Manager', email: 'mgr@wc.ae', role: 'manager' } });
+      expect(mockNavigate).not.toHaveBeenCalled();
+      expect(screen.getByText('WhatsApp Business Integration')).toBeInTheDocument();
+    });
+
     it('allows owner users', () => {
       renderPage();
       expect(mockNavigate).not.toHaveBeenCalled();

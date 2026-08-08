@@ -4,6 +4,7 @@ import { createLogger } from '../../utils/logger';
 import { authFetch } from '../../utils/authFetch';
 import { useSelector } from 'react-redux';
 import type { RootState } from '../../store/store';
+import { isAdminOrAbove } from '../../utils/roleHelpers';
 import './WhatsAppAnalyticsPage.css';
 
 const log = createLogger('WhatsAppAnalytics');
@@ -30,7 +31,7 @@ const WhatsAppAnalyticsPage: FC = () => {
   const [dateRange, setDateRange] = useState<string>('7d');
 
   useEffect(() => {
-    if (!user || (user.role !== 'owner' && user.role !== 'admin')) {
+    if (!user || !isAdminOrAbove(user.role)) {
       navigate('/');
     }
   }, [user, navigate]);

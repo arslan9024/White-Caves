@@ -57,6 +57,22 @@ const { mockPrisma, mockLogger } = vi.hoisted(() => {
           createdAt: new Date('2026-01-15'),
         }),
       },
+      corporateDocument: {
+        findMany: fn().mockResolvedValue([]),
+        findUnique: fn().mockResolvedValue(null),
+        create: fn().mockResolvedValue({ id: 'corp-1', title: 'RERA Certificate' }),
+        update: fn().mockResolvedValue({ id: 'corp-1', title: 'RERA Certificate (Updated)' }),
+      },
+      corporateDocumentAlert: {
+        findMany: fn().mockResolvedValue([]),
+        findFirst: fn().mockResolvedValue(null),
+        findUnique: fn().mockResolvedValue(null),
+        create: fn().mockResolvedValue({ id: 'alert-1', status: 'open' }),
+        update: fn().mockResolvedValue({ id: 'alert-1', status: 'acknowledged' }),
+      },
+      corporateDocumentAuditLog: {
+        create: fn().mockResolvedValue({ id: 'audit-1' }),
+      },
     },
     mockLogger,
   };
@@ -138,10 +154,35 @@ vi.mock('../services/compliance/permitAlertScheduler.js', () => ({
     ],
   })),
 }));
+vi.mock('../services/compliance/corporateDocumentService.js', () => ({
+  listCorporateDocuments: vi.fn(async () => []),
+  getCorporateDocumentById: vi.fn(async () => null),
+  createCorporateDocument: vi.fn(async () => ({ id: 'corp-1', title: 'DET License' })),
+  updateCorporateDocument: vi.fn(async () => ({ id: 'corp-1', title: 'DET License Updated' })),
+  archiveCorporateDocument: vi.fn(async () => ({ id: 'corp-1', title: 'DET License Updated', status: 'archived' })),
+  listCorporateDocumentAlerts: vi.fn(async () => []),
+  acknowledgeCorporateDocumentAlert: vi.fn(async () => ({ id: 'alert-1', status: 'acknowledged' })),
+  importCorporateDocumentsFromRegistry: vi.fn(async () => ({
+    filePath: 'docs/company_documents/normalized/company_documents_registry.json',
+    total: 4,
+    created: 2,
+    updated: 2,
+  })),
+}));
 
 import complianceRoutes from './compliance.js';
 import { enforcePropertyPermitCompliance } from '../services/compliance/propertyPermitEnforcementScheduler.js';
 import { checkBRNExpirations } from '../services/compliance/reraExpiryScheduler.js';
+import {
+  acknowledgeCorporateDocumentAlert,
+  archiveCorporateDocument,
+  createCorporateDocument,
+  getCorporateDocumentById,
+  importCorporateDocumentsFromRegistry,
+  listCorporateDocumentAlerts,
+  listCorporateDocuments,
+  updateCorporateDocument,
+} from '../services/compliance/corporateDocumentService.js';
 
 // ── Test app factory ─────────────────────────────────────────────────
 function createApp(role: string = 'owner') {
@@ -178,6 +219,33 @@ describe('Compliance Routes — /api/compliance', () => {
     mockPrisma.user.findMany.mockResolvedValue([]);
     mockPrisma.activity.findUnique.mockResolvedValue(null);
     mockPrisma.activity.update.mockResolvedValue({ id: 'doc-1' });
+
+    (listCorporateDocuments as unknown as ReturnType<typeof vi.fn>).mockResolvedValue([]);
+    (getCorporateDocumentById as unknown as ReturnType<typeof vi.fn>).mockResolvedValue(null);
+    (createCorporateDocument as unknown as ReturnType<typeof vi.fn>).mockResolvedValue({
+      id: 'corp-1',
+      title: 'DET License',
+    });
+    (updateCorporateDocument as unknown as ReturnType<typeof vi.fn>).mockResolvedValue({
+      id: 'corp-1',
+      title: 'DET License Updated',
+    });
+    (archiveCorporateDocument as unknown as ReturnType<typeof vi.fn>).mockResolvedValue({
+      id: 'corp-1',
+      title: 'DET License Updated',
+      status: 'archived',
+    });
+    (listCorporateDocumentAlerts as unknown as ReturnType<typeof vi.fn>).mockResolvedValue([]);
+    (acknowledgeCorporateDocumentAlert as unknown as ReturnType<typeof vi.fn>).mockResolvedValue({
+      id: 'alert-1',
+      status: 'acknowledged',
+    });
+    (importCorporateDocumentsFromRegistry as unknown as ReturnType<typeof vi.fn>).mockResolvedValue({
+      filePath: 'docs/company_documents/normalized/company_documents_registry.json',
+      total: 4,
+      created: 2,
+      updated: 2,
+    });
   });
 
   // ── GET /status ──────────────────────────────────────────────────
@@ -1107,6 +1175,162 @@ describe('Compliance Routes — /api/compliance', () => {
     it('returns 403 for agent role', async () => {
       const res = await request(createApp('agent')).get('/api/compliance/queues');
       expect(res.status).toBe(403);
+    });
+  });
+
+  // ── W31 Corporate document compliance endpoints ──────────────────────
+  describe('Corporate document compliance endpoints', () => {
+    it('lists corporate documents for manager', async () => {
+      (listCorporateDocuments as unknown as ReturnType<typeof vi.fn>).mockResolvedValueOnce([
+        { id: 'corp-1', title: 'DET License', status: 'active' },
+      ]);
+
+      const res = await request(createApp('manager')).get('/api/compliance/corporate-documents');
+
+      expect(res.status).toBe(200);
+      expect(res.body.success).toBe(true);
+      expect(res.body.data).toHaveLength(1);
+      expect(res.body.summary.total).toBe(1);
+    });
+
+    it('returns 403 when agent tries to list corporate documents', async () => {
+      const res = await request(createApp('agent')).get('/api/compliance/corporate-documents');
+      expect(res.status).toBe(403);
+    });
+
+    it('returns corporate document by id', async () => {
+      (getCorporateDocumentById as unknown as ReturnType<typeof vi.fn>).mockResolvedValueOnce({
+        id: 'corp-1',
+        title: 'RERA Office Registration',
+        alerts: [],
+      });
+
+      const res = await request(createApp('owner')).get('/api/compliance/corporate-documents/corp-1');
+
+      expect(res.status).toBe(200);
+      expect(res.body.success).toBe(true);
+      expect(res.body.data.id).toBe('corp-1');
+    });
+
+    it('returns 404 when corporate document id does not exist', async () => {
+      (getCorporateDocumentById as unknown as ReturnType<typeof vi.fn>).mockResolvedValueOnce(null);
+
+      const res = await request(createApp('owner')).get('/api/compliance/corporate-documents/missing');
+      expect(res.status).toBe(404);
+    });
+
+    it('creates corporate document for manager role', async () => {
+      (createCorporateDocument as unknown as ReturnType<typeof vi.fn>).mockResolvedValueOnce({
+        id: 'corp-2',
+        title: 'GDRFA Establishment Card',
+      });
+
+      const res = await request(createApp('manager')).post('/api/compliance/corporate-documents').send({
+        title: 'GDRFA Establishment Card',
+        authority: 'GDRFA Dubai',
+      });
+
+      expect(res.status).toBe(201);
+      expect(res.body.success).toBe(true);
+      expect(res.body.data.id).toBe('corp-2');
+    });
+
+    it('requires title and authority for create', async () => {
+      const res = await request(createApp('manager')).post('/api/compliance/corporate-documents').send({
+        title: 'Missing authority',
+      });
+
+      expect(res.status).toBe(400);
+      expect(res.body.error).toMatch(/title and authority are required/i);
+    });
+
+    it('updates corporate document for owner role', async () => {
+      (updateCorporateDocument as unknown as ReturnType<typeof vi.fn>).mockResolvedValueOnce({
+        id: 'corp-1',
+        title: 'DET Commercial License Package',
+      });
+
+      const res = await request(createApp('owner'))
+        .patch('/api/compliance/corporate-documents/corp-1')
+        .send({ title: 'DET Commercial License Package' });
+
+      expect(res.status).toBe(200);
+      expect(res.body.success).toBe(true);
+      expect(res.body.data.title).toContain('DET');
+    });
+
+    it('archives corporate document for manager role', async () => {
+      (archiveCorporateDocument as unknown as ReturnType<typeof vi.fn>).mockResolvedValueOnce({
+        id: 'corp-1',
+        title: 'DET Commercial License Package',
+        status: 'archived',
+      });
+
+      const res = await request(createApp('manager')).patch(
+        '/api/compliance/corporate-documents/corp-1/archive'
+      );
+
+      expect(res.status).toBe(200);
+      expect(res.body.success).toBe(true);
+      expect(res.body.data.status).toBe('archived');
+      expect(archiveCorporateDocument).toHaveBeenCalledWith('corp-1', 'user-1');
+    });
+
+    it('returns 403 when agent tries to archive corporate document', async () => {
+      const res = await request(createApp('agent')).patch(
+        '/api/compliance/corporate-documents/corp-1/archive'
+      );
+
+      expect(res.status).toBe(403);
+    });
+
+    it('lists corporate document alerts for finance role', async () => {
+      (listCorporateDocumentAlerts as unknown as ReturnType<typeof vi.fn>).mockResolvedValueOnce([
+        { id: 'alert-1', status: 'open', alertType: 'expiry_warning' },
+        { id: 'alert-2', status: 'acknowledged', alertType: 'expiry_expired' },
+      ]);
+
+      const res = await request(createApp('finance')).get('/api/compliance/corporate-documents/alerts/list');
+
+      expect(res.status).toBe(200);
+      expect(res.body.success).toBe(true);
+      expect(res.body.summary.total).toBe(2);
+      expect(res.body.summary.open).toBe(1);
+      expect(res.body.summary.acknowledged).toBe(1);
+    });
+
+    it('acknowledges corporate document alert', async () => {
+      (acknowledgeCorporateDocumentAlert as unknown as ReturnType<typeof vi.fn>).mockResolvedValueOnce({
+        id: 'alert-1',
+        status: 'acknowledged',
+      });
+
+      const res = await request(createApp('manager')).patch(
+        '/api/compliance/corporate-documents/alerts/alert-1/acknowledge'
+      );
+
+      expect(res.status).toBe(200);
+      expect(res.body.success).toBe(true);
+      expect(res.body.data.status).toBe('acknowledged');
+    });
+
+    it('imports corporate document registry for admin role', async () => {
+      (importCorporateDocumentsFromRegistry as unknown as ReturnType<typeof vi.fn>).mockResolvedValueOnce({
+        filePath: 'docs/company_documents/normalized/company_documents_registry.json',
+        total: 4,
+        created: 2,
+        updated: 2,
+      });
+
+      const res = await request(createApp('admin'))
+        .post('/api/compliance/corporate-documents/import-registry')
+        .send({});
+
+      expect(res.status).toBe(200);
+      expect(res.body.success).toBe(true);
+      expect(res.body.data.total).toBe(4);
+      expect(res.body.data.created).toBe(2);
+      expect(res.body.data.updated).toBe(2);
     });
   });
 });

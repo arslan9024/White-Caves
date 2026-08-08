@@ -78,6 +78,29 @@ export interface HenryRecord {
   createdAt: string;
 }
 
+export interface HenryWorkflowHistoryEvent {
+  type: 'created' | 'status_changed';
+  message: string;
+  timestamp: string;
+  fromStatus?: 'queued' | 'in_review' | 'approved' | 'rejected' | 'completed' | null;
+  toStatus?: 'queued' | 'in_review' | 'approved' | 'rejected' | 'completed' | null;
+}
+
+export interface HenryWorkflowItem {
+  id: string;
+  title: string;
+  templateKey: string;
+  ownerUserEmail: string | null;
+  assigneeUserEmail: string | null;
+  dueDate: string | null;
+  priority: 'low' | 'medium' | 'high';
+  status: 'queued' | 'in_review' | 'approved' | 'rejected' | 'completed';
+  notes?: string | null;
+  history: HenryWorkflowHistoryEvent[];
+  createdAt: string;
+  updatedAt: string;
+}
+
 // ─── Template Registry ──────────────────────────────────────────────────────
 
 export const DOCUMENT_TEMPLATES: DocumentTemplate[] = [
@@ -277,8 +300,10 @@ const HenryDocumentHub: React.FC<HenryDocumentHubProps> = () => {
   const [formData, setFormData] = useState<Record<string, unknown>>({});
   const [complianceReport, setComplianceReport] = useState<ComplianceReport | null>(null);
   const [records, setRecords] = useState<HenryRecord[]>([]);
+  const [workflowItems, setWorkflowItems] = useState<HenryWorkflowItem[]>([]);
   const [activePanel, setActivePanel] = useState<'editor' | 'compliance' | 'archive'>('editor');
   const [isLoading, setIsLoading] = useState(false);
+  const [isLoadingWorkflows, setIsLoadingWorkflows] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   const [isChecking, setIsChecking] = useState(false);
   const [isExtracting, setIsExtracting] = useState(false);
@@ -289,10 +314,11 @@ const HenryDocumentHub: React.FC<HenryDocumentHubProps> = () => {
   const [error, setError] = useState<string | null>(null);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
 
-  // Load archive records on mount
+  // Load archive records and workflow queue on mount
   useEffect(() => {
-    loadRecords();
-  }, []);
+    void loadRecords();
+    void loadWorkflowItems();
+  }, [loadRecords, loadWorkflowItems]);
 
   const loadRecords = useCallback(async () => {
     setIsLoading(true);
@@ -310,6 +336,25 @@ const HenryDocumentHub: React.FC<HenryDocumentHubProps> = () => {
       console.error('[Henry] Failed to load records:', err);
     } finally {
       setIsLoading(false);
+    }
+  }, []);
+
+  const loadWorkflowItems = useCallback(async () => {
+    setIsLoadingWorkflows(true);
+    try {
+      const res = await authFetch('/api/henry/workflows');
+      const json = (await res.json()) as {
+        success: boolean;
+        data: { items: HenryWorkflowItem[] };
+        error?: string;
+      };
+      if (json.success) {
+        setWorkflowItems(json.data.items);
+      }
+    } catch (err) {
+      console.error('[Henry] Failed to load workflow items:', err);
+    } finally {
+      setIsLoadingWorkflows(false);
     }
   }, []);
 
@@ -380,8 +425,27 @@ const HenryDocumentHub: React.FC<HenryDocumentHubProps> = () => {
       });
       const json = (await res.json()) as { success: boolean; error?: string };
       if (json.success) {
-        setSuccessMessage('Document saved to archive successfully');
-        await loadRecords();
+        const workflowRes = await authFetch('/api/henry/workflows', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            title: `${activeTemplate.label} needs review`,
+            templateKey: activeTemplate.key,
+            ownerUserEmail: selectedOwnerEmail || null,
+            assigneeUserEmail: selectedOwnerEmail || null,
+            dueDate: new Date(Date.now() + 3 * 24 * 60 * 60 * 1000).toISOString(),
+            priority: activeTemplate.key === 'key_handover' || activeTemplate.key === 'tenancy_contract' ? 'high' : 'medium',
+            status: 'queued',
+            notes: 'Saved from Henry document hub',
+          }),
+        });
+        const workflowJson = (await workflowRes.json()) as { success: boolean; error?: string };
+        if (workflowJson.success) {
+          setSuccessMessage('Document saved to archive and added to the operations queue');
+        } else {
+          setSuccessMessage('Document saved to archive successfully');
+        }
+        await Promise.all([loadRecords(), loadWorkflowItems()]);
         setActivePanel('archive');
       } else {
         setError(json.error ?? 'Save failed');
@@ -453,6 +517,26 @@ const HenryDocumentHub: React.FC<HenryDocumentHubProps> = () => {
       }
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Unable to mark record as signed');
+    }
+  };
+
+  const handleTransitionWorkflow = async (id: string, status: HenryWorkflowItem['status']) => {
+    setError(null);
+    try {
+      const res = await authFetch(`/api/henry/workflows/${id}/transition`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ status }),
+      });
+      const json = (await res.json()) as { success: boolean; error?: string };
+      if (json.success) {
+        setSuccessMessage(`Workflow item moved to ${status}`);
+        await loadWorkflowItems();
+      } else {
+        setError(json.error ?? 'Unable to update workflow item');
+      }
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Unable to update workflow item');
     }
   };
 
@@ -622,10 +706,13 @@ const HenryDocumentHub: React.FC<HenryDocumentHubProps> = () => {
         {activePanel === 'archive' && (
           <ArchivePanel
             records={records}
+            workflowItems={workflowItems}
             isLoading={isLoading}
+            isLoadingWorkflows={isLoadingWorkflows}
             onDelete={handleDeleteRecord}
             onRefresh={loadRecords}
             onMarkSigned={handleMarkSigned}
+            onTransitionWorkflow={handleTransitionWorkflow}
           />
         )}
 
@@ -1081,18 +1168,24 @@ const CompliancePanel: React.FC<CompliancePanelProps> = ({ report }) => {
 
 interface ArchivePanelProps {
   records: HenryRecord[];
+  workflowItems: HenryWorkflowItem[];
   isLoading: boolean;
+  isLoadingWorkflows: boolean;
   onDelete: (id: string) => void;
   onRefresh: () => void;
   onMarkSigned: (id: string) => void;
+  onTransitionWorkflow: (id: string, status: HenryWorkflowItem['status']) => void;
 }
 
 const ArchivePanel: React.FC<ArchivePanelProps> = ({
   records,
+  workflowItems,
   isLoading,
+  isLoadingWorkflows,
   onDelete,
   onRefresh,
   onMarkSigned,
+  onTransitionWorkflow,
 }) => (
   <div>
     <div
@@ -1118,6 +1211,60 @@ const ArchivePanel: React.FC<ArchivePanelProps> = ({
       >
         🔄 Refresh
       </button>
+    </div>
+
+    <div
+      style={{
+        background: '#16131f',
+        border: '1px solid #2f2a3f',
+        borderRadius: 8,
+        padding: 12,
+        marginBottom: 16,
+      }}
+    >
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
+        <strong style={{ color: '#c8b6ff', fontSize: 13 }}>⚙️ Operations queue</strong>
+        <span style={{ color: '#888', fontSize: 12 }}>{workflowItems.length} item(s)</span>
+      </div>
+      {isLoadingWorkflows ? (
+        <div style={{ color: '#888', fontSize: 12 }}>Loading workflow queue...</div>
+      ) : workflowItems.length === 0 ? (
+        <div style={{ color: '#666', fontSize: 12 }}>No workflow items yet. Saving a document will queue it for review.</div>
+      ) : (
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+          {workflowItems.map(item => (
+            <div
+              key={item.id}
+              style={{
+                display: 'flex',
+                justifyContent: 'space-between',
+                alignItems: 'center',
+                gap: 8,
+                padding: '8px 10px',
+                background: '#1b1826',
+                borderRadius: 6,
+              }}
+            >
+              <div>
+                <div style={{ color: '#fff', fontSize: 12, fontWeight: 600 }}>{item.title}</div>
+                <div style={{ color: '#888', fontSize: 11 }}>
+                  {item.templateKey} • owner: {item.ownerUserEmail ?? 'unassigned'} • assignee: {item.assigneeUserEmail ?? 'unassigned'} • due: {item.dueDate ? new Date(item.dueDate).toLocaleDateString() : 'n/a'} • {item.status}
+                </div>
+                {item.history?.length > 0 && (
+                  <div style={{ color: '#a78bfa', fontSize: 10, marginTop: 4 }}>
+                    {item.history[item.history.length - 1].message}
+                  </div>
+                )}
+              </div>
+              <div style={{ display: 'flex', gap: 6 }}>
+                <button onClick={() => onTransitionWorkflow(item.id, 'in_review')} style={{ ...buttonBase, background: '#4338ca', color: '#fff' }}>Review</button>
+                <button onClick={() => onTransitionWorkflow(item.id, 'approved')} style={{ ...buttonBase, background: '#166534', color: '#fff' }}>Approve</button>
+                <button onClick={() => onTransitionWorkflow(item.id, 'completed')} style={{ ...buttonBase, background: '#92400e', color: '#fff' }}>Complete</button>
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
     </div>
 
     {isLoading ? (

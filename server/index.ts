@@ -107,6 +107,7 @@ import { startFollowUpScheduler } from './services/automation/followUpScheduler.
 import { startRateRefresh } from './services/currencyService.js';
 import { startViewingReminderScheduler } from './services/schedulingService.js';
 import { startRERAExpiryScheduler } from './services/compliance/reraExpiryScheduler.js';
+import { startCorporateDocumentExpiryScheduler } from './services/compliance/corporateDocumentExpiryScheduler.js';
 import { startAutoRouting } from './services/ai/leadAutoRouter.js';
 import { cacheService } from './services/CacheService.js';
 import { schedulerService } from './services/SchedulerService.js';
@@ -1257,6 +1258,7 @@ const startServer = async () => {
     startViewingReminderScheduler(); // Phase 3C: viewing reminders every 15 min
     startViewingReminderCron(); // Wave 23: FCM push viewing reminders every 5 min
     startRERAExpiryScheduler(); // Phase 3D: RERA BRN expiry checks daily
+    startCorporateDocumentExpiryScheduler(); // Wave 31: corporate document expiry checks daily
     startAutoRouting(); // Phase 4A: auto-route hot leads to best agents
     schedulerService.start(); // Wave 12: cron automation engine
 

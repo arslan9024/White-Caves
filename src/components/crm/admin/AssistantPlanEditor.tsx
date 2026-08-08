@@ -16,11 +16,11 @@ import { useSelector } from 'react-redux';
 import type { RootState } from '../../../store/store';
 import { assistantsService } from '../../../services/assistantsService';
 import type { AssistantMeta } from '../../../services/assistantsService';
-
-const isSuperUser = (role?: string): boolean => role === 'owner' || role === 'admin';
+import { isAdminOrAbove } from '../../../utils/roleHelpers';
 
 const AssistantPlanEditor: React.FC = () => {
   const userRole = useSelector((state: RootState) => state.auth?.user?.role as string | undefined);
+  const isSuperUser = isAdminOrAbove(userRole);
 
   const [assistants, setAssistants] = useState<AssistantMeta[]>([]);
   const [selectedId, setSelectedId] = useState<string>('');
@@ -98,7 +98,7 @@ const AssistantPlanEditor: React.FC = () => {
     }
   };
 
-  if (!isSuperUser(userRole)) {
+  if (!isSuperUser) {
     return (
       <div
         role="alert"
@@ -274,4 +274,5 @@ const AssistantPlanEditor: React.FC = () => {
   );
 };
 
+export { AssistantPlanEditor };
 export default AssistantPlanEditor;

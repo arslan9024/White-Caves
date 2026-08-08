@@ -2,8 +2,9 @@ import React, { useState, useEffect } from 'react';
 import { useDispatch } from 'react-redux';
 import { RecaptchaVerifier, signInWithPhoneNumber, type ConfirmationResult } from 'firebase/auth';
 import { auth } from '../../../../config/firebase';
-import { loginSuccess, loginStart, loginFailure } from '../../../../store/authSlice';
+import { loginStart, loginFailure } from '../../../../store/authSlice';
 import { createLogger } from '../../../../utils/logger';
+import { finalizeAuthenticatedSession } from '../../../../utils/authSession';
 
 // Extend Window for Firebase RecaptchaVerifier
 declare global {
@@ -139,11 +140,12 @@ const MobileLoginForm: React.FC<MobileLoginFormProps> = ({ onSuccess, onError })
       };
       
       const token = await user.getIdToken();
-      dispatch(loginSuccess({
-        user: userData,
+      finalizeAuthenticatedSession({
+        dispatch,
+        user: userData as any,
         token,
         provider: 'phone',
-      }));
+      });
       
       onSuccess?.(userData);
     } catch (error) {

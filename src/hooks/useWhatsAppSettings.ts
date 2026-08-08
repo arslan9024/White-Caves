@@ -11,6 +11,7 @@ import { useSelector, useDispatch } from 'react-redux';
 import { createLogger } from '../utils/logger';
 import { authFetch } from '../utils/authFetch';
 import type { RootState, AppDispatch } from '../store/store';
+import { isAdminOrAbove } from '../utils/roleHelpers';
 import {
   connectWhatsApp,
   disconnectWhatsApp,
@@ -72,7 +73,7 @@ export function useWhatsAppSettings() {
 
   // Authorization check
   useEffect(() => {
-    if (!user || (user.role !== 'owner' && user.role !== 'admin')) {
+    if (!user || !isAdminOrAbove(user.role)) {
       navigate('/');
     }
   }, [user, navigate]);

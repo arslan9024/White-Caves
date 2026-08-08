@@ -39,9 +39,61 @@ const router = Router();
 const mockHenryRecords: Array<Record<string, any>> = [];
 const VALID_DEPARTMENTS = ['sales', 'leasing', 'finance', 'compliance', 'legal', 'operations'] as const;
 const VALID_HENRY_STATUSES = ['draft', 'pending_signature', 'signed', 'archived'] as const;
+const VALID_WORKFLOW_STATUSES = ['queued', 'in_review', 'approved', 'rejected', 'completed'] as const;
+const VALID_WORKFLOW_PRIORITIES = ['low', 'medium', 'high'] as const;
 type HenryRecordStatus = (typeof VALID_HENRY_STATUSES)[number];
+type HenryWorkflowStatus = (typeof VALID_WORKFLOW_STATUSES)[number];
+type HenryWorkflowPriority = (typeof VALID_WORKFLOW_PRIORITIES)[number];
+
+interface HenryWorkflowHistoryEntry {
+  type: 'created' | 'status_changed';
+  message: string;
+  timestamp: Date;
+  fromStatus?: HenryWorkflowStatus | null;
+  toStatus?: HenryWorkflowStatus | null;
+}
+
+interface HenryWorkflowItem {
+  id: string;
+  title: string;
+  templateKey: string;
+  ownerUserEmail: string | null;
+  assigneeUserEmail: string | null;
+  dueDate: string | null;
+  priority: HenryWorkflowPriority;
+  status: HenryWorkflowStatus;
+  notes?: string | null;
+  history: HenryWorkflowHistoryEntry[];
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+const henryWorkflowQueue: HenryWorkflowItem[] = [];
 
 const normalizeId = () => Math.random().toString(36).slice(2, 10) + Date.now().toString(36);
+
+const createWorkflowHistoryEntry = (
+  type: HenryWorkflowHistoryEntry['type'],
+  message: string,
+  fromStatus?: HenryWorkflowStatus | null,
+  toStatus?: HenryWorkflowStatus | null
+): HenryWorkflowHistoryEntry => ({
+  type,
+  message,
+  timestamp: new Date(),
+  ...(fromStatus !== undefined ? { fromStatus: fromStatus ?? null } : {}),
+  ...(toStatus !== undefined ? { toStatus: toStatus ?? null } : {}),
+});
+
+const serializeWorkflowItem = (item: HenryWorkflowItem) => ({
+  ...item,
+  createdAt: item.createdAt.toISOString(),
+  updatedAt: item.updatedAt.toISOString(),
+  history: item.history.map(entry => ({
+    ...entry,
+    timestamp: entry.timestamp.toISOString(),
+  })),
+});
 
 const createMockHenryRecordModel = () => ({
   findMany: async (args: Record<string, unknown> = {}) => {
@@ -153,6 +205,136 @@ const upload = multer({
 
 router.get('/health', (_req: Request, res: Response) => {
   res.json({ success: true, service: 'henry', timestamp: new Date() });
+});
+
+// ─── GET /api/henry/workflows ────────────────────────────────────────────
+
+router.get('/workflows', requireMinRole('agent'), (_req: Request, res: Response) => {
+  try {
+    const items = [...henryWorkflowQueue]
+      .sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime())
+      .map(item => serializeWorkflowItem(item));
+
+    res.json({ success: true, data: { items, count: items.length } });
+  } catch (err) {
+    res
+      .status(500)
+      .json({ success: false, error: err instanceof Error ? err.message : 'Unknown error' });
+  }
+});
+
+// ─── POST /api/henry/workflows ───────────────────────────────────────────
+
+router.post('/workflows', requireMinRole('agent'), async (req: AuthRequest, res: Response) => {
+  try {
+    const { title, templateKey, ownerUserEmail, assigneeUserEmail, dueDate, priority, status, notes } = req.body as {
+      title?: unknown;
+      templateKey?: unknown;
+      ownerUserEmail?: unknown;
+      assigneeUserEmail?: unknown;
+      dueDate?: unknown;
+      priority?: unknown;
+      status?: unknown;
+      notes?: unknown;
+    };
+
+    if (!title || typeof title !== 'string' || !title.trim()) {
+      return res.status(400).json({ success: false, error: 'title is required' });
+    }
+    if (!templateKey || typeof templateKey !== 'string' || !templateKey.trim()) {
+      return res.status(400).json({ success: false, error: 'templateKey is required' });
+    }
+
+    const normalizedOwnerEmail = ownerUserEmail === null || ownerUserEmail === undefined
+      ? null
+      : typeof ownerUserEmail === 'string' && ownerUserEmail.trim()
+        ? ownerUserEmail.trim()
+        : null;
+    const normalizedAssigneeEmail = assigneeUserEmail === null || assigneeUserEmail === undefined
+      ? null
+      : typeof assigneeUserEmail === 'string' && assigneeUserEmail.trim()
+        ? assigneeUserEmail.trim()
+        : null;
+    const normalizedDueDate = dueDate === null || dueDate === undefined
+      ? null
+      : typeof dueDate === 'string' && dueDate.trim()
+        ? dueDate.trim()
+        : null;
+
+    const normalizedPriority = (
+      priority && typeof priority === 'string' && VALID_WORKFLOW_PRIORITIES.includes(priority as HenryWorkflowPriority)
+        ? (priority as HenryWorkflowPriority)
+        : 'medium'
+    );
+    const normalizedStatus = (
+      status && typeof status === 'string' && VALID_WORKFLOW_STATUSES.includes(status as HenryWorkflowStatus)
+        ? (status as HenryWorkflowStatus)
+        : 'queued'
+    );
+
+    const item: HenryWorkflowItem = {
+      id: normalizeId(),
+      title: title.trim(),
+      templateKey: templateKey.trim(),
+      ownerUserEmail: normalizedOwnerEmail,
+      assigneeUserEmail: normalizedAssigneeEmail,
+      dueDate: normalizedDueDate,
+      priority: normalizedPriority,
+      status: normalizedStatus,
+      notes: typeof notes === 'string' ? notes.trim() : null,
+      history: [createWorkflowHistoryEntry('created', 'Workflow item created')],
+      createdAt: new Date(),
+      updatedAt: new Date(),
+    };
+
+    henryWorkflowQueue.push(item);
+
+    res.status(201).json({ success: true, data: serializeWorkflowItem(item) });
+  } catch (err) {
+    res
+      .status(500)
+      .json({ success: false, error: err instanceof Error ? err.message : 'Unknown error' });
+  }
+});
+
+// ─── POST /api/henry/workflows/:id/transition ─────────────────────────────
+
+router.post('/workflows/:id/transition', requireMinRole('agent'), async (req: AuthRequest, res: Response) => {
+  try {
+    const { id } = req.params as Record<string, string>;
+    const { status, notes } = req.body as { status?: unknown; notes?: unknown };
+
+    if (!status || typeof status !== 'string' || !VALID_WORKFLOW_STATUSES.includes(status as HenryWorkflowStatus)) {
+      return res.status(400).json({
+        success: false,
+        error: `status must be one of: ${VALID_WORKFLOW_STATUSES.join(', ')}`,
+      });
+    }
+
+    const item = henryWorkflowQueue.find(entry => entry.id === id);
+    if (!item) {
+      return res.status(404).json({ success: false, error: 'Workflow item not found' });
+    }
+
+    const previousStatus = item.status;
+    item.status = status as HenryWorkflowStatus;
+    item.notes = typeof notes === 'string' ? notes.trim() : item.notes ?? null;
+    item.updatedAt = new Date();
+    item.history.push(
+      createWorkflowHistoryEntry(
+        'status_changed',
+        `Workflow moved to ${status}`,
+        previousStatus,
+        status as HenryWorkflowStatus
+      )
+    );
+
+    res.json({ success: true, data: serializeWorkflowItem(item) });
+  } catch (err) {
+    res
+      .status(500)
+      .json({ success: false, error: err instanceof Error ? err.message : 'Unknown error' });
+  }
 });
 
 // ─── GET /api/henry/records ───────────────────────────────────────────────

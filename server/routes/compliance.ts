@@ -35,6 +35,16 @@ import {
   getComplianceOverview,
   updateEjariStatus,
 } from '../services/compliance/complianceService.js';
+import {
+  acknowledgeCorporateDocumentAlert,
+  archiveCorporateDocument,
+  createCorporateDocument,
+  getCorporateDocumentById,
+  importCorporateDocumentsFromRegistry,
+  listCorporateDocumentAlerts,
+  listCorporateDocuments,
+  updateCorporateDocument,
+} from '../services/compliance/corporateDocumentService.js';
 import { getPermitAlerts } from '../services/compliance/permitAlertScheduler.js';
 import { enforcePropertyPermitCompliance } from '../services/compliance/propertyPermitEnforcementScheduler.js';
 import { screenAML } from '../services/compliance/amlAdapter.js';
@@ -1551,6 +1561,165 @@ router.get(
           };
         }),
       },
+    });
+  })
+);
+
+// ─── W31 Corporate document compliance register ───────────────────────────
+
+router.get(
+  '/corporate-documents',
+  requirePermission('view_analytics'),
+  asyncHandler(async (req: Request, res: Response) => {
+    const allowedRoles = ['owner', 'manager', 'admin', 'finance'];
+    if (!allowedRoles.includes(req.user?.role || '')) {
+      throw new AppError('Access denied — corporate document register requires manager role', 403);
+    }
+
+    const status = req.query.status ? String(req.query.status) : undefined;
+    const authority = req.query.authority ? String(req.query.authority) : undefined;
+    const search = req.query.search ? String(req.query.search) : undefined;
+    const limit = req.query.limit ? Number(req.query.limit) : undefined;
+
+    const data = await listCorporateDocuments({ status, authority, search, limit });
+
+    res.status(200).json({
+      success: true,
+      data,
+      summary: {
+        total: data.length,
+        status,
+      },
+    });
+  })
+);
+
+router.get(
+  '/corporate-documents/:id',
+  requirePermission('view_analytics'),
+  asyncHandler(async (req: Request, res: Response) => {
+    const allowedRoles = ['owner', 'manager', 'admin', 'finance'];
+    if (!allowedRoles.includes(req.user?.role || '')) {
+      throw new AppError('Access denied — corporate document details require manager role', 403);
+    }
+
+    const { id } = req.params;
+    const document = await getCorporateDocumentById(id);
+    if (!document) {
+      throw new AppError('Corporate document not found', 404);
+    }
+
+    res.status(200).json({ success: true, data: document });
+  })
+);
+
+router.post(
+  '/corporate-documents',
+  requirePermission('view_analytics'),
+  asyncHandler(async (req: Request, res: Response) => {
+    const allowedRoles = ['owner', 'manager', 'admin'];
+    if (!allowedRoles.includes(req.user?.role || '')) {
+      throw new AppError('Access denied — corporate document creation requires manager role', 403);
+    }
+
+    const { title, authority } = req.body || {};
+    if (!title || !authority) {
+      throw new AppError('title and authority are required', 400);
+    }
+
+    const created = await createCorporateDocument(req.body, req.user?.id || undefined);
+    res.status(201).json({ success: true, data: created });
+  })
+);
+
+router.patch(
+  '/corporate-documents/:id',
+  requirePermission('view_analytics'),
+  asyncHandler(async (req: Request, res: Response) => {
+    const allowedRoles = ['owner', 'manager', 'admin'];
+    if (!allowedRoles.includes(req.user?.role || '')) {
+      throw new AppError('Access denied — corporate document update requires manager role', 403);
+    }
+
+    const { id } = req.params;
+    const updated = await updateCorporateDocument(id, req.body || {}, req.user?.id || undefined);
+    res.status(200).json({ success: true, data: updated });
+  })
+);
+
+router.patch(
+  '/corporate-documents/:id/archive',
+  requirePermission('view_analytics'),
+  asyncHandler(async (req: Request, res: Response) => {
+    const allowedRoles = ['owner', 'manager', 'admin'];
+    if (!allowedRoles.includes(req.user?.role || '')) {
+      throw new AppError('Access denied — corporate document archive requires manager role', 403);
+    }
+
+    const { id } = req.params;
+    const archived = await archiveCorporateDocument(id, req.user?.id || undefined);
+    res.status(200).json({ success: true, data: archived });
+  })
+);
+
+router.get(
+  '/corporate-documents/alerts/list',
+  requirePermission('view_analytics'),
+  asyncHandler(async (req: Request, res: Response) => {
+    const allowedRoles = ['owner', 'manager', 'admin', 'finance'];
+    if (!allowedRoles.includes(req.user?.role || '')) {
+      throw new AppError('Access denied — corporate document alerts require manager role', 403);
+    }
+
+    const limit = req.query.limit ? Number(req.query.limit) : 100;
+    const data = await listCorporateDocumentAlerts(limit);
+
+    res.status(200).json({
+      success: true,
+      data,
+      summary: {
+        total: data.length,
+        open: data.filter((alert: { status: string }) => alert.status === 'open').length,
+        acknowledged: data.filter((alert: { status: string }) => alert.status === 'acknowledged')
+          .length,
+      },
+    });
+  })
+);
+
+router.patch(
+  '/corporate-documents/alerts/:alertId/acknowledge',
+  requirePermission('view_analytics'),
+  asyncHandler(async (req: Request, res: Response) => {
+    const allowedRoles = ['owner', 'manager', 'admin', 'finance'];
+    if (!allowedRoles.includes(req.user?.role || '')) {
+      throw new AppError('Access denied — alert acknowledgement requires manager role', 403);
+    }
+
+    const { alertId } = req.params;
+    const updated = await acknowledgeCorporateDocumentAlert(alertId, req.user?.id || undefined);
+    res.status(200).json({ success: true, data: updated });
+  })
+);
+
+router.post(
+  '/corporate-documents/import-registry',
+  requirePermission('view_analytics'),
+  asyncHandler(async (req: Request, res: Response) => {
+    const allowedRoles = ['owner', 'manager', 'admin'];
+    if (!allowedRoles.includes(req.user?.role || '')) {
+      throw new AppError('Access denied — corporate registry import requires manager role', 403);
+    }
+
+    const filePath = req.body?.filePath ? String(req.body.filePath) : undefined;
+    const result = await importCorporateDocumentsFromRegistry({
+      filePath,
+      actorUserId: req.user?.id || undefined,
+    });
+
+    res.status(200).json({
+      success: true,
+      data: result,
     });
   })
 );

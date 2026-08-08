@@ -2,7 +2,8 @@ import React, { useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { signInWithPopup, OAuthProvider } from 'firebase/auth';
 import { auth } from '../../../../config/firebase';
-import { loginSuccess, loginStart, loginFailure } from '../../../../store/authSlice';
+import { loginStart, loginFailure } from '../../../../store/authSlice';
+import { finalizeAuthenticatedSession } from '../../../../utils/authSession';
 import './SocialLogin.css';
 
 const AppleLoginButton = ({ onSuccess, onError, disabled }) => {
@@ -33,11 +34,12 @@ const AppleLoginButton = ({ onSuccess, onError, disabled }) => {
       };
       
       const token = await user.getIdToken();
-      dispatch(loginSuccess({
+      finalizeAuthenticatedSession({
+        dispatch,
         user: userData,
         token,
         provider: 'apple',
-      }));
+      });
       
       onSuccess?.(userData);
     } catch (error) {

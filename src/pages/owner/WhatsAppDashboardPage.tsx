@@ -6,6 +6,7 @@ const log = createLogger('WhatsAppDashboard');
 import { useNavigate } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import type { RootState } from '../../store/store';
+import { isAdminOrAbove } from '../../utils/roleHelpers';
 import './WhatsAppDashboardPage.css';
 
 interface WhatsAppStats {
@@ -30,7 +31,7 @@ const WhatsAppDashboardPage: FC = () => {
   const isMountedRef = React.useRef(true);
 
   useEffect(() => {
-    if (!user || (user.role !== 'owner' && user.role !== 'admin')) {
+    if (!user || !isAdminOrAbove(user.role)) {
       navigate('/');
     }
   }, [user, navigate]);

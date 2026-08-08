@@ -2,10 +2,10 @@ import React, { useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { signInWithPopup, GoogleAuthProvider } from 'firebase/auth';
 import { auth } from '../../../../config/firebase';
-import { loginSuccess, loginStart, loginFailure } from '../../../../store/authSlice';
-import { setUser } from '../../../../store/userSlice';
+import { loginStart, loginFailure } from '../../../../store/authSlice';
 import { syncFirebaseUser } from '../../../../services/authService';
 import { createLogger } from '../../../../utils/logger';
+import { finalizeAuthenticatedSession } from '../../../../utils/authSession';
 
 const log = createLogger('GoogleLogin');
 import './SocialLogin.css';
@@ -45,29 +45,18 @@ const GoogleLoginButton = ({ onSuccess, onError, disabled }: GoogleLoginButtonPr
       }
       const backendUser = backendResponse.data.user;
 
-      dispatch(
-        loginSuccess({
-          user: {
-            id: backendUser.id,
-            email: backendUser.email,
-            name: backendUser.name || undefined,
-            role: backendUser.role,
-            photoURL: backendUser.photoUrl || undefined,
-          },
-          token: backendResponse.data.token,
-          provider: 'google',
-        })
-      );
-
-      dispatch(
-        setUser({
+      finalizeAuthenticatedSession({
+        dispatch,
+        user: {
           id: backendUser.id,
           email: backendUser.email,
           name: backendUser.name || undefined,
           role: backendUser.role,
           photoURL: backendUser.photoUrl || undefined,
-        })
-      );
+        } as any,
+        token: backendResponse.data.token,
+        provider: 'google',
+      });
 
       onSuccess?.(backendUser);
     } catch (error: unknown) {

@@ -1,5 +1,6 @@
 import React, { FC, KeyboardEvent, RefObject, useState } from 'react';
 import type { RoleTab } from '../../config/ROLE_TAB_MAPPING';
+import { isAdminOrAbove } from '../../utils/roleHelpers';
 import { getCRMModule } from '../../config/crmModuleRegistry';
 import {
   MD_TOP_LEVEL_WORKSPACES,
@@ -51,7 +52,7 @@ const DashboardSideRail: FC<DashboardSideRailProps> = ({
   onSelectModule,
 }) => {
   const groupedModules = React.useMemo(() => groupModulesForMD(moduleEntries), [moduleEntries]);
-  const isManagingDirector = currentRole === 'managing_director';
+  const isManagingDirector = currentRole === 'managing_director' || isAdminOrAbove(currentRole);
 
   const workspaceTabs = React.useMemo<RoleTab[]>(() => {
     if (!isManagingDirector) {

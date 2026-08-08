@@ -49,6 +49,13 @@ describe('roleHasPermission', () => {
     expect(roleHasPermission('finance', 'process_payments')).toBe(true);
   });
 
+  it('supports the new executive hierarchy roles', () => {
+    expect(roleHasPermission('managing_director', 'manage_users')).toBe(true);
+    expect(roleHasPermission('director', 'manage_agents')).toBe(true);
+    expect(roleHasPermission('supervisor', 'manage_leads')).toBe(true);
+    expect(roleHasPermission('viewer', 'view_dashboard')).toBe(true);
+  });
+
   it('returns false when role lacks the permission', () => {
     expect(roleHasPermission('buyer', 'manage_leads')).toBe(false);
     expect(roleHasPermission('viewer', 'delete_property')).toBe(false);
@@ -68,6 +75,13 @@ describe('roleHasPermission', () => {
 describe('ROLE_HIERARCHY', () => {
   it('owner has highest level (100)', () => {
     expect(ROLE_HIERARCHY['owner']).toBe(100);
+  });
+
+  it('orders the new management hierarchy correctly', () => {
+    expect(ROLE_HIERARCHY['managing_director']).toBeGreaterThan(ROLE_HIERARCHY['director']);
+    expect(ROLE_HIERARCHY['director']).toBeGreaterThan(ROLE_HIERARCHY['manager']);
+    expect(ROLE_HIERARCHY['manager']).toBeGreaterThan(ROLE_HIERARCHY['supervisor']);
+    expect(ROLE_HIERARCHY['supervisor']).toBeGreaterThan(ROLE_HIERARCHY['agent']);
   });
 
   it('buyer/tenant have lowest level (10)', () => {

@@ -16,6 +16,12 @@ vi.mock('react-redux', () => ({
   useDispatch: () => mockDispatch,
 }));
 
+const mockAuthFetch = vi.fn();
+vi.mock('../../../utils/authFetch', () => ({
+  authFetch: (...args: unknown[]) => mockAuthFetch(...args),
+  extractApiError: vi.fn(async (_response: unknown, fallback: string) => fallback),
+}));
+
 // Mock thunks
 vi.mock('../../../store/crmDataSlice', () => ({
   fetchBRNExpiryAPI: vi.fn((args: unknown) => ({ type: 'fetchBRN', payload: args })),
@@ -46,6 +52,10 @@ describe('useCompliance', () => {
     expect(typeof result.current.fetchOverview).toBe('function');
     expect(typeof result.current.downloadEjariExport).toBe('function');
     expect(typeof result.current.updateEjari).toBe('function');
+    expect(typeof result.current.fetchCorporateDocuments).toBe('function');
+    expect(typeof result.current.fetchCorporateAlerts).toBe('function');
+    expect(typeof result.current.acknowledgeCorporateAlert).toBe('function');
+    expect(typeof result.current.importCorporateRegistry).toBe('function');
   });
 
   describe('fetchBRNExpiry', () => {
@@ -148,6 +158,96 @@ describe('useCompliance', () => {
       });
 
       expect(outcome).toEqual(mockResult);
+    });
+  });
+
+  describe('corporate documents register actions', () => {
+    it('fetches corporate documents and computes summary', async () => {
+      mockAuthFetch.mockResolvedValueOnce({
+        ok: true,
+        json: async () => ({
+          data: [
+            { id: 'doc-1', title: 'DET License', authority: 'DET', status: 'active' },
+            { id: 'doc-2', title: 'RERA Certificate', authority: 'RERA', status: 'expired' },
+          ],
+        }),
+      });
+
+      const { result } = renderHook(() => useCompliance());
+      await act(async () => {
+        await result.current.fetchCorporateDocuments({ limit: 100 });
+      });
+
+      expect(result.current.corporateDocuments).toHaveLength(2);
+      expect(result.current.corporateSummary.total).toBe(2);
+      expect(result.current.corporateSummary.expired).toBe(1);
+      expect(result.current.corporateSummary.authorityBreakdown[0]).toEqual({ authority: 'DET', count: 1 });
+    });
+
+    it('fetches corporate alerts', async () => {
+      mockAuthFetch.mockResolvedValueOnce({
+        ok: true,
+        json: async () => ({
+          data: [{ id: 'alert-1', documentId: 'doc-1', alertType: 'expiry_warning', status: 'open', message: 'Alert' }],
+        }),
+      });
+
+      const { result } = renderHook(() => useCompliance());
+      await act(async () => {
+        await result.current.fetchCorporateAlerts(50);
+      });
+
+      expect(result.current.corporateAlerts).toHaveLength(1);
+      expect(result.current.corporateSummary.openAlerts).toBe(1);
+    });
+
+    it('acknowledges a corporate alert and updates local state', async () => {
+      mockAuthFetch
+        .mockResolvedValueOnce({
+          ok: true,
+          json: async () => ({
+            data: [{ id: 'alert-1', documentId: 'doc-1', alertType: 'expiry_warning', status: 'open', message: 'Alert' }],
+          }),
+        })
+        .mockResolvedValueOnce({
+          ok: true,
+          json: async () => ({
+            data: { id: 'alert-1', documentId: 'doc-1', alertType: 'expiry_warning', status: 'acknowledged', message: 'Alert' },
+          }),
+        });
+
+      const { result } = renderHook(() => useCompliance());
+      await act(async () => {
+        await result.current.fetchCorporateAlerts();
+      });
+      await act(async () => {
+        await result.current.acknowledgeCorporateAlert('alert-1');
+      });
+
+      expect(result.current.corporateAlerts[0]?.status).toBe('acknowledged');
+      expect(result.current.corporateSummary.acknowledgedAlerts).toBe(1);
+    });
+
+    it('imports the corporate registry', async () => {
+      mockAuthFetch.mockResolvedValueOnce({
+        ok: true,
+        json: async () => ({
+          data: { filePath: 'docs/company_documents/normalized/company_documents_registry.json', total: 4, created: 2, updated: 2 },
+        }),
+      });
+
+      const { result } = renderHook(() => useCompliance());
+      let importResult;
+      await act(async () => {
+        importResult = await result.current.importCorporateRegistry();
+      });
+
+      expect(importResult).toEqual({
+        filePath: 'docs/company_documents/normalized/company_documents_registry.json',
+        total: 4,
+        created: 2,
+        updated: 2,
+      });
     });
   });
 });
