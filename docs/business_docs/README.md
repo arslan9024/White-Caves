@@ -1,13 +1,39 @@
 # Business Documentation Index
 
-**Status:** Active  
+**Status:** Active / Business-to-SRS Uplift Complete  
 **Owner:** Business & Product Governance  
-**Last Updated:** 2026-08-03  
+**Last Updated:** 2026-08-07  
+**Next Review:** 2026-08-21  
 **Source of Truth:** Yes
 
 This directory is the canonical business and domain documentation layer for White Caves.
 Use `docs/business_docs/` for business rules, operating models, compliance obligations,
 feature intent, and domain-level acceptance expectations.
+
+## Governance metadata contract (mandatory)
+
+All active business-doc entrypoints should explicitly publish:
+
+- `Status`
+- `Owner`
+- `Last Updated`
+- `Next Review`
+- `Source of Truth`
+- `Depends On`
+- `Feeds`
+
+Suggested dependency/feed defaults for business-doc roots:
+
+- **Depends On:** `docs/plans/MASTER_PLAN.md`, `docs/plans/PENDING_TASKS_ONLY.md`, canonical runtime route contracts where endpoint claims exist.
+- **Feeds:** `docs/software_docs/01_requirements_engineering/SRS_MASTER_12_DEPARTMENTS.md`, `docs/plans/documentation/REQ_CROSSWALK.md`, future wave backlog artifacts.
+
+## Frontend-first implementation policy (business-doc perspective)
+
+For future execution waves, frontend refactor work is the first implementation cluster before secondary documentation lanes. Business feature docs should mark frontend-impacting requirements clearly so they can be prioritized into the `Frontend Refactor First` cluster.
+
+## 10k SRS program alignment
+
+Business requirement artifacts in this folder are upstream inputs to the hybrid 10k SRS program (canonical software requirement IDs + linked UC scenarios). To avoid count drift, business aliases/references must stay explicit and traceable to canonical SRS registry entries.
 
 ## Canonical governance links
 
@@ -16,17 +42,36 @@ feature intent, and domain-level acceptance expectations.
 - [`../plans/waves/README.md`](../plans/waves/README.md)
 - [`../software_docs/INDEX.md`](../software_docs/INDEX.md)
 - [`../software_docs/DOCS_INTEGRATION_AND_CONSISTENCY_SYSTEM_2026-08-03.md`](../software_docs/DOCS_INTEGRATION_AND_CONSISTENCY_SYSTEM_2026-08-03.md)
+- [`../software_docs/01_requirements_engineering/SRS_MASTER_12_DEPARTMENTS.md`](../software_docs/01_requirements_engineering/SRS_MASTER_12_DEPARTMENTS.md)
+- [`../software_docs/01_requirements_engineering/ENTRPRISE_SRS_INVENTORY_2026-08-06.md`](../software_docs/01_requirements_engineering/ENTRPRISE_SRS_INVENTORY_2026-08-06.md)
+- [`05_requirements/enterprise-requirement-inventory.md`](./05_requirements/enterprise-requirement-inventory.md)
+
+## 2026-08-07 business-docs uplift
+
+This business-docs layer now serves as the upstream source for downstream SRS, use-case, design, test, and release work. Every active business document should now make the following explicit:
+
+- business outcome and owning department;
+- requirement or policy IDs where applicable;
+- measurable acceptance criteria;
+- compliance, privacy, or SLA constraints;
+- downstream links to SRS, feature specs, tests, and release notes.
 
 ## Current upgrade artifacts
 
+- [`BUSINESS_DOCS_FULL_UPGRADE_CHECKLIST_2026-08-07.md`](./BUSINESS_DOCS_FULL_UPGRADE_CHECKLIST_2026-08-07.md)
 - [`BUSINESS_DOCS_COVERAGE_MATRIX_2026-08-02.md`](./BUSINESS_DOCS_COVERAGE_MATRIX_2026-08-02.md)
+- [`BUSINESS_DOCS_COVERAGE_AUDIT_2026-08-06.md`](./BUSINESS_DOCS_COVERAGE_AUDIT_2026-08-06.md)
 - [`BUSINESS_DOCS_UPGRADE_ROADMAP_2026-Q3.md`](./BUSINESS_DOCS_UPGRADE_ROADMAP_2026-Q3.md)
+- [`TRANSITIONAL_DIRECTORY_SUPERSESSION_MAP_2026-08-07.md`](./TRANSITIONAL_DIRECTORY_SUPERSESSION_MAP_2026-08-07.md)
 - [`BUSINESS_OPERATING_MANUAL_2026-08-03.md`](./BUSINESS_OPERATING_MANUAL_2026-08-03.md)
 - [`AI_AUTOMATION_AND_ASSISTANT_MAP_2026-08-03.md`](./AI_AUTOMATION_AND_ASSISTANT_MAP_2026-08-03.md)
 - [`IMPLEMENTATION_TRACEABILITY_AND_DELIVERY_MAP_2026-08-03.md`](./IMPLEMENTATION_TRACEABILITY_AND_DELIVERY_MAP_2026-08-03.md)
 - [`DEPARTMENT_OPERATING_MAP_AND_AUTOMATION_READINESS_2026-08-03.md`](./DEPARTMENT_OPERATING_MAP_AND_AUTOMATION_READINESS_2026-08-03.md)
 - [`WAVE_TO_REQUIREMENT_AND_RELEASE_MAPPING_2026-08-03.md`](./WAVE_TO_REQUIREMENT_AND_RELEASE_MAPPING_2026-08-03.md)
 - [`../IMPLEMENTATION_EXECUTION_PLAYBOOK_2026-08-03.md`](../IMPLEMENTATION_EXECUTION_PLAYBOOK_2026-08-03.md)
+- [`../AUTHORITATIVE_DOC_MAP_2026-08-06.md`](../AUTHORITATIVE_DOC_MAP_2026-08-06.md)
+- [`../RELEASE_AND_ROLLOUT_NOTES_TEMPLATE_2026-08-06.md`](../RELEASE_AND_ROLLOUT_NOTES_TEMPLATE_2026-08-06.md)
+- [`../plans/documentation/BUSINESS_DOCS_MAINTENANCE_CLOSEOUT_2026-08-08.md`](../plans/documentation/BUSINESS_DOCS_MAINTENANCE_CLOSEOUT_2026-08-08.md)
 - [`../plans/session_exports/README.md`](../plans/session_exports/README.md)
 - [`../plans/session_exports/SESSION_EXPORT_2026-08-03.md`](../plans/session_exports/SESSION_EXPORT_2026-08-03.md)
 - [`09_crm_features/task-batching-and-priority-grouping.md`](./09_crm_features/task-batching-and-priority-grouping.md)
@@ -53,6 +98,7 @@ feature intent, and domain-level acceptance expectations.
 - [`16_scenario_library/batches/SCENARIO_BATCH_A1_COMPLIANCE_LEASING_FINANCE_0001_0200.md`](./16_scenario_library/batches/SCENARIO_BATCH_A1_COMPLIANCE_LEASING_FINANCE_0001_0200.md)
 - [`16_scenario_library/batches/SCENARIO_BATCH_A2_SALES_VIEWINGS_OFFERS_CONVERSION_0201_0500.md`](./16_scenario_library/batches/SCENARIO_BATCH_A2_SALES_VIEWINGS_OFFERS_CONVERSION_0201_0500.md)
 - [`16_scenario_library/batches/SCENARIO_BATCH_A3_OPERATIONS_MAINTENANCE_INCIDENTS_0501_0800.md`](./16_scenario_library/batches/SCENARIO_BATCH_A3_OPERATIONS_MAINTENANCE_INCIDENTS_0501_0800.md)
+- [`05_requirements/enterprise-requirement-inventory.md`](./05_requirements/enterprise-requirement-inventory.md) — enterprise business-doc inventory and SRS counterpart map
 
 ## What belongs here
 
@@ -97,6 +143,10 @@ until their contents are fully merged or formally archived:
 - `03_regulatory_compliance_legal/`
 - `04_marketing_communications/`
 - `10_design_system_and_security/`
+
+Transitional supersession authority:
+
+- [`TRANSITIONAL_DIRECTORY_SUPERSESSION_MAP_2026-08-07.md`](./TRANSITIONAL_DIRECTORY_SUPERSESSION_MAP_2026-08-07.md)
 
 Do not create new source-of-truth documents in transitional directories unless the active
 wave explicitly says so.

@@ -2,10 +2,95 @@
 
 <!-- markdownlint-disable MD024 MD032 MD040 MD060 -->
 
+**Status:** Active  
+**Owner:** Compliance + Legal + Security Governance  
+**Last Updated:** 2026-08-07  
+**Next Review:** 2026-08-21  
+**Source of Truth:** Business-layer compliance requirements baseline (`REQ-COMP-*`)
+
 > **Version:** 1.0  
 > **Last Updated:** March 2026  
 > **Regulatory Bodies:** RERA, DLD, FATF, UAE PDPL  
 > **Jurisdiction:** Dubai, United Arab Emirates
+
+## Canonical governance links
+
+- [`README.md`](./README.md)
+- [`requirements-framework.md`](./requirements-framework.md)
+- [`POLICY_CONTROL_INDEX_POL_SEED.md`](./POLICY_CONTROL_INDEX_POL_SEED.md)
+- [`REQ_TO_FR_BR_NFR_POL_AC_MAPPING_2026-08-03.md`](./REQ_TO_FR_BR_NFR_POL_AC_MAPPING_2026-08-03.md)
+- [`rera-compliance-checklist.md`](./rera-compliance-checklist.md)
+- [`risk-register.md`](./risk-register.md)
+- [`../../plans/documentation/REQ_CROSSWALK.md`](../../plans/documentation/REQ_CROSSWALK.md)
+
+## Feed targets
+
+- `docs/plans/documentation/REQ_CROSSWALK.md`
+- `docs/software_docs/01_requirements_engineering/SRS_MASTER_12_DEPARTMENTS.md`
+- `docs/business_docs/13_testing/qa-checklist.md`
+- `docs/business_docs/15_release_management/business-release-and-incident-communication-sop.md`
+
+## Requirement catalog
+
+### REQ-COMP-001: RERA permit and broker identity compliance
+
+The system shall require valid permit, license, and BRN identity data before a regulated property or agent record can be published.
+
+**Acceptance criteria:**
+
+- [ ] Property publication blocks if permit number is missing or expired
+- [ ] Agent publication blocks if BRN is missing or expired
+- [ ] Exported documents include the required regulatory identifiers
+
+**Evidence:** compliance dashboard snapshot, publish-block log, and exported listing artifact.
+
+### REQ-COMP-002: DLD and Ejari workflow compliance
+
+The system shall enforce DLD transfer and Ejari registration workflows for the relevant transaction type.
+
+**Acceptance criteria:**
+
+- [ ] Sale transactions show a DLD transfer reference before close
+- [ ] Active lease records cannot be marked active without Ejari data
+- [ ] Oqood-required off-plan flows show the correct status gate
+
+**Evidence:** transaction workflow record and lease compliance record.
+
+### REQ-COMP-003: AML/KYC escalation compliance
+
+The system shall enforce CDD, EDD, screening, and retention rules before transaction completion.
+
+**Acceptance criteria:**
+
+- [ ] CDD is mandatory before regulated transaction progress
+- [ ] EDD triggers for threshold or risk-based conditions
+- [ ] Retention locks prevent deletion during the legal retention window
+
+**Evidence:** KYC record, screening log, and retention audit record.
+
+### REQ-COMP-004: PDPL consent and access rights
+
+The system shall capture consent and support access, deletion, and residency rules under UAE PDPL.
+
+**Acceptance criteria:**
+
+- [ ] Consent timestamp and version are stored for each personal-data collection event
+- [ ] Data-access export is available within the required response window
+- [ ] Data residency restrictions are visible in the compliance dashboard
+
+**Evidence:** consent audit trail, data export record, residency configuration note.
+
+### REQ-COMP-005: Regulatory reporting and review cadence
+
+The system shall support periodic regulatory reporting and compliance review scheduling.
+
+**Acceptance criteria:**
+
+- [ ] Quarterly reporting exports include the required compliance fields
+- [ ] Dashboard shows current compliance coverage by domain
+- [ ] Review cadence is recorded and visible to compliance owners
+
+**Evidence:** regulatory report export and compliance review log.
 
 ---
 
@@ -318,6 +403,13 @@ Quarterly reports generated for submission to RERA/DLD:
 - [ ] Oqood off-plan registration tracking
 - [ ] DLD transfer fee auto-calculation
 - [ ] PDPL right-of-access export function
+
+## Traceability
+
+- Business owner: Compliance Officer
+- SRS counterpart: `WC-SRS-006` and `WC-SRS-016`
+- Related business rules: `BR-004`, `BR-006`, `BR-008`, `BR-010`
+- Validation surfaces: compliance dashboard, report export, and audit trail
 - [ ] Annual compliance audit workflow
 
 ---

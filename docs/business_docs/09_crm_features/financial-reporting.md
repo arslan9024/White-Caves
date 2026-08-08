@@ -5,13 +5,84 @@
 > **Status:** In Progress (Core reports active, advanced exports expanding)  
 > **Module Owner:** Theodora (Finance Director AI) + Zoe (Executive AI)  
 > **API Endpoints:** `/api/finance`, `/api/dashboard`, `/api/commissions`  
-> **Priority:** High
+> **Priority:** High  
+> **Next Review:** 2026-08-21  
+> **Source of Truth:** CRM financial reporting feature specification (business layer)
+
+## Canonical governance links
+
+- [`../05_requirements/functional-requirements.md`](../05_requirements/functional-requirements.md)
+- [`../05_requirements/non-functional-requirements.md`](../05_requirements/non-functional-requirements.md)
+- [`../05_requirements/compliance-requirements.md`](../05_requirements/compliance-requirements.md)
+- [`../../plans/documentation/REQ_CROSSWALK.md`](../../plans/documentation/REQ_CROSSWALK.md)
+
+## Feed targets
+
+- `docs/software_docs/01_requirements_engineering/SRS_MASTER_12_DEPARTMENTS.md`
+- `docs/plans/documentation/REQ_CROSSWALK.md`
+- frontend-first reliability and closure lanes in `docs/plans/waves/WAVE_39_*` and `WAVE_40_*`
 
 ---
 
 ## Overview
 
 The Financial Reporting module delivers accurate, role-appropriate financial views across the platform — from agent-level commission statements to executive P&L dashboards. All reports are exportable to Excel and PDF.
+
+## Requirement catalog
+
+### REQ-FRPT-001: Executive summary dashboard
+
+The system shall provide a live executive financial dashboard with revenue, pipeline, and occupancy KPIs.
+
+**Acceptance criteria:**
+
+- [ ] Dashboard loads the latest KPI values for authorized roles
+- [ ] Period comparison is available for month and quarter views
+- [ ] Charts and cards are exportable in report snapshots
+
+**Evidence:** dashboard snapshot and export log.
+
+### REQ-FRPT-002: Commission and rent report generation
+
+The system shall generate commission statements, rental income reports, and transaction summaries with the correct audience access.
+
+**Acceptance criteria:**
+
+- [ ] Finance, managers, owners, agents, and landlords see only their permitted reports
+- [ ] All reports include company name and RERA license number
+- [ ] Excel and PDF outputs preserve column headers and totals
+
+**Evidence:** report files and access-control audit.
+
+### REQ-FRPT-003: VAT and tax compliance reporting
+
+The system shall calculate VAT treatment by transaction type and preserve taxable and exempt totals.
+
+**Acceptance criteria:**
+
+- [ ] VAT is applied only to qualifying services
+- [ ] Exempt and zero-rated items remain visible in the output
+- [ ] VAT calculations are reproducible from the transaction source data
+
+**Evidence:** VAT worksheet and tax calculation audit.
+
+### REQ-FRPT-004: Split calculator and payout controls
+
+The system shall calculate commission splits and block invalid payout plans.
+
+**Acceptance criteria:**
+
+- [ ] Split totals must equal 100%
+- [ ] Manager overrides require approval and audit logging
+- [ ] Split outcomes are included in commission exports
+
+**Evidence:** split preview, approval log, and commission export.
+
+## Traceability
+
+- Maps to `REQ-FIN-001` through `REQ-FIN-004` in `functional-requirements.md`
+- Aligns to `WC-SRS-010`, `WC-SRS-011`, and finance/compliance validation artifacts
+- Feeds tax reporting, payout, and executive dashboard evidence
 
 ---
 

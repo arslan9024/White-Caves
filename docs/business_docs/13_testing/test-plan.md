@@ -1,5 +1,26 @@
 # Test Plan — White Caves CRM Platform
 
+<!-- markdownlint-disable MD022 MD031 MD032 MD034 MD040 MD058 MD060 -->
+
+**Status:** Active  
+**Owner:** QA & Release Readiness  
+**Last Updated:** 2026-08-07  
+**Next Review:** 2026-08-21  
+**Source of Truth:** Business-layer test strategy and release verification contract
+
+## Canonical governance links
+
+- [`../05_requirements/functional-requirements.md`](../05_requirements/functional-requirements.md)
+- [`../05_requirements/non-functional-requirements.md`](../05_requirements/non-functional-requirements.md)
+- [`../../plans/documentation/REQ_CROSSWALK.md`](../../plans/documentation/REQ_CROSSWALK.md)
+- [`../../software_docs/01_requirements_engineering/SRS_MASTER_12_DEPARTMENTS.md`](../../software_docs/01_requirements_engineering/SRS_MASTER_12_DEPARTMENTS.md)
+
+## Feed targets
+
+- `docs/software_docs/01_requirements_engineering/SRS_MASTER_12_DEPARTMENTS.md`
+- `docs/plans/documentation/REQ_CROSSWALK.md`
+- frontend reliability/accessibility/performance lanes in `docs/plans/waves/WAVE_39_*` and `WAVE_40_*`
+
 > **Document ID:** WC-TP-001  
 > **Version:** 1.0  
 > **Date:** March 2026  

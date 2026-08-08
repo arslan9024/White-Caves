@@ -1,10 +1,41 @@
+<!-- markdownlint-disable MD022 MD025 MD032 MD034 MD060 -->
+
 # User Acceptance Testing (UAT) Scenarios
 # White Caves CRM Platform
+
+**Status:** Active / UAT Baseline (expanding to scenario-library posture)  
+**Owner:** QA & Business Acceptance Governance  
+**Last Updated:** 2026-08-07  
+**Next Review:** 2026-08-21  
+**Source of Truth:** UAT lane baseline (paired with scenario library)
+
+## Canonical governance links
+
+- [`../05_requirements/functional-requirements.md`](../05_requirements/functional-requirements.md)
+- [`../05_requirements/non-functional-requirements.md`](../05_requirements/non-functional-requirements.md)
+- [`../../plans/documentation/REQ_CROSSWALK.md`](../../plans/documentation/REQ_CROSSWALK.md)
+- [`../../software_docs/01_requirements_engineering/SRS_MASTER_12_DEPARTMENTS.md`](../../software_docs/01_requirements_engineering/SRS_MASTER_12_DEPARTMENTS.md)
+
+## Feed targets
+
+- `docs/software_docs/01_requirements_engineering/SRS_MASTER_12_DEPARTMENTS.md`
+- `docs/plans/documentation/REQ_CROSSWALK.md`
+- frontend reliability/accessibility and release-readiness lanes in `docs/plans/waves/WAVE_39_*` and `WAVE_40_*`
 
 > **Document ID:** WC-UAT-001  
 > **Version:** 1.0  
 > **Date:** March 2026  
 > **Participants:** Business stakeholders, department heads, key users
+
+## Canonical scenario expansion bridge
+
+This UAT pack is the practical acceptance baseline for business signoff. Broader scenario-scale governance (including exception/regression/compliance scenario growth) is maintained in the canonical scenario library:
+
+- [`../16_scenario_library/README.md`](../16_scenario_library/README.md)
+- [`../16_scenario_library/SCENARIO_LIBRARY_MASTER_INDEX_2026-08-03.md`](../16_scenario_library/SCENARIO_LIBRARY_MASTER_INDEX_2026-08-03.md)
+- [`../16_scenario_library/SCENARIO_TRACEABILITY_MATRIX_SEED_2026-08-03.md`](../16_scenario_library/SCENARIO_TRACEABILITY_MATRIX_SEED_2026-08-03.md)
+
+Future wave updates should keep this file focused on business-user acceptance flows while publishing deep scenario-scale expansions in the scenario-library lane.
 
 ---
 

@@ -18,6 +18,62 @@
 | **Speed**          | Instant local state updates; skeleton loaders for async data                    |
 | **Mobile-Ready**   | Responsive from 360px; full functionality on tablet (1024px)                    |
 
+## Requirement catalog
+
+### REQ-UX-001: Role-adaptive navigation and screen density
+
+The system shall adapt navigation, actions, and data density to the current user role and viewport size.
+
+**Acceptance criteria:**
+
+- [ ] Sidebar and actions change based on role permissions
+- [ ] Desktop, tablet, and mobile layouts follow the documented breakpoints
+- [ ] Dense dashboards remain readable without horizontal overflow where possible
+
+**Evidence:** responsive layout test and role-based rendering snapshot.
+
+### REQ-UX-002: Design tokens and visual consistency
+
+The system shall use a shared design token set for colors, typography, spacing, and shadows.
+
+**Acceptance criteria:**
+
+- [ ] Primary colors and backgrounds come from documented tokens
+- [ ] Typography and spacing are standardized across screens
+- [ ] Token changes are reflected consistently in the UI kit
+
+**Evidence:** token registry and component theme review.
+
+### REQ-UX-003: Loading, empty, and error state standards
+
+The system shall define predictable loading, empty, and error states for every major surface.
+
+**Acceptance criteria:**
+
+- [ ] Async screens show a loading state
+- [ ] Empty states explain next action clearly
+- [ ] Errors are user-safe and avoid exposing internals
+
+**Evidence:** UI state checklist and interaction test.
+
+### REQ-UX-004: Arabic and RTL readiness
+
+The system shall support Arabic layouts, RTL direction, and locale-appropriate typography where required.
+
+**Acceptance criteria:**
+
+- [ ] Arabic font and direction tokens are documented
+- [ ] RTL layouts preserve alignment and navigation flow
+- [ ] Locale-switching does not break the layout grid
+
+**Evidence:** RTL preview, locale toggle test, and typography snapshot.
+
+## Traceability
+
+- Supports `REQ-TP-005`, `REQ-LP-001`, and accessible dashboard rendering
+- Aligns to `WC-SRS-014`, `WC-SRS-016`, and `WC-SRS-018`
+- Feeds UI implementation, responsive QA, and locale validation artifacts
+
 ---
 
 ## 2. Design Tokens

@@ -1,10 +1,70 @@
 # User Stories — White Caves CRM Platform
 
+<!-- markdownlint-disable MD022 MD032 MD060 -->
+
+**Status:** Active  
+**Owner:** Product + UX + Department Operations Governance  
+**Last Updated:** 2026-08-07  
+**Next Review:** 2026-08-21  
+**Source of Truth:** Business-layer user-story narrative baseline mapped to requirement families
+
 > **Version:** 1.0  
 > **Last Updated:** March 2026  
 > **Format:** As a [role], I want to [action], so that [benefit]
 
+## Canonical governance links
+
+- [`README.md`](./README.md)
+- [`functional-requirements.md`](./functional-requirements.md)
+- [`business-rules.md`](./business-rules.md)
+- [`requirements-framework.md`](./requirements-framework.md)
+- [`../../plans/documentation/REQ_CROSSWALK.md`](../../plans/documentation/REQ_CROSSWALK.md)
+- [`../../software_docs/03_use_cases/UC_MASTER_LIBRARY_12_DEPARTMENTS.md`](../../software_docs/03_use_cases/UC_MASTER_LIBRARY_12_DEPARTMENTS.md)
+
+## Feed targets
+
+- `docs/plans/documentation/REQ_CROSSWALK.md`
+- `docs/software_docs/03_use_cases/UC_MASTER_LIBRARY_12_DEPARTMENTS.md`
+- `docs/business_docs/13_testing/uat-scenarios.md`
+- `docs/plans/waves/WAVE_37_IMPLEMENTATION_BACKLOG.md`
+
 ---
+
+## Story traceability catalog
+
+### STY-LEAD-001: WhatsApp to lead capture
+
+As a sales agent, I want to create a lead from a WhatsApp conversation, so that I capture a new opportunity without leaving the chat.
+
+**Traceability:** `REQ-WA-001`, `REQ-WA-002`, `REQ-LEAD-001`
+
+### STY-LEASE-001: Tenant self-service visibility
+
+As a tenant, I want to log in and see my lease details and payment schedule, so that I know when my next payment is due.
+
+**Traceability:** `REQ-TP-001`, `REQ-TP-002`, `REQ-TP-004`
+
+### STY-VIEW-001: Viewing scheduling and follow-up
+
+As a sales agent, I want to schedule a property viewing and send a confirmation instantly, so that clients can book with confidence.
+
+**Traceability:** `REQ-VW-001`, `REQ-VW-003`, `REQ-VW-005`
+
+### STY-COMP-001: Listing compliance review
+
+As a compliance officer, I want to see a dashboard of all active listings without a RERA permit, so that I fix non-compliance before a fine is issued.
+
+**Traceability:** `REQ-COMP-001`, `REQ-COMP-005`
+
+### STY-HR-001: Hiring visibility and profile governance
+
+As an HR manager, I want to manage job postings and track applicants, so that I streamline the hiring process.
+
+**Traceability:** `REQ-HR-001` through `REQ-HR-005`
+
+### Story coverage note
+
+The stories below remain the narrative source for product planning, while the traceability catalog above is the implementation-facing bridge to requirement IDs and validation artifacts.
 
 ## Sales Agent Stories
 

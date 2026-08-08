@@ -1,5 +1,7 @@
 # White Caves — Access Control Policy
 
+<!-- markdownlint-disable MD022 MD031 MD032 MD040 MD058 MD060 -->
+
 > **Version:** 1.0  
 > **Last updated:** March 29, 2026  
 > **Scope:** Frontend route guards, backend middleware, database-level filtering
@@ -30,6 +32,62 @@ White Caves implements a **three-layer RBAC** security model:
 ```
 
 ## 2. Permission Model
+
+## Requirement catalog
+
+### REQ-ACP-001: Three-layer access enforcement
+
+The system shall enforce access control at the frontend, backend, and data layers.
+
+**Acceptance criteria:**
+
+- [ ] Protected routes hide unauthorized screens
+- [ ] Backend middleware rejects unauthorized requests
+- [ ] Database scoping prevents cross-tenant data leakage
+
+**Evidence:** access-control test, middleware log, and scoped query audit.
+
+### REQ-ACP-002: Permission and ownership scoping
+
+The system shall support resource permissions and `.own` ownership scoping for user-visible records.
+
+**Acceptance criteria:**
+
+- [ ] `resource.*` permissions grant full access on the resource
+- [ ] `.own` permissions restrict access to owned or assigned records
+- [ ] Permission inheritance rules remain explicit and auditable
+
+**Evidence:** permission matrix, query scope log, and ownership check.
+
+### REQ-ACP-003: Role lifecycle and role-change controls
+
+The system shall allow only authorized roles to change user roles and ensure the change is logged.
+
+**Acceptance criteria:**
+
+- [ ] Only super admin and managing director can change roles
+- [ ] Role changes take effect immediately
+- [ ] Role changes are captured in the audit trail
+
+**Evidence:** role change log and audit record.
+
+### REQ-ACP-004: Sensitive data classification
+
+The system shall classify data into public, internal, confidential, and restricted access tiers.
+
+**Acceptance criteria:**
+
+- [ ] Data classification is documented by category
+- [ ] Financial and system settings remain restricted
+- [ ] Cross-border restrictions are enforced for protected data
+
+**Evidence:** data-classification matrix and restricted access test.
+
+## Traceability
+
+- Supports role-gated execution across `functional-requirements.md`
+- Aligns to `WC-SRS-001`, `WC-SRS-006`, and `WC-SRS-016`
+- Feeds frontend, middleware, and database enforcement validation
 
 ### Permission Format
 Permissions follow the `resource.action` pattern:

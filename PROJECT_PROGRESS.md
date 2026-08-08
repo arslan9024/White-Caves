@@ -2,19 +2,45 @@
 
 > **Agency:** White Caves Global Agency
 > **Orchestrator:** @Ada (Chief Architect)
-> **Last Updated:** 2026-07-29
-> **Global Progress:** **100% COMPLETE (30 of 30 active waves complete)**
-> **Policy Mode:** Dual-threshold readiness (60% unlock, 90% target) + policy-driven gating (Governance V2 active)
-> **Daily Report:** `PROJECT_PROGRESS_REPORT.md`
+> **Last Updated:** 2026-08-03
+> **Global Progress:** **Active multi-wave delivery: Waves 08–30 complete, Wave 31 planned/executing in slices, Wave 32 governance lane active**
+> **Policy Mode:** Dual-threshold readiness (69% unlock, 96% target) + policy-driven gating (Governance V2 active)
+> **Daily Report Archive:** `docs/plans/archives/PROJECT_PROGRESS_REPORT.md`
 
 ---
 
 ## 🗺️ Roadmap & Queue References
 
-- Canonical roadmap: **[plans/MASTER_PLAN.md](plans/MASTER_PLAN.md)**
-- Active queue: **[plans/PENDING_TASKS_ONLY.md](plans/PENDING_TASKS_ONLY.md)**
-- Last Updated (ISO): 2026-07-29
-- **Milestone Status:** **100% FULL PROJECT COMPLETION MILESTONE REACHED** ✅
+- Canonical roadmap: **[docs/plans/MASTER_PLAN.md](docs/plans/MASTER_PLAN.md)**
+- Active queue: **[docs/plans/PENDING_TASKS_ONLY.md](docs/plans/PENDING_TASKS_ONLY.md)**
+- Wave index: **[docs/plans/waves/README.md](docs/plans/waves/README.md)**
+- Progress dashboard: **[docs/plans/PROGRESS_DASHBOARD.md](docs/plans/PROGRESS_DASHBOARD.md)**
+- Wave summary: **[docs/plans/WAVE_PROGRESS_SUMMARY.md](docs/plans/WAVE_PROGRESS_SUMMARY.md)**
+- Last Updated (ISO): 2026-08-03
+- **Milestone Status:** **Historical full-completion claim retired; follow canonical wave trackers for live status**
+
+## 📌 Current Executive Snapshot
+
+- **Completed canonical waves:** 08–30
+- **Active implementation baseline:** Wave 31 — Corporate credentials & compliance automation
+- **Active governance/documentation lane:** Wave 32 — Documentation governance, traceability & progress intelligence
+- **SRS expansion milestone (2026-08-07):** Priority-first canonical register shipped and audited at **5121 total / 5061 unique** requirement IDs (target 5000 exceeded)
+- **Primary cleanup focus:** canonical documentation roots, progress visibility, and cross-domain traceability bridges
+- **Inception closure lane:** scorecard + business/use-case bridge + final signoff memo published under `docs/plans/*`
+
+## 📍 Live Status Rule
+
+Use this file for executive summary and historical evidence only.
+For live operational truth, prefer:
+
+- `docs/plans/MASTER_PLAN.md`
+- `docs/plans/PENDING_TASKS_ONLY.md`
+- `docs/plans/waves/README.md`
+- `docs/plans/PROGRESS_DASHBOARD.md`
+
+## Historical Delivery Evidence
+
+The sections below remain valuable as implementation history and evidence snapshots, but they are not the authoritative source for current active-wave status. Use the canonical `docs/plans/*` tracker set above for live execution truth.
 
 ## 🚀 Wave 30 Implementation Progress (AI Predictive UX & Mouse Trajectory Pre-Fetch Engine)
 
@@ -54,12 +80,12 @@
 ## 🚀 Wave 19 Planning Upgrade Evidence (Dashboard Hardening)
 
 - Wave 19 planning artifacts upgraded for execution depth:
-  - `plans/waves/WAVE_19_SDD.md`
-  - `plans/waves/WAVE_19_IMPLEMENTATION_BACKLOG.md`
-  - `plans/waves/WAVE_19_TEST_ROLLOUT.md`
-  - `plans/waves/WAVE_19_READINESS_PACKET.md`
+  - `docs/plans/waves/WAVE_19_SDD.md`
+  - `docs/plans/waves/WAVE_19_IMPLEMENTATION_BACKLOG.md`
+  - `docs/plans/waves/WAVE_19_TEST_ROLLOUT.md`
+  - `docs/plans/waves/WAVE_19_READINESS_PACKET.md`
 - New contract artifact added:
-  - `plans/waves/WAVE_19_DASHBOARD_API_CONTRACT.md`
+  - `docs/plans/waves/WAVE_19_DASHBOARD_API_CONTRACT.md`
 - New controls now explicitly documented:
   - REQ→test traceability for dashboard-critical requirements
   - rollout/rollback metric gates (dashboard API/load p95, export reliability, freshness SLA)
@@ -68,8 +94,8 @@
 ## 🚀 Wave 19 Implementation Progress (Current Cycle)
 
 - ✅ W19-010 through W19-013 completed in sequence (auth routing standardization, fallback hardening, MD split workspaces, KPI/AI boundaries, executive first-screen UX, state-system empty-state + RTL parity, dashboard API contract lock).
-- ✅ W19-012 completed: REQ→test traceability matrix upgraded in `plans/waves/WAVE_19_TEST_ROLLOUT.md` with explicit test IDs, evidence files, and validation commands.
-- ✅ W19-013 completed: rollout/rollback threshold matrix added in `plans/waves/WAVE_19_DASHBOARD_API_CONTRACT.md`.
+- ✅ W19-012 completed: REQ→test traceability matrix upgraded in `docs/plans/waves/WAVE_19_TEST_ROLLOUT.md` with explicit test IDs, evidence files, and validation commands.
+- ✅ W19-013 completed: rollout/rollback threshold matrix added in `docs/plans/waves/WAVE_19_DASHBOARD_API_CONTRACT.md`.
 - ✅ W19-014 completed: `W18.1-P1-003` closure evidence confirmed and linked. Agent performance filterable dashboard + XLSX/PDF export routes shipped (`GET /api/dashboard/agent-performance`, `POST .../export`, `GET .../export/:jobId`) with 32/32 route tests passing.
 - ✅ W19-015 completed: `npm run plans:validate` passed after all W19-010–W19-014 task closures.
 - ✅ Governance checks run for this cycle: `npm run plans:validate` passed; orchestrator progress brief refreshed.
@@ -126,7 +152,7 @@
 - **Top P1s in scope:** P1-001 (lead import), P1-002 (audit log UI), P1-003 (agent performance report), P1-004 (Nina escalation), P1-005 (e-sign), P1-006 (portal syndication), P1-007 (follow-up automation depth), P1-008 (Ejari + rent collection)
 - **Session 3 entry gate confirmed:** @Ada architecture approval issued 2026-05-28
 - **P0 exhaustion target:** 20/20 complete by Session 3 exit
-- See full plan: [`plans/waves/WAVE_18_1_IMPLEMENTATION_BACKLOG.md`](plans/waves/WAVE_18_1_IMPLEMENTATION_BACKLOG.md) Session 3 section
+- See full plan: [`docs/plans/waves/WAVE_18_1_IMPLEMENTATION_BACKLOG.md`](docs/plans/waves/WAVE_18_1_IMPLEMENTATION_BACKLOG.md) Session 3 section
 
 ### Session 3 Incremental Delivery (current branch)
 
@@ -417,10 +443,10 @@
 
 **Status:** 🔨 PLANNING UPDATED (Docs-first)
 
-- [x] Priority plan created (`plans/PHASE_33_PRIORITY_MODULE_HOMEPAGE_SUPERUSER_LEASING.md`)
+- [x] Priority plan created (`docs/plans/PHASE_33_PRIORITY_MODULE_HOMEPAGE_SUPERUSER_LEASING.md`)
 - [x] Phase 1 + Phase 3 plans aligned to P0 direction
 - [x] Core leasing business docs aligned (tenant/landlord/tenancy/workflow)
-- [x] Gate-to-code execution pack created (`plans/PHASE_33_IMPLEMENTATION_EXECUTION_PACK.md`)
+- [x] Gate-to-code execution pack created (`docs/plans/PHASE_33_IMPLEMENTATION_EXECUTION_PACK.md`)
 - [x] Identity-core patch implemented (alias normalization + canonical executive routing baseline)
 - [x] Homepage conversion Step 2 implemented (leasing-first hero CTA + 4 conversion events instrumented)
 - [x] **Phase 33 Step 3 COMPLETE**: Leasing continuity E2E spec (18/18 ✅ Chromium+Firefox+WebKit — API mocked, hero/search/whatsapp/form/role-route lifecycle covered)
@@ -448,12 +474,12 @@
 **Status:** 🔨 PLANNING UPDATED (May 15 synthesis)
 
 - [x] Cross-agent synthesis completed (@Ada + @Margaret + guardian + @Dena)
-- [x] Compact execution program created (`plans/MULTIAGENT_11_WAVE_EXECUTION_PROGRAM.md`)
-- [x] Active master plan linked to 11-wave program (`plans/MASTER_PLAN.md`)
+- [x] Compact execution program created (`docs/plans/MULTIAGENT_11_WAVE_EXECUTION_PROGRAM.md`)
+- [x] Active master plan linked to 11-wave program (`docs/plans/MASTER_PLAN.md`)
 - [x] Wave 02 artifact bundle created (`plans/waves/WAVE_02_SDD.md`, `WAVE_02_READINESS_PACKET.md`, `WAVE_02_IMPLEMENTATION_BACKLOG.md`, `WAVE_02_TEST_ROLLOUT.md`)
 - [x] Wave 02 governance inventories completed (`WAVE_02_READINESS_SOURCE_OF_TRUTH.md`, `WAVE_02_ROUTE_OWNERSHIP_INVENTORY.md`, `WAVE_02_PERMISSION_BOUNDARY_MAP.md`, `WAVE_02_DATA_CONTRACT_INVENTORY.md`)
-- [x] Wave 03 artifact bundle prepared (`plans/waves/WAVE_03_SDD.md`, `WAVE_03_READINESS_PACKET.md`, `WAVE_03_IMPLEMENTATION_BACKLOG.md`, `WAVE_03_TEST_ROLLOUT.md`)
-- [x] Wave 04 artifact bundle prepared (`plans/waves/WAVE_04_SDD.md`, `WAVE_04_READINESS_PACKET.md`, `WAVE_04_IMPLEMENTATION_BACKLOG.md`, `WAVE_04_TEST_ROLLOUT.md`)
+- [x] Wave 03 artifact bundle prepared (`docs/plans/waves/WAVE_03_SDD.md`, `docs/plans/waves/WAVE_03_READINESS_PACKET.md`, `docs/plans/waves/WAVE_03_IMPLEMENTATION_BACKLOG.md`, `docs/plans/waves/WAVE_03_TEST_ROLLOUT.md`)
+- [x] Wave 04 artifact bundle prepared (`docs/plans/waves/WAVE_04_SDD.md`, `docs/plans/waves/WAVE_04_READINESS_PACKET.md`, `docs/plans/waves/WAVE_04_IMPLEMENTATION_BACKLOG.md`, `docs/plans/waves/WAVE_04_TEST_ROLLOUT.md`)
 - [x] Reconcile canonical readiness source and close Wave 02 entry gate
 - [x] Wave 03 pre-implementation hardening started (webhook idempotency guard + green test/build)
 - [x] Wave 04 pre-implementation hardening started (property route compliance guard + green route tests/build)
@@ -487,9 +513,9 @@
 **Status:** 🔨 PLANNED (May 18, 2026)
 
 - [x] Phase 27 execution plan created (`plans/PHASE_27_SUBAGENT_NEXT_LEVEL_90_READINESS.md`)
-- [x] Pending tracker linked to Phase 27 (`plans/PENDING_TASKS_ONLY.md`)
+- [x] Pending tracker linked to Phase 27 (`docs/plans/PENDING_TASKS_ONLY.md`)
 - [x] Policy metadata extended for dual-threshold model (`scripts/orchestrator/policy.json`)
-- [x] Run tracker sync pass across `AGENTS.md`, `PROJECT_PROGRESS.md`, `DAILY_MILESTONE_TRACKER.md`, and `plans/PENDING_TASKS_ONLY.md`
+- [x] Run tracker sync pass across `AGENTS.md`, `PROJECT_PROGRESS.md`, `DAILY_MILESTONE_TRACKER.md`, and `docs/plans/PENDING_TASKS_ONLY.md`
 - [x] Introduce FEEDS_ACK audit command and daily target90 readiness check command
 
 ### MILESTONE-NPLUS1-6-CLOSURE
@@ -498,7 +524,7 @@
 
 **Status:** ✅ VERIFIED COMPLETE
 
-- [x] Canonical tracker reconciliation completed (`plans/PENDING_TASKS_ONLY.md`)
+- [x] Canonical tracker reconciliation completed (`docs/plans/PENDING_TASKS_ONLY.md`)
 - [x] Type safety verification passed (`npm run typecheck`)
 - [x] Lint verification passed (`npm run lint`)
 - [x] Tenant portal parity regression pack passed (5 files, 36 tests)
@@ -519,14 +545,14 @@
 
 **Status:** ✅ COMPLETE
 
-- [x] `plans/waves/WAVE_17_SDD.md` created (glassmorphism, Framer Motion, mobile, PWA, WCAG 2.2 scope)
-- [x] `plans/waves/WAVE_17_READINESS_PACKET.md` created (60% unlock gate + 6 free-agent spec checks)
-- [x] `plans/waves/WAVE_17_IMPLEMENTATION_BACKLOG.md` created (W17-001 → W17-009 ordered tasks)
-- [x] `plans/waves/WAVE_17_TEST_ROLLOUT.md` created (Lighthouse CI, Axe WCAG, PWA, Playwright mobile matrix)
+- [x] `docs/plans/waves/WAVE_17_SDD.md` created (glassmorphism, Framer Motion, mobile, PWA, WCAG 2.2 scope)
+- [x] `docs/plans/waves/WAVE_17_READINESS_PACKET.md` created (60% unlock gate + 6 free-agent spec checks)
+- [x] `docs/plans/waves/WAVE_17_IMPLEMENTATION_BACKLOG.md` created (W17-001 → W17-009 ordered tasks)
+- [x] `docs/plans/waves/WAVE_17_TEST_ROLLOUT.md` created (Lighthouse CI, Axe WCAG, PWA, Playwright mobile matrix)
 - [x] `business_docs/06_design_architecture/ui-ux-specification.md` expanded with Sections 13–17 (glassmorphism tokens, Framer Motion guidelines, enhanced mobile breakpoints, PWA spec, WCAG 2.2 criteria)
 - [x] `plans/waves/README.md` updated — Wave 17 row added
-- [x] `plans/MASTER_PLAN.md` updated — Wave 17 added as Sequence 9 (S10)
-- [x] `plans/PENDING_TASKS_ONLY.md` updated — S10 Wave 17 queue entry + free-agent invocation table
+- [x] `docs/plans/MASTER_PLAN.md` updated — Wave 17 added as Sequence 9 (S10)
+- [x] `docs/plans/PENDING_TASKS_ONLY.md` updated — S10 Wave 17 queue entry + free-agent invocation table
 - [x] `DAILY_MILESTONE_TRACKER.md` updated — May 25 entry recorded
 - [x] Wave 14 → Wave 15 → Wave 16 complete before Wave 17 coding
 - [x] 6 free-agent planning specs committed (Phase A outputs reflected in Wave 17 docs)

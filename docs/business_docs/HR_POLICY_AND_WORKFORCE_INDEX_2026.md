@@ -1,6 +1,9 @@
 # HR Policy & Workforce Index (2026)
 
 **Purpose:** Central index for HR-related documentation (people operations, payroll, onboarding, performance, policy control).
+**Status:** Active  
+**Owner:** HR Governance Lead + Operations Director  
+**Review Cadence:** Quarterly (plus incident-driven updates)
 
 ---
 
@@ -22,10 +25,10 @@
 - [x] Role and responsibility mapping documented
 - [x] Payroll baseline documented
 - [x] Access and role security policy documented
-- [ ] Leave policy canonicalized as standalone policy page
-- [ ] Performance management policy canonicalized as standalone policy page
-- [ ] Disciplinary/escalation policy canonicalized as standalone policy page
-- [ ] Offboarding checklist canonicalized as standalone policy page
+- [x] Leave policy canonicalized as standalone policy page
+- [x] Performance management policy canonicalized as standalone policy page
+- [x] Disciplinary/escalation policy canonicalized as standalone policy page
+- [x] Offboarding checklist canonicalized as standalone policy page
 
 ---
 
@@ -45,9 +48,17 @@
 
 ---
 
-## 4) Planning Link
+## 5) Planning Link
 
 All HR policy upgrades should be reflected in:
 
 - `../plans/PENDING_TASKS_ONLY.md`
 - `../plans/waves/WAVE_31_IMPLEMENTATION_BACKLOG.md`
+
+## 6) Governance evidence expectations
+
+- Quarterly HR policy review note published with owner and date.
+- Any role/compliance-impacting HR policy update must include downstream references to:
+  - `../09_user_roles_permissions/ROLE_MATRIX.md`
+  - `../05_requirements/compliance-requirements.md`
+  - active planning queue in `../plans/PENDING_TASKS_ONLY.md`.

@@ -1,5 +1,26 @@
 # 10 — Design System Specification
 
+<!-- markdownlint-disable MD060 -->
+
+**Status:** Transitional (Reference-Only)  
+**Owner:** UX + Security Documentation Governance  
+**Last Updated:** 2026-08-07  
+**Next Review:** 2026-08-21  
+**Source of Truth:** Historical reference lane only; active authority has moved to canonical folders
+
+## Canonical supersession targets
+
+- [`../06_design_architecture/`](../06_design_architecture/)
+- [`../05_requirements/`](../05_requirements/)
+- [`../09_user_roles_permissions/`](../09_user_roles_permissions/)
+- [`../TRANSITIONAL_DIRECTORY_SUPERSESSION_MAP_2026-08-07.md`](../TRANSITIONAL_DIRECTORY_SUPERSESSION_MAP_2026-08-07.md)
+
+## Feed targets
+
+- `docs/business_docs/06_design_architecture/`
+- `docs/business_docs/05_requirements/non-functional-requirements.md`
+- `docs/business_docs/09_user_roles_permissions/`
+
 Authoritative design system documentation for the White Caves Real Estate platform.
 
 > **Brand Authority (effective 2026-04-27):**

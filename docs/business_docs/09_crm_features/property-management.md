@@ -2,15 +2,100 @@
 
 > **Status:** Active (Production + Optimization)  
 > **Module Owner:** Hassan (Property Specialist AI)  
-> **Last Updated:** May 2026  
+> **Last Updated:** August 2026  
 > **Priority:** Critical  
 > **API Endpoints:** `/api/properties`, `/api/listings`, `/api/syndication`
+> **Priority Scope:** MD + Leasing Agent first for listing-readiness and leasing handoff integrity.  
+> **Next Review:** 2026-08-21  
+> **Source of Truth:** CRM property management feature specification (business layer)
+
+## Canonical governance links
+
+- [`../05_requirements/functional-requirements.md`](../05_requirements/functional-requirements.md)
+- [`../05_requirements/compliance-requirements.md`](../05_requirements/compliance-requirements.md)
+- [`../../plans/documentation/REQ_CROSSWALK.md`](../../plans/documentation/REQ_CROSSWALK.md)
+- [`../../software_docs/01_requirements_engineering/SRS_MASTER_12_DEPARTMENTS.md`](../../software_docs/01_requirements_engineering/SRS_MASTER_12_DEPARTMENTS.md)
+
+## Feed targets
+
+- `docs/software_docs/01_requirements_engineering/SRS_MASTER_12_DEPARTMENTS.md`
+- `docs/plans/documentation/REQ_CROSSWALK.md`
+- frontend architecture/state/resilience lanes in `docs/plans/waves/WAVE_37_*` through `WAVE_40_*`
 
 ---
 
 ## Overview
 
 Property Management is the core module of the White Caves CRM, enabling real estate professionals to manage the complete lifecycle of property listings — from initial draft through active marketing to archival. The module integrates with Dubai's regulatory framework (RERA, DLD) and supports syndication to major property portals.
+
+### Priority persona alignment (P0)
+
+- **MD (`owner`)**: portfolio control, compliance confidence, and escalation visibility.
+- **Leasing Agent (`leasing_agent`)**: first-agent owner of listing-to-leasing transition quality.
+- **Reference scenario profile:** `agent.one.whitecaves@gmail.com` (leasing broker journey verification).
+
+### Listing-to-leasing handoff controls
+
+- Listing cannot be considered lease-ready unless tenancy-required fields are complete.
+- Lease-focused listings must expose payment/receipt prerequisites to downstream tenancy flow.
+- Handoff state to tenancy must be traceable in audit records for MD review.
+
+## Requirement catalog
+
+### REQ-PROP-001: Listing lifecycle and compliance gate
+
+The system shall move listings through draft, pending, active, rejected, completed, and archived states with gate enforcement.
+
+**Acceptance criteria:**
+
+- [ ] Draft listings cannot go active without required fields and permit data
+- [ ] Rejections store a reason and send a notification to the agent
+- [ ] Archived listings can be relisted only after revalidation
+
+**Evidence:** lifecycle audit, rejection record, and relist validation log.
+
+### REQ-PROP-002: Portal syndication and sync status tracking
+
+The system shall syndicate active listings to portals and expose sync status.
+
+**Acceptance criteria:**
+
+- [ ] One-click syndication is available for supported portals
+- [ ] Sync status is visible per portal and listing
+- [ ] Sync failures are actionable and retryable
+
+**Evidence:** syndication log, portal status snapshot, and error queue.
+
+### REQ-PROP-003: Property analytics and inventory aging
+
+The system shall expose views, inquiries, pricing, and aging metrics for each property.
+
+**Acceptance criteria:**
+
+- [ ] Views and inquiries are tracked per listing
+- [ ] Aging report highlights stale inventory
+- [ ] Conversion and performance views are visible to managers and owners
+
+**Evidence:** analytics snapshot and aging report.
+
+### REQ-PROP-004: Bulk operations and media management
+
+The system shall support bulk status updates and media uploads for property records.
+
+**Acceptance criteria:**
+
+- [ ] Bulk actions apply only to selected properties
+- [ ] Media uploads preserve ordering and primary-photo flags
+- [ ] Import/export logs record who performed the action
+
+**Evidence:** bulk action audit, media upload log, and export record.
+
+## Traceability
+
+- Supports `REQ-SP-001` through `REQ-SP-004` and the property inventory family in `functional-requirements.md`
+- Aligns to `WC-SRS-001`, `WC-SRS-014`, and `WC-SRS-015`
+- Feeds portal syndication, analytics, and compliance evidence flows
+- Priority linkage: feeds MD dashboard controls and Leasing Agent leasing-readiness queue
 
 ### Purpose
 
@@ -65,7 +150,7 @@ Provide agents, managers, and property owners with a centralized system to creat
 
 ### State Machine
 
-```
+```text
 ┌─────────┐    Submit     ┌─────────┐    Approve    ┌────────┐
 │  DRAFT  │──────────────▶│ PENDING │──────────────▶│ ACTIVE │
 └─────────┘               └─────────┘               └────────┘

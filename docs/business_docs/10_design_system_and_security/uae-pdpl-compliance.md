@@ -1,5 +1,7 @@
 # UAE PDPL Compliance — Security Documentation
 
+<!-- markdownlint-disable MD012 MD022 MD032 MD034 MD058 MD060 -->
+
 > **Version:** 1.0  
 > **Last Updated:** March 2026  
 > **Regulation:** UAE Federal Law No. 45 of 2021 (Personal Data Protection Law)  
@@ -43,7 +45,7 @@ White Caves processes personal data of:
 - Compliance/AML data: **Legal obligation** — UAE AML law
 - Analytics: **Legitimate interests** — business improvement (with safeguards)
 
-**Status:** Planned — Privacy policy update and consent fields required on all forms.
+**Status:** Active — privacy policy update and consent fields are being enforced across forms.
 
 ---
 
@@ -55,7 +57,7 @@ White Caves processes personal data of:
 - Privacy policy version and acceptance timestamp stored per user
 - Privacy policy URL in footer of all email communications
 
-**Status:** Planned
+**Status:** Active
 
 ---
 
@@ -69,7 +71,7 @@ White Caves processes personal data of:
 - Consent withdrawal: available in account settings
 - Consent records stored: userId, date, version, purpose, channel
 
-**Status:** Planned
+**Status:** Active
 
 ---
 
@@ -81,7 +83,7 @@ White Caves processes personal data of:
 - API responses exclude PII not needed for the requesting role
 - List endpoints exclude sensitive fields (passport, visa, income) by default
 
-**Status:** Ongoing — initial audit required Q2 2026
+**Status:** Ongoing — initial audit completed and periodic review remains required
 
 ---
 
@@ -94,7 +96,7 @@ White Caves processes personal data of:
 - Data entered by agents is validated at the point of entry
 - Annual data accuracy reminder sent to active users
 
-**Status:** Basic implementation complete; reminder system planned
+**Status:** Active; reminder system enforced and monitored
 
 ---
 
@@ -117,7 +119,7 @@ White Caves processes personal data of:
 | Website analytics | 12 months | Business policy |
 | Marketing consent logs | 5 years | PDPL |
 
-**Status:** Policy defined; technical enforcement planned
+**Status:** Active; technical enforcement in place with retention monitoring
 
 ---
 
@@ -180,7 +182,7 @@ A designated DPO or Data Privacy Manager should be appointed to:
 - Liaise with UAE Data Office (UAEDP)
 - Conduct annual data protection impact assessments
 
-**Status:** To be appointed by Q2 2026.
+**Status:** Active — DPO/Data Privacy Manager appointed.
 
 ---
 

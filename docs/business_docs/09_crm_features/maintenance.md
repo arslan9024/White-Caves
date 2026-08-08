@@ -2,13 +2,85 @@
 
 > **Owner:** @Corinne | **Tool:** DeepSeek Chat (DeepSeek V3)  
 > **Purpose:** Tenant maintenance request system with contractor assignment, SLA tracking, landlord approval, and closure QA.  
-> **Status:** ✅ Implementation-ready (P0 operations hardening)
+> **Status:** ✅ Implementation-ready (P0 operations hardening)  
+> **Last Updated:** 2026-08-07  
+> **Next Review:** 2026-08-21  
+> **Source of Truth:** CRM maintenance management feature specification (business layer)
+
+## Canonical governance links
+
+- [`../05_requirements/functional-requirements.md`](../05_requirements/functional-requirements.md)
+- [`../05_requirements/non-functional-requirements.md`](../05_requirements/non-functional-requirements.md)
+- [`../05_requirements/compliance-requirements.md`](../05_requirements/compliance-requirements.md)
+- [`../../plans/documentation/REQ_CROSSWALK.md`](../../plans/documentation/REQ_CROSSWALK.md)
+
+## Feed targets
+
+- `docs/software_docs/01_requirements_engineering/SRS_MASTER_12_DEPARTMENTS.md`
+- `docs/plans/documentation/REQ_CROSSWALK.md`
+- frontend resilience/observability lanes in `docs/plans/waves/WAVE_39_*` and `WAVE_40_*`
 
 ---
 
 ## 1. Overview
 
 The Maintenance module manages the full lifecycle of property issues from intake to verified closure. It is designed to protect tenant experience, maintain landlord trust, and enforce SLA-driven operations with auditable controls.
+
+## Requirement catalog
+
+### REQ-MNT-001: Maintenance intake and categorization
+
+The system shall capture maintenance requests with category, priority, property, and tenant context.
+
+**Acceptance criteria:**
+
+- [ ] Request creation stores property, tenant, landlord, category, and priority
+- [ ] Emergency requests are flagged for fast-path handling
+- [ ] Incomplete requests are blocked with a clear validation message
+
+**Evidence:** request record, validation log, and intake audit.
+
+### REQ-MNT-002: Contractor assignment and SLA tracking
+
+The system shall assign contractors based on category, area, availability, and quality score while tracking SLA thresholds.
+
+**Acceptance criteria:**
+
+- [ ] Auto-suggestion respects contractor specialization and area
+- [ ] SLA breach alerts trigger before and at threshold crossing
+- [ ] Manual reassignment is logged with actor and reason
+
+**Evidence:** assignment log, SLA alert record, and reassignment audit.
+
+### REQ-MNT-003: Landlord approval workflow
+
+The system shall require landlord approval for repairs above the configured threshold.
+
+**Acceptance criteria:**
+
+- [ ] Cost estimate is visible before approval
+- [ ] Approve, decline, and negotiate actions are available to the landlord
+- [ ] Timeout routes the ticket to manager escalation
+
+**Evidence:** approval request, landlord response log, and escalation record.
+
+### REQ-MNT-004: Closure quality assurance and reopen controls
+
+The system shall require closure evidence and support controlled reopen of completed tickets.
+
+**Acceptance criteria:**
+
+- [ ] Completion requires before/after evidence and work notes
+- [ ] Reopen requires root-cause reason and owner reassignment
+- [ ] Tenant rating can be captured after closure
+
+**Evidence:** closure checklist, reopen log, and tenant rating record.
+
+## Traceability
+
+- Maps to `REQ-TP-003` and `REQ-TP-004` in `functional-requirements.md`
+- Aligns to `REQ-INT-001` and landlord/tenant portal evidence flows
+- Feeds SLA, contractor, and approval validation artifacts
 
 ### Core outcomes
 

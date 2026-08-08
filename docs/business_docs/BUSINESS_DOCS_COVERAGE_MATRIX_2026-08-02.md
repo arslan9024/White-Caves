@@ -15,8 +15,8 @@
 | Inventory operating model | ✅ Strong | `09_crm_features/property-management.md`, `sentinel-property.md` | Add monthly inventory data-quality KPI checkpoint |
 | Finance & accounts model | ✅ Strong | `07_business_model/revenue-model.md`, `white-caves-commission-engine-spec.md`, `09_crm_features/financial-reporting.md` | Add explicit close-calendar and reconciliation calendar reference |
 | HR model & policies | 🟡 Partial-to-Strong | `01_company_structure/employee-payroll-handbook.md`, `04_workflows/agent-onboarding-workflow.md`, role docs | Consolidate HR policy index (leave, discipline, performance, onboarding/offboarding) in one entrypoint |
-| Legal / compliance / AML / PDPL | ✅ Strong | `03_regulatory_compliance_legal/*`, `10_design_system_and_security/kyc-aml-framework.md`, `uae-pdpl-compliance.md`, requirements docs | Ensure regulation update cadence references 2026+ changes quarterly |
-| Scenario Library (A-to-Z) | 🟡 In Progress | `16_scenario_library/README.md`, `16_scenario_library/SCENARIO_LIBRARY_MASTER_INDEX_2026-08-03.md`, `16_scenario_library/batches/SCENARIO_BATCH_A1_COMPLIANCE_LEASING_FINANCE_0001_0200.md`, `16_scenario_library/batches/SCENARIO_BATCH_A2_SALES_VIEWINGS_OFFERS_CONVERSION_0201_0500.md`, `16_scenario_library/batches/SCENARIO_BATCH_A3_OPERATIONS_MAINTENANCE_INCIDENTS_0501_0800.md` | Expand from 800 to 10,000 scenarios using phased traceability-gated batches |
+| Legal / compliance / AML / PDPL | ✅ Strong | `05_requirements/compliance-requirements.md`, `05_requirements/rera-compliance-checklist.md`, `05_requirements/risk-register.md`, `09_user_roles_permissions/`, `TRANSITIONAL_DIRECTORY_SUPERSESSION_MAP_2026-08-07.md` | Ensure regulation update cadence references 2026+ changes quarterly |
+| Scenario Library (A-to-Z) | ✅ Strong (Phase A complete) | `16_scenario_library/README.md`, `16_scenario_library/SCENARIO_LIBRARY_MASTER_INDEX_2026-08-03.md`, `16_scenario_library/batches/SCENARIO_BATCH_A1_COMPLIANCE_LEASING_FINANCE_0001_0200.md`, `16_scenario_library/batches/SCENARIO_BATCH_A2_SALES_VIEWINGS_OFFERS_CONVERSION_0201_0500.md`, `16_scenario_library/batches/SCENARIO_BATCH_A3_OPERATIONS_MAINTENANCE_INCIDENTS_0501_0800.md` | Continue phased expansion from 800 to 10,000 scenarios using traceability-gated batches |
 | Market & Dubai trend intelligence | ✅ Strong | `08_integrations_and_research/dubai-market-analysis-2026.md`, `competitor-analysis.md`, `technology_upgrades.md` | Add trend-watch KPI cadence and owner assignment |
 | Release/operations governance | ✅ Strong | `14_devops/*`, `15_release_management/*` | Add business-side release communication SOP summary |
 
@@ -28,7 +28,8 @@ Use this as the authoritative map:
 
 - `01_company_structure/` — legal profile, governance, hierarchy, staffing
 - `02_services/` — service lines, customer segments, delivery model
-- `03_regulatory_compliance_legal/` + `10_design_system_and_security/` — compliance and legal controls
+- `05_requirements/` + `09_user_roles_permissions/` — active compliance, policy, and legal-control authority
+- `03_regulatory_compliance_legal/` + `10_design_system_and_security/` — transitional/reference-only compliance history (see supersession map)
 - `04_workflows/` — operational process flow and departmental runbooks
 - `05_requirements/` + `06_design_architecture/` + `12_srs/` — requirements-to-design business-to-technical chain
 - `07_business_model/` — revenue, costs, finance model, value architecture

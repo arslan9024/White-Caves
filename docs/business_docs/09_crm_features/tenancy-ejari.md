@@ -1,9 +1,28 @@
 # Tenancy & Ejari Management — CRM Feature Specification
 
+<!-- markdownlint-disable MD060 -->
+
 > **Status:** In Progress (Core workflows active, endpoint expansion ongoing)  
 > **Module Owner:** Daisy (Leasing Manager AI)  
 > **API Endpoints:** `/api/tenants`, `/api/leases` (primary namespace)  
 > **Priority:** High
+> **Priority Scope:** MD + Leasing Agent first with leasing execution and receipt continuity controls.  
+> **Last Updated:** 2026-08-07  
+> **Next Review:** 2026-08-21  
+> **Source of Truth:** CRM tenancy and Ejari feature specification (business layer)
+
+## Canonical governance links
+
+- [`../05_requirements/functional-requirements.md`](../05_requirements/functional-requirements.md)
+- [`../05_requirements/compliance-requirements.md`](../05_requirements/compliance-requirements.md)
+- [`../../plans/documentation/REQ_CROSSWALK.md`](../../plans/documentation/REQ_CROSSWALK.md)
+- [`../../software_docs/01_requirements_engineering/SRS_MASTER_12_DEPARTMENTS.md`](../../software_docs/01_requirements_engineering/SRS_MASTER_12_DEPARTMENTS.md)
+
+## Feed targets
+
+- `docs/software_docs/01_requirements_engineering/SRS_MASTER_12_DEPARTMENTS.md`
+- `docs/plans/documentation/REQ_CROSSWALK.md`
+- frontend state/reliability closure lanes in `docs/plans/waves/WAVE_38_*` through `WAVE_40_*`
 
 ---
 
@@ -22,6 +41,20 @@ This module is now part of the P0 unified journey:
 5. Payment + maintenance + renewal/exit
 
 The tenancy module is the contractual/compliance core of that full lifecycle and must remain synchronized with landlord and tenant portals.
+
+### Priority persona contract (P0)
+
+- **MD (`owner`)**: monitors compliance completion, leasing SLA breaches, and unresolved payment/receipt exceptions.
+- **Leasing Agent (`leasing_agent`)**: first-line owner for qualification, lease execution, Ejari completion, and receipt-delivery verification.
+- **Reference scenario profile:** `agent.one.whitecaves@gmail.com` for first-agent operational acceptance.
+
+### Receipt continuity controls (mandatory)
+
+| Event | Required behavior | Owner | SLA |
+|------|--------------------|-------|-----|
+| Rent payment marked paid | Generate receipt with lease and payment references | Finance/System | immediate |
+| Receipt delivery | Confirm tenant/landlord delivery status | Leasing Agent | ≤ 30 minutes |
+| Receipt archival | Store immutable receipt + audit link | Finance/Docs | same business day |
 
 ---
 
@@ -145,6 +178,8 @@ RentPayment {
 
 ### Leases (Planned)
 
+> **Priority implementation note:** this lane is P0 for MD + Leasing Agent and should be tracked as active implementation scope where route readiness exists.
+
 | Method | Path                                  | Access                         | Description                    |
 | ------ | ------------------------------------- | ------------------------------ | ------------------------------ |
 | GET    | `/api/leases`                         | Agent (own), Manager           | List active leases             |
@@ -193,6 +228,9 @@ RentPayment {
 - [ ] Late fee auto-calculated on Day 15
 - [ ] Lease expiry reminder task created 60 days before end
 - [ ] Ejari expiry warning 30 days before
+- [ ] Receipt generation event occurs for each paid rent transaction
+- [ ] Leasing Agent can verify receipt delivery status for tenant/landlord
+- [ ] MD can view unresolved receipt exceptions in oversight dashboards
 
 ---
 
@@ -587,6 +625,12 @@ RentIncreaseNotice {
 
 **Version:** 1.2 | **Last Updated:** May 2026 | **Sections:** 14/14 (Target Met ✅)  
 **Agent Activity:** @Victoria (Gemini 2.0 Flash — FREE) | Sections: 8 → 14 | Quality: ⭐⭐⭐⭐⭐
+
+### Priority wave update (2026-08)
+
+- MD + Leasing Agent-first execution model adopted for leasing operations.
+- Receipt continuity is treated as mandatory leasing completion control.
+- First-agent acceptance profile: `agent.one.whitecaves@gmail.com`.
 
 ### Real-World Dubai Land Department (DLD) Regulations
 

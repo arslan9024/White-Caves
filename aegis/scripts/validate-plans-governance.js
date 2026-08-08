@@ -92,7 +92,13 @@ function assertIndexLinksExist(indexRelativePath) {
     }
   }
 }
-
+function assertContains(fileRelativePath, needle) {
+  const absolutePath = path.join(repoRoot, fileRelativePath);
+  const content = readFileSafe(absolutePath);
+  if (!content.includes(needle)) {
+    errors.push(`${fileRelativePath} is missing required reference: ${needle}`);
+  }
+}
 function assertCrossTrackerConsistency() {
   const projectProgress = readFileSafe(path.join(repoRoot, 'PROJECT_PROGRESS.md'));
   const daily = readFileSafe(path.join(repoRoot, 'DAILY_MILESTONE_TRACKER.md'));
@@ -194,6 +200,10 @@ assertNoPastedArtifacts();
 assertIndexLinksExist('docs/plans/INDEX.md');
 assertIndexLinksExist('docs/plans/README.md');
 assertIndexLinksExist('docs/plans/waves/README.md');
+assertContains('docs/plans/README.md', 'AUTHORITATIVE_DOC_MAP_2026-08-06.md');
+assertContains('docs/business_docs/README.md', 'AUTHORITATIVE_DOC_MAP_2026-08-06.md');
+assertContains('docs/software_docs/INDEX.md', 'AUTHORITATIVE_DOC_MAP_2026-08-06.md');
+assertContains('docs/plans/README.md', 'RELEASE_AND_ROLLOUT_NOTES_TEMPLATE_2026-08-06.md');
 assertCrossTrackerConsistency();
 
 const requiredPointers = ['MASTER_PLAN.md', 'PENDING_TASKS_ONLY.md'];
@@ -219,6 +229,8 @@ for (const wavePlan of linkedWavePlans) {
   'docs/plans/INDEX.md',
   'docs/plans/PENDING_TASKS_ONLY.md',
   'docs/plans/PLANNING_GOVERNANCE.md',
+  'docs/AUTHORITATIVE_DOC_MAP_2026-08-06.md',
+  'docs/RELEASE_AND_ROLLOUT_NOTES_TEMPLATE_2026-08-06.md',
   'docs/plans/waves/README.md',
 ].forEach(file => assertRecentUpdatedDate(file, 45));
 

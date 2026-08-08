@@ -1,5 +1,7 @@
 # Nadia — WhatsApp CRM Manager with Meta Cloud API
 
+<!-- markdownlint-disable MD022 MD031 MD032 MD040 MD060 -->
+
 > **Department:** Communications  
 > **ID:** `nadia`  
 > **Title:** WhatsApp CRM Manager & Meta Cloud API Orchestrator  
@@ -27,6 +29,62 @@
 **Unique Position**: Nadia is the ONLY official Meta channel. She receives ALL customer messages via webhook and makes routing decisions.
 
 **The key differentiator**: OFFICIAL META INFRASTRUCTURE + WEBHOOK RECEIVER + ROUTING ENGINE. The "switchboard" that orchestrates Linda + Nina + agents + bots.
+
+## Requirement catalog
+
+### REQ-NADIA-001: Meta webhook ingestion and conversation persistence
+
+The system shall ingest inbound WhatsApp webhook events and persist linked conversation records.
+
+**Acceptance criteria:**
+
+- [ ] Inbound messages are authenticated and parsed
+- [ ] Sender identity is linked to lead context when possible
+- [ ] Conversation events are persisted with routing outcomes
+
+**Evidence:** webhook processing log and conversation record snapshot.
+
+### REQ-NADIA-002: Routing and SLA-aware assignment
+
+The system shall route messages to bots or agents based on intent, lead score, and SLA policy.
+
+**Acceptance criteria:**
+
+- [ ] Routing decisions include rationale fields (intent/score/SLA)
+- [ ] Urgent leads are prioritized by SLA thresholds
+- [ ] Escalations are logged for delayed responses
+
+**Evidence:** routing audit and SLA breach report.
+
+### REQ-NADIA-003: Template governance and campaign delivery
+
+The system shall enforce approved template usage for campaign and utility sends.
+
+**Acceptance criteria:**
+
+- [ ] Unapproved templates are blocked from send paths
+- [ ] Campaign sends honor suppression and opt-out policies
+- [ ] Delivery and read metrics are captured per campaign
+
+**Evidence:** template approval record and campaign analytics export.
+
+### REQ-NADIA-004: Agent performance and compliance telemetry
+
+The system shall track agent response quality and maintain compliance-ready audit logs.
+
+**Acceptance criteria:**
+
+- [ ] Agent response metrics are available by period
+- [ ] Compliance events (opt-out, retention, overrides) are logged
+- [ ] Dashboards expose health, quality, and exception signals
+
+**Evidence:** agent dashboard snapshot and compliance event log.
+
+## Traceability
+
+- Maps to `REQ-WA-001` through `REQ-WA-007` and `REQ-MKT-003`
+- Aligns to `WC-SRS-008`, `WC-SRS-009`, and communications audit artifacts
+- Feeds messaging, routing, and campaign validation
 
 ---
 

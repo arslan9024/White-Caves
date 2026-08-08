@@ -1,9 +1,26 @@
 # Wave 15 — PWA Readiness: Service Worker + Manifest + Offline Behaviour
 
+<!-- markdownlint-disable MD060 -->
+
 **Drafted by:** @PWA  
 **Model:** DeepSeek V3  
 **Status:** ✅ READY (retrospective spec for implemented Wave 15)  
 **Last Updated:** 2026-05-25  
+**Next Review:** 2026-08-21  
+**Source of Truth:** CRM Wave 15 PWA readiness feature specification (business layer)
+
+## Canonical governance links
+
+- [`../05_requirements/functional-requirements.md`](../05_requirements/functional-requirements.md)
+- [`../05_requirements/non-functional-requirements.md`](../05_requirements/non-functional-requirements.md)
+- [`../../plans/documentation/REQ_CROSSWALK.md`](../../plans/documentation/REQ_CROSSWALK.md)
+- [`../../software_docs/01_requirements_engineering/SRS_MASTER_12_DEPARTMENTS.md`](../../software_docs/01_requirements_engineering/SRS_MASTER_12_DEPARTMENTS.md)
+
+## Feed targets
+
+- `docs/software_docs/01_requirements_engineering/SRS_MASTER_12_DEPARTMENTS.md`
+- `docs/plans/documentation/REQ_CROSSWALK.md`
+- frontend installability/offline UX lanes in `docs/plans/waves/WAVE_39_*` and `WAVE_40_*`
 
 CONSUMES←@Redis: `business_docs/09_crm_features/wave-15-cache-performance.md#performance-baseline`  
 FEEDS→@Una: `business_docs/06_design_architecture/ui-ux-specification.md#pwa`  
@@ -38,6 +55,7 @@ Wave 15 establishes the PWA foundation for White Caves, enabling installability 
 ```
 
 **Manifest linked in `index.html`:**
+
 ```html
 <link rel="manifest" href="/manifest.json" />
 <meta name="theme-color" content="#C9A84C" />
@@ -51,7 +69,7 @@ Wave 15 establishes the PWA foundation for White Caves, enabling installability 
 
 ### 3.1 Cache Strategy: Cache-First with Network Fallback
 
-```
+```text
 Request
   → Check cache first
   → If cached: return immediately (Cache HIT)
@@ -96,6 +114,7 @@ The following request patterns bypass the cache entirely:
 ## 4. Offline Page (`public/offline.html`)
 
 A standalone minimal HTML page displayed when:
+
 - The user is offline AND
 - The requested page is not in cache
 
@@ -132,6 +151,7 @@ window.addEventListener('beforeinstallprompt', (e) => {
 ```
 
 Install banner appears at the top of the page with:
+
 - "Install White Caves App" text
 - "Install" button → triggers `deferredPrompt.prompt()`
 - "Not now" dismiss button (suppressed for 7 days)

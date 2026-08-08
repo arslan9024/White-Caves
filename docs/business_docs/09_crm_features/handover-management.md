@@ -5,14 +5,86 @@
 > **Owner:** @Maya | **Tool:** Groq Console (Llama 3.1 70B)
 > **Purpose:** VestaHandoverCRM module for snagging checklists, punch list tracking and keys issuance log.
 > **Status:** ✅ Complete — full spec (May 2026)
+> **Last Updated:** 2026-08-07
+> **Next Review:** 2026-08-21
+> **Source of Truth:** CRM handover management feature specification (business layer)
 > **CRM Module:** VestaHandoverCRM (`src/components/crm/VestaHandoverCRM/`)
 > **API Base:** `/api/handover`
+
+## Canonical governance links
+
+- [`../05_requirements/functional-requirements.md`](../05_requirements/functional-requirements.md)
+- [`../05_requirements/compliance-requirements.md`](../05_requirements/compliance-requirements.md)
+- [`../../plans/documentation/REQ_CROSSWALK.md`](../../plans/documentation/REQ_CROSSWALK.md)
+- [`../../software_docs/01_requirements_engineering/SRS_MASTER_12_DEPARTMENTS.md`](../../software_docs/01_requirements_engineering/SRS_MASTER_12_DEPARTMENTS.md)
+
+## Feed targets
+
+- `docs/software_docs/01_requirements_engineering/SRS_MASTER_12_DEPARTMENTS.md`
+- `docs/plans/documentation/REQ_CROSSWALK.md`
+- frontend handover workflow/reliability lanes in `docs/plans/waves/WAVE_39_*` and `WAVE_40_*`
 
 ---
 
 ## 1. Overview
 
 VestaHandoverCRM manages the end-to-end property handover workflow for off-plan units from developer to buyer. It covers snagging inspection, punch list tracking, keys and access issuance, DEWA utility connection, and the legally required handover completion certificate.
+
+## Requirement catalog
+
+### REQ-HND-001: Snagging checklist and defect tracking
+
+The system shall create snagging checklists with categorized defects and status tracking.
+
+**Acceptance criteria:**
+
+- [ ] Checklist items are grouped by defect category
+- [ ] Each item supports pass, fail, or punch status
+- [ ] Photo evidence is captured per defect where required
+
+**Evidence:** checklist record and defect photo archive.
+
+### REQ-HND-002: Punch list lifecycle and RERA deadline handling
+
+The system shall track punch list resolution with RERA-aligned deadlines and escalations.
+
+**Acceptance criteria:**
+
+- [ ] Developer response deadline is derived from submission date
+- [ ] Overdue defects are escalated through the legal workflow
+- [ ] Re-inspection creates a new immutable version
+
+**Evidence:** punch list log and escalation record.
+
+### REQ-HND-003: Handover appointment coordination
+
+The system shall coordinate multi-party handover appointments and reminder schedules.
+
+**Acceptance criteria:**
+
+- [ ] Appointment includes buyer, agent, developer rep, and optional specialist
+- [ ] Reminder schedule is delivered before the appointment
+- [ ] Preparation checklist is required before sign-off
+
+**Evidence:** appointment invite, reminder log, and preparation checklist.
+
+### REQ-HND-004: Keys, access issuance, and completion certificate
+
+The system shall log key issuance and generate a completion certificate on final sign-off.
+
+**Acceptance criteria:**
+
+- [ ] Keys and access items are logged with serial numbers
+- [ ] Returned items can be tracked
+- [ ] Completion certificate is generated only after required sign-off
+
+**Evidence:** access log and certificate artifact.
+
+## Traceability
+
+- Maps to `REQ-VW-001` through `REQ-VW-005` and `REQ-LGL-004`
+- Aligns to `WC-SRS-011`, `WC-SRS-012`, and handover evidence artifacts
+- Feeds snagging, legal escalation, and completion certificate validation
 
 **Key capabilities:**
 

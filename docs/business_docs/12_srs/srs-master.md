@@ -1,3 +1,5 @@
+<!-- markdownlint-disable MD022 MD025 MD032 MD036 MD060 -->
+
 # Software Requirements Specification (SRS)
 # White Caves Real Estate CRM Platform
 
@@ -7,7 +9,23 @@
 > **Status:** Approved  
 > **Standard:** Based on IEEE Std 830-1998 / ISO/IEC 25010  
 > **Author:** Technical & Product Teams, White Caves Real Estate LLC  
-> **Classification:** Internal — Confidential
+> **Classification:** Internal — Confidential  
+> **Last Updated:** 2026-08-07  
+> **Next Review:** 2026-08-21  
+> **Source of Truth:** Business SRS wrapper (non-counting), bridged to canonical software SRS registry
+
+## Canonical governance links
+
+- [`../05_requirements/functional-requirements.md`](../05_requirements/functional-requirements.md)
+- [`../05_requirements/non-functional-requirements.md`](../05_requirements/non-functional-requirements.md)
+- [`../../plans/documentation/REQ_CROSSWALK.md`](../../plans/documentation/REQ_CROSSWALK.md)
+- [`../../software_docs/01_requirements_engineering/SRS_MASTER_12_DEPARTMENTS.md`](../../software_docs/01_requirements_engineering/SRS_MASTER_12_DEPARTMENTS.md)
+
+## Feed targets
+
+- `docs/software_docs/01_requirements_engineering/SRS_MASTER_12_DEPARTMENTS.md`
+- `docs/plans/documentation/REQ_CROSSWALK.md`
+- frontend and release readiness requirement lanes in `docs/plans/waves/WAVE_37_*` through `WAVE_40_*`
 
 ---
 
@@ -97,19 +115,22 @@ be expanded toward the 12-department master SRS structure as the counted full-SR
 
 | Document | Location |
 |----------|---------|
-| Functional Requirements | `business_docs/05_requirements/functional-requirements.md` |
-| Non-Functional Requirements | `business_docs/05_requirements/non-functional-requirements.md` |
-| Business Rules | `business_docs/05_requirements/business-rules.md` |
-| Compliance Requirements | `business_docs/05_requirements/compliance-requirements.md` |
-| Integration Requirements | `business_docs/05_requirements/integration-requirements.md` |
-| System Architecture | `business_docs/06_design_architecture/system-architecture.md` |
-| Database Schema | `business_docs/06_design_architecture/database-schema.md` |
-| API Reference | `business_docs/06_design_architecture/api-reference.md` |
-| Implementation Plan | `business_docs/implementation-plan.md` |
-| Business-to-Software SRS Bridge | `business_docs/12_srs/README.md` |
-| Requirement Crosswalk | `plans/documentation/REQ_CROSSWALK.md` |
-| Requirement Taxonomy Mapping | `business_docs/05_requirements/REQ_TO_FR_BR_NFR_POL_AC_MAPPING_2026-08-03.md` |
-| Software Master SRS Structure | `software_docs/01_requirements_engineering/SRS_MASTER_12_DEPARTMENTS.md` |
+| Functional Requirements | `../05_requirements/functional-requirements.md` |
+| Non-Functional Requirements | `../05_requirements/non-functional-requirements.md` |
+| Business Rules | `../05_requirements/business-rules.md` |
+| Compliance Requirements | `../05_requirements/compliance-requirements.md` |
+| Integration Requirements | `../05_requirements/integration-requirements.md` |
+| System Architecture | `../06_design_architecture/system-architecture.md` |
+| Database Schema | `../06_design_architecture/database-schema.md` |
+| API Reference | `../06_design_architecture/api-reference.md` |
+| Implementation Plan | `../implementation-plan.md` |
+| Business-to-Software SRS Bridge | `README.md` |
+| Requirement Crosswalk | `../../plans/documentation/REQ_CROSSWALK.md` |
+| Requirement Taxonomy Mapping | `../05_requirements/REQ_TO_FR_BR_NFR_POL_AC_MAPPING_2026-08-03.md` |
+| Software Master SRS Structure | `../../software_docs/01_requirements_engineering/SRS_MASTER_12_DEPARTMENTS.md` |
+| 10k ID Allocation Matrix | `../../plans/documentation/SRS_10K_ID_ALLOCATION_MATRIX_2026-08-07.md` |
+| 10k Writing Style Guide | `../../plans/documentation/SRS_10K_WRITING_STYLE_GUIDE_2026-08-07.md` |
+| 10k Hybrid Registry Schema | `../../plans/documentation/SRS_10K_HYBRID_REGISTRY_SCHEMA_2026-08-07.md` |
 | RERA Law No. 16 of 2007 | RERA official publications |
 | UAE AML Law No. 20 of 2018 | UAE Federal Register |
 | UAE PDPL Law No. 45 of 2021 | UAE Federal Register |
@@ -120,6 +141,13 @@ Section 2 describes the product perspective, user classes, and operating environ
 
 The current version remains a legacy summary-oriented SRS and should be read together with the
 counted requirement baseline and business-to-software bridge artifacts above.
+
+### 1.6 Governance alignment notes (2026-08)
+
+- This SRS is a business-facing wrapper and does not replace canonical software counting authority.
+- Canonical large-scale implementation requirement counting is controlled in the software registry lane.
+- Business requirement intent aliases must remain trace-linked to software registry rows and scenario evidence.
+- Frontend-impacting requirement changes should prioritize wave routing through W37-W40 frontend-first lanes before secondary closeout tasks.
 
 ---
 
@@ -555,6 +583,31 @@ The system must support the following data growth projections without architectu
 | Duplicate/enhanced headings excluded from total | 5 | Do not increment canonical requirement count |
 | Canonical software-side `REQ-*` definitions | 0 | Software docs are downstream mirrors during business-first expansion |
 | First complete business SRS target | 420-650 | Target band for the first enterprise-grade counted SRS wave |
+| Enterprise expansion target (program) | 5000 | Staged, unique requirement IDs with priority-first completion |
+
+### 8.0C Priority-first expansion lanes (2026-08)
+
+The current enterprise expansion program prioritizes completion in this order:
+
+1. **Property listings** (quality, compliance gate, publishing, listing-to-leasing handoff)
+2. **Leasing full operations** (qualification, viewing, tenancy/Ejari, active lease lifecycle)
+3. **Receipt generation and controls** (issue, delivery, archive, audit)
+
+#### Program allocation envelope toward 5000
+
+| Lane | Range | Focus |
+|------|-------|-------|
+| A | `00001-02000` | Listings and conversion controls |
+| B | `02001-03700` | Leasing operations lifecycle |
+| C | `03701-04600` | Receipt + finance continuity |
+| D | `04601-05000` | Cross-cutting and reserve |
+
+#### Governance constraints
+
+- Count only canonical, unique requirement IDs.
+- Mirrored references in summary docs do not increment totals.
+- Every requirement in priority lanes must map to acceptance criteria and evidence references.
+- Receipt requirements are mapped to canonical document routes (`POST /api/documents/generate`, `GET /api/documents/:id`, `PATCH /api/documents/:id/status`) unless a future wave introduces dedicated receipt endpoints.
 
 ### 8.0A Counting rules
 

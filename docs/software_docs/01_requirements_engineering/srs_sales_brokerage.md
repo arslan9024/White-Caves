@@ -1,5 +1,7 @@
 # Software Requirements Specification (SRS): Sales & Brokerage
 
+<!-- markdownlint-disable MD022 MD032 -->
+
 ## 1. System Context & Overview
 
 The **Sales & Luxury Brokerage Module** powers the core commercial operations of White Caves Real Estate LLC. It coordinates property listing ingestion, broker squad allocation (108 squad leads across 12 departments), lead assignment, and 9,378-unit property inventory tracking across Dubai's top luxury communities.
@@ -37,3 +39,16 @@ All UI components and status metrics conform to the White Caves brand palette:
 ### 2.3 4-Column Drag-and-Drop Kanban
 - **REQ-SALES-07**: Support workflow states: `NEW_LEAD` ➔ `CONTACTED` ➔ `VIEWING_SCHEDULED` ➔ `CLOSING_OFFER`.
 - **REQ-SALES-08**: Provide quick-action modals for note additions, phone calls, and contract drafting on card click.
+
+### 2.4 P0 Listing-to-Leasing Priority Extension (MD + Leasing Agent)
+
+- **REQ-SALES-09**: Listing records flagged for lease intent must expose leasing-readiness status before viewing confirmation.
+- **REQ-SALES-10**: Lead routing for leasing-intent leads shall prioritize `leasing_agent` assignment queues with SLA visibility.
+- **REQ-SALES-11**: Executive oversight view shall expose unresolved leasing lead SLA breaches to `owner` users.
+- **REQ-SALES-12**: The first-agent leasing scenario profile (`agent.one.whitecaves@gmail.com`) shall be represented in acceptance test journeys for lead-to-lease continuity.
+
+### 2.5 Traceability anchors for P0 extension
+
+- Business linkage: `docs/business_docs/09_crm_features/property-management.md`
+- Workflow linkage: `docs/business_docs/04_workflows/lead-to-sale-flowchart.md`
+- Role linkage: `docs/business_docs/09_user_roles_permissions/roles-matrix.md`

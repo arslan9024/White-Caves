@@ -1,9 +1,25 @@
 # Scenario Batch A1 — Compliance, Leasing, Finance (0001–0200)
 
-**Status:** Active
-**Batch Size:** 200 scenarios
-**Priority:** P0 critical controls
-**Last Updated:** 2026-08-03
+**Status:** Active  
+**Owner:** Product + Compliance + QA  
+**Batch Size:** 200 scenarios  
+**Priority:** P0 critical controls  
+**Last Updated:** 2026-08-03  
+**Next Review:** 2026-08-21  
+**Source of Truth:** Scenario batch A1 catalog for compliance/leasing/finance traceability coverage
+
+## Canonical governance links
+
+- [`../../05_requirements/functional-requirements.md`](../../05_requirements/functional-requirements.md)
+- [`../../05_requirements/non-functional-requirements.md`](../../05_requirements/non-functional-requirements.md)
+- [`../../../plans/documentation/REQ_CROSSWALK.md`](../../../plans/documentation/REQ_CROSSWALK.md)
+- [`../../../software_docs/01_requirements_engineering/SRS_MASTER_12_DEPARTMENTS.md`](../../../software_docs/01_requirements_engineering/SRS_MASTER_12_DEPARTMENTS.md)
+
+## Feed targets
+
+- `docs/software_docs/01_requirements_engineering/SRS_MASTER_12_DEPARTMENTS.md`
+- `docs/plans/documentation/REQ_CROSSWALK.md`
+- scenario expansion/closure lanes in `docs/plans/waves/WAVE_35_*` and `WAVE_36_*`
 
 ## 1. Scope
 

@@ -1,8 +1,33 @@
 # Rental Management & Finance Workflow Flowcharts
 
+<!-- markdownlint-disable MD024 MD040 MD060 -->
+
 > **Version:** 1.0  
-> **Last Updated:** March 2026  
+> **Last Updated:** August 2026  
 > **Owner:** Operations (Daisy) + Finance (Theodora)
+> **Priority Scope:** MD + Leasing Agent first (property listings → leasing operations → receipts).
+
+---
+
+## Priority Persona Contract (P0)
+
+- **Executive owner:** MD (`owner`) for escalations, compliance confidence, and approval exceptions.
+- **First-operator owner:** Leasing Agent (`leasing_agent`) for day-to-day leasing execution.
+- **Reference workflow profile:** `agent.one.whitecaves@gmail.com` (Leasing Broker scenario validation).
+
+### P0 operational success criteria
+
+1. Leasing leads from homepage sources are qualified and moved to viewing within agreed SLA.
+2. Lease progression to Ejari is traceable and status-driven.
+3. Rent payment confirmation produces receipt issue, delivery, and archival events.
+
+### Receipt operations matrix (mandatory)
+
+| Trigger | Owner | SLA | Required artifact |
+|---------|-------|-----|-------------------|
+| Payment marked paid | Finance/System | Immediate | Receipt record created |
+| Receipt sent to parties | Leasing Agent | ≤ 30 min | Delivery status evidence |
+| Receipt archived | Finance/Docs | Same day | Audit-linked archive entry |
 
 ---
 
@@ -120,6 +145,12 @@
 │ Escalation closed
 │ Tenant notified with receipt
 ```
+
+### Workflow 1 receipt checkpoints
+
+- A unique receipt identifier must be generated for each paid rent event.
+- Receipt payload must include lease reference, paid amount, VAT fields (if applicable), and timestamp.
+- Receipt delivery status must be visible to Leasing Agent and auditable by MD.
 
 ---
 

@@ -3,7 +3,23 @@
 > **Status:** Active (Implemented + Optimization)  
 > **Module Owner:** Sophia (Sales Director AI)  
 > **Priority:** High  
-> **Primary Surfaces:** `SophiaSalesCRM_NEW`, pipeline/forecasting dashboards
+> **Primary Surfaces:** `SophiaSalesCRM_NEW`, pipeline/forecasting dashboards  
+> **Last Updated:** 2026-08-07  
+> **Next Review:** 2026-08-21  
+> **Source of Truth:** CRM sales pipeline feature specification (business layer)
+
+## Canonical governance links
+
+- [`../05_requirements/functional-requirements.md`](../05_requirements/functional-requirements.md)
+- [`../05_requirements/non-functional-requirements.md`](../05_requirements/non-functional-requirements.md)
+- [`../../plans/documentation/REQ_CROSSWALK.md`](../../plans/documentation/REQ_CROSSWALK.md)
+- [`../../software_docs/01_requirements_engineering/SRS_MASTER_12_DEPARTMENTS.md`](../../software_docs/01_requirements_engineering/SRS_MASTER_12_DEPARTMENTS.md)
+
+## Feed targets
+
+- `docs/software_docs/01_requirements_engineering/SRS_MASTER_12_DEPARTMENTS.md`
+- `docs/plans/documentation/REQ_CROSSWALK.md`
+- frontend state/performance/reliability lanes in `docs/plans/waves/WAVE_38_*` through `WAVE_40_*`
 
 ---
 

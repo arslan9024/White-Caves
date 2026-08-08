@@ -1,9 +1,26 @@
 # Wave 12 — Automation Engine: SchedulerService + Cron Execution Model
 
+<!-- markdownlint-disable MD022 MD032 MD040 MD060 -->
+
 **Drafted by:** @Cron  
 **Model:** Llama 3.1 70B via Groq  
 **Status:** ✅ READY (retrospective spec for implemented Wave 12)  
 **Last Updated:** 2026-05-25  
+**Next Review:** 2026-08-21  
+**Source of Truth:** CRM Wave 12 automation engine feature specification (business layer)
+
+## Canonical governance links
+
+- [`../05_requirements/functional-requirements.md`](../05_requirements/functional-requirements.md)
+- [`../05_requirements/non-functional-requirements.md`](../05_requirements/non-functional-requirements.md)
+- [`../../plans/documentation/REQ_CROSSWALK.md`](../../plans/documentation/REQ_CROSSWALK.md)
+- [`../../software_docs/01_requirements_engineering/SRS_MASTER_12_DEPARTMENTS.md`](../../software_docs/01_requirements_engineering/SRS_MASTER_12_DEPARTMENTS.md)
+
+## Feed targets
+
+- `docs/software_docs/01_requirements_engineering/SRS_MASTER_12_DEPARTMENTS.md`
+- `docs/plans/documentation/REQ_CROSSWALK.md`
+- frontend automation observability/reliability lanes in `docs/plans/waves/WAVE_39_*` and `WAVE_40_*`
 
 CONSUMES←@Mira: `server/services/SchedulerService.ts`  
 FEEDS→@Handlebars: `business_docs/09_crm_features/wave-12-email-wiring.md#scheduled-triggers`  

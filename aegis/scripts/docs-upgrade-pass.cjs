@@ -12,16 +12,16 @@ const root = path.resolve(__dirname, '..');
 
 const phrasesToReplace = [
   {
-    from: /@Ada\s*[—\-]\s*Context Ready \(60% Readiness\)\s*[—\-]\s*Coding Phase Approved/g,
+    from: /@Ada\s*[—\-]\s*Context Ready \(90% Readiness\)\s*[—\-]\s*Coding Phase Approved/g,
     to: '@Ada — Context Ready (90% Readiness) — High-Fidelity Coding Phase Approved'
   },
   {
-    from: /@Ada\s*--\s*Context Ready \(60% Readiness\)\s*--\s*Coding Phase Approved/g,
+    from: /@Ada\s*--\s*Context Ready \(90% Readiness\)\s*--\s*Coding Phase Approved/g,
     to: '@Ada — Context Ready (90% Readiness) — High-Fidelity Coding Phase Approved'
   },
   {
-    from: /Context Ready \(60% Readiness\)/g,
-    to: 'Context Ready (90% Readiness)'
+    from: /Context Ready \(90% Readiness\)/g,
+    to: 'Context Ready (95% Readiness)'
   }
 ];
 

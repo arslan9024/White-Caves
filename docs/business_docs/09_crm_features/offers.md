@@ -1,16 +1,90 @@
 # Offers Management — Business Specification
 
+<!-- markdownlint-disable MD022 MD031 MD032 MD040 MD060 -->
+
 **Owner:** @Jaime (Llama 3.1 70B — Groq Console)
 **Status:** 🟡 [Pending specific implementation definition per 90% readiness guidelines] — awaiting @Jaime Task 1
 **Target:** 12 sections
 **API Route:** `/api/offers`
 **Related:** properties, leads, leases, documents (MOU/LOI generation)
+**Last Updated:** 2026-08-07
+**Next Review:** 2026-08-21
+**Source of Truth:** CRM offers management feature specification (business layer)
+
+## Canonical governance links
+
+- [`../05_requirements/functional-requirements.md`](../05_requirements/functional-requirements.md)
+- [`../05_requirements/compliance-requirements.md`](../05_requirements/compliance-requirements.md)
+- [`../../plans/documentation/REQ_CROSSWALK.md`](../../plans/documentation/REQ_CROSSWALK.md)
+- [`../../software_docs/01_requirements_engineering/SRS_MASTER_12_DEPARTMENTS.md`](../../software_docs/01_requirements_engineering/SRS_MASTER_12_DEPARTMENTS.md)
+
+## Feed targets
+
+- `docs/software_docs/01_requirements_engineering/SRS_MASTER_12_DEPARTMENTS.md`
+- `docs/plans/documentation/REQ_CROSSWALK.md`
+- frontend workflow/reliability closure lanes in `docs/plans/waves/WAVE_39_*` and `WAVE_40_*`
 
 ---
 
 ## Overview
 
 The offers module manages the negotiation workflow between buyers/tenants and sellers/landlords. It tracks every offer, counter-offer, and final acceptance — then automatically triggers MOU/LOI document generation upon acceptance.
+
+## Requirement catalog
+
+### REQ-OFF-001: Offer submission and participant validation
+
+The system shall accept offers only when required fields and participant rules are satisfied.
+
+**Acceptance criteria:**
+
+- [ ] Offer records store property, agent, price, type, and expiry
+- [ ] Exactly one participant field is allowed: buyer or tenant
+- [ ] Validation errors explain the missing or invalid field
+
+**Evidence:** offer record, validation log, and participant audit.
+
+### REQ-OFF-002: Counter-offer history and governance
+
+The system shall preserve every counter-offer round with actor, timestamp, and note.
+
+**Acceptance criteria:**
+
+- [ ] Counter-offer history is append-only
+- [ ] Final accepted round is locked from editing
+- [ ] Max counter rounds trigger escalation when exceeded
+
+**Evidence:** counter-offer history and escalation log.
+
+### REQ-OFF-003: Acceptance triggers and downstream documents
+
+The system shall generate downstream documents and tasks when an offer is accepted.
+
+**Acceptance criteria:**
+
+- [ ] Accepted offers generate MOU or LOI artifacts
+- [ ] Notifications are sent to relevant parties
+- [ ] RERA/compliance tasks are created where required
+
+**Evidence:** document generation log and task queue record.
+
+### REQ-OFF-004: Expiry and comparison views
+
+The system shall expire offers automatically and support side-by-side comparison of active offers.
+
+**Acceptance criteria:**
+
+- [ ] Offers transition to expired after validUntil
+- [ ] Comparison view shows price, conditions, and buyer profile
+- [ ] Expired offers remain read-only with reason code
+
+**Evidence:** expiry job log and comparison snapshot.
+
+## Traceability
+
+- Supports `REQ-LEAD-003`, `REQ-TENANT-002`, and transaction workflow coverage
+- Aligns to `WC-SRS-011`, `WC-SRS-012`, and downstream document artifacts
+- Feeds negotiation, acceptance, and compliance validation
 
 **Key Capabilities:**
 
@@ -23,25 +97,9 @@ The offers module manages the negotiation workflow between buyers/tenants and se
 
 ---
 
-## [Action Required: Enforce production-ready engineering constraints] — @Jaime Task 1
+## Implementation handoff
 
-Paste the output from this prompt into the sections below:
-
-```
-@Jaime — DRAFT: offers.md → spec /api/offers route: offer schema (propertyId, buyerId or tenantId, agentId, offerPrice AED, offerType: purchase/lease, validUntil date, status: pending/countered/accepted/rejected/expired, conditions: mortgageSubject/cashPurchase/furnitureIncluded/subjectToNOC, counterOfferHistory array of {price, date, fromParty, notes}), offer workflow (buyer submits → agent presents to seller/landlord → counter offer round → acceptance → auto-generate MOU or LOI PDF), offer comparison table (multiple offers on same property: side-by-side price, conditions, buyer profile), automated expiry cron (set status=expired when validUntil passed), offer acceptance triggers (generate MOU PDF, WhatsApp notification to all parties, create RERA form task), offer analytics (average offers per property, average negotiation rounds, price achieved vs asking %).
-```
-
-## [Action Required: Enforce production-ready engineering constraints] — @Jaime Task 2
-
-```
-@Jaime — DRAFT: whatsapp-integration.md → spec Meta WhatsApp Business API: WABA setup checklist, message template categories (UTILITY/MARKETING/AUTHENTICATION) with examples, webhook handler spec (/api/webhooks/meta), 24-hour conversation window management, opt-in/opt-out database tracking, rate limits and pricing tiers.
-```
-
-## [Action Required: Enforce production-ready engineering constraints] — @Jaime Task 3
-
-```
-@Jaime — EXPAND: whatsapp-integration.md → add NinaChatbot conversation flows (property enquiry, maintenance submission, payment reminder), human handoff triggers, broadcast campaign rate limits, WhatsApp Business widget embed spec.
-```
+The planning prompts above are superseded by the requirement catalog in this document. The active specification now covers offer creation, counter-offers, ranking, expiry, acceptance triggers, and analytics.
 
 ## Offer Data Model
 

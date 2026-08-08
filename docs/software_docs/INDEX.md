@@ -1,6 +1,6 @@
 # Software Docs Index
 
-**Last Updated:** 2026-08-02
+**Last Updated:** 2026-08-07
 
 This is the canonical software architecture and project-management documentation root for White Caves.
 
@@ -17,29 +17,45 @@ the active planning stack.
 3. [`adr/README.md`](./adr/README.md)
 4. [`PROJECT_MANAGEMENT_GOVERNANCE_INDEX_2026-08-02.md`](./PROJECT_MANAGEMENT_GOVERNANCE_INDEX_2026-08-02.md)
 5. [`BUSINESS_TO_SOFTWARE_CROSSWALK_2026-08-03.md`](./BUSINESS_TO_SOFTWARE_CROSSWALK_2026-08-03.md)
-6. [`../business_docs/IMPLEMENTATION_TRACEABILITY_AND_DELIVERY_MAP_2026-08-03.md`](../business_docs/IMPLEMENTATION_TRACEABILITY_AND_DELIVERY_MAP_2026-08-03.md)
-7. [`RELEASE_READINESS_AND_WAVE_TRACEABILITY_TEMPLATE_2026-08-03.md`](./RELEASE_READINESS_AND_WAVE_TRACEABILITY_TEMPLATE_2026-08-03.md)
-8. [`IMPLEMENTATION_READINESS_CHECKLIST_2026-08-03.md`](./IMPLEMENTATION_READINESS_CHECKLIST_2026-08-03.md)
-9. [`../IMPLEMENTATION_EXECUTION_PLAYBOOK_2026-08-03.md`](../IMPLEMENTATION_EXECUTION_PLAYBOOK_2026-08-03.md)
-10. [`SOFTWARE_DOCS_UPGRADE_ROADMAP_2026-Q3.md`](./SOFTWARE_DOCS_UPGRADE_ROADMAP_2026-Q3.md)
-11. [`01_requirements_engineering/SRS_MASTER_12_DEPARTMENTS.md`](./01_requirements_engineering/SRS_MASTER_12_DEPARTMENTS.md)
-12. [`02_software_design/SDD_MASTER_ARCHITECTURE_PACK.md`](./02_software_design/SDD_MASTER_ARCHITECTURE_PACK.md)
-13. [`03_use_cases/UC_MASTER_LIBRARY_12_DEPARTMENTS.md`](./03_use_cases/UC_MASTER_LIBRARY_12_DEPARTMENTS.md)
-14. [`04_flowcharts/FLOWCHART_MASTER_CATALOG_36X.md`](./04_flowcharts/FLOWCHART_MASTER_CATALOG_36X.md)
-15. [`IMPLEMENTATION_TEST_READINESS_MASTER.md`](./IMPLEMENTATION_TEST_READINESS_MASTER.md)
-16. [`frontend/FRONTEND_400_PERCENT_PROGRAM.md`](./frontend/FRONTEND_400_PERCENT_PROGRAM.md)
-17. [`DOCS_INTEGRATION_AND_CONSISTENCY_SYSTEM_2026-08-03.md`](./DOCS_INTEGRATION_AND_CONSISTENCY_SYSTEM_2026-08-03.md)
-18. [`01_requirements_engineering/RUP_INCEPTION_PHASE_MASTER_CHECKLIST.md`](./01_requirements_engineering/RUP_INCEPTION_PHASE_MASTER_CHECKLIST.md)
+6. [`SOFTWARE_DOCS_COVERAGE_AUDIT_2026-08-06.md`](./SOFTWARE_DOCS_COVERAGE_AUDIT_2026-08-06.md)
+7. [`../README.md`](../README.md)
+8. [`../AUTHORITATIVE_DOC_MAP_2026-08-06.md`](../AUTHORITATIVE_DOC_MAP_2026-08-06.md)
+9. [`../business_docs/IMPLEMENTATION_TRACEABILITY_AND_DELIVERY_MAP_2026-08-03.md`](../business_docs/IMPLEMENTATION_TRACEABILITY_AND_DELIVERY_MAP_2026-08-03.md)
+10. [`RELEASE_READINESS_AND_WAVE_TRACEABILITY_TEMPLATE_2026-08-03.md`](./RELEASE_READINESS_AND_WAVE_TRACEABILITY_TEMPLATE_2026-08-03.md)
+11. [`IMPLEMENTATION_READINESS_CHECKLIST_2026-08-03.md`](./IMPLEMENTATION_READINESS_CHECKLIST_2026-08-03.md)
+12. [`../IMPLEMENTATION_EXECUTION_PLAYBOOK_2026-08-03.md`](../IMPLEMENTATION_EXECUTION_PLAYBOOK_2026-08-03.md)
+13. [`../RELEASE_AND_ROLLOUT_NOTES_TEMPLATE_2026-08-06.md`](../RELEASE_AND_ROLLOUT_NOTES_TEMPLATE_2026-08-06.md)
+14. [`SOFTWARE_DOCS_UPGRADE_ROADMAP_2026-Q3.md`](./SOFTWARE_DOCS_UPGRADE_ROADMAP_2026-Q3.md)
+15. [`01_requirements_engineering/SRS_MASTER_12_DEPARTMENTS.md`](./01_requirements_engineering/SRS_MASTER_12_DEPARTMENTS.md)
+16. [`01_requirements_engineering/SRS_INSIGHTS_REPORT_2026-08-07.md`](./01_requirements_engineering/SRS_INSIGHTS_REPORT_2026-08-07.md)
+17. [`01_requirements_engineering/SRS_IMPLEMENTATION_PACKET_2026-08-07.md`](./01_requirements_engineering/SRS_IMPLEMENTATION_PACKET_2026-08-07.md)
+18. [`01_requirements_engineering/ENTRPRISE_SRS_INVENTORY_2026-08-06.md`](./01_requirements_engineering/ENTRPRISE_SRS_INVENTORY_2026-08-06.md)
+19. [`02_software_design/SDD_MASTER_ARCHITECTURE_PACK.md`](./02_software_design/SDD_MASTER_ARCHITECTURE_PACK.md)
+20. [`03_use_cases/UC_MASTER_LIBRARY_12_DEPARTMENTS.md`](./03_use_cases/UC_MASTER_LIBRARY_12_DEPARTMENTS.md)
+21. [`04_flowcharts/FLOWCHART_MASTER_CATALOG_36X.md`](./04_flowcharts/FLOWCHART_MASTER_CATALOG_36X.md)
+22. [`IMPLEMENTATION_TEST_READINESS_MASTER.md`](./IMPLEMENTATION_TEST_READINESS_MASTER.md)
+23. [`frontend/FRONTEND_400_PERCENT_PROGRAM.md`](./frontend/FRONTEND_400_PERCENT_PROGRAM.md)
+24. [`DOCS_INTEGRATION_AND_CONSISTENCY_SYSTEM_2026-08-03.md`](./DOCS_INTEGRATION_AND_CONSISTENCY_SYSTEM_2026-08-03.md)
+25. [`01_requirements_engineering/RUP_INCEPTION_PHASE_MASTER_CHECKLIST.md`](./01_requirements_engineering/RUP_INCEPTION_PHASE_MASTER_CHECKLIST.md)
+26. [`../UPGRADE_REFERENCE_READINESS_SCORECARD_2026-08.md`](../UPGRADE_REFERENCE_READINESS_SCORECARD_2026-08.md)
+27. [`../plans/AEGIS_DOCS_AUTOPILOT_100_TURN_2026-08-07.md`](../plans/AEGIS_DOCS_AUTOPILOT_100_TURN_2026-08-07.md)
 
 ---
 
 ## Architecture and Requirements Layers
 
-- `01_requirements_engineering/` — requirement baselines and change history
+- `01_requirements_engineering/` — canonical requirement baselines, acceptance criteria, and traceability contracts; the primary entry points are [01_requirements_engineering/SRS_MASTER_12_DEPARTMENTS.md](./01_requirements_engineering/SRS_MASTER_12_DEPARTMENTS.md), [01_requirements_engineering/functional_specifications.md](./01_requirements_engineering/functional_specifications.md), and [01_requirements_engineering/ENTRPRISE_SRS_INVENTORY_2026-08-06.md](./01_requirements_engineering/ENTRPRISE_SRS_INVENTORY_2026-08-06.md)
 - `02_software_design/` — SDD and technical design contracts, including [02_software_design/crm_task_batching_design.md](./02_software_design/crm_task_batching_design.md) and [02_software_design/SDD_MASTER_ARCHITECTURE_PACK.md](./02_software_design/SDD_MASTER_ARCHITECTURE_PACK.md)
 - `03_use_cases/` — operational behavior contracts, including [03_use_cases/UC_MASTER_LIBRARY_12_DEPARTMENTS.md](./03_use_cases/UC_MASTER_LIBRARY_12_DEPARTMENTS.md)
 - `04_flowcharts/` — process/navigation/system flow artifacts, including [04_flowcharts/FLOWCHART_MASTER_CATALOG_36X.md](./04_flowcharts/FLOWCHART_MASTER_CATALOG_36X.md)
 - `adr/` — architecture decision records and rationale
+
+### Canonical delivery sequence
+
+1. Start with the requirement baseline in [01_requirements_engineering/SRS_MASTER_12_DEPARTMENTS.md](./01_requirements_engineering/SRS_MASTER_12_DEPARTMENTS.md).
+2. Map requirements to behavior in [03_use_cases/UC_MASTER_LIBRARY_12_DEPARTMENTS.md](./03_use_cases/UC_MASTER_LIBRARY_12_DEPARTMENTS.md).
+3. Resolve each path into design contracts in [02_software_design/SDD_MASTER_ARCHITECTURE_PACK.md](./02_software_design/SDD_MASTER_ARCHITECTURE_PACK.md).
+4. Validate readiness and evidence in [IMPLEMENTATION_TEST_READINESS_MASTER.md](./IMPLEMENTATION_TEST_READINESS_MASTER.md).
 
 ---
 
@@ -55,6 +71,7 @@ Business policy and release governance references:
 
 - [`../business_docs/README.md`](../business_docs/README.md)
 - [`../business_docs/15_release_management/README.md`](../business_docs/15_release_management/README.md)
+- [`../UPGRADE_REFERENCE_READINESS_SCORECARD_2026-08.md`](../UPGRADE_REFERENCE_READINESS_SCORECARD_2026-08.md)
 
 ---
 
@@ -74,6 +91,7 @@ The software-docs layer has been upgraded into a more complete engineering opera
 - [SOFTWARE_ENGINEERING_MATURITY_BLUEPRINT.md](./SOFTWARE_ENGINEERING_MATURITY_BLUEPRINT.md) — end-to-end engineering maturity and delivery blueprint.
 - [BUSINESS_TO_SOFTWARE_CROSSWALK_2026-08-03.md](./BUSINESS_TO_SOFTWARE_CROSSWALK_2026-08-03.md) — business-to-implementation traceability map.
 - [01_requirements_engineering/SRS_MASTER_12_DEPARTMENTS.md](./01_requirements_engineering/SRS_MASTER_12_DEPARTMENTS.md) — requirements baseline.
+- [01_requirements_engineering/ENTRPRISE_SRS_INVENTORY_2026-08-06.md](./01_requirements_engineering/ENTRPRISE_SRS_INVENTORY_2026-08-06.md) — enterprise-wide SRS inventory, coverage map, and readiness assessment.
 - [02_software_design/SDD_MASTER_ARCHITECTURE_PACK.md](./02_software_design/SDD_MASTER_ARCHITECTURE_PACK.md) — design contract base.
 - [03_use_cases/UC_MASTER_LIBRARY_12_DEPARTMENTS.md](./03_use_cases/UC_MASTER_LIBRARY_12_DEPARTMENTS.md) — behavior and workflow contracts.
 - [IMPLEMENTATION_TEST_READINESS_MASTER.md](./IMPLEMENTATION_TEST_READINESS_MASTER.md) — verification and rollout readiness package.
@@ -103,3 +121,8 @@ Each major software document should include:
   as historical if they overlap with active documents.
 - When a root-level software doc conflicts with `docs/plans/*` or the ADR series, the canonical
   planning stack and ADR series win.
+
+### Runtime ownership rule (backend)
+
+- Treat `server/` (entrypoint `server/index.ts`) as canonical runtime backend for API contracts and route evidence.
+- Treat `src/server/` as legacy/compatibility unless an active wave explicitly scopes changes there.

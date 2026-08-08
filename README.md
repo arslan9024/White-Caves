@@ -1,13 +1,21 @@
 # White Caves CRM Platform - Documentation Guide
 
+> **Canonical status notice (2026-08-07):** This root README is a navigation helper. Live delivery status, requirement coverage, and wave truth are authoritative in `docs/plans/*`, `docs/business_docs/*`, and `docs/software_docs/*`.
+
 ## 📚 Documentation Organization
 
 This project is organized into clear, logical sections for easy navigation:
 
 ### 🚀 Quick Access
 
+- **Canonical planning authority:** `docs/plans/MASTER_PLAN.md`, `docs/plans/PENDING_TASKS_ONLY.md`, `docs/plans/waves/README.md`
+- **Canonical business authority:** `docs/business_docs/README.md`
+- **Canonical software authority:** `docs/software_docs/INDEX.md`
+
 - **QUICK_ACCESS_GUIDE.md** - Start here for common tasks and shortcuts
 - **EMERGENCY_RESPONSE_PROCEDURES.md** - Critical incident response procedures
+- [docs/AUTHORITATIVE_DOC_MAP_2026-08-06.md](docs/AUTHORITATIVE_DOC_MAP_2026-08-06.md) - Canonical map for product domains, docs, and evidence expectations
+- [docs/RELEASE_AND_ROLLOUT_NOTES_TEMPLATE_2026-08-06.md](docs/RELEASE_AND_ROLLOUT_NOTES_TEMPLATE_2026-08-06.md) - Standard release and rollout note format
 
 #### White Caves Real Estate LLC
 
@@ -30,6 +38,8 @@ All strategic documents are in `/plans/`:
 
 ### 📊 Dashboards & Visual References
 
+- **DOCUMENTATION_STATUS_AND_NAVIGATION_SUMMARY_2026-08-03.md** - Repository overview of the documentation architecture and main entry points
+- **IMPLEMENTATION_EXECUTION_PLAYBOOK_2026-08-03.md** - Repeatable workflow for moving from business intent to delivery handoff
 - **STATUS_DASHBOARD_VISUAL.md** - Current project status dashboard
 - **PRODUCTION_READINESS_VISUAL_OVERVIEW.md** - Visual project readiness metrics
 - **PRODUCTION_READINESS_DELIVERABLES_INDEX.md** - Complete deliverables index
@@ -163,7 +173,7 @@ Legacy note: `MONGODB_URI` is supported as a fallback alias, but `DATABASE_URL` 
 
 ## 📈 Key Metrics
 
-**Current Status:**
+**Current Status (legacy snapshot; verify against canonical docs):**
 
 - TypeScript Coverage: 96%+
 - 0 TypeScript Errors
@@ -244,6 +254,6 @@ All documentation is maintained in version control. To update:
 
 ---
 
-**Last Updated:** February 2026
+**Last Updated:** 2026-08-07
 **Maintained By:** Development Team
 **Next Review:** End of month

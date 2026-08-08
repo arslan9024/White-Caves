@@ -1,9 +1,10 @@
 # White Caves CRM — Master Implementation Plan
 
-> **Version:** 2.1  
-> **Last Updated:** June 2026  
+> **Version:** 2.2  
+> **Last Updated:** 2026-08-07  
 > **Status:** Active  
 > **Maintained By:** Technical & Product Teams
+> **Canonical status notice (2026-08-07):** This plan contains phase architecture and dependency strategy. For live completion state and validated evidence, use `docs/plans/MASTER_PLAN.md`, `docs/plans/PENDING_TASKS_ONLY.md`, and wave artifacts under `docs/plans/waves/`.
 
 ---
 
@@ -13,7 +14,9 @@ White Caves CRM is a Dubai real estate operations platform serving 200+ agents w
 
 ---
 
-## Current State Assessment (March 2026)
+## Current State Assessment (historical baseline)
+
+This section is retained as a historical planning baseline. Some items listed as partial/not-started have since progressed in implementation and/or governance waves; always cross-check against canonical trackers before execution decisions.
 
 ### ✅ Fully Implemented
 
@@ -312,7 +315,7 @@ The platform only counts as fully development-complete when the execution stack 
 
 ---
 
-## Milestone Summary
+## Milestone Summary (historical timeline targets)
 
 | Milestone        | Target Date  | Key Deliverables                                   |
 | ---------------- | ------------ | -------------------------------------------------- |
@@ -382,4 +385,4 @@ A feature is complete when:
 
 ---
 
-**Version:** 2.0 | **Last Updated:** March 2026 | **Maintained By:** Product & Technical Teams
+**Version:** 2.2 | **Last Updated:** 2026-08-07 | **Maintained By:** Product & Technical Teams

@@ -1,6 +1,6 @@
 # /plans — Planning Workspace
 
-**Last Updated:** 2026-07-16  
+**Last Updated:** 2026-08-08  
 **Canonical Roadmap:** [`MASTER_PLAN.md`](./MASTER_PLAN.md)
 
 This directory is the implementation planning workspace for White Caves.
@@ -10,13 +10,14 @@ Use the canonical tracker set first, then drop into the active wave bundle you a
 
 ## Start Here
 
-| Purpose                        | File                                                 |
-| ------------------------------ | ---------------------------------------------------- |
-| Canonical roadmap              | [`MASTER_PLAN.md`](./MASTER_PLAN.md)                 |
-| Canonical implementation queue | [`PENDING_TASKS_ONLY.md`](./PENDING_TASKS_ONLY.md)   |
-| Navigation / folder map        | [`INDEX.md`](./INDEX.md)                             |
-| Governance rules               | [`PLANNING_GOVERNANCE.md`](./PLANNING_GOVERNANCE.md) |
-| Wave bundle index              | [`waves/README.md`](./waves/README.md)               |
+| Purpose                        | File                                                        |
+| ------------------------------ | ----------------------------------------------------------- |
+| Canonical roadmap              | [`MASTER_PLAN.md`](./MASTER_PLAN.md)                        |
+| Canonical implementation queue | [`PENDING_TASKS_ONLY.md`](./PENDING_TASKS_ONLY.md)          |
+| Navigation / folder map        | [`INDEX.md`](./INDEX.md)                                    |
+| Planning documentation index   | [`documentation/README.md`](./documentation/README.md)      |
+| Governance rules               | [`PLANNING_GOVERNANCE.md`](./PLANNING_GOVERNANCE.md)        |
+| Wave bundle index              | [`waves/README.md`](./waves/README.md)                      |
 
 ---
 
@@ -27,6 +28,14 @@ Use the canonical tracker set first, then drop into the active wave bundle you a
 3. Open the active bundle in [`waves/README.md`](./waves/README.md).
 4. Implement only against the linked source backlog(s) and bundle artifacts.
 5. Close out by updating canonical trackers and running `npm run plans:validate`.
+
+## Canonical delivery and governance docs
+
+- [../AUTHORITATIVE_DOC_MAP_2026-08-06.md](../AUTHORITATIVE_DOC_MAP_2026-08-06.md) — current product/domain map and evidence expectations
+- [../RELEASE_AND_ROLLOUT_NOTES_TEMPLATE_2026-08-06.md](../RELEASE_AND_ROLLOUT_NOTES_TEMPLATE_2026-08-06.md) — standard release and rollout note format
+- [../IMPLEMENTATION_EXECUTION_PLAYBOOK_2026-08-03.md](../IMPLEMENTATION_EXECUTION_PLAYBOOK_2026-08-03.md) — end-to-end execution workflow
+- [documentation/README.md](./documentation/README.md) — planning-side documentation index for traceability, matrices, and maintenance artifacts
+- [documentation/BUSINESS_DOCS_MAINTENANCE_CLOSEOUT_2026-08-08.md](./documentation/BUSINESS_DOCS_MAINTENANCE_CLOSEOUT_2026-08-08.md) — maintenance-mode sync contract for business-doc trackers
 
 ---
 

@@ -1,8 +1,24 @@
 # Scenario Library Master Index
 
 **Status:** Active
-**Last Updated:** 2026-08-03
+**Owner:** Product + Compliance + QA Governance
+**Last Updated:** 2026-08-07
+**Next Review:** 2026-08-21
+**Source of Truth:** Canonical scenario volume and coverage index
 **Target:** 10,000 scenarios (implementation-grade)
+
+## Canonical governance links
+
+- [`../05_requirements/functional-requirements.md`](../05_requirements/functional-requirements.md)
+- [`../05_requirements/non-functional-requirements.md`](../05_requirements/non-functional-requirements.md)
+- [`../../plans/documentation/REQ_CROSSWALK.md`](../../plans/documentation/REQ_CROSSWALK.md)
+- [`../../software_docs/01_requirements_engineering/SRS_MASTER_12_DEPARTMENTS.md`](../../software_docs/01_requirements_engineering/SRS_MASTER_12_DEPARTMENTS.md)
+
+## Feed targets
+
+- `docs/software_docs/01_requirements_engineering/SRS_MASTER_12_DEPARTMENTS.md`
+- `docs/plans/documentation/REQ_CROSSWALK.md`
+- scenario-governance and frontend-priority linkage lanes in `docs/plans/waves/WAVE_35_*` through `WAVE_40_*`
 
 ## 1. Index purpose
 
@@ -56,3 +72,14 @@ A batch is complete only when:
 - `../05_requirements/REQ_TO_FR_BR_NFR_POL_AC_MAPPING_2026-08-03.md`
 - `../13_testing/uat-scenarios.md`
 - `../../plans/waves/README.md`
+- `../../plans/documentation/SRS_10K_HYBRID_REGISTRY_SCHEMA_2026-08-07.md`
+
+## 7. Hybrid 10k synchronization
+
+- Scenario totals and batch completion do not directly increment canonical software requirement counts.
+- Canonical requirement progress is measured in the hybrid software registry with linked scenario evidence.
+- Every batch closeout should include orphan detection for missing requirement/policy/test links.
+
+## 8. Frontend-first impact routing
+
+Scenarios that materially affect UI resilience, accessibility, state behavior, or frontend performance should be tagged for priority linkage to frontend-first waves (`W37`-`W40`) before secondary governance closures.

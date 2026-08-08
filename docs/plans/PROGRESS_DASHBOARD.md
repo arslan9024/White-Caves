@@ -2,7 +2,7 @@
 
 **Status:** Active  
 **Owner:** @Margaret + @Ada  
-**Last Updated:** 2026-08-02
+**Last Updated:** 2026-08-07
 
 This dashboard is the canonical visual summary for documentation and wave-level progress.
 It complements `MASTER_PLAN.md`, `PENDING_TASKS_ONLY.md`, and `PROJECT_PROGRESS.md`.
@@ -34,6 +34,7 @@ flowchart LR
 | Business ↔ software traceability | Fragmented | Planned bridge creation | 85%+ mapped |
 | Progress visibility | Table-heavy / contradictory | Visual dashboard introduced | Dashboard + summary + tracker alignment |
 | Historical vs active separation | Inconsistent | Improving | explicit on all governance roots |
+| SRS requirement scale coverage | 191 total / 61 unique (previous baseline) | Canonical range-enabled audit active | 5000+ unique IDs |
 
 ## Current contradictions being burned down
 
@@ -46,3 +47,10 @@ flowchart LR
 - Wave 32 establishes the reporting baseline.
 - Progress visuals move from narrative-only to visual + tracker-backed reporting.
 - Traceability bridge artifacts will define how requirement, RBAC, SLA, and compliance truth travels across business and software docs.
+
+## SRS scale milestone (2026-08-07)
+
+- Canonical 5000-ID range register added in `SRS_MASTER_12_DEPARTMENTS.md` with priority-first lanes: Listings `0001..2000`, Leasing `2001..3700`, Receipts `3701..4600`, Cross-cutting `4601..5000`.
+- SRS audit parser upgraded to count explicit IDs and canonical range declarations.
+- Latest validated audit result: **5121 total / 5061 unique** requirement IDs.
+- Validation evidence: `npm run plans:validate` ✅ and `npm run srs:audit` ✅.

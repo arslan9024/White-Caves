@@ -1,9 +1,26 @@
 # Wave 13 — Real-Time Notifications: Socket.io + NotificationService
 
+<!-- markdownlint-disable MD032 MD040 MD060 -->
+
 **Drafted by:** @Socket  
 **Model:** Llama 3.1 70B via Groq  
 **Status:** ✅ READY (retrospective spec for implemented Wave 13)  
 **Last Updated:** 2026-05-25  
+**Next Review:** 2026-08-21  
+**Source of Truth:** CRM Wave 13 real-time notifications feature specification (business layer)
+
+## Canonical governance links
+
+- [`../05_requirements/functional-requirements.md`](../05_requirements/functional-requirements.md)
+- [`../05_requirements/non-functional-requirements.md`](../05_requirements/non-functional-requirements.md)
+- [`../../plans/documentation/REQ_CROSSWALK.md`](../../plans/documentation/REQ_CROSSWALK.md)
+- [`../../software_docs/01_requirements_engineering/SRS_MASTER_12_DEPARTMENTS.md`](../../software_docs/01_requirements_engineering/SRS_MASTER_12_DEPARTMENTS.md)
+
+## Feed targets
+
+- `docs/software_docs/01_requirements_engineering/SRS_MASTER_12_DEPARTMENTS.md`
+- `docs/plans/documentation/REQ_CROSSWALK.md`
+- frontend notifications/reliability lanes in `docs/plans/waves/WAVE_39_*` and `WAVE_40_*`
 
 CONSUMES←@Mira: `server/services/NotificationService.ts`, `server/services/socketServer.ts`  
 FEEDS→@Katherine: `business_docs/09_crm_features/wave-13-realtime-notifications.md#acceptance-criteria`  

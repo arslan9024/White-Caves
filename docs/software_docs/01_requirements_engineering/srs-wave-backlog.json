@@ -1,0 +1,69 @@
+{
+  "generatedAt": "2026-08-06T21:06:50.949Z",
+  "items": [
+    {
+      "waveItem": "WAVE-SRS-001",
+      "scope": "Reservation and milestone consistency for off-plan deals",
+      "requirementIds": [
+        "FR-OP-001",
+        "FR-OP-002"
+      ],
+      "owner": "Off-plan delivery lead",
+      "validationCheckpoint": "Reservation state and milestone ledger are both persisted and visible."
+    },
+    {
+      "waveItem": "WAVE-SRS-002",
+      "scope": "Deal readiness and ROI visibility for investment workflows",
+      "requirementIds": [
+        "FR-CI-001"
+      ],
+      "owner": "Commercial finance lead",
+      "validationCheckpoint": "Deal cards block progression until ROI and approval state are present."
+    },
+    {
+      "waveItem": "WAVE-SRS-003",
+      "scope": "Maintenance lifecycle and SLA handling for facilities workflows",
+      "requirementIds": [
+        "FR-FM-001"
+      ],
+      "owner": "Facilities operations lead",
+      "validationCheckpoint": "Ticket transitions and breach visibility are recorded end to end."
+    },
+    {
+      "waveItem": "WAVE-SRS-004",
+      "scope": "Campaign audience segmentation and launch readiness",
+      "requirementIds": [
+        "FR-MG-001"
+      ],
+      "owner": "Marketing operations lead",
+      "validationCheckpoint": "Campaign preview contains the expected segments and launch constraints."
+    },
+    {
+      "waveItem": "WAVE-SRS-005",
+      "scope": "Transaction document completeness and transfer-state control",
+      "requirementIds": [
+        "FR-CT-001"
+      ],
+      "owner": "Conveyancing operations lead",
+      "validationCheckpoint": "Transaction completion is blocked until required documents and state are present."
+    },
+    {
+      "waveItem": "WAVE-SRS-006",
+      "scope": "Platform observability and incident recovery visibility",
+      "requirementIds": [
+        "FR-TA-001"
+      ],
+      "owner": "Platform operations lead",
+      "validationCheckpoint": "Telemetry and incident recovery evidence are available from the same operational surface."
+    },
+    {
+      "waveItem": "WAVE-SRS-007",
+      "scope": "Executive reporting aggregation and cross-team visibility",
+      "requirementIds": [
+        "FR-EX-001"
+      ],
+      "owner": "Strategy reporting lead",
+      "validationCheckpoint": "Dashboard export reflects cross-department status from the same source of truth."
+    }
+  ]
+}

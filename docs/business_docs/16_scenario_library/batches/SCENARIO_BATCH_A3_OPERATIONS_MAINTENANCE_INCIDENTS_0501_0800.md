@@ -1,9 +1,25 @@
 # Scenario Batch A3 — Operations, Maintenance, Incident Workflows (0501–0800)
 
-**Status:** Active
-**Batch Size:** 300 scenarios
-**Priority:** P0/P1 operational continuity and SLA controls
-**Last Updated:** 2026-08-03
+**Status:** Active  
+**Owner:** Operations + Support + Compliance + QA  
+**Batch Size:** 300 scenarios  
+**Priority:** P0/P1 operational continuity and SLA controls  
+**Last Updated:** 2026-08-03  
+**Next Review:** 2026-08-21  
+**Source of Truth:** Scenario batch A3 catalog for operations/maintenance/incident traceability coverage
+
+## Canonical governance links
+
+- [`../../05_requirements/functional-requirements.md`](../../05_requirements/functional-requirements.md)
+- [`../../05_requirements/non-functional-requirements.md`](../../05_requirements/non-functional-requirements.md)
+- [`../../../plans/documentation/REQ_CROSSWALK.md`](../../../plans/documentation/REQ_CROSSWALK.md)
+- [`../../../software_docs/01_requirements_engineering/SRS_MASTER_12_DEPARTMENTS.md`](../../../software_docs/01_requirements_engineering/SRS_MASTER_12_DEPARTMENTS.md)
+
+## Feed targets
+
+- `docs/software_docs/01_requirements_engineering/SRS_MASTER_12_DEPARTMENTS.md`
+- `docs/plans/documentation/REQ_CROSSWALK.md`
+- scenario expansion/closure and frontend reliability linkage lanes in `docs/plans/waves/WAVE_35_*` through `WAVE_40_*`
 
 ## 1. Scope
 

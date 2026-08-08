@@ -1,16 +1,89 @@
 # Marketing Automation — CRM Feature Specification
 
-> **Status:** Planned  
+<!-- markdownlint-disable MD022 MD024 MD031 MD032 MD040 MD060 -->
+
+> **Status:** Active -- requirement catalog expanded.
 > **Module Owner:** Fatima (Marketing Manager AI)  
 > **Last Updated:** April 2026  
 > **Priority:** High  
 > **API Endpoints:** `/api/marketing`, `/api/campaigns`, `/api/content`
+> **Next Review:** 2026-08-21
+> **Source of Truth:** CRM marketing automation feature specification (business layer)
+
+## Canonical governance links
+
+- [`../05_requirements/functional-requirements.md`](../05_requirements/functional-requirements.md)
+- [`../05_requirements/compliance-requirements.md`](../05_requirements/compliance-requirements.md)
+- [`../../plans/documentation/REQ_CROSSWALK.md`](../../plans/documentation/REQ_CROSSWALK.md)
+- [`../../software_docs/01_requirements_engineering/SRS_MASTER_12_DEPARTMENTS.md`](../../software_docs/01_requirements_engineering/SRS_MASTER_12_DEPARTMENTS.md)
+
+## Feed targets
+
+- `docs/software_docs/01_requirements_engineering/SRS_MASTER_12_DEPARTMENTS.md`
+- `docs/plans/documentation/REQ_CROSSWALK.md`
+- frontend campaign/reporting refinement lanes in `docs/plans/waves/WAVE_39_*` and `WAVE_40_*`
 
 ---
 
 ## Overview
 
 The Marketing Automation module empowers the White Caves CRM with end-to-end marketing capabilities — from campaign creation and multi-channel distribution to lead nurturing workflows and ROI tracking. The system is purpose-built for Dubai real estate marketing with support for WhatsApp, portal syndication, and multilingual content.
+
+## Requirement catalog
+
+### REQ-MKT-AUT-001: Campaign creation and segmentation
+
+The system shall allow users to create segmented campaigns across email, WhatsApp, and social channels.
+
+**Acceptance criteria:**
+
+- [ ] Campaigns can be segmented by source, area, lead status, and activity
+- [ ] Templates support multilingual content and brand assets
+- [ ] Scheduled and immediate delivery modes are available where permitted
+
+**Evidence:** campaign record, segmentation log, and send queue.
+
+### REQ-MKT-AUT-002: Workflow automation and nurturing
+
+The system shall execute nurture workflows triggered by lead and lease events.
+
+**Acceptance criteria:**
+
+- [ ] Trigger types include lead created, status changed, and lease expiry
+- [ ] Workflow steps can send messages, create tasks, and update fields
+- [ ] Completed and paused workflows are visible in reporting
+
+**Evidence:** workflow run log and automation audit.
+
+### REQ-MKT-AUT-003: WhatsApp broadcast governance and consent
+
+The system shall enforce WhatsApp template approval, opt-in, and opt-out rules for broadcasts.
+
+**Acceptance criteria:**
+
+- [ ] Only approved templates can be broadcast
+- [ ] Opted-out contacts are excluded automatically
+- [ ] Delivery results are tracked per recipient
+
+**Evidence:** broadcast approval log, consent record, and delivery report.
+
+### REQ-MKT-AUT-004: ROI analytics and attribution
+
+The system shall expose campaign ROI, attribution, and engagement metrics.
+
+**Acceptance criteria:**
+
+- [ ] Dashboard shows spend, leads, conversion, and revenue attributed
+- [ ] A/B test results can declare a winner using configured criteria
+- [ ] Reports can be filtered by channel, area, and campaign type
+
+**Evidence:** ROI dashboard snapshot and attribution export.
+
+## Traceability
+
+- Maps to `REQ-WA-005`, `REQ-WA-006`, `REQ-TP-005`, and `REQ-RPT-001`
+- Aligns to `WC-SRS-008`, `WC-SRS-009`, and `WC-SRS-015`
+- Feeds campaign, workflow, broadcast, and attribution validation artifacts
 
 ### Purpose
 

@@ -1,10 +1,27 @@
 # Trakheesi Permit Integration — CRM Feature Specification
 
-> **Status:** Planned
+<!-- markdownlint-disable MD032 MD040 MD060 -->
+
+> **Status:** Active -- requirement catalog expanded.
 > **Module Owner:** Compliance (Laila AI) + Listing Engine
 > **Last Updated:** May 2026
+> **Next Review:** 2026-08-21
+> **Source of Truth:** CRM Trakheesi permit integration feature specification (business layer)
 > **Priority:** Critical — AED 50,000 penalty per violation (RERA Circular No. 4 of 2021)
 > **API Endpoints:** `/api/compliance/trakheesi`, DLD Trakheesi REST API
+
+## Canonical governance links
+
+- [`../05_requirements/compliance-requirements.md`](../05_requirements/compliance-requirements.md)
+- [`../05_requirements/functional-requirements.md`](../05_requirements/functional-requirements.md)
+- [`../../plans/documentation/REQ_CROSSWALK.md`](../../plans/documentation/REQ_CROSSWALK.md)
+- [`../../software_docs/01_requirements_engineering/SRS_MASTER_12_DEPARTMENTS.md`](../../software_docs/01_requirements_engineering/SRS_MASTER_12_DEPARTMENTS.md)
+
+## Feed targets
+
+- `docs/software_docs/01_requirements_engineering/SRS_MASTER_12_DEPARTMENTS.md`
+- `docs/plans/documentation/REQ_CROSSWALK.md`
+- frontend compliance/publishing lanes in `docs/plans/waves/WAVE_39_*` and `WAVE_40_*`
 
 ---
 
@@ -19,6 +36,62 @@ Trakheesi is RERA's mandatory property advertising permit system. Every property
 - Auto-blocking of listing publication when permit is missing or expired
 - Permit number displayed on all listing exports and portal feeds
 - Audit trail of all permit checks
+
+## Requirement catalog
+
+### REQ-TRK-001: Permit validation before publication
+
+The system shall validate Trakheesi permit presence and freshness before listing publication.
+
+**Acceptance criteria:**
+
+- [ ] Missing permits block publication
+- [ ] Expired or expiring permits trigger warnings and renewal routing
+- [ ] Validation checks are logged per property
+
+**Evidence:** publication gate log and permit verification history.
+
+### REQ-TRK-002: Expiry tracking and escalation
+
+The system shall monitor permit expiry and alert agents, managers, and owners on schedule.
+
+**Acceptance criteria:**
+
+- [ ] 60/30/7-day alerts are generated
+- [ ] Expired permits are withdrawn from portal feeds
+- [ ] Escalation paths are auditable
+
+**Evidence:** expiry alert log and withdrawal record.
+
+### REQ-TRK-003: Validation API proxy and audit trail
+
+The system shall expose a CRM proxy for permit validation and keep a durable audit trail.
+
+**Acceptance criteria:**
+
+- [ ] Validate and status endpoints are available
+- [ ] API responses are sanitized before storage
+- [ ] Verification events include trigger source and result
+
+**Evidence:** API proxy log and verification audit trail.
+
+### REQ-TRK-004: Renewal workflow and compliance dashboard
+
+The system shall support manual renewal steps, bulk renewal review, and compliance dashboard reporting.
+
+**Acceptance criteria:**
+
+- [ ] Renewal requests can be initiated from a property record
+- [ ] Bulk expiring permit reports can be exported
+- [ ] Dashboard widgets show active, expiring, expired, and missing counts
+
+**Evidence:** renewal request record and compliance dashboard snapshot.
+
+## Traceability
+
+- Maps to `REQ-PROP-001`, `REQ-SYNC-001`, and listing compliance coverage
+- Aligns to `WC-SRS-001`, `WC-SRS-014`, and permit evidence artifacts
+- Feeds publication, syndication, and compliance validation
 
 ---
 

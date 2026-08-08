@@ -4,12 +4,83 @@
 **Status**: Production Ready ✅  
 **Last Updated**: March 17, 2026  
 **Location**: `/src/components/crm/UnifiedCRM.tsx`
+**Next Review**: 2026-08-21  
+**Source of Truth**: CRM unified component feature specification (business layer)
+
+## Canonical governance links
+
+- [`../05_requirements/functional-requirements.md`](../05_requirements/functional-requirements.md)
+- [`../05_requirements/non-functional-requirements.md`](../05_requirements/non-functional-requirements.md)
+- [`../../plans/documentation/REQ_CROSSWALK.md`](../../plans/documentation/REQ_CROSSWALK.md)
+- [`../../software_docs/01_requirements_engineering/SRS_MASTER_12_DEPARTMENTS.md`](../../software_docs/01_requirements_engineering/SRS_MASTER_12_DEPARTMENTS.md)
+
+## Feed targets
+
+- `docs/software_docs/01_requirements_engineering/SRS_MASTER_12_DEPARTMENTS.md`
+- `docs/plans/documentation/REQ_CROSSWALK.md`
+- frontend dashboard reliability/refactor lanes in `docs/plans/waves/WAVE_39_*` and `WAVE_40_*`
 
 ---
 
 ## 📋 Overview
 
 The **UnifiedCRM Component** is a powerful, flexible React component that provides unified dashboard access for all 12 CRM views in the White Caves platform. It consolidates what were previously 12 separate dashboard components into one intelligent, role-based component that adapts to any user's needs.
+
+## Requirement catalog
+
+### REQ-UCRM-001: Role-based unified dashboard switching
+
+The system shall switch CRM dashboard views based on the authenticated user role and selected context.
+
+**Acceptance criteria:**
+
+- [ ] Each role sees only permitted dashboard views
+- [ ] Switching views preserves route state and data context
+- [ ] Unsupported views fall back to a safe default
+
+**Evidence:** role access matrix, view-change log, and fallback test.
+
+### REQ-UCRM-002: Metrics refresh and live state management
+
+The system shall refresh visible metrics on a configurable interval without losing UI state.
+
+**Acceptance criteria:**
+
+- [ ] Refresh interval is configurable per view
+- [ ] Live updates do not clear filters or selections
+- [ ] Refresh failures degrade gracefully with an error state
+
+**Evidence:** refresh trace, state retention test, and error snapshot.
+
+### REQ-UCRM-003: Export and customization controls
+
+The system shall support export and dashboard customization features where enabled by policy.
+
+**Acceptance criteria:**
+
+- [ ] Export actions can generate CSV or PDF outputs where permitted
+- [ ] Metric rearrangement is available only when customization is enabled
+- [ ] Disabled controls are hidden or clearly deactivated
+
+**Evidence:** export artifact, customization log, and permission check.
+
+### REQ-UCRM-004: View-specific KPI rendering
+
+The system shall render the correct KPI set for each of the 12 supported dashboard views.
+
+**Acceptance criteria:**
+
+- [ ] Company, sales, leads, finance, performance, and client views render distinct KPI groups
+- [ ] Property and inventory views expose availability metrics
+- [ ] Agent and department views show role-relevant metrics only
+
+**Evidence:** KPI snapshot set and view matrix test.
+
+## Traceability
+
+- Supports `REQ-RPT-001` through `REQ-RPT-003` and the dashboard family in `functional-requirements.md`
+- Aligns to `WC-SRS-001`, `WC-SRS-009`, and `WC-SRS-014`
+- Feeds the component-level UI and export validation artifacts
 
 ### Key Features
 

@@ -1,9 +1,27 @@
+<!-- markdownlint-disable MD009 MD022 MD024 MD031 MD032 MD040 -->
+
 # Package 3: AI Assistant CRUD Operations
 ## Complete Implementation Guide & API Documentation
 
 **Date**: March 17, 2026  
 **Status**: ✅ COMPLETE & PRODUCTION READY  
 **Version**: 1.0.0
+**Last Updated**: 2026-08-07  
+**Next Review**: 2026-08-21  
+**Source of Truth**: CRM AI assistant CRUD feature specification (business layer)
+
+## Canonical governance links
+
+- [`../05_requirements/functional-requirements.md`](../05_requirements/functional-requirements.md)
+- [`../05_requirements/non-functional-requirements.md`](../05_requirements/non-functional-requirements.md)
+- [`../../plans/documentation/REQ_CROSSWALK.md`](../../plans/documentation/REQ_CROSSWALK.md)
+- [`../../software_docs/01_requirements_engineering/SRS_MASTER_12_DEPARTMENTS.md`](../../software_docs/01_requirements_engineering/SRS_MASTER_12_DEPARTMENTS.md)
+
+## Feed targets
+
+- `docs/software_docs/01_requirements_engineering/SRS_MASTER_12_DEPARTMENTS.md`
+- `docs/plans/documentation/REQ_CROSSWALK.md`
+- frontend assistant workflow/reliability lanes in `docs/plans/waves/WAVE_39_*` and `WAVE_40_*`
 
 ---
 

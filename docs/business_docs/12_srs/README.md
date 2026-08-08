@@ -2,7 +2,9 @@
 
 **Status:** Active  
 **Owner:** Product + Architecture  
-**Last Updated:** 2026-08-03
+**Last Updated:** 2026-08-07  
+**Next Review:** 2026-08-21  
+**Source of Truth:** Canonical business-to-software SRS bridge
 
 ## 1. Purpose
 
@@ -12,6 +14,24 @@ It translates business intent into software requirement structures aligned with 
 This folder is also the canonical entrypoint for the **formal business SRS wrapper**.
 Counted canonical business requirements are maintained in `../05_requirements/functional-requirements.md`;
 this folder summarizes, structures, and bridges them into software-facing SRS/SDD/UC artifacts.
+
+## 2.1 Enterprise inventory bridge
+
+- [`../05_requirements/enterprise-requirement-inventory.md`](../05_requirements/enterprise-requirement-inventory.md) — companion business inventory and SRS counterpart index
+- [`../../software_docs/01_requirements_engineering/ENTRPRISE_SRS_INVENTORY_2026-08-06.md`](../../software_docs/01_requirements_engineering/ENTRPRISE_SRS_INVENTORY_2026-08-06.md) — software-side enterprise inventory
+
+## Canonical governance links
+
+- [`../05_requirements/functional-requirements.md`](../05_requirements/functional-requirements.md)
+- [`../05_requirements/non-functional-requirements.md`](../05_requirements/non-functional-requirements.md)
+- [`../../plans/documentation/REQ_CROSSWALK.md`](../../plans/documentation/REQ_CROSSWALK.md)
+- [`../../software_docs/01_requirements_engineering/SRS_MASTER_12_DEPARTMENTS.md`](../../software_docs/01_requirements_engineering/SRS_MASTER_12_DEPARTMENTS.md)
+
+## Feed targets
+
+- `docs/software_docs/01_requirements_engineering/SRS_MASTER_12_DEPARTMENTS.md`
+- `docs/plans/documentation/REQ_CROSSWALK.md`
+- frontend and release readiness requirement lanes in `docs/plans/waves/WAVE_37_*` through `WAVE_40_*`
 
 ## 2. Canonical contents
 
@@ -64,8 +84,17 @@ The current `srs-master.md` is still a legacy summary-oriented SRS. The active u
 
 1. preserve the current 58-REQ business baseline,
 2. restructure the business SRS around the same 12 departments used by `../../software_docs/01_requirements_engineering/SRS_MASTER_12_DEPARTMENTS.md`,
-3. grow toward a first complete business SRS target of **420-650** unique business REQs,
+3. preserve business-layer authority while aligning to the hybrid 10k software SRS program (canonical software requirement IDs + linked UC scenarios),
 4. mirror approved business REQ families into software SRS/SDD/UC/test artifacts without creating competing requirement authorities.
+
+## 5.1 Hybrid 10k alignment notes
+
+- Canonical large-scale counting authority for the 10k campaign is software-side (registry-governed) and must not be inferred from narrative business mentions.
+- Business `REQ-*` identifiers remain upstream intent aliases and must map into canonical software registry rows.
+- Mandatory bridge artifacts for 10k execution:
+  - `../../plans/documentation/SRS_10K_ID_ALLOCATION_MATRIX_2026-08-07.md`
+  - `../../plans/documentation/SRS_10K_WRITING_STYLE_GUIDE_2026-08-07.md`
+  - `../../plans/documentation/SRS_10K_HYBRID_REGISTRY_SCHEMA_2026-08-07.md`
 
 ## 6. Related artifacts
 

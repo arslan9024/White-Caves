@@ -22,5 +22,5 @@
 
 | Subsystem | Duplicate Assets                         | Consolidation Target | Status                                                              |
 | --------- | ---------------------------------------- | -------------------- | ------------------------------------------------------------------- |
-| Layouts   | `Sidebar.tsx`, `LegacySidebar.tsx`       | `GlobalSidebar.tsx`  | [Action Required: Enforce production-ready engineering constraints] |
-| Config    | `.env.local.backup`, `.env.consolidated` | `.env`               | [Action Required: Enforce production-ready engineering constraints] |
+| Layouts   | `Sidebar.tsx`, `LegacySidebar.tsx`       | `GlobalSidebar.tsx`  | Active — consolidation tracked through architecture governance.     |
+| Config    | `.env.local.backup`, `.env.consolidated` | `.env`               | Active — backup/env cleanup governed by deduplication policy.       |

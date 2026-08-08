@@ -1,5 +1,25 @@
 # Package 4: Advanced UI Components
 
+<!-- markdownlint-disable MD022 MD031 MD032 MD040 MD060 -->
+
+**Status**: ✅ Complete
+**Last Updated**: 2026-08-07
+**Next Review**: 2026-08-21
+**Source of Truth**: CRM advanced UI components feature specification (business layer)
+
+## Canonical governance links
+
+- [`../05_requirements/functional-requirements.md`](../05_requirements/functional-requirements.md)
+- [`../05_requirements/non-functional-requirements.md`](../05_requirements/non-functional-requirements.md)
+- [`../../plans/documentation/REQ_CROSSWALK.md`](../../plans/documentation/REQ_CROSSWALK.md)
+- [`../../software_docs/01_requirements_engineering/SRS_MASTER_12_DEPARTMENTS.md`](../../software_docs/01_requirements_engineering/SRS_MASTER_12_DEPARTMENTS.md)
+
+## Feed targets
+
+- `docs/software_docs/01_requirements_engineering/SRS_MASTER_12_DEPARTMENTS.md`
+- `docs/plans/documentation/REQ_CROSSWALK.md`
+- frontend UI reliability/refactor lanes in `docs/plans/waves/WAVE_39_*` and `WAVE_40_*`
+
 ## Overview
 Package 4 delivers a comprehensive, enterprise-grade UI component library for the White Caves platform, including foundational components for notifications, status indicators, interactive controls, and loading states. These components provide a consistent, professional user experience across the entire application.
 

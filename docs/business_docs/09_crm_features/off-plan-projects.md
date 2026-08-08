@@ -1,10 +1,28 @@
 # Off-Plan Projects Management — Business Specification
 
+<!-- markdownlint-disable MD040 -->
+
 **Owner:** @Maya (Llama 3.1 70B — Groq Console)
 **Status:** 🟡 [Pending specific implementation definition per 90% readiness guidelines] — awaiting @Maya Task 1
 **Target:** 14 sections
 **CRM Module:** AtlasProjectsCRM (src/components/crm/AtlasProjectsCRM/)
 **API Base:** `/api/properties?transactionType=primary`, `/api/leasing-inventory`
+**Last Updated:** 2026-08-07
+**Next Review:** 2026-08-21
+**Source of Truth:** CRM off-plan projects feature specification (business layer)
+
+## Canonical governance links
+
+- [`../05_requirements/functional-requirements.md`](../05_requirements/functional-requirements.md)
+- [`../05_requirements/compliance-requirements.md`](../05_requirements/compliance-requirements.md)
+- [`../../plans/documentation/REQ_CROSSWALK.md`](../../plans/documentation/REQ_CROSSWALK.md)
+- [`../../software_docs/01_requirements_engineering/SRS_MASTER_12_DEPARTMENTS.md`](../../software_docs/01_requirements_engineering/SRS_MASTER_12_DEPARTMENTS.md)
+
+## Feed targets
+
+- `docs/software_docs/01_requirements_engineering/SRS_MASTER_12_DEPARTMENTS.md`
+- `docs/plans/documentation/REQ_CROSSWALK.md`
+- frontend state/reliability closure lanes in `docs/plans/waves/WAVE_38_*` through `WAVE_40_*`
 
 ---
 
@@ -22,27 +40,67 @@ AtlasProjectsCRM manages the full lifecycle of off-plan property projects — fr
 - ROI projection calculator for investor clients
 - Cancellation refund engine (RERA Article 11)
 
+## Requirement catalog
+
+### REQ-OFFP-001: Project and unit inventory management
+
+The system shall track off-plan projects, their unit inventory, and structured payment plan options.
+
+**Acceptance criteria:**
+
+- [ ] Projects store developer, launch, completion, and inventory fields
+- [ ] Units are tracked with status and reservation lock behavior
+- [ ] Payment plan options are represented as milestone arrays
+
+**Evidence:** project record, unit inventory, and payment plan snapshot.
+
+### REQ-OFFP-002: Reservation to SPA workflow
+
+The system shall support the buyer reservation flow from deposit capture through SPA signing and Oqood registration.
+
+**Acceptance criteria:**
+
+- [ ] Reservation requires an EOI deposit reference
+- [ ] SPA signing appointment is scheduled before registration
+- [ ] Oqood registration is targetable within 60 days
+
+**Evidence:** reservation log and SPA/Oqood timeline.
+
+### REQ-OFFP-003: Milestone tracking and payment engine
+
+The system shall track construction milestones and payment schedules with overdue handling.
+
+**Acceptance criteria:**
+
+- [ ] Milestone percentage and due dates are visible
+- [ ] Overdue and variance states are surfaced
+- [ ] Buyers receive milestone notifications
+
+**Evidence:** milestone tracker and payment schedule audit.
+
+### REQ-OFFP-004: Escrow, cancellation, and ROI controls
+
+The system shall enforce escrow compliance, calculate cancellation refunds, and provide ROI estimates.
+
+**Acceptance criteria:**
+
+- [ ] Escrow evidence is required before disbursement
+- [ ] Refund brackets follow the defined policy rules
+- [ ] ROI outputs include gross yield, net yield, and payback period
+
+**Evidence:** escrow validation log, refund worksheet, and ROI report.
+
+## Traceability
+
+- Maps to `REQ-INV-003`, `REQ-VAL-002`, and finance/investment coverage
+- Aligns to `WC-SRS-012`, `WC-SRS-014`, and off-plan evidence artifacts
+- Feeds reservation, escrow, and investor validation
+
 ---
 
-## [Action Required: Enforce production-ready engineering constraints] — @Maya Task 1
+## Implementation handoff
 
-Paste the output from this prompt into the sections below:
-
-```
-@Maya — DRAFT: off-plan-projects.md → spec AtlasProjectsCRM: project schema (developer, project name, location GeoPoint, launch date, estimated completion, totalUnits, availableUnits, paymentPlanOptions array), unit inventory (unitNumber, floor, type: studio/1BR/2BR/3BR/penthouse, BUA sqft, view, listPrice, status: available/reserved/sold/transferred), buyer reservation workflow (EOI deposit receipt → SPA draft → signing appointment → Oqood DLD registration within 60 days → payment milestone schedule), project milestone tracker (construction % from developer API or manual update, estimated handover countdown, delay flag), ROI projection calculator (inputs: purchase price, expected rent per RERA index, service charge/sqft → outputs: gross yield %, net yield %, payback years).
-```
-
-## [Action Required: Enforce production-ready engineering constraints] — @Maya Task 2
-
-```
-@Maya — DRAFT: handover-management.md → spec VestaHandoverCRM: snagging checklist, snagging report PDF, handover appointment scheduling, punch list tracking, keys & access issuance log, DEWA connection tracker, handover completion certificate.
-```
-
-## [Action Required: Enforce production-ready engineering constraints] — @Maya Task 3
-
-```
-@Maya — EXPAND: off-plan-projects.md → add payment plan engine: SPA payment schedule table, escrow compliance (Law No. 8 of 2007), cancellation refund table (RERA Article 11), developer credit rating display.
-```
+The planning prompts above are superseded by the requirement catalog in this document. The active specification now covers project inventory, reservation workflow, milestone tracking, escrow compliance, cancellation rules, and ROI controls.
 
 ## Project Schema
 

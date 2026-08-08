@@ -51,6 +51,7 @@ This keeps the business documentation, software documentation, and implementatio
 3. Add or update the relevant software design artifact.
 4. Link the workflow or use case.
 5. Record the implementation and validation evidence in the plans or wave documentation.
+6. Attach a release note using [../RELEASE_AND_ROLLOUT_NOTES_TEMPLATE_2026-08-06.md](../RELEASE_AND_ROLLOUT_NOTES_TEMPLATE_2026-08-06.md).
 
 ---
 

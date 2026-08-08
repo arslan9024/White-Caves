@@ -1,5 +1,24 @@
 # UI/UX Specification — CRM Feature Snapshot
 
+**Status:** Active  
+**Owner:** @Marissa  
+**Last Updated:** 2026-08-07  
+**Next Review:** 2026-08-21  
+**Source of Truth:** CRM UI/UX specification for business-feature experience contracts
+
+## Canonical governance links
+
+- [`../05_requirements/functional-requirements.md`](../05_requirements/functional-requirements.md)
+- [`../05_requirements/non-functional-requirements.md`](../05_requirements/non-functional-requirements.md)
+- [`../../plans/documentation/REQ_CROSSWALK.md`](../../plans/documentation/REQ_CROSSWALK.md)
+- [`../../software_docs/01_requirements_engineering/SRS_MASTER_12_DEPARTMENTS.md`](../../software_docs/01_requirements_engineering/SRS_MASTER_12_DEPARTMENTS.md)
+
+## Feed targets
+
+- `docs/software_docs/01_requirements_engineering/SRS_MASTER_12_DEPARTMENTS.md`
+- `docs/plans/documentation/REQ_CROSSWALK.md`
+- frontend architecture/state/performance/reliability lanes in `docs/plans/waves/WAVE_37_*` through `WAVE_40_*`
+
 > **Owner:** @Marissa
 > **Purpose:** Fast-track UX spec mapped to CRM feature lane requirements.
 

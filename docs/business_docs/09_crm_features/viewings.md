@@ -7,12 +7,96 @@
 **Target:** 10 sections
 **API Route:** `/api/viewings`
 **Related:** scheduling-calendar.md, leads, properties
+**Last Updated:** 2026-08-07
+**Next Review:** 2026-08-21
+**Source of Truth:** CRM property viewings feature specification (business layer)
+
+## Canonical governance links
+
+- [`../05_requirements/functional-requirements.md`](../05_requirements/functional-requirements.md)
+- [`../05_requirements/non-functional-requirements.md`](../05_requirements/non-functional-requirements.md)
+- [`../../plans/documentation/REQ_CROSSWALK.md`](../../plans/documentation/REQ_CROSSWALK.md)
+- [`../../software_docs/01_requirements_engineering/SRS_MASTER_12_DEPARTMENTS.md`](../../software_docs/01_requirements_engineering/SRS_MASTER_12_DEPARTMENTS.md)
+
+## Feed targets
+
+- `docs/software_docs/01_requirements_engineering/SRS_MASTER_12_DEPARTMENTS.md`
+- `docs/plans/documentation/REQ_CROSSWALK.md`
+- frontend workflow/reliability lanes in `docs/plans/waves/WAVE_39_*` and `WAVE_40_*`
 
 ---
 
 ## Overview
 
 The viewings module manages all property viewing appointments — in-person and virtual — from lead request through confirmation, execution, post-viewing feedback, and conversion tracking. It integrates with the agent calendar to prevent double-booking and auto-triggers follow-up workflows after each viewing.
+
+## Requirement catalog
+
+### REQ-VW-001: Viewing scheduling and confirmation
+
+The system shall create and confirm property viewing appointments based on agent availability and property rules.
+
+**Acceptance criteria:**
+
+- [ ] Viewing records store property, lead, agent, start time, duration, and type
+- [ ] Confirmed bookings trigger a customer confirmation message
+- [ ] The UI prevents invalid scheduling when the slot is already consumed
+
+**Evidence:** viewing record, confirmation message log, and scheduler snapshot.
+
+### REQ-VW-002: Conflict detection and open-house handling
+
+The system shall reject double-booking conflicts while allowing controlled open-house overlaps.
+
+**Acceptance criteria:**
+
+- [ ] Same-agent time overlaps are rejected for standard viewings
+- [ ] Same-property time overlaps are rejected unless open-house mode is enabled
+- [ ] Conflict messages explain the reason and next available options
+
+**Evidence:** conflict engine log, rejected booking record, and open-house configuration.
+
+### REQ-VW-003: Calendar and ICS synchronization
+
+The system shall generate calendar artifacts and keep external calendar systems aligned.
+
+**Acceptance criteria:**
+
+- [ ] Confirmed bookings generate an .ics file
+- [ ] Calendar sync updates reflect confirmation, reschedule, and cancellation events
+- [ ] Location and notes are included in the exported calendar item
+
+**Evidence:** ICS artifact, calendar sync log, and external event trace.
+
+### REQ-VW-004: Virtual viewing lifecycle
+
+The system shall support secure virtual viewing links and consent-aware recording behavior.
+
+**Acceptance criteria:**
+
+- [ ] Virtual appointments can generate a meeting link at confirmation time
+- [ ] Recording consent is captured before enabling recording
+- [ ] Fallback handling is available when physical access is blocked
+
+**Evidence:** meeting link record, consent flag, and fallback handling log.
+
+### REQ-VW-005: Post-viewing feedback and conversion analytics
+
+The system shall request feedback after completed viewings and track conversion outcomes.
+
+**Acceptance criteria:**
+
+- [ ] Feedback prompt is sent after completion
+- [ ] Viewing-to-offer metrics are available per property and agent
+- [ ] Follow-up tasks are created within the documented SLA
+
+**Evidence:** feedback response record, conversion analytics snapshot, and task queue entry.
+
+## Traceability
+
+- Supports `REQ-LEAD-003` and adjacent lead workflow requirements in `functional-requirements.md`
+- Maps to `WC-SRS-011`, `WC-SRS-012`, and scheduling/inbox automation artifacts
+- Feeds operations, analytics, and tenant/handover follow-up workflows
 
 **Key Capabilities:**
 
@@ -27,25 +111,9 @@ The viewings module manages all property viewing appointments — in-person and 
 
 ---
 
-## [Action Required: Enforce production-ready engineering constraints] — @Booking Task 1
+## Implementation handoff
 
-Paste the output from this prompt into the sections below:
-
-```
-@Booking — DRAFT: viewings.md → spec /api/viewings route: viewing schema (propertyId, leadId, agentId, scheduledAt, durationMinutes: default 60, status: scheduled/confirmed/completed/cancelled/no_show, type: in-person/virtual, zoomLink if virtual, notes, feedbackRating 1-5, feedbackText), scheduling flow (lead selects slot from agent availability → confirmation WhatsApp message sent → 24h reminder → post-viewing WhatsApp feedback request), conflict detection (agent double-booking check, property already has confirmed viewing at same time), ICS file generation (.ics export with property address as location), bulk open-house slots (one property, multiple concurrent viewing slots), viewing conversion metric (viewings → offers rate per property, tracked in analytics).
-```
-
-## [Action Required: Enforce production-ready engineering constraints] — @Booking Task 2
-
-```
-@Booking — DRAFT: scheduling-calendar.md → spec agent calendar: availability config, appointment types, calendar views, multi-agent overlay, Google Calendar sync (OAuth2), Outlook sync (Microsoft Graph API), mobile push notifications.
-```
-
-## [Action Required: Enforce production-ready engineering constraints] — @Booking Task 3
-
-```
-@Booking — EXPAND: viewings.md → add virtual viewing spec, viewing preparation checklist, property access log, post-viewing automated workflow (send brochure, create follow-up task, update lead stage, prompt agent for verbal feedback).
-```
+The planning prompts above are superseded by the requirement catalog in this document. The active specification now covers viewing scheduling, conflict detection, ICS exports, open-house slots, virtual viewings, and post-viewing automation.
 
 ## Viewing Schema Contract
 

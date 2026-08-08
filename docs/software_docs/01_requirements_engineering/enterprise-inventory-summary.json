@@ -1,0 +1,256 @@
+{
+  "generatedAt": "2026-08-07T06:43:06.241Z",
+  "targetRequirementCount": 3000,
+  "generatedRequirementCount": 3000,
+  "businessPackageCount": 18,
+  "softwareDomainCount": 16,
+  "businessPackages": [
+    {
+      "id": "BD-001",
+      "packageName": "Requirements Foundation",
+      "srsCounterpart": "WC-SRS-001",
+      "coreArtifacts": "Functional requirements, non-functional requirements, business rules, risk register",
+      "primaryOwner": "Product",
+      "status": "Active"
+    },
+    {
+      "id": "BD-002",
+      "packageName": "Sales Operations",
+      "srsCounterpart": "WC-SRS-002",
+      "coreArtifacts": "Lead-management docs, pipeline docs, offer workflow docs, sales CRM specs",
+      "primaryOwner": "Sales Ops",
+      "status": "Active"
+    },
+    {
+      "id": "BD-003",
+      "packageName": "Inventory & Property Master Data",
+      "srsCounterpart": "WC-SRS-003",
+      "coreArtifacts": "Property inventory docs, valuation docs, market intelligence docs",
+      "primaryOwner": "Inventory",
+      "status": "Active"
+    },
+    {
+      "id": "BD-004",
+      "packageName": "Leasing & Tenancy Operations",
+      "srsCounterpart": "WC-SRS-004",
+      "coreArtifacts": "Tenancy-Ejari docs, landlord portal docs, legal-management docs",
+      "primaryOwner": "Leasing",
+      "status": "Active"
+    },
+    {
+      "id": "BD-005",
+      "packageName": "Finance & Revenue Management",
+      "srsCounterpart": "WC-SRS-005",
+      "coreArtifacts": "Financial-reporting docs, revenue-model docs, payout rules",
+      "primaryOwner": "Finance",
+      "status": "Active"
+    },
+    {
+      "id": "BD-006",
+      "packageName": "Compliance & Regulatory Governance",
+      "srsCounterpart": "WC-SRS-006",
+      "coreArtifacts": "Compliance requirements, PDPL docs, AML docs, risk register",
+      "primaryOwner": "Compliance",
+      "status": "Active"
+    },
+    {
+      "id": "BD-007",
+      "packageName": "Operations & Service Delivery",
+      "srsCounterpart": "WC-SRS-007",
+      "coreArtifacts": "Workflow docs, maintenance docs, handover-management docs",
+      "primaryOwner": "Operations",
+      "status": "Active"
+    },
+    {
+      "id": "BD-008",
+      "packageName": "Marketing & Growth",
+      "srsCounterpart": "WC-SRS-008",
+      "coreArtifacts": "Marketing campaigns docs, SEO strategy docs, campaign attribution docs",
+      "primaryOwner": "Marketing",
+      "status": "Active"
+    },
+    {
+      "id": "BD-009",
+      "packageName": "AI Assistants & Automation",
+      "srsCounterpart": "WC-SRS-009",
+      "coreArtifacts": "AI assistants README, integration map, persona capability docs",
+      "primaryOwner": "AI Product",
+      "status": "Active"
+    },
+    {
+      "id": "BD-010",
+      "packageName": "Tenant & Landlord Experience",
+      "srsCounterpart": "WC-SRS-010",
+      "coreArtifacts": "Tenant portal docs, landlord portal docs, portal UX requirements",
+      "primaryOwner": "CX / Portal",
+      "status": "Active"
+    },
+    {
+      "id": "BD-011",
+      "packageName": "Scheduling & Viewing Operations",
+      "srsCounterpart": "WC-SRS-011",
+      "coreArtifacts": "Scheduling-calendar docs, viewing docs, appointment flow docs",
+      "primaryOwner": "Sales Ops",
+      "status": "Active"
+    },
+    {
+      "id": "BD-012",
+      "packageName": "Document & Signature Workflows",
+      "srsCounterpart": "WC-SRS-012",
+      "coreArtifacts": "Document-generation docs, legal-management docs, tenant document docs",
+      "primaryOwner": "Operations",
+      "status": "Active"
+    },
+    {
+      "id": "BD-013",
+      "packageName": "Analytics & Executive Reporting",
+      "srsCounterpart": "WC-SRS-013",
+      "coreArtifacts": "Analytics-dashboard docs, market-analytics docs, reporting docs",
+      "primaryOwner": "Analytics",
+      "status": "Active"
+    },
+    {
+      "id": "BD-014",
+      "packageName": "Mobile & PWA Experience",
+      "srsCounterpart": "WC-SRS-014",
+      "coreArtifacts": "UI-UX specification docs, mobile research docs, responsive design docs",
+      "primaryOwner": "UX",
+      "status": "Active"
+    },
+    {
+      "id": "BD-015",
+      "packageName": "Integration & API Ecosystem",
+      "srsCounterpart": "WC-SRS-015",
+      "coreArtifacts": "Integration requirements, integration-map, external API docs",
+      "primaryOwner": "Platform",
+      "status": "Active"
+    },
+    {
+      "id": "BD-016",
+      "packageName": "Security, Audit & Privacy",
+      "srsCounterpart": "WC-SRS-016",
+      "coreArtifacts": "Audit-trail docs, privacy docs, security requirements",
+      "primaryOwner": "Security",
+      "status": "Active"
+    },
+    {
+      "id": "BD-017",
+      "packageName": "Market Intelligence & Valuation",
+      "srsCounterpart": "WC-SRS-017",
+      "coreArtifacts": "Property-valuation docs, market-intelligence docs, pricing model docs",
+      "primaryOwner": "Market Intelligence",
+      "status": "Active"
+    },
+    {
+      "id": "BD-018",
+      "packageName": "Off-Plan Delivery & Handover",
+      "srsCounterpart": "WC-SRS-018",
+      "coreArtifacts": "Off-plan-projects docs, handover-management docs, project delivery docs",
+      "primaryOwner": "Projects",
+      "status": "Active"
+    }
+  ],
+  "softwareDomains": [
+    {
+      "domain": "Executive & strategy",
+      "coverageStatus": "Covered",
+      "representativeRequirementIds": "FR-EX-001, BR-EX-002",
+      "readinessNote": "Mature governance and reporting coverage."
+    },
+    {
+      "domain": "Sales & brokerage",
+      "coverageStatus": "Covered",
+      "representativeRequirementIds": "FR-SB-001, FR-SB-002, AC-SB-001",
+      "readinessNote": "Strong pipeline and lead lifecycle coverage."
+    },
+    {
+      "domain": "Leasing & tenancy",
+      "coverageStatus": "Covered",
+      "representativeRequirementIds": "FR-LT-001, FR-LT-002, POL-LT-001",
+      "readinessNote": "Good lifecycle and legal workflow coverage."
+    },
+    {
+      "domain": "Property & facilities",
+      "coverageStatus": "Covered",
+      "representativeRequirementIds": "FR-PF-001, FR-PF-002",
+      "readinessNote": "Operations and handover coverage is present."
+    },
+    {
+      "domain": "Finance & treasury",
+      "coverageStatus": "Covered",
+      "representativeRequirementIds": "FR-FT-001, FR-FT-002, POL-FT-001",
+      "readinessNote": "Financial approvals and VAT controls are explicit."
+    },
+    {
+      "domain": "Compliance & risk",
+      "coverageStatus": "Covered",
+      "representativeRequirementIds": "POL-CR-001, SEC-CR-001",
+      "readinessNote": "Compliance and audit controls are well represented."
+    },
+    {
+      "domain": "Legal & contracts",
+      "coverageStatus": "Covered",
+      "representativeRequirementIds": "BR-LD-001, POL-LD-001",
+      "readinessNote": "Contract and notice workflows are defined."
+    },
+    {
+      "domain": "Marketing & growth",
+      "coverageStatus": "Partial",
+      "representativeRequirementIds": "FR-MG-001, AC-MG-001",
+      "readinessNote": "Needs stronger acceptance criteria and traceability."
+    },
+    {
+      "domain": "Communications & client care",
+      "coverageStatus": "Partial",
+      "representativeRequirementIds": "FR-CC-001, INT-CC-001",
+      "readinessNote": "Messaging and notification flows need tighter evidence links."
+    },
+    {
+      "domain": "Technology & platform",
+      "coverageStatus": "Covered",
+      "representativeRequirementIds": "NFR-TP-001, OBS-TP-001",
+      "readinessNote": "Platform, observability, and deployment readiness are documented."
+    },
+    {
+      "domain": "Data, AI & BI",
+      "coverageStatus": "Covered",
+      "representativeRequirementIds": "FR-DA-001, INT-DA-001",
+      "readinessNote": "Analytics and AI integration requirements are present."
+    },
+    {
+      "domain": "HR & workforce",
+      "coverageStatus": "Partial",
+      "representativeRequirementIds": "FR-HR-001, AC-HR-001",
+      "readinessNote": "Workforce role and onboarding requirements need expansion."
+    },
+    {
+      "domain": "Security & audit controls",
+      "coverageStatus": "Covered",
+      "representativeRequirementIds": "SEC-SECURITY-001, OBS-SECURITY-001",
+      "readinessNote": "Good control-plane coverage."
+    },
+    {
+      "domain": "Privacy & retention",
+      "coverageStatus": "Covered",
+      "representativeRequirementIds": "POL-PDPL-001, SEC-DATA-001",
+      "readinessNote": "Privacy and retention expectations are present."
+    },
+    {
+      "domain": "Integration & interoperability",
+      "coverageStatus": "Covered",
+      "representativeRequirementIds": "INT-EXTERNAL-001, INT-WHATSAPP-001",
+      "readinessNote": "Cross-system and external-service contracts are documented."
+    },
+    {
+      "domain": "Release & change governance",
+      "coverageStatus": "Covered",
+      "representativeRequirementIds": "OBS-RELEASE-001, AC-RELEASE-001",
+      "readinessNote": "Release readiness and rollback expectations are represented."
+    }
+  ],
+  "coverageSnapshot": {
+    "businessReady": true,
+    "softwareReady": true,
+    "expansionPlan": "Split-by-department inventory with master index, owner, acceptance criteria, and evidence references."
+  }
+}

@@ -1,9 +1,26 @@
 # Wave 12 — Email Wiring: Template Registry + Event Trigger Matrix
 
+<!-- markdownlint-disable MD040 MD060 -->
+
 **Drafted by:** @Handlebars  
 **Model:** Gemini 2.0 Flash  
 **Status:** ✅ READY (retrospective spec for implemented Wave 12)  
 **Last Updated:** 2026-05-25  
+**Next Review:** 2026-08-21  
+**Source of Truth:** CRM Wave 12 email wiring feature specification (business layer)
+
+## Canonical governance links
+
+- [`../05_requirements/functional-requirements.md`](../05_requirements/functional-requirements.md)
+- [`../05_requirements/non-functional-requirements.md`](../05_requirements/non-functional-requirements.md)
+- [`../../plans/documentation/REQ_CROSSWALK.md`](../../plans/documentation/REQ_CROSSWALK.md)
+- [`../../software_docs/01_requirements_engineering/SRS_MASTER_12_DEPARTMENTS.md`](../../software_docs/01_requirements_engineering/SRS_MASTER_12_DEPARTMENTS.md)
+
+## Feed targets
+
+- `docs/software_docs/01_requirements_engineering/SRS_MASTER_12_DEPARTMENTS.md`
+- `docs/plans/documentation/REQ_CROSSWALK.md`
+- frontend notification/reliability lanes in `docs/plans/waves/WAVE_39_*` and `WAVE_40_*`
 
 CONSUMES←@Cron: `business_docs/09_crm_features/wave-12-automation-engine.md#job-definitions`  
 FEEDS→@Annie: `business_docs/09_crm_features/email-automation.md#trigger-events`  

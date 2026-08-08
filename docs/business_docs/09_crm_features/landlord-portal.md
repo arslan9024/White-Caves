@@ -1,16 +1,89 @@
 # Landlord Portal — CRM Feature Specification
 
-> **Status:** Planned  
+<!-- markdownlint-disable MD022 MD024 MD031 MD032 MD040 MD060 -->
+
+> **Status:** Active -- requirement catalog expanded.
 > **Module Owner:** Omar (Financial Advisor AI)  
 > **Last Updated:** April 2026  
 > **Priority:** High  
-> **API Endpoints:** `/api/landlord-portal`, `/api/landlord/properties`, `/api/landlord/financials`
+> **API Endpoints:** `/api/landlord-portal`, `/api/landlord/properties`, `/api/landlord/financials`  
+> **Next Review:** 2026-08-21  
+> **Source of Truth:** CRM landlord portal feature specification (business layer)
+
+## Canonical governance links
+
+- [`../05_requirements/functional-requirements.md`](../05_requirements/functional-requirements.md)
+- [`../05_requirements/compliance-requirements.md`](../05_requirements/compliance-requirements.md)
+- [`../../plans/documentation/REQ_CROSSWALK.md`](../../plans/documentation/REQ_CROSSWALK.md)
+- [`../../software_docs/01_requirements_engineering/SRS_MASTER_12_DEPARTMENTS.md`](../../software_docs/01_requirements_engineering/SRS_MASTER_12_DEPARTMENTS.md)
+
+## Feed targets
+
+- `docs/software_docs/01_requirements_engineering/SRS_MASTER_12_DEPARTMENTS.md`
+- `docs/plans/documentation/REQ_CROSSWALK.md`
+- frontend architecture/state/resilience lanes in `docs/plans/waves/WAVE_37_*` through `WAVE_40_*`
 
 ---
 
 ## Overview
 
 The Landlord Portal provides property owners with a dedicated, self-service interface to manage their real estate portfolio, track rental income, monitor tenant status, and communicate with their property management team. The portal is designed as a secure, role-restricted view into the White Caves CRM with mobile-responsive access.
+
+## Requirement catalog
+
+### REQ-LP-001: Portfolio dashboard and property visibility
+
+The system shall present landlords with a secure portfolio dashboard showing owned properties and key occupancy data.
+
+**Acceptance criteria:**
+
+- [ ] Landlords see only authorized properties
+- [ ] Occupancy, vacancy, and portfolio value are visible at a glance
+- [ ] Mobile view preserves the same portfolio data set
+
+**Evidence:** portfolio dashboard snapshot and access control log.
+
+### REQ-LP-002: Financial transparency and report downloads
+
+The system shall display rental income, expenses, and ROI summaries with downloadable reports.
+
+**Acceptance criteria:**
+
+- [ ] Income and expense summaries are visible per property and portfolio
+- [ ] Reports can be downloaded in the configured export formats
+- [ ] Currency display supports AED primary and secondary toggles where enabled
+
+**Evidence:** financial report download log and ROI summary.
+
+### REQ-LP-003: Maintenance and renewal approvals
+
+The system shall allow landlords to review maintenance approvals and renewal actions that require consent.
+
+**Acceptance criteria:**
+
+- [ ] High-cost maintenance items request landlord approval
+- [ ] Renewal approvals or declines are auditable
+- [ ] Status updates are visible to both landlord and manager
+
+**Evidence:** approval record, renewal action log, and status snapshot.
+
+### REQ-LP-004: Document access and communication audit
+
+The system shall provide access to tenancy documents and a visible communication history with the property manager.
+
+**Acceptance criteria:**
+
+- [ ] Ejari, contracts, and related documents are downloadable where permitted
+- [ ] Communication history is visible and searchable
+- [ ] Unauthorized document access is blocked
+
+**Evidence:** document access audit, message history record, and blocked access log.
+
+## Traceability
+
+- Supports `REQ-TENANT-004`, `REQ-FRPT-001`, and `REQ-FRPT-002`
+- Aligns to `WC-SRS-012`, `WC-SRS-016`, and landlord access evidence
+- Feeds portal permission, financial, and maintenance approval validation
 
 ### Priority Module Alignment (May 2026)
 

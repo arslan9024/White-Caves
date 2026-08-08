@@ -1,7 +1,7 @@
 # Functional Requirements — White Caves CRM Platform
 
-> **Version:** 1.2  
-> **Last Updated:** 2026-08-02  
+> **Version:** 1.3  
+> **Last Updated:** 2026-08-07  
 > **Status:** Active / Normalization In Progress  
 > **Owner:** Product Team  
 > **Source of Truth:** Canonical business requirements baseline
@@ -37,6 +37,18 @@ Each requirement should progressively map to:
 - one or more software realization artifacts in `docs/software_docs/`;
 - a validation surface (test, audit, or wave backlog item);
 - a compliance control or RBAC mapping where applicable.
+
+## Business-to-SRS uplift contract
+
+Every requirement entry should now be packaged with the following delivery context:
+
+1. owning department and business owner;
+2. requirement ID and requirement family (`FR`, `BR`, `NFR`, `POL`, `SEC`, `INT`);
+3. linked CRM feature or workflow;
+4. downstream SRS requirement IDs and associated acceptance evidence;
+5. release gate or validation artifact that proves completion.
+
+If any of these are missing, the requirement should be treated as not yet ready for implementation handoff.
 
 ---
 
@@ -448,6 +460,30 @@ Send bulk WhatsApp messages to segmented contact lists.
 - [ ] Delivery report: sent, delivered, read, failed per recipient
 - [ ] Respect opt-out: contacts who opted out are excluded automatically
 
+### REQ-WA-006: Webhook Verification and Message Persistence
+
+**Priority:** Critical | **Status:** In Progress
+
+Webhook events from Meta must be verified, normalized, and stored before any downstream processing.
+
+**Acceptance Criteria:**
+
+- [ ] Invalid webhook signatures are rejected
+- [ ] Valid inbound events are persisted with source, timestamp, and message metadata
+- [ ] Webhook failures are surfaced in the operations audit log
+
+### REQ-WA-007: Conversation Analytics and SLA Monitoring
+
+**Priority:** High | **Status:** Planned
+
+WhatsApp conversations must expose response-time, queue-depth, and conversion reporting.
+
+**Acceptance Criteria:**
+
+- [ ] Dashboard shows first response time and resolution time
+- [ ] Queue depth is visible by assignment bucket
+- [ ] Conversion metrics can be filtered by source and agent
+
 ---
 
 ## Module 5: Sales Pipeline & Transactions (Sophia)
@@ -622,6 +658,30 @@ Tenants and landlords can raise maintenance requests; operations team tracks res
 - [ ] Status: Open → In Progress → Pending Approval → Closed
 - [ ] Resolution time tracked; alerts for requests open > 48 hours
 
+### REQ-TENANT-005: Tenant Portal Home Dashboard
+
+**Priority:** High | **Status:** Planned
+
+Tenants must see a dashboard summary of lease, payment, and maintenance status.
+
+**Acceptance Criteria:**
+
+- [ ] Lease countdown, next payment, and open maintenance counts are visible
+- [ ] Empty states are safe when tenant data is incomplete
+- [ ] Dashboard respects Arabic/English locale and mobile layout
+
+### REQ-TENANT-006: Tenant Documents and Profile Access
+
+**Priority:** High | **Status:** Planned
+
+Tenants must be able to download tenancy documents and review personal profile details.
+
+**Acceptance Criteria:**
+
+- [ ] Ejari, tenancy agreement, and NOC actions are available when permitted
+- [ ] Emirates ID and passport expiry alerts are surfaced to the tenant
+- [ ] Tenant can only access their own documents and profile data
+
 ---
 
 ## Module 8: Compliance & Regulatory (Laila)
@@ -764,18 +824,18 @@ Daily automated backups of all database data. Manual restore capability.
 | Authentication | 6 | 5 | 0 | 1 | 0 |
 | Lead Management | 10 | 7 | 0 | 3 | 0 |
 | Property Inventory | 8 | 4 | 0 | 4 | 0 |
-| WhatsApp | 5 | 1 | 1 | 3 | 0 |
+| WhatsApp | 7 | 1 | 1 | 5 | 0 |
 | Pipeline/Transactions | 4 | 2 | 0 | 2 | 0 |
 | Finance | 4 | 2 | 0 | 2 | 0 |
-| Tenant/Lease | 4 | 1 | 1 | 2 | 0 |
+| Tenant/Lease | 6 | 1 | 1 | 4 | 0 |
 | Compliance | 3 | 1 | 0 | 2 | 0 |
 | Reporting | 3 | 1 | 0 | 2 | 0 |
 | Admin | 3 | 1 | 0 | 2 | 0 |
-| **TOTAL** | **50** | **25** | **2** | **23** | **0** |
+| **TOTAL** | **54** | **25** | **2** | **27** | **0** |
 
 ---
 
-**Version:** 1.0 | **Last Updated:** March 2026 | **Maintained By:** Product Team
+**Version:** 1.0 (historical snapshot) | **Last Updated:** March 2026 | **Maintained By:** Product Team
 
 ---
 
@@ -870,5 +930,5 @@ All acceptance criteria in this document follow the format:
 
 ---
 
-**Version:** 1.1 | **Last Updated:** June 2026 | **Maintained By:** Product Team  
+**Version:** 1.1 (historical snapshot) | **Last Updated:** June 2026 | **Maintained By:** Product Team  
 **Change Log:** v1.0 — Initial requirements REQ-AUTH through REQ-ADMIN (March 2026); v1.1 — Added Appendix A (MoSCoW legend), Appendix B (acceptance criteria template), Appendix C (test traceability matrix), Appendix D (enhanced Given/When/Then for critical requirements) (June 2026)

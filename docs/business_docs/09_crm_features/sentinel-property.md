@@ -2,15 +2,95 @@
 
 **Owner:** @Mary (DeepSeek V3 — DeepSeek Chat)  
 **Status:** ✅ Implementation-ready (P0 inventory hardening)  
+**Last Updated:** 2026-08-07  
+**Next Review:** 2026-08-21  
+**Source of Truth:** CRM sentinel property management feature specification (business layer)  
 **Target:** 12 sections  
 **CRM Module:** SentinelPropertyCRM (`src/components/crm/SentinelPropertyCRM/`)  
 **API Base:** `/api/properties`
+**Priority Scope:** MD + Leasing Agent first for inventory quality, publish gates, and leasing conversion readiness.
+
+## Canonical governance links
+
+- [`../05_requirements/functional-requirements.md`](../05_requirements/functional-requirements.md)
+- [`../05_requirements/compliance-requirements.md`](../05_requirements/compliance-requirements.md)
+- [`../../plans/documentation/REQ_CROSSWALK.md`](../../plans/documentation/REQ_CROSSWALK.md)
+- [`../../software_docs/01_requirements_engineering/SRS_MASTER_12_DEPARTMENTS.md`](../../software_docs/01_requirements_engineering/SRS_MASTER_12_DEPARTMENTS.md)
+
+## Feed targets
+
+- `docs/software_docs/01_requirements_engineering/SRS_MASTER_12_DEPARTMENTS.md`
+- `docs/plans/documentation/REQ_CROSSWALK.md`
+- frontend inventory workflow/reliability lanes in `docs/plans/waves/WAVE_39_*` and `WAVE_40_*`
 
 ---
 
 ## 1) Overview
 
 SentinelPropertyCRM manages the full inventory lifecycle for White Caves, with DAMAC Hills 2 as a primary operational focus. The module ensures every listing is complete, compliant, priced with comp-backed logic, and operationally ready for leasing or sale.
+
+### Priority persona alignment (P0)
+
+- **MD (`owner`)**: accountable for inventory quality governance and compliance drift prevention.
+- **Leasing Agent (`leasing_agent`)**: primary operator for leasing-ready inventory execution.
+- **Reference scenario profile:** `agent.one.whitecaves@gmail.com` to validate first-agent listing readiness behavior.
+
+## Requirement catalog
+
+### REQ-SP-001: Property lifecycle state integrity
+
+The system shall enforce a controlled property lifecycle from draft through archival and relisting.
+
+**Acceptance criteria:**
+
+- [ ] Invalid transitions are rejected
+- [ ] Every transition stores actor, timestamp, and reason
+- [ ] Lifecycle state is visible to managers and agents
+
+**Evidence:** state transition log and lifecycle audit record.
+
+### REQ-SP-002: Mandatory compliance fields and publication gate
+
+The system shall block publication until mandatory and conditional compliance fields are complete.
+
+**Acceptance criteria:**
+
+- [ ] RERA and ownership fields are required before publication
+- [ ] Conditional fields are enforced for resale, off-plan, and lease listings
+- [ ] Blocked listings show a human-readable remediation hint
+
+**Evidence:** publication gate log and blocked listing report.
+
+### REQ-SP-003: Property quality score and duplicate detection
+
+The system shall calculate a quality score and detect duplicate listings using deterministic rules.
+
+**Acceptance criteria:**
+
+- [ ] Quality score updates after media or description changes
+- [ ] High-confidence duplicates are flagged before save
+- [ ] Duplicate override requires manager approval and reason capture
+
+**Evidence:** quality score snapshot and duplicate audit trail.
+
+### REQ-SP-004: Bulk import validation and reject reporting
+
+The system shall validate bulk imports and produce row-level rejection details.
+
+**Acceptance criteria:**
+
+- [ ] Required columns are enforced
+- [ ] Invalid rows are rejected with row numbers and reasons
+- [ ] Summary totals are available after import completion
+
+**Evidence:** import summary, reject report, and job metadata.
+
+## Traceability
+
+- Maps to `REQ-LEAD-001` and property lifecycle coverage in `functional-requirements.md`
+- Aligns to `WC-SRS-001`, `WC-SRS-014`, and inventory/compliance validation artifacts
+- Feeds publishing, duplicate management, and quality-scoring evidence
+- Priority linkage: listing readiness evidence consumed by tenancy and receipt-governance workflows
 
 ### Core outcomes
 

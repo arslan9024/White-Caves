@@ -1,11 +1,13 @@
 # Linda — WhatsApp LocalAuth Bot Manager
 
+<!-- markdownlint-disable MD022 MD031 MD032 MD040 MD058 MD060 -->
+
 > **Department:** Communications  
 > **ID:** `linda`  
 > **Title:** WhatsApp LocalAuth Bot Manager & Agent Session Manager  
 > **Color:** #8B5CF6 (Purple)  
 > **Avatar:** 🤖  
-> **Status:** Production-Ready  
+> **Status:** Active — requirement catalog expanded.  
 > **Dashboard URL:** `/owner/dashboard?tab=linda`  
 > **Framework:** whatsapp-web.js + LocalAuth
 
@@ -66,6 +68,62 @@
 - Google Contacts → MongoDB sync on demand via `POST /api/linda/contacts/sync`
 - Stores `LindaContact` with `score`, `lastInteraction`, `property` (last discussed)
 - De-duplicates on phone number
+
+## Requirement catalog
+
+### REQ-LINDA-001: Session lifecycle and reliability
+
+The system shall manage per-agent WhatsApp LocalAuth sessions with resilience and recoverability.
+
+**Acceptance criteria:**
+
+- [ ] Session state transitions are persisted and observable
+- [ ] Disconnects trigger retry/recovery logic
+- [ ] Session ownership boundaries are role-enforced
+
+**Evidence:** session status telemetry and recovery event log.
+
+### REQ-LINDA-002: Message dispatch and campaign governance
+
+The system shall support direct and broadcast messaging with policy-safe throttling and tracking.
+
+**Acceptance criteria:**
+
+- [ ] Direct message send results are auditable
+- [ ] Broadcast jobs expose sent/failed/pending counters
+- [ ] Rate constraints are enforced per session
+
+**Evidence:** message delivery audit and campaign performance report.
+
+### REQ-LINDA-003: Command execution and CRM integration
+
+The system shall execute approved real-estate command workflows and return structured outcomes.
+
+**Acceptance criteria:**
+
+- [ ] Command invocations capture actor, payload, and result
+- [ ] Failures return actionable error context
+- [ ] Downstream CRM updates are linked to command IDs
+
+**Evidence:** command execution log and CRM linkage trace.
+
+### REQ-LINDA-004: Contact intelligence and policy-compliant sharing
+
+The system shall classify contact context and enforce controlled data-sharing rules.
+
+**Acceptance criteria:**
+
+- [ ] Conversation states combine history + contact-book status
+- [ ] Contact class and badges are consistent and filterable
+- [ ] Sensitive owner-contact disclosure requires policy checks
+
+**Evidence:** classification audit, badge filter report, and sharing decision log.
+
+## Traceability
+
+- Maps to `REQ-WA-001` through `REQ-WA-004`, plus consent/access controls
+- Aligns to `WC-SRS-013` and communications-governance artifacts
+- Feeds messaging reliability, CRM routing, and audit compliance validation
 
 ---
 

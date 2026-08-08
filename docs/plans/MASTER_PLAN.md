@@ -6,7 +6,7 @@
 > **Architecture Pattern:** View-Logic-Style 3-Folder Component Isolation (`*.tsx`, `*.logic.ts`, `*.style.ts`)  
 > **Active Wave Backlog:** [WAVE_31_IMPLEMENTATION_BACKLOG.md](./waves/WAVE_31_IMPLEMENTATION_BACKLOG.md) (Wave 31 - planned)  
 > **Parallel Governance Wave:** [WAVE_32_IMPLEMENTATION_BACKLOG.md](./waves/WAVE_32_IMPLEMENTATION_BACKLOG.md) (Documentation governance + progress intelligence)
-> **Last Updated:** 2026-08-02
+> **Last Updated:** 2026-08-07
 
 ---
 
@@ -29,12 +29,88 @@ Wave 32 is registered as a parallel documentation-governance and progress-intell
 - create initial cross-domain traceability bridges; and
 - reconcile tracker contradictions before broader documentation expansion.
 
+### SRS expansion closure sync (2026-08-07)
+
+- Canonical 5000-ID requirement register is now active in `docs/software_docs/01_requirements_engineering/SRS_MASTER_12_DEPARTMENTS.md`.
+- SRS audit parser supports both explicit requirement IDs and canonical range declarations.
+- Current validated SRS evidence baseline: **5121 total / 5061 unique** requirement IDs.
+- Validation commands passed: `npm run plans:validate` and `npm run srs:audit`.
+
+### Upgrade reference activation (2026-08-07)
+
+- Canonical future-upgrade scorecard is published at `docs/UPGRADE_REFERENCE_READINESS_SCORECARD_2026-08.md`.
+- The scorecard governs closure of stale narrative drift, endpoint-contract drift,
+    source-of-truth ambiguity, and SRS semantic completeness for future waves.
+
 Primary artifacts:
 
 - [`./waves/WAVE_32_SDD.md`](./waves/WAVE_32_SDD.md)
 - [`./waves/WAVE_32_READINESS_PACKET.md`](./waves/WAVE_32_READINESS_PACKET.md)
 - [`./waves/WAVE_32_IMPLEMENTATION_BACKLOG.md`](./waves/WAVE_32_IMPLEMENTATION_BACKLOG.md)
 - [`./waves/WAVE_32_TEST_ROLLOUT.md`](./waves/WAVE_32_TEST_ROLLOUT.md)
+- [`../UPGRADE_REFERENCE_READINESS_SCORECARD_2026-08.md`](../UPGRADE_REFERENCE_READINESS_SCORECARD_2026-08.md)
+
+### Future documentation completion program (prepared 2026-08-07)
+
+The next documentation-focused wave sequence is now authored under `docs/plans/waves/`:
+
+- **Wave 33** — business docs canonicalization and coverage completion.
+- **Wave 34** — software docs canon sync and architecture reconciliation.
+- **Wave 35** — SRS semantic completeness and requirement traceability.
+- **Wave 36** — release readiness, ops evidence, and documentation closeout.
+
+These bundles are prepared for future implementation and should be executed after active Wave 31 / Wave 32 priorities are sufficiently stabilized.
+
+### Frontend-first continuation bundles (prepared 2026-08-07)
+
+Frontend-priority continuation bundles are now scaffolded for future implementation hardening:
+
+- [`./waves/WAVE_37_SDD.md`](./waves/WAVE_37_SDD.md)
+- [`./waves/WAVE_37_READINESS_PACKET.md`](./waves/WAVE_37_READINESS_PACKET.md)
+- [`./waves/WAVE_37_IMPLEMENTATION_BACKLOG.md`](./waves/WAVE_37_IMPLEMENTATION_BACKLOG.md)
+- [`./waves/WAVE_37_TEST_ROLLOUT.md`](./waves/WAVE_37_TEST_ROLLOUT.md)
+- [`./waves/WAVE_37_FLOWCHARTS.md`](./waves/WAVE_37_FLOWCHARTS.md)
+
+- [`./waves/WAVE_38_SDD.md`](./waves/WAVE_38_SDD.md)
+- [`./waves/WAVE_38_READINESS_PACKET.md`](./waves/WAVE_38_READINESS_PACKET.md)
+- [`./waves/WAVE_38_IMPLEMENTATION_BACKLOG.md`](./waves/WAVE_38_IMPLEMENTATION_BACKLOG.md)
+- [`./waves/WAVE_38_TEST_ROLLOUT.md`](./waves/WAVE_38_TEST_ROLLOUT.md)
+- [`./waves/WAVE_38_FLOWCHARTS.md`](./waves/WAVE_38_FLOWCHARTS.md)
+
+- [`./waves/WAVE_39_SDD.md`](./waves/WAVE_39_SDD.md)
+- [`./waves/WAVE_39_READINESS_PACKET.md`](./waves/WAVE_39_READINESS_PACKET.md)
+- [`./waves/WAVE_39_IMPLEMENTATION_BACKLOG.md`](./waves/WAVE_39_IMPLEMENTATION_BACKLOG.md)
+- [`./waves/WAVE_39_TEST_ROLLOUT.md`](./waves/WAVE_39_TEST_ROLLOUT.md)
+- [`./waves/WAVE_39_FLOWCHARTS.md`](./waves/WAVE_39_FLOWCHARTS.md)
+
+- [`./waves/WAVE_40_SDD.md`](./waves/WAVE_40_SDD.md)
+- [`./waves/WAVE_40_READINESS_PACKET.md`](./waves/WAVE_40_READINESS_PACKET.md)
+- [`./waves/WAVE_40_IMPLEMENTATION_BACKLOG.md`](./waves/WAVE_40_IMPLEMENTATION_BACKLOG.md)
+- [`./waves/WAVE_40_TEST_ROLLOUT.md`](./waves/WAVE_40_TEST_ROLLOUT.md)
+- [`./waves/WAVE_40_FLOWCHARTS.md`](./waves/WAVE_40_FLOWCHARTS.md)
+
+### Frontend Refactor Priority Charter (mandatory)
+
+For all future implementation waves, frontend refactors are a permanent top-priority execution lane. Each wave must schedule a `Frontend Refactor First` cluster before secondary documentation/governance tasks. Minimum frontend cluster scope per wave:
+
+- route/page composition simplification;
+- component decomposition + shared UI abstraction cleanup;
+- state/data-flow simplification (Redux/service boundaries);
+- rendering/performance improvements;
+- accessibility and resilient UI states (loading/error/empty + keyboard/ARIA).
+
+### W33-W40 dependency and checkpoint registration
+
+| Wave | Primary objective | Dependency | Frontend-first checkpoint | Status |
+| --- | --- | --- | --- | --- |
+| 33 | Business docs canonicalization and coverage completion | Wave 32 governance artifacts stable | Backlog includes P0 frontend refactor cluster before docs-only tasks | Planned |
+| 34 | Software docs canon sync + architecture reconciliation | Wave 33 core outputs registered | Frontend state/data-flow refactor cluster present and evidence-linked | Planned |
+| 35 | SRS semantic completeness + requirement traceability hardening | Wave 34 architecture canon sync complete | Frontend UX resilience cluster included and test-gated | Planned |
+| 36 | Release-readiness documentation closeout | Wave 35 traceability evidence baseline complete | Frontend accessibility/performance hardening cluster closed | Planned |
+| 37 | Frontend architecture decomposition | Wave 33-36 control plane normalized | Route/module boundary refactors completed first | Planned |
+| 38 | Frontend state + performance optimization | Wave 37 architecture decomposition complete | Unified API client/state simplification evidence linked | Planned |
+| 39 | Frontend reliability + accessibility hardening | Wave 38 state/performance baseline stable | Error/loading/empty and a11y interaction checklist closed | Planned |
+| 40 | Full-project closure + supersession lock | Wave 39 reliability closure + tracker sync | Final frontend debt burn-down closed before final docs lock | Planned |
 
 ---
 

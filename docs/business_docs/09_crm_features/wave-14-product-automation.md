@@ -1,9 +1,26 @@
 # Wave 14 — Product Automation: Lead Rescore Triggers + Audit Log UI
 
+<!-- markdownlint-disable MD022 MD031 MD032 MD040 MD060 -->
+
 **Drafted by:** @LeadScore  
 **Model:** DeepSeek V3  
 **Status:** ✅ READY (retrospective spec for implemented Wave 14)  
 **Last Updated:** 2026-05-25  
+**Next Review:** 2026-08-21  
+**Source of Truth:** CRM Wave 14 product automation feature specification (business layer)
+
+## Canonical governance links
+
+- [`../05_requirements/functional-requirements.md`](../05_requirements/functional-requirements.md)
+- [`../05_requirements/non-functional-requirements.md`](../05_requirements/non-functional-requirements.md)
+- [`../../plans/documentation/REQ_CROSSWALK.md`](../../plans/documentation/REQ_CROSSWALK.md)
+- [`../../software_docs/01_requirements_engineering/SRS_MASTER_12_DEPARTMENTS.md`](../../software_docs/01_requirements_engineering/SRS_MASTER_12_DEPARTMENTS.md)
+
+## Feed targets
+
+- `docs/software_docs/01_requirements_engineering/SRS_MASTER_12_DEPARTMENTS.md`
+- `docs/plans/documentation/REQ_CROSSWALK.md`
+- frontend lead-quality/audit-UX lanes in `docs/plans/waves/WAVE_39_*` and `WAVE_40_*`
 
 CONSUMES←@Cron: `business_docs/09_crm_features/wave-12-automation-engine.md#lead-auto-rescore`  
 FEEDS→@Cassie: `business_docs/09_crm_features/analytics-dashboard.md#lead-quality-signals`  

@@ -2,21 +2,93 @@
 
 > **Owner:** @Rachel | **Tool:** Google AI Studio (Gemini 2.0 Flash)
 > **Purpose:** Dubai property keyword clusters, Core Web Vitals targets and structured data schemas.
-> **Status:** Stub -- awaiting expansion by @Rachel.
+> **Status:** Active -- requirement catalog expanded.
+> **Last Updated:** 2026-08-07
+> **Next Review:** 2026-08-21
+> **Source of Truth:** CRM SEO strategy feature specification (business layer)
+
+## Canonical governance links
+
+- [`../05_requirements/functional-requirements.md`](../05_requirements/functional-requirements.md)
+- [`../05_requirements/non-functional-requirements.md`](../05_requirements/non-functional-requirements.md)
+- [`../../plans/documentation/REQ_CROSSWALK.md`](../../plans/documentation/REQ_CROSSWALK.md)
+- [`../../software_docs/01_requirements_engineering/SRS_MASTER_12_DEPARTMENTS.md`](../../software_docs/01_requirements_engineering/SRS_MASTER_12_DEPARTMENTS.md)
+
+## Feed targets
+
+- `docs/software_docs/01_requirements_engineering/SRS_MASTER_12_DEPARTMENTS.md`
+- `docs/plans/documentation/REQ_CROSSWALK.md`
+- frontend SEO/performance lanes in `docs/plans/waves/WAVE_39_*` and `WAVE_40_*`
 
 ---
 
 ## 1. Overview
 
-> _[Action Required: Enforce production-ready engineering constraints]: expand this section with full spec._
+The SEO strategy module manages Dubai keyword coverage, schema markup, technical crawl hygiene, and performance targets.
+
+## Requirement catalog
+
+### REQ-SEO-001: Keyword clustering and page mapping
+
+The system shall map high-value Dubai real-estate keyword clusters to canonical pages.
+
+**Acceptance criteria:**
+
+- [ ] Keyword clusters are grouped by intent and area
+- [ ] Each cluster has a canonical landing page
+- [ ] Arabic and English clusters are tracked separately
+
+**Evidence:** keyword map and page assignment log.
+
+### REQ-SEO-002: Core Web Vitals and performance budgets
+
+The system shall maintain the documented performance targets for LCP, CLS, and interaction latency.
+
+**Acceptance criteria:**
+
+- [ ] Performance thresholds are documented and measurable
+- [ ] Asset and script optimizations are tracked
+- [ ] Failures are visible in the audit loop
+
+**Evidence:** CWV report and performance snapshot.
+
+### REQ-SEO-003: Structured data and crawl hygiene
+
+The system shall inject structured data and maintain sitemap, robots, and canonical hygiene.
+
+**Acceptance criteria:**
+
+- [ ] JSON-LD schema is valid on key templates
+- [ ] Sitemap and robots directives are published
+- [ ] Duplicate content controls are in place
+
+**Evidence:** schema validation and crawl audit.
+
+### REQ-SEO-004: Measurement and link acquisition
+
+The system shall track rankings, Search Console metrics, and link acquisition outcomes.
+
+**Acceptance criteria:**
+
+- [ ] Ranking and page health metrics are captured
+- [ ] Link acquisition efforts are visible in reporting
+- [ ] Alerts exist for major traffic or ranking drops
+
+**Evidence:** ranking dashboard and measurement report.
+
+## Traceability
+
+- Maps to `REQ-MKT-AUT-004` and marketing performance coverage
+- Aligns to `WC-SRS-014` and SEO evidence artifacts
+- Feeds keyword, technical SEO, and reporting validation
 
 ## 2. Dubai Keyword Clusters
 
-> _[Action Required: Enforce production-ready engineering constraints]: expand this section with full spec._
+Keyword clusters should be organized by intent, geography, and language with canonical page mapping.
 
 ## 3. Core Web Vitals Targets
 
-> _[Action Required: Enforce production-ready engineering constraints]: expand this section with full spec._
+SEO strategy requirements are now captured in the catalog below, covering keyword clusters, Core Web Vitals, structured data, crawl hygiene, and measurement.
 
 ## 4. Local SEO Foundations
 

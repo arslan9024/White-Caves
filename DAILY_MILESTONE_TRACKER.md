@@ -1,16 +1,38 @@
 # White Caves Daily Milestone Tracker
 
-**Date:** Jul 22, 2026  
+**Date:** 2026-08-03  
 **Owner:** @Margaret + @Ada  
-**Status:** Active ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â **100% PROJECT MILESTONE COMPLETED**  
-**Last Updated:** 2026-07-22  
-**Global App Completion:** **100%**
+**Status:** Active — historical evidence tracker (non-canonical for live wave state)  
+**Last Updated:** 2026-08-03  
+**Global App Completion:** Use canonical wave trackers in `docs/plans/*`
 
-> Roadmap: [plans/MASTER_PLAN.md](plans/MASTER_PLAN.md) Ã‚Â· Queue: [plans/PENDING_TASKS_ONLY.md](plans/PENDING_TASKS_ONLY.md)
+> Canonical roadmap: [docs/plans/MASTER_PLAN.md](docs/plans/MASTER_PLAN.md) · Queue: [docs/plans/PENDING_TASKS_ONLY.md](docs/plans/PENDING_TASKS_ONLY.md) · Waves: [docs/plans/waves/README.md](docs/plans/waves/README.md)
+
+## Canonical status notice (2026-08-03 normalization)
+
+- Root-level completion claims are retained only as historical snapshots.
+- Live status authority is consolidated to `docs/plans/MASTER_PLAN.md`, `docs/plans/PENDING_TASKS_ONLY.md`, and `docs/plans/waves/README.md`.
 
 ---
 
 ## Orchestrator Sync Log
+
+- **Aug 07, 2026 — @Ada + @Margaret + @Copilot — SRS 5000-ID Priority-First Completion (MD + Leasing + Receipts)**
+  - **Task ID:** `SRS-5000-PRIORITY-FIRST`
+  - **Files touched:**
+    - `docs/software_docs/01_requirements_engineering/SRS_MASTER_12_DEPARTMENTS.md`
+    - `aegis/scripts/srs-audit.js`
+    - `docs/software_docs/01_requirements_engineering/ENTRPRISE_SRS_INVENTORY_2026-08-06.md`
+    - `docs/software_docs/01_requirements_engineering/functional_specifications.md`
+  - **Acceptance criteria:**
+    - Canonical 5000-ID register exists with MD/Leasing-first lane ordering.
+    - SRS audit parser counts explicit IDs and canonical ranges.
+    - Audit output exceeds 5000 unique IDs without governance regressions.
+  - **Validation steps:**
+    - `npm run plans:validate` ✅
+    - `npm run srs:audit` ✅
+  - **Result:** `5121 total / 5061 unique` requirement IDs.
+  - **Blocker status:** None.
 
 - **Jul 27, 2026 Ã¢â‚¬â€ @Ada Ã¢â‚¬â€ Universal Navigation, Role-Based Dashboard Filtering & MD Impersonation Matrix**
   - **Universal Top Nav Integration**: Built `src/components/navigation/TopNavbar.tsx` and `TopNavbar.css` rendering across public Homepage, Profile, and CRM pages with global search, live DLD API ticker, and profile shortcut.
@@ -140,9 +162,8 @@
 | Jul 22 | Orchestrator Sync | @Katherine + @Margaret | Done | Queue: done=3 running=0 waitAck=0 queued=22 failed=0 -- Docs: PASS=40 BLOCKED=0 MISSING=0 -- Done: AGC02A01(@Sofia), AGC02A02(@Timnit), DU001(@Timnit) -- READY: @Victoria |
 
 | Jul 22 | Orchestrator Sync | @Katherine + @Margaret | Done | Queue: done=3 running=0 waitAck=0 queued=22 failed=0 -- Docs: PASS=40 BLOCKED=0 MISSING=0 -- Done: AGC02A01(@Sofia), AGC02A02(@Timnit), DU001(@Timnit) -- READY: @Victoria |
-
-
 | Jul 29 | Orchestrator Sync | @Katherine + @Margaret | Done   | Queue: done=1 running=0 waitAck=0 queued=0 failed=0 -- Docs: PASS=40 BLOCKED=0 MISSING=0 -- Done: DU001(@S5) -- READY: none |
+
 ## Today's Sign-Off
 
 > @Margaret reviewed the current sprint context. Canonical planning authority is consolidated to `plans/MASTER_PLAN.md`, `plans/PENDING_TASKS_ONLY.md`, `plans/INDEX.md`, `plans/PLANNING_GOVERNANCE.md`, `PROJECT_PROGRESS.md`, and this tracker.
@@ -306,15 +327,12 @@
   - Created the Sequence Effectiveness Report API and corresponding unit tests.
   - Synced `NotificationPreference` model to database, hard-wired channel preferences to the real-time Socket.io notification room (`notification:{userId}`), and supported unread flags in the notifications list API.
   - Checked build, plans validation, and unit tests (all passed successfully).
-    a e g i s / m a s t e r - u n m a s k :   r e p a i r e d   n a v i g a t i o n   p a t h s   |   a c t i v a t e d   l e v e l   5   m a n a g i n g   d i r e c t o r   b y p a s s   |   e x p o s e d   1 0 0 %   o f   h i d d e n   m o d u l e s 
-     
-     
-
+  - Historical note: legacy terminal artifact text removed during tracker normalization (2026-08-03).
 
 ## Session Report -- 2026-07-27 22:07
 
 | Metric | Value |
-|--------|-------|
+| ------ | ----- |
 | Tasks Done (total) | 87 / 106 (82%) |
 | Completed Today | 0 |
 | Currently Running | 0 |
@@ -325,7 +343,7 @@
 ### Lane Progress
 
 | Lane | Done | Total | Pct |
-|------|------|-------|-----|
+| ---- | ---- | ----- | --- |
 | A | 57 | 76 | 75% |
 | B | 12 | 12 | 100% |
 | C | 12 | 12 | 100% |

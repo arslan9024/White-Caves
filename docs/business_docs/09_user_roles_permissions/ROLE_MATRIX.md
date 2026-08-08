@@ -1,7 +1,40 @@
 # 🏛️ White Caves — Role & Rank Matrix (ROLE_MATRIX.md)
 
+<!-- markdownlint-disable MD040 MD060 -->
+
 > **Single source of truth** for all user roles, ranks, permissions, and routing in the White Caves CRM platform.
-> **Version:** 2.0 | **Updated:** 2026-05-17 | **Owner:** @Ada (Chief Architect)
+> **Version:** 2.1 | **Updated:** 2026-08-07 | **Owner:** @Ada (Chief Architect)
+> **Priority Scope:** MD + Leasing Agent first for property listings, leasing full operations, and receipt generation.
+
+---
+
+## 🎯 Priority Operations Contract (2026-08)
+
+### Role priority order
+
+1. **MD (`owner`)** — enterprise control, compliance oversight, escalation authority.
+2. **Leasing Agent (`leasing_agent`)** — first-agent operational lane for leasing execution.
+
+### First-agent profile for documentation acceptance
+
+- **Reference account:** `agent.one.whitecaves@gmail.com`
+- **Usage:** scenario validation profile for leasing-first workflows, role routing, and receipt checkpoints.
+
+### Priority workflow lanes
+
+| Priority lane | Primary role | Supporting roles | Required output |
+|---------------|--------------|------------------|-----------------|
+| Property listing activation | Leasing Agent | Admin, Property Coordinator | Listing ready with compliance fields |
+| Leasing full lifecycle | Leasing Agent | Landlord, Tenant, Compliance | Active lease with Ejari traceability |
+| Receipt operations | Leasing Agent + Finance | Document Controller | Issued, delivered, archived receipt trail |
+
+### Receipt SLA expectations (P0)
+
+| Event | SLA | Owner | Escalation |
+|------|-----|-------|------------|
+| Receipt issue after payment confirmation | ≤ 15 minutes | Finance/System | MD alert on breach > 2 hours |
+| Receipt delivery to tenant/landlord | ≤ 30 minutes | Leasing Agent | Leasing Manager after 1 hour |
+| Receipt archive + audit linkage | Same business day | Finance + Docs | MD weekly compliance check |
 
 ---
 

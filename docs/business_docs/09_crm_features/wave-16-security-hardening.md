@@ -1,9 +1,26 @@
 # Wave 16 — Security Hardening: API v1 Migration + CSRF Strategy
 
+<!-- markdownlint-disable MD060 -->
+
 **Drafted by:** @S5  
 **Model:** Gemini 2.0 Flash  
 **Status:** ✅ READY (retrospective spec for implemented Wave 16)  
-**Last Updated:** 2026-05-25
+**Last Updated:** 2026-05-25  
+**Next Review:** 2026-08-21  
+**Source of Truth:** CRM Wave 16 security hardening feature specification (business layer)
+
+## Canonical governance links
+
+- [`../05_requirements/functional-requirements.md`](../05_requirements/functional-requirements.md)
+- [`../05_requirements/non-functional-requirements.md`](../05_requirements/non-functional-requirements.md)
+- [`../../plans/documentation/REQ_CROSSWALK.md`](../../plans/documentation/REQ_CROSSWALK.md)
+- [`../../software_docs/01_requirements_engineering/SRS_MASTER_12_DEPARTMENTS.md`](../../software_docs/01_requirements_engineering/SRS_MASTER_12_DEPARTMENTS.md)
+
+## Feed targets
+
+- `docs/software_docs/01_requirements_engineering/SRS_MASTER_12_DEPARTMENTS.md`
+- `docs/plans/documentation/REQ_CROSSWALK.md`
+- frontend auth/session/security-resilience lanes in `docs/plans/waves/WAVE_39_*` and `WAVE_40_*`
 
 CONSUMES←@Radia: `business_docs/05_requirements/compliance-requirements.md#security`  
 FEEDS→@Katherine: `business_docs/05_requirements/non-functional-requirements.md#security-hardening`  

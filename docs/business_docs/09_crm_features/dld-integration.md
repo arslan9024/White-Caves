@@ -3,11 +3,26 @@
 **Owner:** @Timnit (Gemini 2.0 Flash — Google AI Studio)  
 **Status:** ✅ [GATE PASSED — 12/12 Complete]  
 **Last Updated:** 2026-07-22  
+**Next Review:** 2026-08-21  
+**Source of Truth:** CRM DLD integration feature specification (business layer)  
 **CRM Module:** DLD Integration layer (`server/routes/compliance.ts` + `server/services/dld/`)  
 **API Base:** `/api/compliance/dld`, external DLD REST API  
 **CONSUMES:** `business_docs/05_requirements/compliance-requirements.md`  
 **FEEDS:** `docs/plans/waves/WAVE_25_IMPLEMENTATION_BACKLOG.md`  
 **FEEDS_ACK:** @Ada (Chief Architect) + @Margaret (Strategic Planner) — 2026-07-22
+
+## Canonical governance links
+
+- [`../05_requirements/compliance-requirements.md`](../05_requirements/compliance-requirements.md)
+- [`../05_requirements/functional-requirements.md`](../05_requirements/functional-requirements.md)
+- [`../../plans/documentation/REQ_CROSSWALK.md`](../../plans/documentation/REQ_CROSSWALK.md)
+- [`../../software_docs/01_requirements_engineering/SRS_MASTER_12_DEPARTMENTS.md`](../../software_docs/01_requirements_engineering/SRS_MASTER_12_DEPARTMENTS.md)
+
+## Feed targets
+
+- `docs/software_docs/01_requirements_engineering/SRS_MASTER_12_DEPARTMENTS.md`
+- `docs/plans/documentation/REQ_CROSSWALK.md`
+- frontend compliance visibility lanes in `docs/plans/waves/WAVE_39_*` and `WAVE_40_*`
 
 ---
 

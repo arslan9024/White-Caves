@@ -1,6 +1,25 @@
 # Leasing Intake Forms & Onboarding Architecture — Feature Specification
+
+<!-- markdownlint-disable MD040 MD060 -->
+
 **Module:** Leasing & Tenancy Intake | **Owner:** @Amina (Leasing Intake Lead) | **Priority:** High  
 **Governance:** `business_docs/` | **Brand Palette:** White Caves Red (`#EF4444`) | White (`#FFFFFF`) | Slate (`#1E293B`)
+**Last Updated:** 2026-08-07  
+**Next Review:** 2026-08-21  
+**Source of Truth:** CRM leasing intake forms and onboarding feature specification (business layer)
+
+## Canonical governance links
+
+- [`../05_requirements/functional-requirements.md`](../05_requirements/functional-requirements.md)
+- [`../05_requirements/compliance-requirements.md`](../05_requirements/compliance-requirements.md)
+- [`../../plans/documentation/REQ_CROSSWALK.md`](../../plans/documentation/REQ_CROSSWALK.md)
+- [`../../software_docs/01_requirements_engineering/SRS_MASTER_12_DEPARTMENTS.md`](../../software_docs/01_requirements_engineering/SRS_MASTER_12_DEPARTMENTS.md)
+
+## Feed targets
+
+- `docs/software_docs/01_requirements_engineering/SRS_MASTER_12_DEPARTMENTS.md`
+- `docs/plans/documentation/REQ_CROSSWALK.md`
+- frontend intake UX/reliability lanes in `docs/plans/waves/WAVE_39_*` and `WAVE_40_*`
 
 ---
 

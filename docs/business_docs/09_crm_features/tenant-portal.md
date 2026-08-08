@@ -6,6 +6,21 @@
 > **Owner:** @Annie | **Target:** 14 sections | **Module:** TenantPortal (src/components/portal/tenant/)
 > **Module Owner:** Daisy (Leasing Manager AI) | **Last Updated:** May 2026 | **Priority:** High
 > **API Endpoints:** `/api/leases?tenantId=:userId`, `/api/maintenance`, `/api/activities`
+> **Next Review:** 2026-08-21
+> **Source of Truth:** CRM tenant portal feature specification (business layer)
+
+## Canonical governance links
+
+- [`../05_requirements/functional-requirements.md`](../05_requirements/functional-requirements.md)
+- [`../05_requirements/compliance-requirements.md`](../05_requirements/compliance-requirements.md)
+- [`../../plans/documentation/REQ_CROSSWALK.md`](../../plans/documentation/REQ_CROSSWALK.md)
+- [`../../software_docs/01_requirements_engineering/SRS_MASTER_12_DEPARTMENTS.md`](../../software_docs/01_requirements_engineering/SRS_MASTER_12_DEPARTMENTS.md)
+
+## Feed targets
+
+- `docs/software_docs/01_requirements_engineering/SRS_MASTER_12_DEPARTMENTS.md`
+- `docs/plans/documentation/REQ_CROSSWALK.md`
+- frontend architecture/state/resilience lanes in `docs/plans/waves/WAVE_37_*` through `WAVE_40_*`
 
 ## 🚀 Next Step — Invoke @Annie
 
@@ -16,6 +31,79 @@ Copy this prompt into **Google AI Studio (Gemini 2.0 Flash)**:
 ```
 
 ---
+
+## Requirement catalog
+
+### REQ-TP-001: Lease summary and countdown visibility
+
+The system shall show an authenticated tenant a clear lease summary, expiry countdown, and current tenancy status.
+
+**Acceptance criteria:**
+
+- [ ] Lease start, end, rent, and status are visible in the home view
+- [ ] Countdown to renewal or expiry is accurate to the selected lease record
+- [ ] Missing lease data renders a safe empty state instead of an error crash
+
+**Evidence:** tenant dashboard screenshot, lease API response, and UI test output.
+
+### REQ-TP-002: Payment history and PDC status tracking
+
+The system shall display payment history and post-dated cheque status for the tenant’s lease.
+
+**Acceptance criteria:**
+
+- [ ] Payment rows include date, amount, method, and receipt link
+- [ ] PDC records show not deposited, deposited, cleared, or bounced states
+- [ ] Overdue payments are visibly flagged with safe messaging
+
+**Evidence:** payment history table, cheque lifecycle record, and finance audit snapshot.
+
+### REQ-TP-003: Maintenance request submission and tracking
+
+The system shall let tenants submit maintenance issues and track each request through completion.
+
+**Acceptance criteria:**
+
+- [ ] Request form captures category, priority, description, and attachments
+- [ ] Request status updates are visible to the tenant in real time or near-real time
+- [ ] Emergency submissions are escalated immediately to operations
+
+**Evidence:** maintenance request record, status timeline, and escalation log.
+
+### REQ-TP-004: Document access and tenancy self-service
+
+The system shall provide downloadable tenancy documents and renewal-related actions.
+
+**Acceptance criteria:**
+
+- [ ] Ejari and tenancy documents are downloadable from the portal
+- [ ] Renewal or NOC actions are available when policy permits
+- [ ] Unauthorized users cannot access another tenant’s documents
+
+**Evidence:** document download log, access control test, and self-service audit.
+
+### REQ-TP-005: Profile data and alerting
+
+The system shall allow tenants to review profile details and receive expiry alerts for identity documents.
+
+**Acceptance criteria:**
+
+- [ ] Emirates ID and passport expiry dates are visible where stored
+- [ ] Reminder alerts are generated before expiry thresholds
+- [ ] Profile updates preserve the audit trail
+
+**Evidence:** profile audit log, alert record, and notification snapshot.
+
+## Traceability
+
+- Supports `REQ-FR-006` and the tenant workflow family in `docs/business_docs/05_requirements/functional-requirements.md`
+- Aligns to `WC-SRS-012`, `WC-SRS-013`, and the tenancy/Ejari traceability chain
+- Feeds the portal acceptance and UX validation artifacts for mobile and desktop layouts
+
+## Portal evidence model
+
+- Each tab should emit a small operational evidence trail: load success, empty state, action taken, and failure case where applicable.
+- Tenant portal changes must preserve Arabic/English labels and accessible keyboard flow.
 
 ## Overview
 

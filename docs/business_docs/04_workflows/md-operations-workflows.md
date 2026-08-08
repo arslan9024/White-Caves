@@ -1,8 +1,37 @@
 # Managing Director — 14 Operations Business Process Workflows
 
+<!-- markdownlint-disable MD022 MD024 MD032 MD036 MD056 MD058 MD060 -->
+
 > **White Caves Real Estate LLC** — Complete Business Process Documentation
 > **Owner:** Managing Director (Level 5 Master — Arslan Malik)
 > **Last Updated:** 2026-07-28
+> **Priority Execution Update:** 2026-08-07 (MD + Leasing Agent first)
+
+---
+
+## Priority Execution Contract (P0)
+
+### Immediate business priority order
+
+1. **Property Listings** — intake quality, compliance validity, publishing readiness.
+2. **Leasing Full Operations** — lead qualification, viewing, tenancy/Ejari, active lease handling.
+3. **Receipt Generation** — payment-linked receipts issued, delivered, and archived with audit integrity.
+
+### Primary personas
+
+- **MD (`owner`)**: control deck authority, escalations, compliance exceptions, monthly assurance.
+- **Leasing Agent (`leasing_agent`)**: first-agent operational owner for leasing execution.
+
+### First-agent scenario profile
+
+- **Reference account for journey validation:** `agent.one.whitecaves@gmail.com`
+- **Journey scope:** homepage entry → leasing qualification → viewing → lease signature → Ejari → rent/receipt lifecycle.
+
+### P0 acceptance checkpoints
+
+- Listings cannot move to active channel without compliance-ready fields.
+- Leasing workflows must preserve SLA checkpoints and status transitions.
+- Every confirmed payment must produce a traceable receipt lifecycle event.
 
 ---
 
@@ -221,6 +250,15 @@ All commission invoices include UAE VAT at 5% (Federal Tax Authority — FTA):
 - **VAT 5%**: AED 2,500
 - **Total Invoice**: AED 52,500
 - **TRN Format**: `100-XXXX-XXXX-XXXX-XXXX` (Tax Registration Number)
+
+### Receipt Governance (MD + Leasing Priority)
+
+| Step | Responsible role | System requirement | Evidence output |
+|------|------------------|-------------------|-----------------|
+| Payment confirmation | Leasing Agent / Finance | Payment status verified | Payment confirmation event |
+| Receipt issuance | Finance/System | Receipt ID + VAT fields | Receipt PDF/record |
+| Delivery confirmation | Leasing Agent | Tenant/Landlord notified | Delivery status log |
+| Archival + audit link | Finance/Docs | Immutable linkage | Audit trail entry |
 
 ---
 

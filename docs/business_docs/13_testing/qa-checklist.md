@@ -1,5 +1,24 @@
 # QA Release Checklist — White Caves CRM Platform
 
+**Status:** Active  
+**Owner:** QA & Release Governance  
+**Last Updated:** 2026-08-07  
+**Next Review:** 2026-08-21  
+**Source of Truth:** Business-layer release quality gate checklist
+
+## Canonical governance links
+
+- [`../05_requirements/functional-requirements.md`](../05_requirements/functional-requirements.md)
+- [`../05_requirements/non-functional-requirements.md`](../05_requirements/non-functional-requirements.md)
+- [`../../plans/documentation/REQ_CROSSWALK.md`](../../plans/documentation/REQ_CROSSWALK.md)
+- [`../../software_docs/01_requirements_engineering/SRS_MASTER_12_DEPARTMENTS.md`](../../software_docs/01_requirements_engineering/SRS_MASTER_12_DEPARTMENTS.md)
+
+## Feed targets
+
+- `docs/software_docs/01_requirements_engineering/SRS_MASTER_12_DEPARTMENTS.md`
+- `docs/plans/documentation/REQ_CROSSWALK.md`
+- release/readiness verification lanes in `docs/plans/waves/WAVE_36_*`, `WAVE_39_*`, and `WAVE_40_*`
+
 > **Version:** 1.0 | **Last Updated:** March 2026
 
 ---
@@ -20,7 +39,7 @@ Complete this checklist before every production release. All items must be ✅ b
 - [ ] ESLint: 0 errors (warnings allowed)
 - [ ] No `console.log` left in production code
 - [ ] No hardcoded secrets, API keys, or passwords in code
-- [ ] No `[Action Required: Enforce production-ready engineering constraints]:` comments that block functionality
+- [ ] No unresolved scaffold comments that block functionality
 
 ### Automated Tests
 

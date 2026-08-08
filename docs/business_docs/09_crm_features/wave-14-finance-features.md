@@ -1,9 +1,26 @@
 # Wave 14 — Finance Features: Mortgage API + Calendar Sync + Multi-Currency
 
+<!-- markdownlint-disable MD022 MD032 MD040 MD060 -->
+
 **Drafted by:** @Mortgage  
 **Model:** Gemini 2.0 Flash  
 **Status:** ✅ READY (retrospective spec for implemented Wave 14)  
 **Last Updated:** 2026-05-25  
+**Next Review:** 2026-08-21  
+**Source of Truth:** CRM Wave 14 finance features specification (business layer)
+
+## Canonical governance links
+
+- [`../05_requirements/functional-requirements.md`](../05_requirements/functional-requirements.md)
+- [`../05_requirements/non-functional-requirements.md`](../05_requirements/non-functional-requirements.md)
+- [`../../plans/documentation/REQ_CROSSWALK.md`](../../plans/documentation/REQ_CROSSWALK.md)
+- [`../../software_docs/01_requirements_engineering/SRS_MASTER_12_DEPARTMENTS.md`](../../software_docs/01_requirements_engineering/SRS_MASTER_12_DEPARTMENTS.md)
+
+## Feed targets
+
+- `docs/software_docs/01_requirements_engineering/SRS_MASTER_12_DEPARTMENTS.md`
+- `docs/plans/documentation/REQ_CROSSWALK.md`
+- frontend finance/scheduling reliability lanes in `docs/plans/waves/WAVE_39_*` and `WAVE_40_*`
 
 CONSUMES←@Invoice: `business_docs/09_crm_features/financial-reporting.md#mortgage-section`  
 FEEDS→@Anima: `business_docs/09_crm_features/currency-management.md#fx-conversion`  

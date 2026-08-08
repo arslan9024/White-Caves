@@ -1,5 +1,7 @@
 # Software Requirements Specification (SRS): Operations & Logistics
 
+<!-- markdownlint-disable MD022 MD032 -->
+
 ## 1. Scope & System Overview
 
 The **Operations & Property Logistics Module** manages physical unit handovers, statutory Ejari contract renewals, Form 12 eviction legal notices, Post-Dated Cheque (PDC) vault management, and smart lock viewing logs across all managed units.
@@ -33,3 +35,16 @@ The **Operations & Property Logistics Module** manages physical unit handovers, 
 
 ### 2.3 Smart Lock Viewing Log (Sentinel AI Integration)
 - **REQ-OPS-05**: Log digital access events across managed units, capturing broker ID, timestamp, viewing duration, and access method.
+
+### 2.4 P0 Leasing Operations Extension (MD + Leasing Agent)
+
+- **REQ-OPS-06**: Leasing workflows shall enforce qualification → viewing → lease-signing → Ejari activation status continuity without skipped transitions.
+- **REQ-OPS-07**: Lease activation shall remain blocked until mandatory Ejari and tenancy-compliance fields are complete.
+- **REQ-OPS-08**: Payment-confirmed tenancy events shall publish receipt lifecycle checkpoints (issued, delivered, archived).
+- **REQ-OPS-09**: MD oversight surfaces shall expose unresolved leasing operational blockers and receipt-related exceptions.
+
+### 2.5 Traceability anchors for P0 extension
+
+- Business linkage: `docs/business_docs/09_crm_features/tenancy-ejari.md`
+- Listing linkage: `docs/business_docs/09_crm_features/sentinel-property.md`
+- Workflow linkage: `docs/business_docs/04_workflows/rental-management-flowchart.md`

@@ -22,7 +22,7 @@
 11. **Soft Micro-Dropshadow Vectors:** Wire subtle, low-opacity gray shadow properties (`0 4px 12px rgba(0,0,0,0.05)`).
 12. **Compact Metadata Text Baselines:** Style layout timestamps and tracking logs with clear micro-typography.
 13. **Horizontal Section Hairline Dividers:** Insert low-opacity hairline dividers (`1px solid #E2E8F0`) between page widgets.
-14. **Skeleton Screen Placeholder Cards:** Design matching skeleton screens for initial data loading states.
+14. **Skeleton Screen Loading States:** Design branded skeleton screens that mirror the final card layout and preserve spacing during data loading.
 15. **Auto-Generated UI Evidence Specs:** Link automated frontend validation script logs directly into daily ledgers.
 
 ---
@@ -60,7 +60,7 @@
 ## 👤 3. Auth Module & Profile Page Modernization (Items 41 - 60)
 
 41. **Luxury Split-Screen Login Shell:** Refactor `SignIn.tsx` & `SignUp.tsx` into modern split-screen presentation cards.
-42. **Floating Form Labels:** Sleek floating placeholder labels moving up smoothly on input focus.
+42. **Accessible Floating Form Labels:** Implement floating labels that remain readable, keyboard-accessible, and compliant with contrast rules on focus and error states.
 43. **Google OAuth Exception Safety Wrapper:** Try-catch error bounds around Google login handshakes.
 44. **Instant Post-Login Routing Guard:** Pre-check local storage tokens before mounting routes.
 45. **Founder Landing Short-Circuit:** Email `arslanmalikgoraha@gmail.com` force-injects `accessLevel: 5` (`LEVEL_5_MASTER`).

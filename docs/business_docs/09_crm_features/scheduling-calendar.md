@@ -2,21 +2,93 @@
 
 > **Owner:** @Booking | **Tool:** Groq Console (Llama 3.1 70B)
 > **Purpose:** Agent availability config, appointment types and Google/Outlook two-way calendar sync.
-> **Status:** Stub -- awaiting expansion by @Booking.
+> **Status:** Active -- requirement catalog expanded.
+> **Last Updated:** 2026-08-07
+> **Next Review:** 2026-08-21
+> **Source of Truth:** CRM scheduling and calendar feature specification (business layer)
+
+## Canonical governance links
+
+- [`../05_requirements/functional-requirements.md`](../05_requirements/functional-requirements.md)
+- [`../05_requirements/non-functional-requirements.md`](../05_requirements/non-functional-requirements.md)
+- [`../../plans/documentation/REQ_CROSSWALK.md`](../../plans/documentation/REQ_CROSSWALK.md)
+- [`../../software_docs/01_requirements_engineering/SRS_MASTER_12_DEPARTMENTS.md`](../../software_docs/01_requirements_engineering/SRS_MASTER_12_DEPARTMENTS.md)
+
+## Feed targets
+
+- `docs/software_docs/01_requirements_engineering/SRS_MASTER_12_DEPARTMENTS.md`
+- `docs/plans/documentation/REQ_CROSSWALK.md`
+- frontend calendar workflow/resilience lanes in `docs/plans/waves/WAVE_39_*` and `WAVE_40_*`
 
 ---
 
 ## 1. Overview
 
-> _[Action Required: Enforce production-ready engineering constraints]: expand this section with full spec._
+The scheduling and calendar module manages availability, appointment creation, reminders, and two-way sync with external calendars.
+
+## Requirement catalog
+
+### REQ-SCH-001: Availability rules and appointment types
+
+The system shall configure working hours, appointment types, and calendar blocks per role.
+
+**Acceptance criteria:**
+
+- [ ] Working hours can be defined per role or department
+- [ ] Public holidays and manual blocks are enforced
+- [ ] Appointment types are enumerated and selectable
+
+**Evidence:** availability configuration record and appointment type list.
+
+### REQ-SCH-002: Calendar views and conflict prevention
+
+The system shall present day, week, month, and agenda views with conflict prevention rules.
+
+**Acceptance criteria:**
+
+- [ ] Calendar views render the same data set in different layouts
+- [ ] Double-booking is blocked for the same agent unless policy allows it
+- [ ] Open-house exceptions require explicit capacity configuration
+
+**Evidence:** calendar view snapshot and conflict log.
+
+### REQ-SCH-003: Two-way sync and notification workflow
+
+The system shall sync appointments with Google and Outlook and send reminders on schedule.
+
+**Acceptance criteria:**
+
+- [ ] CRM events push to external calendars
+- [ ] External busy slots are ingested back into CRM
+- [ ] Reminder notifications are sent at the configured intervals
+
+**Evidence:** sync log, reminder queue, and notification audit.
+
+### REQ-SCH-004: Security, permissions, and timezone correctness
+
+The system shall enforce role-based calendar permissions and timezone-safe scheduling.
+
+**Acceptance criteria:**
+
+- [ ] Agents edit only their own calendars
+- [ ] Managers can overlay team calendars
+- [ ] UAE timezone handling is consistent across sync and reminders
+
+**Evidence:** permission check, overlay snapshot, and timezone test.
+
+## Traceability
+
+- Maps to `REQ-VW-001`, `REQ-VW-003`, and `REQ-MNT-003`
+- Aligns to `WC-SRS-011`, `WC-SRS-012`, and scheduling evidence artifacts
+- Feeds appointment, reminder, and sync validation
 
 ## 2. Availability Configuration and Appointment Types
 
-> _[Action Required: Enforce production-ready engineering constraints]: expand this section with full spec._
+Availability rules should be maintained as configurable role templates with explicit exception handling for holidays, travel, and special operations.
 
 ## 3. Google Calendar and Outlook Sync Spec
 
-> _[Action Required: Enforce production-ready engineering constraints]: expand this section with full spec._
+Scheduling calendar requirements are now captured in the catalog below, covering availability rules, calendar views, synchronization, and notification behavior.
 
 ## 4. Calendar Views
 

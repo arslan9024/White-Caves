@@ -2,21 +2,93 @@
 
 > **Owner:** @Anima | **Tool:** DeepSeek Chat (DeepSeek V3)
 > **Purpose:** Secondary market transaction workflow, dual-agency disclosure and DLD transfer fee breakdown.
-> **Status:** Stub -- awaiting expansion by @Anima.
+> **Status:** Active -- requirement catalog expanded.
+> **Last Updated:** 2026-08-07
+> **Next Review:** 2026-08-21
+> **Source of Truth:** CRM secondary sales feature specification (business layer)
+
+## Canonical governance links
+
+- [`../05_requirements/functional-requirements.md`](../05_requirements/functional-requirements.md)
+- [`../05_requirements/compliance-requirements.md`](../05_requirements/compliance-requirements.md)
+- [`../../plans/documentation/REQ_CROSSWALK.md`](../../plans/documentation/REQ_CROSSWALK.md)
+- [`../../software_docs/01_requirements_engineering/SRS_MASTER_12_DEPARTMENTS.md`](../../software_docs/01_requirements_engineering/SRS_MASTER_12_DEPARTMENTS.md)
+
+## Feed targets
+
+- `docs/software_docs/01_requirements_engineering/SRS_MASTER_12_DEPARTMENTS.md`
+- `docs/plans/documentation/REQ_CROSSWALK.md`
+- frontend workflow/reliability lanes in `docs/plans/waves/WAVE_39_*` and `WAVE_40_*`
 
 ---
 
 ## 1. Overview
 
-> _[Action Required: Enforce production-ready engineering constraints]: expand this section with full spec._
+The secondary sales module manages resale transactions, disclosure forms, transfer fees, and settlement controls.
+
+## Requirement catalog
+
+### REQ-SEC-001: Secondary sale transaction workflow
+
+The system shall track a resale transaction from seller instruction through DLD transfer completion.
+
+**Acceptance criteria:**
+
+- [ ] Workflow stages are recorded in order
+- [ ] Stage transitions require mandatory documents
+- [ ] Settlement completion is auditable
+
+**Evidence:** secondary sale timeline and stage audit.
+
+### REQ-SEC-002: Dual-agency disclosure enforcement
+
+The system shall require dual-agency disclosure forms before offer acceptance when applicable.
+
+**Acceptance criteria:**
+
+- [ ] Form A, B, and I controls are available where required
+- [ ] Missing disclosures block progress
+- [ ] Signed copies are stored with the deal record
+
+**Evidence:** disclosure log and signed form archive.
+
+### REQ-SEC-003: DLD transfer fee and commission breakdown
+
+The system shall calculate transfer fees, trustee costs, and commission splits with auditability.
+
+**Acceptance criteria:**
+
+- [ ] Fee breakdown shows buyer/seller shares and fixed admin fees
+- [ ] Commission split is configurable and documented
+- [ ] Calculations are reproducible from deal inputs
+
+**Evidence:** fee worksheet and payout audit.
+
+### REQ-SEC-004: NOC and escalation handling
+
+The system shall manage NOC requests, delay handling, and transfer exceptions.
+
+**Acceptance criteria:**
+
+- [ ] NOC requests are tracked until resolved
+- [ ] Delay and rejection paths escalate to the owner or manager
+- [ ] Transfer status updates reach the dashboard
+
+**Evidence:** NOC log, escalation record, and transfer status snapshot.
+
+## Traceability
+
+- Maps to `REQ-OFF-001`, `REQ-OFF-003`, and `REQ-FRPT-002`
+- Aligns to `WC-SRS-011` and resale compliance artifacts
+- Feeds transfer, fee, and disclosure validation
 
 ## 2. Transaction Workflow (Seller Instruction to Commission Disbursement)
 
-> _[Action Required: Enforce production-ready engineering constraints]: expand this section with full spec._
+Transaction workflow should remain stage-gated and disclosure-aware from seller instruction to commission release.
 
 ## 3. Dual Agency Disclosure (RERA Form A, B, I)
 
-> _[Action Required: Enforce production-ready engineering constraints]: expand this section with full spec._
+Secondary sales requirements are now captured in the catalog below, covering resale workflow, disclosure enforcement, fee breakdowns, and NOC handling.
 
 ## 4. Fee and Cost Breakdown
 

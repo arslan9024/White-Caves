@@ -1,7 +1,7 @@
 # Use Case Master Library — 12 Departments
 
-**Status:** Active Planning Specification  
-**Last Updated:** 2026-08-03
+**Status:** Active / Traceability Bridge Enabled  
+**Last Updated:** 2026-08-07
 
 ## 1. Purpose
 
@@ -21,6 +21,27 @@ This document defines the master use-case catalog and schema for all departments
 - `UC-TP-*` Technology & Platform
 - `UC-DA-*` Data & AI
 - `UC-HR-*` HR & Workforce
+
+## 2.1 Traceability anchors
+
+The use-case catalog is not a standalone artifact. Each UC must be traceable to the requirements layer, the software-design layer, and the test/readiness layer.
+
+Required anchors per UC:
+
+- one or more requirement IDs from the SRS baseline (`FR-*`, `BR-*`, `POL-*`, `AC-*`);
+- one design component or API contract from the SDD pack;
+- one test suite or evidence artifact from the implementation readiness pack.
+
+### 2.2 Traceability examples
+
+Representative use cases should resolve to the following implementation anchors:
+
+- `UC-SB-PIPE-001` → `FR-SB-001`, `SalesPipelineService`, `sales-pipeline`;
+- `UC-LT-EJARI-001` → `FR-LT-001`, `TenancyWorkflowService`, `ejari-pdc`;
+- `UC-FT-APP-001` → `FR-FT-001`, `FinanceApprovalService`, `finance-approval`;
+- `UC-CR-AUDIT-001` → `POL-CR-001`, `ComplianceWorkflowService`, `privacy-audit`.
+
+Example: `UC-SB-PIPE-001` should resolve to `FR-SB-001`, `SalesPipelineService`, and the `sales-pipeline` test suite.
 
 ## 3. UC identifier and decomposition standard
 

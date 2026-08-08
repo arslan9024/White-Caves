@@ -1,9 +1,26 @@
 # Wave 14 — Validation Architecture: Request Validation + API Consistency
 
+<!-- markdownlint-disable MD060 -->
+
 **Drafted by:** @Zod  
 **Model:** Llama 3.1 70B via Groq  
 **Status:** ✅ READY (retrospective spec for implemented Wave 14)  
 **Last Updated:** 2026-05-25  
+**Next Review:** 2026-08-21  
+**Source of Truth:** CRM Wave 14 validation architecture feature specification (business layer)
+
+## Canonical governance links
+
+- [`../05_requirements/functional-requirements.md`](../05_requirements/functional-requirements.md)
+- [`../05_requirements/non-functional-requirements.md`](../05_requirements/non-functional-requirements.md)
+- [`../../plans/documentation/REQ_CROSSWALK.md`](../../plans/documentation/REQ_CROSSWALK.md)
+- [`../../software_docs/01_requirements_engineering/SRS_MASTER_12_DEPARTMENTS.md`](../../software_docs/01_requirements_engineering/SRS_MASTER_12_DEPARTMENTS.md)
+
+## Feed targets
+
+- `docs/software_docs/01_requirements_engineering/SRS_MASTER_12_DEPARTMENTS.md`
+- `docs/plans/documentation/REQ_CROSSWALK.md`
+- frontend form/error-contract reliability lanes in `docs/plans/waves/WAVE_39_*` and `WAVE_40_*`
 
 CONSUMES←@Mira: `server/middleware/validation.js`, `server/services/ValidationService.js`  
 FEEDS→@Radia: `business_docs/05_requirements/non-functional-requirements.md#validation`  

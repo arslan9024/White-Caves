@@ -1,5 +1,7 @@
 # Dubai Land Department (DLD) & RERA Legal Conveyancing Matrix
 
+<!-- markdownlint-disable MD022 MD032 MD040 MD060 -->
+
 **Document Ref:** LEG-DLD-CONVEYANCING-2026  
 **Jurisdiction:** Dubai, United Arab Emirates (RERA Regulatory Framework)  
 **Owner:** @Sofia (Compliance Lead) & @Neva (Legal Specialist)  
@@ -10,6 +12,62 @@
 ## 1. Overview of Mandatory RERA Real Estate Forms
 
 All property transactions in Dubai must strictly follow prescribed Dubai Land Department (DLD) and Real Estate Regulatory Agency (RERA) contract templates. Deviations or incorrect form citations invalidate marketing permits and expose the agency to regulatory fines.
+
+## Requirement catalog
+
+### REQ-DLD-001: Mandatory form selection by transaction stage
+
+The system shall map transaction stages to the required DLD/RERA form set.
+
+**Acceptance criteria:**
+
+- [ ] Listing, buyer onboarding, co-brokerage, sale, renewal, and eviction stages map to the correct form(s)
+- [ ] Incorrect form selection is flagged before submission
+- [ ] Responsible party is recorded for each stage
+
+**Evidence:** stage-to-form matrix and validation log.
+
+### REQ-DLD-002: Trakheesi permit linkage to Form A
+
+The system shall require a valid Trakheesi permit to be linked to Form A before public marketing.
+
+**Acceptance criteria:**
+
+- [ ] Form A cannot proceed without a valid permit reference
+- [ ] Public marketing is blocked when the permit is missing or expired
+- [ ] Permit linkage is visible in the listing record
+
+**Evidence:** permit-link audit and marketing gate log.
+
+### REQ-DLD-003: Notice timing for Form 7 and Form 12
+
+The system shall enforce notice periods for rent increase and eviction notices.
+
+**Acceptance criteria:**
+
+- [ ] Form 7 requires a minimum 90-day notice window
+- [ ] Form 12 requires a 12-month notice window
+- [ ] Violations are surfaced before notice issuance
+
+**Evidence:** notice timing validation and legal notice audit.
+
+### REQ-DLD-004: Conveyancing audit trail and SLA enforcement
+
+The system shall record legal form execution, responsible party, and SLA outcome for each stage.
+
+**Acceptance criteria:**
+
+- [ ] Stage completion timestamps are captured
+- [ ] SLA misses are visible to managers and legal staff
+- [ ] Audit records can be exported for compliance review
+
+**Evidence:** conveyancing audit trail and export file.
+
+## Traceability
+
+- Maps to `REQ-COMP-001`, `REQ-LGL-001`, and `REQ-LP-003`
+- Aligns to `WC-SRS-006` and `WC-SRS-012`
+- Feeds legal form, permit, and notice validation
 
 ```
 ┌─────────────────────────────────────────────────────────────────────────────┐

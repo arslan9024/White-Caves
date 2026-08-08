@@ -1,258 +1,137 @@
-# Business & Technical Requirements Documentation
+# Requirements Framework (Business Layer Authority)
 
-This directory contains comprehensive specification of all business and technical requirements for the White Caves CRM Platform.
+**Status:** Active  
+**Owner:** Product + Architecture + Compliance Governance  
+**Last Updated:** 2026-08-07  
+**Next Review:** 2026-08-21  
+**Source of Truth:** Business-layer requirements framework and authority boundaries
 
----
+This document defines how requirement artifacts in `docs/business_docs/05_requirements/` are structured, governed, and bridged to software implementation artifacts.
 
-## 📋 Document Categories
+## 1. Authority model
 
-### Functional Requirements
+| Artifact | Role | Counting authority |
+| --- | --- | --- |
+| `functional-requirements.md` | Canonical business requirement register (`REQ-*`) | **Yes (business layer)** |
+| `requirements-framework.md` | Governance framework, lifecycle, and taxonomy rules | No |
+| `../12_srs/srs-master.md` | Business SRS wrapper/summary | No |
+| `../../plans/documentation/REQ_CROSSWALK.md` | Business-to-software traceability bridge | No |
+| `../../software_docs/01_requirements_engineering/SRS_MASTER_12_DEPARTMENTS.md` | Canonical software implementation requirement register | **Yes (software layer)** |
 
-Documents **what** the system does and the specific behaviors expected from each feature.
+## 2. Requirement taxonomy
 
-**Files**:
+Business requirement families in this folder:
 
-- `functional-requirements.md` - Complete functional requirements by feature
-- `user-stories.md` - User stories organized by role and feature
-- `use-cases.md` - Actor-based use case scenarios
-- `business-rules.md` - Business logic and rules
+- `REQ-*`: Canonical business requirements (intent authority)
+- `BR-*`: Business rules
+- `NFR-*`: Non-functional expectation anchors
+- `POL-*`: Policy/control linkage anchors
+- `AC-*`: Acceptance criteria anchors
 
-### Non-Functional Requirements
+Software-side large-scale families for the hybrid 10k execution program are governed in:
 
-Documents **how well** the system performs and operates (performance, security, reliability, etc.).
+- `../../plans/documentation/SRS_10K_ID_ALLOCATION_MATRIX_2026-08-07.md`
+- `../../plans/documentation/SRS_10K_WRITING_STYLE_GUIDE_2026-08-07.md`
+- `../../plans/documentation/SRS_10K_HYBRID_REGISTRY_SCHEMA_2026-08-07.md`
 
-**Files**:
+## 3. Canonical document lanes
 
-- `non-functional-requirements.md` - Performance, security, scalability targets
-- `performance-requirements.md` - Response time, throughput, capacity
-- `security-requirements.md` - Security constraints and compliance
-- `compliance-requirements.md` - Legal, regulatory, and contractual requirements
+### 3.1 Functional intent lane
 
-### System Requirements
+- `functional-requirements.md`
+- `business-rules.md`
+- `user-stories.md`
+- `use-cases.md`
 
-Documents the technical environment and integration specifications.
+### 3.2 Quality/compliance lane
 
-**Files**:
+- `non-functional-requirements.md`
+- `performance-requirements.md`
+- `security-requirements.md`
+- `compliance-requirements.md`
 
-- `system-requirements.md` - Tech stack, dependencies, infrastructure
-- `integration-requirements.md` - External system integrations
-- `api-requirements.md` - API specifications and contracts
-- `database-requirements.md` - Database schema and data requirements
+### 3.3 Technical boundary lane
 
-### Constraints & Assumptions
+- `system-requirements.md`
+- `integration-requirements.md`
+- `api-requirements.md`
+- `database-requirements.md`
 
-Documents limits, assumptions, and dependencies.
+### 3.4 Constraint lane
 
-**Files**:
+- `constraints.md`
+- `assumptions.md`
+- `dependencies.md`
 
-- `constraints.md` - Technical, budget, schedule, resource constraints
-- `assumptions.md` - Assumptions about users, data, environment
-- `dependencies.md` - External dependencies and risks
+## 4. Frontend-first planning contract
 
----
+Requirement updates that impact UX, page composition, state flow, resiliency states, accessibility, or runtime performance must explicitly feed frontend-priority waves before secondary lanes.
 
-## 🎯 How to Use This Directory
+Mandatory frontend-first traces when relevant:
 
-### For Developers
+- `../../plans/waves/WAVE_37_IMPLEMENTATION_BACKLOG.md`
+- `../../plans/waves/WAVE_38_IMPLEMENTATION_BACKLOG.md`
+- `../../plans/waves/WAVE_39_IMPLEMENTATION_BACKLOG.md`
+- `../../plans/waves/WAVE_40_IMPLEMENTATION_BACKLOG.md`
 
-1. **Start**: Read `functional-requirements.md` for scope
-2. **Understand**: Review `use-cases.md` for workflows
-3. **Implement**: Follow `api-requirements.md` for contracts
-4. **Verify**: Check `non-functional-requirements.md` for acceptance criteria
-5. **Deploy**: Reference `security-requirements.md` for security gates
+## 5. Traceability contract
 
-### For Product Managers
+Each meaningful requirement update should maintain or add:
 
-1. **Overview**: Read `functional-requirements.md`
-2. **Validate**: Review `user-stories.md` for user perspective
-3. **Plan**: Reference `constraints.md` for feasibility
-4. **Measure**: Check `non-functional-requirements.md` for success metrics
+1. business source reference (`REQ-*`, `BR-*`, `NFR-*`, `POL-*`, `AC-*`),
+2. software realization link (SRS/SDD/UC path),
+3. test/UAT evidence link,
+4. wave/release linkage,
+5. owner and lifecycle status.
 
-### For QA/Testing Teams
+Primary bridge targets:
 
-1. **Scope**: Review `functional-requirements.md` for test coverage
-2. **Scenarios**: Study `use-cases.md` for test scenarios
-3. **Criteria**: Check `non-functional-requirements.md` for acceptance criteria
-4. **Security**: Reference `security-requirements.md` for security test cases
+- `../../plans/documentation/REQ_CROSSWALK.md`
+- `../../software_docs/01_requirements_engineering/SRS_MASTER_12_DEPARTMENTS.md`
+- `../../software_docs/02_software_design/SDD_MASTER_ARCHITECTURE_PACK.md`
+- `../../software_docs/03_use_cases/UC_MASTER_LIBRARY_12_DEPARTMENTS.md`
+- `../13_testing/uat-scenarios.md`
 
-### For Business Stakeholders
+## 6. Lifecycle governance
 
-1. **Context**: Read `functional-requirements.md` for feature descriptions
-2. **Value**: Review `use-cases.md` for user benefits
-3. **Compliance**: Check `compliance-requirements.md` for regulatory aspects
+Requirement lifecycle states:
 
----
+1. Proposed
+2. Reviewed
+3. Approved
+4. Planned
+5. Implemented
+6. Verified
+7. Released
+8. Superseded
 
-## 📊 Requirement Traceability
+Do not hard-delete superseded requirements; preserve audit history and add supersession references.
 
-All requirements are traceable:
+## 7. Quality gates
 
-- **ID**: Unique identifier (REQ-001, REQ-002, etc.)
-- **Type**: Functional, Non-Functional, System, Constraint
-- **Status**: Proposed, Approved, Implemented, Verified
-- **Priority**: Critical, High, Medium, Low
-- **Owner**: Who owns this requirement
-- **Comments**: Discussion and decisions
+A requirement entry is governance-ready only when:
 
----
+- statement is testable and unambiguous,
+- scope and owner are explicit,
+- acceptance criteria are measurable,
+- policy/compliance references are present where required,
+- traceability links resolve to canonical `docs/*` artifacts.
 
-## ✅ Requirements Checklist
+## 8. 10k hybrid SRS alignment
 
-### Phase 1: Core CRM (100% Complete)
+The business layer remains the intent authority, while software-side hybrid registry rows are the canonical large-scale implementation counting authority.
 
-- ✅ Client Management
-- ✅ Lead Tracking
-- ✅ Commission Tracking
-- ✅ Basic Reporting
+Execution rule:
 
-### Phase 2: Integration (95% Complete)
+- business narrative references must not be treated as canonical software-count increments,
+- mapped software rows and linked scenarios drive canonical 10k progress accounting,
+- crosswalk quality and orphan detection are mandatory at each checkpoint (`C1` to `C10`).
 
-- ✅ WhatsApp Integration
-- ✅ Email Automation
-- ✅ Dashboard & Analytics
-- ⏳ SMS Integration (future)
+## 9. Related governance artifacts
 
-### Phase 3: AI & Advanced (80% Complete)
-
-- ⏳ AI Assistant Integration
-- ⏳ Predictive Analytics
-- ⏳ Advanced Automation
-
-### Phase 4: Mobile & Optimization (Planned)
-
-- ⏳ Mobile App
-- ⏳ Performance Optimization
-- ⏳ Advanced Features
-
----
-
-## 📈 Key Metrics & Targets
-
-### Performance Requirements
-
-- **Page Load**: < 2 seconds
-- **API Response**: < 500ms at 95th percentile
-- **Database Query**: < 100ms for standard queries
-- **Availability**: 99.5% uptime SLA
-
-### Security Requirements
-
-- **Encryption**: All data in transit (SSL/TLS)
-- **Authentication**: OAuth 2.0 with MFA support
-- **Authorization**: Role-based access control
-- **Audit**: Complete audit trail of all changes
-
-### Scalability Requirements
-
-- **Users**: Support 500+ concurrent users
-- **Data**: Handle 100,000+ client records
-- **Transactions**: 1,000+ transactions per minute
-- **Growth**: Support 3x growth in users/data
-
----
-
-## 📝 Requirement Life Cycle
-
-1. **Proposal**: New requirement identified
-2. **Analysis**: Feasibility and impact analysis
-3. **Approval**: Stakeholder and technical approval
-4. **Design**: Technical design review
-5. **Implementation**: Development and testing
-6. **Verification**: Acceptance testing
-7. **Deployment**: Released to production
-8. **Maintenance**: Ongoing support and updates
-
----
-
-## 🔗 Related Documentation
-
-**Strategic**:
-
-- `docs/plans/MASTER_PLAN.md` - Canonical master plan and roadmap
-- `docs/business_docs/09_crm_features/` - Canonical feature specifications
-
-**Technical**:
-
-- `docs/software_docs/INDEX.md` - Software architecture entrypoint
-- `docs/software_docs/backend/api_architecture.md` - Backend/API architecture specification
-- `docs/software_docs/01_requirements_engineering/functional_specifications.md` - Software-facing requirements translation
-
-**Implementation**:
-
-- `/src/types/` - TypeScript types reflecting requirements
-- `/src/services/` - Service implementations
-- Repository code reflecting requirements
-
----
-
-## 🎓 Example Requirement Entry
-
-```markdown
-## REQ-001: Client Management - Create Client
-
-**Type**: Functional Requirement  
-**Priority**: Critical  
-**Status**: Implemented & Verified  
-**Owner**: Product Team  
-
-### Description
-Agents must be able to create new client records within the CRM system.
-
-### Acceptance Criteria
-- [x] Display form with all required fields
-- [x] Validate all inputs before submission
-- [x] Store client in database
-- [x] Redirect to client detail view after creation
-- [x] Show error message if creation fails
-
-### Technical Details
-- Form validation: Client-side and server-side
-- API endpoint: POST /api/clients
-- Database: MongoDB clients collection
-- Response: New client object with ID
-
-### Related Features
-- Links to client management feature
-- Links to business rules
-- Depends on: User authentication
-
-### Test Scenarios
-- Create client with all required fields
-- Create client with optional fields
-- Validate email format
-- Validate phone number format
-- Test database constraints
-```
-
----
-
-## 📞 Support & Questions
-
-For requirement-related questions:
-
-1. Check relevant requirement file
-2. Review related feature documentation
-3. Contact product manager
-4. Escalate to product leadership
-
----
-
-## 🔄 Updates & Changes
-
-When requirements change:
-
-1. **Document**: Update or create requirement entry
-2. **Notify**: Communicate change to affected teams
-3. **Prioritize**: Determine priority and timeline
-4. **Implement**: Schedule implementation
-5. **Test**: Verify new/modified requirements
-6. **Deploy**: Release with updated documentation
-
----
-
-**Version**: 1.0  
-**Last Updated**: February 2026  
-**Maintained By**: Product & Technical Teams  
-**Review Cycle**: Monthly or as needed
-
-For specific requirement details, see individual requirement files in this folder.
+- `../README.md`
+- `README.md`
+- `../../plans/MASTER_PLAN.md`
+- `../../plans/PENDING_TASKS_ONLY.md`
+- `../../plans/waves/README.md`
+- `../BUSINESS_DOCS_FULL_UPGRADE_CHECKLIST_2026-08-07.md`

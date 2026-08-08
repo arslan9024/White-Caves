@@ -1,8 +1,34 @@
 # Lead-to-Sale & Lead-to-Lease Workflow Flowcharts
 
+<!-- markdownlint-disable MD022 MD024 MD040 MD060 -->
+
 > **Version:** 1.0  
-> **Last Updated:** March 2026  
+> **Last Updated:** August 2026  
 > **Owner:** Sales Department (Clara + Sophia)
+> **Priority Scope:** MD + Leasing Agent first for listing, leasing execution, and receipt continuity.
+
+---
+
+## Priority Persona Overlay (P0)
+
+### Priority personas
+
+- **MD (`owner`)**: owns executive controls, high-value approvals, and policy escalations.
+- **Leasing Agent (`leasing_agent`)**: first-agent owner for lead-to-lease continuity.
+
+### First-agent validation profile
+
+- **Reference account:** `agent.one.whitecaves@gmail.com`
+- **Expected lifecycle:** lead ingest → qualification → viewing → lease agreement → Ejari → payment/receipt operations.
+
+### P0 SLA overlays
+
+| Stage | Primary role | SLA expectation |
+|-------|--------------|-----------------|
+| First contact for hot leasing leads | Leasing Agent | ≤ 2 hours |
+| Viewing arrangement post-qualification | Leasing Agent | ≤ 3 days |
+| Lease/Ejari transition once approved | Leasing Agent | same operational cycle |
+| Receipt after payment confirmation | Finance/System + Leasing Agent | ≤ 30 minutes to delivery |
 
 ---
 
@@ -232,6 +258,7 @@ Rental workflow from lead capture through tenant vetting, lease agreement, Ejari
 │ Monthly: Rent collection (see Rental Collection Workflow)
 │ 60 Days before expiry: Renewal reminder created
 │ Any time: Maintenance requests via WhatsApp
+│ Payment confirmed: receipt issued + delivered + archived
         │
         ▼
 [LEASE RENEWAL or EXPIRY]
@@ -254,6 +281,12 @@ Rental workflow from lead capture through tenant vetting, lease agreement, Ejari
 | Negotiating | Counter-offers in progress | Resolution within 7 days | Negotiation win rate |
 | Won | Deal closed | Commission paid within 5 days | Conversion rate |
 | Lost | Deal failed | Loss reason mandatory | Loss analysis |
+
+### Receipt control note (Lead-to-Lease)
+
+- Receipt generation is a mandatory completion control for payment-related tenant events.
+- Leasing Agent must verify delivery status and follow up on failed delivery attempts.
+- MD must have dashboard visibility into receipt SLA breaches and unresolved exceptions.
 
 ---
 

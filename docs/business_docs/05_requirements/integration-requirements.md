@@ -1,8 +1,95 @@
 # Integration Requirements — White Caves CRM Platform
 
+<!-- markdownlint-disable MD022 MD024 MD031 MD032 MD036 MD040 MD058 MD060 -->
+
+**Status:** Active  
+**Owner:** Platform + API + Product Integration Governance  
+**Last Updated:** 2026-08-07  
+**Next Review:** 2026-08-21  
+**Source of Truth:** Business-layer integration requirements and third-party contract intent
+
 > **Version:** 1.0  
 > **Last Updated:** March 2026  
 > **Purpose:** Defines all external system integrations, APIs, and data exchange contracts
+
+## Canonical governance links
+
+- [`README.md`](./README.md)
+- [`requirements-framework.md`](./requirements-framework.md)
+- [`functional-requirements.md`](./functional-requirements.md)
+- [`non-functional-requirements.md`](./non-functional-requirements.md)
+- [`../../plans/documentation/REQ_CROSSWALK.md`](../../plans/documentation/REQ_CROSSWALK.md)
+- [`../../software_docs/01_requirements_engineering/SRS_MASTER_12_DEPARTMENTS.md`](../../software_docs/01_requirements_engineering/SRS_MASTER_12_DEPARTMENTS.md)
+- [`../../software_docs/02_software_design/SDD_MASTER_ARCHITECTURE_PACK.md`](../../software_docs/02_software_design/SDD_MASTER_ARCHITECTURE_PACK.md)
+
+## Feed targets
+
+- `docs/plans/documentation/REQ_CROSSWALK.md`
+- `docs/software_docs/01_requirements_engineering/SRS_MASTER_12_DEPARTMENTS.md`
+- `docs/software_docs/02_software_design/SDD_MASTER_ARCHITECTURE_PACK.md`
+- `docs/business_docs/09_crm_features/portal-syndication.md`
+
+## Requirement catalog
+
+### REQ-INT-001: WhatsApp inbound and outbound resilience
+
+The system shall support WhatsApp webhook intake, outbound messaging, retry, and fallback handling.
+
+**Acceptance criteria:**
+
+- [ ] Inbound webhook events are acknowledged and persisted
+- [ ] Outbound failures queue for retry with backoff
+- [ ] Critical messaging can fall back to an alternate channel
+
+**Evidence:** webhook log, outbound queue entry, retry record.
+
+### REQ-INT-002: Portal syndication and lead capture
+
+The system shall syndicate listings to portal providers and capture inbound leads back into CRM.
+
+**Acceptance criteria:**
+
+- [ ] Listing updates propagate to the configured portal feeds
+- [ ] Inbound portal leads are auto-created in CRM
+- [ ] Sync failures are visible and actionable to operators
+
+**Evidence:** portal sync record, inbound lead audit, and error log.
+
+### REQ-INT-003: Authentication and identity exchange
+
+The system shall exchange identity data with the selected authentication provider and issue platform tokens.
+
+**Acceptance criteria:**
+
+- [ ] Federated login succeeds through the identity provider
+- [ ] Platform token issuance follows provider verification
+- [ ] Identity sync is auditable and traceable
+
+**Evidence:** auth exchange log and session audit record.
+
+### REQ-INT-004: Payments and currency conversion
+
+The system shall integrate with payment and exchange-rate providers without blocking core CRM workflows.
+
+**Acceptance criteria:**
+
+- [ ] Payment events are handled through a documented webhook path
+- [ ] Currency conversion uses cached rates when live rates are unavailable
+- [ ] Provider failures are isolated from core record operations
+
+**Evidence:** payment event log, FX cache record, provider error log.
+
+### REQ-INT-005: External API security and idempotency
+
+The system shall validate signed webhooks, protect credentials, and avoid duplicate side effects.
+
+**Acceptance criteria:**
+
+- [ ] Signed inbound webhooks are required where providers support them
+- [ ] Duplicate events are treated idempotently
+- [ ] Secrets are environment-based and not hard-coded
+
+**Evidence:** webhook verification log, idempotency record, secret inventory note.
 
 ---
 
@@ -258,6 +345,13 @@ White Caves CRM Platform
 │   ├── Bayut API ──→ Listing syndication
 │   ├── Stripe API ──→ Payment processing
 │   ├── ExchangeRate API ──→ Currency conversion
+
+## Traceability
+
+- Business owner: Platform / Integrations
+- SRS counterpart: `WC-SRS-015` and `WC-SRS-009`
+- Related business rules: `BR-007`, `BR-010`
+- Validation surfaces: webhook logs, sync reports, payment events, auth audit
 │   ├── SendGrid / SES ──→ Transactional email
 │   └── Firebase Admin SDK ──→ Token verification
 │

@@ -1,11 +1,71 @@
 # CRM Task Batching and Priority Grouping
 
+<!-- markdownlint-disable MD024 MD050 -->
+
 **Status:** Active  
 **Owner:** Product & CRM Delivery  
 **Last Updated:** 2026-08-02  
-**Source of Truth:** Yes
+**Next Review:** 2026-08-21  
+**Source of Truth:** CRM task batching and priority grouping feature specification (business layer)
+
+## Canonical governance links
+
+- [`../05_requirements/functional-requirements.md`](../05_requirements/functional-requirements.md)
+- [`../05_requirements/non-functional-requirements.md`](../05_requirements/non-functional-requirements.md)
+- [`../../plans/documentation/REQ_CROSSWALK.md`](../../plans/documentation/REQ_CROSSWALK.md)
+- [`../../software_docs/01_requirements_engineering/SRS_MASTER_12_DEPARTMENTS.md`](../../software_docs/01_requirements_engineering/SRS_MASTER_12_DEPARTMENTS.md)
+
+## Feed targets
+
+- `docs/software_docs/01_requirements_engineering/SRS_MASTER_12_DEPARTMENTS.md`
+- `docs/plans/documentation/REQ_CROSSWALK.md`
+- frontend tasks UX/reliability lanes in `docs/plans/waves/WAVE_39_*` and `WAVE_40_*`
 
 This feature groups CRM tasks into priority-led batches so the Tasks & Actions experience stays readable and easier to act on. The behavior is currently implemented in the Clara Leads CRM task view and is intentionally reusable so the batching logic is not embedded directly inside the UI component.
+
+## Requirement catalog
+
+### REQ-TASK-001: Priority-led task batching
+
+The system shall group CRM tasks by priority and keep the highest priority work first.
+
+**Acceptance criteria:**
+
+- [ ] Critical and high priority tasks appear before lower priorities
+- [ ] Missing priority values default to medium
+- [ ] Batch labels clearly show priority and item count
+
+**Evidence:** grouped task view and batch render snapshot.
+
+### REQ-TASK-002: Deadline-aware ordering and batch sizing
+
+The system shall sort items within each batch by urgency and maintain a small default batch size.
+
+**Acceptance criteria:**
+
+- [ ] Tasks inside a batch are ordered by earliest deadline
+- [ ] Default batch size remains capped at three items
+- [ ] Batch generation is deterministic for a fixed input set
+
+**Evidence:** task batching output and ordering test snapshot.
+
+### REQ-TASK-003: Reusable UI integration
+
+The system shall expose batching logic as a reusable utility for task views.
+
+**Acceptance criteria:**
+
+- [ ] The utility can be consumed outside the current task view
+- [ ] UI components render batch headers with priority badges
+- [ ] Regression tests cover the batching behavior
+
+**Evidence:** utility import path, task view integration, and test output.
+
+## Traceability
+
+- Maps to task-follow-up and CRM prioritization coverage
+- Aligns to `WC-SRS-002` and task batching implementation artifacts
+- Feeds task triage and dashboard presentation validation
 
 ## Purpose and business outcome
 

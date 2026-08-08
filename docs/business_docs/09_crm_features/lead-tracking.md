@@ -4,12 +4,95 @@
 **Last Updated**: February 2026  
 **Priority**: High  
 **Completion**: 100%
+**Next Review**: 2026-08-21  
+**Source of Truth**: CRM lead tracking and pipeline feature specification (business layer)
+
+## Canonical governance links
+
+- [`../05_requirements/functional-requirements.md`](../05_requirements/functional-requirements.md)
+- [`../05_requirements/non-functional-requirements.md`](../05_requirements/non-functional-requirements.md)
+- [`../../plans/documentation/REQ_CROSSWALK.md`](../../plans/documentation/REQ_CROSSWALK.md)
+- [`../../software_docs/01_requirements_engineering/SRS_MASTER_12_DEPARTMENTS.md`](../../software_docs/01_requirements_engineering/SRS_MASTER_12_DEPARTMENTS.md)
+
+## Feed targets
+
+- `docs/software_docs/01_requirements_engineering/SRS_MASTER_12_DEPARTMENTS.md`
+- `docs/plans/documentation/REQ_CROSSWALK.md`
+- frontend pipeline usability/reliability lanes in `docs/plans/waves/WAVE_39_*` and `WAVE_40_*`
 
 ---
 
 ## Overview
 
 Lead Tracking is the engine that drives the sales process. It transforms prospects into opportunities and tracks them through the complete sales pipeline from initial contact to deal closure.
+
+## Requirement catalog
+
+### REQ-LT-001: Lead creation and source attribution
+
+The system shall create leads from multiple sources and preserve immutable source attribution.
+
+**Acceptance criteria:**
+
+- [ ] Leads can be created from WhatsApp, web forms, walk-ins, referrals, and imports
+- [ ] Source attribution is stored on the lead and preserved through edits
+- [ ] Duplicate lead warnings are visible before save
+
+**Evidence:** lead record, source audit, and duplicate check log.
+
+### REQ-LT-002: Pipeline stage tracking and conversion metrics
+
+The system shall track leads through configurable stages and expose conversion metrics by stage.
+
+**Acceptance criteria:**
+
+- [ ] Kanban pipeline shows all active leads by stage
+- [ ] Stage duration is measurable for each lead
+- [ ] Conversion metrics are available per stage and source
+
+**Evidence:** pipeline dashboard snapshot and metrics export.
+
+### REQ-LT-003: Lead scoring and qualification
+
+The system shall score leads using engagement, profile, and behavior factors.
+
+**Acceptance criteria:**
+
+- [ ] Score updates when new interactions are logged
+- [ ] Hot/warm/cold classifications are visible to users
+- [ ] Qualification criteria are recorded on the lead detail view
+
+**Evidence:** score audit log and qualification panel snapshot.
+
+### REQ-LT-004: Activity timeline and follow-up scheduling
+
+The system shall maintain a chronological activity timeline and support follow-up reminders.
+
+**Acceptance criteria:**
+
+- [ ] Calls, emails, meetings, and messages appear in chronological order
+- [ ] Follow-up reminders can be scheduled from the lead record
+- [ ] Activity history is visible to managers and executives per role
+
+**Evidence:** activity timeline, reminder record, and role access check.
+
+### REQ-LT-005: Lead assignment and stall detection
+
+The system shall assign leads by availability and specialization and flag stalled opportunities.
+
+**Acceptance criteria:**
+
+- [ ] Auto-assignment respects role and specialization rules
+- [ ] Stalled leads are surfaced after the configured inactivity window
+- [ ] Managers can reassign a stalled lead with audit logging
+
+**Evidence:** assignment log, stall alert, and reassignment audit.
+
+## Traceability
+
+- Maps to `REQ-LEAD-001` through `REQ-LEAD-006` in `functional-requirements.md`
+- Supports `WC-SRS-002` and `WC-SRS-009` lead and pipeline coverage
+- Feeds scoring, assignment, and analytics validation artifacts
 
 ### Purpose
 
@@ -94,7 +177,7 @@ Provide agents and managers with visibility into the sales pipeline, enabling ef
 
 ### Status Workflow
 
-```
+```text
 New Lead (just created)
     ↓
 Lead Qualification (BANT assessment)
@@ -172,7 +255,7 @@ Dead Lead (didn't convert - archived)
 
 ### Lead Scoring Formula
 
-```
+```text
 Base Score: 0 points
 
 Engagement Factor (0-30 points):
@@ -249,6 +332,11 @@ A lead is disqualified if:
 - **Primary UI Surface**: `ClaraLeadsCRM_NEW`
 - **Primary Flow**: source capture -> qualification -> stage transitions -> close/loss reporting
 - **Core Rule**: every lead must retain immutable source attribution and stage-history records
+
+## Validation notes
+
+- Lead-tracking updates should preserve stage history and source tagging across imports and manual edits.
+- New workflow changes should use the same evidence trail as the dashboard and pipeline exports.
 
 ---
 

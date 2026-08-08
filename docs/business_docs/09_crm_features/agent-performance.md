@@ -1,15 +1,81 @@
 # Agent Performance Management — CRM Feature Specification
 
-> **Status:** Planned  
+> **Status:** Active -- requirement catalog expanded.  
 > **Module Owner:** Zoe (Executive AI) + Sales Managers  
 > **API Endpoints:** `/api/agents`, `/api/dashboard/performance` (planned)  
-> **Priority:** High
+> **Priority:** High  
+> **Last Updated:** 2026-08-07  
+> **Next Review:** 2026-08-21  
+> **Source of Truth:** CRM agent performance feature specification (business layer)
+
+## Canonical governance links
+
+- [`../05_requirements/functional-requirements.md`](../05_requirements/functional-requirements.md)
+- [`../05_requirements/compliance-requirements.md`](../05_requirements/compliance-requirements.md)
+- [`../05_requirements/non-functional-requirements.md`](../05_requirements/non-functional-requirements.md)
+- [`../../plans/documentation/REQ_CROSSWALK.md`](../../plans/documentation/REQ_CROSSWALK.md)
+
+## Feed targets
+
+- `docs/software_docs/01_requirements_engineering/SRS_MASTER_12_DEPARTMENTS.md`
+- `docs/plans/documentation/REQ_CROSSWALK.md`
+- frontend analytics/reliability lanes in `docs/plans/waves/WAVE_39_*` and `WAVE_40_*`
 
 ---
 
 ## Overview
 
 The Agent Performance module gives sales managers and executives real-time visibility into each agent's productivity, conversion rates, and commission earnings. It enables data-driven coaching, fair recognition, and capacity planning.
+
+## Requirement catalog
+
+### REQ-APR-001: Agent performance dashboard
+
+The system shall provide a performance dashboard for each agent and manager view with lead, activity, conversion, and commission metrics.
+
+**Acceptance criteria:**
+
+- [ ] Dashboard shows lead, contact, viewing, offer, and close metrics
+- [ ] Agent view is restricted to own data
+- [ ] Manager view shows team and department data
+
+**Evidence:** dashboard snapshot and role-based access check.
+
+### REQ-APR-002: Target setting and progress tracking
+
+The system shall allow managers to set monthly targets per agent and track progress against those targets.
+
+**Acceptance criteria:**
+
+- [ ] Targets can be set for deals, value, and conversion rate
+- [ ] Progress bars update from CRM activity
+- [ ] Mid-month underperformance alerts are visible to managers
+
+**Evidence:** target record, progress snapshot, and alert log.
+
+### REQ-APR-003: RERA license expiry monitoring
+
+The system shall block lead assignment and regulated activity when an agent’s RERA license is expired.
+
+**Acceptance criteria:**
+
+- [ ] Expired agents cannot be selected for new assignments
+- [ ] License expiry reminders are sent at configured thresholds
+- [ ] Compliance dashboard shows active, expiring, and expired counts
+
+**Evidence:** license status dashboard and assignment block audit log.
+
+### REQ-APR-004: Coaching plan workflow
+
+The system shall support formal coaching plans for underperforming agents with goals, review dates, and manager sign-off.
+
+**Acceptance criteria:**
+
+- [ ] Coaching plan records root cause, actions, and success metrics
+- [ ] Review date is mandatory
+- [ ] Plan completion status is visible to manager and compliance stakeholders
+
+**Evidence:** coaching plan record and review outcome log.
 
 ---
 
@@ -125,6 +191,13 @@ Beyond closing deals, agent quality measured by:
 - [ ] Response time metric measured from lead assignment to first activity
 - [ ] Performance report exportable to Excel/PDF
 
+## Traceability
+
+- Business owner: Sales Manager / Executive
+- SRS counterpart: `WC-SRS-002` and `WC-SRS-016`
+- Related upstream requirements: `COMP-RERA-003`, `COMP-PDPL-001`
+- Validation surfaces: leaderboard export, dashboard metrics, coaching plan records
+
 ---
 
 ---
@@ -178,7 +251,7 @@ When `reraLicenseStatus = 'expired'`:
 
 ### Compliance Dashboard — RERA License Section
 
-```
+```text
 RERA LICENSE STATUS OVERVIEW
 ────────────────────────────────────────────────────
 Status         | Count | Agents
@@ -219,7 +292,7 @@ A manager initiates a coaching plan when an agent meets ANY of the following:
 
 ### Coaching Plan Structure
 
-```
+```text
 AGENT COACHING PLAN
 
 Agent:          [Full Name], BRN [XXXX]
@@ -304,7 +377,7 @@ A PIP is escalated from a failed Coaching Plan (agent did not meet success metri
 
 ### PIP Structure (60 or 90 Days)
 
-```
+```text
 PERFORMANCE IMPROVEMENT PLAN (PIP)
 
 Agent:          [Full Name], BRN [XXXX]
@@ -382,15 +455,15 @@ PerformanceImprovementPlan {
 
 ## Mobile Analytics View
 
-### Overview
+### Mobile Analytics Overview
 
 Senior agents and managers access performance dashboards on mobile devices (iOS/Android). The mobile view is optimized for at-a-glance KPI review and quick actions.
 
 ### Mobile Dashboard Specification
 
-**Screen 1 — My Performance (Agent view, portrait)**
+#### Screen 1 — My Performance (Agent view, portrait)
 
-```
+```text
 ┌─────────────────────────────────────────┐
 │  👤 [Agent Name]   BRN Active ✅        │
 │  ─────────────────────────────────      │
@@ -412,9 +485,9 @@ Senior agents and managers access performance dashboards on mobile devices (iOS/
 └─────────────────────────────────────────┘
 ```
 
-**Screen 2 — Team Overview (Manager view, portrait)**
+#### Screen 2 — Team Overview (Manager view, portrait)
 
-```
+```text
 ┌─────────────────────────────────────────┐
 │  👥 Team Performance  [Filter ▾]        │
 │  ─────────────────────────────────      │

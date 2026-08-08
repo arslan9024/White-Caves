@@ -2,21 +2,93 @@
 
 > **Owner:** @Fei-Fei | **Tool:** DeepSeek Chat (DeepSeek V3)
 > **Purpose:** AVM engine, rental yield calculator and bank valuation request workflow.
-> **Status:** Stub -- awaiting expansion by @Fei-Fei.
+> **Status:** Active -- requirement catalog expanded.
+> **Last Updated:** 2026-08-07
+> **Next Review:** 2026-08-21
+> **Source of Truth:** CRM property valuation feature specification (business layer)
+
+## Canonical governance links
+
+- [`../05_requirements/functional-requirements.md`](../05_requirements/functional-requirements.md)
+- [`../05_requirements/compliance-requirements.md`](../05_requirements/compliance-requirements.md)
+- [`../../plans/documentation/REQ_CROSSWALK.md`](../../plans/documentation/REQ_CROSSWALK.md)
+- [`../../software_docs/01_requirements_engineering/SRS_MASTER_12_DEPARTMENTS.md`](../../software_docs/01_requirements_engineering/SRS_MASTER_12_DEPARTMENTS.md)
+
+## Feed targets
+
+- `docs/software_docs/01_requirements_engineering/SRS_MASTER_12_DEPARTMENTS.md`
+- `docs/plans/documentation/REQ_CROSSWALK.md`
+- frontend valuation/insights refinement lanes in `docs/plans/waves/WAVE_39_*` and `WAVE_40_*`
 
 ---
 
 ## 1. Overview
 
-> _[Action Required: Enforce production-ready engineering constraints]: expand this section with full spec._
+The valuation module provides AVM-based pricing, manual override controls, rental yield analysis, and bank valuation requests.
+
+## Requirement catalog
+
+### REQ-VAL-001: AVM inputs, outputs, and history
+
+The system shall calculate estimated value using a documented input set and preserve valuation history.
+
+**Acceptance criteria:**
+
+- [ ] AVM uses location, size, bedroom, bathroom, floor, view, age, and transaction inputs
+- [ ] Output includes estimated value, confidence, and comparable count
+- [ ] Historical snapshots are retained for trend analysis
+
+**Evidence:** valuation snapshot, comparable log, and history graph.
+
+### REQ-VAL-002: Rental yield and investment metrics
+
+The system shall calculate gross and net rental yield using the property’s financial inputs.
+
+**Acceptance criteria:**
+
+- [ ] Gross and net yield formulas are explicit
+- [ ] Service charges are represented in the net calculation
+- [ ] Yield values are visible in the property detail view
+
+**Evidence:** yield calculation output and property analytics snapshot.
+
+### REQ-VAL-003: Manual override and approval workflow
+
+The system shall support manual valuation overrides by authorized valuers with manager approval.
+
+**Acceptance criteria:**
+
+- [ ] Override requires rationale and approver metadata
+- [ ] Unauthorized users cannot submit overrides
+- [ ] Override delta is auditable against the AVM baseline
+
+**Evidence:** override log, approval record, and audit trail.
+
+### REQ-VAL-004: Bank valuation request handling
+
+The system shall submit valuation requests to banks with the required document set and status tracking.
+
+**Acceptance criteria:**
+
+- [ ] Title deed, floor plan, and snapshot are attached
+- [ ] Request status is tracked from submission to response
+- [ ] Bank-specific adapters preserve the request format
+
+**Evidence:** bank request record and status timeline.
+
+## Traceability
+
+- Maps to `REQ-SP-003`, `REQ-FRPT-004`, and valuation visibility in `functional-requirements.md`
+- Aligns to `WC-SRS-014` and valuation evidence artifacts
+- Feeds pricing, yield, and bank request validation
 
 ## 2. AVM Inputs and Output Schema
 
-> _[Action Required: Enforce production-ready engineering constraints]: expand this section with full spec._
+AVM output should include value, confidence, comparison count, and method metadata, with explicit source references for each comparable.
 
 ## 3. Rental Yield Calculator
 
-> _[Action Required: Enforce production-ready engineering constraints]: expand this section with full spec._
+Property valuation requirements are now captured in the catalog below, covering AVM inputs, yield calculations, manual overrides, and bank valuation requests.
 
 ## 4. Comparable Selection Logic
 

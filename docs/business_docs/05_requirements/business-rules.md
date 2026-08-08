@@ -1,8 +1,70 @@
 # Business Rules — White Caves CRM Platform
 
+<!-- markdownlint-disable MD022 MD031 MD032 MD036 MD040 MD058 MD060 -->
+
+**Status:** Active  
+**Owner:** Product + Operations + Compliance Governance  
+**Last Updated:** 2026-08-07  
+**Next Review:** 2026-08-21  
+**Source of Truth:** Canonical business-rule baseline (`BR-*`) for business-layer requirement intent
+
 > **Version:** 1.0  
 > **Last Updated:** March 2026  
 > **Purpose:** Defines the core business logic that the platform must enforce
+
+## Canonical governance links
+
+- [`README.md`](./README.md)
+- [`requirements-framework.md`](./requirements-framework.md)
+- [`REQ_TO_FR_BR_NFR_POL_AC_MAPPING_2026-08-03.md`](./REQ_TO_FR_BR_NFR_POL_AC_MAPPING_2026-08-03.md)
+- [`POLICY_CONTROL_INDEX_POL_SEED.md`](./POLICY_CONTROL_INDEX_POL_SEED.md)
+- [`../../plans/documentation/REQ_CROSSWALK.md`](../../plans/documentation/REQ_CROSSWALK.md)
+- [`../../software_docs/01_requirements_engineering/SRS_MASTER_12_DEPARTMENTS.md`](../../software_docs/01_requirements_engineering/SRS_MASTER_12_DEPARTMENTS.md)
+
+## Feed targets
+
+- `docs/plans/documentation/REQ_CROSSWALK.md`
+- `docs/software_docs/01_requirements_engineering/SRS_MASTER_12_DEPARTMENTS.md`
+- `docs/business_docs/12_srs/srs-master.md`
+- `docs/business_docs/13_testing/uat-scenarios.md`
+
+## Requirement catalog
+
+### REQ-BR-011: Campaign execution controls
+
+Campaigns must respect consent, template approval, audience filters, and budget controls before sending.
+
+**Acceptance criteria:**
+
+- [ ] Unapproved templates are rejected before send
+- [ ] Opt-out recipients are excluded from the audience
+- [ ] Budget overrun triggers a warning or block
+
+**Evidence:** campaign pre-send validation log and campaign audit trail.
+
+### REQ-BR-012: Hiring pipeline and role visibility
+
+Hiring and workforce records must follow role-based access, retention, and auditable stage transitions.
+
+**Acceptance criteria:**
+
+- [ ] Candidate records are accessible only to authorized HR roles
+- [ ] Hiring stage transitions are timestamped and attributed
+- [ ] Retention policy is enforced on archived records
+
+**Evidence:** hiring board audit log and retention lock record.
+
+### REQ-BR-013: Compliance gating for regulated workflows
+
+Regulated workflows must stop when license, permit, KYC, or consent conditions are missing.
+
+**Acceptance criteria:**
+
+- [ ] Missing permit/license data blocks publication
+- [ ] Missing KYC or consent blocks regulated transaction progression
+- [ ] Regulatory exceptions are logged with owner and reason
+
+**Evidence:** compliance block log and exception record.
 
 ---
 
@@ -258,6 +320,13 @@ Each rule has the following governance attributes for regulatory traceability an
 - **Given** a lead has had no activity for 31 days, **When** the nightly score job runs, **Then** the score decreases by 20 points (BR-001-K) and lead is flagged "Dormant"
 - **Given** a lead score reaches 90+, **When** recalculated, **Then** a "Hot Lead 🔴" notification is sent to the assigned agent within 1 minute via in-app notification
 - **Given** score is manually overridden (exception path), **When** the override is saved, **Then** audit trail records: userId, original score, override score, reason, timestamp
+
+## Traceability
+
+- Business owner: Product + Operations + Compliance
+- SRS counterpart: `WC-SRS-001`, `WC-SRS-006`, `WC-SRS-008`, `WC-SRS-016`
+- Related requirement families: `REQ-MKT-*`, `REQ-HR-*`, `REQ-COMP-*`, `REQ-INT-*`
+- Validation surfaces: rule engine output, audit trail, and workflow blocks
 - **Test Reference:** TC-BR-001
 
 ### BR-002 Lead Assignment — Acceptance Criteria

@@ -1,15 +1,37 @@
 # 15 — Release Management
 
-Release management index for the White Caves Real Estate platform — process, versioning, change management, and rollback procedures.
+Release management index for the White Caves platform covering process, versioning, change control, and rollback governance.
 
-> Last Updated: April 2026
+**Status:** Active  
+**Owner:** Release + Operations + QA Governance  
+**Last Updated:** 2026-08-07  
+**Next Review:** 2026-08-21  
+**Source of Truth:** Canonical release-governance business index
+
+## Canonical governance links
+
+- [`../../plans/MASTER_PLAN.md`](../../plans/MASTER_PLAN.md)
+- [`../../plans/PENDING_TASKS_ONLY.md`](../../plans/PENDING_TASKS_ONLY.md)
+- [`../../plans/waves/README.md`](../../plans/waves/README.md)
+- [`../13_testing/uat-scenarios.md`](../13_testing/uat-scenarios.md)
+- [`../../software_docs/INDEX.md`](../../software_docs/INDEX.md)
+
+## Traceability feeds
+
+- [`../../plans/documentation/REQ_CROSSWALK.md`](../../plans/documentation/REQ_CROSSWALK.md)
+- [`../16_scenario_library/SCENARIO_TRACEABILITY_MATRIX_SEED_2026-08-03.md`](../16_scenario_library/SCENARIO_TRACEABILITY_MATRIX_SEED_2026-08-03.md)
+- [`../BUSINESS_DOCS_FULL_UPGRADE_CHECKLIST_2026-08-07.md`](../BUSINESS_DOCS_FULL_UPGRADE_CHECKLIST_2026-08-07.md)
+
+## Release framing note (2026 normalization)
+
+Historical dated calendar entries below are preserved as operational history. Active release governance should use rolling wave-based readiness and validation evidence from canonical planning trackers.
 
 ---
 
-## Documents in This Section
+## Documents in this section
 
 | File | Description |
-|------|-------------|
+| --- | --- |
 | `release-process.md` | Detailed release workflow from planning to post-release |
 | `change-management.md` | Change request process, approval workflows, impact assessment |
 
@@ -26,15 +48,15 @@ White Caves follows a structured release cadence combining continuous delivery f
 ### Release Types
 
 | Type | Cadence | Scope | Approval | Downtime |
-|------|---------|-------|----------|----------|
+| --- | --- | --- | --- | --- |
 | **Major** (v2.0.0) | Quarterly | New features, breaking changes, architecture updates | CTO + Product Owner | Scheduled maintenance window |
 | **Minor** (v1.1.0) | Bi-weekly | New features, enhancements, non-breaking changes | Engineering Lead | Zero-downtime rolling deploy |
 | **Patch** (v1.0.1) | As needed | Bug fixes, security patches, hotfixes | Engineering Lead | Zero-downtime rolling deploy |
 | **Hotfix** | Emergency | Critical bug or security vulnerability | Any senior engineer | Zero-downtime, immediate |
 
-### Release Workflow
+### Release workflow
 
-```
+```text
 Planning → Development → Code Freeze → QA/Staging → Go/No-Go → Production → Post-Release
    │            │              │             │            │            │            │
  Sprint      Feature        Branch         E2E +       Release     Rolling      Monitor
@@ -78,9 +100,9 @@ Planning → Development → Code Freeze → QA/Staging → Go/No-Go → Product
 
 ## 2. Change Management
 
-### Change Request Process
+### Change request process
 
-```
+```text
 Request → Impact Assessment → Review → Approval → Implementation → Verification
    │              │               │         │              │              │
  Requester    Engineering     Change     Decision       Dev Team      QA Team
@@ -91,7 +113,7 @@ Request → Impact Assessment → Review → Approval → Implementation → Ver
 ### Change Categories
 
 | Category | Risk Level | Approval Required | Lead Time |
-|----------|-----------|-------------------|-----------|
+| --- | --- | --- | --- |
 | **Standard** | Low | Auto-approved (follows template) | Same sprint |
 | **Normal** | Medium | Engineering Lead | 1 sprint |
 | **Significant** | High | Engineering Lead + Product Owner | 2 sprints |
@@ -100,7 +122,7 @@ Request → Impact Assessment → Review → Approval → Implementation → Ver
 ### Impact Assessment Criteria
 
 | Factor | Low | Medium | High |
-|--------|-----|--------|------|
+| --- | --- | --- | --- |
 | Users affected | < 100 | 100–10,000 | > 10,000 |
 | Data migration | None | Additive only | Schema change |
 | API changes | Internal only | Backward compatible | Breaking change |
@@ -117,7 +139,7 @@ Request → Impact Assessment → Review → Approval → Implementation → Ver
 
 White Caves follows [Semantic Versioning 2.0.0](https://semver.org/):
 
-```
+```text
 MAJOR.MINOR.PATCH[-prerelease][+build]
 
 Examples:
@@ -132,7 +154,7 @@ Examples:
 ### Version Sources
 
 | Artifact | Version Location | Update Method |
-|----------|-----------------|---------------|
+| --- | --- | --- |
 | Application | `package.json` → `version` | `npm version` command |
 | API | `openapi.json` → `info.version` | Manual (matches app) |
 | Docker Image | Tag: `whitecaves:v1.2.3` | CI/CD pipeline |
@@ -159,7 +181,7 @@ v{MAJOR}.{MINOR}.{PATCH}[-{prerelease}]
 ### 2026 Release Schedule
 
 | Release | Version | Target Date | Theme | Status |
-|---------|---------|-------------|-------|--------|
+| --- | --- | --- | --- | --- |
 | Q1 Launch | v1.0.0 | Jan 15, 2026 | MVP: CRM Core, Property Listings | ✅ Released |
 | Q1 Patch | v1.0.1 | Feb 1, 2026 | Bug fixes, performance tuning | ✅ Released |
 | Sprint 3 | v1.1.0 | Feb 15, 2026 | WhatsApp integration, lead scoring | ✅ Released |
@@ -174,7 +196,7 @@ v{MAJOR}.{MINOR}.{PATCH}[-{prerelease}]
 ### Release Windows
 
 | Day | Time (GST) | Type | Notes |
-|-----|-----------|------|-------|
+| --- | --- | --- | --- |
 | Tuesday | 10:00–12:00 | Standard releases | Lowest traffic period |
 | Thursday | 10:00–12:00 | Backup window | If Tuesday blocked |
 | Any day | Any time | Hotfixes | Emergency only |
@@ -182,7 +204,7 @@ v{MAJOR}.{MINOR}.{PATCH}[-{prerelease}]
 ### Blackout Periods
 
 | Period | Reason |
-|--------|--------|
+| --- | --- |
 | Ramadan final week | High traffic, cultural sensitivity |
 | National Day (Dec 2–3) | Holiday, reduced team availability |
 | New Year (Dec 31–Jan 2) | Holiday period |
@@ -193,13 +215,13 @@ v{MAJOR}.{MINOR}.{PATCH}[-{prerelease}]
 ## 5. Rollback Procedures
 
 ### Business-side communication add-on
-- [Business Release and Incident Communication SOP](business-release-and-incident-communication-sop.md)
 
+- [Business Release and Incident Communication SOP](business-release-and-incident-communication-sop.md)
 
 ### Rollback Decision Matrix
 
 | Scenario | Action | RTO | Data Impact |
-|----------|--------|-----|-------------|
+| --- | --- | --- | --- |
 | UI regression (cosmetic) | Deploy previous build | < 10 min | None |
 | API error rate spike (> 5%) | Revert to previous Docker image | < 5 min | None |
 | Performance degradation | Revert + investigate | < 15 min | None |
@@ -243,7 +265,7 @@ npx prisma db pull  # Compare with expected schema
 
 #### Feature Flag Rollback (< 2 minutes)
 
-```
+```text
 Feature flags allow instant rollback without deployment:
 1. Navigate to feature flag dashboard
 2. Toggle the affected feature OFF
@@ -264,7 +286,7 @@ Feature flags allow instant rollback without deployment:
 ## Quick Reference
 
 | Action | Command / Process |
-|--------|------------------|
+| --- | --- |
 | Check current version | `cat package.json \| jq .version` |
 | Create release tag | `git tag -a v1.x.x -m "Release notes"` |
 | View release history | `git tag --sort=-version:refname` |

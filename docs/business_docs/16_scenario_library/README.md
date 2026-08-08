@@ -2,8 +2,23 @@
 
 **Status:** Active
 **Owner:** Product + Operations + Compliance + Delivery Governance
-**Last Updated:** 2026-08-03
+**Last Updated:** 2026-08-07
+**Next Review:** 2026-08-21
+**Source of Truth:** Canonical scenario library authority
 **Purpose:** Canonical business scenario library for all company operations, policies, workflows, and edge cases.
+
+## Canonical governance links
+
+- [`../05_requirements/functional-requirements.md`](../05_requirements/functional-requirements.md)
+- [`../05_requirements/non-functional-requirements.md`](../05_requirements/non-functional-requirements.md)
+- [`../../plans/documentation/REQ_CROSSWALK.md`](../../plans/documentation/REQ_CROSSWALK.md)
+- [`../../software_docs/01_requirements_engineering/SRS_MASTER_12_DEPARTMENTS.md`](../../software_docs/01_requirements_engineering/SRS_MASTER_12_DEPARTMENTS.md)
+
+## Feed targets
+
+- `docs/software_docs/01_requirements_engineering/SRS_MASTER_12_DEPARTMENTS.md`
+- `docs/plans/documentation/REQ_CROSSWALK.md`
+- scenario-governance and frontend-priority linkage lanes in `docs/plans/waves/WAVE_35_*` through `WAVE_40_*`
 
 ## 1. Mission
 
@@ -86,3 +101,31 @@ A scenario is valid only if:
 - `../04_workflows/TOP_20_CRITICAL_BUSINESS_JOURNEYS_INCEPTION.md`
 - `../../plans/PENDING_TASKS_ONLY.md`
 - `../../plans/waves/README.md`
+- `../../plans/documentation/SRS_10K_HYBRID_REGISTRY_SCHEMA_2026-08-07.md`
+
+## 9. Phased expansion governance (10,000-scale)
+
+**Owner:** Product Operations + Compliance Governance + QA Governance  
+**Review Cadence:** Monthly progress check, quarterly governance gate.
+
+### Expansion checkpoints
+
+1. Phase A (seed) — 0 to 800 scenarios (completed baseline batches A1/A2/A3).
+2. Phase B — 801 to 2,500 scenarios with priority lanes: leasing, compliance, finance.
+3. Phase C — 2,501 to 5,000 scenarios with full CRM lifecycle and failure/recovery coverage.
+4. Phase D — 5,001 to 10,000 scenarios with enterprise edge-case and cross-domain resilience coverage.
+
+### Required evidence per phase
+
+- Scenario count and uniqueness summary.
+- Requirement/policy traceability completeness check.
+- Linkage to wave backlog and release readiness artifacts.
+- Escalation list for orphan or superseded scenarios.
+
+### Hybrid 10k synchronization rule
+
+Scenario expansion must remain synchronized with the hybrid 10k requirement registry program. Scenario identifiers do not increment canonical software requirement totals directly; they provide linked behavioral evidence for canonical requirement rows.
+
+### Frontend-first wave alignment
+
+Scenarios impacting frontend resilience/accessibility/performance should be tagged for first-cluster execution in frontend-priority waves (`W37` to `W40`).

@@ -1,15 +1,93 @@
 # Marketing Campaigns — CRM Feature Specification
 
-> **Status:** Planned  
+> **Status:** Active -- requirement catalog expanded.  
 > **Module Owner:** Olivia (Marketing Manager AI)  
 > **API Endpoints:** `/api/campaigns` (planned), WhatsApp broadcast via Nadia  
-> **Priority:** Medium
+> **Priority:** Medium  
+> **Last Updated:** 2026-08-07  
+> **Next Review:** 2026-08-21  
+> **Source of Truth:** CRM marketing campaigns feature specification (business layer)
+
+## Canonical governance links
+
+- [`../05_requirements/functional-requirements.md`](../05_requirements/functional-requirements.md)
+- [`../05_requirements/integration-requirements.md`](../05_requirements/integration-requirements.md)
+- [`../05_requirements/compliance-requirements.md`](../05_requirements/compliance-requirements.md)
+- [`../../plans/documentation/REQ_CROSSWALK.md`](../../plans/documentation/REQ_CROSSWALK.md)
+
+## Feed targets
+
+- `docs/software_docs/01_requirements_engineering/SRS_MASTER_12_DEPARTMENTS.md`
+- `docs/plans/documentation/REQ_CROSSWALK.md`
+- frontend communication/reliability lanes in `docs/plans/waves/WAVE_39_*` and `WAVE_40_*`
 
 ---
 
 ## Overview
 
 The Marketing Campaigns module allows the marketing team to plan, execute, and analyse multi-channel campaigns. The primary channel is WhatsApp broadcast (via Nadia), complemented by email newsletters and portal listing promotion.
+
+## Requirement catalog
+
+### REQ-MKT-001: Campaign creation and ownership
+
+The system shall allow marketing users to create a campaign with a name, goal, channel, owner, schedule, and status.
+
+**Acceptance criteria:**
+
+- [ ] Campaign creation requires name, channel, owner, and objective
+- [ ] Campaign status is tracked as Draft, Scheduled, Live, Paused, or Completed
+- [ ] Campaign ownership is visible in the detail header and reporting views
+
+**Evidence:** campaign record, audit log, and dashboard snapshot.
+
+### REQ-MKT-002: Audience segmentation and opt-out enforcement
+
+The system shall build campaign audiences from lead status, area, budget, source, language, and last-activity filters while excluding opted-out recipients.
+
+**Acceptance criteria:**
+
+- [ ] Audience builder supports at least 6 filter dimensions
+- [ ] Opt-out recipients are excluded automatically
+- [ ] Estimated audience size is shown before send
+
+**Evidence:** audience preview export and recipient inclusion/exclusion log.
+
+### REQ-MKT-003: Template and compliance validation
+
+The system shall block campaign sends unless the selected WhatsApp template is approved and compliant with the active channel rules.
+
+**Acceptance criteria:**
+
+- [ ] Unapproved templates cannot be sent
+- [ ] Each template references its approval state and version
+- [ ] Compliance warnings appear before scheduling
+
+**Evidence:** template approval record and pre-send validation log.
+
+### REQ-MKT-004: Campaign delivery analytics
+
+The system shall track send, delivery, open/read, reply, and conversion metrics for each campaign.
+
+**Acceptance criteria:**
+
+- [ ] Delivery funnel is visible per campaign
+- [ ] Conversion to viewing or inquiry is attributable to the campaign
+- [ ] Metrics can be exported for executive reporting
+
+**Evidence:** campaign analytics export and KPI dashboard snapshot.
+
+### REQ-MKT-005: Budget and spend governance
+
+The system shall support budget caps and overspend warnings for marketing campaigns.
+
+**Acceptance criteria:**
+
+- [ ] Campaign budget can be recorded before send
+- [ ] Overspend warning appears when spend exceeds threshold
+- [ ] Budget tracking is visible in campaign detail and reporting views
+
+**Evidence:** spend ledger, warning event, and campaign report export.
 
 ---
 
@@ -37,7 +115,7 @@ The Marketing Campaigns module allows the marketing team to plan, execute, and a
 
 ## Campaign Workflow
 
-```
+```text
 1. Create Campaign
    ├── Campaign name, type, channel
    ├── Audience builder (filters: status, score, area, type, last activity)
@@ -109,6 +187,13 @@ The system tracks lead source throughout the lifecycle:
 - [ ] Attribution correctly links leads to campaign source
 - [ ] Campaign cannot use unapproved WhatsApp templates
 - [ ] Marketing report exportable with campaign performance summary
+
+## Traceability
+
+- Business owner: Marketing Manager
+- SRS counterpart: `WC-SRS-008`
+- Related upstream requirements: `COMP-RERA-001`, `COMP-RERA-004`, `COMP-PDPL-001`
+- Validation surfaces: campaign report export, audit trail, and dashboard analytics
 
 ---
 

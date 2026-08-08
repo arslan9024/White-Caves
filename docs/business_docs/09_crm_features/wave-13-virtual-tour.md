@@ -1,9 +1,26 @@
 # Wave 13 — Virtual Tour: pannellum-react Integration Plan
 
+<!-- markdownlint-disable MD032 MD040 MD060 -->
+
 **Drafted by:** @Pannellum  
 **Model:** Gemini 2.0 Flash  
 **Status:** ✅ READY (retrospective spec for implemented Wave 13)  
 **Last Updated:** 2026-05-25  
+**Next Review:** 2026-08-21  
+**Source of Truth:** CRM Wave 13 virtual tour feature specification (business layer)
+
+## Canonical governance links
+
+- [`../05_requirements/functional-requirements.md`](../05_requirements/functional-requirements.md)
+- [`../05_requirements/non-functional-requirements.md`](../05_requirements/non-functional-requirements.md)
+- [`../../plans/documentation/REQ_CROSSWALK.md`](../../plans/documentation/REQ_CROSSWALK.md)
+- [`../../software_docs/01_requirements_engineering/SRS_MASTER_12_DEPARTMENTS.md`](../../software_docs/01_requirements_engineering/SRS_MASTER_12_DEPARTMENTS.md)
+
+## Feed targets
+
+- `docs/software_docs/01_requirements_engineering/SRS_MASTER_12_DEPARTMENTS.md`
+- `docs/plans/documentation/REQ_CROSSWALK.md`
+- frontend media/UX reliability lanes in `docs/plans/waves/WAVE_39_*` and `WAVE_40_*`
 
 CONSUMES←@Cloudinary: `business_docs/09_crm_features/wave-13-media-upload.md#http-routes`  
 FEEDS→@Marissa: `business_docs/06_design_architecture/ui-ux-specification.md#virtual-tour`  

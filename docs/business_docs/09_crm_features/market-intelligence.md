@@ -2,21 +2,93 @@
 
 > **Owner:** @Fei-Fei | **Tool:** DeepSeek Chat (DeepSeek V3)
 > **Purpose:** CipherMarket module for Dubai area price index, transaction volumes and RERA rental index.
-> **Status:** Stub -- awaiting expansion by @Fei-Fei.
+> **Status:** Active -- requirement catalog expanded.
+> **Last Updated:** 2026-08-07
+> **Next Review:** 2026-08-21
+> **Source of Truth:** CRM market intelligence feature specification (business layer)
+
+## Canonical governance links
+
+- [`../05_requirements/functional-requirements.md`](../05_requirements/functional-requirements.md)
+- [`../05_requirements/compliance-requirements.md`](../05_requirements/compliance-requirements.md)
+- [`../../plans/documentation/REQ_CROSSWALK.md`](../../plans/documentation/REQ_CROSSWALK.md)
+- [`../../software_docs/01_requirements_engineering/SRS_MASTER_12_DEPARTMENTS.md`](../../software_docs/01_requirements_engineering/SRS_MASTER_12_DEPARTMENTS.md)
+
+## Feed targets
+
+- `docs/software_docs/01_requirements_engineering/SRS_MASTER_12_DEPARTMENTS.md`
+- `docs/plans/documentation/REQ_CROSSWALK.md`
+- frontend analytics/reporting refinement lanes in `docs/plans/waves/WAVE_39_*` and `WAVE_40_*`
 
 ---
 
 ## 1. Overview
 
-> _[Action Required: Enforce production-ready engineering constraints]: expand this section with full spec._
+The market intelligence module provides area pricing, transaction trends, supply-demand signals, and monthly reporting for decision makers.
+
+## Requirement catalog
+
+### REQ-MKT-001: Area price index management
+
+The system shall maintain a monthly price index by neighborhood with source metadata.
+
+**Acceptance criteria:**
+
+- [ ] Top neighborhoods have current price-per-sqft values
+- [ ] Index values store source and refresh date
+- [ ] Historical changes are retained for trend analysis
+
+**Evidence:** price index snapshot and import log.
+
+### REQ-MKT-002: Rental index and compliance integration
+
+The system shall expose RERA rental index values for use in lease and pricing workflows.
+
+**Acceptance criteria:**
+
+- [ ] Area rental index values are visible to authorized users
+- [ ] Rent-rule workflows can reference the index
+- [ ] Missing data is surfaced as a blocked or stale state
+
+**Evidence:** rental index view and compliance reference log.
+
+### REQ-MKT-003: Transaction volume, supply, and demand signals
+
+The system shall track monthly transactions, absorption, and listing activity by area.
+
+**Acceptance criteria:**
+
+- [ ] Volume charts can be filtered by area and property type
+- [ ] Days-on-market and absorption metrics are calculated
+- [ ] New listings vs sold ratio is visible in the dashboard
+
+**Evidence:** transaction dashboard and signal snapshot.
+
+### REQ-MKT-004: Alerts, competitor benchmarking, and exports
+
+The system shall alert users on pricing opportunities and export market reports.
+
+**Acceptance criteria:**
+
+- [ ] Price-drop and yield alerts are configurable
+- [ ] Competitor benchmarks compare internal and portal averages
+- [ ] Scheduled monthly reports can be exported
+
+**Evidence:** alert log, benchmark report, and export file.
+
+## Traceability
+
+- Maps to `REQ-VAL-001`, `REQ-FRPT-001`, and `REQ-FRPT-003`
+- Aligns to `WC-SRS-014` and `WC-SRS-015`
+- Feeds pricing, rental compliance, and leadership reporting artifacts
 
 ## 2. Dubai Area Price Index
 
-> _[Action Required: Enforce production-ready engineering constraints]: expand this section with full spec._
+The Dubai area price index should be maintained as a monthly, source-traced dataset with neighborhood-level drilldown.
 
 ## 3. RERA Rental Index Integration
 
-> _[Action Required: Enforce production-ready engineering constraints]: expand this section with full spec._
+Market intelligence requirements are now captured in the catalog below, covering area indices, transaction volume, supply-demand metrics, and alerts.
 
 ## 4. Transaction Volume Dashboard
 

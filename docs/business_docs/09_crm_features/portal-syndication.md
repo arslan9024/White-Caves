@@ -1,16 +1,89 @@
 # Portal Listing Syndication — CRM Feature Specification
 
-> **Status:** Planned
+<!-- markdownlint-disable MD022 MD031 MD032 MD040 MD060 -->
+
+> **Status:** Active -- requirement catalog expanded.
 > **Module Owner:** Syndication Engine (server/services/portalSyndication/)
 > **Last Updated:** May 2026
 > **Priority:** High
 > **API Endpoints:** `/api/syndication`, `/api/webhooks/propertyfinder`, `/api/webhooks/bayut`
+> **Next Review:** 2026-08-21
+> **Source of Truth:** CRM portal syndication feature specification (business layer)
+
+## Canonical governance links
+
+- [`../05_requirements/functional-requirements.md`](../05_requirements/functional-requirements.md)
+- [`../05_requirements/integration-requirements.md`](../05_requirements/integration-requirements.md)
+- [`../05_requirements/compliance-requirements.md`](../05_requirements/compliance-requirements.md)
+- [`../../plans/documentation/REQ_CROSSWALK.md`](../../plans/documentation/REQ_CROSSWALK.md)
+
+## Feed targets
+
+- `docs/software_docs/01_requirements_engineering/SRS_MASTER_12_DEPARTMENTS.md`
+- `docs/plans/documentation/REQ_CROSSWALK.md`
+- frontend reliability/observability lanes in `docs/plans/waves/WAVE_39_*` and `WAVE_40_*`
 
 ---
 
 ## Overview
 
 The Portal Syndication Engine pushes validated White Caves listings to Dubai's major property portals (PropertyFinder, Bayut, Dubizzle) and pulls inbound leads from those portals back into the CRM. All outbound listings must carry a valid Trakheesi permit number — syndication is blocked for listings missing or expired permits.
+
+## Requirement catalog
+
+### REQ-SYNC-001: Portal feed generation and validation
+
+The system shall generate portal-specific feeds only after all validation gates pass.
+
+**Acceptance criteria:**
+
+- [ ] Listings missing permits are blocked from syndication
+- [ ] Portal-specific field mappings are applied
+- [ ] Feed generation is scheduled and on-demand capable
+
+**Evidence:** feed generation log and validation report.
+
+### REQ-SYNC-002: Inbound lead capture and assignment
+
+The system shall ingest portal leads and route them to the correct agent or team.
+
+**Acceptance criteria:**
+
+- [ ] Webhook payloads create CRM leads
+- [ ] Leads are linked to the originating property
+- [ ] Buyers receive an acknowledgement message
+
+**Evidence:** inbound lead log and assignment audit.
+
+### REQ-SYNC-003: Retry queue and error handling
+
+The system shall queue failed syndication jobs and surface actionable errors.
+
+**Acceptance criteria:**
+
+- [ ] Portal failures retry according to configured backoff
+- [ ] Permanent errors remain visible in the dashboard
+- [ ] Failed syndication does not crash the publishing flow
+
+**Evidence:** retry queue, failure report, and dashboard snapshot.
+
+### REQ-SYNC-004: Syndication health dashboard
+
+The system shall show feed status, rejection causes, and portal coverage metrics.
+
+**Acceptance criteria:**
+
+- [ ] Portal status is visible per listing
+- [ ] Rejection reasons are human readable
+- [ ] Operations can filter by portal and status
+
+**Evidence:** health dashboard and error filter snapshot.
+
+## Traceability
+
+- Maps to `REQ-PROP-002`, `REQ-COMP-001`, and `REQ-LT-001`
+- Aligns to `WC-SRS-015` and portal feed evidence artifacts
+- Feeds syndication, inbound lead, and compliance validation
 
 **Key Capabilities:**
 - Automated listing push to PropertyFinder (XML feed + REST API)

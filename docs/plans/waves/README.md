@@ -1,8 +1,10 @@
 # Wave Bundle Index
 
-**Last Updated:** 2026-08-02
+**Last Updated:** 2026-08-07
 
 Status taxonomy for planning normalization: `planned`, `under-review`, `active`, `blocked`, `complete`, `archived`.
+
+Frontend refactor execution policy: every active/future wave must schedule a **Frontend Refactor First** cluster as the first implementation block before secondary lanes.
 
 Use this index after reviewing [`../MASTER_PLAN.md`](../MASTER_PLAN.md) and [`../PENDING_TASKS_ONLY.md`](../PENDING_TASKS_ONLY.md).
 Each wave should be executed only in roadmap order.
@@ -36,6 +38,25 @@ Each wave should be executed only in roadmap order.
 | 30   | AI Predictive UX & Auto-Form Pre-Fill Engine                                | ✅ Complete | —                         | —                                            | [`Backlog`](./WAVE_30_IMPLEMENTATION_BACKLOG.md) | —                                    |
 | 31   | Corporate credentials & compliance automation                               | 📋 Planned  | [`SDD`](./WAVE_31_SDD.md) | [`Readiness`](./WAVE_31_READINESS_PACKET.md) | [`Backlog`](./WAVE_31_IMPLEMENTATION_BACKLOG.md) | [`Tests`](./WAVE_31_TEST_ROLLOUT.md) |
 | 32   | Documentation governance, traceability & progress intelligence              | 📋 Planned  | [`SDD`](./WAVE_32_SDD.md) | [`Readiness`](./WAVE_32_READINESS_PACKET.md) | [`Backlog`](./WAVE_32_IMPLEMENTATION_BACKLOG.md) | [`Tests`](./WAVE_32_TEST_ROLLOUT.md) |
+| 33   | Business docs canonicalization and coverage completion                      | 📋 Planned  | [`SDD`](./WAVE_33_SDD.md) | [`Readiness`](./WAVE_33_READINESS_PACKET.md) | [`Backlog`](./WAVE_33_IMPLEMENTATION_BACKLOG.md) | [`Tests`](./WAVE_33_TEST_ROLLOUT.md) |
+| 34   | Software docs canon sync and architecture reconciliation                    | 📋 Planned  | [`SDD`](./WAVE_34_SDD.md) | [`Readiness`](./WAVE_34_READINESS_PACKET.md) | [`Backlog`](./WAVE_34_IMPLEMENTATION_BACKLOG.md) | [`Tests`](./WAVE_34_TEST_ROLLOUT.md) |
+| 35   | SRS semantic completeness and requirement traceability                      | 📋 Planned  | [`SDD`](./WAVE_35_SDD.md) | [`Readiness`](./WAVE_35_READINESS_PACKET.md) | [`Backlog`](./WAVE_35_IMPLEMENTATION_BACKLOG.md) | [`Tests`](./WAVE_35_TEST_ROLLOUT.md) |
+| 36   | Release readiness, ops evidence, and documentation closeout                 | 📋 Planned  | [`SDD`](./WAVE_36_SDD.md) | [`Readiness`](./WAVE_36_READINESS_PACKET.md) | [`Backlog`](./WAVE_36_IMPLEMENTATION_BACKLOG.md) | [`Tests`](./WAVE_36_TEST_ROLLOUT.md) |
+
+## Artifact Integrity Matrix (Active/Future Governance Lane)
+
+| Wave | SDD | Flowcharts | Readiness | Backlog | Test Rollout | Frontend Refactor First | Notes |
+| ---- | --- | ---------- | --------- | ------- | ------------ | ------------------------ | ----- |
+| 31 | ✅ | ⚠️ Legacy/partial | ✅ | ✅ | ✅ | ⚠️ To normalize in next touchpoint | Corporate credentials wave; normalize to current frontend-first charter when reopened |
+| 32 | ✅ | ⚠️ Legacy/partial | ✅ | ✅ | ✅ | ⚠️ Governance lane (doc-first) | Documentation governance lane; keep policy visible for future implementation bundles |
+| 33 | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ Required | Business docs canonicalization wave |
+| 34 | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ Required | Software docs/architecture reconciliation wave |
+| 35 | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ Required | SRS semantic completeness wave |
+| 36 | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ Required | Release-readiness docs closeout wave |
+| 37 | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ Required | Frontend architecture decomposition wave |
+| 38 | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ Required | Frontend state/performance wave |
+| 39 | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ Required | Frontend reliability/accessibility wave |
+| 40 | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ Required | Full-project closure with frontend-first debt burn-down |
 
 ### Current documentation governance highlight
 
@@ -54,3 +75,12 @@ Each wave should be executed only in roadmap order.
 - **Waves 20–22 added June 2026:** Full leasing & tenancy lifecycle (Wave 20), UAE VAT + commission engine (Wave 21), and market intelligence + off-plan + advanced analytics (Wave 22). Each has SDD, readiness packet, and full implementation backlog. Entry gates follow standard approval phrase sequence.
 - **Waves 23–25 added June 2026:** Mobile CRM + PWA offline + push (Wave 23), WhatsApp automation + AI chat + notification centre (Wave 24), and portal syndication + careers + community management + advanced SEO (Wave 25). All three waves have full four-artifact bundles (SDD, readiness, backlog, test rollout). Entry gates follow the standard approval phrase sequence. Wave 23 readiness is 72%, Wave 24 is 78%, Wave 25 is 75% — all above the 60% unlock threshold.
 - **Wave 32 added August 2026:** Documentation governance, cross-domain traceability, and progress-intelligence visualization. This wave runs as a parallel governance lane to clean entrypoints, publish dashboard artifacts, and reconcile tracker contradictions.
+- **Waves 33–36 added August 2026:** Future documentation-completion program covering business-doc canonicalization (Wave 33), software-doc/architecture canon sync (Wave 34), SRS semantic traceability hardening (Wave 35), and release-readiness documentation closeout (Wave 36).
+- **Waves 37–40 reserved for future implementation:** Frontend-first refactor and stabilization sequence (architecture decomposition, state/performance, reliability/accessibility, full-project closure).
+
+### W37-W40 scaffold bundle references
+
+- Wave 37: [`WAVE_37_SDD.md`](./WAVE_37_SDD.md), [`WAVE_37_READINESS_PACKET.md`](./WAVE_37_READINESS_PACKET.md), [`WAVE_37_IMPLEMENTATION_BACKLOG.md`](./WAVE_37_IMPLEMENTATION_BACKLOG.md), [`WAVE_37_TEST_ROLLOUT.md`](./WAVE_37_TEST_ROLLOUT.md), [`WAVE_37_FLOWCHARTS.md`](./WAVE_37_FLOWCHARTS.md)
+- Wave 38: [`WAVE_38_SDD.md`](./WAVE_38_SDD.md), [`WAVE_38_READINESS_PACKET.md`](./WAVE_38_READINESS_PACKET.md), [`WAVE_38_IMPLEMENTATION_BACKLOG.md`](./WAVE_38_IMPLEMENTATION_BACKLOG.md), [`WAVE_38_TEST_ROLLOUT.md`](./WAVE_38_TEST_ROLLOUT.md), [`WAVE_38_FLOWCHARTS.md`](./WAVE_38_FLOWCHARTS.md)
+- Wave 39: [`WAVE_39_SDD.md`](./WAVE_39_SDD.md), [`WAVE_39_READINESS_PACKET.md`](./WAVE_39_READINESS_PACKET.md), [`WAVE_39_IMPLEMENTATION_BACKLOG.md`](./WAVE_39_IMPLEMENTATION_BACKLOG.md), [`WAVE_39_TEST_ROLLOUT.md`](./WAVE_39_TEST_ROLLOUT.md), [`WAVE_39_FLOWCHARTS.md`](./WAVE_39_FLOWCHARTS.md)
+- Wave 40: [`WAVE_40_SDD.md`](./WAVE_40_SDD.md), [`WAVE_40_READINESS_PACKET.md`](./WAVE_40_READINESS_PACKET.md), [`WAVE_40_IMPLEMENTATION_BACKLOG.md`](./WAVE_40_IMPLEMENTATION_BACKLOG.md), [`WAVE_40_TEST_ROLLOUT.md`](./WAVE_40_TEST_ROLLOUT.md), [`WAVE_40_FLOWCHARTS.md`](./WAVE_40_FLOWCHARTS.md)

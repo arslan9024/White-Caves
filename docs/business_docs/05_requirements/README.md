@@ -1,8 +1,37 @@
 # White Caves Unified CRM - Complete Requirements Specification
 
+**Status:** Active / Transitional Canonical Bridge  
+**Owner:** Requirements Governance  
+**Last Updated:** 2026-08-07  
+**Next Review:** 2026-08-21  
+**Source of Truth:** Partial (see canonical authority below)
+
+## Canonical authority (must read first)
+
+This file remains a comprehensive narrative/reference requirement pack. Canonical counting and requirement-governance authority is distributed as follows:
+
+- Business requirement counting authority: [`functional-requirements.md`](./functional-requirements.md)
+- Business↔software mapping authority: [`REQ_TO_FR_BR_NFR_POL_AC_MAPPING_2026-08-03.md`](./REQ_TO_FR_BR_NFR_POL_AC_MAPPING_2026-08-03.md)
+- Software canonical requirement register authority: [`../../software_docs/01_requirements_engineering/SRS_MASTER_12_DEPARTMENTS.md`](../../software_docs/01_requirements_engineering/SRS_MASTER_12_DEPARTMENTS.md)
+- Cross-domain traceability authority: [`../../plans/documentation/REQ_CROSSWALK.md`](../../plans/documentation/REQ_CROSSWALK.md)
+
+## 10k SRS hybrid program alignment
+
+During the 10k SRS campaign, this document functions as a business-facing requirement narrative source. Canonical requirement totals must be derived from the software-side canonical registry and validated mapping artifacts, not from narrative mentions in this file.
+
+## Frontend-first priority note
+
+Requirements that drive frontend behavior (routing, state flows, UI resilience, accessibility, performance) should be tagged in downstream mapping artifacts for first-cluster execution in future waves.
+
 ## Executive Summary
 
 Complete specifications for White Caves unified real estate CRM platform serving 200+ agents across Dubai with 9,378+ properties, 1,500+ monthly leads, and $50M+ annual transaction volume.
+
+## Enterprise Inventory Index
+
+- [Business-document inventory](./enterprise-requirement-inventory.md)
+- [Software requirements inventory](../../software_docs/01_requirements_engineering/ENTRPRISE_SRS_INVENTORY_2026-08-06.md)
+- [Generated requirement catalog](../../software_docs/01_requirements_engineering/enterprise-requirement-catalog.json)
 
 ---
 

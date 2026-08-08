@@ -2,7 +2,9 @@
 
 **Status:** Active Normalization Map  
 **Owner:** Product + Architecture + Compliance  
-**Last Updated:** 2026-08-03
+**Last Updated:** 2026-08-07  
+**Next Review:** 2026-08-21  
+**Source of Truth:** Business-to-software requirement taxonomy transition map
 
 ## 1. Purpose
 
@@ -48,6 +50,8 @@ This map is complete when:
 - `./functional-requirements.md`
 - `./compliance-requirements.md`
 - `./POLICY_CONTROL_INDEX_POL_SEED.md`
+- `../../plans/documentation/SRS_10K_ID_ALLOCATION_MATRIX_2026-08-07.md`
+- `../../plans/documentation/SRS_10K_HYBRID_REGISTRY_SCHEMA_2026-08-07.md`
 - `../../software_docs/01_requirements_engineering/SRS_MASTER_12_DEPARTMENTS.md`
 - `../../software_docs/03_use_cases/UC_MASTER_LIBRARY_12_DEPARTMENTS.md`
 - `../../plans/INCEPTION_EXIT_READINESS_SCORECARD.md`

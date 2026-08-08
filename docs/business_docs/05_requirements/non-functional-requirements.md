@@ -1,8 +1,95 @@
 # Non-Functional Requirements — White Caves CRM Platform
 
+<!-- markdownlint-disable MD022 MD032 MD036 MD040 MD058 MD060 -->
+
+**Status:** Active  
+**Owner:** Architecture + Platform + QA Governance  
+**Last Updated:** 2026-08-07  
+**Next Review:** 2026-08-21  
+**Source of Truth:** Business-layer non-functional quality baseline (`REQ-NFR-*`)
+
 > **Version:** 1.0  
 > **Last Updated:** March 2026  
 > **Purpose:** Defines quality attributes — how well the system must perform, scale, and operate
+
+## Canonical governance links
+
+- [`README.md`](./README.md)
+- [`requirements-framework.md`](./requirements-framework.md)
+- [`functional-requirements.md`](./functional-requirements.md)
+- [`risk-register.md`](./risk-register.md)
+- [`../../plans/documentation/REQ_CROSSWALK.md`](../../plans/documentation/REQ_CROSSWALK.md)
+- [`../../software_docs/01_requirements_engineering/SRS_MASTER_12_DEPARTMENTS.md`](../../software_docs/01_requirements_engineering/SRS_MASTER_12_DEPARTMENTS.md)
+- [`../../software_docs/02_software_design/SDD_MASTER_ARCHITECTURE_PACK.md`](../../software_docs/02_software_design/SDD_MASTER_ARCHITECTURE_PACK.md)
+
+## Feed targets
+
+- `docs/plans/documentation/REQ_CROSSWALK.md`
+- `docs/software_docs/01_requirements_engineering/SRS_MASTER_12_DEPARTMENTS.md`
+- `docs/software_docs/02_software_design/SDD_MASTER_ARCHITECTURE_PACK.md`
+- `docs/business_docs/13_testing/test-plan.md`
+
+## Requirement catalog
+
+### REQ-NFR-001: API and dashboard performance budgets
+
+The system shall maintain explicit response-time budgets for API, dashboard, search, and upload operations.
+
+**Acceptance criteria:**
+
+- [ ] Read, write, dashboard, search, and upload operations each meet their documented budget
+- [ ] p95 latency is measurable in production-like load tests
+- [ ] Performance regressions are visible in the quality gate report
+
+**Evidence:** load-test result, benchmark summary, and monitoring dashboard.
+
+### REQ-NFR-002: Availability and durability targets
+
+The system shall provide uptime, backup, and recovery targets suitable for enterprise operations.
+
+**Acceptance criteria:**
+
+- [ ] Production uptime target is explicitly documented and monitored
+- [ ] Backup retention and recovery targets are measurable
+- [ ] Graceful degradation is defined for critical external outages
+
+**Evidence:** backup policy, incident log, and availability report.
+
+### REQ-NFR-003: Scalability and throughput expectations
+
+The system shall scale to the documented data volume and concurrency targets without requiring redesign of core flows.
+
+**Acceptance criteria:**
+
+- [ ] Core entities have year-1 and year-3 capacity targets
+- [ ] Horizontal scaling is supported for the API tier
+- [ ] Search performance targets remain valid at scale
+
+**Evidence:** capacity plan, search benchmark, and infrastructure note.
+
+### REQ-NFR-004: Security and auditability baseline
+
+The system shall enforce transport security, authentication hardening, input safety, and immutable audit logging.
+
+**Acceptance criteria:**
+
+- [ ] Transport is HTTPS-only with modern TLS
+- [ ] Audit logs capture user, timestamp, entity, and action data
+- [ ] Secrets are excluded from version-controlled sources
+
+**Evidence:** security scan, audit export, and secrets review log.
+
+### REQ-NFR-005: Accessibility, usability, and locale support
+
+The system shall remain usable across required viewport sizes, languages, and accessibility constraints.
+
+**Acceptance criteria:**
+
+- [ ] English and Arabic UI support are available where required
+- [ ] WCAG AA requirements are represented in the UI guidance
+- [ ] Error states, loading states, and keyboard-only usage are documented
+
+**Evidence:** accessibility audit, UI review note, and responsive design test.
 
 ---
 
@@ -258,6 +345,13 @@ Measured using Lighthouse CI and Chrome User Experience Report (CrUX) for Dubai-
 | Largest Contentful Paint (LCP) | ≤ 2.5 s | 2.5–4.0 s | > 4.0 s |
 | First Input Delay (FID) / INP | ≤ 100 ms | 100–300 ms | > 300 ms |
 | Cumulative Layout Shift (CLS) | ≤ 0.1 | 0.1–0.25 | > 0.25 |
+
+## Traceability
+
+- Business owner: Product + Engineering
+- SRS counterpart: `WC-SRS-001`, `WC-SRS-014`, `WC-SRS-016`
+- Related business rules: `BR-009`, `BR-010`
+- Validation surfaces: load tests, Lighthouse results, accessibility audit, security scan
 | Time to First Byte (TTFB) | ≤ 600 ms | 600 ms–1.5 s | > 1.5 s |
 | First Contentful Paint (FCP) | ≤ 1.8 s | 1.8–3.0 s | > 3.0 s |
 

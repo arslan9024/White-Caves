@@ -1,0 +1,75 @@
+{
+  "generatedAt": "2026-08-07T12:04:50.676Z",
+  "reportDate": "2026-08-07",
+  "totalRequirementIds": 5121,
+  "uniqueRequirementIds": 5061,
+  "categoryCounts": {
+    "FR": 2760,
+    "BR": 554,
+    "NFR": 121,
+    "POL": 358,
+    "SEC": 360,
+    "INT": 418,
+    "OBS": 105,
+    "AC": 445
+  },
+  "files": [
+    {
+      "file": "docs/software_docs/01_requirements_engineering/SRS_MASTER_12_DEPARTMENTS.md",
+      "count": 5041,
+      "counts": {
+        "FR": 2722,
+        "BR": 551,
+        "NFR": 120,
+        "POL": 351,
+        "SEC": 356,
+        "INT": 412,
+        "OBS": 101,
+        "AC": 428
+      }
+    },
+    {
+      "file": "docs/software_docs/01_requirements_engineering/functional_specifications.md",
+      "count": 41,
+      "counts": {
+        "FR": 22,
+        "BR": 1,
+        "NFR": 0,
+        "POL": 1,
+        "SEC": 1,
+        "INT": 2,
+        "OBS": 1,
+        "AC": 13
+      }
+    },
+    {
+      "file": "docs/software_docs/01_requirements_engineering/ENTRPRISE_SRS_INVENTORY_2026-08-06.md",
+      "count": 35,
+      "counts": {
+        "FR": 13,
+        "BR": 2,
+        "NFR": 1,
+        "POL": 5,
+        "SEC": 3,
+        "INT": 4,
+        "OBS": 3,
+        "AC": 4
+      }
+    },
+    {
+      "file": "docs/software_docs/03_use_cases/UC_MASTER_LIBRARY_12_DEPARTMENTS.md",
+      "count": 4,
+      "counts": {
+        "FR": 3,
+        "BR": 0,
+        "NFR": 0,
+        "POL": 1,
+        "SEC": 0,
+        "INT": 0,
+        "OBS": 0,
+        "AC": 0
+      }
+    }
+  ],
+  "requiredArtifactsPresent": true
+}

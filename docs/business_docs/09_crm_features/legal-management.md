@@ -5,14 +5,86 @@
 **Owner:** @Timnit (Gemini 2.0 Flash — Google AI Studio)
 **Status:** ✅ Complete — full spec (May 2026)
 **Target:** 12 sections
+**Last Updated:** 2026-08-07
+**Next Review:** 2026-08-21
+**Source of Truth:** CRM legal management feature specification (business layer)
 **CRM Module:** EvangelineLegalCRM (`src/components/crm/EvangelineLegalCRM/`)
 **API Base:** `/api/documents`, `/api/leases`, `/api/compliance`
+
+## Canonical governance links
+
+- [`../05_requirements/compliance-requirements.md`](../05_requirements/compliance-requirements.md)
+- [`../05_requirements/functional-requirements.md`](../05_requirements/functional-requirements.md)
+- [`../../plans/documentation/REQ_CROSSWALK.md`](../../plans/documentation/REQ_CROSSWALK.md)
+- [`../../software_docs/01_requirements_engineering/SRS_MASTER_12_DEPARTMENTS.md`](../../software_docs/01_requirements_engineering/SRS_MASTER_12_DEPARTMENTS.md)
+
+## Feed targets
+
+- `docs/software_docs/01_requirements_engineering/SRS_MASTER_12_DEPARTMENTS.md`
+- `docs/plans/documentation/REQ_CROSSWALK.md`
+- frontend legal workflow/reliability lanes in `docs/plans/waves/WAVE_39_*` and `WAVE_40_*`
 
 ---
 
 ## Overview
 
 EvangelineLegalCRM manages all legal documentation for White Caves: tenancy contracts, addendums, legal notices, e-signatures, and RERA dispute filings. It enforces UAE tenancy law and Dubai tenancy tribunal requirements at every step.
+
+## Requirement catalog
+
+### REQ-LGL-001: Contract template governance
+
+The system shall provide versioned legal templates with immutable signed-document retention.
+
+**Acceptance criteria:**
+
+- [ ] Templates are versioned and preserved after signing
+- [ ] Signed documents are immutable
+- [ ] Required variables are documented per template type
+
+**Evidence:** template registry and signed document audit.
+
+### REQ-LGL-002: Legal notices and notice-period validation
+
+The system shall generate Form 6, Form 7, and Form 12 notices only when the required legal conditions are met.
+
+**Acceptance criteria:**
+
+- [ ] Rent increase notices validate RERA notice periods and cap rules
+- [ ] Eviction notices require the correct valid ground and evidence checklist
+- [ ] Non-renewal notices enforce the 90-day threshold
+
+**Evidence:** notice generation log and legal validation record.
+
+### REQ-LGL-003: E-signature orchestration and storage
+
+The system shall send legal documents for signature and store completion artifacts with retention controls.
+
+**Acceptance criteria:**
+
+- [ ] Signature envelopes can be sent and tracked
+- [ ] Completed documents are stored in the correct lease folder
+- [ ] Expired, declined, or voided envelopes are logged
+
+**Evidence:** envelope status log and storage path audit.
+
+### REQ-LGL-004: RDC dispute filing workflow
+
+The system shall package and track RDC dispute cases with evidence completeness checks.
+
+**Acceptance criteria:**
+
+- [ ] Case type populates the correct evidence checklist
+- [ ] Dispute packet generation is blocked if required files are missing
+- [ ] Case number and hearing dates are tracked in the CRM
+
+**Evidence:** dispute packet record and hearing audit trail.
+
+## Traceability
+
+- Maps to `REQ-FRPT-002` and legal/tenant workflows in `functional-requirements.md`
+- Aligns to `WC-SRS-012`, `WC-SRS-016`, and legal evidence artifacts
+- Feeds notices, e-signature, and dispute validation trails
 
 **Key Capabilities:**
 
@@ -254,11 +326,13 @@ When `legalHold: true`:
 
 | Method  | Path                                    | Auth    | Description                       |
 | ------- | --------------------------------------- | ------- | --------------------------------- |
-| `GET`   | `/api/documents/templates`              | Agent+  | List available contract templates |
-| `POST`  | `/api/documents/templates/:id/generate` | Agent   | Generate document from template   |
-| `POST`  | `/api/documents/:id/sign`               | Agent   | Send document for e-signature     |
-| `GET`   | `/api/documents/:id/status`             | Agent+  | Get signature status              |
-| `GET`   | `/api/documents/:id/download`           | Agent+  | Download signed PDF               |
+| `GET`   | `/api/documents/types`                  | Agent+  | List available document types     |
+| `POST`  | `/api/documents/generate`               | Agent   | Generate legal document           |
+| `POST`  | `/api/documents/generate-auto`          | Agent   | Generate with auto-filled fields  |
+| `GET`   | `/api/documents/:id`                    | Agent+  | Get document payload + status     |
+| `GET`   | `/api/documents/:id/html`               | Agent+  | Retrieve printable HTML           |
+| `PATCH` | `/api/documents/:id/status`             | Manager | Update lifecycle status           |
+| `GET`   | `/api/documents/contract/:id/pdf`       | Agent+  | Download contract PDF summary     |
 | `POST`  | `/api/leases/:id/addendums`             | Agent   | Generate addendum                 |
 | `POST`  | `/api/compliance/notices/form7`         | Manager | Issue rent increase notice        |
 | `POST`  | `/api/compliance/notices/form12`        | Manager | Issue eviction notice             |
@@ -266,6 +340,10 @@ When `legalHold: true`:
 | `POST`  | `/api/compliance/rdc/cases`             | Manager | Create RDC dispute case           |
 | `GET`   | `/api/compliance/rdc/cases/:leaseId`    | Manager | Get dispute cases for lease       |
 | `PATCH` | `/api/compliance/rdc/cases/:id`         | Manager | Update case status/hearing dates  |
+
+**Compatibility note:**
+
+- Legacy conceptual endpoints such as `/api/documents/templates/*`, `/api/documents/:id/sign`, and `GET /api/documents/:id/status` remain design-level references for future e-signature integration unless runtime routes are explicitly added in a future wave.
 
 ---
 

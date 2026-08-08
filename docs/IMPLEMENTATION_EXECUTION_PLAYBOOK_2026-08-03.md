@@ -31,6 +31,7 @@ Use these for business intent, operating rules, compliance obligations, and acce
 - [business_docs/AI_AUTOMATION_AND_ASSISTANT_MAP_2026-08-03.md](./business_docs/AI_AUTOMATION_AND_ASSISTANT_MAP_2026-08-03.md)
 - [business_docs/IMPLEMENTATION_TRACEABILITY_AND_DELIVERY_MAP_2026-08-03.md](./business_docs/IMPLEMENTATION_TRACEABILITY_AND_DELIVERY_MAP_2026-08-03.md)
 - [business_docs/WAVE_TO_REQUIREMENT_AND_RELEASE_MAPPING_2026-08-03.md](./business_docs/WAVE_TO_REQUIREMENT_AND_RELEASE_MAPPING_2026-08-03.md)
+- [AUTHORITATIVE_DOC_MAP_2026-08-06.md](./AUTHORITATIVE_DOC_MAP_2026-08-06.md)
 
 ### Software layer
 
@@ -85,7 +86,8 @@ Every meaningful change should be validated with the appropriate checks:
 
 - documentation updates: run `npm run plans:validate`;
 - implementation changes: run `npm run typecheck`, `npm run lint`, and `npm run build` where the scope justifies it;
-- feature or regression work: run targeted tests for the affected area.
+- feature or regression work: run targeted tests for the affected area;
+- release-impacting work: attach a release note using [RELEASE_AND_ROLLOUT_NOTES_TEMPLATE_2026-08-06.md](./RELEASE_AND_ROLLOUT_NOTES_TEMPLATE_2026-08-06.md).
 
 ### Step 5 — Leave behind traceable evidence
 
@@ -180,4 +182,5 @@ The current governance emphasis is to keep the repository navigable, traceable, 
 
 - keep business docs tied to software design and planning;
 - keep wave bundles and task trackers synchronized;
-- ensure every major change leaves behind a clear discoverable path for the next contributor.
+- ensure every major change leaves behind a clear discoverable path for the next contributor;
+- consolidate overlapping docs into the canonical map in [AUTHORITATIVE_DOC_MAP_2026-08-06.md](./AUTHORITATIVE_DOC_MAP_2026-08-06.md).

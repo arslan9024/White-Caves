@@ -61,3 +61,14 @@ Use the following handoff pattern when moving work from business intent to deliv
 - `FEEDS_ACK←@DownstreamAgent: accepted|revise + path#section`
 
 This keeps the business documentation layer and software implementation layer aligned as work progresses.
+
+## 5) Required evidence for each feature or wave
+
+Every feature or release slice should also include a short rollout note using [../RELEASE_AND_ROLLOUT_NOTES_TEMPLATE_2026-08-06.md](../RELEASE_AND_ROLLOUT_NOTES_TEMPLATE_2026-08-06.md). The note should capture:
+
+- the business outcome;
+- the related business and software documents;
+- the validation evidence;
+- rollout and fallback guidance.
+
+This closes the gap between planning and release readiness.

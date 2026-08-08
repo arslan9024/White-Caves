@@ -1,9 +1,33 @@
 # Risk Register — White Caves CRM Platform
 
+<!-- markdownlint-disable MD022 MD032 MD040 MD060 -->
+
+**Status:** Active  
+**Owner:** Risk + Compliance + Delivery Governance  
+**Last Updated:** 2026-08-07  
+**Next Review:** 2026-08-21  
+**Source of Truth:** Business-layer risk governance baseline mapped to requirement/control families
+
 > **Document ID:** WC-RSK-001  
 > **Version:** 1.0  
 > **Date:** March 2026  
 > **Review Frequency:** Quarterly
+
+## Canonical governance links
+
+- [`README.md`](./README.md)
+- [`requirements-framework.md`](./requirements-framework.md)
+- [`compliance-requirements.md`](./compliance-requirements.md)
+- [`POLICY_CONTROL_INDEX_POL_SEED.md`](./POLICY_CONTROL_INDEX_POL_SEED.md)
+- [`../../plans/documentation/REQ_CROSSWALK.md`](../../plans/documentation/REQ_CROSSWALK.md)
+- [`../../plans/waves/README.md`](../../plans/waves/README.md)
+
+## Feed targets
+
+- `docs/plans/documentation/REQ_CROSSWALK.md`
+- `docs/plans/waves/WAVE_36_IMPLEMENTATION_BACKLOG.md`
+- `docs/business_docs/13_testing/qa-checklist.md`
+- `docs/business_docs/15_release_management/business-release-and-incident-communication-sop.md`
 
 ---
 
@@ -21,6 +45,22 @@
 | 17–25 | Critical — Immediate Action |
 
 ---
+
+## Requirement and control crosswalk
+
+| Control ID | Related requirement families | Primary evidence |
+|-----------|------------------------------|------------------|
+| RSK-C-001 | `REQ-COMP-001`, `REQ-COMP-002` | listing audit, permit report |
+| RSK-C-002 | `REQ-COMP-003` | AML review log, SAR workflow |
+| RSK-C-003 | `REQ-COMP-004` | consent record, access audit |
+| RSK-B-002 | `REQ-LEAD-001`, `REQ-TP-003` | adoption dashboard, usage trend |
+| RSK-T-003 | `REQ-WA-001`, `REQ-WA-002` | provider outage log, retry queue |
+
+### Risk review evidence standard
+
+- Each high or critical risk must link to at least one concrete requirement family.
+- Mitigation actions must point to a reviewable artifact: dashboard, log, test, or policy record.
+- Quarterly risk review outputs should be versioned alongside the active requirement baseline.
 
 ## Technical Risks
 

@@ -36,6 +36,18 @@ Defines the architecture-document contract for department SDDs and platform SDDs
 - SDD-DA
 - SDD-HR
 
+## 2.1 Traceability anchors
+
+Every SDD must be anchored to the requirements and use-case layers so the architecture remains implementation-driven rather than speculative.
+
+Required anchors per SDD:
+
+- the relevant requirement IDs from the SRS inventory;
+- the linked UC families and scenario variants;
+- the test/readiness evidence required for release gating.
+
+Example: a sales workflow SDD should reference `FR-SB-001`, `UC-SB-PIPE-*`, and the corresponding `sales-pipeline` validation suite.
+
 ## 4. Architecture decomposition levels
 
 Each SDD must define:

@@ -1,7 +1,7 @@
 # Implementation Test & Readiness Master
 
 **Status:** Active Planning Specification  
-**Last Updated:** 2026-08-03
+**Last Updated:** 2026-08-06
 
 ## 1. Purpose
 
@@ -18,6 +18,17 @@ Per department and per wave:
 - performance budget checks
 - rollback drill checks
 
+## 2.1 Requirement-to-test traceability contract
+
+Each implementation wave must publish a minimum traceability record showing:
+
+- the requirement IDs being exercised;
+- the UC IDs covering the behavior;
+- the SDD component or API boundary being tested;
+- the test suite or evidence artifact used for validation.
+
+Example: `FR-CC-001` should be paired with `UC-CC-ROUT-001`, `ConversationRoutingService`, and the `whatsapp-routing` test suite.
+
 ## 3. Mandatory readiness checklist
 
 1. scope and dependencies confirmed
@@ -28,6 +39,27 @@ Per department and per wave:
 6. rollback path verified
 7. FEEDS/CONSUMES/FEEDS_ACK recorded
 8. tracker sync complete
+
+## 3.1 Wave gate model
+
+Each implementation wave must be evaluated against five readiness gates before promotion:
+
+1. **Requirement gate** — all targeted requirement IDs are documented, owned, and linked to at least one UC.
+2. **Design gate** — SDD/API/state-machine references exist for each implementation path.
+3. **Verification gate** — unit/integration/E2E or evidence artifacts exist for the targeted scope.
+4. **Operations gate** — observability, rollback, and dependency-failure handling are documented.
+5. **Release gate** — blocker log, evidence pack, and tracker sync are complete.
+
+A wave is not considered ready for merge or rollout until all five gates are marked completed.
+
+## 3.2 Evidence expectations per wave
+
+Each wave must publish:
+
+- a short traceability summary linking requirement IDs to UC IDs and SDD components;
+- the relevant test suite names and latest pass/fail status;
+- the rollout or rollback posture for the affected services;
+- a note on any unresolved dependencies or open risks.
 
 ## 4. Release blockers
 
@@ -46,6 +78,8 @@ Each wave must publish:
 - KPI delta summary
 - blocker log
 - rollback readiness statement
+- traceability summary linking requirements, UCs, SDDs, tests, and owners
+- release readiness statement with explicit pass/fail status
 
 ## 6. Linkage
 

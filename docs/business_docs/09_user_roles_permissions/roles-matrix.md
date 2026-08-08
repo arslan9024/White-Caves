@@ -1,8 +1,40 @@
 # White Caves — Roles & Permissions Matrix
 
+<!-- markdownlint-disable MD022 MD032 MD060 -->
+
 > **Source of truth:** `src/config/roles.ts`  
-> **Last updated:** March 29, 2026  
+> **Last updated:** August 7, 2026  
 > **Total roles:** 22 | **Total permissions:** 45+
+> **Priority scope (Wave MD-Leasing-P0):** Property listings, leasing operations, and receipt generation for MD + Leasing Agent first.
+
+---
+
+## 0. Priority Persona Contract (P0)
+
+### Priority personas
+
+1. **Managing Director (MD)** — executive control, compliance oversight, and final approval authority.
+2. **Leasing Agent** — first-line operator for rental lead handling, viewings, tenancy execution, and rent-operation continuity.
+
+### First-agent documentation profile
+
+- **Profile account (documentation scenario):** `agent.one.whitecaves@gmail.com`
+- **Persona mapping:** Leasing Broker journey profile
+- **Operational expectation:** end-to-end leasing workflow ownership from lead qualification through active-lease transition
+
+### Receipt accountability baseline
+
+| Receipt stage | Primary owner | Secondary owner | MD oversight |
+|---------------|---------------|-----------------|--------------|
+| Payment confirmation capture | Leasing Agent | Finance Officer | Review exceptions |
+| Receipt generation | Finance/System | Leasing Agent (trigger/verify) | Audit visibility |
+| Receipt delivery to tenant/landlord | Leasing Agent | Tenant/Landlord Portal | SLA monitoring |
+| Receipt archival & audit trail | Document Controller/Finance | Leasing Agent | Compliance review |
+
+### Canonical role key note
+
+- Canonical runtime key is `leasing_agent`.
+- Legacy alias `leasing-agent` remains supported for compatibility and must be normalized in docs and implementation mappings.
 
 ---
 

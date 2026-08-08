@@ -1,11 +1,13 @@
 # Nina — WhatsApp NLP Engine & Bot Intelligence
 
+<!-- markdownlint-disable MD009 MD022 MD031 MD032 MD040 MD060 -->
+
 > **Department:** Communications  
 > **ID:** `nina`  
 > **Title:** WhatsApp NLP Engine & Conversation Intelligence  
 > **Color:** #06B6D4 (Cyan)  
 > **Avatar:** 🧠  
-> **Status:** Production-Ready (Pure Logic Layer)  
+> **Status:** Active — requirement catalog expanded.  
 > **Framework:** Claude 3.5 Sonnet NLP + Flow State Machine
 
 ---
@@ -65,6 +67,62 @@
 - Average conversation length (turns)
 - Error rate tracking
 - User satisfaction metrics
+
+## Requirement catalog
+
+### REQ-NINA-001: Intent classification reliability
+
+The system shall classify inbound messages into supported intents with confidence-scored outputs.
+
+**Acceptance criteria:**
+
+- [ ] Intent results include confidence and model metadata
+- [ ] Ambiguous intents trigger fallback/escalation paths
+- [ ] Classification outcomes are auditable per conversation
+
+**Evidence:** intent classification report and low-confidence escalation audit.
+
+### REQ-NINA-002: Entity extraction and slot governance
+
+The system shall extract required entities for property and lead workflows with validation rules.
+
+**Acceptance criteria:**
+
+- [ ] Slot extraction returns structured key-value payloads
+- [ ] Missing/invalid slots trigger clarifying prompts
+- [ ] Extracted entities map to downstream command contracts
+
+**Evidence:** slot extraction test report and command mapping log.
+
+### REQ-NINA-003: Multi-turn flow execution integrity
+
+The system shall execute conversation flows with deterministic state transitions and recovery controls.
+
+**Acceptance criteria:**
+
+- [ ] Flow state transitions are logged with node context
+- [ ] Error handlers resolve or escalate failed branches
+- [ ] Max-turn and timeout limits are enforced
+
+**Evidence:** flow execution trace and error recovery summary.
+
+### REQ-NINA-004: NLP analytics and optimization loop
+
+The system shall publish NLP performance metrics to support iterative flow improvement.
+
+**Acceptance criteria:**
+
+- [ ] KPI metrics are reportable by flow and intent
+- [ ] A/B flow variants track comparative outcomes
+- [ ] Improvement actions are linked to observed metrics
+
+**Evidence:** NLP analytics dashboard snapshot and optimization change log.
+
+## Traceability
+
+- Maps to `REQ-AI-001` through `REQ-AI-004` and messaging intelligence controls
+- Aligns to `WC-SRS-014` and conversation orchestration artifacts
+- Feeds intent routing, lead qualification, and assistant quality validation
 
 ---
 

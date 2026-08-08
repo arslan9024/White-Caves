@@ -2,21 +2,93 @@
 
 > **Owner:** @Mary | **Tool:** DeepSeek Chat (DeepSeek V3)
 > **Purpose:** MavenInvestment module for investor profiles, portfolio dashboards and deal flow pipeline.
-> **Status:** Stub -- awaiting expansion by @Mary.
+> **Status:** Active -- requirement catalog expanded.
+> **Last Updated:** 2026-08-07
+> **Next Review:** 2026-08-21
+> **Source of Truth:** CRM investment management feature specification (business layer)
+
+## Canonical governance links
+
+- [`../05_requirements/functional-requirements.md`](../05_requirements/functional-requirements.md)
+- [`../05_requirements/compliance-requirements.md`](../05_requirements/compliance-requirements.md)
+- [`../../plans/documentation/REQ_CROSSWALK.md`](../../plans/documentation/REQ_CROSSWALK.md)
+- [`../../software_docs/01_requirements_engineering/SRS_MASTER_12_DEPARTMENTS.md`](../../software_docs/01_requirements_engineering/SRS_MASTER_12_DEPARTMENTS.md)
+
+## Feed targets
+
+- `docs/software_docs/01_requirements_engineering/SRS_MASTER_12_DEPARTMENTS.md`
+- `docs/plans/documentation/REQ_CROSSWALK.md`
+- frontend dashboard/decision-support lanes in `docs/plans/waves/WAVE_39_*` and `WAVE_40_*`
 
 ---
 
 ## 1. Overview
 
-> _[Action Required: Enforce production-ready engineering constraints]: expand this section with full spec._
+The investment management module tracks investor profiles, portfolio performance, and high-value deal approval flows.
+
+## Requirement catalog
+
+### REQ-INV-001: Investor profile and eligibility model
+
+The system shall store investor risk, horizon, and eligibility criteria for freehold and restricted zones.
+
+**Acceptance criteria:**
+
+- [ ] Investor profile includes risk appetite and horizon
+- [ ] Eligibility checks are visible by area
+- [ ] Profile changes are auditable
+
+**Evidence:** investor profile record and eligibility audit.
+
+### REQ-INV-002: Portfolio dashboard and KPI tracking
+
+The system shall show portfolio value, yields, occupancy, and unrealized gain/loss.
+
+**Acceptance criteria:**
+
+- [ ] Dashboard shows current value and total invested
+- [ ] Yield and occupancy are visible per property and portfolio
+- [ ] Historical trends are available for comparison
+
+**Evidence:** portfolio dashboard and trend snapshot.
+
+### REQ-INV-003: Deal flow pipeline and governance
+
+The system shall track deal stages and require committee approval for large investments.
+
+**Acceptance criteria:**
+
+- [ ] Pipeline stages are recorded with probability
+- [ ] High-value deals require committee approval
+- [ ] Decision logs are retained
+
+**Evidence:** deal pipeline log and committee decision record.
+
+### REQ-INV-004: ROI tools and investor reports
+
+The system shall calculate ROI scenarios and generate investor reports.
+
+**Acceptance criteria:**
+
+- [ ] Cash vs mortgage comparisons are available
+- [ ] Scenario outputs are labeled conservative/base/optimistic
+- [ ] Reports can be exported in approved formats
+
+**Evidence:** ROI calculation output and report export.
+
+## Traceability
+
+- Maps to `REQ-FRPT-001`, `REQ-FRPT-003`, and finance analytics coverage
+- Aligns to `WC-SRS-010`, `WC-SRS-014`, and investment evidence artifacts
+- Feeds portfolio, pipeline, and reporting validation
 
 ## 2. Investor Profile Fields
 
-> _[Action Required: Enforce production-ready engineering constraints]: expand this section with full spec._
+Investor profiles should include risk appetite, investment horizon, preferred areas, liquidity profile, and citizenship-based eligibility checks.
 
 ## 3. Portfolio Dashboard KPIs
 
-> _[Action Required: Enforce production-ready engineering constraints]: expand this section with full spec._
+Investment management requirements are now captured in the catalog below, covering investor profiles, dashboard KPIs, deal flow, and ROI reporting.
 
 ## 4. Investor Profiling Model
 
