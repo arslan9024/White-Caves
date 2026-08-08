@@ -3,7 +3,33 @@
 > **Document Class:** Requirements Engineering (SRS)  
 > **Repository Path:** `software_docs/01_requirements_engineering/functional_specifications.md`  
 > **Brand Canvas:** White Caves Red (`#EF4444`) | Crisp White (`#FFFFFF`) | Deep Slate Gray (`#1E293B`)  
-> **System Architecture:** RUP 4-Tier Component Isolation (View-Logic-Style)
+> **System Architecture:** RUP 4-Tier Component Isolation (View-Logic-Style)  
+> **Status:** Active / Traceability Expansion In Progress  
+> **Last Updated:** 2026-08-02
+
+---
+
+## Canonical traceability links
+
+- [`../../business_docs/05_requirements/functional-requirements.md`](../../business_docs/05_requirements/functional-requirements.md)
+- [`../../business_docs/09_crm_features/README.md`](../../business_docs/09_crm_features/README.md)
+- [`../02_software_design/rbac_state_gating.md`](../02_software_design/rbac_state_gating.md)
+- [`../../plans/documentation/REQ_CROSSWALK.md`](../../plans/documentation/REQ_CROSSWALK.md)
+- [`../../plans/documentation/RBAC_ROLE_TO_LEVEL_MAP.md`](../../plans/documentation/RBAC_ROLE_TO_LEVEL_MAP.md)
+
+## Purpose of this document
+
+This file translates business-domain requirements into software-facing operating bounds,
+departmental system partitions, and access-model assumptions. It should be read alongside the
+business requirement catalog rather than as a replacement for it.
+
+## Normalization priorities
+
+Wave 32 expands this document toward:
+
+1. explicit requirement realization references;
+2. alignment with canonical RBAC/access-level mapping;
+3. direct links to use cases, SDDs, and verification surfaces.
 
 ---
 
@@ -26,13 +52,20 @@
 
 ## 🔒 2. Role-Based Access Control (RBAC) Hierarchy
 
-```
+```text
 LEVEL 5: MASTER (Managing Director / Founder) ──► Full Platform Read/Write/Override + Ghost Session Impersonation
 LEVEL 4: EXECUTIVE (CTO, CFO, COO)             ──► Department Oversight + Financial Approvals + Telemetry
 LEVEL 3: DEPARTMENT MANAGER                    ──► Team Allocation + Deal Approval + Commission Releases
 LEVEL 2: SENIOR / LICENSED BROKER              ──► Active Listing CRUD + Pipeline Management + Lead Intake
 LEVEL 1: ASSOCIATE / CLIENT PORTAL             ──► Assigned Listing Views + Self-Service Document Drawer
 ```
+
+This hierarchy is a software-facing access abstraction and must be reconciled with the richer
+business-facing role catalogs in:
+
+- `docs/business_docs/01_company_structure/roles.md`
+- `docs/business_docs/09_user_roles_permissions/roles-matrix.md`
+- `docs/plans/documentation/RBAC_ROLE_TO_LEVEL_MAP.md`
 
 ---
 

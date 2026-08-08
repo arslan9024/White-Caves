@@ -43,6 +43,7 @@ vi.mock('../config/firebase', () => ({
   signOut: vi.fn().mockResolvedValue(undefined),
   signInWithPhone: vi.fn(),
   createRecaptchaVerifier: vi.fn(),
+  handleRedirectResult: vi.fn().mockResolvedValue(null),
 }));
 
 vi.mock('../services/authService', () => ({
@@ -58,6 +59,7 @@ vi.mock('../services/authService', () => ({
 vi.mock('../utils/safeStorage', () => ({
   safeStorage: {
     setJSON: vi.fn(),
+    getJSON: vi.fn(() => null),
     get: vi.fn(),
     set: vi.fn(),
     remove: vi.fn(),
@@ -347,7 +349,7 @@ describe('useSignIn — handleSocialAuth (integration)', () => {
 
       expect(result.current.step).toBe(1);
       expect(result.current.pendingUser).toBeNull();
-      expect(mockNavigate).toHaveBeenCalledWith('/crm');
+      expect(mockNavigate).toHaveBeenCalledWith('/profile');
       vi.useRealTimers();
     });
   });

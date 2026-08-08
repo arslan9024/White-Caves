@@ -62,7 +62,7 @@ White Caves CRM is a Dubai real estate operations platform serving 200+ agents w
 
 The platform only counts as fully development-complete when the execution stack stays observable and reproducible:
 
-- `plans/MASTER_PLAN.md` and `plans/PENDING_TASKS_ONLY.md` remain current
+- `docs/plans/MASTER_PLAN.md` and `docs/plans/PENDING_TASKS_ONLY.md` remain current
 - `PROJECT_PROGRESS.md` and `DAILY_MILESTONE_TRACKER.md` mirror the live queue
 - `scripts/orchestrator/progress-intelligence.ps1` and `scripts/orchestrator/dashboard.ps1` continue to emit ETA, drift, blockers, and trend visibility
 - `npm run plans:validate` passes after every planning update

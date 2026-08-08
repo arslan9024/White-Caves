@@ -1,8 +1,8 @@
 # Integration Map — White Caves CRM
 
 > **Version:** 1.0 | **Date:** June 2026 | **Owner:** @Mira + @Zainab  
-> **CONSUMES←:** `business_docs/03_ai_assistants/README.md`, `business_docs/05_requirements/integration-requirements.md`  
-> **FEEDS→:** `plans/waves/WAVE_23_SDD.md`, `plans/waves/WAVE_24_SDD.md`, `plans/waves/WAVE_25_SDD.md`
+> **CONSUMES←:** `docs/business_docs/03_ai_assistants/README.md`, `docs/business_docs/05_requirements/integration-requirements.md`  
+> **FEEDS→:** `docs/plans/waves/WAVE_23_SDD.md`, `docs/plans/waves/WAVE_24_SDD.md`, `docs/plans/waves/WAVE_25_SDD.md`
 
 ---
 
@@ -17,7 +17,7 @@ This document maps every external integration consumed by the White Caves CRM pl
 ### 1.1 Firebase Authentication
 
 | Field | Value |
-|---|---|
+| --- | --- |
 | Provider | Google Firebase Auth |
 | API Type | Firebase SDK + REST (`/identitytoolkit/v3`) |
 | Auth Method | Service Account JSON → Admin SDK |
@@ -30,7 +30,7 @@ This document maps every external integration consumed by the White Caves CRM pl
 ### 1.2 Google OAuth 2.0
 
 | Field | Value |
-|---|---|
+| --- | --- |
 | Provider | Google Identity Platform |
 | API Type | OAuth 2.0 Authorization Code |
 | Auth Method | Client ID + Secret → access/refresh token |
@@ -47,7 +47,7 @@ This document maps every external integration consumed by the White Caves CRM pl
 ### 2.1 PropertyFinder Feed (PF XML)
 
 | Field | Value |
-|---|---|
+| --- | --- |
 | Provider | PropertyFinder (UAE) |
 | API Type | XML Feed (property listing syndication) |
 | Auth Method | API key in `X-PF-API-Key` header |
@@ -61,7 +61,7 @@ This document maps every external integration consumed by the White Caves CRM pl
 ### 2.2 Bayut Feed (Dubizzle Group)
 
 | Field | Value |
-|---|---|
+| --- | --- |
 | Provider | Bayut / Dubizzle Group |
 | API Type | JSON REST API |
 | Auth Method | ****** (refreshed monthly) |
@@ -74,7 +74,7 @@ This document maps every external integration consumed by the White Caves CRM pl
 ### 2.3 Trakheesi (RERA Permit Validation)
 
 | Field | Value |
-|---|---|
+| --- | --- |
 | Provider | Dubai Land Department / RERA |
 | API Type | REST API |
 | Auth Method | DLD API Key + Broker License Number |
@@ -91,7 +91,7 @@ This document maps every external integration consumed by the White Caves CRM pl
 ### 3.1 DLD Oqood (Off-Plan Registration)
 
 | Field | Value |
-|---|---|
+| --- | --- |
 | Provider | Dubai Land Department |
 | API Type | REST API (DLD Smart Services) |
 | Auth Method | DLD developer/broker certificate + API key |
@@ -105,7 +105,7 @@ This document maps every external integration consumed by the White Caves CRM pl
 ### 3.2 DLD Title Deed Verification
 
 | Field | Value |
-|---|---|
+| --- | --- |
 | Provider | Dubai Land Department |
 | API Type | REST (GET `/titleDeed/{titleDeedNumber}`) |
 | Auth Method | DLD API Key |
@@ -122,7 +122,7 @@ This document maps every external integration consumed by the White Caves CRM pl
 ### 4.1 Meta WhatsApp Business API (WABA)
 
 | Field | Value |
-|---|---|
+| --- | --- |
 | Provider | Meta Platforms |
 | API Type | REST (Cloud API) + Webhooks |
 | Auth Method | Permanent Access Token (WABA) |
@@ -137,7 +137,7 @@ This document maps every external integration consumed by the White Caves CRM pl
 ### 4.2 Resend (Transactional Email)
 
 | Field | Value |
-|---|---|
+| --- | --- |
 | Provider | Resend |
 | API Type | REST (`/emails`) |
 | Auth Method | API Key in `Authorization: Bearer` header |
@@ -154,7 +154,7 @@ This document maps every external integration consumed by the White Caves CRM pl
 ### 5.1 DocuSign
 
 | Field | Value |
-|---|---|
+| --- | --- |
 | Provider | DocuSign |
 | API Type | REST (eSignature API v2.1) |
 | Auth Method | OAuth 2.0 JWT Grant (service account) |
@@ -168,7 +168,7 @@ This document maps every external integration consumed by the White Caves CRM pl
 ### 5.2 PDF Generation (Puppeteer / PDFKit)
 
 | Field | Value |
-|---|---|
+| --- | --- |
 | Provider | Internal (Puppeteer headless Chrome or PDFKit) |
 | API Type | Internal Node.js service |
 | Use Case | Ejari certificate, tenancy agreement, NOC letter, payment receipt, work order |
@@ -183,7 +183,7 @@ This document maps every external integration consumed by the White Caves CRM pl
 ### 6.1 Exchange Rate API
 
 | Field | Value |
-|---|---|
+| --- | --- |
 | Provider | ExchangeRate-API |
 | API Type | REST (GET `/{base}/{target}`) |
 | Auth Method | API key in URL parameter |
@@ -197,7 +197,7 @@ This document maps every external integration consumed by the White Caves CRM pl
 ### 6.2 UAE FTA e-Filing (VAT)
 
 | Field | Value |
-|---|---|
+| --- | --- |
 | Provider | UAE Federal Tax Authority |
 | API Type | FTA Online Portal (manual + future API hook) |
 | Auth Method | TRN credentials |
@@ -213,7 +213,7 @@ This document maps every external integration consumed by the White Caves CRM pl
 ### 7.1 Google Calendar (OAuth 2.0)
 
 | Field | Value |
-|---|---|
+| --- | --- |
 | Provider | Google |
 | API Type | Google Calendar API v3 |
 | Auth Method | OAuth 2.0 Authorization Code (per-agent) |
@@ -226,7 +226,7 @@ This document maps every external integration consumed by the White Caves CRM pl
 ### 7.2 Microsoft Outlook (Graph API)
 
 | Field | Value |
-|---|---|
+| --- | --- |
 | Provider | Microsoft |
 | API Type | Microsoft Graph API v1.0 |
 | Auth Method | OAuth 2.0 (MSAL, per-agent) |
@@ -243,7 +243,7 @@ This document maps every external integration consumed by the White Caves CRM pl
 ### 8.1 OpenAI (GPT-4o)
 
 | Field | Value |
-|---|---|
+| --- | --- |
 | Provider | OpenAI |
 | API Type | REST Chat Completions API |
 | Auth Method | ****** key |
@@ -258,7 +258,7 @@ This document maps every external integration consumed by the White Caves CRM pl
 ### 8.2 Anthropic Claude (Fallback)
 
 | Field | Value |
-|---|---|
+| --- | --- |
 | Provider | Anthropic |
 | API Type | REST Messages API |
 | Auth Method | `x-api-key` header |
@@ -269,7 +269,7 @@ This document maps every external integration consumed by the White Caves CRM pl
 ### 8.3 Groq (Fast Inference Fallback)
 
 | Field | Value |
-|---|---|
+| --- | --- |
 | Provider | Groq |
 | API Type | OpenAI-compatible REST |
 | Auth Method | ****** key |
@@ -284,7 +284,7 @@ This document maps every external integration consumed by the White Caves CRM pl
 ### 9.1 Cloudinary (Image & Video CDN)
 
 | Field | Value |
-|---|---|
+| --- | --- |
 | Provider | Cloudinary |
 | API Type | REST Upload API + Delivery CDN |
 | Auth Method | API key + API secret (signed upload) |
@@ -298,7 +298,7 @@ This document maps every external integration consumed by the White Caves CRM pl
 ### 9.2 Matterport (3D Virtual Tours)
 
 | Field | Value |
-|---|---|
+| --- | --- |
 | Provider | Matterport |
 | API Type | Embed URL + Matterport API v2 (asset management) |
 | Auth Method | API token |
@@ -311,7 +311,7 @@ This document maps every external integration consumed by the White Caves CRM pl
 ### 9.3 Zoom (Virtual Viewings)
 
 | Field | Value |
-|---|---|
+| --- | --- |
 | Provider | Zoom Video Communications |
 | API Type | REST (Meetings API v2) |
 | Auth Method | Server-to-Server OAuth |
@@ -328,7 +328,7 @@ This document maps every external integration consumed by the White Caves CRM pl
 ### 10.1 MongoDB Atlas
 
 | Field | Value |
-|---|---|
+| --- | --- |
 | Provider | MongoDB |
 | API Type | MongoDB Wire Protocol (Prisma ORM) |
 | Connection | `mongodb+srv://` connection string |
@@ -341,7 +341,7 @@ This document maps every external integration consumed by the White Caves CRM pl
 ### 10.2 Vercel (Frontend + Serverless Functions)
 
 | Field | Value |
-|---|---|
+| --- | --- |
 | Provider | Vercel |
 | API Type | CI/CD + Edge Network |
 | Auth Method | Vercel Access Token (CI), GitHub Actions OIDC |
@@ -353,7 +353,7 @@ This document maps every external integration consumed by the White Caves CRM pl
 ### 10.3 Redis (Caching & Rate Limiting)
 
 | Field | Value |
-|---|---|
+| --- | --- |
 | Provider | Upstash Redis (serverless) or Redis Cloud |
 | API Type | Redis protocol via `ioredis` |
 | Use Case | Session cache, real-time counters, rate limiting, AI chat session state |
@@ -364,7 +364,7 @@ This document maps every external integration consumed by the White Caves CRM pl
 ### 10.4 Firebase Cloud Messaging (FCM) — Push Notifications
 
 | Field | Value |
-|---|---|
+| --- | --- |
 | Provider | Google Firebase |
 | API Type | FCM HTTP v1 API |
 | Auth Method | Firebase Admin SDK (service account) |
@@ -381,19 +381,19 @@ This document maps every external integration consumed by the White Caves CRM pl
 ### 11.1 UAE FIU goAML
 
 | Field | Value |
-|---|---|
+| --- | --- |
 | Provider | UAE Financial Intelligence Unit |
 | API Type | Manual portal submission + XML file format |
 | Auth Method | FIU registered entity credentials |
 | Data Direction | OUT — Suspicious Transaction Report (STR), Suspicious Activity Report (SAR) |
 | Threshold | Cash transactions > AED 55,000 or suspicious indicator regardless of amount |
-| Internal Owner | `business_docs/10_security/kyc-aml-framework.md`, `plans/COMPLIANCE/` |
+| Internal Owner | `docs/business_docs/10_design_system_and_security/kyc-aml-framework.md`, `docs/plans/COMPLIANCE/` |
 | Cadence | On-demand (triggered by compliance officer review) |
 
 ### 11.2 CBUAE PEP Screening
 
 | Field | Value |
-|---|---|
+| --- | --- |
 | Provider | Internal sanctions list + commercial PEP database (LexisNexis or equivalent) |
 | API Type | REST (commercial vendor) or manual CSV lookup |
 | Auth Method | Vendor API key |
@@ -409,7 +409,7 @@ This document maps every external integration consumed by the White Caves CRM pl
 ### 12.1 Google Analytics 4 (GA4)
 
 | Field | Value |
-|---|---|
+| --- | --- |
 | Provider | Google |
 | API Type | gtag.js + Measurement Protocol |
 | Auth Method | Measurement ID embedded in frontend; Measurement Protocol API Secret for server-side events |
@@ -420,7 +420,7 @@ This document maps every external integration consumed by the White Caves CRM pl
 ### 12.2 Meta Pixel
 
 | Field | Value |
-|---|---|
+| --- | --- |
 | Provider | Meta Platforms |
 | API Type | Pixel JS (browser) + Conversions API (server-side) |
 | Auth Method | Pixel ID (browser); access token (server-side) |
@@ -435,7 +435,7 @@ This document maps every external integration consumed by the White Caves CRM pl
 > Available at `/admin/integrations` (Admin and Lion roles only).
 
 | Integration | Status Indicator | Health Check | Alert Channel |
-|---|---|---|---|
+| --- | --- | --- | --- |
 | Firebase Auth | 🟢 / 🔴 | `GET /api/v1/health/firebase` | Slack `#ops-alerts` |
 | WhatsApp API | 🟢 / 🟡 / 🔴 | `GET /api/v1/health/whatsapp` | Slack + email |
 | Resend Email | 🟢 / 🔴 | Webhook delivery stats | Slack `#ops-alerts` |
@@ -456,7 +456,7 @@ This document maps every external integration consumed by the White Caves CRM pl
 > All variables below must be present in `.env` (local) and Vercel project settings (production). Never commit secrets to git.
 
 | Variable | Integration | Required | Secret |
-|---|---|---|---|
+| --- | --- | --- | --- |
 | `DATABASE_URL` | MongoDB Atlas | ✅ | ✅ |
 | `FIREBASE_PROJECT_ID` | Firebase | ✅ | ❌ |
 | `FIREBASE_CLIENT_EMAIL` | Firebase | ✅ | ✅ |
@@ -513,4 +513,4 @@ This document maps every external integration consumed by the White Caves CRM pl
 
 ---
 
-*Last reviewed: June 2026 | Next review: December 2026*
+Last reviewed: June 2026 | Next review: December 2026

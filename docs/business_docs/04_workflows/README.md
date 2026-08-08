@@ -1,6 +1,7 @@
 # White Caves Business Workflows & Process Flows
 
 ## Overview
+
 All critical business workflows are WhatsApp-centric with AI-powered automation and human escalation for complex cases. These workflows ensure 24/7 responsiveness, data consistency, and seamless customer experience.
 
 ---
@@ -8,12 +9,14 @@ All critical business workflows are WhatsApp-centric with AI-powered automation 
 ## 🔴 CRITICAL WORKFLOWS (Daily Operations)
 
 ### WORKFLOW #1: CUSTOMER INQUIRY TO LEAD CONVERSION
-**Duration**: 2-5 minutes
-**Owner**: Nina (Bot) + Nadia (Agents) + Clara (Lead Manager)
+
+**Duration**: 2-5 minutes  
+**Owner**: Nina (Bot) + Nadia (Agents) + Clara (Lead Manager)  
 **Success Rate Target**: 92%+
 
-#### Flow Process:
-```
+#### Flow Process — Inquiry to Lead
+
+```text
 Customer sends WhatsApp inquiry
          ↓
 Nina (WhatsApp Bot) - Auto-response (10s)
@@ -57,6 +60,7 @@ Sales Agent Nurturing
 ```
 
 **Key Performance Indicators**:
+
 - Nina bot response time: <10 seconds
 - Auto-qualification rate: 70%+
 - Lead creation time: <5 minutes
@@ -66,12 +70,14 @@ Sales Agent Nurturing
 ---
 
 ### WORKFLOW #2: PROPERTY INQUIRY TO SALE/LEASE
-**Duration**: 3-45 days
-**Owner**: Clara (Sales) + Sophia (Pipeline) + Theodora (Finance)
+
+**Duration**: 3-45 days  
+**Owner**: Clara (Sales) + Sophia (Pipeline) + Theodora (Finance)  
 **Success Metrics**: 8% conversion rate, 4-5 properties shown per conversion
 
-#### Flow Process:
-```
+#### Flow Process — Property Hand-off
+
+```text
 [From Workflow #1: Qualified Lead in Clara]
          ↓
 Property Matching (AI)
@@ -123,6 +129,7 @@ Commission Disbursement (Monthly)
 ```
 
 **Key Performance Indicators**:
+
 - Lead-to-property-viewing: 2-3 days
 - Viewing-to-offer: 1-3 days
 - Offer-to-closure: 5-15 days
@@ -133,12 +140,14 @@ Commission Disbursement (Monthly)
 ---
 
 ### WORKFLOW #3: RENTAL COLLECTION & TENANT MANAGEMENT
-**Duration**: Ongoing (monthly)
-**Owner**: Daisy (Leasing) + Theodora (Finance)
+
+**Duration**: Ongoing (monthly)  
+**Owner**: Daisy (Leasing) + Theodora (Finance)  
 **Success Metrics**: >95% on-time payment, <2% tenant complaints
 
-#### Flow Process:
-```
+#### Flow Process — Rental Lifecycle
+
+```text
 [Monthly Cycle - Day 1-5]
 Rent Due Notice
 - Automated WhatsApp message to tenant
@@ -170,6 +179,7 @@ Monthly Reporting
 ```
 
 **Key Performance Indicators**:
+
 - On-time payment rate: >95%
 - Payment processing time: <3 business days
 - Maintenance resolution time: <48 hours
@@ -179,12 +189,14 @@ Monthly Reporting
 ---
 
 ### WORKFLOW #4: MARKETING & LEAD GENERATION
-**Duration**: Ongoing (daily)
-**Owner**: Olivia (Marketing) + Clara (Lead CRM)
+
+**Duration**: Ongoing (daily)  
+**Owner**: Olivia (Marketing) + Clara (Lead CRM)  
 **Success Metrics**: 1,500+ qualified leads/month, <$15 per qualified lead
 
-#### Flow Process:
-```
+#### Flow Process — Marketing Campaign
+
+```text
 Campaign Planning (Monthly)
 - Market analysis (Sentinel insights)
 - Seasonal trends (Olivia)
@@ -217,6 +229,7 @@ Campaign Optimization
 ```
 
 **Key Performance Indicators**:
+
 - New leads per month: 1,500+
 - Cost per qualified lead: <$15
 - Conversion rate by channel: 5-12%
@@ -227,13 +240,20 @@ Campaign Optimization
 
 ## 🟢 OPERATIONAL WORKFLOWS (Support)
 
+### Governance and operations add-ons
+
+- [Inventory Quality and Monthly Audit SOP](inventory-quality-and-audit-sop.md)
+- [Finance Close and Reconciliation Governance](../07_business_model/FINANCE_CLOSE_AND_RECONCILIATION_GOVERNANCE.md)
+
 ### WORKFLOW #5: CUSTOMER SUPPORT & ISSUE RESOLUTION
-**Duration**: 4 hours (target)
-**Owner**: Nadia (Communications) + departmental escalation
+
+**Duration**: 4 hours (target)  
+**Owner**: Nadia (Communications) + departmental escalation  
 **Success Metrics**: 95%+ resolution within 4 hours
 
-#### Flow Process:
-```
+#### Flow Process — Support Triage
+
+```text
 Customer Issue/Complaint
 - Via WhatsApp (primary)
 - Via email (secondary)
@@ -278,6 +298,7 @@ Post-Resolution
 ```
 
 **Key Performance Indicators**:
+
 - First response time: <5 minutes
 - Simple issue resolution: <30 minutes
 - Complex issue resolution: <4 hours
@@ -288,12 +309,14 @@ Post-Resolution
 ---
 
 ### WORKFLOW #6: COMPLIANCE & AUDIT
-**Duration**: Monthly/Quarterly
-**Owner**: Laila (Compliance) + departmental audit
+
+**Duration**: Monthly/Quarterly  
+**Owner**: Laila (Compliance) + departmental audit  
 **Success Metrics**: 100% compliance, zero violations
 
-#### Flow Process:
-```
+#### Flow Process — Compliance Review
+
+```text
 Monthly Compliance Check
 - Laila reviews active leads (KYC/AML)
 - Clara provides lead list
@@ -324,6 +347,7 @@ Post-Audit
 ```
 
 **Key Performance Indicators**:
+
 - Compliance violation rate: 0%
 - Audit findings: Zero critical
 - KYC verification rate: 100%
@@ -332,12 +356,14 @@ Post-Audit
 ---
 
 ### WORKFLOW #7: FINANCIAL RECONCILIATION & REPORTING
-**Duration**: Monthly (5 days post-month-end)
-**Owner**: Theodora (Finance) + Zoe (Executive)
+
+**Duration**: Monthly (5 days post-month-end)  
+**Owner**: Theodora (Finance) + Zoe (Executive)  
 **Success Metrics**: 100% accuracy, <5 days post-close
 
-#### Flow Process:
-```
+#### Flow Process — Close and Reporting
+
+```text
 Month-End Processing (Day 25-28)
 - All transactions recorded (Theodora)
 - Payment reconciliation
@@ -374,6 +400,7 @@ Archive & Filing (Day 5-7)
 ```
 
 **Key Performance Indicators**:
+
 - Close timeline: <5 days
 - Reconciliation accuracy: 100%
 - Commission accuracy: 100%
@@ -384,7 +411,7 @@ Archive & Filing (Day 5-7)
 
 ## 📊 WORKFLOW INTERACTION MAP
 
-```
+```text
 Customer (WhatsApp)
     ↓
 Nina Bot ←-→ Nadia (Agents) - 24/7 Coverage
@@ -404,7 +431,7 @@ Clara (Lead CRM)
 ## 🎯 WORKFLOW PERFORMANCE DASHBOARD
 
 | Workflow | Duration | Success % | Owner | Status |
-|----------|----------|-----------|-------|--------|
+| --- | --- | --- | --- | --- |
 | Inquiry to Lead | 2-5 min | 92%+ | Nina/Nadia | ✅ |
 | Lead to Sale | 4-5 weeks | 8% | Clara/Sophia | ✅ |
 | Rental Collection | Monthly | 95%+ | Daisy/Theodora | ✅ |
@@ -419,28 +446,33 @@ Clara (Lead CRM)
 ## 🔄 AUTOMATION & ESCALATION LEVELS
 
 ### Auto-Escalation Rules (No Human Required)
+
 - **Nina Bot** handles: Simple FAQs, appointment scheduling, lead form submission
 - **Policy triggers**: Dormant lead (8+ days no contact), Overdue rent (10+ days), Critical compliance alert
 
 ### Manual Escalation Triggers (Agent Intervention)
+
 - **Nadia Escalation**: Customer asks for human, Bot confidence <60%, Complex negotiation required
 - **Clara Escalation**: Lead quality concerns, Offer negotiation, Property conflict
 - **Daisy/Theodora Escalation**: Lease modification, Payment plan, Financial adjustment
 - **Laila Escalation**: Compliance red flag, Contract exception, AML alert
 
 ### Executive Escalation (C-Level Review)
+
 - **Zoe Alert Triggers**: Transaction >AED 5M, Compliance violation, Major customer complaint, Market crisis
 - **Board-Level Items**: Quarterly financials, Strategic partnership, Regulatory changes
 
 ---
 
 ## 🟣 WORKFLOW #8: HENRY DOCUMENT CUSTODY & INSPECTION READINESS
+
 **Duration**: 3-10 minutes per signed document intake  
 **Owner**: Henry (Record Keeper) + department owner (Sales/Leasing/Finance/Compliance/Legal/Ops)  
 **Success Metrics**: 100% signed docs timestamped + tagged (department + user) and retrievable for inspection
 
-#### Flow Process:
-```
+### Flow Process
+
+```text
 Document template selected (Henry)
          ↓
 Draft generated + compliance pre-check
@@ -467,6 +499,7 @@ Export package for compliance/audit review
 ```
 
 **Key Performance Indicators**:
+
 - Signed timestamp completeness: 100%
 - Department tag completeness: 100%
 - Owner user tag completeness: 100%

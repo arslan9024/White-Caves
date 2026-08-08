@@ -41,8 +41,8 @@ import {
 // ═══════════════════════════════════════════════════════════════════════════
 
 describe('ROLES constants', () => {
-  it('defines all canonical roles (18 total in v2.0)', () => {
-    expect(Object.keys(ROLES)).toHaveLength(18);
+  it('defines all canonical roles (21 total in v2.0)', () => {
+    expect(Object.keys(ROLES)).toHaveLength(21);
   });
 
   it('has correct backend CRM roles', () => {
@@ -71,6 +71,14 @@ describe('ROLES constants', () => {
 describe('ROLE_HIERARCHY', () => {
   it('owner has highest level (100)', () => {
     expect(ROLE_HIERARCHY[ROLES.OWNER]).toBe(100);
+  });
+
+  it('managing director has level 95', () => {
+    expect(ROLE_HIERARCHY[ROLES.MANAGING_DIRECTOR]).toBe(95);
+  });
+
+  it('director has level 85', () => {
+    expect(ROLE_HIERARCHY[ROLES.DIRECTOR]).toBe(85);
   });
 
   it('manager has level 90', () => {
@@ -105,9 +113,9 @@ describe('ROLE_HIERARCHY', () => {
     expect(ROLE_HIERARCHY[ROLES.BUYER]).toBe(10);
   });
 
-  it('hierarchy covers all canonical roles (18 in v2.0)', () => {
+  it('hierarchy covers all canonical roles (21 in v2.0)', () => {
     const rolesWithHierarchy = Object.keys(ROLE_HIERARCHY);
-    expect(rolesWithHierarchy).toHaveLength(18);
+    expect(rolesWithHierarchy).toHaveLength(21);
   });
 
   it('owner outranks manager', () => {
@@ -268,12 +276,12 @@ describe('ROLE_PERMISSIONS mapping', () => {
     });
   });
 
-  // ── Manager — most permissions minus MANAGE_USERS ──────────────────
+  // ── Manager — executive operations without owner-only settings ───────
   describe('manager permissions', () => {
-    it('can manage agents and modify settings', () => {
+    it('can manage agents and view reporting surfaces', () => {
       const managerPerms = ROLE_PERMISSIONS[ROLES.MANAGER];
       expect(managerPerms).toContain(PERMISSIONS.MANAGE_AGENTS);
-      expect(managerPerms).toContain(PERMISSIONS.MODIFY_SETTINGS);
+      expect(managerPerms).toContain(PERMISSIONS.VIEW_ALL_REPORTS);
     });
 
     it('cannot manage users (owner-exclusive)', () => {
@@ -447,6 +455,11 @@ describe('isManager', () => {
 
   it('returns true for manager', () => {
     expect(isManager(ROLES.MANAGER)).toBe(true);
+  });
+
+  it('returns true for director and managing director', () => {
+    expect(isManager(ROLES.DIRECTOR)).toBe(true);
+    expect(isManager(ROLES.MANAGING_DIRECTOR)).toBe(true);
   });
 
   it('returns false for admin', () => {
@@ -662,13 +675,13 @@ describe('Security invariants', () => {
     });
   });
 
-  it('DELETE_PROPERTY is restricted to owner, manager, and admin', () => {
+  it('DELETE_PROPERTY is restricted to owner, managing director, manager, and admin', () => {
     const rolesWithDelete = Object.values(ROLES).filter(role =>
       ROLE_PERMISSIONS[role].includes(PERMISSIONS.DELETE_PROPERTY)
     );
     expect(rolesWithDelete).toEqual(
-      expect.arrayContaining([ROLES.OWNER, ROLES.MANAGER, ROLES.ADMIN])
+      expect.arrayContaining([ROLES.OWNER, ROLES.MANAGING_DIRECTOR, ROLES.MANAGER, ROLES.ADMIN])
     );
-    expect(rolesWithDelete).toHaveLength(3);
+    expect(rolesWithDelete).toHaveLength(4);
   });
 });

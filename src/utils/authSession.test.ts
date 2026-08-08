@@ -154,7 +154,7 @@ describe('authSession utilities', () => {
         returnTo: '/crm/priority',
       });
 
-      expect(destination).toBe('/crm/priority');
+      expect(destination).toBe('/profile');
       expect(dispatch).toHaveBeenCalledWith(setUser(expect.objectContaining({ role: 'lion' })));
       expect(dispatch).toHaveBeenCalledWith(setActiveRole('lion'));
 
@@ -166,6 +166,13 @@ describe('authSession utilities', () => {
           token: 'jwt-123',
           provider: 'backend',
           rememberMe: true,
+        })
+      );
+      expect(mockSetJSON).toHaveBeenCalledWith(
+        'user',
+        expect.objectContaining({
+          role: 'lion',
+          email: 'arslanmalikgoraha@gmail.com',
         })
       );
       expect(mockSetJSON).toHaveBeenCalledWith(
@@ -193,7 +200,7 @@ describe('authSession utilities', () => {
         .map(call => call[0])
         .find((action: { type: string }) => action.type === loginSuccess.type);
       expect(loginAction?.payload.token).toBe('stored-token');
-      expect(mockSetJSON).not.toHaveBeenCalled();
+      expect(mockSetJSON).not.toHaveBeenCalledWith('userRole', expect.anything());
       expect(dispatch).not.toHaveBeenCalledWith(setActiveRole(expect.anything()));
     });
   });

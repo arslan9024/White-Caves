@@ -323,6 +323,6 @@ A: You can reactivate archived leads. They restart at "Initial Interest" stage.
 
 ---
 
-**For Implementation Details**: See `/plans/ARCHITECTURE.md`  
+**For Implementation Details**: See `docs/software_docs/INDEX.md`, `docs/software_docs/03_use_cases/lead_ingestion_lifecycle.md`, and `docs/software_docs/03_use_cases/lead_distribution_sla.md`  
 **For Integration Help**: Contact development team  
 **For Questions**: Email product or sales team

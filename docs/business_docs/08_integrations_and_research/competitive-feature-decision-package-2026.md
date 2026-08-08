@@ -67,7 +67,7 @@ Each feature candidate is scored from 1-5 for the following dimensions:
 - `business_docs/08_market_research/competitor-analysis.md`
 - `business_docs/08_market_research/competitor_analysis.md`
 - `business_docs/08_market_research/technology_upgrades.md`
-- `plans/PENDING_TASKS_ONLY.md`
+- `docs/plans/PENDING_TASKS_ONLY.md`
 
 ### 3.2 Baseline by Capability Cluster
 
@@ -115,26 +115,26 @@ Each feature candidate is scored from 1-5 for the following dimensions:
 
 | Competitor | Capability observed | Evidence URL | Confidence | White Caves implication |
 | --- | --- | --- | --- | --- |
-| Property Finder | PF Expert / agent tooling and product suite | https://www.propertyfinder.com/products/ | High | White Caves needs a clearer broker-facing “control tower” narrative for ops + performance |
-| Property Finder | Consumer app with English/Arabic mobile experience | https://play.google.com/store/apps/details?id=ae.propertyfinder.propertyfinder&hl=en-IN | High | Native mobile remains a parity gap beyond current PWA posture |
-| Property Finder | Monthly rent payments via Keyper integration | https://www.arabianbusiness.com/real-estate/uae-set-for-major-rental-shift-as-property-finder-integrates-monthly-rent-payments-through-keyper | Medium | Flexible rent and resident payment experiences are becoming channel-level expectations |
-| Bayut | Agent-facing solutions hub | https://www.bayut.com/agents/ | High | White Caves should make brokerage value props easier to package and demo |
-| Bayut / ecosystem | Multi-portal + CRM integrations (Property Finder / Bayut / Dubizzle / WhatsApp) | https://pixxicrm.com/integrations | Medium | Syndication depth and inbox orchestration are competitive table stakes |
-| Dubizzle | Pro / property selling workflow | https://www.dubizzle.com/pro/sell/property | High | Listing distribution automation should include cost/performance feedback loops |
-| Yardi AE | Middle East property management positioning | https://www.yardi.ae/ | High | Landlord/tenant operations depth is a serious benchmark for recurring-revenue modules |
-| Yardi Breeze | Cloud property operations and resident workflows | https://www.yardibreeze.com/ | High | White Caves can differentiate with simpler UX plus Dubai-native compliance |
-| RealCube | UAE property / tenant operations platform | https://www.realcube.com | High | Community, resident, and maintenance experiences need stronger productization |
-| SmartCrowd | Fractional real estate investing platform | https://www.smartcrowd.ae/ | High | Investor-facing fractional and portfolio opportunities are strategic whitespace |
-| Zoho CRM | Real-estate-specific CRM offering | https://www.zoho.com/crm/verticals/real-estate/ | High | Workflow blueprints, mobile, and bundled CRM operations remain strong baseline expectations |
-| Zoho CRM | WhatsApp integration | https://www.zoho.com/crm/whatsapp-integration.html | High | WhatsApp is no longer unique by itself; White Caves must win on automation quality and Dubai context |
-| Zoho CRM | Mobile CRM | https://www.zoho.com/crm/mobile/ | High | Native mobile parity gap persists |
-| Zoho CRM | Workflow automation | https://www.zoho.com/crm/features/workflow.html | High | Blueprint-style orchestration could sharpen White Caves role-specific process control |
-| Zoho CRM | AI assistant (Zia) | https://www.zoho.com/crm/features/zia-artificial-intelligence.html | High | White Caves should keep emphasizing domain-specific AI assistants, not generic AI only |
-| Salesforce | Mobile CRM | https://www.salesforce.com/products/mobile/overview/ | High | Enterprise buyers expect full mobile field operations |
-| Salesforce | Flow automation | https://www.salesforce.com/products/platform/flow-automation/ | High | White Caves needs a simpler but clearly visual workflow/control model |
-| Salesforce | Digital engagement + WhatsApp messaging | https://www.salesforce.com/products/service-cloud/features/digital-engagement/ | High | Multi-channel engagement depth matters if WhatsApp policy or delivery risk changes |
-| Salesforce | WhatsApp messaging | https://www.salesforce.com/products/service-cloud/features/whatsapp-messaging/ | High | White Caves should treat WhatsApp as a platform, not just an inbox |
-| Salesforce | Einstein AI | https://www.salesforce.com/products/einstein/overview/ | High | Analytics + AI recommendations should be embedded deeper into daily workflows |
+| Property Finder | PF Expert / agent tooling and product suite | <https://www.propertyfinder.com/products/> | High | White Caves needs a clearer broker-facing “control tower” narrative for ops + performance |
+| Property Finder | Consumer app with English/Arabic mobile experience | <https://play.google.com/store/apps/details?id=ae.propertyfinder.propertyfinder&hl=en-IN> | High | Native mobile remains a parity gap beyond current PWA posture |
+| Property Finder | Monthly rent payments via Keyper integration | <https://www.arabianbusiness.com/real-estate/uae-set-for-major-rental-shift-as-property-finder-integrates-monthly-rent-payments-through-keyper> | Medium | Flexible rent and resident payment experiences are becoming channel-level expectations |
+| Bayut | Agent-facing solutions hub | <https://www.bayut.com/agents/> | High | White Caves should make brokerage value props easier to package and demo |
+| Bayut / ecosystem | Multi-portal + CRM integrations (Property Finder / Bayut / Dubizzle / WhatsApp) | <https://pixxicrm.com/integrations> | Medium | Syndication depth and inbox orchestration are competitive table stakes |
+| Dubizzle | Pro / property selling workflow | <https://www.dubizzle.com/pro/sell/property> | High | Listing distribution automation should include cost/performance feedback loops |
+| Yardi AE | Middle East property management positioning | <https://www.yardi.ae/> | High | Landlord/tenant operations depth is a serious benchmark for recurring-revenue modules |
+| Yardi Breeze | Cloud property operations and resident workflows | <https://www.yardibreeze.com/> | High | White Caves can differentiate with simpler UX plus Dubai-native compliance |
+| RealCube | UAE property / tenant operations platform | <https://www.realcube.com> | High | Community, resident, and maintenance experiences need stronger productization |
+| SmartCrowd | Fractional real estate investing platform | <https://www.smartcrowd.ae/> | High | Investor-facing fractional and portfolio opportunities are strategic whitespace |
+| Zoho CRM | Real-estate-specific CRM offering | <https://www.zoho.com/crm/verticals/real-estate/> | High | Workflow blueprints, mobile, and bundled CRM operations remain strong baseline expectations |
+| Zoho CRM | WhatsApp integration | <https://www.zoho.com/crm/whatsapp-integration.html> | High | WhatsApp is no longer unique by itself; White Caves must win on automation quality and Dubai context |
+| Zoho CRM | Mobile CRM | <https://www.zoho.com/crm/mobile/> | High | Native mobile parity gap persists |
+| Zoho CRM | Workflow automation | <https://www.zoho.com/crm/features/workflow.html> | High | Blueprint-style orchestration could sharpen White Caves role-specific process control |
+| Zoho CRM | AI assistant (Zia) | <https://www.zoho.com/crm/features/zia-artificial-intelligence.html> | High | White Caves should keep emphasizing domain-specific AI assistants, not generic AI only |
+| Salesforce | Mobile CRM | <https://www.salesforce.com/products/mobile/overview/> | High | Enterprise buyers expect full mobile field operations |
+| Salesforce | Flow automation | <https://www.salesforce.com/products/platform/flow-automation/> | High | White Caves needs a simpler but clearly visual workflow/control model |
+| Salesforce | Digital engagement + WhatsApp messaging | <https://www.salesforce.com/products/service-cloud/features/digital-engagement/> | High | Multi-channel engagement depth matters if WhatsApp policy or delivery risk changes |
+| Salesforce | WhatsApp messaging | <https://www.salesforce.com/products/service-cloud/features/whatsapp-messaging/> | High | White Caves should treat WhatsApp as a platform, not just an inbox |
+| Salesforce | Einstein AI | <https://www.salesforce.com/products/einstein/overview/> | High | Analytics + AI recommendations should be embedded deeper into daily workflows |
 
 ---
 
@@ -205,13 +205,13 @@ Each feature candidate is scored from 1-5 for the following dimensions:
 
 ## 8. Recommended Next 2 Waves
 
-> Wave numbering below is proposed only. Wave 17 is already green in `plans/PENDING_TASKS_ONLY.md`.
+> Wave numbering below is proposed only. Wave 17 is already green in `docs/plans/PENDING_TASKS_ONLY.md`.
 
 ### Proposed Wave 18 — Revenue + Trust Acceleration
 
 **Goal:** improve close-rate, listing efficiency, and legal trust with features that reuse existing White Caves foundations.
 
-#### Scope
+#### Scope — Wave 18
 
 1. **W18-1: WhatsApp Cloud Reliability Layer**
    - Retry queue, idempotency, delivery telemetry, template approval state, SLA escalation
@@ -224,7 +224,7 @@ Each feature candidate is scored from 1-5 for the following dimensions:
 5. **W18-5: Market Intelligence MVP Completion**
    - Price index, transaction volume dashboard, RERA rental index visibility, scheduled exports
 
-#### Acceptance Targets
+#### Acceptance Targets — Wave 18
 
 - WhatsApp first-response SLA dashboard live for managers
 - Portal rejection reasons visible per listing and per portal
@@ -236,7 +236,7 @@ Each feature candidate is scored from 1-5 for the following dimensions:
 
 **Goal:** increase customer retention and open new recurring/premium revenue lanes.
 
-#### Scope
+#### Scope — Wave 19
 
 1. **W19-1: Native Mobile Companion App**
    - Agent inbox, appointments, inventory snapshots, push alerts, saved actions
@@ -251,7 +251,7 @@ Each feature candidate is scored from 1-5 for the following dimensions:
 6. **W19-6: Agent Trust / Compliance Scorecards**
    - BRN expiry, listing quality, SLA response, compliance exceptions
 
-#### Acceptance Targets
+#### Acceptance Targets — Wave 19
 
 - Mobile app pilot cohort actively using production workflows
 - Tenant and landlord self-service requests visible end-to-end
@@ -331,24 +331,25 @@ If executed in this order, White Caves can move from “feature-rich internal pl
   - `/home/runner/work/White-Caves/White-Caves/business_docs/08_market_research/competitor_analysis.md`
   - `/home/runner/work/White-Caves/White-Caves/business_docs/08_market_research/technology_upgrades.md`
   - `/home/runner/work/White-Caves/White-Caves/plans/PENDING_TASKS_ONLY.md`
-- External sources captured on 2026-05-25:
-  - https://www.propertyfinder.com/products/
-  - https://play.google.com/store/apps/details?id=ae.propertyfinder.propertyfinder&hl=en-IN
-  - https://www.arabianbusiness.com/real-estate/uae-set-for-major-rental-shift-as-property-finder-integrates-monthly-rent-payments-through-keyper
-  - https://www.bayut.com/agents/
-  - https://www.dubizzle.com/pro/sell/property
-  - https://pixxicrm.com/integrations
-  - https://www.yardi.ae/
-  - https://www.yardibreeze.com/
-  - https://www.realcube.com
-  - https://www.smartcrowd.ae/
-  - https://www.zoho.com/crm/verticals/real-estate/
-  - https://www.zoho.com/crm/whatsapp-integration.html
-  - https://www.zoho.com/crm/mobile/
-  - https://www.zoho.com/crm/features/workflow.html
-  - https://www.zoho.com/crm/features/zia-artificial-intelligence.html
-  - https://www.salesforce.com/products/mobile/overview/
-  - https://www.salesforce.com/products/platform/flow-automation/
-  - https://www.salesforce.com/products/einstein/overview/
-  - https://www.salesforce.com/products/service-cloud/features/digital-engagement/
-  - https://www.salesforce.com/products/service-cloud/features/whatsapp-messaging/
+External sources captured on 2026-05-25:
+
+- <https://www.propertyfinder.com/products/>
+- <https://play.google.com/store/apps/details?id=ae.propertyfinder.propertyfinder&hl=en-IN>
+- <https://www.arabianbusiness.com/real-estate/uae-set-for-major-rental-shift-as-property-finder-integrates-monthly-rent-payments-through-keyper>
+- <https://www.bayut.com/agents/>
+- <https://www.dubizzle.com/pro/sell/property>
+- <https://pixxicrm.com/integrations>
+- <https://www.yardi.ae/>
+- <https://www.yardibreeze.com/>
+- <https://www.realcube.com>
+- <https://www.smartcrowd.ae/>
+- <https://www.zoho.com/crm/verticals/real-estate/>
+- <https://www.zoho.com/crm/whatsapp-integration.html>
+- <https://www.zoho.com/crm/mobile/>
+- <https://www.zoho.com/crm/features/workflow.html>
+- <https://www.zoho.com/crm/features/zia-artificial-intelligence.html>
+- <https://www.salesforce.com/products/mobile/overview/>
+- <https://www.salesforce.com/products/platform/flow-automation/>
+- <https://www.salesforce.com/products/einstein/overview/>
+- <https://www.salesforce.com/products/service-cloud/features/digital-engagement/>
+- <https://www.salesforce.com/products/service-cloud/features/whatsapp-messaging/>

@@ -1,216 +1,86 @@
-# CRM Features & Capabilities
+# CRM Features Index
 
-This folder contains comprehensive documentation of all CRM features, capabilities, and user workflows within the White Caves Platform.
+**Status:** Active  
+**Owner:** Product & Domain Delivery  
+**Last Updated:** 2026-08-02  
+**Source of Truth:** Yes
 
-## 📋 Feature Categories
+This folder is the canonical business-feature index for White Caves CRM modules.
+Use it to navigate feature specifications, operational workflows, and domain-level behavior
+before moving into software design or implementation artifacts.
 
-### Core CRM Features
+## Canonical references
 
-- **Client Management** - Complete client lifecycle management
-- **Lead Tracking** - Lead qualification and pipeline management
-- **Property Management** - Listing, inventory, and availability management
-- **Service Tracking** - Service requests and fulfillment
-- **Transaction Management** - Deal tracking and documentation
+- [`../05_requirements/functional-requirements.md`](../05_requirements/functional-requirements.md)
+- [`../05_requirements/compliance-requirements.md`](../05_requirements/compliance-requirements.md)
+- [`../../software_docs/INDEX.md`](../../software_docs/INDEX.md)
+- [`../../plans/documentation/REQ_CROSSWALK.md`](../../plans/documentation/REQ_CROSSWALK.md)
 
-### AI Assistant Integration
+## Feature lanes
 
-- **Lead Assistant** - Lead scoring and qualification
-- **Property Assistant** - Property recommendations and matching
-- **Analytics Assistant** - Performance and market analysis
+### Core CRM
 
-### Automation Features
+- `client-management.md` — client records, preferences, relationship history
+- `lead-tracking.md` — lead lifecycle, scoring, ownership, and qualification
+- `task-batching-and-priority-grouping.md` — priority-led task batching for the CRM Tasks & Actions experience
+- `property-management.md` — listings, inventory, publication state, and compliance-sensitive fields
+- `sales-pipeline.md` — deal stages, conversion flow, and operational controls
+- `commission-tracking.md` — commission lifecycle and payout controls
 
-- **WhatsApp Integration** - Automated client communication
-- **Email Automation** - Bulk messaging and templates
-- **Workflow Automation** - Task automation and routing
-- **Notification System** - Real-time updates and alerts
+### Compliance, legal, and regulated operations
 
----
+- `trakheesi-integration.md` — permit validation, publication gating, and expiry awareness
+- `legal-management.md` — contracts, legal notices, and signature workflows
+- `dld-integration.md` — DLD/Oqood process and title-transfer contracts
+- `tenancy-ejari.md` — Ejari registration, PDC flow, and tenancy lifecycle governance
 
-## 📈 Feature Status Overview
+### Listing, project, and portfolio operations
 
-| Feature              | Status         | Completion | Priority |
-| -------------------- | -------------- | ---------- | -------- |
-| Client Management    | ✅ Complete    | 100%       | High     |
-| Lead Tracking        | ✅ Complete    | 100%       | High     |
-| Property Management  | ✅ Complete    | 95%        | High     |
-| WhatsApp Integration | 🔄 In Progress | 75%        | High     |
-| Sales Pipeline       | ✅ Complete    | 90%        | High     |
-| AI Assistants        | ✅ Complete    | 90%        | Medium   |
-| Automation           | ⏳ In Progress | 80%        | Medium   |
-| Analytics            | ⏳ In Progress | 75%        | Medium   |
+- `portal-syndication.md` — outbound portal feeds and inbound lead capture expectations
+- `sentinel-property.md` — property state machine, quality scoring, and duplicate detection
+- `off-plan-projects.md` — off-plan inventory, milestone, and payment-plan behavior
+- `landlord-portal.md` / `tenant-portal.md` — portal operating experiences and role-facing workflows
 
----
+### Communication, AI, and automation
 
-## 📚 Feature Documentation Files
+- `whatsapp-integration.md` — message templates, inbox, bot, and broadcast behavior
+- `ai-chat.md` — assistant orchestration, provider fallback, and conversation lifecycle
+- `follow-up-automation.md` — sequence triggers, pause rules, and conversion follow-up logic
+- `email-automation.md` / `marketing-automation.md` — outbound communication and nurture automation
 
-### Essential Features
+### Analytics and executive intelligence
 
-1. **client-management.md** - Client CRUD, history, preferences
-2. **lead-tracking.md** - Lead pipeline, scoring, qualification
-3. **property-management.md** - Properties, listings, inventory
-4. **sales-pipeline.md** - Deal stages, forecasting, conversion controls
+- `analytics-dashboard.md` — KPI dashboards and analytics behavior
+- `agent-performance.md` — productivity and performance metrics
+- `financial-reporting.md` — finance outputs and report contracts
+- `market-analytics.md` / `market-intelligence.md` — market and pricing decision support
 
-### Compliance & Legal Features
+## Supporting workflow references
 
-5. **trakheesi-integration.md** - Trakheesi permit validation, expiry tracking, publication gate (NEW May 2026)
-6. **legal-management.md** - Contract templates, legal notices (Forms 6/7/12), e-signature, RDC dispute filing
-7. **dld-integration.md** - DLD/Oqood off-plan registration, title deed transfer workflow
-8. **tenancy-ejari.md** - Ejari registration, PDC tracking, tenancy lifecycle
+- [`../04_workflows/lead-to-sale-flowchart.md`](../04_workflows/lead-to-sale-flowchart.md)
+- [`../04_workflows/rental-management-flowchart.md`](../04_workflows/rental-management-flowchart.md)
+- [`../04_workflows/finance-reconciliation-flowchart.md`](../04_workflows/finance-reconciliation-flowchart.md)
 
-### Portal & Listing Features
+## Documentation expectations
 
-9. **portal-syndication.md** - PropertyFinder/Bayut/Dubizzle XML feed engine + inbound lead capture (NEW May 2026)
-10. **sentinel-property.md** - Property lifecycle state machine, quality score, duplicate detection
-11. **off-plan-projects.md** - Off-plan project management, payment milestone tracking
+Each feature document should progressively include:
 
-### Advanced Features
+1. feature purpose and business outcome;
+2. user stories or actor roles;
+3. business rules and validation rules;
+4. integration points;
+5. KPI/SLA implications where relevant;
+6. related requirement, workflow, or traceability links.
 
-12. **whatsapp-integration.md** - WhatsApp bot, automation, templates
-13. **ai-chat.md** - AI chat flows, provider fallback, conversation lifecycle
-14. **analytics-dashboard.md** - KPI dashboards and analytics workflows
-15. **follow-up-automation.md** - Trigger-based automation and sequence execution
+## Normalization note
 
-### User Workflow References
+Some files in this folder are legacy package-era or wave-era artifacts (for example package-based
+or wave-draft documents). They may remain useful historically, but active source-of-truth feature
+guidance should prefer the canonical feature specs and linked requirements docs above.
 
-9. **`business_docs/04_workflows/lead-to-sale-flowchart.md`** - Lead-to-close lifecycle
-10. **`business_docs/04_workflows/rental-management-flowchart.md`** - Lease and rental operations
-11. **`business_docs/04_workflows/finance-reconciliation-flowchart.md`** - Month-end finance workflow
+## Related artifacts
 
----
-
-## 🎯 Key Sections in Each Feature Document
-
-All feature documents follow a consistent structure:
-
-1. **Overview** - What is this feature and why it matters
-2. **User Stories** - As a [user], I want to [action], so that [benefit]
-3. **Key Capabilities** - Main functions and capabilities
-4. **User Interface** - Screens, workflows, navigation
-5. **Business Rules** - Rules, validation, constraints
-6. **Integration Points** - How feature integrates with others
-7. **Metrics & KPIs** - Performance indicators
-8. **Related Features** - Dependencies and relationships
-9. **FAQ** - Common questions and answers
-
----
-
-## 🔄 Feature Dependencies
-
-```
-Client Management
-├── Lead Tracking (depends on clients)
-├── Transaction Management (tracks client deals)
-└── Property Management (properties assigned to clients)
-
-Lead Tracking
-├── Client Management (clients are leads)
-├── AI Assistants (lead scoring)
-└── WhatsApp Integration (lead communication)
-
-Transaction Management
-├── Lead Tracking (transactions from leads)
-├── Client Management (tracks client deals)
-└── Analytics (transaction analysis)
-
-WhatsApp Integration
-├── Client Management (send to clients)
-├── Lead Tracking (qualify leads)
-└── Automation (schedule messages)
-```
-
----
-
-## 📊 User Roles & Accessibility
-
-### By User Role
-
-**Agents**
-
-- Access to: Client Management, Lead Tracking, Transaction History
-- Cannot: Manage other agents' data, system configuration
-
-**Managers**
-
-- Access to: All CRM features, team management, reports
-- Cannot: System configuration, user management
-
-**Admin**
-
-- Access to: All features, system configuration, user management
-- Full unrestricted access
-
-**Executives**
-
-- Access to: Dashboards, analytics, strategic reports
-- Cannot: Modify operational data
-
----
-
-## 🚀 Implementation Status
-
-### Phase 1: Core CRM
-
-- ✅ Client Management System
-- ✅ Lead Tracking & Pipeline
-- ✅ Transaction Management System
-- ✅ Property Inventory System
-
-### Phase 2: Integration
-
-- ✅ WhatsApp Bot Integration
-- ✅ Email Automation
-- ✅ Dashboard & Reporting
-
-### Phase 3: AI & Analytics (Current)
-
-- ⏳ AI Assistant Integration
-- ⏳ Advanced Analytics
-- ⏳ Workflow Automation
-
-### Phase 4: Optimization (Planned)
-
-- ⏳ Performance Optimization
-- ⏳ Advanced Reporting
-- ⏳ Custom Workflows
-
----
-
-## 💡 Feature Request Process
-
-To request new features or modifications:
-
-1. **Document**: Create a feature request doc with user stories
-2. **Submit**: Add to feature request checklist
-3. **Review**: Product team evaluates priority
-4. **Implement**: Scheduled in development roadmap
-5. **Deploy**: Release with proper documentation
-
----
-
-## 📞 Support & Questions
-
-For feature-specific questions:
-
-- Consult individual feature documentation
-- Check FAQ section
-- Review business rules
-- Contact product team
-
----
-
-## 🔗 Related Documentation
-
-- **Business Requirements**: `/business_docs/05_requirements/`
-- **Technical Architecture**: `/plans/ARCHITECTURE.md`
-- **API Documentation**: `/plans/API_DOCUMENTATION.md`
-- **UI Components**: Code repository `/src/components/`
-
----
-
-**Version**: 1.0  
-**Last Updated**: February 2026  
-**Maintained By**: Product & Development Teams  
-**Review Cycle**: Monthly
-
-For implementation details, see individual feature files in this folder.
+- Business requirements: [`../05_requirements/`](../05_requirements/)
+- Business workflows: [`../04_workflows/`](../04_workflows/)
+- Software requirements: [`../../software_docs/01_requirements_engineering/functional_specifications.md`](../../software_docs/01_requirements_engineering/functional_specifications.md)
+- Progress dashboard: [`../../plans/PROGRESS_DASHBOARD.md`](../../plans/PROGRESS_DASHBOARD.md)

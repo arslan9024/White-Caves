@@ -330,7 +330,7 @@ A: No legitimate service can guarantee rankings. Focus on sustainable, long-term
 
 ## 🔗 Related Resources
 
-- **Technical Details**: `/plans/ARCHITECTURE.md`
+- **Technical Details**: `docs/software_docs/INDEX.md`
 - **Content Marketing**: Marketing team resources
 - **Analytics**: See analytics section above
 - **CRM Features**: Leads from search

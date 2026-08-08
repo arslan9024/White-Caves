@@ -24,39 +24,40 @@
     "sourceMap": false,
     "jsx": "preserve",
     "baseUrl": ".",
+    "ignoreDeprecations": "6.0",
     "paths": {
       "@/*": [
-        "src/*"
+        "./src/*"
       ],
       "@/components/*": [
-        "src/components/*"
+        "./src/components/*"
       ],
       "@/shared/*": [
-        "src/components/shared/*"
+        "./src/components/shared/*"
       ],
       "@/layouts/*": [
-        "src/layouts/*"
+        "./src/layouts/*"
       ],
       "@/context/*": [
-        "src/context/*"
+        "./src/context/*"
       ],
       "@/locales/*": [
-        "src/locales/*"
+        "./src/locales/*"
       ],
       "@/mocks/*": [
-        "src/mocks/*"
+        "./src/mocks/*"
       ],
       "@/store/*": [
-        "src/store/*"
+        "./src/store/*"
       ],
       "@/hooks/*": [
-        "src/hooks/*"
+        "./src/hooks/*"
       ],
       "@/server/*": [
-        "server/*"
+        "./server/*"
       ],
       "@/lib/*": [
-        "src/lib/*"
+        "./src/lib/*"
       ]
     },
     "types": [

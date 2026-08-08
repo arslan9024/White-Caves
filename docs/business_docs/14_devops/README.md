@@ -8,12 +8,12 @@ DevOps documentation index for the White Caves Real Estate platform covering CI/
 
 ## Documents in This Section
 
-| File                          | Description                                                   |
-| ----------------------------- | ------------------------------------------------------------- |
-| `deployment-runbook.md`       | Step-by-step deployment procedures for all environments       |
-| `environment-setup.md`        | Environment configuration and local development setup         |
-| `incident-response.md`        | Incident classification, escalation, and resolution playbooks |
-| `monitoring-observability.md` | Monitoring stack, alerting rules, and observability strategy  |
+| File | Description |
+| --- | --- |
+| `deployment-runbook.md` | Step-by-step deployment procedures for all environments |
+| `environment-setup.md` | Environment configuration and local development setup |
+| `incident-response.md` | Incident classification, escalation, and resolution playbooks |
+| `monitoring-observability.md` | Monitoring stack, alerting rules, and observability strategy |
 
 ---
 
@@ -21,7 +21,7 @@ DevOps documentation index for the White Caves Real Estate platform covering CI/
 
 ### Branch Model
 
-```
+```text
 main (production, monthly release-only)
 └── development (daily integration branch)
     ├── feature/*
@@ -42,14 +42,14 @@ main (production, monthly release-only)
 
 ## CI/CD Pipeline
 
-| Stage                  | Tool                      | Trigger                                    |
-| ---------------------- | ------------------------- | ------------------------------------------ |
-| Lint                   | ESLint + Prettier         | PR to `development` and monthly release PR |
-| Type Check             | TypeScript `tsc --noEmit` | PR to `development` and monthly release PR |
-| Unit/Integration Tests | Vitest/Jest               | PR to `development` and monthly release PR |
-| Build                  | Vite + server build       | PR to `development` and monthly release PR |
-| E2E Smoke              | Playwright                | monthly release PR + pre-prod validation   |
-| Security Scan          | npm audit + SAST          | monthly release PR                         |
+| Stage | Tool | Trigger |
+| --- | --- | --- |
+| Lint | ESLint + Prettier | PR to `development` and monthly release PR |
+| Type Check | TypeScript `tsc --noEmit` | PR to `development` and monthly release PR |
+| Unit/Integration Tests | Vitest/Jest | PR to `development` and monthly release PR |
+| Build | Vite + server build | PR to `development` and monthly release PR |
+| E2E Smoke | Playwright | monthly release PR + pre-prod validation |
+| Security Scan | npm audit + SAST | monthly release PR |
 
 ### Required Monthly Release Gates
 
@@ -63,11 +63,11 @@ main (production, monthly release-only)
 
 ## Environment Promotion
 
-| Environment | Branch Source                        | Deploy Mode            |
-| ----------- | ------------------------------------ | ---------------------- |
-| Development | `development`                        | frequent/continuous    |
-| Staging     | release candidate from `development` | pre-release validation |
-| Production  | `main`                               | monthly release window |
+| Environment | Branch Source | Deploy Mode |
+| --- | --- | --- |
+| Development | `development` | frequent/continuous |
+| Staging | release candidate from `development` | pre-release validation |
+| Production | `main` | monthly release window |
 
 ---
 
@@ -89,3 +89,8 @@ In SEV-1/SEV-2 events, prioritize service restoration first, then complete gover
 - production validation,
 - back-merge to `development`,
 - post-incident review.
+
+## Related business-side governance
+
+- [Business Release and Incident Communication SOP](../15_release_management/business-release-and-incident-communication-sop.md)
+- [Quarterly Market and Regulatory Review](../08_integrations_and_research/quarterly-market-and-regulatory-review.md)

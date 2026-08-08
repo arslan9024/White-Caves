@@ -479,4 +479,7 @@ export async function logout(): Promise<void> {
   }
   clearToken();
   safeStorage.remove('userRole');
+  safeStorage.remove('user');
+  safeStorage.remove('loginProvider');
+  safeStorage.remove('rememberMe');
 }

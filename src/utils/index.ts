@@ -90,6 +90,68 @@ export const formatPrice = (
 };
 
 /**
+ * Create a normalized registry by consolidating duplicate records under a stable identity key.
+ * Records are merged so the first non-empty value wins and duplicates increment a priority score.
+ */
+export function createNormalizedRegistry<T extends Record<string, unknown>>(
+  items: T[],
+  identityKey: keyof T,
+): Array<T & { normalizedKey: string; priority: number }> {
+  const registry = new Map<string, T & { normalizedKey: string; priority: number }>();
+
+  for (const item of items) {
+    const rawValue = item[identityKey];
+    const normalizedKey = typeof rawValue === 'string'
+      ? rawValue.trim().toLowerCase()
+      : String(rawValue ?? '').trim().toLowerCase();
+
+    if (!normalizedKey) continue;
+
+    const existing = registry.get(normalizedKey);
+
+    if (!existing) {
+      registry.set(normalizedKey, {
+        ...item,
+        normalizedKey,
+        priority: 1,
+      } as T & { normalizedKey: string; priority: number });
+      continue;
+    }
+
+    existing.priority += 1;
+
+    for (const [field, value] of Object.entries(item)) {
+      if (field === String(identityKey) || field === 'normalizedKey' || field === 'priority') {
+        continue;
+      }
+
+      const targetField = field as keyof typeof existing;
+      const currentValue = existing[targetField];
+
+      if (currentValue == null && value != null) {
+        existing[targetField] = value as never;
+      } else if (
+        typeof currentValue === 'string' &&
+        typeof value === 'string' &&
+        currentValue.trim() === ''
+      ) {
+        existing[targetField] = value as never;
+      } else if (
+        typeof currentValue === 'number' &&
+        typeof value === 'number' &&
+        value > currentValue
+      ) {
+        existing[targetField] = value as never;
+      }
+    }
+  }
+
+  return Array.from(registry.values()).sort(
+    (a, b) => b.priority - a.priority || a.normalizedKey.localeCompare(b.normalizedKey),
+  );
+}
+
+/**
  * Validate email
  */
 export { isValidEmail } from './validation';

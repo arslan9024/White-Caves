@@ -192,6 +192,10 @@ v{MAJOR}.{MINOR}.{PATCH}[-{prerelease}]
 
 ## 5. Rollback Procedures
 
+### Business-side communication add-on
+- [Business Release and Incident Communication SOP](business-release-and-incident-communication-sop.md)
+
+
 ### Rollback Decision Matrix
 
 | Scenario | Action | RTO | Data Impact |

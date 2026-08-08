@@ -60,6 +60,7 @@ vi.mock('../../config/firebase', () => ({
   signOut: (...args: unknown[]) => mockSignOut(...args),
   signInWithPhone: vi.fn(),
   createRecaptchaVerifier: vi.fn(),
+  handleRedirectResult: vi.fn().mockResolvedValue(null),
 }));
 
 const mockBackendLogin = vi.fn();
@@ -564,7 +565,7 @@ describe('SignInPage', () => {
       });
 
       await waitFor(() => {
-        expect(mockNavigate).toHaveBeenCalledWith('/crm');
+        expect(mockNavigate).toHaveBeenCalledWith('/crm', { replace: true });
       });
     });
 

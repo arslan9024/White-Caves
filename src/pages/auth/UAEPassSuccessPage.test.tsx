@@ -7,7 +7,7 @@
  */
 
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
-import { render, screen, fireEvent, waitFor } from '@testing-library/react';
+import { render, screen, fireEvent, waitFor, act } from '@testing-library/react';
 import React from 'react';
 
 // ── Mocks ────────────────────────────────────────────────────────
@@ -15,6 +15,8 @@ import React from 'react';
 const mockNavigate = vi.fn();
 const mockAuthFetch = vi.fn();
 const mockDispatch = vi.fn();
+const mockFinalizeAuthenticatedSession = vi.fn();
+const mockNavigateToPostLoginDestination = vi.fn();
 let mockSearchParams = new URLSearchParams('code=AUTH_CODE_123&state=STATE_456');
 
 vi.mock('react-router-dom', async () => {
@@ -43,6 +45,14 @@ vi.mock('../../utils/authFetch', () => ({
   authFetch: (...args: unknown[]) => mockAuthFetch(...args),
 }));
 
+vi.mock('../../utils/authSession', () => ({
+  finalizeAuthenticatedSession: (...args: unknown[]) => mockFinalizeAuthenticatedSession(...args),
+  navigateToPostLoginDestination: (navigate: (path: string, options?: unknown) => void, destination: string, replace = true) => {
+    mockNavigateToPostLoginDestination(navigate, destination, replace);
+    navigate(destination);
+  },
+}));
+
 vi.mock('../../utils/logger', () => ({
   createLogger: () => ({
     info: vi.fn(), warn: vi.fn(), error: vi.fn(), debug: vi.fn(),
@@ -69,6 +79,10 @@ describe('UAEPassSuccessPage', () => {
   beforeEach(() => {
     vi.clearAllMocks();
     mockSearchParams = new URLSearchParams('code=AUTH_CODE_123&state=STATE_456');
+    mockFinalizeAuthenticatedSession.mockReturnValue('/profile');
+    mockNavigateToPostLoginDestination.mockImplementation((navigate: (path: string, options?: unknown) => void, destination: string) => {
+      navigate(destination);
+    });
     mockAuthFetch.mockResolvedValue({
       ok: true,
       json: () => Promise.resolve(mockUserData),
@@ -123,18 +137,39 @@ describe('UAEPassSuccessPage', () => {
       expect(await screen.findByText('+971 50 123 4567')).toBeInTheDocument();
     });
 
-    it('dispatches setUser to Redux store', async () => {
+    it('finalizes the authenticated session through shared authSession logic', async () => {
       render(<UAEPassSuccessPage />);
       await screen.findByText('Welcome!');
-      expect(mockDispatch).toHaveBeenCalledWith({
-        type: 'user/setUser',
-        payload: {
-          id: '784-XXXX-XXXXXXX-X',
-          email: 'ahmed@test.ae',
-          name: 'Ahmed Al-Maktoum',
-          phone: '+971 50 123 4567',
-        },
+      await waitFor(() => {
+        expect(mockFinalizeAuthenticatedSession).toHaveBeenCalledWith(
+          expect.objectContaining({
+            dispatch: mockDispatch,
+            user: expect.objectContaining({
+              email: 'ahmed@test.ae',
+              name: 'Ahmed Al-Maktoum',
+            }),
+            provider: 'uae-pass',
+          }),
+        );
       });
+    });
+
+    it('uses the resolved post-login destination returned by authSession', async () => {
+      vi.useFakeTimers();
+      try {
+        mockFinalizeAuthenticatedSession.mockReturnValue('/tenant-portal');
+        render(<UAEPassSuccessPage />);
+        await act(async () => {
+          await Promise.resolve();
+        });
+        expect(screen.getByText('Welcome!')).toBeInTheDocument();
+        await act(async () => {
+          vi.advanceTimersByTime(3000);
+        });
+        expect(mockNavigateToPostLoginDestination).toHaveBeenCalledWith(expect.any(Function), '/tenant-portal', true);
+      } finally {
+        vi.useRealTimers();
+      }
     });
 
     it('shows redirect message', async () => {
@@ -155,13 +190,21 @@ describe('UAEPassSuccessPage', () => {
     });
 
     it('auto-redirects to profile after successful auth', async () => {
-      render(<UAEPassSuccessPage />);
-      await screen.findByText('Welcome!');
-      // Wait for the 3-second redirect timer to fire
-      await waitFor(() => {
+      vi.useFakeTimers();
+      try {
+        render(<UAEPassSuccessPage />);
+        await act(async () => {
+          await Promise.resolve();
+        });
+        expect(screen.getByText('Welcome!')).toBeInTheDocument();
+        await act(async () => {
+          vi.advanceTimersByTime(3000);
+        });
         expect(mockNavigate).toHaveBeenCalledWith('/profile');
-      }, { timeout: 5000 });
-    }, 10000);
+      } finally {
+        vi.useRealTimers();
+      }
+    });
   });
 
   // ────── API Call ──────

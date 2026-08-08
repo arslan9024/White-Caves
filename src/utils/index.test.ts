@@ -4,6 +4,7 @@ import {
   formatCurrency,
   formatCurrencyAbbreviated,
   formatPrice,
+  createNormalizedRegistry,
 } from './index';
 
 // ═══════════════════════════════════════════════════════════════════════
@@ -151,6 +152,51 @@ describe('utils/index', () => {
     it('priceType takes precedence over unit', () => {
       const result = formatPrice(8000, { priceType: 'month', unit: 'per sqft' });
       expect(result).toContain('/month');
+    });
+  });
+
+  describe('createNormalizedRegistry', () => {
+    it('deduplicates by normalized identity and preserves the strongest non-empty values', () => {
+      const rows = [
+        { id: 'A-1', name: 'Alice', region: 'Dubai', score: 10 },
+        { id: 'A-2', name: 'Bob', region: 'Abu Dhabi', score: 8 },
+        { id: 'A-1', name: 'Alice', region: '', score: 12 },
+      ];
+
+      const result = createNormalizedRegistry(rows, 'id');
+
+      expect(result).toHaveLength(2);
+      expect(result[0]).toMatchObject({
+        id: 'A-1',
+        name: 'Alice',
+        region: 'Dubai',
+        score: 12,
+        normalizedKey: 'a-1',
+        priority: 2,
+      });
+      expect(result[1]).toMatchObject({
+        id: 'A-2',
+        name: 'Bob',
+        region: 'Abu Dhabi',
+        score: 8,
+        normalizedKey: 'a-2',
+        priority: 1,
+      });
+    });
+
+    it('ignores blank identity values and sorts by priority then key', () => {
+      const rows = [
+        { id: '  ', name: 'Empty', region: 'Dubai' },
+        { id: 'B-9', name: 'Beta', region: 'Sharjah' },
+        { id: 'A-4', name: 'Alpha', region: 'Ajman' },
+      ];
+
+      const result = createNormalizedRegistry(rows, 'id');
+
+      expect(result).toHaveLength(2);
+      expect(result[0].normalizedKey).toBe('a-4');
+      expect(result[1].normalizedKey).toBe('b-9');
+      expect(result[0].priority).toBe(1);
     });
   });
 

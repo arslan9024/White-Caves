@@ -6,7 +6,7 @@
 **CRM Module:** DLD Integration layer (`server/routes/compliance.ts` + `server/services/dld/`)  
 **API Base:** `/api/compliance/dld`, external DLD REST API  
 **CONSUMES:** `business_docs/05_requirements/compliance-requirements.md`  
-**FEEDS:** `plans/waves/WAVE_25_IMPLEMENTATION_BACKLOG.md`  
+**FEEDS:** `docs/plans/waves/WAVE_25_IMPLEMENTATION_BACKLOG.md`  
 **FEEDS_ACK:** @Ada (Chief Architect) + @Margaret (Strategic Planner) — 2026-07-22
 
 ---
@@ -79,7 +79,7 @@ The DLD Integration connects White Caves Real Estate LLC CRM to the Dubai Land D
 
 ## 4. Title Deed Transfer Workflow & Settlement Checkpoints
 
-```
+```text
 ┌────────────────────────────────────────────────────────────────────────────────────────┐
 │ STEP 1: CREATE TRANSFER REQUEST IN CRM (Attach Buyer/Seller KYC)                      │
 ├────────────────────────────────────────────────────────────────────────────────────────┤

@@ -63,3 +63,21 @@
 | DOC-31-006 | P1       | software_docs | Add software documentation upgrade roadmap tied to Wave 31/Wave 32 planning dependency chain                                                | ✅ Complete |
 
 **Dependency Note:** Wave 31 implementation execution should continue only against canonical documents under `docs/` after DOC-31-001..006 are complete and validated.
+
+## 📈 Wave 32 — Documentation Governance & Progress Intelligence Queue
+
+| Task ID | Priority | Stream | Task | Status |
+| --- | --- | --- | --- | --- |
+| W32-001 | P0 | business_docs | Normalize `docs/business_docs/README.md` as canonical business entrypoint and remove stale navigation drift | ✅ Complete |
+| W32-002 | P0 | software_docs | Normalize `docs/software_docs/INDEX.md` and `docs/software_docs/adr/README.md` with canonical/historical separation | ✅ Complete |
+| W32-003 | P0 | plans | Publish `docs/plans/PROGRESS_DASHBOARD.md` with status, lanes, and uplift KPI framing | ✅ Complete |
+| W32-004 | P0 | plans | Publish `docs/plans/WAVE_PROGRESS_SUMMARY.md` with active/planned wave summary and contradiction cleanup notes | ✅ Complete |
+| W32-005 | P1 | plans | Create requirement crosswalk seed between business requirement IDs and software realization IDs | ✅ Complete |
+| W32-006 | P1 | plans | Create RBAC role-to-level bridge between business role catalogs and software access levels | ✅ Complete |
+| W32-007 | P1 | plans | Create SLA reconciliation matrix bridging business promises and software timers | ✅ Complete |
+| W32-008 | P1 | plans | Create compliance control matrix linking `COMP-*` controls to design/test surfaces | ✅ Complete |
+| W32-009 | P0 | project_progress | Reconcile `PROJECT_PROGRESS.md` with actual wave reality and remove false full-completion claims | ✅ Complete |
+| W32-010 | P0 | plans | Sync `MASTER_PLAN.md`, `PENDING_TASKS_ONLY.md`, and `waves/README.md` to include Wave 32 | ✅ Complete |
+| W32-011 | P1 | business_docs | Normalize `docs/business_docs/09_crm_features/README.md` and align it to canonical requirements/software traceability links | ✅ Complete |
+| W32-012 | P1 | software_docs | Add canonical traceability framing to `functional_specifications.md` and `rbac_state_gating.md` | ✅ Complete |
+| W32-013 | P0 | business_docs | Run dedicated structural normalization pass for `docs/business_docs/05_requirements/functional-requirements.md` to resolve large markdown-format debt while preserving requirement IDs | ✅ Complete |

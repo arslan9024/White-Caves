@@ -35,6 +35,11 @@ Each wave should be executed only in roadmap order.
 | 29   | Advanced PWA Offline Write & Conflict-Free Replicated Data Engine           | ✅ Complete | —                         | —                                            | [`Backlog`](./WAVE_29_IMPLEMENTATION_BACKLOG.md) | —                                    |
 | 30   | AI Predictive UX & Auto-Form Pre-Fill Engine                                | ✅ Complete | —                         | —                                            | [`Backlog`](./WAVE_30_IMPLEMENTATION_BACKLOG.md) | —                                    |
 | 31   | Corporate credentials & compliance automation                               | 📋 Planned  | [`SDD`](./WAVE_31_SDD.md) | [`Readiness`](./WAVE_31_READINESS_PACKET.md) | [`Backlog`](./WAVE_31_IMPLEMENTATION_BACKLOG.md) | [`Tests`](./WAVE_31_TEST_ROLLOUT.md) |
+| 32   | Documentation governance, traceability & progress intelligence              | 📋 Planned  | [`SDD`](./WAVE_32_SDD.md) | [`Readiness`](./WAVE_32_READINESS_PACKET.md) | [`Backlog`](./WAVE_32_IMPLEMENTATION_BACKLOG.md) | [`Tests`](./WAVE_32_TEST_ROLLOUT.md) |
+
+### Current documentation governance highlight
+
+- CRM task batching is now documented as a canonical business/software/planning traceability item via [../business_docs/09_crm_features/task-batching-and-priority-grouping.md](../business_docs/09_crm_features/task-batching-and-priority-grouping.md) and [../software_docs/02_software_design/crm_task_batching_design.md](../software_docs/02_software_design/crm_task_batching_design.md).
 
 ## Notes
 
@@ -48,3 +53,4 @@ Each wave should be executed only in roadmap order.
 - Wave 17 (Full UI/UX Luxury Upgrade) is implemented and validated; see the Wave 17 bundle docs for closeout details.
 - **Waves 20–22 added June 2026:** Full leasing & tenancy lifecycle (Wave 20), UAE VAT + commission engine (Wave 21), and market intelligence + off-plan + advanced analytics (Wave 22). Each has SDD, readiness packet, and full implementation backlog. Entry gates follow standard approval phrase sequence.
 - **Waves 23–25 added June 2026:** Mobile CRM + PWA offline + push (Wave 23), WhatsApp automation + AI chat + notification centre (Wave 24), and portal syndication + careers + community management + advanced SEO (Wave 25). All three waves have full four-artifact bundles (SDD, readiness, backlog, test rollout). Entry gates follow the standard approval phrase sequence. Wave 23 readiness is 72%, Wave 24 is 78%, Wave 25 is 75% — all above the 60% unlock threshold.
+- **Wave 32 added August 2026:** Documentation governance, cross-domain traceability, and progress-intelligence visualization. This wave runs as a parallel governance lane to clean entrypoints, publish dashboard artifacts, and reconcile tracker contradictions.

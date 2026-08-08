@@ -1,13 +1,22 @@
 # Plans Index
 
-**Last Updated:** 2026-08-02
+**Last Updated:** 2026-08-03
 
 ## Start Here (Canonical)
 
 - [`MASTER_PLAN.md`](./MASTER_PLAN.md)
+- [`MASTER_PLAN_36X_600_DETAIL.md`](./MASTER_PLAN_36X_600_DETAIL.md)
 - [`PENDING_TASKS_ONLY.md`](./PENDING_TASKS_ONLY.md)
+- [`WAVE_33_132_EXECUTION_MATRIX.md`](./WAVE_33_132_EXECUTION_MATRIX.md)
 - [`waves/README.md`](./waves/README.md)
 - [`PLANNING_GOVERNANCE.md`](./PLANNING_GOVERNANCE.md)
+- [`INCEPTION_EXIT_READINESS_SCORECARD.md`](./INCEPTION_EXIT_READINESS_SCORECARD.md)
+- [`INCEPTION_OPEN_DECISIONS_AND_ASSUMPTIONS_2026-08-03.md`](./INCEPTION_OPEN_DECISIONS_AND_ASSUMPTIONS_2026-08-03.md)
+- [`INCEPTION_SCOPE_BOUNDARY_DECISION_PACKET.md`](./INCEPTION_SCOPE_BOUNDARY_DECISION_PACKET.md)
+- [`INCEPTION_BUSINESS_REQUIREMENTS_USECASE_AUDIT_2026-08-03.md`](./INCEPTION_BUSINESS_REQUIREMENTS_USECASE_AUDIT_2026-08-03.md)
+- [`INCEPTION_FINAL_SIGNOFF_MEMO_2026-08-03.md`](./INCEPTION_FINAL_SIGNOFF_MEMO_2026-08-03.md)
+- [`session_exports/README.md`](./session_exports/README.md)
+- [`session_exports/SESSION_EXPORT_2026-08-03.md`](./session_exports/SESSION_EXPORT_2026-08-03.md)
 
 ---
 
@@ -46,4 +55,5 @@
 
 - Business completeness source: [`../business_docs/README.md`](../business_docs/README.md)
 - Software project-management source: [`../software_docs/INDEX.md`](../software_docs/INDEX.md)
+- Cross-doc consistency authority: [`../software_docs/DOCS_INTEGRATION_AND_CONSISTENCY_SYSTEM_2026-08-03.md`](../software_docs/DOCS_INTEGRATION_AND_CONSISTENCY_SYSTEM_2026-08-03.md)
 - Governance validation: `npm run plans:validate`

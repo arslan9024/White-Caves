@@ -558,32 +558,102 @@ export function useSignIn() {
         setError(googleAuthUnavailableMessage);
         return;
       }
+
+      if (!isSupportedSocialProvider(provider)) {
+        setSocialSyncRecovery(null);
+        setSocialRetryAttempts(0);
+        setError('Invalid provider');
+        setLoading(false);
+        return;
+      }
+
       setLoading(true);
       setError('');
       try {
-        if (!isSupportedSocialProvider(provider)) {
-          throw new Error('Invalid provider');
+        let firebaseResult: {
+          user: {
+            uid: string;
+            email: string | null;
+            displayName: string | null;
+            photoURL: string | null;
+            getIdToken?: (forceRefresh?: boolean) => Promise<string>;
+          };
+        } | null = null;
+
+        try {
+          switch (provider) {
+            case 'google':
+              firebaseResult = (await signInWithGoogle()) as typeof firebaseResult;
+              break;
+            case 'facebook':
+              firebaseResult = (await signInWithFacebook()) as typeof firebaseResult;
+              break;
+            case 'apple':
+              firebaseResult = (await signInWithApple()) as typeof firebaseResult;
+              break;
+            default:
+              throw new Error('Invalid provider');
+          }
+        } catch (providerError: unknown) {
+          const providerMessage = normalizeSocialAuthErrorMessage(providerError, provider);
+          setSocialSyncRecovery(null);
+          setSocialRetryAttempts(0);
+          setError(providerMessage);
+          setLoading(false);
+          return;
         }
 
-        switch (provider) {
-          case 'google':
-            await signInWithGoogle();
-            break;
-          case 'facebook':
-            await signInWithFacebook();
-            break;
-          case 'apple':
-            await signInWithApple();
-            break;
-          default:
-            throw new Error('Invalid provider');
+        if (!firebaseResult?.user) {
+          setLoading(false);
+          return;
+        }
+
+        const firebaseUser = firebaseResult.user;
+        const backendResponse = await syncFirebaseUser(firebaseUser);
+
+        if (!backendResponse?.data?.user) {
+          throw new Error('Invalid backend response: missing user data');
+        }
+
+        const backendUser = backendResponse.data.user;
+        setSocialSyncRecovery(null);
+        setSocialRetryAttempts(0);
+        setError('');
+
+        if (mode === 'signup') {
+          if (isSuperuserEmail(backendUser.email)) {
+            handleSignInSuccess({
+              ...backendUser,
+              role: 'managing_director',
+              status: 'active',
+              photoUrl: backendUser.photoUrl || firebaseUser.photoURL,
+              displayName: backendUser.name || firebaseUser.displayName,
+            });
+          } else {
+            handleSignUpSuccess(backendUser, { fromSocialProvider: provider });
+          }
+        } else {
+          handleSignInSuccess({
+            ...backendUser,
+            photoUrl: backendUser.photoUrl || firebaseUser.photoURL,
+            displayName: backendUser.name || firebaseUser.displayName,
+            role: isSuperuserEmail(backendUser.email)
+              ? 'managing_director'
+              : backendUser.role,
+            status: isSuperuserEmail(backendUser.email) ? 'active' : backendUser.status,
+          });
         }
       } catch (err: unknown) {
-        setError(normalizeSocialAuthErrorMessage(err, provider));
+        const syncMessage =
+          err instanceof Error && err.message.trim()
+            ? err.message.trim()
+            : 'Unable to complete authentication sync';
+        setSocialSyncRecovery({ provider: provider as SupportedSocialProvider, reason: syncMessage });
+        setError(`backend session setup failed: ${syncMessage}`);
         setLoading(false);
       }
     },
-    [googleAuthUnavailableMessage]
+    [googleAuthUnavailableMessage, handleSignInSuccess, handleSignUpSuccess, mode]
   );
 
   const retrySocialAuth = useCallback(async (): Promise<void> => {
@@ -591,10 +661,13 @@ export function useSignIn() {
       return;
     }
 
-    if (socialRetryAttempts >= MAX_SOCIAL_RETRY_ATTEMPTS) {
+    const nextAttemptCount = socialRetryAttempts + 1;
+    if (nextAttemptCount > MAX_SOCIAL_RETRY_ATTEMPTS) {
       setError('Retry limit reached. Please switch to email login or try again later.');
       return;
     }
+
+    setSocialRetryAttempts(nextAttemptCount);
 
     if (socialSyncRecovery.provider === 'google' && firebaseAuth?.currentUser) {
       setLoading(true);
@@ -635,7 +708,6 @@ export function useSignIn() {
             ? syncError.message.trim()
             : 'Unable to complete authentication sync';
 
-        setSocialRetryAttempts(prev => prev + 1);
         setSocialSyncRecovery({ provider: 'google', reason: syncMessage });
 
         if (shouldClearFirebaseSessionAfterSyncFailure(syncMessage)) {
@@ -654,7 +726,11 @@ export function useSignIn() {
       return;
     }
 
-    await handleSocialAuth(socialSyncRecovery.provider, { isRetry: true });
+    try {
+      await handleSocialAuth(socialSyncRecovery.provider, { isRetry: true });
+    } catch {
+      // noop; handleSocialAuth already surfaces errors in state
+    }
   }, [
     handleSignInSuccess,
     handleSignUpSuccess,

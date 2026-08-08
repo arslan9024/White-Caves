@@ -31,10 +31,17 @@
 
 ## 3) Priority HR Policy Upgrades
 
-1. Add `HR_LEAVE_POLICY.md` (entitlements, approvals, SLA)
-2. Add `HR_PERFORMANCE_POLICY.md` (KPIs, review cadence, PIP workflow)
-3. Add `HR_DISCIPLINARY_POLICY.md` (violation classes, response matrix)
-4. Add `HR_OFFBOARDING_POLICY.md` (access revocation + asset recovery + compliance closeout)
+1. Add `HR_LEAVE_POLICY.md` (entitlements, approvals, SLA) — completed
+2. Add `HR_PERFORMANCE_POLICY.md` (KPIs, review cadence, PIP workflow) — completed
+3. Add `HR_DISCIPLINARY_POLICY.md` (violation classes, response matrix) — completed
+4. Add `HR_OFFBOARDING_POLICY.md` (access revocation + asset recovery + compliance closeout) — completed
+
+## 4) Canonical Policy Entry Points
+
+- [HR Leave Policy](01_company_structure/HR_LEAVE_POLICY.md)
+- [HR Performance Management Policy](01_company_structure/HR_PERFORMANCE_POLICY.md)
+- [HR Disciplinary and Escalation Policy](01_company_structure/HR_DISCIPLINARY_POLICY.md)
+- [HR Offboarding Policy](01_company_structure/HR_OFFBOARDING_POLICY.md)
 
 ---
 

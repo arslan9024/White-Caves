@@ -127,7 +127,7 @@ vi.mock('./pages/auth/UAEPassSuccessPage', () => ({
   default: () => <div data-testid="uaepass-page">UAE Pass</div>,
 }));
 
-vi.mock('./pages/UnifiedDashboardPage', () => ({
+vi.mock('./pages/crm/UnifiedDashboardPage', () => ({
   default: () => <div data-testid="dashboard-page">Dashboard</div>,
 }));
 
@@ -226,6 +226,10 @@ vi.mock('./components/RoleGateway', () => ({
 // Mock optional components (can fail to load)
 vi.mock('./components/layout/UniversalComponents', () => ({
   default: () => <div data-testid="universal-components" />,
+}));
+
+vi.mock('./layouts/UnifiedWorkspaceLayout', () => ({
+  UnifiedWorkspaceLayout: ({ children }: any) => <div data-testid="workspace-layout">{children}</div>,
 }));
 
 vi.mock('./features/auth/components/BiometricLogin', () => ({
@@ -525,6 +529,17 @@ describe('App', () => {
     await waitFor(() => {
       expect(screen.getByTestId('profile-page')).toBeInTheDocument();
     });
+  });
+
+  it('wraps the profile route in the workspace layout when signed in', async () => {
+    mockReduxState.currentUser = { id: '1', role: 'buyer', email: 'test@test.com' };
+    await act(async () => {
+      renderAtRoute('/profile');
+    });
+    await waitFor(() => {
+      expect(screen.getByTestId('profile-page')).toBeInTheDocument();
+    });
+    expect(screen.getByTestId('workspace-layout')).toBeInTheDocument();
   });
 
   // ── Auth Initialization ──

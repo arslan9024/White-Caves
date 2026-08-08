@@ -35,6 +35,12 @@
 - **Average Team Performance**: 88%
 - **System Uptime Target**: 99.9%
 
+## Workforce policy entrypoints
+- [HR Leave Policy](HR_LEAVE_POLICY.md)
+- [HR Performance Management Policy](HR_PERFORMANCE_POLICY.md)
+- [HR Disciplinary and Escalation Policy](HR_DISCIPLINARY_POLICY.md)
+- [HR Offboarding Policy](HR_OFFBOARDING_POLICY.md)
+
 ## Integration Points
 - **Integrated AI Assistants**: 24 documented personas (14 core + 10 specialized)
 - **Primary Communication Channel**: WhatsApp (Nadia, Nina bots)

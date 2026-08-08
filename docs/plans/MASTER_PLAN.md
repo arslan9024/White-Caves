@@ -5,6 +5,7 @@
 > **Brand Palette Lockdown:** White Caves Red (`#EF4444`) | Crisp White (`#FFFFFF`) | Deep Slate Gray (`#1E293B`)  
 > **Architecture Pattern:** View-Logic-Style 3-Folder Component Isolation (`*.tsx`, `*.logic.ts`, `*.style.ts`)  
 > **Active Wave Backlog:** [WAVE_31_IMPLEMENTATION_BACKLOG.md](./waves/WAVE_31_IMPLEMENTATION_BACKLOG.md) (Wave 31 - planned)  
+> **Parallel Governance Wave:** [WAVE_32_IMPLEMENTATION_BACKLOG.md](./waves/WAVE_32_IMPLEMENTATION_BACKLOG.md) (Documentation governance + progress intelligence)
 > **Last Updated:** 2026-08-02
 
 ---
@@ -18,6 +19,22 @@ Documentation structure is confirmed and normalized to:
 - `docs/software_docs/` (software architecture + PM authority)
 
 Legacy root-level `plans/`, `business_docs/`, and `software_docs/` are treated as non-canonical unless explicitly restored for compatibility. All roadmap and readiness updates must be written to the `docs/` hierarchy first.
+
+## 📌 Active Documentation Governance Parallel Track (2026-08-02)
+
+Wave 32 is registered as a parallel documentation-governance and progress-intelligence lane to:
+
+- normalize business/software documentation entrypoints;
+- publish visual progress reporting artifacts;
+- create initial cross-domain traceability bridges; and
+- reconcile tracker contradictions before broader documentation expansion.
+
+Primary artifacts:
+
+- [`./waves/WAVE_32_SDD.md`](./waves/WAVE_32_SDD.md)
+- [`./waves/WAVE_32_READINESS_PACKET.md`](./waves/WAVE_32_READINESS_PACKET.md)
+- [`./waves/WAVE_32_IMPLEMENTATION_BACKLOG.md`](./waves/WAVE_32_IMPLEMENTATION_BACKLOG.md)
+- [`./waves/WAVE_32_TEST_ROLLOUT.md`](./waves/WAVE_32_TEST_ROLLOUT.md)
 
 ---
 

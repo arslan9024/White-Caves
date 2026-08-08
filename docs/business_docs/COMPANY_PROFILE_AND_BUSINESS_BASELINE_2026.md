@@ -68,6 +68,13 @@ Owners should review trend shifts quarterly and update policy/requirements backl
 - **Quarterly:** market + compliance + service model update
 - **Semi-annual:** policy stack harmonization (HR/legal/privacy/security)
 
+## 6) New Governance Additions
+
+- HR policy entrypoints are now consolidated through [HR Policy & Workforce Index](HR_POLICY_AND_WORKFORCE_INDEX_2026.md)
+- Finance close and reconciliation guidance is documented in [Finance Close and Reconciliation Governance](07_business_model/FINANCE_CLOSE_AND_RECONCILIATION_GOVERNANCE.md)
+- Inventory quality audit controls are documented in [Inventory Quality and Monthly Audit SOP](04_workflows/inventory-quality-and-audit-sop.md)
+- Quarterly review and release communication guidance are documented in [Quarterly Market and Regulatory Review](08_integrations_and_research/quarterly-market-and-regulatory-review.md) and [Business Release and Incident Communication SOP](15_release_management/business-release-and-incident-communication-sop.md)
+
 ---
 
 ## 6) Dependencies into Planning

@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef, lazy, Suspense, type ReactNode } fr
 import { BrowserRouter, Routes, Route, Navigate, useLocation, useNavigate } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 import { SpeedInsights } from '@vercel/speed-insights/react';
-import { setLoading } from './store/userSlice';
+import { setLoading, type AppUser } from './store/userSlice';
 import { setTheme, setActiveRole } from './store/navigationSlice';
 import { LanguageProvider } from './context/LanguageContext';
 import { WorkspaceProvider } from './context/WorkspaceContext';
@@ -413,6 +413,20 @@ function App(): React.JSX.Element {
     const checkAuth = async () => {
       try {
         const token = safeStorage.get('token');
+        const storedUser = safeStorage.getJSON<AppUser>('user');
+
+        if (token && storedUser) {
+          finalizeAuthenticatedSession({
+            dispatch,
+            user: storedUser,
+            token,
+            provider: safeStorage.get('loginProvider') ?? 'bootstrap',
+            rememberMe: Boolean(safeStorage.getJSON<boolean>('rememberMe')),
+          });
+          dispatch(setLoading(false));
+          return;
+        }
+
         if (token) {
           const response = await authFetch('/api/auth/profile', { signal: controller.signal });
           if (controller.signal.aborted) return;
@@ -752,7 +766,16 @@ function App(): React.JSX.Element {
                       <Route path="/reset-password" element={<Navigate to="/" replace />} />
                       <Route
                         path="/profile"
-                        element={renderSignedInPage(<ProfilePage />, 'Profile')}
+                        element={renderSignedInPage(
+                          <UnifiedWorkspaceLayout>
+                            <RouteErrorBoundary section="Profile">
+                              <Suspense fallback={<SuspenseLoader />}>
+                                <ProfilePage />
+                              </Suspense>
+                            </RouteErrorBoundary>
+                          </UnifiedWorkspaceLayout>,
+                          'Profile'
+                        )}
                       />
                       <Route
                         path="/select-role"

@@ -26,6 +26,7 @@ import { MapContainer } from '../components/homepage/MapContainer';
 import { ToolsDashboard } from '../components/homepage/ToolsDashboard';
 import { AreaGuideGrid } from '../components/homepage/AreaGuideGrid';
 import { TestimonialPodium } from '../components/homepage/TestimonialPodium';
+import { HOME_PROPERTIES } from '../data/homeProperties';
 import './HomePage.css';
 
 // Above-the-fold: Hero is the LCP element — import directly (NOT lazy) so the

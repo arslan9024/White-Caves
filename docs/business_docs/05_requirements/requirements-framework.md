@@ -7,36 +7,44 @@ This directory contains comprehensive specification of all business and technica
 ## 📋 Document Categories
 
 ### Functional Requirements
+
 Documents **what** the system does and the specific behaviors expected from each feature.
 
 **Files**:
+
 - `functional-requirements.md` - Complete functional requirements by feature
 - `user-stories.md` - User stories organized by role and feature
 - `use-cases.md` - Actor-based use case scenarios
 - `business-rules.md` - Business logic and rules
 
 ### Non-Functional Requirements
+
 Documents **how well** the system performs and operates (performance, security, reliability, etc.).
 
 **Files**:
+
 - `non-functional-requirements.md` - Performance, security, scalability targets
 - `performance-requirements.md` - Response time, throughput, capacity
 - `security-requirements.md` - Security constraints and compliance
 - `compliance-requirements.md` - Legal, regulatory, and contractual requirements
 
 ### System Requirements
+
 Documents the technical environment and integration specifications.
 
 **Files**:
+
 - `system-requirements.md` - Tech stack, dependencies, infrastructure
 - `integration-requirements.md` - External system integrations
 - `api-requirements.md` - API specifications and contracts
 - `database-requirements.md` - Database schema and data requirements
 
 ### Constraints & Assumptions
+
 Documents limits, assumptions, and dependencies.
 
 **Files**:
+
 - `constraints.md` - Technical, budget, schedule, resource constraints
 - `assumptions.md` - Assumptions about users, data, environment
 - `dependencies.md` - External dependencies and risks
@@ -46,6 +54,7 @@ Documents limits, assumptions, and dependencies.
 ## 🎯 How to Use This Directory
 
 ### For Developers
+
 1. **Start**: Read `functional-requirements.md` for scope
 2. **Understand**: Review `use-cases.md` for workflows
 3. **Implement**: Follow `api-requirements.md` for contracts
@@ -53,18 +62,21 @@ Documents limits, assumptions, and dependencies.
 5. **Deploy**: Reference `security-requirements.md` for security gates
 
 ### For Product Managers
+
 1. **Overview**: Read `functional-requirements.md`
 2. **Validate**: Review `user-stories.md` for user perspective
 3. **Plan**: Reference `constraints.md` for feasibility
 4. **Measure**: Check `non-functional-requirements.md` for success metrics
 
 ### For QA/Testing Teams
+
 1. **Scope**: Review `functional-requirements.md` for test coverage
 2. **Scenarios**: Study `use-cases.md` for test scenarios
 3. **Criteria**: Check `non-functional-requirements.md` for acceptance criteria
 4. **Security**: Reference `security-requirements.md` for security test cases
 
 ### For Business Stakeholders
+
 1. **Context**: Read `functional-requirements.md` for feature descriptions
 2. **Value**: Review `use-cases.md` for user benefits
 3. **Compliance**: Check `compliance-requirements.md` for regulatory aspects
@@ -74,6 +86,7 @@ Documents limits, assumptions, and dependencies.
 ## 📊 Requirement Traceability
 
 All requirements are traceable:
+
 - **ID**: Unique identifier (REQ-001, REQ-002, etc.)
 - **Type**: Functional, Non-Functional, System, Constraint
 - **Status**: Proposed, Approved, Implemented, Verified
@@ -86,23 +99,27 @@ All requirements are traceable:
 ## ✅ Requirements Checklist
 
 ### Phase 1: Core CRM (100% Complete)
+
 - ✅ Client Management
 - ✅ Lead Tracking
 - ✅ Commission Tracking
 - ✅ Basic Reporting
 
 ### Phase 2: Integration (95% Complete)
+
 - ✅ WhatsApp Integration
 - ✅ Email Automation
 - ✅ Dashboard & Analytics
 - ⏳ SMS Integration (future)
 
 ### Phase 3: AI & Advanced (80% Complete)
+
 - ⏳ AI Assistant Integration
 - ⏳ Predictive Analytics
 - ⏳ Advanced Automation
 
 ### Phase 4: Mobile & Optimization (Planned)
+
 - ⏳ Mobile App
 - ⏳ Performance Optimization
 - ⏳ Advanced Features
@@ -112,18 +129,21 @@ All requirements are traceable:
 ## 📈 Key Metrics & Targets
 
 ### Performance Requirements
+
 - **Page Load**: < 2 seconds
 - **API Response**: < 500ms at 95th percentile
 - **Database Query**: < 100ms for standard queries
 - **Availability**: 99.5% uptime SLA
 
 ### Security Requirements
+
 - **Encryption**: All data in transit (SSL/TLS)
 - **Authentication**: OAuth 2.0 with MFA support
 - **Authorization**: Role-based access control
 - **Audit**: Complete audit trail of all changes
 
 ### Scalability Requirements
+
 - **Users**: Support 500+ concurrent users
 - **Data**: Handle 100,000+ client records
 - **Transactions**: 1,000+ transactions per minute
@@ -147,15 +167,18 @@ All requirements are traceable:
 ## 🔗 Related Documentation
 
 **Strategic**:
-- `/plans/MASTER_PLAN_UPDATED_FEB_2026.md` - Master plan and roadmap
-- `/business_docs/crm_features/` - Feature specifications
+
+- `docs/plans/MASTER_PLAN.md` - Canonical master plan and roadmap
+- `docs/business_docs/09_crm_features/` - Canonical feature specifications
 
 **Technical**:
-- `/plans/ARCHITECTURE.md` - System architecture
-- `/plans/API_DOCUMENTATION.md` - API specifications
-- `/plans/TECHNICAL_REFERENCE.md` - Technical details
+
+- `docs/software_docs/INDEX.md` - Software architecture entrypoint
+- `docs/software_docs/backend/api_architecture.md` - Backend/API architecture specification
+- `docs/software_docs/01_requirements_engineering/functional_specifications.md` - Software-facing requirements translation
 
 **Implementation**:
+
 - `/src/types/` - TypeScript types reflecting requirements
 - `/src/services/` - Service implementations
 - Repository code reflecting requirements
@@ -206,6 +229,7 @@ Agents must be able to create new client records within the CRM system.
 ## 📞 Support & Questions
 
 For requirement-related questions:
+
 1. Check relevant requirement file
 2. Review related feature documentation
 3. Contact product manager
@@ -216,6 +240,7 @@ For requirement-related questions:
 ## 🔄 Updates & Changes
 
 When requirements change:
+
 1. **Document**: Update or create requirement entry
 2. **Notify**: Communicate change to affected teams
 3. **Prioritize**: Determine priority and timeline

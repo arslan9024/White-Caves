@@ -76,6 +76,23 @@ const persistRolePreference = (
   return normalizedRole;
 };
 
+const persistAuthenticatedSessionArtifacts = (options: {
+  user: AppUser;
+  token?: string | null;
+  provider?: string;
+  rememberMe?: boolean;
+}): void => {
+  if (options.token) {
+    safeStorage.set('token', options.token);
+  }
+
+  safeStorage.setJSON('user', options.user);
+  if (options.provider) {
+    safeStorage.set('loginProvider', options.provider);
+  }
+  safeStorage.setJSON('rememberMe', Boolean(options.rememberMe));
+};
+
 export const finalizeAuthenticatedSession = (options: {
   dispatch: AppDispatch;
   user: AppUser;
@@ -97,11 +114,20 @@ export const finalizeAuthenticatedSession = (options: {
     accessLevel: isManagingDirectorMaster ? 5 : (options.user.accessLevel ?? 1),
   };
 
+  const resolvedToken = options.token ?? safeStorage.get('token') ?? undefined;
+
+  persistAuthenticatedSessionArtifacts({
+    user: resolvedUser,
+    token: resolvedToken,
+    provider: options.provider ?? 'backend',
+    rememberMe: options.rememberMe ?? false,
+  });
+
   options.dispatch(setUser(resolvedUser));
   options.dispatch(
     loginSuccess({
       user: resolvedUser,
-      token: options.token ?? safeStorage.get('token') ?? undefined,
+      token: resolvedToken,
       provider: options.provider ?? 'backend',
       rememberMe: options.rememberMe ?? false,
     })
@@ -121,6 +147,9 @@ export const finalizeAuthenticatedSession = (options: {
 export const completeClientLogout = (dispatch: AppDispatch): void => {
   safeStorage.remove('token');
   safeStorage.remove('userRole');
+  safeStorage.remove('user');
+  safeStorage.remove('loginProvider');
+  safeStorage.remove('rememberMe');
   dispatch(setUser(null));
   dispatch(logoutAuthState(undefined));
 };

@@ -23,6 +23,7 @@ const UAEPassSuccessPage: FC = () => {
   const [userData, setUserData] = useState<UserData | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string>('');
+  const [redirectDestination, setRedirectDestination] = useState<string>('/profile');
   const navTimerRef = useRef<ReturnType<typeof setTimeout>>();
   const isMountedRef = useRef(true);
 
@@ -86,9 +87,11 @@ const UAEPassSuccessPage: FC = () => {
           provider: 'uae-pass',
         });
 
-        // Wait a moment to show success message, then redirect
+        setRedirectDestination(destination);
+
+        // Wait a moment to show success message, then redirect to the shared post-login destination.
         navTimerRef.current = setTimeout(() => {
-          navigate('/profile');
+          navigateToPostLoginDestination(navigate, destination, true);
         }, 3000);
       } else {
         const errorData = await response.json().catch(e => {
@@ -173,7 +176,7 @@ const UAEPassSuccessPage: FC = () => {
               </p>
 
               <button
-                onClick={() => navigate('/profile')}
+                onClick={() => navigateToPostLoginDestination(navigate, redirectDestination, true)}
                 className="btn-continue"
               >
                 Continue to Profile

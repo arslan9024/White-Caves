@@ -89,11 +89,11 @@ const SignInPage: React.FC = () => {
             getIdToken: (forceRefresh?: boolean) => result.user.getIdToken(forceRefresh),
           });
           const user = backendResponse?.data?.user ?? null;
-          if (user && backendResponse.data.token) {
+          if (user) {
             const destination = finalizeAuthenticatedSession({
               dispatch,
               user: user as any,
-              token: backendResponse.data.token,
+              token: backendResponse?.data?.token ?? null,
               provider: 'google' as any,
               rememberMe: false,
               returnTo,
@@ -194,17 +194,21 @@ const SignInPage: React.FC = () => {
       try {
         const response = await registerWithEmail(email, password);
         const user = response?.data?.user ?? null;
-        if (user && response.data?.token) {
-          const destination = finalizeAuthenticatedSession({
-            dispatch,
-            user: user as any,
-            token: response.data.token,
-            provider: 'email',
-            rememberMe: false,
-            returnTo,
-          });
+        if (user) {
+          if (response.data?.token) {
+            finalizeAuthenticatedSession({
+              dispatch,
+              user: user as any,
+              token: response.data.token,
+              provider: 'email',
+              rememberMe: false,
+              returnTo,
+            });
+          }
           setRegisteredUser(user);
           setSignupStep(2);
+        } else {
+          setError('Registration failed');
         }
       } catch (err: unknown) {
         const msg = err instanceof Error ? err.message : 'Registration failed';
@@ -310,11 +314,11 @@ const SignInPage: React.FC = () => {
           });
 
           const user = backendResponse?.data?.user ?? null;
-          if (user && backendResponse.data.token) {
+          if (user) {
             const destination = finalizeAuthenticatedSession({
               dispatch,
               user: user as any,
-              token: backendResponse.data.token,
+              token: backendResponse?.data?.token ?? null,
               provider,
               rememberMe: false,
               returnTo,
@@ -393,11 +397,11 @@ const SignInPage: React.FC = () => {
       });
 
       const user = backendResponse?.data?.user ?? null;
-      if (user && backendResponse.data.token) {
+      if (user) {
         const destination = finalizeAuthenticatedSession({
           dispatch,
           user: user as any,
-          token: backendResponse.data.token,
+          token: backendResponse?.data?.token ?? null,
           provider: socialRecovery.provider as any,
           rememberMe: false,
           returnTo,

@@ -1,7 +1,10 @@
 export const ROLES = {
   // Backend CRM roles (primary — these match the database)
   OWNER: 'owner',
+  MANAGING_DIRECTOR: 'managing_director',
+  DIRECTOR: 'director',
   MANAGER: 'manager',
+  SUPERVISOR: 'supervisor',
   ADMIN: 'admin',
   AGENT: 'agent',
   FINANCE: 'finance',
@@ -25,7 +28,10 @@ export const ROLES = {
 
 export const ROLE_HIERARCHY: Record<string, number> = {
   [ROLES.OWNER]: 100,
+  [ROLES.MANAGING_DIRECTOR]: 95,
+  [ROLES.DIRECTOR]: 85,
   [ROLES.MANAGER]: 90,
+  [ROLES.SUPERVISOR]: 70,
   [ROLES.ADMIN]: 80,
   [ROLES.FINANCE]: 70,
   [ROLES.HR_STAFF]: 65,
@@ -235,6 +241,54 @@ export const ROLE_PERMISSIONS: Record<string, string[]> = {
     PERMISSIONS.VIEW_ANALYTICS,
   ],
   [ROLES.USER]: [PERMISSIONS.VIEW_DASHBOARD, PERMISSIONS.EDIT_PROFILE, PERMISSIONS.VIEW_PROPERTIES],
+  [ROLES.MANAGING_DIRECTOR]: [
+    PERMISSIONS.VIEW_DASHBOARD,
+    PERMISSIONS.EDIT_PROFILE,
+    PERMISSIONS.VIEW_PROPERTIES,
+    PERMISSIONS.CREATE_PROPERTY,
+    PERMISSIONS.EDIT_PROPERTY,
+    PERMISSIONS.DELETE_PROPERTY,
+    PERMISSIONS.VIEW_LEADS,
+    PERMISSIONS.MANAGE_LEADS,
+    PERMISSIONS.VIEW_CONTRACTS,
+    PERMISSIONS.CREATE_CONTRACTS,
+    PERMISSIONS.SIGN_CONTRACTS,
+    PERMISSIONS.VIEW_PAYMENTS,
+    PERMISSIONS.PROCESS_PAYMENTS,
+    PERMISSIONS.VIEW_ANALYTICS,
+    PERMISSIONS.VIEW_SYSTEM_HEALTH,
+    PERMISSIONS.MANAGE_USERS,
+    PERMISSIONS.MANAGE_AGENTS,
+    PERMISSIONS.VIEW_ALL_REPORTS,
+    PERMISSIONS.MANAGE_RERA_COMPLIANCE,
+    PERMISSIONS.VIEW_AUDIT_LOGS,
+    PERMISSIONS.APPROVE_ROLE_REQUEST,
+    PERMISSIONS.MANAGE_ALL_LISTINGS,
+    PERMISSIONS.EXPORT_REPORTS,
+    PERMISSIONS.APPROVE_COMMISSION,
+  ],
+  [ROLES.DIRECTOR]: [
+    PERMISSIONS.VIEW_DASHBOARD,
+    PERMISSIONS.EDIT_PROFILE,
+    PERMISSIONS.VIEW_PROPERTIES,
+    PERMISSIONS.CREATE_PROPERTY,
+    PERMISSIONS.EDIT_PROPERTY,
+    PERMISSIONS.VIEW_LEADS,
+    PERMISSIONS.MANAGE_LEADS,
+    PERMISSIONS.VIEW_CONTRACTS,
+    PERMISSIONS.CREATE_CONTRACTS,
+    PERMISSIONS.VIEW_PAYMENTS,
+    PERMISSIONS.PROCESS_PAYMENTS,
+    PERMISSIONS.VIEW_ANALYTICS,
+    PERMISSIONS.MANAGE_AGENTS,
+    PERMISSIONS.VIEW_ALL_REPORTS,
+    PERMISSIONS.MANAGE_RERA_COMPLIANCE,
+    PERMISSIONS.VIEW_AUDIT_LOGS,
+    PERMISSIONS.APPROVE_ROLE_REQUEST,
+    PERMISSIONS.MANAGE_ALL_LISTINGS,
+    PERMISSIONS.EXPORT_REPORTS,
+    PERMISSIONS.APPROVE_COMMISSION,
+  ],
   [ROLES.OWNER]: [
     PERMISSIONS.VIEW_DASHBOARD,
     PERMISSIONS.EDIT_PROFILE,
@@ -264,6 +318,20 @@ export const ROLE_PERMISSIONS: Record<string, string[]> = {
     PERMISSIONS.EXPORT_REPORTS,
     PERMISSIONS.APPROVE_COMMISSION,
   ],
+  [ROLES.SUPERVISOR]: [
+    PERMISSIONS.VIEW_DASHBOARD,
+    PERMISSIONS.EDIT_PROFILE,
+    PERMISSIONS.VIEW_PROPERTIES,
+    PERMISSIONS.VIEW_LEADS,
+    PERMISSIONS.MANAGE_LEADS,
+    PERMISSIONS.VIEW_CONTRACTS,
+    PERMISSIONS.CREATE_CONTRACTS,
+    PERMISSIONS.VIEW_PAYMENTS,
+    PERMISSIONS.VIEW_ANALYTICS,
+    PERMISSIONS.VIEW_ALL_REPORTS,
+    PERMISSIONS.MANAGE_ALL_LISTINGS,
+    PERMISSIONS.EXPORT_REPORTS,
+  ],
   // ── Backend CRM roles ──────────────────────────────────────
   [ROLES.MANAGER]: [
     PERMISSIONS.VIEW_DASHBOARD,
@@ -282,7 +350,6 @@ export const ROLE_PERMISSIONS: Record<string, string[]> = {
     PERMISSIONS.VIEW_SYSTEM_HEALTH,
     PERMISSIONS.MANAGE_AGENTS,
     PERMISSIONS.VIEW_ALL_REPORTS,
-    PERMISSIONS.MODIFY_SETTINGS,
     PERMISSIONS.MANAGE_RERA_COMPLIANCE,
     PERMISSIONS.VIEW_AUDIT_LOGS,
     PERMISSIONS.APPROVE_ROLE_REQUEST,
@@ -375,7 +442,11 @@ export const PUBLIC_ROLES = [
 // Kept in sync with server/middleware/rbac.ts ROLE_ALIAS_MAP.
 export const ROLE_ALIAS_MAP: Record<string, string> = {
   lion: 'owner',
-  managing_director: 'owner',
+  managing_director: 'managing_director',
+  director: 'director',
+  department_director: 'director',
+  supervisor: 'supervisor',
+  department_supervisor: 'supervisor',
   real_estate_company: 'owner',
   property_mgmt_company: 'manager',
   super_admin: 'admin',
@@ -428,7 +499,10 @@ export const RANK_1_ROLES = [ROLES.USER];
 
 export const RANK_2_ROLES = [
   ROLES.OWNER,
+  ROLES.MANAGING_DIRECTOR,
+  ROLES.DIRECTOR,
   ROLES.MANAGER,
+  ROLES.SUPERVISOR,
   ROLES.ADMIN,
   ROLES.HR_STAFF,
   ROLES.ACCOUNTS_STAFF,
@@ -510,13 +584,24 @@ export function isAgent(userRole: string | null): boolean {
 export function isManager(userRole: string | null): boolean {
   if (!userRole) return false;
   const resolved = resolveBackendRole(userRole);
-  return resolved === ROLES.OWNER || resolved === ROLES.MANAGER;
+  return (
+    resolved === ROLES.OWNER ||
+    resolved === ROLES.MANAGING_DIRECTOR ||
+    resolved === ROLES.DIRECTOR ||
+    resolved === ROLES.MANAGER
+  );
 }
 
 export function isAdmin(userRole: string | null): boolean {
   if (!userRole) return false;
   const resolved = resolveBackendRole(userRole);
-  return resolved === ROLES.OWNER || resolved === ROLES.MANAGER || resolved === ROLES.ADMIN;
+  return (
+    resolved === ROLES.OWNER ||
+    resolved === ROLES.MANAGING_DIRECTOR ||
+    resolved === ROLES.DIRECTOR ||
+    resolved === ROLES.MANAGER ||
+    resolved === ROLES.ADMIN
+  );
 }
 
 export function canAccessFeature(userRole: string | null, featureId: string): boolean {
@@ -535,6 +620,7 @@ export function getRoleLevel(userRole: string): number {
 const EMPTY_PERMISSIONS: string[] = [];
 
 export function getPermissionsForRole(role: string): string[] {
+  const resolved = resolveBackendRole(role);
   // eslint-disable-next-line security/detect-object-injection
-  return ROLE_PERMISSIONS[role] || EMPTY_PERMISSIONS;
+  return ROLE_PERMISSIONS[resolved] || EMPTY_PERMISSIONS;
 }

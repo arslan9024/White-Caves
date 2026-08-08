@@ -12,6 +12,7 @@
 The **UnifiedCRM Component** is a powerful, flexible React component that provides unified dashboard access for all 12 CRM views in the White Caves platform. It consolidates what were previously 12 separate dashboard components into one intelligent, role-based component that adapts to any user's needs.
 
 ### Key Features
+
 - ✅ **12 Dashboard Views** - Company, Department, Sales, Property, Commission, Leads, Office, Agent, Financial, Performance, Inventory, Client
 - ✅ **Role-Based Access** - Automatic filtering based on user role
 - ✅ **Real-Time Metrics** - Live data with configurable refresh intervals
@@ -25,7 +26,8 @@ The **UnifiedCRM Component** is a powerful, flexible React component that provid
 ## 🏗️ Architecture
 
 ### Component Structure
-```
+
+```text
 UnifiedCRM.tsx (Main Component)
 ├── Types & Constants (12 Dashboard Configurations)
 ├── Styled Components (13 styled elements)
@@ -42,72 +44,84 @@ Supporting Files:
 ### Gallery of 12 Dashboard Views
 
 #### 1. **Company Overview** (🏢)
+
 - **Audience**: CEO, COO, Admin
 - **Purpose**: Company-wide metrics and strategic overview
 - **Metrics**: Total Revenue, Total Agents, Total Clients, Market Position
 - **Features**: Company Analytics, Team Overview, Financial Summary
 
 #### 2. **Department** (📊)
+
 - **Audience**: Manager, Admin
 - **Purpose**: Department-specific performance tracking
 - **Metrics**: Dept Revenue, Agents, Performance, KPIs
 - **Features**: Department Analytics, Team Metrics, Agent Rankings
 
 #### 3. **Sales Pipeline** (📈)
+
 - **Audience**: Agent, Manager, Admin
 - **Purpose**: Sales opportunities and pipeline management
 - **Metrics**: Pipeline Value, Deals in Progress, Conversion Rate, Avg Deal Size
 - **Features**: Pipeline View, Deal Tracker, Sales Forecast
 
 #### 4. **Property Inventory** (🏠)
+
 - **Audience**: Agent, Manager, Admin, Operations
 - **Purpose**: Property listing and inventory management
 - **Metrics**: Total Properties, Available, Leased, Sold
 - **Features**: Property List, Availability Tracking, Listing Status
 
 #### 5. **Commission Tracking** (💰)
+
 - **Audience**: Agent, Manager, Finance, Admin
 - **Purpose**: Commission calculations and payment tracking
 - **Metrics**: Total Commission, Pending, Approved, Paid Amount
 - **Features**: Commission Summary, Payment Tracking, Dispute Management
 
 #### 6. **Leads Management** (👥)
+
 - **Audience**: Agent, Manager, Admin
 - **Purpose**: Lead tracking and qualification
 - **Metrics**: Total Leads, Qualified, Conversion Rate, Lead Quality
 - **Features**: Lead Pipeline, Scoring, Qualification Tracking
 
 #### 7. **Office Management** (🏛️)
+
 - **Audience**: Manager, Operations, Admin
 - **Purpose**: Daily office operations and administration
 - **Metrics**: Office Efficiency, Operations Cost, Staff Count, Utilization
 - **Features**: Operations Dashboard, Resource Planning, Schedule Management
 
 #### 8. **Agent Performance** (⭐)
+
 - **Audience**: Agent, Manager, Admin
 - **Purpose**: Individual performance metrics and goals
 - **Metrics**: Deals Closed, Total Commission, Client Count, Satisfaction
 - **Features**: Personal KPIs, Performance Chart, Goals Tracking
 
 #### 9. **Financial Dashboard** (💵)
+
 - **Audience**: Finance, Manager, Admin
 - **Purpose**: Financial metrics and reporting
 - **Metrics**: Total Revenue, Operating Costs, Net Profit, Cash Flow
 - **Features**: Revenue Tracking, Expense Analysis, Profit Projection
 
 #### 10. **Performance KPIs** (📉)
+
 - **Audience**: Manager, Admin, Agent
 - **Purpose**: Key performance indicators and trends
 - **Metrics**: KPI Summary, Trend Analysis, Benchmarking, Goals Progress
 - **Features**: KPI Dashboard, Trend Charts, Goal Tracking
 
 #### 11. **Inventory Management** (📦)
+
 - **Audience**: Operations, Manager, Admin
 - **Purpose**: Resource and property inventory management
 - **Metrics**: Total Items, In Stock, Reserved, Low Stock
 - **Features**: Inventory List, Stock Tracking, Alerts
 
 #### 12. **Client Profiles** (👤)
+
 - **Audience**: Agent, Manager, Admin
 - **Purpose**: Client information and relationship management
 - **Metrics**: Total Clients, Active Clients, Lifetime Value, Satisfaction
@@ -118,6 +132,7 @@ Supporting Files:
 ## 🚀 Quick Start
 
 ### Basic Usage
+
 ```tsx
 import { UnifiedCRM } from '@/components/crm';
 
@@ -127,6 +142,7 @@ function App() {
 ```
 
 ### With Event Handlers
+
 ```tsx
 <UnifiedCRM
   defaultView="sales"
@@ -141,6 +157,7 @@ function App() {
 ```
 
 ### With Configuration
+
 ```tsx
 <UnifiedCRM
   defaultView="company"
@@ -156,34 +173,40 @@ function App() {
 ## 📖 Props Reference
 
 ### `defaultView` (optional)
+
 - **Type**: `DashboardView`
 - **Default**: `'company'`
 - **Description**: Initial dashboard view to display
 - **Example**: `defaultView="sales"`
 
 ### `onViewChange` (optional)
+
 - **Type**: `(view: DashboardView) => void`
 - **Description**: Callback when user switches dashboard view
 - **Example**: `onViewChange={(view) => router.push(`/dashboard/${view}`)}`
 
 ### `onMetricsUpdate` (optional)
+
 - **Type**: `(metrics: Metric[]) => void`
 - **Description**: Callback when metrics are updated
 - **Example**: `onMetricsUpdate={(metrics) => updateAnalytics(metrics)}`
 
 ### `refreshInterval` (optional)
+
 - **Type**: `number` (milliseconds)
 - **Default**: View-specific (30s - 5m)
 - **Description**: Auto-refresh interval for metrics
 - **Example**: `refreshInterval={60000}` (1 minute)
 
 ### `enableExport` (optional)
+
 - **Type**: `boolean`
 - **Default**: `false`
 - **Description**: Enable CSV/PDF export functionality
 - **Example**: `enableExport={true}`
 
 ### `enableCustomization` (optional)
+
 - **Type**: `boolean`
 - **Default**: `false`
 - **Description**: Enable drag-to-rearrange and resize metrics
@@ -194,6 +217,7 @@ function App() {
 ## 🎨 Styling & Theming
 
 ### Custom Styled Components Used
+
 - `StyledContainer` - Main container with gradient background
 - `Header` - Top header with title and view selector
 - `Title` - Large bold title text
@@ -208,6 +232,7 @@ function App() {
 - `LoadingSpinner` - Animation while loading
 
 ### Theme Colors
+
 - **Primary**: `#1976d2` (Blue)
 - **Success**: `#4caf50` (Green)
 - **Warning**: `#ff9800` (Orange)
@@ -215,6 +240,7 @@ function App() {
 - **Neutral**: `#9e9e9e` (Gray)
 
 ### Customizing Styles
+
 ```tsx
 import styled from 'styled-components';
 
@@ -230,7 +256,7 @@ const CustomUnifiedCRM = styled(UnifiedCRM)`
 The component automatically filters available dashboard views based on user role:
 
 | Role | Accessible Views |
-|------|------------------|
+| ---- | ---------------- |
 | **admin** | All 12 views |
 | **ceo** | Company, Financial, Performance |
 | **coo** | Company, Department, Office, Financial |
@@ -242,7 +268,9 @@ The component automatically filters available dashboard views based on user role
 | **support** | Client, Leads |
 
 ### Adding Custom Roles
+
 Edit `/src/components/crm/types.ts`:
+
 ```typescript
 export const ROLE_ACCESS_MATRIX: Record<UserRole, DashboardView[]> = {
   // ... existing roles
@@ -255,51 +283,67 @@ export const ROLE_ACCESS_MATRIX: Record<UserRole, DashboardView[]> = {
 ## 🪝 Custom Hooks
 
 ### `useDashboardView`
+
 Manage current view and loading state
+
 ```tsx
 const { currentView, setCurrentView, loading, error } = useDashboardView('company');
 ```
 
 ### `useDashboardFilters`
+
 Manage dashboard filters
+
 ```tsx
 const { filters, updateFilter, clearFilters } = useDashboardFilters();
 updateFilter({ dateRange: { start: new Date(), end: new Date() } });
 ```
 
 ### `useDashboardMetrics`
+
 Fetch and refresh metrics
+
 ```tsx
 const { metrics, loading, refreshMetrics } = useDashboardMetrics(60000);
 ```
 
 ### `useDashboardAccess`
+
 Check user access levels
+
 ```tsx
 const { userRole, hasAccess, getAccessibleDashboards } = useDashboardAccess();
 ```
 
 ### `useDashboardCustomization`
+
 Handle custom layout and expanded states
+
 ```tsx
 const { customLayout, expandedMetrics, toggleMetricExpanded } = useDashboardCustomization();
 ```
 
 ### `useDashboardExport`
+
 Export data as CSV or JSON
+
 ```tsx
 const { exporting, exportAsCSV, exportAsJSON } = useDashboardExport();
 await exportAsCSV(data, 'dashboard.csv');
 ```
 
 ### `useRealtimeDashboard`
+
 WebSocket connection for real-time updates
+
 ```tsx
 const { isConnected, reconnecting, sendMessage } = useRealtimeDashboard(true);
 ```
 
 ### `useDashboardPerformance`
+
 Monitor render and data fetch times
+
 ```tsx
 const { metrics, measurePerformance } = useDashboardPerformance();
 const stopMeasure = measurePerformance('DataFetch');
@@ -314,16 +358,19 @@ stopMeasure(); // Logs time taken
 The component is fully responsive:
 
 ### Desktop (1200px+)
+
 - 4-column grid layout
 - Full view of all metrics and features
 - Horizontal view selector buttons
 
 ### Tablet (768px - 1199px)
+
 - 2-3 column grid layout
 - Optimized touch targets
 - View selector may wrap
 
 ### Mobile (< 768px)
+
 - 1-column stack layout
 - Full-width cards
 - Vertical view selector with scrolling
@@ -333,16 +380,19 @@ The component is fully responsive:
 ## 🔒 Security Considerations
 
 ### Data Access
+
 - Component respects user role for view access
 - Backend should validate all requests
 - Sensitive financial data should be masked for non-finance roles
 
 ### API Security
+
 - All API calls should use authenticated endpoints
 - Validate user role on backend before returning data
 - Implement rate limiting on dashboard data endpoints
 
 ### Code Security
+
 - All user inputs are properly escaped
 - No SQL injection vectors
 - CSRF protection should be enabled
@@ -353,6 +403,7 @@ The component is fully responsive:
 ## 🧪 Testing
 
 ### Unit Tests
+
 ```typescript
 describe('UnifiedCRM', () => {
   it('renders company view by default', () => {
@@ -369,6 +420,7 @@ describe('UnifiedCRM', () => {
 ```
 
 ### Integration Tests
+
 ```typescript
 it('switches views when button clicked', async () => {
   const { getByRole } = render(<UnifiedCRM defaultView="company" />);
@@ -379,6 +431,7 @@ it('switches views when button clicked', async () => {
 ```
 
 ### E2E Tests
+
 ```typescript
 // Cypress example
 describe('UnifiedCRM E2E', () => {
@@ -395,7 +448,8 @@ describe('UnifiedCRM E2E', () => {
 ## 🔧 API Integration
 
 ### Expected API Endpoints
-```
+
+```text
 GET /api/dashboard/company/metrics    - Company metrics
 GET /api/dashboard/sales/metrics      - Sales pipeline metrics
 GET /api/dashboard/:view/metrics      - Generic endpoint
@@ -403,6 +457,7 @@ POST /api/dashboard/export            - Export dashboard data
 ```
 
 ### API Response Format
+
 ```json
 {
   "view": "sales",
@@ -427,6 +482,7 @@ POST /api/dashboard/export            - Export dashboard data
 ## 📊 Performance Optimization
 
 ### Techniques Used
+
 - **Memoization**: `useMemo` for filtered dashboards
 - **Callbacks**: `useCallback` for event handlers
 - **Lazy Loading**: Views load on demand
@@ -434,6 +490,7 @@ POST /api/dashboard/export            - Export dashboard data
 - **Code Splitting**: Component can be lazy-loaded
 
 ### Performance Tips
+
 1. Set appropriate `refreshInterval` based on data freshness requirements
 2. Use `enableCustomization={false}` if not needed
 3. Lazy load UnifiedCRM when not immediately needed
@@ -444,12 +501,14 @@ POST /api/dashboard/export            - Export dashboard data
 ## 🚨 Error Handling
 
 ### Error States
+
 - **Access Denied**: User doesn't have role for view
 - **No Data**: Metrics failed to load
 - **Connection Error**: Can't reach API
 - **Timeout**: API response too slow
 
 ### Error Recovery
+
 ```tsx
 <UnifiedCRM
   onViewChange={async (view) => {
@@ -468,11 +527,13 @@ POST /api/dashboard/export            - Export dashboard data
 ## 🔄 Real-Time Updates
 
 ### WebSocket Integration
+
 - Component supports real-time metric updates
 - Use `useRealtimeDashboard` hook for WebSocket connection
 - Automatic reconnection on disconnect
 
 ### Example
+
 ```tsx
 const { isConnected, sendMessage } = useRealtimeDashboard(true);
 
@@ -489,6 +550,7 @@ sendMessage({
 ## 📈 Future Enhancements
 
 ### Planned Features (Phase 2)
+
 - Advanced filtering and search
 - Custom metric calculations
 - Dashboard sharing and collaboration
@@ -499,6 +561,7 @@ sendMessage({
 - Integration with business intelligence tools
 
 ### Extensibility
+
 The component is designed to be easily extended:
 
 ```typescript
@@ -522,25 +585,29 @@ DASHBOARD_CONFIGS.custom = newConfig;
 ## 🐛 Troubleshooting
 
 ### Issue: View not showing for user
+
 **Solution**: Check `ROLE_ACCESS_MATRIX` in `/src/components/crm/types.ts` - user's role must be in the view's roles array
 
 ### Issue: Metrics not updating
+
 **Solution**: Verify API endpoints are returning data correctly, check browser console for errors
 
 ### Issue: Slow performance
+
 **Solution**: Increase `refreshInterval`, disable `enableCustomization`, or optimize metric calculations
 
 ### Issue: Styling issues
+
 **Solution**: Ensure styled-components is installed and CSS-in-JS is working in your environment
 
 ---
 
 ## 📚 Related Documentation
 
-- **Feature Specs**: `/business_docs/crm_features/client-management.md`
-- **Enterprise Requirements**: `/business_docs/requirements/README.md`
-- **Technical Architecture**: `/plans/ARCHITECTURE.md`
-- **API Documentation**: `/plans/API_DOCUMENTATION.md`
+- **Feature Specs**: `docs/business_docs/09_crm_features/client-management.md`
+- **Enterprise Requirements**: `docs/business_docs/05_requirements/requirements-framework.md`
+- **Technical Architecture**: `docs/software_docs/INDEX.md`
+- **API Documentation**: `docs/software_docs/backend/api_architecture.md`
 
 ---
 
@@ -566,6 +633,7 @@ Before deploying UnifiedCRM to production:
 ## 📞 Support
 
 For questions or issues with UnifiedCRM:
+
 1. Check this documentation
 2. Review component TypeScript interfaces
 3. Check browser console for errors

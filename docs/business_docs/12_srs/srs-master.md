@@ -50,7 +50,14 @@ The White Caves CRM Platform (hereafter "the System") is a full-stack web applic
 - **AI Assistant Hub** — 24 named AI assistants representing every business function
 - **Executive Reporting** — Real-time KPIs and business intelligence
 
+**Current SRS posture note:** This document is the formal business SRS wrapper for White Caves.
+The counted canonical business requirement ledger remains `../05_requirements/functional-requirements.md`
+plus active `REQ-PDPL-*` entries under `../10_design_system_and_security/uae-pdpl-compliance.md`.
+The current authoritative baseline is **58 unique business `REQ-*` definitions**; this document will
+be expanded toward the 12-department master SRS structure as the counted full-SRS program progresses.
+
 **Out of Scope (this version):**
+
 - Native iOS/Android mobile applications
 - On-premises deployment
 - Multi-company / multi-tenancy (single company deployment)
@@ -99,6 +106,10 @@ The White Caves CRM Platform (hereafter "the System") is a full-stack web applic
 | Database Schema | `business_docs/06_design_architecture/database-schema.md` |
 | API Reference | `business_docs/06_design_architecture/api-reference.md` |
 | Implementation Plan | `business_docs/implementation-plan.md` |
+| Business-to-Software SRS Bridge | `business_docs/12_srs/README.md` |
+| Requirement Crosswalk | `plans/documentation/REQ_CROSSWALK.md` |
+| Requirement Taxonomy Mapping | `business_docs/05_requirements/REQ_TO_FR_BR_NFR_POL_AC_MAPPING_2026-08-03.md` |
+| Software Master SRS Structure | `software_docs/01_requirements_engineering/SRS_MASTER_12_DEPARTMENTS.md` |
 | RERA Law No. 16 of 2007 | RERA official publications |
 | UAE AML Law No. 20 of 2018 | UAE Federal Register |
 | UAE PDPL Law No. 45 of 2021 | UAE Federal Register |
@@ -106,6 +117,9 @@ The White Caves CRM Platform (hereafter "the System") is a full-stack web applic
 ### 1.5 Overview
 
 Section 2 describes the product perspective, user classes, and operating environment. Section 3 details external interface requirements. Section 4 summarises system features (full details in referenced documents). Section 5 defines non-functional requirements. Section 6 and 7 document constraints, assumptions, and dependencies.
+
+The current version remains a legacy summary-oriented SRS and should be read together with the
+counted requirement baseline and business-to-software bridge artifacts above.
 
 ---
 
@@ -115,7 +129,7 @@ Section 2 describes the product perspective, user classes, and operating environ
 
 The White Caves CRM Platform is a **new standalone system** replacing a combination of manual processes, spreadsheets, and generic CRM tools previously used by the sales team. It interfaces with several external systems:
 
-```
+```text
 ┌──────────────────────────────────────────────────────┐
 │                WHITE CAVES CRM                        │
 │  (Web Application — cloud hosted, UAE data residency) │
@@ -153,6 +167,26 @@ Cloud API    (listing sync)  (listing    (OAuth login)
 10. **Executive Dashboard and Analytics**
 11. **AI Assistant Hub (24 Named Assistants)**
 12. **System Administration and Configuration**
+
+### 2.2A Enterprise SRS alignment direction
+
+The active upgrade path for this SRS is to align its long-form structure with the 12-department
+master contract defined in `software_docs/01_requirements_engineering/SRS_MASTER_12_DEPARTMENTS.md`.
+That means future full-SRS expansion should group requirements and traceability by these
+departmental lanes:
+
+1. Executive Council & Strategy
+2. Sales & Brokerage
+3. Leasing & Tenancy
+4. Property & Facilities Operations
+5. Finance, Treasury & Revenue Assurance
+6. Compliance, Regulatory & Risk
+7. Legal, Disputes & Contracts
+8. Marketing, Growth & Brand
+9. Communications, Client Care & WhatsApp
+10. Technology, Platform & DevOps
+11. Data, AI & Business Intelligence
+12. HR, Talent & Workforce Operations
 
 ### 2.3 User Classes and Characteristics
 
@@ -511,6 +545,69 @@ The system must support the following data growth projections without architectu
 ---
 
 ## 8. Appendix
+
+### 8.0 Counted requirement baseline and expansion target
+
+| Metric | Value | Notes |
+|--------|------:|-------|
+| Current unique business `REQ-*` definitions | 58 | Canonical baseline for counted-SRS program |
+| Current `REQ-*` headings | 63 | Includes enhanced/duplicate headings |
+| Duplicate/enhanced headings excluded from total | 5 | Do not increment canonical requirement count |
+| Canonical software-side `REQ-*` definitions | 0 | Software docs are downstream mirrors during business-first expansion |
+| First complete business SRS target | 420-650 | Target band for the first enterprise-grade counted SRS wave |
+
+### 8.0A Counting rules
+
+- Count only unique canonical business requirement definitions.
+- Do not count scenario references, software-doc references, or enhanced appendix headings toward the canonical total.
+- Preserve `REQ-*` IDs as stable business identifiers even as software taxonomy expands to `FR/BR/NFR/POL/INT/SEC/OBS/AC`.
+
+### 8.0B First-wave family numbering ranges (governance baseline)
+
+| Family | Approved range |
+|--------|----------------|
+| `REQ-EXEC-*` | `REQ-EXEC-001..015` |
+| `REQ-AUTH-*` | `REQ-AUTH-001..020` |
+| `REQ-ADMIN-*` | `REQ-ADMIN-001..020` |
+| `REQ-CLIENT-*` | `REQ-CLIENT-001..020` |
+| `REQ-LEAD-*` | `REQ-LEAD-001..040` |
+| `REQ-TASK-*` | `REQ-TASK-001..015` |
+| `REQ-PROP-*` | `REQ-PROP-001..035` |
+| `REQ-SENTINEL-*` | `REQ-SENTINEL-001..015` |
+| `REQ-PIPELINE-*` | `REQ-PIPELINE-001..025` |
+| `REQ-OFFER-*` | `REQ-OFFER-001..020` |
+| `REQ-VIEWING-*` | `REQ-VIEWING-001..020` |
+| `REQ-COMMISSION-*` | `REQ-COMMISSION-001..020` |
+| `REQ-FIN-*` | `REQ-FIN-001..025` |
+| `REQ-CURRENCY-*` | `REQ-CURRENCY-001..010` |
+| `REQ-TENANCY-*` | `REQ-TENANCY-001..030` |
+| `REQ-EJARI-*` | `REQ-EJARI-001..015` |
+| `REQ-PORTAL-TENANT-*` | `REQ-PORTAL-TENANT-001..015` |
+| `REQ-PORTAL-LANDLORD-*` | `REQ-PORTAL-LANDLORD-001..015` |
+| `REQ-MAINT-*` | `REQ-MAINT-001..025` |
+| `REQ-HANDOVER-*` | `REQ-HANDOVER-001..020` |
+| `REQ-COMMUNITY-*` | `REQ-COMMUNITY-001..015` |
+| `REQ-COMP-*` | `REQ-COMP-001..020` |
+| `REQ-PDPL-*` | `REQ-PDPL-001..020` |
+| `REQ-AML-*` | `REQ-AML-001..015` |
+| `REQ-RERA-*` | `REQ-RERA-001..015` |
+| `REQ-LEGAL-*` | `REQ-LEGAL-001..025` |
+| `REQ-DLD-*` | `REQ-DLD-001..020` |
+| `REQ-DOC-*` | `REQ-DOC-001..020` |
+| `REQ-MKT-*` | `REQ-MKT-001..020` |
+| `REQ-MARKET-*` | `REQ-MARKET-001..020` |
+| `REQ-WA-*` | `REQ-WA-001..030` |
+| `REQ-EMAIL-*` | `REQ-EMAIL-001..015` |
+| `REQ-FOLLOWUP-*` | `REQ-FOLLOWUP-001..020` |
+| `REQ-AI-*` | `REQ-AI-001..020` |
+| `REQ-ANALYTICS-*` | `REQ-ANALYTICS-001..025` |
+| `REQ-RPT-*` | `REQ-RPT-001..020` |
+| `REQ-OFFPLAN-*` | `REQ-OFFPLAN-001..025` |
+| `REQ-SECONDARY-*` | `REQ-SECONDARY-001..020` |
+| `REQ-INVEST-*` | `REQ-INVEST-001..020` |
+| `REQ-PROSPECT-*` | `REQ-PROSPECT-001..020` |
+| `REQ-OPS-*` | `REQ-OPS-001..015` |
+| `REQ-HR-*` | `REQ-HR-001..015` |
 
 ### 8.1 Requirements Traceability Matrix (Summary)
 
