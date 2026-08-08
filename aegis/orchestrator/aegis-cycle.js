@@ -29,7 +29,7 @@ import { runScan } from './aegis-autopilot-scanner.js';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const ROOT = path.resolve(__dirname, '..', '..');
-const RUN_LOG = path.join(ROOT, 'plans', 'AEGIS_RUN_LOG.md');
+const RUN_LOG = path.join(ROOT, 'docs', 'plans', 'AEGIS_RUN_LOG.md');
 
 // ── CLI arg parsing ────────────────────────────────────────────────────────
 function parseArgs() {
