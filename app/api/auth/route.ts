@@ -69,8 +69,10 @@ interface DbUser {
   id: string;
   email: string;
   name?: string | null;
+  passwordHash?: string | null;
   password?: string | null;
   role?: string | null;
+  status?: string | null;
   isActive?: boolean | null;
 }
 
@@ -95,10 +97,9 @@ export async function POST(request: NextRequest) {
 
   const user = await safeQuery<DbUser | null>(
     async (db) => {
-      // @ts-expect-error — model inferred at runtime
-      return db.user.findUnique({
+      return (db.user as any).findUnique({
         where: { email: email.toLowerCase().trim() },
-        select: { id: true, email: true, name: true, password: true, role: true, isActive: true },
+        select: { id: true, email: true, name: true, passwordHash: true, role: true, status: true },
       });
     },
     null
@@ -110,12 +111,13 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: 'Invalid credentials', code: 'AUTH_FAILED' }, { status: 401 });
   }
 
-  if (user.isActive === false) {
+  if (user.status === 'disabled' || user.status === 'inactive' || user.isActive === false) {
     return NextResponse.json({ error: 'Account disabled', code: 'ACCOUNT_DISABLED' }, { status: 403 });
   }
 
-  const passwordValid = user.password
-    ? await verifyPassword(password, user.password)
+  const hash = user.passwordHash ?? user.password;
+  const passwordValid = hash
+    ? await verifyPassword(password, hash)
     : false;
 
   if (!passwordValid) {
@@ -168,16 +170,15 @@ export async function GET(request: NextRequest) {
 
   const user = await safeQuery<DbUser | null>(
     async (db) => {
-      // @ts-expect-error — model inferred at runtime
-      return db.user.findUnique({
+      return (db.user as any).findUnique({
         where: { id: String(payload.sub) },
-        select: { id: true, email: true, name: true, role: true, isActive: true },
+        select: { id: true, email: true, name: true, role: true, status: true },
       });
     },
     null
   );
 
-  if (!user || user.isActive === false) {
+  if (!user || user.status === 'disabled' || user.status === 'inactive' || user.isActive === false) {
     return NextResponse.json({ error: 'User not found', code: 'USER_NOT_FOUND' }, { status: 401 });
   }
 

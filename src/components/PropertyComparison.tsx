@@ -1,4 +1,4 @@
-import { useState, useMemo, ReactNode } from 'react';
+import React, { useState, useMemo, ReactNode } from 'react';
 import { useSelector } from 'react-redux';
 import { formatPrice } from '../utils';
 import './PropertyComparison.css';

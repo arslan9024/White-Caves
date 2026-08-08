@@ -2,6 +2,7 @@ import React, { FC, lazy, Suspense, useEffect, useMemo, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import { setProperties, type Property } from '../store/propertySlice';
+import { HOME_PROPERTIES } from '../data/homeProperties';
 import {
   clearError,
   fetchHomepageData,

@@ -45,8 +45,7 @@ interface PropertyListing {
 async function getProperties(): Promise<PropertyListing[]> {
   return safeQuery(
     async (db) => {
-      // @ts-expect-error — schema model name may vary; safeQuery returns [] on miss
-      const results = await db.property.findMany({
+      const results = await (db.property as any).findMany({
         take: 24,
         orderBy: { createdAt: 'desc' },
         select: {

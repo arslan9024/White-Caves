@@ -24,7 +24,7 @@ export const IS_PRODUCTION = NODE_ENV === 'production';
 
 // ─── Auth ────────────────────────────────────────────────────────────────
 const _jwtSecret = process.env.JWT_SECRET;
-if (!_jwtSecret && (IS_PRODUCTION || NODE_ENV === 'staging')) {
+if (!_jwtSecret && (IS_PRODUCTION || (NODE_ENV as string) === 'staging')) {
   throw new Error('CRITICAL: JWT_SECRET environment variable must be set in production/staging');
 }
 if (!_jwtSecret && NODE_ENV !== 'development' && NODE_ENV !== 'test') {

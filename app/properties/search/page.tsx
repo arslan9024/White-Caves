@@ -68,8 +68,7 @@ async function searchProperties(params: SearchParams): Promise<PropertyListing[]
 
   return safeQuery(
     async (db) => {
-      // @ts-expect-error — model inferred at runtime
-      const results = await db.property.findMany({
+      const results = await (db.property as any).findMany({
         where,
         take: 36,
         orderBy: { createdAt: 'desc' },

@@ -30,7 +30,7 @@ export async function GET(): Promise<NextResponse<HealthResponse>> {
   // ── Database Ping ───────────────────────────────────────────────────────────
   let dbStatus: 'connected' | 'unreachable' = 'unreachable';
   try {
-    await prisma.$queryRaw`SELECT 1`;
+    await (prisma as any).$queryRaw`SELECT 1`;
     dbStatus = 'connected';
   } catch {
     // DB offline — degrade gracefully

@@ -54,7 +54,6 @@ export async function GET(request: NextRequest) {
 
   const [leads, total] = await safeQuery(
     async (db) => {
-      // @ts-expect-error — model name inferred from schema at runtime
       const [rows, count] = await Promise.all([
         db.lead.findMany({
           where,
@@ -123,7 +122,6 @@ export async function POST(request: NextRequest) {
 
   const lead = await safeQuery(
     async (db) => {
-      // @ts-expect-error — model name inferred from schema at runtime
       return db.lead.create({
         data: {
           name: String(name),

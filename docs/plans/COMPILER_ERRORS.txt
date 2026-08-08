@@ -1,6 +1,6 @@
 [36mvite v7.3.5 [32mbuilding client environment for production...[36m[39m
 transforming...
-[32m✓[39m 2634 modules transformed.
+[32m✓[39m 2635 modules transformed.
 rendering chunks...
 computing gzip size...
 [2mdist/[22m[32mmanifest.webmanifest                                             [39m[1m[2m  0.60 kB[22m[1m[22m
@@ -212,21 +212,21 @@ computing gzip size...
 [2mdist/[22m[36massets/TenantPortalPage-Cg7bNbeb.js                              [39m[1m[2m 67.17 kB[22m[1m[22m[2m │ gzip:  8.39 kB[22m
 [2mdist/[22m[36massets/crmDataSlice-DC1TRxrP.js                                  [39m[1m[2m 84.95 kB[22m[1m[22m[2m │ gzip: 19.04 kB[22m
 [2mdist/[22m[36massets/store-DPo7Vq87.js                                         [39m[1m[2m 85.31 kB[22m[1m[22m[2m │ gzip: 24.34 kB[22m
-[2mdist/[22m[36massets/HomePage-DOwfKjK1.js                                      [39m[1m[2m101.47 kB[22m[1m[22m[2m │ gzip: 20.88 kB[22m
+[2mdist/[22m[36massets/HomePage-C9TwpEUR.js                                      [39m[1m[2m103.88 kB[22m[1m[22m[2m │ gzip: 21.70 kB[22m
 [2mdist/[22m[36massets/LandlordPortalPage-DSMp7GRn.js                            [39m[1m[2m116.26 kB[22m[1m[22m[2m │ gzip: 13.04 kB[22m
 [2mdist/[22m[36massets/aiAssistantDashboardSlice-CyGdSZZl.js                     [39m[1m[2m119.14 kB[22m[1m[22m[2m │ gzip: 31.08 kB[22m
 [2mdist/[22m[36massets/firebase-B6_21Y0L.js                                      [39m[1m[2m124.83 kB[22m[1m[22m[2m │ gzip: 37.39 kB[22m
 [2mdist/[22m[36massets/proxy-DkIuAswp.js                                         [39m[1m[2m138.15 kB[22m[1m[22m[2m │ gzip: 46.40 kB[22m
 [2mdist/[22m[36massets/index-BvPJadAR.js                                         [39m[1m[2m153.22 kB[22m[1m[22m[2m │ gzip: 32.48 kB[22m
 [2mdist/[22m[36massets/TileLayer-CWQta3nb.js                                     [39m[1m[2m153.80 kB[22m[1m[22m[2m │ gzip: 45.00 kB[22m
-[2mdist/[22m[36massets/index-BYSid-sQ.js                                         [39m[1m[2m178.94 kB[22m[1m[22m[2m │ gzip: 40.13 kB[22m
+[2mdist/[22m[36massets/index-DsO5gbXc.js                                         [39m[1m[2m178.94 kB[22m[1m[22m[2m │ gzip: 40.13 kB[22m
 [2mdist/[22m[36massets/__federation_shared_react-router-dom-CkKRZ9W1.js          [39m[1m[2m199.74 kB[22m[1m[22m[2m │ gzip: 65.30 kB[22m
 [2mdist/[22m[36massets/index-C9jzvzOW.js                                         [39m[1m[2m285.06 kB[22m[1m[22m[2m │ gzip: 87.18 kB[22m
-[32m✓ built in 16.07s[39m
+[32m✓ built in 17.65s[39m
 
 PWA v1.3.0
 mode      generateSW
-precache  227 entries (5297.38 KiB)
+precache  227 entries (5300.13 KiB)
 files generated
   dist/sw.js
   dist/workbox-60b9b2d4.js

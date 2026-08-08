@@ -14,6 +14,9 @@ export default [
   },
   {
     ignores: [
+      '.next/**',
+      'next-env.d.ts',
+      'aegis/**',
       'dist/**',
       'modules/**',
       'coverage/**',
@@ -133,6 +136,12 @@ export default [
   {
     files: ['**/*.{test,spec}.{js,jsx,ts,tsx}'],
     languageOptions: {
+      parser: tsParser,
+      parserOptions: {
+        ecmaFeatures: {
+          jsx: true,
+        },
+      },
       globals: {
         describe: true,
         it: true,

@@ -38,9 +38,10 @@ interface PropertyDetail {
 export async function generateMetadata({
   params,
 }: {
-  params: { id: string };
+  params: Promise<{ id: string }>;
 }): Promise<Metadata> {
-  const property = await getProperty(params.id);
+  const { id } = await params;
+  const property = await getProperty(id);
   if (!property) {
     return { title: 'Property Not Found | White Caves' };
   }
@@ -68,8 +69,7 @@ export async function generateMetadata({
 async function getProperty(id: string): Promise<PropertyDetail | null> {
   return safeQuery(
     async (db) => {
-      // @ts-expect-error — model inferred at runtime
-      const result = await db.property.findUnique({
+      const result = await (db.property as any).findUnique({
         where: { id },
         select: {
           id: true, title: true, description: true, price: true,
@@ -104,9 +104,10 @@ export const dynamic = 'force-dynamic';
 export default async function PropertyDetailPage({
   params,
 }: {
-  params: { id: string };
+  params: Promise<{ id: string }>;
 }) {
-  const property = await getProperty(params.id);
+  const { id } = await params;
+  const property = await getProperty(id);
   if (!property) notFound();
 
   const formatPrice = (p: number | null | undefined) =>

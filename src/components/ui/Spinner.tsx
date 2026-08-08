@@ -270,4 +270,5 @@ const Spinner: FC<SpinnerProps> = memo(function Spinner({
   );
 });
 
+export { Spinner };
 export default Spinner;

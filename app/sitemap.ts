@@ -16,7 +16,6 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   // Fetch active property IDs
   const propertyIds = await safeQuery(
     async (db) => {
-      // @ts-expect-error — model inferred at runtime
       const properties = await db.property.findMany({
         select: { id: true, updatedAt: true },
         take: 1000,

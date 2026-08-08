@@ -19,7 +19,7 @@
  * ────────────────────────────────────────────────────────────────────────────
  */
 
-import React, { useRef } from 'react';
+import React, { useState } from 'react';
 import { Provider } from 'react-redux';
 import { configureStore } from '@reduxjs/toolkit';
 import type { EnhancedStore } from '@reduxjs/toolkit';
@@ -47,10 +47,7 @@ export default function StoreProvider({
 }: {
   children: React.ReactNode;
 }) {
-  const storeRef = useRef<EnhancedStore | null>(null);
-  if (!storeRef.current) {
-    storeRef.current = makeNextStore();
-  }
+  const [store] = useState(() => makeNextStore());
 
-  return <Provider store={storeRef.current}>{children}</Provider>;
+  return <Provider store={store}>{children}</Provider>;
 }

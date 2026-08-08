@@ -31,7 +31,6 @@ interface LeadItem {
 async function getLeads(): Promise<LeadItem[]> {
   return safeQuery(
     async (db) => {
-      // @ts-expect-error — model inferred at runtime
       const leads = await db.lead.findMany({
         take: 50,
         orderBy: { createdAt: 'desc' },
