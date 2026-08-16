@@ -1,7 +1,8 @@
 import React, { useState, useEffect, useMemo, useRef } from 'react';
 import { Send, Search, CheckCheck, User, Phone, ShieldCheck, Tag, Sparkles, Clock, RefreshCw, Wifi, AlertTriangle, Plus, Smartphone, QrCode, Key } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { FixedSizeList as List } from 'react-window';
+import * as reactWindow from 'react-window';
+const List = reactWindow.FixedSizeList;
 
 interface ChatMessage {
   id: string;

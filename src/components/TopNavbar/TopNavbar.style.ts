@@ -19,11 +19,11 @@ export const NavbarContainer = styled(motion.nav)`
 
 export const OverhangingLogoWrapper = styled(motion.div)`
   position: absolute;
-  top: 10px;
+  top: 0;
   left: 50%;
   transform: translateX(-50%);
-  width: 100px;
-  height: 100px;
+  width: 128px;
+  height: 128px;
   background: #FFFFFF;
   border-radius: 50%;
   box-shadow: 0 8px 30px rgba(239, 68, 68, 0.15);

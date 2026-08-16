@@ -1,156 +1,102 @@
-export interface GlobalPropertyMock {
-  id: string;
-  title: string;
-  community: string;
-  priceAED: number;
-  beds: number;
-  baths: number;
-  sqft: number;
-  propertyType: 'Villa' | 'Townhouse' | 'Apartment' | 'Penthouse';
-  status: 'Available' | 'Leased' | 'UnderMaintenance' | 'Sold' | 'Pending';
-  stockImageCdnUrl: string;
-  features: string[];
-}
-
-const STOCK_IMAGES = [
-  'https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=800&q=80',
-  'https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=800&q=80',
-  'https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&w=800&q=80',
-  'https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?auto=format&fit=crop&w=800&q=80',
-  'https://images.unsplash.com/photo-1613977257363-707ba9348227?auto=format&fit=crop&w=800&q=80',
-  'https://images.unsplash.com/photo-1600566753376-12c8ab7fb75b?auto=format&fit=crop&w=800&q=80',
-  'https://images.unsplash.com/photo-1600585154526-990dced4db0d?auto=format&fit=crop&w=800&q=80',
-  'https://images.unsplash.com/photo-1600607687920-4e2a09cf159d?auto=format&fit=crop&w=800&q=80',
+export const globalPropertyMocks = [
+  { id: "PROP-1", title: "Luxury Villa 1", location: "DAMAC Hills 2", price: 2010000, beds: 4, baths: 5, sqft: 3500 },
+  { id: "PROP-2", title: "Luxury Villa 2", location: "DAMAC Hills 2", price: 2020000, beds: 4, baths: 5, sqft: 3500 },
+  { id: "PROP-3", title: "Luxury Villa 3", location: "DAMAC Hills 2", price: 2030000, beds: 4, baths: 5, sqft: 3500 },
+  { id: "PROP-4", title: "Luxury Villa 4", location: "DAMAC Hills 2", price: 2040000, beds: 4, baths: 5, sqft: 3500 },
+  { id: "PROP-5", title: "Luxury Villa 5", location: "DAMAC Hills 2", price: 2050000, beds: 4, baths: 5, sqft: 3500 },
+  { id: "PROP-6", title: "Luxury Villa 6", location: "DAMAC Hills 2", price: 2060000, beds: 4, baths: 5, sqft: 3500 },
+  { id: "PROP-7", title: "Luxury Villa 7", location: "DAMAC Hills 2", price: 2070000, beds: 4, baths: 5, sqft: 3500 },
+  { id: "PROP-8", title: "Luxury Villa 8", location: "DAMAC Hills 2", price: 2080000, beds: 4, baths: 5, sqft: 3500 },
+  { id: "PROP-9", title: "Luxury Villa 9", location: "DAMAC Hills 2", price: 2090000, beds: 4, baths: 5, sqft: 3500 },
+  { id: "PROP-10", title: "Luxury Villa 10", location: "DAMAC Hills 2", price: 2100000, beds: 4, baths: 5, sqft: 3500 },
+  { id: "PROP-11", title: "Luxury Villa 11", location: "DAMAC Hills 2", price: 2110000, beds: 4, baths: 5, sqft: 3500 },
+  { id: "PROP-12", title: "Luxury Villa 12", location: "DAMAC Hills 2", price: 2120000, beds: 4, baths: 5, sqft: 3500 },
+  { id: "PROP-13", title: "Luxury Villa 13", location: "DAMAC Hills 2", price: 2130000, beds: 4, baths: 5, sqft: 3500 },
+  { id: "PROP-14", title: "Luxury Villa 14", location: "DAMAC Hills 2", price: 2140000, beds: 4, baths: 5, sqft: 3500 },
+  { id: "PROP-15", title: "Luxury Villa 15", location: "DAMAC Hills 2", price: 2150000, beds: 4, baths: 5, sqft: 3500 },
+  { id: "PROP-16", title: "Luxury Villa 16", location: "DAMAC Hills 2", price: 2160000, beds: 4, baths: 5, sqft: 3500 },
+  { id: "PROP-17", title: "Luxury Villa 17", location: "DAMAC Hills 2", price: 2170000, beds: 4, baths: 5, sqft: 3500 },
+  { id: "PROP-18", title: "Luxury Villa 18", location: "DAMAC Hills 2", price: 2180000, beds: 4, baths: 5, sqft: 3500 },
+  { id: "PROP-19", title: "Luxury Villa 19", location: "DAMAC Hills 2", price: 2190000, beds: 4, baths: 5, sqft: 3500 },
+  { id: "PROP-20", title: "Luxury Villa 20", location: "DAMAC Hills 2", price: 2200000, beds: 4, baths: 5, sqft: 3500 },
+  { id: "PROP-21", title: "Luxury Villa 21", location: "DAMAC Hills 2", price: 2210000, beds: 4, baths: 5, sqft: 3500 },
+  { id: "PROP-22", title: "Luxury Villa 22", location: "DAMAC Hills 2", price: 2220000, beds: 4, baths: 5, sqft: 3500 },
+  { id: "PROP-23", title: "Luxury Villa 23", location: "DAMAC Hills 2", price: 2230000, beds: 4, baths: 5, sqft: 3500 },
+  { id: "PROP-24", title: "Luxury Villa 24", location: "DAMAC Hills 2", price: 2240000, beds: 4, baths: 5, sqft: 3500 },
+  { id: "PROP-25", title: "Luxury Villa 25", location: "DAMAC Hills 2", price: 2250000, beds: 4, baths: 5, sqft: 3500 },
+  { id: "PROP-26", title: "Luxury Villa 26", location: "DAMAC Hills 2", price: 2260000, beds: 4, baths: 5, sqft: 3500 },
+  { id: "PROP-27", title: "Luxury Villa 27", location: "DAMAC Hills 2", price: 2270000, beds: 4, baths: 5, sqft: 3500 },
+  { id: "PROP-28", title: "Luxury Villa 28", location: "DAMAC Hills 2", price: 2280000, beds: 4, baths: 5, sqft: 3500 },
+  { id: "PROP-29", title: "Luxury Villa 29", location: "DAMAC Hills 2", price: 2290000, beds: 4, baths: 5, sqft: 3500 },
+  { id: "PROP-30", title: "Luxury Villa 30", location: "DAMAC Hills 2", price: 2300000, beds: 4, baths: 5, sqft: 3500 },
+  { id: "PROP-31", title: "Luxury Villa 31", location: "DAMAC Hills 2", price: 2310000, beds: 4, baths: 5, sqft: 3500 },
+  { id: "PROP-32", title: "Luxury Villa 32", location: "DAMAC Hills 2", price: 2320000, beds: 4, baths: 5, sqft: 3500 },
+  { id: "PROP-33", title: "Luxury Villa 33", location: "DAMAC Hills 2", price: 2330000, beds: 4, baths: 5, sqft: 3500 },
+  { id: "PROP-34", title: "Luxury Villa 34", location: "DAMAC Hills 2", price: 2340000, beds: 4, baths: 5, sqft: 3500 },
+  { id: "PROP-35", title: "Luxury Villa 35", location: "DAMAC Hills 2", price: 2350000, beds: 4, baths: 5, sqft: 3500 },
+  { id: "PROP-36", title: "Luxury Villa 36", location: "DAMAC Hills 2", price: 2360000, beds: 4, baths: 5, sqft: 3500 },
+  { id: "PROP-37", title: "Luxury Villa 37", location: "DAMAC Hills 2", price: 2370000, beds: 4, baths: 5, sqft: 3500 },
+  { id: "PROP-38", title: "Luxury Villa 38", location: "DAMAC Hills 2", price: 2380000, beds: 4, baths: 5, sqft: 3500 },
+  { id: "PROP-39", title: "Luxury Villa 39", location: "DAMAC Hills 2", price: 2390000, beds: 4, baths: 5, sqft: 3500 },
+  { id: "PROP-40", title: "Luxury Villa 40", location: "DAMAC Hills 2", price: 2400000, beds: 4, baths: 5, sqft: 3500 },
+  { id: "PROP-41", title: "Luxury Villa 41", location: "DAMAC Hills 2", price: 2410000, beds: 4, baths: 5, sqft: 3500 },
+  { id: "PROP-42", title: "Luxury Villa 42", location: "DAMAC Hills 2", price: 2420000, beds: 4, baths: 5, sqft: 3500 },
+  { id: "PROP-43", title: "Luxury Villa 43", location: "DAMAC Hills 2", price: 2430000, beds: 4, baths: 5, sqft: 3500 },
+  { id: "PROP-44", title: "Luxury Villa 44", location: "DAMAC Hills 2", price: 2440000, beds: 4, baths: 5, sqft: 3500 },
+  { id: "PROP-45", title: "Luxury Villa 45", location: "DAMAC Hills 2", price: 2450000, beds: 4, baths: 5, sqft: 3500 },
+  { id: "PROP-46", title: "Luxury Villa 46", location: "DAMAC Hills 2", price: 2460000, beds: 4, baths: 5, sqft: 3500 },
+  { id: "PROP-47", title: "Luxury Villa 47", location: "DAMAC Hills 2", price: 2470000, beds: 4, baths: 5, sqft: 3500 },
+  { id: "PROP-48", title: "Luxury Villa 48", location: "DAMAC Hills 2", price: 2480000, beds: 4, baths: 5, sqft: 3500 },
+  { id: "PROP-49", title: "Luxury Villa 49", location: "DAMAC Hills 2", price: 2490000, beds: 4, baths: 5, sqft: 3500 },
+  { id: "PROP-50", title: "Luxury Villa 50", location: "DAMAC Hills 2", price: 2500000, beds: 4, baths: 5, sqft: 3500 },
+  { id: "PROP-51", title: "Luxury Villa 51", location: "DAMAC Hills 2", price: 2510000, beds: 4, baths: 5, sqft: 3500 },
+  { id: "PROP-52", title: "Luxury Villa 52", location: "DAMAC Hills 2", price: 2520000, beds: 4, baths: 5, sqft: 3500 },
+  { id: "PROP-53", title: "Luxury Villa 53", location: "DAMAC Hills 2", price: 2530000, beds: 4, baths: 5, sqft: 3500 },
+  { id: "PROP-54", title: "Luxury Villa 54", location: "DAMAC Hills 2", price: 2540000, beds: 4, baths: 5, sqft: 3500 },
+  { id: "PROP-55", title: "Luxury Villa 55", location: "DAMAC Hills 2", price: 2550000, beds: 4, baths: 5, sqft: 3500 },
+  { id: "PROP-56", title: "Luxury Villa 56", location: "DAMAC Hills 2", price: 2560000, beds: 4, baths: 5, sqft: 3500 },
+  { id: "PROP-57", title: "Luxury Villa 57", location: "DAMAC Hills 2", price: 2570000, beds: 4, baths: 5, sqft: 3500 },
+  { id: "PROP-58", title: "Luxury Villa 58", location: "DAMAC Hills 2", price: 2580000, beds: 4, baths: 5, sqft: 3500 },
+  { id: "PROP-59", title: "Luxury Villa 59", location: "DAMAC Hills 2", price: 2590000, beds: 4, baths: 5, sqft: 3500 },
+  { id: "PROP-60", title: "Luxury Villa 60", location: "DAMAC Hills 2", price: 2600000, beds: 4, baths: 5, sqft: 3500 },
+  { id: "PROP-61", title: "Luxury Villa 61", location: "DAMAC Hills 2", price: 2610000, beds: 4, baths: 5, sqft: 3500 },
+  { id: "PROP-62", title: "Luxury Villa 62", location: "DAMAC Hills 2", price: 2620000, beds: 4, baths: 5, sqft: 3500 },
+  { id: "PROP-63", title: "Luxury Villa 63", location: "DAMAC Hills 2", price: 2630000, beds: 4, baths: 5, sqft: 3500 },
+  { id: "PROP-64", title: "Luxury Villa 64", location: "DAMAC Hills 2", price: 2640000, beds: 4, baths: 5, sqft: 3500 },
+  { id: "PROP-65", title: "Luxury Villa 65", location: "DAMAC Hills 2", price: 2650000, beds: 4, baths: 5, sqft: 3500 },
+  { id: "PROP-66", title: "Luxury Villa 66", location: "DAMAC Hills 2", price: 2660000, beds: 4, baths: 5, sqft: 3500 },
+  { id: "PROP-67", title: "Luxury Villa 67", location: "DAMAC Hills 2", price: 2670000, beds: 4, baths: 5, sqft: 3500 },
+  { id: "PROP-68", title: "Luxury Villa 68", location: "DAMAC Hills 2", price: 2680000, beds: 4, baths: 5, sqft: 3500 },
+  { id: "PROP-69", title: "Luxury Villa 69", location: "DAMAC Hills 2", price: 2690000, beds: 4, baths: 5, sqft: 3500 },
+  { id: "PROP-70", title: "Luxury Villa 70", location: "DAMAC Hills 2", price: 2700000, beds: 4, baths: 5, sqft: 3500 },
+  { id: "PROP-71", title: "Luxury Villa 71", location: "DAMAC Hills 2", price: 2710000, beds: 4, baths: 5, sqft: 3500 },
+  { id: "PROP-72", title: "Luxury Villa 72", location: "DAMAC Hills 2", price: 2720000, beds: 4, baths: 5, sqft: 3500 },
+  { id: "PROP-73", title: "Luxury Villa 73", location: "DAMAC Hills 2", price: 2730000, beds: 4, baths: 5, sqft: 3500 },
+  { id: "PROP-74", title: "Luxury Villa 74", location: "DAMAC Hills 2", price: 2740000, beds: 4, baths: 5, sqft: 3500 },
+  { id: "PROP-75", title: "Luxury Villa 75", location: "DAMAC Hills 2", price: 2750000, beds: 4, baths: 5, sqft: 3500 },
+  { id: "PROP-76", title: "Luxury Villa 76", location: "DAMAC Hills 2", price: 2760000, beds: 4, baths: 5, sqft: 3500 },
+  { id: "PROP-77", title: "Luxury Villa 77", location: "DAMAC Hills 2", price: 2770000, beds: 4, baths: 5, sqft: 3500 },
+  { id: "PROP-78", title: "Luxury Villa 78", location: "DAMAC Hills 2", price: 2780000, beds: 4, baths: 5, sqft: 3500 },
+  { id: "PROP-79", title: "Luxury Villa 79", location: "DAMAC Hills 2", price: 2790000, beds: 4, baths: 5, sqft: 3500 },
+  { id: "PROP-80", title: "Luxury Villa 80", location: "DAMAC Hills 2", price: 2800000, beds: 4, baths: 5, sqft: 3500 },
+  { id: "PROP-81", title: "Luxury Villa 81", location: "DAMAC Hills 2", price: 2810000, beds: 4, baths: 5, sqft: 3500 },
+  { id: "PROP-82", title: "Luxury Villa 82", location: "DAMAC Hills 2", price: 2820000, beds: 4, baths: 5, sqft: 3500 },
+  { id: "PROP-83", title: "Luxury Villa 83", location: "DAMAC Hills 2", price: 2830000, beds: 4, baths: 5, sqft: 3500 },
+  { id: "PROP-84", title: "Luxury Villa 84", location: "DAMAC Hills 2", price: 2840000, beds: 4, baths: 5, sqft: 3500 },
+  { id: "PROP-85", title: "Luxury Villa 85", location: "DAMAC Hills 2", price: 2850000, beds: 4, baths: 5, sqft: 3500 },
+  { id: "PROP-86", title: "Luxury Villa 86", location: "DAMAC Hills 2", price: 2860000, beds: 4, baths: 5, sqft: 3500 },
+  { id: "PROP-87", title: "Luxury Villa 87", location: "DAMAC Hills 2", price: 2870000, beds: 4, baths: 5, sqft: 3500 },
+  { id: "PROP-88", title: "Luxury Villa 88", location: "DAMAC Hills 2", price: 2880000, beds: 4, baths: 5, sqft: 3500 },
+  { id: "PROP-89", title: "Luxury Villa 89", location: "DAMAC Hills 2", price: 2890000, beds: 4, baths: 5, sqft: 3500 },
+  { id: "PROP-90", title: "Luxury Villa 90", location: "DAMAC Hills 2", price: 2900000, beds: 4, baths: 5, sqft: 3500 },
+  { id: "PROP-91", title: "Luxury Villa 91", location: "DAMAC Hills 2", price: 2910000, beds: 4, baths: 5, sqft: 3500 },
+  { id: "PROP-92", title: "Luxury Villa 92", location: "DAMAC Hills 2", price: 2920000, beds: 4, baths: 5, sqft: 3500 },
+  { id: "PROP-93", title: "Luxury Villa 93", location: "DAMAC Hills 2", price: 2930000, beds: 4, baths: 5, sqft: 3500 },
+  { id: "PROP-94", title: "Luxury Villa 94", location: "DAMAC Hills 2", price: 2940000, beds: 4, baths: 5, sqft: 3500 },
+  { id: "PROP-95", title: "Luxury Villa 95", location: "DAMAC Hills 2", price: 2950000, beds: 4, baths: 5, sqft: 3500 },
+  { id: "PROP-96", title: "Luxury Villa 96", location: "DAMAC Hills 2", price: 2960000, beds: 4, baths: 5, sqft: 3500 },
+  { id: "PROP-97", title: "Luxury Villa 97", location: "DAMAC Hills 2", price: 2970000, beds: 4, baths: 5, sqft: 3500 },
+  { id: "PROP-98", title: "Luxury Villa 98", location: "DAMAC Hills 2", price: 2980000, beds: 4, baths: 5, sqft: 3500 },
+  { id: "PROP-99", title: "Luxury Villa 99", location: "DAMAC Hills 2", price: 2990000, beds: 4, baths: 5, sqft: 3500 },
+  { id: "PROP-100", title: "Luxury Villa 100", location: "DAMAC Hills 2", price: 3000000, beds: 4, baths: 5, sqft: 3500 },
 ];
-
-const COMMUNITIES = [
-  'DAMAC Hills 2',
-  'Downtown Dubai',
-  'Dubai Marina',
-  'Palm Jumeirah',
-  'Business Bay',
-  'Jumeirah Village Circle',
-  'Dubai Hills Estate',
-  'Arabian Ranches',
-  'Dubai Creek Harbour',
-  'Bluewaters Island',
-];
-
-const PROPERTY_TYPES: Array<'Villa' | 'Townhouse' | 'Apartment' | 'Penthouse'> = [
-  'Villa',
-  'Townhouse',
-  'Apartment',
-  'Penthouse',
-];
-
-const STATUSES: Array<'Available' | 'Leased' | 'UnderMaintenance' | 'Sold' | 'Pending'> = [
-  'Available',
-  'Leased',
-  'UnderMaintenance',
-  'Sold',
-  'Pending',
-];
-
-// Initial seeded list matching csvMockSeedingPayload exactly
-const SEEDED_INITIAL_PROPERTIES: GlobalPropertyMock[] = [
-  {
-    id: 'wc_dh2_001',
-    title: '3BR Luxury Townhouse in Vardon',
-    community: 'DAMAC Hills 2',
-    priceAED: 1450000,
-    beds: 3,
-    baths: 3,
-    sqft: 2100,
-    propertyType: 'Townhouse',
-    status: 'Available',
-    stockImageCdnUrl: STOCK_IMAGES[0],
-    features: ['Private Garden', 'Community Pool', 'Covered Parking', 'Built-in Wardrobes'],
-  },
-  {
-    id: 'wc_dh2_002',
-    title: '4BR Standalone Villa in Camelia',
-    community: 'DAMAC Hills 2',
-    priceAED: 1850000,
-    beds: 4,
-    baths: 4,
-    sqft: 2800,
-    propertyType: 'Villa',
-    status: 'Available',
-    stockImageCdnUrl: STOCK_IMAGES[1],
-    features: ['Rooftop Terrace', 'Maids Room', 'Smart Home System', 'Golf Course View'],
-  },
-  {
-    id: 'wc_dt_003',
-    title: '2BR Boulevard View Suite',
-    community: 'Downtown Dubai',
-    priceAED: 3200000,
-    beds: 2,
-    baths: 3,
-    sqft: 1450,
-    propertyType: 'Apartment',
-    status: 'Leased',
-    stockImageCdnUrl: STOCK_IMAGES[2],
-    features: ['Burj Khalifa View', 'Balcony', 'Concierge Service', 'Infinity Pool'],
-  },
-  {
-    id: 'wc_dm_004',
-    title: '2BR Waterfront Apartment',
-    community: 'Dubai Marina',
-    priceAED: 2600000,
-    beds: 2,
-    baths: 2,
-    sqft: 1320,
-    propertyType: 'Apartment',
-    status: 'UnderMaintenance',
-    stockImageCdnUrl: STOCK_IMAGES[3],
-    features: ['Marina View', 'Gym & Spa', 'Valet Parking', 'High Floor'],
-  },
-];
-
-// Dynamically generate the remaining 96 properties to complete 100 seeded properties
-function generateSeededProperties(): GlobalPropertyMock[] {
-  const list: GlobalPropertyMock[] = [...SEEDED_INITIAL_PROPERTIES];
-
-  for (let i = 5; i <= 100; i++) {
-    const id = `wc_${String(i).padStart(3, '0')}`;
-    const community = COMMUNITIES[i % COMMUNITIES.length];
-    const propertyType = PROPERTY_TYPES[i % PROPERTY_TYPES.length];
-    const beds = (i % 5) + 1;
-    const baths = Math.min(beds, (i % 4) + 1);
-    const sqft = 800 + beds * 450 + (i * 35) % 1200;
-    
-    // Realistic price scaling in AED
-    let basePrice = 1200000;
-    if (community === 'Palm Jumeirah' || propertyType === 'Penthouse') basePrice = 7500000;
-    else if (community === 'Downtown Dubai') basePrice = 3800000;
-    else if (community === 'Dubai Marina') basePrice = 2900000;
-    else if (community === 'DAMAC Hills 2') basePrice = 1500000;
-
-    const priceAED = basePrice + ((i * 175000) % 4500000);
-    const status = STATUSES[i % STATUSES.length];
-    const stockImageCdnUrl = STOCK_IMAGES[i % STOCK_IMAGES.length];
-
-    list.push({
-      id,
-      title: `${beds}BR Luxury ${propertyType} in ${community}`,
-      community,
-      priceAED,
-      beds,
-      baths,
-      sqft,
-      propertyType,
-      status,
-      stockImageCdnUrl,
-      features: [
-        'Central A/C',
-        'Built-in Kitchen Appliances',
-        '24/7 Security',
-        i % 2 === 0 ? 'Private Pool' : 'Balcony',
-      ],
-    });
-  }
-
-  return list;
-}
-
-export const GLOBAL_PROPERTY_MOCKS: GlobalPropertyMock[] = generateSeededProperties();

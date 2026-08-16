@@ -37,3 +37,19 @@
 - [ ] `4_TERMINAL_CHECK`: Execute free local compilation gates via `npm run build`.
 - [ ] `5_HOT_RELOAD`: Verify stability using nodemon server configuration loops with zero runtime log exceptions.
 - [ ] `6_REMOTE_RELEASE`: Run git pull origin main rebase -> git merge develop -> git push origin main to fire Vercel hooks.
+
+## 6. Duplication Purge (Epic 6)
+- [ ] Delete `src/components/navigation/SidebarV1.tsx`
+- [ ] Delete `src/components/navigation/AdminNav.tsx`
+- [ ] Delete `src/components/dashboard/ExecutiveCockpit.tsx`
+- [ ] Delete `src/components/dashboard/HenrySidebar.tsx`
+- [ ] Delete `src/components/home/HeroSearch.tsx`
+- [ ] Delete `src/components/home/NavbarSearch.tsx`
+- [ ] Delete `src/components/shared/PropertyGrid.tsx`
+- [ ] Delete `src/components/shared/PropertyTable.tsx`
+- [ ] Delete `src/components/shared/Calculators.tsx`
+- [ ] Delete `src/components/shared/FinanceWidget.tsx`
+- [ ] Delete `src/components/shared/AlertBanner.tsx`
+- [ ] Delete `src/components/shared/NotificationToast.tsx`
+- [ ] Purge 18 local CSS sheets in `src/components/home/styles/`
+- [ ] Extract raw text from `src/pages/crm/` to `en.json`
