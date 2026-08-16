@@ -83,7 +83,7 @@ export function getRoleRank(role: string | null): number {
  */
 export function getRoleBadgeColor(role: string | null): string {
   const resolved = resolveBackendRole(role ?? '');
-  if (resolved === 'owner') return '#C9A84C'; // gold — Managing Director
+  if (resolved === 'owner') return '#EF4444'; // White Caves Red — Managing Director
   if (['admin', 'manager'].includes(resolved)) return '#6366f1'; // indigo
   if (['hr_staff', 'accounts_staff', 'finance'].includes(resolved)) return '#0ea5e9'; // sky blue
   if (

@@ -1,21 +1,26 @@
 // ─────────────────────────────────────────────────────────────
 // COLORS — Single source of truth for all brand colors
+// AEGIS 2.0 COLOR LOCKDOWN:
+//   ✅ White Caves Red  : #EF4444
+//   ✅ Brilliant White  : #FFFFFF
+//   ✅ Deep Slate Gray  : #1E293B
+//   ❌ FORBIDDEN: Metallic Gold (#C9A84C), Emerald Green, Obsidian Black
 // ─────────────────────────────────────────────────────────────
 
 // PRIMARY BRAND COLORS
 export const colors = {
-  // Brand Colors — METALLIC GOLD (White Caves Brand Color Law)
+  // Brand Colors — WHITE CAVES RED (AEGIS 2.0 Color Lockdown)
   primary: {
-    50: 'rgba(201, 168, 76, 0.05)',
-    100: 'rgba(201, 168, 76, 0.1)',
-    200: 'rgba(201, 168, 76, 0.2)',
-    300: 'rgba(201, 168, 76, 0.35)',
-    400: '#e4b75e',
-    500: '#C9A84C', // Metallic Gold (canonical brand primary)
-    600: '#a8883a',
-    700: '#8a6e2e',
-    800: '#6b5422',
-    900: '#4a3a17',
+    50: 'rgba(239, 68, 68, 0.05)',
+    100: 'rgba(239, 68, 68, 0.1)',
+    200: 'rgba(239, 68, 68, 0.2)',
+    300: 'rgba(239, 68, 68, 0.35)',
+    400: '#F87171',
+    500: '#EF4444', // White Caves Red (canonical brand primary)
+    600: '#DC2626',
+    700: '#B91C1C',
+    800: '#991B1B',
+    900: '#7F1D1D',
   },
 
   // SEMANTIC COLORS
@@ -71,45 +76,45 @@ export const colors = {
     900: '#171717',
   },
 
-  // TEXT COLORS (Obsidian Dark mode)
+  // TEXT COLORS (Deep Slate mode)
   text: {
-    primary: '#ffffff',
-    secondary: 'rgba(255, 255, 255, 0.7)',
-    tertiary: 'rgba(255, 255, 255, 0.45)',
-    inverse: '#0f0f0f',
+    primary: '#1E293B',
+    secondary: 'rgba(30, 41, 59, 0.7)',
+    tertiary: 'rgba(30, 41, 59, 0.45)',
+    inverse: '#FFFFFF',
   },
 
-  // BACKGROUND COLORS (Obsidian Dark palette)
+  // BACKGROUND COLORS (White/Slate palette)
   background: {
-    default: '#0f0f0f',
-    surface: '#1a1a1a',
-    hover: '#1f1f1f',
-    active: '#2c2c2c',
+    default: '#FFFFFF',
+    surface: '#F8FAFC',
+    hover: '#F1F5F9',
+    active: '#E2E8F0',
   },
 
-  // BORDER COLORS (Obsidian Dark palette)
+  // BORDER COLORS (Slate palette)
   border: {
-    light: '#2c2c2c',
-    default: 'rgba(201, 168, 76, 0.3)',
-    dark: '#C9A84C',
+    light: '#E2E8F0',
+    default: 'rgba(239, 68, 68, 0.3)',
+    dark: '#EF4444',
   },
 
   // STATUS SPECIFIC (used in badges, alerts)
   status: {
     success: '#10B981',
-    warning: '#C9A84C',
+    warning: '#F59E0B',
     error: '#EF4444',
-    info: '#C9A84C',
+    info: '#64748B',
   },
 };
 
 // SEMANTIC ALIASES (use these for maintainability)
 export const semanticColors = {
-  brand: colors.primary[500], // #C9A84C — Metallic Gold
+  brand: colors.primary[500], // #EF4444 — White Caves Red
   success: colors.success[500], // #22C55E
   warning: colors.warning[500], // #F59E0B
   error: colors.error[500], // #EF4444
-  info: '#C9A84C', // Metallic Gold (no blue allowed per Brand Color Law)
+  info: '#64748B', // Slate (neutral informational)
 
   // UI-specific
   buttonPrimary: colors.primary[500],

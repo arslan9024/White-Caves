@@ -77,13 +77,11 @@ const InteractiveMap = ({ onPropertySelect }: InteractiveMapProps) => {
   useEffect(() => {
     // Initialize Google Maps Loader as per AEGIS Stage 4 Mandate
     const loader = new Loader({
-      apiKey: process.env.REACT_APP_GOOGLE_MAPS_API_KEY || 'AIzaSyDummyKeyForWhiteCavesRealEstate',
+      apiKey: import.meta.env.VITE_GOOGLE_MAPS_API_KEY || '',
       version: 'weekly',
     });
-    loader.load().then(() => {
-      console.log('Google Maps API loaded successfully.');
-    }).catch(e => {
-      console.error('Error loading Google Maps API:', e);
+    loader.load().catch(() => {
+      // Silent fail — map degrades to SVG visual
     });
 
     if (!savedViewport || selectedLocation) return;
@@ -248,7 +246,7 @@ const InteractiveMap = ({ onPropertySelect }: InteractiveMapProps) => {
               <PropertyCard
                 key={property.id}
                 onClick={() => handlePropertyClick(property)}
-                style={String(property.id) === activePropertyId ? { border: '2px solid #C9A84C' } : undefined}
+                style={String(property.id) === activePropertyId ? { border: '2px solid #EF4444', boxShadow: '0 0 0 3px rgba(239,68,68,0.2)' } : undefined}
               >
                 <PropertyImage
                   src={(property.images as string[])?.[0] || '/company-logo.jpg'}
@@ -282,7 +280,7 @@ const InteractiveMap = ({ onPropertySelect }: InteractiveMapProps) => {
               <PropertyCard
                 key={property.id}
                 onClick={() => handlePropertyClick(property)}
-                style={String(property.id) === activePropertyId ? { border: '2px solid #C9A84C' } : undefined}
+                style={String(property.id) === activePropertyId ? { border: '2px solid #EF4444', boxShadow: '0 0 0 3px rgba(239,68,68,0.2)' } : undefined}
               >
                 <PropertyImage
                   src={(property.images as string[])?.[0] || '/company-logo.jpg'}

@@ -35,23 +35,23 @@ const Grid = styled.div`
 `;
 
 const LoadingSkeletonCard = styled.div`
-  border: 1px solid rgba(201, 168, 76, 0.2);
+  border: 1px solid rgba(239, 68, 68, 0.2);
   border-radius: 12px;
   overflow: hidden;
-  background: #1a1a1a;
+  background: #F8FAFC;
 `;
 
 const PropertyCard = styled.div`
-  background: #0f0f0f;
-  border: 1px solid rgba(201, 168, 76, 0.25);
+  background: #FFFFFF;
+  border: 1px solid rgba(239, 68, 68, 0.25);
   border-radius: 12px;
   overflow: hidden;
   transition: all 0.2s;
 
   &:hover {
-    box-shadow: 0 4px 20px rgba(201, 168, 76, 0.15);
+    box-shadow: 0 4px 20px rgba(239, 68, 68, 0.15);
     transform: translateY(-2px);
-    border-color: rgba(201, 168, 76, 0.5);
+    border-color: rgba(239, 68, 68, 0.5);
   }
 `;
 
@@ -60,15 +60,15 @@ const PropertyImage = styled.div<{ $type?: string }>`
   background: ${props => {
     switch (props.$type) {
       case 'villa':
-        return 'linear-gradient(135deg, #C9A84C 0%, #8a6e2e 100%)';
+        return 'linear-gradient(135deg, #EF4444 0%, #B91C1C 100%)';
       case 'apartment':
-        return 'linear-gradient(135deg, #10B981 0%, #064e3b 100%)';
+        return 'linear-gradient(135deg, #1E293B 0%, #334155 100%)';
       case 'penthouse':
-        return 'linear-gradient(135deg, #C9A84C 0%, #10B981 100%)';
+        return 'linear-gradient(135deg, #EF4444 0%, #1E293B 100%)';
       case 'commercial':
-        return 'linear-gradient(135deg, #1f1f1f 0%, #C9A84C 100%)';
+        return 'linear-gradient(135deg, #0F172A 0%, #EF4444 100%)';
       default:
-        return 'linear-gradient(135deg, #1a1a1a 0%, #2c2c2c 100%)';
+        return 'linear-gradient(135deg, #F8FAFC 0%, #E2E8F0 100%)';
     }
   }};
   display: flex;

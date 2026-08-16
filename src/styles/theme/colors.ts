@@ -1,107 +1,108 @@
 /**
  * Color Palette - White Caves Brand System
  * ═══════════════════════════════════════════════════
- * BRAND COLOR LAW (STRICTLY ENFORCED):
- *   Emerald Green : #10B981  — success, accents, focus
- *   Metallic Gold : #C9A84C  — primary, headings, CTAs
- *   Obsidian Dark : #0f0f0f  — backgrounds, surfaces
+ * AEGIS 2.0 COLOR LOCKDOWN (STRICTLY ENFORCED):
+ *   ✅ White Caves Red  : #EF4444  — primary, headings, CTAs
+ *   ✅ Brilliant White  : #FFFFFF  — backgrounds
+ *   ✅ Deep Slate Gray  : #1E293B  — text, surfaces
+ *   ❌ FORBIDDEN: Metallic Gold (#C9A84C), Emerald Green (#10B981 as primary), Obsidian Black
  * ═══════════════════════════════════════════════════
  */
 
 export const colors = {
-  // Primary Brand Colors — METALLIC GOLD
-  primary: '#C9A84C',
-  primaryDark: '#a8883a',
-  primaryLight: '#e4b75e',
-  primaryVeryLight: 'rgba(201, 168, 76, 0.08)',
+  // Primary Brand Colors — WHITE CAVES RED (AEGIS 2.0)
+  primary: '#EF4444',
+  primaryDark: '#B91C1C',
+  primaryLight: '#F87171',
+  primaryVeryLight: 'rgba(239, 68, 68, 0.08)',
 
-  // Secondary Colors — EMERALD GREEN
-  secondary: '#10B981',
-  secondaryDark: '#064e3b',
-  secondaryLight: '#34d399',
+  // Secondary Colors — Slate
+  secondary: '#1E293B',
+  secondaryDark: '#0F172A',
+  secondaryLight: '#334155',
 
-  // Gold Palette (50→900) — Metallic Gold brand scale
-  gold: {
-    50: 'rgba(201, 168, 76, 0.05)',
-    100: 'rgba(201, 168, 76, 0.1)',
-    200: 'rgba(201, 168, 76, 0.2)',
-    300: 'rgba(201, 168, 76, 0.35)',
-    400: '#e4b75e',
-    500: '#C9A84C',
-    600: '#a8883a',
-    700: '#8a6e2e',
-    800: '#6b5422',
-    900: '#4a3a17',
+  // Red Palette (50→900) — White Caves Red brand scale
+  red: {
+    50: 'rgba(239, 68, 68, 0.05)',
+    100: 'rgba(239, 68, 68, 0.1)',
+    200: 'rgba(239, 68, 68, 0.2)',
+    300: 'rgba(239, 68, 68, 0.35)',
+    400: '#F87171',
+    500: '#EF4444',
+    600: '#DC2626',
+    700: '#B91C1C',
+    800: '#991B1B',
+    900: '#7F1D1D',
   },
 
-  // Green Palette (50→900)
-  green: {
-    50: '#ecfdf5',
-    100: '#d1fae5',
-    200: '#a7f3d0',
-    300: '#6ee7b7',
-    400: '#34d399',
-    500: '#10B981',
-    600: '#059669',
-    700: '#047857',
-    800: '#065f46',
-    900: '#064e3b',
+  // Slate Palette (50→900) — Deep Slate brand scale
+  slate: {
+    50: '#F8FAFC',
+    100: '#F1F5F9',
+    200: '#E2E8F0',
+    300: '#CBD5E1',
+    400: '#94A3B8',
+    500: '#64748B',
+    600: '#475569',
+    700: '#334155',
+    800: '#1E293B',
+    900: '#0F172A',
   },
 
-  // Luxury Gradients — Gold/Emerald/Obsidian brand palette
+  // Brand Gradients — Red/White/Slate palette
   luxury: {
-    goldShimmer: 'linear-gradient(135deg, #C9A84C 0%, #e4b75e 50%, #C9A84C 100%)',
-    goldToGreen: 'linear-gradient(135deg, #C9A84C 0%, #10B981 100%)',
-    darkGreen: 'linear-gradient(135deg, #10B981 0%, #064e3b 100%)',
-    goldDark: 'linear-gradient(180deg, #C9A84C, #a8883a)',
-    warmSand: 'linear-gradient(135deg, #1f1f1f 0%, #2c2c2c 100%)',
-    premiumDark: 'linear-gradient(135deg, #0f0f0f 0%, #1a1a1a 100%)',
+    redShimmer: 'linear-gradient(135deg, #EF4444 0%, #F87171 50%, #EF4444 100%)',
+    redToSlate: 'linear-gradient(135deg, #EF4444 0%, #1E293B 100%)',
+    slateDeep: 'linear-gradient(135deg, #1E293B 0%, #0F172A 100%)',
+    redDark: 'linear-gradient(180deg, #EF4444, #B91C1C)',
+    warmWhite: 'linear-gradient(135deg, #F8FAFC 0%, #FFFFFF 100%)',
+    premiumLight: 'linear-gradient(135deg, #FFFFFF 0%, #F1F5F9 100%)',
   },
 
   // Semantic Colors
   success: '#10B981',
   successLight: '#34d399',
-  warning: '#C9A84C',
-  warningLight: '#e4b75e',
+  warning: '#F59E0B',
+  warningLight: '#FBBF24',
   error: '#EF4444',
-  errorLight: '#f87171',
-  info: '#C9A84C',
-  infoLight: '#e4b75e',
+  errorLight: '#F87171',
+  info: '#64748B',
+  infoLight: '#94A3B8',
 
-  // Text Colors (Obsidian Dark)
+  // Text Colors (White/Slate)
   text: {
-    primary: '#ffffff',
-    secondary: 'rgba(255, 255, 255, 0.7)',
-    tertiary: 'rgba(255, 255, 255, 0.45)',
-    disabled: 'rgba(255, 255, 255, 0.25)',
-    inverse: '#0f0f0f',
+    primary: '#1E293B',
+    secondary: 'rgba(30, 41, 59, 0.7)',
+    tertiary: 'rgba(30, 41, 59, 0.45)',
+    disabled: 'rgba(30, 41, 59, 0.25)',
+    inverse: '#FFFFFF',
   },
 
-  // Background Colors (Obsidian Dark)
+  // Background Colors (White/Slate)
   background: {
-    primary: '#0f0f0f',
-    secondary: '#1a1a1a',
-    tertiary: '#1f1f1f',
-    overlay: 'rgba(0, 0, 0, 0.7)',
-    dark: '#0f0f0f',
-    darkSecondary: '#1a1a1a',
+    primary: '#FFFFFF',
+    secondary: '#F8FAFC',
+    tertiary: '#F1F5F9',
+    overlay: 'rgba(30, 41, 59, 0.7)',
+    dark: '#1E293B',
+    darkSecondary: '#0F172A',
   },
 
   // Border Colors
-  border: '#2c2c2c',
-  borderLight: 'rgba(201, 168, 76, 0.15)',
-  borderDark: '#C9A84C',
+  border: '#E2E8F0',
+  borderLight: 'rgba(239, 68, 68, 0.15)',
+  borderDark: '#EF4444',
 
   // Shadow & Effects
-  shadow: 'rgba(0, 0, 0, 0.3)',
-  shadowLight: 'rgba(0, 0, 0, 0.15)',
-  shadowDark: 'rgba(0, 0, 0, 0.5)',
+  shadow: 'rgba(30, 41, 59, 0.1)',
+  shadowLight: 'rgba(30, 41, 59, 0.05)',
+  shadowDark: 'rgba(30, 41, 59, 0.3)',
 
-  // Departmental / Categorical Colors
+  // Departmental / Categorical Colors (functional only — not brand)
   departments: {
     operations: '#3B82F6',
     finance: '#F59E0B',
-    sales: '#10B981',
+    sales: '#EF4444',
     marketing: '#EC4899',
     communications: '#6366F1',
     hr: '#8B5CF6',
@@ -120,7 +121,6 @@ export const colors = {
   },
 
   // Badge / StatusConfig Colors
-  // Used by statusConfig.ts for badge color overrides across all entity types.
   badges: {
     blue: '#3B82F6',
     cyan: '#06B6D4',
@@ -133,17 +133,17 @@ export const colors = {
     grayLight: '#9CA3AF',
   },
 
-  // Role category colours (used by roles.ts REAL_ESTATE_ROLES)
+  // Role category colours
   roles: {
-    gold: '#E31E24',
+    red: '#EF4444',
     navyBlue: '#1E40AF',
     violet: '#7C3AED',
-    crimson: '#D32F2F',
+    crimson: '#B91C1C',
     royalBlue: '#2563EB',
     deepPurple: '#7C3AED',
     emerald: '#059669',
     orange: '#EA580C',
-    teal: '#10B981',
+    teal: '#0D9488',
     indigo: '#6366F1',
     cyan: '#0891B2',
     mintTeal: '#0D9488',
@@ -161,67 +161,65 @@ export const colors = {
     tangerine: '#F97316',
   },
 
-  // Dark Mode Colors
+  // Light Mode Colors
   dark: {
-    bg: '#1A1A1A',
-    bgSecondary: '#2A2A2A',
-    bgTertiary: '#3A3A3A',
-    text: '#FFFFFF',
-    textSecondary: '#D1D5DB',
-    border: '#404040',
-    shadow: 'rgba(0, 0, 0, 0.3)',
+    bg: '#FFFFFF',
+    bgSecondary: '#F8FAFC',
+    bgTertiary: '#F1F5F9',
+    text: '#1E293B',
+    textSecondary: '#475569',
+    border: '#E2E8F0',
+    shadow: 'rgba(30, 41, 59, 0.1)',
   },
 
   // Utility Aliases for Component Compatibility
-  surface: '#1a1a1a',
-  surfaceAlt: '#1f1f1f',
-  hover: '#2c2c2c',
-  cardBg: '#0f0f0f',
-  textColor: '#ffffff',
-  textPrimary: '#ffffff',
-  textSecondary: 'rgba(255, 255, 255, 0.7)',
-  textMuted: 'rgba(255, 255, 255, 0.45)',
-  borderColor: '#2c2c2c',
-  bgPrimary: '#0f0f0f',
-  bgSecondary: '#1a1a1a',
-  bgTertiary: '#1f1f1f',
+  surface: '#F8FAFC',
+  surfaceAlt: '#F1F5F9',
+  hover: '#FEF2F2',
+  cardBg: '#FFFFFF',
+  textColor: '#1E293B',
+  textPrimary: '#1E293B',
+  textSecondary: 'rgba(30, 41, 59, 0.7)',
+  textMuted: 'rgba(30, 41, 59, 0.45)',
+  borderColor: '#E2E8F0',
+  bgPrimary: '#FFFFFF',
+  bgSecondary: '#F8FAFC',
+  bgTertiary: '#F1F5F9',
   danger: '#EF4444',
-  dangerDark: '#EF4444',
+  dangerDark: '#B91C1C',
   dangerLight: 'rgba(239, 68, 68, 0.15)',
-  accentGold: '#C9A84C',
-  accentEmerald: '#10B981',
-  accentSand: '#2c2c2c',
-  accentCharcoal: '#1a1a1a',
-  glassBackground: 'rgba(15, 15, 15, 0.85)',
-  glassBorder: 'rgba(201, 168, 76, 0.15)',
+  accentRed: '#EF4444',
+  accentSlate: '#1E293B',
+  accentWhite: '#FFFFFF',
+  glassBackground: 'rgba(255, 255, 255, 0.85)',
+  glassBorder: 'rgba(239, 68, 68, 0.15)',
   radiusMd: '8px',
   radiusLg: '12px',
   radiusSm: '6px',
 
-  // Legacy compat — brand primary now Gold
-  brandRed: '#C9A84C',
+  // Brand primary — always Red
+  brandRed: '#EF4444',
 
   // ═══════════════════════════════════════════════════════════════
   // WCAG AA CONTRAST-SAFE VARIANTS
-  // Gold on dark backgrounds easily meets AA contrast thresholds.
   // ═══════════════════════════════════════════════════════════════
   a11y: {
-    /** Brand gold for text on dark backgrounds. */
-    goldText: '#C9A84C',
-    /** Brand gold for large text. */
-    goldLargeText: '#e4b75e',
-    /** Brand gold for UI elements (non-text). */
-    goldUI: '#C9A84C',
-    /** Focus ring — emerald green visible on dark backgrounds. */
-    focusRing: '#10B981',
-    /** Error text — semantic red exception. */
+    /** Brand red for text on light backgrounds. */
+    redText: '#B91C1C',
+    /** Brand red for large text. */
+    redLargeText: '#EF4444',
+    /** Brand red for UI elements (non-text). */
+    redUI: '#EF4444',
+    /** Focus ring — red visible on light backgrounds. */
+    focusRing: '#EF4444',
+    /** Error text — semantic red. */
     errorText: '#EF4444',
-    /** Warning text — gold on dark. */
-    warningText: '#C9A84C',
-    /** Success text — emerald green on dark. */
-    successText: '#10B981',
-    /** Info text — gold on dark. */
-    infoText: '#C9A84C',
+    /** Warning text — amber on light. */
+    warningText: '#D97706',
+    /** Success text — emerald green. */
+    successText: '#059669',
+    /** Info text — slate on light. */
+    infoText: '#1E293B',
   },
 };
 
