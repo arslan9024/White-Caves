@@ -22,7 +22,7 @@ import {
   PrimaryButton,
   SecondaryButton,
 } from './styles/CrmPageStyles';
-import './CadenceRuleAdminPage.css';
+
 
 // ─── Types ───────────────────────────────────────────────────────────────
 

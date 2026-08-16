@@ -2,7 +2,6 @@ import React, { FC, useCallback, useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useDocumentTitle } from '../../hooks/useDocumentTitle';
 import { authFetch } from '../../utils/authFetch';
-import './AuditLogPage.css';
 import {
   PageContainer,
   PageHeader,

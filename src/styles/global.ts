@@ -525,7 +525,7 @@ export const GlobalStyles = createGlobalStyle`
     position: absolute;
     top: -100px;
     left: 16px;
-    background: #C9A84C;
+    background: #EF4444;
     color: #FFFFFF;
     padding: 8px 16px;
     z-index: var(--z-max, 9999);

@@ -4,7 +4,7 @@
 export const lightTheme = {
   colors: {
     // Primary & Secondary
-    primary: '#C9A84C', // Metallic Gold
+    primary: '#EF4444', // White Caves Red
     secondary: '#0EA5E9', // Sky Blue
 
     // Backgrounds (nested structure for styled-components)
@@ -262,17 +262,17 @@ const legacyColors = {
   dark: {
     bg: '#111827',
   },
-  primaryDark: '#a8883a',
-  primaryLight: 'rgba(201, 168, 76, 0.12)',
-  primaryVeryLight: 'rgba(201, 168, 76, 0.05)',
-  secondaryDark: '#064e3b',
+  primaryDark: '#B91C1C',
+  primaryLight: 'rgba(239, 68, 68, 0.12)',
+  primaryVeryLight: 'rgba(239, 68, 68, 0.05)',
+  secondaryDark: '#0F172A',
   luxury: {
-    goldShimmer: 'linear-gradient(135deg, #C9A84C 0%, #e4b75e 50%, #C9A84C 100%)',
-    goldToGreen: 'linear-gradient(135deg, #C9A84C 0%, #10B981 100%)',
-    darkGreen: 'linear-gradient(135deg, #10B981 0%, #064e3b 100%)',
-    goldDark: 'linear-gradient(180deg, #C9A84C, #a8883a)',
-    warmSand: 'linear-gradient(135deg, #1f1f1f 0%, #2c2c2c 100%)',
-    premiumDark: 'linear-gradient(135deg, #0f0f0f 0%, #1a1a1a 100%)',
+    redShimmer: 'linear-gradient(135deg, #EF4444 0%, #F87171 50%, #EF4444 100%)',
+    redToSlate: 'linear-gradient(135deg, #EF4444 0%, #1E293B 100%)',
+    slateDeep: 'linear-gradient(135deg, #1E293B 0%, #0F172A 100%)',
+    redDark: 'linear-gradient(180deg, #EF4444, #B91C1C)',
+    warmWhite: 'linear-gradient(135deg, #FFFFFF 0%, #F8FAFC 100%)',
+    premiumLight: 'linear-gradient(135deg, #F8FAFC 0%, #F1F5F9 100%)',
   },
   border: lightTheme.colors.border.medium,
   borderDark: lightTheme.colors.border.dark,
