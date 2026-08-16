@@ -1,4 +1,13 @@
-export const globalPropertyMocks = [
+export interface GlobalPropertyMock {
+  id: string;
+  title: string;
+  location: string;
+  price: number;
+  beds: number;
+  baths: number;
+  sqft: number;
+}
+export const GLOBAL_PROPERTY_MOCKS: GlobalPropertyMock[] = [
   { id: "PROP-1", title: "Luxury Villa 1", location: "DAMAC Hills 2", price: 2010000, beds: 4, baths: 5, sqft: 3500 },
   { id: "PROP-2", title: "Luxury Villa 2", location: "DAMAC Hills 2", price: 2020000, beds: 4, baths: 5, sqft: 3500 },
   { id: "PROP-3", title: "Luxury Villa 3", location: "DAMAC Hills 2", price: 2030000, beds: 4, baths: 5, sqft: 3500 },
