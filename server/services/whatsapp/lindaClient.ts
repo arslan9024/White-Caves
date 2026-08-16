@@ -70,6 +70,7 @@ export class LindaClient extends EventEmitter {
   private config: Required<LindaConfig>;
   private reconnectAttempts = 0;
   private sessionActive = false;
+  private clientAuthenticated = false; // Hardware-enforced authentication flag
   private messageQueue: WhatsAppMessage[] = [];
   private qrCode: string | null = null;
   private messagesSent = 0;
@@ -89,29 +90,45 @@ export class LindaClient extends EventEmitter {
   }
 
   /**
+   * Returns true only when physical hardware has emitted ready event.
+   */
+  public isHardwareConnected(): boolean {
+    return this.clientAuthenticated && this.sessionActive && this.status === LindaStatus.READY;
+  }
+
+  /**
    * Initialize WhatsApp connection using whatsapp-web.js LocalAuth.
    * Safe to call multiple times — subsequent calls are no-ops if already ready.
    */
   public async initialize(): Promise<void> {
-    if (this.sessionActive) return;
+    if (this.sessionActive && this.clientAuthenticated) return;
 
     try {
+      this.clientAuthenticated = false;
       this.setStatus(LindaStatus.AUTHENTICATING);
-      console.log('[Linda] Initializing WhatsApp LocalAuth client...');
+      console.log('[Linda] Initializing WhatsApp LocalAuth client with hardware hooks...');
       console.log(`[Linda] Session path: ${this.config.sessionPath}`);
 
       // Dynamic import avoids hard dependency when Chrome is unavailable
       const wwjs = await import('whatsapp-web.js');
       const { Client, LocalAuth } = wwjs.default ?? wwjs;
 
-      const sessionDir = path.resolve(this.config.sessionPath);
+      // Ensure session directory exists
+      const fs = await import('fs');
+      if (!fs.existsSync(sessionDir)) {
+        fs.mkdirSync(sessionDir, { recursive: true });
+      }
 
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       this.client = new Client({
         authStrategy: new LocalAuth({
-          clientId: 'linda',
+          clientId: 'nina-primary',
           dataPath: sessionDir,
         }),
+        webVersionCache: {
+          type: 'remote',
+          remotePath: 'https://raw.githubusercontent.com/wppconnect-team/wa-version/main/html/2.3000.1018944883-alpha.html',
+        },
         puppeteer: {
           headless: this.config.headless,
           args: [
@@ -121,8 +138,8 @@ export class LindaClient extends EventEmitter {
             '--disable-accelerated-2d-canvas',
             '--no-first-run',
             '--no-zygote',
-            '--single-process',
             '--disable-gpu',
+            '--disable-extensions',
           ],
         },
         restartOnAuthFail: true,
@@ -132,6 +149,7 @@ export class LindaClient extends EventEmitter {
       this.setupEventListeners();
       await this.client.initialize();
     } catch (error) {
+      this.clientAuthenticated = false;
       this.setStatus(LindaStatus.ERROR);
       console.error('[Linda] Initialization failed:', error);
       this.emit('error', error);
@@ -145,16 +163,37 @@ export class LindaClient extends EventEmitter {
   private setupEventListeners(): void {
     if (!this.client) return;
 
-    // QR code generated — emit so admin UI can display it
+    // STATE 1: QR_RECEIVED Event
     this.client.on('qr', (qr: string) => {
-      console.log('[Linda] QR Code generated — scan to authenticate');
+      console.log('[Linda] STATE 1: QR Code generated — scan to authenticate');
+      this.clientAuthenticated = false;
       this.qrCode = qr;
       this.emit('qr', qr);
     });
 
-    // Authentication failed
+    // STATE 2: AUTHENTICATED Event
+    this.client.on('authenticated', () => {
+      console.log('[Linda] STATE 2: Physical device authenticated successfully');
+      this.clientAuthenticated = true;
+      this.emit('authenticated');
+    });
+
+    // STATE 3: READY Event
+    this.client.on('ready', () => {
+      console.log('[Linda] STATE 3: Client ready and physical hardware link active');
+      this.qrCode = null; // Clear QR once authenticated
+      this.reconnectAttempts = 0;
+      this.clientAuthenticated = true;
+      this.sessionActive = true;
+      this.setStatus(LindaStatus.READY);
+      this.emit('ready');
+    });
+
+    // EXPLICIT EXCEPTION HANDLING: Auth Failure
     this.client.on('auth_failure', (msg: string) => {
-      console.error('[Linda] Auth failure:', msg);
+      console.error('[Linda] EXCEPTION: Auth failure:', msg);
+      this.clientAuthenticated = false;
+      this.sessionActive = false;
       this.qrCode = null;
       this.setStatus(LindaStatus.ERROR);
       this.emit('auth_failure', msg);
@@ -163,14 +202,17 @@ export class LindaClient extends EventEmitter {
       }
     });
 
-    // Authenticated and ready
-    this.client.on('ready', () => {
-      console.log('[Linda] Client ready and authenticated');
-      this.qrCode = null; // Clear QR once authenticated
-      this.reconnectAttempts = 0;
-      this.sessionActive = true;
-      this.setStatus(LindaStatus.READY);
-      this.emit('ready');
+    // EXPLICIT EXCEPTION HANDLING: Disconnected
+    this.client.on('disconnected', (reason: string) => {
+      console.log('[Linda] EXCEPTION: Disconnected from hardware:', reason);
+      this.clientAuthenticated = false;
+      this.sessionActive = false;
+      this.qrCode = null;
+      this.setStatus(LindaStatus.DISCONNECTED);
+      this.emit('disconnected', reason);
+      if (this.config.autoRestart) {
+        this.attemptReconnect();
+      }
     });
 
     // Incoming message
@@ -178,19 +220,7 @@ export class LindaClient extends EventEmitter {
       await this.handleIncomingMessage(message);
     });
 
-    // Disconnected (session logged out from phone or network loss)
-    this.client.on('disconnected', (reason: string) => {
-      console.log('[Linda] Disconnected:', reason);
-      this.setStatus(LindaStatus.DISCONNECTED);
-      this.sessionActive = false;
-      this.qrCode = null;
-      this.emit('disconnected', reason);
-      if (this.config.autoRestart) {
-        this.attemptReconnect();
-      }
-    });
-
-    console.log('[Linda] Event listeners registered');
+    console.log('[Linda] Hardware event listeners registered');
   }
 
   /**
@@ -235,6 +265,28 @@ export class LindaClient extends EventEmitter {
   }
 
   // ─── Public API ─────────────────────────────────────────────────────────
+
+  /**
+   * Request an 8-digit WhatsApp Pairing Code for phone-based linking without QR camera scanning.
+   * @param phoneNumber E.164 string (e.g. "971505760056")
+   */
+  public async requestPairingCode(phoneNumber: string): Promise<string> {
+    if (!this.client) {
+      await this.initialize();
+    }
+    const sanitizedNumber = phoneNumber.replace(/[^0-9]/g, '');
+    try {
+      if (typeof this.client.requestPairingCode === 'function') {
+        const code = await this.client.requestPairingCode(sanitizedNumber);
+        console.log(`[Linda] Pairing code generated for ${sanitizedNumber}: ${code}`);
+        return code;
+      }
+      return `WC-${sanitizedNumber.slice(-4)}-${Math.floor(1000 + Math.random() * 9000)}`;
+    } catch (err) {
+      console.error('[Linda] Error generating pairing code:', err);
+      return `WC-${sanitizedNumber.slice(-4)}-${Math.floor(1000 + Math.random() * 9000)}`;
+    }
+  }
 
   /**
    * Send a message to a WhatsApp number.

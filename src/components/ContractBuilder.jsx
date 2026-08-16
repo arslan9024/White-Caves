@@ -63,7 +63,7 @@ export default function ContractBuilder({
     } catch (err) {
       setTemplates(DEFAULT_TEMPLATES);
       setError('Failed to load templates');
-      console.error(err);
+      
     }
   };
 
@@ -170,7 +170,7 @@ export default function ContractBuilder({
       }
     } catch (err) {
       setError('Failed to create contract');
-      console.error(err);
+      
     } finally {
       setLoading(false);
     }

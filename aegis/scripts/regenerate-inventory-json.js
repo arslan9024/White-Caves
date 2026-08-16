@@ -3,7 +3,7 @@ import fs from 'fs';
 import path from 'path';
 
 const EXCEL_PATH = 'attached_assets/Akoya-Oxygen-2023-Arslan-only_1767877172288.xlsx';
-const OUTPUT_DIR = 'src/data/damacHills2';
+const OUTPUT_DIR = 'public/data/damacHills2';
 
 const COLUMN_MAPPING = {
   'P-NUMBER': 'pNumber',

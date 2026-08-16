@@ -607,10 +607,6 @@ class AIOrchestrationEngine {
         return { success: false, error: `Unknown task type: ${taskCategory}` };
       }
 
-      console.log(`[${orchestrationId}] Orchestrating: ${taskDescription}`);
-      console.log(`[${orchestrationId}] Category: ${taskCategory}`);
-      console.log(`[${orchestrationId}] Routing: ${route.primary.join(' + ')}`);
-
       // Step 2: Prepare assistant execution plan
       const executionPlan = this._createExecutionPlan(taskCategory, route, context);
 
@@ -641,7 +637,7 @@ class AIOrchestrationEngine {
       };
 
     } catch (error) {
-      console.error(`[${orchestrationId}] Orchestration failed:`, error);
+      
       return {
         success: false,
         orchestrationId,
@@ -667,7 +663,7 @@ class AIOrchestrationEngine {
       if (result.status === 'fulfilled') {
         successResults[assistant] = result.value;
       } else {
-        console.error(`[${orchestrationId}] ${assistant} failed:`, result.reason);
+        
         successResults[assistant] = { error: result.reason };
       }
     });
@@ -694,7 +690,7 @@ class AIOrchestrationEngine {
           }
         }
       } catch (error) {
-        console.error(`[${orchestrationId}] ${step.assistant} failed:`, error);
+        
         successResults[step.assistant] = { error: error.message };
       }
     }
@@ -712,7 +708,6 @@ class AIOrchestrationEngine {
 
       setTimeout(() => {
         const output = this._simulateAssistantOutput(assistantId, taskType, input);
-        console.log(`[${orchestrationId}] ✓ ${assistantId} completed ${taskType} in ${Math.round(processingTime)}ms`);
         
         resolve({
           assistantId,

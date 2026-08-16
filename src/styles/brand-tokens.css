@@ -1,0 +1,178 @@
+/**
+ * White Caves Real Estate LLC — Master Brand Design Tokens & CSS Variables
+ * Wave 60 FE-GOAL-042 | WCAG AAA Accessibility & Dubai Luxury Aesthetics
+ */
+:root {
+  /* Brand Core Palette */
+  --wc-red-primary: #EF4444;
+  --wc-red-hover: #DC2626;
+  --wc-red-active: #B91C1C;
+  --wc-red-subtle: rgba(239, 68, 68, 0.12);
+  --wc-red-glow: rgba(239, 68, 68, 0.35);
+  --wc-red-gradient: linear-gradient(135deg, #EF4444 0%, #DC2626 100%);
+
+  /* Dubai Sovereign Gold & Accents */
+  --wc-gold-primary: #D4AF37;
+  --wc-gold-hover: #C5A028;
+  --wc-gold-active: #AA7C11;
+  --wc-gold-subtle: rgba(212, 175, 55, 0.12);
+  --wc-gold-glow: rgba(212, 175, 55, 0.35);
+  --wc-gold-gradient: linear-gradient(135deg, #D4AF37 0%, #AA7C11 100%);
+  --wc-gold-shimmer: linear-gradient(90deg, rgba(212, 175, 55, 0) 0%, rgba(212, 175, 55, 0.4) 50%, rgba(212, 175, 55, 0) 100%);
+
+  /* Neutrals & Dark Luxury Slate Canvas */
+  --wc-bg-canvas: #070B14;
+  --wc-bg-surface: #0F172A;
+  --wc-bg-card: #1E293B;
+  --wc-bg-card-hover: #334155;
+  --wc-bg-glass: rgba(15, 23, 42, 0.85);
+  --wc-border-subtle: rgba(100, 116, 139, 0.2);
+  --wc-border-active: rgba(239, 68, 68, 0.4);
+  --wc-border-gold: rgba(212, 175, 55, 0.35);
+
+  /* Typography & Text */
+  --wc-text-primary: #FFFFFF;
+  --wc-text-secondary: #CBD5E1;
+  --wc-text-muted: #94A3B8;
+  --wc-text-faint: #64748B;
+  --wc-font-headline: 'Outfit', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --wc-font-serif: 'Playfair Display', Georgia, serif;
+  --wc-font-body: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+
+  /* Accent & Status */
+  --wc-emerald: #10B981;
+  --wc-emerald-subtle: rgba(16, 185, 129, 0.12);
+  --wc-amber: #F59E0B;
+  --wc-amber-subtle: rgba(245, 158, 11, 0.12);
+  --wc-purple-vip: #8B5CF6;
+  --wc-purple-subtle: rgba(139, 92, 246, 0.12);
+  --wc-sky-blue: #38BDF8;
+  --wc-sky-subtle: rgba(56, 189, 248, 0.12);
+
+  /* Elevation & Shadows */
+  --wc-shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.2);
+  --wc-shadow-md: 0 8px 24px rgba(0, 0, 0, 0.35);
+  --wc-shadow-lg: 0 16px 40px rgba(0, 0, 0, 0.45);
+  --wc-shadow-luxury: 0 12px 36px rgba(239, 68, 68, 0.18);
+  --wc-shadow-gold: 0 12px 36px rgba(212, 175, 55, 0.22);
+  --wc-shadow-vip: 0 12px 36px rgba(139, 92, 246, 0.18);
+
+  /* Radius */
+  --wc-radius-sm: 6px;
+  --wc-radius-md: 10px;
+  --wc-radius-lg: 16px;
+  --wc-radius-xl: 24px;
+  --wc-radius-full: 9999px;
+
+  /* Transitions & Micro-Easings */
+  --wc-transition-fast: 150ms cubic-bezier(0.4, 0, 0.2, 1);
+  --wc-transition-normal: 250ms cubic-bezier(0.4, 0, 0.2, 1);
+  --wc-transition-smooth: 400ms cubic-bezier(0.16, 1, 0.3, 1);
+  --wc-transition-bounce: 500ms cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+/* Custom Luxury Scrollbars */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--wc-bg-canvas);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--wc-bg-card-hover);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--wc-red-primary);
+}
+
+/* Focus Ring Accessibility */
+*:focus-visible {
+  outline: 2px solid var(--wc-red-primary);
+  outline-offset: 2px;
+}
+
+/* Universal Button Components */
+.wc-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  font-family: var(--wc-font-headline);
+  font-weight: 600;
+  font-size: 0.875rem;
+  letter-spacing: 0.02em;
+  padding: 0.625rem 1.25rem;
+  border-radius: var(--wc-radius-md);
+  border: 1px solid transparent;
+  cursor: pointer;
+  text-decoration: none;
+  transition: all var(--wc-transition-normal);
+  user-select: none;
+  position: relative;
+  overflow: hidden;
+}
+
+.wc-btn-primary {
+  background: var(--wc-red-gradient);
+  color: #FFFFFF;
+  box-shadow: 0 4px 14px rgba(239, 68, 68, 0.35);
+}
+
+.wc-btn-primary:hover {
+  background: linear-gradient(135deg, #DC2626 0%, #B91C1C 100%);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(239, 68, 68, 0.5);
+}
+
+.wc-btn-primary:active {
+  transform: translateY(0);
+}
+
+.wc-btn-gold {
+  background: var(--wc-gold-gradient);
+  color: #070B14;
+  font-weight: 700;
+  box-shadow: 0 4px 14px rgba(212, 175, 55, 0.35);
+}
+
+.wc-btn-gold:hover {
+  background: linear-gradient(135deg, #E5C358 0%, #D4AF37 100%);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(212, 175, 55, 0.5);
+}
+
+.wc-btn-gold:active {
+  transform: translateY(0);
+}
+
+.wc-btn-glass {
+  background: rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  color: #FFFFFF;
+}
+
+.wc-btn-glass:hover {
+  background: rgba(255, 255, 255, 0.16);
+  border-color: rgba(255, 255, 255, 0.3);
+  transform: translateY(-2px);
+}
+
+/* Screen Reader Utility Class */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border-width: 0;
+}

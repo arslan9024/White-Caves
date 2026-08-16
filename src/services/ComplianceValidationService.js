@@ -278,7 +278,6 @@ class ComplianceValidationService {
     }
 
     // In production, would save to database for compliance audit
-    console.warn('[COMPLIANCE] Violation detected:', log);
 
     return log;
   }

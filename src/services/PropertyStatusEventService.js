@@ -62,7 +62,7 @@ class PropertyStatusEventService {
       // Call all subscribers for this event type
       const promises = subscribers.map(callback => 
         Promise.resolve(callback(event)).catch(error => {
-          console.error(`Error in subscriber for ${event.type}:`, error);
+          
           event.errors.push({
             subscriber: callback.name || 'anonymous',
             error: error.message
@@ -73,7 +73,7 @@ class PropertyStatusEventService {
       await Promise.all(promises);
       event.processed = true;
     } catch (error) {
-      console.error(`Error processing event ${event.id}:`, error);
+      
       event.errors.push({
         processor: 'main',
         error: error.message
@@ -204,9 +204,7 @@ class PropertyStatusEventService {
    */
   async maryOnLeaseSigned(event) {
     const { propertyId, tenantName, tenantPhone, tenantEmail, leaseStartDate, leaseEndDate, rentAmount } = event.payload;
-    
-    console.log(`[MARY] Updating property ${propertyId}: Lease signed by ${tenantName}`);
-    
+
     // In actual implementation, would call Mary's API
     // PUT /api/inventory/{propertyId}
     const updatePayload = {
@@ -231,8 +229,7 @@ class PropertyStatusEventService {
    * Notify Linda when property status changes
    */
   async lindaOnPropertyStatusChange(event) {
-    console.log(`[LINDA] Property status changed: ${event.type} for property ${event.payload.propertyId}`);
-    
+
     // In actual implementation, would notify Linda's CRM dashboard
     // POST /api/whatsapp/conversations/notify
     const notification = {
@@ -251,8 +248,7 @@ class PropertyStatusEventService {
    * Notify Nina about property availability changes
    */
   async ninaOnPropertyAvailabilityChange(event) {
-    console.log(`[NINA] Property availability changed: ${event.payload.propertyId}`);
-    
+
     // Nina should update its knowledge base about property availability
     const notification = {
       type: 'property_availability_change',

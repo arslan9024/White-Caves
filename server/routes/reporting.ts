@@ -1085,4 +1085,35 @@ router.get(
   })
 );
 
+// ─── Wave 34: GET /api/dashboard/reports/financial/commissions/export ────
+router.get(
+  '/reports/financial/commissions/export',
+  requirePermission('export_financial_reports'),
+  asyncHandler(async (req: Request, res: Response) => {
+    const agentId = req.query.agentId as string | undefined;
+    const file = await documentService.generateCommissionDetailExcel(agentId);
+
+    res.setHeader('Content-Type', file.mimeType);
+    res.setHeader('Content-Disposition', `attachment; filename="${file.filename}"`);
+    res.status(200).send(file.buffer);
+  })
+);
+
+// ─── Wave 34: GET /api/dashboard/reports/financial/pnl/pdf ─────────────
+router.get(
+  '/reports/financial/pnl/pdf',
+  requirePermission('export_financial_reports'),
+  asyncHandler(async (req: Request, res: Response) => {
+    const now = new Date();
+    const year = parseInt((req.query.year as string) || String(now.getFullYear()), 10);
+    const month = parseInt((req.query.month as string) || String(now.getMonth() + 1), 10);
+
+    const file = await documentService.generateMonthlyPnLPdf(year, month);
+
+    res.setHeader('Content-Type', file.mimeType);
+    res.setHeader('Content-Disposition', `attachment; filename="${file.filename}"`);
+    res.status(200).send(file.buffer);
+  })
+);
+
 export default router;

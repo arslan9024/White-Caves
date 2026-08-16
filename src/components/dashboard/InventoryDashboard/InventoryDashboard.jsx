@@ -140,7 +140,7 @@ const InventoryDashboard = () => {
       }
     } catch (error) {
       if (error.name !== 'AbortError') {
-        console.error('Error loading area summaries:', error);
+        
       }
     } finally {
       setLoading(false);
@@ -180,7 +180,7 @@ const InventoryDashboard = () => {
       }
     } catch (error) {
       if (error.name !== 'AbortError') {
-        console.error('Error loading dashboard stats:', error);
+        
       }
     }
   }, []);
@@ -223,7 +223,7 @@ const InventoryDashboard = () => {
       }
     } catch (error) {
       if (error.name !== 'AbortError') {
-        console.error(`Error loading properties for ${area}:`, error);
+        
       }
     } finally {
       setAreaLoadingState(prev => ({ ...prev, [area]: false }));
@@ -358,7 +358,7 @@ const InventoryDashboard = () => {
         setBulkError(result.message || `Failed to perform bulk ${bulkActionType}`);
       }
     } catch (error) {
-      console.error('Bulk operation error:', error);
+      
       setBulkError(`Error performing bulk ${bulkActionType}: ${error.message}`);
     } finally {
       setIsBulkLoading(false);

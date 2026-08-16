@@ -4,8 +4,8 @@
 > **Framework:** Rational Unified Process (RUP) 4-Tier Software Docs Isolation  
 > **Brand Palette Lockdown:** White Caves Red (`#EF4444`) | Crisp White (`#FFFFFF`) | Deep Slate Gray (`#1E293B`)  
 > **Architecture Pattern:** View-Logic-Style 3-Folder Component Isolation (`*.tsx`, `*.logic.ts`, `*.style.ts`)  
-> **Active Wave Backlog:** [WAVE_30_IMPLEMENTATION_BACKLOG.md](plans/waves/WAVE_30_IMPLEMENTATION_BACKLOG.md) (Wave 30)  
-> **Last Updated:** 2026-08-02  
+> **Active Wave Backlog:** [WAVE_45_IMPLEMENTATION_BACKLOG.md](waves/WAVE_45_IMPLEMENTATION_BACKLOG.md) (Wave 45 SRS Roadmap)  
+> **Last Updated:** 2026-08-09  
 
 ---
 

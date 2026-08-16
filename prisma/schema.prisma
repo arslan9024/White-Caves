@@ -241,6 +241,12 @@ model Property {
   rentIndexRef        String? // RERA Rent Index reference (for rent increase calculations)
   furnished           Boolean @default(false) // affects max deposit calculation
 
+  // ─── RERA Permit Enforcement (SRS §4.3, RERA Law No. 16/2007) ────────
+  // Every listing published on PropertyFinder/Bayut and internally must carry
+  // a valid RERA permit. System blocks publishing if missing or expired.
+  reraPermitNumber    String?   // RERA Trakheesi permit number (e.g. 71234-2024)
+  reraPermitExpiryDate DateTime? // Permit expiry date — enforced on publish
+
   // Verification evidence fields (P0-012)
   verifiedAt        DateTime?  // when listing was verified
   verifiedBy        String?    @db.ObjectId  // userId who verified
@@ -692,6 +698,7 @@ model Lease {
   property      Property @relation(fields: [propertyId], references: [id])
   addenda       LeaseAddendum[]
   pdcSchedule   PDCSchedule[]
+  rentPayments  RentPayment[]
 
   @@index([tenantId])
   @@index([landlordId])
@@ -699,6 +706,30 @@ model Lease {
   @@index([status])
   @@index([endDate])
   @@index([createdAt])
+}
+
+// ─── RENT PAYMENT SCHEDULE ───────────────────────────────────────────────
+
+model RentPayment {
+  id            String    @id @default(auto()) @map("_id") @db.ObjectId
+  leaseId       String    @db.ObjectId
+  installment   Int       // 1..12
+  amountAED     Float
+  dueDate       DateTime
+  paidDate      DateTime?
+  status        String    @default("pending") // pending, paid, overdue, waived
+  paymentMethod String?   // pdc, bank_transfer, card, cash
+  receiptNumber String?
+  lateFeeAED    Float     @default(0)
+  notes         String?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  lease         Lease     @relation(fields: [leaseId], references: [id], onDelete: Cascade)
+
+  @@index([leaseId])
+  @@index([status])
+  @@index([dueDate])
 }
 
 // ─── MAINTENANCE ────────────────────────────────────────────────────────
@@ -716,6 +747,14 @@ model Maintenance {
   costCurrency  String   @default("AED")  // AED, USD, EUR, GBP, INR
   images        String[]
   notes         String?
+  // Wave 36 Contractor & SLA fields
+  contractorId  String?  @db.ObjectId
+  contractorName String?
+  assignedAt    DateTime?
+  slaDeadline   DateTime?
+  slaBreached   Boolean  @default(false)
+  tenantRating  Int?     // 1-5 rating upon resolution
+  tenantFeedback String? // Optional feedback comments
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
 
@@ -727,9 +766,11 @@ model Maintenance {
 
   @@index([requesterId])
   @@index([propertyId])
+  @@index([contractorId])
   @@index([status])
   @@index([priority])
   @@index([category])
+  @@index([slaBreached])
   @@index([createdAt])
 }
 
@@ -1203,8 +1244,11 @@ model PDCSchedule {
   chequeNumber  String
   bankName      String
   amount        Float
+  amountAED     Float?   // Alias field for AED clearance tracking
   currency      String   @default("AED")
   dueDate       DateTime
+  clearanceDate DateTime?
+  bouncedReason String?
   status        String   @default("pending") // pending, presented, cleared, bounced
   chequeImageUrl String? // Upload of scanned cheque
   reminderSent  Boolean  @default(false)
@@ -1215,8 +1259,8 @@ model PDCSchedule {
   // Relations
   leaseId       String   @db.ObjectId
   lease         Lease    @relation(fields: [leaseId], references: [id])
-  tenantId      String   @db.ObjectId
-  tenant        User     @relation("PDCTenant", fields: [tenantId], references: [id])
+  tenantId      String?  @db.ObjectId
+  tenant        User?    @relation("PDCTenant", fields: [tenantId], references: [id])
 
   @@index([leaseId])
   @@index([tenantId])
@@ -1296,6 +1340,58 @@ model BroadcastStat {
   totalReplied   Int      @default(0)
   createdAt      DateTime @default(now())
   updatedAt      DateTime @updatedAt
+}
+
+// ─── CAMPAIGN MODULE (Wave 38) ──────────────────────────────────────────
+
+model Campaign {
+  id               String   @id @default(auto()) @map("_id") @db.ObjectId
+  name             String
+  type             String   @default("whatsapp_broadcast") // whatsapp_broadcast, email_newsletter, sms_alert
+  templateName     String                                 // Meta WABA approved template name
+  templateLanguage String   @default("en")                // en, ar
+  templateVars     Json?                                  // Dynamic header/body placeholders
+  audienceFilter   Json?                                  // { minScore, status, propertyType, location }
+  scheduledAt      DateTime?
+  startedAt        DateTime?
+  completedAt      DateTime?
+  status           String   @default("draft")             // draft, scheduled, sending, completed, cancelled, failed
+  targetCount      Int      @default(0)
+  sentCount        Int      @default(0)
+  deliveredCount   Int      @default(0)
+  readCount        Int      @default(0)
+  failedCount      Int      @default(0)
+  createdById      String?  @db.ObjectId
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+
+  recipients       CampaignRecipient[]
+
+  @@index([status])
+  @@index([scheduledAt])
+  @@index([createdAt])
+}
+
+model CampaignRecipient {
+  id            String    @id @default(auto()) @map("_id") @db.ObjectId
+  campaignId    String    @db.ObjectId
+  leadId        String?   @db.ObjectId
+  phone         String
+  name          String?
+  status        String    @default("pending") // pending, sent, delivered, read, failed
+  wabaMessageId String?
+  sentAt        DateTime?
+  deliveredAt   DateTime?
+  readAt        DateTime?
+  errorMessage  String?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  campaign      Campaign  @relation(fields: [campaignId], references: [id], onDelete: Cascade)
+
+  @@index([campaignId])
+  @@index([leadId])
+  @@index([status])
 }
 
 // ─── LINDA: COMMISSION RULE ─────────────────────────────────────────────
@@ -1933,4 +2029,25 @@ model EventRSVP {
   createdAt   DateTime @default(now())
 
   @@unique([eventId, tenantId])
+}
+
+// ─── Wave 41: KYC Record Schema ───────────────────────────────────────────
+model KycRecord {
+  id              String   @id @default(auto()) @map("_id") @db.ObjectId
+  clientId        String?  @db.ObjectId
+  clientName      String
+  clientEmail     String?
+  clientPhone     String?
+  transactionType String   @default("lease") // lease, sale, renewal
+  status          String   @default("pending_submission") // pending_submission, under_review, verified, rejected
+  documents       Json?    // [{ docType: string, fileUrl: string, uploadedAt: string }]
+  rejectionReason String?
+  reviewedById    String?
+  reviewedByName  String?
+  verifiedAt      DateTime?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  @@index([clientId])
+  @@index([status])
 }

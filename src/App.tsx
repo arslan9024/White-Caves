@@ -35,6 +35,8 @@ const PendingApprovalPage = lazyRetry(() => import('./pages/auth/PendingApproval
 const SignInPage = lazyRetry(() => import('./pages/auth/SignInPage'));
 const HomePage = lazyRetry(() => import('./pages/HomePage'));
 const ServerStatusPage = lazyRetry(() => import('./pages/ServerStatusPage'));
+const PricingPage = lazyRetry(() => import('./pages/PricingPage'));
+const GoalsGalleryPage = lazyRetry(() => import('./pages/goals/GoalsGalleryPage'));
 // Removed CompanyDashboard
 
 // ─── Types ──────────────────────────────────────────────────────────────
@@ -82,21 +84,23 @@ function getRoleLandingPath(role: string | null | undefined, email?: string): st
 }
 
 const LEGACY_DASHBOARD_REDIRECT_ROUTES: Array<{ path: string; to: string }> = [
-  { path: '/lion/dashboard', to: '/crm?tab=overview&cockpit=md' },
-  { path: '/owner/dashboard', to: '/crm?tab=overview&cockpit=md' },
-  { path: '/md/dashboard', to: '/crm?tab=overview&cockpit=md' },
-  { path: '/buyer/dashboard', to: '/crm' },
-  { path: '/seller/dashboard', to: '/crm' },
-  { path: '/leasing-agent/dashboard', to: '/crm' },
-  { path: '/secondary-sales-agent/dashboard', to: '/crm' },
+  { path: '/lion/dashboard', to: '/dashboard' },
+  { path: '/owner/dashboard', to: '/dashboard' },
+  { path: '/md/dashboard', to: '/dashboard' },
+  { path: '/buyer/dashboard', to: '/dashboard' },
+  { path: '/seller/dashboard', to: '/dashboard' },
+  { path: '/leasing-agent/dashboard', to: '/dashboard' },
+  { path: '/secondary-sales-agent/dashboard', to: '/dashboard' },
   { path: '/landlord/dashboard', to: '/landlord-portal' },
   { path: '/tenant/dashboard', to: '/tenant-portal' },
 ];
 
 const LEGACY_OWNER_REDIRECT_ROUTES: Array<{ path: string; to: string }> = [
-  { path: '/owner/business-model', to: '/crm?tab=overview&cockpit=md' },
-  { path: '/owner/client-services', to: '/crm?tab=overview&cockpit=md' },
-  { path: '/modern-dashboard', to: '/crm?tab=overview&cockpit=md' },
+  { path: '/owner/business-model', to: '/dashboard' },
+  { path: '/owner/client-services', to: '/dashboard' },
+  { path: '/modern-dashboard', to: '/dashboard' },
+  { path: '/crm', to: '/dashboard' },
+  { path: '/owner/crm', to: '/dashboard' },
 ];
 
 // ─── Protected Route ────────────────────────────────────────────────────
@@ -240,13 +244,11 @@ function DashboardEntryRoute() {
   }
 
   return (
-    <UnifiedWorkspaceLayout>
-      <RouteErrorBoundary section="Dashboard">
-        <Suspense fallback={<SuspenseLoader />}>
-          <UnifiedDashboardPage />
-        </Suspense>
-      </RouteErrorBoundary>
-    </UnifiedWorkspaceLayout>
+    <RouteErrorBoundary section="Dashboard">
+      <Suspense fallback={<SuspenseLoader />}>
+        <CRMHubPage />
+      </Suspense>
+    </RouteErrorBoundary>
   );
 }
 
@@ -290,8 +292,8 @@ const SalesPipelinePage = lazy(() => import('./pages/secondary-sales-agent/Sales
 // Leasing Acquisition (Sprint 1)
 const LeasingAcquisition = lazy(() => import('./pages/LeasingAcquisition'));
 
-// Unified Dashboard (replaces role-specific dashboards)
-const UnifiedDashboardPage = lazy(() => import('./pages/crm/UnifiedDashboardPage'));
+// Executive Dashboard (central command center)
+const CRMHubPage = lazy(() => import('./pages/crm/CRMHubPage'));
 const ViewingsPage = lazy(() => import('./pages/crm/ViewingsPage'));
 const NadiaPage = lazy(() => import('./pages/NadiaPage'));
 
@@ -664,6 +666,7 @@ function App(): React.JSX.Element {
     { path: '/property/:id', section: 'PropertyDetail', page: <PropertyDetailPage /> },
     { path: '/about', section: 'About', page: <AboutPage /> },
     { path: '/services', section: 'Services', page: <ServicesPage /> },
+    { path: '/pricing', section: 'Pricing', page: <PricingPage /> },
     { path: '/careers', section: 'Careers', page: <CareersPage /> },
     { path: '/contact', section: 'Contact', page: <ContactPage /> },
     {
@@ -673,6 +676,7 @@ function App(): React.JSX.Element {
     },
     { path: '/terms', section: 'Terms', page: <TermsPage /> },
     { path: '/tools', section: 'Tools', page: <ToolsPage /> },
+    { path: '/goals', section: 'Goals Gallery', page: <GoalsGalleryPage /> },
     {
       path: '/ai-intelligence',
       section: 'AI Intelligence',
@@ -772,16 +776,25 @@ function App(): React.JSX.Element {
                         ])}
                       />
 
-                      {/* ==================== UNIFIED DASHBOARD ==================== */}
+                      {/* ==================== EXECUTIVE DASHBOARD ==================== */}
                       <Route
-                        path="/crm/:department?"
+                        path="/dashboard/*"
                         element={
                           <ProtectedRoute>
                             <DashboardEntryRoute />
                           </ProtectedRoute>
                         }
                       />
-                      <Route path="/dashboard" element={<Navigate to="/crm" replace />} />
+                      <Route
+                        path="/dashboard"
+                        element={
+                          <ProtectedRoute>
+                            <DashboardEntryRoute />
+                          </ProtectedRoute>
+                        }
+                      />
+                      <Route path="/crm/*" element={<Navigate to="/dashboard" replace />} />
+                      <Route path="/crm" element={<Navigate to="/dashboard" replace />} />
 
                       {/* ==================== ROLE-SPECIFIC SUB-PAGES ==================== */}
                       {roleSpecificAppRoutes.map(route => (

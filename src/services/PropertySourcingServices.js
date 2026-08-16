@@ -109,7 +109,7 @@ class PropertySourcingService {
 
       return opportunity;
     } catch (error) {
-      console.error('Error creating opportunity:', error);
+      
       throw error;
     }
   }
@@ -151,7 +151,7 @@ class PropertySourcingService {
 
       return opportunity;
     } catch (error) {
-      console.error('Error updating verification status:', error);
+      
       throw error;
     }
   }
@@ -224,7 +224,7 @@ class PropertySourcingService {
 
       return property;
     } catch (error) {
-      console.error('Error converting opportunity to property:', error);
+      
       throw error;
     }
   }
@@ -309,7 +309,7 @@ class PropertySourcingService {
 
       return stats;
     } catch (error) {
-      console.error('Error getting sourcing stats:', error);
+      
       throw error;
     }
   }

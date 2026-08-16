@@ -38,7 +38,7 @@ const ImportHistoryPage = () => {
         setImports(result.data.imports || []);
       }
     } catch (error) {
-      console.error('Failed to fetch imports:', error);
+      
     } finally {
       setIsLoading(false);
     }
@@ -325,7 +325,7 @@ const ImportDetailModal = ({ import: importData, onClose }) => {
         setErrors(result.data.errors || []);
       }
     } catch (error) {
-      console.error('Failed to fetch errors:', error);
+      
     }
   };
 

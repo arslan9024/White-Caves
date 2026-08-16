@@ -16,19 +16,17 @@ export const fetchDepartments = createAsyncThunk(
   'relationalSidebar/fetchDepartments',
   async (_, { rejectWithValue }) => {
     try {
-      console.warn('[Thunk] Fetching departments...');
 
       const response = await sidebarAPI.getDepartments();
 
       if (!response.success) {
-        console.error('[Thunk] Failed to fetch departments:', response.error);
+        
         return rejectWithValue(response.error);
       }
 
-      console.warn('[Thunk] Departments fetched successfully:', response.data);
       return response.data;
     } catch (error) {
-      console.error('[Thunk] Error in fetchDepartments:', error);
+      
       return rejectWithValue(error.message);
     }
   }
@@ -46,19 +44,16 @@ export const fetchDepartmentById = createAsyncThunk(
         return rejectWithValue('Department ID is required');
       }
 
-      console.warn(`[Thunk] Fetching department: ${departmentId}`);
-
       const response = await sidebarAPI.getDepartmentById(departmentId);
 
       if (!response.success) {
-        console.error(`[Thunk] Failed to fetch department ${departmentId}:`, response.error);
+        
         return rejectWithValue(response.error);
       }
 
-      console.warn(`[Thunk] Department ${departmentId} fetched successfully`);
       return response.data;
     } catch (error) {
-      console.error('[Thunk] Error in fetchDepartmentById:', error);
+      
       return rejectWithValue(error.message);
     }
   }
@@ -72,22 +67,20 @@ export const fetchAssistants = createAsyncThunk(
   'relationalSidebar/fetchAssistants',
   async (filters = {}, { rejectWithValue }) => {
     try {
-      console.warn('[Thunk] Fetching assistants...', filters);
 
       const response = await sidebarAPI.getAssistants(filters);
 
       if (!response.success) {
-        console.error('[Thunk] Failed to fetch assistants:', response.error);
+        
         return rejectWithValue(response.error);
       }
 
-      console.warn('[Thunk] Assistants fetched successfully:', response.data);
       return {
         assistants: response.data,
         filters: filters,
       };
     } catch (error) {
-      console.error('[Thunk] Error in fetchAssistants:', error);
+      
       return rejectWithValue(error.message);
     }
   }
@@ -105,19 +98,16 @@ export const fetchAssistantById = createAsyncThunk(
         return rejectWithValue('Assistant ID is required');
       }
 
-      console.warn(`[Thunk] Fetching assistant: ${assistantId}`);
-
       const response = await sidebarAPI.getAssistantById(assistantId);
 
       if (!response.success) {
-        console.error(`[Thunk] Failed to fetch assistant ${assistantId}:`, response.error);
+        
         return rejectWithValue(response.error);
       }
 
-      console.warn(`[Thunk] Assistant ${assistantId} fetched successfully`);
       return response.data;
     } catch (error) {
-      console.error('[Thunk] Error in fetchAssistantById:', error);
+      
       return rejectWithValue(error.message);
     }
   }
@@ -135,26 +125,20 @@ export const fetchContextualData = createAsyncThunk(
         return rejectWithValue('Assistant ID and context are required');
       }
 
-      console.warn(`[Thunk] Fetching context data: ${assistantId}/${context}`);
-
       const response = await sidebarAPI.getContextualData(assistantId, context);
 
       if (!response.success) {
-        console.error(
-          `[Thunk] Failed to fetch context data ${assistantId}/${context}:`,
-          response.error
-        );
+        
         return rejectWithValue(response.error);
       }
 
-      console.warn(`[Thunk] Context data ${assistantId}/${context} fetched successfully`);
       return {
         assistantId,
         context,
         data: response.data,
       };
     } catch (error) {
-      console.error('[Thunk] Error in fetchContextualData:', error);
+      
       return rejectWithValue(error.message);
     }
   }
@@ -172,22 +156,19 @@ export const sendNotification = createAsyncThunk(
         return rejectWithValue('Assistant ID and message are required');
       }
 
-      console.warn(`[Thunk] Sending notification to ${assistantId}:`, message);
-
       const response = await sidebarAPI.sendNotification(assistantId, message, type);
 
       if (!response.success) {
-        console.error(`[Thunk] Failed to send notification to ${assistantId}:`, response.error);
+        
         return rejectWithValue(response.error);
       }
 
-      console.warn(`[Thunk] Notification sent to ${assistantId} successfully`);
       return {
         assistantId,
         notification: response.data,
       };
     } catch (error) {
-      console.error('[Thunk] Error in sendNotification:', error);
+      
       return rejectWithValue(error.message);
     }
   }
@@ -201,22 +182,20 @@ export const initializeSidebar = createAsyncThunk(
   'relationalSidebar/initializeSidebar',
   async (_, { rejectWithValue, dispatch: _dispatch }) => {
     try {
-      console.warn('[Thunk] Initializing sidebar...');
 
       const response = await sidebarAPI.initializeSidebarData();
 
       if (!response.success) {
-        console.error('[Thunk] Failed to initialize sidebar:', response.error);
+        
         return rejectWithValue(response.error);
       }
 
-      console.warn('[Thunk] Sidebar initialized successfully');
       return {
         departments: response.data.departments,
         assistants: response.data.assistants,
       };
     } catch (error) {
-      console.error('[Thunk] Error in initializeSidebar:', error);
+      
       return rejectWithValue(error.message);
     }
   }
@@ -234,16 +213,12 @@ export const fetchFilteredAssistants = createAsyncThunk(
         return rejectWithValue('Filter type and ID are required');
       }
 
-      console.warn(`[Thunk] Fetching filtered assistants: ${filterType}=${filterId}`);
-
       const response = await sidebarAPI.getFilteredAssistants(filterType, filterId);
 
       if (!response.success) {
-        console.error('[Thunk] Failed to fetch filtered assistants:', response.error);
         return rejectWithValue(response.error);
       }
 
-      console.warn(`[Thunk] Filtered assistants (${filterType}=${filterId}) fetched successfully`);
       return {
         assistants: response.data,
         filter: {
@@ -252,7 +227,7 @@ export const fetchFilteredAssistants = createAsyncThunk(
         },
       };
     } catch (error) {
-      console.error('[Thunk] Error in fetchFilteredAssistants:', error);
+      
       return rejectWithValue(error.message);
     }
   }
@@ -270,19 +245,13 @@ export const loadFullContext = createAsyncThunk(
         return rejectWithValue('Assistant ID and context are required');
       }
 
-      console.warn(`[Thunk] Loading full context: ${assistantId}/${context}`);
-
       const response = await sidebarAPI.loadContextFull(assistantId, context);
 
       if (!response.success) {
-        console.error(
-          `[Thunk] Failed to load full context ${assistantId}/${context}:`,
-          response.error
-        );
+        
         return rejectWithValue(response.error);
       }
 
-      console.warn(`[Thunk] Full context ${assistantId}/${context} loaded successfully`);
       return {
         assistantId,
         context,
@@ -290,7 +259,7 @@ export const loadFullContext = createAsyncThunk(
         contextData: response.data.contextData,
       };
     } catch (error) {
-      console.error('[Thunk] Error in loadFullContext:', error);
+      
       return rejectWithValue(error.message);
     }
   }

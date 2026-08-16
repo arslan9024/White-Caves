@@ -7,7 +7,7 @@
 
 .nina-header {
   /* Base header styles from crm-base.css */
-  background: linear-gradient(135deg, #7c3aed 0%, #a855f7 100%);
+  background: linear-gradient(135deg, #D4AF37 0%, #C5A059 100%);
   color: white;
 }
 
@@ -46,7 +46,7 @@
   color: white;
   font-weight: 500;
   cursor: pointer;
-  transition: all 0.2s;
+  transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .nina-toggle.active {
@@ -75,7 +75,7 @@
   cursor: pointer;
   border-radius: 8px;
   white-space: nowrap;
-  transition: all 0.2s;
+  transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .nina-tab.active {
@@ -111,16 +111,16 @@
   border-radius: 12px;
   padding: 1.25rem;
   cursor: pointer;
-  transition: all 0.2s;
+  transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .bot-card:hover {
-  border-color: #a855f7;
+  border-color: #C5A059;
 }
 
 .bot-card.selected {
-  border-color: #7c3aed;
-  box-shadow: 0 0 0 2px rgba(124, 58, 237, 0.2);
+  border-color: #D4AF37;
+  box-shadow: 0 0 0 2px rgba(212, 175, 55, 0.2);
 }
 
 .bot-card.add-bot {
@@ -249,7 +249,7 @@
   color: var(--text-secondary);
   font-size: 0.75rem;
   cursor: pointer;
-  transition: all 0.2s;
+  transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .bot-action-btn.start {
@@ -338,8 +338,8 @@
   align-items: center;
   gap: 0.375rem;
   padding: 6px 12px;
-  background: rgba(124, 58, 237, 0.1);
-  color: #a855f7;
+  background: rgba(212, 175, 55, 0.1);
+  color: #C5A059;
   border-radius: 20px;
   font-size: 0.75rem;
 }
@@ -350,7 +350,7 @@
 }
 
 .terminal-view {
-  background: #1a1a2e;
+  background: #FAFAFA;
   border-radius: 12px;
   overflow: hidden;
 }
@@ -360,8 +360,10 @@
   justify-content: space-between;
   align-items: center;
   padding: 0.75rem 1rem;
-  background: #16213e;
-  border-bottom: 1px solid #2a2a4a;
+  background: rgba(255, 255, 255, 0.85);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-bottom: 1px solid #E2E8F0;
 }
 
 .terminal-title {
@@ -423,12 +425,12 @@
   align-items: center;
   gap: 0.5rem;
   padding: 0.75rem 1rem;
-  background: #0f0f23;
-  border-top: 1px solid #2a2a4a;
+  background: #FAFAFA;
+  border-top: 1px solid #E2E8F0;
 }
 
 .terminal-input .prompt {
-  color: #a855f7;
+  color: #C5A059;
   font-family: 'JetBrains Mono', monospace;
   font-size: 0.85rem;
 }
@@ -445,7 +447,7 @@
 
 .terminal-input button {
   padding: 0.5rem;
-  background: #7c3aed;
+  background: #D4AF37;
   border: none;
   border-radius: 4px;
   color: white;
@@ -510,7 +512,7 @@
   cursor: pointer;
   color: var(--text-secondary);
   font-size: 0.8rem;
-  transition: all 0.2s;
+  transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .file-item:hover {
@@ -519,8 +521,8 @@
 }
 
 .file-item.selected {
-  background: rgba(124, 58, 237, 0.15);
-  color: #a855f7;
+  background: rgba(212, 175, 55, 0.15);
+  color: #C5A059;
 }
 
 .file-item svg {
@@ -534,7 +536,7 @@
 }
 
 .code-editor {
-  background: #1e1e1e;
+  background: #FAFAFA;
   border-radius: 12px;
   overflow: hidden;
 }
@@ -544,7 +546,7 @@
   justify-content: space-between;
   align-items: center;
   padding: 0.75rem 1rem;
-  background: #2d2d2d;
+  background: #F1F5F9;
   color: #e5e7eb;
   font-size: 0.85rem;
 }
@@ -633,8 +635,8 @@
 }
 
 .card-icon.purple {
-  background: rgba(168, 85, 247, 0.15);
-  color: #a855f7;
+  background: rgba(197, 160, 89, 0.15);
+  color: #C5A059;
 }
 
 .card-icon.orange {
@@ -723,7 +725,7 @@
 
 .performance-fill {
   height: 100%;
-  background: linear-gradient(90deg, #7c3aed, var(--color-purple));
+  background: linear-gradient(90deg, #D4AF37, var(--color-purple));
   border-radius: 4px;
   transition: width 0.5s ease;
 }
@@ -808,7 +810,7 @@
   align-items: center;
   gap: 0.5rem;
   padding: 0.625rem 1rem;
-  background: #7c3aed;
+  background: #D4AF37;
   color: white;
   border: none;
   border-radius: 8px;
@@ -865,8 +867,8 @@
 }
 
 .stat-icon.total {
-  background: rgba(124, 58, 237, 0.15);
-  color: #7c3aed;
+  background: rgba(212, 175, 55, 0.15);
+  color: #D4AF37;
 }
 
 .stat-info {
@@ -949,7 +951,7 @@
 
 .progress-cell .progress-fill {
   height: 100%;
-  background: linear-gradient(90deg, #7c3aed, #a855f7);
+  background: linear-gradient(90deg, #D4AF37, #C5A059);
   border-radius: 3px;
 }
 
@@ -969,7 +971,7 @@
   border-radius: 6px;
   color: var(--text-secondary);
   cursor: pointer;
-  transition: all 0.2s;
+  transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .action-btn:hover {
@@ -995,7 +997,7 @@
   align-items: center;
   gap: 0.5rem;
   padding: 0.5rem 1rem;
-  background: #7c3aed;
+  background: #D4AF37;
   color: white;
   border: none;
   border-radius: 8px;
@@ -1060,13 +1062,13 @@
   color: var(--text-secondary);
   font-size: 0.875rem;
   cursor: pointer;
-  transition: all 0.2s;
+  transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .filter-btn.active {
-  background: #7c3aed;
+  background: #D4AF37;
   color: white;
-  border-color: #7c3aed;
+  border-color: #D4AF37;
 }
 
 .contacts-grid {
@@ -1105,8 +1107,8 @@
 }
 
 .project-item.selected {
-  background: rgba(124, 58, 237, 0.1);
-  border: 1px solid #7c3aed;
+  background: rgba(212, 175, 55, 0.1);
+  border: 1px solid #D4AF37;
 }
 
 .project-info {
@@ -1192,17 +1194,17 @@
   color: var(--text-primary);
   font-size: 0.8rem;
   cursor: pointer;
-  transition: all 0.2s;
+  transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .blocklist-btn:hover {
-  border-color: #7c3aed;
-  color: #7c3aed;
+  border-color: #D4AF37;
+  color: #D4AF37;
 }
 
 .blocklist-info {
   padding: 0.75rem;
-  background: rgba(124, 58, 237, 0.1);
+  background: rgba(212, 175, 55, 0.1);
   border-radius: 8px;
 }
 
@@ -1226,13 +1228,13 @@
   color: var(--text-secondary);
   font-size: 0.8rem;
   cursor: pointer;
-  transition: all 0.2s;
+  transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .category-btn.active {
-  background: #7c3aed;
+  background: #D4AF37;
   color: white;
-  border-color: #7c3aed;
+  border-color: #D4AF37;
 }
 
 .templates-grid {
@@ -1280,8 +1282,8 @@
 }
 
 .template-lang.bilingual {
-  background: rgba(124, 58, 237, 0.15);
-  color: #7c3aed;
+  background: rgba(212, 175, 55, 0.15);
+  color: #D4AF37;
 }
 
 .template-category {
@@ -1318,17 +1320,17 @@
   color: var(--text-secondary);
   font-size: 0.75rem;
   cursor: pointer;
-  transition: all 0.2s;
+  transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .template-btn:hover {
-  border-color: #7c3aed;
-  color: #7c3aed;
+  border-color: #D4AF37;
+  color: #D4AF37;
 }
 
 .template-btn.use {
-  background: #7c3aed;
-  border-color: #7c3aed;
+  background: #D4AF37;
+  border-color: #D4AF37;
   color: white;
 }
 
@@ -1448,12 +1450,12 @@
   display: flex;
   gap: 1rem;
   position: relative;
-  transition: all 0.2s;
+  transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .ai-model-card:hover {
-  border-color: #7c3aed;
-  box-shadow: 0 4px 12px rgba(124, 58, 237, 0.15);
+  border-color: #D4AF37;
+  box-shadow: 0 4px 12px rgba(212, 175, 55, 0.15);
 }
 
 .model-icon {
@@ -1466,7 +1468,7 @@
   flex-shrink: 0;
 }
 
-.model-icon.intent { background: rgba(124, 58, 237, 0.15); color: #7c3aed; }
+.model-icon.intent { background: rgba(212, 175, 55, 0.15); color: #D4AF37; }
 .model-icon.scoring { background: rgba(245, 158, 11, 0.15); color: #f59e0b; }
 .model-icon.sentiment { background: rgba(239, 68, 68, 0.15); color: #EF4444; }
 .model-icon.language { background: rgba(59, 130, 246, 0.15); color: #3b82f6; }
@@ -1595,13 +1597,13 @@
   align-items: center;
   gap: 0.5rem;
   padding: 0.75rem 1.5rem;
-  background: #7c3aed;
+  background: #D4AF37;
   color: white;
   border: none;
   border-radius: 8px;
   font-weight: 600;
   cursor: pointer;
-  transition: all 0.2s;
+  transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .test-btn:hover {
@@ -1639,8 +1641,8 @@
 
 .result-item .confidence {
   font-size: 0.7rem;
-  color: #7c3aed;
-  background: rgba(124, 58, 237, 0.15);
+  color: #D4AF37;
+  background: rgba(212, 175, 55, 0.15);
   padding: 0.125rem 0.5rem;
   border-radius: 12px;
 }
@@ -1692,7 +1694,7 @@
   padding: 1.25rem;
   display: flex;
   gap: 1rem;
-  transition: all 0.2s;
+  transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .security-card:hover {
@@ -1841,7 +1843,7 @@
   padding: 1.25rem;
   display: flex;
   gap: 1rem;
-  transition: all 0.2s;
+  transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .schedule-card:hover {
@@ -1861,7 +1863,7 @@
 .schedule-icon.timezone { background: rgba(59, 130, 246, 0.15); color: #3b82f6; }
 .schedule-icon.local { background: rgba(239, 68, 68, 0.15); color: #EF4444; }
 .schedule-icon.strict { background: rgba(245, 158, 11, 0.15); color: #f59e0b; }
-.schedule-icon.behavior { background: rgba(124, 58, 237, 0.15); color: #7c3aed; }
+.schedule-icon.behavior { background: rgba(212, 175, 55, 0.15); color: #D4AF37; }
 
 .schedule-info {
   flex: 1;
@@ -1953,3 +1955,107 @@
 .timeline-block.current .label {
   color: #f59e0b;
 }
+
+/* ==========================================================================
+   400x ULTRA-PREMIUM LUXURY ENHANCEMENTS
+   ========================================================================== */
+
+/* Ambient Breathing Backgrounds */
+@keyframes breathingGoldBackground {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+body, .user-dashboard, .profile-page, .nina-crm-container, .henry-hub-container {
+  background: linear-gradient(-45deg, #FAFAFA, #FFFFFF, #F1F5F9, #F8F9FA);
+  background-size: 400% 400%;
+  animation: breathingGoldBackground 15s ease infinite;
+}
+
+/* Glassmorphism 2.0 with Frosted Textures */
+.stat-card, .dashboard-welcome, .profile-card, .bot-card, .file-explorer, .terminal-view, .overview-section, .favorite-card, .search-card, .alert-card, .activity-item, .wizard-step {
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.95) 0%, rgba(255, 255, 255, 0.75) 100%) !important;
+  backdrop-filter: blur(24px) saturate(200%) !important;
+  -webkit-backdrop-filter: blur(24px) saturate(200%) !important;
+  border: 1px solid rgba(255, 255, 255, 0.9) !important;
+  border-bottom: 1px solid rgba(212, 175, 55, 0.35) !important;
+  border-right: 1px solid rgba(212, 175, 55, 0.15) !important;
+  box-shadow: 0 20px 60px rgba(212, 175, 55, 0.08), inset 0 1px 0 rgba(255, 255, 255, 1) !important;
+  transition: all 0.7s cubic-bezier(0.16, 1, 0.3, 1) !important;
+  position: relative;
+  overflow: hidden;
+}
+
+/* 3D Tilt Hover and Glare Shimmer */
+.stat-card:hover, .favorite-card:hover, .bot-card:hover, .search-card:hover {
+  transform: translateY(-8px) scale(1.02) perspective(1000px) rotateX(2deg) rotateY(-2deg) !important;
+  box-shadow: 0 30px 80px rgba(212, 175, 55, 0.15), inset 0 1px 0 rgba(255, 255, 255, 1) !important;
+  z-index: 10;
+}
+
+/* The Glare Sweep Pseudo-Element */
+.stat-card::after, .favorite-card::after, .bot-card::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -150%;
+  width: 50%;
+  height: 100%;
+  background: linear-gradient(to right, rgba(255,255,255,0) 0%, rgba(255,255,255,0.8) 50%, rgba(255,255,255,0) 100%);
+  transform: skewX(-25deg);
+  transition: all 0.7s cubic-bezier(0.16, 1, 0.3, 1);
+  opacity: 0;
+  pointer-events: none;
+}
+
+.stat-card:hover::after, .favorite-card:hover::after, .bot-card:hover::after {
+  left: 150%;
+  opacity: 1;
+  transition: all 1s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* Metallic Gold Shimmering Text for Titles and Values */
+.stat-value, .welcome-text h2, .nina-title h2, .favorite-price, .profile-name {
+  background: linear-gradient(to right, #C5A059 0%, #D4AF37 50%, #E6C27A 100%);
+  background-size: 200% auto;
+  color: #0f0f0f;
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: shineGold 5s linear infinite;
+  text-shadow: 0px 4px 16px rgba(212, 175, 55, 0.3);
+}
+
+@keyframes shineGold {
+  to { background-position: 200% center; }
+}
+
+/* Custom Ultra-Minimal Scrollbars */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 10px;
+}
+::-webkit-scrollbar-thumb {
+  background: linear-gradient(180deg, #D4AF37, #C5A059);
+  border-radius: 10px;
+  box-shadow: inset 0 0 6px rgba(0,0,0,0.1);
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #0f0f0f;
+}
+
+/* Glowing Accent Buttons */
+button {
+  transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1) !important;
+}
+button:hover {
+  box-shadow: 0 0 20px rgba(212, 175, 55, 0.6), 0 0 40px rgba(212, 175, 55, 0.2) !important;
+  transform: translateY(-2px) scale(1.03) !important;
+}
+
+/* ========================================================================== */

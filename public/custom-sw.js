@@ -120,7 +120,53 @@ self.addEventListener('notificationclick', (event) => {
 // ─── Notification Close (analytics) ────────────────────────────────────────
 
 self.addEventListener('notificationclose', (event) => {
-  // Future: track notification dismissal rates
   const { type } = event.notification.data || {};
-  console.log(`[SW] Notification closed: type=${type}`);
 });
+
+// ─── Offline Portal Pre-Caching & Stale-While-Revalidate ────────────────────
+
+const CACHE_NAME = 'white-caves-portals-v2026.08';
+const OFFLINE_URLS = [
+  '/',
+  '/landlord',
+  '/tenant',
+  '/properties',
+  '/offline.html',
+];
+
+self.addEventListener('install', (event) => {
+  event.waitUntil(
+    caches.open(CACHE_NAME).then((cache) => {
+      return cache.addAll(OFFLINE_URLS).catch((err) => {
+        // Soft error fallback for dynamic assets
+      });
+    })
+  );
+  self.skipWaiting();
+});
+
+self.addEventListener('activate', (event) => {
+  event.waitUntil(
+    caches.keys().then((cacheNames) => {
+      return Promise.all(
+        cacheNames
+          .filter((name) => name !== CACHE_NAME)
+          .map((name) => caches.delete(name))
+      );
+    })
+  );
+  self.clients.claim();
+});
+
+self.addEventListener('fetch', (event) => {
+  if (event.request.mode === 'navigate') {
+    event.respondWith(
+      fetch(event.request).catch(() => {
+        return caches.match(event.request).then((cachedResponse) => {
+          return cachedResponse || caches.match('/offline.html');
+        });
+      })
+    );
+  }
+});
+

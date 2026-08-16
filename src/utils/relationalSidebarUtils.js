@@ -328,7 +328,7 @@ export const filterAssistantsByDepartment = (departmentId, userPermissions = {})
       })
       .map(([id, assistant]) => ({ id, ...assistant }));
   } catch (error) {
-    console.error('Error filtering assistants by department:', error);
+    
     return [];
   }
 };
@@ -349,7 +349,7 @@ export const filterAssistantsByService = (serviceId, userPermissions = {}) => {
       })
       .map(([id, assistant]) => ({ id, ...assistant }));
   } catch (error) {
-    console.error('Error filtering assistants by service:', error);
+    
     return [];
   }
 };
@@ -365,7 +365,7 @@ export const filterServicesByAssistant = (assistantId) => {
     if (!assistant) return [];
     return assistant.services || [];
   } catch (error) {
-    console.error('Error filtering services by assistant:', error);
+    
     return [];
   }
 };
@@ -381,7 +381,7 @@ export const filterDepartmentsByAssistant = (assistantId) => {
     if (!assistant) return [];
     return assistant.departments || [];
   } catch (error) {
-    console.error('Error filtering departments by assistant:', error);
+    
     return [];
   }
 };
@@ -414,7 +414,7 @@ export const getDefaultAssistant = (
     const filtered = filterAssistantsByDepartment(departmentId, userPermissions);
     return filtered.length > 0 ? filtered[0].id : null;
   } catch (error) {
-    console.error('Error getting default assistant:', error);
+    
     return null;
   }
 };
@@ -436,7 +436,7 @@ export const getDefaultDepartment = (selectionHistory = []) => {
     // Default to first department
     return DEPARTMENTS[0];
   } catch (error) {
-    console.error('Error getting default department:', error);
+    
     return DEPARTMENTS[0];
   }
 };
@@ -452,7 +452,7 @@ export const getContextsForAssistant = (assistantId) => {
     if (!assistant) return [];
     return assistant.contexts || [];
   } catch (error) {
-    console.error('Error getting contexts for assistant:', error);
+    
     return [];
   }
 };
@@ -469,7 +469,7 @@ export const isValidAssistantContext = (assistantId, context) => {
     if (!assistant) return false;
     return assistant.contexts.includes(context);
   } catch (error) {
-    console.error('Error checking valid assistant context:', error);
+    
     return false;
   }
 };
@@ -515,7 +515,7 @@ export const buildRelationshipMap = (userPermissions = {}) => {
 
     return map;
   } catch (error) {
-    console.error('Error building relationship map:', error);
+    
     return {};
   }
 };
@@ -550,7 +550,7 @@ export const getSidebarRenderConfig = (
       },
     };
   } catch (error) {
-    console.error('Error getting sidebar render config:', error);
+    
     return {
       showLeftSidebar: true,
       showRightSidebar: true,

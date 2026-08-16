@@ -358,7 +358,7 @@ describe('Properties Routes — /api/properties', () => {
         .put(`/api/properties/${VALID_ID}`)
         .send({ status: 'available' });
 
-      expect(res.status).toBe(400);
+      expect(res.status).toBe(422); // Wave 34: RERA permit now enforced — returns 422 Unprocessable
       expect(mockPrisma.property.update).not.toHaveBeenCalled();
     });
   });
@@ -458,7 +458,7 @@ describe('Properties Routes — /api/properties', () => {
         .patch(`/api/properties/${VALID_ID}`)
         .send({ status: 'available' });
 
-      expect(res.status).toBe(400);
+      expect(res.status).toBe(422); // Wave 34: RERA permit now enforced — returns 422 Unprocessable
       expect(mockPrisma.property.update).not.toHaveBeenCalled();
     });
   });
@@ -502,4 +502,101 @@ describe('Properties Routes — /api/properties', () => {
       expect(mockPrisma.$transaction).toHaveBeenCalled();
     });
   });
+
+  // ── WAVE 34: RERA PERMIT ENFORCEMENT (SRS §4.3, RERA Law No. 16/2007) ──
+  describe('RERA Permit Enforcement (W34-001)', () => {
+    describe('PATCH /:id — status set to available', () => {
+      it('returns 422 when publishing without reraPermitNumber in DB or body', async () => {
+        mockPrisma.property.findUnique.mockResolvedValueOnce({
+          id: VALID_ID,
+          userId: 'user-1',
+          title: 'Unpermitted Unit',
+          reraPermitNumber: null,
+          reraPermitExpiryDate: null,
+        });
+
+        const res = await request(createApp('owner'))
+          .patch(`/api/properties/${VALID_ID}`)
+          .send({ status: 'available' });
+
+        expect(res.status).toBe(422);
+        expect(res.body.error).toMatch(/reraPermitNumber is required/i);
+      });
+
+      it('returns 422 when RERA permit is expired', async () => {
+        const expiredDate = new Date(Date.now() - 24 * 60 * 60 * 1000); // yesterday
+        mockPrisma.property.findUnique.mockResolvedValueOnce({
+          id: VALID_ID,
+          userId: 'user-1',
+          title: 'Expired Permit Unit',
+          reraPermitNumber: 'RERA-71234-2023',
+          reraPermitExpiryDate: expiredDate,
+        });
+
+        const res = await request(createApp('owner'))
+          .patch(`/api/properties/${VALID_ID}`)
+          .send({
+            status: 'available',
+            reraPermitNumber: 'RERA-71234-2023',
+            reraPermitExpiryDate: expiredDate.toISOString(),
+          });
+
+        expect(res.status).toBe(422);
+        expect(res.body.error).toMatch(/RERA permit has expired/i);
+      });
+
+      it('allows publishing when valid reraPermitNumber is in the DB', async () => {
+        const futureDate = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000); // 30 days ahead
+        mockPrisma.property.findUnique.mockResolvedValueOnce({
+          id: VALID_ID,
+          userId: 'user-1',
+          title: 'Permitted Unit',
+          status: 'draft',
+          municipalityNumber: 'MUN-12345',
+          buildingPermitNumber: 'BLD-67890',
+          reraPermitNumber: 'RERA-71234-2026',
+          reraPermitExpiryDate: futureDate,
+        });
+        mockPrisma.property.update.mockResolvedValueOnce({
+          id: VALID_ID,
+          status: 'available',
+          reraPermitNumber: 'RERA-71234-2026',
+        });
+
+        const res = await request(createApp('owner'))
+          .patch(`/api/properties/${VALID_ID}`)
+          .send({
+            status: 'available',
+            municipalityNumber: 'MUN-12345',
+            buildingPermitNumber: 'BLD-67890',
+            reraPermitNumber: 'RERA-71234-2026',
+            reraPermitExpiryDate: futureDate.toISOString(),
+          });
+
+        expect(res.status).toBe(200);
+        expect(res.body.success).toBe(true);
+      });
+
+      it('allows non-available status changes without RERA permit', async () => {
+        mockPrisma.property.findUnique.mockResolvedValueOnce({
+          id: VALID_ID,
+          userId: 'user-1',
+          title: 'Off Market Unit',
+          reraPermitNumber: null,
+          reraPermitExpiryDate: null,
+        });
+        mockPrisma.property.update.mockResolvedValueOnce({
+          id: VALID_ID,
+          status: 'off_market',
+        });
+
+        const res = await request(createApp('owner'))
+          .patch(`/api/properties/${VALID_ID}`)
+          .send({ status: 'off_market' });
+
+        expect(res.status).toBe(200);
+      });
+    });
+  });
 });
+

@@ -1,5 +1,5 @@
 {
-  "version": "2026.06.17-aegis-control-plane-v1",
+  "version": "2026.08.13-aegis-v4-deep-analyzer-v1",
   "schemaVersion": "2.1.0",
   "readinessThresholdPct": 60,
   "readinessTargetPct": 90,

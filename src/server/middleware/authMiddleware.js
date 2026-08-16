@@ -8,7 +8,7 @@ import { getRoleLevel } from '../../utils/roleHelpers.js';
 
 const JWT_SECRET = process.env.JWT_SECRET;
 if (!JWT_SECRET) {
-  console.warn('⚠️ JWT_SECRET is not set – JWT operations will fail.');
+  
 }
 
 /** Generate a JWT for a user object.

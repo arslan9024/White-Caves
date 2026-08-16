@@ -1,15 +1,15 @@
 /* CRM Layout System - White Caves Real Estate */
-/* STRICT RED & WHITE THEME - Light backgrounds only */
+/* LUXURY EXECUTIVE CRM THEME */
 
 :root {
-  /* RED & WHITE Brand Colors - DO NOT CHANGE */
-  --crm-navy: #1a1a1a;
-  --crm-navy-light: #374151;
-  --crm-gold: #b03737;
-  --crm-gold-light: #fdeaea;
-  --crm-sand: #f5f5f5;
-  --crm-red: #b03737;
-  --crm-red-light: #fdeaea;
+  /* Master Brand Colors */
+  --crm-navy: #0F172A;
+  --crm-navy-light: #1E293B;
+  --crm-gold: #D4AF37;
+  --crm-gold-light: rgba(212, 175, 55, 0.12);
+  --crm-sand: #F8FAFC;
+  --crm-red: #EF4444;
+  --crm-red-light: rgba(239, 68, 68, 0.12);
 
   /* Layout Dimensions */
   --crm-topnav-height: 64px;
@@ -18,20 +18,20 @@
   --crm-ai-panel-width: 320px;
   --crm-ai-panel-collapsed: 0px;
 
-  /* Tier Colors - Updated to Red theme */
-  --tier-basic: #64748b;
-  --tier-essential: #b03737;
-  --tier-premium: #b03737;
-  --tier-ultra: linear-gradient(135deg, #b03737, #d35050);
-  --tier-corporate: #1a1a1a;
+  /* Tier Colors */
+  --tier-basic: #64748B;
+  --tier-essential: #EF4444;
+  --tier-premium: #D4AF37;
+  --tier-ultra: linear-gradient(135deg, #EF4444, #D4AF37);
+  --tier-corporate: #0F172A;
 
-  /* CRM Surfaces - ALWAYS WHITE/LIGHT */
-  --surface-primary: #ffffff;
-  --surface-secondary: #fafafa;
-  --text-tertiary: #6b7280;
-  --hover-bg: rgba(176, 55, 55, 0.05);
-  --input-bg: #fafafa;
-  --border-hover: #e5e7eb;
+  /* CRM Surfaces */
+  --surface-primary: #FFFFFF;
+  --surface-secondary: #F8FAFC;
+  --text-tertiary: #64748B;
+  --hover-bg: rgba(239, 68, 68, 0.06);
+  --input-bg: #FFFFFF;
+  --border-hover: rgba(239, 68, 68, 0.3);
 }
 
 /* FORCE LIGHT MODE - No dark theme */

@@ -3,9 +3,31 @@ import { requirePermission } from '../middleware/rbac.js';
 import { asyncHandler, AppError } from '../middleware/errorHandler.js';
 import { prisma } from '../database.js';
 
+import { generatePropertyFinderXml, generateBayutXml } from '../services/portalSyncService.js';
+
 const router = Router();
 
 const isSyndicationEnabled = () => process.env.SYNDICATION_ENABLED === 'true';
+
+// ─── GET /api/syndication/propertyfinder — XML Feed ──────────────────────
+router.get(
+  '/propertyfinder',
+  asyncHandler(async (_req: Request, res: Response) => {
+    const xml = await generatePropertyFinderXml();
+    res.header('Content-Type', 'application/xml');
+    res.status(200).send(xml);
+  })
+);
+
+// ─── GET /api/syndication/bayut — XML Feed ────────────────────────────────
+router.get(
+  '/bayut',
+  asyncHandler(async (_req: Request, res: Response) => {
+    const xml = await generateBayutXml();
+    res.header('Content-Type', 'application/xml');
+    res.status(200).send(xml);
+  })
+);
 
 router.get('/status', requirePermission('view_properties'), asyncHandler(async (_req: Request, res: Response) => {
   const enabled = isSyndicationEnabled();

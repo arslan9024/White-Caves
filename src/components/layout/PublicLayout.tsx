@@ -1,17 +1,29 @@
 import React, { type FC, type ReactNode } from 'react';
-import { useInRouterContext } from 'react-router-dom';
+import { useInRouterContext, useLocation } from 'react-router-dom';
 import Footer from '../Footer';
 import PublicNavbar from './PublicNavbar/PublicNavbar';
 import OfflineBanner from '../OfflineBanner';
+import BackToTopButton from '../navigation/BackToTopButton/BackToTopButton';
 import './PublicLayout.css';
 
 interface PublicLayoutProps {
   children: ReactNode;
   mainClassName?: string;
+  hideFooter?: boolean;
 }
 
-const PublicLayout: FC<PublicLayoutProps> = ({ children, mainClassName }) => {
+const PublicLayout: FC<PublicLayoutProps> = ({ children, mainClassName, hideFooter }) => {
   const inRouter = useInRouterContext();
+  let pathname = '';
+  try {
+    const location = useLocation();
+    pathname = location.pathname;
+  } catch (e) {
+    // router fallback
+  }
+
+  // Hide footer if explicitly requested or if on app/dashboard/profile views
+  const shouldHideFooter = hideFooter || pathname.includes('/dashboard') || pathname.includes('/profile') || pathname.includes('/crm');
 
   return (
     <div className="public-layout" data-testid="public-layout">
@@ -33,16 +45,21 @@ const PublicLayout: FC<PublicLayoutProps> = ({ children, mainClassName }) => {
         {children}
       </main>
 
-      {inRouter ? (
-        <Footer />
-      ) : (
-        <footer
-          data-testid="public-layout-fallback-footer"
-          className="public-layout__fallback-footer"
-        >
-          © White Caves Real Estate
-        </footer>
+      {!shouldHideFooter && (
+        inRouter ? (
+          <Footer />
+        ) : (
+          <footer
+            data-testid="public-layout-fallback-footer"
+            className="public-layout__fallback-footer"
+          >
+            © White Caves Real Estate
+          </footer>
+        )
       )}
+
+      {/* Global Back To Top Floating Action */}
+      <BackToTopButton />
     </div>
   );
 };

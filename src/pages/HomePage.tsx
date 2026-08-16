@@ -27,6 +27,7 @@ import { MapContainer } from '../components/homepage/MapContainer';
 import { ToolsDashboard } from '../components/homepage/ToolsDashboard';
 import { AreaGuideGrid } from '../components/homepage/AreaGuideGrid';
 import { TestimonialPodium } from '../components/homepage/TestimonialPodium';
+import '../styles/luxuryDesignSystem.css';
 import './HomePage.css';
 
 // Above-the-fold: Hero is the LCP element — import directly (NOT lazy) so the
@@ -303,6 +304,137 @@ const HomePage: FC = () => {
           <ContactCTA />
           <OnboardingGateway />
         </Suspense>
+        {/* STAGE 1: Quick Search Launcher Modal Overlay */}
+        {isSearchOpen && (
+          <div
+            className="home-page-search-modal-backdrop"
+            onClick={() => setIsSearchOpen(false)}
+            role="dialog"
+            aria-modal="true"
+            aria-label="Quick Property Search"
+            style={{
+              position: 'fixed',
+              inset: 0,
+              zIndex: 9999,
+              background: 'rgba(15, 23, 42, 0.85)',
+              backdropFilter: 'blur(16px)',
+              display: 'flex',
+              alignItems: 'flex-start',
+              justifyContent: 'center',
+              paddingTop: '10vh',
+              paddingLeft: '1rem',
+              paddingRight: '1rem',
+            }}
+          >
+            <div
+              className="home-page-search-modal-card"
+              onClick={e => e.stopPropagation()}
+              style={{
+                width: '100%',
+                maxWidth: '680px',
+                background: '#0F172A',
+                border: '1px solid rgba(212, 175, 55, 0.3)',
+                borderRadius: '24px',
+                padding: '1.75rem',
+                boxShadow: '0 25px 60px rgba(0,0,0,0.5), 0 0 40px rgba(6, 182, 212, 0.15)',
+                color: '#F8FAFC',
+              }}
+            >
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.25rem' }}>
+                <div>
+                  <h3 style={{ margin: 0, fontSize: '1.25rem', fontWeight: 800, color: '#F8FAFC' }}>
+                    Luxury Property Search
+                  </h3>
+                  <p style={{ margin: '4px 0 0', fontSize: '0.85rem', color: '#94A3B8' }}>
+                    Press <kbd style={{ background: '#1E293B', padding: '2px 6px', borderRadius: '4px', border: '1px solid #334155' }}>Ctrl + K</kbd> anytime to open
+                  </p>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => setIsSearchOpen(false)}
+                  style={{
+                    background: 'transparent',
+                    border: '1px solid rgba(255,255,255,0.1)',
+                    color: '#94A3B8',
+                    borderRadius: '50%',
+                    width: '36px',
+                    height: '36px',
+                    cursor: 'pointer',
+                    fontSize: '1.1rem',
+                  }}
+                  aria-label="Close search"
+                >
+                  ✕
+                </button>
+              </div>
+
+              <div style={{ position: 'relative', marginBottom: '1.5rem' }}>
+                <input
+                  type="text"
+                  placeholder="Search by community, villa name, penthouse, or RERA ID..."
+                  autoFocus
+                  onKeyDown={e => {
+                    if (e.key === 'Enter') {
+                      navigate(`/properties?q=${encodeURIComponent((e.target as HTMLInputElement).value)}`);
+                      setIsSearchOpen(false);
+                    }
+                  }}
+                  style={{
+                    width: '100%',
+                    padding: '1rem 1.25rem',
+                    background: '#1E293B',
+                    border: '1px solid rgba(6, 182, 212, 0.4)',
+                    borderRadius: '14px',
+                    color: '#FFFFFF',
+                    fontSize: '1rem',
+                    outline: 'none',
+                    boxShadow: '0 4px 20px rgba(0, 0, 0, 0.2)',
+                  }}
+                />
+              </div>
+
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+                <span style={{ fontSize: '0.75rem', fontWeight: 800, color: '#D4AF37', textTransform: 'uppercase', letterSpacing: '0.08em' }}>
+                  Popular Luxury Destinations
+                </span>
+                <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
+                  {['Palm Jumeirah Villa', 'Downtown Penthouse', 'Dubai Marina', 'DAMAC Hills 2', 'Waterfront Estate', 'Off-Plan Investment'].map(tag => (
+                    <button
+                      key={tag}
+                      type="button"
+                      onClick={() => {
+                        navigate(`/properties?q=${encodeURIComponent(tag)}`);
+                        setIsSearchOpen(false);
+                      }}
+                      style={{
+                        padding: '6px 14px',
+                        borderRadius: '9999px',
+                        background: 'rgba(255,255,255,0.06)',
+                        border: '1px solid rgba(255,255,255,0.12)',
+                        color: '#E2E8F0',
+                        fontSize: '0.82rem',
+                        fontWeight: 600,
+                        cursor: 'pointer',
+                        transition: 'all 0.2s ease',
+                      }}
+                      onMouseEnter={e => {
+                        (e.target as HTMLButtonElement).style.background = '#06B6D4';
+                        (e.target as HTMLButtonElement).style.borderColor = '#06B6D4';
+                      }}
+                      onMouseLeave={e => {
+                        (e.target as HTMLButtonElement).style.background = 'rgba(255,255,255,0.06)';
+                        (e.target as HTMLButtonElement).style.borderColor = 'rgba(255,255,255,0.12)';
+                      }}
+                    >
+                      {tag}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+
         <RoleSelectionModal />
       </div>
     </PublicLayout>

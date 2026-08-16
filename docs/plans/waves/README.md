@@ -1,6 +1,6 @@
 # Wave Bundle Index
 
-**Last Updated:** 2026-07-05
+**Last Updated:** 2026-08-09
 
 Use this index after reviewing [`../MASTER_PLAN.md`](../MASTER_PLAN.md) and [`../PENDING_TASKS_ONLY.md`](../PENDING_TASKS_ONLY.md).
 Each wave should be executed only in roadmap order.
@@ -31,7 +31,22 @@ Each wave should be executed only in roadmap order.
 | 27   | Autonomous unit test expansion, design token standardization & verification | ✅ Complete  | —                         | —                                            | [`Backlog`](./WAVE_27_IMPLEMENTATION_BACKLOG.md) | —                                    |
 | 28   | Admin Cockpit & Portal Health Unit Test Suites + Strict Type Refactoring   | ✅ Complete | —                         | —                                            | [`Backlog`](./WAVE_28_IMPLEMENTATION_BACKLOG.md) | —                                    |
 | 29   | Advanced PWA Offline Write & Conflict-Free Replicated Data Engine         | ✅ Complete | —                         | —                                            | [`Backlog`](./WAVE_29_IMPLEMENTATION_BACKLOG.md) | —                                    |
-| 30   | AI Predictive UX & Auto-Form Pre-Fill Engine                                | 🟢 Active   | —                         | —                                            | [`Backlog`](./WAVE_30_IMPLEMENTATION_BACKLOG.md) | —                                    |
+| 30   | AI Predictive UX & Auto-Form Pre-Fill Engine                                | ✅ Complete | —                         | —                                            | [`Backlog`](./WAVE_30_IMPLEMENTATION_BACKLOG.md) | —                                    |
+| 31   | High-Throughput GraphQL API Gateway                                        | ✅ Complete | —                         | —                                            | [`Backlog`](./WAVE_31_IMPLEMENTATION_BACKLOG.md) | —                                    |
+| 32   | Real-Time WebSocket Notification Dispatch Engine                            | ✅ Complete | —                         | —                                            | [`Backlog`](./WAVE_32_IMPLEMENTATION_BACKLOG.md) | —                                    |
+| 33   | WhatsApp Cloud API Real Integration + Ejari Schema                         | 🟢 Active   | —                         | —                                            | [`Backlog`](./WAVE_33_IMPLEMENTATION_BACKLOG.md) | —                                    |
+| 34   | RERA Permit Enforcement + Financial Export (PDF/Excel)                     | 🟢 Active   | —                         | —                                            | [`Backlog`](./WAVE_34_IMPLEMENTATION_BACKLOG.md) | —                                    |
+| 35   | Full Lease & Tenancy Module                                                | 📋 Planned  | —                         | —                                            | [`Backlog`](./WAVE_35_IMPLEMENTATION_BACKLOG.md) | —                                    |
+| 36   | Maintenance Module + Tenant Portal                                         | 📋 Planned  | —                         | —                                            | [`Backlog`](./WAVE_36_IMPLEMENTATION_BACKLOG.md) | —                                    |
+| 37   | Nina Bot Core (WhatsApp AI Integration)                                    | 📋 Planned  | —                         | —                                            | [`Backlog`](./WAVE_37_IMPLEMENTATION_BACKLOG.md) | —                                    |
+| 38   | Broadcast Campaigns Engine (Olivia Integration)                            | 📋 Planned  | —                         | —                                            | [`Backlog`](./WAVE_38_IMPLEMENTATION_BACKLOG.md) | —                                    |
+| 39   | Portal Syndication Engine (PropertyFinder + Bayut)                         | 📋 Planned  | —                         | —                                            | [`Backlog`](./WAVE_39_IMPLEMENTATION_BACKLOG.md) | —                                    |
+| 40   | Agent Performance Analytics + Multi-Currency Engine                       | 📋 Planned  | —                         | —                                            | [`Backlog`](./WAVE_40_IMPLEMENTATION_BACKLOG.md) | —                                    |
+| 41   | KYC Workflow Module                                                        | 📋 Planned  | —                         | —                                            | [`Backlog`](./WAVE_41_IMPLEMENTATION_BACKLOG.md) | —                                    |
+| 42   | AML Screening + PDPL Consent Management                                    | 📋 Planned  | —                         | —                                            | [`Backlog`](./WAVE_42_IMPLEMENTATION_BACKLOG.md) | —                                    |
+| 43   | Audit Log Enhancement + Security Hardening                                 | 📋 Planned  | —                         | —                                            | [`Backlog`](./WAVE_43_IMPLEMENTATION_BACKLOG.md) | —                                    |
+| 44   | Landlord Portal + Advanced Analytics                                       | 📋 Planned  | —                         | —                                            | [`Backlog`](./WAVE_44_IMPLEMENTATION_BACKLOG.md) | —                                    |
+| 45   | Arabic RTL Language Support + PWA Completion (Final SRS Milestone)        | 📋 Planned  | —                         | —                                            | [`Backlog`](./WAVE_45_IMPLEMENTATION_BACKLOG.md) | —                                    |
 
 ## Notes
 

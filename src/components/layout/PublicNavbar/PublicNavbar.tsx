@@ -182,20 +182,30 @@ const PublicNavbar = (): React.JSX.Element => {
   return (
     <header className="public-navbar" role="banner">
       <div className="public-navbar__inner">
-        {/* Brand / Logo */}
-        <Link to="/" className="public-navbar__brand" aria-label="White Caves Home">
+        {/* Brand / Big Overhanging Circular Logo (Zero Written Text, 76px Diameter) */}
+        <Link to="/" className="public-navbar__brand" aria-label="White Caves Home" style={{ position: 'relative', width: '76px', height: '76px', marginLeft: '1rem', zIndex: 1010 }}>
           <img
             src={logoSrc}
             alt="White Caves Real Estate LLC"
             className="public-navbar__brand-logo"
             loading="lazy"
-            width={42}
-            height={42}
+            width={76}
+            height={76}
+            style={{
+              position: 'absolute',
+              top: '0',
+              left: '0.5rem',
+              transform: 'translateY(22%)',
+              width: '76px',
+              height: '76px',
+              borderRadius: '50%',
+              border: '3.5px solid #EF4444',
+              boxShadow: '0 10px 28px rgba(239, 68, 68, 0.5)',
+              zIndex: 1010,
+              objectFit: 'cover',
+              background: '#FFFFFF',
+            }}
           />
-          <span className="public-navbar__brand-name">
-            <span className="public-navbar__brand-line1">White Caves</span>
-            <span className="public-navbar__brand-line2">Real Estate LLC</span>
-          </span>
         </Link>
 
         {/* Desktop navigation */}

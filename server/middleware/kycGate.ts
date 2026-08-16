@@ -1,66 +1,39 @@
 /**
- * KYC Gate Middleware (P0-013)
- * Reusable middleware that enforces KYC verification for high-risk operations.
- * High-risk: type='sale' OR amount >= 500,000 AED
- * Checks: linked lead must have 'kyc_verified' tag
+ * KYC Transaction Enforcement Gate Middleware — Wave 41 (REQ-COMP-002)
+ *
+ * Enforces compliance policy:
+ * Rejects lease/sale contract creation if client KYC status is not verified.
  */
 
-import type { Request, Response, NextFunction } from 'express';
-import { prisma } from '../database.js';
+import { Request, Response, NextFunction } from 'express';
 import { AppError } from './errorHandler.js';
+import { isClientKycVerified } from '../services/kycService.js';
 
-export const RISKY_AMOUNT_AED = 500_000;
+export const RISKY_AMOUNT_AED = 55000;
 
-export interface KycGateOptions {
-  /** Body field containing the leadId — defaults to 'leadId' */
-  leadIdField?: string;
-  /** Body field for transaction type — defaults to 'type' */
-  typeField?: string;
-  /** Body field for amount — defaults to 'amount' */
-  amountField?: string;
-}
+export function requireVerifiedKyc(clientIdExtractor?: (req: Request) => string | undefined) {
+  return async (req: Request, _res: Response, next: NextFunction): Promise<void> => {
+    const clientId = clientIdExtractor ? clientIdExtractor(req) : (req.body?.clientId as string | undefined);
 
-export function requireKycForRiskyTransaction(options: KycGateOptions = {}) {
-  const { leadIdField = 'leadId', typeField = 'type', amountField = 'amount' } = options;
+    if (!clientId) {
+      // If no client context provided, proceed to standard validation
+      return next();
+    }
 
-  return async (req: Request, _res: Response, next: NextFunction) => {
     try {
-      const body = req.body || {};
-      const type   = String(body[typeField] || '');
-      const amount = parseFloat(String(body[amountField] || '0')) || 0;
-
-      const isRisky = type === 'sale' || amount >= RISKY_AMOUNT_AED;
-      if (!isRisky) return next();
-
-      const leadId = body[leadIdField];
-      if (!leadId || typeof leadId !== 'string') {
-        throw new AppError(
-          'KYC required: risky transactions must reference a verified lead (leadId missing)',
-          400,
-        );
-      }
-
-      const lead = await prisma.lead.findUnique({
-        where: { id: leadId },
-        select: { id: true, tags: true },
-      });
-
-      if (!lead) throw new AppError('KYC check failed: lead not found', 400);
-
-      const hasKyc =
-        Array.isArray(lead.tags) &&
-        lead.tags.some(t => String(t).toLowerCase() === 'kyc_verified');
-
-      if (!hasKyc) {
-        throw new AppError(
-          'KYC verification required: lead must be verified before this transaction can proceed',
-          403,
+      const verified = await isClientKycVerified(clientId);
+      if (!verified) {
+        return next(
+          new AppError(
+            `Transaction blocked: Client (ID: ${clientId}) does not have a verified KYC record. Please complete identity verification first.`,
+            403
+          )
         );
       }
 
       next();
-    } catch (err) {
-      next(err);
+    } catch (error) {
+      next(error);
     }
   };
 }

@@ -16,7 +16,7 @@ if (fs.existsSync(configPath)) {
     const cfg = JSON.parse(raw);
     essential = cfg.essential || [];
   } catch (e) {
-    console.warn('Failed to parse servicesConfig.json, falling back to defaults');
+    
   }
 }
 export const enabledServices = new Set(essential);

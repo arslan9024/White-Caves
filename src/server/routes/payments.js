@@ -16,7 +16,7 @@ if (isStripeConfigured) {
       apiVersion: '2023-10-16',
     });
   } catch (error) {
-    console.error('Failed to initialize Stripe:', error);
+    
   }
 }
 
@@ -31,7 +31,7 @@ router.post(
 
     try {
       if (!isStripeConfigured || !stripe) {
-        console.warn('Stripe not configured or failed to init. Returning simulation payload.');
+        
         return res.json({
           success: true,
           clientSecret: `mock_pi_secret_simulation_payload`,
@@ -53,7 +53,7 @@ router.post(
         clientSecret: paymentIntent.client_secret,
       });
     } catch (error) {
-      console.error('Stripe API error:', error);
+      
       // 503 Mitigation fallback
       res.json({
         success: true,

@@ -39,7 +39,7 @@ function AnalyticsDashboard() {
         throw new Error('Failed to fetch dashboard statistics');
       }
     } catch (err) {
-      console.error('Error fetching dashboard stats:', err);
+      
       setError(err.message || 'Failed to load analytics data');
     } finally {
       setLoading(false);
@@ -88,7 +88,7 @@ function AnalyticsDashboard() {
       link.click();
       URL.revokeObjectURL(url);
     } catch (err) {
-      console.error('Error exporting data:', err);
+      
       setError('Failed to export analytics data');
     }
   };

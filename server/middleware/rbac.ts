@@ -355,6 +355,7 @@ export const ROLE_PERMISSIONS: Record<string, string[]> = {
     'manage_all_listings',
     'export_reports',
     'approve_commission',
+    'manage_marketing',
   ],
   manager: [
     'view_dashboard',
@@ -388,6 +389,7 @@ export const ROLE_PERMISSIONS: Record<string, string[]> = {
     'manage_all_listings',
     'export_reports',
     'approve_commission',
+    'manage_marketing',
   ],
   owner: [
     'view_dashboard',
@@ -423,6 +425,7 @@ export const ROLE_PERMISSIONS: Record<string, string[]> = {
     'view_audit_logs',
     'approve_role_request',
     'manage_all_listings',
+    'manage_marketing',
     'export_reports',
     'approve_commission',
   ],

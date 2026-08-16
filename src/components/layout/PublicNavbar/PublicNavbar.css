@@ -58,26 +58,7 @@
 }
 
 .public-navbar__brand-name {
-  display: flex;
-  flex-direction: column;
-  line-height: 1;
-  transition: opacity 0.2s ease;
-}
-
-.public-navbar__brand-line1 {
-  font-size: 1rem;
-  font-weight: 800;
-  color: #111827;
-  letter-spacing: 0.01em;
-}
-
-.public-navbar__brand-line2 {
-  font-size: 0.65rem;
-  font-weight: 500;
-  color: #6b7280;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-  margin-top: 2px;
+  display: none !important;
 }
 
 /* ── Desktop Navigation ─────────────────────────────────────── */

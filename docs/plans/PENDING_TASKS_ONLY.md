@@ -1,9 +1,9 @@
 # White Caves Real Estate LLC — Pending Tasks & RUP System Ledger
 
 > **System Version:** 2.0.26  
-> **Last Updated:** 2026-08-02  
+> **Last Updated:** 2026-08-09  
 > **Active Stream:** `MASTER_PLAN.md`  
-> **Active Wave Bundle:** Wave 30 (Mobile CRM & Corporate System Infrastructure)  
+> **Active Wave Bundle:** Wave 45 (Arabic RTL Support & PWA Offline Engine — SRS Final Phase)  
 > **Engineering Model:** Rational Unified Process (RUP)  
 > **Hierarchy:** 1 Managing Director (Arsalan Malik) | 12 Department Managers | 108 Supervisors  
 > **Brand Palette:** Red (`#EF4444`) | White (`#FFFFFF`) | Slate (`#1E293B`)  
@@ -48,3 +48,27 @@
 - [x] **SYNC_04 (4_TERMINAL_CHECK):** Zero-token local compilation checks via `npm run build` and `npm run next:build`
 - [x] **SYNC_05 (5_HOT_RELOAD):** Runtime stability verification with zero log exceptions
 - [x] **SYNC_06 (6_REMOTE_RELEASE):** Remote release workflow ready for Vercel deployment hooks
+
+---
+
+## 🎨 Multi-Zone UI/UX Upgrade Parameters (@Ada RUP Construction)
+
+| Viewport Target | Architecture Tier | Action Directive | UI Pattern | Status |
+| :--- | :--- | :--- | :--- | :--- |
+| `src/components/navigation/TopNavbar.tsx` | GLOBAL_SHELL | Remove written text strings, double logo vector boundaries to 76px x 76px (`h-[76px] w-[76px]`). Enforce 50% vertical overhang past bottom red header line. Shift right. | `OverhangingLogoShell` | ✅ COMPLETED |
+| `src/components/navigation/TopNavbar.tsx` | GLOBAL_SHELL | Inject binary light/dark switch (`#FFFFFF` + `#EF4444` vs `#0F172A` + `#EF4444`). | `ThemeToggle` | ✅ COMPLETED |
+| `src/components/navigation/TopNavbar.tsx` | GLOBAL_SHELL | Fluid dropdown lists: hover opens micro-shadow glassmorphic container, click locks open. | `FluidDropdownFlow` | ✅ COMPLETED |
+| `src/components/home/HeroSection.tsx` | HOMEPAGE | Re-align search pill items, integrate live monochrome Google Maps module with red listing pins from local property ledger. | `UnifiedHomepageView` | ✅ COMPLETED |
+| `src/pages/crm/ProfilePage.tsx` | AUTH_PROFILE | Founder summary card with interactive milestone line, session IP tickers, document expiration badges (DET `1388443`, RERA ORN `44483`, HQ Ejari, ICP card) with 90/60/30-day renewal countdown notifications. | `SovereignProfilePage` | ✅ COMPLETED |
+| `src/pages/crm/UnifiedDashboardPage.tsx` | CRM_COCKPIT | High-density analytics tokens, live cross-department action trackers, draggable widget modules, micro-sparkline graphs next to manager profiles. | `ExecutiveFlightDeck` | ✅ COMPLETED |
+
+---
+
+## 📐 Algorithms Domain Manifest Index (`software_docs/05_algorithms/`)
+
+| File Path | Department | Algorithm Name | Mathematical / Logic Protocol | SDD Reference |
+| :--- | :--- | :--- | :--- | :--- |
+| `software_docs/05_algorithms/lead_sla_decay.md` | `comms` | Lead SLA Decay & Escalation Algorithm | Weight-Based TTL Decay Penalty Counters | `../02_software_design/rbac_state_gating_sdd.md` |
+| `software_docs/05_algorithms/commission_tier_acceleration.md` | `finance` | Dynamic Commission Tier Accelerator | Threshold-Trigger Split Math (50/50 to 70/30 Split) | `../02_software_design/database_architecture_sdd.md` |
+| `software_docs/05_algorithms/predictive_roi_appraisal.md` | `intelligence` | Predictive Property ROI Appraisal | Linear Regression DLD Density Arrays | `../02_software_design/tech_replacement_rules.md` |
+| `software_docs/05_algorithms/noc_express_pathfinder.md` | `conveyancing` | NOC Express Pathfinder Logic | Graph-Based Delay Analysis across developers | `../02_software_design/tech_replacement_rules.md` |

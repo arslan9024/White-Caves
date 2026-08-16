@@ -29,7 +29,7 @@ const AuroraTechnicalDashboard = () => {
         // Future: wire data into chart state
         void data;
       } catch (error) {
-        console.error('Failed to fetch metrics:', error);
+        
       }
     };
 

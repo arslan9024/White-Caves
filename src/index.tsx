@@ -12,8 +12,8 @@ import './styles/tokens.css';
 // Dubai Luxury design tokens — loaded globally so any component opting into
 // the `dubai-luxury-theme` class inherits --luxury-cta-bg / --primary-color etc.
 import './styles/dubaiLuxuryTheme.css';
-// W17-001: Glassmorphism tokens + .glass-surface utility class + dark-mode vars
-import './styles/tokens.css';
+// Master Brand Tokens (Waves 56-65) — Red primary, Dark Luxury Slate, and custom scrollbars
+import './styles/brand-tokens.css';
 // RTL utility overrides — applied automatically when dir="rtl" is set on <html>
 import './styles/rtl.css';
 import { createLogger } from './utils/logger';

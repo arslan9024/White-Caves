@@ -138,7 +138,7 @@ export default function UserDashboard() {
     <div className="user-dashboard">
       <div className="dashboard-header">
         <div className="dashboard-welcome">
-          <div className="user-avatar">
+          <div className="user-avatar glow-effect">
             {user?.name?.charAt(0) || user?.email?.charAt(0) || 'U'}
           </div>
           <div className="welcome-text">
@@ -164,32 +164,32 @@ export default function UserDashboard() {
         ))}
       </div>
 
-      <div className="dashboard-content">
+      <div className="dashboard-content stagger-entry">
         {activeTab === 'overview' && (
           <div className="overview-tab">
             <div className="stats-grid">
-              <div className="stat-card">
+              <div className="stat-card slide-up">
                 <div className="stat-icon">👁️</div>
                 <div className="stat-info">
                   <span className="stat-value">{stats.totalViews}</span>
                   <span className="stat-label">Properties Viewed</span>
                 </div>
               </div>
-              <div className="stat-card">
+              <div className="stat-card slide-up">
                 <div className="stat-icon">💬</div>
                 <div className="stat-info">
                   <span className="stat-value">{stats.totalInquiries}</span>
                   <span className="stat-label">Inquiries Sent</span>
                 </div>
               </div>
-              <div className="stat-card">
+              <div className="stat-card slide-up">
                 <div className="stat-icon">📅</div>
                 <div className="stat-info">
                   <span className="stat-value">{stats.scheduledViewings}</span>
                   <span className="stat-label">Scheduled Viewings</span>
                 </div>
               </div>
-              <div className="stat-card">
+              <div className="stat-card slide-up">
                 <div className="stat-icon">❤️</div>
                 <div className="stat-info">
                   <span className="stat-value">{favorites.length}</span>

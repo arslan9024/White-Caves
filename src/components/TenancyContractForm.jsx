@@ -104,7 +104,7 @@ const TenancyContractForm = ({ onSuccess, initialContractId }) => {
         setAgreements(json.data || []);
       }
     } catch (err) {
-      console.error('Error loading tenancy agreements:', err);
+      
     }
   }, []);
 
@@ -208,7 +208,7 @@ const TenancyContractForm = ({ onSuccess, initialContractId }) => {
       const message = err?.message || 'Error saving draft';
       setError(message);
       setStatusMessage({ type: 'error', text: message });
-      console.error('Error saving draft:', err);
+      
     } finally {
       setLoading(false);
     }
@@ -249,7 +249,7 @@ const TenancyContractForm = ({ onSuccess, initialContractId }) => {
       const message = err?.message || 'Error activating tenancy agreement';
       setError(message);
       setStatusMessage({ type: 'error', text: message });
-      console.error('Error generating PDF:', err);
+      
     } finally {
       setLoading(false);
     }

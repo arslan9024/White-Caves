@@ -40,7 +40,11 @@
     "impersonate_group_brokers": "Sales & Leasing Brokers",
     "impersonate_group_external": "External Portals",
     "impersonate_viewing_as": "VIEWING AS",
-    "impersonate_reset": "Reset to Master Mode"
+    "impersonate_reset": "Reset to Master Mode",
+    "md_hub_title": "👑 [Managing Director Hub]",
+    "md_hub_pipeline": "📊 12-Department Pipeline Overview",
+    "md_hub_expiry": "🏛️ Governing Expiry Monitors (DET/RERA)",
+    "md_hub_ai_dispatch": "🤖 Nadia & Nina AI Dispatch Array"
   },
   "workspace": {
     "welcome": "Welcome back",

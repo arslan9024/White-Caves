@@ -802,7 +802,30 @@ router.put(
     if (body.description !== undefined)
       updateData.description = body.description ? sanitizeString(String(body.description)) : null;
     if (body.type !== undefined) updateData.type = String(body.type);
-    if (body.status !== undefined) updateData.status = String(body.status);
+    if (body.status !== undefined) {
+      // ─── RERA PERMIT ENFORCEMENT (SRS §4.3, RERA Law No. 16/2007) ──────
+      // Properties cannot be set to 'available' without a valid, non-expired RERA permit.
+      const incomingStatus = String(body.status);
+      if (incomingStatus === 'available') {
+        const permitNum = body.reraPermitNumber ?? existing.reraPermitNumber;
+        const permitExpiry = body.reraPermitExpiryDate
+          ? new Date(String(body.reraPermitExpiryDate))
+          : existing.reraPermitExpiryDate;
+        if (!permitNum || String(permitNum).trim() === '') {
+          throw new AppError(
+            'Cannot publish property: reraPermitNumber is required (RERA Law No. 16/2007). Obtain a Trakheesi permit first.',
+            422
+          );
+        }
+        if (permitExpiry && permitExpiry < new Date()) {
+          throw new AppError(
+            'Cannot publish property: RERA permit has expired. Renew via Trakheesi before publishing.',
+            422
+          );
+        }
+      }
+      updateData.status = incomingStatus;
+    }
     if (body.price !== undefined) updateData.price = parseFloat(String(body.price));
     if (body.currency !== undefined) updateData.currency = String(body.currency);
     if (body.bedrooms !== undefined) updateData.bedrooms = parseInt(String(body.bedrooms), 10);
@@ -928,6 +951,26 @@ router.patch(
 
     const body = req.body as Record<string, unknown>;
     const updateData: Prisma.PropertyUpdateInput = {};
+
+    // ─── RERA PERMIT ENFORCEMENT (SRS §4.3, RERA Law No. 16/2007) ──────────
+    if (body.status !== undefined && String(body.status) === 'available') {
+      const permitNum = body.reraPermitNumber ?? existing.reraPermitNumber;
+      const permitExpiry = body.reraPermitExpiryDate
+        ? new Date(String(body.reraPermitExpiryDate))
+        : existing.reraPermitExpiryDate;
+      if (!permitNum || String(permitNum).trim() === '') {
+        throw new AppError(
+          'Cannot publish property: reraPermitNumber is required (RERA Law No. 16/2007). Obtain a Trakheesi permit first.',
+          422
+        );
+      }
+      if (permitExpiry && permitExpiry < new Date()) {
+        throw new AppError(
+          'Cannot publish property: RERA permit has expired. Renew via Trakheesi before publishing.',
+          422
+        );
+      }
+    }
 
     const stringFields = [
       'title',

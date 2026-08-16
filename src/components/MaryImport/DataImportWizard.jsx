@@ -204,7 +204,7 @@ const DataImportWizard = () => {
             const result = await response.json();
             return result.data.mapping;
           } catch (err) {
-            console.error('Auto-detect failed:', err);
+            
             return columnMapping;
           }
         }}

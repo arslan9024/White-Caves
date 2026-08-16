@@ -8,8 +8,7 @@ export function initializeSentry(app) {
   const dsn = process.env.SENTRY_DSN;
 
   if (!dsn) {
-    console.warn('⚠️  SENTRY_DSN not configured - error tracking disabled');
-    console.warn('   To enable: set SENTRY_DSN in .env.staging');
+
     return false;
   }
 
@@ -38,10 +37,6 @@ export function initializeSentry(app) {
   
   // Error handler - must be last
   app.use(Sentry.Handlers.errorHandler());
-
-  console.log('✅ Sentry initialized for error tracking');
-  console.log(`   Environment: ${process.env.NODE_ENV || 'production'}`);
-  console.log(`   Trace sample rate: ${process.env.NODE_ENV === 'production' ? '10%' : '100%'}`);
 
   return true;
 }

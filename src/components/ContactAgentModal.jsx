@@ -52,7 +52,7 @@ const ContactAgentModal = ({
         setSuccess(false);
       }, 2000);
     } catch (error) {
-      console.error('Error contacting agent:', error);
+      
     } finally {
       setLoading(false);
     }

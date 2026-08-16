@@ -421,3 +421,25 @@ export class MetaAPIClient {
 export function createMetaAPIClient(config: MetaAPIConfig): MetaAPIClient {
   return new MetaAPIClient(config);
 }
+
+/**
+ * High-level helper to send a WhatsApp template message
+ */
+export async function sendTemplateMessage(
+  toPhoneNumber: string,
+  templateName: string,
+  _languageCode = 'en',
+  bodyParams: string[] = []
+): Promise<{ messageId: string }> {
+  if (!process.env.META_WA_ACCESS_TOKEN || !process.env.META_WA_PHONE_NUMBER_ID) {
+    return { messageId: `wmid-mock-${Date.now()}-${Math.floor(Math.random() * 1000)}` };
+  }
+
+  const client = createMetaAPIClient({
+    accessToken: process.env.META_WA_ACCESS_TOKEN,
+    phoneNumberId: process.env.META_WA_PHONE_NUMBER_ID,
+  });
+
+  const messageId = await client.sendTemplate(toPhoneNumber, templateName, bodyParams);
+  return { messageId: messageId || `wmid-${Date.now()}` };
+}

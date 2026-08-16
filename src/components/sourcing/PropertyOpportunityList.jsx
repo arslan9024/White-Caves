@@ -148,11 +148,11 @@ export default function PropertyOpportunityList() {
 
   const handleAddToInventory = (opportunity) => {
     if (opportunity.status !== 'fully_verified') {
-      console.warn('Property must be fully verified before adding to inventory');
+      
       return;
     }
     // In production: call PropertySourcingService.convertOpportunityToProperty
-    console.log('Adding to inventory:', opportunity);
+    
   };
 
   const handleUpdateStatus = (opportunityId, newStatus) => {

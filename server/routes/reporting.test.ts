@@ -75,6 +75,16 @@ const { mockPrisma, mockDocumentService } = vi.hoisted(() => {
         filename: 'monthly-pl.xlsx',
         buffer: Buffer.from('pl-export'),
       }),
+      generateCommissionDetailExcel: fn().mockResolvedValue({
+        mimeType: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+        filename: 'commission-detail.xlsx',
+        buffer: Buffer.from('commission-export'),
+      }),
+      generateMonthlyPnLPdf: fn().mockResolvedValue({
+        mimeType: 'application/pdf',
+        filename: 'pnl-statement-2026-08.pdf',
+        buffer: Buffer.from('pnl-pdf-export'),
+      }),
     },
   };
 });
@@ -1680,4 +1690,46 @@ describe('Reporting / Dashboard Routes — /api/dashboard', () => {
       expect(res.body.error).toMatch(/pl export failed/i);
     });
   });
+
+  // ── WAVE 34: FINANCIAL EXPORT ENDPOINTS ──────────────────────────────
+  describe('GET /api/dashboard/reports/financial/commissions/export', () => {
+    it('returns 200 with Excel attachment for authorized role', async () => {
+      const res = await request(createApp('finance')).get(
+        '/api/dashboard/reports/financial/commissions/export'
+      );
+
+      expect(res.status).toBe(200);
+      expect(res.headers['content-type']).toContain('application/vnd.openxmlformats');
+      expect(res.headers['content-disposition']).toContain('commission-detail.xlsx');
+    });
+
+    it('returns 403 for unauthorized role (agent)', async () => {
+      const res = await request(createApp('agent')).get(
+        '/api/dashboard/reports/financial/commissions/export'
+      );
+
+      expect(res.status).toBe(403);
+    });
+  });
+
+  describe('GET /api/dashboard/reports/financial/pnl/pdf', () => {
+    it('returns 200 with PDF attachment for finance role', async () => {
+      const res = await request(createApp('finance')).get(
+        '/api/dashboard/reports/financial/pnl/pdf?year=2026&month=8'
+      );
+
+      expect(res.status).toBe(200);
+      expect(res.headers['content-type']).toContain('application/pdf');
+      expect(res.headers['content-disposition']).toContain('pnl-statement-2026-08.pdf');
+    });
+
+    it('returns 403 for unauthorized role (viewer)', async () => {
+      const res = await request(createApp('viewer')).get(
+        '/api/dashboard/reports/financial/pnl/pdf'
+      );
+
+      expect(res.status).toBe(403);
+    });
+  });
 });
+

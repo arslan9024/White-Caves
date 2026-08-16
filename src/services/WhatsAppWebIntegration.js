@@ -23,7 +23,7 @@ class WhatsAppWebIntegrationService {
   async initializeConnection() {
     try {
       if (this.client && this.isReady) {
-        console.log('WhatsApp client already initialized and ready');
+        
         return this.isReady;
       }
 
@@ -37,7 +37,7 @@ class WhatsAppWebIntegrationService {
       });
 
       this.client.on('qr', qr => {
-        console.log('WhatsApp QR Code generated');
+        
         this.currentQRCode = qr;
         this.qrCodeExpiryTime = Date.now() + 45000; // 45 seconds
 
@@ -55,7 +55,7 @@ class WhatsAppWebIntegrationService {
       });
 
       this.client.on('ready', () => {
-        console.log('WhatsApp client is ready!');
+        
         this.isReady = true;
         if (this.eventHandlers.onReady) {
           this.eventHandlers.onReady();
@@ -69,7 +69,7 @@ class WhatsAppWebIntegrationService {
       });
 
       this.client.on('disconnected', reason => {
-        console.log('WhatsApp client disconnected:', reason);
+        
         this.isReady = false;
         if (this.eventHandlers.onDisconnected) {
           this.eventHandlers.onDisconnected(reason);
@@ -79,7 +79,7 @@ class WhatsAppWebIntegrationService {
       await this.client.initialize();
       return this.isReady;
     } catch (error) {
-      console.error('Failed to initialize WhatsApp connection:', error);
+      
       throw new Error(`WhatsApp initialization failed: ${error.message}`);
     }
   }
@@ -131,7 +131,7 @@ class WhatsAppWebIntegrationService {
           : null,
       }));
     } catch (error) {
-      console.error('Failed to get conversations:', error);
+      
       throw error;
     }
   }
@@ -179,7 +179,7 @@ class WhatsAppWebIntegrationService {
 
       return conversationData;
     } catch (error) {
-      console.error(`Failed to get conversation ${chatId}:`, error);
+      
       throw error;
     }
   }
@@ -221,7 +221,7 @@ class WhatsAppWebIntegrationService {
 
       return results.sort((a, b) => b.relevanceScore - a.relevanceScore);
     } catch (error) {
-      console.error('Search conversations failed:', error);
+      
       throw error;
     }
   }
@@ -244,7 +244,7 @@ class WhatsAppWebIntegrationService {
         to: formattedNumber,
       };
     } catch (error) {
-      console.error('Failed to send message:', error);
+      
       throw error;
     }
   }
@@ -281,7 +281,7 @@ class WhatsAppWebIntegrationService {
         this.conversationCache.clear();
       }
     } catch (error) {
-      console.error('Error disconnecting WhatsApp client:', error);
+      
     }
   }
 
@@ -336,7 +336,6 @@ class WhatsAppWebIntegrationService {
     }
 
     this.retryAttempts++;
-    console.log(`Retrying connection (attempt ${this.retryAttempts}/${this.maxRetries})`);
 
     // Clear current client
     if (this.client) {

@@ -37,7 +37,6 @@ const apiCall = async (endpoint, options = {}) => {
     const data = await handleResponse(response);
 
     // Log successful request
-    console.warn(`[API] ${options.method || 'GET'} ${endpoint} - Success`, data);
 
     return {
       success: true,
@@ -46,7 +45,6 @@ const apiCall = async (endpoint, options = {}) => {
     };
   } catch (error) {
     // Log error
-    console.error(`[API] ${options.method || 'GET'} ${endpoint} - Error:`, error.message);
 
     return {
       success: false,
@@ -207,7 +205,7 @@ export const initializeSidebarData = async () => {
       },
     };
   } catch (error) {
-    console.error('[API] initializeSidebarData failed:', error);
+    
     return {
       success: false,
       error: error.message,
@@ -261,7 +259,7 @@ export const loadContextFull = async (assistantId, context) => {
       },
     };
   } catch (error) {
-    console.error('[API] loadContextFull failed:', error);
+    
     return {
       success: false,
       error: error.message,
@@ -287,7 +285,7 @@ export const healthCheck = async () => {
       status: response.status,
     };
   } catch (error) {
-    console.error('[API] Health check failed:', error);
+    
     return {
       success: false,
       status: 0,

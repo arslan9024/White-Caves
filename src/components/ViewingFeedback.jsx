@@ -71,7 +71,7 @@ const ViewingFeedback = ({ viewing, onSubmit, onClose }) => {
         setTimeout(() => onClose?.(), 2000);
       }
     } catch (error) {
-      console.error('Error submitting feedback:', error);
+      
     } finally {
       setSubmitting(false);
     }

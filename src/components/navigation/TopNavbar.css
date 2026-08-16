@@ -61,15 +61,7 @@
 }
 
 .top-navbar-title {
-  font-size: 1.1rem;
-  font-weight: 800;
-  color: #1E293B;
-  letter-spacing: 0.5px;
-  text-transform: uppercase;
-}
-
-.top-navbar-title span {
-  color: #EF4444;
+  display: none !important;
 }
 
 .top-navbar-search {

@@ -97,7 +97,7 @@ const PropertyGalleryPage = () => {
         setIsFavorite(!isFavorite);
       }
     } catch (err) {
-      console.error('Failed to update favorite:', err);
+      
     }
   };
 

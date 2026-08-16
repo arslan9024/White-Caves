@@ -111,7 +111,7 @@ export default function DashboardView() {
   const handleAiExecute = useCallback(() => {
     if (aiPrompt.trim()) {
       // In production this would dispatch to an AI ingestion pipeline
-      console.log('[AI Command Center] Ingesting prompt:', aiPrompt);
+      
       setAiPrompt('');
       setAiModalOpen(false);
     }

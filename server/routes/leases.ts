@@ -476,6 +476,18 @@ router.patch(
       if (!validStatuses.includes(status)) {
         throw new AppError(`Invalid status. Must be one of: ${validStatuses.join(', ')}`, 400);
       }
+      // ─── EJARI ENFORCEMENT (REQ-TENANT-003, SRS §4.7) ────────────────
+      // A lease cannot be activated without a valid Ejari registration number.
+      // This satisfies Dubai Decree No. 26/2013 (Ejari mandatory for all leases).
+      if (status === 'active') {
+        const ejariToUse = ejariNumber ?? existing.ejariNumber;
+        if (!ejariToUse || String(ejariToUse).trim() === '') {
+          throw new AppError(
+            'Cannot activate lease: ejariNumber is required. Register with Ejari first (Dubai Decree No. 26/2013).',
+            422
+          );
+        }
+      }
       updateData.status = status;
     }
     if (monthlyRent !== undefined) updateData.monthlyRent = monthlyRent;
@@ -1110,5 +1122,9 @@ router.post('/collections/overdue-queue/:pdcId/notify', asyncHandler(notifyOverd
 // ─── POST /api/leases/overdue-collection-queue/:pdcId/notify ───────────────
 // Backward-compatible alias for existing clients.
 router.post('/overdue-collection-queue/:pdcId/notify', asyncHandler(notifyOverdueCollection));
+
+// ─── Wave 35: Mount Rent Payments Sub-router ───────────────────────────
+import rentPaymentsRouter from './rentPayments.js';
+router.use('/:leaseId/payments', rentPaymentsRouter);
 
 export default router;

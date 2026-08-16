@@ -51,7 +51,6 @@ const ContractSigningPage = () => {
    */
   const handleSignatureComplete = result => {
     setSignatureComplete(true);
-    console.warn('Signature submitted successfully:', result);
 
     // Redirect after a delay
     setTimeout(() => {

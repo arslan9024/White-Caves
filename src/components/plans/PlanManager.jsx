@@ -60,7 +60,7 @@ export default function PlanManager() {
       const data = await response.json();
       setPlans(data.plans || []);
     } catch (error) {
-      console.error('Error loading plans:', error);
+      
       showStatus('error', 'Failed to load plans');
     } finally {
       setLoading(false);
@@ -78,7 +78,7 @@ export default function PlanManager() {
       const data = await response.json();
       setStats(data);
     } catch (error) {
-      console.error('Error loading stats:', error);
+      
     }
   };
 
@@ -100,7 +100,7 @@ export default function PlanManager() {
       loadPlans();
       loadStats();
     } catch (error) {
-      console.error('Error creating plan:', error);
+      
       showStatus('error', 'Failed to create plan');
     }
   };
@@ -122,7 +122,7 @@ export default function PlanManager() {
       loadPlans();
       loadStats();
     } catch (error) {
-      console.error('Error deleting plan:', error);
+      
       showStatus('error', 'Failed to delete plan');
     }
   };
@@ -146,7 +146,7 @@ export default function PlanManager() {
       showStatus('success', 'Plan improved with AI successfully!');
       loadPlans();
     } catch (error) {
-      console.error('Error improving plan:', error);
+      
       showStatus('error', 'Failed to improve plan');
     } finally {
       setLoading(false);
@@ -182,7 +182,7 @@ export default function PlanManager() {
       loadPlans();
       loadStats();
     } catch (error) {
-      console.error('Error merging plans:', error);
+      
       showStatus('error', 'Failed to merge plans');
     } finally {
       setLoading(false);
@@ -484,7 +484,7 @@ function CreatePlanModal({ onCreate, onClose, onNotify }) {
       setFormMessage({ type: 'success', text: 'Plan generated with AI!' });
       onNotify?.('success', 'Plan generated with AI!');
     } catch (error) {
-      console.error('Error:', error);
+      
       setFormMessage({ type: 'error', text: 'Failed to generate plan' });
       onNotify?.('error', 'Failed to generate plan');
     } finally {
@@ -684,7 +684,7 @@ function PlanEditor({ planId, onClose, onNotify }) {
       setPlan(data);
       setContent(data.content);
     } catch (error) {
-      console.error('Error loading plan:', error);
+      
       setEditorMessage({ type: 'error', text: 'Failed to load plan' });
       onNotify?.('error', 'Failed to load plan');
     } finally {
@@ -712,7 +712,7 @@ function PlanEditor({ planId, onClose, onNotify }) {
       onNotify?.('success', 'Plan saved successfully!');
       onClose();
     } catch (error) {
-      console.error('Error saving plan:', error);
+      
       setEditorMessage({ type: 'error', text: 'Failed to save plan' });
       onNotify?.('error', 'Failed to save plan');
     } finally {

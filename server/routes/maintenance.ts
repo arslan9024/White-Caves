@@ -293,6 +293,90 @@ router.patch(
   })
 );
 
+// ─── PATCH /api/maintenance/:id/assign — Assign contractor & set SLA clock ────
+router.patch(
+  '/:id/assign',
+  asyncHandler(async (req: AuthRequest, res: Response) => {
+    const userId = req.user?.id;
+    const userRole = req.user?.role;
+    if (!userId) throw new AppError('Authentication required', 401);
+    if (!['owner', 'admin', 'manager'].includes(userRole || '')) {
+      throw new AppError('Only managers and admins can assign contractors', 403);
+    }
+
+    const { id } = req.params as Record<string, string>;
+    const { contractorId, contractorName } = req.body as {
+      contractorId: string;
+      contractorName?: string;
+    };
+
+    if (!contractorId) throw new AppError('contractorId is required', 400);
+
+    const existing = await prisma.maintenance.findUnique({ where: { id } });
+    if (!existing) throw new AppError('Maintenance request not found', 404);
+
+    const now = new Date();
+    // SLA: 4 hours for emergency, 48 hours for normal
+    const slaHours = existing.priority === 'emergency' ? 4 : 48;
+    const slaDeadline = new Date(now.getTime() + slaHours * 60 * 60 * 1000);
+
+    const updated = await prisma.maintenance.update({
+      where: { id },
+      data: {
+        contractorId,
+        contractorName: contractorName || 'Licensed Contractor',
+        assignedAt: now,
+        slaDeadline,
+        status: 'in_progress',
+      },
+    });
+
+    await prisma.activity.create({
+      data: {
+        type: 'maintenance',
+        action: 'contractor_assigned',
+        description: `Contractor "${contractorName || contractorId}" assigned to maintenance #${id} (SLA: ${slaHours}h)`,
+        userId,
+      },
+    });
+
+    res.status(200).json({ success: true, data: updated });
+  })
+);
+
+// ─── PATCH /api/maintenance/:id/rate — Tenant rating & feedback ────────────
+router.patch(
+  '/:id/rate',
+  asyncHandler(async (req: AuthRequest, res: Response) => {
+    const userId = req.user?.id;
+    if (!userId) throw new AppError('Authentication required', 401);
+
+    const { id } = req.params as Record<string, string>;
+    const { rating, feedback } = req.body as { rating: number; feedback?: string };
+
+    if (!rating || rating < 1 || rating > 5) {
+      throw new AppError('Rating must be an integer between 1 and 5', 400);
+    }
+
+    const existing = await prisma.maintenance.findUnique({ where: { id } });
+    if (!existing) throw new AppError('Maintenance request not found', 404);
+
+    if (existing.requesterId !== userId) {
+      throw new AppError('Only the original requester can submit feedback', 403);
+    }
+
+    const updated = await prisma.maintenance.update({
+      where: { id },
+      data: {
+        tenantRating: Math.round(rating),
+        tenantFeedback: feedback || null,
+      },
+    });
+
+    res.status(200).json({ success: true, data: updated });
+  })
+);
+
 // ─── DELETE /api/maintenance/:id — Delete a maintenance request ──────────────
 router.delete(
   '/:id',

@@ -61,6 +61,9 @@ export function useUserProfile() {
   const [profileName, setProfileName] = useState<string>('');
   const [profilePhone, setProfilePhone] = useState<string>('');
   const [profileLanguage, setProfileLanguage] = useState<string>('en');
+  const [profilePhotoUrl, setProfilePhotoUrl] = useState<string>('');
+  const [brnNumber, setBrnNumber] = useState<string>('');
+  const [reraLicense, setReraLicense] = useState<string>('');
   const [isSaving, setIsSaving] = useState<boolean>(false);
 
   useEffect((): void => {
@@ -72,6 +75,7 @@ export function useUserProfile() {
     // Initialize form state from user data
     setProfileName(user.name || '');
     setProfilePhone(user.phone || '');
+    setProfilePhotoUrl(user.photoURL || user.photoUrl || user.photo || '');
 
     const stored = safeStorage.getJSON<UserData>('userRole');
     if (stored) {
@@ -115,6 +119,9 @@ export function useUserProfile() {
           name: profileName.trim(),
           phone: profilePhone.trim() || null,
           language: profileLanguage,
+          photoURL: profilePhotoUrl.trim() || null,
+          brnNumber: brnNumber.trim() || null,
+          reraLicenseNumber: reraLicense.trim() || null,
         }),
       });
       if (!response.ok) {
@@ -135,6 +142,7 @@ export function useUserProfile() {
       if (user?.id && user?.email) {
         const nextName = profileName.trim();
         const nextPhone = profilePhone.trim() || undefined;
+        const nextPhoto = profilePhotoUrl.trim() || undefined;
         dispatch(
           setUser({
             ...user,
@@ -143,11 +151,14 @@ export function useUserProfile() {
             name: nextName,
             displayName: nextName,
             phone: nextPhone,
+            photoURL: nextPhoto,
+            photoUrl: nextPhoto,
+            photo: nextPhoto,
             profileComplete: isProfileComplete({ name: nextName, phone: nextPhone }),
           })
         );
       }
-      toast.success('Profile updated successfully.');
+      toast.success('Profile configuration updated successfully.');
     } catch (err) {
       const message =
         err instanceof Error ? err.message : 'Failed to save profile. Please try again.';
@@ -197,6 +208,12 @@ export function useUserProfile() {
     setProfilePhone,
     profileLanguage,
     setProfileLanguage,
+    profilePhotoUrl,
+    setProfilePhotoUrl,
+    brnNumber,
+    setBrnNumber,
+    reraLicense,
+    setReraLicense,
     isSaving,
     handleLogout,
     handleSaveProfile,

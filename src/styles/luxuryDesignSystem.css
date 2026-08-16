@@ -1,0 +1,140 @@
+/**
+ * White Caves Real Estate LLC — Sovereign Luxury Aesthetic CSS Design System
+ * 
+ * Executive UI Design Tokens & Mechanics:
+ * - 3D Perspective Image Stacking & Glassmorphic Elevation
+ * - Luxury Gradient Overlays & Backdrop Blur Filters
+ * - Italicized Serif Highlight Typography (<span className="wc-luxury-italic-gold">)
+ * - Rounded Pill Category Selector Chips
+ * - Ultra-Luxury Shadow Glows & Micro-Animations
+ */
+
+/* ─── 3D Perspective Card Container ─── */
+.wc-luxury-3d-perspective {
+  perspective: 1000px;
+}
+
+.wc-luxury-3d-card-main {
+  transform: rotateY(-6deg) rotateX(2deg) scale(0.98);
+  transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.6s ease;
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.4);
+  border-radius: 1.5rem;
+  overflow: hidden;
+  border: 1px solid rgba(212, 175, 55, 0.2);
+}
+
+.wc-luxury-3d-card-main:hover {
+  transform: rotateY(0deg) rotateX(0deg) scale(1.01);
+  box-shadow: 0 30px 70px rgba(239, 68, 68, 0.25), 0 0 24px rgba(212, 175, 55, 0.2);
+  border-color: rgba(239, 68, 68, 0.4);
+}
+
+.wc-luxury-3d-card-overlay {
+  transform: rotateY(8deg) rotateX(-2deg) translateZ(20px);
+  transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+  box-shadow: 0 15px 40px rgba(212, 175, 55, 0.25);
+  border-radius: 1.5rem;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+}
+
+.wc-luxury-3d-card-overlay:hover {
+  transform: rotateY(0deg) rotateX(0deg) translateZ(30px);
+}
+
+/* ─── Glassmorphic Card Container & Hover Effects ─── */
+.wc-luxury-glass-card {
+  background: rgba(15, 23, 42, 0.85);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 1.5rem;
+  transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+  position: relative;
+  overflow: hidden;
+}
+
+.wc-luxury-glass-card:hover {
+  border-color: rgba(239, 68, 68, 0.4);
+  transform: translateY(-4px);
+  box-shadow: 0 20px 40px rgba(239, 68, 68, 0.15), 0 0 20px rgba(212, 175, 55, 0.1);
+}
+
+/* ─── Rounded Category Filter Chips ─── */
+.wc-luxury-pill-chip {
+  padding: 8px 20px;
+  border-radius: 9999px;
+  font-size: 0.82rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  cursor: pointer;
+  background: rgba(255, 255, 255, 0.05);
+  color: #94A3B8;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.wc-luxury-pill-chip.active {
+  background: linear-gradient(135deg, #EF4444 0%, #DC2626 100%);
+  color: #FFFFFF;
+  border-color: #EF4444;
+  box-shadow: 0 4px 16px rgba(239, 68, 68, 0.4);
+}
+
+.wc-luxury-pill-chip:hover:not(.active) {
+  background: rgba(255, 255, 255, 0.12);
+  color: #FFFFFF;
+  border-color: rgba(212, 175, 55, 0.3);
+  transform: translateY(-1px);
+}
+
+/* ─── Luxury Typography Highlight Styles ─── */
+.wc-luxury-serif-title {
+  font-family: 'Playfair Display', Georgia, serif;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+}
+
+.wc-luxury-italic-gold {
+  font-style: italic;
+  font-weight: 400;
+  color: #D4AF37;
+  text-shadow: 0 0 20px rgba(212, 175, 55, 0.3);
+}
+
+.wc-luxury-italic-red {
+  font-style: italic;
+  font-weight: 400;
+  color: #EF4444;
+  text-shadow: 0 0 20px rgba(239, 68, 68, 0.3);
+}
+
+.wc-luxury-italic-cyan {
+  font-style: italic;
+  font-weight: 400;
+  color: #38BDF8;
+  text-shadow: 0 0 20px rgba(56, 189, 248, 0.25);
+}
+
+/* ─── Ecosystem Feature Card Grid ─── */
+.wc-luxury-feature-icon {
+  width: 52px;
+  height: 52px;
+  border-radius: 1rem;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #D4AF37;
+  transition: all 0.3s ease;
+}
+
+.wc-luxury-glass-card:hover .wc-luxury-feature-icon {
+  background: rgba(239, 68, 68, 0.15);
+  border-color: rgba(239, 68, 68, 0.4);
+  color: #EF4444;
+  transform: scale(1.08);
+}

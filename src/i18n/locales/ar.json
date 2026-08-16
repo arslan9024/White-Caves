@@ -1,0 +1,27 @@
+{
+  "common": {
+    "welcome": "مرحباً بكم في وايت كيفز لإدارة العقارات",
+    "dashboard": "لوحة التحكم",
+    "properties": "العقارات",
+    "leads": "العملاء المحتملون",
+    "contracts": "العقود والأجرّي",
+    "maintenance": "الصيانة",
+    "reports": "التقارير المالية",
+    "settings": "الإعدادات",
+    "logout": "تسجيل الخروج",
+    "save": "حفظ",
+    "cancel": "إلغاء",
+    "submit": "إرسال",
+    "search": "بحث...",
+    "status": "الحالة",
+    "actions": "الإجراءات"
+  },
+  "crm": {
+    "newLead": "إضافة عميل محتمل جديد",
+    "leadScoring": "تقييم العملاء الذكي",
+    "whatsappBroadcast": "حملة واتساب الترويجية",
+    "kycVerification": "التحقق من الهوية (KYC)",
+    "amlScreening": "فحص مكافحة غسيل الأموال (AML)",
+    "totalRevenue": "إجمالي الإيرادات (درهم)"
+  }
+}

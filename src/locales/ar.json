@@ -40,7 +40,11 @@
     "impersonate_group_brokers": "وسطاء المبيعات والإيجار",
     "impersonate_group_external": "البوابات الخارجية",
     "impersonate_viewing_as": "تتصفح باسم",
-    "impersonate_reset": "العودة إلى وضع المدير"
+    "impersonate_reset": "العودة إلى وضع المدير",
+    "md_hub_title": "👑 [مركز المدير التنفيذي]",
+    "md_hub_pipeline": "📊 نظرة عامة على أقسام الشركة الـ12",
+    "md_hub_expiry": "🏛️ مراقبة صلاحية التراخيص الحكومية (DET/RERA)",
+    "md_hub_ai_dispatch": "🤖 مصفوفة الذكاء الاصطناعي ناديا ونينا"
   },
   "workspace": {
     "welcome": "مرحباً بعودتك",

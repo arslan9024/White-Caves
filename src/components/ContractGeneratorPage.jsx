@@ -87,7 +87,7 @@ const ContractGeneratorPage = () => {
       previewWindow.document.write(html);
       previewWindow.document.close();
     } catch (err) {
-      console.error('Error previewing contract:', err);
+      
     }
   };
 

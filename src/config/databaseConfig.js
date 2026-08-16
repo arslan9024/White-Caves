@@ -179,7 +179,7 @@ export async function initializeDatabaseConnection() {
 
     // In testing mode, use mock models
     if (databaseConfig.isMemoryMode()) {
-      console.log('📝 Using in-memory database for testing');
+      
       const { createMockModels } = await import('../test/utils/mockDatabase.js');
       return {
         success: true,
@@ -191,8 +191,6 @@ export async function initializeDatabaseConnection() {
 
     // For production/development with real MongoDB
     if (connString) {
-      console.log(`🔗 Attempting MongoDB connection (${databaseConfig.connectionMode})...`);
-      
       // This would be called by the actual server initialization code
       // Here we just return the configuration
       return {
@@ -206,7 +204,7 @@ export async function initializeDatabaseConnection() {
     throw new Error('Unable to determine database configuration');
   } catch (error) {
     databaseConfig.lastError = error.message;
-    console.error('❌ Database initialization failed:', error.message);
+    
     return {
       success: false,
       mode: 'error',

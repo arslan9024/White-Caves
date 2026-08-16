@@ -177,7 +177,7 @@ const DocumentVerificationProcessor = ({
       await navigator.clipboard.writeText(text);
       setStatusMessage({ type: 'success', text: 'Copied to clipboard!' });
     } catch (err) {
-      console.error('Failed to copy:', err);
+      
       setStatusMessage({ type: 'error', text: 'Failed to copy text.' });
     }
   };

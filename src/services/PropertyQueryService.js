@@ -176,7 +176,7 @@ class PropertyQueryService {
 
       return await response.json();
     } catch (error) {
-      console.error('Property query error:', error);
+      
       throw error;
     }
   }
@@ -223,7 +223,7 @@ class PropertyQueryService {
         message: 'No properties found matching your criteria'
       };
     } catch (error) {
-      console.error('Natural language search error:', error);
+      
       return {
         success: false,
         error: error.message,
@@ -287,7 +287,7 @@ class PropertyQueryService {
         property: data
       };
     } catch (error) {
-      console.error('Property detail fetch error:', error);
+      
       throw error;
     }
   }
@@ -309,7 +309,7 @@ class PropertyQueryService {
 
       return await response.json();
     } catch (error) {
-      console.error('Statistics fetch error:', error);
+      
       throw error;
     }
   }
@@ -346,7 +346,7 @@ class PropertyQueryService {
         matchScore: this.calculateMatchScore(leadProfile, result.data || [])
       };
     } catch (error) {
-      console.error('Property suggestion error:', error);
+      
       throw error;
     }
   }

@@ -29,7 +29,7 @@ const WhatsAppLeadsDashboard = () => {
       const data = await response.json();
       setLeads(data.leads || []);
     } catch (error) {
-      console.error('Error fetching leads:', error);
+      
     } finally {
       setLoading(false);
     }
@@ -54,7 +54,7 @@ const WhatsAppLeadsDashboard = () => {
             : 0,
       });
     } catch (error) {
-      console.error('Error fetching stats:', error);
+      
     }
   };
 

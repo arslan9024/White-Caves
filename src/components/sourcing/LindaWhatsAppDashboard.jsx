@@ -159,7 +159,7 @@ export default function LindaWhatsAppDashboard() {
 
   const handleConfirmAddToMary = () => {
     // In production, this would call PropertySourcingService.convertOpportunityToProperty
-    console.log('Adding opportunity to Mary inventory:', selectedOpportunity);
+    
     setShowOpportunity(false);
     setSelectedOpportunity(null);
   };

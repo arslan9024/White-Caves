@@ -18,7 +18,7 @@
       "id": "r2mr2_mb_all_brown_clusters",
       "name": "R2MR2-MB ALL BROWN CLUSTERS",
       "cluster": "R2MR2",
-      "propertyCount": 127,
+      "propertyCount": 128,
       "isFiltered": true
     },
     {
@@ -398,6 +398,7 @@
       "Single Row"
     ],
     "floors": [
+      "0",
       "G",
       "1",
       "ROLA NEW OWNER",
@@ -418,13 +419,14 @@
     ],
     "rooms": [
       ".",
+      "0",
       "1 B/R",
       "2",
       "2 B/R",
       "3 B/R",
       "6 B/R",
-      "971555561316",
-      "Studio"
+      "Studio",
+      "[object Object]"
     ],
     "areas": [
       "0",
@@ -435,15 +437,16 @@
     ],
     "masterProjects": [
       ".",
+      "0",
       "Dubai Tiger Woods"
     ]
   },
   "stats": {
-    "totalProperties": 9378,
+    "totalProperties": 9210,
     "totalOwners": 8767,
-    "multiOwnerProperties": 1170,
+    "multiOwnerProperties": 1171,
     "ownersWithMultipleProperties": 863,
-    "ownersWithMultiplePhones": 1684
+    "ownersWithMultiplePhones": 1676
   },
   "columns": [
     {
@@ -573,5 +576,5 @@
       "filterable": true
     }
   ],
-  "generatedAt": "2026-01-08T13:21:04.234Z"
+  "generatedAt": "2026-08-11T22:39:04.215Z"
 }

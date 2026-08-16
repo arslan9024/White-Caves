@@ -43,7 +43,7 @@ export default function AIModelSelector({ onModelChange = null }) {
         setCurrentModel(data.currentModel || 'deepseek');
       }
     } catch (error) {
-      console.error('Failed to check AI model status:', error);
+      
     } finally {
       setLoading(false);
     }
@@ -72,7 +72,7 @@ export default function AIModelSelector({ onModelChange = null }) {
         );
       }
     } catch (error) {
-      console.error('Error switching AI model:', error);
+      
       showStatus('error', 'Error switching AI model');
     }
   };

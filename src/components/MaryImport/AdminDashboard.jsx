@@ -34,7 +34,7 @@ const AdminDashboard = () => {
         setDashboardData(result.data);
       }
     } catch (error) {
-      console.error('Failed to fetch dashboard data:', error);
+      
     } finally {
       setIsLoading(false);
     }
@@ -48,7 +48,7 @@ const AdminDashboard = () => {
         setSystemHealth(result.data);
       }
     } catch (error) {
-      console.error('Failed to fetch system health:', error);
+      
     }
   };
 

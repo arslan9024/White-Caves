@@ -106,12 +106,30 @@
 
 .wc-badge-gold {
   background: rgba(212, 175, 55, 0.12);
-  color: #B45309;
+  color: #D4AF37;
   border: 1px solid rgba(212, 175, 55, 0.4);
 }
 
 .wc-badge-green {
   background: rgba(16, 185, 129, 0.1);
-  color: #059669;
+  color: #10B981;
   border: 1px solid rgba(16, 185, 129, 0.3);
+}
+
+.wc-badge-purple {
+  background: rgba(139, 92, 246, 0.12);
+  color: #8B5CF6;
+  border: 1px solid rgba(139, 92, 246, 0.35);
+}
+
+.wc-badge-cyan {
+  background: rgba(56, 189, 248, 0.12);
+  color: #38BDF8;
+  border: 1px solid rgba(56, 189, 248, 0.35);
+}
+
+.wc-badge-slate {
+  background: rgba(100, 116, 139, 0.12);
+  color: #94A3B8;
+  border: 1px solid rgba(100, 116, 139, 0.25);
 }

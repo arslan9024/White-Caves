@@ -67,6 +67,7 @@ import viewingsRoutes from './routes/viewings.js';
 import offersRoutes from './routes/offers.js';
 import leasesRoutes from './routes/leases.js';
 import maintenanceRoutes from './routes/maintenance.js';
+import campaignsRoutes from './routes/campaigns.js';
 import clientsRoutes from './routes/clients.js';
 import activitiesRoutes from './routes/activities.js';
 import followUpsRoutes from './routes/follow-ups.js';
@@ -90,6 +91,15 @@ import { roleRequestRouter, adminRoleRequestRouter } from './routes/roleRequests
 import { phase6Router } from './routes/phase6.routes.js';
 import landlordPortalRoutes from './routes/landlord.js';
 import tenantPortalRoutes from './routes/tenantPortal.js';
+import portalWebhooksRoutes from './routes/portalWebhooks.js';
+import agentPerformanceRoutes from './routes/agentPerformance.js';
+import agentTargetsRoutes from './routes/agentTargets.js';
+import kycRoutes from './routes/kyc.js';
+import sarRoutes from './routes/sar.js';
+import consentRoutes from './routes/consent.js';
+import dataExportRoutes from './routes/dataExport.js';
+import dataDeleteRoutes from './routes/dataDelete.js';
+import financialReportsRoutes from './routes/financialReports.js';
 import invoicesLeaseRoutes from './routes/invoicesLease.js';
 import usersRoutes from './routes/users.js';
 import leasingInventoryRoutes from './routes/leasing-inventory.js';
@@ -100,6 +110,7 @@ import importHistoryRoutes from './routes/importHistory.routes.js';
 import smartImportRoutes from './routes/smartImport.routes.js';
 import mediaRoutes from './routes/media.js';
 import whatsappRouter from './routes/broadcast.js';
+import whatsappEngineRoutes from './routes/whatsapp.js';
 import { pushRoutes } from './routes/push.js';
 import { startViewingReminderCron } from './services/ViewingReminderCron.js';
 import { requireRole, requirePermission } from './middleware/rbac.js';
@@ -548,6 +559,7 @@ app.use('/api/nadia', nadiaRoutes);
 
 // W24-006: Broadcast Campaigns
 app.use('/api/whatsapp', whatsappRouter);
+app.use('/api/whatsapp-engine', whatsappEngineRoutes);
 
 // Linda LocalAuth WhatsApp Integration (alternative channel)
 app.use('/api/linda', lindaRoutes);
@@ -587,6 +599,35 @@ app.use('/api/invoices/lease', invoicesLeaseRoutes);
 
 // Maintenance API (maintenance requests for landlords and tenants)
 app.use('/api/maintenance', maintenanceRoutes);
+
+// Tenant Portal API — Wave 36 (overview, documents, maintenance request)
+app.use('/api/tenant-portal', authMiddleware, tenantPortalRoutes);
+
+// Broadcast Campaigns API — Wave 38 (WhatsApp broadcast creation, execution, analytics)
+app.use('/api/campaigns', campaignsRoutes);
+
+// Portal Webhooks API — Wave 39 (inbound lead capture from PropertyFinder & Bayut)
+app.use('/api/webhooks/portals', portalWebhooksRoutes);
+
+// Agent Performance API — Wave 40 (metrics, leaderboard, SLA response time)
+app.use('/api/agent-performance', agentPerformanceRoutes);
+
+// Agent Targets API — Wave 40 (monthly target setting and progress tracking)
+app.use('/api/agent-targets', agentTargetsRoutes);
+
+// KYC Workflow API — Wave 41 (customer identity verification & document checklist)
+app.use('/api/kyc', authMiddleware, kycRoutes);
+
+// AML & SAR API — Wave 42 (Suspicious Activity Reports & goAML filing)
+app.use('/api/sar', authMiddleware, sarRoutes);
+
+// PDPL Consent & Rights API — Wave 42 (consent tracking, data export, right to erasure)
+app.use('/api/consent', consentRoutes);
+app.use('/api/data-export', authMiddleware, dataExportRoutes);
+app.use('/api/data-delete', dataDeleteRoutes);
+
+// Financial Reports API — Wave 44 (monthly P&L statement, landlord rental income)
+app.use('/api/financial-reports', authMiddleware, financialReportsRoutes);
 
 // Valuation API — Wave 12 (AVM + manual override + bank request)
 app.use('/api/valuations', authMiddleware, valuationRoutes);

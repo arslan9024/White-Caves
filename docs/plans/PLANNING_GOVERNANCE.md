@@ -88,3 +88,17 @@ Before any code modification turn, the following six criteria must be documented
 | **`5_LOCAL_VALIDATE`**| Laptop CPU | Execute local machine build verification gates: `npm run build` and verify hot-reloading stability via `nodemon` thread | 0-token loop termination on compilation errors |
 | **`6_REMOTE_SYNC`** | Git Engine | Run `git checkout main` ➔ `git pull origin main` ➔ `git checkout develop` ➔ `git rebase main` ➔ `git merge develop` ➔ `git push origin main` | Automated secure deployment webhook firing |
 
+---
+
+## 🤖 6. AEGIS 2.0 Autopilot 100-Turn Orchestration Core Protocol
+
+```
+business_docs/ ➔ software_docs/ ➔ plans/ ➔ aegis/
+```
+
+- **Target Total Loops**: 100 Continuous Autopilot Turns.
+- **Dry-Run Prevention**: Forced global codebase gap scan across `/src` and `/server` whenever backlog items complete.
+- **Deduplication Law**: Continuous deduplication across views, logic, styles, and docs. All redundant stubs are shredded immediately.
+- **Single-File Isolation**: View (`.tsx`), Logic (`.logic.ts`), Style (`.style.ts`), and Dictionary (`locales/en.json` & `ar.json`).
+- **Level 5 God-Mode**: Unrestricted administrative bypass for `arslanmalikgoraha@gmail.com` / `the.white.caves@gmail.com` unmasking the `[Managing Director Hub]` sidebar group.
+

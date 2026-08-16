@@ -1,4 +1,4 @@
-﻿/**
+/**
  * Unified Navbar Component
  * Single source of truth for top-level navigation
  *
@@ -136,9 +136,49 @@ export const UnifiedNavbar: React.FC<UnifiedNavbarProps> = ({
   return (
     <NavbarContainer className={className} role="navigation" aria-label="Main navigation">
       <LeftSection>
-        <LogoSection>
-          {logoSrc && <Logo src={logoSrc} alt="Company logo" />}
-          <LogoText>White Caves</LogoText>
+        <LogoSection style={{ position: 'relative', width: '64px', height: '64px', zIndex: 1010 }}>
+          {logoSrc ? (
+            <Logo
+              src={logoSrc}
+              alt="White Caves Real Estate LLC"
+              style={{
+                position: 'absolute',
+                top: '0',
+                transform: 'translateY(25%)',
+                width: '64px',
+                height: '64px',
+                borderRadius: '50%',
+                border: '3px solid #EF4444',
+                boxShadow: '0 8px 24px rgba(239, 68, 68, 0.4)',
+                zIndex: 1010,
+                objectFit: 'cover',
+                background: '#FFFFFF',
+              }}
+            />
+          ) : (
+            <div
+              style={{
+                position: 'absolute',
+                top: '0',
+                transform: 'translateY(25%)',
+                width: '64px',
+                height: '64px',
+                borderRadius: '50%',
+                background: 'linear-gradient(135deg, #EF4444 0%, #B91C1C 100%)',
+                color: '#FFFFFF',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                fontWeight: 900,
+                fontSize: '1.4rem',
+                border: '3px solid #FFFFFF',
+                boxShadow: '0 8px 24px rgba(239, 68, 68, 0.4)',
+                zIndex: 1010,
+              }}
+            >
+              WC
+            </div>
+          )}
         </LogoSection>
         {title && <DashboardTitle>{title}</DashboardTitle>}
       </LeftSection>

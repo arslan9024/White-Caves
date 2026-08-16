@@ -49,7 +49,7 @@ const LindaMaryPropertyWidget = ({ conversation, onPropertySelected }) => {
       }
     } catch (err) {
       setError('Error searching properties. Please try again.');
-      console.error('Search error:', err);
+      
     } finally {
       setLoading(false);
     }
@@ -104,7 +104,7 @@ const LindaMaryPropertyWidget = ({ conversation, onPropertySelected }) => {
       }
     } catch (err) {
       setError('Error performing advanced search. Please try again.');
-      console.error('Advanced search error:', err);
+      
     } finally {
       setLoading(false);
     }

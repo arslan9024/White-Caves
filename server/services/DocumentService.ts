@@ -409,6 +409,126 @@ export class DocumentService {
     logger.info('[DocumentService] generated PDF', { title, lines: lines.length });
     return Buffer.from(bytes);
   }
+
+  /**
+   * Wave 34: Commission Detail Report (Excel format)
+   */
+  async generateCommissionDetailExcel(agentId?: string): Promise<GeneratedFile> {
+    const whereClause = agentId ? { agentId } : {};
+    const commissions = await prisma.commission.findMany({
+      where: whereClause,
+      include: {
+        agent: { select: { id: true, name: true, email: true } },
+      },
+      orderBy: { createdAt: 'desc' },
+      take: 5000,
+    });
+
+    const exceljsModule = await import('exceljs').catch(() => null);
+    if (!exceljsModule) {
+      const rows = commissions.map(c => [
+        c.id,
+        c.agent?.name || '—',
+        c.agent?.email || '—',
+        c.amount,
+        c.currency || 'AED',
+        c.status,
+        c.type || 'sales',
+        safeDate(c.createdAt),
+      ]);
+      return {
+        buffer: buildCsvBuffer(
+          ['Commission ID', 'Agent Name', 'Agent Email', 'Amount', 'Currency', 'Status', 'Type', 'Created At'],
+          rows
+        ),
+        mimeType: CSV_MIME,
+        filename: `commission-detail-${new Date().toISOString().slice(0, 10)}.csv`,
+      };
+    }
+
+    const ExcelJS = (exceljsModule as any)?.default || (exceljsModule as any);
+    const workbook = new ExcelJS.Workbook();
+    const sheet = workbook.addWorksheet('Commission Details');
+
+    sheet.columns = [
+      { header: 'ID', key: 'id', width: 26 },
+      { header: 'Agent Name', key: 'agentName', width: 24 },
+      { header: 'Agent Email', key: 'agentEmail', width: 28 },
+      { header: 'Amount (AED)', key: 'amount', width: 16 },
+      { header: 'VAT 5% (AED)', key: 'vat', width: 14 },
+      { header: 'Net Payout (AED)', key: 'netPayout', width: 16 },
+      { header: 'Status', key: 'status', width: 14 },
+      { header: 'Type', key: 'type', width: 14 },
+      { header: 'Date', key: 'createdAt', width: 16 },
+    ];
+
+    commissions.forEach(c => {
+      const vat = Math.round((c.amount || 0) * 0.05 * 100) / 100;
+      const netPayout = Math.round(((c.amount || 0) - vat) * 100) / 100;
+      sheet.addRow({
+        id: c.id,
+        agentName: c.agent?.name || '—',
+        agentEmail: c.agent?.email || '—',
+        amount: c.amount || 0,
+        vat,
+        netPayout,
+        status: c.status,
+        type: c.type || 'sales',
+        createdAt: safeDate(c.createdAt),
+      });
+    });
+
+    const headerRow = sheet.getRow(1);
+    headerRow.font = { bold: true };
+
+    const arrayBuffer = await workbook.xlsx.writeBuffer();
+    return {
+      buffer: Buffer.from(arrayBuffer),
+      mimeType: XLSX_MIME,
+      filename: `commission-detail-${new Date().toISOString().slice(0, 10)}.xlsx`,
+    };
+  }
+
+  /**
+   * Wave 34: Monthly P&L Report (PDF format)
+   */
+  async generateMonthlyPnLPdf(year: number, month: number): Promise<GeneratedFile> {
+    const startDate = new Date(Date.UTC(year, month - 1, 1));
+    const endDate = new Date(Date.UTC(year, month, 0, 23, 59, 59, 999));
+
+    const [transactions, expenses] = await Promise.all([
+      prisma.transaction.findMany({
+        where: { createdAt: { gte: startDate, lte: endDate } },
+      }),
+      prisma.expense.findMany({
+        where: { createdAt: { gte: startDate, lte: endDate } },
+      }),
+    ]);
+
+    const grossIncome = transactions.reduce((sum, tx) => sum + (tx.amount || 0), 0);
+    const totalExpenses = expenses.reduce((sum, exp) => sum + (exp.amount || 0), 0);
+    const vatCollected = Math.round(grossIncome * 0.05 * 100) / 100;
+    const netOperatingIncome = grossIncome - totalExpenses;
+
+    const periodLabel = `${year}-${String(month).padStart(2, '0')}`;
+    const lines = [
+      `Period: ${periodLabel} (${safeDate(startDate)} to ${safeDate(endDate)})`,
+      `Gross Transaction Volume: AED ${grossIncome.toLocaleString('en-US')}`,
+      `UAE FTA VAT (5% Collected): AED ${vatCollected.toLocaleString('en-US')}`,
+      `Total Operating Expenses: AED ${totalExpenses.toLocaleString('en-US')}`,
+      `Net Operating Income: AED ${netOperatingIncome.toLocaleString('en-US')}`,
+      '',
+      `Total Transactions Processed: ${transactions.length}`,
+      `Total Expense Line Items: ${expenses.length}`,
+    ];
+
+    const buffer = await this.renderSimplePdf(`Monthly P&L Statement — ${periodLabel}`, lines);
+    return {
+      buffer,
+      mimeType: PDF_MIME,
+      filename: `pnl-statement-${periodLabel}.pdf`,
+    };
+  }
 }
 
 export const documentService = new DocumentService();

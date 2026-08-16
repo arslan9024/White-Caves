@@ -34,7 +34,7 @@ const ViewingCalendar = ({
       const data = await response.json();
       setViewings(data.viewings || []);
     } catch (error) {
-      console.error('Error fetching viewings:', error);
+      
     } finally {
       setLoading(false);
     }
@@ -52,7 +52,7 @@ const ViewingCalendar = ({
       const data = await response.json();
       setAvailableSlots(data.slots || []);
     } catch (error) {
-      console.error('Error fetching available slots:', error);
+      
     }
   };
 

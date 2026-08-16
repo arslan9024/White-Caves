@@ -277,6 +277,7 @@ describe('Leases Routes — /api/leases', () => {
         id: 'lease-1',
         landlordId: 'user-1',
         property: { ownerId: 'user-1' },
+        ejariNumber: 'EJ-2026-00001', // required when activating — Wave 33 enforcement
       });
       const res = await request(app).patch('/api/leases/lease-1').send({ status: 'active' });
       expect(res.status).toBe(200);
@@ -456,4 +457,107 @@ describe('Leases Routes — /api/leases', () => {
       expect(mockPrisma.activity.create).toHaveBeenCalled();
     });
   });
+
+  // ── WAVE 33: EJARI ENFORCEMENT (REQ-TENANT-003, SRS §4.7) ──────────────
+  describe('PATCH /api/leases/:id — Ejari Enforcement (W33-005)', () => {
+    it('returns 422 when activating a lease without ejariNumber (no number in DB or body)', async () => {
+      // Lease exists, landlordId matches user, but NO ejariNumber anywhere
+      mockPrisma.lease.findUnique.mockResolvedValueOnce({
+        id: 'lease-no-ejari',
+        status: 'draft',
+        tenantId: 'tenant-1',
+        landlordId: 'user-1',
+        ejariNumber: null, // not registered
+      });
+
+      const res = await request(app)
+        .patch('/api/leases/lease-no-ejari')
+        .send({ status: 'active' }); // no ejariNumber in body either
+
+      expect(res.status).toBe(422);
+      expect(res.body.error).toMatch(/ejariNumber is required/i);
+    });
+
+    it('returns 422 when activating with empty string ejariNumber', async () => {
+      mockPrisma.lease.findUnique.mockResolvedValueOnce({
+        id: 'lease-empty-ejari',
+        status: 'draft',
+        tenantId: 'tenant-1',
+        landlordId: 'user-1',
+        ejariNumber: '',
+      });
+
+      const res = await request(app)
+        .patch('/api/leases/lease-empty-ejari')
+        .send({ status: 'active', ejariNumber: '  ' }); // blank string
+
+      expect(res.status).toBe(422);
+      expect(res.body.error).toMatch(/ejariNumber is required/i);
+    });
+
+    it('allows activation when ejariNumber is present in the existing record', async () => {
+      mockPrisma.lease.findUnique.mockResolvedValueOnce({
+        id: 'lease-with-ejari',
+        status: 'draft',
+        tenantId: 'tenant-1',
+        landlordId: 'user-1',
+        ejariNumber: 'EJ-2026-00123', // valid number already stored
+      });
+      mockPrisma.lease.update.mockResolvedValueOnce({
+        id: 'lease-with-ejari',
+        status: 'active',
+        ejariNumber: 'EJ-2026-00123',
+      });
+
+      const res = await request(app)
+        .patch('/api/leases/lease-with-ejari')
+        .send({ status: 'active' });
+
+      expect(res.status).toBe(200);
+      expect(res.body.success).toBe(true);
+    });
+
+    it('allows activation when ejariNumber is provided in the PATCH body', async () => {
+      mockPrisma.lease.findUnique.mockResolvedValueOnce({
+        id: 'lease-body-ejari',
+        status: 'draft',
+        tenantId: 'tenant-1',
+        landlordId: 'user-1',
+        ejariNumber: null, // not in DB yet
+      });
+      mockPrisma.lease.update.mockResolvedValueOnce({
+        id: 'lease-body-ejari',
+        status: 'active',
+        ejariNumber: 'EJ-2026-00456',
+      });
+
+      const res = await request(app)
+        .patch('/api/leases/lease-body-ejari')
+        .send({ status: 'active', ejariNumber: 'EJ-2026-00456' });
+
+      expect(res.status).toBe(200);
+      expect(res.body.success).toBe(true);
+    });
+
+    it('allows non-active status changes without ejariNumber', async () => {
+      mockPrisma.lease.findUnique.mockResolvedValueOnce({
+        id: 'lease-terminate',
+        status: 'active',
+        tenantId: 'tenant-1',
+        landlordId: 'user-1',
+        ejariNumber: null,
+      });
+      mockPrisma.lease.update.mockResolvedValueOnce({
+        id: 'lease-terminate',
+        status: 'terminated',
+      });
+
+      const res = await request(app)
+        .patch('/api/leases/lease-terminate')
+        .send({ status: 'terminated' });
+
+      expect(res.status).toBe(200);
+    });
+  });
 });
+

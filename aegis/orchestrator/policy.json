@@ -1,6 +1,6 @@
 {
-  "version": "2026.06.17-aegis-control-plane-v1",
-  "schemaVersion": "2.1.0",
+  "version": "2026.08.13-aegis-v4-deep-analyzer-v1",
+  "schemaVersion": "2.2.0",
   "readinessThresholdPct": 60,
   "readinessTargetPct": 90,
   "largeWaveMinReadinessPct": 90,
@@ -8,6 +8,24 @@
   "readinessChecksTotal": 30,
   "approvalPhrase": "@Ada - Context Ready (90% Readiness) - High-Fidelity Coding Phase Approved",
   "depthGateLabel": "depth evidence",
+  "deduplicationAndOptimizationEngine": {
+    "enabled": true,
+    "duplicateComponentSimilarityThreshold": 0.85,
+    "algorithmicOptimizationPolicy": {
+      "enforceTimeComplexityReduction": true,
+      "maxAllowedLoopComplexity": "O(n)",
+      "enableMemoization": true
+    },
+    "deadCodePruning": {
+      "autoPurgeUnreferencedExports": true,
+      "autoCleanConsoleLogs": true
+    },
+    "codeStyleStandards": {
+      "atomicFolderLayoutEnforced": true,
+      "zeroHardcodedStringsAllowed": true,
+      "typescriptStrictness": "High"
+    }
+  },
   "modelRouting": {
     "freeModelOnlyMode": true,
     "planningAgents": "170-agent-aegis-mesh-120-free-plus-50-premium",

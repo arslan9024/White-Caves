@@ -24,6 +24,7 @@ import PageHeroBanner from '../components/layout/PageHeroBanner';
 import PageMeta from '../components/seo/PageMeta';
 import { useToast } from '../components/Toast';
 import { authFetch } from '../utils/authFetch';
+import { SharjahFeeVerificationAudit } from '../components/public/SharjahFeeVerificationAudit';
 import './ServicesPage.css';
 
 // ─── Types ────────────────────────────────────────────────────────────────────
@@ -549,6 +550,9 @@ const ServicesPage: FC = () => {
                       </p>
                     </div>
                   </div>
+
+                  {/* UAE Multi-Emirate Fee Verification Audit (Sharjah & Dubai) */}
+                  <SharjahFeeVerificationAudit />
                 </motion.div>
               )}
             </AnimatePresence>

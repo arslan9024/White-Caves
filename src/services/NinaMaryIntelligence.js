@@ -55,7 +55,7 @@ class NinaMaryIntelligence {
 
       return response;
     } catch (error) {
-      console.error('Error generating enhanced response:', error);
+      
       return {
         type: 'error',
         text: 'I encountered an issue searching our inventory. Please contact our sales team for assistance.',
@@ -250,7 +250,7 @@ class NinaMaryIntelligence {
         property: prop
       };
     } catch (error) {
-      console.error('Error handling follow-up:', error);
+      
       return {
         type: 'error',
         text: 'I encountered an issue retrieving those details. Please ask our agent for help.'
@@ -306,7 +306,7 @@ class NinaMaryIntelligence {
         message: 'No properties found matching your preferences. Would you like to adjust your criteria?'
       };
     } catch (error) {
-      console.error('Error generating recommendations:', error);
+      
       return {
         success: false,
         error: error.message
