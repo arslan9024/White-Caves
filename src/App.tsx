@@ -354,6 +354,8 @@ import { createLogger } from './utils/logger';
 import { useSocket } from './hooks/useSocket';
 // W17-002: Framer Motion — AnimatePresence page transitions
 import { AnimatePresence, motion, useReducedMotion } from 'framer-motion';
+import { CustomCursor } from './components/motion/CustomCursor';
+import { ThemeProvider as LuxuryThemeProvider } from './components/theme/ThemeProvider';
 
 const log = createLogger('App');
 
@@ -713,11 +715,13 @@ function App(): React.JSX.Element {
     <SQAErrorBoundary>
       <AuthModalProvider>
         <ThemeProvider>
-          <StatusProvider>
-            <LanguageProvider>
-              <WorkspaceProvider>
-                <BrowserRouter>
-                <FounderRedirectGuard />
+          <LuxuryThemeProvider>
+            <StatusProvider>
+              <LanguageProvider>
+                <WorkspaceProvider>
+                  <BrowserRouter>
+                    <CustomCursor />
+                    <FounderRedirectGuard />
                 {/* Accessibility: skip-to-content link (WCAG 2.1 Level A) */}
                 <a href="#main-content" className="skip-to-content">
                   Skip to main content
@@ -906,10 +910,11 @@ function App(): React.JSX.Element {
             </WorkspaceProvider>
           </LanguageProvider>
         </StatusProvider>
+        </LuxuryThemeProvider>
       </ThemeProvider>
     </AuthModalProvider>
   </SQAErrorBoundary>
-  );
+);
 }
 
 export default App;

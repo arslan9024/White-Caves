@@ -8,7 +8,9 @@
 
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import TopNavbar from '../components/navigation/TopNavbar';
+import TopNavbar from '../components/TopNavbar/TopNavbar';
+import CavesFloatingSearch from '../components/CavesFloatingSearch/CavesFloatingSearch';
+import CavesWhatsAppWidget from '../components/CavesWhatsAppWidget/CavesWhatsAppWidget';
 import { useWorkspaceLayoutLogic } from './UnifiedWorkspaceLayout.logic';
 
 // ─── Props ────────────────────────────────────────────────────────────────────
@@ -376,6 +378,10 @@ export const UnifiedWorkspaceLayout: React.FC<UnifiedWorkspaceLayoutProps> = ({
           </div>
         </main>
       </div>
+
+      {/* Floating Widgets */}
+      <CavesFloatingSearch />
+      <CavesWhatsAppWidget />
     </div>
   );
 };

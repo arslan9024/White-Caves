@@ -11,11 +11,26 @@ import React, { FC, memo, useState, useEffect, Suspense, useCallback, useMemo } 
 import ErrorBoundary from '../../components/ErrorBoundary';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import styled from 'styled-components';
+import { motion, AnimatePresence } from 'framer-motion';
 import { Badge } from '../../components/ui';
 import SuspenseLoader from '../../components/common/SuspenseLoader';
 import { useCRMHubData } from '../../hooks/crm/useCRMHubData';
 import { CRM_MODULE_REGISTRY, resolveCRMModules, CRM_HUB_MODULE_ORDER } from '../../config/crmModuleRegistry';
 import PublicLayout from '../../components/layout/PublicLayout';
+
+// --- Framer Motion Animation Variants ---
+const staggerContainer = {
+  hidden: { opacity: 0 },
+  show: {
+    opacity: 1,
+    transition: { staggerChildren: 0.1, delayChildren: 0.1 },
+  },
+};
+
+const slideUpItem = {
+  hidden: { y: 20, opacity: 0 },
+  show: { y: 0, opacity: 1, transition: { type: 'spring', stiffness: 300, damping: 24 } },
+};
 
 // ─── Building Layout Types ──────────────────────────────────────────────
 
@@ -655,7 +670,7 @@ const HubSubtitle = styled.p`
   margin: 0;
 `;
 
-const ContentArea = styled.div`
+const ContentArea = styled(motion.div)`
   background: #FFFFFF;
   border-radius: 16px;
   border: 1px solid rgba(239, 68, 68, 0.2);
@@ -766,8 +781,13 @@ export const CRMHubPage: FC = () => {
     if (activeTab === 'dept_summary') {
       const activeDeptObj = openTopTile === 'md_office' ? MD_SUITE_DEPT : selectedDept;
       return (
-        <ContentArea>
+        <ContentArea
+          initial="hidden"
+          animate="show"
+          variants={staggerContainer}
+        >
           {/* Content Viewport Header with Decoupled Location Badge & Department Number */}
+          <motion.div variants={slideUpItem}>
           <ContentHeader>
             <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
               <span style={{ fontSize: '1.6rem' }}>{activeDeptObj.icon}</span>
@@ -801,10 +821,12 @@ export const CRMHubPage: FC = () => {
               </Badge>
             </div>
           </ContentHeader>
+          </motion.div>
 
           {/* Department Executive Hydration Body */}
           <div style={{ padding: '1.75rem' }}>
             {/* Executive Summary Card */}
+            <motion.div variants={slideUpItem}>
             <div
               style={{
                 background: 'linear-gradient(135deg, #F8FAFC 0%, #EFF6FF 100%)',
@@ -821,15 +843,17 @@ export const CRMHubPage: FC = () => {
                 {activeDeptObj.summary}
               </p>
             </div>
+            </motion.div>
 
             {/* Mission Operational Scope */}
-            <div style={{ marginBottom: '1.75rem' }}>
+            <motion.div variants={slideUpItem} style={{ marginBottom: '1.75rem' }}>
               <h4 style={{ margin: '0 0 0.85rem 0', fontSize: '1.05rem', fontWeight: 800, color: '#1E293B' }}>
                 🎯 Mission Operational Scope
               </h4>
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '1rem' }}>
                 {activeDeptObj.scope.map((item, index) => (
-                  <div
+                  <motion.div
+                    whileHover={{ scale: 1.02, y: -2 }}
                     key={index}
                     style={{
                       background: '#FFFFFF',
@@ -846,13 +870,13 @@ export const CRMHubPage: FC = () => {
                     <span style={{ fontSize: '0.88rem', fontWeight: 700, color: '#475569', lineHeight: 1.4 }}>
                       {item}
                     </span>
-                  </div>
+                  </motion.div>
                 ))}
               </div>
-            </div>
+            </motion.div>
 
             {/* Quick Operational Sub-Nodes Launcher */}
-            <div>
+            <motion.div variants={slideUpItem}>
               <h4 style={{ margin: '0 0 0.85rem 0', fontSize: '1.05rem', fontWeight: 800, color: '#1E293B' }}>
                 ⚡ Operational Sub-Nodes Launchpad
               </h4>
@@ -862,7 +886,9 @@ export const CRMHubPage: FC = () => {
                       .flatMap(sg => sg.items)
                       .filter((item): item is { id: string; label: string; icon: string } => Boolean(item))
                       .map((item) => (
-                      <button
+                      <motion.button
+                        whileHover={{ scale: 1.05 }}
+                        whileTap={{ scale: 0.95 }}
                         key={item.id + item.label}
                         onClick={() => handleSubItemClick(item.id)}
                         style={{
@@ -878,14 +904,15 @@ export const CRMHubPage: FC = () => {
                           alignItems: 'center',
                           gap: '8px',
                           boxShadow: '0 2px 8px rgba(239, 68, 68, 0.08)',
-                          transition: 'all 0.2s ease',
                         }}
                       >
                         <span>{item.icon}</span> Launch {item.label} ➔
-                      </button>
+                      </motion.button>
                     ))
                   : activeDeptObj.items?.map(item => (
-                      <button
+                      <motion.button
+                        whileHover={{ scale: 1.05 }}
+                        whileTap={{ scale: 0.95 }}
                         key={item.id + item.label}
                         onClick={() => handleSubItemClick(item.id)}
                         style={{
@@ -901,14 +928,13 @@ export const CRMHubPage: FC = () => {
                           alignItems: 'center',
                           gap: '8px',
                           boxShadow: '0 2px 8px rgba(239, 68, 68, 0.08)',
-                          transition: 'all 0.2s ease',
                         }}
                       >
                         <span>{item.icon}</span> Launch {item.label} ➔
-                      </button>
+                      </motion.button>
                     ))}
               </div>
-            </div>
+            </motion.div>
           </div>
         </ContentArea>
       );

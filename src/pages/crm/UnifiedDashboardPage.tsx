@@ -99,10 +99,10 @@ export const UnifiedDashboardPage: FC = () => {
         <div>
           <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '6px' }}>
             <h1 style={{ fontSize: '1.75rem', fontWeight: 800, margin: 0, fontFamily: 'Outfit, sans-serif' }}>
-              Welcome Back, Arslan Malik
+              Welcome Back, {activeUser?.name || 'Arslan Malik'}
             </h1>
-            <span style={{ background: RED, color: WHITE, padding: '4px 10px', borderRadius: '9999px', fontSize: '0.75rem', fontWeight: 800 }}>
-              LEVEL 5 MASTER MD
+            <span style={{ background: isMaster ? RED : '#0ea5e9', color: WHITE, padding: '4px 10px', borderRadius: '9999px', fontSize: '0.75rem', fontWeight: 800 }}>
+              {isMaster ? 'LEVEL 5 MASTER MD' : `LEVEL ${effectiveAccessLevel}`}
             </span>
           </div>
           <p style={{ margin: 0, color: 'var(--color-94a3b8, #94A3B8)', fontSize: '0.9rem' }}>

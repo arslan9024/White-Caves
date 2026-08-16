@@ -1,9 +1,12 @@
 {
   "hero": {
-    "title": "Luxury Dubai Real Estate Redefined",
-    "subtitle": "Discover ultra-exclusive villas in DAMAC Hills 2, Palm Jumeirah, and Downtown Dubai with White Caves Real Estate LLC.",
-    "cta_explore": "Explore Featured Properties",
-    "cta_contact": "Speak with an Expert Broker"
+    "badge": "White Caves Sovereign Real Estate Dubai",
+    "title_main": "Discover Dubai's Most Exclusive",
+    "title_highlight": "Villas & Penthouses",
+    "subtitle": "Explore live DLD verified listings across Palm Jumeirah, Downtown Dubai, and DAMAC Hills 2 managed directly by our 12 Corporate Departments.",
+    "search_placeholder": "Search Palm Jumeirah Villa, Downtown Penthouse, DAMAC Hills 2...",
+    "search_btn": "Search Market",
+    "popular_communities": "Popular Communities:"
   },
   "search": {
     "placeholder": "Search DAMAC Hills 2, Ejari, Investors, Leads...",
@@ -98,6 +101,36 @@
     "error_invalid": "Invalid email or password. Please try again.",
     "error_locked": "Account locked. Contact your administrator.",
     "success_login": "Welcome back! Redirecting..."
+  },
+  "auth_panel": {
+    "title": "Welcome Back to White Caves",
+    "subtitle": "Sign in to access your sovereign account",
+    "phone": "Phone",
+    "email": "Email",
+    "full_name": "Full Name",
+    "password": "Password",
+    "confirm_password": "Confirm Password",
+    "btn_signin": "Sign In",
+    "btn_signup": "Create Account",
+    "btn_verify": "Verify & Continue",
+    "forgot": "Forgot password?",
+    "social_google": "Google",
+    "social_apple": "Apple",
+    "social_facebook": "Facebook"
+  },
+  "crm_dashboard": {
+    "title": "CRM Dashboard",
+    "active_leads": "Active Leads",
+    "total_revenue": "Total Revenue",
+    "recent_activity": "Recent Activity",
+    "view_all": "View All"
+  },
+  "profile_summary": {
+    "title": "Profile Summary",
+    "role": "Role",
+    "department": "Department",
+    "edit_profile": "Edit Profile",
+    "documents": "Verified Documents"
   },
   "footer": {
     "brand_tagline": "Luxury Real Estate Specialists — Dubai, UAE",

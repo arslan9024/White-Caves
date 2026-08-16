@@ -8,6 +8,7 @@ import {
   selectViewportBounds,
   selectActivePropertyId,
 } from '../redux/slices/propertySlice';
+import { Loader } from '@googlemaps/js-api-loader';
 import {
   InteractiveMapContainer,
   MapHeader,
@@ -74,6 +75,17 @@ const InteractiveMap = ({ onPropertySelect }: InteractiveMapProps) => {
 
   // Restore viewport on mount: if Redux has a saved viewport, find the nearest Dubai area
   useEffect(() => {
+    // Initialize Google Maps Loader as per AEGIS Stage 4 Mandate
+    const loader = new Loader({
+      apiKey: process.env.REACT_APP_GOOGLE_MAPS_API_KEY || 'AIzaSyDummyKeyForWhiteCavesRealEstate',
+      version: 'weekly',
+    });
+    loader.load().then(() => {
+      console.log('Google Maps API loaded successfully.');
+    }).catch(e => {
+      console.error('Error loading Google Maps API:', e);
+    });
+
     if (!savedViewport || selectedLocation) return;
     const centerLat = (savedViewport.north + savedViewport.south) / 2;
     const centerLng = (savedViewport.east + savedViewport.west) / 2;

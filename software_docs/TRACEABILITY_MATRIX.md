@@ -23,8 +23,8 @@ This matrix ensures that every requirement mapped in the SRS and every architect
 
 The following areas represent known gaps between the planned roadmap and the existing codebase:
 
-1. **Analytics Data Export:** The "CSV export API endpoints" for the Analytics Dashboard were planned but not executed. (Status: 🔴 0%)
-2. **Offline Support:** The SDD calls for Progressive Web App (PWA) offline capabilities for the CRM, but no Service Worker is registered for the new components. (Status: 🔴 0%)
+1. **Analytics CSV Export API Endpoints:** **STATUS:** ✅ 100% (Added `/export-csv` in `server/routes/analytics.ts`)
+2. **Offline Support:** **STATUS:** ✅ 100% (PWA Service Worker caching strategy confirmed in Vite build)
 3. **Data Mocking Engine:** The UI is currently relying on hardcoded arrays or basic mocks. We are missing a centralized GraphQL mocking engine to simulate scale. (Status: 🔴 10%)
 
 ---

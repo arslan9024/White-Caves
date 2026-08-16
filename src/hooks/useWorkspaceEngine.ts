@@ -9,6 +9,25 @@ export interface CurrencyRates {
   AED: number;
 }
 
+export type DepartmentID = 
+  | 'dept-12' | 'dept-11' | 'dept-10' | 'dept-09' | 'dept-08' | 'dept-07'
+  | 'dept-06' | 'dept-05' | 'dept-04' | 'dept-03' | 'dept-02' | 'dept-01' 
+  | 'dept-ground' | 'dept-md';
+
+export interface CashFlowMetrics {
+  grossRevenue: number;
+  vatLiability: number; // UAE VAT 5% FTA Compliance
+  escrowBalance: number;
+  brokerCommissions: number;
+  netCorporateIncome: number;
+}
+
+export interface WorkspaceState {
+  activeDepartment: DepartmentID;
+  impersonationMode: string;
+  isDashboardLocked: boolean;
+}
+
 export interface WorkspaceMetrics {
   totalRevenueAED: number;
   totalLeads: number;
@@ -23,7 +42,15 @@ const DEFAULT_FX_RATES: CurrencyRates = {
   GBP: 0.2145,
 };
 
-export function useWorkspaceEngine(userEmail: string = FOUNDER_EMAIL) {
+const INITIAL_CASH_FLOW: CashFlowMetrics = {
+  grossRevenue: 1480000000, // 1.48 Billion AED Default Volume
+  vatLiability: 74000000,   // 5% of Gross
+  escrowBalance: 320000000,
+  brokerCommissions: 29600000, // Approx 2% avg
+  netCorporateIncome: 1056400000,
+};
+
+export function useWorkspaceEngine(userEmail: string = FOUNDER_EMAIL, initialDept: DepartmentID = 'dept-07') {
   const [profile, setProfile] = useState<UserProfile>(() => evaluateFounderGuard(userEmail));
   const [activeViewCode, setActiveViewCode] = useState<string>('VIEW-01');
   const [fxRates, setFxRates] = useState<CurrencyRates>(DEFAULT_FX_RATES);
@@ -31,6 +58,15 @@ export function useWorkspaceEngine(userEmail: string = FOUNDER_EMAIL) {
   const [searchTerm, setSearchTerm] = useState<string>('');
   const [activeCategory, setActiveCategory] = useState<string>('All');
   const [isFxLoading, setIsFxLoading] = useState<boolean>(false);
+
+  // 1-12-108 Ecosystem State
+  const [workspaceState, setWorkspaceState] = useState<WorkspaceState>({
+    activeDepartment: initialDept,
+    impersonationMode: 'MD',
+    isDashboardLocked: false,
+  });
+
+  const [cashFlow, setCashFlow] = useState<CashFlowMetrics>(INITIAL_CASH_FLOW);
 
   useEffect(() => {
     setProfile(evaluateFounderGuard(userEmail));
@@ -92,12 +128,35 @@ export function useWorkspaceEngine(userEmail: string = FOUNDER_EMAIL) {
 
   const metrics = useMemo<WorkspaceMetrics>(() => {
     return {
-      totalRevenueAED: 21400000,
+      totalRevenueAED: cashFlow.grossRevenue, // Linked to active cash flow
       totalLeads: 771,
       activeProperties: 9378,
       systemHealthPercent: 99.8,
     };
+  }, [cashFlow.grossRevenue]);
+
+  // ─── 1-12-108 DEPARTMENT CALCULATIONS ──────────────────────────────────────────
+  
+  const updateGrossRevenue = useCallback((newRevenue: number) => {
+    setCashFlow(prev => {
+      const vat = newRevenue * 0.05;
+      const net = newRevenue - vat - prev.brokerCommissions;
+      return {
+        ...prev,
+        grossRevenue: newRevenue,
+        vatLiability: vat,
+        netCorporateIncome: net,
+      };
+    });
   }, []);
+
+  const setImpersonation = useCallback((role: string) => {
+    if (workspaceState.isDashboardLocked) {
+      console.warn("Workspace is locked. Cannot change impersonation mode.");
+      return;
+    }
+    setWorkspaceState(prev => ({ ...prev, impersonationMode: role }));
+  }, [workspaceState.isDashboardLocked]);
 
   return {
     profile,
@@ -115,6 +174,12 @@ export function useWorkspaceEngine(userEmail: string = FOUNDER_EMAIL) {
     activeCategory,
     setActiveCategory,
     metrics,
+    // New 1-12-108 Ecosystem additions:
+    workspaceState,
+    setWorkspaceState,
+    cashFlow,
+    updateGrossRevenue,
+    setImpersonation
   };
 }
 

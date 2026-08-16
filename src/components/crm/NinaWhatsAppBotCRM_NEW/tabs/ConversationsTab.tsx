@@ -1,5 +1,7 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo, useRef } from 'react';
 import { Send, Search, CheckCheck, User, Phone, ShieldCheck, Tag, Sparkles, Clock, RefreshCw, Wifi, AlertTriangle, Plus, Smartphone, QrCode, Key } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { FixedSizeList as List } from 'react-window';
 
 interface ChatMessage {
   id: string;
@@ -291,42 +293,54 @@ export const ConversationsTab: React.FC = () => {
             />
           </div>
 
-          {/* Contacts Stream */}
-          <div style={{ flex: 1, overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+          {/* Contacts Stream Virtualized */}
+          <div style={{ flex: 1, overflowY: 'hidden', display: 'flex', flexDirection: 'column' }}>
             {filteredContacts.length > 0 ? (
-              filteredContacts.map(contact => {
-                const isSelected = activeContact && contact.id === activeContact.id;
-                return (
-                  <div
-                    key={contact.id}
-                    onClick={() => setSelectedContactId(contact.id)}
-                    style={{
-                      background: isSelected ? '#FFFFFF' : 'transparent',
-                      border: isSelected ? '1.5px solid #25D366' : '1px solid transparent',
-                      borderRadius: '10px',
-                      padding: '10px',
-                      cursor: 'pointer',
-                      transition: 'all 0.15s ease',
-                      boxShadow: isSelected ? '0 2px 8px rgba(37, 211, 102, 0.12)' : 'none',
-                    }}
-                  >
-                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2px' }}>
-                      <span style={{ fontWeight: 800, fontSize: '0.86rem', color: '#1E293B' }}>
-                        {contact.avatar} {contact.name}
+              <List
+                height={400} // Approximate height
+                itemCount={filteredContacts.length}
+                itemSize={85} // Height of each contact row
+                width="100%"
+                itemData={filteredContacts}
+              >
+                {({ index, style, data }) => {
+                  const contact = data[index];
+                  const isSelected = activeContact && contact.id === activeContact.id;
+                  return (
+                    <motion.div
+                      whileHover={{ scale: 1.02 }}
+                      whileTap={{ scale: 0.98 }}
+                      onClick={() => setSelectedContactId(contact.id)}
+                      style={{
+                        ...style,
+                        background: isSelected ? '#FFFFFF' : 'transparent',
+                        border: isSelected ? '1.5px solid #25D366' : '1px solid transparent',
+                        borderRadius: '10px',
+                        padding: '10px',
+                        cursor: 'pointer',
+                        transition: 'background 0.15s ease, border 0.15s ease',
+                        boxShadow: isSelected ? '0 2px 8px rgba(37, 211, 102, 0.12)' : 'none',
+                        marginBottom: '4px',
+                      }}
+                    >
+                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2px' }}>
+                        <span style={{ fontWeight: 800, fontSize: '0.86rem', color: '#1E293B' }}>
+                          {contact.avatar} {contact.name}
+                        </span>
+                        <span style={{ fontSize: '0.7rem', color: '#64748B' }}>{contact.lastMessageTime}</span>
+                      </div>
+
+                      <span style={{ fontSize: '0.75rem', color: '#06B6D4', fontWeight: 700, display: 'block', marginBottom: '4px' }}>
+                        {contact.phone}
                       </span>
-                      <span style={{ fontSize: '0.7rem', color: '#64748B' }}>{contact.lastMessageTime}</span>
-                    </div>
 
-                    <span style={{ fontSize: '0.75rem', color: '#06B6D4', fontWeight: 700, display: 'block', marginBottom: '4px' }}>
-                      {contact.phone}
-                    </span>
-
-                    <p style={{ margin: 0, fontSize: '0.76rem', color: '#475569', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
-                      {contact.lastMessage}
-                    </p>
-                  </div>
-                );
-              })
+                      <p style={{ margin: 0, fontSize: '0.76rem', color: '#475569', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                        {contact.lastMessage}
+                      </p>
+                    </motion.div>
+                  );
+                }}
+              </List>
             ) : (
               <div style={{ padding: '2rem 0.5rem', textAlign: 'center', color: '#64748B' }}>
                 <span style={{ fontSize: '2rem', display: 'block', marginBottom: '0.5rem' }}>📭</span>

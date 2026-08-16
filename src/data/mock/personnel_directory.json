@@ -1,0 +1,950 @@
+[
+  {
+    "id": "MGR-1",
+    "role": "Manager",
+    "department": "Dept-01",
+    "name": "Manager Dummy 1",
+    "level": 4
+  },
+  {
+    "id": "MGR-2",
+    "role": "Manager",
+    "department": "Dept-02",
+    "name": "Manager Dummy 2",
+    "level": 4
+  },
+  {
+    "id": "MGR-3",
+    "role": "Manager",
+    "department": "Dept-03",
+    "name": "Manager Dummy 3",
+    "level": 4
+  },
+  {
+    "id": "MGR-4",
+    "role": "Manager",
+    "department": "Dept-04",
+    "name": "Manager Dummy 4",
+    "level": 4
+  },
+  {
+    "id": "MGR-5",
+    "role": "Manager",
+    "department": "Dept-05",
+    "name": "Manager Dummy 5",
+    "level": 4
+  },
+  {
+    "id": "MGR-6",
+    "role": "Manager",
+    "department": "Dept-06",
+    "name": "Manager Dummy 6",
+    "level": 4
+  },
+  {
+    "id": "MGR-7",
+    "role": "Manager",
+    "department": "Dept-07",
+    "name": "Manager Dummy 7",
+    "level": 4
+  },
+  {
+    "id": "MGR-8",
+    "role": "Manager",
+    "department": "Dept-08",
+    "name": "Manager Dummy 8",
+    "level": 4
+  },
+  {
+    "id": "MGR-9",
+    "role": "Manager",
+    "department": "Dept-09",
+    "name": "Manager Dummy 9",
+    "level": 4
+  },
+  {
+    "id": "MGR-10",
+    "role": "Manager",
+    "department": "Dept-10",
+    "name": "Manager Dummy 10",
+    "level": 4
+  },
+  {
+    "id": "MGR-11",
+    "role": "Manager",
+    "department": "Dept-11",
+    "name": "Manager Dummy 11",
+    "level": 4
+  },
+  {
+    "id": "MGR-12",
+    "role": "Manager",
+    "department": "Dept-12",
+    "name": "Manager Dummy 12",
+    "level": 4
+  },
+  {
+    "id": "SUP-1",
+    "role": "Supervisor",
+    "department": "Dept-01",
+    "name": "Supervisor Dummy 1",
+    "reportsTo": "MGR-1",
+    "level": 3
+  },
+  {
+    "id": "SUP-2",
+    "role": "Supervisor",
+    "department": "Dept-01",
+    "name": "Supervisor Dummy 2",
+    "reportsTo": "MGR-1",
+    "level": 3
+  },
+  {
+    "id": "SUP-3",
+    "role": "Supervisor",
+    "department": "Dept-01",
+    "name": "Supervisor Dummy 3",
+    "reportsTo": "MGR-1",
+    "level": 3
+  },
+  {
+    "id": "SUP-4",
+    "role": "Supervisor",
+    "department": "Dept-01",
+    "name": "Supervisor Dummy 4",
+    "reportsTo": "MGR-1",
+    "level": 3
+  },
+  {
+    "id": "SUP-5",
+    "role": "Supervisor",
+    "department": "Dept-01",
+    "name": "Supervisor Dummy 5",
+    "reportsTo": "MGR-1",
+    "level": 3
+  },
+  {
+    "id": "SUP-6",
+    "role": "Supervisor",
+    "department": "Dept-01",
+    "name": "Supervisor Dummy 6",
+    "reportsTo": "MGR-1",
+    "level": 3
+  },
+  {
+    "id": "SUP-7",
+    "role": "Supervisor",
+    "department": "Dept-01",
+    "name": "Supervisor Dummy 7",
+    "reportsTo": "MGR-1",
+    "level": 3
+  },
+  {
+    "id": "SUP-8",
+    "role": "Supervisor",
+    "department": "Dept-01",
+    "name": "Supervisor Dummy 8",
+    "reportsTo": "MGR-1",
+    "level": 3
+  },
+  {
+    "id": "SUP-9",
+    "role": "Supervisor",
+    "department": "Dept-01",
+    "name": "Supervisor Dummy 9",
+    "reportsTo": "MGR-1",
+    "level": 3
+  },
+  {
+    "id": "SUP-10",
+    "role": "Supervisor",
+    "department": "Dept-02",
+    "name": "Supervisor Dummy 10",
+    "reportsTo": "MGR-2",
+    "level": 3
+  },
+  {
+    "id": "SUP-11",
+    "role": "Supervisor",
+    "department": "Dept-02",
+    "name": "Supervisor Dummy 11",
+    "reportsTo": "MGR-2",
+    "level": 3
+  },
+  {
+    "id": "SUP-12",
+    "role": "Supervisor",
+    "department": "Dept-02",
+    "name": "Supervisor Dummy 12",
+    "reportsTo": "MGR-2",
+    "level": 3
+  },
+  {
+    "id": "SUP-13",
+    "role": "Supervisor",
+    "department": "Dept-02",
+    "name": "Supervisor Dummy 13",
+    "reportsTo": "MGR-2",
+    "level": 3
+  },
+  {
+    "id": "SUP-14",
+    "role": "Supervisor",
+    "department": "Dept-02",
+    "name": "Supervisor Dummy 14",
+    "reportsTo": "MGR-2",
+    "level": 3
+  },
+  {
+    "id": "SUP-15",
+    "role": "Supervisor",
+    "department": "Dept-02",
+    "name": "Supervisor Dummy 15",
+    "reportsTo": "MGR-2",
+    "level": 3
+  },
+  {
+    "id": "SUP-16",
+    "role": "Supervisor",
+    "department": "Dept-02",
+    "name": "Supervisor Dummy 16",
+    "reportsTo": "MGR-2",
+    "level": 3
+  },
+  {
+    "id": "SUP-17",
+    "role": "Supervisor",
+    "department": "Dept-02",
+    "name": "Supervisor Dummy 17",
+    "reportsTo": "MGR-2",
+    "level": 3
+  },
+  {
+    "id": "SUP-18",
+    "role": "Supervisor",
+    "department": "Dept-02",
+    "name": "Supervisor Dummy 18",
+    "reportsTo": "MGR-2",
+    "level": 3
+  },
+  {
+    "id": "SUP-19",
+    "role": "Supervisor",
+    "department": "Dept-03",
+    "name": "Supervisor Dummy 19",
+    "reportsTo": "MGR-3",
+    "level": 3
+  },
+  {
+    "id": "SUP-20",
+    "role": "Supervisor",
+    "department": "Dept-03",
+    "name": "Supervisor Dummy 20",
+    "reportsTo": "MGR-3",
+    "level": 3
+  },
+  {
+    "id": "SUP-21",
+    "role": "Supervisor",
+    "department": "Dept-03",
+    "name": "Supervisor Dummy 21",
+    "reportsTo": "MGR-3",
+    "level": 3
+  },
+  {
+    "id": "SUP-22",
+    "role": "Supervisor",
+    "department": "Dept-03",
+    "name": "Supervisor Dummy 22",
+    "reportsTo": "MGR-3",
+    "level": 3
+  },
+  {
+    "id": "SUP-23",
+    "role": "Supervisor",
+    "department": "Dept-03",
+    "name": "Supervisor Dummy 23",
+    "reportsTo": "MGR-3",
+    "level": 3
+  },
+  {
+    "id": "SUP-24",
+    "role": "Supervisor",
+    "department": "Dept-03",
+    "name": "Supervisor Dummy 24",
+    "reportsTo": "MGR-3",
+    "level": 3
+  },
+  {
+    "id": "SUP-25",
+    "role": "Supervisor",
+    "department": "Dept-03",
+    "name": "Supervisor Dummy 25",
+    "reportsTo": "MGR-3",
+    "level": 3
+  },
+  {
+    "id": "SUP-26",
+    "role": "Supervisor",
+    "department": "Dept-03",
+    "name": "Supervisor Dummy 26",
+    "reportsTo": "MGR-3",
+    "level": 3
+  },
+  {
+    "id": "SUP-27",
+    "role": "Supervisor",
+    "department": "Dept-03",
+    "name": "Supervisor Dummy 27",
+    "reportsTo": "MGR-3",
+    "level": 3
+  },
+  {
+    "id": "SUP-28",
+    "role": "Supervisor",
+    "department": "Dept-04",
+    "name": "Supervisor Dummy 28",
+    "reportsTo": "MGR-4",
+    "level": 3
+  },
+  {
+    "id": "SUP-29",
+    "role": "Supervisor",
+    "department": "Dept-04",
+    "name": "Supervisor Dummy 29",
+    "reportsTo": "MGR-4",
+    "level": 3
+  },
+  {
+    "id": "SUP-30",
+    "role": "Supervisor",
+    "department": "Dept-04",
+    "name": "Supervisor Dummy 30",
+    "reportsTo": "MGR-4",
+    "level": 3
+  },
+  {
+    "id": "SUP-31",
+    "role": "Supervisor",
+    "department": "Dept-04",
+    "name": "Supervisor Dummy 31",
+    "reportsTo": "MGR-4",
+    "level": 3
+  },
+  {
+    "id": "SUP-32",
+    "role": "Supervisor",
+    "department": "Dept-04",
+    "name": "Supervisor Dummy 32",
+    "reportsTo": "MGR-4",
+    "level": 3
+  },
+  {
+    "id": "SUP-33",
+    "role": "Supervisor",
+    "department": "Dept-04",
+    "name": "Supervisor Dummy 33",
+    "reportsTo": "MGR-4",
+    "level": 3
+  },
+  {
+    "id": "SUP-34",
+    "role": "Supervisor",
+    "department": "Dept-04",
+    "name": "Supervisor Dummy 34",
+    "reportsTo": "MGR-4",
+    "level": 3
+  },
+  {
+    "id": "SUP-35",
+    "role": "Supervisor",
+    "department": "Dept-04",
+    "name": "Supervisor Dummy 35",
+    "reportsTo": "MGR-4",
+    "level": 3
+  },
+  {
+    "id": "SUP-36",
+    "role": "Supervisor",
+    "department": "Dept-04",
+    "name": "Supervisor Dummy 36",
+    "reportsTo": "MGR-4",
+    "level": 3
+  },
+  {
+    "id": "SUP-37",
+    "role": "Supervisor",
+    "department": "Dept-05",
+    "name": "Supervisor Dummy 37",
+    "reportsTo": "MGR-5",
+    "level": 3
+  },
+  {
+    "id": "SUP-38",
+    "role": "Supervisor",
+    "department": "Dept-05",
+    "name": "Supervisor Dummy 38",
+    "reportsTo": "MGR-5",
+    "level": 3
+  },
+  {
+    "id": "SUP-39",
+    "role": "Supervisor",
+    "department": "Dept-05",
+    "name": "Supervisor Dummy 39",
+    "reportsTo": "MGR-5",
+    "level": 3
+  },
+  {
+    "id": "SUP-40",
+    "role": "Supervisor",
+    "department": "Dept-05",
+    "name": "Supervisor Dummy 40",
+    "reportsTo": "MGR-5",
+    "level": 3
+  },
+  {
+    "id": "SUP-41",
+    "role": "Supervisor",
+    "department": "Dept-05",
+    "name": "Supervisor Dummy 41",
+    "reportsTo": "MGR-5",
+    "level": 3
+  },
+  {
+    "id": "SUP-42",
+    "role": "Supervisor",
+    "department": "Dept-05",
+    "name": "Supervisor Dummy 42",
+    "reportsTo": "MGR-5",
+    "level": 3
+  },
+  {
+    "id": "SUP-43",
+    "role": "Supervisor",
+    "department": "Dept-05",
+    "name": "Supervisor Dummy 43",
+    "reportsTo": "MGR-5",
+    "level": 3
+  },
+  {
+    "id": "SUP-44",
+    "role": "Supervisor",
+    "department": "Dept-05",
+    "name": "Supervisor Dummy 44",
+    "reportsTo": "MGR-5",
+    "level": 3
+  },
+  {
+    "id": "SUP-45",
+    "role": "Supervisor",
+    "department": "Dept-05",
+    "name": "Supervisor Dummy 45",
+    "reportsTo": "MGR-5",
+    "level": 3
+  },
+  {
+    "id": "SUP-46",
+    "role": "Supervisor",
+    "department": "Dept-06",
+    "name": "Supervisor Dummy 46",
+    "reportsTo": "MGR-6",
+    "level": 3
+  },
+  {
+    "id": "SUP-47",
+    "role": "Supervisor",
+    "department": "Dept-06",
+    "name": "Supervisor Dummy 47",
+    "reportsTo": "MGR-6",
+    "level": 3
+  },
+  {
+    "id": "SUP-48",
+    "role": "Supervisor",
+    "department": "Dept-06",
+    "name": "Supervisor Dummy 48",
+    "reportsTo": "MGR-6",
+    "level": 3
+  },
+  {
+    "id": "SUP-49",
+    "role": "Supervisor",
+    "department": "Dept-06",
+    "name": "Supervisor Dummy 49",
+    "reportsTo": "MGR-6",
+    "level": 3
+  },
+  {
+    "id": "SUP-50",
+    "role": "Supervisor",
+    "department": "Dept-06",
+    "name": "Supervisor Dummy 50",
+    "reportsTo": "MGR-6",
+    "level": 3
+  },
+  {
+    "id": "SUP-51",
+    "role": "Supervisor",
+    "department": "Dept-06",
+    "name": "Supervisor Dummy 51",
+    "reportsTo": "MGR-6",
+    "level": 3
+  },
+  {
+    "id": "SUP-52",
+    "role": "Supervisor",
+    "department": "Dept-06",
+    "name": "Supervisor Dummy 52",
+    "reportsTo": "MGR-6",
+    "level": 3
+  },
+  {
+    "id": "SUP-53",
+    "role": "Supervisor",
+    "department": "Dept-06",
+    "name": "Supervisor Dummy 53",
+    "reportsTo": "MGR-6",
+    "level": 3
+  },
+  {
+    "id": "SUP-54",
+    "role": "Supervisor",
+    "department": "Dept-06",
+    "name": "Supervisor Dummy 54",
+    "reportsTo": "MGR-6",
+    "level": 3
+  },
+  {
+    "id": "SUP-55",
+    "role": "Supervisor",
+    "department": "Dept-07",
+    "name": "Supervisor Dummy 55",
+    "reportsTo": "MGR-7",
+    "level": 3
+  },
+  {
+    "id": "SUP-56",
+    "role": "Supervisor",
+    "department": "Dept-07",
+    "name": "Supervisor Dummy 56",
+    "reportsTo": "MGR-7",
+    "level": 3
+  },
+  {
+    "id": "SUP-57",
+    "role": "Supervisor",
+    "department": "Dept-07",
+    "name": "Supervisor Dummy 57",
+    "reportsTo": "MGR-7",
+    "level": 3
+  },
+  {
+    "id": "SUP-58",
+    "role": "Supervisor",
+    "department": "Dept-07",
+    "name": "Supervisor Dummy 58",
+    "reportsTo": "MGR-7",
+    "level": 3
+  },
+  {
+    "id": "SUP-59",
+    "role": "Supervisor",
+    "department": "Dept-07",
+    "name": "Supervisor Dummy 59",
+    "reportsTo": "MGR-7",
+    "level": 3
+  },
+  {
+    "id": "SUP-60",
+    "role": "Supervisor",
+    "department": "Dept-07",
+    "name": "Supervisor Dummy 60",
+    "reportsTo": "MGR-7",
+    "level": 3
+  },
+  {
+    "id": "SUP-61",
+    "role": "Supervisor",
+    "department": "Dept-07",
+    "name": "Supervisor Dummy 61",
+    "reportsTo": "MGR-7",
+    "level": 3
+  },
+  {
+    "id": "SUP-62",
+    "role": "Supervisor",
+    "department": "Dept-07",
+    "name": "Supervisor Dummy 62",
+    "reportsTo": "MGR-7",
+    "level": 3
+  },
+  {
+    "id": "SUP-63",
+    "role": "Supervisor",
+    "department": "Dept-07",
+    "name": "Supervisor Dummy 63",
+    "reportsTo": "MGR-7",
+    "level": 3
+  },
+  {
+    "id": "SUP-64",
+    "role": "Supervisor",
+    "department": "Dept-08",
+    "name": "Supervisor Dummy 64",
+    "reportsTo": "MGR-8",
+    "level": 3
+  },
+  {
+    "id": "SUP-65",
+    "role": "Supervisor",
+    "department": "Dept-08",
+    "name": "Supervisor Dummy 65",
+    "reportsTo": "MGR-8",
+    "level": 3
+  },
+  {
+    "id": "SUP-66",
+    "role": "Supervisor",
+    "department": "Dept-08",
+    "name": "Supervisor Dummy 66",
+    "reportsTo": "MGR-8",
+    "level": 3
+  },
+  {
+    "id": "SUP-67",
+    "role": "Supervisor",
+    "department": "Dept-08",
+    "name": "Supervisor Dummy 67",
+    "reportsTo": "MGR-8",
+    "level": 3
+  },
+  {
+    "id": "SUP-68",
+    "role": "Supervisor",
+    "department": "Dept-08",
+    "name": "Supervisor Dummy 68",
+    "reportsTo": "MGR-8",
+    "level": 3
+  },
+  {
+    "id": "SUP-69",
+    "role": "Supervisor",
+    "department": "Dept-08",
+    "name": "Supervisor Dummy 69",
+    "reportsTo": "MGR-8",
+    "level": 3
+  },
+  {
+    "id": "SUP-70",
+    "role": "Supervisor",
+    "department": "Dept-08",
+    "name": "Supervisor Dummy 70",
+    "reportsTo": "MGR-8",
+    "level": 3
+  },
+  {
+    "id": "SUP-71",
+    "role": "Supervisor",
+    "department": "Dept-08",
+    "name": "Supervisor Dummy 71",
+    "reportsTo": "MGR-8",
+    "level": 3
+  },
+  {
+    "id": "SUP-72",
+    "role": "Supervisor",
+    "department": "Dept-08",
+    "name": "Supervisor Dummy 72",
+    "reportsTo": "MGR-8",
+    "level": 3
+  },
+  {
+    "id": "SUP-73",
+    "role": "Supervisor",
+    "department": "Dept-09",
+    "name": "Supervisor Dummy 73",
+    "reportsTo": "MGR-9",
+    "level": 3
+  },
+  {
+    "id": "SUP-74",
+    "role": "Supervisor",
+    "department": "Dept-09",
+    "name": "Supervisor Dummy 74",
+    "reportsTo": "MGR-9",
+    "level": 3
+  },
+  {
+    "id": "SUP-75",
+    "role": "Supervisor",
+    "department": "Dept-09",
+    "name": "Supervisor Dummy 75",
+    "reportsTo": "MGR-9",
+    "level": 3
+  },
+  {
+    "id": "SUP-76",
+    "role": "Supervisor",
+    "department": "Dept-09",
+    "name": "Supervisor Dummy 76",
+    "reportsTo": "MGR-9",
+    "level": 3
+  },
+  {
+    "id": "SUP-77",
+    "role": "Supervisor",
+    "department": "Dept-09",
+    "name": "Supervisor Dummy 77",
+    "reportsTo": "MGR-9",
+    "level": 3
+  },
+  {
+    "id": "SUP-78",
+    "role": "Supervisor",
+    "department": "Dept-09",
+    "name": "Supervisor Dummy 78",
+    "reportsTo": "MGR-9",
+    "level": 3
+  },
+  {
+    "id": "SUP-79",
+    "role": "Supervisor",
+    "department": "Dept-09",
+    "name": "Supervisor Dummy 79",
+    "reportsTo": "MGR-9",
+    "level": 3
+  },
+  {
+    "id": "SUP-80",
+    "role": "Supervisor",
+    "department": "Dept-09",
+    "name": "Supervisor Dummy 80",
+    "reportsTo": "MGR-9",
+    "level": 3
+  },
+  {
+    "id": "SUP-81",
+    "role": "Supervisor",
+    "department": "Dept-09",
+    "name": "Supervisor Dummy 81",
+    "reportsTo": "MGR-9",
+    "level": 3
+  },
+  {
+    "id": "SUP-82",
+    "role": "Supervisor",
+    "department": "Dept-10",
+    "name": "Supervisor Dummy 82",
+    "reportsTo": "MGR-10",
+    "level": 3
+  },
+  {
+    "id": "SUP-83",
+    "role": "Supervisor",
+    "department": "Dept-10",
+    "name": "Supervisor Dummy 83",
+    "reportsTo": "MGR-10",
+    "level": 3
+  },
+  {
+    "id": "SUP-84",
+    "role": "Supervisor",
+    "department": "Dept-10",
+    "name": "Supervisor Dummy 84",
+    "reportsTo": "MGR-10",
+    "level": 3
+  },
+  {
+    "id": "SUP-85",
+    "role": "Supervisor",
+    "department": "Dept-10",
+    "name": "Supervisor Dummy 85",
+    "reportsTo": "MGR-10",
+    "level": 3
+  },
+  {
+    "id": "SUP-86",
+    "role": "Supervisor",
+    "department": "Dept-10",
+    "name": "Supervisor Dummy 86",
+    "reportsTo": "MGR-10",
+    "level": 3
+  },
+  {
+    "id": "SUP-87",
+    "role": "Supervisor",
+    "department": "Dept-10",
+    "name": "Supervisor Dummy 87",
+    "reportsTo": "MGR-10",
+    "level": 3
+  },
+  {
+    "id": "SUP-88",
+    "role": "Supervisor",
+    "department": "Dept-10",
+    "name": "Supervisor Dummy 88",
+    "reportsTo": "MGR-10",
+    "level": 3
+  },
+  {
+    "id": "SUP-89",
+    "role": "Supervisor",
+    "department": "Dept-10",
+    "name": "Supervisor Dummy 89",
+    "reportsTo": "MGR-10",
+    "level": 3
+  },
+  {
+    "id": "SUP-90",
+    "role": "Supervisor",
+    "department": "Dept-10",
+    "name": "Supervisor Dummy 90",
+    "reportsTo": "MGR-10",
+    "level": 3
+  },
+  {
+    "id": "SUP-91",
+    "role": "Supervisor",
+    "department": "Dept-11",
+    "name": "Supervisor Dummy 91",
+    "reportsTo": "MGR-11",
+    "level": 3
+  },
+  {
+    "id": "SUP-92",
+    "role": "Supervisor",
+    "department": "Dept-11",
+    "name": "Supervisor Dummy 92",
+    "reportsTo": "MGR-11",
+    "level": 3
+  },
+  {
+    "id": "SUP-93",
+    "role": "Supervisor",
+    "department": "Dept-11",
+    "name": "Supervisor Dummy 93",
+    "reportsTo": "MGR-11",
+    "level": 3
+  },
+  {
+    "id": "SUP-94",
+    "role": "Supervisor",
+    "department": "Dept-11",
+    "name": "Supervisor Dummy 94",
+    "reportsTo": "MGR-11",
+    "level": 3
+  },
+  {
+    "id": "SUP-95",
+    "role": "Supervisor",
+    "department": "Dept-11",
+    "name": "Supervisor Dummy 95",
+    "reportsTo": "MGR-11",
+    "level": 3
+  },
+  {
+    "id": "SUP-96",
+    "role": "Supervisor",
+    "department": "Dept-11",
+    "name": "Supervisor Dummy 96",
+    "reportsTo": "MGR-11",
+    "level": 3
+  },
+  {
+    "id": "SUP-97",
+    "role": "Supervisor",
+    "department": "Dept-11",
+    "name": "Supervisor Dummy 97",
+    "reportsTo": "MGR-11",
+    "level": 3
+  },
+  {
+    "id": "SUP-98",
+    "role": "Supervisor",
+    "department": "Dept-11",
+    "name": "Supervisor Dummy 98",
+    "reportsTo": "MGR-11",
+    "level": 3
+  },
+  {
+    "id": "SUP-99",
+    "role": "Supervisor",
+    "department": "Dept-11",
+    "name": "Supervisor Dummy 99",
+    "reportsTo": "MGR-11",
+    "level": 3
+  },
+  {
+    "id": "SUP-100",
+    "role": "Supervisor",
+    "department": "Dept-12",
+    "name": "Supervisor Dummy 100",
+    "reportsTo": "MGR-12",
+    "level": 3
+  },
+  {
+    "id": "SUP-101",
+    "role": "Supervisor",
+    "department": "Dept-12",
+    "name": "Supervisor Dummy 101",
+    "reportsTo": "MGR-12",
+    "level": 3
+  },
+  {
+    "id": "SUP-102",
+    "role": "Supervisor",
+    "department": "Dept-12",
+    "name": "Supervisor Dummy 102",
+    "reportsTo": "MGR-12",
+    "level": 3
+  },
+  {
+    "id": "SUP-103",
+    "role": "Supervisor",
+    "department": "Dept-12",
+    "name": "Supervisor Dummy 103",
+    "reportsTo": "MGR-12",
+    "level": 3
+  },
+  {
+    "id": "SUP-104",
+    "role": "Supervisor",
+    "department": "Dept-12",
+    "name": "Supervisor Dummy 104",
+    "reportsTo": "MGR-12",
+    "level": 3
+  },
+  {
+    "id": "SUP-105",
+    "role": "Supervisor",
+    "department": "Dept-12",
+    "name": "Supervisor Dummy 105",
+    "reportsTo": "MGR-12",
+    "level": 3
+  },
+  {
+    "id": "SUP-106",
+    "role": "Supervisor",
+    "department": "Dept-12",
+    "name": "Supervisor Dummy 106",
+    "reportsTo": "MGR-12",
+    "level": 3
+  },
+  {
+    "id": "SUP-107",
+    "role": "Supervisor",
+    "department": "Dept-12",
+    "name": "Supervisor Dummy 107",
+    "reportsTo": "MGR-12",
+    "level": 3
+  },
+  {
+    "id": "SUP-108",
+    "role": "Supervisor",
+    "department": "Dept-12",
+    "name": "Supervisor Dummy 108",
+    "reportsTo": "MGR-12",
+    "level": 3
+  }
+]

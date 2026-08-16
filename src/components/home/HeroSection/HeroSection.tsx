@@ -1,6 +1,7 @@
 import React, { FC } from 'react';
 import { Search, MapPin, Sparkles } from 'lucide-react';
 import { useHeroSectionLogic } from './HeroSection.logic';
+import { useTranslation } from '../../../hooks/useTranslation';
 import {
   HeroWrapper,
   DecorativeOrb,
@@ -23,36 +24,38 @@ export const HeroSection: FC = () => {
     destinationTags,
   } = useHeroSectionLogic();
 
+  const { t } = useTranslation();
+
   return (
     <HeroWrapper data-testid="hero-section">
       <DecorativeOrb />
 
       <HeroContent>
         <BadgeTag>
-          <Sparkles size={14} /> White Caves Sovereign Real Estate Dubai
+          <Sparkles size={14} /> {t('hero.badge')}
         </BadgeTag>
 
         <HeroTitle>
-          Discover Dubai's Most Exclusive <span>Villas & Penthouses</span>
+          {t('hero.title_main')} <span>{t('hero.title_highlight')}</span>
         </HeroTitle>
 
         <HeroSubtitle>
-          Explore live DLD verified listings across Palm Jumeirah, Downtown Dubai, and DAMAC Hills 2 managed directly by our 12 Corporate Departments.
+          {t('hero.subtitle')}
         </HeroSubtitle>
 
         <SearchForm onSubmit={handleSearchSubmit}>
           <Search size={20} color="#EF4444" />
           <input
             type="text"
-            placeholder="Search Palm Jumeirah Villa, Downtown Penthouse, DAMAC Hills 2..."
+            placeholder={t('hero.search_placeholder')}
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
           />
-          <button type="submit">Search Market</button>
+          <button type="submit">{t('hero.search_btn')}</button>
         </SearchForm>
 
         <CommunityPillsWrapper>
-          <span className="label">Popular Communities:</span>
+          <span className="label">{t('hero.popular_communities')}</span>
           {destinationTags.map((tag) => (
             <CommunityPill
               key={tag}
@@ -69,5 +72,7 @@ export const HeroSection: FC = () => {
     </HeroWrapper>
   );
 };
+
+export default HeroSection;
 
 export default HeroSection;

@@ -11,6 +11,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { Bot, RefreshCw, Volume2, VolumeX, Sparkles, Key, QrCode, Terminal, Check, Battery, Radio, Zap, ArrowRight, ArrowLeft, CheckCircle, ShieldCheck, MessageSquare, Layers, Sliders, Copy } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
 import { useBotData } from './hooks/useBotData';
 import { ConversationsTab } from './tabs/ConversationsTab';
 import { AutoReplyPlannerTab } from './tabs/AutoReplyPlannerTab';
@@ -283,8 +284,14 @@ export const NinaWhatsAppBotCRM: React.FC = () => {
           }}
         >
           {/* STAGE 1 INDICATOR */}
-          <button
-            onClick={() => { setCurrentStage(1); ninaSpeak('SWITCHING TO STAGE 1: HARDWARE CONNECTION PORTAL', setSubtitleText); }}
+          <motion.button
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+            onClick={() => { 
+              setCurrentStage(1); 
+              ninaSpeak('SWITCHING TO STAGE 1: HARDWARE CONNECTION PORTAL', setSubtitleText);
+              if (typeof navigator !== 'undefined' && navigator.vibrate) navigator.vibrate(50);
+            }}
             style={{
               background: currentStage === 1 ? '#06B6D4' : 'transparent',
               color: currentStage === 1 ? '#FFFFFF' : '#94A3B8',
@@ -297,25 +304,29 @@ export const NinaWhatsAppBotCRM: React.FC = () => {
               display: 'flex',
               alignItems: 'center',
               gap: '8px',
-              transition: 'all 0.2s ease',
+              transition: 'background 0.2s ease, color 0.2s ease',
             }}
           >
             <span style={{ background: isConnected ? '#10B981' : '#F59E0B', color: '#0f0f0f', borderRadius: '50%', width: '22px', height: '22px', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '0.75rem' }}>
               1
             </span>
             <span>Stage 1: Device Auth & Inception</span>
-          </button>
+          </motion.button>
 
           <ArrowRight size={16} color="#64748B" />
 
           {/* STAGE 2 INDICATOR */}
-          <button
+          <motion.button
+            whileHover={isConnected ? { scale: 1.05 } : {}}
+            whileTap={isConnected ? { scale: 0.95 } : {}}
             onClick={() => {
               if (isConnected) {
                 setCurrentStage(2);
                 ninaSpeak('SWITCHING TO STAGE 2: FEATURE MATRIX & ELABORATION', setSubtitleText);
+                if (typeof navigator !== 'undefined' && navigator.vibrate) navigator.vibrate(50);
               } else {
                 ninaSpeak('STAGE 2 LOCKED! PLEASE CONFIRM HARDWARE CONNECTION IN STAGE 1 FIRST!', setSubtitleText);
+                if (typeof navigator !== 'undefined' && navigator.vibrate) navigator.vibrate([50, 50, 50]);
               }
             }}
             style={{
@@ -331,25 +342,29 @@ export const NinaWhatsAppBotCRM: React.FC = () => {
               alignItems: 'center',
               gap: '8px',
               opacity: isConnected ? 1 : 0.6,
-              transition: 'all 0.2s ease',
+              transition: 'background 0.2s ease, color 0.2s ease',
             }}
           >
             <span style={{ background: currentStage >= 2 ? '#10B981' : '#64748B', color: '#0f0f0f', borderRadius: '50%', width: '22px', height: '22px', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '0.75rem' }}>
               2
             </span>
             <span>Stage 2: Feature Matrix & Config</span>
-          </button>
+          </motion.button>
 
           <ArrowRight size={16} color="#64748B" />
 
           {/* STAGE 3 INDICATOR */}
-          <button
+          <motion.button
+            whileHover={isConnected ? { scale: 1.05 } : {}}
+            whileTap={isConnected ? { scale: 0.95 } : {}}
             onClick={() => {
               if (isConnected) {
                 setCurrentStage(3);
                 ninaSpeak('SWITCHING TO STAGE 3: LIVE CONVERSATIONS & RESULTS', setSubtitleText);
+                if (typeof navigator !== 'undefined' && navigator.vibrate) navigator.vibrate(50);
               } else {
                 ninaSpeak('STAGE 3 LOCKED! PLEASE CONFIRM HARDWARE CONNECTION IN STAGE 1 FIRST!', setSubtitleText);
+                if (typeof navigator !== 'undefined' && navigator.vibrate) navigator.vibrate([50, 50, 50]);
               }
             }}
             style={{
@@ -365,14 +380,14 @@ export const NinaWhatsAppBotCRM: React.FC = () => {
               alignItems: 'center',
               gap: '8px',
               opacity: isConnected ? 1 : 0.6,
-              transition: 'all 0.2s ease',
+              transition: 'background 0.2s ease, color 0.2s ease',
             }}
           >
             <span style={{ background: currentStage === 3 ? '#10B981' : '#64748B', color: '#0f0f0f', borderRadius: '50%', width: '22px', height: '22px', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '0.75rem' }}>
               3
             </span>
             <span>Stage 3: Live Conversations & Results</span>
-          </button>
+          </motion.button>
         </div>
 
         {/* ─── STAGE 1: INCEPTION & DEVICE AUTHENTICATION ─── */}
@@ -380,7 +395,7 @@ export const NinaWhatsAppBotCRM: React.FC = () => {
           <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
             <div
               style={{
-                background: 'rgba(250, 250, 250, 0.7)', backdropFilter: 'blur(8px)',
+                background: 'rgba(250, 250, 250, 0.7)',
                 border: '2px solid #D4AF37',
                 borderRadius: '18px',
                 padding: '1.75rem',
@@ -648,7 +663,6 @@ export const NinaWhatsAppBotCRM: React.FC = () => {
                   onClick={() => setCurrentStage(2)}
                   style={{
                     background: '#F1F5F9', color: '#0f0f0f',
-                    color: '#0f0f0f',
                     border: 'none',
                     borderRadius: '8px',
                     padding: '8px 14px',

@@ -220,5 +220,35 @@ router.get(
     });
   })
 );
+// ── CSV Export Endpoints (Gap Resolved) ──────────────────────────────────
+router.get(
+  '/export-csv',
+  requirePermission('view_analytics'),
+  asyncHandler(async (req: Request, res: Response) => {
+    logger.info('[Analytics] CSV Export Requested');
+
+    const overview = await getMarketOverview();
+    const trends = await getPriceTrends({ days: 90 });
+
+    // Generate CSV Content
+    let csv = 'Report Type,Metric,Value\n';
+    
+    // Add Overview Metrics
+    csv += `Overview,Total Active Listings,${overview.totalAvailable}\n`;
+    csv += `Overview,Total Transactions (30d),${overview.totalTransactions30d}\n`;
+    csv += `Overview,Avg Price Per Sqft,${overview.avgPricePerSqft}\n`;
+    
+    // Add Trend Metrics
+    if (trends && trends.length > 0) {
+      trends.forEach((t: any) => {
+        csv += `Trend,${t.area || 'All'},${t.pricePerSqft || 0}\n`;
+      });
+    }
+
+    res.setHeader('Content-Type', 'text/csv');
+    res.setHeader('Content-Disposition', 'attachment; filename="analytics_export.csv"');
+    res.status(200).send(csv);
+  })
+);
 
 export default router;
