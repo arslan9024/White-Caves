@@ -307,6 +307,7 @@ const WhatsAppDashboardPage = lazy(() => import('./pages/owner/WhatsAppDashboard
 const WhatsAppChatbotPage = lazy(() => import('./pages/owner/WhatsAppChatbotPage'));
 const WhatsAppAnalyticsPage = lazy(() => import('./pages/owner/WhatsAppAnalyticsPage'));
 const WhatsAppSettingsPage = lazy(() => import('./pages/owner/WhatsAppSettingsPage'));
+const GovernanceDashboard = lazy(() => import('./pages/crm/GovernanceDashboard/GovernanceDashboard'));
 
 // Public Pages
 const PropertiesPage = lazy(() => import('./pages/PropertiesPage'));
@@ -659,6 +660,12 @@ function App(): React.JSX.Element {
       section: 'Login Security',
       page: <LoginSecurityPage />,
       allowedRoles: ['owner', 'admin'],
+    },
+    {
+      path: '/owner/governance',
+      section: 'Governance Dashboard',
+      page: <GovernanceDashboard />,
+      allowedRoles: ['owner'],
     },
   ];
 

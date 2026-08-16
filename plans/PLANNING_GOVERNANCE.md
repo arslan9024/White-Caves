@@ -6,7 +6,7 @@
 **Target**: Global Repository and Website Implementation Synchronization
 
 ### Active Mandates
-- **Refactoring**: All repository components migrating to strict co-located subfolder segregation (`/logic/` and `/styles/`).
+- **Refactoring**: All repository components migrating to strict co-located subfolder segregation (`/content-data/`,`/logic/` and `/styles/`).
 - **Navigation**: Merging scattered sidebars into `src/layouts/UnifiedWorkspaceLayout.tsx` with Level 5 "[Managing Director Hub]" panel.
 - **Aesthetics**: Global enforcement of White Caves Red (`#EF4444`) and Brilliant White (`#FFFFFF`). Circular brand logo container overhang doubled to exactly 50% out of the top navbar frame.
 - **Data Access**: Auth layer bypass for `arslanmalikgoraha@gmail.com` (LEVEL 5 MASTER). Auto-hydration of 100 dummy properties and 100 personnel profiles.

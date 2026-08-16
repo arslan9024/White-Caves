@@ -12,6 +12,7 @@ import TopNavbar from '../components/TopNavbar/TopNavbar';
 import CavesFloatingSearch from '../components/CavesFloatingSearch/CavesFloatingSearch';
 import CavesWhatsAppWidget from '../components/CavesWhatsAppWidget/CavesWhatsAppWidget';
 import { useWorkspaceLayoutLogic } from './UnifiedWorkspaceLayout.logic';
+import { getLicenseStatuses, hasExpiringLicenses } from '../utils/licenseMonitors';
 
 // ─── Props ────────────────────────────────────────────────────────────────────
 
@@ -45,6 +46,21 @@ export const UnifiedWorkspaceLayout: React.FC<UnifiedWorkspaceLayoutProps> = ({
   } = useWorkspaceLayoutLogic(currentUserEmail, initialViewId);
 
   const isLevel5 = userProfile.isFounder || userProfile.accessLevel >= 5;
+
+  const statuses = React.useMemo(() => getLicenseStatuses(), []);
+  const hasAlerts = hasExpiringLicenses(statuses);
+
+  const alertBadge = hasAlerts ? (
+    <span style={{
+      width: '10px',
+      height: '10px',
+      backgroundColor: '#EF4444',
+      borderRadius: '50%',
+      display: 'inline-block',
+      boxShadow: '0 0 8px #EF4444',
+      animation: 'pulse 2s infinite'
+    }} />
+  ) : null;
 
   return (
     <div
@@ -139,7 +155,10 @@ export const UnifiedWorkspaceLayout: React.FC<UnifiedWorkspaceLayoutProps> = ({
                   textTransform: 'uppercase',
                 }}
               >
-                <span>👑 [Managing Director Hub]</span>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                  <span>👑 [Managing Director Hub]</span>
+                  {alertBadge}
+                </div>
                 <span>{isMdHubOpen ? '▲' : '▼'}</span>
               </button>
 
@@ -167,7 +186,7 @@ export const UnifiedWorkspaceLayout: React.FC<UnifiedWorkspaceLayoutProps> = ({
                   </button>
 
                   <button
-                    onClick={() => navigate('/profile')}
+                    onClick={() => navigate('/owner/governance')}
                     style={{
                       width: '100%',
                       textAlign: 'left',

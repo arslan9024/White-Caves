@@ -74,5 +74,3 @@ export const HeroSection: FC = () => {
 };
 
 export default HeroSection;
-
-export default HeroSection;
