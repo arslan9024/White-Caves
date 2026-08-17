@@ -21,6 +21,7 @@ import { useUserRole, ROLE_LABELS } from '../../context/UserRoleContext';
 const OperationsDepartmentView = React.lazy(() => import('./OperationsDepartmentView'));
 const FinanceDepartmentView = React.lazy(() => import('./FinanceDepartmentView'));
 const DocumentGenerationPanel = React.lazy(() => import('../../components/crm/DocumentGenerationPanel'));
+const HenryDocumentStudio = React.lazy(() => import('../../components/crm/HenryDocumentStudio'));
 const AuditTrailPanel = React.lazy(() => import('../../components/crm/AuditTrailPanel'));
 const ComplianceDepartmentView = React.lazy(() => import('./ComplianceDepartmentView'));
 const MarketingDepartmentView = React.lazy(() => import('./MarketingDepartmentView'));
@@ -239,7 +240,12 @@ export const UnifiedDashboardPage: FC = () => {
 
         {activeDepartment === 'properties' && <PropertySearchPanel />}
         {activeDepartment === 'operations' && <ViewingSchedulerPanel />}
-        {activeDepartment === 'documents' && <DocumentGenerationPanel />}
+        {activeDepartment === 'documents' && (
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
+            <HenryDocumentStudio />
+            <DocumentGenerationPanel />
+          </div>
+        )}
         {activeDepartment === 'finance' && <CommissionManagementPanel />}
         {activeDepartment === 'marketing' && <MarketingDepartmentView />}
         {activeDepartment === 'executive' && <ExecutiveDepartmentView />}
