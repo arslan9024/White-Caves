@@ -6,6 +6,12 @@ export interface GlobalPropertyMock {
   beds: number;
   baths: number;
   sqft: number;
+  status?: string;
+  propertyType?: string;
+  community?: string;
+  stockImageCdnUrl?: string;
+  priceAED?: number;
+  features?: string[];
 }
 export const GLOBAL_PROPERTY_MOCKS: GlobalPropertyMock[] = [
   { id: "PROP-1", title: "Luxury Villa 1", location: "DAMAC Hills 2", price: 2010000, beds: 4, baths: 5, sqft: 3500 },

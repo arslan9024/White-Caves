@@ -80,7 +80,7 @@ const InteractiveMap = ({ onPropertySelect }: InteractiveMapProps) => {
       apiKey: import.meta.env.VITE_GOOGLE_MAPS_API_KEY || '',
       version: 'weekly',
     });
-    loader.load().catch(() => {
+    (loader as any).importLibrary('maps').catch(() => {
       // Silent fail — map degrades to SVG visual
     });
 

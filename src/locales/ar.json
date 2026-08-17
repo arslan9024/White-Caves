@@ -106,5 +106,26 @@
     "links_terms": "شروط الخدمة",
     "links_rera": "رخصة ريرا",
     "links_contact": "تواصل معنا"
+  },
+  "departments": {
+    "luxury_sales": "مبيعات العقارات الفاخرة والوساطة",
+    "off_plan": "تطوير المشاريع قيد الإنشاء",
+    "commercial_investment": "العقارات التجارية والاستثمار المؤسسي",
+    "residential_leasing": "إدارة المحافظ والتأجير السكني (إيجاري)",
+    "asset_facilities": "إدارة الأصول والمرافق (مركز داماك هيلز 2)",
+    "revenue_treasury": "الإيرادات والمالية والخزينة",
+    "performance_marketing": "التسويق وجذب العملاء المحتملين",
+    "corporate_comms": "الاتصالات المؤسسية وخدمة العملاء",
+    "executive_office": "المكتب التنفيذي والحوكمة المؤسسية",
+    "regulatory_rera": "الشؤون التنظيمية والامتثال لـ ريرا",
+    "conveyancing_transactions": "نقل الملكية وإدارة المعاملات",
+    "market_iot_intelligence": "ذكاء السوق وعلوم بيانات إنترنت الأشياء"
+  },
+  "assistants": {
+    "command_center_title": "🔱 مركز قيادة الذكاء الاصطناعي إيجيس 2.0",
+    "command_center_subtitle": "شبكة عصبية ذاتية التحكم تقود 35 مساعداً ذكياً عبر 12 قسماً مؤسسياً.",
+    "launch_agent": "تشغيل قمرة المساعد",
+    "status_optimal": "النظام في الحالة المثلى",
+    "active_agents": "35 وكيلاً ذكياً نشطاً"
   }
 }

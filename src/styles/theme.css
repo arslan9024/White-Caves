@@ -1,81 +1,83 @@
-:root {
-  /* ============================================
-     WHITE CAVES BRAND THEME - RED & WHITE
-     DO NOT CHANGE - Core Brand Colors
-     ============================================ */
+/* ==========================================================================
+   WHITE CAVES REAL ESTATE LLC — LUXURY THEME SYSTEM (LIGHT & DARK MODES)
+   ========================================================================== */
 
-  /* Primary Brand Colors — METALLIC GOLD (replaces legacy red) */
-  --color-primary: #EF4444 !important;
-  --color-primary-dark: #a8883a !important;
-  --color-primary-light: rgba(239, 68, 68, 0.12) !important;
-  --primary-color: #EF4444 !important;
-  --accent-gold: #EF4444 !important;
+/* --------------------------------------------------------------------------
+   1. GLOBAL ROOT / LIGHT MODE (Default)
+   -------------------------------------------------------------------------- */
+:root,
+[data-theme='light'] {
+  /* Brand Accents — Luxury Crimson Red */
+  --color-primary: #EF4444;
+  --color-primary-dark: #DC2626;
+  --color-primary-light: rgba(239, 68, 68, 0.12);
+  --primary-color: #EF4444;
+  --accent-gold: #EF4444;
+  --color-gold: #EF4444;
 
-  /* Neutral Colors - Always Light */
-  --color-white: #ffffff !important;
-  --color-off-white: #fafafa !important;
-  --color-black: #1a1a1a !important;
-  --color-dark-gray: #374151 !important;
-  --color-medium-gray: #6b7280 !important;
-  --color-light-gray: #f3f4f6 !important;
+  /* Neutral Base Palette */
+  --color-white: #FFFFFF;
+  --color-off-white: #FAFAFA;
+  --color-black: #0F172A;
+  --color-dark-gray: #334155;
+  --color-medium-gray: #64748B;
+  --color-light-gray: #F1F5F9;
 
-  /* Remove Gold - Replace with Red */
-  --color-gold: #EF4444 !important;
+  /* Functional Status Colors */
+  --color-success: #10B981;
+  --color-warning: #F59E0B;
+  --color-error: #EF4444;
+  --color-info: #3B82F6;
 
-  /* Status Colors */
-  --color-success: #EF4444 !important;
-  --color-warning: #EF4444 !important;
-  --color-error: #ef4444 !important;
-  --color-info: #EF4444 !important;
+  /* Light Theme Surfaces & Backgrounds */
+  --bg-primary: #FFFFFF;
+  --bg-secondary: #F8FAFC;
+  --bg-tertiary: #F1F5F9;
+  --bg-dark: #0F172A;
+  --bg-overlay: rgba(15, 23, 42, 0.6);
+  --bg-glass: rgba(255, 255, 255, 0.88);
+  --bg-card: #FFFFFF;
+  --bg-input: #FFFFFF;
+  --bg-hover: #F8FAFC;
+  --surface-primary: #FFFFFF;
+  --surface-secondary: #F8FAFC;
 
-  /* Backgrounds - ALWAYS LIGHT/WHITE */
-  --bg-primary: #ffffff !important;
-  --bg-secondary: #fafafa !important;
-  --bg-tertiary: #f5f5f5 !important;
-  --bg-dark: #ffffff !important;
-  --bg-overlay: rgba(0, 0, 0, 0.5) !important;
-  --bg-glass: rgba(255, 255, 255, 0.95) !important;
-  --bg-card: #ffffff !important;
-  --bg-input: #ffffff !important;
-  --bg-hover: rgba(239, 68, 68, 0.05) !important;
-  --surface-primary: #ffffff !important;
-  --surface-secondary: #fafafa !important;
+  /* High-Contrast Light Mode Typography */
+  --text-primary: #0F172A;
+  --text-secondary: #334155;
+  --text-muted: #64748B;
+  --text-inverse: #FFFFFF;
+  --text-link: #EF4444;
+  --text-link-hover: #DC2626;
 
-  /* Text Colors - Dark on Light */
-  --text-primary: #1a1a1a !important;
-  --text-secondary: #374151 !important;
-  --text-muted: #6b7280 !important;
-  --text-inverse: #ffffff !important;
-  --text-link: #EF4444 !important;
-
-  /* Borders */
-  --border-color: #e5e7eb !important;
-  --border-light: rgba(0, 0, 0, 0.08) !important;
-  --border-input: #d1d5db !important;
+  /* Light Theme Borders */
+  --border-color: #E2E8F0;
+  --border-light: #F1F5F9;
+  --border-input: #CBD5E1;
   --border-radius: 8px;
   --border-radius-sm: 4px;
   --border-radius-lg: 12px;
   --border-radius-xl: 16px;
   --border-radius-full: 9999px;
 
-  /* Shadows */
+  /* Elevation Shadows */
   --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
-  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.08), 0 2px 4px -1px rgba(0, 0, 0, 0.04);
+  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.08), 0 4px 6px -2px rgba(0, 0, 0, 0.04);
   --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
-  --shadow-red: 0 0 20px rgba(176, 55, 55, 0.15);
-  --shadow-card: 0 1px 3px rgba(0, 0, 0, 0.1), 0 1px 2px rgba(0, 0, 0, 0.06);
+  --shadow-red: 0 0 20px rgba(239, 68, 68, 0.2);
+  --shadow-card: 0 1px 3px rgba(0, 0, 0, 0.05), 0 1px 2px rgba(0, 0, 0, 0.03);
 
-  /* Transitions */
+  /* Animation Timings */
   --transition-fast: 0.15s ease;
   --transition-normal: 0.3s ease;
   --transition-slow: 0.5s ease;
 
-  /* Typography */
+  /* Typography Fonts */
   --font-heading: 'Montserrat', sans-serif;
-  --font-body: 'Open Sans', sans-serif;
+  --font-body: 'Inter', 'Open Sans', sans-serif;
 
-  /* Spacing */
+  /* Spacing Scale */
   --spacing-xs: 4px;
   --spacing-sm: 8px;
   --spacing-md: 16px;
@@ -84,35 +86,89 @@
   --spacing-2xl: 48px;
   --spacing-3xl: 64px;
 
-  /* Z-Index */
+  /* Layering Z-Indices */
   --z-dropdown: 100;
   --z-sticky: 200;
   --z-modal: 300;
   --z-toast: 400;
   --z-navbar: 1000;
 
-  /* Navigation - Light with Red accents */
-  --nav-bg: #ffffff !important;
-  --nav-text: #1a1a1a !important;
-  --nav-text-muted: #6b7280 !important;
+  /* Navigation */
+  --nav-bg: #FFFFFF;
+  --nav-text: #0F172A;
+  --nav-text-muted: #64748B;
 }
 
-/* FORCE LIGHT MODE - Override any dark mode attempts */
+/* --------------------------------------------------------------------------
+   2. DARK LUXURY THEME (Obsidian Midnight Palette)
+   -------------------------------------------------------------------------- */
 [data-theme='dark'],
-[data-theme='dark'] *,
-.dark-mode,
-.dark-mode * {
-  --bg-primary: #ffffff !important;
-  --bg-secondary: #fafafa !important;
-  --bg-tertiary: #f5f5f5 !important;
-  --bg-dark: #ffffff !important;
-  --bg-card: #ffffff !important;
-  --bg-input: #ffffff !important;
-  --text-primary: #1a1a1a !important;
-  --text-secondary: #374151 !important;
-  --nav-bg: #ffffff !important;
+.dark-mode {
+  /* Brand Accents — Bright Crimson */
+  --color-primary: #EF4444;
+  --color-primary-dark: #DC2626;
+  --color-primary-light: rgba(239, 68, 68, 0.2);
+  --primary-color: #EF4444;
+  --accent-gold: #EF4444;
+  --color-gold: #EF4444;
+
+  /* Neutral Base Palette */
+  --color-white: #FFFFFF;
+  --color-off-white: #111827;
+  --color-black: #0B0F17;
+  --color-dark-gray: #1F2937;
+  --color-medium-gray: #94A3B8;
+  --color-light-gray: #334155;
+
+  /* Functional Status Colors */
+  --color-success: #34D399;
+  --color-warning: #FBBF24;
+  --color-error: #F87171;
+  --color-info: #60A5FA;
+
+  /* Dark Theme Surfaces & Backgrounds */
+  --bg-primary: #0B0F17;
+  --bg-secondary: #111827;
+  --bg-tertiary: #1F2937;
+  --bg-dark: #0B0F17;
+  --bg-overlay: rgba(0, 0, 0, 0.85);
+  --bg-glass: rgba(17, 24, 39, 0.9);
+  --bg-card: #111827;
+  --bg-input: #1F2937;
+  --bg-hover: rgba(239, 68, 68, 0.12);
+  --surface-primary: #0B0F17;
+  --surface-secondary: #111827;
+
+  /* Crisp High-Contrast Dark Mode Typography */
+  --text-primary: #F8FAFC;
+  --text-secondary: #E2E8F0;
+  --text-muted: #94A3B8;
+  --text-inverse: #0B0F17;
+  --text-link: #EF4444;
+  --text-link-hover: #F87171;
+
+  /* Dark Theme Borders */
+  --border-color: rgba(255, 255, 255, 0.1);
+  --border-light: rgba(255, 255, 255, 0.06);
+  --border-input: rgba(255, 255, 255, 0.15);
+
+  /* Elevation Shadows with Subtle Glows */
+  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.6);
+  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.7), 0 2px 4px -1px rgba(0, 0, 0, 0.5);
+  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.8), 0 4px 6px -2px rgba(0, 0, 0, 0.6);
+  --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.9), 0 10px 10px -5px rgba(0, 0, 0, 0.7);
+  --shadow-red: 0 0 25px rgba(239, 68, 68, 0.3);
+  --shadow-card: 0 4px 20px -2px rgba(0, 0, 0, 0.6), 0 0 0 1px rgba(255, 255, 255, 0.05);
+
+  /* Navigation in Dark Mode */
+  --nav-bg: #0B0F17;
+  --nav-text: #F8FAFC;
+  --nav-text-muted: #94A3B8;
 }
 
+/* --------------------------------------------------------------------------
+   3. BASE STYLES & LAYOUT
+   -------------------------------------------------------------------------- */
 * {
   box-sizing: border-box;
 }
@@ -132,6 +188,14 @@ body {
   transition:
     background-color var(--transition-normal),
     color var(--transition-normal);
+}
+
+.theme-transition,
+.theme-transition *,
+.theme-transition *:before,
+.theme-transition *:after {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+  transition-delay: 0 !important;
 }
 
 .container {
@@ -166,6 +230,9 @@ body {
   }
 }
 
+/* --------------------------------------------------------------------------
+   4. LUXURY CARD & BUTTON COMPONENTS
+   -------------------------------------------------------------------------- */
 .card {
   background: var(--bg-card);
   border: 1px solid var(--border-color);
@@ -187,7 +254,7 @@ body {
   padding: var(--spacing-sm) var(--spacing-md);
   font-family: var(--font-body);
   font-size: 0.9rem;
-  font-weight: 500;
+  font-weight: 600;
   border-radius: var(--border-radius);
   border: none;
   cursor: pointer;
@@ -197,7 +264,7 @@ body {
 
 .btn-primary {
   background: var(--color-primary);
-  color: var(--color-white);
+  color: #FFFFFF;
 }
 
 .btn-primary:hover {
@@ -224,9 +291,10 @@ body {
 
 .btn-outline:hover {
   background: var(--color-primary);
-  color: var(--color-white);
+  color: #FFFFFF;
 }
 
+/* Form Controls */
 input,
 select,
 textarea {
@@ -246,7 +314,7 @@ select:focus,
 textarea:focus {
   outline: none;
   border-color: var(--color-primary);
-  box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.1);
+  box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.2);
 }
 
 input::placeholder,
@@ -254,6 +322,9 @@ textarea::placeholder {
   color: var(--text-muted);
 }
 
+/* --------------------------------------------------------------------------
+   5. UTILITY CLASSES & GRIDS
+   -------------------------------------------------------------------------- */
 .grid {
   display: grid;
   gap: var(--spacing-md);
@@ -340,16 +411,16 @@ textarea::placeholder {
 }
 
 .bg-success {
-  background: rgba(239, 68, 68, 0.1);
+  background: rgba(16, 185, 129, 0.12);
 }
 .bg-warning {
-  background: rgba(245, 158, 11, 0.1);
+  background: rgba(245, 158, 11, 0.12);
 }
 .bg-error {
-  background: rgba(239, 68, 68, 0.1);
+  background: rgba(239, 68, 68, 0.12);
 }
 .bg-info {
-  background: rgba(59, 130, 246, 0.1);
+  background: rgba(59, 130, 246, 0.12);
 }
 
 .mt-sm {
@@ -430,6 +501,9 @@ textarea::placeholder {
   }
 }
 
+/* --------------------------------------------------------------------------
+   6. STATS & TABLES
+   -------------------------------------------------------------------------- */
 .stat-card {
   background: var(--bg-card);
   border: 1px solid var(--border-color);
@@ -541,14 +615,14 @@ textarea::placeholder {
   align-items: center;
   padding: 2px 8px;
   font-size: 0.75rem;
-  font-weight: 500;
+  font-weight: 600;
   border-radius: var(--border-radius-full);
   text-transform: uppercase;
   letter-spacing: 0.3px;
 }
 
 .badge-success {
-  background: rgba(239, 68, 68, 0.15);
+  background: rgba(16, 185, 129, 0.15);
   color: var(--color-success);
 }
 
@@ -568,7 +642,7 @@ textarea::placeholder {
 }
 
 .badge-primary {
-  background: rgba(220, 38, 38, 0.15);
+  background: rgba(239, 68, 68, 0.15);
   color: var(--color-primary);
 }
 
@@ -595,7 +669,7 @@ textarea::placeholder {
   display: flex;
   align-items: center;
   justify-content: center;
-  color: var(--color-white);
+  color: #FFFFFF;
   font-weight: 600;
   font-size: 0.9rem;
   overflow: hidden;

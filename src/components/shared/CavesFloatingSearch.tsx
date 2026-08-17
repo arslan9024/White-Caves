@@ -188,7 +188,7 @@ export const CavesFloatingSearch: FC<CavesFloatingSearchProps> = ({
                         </span>
                       </div>
                       <div className="card-body">
-                        <div className="price">AED {property.priceAED.toLocaleString()}</div>
+                        <div className="price">AED {(property.priceAED || 0).toLocaleString()}</div>
                         <h4 className="title">{property.title}</h4>
                         <div className="community">📍 {property.community}</div>
                         <div className="meta">

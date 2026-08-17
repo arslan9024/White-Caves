@@ -4,6 +4,7 @@ import { createLogger } from '../../utils/logger';
 import { authFetch } from '../../utils/authFetch';
 import { useSelector } from 'react-redux';
 import type { RootState } from '../../store/store';
+import { exportToCsv } from '../../utils/exportUtils';
 import './WhatsAppAnalyticsPage.css';
 
 const log = createLogger('WhatsAppAnalytics');
@@ -28,6 +29,25 @@ const WhatsAppAnalyticsPage: FC = () => {
   });
   const [loading, setLoading] = useState<boolean>(false);
   const [dateRange, setDateRange] = useState<string>('7d');
+
+  const handleExportCsv = () => {
+    exportToCsv(
+      `WhatsApp_Analytics_Report_${dateRange}_${new Date().toISOString().split('T')[0]}`,
+      [
+        { label: 'Metric', key: 'metric' },
+        { label: 'Value', key: 'value' },
+        { label: 'Date Range', key: 'range' },
+        { label: 'Exported At', key: 'timestamp' },
+      ],
+      [
+        { metric: 'Total Messages', value: analytics.totalMessages, range: dateRange, timestamp: new Date().toISOString() },
+        { metric: 'Sent Messages', value: analytics.sentMessages, range: dateRange, timestamp: new Date().toISOString() },
+        { metric: 'Received Messages', value: analytics.receivedMessages, range: dateRange, timestamp: new Date().toISOString() },
+        { metric: 'Average Response Time', value: analytics.averageResponseTime, range: dateRange, timestamp: new Date().toISOString() },
+        { metric: 'Top Keywords', value: analytics.topKeywords.join('; '), range: dateRange, timestamp: new Date().toISOString() },
+      ]
+    );
+  };
 
   useEffect(() => {
     if (!user || (user.role !== 'owner' && user.role !== 'admin')) {
@@ -68,14 +88,36 @@ const WhatsAppAnalyticsPage: FC = () => {
           <p>Insights into your WhatsApp communications</p>
         </header>
 
-        <div className="analytics-controls">
-          <label htmlFor="wa-analytics-date-range">Date Range:</label>
-          <select id="wa-analytics-date-range" value={dateRange} onChange={(e: React.ChangeEvent<HTMLSelectElement>) => setDateRange(e.target.value)}>
-            <option value="7d">Last 7 Days</option>
-            <option value="30d">Last 30 Days</option>
-            <option value="90d">Last 90 Days</option>
-            <option value="1y">Last Year</option>
-          </select>
+        <div className="analytics-controls" style={{ display: 'flex', gap: '1rem', alignItems: 'center', justifyContent: 'space-between' }}>
+          <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
+            <label htmlFor="wa-analytics-date-range">Date Range:</label>
+            <select id="wa-analytics-date-range" value={dateRange} onChange={(e: React.ChangeEvent<HTMLSelectElement>) => setDateRange(e.target.value)}>
+              <option value="7d">Last 7 Days</option>
+              <option value="30d">Last 30 Days</option>
+              <option value="90d">Last 90 Days</option>
+              <option value="1y">Last Year</option>
+            </select>
+          </div>
+          <button
+            type="button"
+            onClick={handleExportCsv}
+            disabled={loading}
+            style={{
+              padding: '0.5rem 1.25rem',
+              backgroundColor: '#B45309',
+              color: '#FFFFFF',
+              border: 'none',
+              borderRadius: '8px',
+              fontWeight: 600,
+              cursor: 'pointer',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '0.4rem',
+              transition: 'background 0.2s ease',
+            }}
+          >
+            📥 Export CSV Report
+          </button>
         </div>
 
         {loading ? (

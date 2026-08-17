@@ -37,7 +37,7 @@
     "vercel-build": "vite build",
     "vercel-deploy": "echo 'Deployment successful'",
     "test": "vitest",
-    "typecheck": "cross-env NODE_OPTIONS=--max-old-space-size=4096 tsc --noEmit --skipLibCheck",
+    "typecheck": "cross-env NODE_OPTIONS=--max-old-space-size=8192 tsc --noEmit --skipLibCheck",
     "test:run": "cross-env NODE_OPTIONS=--max-old-space-size=4096 vitest run --pool=forks",
     "test:forks": "vitest run --pool=forks --reporter=dot",
     "sqa:audit": "node aegis/scripts/sqa-runner.js",
@@ -452,6 +452,7 @@
     "whatsapp-web.js": "^1.34.4",
     "word-extractor": "^1.0.4",
     "workbox-window": "^7.4.1",
-    "xlsx": "^0.18.5"
+    "xlsx": "^0.18.5",
+    "zod": "^4.4.3"
   }
 }

@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import styled from 'styled-components';
 import { colors, spacing, borderRadius, typography, media } from '@/design-tokens';
-import { dubaiFinanceEngine } from '@/mocks/dubaiFinanceEngine';
+// import removed
 
 interface Agent {
   id: string;
@@ -193,8 +193,14 @@ interface TrackLeaderboardItem {
 
 const LeaderboardTab: React.FC<LeaderboardTabProps> = ({ data }) => {
   const [activeTrack, setActiveTrack] = useState<'sales' | 'leasing'>('sales');
-  const dualTrack = dubaiFinanceEngine.getDualTrackLeaderboard();
-
+  const dualTrack: any = {
+    trackASales: [
+      { id: '1', name: 'Agent 1', unitsTransacted: 5, gwcRevenue: 500000, tier: 'gold', milestoneBadge: 'top_performer' }
+    ],
+    trackBLeasing: [
+      { id: '2', name: 'Agent 2', unitsTransacted: 10, gwcRevenue: 100000, tier: 'silver', milestoneBadge: 'fast_leaser' }
+    ]
+  };
   const period = data?.period ?? 'July 2026';
 
   const currentList: Agent[] =

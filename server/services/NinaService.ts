@@ -10,7 +10,7 @@
  * 6. Dispatches auto-replies via getLindaClient() or flags for human escalation
  */
 
-import { getLindaClient } from './whatsapp/lindaClient.js';
+import { getWhatsAppEngine } from './whatsapp/WhatsAppEngine.js';
 import { prisma } from '../database.js';
 
 export interface NinaMessagePayload {
@@ -289,7 +289,7 @@ export class NinaService {
    * Listen to active Linda WhatsApp client and process inbound messages automatically
    */
   public static initWhatsAppListener(): void {
-    const client = getLindaClient();
+    const client = getWhatsAppEngine('nina-md-primary');
     client.on('message', async (msg) => {
       if (msg.isFromMe || !msg.body) return;
 
@@ -308,6 +308,6 @@ export class NinaService {
         }
       }
     });
-    console.log('[Nina] Automated WhatsApp NLP listener attached to Linda transport layer');
+    console.log('[Nina] Automated WhatsApp NLP listener attached to WhatsAppEngine (nina-md-primary)');
   }
 }

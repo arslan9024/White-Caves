@@ -521,7 +521,7 @@ export const OwnerAvatar = styled.div`
   width: 48px;
   height: 48px;
   border-radius: ${radius.xl};
-  background: ${colors.luxury.goldDark};
+  background: #B45309;
   display: flex;
   align-items: center;
   justify-content: center;

@@ -17,7 +17,7 @@ export const useBotData = () => {
   // Real API Sync to check live WhatsApp localAuth state
   const syncLiveSessionStatus = useCallback(async () => {
     try {
-      const res = await fetch('/api/v1/whatsapp/status');
+      const res = await fetch('/api/whatsapp-engine/nina-md-primary/status');
       if (res.ok) {
         const data = await res.json();
         if (data.isConnected || data.status === 'READY') {

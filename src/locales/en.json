@@ -139,5 +139,26 @@
     "links_terms": "Terms of Service",
     "links_rera": "RERA License",
     "links_contact": "Contact Us"
+  },
+  "departments": {
+    "luxury_sales": "Luxury Sales & Brokerage",
+    "off_plan": "Strategic Off-Plan Developments",
+    "commercial_investment": "Commercial Real Estate & Investment",
+    "residential_leasing": "Portfolio Management & Residential Leasing",
+    "asset_facilities": "Asset Management & Facilities (DH2 Hub)",
+    "revenue_treasury": "Revenue, Finance & Treasury",
+    "performance_marketing": "Performance Marketing & Lead Acquisition",
+    "corporate_comms": "Corporate Communications & Client Experience",
+    "executive_office": "Executive Office & Corporate Governance",
+    "regulatory_rera": "Regulatory Affairs & RERA Compliance",
+    "conveyancing_transactions": "Conveyancing & Transaction Management",
+    "market_iot_intelligence": "Market Intelligence & IoT Data Science"
+  },
+  "assistants": {
+    "command_center_title": "🔱 AEGIS 2.0 AI Command Center",
+    "command_center_subtitle": "Autonomous neural grid commanding 35 enterprise AI assistants across 12 corporate departments.",
+    "launch_agent": "Launch Agent Cockpit",
+    "status_optimal": "System Optimal",
+    "active_agents": "35 Autonomous Agents Live"
   }
 }

@@ -27,8 +27,8 @@ export function useProfileScheduler(): ProfileSchedulerState {
   });
 
   useEffect(() => {
-    const mdUser = companyLedger.personnel?.find((p) => p.email === 'arslanmalikgoraha@gmail.com');
-    const mdDocs = mdUser?.documents || companyLedger.credentials || [];
+    const mdUser = companyLedger.find((p: any) => p.email === 'arslanmalikgoraha@gmail.com');
+    const mdDocs = (mdUser as any)?.documents || [];
     const now = new Date();
 
     const activeAlerts: DocumentExpiryAlert[] = [];

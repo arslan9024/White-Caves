@@ -34,9 +34,18 @@ export type GatewayStatus = 'UNLINKED_ERROR' | 'ESTABLISHING_LINK_STREAM' | 'LIV
 
 export const NinaWhatsAppBotCRM: React.FC = () => {
   // Managing Director (MD) Sovereign Access Security Guard
-  const activeRole = useSelector((state: RootState) => state.navigation?.activeRole || 'md');
+  const activeRole = useSelector((state: RootState) => state.navigation?.activeRole ?? '');
   const sessionUser = useSelector(selectSessionUser);
-  const isMDAuthorized = activeRole === 'md' || activeRole === 'superuser' || (sessionUser && (sessionUser.email === 'arslan9024@gmail.com' || sessionUser.role === 'md'));
+  const isMDAuthorized =
+    activeRole === 'md' ||
+    activeRole === 'owner' ||
+    activeRole === 'superuser' ||
+    (sessionUser &&
+      (sessionUser.email === 'arslanmalikgoraha@gmail.com' ||
+        sessionUser.email === 'the.white.caves@gmail.com' ||
+        sessionUser.role === 'md' ||
+        sessionUser.role === 'owner' ||
+        (sessionUser as { accessLevel?: number }).accessLevel === 5));
   // RUP 3-Stage Phase Gate State (1: Inception/Auth, 2: Elaboration/Features, 3: Construction/Conversations)
   const [currentStage, setCurrentStage] = useState<RUPStage>(1);
   const [isConnected, setIsConnected] = useState<boolean>(false);
@@ -84,7 +93,7 @@ export const NinaWhatsAppBotCRM: React.FC = () => {
     setIsGenerating(true);
     try {
       const cleanPhone = phoneNumber.replace(/[^0-9]/g, '');
-      const res = await fetch('/api/whatsapp-engine/pair-code', {
+      const res = await fetch('/api/whatsapp-engine/nina-md-primary/pair-code', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ phoneNumber: cleanPhone || '971505760056' }),
@@ -118,33 +127,26 @@ export const NinaWhatsAppBotCRM: React.FC = () => {
   const initiateDeviceLinkSequence = async () => {
     setGatewayStatus('ESTABLISHING_LINK_STREAM');
     addHandshakeLog('Initializing full-duplex WhatsApp LocalAuth channel...');
-    ninaSpeak('AUTHENTICATION REQUEST VALIDATED! INITIALIZING CORE COMMUNICATION LINKS!', setSubtitleText);
+    ninaSpeak('AUTHENTICATION REQUEST VALIDATED! WAITING FOR HARDWARE LINK...', setSubtitleText);
 
-    try {
-      const res = await fetch('/api/whatsapp-engine/status');
-      const json = await res.json();
-      if (json.data?.isConnected) {
-        setIsConnected(true);
-        setGatewayStatus('LIVE_CONNECTED_STREAM');
-        addHandshakeLog('STATE 3: Hardware link ready and active on line ' + phoneNumber);
-        setCurrentStage(2);
-        return;
+    const pollInterval = setInterval(async () => {
+      try {
+        const res = await fetch('/api/whatsapp-engine/nina-md-primary/status');
+        const json = await res.json();
+        if (json.data?.isConnected || json.data?.status === 'READY') {
+          clearInterval(pollInterval);
+          setIsConnected(true);
+          setGatewayStatus('LIVE_CONNECTED_STREAM');
+          addHandshakeLog('STATE 3: Hardware link ready and active on line ' + phoneNumber);
+          ninaSpeak('GATEWAY CONNECTION FULLY SECURED! UNLOCKING STAGE 2 FEATURE MATRIX!', setSubtitleText);
+          setCurrentStage(2);
+        } else {
+          addHandshakeLog('STATE 2: Waiting for device authentication... Status: ' + (json.data?.status || 'UNKNOWN'));
+        }
+      } catch (e) {
+        // Keep polling
       }
-    } catch (e) {
-      // Fallback
-    }
-
-    setTimeout(() => {
-      addHandshakeLog('STATE 2: Device authentication validated via LocalAuth.');
-    }, 1200);
-
-    setTimeout(() => {
-      setIsConnected(true);
-      setGatewayStatus('LIVE_CONNECTED_STREAM');
-      addHandshakeLog('STATE 3: Hardware link ready and active on line ' + phoneNumber);
-      ninaSpeak('GATEWAY CONNECTION FULLY SECURED! UNLOCKING STAGE 2 FEATURE MATRIX!', setSubtitleText);
-      setCurrentStage(2);
-    }, 2500);
+    }, 3000);
   };
 
   // Trigger Speech on Initial Mount
@@ -588,6 +590,22 @@ export const NinaWhatsAppBotCRM: React.FC = () => {
                 <h4 style={{ margin: '2px 0 0', fontSize: '1.1rem', fontWeight: 800, color: '#065F46' }}>
                   Configure Active Bot Features & DAMAC Hills 2 Auto-Reply Rules
                 </h4>
+                {currentStage === 2 && (
+                  <>
+                    <button className={`nina-tab ${selectedFeatureTab === 'autoreply' ? 'active' : ''}`} onClick={() => setSelectedFeatureTab('autoreply')}>
+                      <MessageSquare size={16} /> Live Interception Feed
+                    </button>
+                    <button className={`nina-tab ${selectedFeatureTab === 'native' ? 'active' : ''}`} onClick={() => setSelectedFeatureTab('native')}>
+                      <Terminal size={16} /> VIP Intelligence
+                    </button>
+                    <button className={`nina-tab ${selectedFeatureTab === 'analytics' ? 'active' : ''}`} onClick={() => setSelectedFeatureTab('analytics')}>
+                      <ShieldCheck size={16} /> Daily MD Briefing
+                    </button>
+                    <button className={`nina-tab ${selectedFeatureTab === 'settings' ? 'active' : ''}`} onClick={() => setSelectedFeatureTab('settings')}>
+                      <Sliders size={16} /> Executive Settings
+                    </button>
+                  </>
+                )}
               </div>
 
               <button
@@ -608,36 +626,6 @@ export const NinaWhatsAppBotCRM: React.FC = () => {
               >
                 <span>Proceed to Stage 3: Live Conversations</span> <ArrowRight size={18} />
               </button>
-            </div>
-
-            {/* Stage 2 Feature Selection Sub-Navigation Tabs */}
-            <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.5rem' }}>
-              {[
-                { id: 'autoreply', label: '⚡ 1. AI Auto-Reply & 9,210 DLD Matcher' },
-                { id: 'engine', label: '⚙️ 2. Native whatsapp-web.js Engine' },
-                { id: 'sessions', label: '📱 3. Active Sessions' },
-                { id: 'bots', label: '🤖 4. Automated Bot Flows' },
-                { id: 'code', label: '📝 5. Code Modules' },
-                { id: 'analytics', label: '📊 6. Performance Analytics' },
-                { id: 'settings', label: '⚙️ 7. Bot Settings' },
-              ].map(tab => (
-                <button
-                  key={tab.id}
-                  onClick={() => setSelectedFeatureTab(tab.id)}
-                  style={{
-                    background: selectedFeatureTab === tab.id ? '#06B6D4' : '#F8FAFC',
-                    color: selectedFeatureTab === tab.id ? '#FFFFFF' : '#334155',
-                    border: selectedFeatureTab === tab.id ? '1px solid #06B6D4' : '1px solid #E2E8F0',
-                    borderRadius: '8px',
-                    padding: '8px 14px',
-                    fontSize: '0.82rem',
-                    fontWeight: 800,
-                    cursor: 'pointer',
-                  }}
-                >
-                  {tab.label}
-                </button>
-              ))}
             </div>
 
             {/* Render Active Stage 2 Feature Sub-View */}
@@ -779,23 +767,47 @@ export const NinaWhatsAppBotCRM: React.FC = () => {
           }}
         >
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '8px' }}>
-            <span style={{ fontSize: '0.82rem', fontWeight: 700, color: '#333' }}>WhatsApp Gateway</span>
-            <span
-              style={{
-                padding: '4px 9px',
-                borderRadius: '12px',
-                fontSize: '0.7rem',
-                fontWeight: 'bold',
-                backgroundColor: isConnected ? '#E8F5E9' : '#FFEBEE',
-                color: isConnected ? '#2E7D32' : '#C62828',
+            <h2 style={{ margin: 0, fontSize: '1.25rem', fontWeight: 700, color: '#FFFFFF' }}>
+              Nina Executive Briefing Room
+            </h2>
+            <div style={{ display: 'flex', gap: '0.5rem', marginTop: '0.25rem' }}>
+              <span style={{ fontSize: '0.75rem', background: 'rgba(239, 68, 68, 0.2)', color: '#EF4444', padding: '2px 8px', borderRadius: '12px', fontWeight: 600 }}>Sovereign Mode</span>
+              <span style={{ fontSize: '0.75rem', background: 'rgba(212, 175, 55, 0.2)', color: '#D4AF37', padding: '2px 8px', borderRadius: '12px', fontWeight: 600 }}>MD Access: Verified</span>
+            </div>
+          </div>
+          
+          <div style={{ display: 'flex', gap: '1rem', alignItems: 'center' }}>
+            <button 
+              onClick={toggleAudioMute}
+              style={{ 
+                background: 'transparent', 
+                border: '1px solid rgba(255,255,255,0.2)', 
+                color: 'white', 
+                padding: '8px', 
+                borderRadius: '50%',
+                cursor: 'pointer'
               }}
             >
-              {isConnected ? 'STAGE 3 READY' : 'STAGE 1 AUTH'}
-            </span>
-          </div>
-
-          <div style={{ fontSize: '0.75rem', color: '#64748B', marginBottom: '10px' }}>
-            Bound Phone: <strong style={{ color: '#D4AF37' }}>+971 50 576 0056</strong>
+              {isAudioMuted ? <VolumeX size={18} /> : <Volume2 size={18} />}
+            </button>
+            <button 
+              style={{
+                background: 'rgba(239, 68, 68, 0.15)',
+                border: '1px solid #EF4444',
+                color: '#EF4444',
+                padding: '8px 16px',
+                borderRadius: '8px',
+                fontWeight: 600,
+                fontSize: '0.85rem',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '6px',
+                cursor: 'pointer'
+              }}
+            >
+              <ShieldCheck size={16} />
+              Ghost Mode (Intervention)
+            </button>
           </div>
 
           <button
@@ -812,7 +824,7 @@ export const NinaWhatsAppBotCRM: React.FC = () => {
               cursor: 'pointer',
             }}
           >
-            {isConnected ? 'Stage 1 Verified · Stage 2 & 3 Unlocked' : 'Confirm Stage 1 Device Auth'}
+            {isConnected ? 'Verified · Stage 2 & 3 Unlocked' : 'Confirm Stage 1 Device Auth'}
           </button>
         </div>
       </div>

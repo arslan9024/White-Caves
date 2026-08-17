@@ -1,9 +1,11 @@
 import React, { FC } from 'react';
+import { Sun, Moon } from 'lucide-react';
 import { 
   NavbarContainer, 
   OverhangingLogoWrapper, 
   NavGroup, 
   NavLink, 
+  ThemeToggleBtn,
   ImpersonationSwitch 
 } from './TopNavbar.style';
 import { useTopNavbarLogic, TopNavbarProps } from './TopNavbar.logic';
@@ -12,6 +14,8 @@ export const TopNavbar: FC<TopNavbarProps> = (props) => {
   const {
     scrolled,
     currentPath,
+    isDark,
+    toggleTheme,
     impersonationLevel,
     handleNavigate,
     handleImpersonationChange
@@ -25,6 +29,7 @@ export const TopNavbar: FC<TopNavbarProps> = (props) => {
       style={{
         boxShadow: scrolled ? '0 4px 20px rgba(0, 0, 0, 0.08)' : '0 4px 20px rgba(0, 0, 0, 0.02)',
       }}
+      data-testid="top-navbar"
     >
       {/* Left Navigation Group */}
       <NavGroup>
@@ -41,20 +46,21 @@ export const TopNavbar: FC<TopNavbarProps> = (props) => {
           Primary Market
         </NavLink>
         <NavLink 
-          $active={currentPath === '/secondary'} 
-          onClick={() => handleNavigate('/secondary')}
+          $active={currentPath === '/properties'} 
+          onClick={() => handleNavigate('/properties')}
         >
           Secondary Market
         </NavLink>
       </NavGroup>
 
-      {/* Central Overhanging Logo */}
+      {/* Central Overhanging Logo (64px, 50% overhang) */}
       <OverhangingLogoWrapper
         whileHover={{ scale: 1.05 }}
         whileTap={{ scale: 0.95 }}
         onClick={() => handleNavigate('/')}
+        title="White Caves Real Estate LLC"
       >
-        <img src="/company-logo.jpg" alt="White Caves Corporate" />
+        <img src="/company-logo.jpg" alt="White Caves Logo" />
       </OverhangingLogoWrapper>
 
       {/* Right Navigation Group & Executive Tools */}
@@ -71,6 +77,15 @@ export const TopNavbar: FC<TopNavbarProps> = (props) => {
         >
           Executive Profile
         </NavLink>
+
+        {/* Binary Theme Switcher (Light = Crisp White / Dark = Deep Slate) */}
+        <ThemeToggleBtn 
+          onClick={toggleTheme} 
+          title={isDark ? 'Switch to Light Mode' : 'Switch to Dark Mode'}
+          data-testid="theme-toggle-btn"
+        >
+          {isDark ? <Sun size={18} /> : <Moon size={18} />}
+        </ThemeToggleBtn>
 
         {/* Ghost Session Impersonation Switch (Visible only for MD Mode) */}
         {props.isMDMode && (

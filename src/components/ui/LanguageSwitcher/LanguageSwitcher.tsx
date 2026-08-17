@@ -11,20 +11,24 @@ interface LanguageSwitcherProps {
 /**
  * LanguageSwitcher
  * Renders a compact EN / AR toggle button.
- * Clicking it calls `toggleLanguage()` from LanguageContext, which also:
+ * Clicking it toggles between English and Arabic, which also:
  *   - sets `dir="rtl"` / `dir="ltr"` on <html>
  *   - switches font-family to Cairo (Arabic) or Inter/Montserrat (English)
  *   - persists the choice to localStorage
  */
 const LanguageSwitcher: React.FC<LanguageSwitcherProps> = ({ className }) => {
-  const { language, toggleLanguage } = useLanguage();
+  const { language, setLanguage } = useLanguage();
   const isArabic = language === LANGUAGES.AR;
+
+  const handleToggle = () => {
+    setLanguage(language === LANGUAGES.EN ? LANGUAGES.AR : LANGUAGES.EN);
+  };
 
   return (
     <button
       type="button"
       className={`lang-switcher${isArabic ? ' lang-switcher--ar' : ''}${className ? ` ${className}` : ''}`}
-      onClick={toggleLanguage}
+      onClick={handleToggle}
       aria-label={isArabic ? 'Switch to English' : 'التبديل إلى العربية'}
       title={isArabic ? 'Switch to English' : 'التبديل إلى العربية'}
     >

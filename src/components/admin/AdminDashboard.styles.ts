@@ -785,7 +785,7 @@ export const ChartPlaceholder = styled.div`
 export const ChartBar = styled.div<{ $height?: string }>`
   width: 20%;
   height: ${props => props.$height || '50%'};
-  background: ${colors.luxury.goldDark};
+  background: #B45309;
   border-radius: ${radius.sm} ${radius.sm} 0 0;
   transition: ${transitions.hover};
 

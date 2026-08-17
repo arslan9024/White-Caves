@@ -41,7 +41,7 @@ export const REAL_ESTATE_ROLES: RoleDefinition[] = [
     id: 'managing_director',
     name: 'Managing Director',
     icon: Crown,
-    color: colors.roles.gold,
+    color: '#F59E0B',
     description: 'Full access to all features, analytics, and settings',
     permissions: ['*'],
     dashboardPath: '/md/dashboard',

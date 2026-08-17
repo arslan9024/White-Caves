@@ -1,4 +1,6 @@
-export const CREATOR_SUPERUSER_EMAIL = (import.meta.env.VITE_CREATOR_SUPERUSER_EMAIL ?? '')
+export const CREATOR_SUPERUSER_EMAIL = (
+  import.meta.env.VITE_CREATOR_SUPERUSER_EMAIL || 'arslanmalikgoraha@gmail.com'
+)
   .toLowerCase()
   .trim();
 export const CANONICAL_SUPERUSER_ROLE = 'lion';
@@ -26,7 +28,9 @@ export function isCreatorSuperUserEmail(email?: string | null): boolean {
   if (normalizedEmail === 'arslanmalikgoraha@gmail.com') return true;
 
   // Read env var lazily so vi.stubEnv works correctly in tests
-  const configured = (import.meta.env.VITE_CREATOR_SUPERUSER_EMAIL ?? '').toLowerCase().trim();
+  const configured = (import.meta.env.VITE_CREATOR_SUPERUSER_EMAIL || CREATOR_SUPERUSER_EMAIL)
+    .toLowerCase()
+    .trim();
   if (!configured) return false;
   return normalizedEmail === configured;
 }

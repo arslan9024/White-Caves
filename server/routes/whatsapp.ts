@@ -1,16 +1,22 @@
-import { Router, Request, Response } from 'express';
-import { getLindaClient, LindaStatus } from '../services/whatsapp/lindaClient.js';
+﻿import { Router, Request, Response } from 'express';
+import { getWhatsAppEngine, WhatsAppEngineStatus } from '../services/whatsapp/WhatsAppEngine.js';
 import { NinaService } from '../services/NinaService.js';
 import qrcode from 'qrcode';
 
 const router = Router();
 
+/** Helper to get engine from URL param */
+function getEngine(req: Request) {
+  const agentId = req.params.agentId || 'nina-md-primary';
+  return getWhatsAppEngine(agentId);
+}
+
 /**
- * GET /api/whatsapp/status
+ * GET /api/whatsapp-engine/:agentId/status
  * Returns current WhatsApp engine connection status and stats
  */
-router.get('/status', (req: Request, res: Response) => {
-  const client = getLindaClient();
+router.get('/:agentId/status', (req: Request, res: Response) => {
+  const client = getEngine(req);
   const stats = client.getStats();
   return res.json({
     success: true,
@@ -22,11 +28,11 @@ router.get('/status', (req: Request, res: Response) => {
 });
 
 /**
- * GET /api/whatsapp/qr
+ * GET /api/whatsapp-engine/:agentId/qr
  * Returns current QR code as Data URL (image/png base64) for frontend scanning
  */
-router.get('/qr', async (req: Request, res: Response) => {
-  const client = getLindaClient();
+router.get('/:agentId/qr', async (req: Request, res: Response) => {
+  const client = getEngine(req);
   const qrString = client.getQRCode();
 
   if (!qrString) {
@@ -107,10 +113,10 @@ function validateNinaProcessPayload(body: unknown): WhatsAppNinaPayload {
 }
 
 /**
- * POST /api/whatsapp/pair-code
+ * POST /api/whatsapp-engine/:agentId/pair-code
  * Request an 8-character Pairing Code for Linking Device via Phone Number (No Camera Needed)
  */
-router.post('/pair-code', async (req: Request, res: Response) => {
+router.post('/:agentId/pair-code', async (req: Request, res: Response) => {
   let validated: WhatsAppPairCodePayload;
   try {
     validated = validatePairCodePayload(req.body);
@@ -121,7 +127,7 @@ router.post('/pair-code', async (req: Request, res: Response) => {
   const { phoneNumber } = validated;
 
   try {
-    const client = getLindaClient();
+    const client = getEngine(req);
     const code = await client.requestPairingCode(phoneNumber);
     return res.json({
       success: true,
@@ -140,10 +146,10 @@ router.post('/pair-code', async (req: Request, res: Response) => {
 });
 
 /**
- * POST /api/whatsapp/send
+ * POST /api/whatsapp-engine/:agentId/send
  * Outbound WhatsApp message sending endpoint
  */
-router.post('/send', async (req: Request, res: Response) => {
+router.post('/:agentId/send', async (req: Request, res: Response) => {
   let validated: WhatsAppSendMessagePayload;
   try {
     validated = validateSendMessagePayload(req.body);
@@ -154,7 +160,7 @@ router.post('/send', async (req: Request, res: Response) => {
   const { to, message } = validated;
 
   try {
-    const client = getLindaClient();
+    const client = getEngine(req);
     if (!client.isConnected()) {
       return res.status(400).json({
         success: false,
@@ -181,12 +187,12 @@ router.post('/send', async (req: Request, res: Response) => {
 });
 
 /**
- * POST /api/whatsapp/logout
+ * POST /api/whatsapp-engine/:agentId/logout
  * Disconnects WhatsApp session and clears local auth tokens
  */
-router.post('/logout', async (req: Request, res: Response) => {
+router.post('/:agentId/logout', async (req: Request, res: Response) => {
   try {
-    const client = getLindaClient();
+    const client = getEngine(req);
     await client.disconnect();
     return res.json({
       success: true,
@@ -201,10 +207,10 @@ router.post('/logout', async (req: Request, res: Response) => {
 });
 
 /**
- * POST /api/whatsapp/nina/process
+ * POST /api/whatsapp-engine/:agentId/process
  * Sandbox endpoint to test Nina's NLP intent classification & state machine without sending actual messages
  */
-router.post('/nina/process', async (req: Request, res: Response) => {
+router.post('/:agentId/process', async (req: Request, res: Response) => {
   let validated: WhatsAppNinaPayload;
   try {
     validated = validateNinaProcessPayload(req.body);

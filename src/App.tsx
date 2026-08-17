@@ -5,6 +5,7 @@ import { SpeedInsights } from '@vercel/speed-insights/react';
 import { setLoading } from './store/userSlice';
 import { setTheme, setActiveRole } from './store/navigationSlice';
 import { LanguageProvider } from './context/LanguageContext';
+import { CurrencyProvider } from './context/CurrencyContext';
 import { WorkspaceProvider } from './context/WorkspaceContext';
 import { ThemeProvider } from './styles/ThemeProvider';
 import { UnifiedWorkspaceLayout } from './layouts/UnifiedWorkspaceLayout';
@@ -725,203 +726,205 @@ function App(): React.JSX.Element {
           <LuxuryThemeProvider>
             <StatusProvider>
               <LanguageProvider>
-                <WorkspaceProvider>
-                  <BrowserRouter>
-                    <CustomCursor />
-                    <FounderRedirectGuard />
-                {/* Accessibility: skip-to-content link (WCAG 2.1 Level A) */}
-                <a href="#main-content" className="skip-to-content">
-                  Skip to main content
-                </a>
-                <SpeedInsights />
-                <Suspense fallback={null}>
-                  <WebVitalsTracker />
-                </Suspense>
-                <Suspense fallback={null}>
-                  <UniversalComponents />
-                </Suspense>
-                {/* Phase 10 — PWA install banner (loads after idle) */}
-                <Suspense fallback={null}>
-                  <PWAInstallPrompt />
-                </Suspense>
-                {user && (
-                  <Suspense fallback={null}>
-                    <BiometricPrompt onClose={() => {}} />
-                  </Suspense>
-                )}
-                <main id="main-content" role="main">
-                  <LocationKeyWrapper>
-                    <Routes>
-                      {publicRoutes.map(route => (
-                        <Route
-                          key={`public-${route.path}`}
-                          path={route.path}
-                          element={renderPublicPage(route.page, route.section)}
-                        />
-                      ))}
-                      <Route path="/signin" element={renderGuestOnlyPage(<SignInPage />, 'Sign In')} />
-                      <Route path="/signup" element={renderGuestOnlyPage(<SignInPage />, 'Sign Up')} />
-                      <Route path="/login" element={<Navigate to="/signin" replace />} />
-                      <Route path="/auth/signin" element={<Navigate to="/signin" replace />} />
-                      <Route path="/forgot-password" element={<Navigate to="/" replace />} />
-                      <Route path="/reset-password" element={<Navigate to="/" replace />} />
-                      <Route
-                        path="/profile"
-                        element={renderSignedInPage(<ProfilePage />, 'Profile')}
-                      />
-                      <Route
-                        path="/select-role"
-                        element={renderSignedInPage(
-                          <RoleGateway user={user ?? {}} onRoleSelect={handleRoleSelect} />,
-                          'Role Selection'
-                        )}
-                      />
-                      <Route
-                        path="/pending-approval"
-                        element={renderSignedInPage(<PendingApprovalPage />, 'Pending Approval')}
-                      />
-                      <Route
-                        path="/status"
-                        element={renderProtectedAppPage(<ServerStatusPage />, 'Server Status', [
-                          'owner',
-                        ])}
-                      />
-
-                      {/* ==================== EXECUTIVE DASHBOARD ==================== */}
-                      <Route
-                        path="/dashboard/*"
-                        element={
-                          <ProtectedRoute>
-                            <DashboardEntryRoute />
-                          </ProtectedRoute>
-                        }
-                      />
-                      <Route
-                        path="/dashboard"
-                        element={
-                          <ProtectedRoute>
-                            <DashboardEntryRoute />
-                          </ProtectedRoute>
-                        }
-                      />
-                      <Route path="/crm/*" element={<Navigate to="/dashboard" replace />} />
-                      <Route path="/crm" element={<Navigate to="/dashboard" replace />} />
-
-                      {/* ==================== ROLE-SPECIFIC SUB-PAGES ==================== */}
-                      {roleSpecificAppRoutes.map(route => (
-                        <Route
-                          key={`role-specific-${route.path}`}
-                          path={route.path}
-                          element={renderProtectedAppPage(
-                            route.page,
-                            route.section,
-                            route.allowedRoles
-                          )}
-                        />
-                      ))}
-
-                      {/* ==================== PORTAL ROUTES (Phase 2) ==================== */}
-                      {portalRoutes.map(route => (
-                        <Route
-                          key={`portal-${route.path}`}
-                          path={route.path}
-                          element={renderProtectedPortalPage(
-                            route.page,
-                            route.section,
-                            route.portalType,
-                            route.allowedRoles
-                          )}
-                        />
-                      ))}
-
-                      {/* ==================== ALL DASHBOARD ROUTES → UNIFIED ==================== */}
-                      {/* Role-specific dashboard paths redirect to canonical targets */}
-                      {LEGACY_DASHBOARD_REDIRECT_ROUTES.map(route => (
-                        <Route
-                          key={`legacy-dashboard-${route.path}`}
-                          path={route.path}
-                          element={<Navigate to={route.to} replace />}
-                        />
-                      ))}
-
-                      {/* ==================== LEGACY OWNER ROUTES → Redirect to Dashboard ==================== */}
-                      {LEGACY_OWNER_REDIRECT_ROUTES.map(route => (
-                        <Route
-                          key={`legacy-owner-${route.path}`}
-                          path={route.path}
-                          element={<Navigate to={route.to} replace />}
-                        />
-                      ))}
-                      {ownerUtilityRoutes.map(route => (
-                        <Route
-                          key={`owner-utility-${route.path}`}
-                          path={route.path}
-                          element={renderProtectedAppPage(
-                            route.page,
-                            route.section,
-                            route.allowedRoles
-                          )}
-                        />
-                      ))}
-                      {ownerWhatsAppRoutes.map(route => (
-                        <Route
-                          key={`owner-whatsapp-${route.path}`}
-                          path={route.path}
-                          element={renderProtectedAppPage(route.page, route.section, ['owner'])}
-                        />
-                      ))}
-
-                      {/* ==================== CRM MANAGEMENT ROUTES ==================== */}
-                      {ownerCrmRedirectRoutes.map(route => (
-                        <Route
-                          key={`owner-crm-${route.path}`}
-                          path={route.path}
-                          element={renderProtectedRedirect(route.to, ['owner'])}
-                        />
-                      ))}
-
-                      {/* Personal Goals */}
-                      <Route
-                        path="/owner/goals/argentina"
-                        element={
-                          <ProtectedRoute allowedRoles={['owner']}>
-                            <UnifiedWorkspaceLayout>
-                              <RouteErrorBoundary section="Argentina Goal">
-                                <Suspense fallback={<SuspenseLoader />}>
-                                  <ArgentinaGoalPage />
-                                </Suspense>
-                              </RouteErrorBoundary>
-                            </UnifiedWorkspaceLayout>
-                          </ProtectedRoute>
-                        }
-                      />
-
-                      {/* Nadia AI CRM — WhatsApp Business API Dashboard */}
-                      <Route
-                        path="/nadia"
-                        element={renderProtectedAppPage(<NadiaPage />, 'Nadia AI')}
-                      />
-
-                      {/* ==================== OTHER ROUTES ==================== */}
-                      {import.meta.env.DEV && (
-                        <Route
-                          path="/design-system"
-                          element={renderPublicPage(<DesignSystemTest />, 'Design System')}
-                        />
+                <CurrencyProvider>
+                  <WorkspaceProvider>
+                    <BrowserRouter>
+                      <CustomCursor />
+                      <FounderRedirectGuard />
+                      {/* Accessibility: skip-to-content link (WCAG 2.1 Level A) */}
+                      <a href="#main-content" className="skip-to-content">
+                        Skip to main content
+                      </a>
+                      <SpeedInsights />
+                      <Suspense fallback={null}>
+                        <WebVitalsTracker />
+                      </Suspense>
+                      <Suspense fallback={null}>
+                        <UniversalComponents />
+                      </Suspense>
+                      {/* Phase 10 — PWA install banner (loads after idle) */}
+                      <Suspense fallback={null}>
+                        <PWAInstallPrompt />
+                      </Suspense>
+                      {user && (
+                        <Suspense fallback={null}>
+                          <BiometricPrompt onClose={() => {}} />
+                        </Suspense>
                       )}
-                      <Route path="*" element={renderPublicPage(<NotFoundPage />, 'Not Found')} />
-                    </Routes>
-                  </LocationKeyWrapper>
-                </main>
-              </BrowserRouter>
-            </WorkspaceProvider>
-          </LanguageProvider>
-        </StatusProvider>
-        </LuxuryThemeProvider>
-      </ThemeProvider>
-    </AuthModalProvider>
-  </SQAErrorBoundary>
-);
+                      <main id="main-content" role="main">
+                        <LocationKeyWrapper>
+                          <Routes>
+                            {publicRoutes.map(route => (
+                              <Route
+                                key={`public-${route.path}`}
+                                path={route.path}
+                                element={renderPublicPage(route.page, route.section)}
+                              />
+                            ))}
+                            <Route path="/signin" element={renderGuestOnlyPage(<SignInPage />, 'Sign In')} />
+                            <Route path="/signup" element={renderGuestOnlyPage(<SignInPage />, 'Sign Up')} />
+                            <Route path="/login" element={<Navigate to="/signin" replace />} />
+                            <Route path="/auth/signin" element={<Navigate to="/signin" replace />} />
+                            <Route path="/forgot-password" element={<Navigate to="/" replace />} />
+                            <Route path="/reset-password" element={<Navigate to="/" replace />} />
+                            <Route
+                              path="/profile"
+                              element={renderSignedInPage(<ProfilePage />, 'Profile')}
+                            />
+                            <Route
+                              path="/select-role"
+                              element={renderSignedInPage(
+                                <RoleGateway user={user ?? {}} onRoleSelect={handleRoleSelect} />,
+                                'Role Selection'
+                              )}
+                            />
+                            <Route
+                              path="/pending-approval"
+                              element={renderSignedInPage(<PendingApprovalPage />, 'Pending Approval')}
+                            />
+                            <Route
+                              path="/status"
+                              element={renderProtectedAppPage(<ServerStatusPage />, 'Server Status', [
+                                'owner',
+                              ])}
+                            />
+
+                            {/* ==================== EXECUTIVE DASHBOARD ==================== */}
+                            <Route
+                              path="/dashboard/*"
+                              element={
+                                <ProtectedRoute>
+                                  <DashboardEntryRoute />
+                                </ProtectedRoute>
+                              }
+                            />
+                            <Route
+                              path="/dashboard"
+                              element={
+                                <ProtectedRoute>
+                                  <DashboardEntryRoute />
+                                </ProtectedRoute>
+                              }
+                            />
+                            <Route path="/crm/*" element={<Navigate to="/dashboard" replace />} />
+                            <Route path="/crm" element={<Navigate to="/dashboard" replace />} />
+
+                            {/* ==================== ROLE-SPECIFIC SUB-PAGES ==================== */}
+                            {roleSpecificAppRoutes.map(route => (
+                              <Route
+                                key={`role-specific-${route.path}`}
+                                path={route.path}
+                                element={renderProtectedAppPage(
+                                  route.page,
+                                  route.section,
+                                  route.allowedRoles
+                                )}
+                              />
+                            ))}
+
+                            {/* ==================== PORTAL ROUTES (Phase 2) ==================== */}
+                            {portalRoutes.map(route => (
+                              <Route
+                                key={`portal-${route.path}`}
+                                path={route.path}
+                                element={renderProtectedPortalPage(
+                                  route.page,
+                                  route.section,
+                                  route.portalType,
+                                  route.allowedRoles
+                                )}
+                              />
+                            ))}
+
+                            {/* ==================== ALL DASHBOARD ROUTES → UNIFIED ==================== */}
+                            {/* Role-specific dashboard paths redirect to canonical targets */}
+                            {LEGACY_DASHBOARD_REDIRECT_ROUTES.map(route => (
+                              <Route
+                                key={`legacy-dashboard-${route.path}`}
+                                path={route.path}
+                                element={<Navigate to={route.to} replace />}
+                              />
+                            ))}
+
+                            {/* ==================== LEGACY OWNER ROUTES → Redirect to Dashboard ==================== */}
+                            {LEGACY_OWNER_REDIRECT_ROUTES.map(route => (
+                              <Route
+                                key={`legacy-owner-${route.path}`}
+                                path={route.path}
+                                element={<Navigate to={route.to} replace />}
+                              />
+                            ))}
+                            {ownerUtilityRoutes.map(route => (
+                              <Route
+                                key={`owner-utility-${route.path}`}
+                                path={route.path}
+                                element={renderProtectedAppPage(
+                                  route.page,
+                                  route.section,
+                                  route.allowedRoles
+                                )}
+                              />
+                            ))}
+                            {ownerWhatsAppRoutes.map(route => (
+                              <Route
+                                key={`owner-whatsapp-${route.path}`}
+                                path={route.path}
+                                element={renderProtectedAppPage(route.page, route.section, ['owner'])}
+                              />
+                            ))}
+
+                            {/* ==================== CRM MANAGEMENT ROUTES ==================== */}
+                            {ownerCrmRedirectRoutes.map(route => (
+                              <Route
+                                key={`owner-crm-${route.path}`}
+                                path={route.path}
+                                element={renderProtectedRedirect(route.to, ['owner'])}
+                              />
+                            ))}
+
+                            {/* Personal Goals */}
+                            <Route
+                              path="/owner/goals/argentina"
+                              element={
+                                <ProtectedRoute allowedRoles={['owner']}>
+                                  <UnifiedWorkspaceLayout>
+                                    <RouteErrorBoundary section="Argentina Goal">
+                                      <Suspense fallback={<SuspenseLoader />}>
+                                        <ArgentinaGoalPage />
+                                      </Suspense>
+                                    </RouteErrorBoundary>
+                                  </UnifiedWorkspaceLayout>
+                                </ProtectedRoute>
+                              }
+                            />
+
+                            {/* Nadia AI CRM — WhatsApp Business API Dashboard */}
+                            <Route
+                              path="/nadia"
+                              element={renderProtectedAppPage(<NadiaPage />, 'Nadia AI')}
+                            />
+
+                            {/* ==================== OTHER ROUTES ==================== */}
+                            {import.meta.env.DEV && (
+                              <Route
+                                path="/design-system"
+                                element={renderPublicPage(<DesignSystemTest />, 'Design System')}
+                              />
+                            )}
+                            <Route path="*" element={renderPublicPage(<NotFoundPage />, 'Not Found')} />
+                          </Routes>
+                        </LocationKeyWrapper>
+                      </main>
+                    </BrowserRouter>
+                  </WorkspaceProvider>
+                </CurrencyProvider>
+              </LanguageProvider>
+            </StatusProvider>
+          </LuxuryThemeProvider>
+        </ThemeProvider>
+      </AuthModalProvider>
+    </SQAErrorBoundary>
+  );
 }
 
 export default App;

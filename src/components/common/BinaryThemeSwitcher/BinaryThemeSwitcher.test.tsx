@@ -1,18 +1,33 @@
-import { describe, it, expect, vi } from 'vitest';
 import React from 'react';
+import { describe, it, expect, vi } from 'vitest';
 import { render, screen, fireEvent } from '@testing-library/react';
+import { ThemeProvider } from '../../../context/ThemeContext';
 import { BinaryThemeSwitcher } from './BinaryThemeSwitcher';
 
 describe('BinaryThemeSwitcher Component', () => {
-  it('renders theme switcher and toggles between Dark Luxury and Light Mode', () => {
+  it('renders theme switcher and toggles between Light, Dark Luxury, and System Mode', () => {
     const onToggle = vi.fn();
-    render(<BinaryThemeSwitcher onToggle={onToggle} />);
-    expect(screen.getByTestId('binary-theme-switcher')).toBeDefined();
-    expect(screen.getByText(/Dark Luxury/i)).toBeDefined();
+    render(
+      <ThemeProvider>
+        <BinaryThemeSwitcher onToggle={onToggle} />
+      </ThemeProvider>
+    );
 
-    const btn = screen.getByRole('button', { name: /Toggle Theme/i });
-    fireEvent.click(btn);
-    expect(screen.getByText(/Light Mode/i)).toBeDefined();
+    const lightBtn = screen.getByTestId('theme-btn-light');
+    const darkBtn = screen.getByTestId('theme-btn-dark');
+    const systemBtn = screen.getByTestId('theme-btn-system');
+
+    expect(lightBtn).toBeTruthy();
+    expect(darkBtn).toBeTruthy();
+    expect(systemBtn).toBeTruthy();
+
+    fireEvent.click(lightBtn);
     expect(onToggle).toHaveBeenCalledWith('light');
+
+    fireEvent.click(darkBtn);
+    expect(onToggle).toHaveBeenCalledWith('dark');
+
+    fireEvent.click(systemBtn);
+    expect(onToggle).toHaveBeenCalledWith('system');
   });
 });

@@ -5,6 +5,8 @@
  */
 import React, { FC, useState } from 'react';
 import styled, { keyframes } from 'styled-components';
+import { exportToCsv, exportToExcelXml } from '../../../utils/exportUtils';
+import { mockProperties } from '../../../mocks/dubaiRealEstateMocks';
 
 const fadeIn = keyframes`from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}`;
 
@@ -84,15 +86,83 @@ const ExBtn = styled.button<{ $excel?: boolean }>`
   &:hover { filter: brightness(1.1); transform: translateY(-1px); }
 `;
 
+
+
 export const AuditTrailExporter: FC = () => {
   const [downloading, setDownloading] = useState<string | null>(null);
 
   const handleExport = (format: 'CSV' | 'EXCEL') => {
     setDownloading(format);
-    setTimeout(() => {
-      setDownloading(null);
-      alert(`White Caves 2026 Audit Trail exported successfully in ${format} format!`);
-    }, 1200);
+    try {
+      if (format === 'CSV') {
+        const auditData = mockProperties.map((p, idx) => ({
+          auditId: `AUD-2026-${String(idx + 1).padStart(4, '0')}`,
+          propertyId: p.id,
+          title: p.title,
+          community: p.community,
+          reraPermit: p.reraPermitNumber,
+          grossAmountAED: p.priceAED,
+          vat5PctAED: Math.round(p.priceAED * 0.05),
+          netAmountAED: Math.round(p.priceAED * 1.05),
+          status: p.status,
+          ftaComplianceStatus: 'RECONCILED',
+          timestamp: new Date().toISOString(),
+        }));
+
+        exportToCsv(
+          `WhiteCaves_Audit_Trail_FTA_${new Date().toISOString().split('T')[0]}`,
+          [
+            { label: 'Audit Reference', key: 'auditId' },
+            { label: 'Property ID', key: 'propertyId' },
+            { label: 'Asset Title', key: 'title' },
+            { label: 'Community', key: 'community' },
+            { label: 'RERA Permit', key: 'reraPermit' },
+            { label: 'Gross Amount (AED)', key: 'grossAmountAED' },
+            { label: 'VAT 5% (AED)', key: 'vat5PctAED' },
+            { label: 'Total Invoiced (AED)', key: 'netAmountAED' },
+            { label: 'Status', key: 'status' },
+            { label: 'FTA Compliance', key: 'ftaComplianceStatus' },
+            { label: 'Timestamp (UTC)', key: 'timestamp' },
+          ],
+          auditData
+        );
+      } else {
+        const sheet1Rows = mockProperties.map((p, idx) => [
+          `AUD-2026-${String(idx + 1).padStart(4, '0')}`,
+          p.id,
+          p.title,
+          p.community,
+          p.priceAED,
+          Math.round(p.priceAED * 0.05),
+          Math.round(p.priceAED * 1.05),
+          'RECONCILED',
+        ]);
+
+        const sheet2Rows = [
+          ['Q1 2026', 'Standard 5% Taxable', 45000000, 2250000, 'FILED'],
+          ['Q2 2026', 'Standard 5% Taxable', 58000000, 2900000, 'FILED'],
+          ['Q3 2026 (Projected)', 'Standard 5% Taxable', 62000000, 3100000, 'PENDING'],
+        ];
+
+        exportToExcelXml(
+          `WhiteCaves_Corporate_Audit_Workbook_${new Date().toISOString().split('T')[0]}`,
+          [
+            {
+              name: 'Transactions Audit',
+              headers: ['Audit Ref', 'Property ID', 'Asset Title', 'Community', 'Gross (AED)', 'VAT 5%', 'Total (AED)', 'Compliance'],
+              rows: sheet1Rows,
+            },
+            {
+              name: 'FTA VAT Quarterly Manifest',
+              headers: ['Tax Period', 'Category', 'Taxable Revenue (AED)', 'VAT Output (AED)', 'Filing Status'],
+              rows: sheet2Rows,
+            },
+          ]
+        );
+      }
+    } finally {
+      setTimeout(() => setDownloading(null), 600);
+    }
   };
 
   return (

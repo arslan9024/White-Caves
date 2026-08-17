@@ -1,27 +1,43 @@
-import { useState, useCallback } from 'react';
-import en from '../locales/en.json';
+/**
+ * Universal Translation Hook — White Caves Real Estate LLC
+ * Seamlessly interfaces with LanguageContext and Locale Dictionary Data Layer
+ */
 
-type LocaleDict = Record<string, any>;
+import { useLanguage, type LanguageType } from '../context/LanguageContext';
 
-export const useTranslation = () => {
-  // Hardcoded to EN for now, easily extendable to switch AR based on context
-  const [locale] = useState<LocaleDict>(en);
+export interface UseTranslationReturn {
+  t: (key: string, params?: Record<string, string | number>) => string;
+  language: LanguageType;
+  setLanguage: (lang: LanguageType) => void;
+  toggleLanguage: () => void;
+  isRTL: boolean;
+  formatNumber: (number: number) => string;
+  formatCurrency: (amount: number, currency?: string) => string;
+  formatDate: (date: Date | string, options?: Intl.DateTimeFormatOptions) => string;
+}
 
-  const t = useCallback((key: string): string => {
-    const keys = key.split('.');
-    let result = locale;
-    for (const k of keys) {
-      if (result && typeof result === 'object' && k in result) {
-        result = result[k];
-      } else {
-        console.warn(`[useTranslation] Missing key: ${key}`);
-        return key;
-      }
-    }
-    return typeof result === 'string' ? result : key;
-  }, [locale]);
+export function useTranslation(): UseTranslationReturn {
+  const {
+    t,
+    language,
+    setLanguage,
+    toggleLanguage,
+    isRTL,
+    formatNumber,
+    formatCurrency,
+    formatDate,
+  } = useLanguage();
 
-  return { t };
-};
+  return {
+    t,
+    language,
+    setLanguage,
+    toggleLanguage,
+    isRTL,
+    formatNumber,
+    formatCurrency,
+    formatDate,
+  };
+}
 
 export default useTranslation;

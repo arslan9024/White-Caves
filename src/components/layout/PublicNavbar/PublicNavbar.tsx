@@ -5,8 +5,7 @@ import { PUBLIC_NAV } from '../../../config/navigation';
 import type { NavItem } from '../../../config/navigation';
 import { useLanguage } from '../../../context/LanguageContext';
 import { selectSessionUser } from '../../../store/selectors/sessionSelectors';
-import { logout } from '../../../store/authSlice';
-import LanguageSwitcher from '../../ui/LanguageSwitcher';
+import { UserPreferencesDropdown } from './UserPreferencesDropdown';
 import './PublicNavbar.css';
 
 // ---------------------------------------------------------------------------
@@ -119,13 +118,11 @@ const DropdownNavItem: React.FC<DropdownNavItemProps> = ({ group }) => {
 // ---------------------------------------------------------------------------
 // Main PublicNavbar component
 // ---------------------------------------------------------------------------
-const PublicNavbar = (): React.JSX.Element => {
+export const PublicNavbar = (): React.JSX.Element => {
   const location = useLocation();
   const navigate = useNavigate();
-  const dispatch = useDispatch();
   const user = useSelector(selectSessionUser);
   const [isMobileOpen, setIsMobileOpen] = useState(false);
-  const [currency, setCurrency] = useState<'AED' | 'USD' | 'EUR' | 'GBP'>('AED');
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
   const userMenuRef = useRef<HTMLDivElement>(null);
 
@@ -141,9 +138,9 @@ const PublicNavbar = (): React.JSX.Element => {
       path: '/properties',
       children: [...PUBLIC_NAV.buy.slice(0, 3), ...PUBLIC_NAV.rent.slice(0, 2)],
     },
-    { label: t('nav.services'), path: '/services' },
+    { label: t('nav.services') || 'Services', path: '/services' },
     {
-      label: t('nav.company'),
+      label: t('nav.company') || 'Company',
       path: '/about',
       children: PUBLIC_NAV.company as unknown as NavItem[],
     },
@@ -155,13 +152,13 @@ const PublicNavbar = (): React.JSX.Element => {
     { title: t('property.forSale'), items: PUBLIC_NAV.buy },
     { title: t('property.forRent'), items: PUBLIC_NAV.rent },
     { title: t('common.properties'), items: PUBLIC_NAV.sell },
-    { title: t('nav.company'), items: PUBLIC_NAV.company },
+    { title: t('nav.company') || 'Company', items: PUBLIC_NAV.company },
   ];
 
   // Close mobile menu on route change
   useEffect(() => {
-    // eslint-disable-next-line react-hooks/set-state-in-effect
     setIsMobileOpen(false);
+    setIsUserMenuOpen(false);
   }, [location.pathname]);
 
   // Lock body scroll + Escape key when mobile menu is open
@@ -182,8 +179,19 @@ const PublicNavbar = (): React.JSX.Element => {
   return (
     <header className="public-navbar" role="banner">
       <div className="public-navbar__inner">
-        {/* Brand / Big Overhanging Circular Logo (Zero Written Text, 76px Diameter) */}
-        <Link to="/" className="public-navbar__brand" aria-label="White Caves Home" style={{ position: 'relative', width: '76px', height: '76px', marginLeft: '1rem', zIndex: 1010 }}>
+        {/* Brand / Circular Logo */}
+        <Link
+          to="/"
+          className="public-navbar__brand"
+          aria-label="White Caves Home"
+          style={{
+            position: 'relative',
+            width: '76px',
+            height: '76px',
+            marginLeft: '1rem',
+            zIndex: 1010,
+          }}
+        >
           <img
             src={logoSrc}
             alt="White Caves Real Estate LLC"
@@ -225,88 +233,75 @@ const PublicNavbar = (): React.JSX.Element => {
             title="Search properties across Dubai"
           >
             <span>🔍</span>
-            <span className="public-navbar__search-label">Search</span>
+            <span className="public-navbar__search-label">{t('common.search')}</span>
           </button>
 
-          {/* Currency Switcher */}
-          <div className="public-navbar__currency-selector">
-            <select
-              value={currency}
-              onChange={e => setCurrency(e.target.value as any)}
-              className="public-navbar__currency-select"
-              aria-label="Select currency"
-            >
-              <option value="AED">🇦🇪 AED</option>
-              <option value="USD">🇺🇸 USD</option>
-              <option value="EUR">🇪🇺 EUR</option>
-              <option value="GBP">🇬🇧 GBP</option>
-            </select>
-          </div>
-
-          <LanguageSwitcher />
-
           <Link to="/services#sell" className="public-navbar__list-btn">
-            {t('nav.listProperty')}
+            {t('nav.listProperty') || 'List Property'}
           </Link>
 
-          {/* User Account / Sign In State */}
-          {user ? (
-            <div className="public-navbar__user-menu-wrap" ref={userMenuRef}>
-              <button
-                type="button"
-                className="public-navbar__user-btn"
-                onClick={() => setIsUserMenuOpen(!isUserMenuOpen)}
-              >
-                <img alt={user.name || 'User Avatar'}
-                  src={
-                    user.photoURL ||
-                    `https://ui-avatars.com/api/?name=${encodeURIComponent(
-                      user.name || user.email || 'A'
-                    )}&background=EF4444&color=fff`
-                  }
-                  className="public-navbar__user-avatar"
-                />
-                <span className="public-navbar__user-name">{user.name?.split(' ')[0] || 'Account'}</span>
-              </button>
-
-              {isUserMenuOpen && (
-                <div className="public-navbar__user-dropdown">
-                  <div className="public-navbar__user-info">
-                    <p className="public-navbar__user-fullname">{user.name || 'Executive User'}</p>
-                    <p className="public-navbar__user-email">{user.email}</p>
-                  </div>
-                  <hr className="public-navbar__user-divider" />
-                  <Link
-                    to="/profile"
-                    className="public-navbar__user-dropdown-item"
-                    onClick={() => setIsUserMenuOpen(false)}
-                  >
-                    👤 My Profile
-                  </Link>
-                  <Link
-                    to="/crm"
-                    className="public-navbar__user-dropdown-item"
-                    onClick={() => setIsUserMenuOpen(false)}
-                  >
-                    🚀 CRM Cockpit
-                  </Link>
-                  <button
-                    type="button"
-                    className="public-navbar__user-dropdown-item public-navbar__user-dropdown-item--logout"
-                    onClick={() => {
-                      setIsUserMenuOpen(false);
-                      dispatch(logout());
-                      navigate('/');
-                    }}
-                  >
-                    🚪 Sign Out
-                  </button>
-                </div>
+          {/* Unified User Profile & Preferences Menu (Shifted Language, Currency, & Theme here) */}
+          <div className="public-navbar__user-menu-wrap" ref={userMenuRef}>
+            <button
+              type="button"
+              className="public-navbar__user-btn"
+              onClick={() => setIsUserMenuOpen(!isUserMenuOpen)}
+              aria-label="Toggle user preferences and profile menu"
+              data-testid="navbar-profile-preferences-btn"
+            >
+              {user ? (
+                <>
+                  <img
+                    alt={user.name || 'User Avatar'}
+                    src={
+                      user.photoURL ||
+                      `https://ui-avatars.com/api/?name=${encodeURIComponent(
+                        user.name || user.email || 'A'
+                      )}&background=EF4444&color=fff`
+                    }
+                    className="public-navbar__user-avatar"
+                  />
+                  <span className="public-navbar__user-name">
+                    {user.name?.split(' ')[0] || 'Account'}
+                  </span>
+                </>
+              ) : (
+                <>
+                  <span style={{ fontSize: '1.1rem', padding: '0 2px' }}>⚙️</span>
+                  <span className="public-navbar__user-name" style={{ color: 'var(--text-primary)' }}>
+                    Preferences
+                  </span>
+                </>
               )}
-            </div>
-          ) : (
+              <svg
+                style={{
+                  width: '10px',
+                  height: '6px',
+                  marginLeft: '2px',
+                  transform: isUserMenuOpen ? 'rotate(180deg)' : 'none',
+                  transition: 'transform 0.2s ease',
+                }}
+                viewBox="0 0 10 6"
+                fill="none"
+              >
+                <path
+                  d="M1 1l4 4 4-4"
+                  stroke="currentColor"
+                  strokeWidth="1.6"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                />
+              </svg>
+            </button>
+
+            {isUserMenuOpen && (
+              <UserPreferencesDropdown user={user} onClose={() => setIsUserMenuOpen(false)} />
+            )}
+          </div>
+
+          {!user && (
             <Link to="/signin" className="public-navbar__signin">
-              {t('nav.signIn')}
+              {t('common.login') || 'Sign In'}
             </Link>
           )}
 
@@ -351,11 +346,9 @@ const PublicNavbar = (): React.JSX.Element => {
                 <img
                   src={logoSrc}
                   alt="White Caves"
-                  width={32}
-                  height={32}
-                  className="public-navbar__brand-logo"
+                  style={{ width: '36px', height: '36px', borderRadius: '50%' }}
                 />
-                <strong>White Caves</strong>
+                <span>White Caves</span>
               </Link>
               <button
                 type="button"
@@ -367,51 +360,55 @@ const PublicNavbar = (): React.JSX.Element => {
               </button>
             </div>
 
-            {/* Drawer body — grouped sections */}
+            {/* Drawer body */}
             <div className="public-navbar__mobile-body">
               {mobileSections.map(section => (
                 <div key={section.title} className="public-navbar__mobile-section">
-                  <p className="public-navbar__mobile-section-title">{section.title}</p>
-                  <nav aria-label={`${section.title} navigation`}>
-                    {section.items.map(item => (
-                      <NavLink
-                        key={item.path}
-                        to={item.path}
-                        className={({ isActive }) =>
-                          `public-navbar__mobile-link${isActive ? ' active' : ''}`
-                        }
-                      >
-                        <span className="public-navbar__mobile-link-icon" aria-hidden="true">
-                          {item.icon}
-                        </span>
-                        <span>{item.label}</span>
-                        <span className="public-navbar__mobile-link-arrow" aria-hidden="true">
-                          ›
-                        </span>
-                      </NavLink>
-                    ))}
-                  </nav>
+                  <h3 className="public-navbar__mobile-section-title">{section.title}</h3>
+                  {section.items.map(item => (
+                    <NavLink
+                      key={item.path}
+                      to={item.path}
+                      className={({ isActive }) =>
+                        `public-navbar__mobile-link${isActive ? ' active' : ''}`
+                      }
+                      onClick={() => setIsMobileOpen(false)}
+                    >
+                      <span className="public-navbar__mobile-link-icon">{item.icon}</span>
+                      <span>{item.label}</span>
+                      <span className="public-navbar__mobile-link-arrow">›</span>
+                    </NavLink>
+                  ))}
                 </div>
               ))}
             </div>
 
-            {/* Drawer footer CTA */}
+            {/* Drawer footer */}
             <div className="public-navbar__mobile-footer">
-              <LanguageSwitcher className="lang-switcher--mobile" />
               <Link
                 to="/services#sell"
                 className="public-navbar__mobile-list-btn"
                 onClick={() => setIsMobileOpen(false)}
               >
-                📋 {t('nav.listProperty')}
+                {t('nav.listProperty') || 'List Property'}
               </Link>
-              <Link
-                to="/signin"
-                className="public-navbar__mobile-signin"
-                onClick={() => setIsMobileOpen(false)}
-              >
-                {t('nav.signIn')}
-              </Link>
+              {user ? (
+                <Link
+                  to="/profile"
+                  className="public-navbar__mobile-signin"
+                  onClick={() => setIsMobileOpen(false)}
+                >
+                  👤 {user.name?.split(' ')[0] || 'My Profile'}
+                </Link>
+              ) : (
+                <Link
+                  to="/signin"
+                  className="public-navbar__mobile-signin"
+                  onClick={() => setIsMobileOpen(false)}
+                >
+                  {t('common.login') || 'Sign In'}
+                </Link>
+              )}
             </div>
           </div>
         </>

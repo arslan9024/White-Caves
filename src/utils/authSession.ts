@@ -40,10 +40,6 @@ export const resolvePostLoginDestination = (options: {
   user: Pick<AppUser, 'role' | 'status' | 'profileCompleted'> & { email?: string | null };
   returnTo?: string | null;
 }): string => {
-  if (options.user.email?.toLowerCase().trim() === 'arslanmalikgoraha@gmail.com') {
-    return '/profile';
-  }
-
   const normalizedReturnTo = sanitizeReturnToPath(options.returnTo);
   if (normalizedReturnTo) {
     return normalizedReturnTo;

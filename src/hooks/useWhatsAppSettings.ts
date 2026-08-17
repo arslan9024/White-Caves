@@ -97,7 +97,7 @@ export function useWhatsAppSettings() {
   const setupWebSocket = useCallback((): void => {
     try {
       const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
-      const wsUrl = `${protocol}//${window.location.host}/api/whatsapp/status`;
+      const wsUrl = `${protocol}//${window.location.host}/api/whatsapp-engine/status`;
 
       wsRef.current = new WebSocket(wsUrl);
 

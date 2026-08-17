@@ -1,8 +1,8 @@
-import React, { useState, useEffect, useMemo, useRef } from 'react';
+import React, { useState, useEffect, useMemo, useRef, useDeferredValue } from 'react';
 import { Send, Search, CheckCheck, User, Phone, ShieldCheck, Tag, Sparkles, Clock, RefreshCw, Wifi, AlertTriangle, Plus, Smartphone, QrCode, Key } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
-import * as reactWindow from 'react-window';
-const List = reactWindow.FixedSizeList;
+import { List } from 'react-window';
+import { getContactsOffline, saveContactsOffline } from '../../../../utils/indexedChatStore';
 
 interface ChatMessage {
   id: string;
@@ -27,6 +27,46 @@ interface ChatContact {
   messages: ChatMessage[];
 }
 
+const ContactRow = React.memo(({ index, style, data }: any) => {
+  const { contacts, activeContactId, onSelect } = data;
+  const contact = contacts[index];
+  const isSelected = activeContactId && contact.id === activeContactId;
+
+  return (
+    <motion.div
+      whileHover={{ scale: 1.02 }}
+      whileTap={{ scale: 0.98 }}
+      onClick={() => onSelect(contact.id)}
+      style={{
+        ...style,
+        background: isSelected ? '#FFFFFF' : 'transparent',
+        border: isSelected ? '1.5px solid #25D366' : '1px solid transparent',
+        borderRadius: '10px',
+        padding: '10px',
+        cursor: 'pointer',
+        transition: 'background 0.15s ease, border 0.15s ease',
+        boxShadow: isSelected ? '0 2px 8px rgba(37, 211, 102, 0.12)' : 'none',
+        marginBottom: '4px',
+      }}
+    >
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2px' }}>
+        <span style={{ fontWeight: 800, fontSize: '0.86rem', color: '#1E293B' }}>
+          {contact.avatar} {contact.name}
+        </span>
+        <span style={{ fontSize: '0.7rem', color: '#64748B' }}>{contact.lastMessageTime}</span>
+      </div>
+
+      <span style={{ fontSize: '0.75rem', color: '#06B6D4', fontWeight: 700, display: 'block', marginBottom: '4px' }}>
+        {contact.phone}
+      </span>
+
+      <p style={{ margin: 0, fontSize: '0.76rem', color: '#475569', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+        {contact.lastMessage}
+      </p>
+    </motion.div>
+  );
+});
+
 export const ConversationsTab: React.FC = () => {
   const [contacts, setContacts] = useState<ChatContact[]>([]);
   const [selectedContactId, setSelectedContactId] = useState<string>('');
@@ -50,7 +90,7 @@ export const ConversationsTab: React.FC = () => {
 
     try {
       // 1. Fetch Real Connection Status from Backend Engine API
-      const statusRes = await fetch('/api/v1/whatsapp/status');
+      const statusRes = await fetch('/api/whatsapp-engine/status');
       if (statusRes.ok) {
         const statusData = await statusRes.json();
         if (statusData.isConnected || statusData.status === 'READY') {
@@ -71,22 +111,27 @@ export const ConversationsTab: React.FC = () => {
         if (Array.isArray(chatsData.chats) && chatsData.chats.length > 0) {
           setContacts(chatsData.chats);
           setSelectedContactId(chatsData.chats[0].id);
-        } else {
-          setContacts([]); // Zero dummy fallback — strictly empty if 0 real chats synced
+          saveContactsOffline(chatsData.chats as any);
         }
-      } else {
-        setContacts([]);
       }
     } catch (err) {
       console.warn('Real WhatsApp API sync check:', err);
       setDeviceStatus('PAIRING');
-      setContacts([]);
     } finally {
       setLoadingChats(false);
     }
   };
 
   useEffect(() => {
+    // 1. Initial instant hydration from local IndexedDB cache
+    getContactsOffline().then(cached => {
+      if (cached && cached.length > 0) {
+        setContacts(cached as any);
+        setSelectedContactId(cached[0].id);
+      }
+    });
+
+    // 2. Fetch live telemetry from backend
     fetchLiveWhatsAppSession();
   }, []);
 
@@ -157,9 +202,19 @@ export const ConversationsTab: React.FC = () => {
     setShowNewChatModal(false);
   };
 
-  const filteredContacts = contacts.filter(c =>
-    `${c.name} ${c.phone} ${c.tag}`.toLowerCase().includes(searchQuery.toLowerCase())
-  );
+  const deferredSearchQuery = useDeferredValue(searchQuery);
+
+  const filteredContacts = useMemo(() => {
+    return contacts.filter(c =>
+      `${c.name} ${c.phone} ${c.tag}`.toLowerCase().includes(deferredSearchQuery.toLowerCase())
+    );
+  }, [contacts, deferredSearchQuery]);
+
+  const listData = useMemo(() => ({
+    contacts: filteredContacts,
+    activeContactId: selectedContactId,
+    onSelect: setSelectedContactId
+  }), [filteredContacts, selectedContactId]);
 
   return (
     <div className="conversations-tab" style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
@@ -297,51 +352,14 @@ export const ConversationsTab: React.FC = () => {
           {/* Contacts Stream Virtualized */}
           <div style={{ flex: 1, overflowY: 'hidden', display: 'flex', flexDirection: 'column' }}>
             {filteredContacts.length > 0 ? (
-              <List
-                height={400} // Approximate height
-                itemCount={filteredContacts.length}
-                itemSize={85} // Height of each contact row
-                width="100%"
-                itemData={filteredContacts}
-              >
-                {({ index, style, data }) => {
-                  const contact = data[index];
-                  const isSelected = activeContact && contact.id === activeContact.id;
-                  return (
-                    <motion.div
-                      whileHover={{ scale: 1.02 }}
-                      whileTap={{ scale: 0.98 }}
-                      onClick={() => setSelectedContactId(contact.id)}
-                      style={{
-                        ...style,
-                        background: isSelected ? '#FFFFFF' : 'transparent',
-                        border: isSelected ? '1.5px solid #25D366' : '1px solid transparent',
-                        borderRadius: '10px',
-                        padding: '10px',
-                        cursor: 'pointer',
-                        transition: 'background 0.15s ease, border 0.15s ease',
-                        boxShadow: isSelected ? '0 2px 8px rgba(37, 211, 102, 0.12)' : 'none',
-                        marginBottom: '4px',
-                      }}
-                    >
-                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2px' }}>
-                        <span style={{ fontWeight: 800, fontSize: '0.86rem', color: '#1E293B' }}>
-                          {contact.avatar} {contact.name}
-                        </span>
-                        <span style={{ fontSize: '0.7rem', color: '#64748B' }}>{contact.lastMessageTime}</span>
-                      </div>
-
-                      <span style={{ fontSize: '0.75rem', color: '#06B6D4', fontWeight: 700, display: 'block', marginBottom: '4px' }}>
-                        {contact.phone}
-                      </span>
-
-                      <p style={{ margin: 0, fontSize: '0.76rem', color: '#475569', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
-                        {contact.lastMessage}
-                      </p>
-                    </motion.div>
-                  );
-                }}
-              </List>
+              React.createElement(List as any, {
+                height: 400,
+                itemCount: filteredContacts.length,
+                itemSize: 85,
+                width: '100%',
+                itemData: listData,
+                children: ContactRow,
+              })
             ) : (
               <div style={{ padding: '2rem 0.5rem', textAlign: 'center', color: '#64748B' }}>
                 <span style={{ fontSize: '2rem', display: 'block', marginBottom: '0.5rem' }}>📭</span>

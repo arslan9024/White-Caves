@@ -52,28 +52,28 @@
 [data-theme='light'],
 :root {
   /* Backgrounds */
-  --bg-primary: #ffffff;
-  --bg-secondary: #f9fafb;
-  --bg-tertiary: #f3f4f6;
-  --bg-card: #ffffff;
-  --bg-hover: #f3f4f6;
-  --bg-active: #e5e7eb;
-  --bg-overlay: rgba(0, 0, 0, 0.5);
-  --bg-glass: rgba(255, 255, 255, 0.8);
+  --bg-primary: #FFFFFF;
+  --bg-secondary: #F8FAFC;
+  --bg-tertiary: #F1F5F9;
+  --bg-card: #FFFFFF;
+  --bg-hover: #F8FAFC;
+  --bg-active: #E2E8F0;
+  --bg-overlay: rgba(15, 23, 42, 0.6);
+  --bg-glass: rgba(255, 255, 255, 0.88);
 
   /* Text Colors - High Contrast */
-  --text-primary: #111827;
-  --text-secondary: #4b5563;
-  --text-tertiary: #6b7280;
-  --text-muted: #9ca3af;
-  --text-inverse: #ffffff;
+  --text-primary: #0F172A;
+  --text-secondary: #334155;
+  --text-tertiary: #64748B;
+  --text-muted: #94A3B8;
+  --text-inverse: #FFFFFF;
   --text-link: #EF4444;
-  --text-link-hover: #a8883a;
+  --text-link-hover: #DC2626;
 
   /* Border Colors */
-  --border-color: #e5e7eb;
-  --border-light: #f3f4f6;
-  --border-dark: #d1d5db;
+  --border-color: #E2E8F0;
+  --border-light: #F1F5F9;
+  --border-dark: #CBD5E1;
   --border-focus: #EF4444;
 
   /* Shadow Colors */
@@ -84,91 +84,92 @@
   --shadow-glow: 0 0 20px rgba(239, 68, 68, 0.2);
 
   /* Input Colors */
-  --input-bg: #ffffff;
-  --input-border: #d1d5db;
+  --input-bg: #FFFFFF;
+  --input-border: #CBD5E1;
   --input-focus-border: #EF4444;
-  --input-placeholder: #9ca3af;
+  --input-placeholder: #94A3B8;
 
   /* Table Colors */
-  --table-header-bg: #f9fafb;
-  --table-row-hover: #f3f4f6;
-  --table-border: #e5e7eb;
+  --table-header-bg: #F8FAFC;
+  --table-row-hover: #F1F5F9;
+  --table-border: #E2E8F0;
 
   /* Sidebar/Nav Colors */
-  --nav-bg: #ffffff;
-  --nav-text: #374151;
+  --nav-bg: #FFFFFF;
+  --nav-text: #0F172A;
   --nav-text-active: #EF4444;
   --nav-bg-active: rgba(239, 68, 68, 0.08);
 
   /* Badge/Tag Colors */
-  --badge-bg: #f3f4f6;
-  --badge-text: #374151;
+  --badge-bg: #F1F5F9;
+  --badge-text: #334155;
 
   /* Chart Colors */
-  --chart-grid: #e5e7eb;
-  --chart-axis: #6b7280;
+  --chart-grid: #E2E8F0;
+  --chart-axis: #64748B;
 }
 
 /* ==========================================
    DARK THEME
    ========================================== */
-[data-theme='dark'] {
+[data-theme='dark'],
+.dark-mode {
   /* Backgrounds (Obsidian Dark palette) */
-  --bg-primary: #0f0f0f;
-  --bg-secondary: #1a1a1a;
-  --bg-tertiary: #1f1f1f;
-  --bg-card: #1a1a1a;
-  --bg-hover: #1f1f1f;
-  --bg-active: #2c2c2c;
-  --bg-overlay: rgba(0, 0, 0, 0.7);
-  --bg-glass: rgba(26, 26, 26, 0.9);
+  --bg-primary: #0B0F17;
+  --bg-secondary: #111827;
+  --bg-tertiary: #1F2937;
+  --bg-card: #111827;
+  --bg-hover: rgba(239, 68, 68, 0.12);
+  --bg-active: #1F2937;
+  --bg-overlay: rgba(0, 0, 0, 0.85);
+  --bg-glass: rgba(17, 24, 39, 0.9);
 
   /* Text Colors - High Contrast for Dark Mode */
-  --text-primary: #ffffff;
-  --text-secondary: rgba(255, 255, 255, 0.7);
-  --text-tertiary: rgba(255, 255, 255, 0.45);
-  --text-muted: rgba(255, 255, 255, 0.3);
-  --text-inverse: #0f0f0f;
+  --text-primary: #F8FAFC;
+  --text-secondary: #E2E8F0;
+  --text-tertiary: #94A3B8;
+  --text-muted: #64748B;
+  --text-inverse: #0B0F17;
   --text-link: #EF4444;
-  --text-link-hover: #e4b75e;
+  --text-link-hover: #F87171;
 
   /* Border Colors */
-  --border-color: #2c2c2c;
-  --border-light: #1f1f1f;
-  --border-dark: #2c2c2c;
+  --border-color: rgba(255, 255, 255, 0.1);
+  --border-light: rgba(255, 255, 255, 0.06);
+  --border-dark: rgba(255, 255, 255, 0.15);
   --border-focus: #EF4444;
 
   /* Shadow Colors */
-  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.5);
-  --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.6);
-  --shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.7);
-  --shadow-xl: 0 20px 25px rgba(0, 0, 0, 0.8);
-  --shadow-glow: 0 0 20px rgba(239, 68, 68, 0.15);
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.6);
+  --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.7);
+  --shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.8);
+  --shadow-xl: 0 20px 25px rgba(0, 0, 0, 0.9);
+  --shadow-glow: 0 0 25px rgba(239, 68, 68, 0.25);
 
   /* Input Colors */
-  --input-bg: #1a1a1a;
-  --input-border: #2c2c2c;
+  --input-bg: #1F2937;
+  --input-border: rgba(255, 255, 255, 0.15);
   --input-focus-border: #EF4444;
-  --input-placeholder: rgba(255, 255, 255, 0.3);
+  --input-placeholder: #64748B;
 
   /* Table Colors */
-  --table-header-bg: #1a1a1a;
-  --table-row-hover: #1f1f1f;
-  --table-border: #2c2c2c;
+  --table-header-bg: #111827;
+  --table-row-hover: #1F2937;
+  --table-border: rgba(255, 255, 255, 0.1);
 
   /* Sidebar/Nav Colors */
-  --nav-bg: #1a1a1a;
-  --nav-text: rgba(255, 255, 255, 0.7);
+  --nav-bg: #0B0F17;
+  --nav-text: #F8FAFC;
   --nav-text-active: #EF4444;
-  --nav-bg-active: rgba(239, 68, 68, 0.08);
+  --nav-bg-active: rgba(239, 68, 68, 0.15);
 
   /* Badge/Tag Colors */
-  --badge-bg: #2c2c2c;
-  --badge-text: #ffffff;
+  --badge-bg: #1F2937;
+  --badge-text: #E2E8F0;
 
   /* Chart Colors */
-  --chart-grid: #334155;
-  --chart-axis: #94a3b8;
+  --chart-grid: rgba(255, 255, 255, 0.1);
+  --chart-axis: #94A3B8;
 
   /* Status Colors - Adjusted for Dark */
   --success-bg: rgba(34, 197, 94, 0.15);

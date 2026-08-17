@@ -7,19 +7,21 @@
  * 3. Tile 3: AI Command Center (Searchable Dropdown for all 26 AI Assistants — renders ONLY selected AI assistant's content)
  */
 
-import React, { FC, memo, useState, useEffect, Suspense, useCallback, useMemo } from 'react';
+import React, { FC, memo, useState, useEffect, Suspense, useCallback, useMemo, useDeferredValue } from 'react';
 import ErrorBoundary from '../../components/ErrorBoundary';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import styled from 'styled-components';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion, AnimatePresence, Variants } from 'framer-motion';
 import { Badge } from '../../components/ui';
 import SuspenseLoader from '../../components/common/SuspenseLoader';
+import SkeletonLoader from '../../components/common/SkeletonLoader';
+import { useHaptics } from '../../hooks/useHaptics';
 import { useCRMHubData } from '../../hooks/crm/useCRMHubData';
 import { CRM_MODULE_REGISTRY, resolveCRMModules, CRM_HUB_MODULE_ORDER } from '../../config/crmModuleRegistry';
 import PublicLayout from '../../components/layout/PublicLayout';
 
 // --- Framer Motion Animation Variants ---
-const staggerContainer = {
+const staggerContainer: Variants = {
   hidden: { opacity: 0 },
   show: {
     opacity: 1,
@@ -27,7 +29,7 @@ const staggerContainer = {
   },
 };
 
-const slideUpItem = {
+const slideUpItem: Variants = {
   hidden: { y: 20, opacity: 0 },
   show: { y: 0, opacity: 1, transition: { type: 'spring', stiffness: 300, damping: 24 } },
 };
@@ -724,21 +726,25 @@ export const CRMHubPage: FC = () => {
   }, [selectedAiId]);
 
   // Filtered Departments based on search query
+  const deferredDeptQuery = useDeferredValue(deptSearchQuery);
   const filteredDepartments = useMemo(() => {
     return TWELVE_CORPORATE_DEPARTMENTS.filter(d =>
-      `${d.num} ${d.name}`.toLowerCase().includes(deptSearchQuery.toLowerCase())
+      `${d.num} ${d.name}`.toLowerCase().includes(deferredDeptQuery.toLowerCase())
     );
-  }, [deptSearchQuery]);
+  }, [deferredDeptQuery]);
 
   // Filtered AI Assistants based on search query
+  const deferredAiQuery = useDeferredValue(aiSearchQuery);
   const filteredAiAssistants = useMemo(() => {
     return ALL_AI_ASSISTANTS.filter(a =>
-      `${a.num} ${a.name} ${a.role}`.toLowerCase().includes(aiSearchQuery.toLowerCase())
+      `${a.num} ${a.name} ${a.role}`.toLowerCase().includes(deferredAiQuery.toLowerCase())
     );
-  }, [aiSearchQuery]);
+  }, [deferredAiQuery]);
 
   // Sidebar Collapse state
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState<boolean>(false);
+
+  const haptics = useHaptics();
 
   // Sub-Activity Groups Accordion State
   const [openSubGroups, setOpenSubGroups] = useState<Record<string, boolean>>({
@@ -747,28 +753,33 @@ export const CRMHubPage: FC = () => {
 
   // TILE 1 CLICK: Managing Director Office
   const handleMdTileClick = () => {
+    haptics.light();
     setOpenTopTile(prev => (prev === 'md_office' ? null : 'md_office'));
     setActiveTab('dept_summary');
   };
 
   // TILE 2 CLICK: 12 Corporate Departments
   const handleCorporateTileClick = () => {
+    haptics.light();
     setOpenTopTile(prev => (prev === 'corporate' ? null : 'corporate'));
     setActiveTab('dept_summary');
   };
 
   // TILE 3 CLICK: AI Command Center
   const handleAiTileClick = () => {
+    haptics.light();
     setOpenTopTile(prev => (prev === 'ai_command' ? null : 'ai_command'));
     setActiveTab(selectedAiId);
   };
 
   // Sub-item click handler
   const handleSubItemClick = (itemId: string) => {
+    haptics.medium();
     setActiveTab(itemId);
   };
 
   const toggleSubGroup = (key: string) => {
+    haptics.light();
     setOpenSubGroups(prev => ({ ...prev, [key]: !prev[key] }));
   };
 
@@ -976,7 +987,7 @@ export const CRMHubPage: FC = () => {
           </ContentHeader>
           <div style={{ padding: '1rem' }}>
             <ErrorBoundary>
-              <Suspense fallback={<SuspenseLoader />}>
+              <Suspense fallback={<SkeletonLoader width="100%" height="400px" borderRadius="16px" />}>
                 <ModuleComponent role="owner" user={user} />
               </Suspense>
             </ErrorBoundary>

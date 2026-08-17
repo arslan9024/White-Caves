@@ -94,3 +94,24 @@ export {
   TOAST_POSITIONS,
   MODAL_SIZES,
 } from './advancedUI.types';
+
+// ==========================================
+// Epic 2: "400x Overdrive" UI/UX Variants
+// ==========================================
+export const OVERDRIVE_VARIANTS = {
+  containerStagger: {
+    hidden: { opacity: 0 },
+    show: {
+      opacity: 1,
+      transition: { staggerChildren: 0.1, delayChildren: 0.1 },
+    },
+  },
+  slideUpSpring: {
+    hidden: { y: 20, opacity: 0 },
+    show: { y: 0, opacity: 1, transition: { type: 'spring', stiffness: 300, damping: 24 } },
+  },
+  scalePop: {
+    hidden: { scale: 0.95, opacity: 0 },
+    show: { scale: 1, opacity: 1, transition: { type: 'spring', stiffness: 400, damping: 20 } },
+  }
+};

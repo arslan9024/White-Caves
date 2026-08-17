@@ -1,20 +1,12 @@
 import React, { createContext, useContext, useState, FC, ReactNode, memo } from 'react';
-import en from '../locales/en.json';
-import ar from '../locales/ar.json';
-import es from '../locales/es.json';
+import { dictionaries, supportedLocales, SupportedLanguageCode } from '../locales';
 
-export type SupportedLanguage = 'en' | 'ar' | 'es';
-
-const dictionaryMap: Record<SupportedLanguage, Record<string, unknown>> = {
-  en: en as Record<string, unknown>,
-  ar: ar as Record<string, unknown>,
-  es: es as Record<string, unknown>,
-};
+export type SupportedLanguage = SupportedLanguageCode;
 
 interface TranslationContextType {
   language: SupportedLanguage;
   setLanguage: (lang: SupportedLanguage) => void;
-  t: (keyPath: string) => string;
+  t: (keyPath: string, params?: Record<string, string | number>) => string;
 }
 
 const TranslationContext = createContext<TranslationContextType | undefined>(undefined);
@@ -22,19 +14,43 @@ const TranslationContext = createContext<TranslationContextType | undefined>(und
 export const TranslationProvider: FC<{ children: ReactNode }> = ({ children }) => {
   const [language, setLanguage] = useState<SupportedLanguage>('en');
 
-  const t = (keyPath: string): string => {
+  const t = (keyPath: string, params?: Record<string, string | number>): string => {
+    if (!keyPath) return '';
     const keys = keyPath.split('.');
-    let current: unknown = dictionaryMap[language] || dictionaryMap['en'];
+    const dict = dictionaries[language] || dictionaries.en;
+    let current: any = dict;
 
     for (const key of keys) {
       if (current && typeof current === 'object' && key in current) {
-        current = (current as Record<string, unknown>)[key];
+        current = current[key];
       } else {
-        return keyPath; // Fallback to key string if missing
+        // Fallback to English dictionary
+        let fallback: any = dictionaries.en;
+        for (const fk of keys) {
+          if (fallback && typeof fallback === 'object' && fk in fallback) {
+            fallback = fallback[fk];
+          } else {
+            return keyPath;
+          }
+        }
+        current = fallback;
+        break;
       }
     }
 
-    return typeof current === 'string' ? current : keyPath;
+    if (typeof current !== 'string') {
+      return keyPath;
+    }
+
+    let result = current;
+    if (params) {
+      Object.keys(params).forEach(param => {
+        const escaped = param.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+        result = result.replace(new RegExp(`{${escaped}}`, 'g'), String(params[param]));
+      });
+    }
+
+    return result;
   };
 
   return (
@@ -51,32 +67,47 @@ export function useTranslation() {
     return {
       language: 'en' as SupportedLanguage,
       setLanguage: () => {},
-      t: (keyPath: string) => {
+      t: (keyPath: string, params?: Record<string, string | number>) => {
+        if (!keyPath) return '';
         const keys = keyPath.split('.');
-        let current: unknown = en;
+        let current: any = dictionaries.en;
         for (const key of keys) {
           if (current && typeof current === 'object' && key in current) {
-            current = (current as Record<string, unknown>)[key];
+            current = current[key];
           } else {
             return keyPath;
           }
         }
-        return typeof current === 'string' ? current : keyPath;
+        if (typeof current !== 'string') {
+          return keyPath;
+        }
+        let result = current;
+        if (params) {
+          Object.keys(params).forEach(param => {
+            const escaped = param.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+            result = result.replace(new RegExp(`{${escaped}}`, 'g'), String(params[param]));
+          });
+        }
+        return result;
       },
     };
   }
   return context;
 }
 
-/**
- * Convenience JSX component for inline translated text.
- * Usage: <Text tid="key.path" />
- */
-export const Text: FC<{ tid: string }> = memo(({ tid }) => {
-  const { t } = useTranslation();
-  return <>{t(tid)}</>;
-});
+export interface TextProps {
+  tid?: string;
+  k?: string;
+  fallback?: string;
+  params?: Record<string, string | number>;
+}
 
-Text.displayName = 'Text';
+export const Text: FC<TextProps> = memo(({ tid, k, fallback, params }) => {
+  const { t } = useTranslation();
+  const keyPath = tid || k || '';
+  if (!keyPath) return <>{fallback || ''}</>;
+  const value = t(keyPath, params);
+  return <>{value === keyPath && fallback ? fallback : value}</>;
+});
 
 export default TranslationContext;

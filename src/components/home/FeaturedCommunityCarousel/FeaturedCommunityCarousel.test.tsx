@@ -7,12 +7,12 @@ describe('FeaturedCommunityCarousel Component', () => {
   it('renders featured prime Dubai communities carousel and selects community', () => {
     render(<FeaturedCommunityCarousel />);
     expect(screen.getByTestId('featured-community-carousel')).toBeDefined();
-    expect(screen.getByText(/Featured Prime Dubai Communities/i)).toBeDefined();
-    expect(screen.getByText(/DISCOVERY HUBS/i)).toBeDefined();
+    expect(screen.getByText(/Prime Master Communities/i)).toBeDefined();
+    expect(screen.getByText(/DLD Q3 Verified/i)).toBeDefined();
     expect(screen.getByText(/Palm Jumeirah/i)).toBeDefined();
     expect(screen.getByText(/Downtown Dubai/i)).toBeDefined();
     expect(screen.getByText(/Dubai Hills Estate/i)).toBeDefined();
-    expect(screen.getByText(/Emirates Hills/i)).toBeDefined();
+    expect(screen.getByText(/DAMAC Hills 2/i)).toBeDefined();
 
     const dtCard = screen.getByText(/Downtown Dubai/i);
     fireEvent.click(dtCard);

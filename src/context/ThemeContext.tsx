@@ -14,10 +14,13 @@ import { safeStorage } from '../utils/safeStorage';
 
 export type ThemeMode = 'light' | 'dark' | 'system';
 
-interface ThemeContextType {
+export interface ThemeContextType {
   isDark: boolean;
   themeMode: ThemeMode;
   setThemeMode: (mode: ThemeMode) => void;
+  toggleTheme: () => void;
+  updateTheme: (mode: ThemeMode) => void;
+  isLoading: boolean;
   /** @deprecated Use setThemeMode instead */
   setIsDark: Dispatch<SetStateAction<boolean>>;
 }
@@ -29,9 +32,10 @@ interface ThemeProviderProps {
 }
 
 function getSystemDark(): boolean {
-  return typeof window !== 'undefined'
-    ? window.matchMedia('(prefers-color-scheme: dark)').matches
-    : false;
+  if (typeof window === 'undefined' || typeof window.matchMedia === 'undefined') {
+    return false;
+  }
+  return window.matchMedia('(prefers-color-scheme: dark)').matches;
 }
 
 export const ThemeProvider: FC<ThemeProviderProps> = ({ children }) => {
@@ -41,13 +45,16 @@ export const ThemeProvider: FC<ThemeProviderProps> = ({ children }) => {
     // Legacy support
     const legacy = safeStorage.get('theme');
     if (legacy === 'dark') return 'dark';
+    if (legacy === 'light') return 'light';
     return 'system';
   });
 
   const [systemDark, setSystemDark] = useState<boolean>(getSystemDark);
+  const [isLoading, setIsLoading] = useState(false);
 
   // Listen to OS preference changes
   useEffect(() => {
+    if (typeof window === 'undefined' || typeof window.matchMedia === 'undefined') return;
     const mq = window.matchMedia('(prefers-color-scheme: dark)');
     const handler = (e: MediaQueryListEvent) => setSystemDark(e.matches);
     mq.addEventListener('change', handler);
@@ -57,9 +64,24 @@ export const ThemeProvider: FC<ThemeProviderProps> = ({ children }) => {
   const isDark = themeMode === 'dark' || (themeMode === 'system' && systemDark);
 
   const setThemeMode = useCallback((mode: ThemeMode) => {
+    setIsLoading(true);
     setThemeModeState(mode);
     safeStorage.set('themeMode', mode);
     safeStorage.set('theme', mode === 'dark' ? 'dark' : mode === 'light' ? 'light' : 'system');
+    setIsLoading(false);
+  }, []);
+
+  const toggleTheme = useCallback(() => {
+    setThemeModeState(prev => {
+      let next: ThemeMode = 'dark';
+      if (prev === 'dark') next = 'light';
+      else if (prev === 'light') next = 'system';
+      else next = 'dark';
+
+      safeStorage.set('themeMode', next);
+      safeStorage.set('theme', next === 'dark' ? 'dark' : next === 'light' ? 'light' : 'system');
+      return next;
+    });
   }, []);
 
   // Legacy compat: setIsDark toggles between light/dark
@@ -72,6 +94,7 @@ export const ThemeProvider: FC<ThemeProviderProps> = ({ children }) => {
   );
 
   useEffect(() => {
+    if (typeof document === 'undefined') return;
     document.body.className = isDark ? 'dark-mode theme-transition' : 'theme-transition';
     document.documentElement.setAttribute('data-theme', isDark ? 'dark' : 'light');
     document.documentElement.setAttribute('data-theme-mode', themeMode);
@@ -84,8 +107,16 @@ export const ThemeProvider: FC<ThemeProviderProps> = ({ children }) => {
   }, [isDark, themeMode]);
 
   const value = useMemo(
-    () => ({ isDark, themeMode, setThemeMode, setIsDark }),
-    [isDark, themeMode, setThemeMode, setIsDark]
+    () => ({
+      isDark,
+      themeMode,
+      setThemeMode,
+      toggleTheme,
+      updateTheme: setThemeMode,
+      isLoading,
+      setIsDark,
+    }),
+    [isDark, themeMode, setThemeMode, toggleTheme, isLoading, setIsDark]
   );
 
   return <ThemeContext.Provider value={value}>{children}</ThemeContext.Provider>;
@@ -98,3 +129,5 @@ export const useTheme = (): ThemeContextType => {
   }
   return context;
 };
+
+export default ThemeProvider;

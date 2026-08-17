@@ -55,8 +55,8 @@ export function useCavesFloatingSearch() {
         const query = filters.searchTerm.toLowerCase();
         const matchesTitle = prop.title.toLowerCase().includes(query);
         const matchesId = prop.id.toLowerCase().includes(query);
-        const matchesCommunity = prop.community.toLowerCase().includes(query);
-        const matchesFeature = prop.features.some((f) => f.toLowerCase().includes(query));
+        const matchesCommunity = (prop.community || '').toLowerCase().includes(query);
+        const matchesFeature = (prop.features || []).some((f: any) => f.toLowerCase().includes(query));
         if (!matchesTitle && !matchesId && !matchesCommunity && !matchesFeature) {
           return false;
         }
@@ -68,10 +68,10 @@ export function useCavesFloatingSearch() {
       }
 
       // Price filter
-      if (typeof filters.minPrice === 'number' && prop.priceAED < filters.minPrice) {
+      if (typeof filters.minPrice === 'number' && (prop.priceAED || 0) < filters.minPrice) {
         return false;
       }
-      if (typeof filters.maxPrice === 'number' && prop.priceAED > filters.maxPrice) {
+      if (typeof filters.maxPrice === 'number' && (prop.priceAED || 0) > filters.maxPrice) {
         return false;
       }
 

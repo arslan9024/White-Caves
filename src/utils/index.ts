@@ -93,3 +93,23 @@ export const formatPrice = (
  * Validate email
  */
 export { isValidEmail } from './validation';
+
+/**
+ * PII Masking & Data Redaction (UAE PDPL Compliant)
+ */
+export * from './piiMasker';
+
+/**
+ * Intelligent Route Prefetcher
+ */
+export * from './routePrefetcher';
+
+/**
+ * Universal Data Export Engine (CSV / Excel XML)
+ */
+export * from './exportUtils';
+
+/**
+ * Offline-First IndexedDB Chat Store
+ */
+export * from './indexedChatStore';

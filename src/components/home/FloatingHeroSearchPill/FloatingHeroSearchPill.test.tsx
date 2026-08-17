@@ -1,22 +1,30 @@
 import { describe, it, expect } from 'vitest';
 import React from 'react';
 import { render, screen, fireEvent } from '@testing-library/react';
+import { MemoryRouter } from 'react-router-dom';
 import { FloatingHeroSearchPill } from './FloatingHeroSearchPill';
 
 describe('FloatingHeroSearchPill Component', () => {
   it('renders floating hero search pill and toggles category tabs', () => {
-    render(<FloatingHeroSearchPill />);
+    render(
+      <MemoryRouter>
+        <FloatingHeroSearchPill />
+      </MemoryRouter>
+    );
     expect(screen.getByTestId('floating-hero-search-pill')).toBeDefined();
-    expect(screen.getByRole('button', { name: 'BUY' })).toBeDefined();
-    expect(screen.getByRole('button', { name: 'RENT' })).toBeDefined();
-    expect(screen.getByRole('button', { name: 'OFF-PLAN' })).toBeDefined();
-    expect(screen.getByRole('button', { name: 'COMMERCIAL' })).toBeDefined();
+    expect(screen.getByRole('button', { name: /All Inventory/i })).toBeDefined();
+    expect(screen.getByRole('button', { name: /Primary Off-Plan/i })).toBeDefined();
+    expect(screen.getByRole('button', { name: /Secondary Villas/i })).toBeDefined();
+    expect(screen.getByRole('button', { name: /Commercial/i })).toBeDefined();
 
-    const rentTab = screen.getByRole('button', { name: 'RENT' });
-    fireEvent.click(rentTab);
-    expect(screen.getByPlaceholderText(/e\.g\. Palm Jumeirah, Downtown, Emirates Hills/i)).toBeDefined();
+    const offPlanTab = screen.getByRole('button', { name: /Primary Off-Plan/i });
+    fireEvent.click(offPlanTab);
 
-    const searchBtn = screen.getByRole('button', { name: /Search/i });
+    const locationInput = screen.getByTestId('hero-location-input');
+    fireEvent.change(locationInput, { target: { value: 'DAMAC Hills 2' } });
+    expect((locationInput as HTMLInputElement).value).toBe('DAMAC Hills 2');
+
+    const searchBtn = screen.getByTestId('hero-search-submit-btn');
     expect(searchBtn).toBeDefined();
   });
 });
