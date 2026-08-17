@@ -129,7 +129,7 @@ function TierBadge({ tier }: { tier: string }) {
   const colours: Record<string, string> = {
     hot: '#EF4444',
     warm: '#d97706',
-    cold: '#2563eb',
+    cold: '#EF4444',
     inactive: '#6b7280',
   };
   return (

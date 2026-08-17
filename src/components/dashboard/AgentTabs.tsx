@@ -771,7 +771,7 @@ export const ActiveDeals: React.FC = () => {
                   <td style={S.td}>{o.buyer?.name ?? o.user?.name ?? '—'}</td>
                   <td style={{ ...S.td, fontWeight: 600 }}>{S.formatCurrency(o.amount)}</td>
                   <td style={S.td}>
-                    <span style={S.badge('#2563eb', '#dbeafe')}>{S.formatStatus(o.status)}</span>
+                    <span style={S.badge('#EF4444', '#dbeafe')}>{S.formatStatus(o.status)}</span>
                   </td>
                   <td style={S.td}>{S.formatDate(o.createdAt)}</td>
                 </tr>

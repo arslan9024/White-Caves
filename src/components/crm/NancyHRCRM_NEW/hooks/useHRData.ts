@@ -216,7 +216,7 @@ export const useHRData = () => {
   const getApplicantStatusBadge = (status: string): { bg: string; color: string } => {
     switch (status) {
       case 'new':
-        return { bg: 'rgba(59, 130, 246, 0.15)', color: '#3b82f6' };
+        return { bg: 'rgba(59, 130, 246, 0.15)', color: '#EF4444' };
       case 'shortlisted':
         return { bg: 'rgba(168, 85, 247, 0.15)', color: '#a855f7' };
       case 'interviewed':

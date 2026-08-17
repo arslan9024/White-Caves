@@ -68,7 +68,7 @@ const ProgressBarFill = styled.div<{
         return 'background-color: #06b6d4;';
       case 'primary':
       default:
-        return 'background-color: #3b82f6;';
+        return 'background-color: #EF4444;';
     }
   }}
 

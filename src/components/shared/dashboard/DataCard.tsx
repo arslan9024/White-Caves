@@ -59,7 +59,7 @@ const CardTitle = styled.h3`
   svg {
     width: 20px;
     height: 20px;
-    color: #6366f1;
+    color: #EF4444;
   }
 `;
 

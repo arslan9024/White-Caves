@@ -141,7 +141,7 @@ export const OwnerBadge = styled.button<{ $multiPhone?: boolean }>`
   gap: ${spacing.xs};
   padding: 4px 8px;
   background: var(--bg-secondary);
-  border: 1px solid ${props => (props.$multiPhone ? '#3b82f6' : 'var(--border-color)')};
+  border: 1px solid ${props => (props.$multiPhone ? '#EF4444' : 'var(--border-color)')};
   border-radius: ${radius.md};
   font-size: 11px;
   color: var(--text-primary);
@@ -155,7 +155,7 @@ export const OwnerBadge = styled.button<{ $multiPhone?: boolean }>`
 `;
 
 export const MultiPhoneIcon = styled.span`
-  color: #3b82f6;
+  color: #EF4444;
 `;
 
 export const MultiOwnerIndicator = styled.div`
@@ -190,7 +190,7 @@ export const StatusBadge = styled.span<{ $status?: string }>`
   color: ${props => {
     switch (props.$status) {
       case 'rented':
-        return '#3b82f6';
+        return '#EF4444';
       case 'available':
         return '#22c55e';
       default:

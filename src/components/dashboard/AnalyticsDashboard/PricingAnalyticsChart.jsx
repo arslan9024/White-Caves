@@ -27,7 +27,7 @@ function PricingAnalyticsChart({ data, loading = false }) {
     return <div className="chart-error">No data available</div>;
   }
 
-  const COLORS = ['#3b82f6', '#8b5cf6', '#ec4899', '#f59e0b', '#10b981', '#06b6d4', '#14b8a6', '#f97316'];
+  const COLORS = ['#EF4444', '#8b5cf6', '#ec4899', '#f59e0b', '#10b981', '#06b6d4', '#14b8a6', '#f97316'];
 
   const formatPrice = (value) => {
     if (value >= 1000000) {
@@ -83,7 +83,7 @@ function PricingAnalyticsChart({ data, loading = false }) {
                 content={<CustomTooltip />}
                 contentStyle={{ backgroundColor: '#fff', border: '1px solid #e5e7eb' }}
               />
-              <Bar dataKey="avgPrice" fill="#3b82f6" radius={[8, 8, 0, 0]}>
+              <Bar dataKey="avgPrice" fill="#EF4444" radius={[8, 8, 0, 0]}>
                 {data.avgPriceByArea.slice(0, 10).map((entry, index) => (
                   <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
                 ))}

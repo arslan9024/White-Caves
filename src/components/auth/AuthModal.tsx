@@ -416,7 +416,7 @@ const AuthModal: FC<AuthModalProps> = ({ mode: initialMode = 'signin', onClose }
                   style={{
                     background:
                       selectedCategory === cat.id ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.2)',
-                    border: `1px solid ${selectedCategory === cat.id ? '#3b82f6' : 'rgba(255,255,255,0.1)'}`,
+                    border: `1px solid ${selectedCategory === cat.id ? '#EF4444' : 'rgba(255,255,255,0.1)'}`,
                     borderRadius: '12px',
                     padding: '16px',
                     color: '#fff',
@@ -476,7 +476,7 @@ const AuthModal: FC<AuthModalProps> = ({ mode: initialMode = 'signin', onClose }
                   style={{
                     background:
                       selectedRole === role.id ? 'rgba(59,130,246,0.1)' : 'rgba(0,0,0,0.2)',
-                    border: `1px solid ${selectedRole === role.id ? '#3b82f6' : 'rgba(255,255,255,0.1)'}`,
+                    border: `1px solid ${selectedRole === role.id ? '#EF4444' : 'rgba(255,255,255,0.1)'}`,
                     borderRadius: '12px',
                     padding: '12px 16px',
                     color: '#fff',

@@ -80,7 +80,7 @@ const Title = styled.h1`
   svg {
     width: 32px;
     height: 32px;
-    color: #6366f1;
+    color: #EF4444;
   }
 `;
 
@@ -175,7 +175,7 @@ const FilterInput = styled.input`
 
   &:focus {
     outline: none;
-    border-color: #6366f1;
+    border-color: #EF4444;
     box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
   }
 
@@ -195,7 +195,7 @@ const FilterSelect = styled.select`
 
   &:focus {
     outline: none;
-    border-color: #6366f1;
+    border-color: #EF4444;
     box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
   }
 `;
@@ -240,7 +240,7 @@ const LoadingOverlay = styled.div`
 
 const Spinner = styled.div`
   border: 4px solid #f3f4f6;
-  border-top: 4px solid #6366f1;
+  border-top: 4px solid #EF4444;
   border-radius: 50%;
   width: 40px;
   height: 40px;

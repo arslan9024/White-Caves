@@ -454,12 +454,12 @@
 }
 
 .owner-follow-up-list .btn-secondary {
-  background: #3b82f6;
+  background: #EF4444;
   color: white;
 }
 
 .owner-follow-up-list .btn-secondary:hover {
-  background: #2563eb;
+  background: #EF4444;
   box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
 }
 

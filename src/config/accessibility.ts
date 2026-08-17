@@ -100,11 +100,11 @@ export const colorContrast = {
     success: '#10b981', // 5.5:1 ratio
     warning: '#f59e0b', // 5.2:1 ratio
     error: '#ef4444', // 5.5:1 ratio
-    info: '#3b82f6', // 5.5:1 ratio
+    info: '#EF4444', // 5.5:1 ratio
   },
   interactive: {
-    primary: '#6366f1', // 5.4:1 ratio
-    hover: '#4f46e5', // 7.1:1 ratio
+    primary: '#EF4444', // 5.4:1 ratio
+    hover: '#DC2626', // 7.1:1 ratio
     focus: '#4338ca', // 11.2:1 ratio
     disabled: '#e5e7eb', // 2.3:1 ratio (acceptable for disabled)
   },

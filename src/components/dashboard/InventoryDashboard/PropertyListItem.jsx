@@ -18,7 +18,7 @@ const PropertyListItem = ({
       'available': '#10b981',
       'offer_in_progress': '#f59e0b',
       'offer_approved': '#8b5cf6',
-      'contract_generation': '#3b82f6',
+      'contract_generation': '#EF4444',
       'contract_signature': '#06b6d4',
       'signed': '#8b5cf6',
       'occupied': '#ef4444',

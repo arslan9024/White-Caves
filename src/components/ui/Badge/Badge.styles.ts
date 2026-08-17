@@ -75,7 +75,7 @@ const variantStyles = {
   `,
   info: css`
     background: rgba(59, 130, 246, 0.1);
-    color: #2563eb;
+    color: #EF4444;
     border-color: rgba(59, 130, 246, 0.3);
   `,
 };

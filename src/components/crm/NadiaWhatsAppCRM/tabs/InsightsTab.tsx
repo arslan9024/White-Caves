@@ -24,7 +24,7 @@ export const InsightsTab: React.FC<InsightsTabProps> = ({ data }) => {
   const warmLeadsCount = conversations.filter((c: InsightConversation) => c?.priority === 'warm').length;
 
   const stats = [
-    { label: 'Total Conversations', value: totalConversations, icon: MessageCircle, color: '#3b82f6' },
+    { label: 'Total Conversations', value: totalConversations, icon: MessageCircle, color: '#EF4444' },
     { label: 'Unread Messages', value: unreadCount, icon: Zap, color: '#f59e0b' },
     { label: 'Hot Leads', value: hotLeadsCount, icon: TrendingUp, color: '#ef4444' },
     { label: 'Warm Leads', value: warmLeadsCount, icon: Users, color: '#f59e0b' }

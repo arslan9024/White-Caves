@@ -37,7 +37,7 @@
 
 /* Color Variants */
 .metric-card--blue {
-  border-left: 4px solid #3b82f6;
+  border-left: 4px solid #EF4444;
 }
 
 .metric-card--green {
@@ -70,7 +70,7 @@
 
 .metric-card--blue .metric-card__icon {
   background-color: #eff6ff;
-  color: #3b82f6;
+  color: #EF4444;
 }
 
 .metric-card--green .metric-card__icon {

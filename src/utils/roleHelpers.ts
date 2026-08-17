@@ -84,7 +84,7 @@ export function getRoleRank(role: string | null): number {
 export function getRoleBadgeColor(role: string | null): string {
   const resolved = resolveBackendRole(role ?? '');
   if (resolved === 'owner') return '#EF4444'; // White Caves Red — Managing Director
-  if (['admin', 'manager'].includes(resolved)) return '#6366f1'; // indigo
+  if (['admin', 'manager'].includes(resolved)) return '#EF4444'; // indigo
   if (['hr_staff', 'accounts_staff', 'finance'].includes(resolved)) return '#0ea5e9'; // sky blue
   if (
     ['agent', 'leasing_agent', 'leasing-agent', 'sales_agent', 'secondary-sales-agent'].includes(
@@ -94,7 +94,7 @@ export function getRoleBadgeColor(role: string | null): string {
     return '#10b981'; // emerald
   if (resolved === 'landlord') return '#f59e0b'; // amber
   if (resolved === 'tenant') return '#8b5cf6'; // violet
-  if (['buyer', 'seller'].includes(resolved)) return '#3b82f6'; // blue
+  if (['buyer', 'seller'].includes(resolved)) return '#EF4444'; // blue
   if (resolved === 'property_owner') return '#f97316'; // orange
   return '#6b7280'; // gray — default
 }

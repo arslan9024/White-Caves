@@ -28,10 +28,10 @@ function PropertyDistributionChart({ data, loading = false }) {
   }
 
   const COLORS = {
-    status: ['#3b82f6', '#10b981', '#f59e0b', '#ef4444'],
-    type: ['#3b82f6', '#8b5cf6', '#ec4899', '#06b6d4', '#14b8a6'],
-    furnishing: ['#3b82f6', '#10b981', '#f59e0b'],
-    area: ['#3b82f6', '#8b5cf6', '#ec4899', '#f59e0b', '#10b981', '#06b6d4']
+    status: ['#EF4444', '#10b981', '#f59e0b', '#ef4444'],
+    type: ['#EF4444', '#8b5cf6', '#ec4899', '#06b6d4', '#14b8a6'],
+    furnishing: ['#EF4444', '#10b981', '#f59e0b'],
+    area: ['#EF4444', '#8b5cf6', '#ec4899', '#f59e0b', '#10b981', '#06b6d4']
   };
 
   const renderCustomLabel = (entry) => {
@@ -97,7 +97,7 @@ function PropertyDistributionChart({ data, loading = false }) {
               <Tooltip 
                 contentStyle={{ backgroundColor: '#fff', border: '1px solid #e5e7eb' }}
               />
-              <Bar dataKey="count" fill="#3b82f6" radius={[8, 8, 0, 0]}>
+              <Bar dataKey="count" fill="#EF4444" radius={[8, 8, 0, 0]}>
                 {data.byType.map((entry, index) => (
                   <Cell key={`cell-${index}`} fill={COLORS.type[index % COLORS.type.length]} />
                 ))}
@@ -172,7 +172,7 @@ function PropertyDistributionChart({ data, loading = false }) {
               <Tooltip 
                 contentStyle={{ backgroundColor: '#fff', border: '1px solid #e5e7eb' }}
               />
-              <Bar dataKey="count" fill="#3b82f6" radius={[8, 8, 0, 0]}>
+              <Bar dataKey="count" fill="#EF4444" radius={[8, 8, 0, 0]}>
                 {data.byArea.slice(0, 10).map((entry, index) => (
                   <Cell key={`cell-${index}`} fill={COLORS.area[index % COLORS.area.length]} />
                 ))}

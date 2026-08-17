@@ -48,7 +48,7 @@ const GRADIENTS = {
 
 const ACCENT_COLORS = {
   red: '#ef4444',
-  blue: '#3b82f6',
+  blue: '#EF4444',
   green: '#22c55e',
   purple: '#a855f7',
   gold: '#eab308',

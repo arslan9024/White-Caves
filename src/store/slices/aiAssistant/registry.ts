@@ -144,7 +144,7 @@ export const AI_ASSISTANTS_REGISTRY: Record<string, AIAssistant> = {
     title: 'Compliance & Legal Officer',
     department: 'compliance',
     icon: 'Shield',
-    colorScheme: '#6366F1',
+    colorScheme: '#EF4444',
     avatar: '👩‍⚖️',
     description:
       'Laila is the guardian of regulatory adherence at White Caves, ensuring every transaction, employee, and business process meets UAE real estate law, RERA regulations, and AML requirements. She runs Know-Your-Customer checks on new clients — verifying passport, Emirates ID, proof of address, and source-of-funds declarations — continuously screens the client database against AML watchlists, reviews contracts for non-standard clauses, maintains a complete audit trail, and generates the regulatory reports required by DLD, RERA, and the UAE Central Bank.',
@@ -719,7 +719,7 @@ export const AI_ASSISTANTS_REGISTRY: Record<string, AIAssistant> = {
     title: 'Development & Project Intelligence',
     department: 'intelligence',
     icon: 'Map',
-    colorScheme: '#6366F1',
+    colorScheme: '#EF4444',
     avatar: '🗺️',
     description:
       'Atlas maps the off-plan development landscape of Dubai so White Caves can position itself and its clients ahead of the market. She analyses DLD master-plan data, zoning classifications, infrastructure-investment corridors, and developer track records to identify projects with the highest potential for capital appreciation. Atlas builds detailed feasibility profiles for each tracked development — cost per sq ft, payment-plan structures, expected handover dates, nearby amenity scores — and maintains a live pipeline of upcoming launches with ETA alerts sent to the sales team.',
@@ -984,7 +984,7 @@ export const AI_ASSISTANTS_REGISTRY: Record<string, AIAssistant> = {
     title: 'Client Communication History & Timeline',
     department: 'customer_experience',
     icon: 'Clock',
-    colorScheme: '#6366F1',
+    colorScheme: '#EF4444',
     avatar: '📜',
     description:
       "Echo is the client-memory system that ensures no conversation context is ever lost, regardless of which agent or channel a client uses next. She aggregates every touchpoint — WhatsApp messages, Linda bot sessions, emails, phone call notes, meeting records, document shares, and property viewings — into a unified, searchable timeline per client. When an agent opens a client profile, Echo surfaces the most relevant recent context so the conversation can continue seamlessly. She also detects silence — clients who haven't been contacted in 14+ days — and alerts Clara to trigger a re-engagement sequence.",
@@ -1293,7 +1293,7 @@ export const AI_ASSISTANTS_REGISTRY: Record<string, AIAssistant> = {
     title: 'Document Generation Engine',
     department: 'data_and_ai',
     icon: 'FileText',
-    colorScheme: '#6366F1',
+    colorScheme: '#EF4444',
     avatar: '✍️',
     description:
       'Quill is the document factory of White Caves, eliminating the hours agents used to spend manually drafting, formatting, and proofing transaction documents. She maintains a library of RERA-compliant, legally reviewed templates — Sale and Purchase Agreements, MOUs, Tenancy Contracts, NOC request letters, invoices, commission statements, and investor portfolio reports — and populates them in seconds by pulling live data directly from the CRM. Quill supports Arabic/English bilingual documents with RTL formatting, generates bulk batches for portfolio transactions, and routes completed documents to Evangeline for risk review before delivery.',
@@ -1401,7 +1401,7 @@ export const DEPARTMENT_COLORS: Record<string, string> = {
   finance: 'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)',
   marketing: 'linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)',
   executive: 'linear-gradient(135deg, #43e97b 0%, #38f9d7 100%)',
-  compliance: 'linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%)',
+  compliance: 'linear-gradient(135deg, #EF4444 0%, #8b5cf6 100%)',
   communications: 'linear-gradient(135deg, #25D366 0%, #128C7E 100%)',
   sales: 'linear-gradient(135deg, #8B5CF6 0%, #D946EF 100%)',
   technology: 'linear-gradient(135deg, #0EA5E9 0%, #06B6D4 100%)',

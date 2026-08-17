@@ -51,18 +51,18 @@
 
 .toggle-btn:hover {
   background-color: white;
-  color: #3b82f6;
+  color: #EF4444;
 }
 
 .toggle-btn.active {
   background-color: white;
-  color: #3b82f6;
+  color: #EF4444;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
 }
 
 .refresh-btn {
   padding: 8px 16px;
-  background-color: #3b82f6;
+  background-color: #EF4444;
   color: white;
   border: none;
   border-radius: 6px;
@@ -73,7 +73,7 @@
 }
 
 .refresh-btn:hover {
-  background-color: #2563eb;
+  background-color: #EF4444;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
 }
 
@@ -140,7 +140,7 @@
   width: 40px;
   height: 40px;
   border: 3px solid #e5e7eb;
-  border-top-color: #3b82f6;
+  border-top-color: #EF4444;
   border-radius: 50%;
   animation: spin 0.8s linear infinite;
 }

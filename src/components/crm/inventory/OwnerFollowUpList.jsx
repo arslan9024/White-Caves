@@ -23,7 +23,7 @@ const OwnerFollowUpList = ({ owners = [], onFollowUp }) => {
   const statuses = [
     { value: 'all', label: 'All Owners', color: '#6b7280' },
     { value: 'never-contacted', label: 'Never Contacted', color: '#dc2626' },
-    { value: 'contacted', label: 'Contacted', color: '#3b82f6' },
+    { value: 'contacted', label: 'Contacted', color: '#EF4444' },
     { value: 'follow-up-due', label: 'Follow-up Due', color: '#f59e0b' },
     { value: 'follow-up-complete', label: 'Follow-up Complete', color: '#10b981' },
   ];

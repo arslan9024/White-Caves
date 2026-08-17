@@ -289,7 +289,7 @@ const LindaAdminCRM: React.FC<CRMModuleProps> = () => {
               <>
                 <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))', gap: 16, marginBottom: 24 }}>
                   <KpiTile label="Messages Sent" value={stats.messagesSent} icon={<Send size={20} />} color="#22c55e" />
-                  <KpiTile label="Messages Received" value={stats.messagesReceived} icon={<MessageSquare size={20} />} color="#3b82f6" />
+                  <KpiTile label="Messages Received" value={stats.messagesReceived} icon={<MessageSquare size={20} />} color="#EF4444" />
                   <KpiTile label="Queued" value={stats.queuedMessages} icon={<Activity size={20} />} color="#f59e0b" />
                   <KpiTile label="Reconnects" value={stats.reconnectAttempts} icon={<RefreshCw size={20} />} color="#888" />
                 </div>

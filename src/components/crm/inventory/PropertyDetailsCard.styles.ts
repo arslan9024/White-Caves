@@ -55,7 +55,7 @@ export const StatusBadge = styled.span<{ $status?: string }>`
       case 'rented':
         return '#22c55e';
       case 'available':
-        return '#3b82f6';
+        return '#EF4444';
       case 'sold':
         return '#E31E24';
       case 'reserved':

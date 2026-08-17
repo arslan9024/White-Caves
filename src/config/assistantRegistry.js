@@ -44,8 +44,8 @@ export const DEPARTMENTS = {
   compliance: { 
     id: 'compliance',
     label: 'Compliance', 
-    color: '#6366F1',
-    gradient: 'linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%)',
+    color: '#EF4444',
+    gradient: 'linear-gradient(135deg, #EF4444 0%, #8b5cf6 100%)',
     icon: 'Shield'
   },
   technology: { 
@@ -293,7 +293,7 @@ export const AI_ASSISTANTS = {
     title: 'Compliance Officer',
     department: 'compliance',
     icon: 'Shield',
-    color: '#6366F1',
+    color: '#EF4444',
     avatar: '👩‍⚖️',
     description: 'Manages regulatory compliance, KYC/AML processes, audit trails, and contract reviews',
     capabilities: ['kyc_verification', 'aml_monitoring', 'contract_review', 'compliance_reports', 'audit_trail'],
@@ -482,7 +482,7 @@ export const AI_ASSISTANTS = {
     title: 'Development & Project Intelligence',
     department: 'intelligence',
     icon: 'Map',
-    color: '#6366F1',
+    color: '#EF4444',
     avatar: '🗺️',
     description: 'Analyzes zoning, DLC master plans, market gaps, and developer track records to identify high-potential off-plan projects for investment or brokerage',
     capabilities: ['feasibility_analysis', 'zoning_analysis', 'developer_tracking', 'project_pipeline', 'market_gap_detection', 'roi_projection'],

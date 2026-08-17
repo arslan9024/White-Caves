@@ -236,7 +236,7 @@
 .item-status.occupied,
 .item-status.active {
   background: rgba(59, 130, 246, 0.15);
-  color: #3b82f6;
+  color: #EF4444;
 }
 
 .item-status.price-drop,
@@ -263,7 +263,7 @@
 
 .item-status.status-new {
   background: rgba(59, 130, 246, 0.15);
-  color: #3b82f6;
+  color: #EF4444;
 }
 
 .item-priority {
@@ -284,7 +284,7 @@
 
 .item-priority.priority-low {
   background: rgba(59, 130, 246, 0.15);
-  color: #3b82f6;
+  color: #EF4444;
 }
 
 .btn {
@@ -917,7 +917,7 @@
 /* ──────────────────────────────────────────────── */
 
 .portal-welcome-banner {
-  background: linear-gradient(135deg, var(--primary-color, #2563eb) 0%, #1d4ed8 100%);
+  background: linear-gradient(135deg, var(--primary-color, #EF4444) 0%, #DC2626 100%);
   border-radius: 16px;
   padding: 2rem 2.5rem;
   margin-bottom: 2rem;
@@ -987,7 +987,7 @@
 }
 
 .quick-link-tile:hover {
-  border-color: var(--primary-color, #2563eb);
+  border-color: var(--primary-color, #EF4444);
   transform: translateY(-2px);
   box-shadow: 0 4px 12px rgba(37, 99, 235, 0.12);
 }
@@ -1138,7 +1138,7 @@
 
 .status-badge.occupied {
   background: rgba(59, 130, 246, 0.15);
-  color: #3b82f6;
+  color: #EF4444;
 }
 
 .status-badge.available {
@@ -1931,7 +1931,7 @@
   width: 32px;
   height: 32px;
   border-radius: 50%;
-  background: var(--primary-color, #2563eb);
+  background: var(--primary-color, #EF4444);
   color: #fff;
   display: flex;
   align-items: center;
@@ -2229,7 +2229,7 @@
 
 .profile-field input:focus {
   outline: none;
-  border-color: var(--primary-color, #2563eb);
+  border-color: var(--primary-color, #EF4444);
 }
 
 .profile-field input[disabled],
@@ -2247,7 +2247,7 @@
 
 .profile-save-btn {
   padding: 0.6rem 1.5rem;
-  background: var(--primary-color, #2563eb);
+  background: var(--primary-color, #EF4444);
   color: #fff;
   border: none;
   border-radius: 8px;

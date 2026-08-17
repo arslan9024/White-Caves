@@ -211,7 +211,7 @@ export const USER_CATEGORIES: UserCategory[] = [
     label: 'Staff Member',
     icon: '💼',
     desc: 'White Caves employee or agent',
-    color: '#3b82f6',
+    color: '#EF4444',
   },
 ];
 

@@ -153,8 +153,8 @@ export const DEPARTMENTS: Record<DepartmentId, Department> = {
   compliance: {
     id: 'compliance',
     label: 'Compliance',
-    color: '#6366F1',
-    gradient: 'linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%)',
+    color: '#EF4444',
+    gradient: 'linear-gradient(135deg, #EF4444 0%, #8b5cf6 100%)',
     icon: 'Shield',
   },
   technology: {
@@ -482,7 +482,7 @@ export const AI_ASSISTANTS: Record<AssistantId, Assistant> = {
     title: 'Compliance Officer',
     department: 'compliance',
     icon: 'Shield',
-    color: '#6366F1',
+    color: '#EF4444',
     avatar: '👩‍⚖️',
     description:
       'Laila is the guardian of regulatory adherence at White Caves, ensuring every transaction, employee, and business process meets UAE real estate law, RERA regulations, and Anti-Money Laundering requirements. She runs Know-Your-Customer checks on new clients — verifying passport, Emirates ID, proof of address, and source-of-funds declarations — and continuously screens the client database against AML watchlists. Laila reviews contracts before signature for non-standard clauses, maintains a complete and tamper-proof audit trail of all compliance actions, and generates the regulatory reports required by DLD, RERA, and the UAE Central Bank. She also manages RERA agent-license renewals and tracks continuing-education requirements for the sales team.',
@@ -743,7 +743,7 @@ export const AI_ASSISTANTS: Record<AssistantId, Assistant> = {
     title: 'Development & Project Intelligence',
     department: 'intelligence',
     icon: 'Map',
-    color: '#6366F1',
+    color: '#EF4444',
     avatar: '🗺️',
     description:
       'Atlas maps the off-plan development landscape of Dubai so White Caves can position itself and its clients ahead of the market. She analyses DLD master-plan data, zoning classifications, infrastructure-investment corridors, and developer track records to identify projects with the highest potential for capital appreciation. Atlas builds detailed feasibility profiles for each tracked development — cost per sq ft, payment-plan structures, expected handover dates, nearby amenity scores — and maintains a live pipeline of upcoming launches with ETA alerts sent to the sales team. She works closely with Cipher on ROI projections and Nova on launch-event monitoring.',
@@ -1016,7 +1016,7 @@ export const AI_ASSISTANTS: Record<AssistantId, Assistant> = {
     title: 'Client Communication History & Timeline',
     department: 'customer_experience',
     icon: 'Clock',
-    color: '#6366F1',
+    color: '#EF4444',
     avatar: '📜',
     description:
       'Echo is the client-memory system that ensures no conversation context is ever lost, regardless of which agent or channel a client uses next. She aggregates every touchpoint — WhatsApp messages, Linda bot sessions, emails, phone call notes, meeting records, document shares, and property viewings — into a unified, searchable timeline per client. When an agent opens a client profile, Echo surfaces the most relevant recent context ("last spoke 3 days ago, viewed Unit 4B, waiting on mortgage pre-approval confirmation") so the conversation can continue seamlessly. Echo also detects silence — clients who haven\'t been contacted in 14+ days — and alerts Clara to trigger a re-engagement sequence.',
@@ -1297,7 +1297,7 @@ export const AI_ASSISTANTS: Record<AssistantId, Assistant> = {
     title: 'Document Generation Engine',
     department: 'data_and_ai',
     icon: 'FileText',
-    color: '#6366F1',
+    color: '#EF4444',
     avatar: '✍️',
     description:
       'Quill is the document factory of White Caves, eliminating the hours that agents used to spend manually drafting, formatting, and proofing transaction documents. She maintains a library of RERA-compliant, legally reviewed templates — Sale and Purchase Agreements, MOUs, Tenancy Contracts, NOC request letters, invoices, commission statements, and investor portfolio reports — and populates them in seconds by pulling live data directly from the CRM: client names, passport numbers, property details, agreed prices, and payment schedules. Quill supports Arabic/English bilingual documents with RTL formatting, generates bulk batches for portfolio transactions, and routes completed documents to Evangeline for risk review before delivery.',

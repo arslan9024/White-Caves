@@ -34,7 +34,7 @@
 }
 
 .settings-icon:hover {
-  color: #3b82f6;
+  color: #EF4444;
 }
 
 /* Models Grid */
@@ -58,7 +58,7 @@
 }
 
 .model-card:hover:not(.disabled) {
-  border-color: #3b82f6;
+  border-color: #EF4444;
   box-shadow: 0 4px 12px rgba(59, 130, 246, 0.15);
   transform: translateY(-2px);
 }
@@ -90,7 +90,7 @@
 }
 
 .model-icon.deepseek {
-  color: #3b82f6;
+  color: #EF4444;
 }
 
 .model-icon.ollama {
@@ -170,7 +170,7 @@
 }
 
 .refresh-btn {
-  background: #3b82f6;
+  background: #EF4444;
   color: white;
   border: none;
   border-radius: 6px;
@@ -182,7 +182,7 @@
 }
 
 .refresh-btn:hover:not(:disabled) {
-  background: #2563eb;
+  background: #EF4444;
   box-shadow: 0 2px 8px rgba(59, 130, 246, 0.3);
 }
 

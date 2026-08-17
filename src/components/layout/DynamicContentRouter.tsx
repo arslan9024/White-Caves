@@ -54,7 +54,7 @@ const LoadingContainer = styled.div`
 
 const Spinner = styled.div`
   border: 4px solid #f3f4f6;
-  border-top: 4px solid #6366f1;
+  border-top: 4px solid #EF4444;
   border-radius: 50%;
   width: 50px;
   height: 50px;
@@ -103,7 +103,7 @@ const ErrorMessage = styled.p`
 
 const RetryButton = styled.button`
   padding: 0.75rem 1.5rem;
-  background-color: #6366f1;
+  background-color: #EF4444;
   color: #ffffff;
   border: none;
   border-radius: 6px;
@@ -113,7 +113,7 @@ const RetryButton = styled.button`
   transition: all 0.2s;
 
   &:hover {
-    background-color: #4f46e5;
+    background-color: #DC2626;
     box-shadow: 0 2px 8px rgba(99, 102, 241, 0.3);
   }
 

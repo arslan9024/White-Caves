@@ -13,7 +13,7 @@ const ContactStatusBadge = ({ status = 'unknown', size = 'md', showIcon = true }
     },
     'contacted': {
       label: 'Contacted',
-      color: '#3b82f6',
+      color: '#EF4444',
       bgColor: '#dbeafe',
       icon: CheckCircle,
       description: 'Initial contact made',

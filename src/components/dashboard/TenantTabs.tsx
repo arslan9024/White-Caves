@@ -93,7 +93,7 @@ export const TenantOverview: React.FC = () => {
               }}
             >
               <span>{m.title}</span>
-              <span style={S.badge('#2563eb', '#dbeafe')}>{S.formatStatus(m.status)}</span>
+              <span style={S.badge('#EF4444', '#dbeafe')}>{S.formatStatus(m.status)}</span>
             </div>
           ))}
         </div>
@@ -364,7 +364,7 @@ export const TenantMaintenance: React.FC = () => {
                       ? '#EF4444'
                       : r.priority === 'high'
                         ? '#d97706'
-                        : '#2563eb',
+                        : '#EF4444',
                     r.priority === 'emergency'
                       ? '#fef2f2'
                       : r.priority === 'high'
@@ -389,7 +389,7 @@ export const TenantMaintenance: React.FC = () => {
                 }}
               >
                 <span>📅 {S.formatDate(r.createdAt)}</span>
-                <span style={S.badge('#2563eb', '#dbeafe')}>{S.formatStatus(r.status)}</span>
+                <span style={S.badge('#EF4444', '#dbeafe')}>{S.formatStatus(r.status)}</span>
               </div>
             </div>
           ))}

@@ -483,7 +483,7 @@ describe('useWhatsAppData', () => {
 
     it('returns blue for cold priority', () => {
       const { result } = renderHook(() => useWhatsAppData());
-      expect(result.current.getPriorityColor('cold')).toBe('#3b82f6');
+      expect(result.current.getPriorityColor('cold')).toBe('#EF4444');
     });
 
     it('returns gray for unknown priority', () => {

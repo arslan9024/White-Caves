@@ -108,7 +108,7 @@ export const BuyerOverview: React.FC = () => {
                     <td style={S.td}>{v.property?.title ?? v.propertyId}</td>
                     <td style={S.td}>{S.formatDate(v.scheduledAt)}</td>
                     <td style={S.td}>
-                      <span style={S.badge('#2563eb', '#dbeafe')}>{S.formatStatus(v.status)}</span>
+                      <span style={S.badge('#EF4444', '#dbeafe')}>{S.formatStatus(v.status)}</span>
                     </td>
                   </tr>
                 ))}
@@ -356,7 +356,7 @@ export const ViewingSchedule: React.FC = () => {
                   <td style={S.td}>
                     <span
                       style={S.badge(
-                        v.status === 'completed' ? '#16a34a' : '#2563eb',
+                        v.status === 'completed' ? '#16a34a' : '#EF4444',
                         v.status === 'completed' ? '#dcfce7' : '#dbeafe'
                       )}
                     >
@@ -460,7 +460,7 @@ export const BuyerOffers: React.FC = () => {
     if (s === 'accepted') return { c: '#16a34a', bg: '#dcfce7' };
     if (s === 'rejected' || s === 'expired') return { c: '#EF4444', bg: '#fef2f2' };
     if (s === 'countered') return { c: '#d97706', bg: '#fffbeb' };
-    return { c: '#2563eb', bg: '#dbeafe' };
+    return { c: '#EF4444', bg: '#dbeafe' };
   };
 
   return (

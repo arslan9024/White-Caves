@@ -114,16 +114,16 @@ export const FavoriteButton = styled.button<{ $isFavorite?: boolean }>`
 
     &:hover {
       background: rgba(59, 130, 246, 0.15);
-      border-color: #3b82f6;
-      color: #3b82f6;
+      border-color: #EF4444;
+      color: #EF4444;
     }
 
     ${props =>
       props.$isFavorite &&
       `
       background: rgba(59, 130, 246, 0.2);
-      border-color: #3b82f6;
-      color: #3b82f6;
+      border-color: #EF4444;
+      color: #EF4444;
     `}
   }
 `;
@@ -204,7 +204,7 @@ export const SidebarItem = styled.button<{ $active?: boolean }>`
 
   @media (prefers-color-scheme: dark) {
     background: ${props => (props.$active ? 'rgba(59, 130, 246, 0.15)' : 'transparent')};
-    color: ${props => (props.$active ? '#3b82f6' : '#a0aec0')};
+    color: ${props => (props.$active ? '#EF4444' : '#a0aec0')};
 
     &:hover {
       background: rgba(59, 130, 246, 0.1);
@@ -284,8 +284,8 @@ export const QuickActionButton = styled.button`
 
     &:hover {
       background: rgba(59, 130, 246, 0.15);
-      border-color: #3b82f6;
-      color: #3b82f6;
+      border-color: #EF4444;
+      color: #EF4444;
     }
   }
 `;

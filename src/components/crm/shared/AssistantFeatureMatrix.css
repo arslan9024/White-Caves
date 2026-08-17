@@ -70,7 +70,7 @@
 
 .stat-pill.development {
   background: rgba(59, 130, 246, 0.15);
-  color: #3b82f6;
+  color: #EF4444;
 }
 
 .stat-pill.planned {
@@ -260,13 +260,13 @@
 
 .status-badge.development {
   background: rgba(59, 130, 246, 0.15);
-  color: #3b82f6;
+  color: #EF4444;
 }
 
 .status-icon.active { color: #EF4444; }
 .status-icon.beta { color: #f59e0b; }
 .status-icon.planned { color: #6b7280; }
-.status-icon.development { color: #3b82f6; }
+.status-icon.development { color: #EF4444; }
 
 .expand-icon {
   color: var(--text-secondary);
@@ -351,7 +351,7 @@
   background: rgba(59, 130, 246, 0.1);
   border-radius: 8px;
   font-size: 0.8rem;
-  color: #3b82f6;
+  color: #EF4444;
   margin-top: 1rem;
 }
 

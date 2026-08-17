@@ -64,7 +64,7 @@
 .step-header .icon {
   width: 32px;
   height: 32px;
-  color: #3b82f6;
+  color: #EF4444;
   flex-shrink: 0;
   margin-top: 2px;
 }
@@ -111,12 +111,12 @@
 }
 
 .upload-area:hover {
-  border-color: #3b82f6;
+  border-color: #EF4444;
   background-color: #eff6ff;
 }
 
 .upload-area.drag-active {
-  border-color: #3b82f6;
+  border-color: #EF4444;
   background-color: #eff6ff;
   box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
 }
@@ -199,7 +199,7 @@
 
 .progress-fill {
   height: 100%;
-  background: linear-gradient(90deg, #3b82f6, #1d4ed8);
+  background: linear-gradient(90deg, #EF4444, #DC2626);
   transition: width 0.3s ease;
 }
 
@@ -233,13 +233,13 @@
 }
 
 .btn-primary {
-  background: #3b82f6;
+  background: #EF4444;
   color: white;
   flex: 1;
 }
 
 .btn-primary:hover:not(:disabled) {
-  background: #2563eb;
+  background: #EF4444;
   box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
 }
 

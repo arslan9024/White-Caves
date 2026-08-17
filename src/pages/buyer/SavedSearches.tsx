@@ -48,7 +48,7 @@ const btnPrimary: React.CSSProperties = {
   padding: '0.5rem 1.25rem',
   borderRadius: '8px',
   border: 'none',
-  background: 'var(--color-primary, #2563eb)',
+  background: 'var(--color-primary, #EF4444)',
   color: '#fff',
   fontWeight: 600,
   cursor: 'pointer',
@@ -442,7 +442,7 @@ const SavedSearchesPage: React.FC = () => {
                           style={{
                             ...badgeStyle,
                             background: '#dbeafe',
-                            color: '#2563eb',
+                            color: '#EF4444',
                           }}
                         >
                           🔔 Alerts ON

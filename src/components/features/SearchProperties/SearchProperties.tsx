@@ -57,8 +57,8 @@ const SearchInput = styled.input`
 
   &:focus {
     outline: none;
-    border-color: ${props => (props.theme as any)?.colors?.primary || '#3b82f6'};
-    box-shadow: 0 0 0 3px ${props => (props.theme as any)?.colors?.primary || '#3b82f6'}20;
+    border-color: ${props => (props.theme as any)?.colors?.primary || '#EF4444'};
+    box-shadow: 0 0 0 3px ${props => (props.theme as any)?.colors?.primary || '#EF4444'}20;
   }
 
   &::placeholder {
@@ -68,7 +68,7 @@ const SearchInput = styled.input`
 
 const SearchButton = styled.button`
   padding: 10px 20px;
-  background: ${props => (props.theme as any)?.colors?.primary || '#3b82f6'};
+  background: ${props => (props.theme as any)?.colors?.primary || '#EF4444'};
   color: white;
   border: none;
   border-radius: 6px;
@@ -119,7 +119,7 @@ const FilterCheckbox = styled.label`
   }
 
   &:hover {
-    color: ${props => (props.theme as any)?.colors?.primary || '#3b82f6'};
+    color: ${props => (props.theme as any)?.colors?.primary || '#EF4444'};
   }
 `;
 
@@ -148,8 +148,8 @@ const ResultCard = styled.div`
   transition: all 0.2s;
 
   &:hover {
-    border-color: ${props => (props.theme as any)?.colors?.primary || '#3b82f6'};
-    box-shadow: 0 2px 8px ${props => (props.theme as any)?.colors?.primary || '#3b82f6'}20;
+    border-color: ${props => (props.theme as any)?.colors?.primary || '#EF4444'};
+    box-shadow: 0 2px 8px ${props => (props.theme as any)?.colors?.primary || '#EF4444'}20;
   }
 
   .property-name {
@@ -182,7 +182,7 @@ const ResultCard = styled.div`
     }
 
     .value {
-      color: ${props => (props.theme as any)?.colors?.primary || '#3b82f6'};
+      color: ${props => (props.theme as any)?.colors?.primary || '#EF4444'};
       font-weight: 600;
     }
   }

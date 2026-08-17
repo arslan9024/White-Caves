@@ -372,7 +372,7 @@
 
 .btn-retry:hover,
 .btn-manual:hover {
-  background: #2563eb;
+  background: #EF4444;
   transform: translateY(-2px);
   box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
 }

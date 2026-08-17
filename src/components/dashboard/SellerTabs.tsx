@@ -143,7 +143,7 @@ export const SellerInquiries: React.FC = () => {
                       <span style={S.badge('#d97706', '#fffbeb')}>{l.score ?? 0}/100</span>
                     </td>
                     <td style={S.td}>
-                      <span style={S.badge('#2563eb', '#dbeafe')}>{S.formatStatus(l.status)}</span>
+                      <span style={S.badge('#EF4444', '#dbeafe')}>{S.formatStatus(l.status)}</span>
                     </td>
                     <td style={S.td}>{S.formatDate(l.createdAt)}</td>
                   </tr>
@@ -253,7 +253,7 @@ export const ReceivedOffers: React.FC = () => {
     if (s === 'accepted') return { c: '#16a34a', bg: '#dcfce7' };
     if (s === 'rejected' || s === 'expired') return { c: '#EF4444', bg: '#fef2f2' };
     if (s === 'countered') return { c: '#d97706', bg: '#fffbeb' };
-    return { c: '#2563eb', bg: '#dbeafe' };
+    return { c: '#EF4444', bg: '#dbeafe' };
   };
 
   return (

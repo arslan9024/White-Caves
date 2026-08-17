@@ -48,7 +48,7 @@ const DataQualityIndicators = ({ onFilterClick }: { onFilterClick?: (filterKey: 
       label: 'Owners with Multiple Phones',
       value: multiPhoneOwners.length || stats.ownersWithMultiplePhones || 0,
       icon: Phone,
-      color: '#3b82f6',
+      color: '#EF4444',
       description: 'Owners with 2+ phone numbers',
       filterKey: 'showMultiPhone'
     }

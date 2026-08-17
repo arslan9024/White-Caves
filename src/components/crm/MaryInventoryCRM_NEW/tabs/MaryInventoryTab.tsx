@@ -193,7 +193,7 @@ const MaryInventoryTab = () => {
             </div>
           </div>
           <div className="stat-card">
-            <Phone size={24} color="#3b82f6" />
+            <Phone size={24} color="#EF4444" />
             <div className="stat-content">
               <span className="stat-value">{stats.ownersWithMultiplePhones?.toLocaleString() || 0}</span>
               <span className="stat-label">Multi-Phone Owners</span>

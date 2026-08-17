@@ -16,7 +16,7 @@ const BulkStatusModal = ({
     { value: 'maintenance', label: 'Maintenance', color: '#6b7280' },
     { value: 'ready_for_leasing', label: 'Ready for Leasing', color: '#10b981' },
     { value: 'offer_in_progress', label: 'Offer In Progress', color: '#f59e0b' },
-    { value: 'contract_generation', label: 'Contract Generation', color: '#3b82f6' },
+    { value: 'contract_generation', label: 'Contract Generation', color: '#EF4444' },
     { value: 'archived', label: 'Archived', color: '#9ca3af' },
   ];
 

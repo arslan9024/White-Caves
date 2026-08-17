@@ -99,7 +99,7 @@ export function SequenceReport() {
                     <XAxis dataKey="name" hide />
                     <YAxis />
                     <Tooltip />
-                    <Bar dataKey="openRate" fill="#3b82f6" name="Open %" radius={[4, 4, 0, 0]} />
+                    <Bar dataKey="openRate" fill="#EF4444" name="Open %" radius={[4, 4, 0, 0]} />
                     <Bar dataKey="replyRate" fill="#8b5cf6" name="Reply %" radius={[4, 4, 0, 0]} />
                     <Bar
                       dataKey="closedRate"

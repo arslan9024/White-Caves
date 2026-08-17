@@ -244,7 +244,7 @@ export default function NinaWhatsAppBotCRM() {
       case 'error': return '#ef4444';
       case 'warning': return '#f59e0b';
       case 'ai': return '#8b5cf6';
-      case 'message': return '#3b82f6';
+      case 'message': return '#EF4444';
       default: return '#9ca3af';
     }
   };

@@ -166,7 +166,7 @@
 }
 
 .summary-card--vacant::before {
-  background: #3b82f6;
+  background: #EF4444;
 }
 
 .summary-card--maintenance::before {

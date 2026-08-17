@@ -21,7 +21,7 @@ import './ClaraLeadsCRM.css';
 
 const LEAD_STAGES = [
   { id: 'initial', label: 'Initial Contact', color: '#6b7280' },
-  { id: 'qualified', label: 'Qualified', color: '#3b82f6' },
+  { id: 'qualified', label: 'Qualified', color: '#EF4444' },
   { id: 'viewing', label: 'Viewing Scheduled', color: '#8b5cf6' },
   { id: 'negotiation', label: 'Negotiation', color: '#f59e0b' },
   { id: 'offer', label: 'Offer Made', color: '#22c55e' },
@@ -367,7 +367,7 @@ const ClaraLeadsCRM = ({ activeFeature }) => {
     switch (status) {
       case 'hot': return '#ef4444';
       case 'warm': return '#f59e0b';
-      case 'cold': return '#3b82f6';
+      case 'cold': return '#EF4444';
       default: return '#6b7280';
     }
   };
@@ -479,7 +479,7 @@ const ClaraLeadsCRM = ({ activeFeature }) => {
         <div className="stat-card">
           <span className="stat-icon">❄️</span>
           <div className="stat-content">
-            <span className="stat-value" style={{ color: 'var(--accent-blue, #3b82f6)' }}>{stats.cold}</span>
+            <span className="stat-value" style={{ color: 'var(--accent-blue, #EF4444)' }}>{stats.cold}</span>
             <span className="stat-label">Cold Leads</span>
           </div>
         </div>

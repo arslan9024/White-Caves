@@ -28,7 +28,7 @@ export const AnalyticsTab: React.FC<AnalyticsTabProps> = ({ data }) => {
   const totalBots = bots.length;
 
   const stats = [
-    { label: 'Total Messages Processed', value: totalMessages, icon: Activity, color: '#3b82f6' },
+    { label: 'Total Messages Processed', value: totalMessages, icon: Activity, color: '#EF4444' },
     { label: 'Average Response Rate', value: `${avgResponseRate}%`, icon: TrendingUp, color: '#10b981' },
     { label: 'Connected Bots', value: connectedBots, icon: Zap, color: '#10b981' },
     { label: 'Total Bots', value: totalBots, icon: BarChart3, color: '#f59e0b' }

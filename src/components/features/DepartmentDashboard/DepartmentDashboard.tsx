@@ -100,7 +100,7 @@ const ServiceList = styled.ul`
 
 const ServiceTag = styled.li`
   background: ${props => props.theme?.colors?.active || '#eef2ff'};
-  color: ${props => props.theme?.colors?.info || '#3b82f6'};
+  color: ${props => props.theme?.colors?.info || '#EF4444'};
   padding: 4px 12px;
   border-radius: 4px;
   font-size: 12px;
@@ -109,11 +109,11 @@ const ServiceTag = styled.li`
 
 const CommingSoon = styled.div`
   background: ${props => props.theme?.colors?.active || '#eef2ff'};
-  border: 1px dashed ${props => props.theme?.colors?.info || '#3b82f6'};
+  border: 1px dashed ${props => props.theme?.colors?.info || '#EF4444'};
   border-radius: 8px;
   padding: 32px;
   text-align: center;
-  color: ${props => props.theme?.colors?.info || '#3b82f6'};
+  color: ${props => props.theme?.colors?.info || '#EF4444'};
 `;
 
 interface DepartmentDashboardProps {

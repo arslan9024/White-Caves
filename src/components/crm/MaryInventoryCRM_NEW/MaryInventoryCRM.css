@@ -200,7 +200,7 @@
 
 .purpose-badge.rent {
   background: #dbeafe;
-  color: #2563eb;
+  color: #EF4444;
 }
 
 .price-value {
@@ -288,8 +288,8 @@
 }
 
 .action-btn.view:hover {
-  color: #3b82f6;
-  border-color: #3b82f6;
+  color: #EF4444;
+  border-color: #EF4444;
 }
 
 .action-btn.edit:hover {
@@ -1114,7 +1114,7 @@
   display: flex;
   gap: 0;
   padding: 0;
-  background: linear-gradient(135deg, #8b5cf6 0%, #6366f1 100%);
+  background: linear-gradient(135deg, #8b5cf6 0%, #EF4444 100%);
   border-bottom: 2px solid rgba(255, 255, 255, 0.2);
   overflow-x: auto;
 }
@@ -1212,7 +1212,7 @@
 }
 
 .action-btn.primary {
-  background: linear-gradient(135deg, #8b5cf6 0%, #6366f1 100%);
+  background: linear-gradient(135deg, #8b5cf6 0%, #EF4444 100%);
   color: white;
   border-color: transparent;
 }

@@ -196,7 +196,7 @@ const STAGES: Omit<StageSummary, 'count'>[] = [
   {
     stage: 'leased_sold',
     label: 'Leased / Sold',
-    color: '#3b82f6',
+    color: '#EF4444',
     icon: <HandshakeIcon size={20} />,
     description: 'Deal completed',
   },

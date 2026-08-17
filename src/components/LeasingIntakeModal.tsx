@@ -153,7 +153,7 @@ export const LeasingIntakeModal: React.FC<LeasingIntakeModalProps> = ({ isOpen, 
               <option value={6}>6 – Bi‑monthly</option>
               <option value={12}>12 – Monthly</option>
             </select>
-            <button style={{ ...buttonStyle, backgroundColor: 'var(--accent-blue, #3b82f6)', marginBottom: '16px' }} onClick={handleGenerateSchedule}>Generate Schedule</button>
+            <button style={{ ...buttonStyle, backgroundColor: 'var(--accent-blue, #EF4444)', marginBottom: '16px' }} onClick={handleGenerateSchedule}>Generate Schedule</button>
             {pdcSchedule.length > 0 && (
               <table style={{ width: '100%', borderCollapse: 'collapse', color: 'var(--white, #fff)', fontSize: '0.85rem', marginBottom: '16px' }}>
                 <thead>

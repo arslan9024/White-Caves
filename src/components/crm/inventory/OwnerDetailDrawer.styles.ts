@@ -306,7 +306,7 @@ export const PropertyStatus = styled.span<{ $status?: string }>`
       case 'rented':
         return `
           background: rgba(59, 130, 246, 0.1);
-          color: #3b82f6;
+          color: #EF4444;
         `;
       case 'available':
         return `

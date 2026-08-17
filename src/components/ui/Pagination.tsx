@@ -30,8 +30,8 @@ const PaginationButton = styled.button<{ $isActive?: boolean; $isDisabled?: bool
   min-width: 40px;
   height: 40px;
   padding: 0 8px;
-  border: 1px solid ${props => (props.$isActive ? '#3b82f6' : '#e5e7eb')};
-  background-color: ${props => (props.$isActive ? '#3b82f6' : 'white')};
+  border: 1px solid ${props => (props.$isActive ? '#EF4444' : '#e5e7eb')};
+  background-color: ${props => (props.$isActive ? '#EF4444' : 'white')};
   color: ${props => (props.$isActive ? 'white' : '#1f2937')};
   border-radius: 4px;
   cursor: ${props => (props.$isDisabled ? 'not-allowed' : 'pointer')};
@@ -41,12 +41,12 @@ const PaginationButton = styled.button<{ $isActive?: boolean; $isDisabled?: bool
   opacity: ${props => (props.$isDisabled ? '0.5' : '1')};
 
   &:hover:not(:disabled) {
-    border-color: #3b82f6;
+    border-color: #EF4444;
     ${props => !props.$isActive && 'background-color: #f3f4f6;'}
   }
 
   &:focus {
-    outline: 2px solid #3b82f6;
+    outline: 2px solid #EF4444;
     outline-offset: 2px;
   }
 

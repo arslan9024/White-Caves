@@ -36,7 +36,7 @@ const TOAST_VARIANTS = {
   },
   info: {
     bg: 'rgba(17,24,39,0.97)',
-    accent: '#3b82f6',
+    accent: '#EF4444',
     icon: 'ℹ',
     label: 'Info',
   },

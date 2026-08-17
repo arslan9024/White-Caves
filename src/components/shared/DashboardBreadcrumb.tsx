@@ -98,7 +98,7 @@ const BreadcrumbItem = styled.button<{ $active?: boolean }>`
   padding: 0.375rem 0.75rem;
   border: none;
   background: ${props => (props.$active ? '#eef2ff' : 'transparent')};
-  color: ${props => (props.$active ? '#6366f1' : '#6b7280')};
+  color: ${props => (props.$active ? '#EF4444' : '#6b7280')};
   font-weight: ${props => (props.$active ? '600' : '500')};
   cursor: ${props => (props.$active ? 'default' : 'pointer')};
   border-radius: 4px;
@@ -138,8 +138,8 @@ const BackButton = styled.button`
   white-space: nowrap;
 
   &:hover {
-    border-color: #6366f1;
-    color: #6366f1;
+    border-color: #EF4444;
+    color: #EF4444;
     background-color: #f9fafb;
   }
 

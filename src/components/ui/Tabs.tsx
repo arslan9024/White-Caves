@@ -55,7 +55,7 @@ const TabButton = styled.button<{
   font-weight: 600;
   color: ${props => {
     if (props.disabled) return '#d1d5db';
-    return props.$isActive ? '#3b82f6' : '#6b7280';
+    return props.$isActive ? '#EF4444' : '#6b7280';
   }};
   position: relative;
   white-space: nowrap;
@@ -64,27 +64,27 @@ const TabButton = styled.button<{
   ${props => {
     if (props.$variant === 'underline' && props.$isActive) {
       return `
-        border-bottom: 3px solid #3b82f6;
+        border-bottom: 3px solid #EF4444;
         margin-bottom: -2px;
-        color: #3b82f6;
+        color: #EF4444;
       `;
     }
     if (props.$variant === 'box' && props.$isActive) {
       return `
         background-color: white;
         border-radius: 6px;
-        color: #3b82f6;
+        color: #EF4444;
       `;
     }
     return '';
   }}
 
   &:hover:not(:disabled) {
-    color: ${props => (props.$variant === 'underline' ? '#1f2937' : '#3b82f6')};
+    color: ${props => (props.$variant === 'underline' ? '#1f2937' : '#EF4444')};
   }
 
   &:focus {
-    outline: 2px solid #3b82f6;
+    outline: 2px solid #EF4444;
     outline-offset: -2px;
   }
 

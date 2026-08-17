@@ -29,7 +29,7 @@ export const loadLeadMetrics = createAsyncThunk(
 
 const LEAD_STAGES = [
   { id: 'initial', label: 'Initial Contact', color: '#6b7280' },
-  { id: 'qualified', label: 'Qualified', color: '#3b82f6' },
+  { id: 'qualified', label: 'Qualified', color: '#EF4444' },
   { id: 'viewing', label: 'Viewing Scheduled', color: '#8b5cf6' },
   { id: 'negotiation', label: 'Negotiation', color: '#f59e0b' },
   { id: 'offer', label: 'Offer Made', color: '#10b981' },
@@ -37,7 +37,7 @@ const LEAD_STAGES = [
 ];
 
 const LEAD_SOURCES = [
-  { id: 'website', label: 'Website', color: '#3b82f6' },
+  { id: 'website', label: 'Website', color: '#EF4444' },
   { id: 'whatsapp', label: 'WhatsApp', color: '#25d366' },
   { id: 'referral', label: 'Referral', color: '#8b5cf6' },
   { id: 'walk-in', label: 'Walk-in', color: '#f59e0b' },

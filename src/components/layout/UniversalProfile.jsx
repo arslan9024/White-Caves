@@ -48,7 +48,7 @@ export default function UniversalProfile({ variant = 'default', showSignIn = tru
 
   const getRoleInfo = role => {
     const roles = {
-      buyer: { label: 'Buyer', icon: '🏠', color: '#3b82f6' },
+      buyer: { label: 'Buyer', icon: '🏠', color: '#EF4444' },
       seller: { label: 'Seller', icon: '💰', color: '#10b981' },
       landlord: { label: 'Landlord', icon: '🔑', color: '#8b5cf6' },
       tenant: { label: 'Tenant', icon: '🏡', color: '#06b6d4' },

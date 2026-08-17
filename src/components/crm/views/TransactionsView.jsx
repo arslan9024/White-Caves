@@ -901,7 +901,7 @@ export default function TransactionsView() {
           display: inline-block;
           padding: 4px 10px;
           background: rgba(59, 130, 246, 0.1);
-          color: #3b82f6;
+          color: #EF4444;
           border-radius: 6px;
           font-size: 0.75rem;
           font-weight: 500;

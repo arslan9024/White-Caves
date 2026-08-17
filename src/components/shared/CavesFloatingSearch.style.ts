@@ -293,7 +293,7 @@ export const PropertyCard = styled.div`
       color: #ffffff;
 
       &.Available { background: #10b981; }
-      &.Leased { background: #3b82f6; }
+      &.Leased { background: #EF4444; }
       &.UnderMaintenance { background: #f59e0b; }
       &.Sold { background: #64748b; }
       &.Pending { background: #8b5cf6; }

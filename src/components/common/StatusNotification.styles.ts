@@ -57,7 +57,7 @@ export const StatusNotificationItem = styled.div<{ $type: 'success' | 'error' | 
         return `border-left: 4px solid #f59e0b;`;
       case 'info':
       default:
-        return `border-left: 4px solid #3b82f6;`;
+        return `border-left: 4px solid #EF4444;`;
     }
   }}
 `;
@@ -96,7 +96,7 @@ export const StatusIcon = styled.div<{ $type: 'success' | 'error' | 'warning' | 
       case 'info':
       default:
         return `
-          color: #3b82f6;
+          color: #EF4444;
           background: rgba(59, 130, 246, 0.1);
         `;
     }
@@ -190,7 +190,7 @@ export const StatusProgress = styled.div<{ $type: 'success' | 'error' | 'warning
         return `background: #f59e0b;`;
       case 'info':
       default:
-        return `background: #3b82f6;`;
+        return `background: #EF4444;`;
     }
   }}
 `;

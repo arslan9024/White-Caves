@@ -130,7 +130,7 @@ const MaryInventoryCRM = ({ activeFeature }) => {
   const dataTools = [
     { id: 'assets', label: 'DAMAC Assets', icon: Image, color: '#8b5cf6' },
     { id: 'ocr', label: 'Image Scanner', icon: FileImage, color: '#f59e0b' },
-    { id: 'harvester', label: 'Web Harvester', icon: Globe, color: '#3b82f6' }
+    { id: 'harvester', label: 'Web Harvester', icon: Globe, color: '#EF4444' }
   ];
 
   return (
@@ -263,7 +263,7 @@ const MaryInventoryCRM = ({ activeFeature }) => {
           </div>
         </div>
         <div className="stat-card">
-          <Phone size={24} color="#3b82f6" />
+          <Phone size={24} color="#EF4444" />
           <div className="stat-content">
             <span className="stat-value">{stats.ownersWithMultiplePhones?.toLocaleString() || 0}</span>
             <span className="stat-label">Multi-Phone Owners</span>

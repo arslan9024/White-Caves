@@ -27,7 +27,7 @@ function OccupancyChart({ data, loading = false }) {
     return <div className="chart-error">No data available</div>;
   }
 
-  const COLORS = ['#10b981', '#3b82f6', '#f59e0b', '#ef4444'];
+  const COLORS = ['#10b981', '#EF4444', '#f59e0b', '#ef4444'];
 
   const renderCustomLabel = (entry) => {
     return `${(entry.percent * 100).toFixed(0)}%`;

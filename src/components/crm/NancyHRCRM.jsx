@@ -219,7 +219,7 @@ export default function NancyHRCRM() {
 
   const getApplicantStatusBadge = (status) => {
     switch (status) {
-      case 'new': return { bg: 'rgba(59, 130, 246, 0.15)', color: '#3b82f6' };
+      case 'new': return { bg: 'rgba(59, 130, 246, 0.15)', color: '#EF4444' };
       case 'shortlisted': return { bg: 'rgba(168, 85, 247, 0.15)', color: '#a855f7' };
       case 'interviewed': return { bg: 'rgba(245, 158, 11, 0.15)', color: '#f59e0b' };
       case 'hired': return { bg: 'rgba(16, 185, 129, 0.15)', color: '#10b981' };

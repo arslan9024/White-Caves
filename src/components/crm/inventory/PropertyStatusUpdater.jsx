@@ -32,14 +32,14 @@ const PropertyStatusUpdater = ({ property, onUpdate }) => {
 
   const occupancyOptions = [
     { value: 'vacant', label: 'Vacant', color: '#10b981' },
-    { value: 'occupied', label: 'Occupied by Owner', color: '#3b82f6' },
+    { value: 'occupied', label: 'Occupied by Owner', color: '#EF4444' },
     { value: 'rented', label: 'Rented', color: '#06b6d4' },
     { value: 'mixed', label: 'Mixed (Owner + Rental)', color: '#8b5cf6' },
   ];
 
   const marketOptions = [
     { value: 'available', label: 'Available', color: '#10b981' },
-    { value: 'for-rent', label: 'For Rent', color: '#3b82f6' },
+    { value: 'for-rent', label: 'For Rent', color: '#EF4444' },
     { value: 'for-sale', label: 'For Sale', color: '#dc2626' },
     { value: 'hold', label: 'On Hold', color: '#f59e0b' },
     { value: 'not-available', label: 'Not Available', color: '#6b7280' },
@@ -56,7 +56,7 @@ const PropertyStatusUpdater = ({ property, onUpdate }) => {
     { value: 'registered', label: 'Registered', color: '#10b981' },
     { value: 'pending', label: 'Registration Pending', color: '#f59e0b' },
     { value: 'disputed', label: 'Under Dispute', color: '#dc2626' },
-    { value: 'freehold', label: 'Freehold', color: '#3b82f6' },
+    { value: 'freehold', label: 'Freehold', color: '#EF4444' },
     { value: 'leasehold', label: 'Leasehold', color: '#8b5cf6' },
   ];
 

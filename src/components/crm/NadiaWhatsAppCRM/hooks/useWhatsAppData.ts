@@ -209,7 +209,7 @@ export const useWhatsAppData = () => {
       case 'warm':
         return '#f59e0b';
       case 'cold':
-        return '#3b82f6';
+        return '#EF4444';
       default:
         return '#6b7280';
     }

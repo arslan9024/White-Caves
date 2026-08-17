@@ -133,10 +133,10 @@ const CommissionsTab: React.FC<CommissionsTabProps> = ({
 
         <div className="stat-card" style={{ background: 'var(--color-dbeafe, #dbeafe)', borderRadius: '12px', padding: '16px' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '8px' }}>
-            <CheckCircle size={18} color="#2563eb" />
+            <CheckCircle size={18} color="#EF4444" />
             <span style={{ fontSize: '13px', color: 'var(--color-666, #666)' }}>Approved</span>
           </div>
-          <div style={{ fontSize: '24px', fontWeight: 700, color: 'var(--accent-blue, #2563eb)' }}>
+          <div style={{ fontSize: '24px', fontWeight: 700, color: 'var(--accent-blue, #EF4444)' }}>
             AED {stats.approvedTotal.toLocaleString()}
           </div>
           <div style={{ fontSize: '12px', color: 'var(--color-888, #888)', marginTop: '4px' }}>{approvedCommissions.length} ready to pay</div>
@@ -254,7 +254,7 @@ const CommissionsTab: React.FC<CommissionsTabProps> = ({
                 <td>
                   <span className="category-badge" style={{
                     background: commission.type === 'sale' ? '#dbeafe' : commission.type === 'rental' ? '#fef3c7' : '#f3e8ff',
-                    color: commission.type === 'sale' ? '#2563eb' : commission.type === 'rental' ? '#d97706' : '#7c3aed',
+                    color: commission.type === 'sale' ? '#EF4444' : commission.type === 'rental' ? '#d97706' : '#7c3aed',
                     padding: '2px 8px',
                     borderRadius: '4px',
                     fontSize: '12px',
@@ -297,7 +297,7 @@ const CommissionsTab: React.FC<CommissionsTabProps> = ({
                         className="btn-approve"
                         onClick={() => onApprove(String(commission.id))}
                         title="Approve commission"
-                        style={{ background: 'var(--accent-blue, #2563eb)', color: 'var(--white, #fff)', border: 'none', borderRadius: '6px', padding: '4px 8px', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '4px', fontSize: '12px' }}
+                        style={{ background: 'var(--accent-blue, #EF4444)', color: 'var(--white, #fff)', border: 'none', borderRadius: '6px', padding: '4px 8px', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '4px', fontSize: '12px' }}
                       >
                         <CheckCircle size={14} />
                         Approve
