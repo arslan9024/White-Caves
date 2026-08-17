@@ -1,249 +1,98 @@
-# White Caves CRM Platform - Documentation Guide
+# White Caves Real Estate LLC — Global Digital Asset Ecosystem
 
-## 📚 Documentation Organization
-
-This project is organized into clear, logical sections for easy navigation:
-
-### 🚀 Quick Access
-
-- **QUICK_ACCESS_GUIDE.md** - Start here for common tasks and shortcuts
-- **EMERGENCY_RESPONSE_PROCEDURES.md** - Critical incident response procedures
-
-#### White Caves Real Estate LLC
-
-- **Landline Phone**: +971 4 335 0592
-- **Contact**: +971 56 361 6136
-- **Email**: <mailto:admin@whitecaves.com>
-- **Website**: <https://www.whitecave.com>
-- **Location**: Dubai, United Arab Emirates
-
-All strategic documents are in `/plans/`:
-
-- **MASTER_PLAN_UPDATED_FEB_2026.md** - Current master plan and execution strategy
-- **ARCHITECTURE.md** - System architecture and design patterns
-- **DEPLOYMENT_GUIDE.md** - Deployment procedures and environments
-- **PRODUCTION_DEPLOYMENT_RUNBOOK.md** - Step-by-step production deployment
-- **PRODUCTION_EXECUTION_CHECKLIST.md** - Pre-deployment verification checklist
-- **MONITORING_AND_ALERTING_SETUP.md** - Monitoring and alerting configuration
-- **API_DOCUMENTATION.md** - API specifications and endpoints
-- **TECHNICAL_REFERENCE.md** - Technical specifications and standards
-
-### 📊 Dashboards & Visual References
-
-- **STATUS_DASHBOARD_VISUAL.md** - Current project status dashboard
-- **PRODUCTION_READINESS_VISUAL_OVERVIEW.md** - Visual project readiness metrics
-- **PRODUCTION_READINESS_DELIVERABLES_INDEX.md** - Complete deliverables index
-- **PRODUCTION_QUICK_REFERENCE.md** - Quick reference for production operations
-- **INDEX.md** - Complete file index and cross-references
-- **TECHNICAL_REFERENCE.md** - Technical documentation reference
-
-### 💼 Business Documentation
-
-Business requirements, features, and guidelines in `/business_docs/`:
-
-- **CRM Features** - Feature specifications and requirements
-- **Requirements** - Business and technical requirements
-- **SEO** - SEO guidelines and strategies
-- **Security** - Security policies and procedures
-- **TEAM_COMMUNICATION_TEMPLATES.md** - Communication templates (in `/plans/`)
-
-### 📦 Code & Implementation
-
-The source code is organized as follows:
-
-## Technology Stack
-
-### Frontend
-
-- React 18 with Vite
-- Redux Toolkit for state management
-- Framer Motion for animations
-- Custom CSS with dark/light themes
-
-### Backend
-
-- Node.js with Express
-- MongoDB with Mongoose ODM
-- Firebase Admin SDK
-
-### Design
-
-- Red (#DC2626) and White brand colors
-- Montserrat/Open Sans typography
-- Mobile-responsive design
-- RTL support for Arabic
+[![Typecheck](https://img.shields.io/badge/TypeScript-0_Errors-brightgreen.svg)](https://github.com/arslan9024/White-Caves)
+[![Tests](https://img.shields.io/badge/Vitest-100%25_Passing-brightgreen.svg)](https://github.com/arslan9024/White-Caves)
+[![License](https://img.shields.io/badge/DET_License-1388443-red.svg)](https://whitecaves.com)
+[![RERA](https://img.shields.io/badge/RERA_ORN-44483-blue.svg)](https://whitecaves.com)
 
 ---
 
-## Deployment
+## 🌟 Executive Overview & Key Documentation
 
-### Production Requirements
+- 📜 **[PROJECT_VISION.md](PROJECT_VISION.md)** — Comprehensive corporate vision, master roadmap, 1-12-108 organizational hierarchy, and 35 AI assistant roster.
+- 📐 **[software_docs/ARCHITECTURE_OVERVIEW.md](software_docs/ARCHITECTURE_OVERVIEW.md)** — High-level architecture, Redux Toolkit sliced domains, Context triad (`Theme` + `Language` + `Currency`), and CI/CD quality gates.
+- 🏛️ **[software_docs/frontend/ui_architecture.md](software_docs/frontend/ui_architecture.md)** — The 4-Way Folder Segregation standard (`View.tsx` / `Logic.logic.ts` / `Style.style.ts` / `Data.data.ts`), Color lockdown protocol, and symmetrical floating widget balance.
+- 🚀 **[DAILY_MILESTONE_TRACKER.md](DAILY_MILESTONE_TRACKER.md)** — Production release logs, daily milestone status, and active deployment tracker.
+- 📊 **[PROJECT_PROGRESS.md](PROJECT_PROGRESS.md)** — Live turn-by-turn AEGIS orchestration log and verification matrix.
 
-- Node.js 20.x
-- MongoDB database
-- Firebase project with service account
-- Required environment variables configured
+---
 
-### Supported Runtime Versions
+## 🏛️ Government Accreditations
 
-- Node.js: `>=20.x` (CI baseline: 20.x)
-- npm: `>=10.0.0`
+| Authority | License / Registration Number | Category |
+|---|---|---|
+| **Department of Economy & Tourism (DET)** | `1388443` | Real Estate Buying & Selling Brokerage |
+| **Real Estate Regulatory Agency (RERA)** | `44483` | Certified Brokerage Office (ORN) |
+| **Office HQ Ejari Registration** | `0120250814005322` | Office D-72, El Shaye - 4 Building, Dubai |
+| **MOL / ICP Establishment Card** | `2/1/1192499` | Ministry of Human Resources & Emiratisation |
 
-### Build Commands
+---
+
+## 🎨 Technology Stack & UI Architecture
+
+### 1. **Core Front-End**
+- **Framework:** React 18 + Vite (ESM)
+- **Language:** TypeScript (Strict mode, `--noEmit` 0 errors)
+- **State Management:** Redux Toolkit + Memoized Selectors (`createSelector`)
+- **Styling:** Vanilla CSS + `styled-components` + `framer-motion`
+- **Component Standard:** 4-Way Subfolder Co-Location (`View.tsx` / `Logic.logic.ts` / `Style.style.ts` / `Data.data.ts`)
+
+### 2. **Universal 4-Language Localization (i18n)**
+- 🇬🇧 **English (`en`)**: LTR Primary
+- 🇦🇪 **Arabic (`ar`)**: RTL Native UAE (`dir="rtl"`)
+- 🇪🇸 **Spanish (`es`)**: LTR International
+- 🇷🇺 **Russian (`ru`)**: LTR International
+
+### 3. **Design System & Palette**
+- **White Caves Red (`#EF4444`):** Primary brand accent & active triggers
+- **Crisp White (`#FFFFFF`):** Light mode canvas & card surfaces
+- **Deep Slate Gray (`#0F172A` / `#1E293B`):** Dark mode luxury backdrops & contrast text
+
+---
+
+## 🤖 12 Corporate Departments & 35 AI Assistants
+
+White Caves operates an autonomous mesh of 35 specialized AI agents across 12 strict corporate departments:
+1. Executive Council (`@Ada`, `@Margaret`, `@Grace`, `@Elena`, `@Zoe`)
+2. Research Intelligence (`@Elena`, `@Iris`, `@Cassie`, `@Fei-Fei`, `@Anima`)
+3. Frontend & UX Architecture (`@Una`, `@Lea`, `@Marissa`, `@Tracy`, `@Africa`)
+4. Backend & API Systems (`@Mira`, `@Petra`, `@Ruchi`, `@Daniela`)
+5. Database & Data Pipelines (`@Barbara`, `@Anima`, `@Cassie`)
+6. Compliance, Legal & QA (`@Sofia`, `@Katherine`, `@Radia`, `@Ecem`, `@Joy`)
+7. DevOps & Infrastructure (`@Gwynne`, `@Lisa`, `@Annie`, `@Corinne`, `@Rachel`)
+8. Leasing & Tenancy (`@Victoria`, `@Tara`, `@Daisy`)
+9. Finance & VAT Analytics (`@Invoice`, `@Dora`, `@Theodora`)
+10. Sales & CRM Operations (`@Jaime`, `@Mila`, `@Sophia`, `@Clara`, `@Mary`)
+11. Communications & Marketing (`@Rachel`, `@Corinne`, `@Olivia`, `@Nina`, `@Nadia`)
+12. Operations & Facility Maintenance (`@Rania`, `@Dina`, `@Vesta`, `@Henry`)
+
+---
+
+## 🛠️ Getting Started & Commands
 
 ```bash
-# On Windows PowerShell, use npm.cmd instead of npm if you see script execution errors:
-npm.cmd install
-npm.cmd run build
-npm.cmd start
-# Or use Node directly for package binaries:
-node node_modules/vite/bin/vite.js
-node node_modules/vitest/vitest.mjs run
-```
+# Install dependencies
+npm install
 
-If you see an error like:
+# Start local development server
+npm run dev
 
-> File C:\Program Files\nodejs\npm.ps1 cannot be loaded because running scripts is disabled on this system.
+# Run TypeScript compilation gate (0 errors required)
+npm run typecheck
 
-This is a PowerShell security policy. Either use npm.cmd as above, or run:
+# Run unit and integration test suites
+npm run test:run
 
-```powershell
-Set-ExecutionPolicy -Scope CurrentUser -ExecutionPolicy RemoteSigned
-```
-
-to allow script execution for npm.ps1 (not recommended for most users).
-
-### Environment Variables
-
-- `DATABASE_URL`: MongoDB connection string (canonical)
-- `FIREBASE_SERVICE_ACCOUNT`: Firebase admin credentials
-- `STRIPE_SECRET_KEY`: Stripe API key
-- `GOOGLE_CLIENT_ID`: Google OAuth client ID
-- `GOOGLE_CLIENT_SECRET`: Google OAuth secret
-- `JWT_SECRET`: Auth signing secret (required in production)
-- `CORS_ORIGIN`: Allowed origin(s) for server CORS (required in production)
-- `WHATSAPP_WEBHOOK_SECRET`: Webhook signature secret (required in production)
-- `WHATSAPP_ACCESS_TOKEN`: WhatsApp Business API token (optional)
-
-Legacy note: `MONGODB_URI` is supported as a fallback alias, but `DATABASE_URL` is the canonical key.
-
----
-
-## 🎯 Starting Points by Role
-
-### **Project Manager / Team Lead**
-
-1. Read: `QUICK_ACCESS_GUIDE.md`
-2. Review: `STATUS_DASHBOARD_VISUAL.md`
-3. Reference: `/plans/MASTER_PLAN_UPDATED_FEB_2026.md`
-4. Monitor: `/plans/PRODUCTION_READINESS_VISUAL_OVERVIEW.md`
-
-### **Developers**
-
-1. Start: `QUICK_ACCESS_GUIDE.md`
-2. Reference: `/plans/ARCHITECTURE.md`
-3. API Info: `/plans/API_DOCUMENTATION.md`
-4. Deploy: `/plans/PRODUCTION_DEPLOYMENT_RUNBOOK.md`
-
-### **DevOps / Operations**
-
-1. Setup: `/plans/DEPLOYMENT_GUIDE.md`
-2. Monitor: `/plans/MONITORING_AND_ALERTING_SETUP.md`
-3. Deploy: `/plans/PRODUCTION_DEPLOYMENT_RUNBOOK.md`
-4. Emergency: `EMERGENCY_RESPONSE_PROCEDURES.md`
-
-### **Business Stakeholders**
-
-1. Overview: `STATUS_DASHBOARD_VISUAL.md`
-2. Features: `/business_docs/crm_features/`
-3. Readiness: `/plans/PRODUCTION_READINESS_VISUAL_OVERVIEW.md`
-4. Requirements: `/business_docs/requirements/`
-
----
-
-## 📈 Key Metrics
-
-**Current Status:**
-
-- TypeScript Coverage: 96%+
-- 0 TypeScript Errors
-- 0 Import Errors
-- Development Server: Running (localhost:5000)
-- Production Readiness: 90%+ Complete
-
-**Recent Deliverables:**
-
-- Commission tracking system (complete)
-- E2E test suite for commission workflows
-- Sidebar consolidation and unification
-- Enterprise error handling infrastructure
-
----
-
-## 🔧 Common Commands
-
-```bash
-# Development
-npm run dev              # Start Vite frontend dev server
-npm run server           # Start backend server in local mode
-npm run dev:all          # Run frontend + backend together
-
-# Production-like server run
-npm start                # Starts server with NODE_ENV=production
-# Requires env vars: JWT_SECRET, DATABASE_URL, CORS_ORIGIN, WHATSAPP_WEBHOOK_SECRET
-
-# Quality gates
-npm run build            # Production build
-npm test                 # Run tests
-npm run lint             # Run linter
-npm run orchestrator:prmr:handoff        # PR/MR handoff checklist + command hints
-npm run orchestrator:prmr:handoff:checks # Same checklist + typecheck/lint/build run
-
-# Deployment verification
-npm run verify-deploy         # Run deployment readiness checks (endpoints/config/env/SEO files)
-npm run verify:runtime -- --url=https://whitecaves.com # Verify live runtime endpoints (/, /api/health, robots, sitemap)
-npm run verify:runtime:dry     # Print runtime checks without network calls
-# Optional runtime verify tuning: --timeout=15000 --retries=6 --retry-delay=5000
-
-# SEO operations
-npm run seo:generate           # Generate robots.txt + sitemap.xml for production domain
-npm run seo:generate:staging   # Generate robots.txt + sitemap.xml for staging domain
-npm run test:ops               # Run SEO ops script test suite
-npm run quality:seo            # Generate SEO assets + run SEO ops tests
-npm run quality:quick          # Lint + build + SEO ops tests
-
-# E2E testing shortcuts
-npm run test:e2e               # Run all Playwright tests
-npm run test:e2e:smoke         # Run dashboard smoke suite (src/e2e/dashboard.spec.ts)
-npm run test:e2e:accessibility # Run accessibility audit suite (src/e2e/accessibility.audit.spec.ts)
-npm run test:e2e:performance   # Run performance suite (src/e2e/performance.layer5.spec.ts, HTML report)
-npm run test:e2e:performance:json # Run performance suite (src/e2e/performance.layer5.spec.ts, JSON report)
+# Build production bundle
+npm run build
 ```
 
 ---
 
-## 📞 Support & Resources
+## 📞 Corporate Contact
 
-For questions or issues:
-
-1. Check `QUICK_ACCESS_GUIDE.md` for common answers
-2. Review relevant `/plans/` documentation
-3. Check `/archives/` for similar historical solutions
-4. Refer to `/business_docs/` for domain-specific guidance
-
----
-
-## 📝 Documentation Maintenance
-
-All documentation is maintained in version control. To update:
-
-1. Make changes to relevant markdown files
-2. Commit with clear messages: `docs: update [section name]`
-3. Ensure this README reflects current structure
-4. Archive old versions when updated
-
----
-
-**Last Updated:** February 2026
-**Maintained By:** Development Team
-**Next Review:** End of month
+- **Managing Director:** Arslan Malik Bashir Ahmad
+- **Managing Director Direct Email:** `arslanmalikgoraha@gmail.com`
+- **Official Portal:** [https://whitecaves.com](https://whitecaves.com)
+- **Corporate WhatsApp:** +971 50 511 0636
+- **Headquarters:** Office D-72, El Shaye - 4 Building, Dubai, United Arab Emirates
