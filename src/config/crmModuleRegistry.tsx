@@ -38,6 +38,7 @@ const HazelFrontendCRM = lazy(() => import('../components/crm/HazelFrontendCRM_N
 const WillowBackendCRM = lazy(() => import('../components/crm/WillowBackendCRM_NEW'));
 const LindaWhatsAppCRM = lazy(() => import('../components/crm/LindaWhatsAppCRM'));
 const HenryRecordsCRM = lazy(() => import('../components/crm/HenryRecordsCRM'));
+const HenryDocumentStudio = lazy(() => import('../components/crm/HenryDocumentStudio'));
 const EvangelineLegalCRM = lazy(() => import('../components/crm/EvangelineLegalCRM'));
 const SentinelPropertyCRM = lazy(() => import('../components/crm/SentinelPropertyCRM'));
 const HunterProspectingCRM = lazy(() => import('../components/crm/HunterProspectingCRM'));
@@ -142,9 +143,31 @@ export const CRM_MODULE_REGISTRY: Record<string, CRMModuleDefinition> = {
     color: '#8B5CF6', zone: 'ai_command', Component: LindaWhatsAppCRM,
   },
   henry: {
-    id: 'henry', label: 'Henry Records CRM', icon: '🗂️',
-    description: 'Records and compliance operational views',
-    color: '#64748B', zone: 'finance_compliance', Component: HenryRecordsCRM,
+    id: 'henry',
+    label: 'Henry AI — Sovereign Record Keeper & Document Studio',
+    icon: '🗂️',
+    description: 'AI Optical Scanners (Passport, Title Deed, Emirates ID), Tenancy E-Sign, Ejari Vault & VAT Invoices',
+    color: '#EF4444',
+    zone: 'finance_compliance',
+    Component: HenryDocumentStudio,
+  },
+  'henry-records': {
+    id: 'henry-records',
+    label: 'Henry Document Studio & Record Keeper',
+    icon: '🗂️',
+    description: 'AI Optical Scanners, Tenancy E-Sign, Ejari Vault & VAT Invoices',
+    color: '#EF4444',
+    zone: 'finance_compliance',
+    Component: HenryDocumentStudio,
+  },
+  documents: {
+    id: 'documents',
+    label: 'Henry Document Studio & Vault',
+    icon: '📄',
+    description: 'AI Optical Scanners, Tenancy E-Sign, Ejari Vault & VAT Invoices',
+    color: '#EF4444',
+    zone: 'finance_compliance',
+    Component: HenryDocumentStudio,
   },
   evangeline: {
     id: 'evangeline', label: 'Legal CRM', icon: '⚖️',

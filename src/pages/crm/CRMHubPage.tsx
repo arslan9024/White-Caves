@@ -783,10 +783,25 @@ export const CRMHubPage: FC = () => {
     setOpenSubGroups(prev => ({ ...prev, [key]: !prev[key] }));
   };
 
-  // Sync URL params
+  // Bidirectional sync between URL search param and activeTab
   useEffect(() => {
-    setSearchParams({ tab: activeTab });
-  }, [activeTab, setSearchParams]);
+    const urlTab = searchParams.get('tab');
+    if (urlTab && urlTab !== activeTab) {
+      setActiveTab(urlTab);
+      if (urlTab === 'henry') {
+        setSelectedAiId('henry');
+        setOpenTopTile('ai_command');
+      }
+    }
+  }, [searchParams, activeTab]);
+
+  // Sync state to URL params when activeTab changes
+  useEffect(() => {
+    const currentTab = searchParams.get('tab');
+    if (currentTab !== activeTab) {
+      setSearchParams({ tab: activeTab }, { replace: true });
+    }
+  }, [activeTab, searchParams, setSearchParams]);
 
   const renderActiveContent = () => {
     if (activeTab === 'dept_summary') {
