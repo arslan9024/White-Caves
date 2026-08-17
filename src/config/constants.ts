@@ -5,7 +5,7 @@
  */
 
 // ─── Runtime-safe URL fallbacks ───────────────────────────────────────
-const FALLBACK_PUBLIC_ORIGIN = 'https://www.whitecaves.ae';
+const FALLBACK_PUBLIC_ORIGIN = 'https://www.whitecaves.com';
 const runtimeOrigin = typeof window !== 'undefined' && window.location?.origin
   ? window.location.origin
   : FALLBACK_PUBLIC_ORIGIN;
@@ -38,8 +38,8 @@ export const Config = {
     MOBILE: '+971 56 361 6136',
     WHATSAPP: '971563616136',
     EMAIL: 'admin@whitecaves.com',
-    SUPPORT_EMAIL: 'info@whitecaves.ae',
-    WEBSITE: 'www.whitecaves.ae',
+    SUPPORT_EMAIL: 'admin@whitecaves.com',
+    WEBSITE: 'www.whitecaves.com',
     RERA_ORN: '44483',
     RERA_LICENSE: '44483',
     ACTIVITIES: [

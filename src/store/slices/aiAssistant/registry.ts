@@ -1387,7 +1387,7 @@ export const AI_ASSISTANTS_REGISTRY: Record<string, AIAssistant> = {
 };
 
 Object.values(AI_ASSISTANTS_REGISTRY).forEach(assistant => {
-  if (assistant.dashboardUrl.startsWith('/owner/dashboard?tab=')) {
+  if (assistant && typeof assistant.dashboardUrl === 'string' && assistant.dashboardUrl.startsWith('/owner/dashboard?tab=')) {
     assistant.dashboardUrl = assistant.dashboardUrl.replace('/owner/dashboard', '/crm');
   }
 });

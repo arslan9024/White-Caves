@@ -37,7 +37,7 @@ export function exportToCsv<T extends Record<string, any>>(
   columns: ExportColumn<T>[],
   data: T[]
 ): void {
-  const headerRow = columns.map(c => `"${c.label.replace(/"/g, '""')}"`).join(',');
+  const headerRow = columns.map(c => `"${String(c.label || '').replace(/"/g, '""')}"`).join(',');
 
   const dataRows = data.map(row => {
     return columns

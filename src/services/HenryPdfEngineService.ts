@@ -423,11 +423,11 @@ class HenryPdfEngineService {
           </thead>
           <tbody>
             <tr>
-              <td>${payload.receiptType.replace('_', ' ').toUpperCase()}</td>
-              <td style="text-align: right;">AED ${payload.amountAed.toLocaleString()}</td>
-              <td style="text-align: right;">${payload.vatRatePercent}%</td>
-              <td style="text-align: right;">AED ${payload.vatAmountAed.toLocaleString()}</td>
-              <td style="text-align: right; font-weight: bold; color: #EF4444;">AED ${payload.totalWithVatAed.toLocaleString()}</td>
+              <td>${(payload.receiptType || '').replace(/_/g, ' ').toUpperCase()}</td>
+              <td style="text-align: right;">AED ${Number(payload.amountAed || 0).toLocaleString()}</td>
+              <td style="text-align: right;">${payload.vatRatePercent || 5}%</td>
+              <td style="text-align: right;">AED ${Number(payload.vatAmountAed || 0).toLocaleString()}</td>
+              <td style="text-align: right; font-weight: bold; color: #EF4444;">AED ${Number(payload.totalWithVatAed || 0).toLocaleString()}</td>
             </tr>
           </tbody>
         </table>

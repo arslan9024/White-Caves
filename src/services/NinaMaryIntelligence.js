@@ -223,24 +223,24 @@ class NinaMaryIntelligence {
         }
         responseText += 'Would you like to know more details?';
       } else if (this.isAboutAvailability(question)) {
-        responseText = `This property is currently ${prop.marketAvailability.replace('_', ' ')}. `;
+        responseText = `This property is currently ${(prop.marketAvailability || 'available').replace('_', ' ')}. `;
         if (prop.occupancyStatus) {
-          responseText += `Status: ${prop.occupancyStatus.replace('_', ' ')}. `;
+          responseText += `Status: ${String(prop.occupancyStatus).replace('_', ' ')}. `;
         }
         responseText += 'Would you like to schedule a viewing?';
       } else if (this.isAboutLocation(question)) {
-        responseText = `This property is located in ${prop.area}`;
+        responseText = `This property is located in ${prop.area || 'Dubai'}`;
         if (prop.cluster) {
           responseText += `, ${prop.cluster}`;
         }
         responseText += `. It's a great community with excellent amenities!`;
       } else {
-        responseText = `Here's more information about this ${prop.propertyType}:\n`;
-        responseText += `• Location: ${prop.area}\n`;
-        responseText += `• Size: ${prop.actualArea} ${prop.areaUnit}\n`;
+        responseText = `Here's more information about this ${prop.propertyType || 'Property'}:\n`;
+        responseText += `• Location: ${prop.area || 'Dubai'}\n`;
+        responseText += `• Size: ${prop.actualArea || 0} ${prop.areaUnit || 'sq.ft'}\n`;
         responseText += `• Bedrooms: ${prop.rooms || 'Studio'}\n`;
         responseText += `• Price: ${this.formatPrice(prop.askingPrice)}\n`;
-        responseText += `• Furnishing: ${prop.furnishingLevel.replace('_', ' ')}\n`;
+        responseText += `• Furnishing: ${(prop.furnishingLevel || 'unfurnished').replace('_', ' ')}\n`;
       }
 
       return {
