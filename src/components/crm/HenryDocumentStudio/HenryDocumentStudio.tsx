@@ -76,6 +76,12 @@ export const HenryDocumentStudio: FC = () => {
     handleCreateCrmListing,
     handleAutoFillFormA,
     handleCreateAmlKycRecord,
+    scannedContractData,
+    handleScanTenancyContract,
+    handleLoadContractIntoPreparationStudio,
+    handleCreateCrmLandlordFromContract,
+    handleCreateCrmTenantFromContract,
+    handleCopyContractJsonVariables,
     isTenancyModalOpen,
     handleOpenTenancyModal,
     handleCloseTenancyModal,
@@ -206,8 +212,265 @@ export const HenryDocumentStudio: FC = () => {
           </div>
         </SidebarControlPanel>
 
-        {/* Right Canvas: Passport Scanner, Title Deed Scanner, Emirates ID Scanner OR PDF Canvas */}
-        {selectedTemplateId === 'passport_scanner' ? (
+        {/* Right Canvas: Tenancy Contract Scanner, Passport Scanner, Title Deed Scanner, Emirates ID Scanner OR PDF Canvas */}
+        {selectedTemplateId === 'tenancy_contract_scanner' ? (
+          <PreviewCanvasCard style={{ padding: '24px', overflowY: 'auto' }}>
+            {/* Header */}
+            <div
+              style={{
+                display: 'flex',
+                justifyContent: 'space-between',
+                alignItems: 'center',
+                borderBottom: '2px solid #EF4444',
+                paddingBottom: '14px',
+                marginBottom: '18px',
+              }}
+            >
+              <div>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                  <span
+                    style={{
+                      background: '#EF4444',
+                      color: 'white',
+                      padding: '3px 8px',
+                      borderRadius: '4px',
+                      fontSize: '11px',
+                      fontWeight: 800,
+                    }}
+                  >
+                    DLD UNIFIED TENANCY CONTRACT SCANNER & LEARNER
+                  </span>
+                  <span
+                    style={{
+                      fontSize: '11px',
+                      background: scannedContractData.isFilled ? 'rgba(22, 163, 74, 0.15)' : 'rgba(234, 179, 8, 0.15)',
+                      color: scannedContractData.isFilled ? '#16A34A' : '#CA8A04',
+                      padding: '3px 8px',
+                      borderRadius: '4px',
+                      fontWeight: 800,
+                    }}
+                  >
+                    {scannedContractData.isFilled
+                      ? `✅ FILLED & VALIDATED (${scannedContractData.fillScorePercent}% Score)`
+                      : '⚠️ BLANK REUSABLE TEMPLATE (0% Score)'}
+                  </span>
+                </div>
+                <h3 style={{ margin: '6px 0 2px', color: '#1E293B', fontSize: '18px' }}>
+                  Tenancy Contract AI Optical Scanner & Autonomous Learner
+                </h3>
+                <p style={{ margin: 0, color: '#64748B', fontSize: '12px' }}>
+                  Autonomous Fill Detection, Completeness Score ({scannedContractData.filledFieldsCount}/{scannedContractData.totalFieldsCount} Fields), Landlord/Tenant Grouped Extraction & Reference Training Pool.
+                </p>
+              </div>
+
+              <div style={{ display: 'flex', gap: '8px' }}>
+                <ActionButton
+                  $primary
+                  onClick={() => handleScanTenancyContract('sample')}
+                  disabled={isScanning}
+                  title="Scan & Extract Filled Contract Sample"
+                >
+                  <Scan size={14} /> {isScanning ? 'Scanning...' : 'Scan Filled Contract'}
+                </ActionButton>
+                <ActionButton
+                  onClick={() => handleScanTenancyContract('blank')}
+                  disabled={isScanning}
+                  title="Scan Blank Unfilled Contract Template"
+                >
+                  <RefreshCw size={14} /> Scan Blank Template
+                </ActionButton>
+                <ActionButton
+                  onClick={handleCopyContractJsonVariables}
+                  title="Copy All Variables as JSON"
+                >
+                  <Copy size={14} /> Export Variables (JSON)
+                </ActionButton>
+              </div>
+            </div>
+
+            {/* Field Completeness & Missing Fields Alert */}
+            <div
+              style={{
+                background: scannedContractData.isFilled ? 'rgba(22, 163, 74, 0.08)' : 'rgba(234, 179, 8, 0.08)',
+                border: `1px solid ${scannedContractData.isFilled ? 'rgba(22, 163, 74, 0.3)' : 'rgba(234, 179, 8, 0.3)'}`,
+                borderRadius: '10px',
+                padding: '12px 16px',
+                marginBottom: '18px',
+                display: 'flex',
+                justifyContent: 'space-between',
+                alignItems: 'center',
+              }}
+            >
+              <div>
+                <div style={{ fontSize: '13px', fontWeight: 800, color: scannedContractData.isFilled ? '#15803D' : '#A16207' }}>
+                  {scannedContractData.isFilled
+                    ? `Contract Completeness: ${scannedContractData.fillScorePercent}% (${scannedContractData.filledFieldsCount} of ${scannedContractData.totalFieldsCount} fields populated)`
+                    : 'Unfilled DLD Base Contract: 0% Populated (Ready for Auto-Fill Template)'}
+                </div>
+                <div style={{ fontSize: '11px', color: '#64748B', marginTop: '2px' }}>
+                  {scannedContractData.missingFields.length > 0
+                    ? `Missing / Optional Fields: ${scannedContractData.missingFields.join(', ')}`
+                    : 'All critical party, property, financial and addenda terms present & validated!'}
+                </div>
+              </div>
+              <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+                <span style={{ fontSize: '11px', color: '#64748B', fontWeight: 700 }}>Contract Date:</span>
+                <code style={{ background: '#F1F5F9', color: '#0F172A', padding: '3px 8px', borderRadius: '4px', fontWeight: 'bold', fontSize: '11px' }}>
+                  {scannedContractData.contractDate || 'Unspecified'}
+                </code>
+              </div>
+            </div>
+
+            {/* Grouped Extraction Cards Grid */}
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px', marginBottom: '18px' }}>
+              {/* Group 1: Landlord */}
+              <div style={{ background: '#F8FAFC', border: '1px solid #E2E8F0', borderRadius: '10px', padding: '14px' }}>
+                <h4 style={{ margin: '0 0 10px 0', fontSize: '13px', fontWeight: 800, color: '#EF4444', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                  <Building size={15} /> 1. Landlord / Lessor (معلومات المالك)
+                </h4>
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px', fontSize: '11px' }}>
+                  <div>
+                    <span style={{ color: '#64748B', display: 'block' }}>Owner / Lessor Name</span>
+                    <strong style={{ color: '#0F172A', fontSize: '12px' }}>{scannedContractData.landlord.name || '—'}</strong>
+                  </div>
+                  <div>
+                    <span style={{ color: '#64748B', display: 'block' }}>Emirates ID</span>
+                    <strong style={{ color: '#EF4444', fontFamily: 'monospace' }}>{scannedContractData.landlord.emiratesId || '—'}</strong>
+                  </div>
+                  <div>
+                    <span style={{ color: '#64748B', display: 'block' }}>Phone Number</span>
+                    <strong style={{ color: '#0F172A' }}>{scannedContractData.landlord.phone || '—'}</strong>
+                  </div>
+                  <div>
+                    <span style={{ color: '#64748B', display: 'block' }}>Email Address</span>
+                    <strong style={{ color: '#2563EB' }}>{scannedContractData.landlord.email || '—'}</strong>
+                  </div>
+                </div>
+              </div>
+
+              {/* Group 2: Tenant */}
+              <div style={{ background: '#F8FAFC', border: '1px solid #E2E8F0', borderRadius: '10px', padding: '14px' }}>
+                <h4 style={{ margin: '0 0 10px 0', fontSize: '13px', fontWeight: 800, color: '#2563EB', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                  <UserCheck size={15} /> 2. Tenant Information (معلومات المستأجر)
+                </h4>
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px', fontSize: '11px' }}>
+                  <div>
+                    <span style={{ color: '#64748B', display: 'block' }}>Tenant Name</span>
+                    <strong style={{ color: '#0F172A', fontSize: '12px' }}>{scannedContractData.tenant.name || '—'}</strong>
+                  </div>
+                  <div>
+                    <span style={{ color: '#64748B', display: 'block' }}>Emirates ID</span>
+                    <strong style={{ color: '#2563EB', fontFamily: 'monospace' }}>{scannedContractData.tenant.emiratesId || '—'}</strong>
+                  </div>
+                  <div>
+                    <span style={{ color: '#64748B', display: 'block' }}>Phone Number</span>
+                    <strong style={{ color: '#0F172A' }}>{scannedContractData.tenant.phone || '—'}</strong>
+                  </div>
+                  <div>
+                    <span style={{ color: '#64748B', display: 'block' }}>Email Address</span>
+                    <strong style={{ color: '#2563EB' }}>{scannedContractData.tenant.email || '—'}</strong>
+                  </div>
+                </div>
+              </div>
+
+              {/* Group 3: Property Specifications */}
+              <div style={{ background: '#F8FAFC', border: '1px solid #E2E8F0', borderRadius: '10px', padding: '14px' }}>
+                <h4 style={{ margin: '0 0 10px 0', fontSize: '13px', fontWeight: 800, color: '#D97706', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                  <Home size={15} /> 3. Property Specifications (معلومات العقار)
+                </h4>
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px', fontSize: '11px' }}>
+                  <div>
+                    <span style={{ color: '#64748B', display: 'block' }}>Building & Unit</span>
+                    <strong style={{ color: '#0F172A' }}>{scannedContractData.property.buildingName} Unit {scannedContractData.property.propertyNumber}</strong>
+                  </div>
+                  <div>
+                    <span style={{ color: '#64748B', display: 'block' }}>Plot Number</span>
+                    <strong style={{ color: '#0F172A' }}>Plot {scannedContractData.property.plotNumber}</strong>
+                  </div>
+                  <div>
+                    <span style={{ color: '#64748B', display: 'block' }}>Property Type & Usage</span>
+                    <strong style={{ color: '#0F172A' }}>{scannedContractData.property.propertyType} ({scannedContractData.property.usage})</strong>
+                  </div>
+                  <div>
+                    <span style={{ color: '#64748B', display: 'block' }}>Area (Sq.M / Sq.Ft)</span>
+                    <strong style={{ color: '#16A34A' }}>{scannedContractData.property.areaSqM} m² ({scannedContractData.property.areaSqFt} sq.ft)</strong>
+                  </div>
+                  <div style={{ gridColumn: 'span 2' }}>
+                    <span style={{ color: '#64748B', display: 'block' }}>Location / Community</span>
+                    <strong style={{ color: '#0F172A' }}>{scannedContractData.property.location}</strong>
+                  </div>
+                </div>
+              </div>
+
+              {/* Group 4: Lease Financials */}
+              <div style={{ background: '#F8FAFC', border: '1px solid #E2E8F0', borderRadius: '10px', padding: '14px' }}>
+                <h4 style={{ margin: '0 0 10px 0', fontSize: '13px', fontWeight: 800, color: '#16A34A', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                  <FileText size={15} /> 4. Lease & Financials (معلومات العقد والمالية)
+                </h4>
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px', fontSize: '11px' }}>
+                  <div>
+                    <span style={{ color: '#64748B', display: 'block' }}>Lease Period</span>
+                    <strong style={{ color: '#0F172A' }}>{scannedContractData.financials.periodFrom} ➔ {scannedContractData.financials.periodTo}</strong>
+                  </div>
+                  <div>
+                    <span style={{ color: '#64748B', display: 'block' }}>Annual Rent</span>
+                    <strong style={{ color: '#16A34A', fontSize: '13px' }}>AED {scannedContractData.financials.annualRentAed.toLocaleString()}</strong>
+                  </div>
+                  <div>
+                    <span style={{ color: '#64748B', display: 'block' }}>Security Deposit</span>
+                    <strong style={{ color: '#D97706' }}>AED {scannedContractData.financials.securityDepositAed.toLocaleString()}</strong>
+                  </div>
+                  <div>
+                    <span style={{ color: '#64748B', display: 'block' }}>Mode of Payment</span>
+                    <strong style={{ color: '#0F172A' }}>{scannedContractData.financials.modeOfPayment}</strong>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Group 5: Additional Terms / Addenda */}
+            <div style={{ background: '#F8FAFC', border: '1px solid #E2E8F0', borderRadius: '10px', padding: '14px', marginBottom: '18px' }}>
+              <h4 style={{ margin: '0 0 8px 0', fontSize: '13px', fontWeight: 800, color: '#475569' }}>
+                📜 Additional Special Terms & Addenda (شروط إضافية ملحقة بالعقد)
+              </h4>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '4px', fontSize: '11px' }}>
+                {scannedContractData.additionalTerms.map((term, i) => (
+                  <div key={i} style={{ display: 'flex', gap: '6px', color: '#1E293B' }}>
+                    <span style={{ color: '#16A34A', fontWeight: 800 }}>✓</span>
+                    <span>{term}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* 1-Click Platform Ingestion Actions Bar */}
+            <div
+              style={{
+                background: '#F1F5F9',
+                border: '1px solid #CBD5E1',
+                borderRadius: '10px',
+                padding: '14px',
+                display: 'flex',
+                flexWrap: 'wrap',
+                gap: '10px',
+                alignItems: 'center',
+              }}
+            >
+              <span style={{ fontSize: '12px', fontWeight: 800, color: '#334155', marginRight: '6px' }}>
+                1-Click Platform Actions:
+              </span>
+              <ActionButton $primary onClick={handleLoadContractIntoPreparationStudio}>
+                <FileCheck size={14} /> Load into Preparation Studio as Reusable Draft
+              </ActionButton>
+              <ActionButton onClick={handleCreateCrmLandlordFromContract}>
+                <Building size={14} color="#EF4444" /> Create CRM Landlord Profile
+              </ActionButton>
+              <ActionButton onClick={handleCreateCrmTenantFromContract}>
+                <UserCheck size={14} color="#2563EB" /> Create CRM Tenant Profile
+              </ActionButton>
+            </div>
+          </PreviewCanvasCard>
+        ) : selectedTemplateId === 'passport_scanner' ? (
           <PreviewCanvasCard style={{ padding: '24px', overflowY: 'auto' }}>
             {/* Passport Header */}
             <div

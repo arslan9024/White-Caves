@@ -30,7 +30,8 @@ export interface DocumentTemplateOption {
     | 'landlord_mgmt_invoice'
     | 'emirates_id_scanner'
     | 'title_deed_scanner'
-    | 'passport_scanner';
+    | 'passport_scanner'
+    | 'tenancy_contract_scanner';
   title: string;
   category:
     | 'Leasing E-Sign'
@@ -108,6 +109,14 @@ export const DOCUMENT_TEMPLATES: DocumentTemplateOption[] = [
     icon: '🛂',
     description: 'Upload International Passport. Extracts 16+ fields, 2-line ICAO TD3 MRZ, CNIC & 10-yr validity.',
     badge: 'ICAO TD3 Scanner',
+  },
+  {
+    id: 'tenancy_contract_scanner',
+    title: '9. Tenancy Contract AI Scanner & Learner Hub',
+    category: 'AI Optical Scanner',
+    icon: '🔍',
+    description: 'Upload DLD Tenancy Contract. Automated Fill Detection (Filled vs Blank), 92% completeness score, Landlord/Tenant extraction & ML learning.',
+    badge: 'Fill Detection AI',
   },
 ];
 

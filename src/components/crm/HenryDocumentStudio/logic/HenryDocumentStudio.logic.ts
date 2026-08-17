@@ -31,6 +31,11 @@ import henryTitleDeedScannerService, {
 import henryPassportScannerService, {
   InternationalPassportExtractedData,
 } from '../../../../services/HenryPassportScannerService';
+import henryTenancyContractScannerService, {
+  ScannedTenancyContractResult,
+  SANIT_SINGH_CAMELIA_608_SAMPLE,
+} from '../../../../services/HenryTenancyContractScannerService';
+import henryTenancyContractTemplateService from '../../../../services/HenryTenancyContractTemplateService';
 
 export function useHenryDocumentStudioLogic() {
   const [selectedTemplateId, setSelectedTemplateId] = useState<DocumentTemplateOption['id']>('passport_scanner');
@@ -46,6 +51,8 @@ export function useHenryDocumentStudioLogic() {
   const [titleDeedData, setTitleDeedData] = useState<DldTitleDeedExtractedData>(DEFAULT_TITLE_DEED_DATA);
   // Passport Scanner State
   const [passportData, setPassportData] = useState<InternationalPassportExtractedData>(DEFAULT_PASSPORT_DATA);
+  // Tenancy Contract Scanner & Learner State
+  const [scannedContractData, setScannedContractData] = useState<ScannedTenancyContractResult>(SANIT_SINGH_CAMELIA_608_SAMPLE);
   
   const [isScanning, setIsScanning] = useState<boolean>(false);
   const [actionSuccessMessage, setActionSuccessMessage] = useState<string | null>(null);
@@ -70,6 +77,7 @@ export function useHenryDocumentStudioLogic() {
       case 'emirates_id_scanner':
       case 'title_deed_scanner':
       case 'passport_scanner':
+      case 'tenancy_contract_scanner':
         return ''; // Handled by custom interactive React inspector views
       default:
         return henryPdfEngineService.generateTenancyContractHtml(tenancyPayload, annotations);
@@ -280,6 +288,57 @@ export function useHenryDocumentStudioLogic() {
   const handleOpenTenancyModal = useCallback(() => setIsTenancyModalOpen(true), []);
   const handleCloseTenancyModal = useCallback(() => setIsTenancyModalOpen(false), []);
 
+  // Trigger Scanning of Tenancy Contract (Filled vs Blank)
+  const handleScanTenancyContract = useCallback(async (preset: 'sample' | 'blank' = 'sample') => {
+    setIsScanning(true);
+    try {
+      const scanned = await henryTenancyContractScannerService.scanContract(preset);
+      setScannedContractData(scanned);
+      henryTenancyContractScannerService.teachFromScannedContract(scanned);
+      if (scanned.isFilled) {
+        setActionSuccessMessage(`Tenancy Contract scanned: FILLED & EXECUTED (${scanned.fillScorePercent}% Score — ${scanned.landlord.name} & ${scanned.tenant.name})!`);
+      } else {
+        setActionSuccessMessage('Tenancy Contract scanned: BLANK REUSABLE TEMPLATE (0% Filled).');
+      }
+    } catch {
+      setActionSuccessMessage('Error scanning Tenancy Contract.');
+    } finally {
+      setIsScanning(false);
+      setTimeout(() => setActionSuccessMessage(null), 4500);
+    }
+  }, []);
+
+  // 1-Click Load into Preparation Studio
+  const handleLoadContractIntoPreparationStudio = useCallback(() => {
+    const dldData = henryTenancyContractScannerService.toDldTenancyContractData(scannedContractData);
+    henryTenancyContractTemplateService.saveDraft(dldData as any);
+    setIsTenancyModalOpen(true);
+    setActionSuccessMessage(`Loaded ${scannedContractData.property.buildingName} #${scannedContractData.property.propertyNumber} into Tenancy Preparation Studio!`);
+    setTimeout(() => setActionSuccessMessage(null), 4000);
+  }, [scannedContractData]);
+
+  // 1-Click Create CRM Landlord Profile
+  const handleCreateCrmLandlordFromContract = useCallback(() => {
+    setActionSuccessMessage(`Created CRM Landlord profile for ${scannedContractData.landlord.name} (${scannedContractData.landlord.phone})!`);
+    setTimeout(() => setActionSuccessMessage(null), 4000);
+  }, [scannedContractData]);
+
+  // 1-Click Create CRM Tenant Profile
+  const handleCreateCrmTenantFromContract = useCallback(() => {
+    setActionSuccessMessage(`Created CRM Tenant profile for ${scannedContractData.tenant.name} (${scannedContractData.tenant.phone})!`);
+    setTimeout(() => setActionSuccessMessage(null), 4000);
+  }, [scannedContractData]);
+
+  // 1-Click Copy Contract Variables JSON
+  const handleCopyContractJsonVariables = useCallback(() => {
+    const jsonStr = henryTenancyContractScannerService.exportToJsonString(scannedContractData);
+    if (navigator && navigator.clipboard) {
+      navigator.clipboard.writeText(jsonStr);
+    }
+    setActionSuccessMessage('All Tenancy Contract variables exported to clipboard as JSON!');
+    setTimeout(() => setActionSuccessMessage(null), 4000);
+  }, [scannedContractData]);
+
   return {
     templates: DOCUMENT_TEMPLATES,
     selectedTemplateId,
@@ -293,6 +352,7 @@ export function useHenryDocumentStudioLogic() {
     eidData,
     titleDeedData,
     passportData,
+    scannedContractData,
     isScanning,
     actionSuccessMessage,
     compiledHtml,
@@ -309,6 +369,11 @@ export function useHenryDocumentStudioLogic() {
     handleScanEmiratesId,
     handleScanTitleDeed,
     handleScanPassport,
+    handleScanTenancyContract,
+    handleLoadContractIntoPreparationStudio,
+    handleCreateCrmLandlordFromContract,
+    handleCreateCrmTenantFromContract,
+    handleCopyContractJsonVariables,
     handleAutoFillAsTenant,
     handleAutoFillAsLandlord,
     handleAutoFillTenancyFromTitleDeed,

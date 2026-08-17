@@ -1,0 +1,69 @@
+import { describe, it, expect, beforeEach } from 'vitest';
+import henryTenancyContractScannerService, {
+  SANIT_SINGH_CAMELIA_608_SAMPLE,
+  BLANK_DLD_TEMPLATE_SAMPLE,
+} from './HenryTenancyContractScannerService';
+
+describe('HenryTenancyContractScannerService — Optical AI Parser & Fill Detection', () => {
+  it('accurately parses filled contract and calculates 92% completeness score', async () => {
+    const result = await henryTenancyContractScannerService.scanContract('sample');
+
+    expect(result.isFilled).toBe(true);
+    expect(result.fillScorePercent).toBe(92);
+    expect(result.classification).toBe('fully_executed');
+    expect(result.landlord.name).toBe('SANIT SINGH NAGPAL');
+    expect(result.tenant.name).toBe('KESHIVANI MAYADEVAN');
+    expect(result.property.buildingName).toBe('CAMELIA');
+    expect(result.property.propertyNumber).toBe('608');
+    expect(result.property.plotNumber).toBe('176');
+    expect(result.property.areaSqM).toBe(112.24);
+    expect(result.property.location).toBe('DAMAC HILLS 2');
+    expect(result.financials.annualRentAed).toBe(112000);
+    expect(result.financials.securityDepositAed).toBe(5600);
+    expect(result.financials.modeOfPayment).toBe('3 CHEQUES');
+    expect(result.additionalTerms.length).toBe(5);
+    expect(result.additionalTerms[0]).toContain('Addendum is part of contract');
+  });
+
+  it('correctly classifies blank template with 0% fill score', async () => {
+    const result = await henryTenancyContractScannerService.scanContract('blank');
+
+    expect(result.isFilled).toBe(false);
+    expect(result.fillScorePercent).toBe(0);
+    expect(result.classification).toBe('blank_template');
+    expect(result.landlord.name).toBe('');
+    expect(result.tenant.name).toBe('');
+    expect(result.missingFields.length).toBeGreaterThan(10);
+  });
+
+  it('converts scanned contract to DldTenancyContractData for 1-click preparation studio loading', () => {
+    const dldData = henryTenancyContractScannerService.toDldTenancyContractData(SANIT_SINGH_CAMELIA_608_SAMPLE);
+
+    expect(dldData.ownerName).toBe('SANIT SINGH NAGPAL');
+    expect(dldData.tenantName).toBe('KESHIVANI MAYADEVAN');
+    expect(dldData.buildingName).toBe('CAMELIA');
+    expect(dldData.propertyNo).toBe('608');
+    expect(dldData.annualRent).toBe(112000);
+    expect(dldData.status).toBe('ready_for_signature');
+  });
+
+  it('converts scanned contract to CRM Landlord & Tenant Profiles', () => {
+    const landlord = henryTenancyContractScannerService.toCrmLandlordProfile(SANIT_SINGH_CAMELIA_608_SAMPLE);
+    expect(landlord.fullName).toBe('SANIT SINGH NAGPAL');
+    expect(landlord.phone).toBe('0504458097');
+    expect(landlord.ownedProperty).toContain('CAMELIA');
+
+    const tenant = henryTenancyContractScannerService.toCrmTenantProfile(SANIT_SINGH_CAMELIA_608_SAMPLE);
+    expect(tenant.fullName).toBe('KESHIVANI MAYADEVAN');
+    expect(tenant.phone).toBe('050 7915250');
+    expect(tenant.annualRentAed).toBe(112000);
+  });
+
+  it('teaches Henry AI and archives reference contract into training pool', () => {
+    henryTenancyContractScannerService.teachFromScannedContract(SANIT_SINGH_CAMELIA_608_SAMPLE);
+    const pool = henryTenancyContractScannerService.getTrainingReferenceContracts();
+
+    expect(pool.length).toBeGreaterThan(0);
+    expect(pool[0].landlord.name).toBe('SANIT SINGH NAGPAL');
+  });
+});
