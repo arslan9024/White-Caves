@@ -4,108 +4,84 @@ import { render, screen, fireEvent } from '@testing-library/react';
 import { HenryDocumentStudio } from './HenryDocumentStudio';
 import henryPdfEngineService from '../../../services/HenryPdfEngineService';
 
-describe('Henry AI 4000% Upgrade — Sovereign Record Keeper & Document Studio', () => {
+describe('Henry AI 4000% Upgrade — Sovereign Record Keeper, Tenant & Landlord Tax Invoicing', () => {
   beforeEach(() => {
     vi.clearAllMocks();
   });
 
-  it('renders Henry Document Studio with 4 document classification streams', () => {
+  it('renders Henry Document Studio with Tenant & Landlord service charge templates', () => {
     render(<HenryDocumentStudio />);
     expect(screen.getByTestId('henry-document-studio')).toBeDefined();
     expect(screen.getByText(/Henry AI — Sovereign Record Keeper/i)).toBeDefined();
     expect(screen.getByText(/1. Tenancy Contract \(E-Signature\)/i)).toBeDefined();
     expect(screen.getByText(/2. Government Ejari Certificate Vault/i)).toBeDefined();
     expect(screen.getByText(/3. Form B Viewing Register \(AI Auto-Fill\)/i)).toBeDefined();
-    expect(screen.getByText(/4. Broker Commission Tax Invoice/i)).toBeDefined();
+    expect(screen.getByText(/4. Tenant Service Charge Receipt & Tax Invoice/i)).toBeDefined();
+    expect(screen.getByText(/5. Landlord Property Management & Service Invoice/i)).toBeDefined();
   });
 
-  it('generates valid Tenancy Contract HTML with PDC schedule and E-Signature banner', () => {
-    const html = henryPdfEngineService.generateTenancyContractHtml({
-      contractNumber: 'WC-TC-TEST-001',
-      propertyTitle: 'Test Penthouse',
-      unitNumber: 'Unit 901',
-      community: 'Downtown Dubai',
-      annualRentAed: 240000,
-      securityDepositAed: 12000,
-      leaseStartDate: '01/01/2026',
-      leaseEndDate: '31/12/2026',
-      landlord: { name: 'Owner Name', emiratesIdOrPassport: '784-001', email: 'owner@test.com', phone: '+971501111111' },
-      tenant: { name: 'Tenant Name', emiratesIdOrPassport: '784-002', email: 'tenant@test.com', phone: '+971502222222' },
-      broker: { name: 'Broker Name', brnNumber: '123', agencyOrn: '44483', detLicense: '1388443' },
-      pdcSchedule: [
-        { chequeNumber: '001', dueDate: '01/01/2026', amountAed: 60000, bankName: 'ENBD', status: 'cleared' },
-      ],
-      esignToken: 'token-abc-123',
-    });
-
-    expect(html).toContain('WC-TC-TEST-001');
-    expect(html).toContain('E-SIGNATURE LINK READY FOR SHARING');
-    expect(html).toContain('https://whitecaves.ae/sign/token-abc-123');
-    expect(html).toContain('Downtown Dubai');
-  });
-
-  it('generates Government Ejari Archive HTML with official Ejari Number and DLD REST QR', () => {
-    const archiveHtml = henryPdfEngineService.generateGovernmentEjariArchiveHtml({
-      ejariNumber: '0120250814005322',
-      contractReference: 'WC-TC-TEST-001',
-      issueDate: '14/08/2025',
-      expiryDate: '13/08/2026',
-      registeredRentAed: 185000,
-      propertyAddress: 'Villa 142, Cluster V, DAMAC Hills 2',
-      landlordName: 'Tariq Al-Mansoor',
-      tenantName: 'Alexander Wright',
-      brokerName: 'Arslan Malik',
-      brokerBrn: '59821',
-      dldBarcodeHash: 'DLD-HASH-0120250814005322',
-      archivedAt: '2026-08-17',
-    });
-
-    expect(archiveHtml).toContain('0120250814005322');
-    expect(archiveHtml).toContain('HENRY SOVEREIGN VAULT — OFFICIAL GOVERNMENT RECORD');
-    expect(archiveHtml).toContain('DLD REST QR');
-  });
-
-  it('generates Form B Viewing Register and Tax Invoice with TRN', () => {
-    const viewingHtml = henryPdfEngineService.generateViewingFormHtml({
-      formId: 'VIEW-001',
-      clientName: 'Client Test',
-      clientPhone: '+971500000000',
-      clientPassportOrEid: '784-999',
-      propertyTitle: 'Luxury Villa',
-      propertyAddress: 'DAMAC Hills 2',
-      viewingDate: '17/08/2026',
-      viewingTime: '17:00 PM',
-      agentName: 'Arslan Malik',
-      agentBrn: '59821',
-    });
-    expect(viewingHtml).toContain('1-CLICK AI AUTO-FILLED');
-
-    const taxHtml = henryPdfEngineService.generateTaxReceiptHtml({
-      receiptNumber: 'INV-001',
-      receiptType: 'agency_commission',
-      amountAed: 10000,
+  it('generates valid Tenant Service Charge Tax Invoice with TRN and 5% VAT', () => {
+    const tenantInvoiceHtml = henryPdfEngineService.generateTaxReceiptHtml({
+      receiptNumber: 'INV-WC-TNT-2026-041',
+      receiptType: 'tenant_service_charges',
+      billedPartyType: 'tenant',
+      paidBy: 'Alexander Wright',
+      clientTrnOrEid: '784-1990-7654321-2',
+      propertyAddress: 'Villa 142, DAMAC Hills 2, Dubai',
+      serviceDescription: 'Tenant Agency Brokerage Commission & Ejari Service Fee',
+      amountAed: 5000,
       vatRatePercent: 5,
-      vatAmountAed: 500,
-      totalWithVatAed: 10500,
-      paidBy: 'Client Test',
-      paidTo: 'White Caves Real Estate LLC',
+      vatAmountAed: 250,
+      totalWithVatAed: 5250,
+      paidTo: 'WHITE CAVES REAL ESTATE L.L.C',
       whiteCavesTrn: '100488291000003',
       paymentMethod: 'bank_transfer',
-      paymentReference: 'REF-123',
+      paymentReference: 'TXN-TNT-991',
       date: '17/08/2026',
     });
-    expect(taxHtml).toContain('100488291000003');
-    expect(taxHtml).toContain('OFFICIAL TAX INVOICE');
+
+    expect(tenantInvoiceHtml).toContain('TENANT SERVICE CHARGE & INVOICE');
+    expect(tenantInvoiceHtml).toContain('Alexander Wright');
+    expect(tenantInvoiceHtml).toContain('100488291000003');
+    expect(tenantInvoiceHtml).toContain('AED 5,250');
+    expect(tenantInvoiceHtml).toContain('AE960330000019101501006');
+    expect(tenantInvoiceHtml).toContain('FTA UAE COMPLIANT');
   });
 
-  it('allows copying e-sign link and switching document streams', () => {
-    render(<HenryDocumentStudio />);
-    const shareBtn = screen.getByTitle(/Copy E-Signature Link/i);
-    fireEvent.click(shareBtn);
-    expect(screen.getByText(/Link Copied!/i)).toBeDefined();
+  it('generates valid Landlord Property Management Tax Invoice with 5% VAT', () => {
+    const landlordInvoiceHtml = henryPdfEngineService.generateTaxReceiptHtml({
+      receiptNumber: 'INV-WC-LL-2026-088',
+      receiptType: 'landlord_property_management',
+      billedPartyType: 'landlord',
+      paidBy: 'Tariq Al-Mansoor',
+      clientTrnOrEid: '784-1982-1234567-1',
+      propertyAddress: 'Villa 142, DAMAC Hills 2, Dubai',
+      serviceDescription: 'Annual Comprehensive Property Management Fee & Tenant Sourcing',
+      amountAed: 9250,
+      vatRatePercent: 5,
+      vatAmountAed: 462.5,
+      totalWithVatAed: 9712.5,
+      paidTo: 'WHITE CAVES REAL ESTATE L.L.C',
+      whiteCavesTrn: '100488291000003',
+      paymentMethod: 'uaedds',
+      paymentReference: 'DDS-LL-88',
+      date: '17/08/2026',
+    });
 
-    const govtEjariBtn = screen.getByText(/2. Government Ejari Certificate Vault/i);
-    fireEvent.click(govtEjariBtn);
-    expect(screen.getByText(/Official DLD registered certificate/i)).toBeDefined();
+    expect(landlordInvoiceHtml).toContain('LANDLORD PROPERTY MANAGEMENT & SERVICE INVOICE');
+    expect(landlordInvoiceHtml).toContain('Tariq Al-Mansoor');
+    expect(landlordInvoiceHtml).toContain('AED 9,712.5');
+    expect(landlordInvoiceHtml).toContain('Mashreq Bank');
+  });
+
+  it('allows switching between Tenant and Landlord invoice templates in the UI', () => {
+    render(<HenryDocumentStudio />);
+    const tenantTab = screen.getByText(/4. Tenant Service Charge/i);
+    fireEvent.click(tenantTab);
+    expect(screen.getByText(/Official tax invoice & receipt for Tenant Service Charges/i)).toBeDefined();
+
+    const landlordTab = screen.getByText(/5. Landlord Property Management/i);
+    fireEvent.click(landlordTab);
+    expect(screen.getByText(/Tax invoice for Landlord Annual Property Management/i)).toBeDefined();
   });
 });

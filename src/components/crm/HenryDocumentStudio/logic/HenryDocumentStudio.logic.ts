@@ -8,7 +8,8 @@ import {
   DEMO_TENANCY_PAYLOAD,
   DEMO_EJARI_RECORD,
   DEMO_VIEWING_PAYLOAD,
-  DEMO_TAX_RECEIPT,
+  DEMO_TENANT_TAX_RECEIPT,
+  DEMO_LANDLORD_TAX_INVOICE,
   DocumentTemplateOption,
 } from '../data/HenryDocumentStudio.data';
 import henryPdfEngineService, {
@@ -24,7 +25,8 @@ export function useHenryDocumentStudioLogic() {
   const [tenancyPayload, setTenancyPayload] = useState<TenancyContractPayload>(DEMO_TENANCY_PAYLOAD);
   const [ejariRecord, setEjariRecord] = useState<GovernmentEjariRecord>(DEMO_EJARI_RECORD);
   const [viewingPayload, setViewingPayload] = useState<ViewingFormPayload>(DEMO_VIEWING_PAYLOAD);
-  const [taxReceiptPayload, setTaxReceiptPayload] = useState<TaxReceiptPayload>(DEMO_TAX_RECEIPT);
+  const [tenantReceiptPayload, setTenantReceiptPayload] = useState<TaxReceiptPayload>(DEMO_TENANT_TAX_RECEIPT);
+  const [landlordInvoicePayload, setLandlordInvoicePayload] = useState<TaxReceiptPayload>(DEMO_LANDLORD_TAX_INVOICE);
   
   const [zoomLevel, setZoomLevel] = useState<number>(100);
   const [annotations, setAnnotations] = useState<PdfAnnotation[]>([]);
@@ -39,12 +41,14 @@ export function useHenryDocumentStudioLogic() {
         return henryPdfEngineService.generateGovernmentEjariArchiveHtml(ejariRecord);
       case 'viewing_form_autofill':
         return henryPdfEngineService.generateViewingFormHtml(viewingPayload);
-      case 'tax_receipt_vat':
-        return henryPdfEngineService.generateTaxReceiptHtml(taxReceiptPayload);
+      case 'tenant_service_receipt':
+        return henryPdfEngineService.generateTaxReceiptHtml(tenantReceiptPayload);
+      case 'landlord_mgmt_invoice':
+        return henryPdfEngineService.generateTaxReceiptHtml(landlordInvoicePayload);
       default:
         return henryPdfEngineService.generateTenancyContractHtml(tenancyPayload, annotations);
     }
-  }, [selectedTemplateId, tenancyPayload, ejariRecord, viewingPayload, taxReceiptPayload, annotations]);
+  }, [selectedTemplateId, tenancyPayload, ejariRecord, viewingPayload, tenantReceiptPayload, landlordInvoicePayload, annotations]);
 
   const handlePrint = useCallback(() => {
     henryPdfEngineService.triggerPrint(compiledHtml);
@@ -68,7 +72,6 @@ export function useHenryDocumentStudioLogic() {
   }, [tenancyPayload]);
 
   const handleTriggerAiAutoFill = useCallback(() => {
-    // 1-Click AI Auto-Fill simulating instant CRM synchronization
     setViewingPayload((prev) => ({
       ...prev,
       clientName: 'Alexander Wright',
@@ -86,7 +89,8 @@ export function useHenryDocumentStudioLogic() {
     setTenancyPayload,
     ejariRecord,
     viewingPayload,
-    taxReceiptPayload,
+    tenantReceiptPayload,
+    landlordInvoicePayload,
     compiledHtml,
     zoomLevel,
     shareLinkCopied,

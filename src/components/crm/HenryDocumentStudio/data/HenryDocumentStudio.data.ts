@@ -10,9 +10,14 @@ import {
 } from '../../../../services/HenryPdfEngineService';
 
 export interface DocumentTemplateOption {
-  id: 'tenancy_contract_esign' | 'government_ejari_vault' | 'viewing_form_autofill' | 'tax_receipt_vat';
+  id:
+    | 'tenancy_contract_esign'
+    | 'government_ejari_vault'
+    | 'viewing_form_autofill'
+    | 'tenant_service_receipt'
+    | 'landlord_mgmt_invoice';
   title: string;
-  category: 'Leasing E-Sign' | 'Government Vault' | 'AI Auto-Fill' | 'Finance Receipts';
+  category: 'Leasing E-Sign' | 'Government Vault' | 'AI Auto-Fill' | 'Tenant Invoices' | 'Landlord Invoices';
   icon: string;
   description: string;
   badge: string;
@@ -44,12 +49,20 @@ export const DOCUMENT_TEMPLATES: DocumentTemplateOption[] = [
     badge: 'AI Auto-Fill',
   },
   {
-    id: 'tax_receipt_vat',
-    title: '4. Broker Commission Tax Invoice (5% VAT)',
-    category: 'Finance Receipts',
-    icon: '💵',
-    description: 'Official tax invoice with White Caves TRN, 5% VAT calculations, and security deposit vouchers.',
-    badge: 'FTA Compliant',
+    id: 'tenant_service_receipt',
+    title: '4. Tenant Service Charge Receipt & Tax Invoice',
+    category: 'Tenant Invoices',
+    icon: '🧾',
+    description: 'Official tax invoice & receipt for Tenant Service Charges, Admin fees, and Ejari processing (FTA 5% VAT).',
+    badge: 'Tenant Voucher',
+  },
+  {
+    id: 'landlord_mgmt_invoice',
+    title: '5. Landlord Property Management & Service Invoice',
+    category: 'Landlord Invoices',
+    icon: '🏢',
+    description: 'Tax invoice for Landlord Annual Property Management, Maintenance coordination, and Brokerage fees.',
+    badge: 'Landlord Invoice',
   },
 ];
 
@@ -96,18 +109,18 @@ export const DEMO_TENANCY_PAYLOAD: TenancyContractPayload = {
 };
 
 export const DEMO_EJARI_RECORD: GovernmentEjariRecord = {
-  ejariNumber: '0120250814005322',
+  ejariNumber: '0120260721003974',
   contractReference: 'WC-TC-2026-DXB-98442',
-  issueDate: '14/08/2025',
-  expiryDate: '13/08/2026',
+  issueDate: '21/07/2026',
+  expiryDate: '20/07/2027',
   registeredRentAed: 185000,
   propertyAddress: 'Villa 142, Cluster V, DAMAC Hills 2, Dubai',
   landlordName: 'Tariq Al-Mansoor',
   tenantName: 'Alexander Wright',
   brokerName: 'Arslan Malik Bashir Ahmad',
   brokerBrn: '59821',
-  dldBarcodeHash: 'DLD-REST-HASH-0120250814005322-AUTH',
-  archivedAt: '2026-08-17 19:45:00 UTC',
+  dldBarcodeHash: 'DLD-REST-HASH-0120260721003974-AUTH',
+  archivedAt: '2026-08-17 21:00:00 UTC',
 };
 
 export const DEMO_VIEWING_PAYLOAD: ViewingFormPayload = {
@@ -124,17 +137,42 @@ export const DEMO_VIEWING_PAYLOAD: ViewingFormPayload = {
   feedbackNotes: 'Client inspected master suite and pool area. Highly interested in signing Form B mandate.',
 };
 
-export const DEMO_TAX_RECEIPT: TaxReceiptPayload = {
-  receiptNumber: 'INV-WC-2026-0098',
-  receiptType: 'agency_commission',
+export const DEMO_TENANT_TAX_RECEIPT: TaxReceiptPayload = {
+  receiptNumber: 'INV-WC-TNT-2026-041',
+  receiptType: 'tenant_service_charges',
+  billedPartyType: 'tenant',
+  paidBy: 'Alexander Wright (Tenant)',
+  clientTrnOrEid: '784-1990-7654321-2',
+  propertyAddress: 'Villa 142, Cluster V, DAMAC Hills 2, Dubai',
+  unitNumber: 'Villa 142',
+  serviceDescription: 'Tenant Agency Brokerage Commission, Ejari Government Registration & Move-In Service Charges',
+  amountAed: 5000,
+  vatRatePercent: 5,
+  vatAmountAed: 250,
+  totalWithVatAed: 5250,
+  paidTo: 'WHITE CAVES REAL ESTATE L.L.C',
+  whiteCavesTrn: '100488291000003',
+  paymentMethod: 'bank_transfer',
+  paymentReference: 'ENBD-TNT-SERVICE-98442',
+  date: '17/08/2026',
+};
+
+export const DEMO_LANDLORD_TAX_INVOICE: TaxReceiptPayload = {
+  receiptNumber: 'INV-WC-LL-2026-088',
+  receiptType: 'landlord_property_management',
+  billedPartyType: 'landlord',
+  paidBy: 'Tariq Al-Mansoor (Landlord / Asset Owner)',
+  clientTrnOrEid: '784-1982-1234567-1',
+  propertyAddress: 'Villa 142, Cluster V, DAMAC Hills 2, Dubai',
+  unitNumber: 'Villa 142',
+  serviceDescription: 'Annual Comprehensive Property Management Fee, Tenant Sourcing, PDC Supervision & Routine Inspection',
   amountAed: 9250,
   vatRatePercent: 5,
   vatAmountAed: 462.5,
   totalWithVatAed: 9712.5,
-  paidBy: 'Alexander Wright',
-  paidTo: 'White Caves Real Estate LLC',
+  paidTo: 'WHITE CAVES REAL ESTATE L.L.C',
   whiteCavesTrn: '100488291000003',
-  paymentMethod: 'bank_transfer',
-  paymentReference: 'ENBD-TXN-9844201',
+  paymentMethod: 'uaedds',
+  paymentReference: 'DDS-LL-MGMT-2026-088',
   date: '17/08/2026',
 };
