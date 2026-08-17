@@ -9,6 +9,7 @@ import { BiometricSetup } from '../../features/auth/components/BiometricLogin';
 import { useTheme, type ThemeMode } from '../../context/ThemeContext';
 import { useLanguage, type LanguageType } from '../../context/LanguageContext';
 import { useGlobalCurrency, type CurrencyCode } from '../../context/CurrencyContext';
+import { useUserRole, ROLE_LABELS, type UserRole } from '../../context/UserRoleContext';
 import { safeStorage } from '../../utils/safeStorage';
 
 const ProfileWrapper = styled.div`
@@ -78,6 +79,40 @@ const SidebarUserInfo = styled.div`
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
+  }
+`;
+
+const RoleBadgeTag = styled.span<{ $level: number }>`
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  margin-top: 6px;
+  padding: 3px 8px;
+  border-radius: 6px;
+  font-size: 0.72rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  background: ${p => (p.$level === 5 ? '#ef4444' : p.$level >= 3 ? '#1e293b' : 'rgba(239, 68, 68, 0.15)')};
+  color: ${p => (p.$level >= 3 ? '#ffffff' : '#ef4444')};
+  border: 1px solid ${p => (p.$level === 5 ? '#ef4444' : 'rgba(239, 68, 68, 0.3)')};
+`;
+
+const RoleSelectInput = styled.select`
+  width: 100%;
+  padding: 12px 16px;
+  border-radius: ${borderRadius.lg};
+  border: 1px solid var(--border-input, rgba(255, 255, 255, 0.15));
+  background: var(--bg-input, rgba(15, 23, 42, 0.8));
+  color: var(--text-primary, #f8fafc);
+  font-size: 0.95rem;
+  font-weight: 700;
+  cursor: pointer;
+  outline: none;
+  transition: all 0.2s ease;
+
+  &:focus {
+    border-color: #ef4444;
+    box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.25);
   }
 `;
 
@@ -302,6 +337,12 @@ export const ProfilePage: FC = () => {
   const { themeMode, setThemeMode } = useTheme();
   const { language, setLanguage, supportedLanguages } = useLanguage();
   const { currency, setCurrency, currencies } = useGlobalCurrency();
+  const {
+    role: currentRole,
+    accessLevel,
+    isFounder,
+    loginAsRole,
+  } = useUserRole();
 
   // Additional user preferences
   const [measurementUnit, setMeasurementUnit] = useState<'sqft' | 'sqm'>(() => {
@@ -338,6 +379,9 @@ export const ProfilePage: FC = () => {
               <SidebarUserInfo>
                 <h3>{profileName || user?.name || 'Executive User'}</h3>
                 <p>{user?.email}</p>
+                <RoleBadgeTag $level={accessLevel}>
+                  {isFounder ? '👑 Founder (L5)' : `L${accessLevel} · ${ROLE_LABELS[currentRole] || currentRole}`}
+                </RoleBadgeTag>
               </SidebarUserInfo>
             </SidebarHeader>
 
@@ -568,6 +612,53 @@ export const ProfilePage: FC = () => {
                         Sq.M (Meters²)
                       </OptionBtn>
                     </OptionButtonGroup>
+                  </PreferenceBox>
+
+                  {/* 14-Role Sovereign Authority Simulator */}
+                  <PreferenceBox style={{ gridColumn: '1 / -1' }}>
+                    <label
+                      style={{
+                        fontWeight: 800,
+                        fontSize: '0.88rem',
+                        color: 'var(--text-primary)',
+                      }}
+                    >
+                      🏛️ Operational Role & Access Level
+                    </label>
+                    <p
+                      style={{
+                        fontSize: '0.78rem',
+                        color: 'var(--text-muted)',
+                        margin: '2px 0 8px',
+                      }}
+                    >
+                      Active Identity: {ROLE_LABELS[currentRole] || currentRole} (Level {accessLevel})
+                    </p>
+                    <RoleSelectInput
+                      value={currentRole}
+                      onChange={e => loginAsRole(e.target.value as UserRole)}
+                    >
+                      <optgroup label="Tier 1: Internal Corporate Machinery">
+                        <option value="managing_director">👑 Managing Director (L5 Sovereign)</option>
+                        <option value="manager">📊 Department Manager (L4)</option>
+                        <option value="supervisor">⚡ Team Supervisor (L3)</option>
+                        <option value="agent">💼 Licensed Broker (L2)</option>
+                        <option value="intern">🎓 Corporate Intern (L1)</option>
+                      </optgroup>
+                      <optgroup label="Tier 2: Paired Client Portals">
+                        <option value="tenant">🔑 Leasing Tenant (Client L1)</option>
+                        <option value="landlord">🏢 Property Landlord (Asset Owner L2)</option>
+                        <option value="buyer">🏡 Secondary Buyer (Client L1)</option>
+                        <option value="seller">📜 Property Seller (Mandate L1)</option>
+                        <option value="offplan_buyer">🏗️ Off-Plan Purchaser (HNWI L1)</option>
+                        <option value="developer">🏙️ Primary Developer Partner (L2)</option>
+                      </optgroup>
+                      <optgroup label="Tier 3: Strategic Partners & Public">
+                        <option value="conveyancer">⚖️ DLD Conveyancer / Trustee (L2)</option>
+                        <option value="contractor">🛠️ Maintenance Contractor (L2)</option>
+                        <option value="guest">🌐 Executive Guest (Public L1)</option>
+                      </optgroup>
+                    </RoleSelectInput>
                   </PreferenceBox>
                 </PreferencesGrid>
 
