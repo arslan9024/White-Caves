@@ -44,18 +44,18 @@ describe('UserPreferencesDropdown (4-Way Component)', () => {
 
   it('renders correctly with default guest user', () => {
     renderDropdown();
-    expect(screen.getByTestId('user-preferences-dropdown')).toBeInTheDocument();
-    expect(screen.getByTestId('active-role-badge')).toBeInTheDocument();
-    expect(screen.getByTestId('role-simulator-select')).toBeInTheDocument();
+    expect(screen.getByTestId('user-preferences-dropdown')).toBeDefined();
+    expect(screen.getByTestId('active-role-badge')).toBeDefined();
+    expect(screen.getByTestId('role-simulator-select')).toBeDefined();
   });
 
   it('renders theme, language, and currency options', () => {
     renderDropdown();
-    expect(screen.getByTestId('pref-theme-light')).toBeInTheDocument();
-    expect(screen.getByTestId('pref-theme-dark')).toBeInTheDocument();
-    expect(screen.getByTestId('pref-lang-en')).toBeInTheDocument();
-    expect(screen.getByTestId('pref-lang-ar')).toBeInTheDocument();
-    expect(screen.getByTestId('pref-curr-aed')).toBeInTheDocument();
+    expect(screen.getByTestId('pref-theme-light')).toBeDefined();
+    expect(screen.getByTestId('pref-theme-dark')).toBeDefined();
+    expect(screen.getByTestId('pref-lang-en')).toBeDefined();
+    expect(screen.getByTestId('pref-lang-ar')).toBeDefined();
+    expect(screen.getByTestId('pref-curr-aed')).toBeDefined();
   });
 
   it('allows selecting a role from the 14-role simulator', () => {
