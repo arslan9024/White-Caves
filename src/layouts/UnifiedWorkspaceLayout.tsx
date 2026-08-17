@@ -8,11 +8,13 @@
 
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { PanelLeftClose, PanelLeft, Search, ShieldCheck, ChevronDown, ChevronUp, Bell } from 'lucide-react';
 import TopNavbar from '../components/TopNavbar/TopNavbar';
 import CavesFloatingSearch from '../components/CavesFloatingSearch/CavesFloatingSearch';
 import CavesWhatsAppWidget from '../components/CavesWhatsAppWidget/CavesWhatsAppWidget';
 import { useWorkspaceLayoutLogic } from './UnifiedWorkspaceLayout.logic';
 import { getLicenseStatuses, hasExpiringLicenses } from '../utils/licenseMonitors';
+import { ROLE_LABELS } from '../context/UserRoleContext';
 
 // ─── Props ────────────────────────────────────────────────────────────────────
 
@@ -31,6 +33,7 @@ export const UnifiedWorkspaceLayout: React.FC<UnifiedWorkspaceLayoutProps> = ({
 }) => {
   const navigate = useNavigate();
   const [isMdHubOpen, setIsMdHubOpen] = useState(true);
+  const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
 
   const {
     userProfile,
@@ -51,15 +54,17 @@ export const UnifiedWorkspaceLayout: React.FC<UnifiedWorkspaceLayoutProps> = ({
   const hasAlerts = hasExpiringLicenses(statuses);
 
   const alertBadge = hasAlerts ? (
-    <span style={{
-      width: '10px',
-      height: '10px',
-      backgroundColor: '#EF4444',
-      borderRadius: '50%',
-      display: 'inline-block',
-      boxShadow: '0 0 8px #EF4444',
-      animation: 'pulse 2s infinite'
-    }} />
+    <span
+      style={{
+        width: '10px',
+        height: '10px',
+        backgroundColor: '#EF4444',
+        borderRadius: '50%',
+        display: 'inline-block',
+        boxShadow: '0 0 8px #EF4444',
+        animation: 'pulse 2s infinite',
+      }}
+    />
   ) : null;
 
   return (
@@ -70,67 +75,94 @@ export const UnifiedWorkspaceLayout: React.FC<UnifiedWorkspaceLayoutProps> = ({
         minHeight: '100vh',
         width: '100vw',
         backgroundColor: '#FFFFFF',
-        fontFamily: 'Inter, sans-serif',
+        fontFamily: "'Inter', sans-serif",
       }}
     >
       {/* ── FIXED TOP NAVBAR ────────────────────────────────────────────────── */}
-      <TopNavbar />
+      <TopNavbar isMDMode={isLevel5} />
 
       {/* ── MAIN WORKSPACE BODY ─────────────────────────────────────────────── */}
-      <div style={{ display: 'flex', flex: 1, paddingTop: '64px', height: 'calc(100vh - 64px)', overflow: 'hidden' }}>
+      <div style={{ display: 'flex', flex: 1, paddingTop: '68px', height: 'calc(100vh - 68px)', overflow: 'hidden' }}>
 
         {/* ── UNIFIED RECURSIVE LEFT SIDEBAR (Red / White / Slate Theme) ───────── */}
         <aside
           style={{
-            width: '300px',
+            width: isSidebarCollapsed ? '72px' : '310px',
             backgroundColor: '#1E293B',
             color: '#FFFFFF',
             display: 'flex',
             flexDirection: 'column',
             borderRight: '2px solid #EF4444',
             flexShrink: 0,
+            transition: 'width 0.3s cubic-bezier(0.16, 1, 0.3, 1)',
+            overflowX: 'hidden',
           }}
         >
-          {/* Sidebar Brand Header */}
+          {/* Sidebar Brand Header & Collapse Toggle */}
           <div
             style={{
-              padding: '16px 20px',
+              padding: isSidebarCollapsed ? '16px 8px' : '16px 18px',
               backgroundColor: '#0F172A',
               borderBottom: '1px solid rgba(239, 68, 68, 0.3)',
               display: 'flex',
               alignItems: 'center',
-              gap: '12px',
+              justifyContent: isSidebarCollapsed ? 'center' : 'space-between',
+              gap: '10px',
             }}
           >
-            <div
+            {!isSidebarCollapsed && (
+              <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                <div
+                  style={{
+                    width: '36px',
+                    height: '36px',
+                    borderRadius: '50%',
+                    background: 'linear-gradient(135deg, #EF4444 0%, #B91C1C 100%)',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    fontWeight: 900,
+                    fontSize: '14px',
+                    color: '#FFFFFF',
+                    boxShadow: '0 4px 12px rgba(239, 68, 68, 0.4)',
+                    flexShrink: 0,
+                  }}
+                >
+                  WC
+                </div>
+                <div>
+                  <h1 style={{ margin: 0, fontSize: '14px', fontWeight: 800, color: '#FFFFFF', letterSpacing: '0.5px' }}>
+                    WHITE CAVES
+                  </h1>
+                  <span style={{ fontSize: '9px', color: '#94A3B8', textTransform: 'uppercase', letterSpacing: '1px', fontWeight: 700 }}>
+                    Sovereign OS · L{userProfile.accessLevel}
+                  </span>
+                </div>
+              </div>
+            )}
+
+            <button
+              onClick={() => setIsSidebarCollapsed(prev => !prev)}
+              title={isSidebarCollapsed ? 'Expand Sidebar' : 'Collapse Sidebar'}
               style={{
-                width: '36px',
-                height: '36px',
-                borderRadius: '50%',
-                background: 'linear-gradient(135deg, #EF4444 0%, #B91C1C 100%)',
+                background: 'rgba(239, 68, 68, 0.12)',
+                border: '1px solid rgba(239, 68, 68, 0.3)',
+                color: '#EF4444',
+                borderRadius: '8px',
+                padding: '6px',
+                cursor: 'pointer',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
-                fontWeight: 900,
-                fontSize: '15px',
-                color: '#FFFFFF',
-                boxShadow: '0 4px 12px rgba(239, 68, 68, 0.4)',
+                transition: 'all 0.2s ease',
               }}
             >
-              WC
-            </div>
-            <div>
-              <h1 style={{ margin: 0, fontSize: '15px', fontWeight: 'bold', color: '#FFFFFF', letterSpacing: '0.5px' }}>
-                WHITE CAVES
-              </h1>
-              <span style={{ fontSize: '10px', color: '#94A3B8', textTransform: 'uppercase', letterSpacing: '1px' }}>
-                Real Estate LLC · Sovereign OS
-              </span>
-            </div>
+              {isSidebarCollapsed ? <PanelLeft size={16} /> : <PanelLeftClose size={16} />}
+            </button>
           </div>
 
           {/* 👑 MANAGING DIRECTOR HUB (LEVEL 5 EXCLUSIVE SIDEBAR GROUP) ───────── */}
-          {isLevel5 && (
+          {isLevel5 && !isSidebarCollapsed && (
             <div
               style={{
                 backgroundColor: 'rgba(239, 68, 68, 0.08)',
@@ -159,7 +191,7 @@ export const UnifiedWorkspaceLayout: React.FC<UnifiedWorkspaceLayoutProps> = ({
                   <span>👑 [Managing Director Hub]</span>
                   {alertBadge}
                 </div>
-                <span>{isMdHubOpen ? '▲' : '▼'}</span>
+                <span>{isMdHubOpen ? <ChevronUp size={14} /> : <ChevronDown size={14} />}</span>
               </button>
 
               {isMdHubOpen && (
@@ -231,54 +263,63 @@ export const UnifiedWorkspaceLayout: React.FC<UnifiedWorkspaceLayoutProps> = ({
             </div>
           )}
 
-          {/* Search & Category Filter */}
-          <div style={{ padding: '12px 16px', borderBottom: '1px solid #334155' }}>
-            <input
-              type="text"
-              placeholder="Search 100 enterprise views..."
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              aria-label="Search workspace views"
-              style={{
-                width: '100%',
-                padding: '8px 12px',
-                borderRadius: '6px',
-                border: '1px solid #475569',
-                backgroundColor: '#0F172A',
-                color: '#FFFFFF',
-                fontSize: '13px',
-                outline: 'none',
-                boxSizing: 'border-box',
-              }}
-            />
-            <div style={{ display: 'flex', gap: '4px', overflowX: 'auto', marginTop: '8px', paddingBottom: '4px' }}>
-              {categories.slice(0, 5).map((cat) => (
-                <button
-                  key={cat}
-                  onClick={() => setActiveCategory(cat)}
-                  aria-pressed={activeCategory === cat}
+          {/* Search & Category Filter (Visible when expanded) */}
+          {!isSidebarCollapsed && (
+            <div style={{ padding: '12px 14px', borderBottom: '1px solid #334155' }}>
+              <div style={{ position: 'relative', display: 'flex', alignItems: 'center' }}>
+                <input
+                  type="text"
+                  placeholder="Search 100 enterprise views..."
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  aria-label="Search workspace views"
                   style={{
-                    padding: '4px 8px',
-                    borderRadius: '4px',
-                    border: 'none',
-                    fontSize: '11px',
-                    cursor: 'pointer',
-                    backgroundColor: activeCategory === cat ? '#EF4444' : '#334155',
+                    width: '100%',
+                    padding: '8px 12px 8px 32px',
+                    borderRadius: '6px',
+                    border: '1px solid #475569',
+                    backgroundColor: '#0F172A',
                     color: '#FFFFFF',
-                    whiteSpace: 'nowrap',
+                    fontSize: '12px',
+                    outline: 'none',
+                    boxSizing: 'border-box',
                   }}
-                >
-                  {cat}
-                </button>
-              ))}
+                />
+                <Search size={14} style={{ position: 'absolute', left: '10px', color: '#94A3B8' }} />
+              </div>
+              <div style={{ display: 'flex', gap: '4px', overflowX: 'auto', marginTop: '8px', paddingBottom: '4px' }}>
+                {categories.slice(0, 5).map((cat) => (
+                  <button
+                    key={cat}
+                    onClick={() => setActiveCategory(cat)}
+                    aria-pressed={activeCategory === cat}
+                    style={{
+                      padding: '3px 8px',
+                      borderRadius: '4px',
+                      border: 'none',
+                      fontSize: '11px',
+                      fontWeight: 700,
+                      cursor: 'pointer',
+                      backgroundColor: activeCategory === cat ? '#EF4444' : '#334155',
+                      color: '#FFFFFF',
+                      whiteSpace: 'nowrap',
+                      transition: 'all 0.2s ease',
+                    }}
+                  >
+                    {cat}
+                  </button>
+                ))}
+              </div>
             </div>
-          </div>
+          )}
 
           {/* Unified View Navigation */}
-          <nav style={{ flex: 1, overflowY: 'auto', padding: '12px 8px' }} aria-label="Workspace views navigation">
-            <div style={{ fontSize: '11px', fontWeight: 'bold', color: '#94A3B8', padding: '4px 12px', marginBottom: '8px', textTransform: 'uppercase' }}>
-              Operations Registry ({filteredViews.length} Views)
-            </div>
+          <nav style={{ flex: 1, overflowY: 'auto', padding: isSidebarCollapsed ? '12px 6px' : '12px 8px' }} aria-label="Workspace views navigation">
+            {!isSidebarCollapsed && (
+              <div style={{ fontSize: '10px', fontWeight: 800, color: '#94A3B8', padding: '4px 10px', marginBottom: '6px', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+                Operations Registry ({filteredViews.length} Views)
+              </div>
+            )}
             {filteredViews.map((view) => {
               const isActive = view.code === activeViewCode || view.id === activeViewCode;
               return (
@@ -286,10 +327,11 @@ export const UnifiedWorkspaceLayout: React.FC<UnifiedWorkspaceLayoutProps> = ({
                   key={view.id}
                   onClick={() => setActiveViewCode(view.code)}
                   aria-current={isActive ? 'page' : undefined}
+                  title={`${view.code} - ${view.title}`}
                   style={{
                     width: '100%',
-                    textAlign: 'left',
-                    padding: '9px 12px',
+                    textAlign: isSidebarCollapsed ? 'center' : 'left',
+                    padding: isSidebarCollapsed ? '8px 4px' : '8px 10px',
                     marginBottom: '4px',
                     borderRadius: '6px',
                     border: 'none',
@@ -298,65 +340,78 @@ export const UnifiedWorkspaceLayout: React.FC<UnifiedWorkspaceLayoutProps> = ({
                     cursor: 'pointer',
                     display: 'flex',
                     alignItems: 'center',
-                    justifyContent: 'space-between',
-                    fontSize: '13px',
+                    justifyContent: isSidebarCollapsed ? 'center' : 'space-between',
+                    fontSize: '12px',
                     fontWeight: isActive ? '700' : 'normal',
                     transition: 'all 0.15s ease',
                   }}
                 >
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px', overflow: 'hidden' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '6px', overflow: 'hidden' }}>
                     <span
                       style={{
-                        fontSize: '10px',
-                        padding: '2px 5px',
+                        fontSize: '9px',
+                        padding: '2px 4px',
                         borderRadius: '4px',
-                        backgroundColor: isActive ? 'rgba(255,255,255,0.2)' : '#334155',
+                        backgroundColor: isActive ? 'rgba(255,255,255,0.25)' : '#334155',
                         color: '#FFFFFF',
                         fontFamily: 'monospace',
+                        fontWeight: 700,
                       }}
                     >
                       {view.code}
                     </span>
-                    <span style={{ whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{view.title}</span>
+                    {!isSidebarCollapsed && (
+                      <span style={{ whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{view.title}</span>
+                    )}
                   </div>
-                  <span style={{ fontSize: '10px', opacity: 0.7, textTransform: 'uppercase' }}>{view.category}</span>
+                  {!isSidebarCollapsed && (
+                    <span style={{ fontSize: '9px', opacity: 0.7, textTransform: 'uppercase' }}>{view.category}</span>
+                  )}
                 </button>
               );
             })}
           </nav>
 
-          {/* User Footer */}
+          {/* User Footer with Role Badge */}
           <div
             style={{
-              padding: '16px',
+              padding: isSidebarCollapsed ? '12px 6px' : '14px 16px',
               backgroundColor: '#0F172A',
               borderTop: '1px solid #334155',
               display: 'flex',
               alignItems: 'center',
-              gap: '12px',
+              justifyContent: isSidebarCollapsed ? 'center' : 'flex-start',
+              gap: '10px',
             }}
           >
             <div
               style={{
-                width: '36px',
-                height: '36px',
+                width: '34px',
+                height: '34px',
                 borderRadius: '50%',
-                backgroundColor: '#EF4444',
+                backgroundColor: isLevel5 ? '#EF4444' : '#334155',
                 color: '#FFFFFF',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
-                fontWeight: 'bold',
+                fontWeight: 800,
+                fontSize: '13px',
+                flexShrink: 0,
+                boxShadow: isLevel5 ? '0 0 10px rgba(239, 68, 68, 0.4)' : 'none',
               }}
             >
               {userProfile.name.charAt(0)}
             </div>
-            <div style={{ overflow: 'hidden' }}>
-              <div style={{ fontSize: '13px', fontWeight: 'bold', color: '#FFFFFF', textOverflow: 'ellipsis', overflow: 'hidden', whiteSpace: 'nowrap' }}>
-                {userProfile.name}
+            {!isSidebarCollapsed && (
+              <div style={{ overflow: 'hidden' }}>
+                <div style={{ fontSize: '12px', fontWeight: 800, color: '#FFFFFF', textOverflow: 'ellipsis', overflow: 'hidden', whiteSpace: 'nowrap' }}>
+                  {userProfile.name}
+                </div>
+                <div style={{ fontSize: '10px', color: isLevel5 ? '#EF4444' : '#94A3B8', fontWeight: 700 }}>
+                  {isLevel5 ? '👑 Managing Director (L5)' : `L${userProfile.accessLevel} · ${ROLE_LABELS[userProfile.role as keyof typeof ROLE_LABELS] || userProfile.role}`}
+                </div>
               </div>
-              <div style={{ fontSize: '11px', color: '#94A3B8' }}>{userProfile.role}</div>
-            </div>
+            )}
           </div>
         </aside>
 
@@ -375,10 +430,10 @@ export const UnifiedWorkspaceLayout: React.FC<UnifiedWorkspaceLayoutProps> = ({
             }}
           >
             <div>
-              <div style={{ fontSize: '11px', color: '#64748B', textTransform: 'uppercase', fontWeight: '600' }}>
+              <div style={{ fontSize: '11px', color: '#64748B', textTransform: 'uppercase', fontWeight: '700' }}>
                 {activeView.group} · {activeView.category}
               </div>
-              <h2 style={{ margin: 0, fontSize: '16px', fontWeight: 'bold', color: '#1E293B' }}>{activeView.title}</h2>
+              <h2 style={{ margin: 0, fontSize: '16px', fontWeight: 800, color: '#1E293B' }}>{activeView.title}</h2>
             </div>
           </header>
 
@@ -386,7 +441,7 @@ export const UnifiedWorkspaceLayout: React.FC<UnifiedWorkspaceLayoutProps> = ({
           <div style={{ flex: 1, padding: '24px', overflowY: 'auto', backgroundColor: '#F8FAFC' }}>
             {children || (
               <div style={{ padding: '20px', backgroundColor: '#FFFFFF', borderRadius: '12px', border: '1px solid #E2E8F0', boxShadow: '0 4px 16px rgba(0,0,0,0.04)' }}>
-                <h3 style={{ margin: '0 0 12px', color: '#1E293B' }}>
+                <h3 style={{ margin: '0 0 12px', color: '#1E293B', fontWeight: 800 }}>
                   {activeView.code}: {activeView.title}
                 </h3>
                 <p style={{ color: '#64748B', fontSize: '14px', lineHeight: 1.6 }}>

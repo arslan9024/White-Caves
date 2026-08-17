@@ -19,10 +19,10 @@ export interface UseUserPreferencesDropdownProps {
     photoURL?: string;
     role?: string;
   } | null;
-  onClose: () => void;
+  onClose?: () => void;
 }
 
-export function useUserPreferencesDropdownLogic({ user, onClose }: UseUserPreferencesDropdownProps) {
+export function useUserPreferencesDropdownLogic({ user, onClose = () => {} }: UseUserPreferencesDropdownProps = {}) {
   const dropdownRef = useRef<HTMLDivElement>(null);
   const navigate = useNavigate();
   const dispatch = useDispatch();

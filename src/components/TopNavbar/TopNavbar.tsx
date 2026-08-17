@@ -1,14 +1,16 @@
 import React, { FC } from 'react';
-import { Sun, Moon } from 'lucide-react';
+import { Sun, Moon, Shield } from 'lucide-react';
 import { 
   NavbarContainer, 
   OverhangingLogoWrapper, 
   NavGroup, 
   NavLink, 
   ThemeToggleBtn,
-  ImpersonationSwitch 
+  RoleBadge 
 } from './TopNavbar.style';
 import { useTopNavbarLogic, TopNavbarProps } from './TopNavbar.logic';
+import { UserPreferencesDropdown } from '../layout/PublicNavbar/UserPreferencesDropdown';
+import { ROLE_LABELS } from '../../context/UserRoleContext';
 
 export const TopNavbar: FC<TopNavbarProps> = (props) => {
   const {
@@ -16,9 +18,10 @@ export const TopNavbar: FC<TopNavbarProps> = (props) => {
     currentPath,
     isDark,
     toggleTheme,
-    impersonationLevel,
+    role,
+    accessLevel,
+    isFounder,
     handleNavigate,
-    handleImpersonationChange
   } = useTopNavbarLogic(props);
 
   return (
@@ -27,7 +30,7 @@ export const TopNavbar: FC<TopNavbarProps> = (props) => {
       animate={{ y: 0 }}
       transition={{ type: 'spring', stiffness: 300, damping: 30 }}
       style={{
-        boxShadow: scrolled ? '0 4px 20px rgba(0, 0, 0, 0.08)' : '0 4px 20px rgba(0, 0, 0, 0.02)',
+        boxShadow: scrolled ? '0 4px 24px rgba(0, 0, 0, 0.12)' : '0 4px 20px rgba(0, 0, 0, 0.04)',
       }}
       data-testid="top-navbar"
     >
@@ -37,28 +40,28 @@ export const TopNavbar: FC<TopNavbarProps> = (props) => {
           $active={currentPath === '/'} 
           onClick={() => handleNavigate('/')}
         >
-          Corporate HQ
+          🏢 Corporate HQ
         </NavLink>
         <NavLink 
           $active={currentPath === '/off-plan'} 
           onClick={() => handleNavigate('/off-plan')}
         >
-          Primary Market
+          🏗️ Primary Market
         </NavLink>
         <NavLink 
           $active={currentPath === '/properties'} 
           onClick={() => handleNavigate('/properties')}
         >
-          Secondary Market
+          🏡 Secondary Market
         </NavLink>
       </NavGroup>
 
       {/* Central Overhanging Logo (64px, 50% overhang) */}
       <OverhangingLogoWrapper
-        whileHover={{ scale: 1.05 }}
+        whileHover={{ scale: 1.08 }}
         whileTap={{ scale: 0.95 }}
         onClick={() => handleNavigate('/')}
-        title="White Caves Real Estate LLC"
+        title="White Caves Real Estate LLC — Sovereign Real Estate OS"
       >
         <img src="/company-logo.jpg" alt="White Caves Logo" />
       </OverhangingLogoWrapper>
@@ -66,19 +69,27 @@ export const TopNavbar: FC<TopNavbarProps> = (props) => {
       {/* Right Navigation Group & Executive Tools */}
       <NavGroup>
         <NavLink 
-          $active={currentPath === '/crm'} 
+          $active={currentPath.startsWith('/crm')} 
           onClick={() => handleNavigate('/crm')}
         >
-          CRM Hub
+          📊 CRM Hub
         </NavLink>
         <NavLink 
           $active={currentPath === '/profile'} 
           onClick={() => handleNavigate('/profile')}
         >
-          Executive Profile
+          👤 Profile
         </NavLink>
 
-        {/* Binary Theme Switcher (Light = Crisp White / Dark = Deep Slate) */}
+        {/* Dynamic 14-Role Clearance Level Badge */}
+        <RoleBadge $level={accessLevel}>
+          {isFounder ? '👑 Founder (L5)' : `L${accessLevel} · ${ROLE_LABELS[role] || role}`}
+        </RoleBadge>
+
+        {/* Universal User Preferences Dropdown (Role / Lang / Theme / Currency) */}
+        <UserPreferencesDropdown />
+
+        {/* Quick Theme Switcher */}
         <ThemeToggleBtn 
           onClick={toggleTheme} 
           title={isDark ? 'Switch to Light Mode' : 'Switch to Dark Mode'}
@@ -86,19 +97,6 @@ export const TopNavbar: FC<TopNavbarProps> = (props) => {
         >
           {isDark ? <Sun size={18} /> : <Moon size={18} />}
         </ThemeToggleBtn>
-
-        {/* Ghost Session Impersonation Switch (Visible only for MD Mode) */}
-        {props.isMDMode && (
-          <ImpersonationSwitch 
-            value={impersonationLevel}
-            onChange={(e) => handleImpersonationChange(e.target.value)}
-          >
-            <option value="MD">👑 MD View</option>
-            <option value="Level 4">🏛️ Dept Manager (Level 4)</option>
-            <option value="Level 3">👥 Team Lead (Level 3)</option>
-            <option value="Level 2">👔 Broker (Level 2)</option>
-          </ImpersonationSwitch>
-        )}
       </NavGroup>
     </NavbarContainer>
   );

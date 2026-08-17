@@ -25,7 +25,7 @@ import { type UserRole } from '../../../../context/UserRoleContext';
 
 export interface UserPreferencesDropdownProps extends UseUserPreferencesDropdownProps {}
 
-export const UserPreferencesDropdown: FC<UserPreferencesDropdownProps> = ({ user, onClose }) => {
+export const UserPreferencesDropdown: FC<UserPreferencesDropdownProps> = ({ user, onClose = () => {} }) => {
   const {
     dropdownRef,
     user: activeUser,
