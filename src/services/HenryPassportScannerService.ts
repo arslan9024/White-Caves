@@ -169,6 +169,13 @@ class HenryPassportScannerService {
   }
 
   /**
+   * Returns demo scanned Passport data (Arslan Malik - DR0760143)
+   */
+  getDemoExtractedData(): InternationalPassportExtractedData {
+    return { ...ARSLAN_MALIK_SAMPLE_PASSPORT };
+  }
+
+  /**
    * Converts Extracted Passport data into a ContractParty object for Tenancy Contracts
    */
   toContractParty(

@@ -23,8 +23,10 @@ import {
   FileText,
   Globe,
   ShieldAlert,
+  FilePlus2,
 } from 'lucide-react';
 import { useHenryDocumentStudioLogic } from './logic/HenryDocumentStudio.logic';
+import { HenryTenancyContractModal } from './HenryTenancyContractModal';
 import {
   StudioContainer,
   StudioHeader,
@@ -74,6 +76,9 @@ export const HenryDocumentStudio: FC = () => {
     handleCreateCrmListing,
     handleAutoFillFormA,
     handleCreateAmlKycRecord,
+    isTenancyModalOpen,
+    handleOpenTenancyModal,
+    handleCloseTenancyModal,
   } = useHenryDocumentStudioLogic();
 
   return (
@@ -85,10 +90,31 @@ export const HenryDocumentStudio: FC = () => {
             <span>📄</span> Henry AI — Sovereign Record Keeper & Document Studio
           </h2>
           <p style={{ margin: 0, color: '#94A3B8', fontSize: '0.88rem' }}>
-            International Passport AI Scanner, DLD Title Deed OCR, Emirates ID Ingestion, Tenancy E-Sign & VAT Invoices.
+            Official DLD Unified Tenancy Contract, Passport AI Scanner, Title Deed OCR, Emirates ID Ingestion & VAT Invoices.
           </p>
         </div>
         <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
+          <button
+            onClick={handleOpenTenancyModal}
+            data-testid="prepare-tenancy-btn"
+            style={{
+              background: 'linear-gradient(135deg, #EF4444 0%, #DC2626 100%)',
+              color: '#FFFFFF',
+              border: '1px solid #DC2626',
+              borderRadius: '8px',
+              padding: '8px 16px',
+              fontSize: '0.85rem',
+              fontWeight: 800,
+              cursor: 'pointer',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '8px',
+              boxShadow: '0 4px 14px rgba(239, 68, 68, 0.35)',
+              transition: 'all 0.2s ease',
+            }}
+          >
+            <FilePlus2 size={16} /> Prepare New Tenancy Contract
+          </button>
           <Badge>HENRY RECORD KEEPER</Badge>
           <span style={{ fontSize: '0.8rem', color: '#94A3B8' }}>Ejari: 0120260721003974</span>
         </div>
@@ -1064,6 +1090,12 @@ export const HenryDocumentStudio: FC = () => {
           </PreviewCanvasCard>
         )}
       </WorkspaceSplit>
+
+      {/* Official DLD Tenancy Contract Interactive Preparation Modal */}
+      <HenryTenancyContractModal
+        isOpen={isTenancyModalOpen}
+        onClose={handleCloseTenancyModal}
+      />
     </StudioContainer>
   );
 };

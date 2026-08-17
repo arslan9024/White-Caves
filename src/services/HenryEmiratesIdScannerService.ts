@@ -172,6 +172,13 @@ class HenryEmiratesIdScannerService {
   }
 
   /**
+   * Returns demo scanned Emirates ID data (Arslan Malik)
+   */
+  getDemoExtractedData(): EmiratesIdExtractedData {
+    return { ...ARSLAN_MALIK_SAMPLE_EID };
+  }
+
+  /**
    * Converts Extracted Emirates ID data directly into a ContractParty object for Tenancy Contracts
    */
   toContractParty(

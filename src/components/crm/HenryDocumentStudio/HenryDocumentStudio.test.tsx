@@ -64,4 +64,15 @@ describe('Henry AI 4000% Upgrade — International Passport, Title Deed & Emirat
     expect(tenantInvoiceHtml).toContain('100488291000003');
     expect(tenantInvoiceHtml).toContain('AED 5,250');
   });
+
+  it('opens interactive DLD Tenancy Contract preparation modal when Prepare button is clicked', () => {
+    render(<HenryDocumentStudio />);
+    const prepareBtn = screen.getByTestId('prepare-tenancy-btn');
+    expect(prepareBtn).toBeDefined();
+
+    fireEvent.click(prepareBtn);
+    expect(screen.getByTestId('henry-tenancy-modal')).toBeDefined();
+    expect(screen.getByText(/Bilingual Dubai Land Department Tenancy Contract Form/i)).toBeDefined();
+    expect(screen.getByText(/1. Property & Owner/i)).toBeDefined();
+  });
 });

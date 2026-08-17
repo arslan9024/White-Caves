@@ -275,6 +275,11 @@ export function useHenryDocumentStudioLogic() {
     setTimeout(() => setActionSuccessMessage(null), 4000);
   }, [passportData]);
 
+  // Tenancy Contract Modal State
+  const [isTenancyModalOpen, setIsTenancyModalOpen] = useState<boolean>(false);
+  const handleOpenTenancyModal = useCallback(() => setIsTenancyModalOpen(true), []);
+  const handleCloseTenancyModal = useCallback(() => setIsTenancyModalOpen(false), []);
+
   return {
     templates: DOCUMENT_TEMPLATES,
     selectedTemplateId,
@@ -293,6 +298,9 @@ export function useHenryDocumentStudioLogic() {
     compiledHtml,
     zoomLevel,
     shareLinkCopied,
+    isTenancyModalOpen,
+    handleOpenTenancyModal,
+    handleCloseTenancyModal,
     handlePrint,
     handleZoomIn,
     handleZoomOut,

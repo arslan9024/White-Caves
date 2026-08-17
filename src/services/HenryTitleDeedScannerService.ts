@@ -152,6 +152,13 @@ class HenryTitleDeedScannerService {
   }
 
   /**
+   * Returns demo scanned Title Deed data (Akram Dib Nehme - Viridis A Unit 504)
+   */
+  getDemoExtractedData(): DldTitleDeedExtractedData {
+    return { ...VIRIDIS_504_SAMPLE_TITLE_DEED };
+  }
+
+  /**
    * Converts Extracted Title Deed into a clean CRM Property Inventory object
    */
   toCrmPropertyListing(extracted: DldTitleDeedExtractedData) {
