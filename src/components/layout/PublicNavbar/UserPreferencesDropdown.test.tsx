@@ -36,19 +36,20 @@ describe('UserPreferencesDropdown Component', () => {
   it('renders theme, language, and currency selector groups', () => {
     renderDropdown();
 
-    expect(screen.getByTestId('dropdown-theme-selector')).toBeTruthy();
-    expect(screen.getByTestId('dropdown-language-selector')).toBeTruthy();
-    expect(screen.getByTestId('dropdown-currency-selector')).toBeTruthy();
+    expect(screen.getByTestId('user-preferences-dropdown')).toBeTruthy();
+    expect(screen.getByTestId('pref-theme-light')).toBeTruthy();
+    expect(screen.getByTestId('pref-lang-en')).toBeTruthy();
+    expect(screen.getByTestId('pref-curr-aed')).toBeTruthy();
   });
 
   it('allows user to switch theme mode directly from dropdown', () => {
     renderDropdown();
 
-    const lightBtn = screen.getByTestId('pill-theme-light');
+    const lightBtn = screen.getByTestId('pref-theme-light');
     fireEvent.click(lightBtn);
     expect(document.documentElement.getAttribute('data-theme')).toBe('light');
 
-    const darkBtn = screen.getByTestId('pill-theme-dark');
+    const darkBtn = screen.getByTestId('pref-theme-dark');
     fireEvent.click(darkBtn);
     expect(document.documentElement.getAttribute('data-theme')).toBe('dark');
   });
@@ -56,11 +57,11 @@ describe('UserPreferencesDropdown Component', () => {
   it('allows user to switch language directly from dropdown', () => {
     renderDropdown();
 
-    const arBtn = screen.getByTestId('pill-lang-ar');
+    const arBtn = screen.getByTestId('pref-lang-ar');
     fireEvent.click(arBtn);
     expect(document.documentElement.getAttribute('dir')).toBe('rtl');
 
-    const enBtn = screen.getByTestId('pill-lang-en');
+    const enBtn = screen.getByTestId('pref-lang-en');
     fireEvent.click(enBtn);
     expect(document.documentElement.getAttribute('dir')).toBe('ltr');
   });
@@ -68,10 +69,10 @@ describe('UserPreferencesDropdown Component', () => {
   it('allows user to switch currency directly from dropdown', () => {
     renderDropdown();
 
-    const usdBtn = screen.getByTestId('pill-curr-USD');
+    const usdBtn = screen.getByTestId('pref-curr-usd');
     fireEvent.click(usdBtn);
 
-    const aedBtn = screen.getByTestId('pill-curr-AED');
+    const aedBtn = screen.getByTestId('pref-curr-aed');
     fireEvent.click(aedBtn);
   });
 

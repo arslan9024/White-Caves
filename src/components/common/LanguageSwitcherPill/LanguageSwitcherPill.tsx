@@ -1,51 +1,15 @@
 /**
- * LanguageSwitcherPill — Multi-Language Selector Pill
- * Supports 4 Universal Languages: English (EN), Arabic (AR), Spanish (ES), Russian (RU)
- * White Caves Real Estate LLC — Internationalization & UI/UX Suite
+ * LanguageSwitcherPill.tsx — View Layer (4-Way Component Architecture)
+ * Sits at folder root: Pure presentational shell drawing data variables and logic hooks.
  */
+
 import React, { FC } from 'react';
-import styled from 'styled-components';
-import { useLanguage, type LanguageType } from '../../../context/LanguageContext';
+import { useLanguageSwitcherPillLogic, UseLanguageSwitcherPillProps } from './logic/LanguageSwitcherPill.logic';
+import { LANGUAGE_PILL_TEXT } from './data/LanguageSwitcherPill.data';
+import { Container, LangBtn } from './styles/LanguageSwitcherPill.style';
+import { type LanguageType } from '../../../context/LanguageContext';
 
-const Container = styled.div`
-  display: inline-flex;
-  align-items: center;
-  background: rgba(15, 23, 42, 0.85);
-  border: 1px solid rgba(100, 116, 139, 0.25);
-  border-radius: 999px;
-  padding: 3px;
-  gap: 2px;
-  font-family: 'Inter', sans-serif;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-`;
-
-const LangBtn = styled.button<{ $active: boolean }>`
-  display: inline-flex;
-  align-items: center;
-  gap: 4px;
-  padding: 4px 9px;
-  border-radius: 999px;
-  border: none;
-  background: ${p => (p.$active ? '#EF4444' : 'transparent')};
-  color: ${p => (p.$active ? '#FFFFFF' : '#94A3B8')};
-  font-size: 0.72rem;
-  font-weight: 800;
-  cursor: pointer;
-  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-
-  &:hover {
-    color: #FFFFFF;
-    background: ${p => (p.$active ? '#EF4444' : 'rgba(255, 255, 255, 0.08)')};
-  }
-
-  .flag {
-    font-size: 0.85rem;
-    line-height: 1;
-  }
-`;
-
-export interface LanguageSwitcherPillProps {
-  onLanguageChange?: (lang: LanguageType) => void;
+export interface LanguageSwitcherPillProps extends UseLanguageSwitcherPillProps {
   className?: string;
 }
 
@@ -53,17 +17,10 @@ export const LanguageSwitcherPill: FC<LanguageSwitcherPillProps> = ({
   onLanguageChange,
   className,
 }) => {
-  const { language, setLanguage, supportedLanguages } = useLanguage();
-
-  const handleSelect = (code: LanguageType) => {
-    setLanguage(code);
-    onLanguageChange?.(code);
-  };
-
-  const languagesList = Object.values(supportedLanguages);
+  const { language, handleSelect, languagesList } = useLanguageSwitcherPillLogic({ onLanguageChange });
 
   return (
-    <Container className={className} data-testid="language-switcher-pill" aria-label="Select Language">
+    <Container className={className} data-testid="language-switcher-pill" aria-label={LANGUAGE_PILL_TEXT.ariaLabel}>
       {languagesList.map(item => {
         const isActive = language === item.code;
         return (
