@@ -8,17 +8,17 @@ describe('InteractiveMapDrawer Component', () => {
     render(<InteractiveMapDrawer />);
     expect(screen.getByTestId('interactive-map-drawer')).toBeDefined();
     expect(screen.getByText(/Monochrome Leaflet Map — Dubai Luxury Ledger/i)).toBeDefined();
-    expect(screen.getByText(/📍 AED 120M/i)).toBeDefined();
-    expect(screen.getByText(/📍 AED 45M/i)).toBeDefined();
-    expect(screen.getByText(/Property Quick View/i)).toBeDefined();
+    expect(screen.getByTestId('map-pin-PIN-1')).toBeDefined();
+    expect(screen.getByTestId('map-pin-PIN-2')).toBeDefined();
+    expect(screen.getByTestId('map-slide-drawer')).toBeDefined();
 
     // Click Downtown Penthouse marker
-    const dtMarker = screen.getByText(/📍 AED 45M/i);
+    const dtMarker = screen.getByTestId('map-pin-PIN-2');
     fireEvent.click(dtMarker);
-    expect(screen.getByText(/Downtown Penthouse/i)).toBeDefined();
+    expect(screen.getByText(/Downtown Dubai Sky Penthouse/i)).toBeDefined();
 
     // Close drawer
-    const closeBtn = screen.getByRole('button', { name: '✕' });
+    const closeBtn = screen.getByTestId('map-drawer-close-btn');
     fireEvent.click(closeBtn);
   });
 });
