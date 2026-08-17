@@ -270,6 +270,29 @@ export const ar = {
     allRightsReserved: 'جميع الحقوق محفوظة © وايت كيفز العقارية',
     licensedBy: 'مرخصة ومعتمدة من دائرة الأراضي والأملاك ومؤسسة ريرا دبي',
   },
+
+  departments: {
+    luxury_sales: 'مبيعات العقارات الفاخرة والوساطة',
+    off_plan: 'المشاريع الاستراتيجية على الخارطة',
+    commercial_investment: 'العقارات التجارية والاستثمار المؤسسي',
+    residential_leasing: 'إدارة المحافظ العقارية والتأجير السكني',
+    asset_facilities: 'إدارة الأصول والمرافق (مركز داماك هيلز 2)',
+    revenue_treasury: 'الإيرادات، المالية والخزينة',
+    performance_marketing: 'التسويق الرقمي واستقطاب المستثمرين',
+    corporate_comms: 'الاتصالات المؤسسية وتجربة كبار العملاء',
+    executive_office: 'المكتب التنفيذي والحوكمة المؤسسية',
+    regulatory_rera: 'الشؤون التنظيمية والامتثال لمؤسسة ريرا',
+    conveyancing_transactions: 'إدارة إجراءات البيع ونقل الملكية',
+    market_iot_intelligence: 'تحليلات السوق وعلوم بيانات إنترنت الأشياء',
+  },
+
+  assistants: {
+    command_center_title: '🔱 مركز القيادة الذكي للذكاء الاصطناعي AEGIS 2.0',
+    command_center_subtitle: 'شبكة عصبية ذاتية التحكم تقود 35 مساعد ذكاء اصطناعي عبر 12 قسماً مؤسسياً.',
+    launch_agent: 'إطلاق قمرة تحكم المساعد',
+    status_optimal: 'النظام في الوضع المثالي',
+    active_agents: '35 مساعداً مستقلاً نشطاً الآن',
+  },
 };
 
 export default ar;

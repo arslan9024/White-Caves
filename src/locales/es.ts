@@ -270,6 +270,29 @@ export const es = {
     allRightsReserved: 'Todos los derechos reservados © White Caves Real Estate',
     licensedBy: 'Licencia oficial de RERA y Dubai Land Department',
   },
+
+  departments: {
+    luxury_sales: 'Ventas de Lujo y Corretaje',
+    off_plan: 'Desarrollos Estratégicos Sobre Plano',
+    commercial_investment: 'Bienes Raíces Comerciales e Inversión',
+    residential_leasing: 'Gestión de Portafolio y Alquileres',
+    asset_facilities: 'Gestión de Activos e Instalaciones (DH2)',
+    revenue_treasury: 'Ingresos, Finanzas y Tesorería',
+    performance_marketing: 'Marketing de Rendimiento y Adquisición',
+    corporate_comms: 'Comunicaciones Corporativas y Experiencia',
+    executive_office: 'Oficina Ejecutiva y Gobernanza',
+    regulatory_rera: 'Asuntos Regulatorios y Cumplimiento RERA',
+    conveyancing_transactions: 'Gestión de Títulos y Transacciones',
+    market_iot_intelligence: 'Inteligencia de Mercado y Datos IoT',
+  },
+
+  assistants: {
+    command_center_title: '🔱 Centro de Comando de IA AEGIS 2.0',
+    command_center_subtitle: 'Red neuronal autónoma que comanda 35 asistentes de IA en 12 departamentos corporativos.',
+    launch_agent: 'Lanzar Agente',
+    status_optimal: 'Sistema Óptimo',
+    active_agents: '35 Agentes Autónomos Activos',
+  },
 };
 
 export default es;

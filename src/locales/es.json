@@ -1,17 +1,164 @@
 {
   "hero": {
-    "title": "Bienes Raíces de Lujo en Dubái Redefinidos",
-    "subtitle": "Descubra villas exclusivas en DAMAC Hills 2, Palm Jumeirah y Downtown Dubai con White Caves Real Estate LLC.",
-    "cta_explore": "Explorar Propiedades Destacadas",
-    "cta_contact": "Hablar con un Agente Experto"
+    "badge": "White Caves Bienes Raíces Soberanos Dubái",
+    "title_main": "Descubra Lo Más Exclusivo de Dubái",
+    "title_highlight": "Villas y Áticos de Lujo",
+    "subtitle": "Explore propiedades verificadas por el DLD en Palm Jumeirah, Downtown Dubai y DAMAC Hills 2 gestionadas directamente por nuestros 12 Departamentos Corporativos.",
+    "search_placeholder": "Buscar Villa en Palm Jumeirah, Ático en Downtown, DAMAC Hills 2...",
+    "search_btn": "Buscar en el Mercado",
+    "popular_communities": "Comunidades Populares:"
   },
   "search": {
-    "placeholder": "Buscar DAMAC Hills 2, Ejari, Inversores...",
-    "btn_search": "Buscar Mercado"
+    "placeholder": "Buscar DAMAC Hills 2, Ejari, Inversores, Clientes...",
+    "btn_search": "Buscar en el Mercado",
+    "no_results": "No se encontraron propiedades que coincidan con sus criterios.",
+    "loading": "Buscando propiedades...",
+    "filter_bedrooms": "Dormitorios",
+    "filter_price_min": "Precio Mín (AED)",
+    "filter_price_max": "Precio Máx (AED)",
+    "filter_community": "Comunidad",
+    "filter_type": "Tipo de Propiedad",
+    "filter_clear": "Limpiar Filtros",
+    "filter_apply": "Aplicar Filtros"
   },
   "map": {
-    "title": "Mapa Interactivo de Bienes Raíces en Dubái",
-    "subtitle": "Inventario en vivo en las principales comunidades de Dubái.",
-    "badge": "Inventario En Vivo DLD"
+    "title": "Mapa Interactivo de Bienes Raíces de Dubái",
+    "subtitle": "Inventario en tiempo real en las principales comunidades de Dubái.",
+    "badge": "Inventario DLD en Vivo"
+  },
+  "nav": {
+    "home": "Inicio",
+    "dashboard": "Panel de Control",
+    "profile": "Perfil",
+    "properties": "Propiedades",
+    "crm": "CRM",
+    "logout": "Cerrar Sesión",
+    "global_search_placeholder": "Búsqueda Global (Ctrl+K para enfocar)...",
+    "global_search_label": "Entrada de Búsqueda Global de Propiedad o Cliente",
+    "rera_live_badge": "RERA en Vivo:",
+    "rera_live_message": "API Dubai Land Dept 2026 Conectada",
+    "notifications": "Notificaciones y Cola de WhatsApp",
+    "impersonate_placeholder": "🎭 Modo de Suplantación de Usuario",
+    "impersonate_group_leadership": "Liderazgo Central",
+    "impersonate_group_brokers": "Agentes de Ventas y Alquileres",
+    "impersonate_group_external": "Portales Externos",
+    "impersonate_viewing_as": "VIENDO COMO",
+    "impersonate_reset": "Restablecer a Modo Maestro",
+    "md_hub_title": "👑 [Centro del Director General]",
+    "md_hub_pipeline": "📊 Visión General del Pipeline de 12 Departamentos",
+    "md_hub_expiry": "🏛️ Monitores de Vencimiento Regulatorio (DET/RERA)",
+    "md_hub_ai_dispatch": "🤖 Despacho de IA Nadia y Nina"
+  },
+  "workspace": {
+    "welcome": "Bienvenido de nuevo",
+    "loading": "Cargando espacio de trabajo...",
+    "error_boundary_title": "Algo salió mal",
+    "error_boundary_message": "Ocurrió un error inesperado. Por favor actualice la página.",
+    "error_boundary_retry": "Reintentar",
+    "session_expired": "Su sesión ha expirado. Inicie sesión nuevamente.",
+    "permission_denied": "No tiene permiso para acceder a esta sección."
+  },
+  "property": {
+    "badge_featured": "Destacado",
+    "badge_new": "Nuevo",
+    "badge_sold": "Vendido",
+    "badge_rented": "Alquilado",
+    "label_bedrooms": "Dormitorios",
+    "label_bathrooms": "Baños",
+    "label_area": "Área (pies²)",
+    "label_price": "Precio (AED)",
+    "label_community": "Comunidad",
+    "label_type": "Tipo",
+    "label_status": "Estado",
+    "label_agent": "Agente Asignado",
+    "action_view": "Ver Propiedad",
+    "action_save": "Guardar Propiedad",
+    "action_contact": "Contactar Agente",
+    "action_whatsapp": "WhatsApp Agente",
+    "action_schedule": "Agendar Visita"
+  },
+  "crm": {
+    "leads_title": "Gestión de Clientes",
+    "lead_status_new": "Nuevo",
+    "lead_status_active": "Activo",
+    "lead_status_hot": "Urgente",
+    "lead_status_cold": "Frío",
+    "lead_status_converted": "Convertido",
+    "lead_status_lost": "Perdido",
+    "action_assign": "Asignar Cliente",
+    "action_follow_up": "Hacer Seguimiento",
+    "action_note": "Añadir Nota",
+    "pipeline_title": "Pipeline de Ventas"
+  },
+  "auth": {
+    "login_title": "Iniciar Sesión en White Caves CRM",
+    "login_subtitle": "Ingrese sus credenciales para acceder a la plataforma.",
+    "label_email": "Correo Electrónico",
+    "label_password": "Contraseña",
+    "btn_login": "Iniciar Sesión",
+    "btn_forgot": "¿Olvidó su contraseña?",
+    "btn_biometric": "Usar Ingreso Biométrico",
+    "error_invalid": "Correo electrónico o contraseña inválidos.",
+    "error_locked": "Cuenta bloqueada. Contacte a su administrador.",
+    "success_login": "¡Bienvenido de nuevo! Redirigiendo..."
+  },
+  "auth_panel": {
+    "title": "Bienvenido a White Caves",
+    "subtitle": "Inicie sesión para acceder a su cuenta soberana",
+    "phone": "Teléfono",
+    "email": "Correo",
+    "full_name": "Nombre Completo",
+    "password": "Contraseña",
+    "confirm_password": "Confirmar Contraseña",
+    "btn_signin": "Iniciar Sesión",
+    "btn_signup": "Crear Cuenta",
+    "btn_verify": "Verificar y Continuar",
+    "forgot": "¿Olvidó su contraseña?",
+    "social_google": "Google",
+    "social_apple": "Apple",
+    "social_facebook": "Facebook"
+  },
+  "crm_dashboard": {
+    "title": "Panel de Control CRM",
+    "active_leads": "Clientes Activos",
+    "total_revenue": "Ingresos Totales",
+    "recent_activity": "Actividad Reciente",
+    "view_all": "Ver Todo"
+  },
+  "profile_summary": {
+    "title": "Resumen del Perfil",
+    "role": "Rol",
+    "department": "Departamento",
+    "edit_profile": "Editar Perfil",
+    "documents": "Documentos Verificados"
+  },
+  "footer": {
+    "brand_tagline": "Especialistas en Bienes Raíces de Lujo — Dubái, EAU",
+    "copyright": "© 2026 White Caves Real Estate LLC. Todos los derechos reservados.",
+    "links_privacy": "Política de Privacidad",
+    "links_terms": "Términos del Servicio",
+    "links_rera": "Licencia RERA",
+    "links_contact": "Contáctenos"
+  },
+  "departments": {
+    "luxury_sales": "Ventas de Lujo y Corretaje",
+    "off_plan": "Desarrollos Estratégicos Sobre Plano",
+    "commercial_investment": "Bienes Raíces Comerciales e Inversión",
+    "residential_leasing": "Gestión de Portafolio y Alquileres",
+    "asset_facilities": "Gestión de Activos e Instalaciones (DH2)",
+    "revenue_treasury": "Ingresos, Finanzas y Tesorería",
+    "performance_marketing": "Marketing de Rendimiento y Adquisición",
+    "corporate_comms": "Comunicaciones Corporativas y Experiencia",
+    "executive_office": "Oficina Ejecutiva y Gobernanza",
+    "regulatory_rera": "Asuntos Regulatorios y Cumplimiento RERA",
+    "conveyancing_transactions": "Gestión de Títulos y Transacciones",
+    "market_iot_intelligence": "Inteligencia de Mercado y Datos IoT"
+  },
+  "assistants": {
+    "command_center_title": "🔱 Centro de Comando de IA AEGIS 2.0",
+    "command_center_subtitle": "Red neuronal autónoma que comanda 35 asistentes de IA en 12 departamentos corporativos.",
+    "launch_agent": "Lanzar Agente",
+    "status_optimal": "Sistema Óptimo",
+    "active_agents": "35 Agentes Autónomos Activos"
   }
 }

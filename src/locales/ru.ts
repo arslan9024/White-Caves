@@ -270,6 +270,29 @@ export const ru = {
     allRightsReserved: 'Все права защищены © White Caves Real Estate LLC',
     licensedBy: 'Лицензировано RERA и Земельным департаментом Дубая',
   },
+
+  departments: {
+    luxury_sales: 'Продажи Элитной Недвижимости и Брокеридж',
+    off_plan: 'Стратегические Проекты на Стадии Строительства',
+    commercial_investment: 'Коммерческая Недвижимость и Инвестиции',
+    residential_leasing: 'Управление Портфелем и Аренда',
+    asset_facilities: 'Управление Активами и Объектами (DH2)',
+    revenue_treasury: 'Доходы, Финансы и Казначейство',
+    performance_marketing: 'Перформанс-Маркетинг и Лидогенерация',
+    corporate_comms: 'Корпоративные Коммуникации и Клиентский Опыт',
+    executive_office: 'Исполнительный Офис и Корпоративное Управление',
+    regulatory_rera: 'Регуляторные Вопросы и Соответствие RERA',
+    conveyancing_transactions: 'Оформление Сделок и Переход Прав',
+    market_iot_intelligence: 'Анализ Рынка и IoT Аналитика',
+  },
+
+  assistants: {
+    command_center_title: '🔱 Командный Центр ИИ AEGIS 2.0',
+    command_center_subtitle: 'Автономная нейросеть, управляющая 35 корпоративными ИИ-ассистентами в 12 департаментах.',
+    launch_agent: 'Запустить Агента',
+    status_optimal: 'Система в Норме',
+    active_agents: '35 Автономных Агентов Активны',
+  },
 };
 
 export default ru;
