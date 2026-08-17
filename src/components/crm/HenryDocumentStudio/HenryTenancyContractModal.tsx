@@ -24,6 +24,9 @@ import {
   ZoomOut,
   ChevronRight,
   ChevronLeft,
+  Home,
+  Save,
+  Share2,
 } from 'lucide-react';
 import {
   useHenryTenancyContractModalLogic,
@@ -78,6 +81,8 @@ export const HenryTenancyContractModal: FC<HenryTenancyContractModalProps> = ({
     handleSetStandardOneYearDates,
     handleResetToBlank,
     handleLoadSamplePreset,
+    handleLoadCameliaSample,
+    handleLoadJanusiaSample,
     handleGenerateEsignLink,
     handleSaveAndArchive,
     handlePrint,
@@ -111,17 +116,20 @@ export const HenryTenancyContractModal: FC<HenryTenancyContractModalProps> = ({
                   Prepare New Tenancy Contract <span style={{ color: '#EF4444' }}>· DLD Unified Form</span>
                 </h3>
                 <p className="header-subtitle">
-                  Bilingual Dubai Land Department Tenancy Contract Form · Interactive 2-Pane Preparation & Vault Storage
+                  Bilingual Dubai Land Department Tenancy Contract Form · Interactive 5-Stage Preparation & Vault Storage
                 </p>
               </div>
             </div>
 
             <div className="header-actions">
               <HeaderBtn onClick={handleResetToBlank} title="Reset to empty official blank template">
-                <RotateCcw size={14} /> Official Blank Template
+                <RotateCcw size={14} /> Blank Template
               </HeaderBtn>
-              <HeaderBtn onClick={handleLoadSamplePreset} title="Load sample contract data with Title Deed + EID">
-                <Sparkles size={14} color="#F59E0B" /> Load Sample Preset
+              <HeaderBtn onClick={handleLoadCameliaSample} title="Load Camelia 608 (Sanit Singh & Keshivani)">
+                <Sparkles size={14} color="#F59E0B" /> Camelia 608 Sample
+              </HeaderBtn>
+              <HeaderBtn onClick={handleLoadJanusiaSample} title="Load Janusia XH2858B (Svetlana & William Abernethy)">
+                <Sparkles size={14} color="#38BDF8" /> Janusia XH2858B Sample
               </HeaderBtn>
               <HeaderBtn $variant="secondary" onClick={handlePrint}>
                 <Printer size={14} /> Print / PDF
@@ -161,58 +169,28 @@ export const HenryTenancyContractModal: FC<HenryTenancyContractModalProps> = ({
                     $active={activePreviewPage === 1}
                     onClick={() => setActivePreviewPage(1)}
                   >
-                    Page 1: Contract Details
+                    Page 1
                   </PageSwitchBtn>
                   <PageSwitchBtn
                     $active={activePreviewPage === 2}
                     onClick={() => setActivePreviewPage(2)}
                   >
-                    Page 2: Standard Terms (14)
+                    Page 2
                   </PageSwitchBtn>
                   <PageSwitchBtn
                     $active={activePreviewPage === 3}
                     onClick={() => setActivePreviewPage(3)}
                   >
-                    Page 3: Addenda & Rights
-                  </PageSwitchBtn>
-                  <PageSwitchBtn
-                    $active={activePreviewPage === 'all'}
-                    onClick={() => setActivePreviewPage('all')}
-                  >
-                    All 3 Pages
+                    Page 3
                   </PageSwitchBtn>
                 </div>
 
                 <div className="zoom-controls">
-                  <button
-                    onClick={handleZoomOut}
-                    style={{
-                      background: 'rgba(255,255,255,0.08)',
-                      border: 'none',
-                      borderRadius: '4px',
-                      color: '#FFF',
-                      padding: '4px 8px',
-                      cursor: 'pointer',
-                    }}
-                  >
-                    <ZoomOut size={12} />
-                  </button>
+                  <button onClick={handleZoomOut}><ZoomOut size={12} /></button>
                   <span style={{ fontSize: '11px', color: '#94A3B8', minWidth: '35px', textAlign: 'center' }}>
                     {Math.round(zoomLevel * 100)}%
                   </span>
-                  <button
-                    onClick={handleZoomIn}
-                    style={{
-                      background: 'rgba(255,255,255,0.08)',
-                      border: 'none',
-                      borderRadius: '4px',
-                      color: '#FFF',
-                      padding: '4px 8px',
-                      cursor: 'pointer',
-                    }}
-                  >
-                    <ZoomIn size={12} />
-                  </button>
+                  <button onClick={handleZoomIn}><ZoomIn size={12} /></button>
                 </div>
               </PreviewToolbar>
 
@@ -220,55 +198,62 @@ export const HenryTenancyContractModal: FC<HenryTenancyContractModalProps> = ({
                 <PreviewCanvasWrapper $zoom={zoomLevel}>
                   <div
                     dangerouslySetInnerHTML={{ __html: compiledPreviewHtml }}
-                    style={{ background: '#FFFFFF' }}
+                    style={{ background: '#FFFFFF', boxShadow: '0 10px 30px rgba(0,0,0,0.5)', borderRadius: '4px' }}
                   />
                 </PreviewCanvasWrapper>
               </PreviewScrollArea>
             </LeftPreviewPane>
 
-            {/* ══════════ RIGHT PANE: 4-STEP PREPARATION WIZARD ══════════ */}
+            {/* ══════════ RIGHT PANE: 5-STAGE GUIDED STEPPER ══════════ */}
             <RightFormPane>
               {/* Stepper Navigation */}
               <StepperHeader>
                 <StepTabBtn
                   $active={activeStep === 1}
-                  $completed={Boolean(contractData.buildingName && contractData.ownerName)}
+                  $completed={Boolean(contractData.buildingName && contractData.propertyNo)}
                   onClick={() => setActiveStep(1)}
                 >
-                  <Building size={14} /> 1. Property & Owner
+                  <Home size={14} /> 1. Property Specs
                 </StepTabBtn>
                 <StepTabBtn
                   $active={activeStep === 2}
-                  $completed={Boolean(contractData.tenantName)}
+                  $completed={Boolean(contractData.ownerName)}
                   onClick={() => setActiveStep(2)}
                 >
-                  <UserCheck size={14} /> 2. Tenant KYC
+                  <Building size={14} /> 2. Property Owner
                 </StepTabBtn>
                 <StepTabBtn
                   $active={activeStep === 3}
-                  $completed={Boolean(contractData.annualRent > 0)}
+                  $completed={Boolean(contractData.tenantName)}
                   onClick={() => setActiveStep(3)}
                 >
-                  <CreditCard size={14} /> 3. Lease & Terms
+                  <UserCheck size={14} /> 3. Tenant KYC
                 </StepTabBtn>
                 <StepTabBtn
                   $active={activeStep === 4}
-                  $completed={contractData.status === 'ready_for_signature'}
+                  $completed={Boolean(contractData.annualRent > 0)}
                   onClick={() => setActiveStep(4)}
                 >
-                  <ShieldCheck size={14} /> 4. Sign & Finalize
+                  <CreditCard size={14} /> 4. Lease & Financials
+                </StepTabBtn>
+                <StepTabBtn
+                  $active={activeStep === 5}
+                  $completed={contractData.status === 'ready_for_signature'}
+                  onClick={() => setActiveStep(5)}
+                >
+                  <ShieldCheck size={14} /> 5. Sign & Finalize
                 </StepTabBtn>
               </StepperHeader>
 
               <FormScrollArea>
-                {/* ── STEP 1: PROPERTY & LANDLORD DETAILS ── */}
+                {/* ── STAGE 1: PROPERTY SPECIFICATIONS ── */}
                 {activeStep === 1 && (
                   <div>
                     <OcrDropzone onClick={handleScanTitleDeed}>
                       <UploadCloud size={28} color="#EF4444" style={{ margin: '0 auto 8px auto' }} />
                       <div className="dropzone-title">Upload & Ingest DLD Title Deed</div>
                       <div className="dropzone-desc">
-                        Drag and drop official Title Deed PDF/image or click to extract Landlord, Building, Unit #, Area SqM & Plot automatically.
+                        Drag and drop official Title Deed PDF/image or click to extract Building, Unit #, Area SqM, Plot & DEWA premise automatically.
                       </div>
                       <HeaderBtn
                         $variant="primary"
@@ -284,61 +269,7 @@ export const HenryTenancyContractModal: FC<HenryTenancyContractModalProps> = ({
                     </OcrDropzone>
 
                     <h4 style={{ margin: '0 0 1rem 0', color: '#EF4444', fontSize: '0.95rem', fontWeight: 800 }}>
-                      Owner / Lessor Credentials (معلومات المالك / المؤجر)
-                    </h4>
-
-                    <FormGrid $cols={2}>
-                      <FormGroup>
-                        <label>
-                          Owner's Full Name <span className="label-arabic">(اسم المالك)</span>
-                        </label>
-                        <InputField
-                          type="text"
-                          value={contractData.ownerName}
-                          placeholder="e.g. AKRAM DIB NEHME"
-                          onChange={(e) => handleFieldChange('ownerName', e.target.value)}
-                        />
-                      </FormGroup>
-                      <FormGroup>
-                        <label>
-                          Lessor's Name <span className="label-arabic">(اسم المؤجر)</span>
-                        </label>
-                        <InputField
-                          type="text"
-                          value={contractData.lessorName}
-                          placeholder="e.g. AKRAM DIB NEHME"
-                          onChange={(e) => handleFieldChange('lessorName', e.target.value)}
-                        />
-                      </FormGroup>
-                    </FormGrid>
-
-                    <FormGrid $cols={2}>
-                      <FormGroup>
-                        <label>
-                          Lessor's Emirates ID / Passport <span className="label-arabic">(الهوية)</span>
-                        </label>
-                        <InputField
-                          type="text"
-                          value={contractData.lessorEmiratesId}
-                          placeholder="784-XXXX-XXXXXXX-X"
-                          onChange={(e) => handleFieldChange('lessorEmiratesId', e.target.value)}
-                        />
-                      </FormGroup>
-                      <FormGroup>
-                        <label>
-                          Lessor's Phone & Email <span className="label-arabic">(الهاتف والبريد)</span>
-                        </label>
-                        <InputField
-                          type="text"
-                          value={contractData.lessorPhone}
-                          placeholder="+971 50 XXX XXXX"
-                          onChange={(e) => handleFieldChange('lessorPhone', e.target.value)}
-                        />
-                      </FormGroup>
-                    </FormGrid>
-
-                    <h4 style={{ margin: '1.25rem 0 1rem 0', color: '#EF4444', fontSize: '0.95rem', fontWeight: 800 }}>
-                      Property Specifications (معلومات العقار)
+                      Stage 1: Property Specifications (معلومات العقار)
                     </h4>
 
                     <FormGrid $cols={3}>
@@ -347,7 +278,7 @@ export const HenryTenancyContractModal: FC<HenryTenancyContractModalProps> = ({
                         <InputField
                           type="text"
                           value={contractData.buildingName}
-                          placeholder="e.g. VIRIDIS A"
+                          placeholder="e.g. CAMELIA / Janusia"
                           onChange={(e) => handleFieldChange('buildingName', e.target.value)}
                         />
                       </FormGroup>
@@ -356,7 +287,7 @@ export const HenryTenancyContractModal: FC<HenryTenancyContractModalProps> = ({
                         <InputField
                           type="text"
                           value={contractData.propertyNo}
-                          placeholder="e.g. 504"
+                          placeholder="e.g. 608 / XH2858B"
                           onChange={(e) => handleFieldChange('propertyNo', e.target.value)}
                         />
                       </FormGroup>
@@ -365,7 +296,7 @@ export const HenryTenancyContractModal: FC<HenryTenancyContractModalProps> = ({
                         <InputField
                           type="text"
                           value={contractData.plotNo}
-                          placeholder="e.g. 5120"
+                          placeholder="e.g. 176 / 6340"
                           onChange={(e) => handleFieldChange('plotNo', e.target.value)}
                         />
                       </FormGroup>
@@ -384,58 +315,180 @@ export const HenryTenancyContractModal: FC<HenryTenancyContractModalProps> = ({
                         </SelectField>
                       </FormGroup>
                       <FormGroup>
+                        <label>Property Type <span className="label-arabic">(نوع الوحدة)</span></label>
+                        <InputField
+                          type="text"
+                          value={contractData.propertyType}
+                          placeholder="e.g. 3 BHK + Maid Room / LAND"
+                          onChange={(e) => handleFieldChange('propertyType', e.target.value)}
+                        />
+                      </FormGroup>
+                      <FormGroup>
                         <label>Area Sq.M <span className="label-arabic">(مساحة متر مربع)</span></label>
                         <InputField
                           type="number"
                           value={contractData.propertyAreaSqM || ''}
-                          placeholder="e.g. 38.76"
+                          placeholder="e.g. 112.24 / 198.98"
                           onChange={(e) => handleFieldChange('propertyAreaSqM', parseFloat(e.target.value) || 0)}
                         />
                       </FormGroup>
+                    </FormGrid>
+
+                    <FormGrid $cols={3}>
                       <FormGroup>
                         <label>Makani Number <span className="label-arabic">(رقم مكاني)</span></label>
                         <InputField
                           type="text"
                           value={contractData.makaniNo}
-                          placeholder="e.g. 24185 62940"
+                          placeholder="e.g. 257"
                           onChange={(e) => handleFieldChange('makaniNo', e.target.value)}
+                        />
+                      </FormGroup>
+                      <FormGroup>
+                        <label>Premises No. DEWA <span className="label-arabic">(ديوا)</span></label>
+                        <InputField
+                          type="text"
+                          value={contractData.premisesNoDewa}
+                          placeholder="e.g. 918014964"
+                          onChange={(e) => handleFieldChange('premisesNoDewa', e.target.value)}
+                        />
+                      </FormGroup>
+                      <FormGroup>
+                        <label>Location / Community <span className="label-arabic">(الموقع)</span></label>
+                        <InputField
+                          type="text"
+                          value={contractData.location}
+                          placeholder="e.g. DAMAC HILLS 2"
+                          onChange={(e) => handleFieldChange('location', e.target.value)}
                         />
                       </FormGroup>
                     </FormGrid>
                   </div>
                 )}
 
-                {/* ── STEP 2: TENANT KYC INGESTION ── */}
+                {/* ── STAGE 2: PROPERTY OWNER / LESSOR DETAILS ── */}
                 {activeStep === 2 && (
                   <div>
-                    <OcrDropzone>
-                      <UploadCloud size={28} color="#2563EB" style={{ margin: '0 auto 8px auto' }} />
-                      <div className="dropzone-title" style={{ color: '#38BDF8' }}>
-                        Upload & Ingest Tenant Emirates ID or Passport
-                      </div>
-                      <div className="dropzone-desc">
-                        Scan UAE Resident Identity Card (TD1 MRZ) or International Passport (TD3 MRZ) to populate KYC fields automatically.
-                      </div>
-                      <div style={{ display: 'flex', gap: '10px', justifyContent: 'center' }}>
-                        <HeaderBtn
-                          $variant="primary"
-                          onClick={handleScanTenantEmiratesId}
-                          disabled={isProcessingOcr}
-                        >
-                          <Sparkles size={14} /> Scan Emirates ID
-                        </HeaderBtn>
+                    <h4 style={{ margin: '0 0 1rem 0', color: '#EF4444', fontSize: '0.95rem', fontWeight: 800 }}>
+                      Stage 2: Property Owner & Lessor Contacts (معلومات المالك / المؤجر)
+                    </h4>
+
+                    <FormGrid $cols={2}>
+                      <FormGroup>
+                        <label>
+                          Owner's Full Name <span className="label-arabic">(اسم المالك)</span>
+                        </label>
+                        <InputField
+                          type="text"
+                          value={contractData.ownerName}
+                          placeholder="e.g. SANIT SINGH NAGPAL / SVETLANA LEVITSKAYA"
+                          onChange={(e) => handleFieldChange('ownerName', e.target.value)}
+                        />
+                      </FormGroup>
+                      <FormGroup>
+                        <label>
+                          Lessor's Name <span className="label-arabic">(اسم المؤجر)</span>
+                        </label>
+                        <InputField
+                          type="text"
+                          value={contractData.lessorName}
+                          placeholder="e.g. SANIT SINGH NAGPAL / SVETLANA LEVITSKAYA"
+                          onChange={(e) => handleFieldChange('lessorName', e.target.value)}
+                        />
+                      </FormGroup>
+                    </FormGrid>
+
+                    <FormGrid $cols={2}>
+                      <FormGroup>
+                        <label>
+                          Lessor's Emirates ID / Passport <span className="label-arabic">(الهوية)</span>
+                        </label>
+                        <InputField
+                          type="text"
+                          value={contractData.lessorEmiratesId}
+                          placeholder="784-1999-5371408-8 / Passport No"
+                          onChange={(e) => handleFieldChange('lessorEmiratesId', e.target.value)}
+                        />
+                      </FormGroup>
+                      <FormGroup>
+                        <label>
+                          Lessor's Phone Number <span className="label-arabic">(هاتف المؤجر)</span>
+                        </label>
+                        <InputField
+                          type="text"
+                          value={contractData.lessorPhone}
+                          placeholder="0504458097 / +974 5550 1054"
+                          onChange={(e) => handleFieldChange('lessorPhone', e.target.value)}
+                        />
+                      </FormGroup>
+                    </FormGrid>
+
+                    <FormGrid $cols={2}>
+                      <FormGroup>
+                        <label>
+                          Lessor's Email Address <span className="label-arabic">(البريد الإلكتروني)</span>
+                        </label>
+                        <InputField
+                          type="email"
+                          value={contractData.lessorEmail}
+                          placeholder="nagpalsanit@gmail.com / svetlanaln@hotmail.com"
+                          onChange={(e) => handleFieldChange('lessorEmail', e.target.value)}
+                        />
+                      </FormGroup>
+                      <FormGroup>
+                        <label>
+                          License No. (In case of Company) <span className="label-arabic">(رقم الرخصة)</span>
+                        </label>
+                        <InputField
+                          type="text"
+                          value={contractData.lessorLicenseNo}
+                          placeholder="Optional (e.g. 1388443)"
+                          onChange={(e) => handleFieldChange('lessorLicenseNo', e.target.value)}
+                        />
+                      </FormGroup>
+                    </FormGrid>
+                  </div>
+                )}
+
+                {/* ── STAGE 3: TENANT KYC & IDENTITY ── */}
+                {activeStep === 3 && (
+                  <div>
+                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px', marginBottom: '1.25rem' }}>
+                      <OcrDropzone onClick={handleScanTenantEmiratesId}>
+                        <UploadCloud size={24} color="#38BDF8" style={{ margin: '0 auto 6px auto' }} />
+                        <div className="dropzone-title" style={{ fontSize: '0.85rem' }}>Scan Tenant Emirates ID</div>
                         <HeaderBtn
                           $variant="secondary"
-                          onClick={handleScanTenantPassport}
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleScanTenantEmiratesId();
+                          }}
                           disabled={isProcessingOcr}
+                          style={{ margin: '6px auto 0 auto', fontSize: '0.75rem', padding: '4px 10px' }}
                         >
-                          <FileText size={14} /> Scan Passport (Non-Resident)
+                          <Sparkles size={12} /> Scan EID
                         </HeaderBtn>
-                      </div>
-                    </OcrDropzone>
+                      </OcrDropzone>
+
+                      <OcrDropzone onClick={handleScanTenantPassport}>
+                        <UploadCloud size={24} color="#F59E0B" style={{ margin: '0 auto 6px auto' }} />
+                        <div className="dropzone-title" style={{ fontSize: '0.85rem' }}>Scan Tenant Passport</div>
+                        <HeaderBtn
+                          $variant="secondary"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleScanTenantPassport();
+                          }}
+                          disabled={isProcessingOcr}
+                          style={{ margin: '6px auto 0 auto', fontSize: '0.75rem', padding: '4px 10px' }}
+                        >
+                          <Sparkles size={12} /> Scan Passport
+                        </HeaderBtn>
+                      </OcrDropzone>
+                    </div>
 
                     <h4 style={{ margin: '0 0 1rem 0', color: '#38BDF8', fontSize: '0.95rem', fontWeight: 800 }}>
-                      Tenant Identification Credentials (معلومات المستأجر)
+                      Stage 3: Tenant Information & KYC (معلومات المستأجر)
                     </h4>
 
                     <FormGrid $cols={2}>
@@ -444,16 +497,16 @@ export const HenryTenancyContractModal: FC<HenryTenancyContractModalProps> = ({
                         <InputField
                           type="text"
                           value={contractData.tenantName}
-                          placeholder="e.g. Arslan Malik Bashir Ahmad"
+                          placeholder="e.g. KESHIVANI MAYADEVAN / WILLIAM MICHAEL ABERNETHY"
                           onChange={(e) => handleFieldChange('tenantName', e.target.value)}
                         />
                       </FormGroup>
                       <FormGroup>
-                        <label>Emirates ID / Passport No. <span className="label-arabic">(الهوية / جواز السفر)</span></label>
+                        <label>Tenant's Emirates ID / Passport <span className="label-arabic">(الهوية)</span></label>
                         <InputField
                           type="text"
                           value={contractData.tenantEmiratesId}
-                          placeholder="784-1993-1805733-0 or DR0760143"
+                          placeholder="784-1984-7391875-7 / 784197927183794"
                           onChange={(e) => handleFieldChange('tenantEmiratesId', e.target.value)}
                         />
                       </FormGroup>
@@ -461,11 +514,11 @@ export const HenryTenancyContractModal: FC<HenryTenancyContractModalProps> = ({
 
                     <FormGrid $cols={2}>
                       <FormGroup>
-                        <label>Tenant's Phone Number <span className="label-arabic">(رقم هاتف المستأجر)</span></label>
+                        <label>Tenant's Phone Number <span className="label-arabic">(هاتف المستأجر)</span></label>
                         <InputField
                           type="text"
                           value={contractData.tenantPhone}
-                          placeholder="+971 56 361 6136"
+                          placeholder="050 7915250 / 0585969529"
                           onChange={(e) => handleFieldChange('tenantPhone', e.target.value)}
                         />
                       </FormGroup>
@@ -474,63 +527,42 @@ export const HenryTenancyContractModal: FC<HenryTenancyContractModalProps> = ({
                         <InputField
                           type="email"
                           value={contractData.tenantEmail}
-                          placeholder="tenant@email.com"
+                          placeholder="shivanimayadevan9@gmail.com / wmabernethy@gmail.com"
                           onChange={(e) => handleFieldChange('tenantEmail', e.target.value)}
-                        />
-                      </FormGroup>
-                    </FormGrid>
-
-                    <FormGrid $cols={2}>
-                      <FormGroup>
-                        <label>Trade License No. (If Corporate) <span className="label-arabic">(رقم الرخصة)</span></label>
-                        <InputField
-                          type="text"
-                          value={contractData.tenantLicenseNo}
-                          placeholder="Optional"
-                          onChange={(e) => handleFieldChange('tenantLicenseNo', e.target.value)}
-                        />
-                      </FormGroup>
-                      <FormGroup>
-                        <label>Licensing Authority <span className="label-arabic">(سلطة الترخيص)</span></label>
-                        <InputField
-                          type="text"
-                          value={contractData.tenantLicensingAuthority}
-                          placeholder="e.g. DET Dubai / DED"
-                          onChange={(e) => handleFieldChange('tenantLicensingAuthority', e.target.value)}
                         />
                       </FormGroup>
                     </FormGrid>
                   </div>
                 )}
 
-                {/* ── STEP 3: FINANCIAL & LEASE TERMS ── */}
-                {activeStep === 3 && (
+                {/* ── STAGE 4: LEASE FINANCIALS & CONTRACT DETAILS ── */}
+                {activeStep === 4 && (
                   <div>
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
                       <h4 style={{ margin: 0, color: '#10B981', fontSize: '0.95rem', fontWeight: 800 }}>
-                        Lease Period & Financial Configuration (معلومات العقد والمالية)
+                        Stage 4: Contract Period & Financial Schedules (معلومات العقد والمالية)
                       </h4>
-                      <HeaderBtn $variant="secondary" onClick={handleSetStandardOneYearDates}>
+                      <HeaderBtn $variant="secondary" onClick={handleSetStandardOneYearDates} style={{ fontSize: '0.75rem' }}>
                         ⚡ Set 1-Year Standard Lease
                       </HeaderBtn>
                     </div>
 
                     <FormGrid $cols={2}>
                       <FormGroup>
-                        <label>Lease Start Date <span className="label-arabic">(فترة العقد من)</span></label>
+                        <label>Contract Period From <span className="label-arabic">(فترة العقد من)</span></label>
                         <InputField
                           type="text"
                           value={contractData.contractPeriodFrom}
-                          placeholder="DD/MM/YYYY"
+                          placeholder="e.g. 13-07-2026 / 27-01-2026"
                           onChange={(e) => handleFieldChange('contractPeriodFrom', e.target.value)}
                         />
                       </FormGroup>
                       <FormGroup>
-                        <label>Lease End Date <span className="label-arabic">(فترة العقد إلى)</span></label>
+                        <label>Contract Period To <span className="label-arabic">(فترة العقد إلى)</span></label>
                         <InputField
                           type="text"
                           value={contractData.contractPeriodTo}
-                          placeholder="DD/MM/YYYY"
+                          placeholder="e.g. 12-07-2027 / 26-01-2027"
                           onChange={(e) => handleFieldChange('contractPeriodTo', e.target.value)}
                         />
                       </FormGroup>
@@ -542,8 +574,17 @@ export const HenryTenancyContractModal: FC<HenryTenancyContractModalProps> = ({
                         <InputField
                           type="number"
                           value={contractData.annualRent || ''}
-                          placeholder="e.g. 48000"
+                          placeholder="112000 / 120000"
                           onChange={(e) => handleFieldChange('annualRent', parseFloat(e.target.value) || 0)}
+                        />
+                      </FormGroup>
+                      <FormGroup>
+                        <label>Contract Value (AED) <span className="label-arabic">(قيمة العقد)</span></label>
+                        <InputField
+                          type="number"
+                          value={contractData.contractValue || ''}
+                          placeholder="112000 / 120000"
+                          onChange={(e) => handleFieldChange('contractValue', parseFloat(e.target.value) || 0)}
                         />
                       </FormGroup>
                       <FormGroup>
@@ -551,47 +592,39 @@ export const HenryTenancyContractModal: FC<HenryTenancyContractModalProps> = ({
                         <InputField
                           type="number"
                           value={contractData.securityDepositAmount || ''}
-                          placeholder="e.g. 4800"
+                          placeholder="5600 / 6000"
                           onChange={(e) => handleFieldChange('securityDepositAmount', parseFloat(e.target.value) || 0)}
-                        />
-                      </FormGroup>
-                      <FormGroup>
-                        <label>Mode of Payment <span className="label-arabic">(طريقة الدفع)</span></label>
-                        <InputField
-                          type="text"
-                          value={contractData.modeOfPayment}
-                          placeholder="e.g. 4 Cheques (PDC)"
-                          onChange={(e) => handleFieldChange('modeOfPayment', e.target.value)}
                         />
                       </FormGroup>
                     </FormGrid>
 
                     <FormGrid $cols={2}>
                       <FormGroup>
-                        <label>DEWA Premise Number <span className="label-arabic">(رقم المبنى ديوا)</span></label>
+                        <label>Mode of Payment <span className="label-arabic">(طريقة الدفع)</span></label>
                         <InputField
                           type="text"
-                          value={contractData.premisesNoDewa}
-                          placeholder="e.g. 204918273"
-                          onChange={(e) => handleFieldChange('premisesNoDewa', e.target.value)}
+                          value={contractData.modeOfPayment}
+                          placeholder="3 CHEQUES / 4 CHEQUES"
+                          onChange={(e) => handleFieldChange('modeOfPayment', e.target.value)}
                         />
                       </FormGroup>
                       <FormGroup>
-                        <label>Location / Community <span className="label-arabic">(الموقع)</span></label>
+                        <label>Contract Reference ID <span className="label-arabic">(رقم العقد)</span></label>
                         <InputField
                           type="text"
-                          value={contractData.location}
-                          placeholder="e.g. Madinat Hind 4, Dubai"
-                          onChange={(e) => handleFieldChange('location', e.target.value)}
+                          value={contractData.contractId}
+                          readOnly
+                          style={{ opacity: 0.8, fontFamily: 'monospace' }}
                         />
                       </FormGroup>
                     </FormGrid>
 
-                    <h4 style={{ margin: '1.25rem 0 0.75rem 0', color: '#F59E0B', fontSize: '0.9rem', fontWeight: 800 }}>
-                      Additional Terms & Special Addenda (شروط إضافية ملحقة)
+                    <h4 style={{ margin: '1.25rem 0 0.75rem 0', color: '#94A3B8', fontSize: '0.88rem', fontWeight: 800 }}>
+                      Additional Special Terms & Addenda (Page 3)
                     </h4>
                     {(contractData.additionalTerms || []).map((term, index) => (
                       <FormGroup key={index} style={{ marginBottom: '8px' }}>
+                        <label style={{ fontSize: '0.75rem' }}>Clause {index + 1}</label>
                         <InputField
                           type="text"
                           value={term}
@@ -602,63 +635,52 @@ export const HenryTenancyContractModal: FC<HenryTenancyContractModalProps> = ({
                   </div>
                 )}
 
-                {/* ── STEP 4: SIGN, FINALIZE & DISTRIBUTE ── */}
-                {activeStep === 4 && (
+                {/* ── STAGE 5: SIGNATURES & FINALIZATION ── */}
+                {activeStep === 5 && (
                   <div>
-                    <h4 style={{ margin: '0 0 1rem 0', color: '#8B5CF6', fontSize: '0.95rem', fontWeight: 800 }}>
-                      Legal Endorsement & Signatures (التوقيعات والاعتماد)
+                    <h4 style={{ margin: '0 0 1rem 0', color: '#38BDF8', fontSize: '0.95rem', fontWeight: 800 }}>
+                      Stage 5: Digital Endorsements & E-Sign Finalization (التوقيعات واعتماد العقد)
                     </h4>
 
                     <FormGrid $cols={2}>
                       <FormGroup>
-                        <label>Tenant Signature / Name <span className="label-arabic">(توقيع المستأجر)</span></label>
+                        <label>Tenant Endorsement Signature <span className="label-arabic">(توقيع المستأجر)</span></label>
                         <InputField
                           type="text"
                           value={contractData.tenantSignature || ''}
-                          placeholder="Type Tenant Name for E-Sign"
-                          onChange={(e) => {
-                            handleFieldChange('tenantSignature', e.target.value);
-                            handleFieldChange('tenantSignatureDate', new Date().toLocaleDateString('en-GB'));
-                          }}
+                          placeholder="Enter Tenant Name for Digital Signature"
+                          onChange={(e) => handleFieldChange('tenantSignature', e.target.value)}
                         />
                       </FormGroup>
                       <FormGroup>
-                        <label>Lessor Signature / Name <span className="label-arabic">(توقيع المؤجر)</span></label>
+                        <label>Lessor Endorsement Signature <span className="label-arabic">(توقيع المؤجر)</span></label>
                         <InputField
                           type="text"
                           value={contractData.lessorSignature || ''}
-                          placeholder="Type Lessor Name for E-Sign"
-                          onChange={(e) => {
-                            handleFieldChange('lessorSignature', e.target.value);
-                            handleFieldChange('lessorSignatureDate', new Date().toLocaleDateString('en-GB'));
-                          }}
+                          placeholder="Enter Lessor Name for Digital Signature"
+                          onChange={(e) => handleFieldChange('lessorSignature', e.target.value)}
                         />
                       </FormGroup>
                     </FormGrid>
 
                     <div
                       style={{
-                        background: 'rgba(255, 255, 255, 0.03)',
-                        border: '1px solid rgba(255, 255, 255, 0.1)',
-                        borderRadius: '12px',
-                        padding: '1.25rem',
-                        marginTop: '1.5rem',
+                        background: 'rgba(56, 189, 248, 0.08)',
+                        border: '1px solid rgba(56, 189, 248, 0.3)',
+                        borderRadius: '10px',
+                        padding: '16px',
+                        marginTop: '1.25rem',
                       }}
                     >
-                      <h5 style={{ margin: '0 0 10px 0', fontSize: '0.9rem', color: '#F8FAFC' }}>
-                        🚀 Live Production Actions & Distribution
-                      </h5>
-
-                      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px' }}>
-                        <HeaderBtn $variant="primary" onClick={handleGenerateEsignLink} style={{ justifyContent: 'center' }}>
-                          {esignLinkCopied ? <Check size={14} /> : <Copy size={14} />}
-                          {esignLinkCopied ? 'Link Copied to Clipboard!' : 'Generate E-Signature Link'}
-                        </HeaderBtn>
-
-                        <HeaderBtn $variant="success" onClick={handleSaveAndArchive} style={{ justifyContent: 'center' }}>
-                          <ShieldCheck size={14} /> Save to Henry Vault & LocalStorage
-                        </HeaderBtn>
+                      <div style={{ fontWeight: 800, color: '#38BDF8', fontSize: '0.9rem', marginBottom: '6px' }}>
+                        🔒 Digital E-Signature Dispatch
                       </div>
+                      <p style={{ fontSize: '0.8rem', color: '#94A3B8', margin: '0 0 12px 0' }}>
+                        Generate a cryptographically secured E-Signature link to dispatch directly to Tenant and Landlord for instant mobile signing.
+                      </p>
+                      <HeaderBtn $variant="primary" onClick={handleGenerateEsignLink}>
+                        <Share2 size={14} /> {esignLinkCopied ? 'Link Copied to Clipboard!' : 'Generate E-Signature Link'}
+                      </HeaderBtn>
                     </div>
                   </div>
                 )}
@@ -668,20 +690,20 @@ export const HenryTenancyContractModal: FC<HenryTenancyContractModalProps> = ({
               <FormFooterActions>
                 <div>
                   {activeStep > 1 && (
-                    <HeaderBtn onClick={() => setActiveStep((prev) => Math.max(prev - 1, 1))}>
-                      <ChevronLeft size={14} /> Previous Step
+                    <HeaderBtn $variant="secondary" onClick={() => setActiveStep(prev => prev - 1)}>
+                      ← Previous Stage
                     </HeaderBtn>
                   )}
                 </div>
 
                 <div style={{ display: 'flex', gap: '8px' }}>
-                  {activeStep < 4 ? (
-                    <HeaderBtn $variant="primary" onClick={() => setActiveStep((prev) => Math.min(prev + 1, 4))}>
-                      Next Step <ChevronRight size={14} />
+                  {activeStep < 5 ? (
+                    <HeaderBtn $variant="primary" onClick={() => setActiveStep(prev => prev + 1)}>
+                      Next Stage →
                     </HeaderBtn>
                   ) : (
-                    <HeaderBtn $variant="success" onClick={handleSaveAndArchive}>
-                      <Check size={14} /> Complete & Save Contract
+                    <HeaderBtn $variant="primary" onClick={handleSaveAndArchive}>
+                      <Save size={14} /> Save to Henry Vault & Archive
                     </HeaderBtn>
                   )}
                 </div>

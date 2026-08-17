@@ -263,14 +263,23 @@ export const HenryDocumentStudio: FC = () => {
                 </p>
               </div>
 
-              <div style={{ display: 'flex', gap: '8px' }}>
+              <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
                 <ActionButton
                   $primary
-                  onClick={() => handleScanTenancyContract('sample')}
+                  onClick={() => handleScanTenancyContract('sample_sanit')}
                   disabled={isScanning}
-                  title="Scan & Extract Filled Contract Sample"
+                  title="Scan & Extract Camelia 608 (Sanit Singh & Keshivani)"
                 >
-                  <Scan size={14} /> {isScanning ? 'Scanning...' : 'Scan Filled Contract'}
+                  <Scan size={14} /> Scan Camelia 608 (Sanit Singh)
+                </ActionButton>
+                <ActionButton
+                  $primary
+                  onClick={() => handleScanTenancyContract('sample_svetlana')}
+                  disabled={isScanning}
+                  title="Scan & Extract Janusia XH2858B (Svetlana & William Abernethy)"
+                  style={{ background: 'linear-gradient(135deg, #0284C7 0%, #0369A1 100%)', borderColor: '#0284C7' }}
+                >
+                  <Sparkles size={14} /> Scan Janusia XH2858B (Svetlana)
                 </ActionButton>
                 <ActionButton
                   onClick={() => handleScanTenancyContract('blank')}

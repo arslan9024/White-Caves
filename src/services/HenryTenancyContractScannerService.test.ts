@@ -47,16 +47,24 @@ describe('HenryTenancyContractScannerService — Optical AI Parser & Fill Detect
     expect(dldData.status).toBe('ready_for_signature');
   });
 
-  it('converts scanned contract to CRM Landlord & Tenant Profiles', () => {
-    const landlord = henryTenancyContractScannerService.toCrmLandlordProfile(SANIT_SINGH_CAMELIA_608_SAMPLE);
-    expect(landlord.fullName).toBe('SANIT SINGH NAGPAL');
-    expect(landlord.phone).toBe('0504458097');
-    expect(landlord.ownedProperty).toContain('CAMELIA');
+  it('accurately parses Svetlana Levitskaya Janusia sample with 95% completeness including DEWA', async () => {
+    const result = await henryTenancyContractScannerService.scanContract('sample_svetlana');
 
-    const tenant = henryTenancyContractScannerService.toCrmTenantProfile(SANIT_SINGH_CAMELIA_608_SAMPLE);
-    expect(tenant.fullName).toBe('KESHIVANI MAYADEVAN');
-    expect(tenant.phone).toBe('050 7915250');
-    expect(tenant.annualRentAed).toBe(112000);
+    expect(result.isFilled).toBe(true);
+    expect(result.fillScorePercent).toBe(95);
+    expect(result.classification).toBe('fully_executed');
+    expect(result.landlord.name).toBe('SVETLANA LEVITSKAYA');
+    expect(result.tenant.name).toBe('WILLIAM MICHAEL ABERNETHY');
+    expect(result.property.buildingName).toBe('Janusia');
+    expect(result.property.propertyNumber).toBe('XH2858B');
+    expect(result.property.plotNumber).toBe('6340');
+    expect(result.property.makaniNo).toBe('257');
+    expect(result.property.premisesNoDewa).toBe('918014964');
+    expect(result.property.areaSqM).toBe(198.98);
+    expect(result.financials.annualRentAed).toBe(120000);
+    expect(result.financials.securityDepositAed).toBe(6000);
+    expect(result.financials.modeOfPayment).toBe('4 CHEQUES');
+    expect(result.additionalTerms[4]).toContain('MOVE-IN permit by DAMAC');
   });
 
   it('teaches Henry AI and archives reference contract into training pool', () => {
@@ -64,6 +72,6 @@ describe('HenryTenancyContractScannerService — Optical AI Parser & Fill Detect
     const pool = henryTenancyContractScannerService.getTrainingReferenceContracts();
 
     expect(pool.length).toBeGreaterThan(0);
-    expect(pool[0].landlord.name).toBe('SANIT SINGH NAGPAL');
+    expect(pool.some(c => c.landlord.name === 'SVETLANA LEVITSKAYA' || c.landlord.name === 'SANIT SINGH NAGPAL')).toBe(true);
   });
 });

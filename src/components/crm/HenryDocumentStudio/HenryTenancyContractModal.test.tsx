@@ -18,11 +18,11 @@ describe('HenryTenancyContractModal — Interactive Split-Pane DLD Preparation W
     expect(screen.getByTestId('henry-tenancy-modal')).toBeDefined();
     expect(screen.getByText(/Prepare New Tenancy Contract/i)).toBeDefined();
     expect(screen.getByText(/DLD Unified Form/i)).toBeDefined();
-    expect(screen.getByText(/Page 1: Contract Details/i)).toBeDefined();
-    expect(screen.getByText(/1. Property & Owner/i)).toBeDefined();
-    expect(screen.getByText(/2. Tenant KYC/i)).toBeDefined();
-    expect(screen.getByText(/3. Lease & Terms/i)).toBeDefined();
-    expect(screen.getByText(/4. Sign & Finalize/i)).toBeDefined();
+    expect(screen.getByText(/1. Property Specs/i)).toBeDefined();
+    expect(screen.getByText(/2. Property Owner/i)).toBeDefined();
+    expect(screen.getByText(/3. Tenant KYC/i)).toBeDefined();
+    expect(screen.getByText(/4. Lease & Financials/i)).toBeDefined();
+    expect(screen.getByText(/5. Sign & Finalize/i)).toBeDefined();
   });
 
   it('does not render when isOpen is false', () => {
@@ -30,35 +30,45 @@ describe('HenryTenancyContractModal — Interactive Split-Pane DLD Preparation W
     expect(container.firstChild).toBeNull();
   });
 
-  it('navigates between the 4 wizard steps cleanly', () => {
+  it('navigates between the 5 wizard stages cleanly', () => {
     render(<HenryTenancyContractModal isOpen={true} onClose={mockOnClose} />);
 
-    // Step 1 -> Step 2
-    fireEvent.click(screen.getByText(/2. Tenant KYC/i));
-    expect(screen.getByText(/Upload & Ingest Tenant Emirates ID or Passport/i)).toBeDefined();
+    // Stage 1 -> Stage 2 (Property Owner)
+    fireEvent.click(screen.getByText(/2. Property Owner/i));
+    expect(screen.getByText(/Stage 2: Property Owner & Lessor Contacts/i)).toBeDefined();
 
-    // Step 2 -> Step 3
-    fireEvent.click(screen.getByText(/3. Lease & Terms/i));
-    expect(screen.getByText(/Lease Period & Financial Configuration/i)).toBeDefined();
+    // Stage 2 -> Stage 3 (Tenant KYC)
+    fireEvent.click(screen.getByText(/3. Tenant KYC/i));
+    expect(screen.getByText(/Stage 3: Tenant Information & KYC/i)).toBeDefined();
 
-    // Step 3 -> Step 4
-    fireEvent.click(screen.getByText(/4. Sign & Finalize/i));
-    expect(screen.getByText(/Legal Endorsement & Signatures/i)).toBeDefined();
+    // Stage 3 -> Stage 4 (Lease & Financials)
+    fireEvent.click(screen.getByText(/4. Lease & Financials/i));
+    expect(screen.getByText(/Stage 4: Contract Period & Financial Schedules/i)).toBeDefined();
+
+    // Stage 4 -> Stage 5 (Sign & Finalize)
+    fireEvent.click(screen.getByText(/5. Sign & Finalize/i));
+    expect(screen.getByText(/Stage 5: Digital Endorsements & E-Sign Finalization/i)).toBeDefined();
   });
 
-  it('loads sample preset and resets to blank template on button clicks', () => {
+  it('loads Camelia 608 and Janusia XH2858B benchmark samples on button clicks', () => {
     render(<HenryTenancyContractModal isOpen={true} onClose={mockOnClose} />);
 
-    const loadSampleBtn = screen.getByText(/Load Sample Preset/i);
-    fireEvent.click(loadSampleBtn);
+    // Click Camelia 608 Sample
+    const cameliaBtn = screen.getByText(/Camelia 608 Sample/i);
+    fireEvent.click(cameliaBtn);
+    expect(screen.getByDisplayValue(/CAMELIA/i)).toBeDefined();
+    expect(screen.getByDisplayValue(/608/i)).toBeDefined();
 
-    expect(screen.getAllByDisplayValue(/AKRAM DIB NEHME/i).length).toBeGreaterThan(0);
-    expect(screen.getByDisplayValue(/VIRIDIS A/i)).toBeDefined();
-    expect(screen.getByDisplayValue(/504/i)).toBeDefined();
+    // Click Janusia XH2858B Sample
+    const janusiaBtn = screen.getByText(/Janusia XH2858B Sample/i);
+    fireEvent.click(janusiaBtn);
+    expect(screen.getByDisplayValue(/Janusia/i)).toBeDefined();
+    expect(screen.getByDisplayValue(/XH2858B/i)).toBeDefined();
+    expect(screen.getByDisplayValue(/918014964/i)).toBeDefined();
 
-    const resetBlankBtn = screen.getByText(/Official Blank Template/i);
-    fireEvent.click(resetBlankBtn);
-
-    expect(screen.queryByDisplayValue(/AKRAM DIB NEHME/i)).toBeNull();
+    // Click Blank Template
+    const blankBtn = screen.getByText(/Blank Template/i);
+    fireEvent.click(blankBtn);
+    expect(screen.queryByDisplayValue(/Janusia/i)).toBeNull();
   });
 });

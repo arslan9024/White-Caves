@@ -289,7 +289,7 @@ export function useHenryDocumentStudioLogic() {
   const handleCloseTenancyModal = useCallback(() => setIsTenancyModalOpen(false), []);
 
   // Trigger Scanning of Tenancy Contract (Filled vs Blank)
-  const handleScanTenancyContract = useCallback(async (preset: 'sample' | 'blank' = 'sample') => {
+  const handleScanTenancyContract = useCallback(async (preset: 'sample' | 'sample_sanit' | 'sample_svetlana' | 'blank' = 'sample') => {
     setIsScanning(true);
     try {
       const scanned = await henryTenancyContractScannerService.scanContract(preset);

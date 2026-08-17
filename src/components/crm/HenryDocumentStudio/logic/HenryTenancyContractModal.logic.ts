@@ -11,6 +11,10 @@ import henryTenancyContractTemplateService, {
 import henryTitleDeedScannerService from '../../../../services/HenryTitleDeedScannerService';
 import henryEmiratesIdScannerService from '../../../../services/HenryEmiratesIdScannerService';
 import henryPassportScannerService from '../../../../services/HenryPassportScannerService';
+import henryTenancyContractScannerService, {
+  SANIT_SINGH_CAMELIA_608_SAMPLE,
+  SVETLANA_JANUSIA_XH2858B_SAMPLE,
+} from '../../../../services/HenryTenancyContractScannerService';
 
 export interface UseHenryTenancyContractModalLogicProps {
   isOpen: boolean;
@@ -155,6 +159,24 @@ export function useHenryTenancyContractModalLogic({
     setTimeout(() => setStatusMessage(null), 3000);
   }, []);
 
+  // Load Benchmark 1: Camelia 608 (Sanit Singh & Keshivani)
+  const handleLoadCameliaSample = useCallback(() => {
+    const dldData = henryTenancyContractScannerService.toDldTenancyContractData(SANIT_SINGH_CAMELIA_608_SAMPLE);
+    setContractData(prev => ({ ...prev, ...(dldData as DldTenancyContractData) }));
+    henryTenancyContractTemplateService.saveDraft(dldData as DldTenancyContractData);
+    setStatusMessage('Loaded benchmark sample: Camelia Unit 608 (Sanit Singh & Keshivani).');
+    setTimeout(() => setStatusMessage(null), 3500);
+  }, []);
+
+  // Load Benchmark 2: Janusia XH2858B (Svetlana & William Abernethy)
+  const handleLoadJanusiaSample = useCallback(() => {
+    const dldData = henryTenancyContractScannerService.toDldTenancyContractData(SVETLANA_JANUSIA_XH2858B_SAMPLE);
+    setContractData(prev => ({ ...prev, ...(dldData as DldTenancyContractData) }));
+    henryTenancyContractTemplateService.saveDraft(dldData as DldTenancyContractData);
+    setStatusMessage('Loaded benchmark sample: Janusia XH2858B (Svetlana & William Abernethy).');
+    setTimeout(() => setStatusMessage(null), 3500);
+  }, []);
+
   // Load Complete Sample Preset
   const handleLoadSamplePreset = useCallback(() => {
     const demo = henryTenancyContractTemplateService.getDemoPreset();
@@ -253,6 +275,8 @@ export function useHenryTenancyContractModalLogic({
     handleSetStandardOneYearDates,
     handleResetToBlank,
     handleLoadSamplePreset,
+    handleLoadCameliaSample,
+    handleLoadJanusiaSample,
     handleGenerateEsignLink,
     handleSaveAndArchive,
     handlePrint,

@@ -145,6 +145,74 @@ export const SANIT_SINGH_CAMELIA_608_SAMPLE: ScannedTenancyContractResult = {
   scannedAt: new Date().toISOString(),
 };
 
+export const SVETLANA_JANUSIA_XH2858B_SAMPLE: ScannedTenancyContractResult = {
+  isFilled: true,
+  fillScorePercent: 95,
+  totalFieldsCount: 20,
+  filledFieldsCount: 19,
+  missingFields: ['Lessor Emirates ID (Overseas Landlord)'],
+  classification: 'fully_executed',
+  contractDate: '13-01-2026',
+
+  landlord: {
+    name: 'SVETLANA LEVITSKAYA',
+    emiratesId: '',
+    email: 'svetlanaln@hotmail.com',
+    phone: '974 5550 1054',
+    licenseNo: '',
+    licensingAuthority: '',
+  },
+
+  tenant: {
+    name: 'WILLIAM MICHAEL ABERNETHY',
+    emiratesId: '784197927183794',
+    email: 'wmabernethy@gmail.com',
+    phone: '0585969529',
+    licenseNo: '',
+    licensingAuthority: '',
+  },
+
+  property: {
+    usage: 'residential',
+    buildingName: 'Janusia',
+    propertyNumber: 'XH2858B',
+    plotNumber: '6340',
+    propertyType: '3 BHK + Maid Room',
+    areaSqM: 198.98,
+    areaSqFt: 2141.80,
+    location: 'Damac Hills 2',
+    makaniNo: '257',
+    premisesNoDewa: '918014964',
+  },
+
+  financials: {
+    periodFrom: '27-01-2026',
+    periodTo: '26-01-2027',
+    annualRentAed: 120000,
+    contractValueAed: 120000,
+    securityDepositAed: 6000,
+    modeOfPayment: '4 CHEQUES',
+  },
+
+  additionalTerms: [
+    '1. The addendum attached to this is an integral part of the tenancy contract.',
+    '2. This is renewal contract valid for 1 year only. Renewal of the contract is subject to the approval of the landlord.',
+    "3. The security deposit is paid from previous contract and not refundable if the house isn't returned clean, undamaged, and with proof of required services.",
+    '4. The landlord will confirm and arrange the maintenance, including cleaning, painting, and AC service, for the tenant before MOVE-IN.',
+    '5. The key handover will be processed after the submission of EJARI, DEWA receipt, and MOVE-IN permit by DAMAC.',
+  ],
+
+  signatures: {
+    hasTenantSigned: true,
+    tenantSignedDate: '13-01-2026',
+    hasLessorSigned: true,
+    lessorSignedDate: '26-01-2026',
+  },
+
+  confidenceScore: 0.999,
+  scannedAt: new Date().toISOString(),
+};
+
 export const BLANK_DLD_TEMPLATE_SAMPLE: ScannedTenancyContractResult = {
   isFilled: false,
   fillScorePercent: 0,
@@ -222,13 +290,23 @@ export const BLANK_DLD_TEMPLATE_SAMPLE: ScannedTenancyContractResult = {
 const TRAINING_STORAGE_KEY = 'whitecaves_henry_contract_training_set_v1';
 
 class HenryTenancyContractScannerService {
-  private trainingMemory: ScannedTenancyContractResult[] = [SANIT_SINGH_CAMELIA_608_SAMPLE];
+  private trainingMemory: ScannedTenancyContractResult[] = [
+    SANIT_SINGH_CAMELIA_608_SAMPLE,
+    SVETLANA_JANUSIA_XH2858B_SAMPLE,
+  ];
 
   /**
-   * Returns benchmark reference sample (Sanit Singh Nagpal & Keshivani Mayadevan - Camelia 608)
+   * Returns benchmark reference sample 1 (Sanit Singh Nagpal & Keshivani Mayadevan - Camelia 608)
    */
   getDemoExtractedData(): ScannedTenancyContractResult {
     return { ...SANIT_SINGH_CAMELIA_608_SAMPLE, scannedAt: new Date().toISOString() };
+  }
+
+  /**
+   * Returns benchmark reference sample 2 (Svetlana Levitskaya & William Michael Abernethy - Janusia XH2858B)
+   */
+  getSvetlanaJanusiaSample(): ScannedTenancyContractResult {
+    return { ...SVETLANA_JANUSIA_XH2858B_SAMPLE, scannedAt: new Date().toISOString() };
   }
 
   /**
@@ -242,12 +320,14 @@ class HenryTenancyContractScannerService {
    * Scans an uploaded Tenancy Contract PDF / image or returns reference sample
    */
   async scanContract(
-    fileOrPreset?: File | 'sample' | 'blank'
+    fileOrPreset?: File | 'sample' | 'sample_sanit' | 'sample_svetlana' | 'blank'
   ): Promise<ScannedTenancyContractResult> {
     return new Promise((resolve) => {
       setTimeout(() => {
         if (fileOrPreset === 'blank') {
           resolve(this.getBlankTemplateData());
+        } else if (fileOrPreset === 'sample_svetlana') {
+          resolve(this.getSvetlanaJanusiaSample());
         } else {
           resolve(this.getDemoExtractedData());
         }
