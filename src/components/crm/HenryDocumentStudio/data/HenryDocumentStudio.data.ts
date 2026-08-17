@@ -8,6 +8,10 @@ import {
   ViewingFormPayload,
   TaxReceiptPayload,
 } from '../../../../services/HenryPdfEngineService';
+import {
+  EmiratesIdExtractedData,
+  ARSLAN_MALIK_SAMPLE_EID,
+} from '../../../../services/HenryEmiratesIdScannerService';
 
 export interface DocumentTemplateOption {
   id:
@@ -15,9 +19,16 @@ export interface DocumentTemplateOption {
     | 'government_ejari_vault'
     | 'viewing_form_autofill'
     | 'tenant_service_receipt'
-    | 'landlord_mgmt_invoice';
+    | 'landlord_mgmt_invoice'
+    | 'emirates_id_scanner';
   title: string;
-  category: 'Leasing E-Sign' | 'Government Vault' | 'AI Auto-Fill' | 'Tenant Invoices' | 'Landlord Invoices';
+  category:
+    | 'Leasing E-Sign'
+    | 'Government Vault'
+    | 'AI Auto-Fill'
+    | 'Tenant Invoices'
+    | 'Landlord Invoices'
+    | 'AI Optical Scanner';
   icon: string;
   description: string;
   badge: string;
@@ -63,6 +74,14 @@ export const DOCUMENT_TEMPLATES: DocumentTemplateOption[] = [
     icon: '🏢',
     description: 'Tax invoice for Landlord Annual Property Management, Maintenance coordination, and Brokerage fees.',
     badge: 'Landlord Invoice',
+  },
+  {
+    id: 'emirates_id_scanner',
+    title: '6. Emirates ID AI Optical Scanner & Auto-Fill',
+    category: 'AI Optical Scanner',
+    icon: '🪪',
+    description: 'Upload UAE Resident ID (Front & Back). Extracts 18 discrete fields, MRZ, and exports variables.',
+    badge: 'ICP AI Scanner',
   },
 ];
 
@@ -176,3 +195,5 @@ export const DEMO_LANDLORD_TAX_INVOICE: TaxReceiptPayload = {
   paymentReference: 'DDS-LL-MGMT-2026-088',
   date: '17/08/2026',
 };
+
+export const DEFAULT_EID_DATA: EmiratesIdExtractedData = ARSLAN_MALIK_SAMPLE_EID;
