@@ -2,12 +2,17 @@
  * HenryDocumentStudio.data.ts — Data, Templates & Configuration Layer
  */
 
-import { EjariContractPayload } from '../../../../services/HenryPdfEngineService';
+import {
+  TenancyContractPayload,
+  GovernmentEjariRecord,
+  ViewingFormPayload,
+  TaxReceiptPayload,
+} from '../../../../services/HenryPdfEngineService';
 
 export interface DocumentTemplateOption {
-  id: 'ejari_form7' | 'dld_form_a' | 'dld_form_b' | 'legal_notice_form12' | 'contractor_work_order';
+  id: 'tenancy_contract_esign' | 'government_ejari_vault' | 'viewing_form_autofill' | 'tax_receipt_vat';
   title: string;
-  category: 'Leasing' | 'Sales' | 'Legal' | 'Maintenance';
+  category: 'Leasing E-Sign' | 'Government Vault' | 'AI Auto-Fill' | 'Finance Receipts';
   icon: string;
   description: string;
   badge: string;
@@ -15,49 +20,41 @@ export interface DocumentTemplateOption {
 
 export const DOCUMENT_TEMPLATES: DocumentTemplateOption[] = [
   {
-    id: 'ejari_form7',
-    title: 'Ejari Form 7 Unified Tenancy Contract',
-    category: 'Leasing',
-    icon: '📄',
-    description: 'Dubai Land Department standard tenancy lease with PDC repayment schedule table.',
-    badge: 'RERA Standard',
+    id: 'tenancy_contract_esign',
+    title: '1. Tenancy Contract (E-Signature)',
+    category: 'Leasing E-Sign',
+    icon: '✍️',
+    description: 'Unified tenancy lease filled with client & property data. Generates shareable e-sign link.',
+    badge: 'E-Sign Link Ready',
   },
   {
-    id: 'dld_form_a',
-    title: 'DLD Form A — Seller Broker Mandate',
-    category: 'Sales',
-    icon: '📜',
-    description: 'Exclusive marketing agreement with Trakheesi Permit QR code verification.',
-    badge: 'Trakheesi Compliant',
+    id: 'government_ejari_vault',
+    title: '2. Government Ejari Certificate Vault',
+    category: 'Government Vault',
+    icon: '🏛️',
+    description: 'Official DLD registered certificate (registered by agent) permanently archived in Henry Vault.',
+    badge: 'Official Record',
   },
   {
-    id: 'dld_form_b',
-    title: 'DLD Form B — Buyer Representation Agreement',
-    category: 'Sales',
-    icon: '🤝',
-    description: 'Official buyer mandate including viewing log & Form F MOU preview.',
-    badge: 'Form B Mandate',
+    id: 'viewing_form_autofill',
+    title: '3. Form B Viewing Register (AI Auto-Fill)',
+    category: 'AI Auto-Fill',
+    icon: '⚡',
+    description: '1-Click auto-fill populates viewing register from CRM Lead profile and unit specs.',
+    badge: 'AI Auto-Fill',
   },
   {
-    id: 'legal_notice_form12',
-    title: 'Form 12 — 12-Month Eviction Notice',
-    category: 'Legal',
-    icon: '⚖️',
-    description: 'Notary Public compliant 12-month notice pursuant to Dubai Law No. 33 of 2008.',
-    badge: 'Legal Notary',
-  },
-  {
-    id: 'contractor_work_order',
-    title: 'Contractor Work Order & SOW Invoice',
-    category: 'Maintenance',
-    icon: '🛠️',
-    description: 'Scope of Work specification for DAMAC Hills 2 repair tickets with FTA 5% VAT.',
-    badge: 'Facilities Order',
+    id: 'tax_receipt_vat',
+    title: '4. Broker Commission Tax Invoice (5% VAT)',
+    category: 'Finance Receipts',
+    icon: '💵',
+    description: 'Official tax invoice with White Caves TRN, 5% VAT calculations, and security deposit vouchers.',
+    badge: 'FTA Compliant',
   },
 ];
 
-export const DEMO_EJARI_PAYLOAD: EjariContractPayload = {
-  contractNumber: 'EJARI-2026-DXB-98442',
+export const DEMO_TENANCY_PAYLOAD: TenancyContractPayload = {
+  contractNumber: 'WC-TC-2026-DXB-98442',
   propertyTitle: 'Luxury 4-Bedroom Villa with Private Pool',
   unitNumber: 'Villa 142, Cluster V',
   community: 'DAMAC Hills 2 — Akoya Oxygen, Dubai',
@@ -94,4 +91,50 @@ export const DEMO_EJARI_PAYLOAD: EjariContractPayload = {
     'Landlord is strictly responsible for HVAC major chiller maintenance exceeding AED 500.',
     '90 days written notice required for renewal or termination via registered email.',
   ],
+  esignToken: 'token_sec_dxb_98442_sign',
+  esignStatus: 'link_generated',
+};
+
+export const DEMO_EJARI_RECORD: GovernmentEjariRecord = {
+  ejariNumber: '0120250814005322',
+  contractReference: 'WC-TC-2026-DXB-98442',
+  issueDate: '14/08/2025',
+  expiryDate: '13/08/2026',
+  registeredRentAed: 185000,
+  propertyAddress: 'Villa 142, Cluster V, DAMAC Hills 2, Dubai',
+  landlordName: 'Tariq Al-Mansoor',
+  tenantName: 'Alexander Wright',
+  brokerName: 'Arslan Malik Bashir Ahmad',
+  brokerBrn: '59821',
+  dldBarcodeHash: 'DLD-REST-HASH-0120250814005322-AUTH',
+  archivedAt: '2026-08-17 19:45:00 UTC',
+};
+
+export const DEMO_VIEWING_PAYLOAD: ViewingFormPayload = {
+  formId: 'VIEW-REG-8821',
+  clientName: 'Alexander Wright',
+  clientPhone: '+971 52 987 6543',
+  clientPassportOrEid: '784-1990-7654321-2',
+  propertyTitle: 'Luxury 4-Bedroom Villa with Private Pool',
+  propertyAddress: 'Villa 142, Cluster V, DAMAC Hills 2, Dubai',
+  viewingDate: '17/08/2026',
+  viewingTime: '17:30 PM',
+  agentName: 'Arslan Malik Bashir Ahmad',
+  agentBrn: '59821',
+  feedbackNotes: 'Client inspected master suite and pool area. Highly interested in signing Form B mandate.',
+};
+
+export const DEMO_TAX_RECEIPT: TaxReceiptPayload = {
+  receiptNumber: 'INV-WC-2026-0098',
+  receiptType: 'agency_commission',
+  amountAed: 9250,
+  vatRatePercent: 5,
+  vatAmountAed: 462.5,
+  totalWithVatAed: 9712.5,
+  paidBy: 'Alexander Wright',
+  paidTo: 'White Caves Real Estate LLC',
+  whiteCavesTrn: '100488291000003',
+  paymentMethod: 'bank_transfer',
+  paymentReference: 'ENBD-TXN-9844201',
+  date: '17/08/2026',
 };

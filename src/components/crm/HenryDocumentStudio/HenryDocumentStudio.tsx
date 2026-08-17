@@ -4,7 +4,7 @@
  */
 
 import React, { FC } from 'react';
-import { Printer, ZoomIn, ZoomOut, FileText, Stamp, Eye, Download, ShieldCheck } from 'lucide-react';
+import { Printer, ZoomIn, ZoomOut, Share2, Sparkles, Check, Eye, ShieldCheck } from 'lucide-react';
 import { useHenryDocumentStudioLogic } from './logic/HenryDocumentStudio.logic';
 import {
   StudioContainer,
@@ -28,9 +28,12 @@ export const HenryDocumentStudio: FC = () => {
     setSelectedTemplateId,
     compiledHtml,
     zoomLevel,
+    shareLinkCopied,
     handlePrint,
     handleZoomIn,
     handleZoomOut,
+    handleCopyEsignLink,
+    handleTriggerAiAutoFill,
   } = useHenryDocumentStudioLogic();
 
   return (
@@ -39,15 +42,15 @@ export const HenryDocumentStudio: FC = () => {
       <StudioHeader>
         <div>
           <h2>
-            <span>📄</span> Henry AI — Document Studio & PDF Engine
+            <span>📄</span> Henry AI — Sovereign Record Keeper & Document Studio
           </h2>
           <p style={{ margin: 0, color: '#94A3B8', fontSize: '0.88rem' }}>
-            High-DPI PDF compilation, visual contract redlining, print preview & Ejari Form 7 automation.
+            Tenancy Contract E-Signature, Official Government Ejari Archival, AI Auto-Fill Forms & VAT Tax Invoices.
           </p>
         </div>
         <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
-          <Badge>HENRY AI 4000% ACTIVE</Badge>
-          <span style={{ fontSize: '0.8rem', color: '#94A3B8' }}>RERA ORN: 44483</span>
+          <Badge>HENRY RECORD KEEPER</Badge>
+          <span style={{ fontSize: '0.8rem', color: '#94A3B8' }}>Ejari: 0120250814005322</span>
         </div>
       </StudioHeader>
 
@@ -55,7 +58,7 @@ export const HenryDocumentStudio: FC = () => {
       <WorkspaceSplit>
         {/* Left Template & Document Selector */}
         <SidebarControlPanel>
-          <SectionLabel>Select Real Estate Template</SectionLabel>
+          <SectionLabel>Document Classification Streams</SectionLabel>
           <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
             {templates.map((tpl) => (
               <TemplateCard
@@ -85,7 +88,7 @@ export const HenryDocumentStudio: FC = () => {
             ))}
           </div>
 
-          <SectionLabel style={{ marginTop: '12px' }}>Regulatory Compliance Seals</SectionLabel>
+          <SectionLabel style={{ marginTop: '14px' }}>Henry Record Keeper SOP</SectionLabel>
           <div
             style={{
               padding: '12px',
@@ -99,9 +102,11 @@ export const HenryDocumentStudio: FC = () => {
           >
             <div style={{ display: 'flex', alignItems: 'center', gap: '6px', color: '#1E293B', fontWeight: 800, marginBottom: '4px' }}>
               <ShieldCheck size={14} color="#EF4444" />
-              <span>DET & RERA Auto-Watermarking</span>
+              <span>DLD Compliance Rule</span>
             </div>
-            All documents generated in Henry Studio include DET License 1388443, RERA ORN 44483, and Ejari cryptographic hash tags.
+            1. Tenancy Contract is drafted and shared via E-Sign link.<br />
+            2. Licensed Broker registers contract with DLD REST.<br />
+            3. Official Government Ejari Certificate is permanently archived here.
           </div>
         </SidebarControlPanel>
 
@@ -111,11 +116,24 @@ export const HenryDocumentStudio: FC = () => {
             <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
               <Eye size={16} color="#EF4444" />
               <span style={{ fontSize: '0.85rem', fontWeight: 700 }}>
-                Live Print Preview — Zoom: {zoomLevel}%
+                Live Document Preview — Zoom: {zoomLevel}%
               </span>
             </div>
 
             <ToolButtonGroup>
+              {selectedTemplateId === 'tenancy_contract_esign' && (
+                <ActionButton onClick={handleCopyEsignLink} title="Copy E-Signature Link to Share with Client">
+                  {shareLinkCopied ? <Check size={14} color="#22C55E" /> : <Share2 size={14} />}
+                  {shareLinkCopied ? 'Link Copied!' : 'Share E-Sign Link'}
+                </ActionButton>
+              )}
+
+              {selectedTemplateId === 'viewing_form_autofill' && (
+                <ActionButton onClick={handleTriggerAiAutoFill} title="1-Click AI Auto-Fill Form from CRM Data">
+                  <Sparkles size={14} color="#FACC15" /> 1-Click AI Auto-Fill
+                </ActionButton>
+              )}
+
               <ActionButton onClick={handleZoomOut} title="Zoom Out">
                 <ZoomOut size={14} />
               </ActionButton>
@@ -123,7 +141,7 @@ export const HenryDocumentStudio: FC = () => {
                 <ZoomIn size={14} />
               </ActionButton>
               <ActionButton $primary onClick={handlePrint} title="Laser Print / Save as PDF">
-                <Printer size={14} /> Print Document
+                <Printer size={14} /> Print / Export PDF
               </ActionButton>
             </ToolButtonGroup>
           </ToolbarHeader>
