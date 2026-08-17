@@ -3,41 +3,40 @@ import React from 'react';
 import { render, screen, fireEvent } from '@testing-library/react';
 import { HenryDocumentStudio } from './HenryDocumentStudio';
 import henryPdfEngineService from '../../../services/HenryPdfEngineService';
-import henryTitleDeedScannerService from '../../../services/HenryTitleDeedScannerService';
+import henryPassportScannerService from '../../../services/HenryPassportScannerService';
 
-describe('Henry AI 4000% Upgrade — DLD Title Deed & Emirates ID Optical AI Scanners', () => {
+describe('Henry AI 4000% Upgrade — International Passport, Title Deed & Emirates ID Optical AI Scanners', () => {
   beforeEach(() => {
     vi.clearAllMocks();
   });
 
-  it('renders Henry Document Studio with DLD Title Deed Scanner template', () => {
+  it('renders Henry Document Studio with International Passport Scanner template', () => {
     render(<HenryDocumentStudio />);
     expect(screen.getByTestId('henry-document-studio')).toBeDefined();
     expect(screen.getByText(/Henry AI — Sovereign Record Keeper/i)).toBeDefined();
-    expect(screen.getByText(/7. DLD Title Deed AI Optical Scanner & Ingestion/i)).toBeDefined();
-    expect(screen.getByText(/Dubai Land Department \(DLD\) Title Deed Ingestion Hub/i)).toBeDefined();
-    expect(screen.getByText(/VIRIDIS A/i)).toBeDefined();
-    expect(screen.getByText(/Unit 504/i)).toBeDefined();
-    expect(screen.getByText(/AKRAM DIB NEHME/i)).toBeDefined();
-    expect(screen.getByText(/أكرم ديب نعمة/i)).toBeDefined();
-    expect(screen.getAllByText(/38.76 m²/i).length).toBeGreaterThan(0);
-    expect(screen.getByText(/417.21 sq.ft/i)).toBeDefined();
-    expect(screen.getByText(/AED 353,000/i)).toBeDefined();
+    expect(screen.getByText(/8. International Passport AI Scanner & KYC Hub/i)).toBeDefined();
+    expect(screen.getByText(/International Passport & goAML KYC Ingestion Hub/i)).toBeDefined();
+    expect(screen.getAllByText(/DR0760143/i).length).toBeGreaterThan(0);
+    expect(screen.getByText(/Arslan Malik/i)).toBeDefined();
+    expect(screen.getByText(/Bashir Ahmad/i)).toBeDefined();
+    expect(screen.getByText(/32303-4339014-9/i)).toBeDefined();
+    expect(screen.getByText(/MUZAFFARGARH, PAK/i)).toBeDefined();
+    expect(screen.getByText(/10 Years \(Active & Valid\)/i)).toBeDefined();
   });
 
-  it('provides 1-click Title Deed actions to auto-fill Tenancy and create CRM listings', () => {
+  it('provides 1-click Passport actions to auto-fill Tenancy and create KYC records', () => {
     render(<HenryDocumentStudio />);
-    expect(screen.getByText(/Auto-Fill Tenancy Lease \(Property & Landlord\)/i)).toBeDefined();
-    expect(screen.getByText(/Create CRM Property Inventory Listing/i)).toBeDefined();
-    expect(screen.getByText(/Auto-Fill Form A Seller Mandate/i)).toBeDefined();
+    expect(screen.getByText(/Auto-Fill Tenancy Lease \(as Non-Resident Tenant\)/i)).toBeDefined();
+    expect(screen.getByText(/Auto-Fill Tenancy Lease \(as Non-Resident Landlord\)/i)).toBeDefined();
+    expect(screen.getByText(/Create goAML KYC Audit Record/i)).toBeDefined();
   });
 
-  it('executes auto-fill from Title Deed and updates Tenancy Lease state cleanly', () => {
+  it('executes auto-fill from Passport as Tenant and updates Tenancy Lease state cleanly', () => {
     render(<HenryDocumentStudio />);
-    const autoFillBtn = screen.getByText(/Auto-Fill Tenancy Lease \(Property & Landlord\)/i);
+    const autoFillBtn = screen.getByText(/Auto-Fill Tenancy Lease \(as Non-Resident Tenant\)/i);
     fireEvent.click(autoFillBtn);
 
-    expect(screen.getByText(/Tenancy Lease updated with VIRIDIS A Unit 504 and Landlord AKRAM DIB NEHME!/i)).toBeDefined();
+    expect(screen.getByText(/Tenancy Lease auto-filled with Arslan Malik \(Passport DR0760143\) as Tenant!/i)).toBeDefined();
   });
 
   it('generates valid Tenant Service Charge Tax Invoice with TRN and 5% VAT', () => {

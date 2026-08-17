@@ -21,6 +21,8 @@ import {
   RefreshCw,
   Home,
   FileText,
+  Globe,
+  ShieldAlert,
 } from 'lucide-react';
 import { useHenryDocumentStudioLogic } from './logic/HenryDocumentStudio.logic';
 import {
@@ -48,6 +50,7 @@ export const HenryDocumentStudio: FC = () => {
     shareLinkCopied,
     eidData,
     titleDeedData,
+    passportData,
     isScanning,
     actionSuccessMessage,
     handlePrint,
@@ -57,14 +60,20 @@ export const HenryDocumentStudio: FC = () => {
     handleTriggerAiAutoFill,
     handleScanEmiratesId,
     handleScanTitleDeed,
+    handleScanPassport,
     handleAutoFillAsTenant,
     handleAutoFillAsLandlord,
     handleAutoFillTenancyFromTitleDeed,
+    handleAutoFillTenancyAsPassportTenant,
+    handleAutoFillTenancyAsPassportLandlord,
+    handleAutoFillViewingFromPassport,
     handleAutoFillViewingForm,
     handleCopyJsonVariables,
     handleCopyTitleDeedJsonVariables,
+    handleCopyPassportJsonVariables,
     handleCreateCrmListing,
     handleAutoFillFormA,
+    handleCreateAmlKycRecord,
   } = useHenryDocumentStudioLogic();
 
   return (
@@ -76,7 +85,7 @@ export const HenryDocumentStudio: FC = () => {
             <span>📄</span> Henry AI — Sovereign Record Keeper & Document Studio
           </h2>
           <p style={{ margin: 0, color: '#94A3B8', fontSize: '0.88rem' }}>
-            DLD Title Deed AI Scanner, Emirates ID OCR, Tenancy E-Sign, Government Ejari Vault & VAT Invoices.
+            International Passport AI Scanner, DLD Title Deed OCR, Emirates ID Ingestion, Tenancy E-Sign & VAT Invoices.
           </p>
         </div>
         <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
@@ -165,14 +174,292 @@ export const HenryDocumentStudio: FC = () => {
               <ShieldCheck size={14} color="#EF4444" />
               <span>DLD Compliance Rule</span>
             </div>
-            1. Scan Title Deed & Emirates ID to extract verified data.<br />
+            1. Scan Passport, Title Deed & Emirates ID to extract verified data.<br />
             2. 1-Click auto-fills Tenancy Agreement or Viewing Form.<br />
             3. Official Government Ejari Certificate is archived in Vault.
           </div>
         </SidebarControlPanel>
 
-        {/* Right Canvas: Emirates ID Scanner, Title Deed Scanner OR PDF Canvas */}
-        {selectedTemplateId === 'title_deed_scanner' ? (
+        {/* Right Canvas: Passport Scanner, Title Deed Scanner, Emirates ID Scanner OR PDF Canvas */}
+        {selectedTemplateId === 'passport_scanner' ? (
+          <PreviewCanvasCard style={{ padding: '24px', overflowY: 'auto' }}>
+            {/* Passport Header */}
+            <div
+              style={{
+                display: 'flex',
+                justifyContent: 'space-between',
+                alignItems: 'center',
+                borderBottom: '2px solid #EF4444',
+                paddingBottom: '14px',
+                marginBottom: '18px',
+              }}
+            >
+              <div>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                  <span
+                    style={{
+                      background: '#EF4444',
+                      color: 'white',
+                      padding: '3px 8px',
+                      borderRadius: '4px',
+                      fontSize: '11px',
+                      fontWeight: 800,
+                    }}
+                  >
+                    ICAO 9303 TD3 PASSPORT SCANNER
+                  </span>
+                  <span style={{ fontSize: '11px', color: '#16A34A', fontWeight: 800 }}>
+                    10-YEAR VALIDITY KYC VERIFIED
+                  </span>
+                </div>
+                <h3 style={{ margin: '6px 0 2px', color: '#1E293B', fontSize: '18px' }}>
+                  International Passport & goAML KYC Ingestion Hub
+                </h3>
+                <p style={{ margin: 0, color: '#64748B', fontSize: '12px' }}>
+                  Extracts 16+ discrete fields: Passport No, National ID (CNIC), Surname, Father Name, DOB, POB, Authority, and 2-line TD3 MRZ.
+                </p>
+              </div>
+
+              <div style={{ display: 'flex', gap: '8px' }}>
+                <ActionButton
+                  onClick={() => handleScanPassport()}
+                  disabled={isScanning}
+                  title="Rescan Passport Document"
+                >
+                  <RefreshCw size={14} className={isScanning ? 'animate-spin' : ''} />
+                  {isScanning ? 'Scanning...' : 'Rescan Passport'}
+                </ActionButton>
+                <ActionButton
+                  $primary
+                  onClick={handleCopyPassportJsonVariables}
+                  title="Export All 16+ Variables as JSON"
+                >
+                  <Copy size={14} /> Export Variables (JSON)
+                </ActionButton>
+              </div>
+            </div>
+
+            {/* Variable Distribution & 1-Click Platform Actions */}
+            <div
+              style={{
+                backgroundColor: '#F8FAFC',
+                border: '1px solid #E2E8F0',
+                borderRadius: '8px',
+                padding: '14px',
+                marginBottom: '20px',
+              }}
+            >
+              <div
+                style={{
+                  fontSize: '12px',
+                  fontWeight: 800,
+                  color: '#1E293B',
+                  marginBottom: '8px',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '6px',
+                }}
+              >
+                <Sparkles size={14} color="#EF4444" />
+                <span>1-Click Variable Auto-Fill & Platform Distribution:</span>
+              </div>
+              <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
+                <ActionButton onClick={handleAutoFillTenancyAsPassportTenant}>
+                  <UserCheck size={14} color="#2563EB" /> Auto-Fill Tenancy Lease (as Non-Resident Tenant)
+                </ActionButton>
+                <ActionButton onClick={handleAutoFillTenancyAsPassportLandlord}>
+                  <Building size={14} color="#16A34A" /> Auto-Fill Tenancy Lease (as Non-Resident Landlord)
+                </ActionButton>
+                <ActionButton onClick={handleAutoFillViewingFromPassport}>
+                  <FileCheck size={14} color="#D97706" /> Auto-Fill Form B Viewing Register
+                </ActionButton>
+                <ActionButton onClick={handleCreateAmlKycRecord}>
+                  <ShieldAlert size={14} color="#DC2626" /> Create goAML KYC Audit Record
+                </ActionButton>
+              </div>
+            </div>
+
+            {/* Extracted Fields Table (16 Attributes) */}
+            <div
+              style={{
+                display: 'grid',
+                gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))',
+                gap: '16px',
+                marginBottom: '20px',
+              }}
+            >
+              {/* Box 1: Passport & Document Metadata */}
+              <div
+                style={{
+                  border: '1px solid #E2E8F0',
+                  borderRadius: '8px',
+                  padding: '16px',
+                  background: '#FFFFFF',
+                }}
+              >
+                <div
+                  style={{
+                    color: '#EF4444',
+                    fontWeight: 800,
+                    fontSize: '12px',
+                    borderBottom: '1px solid #F1F5F9',
+                    paddingBottom: '6px',
+                    marginBottom: '10px',
+                  }}
+                >
+                  1. PASSPORT & DOCUMENT METADATA
+                </div>
+                <div style={{ fontSize: '12px', lineHeight: 1.8 }}>
+                  <div>
+                    <strong>Passport Number:</strong>{' '}
+                    <code style={{ background: '#FEF2F2', color: '#991B1B', padding: '2px 6px', borderRadius: '4px', fontWeight: 'bold' }}>
+                      {passportData.passportNumber}
+                    </code>
+                  </div>
+                  <div>
+                    <strong>Issuing Country:</strong> {passportData.issuingCountry} ({passportData.issuingCountryCode})
+                  </div>
+                  <div>
+                    <strong>Passport Type:</strong> {passportData.passportType} (Standard International)
+                  </div>
+                  <div>
+                    <strong>Booklet Number:</strong> {passportData.bookletNumber}
+                  </div>
+                  <div>
+                    <strong>Tracking Number:</strong> {passportData.trackingNumber}
+                  </div>
+                  <div>
+                    <strong>Issuing Authority:</strong> {passportData.issuingAuthority}
+                  </div>
+                </div>
+              </div>
+
+              {/* Box 2: Personal Identity & Biometrics */}
+              <div
+                style={{
+                  border: '1px solid #E2E8F0',
+                  borderRadius: '8px',
+                  padding: '16px',
+                  background: '#FFFFFF',
+                }}
+              >
+                <div
+                  style={{
+                    color: '#2563EB',
+                    fontWeight: 800,
+                    fontSize: '12px',
+                    borderBottom: '1px solid #F1F5F9',
+                    paddingBottom: '6px',
+                    marginBottom: '10px',
+                  }}
+                >
+                  2. PERSONAL IDENTITY & BIOMETRICS
+                </div>
+                <div style={{ fontSize: '12px', lineHeight: 1.8 }}>
+                  <div>
+                    <strong>Full Name:</strong>{' '}
+                    <span style={{ fontWeight: 'bold', color: '#1E293B' }}>{passportData.fullName}</span>
+                  </div>
+                  <div>
+                    <strong>Surname:</strong> {passportData.surname} | <strong>Given:</strong> {passportData.givenNames}
+                  </div>
+                  <div>
+                    <strong>Father's Name:</strong> {passportData.fatherName}
+                  </div>
+                  <div>
+                    <strong>National ID / CNIC:</strong>{' '}
+                    <code style={{ background: '#EFF6FF', color: '#1D4ED8', padding: '2px 6px', borderRadius: '4px', fontWeight: 'bold' }}>
+                      {passportData.nationalIdentityNumber}
+                    </code>
+                  </div>
+                  <div>
+                    <strong>Date of Birth:</strong> {passportData.dateOfBirth} (Gender: {passportData.gender === 'M' ? 'Male' : 'Female'})
+                  </div>
+                  <div>
+                    <strong>Place of Birth:</strong> {passportData.placeOfBirth}
+                  </div>
+                </div>
+              </div>
+
+              {/* Box 3: Validity & Lifespan */}
+              <div
+                style={{
+                  border: '1px solid #E2E8F0',
+                  borderRadius: '8px',
+                  padding: '16px',
+                  background: '#FFFFFF',
+                }}
+              >
+                <div
+                  style={{
+                    color: '#16A34A',
+                    fontWeight: 800,
+                    fontSize: '12px',
+                    borderBottom: '1px solid #F1F5F9',
+                    paddingBottom: '6px',
+                    marginBottom: '10px',
+                  }}
+                >
+                  3. VALIDITY & LIFESPAN (10-YEAR EXPIRY)
+                </div>
+                <div style={{ fontSize: '12px', lineHeight: 1.8 }}>
+                  <div>
+                    <strong>Date of Issue:</strong> {passportData.dateOfIssue}
+                  </div>
+                  <div>
+                    <strong>Date of Expiry:</strong>{' '}
+                    <span style={{ color: '#16A34A', fontWeight: 'bold' }}>{passportData.dateOfExpiry}</span>
+                  </div>
+                  <div>
+                    <strong>Validity Period:</strong> {passportData.validityYears} Years (Active & Valid)
+                  </div>
+                  <div>
+                    <strong>Nationality:</strong> {passportData.nationality} ({passportData.nationalityCode})
+                  </div>
+                  <div>
+                    <strong>Optical OCR Confidence:</strong> {(passportData.confidenceScore * 100).toFixed(1)}%
+                  </div>
+                </div>
+              </div>
+
+              {/* Box 4: ICAO 9303 TD3 MRZ Code */}
+              <div
+                style={{
+                  border: '1px solid #E2E8F0',
+                  borderRadius: '8px',
+                  padding: '16px',
+                  background: '#1E293B',
+                  color: '#F8FAFC',
+                }}
+              >
+                <div
+                  style={{
+                    color: '#FACC15',
+                    fontWeight: 800,
+                    fontSize: '12px',
+                    borderBottom: '1px solid #334155',
+                    paddingBottom: '6px',
+                    marginBottom: '10px',
+                  }}
+                >
+                  4. 2-LINE ICAO 9303 TD3 MRZ CODE
+                </div>
+                <div
+                  style={{
+                    fontFamily: 'monospace',
+                    fontSize: '11px',
+                    letterSpacing: '1px',
+                    lineHeight: 1.6,
+                    color: '#E2E8F0',
+                  }}
+                >
+                  <div>{passportData.mrz?.line1}</div>
+                  <div>{passportData.mrz?.line2}</div>
+                </div>
+              </div>
+            </div>
+          </PreviewCanvasCard>
+        ) : selectedTemplateId === 'title_deed_scanner' ? (
           <PreviewCanvasCard style={{ padding: '24px', overflowY: 'auto' }}>
             {/* Title Deed Header */}
             <div

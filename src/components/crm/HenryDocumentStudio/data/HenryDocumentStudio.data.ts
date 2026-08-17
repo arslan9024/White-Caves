@@ -16,6 +16,10 @@ import {
   DldTitleDeedExtractedData,
   VIRIDIS_504_SAMPLE_TITLE_DEED,
 } from '../../../../services/HenryTitleDeedScannerService';
+import {
+  InternationalPassportExtractedData,
+  ARSLAN_MALIK_SAMPLE_PASSPORT,
+} from '../../../../services/HenryPassportScannerService';
 
 export interface DocumentTemplateOption {
   id:
@@ -25,7 +29,8 @@ export interface DocumentTemplateOption {
     | 'tenant_service_receipt'
     | 'landlord_mgmt_invoice'
     | 'emirates_id_scanner'
-    | 'title_deed_scanner';
+    | 'title_deed_scanner'
+    | 'passport_scanner';
   title: string;
   category:
     | 'Leasing E-Sign'
@@ -95,6 +100,14 @@ export const DOCUMENT_TEMPLATES: DocumentTemplateOption[] = [
     icon: '📜',
     description: 'Upload DLD Title Deed. Extracts 22+ fields (Unit, Areas, Owner, Contract No, Price AED & words).',
     badge: 'DLD AI Scanner',
+  },
+  {
+    id: 'passport_scanner',
+    title: '8. International Passport AI Scanner & KYC Hub',
+    category: 'AI Optical Scanner',
+    icon: '🛂',
+    description: 'Upload International Passport. Extracts 16+ fields, 2-line ICAO TD3 MRZ, CNIC & 10-yr validity.',
+    badge: 'ICAO TD3 Scanner',
   },
 ];
 
@@ -211,3 +224,4 @@ export const DEMO_LANDLORD_TAX_INVOICE: TaxReceiptPayload = {
 
 export const DEFAULT_EID_DATA: EmiratesIdExtractedData = ARSLAN_MALIK_SAMPLE_EID;
 export const DEFAULT_TITLE_DEED_DATA: DldTitleDeedExtractedData = VIRIDIS_504_SAMPLE_TITLE_DEED;
+export const DEFAULT_PASSPORT_DATA: InternationalPassportExtractedData = ARSLAN_MALIK_SAMPLE_PASSPORT;
