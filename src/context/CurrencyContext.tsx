@@ -36,7 +36,7 @@ export interface CurrencyContextType {
   convertToAED: (amount: number, fromCurrency?: CurrencyCode) => number;
 }
 
-const CurrencyContext = createContext<CurrencyContextType | undefined>(undefined);
+export const CurrencyContext = createContext<CurrencyContextType | undefined>(undefined);
 
 interface CurrencyProviderProps {
   children: ReactNode;

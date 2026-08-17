@@ -6,6 +6,7 @@ import { setLoading } from './store/userSlice';
 import { setTheme, setActiveRole } from './store/navigationSlice';
 import { LanguageProvider } from './context/LanguageContext';
 import { CurrencyProvider } from './context/CurrencyContext';
+import { UserRoleProvider } from './context/UserRoleContext';
 import { WorkspaceProvider } from './context/WorkspaceContext';
 import { ThemeProvider } from './styles/ThemeProvider';
 import { UnifiedWorkspaceLayout } from './layouts/UnifiedWorkspaceLayout';
@@ -727,7 +728,8 @@ function App(): React.JSX.Element {
             <StatusProvider>
               <LanguageProvider>
                 <CurrencyProvider>
-                  <WorkspaceProvider>
+                  <UserRoleProvider>
+                    <WorkspaceProvider>
                     <BrowserRouter>
                       <CustomCursor />
                       <FounderRedirectGuard />
@@ -917,8 +919,9 @@ function App(): React.JSX.Element {
                       </main>
                     </BrowserRouter>
                   </WorkspaceProvider>
-                </CurrencyProvider>
-              </LanguageProvider>
+                </UserRoleProvider>
+              </CurrencyProvider>
+            </LanguageProvider>
             </StatusProvider>
           </LuxuryThemeProvider>
         </ThemeProvider>

@@ -40,13 +40,14 @@ Every component in `src/components/` conforms to the 4-way subfolder isolation r
 
 ---
 
-## 🌐 Context Triad Layer
+## 🌐 Global Context Quartet Layer
 
-The application context layer provides global, zero-latency state synchronization:
+The application context layer provides global, zero-latency state synchronization across 4 critical pillars:
 
 1. **`ThemeContext`:** Manages `light`, `dark`, and `system` theme modes with smooth CSS transitions (`data-theme` attribute).
 2. **`LanguageContext`:** Manages 4 supported languages (`en`, `ar`, `es`, `ru`) and dynamically toggles the HTML document direction (`dir="ltr"` / `dir="rtl"`).
 3. **`CurrencyContext`:** Manages 4 major currencies (`AED`, `USD`, `EUR`, `GBP`) with automated FX rate conversion across all property and tool calculators.
+4. **`UserRoleContext`:** Manages global user profile, RBAC roles (`guest`, `buyer`, `seller`, `agent`, `supervisor`, `manager`, `managing_director`, `admin`), access levels 1 to 5, permissions matrix, and the Founder Managing Director sovereign bypass (`arslanmalikgoraha@gmail.com`).
 
 ---
 
