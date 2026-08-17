@@ -68,14 +68,36 @@
 
 ## 🛡️ 3. Deduplication & Sovereign Gating Laws
 - [x] **AEGIS 2.0 Color Protocol:** ONLY White Caves Red (`#EF4444`), Brilliant White (`#FFFFFF`), and Deep Slate Gray (`#1E293B`).
-- [x] **Founder Sovereign Short-Circuit:** If email matches `arslanmalikgoraha@gmail.com`, auto-inject `accessLevel: 5`, bypass route locks, and unmask all 12-department navigation controls with zero loading latency.
+- [x] **Founder Sovereign Short-Circuit:** If email matches `arslanmalikgoraha@gmail.com` or `the.white.caves@gmail.com`, auto-inject `accessLevel: 5`, bypass route locks, and unmask all 12-department navigation controls with zero loading latency.
 - [x] **Consolidated Layout:** All navigation unified inside `src/layouts/UnifiedWorkspaceLayout.tsx`.
 
 ---
 
-## ⚙️ 4. Pipeline Sync Stages (PIPELINE)
-- [x] `1_APPEND_PLAN`: Updated `plans/PENDING_TASKS_ONLY.md` with the 35 AI Assistants Master Registry and 4-way subfolder architecture.
+## 👑 4. The 14-Role Sovereign Registry & Identity Matrix (1-12-108 RBAC Engine)
+- [x] **Tier 1: Internal Corporate Machinery (1-12-108 Structure):**
+  - `managing_director` (L5 Sovereign Bypass) — Arslan Malik Bashir Ahmad (`arslanmalikgoraha@gmail.com`). Wildcard permissions `['*']`, unmasks all 12 corporate departments, 35 AI assistants, and Ghost Simulator.
+  - `manager` (L4) — 12 Department Business Heads. Owns regional P&L, deal approvals (`'can_approve_deals'`), commission splits.
+  - `supervisor` (L3) — 108 Execution Team Leads. 15-minute portal response SLA alerts (`'can_override_sla'`), manual lead routing (`'can_assign_leads'`).
+  - `agent` (L2) — Licensed Brokers / Sales & Leasing. Active pipeline, personal leads, Property Finder/Bayut webhooks, contract generation (`'can_create_contracts'`).
+  - `intern` (L1) — Corporate Interns / Trainee Brokers. Read-only leads (`'can_read_assigned_leads'`), deals require supervisor secondary sign-off.
+- [x] **Tier 2: Paired External Client Portals:**
+  - `tenant` (L1) — Leasing Channel. Active Ejari contract logs, Form 7 rent matrices, Henry AI 24/7 maintenance tickets.
+  - `landlord` (L2) — Leasing Channel. Net rental yield calculations, multi-currency statements, maintenance invoice payouts.
+  - `buyer` (L1) — Secondary Market. Curated secondary inventory, viewing calendars, Form B digital signing sheets.
+  - `seller` (L1) — Secondary Market. Marketing performance metrics, Trakheesi permits, Form A mandate logs.
+  - `offplan_buyer` (L1) — Off-Plan Market. Construction milestone tracking, developer payment schedule reminders, appreciation models.
+  - `developer` (L2) — Off-Plan Market. Primary developers (Emaar, DAMAC). Bulk inventory management, developer NOC processing, rebate claims.
+- [x] **Tier 3: Strategic Partners & Public:**
+  - `conveyancer` (L2) — DLD Registration Trustee. Title deed uploads, corporate transaction filing, Manager's Cheque verification.
+  - `contractor` (L2) — Maintenance Contractor. Claim open repair tickets (DAMAC Hills 2), upload on-site repair photos, submit closing invoices.
+  - `guest` (L1) — Public Consumer / Guest. Cinematic showcase, interactive map, floating search pill & WhatsApp concierge.
+- [x] **Unified Context Quartet Integration:** Single user entity in `UserRoleContext` (Commit `0ecfdbd6`) with 1-click single-role login (`loginAsRole`) and UI simulator.
+
+---
+
+## ⚙️ 5. Pipeline Sync Stages (PIPELINE)
+- [x] `1_APPEND_PLAN`: Updated `plans/PENDING_TASKS_ONLY.md` with 14-role sovereign matrix and 35 AI assistants.
 - [x] `2_ISOLATE_FILE`: Segregated components across matching `Component.tsx`, `logic/`, `styles/`, and `data/` files.
 - [x] `3_EXTRACT_TEXT`: Extracted copywriting variables into data layers and translation dictionaries.
-- [x] `4_TERMINAL_CHECK`: Executed local compilation checks via `npm run build`.
+- [x] `4_TERMINAL_CHECK`: Executed local compilation checks via `npm run build` and `npm run typecheck`.
 - [x] `5_HOT_RELOAD`: Verified stability with zero runtime exceptions.

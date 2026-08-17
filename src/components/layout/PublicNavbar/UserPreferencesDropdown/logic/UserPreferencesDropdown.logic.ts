@@ -8,6 +8,7 @@ import { useDispatch } from 'react-redux';
 import { useTheme, type ThemeMode } from '../../../../../context/ThemeContext';
 import { useLanguage, type LanguageType } from '../../../../../context/LanguageContext';
 import { useGlobalCurrency, type CurrencyCode } from '../../../../../context/CurrencyContext';
+import { useUserRole, type UserRole, ROLE_LABELS } from '../../../../../context/UserRoleContext';
 import { logout } from '../../../../../store/authSlice';
 import { THEME_ITEMS } from '../data/UserPreferencesDropdown.data';
 
@@ -29,6 +30,17 @@ export function useUserPreferencesDropdownLogic({ user, onClose }: UseUserPrefer
   const { themeMode, setThemeMode } = useTheme();
   const { language, setLanguage, supportedLanguages } = useLanguage();
   const { currency, setCurrency, currencies } = useGlobalCurrency();
+  const {
+    user: contextUser,
+    role: currentRole,
+    accessLevel,
+    isFounder,
+    isManagingDirector,
+    loginAsRole,
+    switchRole,
+    logout: roleLogout,
+    allRoles,
+  } = useUserRole();
 
   useEffect(() => {
     const handleClickOutside = (e: MouseEvent) => {
@@ -49,14 +61,29 @@ export function useUserPreferencesDropdownLogic({ user, onClose }: UseUserPrefer
   );
 
   const handleLogout = useCallback(() => {
+    roleLogout();
     dispatch(logout());
     onClose();
     navigate('/login');
-  }, [dispatch, onClose, navigate]);
+  }, [roleLogout, dispatch, onClose, navigate]);
+
+  const handleSelectRole = useCallback(
+    (targetRole: UserRole) => {
+      loginAsRole(targetRole);
+      onClose();
+    },
+    [loginAsRole, onClose]
+  );
 
   return {
     dropdownRef,
-    user,
+    user: contextUser || user,
+    currentRole,
+    accessLevel,
+    isFounder,
+    isManagingDirector,
+    allRoles,
+    roleLabels: ROLE_LABELS,
     themeMode,
     setThemeMode,
     language,
@@ -68,5 +95,6 @@ export function useUserPreferencesDropdownLogic({ user, onClose }: UseUserPrefer
     themeItems: THEME_ITEMS,
     handleNavigate,
     handleLogout,
+    handleSelectRole,
   };
 }

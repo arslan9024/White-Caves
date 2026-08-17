@@ -9,7 +9,9 @@ export const DropdownContainer = styled.div`
   position: absolute;
   top: calc(100% + 10px);
   right: 0;
-  width: 290px;
+  width: 320px;
+  max-height: 85vh;
+  overflow-y: auto;
   background: var(--bg-card, #ffffff);
   border: 1px solid var(--border-color, #e2e8f0);
   border-radius: 16px;
@@ -39,16 +41,19 @@ export const UserHeader = styled.div`
   border-bottom: 1px solid var(--border-color, #f1f5f9);
 
   img {
-    width: 42px;
-    height: 42px;
+    width: 44px;
+    height: 44px;
     border-radius: 50%;
     object-fit: cover;
     border: 2px solid #ef4444;
+    flex-shrink: 0;
   }
 `;
 
 export const UserDetails = styled.div`
   overflow: hidden;
+  flex: 1;
+
   h4 {
     margin: 0;
     font-size: 0.92rem;
@@ -60,12 +65,27 @@ export const UserDetails = styled.div`
   }
   p {
     margin: 2px 0 0;
-    font-size: 0.76rem;
+    font-size: 0.74rem;
     color: var(--text-muted, #64748b);
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
   }
+`;
+
+export const RoleBadge = styled.span<{ $level: number }>`
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  margin-top: 4px;
+  padding: 2px 6px;
+  border-radius: 6px;
+  font-size: 0.68rem;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  background: ${p => (p.$level === 5 ? '#ef4444' : p.$level >= 3 ? '#1e293b' : 'rgba(239, 68, 68, 0.12)')};
+  color: ${p => (p.$level >= 3 ? '#ffffff' : '#ef4444')};
 `;
 
 export const SectionTitle = styled.div`
@@ -104,6 +124,24 @@ export const SelectBtn = styled.button<{ $selected: boolean }>`
   &:hover {
     background: ${p => (p.$selected ? 'rgba(239, 68, 68, 0.18)' : 'var(--border-color, #e2e8f0)')};
     color: #ef4444;
+  }
+`;
+
+export const RoleSelectBox = styled.select`
+  width: 100%;
+  padding: 7px 10px;
+  border-radius: 8px;
+  border: 1px solid var(--border-color, #e2e8f0);
+  background: var(--bg-secondary, #f8fafc);
+  color: var(--text-primary, #1e293b);
+  font-size: 0.78rem;
+  font-weight: 700;
+  outline: none;
+  cursor: pointer;
+  transition: border-color 0.15s ease;
+
+  &:focus {
+    border-color: #ef4444;
   }
 `;
 

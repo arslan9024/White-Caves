@@ -1,7 +1,7 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 import React from 'react';
 import { render, screen, fireEvent } from '@testing-library/react';
-import { UserRoleProvider, useUserRole } from './UserRoleContext';
+import { UserRoleProvider, useUserRole, ALL_SOVEREIGN_ROLES } from './UserRoleContext';
 
 const mockStorage: Record<string, any> = {};
 vi.mock('../utils/safeStorage', () => ({
@@ -38,9 +38,11 @@ const TestComponent = () => {
     isAuthenticated,
     isManagingDirector,
     isFounder,
+    allRoles,
     hasPermission,
     hasMinAccessLevel,
     login,
+    loginAsRole,
     logout,
     switchRole,
     setAccessLevel,
@@ -54,6 +56,7 @@ const TestComponent = () => {
       <span data-testid="is-authenticated">{String(isAuthenticated)}</span>
       <span data-testid="is-md">{String(isManagingDirector)}</span>
       <span data-testid="is-founder">{String(isFounder)}</span>
+      <span data-testid="roles-count">{allRoles.length}</span>
       <span data-testid="has-admin-perm">{String(hasPermission('can_admin'))}</span>
       <span data-testid="has-min-l4">{String(hasMinAccessLevel(4))}</span>
 
@@ -84,6 +87,22 @@ const TestComponent = () => {
         Login Founder
       </button>
 
+      <button data-testid="login-tenant-btn" onClick={() => loginAsRole('tenant')}>
+        Login As Tenant
+      </button>
+
+      <button data-testid="login-landlord-btn" onClick={() => loginAsRole('landlord')}>
+        Login As Landlord
+      </button>
+
+      <button data-testid="login-buyer-btn" onClick={() => loginAsRole('buyer')}>
+        Login As Buyer
+      </button>
+
+      <button data-testid="login-supervisor-btn" onClick={() => loginAsRole('supervisor')}>
+        Login As Supervisor
+      </button>
+
       <button data-testid="switch-role-btn" onClick={() => switchRole('manager')}>
         Switch To Manager
       </button>
@@ -99,7 +118,7 @@ const TestComponent = () => {
   );
 };
 
-describe('UserRoleContext & Provider', () => {
+describe('UserRoleContext & 14-Role Sovereign Registry', () => {
   beforeEach(() => {
     Object.keys(mockStorage).forEach(k => delete mockStorage[k]);
   });
@@ -116,6 +135,7 @@ describe('UserRoleContext & Provider', () => {
     expect(screen.getByTestId('access-level').textContent).toBe('1');
     expect(screen.getByTestId('is-authenticated').textContent).toBe('false');
     expect(screen.getByTestId('is-md').textContent).toBe('false');
+    expect(screen.getByTestId('roles-count').textContent).toBe('14');
   });
 
   it('logs in standard broker and updates accessLevel', () => {
@@ -150,6 +170,34 @@ describe('UserRoleContext & Provider', () => {
     expect(screen.getByTestId('is-founder').textContent).toBe('true');
     expect(screen.getByTestId('has-admin-perm').textContent).toBe('true');
     expect(screen.getByTestId('has-min-l4').textContent).toBe('true');
+  });
+
+  it('supports 1-click single-role login for client and corporate channels', () => {
+    render(
+      <UserRoleProvider>
+        <TestComponent />
+      </UserRoleProvider>
+    );
+
+    // 1. Tenant Login
+    fireEvent.click(screen.getByTestId('login-tenant-btn'));
+    expect(screen.getByTestId('user-role').textContent).toBe('tenant');
+    expect(screen.getByTestId('access-level').textContent).toBe('1');
+    expect(screen.getByTestId('is-authenticated').textContent).toBe('true');
+
+    // 2. Landlord Login
+    fireEvent.click(screen.getByTestId('login-landlord-btn'));
+    expect(screen.getByTestId('user-role').textContent).toBe('landlord');
+    expect(screen.getByTestId('access-level').textContent).toBe('2');
+
+    // 3. Buyer Login
+    fireEvent.click(screen.getByTestId('login-buyer-btn'));
+    expect(screen.getByTestId('user-role').textContent).toBe('buyer');
+
+    // 4. Supervisor Login
+    fireEvent.click(screen.getByTestId('login-supervisor-btn'));
+    expect(screen.getByTestId('user-role').textContent).toBe('supervisor');
+    expect(screen.getByTestId('access-level').textContent).toBe('3');
   });
 
   it('allows switching role and setting access level', () => {

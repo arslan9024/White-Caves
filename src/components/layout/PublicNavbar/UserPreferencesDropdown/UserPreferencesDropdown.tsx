@@ -10,21 +10,31 @@ import {
   DropdownContainer,
   UserHeader,
   UserDetails,
+  RoleBadge,
   SectionTitle,
   ButtonGrid,
   SelectBtn,
+  RoleSelectBox,
   LinksGroup,
   MenuLinkBtn,
 } from './styles/UserPreferencesDropdown.style';
 import { type ThemeMode } from '../../../../context/ThemeContext';
 import { type LanguageType } from '../../../../context/LanguageContext';
 import { type CurrencyCode } from '../../../../context/CurrencyContext';
+import { type UserRole } from '../../../../context/UserRoleContext';
 
 export interface UserPreferencesDropdownProps extends UseUserPreferencesDropdownProps {}
 
 export const UserPreferencesDropdown: FC<UserPreferencesDropdownProps> = ({ user, onClose }) => {
   const {
     dropdownRef,
+    user: activeUser,
+    currentRole,
+    accessLevel,
+    isFounder,
+    isManagingDirector,
+    allRoles,
+    roleLabels,
     themeMode,
     setThemeMode,
     language,
@@ -36,12 +46,13 @@ export const UserPreferencesDropdown: FC<UserPreferencesDropdownProps> = ({ user
     themeItems,
     handleNavigate,
     handleLogout,
+    handleSelectRole,
   } = useUserPreferencesDropdownLogic({ user, onClose });
 
   const avatar =
-    user?.photoURL ||
+    activeUser?.photoURL ||
     'https://ui-avatars.com/api/?name=' +
-      encodeURIComponent(user?.name || PREFERENCE_LABELS.guestName) +
+      encodeURIComponent(activeUser?.name || PREFERENCE_LABELS.guestName) +
       '&background=EF4444&color=fff';
 
   return (
@@ -50,8 +61,11 @@ export const UserPreferencesDropdown: FC<UserPreferencesDropdownProps> = ({ user
       <UserHeader>
         <img src={avatar} alt="User Avatar" />
         <UserDetails>
-          <h4>{user?.name || PREFERENCE_LABELS.guestName}</h4>
-          <p>{user?.email || user?.role || PREFERENCE_LABELS.guestRole}</p>
+          <h4>{activeUser?.name || PREFERENCE_LABELS.guestName}</h4>
+          <p>{activeUser?.email || activeUser?.role || PREFERENCE_LABELS.guestRole}</p>
+          <RoleBadge $level={accessLevel} data-testid="active-role-badge">
+            {isFounder ? '👑 Founder (L5)' : `L${accessLevel} · ${roleLabels[currentRole] || currentRole}`}
+          </RoleBadge>
         </UserDetails>
       </UserHeader>
 
@@ -102,6 +116,38 @@ export const UserPreferencesDropdown: FC<UserPreferencesDropdownProps> = ({ user
           </SelectBtn>
         ))}
       </ButtonGrid>
+
+      {/* 4. 14-Role Sovereign Simulator */}
+      <SectionTitle>
+        <span>🏛️ Operational Role / Portal</span>
+        <span style={{ fontSize: '0.65rem', color: '#ef4444' }}>14-Role Matrix</span>
+      </SectionTitle>
+      <RoleSelectBox
+        value={currentRole}
+        onChange={e => handleSelectRole(e.target.value as UserRole)}
+        data-testid="role-simulator-select"
+      >
+        <optgroup label="Tier 1: Internal Corporate Machinery">
+          <option value="managing_director">👑 Managing Director (L5 Sovereign)</option>
+          <option value="manager">📊 Department Manager (L4)</option>
+          <option value="supervisor">⚡ Team Supervisor (L3)</option>
+          <option value="agent">💼 Licensed Broker (L2)</option>
+          <option value="intern">🎓 Corporate Intern (L1)</option>
+        </optgroup>
+        <optgroup label="Tier 2: Paired Client Portals">
+          <option value="tenant">🔑 Leasing Tenant (Client L1)</option>
+          <option value="landlord">🏢 Property Landlord (Asset Owner L2)</option>
+          <option value="buyer">🏡 Secondary Buyer (Client L1)</option>
+          <option value="seller">📜 Property Seller (Mandate L1)</option>
+          <option value="offplan_buyer">🏗️ Off-Plan Purchaser (HNWI L1)</option>
+          <option value="developer">🏙️ Primary Developer Partner (L2)</option>
+        </optgroup>
+        <optgroup label="Tier 3: Strategic Partners & Public">
+          <option value="conveyancer">⚖️ DLD Conveyancer / Trustee (L2)</option>
+          <option value="contractor">🛠️ Maintenance Contractor (L2)</option>
+          <option value="guest">🌐 Executive Guest (Public L1)</option>
+        </optgroup>
+      </RoleSelectBox>
 
       {/* Links & Actions */}
       <LinksGroup>

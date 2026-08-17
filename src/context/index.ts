@@ -4,7 +4,7 @@
  * 1. ThemeContext — Light / Dark / System luxury styling
  * 2. LanguageContext — English / Arabic / Spanish / Russian (LTR/RTL)
  * 3. CurrencyContext — AED / USD / EUR / GBP real-time FX
- * 4. UserRoleContext — Global User Profile, Role, Access Level & Sovereign Founder Bypass
+ * 4. UserRoleContext — 14-Role Sovereign Registry & Global RBAC Authority
  */
 
 // 1. Theme Context
@@ -20,8 +20,19 @@ export { CurrencyContext, CurrencyProvider, useGlobalCurrency, SUPPORTED_CURRENC
 export type { CurrencyCode, CurrencyItem, CurrencyContextType } from './CurrencyContext';
 
 // 4. User Role & Auth Context
-export { UserRoleContext, UserRoleProvider, useUserRole, ROLE_DEFAULT_LEVELS, ROLE_LABELS } from './UserRoleContext';
-export type { UserRole, AccessLevel, UserProfile, UserRoleContextType } from './UserRoleContext';
+export {
+  UserRoleContext,
+  UserRoleProvider,
+  useUserRole,
+  ALL_SOVEREIGN_ROLES,
+  ROLE_DEFAULT_LEVELS,
+  ROLE_LABELS,
+  ROLE_DESCRIPTIONS,
+  ROLE_TIERS,
+  ROLE_DEFAULT_PERMISSIONS,
+  DEMO_ROLE_PROFILES,
+} from './UserRoleContext';
+export type { UserRole, AccessLevel, RoleTier, UserProfile, UserRoleContextType } from './UserRoleContext';
 
 // Toast Context & Hooks
 export { ToastContext, ToastProvider } from './ToastContext';
