@@ -12,6 +12,10 @@ import {
   EmiratesIdExtractedData,
   ARSLAN_MALIK_SAMPLE_EID,
 } from '../../../../services/HenryEmiratesIdScannerService';
+import {
+  DldTitleDeedExtractedData,
+  VIRIDIS_504_SAMPLE_TITLE_DEED,
+} from '../../../../services/HenryTitleDeedScannerService';
 
 export interface DocumentTemplateOption {
   id:
@@ -20,7 +24,8 @@ export interface DocumentTemplateOption {
     | 'viewing_form_autofill'
     | 'tenant_service_receipt'
     | 'landlord_mgmt_invoice'
-    | 'emirates_id_scanner';
+    | 'emirates_id_scanner'
+    | 'title_deed_scanner';
   title: string;
   category:
     | 'Leasing E-Sign'
@@ -82,6 +87,14 @@ export const DOCUMENT_TEMPLATES: DocumentTemplateOption[] = [
     icon: '🪪',
     description: 'Upload UAE Resident ID (Front & Back). Extracts 18 discrete fields, MRZ, and exports variables.',
     badge: 'ICP AI Scanner',
+  },
+  {
+    id: 'title_deed_scanner',
+    title: '7. DLD Title Deed AI Optical Scanner & Ingestion',
+    category: 'AI Optical Scanner',
+    icon: '📜',
+    description: 'Upload DLD Title Deed. Extracts 22+ fields (Unit, Areas, Owner, Contract No, Price AED & words).',
+    badge: 'DLD AI Scanner',
   },
 ];
 
@@ -197,3 +210,4 @@ export const DEMO_LANDLORD_TAX_INVOICE: TaxReceiptPayload = {
 };
 
 export const DEFAULT_EID_DATA: EmiratesIdExtractedData = ARSLAN_MALIK_SAMPLE_EID;
+export const DEFAULT_TITLE_DEED_DATA: DldTitleDeedExtractedData = VIRIDIS_504_SAMPLE_TITLE_DEED;

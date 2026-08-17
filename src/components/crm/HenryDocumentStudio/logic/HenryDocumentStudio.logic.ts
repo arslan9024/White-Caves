@@ -11,6 +11,7 @@ import {
   DEMO_TENANT_TAX_RECEIPT,
   DEMO_LANDLORD_TAX_INVOICE,
   DEFAULT_EID_DATA,
+  DEFAULT_TITLE_DEED_DATA,
   DocumentTemplateOption,
 } from '../data/HenryDocumentStudio.data';
 import henryPdfEngineService, {
@@ -23,9 +24,12 @@ import henryPdfEngineService, {
 import henryEmiratesIdScannerService, {
   EmiratesIdExtractedData,
 } from '../../../../services/HenryEmiratesIdScannerService';
+import henryTitleDeedScannerService, {
+  DldTitleDeedExtractedData,
+} from '../../../../services/HenryTitleDeedScannerService';
 
 export function useHenryDocumentStudioLogic() {
-  const [selectedTemplateId, setSelectedTemplateId] = useState<DocumentTemplateOption['id']>('emirates_id_scanner');
+  const [selectedTemplateId, setSelectedTemplateId] = useState<DocumentTemplateOption['id']>('title_deed_scanner');
   const [tenancyPayload, setTenancyPayload] = useState<TenancyContractPayload>(DEMO_TENANCY_PAYLOAD);
   const [ejariRecord, setEjariRecord] = useState<GovernmentEjariRecord>(DEMO_EJARI_RECORD);
   const [viewingPayload, setViewingPayload] = useState<ViewingFormPayload>(DEMO_VIEWING_PAYLOAD);
@@ -34,6 +38,9 @@ export function useHenryDocumentStudioLogic() {
   
   // Emirates ID Scanner State
   const [eidData, setEidData] = useState<EmiratesIdExtractedData>(DEFAULT_EID_DATA);
+  // Title Deed Scanner State
+  const [titleDeedData, setTitleDeedData] = useState<DldTitleDeedExtractedData>(DEFAULT_TITLE_DEED_DATA);
+  
   const [isScanning, setIsScanning] = useState<boolean>(false);
   const [actionSuccessMessage, setActionSuccessMessage] = useState<string | null>(null);
 
@@ -55,7 +62,8 @@ export function useHenryDocumentStudioLogic() {
       case 'landlord_mgmt_invoice':
         return henryPdfEngineService.generateTaxReceiptHtml(landlordInvoicePayload);
       case 'emirates_id_scanner':
-        return ''; // Handled by custom interactive React inspector view
+      case 'title_deed_scanner':
+        return ''; // Handled by custom interactive React inspector views
       default:
         return henryPdfEngineService.generateTenancyContractHtml(tenancyPayload, annotations);
     }
@@ -108,6 +116,20 @@ export function useHenryDocumentStudioLogic() {
     }
   }, []);
 
+  // Scan or Rescan Title Deed
+  const handleScanTitleDeed = useCallback(async (file?: File) => {
+    setIsScanning(true);
+    setActionSuccessMessage(null);
+    try {
+      const result = await henryTitleDeedScannerService.scanTitleDeed(file || 'sample');
+      setTitleDeedData(result);
+      setActionSuccessMessage('DLD Title Deed successfully scanned! 22+ fields extracted & verified.');
+      setTimeout(() => setActionSuccessMessage(null), 4000);
+    } finally {
+      setIsScanning(false);
+    }
+  }, []);
+
   // 1-Click Auto-Fill Tenancy Lease as Tenant
   const handleAutoFillAsTenant = useCallback(() => {
     setTenancyPayload((prev) => ({
@@ -129,6 +151,14 @@ export function useHenryDocumentStudioLogic() {
     setActionSuccessMessage(`Tenancy Lease auto-filled with ${eidData.fullNameEn} as Landlord!`);
     setTimeout(() => setActionSuccessMessage(null), 4000);
   }, [eidData]);
+
+  // 1-Click Auto-Fill Tenancy Lease from Title Deed (Property & Landlord)
+  const handleAutoFillTenancyFromTitleDeed = useCallback(() => {
+    setTenancyPayload((prev) => henryTitleDeedScannerService.toTenancyContractPayload(titleDeedData, prev));
+    setSelectedTemplateId('tenancy_contract_esign');
+    setActionSuccessMessage(`Tenancy Lease updated with ${titleDeedData.buildingNameEn} Unit ${titleDeedData.propertyNumber} and Landlord ${titleDeedData.ownerNameEn}!`);
+    setTimeout(() => setActionSuccessMessage(null), 4000);
+  }, [titleDeedData]);
 
   // 1-Click Auto-Fill Form B Viewing Register
   const handleAutoFillViewingForm = useCallback(() => {
@@ -152,6 +182,28 @@ export function useHenryDocumentStudioLogic() {
     setTimeout(() => setActionSuccessMessage(null), 4000);
   }, [eidData]);
 
+  // Export Title Deed JSON Variables to Clipboard
+  const handleCopyTitleDeedJsonVariables = useCallback(() => {
+    const jsonStr = henryTitleDeedScannerService.exportToJsonString(titleDeedData);
+    if (navigator && navigator.clipboard) {
+      navigator.clipboard.writeText(jsonStr);
+    }
+    setActionSuccessMessage('All 22 DLD Title Deed variables copied to clipboard as JSON!');
+    setTimeout(() => setActionSuccessMessage(null), 4000);
+  }, [titleDeedData]);
+
+  // Create CRM Property Listing from Title Deed
+  const handleCreateCrmListing = useCallback(() => {
+    setActionSuccessMessage(`Created CRM Inventory Listing for ${titleDeedData.buildingNameEn} Unit ${titleDeedData.propertyNumber}!`);
+    setTimeout(() => setActionSuccessMessage(null), 4000);
+  }, [titleDeedData]);
+
+  // Auto-Fill Form A Seller Mandate from Title Deed
+  const handleAutoFillFormA = useCallback(() => {
+    setActionSuccessMessage(`Form A Seller Mandate auto-filled for ${titleDeedData.ownerNameEn}!`);
+    setTimeout(() => setActionSuccessMessage(null), 4000);
+  }, [titleDeedData]);
+
   return {
     templates: DOCUMENT_TEMPLATES,
     selectedTemplateId,
@@ -163,6 +215,7 @@ export function useHenryDocumentStudioLogic() {
     tenantReceiptPayload,
     landlordInvoicePayload,
     eidData,
+    titleDeedData,
     isScanning,
     actionSuccessMessage,
     compiledHtml,
@@ -174,9 +227,14 @@ export function useHenryDocumentStudioLogic() {
     handleCopyEsignLink,
     handleTriggerAiAutoFill,
     handleScanEmiratesId,
+    handleScanTitleDeed,
     handleAutoFillAsTenant,
     handleAutoFillAsLandlord,
+    handleAutoFillTenancyFromTitleDeed,
     handleAutoFillViewingForm,
     handleCopyJsonVariables,
+    handleCopyTitleDeedJsonVariables,
+    handleCreateCrmListing,
+    handleAutoFillFormA,
   };
 }
