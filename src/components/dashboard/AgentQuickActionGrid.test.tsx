@@ -1,11 +1,11 @@
 import { describe, it, expect } from 'vitest';
 import React from 'react';
 import { render } from '@testing-library/react';
-import AgentQuickActionGrid from './AgentQuickActionGrid';
+import DashboardModuleGrid from './DashboardModuleGrid';
 
-describe('AgentQuickActionGrid Component', () => {
+describe('DashboardModuleGrid Component', () => {
   it('renders without crashing', () => {
-    const { container } = render(<AgentQuickActionGrid />);
+    const { container } = render(<DashboardModuleGrid modulesByZone={[]} />);
     expect(container).toBeDefined();
   });
 });

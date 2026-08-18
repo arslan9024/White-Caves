@@ -27,6 +27,26 @@ vi.mock('../../utils/authFetch', () => ({
   authFetch: (...args: unknown[]) => mockAuthFetch(...args),
 }));
 
+const translationDict: Record<string, string> = {
+  'agent.leasing.pipeline': 'Leasing Pipeline',
+  'agent.leasing.properties': 'Leasing Properties',
+  'agent.leasing.contracts': 'Lease Contracts',
+  'agent.leasing.viewings': 'Leasing Viewings',
+  'agent.leasing.applications': 'Tenant Applications',
+  'agent.leasing.renewals': 'Lease Renewals',
+  'agent.sales.pipeline': 'Sales Pipeline',
+  'agent.sales.leads': 'Sales Leads',
+  'agent.sales.deals': 'Active Deals',
+  'agent.sales.performance': 'Agent Performance',
+};
+
+vi.mock('../../context/TranslationContext', () => ({
+  useTranslation: () => ({
+    t: (key: string) => translationDict[key] || key,
+  }),
+  Text: ({ tid }: { tid: string }) => <span>{translationDict[tid] || tid}</span>,
+}));
+
 function jsonRes(body: unknown) {
   return { ok: true, status: 200, json: () => Promise.resolve(body) } as unknown as Response;
 }
