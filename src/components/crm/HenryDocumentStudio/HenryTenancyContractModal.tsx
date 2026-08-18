@@ -88,7 +88,21 @@ export const HenryTenancyContractModal: FC<HenryTenancyContractModalProps> = ({
     handlePrint,
     handleZoomIn,
     handleZoomOut,
+    handleFileUpload,
   } = useHenryTenancyContractModalLogic({ isOpen, onClose, initialData });
+
+  const masterFileInputRef = React.useRef<HTMLInputElement>(null);
+  const deedFileInputRef = React.useRef<HTMLInputElement>(null);
+  const ownerFileInputRef = React.useRef<HTMLInputElement>(null);
+  const tenantFileInputRef = React.useRef<HTMLInputElement>(null);
+
+  const onFileSelect = (e: React.ChangeEvent<HTMLInputElement>, docType: any = 'auto') => {
+    const file = e.target.files?.[0];
+    if (file) {
+      handleFileUpload(file, docType);
+      e.target.value = ''; // Reset input
+    }
+  };
 
   if (!isOpen) return null;
 
@@ -100,6 +114,36 @@ export const HenryTenancyContractModal: FC<HenryTenancyContractModalProps> = ({
         exit={{ opacity: 0 }}
         onClick={onClose}
       >
+        {/* Hidden File Inputs */}
+        <input
+          type="file"
+          ref={masterFileInputRef}
+          onChange={(e) => onFileSelect(e, 'auto')}
+          accept=".pdf,image/*,.doc,.docx"
+          style={{ display: 'none' }}
+        />
+        <input
+          type="file"
+          ref={deedFileInputRef}
+          onChange={(e) => onFileSelect(e, 'title_deed')}
+          accept=".pdf,image/*"
+          style={{ display: 'none' }}
+        />
+        <input
+          type="file"
+          ref={ownerFileInputRef}
+          onChange={(e) => onFileSelect(e, 'emirates_id_landlord')}
+          accept=".pdf,image/*"
+          style={{ display: 'none' }}
+        />
+        <input
+          type="file"
+          ref={tenantFileInputRef}
+          onChange={(e) => onFileSelect(e, 'emirates_id_tenant')}
+          accept=".pdf,image/*"
+          style={{ display: 'none' }}
+        />
+
         <ModalContainer
           initial={{ scale: 0.95, opacity: 0 }}
           animate={{ scale: 1, opacity: 1 }}
@@ -122,6 +166,14 @@ export const HenryTenancyContractModal: FC<HenryTenancyContractModalProps> = ({
             </div>
 
             <div className="header-actions">
+              <HeaderBtn
+                $variant="primary"
+                onClick={() => masterFileInputRef.current?.click()}
+                title="Upload any tenancy contract PDF/image or document to auto-extract and fill template"
+                style={{ background: 'linear-gradient(135deg, #EF4444, #DC2626)', color: '#FFF' }}
+              >
+                <UploadCloud size={14} /> Upload Doc & Fill Template
+              </HeaderBtn>
               <HeaderBtn onClick={handleResetToBlank} title="Reset to empty official blank template">
                 <RotateCcw size={14} /> Blank Template
               </HeaderBtn>
@@ -249,23 +301,34 @@ export const HenryTenancyContractModal: FC<HenryTenancyContractModalProps> = ({
                 {/* ── STAGE 1: PROPERTY SPECIFICATIONS ── */}
                 {activeStep === 1 && (
                   <div>
-                    <OcrDropzone onClick={handleScanTitleDeed}>
+                    <OcrDropzone onClick={() => deedFileInputRef.current?.click()}>
                       <UploadCloud size={28} color="#EF4444" style={{ margin: '0 auto 8px auto' }} />
                       <div className="dropzone-title">Upload & Ingest DLD Title Deed</div>
                       <div className="dropzone-desc">
-                        Drag and drop official Title Deed PDF/image or click to extract Building, Unit #, Area SqM, Plot & DEWA premise automatically.
+                        Drag and drop official Title Deed PDF/image or click to browse files and extract Building, Unit #, Area SqM, Plot & DEWA premise automatically.
                       </div>
-                      <HeaderBtn
-                        $variant="primary"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          handleScanTitleDeed();
-                        }}
-                        disabled={isProcessingOcr}
-                        style={{ margin: '0 auto' }}
-                      >
-                        <Sparkles size={14} /> {isProcessingOcr ? 'Scanning Title Deed...' : '1-Click Scan & Extract Title Deed'}
-                      </HeaderBtn>
+                      <div style={{ display: 'flex', gap: '8px', justifyContent: 'center', marginTop: '8px' }}>
+                        <HeaderBtn
+                          $variant="primary"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            deedFileInputRef.current?.click();
+                          }}
+                          disabled={isProcessingOcr}
+                        >
+                          <UploadCloud size={14} /> Upload Title Deed File
+                        </HeaderBtn>
+                        <HeaderBtn
+                          $variant="secondary"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleScanTitleDeed();
+                          }}
+                          disabled={isProcessingOcr}
+                        >
+                          <Sparkles size={14} /> 1-Click Sample Ingestion
+                        </HeaderBtn>
+                      </div>
                     </OcrDropzone>
 
                     <h4 style={{ margin: '0 0 1rem 0', color: '#EF4444', fontSize: '0.95rem', fontWeight: 800 }}>
@@ -369,6 +432,39 @@ export const HenryTenancyContractModal: FC<HenryTenancyContractModalProps> = ({
                 {/* ── STAGE 2: PROPERTY OWNER / LESSOR DETAILS ── */}
                 {activeStep === 2 && (
                   <div>
+                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px', marginBottom: '1.25rem' }}>
+                      <OcrDropzone onClick={() => ownerFileInputRef.current?.click()}>
+                        <UploadCloud size={24} color="#EF4444" style={{ margin: '0 auto 6px auto' }} />
+                        <div className="dropzone-title" style={{ fontSize: '0.85rem' }}>Upload Landlord Emirates ID / Passport</div>
+                        <HeaderBtn
+                          $variant="secondary"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            ownerFileInputRef.current?.click();
+                          }}
+                          disabled={isProcessingOcr}
+                          style={{ margin: '6px auto 0 auto', fontSize: '0.75rem', padding: '4px 10px' }}
+                        >
+                          <UploadCloud size={12} /> Browse Landlord ID File
+                        </HeaderBtn>
+                      </OcrDropzone>
+                      <OcrDropzone onClick={() => masterFileInputRef.current?.click()}>
+                        <UploadCloud size={24} color="#F59E0B" style={{ margin: '0 auto 6px auto' }} />
+                        <div className="dropzone-title" style={{ fontSize: '0.85rem' }}>Upload Ownership Deed / Contract</div>
+                        <HeaderBtn
+                          $variant="secondary"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            masterFileInputRef.current?.click();
+                          }}
+                          disabled={isProcessingOcr}
+                          style={{ margin: '6px auto 0 auto', fontSize: '0.75rem', padding: '4px 10px' }}
+                        >
+                          <UploadCloud size={12} /> Browse File
+                        </HeaderBtn>
+                      </OcrDropzone>
+                    </div>
+
                     <h4 style={{ margin: '0 0 1rem 0', color: '#EF4444', fontSize: '0.95rem', fontWeight: 800 }}>
                       Stage 2: Property Owner & Lessor Contacts (معلومات المالك / المؤجر)
                     </h4>
@@ -454,36 +550,62 @@ export const HenryTenancyContractModal: FC<HenryTenancyContractModalProps> = ({
                 {activeStep === 3 && (
                   <div>
                     <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px', marginBottom: '1.25rem' }}>
-                      <OcrDropzone onClick={handleScanTenantEmiratesId}>
+                      <OcrDropzone onClick={() => tenantFileInputRef.current?.click()}>
                         <UploadCloud size={24} color="#38BDF8" style={{ margin: '0 auto 6px auto' }} />
-                        <div className="dropzone-title" style={{ fontSize: '0.85rem' }}>Scan Tenant Emirates ID</div>
-                        <HeaderBtn
-                          $variant="secondary"
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            handleScanTenantEmiratesId();
-                          }}
-                          disabled={isProcessingOcr}
-                          style={{ margin: '6px auto 0 auto', fontSize: '0.75rem', padding: '4px 10px' }}
-                        >
-                          <Sparkles size={12} /> Scan EID
-                        </HeaderBtn>
+                        <div className="dropzone-title" style={{ fontSize: '0.85rem' }}>Upload Tenant Emirates ID</div>
+                        <div style={{ display: 'flex', gap: '6px', justifyContent: 'center', marginTop: '6px' }}>
+                          <HeaderBtn
+                            $variant="secondary"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              tenantFileInputRef.current?.click();
+                            }}
+                            disabled={isProcessingOcr}
+                            style={{ fontSize: '0.75rem', padding: '4px 8px' }}
+                          >
+                            <UploadCloud size={12} /> Browse File
+                          </HeaderBtn>
+                          <HeaderBtn
+                            $variant="secondary"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              handleScanTenantEmiratesId();
+                            }}
+                            disabled={isProcessingOcr}
+                            style={{ fontSize: '0.75rem', padding: '4px 8px' }}
+                          >
+                            <Sparkles size={12} /> Sample
+                          </HeaderBtn>
+                        </div>
                       </OcrDropzone>
 
-                      <OcrDropzone onClick={handleScanTenantPassport}>
-                        <UploadCloud size={24} color="#F59E0B" style={{ margin: '0 auto 6px auto' }} />
-                        <div className="dropzone-title" style={{ fontSize: '0.85rem' }}>Scan Tenant Passport</div>
-                        <HeaderBtn
-                          $variant="secondary"
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            handleScanTenantPassport();
-                          }}
-                          disabled={isProcessingOcr}
-                          style={{ margin: '6px auto 0 auto', fontSize: '0.75rem', padding: '4px 10px' }}
-                        >
-                          <Sparkles size={12} /> Scan Passport
-                        </HeaderBtn>
+                      <OcrDropzone onClick={() => tenantFileInputRef.current?.click()}>
+                        <UploadCloud size={24} color="#10B981" style={{ margin: '0 auto 6px auto' }} />
+                        <div className="dropzone-title" style={{ fontSize: '0.85rem' }}>Upload Tenant Passport</div>
+                        <div style={{ display: 'flex', gap: '6px', justifyContent: 'center', marginTop: '6px' }}>
+                          <HeaderBtn
+                            $variant="secondary"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              tenantFileInputRef.current?.click();
+                            }}
+                            disabled={isProcessingOcr}
+                            style={{ fontSize: '0.75rem', padding: '4px 8px' }}
+                          >
+                            <UploadCloud size={12} /> Browse File
+                          </HeaderBtn>
+                          <HeaderBtn
+                            $variant="secondary"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              handleScanTenantPassport();
+                            }}
+                            disabled={isProcessingOcr}
+                            style={{ fontSize: '0.75rem', padding: '4px 8px' }}
+                          >
+                            <Sparkles size={12} /> Sample
+                          </HeaderBtn>
+                        </div>
                       </OcrDropzone>
                     </div>
 

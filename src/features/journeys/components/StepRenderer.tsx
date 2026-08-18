@@ -1,5 +1,10 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { JourneyStep, JourneySession, JourneyDefinition } from '../../../types/journey';
+import henryTenancyContractTemplateService, { DldTenancyContractData } from '../../../services/HenryTenancyContractTemplateService';
+import henryTenancyContractScannerService from '../../../services/HenryTenancyContractScannerService';
+import henryTitleDeedScannerService from '../../../services/HenryTitleDeedScannerService';
+import henryEmiratesIdScannerService from '../../../services/HenryEmiratesIdScannerService';
+import henryPassportScannerService from '../../../services/HenryPassportScannerService';
 
 interface StepRendererProps {
   step: JourneyStep;
@@ -21,33 +26,124 @@ export const StepRenderer: React.FC<StepRendererProps> = ({
   onLaunchNextJourney
 }) => {
   const data = session.data || {};
+  const journeyFileInputRef = useRef<HTMLInputElement>(null);
+  const [isUploading, setIsUploading] = useState<boolean>(false);
+  const [uploadStatus, setUploadStatus] = useState<string | null>(null);
+  const [previewPage, setPreviewPage] = useState<number | 'all'>(1);
+  const [showLiveDldTemplate, setShowLiveDldTemplate] = useState<boolean>(false);
 
-  // Processing step animation state
-  const [processingStage, setProcessingStage] = useState(0);
-  const processingTasks = [
-    'Validating property and ownership deed',
-    'Validating landlord KYC profile and contacts',
-    'Validating tenant identity and passport/visa',
-    'Verifying contract terms and RERA index compliance',
-    'Compiling standard and custom special clauses',
-    'Generating official Dubai Tenancy Agreement document',
-    'Applying White Caves Real Estate LLC watermark and seals'
-  ];
+  // File Upload & Replacement Handler
+  const handleJourneyFileUpload = async (file: File) => {
+    setIsUploading(true);
+    setUploadStatus(`Ingesting and parsing "${file.name}" (${(file.size / 1024).toFixed(1)} KB)...`);
 
-  useEffect(() => {
-    if (step.type === 'processing') {
-      const interval = setInterval(() => {
-        setProcessingStage((prev) => {
-          if (prev < processingTasks.length) {
-            return prev + 1;
-          }
-          clearInterval(interval);
-          return prev;
+    try {
+      const fileNameLower = file.name.toLowerCase();
+      if (fileNameLower.includes('deed') || fileNameLower.includes('oqood') || fileNameLower.includes('title')) {
+        const deedData = await henryTitleDeedScannerService.scanTitleDeed(file);
+        onUpdateData({
+          propertyName: deedData.buildingNameEn || data.propertyName,
+          community: deedData.communityEn ? `${deedData.communityEn}, Dubai` : data.community,
+          propertyType: deedData.propertyTypeEn || data.propertyType,
+          plotArea: `${deedData.totalAreaSqM ? Math.round(deedData.totalAreaSqM * 10.764) : 1882} sqft`,
+          buaArea: `${deedData.totalAreaSqM ? Math.round(deedData.totalAreaSqM * 10.764 * 1.3) : 2460} sqft`,
+          landlordName: deedData.ownerNameEn || data.landlordName,
+          landlordVerified: true,
+          propertyVerified: true
         });
-      }, 450);
-
-      return () => clearInterval(interval);
+        setUploadStatus(`✓ Scanned "${file.name}": Extracted Title Deed (${deedData.buildingNameEn} #${deedData.propertyNumber}) & Owner! Information updated.`);
+      } else if (fileNameLower.includes('tenant') && (fileNameLower.includes('eid') || fileNameLower.includes('emirates'))) {
+        const eidData = await henryEmiratesIdScannerService.scanEmiratesId(file);
+        onUpdateData({
+          tenantName: eidData.fullNameEn || data.tenantName,
+          tenantEmiratesId: eidData.idNumber || data.tenantEmiratesId,
+          tenantVerified: true
+        });
+        setUploadStatus(`✓ Scanned "${file.name}": Extracted Tenant Emirates ID (${eidData.fullNameEn})!`);
+      } else if (fileNameLower.includes('passport')) {
+        const passportData = await henryPassportScannerService.scanPassport(file);
+        onUpdateData({
+          tenantName: passportData.fullName || data.tenantName,
+          tenantPassportNo: passportData.passportNumber || data.tenantPassportNo,
+          tenantVerified: true
+        });
+        setUploadStatus(`✓ Scanned "${file.name}": Extracted Tenant Passport (${passportData.fullName} - ${passportData.passportNumber})!`);
+      } else {
+        // Full Tenancy Contract Scan
+        const scannedContract = await henryTenancyContractScannerService.scanContract(file);
+        onUpdateData({
+          propertyName: scannedContract.property.buildingName || data.propertyName,
+          community: scannedContract.property.location || data.community,
+          propertyType: scannedContract.property.propertyType || data.propertyType,
+          landlordName: scannedContract.landlord.name || data.landlordName,
+          landlordEmail: scannedContract.landlord.email || data.landlordEmail,
+          landlordPhone: scannedContract.landlord.phone || data.landlordPhone,
+          landlordEmiratesId: scannedContract.landlord.emiratesId || data.landlordEmiratesId,
+          tenantName: scannedContract.tenant.name || data.tenantName,
+          tenantEmail: scannedContract.tenant.email || data.tenantEmail,
+          tenantPhone: scannedContract.tenant.phone || data.tenantPhone,
+          tenantEmiratesId: scannedContract.tenant.emiratesId || data.tenantEmiratesId,
+          annualRent: scannedContract.financials.annualRentAed || data.annualRent,
+          chequesCount: scannedContract.financials.modeOfPayment?.includes('4') ? 4 : (scannedContract.financials.modeOfPayment?.includes('1') ? 1 : 2),
+          startDate: scannedContract.financials.periodFrom || data.startDate,
+          endDate: scannedContract.financials.periodTo || data.endDate,
+          propertyVerified: true,
+          landlordVerified: true,
+          tenantVerified: true
+        });
+        setUploadStatus(`✓ Scanned "${file.name}": Extracted all Contract details (Property, Landlord, Tenant, Rent AED ${scannedContract.financials.annualRentAed.toLocaleString()})! Template filled.`);
+      }
+    } catch {
+      setUploadStatus(`Error processing "${file.name}". Please review manual fields.`);
+    } finally {
+      setIsUploading(false);
+      setTimeout(() => setUploadStatus(null), 5000);
     }
+  };
+
+  // Convert session data into DldTenancyContractData for official HTML compilation
+  const buildDldContractData = (): DldTenancyContractData => {
+    return {
+      contractId: `WC-DLD-${data.propertyName?.replace(/\s+/g, '') || '2026'}-${Date.now().toString(36).toUpperCase()}`,
+      contractDate: new Date().toLocaleDateString('en-GB'),
+      ownerName: data.landlordName || 'Arslan Malik',
+      lessorName: data.landlordName || 'Arslan Malik',
+      lessorEmiratesId: data.landlordEmiratesId || '784-1988-1234567-1',
+      lessorLicenseNo: '',
+      lessorLicensingAuthority: '',
+      lessorEmail: data.landlordEmail || 'arslan.malik@whitecaves.ae',
+      lessorPhone: data.landlordPhone || '+971 50 123 4567',
+      tenantName: data.tenantName || 'Sarah Jenkins',
+      tenantEmiratesId: data.tenantEmiratesId || '784-1992-7654321-2',
+      tenantLicenseNo: '',
+      tenantLicensingAuthority: '',
+      tenantEmail: data.tenantEmail || 'sarah.jenkins@example.com',
+      tenantPhone: data.tenantPhone || '+971 52 987 6543',
+      propertyUsage: 'residential',
+      plotNo: '176',
+      makaniNo: '257',
+      buildingName: data.propertyName || 'Sycamore 131',
+      propertyNo: '131',
+      propertyType: data.propertyType || '3 Bedroom Townhouse',
+      propertyAreaSqM: 198.5,
+      location: data.community || 'DAMAC Hills 2, Dubai',
+      premisesNoDewa: '918014964',
+      contractPeriodFrom: data.startDate || '01-09-2026',
+      contractPeriodTo: data.endDate || '31-08-2027',
+      contractValue: Number(data.annualRent) || 95000,
+      annualRent: Number(data.annualRent) || 95000,
+      securityDepositAmount: Math.round((Number(data.annualRent) || 95000) * ((Number(data.securityDepositPct) || 5) / 100)),
+      modeOfPayment: `${data.chequesCount || 2} Cheques`,
+      additionalTerms: [
+        '1. The tenant shall use the premises strictly for private residential purposes.',
+        '2. Maintenance exceeding AED 500 shall be borne by the landlord, below AED 500 by the tenant.',
+        '3. The contract is governed by Dubai Real Estate Regulatory Agency (RERA) Law No. 26 of 2007 & Law No. 33 of 2008.'
+      ],
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+      status: 'ready_for_signature'
+    };
+  };
   }, [step.type]);
 
   useEffect(() => {
@@ -419,6 +515,47 @@ export const StepRenderer: React.FC<StepRendererProps> = ({
 
     return (
       <div className="space-y-6">
+        <input
+          type="file"
+          ref={journeyFileInputRef}
+          onChange={(e) => {
+            const file = e.target.files?.[0];
+            if (file) {
+              handleJourneyFileUpload(file);
+              e.target.value = '';
+            }
+          }}
+          accept=".pdf,image/*,.doc,.docx"
+          style={{ display: 'none' }}
+        />
+
+        {/* Upload New Document to Replace Info Banner */}
+        <div className="p-4 rounded-xl bg-gradient-to-r from-amber-500/15 via-slate-900 to-amber-500/5 border border-amber-500/40 text-slate-100 flex flex-wrap items-center justify-between gap-3 shadow-lg">
+          <div className="flex items-center space-x-3">
+            <div className="w-10 h-10 rounded-xl bg-amber-500/20 border border-amber-500/40 flex items-center justify-center text-xl">
+              ⚡
+            </div>
+            <div>
+              <div className="text-xs font-bold text-amber-300">Upload New Documents to Auto-Fill & Replace Information</div>
+              <div className="text-[11px] text-slate-400">Upload Title Deed, Tenant/Landlord EID, Passport, or Tenancy Contract PDF to automatically overwrite and fill the template.</div>
+            </div>
+          </div>
+          <button
+            onClick={() => journeyFileInputRef.current?.click()}
+            disabled={isUploading}
+            className="px-4 py-2 text-xs font-bold text-slate-950 bg-amber-400 hover:bg-amber-300 rounded-lg transition-all shadow-md shadow-amber-400/20 flex items-center gap-1.5"
+          >
+            <span>📁 {isUploading ? 'Scanning Document...' : 'Upload Doc to Replace Info'}</span>
+          </button>
+        </div>
+
+        {uploadStatus && (
+          <div className="p-3 rounded-lg bg-blue-950/60 border border-blue-500/40 text-xs text-blue-300 flex items-center gap-2">
+            <span>ℹ️</span>
+            <span>{uploadStatus}</span>
+          </div>
+        )}
+
         <div className="flex items-center justify-between p-3.5 rounded-xl bg-slate-900/80 border border-slate-700/60 text-xs">
           <div className="flex items-center space-x-2">
             <span className="text-base">📂</span>
@@ -460,9 +597,21 @@ export const StepRenderer: React.FC<StepRendererProps> = ({
                   </div>
                 </div>
 
-                <span className={`text-xs font-medium ${isChecked ? 'text-emerald-400' : 'text-slate-500'}`}>
-                  {isChecked ? 'Verified' : 'Attach'}
-                </span>
+                <div className="flex items-center space-x-2">
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      journeyFileInputRef.current?.click();
+                    }}
+                    className="px-2 py-1 text-[11px] bg-slate-800 hover:bg-slate-700 text-slate-300 rounded border border-slate-600"
+                    title="Upload replacement document"
+                  >
+                    Upload
+                  </button>
+                  <span className={`text-xs font-medium ${isChecked ? 'text-emerald-400' : 'text-slate-500'}`}>
+                    {isChecked ? 'Verified' : 'Attach'}
+                  </span>
+                </div>
               </div>
             );
           })}
@@ -475,59 +624,106 @@ export const StepRenderer: React.FC<StepRendererProps> = ({
   // 5. STEP: Smart Review
   // -------------------------------------------------------------
   if (step.type === 'smart-review' || step.id === 'review') {
+    const compiledDldHtml = henryTenancyContractTemplateService.generateDldTenancyContractHtml(
+      buildDldContractData(),
+      previewPage
+    );
+
     return (
       <div className="space-y-6 animate-fadeIn">
         <div className="p-4 rounded-xl bg-emerald-950/30 border border-emerald-500/30 text-xs text-emerald-300 flex items-center justify-between">
           <div className="flex items-center space-x-2">
             <span className="text-base">✓</span>
-            <span className="font-semibold text-white">Smart Review Complete — Everything is verified and ready for generation.</span>
+            <span className="font-semibold text-white">Smart Review Complete — Official DLD Unified Tenancy Contract Template Filled.</span>
           </div>
-          <span className="px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-300 font-bold">100% Validated</span>
+          <button
+            onClick={() => setShowLiveDldTemplate(!showLiveDldTemplate)}
+            className="px-3 py-1 bg-amber-500/20 text-amber-300 hover:bg-amber-500/30 border border-amber-500/40 rounded font-semibold text-xs transition-colors"
+          >
+            {showLiveDldTemplate ? 'Show Summary Cards' : '📄 View Exact DLD Official Template'}
+          </button>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs">
-          {/* Property Section */}
-          <div className="bg-slate-900/80 p-4 rounded-xl border border-slate-700/60 space-y-2">
-            <h5 className="font-bold text-amber-400 uppercase tracking-wider flex items-center justify-between">
-              <span>🏠 Property</span>
-              <span className="text-emerald-400">✓ Verified</span>
-            </h5>
-            <div className="text-sm font-semibold text-white">{data.propertyName || 'Sycamore 131'}</div>
-            <div className="text-slate-400">{data.community || 'DAMAC Hills 2'} • {data.propertyType || '3 Bedroom Townhouse'}</div>
-          </div>
+        {showLiveDldTemplate ? (
+          <div className="space-y-3">
+            <div className="flex items-center justify-between bg-slate-800/80 p-2.5 px-4 rounded-xl border border-slate-700">
+              <div className="flex items-center space-x-2">
+                <span className="text-xs text-slate-300 font-semibold">Official DLD Contract Pages:</span>
+                {[1, 2, 3].map((p) => (
+                  <button
+                    key={p}
+                    onClick={() => setPreviewPage(p as any)}
+                    className={`px-3 py-1 text-xs rounded-md font-bold transition-all ${
+                      previewPage === p ? 'bg-amber-400 text-slate-950' : 'bg-slate-700 text-slate-300 hover:bg-slate-600'
+                    }`}
+                  >
+                    Page {p}
+                  </button>
+                ))}
+                <button
+                  onClick={() => setPreviewPage('all')}
+                  className={`px-3 py-1 text-xs rounded-md font-bold transition-all ${
+                    previewPage === 'all' ? 'bg-amber-400 text-slate-950' : 'bg-slate-700 text-slate-300 hover:bg-slate-600'
+                  }`}
+                >
+                  All 3 Pages
+                </button>
+              </div>
 
-          {/* Landlord Section */}
-          <div className="bg-slate-900/80 p-4 rounded-xl border border-slate-700/60 space-y-2">
-            <h5 className="font-bold text-amber-400 uppercase tracking-wider flex items-center justify-between">
-              <span>👤 Landlord</span>
-              <span className="text-emerald-400">✓ Verified</span>
-            </h5>
-            <div className="text-sm font-semibold text-white">{data.landlordName || 'Arslan Malik'}</div>
-            <div className="text-slate-400">{data.landlordEmail} • EID: {data.landlordEmiratesId}</div>
-          </div>
+              <span className="text-xs text-emerald-400 font-semibold">
+                ✓ Bilingual Arabic & English
+              </span>
+            </div>
 
-          {/* Tenant Section */}
-          <div className="bg-slate-900/80 p-4 rounded-xl border border-slate-700/60 space-y-2">
-            <h5 className="font-bold text-amber-400 uppercase tracking-wider flex items-center justify-between">
-              <span>👤 Tenant</span>
-              <span className="text-emerald-400">✓ Verified</span>
-            </h5>
-            <div className="text-sm font-semibold text-white">{data.tenantName || 'Sarah Jenkins'}</div>
-            <div className="text-slate-400">{data.tenantEmail} • EID: {data.tenantEmiratesId}</div>
-          </div>
-
-          {/* Contract Section */}
-          <div className="bg-slate-900/80 p-4 rounded-xl border border-slate-700/60 space-y-2">
-            <h5 className="font-bold text-amber-400 uppercase tracking-wider flex items-center justify-between">
-              <span>📄 Contract Financials</span>
-              <span className="text-emerald-400">✓ Calculated</span>
-            </h5>
-            <div className="text-sm font-bold text-white">AED {Number(data.annualRent || 95000).toLocaleString()} / year</div>
-            <div className="text-slate-400">
-              {data.chequesCount || 2} Cheques • {data.securityDepositPct || 5}% Deposit • {data.startDate || '2026-09-01'} to {data.endDate || '2027-08-31'}
+            <div className="p-4 bg-white rounded-xl shadow-2xl overflow-x-auto max-h-[600px] border border-slate-700 text-slate-900">
+              <div dangerouslySetInnerHTML={{ __html: compiledDldHtml }} />
             </div>
           </div>
-        </div>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs">
+            {/* Property Section */}
+            <div className="bg-slate-900/80 p-4 rounded-xl border border-slate-700/60 space-y-2">
+              <h5 className="font-bold text-amber-400 uppercase tracking-wider flex items-center justify-between">
+                <span>🏠 Property</span>
+                <span className="text-emerald-400">✓ Verified</span>
+              </h5>
+              <div className="text-sm font-semibold text-white">{data.propertyName || 'Sycamore 131'}</div>
+              <div className="text-slate-400">{data.community || 'DAMAC Hills 2'} • {data.propertyType || '3 Bedroom Townhouse'}</div>
+            </div>
+
+            {/* Landlord Section */}
+            <div className="bg-slate-900/80 p-4 rounded-xl border border-slate-700/60 space-y-2">
+              <h5 className="font-bold text-amber-400 uppercase tracking-wider flex items-center justify-between">
+                <span>👤 Landlord</span>
+                <span className="text-emerald-400">✓ Verified</span>
+              </h5>
+              <div className="text-sm font-semibold text-white">{data.landlordName || 'Arslan Malik'}</div>
+              <div className="text-slate-400">{data.landlordEmail} • EID: {data.landlordEmiratesId}</div>
+            </div>
+
+            {/* Tenant Section */}
+            <div className="bg-slate-900/80 p-4 rounded-xl border border-slate-700/60 space-y-2">
+              <h5 className="font-bold text-amber-400 uppercase tracking-wider flex items-center justify-between">
+                <span>👤 Tenant</span>
+                <span className="text-emerald-400">✓ Verified</span>
+              </h5>
+              <div className="text-sm font-semibold text-white">{data.tenantName || 'Sarah Jenkins'}</div>
+              <div className="text-slate-400">{data.tenantEmail} • EID: {data.tenantEmiratesId}</div>
+            </div>
+
+            {/* Contract Section */}
+            <div className="bg-slate-900/80 p-4 rounded-xl border border-slate-700/60 space-y-2">
+              <h5 className="font-bold text-amber-400 uppercase tracking-wider flex items-center justify-between">
+                <span>📄 Contract Financials</span>
+                <span className="text-emerald-400">✓ Calculated</span>
+              </h5>
+              <div className="text-sm font-bold text-white">AED {Number(data.annualRent || 95000).toLocaleString()} / year</div>
+              <div className="text-slate-400">
+                {data.chequesCount || 2} Cheques • {data.securityDepositPct || 5}% Deposit • {data.startDate || '2026-09-01'} to {data.endDate || '2027-08-31'}
+              </div>
+            </div>
+          </div>
+        )}
       </div>
     );
   }

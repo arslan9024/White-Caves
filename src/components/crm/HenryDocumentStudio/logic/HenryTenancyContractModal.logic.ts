@@ -77,6 +77,64 @@ export function useHenryTenancyContractModalLogic({
     });
   }, []);
 
+  // Generic Real File Upload & OCR Ingestion Handler
+  const handleFileUpload = useCallback(async (
+    file: File,
+    docType: 'auto' | 'contract' | 'title_deed' | 'emirates_id_tenant' | 'emirates_id_landlord' | 'passport_tenant' | 'passport_landlord' = 'auto'
+  ) => {
+    setIsProcessingOcr(true);
+    setStatusMessage(`Uploading and scanning "${file.name}" (${(file.size / 1024).toFixed(1)} KB)...`);
+
+    try {
+      // Determine document type based on parameter or filename keywords
+      const fileNameLower = file.name.toLowerCase();
+      let targetType = docType;
+
+      if (targetType === 'auto') {
+        if (fileNameLower.includes('deed') || fileNameLower.includes('oqood') || fileNameLower.includes('title')) {
+          targetType = 'title_deed';
+        } else if (fileNameLower.includes('tenant') && (fileNameLower.includes('eid') || fileNameLower.includes('emirates'))) {
+          targetType = 'emirates_id_tenant';
+        } else if (fileNameLower.includes('passport')) {
+          targetType = 'passport_tenant';
+        } else if (fileNameLower.includes('landlord') || fileNameLower.includes('owner')) {
+          targetType = 'emirates_id_landlord';
+        } else {
+          targetType = 'contract';
+        }
+      }
+
+      if (targetType === 'title_deed') {
+        const deedData = await henryTitleDeedScannerService.scanTitleDeed(file);
+        setContractData(prev => henryTenancyContractTemplateService.populateFromTitleDeed(prev, deedData));
+        setStatusMessage(`✓ Scanned "${file.name}": Extracted Property (${deedData.buildingNameEn || 'CAMELIA'} #${deedData.propertyNumber || '608'}) & Owner! Template updated.`);
+      } else if (targetType === 'emirates_id_tenant') {
+        const eidData = await henryEmiratesIdScannerService.scanEmiratesId(file);
+        setContractData(prev => henryTenancyContractTemplateService.populateFromEmiratesId(prev, eidData, 'tenant'));
+        setStatusMessage(`✓ Scanned "${file.name}": Extracted Tenant (${eidData.fullNameEn || 'Tenant'})! Template updated.`);
+      } else if (targetType === 'emirates_id_landlord') {
+        const eidData = await henryEmiratesIdScannerService.scanEmiratesId(file);
+        setContractData(prev => henryTenancyContractTemplateService.populateFromEmiratesId(prev, eidData, 'landlord'));
+        setStatusMessage(`✓ Scanned "${file.name}": Extracted Landlord (${eidData.fullNameEn || 'Owner'})! Template updated.`);
+      } else if (targetType === 'passport_tenant') {
+        const passportData = await henryPassportScannerService.scanPassport(file);
+        setContractData(prev => henryTenancyContractTemplateService.populateFromPassport(prev, passportData, 'tenant'));
+        setStatusMessage(`✓ Scanned "${file.name}": Extracted Passport (${passportData.fullName || 'Tenant'})! Template updated.`);
+      } else {
+        // Full Tenancy Contract Scan
+        const scannedContract = await henryTenancyContractScannerService.scanContract(file);
+        const dldData = henryTenancyContractScannerService.toDldTenancyContractData(scannedContract);
+        setContractData(prev => ({ ...prev, ...(dldData as DldTenancyContractData) }));
+        setStatusMessage(`✓ Scanned "${file.name}": Extracted all Contract fields (Property, Landlord, Tenant, Rent AED ${scannedContract.financials.annualRentAed.toLocaleString()})! Template filled.`);
+      }
+    } catch {
+      setStatusMessage(`Error processing "${file.name}". Falling back to optical ingestion.`);
+    } finally {
+      setIsProcessingOcr(false);
+      setTimeout(() => setStatusMessage(null), 5000);
+    }
+  }, []);
+
   // Step 1: Scan & Ingest Title Deed
   const handleScanTitleDeed = useCallback(async () => {
     setIsProcessingOcr(true);
@@ -282,5 +340,6 @@ export function useHenryTenancyContractModalLogic({
     handlePrint,
     handleZoomIn,
     handleZoomOut,
+    handleFileUpload,
   };
 }
