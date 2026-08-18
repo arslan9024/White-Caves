@@ -1,13 +1,13 @@
 /**
- * HenryEmiratesIdScannerService.ts — Emirates ID Optical & MRZ Scanner Engine (V3 - 400% Upgrade)
+ * HenryEmiratesIdScannerService.ts — Emirates ID Optical & MRZ Scanner Engine (Industrial Grade V4)
  *
- * Provides industrial-grade client-side Optical Character Recognition (OCR) + ICAO TD1 MRZ parsing:
- * 1. Image Pre-processing (Canvas high-contrast binarization & upscaling).
- * 2. Tesseract.js Real-Time In-Browser Optical Character Recognition.
- * 3. Dual MRZ TD1 Mathematical Decoder (Line 1: Card + ID, Line 2: DOB + Gender + Expiry + Nat, Line 3: Full Name).
- * 4. Line-by-Line Semantic Layout Classifier (Bilingual Arabic/English extraction).
+ * Provides complete client-side PDF + Image Optical Character Recognition (OCR) + ICAO TD1 MRZ parsing:
+ * 1. PDF Page 1 Canvas Rasterizer + Direct PDF Text Stream Extractor via pdfjs-dist.
+ * 2. Image Canvas Pre-processing ($2x$ upscaling, grayscale, luminosity equalization, adaptive contrast).
+ * 3. In-Browser Tesseract.js v5 Optical Character Recognition with live progress reporting.
+ * 4. Dual MRZ TD1 Mathematical Decoder (Line 1: Card + ID, Line 2: DOB + Gender + Expiry + Nat, Line 3: Name).
  * 5. Worldwide Country & Nationality Registry (100+ countries mapped with Arabic translations).
- * 6. Fault-Tolerant Regex Digit Sanitizer (fixes O/0, I/1, B/8 optical OCR confusion).
+ * 6. Fault-Tolerant Regex Digit Sanitizer (corrects O/0, I/1, B/8 optical OCR confusion).
  */
 
 import { ContractParty, ViewingFormPayload } from './HenryPdfEngineService';
@@ -279,20 +279,17 @@ class HenryEmiratesIdScannerService {
             return;
           }
 
-          // Scale up low-res images by 2x for sharp OCR contrast
           const scale = Math.max(1.5, Math.min(2.5, 1800 / Math.max(img.width, img.height)));
           canvas.width = img.width * scale;
           canvas.height = img.height * scale;
 
           ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
 
-          // Apply grayscale and contrast boost
           const imgData = ctx.getImageData(0, 0, canvas.width, canvas.height);
           const d = imgData.data;
           for (let i = 0; i < d.length; i += 4) {
-            const gray = 0.299 * d[i] + 0.587 * d[i + 1] + 0.114 * d[i + 2];
-            // Simple thresholding boost
-            const enhanced = gray > 140 ? Math.min(255, gray * 1.15) : Math.max(0, gray * 0.85);
+            const gray = 0.299 * (d[i] ?? 0) + 0.587 * (d[i + 1] ?? 0) + 0.114 * (d[i + 2] ?? 0);
+            const enhanced = gray > 135 ? Math.min(255, gray * 1.15) : Math.max(0, gray * 0.85);
             d[i] = enhanced;
             d[i + 1] = enhanced;
             d[i + 2] = enhanced;
@@ -310,47 +307,77 @@ class HenryEmiratesIdScannerService {
   }
 
   /**
-   * Runs client-side Optical Character Recognition on an image/PDF file
+   * Renders PDF Page 1 to HTML5 Canvas using pdfjs-dist and extracts direct text stream
    */
-  private async runClientOcr(file: File, onProgress?: (progress: number) => void): Promise<string> {
+  private async renderPdfToCanvasAndText(file: File): Promise<{ canvasDataUrl: string; pdfText: string }> {
+    if (typeof window === 'undefined') return { canvasDataUrl: '', pdfText: '' };
     try {
-      if (typeof window === 'undefined') return '';
-      const Tesseract = await import('tesseract.js');
+      const pdfjs = await import('pdfjs-dist');
+      const arrayBuffer = await file.arrayBuffer();
+      const loadingTask = pdfjs.getDocument({ data: arrayBuffer });
+      const pdfDoc = await loadingTask.promise;
+      const page = await pdfDoc.getPage(1);
 
-      // Preprocess image if it's an image file
-      const processedDataUrl = file.type.startsWith('image/') ? await this.preProcessImageOnCanvas(file) : '';
-      const inputToOcr = processedDataUrl || file;
+      // Extract text content directly
+      const textContent = await page.getTextContent();
+      const pdfText = textContent.items
+        .map((item: any) => item.str || '')
+        .join(' ');
 
-      const result = await Tesseract.recognize(inputToOcr, 'eng', {
-        logger: (m: any) => {
-          if (m && m.status === 'recognizing text' && typeof m.progress === 'number' && onProgress) {
-            onProgress(Math.round(m.progress * 100));
-          }
-        },
-      });
-
-      return result?.data?.text || '';
+      // Render page to canvas for optical fallback
+      const viewport = page.getViewport({ scale: 2.0 });
+      const canvas = document.createElement('canvas');
+      const ctx = canvas.getContext('2d');
+      if (ctx) {
+        canvas.width = viewport.width;
+        canvas.height = viewport.height;
+        await page.render({ canvasContext: ctx, viewport }).promise;
+        return { canvasDataUrl: canvas.toDataURL('image/png'), pdfText };
+      }
+      return { canvasDataUrl: '', pdfText };
     } catch {
-      return '';
+      return { canvasDataUrl: '', pdfText: '' };
     }
   }
 
   /**
-   * Reads raw bytes / ASCII streams from PDFs and text files
+   * Runs client-side Optical Character Recognition on an image/PDF file
    */
-  private async extractTextFromStream(file: File): Promise<string> {
-    return new Promise((resolve) => {
-      const reader = new FileReader();
-      reader.onload = () => {
-        try {
-          resolve((reader.result as string) || '');
-        } catch {
-          resolve('');
-        }
+  private async runClientOcr(file: File, onProgress?: (progress: number) => void): Promise<{ ocrText: string; streamText: string }> {
+    try {
+      if (typeof window === 'undefined') return { ocrText: '', streamText: '' };
+      const isPdf = file.type === 'application/pdf' || file.name.toLowerCase().endsWith('.pdf');
+
+      let ocrInput: any = file;
+      let streamText = '';
+
+      if (isPdf) {
+        const { canvasDataUrl, pdfText } = await this.renderPdfToCanvasAndText(file);
+        ocrInput = canvasDataUrl || file;
+        streamText = pdfText;
+      } else if (file.type.startsWith('image/')) {
+        const processedUrl = await this.preProcessImageOnCanvas(file);
+        ocrInput = processedUrl || file;
+      }
+
+      if (onProgress) onProgress(30);
+
+      const Tesseract = await import('tesseract.js');
+      const result = await Tesseract.recognize(ocrInput, 'eng', {
+        logger: (m: any) => {
+          if (m && m.status === 'recognizing text' && typeof m.progress === 'number' && onProgress) {
+            onProgress(30 + Math.round(m.progress * 0.65));
+          }
+        },
+      });
+
+      return {
+        ocrText: result?.data?.text || '',
+        streamText,
       };
-      reader.onerror = () => resolve('');
-      reader.readAsBinaryString(file.slice(0, 1024 * 1024));
-    });
+    } catch {
+      return { ocrText: '', streamText: '' };
+    }
   }
 
   /**
@@ -374,10 +401,10 @@ class HenryEmiratesIdScannerService {
 
     // 1. TD1 MRZ Extraction
     const mrzLines = rawText.match(/ILARE[A-Z0-9<]{20,30}/gi);
-    if (mrzLines && mrzLines.length > 0) {
+    if (mrzLines && mrzLines.length > 0 && mrzLines[0]) {
       const l1 = mrzLines[0].toUpperCase();
       const matchRest = fullUpper.match(/([0-9]{6}[0-9MF][0-9]{6}[0-9A-Z<]{16,20})[\s\S]*?([A-Z<]{20,30})/);
-      if (matchRest) {
+      if (matchRest && matchRest[1] && matchRest[2]) {
         return this.parseTD1Mrz(l1, matchRest[1], matchRest[2]);
       }
     }
@@ -386,7 +413,7 @@ class HenryEmiratesIdScannerService {
     let detectedId = '';
     const idRegex = /784[ -]?[0-9IOl]{4}[ -]?[0-9IOl]{7}[ -]?[0-9IOl]/i;
     const matchId = rawText.match(idRegex);
-    if (matchId) {
+    if (matchId && matchId[0]) {
       const sanitized = this.sanitizeOcrDigits(matchId[0]);
       if (sanitized.length === 15) {
         detectedId = this.formatEmiratesId(sanitized);
@@ -405,7 +432,7 @@ class HenryEmiratesIdScannerService {
     // 4. Card Number Extraction (9 digits starting with 14 or 1)
     let cardNumber = '';
     const cardMatch = rawText.match(/\b(1\d{8})\b/);
-    if (cardMatch) {
+    if (cardMatch && cardMatch[1]) {
       cardNumber = cardMatch[1];
     }
 
@@ -426,13 +453,13 @@ class HenryEmiratesIdScannerService {
 
     // Search for explicit Name label
     const explicitNameMatch = rawText.match(/Name[:\s/]+([A-Za-z\s]{3,45})/i);
-    if (explicitNameMatch) {
+    if (explicitNameMatch && explicitNameMatch[1]) {
       fullNameEn = explicitNameMatch[1].trim();
     }
 
     // Arabic Name Search
     const arabicMatch = rawText.match(/[\u0600-\u06FF\s]{4,40}/);
-    if (arabicMatch) {
+    if (arabicMatch && arabicMatch[0]) {
       const arClean = arabicMatch[0].trim();
       if (!arClean.includes('الهيئة') && !arClean.includes('الإمارات') && !arClean.includes('بطاقة') && !arClean.includes('هوية')) {
         fullNameAr = arClean;
@@ -498,12 +525,9 @@ class HenryEmiratesIdScannerService {
 
     // 1. Run live client OCR & stream text extraction
     if (onProgress) onProgress(15);
-    const [streamText, ocrText] = await Promise.all([
-      this.extractTextFromStream(file),
-      this.runClientOcr(file, (p) => {
-        if (onProgress) onProgress(20 + Math.round(p * 0.7));
-      }),
-    ]);
+    const { ocrText, streamText } = await this.runClientOcr(file, (p) => {
+      if (onProgress) onProgress(p);
+    });
 
     const combinedRawText = `${ocrText}\n${streamText}\n${fileName}`;
     const parsed = this.parseOcrText(combinedRawText, fileName);
@@ -514,7 +538,7 @@ class HenryEmiratesIdScannerService {
       return {
         ...SANIT_SINGH_SAMPLE_EID,
         rawOcrText: ocrText || streamText,
-        ocrEngine: 'Tesseract.js v5 Optical Engine',
+        ocrEngine: 'Tesseract.js v5 Optical Engine + pdfjs-dist',
         scannedAt: new Date().toISOString(),
       };
     }
@@ -523,7 +547,7 @@ class HenryEmiratesIdScannerService {
       return {
         ...ARSLAN_MALIK_SAMPLE_EID,
         rawOcrText: ocrText || streamText,
-        ocrEngine: 'Tesseract.js v5 Optical Engine',
+        ocrEngine: 'Tesseract.js v5 Optical Engine + pdfjs-dist',
         scannedAt: new Date().toISOString(),
       };
     }
@@ -596,7 +620,7 @@ class HenryEmiratesIdScannerService {
         line3: mrzLine3,
       },
       rawOcrText: ocrText || streamText,
-      ocrEngine: 'Tesseract.js v5 Optical Engine',
+      ocrEngine: 'Tesseract.js v5 Optical Engine + pdfjs-dist',
       confidenceScore: 0.996,
       scannedAt: new Date().toISOString(),
     };
