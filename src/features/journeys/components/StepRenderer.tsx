@@ -32,6 +32,18 @@ export const StepRenderer: React.FC<StepRendererProps> = ({
   const [previewPage, setPreviewPage] = useState<number | 'all'>(1);
   const [showLiveDldTemplate, setShowLiveDldTemplate] = useState<boolean>(false);
 
+  // Processing step animation state
+  const [processingStage, setProcessingStage] = useState(0);
+  const processingTasks = [
+    'Validating property and ownership deed',
+    'Validating landlord KYC profile and contacts',
+    'Validating tenant identity and passport/visa',
+    'Verifying contract terms and RERA index compliance',
+    'Compiling standard and custom special clauses',
+    'Generating official Dubai Tenancy Agreement document',
+    'Applying White Caves Real Estate LLC watermark and seals'
+  ];
+
   // File Upload & Replacement Handler
   const handleJourneyFileUpload = async (file: File) => {
     setIsUploading(true);
@@ -144,6 +156,21 @@ export const StepRenderer: React.FC<StepRendererProps> = ({
       status: 'ready_for_signature'
     };
   };
+
+  useEffect(() => {
+    if (step.type === 'processing') {
+      const interval = setInterval(() => {
+        setProcessingStage((prev) => {
+          if (prev < processingTasks.length) {
+            return prev + 1;
+          }
+          clearInterval(interval);
+          return prev;
+        });
+      }, 450);
+
+      return () => clearInterval(interval);
+    }
   }, [step.type]);
 
   useEffect(() => {

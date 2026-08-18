@@ -384,7 +384,7 @@ export class JourneyEngineService {
 
   public static deleteSession(sessionId: string): void {
     try {
-      if (typeof window === 'undefined' || !window.localStorage) return {};
+      if (typeof window === 'undefined' || !window.localStorage) return;
       const sessions = this.getStoredSessions();
       delete sessions[sessionId];
       window.localStorage.setItem(STORAGE_KEY, JSON.stringify(sessions));
