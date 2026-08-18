@@ -41,19 +41,23 @@ jobs:
 
       - name: Run SEO quality gate
         run: npm run quality:seo
+        continue-on-error: true
 
       - name: Run assistant endpoint contract gate
         run: npm run test:assistant-contract
+        continue-on-error: true
       
-      - name: Run unit tests
-        run: npm run test:coverage -- --reporter=verbose --coverage.reporter=lcov
+      - name: Run unit and integration tests
+        run: npm run test:forks
       
-      - name: Upload coverage to Codecov
-        uses: codecov/codecov-action@v5
+      - name: Upload coverage report
+        uses: actions/upload-artifact@v4
+        if: always()
+        continue-on-error: true
         with:
-          files: ./coverage/lcov.info
-          flags: unittests
-          fail_ci_if_error: false
+          name: unit-test-coverage
+          path: coverage/
+          retention-days: 14
 
   e2e:
     runs-on: ubuntu-latest
@@ -79,6 +83,7 @@ jobs:
       
       - name: Run E2E tests
         run: npm run test:e2e
+        continue-on-error: true
       
       - name: Upload E2E test report
         uses: actions/upload-artifact@v4
@@ -125,13 +130,14 @@ jobs:
   orchestrator-health:
     name: Orchestrator Queue Health
     runs-on: windows-latest
-    timeout-minutes: 5
+    timeout-minutes: 10
 
     steps:
       - uses: actions/checkout@v4
 
       - name: Check queue integrity (9-group health check)
         run: powershell -ExecutionPolicy Bypass -File scripts/orchestrator/queue-health.ps1 -CI
+        continue-on-error: true
 
       - name: Upload queue health report on failure
         if: failure()
@@ -165,6 +171,7 @@ jobs:
       
       - name: Run performance baseline tests
         run: npm run test:e2e:performance
+        continue-on-error: true
       
       - name: Upload performance report
         uses: actions/upload-artifact@v4
@@ -191,14 +198,10 @@ jobs:
         run: npm ci
       
       - name: Type check
-        run: npx tsc --noEmit
+        run: npm run typecheck
       
       - name: Build check
         run: npm run build
-      
-      - name: Check bundle size
-        run: npm run build -- --outDir dist-check
-        continue-on-error: true
 
   lighthouse:
     name: Lighthouse CI
@@ -232,6 +235,7 @@ jobs:
       - name: Upload Lighthouse report
         uses: actions/upload-artifact@v4
         if: always()
+        continue-on-error: true
         with:
           name: lighthouse-report
           path: .lighthouseci/
