@@ -40,7 +40,7 @@ jobs:
         run: npm run build
       
       - name: Run tests before deploy
-        run: npm test -- --run
+        run: npm run test:forks
       
       - name: Build Docker image
         run: docker build -f Dockerfile.prod -t white-caves:staging-${{ env.DEPLOY_SHA }} .

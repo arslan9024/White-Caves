@@ -48,7 +48,7 @@ jobs:
         run: npm run lint --if-present
       
       - name: Type check
-        run: npx tsc --noEmit
+        run: npm run typecheck
       
       - name: Build check
         run: npm run build
@@ -60,7 +60,7 @@ jobs:
         run: npm run test:assistant-contract
       
       - name: Run unit tests
-        run: npm test -- --run --coverage
+        run: npm run test:coverage
       
       - name: Comment PR with build status
         if: always()

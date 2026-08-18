@@ -72,12 +72,27 @@ web_modules/
 # Yarn Integrity file
 .yarn-integrity
 
-# dotenv environment variable files
+# dotenv environment variable files (Security Lockdown P0)
 .env
-.env.development.local
-.env.test.local
-.env.production.local
-.env.local
+.env.*
+!.env.example
+!.env.*.example
+!.env.production.example
+!.env.staging.example
+
+# Backup and temporary files
+*.backup
+*.bak
+*.tmp
+*~
+
+# Certificates, keys and credentials
+*.pem
+*.key
+*.cert
+*.crt
+*.pfx
+*.p12
 
 # environments/ folder — all files except the production example template
 environments/

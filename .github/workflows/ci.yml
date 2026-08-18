@@ -46,7 +46,7 @@ jobs:
         run: npm run test:assistant-contract
       
       - name: Run unit tests
-        run: npm test -- --run --reporter=verbose --coverage --coverage.reporter=lcov
+        run: npm run test:coverage -- --reporter=verbose --coverage.reporter=lcov
       
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v5
