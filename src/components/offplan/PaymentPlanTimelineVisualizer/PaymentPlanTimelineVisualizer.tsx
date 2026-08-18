@@ -32,8 +32,8 @@ const SumCard = styled.div`padding:10px;border-radius:9px;background:rgba(15,23,
 const SumVal = styled.div<{$red?:boolean;$green?:boolean}>`font-size:0.92rem;font-weight:900;color:${p=>p.$red?'#EF4444':p.$green?'#10B981':'#E2E8F0'};`;
 const SumLab = styled.div`font-size:0.62rem;color:#64748B;margin-top:2px;`;
 
-type Plan = { id:string; label:string; milestones:Milestone[] };
-type Milestone = { label:string; pct:number; when:string; paid:boolean; current:boolean };
+type Plan = { id: string; label: string; milestones: TimelineMilestone[] };
+type TimelineMilestone = { label: string; pct: number; when: string; paid: boolean; current: boolean };
 
 const UNIT_PRICE = 2_000_000;
 
