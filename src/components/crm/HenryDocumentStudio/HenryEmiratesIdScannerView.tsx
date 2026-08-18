@@ -1,10 +1,12 @@
 /**
  * HenryEmiratesIdScannerView.tsx
  *
- * 3.19.2 Scan Emirates ID — Upgraded Split-Screen View.
+ * 3.19.2 Scan Emirates ID — High-Precision OCR & Variable Studio (V3).
  * Left Side:
- *   - Shared Document Upload Component (dropzone + file selector)
+ *   - Shared Document Upload Component (drag-and-drop file selector)
+ *   - Live Real-Time OCR Optical Progress Tracker
  *   - Form-Style Variables Extraction (Full Name EN/AR, ID Number, Card No, Nationality, DOB, Expiry, Employer, MRZ)
+ *   - Raw OCR Text Terminal Inspector
  * Right Side:
  *   - Uploaded Document Live Preview Pane (supports PDF, PNG, JPG, and Digital Card Preview)
  * Bottom:
@@ -28,6 +30,10 @@ import {
   FileText,
   Copy,
   Check,
+  Terminal,
+  Activity,
+  ChevronDown,
+  ChevronUp,
 } from 'lucide-react';
 import henryEmiratesIdScannerService, {
   EmiratesIdExtractedData,
@@ -238,6 +244,36 @@ const MrzBox = styled.div`
   box-sizing: border-box;
 `;
 
+const OcrTerminalBox = styled.div`
+  background: #020617;
+  border: 1px solid #1E293B;
+  border-radius: 8px;
+  padding: 10px;
+  font-family: monospace;
+  font-size: 0.75rem;
+  color: #10B981;
+  max-height: 180px;
+  overflow-y: auto;
+  white-space: pre-wrap;
+  word-break: break-word;
+`;
+
+const ProgressBarContainer = styled.div`
+  background: #E2E8F0;
+  border-radius: 999px;
+  height: 8px;
+  width: 100%;
+  overflow: hidden;
+  margin-top: 4px;
+`;
+
+const ProgressBarFill = styled.div<{ $progress: number }>`
+  background: linear-gradient(90deg, #10B981, #059669);
+  height: 100%;
+  width: ${props => props.$progress}%;
+  transition: width 0.2s ease;
+`;
+
 const BottomActionBar = styled.div`
   background: #FFFFFF;
   border: 1px solid #E2E8F0;
@@ -292,8 +328,10 @@ export const HenryEmiratesIdScannerView: FC = () => {
   const [uploadedFile, setUploadedFile] = useState<File | null>(null);
   const [filePreviewUrl, setFilePreviewUrl] = useState<string | null>(null);
   const [isScanning, setIsScanning] = useState<boolean>(false);
+  const [ocrProgress, setOcrProgress] = useState<number>(0);
   const [statusMsg, setStatusMsg] = useState<string | null>(null);
   const [copiedJson, setCopiedJson] = useState<boolean>(false);
+  const [showOcrInspector, setShowOcrInspector] = useState<boolean>(false);
 
   // Manage Object URL lifecycle
   useEffect(() => {
@@ -308,17 +346,21 @@ export const HenryEmiratesIdScannerView: FC = () => {
 
   const handleFileUpload = async (file: File) => {
     setIsScanning(true);
+    setOcrProgress(10);
     setUploadedFile(file);
-    setStatusMsg(`Scanning and extracting variables from "${file.name}"...`);
+    setStatusMsg(`Running client-side OCR & extracting variables from "${file.name}"...`);
 
     try {
-      const data = await henryEmiratesIdScannerService.scanEmiratesId(file);
+      const data = await henryEmiratesIdScannerService.scanEmiratesId(file, (p) => {
+        setOcrProgress(p);
+      });
       setExtractedData(data);
       setStatusMsg(`✓ Successfully extracted variables for: ${data.fullNameEn} (${data.idNumber})`);
     } catch {
-      setStatusMsg('Error processing Emirates ID file.');
+      setStatusMsg('Error processing Emirates ID optical scan.');
     } finally {
       setIsScanning(false);
+      setOcrProgress(100);
       setTimeout(() => setStatusMsg(null), 4000);
     }
   };
@@ -356,13 +398,14 @@ export const HenryEmiratesIdScannerView: FC = () => {
 
   const handleSaveToVault = () => {
     if (!extractedData) return;
-    setStatusMsg(`✓ Emirates ID ${extractedData.idNumber} saved to White Caves KYC Vault!`);
+    setStatusMsg(`✓ Emirates ID ${extractedData.idNumber} (${extractedData.fullNameEn}) saved to White Caves KYC Vault!`);
     setTimeout(() => setStatusMsg(null), 4000);
   };
 
   const handleDiscard = () => {
     setExtractedData(null);
     setUploadedFile(null);
+    setOcrProgress(0);
     setStatusMsg('Discarded extracted data and cleared upload.');
     setTimeout(() => setStatusMsg(null), 3000);
   };
@@ -394,12 +437,27 @@ export const HenryEmiratesIdScannerView: FC = () => {
           <HenrySharedDocumentUploader
             docType="emirates_id"
             title="3.19.2 Scan Emirates ID (الهوية الإماراتية)"
-            subtitle="Upload front/back ID document or PDF to extract variables and parse 3-line TD1 Machine Readable Zone"
+            subtitle="Upload real front/back Emirates ID card image or PDF to extract variables via client-side OCR engine"
             onFileUpload={handleFileUpload}
             onSampleLoad={handleLoadDemo}
             isProcessing={isScanning}
             accentColor="#10B981"
           />
+
+          {/* OCR Progress Meter */}
+          {isScanning && (
+            <div style={{ background: '#FFFFFF', padding: '10px 14px', borderRadius: '8px', border: '1px solid #CBD5E1' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.78rem', fontWeight: 800, color: '#0F172A' }}>
+                <span style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                  <Activity size={14} color="#10B981" /> Optical OCR Ingestion & MRZ Decoding...
+                </span>
+                <span>{ocrProgress}%</span>
+              </div>
+              <ProgressBarContainer>
+                <ProgressBarFill $progress={ocrProgress} />
+              </ProgressBarContainer>
+            </div>
+          )}
 
           {/* Quick Profile Switchers */}
           <div style={{ display: 'flex', gap: '8px', alignItems: 'center', flexWrap: 'wrap', padding: '2px 0' }}>
@@ -445,10 +503,44 @@ export const HenryEmiratesIdScannerView: FC = () => {
                 <h4 style={{ margin: 0, fontSize: '0.95rem', fontWeight: 800, color: '#0F172A' }}>
                   Extracted Variables Form
                 </h4>
-                <span style={{ fontSize: '0.75rem', color: '#059669', fontWeight: 800 }}>
-                  ✓ {Math.round(extractedData.confidenceScore * 100)}% Confidence Match
-                </span>
+                <div style={{ display: 'flex', gap: '6px', alignItems: 'center' }}>
+                  <span style={{ fontSize: '0.75rem', color: '#059669', fontWeight: 800 }}>
+                    ✓ {Math.round(extractedData.confidenceScore * 100)}% Match
+                  </span>
+                  {extractedData.rawOcrText && (
+                    <button
+                      type="button"
+                      onClick={() => setShowOcrInspector(!showOcrInspector)}
+                      style={{
+                        background: '#F1F5F9',
+                        border: '1px solid #CBD5E1',
+                        borderRadius: '4px',
+                        padding: '2px 6px',
+                        fontSize: '0.7rem',
+                        fontWeight: 700,
+                        color: '#475569',
+                        cursor: 'pointer',
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '4px',
+                      }}
+                    >
+                      <Terminal size={12} /> {showOcrInspector ? 'Hide OCR' : 'Inspect OCR'}
+                    </button>
+                  )}
+                </div>
               </div>
+
+              {showOcrInspector && extractedData.rawOcrText && (
+                <div>
+                  <div style={{ fontSize: '0.7rem', fontWeight: 800, color: '#475569', marginBottom: '4px' }}>
+                    RAW OCR TEXT STREAM:
+                  </div>
+                  <OcrTerminalBox>
+                    {extractedData.rawOcrText}
+                  </OcrTerminalBox>
+                </div>
+              )}
 
               <FormGrid $cols={2}>
                 <FormGroup>
@@ -633,7 +725,7 @@ export const HenryEmiratesIdScannerView: FC = () => {
                   No Document Uploaded Yet
                 </div>
                 <div style={{ fontSize: '0.8rem', marginTop: '4px' }}>
-                  Drag & drop client Emirates ID on the left to preview the document and extract variables.
+                  Drag & drop client Emirates ID on the left to preview the document and extract variables via OCR.
                 </div>
               </div>
             )}
