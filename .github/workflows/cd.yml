@@ -47,10 +47,10 @@ jobs:
       
       - name: Deploy to staging
         env:
-          DEPLOY_KEY: ${{ secrets['STAGING_DEPLOY_KEY'] }}
-          DEPLOY_HOST: ${{ secrets['STAGING_DEPLOY_HOST'] }}
-          DEPLOY_USER: ${{ secrets['STAGING_DEPLOY_USER'] }}
-          DEPLOY_COMMAND: ${{ secrets['STAGING_DEPLOY_COMMAND'] }}
+          DEPLOY_KEY: ${{ secrets.STAGING_DEPLOY_KEY }}
+          DEPLOY_HOST: ${{ secrets.STAGING_DEPLOY_HOST }}
+          DEPLOY_USER: ${{ secrets.STAGING_DEPLOY_USER }}
+          DEPLOY_COMMAND: ${{ secrets.STAGING_DEPLOY_COMMAND }}
         run: |
           if [ -z "$DEPLOY_KEY" ] || [ -z "$DEPLOY_HOST" ] || [ -z "$DEPLOY_USER" ]; then
             echo "⚠️ STAGING_DEPLOY credentials not configured in repository secrets. Skipping remote SSH step."
@@ -68,7 +68,7 @@ jobs:
 
       - name: Verify staging runtime endpoints
         env:
-          RUNTIME_URL: ${{ secrets['STAGING_URL'] }}
+          RUNTIME_URL: ${{ secrets.STAGING_URL }}
         run: |
           if [ -z "$RUNTIME_URL" ]; then
             echo "ℹ️ STAGING_URL secret not configured. Skipping runtime endpoint verification."
@@ -84,7 +84,7 @@ jobs:
           status: ${{ job.status }}
           text: 'Staging deployment: ${{ job.status }}'
         env:
-          SLACK_WEBHOOK_URL: ${{ secrets['SLACK_WEBHOOK'] }}
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK }}
 
   smoke-tests:
     runs-on: ubuntu-latest
@@ -116,7 +116,7 @@ jobs:
           fi
           npm run test:e2e:smoke || true
         env:
-          TEST_BASE_URL: ${{ secrets['STAGING_URL'] }}
+          TEST_BASE_URL: ${{ secrets.STAGING_URL }}
       
       - name: Upload smoke test report
         uses: actions/upload-artifact@v4
@@ -157,10 +157,10 @@ jobs:
       
       - name: Deploy to production
         env:
-          DEPLOY_KEY: ${{ secrets['PROD_DEPLOY_KEY'] }}
-          DEPLOY_HOST: ${{ secrets['PROD_DEPLOY_HOST'] }}
-          DEPLOY_USER: ${{ secrets['PROD_DEPLOY_USER'] }}
-          DEPLOY_COMMAND: ${{ secrets['PROD_DEPLOY_COMMAND'] }}
+          DEPLOY_KEY: ${{ secrets.PROD_DEPLOY_KEY }}
+          DEPLOY_HOST: ${{ secrets.PROD_DEPLOY_HOST }}
+          DEPLOY_USER: ${{ secrets.PROD_DEPLOY_USER }}
+          DEPLOY_COMMAND: ${{ secrets.PROD_DEPLOY_COMMAND }}
         run: |
           if [ -z "$DEPLOY_KEY" ] || [ -z "$DEPLOY_HOST" ] || [ -z "$DEPLOY_USER" ]; then
             echo "⚠️ PROD_DEPLOY credentials not configured in repository secrets. Skipping remote SSH step."
@@ -178,7 +178,7 @@ jobs:
 
       - name: Verify production runtime endpoints
         env:
-          RUNTIME_URL: ${{ secrets['PROD_URL'] }}
+          RUNTIME_URL: ${{ secrets.PROD_URL }}
         run: |
           if [ -z "$RUNTIME_URL" ]; then
             echo "ℹ️ PROD_URL secret not configured. Skipping runtime endpoint verification."
@@ -211,7 +211,7 @@ jobs:
             Version: v${{ github.run_number }}
             Commit: ${{ env.DEPLOY_SHA }}
         env:
-          SLACK_WEBHOOK_URL: ${{ secrets['SLACK_WEBHOOK'] }}
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK }}
       
       - name: Notify failure
         if: failure()
@@ -223,7 +223,7 @@ jobs:
             ❌ *Production Deployment Failed*
             Commit: ${{ env.DEPLOY_SHA }}
         env:
-          SLACK_WEBHOOK_URL: ${{ secrets['SLACK_WEBHOOK'] }}
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK }}
 
   monitoring:
     runs-on: ubuntu-latest
@@ -234,7 +234,7 @@ jobs:
     steps:
       - name: Check production health
         env:
-          PROD_URL: ${{ secrets['PROD_URL'] }}
+          PROD_URL: ${{ secrets.PROD_URL }}
         run: |
           if [ -z "$PROD_URL" ]; then
             echo "ℹ️ PROD_URL not configured. Skipping remote health curl check."
@@ -250,4 +250,4 @@ jobs:
           status: ${{ job.status }}
           text: 'Production monitoring: ${{ job.status }}'
         env:
-          SLACK_WEBHOOK_URL: ${{ secrets['SLACK_WEBHOOK'] }}
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK }}
