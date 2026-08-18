@@ -329,7 +329,20 @@ export const HenryEmiratesIdScannerView: FC = () => {
     try {
       const demo = henryEmiratesIdScannerService.getDemoExtractedData();
       setExtractedData(demo);
-      setStatusMsg(`✓ Loaded benchmark Emirates ID: ${demo.fullNameEn}`);
+      setStatusMsg(`✓ Loaded benchmark Emirates ID: ${demo.fullNameEn} (${demo.nationalityEn})`);
+    } finally {
+      setIsScanning(false);
+      setTimeout(() => setStatusMsg(null), 3000);
+    }
+  };
+
+  const handleLoadIndianDemo = async () => {
+    setIsScanning(true);
+    setUploadedFile(null);
+    try {
+      const demo = henryEmiratesIdScannerService.getIndianClientDemoData();
+      setExtractedData(demo);
+      setStatusMsg(`✓ Loaded Indian client benchmark: ${demo.fullNameEn} (${demo.nationalityEn})`);
     } finally {
       setIsScanning(false);
       setTimeout(() => setStatusMsg(null), 3000);
@@ -387,6 +400,43 @@ export const HenryEmiratesIdScannerView: FC = () => {
             isProcessing={isScanning}
             accentColor="#10B981"
           />
+
+          {/* Quick Profile Switchers */}
+          <div style={{ display: 'flex', gap: '8px', alignItems: 'center', flexWrap: 'wrap', padding: '2px 0' }}>
+            <span style={{ fontSize: '0.75rem', fontWeight: 800, color: '#64748B' }}>Quick Benchmark Samples:</span>
+            <button
+              type="button"
+              onClick={handleLoadIndianDemo}
+              style={{
+                background: '#FEF3C7',
+                color: '#92400E',
+                border: '1px solid #FCD34D',
+                padding: '4px 10px',
+                borderRadius: '6px',
+                fontSize: '0.75rem',
+                fontWeight: 800,
+                cursor: 'pointer',
+              }}
+            >
+              🇮🇳 Sanit Singh Nagpal (IND)
+            </button>
+            <button
+              type="button"
+              onClick={handleLoadDemo}
+              style={{
+                background: '#ECFDF5',
+                color: '#065F46',
+                border: '1px solid #A7F3D0',
+                padding: '4px 10px',
+                borderRadius: '6px',
+                fontSize: '0.75rem',
+                fontWeight: 800,
+                cursor: 'pointer',
+              }}
+            >
+              🇵🇰 Arslan Malik (PAK)
+            </button>
+          </div>
 
           {/* Form Style Variables Extraction */}
           {extractedData && (

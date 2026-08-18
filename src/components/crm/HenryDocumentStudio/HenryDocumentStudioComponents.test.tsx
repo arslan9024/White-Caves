@@ -78,6 +78,12 @@ describe('Henry Document Studio — Shared Uploader & 5 Content Area Views', () 
     expect(screen.getByText(/UNITED ARAB EMIRATES · IDENTITY CARD/i)).toBeDefined();
     expect(screen.getByDisplayValue('784-1993-1805733-0')).toBeDefined();
     expect(screen.getByDisplayValue('Arslan Malik Bashir Ahmad')).toBeDefined();
+
+    // Test Indian client benchmark
+    fireEvent.click(screen.getByText(/Sanit Singh Nagpal/i));
+    expect(screen.getByDisplayValue('784-1988-1849201-1')).toBeDefined();
+    expect(screen.getByDisplayValue('Sanit Singh Nagpal')).toBeDefined();
+    expect(screen.getByDisplayValue('India')).toBeDefined();
   });
 
   it('3.19.3 HenryTitleDeedScannerView loads sample and renders DLD ownership specifications and form', () => {
