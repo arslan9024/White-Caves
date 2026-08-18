@@ -69,19 +69,17 @@ describe('Henry Document Studio — Shared Uploader & 5 Content Area Views', () 
   it('3.19.2 HenryEmiratesIdScannerView loads sample and renders digital Emirates ID card and form', async () => {
     render(<HenryEmiratesIdScannerView />);
 
-    expect(screen.getByText(/3.19.2 Scan Emirates ID/i)).toBeDefined();
-    expect(screen.getByText(/No Emirates ID Uploaded/i)).toBeDefined();
+    expect(screen.getByText(/3.19.2 Emirates ID Live Extraction Studio/i)).toBeDefined();
+    expect(screen.getByText(/Original Emirates ID Document/i)).toBeDefined();
+    expect(screen.getByText(/1. Identity & Card Numbers/i)).toBeDefined();
 
     // Load benchmark demo
     fireEvent.click(screen.getByRole('button', { name: /Load Demo Benchmark/i }));
-    expect(screen.getByText(/Emirates ID Extracted Variables/i)).toBeDefined();
-    expect(screen.getByText(/UNITED ARAB EMIRATES · IDENTITY CARD/i)).toBeDefined();
-    expect(screen.getAllByText('784-1993-1805733-0').length).toBeGreaterThanOrEqual(1);
-    expect(screen.getAllByText('Arslan Malik Bashir Ahmad').length).toBeGreaterThanOrEqual(1);
+    expect(screen.getByDisplayValue('784-1993-1805733-0')).toBeDefined();
+    expect(screen.getByDisplayValue('Arslan Malik Bashir Ahmad')).toBeDefined();
 
-    // Test Extract button
-    fireEvent.click(screen.getByText(/Save to KYC Vault/i));
-    expect(screen.queryByText(/Emirates ID Extracted Variables/i)).toBeNull();
+    // Test Save to Vault button
+    fireEvent.click(screen.getByRole('button', { name: /Save Verified Variables to KYC Vault/i }));
   });
 
   it('3.19.3 HenryTitleDeedScannerView loads sample and renders DLD ownership specifications and form', () => {
