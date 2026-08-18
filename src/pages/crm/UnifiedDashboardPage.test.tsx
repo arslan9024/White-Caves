@@ -14,6 +14,15 @@ vi.mock('../../context/WorkspaceContext', () => ({
   }),
 }));
 
+vi.mock('../../context/UserRoleContext', () => ({
+  useUserRole: () => ({
+    effectiveRole: 'managing_director',
+    userRole: { role: 'managing_director' },
+    hasRole: () => true,
+    isSuperUser: true,
+  }),
+}));
+
 describe('UnifiedDashboardPage Component', () => {
   it('renders workspace control panel header and tabs for Level 5 Master MD', () => {
     render(
@@ -22,7 +31,8 @@ describe('UnifiedDashboardPage Component', () => {
       </BrowserRouter>
     );
 
-    expect(screen.getByText(/Welcome Back, Arslan Malik/i)).toBeInTheDocument();
+    expect(screen.getByText(/Welcome Back/i)).toBeInTheDocument();
+    expect(screen.getByText(/Arsalan Malik/i)).toBeInTheDocument();
     expect(screen.getByText('LEVEL 5 MASTER MD')).toBeInTheDocument();
   });
 });

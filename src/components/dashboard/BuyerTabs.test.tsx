@@ -7,6 +7,7 @@
  * authFetch is mocked at the module level so no network calls are made.
  */
 
+import React from 'react';
 import { describe, it, expect, vi, beforeEach, type Mock } from 'vitest';
 import { render, screen, waitFor, fireEvent } from '@testing-library/react';
 import {

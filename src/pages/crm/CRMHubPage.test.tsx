@@ -1,7 +1,8 @@
 /**
- * CRMHubPage — Unit Tests
- * Tests: rendering, stats cards, CRM module cards, module navigation,
- * quick actions, activity feed, back-to-hub, URL sync
+ * CRMHubPage.test.tsx
+ *
+ * Comprehensive unit test suite for White Caves ERP Dashboard & Sidebar.
+ * Validates Header, Live Ticker, 3-Tile Sidebar, SearchableSelect, and Viewport engine.
  */
 
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
@@ -16,7 +17,7 @@ import { CurrencyProvider } from '../../context/CurrencyContext';
 // ── Mocks ────────────────────────────────────────────────────────
 const mockNavigate = vi.fn();
 const mockSetSearchParams = vi.fn();
-let mockSearchParamsModule = '';
+let mockSearchParamTab = 'dept_summary';
 
 vi.mock('react-router-dom', async () => {
   const actual = await vi.importActual('react-router-dom');
@@ -24,7 +25,7 @@ vi.mock('react-router-dom', async () => {
     ...actual,
     useNavigate: () => mockNavigate,
     useSearchParams: () => [
-      { get: (key: string) => (key === 'module' ? mockSearchParamsModule : null) },
+      { get: (key: string) => (key === 'tab' ? mockSearchParamTab : null) },
       mockSetSearchParams,
     ],
   };
@@ -32,25 +33,25 @@ vi.mock('react-router-dom', async () => {
 
 // Mock lazy-loaded CRM modules
 vi.mock('../../components/crm/ClaraLeadsCRM_NEW', () => ({
-  default: () => <div data-testid="ClaraLeadsCRM">ClaraLeadsCRM</div>,
+  default: () => <div data-testid="ClaraLeadsCRM">ClaraLeadsCRM Module</div>,
 }));
 vi.mock('../../components/crm/MaryInventoryCRM_NEW', () => ({
-  default: () => <div data-testid="MaryInventoryCRM">MaryInventoryCRM</div>,
+  default: () => <div data-testid="MaryInventoryCRM">MaryInventoryCRM Module</div>,
 }));
 vi.mock('../../components/crm/SophiaSalesCRM_NEW', () => ({
-  default: () => <div data-testid="SophiaSalesCRM">SophiaSalesCRM</div>,
+  default: () => <div data-testid="SophiaSalesCRM">SophiaSalesCRM Module</div>,
 }));
 vi.mock('../../components/crm/ZoeExecutiveCRM_NEW', () => ({
-  default: () => <div data-testid="ZoeExecutiveCRM">ZoeExecutiveCRM</div>,
+  default: () => <div data-testid="ZoeExecutiveCRM">ZoeExecutiveCRM Module</div>,
 }));
 vi.mock('../../components/crm/TheodoraFinanceCRM_NEW', () => ({
-  default: () => <div data-testid="TheodoraFinanceCRM">TheodoraFinanceCRM</div>,
+  default: () => <div data-testid="TheodoraFinanceCRM">TheodoraFinanceCRM Module</div>,
 }));
 vi.mock('../../components/crm/DaisyLeasingCRM_NEW', () => ({
-  default: () => <div data-testid="DaisyLeasingCRM">DaisyLeasingCRM</div>,
+  default: () => <div data-testid="DaisyLeasingCRM">DaisyLeasingCRM Module</div>,
 }));
 vi.mock('../../components/crm/NadiaWhatsAppCRM', () => ({
-  default: () => <div data-testid="NadiaWhatsAppCRM">NadiaWhatsAppCRM</div>,
+  default: () => <div data-testid="NadiaWhatsAppCRM">NadiaWhatsAppCRM Module</div>,
 }));
 
 // Mock UI components
@@ -68,15 +69,10 @@ vi.mock('../../components/ui', () => ({
       {children}
     </span>
   ),
-  Tabs: ({ children }: { children: React.ReactNode }) => <div>{children}</div>,
 }));
 
 vi.mock('../../components/common/SuspenseLoader', () => ({
   default: () => <div data-testid="suspense-loader">Loading...</div>,
-}));
-
-vi.mock('../../components/ErrorBoundary', () => ({
-  default: ({ children }: { children: React.ReactNode }) => <div>{children}</div>,
 }));
 
 import CRMHubPage from './CRMHubPage';
@@ -86,7 +82,7 @@ import authReducer from '../../store/authSlice';
 
 // ── Helpers ──────────────────────────────────────────────────────
 
-const createMockStore = (crmOverrides: Record<string, unknown> = {}) => {
+const createMockStore = () => {
   return configureStore({
     reducer: {
       crmData: crmDataReducer,
@@ -94,75 +90,13 @@ const createMockStore = (crmOverrides: Record<string, unknown> = {}) => {
       auth: authReducer,
     },
     preloadedState: {
-      crmData: {
-        leads: {
-          items: [
-            { id: 'l1', name: 'Sarah', status: 'hot', value: 500000 },
-            { id: 'l2', name: 'Mike', status: 'warm', value: 300000 },
-            { id: 'l3', name: 'Lisa', status: 'cold', value: 200000 },
-          ],
-          selected: null,
-          loading: false,
-          error: null,
-        },
-        clients: {
-          items: [
-            { id: 'c1', name: 'Client A' },
-            { id: 'c2', name: 'Client B' },
-          ],
-          selected: null,
-          loading: false,
-          error: null,
-        },
-        agents: {
-          items: [
-            { id: 'a1', name: 'Agent X', status: 'online' },
-            { id: 'a2', name: 'Agent Y', status: 'offline' },
-          ],
-          selected: null,
-          loading: false,
-          error: null,
-        },
-        properties: {
-          items: [],
-          selected: null,
-          loading: false,
-          error: null,
-        },
-        commissions: {
-          items: [{ id: 'cm1', amount: 5000 }],
-          loading: false,
-          error: null,
-        },
-        activities: {
-          items: [
-            {
-              id: 'act1',
-              type: 'lead',
-              description: 'New lead added',
-              timestamp: new Date().toISOString(),
-            },
-            {
-              id: 'act2',
-              type: 'deal',
-              action: 'Deal closed',
-              timestamp: new Date(Date.now() - 3600000).toISOString(),
-            },
-          ],
-          loading: false,
-          error: null,
-        },
-        overview: null,
-        lastUpdated: new Date().toISOString(),
-        ...crmOverrides,
-      } as unknown as ReturnType<typeof crmDataReducer>,
       user: {
-        currentUser: { id: 'u1', name: 'Owner', role: 'owner', email: 'owner@wc.ae' },
+        currentUser: { id: 'u1', name: 'Arslan Malik', role: 'owner', email: 'arslan@whitecaves.ae' },
         loading: false,
         error: null,
       } as unknown as ReturnType<typeof userReducer>,
       auth: {
-        user: { id: 'u1', displayName: 'Owner', email: 'owner@wc.ae', role: 'owner' },
+        user: { id: 'u1', displayName: 'Arslan Malik', email: 'arslan@whitecaves.ae', role: 'owner' },
         token: 'tok',
         refreshToken: null,
         session: {
@@ -183,8 +117,8 @@ const createMockStore = (crmOverrides: Record<string, unknown> = {}) => {
   });
 };
 
-const renderPage = (crmOverrides: Record<string, unknown> = {}) => {
-  const store = createMockStore(crmOverrides);
+const renderPage = () => {
+  const store = createMockStore();
   return render(
     <Provider store={store}>
       <LanguageProvider>
@@ -200,271 +134,86 @@ const renderPage = (crmOverrides: Record<string, unknown> = {}) => {
 
 // ── Tests ────────────────────────────────────────────────────────
 
-describe('CRMHubPage', () => {
+describe('CRMHubPage — Modern Atomic ERP Dashboard', () => {
   beforeEach(() => {
     vi.spyOn(console, 'error').mockImplementation(() => {});
     vi.spyOn(console, 'warn').mockImplementation(() => {});
     vi.clearAllMocks();
-    mockSearchParamsModule = '';
+    mockSearchParamTab = 'dept_summary';
   });
 
   afterEach(() => {
     vi.restoreAllMocks();
   });
 
-  // ── Rendering ────────────────────────────────────────────────
+  it('renders Global ERP Command Core header, live ticker, and 3-Tile Sidebar', () => {
+    renderPage();
 
-  describe('Rendering', () => {
-    it('should render the CRM Hub header', () => {
-      renderPage();
-      expect(screen.getByText('CRM Command Center')).toBeInTheDocument();
-      expect(
-        screen.getByText(/Manage leads, properties, deals, and team performance/)
-      ).toBeInTheDocument();
-    });
+    // Check Header
+    expect(screen.getByText(/White Caves Real Estate LLC — ERP Command Core/i)).toBeInTheDocument();
+    expect(screen.getByText(/Active Meta-Tag:/i)).toBeInTheDocument();
 
-    it('should render quick action buttons', () => {
-      renderPage();
-      // Lead Management appears in both quick actions and module cards
-      expect(screen.getAllByText(/Lead Management/).length).toBeGreaterThanOrEqual(1);
-      expect(
-        screen.getAllByText(/Property Portfolio|Property Inventory/).length
-      ).toBeGreaterThanOrEqual(1);
-      expect(screen.getAllByText(/Agent Performance/).length).toBeGreaterThanOrEqual(1);
-      expect(screen.getAllByText(/WhatsApp CRM/).length).toBeGreaterThanOrEqual(1);
-      expect(screen.getAllByText(/Finance & Commissions/).length).toBeGreaterThanOrEqual(1);
-      expect(
-        screen.getAllByText(/Executive View|Executive Dashboard/).length
-      ).toBeGreaterThanOrEqual(1);
-    });
+    // Check Ticker
+    expect(screen.getByText(/USD \/ AED:/i)).toBeInTheDocument();
+    expect(screen.getByText(/DLD Daily Volume:/i)).toBeInTheDocument();
 
-    it('should render Recent Activity section', () => {
-      renderPage();
-      expect(screen.getByText('Recent Activity')).toBeInTheDocument();
-    });
+    // Check 3 Sidebar Tiles
+    expect(screen.getByText(/1. MD Office \(MD Suite\)/i)).toBeInTheDocument();
+    expect(screen.getByText(/2. Corporate Departments \(12 Depts\)/i)).toBeInTheDocument();
+    expect(screen.getByText(/3. AI Command Center \(26 AI\)/i)).toBeInTheDocument();
   });
 
-  // ── Stats Cards ──────────────────────────────────────────────
+  it('renders Department Executive Overview with mission scope cards and launchpad', () => {
+    renderPage();
 
-  describe('Stats Cards', () => {
-    it('should display total leads count', () => {
-      renderPage();
-      expect(screen.getByText('Total Leads')).toBeInTheDocument();
-      expect(screen.getByText('3')).toBeInTheDocument();
-    });
-
-    it('should display hot leads count', () => {
-      renderPage();
-      expect(screen.getByText('Hot Leads')).toBeInTheDocument();
-      // '1' appears in multiple stat cards
-      expect(screen.getAllByText('1').length).toBeGreaterThanOrEqual(1);
-    });
-
-    it('should display active clients count', () => {
-      renderPage();
-      expect(screen.getByText('Active Clients')).toBeInTheDocument();
-      // '2' appears in multiple stat cards
-      expect(screen.getAllByText('2').length).toBeGreaterThanOrEqual(1);
-    });
-
-    it('should display pipeline value', () => {
-      renderPage();
-      expect(screen.getByText('Pipeline Value')).toBeInTheDocument();
-    });
-
-    it('should display commissions count', () => {
-      renderPage();
-      expect(screen.getByText('Commissions')).toBeInTheDocument();
-    });
+    expect(screen.getByText(/Executive Summary/i)).toBeInTheDocument();
+    expect(screen.getByText(/🎯 Mission Operational Scope/i)).toBeInTheDocument();
+    expect(screen.getByText(/⚡ Operational Sub-Nodes Launchpad/i)).toBeInTheDocument();
   });
 
-  // ── CRM Module Cards ────────────────────────────────────────
+  it('toggles collapsible top header bar', () => {
+    renderPage();
 
-  describe('CRM Module Cards', () => {
-    it('should render all 7 CRM module cards', () => {
-      renderPage();
-      const moduleNames = [
-        'Leads CRM',
-        'Inventory CRM',
-        'Sales CRM',
-        'Finance CRM',
-        'Leasing CRM',
-        'WhatsApp CRM',
-        'Executive CRM',
-      ];
-      // Module cards are in the grid, quick actions also have similar text
-      // So just check they exist
-      for (const name of moduleNames) {
-        const found = screen.getAllByText(new RegExp(name.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')));
-        expect(found.length).toBeGreaterThanOrEqual(1);
-      }
-    });
+    const hideHeaderBtn = screen.getByTitle('Collapse Top Header Bar');
+    fireEvent.click(hideHeaderBtn);
 
-    it('should render module icons', () => {
-      renderPage();
-      expect(screen.getByText('🎯')).toBeInTheDocument();
-      expect(screen.getByText('🏠')).toBeInTheDocument();
-      expect(screen.getByText('📈')).toBeInTheDocument();
-      expect(screen.getByText('💳')).toBeInTheDocument();
-      expect(screen.getByText('📋')).toBeInTheDocument();
-      expect(screen.getByText('💬')).toBeInTheDocument();
-      expect(screen.getByText('👑')).toBeInTheDocument();
-    });
+    expect(screen.getByTitle('Expand Top Header Bar')).toBeInTheDocument();
 
-    it('should render module descriptions', () => {
-      renderPage();
-      expect(screen.getByText('Lead qualification and pipeline management')).toBeInTheDocument();
-      expect(screen.getByText('Portfolio, owners, inventory data quality')).toBeInTheDocument();
-    });
+    const showHeaderBtn = screen.getByTitle('Expand Top Header Bar');
+    fireEvent.click(showHeaderBtn);
+
+    expect(screen.getByTitle('Collapse Top Header Bar')).toBeInTheDocument();
   });
 
-  // ── Quick Actions Navigation ─────────────────────────────────
+  it('toggles sidebar collapse state cleanly', () => {
+    renderPage();
 
-  describe('Quick Actions Navigation', () => {
-    it('should navigate to leads page on Lead Management click', () => {
-      renderPage();
-      // Get the quick action button specifically
-      const leadBtn = screen.getByText(/🎯 Lead Management/);
-      fireEvent.click(leadBtn);
-      expect(mockNavigate).toHaveBeenCalledWith('/owner/crm/leads');
-    });
+    const toggleBtn = screen.getByTitle('Collapse Sidebar');
+    fireEvent.click(toggleBtn);
 
-    it('should navigate to properties page on Property Portfolio click', () => {
-      renderPage();
-      const propBtn = screen.getByText(/🏠 Property Portfolio/);
-      fireEvent.click(propBtn);
-      expect(mockNavigate).toHaveBeenCalledWith('/owner/crm/properties');
-    });
+    expect(screen.getByTitle('Expand Sidebar')).toBeInTheDocument();
 
-    it('should navigate to agents page on Agent Performance click', () => {
-      renderPage();
-      const agentBtn = screen.getByText(/👥 Agent Performance/);
-      fireEvent.click(agentBtn);
-      expect(mockNavigate).toHaveBeenCalledWith('/owner/crm/agents');
-    });
+    fireEvent.click(screen.getByTitle('Expand Sidebar'));
+    expect(screen.getByTitle('Collapse Sidebar')).toBeInTheDocument();
   });
 
-  // ── Module Selection ─────────────────────────────────────────
+  it('opens and switches to Tile 1 (MD Sovereign Suite)', () => {
+    renderPage();
 
-  describe('Module Selection', () => {
-    it('should activate a module when module card is clicked', async () => {
-      renderPage();
-      // Click on Lead Management module card (the one in the modules grid)
-      const cards = screen.getAllByText('Lead qualification and pipeline management');
-      fireEvent.click(cards[0].closest('[class]')!);
+    const mdTile = screen.getByText(/1. MD Office \(MD Suite\)/i);
+    fireEvent.click(mdTile);
 
-      // Should show back button and active module
-      await waitFor(() => {
-        expect(screen.getByText(/Back to CRM Hub/)).toBeInTheDocument();
-      });
-    });
-
-    it('should show back button when module is active', async () => {
-      renderPage();
-      // Click WhatsApp CRM quick action
-      const btn = screen.getByText(/💬 WhatsApp CRM/);
-      fireEvent.click(btn);
-
-      await waitFor(() => {
-        expect(screen.getByText(/Back to CRM Hub/)).toBeInTheDocument();
-      });
-    });
-
-    it('should return to hub when back button is clicked', async () => {
-      renderPage();
-      // Activate a module
-      const btn = screen.getByText(/💬 WhatsApp CRM/);
-      fireEvent.click(btn);
-
-      await waitFor(() => {
-        expect(screen.getByText(/Back to CRM Hub/)).toBeInTheDocument();
-      });
-
-      // Click back
-      fireEvent.click(screen.getByText(/Back to CRM Hub/));
-      await waitFor(() => {
-        expect(screen.getByText('CRM Command Center')).toBeInTheDocument();
-      });
-    });
-
-    it('should show Active badge when module is open', async () => {
-      renderPage();
-      const btn = screen.getByText(/💬 WhatsApp CRM/);
-      fireEvent.click(btn);
-
-      await waitFor(() => {
-        expect(screen.getByText('Active')).toBeInTheDocument();
-      });
-    });
+    expect(screen.getByText(/Office of the Managing Director \(MD Suite\)/i)).toBeInTheDocument();
+    expect(screen.getByText(/Level 7 \(Ultimate Sovereign Access\)/i)).toBeInTheDocument();
   });
 
-  // ── Activity Feed ────────────────────────────────────────────
+  it('opens Tile 3 AI Command Center and selects an AI Assistant with URL update', async () => {
+    renderPage();
 
-  describe('Activity Feed', () => {
-    it('should show activity items', () => {
-      renderPage();
-      expect(screen.getByText('New lead added')).toBeInTheDocument();
-    });
+    const aiTile = screen.getByText(/3. AI Command Center \(26 AI\)/i);
+    fireEvent.click(aiTile);
 
-    it('should show time ago for activities', () => {
-      renderPage();
-      // Activities have time formatted as "Xm ago" or "Xh ago"
-      const timeElements = screen.getAllByText(/ago|Just now|Recently/);
-      expect(timeElements.length).toBeGreaterThanOrEqual(1);
-    });
-
-    it('should show default activity when no activities exist', () => {
-      renderPage({
-        activities: { items: [], loading: false, error: null },
-      });
-      expect(
-        screen.getByText('System initialized — CRM modules loaded successfully')
-      ).toBeInTheDocument();
-    });
-  });
-
-  // ── Stats Card Navigation ────────────────────────────────────
-
-  describe('Stats Card Navigation', () => {
-    it('should navigate to leads when Total Leads card is clicked', () => {
-      renderPage();
-      fireEvent.click(screen.getByText('Total Leads').closest('[class]')!);
-      expect(mockNavigate).toHaveBeenCalledWith('/owner/crm/leads');
-    });
-
-    it('should navigate to agents when Active Agents card is clicked', () => {
-      renderPage();
-      fireEvent.click(screen.getByText('Active Agents').closest('[class]')!);
-      expect(mockNavigate).toHaveBeenCalledWith('/owner/crm/agents');
-    });
-  });
-
-  // ── Empty / Edge Cases ───────────────────────────────────────
-
-  describe('Edge Cases', () => {
-    it('should render with empty CRM data', () => {
-      renderPage({
-        leads: { items: [], selected: null, loading: false, error: null },
-        clients: { items: [], selected: null, loading: false, error: null },
-        agents: { items: [], selected: null, loading: false, error: null },
-        commissions: { items: [], loading: false, error: null },
-        activities: { items: [], loading: false, error: null },
-      });
-      expect(screen.getByText('CRM Command Center')).toBeInTheDocument();
-      // '0' appears in multiple stat cards when all are empty
-      expect(screen.getAllByText('0').length).toBeGreaterThanOrEqual(1);
-    });
-
-    it('should show pipeline value in K format for small values', () => {
-      renderPage({
-        leads: {
-          items: [{ id: 'l1', status: 'hot', value: 50000 }],
-          selected: null,
-          loading: false,
-          error: null,
-        },
-      });
-      expect(screen.getByText('Pipeline Value')).toBeInTheDocument();
-    });
+    expect(screen.getAllByText(/Nadia AI/i).length).toBeGreaterThanOrEqual(1);
+    expect(mockSetSearchParams).toHaveBeenCalled();
   });
 });

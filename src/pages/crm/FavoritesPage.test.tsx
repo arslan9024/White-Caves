@@ -44,6 +44,12 @@ vi.mock('../../components/ui', () => ({
       <button onClick={() => onPageChange(currentPage + 1)}>Next</button>
     </div>
   ),
+  EmptyState: ({ title, description }: any) => (
+    <div data-testid="empty-state">
+      <h3>{title}</h3>
+      {description && <p>{description}</p>}
+    </div>
+  ),
 }));
 
 import FavoritesPage from './FavoritesPage';

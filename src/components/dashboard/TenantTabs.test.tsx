@@ -4,6 +4,7 @@
  * TenantOverview, TenantLease, TenantPayments, TenantMaintenance, TenantDocuments
  */
 
+import React from 'react';
 import { describe, it, expect, vi, beforeEach, type Mock } from 'vitest';
 import { render, screen, waitFor } from '@testing-library/react';
 import {
