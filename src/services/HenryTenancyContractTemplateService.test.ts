@@ -80,8 +80,8 @@ describe('HenryTenancyContractTemplateService — Official DLD Tenancy Contract 
     expect(fullHtml).toContain('Arslan Malik');
     expect(fullHtml).toContain('VIRIDIS A');
     expect(fullHtml).toContain('AED 48,000');
-    expect(fullHtml).toContain('TERMS AND CONDITIONS');
-    expect(fullHtml).toContain('KNOW YOUR RIGHTS & ADDENDUM');
+    expect(fullHtml).toContain('Terms and Conditions');
+    expect(fullHtml).toContain('Know your Rights');
     expect(fullHtml).toContain('support@dubailand.gov.ae');
   });
 });

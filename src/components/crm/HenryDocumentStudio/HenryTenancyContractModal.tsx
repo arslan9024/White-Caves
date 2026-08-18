@@ -1,11 +1,11 @@
 /**
  * HenryTenancyContractModal.tsx
  *
- * High-Fidelity Split-Pane Interactive Modal for preparing Dubai Land Department (DLD)
- * Unified Tenancy Contracts with live 3-page bilingual preview and multi-OCR ingestion.
+ * High-Fidelity Split-Pane Interactive Modal for preparing official Dubai Land Department (DLD)
+ * Unified Tenancy Contracts with live 3-page bilingual preview and multi-OCR document ingestion.
  */
 
-import React, { FC } from 'react';
+import React, { FC, useState, useRef } from 'react';
 import { AnimatePresence } from 'framer-motion';
 import {
   X,
@@ -18,15 +18,13 @@ import {
   CreditCard,
   ShieldCheck,
   UploadCloud,
-  Copy,
   Check,
   ZoomIn,
   ZoomOut,
-  ChevronRight,
-  ChevronLeft,
   Home,
   Save,
   Share2,
+  AlertCircle,
 } from 'lucide-react';
 import {
   useHenryTenancyContractModalLogic,
@@ -91,10 +89,14 @@ export const HenryTenancyContractModal: FC<HenryTenancyContractModalProps> = ({
     handleFileUpload,
   } = useHenryTenancyContractModalLogic({ isOpen, onClose, initialData });
 
-  const masterFileInputRef = React.useRef<HTMLInputElement>(null);
-  const deedFileInputRef = React.useRef<HTMLInputElement>(null);
-  const ownerFileInputRef = React.useRef<HTMLInputElement>(null);
-  const tenantFileInputRef = React.useRef<HTMLInputElement>(null);
+  const [showExitConfirm, setShowExitConfirm] = useState(false);
+
+  // Hidden File Inputs for Each Stage
+  const masterFileInputRef = useRef<HTMLInputElement>(null);
+  const deedFileInputRef = useRef<HTMLInputElement>(null);
+  const landlordFileInputRef = useRef<HTMLInputElement>(null);
+  const tenantEidFileInputRef = useRef<HTMLInputElement>(null);
+  const tenantPassportFileInputRef = useRef<HTMLInputElement>(null);
 
   const onFileSelect = (e: React.ChangeEvent<HTMLInputElement>, docType: any = 'auto') => {
     const file = e.target.files?.[0];
@@ -102,6 +104,15 @@ export const HenryTenancyContractModal: FC<HenryTenancyContractModalProps> = ({
       handleFileUpload(file, docType);
       e.target.value = ''; // Reset input
     }
+  };
+
+  const handleAttemptClose = () => {
+    setShowExitConfirm(true);
+  };
+
+  const handleConfirmClose = () => {
+    setShowExitConfirm(false);
+    onClose();
   };
 
   if (!isOpen) return null;
@@ -112,13 +123,13 @@ export const HenryTenancyContractModal: FC<HenryTenancyContractModalProps> = ({
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         exit={{ opacity: 0 }}
-        onClick={onClose}
+        onClick={(e) => e.stopPropagation()} /* Prevent accidental closing on backdrop click */
       >
-        {/* Hidden File Inputs */}
+        {/* Hidden Stage-Specific File Inputs */}
         <input
           type="file"
           ref={masterFileInputRef}
-          onChange={(e) => onFileSelect(e, 'auto')}
+          onChange={(e) => onFileSelect(e, 'contract')}
           accept=".pdf,image/*,.doc,.docx"
           style={{ display: 'none' }}
         />
@@ -131,15 +142,22 @@ export const HenryTenancyContractModal: FC<HenryTenancyContractModalProps> = ({
         />
         <input
           type="file"
-          ref={ownerFileInputRef}
+          ref={landlordFileInputRef}
           onChange={(e) => onFileSelect(e, 'emirates_id_landlord')}
           accept=".pdf,image/*"
           style={{ display: 'none' }}
         />
         <input
           type="file"
-          ref={tenantFileInputRef}
+          ref={tenantEidFileInputRef}
           onChange={(e) => onFileSelect(e, 'emirates_id_tenant')}
+          accept=".pdf,image/*"
+          style={{ display: 'none' }}
+        />
+        <input
+          type="file"
+          ref={tenantPassportFileInputRef}
+          onChange={(e) => onFileSelect(e, 'passport_tenant')}
           accept=".pdf,image/*"
           style={{ display: 'none' }}
         />
@@ -154,13 +172,13 @@ export const HenryTenancyContractModal: FC<HenryTenancyContractModalProps> = ({
           {/* ── Modal Header ── */}
           <ModalHeader>
             <div className="header-left">
-              <span style={{ fontSize: '1.8rem' }}>📄</span>
+              <span style={{ fontSize: '1.8rem' }}>🏛️</span>
               <div>
                 <h3 className="header-title">
-                  Prepare New Tenancy Contract <span style={{ color: '#EF4444' }}>· DLD Unified Form</span>
+                  Prepare New Tenancy Contract <span style={{ color: '#EF4444' }}>· Official DLD Unified Template</span>
                 </h3>
                 <p className="header-subtitle">
-                  Bilingual Dubai Land Department Tenancy Contract Form · Interactive 5-Stage Preparation & Vault Storage
+                  Government of Dubai / Land Department Bilingual Form (عقد إيجار) · Guided 6-Stage Preparation & Auto-Fill
                 </p>
               </div>
             </div>
@@ -169,24 +187,24 @@ export const HenryTenancyContractModal: FC<HenryTenancyContractModalProps> = ({
               <HeaderBtn
                 $variant="primary"
                 onClick={() => masterFileInputRef.current?.click()}
-                title="Upload any tenancy contract PDF/image or document to auto-extract and fill template"
+                title="Upload full tenancy contract to auto-fill all fields at once"
                 style={{ background: 'linear-gradient(135deg, #EF4444, #DC2626)', color: '#FFF' }}
               >
-                <UploadCloud size={14} /> Upload Doc & Fill Template
+                <UploadCloud size={14} /> Upload Contract & Auto-Fill
               </HeaderBtn>
-              <HeaderBtn onClick={handleResetToBlank} title="Reset to empty official blank template">
+              <HeaderBtn onClick={handleResetToBlank} title="Reset to fresh blank official DLD template">
                 <RotateCcw size={14} /> Blank Template
               </HeaderBtn>
-              <HeaderBtn onClick={handleLoadCameliaSample} title="Load Camelia 608 (Sanit Singh & Keshivani)">
-                <Sparkles size={14} color="#F59E0B" /> Camelia 608 Sample
+              <HeaderBtn onClick={handleLoadCameliaSample} title="Load benchmark sample: Camelia 608">
+                <Sparkles size={14} color="#F59E0B" /> Camelia 608
               </HeaderBtn>
-              <HeaderBtn onClick={handleLoadJanusiaSample} title="Load Janusia XH2858B (Svetlana & William Abernethy)">
-                <Sparkles size={14} color="#38BDF8" /> Janusia XH2858B Sample
+              <HeaderBtn onClick={handleLoadJanusiaSample} title="Load benchmark sample: Janusia XH2858B">
+                <Sparkles size={14} color="#38BDF8" /> Janusia XH2858B
               </HeaderBtn>
               <HeaderBtn $variant="secondary" onClick={handlePrint}>
                 <Printer size={14} /> Print / PDF
               </HeaderBtn>
-              <HeaderBtn $variant="danger" onClick={onClose}>
+              <HeaderBtn $variant="danger" onClick={handleAttemptClose} title="Close / Exit Wizard">
                 <X size={16} />
               </HeaderBtn>
             </div>
@@ -213,7 +231,7 @@ export const HenryTenancyContractModal: FC<HenryTenancyContractModalProps> = ({
 
           {/* ── Split Screen Body (50% Preview | 50% Form) ── */}
           <SplitPaneBody>
-            {/* ══════════ LEFT PANE: LIVE DLD PREVIEW ══════════ */}
+            {/* ══════════ LEFT PANE: LIVE DLD OFFICIAL PREVIEW ══════════ */}
             <LeftPreviewPane>
               <PreviewToolbar>
                 <div className="page-switcher">
@@ -221,19 +239,25 @@ export const HenryTenancyContractModal: FC<HenryTenancyContractModalProps> = ({
                     $active={activePreviewPage === 1}
                     onClick={() => setActivePreviewPage(1)}
                   >
-                    Page 1
+                    Page 1 (Contract & Parties)
                   </PageSwitchBtn>
                   <PageSwitchBtn
                     $active={activePreviewPage === 2}
                     onClick={() => setActivePreviewPage(2)}
                   >
-                    Page 2
+                    Page 2 (14 Legal Terms)
                   </PageSwitchBtn>
                   <PageSwitchBtn
                     $active={activePreviewPage === 3}
                     onClick={() => setActivePreviewPage(3)}
                   >
-                    Page 3
+                    Page 3 (Addendum & Rights)
+                  </PageSwitchBtn>
+                  <PageSwitchBtn
+                    $active={activePreviewPage === 'all'}
+                    onClick={() => setActivePreviewPage('all')}
+                  >
+                    All 3 Pages
                   </PageSwitchBtn>
                 </div>
 
@@ -256,7 +280,7 @@ export const HenryTenancyContractModal: FC<HenryTenancyContractModalProps> = ({
               </PreviewScrollArea>
             </LeftPreviewPane>
 
-            {/* ══════════ RIGHT PANE: 5-STAGE GUIDED STEPPER ══════════ */}
+            {/* ══════════ RIGHT PANE: 6-STAGE GUIDED STEPPER ══════════ */}
             <RightFormPane>
               {/* Stepper Navigation */}
               <StepperHeader>
@@ -265,49 +289,56 @@ export const HenryTenancyContractModal: FC<HenryTenancyContractModalProps> = ({
                   $completed={Boolean(contractData.buildingName && contractData.propertyNo)}
                   onClick={() => setActiveStep(1)}
                 >
-                  <Home size={14} /> 1. Property Specs
+                  <Home size={14} /> 1. Title Deed & Unit
                 </StepTabBtn>
                 <StepTabBtn
                   $active={activeStep === 2}
                   $completed={Boolean(contractData.ownerName)}
                   onClick={() => setActiveStep(2)}
                 >
-                  <Building size={14} /> 2. Property Owner
+                  <Building size={14} /> 2. Landlord KYC
                 </StepTabBtn>
                 <StepTabBtn
                   $active={activeStep === 3}
                   $completed={Boolean(contractData.tenantName)}
                   onClick={() => setActiveStep(3)}
                 >
-                  <UserCheck size={14} /> 3. Tenant KYC
+                  <UserCheck size={14} /> 3. Tenant Docs
                 </StepTabBtn>
                 <StepTabBtn
                   $active={activeStep === 4}
                   $completed={Boolean(contractData.annualRent > 0)}
                   onClick={() => setActiveStep(4)}
                 >
-                  <CreditCard size={14} /> 4. Lease & Financials
+                  <CreditCard size={14} /> 4. Financials
                 </StepTabBtn>
                 <StepTabBtn
                   $active={activeStep === 5}
-                  $completed={contractData.status === 'ready_for_signature'}
+                  $completed={Boolean(contractData.additionalTerms?.length > 0)}
                   onClick={() => setActiveStep(5)}
                 >
-                  <ShieldCheck size={14} /> 5. Sign & Finalize
+                  <FileText size={14} /> 5. Special Terms
+                </StepTabBtn>
+                <StepTabBtn
+                  $active={activeStep === 6}
+                  $completed={contractData.status === 'ready_for_signature'}
+                  onClick={() => setActiveStep(6)}
+                >
+                  <ShieldCheck size={14} /> 6. Review & Export
                 </StepTabBtn>
               </StepperHeader>
 
               <FormScrollArea>
-                {/* ── STAGE 1: PROPERTY SPECIFICATIONS ── */}
+                {/* ── STAGE 1: TITLE DEED & PROPERTY SPECS ── */}
                 {activeStep === 1 && (
                   <div>
                     <OcrDropzone onClick={() => deedFileInputRef.current?.click()}>
                       <UploadCloud size={28} color="#EF4444" style={{ margin: '0 auto 8px auto' }} />
-                      <div className="dropzone-title">Upload & Ingest DLD Title Deed</div>
+                      <div className="dropzone-title">Upload & Scan Official DLD Title Deed / Oqood</div>
                       <div className="dropzone-desc">
-                        Drag and drop official Title Deed PDF/image or click to browse files and extract Building, Unit #, Area SqM, Plot & DEWA premise automatically.
+                        Drag and drop official Title Deed PDF or image to automatically extract Building Name, Unit Number, Plot Number, Makani, DEWA Number, Area SqM, and Owner.
                       </div>
-                      <div style={{ display: 'flex', gap: '8px', justifyContent: 'center', marginTop: '8px' }}>
+                      <div style={{ display: 'flex', gap: '8px', justifyContent: 'center', marginTop: '10px' }}>
                         <HeaderBtn
                           $variant="primary"
                           onClick={(e) => {
@@ -316,7 +347,7 @@ export const HenryTenancyContractModal: FC<HenryTenancyContractModalProps> = ({
                           }}
                           disabled={isProcessingOcr}
                         >
-                          <UploadCloud size={14} /> Upload Title Deed File
+                          <UploadCloud size={14} /> Browse Title Deed File
                         </HeaderBtn>
                         <HeaderBtn
                           $variant="secondary"
@@ -337,7 +368,7 @@ export const HenryTenancyContractModal: FC<HenryTenancyContractModalProps> = ({
 
                     <FormGrid $cols={3}>
                       <FormGroup>
-                        <label>Building / Tower Name <span className="label-arabic">(المبنى)</span></label>
+                        <label>Building / Tower Name <span className="label-arabic">(اسم المبنى)</span></label>
                         <InputField
                           type="text"
                           value={contractData.buildingName}
@@ -346,7 +377,7 @@ export const HenryTenancyContractModal: FC<HenryTenancyContractModalProps> = ({
                         />
                       </FormGroup>
                       <FormGroup>
-                        <label>Unit / Property No. <span className="label-arabic">(رقم الوحدة)</span></label>
+                        <label>Unit / Property No. <span className="label-arabic">(رقم العقار)</span></label>
                         <InputField
                           type="text"
                           value={contractData.propertyNo}
@@ -382,16 +413,16 @@ export const HenryTenancyContractModal: FC<HenryTenancyContractModalProps> = ({
                         <InputField
                           type="text"
                           value={contractData.propertyType}
-                          placeholder="e.g. 3 BHK + Maid Room / LAND"
+                          placeholder="e.g. 3 Bedroom Townhouse"
                           onChange={(e) => handleFieldChange('propertyType', e.target.value)}
                         />
                       </FormGroup>
                       <FormGroup>
-                        <label>Area Sq.M <span className="label-arabic">(مساحة متر مربع)</span></label>
+                        <label>Area Sq.M <span className="label-arabic">(مساحة العقار متر مربع)</span></label>
                         <InputField
                           type="number"
                           value={contractData.propertyAreaSqM || ''}
-                          placeholder="e.g. 112.24 / 198.98"
+                          placeholder="e.g. 198.50"
                           onChange={(e) => handleFieldChange('propertyAreaSqM', parseFloat(e.target.value) || 0)}
                         />
                       </FormGroup>
@@ -408,7 +439,7 @@ export const HenryTenancyContractModal: FC<HenryTenancyContractModalProps> = ({
                         />
                       </FormGroup>
                       <FormGroup>
-                        <label>Premises No. DEWA <span className="label-arabic">(ديوا)</span></label>
+                        <label>Premises No. DEWA <span className="label-arabic">(رقم المبنى ديوا)</span></label>
                         <InputField
                           type="text"
                           value={contractData.premisesNoDewa}
@@ -421,7 +452,7 @@ export const HenryTenancyContractModal: FC<HenryTenancyContractModalProps> = ({
                         <InputField
                           type="text"
                           value={contractData.location}
-                          placeholder="e.g. DAMAC HILLS 2"
+                          placeholder="e.g. DAMAC Hills 2, Dubai"
                           onChange={(e) => handleFieldChange('location', e.target.value)}
                         />
                       </FormGroup>
@@ -429,44 +460,31 @@ export const HenryTenancyContractModal: FC<HenryTenancyContractModalProps> = ({
                   </div>
                 )}
 
-                {/* ── STAGE 2: PROPERTY OWNER / LESSOR DETAILS ── */}
+                {/* ── STAGE 2: LANDLORD / OWNER KYC ── */}
                 {activeStep === 2 && (
                   <div>
-                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px', marginBottom: '1.25rem' }}>
-                      <OcrDropzone onClick={() => ownerFileInputRef.current?.click()}>
-                        <UploadCloud size={24} color="#EF4444" style={{ margin: '0 auto 6px auto' }} />
-                        <div className="dropzone-title" style={{ fontSize: '0.85rem' }}>Upload Landlord Emirates ID / Passport</div>
+                    <OcrDropzone onClick={() => landlordFileInputRef.current?.click()} style={{ marginBottom: '1.25rem' }}>
+                      <UploadCloud size={24} color="#EF4444" style={{ margin: '0 auto 6px auto' }} />
+                      <div className="dropzone-title">Upload Landlord Emirates ID / Passport / Agreement</div>
+                      <div className="dropzone-desc">
+                        Upload landlord identity document to extract Owner Name, Emirates ID, Mobile, and Email automatically.
+                      </div>
+                      <div style={{ display: 'flex', gap: '8px', justifyContent: 'center', marginTop: '8px' }}>
                         <HeaderBtn
-                          $variant="secondary"
+                          $variant="primary"
                           onClick={(e) => {
                             e.stopPropagation();
-                            ownerFileInputRef.current?.click();
+                            landlordFileInputRef.current?.click();
                           }}
                           disabled={isProcessingOcr}
-                          style={{ margin: '6px auto 0 auto', fontSize: '0.75rem', padding: '4px 10px' }}
                         >
-                          <UploadCloud size={12} /> Browse Landlord ID File
+                          <UploadCloud size={14} /> Browse Landlord Document
                         </HeaderBtn>
-                      </OcrDropzone>
-                      <OcrDropzone onClick={() => masterFileInputRef.current?.click()}>
-                        <UploadCloud size={24} color="#F59E0B" style={{ margin: '0 auto 6px auto' }} />
-                        <div className="dropzone-title" style={{ fontSize: '0.85rem' }}>Upload Ownership Deed / Contract</div>
-                        <HeaderBtn
-                          $variant="secondary"
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            masterFileInputRef.current?.click();
-                          }}
-                          disabled={isProcessingOcr}
-                          style={{ margin: '6px auto 0 auto', fontSize: '0.75rem', padding: '4px 10px' }}
-                        >
-                          <UploadCloud size={12} /> Browse File
-                        </HeaderBtn>
-                      </OcrDropzone>
-                    </div>
+                      </div>
+                    </OcrDropzone>
 
                     <h4 style={{ margin: '0 0 1rem 0', color: '#EF4444', fontSize: '0.95rem', fontWeight: 800 }}>
-                      Stage 2: Property Owner & Lessor Contacts (معلومات المالك / المؤجر)
+                      Stage 2: Owner & Lessor Information (معلومات المالك / المؤجر)
                     </h4>
 
                     <FormGrid $cols={2}>
@@ -477,7 +495,7 @@ export const HenryTenancyContractModal: FC<HenryTenancyContractModalProps> = ({
                         <InputField
                           type="text"
                           value={contractData.ownerName}
-                          placeholder="e.g. SANIT SINGH NAGPAL / SVETLANA LEVITSKAYA"
+                          placeholder="e.g. Arslan Malik / SANIT SINGH NAGPAL"
                           onChange={(e) => handleFieldChange('ownerName', e.target.value)}
                         />
                       </FormGroup>
@@ -488,7 +506,7 @@ export const HenryTenancyContractModal: FC<HenryTenancyContractModalProps> = ({
                         <InputField
                           type="text"
                           value={contractData.lessorName}
-                          placeholder="e.g. SANIT SINGH NAGPAL / SVETLANA LEVITSKAYA"
+                          placeholder="e.g. Arslan Malik / SANIT SINGH NAGPAL"
                           onChange={(e) => handleFieldChange('lessorName', e.target.value)}
                         />
                       </FormGroup>
@@ -497,23 +515,23 @@ export const HenryTenancyContractModal: FC<HenryTenancyContractModalProps> = ({
                     <FormGrid $cols={2}>
                       <FormGroup>
                         <label>
-                          Lessor's Emirates ID / Passport <span className="label-arabic">(الهوية)</span>
+                          Lessor's Emirates ID / Passport <span className="label-arabic">(الهوية الإماراتية للمؤجر)</span>
                         </label>
                         <InputField
                           type="text"
                           value={contractData.lessorEmiratesId}
-                          placeholder="784-1999-5371408-8 / Passport No"
+                          placeholder="784-1988-1234567-1"
                           onChange={(e) => handleFieldChange('lessorEmiratesId', e.target.value)}
                         />
                       </FormGroup>
                       <FormGroup>
                         <label>
-                          Lessor's Phone Number <span className="label-arabic">(هاتف المؤجر)</span>
+                          Lessor's Phone Number <span className="label-arabic">(رقم هاتف المؤجر)</span>
                         </label>
                         <InputField
                           type="text"
                           value={contractData.lessorPhone}
-                          placeholder="0504458097 / +974 5550 1054"
+                          placeholder="+971 50 123 4567"
                           onChange={(e) => handleFieldChange('lessorPhone', e.target.value)}
                         />
                       </FormGroup>
@@ -522,18 +540,18 @@ export const HenryTenancyContractModal: FC<HenryTenancyContractModalProps> = ({
                     <FormGrid $cols={2}>
                       <FormGroup>
                         <label>
-                          Lessor's Email Address <span className="label-arabic">(البريد الإلكتروني)</span>
+                          Lessor's Email Address <span className="label-arabic">(البريد الإلكتروني للمؤجر)</span>
                         </label>
                         <InputField
                           type="email"
                           value={contractData.lessorEmail}
-                          placeholder="nagpalsanit@gmail.com / svetlanaln@hotmail.com"
+                          placeholder="arslan.malik@whitecaves.ae"
                           onChange={(e) => handleFieldChange('lessorEmail', e.target.value)}
                         />
                       </FormGroup>
                       <FormGroup>
                         <label>
-                          License No. (In case of Company) <span className="label-arabic">(رقم الرخصة)</span>
+                          License No. <span className="label-arabic">(رقم الرخصة في حال كانت شركة)</span>
                         </label>
                         <InputField
                           type="text"
@@ -546,11 +564,11 @@ export const HenryTenancyContractModal: FC<HenryTenancyContractModalProps> = ({
                   </div>
                 )}
 
-                {/* ── STAGE 3: TENANT KYC & IDENTITY ── */}
+                {/* ── STAGE 3: TENANT DOCUMENTS & KYC ── */}
                 {activeStep === 3 && (
                   <div>
                     <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px', marginBottom: '1.25rem' }}>
-                      <OcrDropzone onClick={() => tenantFileInputRef.current?.click()}>
+                      <OcrDropzone onClick={() => tenantEidFileInputRef.current?.click()}>
                         <UploadCloud size={24} color="#38BDF8" style={{ margin: '0 auto 6px auto' }} />
                         <div className="dropzone-title" style={{ fontSize: '0.85rem' }}>Upload Tenant Emirates ID</div>
                         <div style={{ display: 'flex', gap: '6px', justifyContent: 'center', marginTop: '6px' }}>
@@ -558,12 +576,12 @@ export const HenryTenancyContractModal: FC<HenryTenancyContractModalProps> = ({
                             $variant="secondary"
                             onClick={(e) => {
                               e.stopPropagation();
-                              tenantFileInputRef.current?.click();
+                              tenantEidFileInputRef.current?.click();
                             }}
                             disabled={isProcessingOcr}
                             style={{ fontSize: '0.75rem', padding: '4px 8px' }}
                           >
-                            <UploadCloud size={12} /> Browse File
+                            <UploadCloud size={12} /> Browse EID
                           </HeaderBtn>
                           <HeaderBtn
                             $variant="secondary"
@@ -574,12 +592,12 @@ export const HenryTenancyContractModal: FC<HenryTenancyContractModalProps> = ({
                             disabled={isProcessingOcr}
                             style={{ fontSize: '0.75rem', padding: '4px 8px' }}
                           >
-                            <Sparkles size={12} /> Sample
+                            <Sparkles size={12} /> Sample EID
                           </HeaderBtn>
                         </div>
                       </OcrDropzone>
 
-                      <OcrDropzone onClick={() => tenantFileInputRef.current?.click()}>
+                      <OcrDropzone onClick={() => tenantPassportFileInputRef.current?.click()}>
                         <UploadCloud size={24} color="#10B981" style={{ margin: '0 auto 6px auto' }} />
                         <div className="dropzone-title" style={{ fontSize: '0.85rem' }}>Upload Tenant Passport</div>
                         <div style={{ display: 'flex', gap: '6px', justifyContent: 'center', marginTop: '6px' }}>
@@ -587,12 +605,12 @@ export const HenryTenancyContractModal: FC<HenryTenancyContractModalProps> = ({
                             $variant="secondary"
                             onClick={(e) => {
                               e.stopPropagation();
-                              tenantFileInputRef.current?.click();
+                              tenantPassportFileInputRef.current?.click();
                             }}
                             disabled={isProcessingOcr}
                             style={{ fontSize: '0.75rem', padding: '4px 8px' }}
                           >
-                            <UploadCloud size={12} /> Browse File
+                            <UploadCloud size={12} /> Browse Passport
                           </HeaderBtn>
                           <HeaderBtn
                             $variant="secondary"
@@ -603,7 +621,7 @@ export const HenryTenancyContractModal: FC<HenryTenancyContractModalProps> = ({
                             disabled={isProcessingOcr}
                             style={{ fontSize: '0.75rem', padding: '4px 8px' }}
                           >
-                            <Sparkles size={12} /> Sample
+                            <Sparkles size={12} /> Sample Passport
                           </HeaderBtn>
                         </div>
                       </OcrDropzone>
@@ -619,16 +637,16 @@ export const HenryTenancyContractModal: FC<HenryTenancyContractModalProps> = ({
                         <InputField
                           type="text"
                           value={contractData.tenantName}
-                          placeholder="e.g. KESHIVANI MAYADEVAN / WILLIAM MICHAEL ABERNETHY"
+                          placeholder="e.g. Sarah Jenkins / KESHIVANI MAYADEVAN"
                           onChange={(e) => handleFieldChange('tenantName', e.target.value)}
                         />
                       </FormGroup>
                       <FormGroup>
-                        <label>Tenant's Emirates ID / Passport <span className="label-arabic">(الهوية)</span></label>
+                        <label>Tenant's Emirates ID / Passport <span className="label-arabic">(الهوية الإماراتية للمستأجر)</span></label>
                         <InputField
                           type="text"
                           value={contractData.tenantEmiratesId}
-                          placeholder="784-1984-7391875-7 / 784197927183794"
+                          placeholder="784-1992-7654321-2"
                           onChange={(e) => handleFieldChange('tenantEmiratesId', e.target.value)}
                         />
                       </FormGroup>
@@ -636,20 +654,20 @@ export const HenryTenancyContractModal: FC<HenryTenancyContractModalProps> = ({
 
                     <FormGrid $cols={2}>
                       <FormGroup>
-                        <label>Tenant's Phone Number <span className="label-arabic">(هاتف المستأجر)</span></label>
+                        <label>Tenant's Phone Number <span className="label-arabic">(رقم هاتف المستأجر)</span></label>
                         <InputField
                           type="text"
                           value={contractData.tenantPhone}
-                          placeholder="050 7915250 / 0585969529"
+                          placeholder="+971 52 987 6543"
                           onChange={(e) => handleFieldChange('tenantPhone', e.target.value)}
                         />
                       </FormGroup>
                       <FormGroup>
-                        <label>Tenant's Email Address <span className="label-arabic">(البريد الإلكتروني)</span></label>
+                        <label>Tenant's Email Address <span className="label-arabic">(البريد الإلكتروني للمستأجر)</span></label>
                         <InputField
                           type="email"
                           value={contractData.tenantEmail}
-                          placeholder="shivanimayadevan9@gmail.com / wmabernethy@gmail.com"
+                          placeholder="sarah.jenkins@example.com"
                           onChange={(e) => handleFieldChange('tenantEmail', e.target.value)}
                         />
                       </FormGroup>
@@ -675,7 +693,7 @@ export const HenryTenancyContractModal: FC<HenryTenancyContractModalProps> = ({
                         <InputField
                           type="text"
                           value={contractData.contractPeriodFrom}
-                          placeholder="e.g. 13-07-2026 / 27-01-2026"
+                          placeholder="01-09-2026"
                           onChange={(e) => handleFieldChange('contractPeriodFrom', e.target.value)}
                         />
                       </FormGroup>
@@ -684,7 +702,7 @@ export const HenryTenancyContractModal: FC<HenryTenancyContractModalProps> = ({
                         <InputField
                           type="text"
                           value={contractData.contractPeriodTo}
-                          placeholder="e.g. 12-07-2027 / 26-01-2027"
+                          placeholder="31-08-2027"
                           onChange={(e) => handleFieldChange('contractPeriodTo', e.target.value)}
                         />
                       </FormGroup>
@@ -696,16 +714,21 @@ export const HenryTenancyContractModal: FC<HenryTenancyContractModalProps> = ({
                         <InputField
                           type="number"
                           value={contractData.annualRent || ''}
-                          placeholder="112000 / 120000"
-                          onChange={(e) => handleFieldChange('annualRent', parseFloat(e.target.value) || 0)}
+                          placeholder="95000"
+                          onChange={(e) => {
+                            const val = parseFloat(e.target.value) || 0;
+                            handleFieldChange('annualRent', val);
+                            handleFieldChange('contractValue', val);
+                            handleFieldChange('securityDepositAmount', Math.round(val * 0.05));
+                          }}
                         />
                       </FormGroup>
                       <FormGroup>
                         <label>Contract Value (AED) <span className="label-arabic">(قيمة العقد)</span></label>
                         <InputField
                           type="number"
-                          value={contractData.contractValue || ''}
-                          placeholder="112000 / 120000"
+                          value={contractData.contractValue || contractData.annualRent || ''}
+                          placeholder="95000"
                           onChange={(e) => handleFieldChange('contractValue', parseFloat(e.target.value) || 0)}
                         />
                       </FormGroup>
@@ -714,7 +737,7 @@ export const HenryTenancyContractModal: FC<HenryTenancyContractModalProps> = ({
                         <InputField
                           type="number"
                           value={contractData.securityDepositAmount || ''}
-                          placeholder="5600 / 6000"
+                          placeholder="4750"
                           onChange={(e) => handleFieldChange('securityDepositAmount', parseFloat(e.target.value) || 0)}
                         />
                       </FormGroup>
@@ -726,7 +749,7 @@ export const HenryTenancyContractModal: FC<HenryTenancyContractModalProps> = ({
                         <InputField
                           type="text"
                           value={contractData.modeOfPayment}
-                          placeholder="3 CHEQUES / 4 CHEQUES"
+                          placeholder="2 CHEQUES / 4 CHEQUES"
                           onChange={(e) => handleFieldChange('modeOfPayment', e.target.value)}
                         />
                       </FormGroup>
@@ -740,16 +763,28 @@ export const HenryTenancyContractModal: FC<HenryTenancyContractModalProps> = ({
                         />
                       </FormGroup>
                     </FormGrid>
+                  </div>
+                )}
 
-                    <h4 style={{ margin: '1.25rem 0 0.75rem 0', color: '#94A3B8', fontSize: '0.88rem', fontWeight: 800 }}>
-                      Additional Special Terms & Addenda (Page 3)
+                {/* ── STAGE 5: SPECIAL TERMS & ADDENDUM (PAGE 3) ── */}
+                {activeStep === 5 && (
+                  <div>
+                    <h4 style={{ margin: '0 0 1rem 0', color: '#F59E0B', fontSize: '0.95rem', fontWeight: 800 }}>
+                      Stage 5: Additional Terms & Special Addenda (شروط إضافية — الصفحة 3)
                     </h4>
-                    {(contractData.additionalTerms || []).map((term, index) => (
-                      <FormGroup key={index} style={{ marginBottom: '8px' }}>
-                        <label style={{ fontSize: '0.75rem' }}>Clause {index + 1}</label>
+                    <p style={{ fontSize: '0.8rem', color: '#94A3B8', margin: '0 0 12px 0' }}>
+                      Add up to 5 custom statutory or property-specific special conditions to appear on Page 3 of the official DLD agreement:
+                    </p>
+
+                    {[0, 1, 2, 3, 4].map((index) => (
+                      <FormGroup key={index} style={{ marginBottom: '10px' }}>
+                        <label style={{ fontSize: '0.75rem', fontWeight: 700 }}>
+                          Clause {index + 1} <span className="label-arabic">(الشرط {index + 1})</span>
+                        </label>
                         <InputField
                           type="text"
-                          value={term}
+                          value={(contractData.additionalTerms && contractData.additionalTerms[index]) || ''}
+                          placeholder={`Enter custom clause ${index + 1}...`}
                           onChange={(e) => handleUpdateAdditionalTerm(index, e.target.value)}
                         />
                       </FormGroup>
@@ -757,11 +792,11 @@ export const HenryTenancyContractModal: FC<HenryTenancyContractModalProps> = ({
                   </div>
                 )}
 
-                {/* ── STAGE 5: SIGNATURES & FINALIZATION ── */}
-                {activeStep === 5 && (
+                {/* ── STAGE 6: REVIEW, ENDORSEMENT & EXPORT ── */}
+                {activeStep === 6 && (
                   <div>
                     <h4 style={{ margin: '0 0 1rem 0', color: '#38BDF8', fontSize: '0.95rem', fontWeight: 800 }}>
-                      Stage 5: Digital Endorsements & E-Sign Finalization (التوقيعات واعتماد العقد)
+                      Stage 6: Final Review & Document Export (مراجعة واعتماد العقد)
                     </h4>
 
                     <FormGrid $cols={2}>
@@ -771,7 +806,10 @@ export const HenryTenancyContractModal: FC<HenryTenancyContractModalProps> = ({
                           type="text"
                           value={contractData.tenantSignature || ''}
                           placeholder="Enter Tenant Name for Digital Signature"
-                          onChange={(e) => handleFieldChange('tenantSignature', e.target.value)}
+                          onChange={(e) => {
+                            handleFieldChange('tenantSignature', e.target.value);
+                            handleFieldChange('tenantSignatureDate', new Date().toLocaleDateString('en-GB'));
+                          }}
                         />
                       </FormGroup>
                       <FormGroup>
@@ -780,7 +818,10 @@ export const HenryTenancyContractModal: FC<HenryTenancyContractModalProps> = ({
                           type="text"
                           value={contractData.lessorSignature || ''}
                           placeholder="Enter Lessor Name for Digital Signature"
-                          onChange={(e) => handleFieldChange('lessorSignature', e.target.value)}
+                          onChange={(e) => {
+                            handleFieldChange('lessorSignature', e.target.value);
+                            handleFieldChange('lessorSignatureDate', new Date().toLocaleDateString('en-GB'));
+                          }}
                         />
                       </FormGroup>
                     </FormGrid>
@@ -804,6 +845,15 @@ export const HenryTenancyContractModal: FC<HenryTenancyContractModalProps> = ({
                         <Share2 size={14} /> {esignLinkCopied ? 'Link Copied to Clipboard!' : 'Generate E-Signature Link'}
                       </HeaderBtn>
                     </div>
+
+                    <div style={{ marginTop: '1.5rem', display: 'flex', gap: '10px' }}>
+                      <HeaderBtn $variant="secondary" onClick={handlePrint} style={{ flex: 1 }}>
+                        <Printer size={14} /> Print / Save Full 3-Page Contract PDF
+                      </HeaderBtn>
+                      <HeaderBtn $variant="primary" onClick={handleSaveAndArchive} style={{ flex: 1 }}>
+                        <Save size={14} /> Save to Henry Vault
+                      </HeaderBtn>
+                    </div>
                   </div>
                 )}
               </FormScrollArea>
@@ -819,13 +869,13 @@ export const HenryTenancyContractModal: FC<HenryTenancyContractModalProps> = ({
                 </div>
 
                 <div style={{ display: 'flex', gap: '8px' }}>
-                  {activeStep < 5 ? (
+                  {activeStep < 6 ? (
                     <HeaderBtn $variant="primary" onClick={() => setActiveStep(prev => prev + 1)}>
                       Next Stage →
                     </HeaderBtn>
                   ) : (
                     <HeaderBtn $variant="primary" onClick={handleSaveAndArchive}>
-                      <Save size={14} /> Save to Henry Vault & Archive
+                      <Save size={14} /> Complete & Save Contract
                     </HeaderBtn>
                   )}
                 </div>
@@ -833,6 +883,59 @@ export const HenryTenancyContractModal: FC<HenryTenancyContractModalProps> = ({
             </RightFormPane>
           </SplitPaneBody>
         </ModalContainer>
+
+        {/* ── Confirmation Modal on Exit ── */}
+        {showExitConfirm && (
+          <div
+            style={{
+              position: 'fixed',
+              top: 0,
+              left: 0,
+              right: 0,
+              bottom: 0,
+              background: 'rgba(0, 0, 0, 0.75)',
+              zIndex: 999999,
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              backdropFilter: 'blur(4px)',
+            }}
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div
+              style={{
+                background: '#0F172A',
+                border: '1px solid #334155',
+                borderRadius: '16px',
+                padding: '24px',
+                maxWidth: '420px',
+                width: '90%',
+                boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.5)',
+                color: '#F8FAFC',
+              }}
+            >
+              <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '12px' }}>
+                <div style={{ background: 'rgba(239, 68, 68, 0.2)', padding: '10px', borderRadius: '12px', color: '#EF4444' }}>
+                  <AlertCircle size={24} />
+                </div>
+                <h4 style={{ margin: 0, fontSize: '1.1rem', fontWeight: 800 }}>Exit Tenancy Preparation?</h4>
+              </div>
+
+              <p style={{ fontSize: '0.85rem', color: '#94A3B8', lineHeight: 1.5, margin: '0 0 20px 0' }}>
+                Your current progress is automatically saved to your draft vault. Do you want to continue editing or close the wizard?
+              </p>
+
+              <div style={{ display: 'flex', gap: '10px', justifyContent: 'flex-end' }}>
+                <HeaderBtn $variant="secondary" onClick={() => setShowExitConfirm(false)}>
+                  Continue Editing
+                </HeaderBtn>
+                <HeaderBtn $variant="danger" onClick={handleConfirmClose}>
+                  Save & Exit
+                </HeaderBtn>
+              </div>
+            </div>
+          </div>
+        )}
       </ModalOverlay>
     </AnimatePresence>
   );
