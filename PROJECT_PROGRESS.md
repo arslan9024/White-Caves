@@ -15,8 +15,9 @@
 - Active queue: **[plans/PENDING_TASKS_ONLY.md](plans/PENDING_TASKS_ONLY.md)**
 - Backlog (Waves 46–65): **[plans/FUTURE_100_TASKS_BACKLOG.md](plans/FUTURE_100_TASKS_BACKLOG.md)**
 - Open 100 Issues & Git Workflow: **[plans/OPEN_100_ISSUES_AND_GIT_WORKFLOW.md](plans/OPEN_100_ISSUES_AND_GIT_WORKFLOW.md)**
+- Executive Technical Audit & Hardening: **[docs/EXECUTIVE_TECHNICAL_AUDIT_AND_HARDENING_ROADMAP.md](docs/EXECUTIVE_TECHNICAL_AUDIT_AND_HARDENING_ROADMAP.md)**
 - Last Updated (ISO): 2026-08-18
-- **Milestone Status:** **Waves 56–65 100-Issue Backlog & Enterprise Git Workflow Active** 🚀
+- **Milestone Status:** **Waves 56–65 100-Issue Backlog & Enterprise Hardening Roadmap Active** 🚀
 
 ## 🚀 AEGIS Turn 65 — 100 Open Issues Analysis, CI/CD Activity & Enterprise Git Workflow (2026-08-18)
 
