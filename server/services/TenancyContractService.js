@@ -1,12 +1,11 @@
-const PDFDocument = require('pdfkit');
-const { PDFPage } = require('pdf-lib');
-const pdfLib = require('pdf-lib');
-const fs = require('fs');
-const path = require('path');
-const crypto = require('crypto');
-const TenancyContract = require('../models/TenancyContract');
-const NotificationService = require('./NotificationService');
-const admin = require('firebase-admin');
+import PDFDocument from 'pdfkit';
+import * as pdfLib from 'pdf-lib';
+import fs from 'fs';
+import path from 'path';
+import crypto from 'crypto';
+import TenancyContract from '../models/TenancyContract.js';
+import NotificationService from './NotificationService.js';
+import admin from 'firebase-admin';
 
 class TenancyContractService {
   /**
@@ -644,4 +643,4 @@ class TenancyContractService {
   }
 }
 
-module.exports = new TenancyContractService();
+export default new TenancyContractService();

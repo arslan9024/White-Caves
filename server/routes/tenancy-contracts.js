@@ -1,7 +1,8 @@
-const express = require('express');
+import express from 'express';
+import TenancyContractService from '../services/TenancyContractService.js';
+import auth from '../middleware/auth.js';
+
 const router = express.Router();
-const TenancyContractService = require('../services/TenancyContractService');
-const auth = require('../middleware/auth');
 
 /**
  * POST /api/tenancy-contracts/create
@@ -9,7 +10,6 @@ const auth = require('../middleware/auth');
  */
 router.post('/create', auth, async (req, res) => {
   try {
-    // Schema validation enforced for payload
     const { formData } = req.body;
     const agentId = req.user.id;
 
@@ -245,4 +245,4 @@ router.get('/', auth, async (req, res) => {
   }
 });
 
-module.exports = router;
+export default router;
