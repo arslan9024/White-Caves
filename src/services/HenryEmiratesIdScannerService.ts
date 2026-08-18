@@ -313,6 +313,9 @@ class HenryEmiratesIdScannerService {
     if (typeof window === 'undefined') return { canvasDataUrl: '', pdfText: '' };
     try {
       const pdfjs = await import('pdfjs-dist');
+      if (pdfjs.GlobalWorkerOptions && !pdfjs.GlobalWorkerOptions.workerSrc) {
+        pdfjs.GlobalWorkerOptions.workerSrc = `https://cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version || '3.11.174'}/pdf.worker.min.js`;
+      }
       const arrayBuffer = await file.arrayBuffer();
       const loadingTask = pdfjs.getDocument({ data: arrayBuffer });
       const pdfDoc = await loadingTask.promise;
