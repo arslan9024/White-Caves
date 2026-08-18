@@ -136,9 +136,9 @@ jobs:
       
       - name: Deploy to staging
         env:
-          DEPLOY_KEY: ${{ secrets.STAGING_DEPLOY_KEY }}
-          DEPLOY_HOST: ${{ secrets.STAGING_HOST }}
-          DEPLOY_USER: ${{ secrets.STAGING_USER }}
+          DEPLOY_KEY: ${{ secrets['STAGING_DEPLOY_KEY'] }}
+          DEPLOY_HOST: ${{ secrets['STAGING_HOST'] }}
+          DEPLOY_USER: ${{ secrets['STAGING_USER'] }}
         run: |
           if [ -z "$DEPLOY_KEY" ] || [ -z "$DEPLOY_HOST" ] || [ -z "$DEPLOY_USER" ]; then
             echo "⚠️ Staging deployment credentials not configured. Skipping remote SSH deploy."
@@ -163,9 +163,9 @@ jobs:
       
       - name: Deploy to production
         env:
-          DEPLOY_KEY: ${{ secrets.PROD_DEPLOY_KEY }}
-          DEPLOY_HOST: ${{ secrets.PROD_HOST }}
-          DEPLOY_USER: ${{ secrets.PROD_USER }}
+          DEPLOY_KEY: ${{ secrets['PROD_DEPLOY_KEY'] }}
+          DEPLOY_HOST: ${{ secrets['PROD_HOST'] }}
+          DEPLOY_USER: ${{ secrets['PROD_USER'] }}
         run: |
           if [ -z "$DEPLOY_KEY" ] || [ -z "$DEPLOY_HOST" ] || [ -z "$DEPLOY_USER" ]; then
             echo "⚠️ Production deployment credentials not configured. Skipping remote SSH deploy."
@@ -202,4 +202,4 @@ jobs:
           status: ${{ job.status }}
           text: 'CI/CD Pipeline ${{ job.status }}'
         env:
-          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK }}
+          SLACK_WEBHOOK_URL: ${{ secrets['SLACK_WEBHOOK'] }}
