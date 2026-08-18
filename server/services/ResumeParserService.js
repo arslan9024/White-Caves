@@ -12,7 +12,7 @@ let pdfParse = null;
 async function getPdfParser() {
   if (!pdfParse) {
     try {
-      pdfParse = await import('pdf-parse/lib/pdf.js');
+      pdfParse = await import('pdf-parse');
     } catch (e) {
       // Fallback: create a wrapper
       pdfParse = { default: null };

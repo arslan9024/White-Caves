@@ -136,7 +136,7 @@ router.post(
     logger.info('[PortalWebhooks] Bayut lead processed', {
       leadId: lead.id,
       phone: cleanPhone,
-      referenceNumber,
+      propertyRef,
     });
 
     res.status(200).json({
