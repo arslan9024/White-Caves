@@ -1,9 +1,12 @@
-const express = require('express');
+import express from 'express';
+import AgentContact from '../models/AgentContact.js';
+import Viewing from '../models/Viewing.js';
+import WhatsAppLead from '../models/WhatsAppLead.js';
+import eventService from '../services/eventService.js';
+import Property from '../models/Property.js';
+import WhatsAppBotService from '../services/WhatsAppBotService.js';
+
 const router = express.Router();
-const AgentContact = require('../models/AgentContact');
-const Viewing = require('../models/Viewing');
-const WhatsAppLead = require('../models/WhatsAppLead');
-const eventService = require('../services/eventService');
 
 /**
  * Create agent contact request
@@ -11,16 +14,13 @@ const eventService = require('../services/eventService');
  */
 router.post('/', async (req, res) => {
   try {
-    // Schema validation enforced for contact payload
     const { agentId, propertyId, contactMethod, message, preferredDate, preferredTime, userId } =
       req.body;
 
-    // Validate required fields
     if (!agentId || !propertyId) {
       return res.status(400).json({ error: 'Agent ID and Property ID are required' });
     }
 
-    // Create contact request
     const contactRequest = new AgentContact({
       agentId,
       propertyId,
@@ -34,7 +34,6 @@ router.post('/', async (req, res) => {
 
     await contactRequest.save();
 
-    // If viewing requested, create viewing record
     if (preferredDate && preferredTime) {
       const viewing = new Viewing({
         propertyId,
@@ -51,7 +50,6 @@ router.post('/', async (req, res) => {
       await contactRequest.save();
     }
 
-    // Link to WhatsApp lead if exists
     if (req.body.phoneNumber) {
       const lead = await WhatsAppLead.findOne({ phoneNumber: req.body.phoneNumber });
       if (lead) {
@@ -62,8 +60,7 @@ router.post('/', async (req, res) => {
       }
     }
 
-    // Emit event for agent notification
-    eventService.emit('agent-contact-request', {
+    eventService?.emit?.('agent-contact-request', {
       contactRequestId: contactRequest._id,
       agentId,
       propertyId,
@@ -161,9 +158,8 @@ router.put('/:id', async (req, res) => {
       return res.status(404).json({ error: 'Contact request not found' });
     }
 
-    // Update associated viewing if exists
     if (viewingConfirmedDate && viewingConfirmedTime && request.viewingId) {
-      const viewing = await Viewing.findByIdAndUpdate(
+      await Viewing.findByIdAndUpdate(
         request.viewingId,
         {
           scheduledDate: new Date(`${viewingConfirmedDate}T${viewingConfirmedTime}`),
@@ -173,8 +169,7 @@ router.put('/:id', async (req, res) => {
       );
     }
 
-    // Emit status update event
-    eventService.emit('agent-contact-status-updated', {
+    eventService?.emit?.('agent-contact-status-updated', {
       contactRequestId: request._id,
       status,
       agentId: request.agentId,
@@ -199,14 +194,12 @@ router.post('/:id/respond', async (req, res) => {
       return res.status(404).json({ error: 'Contact request not found' });
     }
 
-    // Add response
     request.response = response || message;
     request.respondedAt = new Date();
     request.status = 'responded';
 
-    // Schedule viewing if dates provided
     if (scheduleDate && scheduleTime && request.viewingId) {
-      const viewing = await Viewing.findByIdAndUpdate(
+      await Viewing.findByIdAndUpdate(
         request.viewingId,
         {
           scheduledDate: new Date(`${scheduleDate}T${scheduleTime}`),
@@ -217,8 +210,7 @@ router.post('/:id/respond', async (req, res) => {
 
     await request.save();
 
-    // Send notification to user
-    eventService.emit('agent-response-received', {
+    eventService?.emit?.('agent-response-received', {
       contactRequestId: request._id,
       agentId: request.agentId,
       propertyId: request.propertyId,
@@ -226,13 +218,9 @@ router.post('/:id/respond', async (req, res) => {
       message: response || message,
     });
 
-    // Send message via contact method
-    const Property = require('../models/Property');
-    const property = await Property.findById(request.propertyId);
-
     if (request.contactMethod === 'whatsapp' && request.whatsAppLeadId) {
-      const WhatsAppService = require('../services/WhatsAppService');
-      await WhatsAppService.sendAgentMessage(request, property, message);
+      const property = await Property.findById(request.propertyId);
+      await WhatsAppBotService?.sendMessage?.(request.whatsAppLeadId, message);
     }
 
     res.json({ success: true, request });
@@ -253,7 +241,6 @@ router.delete('/:id', async (req, res) => {
       return res.status(404).json({ error: 'Contact request not found' });
     }
 
-    // Cancel associated viewing if exists
     if (request.viewingId) {
       await Viewing.findByIdAndUpdate(request.viewingId, {
         status: 'cancelled',
@@ -266,4 +253,4 @@ router.delete('/:id', async (req, res) => {
   }
 });
 
-module.exports = router;
+export default router;
