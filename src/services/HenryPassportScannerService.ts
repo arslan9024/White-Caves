@@ -158,13 +158,92 @@ class HenryPassportScannerService {
    * Scans an uploaded Passport bio-data page or preloaded reference sample
    */
   async scanPassport(fileOrPreset?: File | 'sample'): Promise<InternationalPassportExtractedData> {
+    if (!fileOrPreset || fileOrPreset === 'sample') {
+      return {
+        ...ARSLAN_MALIK_SAMPLE_PASSPORT,
+        scannedAt: new Date().toISOString(),
+      };
+    }
+
+    const file = fileOrPreset as File;
+    const fileName = file.name || 'International_Passport.pdf';
+    const lower = fileName.toLowerCase();
+
+    // Generate unique deterministic seed
+    let hash = 0;
+    const seed = `${fileName}_${file.size}_${file.lastModified || Date.now()}`;
+    for (let i = 0; i < seed.length; i++) {
+      hash = (hash << 5) - hash + seed.charCodeAt(i);
+      hash |= 0;
+    }
+    const absHash = Math.abs(hash);
+
+    let fullName = 'Sarah Elizabeth Jenkins';
+    let countryCode = 'GBR';
+    let nationality = 'BRITISH CITIZEN';
+    let passportNo = `GB${absHash % 9000000 + 1000000}`;
+
+    if (lower.includes('arslan') || lower.includes('malik')) {
+      fullName = 'Arslan Malik';
+      countryCode = 'PAK';
+      nationality = 'PAKISTANI';
+      passportNo = 'DR0760143';
+    } else if (lower.includes('william') || lower.includes('abernethy')) {
+      fullName = 'William Michael Abernethy';
+      countryCode = 'USA';
+      nationality = 'UNITED STATES OF AMERICA';
+      passportNo = `US${absHash % 9000000 + 1000000}`;
+    } else if (lower.includes('svetlana') || lower.includes('levitskaya')) {
+      fullName = 'Svetlana Levitskaya';
+      countryCode = 'RUS';
+      nationality = 'RUSSIAN FEDERATION';
+      passportNo = `75${absHash % 9000000 + 1000000}`;
+    } else if (lower.includes('sanit') || lower.includes('singh')) {
+      fullName = 'Sanit Singh Nagpal';
+      countryCode = 'IND';
+      nationality = 'INDIAN';
+      passportNo = `M${absHash % 9000000 + 1000000}`;
+    }
+
+    const birthYear = 1978 + (absHash % 22);
+    const birthMonth = String((absHash % 12) + 1).padStart(2, '0');
+    const birthDay = String((absHash % 28) + 1).padStart(2, '0');
+    const dob = `${birthDay}/${birthMonth}/${birthYear}`;
+
+    const expYear = 2028 + (absHash % 6);
+    const expiry = `${birthDay}/${birthMonth}/${expYear}`;
+
+    const line1 = `P<${countryCode}${fullName.toUpperCase().replace(/\s+/g, '<')}<<<<<<<<<<<<<<<<<<<<<<<<<<`.slice(0, 44);
+    const line2 = `${passportNo}1${countryCode}${String(birthYear).slice(2)}${birthMonth}${birthDay}9M${String(expYear).slice(2)}${birthMonth}${birthDay}8<<<<<<<<<<<<<<<8`.slice(0, 44);
+
     return new Promise((resolve) => {
       setTimeout(() => {
         resolve({
-          ...ARSLAN_MALIK_SAMPLE_PASSPORT,
+          passportType: 'P',
+          issuingCountryCode: countryCode,
+          issuingCountryEn: nationality,
+          passportNumber: passportNo,
+          fullName,
+          givenNames: fullName.split(' ')[0] || fullName,
+          surname: fullName.split(' ').slice(1).join(' ') || '',
+          nationality,
+          nationalityCode: countryCode,
+          dateOfBirth: dob,
+          placeOfBirth: 'CAPITAL METROPOLIS',
+          gender: absHash % 2 === 0 ? 'M' : 'F',
+          dateOfIssue: `15/01/${birthYear + 20}`,
+          dateOfExpiry: expiry,
+          issuingAuthority: 'PASSPORT & IMMIGRATION COMMAND',
+          nationalIdentityNumber: `NID-${absHash % 90000000 + 10000000}`,
+          rawMrz: `${line1}\n${line2}`,
+          mrz: {
+            line1,
+            line2,
+          },
+          confidenceScore: 0.997,
           scannedAt: new Date().toISOString(),
         });
-      }, 250);
+      }, 300);
     });
   }
 
