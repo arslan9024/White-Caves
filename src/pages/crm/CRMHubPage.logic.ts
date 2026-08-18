@@ -36,6 +36,7 @@ export interface AIAssistantOption {
   name: string;
   role: string;
   icon: string;
+  items?: { id: string; label: string; icon: string; badge?: string }[];
 }
 
 // ─── Master Registry of All 26 AI Assistants ───
@@ -58,7 +59,18 @@ export const ALL_AI_ASSISTANTS: AIAssistantOption[] = [
   { id: 'aurora', num: '3.16', name: 'Aurora AI', role: 'CTO Systems & API Infrastructure', icon: '🖥️' },
   { id: 'hazel', num: '3.17', name: 'Hazel AI', role: 'Frontend & UX Quality Metrics', icon: '🧩' },
   { id: 'willow', num: '3.18', name: 'Willow AI', role: 'Backend & Server Microservices', icon: '⚙️' },
-  { id: 'henry', num: '3.19', name: 'Henry AI', role: 'Records, Title Deeds & Audit Logs', icon: '🗂️' },
+  {
+    id: 'henry',
+    num: '3.19',
+    name: 'Henry AI',
+    role: 'Records, Title Deeds & Audit Logs',
+    icon: '🗂️',
+    items: [
+      { id: 'henry-prepare-tenancy', label: '3.19.1 Prepare Tenancy Contract', icon: '📄', badge: 'Official DLD' },
+      { id: 'henry-title-deeds', label: '3.19.2 Title Deed Vault & Scan', icon: '📜' },
+      { id: 'henry-records', label: '3.19.3 Document Archive & Compliance', icon: '🗄️' },
+    ],
+  },
   { id: 'sentinel', num: '3.20', name: 'Sentinel AI', role: 'Property State Machine & Quality', icon: '🏢' },
   { id: 'hunter', num: '3.21', name: 'Hunter AI', role: 'Outbound Prospecting & Lead Matcher', icon: '🎯' },
   { id: 'cipher', num: '3.22', name: 'Cipher AI', role: 'Market Pricing & CMA Valuations', icon: '📊' },
@@ -306,6 +318,7 @@ export function useCRMHubPageLogic() {
   // Sidebar & Top Header Collapse States
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState<boolean>(false);
   const [isHeaderCollapsed, setIsHeaderCollapsed] = useState<boolean>(false);
+  const [isHenryTenancyModalOpen, setIsHenryTenancyModalOpen] = useState<boolean>(false);
 
   // Subgroup accordion states
   const [openSubGroups, setOpenSubGroups] = useState<Record<string, boolean>>({
@@ -331,6 +344,10 @@ export function useCRMHubPageLogic() {
 
   const handleTabChange = useCallback((newTab: string) => {
     haptics.medium();
+    if (newTab === 'henry-prepare-tenancy') {
+      setIsHenryTenancyModalOpen(true);
+      return;
+    }
     setActiveTab(newTab);
     setSearchParams({ tab: newTab });
   }, [haptics, setSearchParams]);
@@ -398,6 +415,8 @@ export function useCRMHubPageLogic() {
     setIsSidebarCollapsed,
     isHeaderCollapsed,
     setIsHeaderCollapsed,
+    isHenryTenancyModalOpen,
+    setIsHenryTenancyModalOpen,
     openSubGroups,
     activeLocationTag,
     handleTabChange,

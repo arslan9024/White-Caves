@@ -20,6 +20,7 @@ import DashboardLiveTicker from '../../components/dashboard/header/DashboardLive
 import DashboardSidebar from '../../components/dashboard/sidebar/DashboardSidebar';
 import DepartmentOverview from '../../components/dashboard/viewport/DepartmentOverview';
 import ModuleViewport from '../../components/dashboard/viewport/ModuleViewport';
+import HenryTenancyContractModal from '../../components/crm/HenryDocumentStudio/HenryTenancyContractModal';
 
 export const CRMHubPage: FC = () => {
   const {
@@ -34,6 +35,8 @@ export const CRMHubPage: FC = () => {
     setIsSidebarCollapsed,
     isHeaderCollapsed,
     setIsHeaderCollapsed,
+    isHenryTenancyModalOpen,
+    setIsHenryTenancyModalOpen,
     openSubGroups,
     activeLocationTag,
     handleTabChange,
@@ -100,6 +103,12 @@ export const CRMHubPage: FC = () => {
             />
           )}
         </MainLayout>
+
+        {/* 3.19.1 PREPARE NEW TENANCY CONTRACT (DLD OFFICIAL FORM WIZARD) */}
+        <HenryTenancyContractModal
+          isOpen={isHenryTenancyModalOpen}
+          onClose={() => setIsHenryTenancyModalOpen(false)}
+        />
       </HubContainer>
     </PublicLayout>
   );

@@ -42,7 +42,8 @@ export const UnifiedSidebar = styled.aside<{ $collapsed: boolean }>`
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   position: sticky;
   top: 1rem;
-  max-height: calc(100vh - 2rem);
+  height: calc(100vh - 4.5rem);
+  min-height: calc(100vh - 4.5rem);
   overflow-y: auto;
   z-index: 20;
 
@@ -50,7 +51,8 @@ export const UnifiedSidebar = styled.aside<{ $collapsed: boolean }>`
     width: 100%;
     min-width: 100%;
     position: static;
-    max-height: none;
+    height: auto;
+    min-height: auto;
   }
 
   &::-webkit-scrollbar {

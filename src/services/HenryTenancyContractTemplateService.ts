@@ -343,29 +343,41 @@ class HenryTenancyContractTemplateService {
 
     const page1Html = `
       <div class="dld-page" style="page-break-after: always; min-height: 1080px; padding: 25px 32px; font-family: 'Segoe UI', Arial, sans-serif; color: #1E293B; background: #FFFFFF; box-sizing: border-box; position: relative;">
-        <!-- Header Logos & Title -->
-        <div style="display: flex; justify-content: space-between; align-items: center; padding-bottom: 8px; margin-bottom: 4px;">
-          <!-- Left Dubai Gov Logo -->
-          <div style="text-align: left; display: flex; align-items: center; gap: 8px;">
+        <!-- Official Full-Color Header Logos & Title -->
+        <div style="display: flex; justify-content: space-between; align-items: center; padding-bottom: 8px; margin-bottom: 4px; border-bottom: 2px solid #E2E8F0;">
+          <!-- Left: Official Government of Dubai Full-Color Crest -->
+          <div style="text-align: left; display: flex; align-items: center; gap: 10px;">
+            <svg width="42" height="42" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <circle cx="50" cy="50" r="48" fill="#F8FAFC" stroke="#DC2626" stroke-width="2.5"/>
+              <path d="M50 14 C34 14 22 26 22 42 C22 58 36 78 50 86 C64 78 78 58 78 42 C78 26 66 14 50 14 Z" fill="#DC2626"/>
+              <circle cx="50" cy="42" r="16" fill="#F59E0B"/>
+              <path d="M50 30 L54 38 L62 39 L56 45 L58 53 L50 49 L42 53 L44 45 L38 39 L46 38 Z" fill="#FFFFFF"/>
+              <path d="M30 68 Q50 78 70 68" stroke="#FFFFFF" stroke-width="3" fill="none"/>
+            </svg>
             <div>
-              <div style="font-weight: 800; font-size: 15px; color: #0F172A; line-height: 1.1;">حكومة دبـــــــــــي</div>
-              <div style="font-size: 8.5px; color: #0F172A; font-weight: 800; letter-spacing: 0.5px;">GOVERNMENT OF DUBAI</div>
+              <div style="font-weight: 900; font-size: 15px; color: #0F172A; line-height: 1.1; letter-spacing: 0.5px;">حكومة دبـــــــــــي</div>
+              <div style="font-size: 8.5px; color: #DC2626; font-weight: 900; letter-spacing: 1px;">GOVERNMENT OF DUBAI</div>
             </div>
           </div>
 
-          <!-- Right Land Department Logo -->
-          <div style="text-align: right; display: flex; align-items: center; gap: 8px;">
+          <!-- Right: Official Dubai Land Department Logo -->
+          <div style="text-align: right; display: flex; align-items: center; gap: 10px; justify-content: flex-end;">
             <div>
-              <div style="font-weight: 800; font-size: 15px; color: #0F172A; line-height: 1.1;">دائــــرة الأراضــــي والأمـــــلاك</div>
-              <div style="font-size: 9px; color: #0F172A; font-weight: 800;">Land Department</div>
+              <div style="font-weight: 900; font-size: 15px; color: #0F172A; line-height: 1.1; letter-spacing: 0.5px;">دائــــرة الأراضــــي والأمـــــلاك</div>
+              <div style="font-size: 9px; color: #059669; font-weight: 900; letter-spacing: 0.5px;">Land Department</div>
             </div>
+            <svg width="42" height="42" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <circle cx="50" cy="50" r="48" fill="#F8FAFC" stroke="#059669" stroke-width="2.5"/>
+              <path d="M50 18 L50 82 M50 26 Q32 36 30 54 M50 26 Q68 36 70 54 M50 40 Q28 50 26 66 M50 40 Q72 50 74 66" stroke="#059669" stroke-width="3.5" stroke-linecap="round" fill="none"/>
+              <circle cx="50" cy="22" r="5" fill="#F59E0B"/>
+            </svg>
           </div>
         </div>
 
-        <!-- Center Title -->
-        <div style="text-align: center; margin: 4px 0 12px 0;">
-          <div style="font-size: 20px; font-weight: 900; color: #1E293B; letter-spacing: 3px; line-height: 1.2;">عــــقـــــد إيــــجــــــار</div>
-          <div style="font-size: 11px; font-weight: 900; color: #0F172A; letter-spacing: 2px;">TENANCY CONTRACT</div>
+        <!-- Center Official Form Title -->
+        <div style="text-align: center; margin: 6px 0 12px 0;">
+          <div style="font-size: 22px; font-weight: 900; color: #0F172A; letter-spacing: 4px; line-height: 1.2;">عــــقـــــد إيــــجــــــار</div>
+          <div style="font-size: 12px; font-weight: 900; color: #DC2626; letter-spacing: 3px; margin-top: 1px;">TENANCY CONTRACT</div>
         </div>
 
         <!-- Date Line -->
@@ -537,15 +549,28 @@ class HenryTenancyContractTemplateService {
 
     const page2Html = `
       <div class="dld-page" style="page-break-after: always; min-height: 1080px; padding: 25px 32px; font-family: 'Segoe UI', Arial, sans-serif; color: #1E293B; background: #FFFFFF; box-sizing: border-box;">
-        <!-- Header Logos -->
-        <div style="display: flex; justify-content: space-between; align-items: center; padding-bottom: 8px; margin-bottom: 4px;">
-          <div style="text-align: left;">
-            <div style="font-weight: 800; font-size: 15px; color: #0F172A; line-height: 1.1;">حكومة دبـــــــــــي</div>
-            <div style="font-size: 8.5px; color: #0F172A; font-weight: 800; letter-spacing: 0.5px;">GOVERNMENT OF DUBAI</div>
+        <!-- Official Full-Color Header Logos -->
+        <div style="display: flex; justify-content: space-between; align-items: center; padding-bottom: 8px; margin-bottom: 4px; border-bottom: 2px solid #E2E8F0;">
+          <div style="text-align: left; display: flex; align-items: center; gap: 10px;">
+            <svg width="36" height="36" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <circle cx="50" cy="50" r="48" fill="#F8FAFC" stroke="#DC2626" stroke-width="2.5"/>
+              <path d="M50 14 C34 14 22 26 22 42 C22 58 36 78 50 86 C64 78 78 58 78 42 C78 26 66 14 50 14 Z" fill="#DC2626"/>
+              <circle cx="50" cy="42" r="16" fill="#F59E0B"/>
+            </svg>
+            <div>
+              <div style="font-weight: 900; font-size: 14px; color: #0F172A; line-height: 1.1;">حكومة دبـــــــــــي</div>
+              <div style="font-size: 8px; color: #DC2626; font-weight: 900; letter-spacing: 0.5px;">GOVERNMENT OF DUBAI</div>
+            </div>
           </div>
-          <div style="text-align: right;">
-            <div style="font-weight: 800; font-size: 15px; color: #0F172A; line-height: 1.1;">دائــــرة الأراضــــي والأمـــــلاك</div>
-            <div style="font-size: 9px; color: #0F172A; font-weight: 800;">Land Department</div>
+          <div style="text-align: right; display: flex; align-items: center; gap: 10px; justify-content: flex-end;">
+            <div>
+              <div style="font-weight: 900; font-size: 14px; color: #0F172A; line-height: 1.1;">دائــــرة الأراضــــي والأمـــــلاك</div>
+              <div style="font-size: 8.5px; color: #059669; font-weight: 900;">Land Department</div>
+            </div>
+            <svg width="36" height="36" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <circle cx="50" cy="50" r="48" fill="#F8FAFC" stroke="#059669" stroke-width="2.5"/>
+              <path d="M50 18 L50 82 M50 26 Q32 36 30 54 M50 26 Q68 36 70 54 M50 40 Q28 50 26 66 M50 40 Q72 50 74 66" stroke="#059669" stroke-width="3.5" stroke-linecap="round" fill="none"/>
+            </svg>
           </div>
         </div>
 
@@ -654,15 +679,28 @@ class HenryTenancyContractTemplateService {
 
     const page3Html = `
       <div class="dld-page" style="min-height: 1080px; padding: 25px 32px; font-family: 'Segoe UI', Arial, sans-serif; color: #1E293B; background: #FFFFFF; box-sizing: border-box; position: relative;">
-        <!-- Header Logos -->
-        <div style="display: flex; justify-content: space-between; align-items: center; padding-bottom: 8px; margin-bottom: 4px;">
-          <div style="text-align: left;">
-            <div style="font-weight: 800; font-size: 15px; color: #0F172A; line-height: 1.1;">حكومة دبـــــــــــي</div>
-            <div style="font-size: 8.5px; color: #0F172A; font-weight: 800; letter-spacing: 0.5px;">GOVERNMENT OF DUBAI</div>
+        <!-- Official Full-Color Header Logos -->
+        <div style="display: flex; justify-content: space-between; align-items: center; padding-bottom: 8px; margin-bottom: 4px; border-bottom: 2px solid #E2E8F0;">
+          <div style="text-align: left; display: flex; align-items: center; gap: 10px;">
+            <svg width="36" height="36" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <circle cx="50" cy="50" r="48" fill="#F8FAFC" stroke="#DC2626" stroke-width="2.5"/>
+              <path d="M50 14 C34 14 22 26 22 42 C22 58 36 78 50 86 C64 78 78 58 78 42 C78 26 66 14 50 14 Z" fill="#DC2626"/>
+              <circle cx="50" cy="42" r="16" fill="#F59E0B"/>
+            </svg>
+            <div>
+              <div style="font-weight: 900; font-size: 14px; color: #0F172A; line-height: 1.1;">حكومة دبـــــــــــي</div>
+              <div style="font-size: 8px; color: #DC2626; font-weight: 900; letter-spacing: 0.5px;">GOVERNMENT OF DUBAI</div>
+            </div>
           </div>
-          <div style="text-align: right;">
-            <div style="font-weight: 800; font-size: 15px; color: #0F172A; line-height: 1.1;">دائــــرة الأراضــــي والأمـــــلاك</div>
-            <div style="font-size: 9px; color: #0F172A; font-weight: 800;">Land Department</div>
+          <div style="text-align: right; display: flex; align-items: center; gap: 10px; justify-content: flex-end;">
+            <div>
+              <div style="font-weight: 900; font-size: 14px; color: #0F172A; line-height: 1.1;">دائــــرة الأراضــــي والأمـــــلاك</div>
+              <div style="font-size: 8.5px; color: #059669; font-weight: 900;">Land Department</div>
+            </div>
+            <svg width="36" height="36" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <circle cx="50" cy="50" r="48" fill="#F8FAFC" stroke="#059669" stroke-width="2.5"/>
+              <path d="M50 18 L50 82 M50 26 Q32 36 30 54 M50 26 Q68 36 70 54 M50 40 Q28 50 26 66 M50 40 Q72 50 74 66" stroke="#059669" stroke-width="3.5" stroke-linecap="round" fill="none"/>
+            </svg>
           </div>
         </div>
 

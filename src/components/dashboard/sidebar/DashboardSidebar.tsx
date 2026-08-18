@@ -109,8 +109,10 @@ export const DashboardSidebar: FC<DashboardSidebarProps> = ({
         isCollapsed={isCollapsed}
         selectedAi={selectedAi}
         selectedAiId={selectedAiId}
+        activeTab={activeTab}
         onTileClick={onAiTileClick}
         onSelectAiAssistant={onSelectAiAssistant}
+        onSubItemClick={onSubItemClick}
       />
     </UnifiedSidebar>
   );

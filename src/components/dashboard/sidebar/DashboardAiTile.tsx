@@ -17,8 +17,10 @@ export interface DashboardAiTileProps {
   isCollapsed: boolean;
   selectedAi: AIAssistantOption;
   selectedAiId: string;
+  activeTab?: string;
   onTileClick: () => void;
   onSelectAiAssistant: (option: SearchableOption) => void;
+  onSubItemClick?: (itemId: string) => void;
 }
 
 export const DashboardAiTile: FC<DashboardAiTileProps> = ({
@@ -26,8 +28,10 @@ export const DashboardAiTile: FC<DashboardAiTileProps> = ({
   isCollapsed,
   selectedAi,
   selectedAiId,
+  activeTab,
   onTileClick,
   onSelectAiAssistant,
+  onSubItemClick,
 }) => {
   const aiOptions = useMemo<SearchableOption[]>(() => {
     return ALL_AI_ASSISTANTS.map(ai => ({
@@ -85,6 +89,59 @@ export const DashboardAiTile: FC<DashboardAiTileProps> = ({
               {selectedAi.role}
             </div>
           </div>
+
+          {/* AI Assistant Sub-Items / Modules (e.g. 3.19.1 Prepare Tenancy Contract) */}
+          {selectedAi.items && selectedAi.items.length > 0 && (
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '4px', marginTop: '4px' }}>
+              <div style={{ fontSize: '0.7rem', fontWeight: 800, color: '#94A3B8', textTransform: 'uppercase', paddingLeft: '4px' }}>
+                {selectedAi.name} Modules
+              </div>
+              {selectedAi.items.map((subItem) => (
+                <button
+                  key={subItem.id}
+                  type="button"
+                  onClick={() => onSubItemClick?.(subItem.id)}
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'space-between',
+                    width: '100%',
+                    padding: '8px 10px',
+                    borderRadius: '8px',
+                    border: '1px solid rgba(139, 92, 246, 0.25)',
+                    background: activeTab === subItem.id ? 'linear-gradient(135deg, #8B5CF6, #7C3AED)' : 'rgba(255, 255, 255, 0.8)',
+                    color: activeTab === subItem.id ? '#FFFFFF' : '#1E293B',
+                    fontSize: '0.78rem',
+                    fontWeight: 700,
+                    cursor: 'pointer',
+                    transition: 'all 0.2s ease',
+                    textAlign: 'left',
+                    boxShadow: '0 2px 6px rgba(0, 0, 0, 0.02)',
+                  }}
+                  title={`Launch ${subItem.label}`}
+                >
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                    <span>{subItem.icon}</span>
+                    <span>{subItem.label}</span>
+                  </div>
+                  {subItem.badge && (
+                    <span
+                      style={{
+                        fontSize: '0.65rem',
+                        padding: '2px 6px',
+                        borderRadius: '4px',
+                        background: activeTab === subItem.id ? 'rgba(255, 255, 255, 0.25)' : 'rgba(239, 68, 68, 0.15)',
+                        color: activeTab === subItem.id ? '#FFFFFF' : '#DC2626',
+                        fontWeight: 800,
+                      }}
+                    >
+                      {subItem.badge}
+                    </span>
+                  )}
+                </button>
+              ))}
+            </div>
+          )}
         </div>
       )}
     </div>
