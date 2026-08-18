@@ -1,5 +1,9 @@
 # White Caves Real Estate LLC — Pending Tasks & RUP System Ledger
 
+> **⚠️ REFERENCE COPY** — Canonical active version is at [`plans/PENDING_TASKS_ONLY.md`](../../plans/PENDING_TASKS_ONLY.md). Update that file, not this one.
+
+
+
 > **System Version:** 2.0.26  
 > **Last Updated:** 2026-08-09  
 > **Active Stream:** `MASTER_PLAN.md`  

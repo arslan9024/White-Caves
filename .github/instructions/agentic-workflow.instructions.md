@@ -33,7 +33,7 @@ Before premium execution, include a short plan packet with:
 
 ### Minimal-context rules
 
-- Start with `plans/MASTER_PLAN.md`, `plans/PENDING_TASKS_ONLY.md`, and `plans/waves/README.md`.
+- Start with `plans/MASTER_PLAN.md`, `plans/PENDING_TASKS_ONLY.md`, and `docs/plans/waves/README.md`.
 - Load only the exact wave bundle, business-doc sections, and instruction files needed for the task.
 - Carry forward compressed handoff summaries, not broad transcript replays.
 

@@ -1,5 +1,9 @@
 # AUTOPILOT_QUEUE.md
 
+> **⚠️ REFERENCE COPY** — Canonical active version is at [`plans/AUTOPILOT_QUEUE.md`](../../plans/AUTOPILOT_QUEUE.md). Update that file, not this one.
+
+
+
 **Mode:** AUTONOMOUS 10-TASK LOOP
 **Updated:** 2026-05-28 01:50
 **Branch:** copilot/confirm-ai-assistants-upgrade

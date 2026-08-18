@@ -1,0 +1,1 @@
+export { LeadAgingHeatmap } from './LeadAgingHeatmap';

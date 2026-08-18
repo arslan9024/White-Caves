@@ -1,0 +1,1 @@
+export { TitleDeedVerificationPortal } from './TitleDeedVerificationPortal';

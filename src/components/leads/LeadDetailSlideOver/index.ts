@@ -1,0 +1,1 @@
+export { LeadDetailSlideOver } from './LeadDetailSlideOver';

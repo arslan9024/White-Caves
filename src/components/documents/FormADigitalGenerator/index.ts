@@ -1,0 +1,1 @@
+export { FormADigitalGenerator } from './FormADigitalGenerator';
