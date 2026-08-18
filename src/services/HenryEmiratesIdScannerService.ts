@@ -412,11 +412,11 @@ class HenryEmiratesIdScannerService {
     // 5. Date Extraction (DOB & Expiry)
     let dateOfBirth = '';
     let expiryDate = '';
-    const dateMatches = rawText.match(/\b\d{2}[/.-]\d{2}[/.-]\d{4}\b/g) || [];
-    if (dateMatches.length >= 2) {
+    const dateMatches = (rawText.match(/\b\d{2}[/.-]\d{2}[/.-]\d{4}\b/g) || []).filter(Boolean);
+    if (dateMatches.length >= 2 && dateMatches[0] && dateMatches[1]) {
       dateOfBirth = dateMatches[0].replace(/[-.]/g, '/');
       expiryDate = dateMatches[1].replace(/[-.]/g, '/');
-    } else if (dateMatches.length === 1) {
+    } else if (dateMatches.length >= 1 && dateMatches[0]) {
       dateOfBirth = dateMatches[0].replace(/[-.]/g, '/');
     }
 
