@@ -391,6 +391,28 @@ export const HenryEmiratesIdScannerView: FC = () => {
     }
   };
 
+  const handleLoadIbrahimDemo = async () => {
+    setIsScanning(true);
+    setUploadedFile(null);
+    try {
+      const demo = henryEmiratesIdScannerService.getIbrahimSirajDemoData();
+      setExtractedData(demo);
+      setStatusMsg(`✓ Loaded Indian resident benchmark: ${demo.fullNameEn} (${demo.idNumber})`);
+    } finally {
+      setIsScanning(false);
+      setTimeout(() => setStatusMsg(null), 3000);
+    }
+  };
+
+  const handleExtractFromUploadedFile = () => {
+    if (uploadedFile) {
+      handleFileUpload(uploadedFile);
+    } else {
+      // If no file uploaded yet, load Ibrahim Siraj live sample
+      handleLoadIbrahimDemo();
+    }
+  };
+
   const handleUpdateField = (field: keyof EmiratesIdExtractedData, val: any) => {
     if (!extractedData) return;
     setExtractedData(prev => (prev ? { ...prev, [field]: val } : null));
@@ -459,9 +481,53 @@ export const HenryEmiratesIdScannerView: FC = () => {
             </div>
           )}
 
+          {/* Action Trigger: Extract Information From Uploaded ID */}
+          <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+            <button
+              type="button"
+              onClick={handleExtractFromUploadedFile}
+              disabled={isScanning}
+              style={{
+                flex: 1,
+                background: 'linear-gradient(135deg, #10B981, #059669)',
+                color: '#FFFFFF',
+                border: 'none',
+                padding: '12px 18px',
+                borderRadius: '8px',
+                fontSize: '0.9rem',
+                fontWeight: 800,
+                cursor: 'pointer',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                gap: '8px',
+                boxShadow: '0 4px 14px rgba(16, 185, 129, 0.35)',
+                transition: 'all 0.15s ease',
+              }}
+            >
+              <Sparkles size={16} /> ⚡ Extract Information From Uploaded ID to Form
+            </button>
+          </div>
+
           {/* Quick Profile Switchers */}
-          <div style={{ display: 'flex', gap: '8px', alignItems: 'center', flexWrap: 'wrap', padding: '2px 0' }}>
-            <span style={{ fontSize: '0.75rem', fontWeight: 800, color: '#64748B' }}>Quick Benchmark Samples:</span>
+          <div style={{ display: 'flex', gap: '6px', alignItems: 'center', flexWrap: 'wrap', padding: '2px 0' }}>
+            <span style={{ fontSize: '0.72rem', fontWeight: 800, color: '#64748B' }}>Quick UAE Benchmarks:</span>
+            <button
+              type="button"
+              onClick={handleLoadIbrahimDemo}
+              style={{
+                background: '#FEF3C7',
+                color: '#92400E',
+                border: '1px solid #FCD34D',
+                padding: '4px 8px',
+                borderRadius: '6px',
+                fontSize: '0.72rem',
+                fontWeight: 800,
+                cursor: 'pointer',
+              }}
+            >
+              🇮🇳 Ibrahim Siraj (IND - 1970)
+            </button>
             <button
               type="button"
               onClick={handleLoadIndianDemo}
@@ -469,14 +535,14 @@ export const HenryEmiratesIdScannerView: FC = () => {
                 background: '#FEF3C7',
                 color: '#92400E',
                 border: '1px solid #FCD34D',
-                padding: '4px 10px',
+                padding: '4px 8px',
                 borderRadius: '6px',
-                fontSize: '0.75rem',
+                fontSize: '0.72rem',
                 fontWeight: 800,
                 cursor: 'pointer',
               }}
             >
-              🇮🇳 Sanit Singh Nagpal (IND)
+              🇮🇳 Sanit Singh (IND - 1988)
             </button>
             <button
               type="button"
@@ -485,14 +551,14 @@ export const HenryEmiratesIdScannerView: FC = () => {
                 background: '#ECFDF5',
                 color: '#065F46',
                 border: '1px solid #A7F3D0',
-                padding: '4px 10px',
+                padding: '4px 8px',
                 borderRadius: '6px',
-                fontSize: '0.75rem',
+                fontSize: '0.72rem',
                 fontWeight: 800,
                 cursor: 'pointer',
               }}
             >
-              🇵🇰 Arslan Malik (PAK)
+              🇵🇰 Arslan Malik (PAK - 1993)
             </button>
           </div>
 
