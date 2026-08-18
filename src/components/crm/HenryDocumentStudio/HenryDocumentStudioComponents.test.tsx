@@ -1,0 +1,120 @@
+/**
+ * HenryDocumentStudioComponents.test.tsx
+ *
+ * Unit tests for Henry 3.19.1 through 3.19.5 Main Content Area Viewports
+ * and Reusable Shared Document Uploader.
+ */
+
+import { describe, it, expect, vi, beforeEach } from 'vitest';
+import React from 'react';
+import { render, screen, fireEvent } from '@testing-library/react';
+import HenrySharedDocumentUploader from './HenrySharedDocumentUploader';
+import HenryTenancyContractJourneyView from './HenryTenancyContractJourneyView';
+import HenryEmiratesIdScannerView from './HenryEmiratesIdScannerView';
+import HenryTitleDeedScannerView from './HenryTitleDeedScannerView';
+import HenryPassportScannerView from './HenryPassportScannerView';
+import HenryTenancyContractScannerView from './HenryTenancyContractScannerView';
+import henryTenancyContractTemplateService from '../../../services/HenryTenancyContractTemplateService';
+
+describe('Henry Document Studio — Shared Uploader & 5 Content Area Views', () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+    henryTenancyContractTemplateService.resetDraft();
+  });
+
+  it('HenrySharedDocumentUploader renders title, dropzone, and calls onSampleLoad', () => {
+    const mockSampleLoad = vi.fn();
+    const mockUpload = vi.fn();
+
+    render(
+      <HenrySharedDocumentUploader
+        title="Upload Emirates ID"
+        subtitle="Extracts bio data"
+        onFileUpload={mockUpload}
+        onSampleLoad={mockSampleLoad}
+        onSave={vi.fn()}
+        onDiscard={vi.fn()}
+      />
+    );
+
+    expect(screen.getByText('Upload Emirates ID')).toBeDefined();
+    expect(screen.getByText('Extracts bio data')).toBeDefined();
+    expect(screen.getByText(/Load Demo Benchmark/i)).toBeDefined();
+
+    fireEvent.click(screen.getByText(/Load Demo Benchmark/i));
+    expect(mockSampleLoad).toHaveBeenCalledTimes(1);
+  });
+
+  it('3.19.1 HenryTenancyContractJourneyView renders 4-stage stepper and navigates between stages', () => {
+    render(<HenryTenancyContractJourneyView />);
+
+    expect(screen.getByText(/1. Title Deed & Landlord KYC/i)).toBeDefined();
+    expect(screen.getByText(/2. Tenant KYC & Documents/i)).toBeDefined();
+    expect(screen.getByText(/3. Contract Terms & Financials/i)).toBeDefined();
+    expect(screen.getByText(/4. Signatures & Final Actions/i)).toBeDefined();
+
+    // Navigate to Stage 2
+    fireEvent.click(screen.getByText(/2. Tenant KYC & Documents/i));
+    expect(screen.getByText(/Tenant Contact & Legal Identity/i)).toBeDefined();
+
+    // Navigate to Stage 3
+    fireEvent.click(screen.getByText(/3. Contract Terms & Financials/i));
+    expect(screen.getByText(/Stage 3: Lease Financials & Contract Period/i)).toBeDefined();
+
+    // Navigate to Stage 4
+    fireEvent.click(screen.getByText(/4. Signatures & Final Actions/i));
+    expect(screen.getByText(/Stage 4: Endorsement Signatures & Vault Persistence/i)).toBeDefined();
+  });
+
+  it('3.19.2 HenryEmiratesIdScannerView loads sample and renders digital Emirates ID card', () => {
+    render(<HenryEmiratesIdScannerView />);
+
+    expect(screen.getByText(/3.19.2 Scan Emirates ID/i)).toBeDefined();
+    expect(screen.getByText(/No Emirates ID Scanned Yet/i)).toBeDefined();
+
+    // Load benchmark demo
+    fireEvent.click(screen.getByText(/Load Demo Benchmark/i));
+    expect(screen.getByText(/UNITED ARAB EMIRATES · IDENTITY CARD/i)).toBeDefined();
+    expect(screen.getByText(/784-1993-1805733-0/i)).toBeDefined();
+    expect(screen.getByText(/Arslan Malik Bashir Ahmad/i)).toBeDefined();
+  });
+
+  it('3.19.3 HenryTitleDeedScannerView loads sample and renders DLD ownership specifications', () => {
+    render(<HenryTitleDeedScannerView />);
+
+    expect(screen.getByText(/3.19.3 Scan Title Deed/i)).toBeDefined();
+    expect(screen.getByText(/No Title Deed Scanned Yet/i)).toBeDefined();
+
+    // Load benchmark demo
+    fireEvent.click(screen.getByText(/Load Demo Benchmark/i));
+    expect(screen.getByText(/VIRIDIS A/i)).toBeDefined();
+    expect(screen.getByText('504')).toBeDefined();
+    expect(screen.getByText(/AKRAM DIB NEHME/i)).toBeDefined();
+  });
+
+  it('3.19.4 HenryPassportScannerView loads sample and renders passport bio card and MRZ', () => {
+    render(<HenryPassportScannerView />);
+
+    expect(screen.getByText(/3.19.4 Scan International Passport/i)).toBeDefined();
+    expect(screen.getByText(/No Passport Scanned Yet/i)).toBeDefined();
+
+    // Load benchmark demo
+    fireEvent.click(screen.getByText(/Load Demo Benchmark/i));
+    expect(screen.getByText(/DR0760143/i)).toBeDefined();
+    expect(screen.getByText(/Arslan Malik/i)).toBeDefined();
+    expect(screen.getByText(/RAW MACHINE READABLE ZONE/i)).toBeDefined();
+  });
+
+  it('3.19.5 HenryTenancyContractScannerView loads sample and extracts 4 contract domains', () => {
+    render(<HenryTenancyContractScannerView />);
+
+    expect(screen.getByText(/3.19.5 Scan & Extract Tenancy Agreement/i)).toBeDefined();
+
+    // Load benchmark demo
+    fireEvent.click(screen.getByRole('button', { name: /Load Demo Benchmark/i }));
+    expect(screen.getByText(/1. Property Specifications/i)).toBeDefined();
+    expect(screen.getByText(/2. Landlord \/ Lessor/i)).toBeDefined();
+    expect(screen.getByText(/3. Tenant Identity/i)).toBeDefined();
+    expect(screen.getByText(/4. Financial Terms/i)).toBeDefined();
+  });
+});

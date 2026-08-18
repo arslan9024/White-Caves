@@ -66,9 +66,11 @@ export const ALL_AI_ASSISTANTS: AIAssistantOption[] = [
     role: 'Records, Title Deeds & Audit Logs',
     icon: '🗂️',
     items: [
-      { id: 'henry-prepare-tenancy', label: '3.19.1 Prepare Tenancy Contract', icon: '📄', badge: 'Official DLD' },
-      { id: 'henry-title-deeds', label: '3.19.2 Title Deed Vault & Scan', icon: '📜' },
-      { id: 'henry-records', label: '3.19.3 Document Archive & Compliance', icon: '🗄️' },
+      { id: 'henry-tenancy-journey', label: '3.19.1 Prepare Tenancy Contract', icon: '📄', badge: 'DLD Official' },
+      { id: 'henry-scan-eid', label: '3.19.2 Scan Emirates ID', icon: '🪪', badge: 'OCR Engine' },
+      { id: 'henry-scan-title-deed', label: '3.19.3 Scan Title Deed', icon: '📜', badge: 'DLD Oqood' },
+      { id: 'henry-scan-passport', label: '3.19.4 Scan Passport', icon: '🛂', badge: 'ICAO MRZ' },
+      { id: 'henry-scan-contract', label: '3.19.5 Scan Tenancy Contract', icon: '📑', badge: 'DLD Ejari' },
     ],
   },
   { id: 'sentinel', num: '3.20', name: 'Sentinel AI', role: 'Property State Machine & Quality', icon: '🏢' },
@@ -344,12 +346,9 @@ export function useCRMHubPageLogic() {
 
   const handleTabChange = useCallback((newTab: string) => {
     haptics.medium();
-    if (newTab === 'henry-prepare-tenancy') {
-      setIsHenryTenancyModalOpen(true);
-      return;
-    }
-    setActiveTab(newTab);
-    setSearchParams({ tab: newTab });
+    const resolvedTab = newTab === 'henry-prepare-tenancy' ? 'henry-tenancy-journey' : newTab;
+    setActiveTab(resolvedTab);
+    setSearchParams({ tab: resolvedTab });
   }, [haptics, setSearchParams]);
 
   // Tile 1 click

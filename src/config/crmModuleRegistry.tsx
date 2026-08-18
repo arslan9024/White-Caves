@@ -39,6 +39,11 @@ const WillowBackendCRM = lazy(() => import('../components/crm/WillowBackendCRM_N
 const LindaWhatsAppCRM = lazy(() => import('../components/crm/LindaWhatsAppCRM'));
 const HenryRecordsCRM = lazy(() => import('../components/crm/HenryRecordsCRM'));
 const HenryDocumentStudio = lazy(() => import('../components/crm/HenryDocumentStudio'));
+const HenryTenancyContractJourneyView = lazy(() => import('../components/crm/HenryDocumentStudio/HenryTenancyContractJourneyView'));
+const HenryEmiratesIdScannerView = lazy(() => import('../components/crm/HenryDocumentStudio/HenryEmiratesIdScannerView'));
+const HenryTitleDeedScannerView = lazy(() => import('../components/crm/HenryDocumentStudio/HenryTitleDeedScannerView'));
+const HenryPassportScannerView = lazy(() => import('../components/crm/HenryDocumentStudio/HenryPassportScannerView'));
+const HenryTenancyContractScannerView = lazy(() => import('../components/crm/HenryDocumentStudio/HenryTenancyContractScannerView'));
 const EvangelineLegalCRM = lazy(() => import('../components/crm/EvangelineLegalCRM'));
 const SentinelPropertyCRM = lazy(() => import('../components/crm/SentinelPropertyCRM'));
 const HunterProspectingCRM = lazy(() => import('../components/crm/HunterProspectingCRM'));
@@ -150,6 +155,69 @@ export const CRM_MODULE_REGISTRY: Record<string, CRMModuleDefinition> = {
     color: '#EF4444',
     zone: 'finance_compliance',
     Component: HenryDocumentStudio,
+  },
+  'henry-tenancy-journey': {
+    id: 'henry-tenancy-journey',
+    label: '3.19.1 Prepare Tenancy Contract',
+    icon: '📄',
+    description: 'Multi-stage Guided Tenancy Journey with Live DLD Official Form Preview',
+    color: '#EF4444',
+    zone: 'leasing_contracts',
+    Component: HenryTenancyContractJourneyView,
+  },
+  'henry-prepare-tenancy': {
+    id: 'henry-prepare-tenancy',
+    label: '3.19.1 Prepare Tenancy Contract',
+    icon: '📄',
+    description: 'Multi-stage Guided Tenancy Journey with Live DLD Official Form Preview',
+    color: '#EF4444',
+    zone: 'leasing_contracts',
+    Component: HenryTenancyContractJourneyView,
+  },
+  'henry-scan-eid': {
+    id: 'henry-scan-eid',
+    label: '3.19.2 Scan Emirates ID',
+    icon: '🪪',
+    description: 'ICAO TD1 Bio-Data & MRZ Optical Recognition Engine',
+    color: '#10B981',
+    zone: 'finance_compliance',
+    Component: HenryEmiratesIdScannerView,
+  },
+  'henry-scan-title-deed': {
+    id: 'henry-scan-title-deed',
+    label: '3.19.3 Scan Title Deed',
+    icon: '📜',
+    description: 'DLD Title Deed & Oqood Ownership Extraction',
+    color: '#EF4444',
+    zone: 'inventory_listings',
+    Component: HenryTitleDeedScannerView,
+  },
+  'henry-title-deeds': {
+    id: 'henry-title-deeds',
+    label: '3.19.3 Scan Title Deed',
+    icon: '📜',
+    description: 'DLD Title Deed & Oqood Ownership Extraction',
+    color: '#EF4444',
+    zone: 'inventory_listings',
+    Component: HenryTitleDeedScannerView,
+  },
+  'henry-scan-passport': {
+    id: 'henry-scan-passport',
+    label: '3.19.4 Scan Passport',
+    icon: '🛂',
+    description: 'ICAO TD3 International Passport MRZ Parser',
+    color: '#3B82F6',
+    zone: 'finance_compliance',
+    Component: HenryPassportScannerView,
+  },
+  'henry-scan-contract': {
+    id: 'henry-scan-contract',
+    label: '3.19.5 Scan Tenancy Contract',
+    icon: '📑',
+    description: 'DLD Tenancy Contract Optical Ingestion & Agreement Parser',
+    color: '#DC2626',
+    zone: 'leasing_contracts',
+    Component: HenryTenancyContractScannerView,
   },
   'henry-records': {
     id: 'henry-records',
