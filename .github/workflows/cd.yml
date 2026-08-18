@@ -79,7 +79,8 @@ jobs:
         with:
           status: ${{ job.status }}
           text: 'Staging deployment: ${{ job.status }}'
-          webhook_url: ${{ secrets.SLACK_WEBHOOK }}
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK }}
 
   smoke-tests:
     runs-on: ubuntu-latest
@@ -197,7 +198,8 @@ jobs:
             ✅ *Production Deployment Successful*
             Version: v${{ github.run_number }}
             Commit: ${{ env.DEPLOY_SHA }}
-          webhook_url: ${{ secrets.SLACK_WEBHOOK }}
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK }}
       
       - name: Notify failure
         if: failure()
@@ -208,7 +210,8 @@ jobs:
           text: |
             ❌ *Production Deployment Failed*
             Commit: ${{ env.DEPLOY_SHA }}
-          webhook_url: ${{ secrets.SLACK_WEBHOOK }}
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK }}
 
   monitoring:
     runs-on: ubuntu-latest
@@ -234,4 +237,5 @@ jobs:
         with:
           status: ${{ job.status }}
           text: 'Production monitoring: ${{ job.status }}'
-          webhook_url: ${{ secrets.SLACK_WEBHOOK }}
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK }}
