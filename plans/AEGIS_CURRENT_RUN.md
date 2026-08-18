@@ -1,8 +1,6 @@
 # AEGIS Current Run — Autopilot 5-Turn Loop Report
 
-> **⚠️ REFERENCE COPY** — Canonical active version is at [`plans/AEGIS_CURRENT_RUN.md`](../../plans/AEGIS_CURRENT_RUN.md). Update that file, not this one.
-
-
+> **Status:** ACTIVE | **Canonical Path:** `plans/AEGIS_CURRENT_RUN.md` | **Archive Copy:** `docs/plans/AEGIS_CURRENT_RUN.md`
 
 ## System Connection Status
 

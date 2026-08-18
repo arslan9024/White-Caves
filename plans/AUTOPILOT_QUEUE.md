@@ -1,8 +1,6 @@
 # AUTOPILOT_QUEUE.md
 
-> **⚠️ REFERENCE COPY** — Canonical active version is at [`plans/AUTOPILOT_QUEUE.md`](../../plans/AUTOPILOT_QUEUE.md). Update that file, not this one.
-
-
+> **Status:** ACTIVE | **Canonical Path:** `plans/AUTOPILOT_QUEUE.md` | **Archive Copy:** `docs/plans/AUTOPILOT_QUEUE.md`
 
 **Mode:** AUTONOMOUS 10-TASK LOOP
 **Updated:** 2026-05-28 01:50

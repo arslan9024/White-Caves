@@ -1,14 +1,11 @@
 # AEGIS 2.0 — Master Plan & RUP Architecture Status
 
-> **⚠️ REFERENCE COPY** — Canonical active version is at [`plans/MASTER_PLAN.md`](../../plans/MASTER_PLAN.md). Update that file, not this one.
-
-
-
+> **Status:** ACTIVE | **Canonical Path:** `plans/MASTER_PLAN.md` | **Archive Copy:** `docs/plans/MASTER_PLAN.md`  
 > **Project Name:** White Caves Real Estate LLC — Enterprise Platform  
 > **Framework:** Rational Unified Process (RUP) 4-Tier Software Docs Isolation  
 > **Brand Palette Lockdown:** White Caves Red (`#EF4444`) | Crisp White (`#FFFFFF`) | Deep Slate Gray (`#1E293B`)  
 > **Architecture Pattern:** View-Logic-Style 3-Folder Component Isolation (`*.tsx`, `*.logic.ts`, `*.style.ts`)  
-> **Active Wave Backlog:** [WAVE_45_IMPLEMENTATION_BACKLOG.md](waves/WAVE_45_IMPLEMENTATION_BACKLOG.md) (Wave 45 SRS Roadmap)  
+> **Active Wave Backlog:** [WAVE_45_IMPLEMENTATION_BACKLOG.md](../docs/plans/waves/WAVE_45_IMPLEMENTATION_BACKLOG.md) (Wave 45 SRS Roadmap)  
 > **Last Updated:** 2026-08-09  
 
 ---

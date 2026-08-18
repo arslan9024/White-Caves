@@ -136,7 +136,7 @@ If full matrix is too expensive, run focused scope checks first and clearly repo
 - **Corporate Brand Palette Lockdown:** Use ONLY White Caves Red (`#EF4444`) for primary badges, buttons, and active menu states, Crisp White (`#FFFFFF`) for canvas background, and Deep Slate Gray (`#1E293B`) for typography. Emerald green, gold, and dark obsidian themes are strictly banned.
 - **Founder Short-Circuit Law:** Email `arslanmalikgoraha@gmail.com` MUST automatically inject `accessLevel: 5` (`LEVEL_5_MASTER`), bypassing lower-tier department gates and landing directly on `ProfilePage.tsx` before mounting `UnifiedWorkspaceLayout.tsx`.
 
-- Free-planning agents MUST use only approved free models: Gemini 2.0 Flash / 1.5 Flash (Google AI Studio), Llama 3.1 70B / 3.3 70B (Groq), DeepSeek V3 / R1 (DeepSeek Chat), Mistral Small (Mistral Le Chat), Qwen2.5 72B (HuggingFace / Together.ai). See `plans/AGENT_SKILLS_UPGRADE_V3.md` for the full model assignment matrix by role type.
+- Free-planning agents MUST use only approved free models: Gemini 2.0 Flash / 1.5 Flash (Google AI Studio), Llama 3.1 70B / 3.3 70B (Groq), DeepSeek V3 / R1 (DeepSeek Chat), Mistral Small (Mistral Le Chat), Qwen2.5 72B (HuggingFace / Together.ai). See `docs/plans/AGENT_SKILLS_UPGRADE_V3.md` for the full model assignment matrix by role type.
 - Senior coding/design agents use GPT-4o by default for coding and verification.
 - Claude 3.5 Sonnet is reserved for explicit complex architecture/design reviews by: @Ada, @Mira, @Barbara, @Una, @Daniela, @Framer, @Radia.
 
@@ -216,7 +216,7 @@ For orchestration/governance rules (handoff contracts, readiness gates, approval
 
 - `AGENTS.md`
 - `.github/instructions/agentic-workflow.instructions.md`
-- `plans/CUSTOM_AGENTS_PLAN.md` (when applicable)
+- `docs/plans/CUSTOM_AGENTS_PLAN.md` (when applicable)
 
 ### Policy precedence
 

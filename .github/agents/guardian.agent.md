@@ -182,7 +182,7 @@ Always structure your report as:
 | Security Policy               | `/business_docs/10_security/`               |
 | Architecture Decision Records | `/docs/adr/`                                |
 | Archived Ideas                | `/docs/ARCHIVED_IDEAS.md`                   |
-| Historical Plans              | `/plans/`                                   |
+| Active Execution Plans        | `/plans/` (canonical) + `/docs/plans/` (archive) |
 | Prisma Schema                 | `/prisma/schema.prisma`                     |
 | TypeScript Config             | `/tsconfig.json`                            |
 | ESLint Config                 | `/eslint.config.js`                         |
