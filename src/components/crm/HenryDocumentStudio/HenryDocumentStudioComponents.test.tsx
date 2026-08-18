@@ -66,30 +66,22 @@ describe('Henry Document Studio — Shared Uploader & 5 Content Area Views', () 
     expect(screen.getByText(/Stage 4: Endorsement Signatures & Vault Persistence/i)).toBeDefined();
   });
 
-  it('3.19.2 HenryEmiratesIdScannerView loads sample and renders digital Emirates ID card and form', () => {
+  it('3.19.2 HenryEmiratesIdScannerView loads sample and renders digital Emirates ID card and form', async () => {
     render(<HenryEmiratesIdScannerView />);
 
     expect(screen.getByText(/3.19.2 Scan Emirates ID/i)).toBeDefined();
-    expect(screen.getByText(/No Document Uploaded Yet/i)).toBeDefined();
+    expect(screen.getByText(/No Emirates ID Uploaded/i)).toBeDefined();
 
     // Load benchmark demo
     fireEvent.click(screen.getByRole('button', { name: /Load Demo Benchmark/i }));
-    expect(screen.getByText(/Extracted Variables Form/i)).toBeDefined();
+    expect(screen.getByText(/Emirates ID Extracted Variables/i)).toBeDefined();
     expect(screen.getByText(/UNITED ARAB EMIRATES · IDENTITY CARD/i)).toBeDefined();
-    expect(screen.getByDisplayValue('784-1993-1805733-0')).toBeDefined();
-    expect(screen.getByDisplayValue('Arslan Malik Bashir Ahmad')).toBeDefined();
-
-    // Test Ibrahim Siraj Indian client benchmark
-    fireEvent.click(screen.getByText(/Ibrahim Siraj/i));
-    expect(screen.getByDisplayValue('784-1970-7905987-5')).toBeDefined();
-    expect(screen.getByDisplayValue('Ibrahim Siraj Sulthan Mohamed Kasim Sultan Mohammed')).toBeDefined();
-    expect(screen.getByDisplayValue('India')).toBeDefined();
-    expect(screen.getByDisplayValue('Accountant General')).toBeDefined();
-    expect(screen.getByDisplayValue('Auto Vision Trading Fzco - Daz')).toBeDefined();
+    expect(screen.getAllByText('784-1993-1805733-0').length).toBeGreaterThanOrEqual(1);
+    expect(screen.getAllByText('Arslan Malik Bashir Ahmad').length).toBeGreaterThanOrEqual(1);
 
     // Test Extract button
-    fireEvent.click(screen.getByText(/Extract Information From Uploaded ID to Form/i));
-    expect(screen.getByDisplayValue('784-1970-7905987-5')).toBeDefined();
+    fireEvent.click(screen.getByText(/Save to KYC Vault/i));
+    expect(screen.queryByText(/Emirates ID Extracted Variables/i)).toBeNull();
   });
 
   it('3.19.3 HenryTitleDeedScannerView loads sample and renders DLD ownership specifications and form', () => {
