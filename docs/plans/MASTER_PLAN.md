@@ -1,5 +1,9 @@
 # AEGIS 2.0 — Master Plan & RUP Architecture Status
 
+> **⚠️ REFERENCE COPY** — Canonical active version is at [`plans/MASTER_PLAN.md`](../../plans/MASTER_PLAN.md). Update that file, not this one.
+
+
+
 > **Project Name:** White Caves Real Estate LLC — Enterprise Platform  
 > **Framework:** Rational Unified Process (RUP) 4-Tier Software Docs Isolation  
 > **Brand Palette Lockdown:** White Caves Red (`#EF4444`) | Crisp White (`#FFFFFF`) | Deep Slate Gray (`#1E293B`)  

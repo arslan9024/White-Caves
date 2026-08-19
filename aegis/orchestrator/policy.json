@@ -1,5 +1,5 @@
 {
-  "version": "2026.08.13-aegis-v4-deep-analyzer-v1",
+  "version": "2026.08.18-aegis-v4-chronicle-tips-v1",
   "schemaVersion": "2.2.0",
   "readinessThresholdPct": 60,
   "readinessTargetPct": 90,
@@ -212,10 +212,24 @@
       "@River",
       "@Rowan"
     ],
-    "freeModelProviders": ["google-ai-studio", "groq", "deepseek"],
-    "premiumModelProviders": ["openai", "anthropic"],
-    "freeModels": ["Gemini 2.0 Flash", "Llama 3.1 70B", "DeepSeek V3"],
-    "premiumModels": ["GPT-4o", "claude-3.5-sonnet"]
+    "freeModelProviders": [
+      "google-ai-studio",
+      "groq",
+      "deepseek"
+    ],
+    "premiumModelProviders": [
+      "openai",
+      "anthropic"
+    ],
+    "freeModels": [
+      "Gemini 2.0 Flash",
+      "Llama 3.1 70B",
+      "DeepSeek V3"
+    ],
+    "premiumModels": [
+      "GPT-4o",
+      "claude-3.5-sonnet"
+    ]
   },
   "executionMode": {
     "default": "autopilot",
@@ -264,23 +278,47 @@
     "developmentSweepRiskTierBlockOnMissingRequired": false,
     "developmentSweepRiskProfiles": {
       "security": {
-        "requiredChecks": ["test:run", "verify:runtime:dry", "audit"],
-        "optionalChecks": ["test:e2e:accessibility"]
+        "requiredChecks": [
+          "test:run",
+          "verify:runtime:dry",
+          "audit"
+        ],
+        "optionalChecks": [
+          "test:e2e:accessibility"
+        ]
       },
       "auth": {
-        "requiredChecks": ["test:run", "verify:runtime:dry", "test:assistant-contract"],
-        "optionalChecks": ["test:e2e:smoke"]
+        "requiredChecks": [
+          "test:run",
+          "verify:runtime:dry",
+          "test:assistant-contract"
+        ],
+        "optionalChecks": [
+          "test:e2e:smoke"
+        ]
       },
       "database": {
-        "requiredChecks": ["test:run", "verify:runtime:dry", "build"],
+        "requiredChecks": [
+          "test:run",
+          "verify:runtime:dry",
+          "build"
+        ],
         "optionalChecks": []
       },
       "payment": {
-        "requiredChecks": ["test:run", "verify:runtime:dry", "build"],
-        "optionalChecks": ["audit"]
+        "requiredChecks": [
+          "test:run",
+          "verify:runtime:dry",
+          "build"
+        ],
+        "optionalChecks": [
+          "audit"
+        ]
       },
       "general": {
-        "requiredChecks": ["test:run"],
+        "requiredChecks": [
+          "test:run"
+        ],
         "optionalChecks": []
       }
     },
@@ -409,7 +447,12 @@
     },
     "development": {
       "deliveryStyle": "vertical-slice",
-      "requiredChecks": ["typecheck", "lint", "build", "plans:validate"],
+      "requiredChecks": [
+        "typecheck",
+        "lint",
+        "build",
+        "plans:validate"
+      ],
       "targetedTestsRequired": true,
       "maxAutoFixRetries": 3,
       "securityScanRequired": true
@@ -417,7 +460,10 @@
     "git": {
       "defaultRemote": "origin",
       "integrationBranch": "develop",
-      "integrationFallbackBranches": ["development", "main"],
+      "integrationFallbackBranches": [
+        "development",
+        "main"
+      ],
       "releaseBranch": "main",
       "featureBranchPrefix": "feature/",
       "autoMergeReleaseBranch": false,
@@ -426,11 +472,25 @@
   },
   "workflowGraph": {
     "enabled": true,
-    "steps": ["plan", "code", "verify", "merge-ready"],
+    "steps": [
+      "plan",
+      "code",
+      "verify",
+      "merge-ready"
+    ],
     "stepPatterns": {
-      "sequential": ["plan", "code", "verify", "merge-ready"],
+      "sequential": [
+        "plan",
+        "code",
+        "verify",
+        "merge-ready"
+      ],
       "parallel": {
-        "code": ["frontend", "backend", "tests"]
+        "code": [
+          "frontend",
+          "backend",
+          "tests"
+        ]
       },
       "handoff": {
         "plan\u2192code": "@Ada\u2192@Mira",
@@ -440,7 +500,11 @@
       "group-review": {
         "trigger": "high-risk",
         "minRiskScore": 70,
-        "reviewers": ["@Ada", "@Katherine", "@Radia"],
+        "reviewers": [
+          "@Ada",
+          "@Katherine",
+          "@Radia"
+        ],
         "requiredApprovals": 2
       }
     },
@@ -474,19 +538,32 @@
     },
     "tiers": {
       "security": {
-        "blockSeverities": ["critical"]
+        "blockSeverities": [
+          "critical"
+        ]
       },
       "auth": {
-        "blockSeverities": ["critical", "high"]
+        "blockSeverities": [
+          "critical",
+          "high"
+        ]
       },
       "database": {
-        "blockSeverities": ["critical", "high"]
+        "blockSeverities": [
+          "critical",
+          "high"
+        ]
       },
       "payment": {
-        "blockSeverities": ["critical", "high"]
+        "blockSeverities": [
+          "critical",
+          "high"
+        ]
       },
       "general": {
-        "blockSeverities": ["critical"]
+        "blockSeverities": [
+          "critical"
+        ]
       }
     },
     "exceptions": []
@@ -523,7 +600,13 @@
     "cadence": "weekly",
     "metricsDir": "logs/orchestrator/benchmarks",
     "baselineFile": "logs/orchestrator/benchmarks/baseline.json",
-    "metrics": ["taskSuccessRate", "passRate", "reworkRate", "cycleTimeSec", "rollbackRate"],
+    "metrics": [
+      "taskSuccessRate",
+      "passRate",
+      "reworkRate",
+      "cycleTimeSec",
+      "rollbackRate"
+    ],
     "regressionAlertThreshold": 0.1
   },
   "confidenceRouting": {
@@ -532,15 +615,28 @@
     "requireHumanApprovalMaxConfidence": 0.5,
     "riskScoreLowMax": 30,
     "riskScoreHighMin": 70,
-    "highRiskDomains": ["security", "auth", "payment", "database-migration"],
+    "highRiskDomains": [
+      "security",
+      "auth",
+      "payment",
+      "database-migration"
+    ],
     "routingStateDir": "logs/orchestrator/confidence",
     "fallbackDecision": "human-approval",
-    "fallbackChain": ["human-approval", "approval", "escalate"],
+    "fallbackChain": [
+      "human-approval",
+      "approval",
+      "escalate"
+    ],
     "requireReviewMetadataOnUncertain": true,
     "canaryPercentOverride": null
   },
   "artifactSchemasDir": "aegis/orchestrator/schemas",
   "changeLog": [
+    {
+      "date": "2026-08-18",
+      "summary": "Applied chronicle tips: added mergePolicy (no-verify forbidden, branch naming), waveTagging enforcement, sessionStart ritual, and conflict resolution delegation rules."
+    },
     {
       "date": "2026-06-17",
       "summary": "Added control-plane ownership, free-first task-class routing, plan-first packets, context budgets, and session compaction governance."
@@ -577,7 +673,11 @@
   "planFirst": {
     "enabled": true,
     "defaultMode": "plan-before-agent",
-    "trivialExemptions": ["formatting-only", "comment-only", "small-doc-fix"],
+    "trivialExemptions": [
+      "formatting-only",
+      "comment-only",
+      "small-doc-fix"
+    ],
     "requiredPlanPacketFields": [
       "goal",
       "filesInScope",
@@ -618,9 +718,34 @@
   },
   "historyManagement": {
     "enabled": true,
-    "layers": ["raw-logs", "session-snapshot", "handoff-summary"],
+    "layers": [
+      "raw-logs",
+      "session-snapshot",
+      "handoff-summary"
+    ],
     "reuseLayer": "handoff-summary",
     "markStaleAsNonCanonical": true,
     "bootstrapFromMinimalPacket": true
+  },
+  "mergePolicy": {
+    "noVerifyForbidden": true,
+    "noVerifyAllowedForDocOnlyCommits": false,
+    "noVerifyFallback": "fix-root-cause-before-commit",
+    "branchNamingConvention": "copilot/wave-{NN}-{feature-slug}",
+    "requireNamedBranch": true,
+    "directPushToMainForbidden": true,
+    "requirePrForMain": true
+  },
+  "waveTagging": {
+    "enabled": true,
+    "tagFormat": "wave-{NN}-complete",
+    "requireTagBeforeMergeToMain": true,
+    "updatePhaseDeploymentLog": true,
+    "phaseDeploymentLogPath": "docs/plans/DEPLOYMENT.md"
+  },
+  "sessionStart": {
+    "requiredCommand": "npm run orchestrator:progress:intel:brief",
+    "checklistDoc": "docs/plans/SESSION_START_CHECKLIST.md",
+    "enforceNamedBranch": true
   }
 }

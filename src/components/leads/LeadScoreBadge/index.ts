@@ -1,0 +1,1 @@
+export { LeadScoreBadge } from './LeadScoreBadge';

@@ -1,6 +1,6 @@
 # AEGIS 2.0 Planning Governance & 90% Readiness Standard
 
-**Version:** 2026.07-AEGIS-V2  
+**Version:** 2026.08-AEGIS-V4-chronicle-tips  
 **Control Plane Policy:** `scripts/orchestrator/policy.json`  
 **Governance Authority:** Executive Council (@Ada, @Margaret, @Grace, @Elena, @Zoe)  
 **Last Updated:** 2026-07-27
@@ -102,3 +102,25 @@ business_docs/ ➔ software_docs/ ➔ plans/ ➔ aegis/
 - **Single-File Isolation**: View (`.tsx`), Logic (`.logic.ts`), Style (`.style.ts`), and Dictionary (`locales/en.json` & `ar.json`).
 - **Level 5 God-Mode**: Unrestricted administrative bypass for `arslanmalikgoraha@gmail.com` / `the.white.caves@gmail.com` unmasking the `[Managing Director Hub]` sidebar group.
 
+
+---
+
+## 📋 7. Chronicle Tips — Applied 2026-08-18
+
+> From `/chronicle tips` pattern analysis of 31 sessions. Follow these rules every session.
+
+**Rule 1 — No `--no-verify` commits.** Fix the root cause (lint/CSS/build error) instead. Consult `docs/plans/SESSION_TIPS_2026-08-18.md`.
+
+**Rule 2 — Always use a named branch.** Convention: `copilot/wave-NN-<feature-slug>`. Never commit directly to `main` or `develop`.
+
+**Rule 3 — Batch `plans/` edits into one session.** All related plan files for a wave must be updated together via the `Planner` agent.
+
+**Rule 4 — Co-generate tests with source files.** Use the `QA` agent to scaffold tests at the same time as source creation.
+
+**Rule 5 — Start every session with progress intel.** Run `npm run orchestrator:progress:intel:brief` first. See `docs/plans/SESSION_START_CHECKLIST.md`.
+
+**Rule 6 — Delegate doc conflicts to the Architect agent.** Planning file conflicts go to `Architect`. `package-lock.json` conflicts: run `npm install` fresh.
+
+**Rule 7 — Tag completed waves before merging to main.** Run `git tag wave-NN-complete` and update `docs/plans/DEPLOYMENT.md`.
+
+Policy machine-readable enforcement: `aegis/orchestrator/policy.json` → `mergePolicy`, `waveTagging`, `sessionStart`.

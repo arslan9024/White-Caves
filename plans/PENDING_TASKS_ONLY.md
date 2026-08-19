@@ -1,103 +1,75 @@
-# PENDING TASKS ONLY (White Caves Architecture Master Backlog)
+# White Caves Real Estate LLC — Pending Tasks & RUP System Ledger
 
-## 🔱 1. The 35 AI Assistants Master Registry (12 Corporate Departments)
-- [x] **1. Luxury Sales & Brokerage:**
-  - `AI_CLARA` (Lead Qualification & Scoring Specialist)
-  - `AI_SOPHIA` (Deal Closer & Negotiation Strategist)
-  - `AI_HAMDAN` (VIP Investor & Sovereign Matcher)
-- [x] **2. Strategic Off-Plan Developments:**
-  - `AI_ZAYED` (Developer Launch Predictor & Snagging Engine)
-  - `AI_RACHID` (Rebate & Commission Yield Optimizer)
-- [x] **3. Commercial Real Estate & Investment:**
-  - `AI_MAKTOUM` (Bulk Asset & Building Valuator)
-  - `AI_TARIK` (Institutional REIT & Fund Sorter)
-- [x] **4. Portfolio Management & Residential Leasing:**
-  - `AI_NADIA` (Ejari & Tenancy Contract Automation Engine)
-  - `AI_YASMIN` (Lease Renewal & RERA Rental Calculator Sorter)
-- [x] **5. Asset Management & Facilities (DH2 Hub):**
-  - `AI_SENTINEL` (IoT Telemetry & DAMAC Hills 2 Dispatcher)
-  - `AI_FARAH` (Contractor Bidding & SLA Matcher)
-- [x] **6. Revenue, Finance & Treasury:**
-  - `AI_THEODORA` (Multi-Currency Reconciliation & Treasury Engine)
-  - `AI_ESCROW_GUARD` (DLD Escrow Account & Audit Sentinel)
-- [x] **7. Performance Marketing & Lead Acquisition:**
-  - `AI_OLIVIA` (CPL Optimizer & Multi-Portal Syndication Specialist)
-  - `AI_AD_MATRIX` (Meta & Google Real-Time Bid Commander)
-- [x] **8. Corporate Communications & Client Experience:**
-  - `AI_CHATS_ROUTER` (WhatsApp 15-Minute SLA & Omnichannel Dispatcher)
-  - `AI_VIP_RECEPTION` (Multilingual Concierge & Private Showing Planner)
-- [x] **9. Executive Office & Corporate Governance:**
-  - `AI_ZOE` (Managing Director Strategic Advisor & Executive Briefing Desk)
-  - `AI_LION_HEART` (Internal Audit & Tamper-Proof Log Sorter)
-- [x] **10. Regulatory Affairs & RERA Compliance:**
-  - `AI_LAILA` (Trakheesi Permit & Advertisement Validator)
-  - `AI_AML_SHIELD` (UAE FIU Anti-Money Laundering & goAML Screener)
-- [x] **11. Conveyancing & Transaction Management:**
-  - `AI_EVANGELINE` (NOC & Title Transfer Conveyancing Specialist)
-  - `AI_TRUSTEE_BOT` (DLD Registration Trustee Appointment Coordinator)
-- [x] **12. Market Intelligence & IoT Data Science:**
-  - `AI_PREDICT` (Dubai Property Valuation & Price Forecaster)
-  - `AI_HEATMAP` (Community Demand & Transaction Vector Tracker)
-- [x] **9 Cross-Department Utility & Operational Agents:**
-  - `AI_NINA` (Executive WhatsApp MD Assistant & Autonomous Broker)
-  - `AI_LINDA` (Public Portal AI Concierge & Property Guide)
-  - `AI_MARY` (Listing Ingestion & Data Hygiene Specialist)
-  - `AI_NANCY` (HR, Broker Onboarding & Commission Tier Manager)
-  - `AI_DAISY` (Tenant Screening & Credit Risk Sorter)
-  - `AI_AURORA` (Marketing Automation & Email Newsletter Architect)
-  - `AI_HAZEL` (Legal Document Generation & Contract Vault)
-  - `AI_WILLOW` (Infrastructure, DevOps & Database Sentinel)
-  - `AI_HUNTER` (Off-Market Deal Sourcing & Motivated Seller Finder)
+> **Status:** ACTIVE | **Canonical Path:** `plans/PENDING_TASKS_ONLY.md` | **Archive Copy:** `docs/plans/PENDING_TASKS_ONLY.md`  
+> **System Version:** 2.0.26  
+> **Last Updated:** 2026-08-09  
+> **Active Stream:** `MASTER_PLAN.md`  
+> **Active Wave Bundle:** Wave 45 (Arabic RTL Support & PWA Offline Engine — SRS Final Phase)  
+> **Engineering Model:** Rational Unified Process (RUP)  
+> **Hierarchy:** 1 Managing Director (Arsalan Malik) | 12 Department Managers | 108 Supervisors  
+> **Brand Palette:** Red (`#EF4444`) | White (`#FFFFFF`) | Slate (`#1E293B`)  
+> **Forbidden Colors:** Emerald Green | Metallic Gold | Obsidian Black  
+> **Build Gate Status:** 0-Token Local Machine Compilation Checks via `npm run build` & `npm run next:build` (PASSED)
 
 ---
 
-## 🏛️ 2. Interface & Feature Standardization (FE_STANDARD & INTERFACE)
-- [x] Enforce the 4-Way Co-Located Subfolder Pattern across components:
-  - `Component.tsx` (Root: Presentational Shell drawing Data Variables)
-  - `logic/Component.logic.ts` (Hooks, Event Handlers & State)
-  - `styles/Component.style.ts` (Styled-Components & CSS UI Tokens)
-  - `data/Component.data.ts` (Content Strings & Structured Data)
-- [x] Configure `TopNavbar` layout properties: `fixed top-0 left-0 w-full h-16 z-1000 bg-white border-b-2 border-red-500` with 64px central overhanging circular logo.
-- [x] Configure `UnifiedSidebar` layout properties: `fixed top-16 left-0 h-[calc(100vh-64px)] w-[280px] z-900 bg-white border-r` including the exclusive Level 5 `[Managing Director Hub]`.
-- [x] Configure `MainCanvas` layout properties: `margin-top:64px; margin-left:280px; padding:24px; bg-white text-slate`.
-- [x] Symmetrical Floating Widgets:
-  - `<CavesFloatingSearch />`: `fixed bottom-6 left-6 z-2000 bg-white border-red-500 glassmorphic pill`
-  - `<CavesWhatsAppWidget />`: `fixed bottom-6 right-6 z-2000 corporate red/white contact marker token`
+## 🏛️ Master Company Credentials Ledger (`src/mocks/companyMasterLedger.json`)
+
+| Document Type | Document No. | Issue Date | Expiry Date | 90-Day Alert | 30-Day Alert | Governing Authority |
+|---|---|---|---|---|---|---|
+| **DET License** | `1388443` | 31-07-2024 | 30-07-2026 | 01-05-2026 | 30-06-2026 | Dubai Economy & Tourism (DET) |
+| **RERA ORN** | `44483` | 31-07-2024 | 30-07-2026 | 01-05-2026 | 30-06-2026 | Real Estate Regulatory Agency (RERA) |
+| **HQ Ejari** | `0120250814005322` | 14-08-2025 | 13-08-2026 | 15-05-2026 | 14-07-2026 | Dubai Land Department (DLD) |
+| **ICP Est Card** | `2/1/1192499` | 31-07-2024 | 31-08-2026 | 02-06-2026 | 01-08-2026 | Federal Authority for Identity & Citizenship |
 
 ---
 
-## 🛡️ 3. Deduplication & Sovereign Gating Laws
-- [x] **AEGIS 2.0 Color Protocol:** ONLY White Caves Red (`#EF4444`), Brilliant White (`#FFFFFF`), and Deep Slate Gray (`#1E293B`).
-- [x] **Founder Sovereign Short-Circuit:** If email matches `arslanmalikgoraha@gmail.com` or `the.white.caves@gmail.com`, auto-inject `accessLevel: 5`, bypass route locks, and unmask all 12-department navigation controls with zero loading latency.
-- [x] **Consolidated Layout:** All navigation unified inside `src/layouts/UnifiedWorkspaceLayout.tsx`.
+## 🏢 12 Corporate Departments
+
+1. **`sales`** — Luxury Sales & Brokerage (Manager Level 4 + 9 Supervisors)
+2. **`offplan`** — Strategic Off-Plan & Project Development (Manager Level 4 + 9 Supervisors)
+3. **`commercial`** — Commercial Real Estate & Investment (Manager Level 4 + 9 Supervisors)
+4. **`leasing`** — Portfolio Management & Residential Leasing (Manager Level 4 + 9 Supervisors)
+5. **`asset_mgmt`** — Asset Management & Facilities (DH2 Hub - 9,378 Managed Dubai Units)
+6. **`finance`** — Revenue Finance & Treasury (Escrow Audit / FTA VAT / Currency Cache)
+7. **`marketing`** — Performance Marketing & Lead Acquisition (CPL Bounds / Portals Webhooks)
+8. **`comms`** — Corporate Communications & Client Experience (Nadia WhatsApp Array Routing)
+9. **`executive`** — Executive Office & Corporate Governance (Founder Vision Center Viewport)
+10. **`compliance`** — Regulatory Affairs & RERA Compliance (Trakheesi Permits / AML Filters)
+11. **`conveyancing`** — Conveyancing & Transaction Management (DLD Title Transfers & Developer NOCs)
+12. **`intelligence`** — Market Intelligence & IoT Data Science (Sentinel Telemetry Ingestion Hub)
 
 ---
 
-## 👑 4. The 14-Role Sovereign Registry & Identity Matrix (1-12-108 RBAC Engine)
-- [x] **Tier 1: Internal Corporate Machinery (1-12-108 Structure):**
-  - `managing_director` (L5 Sovereign Bypass) — Arslan Malik Bashir Ahmad (`arslanmalikgoraha@gmail.com`). Wildcard permissions `['*']`, unmasks all 12 corporate departments, 35 AI assistants, and Ghost Simulator.
-  - `manager` (L4) — 12 Department Business Heads. Owns regional P&L, deal approvals (`'can_approve_deals'`), commission splits.
-  - `supervisor` (L3) — 108 Execution Team Leads. 15-minute portal response SLA alerts (`'can_override_sla'`), manual lead routing (`'can_assign_leads'`).
-  - `agent` (L2) — Licensed Brokers / Sales & Leasing. Active pipeline, personal leads, Property Finder/Bayut webhooks, contract generation (`'can_create_contracts'`).
-  - `intern` (L1) — Corporate Interns / Trainee Brokers. Read-only leads (`'can_read_assigned_leads'`), deals require supervisor secondary sign-off.
-- [x] **Tier 2: Paired External Client Portals:**
-  - `tenant` (L1) — Leasing Channel. Active Ejari contract logs, Form 7 rent matrices, Henry AI 24/7 maintenance tickets.
-  - `landlord` (L2) — Leasing Channel. Net rental yield calculations, multi-currency statements, maintenance invoice payouts.
-  - `buyer` (L1) — Secondary Market. Curated secondary inventory, viewing calendars, Form B digital signing sheets.
-  - `seller` (L1) — Secondary Market. Marketing performance metrics, Trakheesi permits, Form A mandate logs.
-  - `offplan_buyer` (L1) — Off-Plan Market. Construction milestone tracking, developer payment schedule reminders, appreciation models.
-  - `developer` (L2) — Off-Plan Market. Primary developers (Emaar, DAMAC). Bulk inventory management, developer NOC processing, rebate claims.
-- [x] **Tier 3: Strategic Partners & Public:**
-  - `conveyancer` (L2) — DLD Registration Trustee. Title deed uploads, corporate transaction filing, Manager's Cheque verification.
-  - `contractor` (L2) — Maintenance Contractor. Claim open repair tickets (DAMAC Hills 2), upload on-site repair photos, submit closing invoices.
-  - `guest` (L1) — Public Consumer / Guest. Cinematic showcase, interactive map, floating search pill & WhatsApp concierge.
-- [x] **Unified Context Quartet Integration:** Single user entity in `UserRoleContext` (Commit `0ecfdbd6`) with 1-click single-role login (`loginAsRole`) and UI simulator.
+## 🔄 RUP Pipeline Execution Stages
+
+- [x] **SYNC_01 (1_APPEND_PLAN):** Document dynamic requirements evolution in `plans/PENDING_TASKS_ONLY.md`
+- [x] **SYNC_02 (2_ISOLATE_FILE):** Separate presentation, logic, and styles into atomic 3-folder layout (`.tsx`, `.logic.ts`, `.css`/`.style.ts`)
+- [x] **SYNC_03 (3_EXTRACT_TEXT):** Centralize copywriting parameters in local i18n JSON files (`TranslationContext.tsx`)
+- [x] **SYNC_04 (4_TERMINAL_CHECK):** Zero-token local compilation checks via `npm run build` and `npm run next:build`
+- [x] **SYNC_05 (5_HOT_RELOAD):** Runtime stability verification with zero log exceptions
+- [x] **SYNC_06 (6_REMOTE_RELEASE):** Remote release workflow ready for Vercel deployment hooks
 
 ---
 
-## ⚙️ 5. Pipeline Sync Stages (PIPELINE)
-- [x] `1_APPEND_PLAN`: Updated `plans/PENDING_TASKS_ONLY.md` with 14-role sovereign matrix and 35 AI assistants.
-- [x] `2_ISOLATE_FILE`: Segregated components across matching `Component.tsx`, `logic/`, `styles/`, and `data/` files.
-- [x] `3_EXTRACT_TEXT`: Extracted copywriting variables into data layers and translation dictionaries.
-- [x] `4_TERMINAL_CHECK`: Executed local compilation checks via `npm run build` and `npm run typecheck`.
-- [x] `5_HOT_RELOAD`: Verified stability with zero runtime exceptions.
+## 🎨 Multi-Zone UI/UX Upgrade Parameters (@Ada RUP Construction)
+
+| Viewport Target | Architecture Tier | Action Directive | UI Pattern | Status |
+| :--- | :--- | :--- | :--- | :--- |
+| `src/components/navigation/TopNavbar.tsx` | GLOBAL_SHELL | Remove written text strings, double logo vector boundaries to 76px x 76px (`h-[76px] w-[76px]`). Enforce 50% vertical overhang past bottom red header line. Shift right. | `OverhangingLogoShell` | ✅ COMPLETED |
+| `src/components/navigation/TopNavbar.tsx` | GLOBAL_SHELL | Inject binary light/dark switch (`#FFFFFF` + `#EF4444` vs `#0F172A` + `#EF4444`). | `ThemeToggle` | ✅ COMPLETED |
+| `src/components/navigation/TopNavbar.tsx` | GLOBAL_SHELL | Fluid dropdown lists: hover opens micro-shadow glassmorphic container, click locks open. | `FluidDropdownFlow` | ✅ COMPLETED |
+| `src/components/home/HeroSection.tsx` | HOMEPAGE | Re-align search pill items, integrate live monochrome Google Maps module with red listing pins from local property ledger. | `UnifiedHomepageView` | ✅ COMPLETED |
+| `src/pages/crm/ProfilePage.tsx` | AUTH_PROFILE | Founder summary card with interactive milestone line, session IP tickers, document expiration badges (DET `1388443`, RERA ORN `44483`, HQ Ejari, ICP card) with 90/60/30-day renewal countdown notifications. | `SovereignProfilePage` | ✅ COMPLETED |
+| `src/pages/crm/UnifiedDashboardPage.tsx` | CRM_COCKPIT | High-density analytics tokens, live cross-department action trackers, draggable widget modules, micro-sparkline graphs next to manager profiles. | `ExecutiveFlightDeck` | ✅ COMPLETED |
+
+---
+
+## 📐 Algorithms Domain Manifest Index (`software_docs/05_algorithms/`)
+
+| File Path | Department | Algorithm Name | Mathematical / Logic Protocol | SDD Reference |
+| :--- | :--- | :--- | :--- | :--- |
+| `software_docs/05_algorithms/lead_sla_decay.md` | `comms` | Lead SLA Decay & Escalation Algorithm | Weight-Based TTL Decay Penalty Counters | `../02_software_design/rbac_state_gating_sdd.md` |
+| `software_docs/05_algorithms/commission_tier_acceleration.md` | `finance` | Dynamic Commission Tier Accelerator | Threshold-Trigger Split Math (50/50 to 70/30 Split) | `../02_software_design/database_architecture_sdd.md` |
+| `software_docs/05_algorithms/predictive_roi_appraisal.md` | `intelligence` | Predictive Property ROI Appraisal | Linear Regression DLD Density Arrays | `../02_software_design/tech_replacement_rules.md` |
+| `software_docs/05_algorithms/noc_express_pathfinder.md` | `conveyancing` | NOC Express Pathfinder Logic | Graph-Based Delay Analysis across developers | `../02_software_design/tech_replacement_rules.md` |
