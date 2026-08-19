@@ -520,6 +520,33 @@ export const HenryEmiratesIdScannerView: FC = () => {
               isProcessing={isScanning}
               accentColor="#10B981"
             />
+            <div style={{ marginTop: '8px', display: 'flex', gap: '6px', flexWrap: 'wrap', alignItems: 'center' }}>
+              <span style={{ fontSize: '0.72rem', color: '#64748B', fontWeight: 700 }}>Client Presets:</span>
+              <button
+                type="button"
+                onClick={async () => {
+                  const data = await henryEmiratesIdScannerService.scanEmiratesId('sample_khalif' as any);
+                  setExtractedData(data);
+                  setStatusMsg(`✓ Ingested Client: ${data.fullNameEn} (${data.nationalityEn})`);
+                  setTimeout(() => setStatusMsg(null), 3000);
+                }}
+                style={{ background: '#F1F5F9', border: '1px solid #CBD5E1', borderRadius: '4px', padding: '2px 8px', fontSize: '0.7rem', fontWeight: 700, cursor: 'pointer' }}
+              >
+                Khalif Mohamednur (Kenya / Jayeeco)
+              </button>
+              <button
+                type="button"
+                onClick={async () => {
+                  const data = await henryEmiratesIdScannerService.scanEmiratesId('sample_mansoor' as any);
+                  setExtractedData(data);
+                  setStatusMsg(`✓ Ingested Client: ${data.fullNameEn} (${data.nationalityEn})`);
+                  setTimeout(() => setStatusMsg(null), 3000);
+                }}
+                style={{ background: '#F1F5F9', border: '1px solid #CBD5E1', borderRadius: '4px', padding: '2px 8px', fontSize: '0.7rem', fontWeight: 700, cursor: 'pointer' }}
+              >
+                Mansoor Almarzooqi (UAE / Gov)
+              </button>
+            </div>
           </div>
 
           {/* Section 2: Visual Document Preview Viewer */}

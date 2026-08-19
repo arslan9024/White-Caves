@@ -373,6 +373,34 @@ export const HenryTitleDeedScannerView: FC = () => {
             accentColor="#EF4444"
           />
 
+          <div style={{ marginTop: '-0.5rem', marginBottom: '0.75rem', display: 'flex', gap: '6px', flexWrap: 'wrap', alignItems: 'center' }}>
+            <span style={{ fontSize: '0.72rem', color: '#64748B', fontWeight: 700 }}>Property Presets:</span>
+            <button
+              type="button"
+              onClick={() => {
+                const sample = henryTitleDeedScannerService.getBukoSample();
+                setExtractedData(sample);
+                setStatusMsg(`✓ Ingested Property: ${sample.ownerNameEn} — ${sample.buildingNameEn}`);
+                setTimeout(() => setStatusMsg(null), 3000);
+              }}
+              style={{ background: '#F1F5F9', border: '1px solid #CBD5E1', borderRadius: '4px', padding: '2px 8px', fontSize: '0.7rem', fontWeight: 700, cursor: 'pointer' }}
+            >
+              BUKO COMMODITY DMCC (Madinat Hind 4 Plot 7354)
+            </button>
+            <button
+              type="button"
+              onClick={() => {
+                const sample = henryTitleDeedScannerService.getDemoExtractedData();
+                setExtractedData(sample);
+                setStatusMsg(`✓ Ingested Property: ${sample.ownerNameEn} — ${sample.buildingNameEn}`);
+                setTimeout(() => setStatusMsg(null), 3000);
+              }}
+              style={{ background: '#F1F5F9', border: '1px solid #CBD5E1', borderRadius: '4px', padding: '2px 8px', fontSize: '0.7rem', fontWeight: 700, cursor: 'pointer' }}
+            >
+              Viridis A Unit 504 (Akram Dib Nehme)
+            </button>
+          </div>
+
           {extractedData && (
             <FormCard>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>

@@ -32,6 +32,25 @@ describe('HenryTitleDeedScannerService — DLD Title Deed OCR & Extraction Engin
     expect(data.confidenceScore).toBeGreaterThanOrEqual(0.99);
   });
 
+  it('scans and accurately extracts BUKO COMMODITY DMCC Land Title Deed', async () => {
+    const file = new File(['buko title deed content'], 'BUKO_COMMODITY_TitleDeed_93757.pdf', { type: 'application/pdf' });
+    const data = await henryTitleDeedScannerService.scanTitleDeed(file);
+
+    expect(data.certificateNumber).toBe('93757/2025');
+    expect(data.issueDate).toBe('13/10/2025');
+    expect(data.propertyTypeEn).toBe('Land');
+    expect(data.propertyTypeAr).toBe('ارض');
+    expect(data.communityEn).toBe('Madinat Hind 4');
+    expect(data.plotNumber).toBe('7354');
+    expect(data.municipalityNumber).toBe('914 - 20879');
+    expect(data.totalAreaSqM).toBe(192.49);
+    expect(data.totalAreaSqFt).toBe(2071.95);
+    expect(data.ownerNameEn).toBe('BUKO COMMODITY DMCC');
+    expect(data.ownerNameAr).toBe('بوكو كوموديتي م د م س');
+    expect(data.ownerDldNumber).toBe('5124391');
+    expect(data.purchasePriceAed).toBe(1717600);
+  });
+
   it('maps extracted Title Deed data directly into Tenancy Contract payload', () => {
     const tenancyPayload = henryTitleDeedScannerService.toTenancyContractPayload(
       VIRIDIS_504_SAMPLE_TITLE_DEED,

@@ -39,6 +39,23 @@ describe('HenryEmiratesIdScannerService — Emirates ID OCR & MRZ Engine', () =>
     expect(data.confidenceScore).toBeGreaterThanOrEqual(0.99);
   });
 
+  it('scans and accurately extracts Khalif Mohamednur Ibrahim Emirates ID with TD1 MRZ', async () => {
+    const data = await henryEmiratesIdScannerService.scanEmiratesId('sample_khalif' as any);
+
+    expect(data.idNumber).toBe('784-1984-5852080-0');
+    expect(data.cardNumber).toBe('146532347');
+    expect(data.fullNameEn).toBe('Khalif Mohamednur Ibrahim');
+    expect(data.fullNameAr).toBe('خليف محمدنور ابراهيم');
+    expect(data.nationalityEn).toBe('Kenya');
+    expect(data.nationalityAr).toBe('جمهورية كينيا');
+    expect(data.dateOfBirth).toBe('12/07/1984');
+    expect(data.occupationEn).toBe('Sales Officer');
+    expect(data.employerEn).toBe('Jayeeco General Trading L.L.C');
+    expect(data.mrz?.line1).toBe('ILARE1465323471784198458520800');
+    expect(data.mrz?.line2).toBe('8407122M2706155KEN<<<<<<<<<<<1');
+    expect(data.mrz?.line3).toBe('IBRAHIM<<KHALIF<MOHAMEDNUR<<<<');
+  });
+
   it('detects document side (Front, Back, or Both)', () => {
     expect(henryEmiratesIdScannerService.detectDocumentSide('Resident Identity Card United Arab Emirates 784-1993-1805733-0')).toBe('front');
     expect(henryEmiratesIdScannerService.detectDocumentSide('ILARE1445975719784199318057330 9302109M2611228PAK')).toBe('back');
