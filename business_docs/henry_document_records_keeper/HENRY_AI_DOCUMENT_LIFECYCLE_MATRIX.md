@@ -33,28 +33,67 @@
 └────────────────────────────────────────────────────────────────────────────────────────┘
 ```
 
+## 🔱 The Complete 5-Module Optical Intelligence & Document Ecosystem
+
+```
+┌────────────────────────────────────────────────────────────────────────────────────────┐
+│                        HENRY AI 5-MODULE OPTICAL INTELLIGENCE MESH                     │
+├────────────────────────────────────────────────────────────────────────────────────────┤
+│ 3.19.1 PREPARE TENANCY CONTRACT (JOURNEY WIZARD)                                      │
+│    • 4-Stage Stepper: Property/Lessor ➔ Tenant KYC ➔ Terms & PDCs ➔ Preview & Sign.     │
+│    • Real-time reactive cache ingestion from Emirates ID, Title Deed, and Passports.  │
+│    • Automatic PDC Cheque Breakdown (1, 2, 4, 6 cheques) with VAT calculations.        │
+├────────────────────────────────────────────────────────────────────────────────────────┤
+│ 3.19.2 SCAN EMIRATES ID (الهوية الإماراتية)                                            │
+│    • Universal multi-format ingestion (PDF, PNG, JPG, WEBP) with dual-side flip review. │
+│    • 18+ fields extracted: 15-digit ID, TD1 3-line MRZ, photo, employer & occupation. │
+│    • Multi-client presets: Khalif Mohamednur, Mansoor Almarzooqi, Arslan Malik.       │
+│    • Auto-sync to Session Memory and POST /api/henry/documents/save Database.         │
+├────────────────────────────────────────────────────────────────────────────────────────┤
+│ 3.19.3 SCAN TITLE DEED (شهادة ملكية عقار / عقود)                                      │
+│    • Ingestion of DLD Land Deeds, Hotel Apartments, Villas & Commercial Plots.        │
+│    • 22+ fields extracted: Plot, Municipality Grid (914-20879), Gross Area, Owners,   │
+│      Purchase Price (1.717M AED), Seller Entity, and Contract Number.                 │
+│    • 1-click injection as Landlord/Property in Tenancy Contracts & CRM Listings.       │
+├────────────────────────────────────────────────────────────────────────────────────────┤
+│ 3.19.4 SCAN INTERNATIONAL PASSPORT (جواز السفر الدولي)                                │
+│    • 2-Line ICAO Doc 9303 TD3 MRZ Parsing + Visual Bio-Data Extraction.               │
+│    • 16+ fields: Full Name, Passport No, Nationality, DOB, Expiry, National ID.       │
+│    • 1-click injection into Tenancy Journey and KYC Compliance Vault.                 │
+├────────────────────────────────────────────────────────────────────────────────────────┤
+│ 3.19.5 SCAN & EXTRACT TENANCY CONTRACT (عقد إيجار)                                    │
+│    • 4-domain extraction: Landlord, Tenant, Property, Financials & Signatures.        │
+│    • Fill completeness scoring & adaptive reference training set.                      │
+│    • 1-click loading into 3.19.1 Preparation Studio & Government Ejari Vault.          │
+└────────────────────────────────────────────────────────────────────────────────────────┘
+```
+
 ---
 
 ## 🛠️ Step-by-Step SOP
 
-### Step 1: Lease Agreement & E-Signature
-1. Broker inputs Tenant & Landlord parameters into Henry Studio (or triggers 1-Click AI Auto-Fill from CRM Lead profile).
-2. Henry generates the Tenancy Contract draft with PDC schedule table.
-3. Broker clicks **"Generate & Share E-Signature Link"**.
-4. Client signs on mobile/desktop via digital signature canvas.
-5. Signed PDF is sealed with cryptographic audit timestamp.
+### Step 1: Optical Ingestion & Extraction (3.19.2 – 3.19.5)
+1. Broker or client uploads documents (Emirates ID, Title Deed, Passport, or Tenancy Agreement).
+2. Henry runs local Tesseract + PDF.js + ICAO MRZ optical parsing engines to decode visual text and machine-readable zones.
+3. Extracted variables are normalized into structured TypeScript/JSON interfaces and validated against official UAE checksum standards.
+4. Extracted payloads are instantly saved to both **reactive session storage (`safeStorage`)** and the **server database (`POST /api/henry/documents/save`)**.
 
-### Step 2: Ejari Registration & Archival
-1. Broker takes the fully signed Tenancy Contract + Title Deed + Passports and registers with Dubai Land Department (Dubai REST system).
-2. DLD issues official **Ejari Certificate** with official Ejari Number (`0120250814005322`).
-3. Broker uploads the official government Ejari PDF into **Henry's Government Vault**.
-4. Henry indexes the official document and activates automatic 90-day renewal alarms.
+### Step 2: Automated Lease Journey Assembly (3.19.1)
+1. Broker navigates to **3.19.1 Prepare Tenancy Contract**.
+2. Reactive listeners (`onTitleDeedUpdated`, `onEmiratesIdUpdated`, `onPassportUpdated`) automatically detect active cached documents.
+3. Quick-fill banners offer 1-click ingestion to populate Stage 1 (Property/Lessor) and Stage 2 (Tenant KYC).
+4. Broker selects PDC Cheque schedule (1, 2, 4, or 6 cheques) in Stage 3.
+5. In Stage 4, Henry generates the finalized bilingual DLD Tenancy Contract.
 
-### Step 3: Viewing & Auxiliary Forms
-1. When a client books a viewing, Henry auto-populates **Form B Viewing Register**.
-2. Client signs viewing sheet at the premises.
-3. Form is stored under the Lead's timeline in Henry Vault.
+### Step 3: E-Signature & Government Ejari Registration
+1. Broker generates the secure e-signature URL link for the Landlord and Tenant.
+2. Both parties sign electronically; signatures and timestamps are sealed onto the document.
+3. Broker registers the signed contract via Dubai REST / DLD system.
+4. Government issues official **Ejari Certificate** (`0120250814005322`).
+5. The official Ejari is archived in **Henry's Government Vault** with automated 365-day expiry tracking and 90-day renewal alerts.
 
-### Step 4: Financial Receipts & VAT Tax Invoices
-1. Upon receiving broker commission and security deposit cheques, Henry compiles the official VAT Tax Invoice.
-2. Invoices feature White Caves TRN, 5% VAT calculations, and invoice barcode.
+### Step 4: Auxiliary Forms & Financial Invoices
+1. Viewing appointments automatically draw client and property records into **Form B Viewing Register**.
+2. Exclusive mandates populate **RERA Form A** with Title Deed and Trakheesi permit details.
+3. Agency commissions and deposit receipts generate FTA 5% VAT Tax Invoices with official TRN details.
+

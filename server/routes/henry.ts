@@ -895,4 +895,117 @@ router.post('/translate', requireMinRole('agent'), async (req: Request, res: Res
   }
 });
 
+// ─── POST /api/henry/documents/save ──────────────────────────────────────────
+
+const henryDocumentStore: Array<{
+  id: string;
+  docType: 'emirates_id' | 'title_deed' | 'passport' | 'tenancy_contract' | string;
+  title: string;
+  clientName: string;
+  referenceNumber: string;
+  extractedJson: Record<string, any>;
+  confidenceScore: number;
+  scannedSide?: string;
+  documentFormat?: string;
+  createdAt: string;
+  updatedAt: string;
+}> = [];
+
+router.post('/documents/save', requireMinRole('agent'), async (req: Request, res: Response) => {
+  try {
+    const {
+      docType = 'emirates_id',
+      title = 'Extracted Document',
+      clientName = 'Client',
+      referenceNumber = '',
+      extractedJson = {},
+      confidenceScore = 1.0,
+      scannedSide = 'both',
+      documentFormat = 'application/pdf',
+    } = req.body;
+
+    const newRecord = {
+      id: `doc_${Date.now()}_${Math.random().toString(36).slice(2, 7)}`,
+      docType,
+      title,
+      clientName,
+      referenceNumber: referenceNumber || extractedJson.idNumber || extractedJson.certificateNumber || extractedJson.passportNumber || '',
+      extractedJson,
+      confidenceScore,
+      scannedSide,
+      documentFormat,
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+    };
+
+    henryDocumentStore.unshift(newRecord);
+    if (henryDocumentStore.length > 200) {
+      henryDocumentStore.pop();
+    }
+
+    res.json({
+      success: true,
+      message: `Document ${docType} successfully saved to Henry Document Database.`,
+      data: newRecord,
+    });
+  } catch (err) {
+    res.status(500).json({ success: false, error: err instanceof Error ? err.message : 'Unknown error' });
+  }
+});
+
+// ─── GET /api/henry/documents ────────────────────────────────────────────────
+
+router.get('/documents', requireMinRole('agent'), (req: Request, res: Response) => {
+  try {
+    const { docType, clientName, limit = 50 } = req.query;
+    let list = [...henryDocumentStore];
+
+    if (docType) {
+      list = list.filter(item => item.docType === docType);
+    }
+    if (clientName) {
+      const lower = String(clientName).toLowerCase();
+      list = list.filter(item => item.clientName.toLowerCase().includes(lower));
+    }
+
+    res.json({
+      success: true,
+      count: list.length,
+      data: list.slice(0, Number(limit)),
+    });
+  } catch (err) {
+    res.status(500).json({ success: false, error: err instanceof Error ? err.message : 'Unknown error' });
+  }
+});
+
+// ─── GET /api/henry/documents/latest/:docType ────────────────────────────────
+
+router.get('/documents/latest/:docType', requireMinRole('agent'), (req: Request, res: Response) => {
+  try {
+    const { docType } = req.params;
+    const found = henryDocumentStore.find(item => item.docType === docType);
+    if (!found) {
+      return res.status(404).json({ success: false, error: `No active document found for type "${docType}"` });
+    }
+    res.json({ success: true, data: found });
+  } catch (err) {
+    res.status(500).json({ success: false, error: err instanceof Error ? err.message : 'Unknown error' });
+  }
+});
+
+// ─── GET /api/henry/documents/:id ────────────────────────────────────────────
+
+router.get('/documents/:id', requireMinRole('agent'), (req: Request, res: Response) => {
+  try {
+    const { id } = req.params;
+    const found = henryDocumentStore.find(item => item.id === id);
+    if (!found) {
+      return res.status(404).json({ success: false, error: `Document with ID "${id}" not found` });
+    }
+    res.json({ success: true, data: found });
+  } catch (err) {
+    res.status(500).json({ success: false, error: err instanceof Error ? err.message : 'Unknown error' });
+  }
+});
+
 export default router;

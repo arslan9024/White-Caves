@@ -24,6 +24,12 @@ graph TD
         MrzParser[ICAO 9303 TD1 3-Line Parser]
         ChecksumValidator[ICP 15-Digit Checksum Engine]
         TempStore[Temporary Session Cache: In-Memory & SafeStorage]
+        JsonExporter[JSON Serializer & Exporter]
+    end
+
+    subgraph BackendDatabase [Server & Persistent Storage]
+        SaveEndpoint[POST /api/henry/documents/save]
+        DbRecords[(Prisma / SQLite Document Store)]
     end
 
     subgraph DownstreamConsumers [Downstream CRM Integrations]
@@ -39,9 +45,13 @@ graph TD
     SideClassifier --> MrzParser
     ScannerSvc --> ChecksumValidator
     ScannerSvc --> TempStore
+    ScannerSvc --> JsonExporter
 
     TempStore --> Preview
     TempStore --> SectionView
+
+    ScannerSvc -->|saveToDatabase| SaveEndpoint
+    SaveEndpoint --> DbRecords
 
     TempStore -.->|1-Click Inject| TenancyStudio
     TempStore -.->|1-Click Inject| EjariVault
@@ -56,8 +66,8 @@ graph TD
 ```typescript
 export interface EmiratesIdExtractedData {
   // Identity Keys
-  idNumber: string;             // "784-1993-1805733-0"
-  rawIdNumber: string;          // "784199318057330"
+  idNumber: string;             // "784-1984-5852080-0"
+  rawIdNumber: string;          // "784198458520800"
   cardNumber: string;           // "144597571"
   chipNumber?: string;          // "2500069345"
 

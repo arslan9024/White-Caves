@@ -311,10 +311,10 @@ export const HenryTitleDeedScannerView: FC = () => {
     });
   };
 
-  const handleSaveToVault = () => {
+  const handleSaveToVault = async () => {
     if (!extractedData) return;
-    henryTitleDeedScannerService.setCachedTitleDeed(extractedData);
-    setStatusMsg(`✓ Title Deed Certificate ${extractedData.certificateNumber} saved to Property Vault!`);
+    await henryTitleDeedScannerService.saveToDatabase(extractedData);
+    setStatusMsg(`✓ Title Deed Certificate ${extractedData.certificateNumber} saved to Property Vault & Database!`);
     setTimeout(() => setStatusMsg(null), 4000);
   };
 

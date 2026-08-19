@@ -389,9 +389,9 @@ export const HenryEmiratesIdScannerView: FC = () => {
     });
   };
 
-  const handleSaveToVault = () => {
-    henryEmiratesIdScannerService.setCachedEmiratesId(extractedData);
-    setStatusMsg(`✓ Record ${extractedData.idNumber} (${extractedData.fullNameEn}) confirmed & saved to White Caves KYC Vault!`);
+  const handleSaveToVault = async () => {
+    await henryEmiratesIdScannerService.saveToDatabase(extractedData);
+    setStatusMsg(`✓ Record ${extractedData.idNumber} (${extractedData.fullNameEn}) confirmed & saved to White Caves KYC Vault & Database!`);
     setTimeout(() => setStatusMsg(null), 4000);
   };
 

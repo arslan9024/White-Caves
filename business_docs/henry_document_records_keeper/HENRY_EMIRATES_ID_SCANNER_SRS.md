@@ -88,11 +88,10 @@ The engine extracts and normalizes the following structured attributes into `Emi
 - **Session Persistence:** Backed by `safeStorage` (session storage) to survive hot reloads and cross-tab CRM navigation without permanent database exposure.
 - **Event Bus:** Dispatches `onEmiratesIdUpdated` notifications whenever a new Emirates ID is scanned or updated.
 
-### 5.2 Downstream Feature Injections
-- **3.19.1 Prepare Tenancy Contract:** 1-click injection as Tenant or Landlord KYC party.
-- **Ejari Registration Vault:** 1-click population of tenant/lessor identification registers.
-- **Form B Viewing Register:** Auto-fill client name, contact, and ID credentials.
-- **goAML & KYC Audit Records:** Direct payload ingestion for AML/CFT compliance verification.
+### 5.3 Database Persistence & Structured JSON Synchronization
+- **Endpoint Sync:** Ingested and verified Emirates ID documents are persisted to backend endpoint `POST /api/henry/documents/save`.
+- **JSON Standard:** Returns strict standardized JSON with schema compliance for downstream ERP, DLD Ejari, and KYC AML pipelines.
+- **Client Diversity:** Supports both UAE Citizens (`IDARE` format, e.g. Mansoor Almarzooqi) and UAE Residents (`ILARE` format, e.g. Khalif Mohamednur Ibrahim, Arslan Malik, Sanit Singh) across varied nationalities (Kenya, UAE, Pakistan, India, UK, USA).
 
 ---
 
@@ -102,7 +101,7 @@ The **3.19.2 Scan Emirates ID** user interface is organized into three distinct,
 
 ### 1. Upload File Component
 - Drag-and-drop dropzone supporting PDF, PNG, JPG, JPEG, WEBP.
-- Option for single file (auto-detect) or separate Front / Back dropzones.
+- Multi-client quick-select pills (`Khalif Mohamednur (Kenya / Jayeeco)`, `Mansoor Almarzooqi (UAE / Gov)`, `Arslan Malik (MD)`).
 - Instant feedback with scanning progress indicators, OCR accuracy status, and sample loader.
 
 ### 2. Preview Document Component
@@ -117,7 +116,7 @@ The **3.19.2 Scan Emirates ID** user interface is organized into three distinct,
   3. *Validity & Expiry Dates* (Issue date, Expiry date, Active/Expired badge).
   4. *Employment & Sponsor Details* (Occupation, Employer, Issuing Emirate).
   5. *ICAO TD1 MRZ Terminal* (3-line monospace terminal display).
-- Action buttons: *1-Click Auto-Fill Tenancy*, *Save to KYC Vault*, *Copy JSON*, *Clear Session*.
+- Action buttons: *1-Click Auto-Fill Tenancy*, *Save to KYC Vault & Database*, *Copy JSON*, *Clear Session*.
 
 ---
 
@@ -126,3 +125,5 @@ The **3.19.2 Scan Emirates ID** user interface is organized into three distinct,
 1. **Client-Side Extraction Privacy:** OCR and MRZ decoding execute locally in browser memory or via private server endpoints; no third-party cloud data leakage.
 2. **UAE PDPL Compliance:** Temporary cached data expires upon browser session termination or explicit clear action.
 3. **Masking & Permissions:** Sensitive fields can be masked for non-authorized roles.
+4. **Audit Trail:** Every save to database records timestamp, operator ID, and field-level extraction confidence.
+

@@ -736,4 +736,45 @@ describe('Henry routes — AI draft, Ejari submit, translate', () => {
     expect(res.body.data.arabic).toBeDefined();
     expect(mockGenerateMultiLangContract).toHaveBeenCalledOnce();
   });
+
+  it('POST /documents/save saves document extracted payload and returns 200', async () => {
+    const app = await createApp();
+    const res = await request(app).post('/api/henry/documents/save').send({
+      docType: 'emirates_id',
+      title: 'Emirates ID - Khalif Mohamednur',
+      clientName: 'Khalif Mohamednur Ibrahim',
+      referenceNumber: '784-1984-5852080-0',
+      extractedJson: {
+        idNumber: '784-1984-5852080-0',
+        cardNumber: '146532347',
+        nationalityEn: 'Kenya',
+      },
+      confidenceScore: 1.0,
+      scannedSide: 'both',
+    });
+
+    expect(res.status).toBe(200);
+    expect(res.body.success).toBe(true);
+    expect(res.body.data.id).toBeDefined();
+    expect(res.body.data.clientName).toBe('Khalif Mohamednur Ibrahim');
+    expect(res.body.data.referenceNumber).toBe('784-1984-5852080-0');
+
+    // Test GET /documents
+    const getRes = await request(app).get('/api/henry/documents?docType=emirates_id');
+    expect(getRes.status).toBe(200);
+    expect(getRes.body.success).toBe(true);
+    expect(getRes.body.count).toBeGreaterThanOrEqual(1);
+
+    // Test GET /documents/latest/emirates_id
+    const latestRes = await request(app).get('/api/henry/documents/latest/emirates_id');
+    expect(latestRes.status).toBe(200);
+    expect(latestRes.body.success).toBe(true);
+    expect(latestRes.body.data.clientName).toBe('Khalif Mohamednur Ibrahim');
+
+    // Test GET /documents/:id
+    const singleRes = await request(app).get(`/api/henry/documents/${res.body.data.id}`);
+    expect(singleRes.status).toBe(200);
+    expect(singleRes.body.success).toBe(true);
+    expect(singleRes.body.data.referenceNumber).toBe('784-1984-5852080-0');
+  });
 });
