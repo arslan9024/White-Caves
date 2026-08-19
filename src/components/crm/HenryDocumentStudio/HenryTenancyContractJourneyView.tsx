@@ -6,7 +6,7 @@
  * Right: Live Exact Full-Color Dubai Land Department (DLD) Official Contract PDF Preview.
  */
 
-import React, { FC, useState, useMemo } from 'react';
+import React, { FC, useState, useMemo, useEffect } from 'react';
 import styled from 'styled-components';
 import {
   FileText,
@@ -265,11 +265,27 @@ export const HenryTenancyContractJourneyView: FC = () => {
   const [contractData, setContractData] = useState<DldTenancyContractData>(() =>
     henryTenancyContractTemplateService.loadActiveDraft()
   );
+  const [cachedTitleDeed, setCachedTitleDeed] = useState(() => henryTitleDeedScannerService.getCachedTitleDeed());
+  const [cachedTenantEid, setCachedTenantEid] = useState(() => henryEmiratesIdScannerService.getCachedEmiratesId());
+  const [cachedPassport, setCachedPassport] = useState(() => henryPassportScannerService.getCachedPassport());
+
   const [activeStage, setActiveStage] = useState<number>(1);
   const [previewPage, setPreviewPage] = useState<number | 'all'>('all');
   const [zoomLevel, setZoomLevel] = useState<number>(0.85);
   const [isProcessing, setIsProcessing] = useState<boolean>(false);
   const [statusMsg, setStatusMsg] = useState<string | null>(null);
+
+  useEffect(() => {
+    const unsubDeed = henryTitleDeedScannerService.onTitleDeedUpdated((deed) => setCachedTitleDeed(deed));
+    const unsubEid = henryEmiratesIdScannerService.onEmiratesIdUpdated((eid) => setCachedTenantEid(eid));
+    const unsubPass = henryPassportScannerService.onPassportUpdated((pass) => setCachedPassport(pass));
+
+    return () => {
+      unsubDeed();
+      unsubEid();
+      unsubPass();
+    };
+  }, []);
 
   const updateField = (field: keyof DldTenancyContractData, value: any) => {
     setContractData(prev => {
@@ -466,6 +482,54 @@ export const HenryTenancyContractJourneyView: FC = () => {
           {/* STAGE 1: TITLE DEED & LANDLORD KYC */}
           {activeStage === 1 && (
             <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+              {cachedTitleDeed && (
+                <div style={{ background: '#FEF2F2', border: '1px solid #FECACA', borderRadius: '8px', padding: '10px 14px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                  <div>
+                    <div style={{ fontWeight: 800, fontSize: '0.82rem', color: '#991B1B' }}>⚡ Active Title Deed In Cache</div>
+                    <div style={{ fontSize: '0.74rem', color: '#B91C1C' }}>{cachedTitleDeed.buildingNameEn || 'Building'} Unit {cachedTitleDeed.propertyNumber} ({cachedTitleDeed.ownerNameEn || 'Owner'})</div>
+                  </div>
+                  <PrimaryBtn
+                    $variant="primary"
+                    style={{ padding: '4px 10px', fontSize: '0.72rem' }}
+                    onClick={() => {
+                      setContractData(prev => {
+                        const next = henryTenancyContractTemplateService.populateFromTitleDeed(prev, cachedTitleDeed);
+                        henryTenancyContractTemplateService.saveDraft(next);
+                        return next;
+                      });
+                      setStatusMsg('✓ Auto-filled Property & Owner from Active Title Deed cache!');
+                      setTimeout(() => setStatusMsg(null), 3000);
+                    }}
+                  >
+                    Ingest Title Deed
+                  </PrimaryBtn>
+                </div>
+              )}
+
+              {cachedPassport && (
+                <div style={{ background: '#EFF6FF', border: '1px solid #BFDBFE', borderRadius: '8px', padding: '10px 14px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                  <div>
+                    <div style={{ fontWeight: 800, fontSize: '0.82rem', color: '#1E40AF' }}>⚡ Active Passport In Cache</div>
+                    <div style={{ fontSize: '0.74rem', color: '#2563EB' }}>{cachedPassport.fullName} ({cachedPassport.passportNumber})</div>
+                  </div>
+                  <PrimaryBtn
+                    $variant="primary"
+                    style={{ padding: '4px 10px', fontSize: '0.72rem', background: '#2563EB' }}
+                    onClick={() => {
+                      setContractData(prev => {
+                        const next = henryTenancyContractTemplateService.populateFromPassport(prev, cachedPassport, 'landlord');
+                        henryTenancyContractTemplateService.saveDraft(next);
+                        return next;
+                      });
+                      setStatusMsg('✓ Auto-filled Landlord from Active Passport cache!');
+                      setTimeout(() => setStatusMsg(null), 3000);
+                    }}
+                  >
+                    Ingest as Landlord
+                  </PrimaryBtn>
+                </div>
+              )}
+
               <HenrySharedDocumentUploader
                 docType="title_deed"
                 title="1. Upload Official DLD Title Deed / Oqood"
@@ -583,6 +647,54 @@ export const HenryTenancyContractJourneyView: FC = () => {
           {/* STAGE 2: TENANT KYC & DOCUMENTS */}
           {activeStage === 2 && (
             <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+              {cachedTenantEid && (
+                <div style={{ background: '#ECFDF5', border: '1px solid #A7F3D0', borderRadius: '8px', padding: '10px 14px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                  <div>
+                    <div style={{ fontWeight: 800, fontSize: '0.82rem', color: '#065F46' }}>⚡ Active Emirates ID In Cache</div>
+                    <div style={{ fontSize: '0.74rem', color: '#047857' }}>{cachedTenantEid.fullNameEn} ({cachedTenantEid.idNumber})</div>
+                  </div>
+                  <PrimaryBtn
+                    $variant="primary"
+                    style={{ padding: '4px 10px', fontSize: '0.72rem', background: '#059669' }}
+                    onClick={() => {
+                      setContractData(prev => {
+                        const next = henryTenancyContractTemplateService.populateFromEmiratesId(prev, cachedTenantEid, 'tenant');
+                        henryTenancyContractTemplateService.saveDraft(next);
+                        return next;
+                      });
+                      setStatusMsg('✓ Auto-filled Tenant from Active Emirates ID cache!');
+                      setTimeout(() => setStatusMsg(null), 3000);
+                    }}
+                  >
+                    Ingest as Tenant
+                  </PrimaryBtn>
+                </div>
+              )}
+
+              {cachedPassport && (
+                <div style={{ background: '#F5F3FF', border: '1px solid #DDD6FE', borderRadius: '8px', padding: '10px 14px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                  <div>
+                    <div style={{ fontWeight: 800, fontSize: '0.82rem', color: '#5B21B6' }}>⚡ Active Passport In Cache</div>
+                    <div style={{ fontSize: '0.74rem', color: '#6D28D9' }}>{cachedPassport.fullName} ({cachedPassport.passportNumber})</div>
+                  </div>
+                  <PrimaryBtn
+                    $variant="primary"
+                    style={{ padding: '4px 10px', fontSize: '0.72rem', background: '#7C3AED' }}
+                    onClick={() => {
+                      setContractData(prev => {
+                        const next = henryTenancyContractTemplateService.populateFromPassport(prev, cachedPassport, 'tenant');
+                        henryTenancyContractTemplateService.saveDraft(next);
+                        return next;
+                      });
+                      setStatusMsg('✓ Auto-filled Tenant from Active Passport cache!');
+                      setTimeout(() => setStatusMsg(null), 3000);
+                    }}
+                  >
+                    Ingest as Tenant
+                  </PrimaryBtn>
+                </div>
+              )}
+
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
                 <HenrySharedDocumentUploader
                   docType="emirates_id"
@@ -739,6 +851,38 @@ export const HenryTenancyContractJourneyView: FC = () => {
                   placeholder="e.g. 4 CHEQUES (PDC)"
                   onChange={(e) => updateField('modeOfPayment', e.target.value)}
                 />
+                <div style={{ display: 'flex', gap: '6px', marginTop: '6px', flexWrap: 'wrap' }}>
+                  {[
+                    { count: 1, label: '1 Cheque (Annual)' },
+                    { count: 2, label: '2 Cheques (Semi-Annual)' },
+                    { count: 4, label: '4 Cheques (Quarterly)' },
+                    { count: 6, label: '6 Cheques (Bi-Monthly)' },
+                  ].map(option => (
+                    <button
+                      key={option.count}
+                      type="button"
+                      onClick={() => {
+                        const rent = contractData.annualRent || 0;
+                        const perCheque = option.count > 0 ? Math.round(rent / option.count) : rent;
+                        updateField('modeOfPayment', `${option.count} CHEQUES (AED ${perCheque.toLocaleString()} each)`);
+                        setStatusMsg(`✓ Calculated payment mode: ${option.count} cheques of AED ${perCheque.toLocaleString()}`);
+                        setTimeout(() => setStatusMsg(null), 3000);
+                      }}
+                      style={{
+                        background: contractData.modeOfPayment?.includes(`${option.count} CHEQUE`) ? '#EF4444' : '#F1F5F9',
+                        color: contractData.modeOfPayment?.includes(`${option.count} CHEQUE`) ? '#FFFFFF' : '#334155',
+                        border: '1px solid #CBD5E1',
+                        borderRadius: '4px',
+                        padding: '3px 8px',
+                        fontSize: '0.72rem',
+                        fontWeight: 700,
+                        cursor: 'pointer',
+                      }}
+                    >
+                      {option.label}
+                    </button>
+                  ))}
+                </div>
               </FormGroup>
 
               <h5 style={{ margin: '1rem 0 0.5rem 0', fontSize: '0.85rem', fontWeight: 800, color: '#475569' }}>
