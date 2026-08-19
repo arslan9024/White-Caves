@@ -10,6 +10,7 @@
  */
 
 import { TenancyContractPayload, ContractParty } from './HenryPdfEngineService';
+import { safeStorage } from '../utils/safeStorage';
 
 export interface DldTitleDeedExtractedData {
   // Document Meta
@@ -18,6 +19,7 @@ export interface DldTitleDeedExtractedData {
   issuingAuthorityEn: string; // "Government of Dubai - Land Department"
   issuingAuthorityAr: string; // "حكومة دبي - دائرة الأراضي والأملاك"
   isBlockchainVerified: boolean;
+  documentFormat?: string;
 
   // Property Details
   propertyTypeEn: string; // "Hotel Apartment"
@@ -110,15 +112,69 @@ export const VIRIDIS_504_SAMPLE_TITLE_DEED: DldTitleDeedExtractedData = {
 };
 
 class HenryTitleDeedScannerService {
+  private static readonly CACHE_KEY = 'whitecaves_henry_active_title_deed_cache_v1';
+  private inMemoryCache: DldTitleDeedExtractedData | null = null;
+  private listeners: Set<(data: DldTitleDeedExtractedData | null) => void> = new Set();
+
+  /**
+   * Persists extracted Title Deed data into temporary session memory and localStorage
+   */
+  setCachedTitleDeed(data: DldTitleDeedExtractedData): void {
+    this.inMemoryCache = { ...data };
+    safeStorage.setJSON(HenryTitleDeedScannerService.CACHE_KEY, data);
+    this.notifyListeners(this.inMemoryCache);
+  }
+
+  /**
+   * Retrieves active Title Deed from temporary session cache
+   */
+  getCachedTitleDeed(): DldTitleDeedExtractedData | null {
+    if (this.inMemoryCache) return this.inMemoryCache;
+    const stored = safeStorage.getJSON<DldTitleDeedExtractedData>(HenryTitleDeedScannerService.CACHE_KEY);
+    if (stored) {
+      this.inMemoryCache = stored;
+      return stored;
+    }
+    return null;
+  }
+
+  /**
+   * Clears the active Title Deed session cache
+   */
+  clearCachedTitleDeed(): void {
+    this.inMemoryCache = null;
+    safeStorage.remove(HenryTitleDeedScannerService.CACHE_KEY);
+    this.notifyListeners(null);
+  }
+
+  /**
+   * Registers a subscriber listener to receive active Title Deed cache mutations
+   */
+  onTitleDeedUpdated(listener: (data: DldTitleDeedExtractedData | null) => void): () => void {
+    this.listeners.add(listener);
+    return () => this.listeners.delete(listener);
+  }
+
+  private notifyListeners(data: DldTitleDeedExtractedData | null): void {
+    this.listeners.forEach((listener) => {
+      try {
+        listener(data);
+      } catch (err) {
+        console.error('Error notifying Henry Title Deed cache listener:', err);
+      }
+    });
+  }
   /**
    * Scans an uploaded DLD Title Deed file or preloaded reference sample
    */
   async scanTitleDeed(fileOrPreset?: File | 'sample'): Promise<DldTitleDeedExtractedData> {
     if (!fileOrPreset || fileOrPreset === 'sample') {
-      return {
+      const demo = {
         ...VIRIDIS_504_SAMPLE_TITLE_DEED,
         scannedAt: new Date().toISOString(),
       };
+      this.setCachedTitleDeed(demo);
+      return demo;
     }
 
     const file = fileOrPreset as File;
@@ -179,7 +235,7 @@ class HenryTitleDeedScannerService {
 
     return new Promise((resolve) => {
       setTimeout(() => {
-        resolve({
+        const result: DldTitleDeedExtractedData = {
           certificateNumber: certNo,
           issueDate: new Date().toLocaleDateString('en-GB'),
           issuingAuthorityEn: 'Government of Dubai — Land Department',
@@ -218,9 +274,22 @@ class HenryTitleDeedScannerService {
           purchasePriceWordsEn: 'Official DLD Registered Purchase Value',
           confidenceScore: 0.998,
           scannedAt: new Date().toISOString(),
-        });
+          documentFormat: file.type || (fileName.endsWith('.pdf') ? 'application/pdf' : 'image/png'),
+        };
+
+        this.setCachedTitleDeed(result);
+        resolve(result);
       }, 300);
     });
+  }
+
+  /**
+   * Alias for scanTitleDeed conforming to standard document ingestion interfaces
+   */
+  async scanDocument(
+    fileOrPreset?: File | 'sample'
+  ): Promise<DldTitleDeedExtractedData> {
+    return this.scanTitleDeed(fileOrPreset);
   }
 
   /**
@@ -254,7 +323,9 @@ class HenryTitleDeedScannerService {
    * Returns demo scanned Title Deed data (Akram Dib Nehme - Viridis A Unit 504)
    */
   getDemoExtractedData(): DldTitleDeedExtractedData {
-    return { ...VIRIDIS_504_SAMPLE_TITLE_DEED };
+    const demo = { ...VIRIDIS_504_SAMPLE_TITLE_DEED, scannedAt: new Date().toISOString() };
+    this.setCachedTitleDeed(demo);
+    return demo;
   }
 
   /**

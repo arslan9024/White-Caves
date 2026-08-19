@@ -1,105 +1,83 @@
-# Software Design Description (SDD)
-## Henry AI — Tenancy Contract Optical AI Scanner & Learning Engine
-**Document Version:** 1.0.0  
-**Authority:** White Caves Real Estate L.L.C  
-**System Module:** `HenryTenancyContractScannerService.ts`
+# 🏛️ Software Design Document (SDD): Henry AI Tenancy Contract Optical Ingestion Architecture
+
+**Target System:** Henry AI Optical Extraction Engine (`WC-AI-003`)  
+**Module:** `src/services/HenryTenancyContractScannerService.ts` & `src/components/crm/HenryDocumentStudio/HenryTenancyContractScannerView.tsx`  
+**Governing Authority:** Dubai Land Department (DLD) / RERA / Ejari  
+**Standard:** 3-Part UI Architecture + Temporary Session Store + Continuous Machine Learning
 
 ---
 
-### 1. Architecture & Processing Pipeline
+## 1. System Architecture & Processing Pipeline
 
 ```mermaid
 graph TD
-    A["Uploaded Tenancy Contract PDF / Image"] --> B["HenryTenancyContractScannerService.scanContract()"]
-    B --> C["Document Header & Optical Text Layer Extraction"]
-    C --> D{"Fill Detection Heuristic"}
+    Upload[1. Upload File Component: PDF, PNG, JPG, WEBP] --> Scanner[HenryTenancyContractScannerService.scanContract]
     
-    D -- "Empty / Underscores Only" --> E["Classification: BLANK_TEMPLATE (Fill Score: 0-10%)"]
-    D -- "Populated Values Detected" --> F["Classification: FILLED_CONTRACT (Fill Score: >50%)"]
-    
-    F --> G["Field Grouping: Landlord, Tenant, Property, Rent, Addenda"]
-    G --> H["Completeness Metric & Missing Fields Analysis"]
-    G --> I["Teaching Engine: Ingest into Henry Training Archive"]
-    
-    H --> J["1-Click Actions in Henry Document Studio"]
-    J --> K["Load into Preparation Studio as Reusable Draft"]
-    J --> L["Create CRM Landlord & Tenant Profiles"]
-    J --> M["Export to JSON Variables Clipboard"]
+    Scanner --> Domain1[Domain 1: Property Specifications & DEWA]
+    Scanner --> Domain2[Domain 2: Landlord & Tenant Legal Parties]
+    Scanner --> Domain3[Domain 3: Financial Terms & Cheque Schedules]
+    Scanner --> Domain4[Domain 4: Addenda Terms & Endorsement Signatures]
+
+    Domain1 --> Consolidator[Tenancy Agreement Consolidator]
+    Domain2 --> Consolidator
+    Domain3 --> Consolidator
+    Domain4 --> Consolidator
+
+    Consolidator --> OutputPayload[ScannedTenancyContractResult Object]
+    OutputPayload --> SessionCache[(Temporary Session Cache: safeStorage)]
+    OutputPayload --> LearningPool[(Continuous Training Pool: trainingMemory)]
+
+    SessionCache --> Preview[2. Preview Document Component with Zoom]
+    SessionCache --> ExtractionView[3. Extracted Information Section: 4 Domain Cards]
+
+    ExtractionView --> Action1[1-Click Load into 3.19.1 Preparation Studio]
+    ExtractionView --> Action2[1-Click Save to Ejari Government Vault]
+    ExtractionView --> Action3[Export Variables as JSON]
 ```
 
 ---
 
-### 2. TypeScript Data Interfaces
+## 2. TypeScript Data Schema (`ScannedTenancyContractResult`)
 
 ```typescript
 export interface ScannedTenancyContractResult {
-  // Classification
+  // Classification & Fill State
   isFilled: boolean;
   fillScorePercent: number;
   totalFieldsCount: number;
   filledFieldsCount: number;
   missingFields: string[];
   classification: 'blank_template' | 'partially_filled' | 'fully_executed';
+  documentFormat?: string;
 
-  // Core Contract Details
+  // Metadata
   contractDate: string;
-  
-  // Landlord
-  landlord: {
-    ownerName: string;
-    lessorName: string;
-    emiratesId: string;
-    email: string;
-    phone: string;
-    licenseNo?: string;
-  };
 
-  // Tenant
-  tenant: {
-    name: string;
-    emiratesId: string;
-    email: string;
-    phone: string;
-    licenseNo?: string;
-  };
-
-  // Property
-  property: {
-    usage: 'residential' | 'commercial' | 'industrial';
-    buildingName: string;
-    propertyNumber: string;
-    plotNumber: string;
-    propertyType: string;
-    areaSqM: number;
-    areaSqFt: number;
-    location: string;
-    makaniNo?: string;
-    premisesNoDewa?: string;
-  };
-
-  // Financials & Lease
-  financials: {
-    periodFrom: string;
-    periodTo: string;
-    annualRentAed: number;
-    contractValueAed: number;
-    securityDepositAed: number;
-    modeOfPayment: string;
-  };
-
-  // Addendum Clauses
+  // Grouped Fields
+  landlord: ScannedTenancyParty;
+  tenant: ScannedTenancyParty;
+  property: ScannedTenancyProperty;
+  financials: ScannedTenancyFinancials;
   additionalTerms: string[];
+  signatures: ScannedTenancySignatures;
 
-  // Signatures
-  signatures: {
-    hasTenantSigned: boolean;
-    tenantSignedDate?: string;
-    hasLessorSigned: boolean;
-    lessorSignedDate?: string;
-  };
-
-  // Telemetry
+  // Extraction Telemetry
   confidenceScore: number;
   scannedAt: string;
+}
+```
+
+---
+
+## 3. Temporary Session Store Architecture
+
+```typescript
+class HenryTenancyContractScannerService {
+  private static readonly CACHE_KEY = 'whitecaves_henry_active_tenancy_contract_cache_v1';
+  
+  setCachedContract(data: ScannedTenancyContractResult): void;
+  getCachedContract(): ScannedTenancyContractResult | null;
+  clearCachedContract(): void;
+  onContractUpdated(listener: (data: ScannedTenancyContractResult | null) => void): () => void;
 }
 ```

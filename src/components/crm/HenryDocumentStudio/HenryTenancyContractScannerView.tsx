@@ -213,11 +213,17 @@ const ActionBtn = styled.button<{ $variant?: 'primary' | 'secondary' | 'danger' 
 `;
 
 export const HenryTenancyContractScannerView: FC = () => {
-  const [scannedResult, setScannedResult] = useState<DldScannedContractResult | null>(null);
-  const [contractData, setContractData] = useState<DldTenancyContractData | null>(null);
+  const [scannedResult, setScannedResult] = useState<DldScannedContractResult | null>(() => {
+    return henryTenancyContractScannerService.getCachedContract();
+  });
+  const [contractData, setContractData] = useState<DldTenancyContractData | null>(() => {
+    const cached = henryTenancyContractScannerService.getCachedContract();
+    return cached ? henryTenancyContractScannerService.toDldTenancyContractData(cached) : null;
+  });
   const [uploadedFile, setUploadedFile] = useState<File | null>(null);
   const [filePreviewUrl, setFilePreviewUrl] = useState<string | null>(null);
   const [isScanning, setIsScanning] = useState<boolean>(false);
+  const [zoomLevel, setZoomLevel] = useState<number>(100);
   const [statusMsg, setStatusMsg] = useState<string | null>(null);
   const [copiedJson, setCopiedJson] = useState<boolean>(false);
 
@@ -234,14 +240,14 @@ export const HenryTenancyContractScannerView: FC = () => {
   const handleFileUpload = async (file: File) => {
     setIsScanning(true);
     setUploadedFile(file);
-    setStatusMsg(`Scanning Tenancy Agreement "${file.name}"...`);
+    setStatusMsg(`Reading Tenancy Agreement "${file.name}"...`);
 
     try {
       const result = await henryTenancyContractScannerService.scanContract(file);
       setScannedResult(result);
       const dld = henryTenancyContractScannerService.toDldTenancyContractData(result);
       setContractData(dld);
-      setStatusMsg(`✓ Extracted agreement: ${result.property.buildingName} #${result.property.propertyNo} (Rent AED ${result.financials.annualRentAed.toLocaleString()})`);
+      setStatusMsg(`✓ Extracted agreement: ${result.property.buildingName} #${result.property.propertyNumber} (Rent AED ${result.financials.annualRentAed.toLocaleString()})`);
     } catch {
       setStatusMsg('Error processing Tenancy Contract.');
     } finally {
@@ -257,31 +263,7 @@ export const HenryTenancyContractScannerView: FC = () => {
       const demo = henryTenancyContractScannerService.getDemoExtractedData();
       const dld = henryTenancyContractScannerService.toDldTenancyContractData(demo);
       setContractData(dld);
-      setScannedResult({
-        property: {
-          buildingName: demo.property.buildingName,
-          propertyNo: demo.property.propertyNumber,
-          plotNo: demo.property.plotNumber,
-          location: demo.property.location,
-        },
-        landlord: {
-          ownerName: demo.landlord.name,
-          lessorPhone: demo.landlord.phone,
-          lessorEmail: demo.landlord.email,
-        },
-        tenant: {
-          tenantName: demo.tenant.name,
-          tenantEmiratesId: demo.tenant.emiratesId,
-          tenantPhone: demo.tenant.phone,
-        },
-        financials: {
-          annualRentAed: demo.financials.annualRentAed,
-          modeOfPayment: demo.financials.modeOfPayment,
-          contractPeriodFrom: demo.financials.periodFrom,
-          contractPeriodTo: demo.financials.periodTo,
-        },
-        ocrConfidence: 98,
-      });
+      setScannedResult(demo);
       setStatusMsg('✓ Loaded demo Tenancy Contract (Camelia 608).');
     } finally {
       setIsScanning(false);
@@ -291,13 +273,24 @@ export const HenryTenancyContractScannerView: FC = () => {
 
   const handleUpdateDldField = (field: keyof DldTenancyContractData, val: any) => {
     if (!contractData) return;
-    setContractData(prev => (prev ? { ...prev, [field]: val } : null));
+    setContractData(prev => {
+      if (!prev) return null;
+      const updated = { ...prev, [field]: val };
+      return updated;
+    });
+  };
+
+  const handleLoadToJourney = () => {
+    if (!contractData) return;
+    henryTenancyContractTemplateService.updateActiveDraft(contractData);
+    setStatusMsg(`✓ Loaded ${contractData.buildingName} Unit ${contractData.propertyNo} into 3.19.1 Unified Preparation Studio!`);
+    setTimeout(() => setStatusMsg(null), 4000);
   };
 
   const handleSaveToVault = () => {
     if (!contractData) return;
     henryTenancyContractTemplateService.saveContract(contractData);
-    setStatusMsg(`✓ Contract ${contractData.contractId} saved and archived to Henry Vault!`);
+    setStatusMsg(`✓ Contract ${contractData.contractId} saved and archived to Henry Government Vault!`);
     setTimeout(() => setStatusMsg(null), 4000);
   };
 
@@ -305,7 +298,8 @@ export const HenryTenancyContractScannerView: FC = () => {
     setScannedResult(null);
     setContractData(null);
     setUploadedFile(null);
-    setStatusMsg('Discarded Tenancy Contract data.');
+    henryTenancyContractScannerService.clearCachedContract();
+    setStatusMsg('Discarded Tenancy Contract data and cleared session cache.');
     setTimeout(() => setStatusMsg(null), 3000);
   };
 
@@ -354,7 +348,7 @@ export const HenryTenancyContractScannerView: FC = () => {
                   Extracted Agreement Variables Form
                 </h4>
                 <span style={{ fontSize: '0.75rem', color: '#059669', fontWeight: 800 }}>
-                  ✓ {scannedResult?.ocrConfidence || 98}% Accuracy
+                  ✓ {scannedResult?.fillScorePercent || 98}% Accuracy
                 </span>
               </div>
 
@@ -453,16 +447,31 @@ export const HenryTenancyContractScannerView: FC = () => {
               <FileText size={15} color="#DC2626" />
               <span>Contract Document Preview</span>
             </div>
-            <div className="controls">
+            <div className="controls" style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+              <button
+                type="button"
+                onClick={() => setZoomLevel(prev => Math.max(70, prev - 15))}
+                style={{ background: 'rgba(255,255,255,0.15)', color: '#FFF', border: 'none', borderRadius: '4px', padding: '2px 6px', fontSize: '0.7rem', cursor: 'pointer' }}
+              >
+                -
+              </button>
+              <span style={{ fontSize: '0.72rem', color: '#94A3B8' }}>{zoomLevel}%</span>
+              <button
+                type="button"
+                onClick={() => setZoomLevel(prev => Math.min(180, prev + 15))}
+                style={{ background: 'rgba(255,255,255,0.15)', color: '#FFF', border: 'none', borderRadius: '4px', padding: '2px 6px', fontSize: '0.7rem', cursor: 'pointer' }}
+              >
+                +
+              </button>
               {uploadedFile && (
-                <span style={{ fontSize: '0.72rem', color: '#94A3B8' }}>
+                <span style={{ fontSize: '0.72rem', color: '#94A3B8', marginLeft: '6px' }}>
                   {uploadedFile.name} ({(uploadedFile.size / 1024).toFixed(1)} KB)
                 </span>
               )}
             </div>
           </PreviewHeader>
 
-          <PreviewBody>
+          <PreviewBody style={{ transform: `scale(${zoomLevel / 100})`, transformOrigin: 'top center', transition: 'transform 0.15s ease-out' }}>
             {uploadedFile && filePreviewUrl ? (
               <div style={{ width: '100%', height: '100%', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
                 {uploadedFile.type.startsWith('image/') ? (
@@ -507,12 +516,15 @@ export const HenryTenancyContractScannerView: FC = () => {
           </ActionBtn>
         </div>
 
-        <div style={{ display: 'flex', gap: '8px' }}>
+        <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
+          <ActionBtn $variant="secondary" onClick={handleLoadToJourney} disabled={!contractData}>
+            <FileText size={13} color="#10B981" /> Load into 3.19.1 Preparation Studio
+          </ActionBtn>
           <ActionBtn $variant="secondary" onClick={handleCopyJson} disabled={!contractData}>
             {copiedJson ? <Check size={13} color="#10B981" /> : <Copy size={13} />} Copy Variables JSON
           </ActionBtn>
           <ActionBtn $variant="primary" onClick={handleSaveToVault} disabled={!contractData}>
-            <Save size={13} /> Save to Henry Vault
+            <Save size={13} /> Save to Government Vault
           </ActionBtn>
         </div>
       </BottomActionBar>

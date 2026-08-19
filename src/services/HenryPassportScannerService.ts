@@ -9,6 +9,7 @@
  */
 
 import { ContractParty, ViewingFormPayload } from './HenryPdfEngineService';
+import { safeStorage } from '../utils/safeStorage';
 
 export interface InternationalPassportExtractedData {
   // Document Identity
@@ -19,6 +20,7 @@ export interface InternationalPassportExtractedData {
   bookletNumber: string; // "R7587163"
   trackingNumber: string; // "99992498902"
   issuingAuthority: string; // "PAKISTAN"
+  documentFormat?: string;
 
   // Personal Identity
   surname: string; // "MALIK"
@@ -84,6 +86,59 @@ export const ARSLAN_MALIK_SAMPLE_PASSPORT: InternationalPassportExtractedData = 
 };
 
 class HenryPassportScannerService {
+  private static readonly CACHE_KEY = 'whitecaves_henry_active_passport_cache_v1';
+  private inMemoryCache: InternationalPassportExtractedData | null = null;
+  private listeners: Set<(data: InternationalPassportExtractedData | null) => void> = new Set();
+
+  /**
+   * Persists extracted Passport data into temporary session memory and localStorage
+   */
+  setCachedPassport(data: InternationalPassportExtractedData): void {
+    this.inMemoryCache = { ...data };
+    safeStorage.setJSON(HenryPassportScannerService.CACHE_KEY, data);
+    this.notifyListeners(this.inMemoryCache);
+  }
+
+  /**
+   * Retrieves active Passport from temporary session cache
+   */
+  getCachedPassport(): InternationalPassportExtractedData | null {
+    if (this.inMemoryCache) return this.inMemoryCache;
+    const stored = safeStorage.getJSON<InternationalPassportExtractedData>(HenryPassportScannerService.CACHE_KEY);
+    if (stored) {
+      this.inMemoryCache = stored;
+      return stored;
+    }
+    return null;
+  }
+
+  /**
+   * Clears the active Passport session cache
+   */
+  clearCachedPassport(): void {
+    this.inMemoryCache = null;
+    safeStorage.remove(HenryPassportScannerService.CACHE_KEY);
+    this.notifyListeners(null);
+  }
+
+  /**
+   * Registers a subscriber listener to receive active Passport cache mutations
+   */
+  onPassportUpdated(listener: (data: InternationalPassportExtractedData | null) => void): () => void {
+    this.listeners.add(listener);
+    return () => this.listeners.delete(listener);
+  }
+
+  private notifyListeners(data: InternationalPassportExtractedData | null): void {
+    this.listeners.forEach((listener) => {
+      try {
+        listener(data);
+      } catch (err) {
+        console.error('Error notifying Henry Passport cache listener:', err);
+      }
+    });
+  }
+
   /**
    * Formats Pakistani CNIC / National Identity Number with hyphens (XXXXX-XXXXXXX-X)
    */
@@ -159,10 +214,12 @@ class HenryPassportScannerService {
    */
   async scanPassport(fileOrPreset?: File | 'sample'): Promise<InternationalPassportExtractedData> {
     if (!fileOrPreset || fileOrPreset === 'sample') {
-      return {
+      const demo = {
         ...ARSLAN_MALIK_SAMPLE_PASSPORT,
         scannedAt: new Date().toISOString(),
       };
+      this.setCachedPassport(demo);
+      return demo;
     }
 
     const file = fileOrPreset as File;
@@ -218,40 +275,59 @@ class HenryPassportScannerService {
 
     return new Promise((resolve) => {
       setTimeout(() => {
-        resolve({
-          passportType: 'P',
-          issuingCountryCode: countryCode,
-          issuingCountryEn: nationality,
+        const result: InternationalPassportExtractedData = {
           passportNumber: passportNo,
-          fullName,
-          givenNames: fullName.split(' ')[0] || fullName,
+          passportType: 'P',
+          issuingCountry: nationality,
+          issuingCountryCode: countryCode,
+          bookletNumber: `R${absHash % 9000000 + 1000000}`,
+          trackingNumber: `99${absHash % 900000000 + 100000000}`,
+          issuingAuthority: 'PASSPORT & IMMIGRATION COMMAND',
           surname: fullName.split(' ').slice(1).join(' ') || '',
+          givenNames: fullName.split(' ')[0] || fullName,
+          fullName,
+          fatherName: 'Guardian/Parent Name',
+          nationalIdentityNumber: `NID-${absHash % 90000000 + 10000000}`,
+          dateOfBirth: dob,
+          gender: absHash % 2 === 0 ? 'M' : 'F',
+          placeOfBirth: 'CAPITAL METROPOLIS',
           nationality,
           nationalityCode: countryCode,
-          dateOfBirth: dob,
-          placeOfBirth: 'CAPITAL METROPOLIS',
-          gender: absHash % 2 === 0 ? 'M' : 'F',
           dateOfIssue: `15/01/${birthYear + 20}`,
           dateOfExpiry: expiry,
-          issuingAuthority: 'PASSPORT & IMMIGRATION COMMAND',
-          nationalIdentityNumber: `NID-${absHash % 90000000 + 10000000}`,
-          rawMrz: `${line1}\n${line2}`,
+          isExpired: false,
+          validityYears: 10,
           mrz: {
             line1,
             line2,
           },
           confidenceScore: 0.997,
           scannedAt: new Date().toISOString(),
-        });
+          documentFormat: file.type || (fileName.endsWith('.pdf') ? 'application/pdf' : 'image/png'),
+        };
+
+        this.setCachedPassport(result);
+        resolve(result);
       }, 300);
     });
+  }
+
+  /**
+   * Alias for scanPassport conforming to standard document ingestion interfaces
+   */
+  async scanDocument(
+    fileOrPreset?: File | 'sample'
+  ): Promise<InternationalPassportExtractedData> {
+    return this.scanPassport(fileOrPreset);
   }
 
   /**
    * Returns demo scanned Passport data (Arslan Malik - DR0760143)
    */
   getDemoExtractedData(): InternationalPassportExtractedData {
-    return { ...ARSLAN_MALIK_SAMPLE_PASSPORT };
+    const demo = { ...ARSLAN_MALIK_SAMPLE_PASSPORT, scannedAt: new Date().toISOString() };
+    this.setCachedPassport(demo);
+    return demo;
   }
 
   /**

@@ -52,6 +52,8 @@ export interface ScannedTenancySignatures {
   lessorSignedDate?: string;
 }
 
+export type DldScannedContractResult = ScannedTenancyContractResult;
+
 export interface ScannedTenancyContractResult {
   // Classification & Fill State
   isFilled: boolean;
@@ -75,6 +77,7 @@ export interface ScannedTenancyContractResult {
   // Extraction Telemetry
   confidenceScore: number;
   scannedAt: string;
+  documentFormat?: string;
 }
 
 export const SANIT_SINGH_CAMELIA_608_SAMPLE: ScannedTenancyContractResult = {
@@ -290,23 +293,80 @@ export const BLANK_DLD_TEMPLATE_SAMPLE: ScannedTenancyContractResult = {
 const TRAINING_STORAGE_KEY = 'whitecaves_henry_contract_training_set_v1';
 
 class HenryTenancyContractScannerService {
+  private static readonly CACHE_KEY = 'whitecaves_henry_active_tenancy_contract_cache_v1';
+  private inMemoryCache: ScannedTenancyContractResult | null = null;
+  private listeners: Set<(data: ScannedTenancyContractResult | null) => void> = new Set();
+
   private trainingMemory: ScannedTenancyContractResult[] = [
     SANIT_SINGH_CAMELIA_608_SAMPLE,
     SVETLANA_JANUSIA_XH2858B_SAMPLE,
   ];
 
   /**
+   * Persists extracted contract data into temporary session memory and localStorage
+   */
+  setCachedContract(data: ScannedTenancyContractResult): void {
+    this.inMemoryCache = { ...data };
+    safeStorage.setJSON(HenryTenancyContractScannerService.CACHE_KEY, data);
+    this.notifyListeners(this.inMemoryCache);
+  }
+
+  /**
+   * Retrieves active contract from temporary session cache
+   */
+  getCachedContract(): ScannedTenancyContractResult | null {
+    if (this.inMemoryCache) return this.inMemoryCache;
+    const stored = safeStorage.getJSON<ScannedTenancyContractResult>(HenryTenancyContractScannerService.CACHE_KEY);
+    if (stored) {
+      this.inMemoryCache = stored;
+      return stored;
+    }
+    return null;
+  }
+
+  /**
+   * Clears the active contract session cache
+   */
+  clearCachedContract(): void {
+    this.inMemoryCache = null;
+    safeStorage.remove(HenryTenancyContractScannerService.CACHE_KEY);
+    this.notifyListeners(null);
+  }
+
+  /**
+   * Registers a subscriber listener to receive active contract cache mutations
+   */
+  onContractUpdated(listener: (data: ScannedTenancyContractResult | null) => void): () => void {
+    this.listeners.add(listener);
+    return () => this.listeners.delete(listener);
+  }
+
+  private notifyListeners(data: ScannedTenancyContractResult | null): void {
+    this.listeners.forEach((listener) => {
+      try {
+        listener(data);
+      } catch (err) {
+        console.error('Error notifying Henry Tenancy Contract cache listener:', err);
+      }
+    });
+  }
+
+  /**
    * Returns benchmark reference sample 1 (Sanit Singh Nagpal & Keshivani Mayadevan - Camelia 608)
    */
   getDemoExtractedData(): ScannedTenancyContractResult {
-    return { ...SANIT_SINGH_CAMELIA_608_SAMPLE, scannedAt: new Date().toISOString() };
+    const demo = { ...SANIT_SINGH_CAMELIA_608_SAMPLE, scannedAt: new Date().toISOString() };
+    this.setCachedContract(demo);
+    return demo;
   }
 
   /**
    * Returns benchmark reference sample 2 (Svetlana Levitskaya & William Michael Abernethy - Janusia XH2858B)
    */
   getSvetlanaJanusiaSample(): ScannedTenancyContractResult {
-    return { ...SVETLANA_JANUSIA_XH2858B_SAMPLE, scannedAt: new Date().toISOString() };
+    const demo = { ...SVETLANA_JANUSIA_XH2858B_SAMPLE, scannedAt: new Date().toISOString() };
+    this.setCachedContract(demo);
+    return demo;
   }
 
   /**
@@ -324,15 +384,30 @@ class HenryTenancyContractScannerService {
   ): Promise<ScannedTenancyContractResult> {
     return new Promise((resolve) => {
       setTimeout(() => {
+        let result: ScannedTenancyContractResult;
         if (fileOrPreset === 'blank') {
-          resolve(this.getBlankTemplateData());
+          result = this.getBlankTemplateData();
         } else if (fileOrPreset === 'sample_svetlana') {
-          resolve(this.getSvetlanaJanusiaSample());
+          result = this.getSvetlanaJanusiaSample();
         } else {
-          resolve(this.getDemoExtractedData());
+          result = this.getDemoExtractedData();
         }
+        if (fileOrPreset instanceof File) {
+          result.documentFormat = fileOrPreset.type || (fileOrPreset.name.endsWith('.pdf') ? 'application/pdf' : 'image/png');
+        }
+        this.setCachedContract(result);
+        resolve(result);
       }, 250);
     });
+  }
+
+  /**
+   * Alias for scanContract conforming to standard document ingestion interfaces
+   */
+  async scanDocument(
+    fileOrPreset?: File | 'sample' | 'sample_sanit' | 'sample_svetlana' | 'blank'
+  ): Promise<ScannedTenancyContractResult> {
+    return this.scanContract(fileOrPreset);
   }
 
   /**
@@ -369,16 +444,21 @@ class HenryTenancyContractScannerService {
   /**
    * Converts Extracted Scanned Contract into DldTenancyContractData for 1-click loading into the Preparation Studio
    */
-  toDldTenancyContractData(scanned: ScannedTenancyContractResult): Partial<DldTenancyContractData> {
+  toDldTenancyContractData(scanned: ScannedTenancyContractResult): DldTenancyContractData {
     return {
-      contractDate: scanned.contractDate,
+      contractId: `DLD-${Date.now().toString(36).toUpperCase()}`,
+      contractDate: scanned.contractDate || new Date().toISOString().split('T')[0],
       ownerName: scanned.landlord.name,
       lessorName: scanned.landlord.name,
       lessorEmiratesId: scanned.landlord.emiratesId,
+      lessorLicenseNo: scanned.landlord.licenseNo || '',
+      lessorLicensingAuthority: scanned.landlord.licensingAuthority || '',
       lessorEmail: scanned.landlord.email,
       lessorPhone: scanned.landlord.phone,
       tenantName: scanned.tenant.name,
       tenantEmiratesId: scanned.tenant.emiratesId,
+      tenantLicenseNo: scanned.tenant.licenseNo || '',
+      tenantLicensingAuthority: scanned.tenant.licensingAuthority || '',
       tenantEmail: scanned.tenant.email,
       tenantPhone: scanned.tenant.phone,
       propertyUsage: scanned.property.usage,
@@ -402,6 +482,8 @@ class HenryTenancyContractScannerService {
       lessorSignature: scanned.signatures.hasLessorSigned ? scanned.landlord.name : undefined,
       lessorSignatureDate: scanned.signatures.lessorSignedDate,
       status: scanned.isFilled ? 'ready_for_signature' : 'draft',
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
     };
   }
 

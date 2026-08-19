@@ -10,6 +10,7 @@
  */
 
 import { parse as parseMrz } from 'mrz';
+import { safeStorage } from '../utils/safeStorage';
 import { ContractParty, ViewingFormPayload } from './HenryPdfEngineService';
 
 export interface EmiratesIdExtractedData {
@@ -57,6 +58,8 @@ export interface EmiratesIdExtractedData {
   confidenceScore: number;
   detectedFieldsCount: number;
   scannedAt: string;
+  scannedSide?: 'front' | 'back' | 'both';
+  documentFormat?: string;
 }
 
 const NATIONALITY_REGISTRY: Record<string, { en: string; ar: string; code: string }> = {
@@ -219,6 +222,73 @@ export const SANIT_SINGH_SAMPLE_EID: EmiratesIdExtractedData = {
 };
 
 class HenryEmiratesIdScannerService {
+  private activeSessionCache: EmiratesIdExtractedData | null = null;
+  private updateListeners: Set<(data: EmiratesIdExtractedData | null) => void> = new Set();
+
+  /**
+   * Updates in-memory and session cache and notifies subscribers
+   */
+  setCachedEmiratesId(data: EmiratesIdExtractedData): void {
+    this.activeSessionCache = { ...data };
+    safeStorage.setJSON('whitecaves_henry_active_eid_cache_v1', data);
+    this.notifyListeners(this.activeSessionCache);
+  }
+
+  /**
+   * Retrieves active cached Emirates ID data
+   */
+  getCachedEmiratesId(): EmiratesIdExtractedData | null {
+    if (this.activeSessionCache) {
+      return this.activeSessionCache;
+    }
+    const stored = safeStorage.getJSON<EmiratesIdExtractedData>('whitecaves_henry_active_eid_cache_v1');
+    if (stored) {
+      this.activeSessionCache = stored;
+      return stored;
+    }
+    return null;
+  }
+
+  /**
+   * Clears temporary session cache
+   */
+  clearCachedEmiratesId(): void {
+    this.activeSessionCache = null;
+    safeStorage.remove('whitecaves_henry_active_eid_cache_v1');
+    this.notifyListeners(null);
+  }
+
+  /**
+   * Subscribe to Emirates ID cache changes
+   */
+  onEmiratesIdUpdated(listener: (data: EmiratesIdExtractedData | null) => void): () => void {
+    this.updateListeners.add(listener);
+    return () => this.updateListeners.delete(listener);
+  }
+
+  private notifyListeners(data: EmiratesIdExtractedData | null): void {
+    this.updateListeners.forEach((fn) => {
+      try {
+        fn(data);
+      } catch (err) {
+        console.error('Error in onEmiratesIdUpdated listener:', err);
+      }
+    });
+  }
+
+  /**
+   * Heuristically determines whether document text represents Front, Back or Both sides
+   */
+  detectDocumentSide(textOrFileName: string): 'front' | 'back' | 'both' {
+    const lower = (textOrFileName || '').toLowerCase();
+    const hasMrz = /ilare|p<are|[0-9]{7}[a-z][0-9]{7}/i.test(lower) || lower.includes('mrz') || lower.includes('back');
+    const hasFront = /784-\d{4}-\d{7}-\d|resident identity|united arab emirates|identity card|front/i.test(lower);
+    if (hasMrz && hasFront) return 'both';
+    if (hasMrz) return 'back';
+    if (hasFront) return 'front';
+    return 'both';
+  }
+
   formatEmiratesId(rawNumber: string): string {
     const cleaned = (rawNumber || '').replace(/\D/g, '');
     if (cleaned.length === 15) {
@@ -335,7 +405,7 @@ class HenryEmiratesIdScannerService {
           if (ctx) {
             canvas.width = viewport.width;
             canvas.height = viewport.height;
-            await page.render({ canvasContext: ctx, viewport }).promise;
+            await page.render({ canvasContext: ctx, viewport, canvas } as any).promise;
             canvasDataUrl = canvas.toDataURL('image/png');
           }
         }
@@ -573,7 +643,7 @@ class HenryEmiratesIdScannerService {
 
     if (onProgress) onProgress(100);
 
-    return {
+    const result: EmiratesIdExtractedData = {
       idNumber,
       rawIdNumber,
       cardNumber,
@@ -607,19 +677,77 @@ class HenryEmiratesIdScannerService {
       confidenceScore: 0.999,
       detectedFieldsCount: 12,
       scannedAt: new Date().toISOString(),
+      scannedSide: this.detectDocumentSide(combinedRawText),
+      documentFormat: file.type || (fileName.endsWith('.pdf') ? 'application/pdf' : 'image/png'),
     };
+
+    this.setCachedEmiratesId(result);
+    return result;
+  }
+
+  /**
+   * Alias for scanEmiratesId conforming to standard document ingestion interfaces
+   */
+  async scanDocument(
+    fileOrPreset?: File | 'sample',
+    onProgress?: (progress: number) => void
+  ): Promise<EmiratesIdExtractedData> {
+    return this.scanEmiratesId(fileOrPreset, onProgress);
+  }
+
+  /**
+   * Ingests dual files (Front side + Back side) and merges attributes into a single validated EmiratesIdExtractedData
+   */
+  async scanDualSide(
+    frontFile: File,
+    backFile: File,
+    onProgress?: (progress: number) => void
+  ): Promise<EmiratesIdExtractedData> {
+    if (onProgress) onProgress(15);
+
+    const [frontResult, backResult] = await Promise.all([
+      this.scanEmiratesId(frontFile, (p) => onProgress && onProgress(Math.round(p * 0.45))),
+      this.scanEmiratesId(backFile, (p) => onProgress && onProgress(Math.round(45 + p * 0.45))),
+    ]);
+
+    const merged: EmiratesIdExtractedData = {
+      ...frontResult,
+      cardNumber: backResult.cardNumber || frontResult.cardNumber,
+      chipNumber: backResult.chipNumber || frontResult.chipNumber,
+      mrz: backResult.mrz || frontResult.mrz,
+      occupationEn: backResult.occupationEn || frontResult.occupationEn,
+      occupationAr: backResult.occupationAr || frontResult.occupationAr,
+      employerEn: backResult.employerEn || frontResult.employerEn,
+      employerAr: backResult.employerAr || frontResult.employerAr,
+      issuingPlaceEn: backResult.issuingPlaceEn || frontResult.issuingPlaceEn,
+      issuingPlaceAr: backResult.issuingPlaceAr || frontResult.issuingPlaceAr,
+      confidenceScore: Math.max(frontResult.confidenceScore, backResult.confidenceScore),
+      scannedAt: new Date().toISOString(),
+      scannedSide: 'both',
+      documentFormat: `${frontFile.type || 'image'}, ${backFile.type || 'image'}`,
+    };
+
+    this.setCachedEmiratesId(merged);
+    if (onProgress) onProgress(100);
+    return merged;
   }
 
   getDemoExtractedData(): EmiratesIdExtractedData {
-    return { ...ARSLAN_MALIK_SAMPLE_EID };
+    const demo = { ...ARSLAN_MALIK_SAMPLE_EID, scannedAt: new Date().toISOString() };
+    this.setCachedEmiratesId(demo);
+    return demo;
   }
 
   getIndianClientDemoData(): EmiratesIdExtractedData {
-    return { ...SANIT_SINGH_SAMPLE_EID };
+    const demo = { ...SANIT_SINGH_SAMPLE_EID, scannedAt: new Date().toISOString() };
+    this.setCachedEmiratesId(demo);
+    return demo;
   }
 
   getIbrahimSirajDemoData(): EmiratesIdExtractedData {
-    return { ...DEFAULT_VERIFIED_EID };
+    const demo = { ...DEFAULT_VERIFIED_EID, scannedAt: new Date().toISOString() };
+    this.setCachedEmiratesId(demo);
+    return demo;
   }
 
   toContractParty(

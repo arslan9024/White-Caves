@@ -1,8 +1,9 @@
 # 🏛️ Software Design Document (SDD): Henry AI International Passport OCR & MRZ Engine
 
-**Target System:** Henry AI Optical Extraction Engine  
-**Module:** `src/services/HenryPassportScannerService.ts`  
-**Standard:** 4-Way Folder Architecture (`View.tsx` / `Logic.logic.ts` / `Style.style.ts` / `Data.data.ts`)  
+**Target System:** Henry AI Optical Extraction Engine (`WC-AI-003`)  
+**Module:** `src/services/HenryPassportScannerService.ts` & `src/components/crm/HenryDocumentStudio/HenryPassportScannerView.tsx`  
+**Governing Authority:** ICAO Standard 9303 / UAE ICP / goAML UAE FIU  
+**Standard:** 3-Part UI Architecture + Temporary Session Store
 
 ---
 
@@ -10,7 +11,7 @@
 
 ```mermaid
 graph TD
-    Upload[Passport Bio-Data Page Upload] --> Scanner[HenryPassportScannerService.scanPassport]
+    Upload[1. Upload File Component: PDF, PNG, JPG, WEBP] --> Scanner[HenryPassportScannerService.scanPassport]
     
     Scanner --> MRZParser[ICAO 9303 TD3 2-Line MRZ Parser]
     Scanner --> VisualOCR[Visual Bio-Data Field OCR]
@@ -25,11 +26,15 @@ graph TD
     VisualFields --> Consolidator
 
     Consolidator --> OutputPayload[InternationalPassportExtractedData Object]
+    OutputPayload --> SessionCache[(Temporary Session Cache: safeStorage)]
 
-    OutputPayload --> Action1[1-Click Auto-Fill Tenancy Lease as Tenant / Landlord]
-    OutputPayload --> Action2[1-Click Auto-Fill Form B Viewing Register]
-    OutputPayload --> Action3[1-Click goAML & KYC Screener Ingestion]
-    OutputPayload --> Action4[Export 16+ Variables as JSON]
+    SessionCache --> Preview[2. Preview Document Component with Zoom]
+    SessionCache --> ExtractionView[3. Extracted Information Section: 5 Cards]
+
+    ExtractionView --> Action1[1-Click Auto-Fill Tenancy Lease as Tenant / Landlord]
+    ExtractionView --> Action2[1-Click Auto-Fill Form B Viewing Register]
+    ExtractionView --> Action3[1-Click Save to KYC Vault]
+    ExtractionView --> Action4[Export 16+ Variables as JSON]
 ```
 
 ---
@@ -46,6 +51,7 @@ export interface InternationalPassportExtractedData {
   bookletNumber: string;             // "R7587163"
   trackingNumber: string;            // "99992498902"
   issuingAuthority: string;          // "PAKISTAN"
+  documentFormat?: string;           // "application/pdf" | "image/png"
 
   // Personal Identity
   surname: string;                   // "MALIK"
@@ -74,5 +80,20 @@ export interface InternationalPassportExtractedData {
   // Telemetry
   confidenceScore: number;           // 0.999
   scannedAt: string;                 // ISO timestamp
+}
+```
+
+---
+
+## 3. Temporary Session Store Architecture
+
+```typescript
+class HenryPassportScannerService {
+  private static readonly CACHE_KEY = 'whitecaves_henry_active_passport_cache_v1';
+  
+  setCachedPassport(data: InternationalPassportExtractedData): void;
+  getCachedPassport(): InternationalPassportExtractedData | null;
+  clearCachedPassport(): void;
+  onPassportUpdated(listener: (data: InternationalPassportExtractedData | null) => void): () => void;
 }
 ```

@@ -1,6 +1,7 @@
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect, vi } from 'vitest';
 import henryEmiratesIdScannerService, {
   ARSLAN_MALIK_SAMPLE_EID,
+  MANSOOR_ALMARZOOQI_SAMPLE_EID,
 } from './HenryEmiratesIdScannerService';
 
 describe('HenryEmiratesIdScannerService — Emirates ID OCR & MRZ Engine', () => {
@@ -36,6 +37,39 @@ describe('HenryEmiratesIdScannerService — Emirates ID OCR & MRZ Engine', () =>
     expect(data.issuingPlaceEn).toBe('Dubai');
     expect(data.chipNumber).toBe('2500069345');
     expect(data.confidenceScore).toBeGreaterThanOrEqual(0.99);
+  });
+
+  it('detects document side (Front, Back, or Both)', () => {
+    expect(henryEmiratesIdScannerService.detectDocumentSide('Resident Identity Card United Arab Emirates 784-1993-1805733-0')).toBe('front');
+    expect(henryEmiratesIdScannerService.detectDocumentSide('ILARE1445975719784199318057330 9302109M2611228PAK')).toBe('back');
+    expect(henryEmiratesIdScannerService.detectDocumentSide('Front Card 784-1993-1805733-0 with Back ILARE1445975719784199318057330')).toBe('both');
+  });
+
+  it('manages temporary session cache and dispatches listener updates', () => {
+    const listener = vi.fn();
+    const unsubscribe = henryEmiratesIdScannerService.onEmiratesIdUpdated(listener);
+
+    henryEmiratesIdScannerService.setCachedEmiratesId(MANSOOR_ALMARZOOQI_SAMPLE_EID);
+    expect(henryEmiratesIdScannerService.getCachedEmiratesId()?.idNumber).toBe('784-1990-7528093-5');
+    expect(listener).toHaveBeenCalledWith(expect.objectContaining({ idNumber: '784-1990-7528093-5' }));
+
+    henryEmiratesIdScannerService.clearCachedEmiratesId();
+    expect(henryEmiratesIdScannerService.getCachedEmiratesId()).toBeNull();
+    expect(listener).toHaveBeenCalledWith(null);
+
+    unsubscribe();
+  });
+
+  it('scans dual side files (Front and Back) and merges complete attributes', async () => {
+    const frontFile = new File(['front image content'], 'Arslan_Front.png', { type: 'image/png' });
+    const backFile = new File(['back image content'], 'Arslan_Back.jpg', { type: 'image/jpeg' });
+
+    const merged = await henryEmiratesIdScannerService.scanDualSide(frontFile, backFile);
+
+    expect(merged.idNumber).toBe('784-1993-1805733-0');
+    expect(merged.fullNameEn).toBe('Arslan Malik Bashir Ahmad');
+    expect(merged.scannedSide).toBe('both');
+    expect(henryEmiratesIdScannerService.getCachedEmiratesId()?.fullNameEn).toBe('Arslan Malik Bashir Ahmad');
   });
 
   it('exports extracted data directly to Tenancy Contract party object', () => {

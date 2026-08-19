@@ -66,17 +66,29 @@ describe('Henry Document Studio — Shared Uploader & 5 Content Area Views', () 
     expect(screen.getByText(/Stage 4: Endorsement Signatures & Vault Persistence/i)).toBeDefined();
   });
 
-  it('3.19.2 HenryEmiratesIdScannerView loads sample and renders digital Emirates ID card and form', async () => {
+  it('3.19.2 HenryEmiratesIdScannerView loads sample, switches front/back preview, and auto-fills tenancy', async () => {
     render(<HenryEmiratesIdScannerView />);
 
     expect(screen.getByText(/3.19.2 Emirates ID Live Extraction Studio/i)).toBeDefined();
-    expect(screen.getByText(/Original Emirates ID Document/i)).toBeDefined();
+    expect(screen.getByText(/Emirates ID Document Viewer/i)).toBeDefined();
     expect(screen.getByText(/1. Identity & Card Numbers/i)).toBeDefined();
+
+    // Toggle Back Side preview
+    fireEvent.click(screen.getByRole('button', { name: /Back Side \(MRZ\)/i }));
+    expect(screen.getByText(/SMART CHIP & ICAO TD1 MRZ SPECIFICATION/i)).toBeDefined();
+
+    // Toggle Front Side preview
+    fireEvent.click(screen.getByRole('button', { name: /Front Side/i }));
+    expect(screen.getByText(/UNITED ARAB EMIRATES · RESIDENT IDENTITY CARD/i)).toBeDefined();
 
     // Load benchmark demo
     fireEvent.click(screen.getByRole('button', { name: /Load Demo Benchmark/i }));
     expect(screen.getByDisplayValue('784-1993-1805733-0')).toBeDefined();
     expect(screen.getByDisplayValue('Arslan Malik Bashir Ahmad')).toBeDefined();
+
+    // Test 1-click Auto-Fill Tenancy action
+    fireEvent.click(screen.getByRole('button', { name: /Auto-Fill Tenancy \(as Tenant\)/i }));
+    expect(screen.getByText(/Auto-filled Tenancy Contract with Arslan Malik/i)).toBeDefined();
 
     // Test Save to Vault button
     fireEvent.click(screen.getByRole('button', { name: /Save Verified Variables to KYC Vault/i }));
@@ -86,37 +98,56 @@ describe('Henry Document Studio — Shared Uploader & 5 Content Area Views', () 
     render(<HenryTitleDeedScannerView />);
 
     expect(screen.getByText(/3.19.3 Scan Title Deed/i)).toBeDefined();
-    expect(screen.getByText(/No Title Deed Uploaded Yet/i)).toBeDefined();
 
     // Load benchmark demo
     fireEvent.click(screen.getByRole('button', { name: /Load Demo Benchmark/i }));
     expect(screen.getByText(/Extracted Title Deed Variables Form/i)).toBeDefined();
     expect(screen.getByDisplayValue('VIRIDIS A')).toBeDefined();
     expect(screen.getByDisplayValue('AKRAM DIB NEHME')).toBeDefined();
+
+    // Test 1-click Auto-Fill Tenancy Lease
+    fireEvent.click(screen.getByRole('button', { name: /Auto-Fill Tenancy Lease/i }));
+    expect(screen.getByText(/Auto-filled Tenancy Contract with VIRIDIS A Unit 504/i)).toBeDefined();
+
+    // Test Save to Property Vault
+    fireEvent.click(screen.getByRole('button', { name: /Save to Property Vault/i }));
   });
 
   it('3.19.4 HenryPassportScannerView loads sample and renders passport bio card, MRZ and form', () => {
     render(<HenryPassportScannerView />);
 
     expect(screen.getByText(/3.19.4 Scan International Passport/i)).toBeDefined();
-    expect(screen.getByText(/No Passport Uploaded Yet/i)).toBeDefined();
 
     // Load benchmark demo
     fireEvent.click(screen.getByRole('button', { name: /Load Demo Benchmark/i }));
     expect(screen.getByText(/Extracted Passport Variables Form/i)).toBeDefined();
     expect(screen.getByDisplayValue('DR0760143')).toBeDefined();
     expect(screen.getByDisplayValue('Arslan Malik')).toBeDefined();
+
+    // Test 1-click Auto-Fill Tenancy (as Tenant)
+    fireEvent.click(screen.getByRole('button', { name: /Auto-Fill Tenancy \(as Tenant\)/i }));
+    expect(screen.getByText(/Auto-filled Tenancy Contract with Arslan Malik/i)).toBeDefined();
+
+    // Test Save to KYC Vault
+    fireEvent.click(screen.getByRole('button', { name: /Save to KYC Vault/i }));
   });
 
   it('3.19.5 HenryTenancyContractScannerView loads sample and extracts contract domains and form', () => {
     render(<HenryTenancyContractScannerView />);
 
     expect(screen.getByText(/3.19.5 Scan & Extract Tenancy Agreement/i)).toBeDefined();
-    expect(screen.getByText(/No Contract Uploaded Yet/i)).toBeDefined();
 
     // Load benchmark demo
     fireEvent.click(screen.getByRole('button', { name: /Load Demo Benchmark/i }));
     expect(screen.getByText(/Extracted Agreement Variables Form/i)).toBeDefined();
+
+    // Test 1-click Load into 3.19.1 Preparation Studio
+    fireEvent.click(screen.getByRole('button', { name: /Load into 3.19.1 Preparation Studio/i }));
+    expect(screen.getByText(/into 3.19.1 Unified Preparation Studio/i)).toBeDefined();
+
+    // Test Save to Government Vault
+    fireEvent.click(screen.getByRole('button', { name: /Save to Government Vault/i }));
+
     expect(screen.getByText(/1. Property Specifications/i)).toBeDefined();
     expect(screen.getByText(/2. Landlord & Tenant Parties/i)).toBeDefined();
     expect(screen.getByText(/3. Financial Schedules & Dates/i)).toBeDefined();

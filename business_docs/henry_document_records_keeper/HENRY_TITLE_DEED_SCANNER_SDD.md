@@ -1,8 +1,9 @@
 # 🏛️ Software Design Document (SDD): Henry AI Title Deed Optical Extraction Architecture
 
-**Target System:** Henry AI Optical Extraction Engine  
-**Module:** `src/services/HenryTitleDeedScannerService.ts`  
-**Standard:** 4-Way Folder Architecture (`View.tsx` / `Logic.logic.ts` / `Style.style.ts` / `Data.data.ts`)  
+**Target System:** Henry AI Optical Extraction Engine (`WC-AI-003`)  
+**Module:** `src/services/HenryTitleDeedScannerService.ts` & `src/components/crm/HenryDocumentStudio/HenryTitleDeedScannerView.tsx`  
+**Governing Authority:** Dubai Land Department (DLD) / Real Estate Regulatory Agency (RERA)  
+**Standard:** 3-Part UI Architecture + Temporary Session Store
 
 ---
 
@@ -10,9 +11,9 @@
 
 ```mermaid
 graph TD
-    Upload[DLD Title Deed Upload / Drag & Drop] --> Scanner[HenryTitleDeedScannerService.scanTitleDeed]
+    Upload[1. Upload File Component: PDF, PNG, JPG, WEBP] --> Scanner[HenryTitleDeedScannerService.scanTitleDeed]
     
-    Scanner --> LayoutOCR[Layout-Aware Bilingual OCR]
+    Scanner --> LayoutOCR[Layout-Aware Bilingual OCR Engine]
     Scanner --> BarcodeParser[DLD Barcode & Certificate Verifier]
 
     LayoutOCR --> PropSpecs[Property & Location Specs]
@@ -27,11 +28,15 @@ graph TD
     BarcodeParser --> Consolidator
 
     Consolidator --> OutputPayload[DldTitleDeedExtractedData Object]
+    OutputPayload --> SessionCache[(Temporary Session Cache: safeStorage)]
 
-    OutputPayload --> Action1[1-Click Auto-Fill Tenancy Contract & Ejari]
-    OutputPayload --> Action2[1-Click Create CRM Property Listing]
-    OutputPayload --> Action3[1-Click Auto-Fill Form A Seller Mandate]
-    OutputPayload --> Action4[Export 22+ Variables as JSON]
+    SessionCache --> Preview[2. Preview Document Component with Zoom]
+    SessionCache --> ExtractionView[3. Extracted Information Section: 5 Cards]
+
+    ExtractionView --> Action1[1-Click Auto-Fill Tenancy Contract]
+    ExtractionView --> Action2[1-Click Create CRM Property Listing]
+    ExtractionView --> Action3[1-Click Save to Property Vault]
+    ExtractionView --> Action4[Export 22+ Variables as JSON]
 ```
 
 ---
@@ -46,6 +51,7 @@ export interface DldTitleDeedExtractedData {
   issuingAuthorityEn: string;        // "Government of Dubai - Land Department"
   issuingAuthorityAr: string;        // "حكومة دبي - دائرة الأراضي والأملاك"
   isBlockchainVerified: boolean;
+  documentFormat?: string;           // "application/pdf" | "image/png"
 
   // Property Details
   propertyTypeEn: string;            // "Hotel Apartment"
@@ -89,5 +95,20 @@ export interface DldTitleDeedExtractedData {
   // Extraction Confidence & Telemetry
   confidenceScore: number;           // 0.999
   scannedAt: string;                 // ISO timestamp
+}
+```
+
+---
+
+## 3. Temporary Session Store Architecture
+
+```typescript
+class HenryTitleDeedScannerService {
+  private static readonly CACHE_KEY = 'whitecaves_henry_active_title_deed_cache_v1';
+  
+  setCachedTitleDeed(data: DldTitleDeedExtractedData): void;
+  getCachedTitleDeed(): DldTitleDeedExtractedData | null;
+  clearCachedTitleDeed(): void;
+  onTitleDeedUpdated(listener: (data: DldTitleDeedExtractedData | null) => void): () => void;
 }
 ```

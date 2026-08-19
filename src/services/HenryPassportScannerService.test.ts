@@ -1,4 +1,4 @@
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect, vi } from 'vitest';
 import henryPassportScannerService, {
   ARSLAN_MALIK_SAMPLE_PASSPORT,
 } from './HenryPassportScannerService';
@@ -35,6 +35,27 @@ describe('HenryPassportScannerService — International Passport ICAO 9303 TD3 E
     expect(data.placeOfBirth).toBe('MUZAFFARGARH, PAK');
     expect(data.validityYears).toBe(10);
     expect(data.confidenceScore).toBeGreaterThanOrEqual(0.99);
+  });
+
+  it('manages temporary session cache and dispatches listener updates', () => {
+    const listener = vi.fn();
+    const unsubscribe = henryPassportScannerService.onPassportUpdated(listener);
+
+    henryPassportScannerService.setCachedPassport(ARSLAN_MALIK_SAMPLE_PASSPORT);
+    expect(henryPassportScannerService.getCachedPassport()?.passportNumber).toBe('DR0760143');
+    expect(listener).toHaveBeenCalledWith(expect.objectContaining({ passportNumber: 'DR0760143' }));
+
+    henryPassportScannerService.clearCachedPassport();
+    expect(henryPassportScannerService.getCachedPassport()).toBeNull();
+    expect(listener).toHaveBeenCalledWith(null);
+
+    unsubscribe();
+  });
+
+  it('supports scanDocument alias with automatic session caching', async () => {
+    const data = await henryPassportScannerService.scanDocument('sample');
+    expect(data.passportNumber).toBe('DR0760143');
+    expect(henryPassportScannerService.getCachedPassport()?.fullName).toBe('Arslan Malik');
   });
 
   it('exports extracted data directly to Tenancy Contract party object', () => {

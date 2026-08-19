@@ -209,6 +209,13 @@ class HenryTenancyContractTemplateService {
   }
 
   /**
+   * Updates the active draft in memory & safeStorage
+   */
+  updateActiveDraft(data: DldTenancyContractData): void {
+    this.saveDraft(data);
+  }
+
+  /**
    * Load active draft from LocalStorage or memory cache or fall back to blank template
    */
   loadActiveDraft(): DldTenancyContractData {

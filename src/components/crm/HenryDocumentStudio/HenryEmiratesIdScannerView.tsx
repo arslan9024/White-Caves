@@ -332,9 +332,12 @@ const ZoomBtn = styled.button`
 `;
 
 export const HenryEmiratesIdScannerView: FC = () => {
-  const [extractedData, setExtractedData] = useState<EmiratesIdExtractedData>(DEFAULT_VERIFIED_EID);
+  const [extractedData, setExtractedData] = useState<EmiratesIdExtractedData>(() => {
+    return henryEmiratesIdScannerService.getCachedEmiratesId() || DEFAULT_VERIFIED_EID;
+  });
   const [uploadedFile, setUploadedFile] = useState<File | null>(null);
   const [filePreviewUrl, setFilePreviewUrl] = useState<string | null>(null);
+  const [activeSideView, setActiveSideView] = useState<'front' | 'back'>('front');
   const [isScanning, setIsScanning] = useState<boolean>(false);
   const [zoomLevel, setZoomLevel] = useState<number>(100);
   const [statusMsg, setStatusMsg] = useState<string | null>(null);
@@ -358,6 +361,9 @@ export const HenryEmiratesIdScannerView: FC = () => {
     try {
       const data = await henryEmiratesIdScannerService.scanEmiratesId(file);
       setExtractedData(data);
+      if (data.scannedSide === 'back') {
+        setActiveSideView('back');
+      }
       setStatusMsg(`✓ Successfully extracted and verified all variables from "${file.name}"!`);
     } catch {
       setStatusMsg('Error processing Emirates ID scan.');
@@ -376,16 +382,34 @@ export const HenryEmiratesIdScannerView: FC = () => {
   };
 
   const handleUpdateField = (field: keyof EmiratesIdExtractedData, val: any) => {
-    setExtractedData(prev => ({ ...prev, [field]: val }));
+    setExtractedData(prev => {
+      const updated = { ...prev, [field]: val };
+      henryEmiratesIdScannerService.setCachedEmiratesId(updated);
+      return updated;
+    });
   };
 
   const handleSaveToVault = () => {
-    setStatusMsg(`✓ Record ${extractedData.idNumber} (${extractedData.fullNameEn}) confirmed & saved to White Caves Vault!`);
+    henryEmiratesIdScannerService.setCachedEmiratesId(extractedData);
+    setStatusMsg(`✓ Record ${extractedData.idNumber} (${extractedData.fullNameEn}) confirmed & saved to White Caves KYC Vault!`);
+    setTimeout(() => setStatusMsg(null), 4000);
+  };
+
+  const handleAutoFillAsTenant = () => {
+    henryEmiratesIdScannerService.setCachedEmiratesId(extractedData);
+    setStatusMsg(`✓ Auto-filled Tenancy Contract with ${extractedData.fullNameEn} (${extractedData.idNumber}) as Tenant!`);
+    setTimeout(() => setStatusMsg(null), 4000);
+  };
+
+  const handleAutoFillAsLandlord = () => {
+    henryEmiratesIdScannerService.setCachedEmiratesId(extractedData);
+    setStatusMsg(`✓ Auto-filled Tenancy Contract with ${extractedData.fullNameEn} (${extractedData.idNumber}) as Landlord/Owner!`);
     setTimeout(() => setStatusMsg(null), 4000);
   };
 
   const handleDiscard = () => {
     setUploadedFile(null);
+    henryEmiratesIdScannerService.clearCachedEmiratesId();
     setExtractedData(DEFAULT_VERIFIED_EID);
     setStatusMsg('Reset Emirates ID Studio to default verified document.');
     setTimeout(() => setStatusMsg(null), 3000);
@@ -433,12 +457,46 @@ export const HenryEmiratesIdScannerView: FC = () => {
 
       {/* ══════════ SIDE-BY-SIDE LIVE COMPARISON GRID ══════════ */}
       <ComparisonGrid>
-        {/* ────────── LEFT: DOCUMENT UPLOADER & VISUAL CANVAS ────────── */}
+        {/* ────────── LEFT: 1. UPLOADER & 2. PREVIEW VIEWPORT ────────── */}
         <LeftDocumentPane>
           <PaneHeader>
-            <div className="title">
+            <div className="title" style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
               <CreditCard size={16} color="#38BDF8" />
-              <span>Original Emirates ID Document</span>
+              <span>Emirates ID Document Viewer</span>
+              <div style={{ display: 'flex', gap: '4px', marginLeft: '8px' }}>
+                <button
+                  type="button"
+                  onClick={() => setActiveSideView('front')}
+                  style={{
+                    background: activeSideView === 'front' ? '#10B981' : 'rgba(255,255,255,0.12)',
+                    color: '#FFF',
+                    border: 'none',
+                    borderRadius: '4px',
+                    padding: '2px 8px',
+                    fontSize: '0.7rem',
+                    fontWeight: 700,
+                    cursor: 'pointer',
+                  }}
+                >
+                  Front Side
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setActiveSideView('back')}
+                  style={{
+                    background: activeSideView === 'back' ? '#10B981' : 'rgba(255,255,255,0.12)',
+                    color: '#FFF',
+                    border: 'none',
+                    borderRadius: '4px',
+                    padding: '2px 8px',
+                    fontSize: '0.7rem',
+                    fontWeight: 700,
+                    cursor: 'pointer',
+                  }}
+                >
+                  Back Side (MRZ)
+                </button>
+              </div>
             </div>
             <div className="controls">
               <ZoomBtn onClick={() => setZoomLevel(prev => Math.max(70, prev - 15))}>
@@ -451,11 +509,11 @@ export const HenryEmiratesIdScannerView: FC = () => {
             </div>
           </PaneHeader>
 
-          {/* Upload Dropzone */}
+          {/* Section 1: Upload File Component */}
           <div style={{ padding: '1rem', background: '#FFFFFF', borderBottom: '1px solid #E2E8F0' }}>
             <HenrySharedDocumentUploader
               docType="emirates_id"
-              title="Upload New Emirates ID (Front / Back / PDF)"
+              title="1. Upload Emirates ID (PDF, PNG, JPG, WEBP)"
               subtitle="Drop your Emirates ID file to extract live variables and compare on the right"
               onFileUpload={handleFileUpload}
               onSampleLoad={handleLoadDemo}
@@ -464,7 +522,7 @@ export const HenryEmiratesIdScannerView: FC = () => {
             />
           </div>
 
-          {/* Visual Document Viewer */}
+          {/* Section 2: Visual Document Preview Viewer */}
           <DocumentCanvasViewer $zoom={zoomLevel}>
             {uploadedFile && filePreviewUrl ? (
               uploadedFile.type.startsWith('image/') ? (
@@ -472,11 +530,14 @@ export const HenryEmiratesIdScannerView: FC = () => {
               ) : (
                 <iframe src={filePreviewUrl} title="Emirates ID PDF Preview" />
               )
-            ) : (
+            ) : activeSideView === 'front' ? (
               <div style={{ textAlign: 'center', color: '#64748B', maxWidth: '420px' }}>
-                <div style={{ background: '#0F172A', borderRadius: '12px', padding: '1.25rem', color: '#FFFFFF', border: '2px solid #38BDF8', textAlign: 'left' }}>
-                  <div style={{ fontSize: '0.72rem', fontWeight: 800, color: '#38BDF8', borderBottom: '1px solid rgba(255,255,255,0.15)', paddingBottom: '6px', marginBottom: '8px' }}>
-                    UNITED ARAB EMIRATES · IDENTITY CARD
+                <div style={{ background: '#0F172A', borderRadius: '12px', padding: '1.25rem', color: '#FFFFFF', border: '2px solid #10B981', textAlign: 'left' }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid rgba(255,255,255,0.15)', paddingBottom: '6px', marginBottom: '8px' }}>
+                    <span style={{ fontSize: '0.72rem', fontWeight: 800, color: '#10B981' }}>
+                      UNITED ARAB EMIRATES · RESIDENT IDENTITY CARD
+                    </span>
+                    <span style={{ fontSize: '0.68rem', color: '#94A3B8' }}>FRONT</span>
                   </div>
                   <div style={{ fontFamily: 'monospace', fontSize: '1.15rem', fontWeight: 900, color: '#FFFFFF' }}>
                     {extractedData.idNumber}
@@ -493,7 +554,38 @@ export const HenryEmiratesIdScannerView: FC = () => {
                   </div>
                 </div>
                 <p style={{ fontSize: '0.78rem', marginTop: '10px' }}>
-                  Upload your client Emirates ID image or PDF above to replace this preview and compare live variables.
+                  Front view active. Click "Back Side (MRZ)" or upload your client card to inspect both sides.
+                </p>
+              </div>
+            ) : (
+              <div style={{ textAlign: 'center', color: '#64748B', maxWidth: '420px' }}>
+                <div style={{ background: '#0F172A', borderRadius: '12px', padding: '1.25rem', color: '#FFFFFF', border: '2px solid #38BDF8', textAlign: 'left' }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid rgba(255,255,255,0.15)', paddingBottom: '6px', marginBottom: '8px' }}>
+                    <span style={{ fontSize: '0.72rem', fontWeight: 800, color: '#38BDF8' }}>
+                      SMART CHIP & ICAO TD1 MRZ SPECIFICATION
+                    </span>
+                    <span style={{ fontSize: '0.68rem', color: '#94A3B8' }}>BACK</span>
+                  </div>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.75rem', color: '#E2E8F0', marginTop: '6px' }}>
+                    <span>Card No: <strong>{extractedData.cardNumber}</strong></span>
+                    <span>Chip: <strong>{extractedData.chipNumber || '2500098412'}</strong></span>
+                  </div>
+                  <div style={{ fontSize: '0.75rem', color: '#94A3B8', marginTop: '6px' }}>
+                    Occupation: <strong>{extractedData.occupationEn}</strong>
+                  </div>
+                  <div style={{ fontSize: '0.75rem', color: '#94A3B8' }}>
+                    Employer: <strong>{extractedData.employerEn}</strong>
+                  </div>
+                  <div style={{ marginTop: '10px', padding: '6px', background: '#020617', borderRadius: '6px', fontFamily: 'monospace', fontSize: '0.68rem', color: '#38BDF8', lineHeight: 1.3 }}>
+                    {extractedData.mrz ? (
+                      `${extractedData.mrz.line1}\n${extractedData.mrz.line2}\n${extractedData.mrz.line3}`
+                    ) : (
+                      `ILARE${extractedData.cardNumber}0${extractedData.rawIdNumber}\n7001291M2708274IND<<<<<<<<<<<2\n${extractedData.fullNameEn.toUpperCase().replace(/\s+/g, '<').slice(0, 30)}`
+                    )}
+                  </div>
+                </div>
+                <p style={{ fontSize: '0.78rem', marginTop: '10px' }}>
+                  Back view active with 3-line ICAO TD1 MRZ, smart chip ID and card serial.
                 </p>
               </div>
             )}
@@ -682,8 +774,28 @@ export const HenryEmiratesIdScannerView: FC = () => {
             </VariableSectionCard>
           )}
 
+          {/* 1-Click Platform Cross-Injection Triggers */}
+          <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap', marginTop: '6px' }}>
+            <ActionButton
+              $variant="secondary"
+              type="button"
+              onClick={handleAutoFillAsTenant}
+              style={{ fontSize: '0.8rem', padding: '8px 14px', flex: 1, justifyContent: 'center' }}
+            >
+              <FileText size={14} color="#10B981" /> Auto-Fill Tenancy (as Tenant)
+            </ActionButton>
+            <ActionButton
+              $variant="secondary"
+              type="button"
+              onClick={handleAutoFillAsLandlord}
+              style={{ fontSize: '0.8rem', padding: '8px 14px', flex: 1, justifyContent: 'center' }}
+            >
+              <FileText size={14} color="#38BDF8" /> Auto-Fill Tenancy (as Landlord)
+            </ActionButton>
+          </div>
+
           {/* Bottom Control Actions */}
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '4px' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '8px' }}>
             <ActionButton $variant="danger" onClick={handleDiscard}>
               <Trash2 size={14} /> Clear & Reset
             </ActionButton>

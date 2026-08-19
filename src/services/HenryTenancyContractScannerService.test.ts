@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeEach } from 'vitest';
+import { describe, it, expect, vi } from 'vitest';
 import henryTenancyContractScannerService, {
   SANIT_SINGH_CAMELIA_608_SAMPLE,
   BLANK_DLD_TEMPLATE_SAMPLE,
@@ -65,6 +65,27 @@ describe('HenryTenancyContractScannerService — Optical AI Parser & Fill Detect
     expect(result.financials.securityDepositAed).toBe(6000);
     expect(result.financials.modeOfPayment).toBe('4 CHEQUES');
     expect(result.additionalTerms[4]).toContain('MOVE-IN permit by DAMAC');
+  });
+
+  it('manages temporary session cache and dispatches listener updates', () => {
+    const listener = vi.fn();
+    const unsubscribe = henryTenancyContractScannerService.onContractUpdated(listener);
+
+    henryTenancyContractScannerService.setCachedContract(SANIT_SINGH_CAMELIA_608_SAMPLE);
+    expect(henryTenancyContractScannerService.getCachedContract()?.landlord.name).toBe('SANIT SINGH NAGPAL');
+    expect(listener).toHaveBeenCalledWith(expect.objectContaining({ fillScorePercent: 92 }));
+
+    henryTenancyContractScannerService.clearCachedContract();
+    expect(henryTenancyContractScannerService.getCachedContract()).toBeNull();
+    expect(listener).toHaveBeenCalledWith(null);
+
+    unsubscribe();
+  });
+
+  it('supports scanDocument alias with automatic session caching', async () => {
+    const data = await henryTenancyContractScannerService.scanDocument('sample');
+    expect(data.landlord.name).toBe('SANIT SINGH NAGPAL');
+    expect(henryTenancyContractScannerService.getCachedContract()?.property.buildingName).toBe('CAMELIA');
   });
 
   it('teaches Henry AI and archives reference contract into training pool', () => {

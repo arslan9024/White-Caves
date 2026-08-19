@@ -1,4 +1,4 @@
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect, vi } from 'vitest';
 import henryTitleDeedScannerService, {
   VIRIDIS_504_SAMPLE_TITLE_DEED,
 } from './HenryTitleDeedScannerService';
@@ -65,5 +65,26 @@ describe('HenryTitleDeedScannerService — DLD Title Deed OCR & Extraction Engin
     expect(jsonStr).toContain('AKRAM DIB NEHME');
     expect(jsonStr).toContain('140764/2023');
     expect(jsonStr).toContain('VIRIDIS A');
+  });
+
+  it('manages temporary session cache and dispatches listener updates', () => {
+    const listener = vi.fn();
+    const unsubscribe = henryTitleDeedScannerService.onTitleDeedUpdated(listener);
+
+    henryTitleDeedScannerService.setCachedTitleDeed(VIRIDIS_504_SAMPLE_TITLE_DEED);
+    expect(henryTitleDeedScannerService.getCachedTitleDeed()?.certificateNumber).toBe('140764/2023');
+    expect(listener).toHaveBeenCalledWith(expect.objectContaining({ certificateNumber: '140764/2023' }));
+
+    henryTitleDeedScannerService.clearCachedTitleDeed();
+    expect(henryTitleDeedScannerService.getCachedTitleDeed()).toBeNull();
+    expect(listener).toHaveBeenCalledWith(null);
+
+    unsubscribe();
+  });
+
+  it('supports scanDocument alias with automatic session caching', async () => {
+    const data = await henryTitleDeedScannerService.scanDocument('sample');
+    expect(data.certificateNumber).toBe('140764/2023');
+    expect(henryTitleDeedScannerService.getCachedTitleDeed()?.buildingNameEn).toBe('VIRIDIS A');
   });
 });

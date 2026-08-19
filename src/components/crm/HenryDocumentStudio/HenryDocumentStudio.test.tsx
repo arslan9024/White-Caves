@@ -72,8 +72,9 @@ describe('Henry AI 4000% Upgrade — International Passport, Title Deed & Emirat
 
     fireEvent.click(prepareBtn);
     expect(screen.getByTestId('henry-tenancy-modal')).toBeDefined();
-    expect(screen.getByText(/Bilingual Dubai Land Department Tenancy Contract Form/i)).toBeDefined();
-    expect(screen.getByText(/1. Property Specs/i)).toBeDefined();
+    expect(screen.getAllByText(/Prepare New Tenancy Contract/i).length).toBeGreaterThan(0);
+    expect(screen.getByText(/Official DLD Unified Template/i)).toBeDefined();
+    expect(screen.getByText(/1. Title Deed & Unit/i)).toBeDefined();
   });
 
   it('navigates to Stream 9 Tenancy Contract AI Scanner and displays filled extraction with 92% completeness', () => {

@@ -251,10 +251,13 @@ const ActionBtn = styled.button<{ $variant?: 'primary' | 'secondary' | 'danger' 
 `;
 
 export const HenryTitleDeedScannerView: FC = () => {
-  const [extractedData, setExtractedData] = useState<DldTitleDeedExtractedData | null>(null);
+  const [extractedData, setExtractedData] = useState<DldTitleDeedExtractedData | null>(() => {
+    return henryTitleDeedScannerService.getCachedTitleDeed();
+  });
   const [uploadedFile, setUploadedFile] = useState<File | null>(null);
   const [filePreviewUrl, setFilePreviewUrl] = useState<string | null>(null);
   const [isScanning, setIsScanning] = useState<boolean>(false);
+  const [zoomLevel, setZoomLevel] = useState<number>(100);
   const [statusMsg, setStatusMsg] = useState<string | null>(null);
   const [copiedJson, setCopiedJson] = useState<boolean>(false);
 
@@ -300,19 +303,40 @@ export const HenryTitleDeedScannerView: FC = () => {
 
   const handleUpdateField = (field: keyof DldTitleDeedExtractedData, val: any) => {
     if (!extractedData) return;
-    setExtractedData(prev => (prev ? { ...prev, [field]: val } : null));
+    setExtractedData(prev => {
+      if (!prev) return null;
+      const updated = { ...prev, [field]: val };
+      henryTitleDeedScannerService.setCachedTitleDeed(updated);
+      return updated;
+    });
   };
 
   const handleSaveToVault = () => {
     if (!extractedData) return;
+    henryTitleDeedScannerService.setCachedTitleDeed(extractedData);
     setStatusMsg(`✓ Title Deed Certificate ${extractedData.certificateNumber} saved to Property Vault!`);
+    setTimeout(() => setStatusMsg(null), 4000);
+  };
+
+  const handleAutoFillTenancy = () => {
+    if (!extractedData) return;
+    henryTitleDeedScannerService.setCachedTitleDeed(extractedData);
+    setStatusMsg(`✓ Auto-filled Tenancy Contract with ${extractedData.buildingNameEn} Unit ${extractedData.propertyNumber} & Landlord ${extractedData.ownerNameEn}!`);
+    setTimeout(() => setStatusMsg(null), 4000);
+  };
+
+  const handleCreateCrmListing = () => {
+    if (!extractedData) return;
+    henryTitleDeedScannerService.setCachedTitleDeed(extractedData);
+    setStatusMsg(`✓ Created CRM Property Listing draft for ${extractedData.buildingNameEn} Unit ${extractedData.propertyNumber} (${extractedData.totalAreaSqFt} Sq.Ft)!`);
     setTimeout(() => setStatusMsg(null), 4000);
   };
 
   const handleDiscard = () => {
     setExtractedData(null);
     setUploadedFile(null);
-    setStatusMsg('Discarded Title Deed data.');
+    henryTitleDeedScannerService.clearCachedTitleDeed();
+    setStatusMsg('Discarded Title Deed data and cleared cache.');
     setTimeout(() => setStatusMsg(null), 3000);
   };
 
@@ -469,16 +493,31 @@ export const HenryTitleDeedScannerView: FC = () => {
               <Building size={15} color="#EF4444" />
               <span>Title Deed Document Preview</span>
             </div>
-            <div className="controls">
+            <div className="controls" style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+              <button
+                type="button"
+                onClick={() => setZoomLevel(prev => Math.max(70, prev - 15))}
+                style={{ background: 'rgba(255,255,255,0.15)', color: '#FFF', border: 'none', borderRadius: '4px', padding: '2px 6px', fontSize: '0.7rem', cursor: 'pointer' }}
+              >
+                -
+              </button>
+              <span style={{ fontSize: '0.72rem', color: '#94A3B8' }}>{zoomLevel}%</span>
+              <button
+                type="button"
+                onClick={() => setZoomLevel(prev => Math.min(180, prev + 15))}
+                style={{ background: 'rgba(255,255,255,0.15)', color: '#FFF', border: 'none', borderRadius: '4px', padding: '2px 6px', fontSize: '0.7rem', cursor: 'pointer' }}
+              >
+                +
+              </button>
               {uploadedFile && (
-                <span style={{ fontSize: '0.72rem', color: '#94A3B8' }}>
+                <span style={{ fontSize: '0.72rem', color: '#94A3B8', marginLeft: '6px' }}>
                   {uploadedFile.name} ({(uploadedFile.size / 1024).toFixed(1)} KB)
                 </span>
               )}
             </div>
           </PreviewHeader>
 
-          <PreviewBody>
+          <PreviewBody style={{ transform: `scale(${zoomLevel / 100})`, transformOrigin: 'top center', transition: 'transform 0.15s ease-out' }}>
             {uploadedFile && filePreviewUrl ? (
               <div style={{ width: '100%', height: '100%', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
                 {uploadedFile.type.startsWith('image/') ? (
@@ -509,7 +548,7 @@ export const HenryTitleDeedScannerView: FC = () => {
                 </div>
                 <div className="specs-row">
                   <div><strong>Plot:</strong> {extractedData.plotNumber}</div>
-                  <div><strong>Area:</strong> {extractedData.totalAreaSqM} Sq.M</div>
+                  <div><strong>Area:</strong> {extractedData.totalAreaSqM} Sq.M ({extractedData.totalAreaSqFt} Sq.Ft)</div>
                   <div><strong>Certificate:</strong> {extractedData.certificateNumber}</div>
                   <div><strong>Location:</strong> {extractedData.communityEn}</div>
                 </div>
@@ -537,7 +576,13 @@ export const HenryTitleDeedScannerView: FC = () => {
           </ActionBtn>
         </div>
 
-        <div style={{ display: 'flex', gap: '8px' }}>
+        <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
+          <ActionBtn $variant="secondary" onClick={handleAutoFillTenancy} disabled={!extractedData}>
+            <FileText size={13} color="#10B981" /> Auto-Fill Tenancy Lease
+          </ActionBtn>
+          <ActionBtn $variant="secondary" onClick={handleCreateCrmListing} disabled={!extractedData}>
+            <Building size={13} color="#38BDF8" /> Create CRM Listing
+          </ActionBtn>
           <ActionBtn $variant="secondary" onClick={handleCopyJson} disabled={!extractedData}>
             {copiedJson ? <Check size={13} color="#10B981" /> : <Copy size={13} />} Copy Variables JSON
           </ActionBtn>

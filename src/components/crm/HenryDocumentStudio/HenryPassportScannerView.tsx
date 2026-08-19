@@ -274,10 +274,13 @@ const ActionBtn = styled.button<{ $variant?: 'primary' | 'secondary' | 'danger' 
 `;
 
 export const HenryPassportScannerView: FC = () => {
-  const [extractedData, setExtractedData] = useState<InternationalPassportExtractedData | null>(null);
+  const [extractedData, setExtractedData] = useState<InternationalPassportExtractedData | null>(() => {
+    return henryPassportScannerService.getCachedPassport();
+  });
   const [uploadedFile, setUploadedFile] = useState<File | null>(null);
   const [filePreviewUrl, setFilePreviewUrl] = useState<string | null>(null);
   const [isScanning, setIsScanning] = useState<boolean>(false);
+  const [zoomLevel, setZoomLevel] = useState<number>(100);
   const [statusMsg, setStatusMsg] = useState<string | null>(null);
   const [copiedJson, setCopiedJson] = useState<boolean>(false);
 
@@ -323,19 +326,40 @@ export const HenryPassportScannerView: FC = () => {
 
   const handleUpdateField = (field: keyof InternationalPassportExtractedData, val: any) => {
     if (!extractedData) return;
-    setExtractedData(prev => (prev ? { ...prev, [field]: val } : null));
+    setExtractedData(prev => {
+      if (!prev) return null;
+      const updated = { ...prev, [field]: val };
+      henryPassportScannerService.setCachedPassport(updated);
+      return updated;
+    });
   };
 
   const handleSaveToVault = () => {
     if (!extractedData) return;
-    setStatusMsg(`✓ Passport ${extractedData.passportNumber} saved to White Caves Vault!`);
+    henryPassportScannerService.setCachedPassport(extractedData);
+    setStatusMsg(`✓ Passport ${extractedData.passportNumber} (${extractedData.fullName}) saved to White Caves KYC Vault!`);
+    setTimeout(() => setStatusMsg(null), 4000);
+  };
+
+  const handleAutoFillAsTenant = () => {
+    if (!extractedData) return;
+    henryPassportScannerService.setCachedPassport(extractedData);
+    setStatusMsg(`✓ Auto-filled Tenancy Contract with ${extractedData.fullName} (${extractedData.passportNumber}) as Tenant!`);
+    setTimeout(() => setStatusMsg(null), 4000);
+  };
+
+  const handleAutoFillAsLandlord = () => {
+    if (!extractedData) return;
+    henryPassportScannerService.setCachedPassport(extractedData);
+    setStatusMsg(`✓ Auto-filled Tenancy Contract with ${extractedData.fullName} (${extractedData.passportNumber}) as Landlord/Owner!`);
     setTimeout(() => setStatusMsg(null), 4000);
   };
 
   const handleDiscard = () => {
     setExtractedData(null);
     setUploadedFile(null);
-    setStatusMsg('Discarded Passport data.');
+    henryPassportScannerService.clearCachedPassport();
+    setStatusMsg('Discarded Passport data and cleared session cache.');
     setTimeout(() => setStatusMsg(null), 3000);
   };
 
@@ -491,16 +515,31 @@ export const HenryPassportScannerView: FC = () => {
               <Flag size={15} color="#60A5FA" />
               <span>Passport Document Preview</span>
             </div>
-            <div className="controls">
+            <div className="controls" style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+              <button
+                type="button"
+                onClick={() => setZoomLevel(prev => Math.max(70, prev - 15))}
+                style={{ background: 'rgba(255,255,255,0.15)', color: '#FFF', border: 'none', borderRadius: '4px', padding: '2px 6px', fontSize: '0.7rem', cursor: 'pointer' }}
+              >
+                -
+              </button>
+              <span style={{ fontSize: '0.72rem', color: '#94A3B8' }}>{zoomLevel}%</span>
+              <button
+                type="button"
+                onClick={() => setZoomLevel(prev => Math.min(180, prev + 15))}
+                style={{ background: 'rgba(255,255,255,0.15)', color: '#FFF', border: 'none', borderRadius: '4px', padding: '2px 6px', fontSize: '0.7rem', cursor: 'pointer' }}
+              >
+                +
+              </button>
               {uploadedFile && (
-                <span style={{ fontSize: '0.72rem', color: '#94A3B8' }}>
+                <span style={{ fontSize: '0.72rem', color: '#94A3B8', marginLeft: '6px' }}>
                   {uploadedFile.name} ({(uploadedFile.size / 1024).toFixed(1)} KB)
                 </span>
               )}
             </div>
           </PreviewHeader>
 
-          <PreviewBody>
+          <PreviewBody style={{ transform: `scale(${zoomLevel / 100})`, transformOrigin: 'top center', transition: 'transform 0.15s ease-out' }}>
             {uploadedFile && filePreviewUrl ? (
               <div style={{ width: '100%', height: '100%', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
                 {uploadedFile.type.startsWith('image/') ? (
@@ -559,7 +598,13 @@ export const HenryPassportScannerView: FC = () => {
           </ActionBtn>
         </div>
 
-        <div style={{ display: 'flex', gap: '8px' }}>
+        <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
+          <ActionBtn $variant="secondary" onClick={handleAutoFillAsTenant} disabled={!extractedData}>
+            <User size={13} color="#10B981" /> Auto-Fill Tenancy (as Tenant)
+          </ActionBtn>
+          <ActionBtn $variant="secondary" onClick={handleAutoFillAsLandlord} disabled={!extractedData}>
+            <User size={13} color="#38BDF8" /> Auto-Fill Tenancy (as Landlord)
+          </ActionBtn>
           <ActionBtn $variant="secondary" onClick={handleCopyJson} disabled={!extractedData}>
             {copiedJson ? <Check size={13} color="#10B981" /> : <Copy size={13} />} Copy Variables JSON
           </ActionBtn>
