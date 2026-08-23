@@ -175,16 +175,16 @@ export const LeadSlaEscalationTimer: FC = () => {
       <Body>
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '8px', textAlign: 'center' }}>
           <div style={{ padding: '8px', background: 'rgba(15,23,42,0.7)', borderRadius: '8px', border: '1px solid rgba(100,116,139,0.2)' }}>
-            <div style={{ fontSize: '0.62rem', color: '#94A3B8', textTransform: 'uppercase' }}>Target Response</div>
-            <div style={{ fontSize: '0.95rem', fontWeight: 800, color: '#10B981' }}>&lt; 5 Minutes</div>
+            <div style={{ fontSize: '0.62rem', color: 'var(--color-94a3b8, #94A3B8)', textTransform: 'uppercase' }}>Target Response</div>
+            <div style={{ fontSize: '0.95rem', fontWeight: 800, color: 'var(--accent-green, #10B981)' }}>&lt; 5 Minutes</div>
           </div>
           <div style={{ padding: '8px', background: 'rgba(15,23,42,0.7)', borderRadius: '8px', border: '1px solid rgba(100,116,139,0.2)' }}>
-            <div style={{ fontSize: '0.62rem', color: '#94A3B8', textTransform: 'uppercase' }}>Escalation Threshold</div>
-            <div style={{ fontSize: '0.95rem', fontWeight: 800, color: '#F59E0B' }}>15 Minutes</div>
+            <div style={{ fontSize: '0.62rem', color: 'var(--color-94a3b8, #94A3B8)', textTransform: 'uppercase' }}>Escalation Threshold</div>
+            <div style={{ fontSize: '0.95rem', fontWeight: 800, color: 'var(--accent-gold, #F59E0B)' }}>15 Minutes</div>
           </div>
           <div style={{ padding: '8px', background: 'rgba(15,23,42,0.7)', borderRadius: '8px', border: '1px solid rgba(100,116,139,0.2)' }}>
-            <div style={{ fontSize: '0.62rem', color: '#94A3B8', textTransform: 'uppercase' }}>Auto Re-Route</div>
-            <div style={{ fontSize: '0.95rem', fontWeight: 800, color: '#EF4444' }}>Supervisor Pool</div>
+            <div style={{ fontSize: '0.62rem', color: 'var(--color-94a3b8, #94A3B8)', textTransform: 'uppercase' }}>Auto Re-Route</div>
+            <div style={{ fontSize: '0.95rem', fontWeight: 800, color: 'var(--accent-red, #EF4444)' }}>Supervisor Pool</div>
           </div>
         </div>
 
@@ -196,7 +196,7 @@ export const LeadSlaEscalationTimer: FC = () => {
                 <LeadInfo>
                   <LeadName>
                     {lead.name}
-                    <span style={{ fontSize: '0.65rem', padding: '2px 6px', borderRadius: '4px', background: 'rgba(239,68,68,0.15)', color: '#EF4444' }}>
+                    <span style={{ fontSize: '0.65rem', padding: '2px 6px', borderRadius: '4px', background: 'rgba(239,68,68,0.15)', color: 'var(--accent-red, #EF4444)' }}>
                       {lead.source}
                     </span>
                   </LeadName>

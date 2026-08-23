@@ -211,11 +211,11 @@ export const PortfolioDeckGenerator: FC = () => {
                 <div style={{ display: 'flex', alignItems: 'center' }}>
                   <CheckBox type="checkbox" checked={selectedIds.includes(asset.id)} onChange={() => {}} />
                   <div>
-                    <div style={{ fontSize: '0.8rem', fontWeight: 700, color: '#FFF' }}>{asset.title}</div>
-                    <div style={{ fontSize: '0.68rem', color: '#94A3B8' }}>{asset.type} | Projected Yield: {asset.yield}%</div>
+                    <div style={{ fontSize: '0.8rem', fontWeight: 700, color: 'var(--white, #FFF)' }}>{asset.title}</div>
+                    <div style={{ fontSize: '0.68rem', color: 'var(--color-94a3b8, #94A3B8)' }}>{asset.type} | Projected Yield: {asset.yield}%</div>
                   </div>
                 </div>
-                <div style={{ fontSize: '0.85rem', fontWeight: 800, color: '#A78BFA' }}>
+                <div style={{ fontSize: '0.85rem', fontWeight: 800, color: 'var(--color-a78bfa, #A78BFA)' }}>
                   AED {(asset.value / 1000000).toFixed(1)}M
                 </div>
               </AssetRow>
@@ -225,21 +225,21 @@ export const PortfolioDeckGenerator: FC = () => {
 
         <SummaryBox>
           <div>
-            <div style={{ fontSize: '0.62rem', color: '#94A3B8', textTransform: 'uppercase' }}>Assets Selected</div>
-            <SVal style={{ color: '#FFF' }}>{selectedAssets.length} Properties</SVal>
+            <div style={{ fontSize: '0.62rem', color: 'var(--color-94a3b8, #94A3B8)', textTransform: 'uppercase' }}>Assets Selected</div>
+            <SVal style={{ color: 'var(--white, #FFF)' }}>{selectedAssets.length} Properties</SVal>
           </div>
           <div>
-            <div style={{ fontSize: '0.62rem', color: '#94A3B8', textTransform: 'uppercase' }}>Portfolio AUM</div>
+            <div style={{ fontSize: '0.62rem', color: 'var(--color-94a3b8, #94A3B8)', textTransform: 'uppercase' }}>Portfolio AUM</div>
             <SVal>AED {(totalVal / 1000000).toFixed(1)}M</SVal>
           </div>
           <div>
-            <div style={{ fontSize: '0.62rem', color: '#94A3B8', textTransform: 'uppercase' }}>Weighted Yield</div>
-            <SVal style={{ color: '#10B981' }}>{avgYield}% p.a.</SVal>
+            <div style={{ fontSize: '0.62rem', color: 'var(--color-94a3b8, #94A3B8)', textTransform: 'uppercase' }}>Weighted Yield</div>
+            <SVal style={{ color: 'var(--accent-green, #10B981)' }}>{avgYield}% p.a.</SVal>
           </div>
         </SummaryBox>
 
         {generated ? (
-          <div style={{ padding: '14px', borderRadius: '10px', background: 'rgba(16, 185, 129, 0.1)', border: '1px solid rgba(16, 185, 129, 0.3)', textAlign: 'center', color: '#10B981', fontWeight: 800, fontSize: '0.82rem' }}>
+          <div style={{ padding: '14px', borderRadius: '10px', background: 'rgba(16, 185, 129, 0.1)', border: '1px solid rgba(16, 185, 129, 0.3)', textAlign: 'center', color: 'var(--accent-green, #10B981)', fontWeight: 800, fontSize: '0.82rem' }}>
             ✓ Bespoke Portfolio Deck Compiled & PDF Ready for {clientName}!
           </div>
         ) : (

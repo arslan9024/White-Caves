@@ -99,7 +99,7 @@ export const FounderVipSummaryCard: FC = () => {
       </LeftSide>
       <RightSide>
         <SuperuserBadge>LEVEL 5 SOVEREIGN SUPERUSER</SuperuserBadge>
-        <div style={{ fontSize: '0.72rem', color: '#10B981', fontWeight: 800 }}>
+        <div style={{ fontSize: '0.72rem', color: 'var(--accent-green, #10B981)', fontWeight: 800 }}>
           ✓ All Administrative & Escrow Gates Unlocked
         </div>
       </RightSide>

@@ -59,7 +59,7 @@ export const RealtimeExecutiveTicker: FC = () => {
 
   return (
     <TickerContainer data-testid="realtime-executive-ticker">
-      <div style={{ position: 'absolute', left: 0, zIndex: 2, background: '#DC2626', color: '#FFF', fontSize: '0.68rem', fontWeight: 900, padding: '0 12px', height: '100%', display: 'flex', alignItems: 'center' }}>
+      <div style={{ position: 'absolute', left: 0, zIndex: 2, background: 'var(--accent-red, #DC2626)', color: 'var(--white, #FFF)', fontSize: '0.68rem', fontWeight: 900, padding: '0 12px', height: '100%', display: 'flex', alignItems: 'center' }}>
         LIVE FEED
       </div>
       <TickerTrack>

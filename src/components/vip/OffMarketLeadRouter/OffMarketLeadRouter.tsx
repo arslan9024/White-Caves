@@ -122,7 +122,7 @@ export const OffMarketLeadRouter: FC = () => {
         <UhnwTag>LEVEL 5 SOVEREIGN ACCESS</UhnwTag>
       </Head>
       <Body>
-        <div style={{ padding: '10px 14px', borderRadius: '8px', background: 'rgba(139, 92, 246, 0.08)', border: '1px solid rgba(139, 92, 246, 0.25)', fontSize: '0.72rem', color: '#CBD5E1' }}>
+        <div style={{ padding: '10px 14px', borderRadius: '8px', background: 'rgba(139, 92, 246, 0.08)', border: '1px solid rgba(139, 92, 246, 0.25)', fontSize: '0.72rem', color: 'var(--text-secondary, #CBD5E1)' }}>
           👑 <strong>UHNW Exclusive Routing Protocol:</strong> Properties exceeding AED 50,000,000 (Off-market islands, trophy penthouses) automatically bypass standard broker queues and route directly to the Managing Director & Senior Equity Partners.
         </div>
 
@@ -134,7 +134,7 @@ export const OffMarketLeadRouter: FC = () => {
                   <span>{lead.asset}</span>
                 </LTitle>
                 <LMeta>👤 Buyer Context: {lead.client}</LMeta>
-                <LMeta style={{ color: '#A78BFA', fontWeight: 700 }}>
+                <LMeta style={{ color: 'var(--color-a78bfa, #A78BFA)', fontWeight: 700 }}>
                   🛡️ Routed To: {lead.assignedSeniorPartner} ({lead.status})
                 </LMeta>
               </LInfo>

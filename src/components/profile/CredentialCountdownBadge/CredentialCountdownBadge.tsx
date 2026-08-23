@@ -35,25 +35,25 @@ export const CredentialCountdownBadge: FC = () => {
   return (
     <BadgeContainer data-testid="credential-countdown-badge">
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-        <h4 style={{ margin: 0, color: '#EF4444' }}>🏛️ Governing Credentials Renewal Countdown</h4>
-        <span style={{ fontSize: '0.75rem', color: '#10B981', fontWeight: 800 }}>✓ All Active</span>
+        <h4 style={{ margin: 0, color: 'var(--accent-red, #EF4444)' }}>🏛️ Governing Credentials Renewal Countdown</h4>
+        <span style={{ fontSize: '0.75rem', color: 'var(--accent-green, #10B981)', fontWeight: 800 }}>✓ All Active</span>
       </div>
 
       <BadgeGrid>
         <CredentialItem>
-          <span style={{ fontSize: '0.72rem', color: '#94A3B8' }}>DET License</span>
+          <span style={{ fontSize: '0.72rem', color: 'var(--color-94a3b8, #94A3B8)' }}>DET License</span>
           <div className="days">717 Days</div>
         </CredentialItem>
         <CredentialItem>
-          <span style={{ fontSize: '0.72rem', color: '#94A3B8' }}>RERA ORN</span>
+          <span style={{ fontSize: '0.72rem', color: 'var(--color-94a3b8, #94A3B8)' }}>RERA ORN</span>
           <div className="days">717 Days</div>
         </CredentialItem>
         <CredentialItem>
-          <span style={{ fontSize: '0.72rem', color: '#94A3B8' }}>HQ Ejari</span>
+          <span style={{ fontSize: '0.72rem', color: 'var(--color-94a3b8, #94A3B8)' }}>HQ Ejari</span>
           <div className="days">365 Days</div>
         </CredentialItem>
         <CredentialItem>
-          <span style={{ fontSize: '0.72rem', color: '#94A3B8' }}>ICP Card</span>
+          <span style={{ fontSize: '0.72rem', color: 'var(--color-94a3b8, #94A3B8)' }}>ICP Card</span>
           <div className="days">749 Days</div>
         </CredentialItem>
       </BadgeGrid>

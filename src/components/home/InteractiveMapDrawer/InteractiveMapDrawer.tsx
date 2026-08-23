@@ -22,10 +22,10 @@ export const InteractiveMapDrawer: FC = () => {
       <MapCanvas>
         <div style={{ textAlign: 'center', opacity: 0.85 }}>
           <span style={{ fontSize: '3rem' }}>🗺️</span>
-          <h4 style={{ margin: '8px 0 4px', color: '#EF4444', fontWeight: 800 }}>
+          <h4 style={{ margin: '8px 0 4px', color: 'var(--accent-red, #EF4444)', fontWeight: 800 }}>
             {MAP_DRAWER_TEXT.mapHeader}
           </h4>
-          <span style={{ fontSize: '0.8rem', color: '#94A3B8' }}>
+          <span style={{ fontSize: '0.8rem', color: 'var(--color-94a3b8, #94A3B8)' }}>
             {MAP_DRAWER_TEXT.mapSubtext}
           </span>
         </div>
@@ -56,7 +56,7 @@ export const InteractiveMapDrawer: FC = () => {
               borderBottom: '1px solid rgba(239, 68, 68, 0.2)',
             }}
           >
-            <h4 style={{ margin: 0, color: '#EF4444', fontSize: '1rem', fontWeight: 800 }}>
+            <h4 style={{ margin: 0, color: 'var(--accent-red, #EF4444)', fontSize: '1rem', fontWeight: 800 }}>
               {MAP_DRAWER_TEXT.drawerTitle}
             </h4>
             <button
@@ -91,13 +91,13 @@ export const InteractiveMapDrawer: FC = () => {
               >
                 {selectedProperty.community} · {selectedProperty.beds} Beds
               </div>
-              <h5 style={{ margin: '0 0 6px', color: '#FFFFFF', fontSize: '1.1rem', fontWeight: 800 }}>
+              <h5 style={{ margin: '0 0 6px', color: 'var(--white, #FFFFFF)', fontSize: '1.1rem', fontWeight: 800 }}>
                 {selectedProperty.name}
               </h5>
-              <div style={{ fontSize: '1.2rem', fontWeight: 900, color: '#EF4444', margin: '4px 0 10px' }}>
+              <div style={{ fontSize: '1.2rem', fontWeight: 900, color: 'var(--accent-red, #EF4444)', margin: '4px 0 10px' }}>
                 {selectedProperty.priceFormatted}
               </div>
-              <p style={{ margin: 0, fontSize: '0.8rem', color: '#94A3B8', lineHeight: 1.4 }}>
+              <p style={{ margin: 0, fontSize: '0.8rem', color: 'var(--color-94a3b8, #94A3B8)', lineHeight: 1.4 }}>
                 {selectedProperty.specs}
               </p>
             </div>

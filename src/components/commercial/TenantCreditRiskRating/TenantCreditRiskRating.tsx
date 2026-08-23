@@ -170,13 +170,13 @@ export const TenantCreditRiskRating: FC = () => {
 
         <RiskScoreCard $rating={rating}>
           <div>
-            <div style={{ fontSize: '0.72rem', color: '#94A3B8', textTransform: 'uppercase', fontWeight: 700 }}>
+            <div style={{ fontSize: '0.72rem', color: 'var(--color-94a3b8, #94A3B8)', textTransform: 'uppercase', fontWeight: 700 }}>
               Underwriting Assessment Grade
             </div>
-            <div style={{ fontSize: '0.95rem', fontWeight: 800, color: '#FFF', marginTop: '2px' }}>
+            <div style={{ fontSize: '0.95rem', fontWeight: 800, color: 'var(--white, #FFF)', marginTop: '2px' }}>
               {rating === 'AAA' ? 'Prime Institutional Grade (Low Risk)' : rating === 'A' ? 'Investment Grade Corporate (Moderate Risk)' : 'High Risk Profile'}
             </div>
-            <div style={{ fontSize: '0.7rem', color: '#CBD5E1', marginTop: '4px' }}>
+            <div style={{ fontSize: '0.7rem', color: 'var(--text-secondary, #CBD5E1)', marginTop: '4px' }}>
               Rent-to-Revenue Ratio: <strong>{rentToRevRatio.toFixed(1)}%</strong> (Threshold &lt; 10% is healthy)
             </div>
           </div>

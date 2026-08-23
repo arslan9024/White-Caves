@@ -15,10 +15,10 @@ export const PannellumVRViewer: FC = () => {
       <VrViewport>
         <div style={{ textAlign: 'center', opacity: 0.8 }}>
           <span style={{ fontSize: '3rem' }}>🥽</span>
-          <h4 style={{ margin: '8px 0 4px', color: '#EF4444' }}>
+          <h4 style={{ margin: '8px 0 4px', color: 'var(--accent-red, #EF4444)' }}>
             Pannellum WebGL 360° VR View — {activeRoom} {isVirtualStagingActive ? '(AI Staged)' : '(Empty)'}
           </h4>
-          <span style={{ fontSize: '0.8rem', color: '#94A3B8' }}>Click hot-spots or drag to navigate 360° panorama</span>
+          <span style={{ fontSize: '0.8rem', color: 'var(--color-94a3b8, #94A3B8)' }}>Click hot-spots or drag to navigate 360° panorama</span>
         </div>
 
         <HotspotButton $top="40%" $left="30%" onClick={() => selectRoom('Master Bedroom')}>
@@ -34,11 +34,11 @@ export const PannellumVRViewer: FC = () => {
         <div style={{ display: 'flex', gap: '8px' }}>
           <button
             onClick={toggleVirtualStaging}
-            style={{ padding: '6px 12px', background: '#334155', border: 'none', borderRadius: '6px', color: '#FFF', fontSize: '0.78rem', cursor: 'pointer' }}
+            style={{ padding: '6px 12px', background: 'var(--color-334155, #334155)', border: 'none', borderRadius: '6px', color: 'var(--white, #FFF)', fontSize: '0.78rem', cursor: 'pointer' }}
           >
             {isVirtualStagingActive ? 'Disable AI Staging' : 'Enable AI Staging'}
           </button>
-          <button style={{ padding: '6px 12px', background: '#EF4444', border: 'none', borderRadius: '6px', color: '#FFF', fontSize: '0.78rem', fontWeight: 'bold', cursor: 'pointer' }}>
+          <button style={{ padding: '6px 12px', background: 'var(--accent-red, #EF4444)', border: 'none', borderRadius: '6px', color: 'var(--white, #FFF)', fontSize: '0.78rem', fontWeight: 'bold', cursor: 'pointer' }}>
             WebXR Fullscreen
           </button>
         </div>

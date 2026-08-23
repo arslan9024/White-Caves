@@ -76,7 +76,7 @@ export const BouncedChequeWorkflow: FC = () => {
     <Wrap data-testid="bounced-cheque-workflow">
       <Head>
         <Title>⚠️ Bounced Cheque Legal Workflow</Title>
-        <div style={{fontSize:'0.68rem',color:'#EF4444',fontWeight:700}}>Form 4 Engine</div>
+        <div style={{fontSize:'0.68rem',color:'var(--accent-red, #EF4444)',fontWeight:700}}>Form 4 Engine</div>
       </Head>
       <Body>
         <AlertBanner>
@@ -96,7 +96,7 @@ export const BouncedChequeWorkflow: FC = () => {
         </ChequeCard>
 
         <div>
-          <div style={{fontSize:'0.7rem',fontWeight:700,color:'#94A3B8',textTransform:'uppercase',letterSpacing:'0.05em',marginBottom:'8px'}}>Legal Escalation Workflow</div>
+          <div style={{fontSize:'0.7rem',fontWeight:700,color:'var(--color-94a3b8, #94A3B8)',textTransform:'uppercase',letterSpacing:'0.05em',marginBottom:'8px'}}>Legal Escalation Workflow</div>
           <StepFlow>
             {WORKFLOW_STEPS.map((s,i)=>(
               <Step key={i} $status={getStatus(i)}>
@@ -116,7 +116,7 @@ export const BouncedChequeWorkflow: FC = () => {
             {advancing ? '⏳ Processing…' : step === 0 ? '⚠️ Initiate Legal Workflow' : `→ ${WORKFLOW_STEPS[step].action}`}
           </TriggerBtn>
         ) : (
-          <div style={{padding:'14px',borderRadius:'12px',background:'rgba(16,185,129,0.07)',border:'1px solid rgba(16,185,129,0.25)',textAlign:'center',fontSize:'0.82rem',fontWeight:700,color:'#10B981'}}>
+          <div style={{padding:'14px',borderRadius:'12px',background:'rgba(16,185,129,0.07)',border:'1px solid rgba(16,185,129,0.25)',textAlign:'center',fontSize:'0.82rem',fontWeight:700,color:'var(--accent-green, #10B981)'}}>
             ✅ All legal steps executed — Case ref: WC-BC-{new Date().getFullYear()}-{Math.floor(Math.random()*90000+10000)}
           </div>
         )}

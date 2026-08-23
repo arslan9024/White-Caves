@@ -57,17 +57,17 @@ const ContactRow = React.memo(({ index, style, data }: { index: number; style: R
       }}
     >
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2px' }}>
-        <span style={{ fontWeight: 800, fontSize: '0.86rem', color: '#1E293B' }}>
+        <span style={{ fontWeight: 800, fontSize: '0.86rem', color: 'var(--color-1e293b, #1E293B)' }}>
           {contact.avatar} {contact.name}
         </span>
-        <span style={{ fontSize: '0.7rem', color: '#64748B' }}>{contact.lastMessageTime}</span>
+        <span style={{ fontSize: '0.7rem', color: 'var(--text-secondary, #64748B)' }}>{contact.lastMessageTime}</span>
       </div>
 
-      <span style={{ fontSize: '0.75rem', color: '#06B6D4', fontWeight: 700, display: 'block', marginBottom: '4px' }}>
+      <span style={{ fontSize: '0.75rem', color: 'var(--color-06b6d4, #06B6D4)', fontWeight: 700, display: 'block', marginBottom: '4px' }}>
         {contact.phone}
       </span>
 
-      <p style={{ margin: 0, fontSize: '0.76rem', color: '#475569', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+      <p style={{ margin: 0, fontSize: '0.76rem', color: 'var(--color-475569, #475569)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
         {contact.lastMessage}
       </p>
     </motion.div>
@@ -243,7 +243,7 @@ export const ConversationsTab: React.FC = () => {
           <Wifi size={24} color={deviceStatus === 'CONNECTED' ? '#10B981' : deviceStatus === 'PAIRING' ? '#F59E0B' : '#EF4444'} />
           <div>
             <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-              <span style={{ fontWeight: 800, fontSize: '0.95rem', color: '#1E293B' }}>
+              <span style={{ fontWeight: 800, fontSize: '0.95rem', color: 'var(--color-1e293b, #1E293B)' }}>
                 WhatsApp Account Status:
               </span>
               <span
@@ -259,7 +259,7 @@ export const ConversationsTab: React.FC = () => {
                 {deviceStatus === 'CONNECTED' ? '🟢 ONLINE & CONNECTED' : deviceStatus === 'PAIRING' ? '🟡 LINKING REQUIRED (PAIRING)' : '🔴 UNLINKED / DISCONNECTED'}
               </span>
             </div>
-            <span style={{ fontSize: '0.8rem', color: '#475569', display: 'block', marginTop: '2px' }}>
+            <span style={{ fontSize: '0.8rem', color: 'var(--color-475569, #475569)', display: 'block', marginTop: '2px' }}>
               Line: <strong>{phoneNumber}</strong> (Arslan Malik) · Checked: <strong>{lastCheckedTime || 'Just now'}</strong>
             </span>
           </div>
@@ -320,11 +320,11 @@ export const ConversationsTab: React.FC = () => {
           }}
         >
           <div>
-            <h5 style={{ margin: '0 0 0.35rem 0', fontSize: '0.98rem', fontWeight: 800, color: '#B45309' }}>
+            <h5 style={{ margin: '0 0 0.35rem 0', fontSize: '0.98rem', fontWeight: 800, color: 'var(--color-b45309, #B45309)' }}>
               📱 Link Your WhatsApp Account (+971 50 576 0056) To Start Real Conversation Sync
             </h5>
-            <p style={{ margin: 0, fontSize: '0.84rem', color: '#92400E', lineHeight: 1.45 }}>
-              Open WhatsApp on your phone ➔ <strong>Settings ➔ Linked Devices ➔ Link a Device</strong>. Enter pairing code <strong style={{ fontFamily: 'monospace', background: '#FFFFFF', padding: '2px 6px', borderRadius: '4px' }}>{pairingCode}</strong> or scan QR in the <em>QR & Pairing Portal</em> tab.
+            <p style={{ margin: 0, fontSize: '0.84rem', color: 'var(--color-92400e, #92400E)', lineHeight: 1.45 }}>
+              Open WhatsApp on your phone ➔ <strong>Settings ➔ Linked Devices ➔ Link a Device</strong>. Enter pairing code <strong style={{ fontFamily: 'monospace', background: 'var(--white, #FFFFFF)', padding: '2px 6px', borderRadius: '4px' }}>{pairingCode}</strong> or scan QR in the <em>QR & Pairing Portal</em> tab.
             </p>
           </div>
         </div>
@@ -334,10 +334,10 @@ export const ConversationsTab: React.FC = () => {
       <div style={{ display: 'grid', gridTemplateColumns: '320px 1fr', gap: '1.25rem', height: '580px' }}>
         
         {/* LEFT COLUMN: CONTACTS LIST INBOX */}
-        <div style={{ background: '#F8FAFC', border: '1px solid #E2E8F0', borderRadius: '14px', padding: '1rem', display: 'flex', flexDirection: 'column' }}>
+        <div style={{ background: 'var(--color-f8fafc, #F8FAFC)', border: '1px solid var(--text-secondary, #E2E8F0)', borderRadius: '14px', padding: '1rem', display: 'flex', flexDirection: 'column' }}>
           <div style={{ marginBottom: '0.85rem' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.5rem' }}>
-              <h4 style={{ margin: 0, fontSize: '0.95rem', fontWeight: 800, color: '#1E293B' }}>💬 Synced WhatsApp Chats ({contacts.length})</h4>
+              <h4 style={{ margin: 0, fontSize: '0.95rem', fontWeight: 800, color: 'var(--color-1e293b, #1E293B)' }}>💬 Synced WhatsApp Chats ({contacts.length})</h4>
             </div>
 
             <input
@@ -368,7 +368,7 @@ export const ConversationsTab: React.FC = () => {
                 children: ContactRow,
               })
             ) : (
-              <div style={{ padding: '2rem 0.5rem', textAlign: 'center', color: '#64748B' }}>
+              <div style={{ padding: '2rem 0.5rem', textAlign: 'center', color: 'var(--text-secondary, #64748B)' }}>
                 <span style={{ fontSize: '2rem', display: 'block', marginBottom: '0.5rem' }}>📭</span>
                 <p style={{ margin: 0, fontSize: '0.82rem', fontWeight: 700 }}>
                   0 Conversations Synced. Click "+ New Live Chat" or link your device to load your real WhatsApp threads.
@@ -380,26 +380,26 @@ export const ConversationsTab: React.FC = () => {
 
         {/* RIGHT COLUMN: ACTIVE CONVERSATION CHAT VIEWPORT */}
         {activeContact ? (
-          <div style={{ background: '#FFFFFF', border: '1px solid #E2E8F0', borderRadius: '14px', display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
+          <div style={{ background: 'var(--white, #FFFFFF)', border: '1px solid var(--text-secondary, #E2E8F0)', borderRadius: '14px', display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
             
             {/* Chat Top Header */}
-            <div style={{ padding: '0.85rem 1.25rem', background: '#F8FAFC', borderBottom: '1px solid #E2E8F0', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <div style={{ padding: '0.85rem 1.25rem', background: 'var(--color-f8fafc, #F8FAFC)', borderBottom: '1px solid var(--text-secondary, #E2E8F0)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
                 <span style={{ fontSize: '1.8rem' }}>{activeContact.avatar}</span>
                 <div>
-                  <h3 style={{ margin: 0, fontSize: '1.05rem', fontWeight: 800, color: '#1E293B' }}>{activeContact.name}</h3>
-                  <span style={{ fontSize: '0.78rem', color: '#25D366', fontWeight: 700 }}>
-                    {activeContact.phone} · <span style={{ color: '#64748B' }}>{activeContact.tag}</span>
+                  <h3 style={{ margin: 0, fontSize: '1.05rem', fontWeight: 800, color: 'var(--color-1e293b, #1E293B)' }}>{activeContact.name}</h3>
+                  <span style={{ fontSize: '0.78rem', color: 'var(--color-25d366, #25D366)', fontWeight: 700 }}>
+                    {activeContact.phone} · <span style={{ color: 'var(--text-secondary, #64748B)' }}>{activeContact.tag}</span>
                   </span>
                 </div>
               </div>
-              <span style={{ background: 'rgba(37, 211, 102, 0.12)', color: '#25D366', fontSize: '0.75rem', fontWeight: 800, padding: '4px 10px', borderRadius: '6px' }}>
+              <span style={{ background: 'rgba(37, 211, 102, 0.12)', color: 'var(--color-25d366, #25D366)', fontSize: '0.75rem', fontWeight: 800, padding: '4px 10px', borderRadius: '6px' }}>
                 ✓ Linked Line: +971 50 576 0056
               </span>
             </div>
 
             {/* Messages Stream */}
-            <div style={{ flex: 1, padding: '1.25rem', overflowY: 'auto', background: '#F1F5F9', display: 'flex', flexDirection: 'column', gap: '0.85rem' }}>
+            <div style={{ flex: 1, padding: '1.25rem', overflowY: 'auto', background: 'var(--color-f1f5f9, #F1F5F9)', display: 'flex', flexDirection: 'column', gap: '0.85rem' }}>
               {activeContact.messages.length > 0 ? (
                 activeContact.messages.map(msg => {
                   const isMe = msg.sender === 'arslan' || msg.sender === 'nina';
@@ -420,10 +420,10 @@ export const ConversationsTab: React.FC = () => {
                       }}
                     >
                       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '4px', gap: '1rem' }}>
-                        <span style={{ fontSize: '0.72rem', fontWeight: 800, color: isMe ? '#38BDF8' : '#06B6D4' }}>
+                        <span style={{ fontSize: '0.72rem', fontWeight: 800, color: isMe ? 'var(--color-38bdf8, #38BDF8)' : 'var(--color-06b6d4, #06B6D4)' }}>
                           {msg.senderName}
                         </span>
-                        <span style={{ fontSize: '0.68rem', color: isMe ? 'rgba(255,255,255,0.7)' : '#64748B' }}>
+                        <span style={{ fontSize: '0.68rem', color: isMe ? 'rgba(255,255,255,0.7)' : 'var(--text-secondary, #64748B)' }}>
                           {msg.timestamp}
                         </span>
                       </div>
@@ -433,7 +433,7 @@ export const ConversationsTab: React.FC = () => {
                   );
                 })
               ) : (
-                <div style={{ padding: '3rem 1rem', textAlign: 'center', color: '#64748B' }}>
+                <div style={{ padding: '3rem 1rem', textAlign: 'center', color: 'var(--text-secondary, #64748B)' }}>
                   <p style={{ margin: 0, fontSize: '0.88rem', fontWeight: 700 }}>
                     Type your first message below to send a live WhatsApp message from <strong>+971 50 576 0056</strong>.
                   </p>
@@ -442,7 +442,7 @@ export const ConversationsTab: React.FC = () => {
             </div>
 
             {/* Message Input Box */}
-            <form onSubmit={handleSendMessage} style={{ padding: '0.85rem 1.25rem', background: '#FFFFFF', borderTop: '1px solid #E2E8F0', display: 'flex', gap: '0.75rem', alignItems: 'center' }}>
+            <form onSubmit={handleSendMessage} style={{ padding: '0.85rem 1.25rem', background: 'var(--white, #FFFFFF)', borderTop: '1px solid var(--text-secondary, #E2E8F0)', display: 'flex', gap: '0.75rem', alignItems: 'center' }}>
               <input
                 type="text"
                 placeholder="Type live WhatsApp reply from +971 50 576 0056..."
@@ -479,9 +479,9 @@ export const ConversationsTab: React.FC = () => {
             </form>
           </div>
         ) : (
-          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', background: '#FFFFFF', borderRadius: '14px', border: '1px solid #E2E8F0', color: '#64748B', padding: '2rem' }}>
+          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', background: 'var(--white, #FFFFFF)', borderRadius: '14px', border: '1px solid var(--text-secondary, #E2E8F0)', color: 'var(--text-secondary, #64748B)', padding: '2rem' }}>
             <span style={{ fontSize: '2.5rem', marginBottom: '0.5rem' }}>💬</span>
-            <p style={{ margin: 0, fontSize: '0.92rem', fontWeight: 800, color: '#1E293B', textAlign: 'center' }}>
+            <p style={{ margin: 0, fontSize: '0.92rem', fontWeight: 800, color: 'var(--color-1e293b, #1E293B)', textAlign: 'center' }}>
               No Active Conversation Selected
             </p>
             <p style={{ margin: '4px 0 1rem 0', fontSize: '0.82rem', textAlign: 'center' }}>
@@ -489,7 +489,7 @@ export const ConversationsTab: React.FC = () => {
             </p>
             <button
               onClick={() => setShowNewChatModal(true)}
-              style={{ background: '#06B6D4', color: '#FFFFFF', border: 'none', borderRadius: '8px', padding: '8px 16px', fontSize: '0.85rem', fontWeight: 800, cursor: 'pointer' }}
+              style={{ background: 'var(--color-06b6d4, #06B6D4)', color: 'var(--white, #FFFFFF)', border: 'none', borderRadius: '8px', padding: '8px 16px', fontSize: '0.85rem', fontWeight: 800, cursor: 'pointer' }}
             >
               + Start Live WhatsApp Chat
             </button>
@@ -500,22 +500,22 @@ export const ConversationsTab: React.FC = () => {
       {/* START NEW CHAT MODAL */}
       {showNewChatModal && (
         <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.5)', zIndex: 1000, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-          <div style={{ background: '#FFFFFF', borderRadius: '16px', padding: '1.5rem', width: '90%', maxWidth: '420px' }}>
-            <h3 style={{ margin: '0 0 1rem 0', fontSize: '1.15rem', fontWeight: 800, color: '#06B6D4' }}>
+          <div style={{ background: 'var(--white, #FFFFFF)', borderRadius: '16px', padding: '1.5rem', width: '90%', maxWidth: '420px' }}>
+            <h3 style={{ margin: '0 0 1rem 0', fontSize: '1.15rem', fontWeight: 800, color: 'var(--color-06b6d4, #06B6D4)' }}>
               ➕ Start Live WhatsApp Chat
             </h3>
             <form onSubmit={handleCreateNewChat} style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem', fontSize: '0.85rem' }}>
               <label>
                 Client Name:
-                <input type="text" value={newChatName} onChange={e => setNewChatName(e.target.value)} required placeholder="e.g. Ahmed Al Mansoori" style={{ width: '100%', padding: '6px', borderRadius: '6px', border: '1px solid #CBD5E1' }} />
+                <input type="text" value={newChatName} onChange={e => setNewChatName(e.target.value)} required placeholder="e.g. Ahmed Al Mansoori" style={{ width: '100%', padding: '6px', borderRadius: '6px', border: '1px solid var(--text-secondary, #CBD5E1)' }} />
               </label>
               <label>
                 WhatsApp Mobile Number:
-                <input type="text" value={newChatPhone} onChange={e => setNewChatPhone(e.target.value)} required placeholder="+971 50 123 4567" style={{ width: '100%', padding: '6px', borderRadius: '6px', border: '1px solid #CBD5E1' }} />
+                <input type="text" value={newChatPhone} onChange={e => setNewChatPhone(e.target.value)} required placeholder="+971 50 123 4567" style={{ width: '100%', padding: '6px', borderRadius: '6px', border: '1px solid var(--text-secondary, #CBD5E1)' }} />
               </label>
               <div style={{ display: 'flex', gap: '0.5rem', justifyContent: 'flex-end', marginTop: '0.5rem' }}>
-                <button type="button" onClick={() => setShowNewChatModal(false)} style={{ padding: '8px 14px', borderRadius: '8px', border: '1px solid #CBD5E1', background: '#FFFFFF', cursor: 'pointer' }}>Cancel</button>
-                <button type="submit" style={{ padding: '8px 16px', borderRadius: '8px', border: 'none', background: '#06B6D4', color: '#FFFFFF', fontWeight: 800, cursor: 'pointer' }}>Start Chat</button>
+                <button type="button" onClick={() => setShowNewChatModal(false)} style={{ padding: '8px 14px', borderRadius: '8px', border: '1px solid var(--text-secondary, #CBD5E1)', background: 'var(--white, #FFFFFF)', cursor: 'pointer' }}>Cancel</button>
+                <button type="submit" style={{ padding: '8px 16px', borderRadius: '8px', border: 'none', background: 'var(--color-06b6d4, #06B6D4)', color: 'var(--white, #FFFFFF)', fontWeight: 800, cursor: 'pointer' }}>Start Chat</button>
               </div>
             </form>
           </div>

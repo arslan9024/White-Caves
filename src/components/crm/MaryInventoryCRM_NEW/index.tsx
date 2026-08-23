@@ -322,7 +322,7 @@ interface RawPropertyItem {
   };
 
   return (
-    <div className="mary-inventory-crm" style={{ background: '#FFFFFF', borderRadius: '16px', padding: '1.25rem' }}>
+    <div className="mary-inventory-crm" style={{ background: 'var(--white, #FFFFFF)', borderRadius: '16px', padding: '1.25rem' }}>
       
       {/* ─── HEADER: UNIFIED MASTER INVENTORY WORKSPACE & DATA QUALITY KPI METRICS ─── */}
       <div
@@ -337,10 +337,10 @@ interface RawPropertyItem {
       >
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.25rem', borderBottom: '1px solid rgba(255,255,255,0.1)', paddingBottom: '1rem' }}>
           <div>
-            <span style={{ fontSize: '0.75rem', fontWeight: 800, color: '#EF4444', textTransform: 'uppercase', letterSpacing: '0.08em' }}>
+            <span style={{ fontSize: '0.75rem', fontWeight: 800, color: 'var(--accent-red, #EF4444)', textTransform: 'uppercase', letterSpacing: '0.08em' }}>
               Department 07 · Subitem 7.1 Master Inventory Control Center
             </span>
-            <h2 style={{ margin: '4px 0 0', fontSize: '1.45rem', fontWeight: 800, color: '#FFFFFF' }}>
+            <h2 style={{ margin: '4px 0 0', fontSize: '1.45rem', fontWeight: 800, color: 'var(--white, #FFFFFF)' }}>
               🏠 DAMAC Hills 2 Real Property Inventory Database
             </h2>
           </div>
@@ -367,26 +367,26 @@ interface RawPropertyItem {
         {/* DATA QUALITY INSIGHTS KPI METRICS GRID */}
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(160px, 1fr))', gap: '1rem' }}>
           <div style={{ background: 'rgba(255,255,255,0.06)', borderRadius: '12px', padding: '0.85rem', border: '1px solid rgba(255,255,255,0.1)' }}>
-            <span style={{ fontSize: '0.72rem', color: '#94A3B8', display: 'block' }}>Total Listed Properties</span>
-            <span style={{ fontSize: '1.35rem', fontWeight: 800, color: '#F59E0B' }}>
+            <span style={{ fontSize: '0.72rem', color: 'var(--color-94a3b8, #94A3B8)', display: 'block' }}>Total Listed Properties</span>
+            <span style={{ fontSize: '1.35rem', fontWeight: 800, color: 'var(--accent-gold, #F59E0B)' }}>
               {loadingData ? 'Loading...' : analyticsKPIs.totalProps.toLocaleString()}
             </span>
           </div>
           <div style={{ background: 'rgba(255,255,255,0.06)', borderRadius: '12px', padding: '0.85rem', border: '1px solid rgba(255,255,255,0.1)' }}>
-            <span style={{ fontSize: '0.72rem', color: '#94A3B8', display: 'block' }}>Total Registered Owners</span>
-            <span style={{ fontSize: '1.35rem', fontWeight: 800, color: '#38BDF8' }}>
+            <span style={{ fontSize: '0.72rem', color: 'var(--color-94a3b8, #94A3B8)', display: 'block' }}>Total Registered Owners</span>
+            <span style={{ fontSize: '1.35rem', fontWeight: 800, color: 'var(--color-38bdf8, #38BDF8)' }}>
               {loadingData ? 'Loading...' : analyticsKPIs.totalOwners.toLocaleString()}
             </span>
           </div>
           <div style={{ background: 'rgba(255,255,255,0.06)', borderRadius: '12px', padding: '0.85rem', border: '1px solid rgba(255,255,255,0.1)' }}>
-            <span style={{ fontSize: '0.72rem', color: '#94A3B8', display: 'block' }}>Multi-Owner (2+ Owners)</span>
-            <span style={{ fontSize: '1.35rem', fontWeight: 800, color: '#EC4899' }}>
+            <span style={{ fontSize: '0.72rem', color: 'var(--color-94a3b8, #94A3B8)', display: 'block' }}>Multi-Owner (2+ Owners)</span>
+            <span style={{ fontSize: '1.35rem', fontWeight: 800, color: 'var(--color-ec4899, #EC4899)' }}>
               {loadingData ? 'Loading...' : analyticsKPIs.multiOwnersCount.toLocaleString()}
             </span>
           </div>
           <div style={{ background: 'rgba(255,255,255,0.06)', borderRadius: '12px', padding: '0.85rem', border: '1px solid rgba(255,255,255,0.1)' }}>
-            <span style={{ fontSize: '0.72rem', color: '#94A3B8', display: 'block' }}>Multi-Phone Owners</span>
-            <span style={{ fontSize: '1.35rem', fontWeight: 800, color: '#10B981' }}>
+            <span style={{ fontSize: '0.72rem', color: 'var(--color-94a3b8, #94A3B8)', display: 'block' }}>Multi-Phone Owners</span>
+            <span style={{ fontSize: '1.35rem', fontWeight: 800, color: 'var(--accent-green, #10B981)' }}>
               {loadingData ? 'Loading...' : analyticsKPIs.multiPhoneCount.toLocaleString()}
             </span>
           </div>
@@ -427,7 +427,7 @@ interface RawPropertyItem {
               }}
             >
               <span>{activeWorkspace.name}</span>
-              <span style={{ fontSize: '0.75rem', color: '#EF4444' }}>{areaDropdownOpen ? '▲' : '▼ Select Area'}</span>
+              <span style={{ fontSize: '0.75rem', color: 'var(--accent-red, #EF4444)' }}>{areaDropdownOpen ? '▲' : '▼ Select Area'}</span>
             </button>
 
             {areaDropdownOpen && (
@@ -495,7 +495,7 @@ interface RawPropertyItem {
 
         {/* Data Quality Toggle Buttons */}
         <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.75rem', alignItems: 'center', marginBottom: '1rem' }}>
-          <span style={{ fontSize: '0.78rem', fontWeight: 800, color: '#475569' }}>Data Quality Filters:</span>
+          <span style={{ fontSize: '0.78rem', fontWeight: 800, color: 'var(--color-475569, #475569)' }}>Data Quality Filters:</span>
           <button
             onClick={() => setFilterMultiOwnerOnly(prev => !prev)}
             style={{
@@ -531,7 +531,7 @@ interface RawPropertyItem {
 
         {/* 28 REAL DAMAC HILLS 2 CLUSTER FILTER TAGS WITH DYNAMIC UNIT COUNTS */}
         <div>
-          <span style={{ fontSize: '0.78rem', fontWeight: 800, color: '#475569', display: 'block', marginBottom: '6px' }}>
+          <span style={{ fontSize: '0.78rem', fontWeight: 800, color: 'var(--color-475569, #475569)', display: 'block', marginBottom: '6px' }}>
             DAMAC Hills 2 Cluster Directory ({clusterList.length - 1} Clusters):
           </span>
           <div style={{ display: 'flex', flexWrap: 'wrap', gap: '5px', maxHeight: '110px', overflowY: 'auto' }}>
@@ -576,12 +576,12 @@ interface RawPropertyItem {
             overflowY: 'auto',
           }}
         >
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem', borderBottom: '1px solid #F1F5F9', paddingBottom: '0.75rem' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem', borderBottom: '1px solid var(--color-f1f5f9, #F1F5F9)', paddingBottom: '0.75rem' }}>
             <div>
-              <span style={{ fontSize: '0.75rem', fontWeight: 800, color: '#EF4444', textTransform: 'uppercase', letterSpacing: '0.08em' }}>
+              <span style={{ fontSize: '0.75rem', fontWeight: 800, color: 'var(--accent-red, #EF4444)', textTransform: 'uppercase', letterSpacing: '0.08em' }}>
                 Stage 2: Itemized Property Matrix
               </span>
-              <h4 style={{ margin: '2px 0 0', fontSize: '1.05rem', fontWeight: 800, color: '#1E293B' }}>
+              <h4 style={{ margin: '2px 0 0', fontSize: '1.05rem', fontWeight: 800, color: 'var(--color-1e293b, #1E293B)' }}>
                 Showing {filteredProperties.slice(0, 50).length} of {filteredProperties.length} Properties
               </h4>
             </div>
@@ -607,9 +607,9 @@ interface RawPropertyItem {
                 >
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.4rem' }}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                      <span style={{ fontWeight: 800, fontSize: '0.98rem', color: '#1E293B' }}>{prop.id}</span>
-                      <span style={{ fontSize: '0.78rem', color: '#64748B', fontWeight: 700 }}>(P-No: {prop.pNumber})</span>
-                      <span style={{ background: '#E2E8F0', color: '#334155', fontSize: '0.72rem', fontWeight: 700, padding: '2px 7px', borderRadius: '4px' }}>
+                      <span style={{ fontWeight: 800, fontSize: '0.98rem', color: 'var(--color-1e293b, #1E293B)' }}>{prop.id}</span>
+                      <span style={{ fontSize: '0.78rem', color: 'var(--text-secondary, #64748B)', fontWeight: 700 }}>(P-No: {prop.pNumber})</span>
+                      <span style={{ background: 'var(--text-secondary, #E2E8F0)', color: 'var(--color-334155, #334155)', fontSize: '0.72rem', fontWeight: 700, padding: '2px 7px', borderRadius: '4px' }}>
                         {prop.type}
                       </span>
                     </div>
@@ -627,13 +627,13 @@ interface RawPropertyItem {
                     </span>
                   </div>
 
-                  <div style={{ fontSize: '0.82rem', color: '#475569', marginBottom: '0.4rem' }}>
-                    Cluster: <strong style={{ color: '#EF4444' }}>{prop.sector}</strong> · Plot: <strong>{prop.plotNumber}</strong> · Config: <strong>{prop.config}</strong>
+                  <div style={{ fontSize: '0.82rem', color: 'var(--color-475569, #475569)', marginBottom: '0.4rem' }}>
+                    Cluster: <strong style={{ color: 'var(--accent-red, #EF4444)' }}>{prop.sector}</strong> · Plot: <strong>{prop.plotNumber}</strong> · Config: <strong>{prop.config}</strong>
                   </div>
 
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderTop: '1px solid #E2E8F0', paddingTop: '0.4rem' }}>
-                    <span style={{ fontWeight: 800, fontSize: '0.92rem', color: '#10B981' }}>{prop.askingPrice}</span>
-                    <span style={{ fontSize: '0.78rem', fontWeight: 800, color: '#EF4444' }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderTop: '1px solid var(--text-secondary, #E2E8F0)', paddingTop: '0.4rem' }}>
+                    <span style={{ fontWeight: 800, fontSize: '0.92rem', color: 'var(--accent-green, #10B981)' }}>{prop.askingPrice}</span>
+                    <span style={{ fontSize: '0.78rem', fontWeight: 800, color: 'var(--accent-red, #EF4444)' }}>
                       {isSelected ? '✓ Profile Active' : 'View Profile Drawer ➔'}
                     </span>
                   </div>
@@ -655,10 +655,10 @@ interface RawPropertyItem {
         >
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid rgba(139, 92, 246, 0.2)', paddingBottom: '0.75rem', marginBottom: '1rem' }}>
             <div>
-              <span style={{ fontSize: '0.75rem', fontWeight: 800, color: '#8B5CF6', textTransform: 'uppercase', letterSpacing: '0.08em' }}>
+              <span style={{ fontSize: '0.75rem', fontWeight: 800, color: 'var(--accent-purple, #8B5CF6)', textTransform: 'uppercase', letterSpacing: '0.08em' }}>
                 Stage 3: Comprehensive Profile Drawer
               </span>
-              <h4 style={{ margin: '2px 0 0', fontSize: '1.05rem', fontWeight: 800, color: '#1E293B' }}>
+              <h4 style={{ margin: '2px 0 0', fontSize: '1.05rem', fontWeight: 800, color: 'var(--color-1e293b, #1E293B)' }}>
                 {selectedProperty ? `📋 Asset Profile — ${selectedProperty.id}` : 'Asset Profile Drawer'}
               </h4>
             </div>
@@ -666,13 +666,13 @@ interface RawPropertyItem {
               <div style={{ display: 'flex', gap: '0.4rem' }}>
                 <button
                   onClick={() => setShowEditDetailsModal(true)}
-                  style={{ background: '#8B5CF6', color: '#FFFFFF', border: 'none', borderRadius: '6px', padding: '4px 9px', fontSize: '0.75rem', fontWeight: 800, cursor: 'pointer' }}
+                  style={{ background: 'var(--accent-purple, #8B5CF6)', color: 'var(--white, #FFFFFF)', border: 'none', borderRadius: '6px', padding: '4px 9px', fontSize: '0.75rem', fontWeight: 800, cursor: 'pointer' }}
                 >
                   ✏️ Edit Profile
                 </button>
                 <button
                   onClick={() => setShowEditOwnerModal(true)}
-                  style={{ background: '#3B82F6', color: '#FFFFFF', border: 'none', borderRadius: '6px', padding: '4px 9px', fontSize: '0.75rem', fontWeight: 800, cursor: 'pointer' }}
+                  style={{ background: 'var(--accent-blue, #3B82F6)', color: 'var(--white, #FFFFFF)', border: 'none', borderRadius: '6px', padding: '4px 9px', fontSize: '0.75rem', fontWeight: 800, cursor: 'pointer' }}
                 >
                   👤 Edit Owner
                 </button>
@@ -683,20 +683,20 @@ interface RawPropertyItem {
           {selectedProperty && selectedOwner ? (
             <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
               {/* Section 1: Property Operational Status & Profile Details */}
-              <div style={{ background: '#F8FAFC', border: '1px solid #E2E8F0', borderRadius: '12px', padding: '1rem' }}>
-                <h5 style={{ margin: '0 0 0.75rem 0', fontSize: '0.88rem', fontWeight: 800, color: '#8B5CF6' }}>
+              <div style={{ background: 'var(--color-f8fafc, #F8FAFC)', border: '1px solid var(--text-secondary, #E2E8F0)', borderRadius: '12px', padding: '1rem' }}>
+                <h5 style={{ margin: '0 0 0.75rem 0', fontSize: '0.88rem', fontWeight: 800, color: 'var(--accent-purple, #8B5CF6)' }}>
                   🏛️ Section 1: Property Operational Status & Profile Details
                 </h5>
                 
                 {/* Highlight Badges */}
                 <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px', marginBottom: '0.85rem' }}>
-                  <span style={{ background: 'rgba(139, 92, 246, 0.12)', color: '#8B5CF6', fontWeight: 800, fontSize: '0.75rem', padding: '3px 10px', borderRadius: '6px' }}>
+                  <span style={{ background: 'rgba(139, 92, 246, 0.12)', color: 'var(--accent-purple, #8B5CF6)', fontWeight: 800, fontSize: '0.75rem', padding: '3px 10px', borderRadius: '6px' }}>
                     Furnishing: {selectedProperty.furnishing}
                   </span>
-                  <span style={{ background: 'rgba(16, 185, 129, 0.12)', color: '#10B981', fontWeight: 800, fontSize: '0.75rem', padding: '3px 10px', borderRadius: '6px' }}>
+                  <span style={{ background: 'rgba(16, 185, 129, 0.12)', color: 'var(--accent-green, #10B981)', fontWeight: 800, fontSize: '0.75rem', padding: '3px 10px', borderRadius: '6px' }}>
                     Occupancy: {selectedProperty.occupancy}
                   </span>
-                  <span style={{ background: 'rgba(239, 68, 68, 0.12)', color: '#EF4444', fontWeight: 800, fontSize: '0.75rem', padding: '3px 10px', borderRadius: '6px' }}>
+                  <span style={{ background: 'rgba(239, 68, 68, 0.12)', color: 'var(--accent-red, #EF4444)', fontWeight: 800, fontSize: '0.75rem', padding: '3px 10px', borderRadius: '6px' }}>
                     Terms: {selectedProperty.paymentTerms}
                   </span>
                 </div>
@@ -704,60 +704,60 @@ interface RawPropertyItem {
                 {/* Data Fields */}
                 <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.75rem', fontSize: '0.8rem' }}>
                   <div>
-                    <span style={{ color: '#64748B', display: 'block', fontSize: '0.72rem' }}>Asking Price / Rent (AED)</span>
-                    <strong style={{ color: '#10B981', fontSize: '0.9rem' }}>{selectedProperty.askingPrice}</strong>
+                    <span style={{ color: 'var(--text-secondary, #64748B)', display: 'block', fontSize: '0.72rem' }}>Asking Price / Rent (AED)</span>
+                    <strong style={{ color: 'var(--accent-green, #10B981)', fontSize: '0.9rem' }}>{selectedProperty.askingPrice}</strong>
                   </div>
                   <div>
-                    <span style={{ color: '#64748B', display: 'block', fontSize: '0.72rem' }}>Ejari Registration Number</span>
-                    <strong style={{ color: '#1E293B' }}>{selectedProperty.ejariNumber}</strong>
+                    <span style={{ color: 'var(--text-secondary, #64748B)', display: 'block', fontSize: '0.72rem' }}>Ejari Registration Number</span>
+                    <strong style={{ color: 'var(--color-1e293b, #1E293B)' }}>{selectedProperty.ejariNumber}</strong>
                   </div>
                   <div>
-                    <span style={{ color: '#64748B', display: 'block', fontSize: '0.72rem' }}>Current Annual Rent (AED)</span>
-                    <strong style={{ color: '#475569' }}>{selectedProperty.rentAED}</strong>
+                    <span style={{ color: 'var(--text-secondary, #64748B)', display: 'block', fontSize: '0.72rem' }}>Current Annual Rent (AED)</span>
+                    <strong style={{ color: 'var(--color-475569, #475569)' }}>{selectedProperty.rentAED}</strong>
                   </div>
                   <div>
-                    <span style={{ color: '#64748B', display: 'block', fontSize: '0.72rem' }}>12-Month DLD Notice Status</span>
-                    <strong style={{ color: selectedProperty.noticeServed.includes('Yes') ? '#EF4444' : '#10B981' }}>{selectedProperty.noticeServed}</strong>
+                    <span style={{ color: 'var(--text-secondary, #64748B)', display: 'block', fontSize: '0.72rem' }}>12-Month DLD Notice Status</span>
+                    <strong style={{ color: selectedProperty.noticeServed.includes('Yes') ? 'var(--accent-red, #EF4444)' : 'var(--accent-green, #10B981)' }}>{selectedProperty.noticeServed}</strong>
                   </div>
                 </div>
               </div>
 
               {/* Section 2: Protected Property Owner Information */}
-              <div style={{ background: 'linear-gradient(135deg, #FDF4FF 0%, #EFF6FF 100%)', border: '1px solid rgba(139, 92, 246, 0.3)', borderRadius: '12px', padding: '1rem' }}>
-                <h5 style={{ margin: '0 0 0.75rem 0', fontSize: '0.88rem', fontWeight: 800, color: '#3B82F6' }}>
+              <div style={{ background: 'linear-gradient(135deg, var(--color-fdf4ff, #FDF4FF) 0%, var(--color-eff6ff, #EFF6FF) 100%)', border: '1px solid rgba(139, 92, 246, 0.3)', borderRadius: '12px', padding: '1rem' }}>
+                <h5 style={{ margin: '0 0 0.75rem 0', fontSize: '0.88rem', fontWeight: 800, color: 'var(--accent-blue, #3B82F6)' }}>
                   🔒 Section 2: Protected Property Owner Information
                 </h5>
 
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '0.65rem', fontSize: '0.82rem' }}>
-                  <div style={{ background: '#FFFFFF', padding: '8px 12px', borderRadius: '8px', border: '1px solid rgba(59, 130, 246, 0.2)' }}>
-                    <span style={{ color: '#64748B', display: 'block', fontSize: '0.72rem' }}>Landlord Full Legal Name (Title Deed Match)</span>
-                    <strong style={{ color: '#1E293B', fontSize: '0.92rem' }}>{selectedOwner.landlordName}</strong>
+                  <div style={{ background: 'var(--white, #FFFFFF)', padding: '8px 12px', borderRadius: '8px', border: '1px solid rgba(59, 130, 246, 0.2)' }}>
+                    <span style={{ color: 'var(--text-secondary, #64748B)', display: 'block', fontSize: '0.72rem' }}>Landlord Full Legal Name (Title Deed Match)</span>
+                    <strong style={{ color: 'var(--color-1e293b, #1E293B)', fontSize: '0.92rem' }}>{selectedOwner.landlordName}</strong>
                   </div>
                   <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.5rem' }}>
-                    <div style={{ background: '#FFFFFF', padding: '8px 12px', borderRadius: '8px', border: '1px solid rgba(59, 130, 246, 0.2)' }}>
-                      <span style={{ color: '#64748B', display: 'block', fontSize: '0.72rem' }}>Primary Contact Phone</span>
-                      <strong style={{ color: '#3B82F6' }}>{selectedOwner.primaryPhone}</strong>
+                    <div style={{ background: 'var(--white, #FFFFFF)', padding: '8px 12px', borderRadius: '8px', border: '1px solid rgba(59, 130, 246, 0.2)' }}>
+                      <span style={{ color: 'var(--text-secondary, #64748B)', display: 'block', fontSize: '0.72rem' }}>Primary Contact Phone</span>
+                      <strong style={{ color: 'var(--accent-blue, #3B82F6)' }}>{selectedOwner.primaryPhone}</strong>
                     </div>
-                    <div style={{ background: '#FFFFFF', padding: '8px 12px', borderRadius: '8px', border: '1px solid rgba(59, 130, 246, 0.2)' }}>
-                      <span style={{ color: '#64748B', display: 'block', fontSize: '0.72rem' }}>Verification Status</span>
-                      <strong style={{ color: selectedOwner.verificationStatus.includes('Verified') ? '#10B981' : '#F59E0B' }}>
+                    <div style={{ background: 'var(--white, #FFFFFF)', padding: '8px 12px', borderRadius: '8px', border: '1px solid rgba(59, 130, 246, 0.2)' }}>
+                      <span style={{ color: 'var(--text-secondary, #64748B)', display: 'block', fontSize: '0.72rem' }}>Verification Status</span>
+                      <strong style={{ color: selectedOwner.verificationStatus.includes('Verified') ? 'var(--accent-green, #10B981)' : 'var(--accent-gold, #F59E0B)' }}>
                         {selectedOwner.verificationStatus}
                       </strong>
                     </div>
                   </div>
-                  <div style={{ background: '#FFFFFF', padding: '8px 12px', borderRadius: '8px', border: '1px solid rgba(59, 130, 246, 0.2)' }}>
-                    <span style={{ color: '#64748B', display: 'block', fontSize: '0.72rem' }}>DLD Title Deed Reference Number</span>
-                    <strong style={{ color: '#1E293B' }}>{selectedOwner.titleDeedRef}</strong>
+                  <div style={{ background: 'var(--white, #FFFFFF)', padding: '8px 12px', borderRadius: '8px', border: '1px solid rgba(59, 130, 246, 0.2)' }}>
+                    <span style={{ color: 'var(--text-secondary, #64748B)', display: 'block', fontSize: '0.72rem' }}>DLD Title Deed Reference Number</span>
+                    <strong style={{ color: 'var(--color-1e293b, #1E293B)' }}>{selectedOwner.titleDeedRef}</strong>
                   </div>
-                  <div style={{ background: '#FFFFFF', padding: '8px 12px', borderRadius: '8px', border: '1px solid rgba(59, 130, 246, 0.2)' }}>
-                    <span style={{ color: '#64748B', display: 'block', fontSize: '0.72rem' }}>Exclusive Retainer Mandate</span>
-                    <strong style={{ color: '#10B981' }}>{selectedOwner.mandate}</strong>
+                  <div style={{ background: 'var(--white, #FFFFFF)', padding: '8px 12px', borderRadius: '8px', border: '1px solid rgba(59, 130, 246, 0.2)' }}>
+                    <span style={{ color: 'var(--text-secondary, #64748B)', display: 'block', fontSize: '0.72rem' }}>Exclusive Retainer Mandate</span>
+                    <strong style={{ color: 'var(--accent-green, #10B981)' }}>{selectedOwner.mandate}</strong>
                   </div>
                 </div>
               </div>
             </div>
           ) : (
-            <div style={{ padding: '3rem 1rem', textAlign: 'center', color: '#64748B' }}>
+            <div style={{ padding: '3rem 1rem', textAlign: 'center', color: 'var(--text-secondary, #64748B)' }}>
               <span style={{ fontSize: '2.5rem', display: 'block', marginBottom: '0.5rem' }}>👈</span>
               <p style={{ margin: 0, fontSize: '0.9rem', fontWeight: 700 }}>
                 Select any property card from the left matrix to render the Stage 3 Comprehensive Asset Profile Drawer.
@@ -770,22 +770,22 @@ interface RawPropertyItem {
       {/* ─── ADD NEW LISTING MODAL (CRUD) ─── */}
       {showAddModal && (
         <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.5)', zIndex: 1000, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-          <div style={{ background: '#FFFFFF', borderRadius: '16px', padding: '1.5rem', width: '90%', maxWidth: '520px', maxHeight: '85vh', overflowY: 'auto' }}>
-            <h3 style={{ margin: '0 0 1rem 0', fontSize: '1.15rem', fontWeight: 800, color: '#EF4444' }}>
+          <div style={{ background: 'var(--white, #FFFFFF)', borderRadius: '16px', padding: '1.5rem', width: '90%', maxWidth: '520px', maxHeight: '85vh', overflowY: 'auto' }}>
+            <h3 style={{ margin: '0 0 1rem 0', fontSize: '1.15rem', fontWeight: 800, color: 'var(--accent-red, #EF4444)' }}>
               + Add New Property Listing
             </h3>
             <form onSubmit={handleAddPropertySubmit} style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem', fontSize: '0.85rem' }}>
               <label>
                 Asset Reference ID:
-                <input type="text" value={newPropForm.id} onChange={e => setNewPropForm({ ...newPropForm, id: e.target.value })} required style={{ width: '100%', padding: '6px', borderRadius: '6px', border: '1px solid #CBD5E1' }} />
+                <input type="text" value={newPropForm.id} onChange={e => setNewPropForm({ ...newPropForm, id: e.target.value })} required style={{ width: '100%', padding: '6px', borderRadius: '6px', border: '1px solid var(--text-secondary, #CBD5E1)' }} />
               </label>
               <label>
                 P-Number:
-                <input type="text" value={newPropForm.pNumber} onChange={e => setNewPropForm({ ...newPropForm, pNumber: e.target.value })} required style={{ width: '100%', padding: '6px', borderRadius: '6px', border: '1px solid #CBD5E1' }} />
+                <input type="text" value={newPropForm.pNumber} onChange={e => setNewPropForm({ ...newPropForm, pNumber: e.target.value })} required style={{ width: '100%', padding: '6px', borderRadius: '6px', border: '1px solid var(--text-secondary, #CBD5E1)' }} />
               </label>
               <label>
                 Cluster / Sector Name:
-                <select value={newPropForm.sector} onChange={e => setNewPropForm({ ...newPropForm, sector: e.target.value })} style={{ width: '100%', padding: '6px', borderRadius: '6px', border: '1px solid #CBD5E1' }}>
+                <select value={newPropForm.sector} onChange={e => setNewPropForm({ ...newPropForm, sector: e.target.value })} style={{ width: '100%', padding: '6px', borderRadius: '6px', border: '1px solid var(--text-secondary, #CBD5E1)' }}>
                   {clusterList.filter(c => c.name !== 'ALL').map(c => (
                     <option key={c.name} value={c.name}>{c.name}</option>
                   ))}
@@ -793,23 +793,23 @@ interface RawPropertyItem {
               </label>
               <label>
                 Asking Price / Rent (AED):
-                <input type="text" value={newPropForm.askingPrice} onChange={e => setNewPropForm({ ...newPropForm, askingPrice: e.target.value })} required style={{ width: '100%', padding: '6px', borderRadius: '6px', border: '1px solid #CBD5E1' }} />
+                <input type="text" value={newPropForm.askingPrice} onChange={e => setNewPropForm({ ...newPropForm, askingPrice: e.target.value })} required style={{ width: '100%', padding: '6px', borderRadius: '6px', border: '1px solid var(--text-secondary, #CBD5E1)' }} />
               </label>
               <label>
                 Landlord Legal Name:
-                <input type="text" value={newPropForm.landlordName} onChange={e => setNewPropForm({ ...newPropForm, landlordName: e.target.value })} required style={{ width: '100%', padding: '6px', borderRadius: '6px', border: '1px solid #CBD5E1' }} />
+                <input type="text" value={newPropForm.landlordName} onChange={e => setNewPropForm({ ...newPropForm, landlordName: e.target.value })} required style={{ width: '100%', padding: '6px', borderRadius: '6px', border: '1px solid var(--text-secondary, #CBD5E1)' }} />
               </label>
               <label>
                 Landlord Phone Number:
-                <input type="text" value={newPropForm.primaryPhone} onChange={e => setNewPropForm({ ...newPropForm, primaryPhone: e.target.value })} required style={{ width: '100%', padding: '6px', borderRadius: '6px', border: '1px solid #CBD5E1' }} />
+                <input type="text" value={newPropForm.primaryPhone} onChange={e => setNewPropForm({ ...newPropForm, primaryPhone: e.target.value })} required style={{ width: '100%', padding: '6px', borderRadius: '6px', border: '1px solid var(--text-secondary, #CBD5E1)' }} />
               </label>
               <label>
                 Title Deed Reference Number:
-                <input type="text" value={newPropForm.titleDeedRef} onChange={e => setNewPropForm({ ...newPropForm, titleDeedRef: e.target.value })} required style={{ width: '100%', padding: '6px', borderRadius: '6px', border: '1px solid #CBD5E1' }} />
+                <input type="text" value={newPropForm.titleDeedRef} onChange={e => setNewPropForm({ ...newPropForm, titleDeedRef: e.target.value })} required style={{ width: '100%', padding: '6px', borderRadius: '6px', border: '1px solid var(--text-secondary, #CBD5E1)' }} />
               </label>
               <div style={{ display: 'flex', gap: '0.5rem', justifyContent: 'flex-end', marginTop: '0.5rem' }}>
-                <button type="button" onClick={() => setShowAddModal(false)} style={{ padding: '8px 14px', borderRadius: '8px', border: '1px solid #CBD5E1', background: '#FFFFFF', cursor: 'pointer' }}>Cancel</button>
-                <button type="submit" style={{ padding: '8px 16px', borderRadius: '8px', border: 'none', background: '#EF4444', color: '#FFFFFF', fontWeight: 800, cursor: 'pointer' }}>Save Listing</button>
+                <button type="button" onClick={() => setShowAddModal(false)} style={{ padding: '8px 14px', borderRadius: '8px', border: '1px solid var(--text-secondary, #CBD5E1)', background: 'var(--white, #FFFFFF)', cursor: 'pointer' }}>Cancel</button>
+                <button type="submit" style={{ padding: '8px 16px', borderRadius: '8px', border: 'none', background: 'var(--accent-red, #EF4444)', color: 'var(--white, #FFFFFF)', fontWeight: 800, cursor: 'pointer' }}>Save Listing</button>
               </div>
             </form>
           </div>

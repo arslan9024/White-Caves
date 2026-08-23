@@ -172,15 +172,15 @@ export const AuditTrailExporter: FC = () => {
         <AuditBadge>FTA & RERA EXPORT</AuditBadge>
       </Head>
       <Body>
-        <div style={{ fontSize: '0.75rem', color: '#94A3B8', lineHeight: '1.5' }}>
+        <div style={{ fontSize: '0.75rem', color: 'var(--color-94a3b8, #94A3B8)', lineHeight: '1.5' }}>
           Export fully reconciled transaction logs, VAT 5% filing manifests, tenant escrow deposits, and post-dated cheque ledgers compliant with UAE Federal Tax Authority (FTA) audit formats.
         </div>
 
         <ExportOptions>
           <ExportCard>
             <div style={{ fontSize: '2rem' }}>📊</div>
-            <div style={{ fontSize: '0.85rem', fontWeight: 800, color: '#FFF' }}>Structured CSV Format</div>
-            <div style={{ fontSize: '0.68rem', color: '#94A3B8' }}>
+            <div style={{ fontSize: '0.85rem', fontWeight: 800, color: 'var(--white, #FFF)' }}>Structured CSV Format</div>
+            <div style={{ fontSize: '0.68rem', color: 'var(--color-94a3b8, #94A3B8)' }}>
               Standard UTF-8 comma-delimited data for ERP / QuickBooks / Oracle Financials.
             </div>
             <ExBtn onClick={() => handleExport('CSV')} disabled={!!downloading}>
@@ -190,8 +190,8 @@ export const AuditTrailExporter: FC = () => {
 
           <ExportCard>
             <div style={{ fontSize: '2rem' }}>📗</div>
-            <div style={{ fontSize: '0.85rem', fontWeight: 800, color: '#FFF' }}>Microsoft Excel XML Workbook</div>
-            <div style={{ fontSize: '0.68rem', color: '#94A3B8' }}>
+            <div style={{ fontSize: '0.85rem', fontWeight: 800, color: 'var(--white, #FFF)' }}>Microsoft Excel XML Workbook</div>
+            <div style={{ fontSize: '0.68rem', color: 'var(--color-94a3b8, #94A3B8)' }}>
               Styled multi-tab workbook with formulas, VAT breakdown, and P&L summaries.
             </div>
             <ExBtn $excel onClick={() => handleExport('EXCEL')} disabled={!!downloading}>

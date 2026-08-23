@@ -72,10 +72,10 @@ export const SovereignFooter: FC = () => {
       <FooterGrid>
         <Col>
           <BrandTitle>WHITE <span>CAVES</span></BrandTitle>
-          <div style={{ fontSize: '0.75rem', lineHeight: 1.5, color: '#64748B' }}>
+          <div style={{ fontSize: '0.75rem', lineHeight: 1.5, color: 'var(--text-secondary, #64748B)' }}>
             White Caves Real Estate LLC is an ultra-prime brokerage and institutional asset management agency in Dubai, UAE.
           </div>
-          <div style={{ fontSize: '0.72rem', color: '#EF4444', fontWeight: 700, marginTop: '6px' }}>
+          <div style={{ fontSize: '0.72rem', color: 'var(--accent-red, #EF4444)', fontWeight: 700, marginTop: '6px' }}>
             DET Commercial License #1388443 · RERA ORN #44483
           </div>
         </Col>
@@ -107,7 +107,7 @@ export const SovereignFooter: FC = () => {
 
       <BottomBar>
         <div>© 2024–2026 White Caves Real Estate LLC. All Rights Reserved.</div>
-        <div style={{ color: '#64748B' }}>Architected on AEGIS Sovereign OS V3.0 · Zero-Trust DESC Certified</div>
+        <div style={{ color: 'var(--text-secondary, #64748B)' }}>Architected on AEGIS Sovereign OS V3.0 · Zero-Trust DESC Certified</div>
       </BottomBar>
     </FooterWrapper>
   );

@@ -180,16 +180,16 @@ export const BroadcastCampaignSegmenter: FC = () => {
           </ACard>
           <ACard>
             <AKey>Est. Delivery Rate</AKey>
-            <AVal style={{ color: '#10B981' }}>98.4%</AVal>
+            <AVal style={{ color: 'var(--accent-green, #10B981)' }}>98.4%</AVal>
           </ACard>
           <ACard>
             <AKey>Opt-In Compliance</AKey>
-            <AVal style={{ color: '#FFF' }}>100% PDPL</AVal>
+            <AVal style={{ color: 'var(--white, #FFF)' }}>100% PDPL</AVal>
           </ACard>
         </AudienceBox>
 
         {launched ? (
-          <div style={{ padding: '14px', borderRadius: '10px', background: 'rgba(16, 185, 129, 0.1)', border: '1px solid rgba(16, 185, 129, 0.3)', textAlign: 'center', color: '#10B981', fontWeight: 800, fontSize: '0.82rem' }}>
+          <div style={{ padding: '14px', borderRadius: '10px', background: 'rgba(16, 185, 129, 0.1)', border: '1px solid rgba(16, 185, 129, 0.3)', textAlign: 'center', color: 'var(--accent-green, #10B981)', fontWeight: 800, fontSize: '0.82rem' }}>
             ✓ WhatsApp Broadcast Campaign Dispatched to {audienceCount} Qualified Buyers!
           </div>
         ) : (

@@ -131,10 +131,10 @@ export const UnifiedWorkspaceLayout: React.FC<UnifiedWorkspaceLayoutProps> = ({
                   WC
                 </div>
                 <div>
-                  <h1 style={{ margin: 0, fontSize: '14px', fontWeight: 800, color: '#FFFFFF', letterSpacing: '0.5px' }}>
+                  <h1 style={{ margin: 0, fontSize: '14px', fontWeight: 800, color: 'var(--white, #FFFFFF)', letterSpacing: '0.5px' }}>
                     WHITE CAVES
                   </h1>
-                  <span style={{ fontSize: '9px', color: '#94A3B8', textTransform: 'uppercase', letterSpacing: '1px', fontWeight: 700 }}>
+                  <span style={{ fontSize: '9px', color: 'var(--color-94a3b8, #94A3B8)', textTransform: 'uppercase', letterSpacing: '1px', fontWeight: 700 }}>
                     Sovereign OS · L{userProfile.accessLevel}
                   </span>
                 </div>
@@ -265,7 +265,7 @@ export const UnifiedWorkspaceLayout: React.FC<UnifiedWorkspaceLayoutProps> = ({
 
           {/* Search & Category Filter (Visible when expanded) */}
           {!isSidebarCollapsed && (
-            <div style={{ padding: '12px 14px', borderBottom: '1px solid #334155' }}>
+            <div style={{ padding: '12px 14px', borderBottom: '1px solid var(--color-334155, #334155)' }}>
               <div style={{ position: 'relative', display: 'flex', alignItems: 'center' }}>
                 <input
                   type="text"
@@ -285,7 +285,7 @@ export const UnifiedWorkspaceLayout: React.FC<UnifiedWorkspaceLayoutProps> = ({
                     boxSizing: 'border-box',
                   }}
                 />
-                <Search size={14} style={{ position: 'absolute', left: '10px', color: '#94A3B8' }} />
+                <Search size={14} style={{ position: 'absolute', left: '10px', color: 'var(--color-94a3b8, #94A3B8)' }} />
               </div>
               <div style={{ display: 'flex', gap: '4px', overflowX: 'auto', marginTop: '8px', paddingBottom: '4px' }}>
                 {categories.slice(0, 5).map((cat) => (
@@ -316,7 +316,7 @@ export const UnifiedWorkspaceLayout: React.FC<UnifiedWorkspaceLayoutProps> = ({
           {/* Unified View Navigation */}
           <nav style={{ flex: 1, overflowY: 'auto', padding: isSidebarCollapsed ? '12px 6px' : '12px 8px' }} aria-label="Workspace views navigation">
             {!isSidebarCollapsed && (
-              <div style={{ fontSize: '10px', fontWeight: 800, color: '#94A3B8', padding: '4px 10px', marginBottom: '6px', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+              <div style={{ fontSize: '10px', fontWeight: 800, color: 'var(--color-94a3b8, #94A3B8)', padding: '4px 10px', marginBottom: '6px', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
                 Operations Registry ({filteredViews.length} Views)
               </div>
             )}
@@ -404,10 +404,10 @@ export const UnifiedWorkspaceLayout: React.FC<UnifiedWorkspaceLayoutProps> = ({
             </div>
             {!isSidebarCollapsed && (
               <div style={{ overflow: 'hidden' }}>
-                <div style={{ fontSize: '12px', fontWeight: 800, color: '#FFFFFF', textOverflow: 'ellipsis', overflow: 'hidden', whiteSpace: 'nowrap' }}>
+                <div style={{ fontSize: '12px', fontWeight: 800, color: 'var(--white, #FFFFFF)', textOverflow: 'ellipsis', overflow: 'hidden', whiteSpace: 'nowrap' }}>
                   {userProfile.name}
                 </div>
-                <div style={{ fontSize: '10px', color: isLevel5 ? '#EF4444' : '#94A3B8', fontWeight: 700 }}>
+                <div style={{ fontSize: '10px', color: isLevel5 ? 'var(--accent-red, #EF4444)' : 'var(--color-94a3b8, #94A3B8)', fontWeight: 700 }}>
                   {isLevel5 ? '👑 Managing Director (L5)' : `L${userProfile.accessLevel} · ${ROLE_LABELS[userProfile.role as keyof typeof ROLE_LABELS] || userProfile.role}`}
                 </div>
               </div>
@@ -416,7 +416,7 @@ export const UnifiedWorkspaceLayout: React.FC<UnifiedWorkspaceLayoutProps> = ({
         </aside>
 
         {/* ── MAIN CONTENT CANVAS ───────────────────────────────────────────── */}
-        <main style={{ flex: 1, display: 'flex', flexDirection: 'column', backgroundColor: '#FFFFFF', overflow: 'hidden' }}>
+        <main style={{ flex: 1, display: 'flex', flexDirection: 'column', backgroundColor: 'var(--white, #FFFFFF)', overflow: 'hidden' }}>
           {/* Content Header */}
           <header
             style={{
@@ -430,21 +430,21 @@ export const UnifiedWorkspaceLayout: React.FC<UnifiedWorkspaceLayoutProps> = ({
             }}
           >
             <div>
-              <div style={{ fontSize: '11px', color: '#64748B', textTransform: 'uppercase', fontWeight: '700' }}>
+              <div style={{ fontSize: '11px', color: 'var(--text-secondary, #64748B)', textTransform: 'uppercase', fontWeight: '700' }}>
                 {activeView.group} · {activeView.category}
               </div>
-              <h2 style={{ margin: 0, fontSize: '16px', fontWeight: 800, color: '#1E293B' }}>{activeView.title}</h2>
+              <h2 style={{ margin: 0, fontSize: '16px', fontWeight: 800, color: 'var(--color-1e293b, #1E293B)' }}>{activeView.title}</h2>
             </div>
           </header>
 
           {/* Content Body */}
-          <div style={{ flex: 1, padding: '24px', overflowY: 'auto', backgroundColor: '#F8FAFC' }}>
+          <div style={{ flex: 1, padding: '24px', overflowY: 'auto', backgroundColor: 'var(--color-f8fafc, #F8FAFC)' }}>
             {children || (
-              <div style={{ padding: '20px', backgroundColor: '#FFFFFF', borderRadius: '12px', border: '1px solid #E2E8F0', boxShadow: '0 4px 16px rgba(0,0,0,0.04)' }}>
-                <h3 style={{ margin: '0 0 12px', color: '#1E293B', fontWeight: 800 }}>
+              <div style={{ padding: '20px', backgroundColor: 'var(--white, #FFFFFF)', borderRadius: '12px', border: '1px solid var(--text-secondary, #E2E8F0)', boxShadow: '0 4px 16px rgba(0,0,0,0.04)' }}>
+                <h3 style={{ margin: '0 0 12px', color: 'var(--color-1e293b, #1E293B)', fontWeight: 800 }}>
                   {activeView.code}: {activeView.title}
                 </h3>
-                <p style={{ color: '#64748B', fontSize: '14px', lineHeight: 1.6 }}>
+                <p style={{ color: 'var(--text-secondary, #64748B)', fontSize: '14px', lineHeight: 1.6 }}>
                   Active RUP Module rendering view for <strong>{userProfile.name}</strong> ({userProfile.role}). All operational parameters mapped to corporate Red (#EF4444), Crisp White (#FFFFFF), and Slate Dark (#1E293B).
                 </p>
               </div>

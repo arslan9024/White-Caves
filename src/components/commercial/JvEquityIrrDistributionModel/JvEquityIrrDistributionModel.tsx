@@ -184,7 +184,7 @@ export const JvEquityIrrDistributionModel: FC = () => {
           <WCard>
             <WTitle>Limited Partner (LP / Capital Investor)</WTitle>
             <WVal>AED {(lpTotalReturn / 1000000).toFixed(2)}M</WVal>
-            <div style={{ fontSize: '0.72rem', color: '#CBD5E1' }}>
+            <div style={{ fontSize: '0.72rem', color: 'var(--text-secondary, #CBD5E1)' }}>
               MOIC: <strong>{lpMoic.toFixed(2)}x</strong> | Net Profit: AED {(lpProfit / 1000000).toFixed(2)}M
             </div>
           </WCard>
@@ -192,7 +192,7 @@ export const JvEquityIrrDistributionModel: FC = () => {
           <WCard $gp>
             <WTitle>General Partner (GP Sponsor / Developer)</WTitle>
             <WVal $gp>AED {(gpTotalReturn / 1000000).toFixed(2)}M</WVal>
-            <div style={{ fontSize: '0.72rem', color: '#CBD5E1' }}>
+            <div style={{ fontSize: '0.72rem', color: 'var(--text-secondary, #CBD5E1)' }}>
               MOIC: <strong>{gpMoic.toFixed(2)}x</strong> (incl. {gpPromotePct}% Promote: AED {(gpPromoteGain / 1000000).toFixed(2)}M)
             </div>
           </WCard>

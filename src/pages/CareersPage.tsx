@@ -240,7 +240,7 @@ const CareersPage: FC = () => {
         description="Explore career opportunities at White Caves Real Estate. 50/50 Hired Employee plans, performance-based UAE visa sponsorship, and official offer letter previewer."
       />
 
-      <div style={{ background: '#0F172A', color: '#FFFFFF', paddingTop: '3rem', paddingBottom: '5rem' }}>
+      <div style={{ background: 'var(--color-0f172a, #0F172A)', color: 'var(--white, #FFFFFF)', paddingTop: '3rem', paddingBottom: '5rem' }}>
         <div style={{ maxWidth: '1200px', margin: '0 auto', padding: '0 1.5rem' }}>
 
           {/* HERO HEADER */}
@@ -248,10 +248,10 @@ const CareersPage: FC = () => {
             <span className="wc-luxury-italic-gold" style={{ fontSize: '1.05rem', display: 'block', marginBottom: '8px' }}>
               White Caves Real Estate LLC Executive Careers
             </span>
-            <h1 className="wc-luxury-serif-title" style={{ fontSize: '2.6rem', margin: '0 0 1rem', color: '#FFFFFF' }}>
+            <h1 className="wc-luxury-serif-title" style={{ fontSize: '2.6rem', margin: '0 0 1rem', color: 'var(--white, #FFFFFF)' }}>
               Shape the Future of <span className="wc-luxury-italic-cyan">Dubai Luxury Real Estate</span>
             </h1>
-            <p style={{ color: '#94A3B8', fontSize: '1.05rem', maxWidth: '720px', margin: '0 auto', lineHeight: 1.6 }}>
+            <p style={{ color: 'var(--color-94a3b8, #94A3B8)', fontSize: '1.05rem', maxWidth: '720px', margin: '0 auto', lineHeight: 1.6 }}>
               Join our team of high-performing brokers and specialists. Explore our 50/50 Hired Employee model, performance visa sponsorship, and preview your official offer letter below!
             </p>
           </div>
@@ -269,7 +269,7 @@ const CareersPage: FC = () => {
           >
             <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '1.25rem' }}>
               <Sparkles size={24} color="#06B6D4" />
-              <h3 style={{ margin: 0, fontSize: '1.25rem', fontWeight: 900, color: '#FFFFFF' }}>
+              <h3 style={{ margin: 0, fontSize: '1.25rem', fontWeight: 900, color: 'var(--white, #FFFFFF)' }}>
                 White Caves 4-Stage Executive Hiring Pipeline
               </h3>
             </div>
@@ -283,12 +283,12 @@ const CareersPage: FC = () => {
               ].map(stage => (
                 <div key={stage.step} style={{ background: 'rgba(255, 255, 255, 0.05)', borderRadius: '12px', padding: '1rem', border: '1px solid rgba(255, 255, 255, 0.1)' }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '4px' }}>
-                    <span style={{ background: '#06B6D4', color: '#FFFFFF', borderRadius: '50%', width: '22px', height: '22px', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '0.75rem', fontWeight: 900 }}>
+                    <span style={{ background: 'var(--color-06b6d4, #06B6D4)', color: 'var(--white, #FFFFFF)', borderRadius: '50%', width: '22px', height: '22px', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '0.75rem', fontWeight: 900 }}>
                       {stage.step}
                     </span>
-                    <strong style={{ fontSize: '0.9rem', color: '#FFFFFF' }}>{stage.title}</strong>
+                    <strong style={{ fontSize: '0.9rem', color: 'var(--white, #FFFFFF)' }}>{stage.title}</strong>
                   </div>
-                  <span style={{ fontSize: '0.78rem', color: '#94A3B8', lineHeight: 1.4, display: 'block' }}>{stage.desc}</span>
+                  <span style={{ fontSize: '0.78rem', color: 'var(--color-94a3b8, #94A3B8)', lineHeight: 1.4, display: 'block' }}>{stage.desc}</span>
                 </div>
               ))}
             </div>
@@ -322,32 +322,32 @@ const CareersPage: FC = () => {
               >
                 <div>
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
-                    <span style={{ background: '#06B6D4', color: '#FFFFFF', padding: '2px 8px', borderRadius: '6px', fontSize: '0.72rem', fontWeight: 900, textTransform: 'uppercase' }}>
+                    <span style={{ background: 'var(--color-06b6d4, #06B6D4)', color: 'var(--white, #FFFFFF)', padding: '2px 8px', borderRadius: '6px', fontSize: '0.72rem', fontWeight: 900, textTransform: 'uppercase' }}>
                       {job.department}
                     </span>
-                    <span style={{ color: '#94A3B8', fontSize: '0.78rem', fontWeight: 700 }}>
+                    <span style={{ color: 'var(--color-94a3b8, #94A3B8)', fontSize: '0.78rem', fontWeight: 700 }}>
                       {job.type}
                     </span>
                   </div>
 
-                  <h3 style={{ fontSize: '1.3rem', fontWeight: 900, color: '#FFFFFF', margin: '0 0 0.5rem' }}>
+                  <h3 style={{ fontSize: '1.3rem', fontWeight: 900, color: 'var(--white, #FFFFFF)', margin: '0 0 0.5rem' }}>
                     {job.title}
                   </h3>
 
-                  <div style={{ display: 'flex', gap: '1rem', fontSize: '0.8rem', color: '#38BDF8', marginBottom: '1rem', fontWeight: 700 }}>
+                  <div style={{ display: 'flex', gap: '1rem', fontSize: '0.8rem', color: 'var(--color-38bdf8, #38BDF8)', marginBottom: '1rem', fontWeight: 700 }}>
                     <span>📍 {job.location}</span>
                     <span>⌛ {job.experience}</span>
                   </div>
 
-                  <p style={{ fontSize: '0.86rem', color: '#CBD5E1', lineHeight: 1.55, marginBottom: '1.25rem' }}>
+                  <p style={{ fontSize: '0.86rem', color: 'var(--text-secondary, #CBD5E1)', lineHeight: 1.55, marginBottom: '1.25rem' }}>
                     {job.description}
                   </p>
 
                   <div style={{ marginBottom: '1.25rem' }}>
-                    <strong style={{ fontSize: '0.78rem', color: '#94A3B8', textTransform: 'uppercase', display: 'block', marginBottom: '6px' }}>
+                    <strong style={{ fontSize: '0.78rem', color: 'var(--color-94a3b8, #94A3B8)', textTransform: 'uppercase', display: 'block', marginBottom: '6px' }}>
                       Key Responsibilities:
                     </strong>
-                    <ul style={{ paddingLeft: '1.1rem', margin: 0, fontSize: '0.82rem', color: '#E2E8F0', lineHeight: 1.5 }}>
+                    <ul style={{ paddingLeft: '1.1rem', margin: 0, fontSize: '0.82rem', color: 'var(--text-secondary, #E2E8F0)', lineHeight: 1.5 }}>
                       {job.responsibilities.map((resp, i) => (
                         <li key={i}>{resp}</li>
                       ))}
@@ -402,11 +402,11 @@ const CareersPage: FC = () => {
           </div>
 
           {/* WHATSAPP HR FAST APPLICATION CTA */}
-          <div style={{ textAlign: 'center', background: '#1E293B', borderRadius: '20px', padding: '2.5rem', border: '1px solid #334155' }}>
-            <h3 style={{ margin: '0 0 0.5rem', fontSize: '1.5rem', fontWeight: 900, color: '#FFFFFF' }}>
+          <div style={{ textAlign: 'center', background: 'var(--color-1e293b, #1E293B)', borderRadius: '20px', padding: '2.5rem', border: '1px solid var(--color-334155, #334155)' }}>
+            <h3 style={{ margin: '0 0 0.5rem', fontSize: '1.5rem', fontWeight: 900, color: 'var(--white, #FFFFFF)' }}>
               Want to Apply Directly via WhatsApp HR Desk?
             </h3>
-            <p style={{ color: '#94A3B8', fontSize: '0.92rem', marginBottom: '1.5rem' }}>
+            <p style={{ color: 'var(--color-94a3b8, #94A3B8)', fontSize: '0.92rem', marginBottom: '1.5rem' }}>
               Connect directly with Managing Director Arslan Malik (+971 50 576 0056) at Business Bay.
             </p>
 
@@ -476,33 +476,33 @@ const CareersPage: FC = () => {
               <X size={24} />
             </button>
 
-            <span style={{ fontSize: '0.75rem', fontWeight: 900, color: '#D4AF37', textTransform: 'uppercase' }}>
+            <span style={{ fontSize: '0.75rem', fontWeight: 900, color: 'var(--color-d4af37, #D4AF37)', textTransform: 'uppercase' }}>
               Official White Caves Employment Package
             </span>
-            <h3 style={{ fontSize: '1.4rem', fontWeight: 900, margin: '4px 0 1rem', color: '#FFFFFF' }}>
+            <h3 style={{ fontSize: '1.4rem', fontWeight: 900, margin: '4px 0 1rem', color: 'var(--white, #FFFFFF)' }}>
               {selectedOfferLetter.title}
             </h3>
 
-            <div style={{ background: '#1E293B', padding: '14px', borderRadius: '12px', border: '1px solid #334155', marginBottom: '1.25rem' }}>
-              <span style={{ fontSize: '0.75rem', color: '#06B6D4', fontWeight: 800 }}>COMPENSATION STRUCTURE</span>
-              <strong style={{ fontSize: '1.05rem', color: '#FFFFFF', display: 'block', margin: '2px 0 4px' }}>
+            <div style={{ background: 'var(--color-1e293b, #1E293B)', padding: '14px', borderRadius: '12px', border: '1px solid var(--color-334155, #334155)', marginBottom: '1.25rem' }}>
+              <span style={{ fontSize: '0.75rem', color: 'var(--color-06b6d4, #06B6D4)', fontWeight: 800 }}>COMPENSATION STRUCTURE</span>
+              <strong style={{ fontSize: '1.05rem', color: 'var(--white, #FFFFFF)', display: 'block', margin: '2px 0 4px' }}>
                 {selectedOfferLetter.compensationType}
               </strong>
-              <span style={{ fontSize: '0.8rem', color: '#CBD5E1' }}>{selectedOfferLetter.splitDetails}</span>
+              <span style={{ fontSize: '0.8rem', color: 'var(--text-secondary, #CBD5E1)' }}>{selectedOfferLetter.splitDetails}</span>
             </div>
 
-            <div style={{ background: 'rgba(16, 185, 129, 0.1)', border: '1px solid #10B981', padding: '12px 14px', borderRadius: '12px', marginBottom: '1.25rem' }}>
-              <span style={{ fontSize: '0.75rem', color: '#10B981', fontWeight: 900, textTransform: 'uppercase' }}>🛂 UAE VISA SPONSORSHIP POLICY</span>
-              <p style={{ margin: '4px 0 0', fontSize: '0.84rem', color: '#ECFDF5', lineHeight: 1.45 }}>
+            <div style={{ background: 'rgba(16, 185, 129, 0.1)', border: '1px solid var(--accent-green, #10B981)', padding: '12px 14px', borderRadius: '12px', marginBottom: '1.25rem' }}>
+              <span style={{ fontSize: '0.75rem', color: 'var(--accent-green, #10B981)', fontWeight: 900, textTransform: 'uppercase' }}>🛂 UAE VISA SPONSORSHIP POLICY</span>
+              <p style={{ margin: '4px 0 0', fontSize: '0.84rem', color: 'var(--color-ecfdf5, #ECFDF5)', lineHeight: 1.45 }}>
                 {selectedOfferLetter.visaPolicy}
               </p>
             </div>
 
             <div style={{ marginBottom: '1.5rem' }}>
-              <strong style={{ fontSize: '0.8rem', color: '#94A3B8', textTransform: 'uppercase', display: 'block', marginBottom: '6px' }}>
+              <strong style={{ fontSize: '0.8rem', color: 'var(--color-94a3b8, #94A3B8)', textTransform: 'uppercase', display: 'block', marginBottom: '6px' }}>
                 Included Employment Perks:
               </strong>
-              <ul style={{ paddingLeft: '1.25rem', margin: 0, fontSize: '0.84rem', color: '#E2E8F0', lineHeight: 1.5 }}>
+              <ul style={{ paddingLeft: '1.25rem', margin: 0, fontSize: '0.84rem', color: 'var(--text-secondary, #E2E8F0)', lineHeight: 1.5 }}>
                 {selectedOfferLetter.perks.map((p, i) => (
                   <li key={i}>{p}</li>
                 ))}
@@ -510,7 +510,7 @@ const CareersPage: FC = () => {
             </div>
 
             {/* OFFICIAL LETTER PREVIEW TEXT */}
-            <div style={{ background: '#020617', padding: '1rem', borderRadius: '10px', border: '1px dashed #334155', fontFamily: 'monospace', fontSize: '0.78rem', color: '#CBD5E1', lineHeight: 1.5, whiteSpace: 'pre-wrap', marginBottom: '1.5rem' }}>
+            <div style={{ background: 'var(--color-020617, #020617)', padding: '1rem', borderRadius: '10px', border: '1px dashed var(--color-334155, #334155)', fontFamily: 'monospace', fontSize: '0.78rem', color: 'var(--text-secondary, #CBD5E1)', lineHeight: 1.5, whiteSpace: 'pre-wrap', marginBottom: '1.5rem' }}>
               {selectedOfferLetter.officialLetterText}
             </div>
 
@@ -588,57 +588,57 @@ const CareersPage: FC = () => {
             {applyStatus === 'success' ? (
               <div style={{ textAlign: 'center', padding: '2rem 0' }}>
                 <CheckCircle2 size={48} color="#10B981" style={{ margin: '0 auto 1rem' }} />
-                <h4 style={{ fontSize: '1.2rem', fontWeight: 900, color: '#10B981', margin: '0 0 0.5rem' }}>
+                <h4 style={{ fontSize: '1.2rem', fontWeight: 900, color: 'var(--accent-green, #10B981)', margin: '0 0 0.5rem' }}>
                   Application Submitted Successfully!
                 </h4>
-                <p style={{ fontSize: '0.88rem', color: '#94A3B8' }}>
+                <p style={{ fontSize: '0.88rem', color: 'var(--color-94a3b8, #94A3B8)' }}>
                   Our HR Executive team will review your application and contact you via WhatsApp or Email within 24 hours.
                 </p>
               </div>
             ) : (
               <form onSubmit={handleApplySubmit} style={{ display: 'flex', flexDirection: 'column', gap: '1rem', marginTop: '1rem' }}>
                 <div>
-                  <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: 800, color: '#CBD5E1', marginBottom: '4px' }}>Full Name *</label>
+                  <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: 800, color: 'var(--text-secondary, #CBD5E1)', marginBottom: '4px' }}>Full Name *</label>
                   <input
                     type="text"
                     required
                     value={applyForm.name}
                     onChange={e => setApplyForm({ ...applyForm, name: e.target.value })}
-                    style={{ width: '100%', padding: '10px', borderRadius: '8px', border: '1px solid #334155', background: '#1E293B', color: '#FFFFFF', fontSize: '0.88rem' }}
+                    style={{ width: '100%', padding: '10px', borderRadius: '8px', border: '1px solid var(--color-334155, #334155)', background: 'var(--color-1e293b, #1E293B)', color: 'var(--white, #FFFFFF)', fontSize: '0.88rem' }}
                   />
                 </div>
 
                 <div>
-                  <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: 800, color: '#CBD5E1', marginBottom: '4px' }}>Email Address *</label>
+                  <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: 800, color: 'var(--text-secondary, #CBD5E1)', marginBottom: '4px' }}>Email Address *</label>
                   <input
                     type="email"
                     required
                     value={applyForm.email}
                     onChange={e => setApplyForm({ ...applyForm, email: e.target.value })}
-                    style={{ width: '100%', padding: '10px', borderRadius: '8px', border: '1px solid #334155', background: '#1E293B', color: '#FFFFFF', fontSize: '0.88rem' }}
+                    style={{ width: '100%', padding: '10px', borderRadius: '8px', border: '1px solid var(--color-334155, #334155)', background: 'var(--color-1e293b, #1E293B)', color: 'var(--white, #FFFFFF)', fontSize: '0.88rem' }}
                   />
                 </div>
 
                 <div>
-                  <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: 800, color: '#CBD5E1', marginBottom: '4px' }}>Mobile Number *</label>
+                  <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: 800, color: 'var(--text-secondary, #CBD5E1)', marginBottom: '4px' }}>Mobile Number *</label>
                   <input
                     type="tel"
                     required
                     value={applyForm.phone}
                     onChange={e => setApplyForm({ ...applyForm, phone: e.target.value })}
                     placeholder="+971 50 ..."
-                    style={{ width: '100%', padding: '10px', borderRadius: '8px', border: '1px solid #334155', background: '#1E293B', color: '#FFFFFF', fontSize: '0.88rem' }}
+                    style={{ width: '100%', padding: '10px', borderRadius: '8px', border: '1px solid var(--color-334155, #334155)', background: 'var(--color-1e293b, #1E293B)', color: 'var(--white, #FFFFFF)', fontSize: '0.88rem' }}
                   />
                 </div>
 
                 <div>
-                  <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: 800, color: '#CBD5E1', marginBottom: '4px' }}>Short Summary / Cover Note</label>
+                  <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: 800, color: 'var(--text-secondary, #CBD5E1)', marginBottom: '4px' }}>Short Summary / Cover Note</label>
                   <textarea
                     rows={3}
                     value={applyForm.coverLetter}
                     onChange={e => setApplyForm({ ...applyForm, coverLetter: e.target.value })}
                     placeholder="Tell us about your experience..."
-                    style={{ width: '100%', padding: '10px', borderRadius: '8px', border: '1px solid #334155', background: '#1E293B', color: '#FFFFFF', fontSize: '0.88rem' }}
+                    style={{ width: '100%', padding: '10px', borderRadius: '8px', border: '1px solid var(--color-334155, #334155)', background: 'var(--color-1e293b, #1E293B)', color: 'var(--white, #FFFFFF)', fontSize: '0.88rem' }}
                   />
                 </div>
 

@@ -160,18 +160,18 @@ export const WarehousePowerLoadChecker: FC = () => {
 
         <EvaluationBox $suitable={isSuitable}>
           <div>
-            <div style={{ fontSize: '0.72rem', color: '#94A3B8', textTransform: 'uppercase', fontWeight: 700 }}>
+            <div style={{ fontSize: '0.72rem', color: 'var(--color-94a3b8, #94A3B8)', textTransform: 'uppercase', fontWeight: 700 }}>
               Electrical Capacity Compatibility
             </div>
-            <div style={{ fontSize: '0.95rem', fontWeight: 800, color: '#FFF', marginTop: '2px' }}>
+            <div style={{ fontSize: '0.95rem', fontWeight: 800, color: 'var(--white, #FFF)', marginTop: '2px' }}>
               {isSuitable ? '✓ Fully Compatible — Adequate Power Headroom' : '⚠️ Insufficient Connected Load — DEWA Upgrade Required'}
             </div>
-            <div style={{ fontSize: '0.7rem', color: '#CBD5E1', marginTop: '4px' }}>
-              Surplus Power Capacity: <strong style={{ color: isSuitable ? '#10B981' : '#EF4444' }}>{allocated - required} kW</strong> ({(allocated * 1.25).toFixed(0)} KVA Equivalent)
+            <div style={{ fontSize: '0.7rem', color: 'var(--text-secondary, #CBD5E1)', marginTop: '4px' }}>
+              Surplus Power Capacity: <strong style={{ color: isSuitable ? 'var(--accent-green, #10B981)' : 'var(--accent-red, #EF4444)' }}>{allocated - required} kW</strong> ({(allocated * 1.25).toFixed(0)} KVA Equivalent)
             </div>
           </div>
           <div style={{ textAlign: 'right' }}>
-            <div style={{ fontSize: '1.4rem', fontWeight: 900, color: isSuitable ? '#10B981' : '#EF4444' }}>
+            <div style={{ fontSize: '1.4rem', fontWeight: 900, color: isSuitable ? 'var(--accent-green, #10B981)' : 'var(--accent-red, #EF4444)' }}>
               {isSuitable ? 'APPROVED' : 'UPGRADE REQ.'}
             </div>
           </div>

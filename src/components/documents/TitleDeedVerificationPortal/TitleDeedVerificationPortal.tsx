@@ -21,7 +21,7 @@ export const TitleDeedVerificationPortal: FC = () => {
       {status === 'not_found' && (
         <Result $status="not_found">
           <StatusBanner $status="not_found">❌ Title Deed not found in DLD registry. Verify the number and retry.</StatusBanner>
-          <button onClick={handleReset} style={{ display: 'block', margin: '0.5rem auto 0', background: 'none', border: 'none', color: '#ef4444', cursor: 'pointer', fontWeight: 600 }}>Try another number</button>
+          <button onClick={handleReset} style={{ display: 'block', margin: '0.5rem auto 0', background: 'none', border: 'none', color: 'var(--accent-red, #ef4444)', cursor: 'pointer', fontWeight: 600 }}>Try another number</button>
         </Result>
       )}
       {(status === 'verified' || status === 'encumbered') && result && (

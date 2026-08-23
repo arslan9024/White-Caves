@@ -48,19 +48,19 @@ export const FluidMegaMenu: FC = () => {
 
       <MegaDropdown $isOpen={isOpen}>
         <div>
-          <h5 style={{ margin: '0 0 6px', color: '#EF4444' }}>Residential</h5>
-          <span style={{ fontSize: '0.75rem', color: '#94A3B8', display: 'block' }}>Palm Luxury Villas</span>
-          <span style={{ fontSize: '0.75rem', color: '#94A3B8', display: 'block' }}>Downtown Penthouses</span>
+          <h5 style={{ margin: '0 0 6px', color: 'var(--accent-red, #EF4444)' }}>Residential</h5>
+          <span style={{ fontSize: '0.75rem', color: 'var(--color-94a3b8, #94A3B8)', display: 'block' }}>Palm Luxury Villas</span>
+          <span style={{ fontSize: '0.75rem', color: 'var(--color-94a3b8, #94A3B8)', display: 'block' }}>Downtown Penthouses</span>
         </div>
         <div>
-          <h5 style={{ margin: '0 0 6px', color: '#EF4444' }}>Commercial</h5>
-          <span style={{ fontSize: '0.75rem', color: '#94A3B8', display: 'block' }}>Business Bay Offices</span>
-          <span style={{ fontSize: '0.75rem', color: '#94A3B8', display: 'block' }}>Retail Spaces</span>
+          <h5 style={{ margin: '0 0 6px', color: 'var(--accent-red, #EF4444)' }}>Commercial</h5>
+          <span style={{ fontSize: '0.75rem', color: 'var(--color-94a3b8, #94A3B8)', display: 'block' }}>Business Bay Offices</span>
+          <span style={{ fontSize: '0.75rem', color: 'var(--color-94a3b8, #94A3B8)', display: 'block' }}>Retail Spaces</span>
         </div>
         <div>
-          <h5 style={{ margin: '0 0 6px', color: '#EF4444' }}>Off-Plan</h5>
-          <span style={{ fontSize: '0.75rem', color: '#94A3B8', display: 'block' }}>EMAAR Launches</span>
-          <span style={{ fontSize: '0.75rem', color: '#94A3B8', display: 'block' }}>DAMAC Islands</span>
+          <h5 style={{ margin: '0 0 6px', color: 'var(--accent-red, #EF4444)' }}>Off-Plan</h5>
+          <span style={{ fontSize: '0.75rem', color: 'var(--color-94a3b8, #94A3B8)', display: 'block' }}>EMAAR Launches</span>
+          <span style={{ fontSize: '0.75rem', color: 'var(--color-94a3b8, #94A3B8)', display: 'block' }}>DAMAC Islands</span>
         </div>
       </MegaDropdown>
     </MenuWrapper>

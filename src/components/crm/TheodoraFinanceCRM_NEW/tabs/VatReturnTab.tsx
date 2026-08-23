@@ -40,7 +40,7 @@ export const VatReturnTab: React.FC = () => {
               UAE Federal Tax Authority (FTA) — Form 201 VAT Return
             </h3>
           </div>
-          <p style={{ margin: '0.35rem 0 0 0', fontSize: '0.82rem', color: '#C7D2FE' }}>
+          <p style={{ margin: '0.35rem 0 0 0', fontSize: '0.82rem', color: 'var(--color-c7d2fe, #C7D2FE)' }}>
             Registered TRN: <strong>{vatData.trn}</strong> | In-House Auto Calculated Tax Return
           </p>
         </div>
@@ -59,9 +59,9 @@ export const VatReturnTab: React.FC = () => {
               fontWeight: 700,
             }}
           >
-            <option value="2026-Q3" style={{ color: '#000' }}>2026 Q3 (Jul - Sep)</option>
-            <option value="2026-Q2" style={{ color: '#000' }}>2026 Q2 (Apr - Jun)</option>
-            <option value="2026-Q1" style={{ color: '#000' }}>2026 Q1 (Jan - Mar)</option>
+            <option value="2026-Q3" style={{ color: 'var(--black, #000)' }}>2026 Q3 (Jul - Sep)</option>
+            <option value="2026-Q2" style={{ color: 'var(--black, #000)' }}>2026 Q2 (Apr - Jun)</option>
+            <option value="2026-Q1" style={{ color: 'var(--black, #000)' }}>2026 Q1 (Jan - Mar)</option>
           </select>
 
           <button
@@ -88,57 +88,57 @@ export const VatReturnTab: React.FC = () => {
 
       {/* Summary KPI Cards */}
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '1rem' }}>
-        <div style={{ background: '#FFFFFF', padding: '1.25rem', borderRadius: '12px', border: '1px solid #E2E8F0' }}>
-          <div style={{ fontSize: '0.75rem', fontWeight: 800, color: '#64748B', textTransform: 'uppercase' }}>
+        <div style={{ background: 'var(--white, #FFFFFF)', padding: '1.25rem', borderRadius: '12px', border: '1px solid var(--text-secondary, #E2E8F0)' }}>
+          <div style={{ fontSize: '0.75rem', fontWeight: 800, color: 'var(--text-secondary, #64748B)', textTransform: 'uppercase' }}>
             Box 1: Output VAT (Sales / Commissions)
           </div>
-          <div style={{ fontSize: '1.5rem', fontWeight: 800, color: '#1E293B', marginTop: '0.35rem' }}>
+          <div style={{ fontSize: '1.5rem', fontWeight: 800, color: 'var(--color-1e293b, #1E293B)', marginTop: '0.35rem' }}>
             AED {vatData.outputVat.toLocaleString()}
           </div>
-          <div style={{ fontSize: '0.75rem', color: '#64748B', marginTop: '0.25rem' }}>
+          <div style={{ fontSize: '0.75rem', color: 'var(--text-secondary, #64748B)', marginTop: '0.25rem' }}>
             5% on AED {vatData.standardRatedSales.toLocaleString()} revenue
           </div>
         </div>
 
-        <div style={{ background: '#FFFFFF', padding: '1.25rem', borderRadius: '12px', border: '1px solid #E2E8F0' }}>
-          <div style={{ fontSize: '0.75rem', fontWeight: 800, color: '#64748B', textTransform: 'uppercase' }}>
+        <div style={{ background: 'var(--white, #FFFFFF)', padding: '1.25rem', borderRadius: '12px', border: '1px solid var(--text-secondary, #E2E8F0)' }}>
+          <div style={{ fontSize: '0.75rem', fontWeight: 800, color: 'var(--text-secondary, #64748B)', textTransform: 'uppercase' }}>
             Box 9: Input VAT (Expenses & Outlays)
           </div>
-          <div style={{ fontSize: '1.5rem', fontWeight: 800, color: '#10B981', marginTop: '0.35rem' }}>
+          <div style={{ fontSize: '1.5rem', fontWeight: 800, color: 'var(--accent-green, #10B981)', marginTop: '0.35rem' }}>
             AED {vatData.inputVatRecoverable.toLocaleString()}
           </div>
-          <div style={{ fontSize: '0.75rem', color: '#64748B', marginTop: '0.25rem' }}>
+          <div style={{ fontSize: '0.75rem', color: 'var(--text-secondary, #64748B)', marginTop: '0.25rem' }}>
             5% recoverable on qualifying 42 expenses
           </div>
         </div>
 
-        <div style={{ background: 'linear-gradient(135deg, #EEF2FF 0%, #E0E7FF 100%)', padding: '1.25rem', borderRadius: '12px', border: '1px solid #C7D2FE' }}>
-          <div style={{ fontSize: '0.75rem', fontWeight: 800, color: '#3730A3', textTransform: 'uppercase' }}>
+        <div style={{ background: 'linear-gradient(135deg, var(--color-eef2ff, #EEF2FF) 0%, var(--color-e0e7ff, #E0E7FF) 100%)', padding: '1.25rem', borderRadius: '12px', border: '1px solid var(--color-c7d2fe, #C7D2FE)' }}>
+          <div style={{ fontSize: '0.75rem', fontWeight: 800, color: 'var(--color-3730a3, #3730A3)', textTransform: 'uppercase' }}>
             Box 12: Net VAT Payable to FTA
           </div>
-          <div style={{ fontSize: '1.5rem', fontWeight: 800, color: '#4338CA', marginTop: '0.35rem' }}>
+          <div style={{ fontSize: '1.5rem', fontWeight: 800, color: 'var(--color-4338ca, #4338CA)', marginTop: '0.35rem' }}>
             AED {vatData.netVatPayable.toLocaleString()}
           </div>
-          <div style={{ fontSize: '0.75rem', color: '#3730A3', marginTop: '0.25rem' }}>
+          <div style={{ fontSize: '0.75rem', color: 'var(--color-3730a3, #3730A3)', marginTop: '0.25rem' }}>
             Filing Deadline: {vatData.submissionDeadline}
           </div>
         </div>
       </div>
 
       {/* Official Box-by-Box Breakdown Table */}
-      <div style={{ background: '#FFFFFF', borderRadius: '12px', border: '1px solid #E2E8F0', overflow: 'hidden' }}>
-        <div style={{ padding: '1rem 1.25rem', background: '#F8FAFC', borderBottom: '1px solid #E2E8F0', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-          <h4 style={{ margin: 0, fontSize: '0.95rem', fontWeight: 800, color: '#1E293B' }}>
+      <div style={{ background: 'var(--white, #FFFFFF)', borderRadius: '12px', border: '1px solid var(--text-secondary, #E2E8F0)', overflow: 'hidden' }}>
+        <div style={{ padding: '1rem 1.25rem', background: 'var(--color-f8fafc, #F8FAFC)', borderBottom: '1px solid var(--text-secondary, #E2E8F0)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+          <h4 style={{ margin: 0, fontSize: '0.95rem', fontWeight: 800, color: 'var(--color-1e293b, #1E293B)' }}>
             FTA Form 201 — Itemized Declaration Matrix
           </h4>
-          <span style={{ fontSize: '0.75rem', background: '#ECFDF5', color: '#047857', padding: '3px 8px', borderRadius: '4px', fontWeight: 800 }}>
+          <span style={{ fontSize: '0.75rem', background: 'var(--color-ecfdf5, #ECFDF5)', color: 'var(--color-047857, #047857)', padding: '3px 8px', borderRadius: '4px', fontWeight: 800 }}>
             Audit Status: Ready for Submission
           </span>
         </div>
 
         <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left', fontSize: '0.85rem' }}>
           <thead>
-            <tr style={{ background: '#F8FAFC', borderBottom: '1px solid #E2E8F0', color: '#475569' }}>
+            <tr style={{ background: 'var(--color-f8fafc, #F8FAFC)', borderBottom: '1px solid var(--text-secondary, #E2E8F0)', color: 'var(--color-475569, #475569)' }}>
               <th style={{ padding: '12px 16px' }}>Box #</th>
               <th style={{ padding: '12px 16px' }}>Description</th>
               <th style={{ padding: '12px 16px' }}>Taxable Amount (AED)</th>
@@ -147,33 +147,33 @@ export const VatReturnTab: React.FC = () => {
             </tr>
           </thead>
           <tbody>
-            <tr style={{ borderBottom: '1px solid #F1F5F9' }}>
-              <td style={{ padding: '12px 16px', fontWeight: 800, color: '#4338CA' }}>Box 1a</td>
+            <tr style={{ borderBottom: '1px solid var(--color-f1f5f9, #F1F5F9)' }}>
+              <td style={{ padding: '12px 16px', fontWeight: 800, color: 'var(--color-4338ca, #4338CA)' }}>Box 1a</td>
               <td style={{ padding: '12px 16px', fontWeight: 700 }}>Standard-rated supplies in Dubai (Brokerage & Lease Fees)</td>
               <td style={{ padding: '12px 16px' }}>AED {vatData.standardRatedSales.toLocaleString()}</td>
               <td style={{ padding: '12px 16px' }}>5.0%</td>
-              <td style={{ padding: '12px 16px', fontWeight: 800, color: '#1E293B' }}>AED {vatData.outputVat.toLocaleString()}</td>
+              <td style={{ padding: '12px 16px', fontWeight: 800, color: 'var(--color-1e293b, #1E293B)' }}>AED {vatData.outputVat.toLocaleString()}</td>
             </tr>
-            <tr style={{ borderBottom: '1px solid #F1F5F9' }}>
-              <td style={{ padding: '12px 16px', fontWeight: 800, color: '#4338CA' }}>Box 3</td>
+            <tr style={{ borderBottom: '1px solid var(--color-f1f5f9, #F1F5F9)' }}>
+              <td style={{ padding: '12px 16px', fontWeight: 800, color: 'var(--color-4338ca, #4338CA)' }}>Box 3</td>
               <td style={{ padding: '12px 16px' }}>Zero-rated supplies / Export of services</td>
               <td style={{ padding: '12px 16px' }}>AED 0.00</td>
               <td style={{ padding: '12px 16px' }}>0.0%</td>
               <td style={{ padding: '12px 16px' }}>AED 0.00</td>
             </tr>
-            <tr style={{ borderBottom: '1px solid #F1F5F9' }}>
-              <td style={{ padding: '12px 16px', fontWeight: 800, color: '#4338CA' }}>Box 9</td>
+            <tr style={{ borderBottom: '1px solid var(--color-f1f5f9, #F1F5F9)' }}>
+              <td style={{ padding: '12px 16px', fontWeight: 800, color: 'var(--color-4338ca, #4338CA)' }}>Box 9</td>
               <td style={{ padding: '12px 16px', fontWeight: 700 }}>Standard-rated expenses & overheads (42 Master Items)</td>
               <td style={{ padding: '12px 16px' }}>AED {vatData.standardRatedExpenses.toLocaleString()}</td>
               <td style={{ padding: '12px 16px' }}>5.0%</td>
-              <td style={{ padding: '12px 16px', fontWeight: 800, color: '#10B981' }}>AED {vatData.inputVatRecoverable.toLocaleString()}</td>
+              <td style={{ padding: '12px 16px', fontWeight: 800, color: 'var(--accent-green, #10B981)' }}>AED {vatData.inputVatRecoverable.toLocaleString()}</td>
             </tr>
-            <tr style={{ background: '#F8FAFC', fontWeight: 800, borderTop: '2px solid #E2E8F0' }}>
-              <td style={{ padding: '14px 16px', color: '#4338CA' }}>Box 12</td>
+            <tr style={{ background: 'var(--color-f8fafc, #F8FAFC)', fontWeight: 800, borderTop: '2px solid var(--text-secondary, #E2E8F0)' }}>
+              <td style={{ padding: '14px 16px', color: 'var(--color-4338ca, #4338CA)' }}>Box 12</td>
               <td style={{ padding: '14px 16px' }}>Total Net VAT Payable / (Refundable) for Period</td>
               <td style={{ padding: '14px 16px' }}>—</td>
               <td style={{ padding: '14px 16px' }}>—</td>
-              <td style={{ padding: '14px 16px', color: '#4338CA', fontSize: '1rem' }}>AED {vatData.netVatPayable.toLocaleString()}</td>
+              <td style={{ padding: '14px 16px', color: 'var(--color-4338ca, #4338CA)', fontSize: '1rem' }}>AED {vatData.netVatPayable.toLocaleString()}</td>
             </tr>
           </tbody>
         </table>

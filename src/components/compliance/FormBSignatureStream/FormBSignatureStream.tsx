@@ -134,7 +134,7 @@ export const FormBSignatureStream: FC = () => {
     <Wrap data-testid="form-b-signature-stream">
       <Head>
         <Title>📋 Form B — Buyer Agency Agreement</Title>
-        <div style={{fontSize:'0.7rem',color:'#EF4444',fontWeight:700}}>RERA Digital Signature</div>
+        <div style={{fontSize:'0.7rem',color:'var(--accent-red, #EF4444)',fontWeight:700}}>RERA Digital Signature</div>
       </Head>
       <Body>
         <div>

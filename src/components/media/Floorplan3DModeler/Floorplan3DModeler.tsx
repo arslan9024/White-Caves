@@ -221,8 +221,8 @@ export const Floorplan3DModeler: FC = () => {
       </RoomPanel>
 
       <ControlStrip>
-        <span style={{ color: '#64748B', fontSize: '0.75rem' }}>
-          Total: <strong style={{ color: '#EF4444' }}>
+        <span style={{ color: 'var(--text-secondary, #64748B)', fontSize: '0.75rem' }}>
+          Total: <strong style={{ color: 'var(--accent-red, #EF4444)' }}>
             {ROOMS_DATA.reduce((acc, r) => acc + parseInt(r.size), 0)} m²
           </strong> BUA
         </span>

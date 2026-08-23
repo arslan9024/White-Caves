@@ -36,7 +36,7 @@ export const ESignatureCapturepad: FC = () => {
       ) : (
         <SavedBanner>
           ✅ Signature captured and saved successfully<br />
-          <span style={{ fontSize: '0.8125rem', fontWeight: 400, color: '#64748b' }}>Timestamped: {new Date().toLocaleString('en-AE')}</span>
+          <span style={{ fontSize: '0.8125rem', fontWeight: 400, color: 'var(--text-secondary, #64748b)' }}>Timestamped: {new Date().toLocaleString('en-AE')}</span>
         </SavedBanner>
       )}
     </Root>

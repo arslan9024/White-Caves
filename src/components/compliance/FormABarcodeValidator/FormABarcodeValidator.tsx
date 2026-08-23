@@ -16,8 +16,8 @@ export const FormABarcodeValidator: FC = () => {
   return (
     <ValidatorContainer data-testid="form-a-barcode-validator">
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '12px' }}>
-        <h4 style={{ margin: 0, color: '#EF4444' }}>🏛️ RERA Form A Listing & Trakheesi Permit Validator</h4>
-        <span style={{ fontSize: '0.75rem', color: isValidated ? '#10B981' : '#EF4444', fontWeight: 800 }}>
+        <h4 style={{ margin: 0, color: 'var(--accent-red, #EF4444)' }}>🏛️ RERA Form A Listing & Trakheesi Permit Validator</h4>
+        <span style={{ fontSize: '0.75rem', color: isValidated ? 'var(--accent-green, #10B981)' : 'var(--accent-red, #EF4444)', fontWeight: 800 }}>
           {isValidated ? '✅ DLD REST API VERIFIED' : '❌ UNVERIFIED'}
         </span>
       </div>
@@ -28,11 +28,11 @@ export const FormABarcodeValidator: FC = () => {
           value={trakheesiNo}
           onChange={(e) => setTrakheesiNo(e.target.value)}
           placeholder="Enter 10-digit Trakheesi Permit No."
-          style={{ flex: 1, padding: '8px 12px', background: '#0F172A', border: '1px solid #475569', color: '#FFF', borderRadius: '6px' }}
+          style={{ flex: 1, padding: '8px 12px', background: 'var(--color-0f172a, #0F172A)', border: '1px solid var(--color-475569, #475569)', color: 'var(--white, #FFF)', borderRadius: '6px' }}
         />
         <button
           onClick={() => setIsValidated(true)}
-          style={{ padding: '8px 16px', background: '#EF4444', border: 'none', borderRadius: '6px', color: '#FFF', fontWeight: 'bold', cursor: 'pointer' }}
+          style={{ padding: '8px 16px', background: 'var(--accent-red, #EF4444)', border: 'none', borderRadius: '6px', color: 'var(--white, #FFF)', fontWeight: 'bold', cursor: 'pointer' }}
         >
           Validate Permit
         </button>

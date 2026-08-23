@@ -26,7 +26,7 @@ const COMMUNITIES = [
 
 export const LiquidityIndexBadge: FC = () => (
   <Wrapper data-testid="liquidity-index-badge">
-    <Title><span>💧 Secondary Market Liquidity Index</span><span style={{ fontSize: '0.65rem', color: '#64748B' }}>Score /10</span></Title>
+    <Title><span>💧 Secondary Market Liquidity Index</span><span style={{ fontSize: '0.65rem', color: 'var(--text-secondary, #64748B)' }}>Score /10</span></Title>
     <Body>
       {COMMUNITIES.map(c => (
         <Row key={c.name}>

@@ -140,7 +140,7 @@ export const FinancialPandLDashboard: FC = () => {
             </tr>
           </thead>
           <tbody>
-            <Tr $section><Td colSpan={5} style={{fontWeight:800,color:'#10B981',fontSize:'0.7rem',textTransform:'uppercase',letterSpacing:'0.05em'}}>Revenue</Td></Tr>
+            <Tr $section><Td colSpan={5} style={{fontWeight:800,color:'var(--accent-green, #10B981)',fontSize:'0.7rem',textTransform:'uppercase',letterSpacing:'0.05em'}}>Revenue</Td></Tr>
             {revenue.map((r,i)=>{
               const v=r.actual-r.budget;
               const pct=r.budget>0?(r.actual/r.budget*100):0;
@@ -154,7 +154,7 @@ export const FinancialPandLDashboard: FC = () => {
                 </Tr>
               );
             })}
-            <Tr $section><Td colSpan={5} style={{fontWeight:800,color:'#EF4444',fontSize:'0.7rem',textTransform:'uppercase',letterSpacing:'0.05em'}}>Expenses & Tax</Td></Tr>
+            <Tr $section><Td colSpan={5} style={{fontWeight:800,color:'var(--accent-red, #EF4444)',fontSize:'0.7rem',textTransform:'uppercase',letterSpacing:'0.05em'}}>Expenses & Tax</Td></Tr>
             {expenses.map((r,i)=>{
               const v=r.actual-r.budget;
               const pct=r.budget>0?(r.actual/r.budget*100):0;
@@ -169,7 +169,7 @@ export const FinancialPandLDashboard: FC = () => {
               );
             })}
             <Tr $section>
-              <Td style={{fontWeight:800,color:'#E2E8F0'}}>NET PROFIT</Td>
+              <Td style={{fontWeight:800,color:'var(--text-secondary, #E2E8F0)'}}>NET PROFIT</Td>
               <TdNum style={{fontWeight:900}}>AED {(netBudget/1000).toFixed(0)}K</TdNum>
               <TdNum $positive={netActual>0} style={{fontWeight:900}}>AED {(netActual/1000).toFixed(0)}K</TdNum>
               <TdNum $positive={netVar>=0} $negative={netVar<0} style={{fontWeight:900}}>{netVar>=0?'+':''}{(netVar/1000).toFixed(0)}K</TdNum>

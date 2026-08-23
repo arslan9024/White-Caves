@@ -126,7 +126,7 @@ export const FileUploadDropzone: FC<{
           {fileNames.map((name, idx) => (
             <FileItem key={idx}>
               <span>📄 {name}</span>
-              <span style={{ color: '#10B981', fontWeight: 800 }}>✓ Attached</span>
+              <span style={{ color: 'var(--accent-green, #10B981)', fontWeight: 800 }}>✓ Attached</span>
             </FileItem>
           ))}
         </FileList>

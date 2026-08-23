@@ -242,8 +242,8 @@ export const WebXRHeadsetViewer: FC = () => {
         <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '12px', zIndex: 2 }}>
           <FloatingIcon>{ROOM_ICONS[activeRoom] || '🏠'}</FloatingIcon>
           <div style={{ textAlign: 'center' }}>
-            <div style={{ color: '#EF4444', fontWeight: 800, fontSize: '1.1rem' }}>{activeRoom}</div>
-            <div style={{ color: '#64748B', fontSize: '0.75rem', marginTop: '4px' }}>
+            <div style={{ color: 'var(--accent-red, #EF4444)', fontWeight: 800, fontSize: '1.1rem' }}>{activeRoom}</div>
+            <div style={{ color: 'var(--text-secondary, #64748B)', fontSize: '0.75rem', marginTop: '4px' }}>
               {isWebXR ? 'Immersive WebXR — Head tracking active' : 'Use WASD keys or D-pad to navigate'}
             </div>
           </div>

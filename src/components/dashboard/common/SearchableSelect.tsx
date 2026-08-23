@@ -199,7 +199,7 @@ export const SearchableSelect: FC<SearchableSelectProps> = ({
               {selectedOption.name}
             </>
           ) : (
-            <span style={{ color: '#94A3B8' }}>{placeholder}</span>
+            <span style={{ color: 'var(--color-94a3b8, #94A3B8)' }}>{placeholder}</span>
           )}
         </span>
         <span style={{ fontSize: '0.75rem', color: accentColor, marginLeft: '4px', flexShrink: 0 }}>
@@ -218,7 +218,7 @@ export const SearchableSelect: FC<SearchableSelectProps> = ({
           />
 
           {filteredOptions.length === 0 ? (
-            <div style={{ padding: '8px 10px', fontSize: '0.78rem', color: '#94A3B8', textAlign: 'center' }}>
+            <div style={{ padding: '8px 10px', fontSize: '0.78rem', color: 'var(--color-94a3b8, #94A3B8)', textAlign: 'center' }}>
               No matches found
             </div>
           ) : (

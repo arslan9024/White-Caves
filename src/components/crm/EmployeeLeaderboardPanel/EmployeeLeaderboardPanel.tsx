@@ -84,10 +84,10 @@ export const EmployeeLeaderboardPanel: FC = () => {
           {/* Department Manager Highlight */}
           {manager && (
             <div style={{ marginBottom: '20px' }}>
-              <h4 style={{ fontSize: '0.8rem', color: '#EF4444', fontWeight: 800, margin: '0 0 10px' }}>
+              <h4 style={{ fontSize: '0.8rem', color: 'var(--accent-red, #EF4444)', fontWeight: 800, margin: '0 0 10px' }}>
                 {LEADERBOARD_TEXT.managerTitle}
               </h4>
-              <PersonnelCard style={{ border: '2px solid #EF4444', background: 'rgba(239, 68, 68, 0.03)' }}>
+              <PersonnelCard style={{ border: '2px solid var(--accent-red, #EF4444)', background: 'rgba(239, 68, 68, 0.03)' }}>
                 <Avatar $color={LEVEL_COLORS[4]}>
                   {manager.name.split(' ').map(n => n[0]).join('')}
                 </Avatar>
@@ -103,7 +103,7 @@ export const EmployeeLeaderboardPanel: FC = () => {
           {/* Supervisors */}
           {supervisors.length > 0 && (
             <div style={{ marginBottom: '20px' }}>
-              <h4 style={{ fontSize: '0.8rem', color: '#7C3AED', fontWeight: 800, margin: '0 0 10px' }}>
+              <h4 style={{ fontSize: '0.8rem', color: 'var(--accent-purple, #7C3AED)', fontWeight: 800, margin: '0 0 10px' }}>
                 {LEADERBOARD_TEXT.supervisorTitle} ({supervisors.length})
               </h4>
               <GridCards>
@@ -126,7 +126,7 @@ export const EmployeeLeaderboardPanel: FC = () => {
           {/* Junior Agents */}
           {juniors.length > 0 && (
             <div style={{ marginBottom: '20px' }}>
-              <h4 style={{ fontSize: '0.8rem', color: '#0EA5E9', fontWeight: 800, margin: '0 0 10px' }}>
+              <h4 style={{ fontSize: '0.8rem', color: 'var(--color-0ea5e9, #0EA5E9)', fontWeight: 800, margin: '0 0 10px' }}>
                 {LEADERBOARD_TEXT.juniorsTitle} ({juniors.length})
               </h4>
               <GridCards>
@@ -149,7 +149,7 @@ export const EmployeeLeaderboardPanel: FC = () => {
           {/* Interns */}
           {interns.length > 0 && (
             <div>
-              <h4 style={{ fontSize: '0.8rem', color: '#94A3B8', fontWeight: 800, margin: '0 0 10px' }}>
+              <h4 style={{ fontSize: '0.8rem', color: 'var(--color-94a3b8, #94A3B8)', fontWeight: 800, margin: '0 0 10px' }}>
                 {LEADERBOARD_TEXT.internsTitle} ({interns.length})
               </h4>
               <GridCards>
@@ -173,14 +173,14 @@ export const EmployeeLeaderboardPanel: FC = () => {
         /* Global 12 Department Managers */
         <GridCards data-testid="global-managers-grid">
           {globalTopManagers.map(m => (
-            <PersonnelCard key={m.id} style={{ border: '1.5px solid #D4AF37' }}>
+            <PersonnelCard key={m.id} style={{ border: '1.5px solid var(--color-d4af37, #D4AF37)' }}>
               <Avatar $color="#D4AF37">
                 {m.name.split(' ').map(n => n[0]).join('')}
               </Avatar>
               <Details>
                 <h4>{m.name}</h4>
                 <p>{m.roleTitle}</p>
-                <span style={{ fontSize: '0.72rem', color: '#EF4444', fontWeight: 700 }}>
+                <span style={{ fontSize: '0.72rem', color: 'var(--accent-red, #EF4444)', fontWeight: 700 }}>
                   Dept: {m.assignedDepartment.toUpperCase()}
                 </span>
               </Details>

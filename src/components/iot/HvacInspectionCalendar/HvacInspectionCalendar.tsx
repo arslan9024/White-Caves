@@ -118,7 +118,7 @@ export const HvacInspectionCalendar: FC = () => {
         <Tag>FACILITIES COMPLIANCE</Tag>
       </Head>
       <Body>
-        <div style={{ fontSize: '0.72rem', color: '#94A3B8' }}>
+        <div style={{ fontSize: '0.72rem', color: 'var(--color-94a3b8, #94A3B8)' }}>
           Statutory quarterly inspection tracker for HVAC systems, elevators, and life-safety plant certified under Dubai Civil Defense & Municipality guidelines.
         </div>
 
@@ -133,13 +133,13 @@ export const HvacInspectionCalendar: FC = () => {
                   </StatusPill>
                 </STitle>
                 <SMeta>📍 {item.property} | 📅 Due Date: <strong>{item.date}</strong></SMeta>
-                <SMeta style={{ color: '#CBD5E1' }}>👷 Certified Contractor: {item.vendor}</SMeta>
+                <SMeta style={{ color: 'var(--text-secondary, #CBD5E1)' }}>👷 Certified Contractor: {item.vendor}</SMeta>
               </SInfo>
               <div>
                 {item.status !== 'completed' && (
                   <button 
                     onClick={() => markComplete(item.id)}
-                    style={{ padding: '6px 12px', background: '#10B981', color: '#FFF', border: 'none', borderRadius: '6px', fontSize: '0.72rem', fontWeight: 700, cursor: 'pointer' }}
+                    style={{ padding: '6px 12px', background: 'var(--accent-green, #10B981)', color: 'var(--white, #FFF)', border: 'none', borderRadius: '6px', fontSize: '0.72rem', fontWeight: 700, cursor: 'pointer' }}
                   >
                     ✓ Log Service Report
                   </button>

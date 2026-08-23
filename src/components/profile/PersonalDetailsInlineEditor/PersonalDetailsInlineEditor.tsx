@@ -36,26 +36,26 @@ export const PersonalDetailsInlineEditor: FC = () => {
   return (
     <EditorCard data-testid="personal-details-inline-editor">
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
-        <h4 style={{ margin: 0, color: '#EF4444' }}>📝 Personal & Corporate Details</h4>
+        <h4 style={{ margin: 0, color: 'var(--accent-red, #EF4444)' }}>📝 Personal & Corporate Details</h4>
         <button
           onClick={() => setIsEditing((prev) => !prev)}
-          style={{ background: '#EF4444', color: '#FFF', border: 'none', borderRadius: '6px', padding: '4px 12px', fontSize: '0.78rem', fontWeight: 800, cursor: 'pointer' }}
+          style={{ background: 'var(--accent-red, #EF4444)', color: 'var(--white, #FFF)', border: 'none', borderRadius: '6px', padding: '4px 12px', fontSize: '0.78rem', fontWeight: 800, cursor: 'pointer' }}
         >
           {isEditing ? 'Save Changes' : 'Edit Details'}
         </button>
       </div>
 
       <FieldRow>
-        <span style={{ fontSize: '0.82rem', color: '#94A3B8' }}>Full Name</span>
+        <span style={{ fontSize: '0.82rem', color: 'var(--color-94a3b8, #94A3B8)' }}>Full Name</span>
         {isEditing ? <input value={name} onChange={(e) => setName(e.target.value)} /> : <span style={{ fontWeight: 800 }}>{name}</span>}
       </FieldRow>
       <FieldRow>
-        <span style={{ fontSize: '0.82rem', color: '#94A3B8' }}>Mobile Contact</span>
+        <span style={{ fontSize: '0.82rem', color: 'var(--color-94a3b8, #94A3B8)' }}>Mobile Contact</span>
         {isEditing ? <input value={phone} onChange={(e) => setPhone(e.target.value)} /> : <span style={{ fontWeight: 800 }}>{phone}</span>}
       </FieldRow>
       <FieldRow>
-        <span style={{ fontSize: '0.82rem', color: '#94A3B8' }}>Role & Title</span>
-        <span style={{ color: '#EF4444', fontWeight: 900 }}>Managing Director (Level 5 Superuser)</span>
+        <span style={{ fontSize: '0.82rem', color: 'var(--color-94a3b8, #94A3B8)' }}>Role & Title</span>
+        <span style={{ color: 'var(--accent-red, #EF4444)', fontWeight: 900 }}>Managing Director (Level 5 Superuser)</span>
       </FieldRow>
     </EditorCard>
   );

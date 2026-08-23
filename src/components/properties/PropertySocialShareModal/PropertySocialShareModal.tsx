@@ -120,14 +120,14 @@ export const PropertySocialShareModal: FC<{ propertyUrl?: string; propertyTitle?
       <Modal onClick={e => e.stopPropagation()}>
         <Head>
           <Title>🔗 Share Luxury Listing</Title>
-          <button onClick={onClose} style={{ background: 'transparent', border: 'none', color: '#94A3B8', fontSize: '1.1rem', cursor: 'pointer' }}>✕</button>
+          <button onClick={onClose} style={{ background: 'transparent', border: 'none', color: 'var(--color-94a3b8, #94A3B8)', fontSize: '1.1rem', cursor: 'pointer' }}>✕</button>
         </Head>
 
-        <div style={{ fontSize: '0.78rem', color: '#94A3B8' }}>{propertyTitle}</div>
+        <div style={{ fontSize: '0.78rem', color: 'var(--color-94a3b8, #94A3B8)' }}>{propertyTitle}</div>
 
         <QrBox>
-          <div style={{ fontSize: '3rem', color: '#0F172A' }}>📱</div>
-          <div style={{ fontSize: '0.7rem', color: '#0F172A', fontWeight: 800, marginTop: '4px' }}>SCAN QR CODE FOR VIP BROCHURE</div>
+          <div style={{ fontSize: '3rem', color: 'var(--color-0f172a, #0F172A)' }}>📱</div>
+          <div style={{ fontSize: '0.7rem', color: 'var(--color-0f172a, #0F172A)', fontWeight: 800, marginTop: '4px' }}>SCAN QR CODE FOR VIP BROCHURE</div>
         </QrBox>
 
         <ShareGrid>
@@ -147,7 +147,7 @@ export const PropertySocialShareModal: FC<{ propertyUrl?: string; propertyTitle?
 
         <LinkRow>
           <LinkInput value={propertyUrl} readOnly />
-          <button onClick={handleCopy} style={{ padding: '8px 14px', background: '#EF4444', border: 'none', borderRadius: '8px', color: '#FFF', fontWeight: 800, fontSize: '0.75rem', cursor: 'pointer' }}>
+          <button onClick={handleCopy} style={{ padding: '8px 14px', background: 'var(--accent-red, #EF4444)', border: 'none', borderRadius: '8px', color: 'var(--white, #FFF)', fontWeight: 800, fontSize: '0.75rem', cursor: 'pointer' }}>
             {copied ? '✓ Copied' : 'Copy'}
           </button>
         </LinkRow>

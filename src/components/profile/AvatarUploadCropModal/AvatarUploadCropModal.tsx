@@ -15,8 +15,8 @@ export const AvatarUploadCropModal: FC<{ isOpen: boolean; onClose: () => void }>
     <ModalOverlay $isOpen={isOpen} data-testid="avatar-upload-crop-modal">
       <ModalCard>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-          <h4 style={{ margin: 0, color: '#EF4444' }}>📷 Executive Avatar Photo Upload</h4>
-          <button onClick={onClose} style={{ background: 'none', border: 'none', color: '#94A3B8', fontSize: '1.2rem', cursor: 'pointer' }}>
+          <h4 style={{ margin: 0, color: 'var(--accent-red, #EF4444)' }}>📷 Executive Avatar Photo Upload</h4>
+          <button onClick={onClose} style={{ background: 'none', border: 'none', color: 'var(--color-94a3b8, #94A3B8)', fontSize: '1.2rem', cursor: 'pointer' }}>
             ✕
           </button>
         </div>
@@ -30,7 +30,7 @@ export const AvatarUploadCropModal: FC<{ isOpen: boolean; onClose: () => void }>
         </CropPreviewArea>
 
         <div style={{ margin: '1rem 0' }}>
-          <label style={{ fontSize: '0.8rem', color: '#94A3B8', display: 'block', marginBottom: '6px' }}>Circular Zoom Level ({zoomLevel.toFixed(1)}x)</label>
+          <label style={{ fontSize: '0.8rem', color: 'var(--color-94a3b8, #94A3B8)', display: 'block', marginBottom: '6px' }}>Circular Zoom Level ({zoomLevel.toFixed(1)}x)</label>
           <input
             type="range"
             min="1"
@@ -38,7 +38,7 @@ export const AvatarUploadCropModal: FC<{ isOpen: boolean; onClose: () => void }>
             step="0.1"
             value={zoomLevel}
             onChange={(e) => setZoomLevel(parseFloat(e.target.value))}
-            style={{ width: '100%', accentColor: '#EF4444' }}
+            style={{ width: '100%', accentColor: 'var(--accent-red, #EF4444)' }}
           />
         </div>
 

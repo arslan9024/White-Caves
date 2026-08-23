@@ -159,16 +159,16 @@ export const Form12MailTracker: FC = () => {
         <NoticeCard>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
             <div>
-              <div style={{ fontSize: '0.85rem', fontWeight: 800, color: '#FFF' }}>
+              <div style={{ fontSize: '0.85rem', fontWeight: 800, color: 'var(--white, #FFF)' }}>
                 Villa 44, Springs 11, Emirates Living
               </div>
-              <div style={{ fontSize: '0.7rem', color: '#94A3B8', marginTop: '2px' }}>
+              <div style={{ fontSize: '0.7rem', color: 'var(--color-94a3b8, #94A3B8)', marginTop: '2px' }}>
                 Tenant: Michael Thornton | Landlord: Tariq Mansoor
               </div>
             </div>
             <div style={{ textAlign: 'right' }}>
-              <div style={{ fontSize: '0.65rem', color: '#94A3B8', fontWeight: 700, textTransform: 'uppercase' }}>Reason for Eviction</div>
-              <div style={{ fontSize: '0.75rem', fontWeight: 800, color: '#F59E0B', marginTop: '2px' }}>{reason}</div>
+              <div style={{ fontSize: '0.65rem', color: 'var(--color-94a3b8, #94A3B8)', fontWeight: 700, textTransform: 'uppercase' }}>Reason for Eviction</div>
+              <div style={{ fontSize: '0.75rem', fontWeight: 800, color: 'var(--accent-gold, #F59E0B)', marginTop: '2px' }}>{reason}</div>
             </div>
           </div>
 
@@ -193,7 +193,7 @@ export const Form12MailTracker: FC = () => {
         </NoticeCard>
 
         <div>
-          <div style={{ fontSize: '0.72rem', fontWeight: 700, color: '#94A3B8', textTransform: 'uppercase', marginBottom: '8px' }}>
+          <div style={{ fontSize: '0.72rem', fontWeight: 700, color: 'var(--color-94a3b8, #94A3B8)', textTransform: 'uppercase', marginBottom: '8px' }}>
             Certified Dispatch & Notice Milestone Trail
           </div>
           <MailTimeline>
@@ -204,14 +204,14 @@ export const Form12MailTracker: FC = () => {
                   <StepTitle $completed={step.completed}>{step.title}</StepTitle>
                   <StepDate>📅 {step.date}</StepDate>
                 </StepContent>
-                {step.completed && <span style={{ fontSize: '0.7rem', color: '#10B981', fontWeight: 800 }}>✓ Verified</span>}
-                {step.active && <span style={{ fontSize: '0.7rem', color: '#EF4444', fontWeight: 800 }}>In Progress</span>}
+                {step.completed && <span style={{ fontSize: '0.7rem', color: 'var(--accent-green, #10B981)', fontWeight: 800 }}>✓ Verified</span>}
+                {step.active && <span style={{ fontSize: '0.7rem', color: 'var(--accent-red, #EF4444)', fontWeight: 800 }}>In Progress</span>}
               </StepRow>
             ))}
           </MailTimeline>
         </div>
 
-        <div style={{ padding: '10px 14px', borderRadius: '8px', background: 'rgba(245, 158, 11, 0.08)', border: '1px solid rgba(245, 158, 11, 0.25)', fontSize: '0.7rem', color: '#F59E0B', lineHeight: '1.5' }}>
+        <div style={{ padding: '10px 14px', borderRadius: '8px', background: 'rgba(245, 158, 11, 0.08)', border: '1px solid rgba(245, 158, 11, 0.25)', fontSize: '0.7rem', color: 'var(--accent-gold, #F59E0B)', lineHeight: '1.5' }}>
           ⚖️ <strong>Statutory Notice Rule:</strong> Under Dubai Law No. 26 of 2007 (as amended by Law No. 33 of 2008), eviction notices must be served with a minimum of 12 months notice via Notary Public or certified registered mail.
         </div>
       </Body>

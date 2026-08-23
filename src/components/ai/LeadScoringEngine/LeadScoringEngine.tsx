@@ -52,7 +52,7 @@ export const LeadScoringEngine: FC = () => {
         <Title>🎯 AI Lead Scoring Engine</Title>
         <div style={{ display: 'flex', gap: '6px' }}>
           {LEADS.map((l, i) => (
-            <button key={i} onClick={() => setSelected(i)} style={{ padding: '3px 10px', borderRadius: '6px', border: '1px solid rgba(100,116,139,0.3)', background: i === selected ? '#EF4444' : 'transparent', color: i === selected ? '#FFF' : '#64748B', fontSize: '0.65rem', fontWeight: 700, cursor: 'pointer' }}>
+            <button key={i} onClick={() => setSelected(i)} style={{ padding: '3px 10px', borderRadius: '6px', border: '1px solid rgba(100,116,139,0.3)', background: i === selected ? 'var(--accent-red, #EF4444)' : 'transparent', color: i === selected ? 'var(--white, #FFF)' : 'var(--text-secondary, #64748B)', fontSize: '0.65rem', fontWeight: 700, cursor: 'pointer' }}>
               {l.name.split(' ')[0]}
             </button>
           ))}

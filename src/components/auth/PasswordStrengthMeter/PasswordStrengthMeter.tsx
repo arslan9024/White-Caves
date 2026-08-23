@@ -59,8 +59,8 @@ export const PasswordStrengthMeter: FC<{ password?: string }> = ({ password = ''
         <BarFill $score={score} />
       </BarTrack>
       <StatusRow>
-        <span style={{ color: '#94A3B8' }}>Security Entropy:</span>
-        <span style={{ color: score === 4 ? '#10B981' : score >= 2 ? '#F59E0B' : '#EF4444' }}>
+        <span style={{ color: 'var(--color-94a3b8, #94A3B8)' }}>Security Entropy:</span>
+        <span style={{ color: score === 4 ? 'var(--accent-green, #10B981)' : score >= 2 ? 'var(--accent-gold, #F59E0B)' : 'var(--accent-red, #EF4444)' }}>
           {labels[score]}
         </span>
       </StatusRow>

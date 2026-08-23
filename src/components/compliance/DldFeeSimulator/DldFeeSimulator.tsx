@@ -42,7 +42,7 @@ export const DldFeeSimulator: FC = () => {
     <Wrapper data-testid="dld-fee-simulator">
       <Header>
         <Title>🏛️ DLD Fee Simulator</Title>
-        <div style={{ fontSize: '0.7rem', color: '#10B981', fontWeight: 700 }}>Law 85 of 2006</div>
+        <div style={{ fontSize: '0.7rem', color: 'var(--accent-green, #10B981)', fontWeight: 700 }}>Law 85 of 2006</div>
       </Header>
       <Body>
         <Grid2>

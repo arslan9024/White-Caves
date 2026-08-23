@@ -63,7 +63,7 @@ export const ChauffeurViewingCoordinator: FC = () => {
     <Wrapper data-testid="chauffeur-viewing-coordinator">
       <Header>
         <Title>🚗 VIP Transport Coordinator</Title>
-        <div style={{ fontSize: '0.7rem', color: '#F59E0B', fontWeight: 700 }}>CONCIERGE</div>
+        <div style={{ fontSize: '0.7rem', color: 'var(--accent-gold, #F59E0B)', fontWeight: 700 }}>CONCIERGE</div>
       </Header>
       <Body>
         {SERVICES.map(s => (
@@ -88,7 +88,7 @@ export const ChauffeurViewingCoordinator: FC = () => {
           {!booked ? (
             <BookBtn onClick={() => setBooked(true)}>🎯 Confirm Booking — {selectedTime}</BookBtn>
           ) : (
-            <div style={{ textAlign: 'center', padding: '12px', color: '#10B981', fontWeight: 700 }}>
+            <div style={{ textAlign: 'center', padding: '12px', color: 'var(--accent-green, #10B981)', fontWeight: 700 }}>
               ✅ Booked! {service.emoji} at {selectedTime}. White Caves concierge will confirm within 15 mins.
             </div>
           )}

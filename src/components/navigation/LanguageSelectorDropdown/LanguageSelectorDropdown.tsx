@@ -72,7 +72,7 @@ export const LanguageSelectorDropdown: FC<{ onLanguageChange?: (lang: 'en' | 'ar
       <SelectBtn onClick={() => setOpen(!open)}>
         <span>🌐</span>
         <span>{currentLang === 'en' ? 'EN (English)' : 'العربية (AR)'}</span>
-        <span style={{ fontSize: '0.6rem', color: '#94A3B8' }}>▼</span>
+        <span style={{ fontSize: '0.6rem', color: 'var(--color-94a3b8, #94A3B8)' }}>▼</span>
       </SelectBtn>
 
       {open && (

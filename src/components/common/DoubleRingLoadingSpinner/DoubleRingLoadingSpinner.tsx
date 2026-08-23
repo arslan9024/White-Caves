@@ -46,7 +46,7 @@ export const DoubleRingLoadingSpinner: FC<{ size?: number; label?: string }> = (
         <OuterRing $size={size} />
         <InnerRing $size={size} />
       </SpinnerWrapper>
-      {label && <span style={{ fontSize: '0.72rem', color: '#94A3B8', fontWeight: 700 }}>{label}</span>}
+      {label && <span style={{ fontSize: '0.72rem', color: 'var(--color-94a3b8, #94A3B8)', fontWeight: 700 }}>{label}</span>}
     </div>
   );
 };

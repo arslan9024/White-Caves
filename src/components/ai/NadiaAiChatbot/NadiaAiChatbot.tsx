@@ -92,7 +92,7 @@ export const NadiaAiChatbot: FC = () => {
           <AgentName>Nadia — White Caves AI Agent</AgentName>
           <AgentStatus><StatusDot />Online · Responds instantly</AgentStatus>
         </AgentInfo>
-        <div style={{ fontSize: '0.7rem', color: '#64748B' }}>GPT-4o Powered</div>
+        <div style={{ fontSize: '0.7rem', color: 'var(--text-secondary, #64748B)' }}>GPT-4o Powered</div>
       </Header>
       <MessagesArea>
         {messages.map((m, i) => (

@@ -54,7 +54,7 @@ export const ContractTimeline: FC = () => (
   <Wrapper data-testid="contract-timeline">
     <Header>
       <Title>📅 Sale Contract Journey Timeline</Title>
-      <div style={{ fontSize: '0.7rem', color: '#EF4444', fontWeight: 700 }}>● Stage 4 of 7</div>
+      <div style={{ fontSize: '0.7rem', color: 'var(--accent-red, #EF4444)', fontWeight: 700 }}>● Stage 4 of 7</div>
     </Header>
     <Body>
       <SummaryGrid>

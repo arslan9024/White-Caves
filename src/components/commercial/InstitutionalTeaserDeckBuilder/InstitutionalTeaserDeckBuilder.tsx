@@ -180,21 +180,21 @@ export const InstitutionalTeaserDeckBuilder: FC = () => {
 
         <MemoSummary>
           <div>
-            <div style={{ fontSize: '0.65rem', color: '#94A3B8', textTransform: 'uppercase', fontWeight: 700 }}>Portfolio Valuation</div>
+            <div style={{ fontSize: '0.65rem', color: 'var(--color-94a3b8, #94A3B8)', textTransform: 'uppercase', fontWeight: 700 }}>Portfolio Valuation</div>
             <MVal>AED {(price / 1000000).toFixed(1)}M</MVal>
           </div>
           <div>
-            <div style={{ fontSize: '0.65rem', color: '#94A3B8', textTransform: 'uppercase', fontWeight: 700 }}>Net Initial Yield (Cap Rate)</div>
-            <MVal style={{ color: '#10B981' }}>{capRate}%</MVal>
+            <div style={{ fontSize: '0.65rem', color: 'var(--color-94a3b8, #94A3B8)', textTransform: 'uppercase', fontWeight: 700 }}>Net Initial Yield (Cap Rate)</div>
+            <MVal style={{ color: 'var(--accent-green, #10B981)' }}>{capRate}%</MVal>
           </div>
           <div>
-            <div style={{ fontSize: '0.65rem', color: '#94A3B8', textTransform: 'uppercase', fontWeight: 700 }}>WAULT Duration</div>
-            <MVal style={{ color: '#FFF' }}>{waultYears} Years</MVal>
+            <div style={{ fontSize: '0.65rem', color: 'var(--color-94a3b8, #94A3B8)', textTransform: 'uppercase', fontWeight: 700 }}>WAULT Duration</div>
+            <MVal style={{ color: 'var(--white, #FFF)' }}>{waultYears} Years</MVal>
           </div>
         </MemoSummary>
 
         {compiled ? (
-          <div style={{ padding: '14px', borderRadius: '10px', background: 'rgba(16, 185, 129, 0.1)', border: '1px solid rgba(16, 185, 129, 0.3)', textAlign: 'center', color: '#10B981', fontWeight: 800, fontSize: '0.82rem' }}>
+          <div style={{ padding: '14px', borderRadius: '10px', background: 'rgba(16, 185, 129, 0.1)', border: '1px solid rgba(16, 185, 129, 0.3)', textAlign: 'center', color: 'var(--accent-green, #10B981)', fontWeight: 800, fontSize: '0.82rem' }}>
             ✓ Blind Institutional Teaser Deck Compiled & Stored in Confidential Escrow Vault!
           </div>
         ) : (

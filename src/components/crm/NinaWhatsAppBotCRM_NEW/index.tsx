@@ -179,14 +179,14 @@ export const NinaWhatsAppBotCRM: React.FC = () => {
         }}
       >
         <div style={{ fontSize: '3rem', marginBottom: '1rem' }}>⛔</div>
-        <span style={{ background: '#FEF2F2', color: '#B91C1C', padding: '4px 12px', borderRadius: '6px', fontSize: '0.78rem', fontWeight: 900, textTransform: 'uppercase' }}>
+        <span style={{ background: 'var(--color-fef2f2, #FEF2F2)', color: 'var(--accent-red, #B91C1C)', padding: '4px 12px', borderRadius: '6px', fontSize: '0.78rem', fontWeight: 900, textTransform: 'uppercase' }}>
           Sovereign Security Policy Enforced
         </span>
-        <h2 style={{ fontSize: '1.8rem', fontWeight: 900, margin: '1rem 0 0.5rem', color: '#0f0f0f' }}>
+        <h2 style={{ fontSize: '1.8rem', fontWeight: 900, margin: '1rem 0 0.5rem', color: 'var(--color-0f0f0f, #0f0f0f)' }}>
           Access Denied — Managing Director Sovereign Access Only
         </h2>
-        <p style={{ color: '#64748B', fontSize: '0.95rem', maxWidth: '560px', margin: '0 auto 1.5rem', lineHeight: 1.6 }}>
-          Nina AI Assistant (<strong style={{ color: '#D4AF37' }}>Desk 3.2</strong>) and primary executive line <strong style={{ color: '#D4AF37' }}>+971 50 576 0056</strong> are strictly authorized for <strong>Managing Director (Arslan Malik)</strong> only. No other roles, employees, or freelancers may access this control center.
+        <p style={{ color: 'var(--text-secondary, #64748B)', fontSize: '0.95rem', maxWidth: '560px', margin: '0 auto 1.5rem', lineHeight: 1.6 }}>
+          Nina AI Assistant (<strong style={{ color: 'var(--color-d4af37, #D4AF37)' }}>Desk 3.2</strong>) and primary executive line <strong style={{ color: '#D4AF37' }}>+971 50 576 0056</strong> are strictly authorized for <strong>Managing Director (Arslan Malik)</strong> only. No other roles, employees, or freelancers may access this control center.
         </p>
       </div>
     );
@@ -239,14 +239,14 @@ export const NinaWhatsAppBotCRM: React.FC = () => {
         style={{ flex: 1, padding: '24px', display: 'flex', flexDirection: 'column', overflowY: 'auto' }}
       >
         {/* TOP CONTROL ROOM HEADER */}
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem', borderBottom: '1px solid #E2E8F0', paddingBottom: '0.85rem' }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem', borderBottom: '1px solid var(--text-secondary, #E2E8F0)', paddingBottom: '0.85rem' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
             <span style={{ fontSize: '2rem' }}>🥷</span>
             <div>
-              <span style={{ fontSize: '0.75rem', fontWeight: 800, color: '#D4AF37', textTransform: 'uppercase', letterSpacing: '0.08em' }}>
+              <span style={{ fontSize: '0.75rem', fontWeight: 800, color: 'var(--color-d4af37, #D4AF37)', textTransform: 'uppercase', letterSpacing: '0.08em' }}>
                 Desk 3.2 · RUP 3-Stage Phase-Gated Journey Control
               </span>
-              <h2 style={{ margin: '2px 0 0', fontSize: '1.4rem', fontWeight: 800, color: '#1E293B' }}>
+              <h2 style={{ margin: '2px 0 0', fontSize: '1.4rem', fontWeight: 800, color: 'var(--color-1e293b, #1E293B)' }}>
                 Nina AI Virtual Guide & Operational Control Room
               </h2>
             </div>
@@ -309,7 +309,7 @@ export const NinaWhatsAppBotCRM: React.FC = () => {
               transition: 'background 0.2s ease, color 0.2s ease',
             }}
           >
-            <span style={{ background: isConnected ? '#10B981' : '#F59E0B', color: '#0f0f0f', borderRadius: '50%', width: '22px', height: '22px', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '0.75rem' }}>
+            <span style={{ background: isConnected ? 'var(--accent-green, #10B981)' : 'var(--accent-gold, #F59E0B)', color: 'var(--color-0f0f0f, #0f0f0f)', borderRadius: '50%', width: '22px', height: '22px', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '0.75rem' }}>
               1
             </span>
             <span>Stage 1: Device Auth & Inception</span>
@@ -347,7 +347,7 @@ export const NinaWhatsAppBotCRM: React.FC = () => {
               transition: 'background 0.2s ease, color 0.2s ease',
             }}
           >
-            <span style={{ background: currentStage >= 2 ? '#10B981' : '#64748B', color: '#0f0f0f', borderRadius: '50%', width: '22px', height: '22px', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '0.75rem' }}>
+            <span style={{ background: currentStage >= 2 ? 'var(--accent-green, #10B981)' : 'var(--text-secondary, #64748B)', color: 'var(--color-0f0f0f, #0f0f0f)', borderRadius: '50%', width: '22px', height: '22px', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '0.75rem' }}>
               2
             </span>
             <span>Stage 2: Feature Matrix & Config</span>
@@ -385,7 +385,7 @@ export const NinaWhatsAppBotCRM: React.FC = () => {
               transition: 'background 0.2s ease, color 0.2s ease',
             }}
           >
-            <span style={{ background: currentStage === 3 ? '#10B981' : '#64748B', color: '#0f0f0f', borderRadius: '50%', width: '22px', height: '22px', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '0.75rem' }}>
+            <span style={{ background: currentStage === 3 ? 'var(--accent-green, #10B981)' : 'var(--text-secondary, #64748B)', color: 'var(--color-0f0f0f, #0f0f0f)', borderRadius: '50%', width: '22px', height: '22px', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '0.75rem' }}>
               3
             </span>
             <span>Stage 3: Live Conversations & Results</span>
@@ -408,10 +408,10 @@ export const NinaWhatsAppBotCRM: React.FC = () => {
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.25rem' }}>
                 <div>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '4px' }}>
-                    <span style={{ background: '#D4AF37', color: '#0f0f0f', fontSize: '0.72rem', fontWeight: 900, padding: '3px 8px', borderRadius: '4px' }}>
+                    <span style={{ background: 'var(--color-d4af37, #D4AF37)', color: 'var(--color-0f0f0f, #0f0f0f)', fontSize: '0.72rem', fontWeight: 900, padding: '3px 8px', borderRadius: '4px' }}>
                       STAGE 1 · INCEPTION PHASE
                     </span>
-                    <span style={{ background: isConnected ? 'rgba(37, 211, 102, 0.2)' : 'rgba(239, 68, 68, 0.2)', color: isConnected ? '#25D366' : '#EF4444', border: isConnected ? '1px solid #25D366' : '1px solid #EF4444', fontSize: '0.72rem', fontWeight: 800, padding: '2px 8px', borderRadius: '6px' }}>
+                    <span style={{ background: isConnected ? 'rgba(37, 211, 102, 0.2)' : 'rgba(239, 68, 68, 0.2)', color: isConnected ? 'var(--color-25d366, #25D366)' : 'var(--accent-red, #EF4444)', border: isConnected ? '1px solid var(--color-25d366, #25D366)' : '1px solid var(--accent-red, #EF4444)', fontSize: '0.72rem', fontWeight: 800, padding: '2px 8px', borderRadius: '6px' }}>
                       {isConnected ? '🟢 HARDWARE AUTHENTICATED' : '🔴 PAIRING REQUIRED'}
                     </span>
                   </div>
@@ -444,18 +444,18 @@ export const NinaWhatsAppBotCRM: React.FC = () => {
               {/* Hardware Telemetry Badges */}
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: '0.75rem' }}>
                 <div style={{ background: 'rgba(255, 255, 255, 0.08)', borderRadius: '10px', padding: '10px 14px', border: '1px solid rgba(255, 255, 255, 0.12)' }}>
-                  <span style={{ fontSize: '0.7rem', color: '#64748B', fontWeight: 800, display: 'block' }}>PHONE BINDING</span>
-                  <strong style={{ fontSize: '0.9rem', color: '#D4AF37' }}>{phoneNumber}</strong>
+                  <span style={{ fontSize: '0.7rem', color: 'var(--text-secondary, #64748B)', fontWeight: 800, display: 'block' }}>PHONE BINDING</span>
+                  <strong style={{ fontSize: '0.9rem', color: 'var(--color-d4af37, #D4AF37)' }}>{phoneNumber}</strong>
                 </div>
                 <div style={{ background: 'rgba(255, 255, 255, 0.08)', borderRadius: '10px', padding: '10px 14px', border: '1px solid rgba(255, 255, 255, 0.12)' }}>
-                  <span style={{ fontSize: '0.7rem', color: '#64748B', fontWeight: 800, display: 'block' }}>BATTERY LEVEL</span>
-                  <strong style={{ fontSize: '0.9rem', color: '#10B981', display: 'flex', alignItems: 'center', gap: '4px' }}>
+                  <span style={{ fontSize: '0.7rem', color: 'var(--text-secondary, #64748B)', fontWeight: 800, display: 'block' }}>BATTERY LEVEL</span>
+                  <strong style={{ fontSize: '0.9rem', color: 'var(--accent-green, #10B981)', display: 'flex', alignItems: 'center', gap: '4px' }}>
                     <Battery size={16} /> {batteryLevel}% Mobile Charge
                   </strong>
                 </div>
                 <div style={{ background: 'rgba(255, 255, 255, 0.08)', borderRadius: '10px', padding: '10px 14px', border: '1px solid rgba(255, 255, 255, 0.12)' }}>
-                  <span style={{ fontSize: '0.7rem', color: '#64748B', fontWeight: 800, display: 'block' }}>SIGNAL RSSI</span>
-                  <strong style={{ fontSize: '0.9rem', color: '#F59E0B', display: 'flex', alignItems: 'center', gap: '4px' }}>
+                  <span style={{ fontSize: '0.7rem', color: 'var(--text-secondary, #64748B)', fontWeight: 800, display: 'block' }}>SIGNAL RSSI</span>
+                  <strong style={{ fontSize: '0.9rem', color: 'var(--accent-gold, #F59E0B)', display: 'flex', alignItems: 'center', gap: '4px' }}>
                     <Radio size={16} /> {signalQuality}% Signal Strength
                   </strong>
                 </div>
@@ -463,12 +463,12 @@ export const NinaWhatsAppBotCRM: React.FC = () => {
             </div>
 
             {/* PAIRING PORTAL */}
-            <div style={{ background: 'rgba(255, 255, 255, 0.85)', backdropFilter: 'blur(12px)', border: '1.5px solid #CBD5E1', borderRadius: '16px', padding: '1.5rem' }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.25rem', borderBottom: '1px solid #E2E8F0', paddingBottom: '0.75rem' }}>
-                <h4 style={{ margin: 0, fontSize: '1.1rem', fontWeight: 800, color: '#1E293B' }}>
+            <div style={{ background: 'rgba(255, 255, 255, 0.85)', backdropFilter: 'blur(12px)', border: '1.5px solid var(--text-secondary, #CBD5E1)', borderRadius: '16px', padding: '1.5rem' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.25rem', borderBottom: '1px solid var(--text-secondary, #E2E8F0)', paddingBottom: '0.75rem' }}>
+                <h4 style={{ margin: 0, fontSize: '1.1rem', fontWeight: 800, color: 'var(--color-1e293b, #1E293B)' }}>
                   🔑 Select WhatsApp Pairing Method for {phoneNumber}
                 </h4>
-                <div style={{ display: 'flex', background: '#F1F5F9', padding: '4px', borderRadius: '10px', gap: '4px' }}>
+                <div style={{ display: 'flex', background: 'var(--color-f1f5f9, #F1F5F9)', padding: '4px', borderRadius: '10px', gap: '4px' }}>
                   <button
                     onClick={() => setPairingMethod('pairingCode')}
                     style={{
@@ -505,7 +505,7 @@ export const NinaWhatsAppBotCRM: React.FC = () => {
               {pairingMethod === 'pairingCode' ? (
                 <div style={{ display: 'grid', gridTemplateColumns: '1.1fr 0.9fr', gap: '1.5rem', alignItems: 'center' }}>
                   <div>
-                    <ol style={{ margin: '0 0 1.25rem 0', paddingLeft: '1.25rem', fontSize: '0.88rem', color: '#475569', lineHeight: 1.8 }}>
+                    <ol style={{ margin: '0 0 1.25rem 0', paddingLeft: '1.25rem', fontSize: '0.88rem', color: 'var(--color-475569, #475569)', lineHeight: 1.8 }}>
                       <li>Open <strong>WhatsApp</strong> on phone (<strong>{phoneNumber}</strong>).</li>
                       <li>Tap <strong>Settings ➔ Linked Devices ➔ Link a Device</strong>.</li>
                       <li>Tap <strong>"Link with phone number instead"</strong>.</li>
@@ -533,11 +533,11 @@ export const NinaWhatsAppBotCRM: React.FC = () => {
                     </div>
                   </div>
 
-                  <div style={{ background: '#ECFDF5', border: '2px dashed #10B981', borderRadius: '16px', padding: '1.75rem', textAlign: 'center' }}>
-                    <span style={{ fontSize: '0.78rem', fontWeight: 800, color: '#047857', textTransform: 'uppercase' }}>
+                  <div style={{ background: 'var(--color-ecfdf5, #ECFDF5)', border: '2px dashed var(--accent-green, #10B981)', borderRadius: '16px', padding: '1.75rem', textAlign: 'center' }}>
+                    <span style={{ fontSize: '0.78rem', fontWeight: 800, color: 'var(--color-047857, #047857)', textTransform: 'uppercase' }}>
                       Live 8-Digit Pairing Code
                     </span>
-                    <div style={{ fontSize: '2.2rem', fontWeight: 900, letterSpacing: '0.14em', color: '#065F46', fontFamily: 'monospace', margin: '0.85rem 0' }}>
+                    <div style={{ fontSize: '2.2rem', fontWeight: 900, letterSpacing: '0.14em', color: 'var(--color-065f46, #065F46)', fontFamily: 'monospace', margin: '0.85rem 0' }}>
                       {pairingCode}
                     </div>
                     <button
@@ -559,18 +559,18 @@ export const NinaWhatsAppBotCRM: React.FC = () => {
                   </div>
                 </div>
               ) : (
-                <div style={{ textAlign: 'center', background: '#F8FAFC', padding: '1.5rem', borderRadius: '16px', border: '1px solid #E2E8F0' }}>
-                  <img src={qrCodeUrl} alt="QR Scanner" style={{ width: '220px', height: '220px', borderRadius: '12px', border: '6px solid #FFFFFF' }} />
+                <div style={{ textAlign: 'center', background: 'var(--color-f8fafc, #F8FAFC)', padding: '1.5rem', borderRadius: '16px', border: '1px solid var(--text-secondary, #E2E8F0)' }}>
+                  <img src={qrCodeUrl} alt="QR Scanner" style={{ width: '220px', height: '220px', borderRadius: '12px', border: '6px solid var(--white, #FFFFFF)' }} />
                 </div>
               )}
             </div>
 
             {/* HARDWARE SOCKET TERMINAL */}
-            <div style={{ background: 'rgba(250, 250, 250, 0.7)', backdropFilter: 'blur(8px)', borderRadius: '14px', padding: '1.25rem', border: '1px solid #E2E8F0' }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '0.75rem', color: '#D4AF37', fontWeight: 800, fontSize: '0.88rem' }}>
+            <div style={{ background: 'rgba(250, 250, 250, 0.7)', backdropFilter: 'blur(8px)', borderRadius: '14px', padding: '1.25rem', border: '1px solid var(--text-secondary, #E2E8F0)' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '0.75rem', color: 'var(--color-d4af37, #D4AF37)', fontWeight: 800, fontSize: '0.88rem' }}>
                 <Terminal size={18} /> Stage 1 Socket Handshake Terminal
               </div>
-              <div style={{ fontFamily: 'monospace', fontSize: '0.78rem', color: '#0f0f0f', display: 'flex', flexDirection: 'column', gap: '4px', maxHeight: '140px', overflowY: 'auto' }}>
+              <div style={{ fontFamily: 'monospace', fontSize: '0.78rem', color: 'var(--color-0f0f0f, #0f0f0f)', display: 'flex', flexDirection: 'column', gap: '4px', maxHeight: '140px', overflowY: 'auto' }}>
                 {handshakeLogs.map((log, i) => (
                   <div key={i} style={{ opacity: i === 0 ? 1 : 0.75 }}>
                     {log}
@@ -584,10 +584,10 @@ export const NinaWhatsAppBotCRM: React.FC = () => {
         {/* ─── STAGE 2: ELABORATION & FEATURE MATRIX SELECTION ─── */}
         {currentStage === 2 && (
           <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
-            <div style={{ background: '#ECFDF5', border: '1.5px solid #10B981', borderRadius: '14px', padding: '1rem 1.25rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <div style={{ background: 'var(--color-ecfdf5, #ECFDF5)', border: '1.5px solid var(--accent-green, #10B981)', borderRadius: '14px', padding: '1rem 1.25rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
               <div>
-                <span style={{ fontSize: '0.75rem', fontWeight: 900, color: '#047857', textTransform: 'uppercase' }}>STAGE 2 · ELABORATION PHASE</span>
-                <h4 style={{ margin: '2px 0 0', fontSize: '1.1rem', fontWeight: 800, color: '#065F46' }}>
+                <span style={{ fontSize: '0.75rem', fontWeight: 900, color: 'var(--color-047857, #047857)', textTransform: 'uppercase' }}>STAGE 2 · ELABORATION PHASE</span>
+                <h4 style={{ margin: '2px 0 0', fontSize: '1.1rem', fontWeight: 800, color: 'var(--color-065f46, #065F46)' }}>
                   Configure Active Bot Features & DAMAC Hills 2 Auto-Reply Rules
                 </h4>
                 {currentStage === 2 && (
@@ -638,10 +638,10 @@ export const NinaWhatsAppBotCRM: React.FC = () => {
         {/* ─── STAGE 3: CONSTRUCTION & LIVE CONVERSATIONS RESULTS ─── */}
         {currentStage === 3 && (
           <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
-            <div style={{ background: 'rgba(255, 255, 255, 0.85)', backdropFilter: 'blur(12px)', border: '1.5px solid #D4AF37', borderRadius: '14px', padding: '1rem 1.25rem', color: '#0f0f0f', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <div style={{ background: 'rgba(255, 255, 255, 0.85)', backdropFilter: 'blur(12px)', border: '1.5px solid var(--color-d4af37, #D4AF37)', borderRadius: '14px', padding: '1rem 1.25rem', color: 'var(--color-0f0f0f, #0f0f0f)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
               <div>
-                <span style={{ fontSize: '0.75rem', fontWeight: 900, color: '#D4AF37', textTransform: 'uppercase' }}>STAGE 3 · CONSTRUCTION & RESULTS PHASE</span>
-                <h4 style={{ margin: '2px 0 0', fontSize: '1.1rem', fontWeight: 800, color: '#0f0f0f' }}>
+                <span style={{ fontSize: '0.75rem', fontWeight: 900, color: 'var(--color-d4af37, #D4AF37)', textTransform: 'uppercase' }}>STAGE 3 · CONSTRUCTION & RESULTS PHASE</span>
+                <h4 style={{ margin: '2px 0 0', fontSize: '1.1rem', fontWeight: 800, color: 'var(--color-0f0f0f, #0f0f0f)' }}>
                   Live WhatsApp Conversations Inbox & Real-Time Dispatcher (+971 50 576 0056)
                 </h4>
               </div>
@@ -767,12 +767,12 @@ export const NinaWhatsAppBotCRM: React.FC = () => {
           }}
         >
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '8px' }}>
-            <h2 style={{ margin: 0, fontSize: '1.25rem', fontWeight: 700, color: '#FFFFFF' }}>
+            <h2 style={{ margin: 0, fontSize: '1.25rem', fontWeight: 700, color: 'var(--white, #FFFFFF)' }}>
               Nina Executive Briefing Room
             </h2>
             <div style={{ display: 'flex', gap: '0.5rem', marginTop: '0.25rem' }}>
-              <span style={{ fontSize: '0.75rem', background: 'rgba(239, 68, 68, 0.2)', color: '#EF4444', padding: '2px 8px', borderRadius: '12px', fontWeight: 600 }}>Sovereign Mode</span>
-              <span style={{ fontSize: '0.75rem', background: 'rgba(212, 175, 55, 0.2)', color: '#D4AF37', padding: '2px 8px', borderRadius: '12px', fontWeight: 600 }}>MD Access: Verified</span>
+              <span style={{ fontSize: '0.75rem', background: 'rgba(239, 68, 68, 0.2)', color: 'var(--accent-red, #EF4444)', padding: '2px 8px', borderRadius: '12px', fontWeight: 600 }}>Sovereign Mode</span>
+              <span style={{ fontSize: '0.75rem', background: 'rgba(212, 175, 55, 0.2)', color: 'var(--color-d4af37, #D4AF37)', padding: '2px 8px', borderRadius: '12px', fontWeight: 600 }}>MD Access: Verified</span>
             </div>
           </div>
           

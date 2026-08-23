@@ -68,7 +68,7 @@ export const AmlKycVerificationPanel: FC = () => {
     <Wrapper data-testid="aml-kyc-verification-panel">
       <Header>
         <Title>🔍 AML / KYC Verification Panel</Title>
-        <div style={{ fontSize: '0.7rem', color: '#64748B' }}>CBUAE AML 2024</div>
+        <div style={{ fontSize: '0.7rem', color: 'var(--text-secondary, #64748B)' }}>CBUAE AML 2024</div>
       </Header>
       <Body>
         <KycForm>

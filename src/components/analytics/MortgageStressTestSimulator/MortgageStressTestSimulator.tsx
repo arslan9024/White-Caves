@@ -46,7 +46,7 @@ export const MortgageStressTestSimulator: FC = () => {
     <Wrapper data-testid="mortgage-stress-test-simulator">
       <Header>
         <Title>📊 Mortgage Stress Test Simulator</Title>
-        <div style={{ fontSize: '0.7rem', color: '#64748B' }}>CBUAE Stress Model</div>
+        <div style={{ fontSize: '0.7rem', color: 'var(--text-secondary, #64748B)' }}>CBUAE Stress Model</div>
       </Header>
       <Body>
         <SliderRow>

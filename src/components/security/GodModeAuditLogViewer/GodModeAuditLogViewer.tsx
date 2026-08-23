@@ -104,7 +104,7 @@ export const GodModeAuditLogViewer: FC = () => {
         <L5Badge>SOVEREIGN SECURITY</L5Badge>
       </Head>
       <Body>
-        <div style={{ padding: '10px 14px', borderRadius: '8px', background: 'rgba(239, 68, 68, 0.08)', border: '1px solid rgba(239, 68, 68, 0.25)', fontSize: '0.72rem', color: '#FCA5A5' }}>
+        <div style={{ padding: '10px 14px', borderRadius: '8px', background: 'rgba(239, 68, 68, 0.08)', border: '1px solid rgba(239, 68, 68, 0.25)', fontSize: '0.72rem', color: 'var(--color-fca5a5, #FCA5A5)' }}>
           🔒 <strong>Immutable Blockchain Audit Log:</strong> All Level 5 Superuser impersonations, role elevations, and escrow overrides are cryptographically signed and archived for regulatory compliance with Dubai Government Audit Standards.
         </div>
 
@@ -123,13 +123,13 @@ export const GodModeAuditLogViewer: FC = () => {
           <tbody>
             {logs.map(log => (
               <Tr key={log.id}>
-                <Td style={{ fontWeight: 800, color: '#FFF' }}>{log.id}</Td>
-                <Td style={{ color: '#94A3B8' }}>{log.timestamp}</Td>
-                <Td style={{ fontWeight: 700, color: '#EF4444' }}>{log.actor}</Td>
+                <Td style={{ fontWeight: 800, color: 'var(--white, #FFF)' }}>{log.id}</Td>
+                <Td style={{ color: 'var(--color-94a3b8, #94A3B8)' }}>{log.timestamp}</Td>
+                <Td style={{ fontWeight: 700, color: 'var(--accent-red, #EF4444)' }}>{log.actor}</Td>
                 <Td><ImpersonateTag>{log.targetUser}</ImpersonateTag></Td>
                 <Td>{log.action}</Td>
-                <Td style={{ fontFamily: 'monospace', color: '#94A3B8' }}>{log.ip}</Td>
-                <Td style={{ fontWeight: 800, color: '#10B981' }}>{log.outcome}</Td>
+                <Td style={{ fontFamily: 'monospace', color: 'var(--color-94a3b8, #94A3B8)' }}>{log.ip}</Td>
+                <Td style={{ fontWeight: 800, color: 'var(--accent-green, #10B981)' }}>{log.outcome}</Td>
               </Tr>
             ))}
           </tbody>

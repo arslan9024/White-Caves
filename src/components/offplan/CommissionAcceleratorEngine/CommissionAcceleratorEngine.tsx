@@ -68,7 +68,7 @@ export const CommissionAcceleratorEngine: FC = () => {
     <Wrap data-testid="commission-accelerator-engine">
       <Head>
         <Title>🚀 Commission Accelerator Engine</Title>
-        <div style={{fontSize:'0.68rem',color:'#EF4444',fontWeight:700}}>{tier.label} Tier</div>
+        <div style={{fontSize:'0.68rem',color:'var(--accent-red, #EF4444)',fontWeight:700}}>{tier.label} Tier</div>
       </Head>
       <Body>
         <div>
@@ -80,7 +80,7 @@ export const CommissionAcceleratorEngine: FC = () => {
               </TierSegment>
             ))}
           </TierBar>
-          <div style={{fontSize:'0.65rem',color:'#64748B',marginTop:'4px',textAlign:'right'}}>
+          <div style={{fontSize:'0.65rem',color:'var(--text-secondary, #64748B)',marginTop:'4px',textAlign:'right'}}>
             {unitsToNextTier>0?`${unitsToNextTier} more units to reach ${nextTier.label}`:'🏆 Maximum tier achieved!'}
           </div>
         </div>
@@ -106,8 +106,8 @@ export const CommissionAcceleratorEngine: FC = () => {
             <DevFill $pct={tier.devSplit}>{developer} {tier.devSplit}%</DevFill>
           </SplitBars>
           <div style={{display:'flex',justifyContent:'space-between',fontSize:'0.72rem'}}>
-            <div><span style={{color:'#EF4444',fontWeight:800}}>Agency earns: AED {Math.round(agencyEarnings).toLocaleString()}</span> <span style={{color:'#64748B'}}>per unit</span></div>
-            <div style={{color:'#64748B'}}>Dev retains: AED {Math.round(devRetains).toLocaleString()}</div>
+            <div><span style={{color:'var(--accent-red, #EF4444)',fontWeight:800}}>Agency earns: AED {Math.round(agencyEarnings).toLocaleString()}</span> <span style={{color:'#64748B'}}>per unit</span></div>
+            <div style={{color:'var(--text-secondary, #64748B)'}}>Dev retains: AED {Math.round(devRetains).toLocaleString()}</div>
           </div>
         </SplitCard>
 

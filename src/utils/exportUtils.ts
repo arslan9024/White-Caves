@@ -32,7 +32,7 @@ export function downloadBlob(blob: Blob, filename: string): void {
 /**
  * Converts tabular objects to a UTF-8 CSV file with BOM for Excel compatibility
  */
-export function exportToCsv<T extends Record<string, any>>(
+export function exportToCsv<T extends Record<string, unknown>>(
   filename: string,
   columns: ExportColumn<T>[],
   data: T[]
@@ -42,7 +42,7 @@ export function exportToCsv<T extends Record<string, any>>(
   const dataRows = data.map(row => {
     return columns
       .map(col => {
-        let value: any;
+        let value: unknown;
         if (typeof col.key === 'function') {
           value = col.key(row);
         } else {

@@ -217,17 +217,17 @@ export const UaeddsRentMandate: FC = () => {
           </MItem>
           <MItem>
             <MLabel>PDC Cheques Needed</MLabel>
-            <MVal style={{ color: '#E2E8F0' }}>0 (Paperless)</MVal>
+            <MVal style={{ color: 'var(--text-secondary, #E2E8F0)' }}>0 (Paperless)</MVal>
           </MItem>
         </MandateSummary>
 
         {mandateActive ? (
           <ConfirmationBox>
             <div style={{ fontSize: '1.2rem' }}>✅</div>
-            <div style={{ fontSize: '0.9rem', fontWeight: 800, color: '#10B981' }}>
+            <div style={{ fontSize: '0.9rem', fontWeight: 800, color: 'var(--accent-green, #10B981)' }}>
               UAEDDS Direct Debit Mandate Registered
             </div>
-            <div style={{ fontSize: '0.72rem', color: '#94A3B8' }}>
+            <div style={{ fontSize: '0.72rem', color: 'var(--color-94a3b8, #94A3B8)' }}>
               Mandate UMRN: <strong>AE-DDS-2026-894109</strong> | Bank Authorization Token Active
             </div>
           </ConfirmationBox>
@@ -237,7 +237,7 @@ export const UaeddsRentMandate: FC = () => {
           </SubmitBtn>
         )}
 
-        <div style={{ fontSize: '0.68rem', color: '#64748B', textAlign: 'center', lineHeight: '1.4' }}>
+        <div style={{ fontSize: '0.68rem', color: 'var(--text-secondary, #64748B)', textAlign: 'center', lineHeight: '1.4' }}>
           Paperless rent payment replaces post-dated physical cheques under Dubai DLD & Central Bank of UAE UAEDDS Framework.
         </div>
       </Body>

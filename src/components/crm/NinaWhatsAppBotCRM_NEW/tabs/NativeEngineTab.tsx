@@ -149,20 +149,20 @@ export const NativeEngineTab: React.FC = () => {
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.85rem' }}>
             <span style={{ fontSize: '2.2rem' }}>⚙️</span>
             <div>
-              <span style={{ fontSize: '0.75rem', fontWeight: 800, color: '#38BDF8', textTransform: 'uppercase', letterSpacing: '0.08em' }}>
+              <span style={{ fontSize: '0.75rem', fontWeight: 800, color: 'var(--color-38bdf8, #38BDF8)', textTransform: 'uppercase', letterSpacing: '0.08em' }}>
                 whatsapp-web.js + Nina Native Hybrid Architecture
               </span>
-              <h3 style={{ margin: '2px 0 0', fontSize: '1.35rem', fontWeight: 800, color: '#FFFFFF' }}>
+              <h3 style={{ margin: '2px 0 0', fontSize: '1.35rem', fontWeight: 800, color: 'var(--white, #FFFFFF)' }}>
                 Nina Independent Engine & whatsapp-web.js Control Panel
               </h3>
             </div>
           </div>
-          <span style={{ background: '#06B6D4', color: '#FFFFFF', fontWeight: 800, fontSize: '0.8rem', padding: '6px 14px', borderRadius: '8px' }}>
+          <span style={{ background: 'var(--color-06b6d4, #06B6D4)', color: 'var(--white, #FFFFFF)', fontWeight: 800, fontSize: '0.8rem', padding: '6px 14px', borderRadius: '8px' }}>
             200% Feature Suite Active
           </span>
         </div>
 
-        <p style={{ margin: 0, fontSize: '0.88rem', color: '#CBD5E1', lineHeight: 1.5 }}>
+        <p style={{ margin: 0, fontSize: '0.88rem', color: 'var(--text-secondary, #CBD5E1)', lineHeight: 1.5 }}>
           Nina AI integrates all core features of <strong>whatsapp-web.js v1.34.4</strong> (LocalAuth session persistence, QR code streams, PDF document sharing, location pins, VCards) with her own <strong>Native AI Property Matcher</strong> (9,210 DAMAC Hills 2 properties) for complete independence and reliability!
         </p>
       </div>
@@ -207,24 +207,24 @@ export const NativeEngineTab: React.FC = () => {
           >
             <div>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.5rem' }}>
-                <span style={{ fontSize: '0.72rem', fontWeight: 800, color: '#06B6D4', background: 'rgba(6, 182, 212, 0.1)', padding: '2px 8px', borderRadius: '4px' }}>
+                <span style={{ fontSize: '0.72rem', fontWeight: 800, color: 'var(--color-06b6d4, #06B6D4)', background: 'rgba(6, 182, 212, 0.1)', padding: '2px 8px', borderRadius: '4px' }}>
                   {feat.source}
                 </span>
-                <span style={{ fontSize: '0.72rem', fontWeight: 800, color: '#10B981', background: 'rgba(16, 185, 129, 0.1)', padding: '2px 8px', borderRadius: '4px' }}>
+                <span style={{ fontSize: '0.72rem', fontWeight: 800, color: 'var(--accent-green, #10B981)', background: 'rgba(16, 185, 129, 0.1)', padding: '2px 8px', borderRadius: '4px' }}>
                   ✓ {feat.status}
                 </span>
               </div>
 
-              <h4 style={{ margin: '0 0 0.4rem 0', fontSize: '1rem', fontWeight: 800, color: '#1E293B' }}>{feat.name}</h4>
-              <p style={{ margin: 0, fontSize: '0.84rem', color: '#475569', lineHeight: 1.45 }}>{feat.description}</p>
+              <h4 style={{ margin: '0 0 0.4rem 0', fontSize: '1rem', fontWeight: 800, color: 'var(--color-1e293b, #1E293B)' }}>{feat.name}</h4>
+              <p style={{ margin: 0, fontSize: '0.84rem', color: 'var(--color-475569, #475569)', lineHeight: 1.45 }}>{feat.description}</p>
             </div>
           </div>
         ))}
       </div>
 
       {/* INTERACTIVE ENGINE SIMULATOR & TESTER */}
-      <div style={{ background: '#F8FAFC', border: '1.5px solid #06B6D4', borderRadius: '16px', padding: '1.5rem' }}>
-        <h4 style={{ margin: '0 0 0.85rem 0', fontSize: '1.1rem', fontWeight: 800, color: '#1E293B', display: 'flex', alignItems: 'center', gap: '8px' }}>
+      <div style={{ background: 'var(--color-f8fafc, #F8FAFC)', border: '1.5px solid var(--color-06b6d4, #06B6D4)', borderRadius: '16px', padding: '1.5rem' }}>
+        <h4 style={{ margin: '0 0 0.85rem 0', fontSize: '1.1rem', fontWeight: 800, color: 'var(--color-1e293b, #1E293B)', display: 'flex', alignItems: 'center', gap: '8px' }}>
           <Terminal size={20} color="#06B6D4" /> Interactive Nina AI Engine Simulator (+971 50 576 0056)
         </h4>
 
@@ -267,19 +267,19 @@ export const NativeEngineTab: React.FC = () => {
         {/* Simulation Output Log */}
         {simulatedLog.length > 0 && (
           <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
-            <span style={{ fontSize: '0.75rem', fontWeight: 800, color: '#64748B' }}>Engine Simulation Log:</span>
+            <span style={{ fontSize: '0.75rem', fontWeight: 800, color: 'var(--text-secondary, #64748B)' }}>Engine Simulation Log:</span>
             {simulatedLog.map((log, idx) => (
-              <div key={idx} style={{ background: '#FFFFFF', border: '1px solid #E2E8F0', borderRadius: '10px', padding: '1rem', fontSize: '0.84rem' }}>
+              <div key={idx} style={{ background: 'var(--white, #FFFFFF)', border: '1px solid var(--text-secondary, #E2E8F0)', borderRadius: '10px', padding: '1rem', fontSize: '0.84rem' }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '4px' }}>
-                  <strong style={{ color: '#06B6D4' }}>[{log.time}] Simulated Client Msg: "{log.clientText}"</strong>
-                  <span style={{ background: '#F59E0B', color: '#FFFFFF', padding: '1px 6px', borderRadius: '4px', fontSize: '0.7rem', fontWeight: 800 }}>
+                  <strong style={{ color: 'var(--color-06b6d4, #06B6D4)' }}>[{log.time}] Simulated Client Msg: "{log.clientText}"</strong>
+                  <span style={{ background: 'var(--accent-gold, #F59E0B)', color: 'var(--white, #FFFFFF)', padding: '1px 6px', borderRadius: '4px', fontSize: '0.7rem', fontWeight: 800 }}>
                     Score: {log.assignedLeadScore}/100
                   </span>
                 </div>
-                <div style={{ color: '#475569', marginBottom: '6px' }}>
+                <div style={{ color: 'var(--color-475569, #475569)', marginBottom: '6px' }}>
                   Detected Intent: <strong>{log.detectedIntent}</strong> · DLD Database Villa Matches: <strong>{log.matchedVillasCount}</strong>
                 </div>
-                <div style={{ background: '#ECFDF5', borderLeft: '3px solid #10B981', padding: '8px 12px', borderRadius: '4px', color: '#065F46', fontStyle: 'italic' }}>
+                <div style={{ background: 'var(--color-ecfdf5, #ECFDF5)', borderLeft: '3px solid var(--accent-green, #10B981)', padding: '8px 12px', borderRadius: '4px', color: 'var(--color-065f46, #065F46)', fontStyle: 'italic' }}>
                   Nina AI Auto-Reply: "{log.autoReply}"
                 </div>
               </div>

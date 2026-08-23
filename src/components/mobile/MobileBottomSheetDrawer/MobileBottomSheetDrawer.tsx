@@ -30,14 +30,14 @@ export const MobileBottomSheetDrawer: FC<{ isOpen: boolean; onClose: () => void 
   return (
     <BottomSheetOverlay $isOpen={isOpen} data-testid="mobile-bottom-sheet-drawer">
       <SheetContainer>
-        <div style={{ width: '40px', height: '4px', background: '#475569', borderRadius: '2px', margin: '0 auto 12px' }} />
+        <div style={{ width: '40px', height: '4px', background: 'var(--color-475569, #475569)', borderRadius: '2px', margin: '0 auto 12px' }} />
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
-          <h4 style={{ margin: 0, color: '#EF4444' }}>📱 Mobile Filter Drawer</h4>
-          <button onClick={onClose} style={{ background: 'none', border: 'none', color: '#94A3B8', fontSize: '1.2rem', cursor: 'pointer' }}>
+          <h4 style={{ margin: 0, color: 'var(--accent-red, #EF4444)' }}>📱 Mobile Filter Drawer</h4>
+          <button onClick={onClose} style={{ background: 'none', border: 'none', color: 'var(--color-94a3b8, #94A3B8)', fontSize: '1.2rem', cursor: 'pointer' }}>
             ✕
           </button>
         </div>
-        <p style={{ margin: 0, fontSize: '0.85rem', color: '#94A3B8' }}>Swipe gestures & touch target optimization active.</p>
+        <p style={{ margin: 0, fontSize: '0.85rem', color: 'var(--color-94a3b8, #94A3B8)' }}>Swipe gestures & touch target optimization active.</p>
       </SheetContainer>
     </BottomSheetOverlay>
   );

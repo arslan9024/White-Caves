@@ -232,7 +232,7 @@ export const VrFullscreenModal: FC = () => {
           <ModalHeader>
             <ModalTitle>🥽 White Caves VR — {room?.name}</ModalTitle>
             <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
-              <span style={{ fontSize: '0.72rem', color: '#64748B' }}>Press ESC to exit</span>
+              <span style={{ fontSize: '0.72rem', color: 'var(--text-secondary, #64748B)' }}>Press ESC to exit</span>
               <CloseBtn onClick={() => setIsOpen(false)}>✕</CloseBtn>
             </div>
           </ModalHeader>
@@ -240,7 +240,7 @@ export const VrFullscreenModal: FC = () => {
           <FullscreenViewport>
             <GridBg />
             <PanoCamera style={{ position: 'absolute', top: 16, right: 16 }}>
-              <span style={{ fontSize: '0.7rem', color: '#64748B', background: 'rgba(0,0,0,0.6)', padding: '4px 10px', borderRadius: '6px' }}>
+              <span style={{ fontSize: '0.7rem', color: 'var(--text-secondary, #64748B)', background: 'rgba(0,0,0,0.6)', padding: '4px 10px', borderRadius: '6px' }}>
                 360° Panoramic Mode
               </span>
             </PanoCamera>
@@ -276,8 +276,8 @@ const PanoramaContent: FC<{ activeRoom: string; room: typeof ROOMS[0] }> = ({ ro
   <Panorama key={room?.id}>
     <RoomEmoji>{room?.emoji || '🏠'}</RoomEmoji>
     <div style={{ textAlign: 'center' }}>
-      <div style={{ color: '#EF4444', fontWeight: 800, fontSize: '1.2rem' }}>{room?.name}</div>
-      <div style={{ color: '#475569', fontSize: '0.78rem', marginTop: '6px' }}>
+      <div style={{ color: 'var(--accent-red, #EF4444)', fontWeight: 800, fontSize: '1.2rem' }}>{room?.name}</div>
+      <div style={{ color: 'var(--color-475569, #475569)', fontSize: '0.78rem', marginTop: '6px' }}>
         Use WASD keys or click room tabs to navigate
       </div>
     </div>

@@ -431,7 +431,9 @@ class HenryEmiratesIdScannerService {
       for (let i = 1; i <= numPages; i++) {
         const page = await pdfDoc.getPage(i);
         const textContent = await page.getTextContent();
-        const pageText = textContent.items.map((item: any) => item.str || '').join(' ');
+        const pageText = textContent.items
+          .map(item => ('str' in item ? (item as { str: string }).str : ''))
+          .join(' ');
         combinedPdfText += `\n--- PAGE ${i} ---\n${pageText}`;
 
         if (i === 1) {
@@ -441,7 +443,7 @@ class HenryEmiratesIdScannerService {
           if (ctx) {
             canvas.width = viewport.width;
             canvas.height = viewport.height;
-            await page.render({ canvasContext: ctx, viewport, canvas } as any).promise;
+            await page.render({ canvasContext: ctx, viewport, canvas } as unknown as Parameters<typeof page.render>[0]).promise;
             canvasDataUrl = canvas.toDataURL('image/png');
           }
         }

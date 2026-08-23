@@ -235,7 +235,7 @@ export const AmlPepScreeningFilter: FC = () => {
             <ResultHeader>
               <div>
                 <SubjectName>{result.subject}</SubjectName>
-                <div style={{ fontSize: '0.72rem', color: '#94A3B8', marginTop: '2px' }}>
+                <div style={{ fontSize: '0.72rem', color: 'var(--color-94a3b8, #94A3B8)', marginTop: '2px' }}>
                   Nationality: {result.nationality} | Ref: {result.goAmlRef}
                 </div>
               </div>
@@ -244,8 +244,8 @@ export const AmlPepScreeningFilter: FC = () => {
               </RiskBadge>
             </ResultHeader>
 
-            <div style={{ fontSize: '0.75rem', fontWeight: 700, color: '#E2E8F0' }}>
-              👤 PEP Designation: <span style={{ color: result.risk === 'low' ? '#10B981' : '#F59E0B' }}>{result.pepStatus}</span>
+            <div style={{ fontSize: '0.75rem', fontWeight: 700, color: 'var(--text-secondary, #E2E8F0)' }}>
+              👤 PEP Designation: <span style={{ color: result.risk === 'low' ? 'var(--accent-green, #10B981)' : 'var(--accent-gold, #F59E0B)' }}>{result.pepStatus}</span>
             </div>
 
             <WatchlistGrid>
@@ -268,7 +268,7 @@ export const AmlPepScreeningFilter: FC = () => {
             </WatchlistGrid>
 
             {result.risk === 'medium' && (
-              <div style={{ fontSize: '0.7rem', color: '#F59E0B', background: 'rgba(245, 158, 11, 0.1)', padding: '8px 12px', borderRadius: '6px', lineHeight: '1.4' }}>
+              <div style={{ fontSize: '0.7rem', color: 'var(--accent-gold, #F59E0B)', background: 'rgba(245, 158, 11, 0.1)', padding: '8px 12px', borderRadius: '6px', lineHeight: '1.4' }}>
                 ⚠️ <strong>Enhanced Due Diligence (EDD) Mandatory:</strong> Source of Funds (SOF) and Source of Wealth (SOW) declaration required prior to escrow disbursement.
               </div>
             )}

@@ -91,10 +91,10 @@ export const ConstructionProgressStream: FC = () => {
         <DroneViewer>
           <div style={{ textAlign: 'center' }}>
             <div style={{ fontSize: '2.5rem', marginBottom: '6px' }}>🛸</div>
-            <div style={{ fontSize: '0.85rem', fontWeight: 800, color: '#FFF' }}>
+            <div style={{ fontSize: '0.85rem', fontWeight: 800, color: 'var(--white, #FFF)' }}>
               4K Drone Aerial Site Fly-Over Stream
             </div>
-            <div style={{ fontSize: '0.68rem', color: '#10B981', marginTop: '2px' }}>
+            <div style={{ fontSize: '0.68rem', color: 'var(--accent-green, #10B981)', marginTop: '2px' }}>
               Recorded: 2026-08-10 | Tower Superstructure at Level 38 / 45
             </div>
           </div>
@@ -102,19 +102,19 @@ export const ConstructionProgressStream: FC = () => {
 
         <MilestoneList>
           <MCard>
-            <div style={{ fontSize: '0.65rem', color: '#94A3B8' }}>Overall Completion</div>
-            <div style={{ fontSize: '1.2rem', fontWeight: 900, color: '#10B981', marginTop: '2px' }}>82.4%</div>
-            <div style={{ fontSize: '0.62rem', color: '#CBD5E1', marginTop: '2px' }}>Ahead of Schedule</div>
+            <div style={{ fontSize: '0.65rem', color: 'var(--color-94a3b8, #94A3B8)' }}>Overall Completion</div>
+            <div style={{ fontSize: '1.2rem', fontWeight: 900, color: 'var(--accent-green, #10B981)', marginTop: '2px' }}>82.4%</div>
+            <div style={{ fontSize: '0.62rem', color: 'var(--text-secondary, #CBD5E1)', marginTop: '2px' }}>Ahead of Schedule</div>
           </MCard>
           <MCard>
-            <div style={{ fontSize: '0.65rem', color: '#94A3B8' }}>Facade Installation</div>
-            <div style={{ fontSize: '1.2rem', fontWeight: 900, color: '#FFF', marginTop: '2px' }}>68.0%</div>
-            <div style={{ fontSize: '0.62rem', color: '#CBD5E1', marginTop: '2px' }}>Double Glazed Solar Glass</div>
+            <div style={{ fontSize: '0.65rem', color: 'var(--color-94a3b8, #94A3B8)' }}>Facade Installation</div>
+            <div style={{ fontSize: '1.2rem', fontWeight: 900, color: 'var(--white, #FFF)', marginTop: '2px' }}>68.0%</div>
+            <div style={{ fontSize: '0.62rem', color: 'var(--text-secondary, #CBD5E1)', marginTop: '2px' }}>Double Glazed Solar Glass</div>
           </MCard>
           <MCard>
-            <div style={{ fontSize: '0.65rem', color: '#94A3B8' }}>MEP & Interiors</div>
-            <div style={{ fontSize: '1.2rem', fontWeight: 900, color: '#EF4444', marginTop: '2px' }}>54.5%</div>
-            <div style={{ fontSize: '0.62rem', color: '#CBD5E1', marginTop: '2px' }}>Podium & First 20 Floors</div>
+            <div style={{ fontSize: '0.65rem', color: 'var(--color-94a3b8, #94A3B8)' }}>MEP & Interiors</div>
+            <div style={{ fontSize: '1.2rem', fontWeight: 900, color: 'var(--accent-red, #EF4444)', marginTop: '2px' }}>54.5%</div>
+            <div style={{ fontSize: '0.62rem', color: 'var(--text-secondary, #CBD5E1)', marginTop: '2px' }}>Podium & First 20 Floors</div>
           </MCard>
         </MilestoneList>
       </Body>

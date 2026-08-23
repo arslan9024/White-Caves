@@ -40,9 +40,9 @@ export const ModuleViewport: FC<ModuleViewportProps> = ({
   if (!moduleDef) {
     return (
       <ContentArea>
-        <div style={{ padding: '3rem 2rem', textAlign: 'center', color: '#64748B' }}>
+        <div style={{ padding: '3rem 2rem', textAlign: 'center', color: 'var(--text-secondary, #64748B)' }}>
           <div style={{ fontSize: '2.5rem', marginBottom: '1rem' }}>🔍</div>
-          <h3 style={{ margin: '0 0 0.5rem 0', color: '#1E293B', fontWeight: 800 }}>
+          <h3 style={{ margin: '0 0 0.5rem 0', color: 'var(--color-1e293b, #1E293B)', fontWeight: 800 }}>
             Module Not Found: "{moduleId}"
           </h3>
           <p style={{ margin: '0 0 1.5rem 0', fontSize: '0.9rem' }}>
@@ -77,10 +77,10 @@ export const ModuleViewport: FC<ModuleViewportProps> = ({
         <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
           <span style={{ fontSize: '1.4rem' }}>{moduleDef.icon}</span>
           <div>
-            <span style={{ fontWeight: 800, fontSize: '1.15rem', color: '#1E293B', display: 'block' }}>
+            <span style={{ fontWeight: 800, fontSize: '1.15rem', color: 'var(--color-1e293b, #1E293B)', display: 'block' }}>
               {moduleDef.label}
             </span>
-            <span style={{ fontSize: '0.78rem', color: '#64748B' }}>
+            <span style={{ fontSize: '0.78rem', color: 'var(--text-secondary, #64748B)' }}>
               {moduleDef.description}
             </span>
           </div>

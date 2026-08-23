@@ -92,7 +92,7 @@ export const VipResponseSlaTracker: FC = () => {
     <Wrap data-testid="vip-response-sla-tracker">
       <Head>
         <Title>⚡ VIP SLA Response Tracker</Title>
-        <div style={{fontSize:'0.68rem',color:'#A78BFA',fontWeight:700}}>5-MIN RESPONSE LAW</div>
+        <div style={{fontSize:'0.68rem',color:'var(--color-a78bfa, #A78BFA)',fontWeight:700}}>5-MIN RESPONSE LAW</div>
       </Head>
       <Body>
         <PolicyCard>
@@ -106,7 +106,7 @@ export const VipResponseSlaTracker: FC = () => {
 
         {oldest ? (
           <div style={{textAlign:'center'}}>
-            <div style={{fontSize:'0.7rem',color:'#94A3B8',marginBottom:'10px',fontWeight:600,textTransform:'uppercase',letterSpacing:'0.05em'}}>
+            <div style={{fontSize:'0.7rem',color:'var(--color-94a3b8, #94A3B8)',marginBottom:'10px',fontWeight:600,textTransform:'uppercase',letterSpacing:'0.05em'}}>
               {breached ? '🚨 SLA BREACHED' : '⏱ Time Remaining for Oldest Enquiry'}
             </div>
             <TimerRing $pct={pct} $breached={breached}>
@@ -117,13 +117,13 @@ export const VipResponseSlaTracker: FC = () => {
             </TimerRing>
           </div>
         ) : (
-          <div style={{textAlign:'center',padding:'16px',borderRadius:'12px',background:'rgba(16,185,129,0.06)',border:'1px solid rgba(16,185,129,0.2)',fontSize:'0.82rem',fontWeight:700,color:'#10B981'}}>
+          <div style={{textAlign:'center',padding:'16px',borderRadius:'12px',background:'rgba(16,185,129,0.06)',border:'1px solid rgba(16,185,129,0.2)',fontSize:'0.82rem',fontWeight:700,color:'var(--accent-green, #10B981)'}}>
             ✅ All enquiries responded to — SLA Met!
           </div>
         )}
 
         <div>
-          <div style={{fontSize:'0.7rem',fontWeight:700,color:'#94A3B8',textTransform:'uppercase',letterSpacing:'0.05em',marginBottom:'8px'}}>Live Enquiry Queue</div>
+          <div style={{fontSize:'0.7rem',fontWeight:700,color:'var(--color-94a3b8, #94A3B8)',textTransform:'uppercase',letterSpacing:'0.05em',marginBottom:'8px'}}>Live Enquiry Queue</div>
           <div style={{display:'flex',flexDirection:'column',gap:'8px'}}>
             {enquiries.map((e,i)=>{
               const ems = now - e.startTime;

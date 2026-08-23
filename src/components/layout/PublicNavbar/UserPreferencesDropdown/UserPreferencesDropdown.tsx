@@ -120,7 +120,7 @@ export const UserPreferencesDropdown: FC<UserPreferencesDropdownProps> = ({ user
       {/* 4. 14-Role Sovereign Simulator */}
       <SectionTitle>
         <span>🏛️ Operational Role / Portal</span>
-        <span style={{ fontSize: '0.65rem', color: '#ef4444' }}>14-Role Matrix</span>
+        <span style={{ fontSize: '0.65rem', color: 'var(--accent-red, #ef4444)' }}>14-Role Matrix</span>
       </SectionTitle>
       <RoleSelectBox
         value={currentRole}

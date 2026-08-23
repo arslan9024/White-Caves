@@ -186,7 +186,7 @@ export const TrusteeOfficeScheduler: FC = () => {
           </Field>
           <Field>
             <FLabel>Mandatory DLD Fees</FLabel>
-            <Input value="DLD 4% + Trustee Fee AED 4,200 (Manager Cheque)" readOnly style={{ color: '#10B981', fontWeight: 700 }} />
+            <Input value="DLD 4% + Trustee Fee AED 4,200 (Manager Cheque)" readOnly style={{ color: 'var(--accent-green, #10B981)', fontWeight: 700 }} />
           </Field>
         </FormGrid>
 
@@ -201,7 +201,7 @@ export const TrusteeOfficeScheduler: FC = () => {
                 onClick={() => s.available && setSelectedSlot(s.time)}
               >
                 <div>{s.time}</div>
-                <div style={{ fontSize: '0.62rem', color: s.available ? '#10B981' : '#EF4444', marginTop: '2px' }}>
+                <div style={{ fontSize: '0.62rem', color: s.available ? 'var(--accent-green, #10B981)' : 'var(--accent-red, #EF4444)', marginTop: '2px' }}>
                   {s.available ? 'AVAILABLE' : 'BOOKED'}
                 </div>
               </SlotCard>
@@ -210,7 +210,7 @@ export const TrusteeOfficeScheduler: FC = () => {
         </div>
 
         {booked ? (
-          <div style={{ padding: '14px', borderRadius: '10px', background: 'rgba(16, 185, 129, 0.1)', border: '1px solid rgba(16, 185, 129, 0.3)', textAlign: 'center', color: '#10B981', fontWeight: 800, fontSize: '0.82rem' }}>
+          <div style={{ padding: '14px', borderRadius: '10px', background: 'rgba(16, 185, 129, 0.1)', border: '1px solid rgba(16, 185, 129, 0.3)', textAlign: 'center', color: 'var(--accent-green, #10B981)', fontWeight: 800, fontSize: '0.82rem' }}>
             ✓ Trustee Appointment Confirmed for {transferDate} at {selectedSlot} ({selectedOffice})!
           </div>
         ) : (

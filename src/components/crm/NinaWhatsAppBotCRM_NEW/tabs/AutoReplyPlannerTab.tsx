@@ -105,10 +105,10 @@ export const AutoReplyPlannerTab: React.FC = () => {
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
             <span style={{ fontSize: '2rem' }}>⚡</span>
             <div>
-              <span style={{ fontSize: '0.75rem', fontWeight: 800, color: '#06B6D4', textTransform: 'uppercase', letterSpacing: '0.08em' }}>
+              <span style={{ fontSize: '0.75rem', fontWeight: 800, color: 'var(--color-06b6d4, #06B6D4)', textTransform: 'uppercase', letterSpacing: '0.08em' }}>
                 Nina AI Smart Auto-Reply & Keyword Intent Engine
               </span>
-              <h3 style={{ margin: '2px 0 0', fontSize: '1.35rem', fontWeight: 800, color: '#FFFFFF' }}>
+              <h3 style={{ margin: '2px 0 0', fontSize: '1.35rem', fontWeight: 800, color: 'var(--white, #FFFFFF)' }}>
                 Automated Auto-Reply Rule Planner (+971 50 576 0056)
               </h3>
             </div>
@@ -135,7 +135,7 @@ export const AutoReplyPlannerTab: React.FC = () => {
           </button>
         </div>
 
-        <p style={{ margin: 0, fontSize: '0.88rem', color: '#CBD5E1', lineHeight: 1.5 }}>
+        <p style={{ margin: 0, fontSize: '0.88rem', color: 'var(--text-secondary, #CBD5E1)', lineHeight: 1.5 }}>
           Configure live trigger rules for Nina AI. When an incoming WhatsApp message arrives on <strong>+971 50 576 0056</strong>, Nina parses keyword intents, pulls matching properties from our <strong>9,210 DAMAC Hills 2 Database</strong>, updates lead scores, and responds automatically!
         </p>
       </div>
@@ -156,12 +156,12 @@ export const AutoReplyPlannerTab: React.FC = () => {
           >
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.75rem' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
-                <h4 style={{ margin: 0, fontSize: '1.05rem', fontWeight: 800, color: '#1E293B' }}>{rule.name}</h4>
-                <span style={{ background: 'rgba(6, 182, 212, 0.12)', color: '#06B6D4', fontWeight: 800, fontSize: '0.75rem', padding: '3px 10px', borderRadius: '6px' }}>
+                <h4 style={{ margin: 0, fontSize: '1.05rem', fontWeight: 800, color: 'var(--color-1e293b, #1E293B)' }}>{rule.name}</h4>
+                <span style={{ background: 'rgba(6, 182, 212, 0.12)', color: 'var(--color-06b6d4, #06B6D4)', fontWeight: 800, fontSize: '0.75rem', padding: '3px 10px', borderRadius: '6px' }}>
                   Tag: {rule.intentTag}
                 </span>
                 {rule.dldInventoryLookup && (
-                  <span style={{ background: 'rgba(16, 185, 129, 0.12)', color: '#10B981', fontWeight: 800, fontSize: '0.75rem', padding: '3px 10px', borderRadius: '6px' }}>
+                  <span style={{ background: 'rgba(16, 185, 129, 0.12)', color: 'var(--accent-green, #10B981)', fontWeight: 800, fontSize: '0.75rem', padding: '3px 10px', borderRadius: '6px' }}>
                     ✓ 9,210 DLD DB Matcher Active
                   </span>
                 )}
@@ -190,12 +190,12 @@ export const AutoReplyPlannerTab: React.FC = () => {
 
             {/* Keywords */}
             <div style={{ marginBottom: '0.75rem' }}>
-              <span style={{ fontSize: '0.75rem', color: '#64748B', fontWeight: 700, display: 'block', marginBottom: '4px' }}>
+              <span style={{ fontSize: '0.75rem', color: 'var(--text-secondary, #64748B)', fontWeight: 700, display: 'block', marginBottom: '4px' }}>
                 Trigger Keywords:
               </span>
               <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px' }}>
                 {rule.keywords.map(kw => (
-                  <span key={kw} style={{ background: '#F1F5F9', color: '#334155', fontWeight: 700, fontSize: '0.78rem', padding: '3px 8px', borderRadius: '6px' }}>
+                  <span key={kw} style={{ background: 'var(--color-f1f5f9, #F1F5F9)', color: 'var(--color-334155, #334155)', fontWeight: 700, fontSize: '0.78rem', padding: '3px 8px', borderRadius: '6px' }}>
                     "{kw}"
                   </span>
                 ))}
@@ -203,11 +203,11 @@ export const AutoReplyPlannerTab: React.FC = () => {
             </div>
 
             {/* Template */}
-            <div style={{ background: '#F8FAFC', border: '1px solid #E2E8F0', borderRadius: '10px', padding: '0.85rem' }}>
-              <span style={{ fontSize: '0.72rem', color: '#64748B', display: 'block', marginBottom: '4px' }}>
+            <div style={{ background: 'var(--color-f8fafc, #F8FAFC)', border: '1px solid var(--text-secondary, #E2E8F0)', borderRadius: '10px', padding: '0.85rem' }}>
+              <span style={{ fontSize: '0.72rem', color: 'var(--text-secondary, #64748B)', display: 'block', marginBottom: '4px' }}>
                 Automated Response Template (Nina AI Response):
               </span>
-              <p style={{ margin: 0, fontSize: '0.88rem', color: '#1E293B', fontStyle: 'italic', lineHeight: 1.45 }}>
+              <p style={{ margin: 0, fontSize: '0.88rem', color: 'var(--color-1e293b, #1E293B)', fontStyle: 'italic', lineHeight: 1.45 }}>
                 "{rule.responseTemplate}"
               </p>
             </div>
@@ -218,26 +218,26 @@ export const AutoReplyPlannerTab: React.FC = () => {
       {/* ADD RULE MODAL */}
       {showAddModal && (
         <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.5)', zIndex: 1000, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-          <div style={{ background: '#FFFFFF', borderRadius: '16px', padding: '1.5rem', width: '90%', maxWidth: '500px' }}>
-            <h3 style={{ margin: '0 0 1rem 0', fontSize: '1.15rem', fontWeight: 800, color: '#06B6D4' }}>
+          <div style={{ background: 'var(--white, #FFFFFF)', borderRadius: '16px', padding: '1.5rem', width: '90%', maxWidth: '500px' }}>
+            <h3 style={{ margin: '0 0 1rem 0', fontSize: '1.15rem', fontWeight: 800, color: 'var(--color-06b6d4, #06B6D4)' }}>
               + Create Nina AI Auto-Reply Rule
             </h3>
             <form onSubmit={handleAddRule} style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem', fontSize: '0.85rem' }}>
               <label>
                 Rule Name:
-                <input type="text" value={newRule.name} onChange={e => setNewRule({ ...newRule, name: e.target.value })} required style={{ width: '100%', padding: '6px', borderRadius: '6px', border: '1px solid #CBD5E1' }} />
+                <input type="text" value={newRule.name} onChange={e => setNewRule({ ...newRule, name: e.target.value })} required style={{ width: '100%', padding: '6px', borderRadius: '6px', border: '1px solid var(--text-secondary, #CBD5E1)' }} />
               </label>
               <label>
                 Keywords (comma separated):
-                <input type="text" value={newRule.keywordsText} onChange={e => setNewRule({ ...newRule, keywordsText: e.target.value })} required style={{ width: '100%', padding: '6px', borderRadius: '6px', border: '1px solid #CBD5E1' }} />
+                <input type="text" value={newRule.keywordsText} onChange={e => setNewRule({ ...newRule, keywordsText: e.target.value })} required style={{ width: '100%', padding: '6px', borderRadius: '6px', border: '1px solid var(--text-secondary, #CBD5E1)' }} />
               </label>
               <label>
                 Response Template:
-                <textarea value={newRule.responseTemplate} onChange={e => setNewRule({ ...newRule, responseTemplate: e.target.value })} rows={3} required style={{ width: '100%', padding: '6px', borderRadius: '6px', border: '1px solid #CBD5E1' }} />
+                <textarea value={newRule.responseTemplate} onChange={e => setNewRule({ ...newRule, responseTemplate: e.target.value })} rows={3} required style={{ width: '100%', padding: '6px', borderRadius: '6px', border: '1px solid var(--text-secondary, #CBD5E1)' }} />
               </label>
               <div style={{ display: 'flex', gap: '0.5rem', justifyContent: 'flex-end', marginTop: '0.5rem' }}>
-                <button type="button" onClick={() => setShowAddModal(false)} style={{ padding: '8px 14px', borderRadius: '8px', border: '1px solid #CBD5E1', background: '#FFFFFF', cursor: 'pointer' }}>Cancel</button>
-                <button type="submit" style={{ padding: '8px 16px', borderRadius: '8px', border: 'none', background: '#06B6D4', color: '#FFFFFF', fontWeight: 800, cursor: 'pointer' }}>Save Rule</button>
+                <button type="button" onClick={() => setShowAddModal(false)} style={{ padding: '8px 14px', borderRadius: '8px', border: '1px solid var(--text-secondary, #CBD5E1)', background: 'var(--white, #FFFFFF)', cursor: 'pointer' }}>Cancel</button>
+                <button type="submit" style={{ padding: '8px 16px', borderRadius: '8px', border: 'none', background: 'var(--color-06b6d4, #06B6D4)', color: 'var(--white, #FFFFFF)', fontWeight: 800, cursor: 'pointer' }}>Save Rule</button>
               </div>
             </form>
           </div>

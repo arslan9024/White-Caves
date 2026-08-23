@@ -235,7 +235,7 @@ const PricingPage: React.FC = () => {
         </button>
       </div>
 
-      <div style={{ background: '#0F172A', color: '#FFFFFF', paddingTop: '3rem', paddingBottom: '5rem' }}>
+      <div style={{ background: 'var(--color-0f172a, #0F172A)', color: 'var(--white, #FFFFFF)', paddingTop: '3rem', paddingBottom: '5rem' }}>
         <div style={{ maxWidth: '1200px', margin: '0 auto', padding: '0 1.5rem' }}>
           
           {/* HEADER SECTION */}
@@ -243,35 +243,35 @@ const PricingPage: React.FC = () => {
             <span className="wc-luxury-italic-gold" style={{ fontSize: '1rem', display: 'block', marginBottom: '8px' }}>
               White Caves Compensation & Brokerage Plans
             </span>
-            <h1 className="wc-luxury-serif-title" style={{ fontSize: '2.5rem', margin: '0 0 1rem', color: '#FFFFFF' }}>
+            <h1 className="wc-luxury-serif-title" style={{ fontSize: '2.5rem', margin: '0 0 1rem', color: 'var(--white, #FFFFFF)' }}>
               In-House 50/50 Policy & <span className="wc-luxury-italic-cyan">Private Freelance Access</span>
             </h1>
-            <p style={{ color: '#94A3B8', fontSize: '1.05rem', maxWidth: '720px', margin: '0 auto 1.5rem', lineHeight: 1.6 }}>
+            <p style={{ color: 'var(--color-94a3b8, #94A3B8)', fontSize: '1.05rem', maxWidth: '720px', margin: '0 auto 1.5rem', lineHeight: 1.6 }}>
               All employed in-house brokers operate under our standard <strong>50/50 Commission Split Policy</strong> (full salary, visa, & admin support). Freelance brokers may request restricted private membership packages below.
             </p>
 
             {/* HIRED EMPLOYEE VS FREELANCE BANNER */}
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem', maxWidth: '800px', margin: '0 auto 2rem', textAlign: 'left' }}>
-              <div style={{ background: '#1E293B', border: '1.5px solid #10B981', borderRadius: '14px', padding: '1.25rem' }}>
-                <span style={{ background: '#ECFDF5', color: '#047857', fontSize: '0.72rem', fontWeight: 900, padding: '2px 8px', borderRadius: '4px', textTransform: 'uppercase' }}>
+              <div style={{ background: 'var(--color-1e293b, #1E293B)', border: '1.5px solid var(--accent-green, #10B981)', borderRadius: '14px', padding: '1.25rem' }}>
+                <span style={{ background: 'var(--color-ecfdf5, #ECFDF5)', color: 'var(--color-047857, #047857)', fontSize: '0.72rem', fontWeight: 900, padding: '2px 8px', borderRadius: '4px', textTransform: 'uppercase' }}>
                   Hired In-House Employees
                 </span>
-                <h4 style={{ margin: '6px 0 2px', fontSize: '1.1rem', fontWeight: 900, color: '#FFFFFF' }}>
+                <h4 style={{ margin: '6px 0 2px', fontSize: '1.1rem', fontWeight: 900, color: 'var(--white, #FFFFFF)' }}>
                   Standard 50/50 Commission Split
                 </h4>
-                <p style={{ margin: 0, fontSize: '0.82rem', color: '#94A3B8', lineHeight: 1.45 }}>
+                <p style={{ margin: 0, fontSize: '0.82rem', color: 'var(--color-94a3b8, #94A3B8)', lineHeight: 1.45 }}>
                   50% Broker / 50% Agency. Full salary, UAE visa, health insurance, developer access, and admin backing. AED 0 fees.
                 </p>
               </div>
 
-              <div style={{ background: '#1E293B', border: '1.5px solid #06B6D4', borderRadius: '14px', padding: '1.25rem' }}>
-                <span style={{ background: 'rgba(6, 182, 212, 0.2)', color: '#38BDF8', fontSize: '0.72rem', fontWeight: 900, padding: '2px 8px', borderRadius: '4px', textTransform: 'uppercase' }}>
+              <div style={{ background: 'var(--color-1e293b, #1E293B)', border: '1.5px solid var(--color-06b6d4, #06B6D4)', borderRadius: '14px', padding: '1.25rem' }}>
+                <span style={{ background: 'rgba(6, 182, 212, 0.2)', color: 'var(--color-38bdf8, #38BDF8)', fontSize: '0.72rem', fontWeight: 900, padding: '2px 8px', borderRadius: '4px', textTransform: 'uppercase' }}>
                   Restricted Freelance Access
                 </span>
-                <h4 style={{ margin: '6px 0 2px', fontSize: '1.1rem', fontWeight: 900, color: '#FFFFFF' }}>
+                <h4 style={{ margin: '6px 0 2px', fontSize: '1.1rem', fontWeight: 900, color: 'var(--white, #FFFFFF)' }}>
                   Private Freelance Membership
                 </h4>
-                <p style={{ margin: 0, fontSize: '0.82rem', color: '#94A3B8', lineHeight: 1.45 }}>
+                <p style={{ margin: 0, fontSize: '0.82rem', color: 'var(--color-94a3b8, #94A3B8)', lineHeight: 1.45 }}>
                   100%, 95/5, and 90/10 plans. Restricted access available only via private Managing Director invitation & approval.
                 </p>
               </div>
@@ -281,37 +281,37 @@ const PricingPage: React.FC = () => {
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: '1rem', maxWidth: '1000px', margin: '0 auto 2rem', textAlign: 'left' }}>
               <div style={{ background: 'rgba(255, 255, 255, 0.04)', border: '1px solid rgba(255, 255, 255, 0.1)', borderRadius: '14px', padding: '1.25rem' }}>
                 <span style={{ fontSize: '1.4rem', display: 'block', marginBottom: '6px' }}>🛂</span>
-                <h5 style={{ margin: '0 0 4px', fontSize: '0.95rem', fontWeight: 900, color: '#38BDF8' }}>
+                <h5 style={{ margin: '0 0 4px', fontSize: '0.95rem', fontWeight: 900, color: 'var(--color-38bdf8, #38BDF8)' }}>
                   Performance Visa Sponsorship
                 </h5>
-                <p style={{ margin: 0, fontSize: '0.8rem', color: '#94A3B8', lineHeight: 1.45 }}>
+                <p style={{ margin: 0, fontSize: '0.8rem', color: 'var(--color-94a3b8, #94A3B8)', lineHeight: 1.45 }}>
                   Earn full UAE residence visa sponsorship after successfully closing <strong>1 Sale Deal OR 2 Rental Contracts</strong>.
                 </p>
               </div>
 
               <div style={{ background: 'rgba(255, 255, 255, 0.04)', border: '1px solid rgba(255, 255, 255, 0.1)', borderRadius: '14px', padding: '1.25rem' }}>
                 <span style={{ fontSize: '1.4rem', display: 'block', marginBottom: '6px' }}>🛠️</span>
-                <h5 style={{ margin: '0 0 4px', fontSize: '0.95rem', fontWeight: 900, color: '#10B981' }}>
+                <h5 style={{ margin: '0 0 4px', fontSize: '0.95rem', fontWeight: 900, color: 'var(--accent-green, #10B981)' }}>
                   Full Tech & Support Services
                 </h5>
-                <p style={{ margin: 0, fontSize: '0.8rem', color: '#94A3B8', lineHeight: 1.45 }}>
+                <p style={{ margin: 0, fontSize: '0.8rem', color: 'var(--color-94a3b8, #94A3B8)', lineHeight: 1.45 }}>
                   Even on high-split models, receive complete training, admin backing, DLD title deed tools, and Nina AI lead technology access.
                 </p>
               </div>
 
               <div style={{ background: 'rgba(255, 255, 255, 0.04)', border: '1px solid rgba(255, 255, 255, 0.1)', borderRadius: '14px', padding: '1.25rem' }}>
                 <span style={{ fontSize: '1.4rem', display: 'block', marginBottom: '6px' }}>🗽</span>
-                <h5 style={{ margin: '0 0 4px', fontSize: '0.95rem', fontWeight: 900, color: '#D4AF37' }}>
+                <h5 style={{ margin: '0 0 4px', fontSize: '0.95rem', fontWeight: 900, color: 'var(--color-d4af37, #D4AF37)' }}>
                   Entrepreneurial Flexibility
                 </h5>
-                <p style={{ margin: 0, fontSize: '0.8rem', color: '#94A3B8', lineHeight: 1.45 }}>
+                <p style={{ margin: 0, fontSize: '0.8rem', color: 'var(--color-94a3b8, #94A3B8)', lineHeight: 1.45 }}>
                   Manage your own client relationships and work hours as an independent entrepreneur under our licensed RERA umbrella.
                 </p>
               </div>
             </div>
 
             {/* BILLING TOGGLE */}
-            <div style={{ display: 'inline-flex', alignItems: 'center', background: '#1E293B', padding: '6px', borderRadius: '9999px', margin: '2rem 0 1rem', border: '1px solid #334155' }}>
+            <div style={{ display: 'inline-flex', alignItems: 'center', background: 'var(--color-1e293b, #1E293B)', padding: '6px', borderRadius: '9999px', margin: '2rem 0 1rem', border: '1px solid var(--color-334155, #334155)' }}>
               <button
                 onClick={() => setBillingCycle('monthly')}
                 style={{
@@ -344,7 +344,7 @@ const PricingPage: React.FC = () => {
                 }}
               >
                 <span>Billed Annually</span>
-                <span style={{ background: '#D4AF37', color: '#0F172A', fontSize: '0.7rem', fontWeight: 900, padding: '2px 8px', borderRadius: '6px' }}>
+                <span style={{ background: 'var(--color-d4af37, #D4AF37)', color: 'var(--color-0f172a, #0F172A)', fontSize: '0.7rem', fontWeight: 900, padding: '2px 8px', borderRadius: '6px' }}>
                   SAVE UP TO 33%
                 </span>
               </button>
@@ -412,40 +412,40 @@ const PricingPage: React.FC = () => {
 
                   <div>
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
-                      <span style={{ fontSize: '0.75rem', fontWeight: 800, color: '#06B6D4', textTransform: 'uppercase' }}>
+                      <span style={{ fontSize: '0.75rem', fontWeight: 800, color: 'var(--color-06b6d4, #06B6D4)', textTransform: 'uppercase' }}>
                         {plan.badge || plan.commission}
                       </span>
-                      <span style={{ background: 'rgba(56, 189, 248, 0.15)', color: '#38BDF8', padding: '2px 8px', borderRadius: '6px', fontSize: '0.72rem', fontWeight: 800 }}>
+                      <span style={{ background: 'rgba(56, 189, 248, 0.15)', color: 'var(--color-38bdf8, #38BDF8)', padding: '2px 8px', borderRadius: '6px', fontSize: '0.72rem', fontWeight: 800 }}>
                         {plan.commission}
                       </span>
                     </div>
 
-                    <h3 style={{ fontSize: '1.4rem', fontWeight: 900, margin: '0 0 0.5rem', color: '#FFFFFF' }}>
+                    <h3 style={{ fontSize: '1.4rem', fontWeight: 900, margin: '0 0 0.5rem', color: 'var(--white, #FFFFFF)' }}>
                       {plan.name}
                     </h3>
-                    <p style={{ fontSize: '0.84rem', color: '#94A3B8', lineHeight: 1.5, marginBottom: '1.5rem', minHeight: '42px' }}>
+                    <p style={{ fontSize: '0.84rem', color: 'var(--color-94a3b8, #94A3B8)', lineHeight: 1.5, marginBottom: '1.5rem', minHeight: '42px' }}>
                       {plan.subtitle}
                     </p>
 
                     {/* PRICE DISPLAY */}
                     <div style={{ marginBottom: '1.5rem', borderBottom: '1px solid rgba(255, 255, 255, 0.1)', paddingBottom: '1.25rem' }}>
-                      <span style={{ fontSize: '0.85rem', color: '#94A3B8', fontWeight: 700 }}>AED </span>
-                      <strong style={{ fontSize: '2.4rem', fontWeight: 900, color: '#FFFFFF', fontFamily: 'monospace' }}>
+                      <span style={{ fontSize: '0.85rem', color: 'var(--color-94a3b8, #94A3B8)', fontWeight: 700 }}>AED </span>
+                      <strong style={{ fontSize: '2.4rem', fontWeight: 900, color: 'var(--white, #FFFFFF)', fontFamily: 'monospace' }}>
                         {displayPrice.toLocaleString()}
                       </strong>
-                      <span style={{ fontSize: '0.85rem', color: '#94A3B8' }}>
+                      <span style={{ fontSize: '0.85rem', color: 'var(--color-94a3b8, #94A3B8)' }}>
                         {plan.oneTimePrice ? ' / one time' : billingCycle === 'yearly' ? ' / mo (billed annually)' : ' / mo'}
                       </span>
                     </div>
 
                     {/* INCLUDED FEATURES */}
                     <div style={{ marginBottom: '1.5rem' }}>
-                      <span style={{ fontSize: '0.75rem', fontWeight: 800, color: '#CBD5E1', textTransform: 'uppercase', display: 'block', marginBottom: '0.75rem' }}>
+                      <span style={{ fontSize: '0.75rem', fontWeight: 800, color: 'var(--text-secondary, #CBD5E1)', textTransform: 'uppercase', display: 'block', marginBottom: '0.75rem' }}>
                         What's Included
                       </span>
                       <ul style={{ listStyle: 'none', padding: 0, margin: 0, display: 'flex', flexDirection: 'column', gap: '10px' }}>
                         {plan.features.map((feat, i) => (
-                          <li key={i} style={{ display: 'flex', alignItems: 'flex-start', gap: '8px', fontSize: '0.84rem', color: '#E2E8F0', lineHeight: 1.4 }}>
+                          <li key={i} style={{ display: 'flex', alignItems: 'flex-start', gap: '8px', fontSize: '0.84rem', color: 'var(--text-secondary, #E2E8F0)', lineHeight: 1.4 }}>
                             <CheckCircle2 size={16} color="#10B981" style={{ flexShrink: 0, marginTop: '2px' }} />
                             <span>{feat}</span>
                           </li>
@@ -492,8 +492,8 @@ const PricingPage: React.FC = () => {
             <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '1rem' }}>
               <Calculator size={28} color="#06B6D4" />
               <div>
-                <span style={{ fontSize: '0.75rem', fontWeight: 900, color: '#06B6D4', textTransform: 'uppercase' }}>Interactive Broker Earnings Simulator</span>
-                <h3 style={{ margin: 0, fontSize: '1.4rem', fontWeight: 900, color: '#FFFFFF' }}>
+                <span style={{ fontSize: '0.75rem', fontWeight: 900, color: 'var(--color-06b6d4, #06B6D4)', textTransform: 'uppercase' }}>Interactive Broker Earnings Simulator</span>
+                <h3 style={{ margin: 0, fontSize: '1.4rem', fontWeight: 900, color: 'var(--white, #FFFFFF)' }}>
                   Calculate Your Take-Home Earnings in Dubai
                 </h3>
               </div>
@@ -501,8 +501,8 @@ const PricingPage: React.FC = () => {
 
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '2rem', alignItems: 'center' }}>
               <div>
-                <label style={{ display: 'block', fontSize: '0.84rem', fontWeight: 800, color: '#CBD5E1', marginBottom: '6px' }}>
-                  Annual Property Sales Volume (AED): <strong style={{ color: '#38BDF8' }}>AED {annualSalesVolume.toLocaleString()}</strong>
+                <label style={{ display: 'block', fontSize: '0.84rem', fontWeight: 800, color: 'var(--text-secondary, #CBD5E1)', marginBottom: '6px' }}>
+                  Annual Property Sales Volume (AED): <strong style={{ color: 'var(--color-38bdf8, #38BDF8)' }}>AED {annualSalesVolume.toLocaleString()}</strong>
                 </label>
                 <input
                   type="range"
@@ -511,11 +511,11 @@ const PricingPage: React.FC = () => {
                   step="500000"
                   value={annualSalesVolume}
                   onChange={e => setAnnualSalesVolume(Number(e.target.value))}
-                  style={{ width: '100%', accentColor: '#06B6D4', marginBottom: '1.25rem' }}
+                  style={{ width: '100%', accentColor: 'var(--color-06b6d4, #06B6D4)', marginBottom: '1.25rem' }}
                 />
 
-                <label style={{ display: 'block', fontSize: '0.84rem', fontWeight: 800, color: '#CBD5E1', marginBottom: '6px' }}>
-                  Average Gross Commission Rate (%): <strong style={{ color: '#D4AF37' }}>{commissionRate}%</strong>
+                <label style={{ display: 'block', fontSize: '0.84rem', fontWeight: 800, color: 'var(--text-secondary, #CBD5E1)', marginBottom: '6px' }}>
+                  Average Gross Commission Rate (%): <strong style={{ color: 'var(--color-d4af37, #D4AF37)' }}>{commissionRate}%</strong>
                 </label>
                 <input
                   type="range"
@@ -524,12 +524,12 @@ const PricingPage: React.FC = () => {
                   step="0.5"
                   value={commissionRate}
                   onChange={e => setCommissionRate(Number(e.target.value))}
-                  style={{ width: '100%', accentColor: '#D4AF37' }}
+                  style={{ width: '100%', accentColor: 'var(--color-d4af37, #D4AF37)' }}
                 />
 
                 <div style={{ marginTop: '1.25rem', background: 'rgba(255, 255, 255, 0.05)', padding: '12px 16px', borderRadius: '10px', border: '1px solid rgba(255, 255, 255, 0.1)' }}>
-                  <span style={{ fontSize: '0.78rem', color: '#94A3B8' }}>Total Gross Commission Generated:</span>
-                  <strong style={{ fontSize: '1.2rem', color: '#FFFFFF', display: 'block', fontFamily: 'monospace' }}>
+                  <span style={{ fontSize: '0.78rem', color: 'var(--color-94a3b8, #94A3B8)' }}>Total Gross Commission Generated:</span>
+                  <strong style={{ fontSize: '1.2rem', color: 'var(--white, #FFFFFF)', display: 'block', fontFamily: 'monospace' }}>
                     AED {totalGrossCommission.toLocaleString()}
                   </strong>
                 </div>
@@ -559,7 +559,7 @@ const PricingPage: React.FC = () => {
                       }}
                     >
                       <span style={{ fontSize: '0.84rem', fontWeight: 800, color: item.color }}>{item.name}</span>
-                      <strong style={{ fontSize: '1.05rem', color: '#FFFFFF', fontFamily: 'monospace' }}>
+                      <strong style={{ fontSize: '1.05rem', color: 'var(--white, #FFFFFF)', fontFamily: 'monospace' }}>
                         AED {brokerTakeHome.toLocaleString()}
                       </strong>
                     </div>
@@ -575,15 +575,15 @@ const PricingPage: React.FC = () => {
           </div>
 
           {/* CONTACT & FAQ SECTION */}
-          <div style={{ textAlign: 'center', background: '#1E293B', borderRadius: '18px', padding: '2.5rem', border: '1px solid #334155' }}>
-            <h3 style={{ margin: '0 0 0.5rem', fontSize: '1.5rem', fontWeight: 900, color: '#FFFFFF' }}>
+          <div style={{ textAlign: 'center', background: 'var(--color-1e293b, #1E293B)', borderRadius: '18px', padding: '2.5rem', border: '1px solid var(--color-334155, #334155)' }}>
+            <h3 style={{ margin: '0 0 0.5rem', fontSize: '1.5rem', fontWeight: 900, color: 'var(--white, #FFFFFF)' }}>
               Have More Questions or Need Custom Broker Licensing?
             </h3>
-            <p style={{ color: '#94A3B8', fontSize: '0.92rem', marginBottom: '1.5rem' }}>
+            <p style={{ color: 'var(--color-94a3b8, #94A3B8)', fontSize: '0.92rem', marginBottom: '1.5rem' }}>
               Chat directly with our broker acquisition team at Ontario Tower – Business Bay, Dubai.
             </p>
 
-            <div style={{ display: 'flex', justifyContent: 'center', flexWrap: 'wrap', gap: '1.5rem', fontSize: '0.88rem', color: '#CBD5E1', marginBottom: '1.5rem' }}>
+            <div style={{ display: 'flex', justifyContent: 'center', flexWrap: 'wrap', gap: '1.5rem', fontSize: '0.88rem', color: 'var(--text-secondary, #CBD5E1)', marginBottom: '1.5rem' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
                 <MapPin size={16} color="#06B6D4" /> Office 1503, Ontario Tower – Business Bay, Dubai, UAE
               </div>
@@ -646,16 +646,16 @@ const PricingPage: React.FC = () => {
             <h3 style={{ margin: '0 0 0.5rem', fontSize: '1.4rem', fontWeight: 900 }}>
               Join White Caves on {selectedPlanModal.name}
             </h3>
-            <p style={{ fontSize: '0.88rem', color: '#94A3B8', marginBottom: '1.25rem' }}>
+            <p style={{ fontSize: '0.88rem', color: 'var(--color-94a3b8, #94A3B8)', marginBottom: '1.25rem' }}>
               {selectedPlanModal.subtitle}
             </p>
 
-            <div style={{ background: '#1E293B', padding: '14px', borderRadius: '12px', border: '1px solid #334155', marginBottom: '1.5rem' }}>
-              <span style={{ fontSize: '0.78rem', color: '#38BDF8', fontWeight: 800, textTransform: 'uppercase', display: 'block' }}>SELECTED PLAN</span>
-              <strong style={{ fontSize: '1.2rem', color: '#FFFFFF' }}>{selectedPlanModal.name} ({selectedPlanModal.commission})</strong>
-              <div style={{ fontSize: '1.1rem', color: '#10B981', fontWeight: 900, marginTop: '4px' }}>
+            <div style={{ background: 'var(--color-1e293b, #1E293B)', padding: '14px', borderRadius: '12px', border: '1px solid var(--color-334155, #334155)', marginBottom: '1.5rem' }}>
+              <span style={{ fontSize: '0.78rem', color: 'var(--color-38bdf8, #38BDF8)', fontWeight: 800, textTransform: 'uppercase', display: 'block' }}>SELECTED PLAN</span>
+              <strong style={{ fontSize: '1.2rem', color: 'var(--white, #FFFFFF)' }}>{selectedPlanModal.name} ({selectedPlanModal.commission})</strong>
+              <div style={{ fontSize: '1.1rem', color: 'var(--accent-green, #10B981)', fontWeight: 900, marginTop: '4px' }}>
                 AED {selectedPlanModal.oneTimePrice ? selectedPlanModal.oneTimePrice.toLocaleString() : (billingCycle === 'yearly' ? selectedPlanModal.yearlyPrice : selectedPlanModal.monthlyPrice).toLocaleString()}
-                <span style={{ fontSize: '0.8rem', color: '#94A3B8', fontWeight: 400 }}> {selectedPlanModal.oneTimePrice ? 'one time' : '/ mo'}</span>
+                <span style={{ fontSize: '0.8rem', color: 'var(--color-94a3b8, #94A3B8)', fontWeight: 400 }}> {selectedPlanModal.oneTimePrice ? 'one time' : '/ mo'}</span>
               </div>
             </div>
 

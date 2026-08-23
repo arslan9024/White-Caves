@@ -53,19 +53,19 @@ export const JunoCommunity: React.FC<JunoProps> = ({ moduleId }) => {
   return (
     <div className="crm-container" style={{ maxWidth: '100%', padding: '0.5rem' }}>
       {/* Header */}
-      <div style={{ background: 'linear-gradient(135deg, #4C1D95 0%, #2E1065 100%)', color: '#FFFFFF', padding: '1.25rem 1.5rem', borderRadius: '16px', marginBottom: '1.25rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1rem' }}>
+      <div style={{ background: 'linear-gradient(135deg, var(--color-4c1d95, #4C1D95) 0%, var(--color-2e1065, #2E1065) 100%)', color: 'var(--white, #FFFFFF)', padding: '1.25rem 1.5rem', borderRadius: '16px', marginBottom: '1.25rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1rem' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
-          <div style={{ width: '48px', height: '48px', borderRadius: '12px', background: 'linear-gradient(135deg, #8B5CF6 0%, #7C3AED 100%)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.5rem' }}>
+          <div style={{ width: '48px', height: '48px', borderRadius: '12px', background: 'linear-gradient(135deg, var(--accent-purple, #8B5CF6) 0%, var(--accent-purple, #7C3AED) 100%)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.5rem' }}>
             🏘️
           </div>
           <div>
             <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
               <h2 style={{ margin: 0, fontSize: '1.3rem', fontWeight: 800 }}>Juno AI — Community Operations & Facilities</h2>
-              <span style={{ fontSize: '0.7rem', background: 'rgba(255, 255, 255, 0.15)', padding: '2px 8px', borderRadius: '4px', color: '#DDD6FE', fontWeight: 800 }}>
+              <span style={{ fontSize: '0.7rem', background: 'rgba(255, 255, 255, 0.15)', padding: '2px 8px', borderRadius: '4px', color: 'var(--color-ddd6fe, #DDD6FE)', fontWeight: 800 }}>
                 Residents Experience Hub
               </span>
             </div>
-            <p style={{ margin: '0.2rem 0 0 0', fontSize: '0.82rem', color: '#EDE9FE' }}>
+            <p style={{ margin: '0.2rem 0 0 0', fontSize: '0.82rem', color: 'var(--color-ede9fe, #EDE9FE)' }}>
               Amenity reservations, rapid maintenance ticket SLA dispatch, tenant request logs & community broadcast bulletins.
             </p>
           </div>
@@ -73,27 +73,27 @@ export const JunoCommunity: React.FC<JunoProps> = ({ moduleId }) => {
       </div>
 
       {/* Tabs */}
-      <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap', background: '#FFFFFF', padding: '8px 12px', borderRadius: '12px', border: '1px solid #E2E8F0', marginBottom: '1.25rem' }}>
-        <button onClick={() => setActiveTab('booking')} style={{ padding: '6px 12px', borderRadius: '6px', border: activeTab === 'booking' ? '1px solid #7C3AED' : '1px solid transparent', background: activeTab === 'booking' ? '#7C3AED' : '#F8FAFC', color: activeTab === 'booking' ? '#FFF' : '#334155', fontWeight: 800, fontSize: '0.8rem', cursor: 'pointer' }}>
+      <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap', background: 'var(--white, #FFFFFF)', padding: '8px 12px', borderRadius: '12px', border: '1px solid var(--text-secondary, #E2E8F0)', marginBottom: '1.25rem' }}>
+        <button onClick={() => setActiveTab('booking')} style={{ padding: '6px 12px', borderRadius: '6px', border: activeTab === 'booking' ? '1px solid var(--accent-purple, #7C3AED)' : '1px solid transparent', background: activeTab === 'booking' ? 'var(--accent-purple, #7C3AED)' : 'var(--color-f8fafc, #F8FAFC)', color: activeTab === 'booking' ? 'var(--white, #FFF)' : 'var(--color-334155, #334155)', fontWeight: 800, fontSize: '0.8rem', cursor: 'pointer' }}>
           3.24.1 Facility Booking Desk
         </button>
-        <button onClick={() => setActiveTab('maintenance')} style={{ padding: '6px 12px', borderRadius: '6px', border: activeTab === 'maintenance' ? '1px solid #7C3AED' : '1px solid transparent', background: activeTab === 'maintenance' ? '#7C3AED' : '#F8FAFC', color: activeTab === 'maintenance' ? '#FFF' : '#334155', fontWeight: 800, fontSize: '0.8rem', cursor: 'pointer' }}>
+        <button onClick={() => setActiveTab('maintenance')} style={{ padding: '6px 12px', borderRadius: '6px', border: activeTab === 'maintenance' ? '1px solid var(--accent-purple, #7C3AED)' : '1px solid transparent', background: activeTab === 'maintenance' ? 'var(--accent-purple, #7C3AED)' : 'var(--color-f8fafc, #F8FAFC)', color: activeTab === 'maintenance' ? 'var(--white, #FFF)' : 'var(--color-334155, #334155)', fontWeight: 800, fontSize: '0.8rem', cursor: 'pointer' }}>
           3.24.2 Maintenance Ticket SLA
         </button>
-        <button onClick={() => setActiveTab('service')} style={{ padding: '6px 12px', borderRadius: '6px', border: activeTab === 'service' ? '1px solid #7C3AED' : '1px solid transparent', background: activeTab === 'service' ? '#7C3AED' : '#F8FAFC', color: activeTab === 'service' ? '#FFF' : '#334155', fontWeight: 800, fontSize: '0.8rem', cursor: 'pointer' }}>
+        <button onClick={() => setActiveTab('service')} style={{ padding: '6px 12px', borderRadius: '6px', border: activeTab === 'service' ? '1px solid var(--accent-purple, #7C3AED)' : '1px solid transparent', background: activeTab === 'service' ? 'var(--accent-purple, #7C3AED)' : 'var(--color-f8fafc, #F8FAFC)', color: activeTab === 'service' ? 'var(--white, #FFF)' : 'var(--color-334155, #334155)', fontWeight: 800, fontSize: '0.8rem', cursor: 'pointer' }}>
           3.24.3 Tenant Service Tracker
         </button>
-        <button onClick={() => setActiveTab('notices')} style={{ padding: '6px 12px', borderRadius: '6px', border: activeTab === 'notices' ? '1px solid #7C3AED' : '1px solid transparent', background: activeTab === 'notices' ? '#7C3AED' : '#F8FAFC', color: activeTab === 'notices' ? '#FFF' : '#334155', fontWeight: 800, fontSize: '0.8rem', cursor: 'pointer' }}>
+        <button onClick={() => setActiveTab('notices')} style={{ padding: '6px 12px', borderRadius: '6px', border: activeTab === 'notices' ? '1px solid var(--accent-purple, #7C3AED)' : '1px solid transparent', background: activeTab === 'notices' ? 'var(--accent-purple, #7C3AED)' : 'var(--color-f8fafc, #F8FAFC)', color: activeTab === 'notices' ? 'var(--white, #FFF)' : 'var(--color-334155, #334155)', fontWeight: 800, fontSize: '0.8rem', cursor: 'pointer' }}>
           3.24.4 Community Notice Board
         </button>
       </div>
 
       {/* Tab 1: Bookings */}
       {activeTab === 'booking' && (
-        <div style={{ background: '#FFFFFF', borderRadius: '12px', border: '1px solid #E2E8F0', overflow: 'hidden' }}>
+        <div style={{ background: 'var(--white, #FFFFFF)', borderRadius: '12px', border: '1px solid var(--text-secondary, #E2E8F0)', overflow: 'hidden' }}>
           <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left', fontSize: '0.85rem' }}>
             <thead>
-              <tr style={{ background: '#F8FAFC', borderBottom: '1px solid #E2E8F0', color: '#475569', fontWeight: 800 }}>
+              <tr style={{ background: 'var(--color-f8fafc, #F8FAFC)', borderBottom: '1px solid var(--text-secondary, #E2E8F0)', color: 'var(--color-475569, #475569)', fontWeight: 800 }}>
                 <th style={{ padding: '10px 14px' }}>Booking ID</th>
                 <th style={{ padding: '10px 14px' }}>Amenity Facility</th>
                 <th style={{ padding: '10px 14px' }}>Tenant Name & Unit</th>
@@ -104,14 +104,14 @@ export const JunoCommunity: React.FC<JunoProps> = ({ moduleId }) => {
             </thead>
             <tbody>
               {bookings.map(b => (
-                <tr key={b.id} style={{ borderBottom: '1px solid #F1F5F9' }}>
-                  <td style={{ padding: '10px 14px', fontWeight: 800, color: '#7C3AED' }}>{b.id}</td>
-                  <td style={{ padding: '10px 14px', fontWeight: 700, color: '#1E293B' }}>{b.amenity}</td>
-                  <td style={{ padding: '10px 14px', color: '#475569' }}>{b.tenant}</td>
-                  <td style={{ padding: '10px 14px', color: '#64748B' }}>{b.date}</td>
-                  <td style={{ padding: '10px 14px', fontWeight: 700, color: '#1E293B' }}>{b.time}</td>
+                <tr key={b.id} style={{ borderBottom: '1px solid var(--color-f1f5f9, #F1F5F9)' }}>
+                  <td style={{ padding: '10px 14px', fontWeight: 800, color: 'var(--accent-purple, #7C3AED)' }}>{b.id}</td>
+                  <td style={{ padding: '10px 14px', fontWeight: 700, color: 'var(--color-1e293b, #1E293B)' }}>{b.amenity}</td>
+                  <td style={{ padding: '10px 14px', color: 'var(--color-475569, #475569)' }}>{b.tenant}</td>
+                  <td style={{ padding: '10px 14px', color: 'var(--text-secondary, #64748B)' }}>{b.date}</td>
+                  <td style={{ padding: '10px 14px', fontWeight: 700, color: 'var(--color-1e293b, #1E293B)' }}>{b.time}</td>
                   <td style={{ padding: '10px 14px' }}>
-                    <span style={{ padding: '2px 8px', borderRadius: '4px', fontSize: '0.72rem', fontWeight: 800, background: b.status === 'CONFIRMED' ? '#ECFDF5' : '#FEF3C7', color: b.status === 'CONFIRMED' ? '#047857' : '#B45309' }}>
+                    <span style={{ padding: '2px 8px', borderRadius: '4px', fontSize: '0.72rem', fontWeight: 800, background: b.status === 'CONFIRMED' ? 'var(--color-ecfdf5, #ECFDF5)' : 'var(--color-fef3c7, #FEF3C7)', color: b.status === 'CONFIRMED' ? 'var(--color-047857, #047857)' : 'var(--color-b45309, #B45309)' }}>
                       {b.status}
                     </span>
                   </td>
@@ -124,10 +124,10 @@ export const JunoCommunity: React.FC<JunoProps> = ({ moduleId }) => {
 
       {/* Tab 2: Maintenance SLA */}
       {activeTab === 'maintenance' && (
-        <div style={{ background: '#FFFFFF', borderRadius: '12px', border: '1px solid #E2E8F0', overflow: 'hidden' }}>
+        <div style={{ background: 'var(--white, #FFFFFF)', borderRadius: '12px', border: '1px solid var(--text-secondary, #E2E8F0)', overflow: 'hidden' }}>
           <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left', fontSize: '0.85rem' }}>
             <thead>
-              <tr style={{ background: '#F8FAFC', borderBottom: '1px solid #E2E8F0', color: '#475569', fontWeight: 800 }}>
+              <tr style={{ background: 'var(--color-f8fafc, #F8FAFC)', borderBottom: '1px solid var(--text-secondary, #E2E8F0)', color: 'var(--color-475569, #475569)', fontWeight: 800 }}>
                 <th style={{ padding: '10px 14px' }}>Ticket #</th>
                 <th style={{ padding: '10px 14px' }}>Location</th>
                 <th style={{ padding: '10px 14px' }}>Category Issue</th>
@@ -138,17 +138,17 @@ export const JunoCommunity: React.FC<JunoProps> = ({ moduleId }) => {
             </thead>
             <tbody>
               {tickets.map(t => (
-                <tr key={t.id} style={{ borderBottom: '1px solid #F1F5F9' }}>
-                  <td style={{ padding: '10px 14px', fontWeight: 800, color: '#7C3AED' }}>{t.id}</td>
-                  <td style={{ padding: '10px 14px', fontWeight: 700, color: '#1E293B' }}>{t.unit}</td>
-                  <td style={{ padding: '10px 14px', color: '#475569' }}>{t.category}</td>
-                  <td style={{ padding: '10px 14px', fontWeight: 800, color: '#DC2626' }}>{t.slaRemaining}</td>
+                <tr key={t.id} style={{ borderBottom: '1px solid var(--color-f1f5f9, #F1F5F9)' }}>
+                  <td style={{ padding: '10px 14px', fontWeight: 800, color: 'var(--accent-purple, #7C3AED)' }}>{t.id}</td>
+                  <td style={{ padding: '10px 14px', fontWeight: 700, color: 'var(--color-1e293b, #1E293B)' }}>{t.unit}</td>
+                  <td style={{ padding: '10px 14px', color: 'var(--color-475569, #475569)' }}>{t.category}</td>
+                  <td style={{ padding: '10px 14px', fontWeight: 800, color: 'var(--accent-red, #DC2626)' }}>{t.slaRemaining}</td>
                   <td style={{ padding: '10px 14px' }}>
-                    <span style={{ padding: '2px 8px', borderRadius: '4px', fontSize: '0.72rem', fontWeight: 800, background: t.priority === 'CRITICAL' ? '#FEF2F2' : '#FEF3C7', color: t.priority === 'CRITICAL' ? '#DC2626' : '#B45309' }}>
+                    <span style={{ padding: '2px 8px', borderRadius: '4px', fontSize: '0.72rem', fontWeight: 800, background: t.priority === 'CRITICAL' ? 'var(--color-fef2f2, #FEF2F2)' : 'var(--color-fef3c7, #FEF3C7)', color: t.priority === 'CRITICAL' ? 'var(--accent-red, #DC2626)' : 'var(--color-b45309, #B45309)' }}>
                       {t.priority}
                     </span>
                   </td>
-                  <td style={{ padding: '10px 14px', fontSize: '0.75rem', fontWeight: 700, color: '#1E293B' }}>
+                  <td style={{ padding: '10px 14px', fontSize: '0.75rem', fontWeight: 700, color: 'var(--color-1e293b, #1E293B)' }}>
                     {t.status}
                   </td>
                 </tr>
@@ -160,19 +160,19 @@ export const JunoCommunity: React.FC<JunoProps> = ({ moduleId }) => {
 
       {/* Tab 4: Notice Board */}
       {activeTab === 'notices' && (
-        <div style={{ background: '#FFFFFF', padding: '1.5rem', borderRadius: '12px', border: '1px solid #E2E8F0' }}>
-          <h4 style={{ margin: '0 0 1rem 0', fontSize: '1rem', fontWeight: 800, color: '#1E293B' }}>
+        <div style={{ background: 'var(--white, #FFFFFF)', padding: '1.5rem', borderRadius: '12px', border: '1px solid var(--text-secondary, #E2E8F0)' }}>
+          <h4 style={{ margin: '0 0 1rem 0', fontSize: '1rem', fontWeight: 800, color: 'var(--color-1e293b, #1E293B)' }}>
             Official Community Bulletins & Resident Notices
           </h4>
           <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
             {notices.map(n => (
-              <div key={n.id} style={{ padding: '1.25rem', background: '#F8FAFC', borderRadius: '8px', border: '1px solid #E2E8F0' }}>
+              <div key={n.id} style={{ padding: '1.25rem', background: 'var(--color-f8fafc, #F8FAFC)', borderRadius: '8px', border: '1px solid var(--text-secondary, #E2E8F0)' }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                  <span style={{ fontWeight: 800, color: '#1E293B', fontSize: '0.95rem' }}>{n.title}</span>
-                  <span style={{ fontSize: '0.75rem', color: '#64748B' }}>{n.date}</span>
+                  <span style={{ fontWeight: 800, color: 'var(--color-1e293b, #1E293B)', fontSize: '0.95rem' }}>{n.title}</span>
+                  <span style={{ fontSize: '0.75rem', color: 'var(--text-secondary, #64748B)' }}>{n.date}</span>
                 </div>
-                <div style={{ fontSize: '0.82rem', color: '#475569', marginTop: '6px' }}>Impact: {n.impact}</div>
-                <div style={{ fontSize: '0.72rem', color: '#7C3AED', fontWeight: 800, marginTop: '4px' }}>Issued by {n.author}</div>
+                <div style={{ fontSize: '0.82rem', color: 'var(--color-475569, #475569)', marginTop: '6px' }}>Impact: {n.impact}</div>
+                <div style={{ fontSize: '0.72rem', color: 'var(--accent-purple, #7C3AED)', fontWeight: 800, marginTop: '4px' }}>Issued by {n.author}</div>
               </div>
             ))}
           </div>
@@ -181,11 +181,11 @@ export const JunoCommunity: React.FC<JunoProps> = ({ moduleId }) => {
 
       {/* Tab 3: Service */}
       {activeTab === 'service' && (
-        <div style={{ background: '#FFFFFF', padding: '1.5rem', borderRadius: '12px', border: '1px solid #E2E8F0' }}>
-          <h4 style={{ margin: '0 0 0.5rem 0', fontSize: '1rem', fontWeight: 800, color: '#1E293B' }}>
+        <div style={{ background: 'var(--white, #FFFFFF)', padding: '1.5rem', borderRadius: '12px', border: '1px solid var(--text-secondary, #E2E8F0)' }}>
+          <h4 style={{ margin: '0 0 0.5rem 0', fontSize: '1rem', fontWeight: 800, color: 'var(--color-1e293b, #1E293B)' }}>
             Tenant Concierge & Service Desk Inquiries
           </h4>
-          <p style={{ fontSize: '0.85rem', color: '#64748B' }}>
+          <p style={{ fontSize: '0.85rem', color: 'var(--text-secondary, #64748B)' }}>
             All tenant tickets are routed with automated Nadia WhatsApp notification updates.
           </p>
         </div>

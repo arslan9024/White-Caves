@@ -156,11 +156,11 @@ export const LandlordPayoutBatchDispatch: FC = () => {
           </SCard>
           <SCard>
             <SKey>Agency PM Fees Deducted</SKey>
-            <SVal style={{ color: '#EF4444' }}>AED {totalFees.toLocaleString()}</SVal>
+            <SVal style={{ color: 'var(--accent-red, #EF4444)' }}>AED {totalFees.toLocaleString()}</SVal>
           </SCard>
           <SCard>
             <SKey>Accounts in Batch</SKey>
-            <SVal style={{ color: '#FFF' }}>{payouts.length} Landlords</SVal>
+            <SVal style={{ color: 'var(--white, #FFF)' }}>{payouts.length} Landlords</SVal>
           </SCard>
         </SummaryGrid>
 
@@ -179,14 +179,14 @@ export const LandlordPayoutBatchDispatch: FC = () => {
           <tbody>
             {payouts.map(p => (
               <Tr key={p.id}>
-                <Td style={{ fontWeight: 800, color: '#FFF' }}>{p.id}</Td>
+                <Td style={{ fontWeight: 800, color: 'var(--white, #FFF)' }}>{p.id}</Td>
                 <Td>{p.landlord}</Td>
-                <Td style={{ color: '#94A3B8' }}>{p.property}</Td>
+                <Td style={{ color: 'var(--color-94a3b8, #94A3B8)' }}>{p.property}</Td>
                 <Td>AED {p.grossRent.toLocaleString()}</Td>
-                <Td style={{ color: '#EF4444' }}>- AED {(p.mgmtFee + p.maintenance).toLocaleString()}</Td>
-                <Td style={{ fontWeight: 800, color: '#10B981' }}>AED {p.netPayout.toLocaleString()}</Td>
+                <Td style={{ color: 'var(--accent-red, #EF4444)' }}>- AED {(p.mgmtFee + p.maintenance).toLocaleString()}</Td>
+                <Td style={{ fontWeight: 800, color: 'var(--accent-green, #10B981)' }}>AED {p.netPayout.toLocaleString()}</Td>
                 <Td>
-                  <span style={{ fontSize: '0.65rem', fontWeight: 800, padding: '2px 6px', borderRadius: '4px', background: p.status === 'DISPATCHED' ? 'rgba(16,185,129,0.2)' : 'rgba(245,158,11,0.2)', color: p.status === 'DISPATCHED' ? '#10B981' : '#F59E0B' }}>
+                  <span style={{ fontSize: '0.65rem', fontWeight: 800, padding: '2px 6px', borderRadius: '4px', background: p.status === 'DISPATCHED' ? 'rgba(16,185,129,0.2)' : 'rgba(245,158,11,0.2)', color: p.status === 'DISPATCHED' ? 'var(--accent-green, #10B981)' : 'var(--accent-gold, #F59E0B)' }}>
                     {p.status}
                   </span>
                 </Td>
@@ -196,7 +196,7 @@ export const LandlordPayoutBatchDispatch: FC = () => {
         </PayoutTable>
 
         {dispatched ? (
-          <div style={{ padding: '14px', borderRadius: '10px', background: 'rgba(16, 185, 129, 0.1)', border: '1px solid rgba(16, 185, 129, 0.3)', textAlign: 'center', color: '#10B981', fontWeight: 800, fontSize: '0.85rem' }}>
+          <div style={{ padding: '14px', borderRadius: '10px', background: 'rgba(16, 185, 129, 0.1)', border: '1px solid rgba(16, 185, 129, 0.3)', textAlign: 'center', color: 'var(--accent-green, #10B981)', fontWeight: 800, fontSize: '0.85rem' }}>
             ✓ Batch Wire Transfer of AED {totalNet.toLocaleString()} Transmitted to Corporate Bank API!
           </div>
         ) : (

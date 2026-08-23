@@ -202,9 +202,9 @@ export const OfficeLeaseSqftComparator: FC = () => {
           <ComparisonBox>
             <BoxHeader>
               <span>Imperial Unit Metrics (SqFt)</span>
-              <span style={{ color: '#EF4444' }}>{sqft.toLocaleString()} SqFt</span>
+              <span style={{ color: 'var(--accent-red, #EF4444)' }}>{sqft.toLocaleString()} SqFt</span>
             </BoxHeader>
-            <PriceDisplay>AED {rentPerSqft.toFixed(2)} <span style={{ fontSize: '0.75rem', color: '#94A3B8' }}>/ SqFt / Yr</span></PriceDisplay>
+            <PriceDisplay>AED {rentPerSqft.toFixed(2)} <span style={{ fontSize: '0.75rem', color: 'var(--color-94a3b8, #94A3B8)' }}>/ SqFt / Yr</span></PriceDisplay>
             <MetricRow>
               <span>Annual Base Rent</span>
               <MetricVal>AED {rent.toLocaleString()}</MetricVal>
@@ -222,10 +222,10 @@ export const OfficeLeaseSqftComparator: FC = () => {
           <ComparisonBox $highlight>
             <BoxHeader>
               <span>Metric Unit Metrics (SqM)</span>
-              <span style={{ color: '#10B981' }}>{sqMeters.toFixed(1)} SqM</span>
+              <span style={{ color: 'var(--accent-green, #10B981)' }}>{sqMeters.toFixed(1)} SqM</span>
             </BoxHeader>
-            <PriceDisplay style={{ color: '#10B981' }}>
-              AED {rentPerSqm.toFixed(2)} <span style={{ fontSize: '0.75rem', color: '#94A3B8' }}>/ SqM / Yr</span>
+            <PriceDisplay style={{ color: 'var(--accent-green, #10B981)' }}>
+              AED {rentPerSqm.toFixed(2)} <span style={{ fontSize: '0.75rem', color: 'var(--color-94a3b8, #94A3B8)' }}>/ SqM / Yr</span>
             </PriceDisplay>
             <MetricRow>
               <span>Total Occupancy (Rent + SC)</span>
@@ -237,7 +237,7 @@ export const OfficeLeaseSqftComparator: FC = () => {
             </MetricRow>
             <MetricRow>
               <span>Total Financial Outlay / Yr</span>
-              <MetricVal style={{ color: '#10B981', fontWeight: 900 }}>AED {Math.round(grandTotal).toLocaleString()}</MetricVal>
+              <MetricVal style={{ color: 'var(--accent-green, #10B981)', fontWeight: 900 }}>AED {Math.round(grandTotal).toLocaleString()}</MetricVal>
             </MetricRow>
           </ComparisonBox>
         </CompareGrid>

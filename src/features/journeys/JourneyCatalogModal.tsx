@@ -21,13 +21,17 @@ export const JourneyCatalogModal: React.FC<JourneyCatalogModalProps> = ({
   const journeys = getAllJourneys();
 
   const categories = [
-    { id: 'all', label: 'All Journeys' },
+    { id: 'all', label: 'All 20 Journeys' },
     { id: 'leasing', label: 'Leasing' },
-    { id: 'property', label: 'Property' },
-    { id: 'landlord', label: 'Landlord' },
-    { id: 'tenant', label: 'Tenant' },
+    { id: 'sales', label: 'Sales' },
+    { id: 'finance', label: 'Finance' },
+    { id: 'wealth', label: 'VIP Wealth' },
     { id: 'compliance', label: 'Compliance' },
-    { id: 'property-management', label: 'Management' }
+    { id: 'property', label: 'Property' },
+    { id: 'projects', label: 'Off-Plan' },
+    { id: 'marketing', label: 'Marketing' },
+    { id: 'community', label: 'Community' },
+    { id: 'property-management', label: 'Management' },
   ];
 
   const filtered = journeys.filter(j => {
@@ -48,7 +52,7 @@ export const JourneyCatalogModal: React.FC<JourneyCatalogModalProps> = ({
               <span className="text-xl">🗺️</span>
               <h2 className="text-xl font-bold text-white tracking-wide">White Caves Journey Hub</h2>
               <span className="text-xs px-2.5 py-0.5 rounded-full bg-amber-500/20 text-amber-300 font-bold border border-amber-500/30">
-                10 Flagship Journeys
+                20 Flagship Journeys
               </span>
             </div>
             <p className="text-xs text-slate-400 mt-1">

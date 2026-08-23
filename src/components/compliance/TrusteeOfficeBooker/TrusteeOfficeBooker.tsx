@@ -53,7 +53,7 @@ export const TrusteeOfficeBooker: FC = () => {
     <Wrapper data-testid="trustee-office-booker">
       <Header>
         <Title>🏛️ DLD Trustee Office Appointment</Title>
-        <div style={{ fontSize: '0.7rem', color: '#64748B' }}>Title Transfer</div>
+        <div style={{ fontSize: '0.7rem', color: 'var(--text-secondary, #64748B)' }}>Title Transfer</div>
       </Header>
       <Body>
         <TrusteeGrid>
@@ -75,16 +75,16 @@ export const TrusteeOfficeBooker: FC = () => {
           <CostRow><CostLabel>Trustee Office Fee</CostLabel><CostVal>AED {trustee.fee.toLocaleString()}</CostVal></CostRow>
           <CostRow><CostLabel>Knowledge & Innovation Fees</CostLabel><CostVal>AED 20</CostVal></CostRow>
           <TotalRow>
-            <div style={{ fontSize: '0.8rem', fontWeight: 700, color: '#94A3B8' }}>Total Payable at Trustee</div>
-            <div style={{ fontSize: '0.95rem', fontWeight: 900, color: '#EF4444' }}>AED {(dldFee + trustee.fee + 20).toLocaleString()}</div>
+            <div style={{ fontSize: '0.8rem', fontWeight: 700, color: 'var(--color-94a3b8, #94A3B8)' }}>Total Payable at Trustee</div>
+            <div style={{ fontSize: '0.95rem', fontWeight: 900, color: 'var(--accent-red, #EF4444)' }}>AED {(dldFee + trustee.fee + 20).toLocaleString()}</div>
           </TotalRow>
         </CostCard>
         {!booked ? (
           <BookBtn onClick={() => setBooked(true)}>📅 Book Appointment — {new Date(txDate).toLocaleDateString('en-AE', { day: 'numeric', month: 'short', year: 'numeric' })}</BookBtn>
         ) : (
-          <div style={{ textAlign: 'center', padding: '14px', color: '#10B981', fontWeight: 700, background: 'rgba(16,185,129,0.08)', borderRadius: '10px', border: '1px solid rgba(16,185,129,0.2)' }}>
+          <div style={{ textAlign: 'center', padding: '14px', color: 'var(--accent-green, #10B981)', fontWeight: 700, background: 'rgba(16,185,129,0.08)', borderRadius: '10px', border: '1px solid rgba(16,185,129,0.2)' }}>
             ✅ Appointment Confirmed at {trustee.name}!<br />
-            <span style={{ fontSize: '0.72rem', color: '#64748B', fontWeight: 400 }}>Reference: WC-TRUST-{Date.now().toString().slice(-6)}</span>
+            <span style={{ fontSize: '0.72rem', color: 'var(--text-secondary, #64748B)', fontWeight: 400 }}>Reference: WC-TRUST-{Date.now().toString().slice(-6)}</span>
           </div>
         )}
       </Body>

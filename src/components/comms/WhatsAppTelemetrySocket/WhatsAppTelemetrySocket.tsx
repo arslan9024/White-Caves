@@ -99,21 +99,21 @@ export const WhatsAppTelemetrySocket: FC = () => {
           <LiveDot />
           WhatsApp Webhook & Telemetry Stream
         </Title>
-        <span style={{ fontSize: '0.68rem', fontWeight: 800, color: '#25D366' }}>SOCKET: CONNECTED</span>
+        <span style={{ fontSize: '0.68rem', fontWeight: 800, color: 'var(--color-25d366, #25D366)' }}>SOCKET: CONNECTED</span>
       </Head>
       <Body>
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '10px', textAlign: 'center' }}>
           <div style={{ padding: '10px', background: 'rgba(15,23,42,0.7)', borderRadius: '8px', border: '1px solid rgba(100,116,139,0.2)' }}>
-            <div style={{ fontSize: '0.65rem', color: '#94A3B8' }}>Delivery Rate</div>
-            <div style={{ fontSize: '1.1rem', fontWeight: 900, color: '#25D366' }}>99.2%</div>
+            <div style={{ fontSize: '0.65rem', color: 'var(--color-94a3b8, #94A3B8)' }}>Delivery Rate</div>
+            <div style={{ fontSize: '1.1rem', fontWeight: 900, color: 'var(--color-25d366, #25D366)' }}>99.2%</div>
           </div>
           <div style={{ padding: '10px', background: 'rgba(15,23,42,0.7)', borderRadius: '8px', border: '1px solid rgba(100,116,139,0.2)' }}>
-            <div style={{ fontSize: '0.65rem', color: '#94A3B8' }}>Read Rate</div>
-            <div style={{ fontSize: '1.1rem', fontWeight: 900, color: '#38BDF8' }}>88.7%</div>
+            <div style={{ fontSize: '0.65rem', color: 'var(--color-94a3b8, #94A3B8)' }}>Read Rate</div>
+            <div style={{ fontSize: '1.1rem', fontWeight: 900, color: 'var(--color-38bdf8, #38BDF8)' }}>88.7%</div>
           </div>
           <div style={{ padding: '10px', background: 'rgba(15,23,42,0.7)', borderRadius: '8px', border: '1px solid rgba(100,116,139,0.2)' }}>
-            <div style={{ fontSize: '0.65rem', color: '#94A3B8' }}>Avg. Read Time</div>
-            <div style={{ fontSize: '1.1rem', fontWeight: 900, color: '#FFF' }}>38s</div>
+            <div style={{ fontSize: '0.65rem', color: 'var(--color-94a3b8, #94A3B8)' }}>Avg. Read Time</div>
+            <div style={{ fontSize: '1.1rem', fontWeight: 900, color: 'var(--white, #FFF)' }}>38s</div>
           </div>
         </div>
 
@@ -125,11 +125,11 @@ export const WhatsAppTelemetrySocket: FC = () => {
                   {ev.status === 'read' ? '✓✓' : ev.status === 'delivered' ? '✓✓' : '✓'}
                 </StatusTick>
                 <div>
-                  <div style={{ color: '#FFF', fontWeight: 700 }}>{ev.recipient}</div>
-                  <div style={{ color: '#94A3B8', fontSize: '0.68rem' }}>{ev.message}</div>
+                  <div style={{ color: 'var(--white, #FFF)', fontWeight: 700 }}>{ev.recipient}</div>
+                  <div style={{ color: 'var(--color-94a3b8, #94A3B8)', fontSize: '0.68rem' }}>{ev.message}</div>
                 </div>
               </EventInfo>
-              <div style={{ color: '#64748B', fontSize: '0.68rem' }}>{ev.time}</div>
+              <div style={{ color: 'var(--text-secondary, #64748B)', fontSize: '0.68rem' }}>{ev.time}</div>
             </EventRow>
           ))}
         </StreamList>

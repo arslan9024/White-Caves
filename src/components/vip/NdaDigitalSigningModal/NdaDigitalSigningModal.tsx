@@ -115,7 +115,7 @@ export const NdaDigitalSigningModal: FC = () => {
     <Wrap data-testid="nda-digital-signing-modal">
       <Head>
         <Title>🔏 Confidential NDA — UHNW Access</Title>
-        <div style={{fontSize:'0.68rem',color:'#A78BFA',fontWeight:700,background:'rgba(139,92,246,0.1)',padding:'3px 10px',borderRadius:'999px',border:'1px solid rgba(139,92,246,0.25)'}}>LEVEL 5</div>
+        <div style={{fontSize:'0.68rem',color:'var(--color-a78bfa, #A78BFA)',fontWeight:700,background:'rgba(139,92,246,0.1)',padding:'3px 10px',borderRadius:'999px',border:'1px solid rgba(139,92,246,0.25)'}}>LEVEL 5</div>
       </Head>
       <Body>
         <NdaText>

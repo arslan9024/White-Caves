@@ -205,7 +205,7 @@ const TheodoraFinanceCRM: React.FC<TheodoraFinanceCRMProps> = ({ moduleId }) => 
             </div>
             <div>
               <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                <h2 style={{ margin: 0, fontSize: '1.3rem', fontWeight: 800, color: '#FFFFFF' }}>
+                <h2 style={{ margin: 0, fontSize: '1.3rem', fontWeight: 800, color: 'var(--white, #FFFFFF)' }}>
                   Theodora AI — In-House Accounting & Finance Suite
                 </h2>
                 <span
@@ -221,7 +221,7 @@ const TheodoraFinanceCRM: React.FC<TheodoraFinanceCRMProps> = ({ moduleId }) => 
                   Zoho-Free Autonomous Suite
                 </span>
               </div>
-              <p style={{ margin: '0.25rem 0 0 0', fontSize: '0.82rem', color: '#C7D2FE' }}>
+              <p style={{ margin: '0.25rem 0 0 0', fontSize: '0.82rem', color: 'var(--color-c7d2fe, #C7D2FE)' }}>
                 Managing full financial lifecycle: Tax Invoicing, 42 Master Expenses, Wio vs. Director Loan, UAE FTA Form 201 VAT & 9% Corporate Tax.
               </p>
             </div>
@@ -244,8 +244,8 @@ const TheodoraFinanceCRM: React.FC<TheodoraFinanceCRMProps> = ({ moduleId }) => 
         }}
       >
         {tabGroups.map((group) => (
-          <div key={group.group} style={{ display: 'flex', alignItems: 'center', gap: '4px', borderRight: '1px solid #E2E8F0', paddingRight: '12px' }}>
-            <span style={{ fontSize: '0.68rem', fontWeight: 800, color: '#94A3B8', textTransform: 'uppercase', marginRight: '4px' }}>
+          <div key={group.group} style={{ display: 'flex', alignItems: 'center', gap: '4px', borderRight: '1px solid var(--text-secondary, #E2E8F0)', paddingRight: '12px' }}>
+            <span style={{ fontSize: '0.68rem', fontWeight: 800, color: 'var(--color-94a3b8, #94A3B8)', textTransform: 'uppercase', marginRight: '4px' }}>
               {group.group}:
             </span>
             {group.items.map((tab) => (

@@ -117,7 +117,7 @@ export const SystemHealthDashboard: FC = () => {
         </MetricGrid>
 
         <div>
-          <div style={{fontSize:'0.7rem',fontWeight:700,color:'#94A3B8',textTransform:'uppercase',letterSpacing:'0.05em',marginBottom:'8px'}}>Service Status</div>
+          <div style={{fontSize:'0.7rem',fontWeight:700,color:'var(--color-94a3b8, #94A3B8)',textTransform:'uppercase',letterSpacing:'0.05em',marginBottom:'8px'}}>Service Status</div>
           <ServiceGrid>
             {services.map((s,i)=>(
               <ServiceRow key={i} $ok={s.ok}>
@@ -129,7 +129,7 @@ export const SystemHealthDashboard: FC = () => {
         </div>
 
         <div>
-          <div style={{fontSize:'0.7rem',fontWeight:700,color:'#94A3B8',textTransform:'uppercase',letterSpacing:'0.05em',marginBottom:'8px'}}>System Alerts</div>
+          <div style={{fontSize:'0.7rem',fontWeight:700,color:'var(--color-94a3b8, #94A3B8)',textTransform:'uppercase',letterSpacing:'0.05em',marginBottom:'8px'}}>System Alerts</div>
           <AlertList>
             {alerts.map((a,i)=>(
               <AlertItem key={i} $type={a.type}>

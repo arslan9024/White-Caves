@@ -112,7 +112,7 @@ export const ChatSentimentAnalyzer: FC = () => {
         <Tag>NINA NLP TELEMETRY</Tag>
       </Head>
       <Body>
-        <div style={{ fontSize: '0.72rem', color: '#94A3B8' }}>
+        <div style={{ fontSize: '0.72rem', color: 'var(--color-94a3b8, #94A3B8)' }}>
           Real-time customer sentiment telemetry classifying inbound conversations into Intent, Urgency, and Churn Risk to trigger proactive executive interventions.
         </div>
 
@@ -122,13 +122,13 @@ export const ChatSentimentAnalyzer: FC = () => {
               <CInfo>
                 <CName>{c.client}</CName>
                 <CExcerpt>{c.excerpt}</CExcerpt>
-                <div style={{ fontSize: '0.65rem', color: '#CBD5E1', fontWeight: 700, marginTop: '2px' }}>
-                  Recommended Action: <span style={{ color: '#EF4444' }}>{c.action}</span>
+                <div style={{ fontSize: '0.65rem', color: 'var(--text-secondary, #CBD5E1)', fontWeight: 700, marginTop: '2px' }}>
+                  Recommended Action: <span style={{ color: 'var(--accent-red, #EF4444)' }}>{c.action}</span>
                 </div>
               </CInfo>
               <ScoreSection>
                 <ScoreVal $sentiment={c.sentiment}>{c.score}</ScoreVal>
-                <div style={{ fontSize: '0.65rem', color: '#64748B', textTransform: 'uppercase', fontWeight: 700 }}>Sentiment Index</div>
+                <div style={{ fontSize: '0.65rem', color: 'var(--text-secondary, #64748B)', textTransform: 'uppercase', fontWeight: 700 }}>Sentiment Index</div>
               </ScoreSection>
             </ChatItem>
           ))}

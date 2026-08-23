@@ -56,7 +56,7 @@ export function useCavesFloatingSearch() {
         const matchesTitle = prop.title.toLowerCase().includes(query);
         const matchesId = prop.id.toLowerCase().includes(query);
         const matchesCommunity = (prop.community || '').toLowerCase().includes(query);
-        const matchesFeature = (prop.features || []).some((f: any) => f.toLowerCase().includes(query));
+        const matchesFeature = (prop.features || []).some((f: string) => (typeof f === 'string' ? f.toLowerCase().includes(query) : false));
         if (!matchesTitle && !matchesId && !matchesCommunity && !matchesFeature) {
           return false;
         }

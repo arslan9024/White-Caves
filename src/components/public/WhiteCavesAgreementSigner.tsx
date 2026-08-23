@@ -61,20 +61,20 @@ export const WhiteCavesAgreementSigner: React.FC = () => {
       }}
     >
       {/* HEADER BANNER */}
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem', borderBottom: '1px solid #E2E8F0', paddingBottom: '1rem' }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem', borderBottom: '1px solid var(--text-secondary, #E2E8F0)', paddingBottom: '1rem' }}>
         <div>
           <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '4px' }}>
-            <span style={{ background: '#06B6D4', color: '#FFFFFF', fontSize: '0.72rem', fontWeight: 900, padding: '3px 8px', borderRadius: '4px', textTransform: 'uppercase' }}>
+            <span style={{ background: 'var(--color-06b6d4, #06B6D4)', color: 'var(--white, #FFFFFF)', fontSize: '0.72rem', fontWeight: 900, padding: '3px 8px', borderRadius: '4px', textTransform: 'uppercase' }}>
               Dubai RERA Legal Contract Engine
             </span>
-            <span style={{ background: '#ECFDF5', color: '#047857', border: '1px solid #10B981', fontSize: '0.72rem', fontWeight: 800, padding: '2px 8px', borderRadius: '6px' }}>
+            <span style={{ background: 'var(--color-ecfdf5, #ECFDF5)', color: 'var(--color-047857, #047857)', border: '1px solid var(--accent-green, #10B981)', fontSize: '0.72rem', fontWeight: 800, padding: '2px 8px', borderRadius: '6px' }}>
               RERA Compliant & Verified
             </span>
           </div>
-          <h3 style={{ margin: 0, fontSize: '1.4rem', fontWeight: 900, color: '#0F172A' }}>
+          <h3 style={{ margin: 0, fontSize: '1.4rem', fontWeight: 900, color: 'var(--color-0f172a, #0F172A)' }}>
             White Caves Real Estate Services Agreement Signer
           </h3>
-          <span style={{ fontSize: '0.84rem', color: '#64748B' }}>
+          <span style={{ fontSize: '0.84rem', color: 'var(--text-secondary, #64748B)' }}>
             Office C1503, Ontario Tower, Business Bay, P.O. Box 450797, Dubai, UAE
           </span>
         </div>
@@ -102,56 +102,56 @@ export const WhiteCavesAgreementSigner: React.FC = () => {
       </div>
 
       {/* STEP 1: CANDIDATE & PACKAGE SELECTION INPUTS */}
-      <div style={{ background: '#F8FAFC', borderRadius: '14px', padding: '1.25rem', border: '1px solid #E2E8F0', marginBottom: '1.5rem' }}>
-        <h4 style={{ margin: '0 0 1rem', fontSize: '1.05rem', fontWeight: 800, color: '#0F172A' }}>
+      <div style={{ background: 'var(--color-f8fafc, #F8FAFC)', borderRadius: '14px', padding: '1.25rem', border: '1px solid var(--text-secondary, #E2E8F0)', marginBottom: '1.5rem' }}>
+        <h4 style={{ margin: '0 0 1rem', fontSize: '1.05rem', fontWeight: 800, color: 'var(--color-0f172a, #0F172A)' }}>
           1. Select Category Package & Enter Client Details
         </h4>
 
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '1rem', marginBottom: '1.25rem' }}>
           <div>
-            <label style={{ display: 'block', fontSize: '0.78rem', fontWeight: 800, color: '#475569', marginBottom: '4px' }}>Client Full Name *</label>
+            <label style={{ display: 'block', fontSize: '0.78rem', fontWeight: 800, color: 'var(--color-475569, #475569)', marginBottom: '4px' }}>Client Full Name *</label>
             <input
               type="text"
               value={clientName}
               onChange={e => setClientName(e.target.value)}
-              style={{ width: '100%', padding: '9px 12px', borderRadius: '8px', border: '1px solid #CBD5E1', fontSize: '0.88rem', fontWeight: 700 }}
+              style={{ width: '100%', padding: '9px 12px', borderRadius: '8px', border: '1px solid var(--text-secondary, #CBD5E1)', fontSize: '0.88rem', fontWeight: 700 }}
             />
           </div>
 
           <div>
-            <label style={{ display: 'block', fontSize: '0.78rem', fontWeight: 800, color: '#475569', marginBottom: '4px' }}>Email Address *</label>
+            <label style={{ display: 'block', fontSize: '0.78rem', fontWeight: 800, color: 'var(--color-475569, #475569)', marginBottom: '4px' }}>Email Address *</label>
             <input
               type="email"
               value={clientEmail}
               onChange={e => setClientEmail(e.target.value)}
-              style={{ width: '100%', padding: '9px 12px', borderRadius: '8px', border: '1px solid #CBD5E1', fontSize: '0.88rem', fontWeight: 700 }}
+              style={{ width: '100%', padding: '9px 12px', borderRadius: '8px', border: '1px solid var(--text-secondary, #CBD5E1)', fontSize: '0.88rem', fontWeight: 700 }}
             />
           </div>
 
           <div>
-            <label style={{ display: 'block', fontSize: '0.78rem', fontWeight: 800, color: '#475569', marginBottom: '4px' }}>Phone Number *</label>
+            <label style={{ display: 'block', fontSize: '0.78rem', fontWeight: 800, color: 'var(--color-475569, #475569)', marginBottom: '4px' }}>Phone Number *</label>
             <input
               type="text"
               value={clientPhone}
               onChange={e => setClientPhone(e.target.value)}
-              style={{ width: '100%', padding: '9px 12px', borderRadius: '8px', border: '1px solid #CBD5E1', fontSize: '0.88rem', fontWeight: 700 }}
+              style={{ width: '100%', padding: '9px 12px', borderRadius: '8px', border: '1px solid var(--text-secondary, #CBD5E1)', fontSize: '0.88rem', fontWeight: 700 }}
             />
           </div>
 
           <div>
-            <label style={{ display: 'block', fontSize: '0.78rem', fontWeight: 800, color: '#475569', marginBottom: '4px' }}>Passport Number</label>
+            <label style={{ display: 'block', fontSize: '0.78rem', fontWeight: 800, color: 'var(--color-475569, #475569)', marginBottom: '4px' }}>Passport Number</label>
             <input
               type="text"
               value={passportNo}
               onChange={e => setPassportNo(e.target.value)}
-              style={{ width: '100%', padding: '9px 12px', borderRadius: '8px', border: '1px solid #CBD5E1', fontSize: '0.88rem', fontWeight: 700 }}
+              style={{ width: '100%', padding: '9px 12px', borderRadius: '8px', border: '1px solid var(--text-secondary, #CBD5E1)', fontSize: '0.88rem', fontWeight: 700 }}
             />
           </div>
         </div>
 
         {/* PACKAGE CATEGORY SELECTOR */}
         <div>
-          <label style={{ display: 'block', fontSize: '0.78rem', fontWeight: 800, color: '#475569', marginBottom: '6px' }}>Select Startup Package Category:</label>
+          <label style={{ display: 'block', fontSize: '0.78rem', fontWeight: 800, color: 'var(--color-475569, #475569)', marginBottom: '6px' }}>Select Startup Package Category:</label>
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '0.5rem' }}>
             {CATEGORY_OPTIONS.map(cat => (
               <button
@@ -192,14 +192,14 @@ export const WhiteCavesAgreementSigner: React.FC = () => {
           marginBottom: '1.5rem',
         }}
       >
-        <div style={{ textAlign: 'center', borderBottom: '1px solid #334155', paddingBottom: '1rem', marginBottom: '1.25rem' }}>
-          <span style={{ fontSize: '0.75rem', fontWeight: 900, color: '#06B6D4', textTransform: 'uppercase', letterSpacing: '0.08em' }}>
+        <div style={{ textAlign: 'center', borderBottom: '1px solid var(--color-334155, #334155)', paddingBottom: '1rem', marginBottom: '1.25rem' }}>
+          <span style={{ fontSize: '0.75rem', fontWeight: 900, color: 'var(--color-06b6d4, #06B6D4)', textTransform: 'uppercase', letterSpacing: '0.08em' }}>
             WHITE CAVES REAL ESTATE LLC — DUBAI, UAE
           </span>
-          <h2 style={{ margin: '4px 0 2px', fontSize: '1.5rem', fontWeight: 900, color: '#FFFFFF', fontFamily: 'sans-serif' }}>
+          <h2 style={{ margin: '4px 0 2px', fontSize: '1.5rem', fontWeight: 900, color: 'var(--white, #FFFFFF)', fontFamily: 'sans-serif' }}>
             REAL ESTATE SERVICES AGREEMENT
           </h2>
-          <span style={{ fontSize: '0.82rem', color: '#94A3B8', fontFamily: 'sans-serif' }}>
+          <span style={{ fontSize: '0.82rem', color: 'var(--color-94a3b8, #94A3B8)', fontFamily: 'sans-serif' }}>
             Date: <strong>{currentDateStr}</strong> | Startup Package Category: <strong>{selectedCategory.id} ({selectedCategory.commission}%)</strong>
           </span>
         </div>
@@ -210,38 +210,38 @@ export const WhiteCavesAgreementSigner: React.FC = () => {
           This Real Estate Services Agreement ("Agreement") is entered into on this <strong>{currentDateStr}</strong> ("Effective Date"), by and between <strong>White Caves Real Estate LLC</strong>, a company duly registered and operating in Dubai, United Arab Emirates, having its principal place of business at Ontario Tower, Office C1503, Business Bay, P.O. Box 450797, Dubai, UAE ("Company"), and <strong>{clientName}</strong>, holding Passport No. <strong>{passportNo}</strong>, residing at <strong>{address}</strong> ("Client"). The Company and Client shall collectively be referred to as the "Parties".
         </p>
 
-        <h4 style={{ color: '#38BDF8', fontFamily: 'sans-serif', marginTop: '1.25rem', marginBottom: '0.5rem' }}>RECITALS</h4>
+        <h4 style={{ color: 'var(--color-38bdf8, #38BDF8)', fontFamily: 'sans-serif', marginTop: '1.25rem', marginBottom: '0.5rem' }}>RECITALS</h4>
         <p>
           WHEREAS, the Company is a licensed and registered real estate agency in Dubai, specializing in real estate transactions, and holds the requisite licenses, including the Labor Card and the RERA Card, necessary to operate in compliance with the regulations of the Real Estate Regulatory Authority ("RERA") and relevant labor laws;<br />
           WHEREAS, the Client desires to engage the Company to provide real estate services, and the Company is willing to provide such services, subject to the terms and conditions set forth in this Agreement;<br />
           NOW, THEREFORE, in consideration of the premises and covenants contained herein, the Parties agree as follows:
         </p>
 
-        <h4 style={{ color: '#38BDF8', fontFamily: 'sans-serif', marginTop: '1.25rem', marginBottom: '0.5rem' }}>SERVICES & COMMISSION STRUCTURE</h4>
+        <h4 style={{ color: 'var(--color-38bdf8, #38BDF8)', fontFamily: 'sans-serif', marginTop: '1.25rem', marginBottom: '0.5rem' }}>SERVICES & COMMISSION STRUCTURE</h4>
         <p>
           <strong>Commission Structure:</strong> The Company would provide <strong>{selectedCategory.commission}% commission</strong> on each sale concluded by the Client as part of the subscription, along with administrative assistance in closing the deals. *(Refer to Annexure A for commission split under this category.)*<br />
           <strong>Developers Access:</strong> Access to all major developers (Emaar, DAMAC, Nakheel). If Client requires registration with new developers, the Company will execute all necessary agency registration procedures.<br />
           <strong>Administrative Support:</strong> The Company will provide all administrative support including necessary documentation for ongoing closing transactions, RERA contracts either sale or rent, tax invoices, developer commission follow-ups, and commission payouts within <strong>three (3) working days</strong> of bank clearance.
         </p>
 
-        <h4 style={{ color: '#38BDF8', fontFamily: 'sans-serif', marginTop: '1.25rem', marginBottom: '0.5rem' }}>SERVICE TERM & TERMINATION</h4>
+        <h4 style={{ color: 'var(--color-38bdf8, #38BDF8)', fontFamily: 'sans-serif', marginTop: '1.25rem', marginBottom: '0.5rem' }}>SERVICE TERM & TERMINATION</h4>
         <p>
           This Agreement shall commence on the Effective Date and remain in effect for an initial 1-month term, automatically renewing unless terminated by mutual consent or with a minimum of <strong>two (2) months' written notice</strong>.
         </p>
 
-        <div style={{ marginTop: '1.5rem', borderTop: '1px solid #334155', paddingTop: '1.25rem', display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '2rem', fontFamily: 'sans-serif' }}>
+        <div style={{ marginTop: '1.5rem', borderTop: '1px solid var(--color-334155, #334155)', paddingTop: '1.25rem', display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '2rem', fontFamily: 'sans-serif' }}>
           <div>
-            <strong style={{ color: '#06B6D4', display: 'block', fontSize: '0.85rem' }}>For White Caves Real Estate LLC:</strong>
-            <span style={{ fontSize: '0.9rem', fontWeight: 800, color: '#FFFFFF' }}>Juergen Pernegger / Arslan Malik</span>
-            <span style={{ fontSize: '0.78rem', color: '#94A3B8', display: 'block' }}>Co-Founder & Managing Director</span>
+            <strong style={{ color: 'var(--color-06b6d4, #06B6D4)', display: 'block', fontSize: '0.85rem' }}>For White Caves Real Estate LLC:</strong>
+            <span style={{ fontSize: '0.9rem', fontWeight: 800, color: 'var(--white, #FFFFFF)' }}>Juergen Pernegger / Arslan Malik</span>
+            <span style={{ fontSize: '0.78rem', color: 'var(--color-94a3b8, #94A3B8)', display: 'block' }}>Co-Founder & Managing Director</span>
           </div>
 
           <div>
-            <strong style={{ color: '#10B981', display: 'block', fontSize: '0.85rem' }}>Client Acceptance & Digital Signature:</strong>
-            <span style={{ fontSize: '0.9rem', fontWeight: 800, color: '#FFFFFF' }}>{clientName}</span>
-            <span style={{ fontSize: '0.78rem', color: '#94A3B8', display: 'block' }}>Date: {currentDateStr}</span>
+            <strong style={{ color: 'var(--accent-green, #10B981)', display: 'block', fontSize: '0.85rem' }}>Client Acceptance & Digital Signature:</strong>
+            <span style={{ fontSize: '0.9rem', fontWeight: 800, color: 'var(--white, #FFFFFF)' }}>{clientName}</span>
+            <span style={{ fontSize: '0.78rem', color: 'var(--color-94a3b8, #94A3B8)', display: 'block' }}>Date: {currentDateStr}</span>
             {isSigned && (
-              <span style={{ background: '#ECFDF5', color: '#047857', border: '1px solid #10B981', fontSize: '0.72rem', fontWeight: 900, padding: '2px 8px', borderRadius: '4px', display: 'inline-block', marginTop: '4px' }}>
+              <span style={{ background: 'var(--color-ecfdf5, #ECFDF5)', color: 'var(--color-047857, #047857)', border: '1px solid var(--accent-green, #10B981)', fontSize: '0.72rem', fontWeight: 900, padding: '2px 8px', borderRadius: '4px', display: 'inline-block', marginTop: '4px' }}>
                 ✓ DIGITAL SIGNATURE VERIFIED
               </span>
             )}
@@ -250,15 +250,15 @@ export const WhiteCavesAgreementSigner: React.FC = () => {
       </div>
 
       {/* STEP 3: DIGITAL SIGNATURE CANVAS */}
-      <div style={{ background: '#F8FAFC', borderRadius: '14px', padding: '1.25rem', border: '1px solid #E2E8F0' }}>
-        <h4 style={{ margin: '0 0 0.5rem', fontSize: '1.05rem', fontWeight: 800, color: '#0F172A' }}>
+      <div style={{ background: 'var(--color-f8fafc, #F8FAFC)', borderRadius: '14px', padding: '1.25rem', border: '1px solid var(--text-secondary, #E2E8F0)' }}>
+        <h4 style={{ margin: '0 0 0.5rem', fontSize: '1.05rem', fontWeight: 800, color: 'var(--color-0f172a, #0F172A)' }}>
           3. Provide Digital Signature Below
         </h4>
-        <p style={{ margin: '0 0 1rem', fontSize: '0.84rem', color: '#64748B' }}>
+        <p style={{ margin: '0 0 1rem', fontSize: '0.84rem', color: 'var(--text-secondary, #64748B)' }}>
           Draw your signature inside the box below to execute this Real Estate Services Agreement.
         </p>
 
-        <div style={{ border: '2px dashed #06B6D4', borderRadius: '12px', background: '#FFFFFF', padding: '4px', marginBottom: '1rem', width: '100%', maxWidth: '500px' }}>
+        <div style={{ border: '2px dashed var(--color-06b6d4, #06B6D4)', borderRadius: '12px', background: 'var(--white, #FFFFFF)', padding: '4px', marginBottom: '1rem', width: '100%', maxWidth: '500px' }}>
           <SignatureCanvas
             ref={sigCanvasRef}
             canvasProps={{

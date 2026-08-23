@@ -196,7 +196,7 @@ export const IpWhitelistFirewall: FC = () => {
                 <span style={{ fontSize: '1rem' }}>🌐</span>
                 <IpAddress>{item.ip}</IpAddress>
                 <IpLabel>{item.label}</IpLabel>
-                <span style={{ fontSize: '0.65rem', fontWeight: 800, padding: '2px 6px', borderRadius: '4px', background: 'rgba(239,68,68,0.15)', color: '#EF4444' }}>
+                <span style={{ fontSize: '0.65rem', fontWeight: 800, padding: '2px 6px', borderRadius: '4px', background: 'rgba(239,68,68,0.15)', color: 'var(--accent-red, #EF4444)' }}>
                   {item.role}
                 </span>
               </IpInfo>

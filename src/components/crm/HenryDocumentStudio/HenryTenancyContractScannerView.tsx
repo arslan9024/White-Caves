@@ -323,7 +323,7 @@ export const HenryTenancyContractScannerView: FC = () => {
     <ViewContainer>
       {/* Status Feedback Banner */}
       {statusMsg && (
-        <div style={{ background: '#0F172A', color: '#38BDF8', padding: '8px 16px', borderRadius: '8px', fontSize: '0.82rem', fontWeight: 700 }}>
+        <div style={{ background: 'var(--color-0f172a, #0F172A)', color: 'var(--color-38bdf8, #38BDF8)', padding: '8px 16px', borderRadius: '8px', fontSize: '0.82rem', fontWeight: 700 }}>
           ⚡ {statusMsg}
         </div>
       )}
@@ -344,15 +344,15 @@ export const HenryTenancyContractScannerView: FC = () => {
           {contractData && (
             <FormCard>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                <h4 style={{ margin: 0, fontSize: '0.95rem', fontWeight: 800, color: '#0F172A' }}>
+                <h4 style={{ margin: 0, fontSize: '0.95rem', fontWeight: 800, color: 'var(--color-0f172a, #0F172A)' }}>
                   Extracted Agreement Variables Form
                 </h4>
-                <span style={{ fontSize: '0.75rem', color: '#059669', fontWeight: 800 }}>
+                <span style={{ fontSize: '0.75rem', color: 'var(--accent-green, #059669)', fontWeight: 800 }}>
                   ✓ {scannedResult?.fillScorePercent || 98}% Accuracy
                 </span>
               </div>
 
-              <h5 style={{ margin: '0.5rem 0 0 0', fontSize: '0.8rem', fontWeight: 800, color: '#EF4444' }}>
+              <h5 style={{ margin: '0.5rem 0 0 0', fontSize: '0.8rem', fontWeight: 800, color: 'var(--accent-red, #EF4444)' }}>
                 1. Property Specifications
               </h5>
               <FormGrid $cols={3}>
@@ -369,7 +369,7 @@ export const HenryTenancyContractScannerView: FC = () => {
                   <input
                     type="text"
                     value={contractData.propertyNo}
-                    style={{ fontWeight: 800, color: '#EF4444' }}
+                    style={{ fontWeight: 800, color: 'var(--accent-red, #EF4444)' }}
                     onChange={(e) => handleUpdateDldField('propertyNo', e.target.value)}
                   />
                 </FormGroup>
@@ -383,7 +383,7 @@ export const HenryTenancyContractScannerView: FC = () => {
                 </FormGroup>
               </FormGrid>
 
-              <h5 style={{ margin: '0.5rem 0 0 0', fontSize: '0.8rem', fontWeight: 800, color: '#3B82F6' }}>
+              <h5 style={{ margin: '0.5rem 0 0 0', fontSize: '0.8rem', fontWeight: 800, color: 'var(--accent-blue, #3B82F6)' }}>
                 2. Landlord & Tenant Parties
               </h5>
               <FormGrid $cols={2}>
@@ -406,7 +406,7 @@ export const HenryTenancyContractScannerView: FC = () => {
                 </FormGroup>
               </FormGrid>
 
-              <h5 style={{ margin: '0.5rem 0 0 0', fontSize: '0.8rem', fontWeight: 800, color: '#10B981' }}>
+              <h5 style={{ margin: '0.5rem 0 0 0', fontSize: '0.8rem', fontWeight: 800, color: 'var(--accent-green, #10B981)' }}>
                 3. Financial Schedules & Dates
               </h5>
               <FormGrid $cols={3}>
@@ -415,7 +415,7 @@ export const HenryTenancyContractScannerView: FC = () => {
                   <input
                     type="number"
                     value={contractData.annualRent || ''}
-                    style={{ fontWeight: 800, color: '#059669' }}
+                    style={{ fontWeight: 800, color: 'var(--accent-green, #059669)' }}
                     onChange={(e) => handleUpdateDldField('annualRent', parseFloat(e.target.value) || 0)}
                   />
                 </FormGroup>
@@ -451,20 +451,20 @@ export const HenryTenancyContractScannerView: FC = () => {
               <button
                 type="button"
                 onClick={() => setZoomLevel(prev => Math.max(70, prev - 15))}
-                style={{ background: 'rgba(255,255,255,0.15)', color: '#FFF', border: 'none', borderRadius: '4px', padding: '2px 6px', fontSize: '0.7rem', cursor: 'pointer' }}
+                style={{ background: 'rgba(255,255,255,0.15)', color: 'var(--white, #FFF)', border: 'none', borderRadius: '4px', padding: '2px 6px', fontSize: '0.7rem', cursor: 'pointer' }}
               >
                 -
               </button>
-              <span style={{ fontSize: '0.72rem', color: '#94A3B8' }}>{zoomLevel}%</span>
+              <span style={{ fontSize: '0.72rem', color: 'var(--color-94a3b8, #94A3B8)' }}>{zoomLevel}%</span>
               <button
                 type="button"
                 onClick={() => setZoomLevel(prev => Math.min(180, prev + 15))}
-                style={{ background: 'rgba(255,255,255,0.15)', color: '#FFF', border: 'none', borderRadius: '4px', padding: '2px 6px', fontSize: '0.7rem', cursor: 'pointer' }}
+                style={{ background: 'rgba(255,255,255,0.15)', color: 'var(--white, #FFF)', border: 'none', borderRadius: '4px', padding: '2px 6px', fontSize: '0.7rem', cursor: 'pointer' }}
               >
                 +
               </button>
               {uploadedFile && (
-                <span style={{ fontSize: '0.72rem', color: '#94A3B8', marginLeft: '6px' }}>
+                <span style={{ fontSize: '0.72rem', color: 'var(--color-94a3b8, #94A3B8)', marginLeft: '6px' }}>
                   {uploadedFile.name} ({(uploadedFile.size / 1024).toFixed(1)} KB)
                 </span>
               )}
@@ -491,12 +491,12 @@ export const HenryTenancyContractScannerView: FC = () => {
             ) : contractData ? (
               <div
                 dangerouslySetInnerHTML={{ __html: compiledDldHtml }}
-                style={{ background: '#FFFFFF', boxShadow: '0 8px 24px rgba(0,0,0,0.2)', borderRadius: '4px', maxWidth: '100%' }}
+                style={{ background: 'var(--white, #FFFFFF)', boxShadow: '0 8px 24px rgba(0,0,0,0.2)', borderRadius: '4px', maxWidth: '100%' }}
               />
             ) : (
-              <div style={{ textAlign: 'center', color: '#94A3B8', padding: '3rem 1rem' }}>
+              <div style={{ textAlign: 'center', color: 'var(--color-94a3b8, #94A3B8)', padding: '3rem 1rem' }}>
                 <FileText size={48} color="#94A3B8" style={{ margin: '0 auto 12px auto' }} />
-                <div style={{ fontWeight: 800, fontSize: '0.95rem', color: '#334155' }}>
+                <div style={{ fontWeight: 800, fontSize: '0.95rem', color: 'var(--color-334155, #334155)' }}>
                   No Contract Uploaded Yet
                 </div>
                 <div style={{ fontSize: '0.8rem', marginTop: '4px' }}>

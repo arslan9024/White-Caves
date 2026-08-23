@@ -115,7 +115,7 @@ export const LicenseCountdownBadges: FC = () => {
                 <span>●</span>
                 <span>{c.daysLeft} Days Remaining</span>
               </BExpiry>
-              <div style={{ fontSize: '0.62rem', color: '#64748B', marginTop: '2px' }}>
+              <div style={{ fontSize: '0.62rem', color: 'var(--text-secondary, #64748B)', marginTop: '2px' }}>
                 Valid Until: {c.expiryDate}
               </div>
             </div>

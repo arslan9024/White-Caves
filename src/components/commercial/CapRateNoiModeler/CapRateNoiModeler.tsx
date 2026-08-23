@@ -20,24 +20,24 @@ export const CapRateNoiModeler: FC = () => {
   return (
     <ModelerContainer data-testid="cap-rate-noi-modeler">
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '1rem' }}>
-        <h3 style={{ margin: 0, color: '#EF4444' }}>🏢 Commercial CRE Building Cap Rate & NOI Modeler</h3>
-        <span style={{ fontSize: '0.75rem', background: '#0F172A', color: '#10B981', padding: '4px 10px', borderRadius: '12px', border: '1px solid #10B981' }}>
+        <h3 style={{ margin: 0, color: 'var(--accent-red, #EF4444)' }}>🏢 Commercial CRE Building Cap Rate & NOI Modeler</h3>
+        <span style={{ fontSize: '0.75rem', background: 'var(--color-0f172a, #0F172A)', color: 'var(--accent-green, #10B981)', padding: '4px 10px', borderRadius: '12px', border: '1px solid var(--accent-green, #10B981)' }}>
           IRR Model Active
         </span>
       </div>
 
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '12px', marginTop: '12px' }}>
-        <div style={{ background: '#0F172A', padding: '12px', borderRadius: '8px' }}>
-          <span style={{ fontSize: '0.72rem', color: '#94A3B8' }}>Net Operating Income (NOI)</span>
-          <div style={{ fontSize: '1.2rem', fontWeight: 800, color: '#FFF', marginTop: '4px' }}>AED {noi.toLocaleString()}</div>
+        <div style={{ background: 'var(--color-0f172a, #0F172A)', padding: '12px', borderRadius: '8px' }}>
+          <span style={{ fontSize: '0.72rem', color: 'var(--color-94a3b8, #94A3B8)' }}>Net Operating Income (NOI)</span>
+          <div style={{ fontSize: '1.2rem', fontWeight: 800, color: 'var(--white, #FFF)', marginTop: '4px' }}>AED {noi.toLocaleString()}</div>
         </div>
-        <div style={{ background: '#0F172A', padding: '12px', borderRadius: '8px' }}>
-          <span style={{ fontSize: '0.72rem', color: '#94A3B8' }}>Capitalization Rate (Cap Rate)</span>
-          <div style={{ fontSize: '1.2rem', fontWeight: 800, color: '#10B981', marginTop: '4px' }}>{capRate}%</div>
+        <div style={{ background: 'var(--color-0f172a, #0F172A)', padding: '12px', borderRadius: '8px' }}>
+          <span style={{ fontSize: '0.72rem', color: 'var(--color-94a3b8, #94A3B8)' }}>Capitalization Rate (Cap Rate)</span>
+          <div style={{ fontSize: '1.2rem', fontWeight: 800, color: 'var(--accent-green, #10B981)', marginTop: '4px' }}>{capRate}%</div>
         </div>
-        <div style={{ background: '#0F172A', padding: '12px', borderRadius: '8px' }}>
-          <span style={{ fontSize: '0.72rem', color: '#94A3B8' }}>Asset Purchase Price</span>
-          <div style={{ fontSize: '1.2rem', fontWeight: 800, color: '#EF4444', marginTop: '4px' }}>AED {(purchasePrice / 1000000).toFixed(1)}M</div>
+        <div style={{ background: 'var(--color-0f172a, #0F172A)', padding: '12px', borderRadius: '8px' }}>
+          <span style={{ fontSize: '0.72rem', color: 'var(--color-94a3b8, #94A3B8)' }}>Asset Purchase Price</span>
+          <div style={{ fontSize: '1.2rem', fontWeight: 800, color: 'var(--accent-red, #EF4444)', marginTop: '4px' }}>AED {(purchasePrice / 1000000).toFixed(1)}M</div>
         </div>
       </div>
     </ModelerContainer>

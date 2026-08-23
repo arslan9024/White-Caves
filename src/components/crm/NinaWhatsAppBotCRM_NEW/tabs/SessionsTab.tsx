@@ -85,21 +85,21 @@ export const SessionsTab: React.FC<SessionsTabProps> = ({ data }) => {
             <span style={{ fontSize: '2.2rem' }}>⚡</span>
             <div>
               <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                <span style={{ fontSize: '0.75rem', fontWeight: 800, color: '#25D366', textTransform: 'uppercase', letterSpacing: '0.08em' }}>
+                <span style={{ fontSize: '0.75rem', fontWeight: 800, color: 'var(--color-25d366, #25D366)', textTransform: 'uppercase', letterSpacing: '0.08em' }}>
                   whatsapp-web.js v1.34.4 Core Engine Active
                 </span>
-                <span style={{ background: 'rgba(37, 211, 102, 0.2)', color: '#25D366', fontSize: '0.7rem', fontWeight: 800, padding: '2px 8px', borderRadius: '4px' }}>
+                <span style={{ background: 'rgba(37, 211, 102, 0.2)', color: 'var(--color-25d366, #25D366)', fontSize: '0.7rem', fontWeight: 800, padding: '2px 8px', borderRadius: '4px' }}>
                   LocalAuth Persistent
                 </span>
               </div>
-              <h3 style={{ margin: '4px 0 0', fontSize: '1.45rem', fontWeight: 800, color: '#FFFFFF' }}>
+              <h3 style={{ margin: '4px 0 0', fontSize: '1.45rem', fontWeight: 800, color: 'var(--white, #FFFFFF)' }}>
                 📱 Primary Core Line: +971 50 576 0056 (Arslan Malik)
               </h3>
             </div>
           </div>
           
           <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
-            <span style={{ background: '#25D366', color: '#FFFFFF', fontWeight: 800, fontSize: '0.82rem', padding: '6px 14px', borderRadius: '8px', display: 'flex', alignItems: 'center', gap: '6px', boxShadow: '0 4px 12px rgba(37, 211, 102, 0.3)' }}>
+            <span style={{ background: 'var(--color-25d366, #25D366)', color: 'var(--white, #FFFFFF)', fontWeight: 800, fontSize: '0.82rem', padding: '6px 14px', borderRadius: '8px', display: 'flex', alignItems: 'center', gap: '6px', boxShadow: '0 4px 12px rgba(37, 211, 102, 0.3)' }}>
               <Wifi size={16} /> Device Online & Syncing
             </span>
           </div>
@@ -108,20 +108,20 @@ export const SessionsTab: React.FC<SessionsTabProps> = ({ data }) => {
         {/* Real-time Telemetry Bar */}
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: '1rem', background: 'rgba(255,255,255,0.06)', borderRadius: '12px', padding: '1rem', border: '1px solid rgba(255,255,255,0.1)' }}>
           <div>
-            <span style={{ fontSize: '0.72rem', color: '#94A3B8', display: 'block' }}>Engine Library</span>
-            <strong style={{ fontSize: '0.92rem', color: '#38BDF8' }}>whatsapp-web.js LocalAuth</strong>
+            <span style={{ fontSize: '0.72rem', color: 'var(--color-94a3b8, #94A3B8)', display: 'block' }}>Engine Library</span>
+            <strong style={{ fontSize: '0.92rem', color: 'var(--color-38bdf8, #38BDF8)' }}>whatsapp-web.js LocalAuth</strong>
           </div>
           <div>
-            <span style={{ fontSize: '0.72rem', color: '#94A3B8', display: 'block' }}>Real-time Status Sync</span>
-            <strong style={{ fontSize: '0.92rem', color: '#10B981' }}>{lastSyncTime} (Live Ping)</strong>
+            <span style={{ fontSize: '0.72rem', color: 'var(--color-94a3b8, #94A3B8)', display: 'block' }}>Real-time Status Sync</span>
+            <strong style={{ fontSize: '0.92rem', color: 'var(--accent-green, #10B981)' }}>{lastSyncTime} (Live Ping)</strong>
           </div>
           <div>
-            <span style={{ fontSize: '0.72rem', color: '#94A3B8', display: 'block' }}>Network Latency</span>
-            <strong style={{ fontSize: '0.92rem', color: '#F59E0B' }}>{networkPing} ms (Ultra Fast)</strong>
+            <span style={{ fontSize: '0.72rem', color: 'var(--color-94a3b8, #94A3B8)', display: 'block' }}>Network Latency</span>
+            <strong style={{ fontSize: '0.92rem', color: 'var(--accent-gold, #F59E0B)' }}>{networkPing} ms (Ultra Fast)</strong>
           </div>
           <div>
-            <span style={{ fontSize: '0.72rem', color: '#94A3B8', display: 'block' }}>Device Battery Status</span>
-            <strong style={{ fontSize: '0.92rem', color: '#10B981' }}>🔋 {batteryLevel}% Charged</strong>
+            <span style={{ fontSize: '0.72rem', color: 'var(--color-94a3b8, #94A3B8)', display: 'block' }}>Device Battery Status</span>
+            <strong style={{ fontSize: '0.92rem', color: 'var(--accent-green, #10B981)' }}>🔋 {batteryLevel}% Charged</strong>
           </div>
         </div>
       </div>
@@ -136,18 +136,18 @@ export const SessionsTab: React.FC<SessionsTabProps> = ({ data }) => {
           boxShadow: '0 4px 16px rgba(6, 182, 212, 0.08)',
         }}
       >
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.25rem', borderBottom: '1px solid #E2E8F0', paddingBottom: '0.75rem' }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.25rem', borderBottom: '1px solid var(--text-secondary, #E2E8F0)', paddingBottom: '0.75rem' }}>
           <div>
-            <span style={{ fontSize: '0.75rem', fontWeight: 800, color: '#06B6D4', textTransform: 'uppercase', letterSpacing: '0.08em' }}>
+            <span style={{ fontSize: '0.75rem', fontWeight: 800, color: 'var(--color-06b6d4, #06B6D4)', textTransform: 'uppercase', letterSpacing: '0.08em' }}>
               Official Device Authentication Portal
             </span>
-            <h4 style={{ margin: '2px 0 0', fontSize: '1.2rem', fontWeight: 800, color: '#1E293B' }}>
+            <h4 style={{ margin: '2px 0 0', fontSize: '1.2rem', fontWeight: 800, color: 'var(--color-1e293b, #1E293B)' }}>
               Link WhatsApp Account +971 50 576 0056 to Nina AI
             </h4>
           </div>
 
           {/* Linking Method Switcher */}
-          <div style={{ display: 'flex', background: '#F1F5F9', padding: '4px', borderRadius: '10px', gap: '4px' }}>
+          <div style={{ display: 'flex', background: 'var(--color-f1f5f9, #F1F5F9)', padding: '4px', borderRadius: '10px', gap: '4px' }}>
             <button
               onClick={() => setPairingMethod('pairingCode')}
               style={{
@@ -191,10 +191,10 @@ export const SessionsTab: React.FC<SessionsTabProps> = ({ data }) => {
         {pairingMethod === 'pairingCode' ? (
           <div style={{ display: 'grid', gridTemplateColumns: '1.1fr 0.9fr', gap: '1.5rem', alignItems: 'center' }}>
             <div>
-              <h5 style={{ margin: '0 0 0.5rem 0', fontSize: '1.05rem', fontWeight: 800, color: '#1E293B' }}>
+              <h5 style={{ margin: '0 0 0.5rem 0', fontSize: '1.05rem', fontWeight: 800, color: 'var(--color-1e293b, #1E293B)' }}>
                 🔑 Step-by-Step WhatsApp Pairing Code Linking
               </h5>
-              <ol style={{ margin: '0 0 1.25rem 0', paddingLeft: '1.25rem', fontSize: '0.88rem', color: '#475569', lineHeight: 1.8 }}>
+              <ol style={{ margin: '0 0 1.25rem 0', paddingLeft: '1.25rem', fontSize: '0.88rem', color: 'var(--color-475569, #475569)', lineHeight: 1.8 }}>
                 <li>Open <strong>WhatsApp</strong> on your phone (<strong>{inputPhoneNumber}</strong>).</li>
                 <li>Tap <strong>Settings ➔ Linked Devices ➔ Link a Device</strong>.</li>
                 <li>Tap <strong>"Link with phone number instead"</strong> at the bottom of the camera screen.</li>
@@ -248,7 +248,7 @@ export const SessionsTab: React.FC<SessionsTabProps> = ({ data }) => {
                 boxShadow: '0 4px 16px rgba(16, 185, 129, 0.1)',
               }}
             >
-              <span style={{ fontSize: '0.78rem', fontWeight: 800, color: '#047857', textTransform: 'uppercase', letterSpacing: '0.08em' }}>
+              <span style={{ fontSize: '0.78rem', fontWeight: 800, color: 'var(--color-047857, #047857)', textTransform: 'uppercase', letterSpacing: '0.08em' }}>
                 Live 8-Digit Pairing Code for +971 50 576 0056
               </span>
               <div
@@ -285,7 +285,7 @@ export const SessionsTab: React.FC<SessionsTabProps> = ({ data }) => {
                 {copiedCode ? 'Copied to Clipboard!' : 'Copy Pairing Code'}
               </button>
 
-              <span style={{ display: 'block', fontSize: '0.75rem', color: '#047857', marginTop: '0.85rem', fontWeight: 700 }}>
+              <span style={{ display: 'block', fontSize: '0.75rem', color: 'var(--color-047857, #047857)', marginTop: '0.85rem', fontWeight: 700 }}>
                 ✓ Valid for 3 Minutes · Auto-Handshake Active
               </span>
             </div>
@@ -294,10 +294,10 @@ export const SessionsTab: React.FC<SessionsTabProps> = ({ data }) => {
           /* METHOD B: HIGH-RES VECTOR QR CODE SCAN */
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.5rem', alignItems: 'center' }}>
             <div>
-              <h5 style={{ margin: '0 0 0.5rem 0', fontSize: '1.05rem', fontWeight: 800, color: '#1E293B' }}>
+              <h5 style={{ margin: '0 0 0.5rem 0', fontSize: '1.05rem', fontWeight: 800, color: 'var(--color-1e293b, #1E293B)' }}>
                 📷 High-Resolution Vector QR Code Scanner
               </h5>
-              <ol style={{ margin: '0 0 1rem 0', paddingLeft: '1.25rem', fontSize: '0.88rem', color: '#475569', lineHeight: 1.8 }}>
+              <ol style={{ margin: '0 0 1rem 0', paddingLeft: '1.25rem', fontSize: '0.88rem', color: 'var(--color-475569, #475569)', lineHeight: 1.8 }}>
                 <li>Open <strong>WhatsApp</strong> on your mobile phone (<strong>+971 50 576 0056</strong>).</li>
                 <li>Tap <strong>Settings ➔ Linked Devices ➔ Link a Device</strong>.</li>
                 <li>Point your mobile camera at the high-res QR code on the right.</li>
@@ -328,7 +328,7 @@ export const SessionsTab: React.FC<SessionsTabProps> = ({ data }) => {
             </div>
 
             {/* HIGH RES QR DISPLAY */}
-            <div style={{ textAlign: 'center', background: '#F8FAFC', padding: '1.5rem', borderRadius: '16px', border: '1px solid #E2E8F0' }}>
+            <div style={{ textAlign: 'center', background: 'var(--color-f8fafc, #F8FAFC)', padding: '1.5rem', borderRadius: '16px', border: '1px solid var(--text-secondary, #E2E8F0)' }}>
               <img
                 src={qrCodeUrl}
                 alt="Nina High Res QR Code"
@@ -340,7 +340,7 @@ export const SessionsTab: React.FC<SessionsTabProps> = ({ data }) => {
                   boxShadow: '0 8px 24px rgba(0,0,0,0.12)',
                 }}
               />
-              <span style={{ display: 'block', fontSize: '0.82rem', fontWeight: 800, color: '#06B6D4', marginTop: '0.75rem' }}>
+              <span style={{ display: 'block', fontSize: '0.82rem', fontWeight: 800, color: 'var(--color-06b6d4, #06B6D4)', marginTop: '0.75rem' }}>
                 Verified QR Code for +971 50 576 0056
               </span>
             </div>
@@ -350,7 +350,7 @@ export const SessionsTab: React.FC<SessionsTabProps> = ({ data }) => {
 
       {/* ─── ACTIVE BOTS & MULTI-DEVICE SESSIONS LIST ─── */}
       <div>
-        <h4 style={{ margin: '0 0 0.85rem 0', fontSize: '1.1rem', fontWeight: 800, color: '#1E293B' }}>
+        <h4 style={{ margin: '0 0 0.85rem 0', fontSize: '1.1rem', fontWeight: 800, color: 'var(--color-1e293b, #1E293B)' }}>
           🤖 Registered Multi-Device WhatsApp Sessions ({bots.length})
         </h4>
 
@@ -370,7 +370,7 @@ export const SessionsTab: React.FC<SessionsTabProps> = ({ data }) => {
               }}
             >
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.5rem' }}>
-                <span style={{ fontWeight: 800, fontSize: '0.95rem', color: '#1E293B' }}>{bot.name}</span>
+                <span style={{ fontWeight: 800, fontSize: '0.95rem', color: 'var(--color-1e293b, #1E293B)' }}>{bot.name}</span>
                 <span
                   style={{
                     fontSize: '0.72rem',
@@ -385,11 +385,11 @@ export const SessionsTab: React.FC<SessionsTabProps> = ({ data }) => {
                 </span>
               </div>
 
-              <span style={{ fontSize: '0.88rem', fontWeight: 800, color: '#06B6D4', display: 'block', marginBottom: '0.5rem' }}>
+              <span style={{ fontSize: '0.88rem', fontWeight: 800, color: 'var(--color-06b6d4, #06B6D4)', display: 'block', marginBottom: '0.5rem' }}>
                 {bot.number}
               </span>
 
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.4rem', fontSize: '0.78rem', color: '#64748B' }}>
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.4rem', fontSize: '0.78rem', color: 'var(--text-secondary, #64748B)' }}>
                 <span>Messages: <strong>{bot.messagesProcessed.toLocaleString()}</strong></span>
                 <span>Response Rate: <strong>{bot.responseRate}%</strong></span>
                 <span>Avg Speed: <strong>{bot.avgResponseTime}</strong></span>

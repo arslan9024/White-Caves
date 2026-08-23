@@ -230,19 +230,19 @@ export const PoaValidationPortal: FC = () => {
           <ValidationBox $valid={result.valid}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
               <div>
-                <div style={{ fontSize: '0.95rem', fontWeight: 800, color: '#FFF' }}>
+                <div style={{ fontSize: '0.95rem', fontWeight: 800, color: 'var(--white, #FFF)' }}>
                   POA Status: {result.valid ? 'LEGAL & ACTIVE' : 'EXPIRED / INVALID'}
                 </div>
-                <div style={{ fontSize: '0.7rem', color: '#94A3B8', marginTop: '2px' }}>
+                <div style={{ fontSize: '0.7rem', color: 'var(--color-94a3b8, #94A3B8)', marginTop: '2px' }}>
                   Valid from {result.issueDate} to {result.expiryDate} (Within DLD 2-Year Statutory Window)
                 </div>
               </div>
-              <span style={{ fontSize: '0.7rem', fontWeight: 800, padding: '3px 10px', borderRadius: '6px', background: '#10B981', color: '#FFF' }}>
+              <span style={{ fontSize: '0.7rem', fontWeight: 800, padding: '3px 10px', borderRadius: '6px', background: 'var(--accent-green, #10B981)', color: 'var(--white, #FFF)' }}>
                 ✓ DLD TRUSTEE READY
               </span>
             </div>
 
-            <div style={{ fontSize: '0.72rem', fontWeight: 700, color: '#CBD5E1', marginTop: '6px' }}>
+            <div style={{ fontSize: '0.72rem', fontWeight: 700, color: 'var(--text-secondary, #CBD5E1)', marginTop: '6px' }}>
               Scope of Delegated Powers & Restrictions:
             </div>
 
@@ -255,7 +255,7 @@ export const PoaValidationPortal: FC = () => {
               ))}
             </ScopeList>
 
-            <div style={{ fontSize: '0.68rem', color: '#F59E0B', background: 'rgba(245, 158, 11, 0.08)', padding: '8px 12px', borderRadius: '6px', lineHeight: '1.4' }}>
+            <div style={{ fontSize: '0.68rem', color: 'var(--accent-gold, #F59E0B)', background: 'rgba(245, 158, 11, 0.08)', padding: '8px 12px', borderRadius: '6px', lineHeight: '1.4' }}>
               ⚠️ <strong>RERA Conveyancing Directive:</strong> POAs for selling property in Dubai cannot exceed 2 years from the date of notarization. Cheques for purchase price must be drawn strictly in the seller's name, not the POA holder.
             </div>
           </ValidationBox>

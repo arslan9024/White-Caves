@@ -34,32 +34,32 @@ export const ExecutiveFlightDeck: FC = () => {
   return (
     <DeckContainer data-testid="executive-flight-deck">
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-        <h3 style={{ margin: 0, color: '#EF4444' }}>⚡ Managing Director Executive Flight Deck</h3>
-        <span style={{ fontSize: '0.75rem', background: 'rgba(239,68,68,0.2)', border: '1px solid #EF4444', color: '#EF4444', padding: '4px 10px', borderRadius: '12px' }}>
+        <h3 style={{ margin: 0, color: 'var(--accent-red, #EF4444)' }}>⚡ Managing Director Executive Flight Deck</h3>
+        <span style={{ fontSize: '0.75rem', background: 'rgba(239,68,68,0.2)', border: '1px solid var(--accent-red, #EF4444)', color: 'var(--accent-red, #EF4444)', padding: '4px 10px', borderRadius: '12px' }}>
           LEVEL 5 GOD-MODE
         </span>
       </div>
 
       <KpiGrid>
         <KpiCard>
-          <span style={{ fontSize: '0.75rem', color: '#94A3B8' }}>Total Revenue YTD</span>
+          <span style={{ fontSize: '0.75rem', color: 'var(--color-94a3b8, #94A3B8)' }}>Total Revenue YTD</span>
           <div className="value">AED 48.5M</div>
-          <span style={{ fontSize: '0.72rem', color: '#10B981' }}>📈 +18.4% vs target</span>
+          <span style={{ fontSize: '0.72rem', color: 'var(--accent-green, #10B981)' }}>📈 +18.4% vs target</span>
         </KpiCard>
         <KpiCard>
-          <span style={{ fontSize: '0.75rem', color: '#94A3B8' }}>Active Managed Units</span>
+          <span style={{ fontSize: '0.75rem', color: 'var(--color-94a3b8, #94A3B8)' }}>Active Managed Units</span>
           <div className="value">9,378</div>
-          <span style={{ fontSize: '0.72rem', color: '#38BDF8' }}>98.2% Occupancy</span>
+          <span style={{ fontSize: '0.72rem', color: 'var(--color-38bdf8, #38BDF8)' }}>98.2% Occupancy</span>
         </KpiCard>
         <KpiCard>
-          <span style={{ fontSize: '0.75rem', color: '#94A3B8' }}>Lead Response SLA</span>
+          <span style={{ fontSize: '0.75rem', color: 'var(--color-94a3b8, #94A3B8)' }}>Lead Response SLA</span>
           <div className="value">4.2 Mins</div>
-          <span style={{ fontSize: '0.72rem', color: '#10B981' }}>⚡ Sub-15m Compliant</span>
+          <span style={{ fontSize: '0.72rem', color: 'var(--accent-green, #10B981)' }}>⚡ Sub-15m Compliant</span>
         </KpiCard>
         <KpiCard>
-          <span style={{ fontSize: '0.75rem', color: '#94A3B8' }}>Active Supervisors</span>
+          <span style={{ fontSize: '0.75rem', color: 'var(--color-94a3b8, #94A3B8)' }}>Active Supervisors</span>
           <div className="value">108 / 108</div>
-          <span style={{ fontSize: '0.72rem', color: '#EF4444' }}>12 Depts Synced</span>
+          <span style={{ fontSize: '0.72rem', color: 'var(--accent-red, #EF4444)' }}>12 Depts Synced</span>
         </KpiCard>
       </KpiGrid>
     </DeckContainer>

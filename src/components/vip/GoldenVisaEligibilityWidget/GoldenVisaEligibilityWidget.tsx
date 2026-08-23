@@ -49,7 +49,7 @@ export const GoldenVisaEligibilityWidget: FC = () => {
     <Wrapper data-testid="golden-visa-eligibility-widget">
       <Header>
         <Title>🇦🇪 UAE Golden Visa Eligibility</Title>
-        <div style={{ fontSize: '0.7rem', color: '#F59E0B', fontWeight: 700 }}>AED 2M Threshold</div>
+        <div style={{ fontSize: '0.7rem', color: 'var(--accent-gold, #F59E0B)', fontWeight: 700 }}>AED 2M Threshold</div>
       </Header>
       <Body>
         <EligCard $eligible={eligible}>

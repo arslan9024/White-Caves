@@ -204,33 +204,33 @@ export const ReserveFundEscrowCalculator: FC = () => {
           </ECard>
           <ECard>
             <EKey>Per Unit Allocation</EKey>
-            <EVal style={{ color: '#10B981' }}>AED {Math.round(perUnitReserve).toLocaleString()}</EVal>
+            <EVal style={{ color: 'var(--accent-green, #10B981)' }}>AED {Math.round(perUnitReserve).toLocaleString()}</EVal>
           </ECard>
           <ECard>
             <EKey>Monthly Escrow Draft</EKey>
-            <EVal style={{ color: '#FFF' }}>AED {Math.round(monthlyReserve).toLocaleString()}</EVal>
+            <EVal style={{ color: 'var(--white, #FFF)' }}>AED {Math.round(monthlyReserve).toLocaleString()}</EVal>
           </ECard>
         </EscrowDisplay>
 
         <AllocationBreakdown>
-          <div style={{ fontSize: '0.7rem', fontWeight: 700, color: '#94A3B8', textTransform: 'uppercase' }}>
+          <div style={{ fontSize: '0.7rem', fontWeight: 700, color: 'var(--color-94a3b8, #94A3B8)', textTransform: 'uppercase' }}>
             Statutory CapEx Reserve Sub-Accounts
           </div>
           <AllocRow>
             <span>❄️ HVAC & Mechanical Plant Replacement (40%)</span>
-            <span style={{ fontWeight: 800, color: '#E2E8F0' }}>AED {Math.round(totalReserveAnnual * 0.4).toLocaleString()}</span>
+            <span style={{ fontWeight: 800, color: 'var(--text-secondary, #E2E8F0)' }}>AED {Math.round(totalReserveAnnual * 0.4).toLocaleString()}</span>
           </AllocRow>
           <AllocRow>
             <span>🛗 Elevator & Lift Modernization Fund (25%)</span>
-            <span style={{ fontWeight: 800, color: '#E2E8F0' }}>AED {Math.round(totalReserveAnnual * 0.25).toLocaleString()}</span>
+            <span style={{ fontWeight: 800, color: 'var(--text-secondary, #E2E8F0)' }}>AED {Math.round(totalReserveAnnual * 0.25).toLocaleString()}</span>
           </AllocRow>
           <AllocRow>
             <span>🧱 Facade, Waterproofing & Roofing (20%)</span>
-            <span style={{ fontWeight: 800, color: '#E2E8F0' }}>AED {Math.round(totalReserveAnnual * 0.2).toLocaleString()}</span>
+            <span style={{ fontWeight: 800, color: 'var(--text-secondary, #E2E8F0)' }}>AED {Math.round(totalReserveAnnual * 0.2).toLocaleString()}</span>
           </AllocRow>
           <AllocRow>
             <span>🚨 Emergency Contingency Escrow (15%)</span>
-            <span style={{ fontWeight: 800, color: '#EF4444' }}>AED {Math.round(totalReserveAnnual * 0.15).toLocaleString()}</span>
+            <span style={{ fontWeight: 800, color: 'var(--accent-red, #EF4444)' }}>AED {Math.round(totalReserveAnnual * 0.15).toLocaleString()}</span>
           </AllocRow>
         </AllocationBreakdown>
       </Body>

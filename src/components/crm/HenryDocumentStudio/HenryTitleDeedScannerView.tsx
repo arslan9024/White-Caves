@@ -355,7 +355,7 @@ export const HenryTitleDeedScannerView: FC = () => {
     <ViewContainer>
       {/* Status Feedback Banner */}
       {statusMsg && (
-        <div style={{ background: '#0F172A', color: '#38BDF8', padding: '8px 16px', borderRadius: '8px', fontSize: '0.82rem', fontWeight: 700 }}>
+        <div style={{ background: 'var(--color-0f172a, #0F172A)', color: 'var(--color-38bdf8, #38BDF8)', padding: '8px 16px', borderRadius: '8px', fontSize: '0.82rem', fontWeight: 700 }}>
           ⚡ {statusMsg}
         </div>
       )}
@@ -374,7 +374,7 @@ export const HenryTitleDeedScannerView: FC = () => {
           />
 
           <div style={{ marginTop: '-0.5rem', marginBottom: '0.75rem', display: 'flex', gap: '6px', flexWrap: 'wrap', alignItems: 'center' }}>
-            <span style={{ fontSize: '0.72rem', color: '#64748B', fontWeight: 700 }}>Property Presets:</span>
+            <span style={{ fontSize: '0.72rem', color: 'var(--text-secondary, #64748B)', fontWeight: 700 }}>Property Presets:</span>
             <button
               type="button"
               onClick={() => {
@@ -383,7 +383,7 @@ export const HenryTitleDeedScannerView: FC = () => {
                 setStatusMsg(`✓ Ingested Property: ${sample.ownerNameEn} — ${sample.buildingNameEn}`);
                 setTimeout(() => setStatusMsg(null), 3000);
               }}
-              style={{ background: '#F1F5F9', border: '1px solid #CBD5E1', borderRadius: '4px', padding: '2px 8px', fontSize: '0.7rem', fontWeight: 700, cursor: 'pointer' }}
+              style={{ background: 'var(--color-f1f5f9, #F1F5F9)', border: '1px solid var(--text-secondary, #CBD5E1)', borderRadius: '4px', padding: '2px 8px', fontSize: '0.7rem', fontWeight: 700, cursor: 'pointer' }}
             >
               BUKO COMMODITY DMCC (Madinat Hind 4 Plot 7354)
             </button>
@@ -395,7 +395,7 @@ export const HenryTitleDeedScannerView: FC = () => {
                 setStatusMsg(`✓ Ingested Property: ${sample.ownerNameEn} — ${sample.buildingNameEn}`);
                 setTimeout(() => setStatusMsg(null), 3000);
               }}
-              style={{ background: '#F1F5F9', border: '1px solid #CBD5E1', borderRadius: '4px', padding: '2px 8px', fontSize: '0.7rem', fontWeight: 700, cursor: 'pointer' }}
+              style={{ background: 'var(--color-f1f5f9, #F1F5F9)', border: '1px solid var(--text-secondary, #CBD5E1)', borderRadius: '4px', padding: '2px 8px', fontSize: '0.7rem', fontWeight: 700, cursor: 'pointer' }}
             >
               Viridis A Unit 504 (Akram Dib Nehme)
             </button>
@@ -404,10 +404,10 @@ export const HenryTitleDeedScannerView: FC = () => {
           {extractedData && (
             <FormCard>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                <h4 style={{ margin: 0, fontSize: '0.95rem', fontWeight: 800, color: '#0F172A' }}>
+                <h4 style={{ margin: 0, fontSize: '0.95rem', fontWeight: 800, color: 'var(--color-0f172a, #0F172A)' }}>
                   Extracted Title Deed Variables Form
                 </h4>
-                <span style={{ fontSize: '0.75rem', color: '#059669', fontWeight: 800 }}>
+                <span style={{ fontSize: '0.75rem', color: 'var(--accent-green, #059669)', fontWeight: 800 }}>
                   ✓ DLD Registry Validated
                 </span>
               </div>
@@ -426,7 +426,7 @@ export const HenryTitleDeedScannerView: FC = () => {
                   <input
                     type="text"
                     value={extractedData.propertyNumber}
-                    style={{ fontWeight: 800, color: '#EF4444' }}
+                    style={{ fontWeight: 800, color: 'var(--accent-red, #EF4444)' }}
                     onChange={(e) => handleUpdateField('propertyNumber', e.target.value)}
                   />
                 </FormGroup>
@@ -525,20 +525,20 @@ export const HenryTitleDeedScannerView: FC = () => {
               <button
                 type="button"
                 onClick={() => setZoomLevel(prev => Math.max(70, prev - 15))}
-                style={{ background: 'rgba(255,255,255,0.15)', color: '#FFF', border: 'none', borderRadius: '4px', padding: '2px 6px', fontSize: '0.7rem', cursor: 'pointer' }}
+                style={{ background: 'rgba(255,255,255,0.15)', color: 'var(--white, #FFF)', border: 'none', borderRadius: '4px', padding: '2px 6px', fontSize: '0.7rem', cursor: 'pointer' }}
               >
                 -
               </button>
-              <span style={{ fontSize: '0.72rem', color: '#94A3B8' }}>{zoomLevel}%</span>
+              <span style={{ fontSize: '0.72rem', color: 'var(--color-94a3b8, #94A3B8)' }}>{zoomLevel}%</span>
               <button
                 type="button"
                 onClick={() => setZoomLevel(prev => Math.min(180, prev + 15))}
-                style={{ background: 'rgba(255,255,255,0.15)', color: '#FFF', border: 'none', borderRadius: '4px', padding: '2px 6px', fontSize: '0.7rem', cursor: 'pointer' }}
+                style={{ background: 'rgba(255,255,255,0.15)', color: 'var(--white, #FFF)', border: 'none', borderRadius: '4px', padding: '2px 6px', fontSize: '0.7rem', cursor: 'pointer' }}
               >
                 +
               </button>
               {uploadedFile && (
-                <span style={{ fontSize: '0.72rem', color: '#94A3B8', marginLeft: '6px' }}>
+                <span style={{ fontSize: '0.72rem', color: 'var(--color-94a3b8, #94A3B8)', marginLeft: '6px' }}>
                   {uploadedFile.name} ({(uploadedFile.size / 1024).toFixed(1)} KB)
                 </span>
               )}
@@ -582,9 +582,9 @@ export const HenryTitleDeedScannerView: FC = () => {
                 </div>
               </DeedSummaryCard>
             ) : (
-              <div style={{ textAlign: 'center', color: '#94A3B8', padding: '3rem 1rem' }}>
+              <div style={{ textAlign: 'center', color: 'var(--color-94a3b8, #94A3B8)', padding: '3rem 1rem' }}>
                 <Building size={48} color="#94A3B8" style={{ margin: '0 auto 12px auto' }} />
-                <div style={{ fontWeight: 800, fontSize: '0.95rem', color: '#334155' }}>
+                <div style={{ fontWeight: 800, fontSize: '0.95rem', color: 'var(--color-334155, #334155)' }}>
                   No Title Deed Uploaded Yet
                 </div>
                 <div style={{ fontSize: '0.8rem', marginTop: '4px' }}>

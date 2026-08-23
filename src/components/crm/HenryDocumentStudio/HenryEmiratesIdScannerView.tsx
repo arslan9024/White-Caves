@@ -450,7 +450,7 @@ export const HenryEmiratesIdScannerView: FC = () => {
       </TopActionBar>
 
       {statusMsg && (
-        <div style={{ background: '#0F172A', color: '#38BDF8', padding: '10px 18px', borderRadius: '8px', fontSize: '0.85rem', fontWeight: 800 }}>
+        <div style={{ background: 'var(--color-0f172a, #0F172A)', color: 'var(--color-38bdf8, #38BDF8)', padding: '10px 18px', borderRadius: '8px', fontSize: '0.85rem', fontWeight: 800 }}>
           ⚡ {statusMsg}
         </div>
       )}
@@ -502,7 +502,7 @@ export const HenryEmiratesIdScannerView: FC = () => {
               <ZoomBtn onClick={() => setZoomLevel(prev => Math.max(70, prev - 15))}>
                 <ZoomOut size={13} />
               </ZoomBtn>
-              <span style={{ fontSize: '0.72rem', color: '#94A3B8' }}>{zoomLevel}%</span>
+              <span style={{ fontSize: '0.72rem', color: 'var(--color-94a3b8, #94A3B8)' }}>{zoomLevel}%</span>
               <ZoomBtn onClick={() => setZoomLevel(prev => Math.min(180, prev + 15))}>
                 <ZoomIn size={13} />
               </ZoomBtn>
@@ -510,7 +510,7 @@ export const HenryEmiratesIdScannerView: FC = () => {
           </PaneHeader>
 
           {/* Section 1: Upload File Component */}
-          <div style={{ padding: '1rem', background: '#FFFFFF', borderBottom: '1px solid #E2E8F0' }}>
+          <div style={{ padding: '1rem', background: 'var(--white, #FFFFFF)', borderBottom: '1px solid var(--text-secondary, #E2E8F0)' }}>
             <HenrySharedDocumentUploader
               docType="emirates_id"
               title="1. Upload Emirates ID (PDF, PNG, JPG, WEBP)"
@@ -521,7 +521,7 @@ export const HenryEmiratesIdScannerView: FC = () => {
               accentColor="#10B981"
             />
             <div style={{ marginTop: '8px', display: 'flex', gap: '6px', flexWrap: 'wrap', alignItems: 'center' }}>
-              <span style={{ fontSize: '0.72rem', color: '#64748B', fontWeight: 700 }}>Client Presets:</span>
+              <span style={{ fontSize: '0.72rem', color: 'var(--text-secondary, #64748B)', fontWeight: 700 }}>Client Presets:</span>
               <button
                 type="button"
                 onClick={async () => {
@@ -530,7 +530,7 @@ export const HenryEmiratesIdScannerView: FC = () => {
                   setStatusMsg(`✓ Ingested Client: ${data.fullNameEn} (${data.nationalityEn})`);
                   setTimeout(() => setStatusMsg(null), 3000);
                 }}
-                style={{ background: '#F1F5F9', border: '1px solid #CBD5E1', borderRadius: '4px', padding: '2px 8px', fontSize: '0.7rem', fontWeight: 700, cursor: 'pointer' }}
+                style={{ background: 'var(--color-f1f5f9, #F1F5F9)', border: '1px solid var(--text-secondary, #CBD5E1)', borderRadius: '4px', padding: '2px 8px', fontSize: '0.7rem', fontWeight: 700, cursor: 'pointer' }}
               >
                 Khalif Mohamednur (Kenya / Jayeeco)
               </button>
@@ -542,7 +542,7 @@ export const HenryEmiratesIdScannerView: FC = () => {
                   setStatusMsg(`✓ Ingested Client: ${data.fullNameEn} (${data.nationalityEn})`);
                   setTimeout(() => setStatusMsg(null), 3000);
                 }}
-                style={{ background: '#F1F5F9', border: '1px solid #CBD5E1', borderRadius: '4px', padding: '2px 8px', fontSize: '0.7rem', fontWeight: 700, cursor: 'pointer' }}
+                style={{ background: 'var(--color-f1f5f9, #F1F5F9)', border: '1px solid var(--text-secondary, #CBD5E1)', borderRadius: '4px', padding: '2px 8px', fontSize: '0.7rem', fontWeight: 700, cursor: 'pointer' }}
               >
                 Mansoor Almarzooqi (UAE / Gov)
               </button>
@@ -558,24 +558,24 @@ export const HenryEmiratesIdScannerView: FC = () => {
                 <iframe src={filePreviewUrl} title="Emirates ID PDF Preview" />
               )
             ) : activeSideView === 'front' ? (
-              <div style={{ textAlign: 'center', color: '#64748B', maxWidth: '420px' }}>
-                <div style={{ background: '#0F172A', borderRadius: '12px', padding: '1.25rem', color: '#FFFFFF', border: '2px solid #10B981', textAlign: 'left' }}>
+              <div style={{ textAlign: 'center', color: 'var(--text-secondary, #64748B)', maxWidth: '420px' }}>
+                <div style={{ background: 'var(--color-0f172a, #0F172A)', borderRadius: '12px', padding: '1.25rem', color: 'var(--white, #FFFFFF)', border: '2px solid var(--accent-green, #10B981)', textAlign: 'left' }}>
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid rgba(255,255,255,0.15)', paddingBottom: '6px', marginBottom: '8px' }}>
-                    <span style={{ fontSize: '0.72rem', fontWeight: 800, color: '#10B981' }}>
+                    <span style={{ fontSize: '0.72rem', fontWeight: 800, color: 'var(--accent-green, #10B981)' }}>
                       UNITED ARAB EMIRATES · RESIDENT IDENTITY CARD
                     </span>
-                    <span style={{ fontSize: '0.68rem', color: '#94A3B8' }}>FRONT</span>
+                    <span style={{ fontSize: '0.68rem', color: 'var(--color-94a3b8, #94A3B8)' }}>FRONT</span>
                   </div>
-                  <div style={{ fontFamily: 'monospace', fontSize: '1.15rem', fontWeight: 900, color: '#FFFFFF' }}>
+                  <div style={{ fontFamily: 'monospace', fontSize: '1.15rem', fontWeight: 900, color: 'var(--white, #FFFFFF)' }}>
                     {extractedData.idNumber}
                   </div>
-                  <div style={{ fontSize: '0.9rem', fontWeight: 800, color: '#F8FAFC', marginTop: '4px' }}>
+                  <div style={{ fontSize: '0.9rem', fontWeight: 800, color: 'var(--color-f8fafc, #F8FAFC)', marginTop: '4px' }}>
                     {extractedData.fullNameEn}
                   </div>
-                  <div style={{ fontSize: '0.85rem', color: '#94A3B8', direction: 'rtl', textAlign: 'right' }}>
+                  <div style={{ fontSize: '0.85rem', color: 'var(--color-94a3b8, #94A3B8)', direction: 'rtl', textAlign: 'right' }}>
                     {extractedData.fullNameAr}
                   </div>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: '12px', paddingTop: '8px', borderTop: '1px dashed rgba(255,255,255,0.15)', fontSize: '0.75rem', color: '#94A3B8' }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: '12px', paddingTop: '8px', borderTop: '1px dashed rgba(255,255,255,0.15)', fontSize: '0.75rem', color: 'var(--color-94a3b8, #94A3B8)' }}>
                     <span>Nationality: {extractedData.nationalityEn} ({extractedData.nationalityCode})</span>
                     <span>Expiry: {extractedData.expiryDate}</span>
                   </div>
@@ -585,25 +585,25 @@ export const HenryEmiratesIdScannerView: FC = () => {
                 </p>
               </div>
             ) : (
-              <div style={{ textAlign: 'center', color: '#64748B', maxWidth: '420px' }}>
-                <div style={{ background: '#0F172A', borderRadius: '12px', padding: '1.25rem', color: '#FFFFFF', border: '2px solid #38BDF8', textAlign: 'left' }}>
+              <div style={{ textAlign: 'center', color: 'var(--text-secondary, #64748B)', maxWidth: '420px' }}>
+                <div style={{ background: 'var(--color-0f172a, #0F172A)', borderRadius: '12px', padding: '1.25rem', color: 'var(--white, #FFFFFF)', border: '2px solid var(--color-38bdf8, #38BDF8)', textAlign: 'left' }}>
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid rgba(255,255,255,0.15)', paddingBottom: '6px', marginBottom: '8px' }}>
-                    <span style={{ fontSize: '0.72rem', fontWeight: 800, color: '#38BDF8' }}>
+                    <span style={{ fontSize: '0.72rem', fontWeight: 800, color: 'var(--color-38bdf8, #38BDF8)' }}>
                       SMART CHIP & ICAO TD1 MRZ SPECIFICATION
                     </span>
-                    <span style={{ fontSize: '0.68rem', color: '#94A3B8' }}>BACK</span>
+                    <span style={{ fontSize: '0.68rem', color: 'var(--color-94a3b8, #94A3B8)' }}>BACK</span>
                   </div>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.75rem', color: '#E2E8F0', marginTop: '6px' }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.75rem', color: 'var(--text-secondary, #E2E8F0)', marginTop: '6px' }}>
                     <span>Card No: <strong>{extractedData.cardNumber}</strong></span>
                     <span>Chip: <strong>{extractedData.chipNumber || '2500098412'}</strong></span>
                   </div>
-                  <div style={{ fontSize: '0.75rem', color: '#94A3B8', marginTop: '6px' }}>
+                  <div style={{ fontSize: '0.75rem', color: 'var(--color-94a3b8, #94A3B8)', marginTop: '6px' }}>
                     Occupation: <strong>{extractedData.occupationEn}</strong>
                   </div>
-                  <div style={{ fontSize: '0.75rem', color: '#94A3B8' }}>
+                  <div style={{ fontSize: '0.75rem', color: 'var(--color-94a3b8, #94A3B8)' }}>
                     Employer: <strong>{extractedData.employerEn}</strong>
                   </div>
-                  <div style={{ marginTop: '10px', padding: '6px', background: '#020617', borderRadius: '6px', fontFamily: 'monospace', fontSize: '0.68rem', color: '#38BDF8', lineHeight: 1.3 }}>
+                  <div style={{ marginTop: '10px', padding: '6px', background: 'var(--color-020617, #020617)', borderRadius: '6px', fontFamily: 'monospace', fontSize: '0.68rem', color: 'var(--color-38bdf8, #38BDF8)', lineHeight: 1.3 }}>
                     {extractedData.mrz ? (
                       `${extractedData.mrz.line1}\n${extractedData.mrz.line2}\n${extractedData.mrz.line3}`
                     ) : (
@@ -637,7 +637,7 @@ export const HenryEmiratesIdScannerView: FC = () => {
                 <input
                   type="text"
                   value={extractedData.idNumber}
-                  style={{ fontFamily: 'monospace', color: '#059669', fontSize: '1rem' }}
+                  style={{ fontFamily: 'monospace', color: 'var(--accent-green, #059669)', fontSize: '1rem' }}
                   onChange={(e) => handleUpdateField('idNumber', e.target.value)}
                 />
               </div>
@@ -747,7 +747,7 @@ export const HenryEmiratesIdScannerView: FC = () => {
                 <input
                   type="text"
                   value={extractedData.expiryDate}
-                  style={{ color: '#2563EB', fontWeight: 800 }}
+                  style={{ color: 'var(--accent-blue, #2563EB)', fontWeight: 800 }}
                   onChange={(e) => handleUpdateField('expiryDate', e.target.value)}
                 />
               </div>

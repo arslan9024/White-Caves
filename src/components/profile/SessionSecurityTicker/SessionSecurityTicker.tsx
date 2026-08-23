@@ -45,14 +45,14 @@ export const SessionSecurityTicker: FC = () => {
     <TickerBar data-testid="session-security-ticker">
       <div>
         <LiveDot />
-        <span style={{ color: '#FFF', fontWeight: 700 }}>SECURE AES-256 SESSION</span>
-        <span style={{ margin: '0 8px', color: '#64748B' }}>|</span>
+        <span style={{ color: 'var(--white, #FFF)', fontWeight: 700 }}>SECURE AES-256 SESSION</span>
+        <span style={{ margin: '0 8px', color: 'var(--text-secondary, #64748B)' }}>|</span>
         <span>IP: <strong>194.187.168.42 (Dubai, UAE)</strong></span>
       </div>
       <div>
         <span>Browser: <strong>Chrome/Blink Engine</strong></span>
-        <span style={{ margin: '0 8px', color: '#64748B' }}>|</span>
-        <span style={{ color: '#10B981', fontWeight: 800 }}>{time} GST</span>
+        <span style={{ margin: '0 8px', color: 'var(--text-secondary, #64748B)' }}>|</span>
+        <span style={{ color: 'var(--accent-green, #10B981)', fontWeight: 800 }}>{time} GST</span>
       </div>
     </TickerBar>
   );

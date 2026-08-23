@@ -61,7 +61,7 @@ export const OffPlanAssignmentCalculator: FC = () => {
     <Wrap data-testid="off-plan-assignment-calculator">
       <Head>
         <Title>📋 Off-Plan Assignment Eligibility</Title>
-        <div style={{fontSize:'0.68rem',color:'#EF4444',fontWeight:700}}>DLD Flip Rule</div>
+        <div style={{fontSize:'0.68rem',color:'var(--accent-red, #EF4444)',fontWeight:700}}>DLD Flip Rule</div>
       </Head>
       <Body>
         <FieldGrid>
@@ -102,7 +102,7 @@ export const OffPlanAssignmentCalculator: FC = () => {
             <BarVal $ok={eligible}>{paidPct.toFixed(1)}% paid</BarVal>
           </BarLabel>
           <Track><Fill $pct={paidPct} $ok={eligible}/></Track>
-          <div style={{display:'flex',justifyContent:'flex-end',marginTop:'4px',fontSize:'0.65rem',color:'#475569'}}>
+          <div style={{display:'flex',justifyContent:'flex-end',marginTop:'4px',fontSize:'0.65rem',color:'var(--color-475569, #475569)'}}>
             Threshold: {threshold}% — Need AED {Math.max(0,(threshold/100*total)-paid).toLocaleString()} more
           </div>
         </ProgressBar>

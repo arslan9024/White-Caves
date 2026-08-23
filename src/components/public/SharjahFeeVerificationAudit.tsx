@@ -90,13 +90,13 @@ export const SharjahFeeVerificationAudit: React.FC = () => {
   const getStatusBadge = (status: FeeItem['status']) => {
     switch (status) {
       case 'valid':
-        return <span style={{ background: '#ECFDF5', color: '#047857', border: '1px solid #10B981', padding: '2px 8px', borderRadius: '6px', fontSize: '0.72rem', fontWeight: 800 }}>✓ VALID</span>;
+        return <span style={{ background: 'var(--color-ecfdf5, #ECFDF5)', color: 'var(--color-047857, #047857)', border: '1px solid var(--accent-green, #10B981)', padding: '2px 8px', borderRadius: '6px', fontSize: '0.72rem', fontWeight: 800 }}>✓ VALID</span>;
       case 'illegal':
-        return <span style={{ background: '#FEF2F2', color: '#B91C1C', border: '1px solid #EF4444', padding: '2px 8px', borderRadius: '6px', fontSize: '0.72rem', fontWeight: 800 }}>🚫 ILLEGAL FEE</span>;
+        return <span style={{ background: 'var(--color-fef2f2, #FEF2F2)', color: 'var(--accent-red, #B91C1C)', border: '1px solid var(--accent-red, #EF4444)', padding: '2px 8px', borderRadius: '6px', fontSize: '0.72rem', fontWeight: 800 }}>🚫 ILLEGAL FEE</span>;
       case 'overcharged':
-        return <span style={{ background: '#FFFBEB', color: '#B45309', border: '1px solid #F59E0B', padding: '2px 8px', borderRadius: '6px', fontSize: '0.72rem', fontWeight: 800 }}>⚠️ OVERCHARGED</span>;
+        return <span style={{ background: 'var(--color-fffbeb, #FFFBEB)', color: 'var(--color-b45309, #B45309)', border: '1px solid var(--accent-gold, #F59E0B)', padding: '2px 8px', borderRadius: '6px', fontSize: '0.72rem', fontWeight: 800 }}>⚠️ OVERCHARGED</span>;
       case 'inflated':
-        return <span style={{ background: '#EFF6FF', color: '#1D4ED8', border: '1px solid #3B82F6', padding: '2px 8px', borderRadius: '6px', fontSize: '0.72rem', fontWeight: 800 }}>📈 INFLATED MARKUP</span>;
+        return <span style={{ background: 'var(--color-eff6ff, #EFF6FF)', color: 'var(--accent-blue, #1D4ED8)', border: '1px solid var(--accent-blue, #3B82F6)', padding: '2px 8px', borderRadius: '6px', fontSize: '0.72rem', fontWeight: 800 }}>📈 INFLATED MARKUP</span>;
     }
   };
 
@@ -112,26 +112,26 @@ export const SharjahFeeVerificationAudit: React.FC = () => {
       }}
     >
       {/* Header Banner */}
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.25rem', borderBottom: '1px solid #E2E8F0', paddingBottom: '1rem' }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.25rem', borderBottom: '1px solid var(--text-secondary, #E2E8F0)', paddingBottom: '1rem' }}>
         <div>
           <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '4px' }}>
-            <span style={{ background: '#06B6D4', color: '#FFFFFF', fontSize: '0.72rem', fontWeight: 900, padding: '3px 8px', borderRadius: '4px', textTransform: 'uppercase' }}>
+            <span style={{ background: 'var(--color-06b6d4, #06B6D4)', color: 'var(--white, #FFFFFF)', fontSize: '0.72rem', fontWeight: 900, padding: '3px 8px', borderRadius: '4px', textTransform: 'uppercase' }}>
               UAE Multi-Emirate Tenancy Rights
             </span>
-            <span style={{ background: '#ECFDF5', color: '#047857', border: '1px solid #10B981', fontSize: '0.72rem', fontWeight: 800, padding: '2px 8px', borderRadius: '6px' }}>
+            <span style={{ background: 'var(--color-ecfdf5, #ECFDF5)', color: 'var(--color-047857, #047857)', border: '1px solid var(--accent-green, #10B981)', fontSize: '0.72rem', fontWeight: 800, padding: '2px 8px', borderRadius: '6px' }}>
               Sharjah Law No. 5 of 2024 Active
             </span>
           </div>
-          <h3 style={{ margin: 0, fontSize: '1.35rem', fontWeight: 900, color: '#1E293B' }}>
+          <h3 style={{ margin: 0, fontSize: '1.35rem', fontWeight: 900, color: 'var(--color-1e293b, #1E293B)' }}>
             UAE Tenancy Fee Verification & Legal Protection Audit
           </h3>
-          <span style={{ fontSize: '0.84rem', color: '#64748B', display: 'block', marginTop: '2px' }}>
-            Public Lease Audit Case Study: <strong style={{ color: '#06B6D4' }}>{locationName}</strong> · Annual Rent: AED {annualRent.toLocaleString()}
+          <span style={{ fontSize: '0.84rem', color: 'var(--text-secondary, #64748B)', display: 'block', marginTop: '2px' }}>
+            Public Lease Audit Case Study: <strong style={{ color: 'var(--color-06b6d4, #06B6D4)' }}>{locationName}</strong> · Annual Rent: AED {annualRent.toLocaleString()}
           </span>
         </div>
 
         {/* Emirate Selector */}
-        <div style={{ display: 'flex', background: '#F1F5F9', padding: '4px', borderRadius: '10px', gap: '4px' }}>
+        <div style={{ display: 'flex', background: 'var(--color-f1f5f9, #F1F5F9)', padding: '4px', borderRadius: '10px', gap: '4px' }}>
           <button
             onClick={() => { setSelectedEmirate('Sharjah'); setLocationName('Al Nabba, Sharjah'); }}
             style={{
@@ -167,28 +167,28 @@ export const SharjahFeeVerificationAudit: React.FC = () => {
 
       {/* Audit KPI Cards */}
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '1rem', marginBottom: '1.5rem' }}>
-        <div style={{ background: '#FEF2F2', border: '1.5px solid #EF4444', borderRadius: '12px', padding: '1.15rem' }}>
-          <span style={{ fontSize: '0.75rem', fontWeight: 800, color: '#B91C1C', textTransform: 'uppercase' }}>Total Quoted Outlay</span>
-          <div style={{ fontSize: '1.5rem', fontWeight: 900, color: '#991B1B', margin: '4px 0 2px' }}>
+        <div style={{ background: 'var(--color-fef2f2, #FEF2F2)', border: '1.5px solid var(--accent-red, #EF4444)', borderRadius: '12px', padding: '1.15rem' }}>
+          <span style={{ fontSize: '0.75rem', fontWeight: 800, color: 'var(--accent-red, #B91C1C)', textTransform: 'uppercase' }}>Total Quoted Outlay</span>
+          <div style={{ fontSize: '1.5rem', fontWeight: 900, color: 'var(--color-991b1b, #991B1B)', margin: '4px 0 2px' }}>
             AED {totalQuoted.toLocaleString()}
           </div>
-          <span style={{ fontSize: '0.74rem', color: '#7F1D1D' }}>Includes inflated & illegal fee add-ons</span>
+          <span style={{ fontSize: '0.74rem', color: 'var(--color-7f1d1d, #7F1D1D)' }}>Includes inflated & illegal fee add-ons</span>
         </div>
 
-        <div style={{ background: '#ECFDF5', border: '1.5px solid #10B981', borderRadius: '12px', padding: '1.15rem' }}>
-          <span style={{ fontSize: '0.75rem', fontWeight: 800, color: '#047857', textTransform: 'uppercase' }}>Legal & Fair Outlay</span>
-          <div style={{ fontSize: '1.5rem', fontWeight: 900, color: '#065F46', margin: '4px 0 2px' }}>
+        <div style={{ background: 'var(--color-ecfdf5, #ECFDF5)', border: '1.5px solid var(--accent-green, #10B981)', borderRadius: '12px', padding: '1.15rem' }}>
+          <span style={{ fontSize: '0.75rem', fontWeight: 800, color: 'var(--color-047857, #047857)', textTransform: 'uppercase' }}>Legal & Fair Outlay</span>
+          <div style={{ fontSize: '1.5rem', fontWeight: 900, color: 'var(--color-065f46, #065F46)', margin: '4px 0 2px' }}>
             AED {totalLegal.toLocaleString()}
           </div>
-          <span style={{ fontSize: '0.74rem', color: '#064E3B' }}>Verified by Sharjah Municipality & SEWA rules</span>
+          <span style={{ fontSize: '0.74rem', color: 'var(--color-064e3b, #064E3B)' }}>Verified by Sharjah Municipality & SEWA rules</span>
         </div>
 
-        <div style={{ background: 'linear-gradient(135deg, #0F172A 0%, #164E63 100%)', border: '2px solid #38BDF8', borderRadius: '12px', padding: '1.15rem', color: '#FFFFFF' }}>
-          <span style={{ fontSize: '0.75rem', fontWeight: 800, color: '#38BDF8', textTransform: 'uppercase' }}>Tenant Savings Identified</span>
-          <div style={{ fontSize: '1.6rem', fontWeight: 900, color: '#10B981', margin: '4px 0 2px' }}>
+        <div style={{ background: 'linear-gradient(135deg, var(--color-0f172a, #0F172A) 0%, var(--color-164e63, #164E63) 100%)', border: '2px solid var(--color-38bdf8, #38BDF8)', borderRadius: '12px', padding: '1.15rem', color: 'var(--white, #FFFFFF)' }}>
+          <span style={{ fontSize: '0.75rem', fontWeight: 800, color: 'var(--color-38bdf8, #38BDF8)', textTransform: 'uppercase' }}>Tenant Savings Identified</span>
+          <div style={{ fontSize: '1.6rem', fontWeight: 900, color: 'var(--accent-green, #10B981)', margin: '4px 0 2px' }}>
             AED {totalSavings.toLocaleString()}
           </div>
-          <span style={{ fontSize: '0.74rem', color: '#CBD5E1' }}>15.2% Total Cash Saved for Tenant!</span>
+          <span style={{ fontSize: '0.74rem', color: 'var(--text-secondary, #CBD5E1)' }}>15.2% Total Cash Saved for Tenant!</span>
         </div>
       </div>
 
@@ -196,7 +196,7 @@ export const SharjahFeeVerificationAudit: React.FC = () => {
       <div style={{ overflowX: 'auto', marginBottom: '1.5rem' }}>
         <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.84rem' }}>
           <thead>
-            <tr style={{ background: '#F8FAFC', borderBottom: '2px solid #E2E8F0', textAlign: 'left', color: '#475569' }}>
+            <tr style={{ background: 'var(--color-f8fafc, #F8FAFC)', borderBottom: '2px solid var(--text-secondary, #E2E8F0)', textAlign: 'left', color: 'var(--color-475569, #475569)' }}>
               <th style={{ padding: '10px 12px', fontWeight: 800 }}>Fee Name</th>
               <th style={{ padding: '10px 12px', fontWeight: 800 }}>Quoted (AED)</th>
               <th style={{ padding: '10px 12px', fontWeight: 800 }}>Legal Limit (AED)</th>
@@ -207,22 +207,22 @@ export const SharjahFeeVerificationAudit: React.FC = () => {
           </thead>
           <tbody>
             {DEFAULT_SHARJAH_FEES.map((fee, i) => (
-              <tr key={i} style={{ borderBottom: '1px solid #F1F5F9', background: fee.status === 'illegal' ? '#FEF2F2' : fee.status === 'overcharged' ? '#FFFBEB' : 'transparent' }}>
-                <td style={{ padding: '10px 12px', fontWeight: 800, color: '#1E293B' }}>{fee.fee_name}</td>
-                <td style={{ padding: '10px 12px', fontWeight: 700, color: fee.quoted_amount_aed > fee.legal_amount_aed ? '#DC2626' : '#1E293B' }}>
+              <tr key={i} style={{ borderBottom: '1px solid var(--color-f1f5f9, #F1F5F9)', background: fee.status === 'illegal' ? 'var(--color-fef2f2, #FEF2F2)' : fee.status === 'overcharged' ? 'var(--color-fffbeb, #FFFBEB)' : 'transparent' }}>
+                <td style={{ padding: '10px 12px', fontWeight: 800, color: 'var(--color-1e293b, #1E293B)' }}>{fee.fee_name}</td>
+                <td style={{ padding: '10px 12px', fontWeight: 700, color: fee.quoted_amount_aed > fee.legal_amount_aed ? 'var(--accent-red, #DC2626)' : 'var(--color-1e293b, #1E293B)' }}>
                   AED {fee.quoted_amount_aed.toLocaleString()}
                 </td>
-                <td style={{ padding: '10px 12px', fontWeight: 800, color: '#10B981' }}>
+                <td style={{ padding: '10px 12px', fontWeight: 800, color: 'var(--accent-green, #10B981)' }}>
                   AED {fee.legal_amount_aed.toLocaleString()}
                 </td>
                 <td style={{ padding: '10px 12px' }}>{getStatusBadge(fee.status)}</td>
-                <td style={{ padding: '10px 12px', fontWeight: 700, color: fee.is_refundable ? '#047857' : '#64748B' }}>
+                <td style={{ padding: '10px 12px', fontWeight: 700, color: fee.is_refundable ? 'var(--color-047857, #047857)' : 'var(--text-secondary, #64748B)' }}>
                   {fee.is_refundable ? '✓ Refundable' : 'Non-refundable'}
                 </td>
-                <td style={{ padding: '10px 12px', color: '#475569', lineHeight: 1.4 }}>
+                <td style={{ padding: '10px 12px', color: 'var(--color-475569, #475569)', lineHeight: 1.4 }}>
                   {fee.legal_basis_or_rule}
                   {fee.source_link && (
-                    <a href={fee.source_link} target="_blank" rel="noreferrer" style={{ marginLeft: '6px', color: '#06B6D4', textDecoration: 'underline', fontWeight: 700 }}>
+                    <a href={fee.source_link} target="_blank" rel="noreferrer" style={{ marginLeft: '6px', color: 'var(--color-06b6d4, #06B6D4)', textDecoration: 'underline', fontWeight: 700 }}>
                       [Source <ExternalLink size={12} style={{ verticalAlign: 'middle' }} />]
                     </a>
                   )}
@@ -234,13 +234,13 @@ export const SharjahFeeVerificationAudit: React.FC = () => {
       </div>
 
       {/* Sharjah Rent Freeze Legal Banner */}
-      <div style={{ background: '#ECFDF5', border: '1.5px solid #10B981', borderRadius: '12px', padding: '1rem 1.25rem', display: 'flex', alignItems: 'center', gap: '1rem' }}>
+      <div style={{ background: 'var(--color-ecfdf5, #ECFDF5)', border: '1.5px solid var(--accent-green, #10B981)', borderRadius: '12px', padding: '1rem 1.25rem', display: 'flex', alignItems: 'center', gap: '1rem' }}>
         <ShieldCheck size={28} color="#10B981" />
         <div>
-          <h4 style={{ margin: '0 0 2px 0', fontSize: '0.95rem', fontWeight: 800, color: '#065F46' }}>
+          <h4 style={{ margin: '0 0 2px 0', fontSize: '0.95rem', fontWeight: 800, color: 'var(--color-065f46, #065F46)' }}>
             Sharjah Rent Freeze Protection (Sharjah Law No. 5 of 2024)
           </h4>
-          <p style={{ margin: 0, fontSize: '0.84rem', color: '#047857', lineHeight: 1.45 }}>
+          <p style={{ margin: 0, fontSize: '0.84rem', color: 'var(--color-047857, #047857)', lineHeight: 1.45 }}>
             Under <strong>Sharjah Law No. 5 of 2024</strong>, residential tenancy agreements enjoy a <strong>mandatory 3-year rent freeze</strong> starting from the contract commencement date. Landlords cannot legally raise rent for the first 3 years of your tenancy.
           </p>
         </div>

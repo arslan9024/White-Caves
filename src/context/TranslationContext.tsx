@@ -18,17 +18,17 @@ export const TranslationProvider: FC<{ children: ReactNode }> = ({ children }) =
     if (!keyPath) return '';
     const keys = keyPath.split('.');
     const dict = dictionaries[language] || dictionaries.en;
-    let current: any = dict;
+    let current: Record<string, unknown> | unknown = dict;
 
     for (const key of keys) {
-      if (current && typeof current === 'object' && key in current) {
-        current = current[key];
+      if (current && typeof current === 'object' && key in (current as Record<string, unknown>)) {
+        current = (current as Record<string, unknown>)[key];
       } else {
         // Fallback to English dictionary
-        let fallback: any = dictionaries.en;
+        let fallback: Record<string, unknown> | unknown = dictionaries.en;
         for (const fk of keys) {
-          if (fallback && typeof fallback === 'object' && fk in fallback) {
-            fallback = fallback[fk];
+          if (fallback && typeof fallback === 'object' && fk in (fallback as Record<string, unknown>)) {
+            fallback = (fallback as Record<string, unknown>)[fk];
           } else {
             return keyPath;
           }

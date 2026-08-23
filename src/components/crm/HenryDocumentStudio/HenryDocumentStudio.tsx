@@ -95,7 +95,7 @@ export const HenryDocumentStudio: FC = () => {
           <h2>
             <span>📄</span> Henry AI — Sovereign Record Keeper & Document Studio
           </h2>
-          <p style={{ margin: 0, color: '#94A3B8', fontSize: '0.88rem' }}>
+          <p style={{ margin: 0, color: 'var(--color-94a3b8, #94A3B8)', fontSize: '0.88rem' }}>
             Official DLD Unified Tenancy Contract, Passport AI Scanner, Title Deed OCR, Emirates ID Ingestion & VAT Invoices.
           </p>
         </div>
@@ -122,7 +122,7 @@ export const HenryDocumentStudio: FC = () => {
             <FilePlus2 size={16} /> Prepare New Tenancy Contract
           </button>
           <Badge>HENRY RECORD KEEPER</Badge>
-          <span style={{ fontSize: '0.8rem', color: '#94A3B8' }}>Ejari: 0120260721003974</span>
+          <span style={{ fontSize: '0.8rem', color: 'var(--color-94a3b8, #94A3B8)' }}>Ejari: 0120260721003974</span>
         </div>
       </StudioHeader>
 
@@ -255,10 +255,10 @@ export const HenryDocumentStudio: FC = () => {
                       : '⚠️ BLANK REUSABLE TEMPLATE (0% Score)'}
                   </span>
                 </div>
-                <h3 style={{ margin: '6px 0 2px', color: '#1E293B', fontSize: '18px' }}>
+                <h3 style={{ margin: '6px 0 2px', color: 'var(--color-1e293b, #1E293B)', fontSize: '18px' }}>
                   Tenancy Contract AI Optical Scanner & Autonomous Learner
                 </h3>
-                <p style={{ margin: 0, color: '#64748B', fontSize: '12px' }}>
+                <p style={{ margin: 0, color: 'var(--text-secondary, #64748B)', fontSize: '12px' }}>
                   Autonomous Fill Detection, Completeness Score ({scannedContractData.filledFieldsCount}/{scannedContractData.totalFieldsCount} Fields), Landlord/Tenant Grouped Extraction & Reference Training Pool.
                 </p>
               </div>
@@ -277,7 +277,7 @@ export const HenryDocumentStudio: FC = () => {
                   onClick={() => handleScanTenancyContract('sample_svetlana')}
                   disabled={isScanning}
                   title="Scan & Extract Janusia XH2858B (Svetlana & William Abernethy)"
-                  style={{ background: 'linear-gradient(135deg, #0284C7 0%, #0369A1 100%)', borderColor: '#0284C7' }}
+                  style={{ background: 'linear-gradient(135deg, var(--accent-blue, #0284C7) 0%, var(--color-0369a1, #0369A1) 100%)', borderColor: 'var(--accent-blue, #0284C7)' }}
                 >
                   <Sparkles size={14} /> Scan Janusia XH2858B (Svetlana)
                 </ActionButton>
@@ -311,20 +311,20 @@ export const HenryDocumentStudio: FC = () => {
               }}
             >
               <div>
-                <div style={{ fontSize: '13px', fontWeight: 800, color: scannedContractData.isFilled ? '#15803D' : '#A16207' }}>
+                <div style={{ fontSize: '13px', fontWeight: 800, color: scannedContractData.isFilled ? 'var(--color-15803d, #15803D)' : 'var(--color-a16207, #A16207)' }}>
                   {scannedContractData.isFilled
                     ? `Contract Completeness: ${scannedContractData.fillScorePercent}% (${scannedContractData.filledFieldsCount} of ${scannedContractData.totalFieldsCount} fields populated)`
                     : 'Unfilled DLD Base Contract: 0% Populated (Ready for Auto-Fill Template)'}
                 </div>
-                <div style={{ fontSize: '11px', color: '#64748B', marginTop: '2px' }}>
+                <div style={{ fontSize: '11px', color: 'var(--text-secondary, #64748B)', marginTop: '2px' }}>
                   {scannedContractData.missingFields.length > 0
                     ? `Missing / Optional Fields: ${scannedContractData.missingFields.join(', ')}`
                     : 'All critical party, property, financial and addenda terms present & validated!'}
                 </div>
               </div>
               <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
-                <span style={{ fontSize: '11px', color: '#64748B', fontWeight: 700 }}>Contract Date:</span>
-                <code style={{ background: '#F1F5F9', color: '#0F172A', padding: '3px 8px', borderRadius: '4px', fontWeight: 'bold', fontSize: '11px' }}>
+                <span style={{ fontSize: '11px', color: 'var(--text-secondary, #64748B)', fontWeight: 700 }}>Contract Date:</span>
+                <code style={{ background: 'var(--color-f1f5f9, #F1F5F9)', color: 'var(--color-0f172a, #0F172A)', padding: '3px 8px', borderRadius: '4px', fontWeight: 'bold', fontSize: '11px' }}>
                   {scannedContractData.contractDate || 'Unspecified'}
                 </code>
               </div>
@@ -333,119 +333,119 @@ export const HenryDocumentStudio: FC = () => {
             {/* Grouped Extraction Cards Grid */}
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px', marginBottom: '18px' }}>
               {/* Group 1: Landlord */}
-              <div style={{ background: '#F8FAFC', border: '1px solid #E2E8F0', borderRadius: '10px', padding: '14px' }}>
-                <h4 style={{ margin: '0 0 10px 0', fontSize: '13px', fontWeight: 800, color: '#EF4444', display: 'flex', alignItems: 'center', gap: '6px' }}>
+              <div style={{ background: 'var(--color-f8fafc, #F8FAFC)', border: '1px solid var(--text-secondary, #E2E8F0)', borderRadius: '10px', padding: '14px' }}>
+                <h4 style={{ margin: '0 0 10px 0', fontSize: '13px', fontWeight: 800, color: 'var(--accent-red, #EF4444)', display: 'flex', alignItems: 'center', gap: '6px' }}>
                   <Building size={15} /> 1. Landlord / Lessor (معلومات المالك)
                 </h4>
                 <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px', fontSize: '11px' }}>
                   <div>
-                    <span style={{ color: '#64748B', display: 'block' }}>Owner / Lessor Name</span>
-                    <strong style={{ color: '#0F172A', fontSize: '12px' }}>{scannedContractData.landlord.name || '—'}</strong>
+                    <span style={{ color: 'var(--text-secondary, #64748B)', display: 'block' }}>Owner / Lessor Name</span>
+                    <strong style={{ color: 'var(--color-0f172a, #0F172A)', fontSize: '12px' }}>{scannedContractData.landlord.name || '—'}</strong>
                   </div>
                   <div>
-                    <span style={{ color: '#64748B', display: 'block' }}>Emirates ID</span>
-                    <strong style={{ color: '#EF4444', fontFamily: 'monospace' }}>{scannedContractData.landlord.emiratesId || '—'}</strong>
+                    <span style={{ color: 'var(--text-secondary, #64748B)', display: 'block' }}>Emirates ID</span>
+                    <strong style={{ color: 'var(--accent-red, #EF4444)', fontFamily: 'monospace' }}>{scannedContractData.landlord.emiratesId || '—'}</strong>
                   </div>
                   <div>
-                    <span style={{ color: '#64748B', display: 'block' }}>Phone Number</span>
-                    <strong style={{ color: '#0F172A' }}>{scannedContractData.landlord.phone || '—'}</strong>
+                    <span style={{ color: 'var(--text-secondary, #64748B)', display: 'block' }}>Phone Number</span>
+                    <strong style={{ color: 'var(--color-0f172a, #0F172A)' }}>{scannedContractData.landlord.phone || '—'}</strong>
                   </div>
                   <div>
-                    <span style={{ color: '#64748B', display: 'block' }}>Email Address</span>
-                    <strong style={{ color: '#2563EB' }}>{scannedContractData.landlord.email || '—'}</strong>
+                    <span style={{ color: 'var(--text-secondary, #64748B)', display: 'block' }}>Email Address</span>
+                    <strong style={{ color: 'var(--accent-blue, #2563EB)' }}>{scannedContractData.landlord.email || '—'}</strong>
                   </div>
                 </div>
               </div>
 
               {/* Group 2: Tenant */}
-              <div style={{ background: '#F8FAFC', border: '1px solid #E2E8F0', borderRadius: '10px', padding: '14px' }}>
-                <h4 style={{ margin: '0 0 10px 0', fontSize: '13px', fontWeight: 800, color: '#2563EB', display: 'flex', alignItems: 'center', gap: '6px' }}>
+              <div style={{ background: 'var(--color-f8fafc, #F8FAFC)', border: '1px solid var(--text-secondary, #E2E8F0)', borderRadius: '10px', padding: '14px' }}>
+                <h4 style={{ margin: '0 0 10px 0', fontSize: '13px', fontWeight: 800, color: 'var(--accent-blue, #2563EB)', display: 'flex', alignItems: 'center', gap: '6px' }}>
                   <UserCheck size={15} /> 2. Tenant Information (معلومات المستأجر)
                 </h4>
                 <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px', fontSize: '11px' }}>
                   <div>
-                    <span style={{ color: '#64748B', display: 'block' }}>Tenant Name</span>
-                    <strong style={{ color: '#0F172A', fontSize: '12px' }}>{scannedContractData.tenant.name || '—'}</strong>
+                    <span style={{ color: 'var(--text-secondary, #64748B)', display: 'block' }}>Tenant Name</span>
+                    <strong style={{ color: 'var(--color-0f172a, #0F172A)', fontSize: '12px' }}>{scannedContractData.tenant.name || '—'}</strong>
                   </div>
                   <div>
-                    <span style={{ color: '#64748B', display: 'block' }}>Emirates ID</span>
-                    <strong style={{ color: '#2563EB', fontFamily: 'monospace' }}>{scannedContractData.tenant.emiratesId || '—'}</strong>
+                    <span style={{ color: 'var(--text-secondary, #64748B)', display: 'block' }}>Emirates ID</span>
+                    <strong style={{ color: 'var(--accent-blue, #2563EB)', fontFamily: 'monospace' }}>{scannedContractData.tenant.emiratesId || '—'}</strong>
                   </div>
                   <div>
-                    <span style={{ color: '#64748B', display: 'block' }}>Phone Number</span>
-                    <strong style={{ color: '#0F172A' }}>{scannedContractData.tenant.phone || '—'}</strong>
+                    <span style={{ color: 'var(--text-secondary, #64748B)', display: 'block' }}>Phone Number</span>
+                    <strong style={{ color: 'var(--color-0f172a, #0F172A)' }}>{scannedContractData.tenant.phone || '—'}</strong>
                   </div>
                   <div>
-                    <span style={{ color: '#64748B', display: 'block' }}>Email Address</span>
-                    <strong style={{ color: '#2563EB' }}>{scannedContractData.tenant.email || '—'}</strong>
+                    <span style={{ color: 'var(--text-secondary, #64748B)', display: 'block' }}>Email Address</span>
+                    <strong style={{ color: 'var(--accent-blue, #2563EB)' }}>{scannedContractData.tenant.email || '—'}</strong>
                   </div>
                 </div>
               </div>
 
               {/* Group 3: Property Specifications */}
-              <div style={{ background: '#F8FAFC', border: '1px solid #E2E8F0', borderRadius: '10px', padding: '14px' }}>
-                <h4 style={{ margin: '0 0 10px 0', fontSize: '13px', fontWeight: 800, color: '#D97706', display: 'flex', alignItems: 'center', gap: '6px' }}>
+              <div style={{ background: 'var(--color-f8fafc, #F8FAFC)', border: '1px solid var(--text-secondary, #E2E8F0)', borderRadius: '10px', padding: '14px' }}>
+                <h4 style={{ margin: '0 0 10px 0', fontSize: '13px', fontWeight: 800, color: 'var(--accent-gold, #D97706)', display: 'flex', alignItems: 'center', gap: '6px' }}>
                   <Home size={15} /> 3. Property Specifications (معلومات العقار)
                 </h4>
                 <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px', fontSize: '11px' }}>
                   <div>
-                    <span style={{ color: '#64748B', display: 'block' }}>Building & Unit</span>
-                    <strong style={{ color: '#0F172A' }}>{scannedContractData.property.buildingName} Unit {scannedContractData.property.propertyNumber}</strong>
+                    <span style={{ color: 'var(--text-secondary, #64748B)', display: 'block' }}>Building & Unit</span>
+                    <strong style={{ color: 'var(--color-0f172a, #0F172A)' }}>{scannedContractData.property.buildingName} Unit {scannedContractData.property.propertyNumber}</strong>
                   </div>
                   <div>
-                    <span style={{ color: '#64748B', display: 'block' }}>Plot Number</span>
-                    <strong style={{ color: '#0F172A' }}>Plot {scannedContractData.property.plotNumber}</strong>
+                    <span style={{ color: 'var(--text-secondary, #64748B)', display: 'block' }}>Plot Number</span>
+                    <strong style={{ color: 'var(--color-0f172a, #0F172A)' }}>Plot {scannedContractData.property.plotNumber}</strong>
                   </div>
                   <div>
-                    <span style={{ color: '#64748B', display: 'block' }}>Property Type & Usage</span>
-                    <strong style={{ color: '#0F172A' }}>{scannedContractData.property.propertyType} ({scannedContractData.property.usage})</strong>
+                    <span style={{ color: 'var(--text-secondary, #64748B)', display: 'block' }}>Property Type & Usage</span>
+                    <strong style={{ color: 'var(--color-0f172a, #0F172A)' }}>{scannedContractData.property.propertyType} ({scannedContractData.property.usage})</strong>
                   </div>
                   <div>
-                    <span style={{ color: '#64748B', display: 'block' }}>Area (Sq.M / Sq.Ft)</span>
-                    <strong style={{ color: '#16A34A' }}>{scannedContractData.property.areaSqM} m² ({scannedContractData.property.areaSqFt} sq.ft)</strong>
+                    <span style={{ color: 'var(--text-secondary, #64748B)', display: 'block' }}>Area (Sq.M / Sq.Ft)</span>
+                    <strong style={{ color: 'var(--accent-green, #16A34A)' }}>{scannedContractData.property.areaSqM} m² ({scannedContractData.property.areaSqFt} sq.ft)</strong>
                   </div>
                   <div style={{ gridColumn: 'span 2' }}>
-                    <span style={{ color: '#64748B', display: 'block' }}>Location / Community</span>
-                    <strong style={{ color: '#0F172A' }}>{scannedContractData.property.location}</strong>
+                    <span style={{ color: 'var(--text-secondary, #64748B)', display: 'block' }}>Location / Community</span>
+                    <strong style={{ color: 'var(--color-0f172a, #0F172A)' }}>{scannedContractData.property.location}</strong>
                   </div>
                 </div>
               </div>
 
               {/* Group 4: Lease Financials */}
-              <div style={{ background: '#F8FAFC', border: '1px solid #E2E8F0', borderRadius: '10px', padding: '14px' }}>
-                <h4 style={{ margin: '0 0 10px 0', fontSize: '13px', fontWeight: 800, color: '#16A34A', display: 'flex', alignItems: 'center', gap: '6px' }}>
+              <div style={{ background: 'var(--color-f8fafc, #F8FAFC)', border: '1px solid var(--text-secondary, #E2E8F0)', borderRadius: '10px', padding: '14px' }}>
+                <h4 style={{ margin: '0 0 10px 0', fontSize: '13px', fontWeight: 800, color: 'var(--accent-green, #16A34A)', display: 'flex', alignItems: 'center', gap: '6px' }}>
                   <FileText size={15} /> 4. Lease & Financials (معلومات العقد والمالية)
                 </h4>
                 <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px', fontSize: '11px' }}>
                   <div>
-                    <span style={{ color: '#64748B', display: 'block' }}>Lease Period</span>
-                    <strong style={{ color: '#0F172A' }}>{scannedContractData.financials.periodFrom} ➔ {scannedContractData.financials.periodTo}</strong>
+                    <span style={{ color: 'var(--text-secondary, #64748B)', display: 'block' }}>Lease Period</span>
+                    <strong style={{ color: 'var(--color-0f172a, #0F172A)' }}>{scannedContractData.financials.periodFrom} ➔ {scannedContractData.financials.periodTo}</strong>
                   </div>
                   <div>
-                    <span style={{ color: '#64748B', display: 'block' }}>Annual Rent</span>
-                    <strong style={{ color: '#16A34A', fontSize: '13px' }}>AED {scannedContractData.financials.annualRentAed.toLocaleString()}</strong>
+                    <span style={{ color: 'var(--text-secondary, #64748B)', display: 'block' }}>Annual Rent</span>
+                    <strong style={{ color: 'var(--accent-green, #16A34A)', fontSize: '13px' }}>AED {scannedContractData.financials.annualRentAed.toLocaleString()}</strong>
                   </div>
                   <div>
-                    <span style={{ color: '#64748B', display: 'block' }}>Security Deposit</span>
-                    <strong style={{ color: '#D97706' }}>AED {scannedContractData.financials.securityDepositAed.toLocaleString()}</strong>
+                    <span style={{ color: 'var(--text-secondary, #64748B)', display: 'block' }}>Security Deposit</span>
+                    <strong style={{ color: 'var(--accent-gold, #D97706)' }}>AED {scannedContractData.financials.securityDepositAed.toLocaleString()}</strong>
                   </div>
                   <div>
-                    <span style={{ color: '#64748B', display: 'block' }}>Mode of Payment</span>
-                    <strong style={{ color: '#0F172A' }}>{scannedContractData.financials.modeOfPayment}</strong>
+                    <span style={{ color: 'var(--text-secondary, #64748B)', display: 'block' }}>Mode of Payment</span>
+                    <strong style={{ color: 'var(--color-0f172a, #0F172A)' }}>{scannedContractData.financials.modeOfPayment}</strong>
                   </div>
                 </div>
               </div>
             </div>
 
             {/* Group 5: Additional Terms / Addenda */}
-            <div style={{ background: '#F8FAFC', border: '1px solid #E2E8F0', borderRadius: '10px', padding: '14px', marginBottom: '18px' }}>
-              <h4 style={{ margin: '0 0 8px 0', fontSize: '13px', fontWeight: 800, color: '#475569' }}>
+            <div style={{ background: 'var(--color-f8fafc, #F8FAFC)', border: '1px solid var(--text-secondary, #E2E8F0)', borderRadius: '10px', padding: '14px', marginBottom: '18px' }}>
+              <h4 style={{ margin: '0 0 8px 0', fontSize: '13px', fontWeight: 800, color: 'var(--color-475569, #475569)' }}>
                 📜 Additional Special Terms & Addenda (شروط إضافية ملحقة بالعقد)
               </h4>
               <div style={{ display: 'flex', flexDirection: 'column', gap: '4px', fontSize: '11px' }}>
                 {scannedContractData.additionalTerms.map((term, i) => (
-                  <div key={i} style={{ display: 'flex', gap: '6px', color: '#1E293B' }}>
-                    <span style={{ color: '#16A34A', fontWeight: 800 }}>✓</span>
+                  <div key={i} style={{ display: 'flex', gap: '6px', color: 'var(--color-1e293b, #1E293B)' }}>
+                    <span style={{ color: 'var(--accent-green, #16A34A)', fontWeight: 800 }}>✓</span>
                     <span>{term}</span>
                   </div>
                 ))}
@@ -465,7 +465,7 @@ export const HenryDocumentStudio: FC = () => {
                 alignItems: 'center',
               }}
             >
-              <span style={{ fontSize: '12px', fontWeight: 800, color: '#334155', marginRight: '6px' }}>
+              <span style={{ fontSize: '12px', fontWeight: 800, color: 'var(--color-334155, #334155)', marginRight: '6px' }}>
                 1-Click Platform Actions:
               </span>
               <ActionButton $primary onClick={handleLoadContractIntoPreparationStudio}>
@@ -506,14 +506,14 @@ export const HenryDocumentStudio: FC = () => {
                   >
                     ICAO 9303 TD3 PASSPORT SCANNER
                   </span>
-                  <span style={{ fontSize: '11px', color: '#16A34A', fontWeight: 800 }}>
+                  <span style={{ fontSize: '11px', color: 'var(--accent-green, #16A34A)', fontWeight: 800 }}>
                     10-YEAR VALIDITY KYC VERIFIED
                   </span>
                 </div>
-                <h3 style={{ margin: '6px 0 2px', color: '#1E293B', fontSize: '18px' }}>
+                <h3 style={{ margin: '6px 0 2px', color: 'var(--color-1e293b, #1E293B)', fontSize: '18px' }}>
                   International Passport & goAML KYC Ingestion Hub
                 </h3>
-                <p style={{ margin: 0, color: '#64748B', fontSize: '12px' }}>
+                <p style={{ margin: 0, color: 'var(--text-secondary, #64748B)', fontSize: '12px' }}>
                   Extracts 16+ discrete fields: Passport No, National ID (CNIC), Surname, Father Name, DOB, POB, Authority, and 2-line TD3 MRZ.
                 </p>
               </div>
@@ -610,7 +610,7 @@ export const HenryDocumentStudio: FC = () => {
                 <div style={{ fontSize: '12px', lineHeight: 1.8 }}>
                   <div>
                     <strong>Passport Number:</strong>{' '}
-                    <code style={{ background: '#FEF2F2', color: '#991B1B', padding: '2px 6px', borderRadius: '4px', fontWeight: 'bold' }}>
+                    <code style={{ background: 'var(--color-fef2f2, #FEF2F2)', color: 'var(--color-991b1b, #991B1B)', padding: '2px 6px', borderRadius: '4px', fontWeight: 'bold' }}>
                       {passportData.passportNumber}
                     </code>
                   </div>
@@ -656,7 +656,7 @@ export const HenryDocumentStudio: FC = () => {
                 <div style={{ fontSize: '12px', lineHeight: 1.8 }}>
                   <div>
                     <strong>Full Name:</strong>{' '}
-                    <span style={{ fontWeight: 'bold', color: '#1E293B' }}>{passportData.fullName}</span>
+                    <span style={{ fontWeight: 'bold', color: 'var(--color-1e293b, #1E293B)' }}>{passportData.fullName}</span>
                   </div>
                   <div>
                     <strong>Surname:</strong> {passportData.surname} | <strong>Given:</strong> {passportData.givenNames}
@@ -666,7 +666,7 @@ export const HenryDocumentStudio: FC = () => {
                   </div>
                   <div>
                     <strong>National ID / CNIC:</strong>{' '}
-                    <code style={{ background: '#EFF6FF', color: '#1D4ED8', padding: '2px 6px', borderRadius: '4px', fontWeight: 'bold' }}>
+                    <code style={{ background: 'var(--color-eff6ff, #EFF6FF)', color: 'var(--accent-blue, #1D4ED8)', padding: '2px 6px', borderRadius: '4px', fontWeight: 'bold' }}>
                       {passportData.nationalIdentityNumber}
                     </code>
                   </div>
@@ -706,7 +706,7 @@ export const HenryDocumentStudio: FC = () => {
                   </div>
                   <div>
                     <strong>Date of Expiry:</strong>{' '}
-                    <span style={{ color: '#16A34A', fontWeight: 'bold' }}>{passportData.dateOfExpiry}</span>
+                    <span style={{ color: 'var(--accent-green, #16A34A)', fontWeight: 'bold' }}>{passportData.dateOfExpiry}</span>
                   </div>
                   <div>
                     <strong>Validity Period:</strong> {passportData.validityYears} Years (Active & Valid)
@@ -784,14 +784,14 @@ export const HenryDocumentStudio: FC = () => {
                   >
                     DLD TITLE DEED AI SCANNER
                   </span>
-                  <span style={{ fontSize: '11px', color: '#16A34A', fontWeight: 800 }}>
+                  <span style={{ fontSize: '11px', color: 'var(--accent-green, #16A34A)', fontWeight: 800 }}>
                     BLOCKCHAIN VERIFIED (شهادة ملكية عقار)
                   </span>
                 </div>
-                <h3 style={{ margin: '6px 0 2px', color: '#1E293B', fontSize: '18px' }}>
+                <h3 style={{ margin: '6px 0 2px', color: 'var(--color-1e293b, #1E293B)', fontSize: '18px' }}>
                   Dubai Land Department (DLD) Title Deed Ingestion Hub
                 </h3>
-                <p style={{ margin: 0, color: '#64748B', fontSize: '12px' }}>
+                <p style={{ margin: 0, color: 'var(--text-secondary, #64748B)', fontSize: '12px' }}>
                   Extracts 22+ discrete properties: Community, Unit, Areas, Owner DLD ID, Contract No, and Purchase Price in AED.
                 </p>
               </div>
@@ -891,11 +891,11 @@ export const HenryDocumentStudio: FC = () => {
                   </div>
                   <div>
                     <strong>Building:</strong>{' '}
-                    <span style={{ fontWeight: 'bold', color: '#EF4444' }}>{titleDeedData.buildingNameEn}</span> ({titleDeedData.buildingNameAr}), Bldg #{titleDeedData.buildingNumber}
+                    <span style={{ fontWeight: 'bold', color: 'var(--accent-red, #EF4444)' }}>{titleDeedData.buildingNameEn}</span> ({titleDeedData.buildingNameAr}), Bldg #{titleDeedData.buildingNumber}
                   </div>
                   <div>
                     <strong>Unit / Property No:</strong>{' '}
-                    <code style={{ background: '#FEF2F2', color: '#991B1B', padding: '2px 6px', borderRadius: '4px', fontWeight: 'bold' }}>
+                    <code style={{ background: 'var(--color-fef2f2, #FEF2F2)', color: 'var(--color-991b1b, #991B1B)', padding: '2px 6px', borderRadius: '4px', fontWeight: 'bold' }}>
                       Unit {titleDeedData.propertyNumber}
                     </code> (Floor {titleDeedData.floorNumber})
                   </div>
@@ -938,11 +938,11 @@ export const HenryDocumentStudio: FC = () => {
                   </div>
                   <div>
                     <strong>Total Area (Sq Meters):</strong>{' '}
-                    <span style={{ fontWeight: 'bold', color: '#2563EB' }}>{titleDeedData.totalAreaSqM} m²</span>
+                    <span style={{ fontWeight: 'bold', color: 'var(--accent-blue, #2563EB)' }}>{titleDeedData.totalAreaSqM} m²</span>
                   </div>
                   <div>
                     <strong>Total Area (Sq Feet):</strong>{' '}
-                    <span style={{ fontWeight: 'bold', color: '#1E293B' }}>{titleDeedData.totalAreaSqFt} sq.ft</span>
+                    <span style={{ fontWeight: 'bold', color: 'var(--color-1e293b, #1E293B)' }}>{titleDeedData.totalAreaSqFt} sq.ft</span>
                   </div>
                   <div>
                     <strong>Common Area:</strong> {titleDeedData.commonAreaSqM} m²
@@ -974,7 +974,7 @@ export const HenryDocumentStudio: FC = () => {
                 <div style={{ fontSize: '12px', lineHeight: 1.8 }}>
                   <div>
                     <strong>Owner DLD No:</strong>{' '}
-                    <code style={{ background: '#F0FDF4', color: '#166534', padding: '2px 6px', borderRadius: '4px', fontWeight: 'bold' }}>
+                    <code style={{ background: 'var(--color-f0fdf4, #F0FDF4)', color: 'var(--color-166534, #166534)', padding: '2px 6px', borderRadius: '4px', fontWeight: 'bold' }}>
                       {titleDeedData.ownerDldNumber}
                     </code>
                   </div>
@@ -983,7 +983,7 @@ export const HenryDocumentStudio: FC = () => {
                   </div>
                   <div>
                     <strong>Owner Name (AR):</strong>{' '}
-                    <span style={{ fontWeight: 'bold', color: '#1E293B' }}>{titleDeedData.ownerNameAr}</span>
+                    <span style={{ fontWeight: 'bold', color: 'var(--color-1e293b, #1E293B)' }}>{titleDeedData.ownerNameAr}</span>
                   </div>
                   <div>
                     <strong>Ownership Share:</strong> {titleDeedData.ownerSharePercent}% ({titleDeedData.ownedAreaSqM} m²)
@@ -1016,7 +1016,7 @@ export const HenryDocumentStudio: FC = () => {
                 >
                   4. CONVEYANCING & PURCHASE CONTRACT
                 </div>
-                <div style={{ fontSize: '12px', lineHeight: 1.8, color: '#E2E8F0' }}>
+                <div style={{ fontSize: '12px', lineHeight: 1.8, color: 'var(--text-secondary, #E2E8F0)' }}>
                   <div>
                     <strong>Purchased From:</strong> {titleDeedData.purchasedFromEn}
                   </div>
@@ -1028,11 +1028,11 @@ export const HenryDocumentStudio: FC = () => {
                   </div>
                   <div>
                     <strong>Purchase Price:</strong>{' '}
-                    <span style={{ color: '#FACC15', fontWeight: 'bold', fontSize: '14px' }}>
+                    <span style={{ color: 'var(--color-facc15, #FACC15)', fontWeight: 'bold', fontSize: '14px' }}>
                       AED {titleDeedData.purchasePriceAed.toLocaleString()}
                     </span>
                   </div>
-                  <div style={{ fontSize: '11px', color: '#94A3B8', marginTop: '4px' }}>
+                  <div style={{ fontSize: '11px', color: 'var(--color-94a3b8, #94A3B8)', marginTop: '4px' }}>
                     <em>"{titleDeedData.purchasePriceWordsEn}"</em>
                   </div>
                 </div>
@@ -1066,14 +1066,14 @@ export const HenryDocumentStudio: FC = () => {
                   >
                     ICP OPTICAL AI SCANNER
                   </span>
-                  <span style={{ fontSize: '11px', color: '#16A34A', fontWeight: 800 }}>
+                  <span style={{ fontSize: '11px', color: 'var(--accent-green, #16A34A)', fontWeight: 800 }}>
                     100% OCR & MRZ ACCURACY
                   </span>
                 </div>
-                <h3 style={{ margin: '6px 0 2px', color: '#1E293B', fontSize: '18px' }}>
+                <h3 style={{ margin: '6px 0 2px', color: 'var(--color-1e293b, #1E293B)', fontSize: '18px' }}>
                   UAE Resident Identity Card (Emirates ID) Ingestion Hub
                 </h3>
-                <p style={{ margin: 0, color: '#64748B', fontSize: '12px' }}>
+                <p style={{ margin: 0, color: 'var(--text-secondary, #64748B)', fontSize: '12px' }}>
                   Extracts all 18 discrete fields, bilingual Arabic/English names, employer, and ICAO 9303 TD1 MRZ.
                 </p>
               </div>
@@ -1190,7 +1190,7 @@ export const HenryDocumentStudio: FC = () => {
                   </div>
                   <div>
                     <strong>Name (Arabic):</strong>{' '}
-                    <span style={{ fontWeight: 'bold', color: '#1E293B' }}>{eidData.fullNameAr}</span>
+                    <span style={{ fontWeight: 'bold', color: 'var(--color-1e293b, #1E293B)' }}>{eidData.fullNameAr}</span>
                   </div>
                 </div>
               </div>
@@ -1231,7 +1231,7 @@ export const HenryDocumentStudio: FC = () => {
                   </div>
                   <div>
                     <strong>Card Expiry Date:</strong>{' '}
-                    <span style={{ color: '#16A34A', fontWeight: 'bold' }}>{eidData.expiryDate}</span> (Valid)
+                    <span style={{ color: 'var(--accent-green, #16A34A)', fontWeight: 'bold' }}>{eidData.expiryDate}</span> (Valid)
                   </div>
                 </div>
               </div>

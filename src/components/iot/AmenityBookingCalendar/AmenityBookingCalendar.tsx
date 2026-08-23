@@ -150,20 +150,20 @@ export const AmenityBookingCalendar: FC = () => {
               onClick={() => { setSelectedAmenity(a.id); setConfirmed(false); }}
             >
               <span>{a.name}</span>
-              <span style={{ fontSize: '0.62rem', color: '#64748B' }}>{a.location}</span>
+              <span style={{ fontSize: '0.62rem', color: 'var(--text-secondary, #64748B)' }}>{a.location}</span>
             </AmenityBtn>
           ))}
         </AmenitySelector>
 
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-          <div style={{ fontSize: '0.72rem', color: '#94A3B8', fontWeight: 700, textTransform: 'uppercase' }}>
+          <div style={{ fontSize: '0.72rem', color: 'var(--color-94a3b8, #94A3B8)', fontWeight: 700, textTransform: 'uppercase' }}>
             Available Time Slots for {bookingDate}
           </div>
           <input 
             type="date" 
             value={bookingDate} 
             onChange={e => setBookingDate(e.target.value)}
-            style={{ padding: '6px 10px', background: 'rgba(15,23,42,0.8)', border: '1px solid rgba(100,116,139,0.25)', color: '#FFF', borderRadius: '6px', fontSize: '0.75rem' }} 
+            style={{ padding: '6px 10px', background: 'rgba(15,23,42,0.8)', border: '1px solid rgba(100,116,139,0.25)', color: 'var(--white, #FFF)', borderRadius: '6px', fontSize: '0.75rem' }} 
           />
         </div>
 
@@ -176,7 +176,7 @@ export const AmenityBookingCalendar: FC = () => {
               onClick={() => !s.booked && setSelectedSlot(s.time)}
             >
               <div>{s.time}</div>
-              <div style={{ fontSize: '0.62rem', color: s.booked ? '#EF4444' : '#10B981', marginTop: '2px' }}>
+              <div style={{ fontSize: '0.62rem', color: s.booked ? 'var(--accent-red, #EF4444)' : 'var(--accent-green, #10B981)', marginTop: '2px' }}>
                 {s.booked ? 'RESERVED' : 'FREE'}
               </div>
             </SlotCard>
@@ -184,7 +184,7 @@ export const AmenityBookingCalendar: FC = () => {
         </SlotGrid>
 
         {confirmed ? (
-          <div style={{ padding: '14px', borderRadius: '10px', background: 'rgba(16, 185, 129, 0.1)', border: '1px solid rgba(16, 185, 129, 0.3)', textAlign: 'center', color: '#10B981', fontWeight: 800, fontSize: '0.82rem' }}>
+          <div style={{ padding: '14px', borderRadius: '10px', background: 'rgba(16, 185, 129, 0.1)', border: '1px solid rgba(16, 185, 129, 0.3)', textAlign: 'center', color: 'var(--accent-green, #10B981)', fontWeight: 800, fontSize: '0.82rem' }}>
             ✓ Reservation Confirmed for {selectedSlot} on {bookingDate}! Digital Access QR Pass Generated.
           </div>
         ) : (

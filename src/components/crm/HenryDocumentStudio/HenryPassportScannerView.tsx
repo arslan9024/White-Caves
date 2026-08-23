@@ -378,7 +378,7 @@ export const HenryPassportScannerView: FC = () => {
     <ViewContainer>
       {/* Status Feedback Banner */}
       {statusMsg && (
-        <div style={{ background: '#0F172A', color: '#38BDF8', padding: '8px 16px', borderRadius: '8px', fontSize: '0.82rem', fontWeight: 700 }}>
+        <div style={{ background: 'var(--color-0f172a, #0F172A)', color: 'var(--color-38bdf8, #38BDF8)', padding: '8px 16px', borderRadius: '8px', fontSize: '0.82rem', fontWeight: 700 }}>
           ⚡ {statusMsg}
         </div>
       )}
@@ -399,10 +399,10 @@ export const HenryPassportScannerView: FC = () => {
           {extractedData && (
             <FormCard>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                <h4 style={{ margin: 0, fontSize: '0.95rem', fontWeight: 800, color: '#0F172A' }}>
+                <h4 style={{ margin: 0, fontSize: '0.95rem', fontWeight: 800, color: 'var(--color-0f172a, #0F172A)' }}>
                   Extracted Passport Variables Form
                 </h4>
-                <span style={{ fontSize: '0.75rem', color: '#2563EB', fontWeight: 800 }}>
+                <span style={{ fontSize: '0.75rem', color: 'var(--accent-blue, #2563EB)', fontWeight: 800 }}>
                   ✓ ICAO TD3 MRZ Verified
                 </span>
               </div>
@@ -421,7 +421,7 @@ export const HenryPassportScannerView: FC = () => {
                   <input
                     type="text"
                     value={extractedData.passportNumber}
-                    style={{ fontFamily: 'monospace', fontWeight: 800, color: '#2563EB' }}
+                    style={{ fontFamily: 'monospace', fontWeight: 800, color: 'var(--accent-blue, #2563EB)' }}
                     onChange={(e) => handleUpdateField('passportNumber', e.target.value)}
                   />
                 </FormGroup>
@@ -496,7 +496,7 @@ export const HenryPassportScannerView: FC = () => {
 
               {extractedData.mrz && (
                 <div>
-                  <div style={{ fontSize: '0.72rem', fontWeight: 800, color: '#64748B', marginBottom: '4px' }}>
+                  <div style={{ fontSize: '0.72rem', fontWeight: 800, color: 'var(--text-secondary, #64748B)', marginBottom: '4px' }}>
                     RAW MACHINE READABLE ZONE (MRZ TD3 - 2 LINES):
                   </div>
                   <MrzBox>
@@ -519,20 +519,20 @@ export const HenryPassportScannerView: FC = () => {
               <button
                 type="button"
                 onClick={() => setZoomLevel(prev => Math.max(70, prev - 15))}
-                style={{ background: 'rgba(255,255,255,0.15)', color: '#FFF', border: 'none', borderRadius: '4px', padding: '2px 6px', fontSize: '0.7rem', cursor: 'pointer' }}
+                style={{ background: 'rgba(255,255,255,0.15)', color: 'var(--white, #FFF)', border: 'none', borderRadius: '4px', padding: '2px 6px', fontSize: '0.7rem', cursor: 'pointer' }}
               >
                 -
               </button>
-              <span style={{ fontSize: '0.72rem', color: '#94A3B8' }}>{zoomLevel}%</span>
+              <span style={{ fontSize: '0.72rem', color: 'var(--color-94a3b8, #94A3B8)' }}>{zoomLevel}%</span>
               <button
                 type="button"
                 onClick={() => setZoomLevel(prev => Math.min(180, prev + 15))}
-                style={{ background: 'rgba(255,255,255,0.15)', color: '#FFF', border: 'none', borderRadius: '4px', padding: '2px 6px', fontSize: '0.7rem', cursor: 'pointer' }}
+                style={{ background: 'rgba(255,255,255,0.15)', color: 'var(--white, #FFF)', border: 'none', borderRadius: '4px', padding: '2px 6px', fontSize: '0.7rem', cursor: 'pointer' }}
               >
                 +
               </button>
               {uploadedFile && (
-                <span style={{ fontSize: '0.72rem', color: '#94A3B8', marginLeft: '6px' }}>
+                <span style={{ fontSize: '0.72rem', color: 'var(--color-94a3b8, #94A3B8)', marginLeft: '6px' }}>
                   {uploadedFile.name} ({(uploadedFile.size / 1024).toFixed(1)} KB)
                 </span>
               )}
@@ -576,9 +576,9 @@ export const HenryPassportScannerView: FC = () => {
                 </div>
               </PassportDigitalCard>
             ) : (
-              <div style={{ textAlign: 'center', color: '#94A3B8', padding: '3rem 1rem' }}>
+              <div style={{ textAlign: 'center', color: 'var(--color-94a3b8, #94A3B8)', padding: '3rem 1rem' }}>
                 <Flag size={48} color="#94A3B8" style={{ margin: '0 auto 12px auto' }} />
-                <div style={{ fontWeight: 800, fontSize: '0.95rem', color: '#334155' }}>
+                <div style={{ fontWeight: 800, fontSize: '0.95rem', color: 'var(--color-334155, #334155)' }}>
                   No Passport Uploaded Yet
                 </div>
                 <div style={{ fontSize: '0.8rem', marginTop: '4px' }}>

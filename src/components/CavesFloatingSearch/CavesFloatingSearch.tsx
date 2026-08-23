@@ -89,7 +89,7 @@ export const CavesFloatingSearch: React.FC = () => {
             </ModalCategoryPills>
 
             <ResultsList>
-              <div style={{ padding: '4px 0', fontSize: '0.75rem', fontWeight: 700, color: '#94A3B8', display: 'flex', alignItems: 'center', gap: '6px' }}>
+              <div style={{ padding: '4px 0', fontSize: '0.75rem', fontWeight: 700, color: 'var(--color-94a3b8, #94A3B8)', display: 'flex', alignItems: 'center', gap: '6px' }}>
                 <Sparkles size={14} color="#EF4444" />
                 <span>{SEARCH_MODAL_TEXT.trendingLabel}</span>
               </div>

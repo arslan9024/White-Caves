@@ -99,7 +99,7 @@ export const ScheduleViewingSidebarWidget: FC<{ propertyTitle?: string }> = ({
   return (
     <WidgetCard data-testid="schedule-viewing-sidebar-widget">
       <WTitle>📅 Schedule Private Viewing</WTitle>
-      <div style={{ fontSize: '0.72rem', color: '#94A3B8' }}>{propertyTitle}</div>
+      <div style={{ fontSize: '0.72rem', color: 'var(--color-94a3b8, #94A3B8)' }}>{propertyTitle}</div>
 
       <Field>
         <FLabel>Preferred Date</FLabel>
@@ -127,7 +127,7 @@ export const ScheduleViewingSidebarWidget: FC<{ propertyTitle?: string }> = ({
       </Field>
 
       {booked ? (
-        <div style={{ padding: '10px', borderRadius: '8px', background: 'rgba(16, 185, 129, 0.15)', border: '1px solid #10B981', color: '#10B981', fontSize: '0.75rem', fontWeight: 800, textAlign: 'center' }}>
+        <div style={{ padding: '10px', borderRadius: '8px', background: 'rgba(16, 185, 129, 0.15)', border: '1px solid var(--accent-green, #10B981)', color: 'var(--accent-green, #10B981)', fontSize: '0.75rem', fontWeight: 800, textAlign: 'center' }}>
           ✓ VIP Viewing Requested for {date} at {slot}! Senior broker assigned.
         </div>
       ) : (

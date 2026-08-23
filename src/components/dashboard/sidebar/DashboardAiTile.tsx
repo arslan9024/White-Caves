@@ -74,7 +74,7 @@ export const DashboardAiTile: FC<DashboardAiTileProps> = ({
         <div style={{ paddingLeft: '0.5rem', marginTop: '0.5rem', display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
           {/* Team Squad Toggle Bar */}
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '2px 4px' }}>
-            <span style={{ fontSize: '0.68rem', fontWeight: 800, color: '#64748B', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
+            <span style={{ fontSize: '0.68rem', fontWeight: 800, color: 'var(--text-secondary, #64748B)', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
               🏢 AI Teams ({AI_TEAMS_STRUCTURE.length})
             </span>
             <button
@@ -187,15 +187,15 @@ export const DashboardAiTile: FC<DashboardAiTileProps> = ({
             }}
           >
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '0.8rem', fontWeight: 800, color: '#8B5CF6' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '0.8rem', fontWeight: 800, color: 'var(--accent-purple, #8B5CF6)' }}>
                 <span>{selectedAi.icon}</span>
                 <span>{selectedAi.name}</span>
               </div>
-              <span style={{ fontSize: '0.68rem', fontWeight: 800, color: '#8B5CF6', background: 'rgba(139, 92, 246, 0.12)', padding: '1px 6px', borderRadius: '4px' }}>
+              <span style={{ fontSize: '0.68rem', fontWeight: 800, color: 'var(--accent-purple, #8B5CF6)', background: 'rgba(139, 92, 246, 0.12)', padding: '1px 6px', borderRadius: '4px' }}>
                 {selectedAi.num}
               </span>
             </div>
-            <div style={{ fontSize: '0.73rem', color: '#64748B', marginTop: '2px' }}>
+            <div style={{ fontSize: '0.73rem', color: 'var(--text-secondary, #64748B)', marginTop: '2px' }}>
               {selectedAi.role}
             </div>
           </div>
@@ -203,7 +203,7 @@ export const DashboardAiTile: FC<DashboardAiTileProps> = ({
           {/* AI Assistant Sub-Items / Modules (e.g. 3.19.1 Prepare Tenancy Contract) */}
           {selectedAi.items && selectedAi.items.length > 0 && (
             <div style={{ display: 'flex', flexDirection: 'column', gap: '4px', marginTop: '4px' }}>
-              <div style={{ fontSize: '0.7rem', fontWeight: 800, color: '#94A3B8', textTransform: 'uppercase', paddingLeft: '4px' }}>
+              <div style={{ fontSize: '0.7rem', fontWeight: 800, color: 'var(--color-94a3b8, #94A3B8)', textTransform: 'uppercase', paddingLeft: '4px' }}>
                 {selectedAi.name} Modules ({selectedAi.items.length})
               </div>
               {selectedAi.items.map((subItem) => (

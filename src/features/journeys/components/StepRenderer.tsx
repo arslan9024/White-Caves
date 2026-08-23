@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { JourneyStep, JourneySession, JourneyDefinition } from '../../../types/journey';
+import { JourneyStep, JourneySession, JourneyDefinition, JourneyResultOutcome } from '../../../types/journey';
 import henryTenancyContractTemplateService, { DldTenancyContractData } from '../../../services/HenryTenancyContractTemplateService';
 import henryTenancyContractScannerService from '../../../services/HenryTenancyContractScannerService';
 import henryTitleDeedScannerService from '../../../services/HenryTitleDeedScannerService';
@@ -10,9 +10,9 @@ interface StepRendererProps {
   step: JourneyStep;
   session: JourneySession;
   definition: JourneyDefinition;
-  onUpdateData: (patch: Record<string, any>) => void;
+  onUpdateData: (patch: Record<string, unknown>) => void;
   onNext: () => void;
-  onComplete: (resultPayload: any) => void;
+  onComplete: (resultPayload: JourneyResultOutcome) => void;
   onLaunchNextJourney: (journeyId: string) => void;
 }
 

@@ -114,7 +114,7 @@ export const BulkUnitReservationLock: FC = () => {
         <Tag>LAUNCH DAY MULTI-LOCK</Tag>
       </Head>
       <Body>
-        <div style={{ fontSize: '0.72rem', color: '#94A3B8' }}>
+        <div style={{ fontSize: '0.72rem', color: 'var(--color-94a3b8, #94A3B8)' }}>
           Real-time developer launch day unit reservation engine with 15-minute token lock timers to prevent double-booking during high-traffic off-plan launches.
         </div>
 
@@ -126,7 +126,7 @@ export const BulkUnitReservationLock: FC = () => {
               onClick={() => lockUnit(unit.id)}
             >
               <UnitNum>Unit {unit.id}</UnitNum>
-              <div style={{ fontSize: '0.65rem', color: '#CBD5E1' }}>{unit.type}</div>
+              <div style={{ fontSize: '0.65rem', color: 'var(--text-secondary, #CBD5E1)' }}>{unit.type}</div>
               <UnitPrice>{unit.price}</UnitPrice>
               <UnitStatus $status={unit.status}>
                 {unit.status === 'locked' ? '🔒 LOCKED (15M)' : unit.status === 'sold' ? 'SOLD' : 'AVAILABLE (CLICK TO LOCK)'}

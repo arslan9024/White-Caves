@@ -49,11 +49,11 @@ export const FormADigitalGenerator: FC = () => {
             <p><strong>Listing Type:</strong> {form.exclusivity === 'exclusive' ? 'Exclusive (90-day lock-in)' : 'Open Listing'}</p>
             <p><strong>Validity:</strong> {form.validityDays} days from date of signing</p>
             <p><strong>Agent:</strong> {form.agentName} — BRN {form.agentBrn}</p>
-            <p style={{ marginTop: '2rem', borderTop: '1px solid #e2e8f0', paddingTop: '1rem', color: '#94a3b8', fontSize: '0.75rem' }}>
+            <p style={{ marginTop: '2rem', borderTop: '1px solid var(--text-secondary, #e2e8f0)', paddingTop: '1rem', color: 'var(--color-94a3b8, #94a3b8)', fontSize: '0.75rem' }}>
               This form complies with RERA Regulations under Dubai Law No. 85 of 2006.
             </p>
           </Preview>
-          <button onClick={handleReset} style={{ marginTop: '0.75rem', background: 'none', border: 'none', color: '#ef4444', cursor: 'pointer', fontWeight: 600 }}>
+          <button onClick={handleReset} style={{ marginTop: '0.75rem', background: 'none', border: 'none', color: 'var(--accent-red, #ef4444)', cursor: 'pointer', fontWeight: 600 }}>
             ← Generate New Form A
           </button>
         </>

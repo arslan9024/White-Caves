@@ -69,7 +69,7 @@ export const OffPlanRiskCalculator: FC = () => {
     <Wrapper data-testid="offplan-risk-calculator">
       <Header>
         <Title>⚠️ Off-Plan Completion Risk Calculator</Title>
-        <div style={{ fontSize: '0.72rem', color: '#64748B' }}>AEGIS Risk Engine v2</div>
+        <div style={{ fontSize: '0.72rem', color: 'var(--text-secondary, #64748B)' }}>AEGIS Risk Engine v2</div>
       </Header>
       <Body>
         <SliderGroup>

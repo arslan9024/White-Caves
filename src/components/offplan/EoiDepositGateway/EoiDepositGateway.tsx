@@ -183,26 +183,26 @@ export const EoiDepositGateway: FC = () => {
 
         <EoiBox>
           <div>
-            <div style={{ fontSize: '0.65rem', color: '#94A3B8', textTransform: 'uppercase', fontWeight: 700 }}>Refundable EOI Token</div>
+            <div style={{ fontSize: '0.65rem', color: 'var(--color-94a3b8, #94A3B8)', textTransform: 'uppercase', fontWeight: 700 }}>Refundable EOI Token</div>
             <TokenAmount>AED {Number(tokenAmountAed).toLocaleString()}</TokenAmount>
           </div>
           <div>
-            <div style={{ fontSize: '0.65rem', color: '#94A3B8', textTransform: 'uppercase', fontWeight: 700 }}>Queue Priority</div>
-            <div style={{ fontSize: '1.1rem', fontWeight: 900, color: '#10B981', marginTop: '2px' }}>Tier 1 VIP</div>
+            <div style={{ fontSize: '0.65rem', color: 'var(--color-94a3b8, #94A3B8)', textTransform: 'uppercase', fontWeight: 700 }}>Queue Priority</div>
+            <div style={{ fontSize: '1.1rem', fontWeight: 900, color: 'var(--accent-green, #10B981)', marginTop: '2px' }}>Tier 1 VIP</div>
           </div>
           <div>
-            <div style={{ fontSize: '0.65rem', color: '#94A3B8', textTransform: 'uppercase', fontWeight: 700 }}>Refund Guarantee</div>
-            <div style={{ fontSize: '1.1rem', fontWeight: 900, color: '#FFF', marginTop: '2px' }}>100% Escrow</div>
+            <div style={{ fontSize: '0.65rem', color: 'var(--color-94a3b8, #94A3B8)', textTransform: 'uppercase', fontWeight: 700 }}>Refund Guarantee</div>
+            <div style={{ fontSize: '1.1rem', fontWeight: 900, color: 'var(--white, #FFF)', marginTop: '2px' }}>100% Escrow</div>
           </div>
         </EoiBox>
 
         {submitted ? (
           <div style={{ padding: '16px', borderRadius: '12px', background: 'rgba(16, 185, 129, 0.1)', border: '1px solid rgba(16, 185, 129, 0.3)', textAlign: 'center' }}>
             <div style={{ fontSize: '1.2rem', marginBottom: '4px' }}>✅</div>
-            <div style={{ fontSize: '0.9rem', fontWeight: 800, color: '#10B981' }}>
+            <div style={{ fontSize: '0.9rem', fontWeight: 800, color: 'var(--accent-green, #10B981)' }}>
               EOI Token Received & Priority Queue Locked!
             </div>
-            <div style={{ fontSize: '0.72rem', color: '#CBD5E1', marginTop: '4px' }}>
+            <div style={{ fontSize: '0.72rem', color: 'var(--text-secondary, #CBD5E1)', marginTop: '4px' }}>
               Receipt Ref: EOI-EMAAR-2026-9481 | Token allocated to {buyerName}
             </div>
           </div>

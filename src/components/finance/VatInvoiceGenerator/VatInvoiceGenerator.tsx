@@ -115,9 +115,9 @@ export const VatInvoiceGenerator: FC = () => {
                 <LogoSub>License: 801362 | RERA: 12548 | Dubai, UAE</LogoSub>
               </LogoBlock>
               <div style={{ textAlign: 'right' }}>
-                <div style={{ fontSize: '0.68rem', color: '#64748B' }}>TAX INVOICE</div>
-                <div style={{ fontSize: '0.68rem', color: '#94A3B8', fontWeight: 700 }}>{invoiceData.invoiceNumber}</div>
-                <div style={{ fontSize: '0.65rem', color: '#475569' }}>{new Date(invoiceData.date).toLocaleDateString('en-AE')}</div>
+                <div style={{ fontSize: '0.68rem', color: 'var(--text-secondary, #64748B)' }}>TAX INVOICE</div>
+                <div style={{ fontSize: '0.68rem', color: 'var(--color-94a3b8, #94A3B8)', fontWeight: 700 }}>{invoiceData.invoiceNumber}</div>
+                <div style={{ fontSize: '0.65rem', color: 'var(--color-475569, #475569)' }}>{new Date(invoiceData.date).toLocaleDateString('en-AE')}</div>
               </div>
             </InvoiceHeader>
             <Divider />
@@ -125,7 +125,7 @@ export const VatInvoiceGenerator: FC = () => {
             <InvoiceLine><LineLabel>Service:</LineLabel><LineValue>{serviceDesc}</LineValue></InvoiceLine>
             <Divider />
             <InvoiceLine><LineLabel>Net Amount:</LineLabel><LineValue>AED {invoiceData.net.toLocaleString()}</LineValue></InvoiceLine>
-            <InvoiceLine><LineLabel>VAT (5% FTA):</LineLabel><LineValue style={{ color: '#F59E0B' }}>AED {invoiceData.vatAmount.toLocaleString()}</LineValue></InvoiceLine>
+            <InvoiceLine><LineLabel>VAT (5% FTA):</LineLabel><LineValue style={{ color: 'var(--accent-gold, #F59E0B)' }}>AED {invoiceData.vatAmount.toLocaleString()}</LineValue></InvoiceLine>
             <TotalRow>
               <TotalLabel>TOTAL DUE (AED)</TotalLabel>
               <TotalValue>AED {invoiceData.grossAmount.toLocaleString()}</TotalValue>

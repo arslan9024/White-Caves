@@ -439,7 +439,7 @@ export const HenryTenancyContractJourneyView: FC = () => {
     <ViewContainer>
       {/* Feedback Banner */}
       {statusMsg && (
-        <div style={{ background: '#0F172A', color: '#38BDF8', padding: '8px 16px', borderRadius: '8px', fontSize: '0.82rem', fontWeight: 700 }}>
+        <div style={{ background: 'var(--color-0f172a, #0F172A)', color: 'var(--color-38bdf8, #38BDF8)', padding: '8px 16px', borderRadius: '8px', fontSize: '0.82rem', fontWeight: 700 }}>
           ⚡ {statusMsg}
         </div>
       )}
@@ -483,10 +483,10 @@ export const HenryTenancyContractJourneyView: FC = () => {
           {activeStage === 1 && (
             <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
               {cachedTitleDeed && (
-                <div style={{ background: '#FEF2F2', border: '1px solid #FECACA', borderRadius: '8px', padding: '10px 14px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <div style={{ background: 'var(--color-fef2f2, #FEF2F2)', border: '1px solid var(--color-fecaca, #FECACA)', borderRadius: '8px', padding: '10px 14px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                   <div>
-                    <div style={{ fontWeight: 800, fontSize: '0.82rem', color: '#991B1B' }}>⚡ Active Title Deed In Cache</div>
-                    <div style={{ fontSize: '0.74rem', color: '#B91C1C' }}>{cachedTitleDeed.buildingNameEn || 'Building'} Unit {cachedTitleDeed.propertyNumber} ({cachedTitleDeed.ownerNameEn || 'Owner'})</div>
+                    <div style={{ fontWeight: 800, fontSize: '0.82rem', color: 'var(--color-991b1b, #991B1B)' }}>⚡ Active Title Deed In Cache</div>
+                    <div style={{ fontSize: '0.74rem', color: 'var(--accent-red, #B91C1C)' }}>{cachedTitleDeed.buildingNameEn || 'Building'} Unit {cachedTitleDeed.propertyNumber} ({cachedTitleDeed.ownerNameEn || 'Owner'})</div>
                   </div>
                   <PrimaryBtn
                     $variant="primary"
@@ -507,14 +507,14 @@ export const HenryTenancyContractJourneyView: FC = () => {
               )}
 
               {cachedPassport && (
-                <div style={{ background: '#EFF6FF', border: '1px solid #BFDBFE', borderRadius: '8px', padding: '10px 14px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <div style={{ background: 'var(--color-eff6ff, #EFF6FF)', border: '1px solid var(--color-bfdbfe, #BFDBFE)', borderRadius: '8px', padding: '10px 14px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                   <div>
-                    <div style={{ fontWeight: 800, fontSize: '0.82rem', color: '#1E40AF' }}>⚡ Active Passport In Cache</div>
-                    <div style={{ fontSize: '0.74rem', color: '#2563EB' }}>{cachedPassport.fullName} ({cachedPassport.passportNumber})</div>
+                    <div style={{ fontWeight: 800, fontSize: '0.82rem', color: 'var(--color-1e40af, #1E40AF)' }}>⚡ Active Passport In Cache</div>
+                    <div style={{ fontSize: '0.74rem', color: 'var(--accent-blue, #2563EB)' }}>{cachedPassport.fullName} ({cachedPassport.passportNumber})</div>
                   </div>
                   <PrimaryBtn
                     $variant="primary"
-                    style={{ padding: '4px 10px', fontSize: '0.72rem', background: '#2563EB' }}
+                    style={{ padding: '4px 10px', fontSize: '0.72rem', background: 'var(--accent-blue, #2563EB)' }}
                     onClick={() => {
                       setContractData(prev => {
                         const next = henryTenancyContractTemplateService.populateFromPassport(prev, cachedPassport, 'landlord');
@@ -580,7 +580,7 @@ export const HenryTenancyContractJourneyView: FC = () => {
               />
 
               <FormCard>
-                <h4 style={{ margin: 0, fontSize: '0.9rem', fontWeight: 800, color: '#1E293B' }}>
+                <h4 style={{ margin: 0, fontSize: '0.9rem', fontWeight: 800, color: 'var(--color-1e293b, #1E293B)' }}>
                   Property & Landlord Verified Data
                 </h4>
                 <FormGrid $cols={3}>
@@ -648,14 +648,14 @@ export const HenryTenancyContractJourneyView: FC = () => {
           {activeStage === 2 && (
             <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
               {cachedTenantEid && (
-                <div style={{ background: '#ECFDF5', border: '1px solid #A7F3D0', borderRadius: '8px', padding: '10px 14px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <div style={{ background: 'var(--color-ecfdf5, #ECFDF5)', border: '1px solid var(--color-a7f3d0, #A7F3D0)', borderRadius: '8px', padding: '10px 14px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                   <div>
-                    <div style={{ fontWeight: 800, fontSize: '0.82rem', color: '#065F46' }}>⚡ Active Emirates ID In Cache</div>
-                    <div style={{ fontSize: '0.74rem', color: '#047857' }}>{cachedTenantEid.fullNameEn} ({cachedTenantEid.idNumber})</div>
+                    <div style={{ fontWeight: 800, fontSize: '0.82rem', color: 'var(--color-065f46, #065F46)' }}>⚡ Active Emirates ID In Cache</div>
+                    <div style={{ fontSize: '0.74rem', color: 'var(--color-047857, #047857)' }}>{cachedTenantEid.fullNameEn} ({cachedTenantEid.idNumber})</div>
                   </div>
                   <PrimaryBtn
                     $variant="primary"
-                    style={{ padding: '4px 10px', fontSize: '0.72rem', background: '#059669' }}
+                    style={{ padding: '4px 10px', fontSize: '0.72rem', background: 'var(--accent-green, #059669)' }}
                     onClick={() => {
                       setContractData(prev => {
                         const next = henryTenancyContractTemplateService.populateFromEmiratesId(prev, cachedTenantEid, 'tenant');
@@ -672,14 +672,14 @@ export const HenryTenancyContractJourneyView: FC = () => {
               )}
 
               {cachedPassport && (
-                <div style={{ background: '#F5F3FF', border: '1px solid #DDD6FE', borderRadius: '8px', padding: '10px 14px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <div style={{ background: 'var(--color-f5f3ff, #F5F3FF)', border: '1px solid var(--color-ddd6fe, #DDD6FE)', borderRadius: '8px', padding: '10px 14px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                   <div>
-                    <div style={{ fontWeight: 800, fontSize: '0.82rem', color: '#5B21B6' }}>⚡ Active Passport In Cache</div>
-                    <div style={{ fontSize: '0.74rem', color: '#6D28D9' }}>{cachedPassport.fullName} ({cachedPassport.passportNumber})</div>
+                    <div style={{ fontWeight: 800, fontSize: '0.82rem', color: 'var(--color-5b21b6, #5B21B6)' }}>⚡ Active Passport In Cache</div>
+                    <div style={{ fontSize: '0.74rem', color: 'var(--accent-purple, #6D28D9)' }}>{cachedPassport.fullName} ({cachedPassport.passportNumber})</div>
                   </div>
                   <PrimaryBtn
                     $variant="primary"
-                    style={{ padding: '4px 10px', fontSize: '0.72rem', background: '#7C3AED' }}
+                    style={{ padding: '4px 10px', fontSize: '0.72rem', background: 'var(--accent-purple, #7C3AED)' }}
                     onClick={() => {
                       setContractData(prev => {
                         const next = henryTenancyContractTemplateService.populateFromPassport(prev, cachedPassport, 'tenant');
@@ -732,7 +732,7 @@ export const HenryTenancyContractJourneyView: FC = () => {
               </div>
 
               <FormCard>
-                <h4 style={{ margin: 0, fontSize: '0.9rem', fontWeight: 800, color: '#1E293B' }}>
+                <h4 style={{ margin: 0, fontSize: '0.9rem', fontWeight: 800, color: 'var(--color-1e293b, #1E293B)' }}>
                   Tenant Contact & Legal Identity
                 </h4>
                 <FormGrid $cols={2}>
@@ -788,7 +788,7 @@ export const HenryTenancyContractJourneyView: FC = () => {
           {/* STAGE 3: CONTRACT TERMS & FINANCIALS */}
           {activeStage === 3 && (
             <FormCard>
-              <h4 style={{ margin: 0, fontSize: '0.95rem', fontWeight: 800, color: '#1E293B' }}>
+              <h4 style={{ margin: 0, fontSize: '0.95rem', fontWeight: 800, color: 'var(--color-1e293b, #1E293B)' }}>
                 Stage 3: Lease Financials & Contract Period
               </h4>
 
@@ -885,7 +885,7 @@ export const HenryTenancyContractJourneyView: FC = () => {
                 </div>
               </FormGroup>
 
-              <h5 style={{ margin: '1rem 0 0.5rem 0', fontSize: '0.85rem', fontWeight: 800, color: '#475569' }}>
+              <h5 style={{ margin: '1rem 0 0.5rem 0', fontSize: '0.85rem', fontWeight: 800, color: 'var(--color-475569, #475569)' }}>
                 Page 3: Additional Terms (شروط إضافية)
               </h5>
               {[0, 1, 2, 3, 4].map(idx => (
@@ -914,7 +914,7 @@ export const HenryTenancyContractJourneyView: FC = () => {
           {/* STAGE 4: SIGNATURES & FINAL ACTIONS */}
           {activeStage === 4 && (
             <FormCard>
-              <h4 style={{ margin: 0, fontSize: '0.95rem', fontWeight: 800, color: '#1E293B' }}>
+              <h4 style={{ margin: 0, fontSize: '0.95rem', fontWeight: 800, color: 'var(--color-1e293b, #1E293B)' }}>
                 Stage 4: Endorsement Signatures & Vault Persistence
               </h4>
 
@@ -987,7 +987,7 @@ export const HenryTenancyContractJourneyView: FC = () => {
             <div className="zoom-box">
               <button
                 onClick={() => setZoomLevel(prev => Math.max(prev - 0.1, 0.5))}
-                style={{ background: 'none', border: 'none', color: '#FFFFFF', cursor: 'pointer' }}
+                style={{ background: 'none', border: 'none', color: 'var(--white, #FFFFFF)', cursor: 'pointer' }}
               >
                 <ZoomOut size={13} />
               </button>
@@ -996,7 +996,7 @@ export const HenryTenancyContractJourneyView: FC = () => {
               </span>
               <button
                 onClick={() => setZoomLevel(prev => Math.min(prev + 0.1, 1.2))}
-                style={{ background: 'none', border: 'none', color: '#FFFFFF', cursor: 'pointer' }}
+                style={{ background: 'none', border: 'none', color: 'var(--white, #FFFFFF)', cursor: 'pointer' }}
               >
                 <ZoomIn size={13} />
               </button>
@@ -1007,7 +1007,7 @@ export const HenryTenancyContractJourneyView: FC = () => {
             <PreviewScaler $zoom={zoomLevel}>
               <div
                 dangerouslySetInnerHTML={{ __html: compiledPdfHtml }}
-                style={{ background: '#FFFFFF', boxShadow: '0 8px 30px rgba(0,0,0,0.25)', borderRadius: '4px' }}
+                style={{ background: 'var(--white, #FFFFFF)', boxShadow: '0 8px 30px rgba(0,0,0,0.25)', borderRadius: '4px' }}
               />
             </PreviewScaler>
           </PreviewScrollArea>

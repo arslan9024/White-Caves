@@ -20,8 +20,20 @@ vi.mock('../database.js', () => ({
 }));
 
 vi.mock('../middleware/auth.js', () => ({
-  requireAuth: (req: any, res: any, next: any) => next(),
+  default: (req: any, res: any, next: any) => {
+    req.user = { id: 'test-user', role: 'owner' };
+    next();
+  },
+  requireAuth: (req: any, res: any, next: any) => {
+    req.user = { id: 'test-user', role: 'owner' };
+    next();
+  },
   requireRole: () => (req: any, res: any, next: any) => next(),
+}));
+
+vi.mock('../middleware/rbac.js', () => ({
+  requireRole: () => (req: any, res: any, next: any) => next(),
+  requirePermission: () => (req: any, res: any, next: any) => next(),
 }));
 
 const app = express();

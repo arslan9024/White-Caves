@@ -241,7 +241,7 @@ export const ArRoomMeasurer: FC = () => {
             alignItems: 'center', justifyContent: 'center',
             flexDirection: 'column', gap: '8px', pointerEvents: 'none'
           }}>
-            <div style={{ color: '#10B981', fontSize: '0.8rem', fontWeight: 700, textAlign: 'center' }}>
+            <div style={{ color: 'var(--accent-green, #10B981)', fontSize: '0.8rem', fontWeight: 700, textAlign: 'center' }}>
               📱 Tap to start AR scan
             </div>
           </div>

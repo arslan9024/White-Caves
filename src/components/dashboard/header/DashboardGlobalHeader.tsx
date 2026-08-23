@@ -87,7 +87,7 @@ export const DashboardGlobalHeader: FC<DashboardGlobalHeaderProps> = ({
         />
         <div>
           <div style={{ display: 'flex', alignItems: 'center', gap: '10px', flexWrap: 'wrap' }}>
-            <h1 style={{ margin: 0, fontSize: '1.15rem', fontWeight: 900, color: '#FFFFFF', letterSpacing: '-0.01em' }}>
+            <h1 style={{ margin: 0, fontSize: '1.15rem', fontWeight: 900, color: 'var(--white, #FFFFFF)', letterSpacing: '-0.01em' }}>
               White Caves Real Estate LLC — ERP Command Core
             </h1>
             <span
@@ -105,8 +105,8 @@ export const DashboardGlobalHeader: FC<DashboardGlobalHeaderProps> = ({
             </span>
           </div>
 
-          <span style={{ fontSize: '0.78rem', color: '#CBD5E1', fontWeight: 600, display: 'block', marginTop: '2px' }}>
-            Active Meta-Tag: <strong style={{ color: '#F59E0B' }}>{activeLocationTag}</strong> · MD: Arslan Malik
+          <span style={{ fontSize: '0.78rem', color: 'var(--text-secondary, #CBD5E1)', fontWeight: 600, display: 'block', marginTop: '2px' }}>
+            Active Meta-Tag: <strong style={{ color: 'var(--accent-gold, #F59E0B)' }}>{activeLocationTag}</strong> · MD: Arslan Malik
           </span>
         </div>
       </div>

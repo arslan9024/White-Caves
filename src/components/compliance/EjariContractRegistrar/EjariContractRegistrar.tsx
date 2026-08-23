@@ -50,7 +50,7 @@ export const EjariContractRegistrar: FC = () => {
     <Wrapper data-testid="ejari-contract-registrar">
       <Header>
         <Title>🏠 Ejari Contract Registrar</Title>
-        <div style={{ fontSize: '0.7rem', color: '#10B981', fontWeight: 700 }}>Reg. 26/2010</div>
+        <div style={{ fontSize: '0.7rem', color: 'var(--accent-green, #10B981)', fontWeight: 700 }}>Reg. 26/2010</div>
       </Header>
       <Body>
         <EjariForm>
@@ -59,7 +59,7 @@ export const EjariContractRegistrar: FC = () => {
           <Field><Label>Annual Rent (AED)</Label><Input type="number" value={rent} onChange={e => setRent(e.target.value)} /></Field>
           <Field><Label>Duration (months)</Label><Select value={duration} onChange={e => setDuration(e.target.value)}><option value="6">6 months</option><option value="12">12 months</option><option value="24">24 months</option></Select></Field>
           <Field><Label>No. of PDC Cheques</Label><Select value={cheques} onChange={e => setCheques(e.target.value)}><option value="1">1 (Annual)</option><option value="2">2 (Bi-Annual)</option><option value="4">4 (Quarterly)</option><option value="12">12 (Monthly)</option></Select></Field>
-          <Field><Label>Monthly Rent</Label><Input readOnly value={`AED ${Math.round(annualRent / 12).toLocaleString()}`} style={{ color: '#10B981' }} /></Field>
+          <Field><Label>Monthly Rent</Label><Input readOnly value={`AED ${Math.round(annualRent / 12).toLocaleString()}`} style={{ color: 'var(--accent-green, #10B981)' }} /></Field>
         </EjariForm>
 
         <FeeCard>

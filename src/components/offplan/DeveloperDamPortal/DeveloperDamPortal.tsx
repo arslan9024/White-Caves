@@ -144,7 +144,7 @@ export const DeveloperDamPortal: FC = () => {
           {filteredAssets.map(asset => (
             <AssetCard key={asset.id}>
               <div>
-                <span style={{ fontSize: '0.62rem', fontWeight: 800, padding: '2px 6px', borderRadius: '4px', background: 'rgba(239,68,68,0.15)', color: '#EF4444' }}>
+                <span style={{ fontSize: '0.62rem', fontWeight: 800, padding: '2px 6px', borderRadius: '4px', background: 'rgba(239,68,68,0.15)', color: 'var(--accent-red, #EF4444)' }}>
                   {asset.dev} · {asset.type}
                 </span>
                 <ATitle style={{ marginTop: '6px' }}>{asset.title}</ATitle>

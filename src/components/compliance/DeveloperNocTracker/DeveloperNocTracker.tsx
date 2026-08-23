@@ -232,7 +232,7 @@ export const DeveloperNocTracker: FC = () => {
         </NocOverview>
 
         <div>
-          <div style={{ fontSize: '0.72rem', fontWeight: 700, color: '#94A3B8', textTransform: 'uppercase', marginBottom: '8px' }}>
+          <div style={{ fontSize: '0.72rem', fontWeight: 700, color: 'var(--color-94a3b8, #94A3B8)', textTransform: 'uppercase', marginBottom: '8px' }}>
             {selectedDev} Step-by-Step Approval Protocol
           </div>
           <StepList>

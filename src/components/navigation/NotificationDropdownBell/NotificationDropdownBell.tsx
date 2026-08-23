@@ -104,17 +104,17 @@ export const NotificationDropdownBell: FC = () => {
       {open && (
         <Dropdown>
           <DHead>
-            <span style={{ fontSize: '0.8rem', fontWeight: 800, color: '#FFF' }}>Executive Alerts</span>
-            <span style={{ fontSize: '0.68rem', color: '#EF4444', fontWeight: 700, cursor: 'pointer' }}>Mark All Read</span>
+            <span style={{ fontSize: '0.8rem', fontWeight: 800, color: 'var(--white, #FFF)' }}>Executive Alerts</span>
+            <span style={{ fontSize: '0.68rem', color: 'var(--accent-red, #EF4444)', fontWeight: 700, cursor: 'pointer' }}>Mark All Read</span>
           </DHead>
           <FeedList>
             {notifications.map(n => (
               <FeedItem key={n.id} $unread={n.unread}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                  <span style={{ fontSize: '0.78rem', fontWeight: 800, color: '#FFF' }}>{n.title}</span>
-                  <span style={{ fontSize: '0.62rem', color: '#64748B' }}>{n.time}</span>
+                  <span style={{ fontSize: '0.78rem', fontWeight: 800, color: 'var(--white, #FFF)' }}>{n.title}</span>
+                  <span style={{ fontSize: '0.62rem', color: 'var(--text-secondary, #64748B)' }}>{n.time}</span>
                 </div>
-                <div style={{ fontSize: '0.68rem', color: '#94A3B8' }}>{n.desc}</div>
+                <div style={{ fontSize: '0.68rem', color: 'var(--color-94a3b8, #94A3B8)' }}>{n.desc}</div>
               </FeedItem>
             ))}
           </FeedList>

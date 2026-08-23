@@ -188,39 +188,39 @@ export const LandFeasibilityStudyGenerator: FC = () => {
           </Field>
           <Field>
             <FLabel>Authority Jurisdiction</FLabel>
-            <Input value="Dubai Municipality (DM) / DDA" readOnly style={{ color: '#94A3B8' }} />
+            <Input value="Dubai Municipality (DM) / DDA" readOnly style={{ color: 'var(--color-94a3b8, #94A3B8)' }} />
           </Field>
         </FormGrid>
 
         <ResultsGrid>
           <RCard>
-            <div style={{ fontSize: '0.62rem', color: '#94A3B8' }}>Permitted GFA</div>
+            <div style={{ fontSize: '0.62rem', color: 'var(--color-94a3b8, #94A3B8)' }}>Permitted GFA</div>
             <RVal>{Math.round(gfaSqft).toLocaleString()} SqFt</RVal>
           </RCard>
           <RCard>
-            <div style={{ fontSize: '0.62rem', color: '#94A3B8' }}>Total BUA (1.35x)</div>
-            <RVal style={{ color: '#E2E8F0' }}>{Math.round(buaSqft).toLocaleString()} SqFt</RVal>
+            <div style={{ fontSize: '0.62rem', color: 'var(--color-94a3b8, #94A3B8)' }}>Total BUA (1.35x)</div>
+            <RVal style={{ color: 'var(--text-secondary, #E2E8F0)' }}>{Math.round(buaSqft).toLocaleString()} SqFt</RVal>
           </RCard>
           <RCard>
-            <div style={{ fontSize: '0.62rem', color: '#94A3B8' }}>Total Dev Cost</div>
+            <div style={{ fontSize: '0.62rem', color: 'var(--color-94a3b8, #94A3B8)' }}>Total Dev Cost</div>
             <RVal>AED {(totalProjectCost / 1000000).toFixed(1)}M</RVal>
           </RCard>
           <RCard>
-            <div style={{ fontSize: '0.62rem', color: '#94A3B8' }}>Projected Net Profit</div>
-            <RVal style={{ color: '#10B981' }}>AED {(developerNetProfit / 1000000).toFixed(1)}M</RVal>
+            <div style={{ fontSize: '0.62rem', color: 'var(--color-94a3b8, #94A3B8)' }}>Projected Net Profit</div>
+            <RVal style={{ color: 'var(--accent-green, #10B981)' }}>AED {(developerNetProfit / 1000000).toFixed(1)}M</RVal>
           </RCard>
         </ResultsGrid>
 
         <CapExSummary>
           <div>
-            <div style={{ fontSize: '0.72rem', fontWeight: 800, color: '#FFF' }}>
-              Projected Developer Return on Investment (ROI): <span style={{ color: '#10B981', fontSize: '0.9rem' }}>{roiPct.toFixed(1)}%</span>
+            <div style={{ fontSize: '0.72rem', fontWeight: 800, color: 'var(--white, #FFF)' }}>
+              Projected Developer Return on Investment (ROI): <span style={{ color: 'var(--accent-green, #10B981)', fontSize: '0.9rem' }}>{roiPct.toFixed(1)}%</span>
             </div>
-            <div style={{ fontSize: '0.68rem', color: '#94A3B8', marginTop: '2px' }}>
+            <div style={{ fontSize: '0.68rem', color: 'var(--color-94a3b8, #94A3B8)', marginTop: '2px' }}>
               Exit Sales Value (GDV): AED {(estGrossDevelopmentValue / 1000000).toFixed(1)}M (based on AED 1,850/sqft average)
             </div>
           </div>
-          <button style={{ padding: '8px 16px', background: '#10B981', border: 'none', borderRadius: '6px', color: '#FFF', fontWeight: 800, fontSize: '0.75rem', cursor: 'pointer' }}>
+          <button style={{ padding: '8px 16px', background: 'var(--accent-green, #10B981)', border: 'none', borderRadius: '6px', color: 'var(--white, #FFF)', fontWeight: 800, fontSize: '0.75rem', cursor: 'pointer' }}>
             📥 Export Feasibility PDF
           </button>
         </CapExSummary>

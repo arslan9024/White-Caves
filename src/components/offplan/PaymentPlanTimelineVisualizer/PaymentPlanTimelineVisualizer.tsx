@@ -83,7 +83,7 @@ export const PaymentPlanTimelineVisualizer: FC = () => {
     <Wrap data-testid="payment-plan-timeline-visualizer">
       <Head>
         <Title>🏗️ Payment Plan Timeline</Title>
-        <div style={{fontSize:'0.68rem',color:'#EF4444',fontWeight:700}}>AED {(UNIT_PRICE/1e6).toFixed(1)}M Unit</div>
+        <div style={{fontSize:'0.68rem',color:'var(--accent-red, #EF4444)',fontWeight:700}}>AED {(UNIT_PRICE/1e6).toFixed(1)}M Unit</div>
       </Head>
       <Body>
         <PlanTabs>

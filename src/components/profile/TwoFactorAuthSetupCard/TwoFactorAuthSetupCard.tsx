@@ -113,17 +113,17 @@ export const TwoFactorAuthSetupCard: FC = () => {
       </Head>
       <Body>
         <QrBox>
-          <div style={{ fontSize: '2.5rem', color: '#0F172A' }}>📱</div>
-          <div style={{ fontSize: '0.62rem', color: '#0F172A', fontWeight: 800, marginTop: '2px' }}>GOOGLE / 1PASSWORD</div>
+          <div style={{ fontSize: '2.5rem', color: 'var(--color-0f172a, #0F172A)' }}>📱</div>
+          <div style={{ fontSize: '0.62rem', color: 'var(--color-0f172a, #0F172A)', fontWeight: 800, marginTop: '2px' }}>GOOGLE / 1PASSWORD</div>
         </QrBox>
 
         <FormSide>
           <div>
-            <div style={{ fontSize: '0.85rem', fontWeight: 800, color: '#FFF' }}>
+            <div style={{ fontSize: '0.85rem', fontWeight: 800, color: 'var(--white, #FFF)' }}>
               Scan QR Code with your Authenticator App
             </div>
-            <div style={{ fontSize: '0.72rem', color: '#94A3B8', marginTop: '2px' }}>
-              Secret Key: <code style={{ color: '#EF4444' }}>WC7X-99K2-M39A-8843</code>
+            <div style={{ fontSize: '0.72rem', color: 'var(--color-94a3b8, #94A3B8)', marginTop: '2px' }}>
+              Secret Key: <code style={{ color: 'var(--accent-red, #EF4444)' }}>WC7X-99K2-M39A-8843</code>
             </div>
           </div>
 

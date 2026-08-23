@@ -48,7 +48,7 @@ export const CmaReportGenerator: FC = () => {
     <Wrapper data-testid="cma-report-generator">
       <Header>
         <Title>📋 AI Comparative Market Analysis</Title>
-        <div style={{ fontSize: '0.7rem', color: '#64748B' }}>CMA Report Builder</div>
+        <div style={{ fontSize: '0.7rem', color: 'var(--text-secondary, #64748B)' }}>CMA Report Builder</div>
       </Header>
       <Body>
         <Field>
@@ -59,7 +59,7 @@ export const CmaReportGenerator: FC = () => {
           <Field><Label>Asking Price (AED)</Label><Input type="number" value={askPrice} onChange={e => setAskPrice(e.target.value)} /></Field>
           <Field><Label>Area (sqft)</Label><Input type="number" value={sqft} onChange={e => setSqft(e.target.value)} /></Field>
           <Field><Label>Bedrooms</Label><Select value={bedrooms} onChange={e => setBedrooms(e.target.value)}><option>1</option><option>2</option><option>3</option><option>4+</option></Select></Field>
-          <Field><Label>Price/Sqft</Label><Input readOnly value={`AED ${Math.round(psf).toLocaleString()}`} style={{ color: '#EF4444' }} /></Field>
+          <Field><Label>Price/Sqft</Label><Input readOnly value={`AED ${Math.round(psf).toLocaleString()}`} style={{ color: 'var(--accent-red, #EF4444)' }} /></Field>
         </Grid2>
         <GenerateBtn onClick={() => setGenerated(true)}>🔍 Generate CMA Report</GenerateBtn>
 

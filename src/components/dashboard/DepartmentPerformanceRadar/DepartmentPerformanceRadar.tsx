@@ -105,14 +105,14 @@ export const DepartmentPerformanceRadar: FC = () => {
           <DeptCard key={idx}>
             <div style={{ display: 'flex', justifyContent: 'space-between' }}>
               <DName>{d.name}</DName>
-              <span style={{ fontSize: '0.75rem', fontWeight: 900, color: '#10B981' }}>{d.score}%</span>
+              <span style={{ fontSize: '0.75rem', fontWeight: 900, color: 'var(--accent-green, #10B981)' }}>{d.score}%</span>
             </div>
             <ScoreBar>
               <ScoreFill $pct={d.score} />
             </ScoreBar>
-            <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.68rem', color: '#94A3B8' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.68rem', color: 'var(--color-94a3b8, #94A3B8)' }}>
               <span>Lead: {d.lead}</span>
-              <span style={{ color: '#FFF', fontWeight: 700 }}>{d.volume}</span>
+              <span style={{ color: 'var(--white, #FFF)', fontWeight: 700 }}>{d.volume}</span>
             </div>
           </DeptCard>
         ))}

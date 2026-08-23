@@ -50,12 +50,12 @@ export const FeaturedCommunityCarousel: FC = () => {
 
               <div>
                 <StatRow>
-                  <span style={{ color: '#94A3B8' }}>{CAROUSEL_TEXT.activeListingsLabel}:</span>
-                  <span style={{ color: '#EF4444', fontWeight: 800 }}>{c.listings}</span>
+                  <span style={{ color: 'var(--color-94a3b8, #94A3B8)' }}>{CAROUSEL_TEXT.activeListingsLabel}:</span>
+                  <span style={{ color: 'var(--accent-red, #EF4444)', fontWeight: 800 }}>{c.listings}</span>
                 </StatRow>
                 <StatRow style={{ marginTop: '4px' }}>
-                  <span style={{ color: '#94A3B8' }}>{CAROUSEL_TEXT.avgPriceLabel}:</span>
-                  <span style={{ color: '#FFFFFF', fontWeight: 700 }}>{c.avgSqft}</span>
+                  <span style={{ color: 'var(--color-94a3b8, #94A3B8)' }}>{CAROUSEL_TEXT.avgPriceLabel}:</span>
+                  <span style={{ color: 'var(--white, #FFFFFF)', fontWeight: 700 }}>{c.avgSqft}</span>
                 </StatRow>
               </div>
             </CommunityCard>

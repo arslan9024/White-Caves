@@ -177,12 +177,12 @@ export const UtilityTransferWizard: FC = () => {
           </Field>
           <Field>
             <FLabel>Statutory DEWA Security Deposit</FLabel>
-            <Input value="AED 2,000 (Apartment) / AED 4,000 (Villa)" readOnly style={{ color: '#10B981', fontWeight: 700 }} />
+            <Input value="AED 2,000 (Apartment) / AED 4,000 (Villa)" readOnly style={{ color: 'var(--accent-green, #10B981)', fontWeight: 700 }} />
           </Field>
         </FormBox>
 
         {transferred ? (
-          <div style={{ padding: '14px', borderRadius: '10px', background: 'rgba(16, 185, 129, 0.1)', border: '1px solid rgba(16, 185, 129, 0.3)', textAlign: 'center', color: '#10B981', fontWeight: 800, fontSize: '0.82rem' }}>
+          <div style={{ padding: '14px', borderRadius: '10px', background: 'rgba(16, 185, 129, 0.1)', border: '1px solid rgba(16, 185, 129, 0.3)', textAlign: 'center', color: 'var(--accent-green, #10B981)', fontWeight: 800, fontSize: '0.82rem' }}>
             ✓ DEWA & Empower Move-In Transfer Successfully Submitted via Direct Smart Government Gateway!
           </div>
         ) : (

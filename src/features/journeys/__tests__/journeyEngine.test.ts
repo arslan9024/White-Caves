@@ -1,6 +1,6 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { JourneyEngineService } from '../../../services/journeys/journeyEngineService';
-import { getJourneyById } from '../registry/journeyRegistry';
+import { getJourneyById, getAllJourneys } from '../registry/journeyRegistry';
 
 describe('White Caves Journey Engine', () => {
   const tenancyJourneyDef = getJourneyById('prepare-tenancy-contract')!;
@@ -104,5 +104,17 @@ describe('White Caves Journey Engine', () => {
 
     const history = JourneyEngineService.getLifecycleHistory();
     expect(history.length).toBeGreaterThan(0);
+  });
+
+  it('contains all 20 flagship lifecycle journeys with valid step definitions', () => {
+    const allJourneys = getAllJourneys();
+
+    expect(allJourneys.length).toBe(20);
+    allJourneys.forEach((journey) => {
+      expect(journey.id).toBeTruthy();
+      expect(journey.title).toBeTruthy();
+      expect(journey.family).toBeTruthy();
+      expect(journey.steps.length).toBeGreaterThanOrEqual(3);
+    });
   });
 });

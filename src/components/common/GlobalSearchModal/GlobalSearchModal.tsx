@@ -183,7 +183,7 @@ export const GlobalSearchModal: FC = () => {
                 </ResultItem>
               ))}
               {filtered.length === 0 && (
-                <div style={{ textAlign: 'center', padding: '24px', color: '#64748B', fontSize: '0.8rem' }}>
+                <div style={{ textAlign: 'center', padding: '24px', color: 'var(--text-secondary, #64748B)', fontSize: '0.8rem' }}>
                   No matching assets or contacts found.
                 </div>
               )}

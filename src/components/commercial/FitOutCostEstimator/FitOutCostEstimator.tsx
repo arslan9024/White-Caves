@@ -184,26 +184,26 @@ export const FitOutCostEstimator: FC = () => {
           </CItem>
           <CItem>
             <CKey>Cost Per SqFt</CKey>
-            <CVal style={{ color: '#10B981' }}>AED {Math.round(grandTotal / sqft)} / sqft</CVal>
+            <CVal style={{ color: 'var(--accent-green, #10B981)' }}>AED {Math.round(grandTotal / sqft)} / sqft</CVal>
           </CItem>
           <CItem>
             <CKey>Approvals & NOCs</CKey>
-            <CVal style={{ color: '#FFF' }}>AED {authorityApprovalFees.toLocaleString()}</CVal>
+            <CVal style={{ color: 'var(--white, #FFF)' }}>AED {authorityApprovalFees.toLocaleString()}</CVal>
           </CItem>
         </CostBreakdown>
 
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '8px', fontSize: '0.72rem', color: '#94A3B8' }}>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '8px', fontSize: '0.72rem', color: 'var(--color-94a3b8, #94A3B8)' }}>
           <div style={{ padding: '8px', background: 'rgba(15,23,42,0.6)', borderRadius: '6px' }}>
             <div>⚡ MEP & HVAC (35%)</div>
-            <div style={{ fontWeight: 800, color: '#E2E8F0', marginTop: '2px' }}>AED {Math.round(mepCost).toLocaleString()}</div>
+            <div style={{ fontWeight: 800, color: 'var(--text-secondary, #E2E8F0)', marginTop: '2px' }}>AED {Math.round(mepCost).toLocaleString()}</div>
           </div>
           <div style={{ padding: '8px', background: 'rgba(15,23,42,0.6)', borderRadius: '6px' }}>
             <div>🧱 Civil, Glass & Ceilings (40%)</div>
-            <div style={{ fontWeight: 800, color: '#E2E8F0', marginTop: '2px' }}>AED {Math.round(civilCost).toLocaleString()}</div>
+            <div style={{ fontWeight: 800, color: 'var(--text-secondary, #E2E8F0)', marginTop: '2px' }}>AED {Math.round(civilCost).toLocaleString()}</div>
           </div>
           <div style={{ padding: '8px', background: 'rgba(15,23,42,0.6)', borderRadius: '6px' }}>
             <div>💻 IT, AV & Joinery (25%)</div>
-            <div style={{ fontWeight: 800, color: '#E2E8F0', marginTop: '2px' }}>AED {Math.round(itFurnitureCost).toLocaleString()}</div>
+            <div style={{ fontWeight: 800, color: 'var(--text-secondary, #E2E8F0)', marginTop: '2px' }}>AED {Math.round(itFurnitureCost).toLocaleString()}</div>
           </div>
         </div>
       </Body>

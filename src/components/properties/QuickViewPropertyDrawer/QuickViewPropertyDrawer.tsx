@@ -118,7 +118,7 @@ export const QuickViewPropertyDrawer: FC<{
       <Drawer onClick={e => e.stopPropagation()}>
         <div>
           <Header>
-            <span style={{ fontSize: '0.75rem', fontWeight: 800, color: '#EF4444' }}>EXCLUSIVE LISTING</span>
+            <span style={{ fontSize: '0.75rem', fontWeight: 800, color: 'var(--accent-red, #EF4444)' }}>EXCLUSIVE LISTING</span>
             <CloseBtn onClick={onClose}>✕</CloseBtn>
           </Header>
 
@@ -126,8 +126,8 @@ export const QuickViewPropertyDrawer: FC<{
 
           <PTitle>{property.title}</PTitle>
           <PPrice>{property.price}</PPrice>
-          <div style={{ fontSize: '0.75rem', color: '#94A3B8', marginTop: '4px' }}>📍 {property.location}</div>
-          <div style={{ fontSize: '0.75rem', color: '#CBD5E1', marginTop: '8px', lineHeight: 1.4 }}>{property.specs}</div>
+          <div style={{ fontSize: '0.75rem', color: 'var(--color-94a3b8, #94A3B8)', marginTop: '4px' }}>📍 {property.location}</div>
+          <div style={{ fontSize: '0.75rem', color: 'var(--text-secondary, #CBD5E1)', marginTop: '8px', lineHeight: 1.4 }}>{property.specs}</div>
         </div>
 
         <DetailBtn onClick={() => alert(`Navigating to full property detail view...`)}>

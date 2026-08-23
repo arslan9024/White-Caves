@@ -276,7 +276,7 @@ export const HenrySharedDocumentUploader: FC<HenrySharedDocumentUploaderProps> =
             {extractedSummary.fields.map((field, idx) => (
               <div key={idx} className="field-item">
                 <div className="field-label">{field.label}</div>
-                <div className="field-value" style={{ color: field.isHighlight ? accentColor : '#0F172A' }}>
+                <div className="field-value" style={{ color: field.isHighlight ? accentColor : 'var(--color-0f172a, #0F172A)' }}>
                   {field.value !== undefined && field.value !== '' ? field.value : '—'}
                 </div>
               </div>

@@ -1,7 +1,8 @@
-﻿import { getWhatsAppEngine, WhatsAppEngine, WhatsAppEngineConfig, WhatsAppEngineStatus } from './WhatsAppEngine.js';
+import { getWhatsAppEngine, WhatsAppEngine, WhatsAppEngineConfig, WhatsAppEngineStatus } from './WhatsAppEngine.js';
 import type { WhatsAppMessage } from './WhatsAppEngine.js';
 
 export type LindaConfig = Omit<WhatsAppEngineConfig, 'clientId'>;
+export const LindaClient = WhatsAppEngine;
 export type LindaClient = WhatsAppEngine;
 export const LindaStatus = WhatsAppEngineStatus;
 export type { WhatsAppMessage };

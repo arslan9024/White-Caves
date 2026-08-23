@@ -146,15 +146,15 @@ export const PropertyDetailMortgageEmi: FC = () => {
 
         <EmiSummary>
           <div>
-            <div style={{ fontSize: '0.68rem', color: '#94A3B8', textTransform: 'uppercase', fontWeight: 700 }}>
+            <div style={{ fontSize: '0.68rem', color: 'var(--color-94a3b8, #94A3B8)', textTransform: 'uppercase', fontWeight: 700 }}>
               Estimated Monthly Installment (EMI)
             </div>
             <EmiVal>AED {Math.round(emi).toLocaleString()} / month</EmiVal>
-            <div style={{ fontSize: '0.68rem', color: '#CBD5E1', marginTop: '2px' }}>
+            <div style={{ fontSize: '0.68rem', color: 'var(--text-secondary, #CBD5E1)', marginTop: '2px' }}>
               Down Payment Required: <strong>AED {Math.round(downPayment).toLocaleString()}</strong> | Loan: AED {Math.round(loanAmount).toLocaleString()}
             </div>
           </div>
-          <button style={{ padding: '10px 16px', background: '#10B981', color: '#FFF', border: 'none', borderRadius: '8px', fontSize: '0.78rem', fontWeight: 800, cursor: 'pointer' }}>
+          <button style={{ padding: '10px 16px', background: 'var(--accent-green, #10B981)', color: 'var(--white, #FFF)', border: 'none', borderRadius: '8px', fontSize: '0.78rem', fontWeight: 800, cursor: 'pointer' }}>
             ⚡ Get Pre-Approved
           </button>
         </EmiSummary>

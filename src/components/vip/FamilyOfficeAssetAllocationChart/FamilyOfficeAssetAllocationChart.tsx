@@ -57,7 +57,7 @@ export const FamilyOfficeAssetAllocationChart: FC = () => {
     <Wrapper data-testid="family-office-asset-allocation-chart">
       <Header>
         <Title>📊 Family Office Asset Allocation</Title>
-        <div style={{ fontSize: '0.7rem', color: '#64748B' }}>AED {(portfolioValue / 1_000_000).toFixed(0)}M Portfolio</div>
+        <div style={{ fontSize: '0.7rem', color: 'var(--text-secondary, #64748B)' }}>AED {(portfolioValue / 1_000_000).toFixed(0)}M Portfolio</div>
       </Header>
       <Body>
         <PieWrapper>

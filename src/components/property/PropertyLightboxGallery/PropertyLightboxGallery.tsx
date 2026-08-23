@@ -27,11 +27,11 @@ export const PropertyLightboxGallery: FC = () => {
       <MainImageArea>
         <div style={{ textAlign: 'center' }}>
           <span style={{ fontSize: '3rem' }}>🏞️</span>
-          <h4 style={{ margin: '8px 0 0', color: '#EF4444' }}>Palm Jumeirah Signature Villa — Photo {selectedIdx} of 4</h4>
+          <h4 style={{ margin: '8px 0 0', color: 'var(--accent-red, #EF4444)' }}>Palm Jumeirah Signature Villa — Photo {selectedIdx} of 4</h4>
         </div>
       </MainImageArea>
 
-      <div style={{ display: 'flex', gap: '8px', padding: '10px', background: '#0F172A' }}>
+      <div style={{ display: 'flex', gap: '8px', padding: '10px', background: 'var(--color-0f172a, #0F172A)' }}>
         {[1, 2, 3, 4].map((idx) => (
           <button
             key={idx}

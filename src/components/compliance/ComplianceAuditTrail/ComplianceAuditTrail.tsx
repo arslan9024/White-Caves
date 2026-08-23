@@ -58,7 +58,7 @@ export const ComplianceAuditTrail: FC = () => {
         <Title>📋 Compliance Audit Trail</Title>
         <div style={{ display: 'flex', gap: '6px' }}>
           {(['all', 'success', 'warning', 'error'] as const).map(f => (
-            <button key={f} onClick={() => setFilter(f)} style={{ padding: '3px 10px', borderRadius: '5px', border: 'none', background: f === filter ? '#EF4444' : 'rgba(100,116,139,0.2)', color: f === filter ? '#FFF' : '#64748B', fontSize: '0.65rem', fontWeight: 700, cursor: 'pointer' }}>
+            <button key={f} onClick={() => setFilter(f)} style={{ padding: '3px 10px', borderRadius: '5px', border: 'none', background: f === filter ? 'var(--accent-red, #EF4444)' : 'rgba(100,116,139,0.2)', color: f === filter ? 'var(--white, #FFF)' : 'var(--text-secondary, #64748B)', fontSize: '0.65rem', fontWeight: 700, cursor: 'pointer' }}>
               {f.toUpperCase()}
             </button>
           ))}

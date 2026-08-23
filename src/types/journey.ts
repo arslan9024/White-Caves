@@ -13,6 +13,12 @@ export type JourneyCategory =
   | 'tenant'
   | 'leasing'
   | 'sales'
+  | 'finance'
+  | 'wealth'
+  | 'legal'
+  | 'projects'
+  | 'marketing'
+  | 'community'
   | 'property-management'
   | 'compliance';
 

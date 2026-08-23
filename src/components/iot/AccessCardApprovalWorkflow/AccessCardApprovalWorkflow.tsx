@@ -117,7 +117,7 @@ export const AccessCardApprovalWorkflow: FC = () => {
         <Tag>SECURITY INTEGRATION</Tag>
       </Head>
       <Body>
-        <div style={{ fontSize: '0.72rem', color: '#94A3B8' }}>
+        <div style={{ fontSize: '0.72rem', color: 'var(--color-94a3b8, #94A3B8)' }}>
           Digital tenant access card request queue linked to building security RFID controllers, automatically verifying active Ejari status before credential issuance.
         </div>
 
@@ -125,12 +125,12 @@ export const AccessCardApprovalWorkflow: FC = () => {
           {requests.map(req => (
             <ReqCard key={req.id} $approved={req.approved}>
               <RInfo>
-                <RName>{req.tenant} <span style={{ fontSize: '0.68rem', color: '#64748B', fontWeight: 600 }}>({req.unit})</span></RName>
+                <RName>{req.tenant} <span style={{ fontSize: '0.68rem', color: 'var(--text-secondary, #64748B)', fontWeight: 600 }}>({req.unit})</span></RName>
                 <RDetail>💳 Requested: {req.cardType} | Admin Fee: AED {req.feeAed}</RDetail>
               </RInfo>
               <div>
                 {req.approved ? (
-                  <span style={{ fontSize: '0.75rem', fontWeight: 800, color: '#10B981' }}>✓ ISSUED & ACTIVE</span>
+                  <span style={{ fontSize: '0.75rem', fontWeight: 800, color: 'var(--accent-green, #10B981)' }}>✓ ISSUED & ACTIVE</span>
                 ) : (
                   <ActionBtn onClick={() => approveRequest(req.id)}>
                     ✓ Authorize RFID Card

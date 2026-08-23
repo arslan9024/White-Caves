@@ -133,16 +133,16 @@ export const OffPlanSalesLeaderboard: FC = () => {
       <Body>
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '10px', textAlign: 'center' }}>
           <div style={{ padding: '10px', background: 'rgba(15,23,42,0.7)', borderRadius: '8px', border: '1px solid rgba(100,116,139,0.2)' }}>
-            <div style={{ fontSize: '0.65rem', color: '#94A3B8' }}>Total Sprint Volume</div>
-            <div style={{ fontSize: '1.1rem', fontWeight: 900, color: '#10B981' }}>AED 316.5M</div>
+            <div style={{ fontSize: '0.65rem', color: 'var(--color-94a3b8, #94A3B8)' }}>Total Sprint Volume</div>
+            <div style={{ fontSize: '1.1rem', fontWeight: 900, color: 'var(--accent-green, #10B981)' }}>AED 316.5M</div>
           </div>
           <div style={{ padding: '10px', background: 'rgba(15,23,42,0.7)', borderRadius: '8px', border: '1px solid rgba(100,116,139,0.2)' }}>
-            <div style={{ fontSize: '0.65rem', color: '#94A3B8' }}>Units Closed</div>
-            <div style={{ fontSize: '1.1rem', fontWeight: 900, color: '#FFF' }}>32 Units</div>
+            <div style={{ fontSize: '0.65rem', color: 'var(--color-94a3b8, #94A3B8)' }}>Units Closed</div>
+            <div style={{ fontSize: '1.1rem', fontWeight: 900, color: 'var(--white, #FFF)' }}>32 Units</div>
           </div>
           <div style={{ padding: '10px', background: 'rgba(15,23,42,0.7)', borderRadius: '8px', border: '1px solid rgba(100,116,139,0.2)' }}>
-            <div style={{ fontSize: '0.65rem', color: '#94A3B8' }}>Target Attainment</div>
-            <div style={{ fontSize: '1.1rem', fontWeight: 900, color: '#EF4444' }}>142% Over</div>
+            <div style={{ fontSize: '0.65rem', color: 'var(--color-94a3b8, #94A3B8)' }}>Target Attainment</div>
+            <div style={{ fontSize: '1.1rem', fontWeight: 900, color: 'var(--accent-red, #EF4444)' }}>142% Over</div>
           </div>
         </div>
 

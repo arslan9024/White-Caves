@@ -133,7 +133,7 @@ export const GdprDataDeletionQueue: FC = () => {
         <PdplBadge>PRIVACY GOVERNANCE</PdplBadge>
       </Head>
       <Body>
-        <div style={{ padding: '10px 14px', borderRadius: '8px', background: 'rgba(139, 92, 246, 0.08)', border: '1px solid rgba(139, 92, 246, 0.25)', fontSize: '0.72rem', color: '#CBD5E1' }}>
+        <div style={{ padding: '10px 14px', borderRadius: '8px', background: 'rgba(139, 92, 246, 0.08)', border: '1px solid rgba(139, 92, 246, 0.25)', fontSize: '0.72rem', color: 'var(--text-secondary, #CBD5E1)' }}>
           ⚖️ <strong>Dual Privacy Framework:</strong> Governed under UAE Federal Decree-Law No. 45 of 2021 (PDPL) & EU GDPR Article 17. Requests are vetted against statutory 5-year anti-money laundering (AML) and RERA escrow audit log retention requirements.
         </div>
 
@@ -143,12 +143,12 @@ export const GdprDataDeletionQueue: FC = () => {
               <RInfo>
                 <RName>{req.client}</RName>
                 <RMeta>📧 {req.email} | Requested: {req.requestedDate}</RMeta>
-                <RMeta style={{ color: req.legalHold ? '#F59E0B' : '#94A3B8' }}>
+                <RMeta style={{ color: req.legalHold ? 'var(--accent-gold, #F59E0B)' : 'var(--color-94a3b8, #94A3B8)' }}>
                   {req.reason} {req.legalHoldReason ? `[${req.legalHoldReason}]` : ''}
                 </RMeta>
               </RInfo>
               <RStatus>
-                <div style={{ fontSize: '0.72rem', fontWeight: 800, color: req.status === 'purged' ? '#10B981' : req.status === 'retained' ? '#F59E0B' : '#EF4444' }}>
+                <div style={{ fontSize: '0.72rem', fontWeight: 800, color: req.status === 'purged' ? 'var(--accent-green, #10B981)' : req.status === 'retained' ? 'var(--accent-gold, #F59E0B)' : 'var(--accent-red, #EF4444)' }}>
                   {req.status === 'purged' ? '✓ PURGED FROM CRM & S3' : req.status === 'retained' ? '⚠️ LEGAL HOLD APPLIED' : '⏳ PENDING EXECUTION'}
                 </div>
                 {req.status === 'pending' && (

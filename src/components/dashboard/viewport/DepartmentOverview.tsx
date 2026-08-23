@@ -35,10 +35,10 @@ export const DepartmentOverview: FC<DepartmentOverviewProps> = ({
         <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
           <span style={{ fontSize: '1.4rem' }}>{department.icon}</span>
           <div>
-            <span style={{ fontWeight: 800, fontSize: '1.15rem', color: '#1E293B', display: 'block' }}>
+            <span style={{ fontWeight: 800, fontSize: '1.15rem', color: 'var(--color-1e293b, #1E293B)', display: 'block' }}>
               {department.num}: {department.name}
             </span>
-            <span style={{ fontSize: '0.78rem', color: '#64748B' }}>
+            <span style={{ fontSize: '0.78rem', color: 'var(--text-secondary, #64748B)' }}>
               Executive Department Overview & Operations Directory
             </span>
           </div>
@@ -78,10 +78,10 @@ export const DepartmentOverview: FC<DepartmentOverviewProps> = ({
               marginBottom: '1.75rem',
             }}
           >
-            <h3 style={{ margin: '0 0 0.5rem 0', fontSize: '1.1rem', fontWeight: 800, color: '#EF4444' }}>
+            <h3 style={{ margin: '0 0 0.5rem 0', fontSize: '1.1rem', fontWeight: 800, color: 'var(--accent-red, #EF4444)' }}>
               📋 {department.num} Executive Summary
             </h3>
-            <p style={{ margin: 0, fontSize: '0.95rem', color: '#334155', lineHeight: 1.6 }}>
+            <p style={{ margin: 0, fontSize: '0.95rem', color: 'var(--color-334155, #334155)', lineHeight: 1.6 }}>
               {department.summary}
             </p>
           </div>
@@ -89,7 +89,7 @@ export const DepartmentOverview: FC<DepartmentOverviewProps> = ({
 
         {/* Mission Operational Scope */}
         <motion.div variants={slideUpItem} initial="hidden" animate="show" style={{ marginBottom: '1.75rem' }}>
-          <h4 style={{ margin: '0 0 0.85rem 0', fontSize: '1.05rem', fontWeight: 800, color: '#1E293B' }}>
+          <h4 style={{ margin: '0 0 0.85rem 0', fontSize: '1.05rem', fontWeight: 800, color: 'var(--color-1e293b, #1E293B)' }}>
             🎯 Mission Operational Scope
           </h4>
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '1rem' }}>
@@ -108,8 +108,8 @@ export const DepartmentOverview: FC<DepartmentOverviewProps> = ({
                   boxShadow: '0 2px 8px rgba(0,0,0,0.03)',
                 }}
               >
-                <span style={{ color: '#EF4444', fontWeight: 800, fontSize: '1.1rem' }}>✓</span>
-                <span style={{ fontSize: '0.88rem', fontWeight: 700, color: '#475569', lineHeight: 1.4 }}>
+                <span style={{ color: 'var(--accent-red, #EF4444)', fontWeight: 800, fontSize: '1.1rem' }}>✓</span>
+                <span style={{ fontSize: '0.88rem', fontWeight: 700, color: 'var(--color-475569, #475569)', lineHeight: 1.4 }}>
                   {item}
                 </span>
               </motion.div>
@@ -119,7 +119,7 @@ export const DepartmentOverview: FC<DepartmentOverviewProps> = ({
 
         {/* Operational Sub-Nodes Launchpad */}
         <motion.div variants={slideUpItem} initial="hidden" animate="show">
-          <h4 style={{ margin: '0 0 0.85rem 0', fontSize: '1.05rem', fontWeight: 800, color: '#1E293B' }}>
+          <h4 style={{ margin: '0 0 0.85rem 0', fontSize: '1.05rem', fontWeight: 800, color: 'var(--color-1e293b, #1E293B)' }}>
             ⚡ Operational Sub-Nodes Launchpad
           </h4>
           <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.75rem' }}>

@@ -91,7 +91,7 @@ export const RbacPermissionMatrixEditor: FC = () => {
     <Wrap data-testid="rbac-permission-matrix-editor">
       <Head>
         <Title>🛡️ RBAC Permission Matrix</Title>
-        <div style={{fontSize:'0.68rem',color:'#EF4444',fontWeight:700}}>{totalGranted} permissions granted</div>
+        <div style={{fontSize:'0.68rem',color:'var(--accent-red, #EF4444)',fontWeight:700}}>{totalGranted} permissions granted</div>
       </Head>
       <Body>
         <RoleTabs>
@@ -114,7 +114,7 @@ export const RbacPermissionMatrixEditor: FC = () => {
             <tbody>
               {PERMISSIONS.map(mod=>(
                 <tr key={mod.module}>
-                  <Td style={{fontWeight:700,color:'#94A3B8'}}>{mod.module}</Td>
+                  <Td style={{fontWeight:700,color:'var(--color-94a3b8, #94A3B8)'}}>{mod.module}</Td>
                   {Array.from(new Set(PERMISSIONS.flatMap(m=>m.actions))).slice(0,5).map(action=>{
                     const key = `${mod.module}::${action}`;
                     const supported = mod.actions.includes(action);
@@ -131,7 +131,7 @@ export const RbacPermissionMatrixEditor: FC = () => {
                           >
                             {isOn?'✓':''}
                           </Check>
-                        ) : <span style={{color:'#1E293B'}}>—</span>}
+                        ) : <span style={{color:'var(--color-1e293b, #1E293B)'}}>—</span>}
                       </TdCenter>
                     );
                   })}
@@ -142,7 +142,7 @@ export const RbacPermissionMatrixEditor: FC = () => {
         </MatrixTable>
 
         {role.locked ? (
-          <div style={{fontSize:'0.72rem',color:'#64748B',textAlign:'center',padding:'8px'}}>
+          <div style={{fontSize:'0.72rem',color:'var(--text-secondary, #64748B)',textAlign:'center',padding:'8px'}}>
             🔒 MD (Level 5) permissions are immutable — full access to all modules
           </div>
         ) : saved ? (

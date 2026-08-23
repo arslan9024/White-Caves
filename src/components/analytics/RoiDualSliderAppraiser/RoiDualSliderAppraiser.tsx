@@ -185,7 +185,7 @@ export const RoiDualSliderAppraiser: FC = () => {
           <span role="img" aria-label="chart">💹</span>
           Rental Yield vs Capital Appreciation
         </Title>
-        <div style={{ fontSize: '0.75rem', color: '#94A3B8', fontWeight: 600 }}>ROI Appraiser</div>
+        <div style={{ fontSize: '0.75rem', color: 'var(--color-94a3b8, #94A3B8)', fontWeight: 600 }}>ROI Appraiser</div>
       </Header>
       <Body>
         <SliderRow>

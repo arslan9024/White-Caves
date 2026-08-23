@@ -152,13 +152,13 @@ export const TopNavbar: FC = () => {
 
       {/* ── Right Section: Navigation Links & Binary Theme Switch ────────────── */}
       <div className="top-navbar-right">
-        <Link to="/" className="nav-link-btn" title="Homepage View" style={{ color: isDark ? '#F8FAFC' : '#1E293B' }}>
+        <Link to="/" className="nav-link-btn" title="Homepage View" style={{ color: isDark ? 'var(--color-f8fafc, #F8FAFC)' : 'var(--color-1e293b, #1E293B)' }}>
           Home
         </Link>
-        <Link to="/crm" className="nav-link-btn" title="CRM Dashboard" style={{ color: isDark ? '#F8FAFC' : '#1E293B' }}>
+        <Link to="/crm" className="nav-link-btn" title="CRM Dashboard" style={{ color: isDark ? 'var(--color-f8fafc, #F8FAFC)' : 'var(--color-1e293b, #1E293B)' }}>
           Dashboard
         </Link>
-        <Link to="/profile" className="nav-link-btn" title="Profile & Security" style={{ color: isDark ? '#F8FAFC' : '#1E293B' }}>
+        <Link to="/profile" className="nav-link-btn" title="Profile & Security" style={{ color: isDark ? 'var(--color-f8fafc, #F8FAFC)' : 'var(--color-1e293b, #1E293B)' }}>
           Profile
         </Link>
 
@@ -234,7 +234,7 @@ export const TopNavbar: FC = () => {
           onClick={handleNotificationsClick}
           className="top-navbar-btn"
           title="Notifications & WhatsApp Queue"
-          style={{ color: isDark ? '#F8FAFC' : '#1E293B' }}
+          style={{ color: isDark ? 'var(--color-f8fafc, #F8FAFC)' : 'var(--color-1e293b, #1E293B)' }}
         >
           <Bell size={18} />
         </button>
@@ -249,14 +249,14 @@ export const TopNavbar: FC = () => {
             <User size={18} color="#EF4444" />
           </button>
           <div className="dropdown-menu">
-            <div style={{ padding: '8px', fontSize: '0.8rem', fontWeight: 'bold', color: isDark ? '#F8FAFC' : '#1E293B', borderBottom: '1px solid rgba(239, 68, 68, 0.2)' }}>
+            <div style={{ padding: '8px', fontSize: '0.8rem', fontWeight: 'bold', color: isDark ? 'var(--color-f8fafc, #F8FAFC)' : 'var(--color-1e293b, #1E293B)', borderBottom: '1px solid rgba(239, 68, 68, 0.2)' }}>
               {activeUser?.name || 'Managing Director'}
-              <div style={{ fontSize: '0.72rem', color: '#94A3B8', fontWeight: 'normal' }}>{activeUser?.email}</div>
+              <div style={{ fontSize: '0.72rem', color: 'var(--color-94a3b8, #94A3B8)', fontWeight: 'normal' }}>{activeUser?.email}</div>
             </div>
-            <Link to="/profile" style={{ display: 'block', padding: '8px', fontSize: '0.8rem', color: '#EF4444', fontWeight: 'bold', textDecoration: 'none' }}>
+            <Link to="/profile" style={{ display: 'block', padding: '8px', fontSize: '0.8rem', color: 'var(--accent-red, #EF4444)', fontWeight: 'bold', textDecoration: 'none' }}>
               👤 Sovereign Profile
             </Link>
-            <Link to="/crm" style={{ display: 'block', padding: '8px', fontSize: '0.8rem', color: isDark ? '#F8FAFC' : '#1E293B', textDecoration: 'none' }}>
+            <Link to="/crm" style={{ display: 'block', padding: '8px', fontSize: '0.8rem', color: isDark ? 'var(--color-f8fafc, #F8FAFC)' : 'var(--color-1e293b, #1E293B)', textDecoration: 'none' }}>
               📊 Executive Dashboard
             </Link>
           </div>

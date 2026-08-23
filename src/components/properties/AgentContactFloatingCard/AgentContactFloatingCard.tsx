@@ -104,7 +104,7 @@ export const AgentContactFloatingCard: FC<{
         <div>
           <AName>{name}</AName>
           <ARole>{role}</ARole>
-          <div style={{ fontSize: '0.65rem', color: '#10B981', fontWeight: 700, marginTop: '2px' }}>
+          <div style={{ fontSize: '0.65rem', color: 'var(--accent-green, #10B981)', fontWeight: 700, marginTop: '2px' }}>
             RERA {reraNumber} · Verified
           </div>
         </div>

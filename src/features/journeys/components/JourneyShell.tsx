@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { JourneyDefinition, JourneySession } from '../../../types/journey';
+import { JourneyDefinition, JourneySession, JourneyResultOutcome } from '../../../types/journey';
 import { JourneyEngineService } from '../../../services/journeys/journeyEngineService';
 import { JourneyHeader } from './JourneyHeader';
 import { JourneyBlockerBanner } from './JourneyBlockerBanner';
@@ -32,7 +32,7 @@ export const JourneyShell: React.FC<JourneyShellProps> = ({
   const isProcessing = currentStep?.type === 'processing';
   const isResult = currentStep?.type === 'result';
 
-  const handleUpdateData = (patch: Record<string, any>) => {
+  const handleUpdateData = (patch: Record<string, unknown>) => {
     const updated = JourneyEngineService.updateSessionData(session, definition, patch);
     setSession(updated);
   };
@@ -52,7 +52,7 @@ export const JourneyShell: React.FC<JourneyShellProps> = ({
     setSession(updated);
   };
 
-  const handleCompleteOutcome = (resultOutcome: any) => {
+  const handleCompleteOutcome = (resultOutcome: JourneyResultOutcome) => {
     const updated = JourneyEngineService.completeJourney(session, resultOutcome);
     setSession(updated);
     // Advance to result step

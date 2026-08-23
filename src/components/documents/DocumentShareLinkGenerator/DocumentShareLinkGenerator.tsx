@@ -9,7 +9,7 @@ export const DocumentShareLinkGenerator: FC = () => {
   const { expiry, setExpiry, requirePin, setRequirePin, link, pin, copied, handleGenerate, handleCopy, EXPIRY_LABELS } = useDocumentShareLinkGeneratorLogic();
   return (
     <Root data-testid="doc-share-link-generator">
-      <Title><Link size={16} style={{ marginRight: 6, color: '#ef4444', verticalAlign: 'text-bottom' }} />Share Document Link</Title>
+      <Title><Link size={16} style={{ marginRight: 6, color: 'var(--accent-red, #ef4444)', verticalAlign: 'text-bottom' }} />Share Document Link</Title>
       <OptionRow>
         <OptionLabel>Link Expiry</OptionLabel>
         <Select value={expiry} onChange={(e) => setExpiry(e.target.value as ExpiryOption)}>
@@ -21,7 +21,7 @@ export const DocumentShareLinkGenerator: FC = () => {
       <OptionRow>
         <OptionLabel>Require PIN</OptionLabel>
         <Toggle type="checkbox" checked={requirePin} onChange={(e) => setRequirePin(e.target.checked)} />
-        <span style={{ fontSize: '0.8125rem', color: '#64748b' }}>4-digit PIN to open</span>
+        <span style={{ fontSize: '0.8125rem', color: 'var(--text-secondary, #64748b)' }}>4-digit PIN to open</span>
       </OptionRow>
       <GenBtn onClick={handleGenerate}>Generate Secure Link</GenBtn>
       {link && (
@@ -32,9 +32,9 @@ export const DocumentShareLinkGenerator: FC = () => {
           </LinkBox>
           {pin && (
             <PinBox>
-              <div style={{ fontSize: '0.75rem', color: '#64748b', marginBottom: '0.25rem' }}>🔐 Recipient PIN Code</div>
+              <div style={{ fontSize: '0.75rem', color: 'var(--text-secondary, #64748b)', marginBottom: '0.25rem' }}>🔐 Recipient PIN Code</div>
               <PinCode>{pin}</PinCode>
-              <div style={{ fontSize: '0.6875rem', color: '#94a3b8', marginTop: '0.25rem' }}>Share this PIN separately (not via same channel)</div>
+              <div style={{ fontSize: '0.6875rem', color: 'var(--color-94a3b8, #94a3b8)', marginTop: '0.25rem' }}>Share this PIN separately (not via same channel)</div>
             </PinBox>
           )}
         </>

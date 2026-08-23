@@ -123,12 +123,12 @@ export const EmergencyHotlineRouter: FC = () => {
         <EmergencyTag>LIVE DISPATCH</EmergencyTag>
       </Head>
       <Body>
-        <div style={{ fontSize: '0.72rem', color: '#94A3B8' }}>
+        <div style={{ fontSize: '0.72rem', color: 'var(--color-94a3b8, #94A3B8)' }}>
           Direct VoIP routing system connecting emergency resident calls (power failure, flooding, AC failure) to geo-located on-duty facility engineers within 60 seconds.
         </div>
 
         <div>
-          <div style={{ fontSize: '0.68rem', fontWeight: 700, color: '#94A3B8', textTransform: 'uppercase', marginBottom: '8px' }}>
+          <div style={{ fontSize: '0.68rem', fontWeight: 700, color: 'var(--color-94a3b8, #94A3B8)', textTransform: 'uppercase', marginBottom: '8px' }}>
             On-Duty Emergency Response Engineers
           </div>
           <DutyGrid>
@@ -138,7 +138,7 @@ export const EmergencyHotlineRouter: FC = () => {
                 <EngRole>{eng.specialty}</EngRole>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '4px' }}>
                   <DutyPill $onDuty={eng.onDuty}>{eng.onDuty ? '● ON ACTIVE DUTY' : 'STANDBY'}</DutyPill>
-                  <span style={{ fontSize: '0.65rem', color: '#CBD5E1' }}>ETA: {eng.eta}</span>
+                  <span style={{ fontSize: '0.65rem', color: 'var(--text-secondary, #CBD5E1)' }}>ETA: {eng.eta}</span>
                 </div>
               </EngineerCard>
             ))}
@@ -146,7 +146,7 @@ export const EmergencyHotlineRouter: FC = () => {
         </div>
 
         {callDispatched ? (
-          <div style={{ padding: '14px', borderRadius: '10px', background: 'rgba(16, 185, 129, 0.1)', border: '1px solid rgba(16, 185, 129, 0.3)', textAlign: 'center', color: '#10B981', fontWeight: 800, fontSize: '0.85rem' }}>
+          <div style={{ padding: '14px', borderRadius: '10px', background: 'rgba(16, 185, 129, 0.1)', border: '1px solid rgba(16, 185, 129, 0.3)', textAlign: 'center', color: 'var(--accent-green, #10B981)', fontWeight: 800, fontSize: '0.85rem' }}>
             ✓ Emergency Hotline Call Routed to Eng. Tariq Al Nuaimi (ETA: 18 mins)! SMS Ticket Dispatched.
           </div>
         ) : (

@@ -208,7 +208,7 @@ export const PdcDepositReminderCalendar: FC = () => {
     <Wrapper data-testid="pdc-deposit-reminder-calendar">
       <Header>
         <Title>📅 PDC Deposit Reminder Calendar</Title>
-        <div style={{ fontSize: '0.7rem', color: '#64748B' }}>7-day bank notification</div>
+        <div style={{ fontSize: '0.7rem', color: 'var(--text-secondary, #64748B)' }}>7-day bank notification</div>
       </Header>
       <Body style={{ opacity: loading ? 0.6 : 1 }}>
         <CalendarGrid>
@@ -225,13 +225,13 @@ export const PdcDepositReminderCalendar: FC = () => {
             );
           })}
         </CalendarGrid>
-        <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap', fontSize: '0.65rem', color: '#64748B' }}>
-          <span style={{ color: '#F59E0B' }}>■</span> Due Soon
-          <span style={{ color: '#EF4444' }}>■</span> 7-Day Alert
-          <span style={{ color: '#10B981' }}>■</span> Deposited
+        <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap', fontSize: '0.65rem', color: 'var(--text-secondary, #64748B)' }}>
+          <span style={{ color: 'var(--accent-gold, #F59E0B)' }}>■</span> Due Soon
+          <span style={{ color: 'var(--accent-red, #EF4444)' }}>■</span> 7-Day Alert
+          <span style={{ color: 'var(--accent-green, #10B981)' }}>■</span> Deposited
         </div>
         <ChequeList>
-          {cheques.length === 0 && !loading && <div style={{ color: '#64748B', fontSize: '0.8rem', textAlign: 'center', padding: '10px' }}>No cheques found.</div>}
+          {cheques.length === 0 && !loading && <div style={{ color: 'var(--text-secondary, #64748B)', fontSize: '0.8rem', textAlign: 'center', padding: '10px' }}>No cheques found.</div>}
           {cheques.map(c => (
             <ChequeCard key={c.id} $status={c.status}>
               <ChequeNum>{c.id}</ChequeNum>

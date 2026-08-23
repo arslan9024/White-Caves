@@ -722,52 +722,52 @@ export const ProfilePage: FC = () => {
                   {/* DET License */}
                   <div style={{ padding: '16px', borderRadius: '12px', background: 'var(--bg-secondary, rgba(239, 68, 68, 0.05))', border: '1px solid rgba(239, 68, 68, 0.3)' }}>
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
-                      <span style={{ fontSize: '0.78rem', fontWeight: 800, color: '#EF4444' }}>DET COMMERCIAL LICENSE</span>
-                      <span style={{ fontSize: '0.7rem', padding: '2px 8px', borderRadius: '999px', background: '#10B981', color: '#FFF', fontWeight: 800 }}>ACTIVE</span>
+                      <span style={{ fontSize: '0.78rem', fontWeight: 800, color: 'var(--accent-red, #EF4444)' }}>DET COMMERCIAL LICENSE</span>
+                      <span style={{ fontSize: '0.7rem', padding: '2px 8px', borderRadius: '999px', background: 'var(--accent-green, #10B981)', color: 'var(--white, #FFF)', fontWeight: 800 }}>ACTIVE</span>
                     </div>
                     <strong style={{ fontSize: '1.1rem', color: 'var(--text-primary)' }}>No. 1388443</strong>
                     <p style={{ fontSize: '0.78rem', color: 'var(--text-muted)', margin: '4px 0 10px' }}>Office Classification: General Brokerage</p>
                     <div style={{ fontSize: '0.75rem', fontWeight: 700, color: 'var(--text-secondary)' }}>
-                      ⏳ Expiry: <span style={{ color: '#EF4444' }}>31-Jul-2026</span> (Audit Valid)
+                      ⏳ Expiry: <span style={{ color: 'var(--accent-red, #EF4444)' }}>31-Jul-2026</span> (Audit Valid)
                     </div>
                   </div>
 
                   {/* RERA ORN */}
                   <div style={{ padding: '16px', borderRadius: '12px', background: 'var(--bg-secondary, rgba(239, 68, 68, 0.05))', border: '1px solid rgba(239, 68, 68, 0.3)' }}>
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
-                      <span style={{ fontSize: '0.78rem', fontWeight: 800, color: '#EF4444' }}>RERA REGISTRATION (ORN)</span>
-                      <span style={{ fontSize: '0.7rem', padding: '2px 8px', borderRadius: '999px', background: '#10B981', color: '#FFF', fontWeight: 800 }}>ACTIVE</span>
+                      <span style={{ fontSize: '0.78rem', fontWeight: 800, color: 'var(--accent-red, #EF4444)' }}>RERA REGISTRATION (ORN)</span>
+                      <span style={{ fontSize: '0.7rem', padding: '2px 8px', borderRadius: '999px', background: 'var(--accent-green, #10B981)', color: 'var(--white, #FFF)', fontWeight: 800 }}>ACTIVE</span>
                     </div>
                     <strong style={{ fontSize: '1.1rem', color: 'var(--text-primary)' }}>ORN: 44483</strong>
                     <p style={{ fontSize: '0.78rem', color: 'var(--text-muted)', margin: '4px 0 10px' }}>Real Estate Regulatory Agency Dubai</p>
                     <div style={{ fontSize: '0.75rem', fontWeight: 700, color: 'var(--text-secondary)' }}>
-                      ⏳ Expiry: <span style={{ color: '#EF4444' }}>15-Aug-2026</span> (Verified)
+                      ⏳ Expiry: <span style={{ color: 'var(--accent-red, #EF4444)' }}>15-Aug-2026</span> (Verified)
                     </div>
                   </div>
 
                   {/* Office HQ Ejari */}
                   <div style={{ padding: '16px', borderRadius: '12px', background: 'var(--bg-secondary, rgba(239, 68, 68, 0.05))', border: '1px solid rgba(239, 68, 68, 0.3)' }}>
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
-                      <span style={{ fontSize: '0.78rem', fontWeight: 800, color: '#EF4444' }}>HQ EJARI CERTIFICATE</span>
-                      <span style={{ fontSize: '0.7rem', padding: '2px 8px', borderRadius: '999px', background: '#10B981', color: '#FFF', fontWeight: 800 }}>ACTIVE</span>
+                      <span style={{ fontSize: '0.78rem', fontWeight: 800, color: 'var(--accent-red, #EF4444)' }}>HQ EJARI CERTIFICATE</span>
+                      <span style={{ fontSize: '0.7rem', padding: '2px 8px', borderRadius: '999px', background: 'var(--accent-green, #10B981)', color: 'var(--white, #FFF)', fontWeight: 800 }}>ACTIVE</span>
                     </div>
                     <strong style={{ fontSize: '1.1rem', color: 'var(--text-primary)' }}>0120250814005322</strong>
                     <p style={{ fontSize: '0.78rem', color: 'var(--text-muted)', margin: '4px 0 10px' }}>Office D-72, El Shaye - 4 Building</p>
                     <div style={{ fontSize: '0.75rem', fontWeight: 700, color: 'var(--text-secondary)' }}>
-                      ⏳ Expiry: <span style={{ color: '#EF4444' }}>01-Oct-2026</span> (Registered)
+                      ⏳ Expiry: <span style={{ color: 'var(--accent-red, #EF4444)' }}>01-Oct-2026</span> (Registered)
                     </div>
                   </div>
 
                   {/* ICP Card */}
                   <div style={{ padding: '16px', borderRadius: '12px', background: 'var(--bg-secondary, rgba(239, 68, 68, 0.05))', border: '1px solid rgba(239, 68, 68, 0.3)' }}>
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
-                      <span style={{ fontSize: '0.78rem', fontWeight: 800, color: '#EF4444' }}>ICP ESTABLISHMENT CARD</span>
-                      <span style={{ fontSize: '0.7rem', padding: '2px 8px', borderRadius: '999px', background: '#10B981', color: '#FFF', fontWeight: 800 }}>ACTIVE</span>
+                      <span style={{ fontSize: '0.78rem', fontWeight: 800, color: 'var(--accent-red, #EF4444)' }}>ICP ESTABLISHMENT CARD</span>
+                      <span style={{ fontSize: '0.7rem', padding: '2px 8px', borderRadius: '999px', background: 'var(--accent-green, #10B981)', color: 'var(--white, #FFF)', fontWeight: 800 }}>ACTIVE</span>
                     </div>
                     <strong style={{ fontSize: '1.1rem', color: 'var(--text-primary)' }}>MOL: 2/1/1192499</strong>
                     <p style={{ fontSize: '0.78rem', color: 'var(--text-muted)', margin: '4px 0 10px' }}>Ministry of Human Resources & Emiratisation</p>
                     <div style={{ fontSize: '0.75rem', fontWeight: 700, color: 'var(--text-secondary)' }}>
-                      ⏳ Expiry: <span style={{ color: '#EF4444' }}>20-Nov-2026</span> (Compliant)
+                      ⏳ Expiry: <span style={{ color: 'var(--accent-red, #EF4444)' }}>20-Nov-2026</span> (Compliant)
                     </div>
                   </div>
                 </div>
@@ -786,23 +786,23 @@ export const ProfilePage: FC = () => {
 
                 {/* Interactive Milestone Timeline */}
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
-                  <div style={{ padding: '14px', borderRadius: '12px', background: 'var(--bg-secondary, #F8FAFC)', borderLeft: '4px solid #EF4444' }}>
+                  <div style={{ padding: '14px', borderRadius: '12px', background: 'var(--bg-secondary, #F8FAFC)', borderLeft: '4px solid var(--accent-red, #EF4444)' }}>
                     <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '4px' }}>
                       <strong style={{ color: 'var(--text-primary)' }}>Q3 Target: AED 250M Gross Transaction Volume</strong>
-                      <span style={{ color: '#EF4444', fontWeight: 800 }}>88% Achieved</span>
+                      <span style={{ color: 'var(--accent-red, #EF4444)', fontWeight: 800 }}>88% Achieved</span>
                     </div>
-                    <div style={{ width: '100%', height: '8px', borderRadius: '4px', background: '#E2E8F0', overflow: 'hidden' }}>
-                      <div style={{ width: '88%', height: '100%', background: 'linear-gradient(90deg, #EF4444, #F97316)' }} />
+                    <div style={{ width: '100%', height: '8px', borderRadius: '4px', background: 'var(--text-secondary, #E2E8F0)', overflow: 'hidden' }}>
+                      <div style={{ width: '88%', height: '100%', background: 'linear-gradient(90deg, var(--accent-red, #EF4444), var(--color-f97316, #F97316))' }} />
                     </div>
                   </div>
 
-                  <div style={{ padding: '14px', borderRadius: '12px', background: 'var(--bg-secondary, #F8FAFC)', borderLeft: '4px solid #10B981' }}>
+                  <div style={{ padding: '14px', borderRadius: '12px', background: 'var(--bg-secondary, #F8FAFC)', borderLeft: '4px solid var(--accent-green, #10B981)' }}>
                     <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '4px' }}>
                       <strong style={{ color: 'var(--text-primary)' }}>DAMAC Hills 2 Cluster Portfolio: 9,378 Units Onboarded</strong>
-                      <span style={{ color: '#10B981', fontWeight: 800 }}>100% Synced</span>
+                      <span style={{ color: 'var(--accent-green, #10B981)', fontWeight: 800 }}>100% Synced</span>
                     </div>
-                    <div style={{ width: '100%', height: '8px', borderRadius: '4px', background: '#E2E8F0', overflow: 'hidden' }}>
-                      <div style={{ width: '100%', height: '100%', background: '#10B981' }} />
+                    <div style={{ width: '100%', height: '8px', borderRadius: '4px', background: 'var(--text-secondary, #E2E8F0)', overflow: 'hidden' }}>
+                      <div style={{ width: '100%', height: '100%', background: 'var(--accent-green, #10B981)' }} />
                     </div>
                   </div>
                 </div>
@@ -831,7 +831,7 @@ export const ProfilePage: FC = () => {
                       <strong style={{ display: 'block', color: 'var(--text-primary)' }}>Web App Dashboard Session (Current)</strong>
                       <span style={{ fontSize: '0.78rem', color: 'var(--text-muted)' }}>IP: 185.192.68.10 · Dubai, UAE · SSL Encrypted · TLS 1.3</span>
                     </div>
-                    <span style={{ padding: '4px 10px', borderRadius: '999px', background: 'rgba(16, 185, 129, 0.15)', color: '#10B981', fontSize: '0.75rem', fontWeight: 800 }}>ACTIVE NOW</span>
+                    <span style={{ padding: '4px 10px', borderRadius: '999px', background: 'rgba(16, 185, 129, 0.15)', color: 'var(--accent-green, #10B981)', fontSize: '0.75rem', fontWeight: 800 }}>ACTIVE NOW</span>
                   </div>
                 </div>
               </Card>

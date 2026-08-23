@@ -189,7 +189,7 @@ export const CryptoPaymentSimulator: FC = () => {
             >
               <span style={{ fontSize: '1.2rem' }}>{item.icon}</span>
               <span style={{ fontWeight: 800, fontSize: '0.78rem' }}>{key}</span>
-              <span style={{ fontSize: '0.62rem', color: '#64748B' }}>${item.rateUsd.toLocaleString()}</span>
+              <span style={{ fontSize: '0.62rem', color: 'var(--text-secondary, #64748B)' }}>${item.rateUsd.toLocaleString()}</span>
             </AssetCard>
           ))}
         </AssetSelector>
@@ -207,26 +207,26 @@ export const CryptoPaymentSimulator: FC = () => {
           <FieldBox>
             <FLabel>Purchase Price (AED)</FLabel>
             <FVal>AED {(propertyPriceAed / 1000000).toFixed(2)}M</FVal>
-            <div style={{ fontSize: '0.68rem', color: '#64748B' }}>≈ ${usdAmount.toLocaleString(undefined, { maximumFractionDigits: 0 })} USD</div>
+            <div style={{ fontSize: '0.68rem', color: 'var(--text-secondary, #64748B)' }}>≈ ${usdAmount.toLocaleString(undefined, { maximumFractionDigits: 0 })} USD</div>
           </FieldBox>
           <FieldBox>
             <FLabel>Payable in {selectedAsset}</FLabel>
-            <FVal style={{ color: '#A78BFA' }}>
+            <FVal style={{ color: 'var(--color-a78bfa, #A78BFA)' }}>
               {selectedAsset === 'BTC' || selectedAsset === 'ETH' 
                 ? cryptoAmount.toFixed(4) 
                 : cryptoAmount.toLocaleString(undefined, { maximumFractionDigits: 0 })} {selectedAsset}
             </FVal>
-            <div style={{ fontSize: '0.68rem', color: '#10B981' }}>0.00% Slippage Protected</div>
+            <div style={{ fontSize: '0.68rem', color: 'var(--accent-green, #10B981)' }}>0.00% Slippage Protected</div>
           </FieldBox>
         </ConversionGrid>
 
         {paid ? (
           <div style={{ padding: '16px', borderRadius: '12px', background: 'rgba(16, 185, 129, 0.08)', border: '1px solid rgba(16, 185, 129, 0.3)', textAlign: 'center' }}>
             <div style={{ fontSize: '1.2rem', marginBottom: '4px' }}>✅</div>
-            <div style={{ fontSize: '0.9rem', fontWeight: 800, color: '#10B981' }}>
+            <div style={{ fontSize: '0.9rem', fontWeight: 800, color: 'var(--accent-green, #10B981)' }}>
               Crypto Escrow Deposit Confirmed!
             </div>
-            <div style={{ fontSize: '0.72rem', color: '#CBD5E1', marginTop: '4px' }}>
+            <div style={{ fontSize: '0.72rem', color: 'var(--text-secondary, #CBD5E1)', marginTop: '4px' }}>
               Transaction Hash: 0x8f9c...4a2b | Direct Settlement into DLD Escrow Vault
             </div>
           </div>
@@ -236,7 +236,7 @@ export const CryptoPaymentSimulator: FC = () => {
           </PayBtn>
         )}
 
-        <div style={{ fontSize: '0.68rem', color: '#64748B', textAlign: 'center', lineHeight: '1.4' }}>
+        <div style={{ fontSize: '0.68rem', color: 'var(--text-secondary, #64748B)', textAlign: 'center', lineHeight: '1.4' }}>
           Regulated under VARA (Virtual Assets Regulatory Authority) Dubai & UAE Central Bank Compliance Directives.
         </div>
       </Body>

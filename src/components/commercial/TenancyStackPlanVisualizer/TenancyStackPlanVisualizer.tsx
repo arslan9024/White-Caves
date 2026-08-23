@@ -117,16 +117,16 @@ export const TenancyStackPlanVisualizer: FC = () => {
       <Body>
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '10px', textAlign: 'center' }}>
           <div style={{ padding: '8px', background: 'rgba(15,23,42,0.7)', borderRadius: '8px' }}>
-            <div style={{ fontSize: '0.62rem', color: '#94A3B8' }}>Total NLA</div>
-            <div style={{ fontSize: '1rem', fontWeight: 900, color: '#FFF' }}>236,000 SqFt</div>
+            <div style={{ fontSize: '0.62rem', color: 'var(--color-94a3b8, #94A3B8)' }}>Total NLA</div>
+            <div style={{ fontSize: '1rem', fontWeight: 900, color: 'var(--white, #FFF)' }}>236,000 SqFt</div>
           </div>
           <div style={{ padding: '8px', background: 'rgba(15,23,42,0.7)', borderRadius: '8px' }}>
-            <div style={{ fontSize: '0.62rem', color: '#94A3B8' }}>Occupancy Rate</div>
-            <div style={{ fontSize: '1rem', fontWeight: 900, color: '#10B981' }}>79.6%</div>
+            <div style={{ fontSize: '0.62rem', color: 'var(--color-94a3b8, #94A3B8)' }}>Occupancy Rate</div>
+            <div style={{ fontSize: '1rem', fontWeight: 900, color: 'var(--accent-green, #10B981)' }}>79.6%</div>
           </div>
           <div style={{ padding: '8px', background: 'rgba(15,23,42,0.7)', borderRadius: '8px' }}>
-            <div style={{ fontSize: '0.62rem', color: '#94A3B8' }}>WAULT (Lease Term)</div>
-            <div style={{ fontSize: '1rem', fontWeight: 900, color: '#38BDF8' }}>5.4 Years</div>
+            <div style={{ fontSize: '0.62rem', color: 'var(--color-94a3b8, #94A3B8)' }}>WAULT (Lease Term)</div>
+            <div style={{ fontSize: '1rem', fontWeight: 900, color: 'var(--color-38bdf8, #38BDF8)' }}>5.4 Years</div>
           </div>
         </div>
 
@@ -137,7 +137,7 @@ export const TenancyStackPlanVisualizer: FC = () => {
                 <FloorNum>{f.floor}</FloorNum>
                 <div>
                   <TenantInfo>{f.tenant}</TenantInfo>
-                  <div style={{ fontSize: '0.68rem', color: '#94A3B8' }}>{f.area} | {f.rent}</div>
+                  <div style={{ fontSize: '0.68rem', color: 'var(--color-94a3b8, #94A3B8)' }}>{f.area} | {f.rent}</div>
                 </div>
               </FloorLeft>
               <ExpiryTag $status={f.status}>{f.expiry}</ExpiryTag>

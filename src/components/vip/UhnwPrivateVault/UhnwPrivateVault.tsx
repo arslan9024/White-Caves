@@ -117,7 +117,7 @@ export const UhnwPrivateVault: FC = () => {
       {step === 'unlocked' && (
         <VaultContent>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-            <div style={{ color: '#10B981', fontSize: '0.8rem', fontWeight: 700 }}>✅ Vault Unlocked — {VAULT_PROPERTIES.length} Exclusive Listings</div>
+            <div style={{ color: 'var(--accent-green, #10B981)', fontSize: '0.8rem', fontWeight: 700 }}>✅ Vault Unlocked — {VAULT_PROPERTIES.length} Exclusive Listings</div>
             <AuthBtn onClick={() => setStep('gate')} style={{ padding: '6px 14px', fontSize: '0.72rem' }}>🔒 Lock Vault</AuthBtn>
           </div>
           {VAULT_PROPERTIES.map((p, i) => (
@@ -128,7 +128,7 @@ export const UhnwPrivateVault: FC = () => {
               </PropInfo>
               <PropPrice>
                 <PropPriceVal>AED {(p.price / 1_000_000).toFixed(0)}M</PropPriceVal>
-                <PropBadge style={{ color: '#A78BFA', fontWeight: 700 }}>{p.tag}</PropBadge>
+                <PropBadge style={{ color: 'var(--color-a78bfa, #A78BFA)', fontWeight: 700 }}>{p.tag}</PropBadge>
               </PropPrice>
             </PropertyCard>
           ))}

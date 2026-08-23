@@ -36,10 +36,10 @@ export const ReraPenaltyRegistry: FC = () => (
   <Wrapper data-testid="rera-penalty-registry">
     <Header>
       <Title>⚖️ RERA Penalty & Fine Registry 2024</Title>
-      <div style={{ fontSize: '0.7rem', color: '#60A5FA', fontWeight: 700 }}>Law 85/2006 Reference</div>
+      <div style={{ fontSize: '0.7rem', color: 'var(--color-60a5fa, #60A5FA)', fontWeight: 700 }}>Law 85/2006 Reference</div>
     </Header>
     <Body>
-      <div style={{ fontSize: '0.75rem', color: '#64748B', padding: '8px 12px', background: 'rgba(59,130,246,0.06)', borderRadius: '8px', border: '1px solid rgba(59,130,246,0.15)' }}>
+      <div style={{ fontSize: '0.75rem', color: 'var(--text-secondary, #64748B)', padding: '8px 12px', background: 'rgba(59,130,246,0.06)', borderRadius: '8px', border: '1px solid rgba(59,130,246,0.15)' }}>
         ⚠️ Reference only — consult a UAE-qualified legal advisor for compliance decisions.
       </div>
       {PENALTIES.map((p, i) => (

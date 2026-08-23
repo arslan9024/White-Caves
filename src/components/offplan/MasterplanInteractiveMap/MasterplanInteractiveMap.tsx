@@ -105,13 +105,13 @@ export const MasterplanInteractiveMap: FC = () => {
         <MapCanvas>
           <div style={{ textAlign: 'center' }}>
             <div style={{ fontSize: '2.2rem', marginBottom: '4px' }}>🏝️</div>
-            <div style={{ fontSize: '0.85rem', fontWeight: 800, color: '#FFF' }}>{activeCluster}</div>
-            <div style={{ fontSize: '0.68rem', color: '#10B981', marginTop: '2px' }}>Interactive GIS Vector Plot Active</div>
+            <div style={{ fontSize: '0.85rem', fontWeight: 800, color: 'var(--white, #FFF)' }}>{activeCluster}</div>
+            <div style={{ fontSize: '0.68rem', color: 'var(--accent-green, #10B981)', marginTop: '2px' }}>Interactive GIS Vector Plot Active</div>
           </div>
         </MapCanvas>
 
         <div>
-          <div style={{ fontSize: '0.68rem', fontWeight: 700, color: '#94A3B8', textTransform: 'uppercase', marginBottom: '8px' }}>
+          <div style={{ fontSize: '0.68rem', fontWeight: 700, color: 'var(--color-94a3b8, #94A3B8)', textTransform: 'uppercase', marginBottom: '8px' }}>
             Master Community Development Clusters
           </div>
           <ClusterGrid>
@@ -121,9 +121,9 @@ export const MasterplanInteractiveMap: FC = () => {
                 $selected={activeCluster === c.name}
                 onClick={() => setActiveCluster(c.name)}
               >
-                <div style={{ fontSize: '0.78rem', fontWeight: 800, color: '#FFF' }}>{c.name}</div>
-                <div style={{ fontSize: '0.65rem', color: '#94A3B8', marginTop: '2px' }}>{c.type}</div>
-                <div style={{ fontSize: '0.62rem', color: '#10B981', fontWeight: 700, marginTop: '4px' }}>{c.status}</div>
+                <div style={{ fontSize: '0.78rem', fontWeight: 800, color: 'var(--white, #FFF)' }}>{c.name}</div>
+                <div style={{ fontSize: '0.65rem', color: 'var(--color-94a3b8, #94A3B8)', marginTop: '2px' }}>{c.type}</div>
+                <div style={{ fontSize: '0.62rem', color: 'var(--accent-green, #10B981)', fontWeight: 700, marginTop: '4px' }}>{c.status}</div>
               </ClusterCard>
             ))}
           </ClusterGrid>

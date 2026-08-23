@@ -140,16 +140,16 @@ export const MaintenanceTicketDispatch: FC = () => {
       <Body>
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '8px', textAlign: 'center' }}>
           <div style={{ padding: '8px', background: 'rgba(15,23,42,0.7)', borderRadius: '8px', border: '1px solid rgba(100,116,139,0.2)' }}>
-            <div style={{ fontSize: '0.62rem', color: '#94A3B8' }}>Critical SLA</div>
-            <div style={{ fontSize: '0.95rem', fontWeight: 800, color: '#EF4444' }}>&lt; 4 Hours</div>
+            <div style={{ fontSize: '0.62rem', color: 'var(--color-94a3b8, #94A3B8)' }}>Critical SLA</div>
+            <div style={{ fontSize: '0.95rem', fontWeight: 800, color: 'var(--accent-red, #EF4444)' }}>&lt; 4 Hours</div>
           </div>
           <div style={{ padding: '8px', background: 'rgba(15,23,42,0.7)', borderRadius: '8px', border: '1px solid rgba(100,116,139,0.2)' }}>
-            <div style={{ fontSize: '0.62rem', color: '#94A3B8' }}>High SLA</div>
-            <div style={{ fontSize: '0.95rem', fontWeight: 800, color: '#F59E0B' }}>&lt; 12 Hours</div>
+            <div style={{ fontSize: '0.62rem', color: 'var(--color-94a3b8, #94A3B8)' }}>High SLA</div>
+            <div style={{ fontSize: '0.95rem', fontWeight: 800, color: 'var(--accent-gold, #F59E0B)' }}>&lt; 12 Hours</div>
           </div>
           <div style={{ padding: '8px', background: 'rgba(15,23,42,0.7)', borderRadius: '8px', border: '1px solid rgba(100,116,139,0.2)' }}>
-            <div style={{ fontSize: '0.62rem', color: '#94A3B8' }}>Standard SLA</div>
-            <div style={{ fontSize: '0.95rem', fontWeight: 800, color: '#10B981' }}>&lt; 48 Hours</div>
+            <div style={{ fontSize: '0.62rem', color: 'var(--color-94a3b8, #94A3B8)' }}>Standard SLA</div>
+            <div style={{ fontSize: '0.95rem', fontWeight: 800, color: 'var(--accent-green, #10B981)' }}>&lt; 48 Hours</div>
           </div>
         </div>
 

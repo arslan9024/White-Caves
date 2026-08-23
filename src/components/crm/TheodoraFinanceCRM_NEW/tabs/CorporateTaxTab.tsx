@@ -42,7 +42,7 @@ export const CorporateTaxTab: React.FC = () => {
               UAE Corporate Tax (CT) — Federal Decree-Law No. 47 of 2022
             </h3>
           </div>
-          <p style={{ margin: '0.35rem 0 0 0', fontSize: '0.82rem', color: '#94A3B8' }}>
+          <p style={{ margin: '0.35rem 0 0 0', fontSize: '0.82rem', color: 'var(--color-94a3b8, #94A3B8)' }}>
             Tax Year: <strong>{taxYear}</strong> | Statutory Standard Rate: <strong>9.0%</strong> above AED 375,000 threshold
           </p>
         </div>
@@ -68,23 +68,23 @@ export const CorporateTaxTab: React.FC = () => {
       </div>
 
       {/* Threshold Meter Card */}
-      <div style={{ background: '#FFFFFF', padding: '1.5rem', borderRadius: '12px', border: '1px solid #E2E8F0' }}>
+      <div style={{ background: 'var(--white, #FFFFFF)', padding: '1.5rem', borderRadius: '12px', border: '1px solid var(--text-secondary, #E2E8F0)' }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.75rem' }}>
           <div>
-            <h4 style={{ margin: 0, fontSize: '1rem', fontWeight: 800, color: '#1E293B' }}>
+            <h4 style={{ margin: 0, fontSize: '1rem', fontWeight: 800, color: 'var(--color-1e293b, #1E293B)' }}>
               Small Business Relief / 0% Tax Threshold Status
             </h4>
-            <p style={{ margin: '0.2rem 0 0 0', fontSize: '0.8rem', color: '#64748B' }}>
+            <p style={{ margin: '0.2rem 0 0 0', fontSize: '0.8rem', color: 'var(--text-secondary, #64748B)' }}>
               First AED 375,000 of Net Taxable Profit is taxed at exactly <strong>0%</strong>
             </p>
           </div>
-          <span style={{ fontSize: '0.9rem', fontWeight: 800, color: ctData.netTaxableProfit > ctData.smallBusinessThreshold ? '#D97706' : '#10B981' }}>
+          <span style={{ fontSize: '0.9rem', fontWeight: 800, color: ctData.netTaxableProfit > ctData.smallBusinessThreshold ? 'var(--accent-gold, #D97706)' : 'var(--accent-green, #10B981)' }}>
             {ctData.netTaxableProfit > ctData.smallBusinessThreshold ? 'Exceeds 0% Band (Standard 9% Applies to Excess)' : '100% Tax Exempt'}
           </span>
         </div>
 
         {/* Progress bar */}
-        <div style={{ width: '100%', height: '14px', background: '#E2E8F0', borderRadius: '7px', overflow: 'hidden', position: 'relative' }}>
+        <div style={{ width: '100%', height: '14px', background: 'var(--text-secondary, #E2E8F0)', borderRadius: '7px', overflow: 'hidden', position: 'relative' }}>
           <div
             style={{
               width: `${progressPercent}%`,
@@ -95,53 +95,53 @@ export const CorporateTaxTab: React.FC = () => {
           />
         </div>
 
-        <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.75rem', color: '#64748B', marginTop: '0.5rem' }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.75rem', color: 'var(--text-secondary, #64748B)', marginTop: '0.5rem' }}>
           <span>AED 0.00 (0% Rate)</span>
-          <span style={{ fontWeight: 800, color: '#1E293B' }}>AED 375,000 Threshold</span>
+          <span style={{ fontWeight: 800, color: 'var(--color-1e293b, #1E293B)' }}>AED 375,000 Threshold</span>
           <span>AED {ctData.netTaxableProfit.toLocaleString()} Current Taxable Profit</span>
         </div>
       </div>
 
       {/* Key Numbers Grid */}
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '1rem' }}>
-        <div style={{ background: '#FFFFFF', padding: '1.25rem', borderRadius: '12px', border: '1px solid #E2E8F0' }}>
-          <div style={{ fontSize: '0.75rem', fontWeight: 800, color: '#64748B', textTransform: 'uppercase' }}>
+        <div style={{ background: 'var(--white, #FFFFFF)', padding: '1.25rem', borderRadius: '12px', border: '1px solid var(--text-secondary, #E2E8F0)' }}>
+          <div style={{ fontSize: '0.75rem', fontWeight: 800, color: 'var(--text-secondary, #64748B)', textTransform: 'uppercase' }}>
             Gross Annual Revenue
           </div>
-          <div style={{ fontSize: '1.5rem', fontWeight: 800, color: '#1E293B', marginTop: '0.35rem' }}>
+          <div style={{ fontSize: '1.5rem', fontWeight: 800, color: 'var(--color-1e293b, #1E293B)', marginTop: '0.35rem' }}>
             AED {ctData.grossRevenue.toLocaleString()}
           </div>
-          <div style={{ fontSize: '0.75rem', color: '#64748B', marginTop: '0.25rem' }}>Commissions & management fees</div>
+          <div style={{ fontSize: '0.75rem', color: 'var(--text-secondary, #64748B)', marginTop: '0.25rem' }}>Commissions & management fees</div>
         </div>
 
-        <div style={{ background: '#FFFFFF', padding: '1.25rem', borderRadius: '12px', border: '1px solid #E2E8F0' }}>
-          <div style={{ fontSize: '0.75rem', fontWeight: 800, color: '#64748B', textTransform: 'uppercase' }}>
+        <div style={{ background: 'var(--white, #FFFFFF)', padding: '1.25rem', borderRadius: '12px', border: '1px solid var(--text-secondary, #E2E8F0)' }}>
+          <div style={{ fontSize: '0.75rem', fontWeight: 800, color: 'var(--text-secondary, #64748B)', textTransform: 'uppercase' }}>
             CT-Deductible Outlays
           </div>
-          <div style={{ fontSize: '1.5rem', fontWeight: 800, color: '#10B981', marginTop: '0.35rem' }}>
+          <div style={{ fontSize: '1.5rem', fontWeight: 800, color: 'var(--accent-green, #10B981)', marginTop: '0.35rem' }}>
             AED {ctData.deductibleExpenses.toLocaleString()}
           </div>
-          <div style={{ fontSize: '0.75rem', color: '#64748B', marginTop: '0.25rem' }}>Portals, Ejari, DEWA, Salaries</div>
+          <div style={{ fontSize: '0.75rem', color: 'var(--text-secondary, #64748B)', marginTop: '0.25rem' }}>Portals, Ejari, DEWA, Salaries</div>
         </div>
 
-        <div style={{ background: '#FFFFFF', padding: '1.25rem', borderRadius: '12px', border: '1px solid #E2E8F0' }}>
-          <div style={{ fontSize: '0.75rem', fontWeight: 800, color: '#64748B', textTransform: 'uppercase' }}>
+        <div style={{ background: 'var(--white, #FFFFFF)', padding: '1.25rem', borderRadius: '12px', border: '1px solid var(--text-secondary, #E2E8F0)' }}>
+          <div style={{ fontSize: '0.75rem', fontWeight: 800, color: 'var(--text-secondary, #64748B)', textTransform: 'uppercase' }}>
             Taxable Base (Above 375k)
           </div>
-          <div style={{ fontSize: '1.5rem', fontWeight: 800, color: '#D97706', marginTop: '0.35rem' }}>
+          <div style={{ fontSize: '1.5rem', fontWeight: 800, color: 'var(--accent-gold, #D97706)', marginTop: '0.35rem' }}>
             AED {ctData.taxableAboveThreshold.toLocaleString()}
           </div>
-          <div style={{ fontSize: '0.75rem', color: '#64748B', marginTop: '0.25rem' }}>Subject to 9.0% rate</div>
+          <div style={{ fontSize: '0.75rem', color: 'var(--text-secondary, #64748B)', marginTop: '0.25rem' }}>Subject to 9.0% rate</div>
         </div>
 
-        <div style={{ background: 'linear-gradient(135deg, #FEF3C7 0%, #FDE68A 100%)', padding: '1.25rem', borderRadius: '12px', border: '1px solid #FCD34D' }}>
-          <div style={{ fontSize: '0.75rem', fontWeight: 800, color: '#92400E', textTransform: 'uppercase' }}>
+        <div style={{ background: 'linear-gradient(135deg, var(--color-fef3c7, #FEF3C7) 0%, var(--color-fde68a, #FDE68A) 100%)', padding: '1.25rem', borderRadius: '12px', border: '1px solid var(--color-fcd34d, #FCD34D)' }}>
+          <div style={{ fontSize: '0.75rem', fontWeight: 800, color: 'var(--color-92400e, #92400E)', textTransform: 'uppercase' }}>
             Estimated Corporate Tax Due
           </div>
-          <div style={{ fontSize: '1.5rem', fontWeight: 800, color: '#B45309', marginTop: '0.35rem' }}>
+          <div style={{ fontSize: '1.5rem', fontWeight: 800, color: 'var(--color-b45309, #B45309)', marginTop: '0.35rem' }}>
             AED {ctData.corporateTaxDue.toLocaleString()}
           </div>
-          <div style={{ fontSize: '0.75rem', color: '#92400E', marginTop: '0.25rem' }}>Effective Tax Rate: {ctData.effectiveTaxRate}</div>
+          <div style={{ fontSize: '0.75rem', color: 'var(--color-92400e, #92400E)', marginTop: '0.25rem' }}>Effective Tax Rate: {ctData.effectiveTaxRate}</div>
         </div>
       </div>
     </div>

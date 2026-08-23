@@ -164,7 +164,7 @@ export const VrThumbnailBar: FC<VrThumbnailBarProps> = ({ onRoomSelect }) => {
 
       <RoomCount>
         <CountBadge>{activeId}/{ROOMS.length}</CountBadge>
-        Viewing: <strong style={{ color: '#CBD5E1' }}>{ROOMS.find(r => r.id === activeId)?.name}</strong>
+        Viewing: <strong style={{ color: 'var(--text-secondary, #CBD5E1)' }}>{ROOMS.find(r => r.id === activeId)?.name}</strong>
         <NavButtons>
           <NavBtn onClick={() => scrollTrack('left')} disabled={activeIdx === 0}>‹</NavBtn>
           <NavBtn onClick={() => scrollTrack('right')} disabled={activeIdx === ROOMS.length - 1}>›</NavBtn>

@@ -174,7 +174,7 @@ _White Caves Global Agency | RERA ORN: 44483_`;
         </div>
 
         {sent ? (
-          <div style={{ padding: '14px', borderRadius: '10px', background: 'rgba(37, 211, 102, 0.1)', border: '1px solid rgba(37, 211, 102, 0.3)', textAlign: 'center', color: '#25D366', fontWeight: 800, fontSize: '0.82rem' }}>
+          <div style={{ padding: '14px', borderRadius: '10px', background: 'rgba(37, 211, 102, 0.1)', border: '1px solid rgba(37, 211, 102, 0.3)', textAlign: 'center', color: 'var(--color-25d366, #25D366)', fontWeight: 800, fontSize: '0.82rem' }}>
             ✓ WhatsApp Notification Dispatched & Delivered to {phone}!
           </div>
         ) : (

@@ -30,9 +30,11 @@ router.get('/', getSecondarySalesInventory);
 router.patch(
   '/:id/stage',
   (req, res, next) => {
-    if (!req.body?.nextStage || typeof req.body.nextStage !== 'string' || !req.body.nextStage.trim()) {
-      return res.status(400).json({ success: false, error: 'nextStage is required' });
+    const stage = req.body?.newStage || req.body?.nextStage;
+    if (!stage || typeof stage !== 'string' || !stage.trim()) {
+      return res.status(400).json({ success: false, error: 'newStage or nextStage is required' });
     }
+    req.body.newStage = stage;
     next();
   },
   handleValidationErrors,

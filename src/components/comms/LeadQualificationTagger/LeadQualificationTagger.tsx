@@ -121,7 +121,7 @@ export const LeadQualificationTagger: FC = () => {
         <Tag>NINA AI SCORER</Tag>
       </Head>
       <Body>
-        <div style={{ fontSize: '0.72rem', color: '#94A3B8' }}>
+        <div style={{ fontSize: '0.72rem', color: 'var(--color-94a3b8, #94A3B8)' }}>
           Automated multi-dimensional intent scoring evaluating buyer liquidity, purchasing timeline, Golden Visa qualification, and direct agency routing.
         </div>
 
@@ -146,7 +146,7 @@ export const LeadQualificationTagger: FC = () => {
                 </TagRow>
               </LInfo>
               <div style={{ textAlign: 'right' }}>
-                <span style={{ fontSize: '0.75rem', fontWeight: 800, color: lead.temperature === 'hot' ? '#EF4444' : lead.temperature === 'warm' ? '#F59E0B' : '#64748B' }}>
+                <span style={{ fontSize: '0.75rem', fontWeight: 800, color: lead.temperature === 'hot' ? 'var(--accent-red, #EF4444)' : lead.temperature === 'warm' ? 'var(--accent-gold, #F59E0B)' : 'var(--text-secondary, #64748B)' }}>
                   {lead.temperature === 'hot' ? 'P0 PRIORITY' : lead.temperature === 'warm' ? 'P1 PRIORITY' : 'NURTURE'}
                 </span>
               </div>

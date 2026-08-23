@@ -105,7 +105,7 @@ export const ExecutiveKpiFlightDeck: FC = () => {
         <KpiGrid>
           <KpiCard>
             <KLabel>Gross Closed Volume</KLabel>
-            <KVal style={{ color: '#10B981' }}>AED 482.6M</KVal>
+            <KVal style={{ color: 'var(--accent-green, #10B981)' }}>AED 482.6M</KVal>
             <TrendRow $positive={true}>▲ +28.4% vs Last Month</TrendRow>
           </KpiCard>
           <KpiCard>
@@ -115,7 +115,7 @@ export const ExecutiveKpiFlightDeck: FC = () => {
           </KpiCard>
           <KpiCard>
             <KLabel>Off-Plan Direct Closures</KLabel>
-            <KVal style={{ color: '#EF4444' }}>64 Units</KVal>
+            <KVal style={{ color: 'var(--accent-red, #EF4444)' }}>64 Units</KVal>
             <TrendRow $positive={true}>▲ 142% Target Velocity</TrendRow>
           </KpiCard>
           <KpiCard>

@@ -97,16 +97,16 @@ export const VendorRatingMatrix: FC = () => {
       <Body>
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '10px', textAlign: 'center' }}>
           <div style={{ padding: '10px', background: 'rgba(15,23,42,0.7)', borderRadius: '8px', border: '1px solid rgba(100,116,139,0.2)' }}>
-            <div style={{ fontSize: '0.65rem', color: '#94A3B8' }}>Annual FM OpEx</div>
-            <div style={{ fontSize: '1.1rem', fontWeight: 900, color: '#EF4444' }}>AED 1.48M</div>
+            <div style={{ fontSize: '0.65rem', color: 'var(--color-94a3b8, #94A3B8)' }}>Annual FM OpEx</div>
+            <div style={{ fontSize: '1.1rem', fontWeight: 900, color: 'var(--accent-red, #EF4444)' }}>AED 1.48M</div>
           </div>
           <div style={{ padding: '10px', background: 'rgba(15,23,42,0.7)', borderRadius: '8px', border: '1px solid rgba(100,116,139,0.2)' }}>
-            <div style={{ fontSize: '0.65rem', color: '#94A3B8' }}>Contractor SLA Adherence</div>
-            <div style={{ fontSize: '1.1rem', fontWeight: 900, color: '#10B981' }}>96.2% On-Time</div>
+            <div style={{ fontSize: '0.65rem', color: 'var(--color-94a3b8, #94A3B8)' }}>Contractor SLA Adherence</div>
+            <div style={{ fontSize: '1.1rem', fontWeight: 900, color: 'var(--accent-green, #10B981)' }}>96.2% On-Time</div>
           </div>
           <div style={{ padding: '10px', background: 'rgba(15,23,42,0.7)', borderRadius: '8px', border: '1px solid rgba(100,116,139,0.2)' }}>
-            <div style={{ fontSize: '0.65rem', color: '#94A3B8' }}>Active Contract Vendors</div>
-            <div style={{ fontSize: '1.1rem', fontWeight: 900, color: '#FFF' }}>18 Contractors</div>
+            <div style={{ fontSize: '0.65rem', color: 'var(--color-94a3b8, #94A3B8)' }}>Active Contract Vendors</div>
+            <div style={{ fontSize: '1.1rem', fontWeight: 900, color: 'var(--white, #FFF)' }}>18 Contractors</div>
           </div>
         </div>
 
@@ -125,14 +125,14 @@ export const VendorRatingMatrix: FC = () => {
           <tbody>
             {vendors.map((v, idx) => (
               <Tr key={idx}>
-                <Td style={{ fontWeight: 800, color: '#FFF' }}>{v.name}</Td>
+                <Td style={{ fontWeight: 800, color: 'var(--white, #FFF)' }}>{v.name}</Td>
                 <Td>{v.trade}</Td>
                 <Td>{v.jobsCompleted}</Td>
-                <Td style={{ color: '#10B981', fontWeight: 700 }}>{v.slaRating}</Td>
+                <Td style={{ color: 'var(--accent-green, #10B981)', fontWeight: 700 }}>{v.slaRating}</Td>
                 <Td>{v.avgCost}</Td>
-                <Td style={{ color: '#F59E0B', fontWeight: 800 }}>{v.score}</Td>
+                <Td style={{ color: 'var(--accent-gold, #F59E0B)', fontWeight: 800 }}>{v.score}</Td>
                 <Td>
-                  <span style={{ fontSize: '0.65rem', fontWeight: 800, padding: '2px 6px', borderRadius: '4px', background: v.status.includes('Preferred') ? 'rgba(16,185,129,0.15)' : 'rgba(100,116,139,0.15)', color: v.status.includes('Preferred') ? '#10B981' : '#CBD5E1' }}>
+                  <span style={{ fontSize: '0.65rem', fontWeight: 800, padding: '2px 6px', borderRadius: '4px', background: v.status.includes('Preferred') ? 'rgba(16,185,129,0.15)' : 'rgba(100,116,139,0.15)', color: v.status.includes('Preferred') ? 'var(--accent-green, #10B981)' : 'var(--text-secondary, #CBD5E1)' }}>
                     {v.status}
                   </span>
                 </Td>

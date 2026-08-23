@@ -52,7 +52,7 @@ export const ShortVsLongTermYieldComparator: FC = () => {
     <Wrapper data-testid="short-vs-long-yield-comparator">
       <Header>
         <Title>🏨 Short-term vs Long-term Yield</Title>
-        <div style={{ fontSize: '0.7rem', color: '#64748B' }}>Ejari vs Airbnb</div>
+        <div style={{ fontSize: '0.7rem', color: 'var(--text-secondary, #64748B)' }}>Ejari vs Airbnb</div>
       </Header>
       <Body>
         <SliderRow>
@@ -77,13 +77,13 @@ export const ShortVsLongTermYieldComparator: FC = () => {
             <CompType $type="short">🏨 Short-Term (Airbnb)</CompType>
             <CompYield>{shortYield}%</CompYield>
             <CompDesc>Net yield after platform fees & ops</CompDesc>
-            <CompDesc style={{ marginTop: '6px', color: '#94A3B8' }}>AED {Math.round(shortTermNetAnnual).toLocaleString()}/yr net</CompDesc>
+            <CompDesc style={{ marginTop: '6px', color: 'var(--color-94a3b8, #94A3B8)' }}>AED {Math.round(shortTermNetAnnual).toLocaleString()}/yr net</CompDesc>
           </CompCard>
           <CompCard $type="long">
             <CompType $type="long">📋 Long-Term (Ejari)</CompType>
             <CompYield>{longYield}%</CompYield>
             <CompDesc>Net yield after 8% mgmt fee</CompDesc>
-            <CompDesc style={{ marginTop: '6px', color: '#94A3B8' }}>AED {Math.round(longTermNet).toLocaleString()}/yr net</CompDesc>
+            <CompDesc style={{ marginTop: '6px', color: 'var(--color-94a3b8, #94A3B8)' }}>AED {Math.round(longTermNet).toLocaleString()}/yr net</CompDesc>
           </CompCard>
         </CompGrid>
 

@@ -183,10 +183,10 @@ export const PropertyConditionReportGenerator: FC = () => {
             {rooms.map((r, idx) => (
               <RoomItem key={idx}>
                 <div>
-                  <div style={{ color: '#FFF', fontWeight: 700 }}>{r.name}</div>
-                  <div style={{ color: '#94A3B8', fontSize: '0.68rem' }}>{r.condition}</div>
+                  <div style={{ color: 'var(--white, #FFF)', fontWeight: 700 }}>{r.name}</div>
+                  <div style={{ color: 'var(--color-94a3b8, #94A3B8)', fontSize: '0.68rem' }}>{r.condition}</div>
                 </div>
-                <span style={{ fontSize: '0.68rem', fontWeight: 800, padding: '3px 8px', borderRadius: '4px', background: 'rgba(16,185,129,0.15)', color: '#10B981' }}>
+                <span style={{ fontSize: '0.68rem', fontWeight: 800, padding: '3px 8px', borderRadius: '4px', background: 'rgba(16,185,129,0.15)', color: 'var(--accent-green, #10B981)' }}>
                   {r.rating}
                 </span>
               </RoomItem>
@@ -195,7 +195,7 @@ export const PropertyConditionReportGenerator: FC = () => {
         </div>
 
         {exported ? (
-          <div style={{ padding: '14px', borderRadius: '10px', background: 'rgba(16, 185, 129, 0.1)', border: '1px solid rgba(16, 185, 129, 0.3)', textAlign: 'center', color: '#10B981', fontWeight: 800, fontSize: '0.82rem' }}>
+          <div style={{ padding: '14px', borderRadius: '10px', background: 'rgba(16, 185, 129, 0.1)', border: '1px solid rgba(16, 185, 129, 0.3)', textAlign: 'center', color: 'var(--accent-green, #10B981)', fontWeight: 800, fontSize: '0.82rem' }}>
             ✓ Formal PCR Signed & PDF Exported for Landlord & Tenant Portal Archives!
           </div>
         ) : (

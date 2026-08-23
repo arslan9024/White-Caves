@@ -54,7 +54,7 @@ export const OqoodRegistrationTracker: FC = () => {
     <Wrapper data-testid="oqood-registration-tracker">
       <Header>
         <Title>📝 Oqood Off-Plan Registration Tracker</Title>
-        <div style={{ fontSize: '0.7rem', color: '#10B981', fontWeight: 700 }}>DLD Interim Registry</div>
+        <div style={{ fontSize: '0.7rem', color: 'var(--accent-green, #10B981)', fontWeight: 700 }}>DLD Interim Registry</div>
       </Header>
       <Body>
         <OqoodHero>
@@ -71,8 +71,8 @@ export const OqoodRegistrationTracker: FC = () => {
           <InfoCard><InfoLabel>Remaining</InfoLabel><InfoVal>AED {(2_000_000 - 900_000).toLocaleString()}</InfoVal></InfoCard>
         </InfoGrid>
         <div>
-          <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.72rem', color: '#64748B', marginBottom: '6px' }}>
-            <span>Payment Progress</span><span style={{ color: '#10B981', fontWeight: 700 }}>{paid}% Paid</span>
+          <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.72rem', color: 'var(--text-secondary, #64748B)', marginBottom: '6px' }}>
+            <span>Payment Progress</span><span style={{ color: 'var(--accent-green, #10B981)', fontWeight: 700 }}>{paid}% Paid</span>
           </div>
           <ProgressBar><ProgressFill $pct={paid} /></ProgressBar>
         </div>

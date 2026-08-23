@@ -202,7 +202,7 @@ export const TrakheesiQrScanner: FC = () => {
         <ScannerBox>
           <QrGraphic>🏁</QrGraphic>
           <ScanLine $scanning={scanning} />
-          <div style={{ position: 'absolute', bottom: 12, fontSize: '0.72rem', color: '#64748B' }}>
+          <div style={{ position: 'absolute', bottom: 12, fontSize: '0.72rem', color: 'var(--text-secondary, #64748B)' }}>
             {scanning ? 'Decoding DLD Cryptographic QR...' : 'Position camera over Trakheesi QR or click Scan'}
           </div>
         </ScannerBox>
@@ -219,7 +219,7 @@ export const TrakheesiQrScanner: FC = () => {
             <BadgeHeader>
               <div>
                 <PermitNumber>{permitData.permitNo}</PermitNumber>
-                <div style={{ fontSize: '0.68rem', color: '#10B981', fontWeight: 600 }}>DLD Trakheesi Active Advertisement Permit</div>
+                <div style={{ fontSize: '0.68rem', color: 'var(--accent-green, #10B981)', fontWeight: 600 }}>DLD Trakheesi Active Advertisement Permit</div>
               </div>
               <StatusPill $valid={permitData.valid}>VERIFIED ACTIVE</StatusPill>
             </BadgeHeader>

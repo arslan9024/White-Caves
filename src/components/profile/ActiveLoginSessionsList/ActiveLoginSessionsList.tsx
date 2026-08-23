@@ -26,10 +26,10 @@ export const ActiveLoginSessionsList: FC = () => {
   return (
     <SessionsContainer data-testid="active-login-sessions-list">
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-        <h4 style={{ margin: 0, color: '#EF4444' }}>💻 Active Login Sessions</h4>
+        <h4 style={{ margin: 0, color: 'var(--accent-red, #EF4444)' }}>💻 Active Login Sessions</h4>
         <button
           onClick={() => setRevoked(true)}
-          style={{ background: 'rgba(239,68,68,0.2)', border: '1px solid #EF4444', color: '#EF4444', padding: '4px 12px', borderRadius: '6px', fontSize: '0.78rem', fontWeight: 800, cursor: 'pointer' }}
+          style={{ background: 'rgba(239,68,68,0.2)', border: '1px solid var(--accent-red, #EF4444)', color: 'var(--accent-red, #EF4444)', padding: '4px 12px', borderRadius: '6px', fontSize: '0.78rem', fontWeight: 800, cursor: 'pointer' }}
         >
           {revoked ? '✓ Other Devices Revoked' : 'Revoke All Other Devices'}
         </button>
@@ -38,18 +38,18 @@ export const ActiveLoginSessionsList: FC = () => {
       <SessionRow>
         <div>
           <span style={{ fontSize: '0.85rem', fontWeight: 800, display: 'block' }}>Chrome 124 (Windows 11) — Current Session</span>
-          <span style={{ fontSize: '0.72rem', color: '#94A3B8' }}>IP: 192.168.1.1 · Dubai, UAE · Active Now</span>
+          <span style={{ fontSize: '0.72rem', color: 'var(--color-94a3b8, #94A3B8)' }}>IP: 192.168.1.1 · Dubai, UAE · Active Now</span>
         </div>
-        <span style={{ fontSize: '0.75rem', color: '#10B981', fontWeight: 800 }}>ACTIVE</span>
+        <span style={{ fontSize: '0.75rem', color: 'var(--accent-green, #10B981)', fontWeight: 800 }}>ACTIVE</span>
       </SessionRow>
 
       {!revoked && (
         <SessionRow>
           <div>
             <span style={{ fontSize: '0.85rem', fontWeight: 800, display: 'block' }}>Safari (iPhone 15 Pro)</span>
-            <span style={{ fontSize: '0.72rem', color: '#94A3B8' }}>IP: 86.98.11.45 · Dubai Marina · 2h ago</span>
+            <span style={{ fontSize: '0.72rem', color: 'var(--color-94a3b8, #94A3B8)' }}>IP: 86.98.11.45 · Dubai Marina · 2h ago</span>
           </div>
-          <span style={{ fontSize: '0.75rem', color: '#94A3B8' }}>IDLE</span>
+          <span style={{ fontSize: '0.75rem', color: 'var(--color-94a3b8, #94A3B8)' }}>IDLE</span>
         </SessionRow>
       )}
     </SessionsContainer>

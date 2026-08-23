@@ -173,7 +173,7 @@ export const SnaggingChecklistAnnotator: FC = () => {
                   <SLocation>({snag.location})</SLocation>
                 </SText>
               </SInfo>
-              <span style={{ fontSize: '0.68rem', fontWeight: 800, color: snag.fixed ? '#10B981' : '#EF4444' }}>
+              <span style={{ fontSize: '0.68rem', fontWeight: 800, color: snag.fixed ? 'var(--accent-green, #10B981)' : 'var(--accent-red, #EF4444)' }}>
                 {snag.fixed ? '✓ REPAIRED' : 'DEFECT PENDING'}
               </span>
             </SnagItem>

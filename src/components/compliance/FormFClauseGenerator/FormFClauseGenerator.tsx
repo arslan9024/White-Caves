@@ -283,13 +283,13 @@ DIGITAL SEAL: SHA256-${Math.random().toString(36).substring(2, 15).toUpperCase()
             <div style={{ marginTop: '8px', display: 'flex', justifyContent: 'flex-end', gap: '8px' }}>
               <button 
                 onClick={() => setGeneratedDoc(null)}
-                style={{ padding: '6px 14px', background: 'transparent', border: '1px solid #475569', color: '#94A3B8', borderRadius: '6px', cursor: 'pointer', fontSize: '0.72rem' }}
+                style={{ padding: '6px 14px', background: 'transparent', border: '1px solid var(--color-475569, #475569)', color: 'var(--color-94a3b8, #94A3B8)', borderRadius: '6px', cursor: 'pointer', fontSize: '0.72rem' }}
               >
                 Reset
               </button>
               <button 
                 onClick={() => alert('Contract sent to Trustee Office Queue & Signer Portal')}
-                style={{ padding: '6px 14px', background: '#10B981', border: 'none', color: '#FFF', borderRadius: '6px', cursor: 'pointer', fontSize: '0.72rem', fontWeight: 700 }}
+                style={{ padding: '6px 14px', background: 'var(--accent-green, #10B981)', border: 'none', color: 'var(--white, #FFF)', borderRadius: '6px', cursor: 'pointer', fontSize: '0.72rem', fontWeight: 700 }}
               >
                 ✓ Dispatch to DLD Portal
               </button>

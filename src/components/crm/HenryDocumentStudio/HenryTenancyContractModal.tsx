@@ -175,7 +175,7 @@ export const HenryTenancyContractModal: FC<HenryTenancyContractModalProps> = ({
               <span style={{ fontSize: '1.8rem' }}>🏛️</span>
               <div>
                 <h3 className="header-title">
-                  Prepare New Tenancy Contract <span style={{ color: '#EF4444' }}>· Official DLD Unified Template</span>
+                  Prepare New Tenancy Contract <span style={{ color: 'var(--accent-red, #EF4444)' }}>· Official DLD Unified Template</span>
                 </h3>
                 <p className="header-subtitle">
                   Government of Dubai / Land Department Bilingual Form (عقد إيجار) · Guided 6-Stage Preparation & Auto-Fill
@@ -188,7 +188,7 @@ export const HenryTenancyContractModal: FC<HenryTenancyContractModalProps> = ({
                 $variant="primary"
                 onClick={() => masterFileInputRef.current?.click()}
                 title="Upload full tenancy contract to auto-fill all fields at once"
-                style={{ background: 'linear-gradient(135deg, #EF4444, #DC2626)', color: '#FFF' }}
+                style={{ background: 'linear-gradient(135deg, var(--accent-red, #EF4444), var(--accent-red, #DC2626))', color: 'var(--white, #FFF)' }}
               >
                 <UploadCloud size={14} /> Upload Contract & Auto-Fill
               </HeaderBtn>
@@ -263,7 +263,7 @@ export const HenryTenancyContractModal: FC<HenryTenancyContractModalProps> = ({
 
                 <div className="zoom-controls">
                   <button onClick={handleZoomOut}><ZoomOut size={12} /></button>
-                  <span style={{ fontSize: '11px', color: '#94A3B8', minWidth: '35px', textAlign: 'center' }}>
+                  <span style={{ fontSize: '11px', color: 'var(--color-94a3b8, #94A3B8)', minWidth: '35px', textAlign: 'center' }}>
                     {Math.round(zoomLevel * 100)}%
                   </span>
                   <button onClick={handleZoomIn}><ZoomIn size={12} /></button>
@@ -274,7 +274,7 @@ export const HenryTenancyContractModal: FC<HenryTenancyContractModalProps> = ({
                 <PreviewCanvasWrapper $zoom={zoomLevel}>
                   <div
                     dangerouslySetInnerHTML={{ __html: compiledPreviewHtml }}
-                    style={{ background: '#FFFFFF', boxShadow: '0 10px 30px rgba(0,0,0,0.5)', borderRadius: '4px' }}
+                    style={{ background: 'var(--white, #FFFFFF)', boxShadow: '0 10px 30px rgba(0,0,0,0.5)', borderRadius: '4px' }}
                   />
                 </PreviewCanvasWrapper>
               </PreviewScrollArea>
@@ -362,7 +362,7 @@ export const HenryTenancyContractModal: FC<HenryTenancyContractModalProps> = ({
                       </div>
                     </OcrDropzone>
 
-                    <h4 style={{ margin: '0 0 1rem 0', color: '#EF4444', fontSize: '0.95rem', fontWeight: 800 }}>
+                    <h4 style={{ margin: '0 0 1rem 0', color: 'var(--accent-red, #EF4444)', fontSize: '0.95rem', fontWeight: 800 }}>
                       Stage 1: Property Specifications (معلومات العقار)
                     </h4>
 
@@ -483,7 +483,7 @@ export const HenryTenancyContractModal: FC<HenryTenancyContractModalProps> = ({
                       </div>
                     </OcrDropzone>
 
-                    <h4 style={{ margin: '0 0 1rem 0', color: '#EF4444', fontSize: '0.95rem', fontWeight: 800 }}>
+                    <h4 style={{ margin: '0 0 1rem 0', color: 'var(--accent-red, #EF4444)', fontSize: '0.95rem', fontWeight: 800 }}>
                       Stage 2: Owner & Lessor Information (معلومات المالك / المؤجر)
                     </h4>
 
@@ -627,7 +627,7 @@ export const HenryTenancyContractModal: FC<HenryTenancyContractModalProps> = ({
                       </OcrDropzone>
                     </div>
 
-                    <h4 style={{ margin: '0 0 1rem 0', color: '#38BDF8', fontSize: '0.95rem', fontWeight: 800 }}>
+                    <h4 style={{ margin: '0 0 1rem 0', color: 'var(--color-38bdf8, #38BDF8)', fontSize: '0.95rem', fontWeight: 800 }}>
                       Stage 3: Tenant Information & KYC (معلومات المستأجر)
                     </h4>
 
@@ -679,7 +679,7 @@ export const HenryTenancyContractModal: FC<HenryTenancyContractModalProps> = ({
                 {activeStep === 4 && (
                   <div>
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
-                      <h4 style={{ margin: 0, color: '#10B981', fontSize: '0.95rem', fontWeight: 800 }}>
+                      <h4 style={{ margin: 0, color: 'var(--accent-green, #10B981)', fontSize: '0.95rem', fontWeight: 800 }}>
                         Stage 4: Contract Period & Financial Schedules (معلومات العقد والمالية)
                       </h4>
                       <HeaderBtn $variant="secondary" onClick={handleSetStandardOneYearDates} style={{ fontSize: '0.75rem' }}>
@@ -769,10 +769,10 @@ export const HenryTenancyContractModal: FC<HenryTenancyContractModalProps> = ({
                 {/* ── STAGE 5: SPECIAL TERMS & ADDENDUM (PAGE 3) ── */}
                 {activeStep === 5 && (
                   <div>
-                    <h4 style={{ margin: '0 0 1rem 0', color: '#F59E0B', fontSize: '0.95rem', fontWeight: 800 }}>
+                    <h4 style={{ margin: '0 0 1rem 0', color: 'var(--accent-gold, #F59E0B)', fontSize: '0.95rem', fontWeight: 800 }}>
                       Stage 5: Additional Terms & Special Addenda (شروط إضافية — الصفحة 3)
                     </h4>
-                    <p style={{ fontSize: '0.8rem', color: '#94A3B8', margin: '0 0 12px 0' }}>
+                    <p style={{ fontSize: '0.8rem', color: 'var(--color-94a3b8, #94A3B8)', margin: '0 0 12px 0' }}>
                       Add up to 5 custom statutory or property-specific special conditions to appear on Page 3 of the official DLD agreement:
                     </p>
 
@@ -795,7 +795,7 @@ export const HenryTenancyContractModal: FC<HenryTenancyContractModalProps> = ({
                 {/* ── STAGE 6: REVIEW, ENDORSEMENT & EXPORT ── */}
                 {activeStep === 6 && (
                   <div>
-                    <h4 style={{ margin: '0 0 1rem 0', color: '#38BDF8', fontSize: '0.95rem', fontWeight: 800 }}>
+                    <h4 style={{ margin: '0 0 1rem 0', color: 'var(--color-38bdf8, #38BDF8)', fontSize: '0.95rem', fontWeight: 800 }}>
                       Stage 6: Final Review & Document Export (مراجعة واعتماد العقد)
                     </h4>
 
@@ -835,10 +835,10 @@ export const HenryTenancyContractModal: FC<HenryTenancyContractModalProps> = ({
                         marginTop: '1.25rem',
                       }}
                     >
-                      <div style={{ fontWeight: 800, color: '#38BDF8', fontSize: '0.9rem', marginBottom: '6px' }}>
+                      <div style={{ fontWeight: 800, color: 'var(--color-38bdf8, #38BDF8)', fontSize: '0.9rem', marginBottom: '6px' }}>
                         🔒 Digital E-Signature Dispatch
                       </div>
-                      <p style={{ fontSize: '0.8rem', color: '#94A3B8', margin: '0 0 12px 0' }}>
+                      <p style={{ fontSize: '0.8rem', color: 'var(--color-94a3b8, #94A3B8)', margin: '0 0 12px 0' }}>
                         Generate a cryptographically secured E-Signature link to dispatch directly to Tenant and Landlord for instant mobile signing.
                       </p>
                       <HeaderBtn $variant="primary" onClick={handleGenerateEsignLink}>
@@ -915,13 +915,13 @@ export const HenryTenancyContractModal: FC<HenryTenancyContractModalProps> = ({
               }}
             >
               <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '12px' }}>
-                <div style={{ background: 'rgba(239, 68, 68, 0.2)', padding: '10px', borderRadius: '12px', color: '#EF4444' }}>
+                <div style={{ background: 'rgba(239, 68, 68, 0.2)', padding: '10px', borderRadius: '12px', color: 'var(--accent-red, #EF4444)' }}>
                   <AlertCircle size={24} />
                 </div>
                 <h4 style={{ margin: 0, fontSize: '1.1rem', fontWeight: 800 }}>Exit Tenancy Preparation?</h4>
               </div>
 
-              <p style={{ fontSize: '0.85rem', color: '#94A3B8', lineHeight: 1.5, margin: '0 0 20px 0' }}>
+              <p style={{ fontSize: '0.85rem', color: 'var(--color-94a3b8, #94A3B8)', lineHeight: 1.5, margin: '0 0 20px 0' }}>
                 Your current progress is automatically saved to your draft vault. Do you want to continue editing or close the wizard?
               </p>
 

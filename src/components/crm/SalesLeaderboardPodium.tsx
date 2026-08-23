@@ -33,7 +33,7 @@ export const SalesLeaderboardPodium: React.FC<{ brokers?: LeaderboardAgent[] }> 
         <div style={{ textAlign: 'center', backgroundColor: 'var(--wc-surface-card, #F8FAFC)', padding: '16px', borderRadius: '12px', border: '1px solid var(--wc-border-light, #E2E8F0)' }}>
           <div style={{ position: 'relative', display: 'inline-block', marginBottom: '10px' }}>
             <img src={brokers[1].avatarUrl} alt={brokers[1].name} style={{ width: '64px', height: '64px', borderRadius: '50%', border: '3px solid var(--wc-text-muted, #94A3B8)', objectFit: 'cover' }} />
-            <span style={{ position: 'absolute', bottom: '-6px', right: '-6px', backgroundColor: 'var(--wc-text-muted, #94A3B8)', color: '#FFFFFF', fontSize: '11px', fontWeight: 'bold', width: '20px', height: '20px', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>2</span>
+            <span style={{ position: 'absolute', bottom: '-6px', right: '-6px', backgroundColor: 'var(--wc-text-muted, #94A3B8)', color: 'var(--white, #FFFFFF)', fontSize: '11px', fontWeight: 'bold', width: '20px', height: '20px', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>2</span>
           </div>
           <div style={{ fontSize: '14px', fontWeight: 'bold', color: 'var(--wc-text-primary, #1E293B)' }}>{brokers[1].name}</div>
           <div style={{ fontSize: '11px', color: 'var(--wc-text-secondary, #64748B)', marginBottom: '8px' }}>{brokers[1].department}</div>
@@ -45,7 +45,7 @@ export const SalesLeaderboardPodium: React.FC<{ brokers?: LeaderboardAgent[] }> 
         <div style={{ textAlign: 'center', backgroundColor: 'var(--wc-red-light, #FFF5F5)', padding: '24px 16px', borderRadius: '12px', border: '2px solid var(--wc-red-primary, #EF4444)', boxShadow: '0 8px 20px rgba(239, 68, 68, 0.15)', transform: 'translateY(-8px)' }}>
           <div style={{ position: 'relative', display: 'inline-block', marginBottom: '10px' }}>
             <img src={brokers[0].avatarUrl} alt={brokers[0].name} style={{ width: '80px', height: '80px', borderRadius: '50%', border: '4px solid var(--wc-red-primary, #EF4444)', objectFit: 'cover' }} />
-            <span style={{ position: 'absolute', bottom: '-8px', right: '-8px', backgroundColor: 'var(--wc-red-primary, #EF4444)', color: '#FFFFFF', fontSize: '12px', fontWeight: 'bold', width: '24px', height: '24px', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>1</span>
+            <span style={{ position: 'absolute', bottom: '-8px', right: '-8px', backgroundColor: 'var(--wc-red-primary, #EF4444)', color: 'var(--white, #FFFFFF)', fontSize: '12px', fontWeight: 'bold', width: '24px', height: '24px', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>1</span>
           </div>
           <div style={{ fontSize: '16px', fontWeight: 'bold', color: 'var(--wc-text-primary, #1E293B)' }}>{brokers[0].name}</div>
           <div style={{ fontSize: '12px', color: 'var(--wc-red-primary, #EF4444)', fontWeight: '600', marginBottom: '8px' }}>★ Top Producer</div>

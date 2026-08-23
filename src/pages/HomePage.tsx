@@ -342,11 +342,11 @@ const HomePage: FC = () => {
             >
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.25rem' }}>
                 <div>
-                  <h3 style={{ margin: 0, fontSize: '1.25rem', fontWeight: 800, color: '#F8FAFC' }}>
+                  <h3 style={{ margin: 0, fontSize: '1.25rem', fontWeight: 800, color: 'var(--color-f8fafc, #F8FAFC)' }}>
                     Luxury Property Search
                   </h3>
-                  <p style={{ margin: '4px 0 0', fontSize: '0.85rem', color: '#94A3B8' }}>
-                    Press <kbd style={{ background: '#1E293B', padding: '2px 6px', borderRadius: '4px', border: '1px solid #334155' }}>Ctrl + K</kbd> anytime to open
+                  <p style={{ margin: '4px 0 0', fontSize: '0.85rem', color: 'var(--color-94a3b8, #94A3B8)' }}>
+                    Press <kbd style={{ background: 'var(--color-1e293b, #1E293B)', padding: '2px 6px', borderRadius: '4px', border: '1px solid var(--color-334155, #334155)' }}>Ctrl + K</kbd> anytime to open
                   </p>
                 </div>
                 <button
@@ -394,7 +394,7 @@ const HomePage: FC = () => {
               </div>
 
               <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
-                <span style={{ fontSize: '0.75rem', fontWeight: 800, color: '#D4AF37', textTransform: 'uppercase', letterSpacing: '0.08em' }}>
+                <span style={{ fontSize: '0.75rem', fontWeight: 800, color: 'var(--color-d4af37, #D4AF37)', textTransform: 'uppercase', letterSpacing: '0.08em' }}>
                   Popular Luxury Destinations
                 </span>
                 <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>

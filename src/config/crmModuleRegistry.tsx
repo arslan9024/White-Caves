@@ -77,6 +77,9 @@ const QuillCRM = lazy(() => import('../components/crm/QuillCRM'));
 const RexCRM = lazy(() => import('../components/crm/RexCRM'));
 const SageCRM = lazy(() => import('../components/crm/SageCRM'));
 
+// Flagship 20 Life Cycle Journeys Hub
+const JourneyHubView = lazy(() => import('../features/journeys/JourneyHubView'));
+
 // Wave 18.1 P0 Batch 2
 const AgentTaskCockpit = lazy(() => import('../components/crm/AgentTaskCockpit'));
 const FunnelEconomicsDashboard = lazy(() => import('../components/crm/FunnelEconomicsDashboard'));
@@ -84,6 +87,11 @@ const KPIBaselineTracker = lazy(() => import('../components/crm/KPIBaselineTrack
 const LeadTimeline = lazy(() => import('../components/crm/LeadTimeline'));
 
 export const CRM_MODULE_REGISTRY: Record<string, CRMModuleDefinition> = {
+  journeys: {
+    id: 'journeys', label: '20 Life Cycle Journeys Hub', icon: '🗺️',
+    description: 'Guided real estate operating missions enforcing RERA compliance & DLD integrity',
+    color: '#EF4444', zone: 'executive', Component: JourneyHubView,
+  },
   unified: {
     id: 'unified', label: 'Unified CRM Dashboard', icon: '🧭',
     description: 'Single command surface for superuser operations',
@@ -560,6 +568,19 @@ export const getCRMModule = (id: string | undefined | null): CRMModuleDefinition
   }
   if (id.startsWith('lead-scoring-') || id === 'lead-scoring') {
     return CRM_MODULE_REGISTRY['lead-scoring'] ?? CRM_MODULE_REGISTRY['leads'] ?? null;
+  }
+
+  // 20 Flagship Journey mappings
+  const journeyKeys = [
+    'prepare-tenancy-contract', 'property-onboarding', 'landlord-onboarding', 'tenant-onboarding',
+    'leasing-deal-creation', 'contract-signing', 'payment-collection', 'create-ejari',
+    'property-handover', 'tenancy-renewal', 'secondary-sales-deal', 'mortgage-preapproval',
+    'golden-visa-application', 'offplan-reservation', 'property-snagging-inspection',
+    'vat-quarterly-filing', 'tenant-moveout-settlement', 'aml-pep-sanctions-screening',
+    'lead-acquisition-qualification', 'community-service-ticket'
+  ];
+  if (journeyKeys.includes(id) || id.startsWith('journey-') || id === 'journeys') {
+    return CRM_MODULE_REGISTRY['journeys'] ?? null;
   }
 
   // Intelligent prefix resolution: e.g. "nadia-broadcast" -> "nadia"

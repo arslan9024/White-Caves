@@ -18,6 +18,25 @@ export interface ProfileSchedulerState {
   managingDirectorName: string;
 }
 
+interface LedgerDocument {
+  docType?: string;
+  doc_type?: string;
+  docNo?: string;
+  doc_no?: string;
+  authority?: string;
+  expiryDate?: string;
+  expiry_date?: string;
+  [key: string]: unknown;
+}
+
+interface LedgerUser {
+  id?: string;
+  email?: string;
+  name?: string;
+  documents?: LedgerDocument[];
+  [key: string]: unknown;
+}
+
 export function useProfileScheduler(): ProfileSchedulerState {
   const [state, setState] = useState<ProfileSchedulerState>({
     alerts: [],
@@ -27,8 +46,9 @@ export function useProfileScheduler(): ProfileSchedulerState {
   });
 
   useEffect(() => {
-    const mdUser = companyLedger.find((p: any) => p.email === 'arslanmalikgoraha@gmail.com');
-    const mdDocs = (mdUser as any)?.documents || [];
+    const users = companyLedger as unknown as LedgerUser[];
+    const mdUser = users.find((p: LedgerUser) => p.email === 'arslanmalikgoraha@gmail.com');
+    const mdDocs = mdUser?.documents || [];
     const now = new Date();
 
     const activeAlerts: DocumentExpiryAlert[] = [];

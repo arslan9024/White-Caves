@@ -55,7 +55,7 @@ export const ReraComplianceChecklist: FC = () => {
     <Wrapper data-testid="rera-compliance-checklist">
       <Header>
         <Title>🏛️ RERA 2024 Compliance Checklist</Title>
-        <div style={{ fontSize: '0.7rem', color: passed.size === CHECKS.length ? '#10B981' : '#F59E0B', fontWeight: 700 }}>
+        <div style={{ fontSize: '0.7rem', color: passed.size === CHECKS.length ? 'var(--accent-green, #10B981)' : 'var(--accent-gold, #F59E0B)', fontWeight: 700 }}>
           {passed.size}/{CHECKS.length} Passed
         </div>
       </Header>

@@ -70,7 +70,7 @@ export const SecurityDepositRefundLedger: FC = () => {
     <Wrap data-testid="security-deposit-refund-ledger">
       <Head>
         <Title>🏦 Security Deposit Refund Ledger</Title>
-        <div style={{fontSize:'0.7rem',color:'#10B981',fontWeight:700}}>RERA Standard</div>
+        <div style={{fontSize:'0.7rem',color:'var(--accent-green, #10B981)',fontWeight:700}}>RERA Standard</div>
       </Head>
       <Body>
         <DepositHeader>
@@ -81,13 +81,13 @@ export const SecurityDepositRefundLedger: FC = () => {
           </div>
           <DepositMeta>
             <DepositLabel>Tenancy Period</DepositLabel>
-            <DepositSub style={{color:'#E2E8F0',fontWeight:700,marginTop:'4px'}}>Jan 2025 – Jan 2026</DepositSub>
+            <DepositSub style={{color:'var(--text-secondary, #E2E8F0)',fontWeight:700,marginTop:'4px'}}>Jan 2025 – Jan 2026</DepositSub>
             <DepositSub>Move-out: {new Date().toLocaleDateString('en-AE')}</DepositSub>
           </DepositMeta>
         </DepositHeader>
 
         <div>
-          <div style={{fontSize:'0.7rem',fontWeight:700,color:'#94A3B8',textTransform:'uppercase',letterSpacing:'0.05em',marginBottom:'8px'}}>
+          <div style={{fontSize:'0.7rem',fontWeight:700,color:'var(--color-94a3b8, #94A3B8)',textTransform:'uppercase',letterSpacing:'0.05em',marginBottom:'8px'}}>
             Itemized Deductions ({deductions.length})
           </div>
           <DeductionList>
@@ -121,7 +121,7 @@ export const SecurityDepositRefundLedger: FC = () => {
           <SumRow><SumLabel>Total Deductions</SumLabel><SumValue $red>- AED {totalDeductions.toLocaleString()}</SumValue></SumRow>
           <Divider/>
           <SumRow>
-            <SumLabel style={{fontWeight:800,color:'#E2E8F0'}}>Net Refund to Tenant</SumLabel>
+            <SumLabel style={{fontWeight:800,color:'var(--text-secondary, #E2E8F0)'}}>Net Refund to Tenant</SumLabel>
             <RefundAmt $positive={refund>=0}>{refund>=0?`AED ${refund.toLocaleString()}`:`Tenant owes AED ${Math.abs(refund).toLocaleString()}`}</RefundAmt>
           </SumRow>
         </Summary>

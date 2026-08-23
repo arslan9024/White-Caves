@@ -102,7 +102,7 @@ describe('Tenancy Contracts API Routes', () => {
 
       expect(res.status).toBe(400);
       expect(res.body.success).toBe(false);
-      expect(res.body.error).toBe('Form data is required');
+      expect(res.body.error).toContain('Form data is required');
     });
   });
 

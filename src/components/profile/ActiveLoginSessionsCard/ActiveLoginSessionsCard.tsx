@@ -123,15 +123,15 @@ export const ActiveLoginSessionsCard: FC = () => {
             <SInfo>
               <SIcon>{s.device.includes('iPhone') ? '📱' : s.device.includes('iPad') ? '📱' : '💻'}</SIcon>
               <div>
-                <SName>{s.device} {s.current && <span style={{ color: '#10B981', fontSize: '0.7rem' }}>(Current Session)</span>}</SName>
+                <SName>{s.device} {s.current && <span style={{ color: 'var(--accent-green, #10B981)', fontSize: '0.7rem' }}>(Current Session)</span>}</SName>
                 <SMeta>📍 {s.location} · IP: {s.ip} · {s.time}</SMeta>
               </div>
             </SInfo>
             <div>
               {s.current ? (
-                <span style={{ fontSize: '0.68rem', color: '#10B981', fontWeight: 800 }}>ACTIVE NOW</span>
+                <span style={{ fontSize: '0.68rem', color: 'var(--accent-green, #10B981)', fontWeight: 800 }}>ACTIVE NOW</span>
               ) : (
-                <span style={{ fontSize: '0.68rem', color: '#94A3B8' }}>AUTHORIZED</span>
+                <span style={{ fontSize: '0.68rem', color: 'var(--color-94a3b8, #94A3B8)' }}>AUTHORIZED</span>
               )}
             </div>
           </SessionRow>

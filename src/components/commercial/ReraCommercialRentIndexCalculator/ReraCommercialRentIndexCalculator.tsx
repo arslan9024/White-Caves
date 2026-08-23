@@ -215,13 +215,13 @@ export const ReraCommercialRentIndexCalculator: FC = () => {
 
         <ResultGrid style={{ opacity: loading ? 0.6 : 1 }}>
           <ResultCard $increaseAllowed={result.maxIncreasePct > 0}>
-            <div style={{ fontSize: '0.65rem', color: '#94A3B8', textTransform: 'uppercase', fontWeight: 700 }}>
+            <div style={{ fontSize: '0.65rem', color: 'var(--color-94a3b8, #94A3B8)', textTransform: 'uppercase', fontWeight: 700 }}>
               Max Permissible Rent Increase
             </div>
-            <RVal style={{ color: result.maxIncreasePct > 0 ? '#EF4444' : '#10B981' }}>
+            <RVal style={{ color: result.maxIncreasePct > 0 ? 'var(--accent-red, #EF4444)' : 'var(--accent-green, #10B981)' }}>
               {loading ? '...' : `+${result.maxIncreasePct}%`}
             </RVal>
-            <div style={{ fontSize: '0.72rem', color: '#CBD5E1' }}>
+            <div style={{ fontSize: '0.72rem', color: 'var(--text-secondary, #CBD5E1)' }}>
               {result.diffPct > 10 
                 ? `Rent is ${result.diffPct.toFixed(1)}% below RERA benchmark` 
                 : 'Rent is within 10% of benchmark (0% Increase Allowed)'}
@@ -229,19 +229,19 @@ export const ReraCommercialRentIndexCalculator: FC = () => {
           </ResultCard>
 
           <ResultCard $increaseAllowed={false}>
-            <div style={{ fontSize: '0.65rem', color: '#94A3B8', textTransform: 'uppercase', fontWeight: 700 }}>
+            <div style={{ fontSize: '0.65rem', color: 'var(--color-94a3b8, #94A3B8)', textTransform: 'uppercase', fontWeight: 700 }}>
               Maximum Legal Renewal Rent
             </div>
-            <RVal style={{ color: '#10B981' }}>
+            <RVal style={{ color: 'var(--accent-green, #10B981)' }}>
               {loading ? '...' : `AED ${Math.round(result.maxAllowableRent).toLocaleString()}`}
             </RVal>
-            <div style={{ fontSize: '0.72rem', color: '#94A3B8' }}>
+            <div style={{ fontSize: '0.72rem', color: 'var(--color-94a3b8, #94A3B8)' }}>
               Max allowable increase: +AED {Math.round(result.allowableIncreaseAed).toLocaleString()} / year
             </div>
           </ResultCard>
         </ResultGrid>
 
-        <div style={{ fontSize: '0.68rem', color: '#F59E0B', background: 'rgba(245, 158, 11, 0.08)', padding: '8px 12px', borderRadius: '6px', lineHeight: '1.4' }}>
+        <div style={{ fontSize: '0.68rem', color: 'var(--accent-gold, #F59E0B)', background: 'rgba(245, 158, 11, 0.08)', padding: '8px 12px', borderRadius: '6px', lineHeight: '1.4' }}>
           ⚖️ <strong>Dubai Decree No. 43 of 2013 Directives:</strong> Landlords must provide minimum 90-day statutory notice before lease expiry to enforce allowable RERA rent index adjustments.
         </div>
       </Body>

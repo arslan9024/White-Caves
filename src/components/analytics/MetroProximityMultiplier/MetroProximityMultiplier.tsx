@@ -64,7 +64,7 @@ export const MetroProximityMultiplier: FC = () => {
     <Wrapper data-testid="metro-proximity-multiplier">
       <Header>
         <Title>🚇 Metro Proximity Valuation</Title>
-        <div style={{ fontSize: '0.65rem', color: '#64748B' }}>DLD Multiplier Model</div>
+        <div style={{ fontSize: '0.65rem', color: 'var(--text-secondary, #64748B)' }}>DLD Multiplier Model</div>
       </Header>
       <Body>
         <MetroMap>
