@@ -29,24 +29,30 @@ router.post('/log', async (req, res) => {
       environment,
     } = req.body;
 
-    // Validate required fields
+    // schema validation — required fields + sanitize string lengths to prevent log injection
     if (!errorId || !message) {
       return res.status(400).json({
         success: false,
         message: 'errorId and message are required'
       });
     }
+    const safeMessage = typeof message === 'string' ? message.slice(0, 5000) : String(message);
+    const safeUrl = typeof url === 'string' ? url.slice(0, 2048) : 'unknown';
+    const safeUserAgent = typeof userAgent === 'string' ? userAgent.slice(0, 512) : 'unknown';
+    const safeEnvironment = ['development', 'staging', 'production'].includes(String(environment))
+      ? String(environment)
+      : 'unknown';
 
     // Create error log entry
     const errorLog = {
       errorId,
-      message,
-      componentStack: componentStack || 'Not provided',
-      stackTrace: stackTrace || 'Not provided',
-      userAgent: userAgent || 'Not provided',
-      url: url || 'Not provided',
+      message: safeMessage,
+      componentStack: typeof componentStack === 'string' ? componentStack.slice(0, 10000) : 'Not provided',
+      stackTrace: typeof stackTrace === 'string' ? stackTrace.slice(0, 10000) : 'Not provided',
+      userAgent: safeUserAgent,
+      url: safeUrl,
       timestamp: timestamp || new Date().toISOString(),
-      environment: environment || 'unknown'
+      environment: safeEnvironment
     };
 
     // Log to file (daily rotation)

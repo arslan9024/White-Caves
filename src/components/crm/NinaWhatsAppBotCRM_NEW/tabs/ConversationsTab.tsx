@@ -27,7 +27,14 @@ interface ChatContact {
   messages: ChatMessage[];
 }
 
-const ContactRow = React.memo(({ index, style, data }: any) => {
+/** Typed props for react-window List item renderer */
+interface ContactRowItemData {
+  contacts: ChatContact[];
+  activeContactId: string | null;
+  onSelect: (id: string) => void;
+}
+
+const ContactRow = React.memo(({ index, style, data }: { index: number; style: React.CSSProperties; data: ContactRowItemData }) => {
   const { contacts, activeContactId, onSelect } = data;
   const contact = contacts[index];
   const isSelected = activeContactId && contact.id === activeContactId;

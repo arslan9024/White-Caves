@@ -324,7 +324,7 @@ export const HenryPassportScannerView: FC = () => {
     }
   };
 
-  const handleUpdateField = (field: keyof InternationalPassportExtractedData, val: any) => {
+  const handleUpdateField = (field: keyof InternationalPassportExtractedData, val: InternationalPassportExtractedData[keyof InternationalPassportExtractedData]) => {
     if (!extractedData) return;
     setExtractedData(prev => {
       if (!prev) return null;

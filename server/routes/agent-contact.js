@@ -17,16 +17,21 @@ router.post('/', async (req, res) => {
     const { agentId, propertyId, contactMethod, message, preferredDate, preferredTime, userId } =
       req.body;
 
+    // schema validation — enforce required field types & whitelist contactMethod values
     if (!agentId || !propertyId) {
       return res.status(400).json({ error: 'Agent ID and Property ID are required' });
     }
-
+    const ALLOWED_CONTACT_METHODS = ['whatsapp', 'call', 'email', 'visit'];
+    const safeContactMethod = ALLOWED_CONTACT_METHODS.includes(String(contactMethod))
+      ? String(contactMethod)
+      : 'whatsapp';
+    const safeMessage = typeof message === 'string' ? message.slice(0, 2000) : '';
     const contactRequest = new AgentContact({
       agentId,
       propertyId,
       userId,
-      contactMethod,
-      message,
+      contactMethod: safeContactMethod,
+      message: safeMessage,
       preferredDate,
       preferredTime,
       status: 'pending',

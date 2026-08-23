@@ -7,6 +7,16 @@ import React, { FC, useState, useEffect } from 'react';
 import styled, { keyframes } from 'styled-components';
 import { apiClient } from '../../../services/apiClient';
 
+/** Typed GraphQL response shape for calculateReraCommercialRent query */
+interface ReraCalculateResponse {
+  calculateReraCommercialRent: {
+    benchmark: number;
+    maxIncreasePct: number;
+    allowableIncreaseAed: number;
+    maxAllowableRent: number;
+  };
+}
+
 const fadeIn = keyframes`from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}`;
 
 const Wrap = styled.div`
@@ -154,7 +164,7 @@ export const ReraCommercialRentIndexCalculator: FC = () => {
             }
           }
         `;
-        const res = await apiClient.post<{ data?: any }>('/graphql', {
+        const res = await apiClient.post<{ data?: ReraCalculateResponse }>('/graphql', {
           query,
           variables: { zone: commercialZone, currentRentAed: Number(currentRentAed) || 1 }
         });

@@ -1,7 +1,7 @@
 # 🛡️ AEGIS Autopilot — Top 12 Critical Target Upgrades
 
 > **Rule of Continuous Perfection**: Each turn dynamically isolates and resolves the 12 most critical system targets across Server, Frontend, Security, and Quality.
-> **Timestamp**: 2026-08-15T11:30:11.586Z
+> **Timestamp**: 2026-08-19T21:30:48.390Z
 > **Total Active Targets**: 12 / 12
 
 ---
@@ -10,80 +10,80 @@
 
 | # | Layer | Category | File | Criticality | Target Action |
 |---|-------|----------|------|-------------|---------------|
-| **1** | `Frontend` | Test Coverage Gap | [`Totp2faSetupCard.style.ts`](file:///C:\Users\HP\Documents\My Web Sites\AntigravityWC\White-Caves\src\components\auth\Totp2faSetupCard\Totp2faSetupCard.style.ts) | **MEDIUM** (Score: 75) | Create test file for src/components/auth/Totp2faSetupCard/Totp2faSetupCard.style.ts with Vitest/Supertest assertions. |
-| **2** | `Frontend` | Test Coverage Gap | [`ExecutiveKpiFlightDeck.tsx`](file:///C:\Users\HP\Documents\My Web Sites\AntigravityWC\White-Caves\src\components\dashboard\ExecutiveKpiFlightDeck\ExecutiveKpiFlightDeck.tsx) | **MEDIUM** (Score: 75) | Create test file for src/components/dashboard/ExecutiveKpiFlightDeck/ExecutiveKpiFlightDeck.tsx with Vitest/Supertest assertions. |
-| **3** | `Frontend` | Test Coverage Gap | [`HeroSection.style.ts`](file:///C:\Users\HP\Documents\My Web Sites\AntigravityWC\White-Caves\src\components\home\HeroSection\HeroSection.style.ts) | **MEDIUM** (Score: 75) | Create test file for src/components/home/HeroSection/HeroSection.style.ts with Vitest/Supertest assertions. |
-| **4** | `Frontend` | Test Coverage Gap | [`PannellumVRViewer.style.ts`](file:///C:\Users\HP\Documents\My Web Sites\AntigravityWC\White-Caves\src\components\media\PannellumVRViewer\PannellumVRViewer.style.ts) | **MEDIUM** (Score: 75) | Create test file for src/components/media/PannellumVRViewer/PannellumVRViewer.style.ts with Vitest/Supertest assertions. |
-| **5** | `Frontend` | Design System | [`LeadScoringEngine.tsx`](file:///C:\Users\HP\Documents\My Web Sites\AntigravityWC\White-Caves\src\components\ai\LeadScoringEngine\LeadScoringEngine.tsx) | **LOW** (Score: 40) | Use tokens.css variables or established color constants. |
-| **6** | `Frontend` | Design System | [`NadiaAiChatbot.tsx`](file:///C:\Users\HP\Documents\My Web Sites\AntigravityWC\White-Caves\src\components\ai\NadiaAiChatbot\NadiaAiChatbot.tsx) | **LOW** (Score: 40) | Use tokens.css variables or established color constants. |
-| **7** | `Frontend` | Test Coverage Gap | [`TopNavbar.style.ts`](file:///C:\Users\HP\Documents\My Web Sites\AntigravityWC\White-Caves\src\components\navigation\TopNavbar.style.ts) | **MEDIUM** (Score: 75) | Create test file for src/components/navigation/TopNavbar.style.ts with Vitest/Supertest assertions. |
-| **8** | `Frontend` | Test Coverage Gap | [`AvatarUploadCropModal.style.ts`](file:///C:\Users\HP\Documents\My Web Sites\AntigravityWC\White-Caves\src\components\profile\AvatarUploadCropModal\AvatarUploadCropModal.style.ts) | **MEDIUM** (Score: 75) | Create test file for src/components/profile/AvatarUploadCropModal/AvatarUploadCropModal.style.ts with Vitest/Supertest assertions. |
-| **9** | `Frontend` | Test Coverage Gap | [`CareerMilestoneTimeline.style.ts`](file:///C:\Users\HP\Documents\My Web Sites\AntigravityWC\White-Caves\src\components\profile\CareerMilestoneTimeline\CareerMilestoneTimeline.style.ts) | **MEDIUM** (Score: 75) | Create test file for src/components/profile/CareerMilestoneTimeline/CareerMilestoneTimeline.style.ts with Vitest/Supertest assertions. |
-| **10** | `Frontend` | Test Coverage Gap | [`ProfileThemeCustomizer.tsx`](file:///C:\Users\HP\Documents\My Web Sites\AntigravityWC\White-Caves\src\components\profile\ProfileThemeCustomizer\ProfileThemeCustomizer.tsx) | **MEDIUM** (Score: 75) | Create test file for src/components/profile/ProfileThemeCustomizer/ProfileThemeCustomizer.tsx with Vitest/Supertest assertions. |
-| **11** | `Frontend` | Test Coverage Gap | [`SessionSecurityTicker.tsx`](file:///C:\Users\HP\Documents\My Web Sites\AntigravityWC\White-Caves\src\components\profile\SessionSecurityTicker\SessionSecurityTicker.tsx) | **MEDIUM** (Score: 75) | Create test file for src/components/profile/SessionSecurityTicker/SessionSecurityTicker.tsx with Vitest/Supertest assertions. |
-| **12** | `Frontend` | Test Coverage Gap | [`TwoFactorAuthSetupCard.tsx`](file:///C:\Users\HP\Documents\My Web Sites\AntigravityWC\White-Caves\src\components\profile\TwoFactorAuthSetupCard\TwoFactorAuthSetupCard.tsx) | **MEDIUM** (Score: 75) | Create test file for src/components/profile/TwoFactorAuthSetupCard/TwoFactorAuthSetupCard.tsx with Vitest/Supertest assertions. |
+| **1** | `Frontend` | TypeScript Strictness | [`HenryTenancyContractScannerView.tsx`](file:///C:\Users\HP\Documents\My Web Sites\AntigravityWC\White-Caves\src\components\crm\HenryDocumentStudio\HenryTenancyContractScannerView.tsx) | **MEDIUM** (Score: 100) | Replace explicit `any` with strict interface or generic constraint. |
+| **2** | `Frontend` | TypeScript Strictness | [`HenryTitleDeedScannerView.tsx`](file:///C:\Users\HP\Documents\My Web Sites\AntigravityWC\White-Caves\src\components\crm\HenryDocumentStudio\HenryTitleDeedScannerView.tsx) | **MEDIUM** (Score: 100) | Replace explicit `any` with strict interface or generic constraint. |
+| **3** | `Frontend` | TypeScript Strictness | [`HenryTenancyContractModal.logic.ts`](file:///C:\Users\HP\Documents\My Web Sites\AntigravityWC\White-Caves\src\components\crm\HenryDocumentStudio\logic\HenryTenancyContractModal.logic.ts) | **MEDIUM** (Score: 100) | Replace explicit `any` with strict interface or generic constraint. |
+| **4** | `Frontend` | TypeScript Strictness | [`ConversationsTab.tsx`](file:///C:\Users\HP\Documents\My Web Sites\AntigravityWC\White-Caves\src\components\crm\NinaWhatsAppBotCRM_NEW\tabs\ConversationsTab.tsx) | **MEDIUM** (Score: 100) | Replace explicit `any` with strict interface or generic constraint. |
+| **5** | `Frontend` | Test Coverage Gap | [`CavesFloatingWhatsApp.style.ts`](file:///C:\Users\HP\Documents\My Web Sites\AntigravityWC\White-Caves\src\components\CavesFloatingWhatsApp\styles\CavesFloatingWhatsApp.style.ts) | **MEDIUM** (Score: 75) | Create test file for src/components/CavesFloatingWhatsApp/styles/CavesFloatingWhatsApp.style.ts with Vitest/Supertest assertions. |
+| **6** | `Frontend` | Test Coverage Gap | [`CavesWhatsAppWidget.logic.ts`](file:///C:\Users\HP\Documents\My Web Sites\AntigravityWC\White-Caves\src\components\CavesWhatsAppWidget\CavesWhatsAppWidget.logic.ts) | **MEDIUM** (Score: 75) | Create test file for src/components/CavesWhatsAppWidget/CavesWhatsAppWidget.logic.ts with Vitest/Supertest assertions. |
+| **7** | `Frontend` | Test Coverage Gap | [`CavesWhatsAppWidget.style.ts`](file:///C:\Users\HP\Documents\My Web Sites\AntigravityWC\White-Caves\src\components\CavesWhatsAppWidget\CavesWhatsAppWidget.style.ts) | **MEDIUM** (Score: 75) | Create test file for src/components/CavesWhatsAppWidget/CavesWhatsAppWidget.style.ts with Vitest/Supertest assertions. |
+| **8** | `Frontend` | Test Coverage Gap | [`CavesWhatsAppWidget.tsx`](file:///C:\Users\HP\Documents\My Web Sites\AntigravityWC\White-Caves\src\components\CavesWhatsAppWidget\CavesWhatsAppWidget.tsx) | **MEDIUM** (Score: 75) | Create test file for src/components/CavesWhatsAppWidget/CavesWhatsAppWidget.tsx with Vitest/Supertest assertions. |
+| **9** | `Frontend` | TypeScript Strictness | [`ModuleViewport.tsx`](file:///C:\Users\HP\Documents\My Web Sites\AntigravityWC\White-Caves\src\components\dashboard\viewport\ModuleViewport.tsx) | **MEDIUM** (Score: 100) | Replace explicit `any` with strict interface or generic constraint. |
+| **10** | `Frontend` | TypeScript Strictness | [`PdcDepositReminderCalendar.tsx`](file:///C:\Users\HP\Documents\My Web Sites\AntigravityWC\White-Caves\src\components\finance\PdcDepositReminderCalendar\PdcDepositReminderCalendar.tsx) | **MEDIUM** (Score: 100) | Replace explicit `any` with strict interface or generic constraint. |
+| **11** | `Frontend` | TypeScript Strictness | [`VatInvoiceGenerator.tsx`](file:///C:\Users\HP\Documents\My Web Sites\AntigravityWC\White-Caves\src\components\finance\VatInvoiceGenerator\VatInvoiceGenerator.tsx) | **MEDIUM** (Score: 100) | Replace explicit `any` with strict interface or generic constraint. |
+| **12** | `Frontend` | TypeScript Strictness | [`LeaderboardTab.tsx`](file:///C:\Users\HP\Documents\My Web Sites\AntigravityWC\White-Caves\src\components\owner\tabs\LeaderboardTab.tsx) | **MEDIUM** (Score: 100) | Replace explicit `any` with strict interface or generic constraint. |
 
 ---
 
 ## 🔍 Target Breakdown & Specs
 
-### 1. [Frontend] Frontend Component/Hook 'Totp2faSetupCard.style' missing unit test file
-- **Target File**: [`src/components/auth/Totp2faSetupCard/Totp2faSetupCard.style.ts:1`](file:///C:\Users\HP\Documents\My Web Sites\AntigravityWC\White-Caves\src\components\auth\Totp2faSetupCard\Totp2faSetupCard.style.ts#L1)
+### 1. [Frontend] Untyped 'any' usage detected
+- **Target File**: [`src/components/crm/HenryDocumentStudio/HenryTenancyContractScannerView.tsx:274`](file:///C:\Users\HP\Documents\My Web Sites\AntigravityWC\White-Caves\src\components\crm\HenryDocumentStudio\HenryTenancyContractScannerView.tsx#L274)
+- **Layer**: Frontend | **Category**: TypeScript Strictness | **Score**: 100
+- **Required Refactor**: Replace explicit `any` with strict interface or generic constraint.
+
+### 2. [Frontend] Untyped 'any' usage detected
+- **Target File**: [`src/components/crm/HenryDocumentStudio/HenryTitleDeedScannerView.tsx:304`](file:///C:\Users\HP\Documents\My Web Sites\AntigravityWC\White-Caves\src\components\crm\HenryDocumentStudio\HenryTitleDeedScannerView.tsx#L304)
+- **Layer**: Frontend | **Category**: TypeScript Strictness | **Score**: 100
+- **Required Refactor**: Replace explicit `any` with strict interface or generic constraint.
+
+### 3. [Frontend] Untyped 'any' usage detected
+- **Target File**: [`src/components/crm/HenryDocumentStudio/logic/HenryTenancyContractModal.logic.ts:61`](file:///C:\Users\HP\Documents\My Web Sites\AntigravityWC\White-Caves\src\components\crm\HenryDocumentStudio\logic\HenryTenancyContractModal.logic.ts#L61)
+- **Layer**: Frontend | **Category**: TypeScript Strictness | **Score**: 100
+- **Required Refactor**: Replace explicit `any` with strict interface or generic constraint.
+
+### 4. [Frontend] Untyped 'any' usage detected
+- **Target File**: [`src/components/crm/NinaWhatsAppBotCRM_NEW/tabs/ConversationsTab.tsx:30`](file:///C:\Users\HP\Documents\My Web Sites\AntigravityWC\White-Caves\src\components\crm\NinaWhatsAppBotCRM_NEW\tabs\ConversationsTab.tsx#L30)
+- **Layer**: Frontend | **Category**: TypeScript Strictness | **Score**: 100
+- **Required Refactor**: Replace explicit `any` with strict interface or generic constraint.
+
+### 5. [Frontend] Frontend Component/Hook 'CavesFloatingWhatsApp.style' missing unit test file
+- **Target File**: [`src/components/CavesFloatingWhatsApp/styles/CavesFloatingWhatsApp.style.ts:1`](file:///C:\Users\HP\Documents\My Web Sites\AntigravityWC\White-Caves\src\components\CavesFloatingWhatsApp\styles\CavesFloatingWhatsApp.style.ts#L1)
 - **Layer**: Frontend | **Category**: Test Coverage Gap | **Score**: 75
-- **Required Refactor**: Create test file for src/components/auth/Totp2faSetupCard/Totp2faSetupCard.style.ts with Vitest/Supertest assertions.
+- **Required Refactor**: Create test file for src/components/CavesFloatingWhatsApp/styles/CavesFloatingWhatsApp.style.ts with Vitest/Supertest assertions.
 
-### 2. [Frontend] Frontend Component/Hook 'ExecutiveKpiFlightDeck' missing unit test file
-- **Target File**: [`src/components/dashboard/ExecutiveKpiFlightDeck/ExecutiveKpiFlightDeck.tsx:1`](file:///C:\Users\HP\Documents\My Web Sites\AntigravityWC\White-Caves\src\components\dashboard\ExecutiveKpiFlightDeck\ExecutiveKpiFlightDeck.tsx#L1)
+### 6. [Frontend] Frontend Component/Hook 'CavesWhatsAppWidget.logic' missing unit test file
+- **Target File**: [`src/components/CavesWhatsAppWidget/CavesWhatsAppWidget.logic.ts:1`](file:///C:\Users\HP\Documents\My Web Sites\AntigravityWC\White-Caves\src\components\CavesWhatsAppWidget\CavesWhatsAppWidget.logic.ts#L1)
 - **Layer**: Frontend | **Category**: Test Coverage Gap | **Score**: 75
-- **Required Refactor**: Create test file for src/components/dashboard/ExecutiveKpiFlightDeck/ExecutiveKpiFlightDeck.tsx with Vitest/Supertest assertions.
+- **Required Refactor**: Create test file for src/components/CavesWhatsAppWidget/CavesWhatsAppWidget.logic.ts with Vitest/Supertest assertions.
 
-### 3. [Frontend] Frontend Component/Hook 'HeroSection.style' missing unit test file
-- **Target File**: [`src/components/home/HeroSection/HeroSection.style.ts:1`](file:///C:\Users\HP\Documents\My Web Sites\AntigravityWC\White-Caves\src\components\home\HeroSection\HeroSection.style.ts#L1)
+### 7. [Frontend] Frontend Component/Hook 'CavesWhatsAppWidget.style' missing unit test file
+- **Target File**: [`src/components/CavesWhatsAppWidget/CavesWhatsAppWidget.style.ts:1`](file:///C:\Users\HP\Documents\My Web Sites\AntigravityWC\White-Caves\src\components\CavesWhatsAppWidget\CavesWhatsAppWidget.style.ts#L1)
 - **Layer**: Frontend | **Category**: Test Coverage Gap | **Score**: 75
-- **Required Refactor**: Create test file for src/components/home/HeroSection/HeroSection.style.ts with Vitest/Supertest assertions.
+- **Required Refactor**: Create test file for src/components/CavesWhatsAppWidget/CavesWhatsAppWidget.style.ts with Vitest/Supertest assertions.
 
-### 4. [Frontend] Frontend Component/Hook 'PannellumVRViewer.style' missing unit test file
-- **Target File**: [`src/components/media/PannellumVRViewer/PannellumVRViewer.style.ts:1`](file:///C:\Users\HP\Documents\My Web Sites\AntigravityWC\White-Caves\src\components\media\PannellumVRViewer\PannellumVRViewer.style.ts#L1)
+### 8. [Frontend] Frontend Component/Hook 'CavesWhatsAppWidget' missing unit test file
+- **Target File**: [`src/components/CavesWhatsAppWidget/CavesWhatsAppWidget.tsx:1`](file:///C:\Users\HP\Documents\My Web Sites\AntigravityWC\White-Caves\src\components\CavesWhatsAppWidget\CavesWhatsAppWidget.tsx#L1)
 - **Layer**: Frontend | **Category**: Test Coverage Gap | **Score**: 75
-- **Required Refactor**: Create test file for src/components/media/PannellumVRViewer/PannellumVRViewer.style.ts with Vitest/Supertest assertions.
+- **Required Refactor**: Create test file for src/components/CavesWhatsAppWidget/CavesWhatsAppWidget.tsx with Vitest/Supertest assertions.
 
-### 5. [Frontend] Hardcoded hex color in style prop: "<button key={i} onClick={() => setSelected(i)} style={{ padd"
-- **Target File**: [`src/components/ai/LeadScoringEngine/LeadScoringEngine.tsx:55`](file:///C:\Users\HP\Documents\My Web Sites\AntigravityWC\White-Caves\src\components\ai\LeadScoringEngine\LeadScoringEngine.tsx#L55)
-- **Layer**: Frontend | **Category**: Design System | **Score**: 40
-- **Required Refactor**: Use tokens.css variables or established color constants.
+### 9. [Frontend] Untyped 'any' usage detected
+- **Target File**: [`src/components/dashboard/viewport/ModuleViewport.tsx:20`](file:///C:\Users\HP\Documents\My Web Sites\AntigravityWC\White-Caves\src\components\dashboard\viewport\ModuleViewport.tsx#L20)
+- **Layer**: Frontend | **Category**: TypeScript Strictness | **Score**: 100
+- **Required Refactor**: Replace explicit `any` with strict interface or generic constraint.
 
-### 6. [Frontend] Hardcoded hex color in style prop: "<div style={{ fontSize: '0.7rem', color: '#64748B' }}>GPT-4o"
-- **Target File**: [`src/components/ai/NadiaAiChatbot/NadiaAiChatbot.tsx:95`](file:///C:\Users\HP\Documents\My Web Sites\AntigravityWC\White-Caves\src\components\ai\NadiaAiChatbot\NadiaAiChatbot.tsx#L95)
-- **Layer**: Frontend | **Category**: Design System | **Score**: 40
-- **Required Refactor**: Use tokens.css variables or established color constants.
+### 10. [Frontend] Untyped 'any' usage detected
+- **Target File**: [`src/components/finance/PdcDepositReminderCalendar/PdcDepositReminderCalendar.tsx:182`](file:///C:\Users\HP\Documents\My Web Sites\AntigravityWC\White-Caves\src\components\finance\PdcDepositReminderCalendar\PdcDepositReminderCalendar.tsx#L182)
+- **Layer**: Frontend | **Category**: TypeScript Strictness | **Score**: 100
+- **Required Refactor**: Replace explicit `any` with strict interface or generic constraint.
 
-### 7. [Frontend] Frontend Component/Hook 'TopNavbar.style' missing unit test file
-- **Target File**: [`src/components/navigation/TopNavbar.style.ts:1`](file:///C:\Users\HP\Documents\My Web Sites\AntigravityWC\White-Caves\src\components\navigation\TopNavbar.style.ts#L1)
-- **Layer**: Frontend | **Category**: Test Coverage Gap | **Score**: 75
-- **Required Refactor**: Create test file for src/components/navigation/TopNavbar.style.ts with Vitest/Supertest assertions.
+### 11. [Frontend] Untyped 'any' usage detected
+- **Target File**: [`src/components/finance/VatInvoiceGenerator/VatInvoiceGenerator.tsx:66`](file:///C:\Users\HP\Documents\My Web Sites\AntigravityWC\White-Caves\src\components\finance\VatInvoiceGenerator\VatInvoiceGenerator.tsx#L66)
+- **Layer**: Frontend | **Category**: TypeScript Strictness | **Score**: 100
+- **Required Refactor**: Replace explicit `any` with strict interface or generic constraint.
 
-### 8. [Frontend] Frontend Component/Hook 'AvatarUploadCropModal.style' missing unit test file
-- **Target File**: [`src/components/profile/AvatarUploadCropModal/AvatarUploadCropModal.style.ts:1`](file:///C:\Users\HP\Documents\My Web Sites\AntigravityWC\White-Caves\src\components\profile\AvatarUploadCropModal\AvatarUploadCropModal.style.ts#L1)
-- **Layer**: Frontend | **Category**: Test Coverage Gap | **Score**: 75
-- **Required Refactor**: Create test file for src/components/profile/AvatarUploadCropModal/AvatarUploadCropModal.style.ts with Vitest/Supertest assertions.
-
-### 9. [Frontend] Frontend Component/Hook 'CareerMilestoneTimeline.style' missing unit test file
-- **Target File**: [`src/components/profile/CareerMilestoneTimeline/CareerMilestoneTimeline.style.ts:1`](file:///C:\Users\HP\Documents\My Web Sites\AntigravityWC\White-Caves\src\components\profile\CareerMilestoneTimeline\CareerMilestoneTimeline.style.ts#L1)
-- **Layer**: Frontend | **Category**: Test Coverage Gap | **Score**: 75
-- **Required Refactor**: Create test file for src/components/profile/CareerMilestoneTimeline/CareerMilestoneTimeline.style.ts with Vitest/Supertest assertions.
-
-### 10. [Frontend] Frontend Component/Hook 'ProfileThemeCustomizer' missing unit test file
-- **Target File**: [`src/components/profile/ProfileThemeCustomizer/ProfileThemeCustomizer.tsx:1`](file:///C:\Users\HP\Documents\My Web Sites\AntigravityWC\White-Caves\src\components\profile\ProfileThemeCustomizer\ProfileThemeCustomizer.tsx#L1)
-- **Layer**: Frontend | **Category**: Test Coverage Gap | **Score**: 75
-- **Required Refactor**: Create test file for src/components/profile/ProfileThemeCustomizer/ProfileThemeCustomizer.tsx with Vitest/Supertest assertions.
-
-### 11. [Frontend] Frontend Component/Hook 'SessionSecurityTicker' missing unit test file
-- **Target File**: [`src/components/profile/SessionSecurityTicker/SessionSecurityTicker.tsx:1`](file:///C:\Users\HP\Documents\My Web Sites\AntigravityWC\White-Caves\src\components\profile\SessionSecurityTicker\SessionSecurityTicker.tsx#L1)
-- **Layer**: Frontend | **Category**: Test Coverage Gap | **Score**: 75
-- **Required Refactor**: Create test file for src/components/profile/SessionSecurityTicker/SessionSecurityTicker.tsx with Vitest/Supertest assertions.
-
-### 12. [Frontend] Frontend Component/Hook 'TwoFactorAuthSetupCard' missing unit test file
-- **Target File**: [`src/components/profile/TwoFactorAuthSetupCard/TwoFactorAuthSetupCard.tsx:1`](file:///C:\Users\HP\Documents\My Web Sites\AntigravityWC\White-Caves\src\components\profile\TwoFactorAuthSetupCard\TwoFactorAuthSetupCard.tsx#L1)
-- **Layer**: Frontend | **Category**: Test Coverage Gap | **Score**: 75
-- **Required Refactor**: Create test file for src/components/profile/TwoFactorAuthSetupCard/TwoFactorAuthSetupCard.tsx with Vitest/Supertest assertions.
+### 12. [Frontend] Untyped 'any' usage detected
+- **Target File**: [`src/components/owner/tabs/LeaderboardTab.tsx:196`](file:///C:\Users\HP\Documents\My Web Sites\AntigravityWC\White-Caves\src\components\owner\tabs\LeaderboardTab.tsx#L196)
+- **Layer**: Frontend | **Category**: TypeScript Strictness | **Score**: 100
+- **Required Refactor**: Replace explicit `any` with strict interface or generic constraint.
 

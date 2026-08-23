@@ -287,7 +287,7 @@ export const HenryTenancyContractJourneyView: FC = () => {
     };
   }, []);
 
-  const updateField = (field: keyof DldTenancyContractData, value: any) => {
+  const updateField = (field: keyof DldTenancyContractData, value: DldTenancyContractData[keyof DldTenancyContractData]) => {
     setContractData(prev => {
       const next = { ...prev, [field]: value };
       henryTenancyContractTemplateService.saveDraft(next);

@@ -5,7 +5,9 @@
  */
 
 import { Router, Request, Response } from 'express';
-type RouteRequest = Request<Record<string, string>>;
+import { readFile } from 'fs/promises';
+import path from 'path';
+import { fileURLToPath } from 'url';
 import { asyncHandler, AppError } from '../middleware/errorHandler.js';
 import type { AuthRequest } from '../middleware/auth.js';
 import { prisma } from '../database.js';
@@ -13,6 +15,12 @@ import { validateIdParam } from '../utils/validate.js';
 import { sanitizeString } from '../utils/sanitize.js';
 import { requirePermission } from '../middleware/rbac.js';
 import { generateTaxInvoice } from '../services/invoiceService.js';
+
+type RouteRequest = AuthRequest & Request<Record<string, string>>;
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+const EXPENSE_SCHEMA_PATH = path.resolve(__dirname, '../../data/expenses-master-schema.json');
 
 const router = Router();
 
@@ -667,7 +675,7 @@ router.post(
 router.patch(
   '/expenses/:id',
   requirePermission('process_payments'),
-  asyncHandler(async (req: Request, res: Response) => {
+  asyncHandler(async (req: AuthRequest, res: Response) => {
     const expenseId = routeParamToString(req.params.id);
     if (!expenseId) {
       throw new AppError('Expense ID is required', 400);
@@ -725,6 +733,21 @@ router.delete(
   })
 );
 
+// ─── GET /api/finance/expense-catalog (Theodora 42-Item Master Catalog) ─
+router.get(
+  '/expense-catalog',
+  requirePermission('view_payments'),
+  asyncHandler(async (req: Request, res: Response) => {
+    try {
+      const data = await readFile(EXPENSE_SCHEMA_PATH, 'utf-8');
+      const json = JSON.parse(data);
+      res.status(200).json({ success: true, data: json });
+    } catch (err: any) {
+      throw new AppError('Could not load expense master catalog: ' + err.message, 500);
+    }
+  })
+);
+
 // ─── GET /api/finance/vat-return ─────────────────────────────────────────
 router.get(
   '/vat-return',
@@ -738,12 +761,22 @@ router.get(
         type: 'tax_invoice',
         date: { gte: periodStart, lte: periodEnd }
       },
-      _sum: { vatAmount: true }
+      _sum: { vatAmount: true, amount: true }
     });
 
-    // Future implementation: Input VAT (would come from Expense records in a full implementation)
-    const inputVAT = 0; 
-    const outputVatAmount = outputVAT._sum.vatAmount || 0;
+    // In-house Input VAT computation: 5.0% on qualifying business expenditures
+    const standardExpenses = await prisma.expense.aggregate({
+      where: {
+        status: { in: ['approved', 'processed'] },
+        date: { gte: periodStart, lte: periodEnd }
+      },
+      _sum: { amount: true }
+    });
+
+    const totalExpenseAmount = standardExpenses._sum.amount || 0;
+    // Input VAT recoverable (5% portion of standard outlays)
+    const inputVAT = Number((totalExpenseAmount * 0.05).toFixed(2));
+    const outputVatAmount = Number((outputVAT._sum.vatAmount || 0).toFixed(2));
 
     res.status(200).json({
       success: true,
@@ -752,7 +785,91 @@ router.get(
         periodEnd,
         outputVAT: outputVatAmount,
         inputVAT,
-        netVAT: outputVatAmount - inputVAT
+        netVAT: Number((outputVatAmount - inputVAT).toFixed(2)),
+        taxableSupplies: outputVAT._sum.amount || 0,
+        taxableExpenses: totalExpenseAmount
+      }
+    });
+  })
+);
+
+// ─── GET /api/finance/directors-loan-summary ─────────────────────────────
+router.get(
+  '/directors-loan-summary',
+  requirePermission('view_payments'),
+  asyncHandler(async (req: Request, res: Response) => {
+    const directorExpenses = await prisma.expense.findMany({
+      where: {
+        notes: { contains: 'DIRECTORS_LOAN' }
+      }
+    });
+
+    const totalAdvances = directorExpenses.reduce((acc, curr) => acc + curr.amount, 0);
+    const reimbursed = directorExpenses
+      .filter(e => e.status === 'reimbursed' || e.status === 'processed')
+      .reduce((acc, curr) => acc + curr.amount, 0);
+    const outstanding = totalAdvances - reimbursed;
+
+    res.status(200).json({
+      success: true,
+      data: {
+        currency: 'AED',
+        totalAdvances,
+        reimbursed,
+        outstanding,
+        transactionCount: directorExpenses.length
+      }
+    });
+  })
+);
+
+// ─── GET /api/finance/corporate-tax-summary ──────────────────────────────
+router.get(
+  '/corporate-tax-summary',
+  requirePermission('view_payments'),
+  asyncHandler(async (req: Request, res: Response) => {
+    const taxYear = req.query.taxYear ? Number(req.query.taxYear) : new Date().getFullYear();
+    const yearStart = new Date(taxYear, 0, 1);
+    const yearEnd = new Date(taxYear, 11, 31, 23, 59, 59);
+
+    const [invoices, expenses] = await Promise.all([
+      prisma.invoice.aggregate({
+        where: {
+          status: 'paid',
+          date: { gte: yearStart, lte: yearEnd }
+        },
+        _sum: { amount: true }
+      }),
+      prisma.expense.aggregate({
+        where: {
+          status: { in: ['approved', 'processed'] },
+          date: { gte: yearStart, lte: yearEnd }
+        },
+        _sum: { amount: true }
+      })
+    ]);
+
+    const totalRevenue = invoices._sum.amount || 0;
+    const deductibleExpenses = expenses._sum.amount || 0;
+    const netTaxableProfit = Math.max(0, totalRevenue - deductibleExpenses);
+
+    // UAE CT Rule: Small Business Relief threshold AED 375,000
+    const CT_RELIEF_THRESHOLD = 375000;
+    const taxableBase = Math.max(0, netTaxableProfit - CT_RELIEF_THRESHOLD);
+    const estimatedCorporateTax = Number((taxableBase * 0.09).toFixed(2));
+
+    res.status(200).json({
+      success: true,
+      data: {
+        taxYear,
+        totalRevenue,
+        deductibleExpenses,
+        netTaxableProfit,
+        smallBusinessReliefThreshold: CT_RELIEF_THRESHOLD,
+        taxableAboveThreshold: taxableBase,
+        statutoryTaxRate: '9%',
+        estimatedCorporateTaxDue: estimatedCorporateTax,
+        qualifiesForSmallBusinessRelief: netTaxableProfit <= CT_RELIEF_THRESHOLD
       }
     });
   })

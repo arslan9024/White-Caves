@@ -59,12 +59,16 @@ export const AI_ASSISTANTS_REGISTRY: Record<string, AIAssistant> = {
     colorScheme: '#F59E0B',
     avatar: '👩‍💼',
     description:
-      "Theodora is the financial backbone of White Caves, managing every dirham that flows in and out of the business. She generates invoices and commission statements, tracks all client payments (cheques, bank transfers, crypto), manages escrow release schedules on off-plan transactions, and reconciles accounts at month-end. She monitors outstanding receivables with automated dunning sequences, integrates with VAT filing requirements, and produces profit-and-loss statements and financial KPIs for Zoe's executive dashboard.",
+      "Theodora is the financial backbone of White Caves, managing every dirham that flows in and out of the business. She operates the 100% in-house UAE accounting suite: classifying all 42 master real estate expenses, reconciling Wio Business vs. Director's Loan equity advances, automating UAE FTA Form 201 VAT 5% returns, generating tax invoices, and computing UAE 9% Corporate Tax small business relief thresholds.",
     capabilities: [
       'invoice_management',
       'payment_tracking',
       'financial_reports',
       'budget_analysis',
+      'master_expense_classification_42',
+      'directors_loan_reconciliation',
+      'uae_vat_form_201',
+      'corporate_tax_relief_9pct',
     ],
     permissions: {
       viewableBy: ['owner', 'admin', 'finance_manager'],
@@ -79,7 +83,15 @@ export const AI_ASSISTANTS_REGISTRY: Record<string, AIAssistant> = {
     },
     quickStats: { value: 12, label: 'Invoices', change: 8.5 },
     dashboardUrl: '/owner/dashboard?tab=theodora',
-    apiEndpoints: ['/api/finance', '/api/invoices', '/api/payments'],
+    apiEndpoints: [
+      '/api/finance',
+      '/api/finance/expense-catalog',
+      '/api/finance/vat-return',
+      '/api/finance/directors-loan-summary',
+      '/api/finance/corporate-tax-summary',
+      '/api/invoices',
+      '/api/payments',
+    ],
   },
   olivia: {
     id: 'olivia',

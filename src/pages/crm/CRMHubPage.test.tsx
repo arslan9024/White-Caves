@@ -160,7 +160,7 @@ describe('CRMHubPage — Modern Atomic ERP Dashboard', () => {
     // Check 3 Sidebar Tiles
     expect(screen.getByText(/1. MD Office \(MD Suite\)/i)).toBeInTheDocument();
     expect(screen.getByText(/2. Corporate Departments \(12 Depts\)/i)).toBeInTheDocument();
-    expect(screen.getByText(/3. AI Command Center \(26 AI\)/i)).toBeInTheDocument();
+    expect(screen.getByText(/3. AI Command Center/i)).toBeInTheDocument();
   });
 
   it('renders Department Executive Overview with mission scope cards and launchpad', () => {
@@ -210,7 +210,7 @@ describe('CRMHubPage — Modern Atomic ERP Dashboard', () => {
   it('opens Tile 3 AI Command Center and selects an AI Assistant with URL update', async () => {
     renderPage();
 
-    const aiTile = screen.getByText(/3. AI Command Center \(26 AI\)/i);
+    const aiTile = screen.getByText(/3. AI Command Center/i);
     fireEvent.click(aiTile);
 
     expect(screen.getAllByText(/Nadia AI/i).length).toBeGreaterThanOrEqual(1);

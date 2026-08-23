@@ -13,10 +13,11 @@ router.post('/create', auth, async (req, res) => {
     const { formData } = req.body;
     const agentId = req.user.id;
 
-    if (!formData) {
+    // schema validation — formData must be a non-null object
+    if (!formData || typeof formData !== 'object' || Array.isArray(formData)) {
       return res.status(400).json({
         success: false,
-        error: 'Form data is required'
+        error: 'Form data is required and must be a valid object'
       });
     }
 

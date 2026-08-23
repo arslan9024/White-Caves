@@ -98,7 +98,7 @@ export const HenryTenancyContractModal: FC<HenryTenancyContractModalProps> = ({
   const tenantEidFileInputRef = useRef<HTMLInputElement>(null);
   const tenantPassportFileInputRef = useRef<HTMLInputElement>(null);
 
-  const onFileSelect = (e: React.ChangeEvent<HTMLInputElement>, docType: any = 'auto') => {
+  const onFileSelect = (e: React.ChangeEvent<HTMLInputElement>, docType: 'auto' | 'contract' | 'title_deed' | 'emirates_id_tenant' | 'emirates_id_landlord' | 'passport_tenant' | 'passport_landlord' = 'auto') => {
     const file = e.target.files?.[0];
     if (file) {
       handleFileUpload(file, docType);

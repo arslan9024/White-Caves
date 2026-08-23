@@ -1,249 +1,170 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { 
-  ClipboardCheck, Flag, Key, AlertCircle, Camera,
-  Calendar, Users, CheckCircle, Clock, Building,
-  ArrowUp, ArrowDown, Filter, Search, Plus, Eye, MessageSquare
+  Key, CheckSquare, Camera, AlertCircle, Wrench, 
+  CheckCircle2, Clock, Download, FileText, Send
 } from 'lucide-react';
-import AssistantDocsTab from './shared/AssistantDocsTab';
 import './AssistantDashboard.css';
 
-const MILESTONES = [
-  { id: 1, project: 'Marina Vista Tower', milestone: 'Foundation Complete', date: '2024-01-15', status: 'completed', progress: 100 },
-  { id: 2, project: 'Marina Vista Tower', milestone: 'Structure 50%', date: '2024-04-20', status: 'in_progress', progress: 65 },
-  { id: 3, project: 'Business Bay Heights', milestone: 'External Facade', date: '2024-02-28', status: 'upcoming', progress: 0 },
-  { id: 4, project: 'Creek Harbour Residences', milestone: 'MEP Installation', date: '2024-03-15', status: 'in_progress', progress: 45 },
-  { id: 5, project: 'Palm Gateway', milestone: 'Interior Fit-out', date: '2024-05-01', status: 'upcoming', progress: 0 }
-];
+interface VestaProps {
+  moduleId?: string;
+  role?: string;
+  user?: any;
+}
 
-const SNAGGING_ITEMS = [
-  { id: 1, unit: 'Unit 1205', issue: 'Paint scratches on master bedroom wall', severity: 'minor', status: 'reported', photo: true, developer: 'Emaar' },
-  { id: 2, unit: 'Unit 1206', issue: 'AC not cooling properly', severity: 'major', status: 'in_progress', photo: true, developer: 'Emaar' },
-  { id: 3, unit: 'Villa 234', issue: 'Missing kitchen cabinet handle', severity: 'minor', status: 'fixed', photo: true, developer: 'DAMAC' },
-  { id: 4, unit: 'Unit 1208', issue: 'Water leak under bathroom sink', severity: 'critical', status: 'reported', photo: true, developer: 'Emaar' },
-  { id: 5, unit: 'Villa 456', issue: 'Tile crack in living room', severity: 'minor', status: 'in_progress', photo: false, developer: 'DAMAC' }
-];
+export const VestaHandoverCRM: React.FC<VestaProps> = ({ moduleId }) => {
+  const [activeTab, setActiveTab] = useState<'snagging' | 'checklist' | 'certificate' | 'contractor'>('snagging');
 
-const HANDOVERS = [
-  { id: 1, unit: 'Unit 1210 - Marina Vista', client: 'Ahmed Al Rashid', date: '2024-01-25', time: '10:00 AM', status: 'scheduled', documents: 'complete' },
-  { id: 2, unit: 'Villa 348 - DAMAC Hills', client: 'James Wilson', date: '2024-01-26', time: '2:00 PM', status: 'scheduled', documents: 'pending_signature' },
-  { id: 3, unit: 'Unit 805 - Business Bay', client: 'Maria Santos', date: '2024-01-22', time: '11:00 AM', status: 'completed', documents: 'complete' },
-  { id: 4, unit: 'Penthouse 2501', client: 'Robert Chen', date: '2024-02-01', time: '3:00 PM', status: 'scheduled', documents: 'pending' }
-];
+  useEffect(() => {
+    if (!moduleId) return;
+    if (moduleId.includes('snagging')) setActiveTab('snagging');
+    else if (moduleId.includes('checklist')) setActiveTab('checklist');
+    else if (moduleId.includes('certificate') || moduleId.includes('key')) setActiveTab('certificate');
+    else if (moduleId.includes('contractor')) setActiveTab('contractor');
+  }, [moduleId]);
 
-const VestaHandoverCRM = () => {
-  const [activeTab, setActiveTab] = useState('milestones');
+  // Feature 1: Snagging Items
+  const [snags, setSnags] = useState([
+    { id: 'SNG-101', room: 'Master Bathroom', item: 'Marble countertop sealant hairline crack', priority: 'MEDIUM', contractor: 'Emaar Facilities', status: 'PENDING_FIX' },
+    { id: 'SNG-102', room: 'Kitchen', item: 'Dishwasher electrical socket loose fit', priority: 'HIGH', contractor: 'Al Futtaim MEP', status: 'IN_PROGRESS' },
+    { id: 'SNG-103', room: 'Living Area', item: 'Floor-to-ceiling glass sliding door friction', priority: 'LOW', contractor: 'Schüco Tech', status: 'RECTIFIED' },
+  ]);
 
-  const getStatusColor = (status) => {
-    switch (status) {
-      case 'completed': case 'fixed': return '#10B981';
-      case 'in_progress': return '#3B82F6';
-      case 'upcoming': case 'scheduled': return '#F59E0B';
-      case 'reported': return '#EF4444';
-      default: return '#6B7280';
-    }
-  };
+  // Feature 2: Handover Checklist
+  const [checklist, setChecklist] = useState({
+    dewaTransferred: true,
+    empowerChilledWaterRegistered: true,
+    accessCardsHandedOver: true,
+    parkingRemoteVerified: true,
+    snaggingReportSigned: true,
+    ejariCertificateDelivered: true,
+  });
 
-  const getSeverityColor = (severity) => {
-    switch (severity) {
-      case 'critical': return '#EF4444';
-      case 'major': return '#F59E0B';
-      case 'minor': return '#10B981';
-      default: return '#6B7280';
-    }
-  };
+  const allComplete = Object.values(checklist).every(Boolean);
 
   return (
-    <div className="assistant-dashboard vesta">
-      <div className="assistant-header">
-        <div className="assistant-avatar" style={{ background: 'linear-gradient(135deg, var(--color-f97316, #F97316) 0%, var(--color-ea580c, #EA580C) 100%)' }}>
-          <ClipboardCheck size={28} />
-        </div>
-        <div className="assistant-info">
-          <h2>Vesta - Project & Snagging Coordinator</h2>
-          <p>Tracks construction milestones for off-plan buyers, automates developer communication, and manages digital snagging with image recognition</p>
-        </div>
-        <div className="assistant-status online">
-          <span className="status-dot"></span>
-          Active
-        </div>
-      </div>
-
-      <div className="quick-stats">
-        <div className="stat-card">
-          <div className="stat-icon" style={{ background: 'rgba(249, 115, 22, 0.2)', color: 'var(--color-f97316, #F97316)' }}>
-            <Flag size={20} />
+    <div className="crm-container" style={{ maxWidth: '100%', padding: '0.5rem' }}>
+      {/* Header */}
+      <div style={{ background: 'linear-gradient(135deg, #78350F 0%, #451A03 100%)', color: '#FFFFFF', padding: '1.25rem 1.5rem', borderRadius: '16px', marginBottom: '1.25rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1rem' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+          <div style={{ width: '48px', height: '48px', borderRadius: '12px', background: 'linear-gradient(135deg, #F59E0B 0%, #D97706 100%)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.5rem' }}>
+            🔑
           </div>
-          <div className="stat-content">
-            <span className="stat-value">45</span>
-            <span className="stat-label">Active Projects</span>
+          <div>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+              <h2 style={{ margin: 0, fontSize: '1.3rem', fontWeight: 800 }}>Vesta AI — Snagging, Move-In & Handover</h2>
+              <span style={{ fontSize: '0.7rem', background: 'rgba(255, 255, 255, 0.15)', padding: '2px 8px', borderRadius: '4px', color: '#FEF3C7', fontWeight: 800 }}>
+                Handover Protocol
+              </span>
+            </div>
+            <p style={{ margin: '0.2rem 0 0 0', fontSize: '0.82rem', color: '#FEF3C7' }}>
+              Digital defect inspection reports, key handover certificates, DEWA/Empower onboarding, and contractor rectification SLA.
+            </p>
           </div>
-          <span className="stat-change positive">12 on track</span>
-        </div>
-        <div className="stat-card highlight">
-          <div className="stat-icon" style={{ background: 'rgba(239, 68, 68, 0.2)', color: 'var(--accent-red, #EF4444)' }}>
-            <AlertCircle size={20} />
-          </div>
-          <div className="stat-content">
-            <span className="stat-value">28</span>
-            <span className="stat-label">Open Snags</span>
-          </div>
-          <span className="stat-change warning">5 critical</span>
-        </div>
-        <div className="stat-card">
-          <div className="stat-icon" style={{ background: 'rgba(16, 185, 129, 0.2)', color: 'var(--accent-green, #10B981)' }}>
-            <Key size={20} />
-          </div>
-          <div className="stat-content">
-            <span className="stat-value">12</span>
-            <span className="stat-label">Handovers This Week</span>
-          </div>
-          <span className="stat-change positive">4 tomorrow</span>
-        </div>
-        <div className="stat-card">
-          <div className="stat-icon" style={{ background: 'rgba(139, 92, 246, 0.2)', color: 'var(--accent-purple, #8B5CF6)' }}>
-            <CheckCircle size={20} />
-          </div>
-          <div className="stat-content">
-            <span className="stat-value">94%</span>
-            <span className="stat-label">Resolution Rate</span>
-          </div>
-          <span className="stat-change positive"><ArrowUp size={14} /> 3%</span>
         </div>
       </div>
 
-      <div className="assistant-tabs">
-        {['milestones', 'snagging', 'handovers', 'developer', 'docs'].map(tab => (
-          <button
-            key={tab}
-            className={`tab-btn ${activeTab === tab ? 'active' : ''}`}
-            onClick={() => setActiveTab(tab)}
-          >
-            {tab === 'docs' ? 'Documentation' : tab.charAt(0).toUpperCase() + tab.slice(1)}
+      {/* Tabs */}
+      <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap', background: '#FFFFFF', padding: '8px 12px', borderRadius: '12px', border: '1px solid #E2E8F0', marginBottom: '1.25rem' }}>
+        <button onClick={() => setActiveTab('snagging')} style={{ padding: '6px 12px', borderRadius: '6px', border: activeTab === 'snagging' ? '1px solid #D97706' : '1px solid transparent', background: activeTab === 'snagging' ? '#D97706' : '#F8FAFC', color: activeTab === 'snagging' ? '#FFF' : '#334155', fontWeight: 800, fontSize: '0.8rem', cursor: 'pointer' }}>
+          3.23.1 Digital Snagging Inspector
+        </button>
+        <button onClick={() => setActiveTab('checklist')} style={{ padding: '6px 12px', borderRadius: '6px', border: activeTab === 'checklist' ? '1px solid #D97706' : '1px solid transparent', background: activeTab === 'checklist' ? '#D97706' : '#F8FAFC', color: activeTab === 'checklist' ? '#FFF' : '#334155', fontWeight: 800, fontSize: '0.8rem', cursor: 'pointer' }}>
+          3.23.2 Move-In Handover Checklist
+        </button>
+        <button onClick={() => setActiveTab('certificate')} style={{ padding: '6px 12px', borderRadius: '6px', border: activeTab === 'certificate' ? '1px solid #D97706' : '1px solid transparent', background: activeTab === 'certificate' ? '#D97706' : '#F8FAFC', color: activeTab === 'certificate' ? '#FFF' : '#334155', fontWeight: 800, fontSize: '0.8rem', cursor: 'pointer' }}>
+          3.23.3 Key Handover Certificate
+        </button>
+        <button onClick={() => setActiveTab('contractor')} style={{ padding: '6px 12px', borderRadius: '6px', border: activeTab === 'contractor' ? '1px solid #D97706' : '1px solid transparent', background: activeTab === 'contractor' ? '#D97706' : '#F8FAFC', color: activeTab === 'contractor' ? '#FFF' : '#334155', fontWeight: 800, fontSize: '0.8rem', cursor: 'pointer' }}>
+          3.23.4 Contractor Rectification SLA
+        </button>
+      </div>
+
+      {/* Tab 1: Snagging */}
+      {activeTab === 'snagging' && (
+        <div style={{ background: '#FFFFFF', borderRadius: '12px', border: '1px solid #E2E8F0', overflow: 'hidden' }}>
+          <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left', fontSize: '0.85rem' }}>
+            <thead>
+              <tr style={{ background: '#F8FAFC', borderBottom: '1px solid #E2E8F0', color: '#475569', fontWeight: 800 }}>
+                <th style={{ padding: '10px 14px' }}>Snag ID</th>
+                <th style={{ padding: '10px 14px' }}>Location / Room</th>
+                <th style={{ padding: '10px 14px' }}>Defect Description</th>
+                <th style={{ padding: '10px 14px' }}>Assigned Contractor</th>
+                <th style={{ padding: '10px 14px' }}>Severity</th>
+                <th style={{ padding: '10px 14px' }}>Status</th>
+              </tr>
+            </thead>
+            <tbody>
+              {snags.map(s => (
+                <tr key={s.id} style={{ borderBottom: '1px solid #F1F5F9' }}>
+                  <td style={{ padding: '10px 14px', fontWeight: 800, color: '#D97706' }}>{s.id}</td>
+                  <td style={{ padding: '10px 14px', fontWeight: 700, color: '#1E293B' }}>{s.room}</td>
+                  <td style={{ padding: '10px 14px', color: '#475569' }}>{s.item}</td>
+                  <td style={{ padding: '10px 14px', color: '#64748B' }}>{s.contractor}</td>
+                  <td style={{ padding: '10px 14px' }}>
+                    <span style={{ padding: '2px 8px', borderRadius: '4px', fontSize: '0.72rem', fontWeight: 800, background: s.priority === 'HIGH' ? '#FEF2F2' : '#FEF3C7', color: s.priority === 'HIGH' ? '#DC2626' : '#B45309' }}>
+                      {s.priority}
+                    </span>
+                  </td>
+                  <td style={{ padding: '10px 14px' }}>
+                    <span style={{ padding: '2px 8px', borderRadius: '4px', fontSize: '0.72rem', fontWeight: 800, background: s.status === 'RECTIFIED' ? '#ECFDF5' : '#EFF6FF', color: s.status === 'RECTIFIED' ? '#047857' : '#1E40AF' }}>
+                      {s.status}
+                    </span>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      )}
+
+      {/* Tab 2: Checklist */}
+      {activeTab === 'checklist' && (
+        <div style={{ background: '#FFFFFF', padding: '1.5rem', borderRadius: '12px', border: '1px solid #E2E8F0' }}>
+          <h4 style={{ margin: '0 0 1rem 0', fontSize: '1rem', fontWeight: 800, color: '#1E293B' }}>
+            Move-In & Key Handover Readiness Gate
+          </h4>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem', marginBottom: '1.25rem' }}>
+            {Object.entries(checklist).map(([k, v]) => (
+              <label key={k} style={{ display: 'flex', alignItems: 'center', gap: '10px', fontSize: '0.85rem', fontWeight: 700, background: '#F8FAFC', padding: '10px 14px', borderRadius: '8px', border: '1px solid #E2E8F0', cursor: 'pointer' }}>
+                <input type="checkbox" checked={v} onChange={e => setChecklist({ ...checklist, [k]: e.target.checked })} />
+                <span>{k.replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase())}</span>
+              </label>
+            ))}
+          </div>
+
+          <button onClick={() => { setActiveTab('certificate'); }} style={{ background: allComplete ? '#10B981' : '#D97706', color: '#FFF', border: 'none', borderRadius: '8px', padding: '10px 20px', fontWeight: 800, fontSize: '0.85rem', cursor: 'pointer' }}>
+            {allComplete ? 'Issue Official Key Handover Certificate' : 'Proceed to Certificate (Pending Checklist)'}
           </button>
-        ))}
-      </div>
+        </div>
+      )}
 
-      <div className="tab-content">
-        {activeTab === 'milestones' && (
-          <div className="milestones-view">
-            <div className="view-header">
-              <h3>Construction Milestones</h3>
-              <select>
-                <option value="all">All Projects</option>
-                <option value="marina">Marina Vista Tower</option>
-                <option value="business">Business Bay Heights</option>
-              </select>
+      {/* Tab 3: Key Certificate */}
+      {activeTab === 'certificate' && (
+        <div style={{ background: '#FFFFFF', padding: '1.5rem', borderRadius: '12px', border: '1px solid #E2E8F0' }}>
+          <div style={{ border: '2px dashed #CBD5E1', padding: '1.5rem', borderRadius: '12px', background: '#F8FAFC', textAlign: 'center' }}>
+            <h3 style={{ margin: '0 0 0.5rem 0', color: '#1E293B', fontWeight: 900 }}>OFFICIAL KEY HANDOVER CERTIFICATE</h3>
+            <p style={{ fontSize: '0.8rem', color: '#64748B', margin: 0 }}>White Caves Real Estate LLC | Dubai Land Department Registered</p>
+            <div style={{ margin: '1.5rem 0', fontSize: '0.9rem', color: '#334155' }}>
+              This certifies that the keys, access cards, and DEWA utility clearances for <strong>Unit 1402, Downtown Heights</strong> have been inspected and formally handed over to the tenant.
             </div>
-            <div className="milestones-timeline">
-              {MILESTONES.map(milestone => (
-                <div key={milestone.id} className="milestone-card">
-                  <div className="milestone-status" style={{ background: getStatusColor(milestone.status) }} />
-                  <div className="milestone-content">
-                    <div className="milestone-header">
-                      <h4>{milestone.milestone}</h4>
-                      <span className="milestone-project">{milestone.project}</span>
-                    </div>
-                    <div className="milestone-progress">
-                      <div className="progress-bar">
-                        <div className="progress-fill" style={{ width: `${milestone.progress}%` }} />
-                      </div>
-                      <span>{milestone.progress}%</span>
-                    </div>
-                    <div className="milestone-meta">
-                      <span><Calendar size={12} /> {milestone.date}</span>
-                      <span className={`status ${milestone.status}`}>{milestone.status.replace('_', ' ')}</span>
-                    </div>
-                  </div>
-                </div>
-              ))}
-            </div>
+            <button onClick={() => alert('Downloaded Official Key Handover Certificate PDF.')} style={{ background: '#D97706', color: '#FFF', border: 'none', borderRadius: '8px', padding: '8px 18px', fontWeight: 800, fontSize: '0.85rem', cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: '6px' }}>
+              <Download size={16} /> Download Signed Handover PDF
+            </button>
           </div>
-        )}
+        </div>
+      )}
 
-        {activeTab === 'snagging' && (
-          <div className="snagging-view">
-            <div className="view-header">
-              <div className="search-box">
-                <Search size={16} />
-                <input type="text" placeholder="Search snags..." />
-              </div>
-              <button className="add-btn"><Plus size={16} /> Report Snag</button>
-            </div>
-            <div className="snagging-list">
-              {SNAGGING_ITEMS.map(snag => (
-                <div key={snag.id} className="snag-card">
-                  <div className="snag-severity" style={{ background: getSeverityColor(snag.severity) }} />
-                  <div className="snag-content">
-                    <div className="snag-header">
-                      <h4>{snag.unit}</h4>
-                      <span className="snag-developer">{snag.developer}</span>
-                    </div>
-                    <p className="snag-issue">{snag.issue}</p>
-                    <div className="snag-meta">
-                      <span className="severity-badge" style={{ color: getSeverityColor(snag.severity) }}>
-                        {snag.severity}
-                      </span>
-                      <span className="status-badge" style={{ color: getStatusColor(snag.status) }}>
-                        {snag.status.replace('_', ' ')}
-                      </span>
-                      {snag.photo && <span className="photo-badge"><Camera size={12} /> Photo</span>}
-                    </div>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-        )}
-
-        {activeTab === 'handovers' && (
-          <div className="handovers-view">
-            <div className="view-header">
-              <h3>Scheduled Handovers</h3>
-              <button className="add-btn"><Plus size={16} /> Schedule Handover</button>
-            </div>
-            <div className="handovers-list">
-              {HANDOVERS.map(handover => (
-                <div key={handover.id} className="handover-card">
-                  <div className="handover-icon" style={{ background: getStatusColor(handover.status) + '20' }}>
-                    <Key size={24} style={{ color: getStatusColor(handover.status) }} />
-                  </div>
-                  <div className="handover-content">
-                    <h4>{handover.unit}</h4>
-                    <p className="handover-client"><Users size={14} /> {handover.client}</p>
-                    <div className="handover-meta">
-                      <span><Calendar size={12} /> {handover.date}</span>
-                      <span><Clock size={12} /> {handover.time}</span>
-                    </div>
-                  </div>
-                  <div className="handover-status">
-                    <span className={`status ${handover.status}`}>{handover.status}</span>
-                    <span className={`docs ${handover.documents}`}>Docs: {handover.documents.replace('_', ' ')}</span>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-        )}
-
-        {activeTab === 'developer' && (
-          <div className="developer-view">
-            <h3>Developer Communications</h3>
-            <div className="empty-state">
-              <MessageSquare size={48} />
-              <p>Automated developer updates will appear here</p>
-              <button className="add-btn"><Plus size={16} /> New Message</button>
-            </div>
-          </div>
-        )}
-
-        {activeTab === 'docs' && (
-          <AssistantDocsTab 
-            assistantId="vesta" 
-            assistantName="Vesta" 
-            assistantColor="#F97316" 
-          />
-        )}
-      </div>
+      {/* Tab 4: Contractor SLA */}
+      {activeTab === 'contractor' && (
+        <div style={{ background: '#FFFFFF', padding: '1.5rem', borderRadius: '12px', border: '1px solid #E2E8F0' }}>
+          <h4 style={{ margin: '0 0 0.5rem 0', fontSize: '1rem', fontWeight: 800, color: '#1E293B' }}>
+            Developer DLP (Defect Liability Period) Contractor SLA
+          </h4>
+          <p style={{ fontSize: '0.82rem', color: '#64748B' }}>
+            Standard 1-year developer defect liability warranty monitoring under UAE Civil Code.
+          </p>
+        </div>
+      )}
     </div>
   );
 };

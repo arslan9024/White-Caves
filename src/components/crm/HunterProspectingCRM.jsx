@@ -1,256 +1,160 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { 
-  Search, Target, Send, Radar, Plus, TrendingUp,
-  Users, Mail, Phone, Globe, Calendar, Clock,
-  ArrowUp, ArrowDown, Filter, Eye, Zap, Activity
+  Target, Users, Send, MapPin, Sparkles, 
+  CheckCircle, MessageSquare, Filter, Search, Phone
 } from 'lucide-react';
-import AssistantDocsTab from './shared/AssistantDocsTab';
 import './AssistantDashboard.css';
 
-const PROSPECTS = [
-  { id: 1, name: 'Khalid Al Maktoum', source: 'LinkedIn', score: 92, status: 'hot', interest: 'Selling Villa', value: 'AED 8M+', lastActivity: 'Viewed our website', contacted: false },
-  { id: 2, name: 'Jennifer Smith', source: 'Property Finder', score: 78, status: 'warm', interest: 'Buying Apartment', value: 'AED 2-3M', lastActivity: 'Inquired on listing', contacted: true },
-  { id: 3, name: 'Hassan Trading LLC', source: 'Web Scrape', score: 85, status: 'hot', interest: 'Commercial Space', value: 'AED 5M+', lastActivity: 'Company expanding', contacted: false },
-  { id: 4, name: 'Maria Rodriguez', source: 'Referral Data', score: 65, status: 'cold', interest: 'Investment', value: 'AED 10M+', lastActivity: 'Previous client', contacted: true },
-  { id: 5, name: 'Chen Wei Holdings', source: 'DLD Records', score: 88, status: 'warm', interest: 'Portfolio', value: 'AED 25M+', lastActivity: 'Recent purchases', contacted: false }
-];
+interface HunterProps {
+  moduleId?: string;
+  role?: string;
+  user?: any;
+}
 
-const OUTREACH_CAMPAIGNS = [
-  { id: 1, name: 'Off-Plan Investors Q1', status: 'active', prospects: 156, contacted: 89, responses: 23, meetings: 8 },
-  { id: 2, name: 'Villa Sellers Marina', status: 'active', prospects: 78, contacted: 45, responses: 12, meetings: 4 },
-  { id: 3, name: 'Expat Relocation', status: 'paused', prospects: 234, contacted: 180, responses: 45, meetings: 15 },
-  { id: 4, name: 'Commercial Tenants', status: 'draft', prospects: 45, contacted: 0, responses: 0, meetings: 0 }
-];
+export const HunterProspectingCRM: React.FC<HunterProps> = ({ moduleId }) => {
+  const [activeTab, setActiveTab] = useState<'matching' | 'profiler' | 'geofence' | 'pitch'>('matching');
 
-const PATTERNS = [
-  { id: 1, pattern: 'High-value villa listings in Palm Jumeirah', trend: 'increasing', leads: 12, opportunity: 'Seller outreach' },
-  { id: 2, pattern: 'Apartment rentals in JVC trending down', trend: 'decreasing', leads: 8, opportunity: 'Landlord advisory' },
-  { id: 3, pattern: 'Off-plan interest in Dubai South', trend: 'increasing', leads: 24, opportunity: 'Investor targeting' },
-  { id: 4, pattern: 'Commercial space demand in Business Bay', trend: 'stable', leads: 6, opportunity: 'Tenant matching' }
-];
+  useEffect(() => {
+    if (!moduleId) return;
+    if (moduleId.includes('offmarket') || moduleId.includes('matcher')) setActiveTab('matching');
+    else if (moduleId.includes('hnw') || moduleId.includes('profiler')) setActiveTab('profiler');
+    else if (moduleId.includes('geofence')) setActiveTab('geofence');
+    else if (moduleId.includes('pitch')) setActiveTab('pitch');
+  }, [moduleId]);
 
-const HunterProspectingCRM = () => {
-  const [activeTab, setActiveTab] = useState('prospects');
+  // Feature 1: Off-Market Luxury Matcher
+  const [buyers, setBuyers] = useState([
+    { id: 'HNW-01', name: 'Dr. Tariq Al Mansoor', budget: 'AED 35M - 45M', pref: 'Palm Jumeirah Waterfront Villa', matchScore: 98, matchedUnit: 'Frond G Signature Villa' },
+    { id: 'HNW-02', name: 'Alexander Volkov', budget: 'AED 15M - 20M', pref: 'Downtown Penthouse Full Burj View', matchScore: 94, matchedUnit: 'Il Primo High Floor Penthouse' },
+    { id: 'HNW-03', name: 'Lady Sophia Sterling', budget: 'AED 50M+', pref: 'Emirates Hills Lake View Mansion', matchScore: 91, matchedUnit: 'Sector E Luxury Palace' },
+  ]);
 
-  const getStatusColor = (status) => {
-    switch (status) {
-      case 'hot': return '#EF4444';
-      case 'warm': return '#F59E0B';
-      case 'cold': return '#3B82F6';
-      default: return '#6B7280';
-    }
+  // Feature 4: Pitch Generator
+  const [selectedBuyer, setSelectedBuyer] = useState(buyers[0]);
+  const [pitchText, setPitchText] = useState(
+    `Dear ${selectedBuyer.name},\n\nWe have secured an exclusive, off-market opportunity matching your exact criteria: ${selectedBuyer.matchedUnit}.\n\n• Asking Price: ${selectedBuyer.budget}\n• Confidential viewing slots available this Thursday.\n\nBest regards,\nWhite Caves Private Client Group`
+  );
+  const [sentSuccess, setSentSuccess] = useState(false);
+
+  const handleSendPitch = () => {
+    setSentSuccess(true);
+    setTimeout(() => setSentSuccess(false), 4000);
   };
 
   return (
-    <div className="assistant-dashboard hunter">
-      <div className="assistant-header">
-        <div className="assistant-avatar" style={{ background: 'linear-gradient(135deg, var(--accent-teal, #0D9488) 0%, var(--accent-teal, #0F766E) 100%)' }}>
-          <Target size={28} />
-        </div>
-        <div className="assistant-info">
-          <h2>Hunter - Lead Prospecting AI</h2>
-          <p>Scrapes and analyzes potential client databases, identifies property buying/selling patterns, and manages automated outreach</p>
-        </div>
-        <div className="assistant-status online">
-          <span className="status-dot"></span>
-          Active
-        </div>
-      </div>
-
-      <div className="quick-stats">
-        <div className="stat-card">
-          <div className="stat-icon" style={{ background: 'rgba(13, 148, 136, 0.2)', color: 'var(--accent-teal, #0D9488)' }}>
-            <Users size={20} />
+    <div className="crm-container" style={{ maxWidth: '100%', padding: '0.5rem' }}>
+      {/* Header */}
+      <div style={{ background: 'linear-gradient(135deg, #065F46 0%, #064E3B 100%)', color: '#FFFFFF', padding: '1.25rem 1.5rem', borderRadius: '16px', marginBottom: '1.25rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1rem' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+          <div style={{ width: '48px', height: '48px', borderRadius: '12px', background: 'linear-gradient(135deg, #10B981 0%, #059669 100%)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.5rem' }}>
+            🎯
           </div>
-          <div className="stat-content">
-            <span className="stat-value">1,247</span>
-            <span className="stat-label">Prospects Found</span>
+          <div>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+              <h2 style={{ margin: 0, fontSize: '1.3rem', fontWeight: 800 }}>Hunter AI — Outbound Prospecting & Lead Matcher</h2>
+              <span style={{ fontSize: '0.7rem', background: 'rgba(255, 255, 255, 0.15)', padding: '2px 8px', borderRadius: '4px', color: '#A7F3D0', fontWeight: 800 }}>
+                Off-Market VIP Matching
+              </span>
+            </div>
+            <p style={{ margin: '0.2rem 0 0 0', fontSize: '0.82rem', color: '#D1FAE5' }}>
+              Algorithmic buyer-to-inventory matcher, HNW investor profiling, and personalized WhatsApp pitch automation.
+            </p>
           </div>
-          <span className="stat-change positive"><ArrowUp size={14} /> 89 this week</span>
-        </div>
-        <div className="stat-card highlight">
-          <div className="stat-icon" style={{ background: 'rgba(239, 68, 68, 0.2)', color: 'var(--accent-red, #EF4444)' }}>
-            <Zap size={20} />
-          </div>
-          <div className="stat-content">
-            <span className="stat-value">67</span>
-            <span className="stat-label">Hot Prospects</span>
-          </div>
-          <span className="stat-change warning">12 uncontacted</span>
-        </div>
-        <div className="stat-card">
-          <div className="stat-icon" style={{ background: 'rgba(245, 158, 11, 0.2)', color: 'var(--accent-gold, #F59E0B)' }}>
-            <Send size={20} />
-          </div>
-          <div className="stat-content">
-            <span className="stat-value">314</span>
-            <span className="stat-label">Outreach Sent</span>
-          </div>
-          <span className="stat-change">23% response rate</span>
-        </div>
-        <div className="stat-card">
-          <div className="stat-icon" style={{ background: 'rgba(139, 92, 246, 0.2)', color: 'var(--accent-purple, #8B5CF6)' }}>
-            <Radar size={20} />
-          </div>
-          <div className="stat-content">
-            <span className="stat-value">4</span>
-            <span className="stat-label">Active Patterns</span>
-          </div>
-          <span className="stat-change positive">2 new</span>
         </div>
       </div>
 
-      <div className="assistant-tabs">
-        {['prospects', 'campaigns', 'patterns', 'enrichment', 'docs'].map(tab => (
-          <button
-            key={tab}
-            className={`tab-btn ${activeTab === tab ? 'active' : ''}`}
-            onClick={() => setActiveTab(tab)}
-          >
-            {tab === 'docs' ? 'Documentation' : tab.charAt(0).toUpperCase() + tab.slice(1)}
-          </button>
-        ))}
+      {/* Tabs */}
+      <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap', background: '#FFFFFF', padding: '8px 12px', borderRadius: '12px', border: '1px solid #E2E8F0', marginBottom: '1.25rem' }}>
+        <button onClick={() => setActiveTab('matching')} style={{ padding: '6px 12px', borderRadius: '6px', border: activeTab === 'matching' ? '1px solid #059669' : '1px solid transparent', background: activeTab === 'matching' ? '#059669' : '#F8FAFC', color: activeTab === 'matching' ? '#FFF' : '#334155', fontWeight: 800, fontSize: '0.8rem', cursor: 'pointer' }}>
+          3.21.1 Off-Market Luxury Matcher
+        </button>
+        <button onClick={() => setActiveTab('profiler')} style={{ padding: '6px 12px', borderRadius: '6px', border: activeTab === 'profiler' ? '1px solid #059669' : '1px solid transparent', background: activeTab === 'profiler' ? '#059669' : '#F8FAFC', color: activeTab === 'profiler' ? '#FFF' : '#334155', fontWeight: 800, fontSize: '0.8rem', cursor: 'pointer' }}>
+          3.21.2 HNW Lead Profiler
+        </button>
+        <button onClick={() => setActiveTab('geofence')} style={{ padding: '6px 12px', borderRadius: '6px', border: activeTab === 'geofence' ? '1px solid #059669' : '1px solid transparent', background: activeTab === 'geofence' ? '#059669' : '#F8FAFC', color: activeTab === 'geofence' ? '#FFF' : '#334155', fontWeight: 800, fontSize: '0.8rem', cursor: 'pointer' }}>
+          3.21.3 Geo-Fenced Outreach
+        </button>
+        <button onClick={() => setActiveTab('pitch')} style={{ padding: '6px 12px', borderRadius: '6px', border: activeTab === 'pitch' ? '1px solid #059669' : '1px solid transparent', background: activeTab === 'pitch' ? '#059669' : '#F8FAFC', color: activeTab === 'pitch' ? '#FFF' : '#334155', fontWeight: 800, fontSize: '0.8rem', cursor: 'pointer' }}>
+          3.21.4 Direct Pitch Dispatcher
+        </button>
       </div>
 
-      <div className="tab-content">
-        {activeTab === 'prospects' && (
-          <div className="prospects-view">
-            <div className="view-header">
-              <div className="search-box">
-                <Search size={16} />
-                <input type="text" placeholder="Search prospects..." />
+      {/* Tab 1: Matcher */}
+      {activeTab === 'matching' && (
+        <div style={{ background: '#FFFFFF', borderRadius: '12px', border: '1px solid #E2E8F0', overflow: 'hidden' }}>
+          <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left', fontSize: '0.85rem' }}>
+            <thead>
+              <tr style={{ background: '#F8FAFC', borderBottom: '1px solid #E2E8F0', color: '#475569', fontWeight: 800 }}>
+                <th style={{ padding: '10px 14px' }}>HNW Buyer</th>
+                <th style={{ padding: '10px 14px' }}>Target Budget</th>
+                <th style={{ padding: '10px 14px' }}>Requirements</th>
+                <th style={{ padding: '10px 14px' }}>Matched Off-Market Property</th>
+                <th style={{ padding: '10px 14px' }}>Match Score</th>
+                <th style={{ padding: '10px 14px' }}>Action</th>
+              </tr>
+            </thead>
+            <tbody>
+              {buyers.map(b => (
+                <tr key={b.id} style={{ borderBottom: '1px solid #F1F5F9' }}>
+                  <td style={{ padding: '10px 14px', fontWeight: 800, color: '#1E293B' }}>{b.name}</td>
+                  <td style={{ padding: '10px 14px', fontWeight: 700, color: '#059669' }}>{b.budget}</td>
+                  <td style={{ padding: '10px 14px', color: '#64748B' }}>{b.pref}</td>
+                  <td style={{ padding: '10px 14px', fontWeight: 700, color: '#1E293B' }}>{b.matchedUnit}</td>
+                  <td style={{ padding: '10px 14px' }}>
+                    <span style={{ background: '#ECFDF5', color: '#047857', padding: '3px 8px', borderRadius: '4px', fontWeight: 800 }}>
+                      {b.matchScore}% Match
+                    </span>
+                  </td>
+                  <td style={{ padding: '10px 14px' }}>
+                    <button onClick={() => { setSelectedBuyer(b); setActiveTab('pitch'); }} style={{ background: '#059669', color: '#FFF', border: 'none', borderRadius: '6px', padding: '4px 10px', fontSize: '0.75rem', fontWeight: 700, cursor: 'pointer' }}>
+                      Prepare Pitch
+                    </button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      )}
+
+      {/* Tab 4: Pitch Dispatcher */}
+      {activeTab === 'pitch' && (
+        <div style={{ background: '#FFFFFF', padding: '1.5rem', borderRadius: '12px', border: '1px solid #E2E8F0' }}>
+          <h4 style={{ margin: '0 0 0.5rem 0', fontSize: '1rem', fontWeight: 800, color: '#1E293B' }}>
+            VIP WhatsApp Pitch Studio for {selectedBuyer.name}
+          </h4>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem', marginTop: '1rem' }}>
+            <textarea
+              rows={8}
+              value={pitchText}
+              onChange={e => setPitchText(e.target.value)}
+              style={{ width: '100%', padding: '12px', borderRadius: '8px', border: '1px solid #CBD5E1', fontSize: '0.85rem', fontFamily: 'sans-serif' }}
+            />
+            {sentSuccess && (
+              <div style={{ background: '#ECFDF5', border: '1px solid #A7F3D0', padding: '10px', borderRadius: '6px', color: '#065F46', fontWeight: 700, fontSize: '0.85rem' }}>
+                ✓ Pitch successfully dispatched to {selectedBuyer.name}'s verified WhatsApp session.
               </div>
-              <div className="filter-group">
-                <select>
-                  <option value="all">All Sources</option>
-                  <option value="linkedin">LinkedIn</option>
-                  <option value="portal">Property Portals</option>
-                  <option value="web">Web Scrape</option>
-                  <option value="dld">DLD Records</option>
-                </select>
-                <button className="add-btn"><Plus size={16} /> Add Prospect</button>
-              </div>
-            </div>
-            <div className="prospects-list">
-              {PROSPECTS.map(prospect => (
-                <div key={prospect.id} className="prospect-card">
-                  <div className="prospect-score" style={{ 
-                    background: prospect.score >= 80 ? 'rgba(239, 68, 68, 0.15)' : prospect.score >= 60 ? 'rgba(245, 158, 11, 0.15)' : 'rgba(59, 130, 246, 0.15)',
-                    color: prospect.score >= 80 ? '#EF4444' : prospect.score >= 60 ? '#F59E0B' : '#3B82F6'
-                  }}>
-                    {prospect.score}
-                  </div>
-                  <div className="prospect-content">
-                    <div className="prospect-header">
-                      <h4>{prospect.name}</h4>
-                      <span className="prospect-status" style={{ color: getStatusColor(prospect.status) }}>
-                        {prospect.status}
-                      </span>
-                    </div>
-                    <p className="prospect-interest">{prospect.interest} • {prospect.value}</p>
-                    <div className="prospect-meta">
-                      <span><Globe size={12} /> {prospect.source}</span>
-                      <span><Activity size={12} /> {prospect.lastActivity}</span>
-                    </div>
-                  </div>
-                  <div className="prospect-actions">
-                    {!prospect.contacted ? (
-                      <button className="contact-btn"><Send size={14} /> Reach Out</button>
-                    ) : (
-                      <span className="contacted-badge">Contacted</span>
-                    )}
-                  </div>
-                </div>
-              ))}
+            )}
+            <div style={{ display: 'flex', gap: '0.75rem' }}>
+              <button onClick={handleSendPitch} style={{ background: '#059669', color: '#FFF', border: 'none', borderRadius: '8px', padding: '10px 20px', fontWeight: 800, fontSize: '0.85rem', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                <Send size={16} /> Send via Nadia WhatsApp Gateway
+              </button>
             </div>
           </div>
-        )}
+        </div>
+      )}
 
-        {activeTab === 'campaigns' && (
-          <div className="campaigns-view">
-            <div className="view-header">
-              <h3>Outreach Campaigns</h3>
-              <button className="add-btn"><Plus size={16} /> New Campaign</button>
-            </div>
-            <div className="campaigns-grid">
-              {OUTREACH_CAMPAIGNS.map(campaign => (
-                <div key={campaign.id} className="campaign-card">
-                  <div className="campaign-header">
-                    <h4>{campaign.name}</h4>
-                    <span className={`campaign-status ${campaign.status}`}>{campaign.status}</span>
-                  </div>
-                  <div className="campaign-funnel">
-                    <div className="funnel-stage">
-                      <span className="funnel-value">{campaign.prospects}</span>
-                      <span className="funnel-label">Prospects</span>
-                    </div>
-                    <div className="funnel-arrow">→</div>
-                    <div className="funnel-stage">
-                      <span className="funnel-value">{campaign.contacted}</span>
-                      <span className="funnel-label">Contacted</span>
-                    </div>
-                    <div className="funnel-arrow">→</div>
-                    <div className="funnel-stage">
-                      <span className="funnel-value">{campaign.responses}</span>
-                      <span className="funnel-label">Responses</span>
-                    </div>
-                    <div className="funnel-arrow">→</div>
-                    <div className="funnel-stage highlight">
-                      <span className="funnel-value">{campaign.meetings}</span>
-                      <span className="funnel-label">Meetings</span>
-                    </div>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-        )}
-
-        {activeTab === 'patterns' && (
-          <div className="patterns-view">
-            <h3>Market Patterns Detected</h3>
-            <div className="patterns-list">
-              {PATTERNS.map(pattern => (
-                <div key={pattern.id} className="pattern-card">
-                  <div className="pattern-icon">
-                    <Radar size={24} />
-                  </div>
-                  <div className="pattern-content">
-                    <h4>{pattern.pattern}</h4>
-                    <div className="pattern-meta">
-                      <span className={`trend ${pattern.trend}`}>
-                        {pattern.trend === 'increasing' ? <ArrowUp size={14} /> : pattern.trend === 'decreasing' ? <ArrowDown size={14} /> : '—'}
-                        {pattern.trend}
-                      </span>
-                      <span>{pattern.leads} potential leads</span>
-                    </div>
-                    <p className="opportunity">Opportunity: {pattern.opportunity}</p>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-        )}
-
-        {activeTab === 'enrichment' && (
-          <div className="enrichment-view">
-            <h3>Lead Enrichment</h3>
-            <div className="empty-state">
-              <Search size={48} />
-              <p>Select prospects to enrich with additional data</p>
-              <button className="add-btn"><Plus size={16} /> Bulk Enrich</button>
-            </div>
-          </div>
-        )}
-
-        {activeTab === 'docs' && (
-          <AssistantDocsTab 
-            assistantId="hunter" 
-            assistantName="Hunter" 
-            assistantColor="#0D9488" 
-          />
-        )}
-      </div>
+      {/* Tab 2 & 3: Profiler & Geofence */}
+      {(activeTab === 'profiler' || activeTab === 'geofence') && (
+        <div style={{ background: '#FFFFFF', padding: '1.5rem', borderRadius: '12px', border: '1px solid #E2E8F0' }}>
+          <h4 style={{ margin: '0 0 0.5rem 0', fontSize: '1rem', fontWeight: 800, color: '#1E293B' }}>
+            {activeTab === 'profiler' ? 'High-Net-Worth Lead Profiler' : 'Geo-Fenced Area Outreach'}
+          </h4>
+          <p style={{ fontSize: '0.85rem', color: '#64748B' }}>
+            Targeting 140+ pre-screened investors across Palm Jumeirah, Emirates Hills, and Dubai Hills Estate.
+          </p>
+        </div>
+      )}
     </div>
   );
 };

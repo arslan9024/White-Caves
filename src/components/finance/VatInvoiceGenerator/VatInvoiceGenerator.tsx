@@ -1,6 +1,20 @@
 import React, { FC, useState } from 'react';
 import styled, { keyframes } from 'styled-components';
 
+/** Typed GraphQL response shape for generateVatInvoice mutation */
+interface VatInvoiceResult {
+  net: number;
+  vatAmount: number;
+  grossAmount: number;
+  trn: string;
+  invoiceNumber: string;
+  date: string;
+}
+
+interface VatInvoiceGraphQLResponse {
+  generateVatInvoice: VatInvoiceResult;
+}
+
 const fadeIn = keyframes`from { opacity: 0; } to { opacity: 1; }`;
 const Wrapper = styled.div`width: 100%; background: linear-gradient(135deg, #0F172A, #1E293B); border: 2px solid rgba(239,68,68,0.25); border-radius: 18px; overflow: hidden; font-family: 'Inter', sans-serif; animation: ${fadeIn} 0.4s ease;`;
 const Header = styled.div`padding: 14px 20px; background: rgba(239,68,68,0.05); border-bottom: 1px solid rgba(239,68,68,0.12); display: flex; align-items: center; justify-content: space-between;`;
@@ -63,7 +77,7 @@ export const VatInvoiceGenerator: FC = () => {
         }
       `;
       const { apiClient } = await import('../../../services/apiClient');
-      const res = await apiClient.post<{ data?: any }>('/graphql', {
+      const res = await apiClient.post<{ data?: VatInvoiceGraphQLResponse }>('/graphql', {
         query,
         variables: { amount: parseFloat(amount) || 0 }
       });

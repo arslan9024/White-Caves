@@ -1,269 +1,202 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { 
-  PieChart, TrendingUp, Calculator, Lightbulb, BarChart3,
-  DollarSign, Percent, Calendar, Target, ArrowUp, ArrowDown,
-  Filter, Search, Plus, Eye, Building, MapPin
+  TrendingUp, BarChart3, Calculator, PieChart, 
+  CheckCircle2, DollarSign, Download, Layers, Sparkles
 } from 'lucide-react';
-import AssistantDocsTab from './shared/AssistantDocsTab';
 import './AssistantDashboard.css';
 
-const PORTFOLIO_DATA = [
-  { id: 1, property: 'Villa 234 - DAMAC Hills 2', type: 'Villa', value: 'AED 2.8M', yield: '7.2%', appreciation: '+12%', recommendation: 'Hold', status: 'performing' },
-  { id: 2, property: 'Apt 1205 - Dubai Marina', type: 'Apartment', value: 'AED 1.9M', yield: '6.8%', appreciation: '+8%', recommendation: 'Hold', status: 'performing' },
-  { id: 3, property: 'Commercial - Business Bay', type: 'Office', value: 'AED 4.5M', yield: '9.1%', appreciation: '+5%', recommendation: 'Buy More', status: 'strong' },
-  { id: 4, property: 'Studio - JVC', type: 'Studio', value: 'AED 650K', yield: '8.5%', appreciation: '-2%', recommendation: 'Sell', status: 'underperforming' },
-  { id: 5, property: 'Townhouse - Springs', type: 'Townhouse', value: 'AED 3.2M', yield: '5.8%', appreciation: '+15%', recommendation: 'Hold', status: 'performing' }
-];
+interface MavenProps {
+  moduleId?: string;
+  role?: string;
+  user?: any;
+}
 
-const YIELD_OPTIMIZATION = [
-  { id: 1, property: 'Villa 234', currentRent: 'AED 180K', marketRent: 'AED 210K', upside: '+16.7%', action: 'Increase at renewal' },
-  { id: 2, property: 'Apt 1205', currentRent: 'AED 130K', marketRent: 'AED 125K', upside: '-3.8%', action: 'Market competitive' },
-  { id: 3, property: 'Studio JVC', currentRent: 'AED 55K', marketRent: 'AED 48K', upside: '-12.7%', action: 'Consider selling' }
-];
+export const MavenInvestmentCRM: React.FC<MavenProps> = ({ moduleId }) => {
+  const [activeTab, setActiveTab] = useState<'dcf' | 'yield' | 'rebalancer' | 'appreciation'>('dcf');
 
-const INVESTMENT_OPPORTUNITIES = [
-  { id: 1, property: 'Off-Plan Tower - MBR City', price: 'AED 1.2M', expectedYield: '8.5%', appreciation: '+18%', roi: '26.5%', risk: 'Medium' },
-  { id: 2, property: 'Ready Villa - Arabian Ranches', price: 'AED 3.8M', expectedYield: '5.2%', appreciation: '+12%', roi: '17.2%', risk: 'Low' },
-  { id: 3, property: 'Commercial - Dubai South', price: 'AED 2.5M', expectedYield: '10.2%', appreciation: '+8%', roi: '18.2%', risk: 'Medium' },
-  { id: 4, property: 'Penthouse - Creek Harbour', price: 'AED 6.8M', expectedYield: '4.8%', appreciation: '+22%', roi: '26.8%', risk: 'Low' }
-];
+  useEffect(() => {
+    if (!moduleId) return;
+    if (moduleId.includes('dcf')) setActiveTab('dcf');
+    else if (moduleId.includes('yield')) setActiveTab('yield');
+    else if (moduleId.includes('rebalancer') || moduleId.includes('portfolio')) setActiveTab('rebalancer');
+    else if (moduleId.includes('appreciation')) setActiveTab('appreciation');
+  }, [moduleId]);
 
-const TAX_INSIGHTS = [
-  { id: 1, insight: 'Golden Visa Eligibility', detail: 'Portfolio exceeds AED 2M threshold', action: 'Apply for 10-year visa' },
-  { id: 2, insight: 'Corporate Structure', detail: 'Consider freezone company for rental income', action: 'Consult tax advisor' },
-  { id: 3, insight: 'Capital Gains', detail: 'No capital gains tax in UAE', action: 'Optimize exit timing' }
-];
+  // Feature 1: DCF Calculator
+  const [initialInvestment, setInitialInvestment] = useState(5000000);
+  const [holdingYears, setHoldingYears] = useState(5);
+  const [annualRentalGrowth, setAnnualRentalGrowth] = useState(5);
+  const [initialRent, setInitialRent] = useState(380000);
+  const [exitCapRate, setExitCapRate] = useState(6.5);
 
-const MavenInvestmentCRM = () => {
-  const [activeTab, setActiveTab] = useState('portfolio');
-
-  const getRecommendationColor = (rec) => {
-    switch (rec) {
-      case 'Buy More': return '#10B981';
-      case 'Hold': return '#3B82F6';
-      case 'Sell': return '#EF4444';
-      default: return '#6B7280';
+  const calculateDcf = () => {
+    let totalCashFlow = 0;
+    let currentRent = initialRent;
+    for (let i = 1; i <= holdingYears; i++) {
+      totalCashFlow += currentRent;
+      currentRent *= (1 + (annualRentalGrowth / 100));
     }
+    const exitPrice = currentRent / (exitCapRate / 100);
+    const totalReturn = totalCashFlow + exitPrice - initialInvestment;
+    const irr = (((exitPrice + totalCashFlow) / initialInvestment) ** (1 / holdingYears) - 1) * 100;
+    return {
+      totalCashFlow: Math.round(totalCashFlow),
+      exitPrice: Math.round(exitPrice),
+      totalReturn: Math.round(totalReturn),
+      irr: irr.toFixed(1),
+    };
   };
 
-  const getRiskColor = (risk) => {
-    switch (risk) {
-      case 'Low': return '#10B981';
-      case 'Medium': return '#F59E0B';
-      case 'High': return '#EF4444';
-      default: return '#6B7280';
-    }
-  };
+  const dcfResults = calculateDcf();
+
+  // Feature 2: Yield Comparator
+  const [propValue, setPropValue] = useState(2400000);
+  const longTermRent = 165000;
+  const longTermNet = longTermRent * 0.95; // 5% maintenance
+  const shortTermGross = 245000;
+  const shortTermNet = shortTermGross * 0.78; // 22% operator + DTCM fees
+
+  const longTermYield = ((longTermNet / propValue) * 100).toFixed(2);
+  const shortTermYield = ((shortTermNet / propValue) * 100).toFixed(2);
 
   return (
-    <div className="assistant-dashboard maven">
-      <div className="assistant-header">
-        <div className="assistant-avatar" style={{ background: 'linear-gradient(135deg, var(--accent-purple, #8B5CF6) 0%, var(--accent-purple, #7C3AED) 100%)' }}>
-          <PieChart size={28} />
-        </div>
-        <div className="assistant-info">
-          <h2>Maven - Investment Strategy & Portfolio Optimizer</h2>
-          <p>Analyzes rental yields, capital appreciation trends, and tax implications to provide data-driven advice on buying, holding, or selling assets</p>
-        </div>
-        <div className="assistant-status online">
-          <span className="status-dot"></span>
-          Active
-        </div>
-      </div>
-
-      <div className="quick-stats">
-        <div className="stat-card">
-          <div className="stat-icon" style={{ background: 'rgba(139, 92, 246, 0.2)', color: 'var(--accent-purple, #8B5CF6)' }}>
-            <DollarSign size={20} />
+    <div className="crm-container" style={{ maxWidth: '100%', padding: '0.5rem' }}>
+      {/* Header */}
+      <div style={{ background: 'linear-gradient(135deg, #14532D 0%, #052E16 100%)', color: '#FFFFFF', padding: '1.25rem 1.5rem', borderRadius: '16px', marginBottom: '1.25rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1rem' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+          <div style={{ width: '48px', height: '48px', borderRadius: '12px', background: 'linear-gradient(135deg, #22C55E 0%, #16A34A 100%)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.5rem' }}>
+            📌
           </div>
-          <div className="stat-content">
-            <span className="stat-value">AED 13.1M</span>
-            <span className="stat-label">Portfolio Value</span>
-          </div>
-          <span className="stat-change positive"><ArrowUp size={14} /> 8.5%</span>
-        </div>
-        <div className="stat-card">
-          <div className="stat-icon" style={{ background: 'rgba(16, 185, 129, 0.2)', color: 'var(--accent-green, #10B981)' }}>
-            <Percent size={20} />
-          </div>
-          <div className="stat-content">
-            <span className="stat-value">7.4%</span>
-            <span className="stat-label">Avg. Yield</span>
-          </div>
-          <span className="stat-change positive">Above market</span>
-        </div>
-        <div className="stat-card">
-          <div className="stat-icon" style={{ background: 'rgba(245, 158, 11, 0.2)', color: 'var(--accent-gold, #F59E0B)' }}>
-            <TrendingUp size={20} />
-          </div>
-          <div className="stat-content">
-            <span className="stat-value">+9.6%</span>
-            <span className="stat-label">Appreciation</span>
-          </div>
-          <span className="stat-change positive">YTD</span>
-        </div>
-        <div className="stat-card">
-          <div className="stat-icon" style={{ background: 'rgba(59, 130, 246, 0.2)', color: 'var(--accent-blue, #3B82F6)' }}>
-            <Target size={20} />
-          </div>
-          <div className="stat-content">
-            <span className="stat-value">17%</span>
-            <span className="stat-label">Total ROI</span>
-          </div>
-          <span className="stat-change positive">Excellent</span>
-        </div>
-      </div>
-
-      <div className="assistant-tabs">
-        {['portfolio', 'yields', 'opportunities', 'tax', 'docs'].map(tab => (
-          <button
-            key={tab}
-            className={`tab-btn ${activeTab === tab ? 'active' : ''}`}
-            onClick={() => setActiveTab(tab)}
-          >
-            {tab === 'docs' ? 'Documentation' : tab.charAt(0).toUpperCase() + tab.slice(1)}
-          </button>
-        ))}
-      </div>
-
-      <div className="tab-content">
-        {activeTab === 'portfolio' && (
-          <div className="portfolio-view">
-            <div className="view-header">
-              <h3>Portfolio Analysis</h3>
-              <button className="add-btn"><Plus size={16} /> Add Property</button>
+          <div>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+              <h2 style={{ margin: 0, fontSize: '1.3rem', fontWeight: 800 }}>Maven AI — Investment Portfolio & Feasibility</h2>
+              <span style={{ fontSize: '0.7rem', background: 'rgba(255, 255, 255, 0.15)', padding: '2px 8px', borderRadius: '4px', color: '#BBF7D0', fontWeight: 800 }}>
+                Financial Engineering
+              </span>
             </div>
-            <div className="portfolio-table">
-              <table>
-                <thead>
-                  <tr>
-                    <th>Property</th>
-                    <th>Type</th>
-                    <th>Value</th>
-                    <th>Yield</th>
-                    <th>Appreciation</th>
-                    <th>Recommendation</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {PORTFOLIO_DATA.map(item => (
-                    <tr key={item.id} className={item.status}>
-                      <td><strong>{item.property}</strong></td>
-                      <td>{item.type}</td>
-                      <td>{item.value}</td>
-                      <td>{item.yield}</td>
-                      <td style={{ color: item.appreciation.startsWith('+') ? 'var(--accent-green, #10B981)' : 'var(--accent-red, #EF4444)' }}>
-                        {item.appreciation}
-                      </td>
-                      <td>
-                        <span className="recommendation-badge" style={{ 
-                          background: `${getRecommendationColor(item.recommendation)}20`,
-                          color: getRecommendationColor(item.recommendation)
-                        }}>
-                          {item.recommendation}
-                        </span>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
+            <p style={{ margin: '0.2rem 0 0 0', fontSize: '0.82rem', color: '#DCFCE7' }}>
+              10-Year DCF / IRR financial modeling, Short-Term Airbnb vs Long-Term Ejari yield comparator, and portfolio risk rebalancing.
+            </p>
           </div>
-        )}
+        </div>
+      </div>
 
-        {activeTab === 'yields' && (
-          <div className="yields-view">
-            <h3>Yield Optimization</h3>
-            <div className="yields-list">
-              {YIELD_OPTIMIZATION.map(item => (
-                <div key={item.id} className="yield-card">
-                  <div className="yield-property">
-                    <Building size={20} />
-                    <h4>{item.property}</h4>
-                  </div>
-                  <div className="yield-comparison">
-                    <div className="yield-current">
-                      <span className="label">Current Rent</span>
-                      <span className="value">{item.currentRent}/yr</span>
-                    </div>
-                    <div className="yield-arrow">→</div>
-                    <div className="yield-market">
-                      <span className="label">Market Rent</span>
-                      <span className="value">{item.marketRent}/yr</span>
-                    </div>
-                    <div className="yield-upside" style={{ color: item.upside.startsWith('+') ? 'var(--accent-green, #10B981)' : 'var(--accent-red, #EF4444)' }}>
-                      {item.upside}
-                    </div>
-                  </div>
-                  <p className="yield-action">{item.action}</p>
+      {/* Tabs */}
+      <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap', background: '#FFFFFF', padding: '8px 12px', borderRadius: '12px', border: '1px solid #E2E8F0', marginBottom: '1.25rem' }}>
+        <button onClick={() => setActiveTab('dcf')} style={{ padding: '6px 12px', borderRadius: '6px', border: activeTab === 'dcf' ? '1px solid #16A34A' : '1px solid transparent', background: activeTab === 'dcf' ? '#16A34A' : '#F8FAFC', color: activeTab === 'dcf' ? '#FFF' : '#334155', fontWeight: 800, fontSize: '0.8rem', cursor: 'pointer' }}>
+          3.26.1 10-Year DCF & IRR Model
+        </button>
+        <button onClick={() => setActiveTab('yield')} style={{ padding: '6px 12px', borderRadius: '6px', border: activeTab === 'yield' ? '1px solid #16A34A' : '1px solid transparent', background: activeTab === 'yield' ? '#16A34A' : '#F8FAFC', color: activeTab === 'yield' ? '#FFF' : '#334155', fontWeight: 800, fontSize: '0.8rem', cursor: 'pointer' }}>
+          3.26.2 Short vs Long-Term Yields
+        </button>
+        <button onClick={() => setActiveTab('rebalancer')} style={{ padding: '6px 12px', borderRadius: '6px', border: activeTab === 'rebalancer' ? '1px solid #16A34A' : '1px solid transparent', background: activeTab === 'rebalancer' ? '#16A34A' : '#F8FAFC', color: activeTab === 'rebalancer' ? '#FFF' : '#334155', fontWeight: 800, fontSize: '0.8rem', cursor: 'pointer' }}>
+          3.26.3 Portfolio Rebalancer
+        </button>
+        <button onClick={() => setActiveTab('appreciation')} style={{ padding: '6px 12px', borderRadius: '6px', border: activeTab === 'appreciation' ? '1px solid #16A34A' : '1px solid transparent', background: activeTab === 'appreciation' ? '#16A34A' : '#F8FAFC', color: activeTab === 'appreciation' ? '#FFF' : '#334155', fontWeight: 800, fontSize: '0.8rem', cursor: 'pointer' }}>
+          3.26.4 Capital Appreciation
+        </button>
+      </div>
+
+      {/* Tab 1: DCF Model */}
+      {activeTab === 'dcf' && (
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1.2fr', gap: '1.25rem' }}>
+          <div style={{ background: '#FFFFFF', padding: '1.25rem', borderRadius: '12px', border: '1px solid #E2E8F0' }}>
+            <h4 style={{ margin: '0 0 1rem 0', fontSize: '0.95rem', fontWeight: 800, color: '#1E293B' }}>
+              DCF Simulation Variables
+            </h4>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+              <div>
+                <label style={{ fontSize: '0.75rem', fontWeight: 800, color: '#64748B' }}>Initial Purchase Price (AED)</label>
+                <input type="number" value={initialInvestment} onChange={e => setInitialInvestment(Number(e.target.value))} style={{ width: '100%', padding: '8px', borderRadius: '6px', border: '1px solid #CBD5E1', fontSize: '0.85rem', fontWeight: 700 }} />
+              </div>
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.75rem' }}>
+                <div>
+                  <label style={{ fontSize: '0.75rem', fontWeight: 800, color: '#64748B' }}>Holding Horizon ({holdingYears} Yrs)</label>
+                  <input type="number" min="1" max="15" value={holdingYears} onChange={e => setHoldingYears(Number(e.target.value))} style={{ width: '100%', padding: '8px', borderRadius: '6px', border: '1px solid #CBD5E1', fontSize: '0.85rem' }} />
                 </div>
-              ))}
-            </div>
-          </div>
-        )}
-
-        {activeTab === 'opportunities' && (
-          <div className="opportunities-view">
-            <h3>Investment Opportunities</h3>
-            <div className="opportunities-grid">
-              {INVESTMENT_OPPORTUNITIES.map(opp => (
-                <div key={opp.id} className="opportunity-card">
-                  <h4>{opp.property}</h4>
-                  <div className="opp-price">{opp.price}</div>
-                  <div className="opp-metrics">
-                    <div className="opp-metric">
-                      <span className="label">Expected Yield</span>
-                      <span className="value">{opp.expectedYield}</span>
-                    </div>
-                    <div className="opp-metric">
-                      <span className="label">Appreciation</span>
-                      <span className="value">{opp.appreciation}</span>
-                    </div>
-                    <div className="opp-metric highlight">
-                      <span className="label">Total ROI</span>
-                      <span className="value">{opp.roi}</span>
-                    </div>
-                  </div>
-                  <div className="opp-footer">
-                    <span className="risk-badge" style={{ color: getRiskColor(opp.risk) }}>
-                      Risk: {opp.risk}
-                    </span>
-                    <button className="view-btn"><Eye size={14} /> Analyze</button>
-                  </div>
+                <div>
+                  <label style={{ fontSize: '0.75rem', fontWeight: 800, color: '#64748B' }}>Annual Rent Growth ({annualRentalGrowth}%)</label>
+                  <input type="number" value={annualRentalGrowth} onChange={e => setAnnualRentalGrowth(Number(e.target.value))} style={{ width: '100%', padding: '8px', borderRadius: '6px', border: '1px solid #CBD5E1', fontSize: '0.85rem' }} />
                 </div>
-              ))}
+              </div>
+              <div>
+                <label style={{ fontSize: '0.75rem', fontWeight: 800, color: '#64748B' }}>Year 1 Annual Net Rent (AED)</label>
+                <input type="number" value={initialRent} onChange={e => setInitialRent(Number(e.target.value))} style={{ width: '100%', padding: '8px', borderRadius: '6px', border: '1px solid #CBD5E1', fontSize: '0.85rem' }} />
+              </div>
             </div>
           </div>
-        )}
 
-        {activeTab === 'tax' && (
-          <div className="tax-view">
-            <h3>Tax Planning Insights</h3>
-            <div className="tax-list">
-              {TAX_INSIGHTS.map(insight => (
-                <div key={insight.id} className="tax-card">
-                  <div className="tax-icon">
-                    <Lightbulb size={24} />
-                  </div>
-                  <div className="tax-content">
-                    <h4>{insight.insight}</h4>
-                    <p>{insight.detail}</p>
-                    <span className="tax-action">{insight.action}</span>
-                  </div>
+          <div style={{ background: '#FFFFFF', padding: '1.25rem', borderRadius: '12px', border: '1px solid #E2E8F0', display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+            <div style={{ background: '#F0FDF4', border: '1px solid #BBF7D0', padding: '1.25rem', borderRadius: '8px' }}>
+              <div style={{ fontSize: '0.75rem', color: '#166534', fontWeight: 800 }}>ESTIMATED INTERNAL RATE OF RETURN (IRR)</div>
+              <div style={{ fontSize: '2rem', fontWeight: 900, color: '#15803D', marginTop: '4px' }}>
+                {dcfResults.irr}% p.a.
+              </div>
+              <div style={{ fontSize: '0.75rem', color: '#166534', marginTop: '4px' }}>
+                Projected {holdingYears}-Year Net Profit: <strong>AED {dcfResults.totalReturn.toLocaleString()}</strong>
+              </div>
+            </div>
+
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.75rem' }}>
+              <div style={{ padding: '0.75rem', background: '#F8FAFC', borderRadius: '6px', border: '1px solid #E2E8F0' }}>
+                <div style={{ fontSize: '0.72rem', color: '#64748B' }}>Cumulative Rental Cash Flow</div>
+                <div style={{ fontWeight: 800, color: '#1E293B', fontSize: '0.85rem', marginTop: '2px' }}>
+                  AED {dcfResults.totalCashFlow.toLocaleString()}
                 </div>
-              ))}
+              </div>
+              <div style={{ padding: '0.75rem', background: '#F8FAFC', borderRadius: '6px', border: '1px solid #E2E8F0' }}>
+                <div style={{ fontSize: '0.72rem', color: '#64748B' }}>Projected Year {holdingYears} Exit Value</div>
+                <div style={{ fontWeight: 800, color: '#16A34A', fontSize: '0.85rem', marginTop: '2px' }}>
+                  AED {dcfResults.exitPrice.toLocaleString()}
+                </div>
+              </div>
             </div>
           </div>
-        )}
+        </div>
+      )}
 
-        {activeTab === 'docs' && (
-          <AssistantDocsTab 
-            assistantId="maven" 
-            assistantName="Maven" 
-            assistantColor="#8B5CF6" 
-          />
-        )}
-      </div>
+      {/* Tab 2: Short vs Long-Term Yields */}
+      {activeTab === 'yield' && (
+        <div style={{ background: '#FFFFFF', padding: '1.5rem', borderRadius: '12px', border: '1px solid #E2E8F0' }}>
+          <h4 style={{ margin: '0 0 1rem 0', fontSize: '1rem', fontWeight: 800, color: '#1E293B' }}>
+            Short-Term Holiday Home (Airbnb) vs Long-Term (Ejari) Yield Analysis
+          </h4>
+
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.5rem' }}>
+            <div style={{ background: '#F8FAFC', padding: '1.25rem', borderRadius: '8px', border: '1px solid #E2E8F0' }}>
+              <div style={{ fontWeight: 800, color: '#1E293B', fontSize: '1rem' }}>🏢 Long-Term Annual Lease (Ejari)</div>
+              <div style={{ fontSize: '1.8rem', fontWeight: 900, color: '#16A34A', margin: '8px 0' }}>{longTermYield}% Net Yield</div>
+              <div style={{ fontSize: '0.8rem', color: '#64748B' }}>
+                • Gross Rent: AED {longTermRent.toLocaleString()} / yr<br />
+                • Zero management fee, 1-4 PDC Cheques<br />
+                • 100% Guaranteed occupancy for 12 months
+              </div>
+            </div>
+
+            <div style={{ background: '#F0FDF4', padding: '1.25rem', borderRadius: '8px', border: '1px solid #BBF7D0' }}>
+              <div style={{ fontWeight: 800, color: '#15803D', fontSize: '1rem' }}>🏖️ Short-Term Holiday Home (DTCM)</div>
+              <div style={{ fontSize: '1.8rem', fontWeight: 900, color: '#15803D', margin: '8px 0' }}>{shortTermYield}% Net Yield</div>
+              <div style={{ fontSize: '0.8rem', color: '#166534' }}>
+                • Gross Booking Revenue: AED {shortTermGross.toLocaleString()} / yr<br />
+                • Net after 20% operator fee + DTCM taxes: AED {shortTermNet.toLocaleString()}<br />
+                • Seasonal premium during Q4/Q1 Dubai peak tourism
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Tab 3 & 4: Rebalancer & Appreciation */}
+      {(activeTab === 'rebalancer' || activeTab === 'appreciation') && (
+        <div style={{ background: '#FFFFFF', padding: '1.5rem', borderRadius: '12px', border: '1px solid #E2E8F0' }}>
+          <h4 style={{ margin: '0 0 0.5rem 0', fontSize: '1rem', fontWeight: 800, color: '#1E293B' }}>
+            {activeTab === 'rebalancer' ? 'Real Estate Portfolio Diversification Matrix' : '10-Year Capital Growth Forecasting'}
+          </h4>
+          <p style={{ fontSize: '0.85rem', color: '#64748B' }}>
+            Optimizes client holdings across high-yield residential apartments, luxury capital appreciation villas, and commercial real estate.
+          </p>
+        </div>
+      )}
     </div>
   );
 };

@@ -271,7 +271,7 @@ export const HenryTenancyContractScannerView: FC = () => {
     }
   };
 
-  const handleUpdateDldField = (field: keyof DldTenancyContractData, val: any) => {
+  const handleUpdateDldField = (field: keyof DldTenancyContractData, val: DldTenancyContractData[keyof DldTenancyContractData]) => {
     if (!contractData) return;
     setContractData(prev => {
       if (!prev) return null;

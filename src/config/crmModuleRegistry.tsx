@@ -60,6 +60,23 @@ const LeadScoringModule = lazy(() => import('../components/crm/LeadScoringModule
 const PropertyValuationModule = lazy(() => import('../components/crm/PropertyValuationModule'));
 const MarketAnalyticsModule = lazy(() => import('../components/crm/MarketAnalyticsModule'));
 
+// 40 Assistant Enterprise Suite Components
+const ApexCRM = lazy(() => import('../components/crm/ApexCRM'));
+const ArcherCRM = lazy(() => import('../components/crm/ArcherCRM'));
+const CrestCRM = lazy(() => import('../components/crm/CrestCRM'));
+const EchoCRM = lazy(() => import('../components/crm/EchoCRM'));
+const FluxCRM = lazy(() => import('../components/crm/FluxCRM'));
+const HaloCRM = lazy(() => import('../components/crm/HaloCRM'));
+const IrisCRM = lazy(() => import('../components/crm/IrisCRM'));
+const LumenCRM = lazy(() => import('../components/crm/LumenCRM'));
+const MiraCRM = lazy(() => import('../components/crm/MiraCRM'));
+const NovaCRM = lazy(() => import('../components/crm/NovaCRM'));
+const OracleCRM = lazy(() => import('../components/crm/OracleCRM'));
+const PrismCRM = lazy(() => import('../components/crm/PrismCRM'));
+const QuillCRM = lazy(() => import('../components/crm/QuillCRM'));
+const RexCRM = lazy(() => import('../components/crm/RexCRM'));
+const SageCRM = lazy(() => import('../components/crm/SageCRM'));
+
 // Wave 18.1 P0 Batch 2
 const AgentTaskCockpit = lazy(() => import('../components/crm/AgentTaskCockpit'));
 const FunnelEconomicsDashboard = lazy(() => import('../components/crm/FunnelEconomicsDashboard'));
@@ -110,6 +127,71 @@ export const CRM_MODULE_REGISTRY: Record<string, CRMModuleDefinition> = {
   theodora: {
     id: 'theodora', label: 'Finance CRM', icon: '💳',
     description: 'Collections, invoicing, commissions, reconciliation',
+    color: '#8B5CF6', zone: 'finance_compliance', Component: TheodoraFinanceCRM,
+  },
+  'theodora-invoices': {
+    id: 'theodora-invoices', label: '3.14.1 Tax Invoices & Pro Forma', icon: '📄',
+    description: 'UAE Tax Invoicing, Pro Forma issuance, and client billing lifecycle',
+    color: '#8B5CF6', zone: 'finance_compliance', Component: TheodoraFinanceCRM,
+  },
+  'theodora-payments': {
+    id: 'theodora-payments', label: '3.14.2 Payments & Escrow Releases', icon: '💳',
+    description: 'Payment receipts, bank transfers, and developer escrow milestone releases',
+    color: '#8B5CF6', zone: 'finance_compliance', Component: TheodoraFinanceCRM,
+  },
+  'theodora-commissions': {
+    id: 'theodora-commissions', label: '3.14.3 Commission Statements', icon: '💵',
+    description: 'Broker commission split calculations, approvals, and payout batches',
+    color: '#8B5CF6', zone: 'finance_compliance', Component: TheodoraFinanceCRM,
+  },
+  'theodora-receivables': {
+    id: 'theodora-receivables', label: '3.14.4 Accounts Receivable & Aging', icon: '⏳',
+    description: 'AR aging buckets, collection dunning, and outstanding ledger tracking',
+    color: '#8B5CF6', zone: 'finance_compliance', Component: TheodoraFinanceCRM,
+  },
+  'theodora-expenses': {
+    id: 'theodora-expenses', label: '3.14.5 42 Master Expense Register', icon: '💰',
+    description: 'Master 42-item real estate expenditures, portal fees, and VAT/CT classification',
+    color: '#8B5CF6', zone: 'finance_compliance', Component: TheodoraFinanceCRM,
+  },
+  'theodora-directors-loan': {
+    id: 'theodora-directors-loan', label: '3.14.6 Wio vs. Director Loan Advances', icon: '🏦',
+    description: "Owner's equity advances, personal card outlays, and Wio corporate reimbursements",
+    color: '#8B5CF6', zone: 'finance_compliance', Component: TheodoraFinanceCRM,
+  },
+  'theodora-receipts': {
+    id: 'theodora-receipts', label: '3.14.7 Digital Receipts & OCR Vault', icon: '🧾',
+    description: 'Cloud document vault, 15-digit TRN extraction, and receipt audit verification',
+    color: '#8B5CF6', zone: 'finance_compliance', Component: TheodoraFinanceCRM,
+  },
+  'theodora-vat-return': {
+    id: 'theodora-vat-return', label: '3.14.8 UAE FTA Form 201 (5% VAT)', icon: '🏛️',
+    description: 'Automated 5% VAT Return Box 1-12 calculation and EmaraTax export',
+    color: '#8B5CF6', zone: 'finance_compliance', Component: TheodoraFinanceCRM,
+  },
+  'theodora-corporate-tax': {
+    id: 'theodora-corporate-tax', label: '3.14.9 UAE Corporate Tax (9%)', icon: '⚖️',
+    description: 'Taxable net profit engine, AED 375k Small Business Relief, and 9% CT calculation',
+    color: '#8B5CF6', zone: 'finance_compliance', Component: TheodoraFinanceCRM,
+  },
+  'theodora-pnl': {
+    id: 'theodora-pnl', label: '3.14.10 Profit & Loss Statement (P&L)', icon: '📊',
+    description: 'Income statement, operating expense breakdown, and EBITDA profitability',
+    color: '#8B5CF6', zone: 'finance_compliance', Component: TheodoraFinanceCRM,
+  },
+  'theodora-balance-sheet': {
+    id: 'theodora-balance-sheet', label: '3.14.11 Balance Sheet & Ledger', icon: '📑',
+    description: 'General ledger, assets, liabilities, and owner equity snapshot',
+    color: '#8B5CF6', zone: 'finance_compliance', Component: TheodoraFinanceCRM,
+  },
+  'theodora-cashflow': {
+    id: 'theodora-cashflow', label: '3.14.12 Cash Flow & Bank Recon', icon: '🌊',
+    description: 'Operating cash flow, bank statement reconciliation, and liquidity',
+    color: '#8B5CF6', zone: 'finance_compliance', Component: TheodoraFinanceCRM,
+  },
+  'theodora-audit-report': {
+    id: 'theodora-audit-report', label: '3.14.13 Regulatory Audit Pack', icon: '🛡️',
+    description: 'One-click compiled audit binder for RERA and statutory regulatory compliance',
     color: '#8B5CF6', zone: 'finance_compliance', Component: TheodoraFinanceCRM,
   },
   olivia: {
@@ -287,6 +369,81 @@ export const CRM_MODULE_REGISTRY: Record<string, CRMModuleDefinition> = {
     description: 'Investment portfolio and decision support',
     color: '#22C55E', zone: 'finance_compliance', Component: MavenInvestmentCRM,
   },
+  apex: {
+    id: 'apex', label: 'Apex AI — Performance Coach', icon: '🏆',
+    description: 'Agent performance metrics, KPI coaching, and leaderboard strategy',
+    color: '#F59E0B', zone: 'sales_leads', Component: ApexCRM,
+  },
+  archer: {
+    id: 'archer', label: 'Archer AI — Lead Scoring Engine', icon: '🎯',
+    description: '100-point multi-factor conversion probability scorer and work queue prioritization',
+    color: '#EF4444', zone: 'sales_leads', Component: ArcherCRM,
+  },
+  crest: {
+    id: 'crest', label: 'Crest AI — Property Valuation AVM', icon: '🏠',
+    description: 'Automated Valuation Model (AVM) with DLD comparative radius analysis',
+    color: '#10B981', zone: 'inventory_listings', Component: CrestCRM,
+  },
+  echo: {
+    id: 'echo', label: 'Echo AI — Communication Timeline', icon: '📜',
+    description: 'Unified cross-channel communication timeline, touchpoint search, and engagement alerts',
+    color: '#EF4444', zone: 'sales_leads', Component: EchoCRM,
+  },
+  flux: {
+    id: 'flux', label: 'Flux AI — Real-Time Market Feeds', icon: '⚡',
+    description: 'Real-time DLD API transaction streamer, portal price scrapers, and news pipeline',
+    color: '#3B82F6', zone: 'inventory_listings', Component: FluxCRM,
+  },
+  halo: {
+    id: 'halo', label: 'Halo AI — Client NPS Tracker', icon: '⭐',
+    description: 'Post-transaction NPS surveys, CSAT measurement, and client satisfaction trends',
+    color: '#F472B6', zone: 'sales_leads', Component: HaloCRM,
+  },
+  iris: {
+    id: 'iris', label: 'Iris AI — 3D Virtual Staging', icon: '🎨',
+    description: 'Generative AI virtual staging, 3D floor plan extrusions, and AR mobile walkthroughs',
+    color: '#A855F7', zone: 'inventory_listings', Component: IrisCRM,
+  },
+  lumen: {
+    id: 'lumen', label: 'Lumen AI — Visual Analytics', icon: '📊',
+    description: 'Geospatial heatmaps, interactive charts, and PDF board reporting',
+    color: '#EC4899', zone: 'executive', Component: LumenCRM,
+  },
+  mira: {
+    id: 'mira', label: 'Mira AI — Multilingual Translation', icon: '🌍',
+    description: 'Real-time Arabic ↔ English WhatsApp translation, RTL document formatting, and dialect tuning',
+    color: '#10B981', zone: 'sales_leads', Component: MiraCRM,
+  },
+  nova: {
+    id: 'nova', label: 'Nova AI — Off-Plan Launch Radar', icon: '🏗️',
+    description: 'Developer launch intelligence feed, payment plan alerts, and handover milestone tracking',
+    color: '#8B5CF6', zone: 'leasing_contracts', Component: NovaCRM,
+  },
+  oracle: {
+    id: 'oracle', label: 'Oracle AI — Market Analyst Bot', icon: '🔮',
+    description: 'Market synthesis reports, DLD volume spike detection, and narrative intelligence briefings',
+    color: '#0D9488', zone: 'inventory_listings', Component: OracleCRM,
+  },
+  prism: {
+    id: 'prism', label: 'Prism AI — Property Matching Engine', icon: '🔭',
+    description: 'Vector-embedding similarity matching between buyer preferences and live inventory',
+    color: '#0EA5E9', zone: 'sales_leads', Component: PrismCRM,
+  },
+  quill: {
+    id: 'quill', label: 'Quill AI — Document Factory', icon: '✍️',
+    description: 'Automated bilingual SPA, tenancy contract, and NOC document generation with DLD compliance',
+    color: '#EF4444', zone: 'finance_compliance', Component: QuillCRM,
+  },
+  rex: {
+    id: 'rex', label: 'Rex AI — Regulatory Document Verifier', icon: '📋',
+    description: 'Fraud prevention, DLD blockchain title deed verification, and Emirates ID validation',
+    color: '#EF4444', zone: 'finance_compliance', Component: RexCRM,
+  },
+  sage: {
+    id: 'sage', label: 'Sage AI — Mortgage & Financing Advisor', icon: '💰',
+    description: 'UAE Central Bank mortgage eligibility, EIBOR affordability calculator, and bank rate comparison',
+    color: '#14B8A6', zone: 'finance_compliance', Component: SageCRM,
+  },
   rera: {
     id: 'rera', label: 'RERA Compliance', icon: '📜',
     description: 'RERA policy and compliance checks',
@@ -395,7 +552,23 @@ export const MODERN_DASHBOARD_ASSISTANT_ORDER: string[] = [
 
 export const getCRMModule = (id: string | undefined | null): CRMModuleDefinition | null => {
   if (!id) return null;
-  return CRM_MODULE_REGISTRY[id] ?? null;
+  if (CRM_MODULE_REGISTRY[id]) return CRM_MODULE_REGISTRY[id];
+
+  // Specific alias mappings
+  if (id.startsWith('cassie-') || id === 'cassie') {
+    return CRM_MODULE_REGISTRY['lead-scoring'] ?? CRM_MODULE_REGISTRY['leads'] ?? null;
+  }
+  if (id.startsWith('lead-scoring-') || id === 'lead-scoring') {
+    return CRM_MODULE_REGISTRY['lead-scoring'] ?? CRM_MODULE_REGISTRY['leads'] ?? null;
+  }
+
+  // Intelligent prefix resolution: e.g. "nadia-broadcast" -> "nadia"
+  const prefix = id.split('-')[0];
+  if (prefix && CRM_MODULE_REGISTRY[prefix]) {
+    return CRM_MODULE_REGISTRY[prefix];
+  }
+
+  return null;
 };
 
 export const resolveCRMModules = (ids: string[]): CRMModuleDefinition[] =>

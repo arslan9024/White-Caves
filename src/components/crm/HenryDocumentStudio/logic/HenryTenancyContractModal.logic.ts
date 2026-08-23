@@ -58,7 +58,7 @@ export function useHenryTenancyContractModalLogic({
   }, [contractData, isOpen]);
 
   // Field change updater
-  const handleFieldChange = useCallback((field: keyof DldTenancyContractData, value: any) => {
+  const handleFieldChange = useCallback((field: keyof DldTenancyContractData, value: DldTenancyContractData[keyof DldTenancyContractData]) => {
     setContractData(prev => {
       const updated = { ...prev, [field]: value };
       if (field === 'annualRent' && !prev.contractValue) {

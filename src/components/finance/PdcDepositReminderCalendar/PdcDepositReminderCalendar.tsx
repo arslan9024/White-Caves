@@ -2,6 +2,18 @@ import React, { FC, useState, useEffect } from 'react';
 import styled, { keyframes } from 'styled-components';
 import { apiClient } from '../../../services/apiClient';
 
+/** Typed GraphQL response shape for postDatedCheques query */
+interface PdcChequeItem {
+  id: string;
+  amount: number;
+  dueDate: string;
+  status: string;
+}
+
+interface PdcGraphQLResponse {
+  postDatedCheques: PdcChequeItem[];
+}
+
 const fadeIn = keyframes`from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); }`;
 const shineGold = keyframes`to { background-position: 200% center; }`;
 
@@ -179,7 +191,7 @@ export const PdcDepositReminderCalendar: FC = () => {
             }
           }
         `;
-        const res = await apiClient.post<{ data?: any }>('/graphql', { query });
+        const res = await apiClient.post<{ data?: PdcGraphQLResponse }>('/graphql', { query });
         if (res?.data?.postDatedCheques) {
           setCheques(res.data.postDatedCheques);
         }

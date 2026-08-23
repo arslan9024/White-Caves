@@ -15,9 +15,18 @@ import {
 } from '../../../pages/crm/CRMHubPage.styles';
 import { CRM_MODULE_REGISTRY } from '../../../config/crmModuleRegistry';
 
+/** Minimal CRM user shape passed through to module components */
+export interface CrmUser {
+  id?: string;
+  email?: string;
+  name?: string;
+  role?: string;
+  [key: string]: unknown;
+}
+
 export interface ModuleViewportProps {
   moduleId: string;
-  user: any;
+  user: CrmUser | null;
   onBackToOverview: () => void;
 }
 
@@ -105,7 +114,7 @@ export const ModuleViewport: FC<ModuleViewportProps> = ({
       <div style={{ padding: '1rem' }}>
         <ErrorBoundary>
           <Suspense fallback={<SkeletonLoader width="100%" height="400px" borderRadius="16px" />}>
-            <ModuleComponent role="owner" user={user} />
+            <ModuleComponent role="owner" user={user} moduleId={moduleId} />
           </Suspense>
         </ErrorBoundary>
       </div>

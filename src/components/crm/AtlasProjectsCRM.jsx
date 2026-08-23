@@ -1,243 +1,298 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { 
   Map, Building, Calculator, Grid, Target,
   Calendar, Users, TrendingUp, Clock, CheckCircle,
-  ArrowUp, ArrowDown, Filter, Search, Eye, Plus, MapPin
+  ArrowUp, ArrowDown, Filter, Search, Eye, Plus, MapPin,
+  AlertTriangle, ShieldCheck, DollarSign, Download, Percent
 } from 'lucide-react';
 import AssistantDocsTab from './shared/AssistantDocsTab';
 import './AssistantDashboard.css';
 
-const PROJECTS = [
-  { id: 1, name: 'Marina Vista Tower', developer: 'Emaar', area: 'Dubai Marina', type: 'Residential', units: 450, completion: 'Q4 2025', status: 'on_track', roi: '12%', priceRange: 'AED 1.2M - 4.5M' },
-  { id: 2, name: 'Business Bay Heights', developer: 'DAMAC', area: 'Business Bay', type: 'Mixed Use', units: 320, completion: 'Q2 2025', status: 'ahead', roi: '15%', priceRange: 'AED 900K - 3.2M' },
-  { id: 3, name: 'Creek Harbour Residences', developer: 'Emaar', area: 'Dubai Creek', type: 'Residential', units: 680, completion: 'Q1 2026', status: 'on_track', roi: '10%', priceRange: 'AED 1.5M - 6.8M' },
-  { id: 4, name: 'JVC Central', developer: 'Sobha', area: 'JVC', type: 'Residential', units: 280, completion: 'Q3 2024', status: 'delayed', roi: '8%', priceRange: 'AED 650K - 1.8M' },
-  { id: 5, name: 'Palm Gateway', developer: 'Nakheel', area: 'Palm Jumeirah', type: 'Luxury', units: 120, completion: 'Q4 2024', status: 'on_track', roi: '18%', priceRange: 'AED 5M - 25M' }
-];
+interface AtlasProps {
+  moduleId?: string;
+  role?: string;
+  user?: any;
+}
 
-const DEVELOPERS = [
-  { id: 1, name: 'Emaar Properties', projects: 45, delivered: 38, onTime: '94%', rating: 4.8 },
-  { id: 2, name: 'DAMAC Properties', projects: 32, delivered: 24, onTime: '82%', rating: 4.2 },
-  { id: 3, name: 'Sobha Realty', projects: 18, delivered: 15, onTime: '96%', rating: 4.7 },
-  { id: 4, name: 'Nakheel', projects: 28, delivered: 22, onTime: '88%', rating: 4.5 }
-];
+export const AtlasProjectsCRM: React.FC<AtlasProps> = ({ moduleId }) => {
+  const [activeTab, setActiveTab] = useState<'tracker' | 'delay' | 'payment-plans' | 'roi' | 'docs'>('tracker');
 
-const MARKET_GAPS = [
-  { id: 1, area: 'Dubai South', gap: 'Affordable Family Villas', demand: 'High', competition: 'Low', opportunity: 'Excellent' },
-  { id: 2, area: 'Al Furjan', gap: 'Mid-Range Apartments', demand: 'Medium', competition: 'Medium', opportunity: 'Good' },
-  { id: 3, area: 'MBR City', gap: 'Luxury Townhouses', demand: 'High', competition: 'Medium', opportunity: 'Good' },
-  { id: 4, area: 'Arjan', gap: 'Studio Apartments', demand: 'Very High', competition: 'Low', opportunity: 'Excellent' }
-];
+  useEffect(() => {
+    if (!moduleId) return;
+    if (moduleId.includes('delay')) setActiveTab('delay');
+    else if (moduleId.includes('payment')) setActiveTab('payment-plans');
+    else if (moduleId.includes('roi')) setActiveTab('roi');
+    else if (moduleId.includes('tracker')) setActiveTab('tracker');
+  }, [moduleId]);
 
-const AtlasProjectsCRM = () => {
-  const [activeTab, setActiveTab] = useState('projects');
+  // Feature 1: Developer Project Matrix
+  const [searchQuery, setSearchQuery] = useState('');
+  const [selectedDeveloper, setSelectedDeveloper] = useState('ALL');
 
-  const getStatusColor = (status) => {
-    switch (status) {
-      case 'ahead': return '#10B981';
-      case 'on_track': return '#3B82F6';
-      case 'delayed': return '#EF4444';
-      default: return '#6B7280';
-    }
+  const [projects, setProjects] = useState([
+    { id: 1, name: 'Marina Vista Tower', developer: 'Emaar', area: 'Dubai Marina', units: 450, completion: 'Q4 2026', progressPct: 78, escrowBalance: 'AED 380M', status: 'ON_TRACK', expectedYield: '8.5%' },
+    { id: 2, name: 'Business Bay Heights', developer: 'DAMAC', area: 'Business Bay', units: 320, completion: 'Q2 2027', progressPct: 45, escrowBalance: 'AED 210M', status: 'ON_TRACK', expectedYield: '9.2%' },
+    { id: 3, name: 'Creek Harbour Residences', developer: 'Emaar', area: 'Dubai Creek', units: 680, completion: 'Q1 2028', progressPct: 22, escrowBalance: 'AED 540M', status: 'ON_TRACK', expectedYield: '7.8%' },
+    { id: 4, name: 'Palm Gateway Penthouse', developer: 'Nakheel', area: 'Palm Jumeirah', units: 120, completion: 'Q4 2026', progressPct: 88, escrowBalance: 'AED 890M', status: 'AHEAD_OF_SCHEDULE', expectedYield: '11.4%' },
+  ]);
+
+  // Feature 2: Delay Estimator
+  const [delayProject, setDelayProject] = useState('Business Bay Heights');
+  const [scheduledHandover, setScheduledHandover] = useState('2027-06-30');
+  const [currentDldProgress, setCurrentDldProgress] = useState(45);
+  const [foundationMonths, setFoundationMonths] = useState(8);
+
+  const calculateDelay = () => {
+    const requiredProgress = 60;
+    const progressGap = Math.max(0, requiredProgress - currentDldProgress);
+    const estimatedDelayMonths = Math.round(progressGap * 0.4);
+    const revisedDate = new Date(scheduledHandover);
+    revisedDate.setMonth(revisedDate.getMonth() + estimatedDelayMonths);
+    return {
+      gap: progressGap,
+      delayMonths: estimatedDelayMonths,
+      revisedHandover: revisedDate.toISOString().split('T')[0],
+      riskTier: estimatedDelayMonths > 4 ? 'HIGH_VARIANCE' : estimatedDelayMonths > 0 ? 'MODERATE' : 'ON_SCHEDULE',
+    };
   };
+  const delayResult = calculateDelay();
+
+  // Feature 3: Payment Plan Builder
+  const [propertyPrice, setPropertyPrice] = useState(2500000);
+  const [downpaymentPct, setDownpaymentPct] = useState(20);
+  const [duringConstructionPct, setDuringConstructionPct] = useState(50);
+  const [postHandoverPct, setPostHandoverPct] = useState(30);
+
+  const dpAmount = (propertyPrice * (downpaymentPct / 100));
+  const duringAmount = (propertyPrice * (duringConstructionPct / 100));
+  const postAmount = (propertyPrice * (postHandoverPct / 100));
+
+  // Feature 4: Off-Plan ROI & Capital Gain Simulator
+  const [purchasePrice, setPurchasePrice] = useState(2000000);
+  const [expectedHandoverPrice, setExpectedHandoverPrice] = useState(2700000);
+  const [annualRent, setAnnualRent] = useState(190000);
+
+  const capitalGain = expectedHandoverPrice - purchasePrice;
+  const capitalGainPct = ((capitalGain / purchasePrice) * 100).toFixed(1);
+  const grossRentalYield = ((annualRent / expectedHandoverPrice) * 100).toFixed(2);
 
   return (
-    <div className="assistant-dashboard atlas">
-      <div className="assistant-header">
-        <div className="assistant-avatar" style={{ background: 'var(--primary-gradient)' }}>
-          <Map size={28} />
-        </div>
-        <div className="assistant-info">
-          <h2>Atlas - Development & Project Intelligence</h2>
-          <p>Analyzes zoning, DLC master plans, market gaps, and developer track records to identify high-potential off-plan projects for investment or brokerage</p>
-        </div>
-        <div className="assistant-status online">
-          <span className="status-dot"></span>
-          Active
-        </div>
-      </div>
-
-      <div className="quick-stats">
-        <div className="stat-card">
-          <div className="stat-icon" style={{ background: 'var(--primary-light)', color: 'var(--primary-color)' }}>
-            <Building size={20} />
+    <div className="crm-container" style={{ maxWidth: '100%', padding: '0.5rem' }}>
+      {/* Header */}
+      <div style={{ background: 'linear-gradient(135deg, #7C2D12 0%, #451A03 100%)', color: '#FFFFFF', padding: '1.25rem 1.5rem', borderRadius: '16px', marginBottom: '1.25rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1rem' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+          <div style={{ width: '48px', height: '48px', borderRadius: '12px', background: 'linear-gradient(135deg, #F97316 0%, #EA580C 100%)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.5rem' }}>
+            🏛️
           </div>
-          <div className="stat-content">
-            <span className="stat-value">156</span>
-            <span className="stat-label">Projects Tracked</span>
-          </div>
-          <span className="stat-change positive"><ArrowUp size={14} /> 12 new</span>
-        </div>
-        <div className="stat-card">
-          <div className="stat-icon" style={{ background: 'var(--success-light)', color: 'var(--success-color)' }}>
-            <CheckCircle size={20} />
-          </div>
-          <div className="stat-content">
-            <span className="stat-value">89%</span>
-            <span className="stat-label">On-Track Rate</span>
-          </div>
-          <span className="stat-change positive">Industry avg: 78%</span>
-        </div>
-        <div className="stat-card">
-          <div className="stat-icon" style={{ background: 'var(--warning-light)', color: 'var(--warning-color)' }}>
-            <Target size={20} />
-          </div>
-          <div className="stat-content">
-            <span className="stat-value">4</span>
-            <span className="stat-label">Market Gaps</span>
-          </div>
-          <span className="stat-change">High opportunity</span>
-        </div>
-        <div className="stat-card">
-          <div className="stat-icon" style={{ background: 'var(--accent-light)', color: 'var(--accent-color)' }}>
-            <TrendingUp size={20} />
-          </div>
-          <div className="stat-content">
-            <span className="stat-value">14%</span>
-            <span className="stat-label">Avg. ROI</span>
-          </div>
-          <span className="stat-change positive"><ArrowUp size={14} /> 2%</span>
-        </div>
-      </div>
-
-      <div className="assistant-tabs">
-        {['projects', 'developers', 'feasibility', 'gaps', 'docs'].map(tab => (
-          <button
-            key={tab}
-            className={`tab-btn ${activeTab === tab ? 'active' : ''}`}
-            onClick={() => setActiveTab(tab)}
-          >
-            {tab === 'docs' ? 'Documentation' : tab.charAt(0).toUpperCase() + tab.slice(1)}
-          </button>
-        ))}
-      </div>
-
-      <div className="tab-content">
-        {activeTab === 'projects' && (
-          <div className="projects-view">
-            <div className="view-header">
-              <div className="search-box">
-                <Search size={16} />
-                <input type="text" placeholder="Search projects..." />
-              </div>
-              <div className="filter-group">
-                <select>
-                  <option value="all">All Developers</option>
-                  <option value="emaar">Emaar</option>
-                  <option value="damac">DAMAC</option>
-                  <option value="sobha">Sobha</option>
-                </select>
-                <select>
-                  <option value="all">All Status</option>
-                  <option value="on_track">On Track</option>
-                  <option value="ahead">Ahead</option>
-                  <option value="delayed">Delayed</option>
-                </select>
-              </div>
+          <div>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+              <h2 style={{ margin: 0, fontSize: '1.3rem', fontWeight: 800 }}>Atlas AI — Off-Plan Projects & Construction</h2>
+              <span style={{ fontSize: '0.7rem', background: 'rgba(255, 255, 255, 0.15)', padding: '2px 8px', borderRadius: '4px', color: '#FED7AA', fontWeight: 800 }}>
+                Escrow & DLD Milestone Radar
+              </span>
             </div>
-            <div className="projects-grid">
-              {PROJECTS.map(project => (
-                <div key={project.id} className="project-card">
-                  <div className="project-header">
-                    <h4>{project.name}</h4>
-                    <span className="project-status" style={{ 
-                      background: `${getStatusColor(project.status)}20`,
-                      color: getStatusColor(project.status)
-                    }}>
-                      {project.status.replace('_', ' ')}
+            <p style={{ margin: '0.2rem 0 0 0', fontSize: '0.82rem', color: '#FFEDD5' }}>
+              Real-time developer milestone tracking, construction delay variance algorithms, payment plan generators & ROI models.
+            </p>
+          </div>
+        </div>
+      </div>
+
+      {/* Tabs */}
+      <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap', background: '#FFFFFF', padding: '8px 12px', borderRadius: '12px', border: '1px solid #E2E8F0', marginBottom: '1.25rem' }}>
+        <button onClick={() => setActiveTab('tracker')} style={{ padding: '6px 12px', borderRadius: '6px', border: activeTab === 'tracker' ? '1px solid #EA580C' : '1px solid transparent', background: activeTab === 'tracker' ? '#EA580C' : '#F8FAFC', color: activeTab === 'tracker' ? '#FFF' : '#334155', fontWeight: 800, fontSize: '0.8rem', cursor: 'pointer' }}>
+          3.7.3 Developer Tracker
+        </button>
+        <button onClick={() => setActiveTab('delay')} style={{ padding: '6px 12px', borderRadius: '6px', border: activeTab === 'delay' ? '1px solid #EA580C' : '1px solid transparent', background: activeTab === 'delay' ? '#EA580C' : '#F8FAFC', color: activeTab === 'delay' ? '#FFF' : '#334155', fontWeight: 800, fontSize: '0.8rem', cursor: 'pointer' }}>
+          3.7.1 Construction Delay Estimator
+        </button>
+        <button onClick={() => setActiveTab('payment-plans')} style={{ padding: '6px 12px', borderRadius: '6px', border: activeTab === 'payment-plans' ? '1px solid #EA580C' : '1px solid transparent', background: activeTab === 'payment-plans' ? '#EA580C' : '#F8FAFC', color: activeTab === 'payment-plans' ? '#FFF' : '#334155', fontWeight: 800, fontSize: '0.8rem', cursor: 'pointer' }}>
+          3.7.2 Payment Plan Builder
+        </button>
+        <button onClick={() => setActiveTab('roi')} style={{ padding: '6px 12px', borderRadius: '6px', border: activeTab === 'roi' ? '1px solid #EA580C' : '1px solid transparent', background: activeTab === 'roi' ? '#EA580C' : '#F8FAFC', color: activeTab === 'roi' ? '#FFF' : '#334155', fontWeight: 800, fontSize: '0.8rem', cursor: 'pointer' }}>
+          3.7.4 Off-Plan ROI Simulator
+        </button>
+      </div>
+
+      {/* Tab 1: Tracker */}
+      {activeTab === 'tracker' && (
+        <div style={{ background: '#FFFFFF', borderRadius: '12px', border: '1px solid #E2E8F0', overflow: 'hidden' }}>
+          <div style={{ padding: '0.75rem 1rem', background: '#F8FAFC', borderBottom: '1px solid #E2E8F0', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <span style={{ fontWeight: 800, fontSize: '0.9rem', color: '#1E293B' }}>Master Developer Off-Plan Matrix</span>
+            <span style={{ fontSize: '0.75rem', color: '#64748B', fontWeight: 700 }}>4 Active Key Projects</span>
+          </div>
+          <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left', fontSize: '0.85rem' }}>
+            <thead>
+              <tr style={{ background: '#F8FAFC', borderBottom: '1px solid #E2E8F0', color: '#475569', fontWeight: 800 }}>
+                <th style={{ padding: '10px 14px' }}>Project Name</th>
+                <th style={{ padding: '10px 14px' }}>Developer</th>
+                <th style={{ padding: '10px 14px' }}>Location</th>
+                <th style={{ padding: '10px 14px' }}>DLD Progress</th>
+                <th style={{ padding: '10px 14px' }}>DLD Escrow Balance</th>
+                <th style={{ padding: '10px 14px' }}>Target Handover</th>
+                <th style={{ padding: '10px 14px' }}>Status</th>
+              </tr>
+            </thead>
+            <tbody>
+              {projects.map(p => (
+                <tr key={p.id} style={{ borderBottom: '1px solid #F1F5F9' }}>
+                  <td style={{ padding: '10px 14px', fontWeight: 800, color: '#1E293B' }}>{p.name}</td>
+                  <td style={{ padding: '10px 14px', fontWeight: 700, color: '#EA580C' }}>{p.developer}</td>
+                  <td style={{ padding: '10px 14px', color: '#64748B' }}>{p.area}</td>
+                  <td style={{ padding: '10px 14px' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                      <div style={{ width: '80px', height: '6px', background: '#E2E8F0', borderRadius: '3px', overflow: 'hidden' }}>
+                        <div style={{ width: `${p.progressPct}%`, height: '100%', background: '#EA580C' }} />
+                      </div>
+                      <span style={{ fontSize: '0.75rem', fontWeight: 800 }}>{p.progressPct}%</span>
+                    </div>
+                  </td>
+                  <td style={{ padding: '10px 14px', fontWeight: 700, color: '#10B981' }}>{p.escrowBalance}</td>
+                  <td style={{ padding: '10px 14px', color: '#64748B' }}>{p.completion}</td>
+                  <td style={{ padding: '10px 14px' }}>
+                    <span style={{ padding: '2px 8px', borderRadius: '4px', fontSize: '0.72rem', fontWeight: 800, background: '#ECFDF5', color: '#047857' }}>
+                      {p.status}
                     </span>
-                  </div>
-                  <div className="project-developer">{project.developer}</div>
-                  <div className="project-details">
-                    <span><MapPin size={14} /> {project.area}</span>
-                    <span><Building size={14} /> {project.units} units</span>
-                    <span><Calendar size={14} /> {project.completion}</span>
-                  </div>
-                  <div className="project-price">{project.priceRange}</div>
-                  <div className="project-roi">
-                    <span>Expected ROI:</span>
-                    <span className="roi-value">{project.roi}</span>
-                  </div>
-                </div>
+                  </td>
+                </tr>
               ))}
+            </tbody>
+          </table>
+        </div>
+      )}
+
+      {/* Tab 2: Delay Estimator */}
+      {activeTab === 'delay' && (
+        <div style={{ background: '#FFFFFF', padding: '1.5rem', borderRadius: '12px', border: '1px solid #E2E8F0' }}>
+          <h4 style={{ margin: '0 0 0.5rem 0', fontSize: '1rem', fontWeight: 800, color: '#1E293B' }}>
+            Construction Delay & Handover Variance Estimator
+          </h4>
+          <p style={{ margin: '0 0 1.25rem 0', fontSize: '0.8rem', color: '#64748B' }}>
+            Compares live DLD audit progress against schedule milestones to project handover delays and escrow liquidity risks.
+          </p>
+
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '1rem', marginBottom: '1.25rem' }}>
+            <div>
+              <label style={{ fontSize: '0.75rem', fontWeight: 800, color: '#64748B', display: 'block', marginBottom: '4px' }}>Select Project</label>
+              <select value={delayProject} onChange={e => setDelayProject(e.target.value)} style={{ width: '100%', padding: '8px', borderRadius: '6px', border: '1px solid #CBD5E1', fontSize: '0.8rem', fontWeight: 700 }}>
+                {projects.map(p => <option key={p.id} value={p.name}>{p.name} ({p.developer})</option>)}
+              </select>
+            </div>
+            <div>
+              <label style={{ fontSize: '0.75rem', fontWeight: 800, color: '#64748B', display: 'block', marginBottom: '4px' }}>DLD Verified Progress ({currentDldProgress}%)</label>
+              <input type="range" min="5" max="100" value={currentDldProgress} onChange={e => setCurrentDldProgress(Number(e.target.value))} style={{ width: '100%' }} />
+            </div>
+            <div>
+              <label style={{ fontSize: '0.75rem', fontWeight: 800, color: '#64748B', display: 'block', marginBottom: '4px' }}>Scheduled Handover</label>
+              <input type="date" value={scheduledHandover} onChange={e => setScheduledHandover(e.target.value)} style={{ width: '100%', padding: '8px', borderRadius: '6px', border: '1px solid #CBD5E1', fontSize: '0.8rem' }} />
             </div>
           </div>
-        )}
 
-        {activeTab === 'developers' && (
-          <div className="developers-view">
-            <h3>Developer Track Records</h3>
-            <div className="developers-grid">
-              {DEVELOPERS.map(dev => (
-                <div key={dev.id} className="developer-card">
-                  <h4>{dev.name}</h4>
-                  <div className="developer-stats">
-                    <div className="dev-stat">
-                      <span className="stat-value">{dev.projects}</span>
-                      <span className="stat-label">Projects</span>
-                    </div>
-                    <div className="dev-stat">
-                      <span className="stat-value">{dev.delivered}</span>
-                      <span className="stat-label">Delivered</span>
-                    </div>
-                    <div className="dev-stat">
-                      <span className="stat-value">{dev.onTime}</span>
-                      <span className="stat-label">On-Time</span>
-                    </div>
-                    <div className="dev-stat">
-                      <span className="stat-value">⭐ {dev.rating}</span>
-                      <span className="stat-label">Rating</span>
-                    </div>
-                  </div>
-                </div>
-              ))}
+          <div style={{ background: '#FFF7ED', border: '1px solid #FFEDD5', padding: '1.25rem', borderRadius: '8px', display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '1rem' }}>
+            <div>
+              <div style={{ fontSize: '0.75rem', color: '#9A3412', fontWeight: 800 }}>ESTIMATED DELAY</div>
+              <div style={{ fontSize: '1.4rem', fontWeight: 800, color: '#C2410C', marginTop: '4px' }}>{delayResult.delayMonths} Months</div>
+            </div>
+            <div>
+              <div style={{ fontSize: '0.75rem', color: '#9A3412', fontWeight: 800 }}>REVISED HANDOVER DATE</div>
+              <div style={{ fontSize: '1.2rem', fontWeight: 800, color: '#9A3412', marginTop: '4px' }}>{delayResult.revisedHandover}</div>
+            </div>
+            <div>
+              <div style={{ fontSize: '0.75rem', color: '#9A3412', fontWeight: 800 }}>RISK CLASSIFICATION</div>
+              <div style={{ fontSize: '1rem', fontWeight: 800, color: delayResult.riskTier === 'HIGH_VARIANCE' ? '#DC2626' : '#D97706', marginTop: '4px' }}>{delayResult.riskTier}</div>
             </div>
           </div>
-        )}
+        </div>
+      )}
 
-        {activeTab === 'feasibility' && (
-          <div className="feasibility-view">
-            <h3>Feasibility Analysis</h3>
-            <div className="empty-state">
-              <Calculator size={48} />
-              <p>Select a project to run feasibility analysis</p>
-              <button className="add-btn"><Plus size={16} /> New Analysis</button>
+      {/* Tab 3: Payment Plan Builder */}
+      {activeTab === 'payment-plans' && (
+        <div style={{ background: '#FFFFFF', padding: '1.5rem', borderRadius: '12px', border: '1px solid #E2E8F0' }}>
+          <h4 style={{ margin: '0 0 0.5rem 0', fontSize: '1rem', fontWeight: 800, color: '#1E293B' }}>
+            Developer Payment Plan & Milestone Schedule Builder
+          </h4>
+
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.5rem', marginTop: '1rem' }}>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+              <div>
+                <label style={{ fontSize: '0.75rem', fontWeight: 800, color: '#64748B' }}>Property Base Price (AED)</label>
+                <input type="number" value={propertyPrice} onChange={e => setPropertyPrice(Number(e.target.value))} style={{ width: '100%', padding: '8px', borderRadius: '6px', border: '1px solid #CBD5E1', fontSize: '0.85rem', fontWeight: 700 }} />
+              </div>
+              <div>
+                <label style={{ fontSize: '0.75rem', fontWeight: 800, color: '#64748B' }}>Down Payment: {downpaymentPct}%</label>
+                <input type="range" min="10" max="40" step="5" value={downpaymentPct} onChange={e => setDownpaymentPct(Number(e.target.value))} style={{ width: '100%' }} />
+              </div>
+              <div>
+                <label style={{ fontSize: '0.75rem', fontWeight: 800, color: '#64748B' }}>During Construction: {duringConstructionPct}%</label>
+                <input type="range" min="30" max="70" step="5" value={duringConstructionPct} onChange={e => setDuringConstructionPct(Number(e.target.value))} style={{ width: '100%' }} />
+              </div>
+              <div>
+                <label style={{ fontSize: '0.75rem', fontWeight: 800, color: '#64748B' }}>Post-Handover / On Handover: {postHandoverPct}%</label>
+                <input type="range" min="0" max="50" step="5" value={postHandoverPct} onChange={e => setPostHandoverPct(Number(e.target.value))} style={{ width: '100%' }} />
+              </div>
+            </div>
+
+            <div style={{ background: '#F8FAFC', padding: '1.25rem', borderRadius: '8px', border: '1px solid #E2E8F0' }}>
+              <h5 style={{ margin: '0 0 1rem 0', fontWeight: 800, color: '#1E293B' }}>Installment Breakdown</h5>
+              <div style={{ display: 'flex', justifyContent: 'space-between', padding: '8px 0', borderBottom: '1px solid #E2E8F0', fontSize: '0.85rem' }}>
+                <span>1. Booking & Down Payment ({downpaymentPct}%):</span>
+                <strong>AED {dpAmount.toLocaleString()}</strong>
+              </div>
+              <div style={{ display: 'flex', justifyContent: 'space-between', padding: '8px 0', borderBottom: '1px solid #E2E8F0', fontSize: '0.85rem' }}>
+                <span>2. Construction Linked ({duringConstructionPct}%):</span>
+                <strong>AED {duringAmount.toLocaleString()}</strong>
+              </div>
+              <div style={{ display: 'flex', justifyContent: 'space-between', padding: '8px 0', borderBottom: '1px solid #E2E8F0', fontSize: '0.85rem' }}>
+                <span>3. On Handover ({postHandoverPct}%):</span>
+                <strong>AED {postAmount.toLocaleString()}</strong>
+              </div>
+              <div style={{ display: 'flex', justifyContent: 'space-between', padding: '12px 0 0 0', fontWeight: 800, color: '#EA580C', fontSize: '0.95rem' }}>
+                <span>Total Commitment:</span>
+                <span>AED {propertyPrice.toLocaleString()}</span>
+              </div>
             </div>
           </div>
-        )}
+        </div>
+      )}
 
-        {activeTab === 'gaps' && (
-          <div className="gaps-view">
-            <h3>Market Gap Detection</h3>
-            <div className="gaps-list">
-              {MARKET_GAPS.map(gap => (
-                <div key={gap.id} className="gap-card">
-                  <div className="gap-header">
-                    <MapPin size={20} />
-                    <h4>{gap.area}</h4>
-                  </div>
-                  <p className="gap-description">{gap.gap}</p>
-                  <div className="gap-metrics">
-                    <span>Demand: <strong>{gap.demand}</strong></span>
-                    <span>Competition: <strong>{gap.competition}</strong></span>
-                    <span className={`opportunity ${gap.opportunity.toLowerCase()}`}>
-                      {gap.opportunity}
-                    </span>
-                  </div>
-                </div>
-              ))}
+      {/* Tab 4: ROI Simulator */}
+      {activeTab === 'roi' && (
+        <div style={{ background: '#FFFFFF', padding: '1.5rem', borderRadius: '12px', border: '1px solid #E2E8F0' }}>
+          <h4 style={{ margin: '0 0 0.5rem 0', fontSize: '1rem', fontWeight: 800, color: '#1E293B' }}>
+            Off-Plan Capital Appreciation & Rental Yield Simulator
+          </h4>
+
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '1rem', marginTop: '1rem', marginBottom: '1.25rem' }}>
+            <div>
+              <label style={{ fontSize: '0.75rem', fontWeight: 800, color: '#64748B' }}>Off-Plan Launch Price (AED)</label>
+              <input type="number" value={purchasePrice} onChange={e => setPurchasePrice(Number(e.target.value))} style={{ width: '100%', padding: '8px', borderRadius: '6px', border: '1px solid #CBD5E1', fontSize: '0.85rem', fontWeight: 700 }} />
+            </div>
+            <div>
+              <label style={{ fontSize: '0.75rem', fontWeight: 800, color: '#64748B' }}>Expected Handover Market Value (AED)</label>
+              <input type="number" value={expectedHandoverPrice} onChange={e => setExpectedHandoverPrice(Number(e.target.value))} style={{ width: '100%', padding: '8px', borderRadius: '6px', border: '1px solid #CBD5E1', fontSize: '0.85rem', fontWeight: 700 }} />
+            </div>
+            <div>
+              <label style={{ fontSize: '0.75rem', fontWeight: 800, color: '#64748B' }}>Projected Annual Rent (AED)</label>
+              <input type="number" value={annualRent} onChange={e => setAnnualRent(Number(e.target.value))} style={{ width: '100%', padding: '8px', borderRadius: '6px', border: '1px solid #CBD5E1', fontSize: '0.85rem', fontWeight: 700 }} />
             </div>
           </div>
-        )}
 
-        {activeTab === 'docs' && (
-          <AssistantDocsTab 
-            assistantId="atlas" 
-            assistantName="Atlas" 
-            assistantColor="#6366F1" 
-          />
-        )}
-      </div>
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
+            <div style={{ background: '#ECFDF5', border: '1px solid #A7F3D0', padding: '1.25rem', borderRadius: '8px' }}>
+              <div style={{ fontSize: '0.75rem', color: '#065F46', fontWeight: 800 }}>CAPITAL APPRECIATION UPON HANDOVER</div>
+              <div style={{ fontSize: '1.6rem', fontWeight: 800, color: '#047857', marginTop: '4px' }}>
+                AED {capitalGain.toLocaleString()} (+{capitalGainPct}%)
+              </div>
+            </div>
+            <div style={{ background: '#EFF6FF', border: '1px solid #BFDBFE', padding: '1.25rem', borderRadius: '8px' }}>
+              <div style={{ fontSize: '0.75rem', color: '#1E40AF', fontWeight: 800 }}>GROSS RENTAL YIELD AT HANDOVER</div>
+              <div style={{ fontSize: '1.6rem', fontWeight: 800, color: '#1D4ED8', marginTop: '4px' }}>
+                {grossRentalYield}% p.a.
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

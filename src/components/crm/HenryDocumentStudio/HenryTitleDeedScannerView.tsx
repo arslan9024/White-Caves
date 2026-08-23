@@ -301,7 +301,7 @@ export const HenryTitleDeedScannerView: FC = () => {
     }
   };
 
-  const handleUpdateField = (field: keyof DldTitleDeedExtractedData, val: any) => {
+  const handleUpdateField = (field: keyof DldTitleDeedExtractedData, val: DldTitleDeedExtractedData[keyof DldTitleDeedExtractedData]) => {
     if (!extractedData) return;
     setExtractedData(prev => {
       if (!prev) return null;

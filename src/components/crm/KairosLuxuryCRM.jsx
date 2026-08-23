@@ -1,256 +1,216 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { 
-  Crown, Star, Heart, Users, Gift,
-  Calendar, MapPin, Phone, Mail, Clock,
-  ArrowUp, ArrowDown, Filter, Search, Plus, Eye
+  Diamond, Plane, Car, Coins, Award, 
+  CheckCircle2, Download, ShieldCheck, DollarSign, Calendar
 } from 'lucide-react';
-import AssistantDocsTab from './shared/AssistantDocsTab';
 import './AssistantDashboard.css';
 
-const VIP_CLIENTS = [
-  { id: 1, name: 'Sheikh Mohammed Al Nahyan', tier: 'Platinum', portfolio: 'AED 45M+', properties: 8, lastContact: '2 days ago', preferences: ['Palm Jumeirah', 'Villas', 'Sea View'] },
-  { id: 2, name: 'Lady Victoria Sterling', tier: 'Platinum', portfolio: 'AED 32M+', properties: 5, lastContact: '1 week ago', preferences: ['Downtown', 'Penthouses', 'Burj View'] },
-  { id: 3, name: 'Dr. Chen Wei Holdings', tier: 'Gold', portfolio: 'AED 25M+', properties: 12, lastContact: '3 days ago', preferences: ['Business Bay', 'Investment', 'High ROI'] },
-  { id: 4, name: 'Maria Santos Family Office', tier: 'Gold', portfolio: 'AED 18M+', properties: 4, lastContact: '5 days ago', preferences: ['Emirates Hills', 'Privacy', 'Golf Course'] }
-];
+interface KairosProps {
+  moduleId?: string;
+  role?: string;
+  user?: any;
+}
 
-const CONCIERGE_SERVICES = [
-  { id: 1, service: 'Private Jet Charter', client: 'Sheikh Mohammed', date: '2024-01-25', status: 'confirmed', partner: 'Jetex Dubai' },
-  { id: 2, service: 'Interior Design Consultation', client: 'Lady Victoria', date: '2024-01-28', status: 'scheduled', partner: 'Luxury Interiors LLC' },
-  { id: 3, service: 'Golden Visa Processing', client: 'Dr. Chen Wei', date: '2024-01-22', status: 'in_progress', partner: 'Legal Partners' },
-  { id: 4, service: 'Yacht Charter', client: 'Maria Santos', date: '2024-02-01', status: 'pending', partner: 'Dubai Marina Yachts' }
-];
+export const KairosLuxuryCRM: React.FC<KairosProps> = ({ moduleId }) => {
+  const [activeTab, setActiveTab] = useState<'golden-visa' | 'crypto' | 'chauffeur' | 'family-office'>('golden-visa');
 
-const EXCLUSIVE_LISTINGS = [
-  { id: 1, property: 'Signature Villa - Palm Jumeirah', price: 'AED 85M', status: 'off_market', features: ['Private Beach', '10 Beds', 'Staff Quarters'] },
-  { id: 2, property: 'Penthouse - Burj Khalifa', price: 'AED 120M', status: 'exclusive', features: ['Full Floor', 'Helipad Access', 'Butler Service'] },
-  { id: 3, property: 'Royal Estate - Emirates Hills', price: 'AED 65M', status: 'off_market', features: ['Golf Course', 'Cinema', 'Wellness Spa'] },
-  { id: 4, property: 'Beachfront Mansion - Jumeirah Bay', price: 'AED 95M', status: 'exclusive', features: ['Infinity Pool', 'Art Gallery', 'Smart Home'] }
-];
+  useEffect(() => {
+    if (!moduleId) return;
+    if (moduleId.includes('golden') || moduleId.includes('visa')) setActiveTab('golden-visa');
+    else if (moduleId.includes('crypto')) setActiveTab('crypto');
+    else if (moduleId.includes('chauffeur') || moduleId.includes('jet')) setActiveTab('chauffeur');
+    else if (moduleId.includes('family')) setActiveTab('family-office');
+  }, [moduleId]);
 
-const PARTNER_NETWORK = [
-  { id: 1, name: 'Jetex Dubai', category: 'Aviation', services: 'Private Jets', rating: 5.0 },
-  { id: 2, name: 'Luxury Interiors LLC', category: 'Design', services: 'Interior Design', rating: 4.9 },
-  { id: 3, name: 'Dubai Marina Yachts', category: 'Lifestyle', services: 'Yacht Charter', rating: 4.8 },
-  { id: 4, name: 'Rolls Royce Dubai', category: 'Automotive', services: 'Luxury Cars', rating: 5.0 },
-  { id: 5, name: 'Legal Partners DIFC', category: 'Legal', services: 'Visa & Legal', rating: 4.9 }
-];
+  // Feature 1: Golden Visa Tool
+  const [totalRealEstateEquity, setTotalRealEstateEquity] = useState(2600000);
+  const [isOffPlan, setIsOffPlan] = useState(false);
+  const [hasMortgage, setHasMortgage] = useState(false);
+  const [mortgageEquityAed, setMortgageEquityAed] = useState(2200000);
 
-const KairosLuxuryCRM = () => {
-  const [activeTab, setActiveTab] = useState('vip');
+  const effectiveEquity = hasMortgage ? mortgageEquityAed : totalRealEstateEquity;
+  const isGoldenVisaEligible = effectiveEquity >= 2000000;
 
-  const getTierColor = (tier) => {
-    switch (tier) {
-      case 'Platinum': return '#8B5CF6';
-      case 'Gold': return '#F59E0B';
-      case 'Silver': return '#6B7280';
-      default: return '#6B7280';
-    }
-  };
+  // Feature 2: Crypto FX Simulator
+  const [propertyPriceAed, setPropertyPriceAed] = useState(15000000);
+  const [selectedCrypto, setSelectedCrypto] = useState<'BTC' | 'ETH' | 'USDT'>('USDT');
 
-  const getStatusColor = (status) => {
-    switch (status) {
-      case 'confirmed': return '#10B981';
-      case 'scheduled': case 'exclusive': return '#3B82F6';
-      case 'in_progress': return '#F59E0B';
-      case 'pending': case 'off_market': return '#8B5CF6';
-      default: return '#6B7280';
-    }
-  };
+  const btcRateAed = 245000;
+  const ethRateAed = 12500;
+  const usdtRateAed = 3.6725;
+
+  const cryptoRequired = selectedCrypto === 'BTC'
+    ? (propertyPriceAed / btcRateAed).toFixed(4)
+    : selectedCrypto === 'ETH'
+    ? (propertyPriceAed / ethRateAed).toFixed(2)
+    : (propertyPriceAed / usdtRateAed).toFixed(2);
+
+  // Feature 3: Chauffeur & Jet
+  const [vipGuests, setVipGuests] = useState([
+    { id: 'VIP-01', client: 'Sheikh Mansoor Family Office', service: 'Rolls Royce Phantom Chauffeur', date: '2026-08-26', itinerary: 'Emirates Hills Mansions', status: 'CONFIRMED' },
+    { id: 'VIP-02', client: 'Lord Sterling Holdings', service: 'Helicopter Viewing Tour (DWC)', date: '2026-08-28', itinerary: 'Palm Jumeirah & World Islands', status: 'PILOT_RESERVED' },
+  ]);
 
   return (
-    <div className="assistant-dashboard kairos">
-      <div className="assistant-header">
-        <div className="assistant-avatar" style={{ background: 'linear-gradient(135deg, var(--accent-gold, #D97706) 0%, var(--color-b45309, #B45309) 100%)' }}>
-          <Crown size={28} />
-        </div>
-        <div className="assistant-info">
-          <h2>Kairos - Luxury Concierge & VIP Experience</h2>
-          <p>Curates personalized services for high-net-worth clients: viewing schedules, interior design partners, visa/payment coordination, creating white-glove service</p>
-        </div>
-        <div className="assistant-status online">
-          <span className="status-dot"></span>
-          Active
-        </div>
-      </div>
-
-      <div className="quick-stats">
-        <div className="stat-card">
-          <div className="stat-icon" style={{ background: 'rgba(139, 92, 246, 0.2)', color: 'var(--accent-purple, #8B5CF6)' }}>
-            <Crown size={20} />
+    <div className="crm-container" style={{ maxWidth: '100%', padding: '0.5rem' }}>
+      {/* Header */}
+      <div style={{ background: 'linear-gradient(135deg, #831843 0%, #500724 100%)', color: '#FFFFFF', padding: '1.25rem 1.5rem', borderRadius: '16px', marginBottom: '1.25rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1rem' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+          <div style={{ width: '48px', height: '48px', borderRadius: '12px', background: 'linear-gradient(135deg, #EC4899 0%, #BE185D 100%)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.5rem' }}>
+            💎
           </div>
-          <div className="stat-content">
-            <span className="stat-value">24</span>
-            <span className="stat-label">VIP Clients</span>
+          <div>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+              <h2 style={{ margin: 0, fontSize: '1.3rem', fontWeight: 800 }}>Kairos AI — Luxury HNWI Wealth Advisory</h2>
+              <span style={{ fontSize: '0.7rem', background: 'rgba(255, 255, 255, 0.15)', padding: '2px 8px', borderRadius: '4px', color: '#FBCFE8', fontWeight: 800 }}>
+                Ultra-Luxury Private Client Group
+              </span>
+            </div>
+            <p style={{ margin: '0.2rem 0 0 0', fontSize: '0.82rem', color: '#FCE7F3' }}>
+              UAE 10-Year Golden Visa qualification calculator, crypto real estate payment locks, and VIP jet/chauffeur viewings.
+            </p>
           </div>
-          <span className="stat-change positive">8 Platinum</span>
-        </div>
-        <div className="stat-card">
-          <div className="stat-icon" style={{ background: 'rgba(245, 158, 11, 0.2)', color: 'var(--accent-gold, #F59E0B)' }}>
-            <Gift size={20} />
-          </div>
-          <div className="stat-content">
-            <span className="stat-value">12</span>
-            <span className="stat-label">Active Services</span>
-          </div>
-          <span className="stat-change">4 this week</span>
-        </div>
-        <div className="stat-card">
-          <div className="stat-icon" style={{ background: 'rgba(16, 185, 129, 0.2)', color: 'var(--accent-green, #10B981)' }}>
-            <Star size={20} />
-          </div>
-          <div className="stat-content">
-            <span className="stat-value">AED 320M</span>
-            <span className="stat-label">Portfolio Value</span>
-          </div>
-          <span className="stat-change positive"><ArrowUp size={14} /> 15%</span>
-        </div>
-        <div className="stat-card">
-          <div className="stat-icon" style={{ background: 'rgba(217, 119, 6, 0.2)', color: 'var(--accent-gold, #D97706)' }}>
-            <Heart size={20} />
-          </div>
-          <div className="stat-content">
-            <span className="stat-value">98%</span>
-            <span className="stat-label">Satisfaction</span>
-          </div>
-          <span className="stat-change positive">World class</span>
         </div>
       </div>
 
-      <div className="assistant-tabs">
-        {['vip', 'concierge', 'exclusive', 'partners', 'docs'].map(tab => (
-          <button
-            key={tab}
-            className={`tab-btn ${activeTab === tab ? 'active' : ''}`}
-            onClick={() => setActiveTab(tab)}
-          >
-            {tab === 'docs' ? 'Documentation' : tab === 'vip' ? 'VIP Clients' : tab.charAt(0).toUpperCase() + tab.slice(1)}
-          </button>
-        ))}
+      {/* Tabs */}
+      <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap', background: '#FFFFFF', padding: '8px 12px', borderRadius: '12px', border: '1px solid #E2E8F0', marginBottom: '1.25rem' }}>
+        <button onClick={() => setActiveTab('golden-visa')} style={{ padding: '6px 12px', borderRadius: '6px', border: activeTab === 'golden-visa' ? '1px solid #BE185D' : '1px solid transparent', background: activeTab === 'golden-visa' ? '#BE185D' : '#F8FAFC', color: activeTab === 'golden-visa' ? '#FFF' : '#334155', fontWeight: 800, fontSize: '0.8rem', cursor: 'pointer' }}>
+          3.25.1 UAE Golden Visa Eligibility Tool
+        </button>
+        <button onClick={() => setActiveTab('crypto')} style={{ padding: '6px 12px', borderRadius: '6px', border: activeTab === 'crypto' ? '1px solid #BE185D' : '1px solid transparent', background: activeTab === 'crypto' ? '#BE185D' : '#F8FAFC', color: activeTab === 'crypto' ? '#FFF' : '#334155', fontWeight: 800, fontSize: '0.8rem', cursor: 'pointer' }}>
+          3.25.2 Real Estate Crypto FX Simulator
+        </button>
+        <button onClick={() => setActiveTab('chauffeur')} style={{ padding: '6px 12px', borderRadius: '6px', border: activeTab === 'chauffeur' ? '1px solid #BE185D' : '1px solid transparent', background: activeTab === 'chauffeur' ? '#BE185D' : '#F8FAFC', color: activeTab === 'chauffeur' ? '#FFF' : '#334155', fontWeight: 800, fontSize: '0.8rem', cursor: 'pointer' }}>
+          3.25.3 Private Jet & Chauffeur Desk
+        </button>
+        <button onClick={() => setActiveTab('family-office')} style={{ padding: '6px 12px', borderRadius: '6px', border: activeTab === 'family-office' ? '1px solid #BE185D' : '1px solid transparent', background: activeTab === 'family-office' ? '#BE185D' : '#F8FAFC', color: activeTab === 'family-office' ? '#FFF' : '#334155', fontWeight: 800, fontSize: '0.8rem', cursor: 'pointer' }}>
+          3.25.4 Family Office Strategy Deck
+        </button>
       </div>
 
-      <div className="tab-content">
-        {activeTab === 'vip' && (
-          <div className="vip-view">
-            <div className="view-header">
-              <div className="search-box">
-                <Search size={16} />
-                <input type="text" placeholder="Search VIP clients..." />
+      {/* Tab 1: Golden Visa */}
+      {activeTab === 'golden-visa' && (
+        <div style={{ background: '#FFFFFF', padding: '1.5rem', borderRadius: '12px', border: '1px solid #E2E8F0' }}>
+          <h4 style={{ margin: '0 0 0.5rem 0', fontSize: '1rem', fontWeight: 800, color: '#1E293B' }}>
+            UAE 10-Year Real Estate Investor Golden Visa Eligibility Engine
+          </h4>
+          <p style={{ margin: '0 0 1.25rem 0', fontSize: '0.8rem', color: '#64748B' }}>
+            Statutory requirement: Minimum <strong>AED 2,000,000</strong> property value/equity owned directly under applicant's name.
+          </p>
+
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '1rem', marginBottom: '1.25rem' }}>
+            <div>
+              <label style={{ fontSize: '0.75rem', fontWeight: 800, color: '#64748B' }}>Total Property Valuation (AED)</label>
+              <input type="number" value={totalRealEstateEquity} onChange={e => setTotalRealEstateEquity(Number(e.target.value))} style={{ width: '100%', padding: '8px', borderRadius: '6px', border: '1px solid #CBD5E1', fontSize: '0.85rem', fontWeight: 700 }} />
+            </div>
+            <div>
+              <label style={{ fontSize: '0.75rem', fontWeight: 800, color: '#64748B' }}>Property Category</label>
+              <select value={isOffPlan ? 'OFF_PLAN' : 'READY'} onChange={e => setIsOffPlan(e.target.value === 'OFF_PLAN')} style={{ width: '100%', padding: '8px', borderRadius: '6px', border: '1px solid #CBD5E1', fontSize: '0.85rem' }}>
+                <option value="READY">Ready Property (Title Deed Issued)</option>
+                <option value="OFF_PLAN">Off-Plan (Oqood Initial Contract)</option>
+              </select>
+            </div>
+          </div>
+
+          <div style={{ background: isGoldenVisaEligible ? '#ECFDF5' : '#FEF2F2', border: `1px solid ${isGoldenVisaEligible ? '#A7F3D0' : '#FECACA'}`, padding: '1.25rem', borderRadius: '8px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <div>
+              <div style={{ fontSize: '1.1rem', fontWeight: 900, color: isGoldenVisaEligible ? '#065F46' : '#991B1B' }}>
+                {isGoldenVisaEligible ? '✓ 100% ELIGIBLE FOR 10-YEAR UAE GOLDEN VISA' : '✗ BELOW AED 2,000,000 STATUTORY THRESHOLD'}
               </div>
-              <button className="add-btn"><Plus size={16} /> Add VIP</button>
+              <div style={{ fontSize: '0.78rem', color: '#475569', marginTop: '4px' }}>
+                Total Eligible Equity: <strong>AED {effectiveEquity.toLocaleString()}</strong> | Eligible for spouse, children, and domestic staff sponsorship.
+              </div>
             </div>
-            <div className="vip-grid">
-              {VIP_CLIENTS.map(client => (
-                <div key={client.id} className="vip-card">
-                  <div className="vip-header">
-                    <div className="vip-avatar">
-                      <Crown size={20} style={{ color: getTierColor(client.tier) }} />
-                    </div>
-                    <div className="vip-info">
-                      <h4>{client.name}</h4>
-                      <span className="vip-tier" style={{ color: getTierColor(client.tier) }}>{client.tier}</span>
-                    </div>
-                  </div>
-                  <div className="vip-stats">
-                    <span>Portfolio: {client.portfolio}</span>
-                    <span>{client.properties} properties</span>
-                  </div>
-                  <div className="vip-preferences">
-                    {client.preferences.map((pref, idx) => (
-                      <span key={idx} className="preference-tag">{pref}</span>
-                    ))}
-                  </div>
-                  <div className="vip-footer">
-                    <span><Clock size={12} /> {client.lastContact}</span>
-                    <div className="vip-actions">
-                      <button><Phone size={14} /></button>
-                      <button><Mail size={14} /></button>
-                    </div>
-                  </div>
-                </div>
-              ))}
+            {isGoldenVisaEligible && (
+              <button onClick={() => alert('Generated Golden Visa ICP Application Packet.')} style={{ background: '#047857', color: '#FFF', border: 'none', borderRadius: '8px', padding: '8px 16px', fontWeight: 800, fontSize: '0.8rem', cursor: 'pointer' }}>
+                Generate ICP Application Pack
+              </button>
+            )}
+          </div>
+        </div>
+      )}
+
+      {/* Tab 2: Crypto FX */}
+      {activeTab === 'crypto' && (
+        <div style={{ background: '#FFFFFF', padding: '1.5rem', borderRadius: '12px', border: '1px solid #E2E8F0' }}>
+          <h4 style={{ margin: '0 0 0.5rem 0', fontSize: '1rem', fontWeight: 800, color: '#1E293B' }}>
+            Real Estate Crypto FX Rate Lock & Escrow Conversion
+          </h4>
+          <p style={{ margin: '0 0 1.25rem 0', fontSize: '0.8rem', color: '#64748B' }}>
+            Fully compliant with VARA (Virtual Assets Regulatory Authority) & UAE Central Bank crypto-to-fiat escrow transfers.
+          </p>
+
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem', marginBottom: '1.25rem' }}>
+            <div>
+              <label style={{ fontSize: '0.75rem', fontWeight: 800, color: '#64748B' }}>Property Price in AED</label>
+              <input type="number" value={propertyPriceAed} onChange={e => setPropertyPriceAed(Number(e.target.value))} style={{ width: '100%', padding: '8px', borderRadius: '6px', border: '1px solid #CBD5E1', fontSize: '0.85rem', fontWeight: 700 }} />
+            </div>
+            <div>
+              <label style={{ fontSize: '0.75rem', fontWeight: 800, color: '#64748B' }}>Cryptocurrency Asset</label>
+              <select value={selectedCrypto} onChange={e => setSelectedCrypto(e.target.value as any)} style={{ width: '100%', padding: '8px', borderRadius: '6px', border: '1px solid #CBD5E1', fontSize: '0.85rem', fontWeight: 700 }}>
+                <option value="USDT">USDT (Tether USD) - 1:3.6725 Peg</option>
+                <option value="BTC">BTC (Bitcoin)</option>
+                <option value="ETH">ETH (Ethereum)</option>
+              </select>
             </div>
           </div>
-        )}
 
-        {activeTab === 'concierge' && (
-          <div className="concierge-view">
-            <div className="view-header">
-              <h3>Active Concierge Services</h3>
-              <button className="add-btn"><Plus size={16} /> New Request</button>
+          <div style={{ background: '#FDF2F8', border: '1px solid #FBCFE8', padding: '1.25rem', borderRadius: '8px' }}>
+            <div style={{ fontSize: '0.75rem', color: '#9D174D', fontWeight: 800 }}>ESTIMATED CRYPTO CONVERSION LOCK (15-MIN GUARANTEE)</div>
+            <div style={{ fontSize: '1.8rem', fontWeight: 900, color: '#831843', marginTop: '4px' }}>
+              {cryptoRequired} {selectedCrypto}
             </div>
-            <div className="concierge-list">
-              {CONCIERGE_SERVICES.map(service => (
-                <div key={service.id} className="concierge-card">
-                  <div className="concierge-icon">
-                    <Gift size={24} />
-                  </div>
-                  <div className="concierge-content">
-                    <h4>{service.service}</h4>
-                    <p className="concierge-client">{service.client}</p>
-                    <div className="concierge-meta">
-                      <span><Calendar size={12} /> {service.date}</span>
-                      <span><Users size={12} /> {service.partner}</span>
-                    </div>
-                  </div>
-                  <span className="concierge-status" style={{ color: getStatusColor(service.status) }}>
-                    {service.status.replace('_', ' ')}
-                  </span>
-                </div>
-              ))}
+            <div style={{ fontSize: '0.75rem', color: '#9D174D', marginTop: '4px' }}>
+              Settlement Currency: AED into White Caves Corporate Wio Escrow Account
             </div>
           </div>
-        )}
+        </div>
+      )}
 
-        {activeTab === 'exclusive' && (
-          <div className="exclusive-view">
-            <h3>Exclusive & Off-Market Listings</h3>
-            <div className="exclusive-grid">
-              {EXCLUSIVE_LISTINGS.map(listing => (
-                <div key={listing.id} className="exclusive-card">
-                  <div className="exclusive-status" style={{ background: getStatusColor(listing.status) }}>
-                    {listing.status.replace('_', ' ')}
-                  </div>
-                  <h4>{listing.property}</h4>
-                  <div className="exclusive-price">{listing.price}</div>
-                  <div className="exclusive-features">
-                    {listing.features.map((feature, idx) => (
-                      <span key={idx} className="feature-tag">{feature}</span>
-                    ))}
-                  </div>
-                  <button className="view-btn"><Eye size={14} /> View Details</button>
-                </div>
+      {/* Tab 3: Chauffeur & Jet */}
+      {activeTab === 'chauffeur' && (
+        <div style={{ background: '#FFFFFF', borderRadius: '12px', border: '1px solid #E2E8F0', overflow: 'hidden' }}>
+          <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left', fontSize: '0.85rem' }}>
+            <thead>
+              <tr style={{ background: '#F8FAFC', borderBottom: '1px solid #E2E8F0', color: '#475569', fontWeight: 800 }}>
+                <th style={{ padding: '10px 14px' }}>VIP Guest</th>
+                <th style={{ padding: '10px 14px' }}>Concierge Transport</th>
+                <th style={{ padding: '10px 14px' }}>Date</th>
+                <th style={{ padding: '10px 14px' }}>Itinerary</th>
+                <th style={{ padding: '10px 14px' }}>Status</th>
+              </tr>
+            </thead>
+            <tbody>
+              {vipGuests.map(v => (
+                <tr key={v.id} style={{ borderBottom: '1px solid #F1F5F9' }}>
+                  <td style={{ padding: '10px 14px', fontWeight: 800, color: '#1E293B' }}>{v.client}</td>
+                  <td style={{ padding: '10px 14px', color: '#BE185D', fontWeight: 700 }}>{v.service}</td>
+                  <td style={{ padding: '10px 14px', color: '#64748B' }}>{v.date}</td>
+                  <td style={{ padding: '10px 14px', color: '#334155' }}>{v.itinerary}</td>
+                  <td style={{ padding: '10px 14px' }}>
+                    <span style={{ padding: '2px 8px', borderRadius: '4px', fontSize: '0.72rem', fontWeight: 800, background: '#ECFDF5', color: '#047857' }}>
+                      {v.status}
+                    </span>
+                  </td>
+                </tr>
               ))}
-            </div>
-          </div>
-        )}
+            </tbody>
+          </table>
+        </div>
+      )}
 
-        {activeTab === 'partners' && (
-          <div className="partners-view">
-            <h3>Premium Partner Network</h3>
-            <div className="partners-grid">
-              {PARTNER_NETWORK.map(partner => (
-                <div key={partner.id} className="partner-card">
-                  <div className="partner-header">
-                    <h4>{partner.name}</h4>
-                    <span className="partner-rating">⭐ {partner.rating}</span>
-                  </div>
-                  <p className="partner-category">{partner.category}</p>
-                  <p className="partner-services">{partner.services}</p>
-                </div>
-              ))}
-            </div>
-          </div>
-        )}
-
-        {activeTab === 'docs' && (
-          <AssistantDocsTab 
-            assistantId="kairos" 
-            assistantName="Kairos" 
-            assistantColor="#D97706" 
-          />
-        )}
-      </div>
+      {/* Tab 4: Family Office */}
+      {activeTab === 'family-office' && (
+        <div style={{ background: '#FFFFFF', padding: '1.5rem', borderRadius: '12px', border: '1px solid #E2E8F0' }}>
+          <h4 style={{ margin: '0 0 0.5rem 0', fontSize: '1rem', fontWeight: 800, color: '#1E293B' }}>
+            Family Office Multi-Asset Real Estate Deck
+          </h4>
+          <p style={{ fontSize: '0.85rem', color: '#64748B' }}>
+            Tailored investment thesis and risk diversification across commercial, residential, and prime off-plan portfolios.
+          </p>
+        </div>
+      )}
     </div>
   );
 };

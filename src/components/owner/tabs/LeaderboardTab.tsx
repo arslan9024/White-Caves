@@ -193,7 +193,11 @@ interface TrackLeaderboardItem {
 
 const LeaderboardTab: React.FC<LeaderboardTabProps> = ({ data }) => {
   const [activeTrack, setActiveTrack] = useState<'sales' | 'leasing'>('sales');
-  const dualTrack: any = {
+  interface DualTrackData {
+    trackASales: TrackLeaderboardItem[];
+    trackBLeasing: TrackLeaderboardItem[];
+  }
+  const dualTrack: DualTrackData = {
     trackASales: [
       { id: '1', name: 'Agent 1', unitsTransacted: 5, gwcRevenue: 500000, tier: 'gold', milestoneBadge: 'top_performer' }
     ],

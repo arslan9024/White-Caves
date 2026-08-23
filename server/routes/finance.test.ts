@@ -40,9 +40,20 @@ const { mockPrisma } = vi.hoisted(() => {
         findUnique: fn().mockResolvedValue(null),
       },
       invoice: {
-        aggregate: fn().mockResolvedValue({ _sum: { vatAmount: 500 } }),
+        aggregate: fn().mockResolvedValue({ _sum: { vatAmount: 500, amount: 10000 } }),
         create: fn().mockResolvedValue({ id: 'inv-1', pdfUrl: '/uploads/inv-1.pdf' }),
         findUnique: fn().mockResolvedValue({ id: 'inv-1', pdfUrl: '/uploads/inv-1.pdf' }),
+      },
+      expense: {
+        aggregate: fn().mockResolvedValue({ _sum: { amount: 2000 } }),
+        findMany: fn().mockResolvedValue([
+          { id: 'exp-1', amount: 1000, status: 'pending', notes: 'DIRECTORS_LOAN personal card' }
+        ]),
+        findUnique: fn().mockResolvedValue({ id: 'exp-1', amount: 1000 }),
+        count: fn().mockResolvedValue(1),
+        create: fn().mockResolvedValue({ id: 'exp-1', amount: 1000 }),
+        update: fn().mockResolvedValue({ id: 'exp-1', amount: 1000 }),
+        delete: fn().mockResolvedValue({ id: 'exp-1' }),
       },
       activity: {
         create: fn().mockResolvedValue({ id: 'act-1' }),
@@ -186,17 +197,51 @@ describe('Finance Routes — /api/finance', () => {
     });
   });
 
-  // ─── VAT & Invoices ──────────────────────────────────────────────────
+  // ─── VAT & Invoices & Theodora Endpoints ─────────────────────────────
   describe('GET /api/finance/vat-return', () => {
     it('returns VAT return metrics', async () => {
       const res = await request(createApp('owner')).get('/api/finance/vat-return');
       expect(res.status).toBe(200);
       expect(res.body.success).toBe(true);
       expect(res.body.data).toHaveProperty('outputVAT', 500);
-      expect(res.body.data).toHaveProperty('inputVAT', 0);
-      expect(res.body.data).toHaveProperty('netVAT', 500);
+      expect(res.body.data).toHaveProperty('inputVAT', 100);
+      expect(res.body.data).toHaveProperty('netVAT', 400);
     });
   });
+
+  describe('GET /api/finance/expense-catalog', () => {
+    it('returns 42 master expense categories and items', async () => {
+      const res = await request(createApp('owner')).get('/api/finance/expense-catalog');
+      expect(res.status).toBe(200);
+      expect(res.body.success).toBe(true);
+      expect(res.body.data).toHaveProperty('company_name', 'White Caves Real Estate LLC');
+      expect(res.body.data.expense_categories).toHaveLength(5);
+    });
+  });
+
+  describe('GET /api/finance/directors-loan-summary', () => {
+    it('returns director loan advances and outstanding balance', async () => {
+      const res = await request(createApp('owner')).get('/api/finance/directors-loan-summary');
+      expect(res.status).toBe(200);
+      expect(res.body.success).toBe(true);
+      expect(res.body.data).toHaveProperty('totalAdvances', 1000);
+      expect(res.body.data).toHaveProperty('outstanding', 1000);
+    });
+  });
+
+  describe('GET /api/finance/corporate-tax-summary', () => {
+    it('returns UAE Corporate Tax summary with small business relief calculation', async () => {
+      const res = await request(createApp('owner')).get('/api/finance/corporate-tax-summary?taxYear=2026');
+      expect(res.status).toBe(200);
+      expect(res.body.success).toBe(true);
+      expect(res.body.data).toHaveProperty('totalRevenue', 10000);
+      expect(res.body.data).toHaveProperty('deductibleExpenses', 2000);
+      expect(res.body.data).toHaveProperty('netTaxableProfit', 8000);
+      expect(res.body.data).toHaveProperty('qualifiesForSmallBusinessRelief', true);
+      expect(res.body.data).toHaveProperty('estimatedCorporateTaxDue', 0);
+    });
+  });
+
 
   describe('POST /api/finance/invoices/tax', () => {
     it('validates missing fields', async () => {

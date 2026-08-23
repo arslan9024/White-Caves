@@ -381,7 +381,7 @@ export const HenryEmiratesIdScannerView: FC = () => {
     setTimeout(() => setStatusMsg(null), 3000);
   };
 
-  const handleUpdateField = (field: keyof EmiratesIdExtractedData, val: any) => {
+  const handleUpdateField = (field: keyof EmiratesIdExtractedData, val: EmiratesIdExtractedData[keyof EmiratesIdExtractedData]) => {
     setExtractedData(prev => {
       const updated = { ...prev, [field]: val };
       henryEmiratesIdScannerService.setCachedEmiratesId(updated);
