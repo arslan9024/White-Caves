@@ -9,10 +9,18 @@ import AssistantDocsTab from './shared/AssistantDocsTab';
 import KYCAMLDashboard from './shared/KYCAMLDashboard';
 import './AssistantDashboard.css';
 
+export interface AuthUser {
+  id?: string;
+  name?: string;
+  email?: string;
+  role?: string;
+  [key: string]: unknown;
+}
+
 interface EvangelineProps {
   moduleId?: string;
   role?: string;
-  user?: any;
+  user?: AuthUser;
 }
 
 export const EvangelineLegalCRM: React.FC<EvangelineProps> = ({ moduleId }) => {

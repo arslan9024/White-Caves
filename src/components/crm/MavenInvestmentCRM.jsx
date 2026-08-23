@@ -5,10 +5,18 @@ import {
 } from 'lucide-react';
 import './AssistantDashboard.css';
 
+export interface AuthUser {
+  id?: string;
+  name?: string;
+  email?: string;
+  role?: string;
+  [key: string]: unknown;
+}
+
 interface MavenProps {
   moduleId?: string;
   role?: string;
-  user?: any;
+  user?: AuthUser;
 }
 
 export const MavenInvestmentCRM: React.FC<MavenProps> = ({ moduleId }) => {

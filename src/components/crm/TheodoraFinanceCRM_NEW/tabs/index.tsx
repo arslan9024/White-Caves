@@ -13,10 +13,18 @@ import FinancialStatementsTab from './FinancialStatementsTab';
 import AssistantLifecycleTab from '../../shared/AssistantLifecycleTab';
 import '../TheodoraFinanceCRM.css';
 
+export interface AuthUser {
+  id?: string;
+  name?: string;
+  email?: string;
+  role?: string;
+  [key: string]: unknown;
+}
+
 interface TheodoraFinanceCRMProps {
   moduleId?: string;
   role?: string;
-  user?: any;
+  user?: AuthUser;
 }
 
 const TheodoraFinanceCRM: React.FC<TheodoraFinanceCRMProps> = ({ moduleId }) => {

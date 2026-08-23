@@ -8,10 +8,18 @@ import {
 import AssistantDocsTab from './shared/AssistantDocsTab';
 import './AssistantDashboard.css';
 
+export interface AuthUser {
+  id?: string;
+  name?: string;
+  email?: string;
+  role?: string;
+  [key: string]: unknown;
+}
+
 interface AtlasProps {
   moduleId?: string;
   role?: string;
-  user?: any;
+  user?: AuthUser;
 }
 
 export const AtlasProjectsCRM: React.FC<AtlasProps> = ({ moduleId }) => {

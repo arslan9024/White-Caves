@@ -5,10 +5,18 @@ import {
 } from 'lucide-react';
 import './AssistantDashboard.css';
 
+export interface AuthUser {
+  id?: string;
+  name?: string;
+  email?: string;
+  role?: string;
+  [key: string]: unknown;
+}
+
 interface SentinelProps {
   moduleId?: string;
   role?: string;
-  user?: any;
+  user?: AuthUser;
 }
 
 export const SentinelPropertyCRM: React.FC<SentinelProps> = ({ moduleId }) => {

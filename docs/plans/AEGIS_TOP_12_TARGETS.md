@@ -1,7 +1,7 @@
 # 🛡️ AEGIS Autopilot — Top 12 Critical Target Upgrades
 
 > **Rule of Continuous Perfection**: Each turn dynamically isolates and resolves the 12 most critical system targets across Server, Frontend, Security, and Quality.
-> **Timestamp**: 2026-08-19T21:30:48.390Z
+> **Timestamp**: 2026-08-23T21:28:55.267Z
 > **Total Active Targets**: 12 / 12
 
 ---
@@ -10,80 +10,80 @@
 
 | # | Layer | Category | File | Criticality | Target Action |
 |---|-------|----------|------|-------------|---------------|
-| **1** | `Frontend` | TypeScript Strictness | [`HenryTenancyContractScannerView.tsx`](file:///C:\Users\HP\Documents\My Web Sites\AntigravityWC\White-Caves\src\components\crm\HenryDocumentStudio\HenryTenancyContractScannerView.tsx) | **MEDIUM** (Score: 100) | Replace explicit `any` with strict interface or generic constraint. |
-| **2** | `Frontend` | TypeScript Strictness | [`HenryTitleDeedScannerView.tsx`](file:///C:\Users\HP\Documents\My Web Sites\AntigravityWC\White-Caves\src\components\crm\HenryDocumentStudio\HenryTitleDeedScannerView.tsx) | **MEDIUM** (Score: 100) | Replace explicit `any` with strict interface or generic constraint. |
-| **3** | `Frontend` | TypeScript Strictness | [`HenryTenancyContractModal.logic.ts`](file:///C:\Users\HP\Documents\My Web Sites\AntigravityWC\White-Caves\src\components\crm\HenryDocumentStudio\logic\HenryTenancyContractModal.logic.ts) | **MEDIUM** (Score: 100) | Replace explicit `any` with strict interface or generic constraint. |
-| **4** | `Frontend` | TypeScript Strictness | [`ConversationsTab.tsx`](file:///C:\Users\HP\Documents\My Web Sites\AntigravityWC\White-Caves\src\components\crm\NinaWhatsAppBotCRM_NEW\tabs\ConversationsTab.tsx) | **MEDIUM** (Score: 100) | Replace explicit `any` with strict interface or generic constraint. |
-| **5** | `Frontend` | Test Coverage Gap | [`CavesFloatingWhatsApp.style.ts`](file:///C:\Users\HP\Documents\My Web Sites\AntigravityWC\White-Caves\src\components\CavesFloatingWhatsApp\styles\CavesFloatingWhatsApp.style.ts) | **MEDIUM** (Score: 75) | Create test file for src/components/CavesFloatingWhatsApp/styles/CavesFloatingWhatsApp.style.ts with Vitest/Supertest assertions. |
-| **6** | `Frontend` | Test Coverage Gap | [`CavesWhatsAppWidget.logic.ts`](file:///C:\Users\HP\Documents\My Web Sites\AntigravityWC\White-Caves\src\components\CavesWhatsAppWidget\CavesWhatsAppWidget.logic.ts) | **MEDIUM** (Score: 75) | Create test file for src/components/CavesWhatsAppWidget/CavesWhatsAppWidget.logic.ts with Vitest/Supertest assertions. |
-| **7** | `Frontend` | Test Coverage Gap | [`CavesWhatsAppWidget.style.ts`](file:///C:\Users\HP\Documents\My Web Sites\AntigravityWC\White-Caves\src\components\CavesWhatsAppWidget\CavesWhatsAppWidget.style.ts) | **MEDIUM** (Score: 75) | Create test file for src/components/CavesWhatsAppWidget/CavesWhatsAppWidget.style.ts with Vitest/Supertest assertions. |
-| **8** | `Frontend` | Test Coverage Gap | [`CavesWhatsAppWidget.tsx`](file:///C:\Users\HP\Documents\My Web Sites\AntigravityWC\White-Caves\src\components\CavesWhatsAppWidget\CavesWhatsAppWidget.tsx) | **MEDIUM** (Score: 75) | Create test file for src/components/CavesWhatsAppWidget/CavesWhatsAppWidget.tsx with Vitest/Supertest assertions. |
-| **9** | `Frontend` | TypeScript Strictness | [`ModuleViewport.tsx`](file:///C:\Users\HP\Documents\My Web Sites\AntigravityWC\White-Caves\src\components\dashboard\viewport\ModuleViewport.tsx) | **MEDIUM** (Score: 100) | Replace explicit `any` with strict interface or generic constraint. |
-| **10** | `Frontend` | TypeScript Strictness | [`PdcDepositReminderCalendar.tsx`](file:///C:\Users\HP\Documents\My Web Sites\AntigravityWC\White-Caves\src\components\finance\PdcDepositReminderCalendar\PdcDepositReminderCalendar.tsx) | **MEDIUM** (Score: 100) | Replace explicit `any` with strict interface or generic constraint. |
-| **11** | `Frontend` | TypeScript Strictness | [`VatInvoiceGenerator.tsx`](file:///C:\Users\HP\Documents\My Web Sites\AntigravityWC\White-Caves\src\components\finance\VatInvoiceGenerator\VatInvoiceGenerator.tsx) | **MEDIUM** (Score: 100) | Replace explicit `any` with strict interface or generic constraint. |
-| **12** | `Frontend` | TypeScript Strictness | [`LeaderboardTab.tsx`](file:///C:\Users\HP\Documents\My Web Sites\AntigravityWC\White-Caves\src\components\owner\tabs\LeaderboardTab.tsx) | **MEDIUM** (Score: 100) | Replace explicit `any` with strict interface or generic constraint. |
+| **1** | `Frontend` | TypeScript Strictness | [`index.tsx`](file:///C:\Users\HP\Documents\My Web Sites\AntigravityWC\White-Caves\src\components\crm\TheodoraFinanceCRM_NEW\tabs\index.tsx) | **MEDIUM** (Score: 100) | Replace explicit `any` with strict interface or generic constraint. |
+| **2** | `Frontend` | TypeScript Strictness | [`VestaHandoverCRM.jsx`](file:///C:\Users\HP\Documents\My Web Sites\AntigravityWC\White-Caves\src\components\crm\VestaHandoverCRM.jsx) | **MEDIUM** (Score: 100) | Replace explicit `any` with strict interface or generic constraint. |
+| **3** | `Frontend` | TypeScript Strictness | [`CavesFloatingSearch.logic.ts`](file:///C:\Users\HP\Documents\My Web Sites\AntigravityWC\White-Caves\src\components\shared\CavesFloatingSearch.logic.ts) | **MEDIUM** (Score: 100) | Replace explicit `any` with strict interface or generic constraint. |
+| **4** | `Frontend` | TypeScript Strictness | [`TranslationContext.tsx`](file:///C:\Users\HP\Documents\My Web Sites\AntigravityWC\White-Caves\src\context\TranslationContext.tsx) | **MEDIUM** (Score: 100) | Replace explicit `any` with strict interface or generic constraint. |
+| **5** | `Frontend` | Test Coverage Gap | [`LanguageSwitcherPill.logic.ts`](file:///C:\Users\HP\Documents\My Web Sites\AntigravityWC\White-Caves\src\components\common\LanguageSwitcherPill\logic\LanguageSwitcherPill.logic.ts) | **MEDIUM** (Score: 75) | Create test file for src/components/common/LanguageSwitcherPill/logic/LanguageSwitcherPill.logic.ts with Vitest/Supertest assertions. |
+| **6** | `Frontend` | Test Coverage Gap | [`LanguageSwitcherPill.style.ts`](file:///C:\Users\HP\Documents\My Web Sites\AntigravityWC\White-Caves\src\components\common\LanguageSwitcherPill\styles\LanguageSwitcherPill.style.ts) | **MEDIUM** (Score: 75) | Create test file for src/components/common/LanguageSwitcherPill/styles/LanguageSwitcherPill.style.ts with Vitest/Supertest assertions. |
+| **7** | `Frontend` | Test Coverage Gap | [`PrefetchLink.tsx`](file:///C:\Users\HP\Documents\My Web Sites\AntigravityWC\White-Caves\src\components\common\PrefetchLink.tsx) | **MEDIUM** (Score: 75) | Create test file for src/components/common/PrefetchLink.tsx with Vitest/Supertest assertions. |
+| **8** | `Frontend` | Test Coverage Gap | [`PropertyCard.data.ts`](file:///C:\Users\HP\Documents\My Web Sites\AntigravityWC\White-Caves\src\components\common\PropertyCard\data\PropertyCard.data.ts) | **MEDIUM** (Score: 75) | Create test file for src/components/common/PropertyCard/data/PropertyCard.data.ts with Vitest/Supertest assertions. |
+| **9** | `Frontend` | TypeScript Strictness | [`JourneyShell.tsx`](file:///C:\Users\HP\Documents\My Web Sites\AntigravityWC\White-Caves\src\features\journeys\components\JourneyShell.tsx) | **MEDIUM** (Score: 100) | Replace explicit `any` with strict interface or generic constraint. |
+| **10** | `Frontend` | TypeScript Strictness | [`StepRenderer.tsx`](file:///C:\Users\HP\Documents\My Web Sites\AntigravityWC\White-Caves\src\features\journeys\components\StepRenderer.tsx) | **MEDIUM** (Score: 100) | Replace explicit `any` with strict interface or generic constraint. |
+| **11** | `Frontend` | TypeScript Strictness | [`useProfileScheduler.ts`](file:///C:\Users\HP\Documents\My Web Sites\AntigravityWC\White-Caves\src\hooks\useProfileScheduler.ts) | **MEDIUM** (Score: 100) | Replace explicit `any` with strict interface or generic constraint. |
+| **12** | `Frontend` | TypeScript Strictness | [`HenryEmiratesIdScannerService.ts`](file:///C:\Users\HP\Documents\My Web Sites\AntigravityWC\White-Caves\src\services\HenryEmiratesIdScannerService.ts) | **MEDIUM** (Score: 100) | Replace explicit `any` with strict interface or generic constraint. |
 
 ---
 
 ## 🔍 Target Breakdown & Specs
 
 ### 1. [Frontend] Untyped 'any' usage detected
-- **Target File**: [`src/components/crm/HenryDocumentStudio/HenryTenancyContractScannerView.tsx:274`](file:///C:\Users\HP\Documents\My Web Sites\AntigravityWC\White-Caves\src\components\crm\HenryDocumentStudio\HenryTenancyContractScannerView.tsx#L274)
+- **Target File**: [`src/components/crm/TheodoraFinanceCRM_NEW/tabs/index.tsx:19`](file:///C:\Users\HP\Documents\My Web Sites\AntigravityWC\White-Caves\src\components\crm\TheodoraFinanceCRM_NEW\tabs\index.tsx#L19)
 - **Layer**: Frontend | **Category**: TypeScript Strictness | **Score**: 100
 - **Required Refactor**: Replace explicit `any` with strict interface or generic constraint.
 
 ### 2. [Frontend] Untyped 'any' usage detected
-- **Target File**: [`src/components/crm/HenryDocumentStudio/HenryTitleDeedScannerView.tsx:304`](file:///C:\Users\HP\Documents\My Web Sites\AntigravityWC\White-Caves\src\components\crm\HenryDocumentStudio\HenryTitleDeedScannerView.tsx#L304)
+- **Target File**: [`src/components/crm/VestaHandoverCRM.jsx:11`](file:///C:\Users\HP\Documents\My Web Sites\AntigravityWC\White-Caves\src\components\crm\VestaHandoverCRM.jsx#L11)
 - **Layer**: Frontend | **Category**: TypeScript Strictness | **Score**: 100
 - **Required Refactor**: Replace explicit `any` with strict interface or generic constraint.
 
 ### 3. [Frontend] Untyped 'any' usage detected
-- **Target File**: [`src/components/crm/HenryDocumentStudio/logic/HenryTenancyContractModal.logic.ts:61`](file:///C:\Users\HP\Documents\My Web Sites\AntigravityWC\White-Caves\src\components\crm\HenryDocumentStudio\logic\HenryTenancyContractModal.logic.ts#L61)
+- **Target File**: [`src/components/shared/CavesFloatingSearch.logic.ts:59`](file:///C:\Users\HP\Documents\My Web Sites\AntigravityWC\White-Caves\src\components\shared\CavesFloatingSearch.logic.ts#L59)
 - **Layer**: Frontend | **Category**: TypeScript Strictness | **Score**: 100
 - **Required Refactor**: Replace explicit `any` with strict interface or generic constraint.
 
 ### 4. [Frontend] Untyped 'any' usage detected
-- **Target File**: [`src/components/crm/NinaWhatsAppBotCRM_NEW/tabs/ConversationsTab.tsx:30`](file:///C:\Users\HP\Documents\My Web Sites\AntigravityWC\White-Caves\src\components\crm\NinaWhatsAppBotCRM_NEW\tabs\ConversationsTab.tsx#L30)
+- **Target File**: [`src/context/TranslationContext.tsx:21`](file:///C:\Users\HP\Documents\My Web Sites\AntigravityWC\White-Caves\src\context\TranslationContext.tsx#L21)
 - **Layer**: Frontend | **Category**: TypeScript Strictness | **Score**: 100
 - **Required Refactor**: Replace explicit `any` with strict interface or generic constraint.
 
-### 5. [Frontend] Frontend Component/Hook 'CavesFloatingWhatsApp.style' missing unit test file
-- **Target File**: [`src/components/CavesFloatingWhatsApp/styles/CavesFloatingWhatsApp.style.ts:1`](file:///C:\Users\HP\Documents\My Web Sites\AntigravityWC\White-Caves\src\components\CavesFloatingWhatsApp\styles\CavesFloatingWhatsApp.style.ts#L1)
+### 5. [Frontend] Frontend Component/Hook 'LanguageSwitcherPill.logic' missing unit test file
+- **Target File**: [`src/components/common/LanguageSwitcherPill/logic/LanguageSwitcherPill.logic.ts:1`](file:///C:\Users\HP\Documents\My Web Sites\AntigravityWC\White-Caves\src\components\common\LanguageSwitcherPill\logic\LanguageSwitcherPill.logic.ts#L1)
 - **Layer**: Frontend | **Category**: Test Coverage Gap | **Score**: 75
-- **Required Refactor**: Create test file for src/components/CavesFloatingWhatsApp/styles/CavesFloatingWhatsApp.style.ts with Vitest/Supertest assertions.
+- **Required Refactor**: Create test file for src/components/common/LanguageSwitcherPill/logic/LanguageSwitcherPill.logic.ts with Vitest/Supertest assertions.
 
-### 6. [Frontend] Frontend Component/Hook 'CavesWhatsAppWidget.logic' missing unit test file
-- **Target File**: [`src/components/CavesWhatsAppWidget/CavesWhatsAppWidget.logic.ts:1`](file:///C:\Users\HP\Documents\My Web Sites\AntigravityWC\White-Caves\src\components\CavesWhatsAppWidget\CavesWhatsAppWidget.logic.ts#L1)
+### 6. [Frontend] Frontend Component/Hook 'LanguageSwitcherPill.style' missing unit test file
+- **Target File**: [`src/components/common/LanguageSwitcherPill/styles/LanguageSwitcherPill.style.ts:1`](file:///C:\Users\HP\Documents\My Web Sites\AntigravityWC\White-Caves\src\components\common\LanguageSwitcherPill\styles\LanguageSwitcherPill.style.ts#L1)
 - **Layer**: Frontend | **Category**: Test Coverage Gap | **Score**: 75
-- **Required Refactor**: Create test file for src/components/CavesWhatsAppWidget/CavesWhatsAppWidget.logic.ts with Vitest/Supertest assertions.
+- **Required Refactor**: Create test file for src/components/common/LanguageSwitcherPill/styles/LanguageSwitcherPill.style.ts with Vitest/Supertest assertions.
 
-### 7. [Frontend] Frontend Component/Hook 'CavesWhatsAppWidget.style' missing unit test file
-- **Target File**: [`src/components/CavesWhatsAppWidget/CavesWhatsAppWidget.style.ts:1`](file:///C:\Users\HP\Documents\My Web Sites\AntigravityWC\White-Caves\src\components\CavesWhatsAppWidget\CavesWhatsAppWidget.style.ts#L1)
+### 7. [Frontend] Frontend Component/Hook 'PrefetchLink' missing unit test file
+- **Target File**: [`src/components/common/PrefetchLink.tsx:1`](file:///C:\Users\HP\Documents\My Web Sites\AntigravityWC\White-Caves\src\components\common\PrefetchLink.tsx#L1)
 - **Layer**: Frontend | **Category**: Test Coverage Gap | **Score**: 75
-- **Required Refactor**: Create test file for src/components/CavesWhatsAppWidget/CavesWhatsAppWidget.style.ts with Vitest/Supertest assertions.
+- **Required Refactor**: Create test file for src/components/common/PrefetchLink.tsx with Vitest/Supertest assertions.
 
-### 8. [Frontend] Frontend Component/Hook 'CavesWhatsAppWidget' missing unit test file
-- **Target File**: [`src/components/CavesWhatsAppWidget/CavesWhatsAppWidget.tsx:1`](file:///C:\Users\HP\Documents\My Web Sites\AntigravityWC\White-Caves\src\components\CavesWhatsAppWidget\CavesWhatsAppWidget.tsx#L1)
+### 8. [Frontend] Frontend Component/Hook 'PropertyCard.data' missing unit test file
+- **Target File**: [`src/components/common/PropertyCard/data/PropertyCard.data.ts:1`](file:///C:\Users\HP\Documents\My Web Sites\AntigravityWC\White-Caves\src\components\common\PropertyCard\data\PropertyCard.data.ts#L1)
 - **Layer**: Frontend | **Category**: Test Coverage Gap | **Score**: 75
-- **Required Refactor**: Create test file for src/components/CavesWhatsAppWidget/CavesWhatsAppWidget.tsx with Vitest/Supertest assertions.
+- **Required Refactor**: Create test file for src/components/common/PropertyCard/data/PropertyCard.data.ts with Vitest/Supertest assertions.
 
 ### 9. [Frontend] Untyped 'any' usage detected
-- **Target File**: [`src/components/dashboard/viewport/ModuleViewport.tsx:20`](file:///C:\Users\HP\Documents\My Web Sites\AntigravityWC\White-Caves\src\components\dashboard\viewport\ModuleViewport.tsx#L20)
+- **Target File**: [`src/features/journeys/components/JourneyShell.tsx:55`](file:///C:\Users\HP\Documents\My Web Sites\AntigravityWC\White-Caves\src\features\journeys\components\JourneyShell.tsx#L55)
 - **Layer**: Frontend | **Category**: TypeScript Strictness | **Score**: 100
 - **Required Refactor**: Replace explicit `any` with strict interface or generic constraint.
 
 ### 10. [Frontend] Untyped 'any' usage detected
-- **Target File**: [`src/components/finance/PdcDepositReminderCalendar/PdcDepositReminderCalendar.tsx:182`](file:///C:\Users\HP\Documents\My Web Sites\AntigravityWC\White-Caves\src\components\finance\PdcDepositReminderCalendar\PdcDepositReminderCalendar.tsx#L182)
+- **Target File**: [`src/features/journeys/components/StepRenderer.tsx:15`](file:///C:\Users\HP\Documents\My Web Sites\AntigravityWC\White-Caves\src\features\journeys\components\StepRenderer.tsx#L15)
 - **Layer**: Frontend | **Category**: TypeScript Strictness | **Score**: 100
 - **Required Refactor**: Replace explicit `any` with strict interface or generic constraint.
 
 ### 11. [Frontend] Untyped 'any' usage detected
-- **Target File**: [`src/components/finance/VatInvoiceGenerator/VatInvoiceGenerator.tsx:66`](file:///C:\Users\HP\Documents\My Web Sites\AntigravityWC\White-Caves\src\components\finance\VatInvoiceGenerator\VatInvoiceGenerator.tsx#L66)
+- **Target File**: [`src/hooks/useProfileScheduler.ts:30`](file:///C:\Users\HP\Documents\My Web Sites\AntigravityWC\White-Caves\src\hooks\useProfileScheduler.ts#L30)
 - **Layer**: Frontend | **Category**: TypeScript Strictness | **Score**: 100
 - **Required Refactor**: Replace explicit `any` with strict interface or generic constraint.
 
 ### 12. [Frontend] Untyped 'any' usage detected
-- **Target File**: [`src/components/owner/tabs/LeaderboardTab.tsx:196`](file:///C:\Users\HP\Documents\My Web Sites\AntigravityWC\White-Caves\src\components\owner\tabs\LeaderboardTab.tsx#L196)
+- **Target File**: [`src/services/HenryEmiratesIdScannerService.ts:434`](file:///C:\Users\HP\Documents\My Web Sites\AntigravityWC\White-Caves\src\services\HenryEmiratesIdScannerService.ts#L434)
 - **Layer**: Frontend | **Category**: TypeScript Strictness | **Score**: 100
 - **Required Refactor**: Replace explicit `any` with strict interface or generic constraint.
 
