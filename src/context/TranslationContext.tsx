@@ -70,10 +70,10 @@ export function useTranslation() {
       t: (keyPath: string, params?: Record<string, string | number>) => {
         if (!keyPath) return '';
         const keys = keyPath.split('.');
-        let current: any = dictionaries.en;
+        let current: Record<string, unknown> | unknown = dictionaries.en;
         for (const key of keys) {
-          if (current && typeof current === 'object' && key in current) {
-            current = current[key];
+          if (current && typeof current === 'object' && key in (current as Record<string, unknown>)) {
+            current = (current as Record<string, unknown>)[key];
           } else {
             return keyPath;
           }

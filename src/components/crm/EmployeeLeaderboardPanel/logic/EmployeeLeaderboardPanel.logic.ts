@@ -5,30 +5,50 @@
 import { useState, useMemo } from 'react';
 import companyLedger from '../../../../mocks/companyMasterLedger.json';
 
+import { CORPORATE_DEPARTMENTS_12 } from '../../../../data/assistants35Registry.data';
+
 export type LedgerPersonnel = {
   id: string;
   name: string;
-  email: string;
-  roleTitle: string;
-  assignedDepartment: string;
+  email?: string;
+  roleTitle?: string;
+  assignedDepartment?: string;
   accessLevel: number;
   commissionRule?: { agentSplit: number; companySplit: number };
 };
 
 export type LedgerDepartment = {
   id: string;
-  num: string;
+  num?: string;
   name: string;
-  icon: string;
+  icon?: string;
   monthlyRevenueAED?: number;
   activeLeads?: number;
 };
 
 export function useEmployeeLeaderboardPanelLogic() {
-  const departments = ((companyLedger as any).departments || []) as LedgerDepartment[];
-  const personnel = ((companyLedger as any).personnel || []) as LedgerPersonnel[];
+  const departments: LedgerDepartment[] = useMemo(() => {
+    return CORPORATE_DEPARTMENTS_12.map(d => ({
+      id: d.id,
+      num: d.code,
+      name: d.name,
+      icon: d.icon,
+    }));
+  }, []);
 
-  const [activeDeptId, setActiveDeptId] = useState<string>(departments[0]?.id || 'sales');
+  const personnel: LedgerPersonnel[] = useMemo(() => {
+    const raw = Array.isArray(companyLedger) ? companyLedger : ((companyLedger as any).personnel || []);
+    return raw.map((p: any) => ({
+      id: p.id || 'EMP-UNKNOWN',
+      name: p.name || 'Staff Member',
+      email: p.email,
+      roleTitle: p.role || p.roleTitle,
+      assignedDepartment: p.assignedDepartment || 'dept-06',
+      accessLevel: p.level || p.accessLevel || 1,
+    }));
+  }, []);
+
+  const [activeDeptId, setActiveDeptId] = useState<string>(departments[0]?.id || 'dept-06');
   const [viewMode, setViewMode] = useState<'department' | 'global'>('department');
 
   const activeDept = useMemo(

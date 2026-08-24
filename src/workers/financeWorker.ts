@@ -110,18 +110,19 @@ export function calculateROI(input: ROIInput): ROIResult {
 
 // Worker message listener if running inside Web Worker context
 if (typeof self !== 'undefined' && typeof window === 'undefined') {
-  self.onmessage = (e: MessageEvent<{ type: string; payload: any; id: string }>) => {
+  self.onmessage = (e: MessageEvent<{ type: string; payload: MortgageInput | ROIInput; id: string }>) => {
     const { type, payload, id } = e.data;
     try {
       if (type === 'CALCULATE_MORTGAGE') {
-        const result = calculateMortgage(payload);
+        const result = calculateMortgage(payload as MortgageInput);
         self.postMessage({ id, success: true, result });
       } else if (type === 'CALCULATE_ROI') {
-        const result = calculateROI(payload);
+        const result = calculateROI(payload as ROIInput);
         self.postMessage({ id, success: true, result });
       }
-    } catch (err: any) {
-      self.postMessage({ id, success: false, error: err?.message || 'Calculation error' });
+    } catch (err: unknown) {
+      const message = err instanceof Error ? err.message : 'Calculation error';
+      self.postMessage({ id, success: false, error: message });
     }
   };
 }

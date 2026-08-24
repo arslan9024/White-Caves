@@ -72,7 +72,7 @@ export function exportToExcelXml(
   filename: string,
   sheets: ExcelSheet[]
 ): void {
-  const sanitize = (val: any) => {
+  const sanitize = (val: unknown) => {
     if (val === null || val === undefined) return '';
     return String(val)
       .replace(/&/g, '&amp;')

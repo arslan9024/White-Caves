@@ -498,7 +498,7 @@ class HenryEmiratesIdScannerService {
       if (typeof window === 'undefined') return { ocrText: '', streamText: '' };
       const isPdf = file.type === 'application/pdf' || file.name.toLowerCase().endsWith('.pdf');
 
-      let ocrInput: any = file;
+      let ocrInput: File | string = file;
       let streamText = '';
 
       if (isPdf) {
@@ -514,7 +514,7 @@ class HenryEmiratesIdScannerService {
 
       const Tesseract = await import('tesseract.js');
       const result = await Tesseract.recognize(ocrInput, 'eng', {
-        logger: (m: any) => {
+        logger: (m: { status?: string; progress?: number }) => {
           if (m && m.status === 'recognizing text' && typeof m.progress === 'number' && onProgress) {
             onProgress(30 + Math.round(m.progress * 0.65));
           }

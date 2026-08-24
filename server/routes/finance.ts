@@ -742,8 +742,9 @@ router.get(
       const data = await readFile(EXPENSE_SCHEMA_PATH, 'utf-8');
       const json = JSON.parse(data);
       res.status(200).json({ success: true, data: json });
-    } catch (err: any) {
-      throw new AppError('Could not load expense master catalog: ' + err.message, 500);
+    } catch (err: unknown) {
+      const message = err instanceof Error ? err.message : String(err);
+      throw new AppError('Could not load expense master catalog: ' + message, 500);
     }
   })
 );
