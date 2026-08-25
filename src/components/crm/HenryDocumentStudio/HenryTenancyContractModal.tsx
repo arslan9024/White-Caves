@@ -464,7 +464,7 @@ export const HenryTenancyContractModal: FC<HenryTenancyContractModalProps> = ({
                 {activeStep === 2 && (
                   <div>
                     <OcrDropzone onClick={() => landlordFileInputRef.current?.click()} style={{ marginBottom: '1.25rem' }}>
-                      <UploadCloud size={24} color="#EF4444" style={{ margin: '0 auto 6px auto' }} />
+                      <UploadCloud size={24} color="var(--accent-red, #EF4444)" style={{ margin: '0 auto 6px auto' }} />
                       <div className="dropzone-title">Upload Landlord Emirates ID / Passport / Agreement</div>
                       <div className="dropzone-desc">
                         Upload landlord identity document to extract Owner Name, Emirates ID, Mobile, and Email automatically.

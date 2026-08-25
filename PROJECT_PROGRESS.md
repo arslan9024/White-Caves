@@ -3,7 +3,7 @@
 > **Agency:** White Caves Global Agency
 > **Orchestrator:** @Ada (Chief Architect)
 > **Last Updated:** 2026-08-25
-> **Global Progress:** **Waves 1–59 complete + Wave 60 ACTIVE — AEGIS Turn 71 (Optical AI Scanner Component Suites, Corporate Tax Tab Verification & Design Tokens Standardization)**
+> **Global Progress:** **Waves 1–60 complete + Wave 61 ACTIVE — AEGIS Turn 72 (Executive Dashboard & Financial Sub-Navigation Unit Suites Expanded, Design Tokens Standardized)**
 > **Policy Mode:** Dual-threshold readiness (60% unlock, 90% target) + AEGIS V3 Deduplication Engine active
 > **Daily Report:** `PROJECT_PROGRESS_REPORT.md`
 
@@ -17,7 +17,33 @@
 - Open 100 Issues & Git Workflow: **[plans/OPEN_100_ISSUES_AND_GIT_WORKFLOW.md](plans/OPEN_100_ISSUES_AND_GIT_WORKFLOW.md)**
 - In-House Finance & Accounting Spec: **[docs/09_crm_features/IN_HOUSE_FINANCE_ACCOUNTING_SPEC.md](docs/09_crm_features/IN_HOUSE_FINANCE_ACCOUNTING_SPEC.md)**
 - Last Updated (ISO): 2026-08-25
-- **Milestone Status:** **Wave 60 Active — AEGIS Turn 71 Autopilot Cycle Complete** 🚀
+- **Milestone Status:** **Wave 61 Active — AEGIS Turn 72 Autopilot Cycle Complete** 🚀
+
+## 🚀 AEGIS Turn 72 — Dashboard Core, In-House Finance Tabs & Telemetry Test Suites (2026-08-25)
+
+**Orchestrator:** @Ada | **Session:** AEGIS-2026-08-25-TURN72  
+**Scanner:** `aegis/orchestrator/aegis-autopilot-scanner.js` — **Remaining issues down to 127 (93.3% reduction)**
+
+### Delivered in Turn 72:
+
+- ✅ **Executive Dashboard Core Test Suites**:
+  - `SearchableSelect.test.tsx`: Verified accessible dropdown selector rendering, option filtering, and click events.
+  - `ExecutiveKpiFlightDeck.test.tsx`: Verified real-time telemetry KPI grid, gross closed volume, and target velocity gauges.
+  - `DashboardGlobalHeader.test.tsx`: Verified ERP command core title, location meta-tag, and collapsible header controls.
+  - `DashboardLiveTicker.test.tsx`: Verified real-time financial indicators including fixed USD/AED (3.6725) and DLD daily volume.
+  - `DashboardAiTile.test.tsx`: Verified Tile 3 AI Command Center (40 AI Assistants & 11 Teams) and squad toggle bar.
+  - `DashboardDeptTile.test.tsx`: Verified Tile 2 Corporate Departments (12 Floors) and sub-group item list.
+- ✅ **In-House Finance Sub-Navigation & Optical Scanner Suites**:
+  - `DirectorsLoanTab.test.tsx`: Verified Director Loan Account (DLA) ledger, owner equity advances, and Wio Business settlements.
+  - `FinancialStatementsTab.test.tsx`: Verified P&L, Balance Sheet, Cash Flow & Bank Recon, and RERA Regulatory Audit Pack tabs.
+  - `VatReturnTab.test.tsx`: Verified FTA Form 201 VAT Return calculations, registered TRN (`100592837400003`), and EmaraTax XML export.
+  - `HenryTitleDeedScannerView.test.tsx`: Verified Title Deed scanner studio, property presets (Viridis 504 / Buko DMCC), and DLD registry validation.
+- ✅ **Design Token Hardening**:
+  - `HenryPassportScannerView.tsx`: Standardized empty state icon colors to `var(--text-secondary, #94A3B8)`.
+  - `HenryTenancyContractModal.tsx`: Standardized dropzone icon colors to `var(--accent-red, #EF4444)`.
+- ✅ **Quality Gate**:
+  - 100% tests passing across all suites.
+  - Zero TypeScript compiler errors.
 
 ## 🚀 AEGIS Turn 71 — Optical AI Scanners, Corporate Tax & Design Token Hardening (2026-08-25)
 

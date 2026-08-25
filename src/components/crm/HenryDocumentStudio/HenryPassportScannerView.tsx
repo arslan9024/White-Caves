@@ -577,7 +577,7 @@ export const HenryPassportScannerView: FC = () => {
               </PassportDigitalCard>
             ) : (
               <div style={{ textAlign: 'center', color: 'var(--color-94a3b8, #94A3B8)', padding: '3rem 1rem' }}>
-                <Flag size={48} color="#94A3B8" style={{ margin: '0 auto 12px auto' }} />
+                <Flag size={48} color="var(--text-secondary, #94A3B8)" style={{ margin: '0 auto 12px auto' }} />
                 <div style={{ fontWeight: 800, fontSize: '0.95rem', color: 'var(--color-334155, #334155)' }}>
                   No Passport Uploaded Yet
                 </div>
