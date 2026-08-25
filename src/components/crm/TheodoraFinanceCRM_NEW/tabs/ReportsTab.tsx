@@ -453,16 +453,16 @@ export const ReportsTab: React.FC<ReportsTabProps> = () => {
                               fontWeight: 800,
                               padding: '2px 6px',
                               borderRadius: '4px',
-                              backgroundColor: '#EEF2F6',
-                              color: '#475569',
+                              backgroundColor: 'var(--color-eef2f6, #EEF2F6)',
+                              color: 'var(--text-secondary, #475569)',
                               fontFamily: 'monospace',
                             }}
                           >
                             {report.id}
                           </span>
-                          <span style={{ fontWeight: 700, color: '#0F172A' }}>{report.name}</span>
+                          <span style={{ fontWeight: 700, color: 'var(--text-primary, #0F172A)' }}>{report.name}</span>
                         </div>
-                        <div style={{ fontSize: '0.75rem', color: '#64748B', marginTop: '2px' }}>
+                        <div style={{ fontSize: '0.75rem', color: 'var(--text-secondary, #64748B)', marginTop: '2px' }}>
                           {report.description}
                         </div>
                       </td>
@@ -488,7 +488,7 @@ export const ReportsTab: React.FC<ReportsTabProps> = () => {
                       </td>
 
                       {/* Created By */}
-                      <td style={{ padding: '12px 16px', color: '#475569', fontSize: '0.8rem' }}>
+                      <td style={{ padding: '12px 16px', color: 'var(--text-secondary, #475569)', fontSize: '0.8rem' }}>
                         <span style={{ display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
                           <span>🤖</span>
                           <span>{report.createdBy}</span>
@@ -496,9 +496,9 @@ export const ReportsTab: React.FC<ReportsTabProps> = () => {
                       </td>
 
                       {/* Last Visited */}
-                      <td style={{ padding: '12px 16px', color: '#64748B', fontSize: '0.8rem' }}>
+                      <td style={{ padding: '12px 16px', color: 'var(--text-secondary, #64748B)', fontSize: '0.8rem' }}>
                         {report.lastVisited === '-' ? (
-                          <span style={{ color: '#94A3B8' }}>— Not Visited</span>
+                          <span style={{ color: 'var(--color-94a3b8, #94A3B8)' }}>— Not Visited</span>
                         ) : (
                           report.lastVisited
                         )}
@@ -517,13 +517,13 @@ export const ReportsTab: React.FC<ReportsTabProps> = () => {
                               fontSize: '0.72rem',
                               fontWeight: 800,
                               cursor: 'pointer',
-                              backgroundColor: isScheduled ? '#DCFCE7' : '#F1F5F9',
-                              color: isScheduled ? '#15803D' : '#64748B',
+                              backgroundColor: isScheduled ? 'var(--color-dcfce7, #DCFCE7)' : 'var(--color-f1f5f9, #F1F5F9)',
+                              color: isScheduled ? 'var(--color-15803d, #15803D)' : 'var(--text-secondary, #64748B)',
                             }}
                           >
                             {isScheduled ? '● Active' : '○ Off'}
                           </button>
-                          <span style={{ fontSize: '0.72rem', color: '#64748B' }}>{report.schedule}</span>
+                          <span style={{ fontSize: '0.72rem', color: 'var(--text-secondary, #64748B)' }}>{report.schedule}</span>
                         </div>
                       </td>
 
@@ -537,8 +537,8 @@ export const ReportsTab: React.FC<ReportsTabProps> = () => {
                               setActiveReportModal(report);
                             }}
                             style={{
-                              background: '#2563EB',
-                              color: '#FFFFFF',
+                              background: 'var(--accent-blue, #2563EB)',
+                              color: 'var(--white, #FFFFFF)',
                               border: 'none',
                               borderRadius: '6px',
                               padding: '5px 10px',
@@ -643,13 +643,13 @@ export const ReportsTab: React.FC<ReportsTabProps> = () => {
                       fontWeight: 800,
                       padding: '2px 8px',
                       borderRadius: '4px',
-                      backgroundColor: '#2563EB',
-                      color: '#FFFFFF',
+                      backgroundColor: 'var(--accent-blue, #2563EB)',
+                      color: 'var(--white, #FFFFFF)',
                     }}
                   >
                     {activeReportModal.id}
                   </span>
-                  <h3 style={{ margin: 0, fontSize: '1.2rem', fontWeight: 800, color: '#0F172A' }}>
+                  <h3 style={{ margin: 0, fontSize: '1.2rem', fontWeight: 800, color: 'var(--text-primary, #0F172A)' }}>
                     {activeReportModal.name}
                   </h3>
                   <span
@@ -658,14 +658,14 @@ export const ReportsTab: React.FC<ReportsTabProps> = () => {
                       fontWeight: 700,
                       padding: '2px 6px',
                       borderRadius: '4px',
-                      backgroundColor: '#EEF2F6',
-                      color: '#475569',
+                      backgroundColor: 'var(--color-eef2f6, #EEF2F6)',
+                      color: 'var(--text-secondary, #475569)',
                     }}
                   >
                     {activeReportModal.categoryName}
                   </span>
                 </div>
-                <p style={{ margin: '4px 0 0 0', fontSize: '0.85rem', color: '#475569' }}>
+                <p style={{ margin: '4px 0 0 0', fontSize: '0.85rem', color: 'var(--text-secondary, #475569)' }}>
                   {activeReportModal.description}
                 </p>
               </div>
@@ -676,7 +676,7 @@ export const ReportsTab: React.FC<ReportsTabProps> = () => {
                   background: 'none',
                   border: 'none',
                   fontSize: '1.25rem',
-                  color: '#64748B',
+                  color: 'var(--text-secondary, #64748B)',
                   cursor: 'pointer',
                   padding: '4px 8px',
                 }}
@@ -690,15 +690,15 @@ export const ReportsTab: React.FC<ReportsTabProps> = () => {
               {/* Statutory UAE Relevance Notice */}
               <div
                 style={{
-                  backgroundColor: '#FEF3C7',
-                  border: '1px solid #FCD34D',
+                  backgroundColor: 'var(--color-fef3c7, #FEF3C7)',
+                  border: '1px solid var(--color-fcd34d, #FCD34D)',
                   borderRadius: '10px',
                   padding: '10px 14px',
                   display: 'flex',
                   alignItems: 'center',
                   gap: '10px',
                   fontSize: '0.82rem',
-                  color: '#92400E',
+                  color: 'var(--color-92400e, #92400E)',
                   fontWeight: 600,
                 }}
               >
@@ -711,7 +711,7 @@ export const ReportsTab: React.FC<ReportsTabProps> = () => {
               {/* Date Filter & Export Controls Bar */}
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '10px' }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                  <span style={{ fontSize: '0.8rem', fontWeight: 700, color: '#475569' }}>Period:</span>
+                  <span style={{ fontSize: '0.8rem', fontWeight: 700, color: 'var(--text-secondary, #475569)' }}>Period:</span>
                   {(['today', 'mtd', 'qtd', 'ytd', 'all'] as const).map((range) => (
                     <button
                       key={range}
@@ -719,9 +719,9 @@ export const ReportsTab: React.FC<ReportsTabProps> = () => {
                       style={{
                         padding: '4px 10px',
                         borderRadius: '6px',
-                        border: reportDateRange === range ? '1px solid #2563EB' : '1px solid #E2E8F0',
-                        backgroundColor: reportDateRange === range ? '#EFF6FF' : '#FFFFFF',
-                        color: reportDateRange === range ? '#1D4ED8' : '#64748B',
+                        border: reportDateRange === range ? '1px solid var(--accent-blue, #2563EB)' : '1px solid var(--text-secondary, #E2E8F0)',
+                        backgroundColor: reportDateRange === range ? 'var(--color-eff6ff, #EFF6FF)' : 'var(--white, #FFFFFF)',
+                        color: reportDateRange === range ? 'var(--color-1d4ed8, #1D4ED8)' : 'var(--text-secondary, #64748B)',
                         fontSize: '0.75rem',
                         fontWeight: 700,
                         cursor: 'pointer',
@@ -739,9 +739,9 @@ export const ReportsTab: React.FC<ReportsTabProps> = () => {
                     style={{
                       padding: '6px 12px',
                       borderRadius: '6px',
-                      border: '1px solid #CBD5E1',
-                      backgroundColor: '#FFFFFF',
-                      color: '#0F172A',
+                      border: '1px solid var(--text-secondary, #CBD5E1)',
+                      backgroundColor: 'var(--white, #FFFFFF)',
+                      color: 'var(--text-primary, #0F172A)',
                       fontSize: '0.8rem',
                       fontWeight: 700,
                       cursor: 'pointer',
@@ -755,8 +755,8 @@ export const ReportsTab: React.FC<ReportsTabProps> = () => {
                       padding: '6px 12px',
                       borderRadius: '6px',
                       border: 'none',
-                      backgroundColor: '#10B981',
-                      color: '#FFFFFF',
+                      backgroundColor: 'var(--accent-green, #10B981)',
+                      color: 'var(--white, #FFFFFF)',
                       fontSize: '0.8rem',
                       fontWeight: 700,
                       cursor: 'pointer',
@@ -773,16 +773,16 @@ export const ReportsTab: React.FC<ReportsTabProps> = () => {
                   <div
                     key={key}
                     style={{
-                      background: '#F8FAFC',
-                      border: '1px solid #E2E8F0',
+                      background: 'var(--color-f8fafc, #F8FAFC)',
+                      border: '1px solid var(--text-secondary, #E2E8F0)',
                       borderRadius: '10px',
                       padding: '12px',
                     }}
                   >
-                    <div style={{ fontSize: '0.72rem', color: '#64748B', fontWeight: 700, textTransform: 'uppercase' }}>
+                    <div style={{ fontSize: '0.72rem', color: 'var(--text-secondary, #64748B)', fontWeight: 700, textTransform: 'uppercase' }}>
                       {key}
                     </div>
-                    <div style={{ fontSize: '1.1rem', fontWeight: 800, color: '#0F172A', marginTop: '4px' }}>
+                    <div style={{ fontSize: '1.1rem', fontWeight: 800, color: 'var(--text-primary, #0F172A)', marginTop: '4px' }}>
                       {val}
                     </div>
                   </div>
@@ -790,14 +790,14 @@ export const ReportsTab: React.FC<ReportsTabProps> = () => {
               </div>
 
               {/* Data Table Preview */}
-              <div style={{ border: '1px solid #E2E8F0', borderRadius: '10px', overflow: 'hidden' }}>
-                <div style={{ padding: '8px 12px', background: '#F1F5F9', fontSize: '0.78rem', fontWeight: 800, color: '#475569' }}>
+              <div style={{ border: '1px solid var(--text-secondary, #E2E8F0)', borderRadius: '10px', overflow: 'hidden' }}>
+                <div style={{ padding: '8px 12px', background: 'var(--color-f1f5f9, #F1F5F9)', fontSize: '0.78rem', fontWeight: 800, color: 'var(--text-secondary, #475569)' }}>
                   Report Data Preview ({reportDateRange.toUpperCase()})
                 </div>
                 <div style={{ overflowX: 'auto' }}>
                   <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.82rem' }}>
                     <thead>
-                      <tr style={{ background: '#F8FAFC', borderBottom: '1px solid #E2E8F0', textAlign: 'left', color: '#64748B', fontWeight: 700 }}>
+                      <tr style={{ background: 'var(--color-f8fafc, #F8FAFC)', borderBottom: '1px solid var(--text-secondary, #E2E8F0)', textAlign: 'left', color: 'var(--text-secondary, #64748B)', fontWeight: 700 }}>
                         {activeReportModal.columns.map((col, idx) => (
                           <th key={idx} style={{ padding: '10px 12px' }}>{col}</th>
                         ))}
@@ -805,9 +805,9 @@ export const ReportsTab: React.FC<ReportsTabProps> = () => {
                     </thead>
                     <tbody>
                       {activeReportModal.sampleRows.map((row, rIdx) => (
-                        <tr key={rIdx} style={{ borderBottom: '1px solid #F1F5F9' }}>
+                        <tr key={rIdx} style={{ borderBottom: '1px solid var(--color-f1f5f9, #F1F5F9)' }}>
                           {activeReportModal.columns.map((col, cIdx) => (
-                            <td key={cIdx} style={{ padding: '10px 12px', color: '#1E293B' }}>
+                            <td key={cIdx} style={{ padding: '10px 12px', color: 'var(--text-primary, #1E293B)' }}>
                               {row[col] ?? '—'}
                             </td>
                           ))}
@@ -823,14 +823,14 @@ export const ReportsTab: React.FC<ReportsTabProps> = () => {
             <div
               style={{
                 padding: '1rem 1.5rem',
-                borderTop: '1px solid #E2E8F0',
+                borderTop: '1px solid var(--text-secondary, #E2E8F0)',
                 display: 'flex',
                 justifyContent: 'space-between',
                 alignItems: 'center',
-                background: '#F8FAFC',
+                background: 'var(--color-f8fafc, #F8FAFC)',
               }}
             >
-              <div style={{ fontSize: '0.78rem', color: '#64748B' }}>
+              <div style={{ fontSize: '0.78rem', color: 'var(--text-secondary, #64748B)' }}>
                 Generated autonomously by <strong>Theodora AI (CFO Intelligence)</strong>
               </div>
               <button
@@ -838,9 +838,9 @@ export const ReportsTab: React.FC<ReportsTabProps> = () => {
                 style={{
                   padding: '8px 16px',
                   borderRadius: '8px',
-                  border: '1px solid #CBD5E1',
-                  backgroundColor: '#FFFFFF',
-                  color: '#334155',
+                  border: '1px solid var(--text-secondary, #CBD5E1)',
+                  backgroundColor: 'var(--white, #FFFFFF)',
+                  color: 'var(--text-secondary, #334155)',
                   fontSize: '0.82rem',
                   fontWeight: 700,
                   cursor: 'pointer',

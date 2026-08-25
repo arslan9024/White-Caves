@@ -22,7 +22,13 @@ const DISMISS_KEY = 'wc_pwa_install_dismissed';
 export function usePwaInstallPromptLogic(): UsePwaInstallPromptReturn {
   const [deferredPrompt, setDeferredPrompt] = useState<BeforeInstallPromptEvent | null>(null);
   const [isInstalled, setIsInstalled] = useState(false);
-  const [isDismissed, setIsDismissed] = useState(() => localStorage.getItem(DISMISS_KEY) === '1');
+  const [isDismissed, setIsDismissed] = useState(() => {
+    try {
+      return typeof window !== 'undefined' && window.localStorage ? window.localStorage.getItem(DISMISS_KEY) === '1' : false;
+    } catch {
+      return false;
+    }
+  });
 
   useEffect(() => {
     const handler = (e: Event) => {
@@ -31,7 +37,7 @@ export function usePwaInstallPromptLogic(): UsePwaInstallPromptReturn {
     };
     window.addEventListener('beforeinstallprompt', handler);
 
-    if (window.matchMedia('(display-mode: standalone)').matches) {
+    if (typeof window !== 'undefined' && window.matchMedia && window.matchMedia('(display-mode: standalone)').matches) {
       setIsInstalled(true);
     }
 
@@ -48,7 +54,11 @@ export function usePwaInstallPromptLogic(): UsePwaInstallPromptReturn {
 
   const handleDismiss = useCallback(() => {
     setIsDismissed(true);
-    localStorage.setItem(DISMISS_KEY, '1');
+    try {
+      if (typeof window !== 'undefined' && window.localStorage) {
+        window.localStorage.setItem(DISMISS_KEY, '1');
+      }
+    } catch {}
   }, []);
 
   return {

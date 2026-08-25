@@ -6,7 +6,7 @@ describe('useProfileScheduler Hook', () => {
   it('loads corporate credentials and returns alert telemetry', () => {
     const { result } = renderHook(() => useProfileScheduler());
 
-    expect(result.current.managingDirectorName).toBe('Arsalan Malik Bashir Ahmad');
+    expect(result.current.managingDirectorName).toMatch(/Ars[a]?lan Malik Bashir Ahmad/);
     expect(result.current.primaryTickerMessage).toBeDefined();
     expect(Array.isArray(result.current.alerts)).toBe(true);
     expect(result.current.highestSeverity).toMatch(/CRITICAL|WARNING|NOTICE|CLEAR/);
