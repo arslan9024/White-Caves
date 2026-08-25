@@ -101,7 +101,7 @@ export const SecurityDepositRefundLedger: FC = () => {
                 </DedInfo>
                 <div style={{textAlign:'right'}}>
                   <DedAmount $disputed={d.disputed}>- AED {d.amount.toLocaleString()}</DedAmount>
-                  <div style={{marginTop:'4px'}}><button onClick={()=>toggle(d.id)} style={{background:'none',border:'1px solid rgba(100,116,139,0.2)',borderRadius:'4px',color:'#64748B',fontSize:'0.6rem',cursor:'pointer',padding:'2px 6px'}}>{d.disputed?'Un-dispute':'Dispute'}</button></div>
+                  <div style={{marginTop:'4px'}}><button onClick={()=>toggle(d.id)} style={{background:'none',border:'1px solid rgba(100,116,139,0.2)',borderRadius:'4px',color:'var(--text-secondary, #64748B)',fontSize:'0.6rem',cursor:'pointer',padding:'2px 6px'}}>{d.disputed?'Un-dispute':'Dispute'}</button></div>
                 </div>
               </DeductionRow>
             ))}
