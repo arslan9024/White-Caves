@@ -91,6 +91,7 @@ export const ALL_AI_ASSISTANTS: AIAssistantOption[] = [
       { id: 'zoe-sla-matrix', label: '3.4.2 12-Department SLA Matrix', icon: '🏛️', badge: 'Operations' },
       { id: 'zoe-wip-monitor', label: '3.4.3 Cross-Team WIP Monitor', icon: '📊', badge: 'Workload' },
       { id: 'zoe-sovereign-override', label: '3.4.4 Sovereign Override Desk', icon: '⚡', badge: 'Level 5 Master' },
+      { id: 'zoe-business-docs', label: '3.4.5 Hyper-Linked Business Docs Hub (DET 1388443)', icon: '📜', badge: 'DET & RERA' },
     ],
   },
   {
@@ -257,6 +258,7 @@ export const ALL_AI_ASSISTANTS: AIAssistantOption[] = [
       { id: 'aurora-api-telemetry', label: '3.16.2 API Latency & Rate Limits', icon: '⚡', badge: '< 100ms' },
       { id: 'aurora-db-tracer', label: '3.16.3 Database Query & Replica Tracer', icon: '🗄️', badge: 'Mongo Replica' },
       { id: 'aurora-cloud-cache', label: '3.16.4 Cloud Cache & Memory Profiler', icon: '☁️', badge: 'Redis Cache' },
+      { id: 'aurora-software-docs', label: '3.16.5 Hyper-Linked Software Architecture Hub (SRS/SDD)', icon: '📐', badge: 'SRS & SDD' },
     ],
   },
   {

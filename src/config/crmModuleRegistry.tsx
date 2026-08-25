@@ -59,6 +59,8 @@ const DLDIntegrationModule = lazy(() => import('../components/crm/DLDIntegration
 const LeadScoringModule = lazy(() => import('../components/crm/LeadScoringModule'));
 const PropertyValuationModule = lazy(() => import('../components/crm/PropertyValuationModule'));
 const MarketAnalyticsModule = lazy(() => import('../components/crm/MarketAnalyticsModule'));
+const ZoeBusinessHub = lazy(() => import('../components/crm/ZoeBusinessHub'));
+const AuroraSoftwareHub = lazy(() => import('../components/crm/AuroraSoftwareHub'));
 
 // 40 Assistant Enterprise Suite Components
 const ApexCRM = lazy(() => import('../components/crm/ApexCRM'));
@@ -212,6 +214,11 @@ export const CRM_MODULE_REGISTRY: Record<string, CRMModuleDefinition> = {
     description: 'Executive KPIs, strategy, and risk signals',
     color: '#E31E24', zone: 'executive', Component: ZoeExecutiveCRM,
   },
+  'zoe-business-docs': {
+    id: 'zoe-business-docs', label: '3.4.5 Hyper-Linked Business Docs Hub', icon: '📜',
+    description: 'Dubai DET 1388443, RERA ORN 44483, Ejari, and 42 expense catalog documentation',
+    color: '#EF4444', zone: 'executive', Component: ZoeBusinessHub,
+  },
   laila: {
     id: 'laila', label: 'Compliance CRM', icon: '🛡️',
     description: 'KYC, compliance checks, legal risks',
@@ -221,6 +228,11 @@ export const CRM_MODULE_REGISTRY: Record<string, CRMModuleDefinition> = {
     id: 'aurora', label: 'CTO Dashboard', icon: '🖥️',
     description: 'System health, incidents, architecture status',
     color: '#0EA5E9', zone: 'executive', Component: AuroraCTODashboard,
+  },
+  'aurora-software-docs': {
+    id: 'aurora-software-docs', label: '3.16.5 Hyper-Linked Software Architecture Hub', icon: '📐',
+    description: 'SRS specifications, SDD topologies, RUP lifecycles, and 4-way folder standards',
+    color: '#3B82F6', zone: 'ai_command', Component: AuroraSoftwareHub,
   },
   hazel: {
     id: 'hazel', label: 'Frontend CRM', icon: '🧩',

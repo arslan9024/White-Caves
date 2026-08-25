@@ -5,22 +5,8 @@ import {
 } from 'lucide-react';
 import './AssistantDashboard.css';
 
-export interface AuthUser {
-  id?: string;
-  name?: string;
-  email?: string;
-  role?: string;
-  [key: string]: unknown;
-}
-
-interface HunterProps {
-  moduleId?: string;
-  role?: string;
-  user?: AuthUser;
-}
-
-export const HunterProspectingCRM: React.FC<HunterProps> = ({ moduleId }) => {
-  const [activeTab, setActiveTab] = useState<'matching' | 'profiler' | 'geofence' | 'pitch'>('matching');
+const HunterProspectingCRM = ({ user, role, moduleId }) => {
+  const [activeTab, setActiveTab] = useState('matching');
 
   useEffect(() => {
     if (!moduleId) return;

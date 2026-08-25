@@ -161,32 +161,11 @@ function getLinkedPlanFilesFromPending(pattern) {
   'docs/plans/AEGIS_RUN_LOG.md',
   'docs/plans/AUTOPILOT_QUEUE.md',
   'docs/plans/AEGIS_WORKFORCE.md',
-  // Architecture Decision Records (Vector 5.1)
-  'docs/software_docs/adr/README.md',
-  'docs/software_docs/adr/ADR-001-auth-dual-provider.md',
-  'docs/software_docs/adr/ADR-002-mongodb-prisma.md',
-  'docs/software_docs/adr/ADR-003-crm-module-registry.md',
-  'docs/software_docs/adr/ADR-004-wave-gate-model.md',
-  'docs/software_docs/adr/ADR-005-superuser-lion-pattern.md',
-  // Wave 25 syndication services (V6.6)
-  'server/services/syndication/propertyFinderService.ts',
-  'server/services/syndication/bayutService.ts',
-  // Wave 25/26 backlogs (V6.6)
-  'docs/plans/waves/WAVE_25_IMPLEMENTATION_BACKLOG.md',
-  'docs/plans/waves/WAVE_26_IMPLEMENTATION_BACKLOG.md',
-  'docs/plans/waves/WAVE_28_IMPLEMENTATION_BACKLOG.md',
-  'docs/plans/waves/WAVE_29_IMPLEMENTATION_BACKLOG.md',
-  'docs/plans/waves/WAVE_30_IMPLEMENTATION_BACKLOG.md',
-  // DLD/Ejari mock services (V1.3)
-  'server/services/mock/dldMockService.ts',
-  'server/services/mock/ejariMockService.ts',
-  // 3-Folder Strategy Architecture (Turn 6 Autopilot)
-  'docs/business_docs/04_workflows/md-operations-workflows.md',
-  'docs/business_docs/02_services/dubai-agency-services.md',
-  'docs/business_docs/01_company_structure/department-handbook.md',
-  'docs/business_docs/01_company_structure/employee-payroll-handbook.md',
-  'docs/software_docs/sdd-md-operations.md',
-  'docs/software_docs/property-inventory-schema.md',
+  // Hyper-Linked HTML Documentation Engines (Zoe AI 3.10 & Aurora AI 3.11)
+  'src/data/zoeBusinessDocsRegistry.ts',
+  'src/data/auroraSoftwareDocsRegistry.ts',
+  'src/components/crm/ZoeBusinessHub/ZoeBusinessHub.tsx',
+  'src/components/crm/AuroraSoftwareHub/AuroraSoftwareHub.tsx',
   'src/components/crm/EmployeeLeaderboardPanel.tsx',
 ].forEach(assertExists);
 

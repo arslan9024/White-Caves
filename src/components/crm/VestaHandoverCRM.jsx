@@ -5,22 +5,8 @@ import {
 } from 'lucide-react';
 import './AssistantDashboard.css';
 
-export interface AuthUser {
-  id?: string;
-  name?: string;
-  email?: string;
-  role?: string;
-  [key: string]: unknown;
-}
-
-interface VestaProps {
-  moduleId?: string;
-  role?: string;
-  user?: AuthUser;
-}
-
-export const VestaHandoverCRM: React.FC<VestaProps> = ({ moduleId }) => {
-  const [activeTab, setActiveTab] = useState<'snagging' | 'checklist' | 'certificate' | 'contractor'>('snagging');
+export const VestaHandoverCRM = ({ moduleId, role, user }) => {
+  const [activeTab, setActiveTab] = useState('snagging');
 
   useEffect(() => {
     if (!moduleId) return;

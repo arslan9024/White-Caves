@@ -5,22 +5,8 @@ import {
 } from 'lucide-react';
 import './AssistantDashboard.css';
 
-export interface AuthUser {
-  id?: string;
-  name?: string;
-  email?: string;
-  role?: string;
-  [key: string]: unknown;
-}
-
-interface MavenProps {
-  moduleId?: string;
-  role?: string;
-  user?: AuthUser;
-}
-
-export const MavenInvestmentCRM: React.FC<MavenProps> = ({ moduleId }) => {
-  const [activeTab, setActiveTab] = useState<'dcf' | 'yield' | 'rebalancer' | 'appreciation'>('dcf');
+export const MavenInvestmentCRM = ({ moduleId, role, user }) => {
+  const [activeTab, setActiveTab] = useState('dcf');
 
   useEffect(() => {
     if (!moduleId) return;

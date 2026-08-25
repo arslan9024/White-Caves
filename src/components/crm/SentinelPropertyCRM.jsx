@@ -5,22 +5,8 @@ import {
 } from 'lucide-react';
 import './AssistantDashboard.css';
 
-export interface AuthUser {
-  id?: string;
-  name?: string;
-  email?: string;
-  role?: string;
-  [key: string]: unknown;
-}
-
-interface SentinelProps {
-  moduleId?: string;
-  role?: string;
-  user?: AuthUser;
-}
-
-export const SentinelPropertyCRM: React.FC<SentinelProps> = ({ moduleId }) => {
-  const [activeTab, setActiveTab] = useState<'lifecycle' | 'verification' | 'decommission' | 'telemetry'>('lifecycle');
+export const SentinelPropertyCRM = ({ moduleId, role, user }) => {
+  const [activeTab, setActiveTab] = useState('lifecycle');
 
   useEffect(() => {
     if (!moduleId) return;
@@ -38,7 +24,7 @@ export const SentinelPropertyCRM: React.FC<SentinelProps> = ({ moduleId }) => {
     { id: 'PROP-9024', title: 'Creek Horizon 2BR', currentStage: 'COMPLETED_SOLD', reraVerified: true, priceAed: '1,950,000' },
   ]);
 
-  const advanceStage = (id: string) => {
+  const advanceStage = (id) => {
     setProperties(prev => prev.map(p => {
       if (p.id !== id) return p;
       const order = ['DRAFT_REVIEW', 'LISTED', 'UNDER_OFFER', 'COMPLETED_SOLD', 'ARCHIVED'];

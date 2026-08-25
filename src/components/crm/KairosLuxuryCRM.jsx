@@ -5,22 +5,8 @@ import {
 } from 'lucide-react';
 import './AssistantDashboard.css';
 
-export interface AuthUser {
-  id?: string;
-  name?: string;
-  email?: string;
-  role?: string;
-  [key: string]: unknown;
-}
-
-interface KairosProps {
-  moduleId?: string;
-  role?: string;
-  user?: AuthUser;
-}
-
-export const KairosLuxuryCRM: React.FC<KairosProps> = ({ moduleId }) => {
-  const [activeTab, setActiveTab] = useState<'golden-visa' | 'crypto' | 'chauffeur' | 'family-office'>('golden-visa');
+export const KairosLuxuryCRM = ({ moduleId, role, user }) => {
+  const [activeTab, setActiveTab] = useState('golden-visa');
 
   useEffect(() => {
     if (!moduleId) return;
@@ -156,7 +142,7 @@ export const KairosLuxuryCRM: React.FC<KairosProps> = ({ moduleId }) => {
             </div>
             <div>
               <label style={{ fontSize: '0.75rem', fontWeight: 800, color: 'var(--text-secondary, #64748B)' }}>Cryptocurrency Asset</label>
-              <select value={selectedCrypto} onChange={e => setSelectedCrypto(e.target.value as any)} style={{ width: '100%', padding: '8px', borderRadius: '6px', border: '1px solid var(--text-secondary, #CBD5E1)', fontSize: '0.85rem', fontWeight: 700 }}>
+              <select value={selectedCrypto} onChange={e => setSelectedCrypto(e.target.value)} style={{ width: '100%', padding: '8px', borderRadius: '6px', border: '1px solid var(--text-secondary, #CBD5E1)', fontSize: '0.85rem', fontWeight: 700 }}>
                 <option value="USDT">USDT (Tether USD) - 1:3.6725 Peg</option>
                 <option value="BTC">BTC (Bitcoin)</option>
                 <option value="ETH">ETH (Ethereum)</option>

@@ -5,22 +5,8 @@ import {
 } from 'lucide-react';
 import './AssistantDashboard.css';
 
-export interface AuthUser {
-  id?: string;
-  name?: string;
-  email?: string;
-  role?: string;
-  [key: string]: unknown;
-}
-
-interface JunoProps {
-  moduleId?: string;
-  role?: string;
-  user?: AuthUser;
-}
-
-export const JunoCommunity: React.FC<JunoProps> = ({ moduleId }) => {
-  const [activeTab, setActiveTab] = useState<'booking' | 'maintenance' | 'service' | 'notices'>('booking');
+export const JunoCommunity = ({ moduleId, role, user }) => {
+  const [activeTab, setActiveTab] = useState('booking');
 
   useEffect(() => {
     if (!moduleId) return;

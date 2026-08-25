@@ -9,22 +9,8 @@ import AssistantDocsTab from './shared/AssistantDocsTab';
 import KYCAMLDashboard from './shared/KYCAMLDashboard';
 import './AssistantDashboard.css';
 
-export interface AuthUser {
-  id?: string;
-  name?: string;
-  email?: string;
-  role?: string;
-  [key: string]: unknown;
-}
-
-interface EvangelineProps {
-  moduleId?: string;
-  role?: string;
-  user?: AuthUser;
-}
-
-export const EvangelineLegalCRM: React.FC<EvangelineProps> = ({ moduleId }) => {
-  const [activeTab, setActiveTab] = useState<'contracts' | 'poa' | 'nda' | 'disputes' | 'risks' | 'kyc' | 'docs'>('contracts');
+export const EvangelineLegalCRM = ({ moduleId, role, user }) => {
+  const [activeTab, setActiveTab] = useState('contracts');
 
   // Synchronize sub-item moduleId from sidebar
   useEffect(() => {
@@ -163,7 +149,7 @@ DUBAI LAND DEPARTMENT (DLD) OFFICIAL STANDARD CONTRACT (${selectedForm.toUpperCa
               <div>
                 <label style={{ fontSize: '0.75rem', fontWeight: 800, color: 'var(--text-secondary, #64748B)', display: 'block', marginBottom: '4px' }}>DLD Contract Type</label>
                 <div style={{ display: 'flex', gap: '0.5rem' }}>
-                  {(['Form A', 'Form B', 'Form F'] as const).map(f => (
+                  {['Form A', 'Form B', 'Form F'].map(f => (
                     <button key={f} onClick={() => setSelectedForm(f)} style={{ flex: 1, padding: '6px', borderRadius: '6px', border: selectedForm === f ? '1px solid var(--accent-purple, #7C3AED)' : '1px solid var(--text-secondary, #CBD5E1)', background: selectedForm === f ? 'var(--accent-purple, #7C3AED)' : 'var(--color-f8fafc, #F8FAFC)', color: selectedForm === f ? 'var(--white, #FFF)' : 'var(--color-475569, #475569)', fontWeight: 800, fontSize: '0.78rem', cursor: 'pointer' }}>
                       {f}
                     </button>
