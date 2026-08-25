@@ -121,6 +121,15 @@ export default function PropertyDetailModal({
     );
   };
 
+  const handleShare = (): void => {
+    if (typeof navigator !== 'undefined' && navigator.share) {
+      navigator.share({ title: property.title, url: window.location.href }).catch(() => {});
+    } else if (typeof navigator !== 'undefined' && navigator.clipboard) {
+      navigator.clipboard.writeText(window.location.href);
+      alert('Listing link copied to clipboard!');
+    }
+  };
+
   // Phase 35: Wire "Request Viewing" to POST /api/viewings (auth) or WhatsApp fallback (public)
   const handleRequestViewing = async (): Promise<void> => {
     if (!viewingDate) {
@@ -425,7 +434,7 @@ Residents will enjoy world-class amenities and the convenience of being close to
                   <Heart size={18} fill={isFavorite ? '#ef4444' : 'none'} />
                   {isFavorite ? 'Saved' : 'Save'}
                 </button>
-                <button className="action-btn" onClick={() => {}}>
+                <button className="action-btn" onClick={handleShare}>
                   <Share2 size={18} />
                   Share
                 </button>

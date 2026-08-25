@@ -1,16 +1,16 @@
 # AEGIS V4 Deep Codebase Audit Report
 
-> **Scan Generated:** 2026-08-15T11:32:50.426Z  
-> **Total Files Scanned:** 3366 source files  
+> **Scan Generated:** 2026-08-25T23:15:25.218Z  
+> **Total Files Scanned:** 3868 source files  
 > **Status:** Deep Static Analysis Complete  
 
 ---
 
 ## 📊 Deep Metric Breakdown
 
-- **Total Source Files Scanned:** 3366
+- **Total Source Files Scanned:** 3868
 - **Hardcoded Production Mocks Detected:** 17
-- **Empty / Stubbed Event Handlers:** 6
+- **Empty / Stubbed Event Handlers:** 3
 - **TypeScript `any` Annotations:** 11
 - **Unresolved TODO / FIXME Tags:** 0
 
@@ -36,14 +36,11 @@
 
 ---
 
-## ⚡ Empty / Stubbed Event Handlers (6)
+## ⚡ Empty / Stubbed Event Handlers (3)
 
 - [`src/components/cards/__tests__/KPICard.test.tsx:231`](file:///C:/Users/HP/Documents/My Web Sites/AntigravityWC/White-Caves/src/components/cards/__tests__/KPICard.test.tsx#L231): `onClick={() => {}}`
-- [`src/components/compliance/AmlKycVerificationPanel/AmlKycVerificationPanel.tsx:93`](file:///C:/Users/HP/Documents/My Web Sites/AntigravityWC/White-Caves/src/components/compliance/AmlKycVerificationPanel/AmlKycVerificationPanel.tsx#L93): `<UploadZone onClick={() => {}}>`
 - [`src/components/crm/shared/__tests__/BigTileCard.test.tsx:171`](file:///C:/Users/HP/Documents/My Web Sites/AntigravityWC/White-Caves/src/components/crm/shared/__tests__/BigTileCard.test.tsx#L171): `<BigTileCard title="Card" onClick={() => {}} />`
 - [`src/components/crm/shared/__tests__/BigTileCard.test.tsx:183`](file:///C:/Users/HP/Documents/My Web Sites/AntigravityWC/White-Caves/src/components/crm/shared/__tests__/BigTileCard.test.tsx#L183): `<BigTileCard title="Card" onClick={() => {}} />`
-- [`src/components/media/WebXRHeadsetViewer/WebXRHeadsetViewer.tsx:262`](file:///C:/Users/HP/Documents/My Web Sites/AntigravityWC/White-Caves/src/components/media/WebXRHeadsetViewer/WebXRHeadsetViewer.tsx#L262): `<DPadBtn $col={2} $row={2} onClick={() => {}}>⊙</DPadBtn>`
-- [`src/shared/components/property/PropertyDetailModal.tsx:428`](file:///C:/Users/HP/Documents/My Web Sites/AntigravityWC/White-Caves/src/shared/components/property/PropertyDetailModal.tsx#L428): `<button className="action-btn" onClick={() => {}}>`
 
 ---
 

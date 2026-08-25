@@ -100,12 +100,15 @@ export function runGovernanceAudit() {
     }
   }
 
-  const highestWaveFiles = readdirSync(join(ROOT, 'plans/waves'))
-    .map((name) => {
-      const match = name.match(/^WAVE_(\d+)_/);
-      return match ? Number(match[1]) : null;
-    })
-    .filter((value) => Number.isFinite(value));
+  const wavesDir = join(ROOT, 'plans/waves');
+  const highestWaveFiles = existsSync(wavesDir)
+    ? readdirSync(wavesDir)
+        .map((name) => {
+          const match = name.match(/^WAVE_(\d+)_/);
+          return match ? Number(match[1]) : null;
+        })
+        .filter((value) => Number.isFinite(value))
+    : [];
   const highestWave = highestWaveFiles.length ? Math.max(...highestWaveFiles) : null;
   if (highestWave) {
     const master = readText(join(ROOT, 'plans/MASTER_PLAN.md'));

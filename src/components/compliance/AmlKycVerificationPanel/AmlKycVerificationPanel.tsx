@@ -90,7 +90,7 @@ export const AmlKycVerificationPanel: FC = () => {
           <Field><Label>Transaction Amount (AED)</Label><Input placeholder="5,500,000" /></Field>
         </KycForm>
 
-        <UploadZone onClick={() => {}}>
+        <UploadZone onClick={() => alert('Document Uploader: Select Emirates ID / Passport / Proof of Address')}>
           <div style={{ fontSize: '1.4rem' }}>📁</div>
           <UploadText>Upload KYC Documents (Passport, Emirates ID, Proof of Address)</UploadText>
         </UploadZone>

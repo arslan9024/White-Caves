@@ -259,7 +259,7 @@ export const WebXRHeadsetViewer: FC = () => {
           <DirectionPad>
             <DPadBtn $col={2} $row={1} onClick={() => move('fwd')}>▲</DPadBtn>
             <DPadBtn $col={1} $row={2} onClick={() => move('left')}>◀</DPadBtn>
-            <DPadBtn $col={2} $row={2} onClick={() => {}}>⊙</DPadBtn>
+            <DPadBtn $col={2} $row={2} onClick={() => setCurrentNode(0)}>⊙</DPadBtn>
             <DPadBtn $col={3} $row={2} onClick={() => move('right')}>▶</DPadBtn>
             <DPadBtn $col={2} $row={3} onClick={() => move('back')}>▼</DPadBtn>
           </DirectionPad>
