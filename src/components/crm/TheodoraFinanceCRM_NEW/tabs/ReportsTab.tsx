@@ -193,21 +193,21 @@ export const ReportsTab: React.FC<ReportsTabProps> = () => {
         {/* Executive Quick Stats */}
         <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap' }}>
           <div style={{ background: 'rgba(255, 255, 255, 0.05)', padding: '8px 14px', borderRadius: '10px', border: '1px solid rgba(255,255,255,0.1)' }}>
-            <div style={{ fontSize: '0.7rem', color: '#94A3B8', fontWeight: 700, textTransform: 'uppercase' }}>Total Reports</div>
+            <div style={{ fontSize: '0.7rem', color: 'var(--text-secondary, #94A3B8)', fontWeight: 700, textTransform: 'uppercase' }}>Total Reports</div>
             <div style={{ fontSize: '1.15rem', fontWeight: 800, color: '#60A5FA' }}>67</div>
           </div>
           <div style={{ background: 'rgba(255, 255, 255, 0.05)', padding: '8px 14px', borderRadius: '10px', border: '1px solid rgba(255,255,255,0.1)' }}>
-            <div style={{ fontSize: '0.7rem', color: '#94A3B8', fontWeight: 700, textTransform: 'uppercase' }}>Categories</div>
+            <div style={{ fontSize: '0.7rem', color: 'var(--text-secondary, #94A3B8)', fontWeight: 700, textTransform: 'uppercase' }}>Categories</div>
             <div style={{ fontSize: '1.15rem', fontWeight: 800, color: '#34D399' }}>14</div>
           </div>
           <div style={{ background: 'rgba(255, 255, 255, 0.05)', padding: '8px 14px', borderRadius: '10px', border: '1px solid rgba(255,255,255,0.1)' }}>
-            <div style={{ fontSize: '0.7rem', color: '#94A3B8', fontWeight: 700, textTransform: 'uppercase' }}>Scheduled</div>
+            <div style={{ fontSize: '0.7rem', color: 'var(--text-secondary, #94A3B8)', fontWeight: 700, textTransform: 'uppercase' }}>Scheduled</div>
             <div style={{ fontSize: '1.15rem', fontWeight: 800, color: '#FBBF24' }}>
               {Object.values(schedules).filter(Boolean).length} Active
             </div>
           </div>
           <div style={{ background: 'rgba(255, 255, 255, 0.05)', padding: '8px 14px', borderRadius: '10px', border: '1px solid rgba(255,255,255,0.1)' }}>
-            <div style={{ fontSize: '0.7rem', color: '#94A3B8', fontWeight: 700, textTransform: 'uppercase' }}>Compliance</div>
+            <div style={{ fontSize: '0.7rem', color: 'var(--text-secondary, #94A3B8)', fontWeight: 700, textTransform: 'uppercase' }}>Compliance</div>
             <div style={{ fontSize: '1.15rem', fontWeight: 800, color: '#A78BFA' }}>FTA / IFRS</div>
           </div>
         </div>

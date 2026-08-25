@@ -46,7 +46,7 @@ export const LeadImportCsvWizard: FC = () => {
       )}
       {step === 3 && (
         <SuccessBanner>
-          <CheckCircle size={40} color="#22c55e" style={{ margin: '0 auto 0.75rem', display: 'block' }} />
+          <CheckCircle size={40} color="var(--accent-green, #22C55E)" style={{ margin: '0 auto 0.75rem', display: 'block' }} />
           <div style={{ fontWeight: 700, fontSize: '1rem', color: 'var(--color-15803d, #15803d)' }}>{rowCount} leads imported successfully!</div>
           <button onClick={handleReset} style={{ marginTop: '1rem', color: 'var(--accent-red, #ef4444)', background: 'none', border: 'none', cursor: 'pointer', fontWeight: 600 }}>
             Import another file
