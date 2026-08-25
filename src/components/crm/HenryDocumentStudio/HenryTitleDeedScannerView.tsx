@@ -583,7 +583,7 @@ export const HenryTitleDeedScannerView: FC = () => {
               </DeedSummaryCard>
             ) : (
               <div style={{ textAlign: 'center', color: 'var(--color-94a3b8, #94A3B8)', padding: '3rem 1rem' }}>
-                <Building size={48} color="#94A3B8" style={{ margin: '0 auto 12px auto' }} />
+                <Building size={48} color="var(--text-secondary, #94A3B8)" style={{ margin: '0 auto 12px auto' }} />
                 <div style={{ fontWeight: 800, fontSize: '0.95rem', color: 'var(--color-334155, #334155)' }}>
                   No Title Deed Uploaded Yet
                 </div>

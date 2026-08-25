@@ -37,14 +37,14 @@ export function useEmployeeLeaderboardPanelLogic() {
   }, []);
 
   const personnel: LedgerPersonnel[] = useMemo(() => {
-    const raw = Array.isArray(companyLedger) ? companyLedger : ((companyLedger as any).personnel || []);
-    return raw.map((p: any) => ({
-      id: p.id || 'EMP-UNKNOWN',
-      name: p.name || 'Staff Member',
-      email: p.email,
-      roleTitle: p.role || p.roleTitle,
-      assignedDepartment: p.assignedDepartment || 'dept-06',
-      accessLevel: p.level || p.accessLevel || 1,
+    const raw = Array.isArray(companyLedger) ? companyLedger : (((companyLedger as unknown) as { personnel?: LedgerPersonnel[] }).personnel || []);
+    return (raw as Array<Record<string, unknown>>).map(p => ({
+      id: String(p.id || 'EMP-UNKNOWN'),
+      name: String(p.name || 'Staff Member'),
+      email: typeof p.email === 'string' ? p.email : undefined,
+      roleTitle: typeof p.role === 'string' ? p.role : (typeof p.roleTitle === 'string' ? p.roleTitle : undefined),
+      assignedDepartment: typeof p.assignedDepartment === 'string' ? p.assignedDepartment : 'dept-06',
+      accessLevel: typeof p.level === 'number' ? p.level : (typeof p.accessLevel === 'number' ? p.accessLevel : 1),
     }));
   }, []);
 

@@ -333,7 +333,7 @@ export const HenryTenancyContractModal: FC<HenryTenancyContractModalProps> = ({
                 {activeStep === 1 && (
                   <div>
                     <OcrDropzone onClick={() => deedFileInputRef.current?.click()}>
-                      <UploadCloud size={28} color="#EF4444" style={{ margin: '0 auto 8px auto' }} />
+                      <UploadCloud size={28} color="var(--accent-red, #EF4444)" style={{ margin: '0 auto 8px auto' }} />
                       <div className="dropzone-title">Upload & Scan Official DLD Title Deed / Oqood</div>
                       <div className="dropzone-desc">
                         Drag and drop official Title Deed PDF or image to automatically extract Building Name, Unit Number, Plot Number, Makani, DEWA Number, Area SqM, and Owner.

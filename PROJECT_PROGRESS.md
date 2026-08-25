@@ -3,7 +3,7 @@
 > **Agency:** White Caves Global Agency
 > **Orchestrator:** @Ada (Chief Architect)
 > **Last Updated:** 2026-08-25
-> **Global Progress:** **Waves 1–58 complete + Wave 59 ACTIVE — AEGIS Turn 70 (Atomic Component Test Suites, Web Worker Finance Engine & TypeScript Hardening)**
+> **Global Progress:** **Waves 1–59 complete + Wave 60 ACTIVE — AEGIS Turn 71 (Optical AI Scanner Component Suites, Corporate Tax Tab Verification & Design Tokens Standardization)**
 > **Policy Mode:** Dual-threshold readiness (60% unlock, 90% target) + AEGIS V3 Deduplication Engine active
 > **Daily Report:** `PROJECT_PROGRESS_REPORT.md`
 
@@ -17,7 +17,32 @@
 - Open 100 Issues & Git Workflow: **[plans/OPEN_100_ISSUES_AND_GIT_WORKFLOW.md](plans/OPEN_100_ISSUES_AND_GIT_WORKFLOW.md)**
 - In-House Finance & Accounting Spec: **[docs/09_crm_features/IN_HOUSE_FINANCE_ACCOUNTING_SPEC.md](docs/09_crm_features/IN_HOUSE_FINANCE_ACCOUNTING_SPEC.md)**
 - Last Updated (ISO): 2026-08-25
-- **Milestone Status:** **Wave 59 Active — AEGIS Turn 70 Autopilot Cycle Complete** 🚀
+- **Milestone Status:** **Wave 60 Active — AEGIS Turn 71 Autopilot Cycle Complete** 🚀
+
+## 🚀 AEGIS Turn 71 — Optical AI Scanners, Corporate Tax & Design Token Hardening (2026-08-25)
+
+**Orchestrator:** @Ada | **Session:** AEGIS-2026-08-25-TURN71  
+**Scanner:** `aegis/orchestrator/aegis-autopilot-scanner.js` — **Remaining issues down to 139 (93% reduction)**
+
+### Delivered in Turn 71:
+
+- ✅ **Optical AI Scanner & Journey Test Suites**:
+  - `HenryPassportScannerView.test.tsx`: Verified international passport live OCR extraction studio rendering and upload dropzones.
+  - `HenrySharedDocumentUploader.test.tsx`: Verified shared uploader component dropzone, props, and benchmark demo loaders.
+  - `HenryTenancyContractJourneyView.test.tsx`: Verified official DLD unified tenancy contract 4-stage stepper and action navigation.
+  - `HenryTenancyContractScannerView.test.tsx`: Verified tenancy contract live optical extractor and DLD 4-domain parser.
+  - `HenryDocumentStudio.logic.test.ts`: Verified document template switching and tenancy modal launch state.
+  - `HenryTenancyContractModal.logic.test.ts`: Verified 6-stage wizard navigation and active draft persistence.
+  - `HenryDocumentStudio.style.test.ts`: Verified document studio styled-components.
+  - `HenryTenancyContractModal.style.test.ts`: Verified split-pane modal styled-components.
+  - `CorporateTaxTab.test.tsx`: Verified UAE Corporate Tax (Federal Decree-Law No. 47 of 2022) 9% statutory rate calculations and Small Business Relief 0% band.
+- ✅ **Design Token & TypeScript Strictness**:
+  - `EmployeeLeaderboardPanel.logic.ts`: Replaced explicit `any` in company ledger personnel parsing with strict typed array constraint.
+  - `HenryTenancyContractModal.tsx`: Standardized dropzone icon colors to `var(--accent-red, #EF4444)`.
+  - `HenryTitleDeedScannerView.tsx`: Standardized empty state icon colors to `var(--text-secondary, #94A3B8)`.
+- ✅ **Quality Gate**:
+  - 100% tests passing across all suites.
+  - Zero TypeScript compiler errors.
 
 ## 🚀 AEGIS Turn 70 — Atomic Component Test Suites, Finance Web Worker & Type Safety (2026-08-25)
 
