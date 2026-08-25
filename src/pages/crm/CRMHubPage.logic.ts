@@ -230,6 +230,7 @@ export const ALL_AI_ASSISTANTS: AIAssistantOption[] = [
       { id: 'theodora-balance-sheet', label: '3.14.11 Balance Sheet & Ledger', icon: '📑', badge: 'GL' },
       { id: 'theodora-cashflow', label: '3.14.12 Cash Flow & Bank Recon', icon: '🌊', badge: 'Wio Bank' },
       { id: 'theodora-audit-report', label: '3.14.13 Regulatory Audit Pack', icon: '🛡️', badge: 'Audit Report' },
+      { id: 'theodora-reports-all', label: '3.14.14 All Reports Hub (67 Reports)', icon: '📑', badge: 'Zoho Standard' },
     ],
   },
   {

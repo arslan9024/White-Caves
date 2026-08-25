@@ -47,6 +47,7 @@ const TheodoraFinanceCRM: React.FC<TheodoraFinanceCRMProps> = ({ moduleId }) => 
       'theodora-balance-sheet': 'financial-statements',
       'theodora-cashflow': 'financial-statements',
       'theodora-audit-report': 'financial-statements',
+      'theodora-reports-all': 'reports',
     };
     if (tabMap[moduleId]) {
       setActiveTab(tabMap[moduleId]);
@@ -106,7 +107,7 @@ const TheodoraFinanceCRM: React.FC<TheodoraFinanceCRMProps> = ({ moduleId }) => 
       group: 'Financial Statements & Audit',
       items: [
         { id: 'financial-statements', label: '3.14.10 P&L / Balance Sheet / Audit', icon: '📈' },
-        { id: 'reports', label: 'Custom Analytics', icon: '🔍' },
+        { id: 'reports', label: '3.14.14 All Reports (67)', icon: '📑' },
         { id: 'lifecycle', label: 'AI Health', icon: '🔄' },
       ],
     },

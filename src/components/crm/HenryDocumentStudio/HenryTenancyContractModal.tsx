@@ -598,7 +598,7 @@ export const HenryTenancyContractModal: FC<HenryTenancyContractModalProps> = ({
                       </OcrDropzone>
 
                       <OcrDropzone onClick={() => tenantPassportFileInputRef.current?.click()}>
-                        <UploadCloud size={24} color="#10B981" style={{ margin: '0 auto 6px auto' }} />
+                        <UploadCloud size={24} color="var(--accent-green, #10B981)" style={{ margin: '0 auto 6px auto' }} />
                         <div className="dropzone-title" style={{ fontSize: '0.85rem' }}>Upload Tenant Passport</div>
                         <div style={{ display: 'flex', gap: '6px', justifyContent: 'center', marginTop: '6px' }}>
                           <HeaderBtn
