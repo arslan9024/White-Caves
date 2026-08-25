@@ -1,6 +1,8 @@
+import React from 'react';
 import { describe, it, expect } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import { DocumentShareLinkGenerator } from './DocumentShareLinkGenerator';
+
 describe('DocumentShareLinkGenerator', () => {
   it('renders share link generator', () => {
     render(<DocumentShareLinkGenerator />);

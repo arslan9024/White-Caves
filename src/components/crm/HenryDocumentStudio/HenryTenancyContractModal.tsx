@@ -569,7 +569,7 @@ export const HenryTenancyContractModal: FC<HenryTenancyContractModalProps> = ({
                   <div>
                     <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px', marginBottom: '1.25rem' }}>
                       <OcrDropzone onClick={() => tenantEidFileInputRef.current?.click()}>
-                        <UploadCloud size={24} color="#38BDF8" style={{ margin: '0 auto 6px auto' }} />
+                        <UploadCloud size={24} color="var(--accent-blue, #38BDF8)" style={{ margin: '0 auto 6px auto' }} />
                         <div className="dropzone-title" style={{ fontSize: '0.85rem' }}>Upload Tenant Emirates ID</div>
                         <div style={{ display: 'flex', gap: '6px', justifyContent: 'center', marginTop: '6px' }}>
                           <HeaderBtn
