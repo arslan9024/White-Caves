@@ -183,7 +183,7 @@ export const ReportsTab: React.FC<ReportsTabProps> = () => {
                   67 Active Reports
                 </span>
               </div>
-              <p style={{ margin: '4px 0 0 0', fontSize: '0.85rem', color: '#94A3B8' }}>
+              <p style={{ margin: '4px 0 0 0', fontSize: '0.85rem', color: 'var(--text-secondary, #94A3B8)' }}>
                 Comprehensive real estate financial, VAT 5%, Corporate Tax 9%, escrow ledger, and operational reporting matrix.
               </p>
             </div>

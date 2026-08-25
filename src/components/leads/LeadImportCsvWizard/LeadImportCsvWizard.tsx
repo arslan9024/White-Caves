@@ -20,7 +20,7 @@ export const LeadImportCsvWizard: FC = () => {
         <>
           <Title>Upload Lead CSV File</Title>
           <DropZone onClick={handleFileSelect}>
-            <Upload size={32} color="#ef4444" style={{ margin: '0 auto 0.5rem', display: 'block' }} />
+            <Upload size={32} color="var(--accent-red, #EF4444)" style={{ margin: '0 auto 0.5rem', display: 'block' }} />
             <div style={{ fontWeight: 600, color: 'var(--color-1e293b, #1e293b)' }}>Click to select CSV file</div>
             <div style={{ fontSize: '0.8125rem', color: 'var(--color-94a3b8, #94a3b8)', marginTop: '0.25rem' }}>Max 10,000 rows · UTF-8 encoding</div>
           </DropZone>
