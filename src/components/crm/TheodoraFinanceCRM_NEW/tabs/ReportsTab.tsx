@@ -194,21 +194,21 @@ export const ReportsTab: React.FC<ReportsTabProps> = () => {
         <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap' }}>
           <div style={{ background: 'rgba(255, 255, 255, 0.05)', padding: '8px 14px', borderRadius: '10px', border: '1px solid rgba(255,255,255,0.1)' }}>
             <div style={{ fontSize: '0.7rem', color: 'var(--text-secondary, #94A3B8)', fontWeight: 700, textTransform: 'uppercase' }}>Total Reports</div>
-            <div style={{ fontSize: '1.15rem', fontWeight: 800, color: '#60A5FA' }}>67</div>
+            <div style={{ fontSize: '1.15rem', fontWeight: 800, color: 'var(--color-primary-blue, #60A5FA)' }}>67</div>
           </div>
           <div style={{ background: 'rgba(255, 255, 255, 0.05)', padding: '8px 14px', borderRadius: '10px', border: '1px solid rgba(255,255,255,0.1)' }}>
             <div style={{ fontSize: '0.7rem', color: 'var(--text-secondary, #94A3B8)', fontWeight: 700, textTransform: 'uppercase' }}>Categories</div>
-            <div style={{ fontSize: '1.15rem', fontWeight: 800, color: '#34D399' }}>14</div>
+            <div style={{ fontSize: '1.15rem', fontWeight: 800, color: 'var(--accent-green, #34D399)' }}>14</div>
           </div>
           <div style={{ background: 'rgba(255, 255, 255, 0.05)', padding: '8px 14px', borderRadius: '10px', border: '1px solid rgba(255,255,255,0.1)' }}>
             <div style={{ fontSize: '0.7rem', color: 'var(--text-secondary, #94A3B8)', fontWeight: 700, textTransform: 'uppercase' }}>Scheduled</div>
-            <div style={{ fontSize: '1.15rem', fontWeight: 800, color: '#FBBF24' }}>
+            <div style={{ fontSize: '1.15rem', fontWeight: 800, color: 'var(--color-amber-500, #FBBF24)' }}>
               {Object.values(schedules).filter(Boolean).length} Active
             </div>
           </div>
           <div style={{ background: 'rgba(255, 255, 255, 0.05)', padding: '8px 14px', borderRadius: '10px', border: '1px solid rgba(255,255,255,0.1)' }}>
             <div style={{ fontSize: '0.7rem', color: 'var(--text-secondary, #94A3B8)', fontWeight: 700, textTransform: 'uppercase' }}>Compliance</div>
-            <div style={{ fontSize: '1.15rem', fontWeight: 800, color: '#A78BFA' }}>FTA / IFRS</div>
+            <div style={{ fontSize: '1.15rem', fontWeight: 800, color: 'var(--accent-purple, #A78BFA)' }}>FTA / IFRS</div>
           </div>
         </div>
       </div>
@@ -229,7 +229,7 @@ export const ReportsTab: React.FC<ReportsTabProps> = () => {
         <div style={{ display: 'flex', gap: '0.75rem', flexWrap: 'wrap', alignItems: 'center', justifyContent: 'space-between' }}>
           {/* Search Input */}
           <div style={{ position: 'relative', flex: '1', minWidth: '260px' }}>
-            <span style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', color: '#94A3B8', fontSize: '0.9rem' }}>
+            <span style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', color: 'var(--text-secondary, #94A3B8)', fontSize: '0.9rem' }}>
               🔍
             </span>
             <input
@@ -241,11 +241,11 @@ export const ReportsTab: React.FC<ReportsTabProps> = () => {
                 width: '100%',
                 padding: '9px 12px 9px 36px',
                 borderRadius: '8px',
-                border: '1px solid #CBD5E1',
+                border: '1px solid var(--border-color, #CBD5E1)',
                 fontSize: '0.85rem',
-                color: '#1E293B',
+                color: 'var(--text-primary, #1E293B)',
                 outline: 'none',
-                backgroundColor: '#F8FAFC',
+                backgroundColor: 'var(--color-f8fafc, #F8FAFC)',
               }}
             />
             {searchQuery && (

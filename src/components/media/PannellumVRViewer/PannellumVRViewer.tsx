@@ -30,7 +30,7 @@ export const PannellumVRViewer: FC = () => {
       </VrViewport>
 
       <VrControls>
-        <div style={{ fontSize: '0.85rem', fontWeight: 'bold' }}>📍 Room: <span style={{ color: '#EF4444' }}>{activeRoom}</span></div>
+        <div style={{ fontSize: '0.85rem', fontWeight: 'bold' }}>📍 Room: <span style={{ color: 'var(--accent-red, #EF4444)' }}>{activeRoom}</span></div>
         <div style={{ display: 'flex', gap: '8px' }}>
           <button
             onClick={toggleVirtualStaging}

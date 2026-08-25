@@ -75,8 +75,10 @@ export function useLeadKanbanBoardLogic() {
   const [draggingId, setDraggingId] = useState<string | null>(null);
   const [dragOverColumn, setDragOverColumn] = useState<ColumnId | null>(null);
   const dragSourceColumn = useRef<ColumnId | null>(null);
+  const draggingIdRef = useRef<string | null>(null);
 
   const handleDragStart = useCallback((leadId: string, colId: ColumnId) => {
+    draggingIdRef.current = leadId;
     setDraggingId(leadId);
     dragSourceColumn.current = colId;
   }, []);
@@ -87,19 +89,22 @@ export function useLeadKanbanBoardLogic() {
 
   const handleDrop = useCallback(
     (targetColId: ColumnId) => {
-      if (!draggingId || !dragSourceColumn.current) return;
-      if (dragSourceColumn.current === targetColId) {
+      const sourceColId = dragSourceColumn.current;
+      const activeId = draggingIdRef.current || draggingId;
+      if (!activeId || !sourceColId) return;
+      if (sourceColId === targetColId) {
         setDraggingId(null);
+        draggingIdRef.current = null;
         setDragOverColumn(null);
         return;
       }
 
       setColumns((prev) => {
         const next = prev.map((col) => ({ ...col, leads: [...col.leads] }));
-        const srcCol = next.find((c) => c.id === dragSourceColumn.current);
+        const srcCol = next.find((c) => c.id === sourceColId);
         const tgtCol = next.find((c) => c.id === targetColId);
         if (!srcCol || !tgtCol) return prev;
-        const idx = srcCol.leads.findIndex((l) => l.id === draggingId);
+        const idx = srcCol.leads.findIndex((l) => l.id === activeId);
         if (idx === -1) return prev;
         const [moved] = srcCol.leads.splice(idx, 1);
         tgtCol.leads.push({ ...moved, daysInStage: 0 });
@@ -107,6 +112,7 @@ export function useLeadKanbanBoardLogic() {
       });
 
       setDraggingId(null);
+      draggingIdRef.current = null;
       setDragOverColumn(null);
       dragSourceColumn.current = null;
     },

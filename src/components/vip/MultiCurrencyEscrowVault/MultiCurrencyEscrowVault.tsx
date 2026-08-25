@@ -65,7 +65,7 @@ export const MultiCurrencyEscrowVault: FC = () => {
     <Wrapper data-testid="multi-currency-escrow-vault">
       <Header>
         <Title>🏦 Multi-Currency Escrow Vault</Title>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}><LiveDot /><span style={{ fontSize: '0.7rem', color: '#10B981', fontWeight: 700 }}>LIVE RATES</span></div>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}><LiveDot /><span style={{ fontSize: '0.7rem', color: 'var(--accent-green, #10B981)', fontWeight: 700 }}>LIVE RATES</span></div>
       </Header>
       <Body>
         <CurrencyGrid>
