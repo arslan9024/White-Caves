@@ -401,9 +401,9 @@ export const ReportsTab: React.FC<ReportsTabProps> = () => {
             <tbody>
               {filteredReports.length === 0 ? (
                 <tr>
-                  <td colSpan={7} style={{ padding: '3rem', textAlign: 'center', color: '#64748B' }}>
+                  <td colSpan={7} style={{ padding: '3rem', textAlign: 'center', color: 'var(--text-secondary, #64748B)' }}>
                     <div style={{ fontSize: '2rem', marginBottom: '8px' }}>🔍</div>
-                    <div style={{ fontWeight: 700, fontSize: '1rem', color: '#1E293B' }}>No reports matched your search</div>
+                    <div style={{ fontWeight: 700, fontSize: '1rem', color: 'var(--text-primary, #1E293B)' }}>No reports matched your search</div>
                     <div style={{ fontSize: '0.85rem', marginTop: '4px' }}>Try searching with different keywords or reset category filters.</div>
                   </td>
                 </tr>

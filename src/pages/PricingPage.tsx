@@ -446,7 +446,7 @@ const PricingPage: React.FC = () => {
                       <ul style={{ listStyle: 'none', padding: 0, margin: 0, display: 'flex', flexDirection: 'column', gap: '10px' }}>
                         {plan.features.map((feat, i) => (
                           <li key={i} style={{ display: 'flex', alignItems: 'flex-start', gap: '8px', fontSize: '0.84rem', color: 'var(--text-secondary, #E2E8F0)', lineHeight: 1.4 }}>
-                            <CheckCircle2 size={16} color="#10B981" style={{ flexShrink: 0, marginTop: '2px' }} />
+                            <CheckCircle2 size={16} color="var(--accent-green, #10B981)" style={{ flexShrink: 0, marginTop: '2px' }} />
                             <span>{feat}</span>
                           </li>
                         ))}
