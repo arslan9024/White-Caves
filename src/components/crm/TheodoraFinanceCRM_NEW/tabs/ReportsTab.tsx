@@ -376,11 +376,11 @@ export const ReportsTab: React.FC<ReportsTabProps> = () => {
           boxShadow: '0 1px 4px rgba(0,0,0,0.03)',
         }}
       >
-        <div style={{ padding: '12px 16px', background: '#F8FAFC', borderBottom: '1px solid #E2E8F0', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-          <div style={{ fontSize: '0.85rem', fontWeight: 800, color: '#334155' }}>
+        <div style={{ padding: '12px 16px', background: 'var(--color-f8fafc, #F8FAFC)', borderBottom: '1px solid var(--border-color, #E2E8F0)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+          <div style={{ fontSize: '0.85rem', fontWeight: 800, color: 'var(--text-primary, #334155)' }}>
             Showing {filteredReports.length} of 67 Reports
           </div>
-          <div style={{ fontSize: '0.75rem', color: '#64748B' }}>
+          <div style={{ fontSize: '0.75rem', color: 'var(--text-secondary, #64748B)' }}>
             Click on any report to open interactive viewer & metrics
           </div>
         </div>
@@ -388,7 +388,7 @@ export const ReportsTab: React.FC<ReportsTabProps> = () => {
         <div style={{ overflowX: 'auto' }}>
           <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left', fontSize: '0.85rem' }}>
             <thead>
-              <tr style={{ background: '#F1F5F9', borderBottom: '1px solid #E2E8F0', color: '#475569', fontWeight: 800, fontSize: '0.75rem', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
+              <tr style={{ background: 'var(--color-f1f5f9, #F1F5F9)', borderBottom: '1px solid var(--border-color, #E2E8F0)', color: 'var(--text-secondary, #475569)', fontWeight: 800, fontSize: '0.75rem', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
                 <th style={{ padding: '12px 16px', width: '40px', textAlign: 'center' }}>★</th>
                 <th style={{ padding: '12px 16px' }}>Report Name</th>
                 <th style={{ padding: '12px 16px' }}>Report Category</th>

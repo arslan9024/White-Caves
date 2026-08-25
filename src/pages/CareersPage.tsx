@@ -587,7 +587,7 @@ const CareersPage: FC = () => {
 
             {applyStatus === 'success' ? (
               <div style={{ textAlign: 'center', padding: '2rem 0' }}>
-                <CheckCircle2 size={48} color="#10B981" style={{ margin: '0 auto 1rem' }} />
+                <CheckCircle2 size={48} color="var(--accent-green, #10B981)" style={{ margin: '0 auto 1rem' }} />
                 <h4 style={{ fontSize: '1.2rem', fontWeight: 900, color: 'var(--accent-green, #10B981)', margin: '0 0 0.5rem' }}>
                   Application Submitted Successfully!
                 </h4>
