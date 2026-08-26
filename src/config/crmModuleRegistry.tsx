@@ -58,9 +58,10 @@ const RERAComplianceModule = lazy(() => import('../components/crm/RERACompliance
 const DLDIntegrationModule = lazy(() => import('../components/crm/DLDIntegrationModule'));
 const LeadScoringModule = lazy(() => import('../components/crm/LeadScoringModule'));
 const PropertyValuationModule = lazy(() => import('../components/crm/PropertyValuationModule'));
-const MarketAnalyticsModule = lazy(() => import('../components/crm/MarketAnalyticsModule'));
 const ZoeBusinessHub = lazy(() => import('../components/crm/ZoeBusinessHub'));
 const AuroraSoftwareHub = lazy(() => import('../components/crm/AuroraSoftwareHub'));
+const MargaretPlansHub = lazy(() => import('../components/crm/MargaretPlansHub'));
+const AdaArchitectureHub = lazy(() => import('../components/crm/AdaArchitectureHub'));
 
 // 40 Assistant Enterprise Suite Components
 const ApexCRM = lazy(() => import('../components/crm/ApexCRM'));
@@ -233,6 +234,26 @@ export const CRM_MODULE_REGISTRY: Record<string, CRMModuleDefinition> = {
     id: 'aurora-software-docs', label: '3.16.5 Hyper-Linked Software Architecture Hub', icon: '📐',
     description: 'SRS specifications, SDD topologies, RUP lifecycles, and 4-way folder standards',
     color: '#3B82F6', zone: 'ai_command', Component: AuroraSoftwareHub,
+  },
+  margaret: {
+    id: 'margaret', label: '3.12 Margaret Strategic Plans Hub', icon: '🗺️',
+    description: 'Master roadmaps, sprint backlogs, feature coverage matrices, and autonomous autopilot queues',
+    color: '#F59E0B', zone: 'executive', Component: MargaretPlansHub,
+  },
+  'margaret-plans-docs': {
+    id: 'margaret-plans-docs', label: '3.12.1 Strategic Plans & Backlog Hub', icon: '📋',
+    description: 'Hyper-linked HTML project roadmaps, wave backlogs, and governance matrices',
+    color: '#F59E0B', zone: 'ai_command', Component: MargaretPlansHub,
+  },
+  ada: {
+    id: 'ada', label: '3.13 Ada Chief Architecture Hub', icon: '🏛️',
+    description: 'Chief architecture governance, zero-token local gates, deduplication laws, and RBAC security',
+    color: '#10B981', zone: 'executive', Component: AdaArchitectureHub,
+  },
+  'ada-architecture-docs': {
+    id: 'ada-architecture-docs', label: '3.13.1 Architecture & SDLC Governance Hub', icon: '🛡️',
+    description: 'System topologies, SDLC policies, deduplication engines, and security matrices',
+    color: '#10B981', zone: 'ai_command', Component: AdaArchitectureHub,
   },
   hazel: {
     id: 'hazel', label: 'Frontend CRM', icon: '🧩',
