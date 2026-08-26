@@ -361,6 +361,36 @@ export const AI_ASSISTANTS: Record<string, AIAssistant> = {
     },
   },
 
+  aegis: {
+    id: 'aegis',
+    name: 'AEGIS',
+    title: 'Autonomous Autopilot & Swarm Orchestrator',
+    avatar: '🛡️',
+    icon: 'ShieldAlert',
+    color: '#EF4444',
+    status: 'active',
+    role: 'Autonomous Engineering',
+    assignedTo: ['EXEC', 'TECH', 'OPS'],
+    department: 'EXEC',
+    category: 'operations',
+    description: 'Autonomous engineering engine coordinating 170 AI specialists, continuous AST deduplication, and zero-defect quality gates',
+    capabilities: [
+      'Autonomous Autopilot Loops',
+      '170-Agent Swarm Orchestration',
+      'Continuous AST Deduplication',
+      'Zero-Token Local Gate Verification',
+      'Daily Execution Chronology Logging',
+    ],
+    reportsTo: 'Arslan Malik (Managing Director)',
+    dashboardPath: '/aegis/dashboard',
+    accessLevel: 'P0 - Sovereign',
+    features: 45,
+    dataFlows: {
+      inputs: ['Scanner Telemetry', 'Vitest Results', 'Git Tree'],
+      outputs: ['Autopilot Execution Logs', 'Clean Deployments'],
+    },
+  },
+
   theodora: {
     id: 'theodora',
     name: 'Theodora',

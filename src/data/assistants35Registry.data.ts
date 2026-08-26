@@ -582,6 +582,25 @@ export const MASTER_35_AI_ASSISTANTS: AssistantDef[] = [
     apiEndpoints: ['/api/architecture/health', '/api/architecture/gates'],
     dataFlows: { inputs: ['source_code_metrics', 'ast_trees'], outputs: ['gate_approvals', 'complexity_reports'] },
   },
+  {
+    id: 'aegis',
+    name: 'AI AEGIS',
+    code: 'AI_AEGIS',
+    title: 'Autonomous Autopilot & Swarm Orchestrator',
+    departmentId: 'executive_office',
+    departmentName: 'Executive Office & Corporate Governance',
+    icon: 'ShieldAlert',
+    color: '#EF4444',
+    avatar: 'https://ui-avatars.com/api/?name=Aegis+AI&background=EF4444&color=fff',
+    status: 'optimal',
+    description: 'Autonomous engineering engine coordinating 170 AI specialists, continuous AST deduplication, and zero-defect quality gates.',
+    specialty: 'Autonomous Autopilot & Swarm Governance',
+    capabilities: ['Autonomous Autopilot Loops', '170-Agent Swarm Orchestration', 'Continuous AST Deduplication'],
+    slaResponseTime: '< 1s',
+    metrics: { accuracyRate: 100.0, tasksCompletedToday: 520, systemHealth: 'optimal' },
+    apiEndpoints: ['/api/aegis/telemetry', '/api/aegis/cycle'],
+    dataFlows: { inputs: ['scanner_telemetry', 'vitest_results'], outputs: ['autopilot_logs', 'clean_releases'] },
+  },
 
   // ─── 10. Regulatory Affairs & RERA Compliance ─────────────────────────────
   {

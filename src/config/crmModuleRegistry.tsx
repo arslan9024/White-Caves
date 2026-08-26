@@ -62,6 +62,7 @@ const ZoeBusinessHub = lazy(() => import('../components/crm/ZoeBusinessHub'));
 const AuroraSoftwareHub = lazy(() => import('../components/crm/AuroraSoftwareHub'));
 const MargaretPlansHub = lazy(() => import('../components/crm/MargaretPlansHub'));
 const AdaArchitectureHub = lazy(() => import('../components/crm/AdaArchitectureHub'));
+const AegisAutopilotHub = lazy(() => import('../components/crm/AegisAutopilotHub'));
 
 // 40 Assistant Enterprise Suite Components
 const ApexCRM = lazy(() => import('../components/crm/ApexCRM'));
@@ -254,6 +255,16 @@ export const CRM_MODULE_REGISTRY: Record<string, CRMModuleDefinition> = {
     id: 'ada-architecture-docs', label: '3.13.1 Architecture & SDLC Governance Hub', icon: '🛡️',
     description: 'System topologies, SDLC policies, deduplication engines, and security matrices',
     color: '#10B981', zone: 'ai_command', Component: AdaArchitectureHub,
+  },
+  aegis: {
+    id: 'aegis', label: '3.15 AEGIS Autopilot Hub', icon: '🚀',
+    description: 'Live orchestrator telemetry, 170-agent swarm mesh, daily sprint progress, and zero-defect gates',
+    color: '#EF4444', zone: 'executive', Component: AegisAutopilotHub,
+  },
+  'aegis-autopilot-hub': {
+    id: 'aegis-autopilot-hub', label: '3.15.1 Autonomous Orchestrator Engine', icon: '🤖',
+    description: 'Autonomous autopilot controls, continuous AST deduplication, and execution logs',
+    color: '#EF4444', zone: 'ai_command', Component: AegisAutopilotHub,
   },
   hazel: {
     id: 'hazel', label: 'Frontend CRM', icon: '🧩',
