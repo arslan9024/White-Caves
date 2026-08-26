@@ -19,7 +19,7 @@ describe('ZoeBusinessHub Component', () => {
     const searchInput = screen.getByPlaceholderText(/Search business docs/i);
     fireEvent.change(searchInput, { target: { value: 'Ejari' } });
 
-    expect(screen.getByText(/DOC-BUS-03/i)).toBeDefined();
+    expect(screen.getByText(/DOC-BUS-04/i)).toBeDefined();
   });
 
   it('opens doc in viewer overlay and triggers cross-assistant navigation', () => {

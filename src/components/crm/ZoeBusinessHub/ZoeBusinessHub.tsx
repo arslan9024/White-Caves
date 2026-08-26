@@ -21,9 +21,13 @@ import {
   DocCodeBadge,
   DocCardTitle,
   DocCardSummary,
+  DocSubItemsList,
+  DocSubItemChip,
   DocCardFooter,
   ViewerOverlay,
   ViewerHeader,
+  ViewerSubItemsNav,
+  ViewerSubItemPill,
   ActionButton,
 } from './styles/ZoeBusinessHub.style';
 
@@ -84,6 +88,16 @@ export const ZoeBusinessHub: FC<ZoeBusinessHubProps> = ({ onNavigateAssistant })
                   <DocCodeBadge>{doc.code}</DocCodeBadge>
                   <DocCardTitle>{doc.title}</DocCardTitle>
                   <DocCardSummary>{doc.summary}</DocCardSummary>
+                  {doc.subItems && doc.subItems.length > 0 && (
+                    <DocSubItemsList>
+                      {doc.subItems.map((sub) => (
+                        <DocSubItemChip key={sub.id}>
+                          <span className="dot">▸</span>
+                          <span><strong>{sub.title}</strong> — {sub.description}</span>
+                        </DocSubItemChip>
+                      ))}
+                    </DocSubItemsList>
+                  )}
                 </div>
                 <DocCardFooter>
                   <span>{doc.departmentFloor}</span>
@@ -103,6 +117,20 @@ export const ZoeBusinessHub: FC<ZoeBusinessHubProps> = ({ onNavigateAssistant })
               </ActionButton>
             </div>
           </ViewerHeader>
+
+          {activeDoc.subItems && activeDoc.subItems.length > 0 && (
+            <ViewerSubItemsNav>
+              <span style={{ fontSize: '0.8rem', fontWeight: 800, color: 'var(--text-muted, #64748b)', marginRight: '8px' }}>
+                📑 JUMP TO SECTION:
+              </span>
+              {activeDoc.subItems.map((sub) => (
+                <ViewerSubItemPill key={sub.id} href={`#${sub.id}`}>
+                  {sub.title}
+                </ViewerSubItemPill>
+              ))}
+            </ViewerSubItemsNav>
+          )}
+
           <div
             dangerouslySetInnerHTML={{ __html: activeDoc.htmlContent }}
             onClick={(e) => {

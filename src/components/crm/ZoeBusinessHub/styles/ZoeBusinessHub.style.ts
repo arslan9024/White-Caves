@@ -148,6 +148,63 @@ export const DocCardSummary = styled.p`
   line-height: 1.5;
 `;
 
+export const DocSubItemsList = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  margin: 0.75rem 0 1rem 0;
+`;
+
+export const DocSubItemChip = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.75rem;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 6px;
+  padding: 0.3rem 0.6rem;
+  color: var(--text-secondary, #cbd5e1);
+
+  span.dot {
+    color: var(--accent-red, #ef4444);
+    font-weight: 900;
+  }
+`;
+
+export const ViewerSubItemsNav = styled.div`
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 10px;
+  padding: 0.75rem 1rem;
+  margin-bottom: 1.5rem;
+  align-items: center;
+`;
+
+export const ViewerSubItemPill = styled.a`
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-size: 0.78rem;
+  font-weight: 700;
+  padding: 0.35rem 0.75rem;
+  border-radius: 6px;
+  background: #ffffff;
+  border: 1px solid #cbd5e1;
+  color: #0f172a;
+  text-decoration: none;
+  transition: all 0.2s;
+
+  &:hover {
+    background: #ef4444;
+    color: #ffffff;
+    border-color: #ef4444;
+  }
+`;
+
 export const DocCardFooter = styled.div`
   display: flex;
   justify-content: space-between;

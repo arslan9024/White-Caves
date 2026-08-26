@@ -26,7 +26,7 @@ describe('ZoeBusinessHub.logic', () => {
       result.current.setSelectedCategory('all');
       result.current.setSearchQuery('Ejari');
     });
-    expect(result.current.filteredDocs.some((d) => d.code === 'DOC-BUS-03')).toBe(true);
+    expect(result.current.filteredDocs.some((d) => d.code === 'DOC-BUS-04')).toBe(true);
   });
 
   it('opens and closes document viewer overlay', () => {
