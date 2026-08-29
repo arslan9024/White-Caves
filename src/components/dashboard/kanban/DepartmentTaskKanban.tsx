@@ -31,12 +31,53 @@ const INITIAL_TASKS: KanbanTask[] = [
   { id: 'TSK-106', title: 'Off-Plan DAMAC Victoria Inventory Audit (148 Units)', department: 'Off-Plan Sales', assignee: 'AI Clara', priority: 'MEDIUM', stage: 'backlog', slaMinutes: 15 },
 ];
 
+const ALL_DEPARTMENTS = [
+  'all',
+  'Tenancy & Ejari',
+  'Legal & AML',
+  'Finance & VAT',
+  'Technology',
+  'Concierge',
+  'Off-Plan Sales',
+  'Secondary Resales',
+  'Property Management',
+  'Marketing & PR',
+  'HR & Talent',
+  'Investments & Family Office',
+  'Executive Strategy',
+];
+
 export const DepartmentTaskKanban: FC = () => {
   const [tasks, setTasks] = useState<KanbanTask[]>(INITIAL_TASKS);
   const [selectedDeptFilter, setSelectedDeptFilter] = useState<string>('all');
+  const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
+  const [newTaskTitle, setNewTaskTitle] = useState('');
+  const [newTaskDept, setNewTaskDept] = useState('Legal & AML');
+  const [newTaskAssignee, setNewTaskAssignee] = useState('AI Sofia');
+  const [newTaskPriority, setNewTaskPriority] = useState<KanbanTask['priority']>('HIGH');
+  const [newTaskSla, setNewTaskSla] = useState<number>(10);
 
   const moveTask = (taskId: string, targetStage: KanbanTask['stage']) => {
     setTasks(prev => prev.map(t => (t.id === taskId ? { ...t, stage: targetStage } : t)));
+  };
+
+  const handleCreateTask = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!newTaskTitle.trim()) return;
+
+    const newTask: KanbanTask = {
+      id: `TSK-${Math.floor(100 + Math.random() * 900)}`,
+      title: newTaskTitle.trim(),
+      department: newTaskDept,
+      assignee: newTaskAssignee,
+      priority: newTaskPriority,
+      stage: 'backlog',
+      slaMinutes: newTaskSla,
+    };
+
+    setTasks(prev => [newTask, ...prev]);
+    setNewTaskTitle('');
+    setIsCreateModalOpen(false);
   };
 
   const stages: { id: KanbanTask['stage']; title: string; color: string; icon: string }[] = [
@@ -62,7 +103,7 @@ export const DepartmentTaskKanban: FC = () => {
       }}
       data-testid="department-task-kanban"
     >
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.25rem', flexWrap: 'wrap', gap: '10px' }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem', flexWrap: 'wrap', gap: '10px' }}>
         <div>
           <h3 style={{ margin: 0, fontSize: '1.15rem', fontWeight: 800 }}>
             📋 Department Task Pipeline & Collaborative Kanban
@@ -73,18 +114,7 @@ export const DepartmentTaskKanban: FC = () => {
         </div>
 
         <button
-          onClick={() => {
-            const newTask: KanbanTask = {
-              id: `TSK-${Math.floor(100 + Math.random() * 900)}`,
-              title: 'Automated DLD Trakheesi Permit Verification',
-              department: 'Legal & AML',
-              assignee: 'AI Sofia',
-              priority: 'HIGH',
-              stage: 'backlog',
-              slaMinutes: 10,
-            };
-            setTasks(prev => [newTask, ...prev]);
-          }}
+          onClick={() => setIsCreateModalOpen(true)}
           style={{
             background: '#EF4444',
             color: '#FFFFFF',
@@ -94,10 +124,34 @@ export const DepartmentTaskKanban: FC = () => {
             fontSize: '0.8rem',
             fontWeight: 800,
             cursor: 'pointer',
+            boxShadow: '0 4px 12px rgba(239, 68, 68, 0.25)',
           }}
         >
-          + Dispatch New Task
+          + Create Executive Directive
         </button>
+      </div>
+
+      {/* 12-Department Filter Pills */}
+      <div style={{ display: 'flex', gap: '6px', overflowX: 'auto', paddingBottom: '8px', marginBottom: '1.25rem' }}>
+        {ALL_DEPARTMENTS.map(dept => (
+          <button
+            key={dept}
+            onClick={() => setSelectedDeptFilter(dept)}
+            style={{
+              padding: '4px 10px',
+              borderRadius: '20px',
+              border: selectedDeptFilter === dept ? '1px solid #EF4444' : '1px solid #E2E8F0',
+              background: selectedDeptFilter === dept ? '#EF4444' : '#F8FAFC',
+              color: selectedDeptFilter === dept ? '#FFFFFF' : '#475569',
+              fontSize: '0.72rem',
+              fontWeight: selectedDeptFilter === dept ? 800 : 600,
+              cursor: 'pointer',
+              whiteSpace: 'nowrap',
+            }}
+          >
+            {dept === 'all' ? `All Departments (${tasks.length})` : dept}
+          </button>
+        ))}
       </div>
 
       {/* Kanban Columns */}
@@ -236,6 +290,214 @@ export const DepartmentTaskKanban: FC = () => {
           );
         })}
       </div>
+
+      {/* ── CREATE EXECUTIVE DIRECTIVE MODAL ── */}
+      <AnimatePresence>
+        {isCreateModalOpen && (
+          <div
+            style={{
+              position: 'fixed',
+              top: 0,
+              left: 0,
+              width: '100vw',
+              height: '100vh',
+              zIndex: 9999,
+              background: 'rgba(15, 23, 42, 0.8)',
+              backdropFilter: 'blur(8px)',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              padding: '1rem',
+            }}
+          >
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95, y: 20 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.95, y: 20 }}
+              style={{
+                background: '#FFFFFF',
+                borderRadius: '20px',
+                width: '100%',
+                maxWidth: '520px',
+                boxShadow: '0 25px 50px rgba(0, 0, 0, 0.25)',
+                overflow: 'hidden',
+              }}
+            >
+              {/* Header */}
+              <div
+                style={{
+                  background: 'linear-gradient(135deg, #0F172A 0%, #1E293B 100%)',
+                  padding: '1.25rem 1.5rem',
+                  color: '#FFFFFF',
+                  display: 'flex',
+                  justifyContent: 'space-between',
+                  alignItems: 'center',
+                }}
+              >
+                <div>
+                  <span style={{ background: '#EF4444', color: '#FFFFFF', fontSize: '0.68rem', fontWeight: 900, padding: '2px 6px', borderRadius: '4px', textTransform: 'uppercase' }}>
+                    Level 7 Executive Suite
+                  </span>
+                  <h3 style={{ margin: '4px 0 0 0', fontSize: '1.1rem', fontWeight: 800 }}>
+                    👑 Create Department Executive Directive
+                  </h3>
+                </div>
+                <button
+                  onClick={() => setIsCreateModalOpen(false)}
+                  style={{
+                    background: 'rgba(255, 255, 255, 0.1)',
+                    border: 'none',
+                    color: '#FFFFFF',
+                    borderRadius: '50%',
+                    width: '32px',
+                    height: '32px',
+                    cursor: 'pointer',
+                  }}
+                >
+                  ✕
+                </button>
+              </div>
+
+              {/* Form */}
+              <form onSubmit={handleCreateTask} style={{ padding: '1.5rem', display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                <div>
+                  <label style={{ fontSize: '0.78rem', fontWeight: 700, color: '#475569', display: 'block', marginBottom: '4px' }}>
+                    Task / Directive Title
+                  </label>
+                  <input
+                    required
+                    type="text"
+                    value={newTaskTitle}
+                    onChange={e => setNewTaskTitle(e.target.value)}
+                    placeholder="e.g., DAMAC Hills 2 Title Deed Registration & PDC Vault Audit"
+                    style={{
+                      width: '100%',
+                      padding: '10px',
+                      borderRadius: '8px',
+                      border: '1px solid #CBD5E1',
+                      fontSize: '0.82rem',
+                      outline: 'none',
+                      boxSizing: 'border-box',
+                    }}
+                  />
+                </div>
+
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px' }}>
+                  <div>
+                    <label style={{ fontSize: '0.78rem', fontWeight: 700, color: '#475569', display: 'block', marginBottom: '4px' }}>
+                      Corporate Department
+                    </label>
+                    <select
+                      value={newTaskDept}
+                      onChange={e => setNewTaskDept(e.target.value)}
+                      style={{
+                        width: '100%',
+                        padding: '9px',
+                        borderRadius: '8px',
+                        border: '1px solid #CBD5E1',
+                        fontSize: '0.82rem',
+                        outline: 'none',
+                        boxSizing: 'border-box',
+                      }}
+                    >
+                      {ALL_DEPARTMENTS.filter(d => d !== 'all').map(d => (
+                        <option key={d} value={d}>{d}</option>
+                      ))}
+                    </select>
+                  </div>
+
+                  <div>
+                    <label style={{ fontSize: '0.78rem', fontWeight: 700, color: '#475569', display: 'block', marginBottom: '4px' }}>
+                      Assignee Lead / Supervisor
+                    </label>
+                    <input
+                      required
+                      type="text"
+                      value={newTaskAssignee}
+                      onChange={e => setNewTaskAssignee(e.target.value)}
+                      placeholder="e.g., AI Victoria (Lead)"
+                      style={{
+                        width: '100%',
+                        padding: '9px',
+                        borderRadius: '8px',
+                        border: '1px solid #CBD5E1',
+                        fontSize: '0.82rem',
+                        outline: 'none',
+                        boxSizing: 'border-box',
+                      }}
+                    />
+                  </div>
+                </div>
+
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px' }}>
+                  <div>
+                    <label style={{ fontSize: '0.78rem', fontWeight: 700, color: '#475569', display: 'block', marginBottom: '4px' }}>
+                      Priority Level
+                    </label>
+                    <select
+                      value={newTaskPriority}
+                      onChange={e => setNewTaskPriority(e.target.value as KanbanTask['priority'])}
+                      style={{
+                        width: '100%',
+                        padding: '9px',
+                        borderRadius: '8px',
+                        border: '1px solid #CBD5E1',
+                        fontSize: '0.82rem',
+                        outline: 'none',
+                        boxSizing: 'border-box',
+                      }}
+                    >
+                      <option value="CRITICAL">🔴 CRITICAL (Immediate)</option>
+                      <option value="HIGH">🟠 HIGH</option>
+                      <option value="MEDIUM">🔵 MEDIUM</option>
+                    </select>
+                  </div>
+
+                  <div>
+                    <label style={{ fontSize: '0.78rem', fontWeight: 700, color: '#475569', display: 'block', marginBottom: '4px' }}>
+                      Max SLA (Minutes)
+                    </label>
+                    <input
+                      type="number"
+                      min={1}
+                      max={60}
+                      value={newTaskSla}
+                      onChange={e => setNewTaskSla(Number(e.target.value))}
+                      style={{
+                        width: '100%',
+                        padding: '9px',
+                        borderRadius: '8px',
+                        border: '1px solid #CBD5E1',
+                        fontSize: '0.82rem',
+                        outline: 'none',
+                        boxSizing: 'border-box',
+                      }}
+                    />
+                  </div>
+                </div>
+
+                <button
+                  type="submit"
+                  style={{
+                    marginTop: '8px',
+                    background: '#EF4444',
+                    color: '#FFFFFF',
+                    border: 'none',
+                    borderRadius: '8px',
+                    padding: '12px',
+                    fontWeight: 800,
+                    fontSize: '0.88rem',
+                    cursor: 'pointer',
+                    boxShadow: '0 4px 12px rgba(239, 68, 68, 0.25)',
+                  }}
+                >
+                  🚀 Dispatch to Department Backlog
+                </button>
+              </form>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
     </div>
   );
 };
