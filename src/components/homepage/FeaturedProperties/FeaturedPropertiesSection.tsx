@@ -4,11 +4,12 @@
  * Live data from homepageSlice.featuredProperties (fetched via /api/homepage/data).
  * Static fallback: gracefully renders skeleton cards while loading.
  */
-import React from 'react';
+import React, { useState } from 'react';
 import { motion } from 'framer-motion';
-import { ArrowRight, Sparkles, CheckCircle2, ShieldCheck } from 'lucide-react';
+import { ArrowRight, Sparkles, CheckCircle2, ShieldCheck, Eye } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import type { HomepageProperty } from '../../../store/slices/homepageSlice';
+import VirtualTourModal from '../../properties/VirtualTourModal';
 import './FeaturedPropertiesSection.css';
 
 // ─── Props ────────────────────────────────────────────────────────────────────
@@ -41,9 +42,10 @@ const SkeletonCard: React.FC = () => (
 interface FeaturedCardProps {
   property: HomepageProperty;
   index: number;
+  onOpenTour: (property: HomepageProperty) => void;
 }
 
-const FeaturedCard: React.FC<FeaturedCardProps> = ({ property, index }) => {
+const FeaturedCard: React.FC<FeaturedCardProps> = ({ property, index, onOpenTour }) => {
   const navigate = useNavigate();
   const fallbackImage = '/images/dubai-skyline.jpg';
   const image = property.images?.[0] ?? fallbackImage;
@@ -168,16 +170,35 @@ const FeaturedCard: React.FC<FeaturedCardProps> = ({ property, index }) => {
           )}
         </div>
 
-        {/* Quick action hover bar */}
-        <div className="fp-card__actions">
+        {/* Quick action hover bar with 3D Tour */}
+        <div className="fp-card__actions" style={{ display: 'flex', gap: '6px' }}>
           <button
             className="fp-action-btn"
+            style={{ flex: 1 }}
             onClick={e => {
               e.stopPropagation();
               navigate(`/property/${property.id}`);
             }}
           >
             View Details
+          </button>
+          <button
+            className="fp-action-btn"
+            style={{
+              background: '#0F172A',
+              color: '#FFFFFF',
+              border: 'none',
+              padding: '6px 10px',
+              fontSize: '0.75rem',
+              fontWeight: 800,
+            }}
+            onClick={e => {
+              e.stopPropagation();
+              onOpenTour(property);
+            }}
+            title="Launch 3D WebGL Virtual Tour"
+          >
+            🕶️ 3D Tour
           </button>
         </div>
       </div>
@@ -204,9 +225,19 @@ const FeaturedPropertiesSection: React.FC<FeaturedPropertiesSectionProps> = ({
   isLoading = false,
 }) => {
   const navigate = useNavigate();
+  const [selectedTourProperty, setSelectedTourProperty] = useState<HomepageProperty | null>(null);
 
   return (
     <section className="fp-section" id="featured-properties">
+      {/* 3D Virtual Tour Viewer Modal */}
+      <VirtualTourModal
+        isOpen={Boolean(selectedTourProperty)}
+        onClose={() => setSelectedTourProperty(null)}
+        propertyTitle={selectedTourProperty?.title}
+        propertyLocation={selectedTourProperty?.location}
+        tourUrl={selectedTourProperty?.images?.[0]}
+      />
+
       <div className="container">
         {/* Header */}
         <motion.div
@@ -234,7 +265,12 @@ const FeaturedPropertiesSection: React.FC<FeaturedPropertiesSectionProps> = ({
         ) : featuredProperties.length > 0 ? (
           <div className="fp-grid">
             {featuredProperties.map((property, i) => (
-              <FeaturedCard key={property.id} property={property} index={i} />
+              <FeaturedCard
+                key={property.id}
+                property={property}
+                index={i}
+                onOpenTour={prop => setSelectedTourProperty(prop)}
+              />
             ))}
           </div>
         ) : (
