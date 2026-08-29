@@ -11,6 +11,8 @@
 
 import React, { FC, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import MultiStageApprovalModal from '../approvals/MultiStageApprovalModal';
+import DepartmentTaskKanban from '../kanban/DepartmentTaskKanban';
 
 export interface FounderExecutiveDashboardProps {
   onNavigateToModule?: (moduleId: string) => void;
@@ -51,6 +53,9 @@ export const FounderExecutiveDashboard: FC<FounderExecutiveDashboardProps> = ({
   const [auditRunning, setAuditRunning] = useState(false);
   const [auditResult, setAuditResult] = useState<string | null>(null);
   const [isEscrowDrawerOpen, setIsEscrowDrawerOpen] = useState(false);
+  const [isApprovalModalOpen, setIsApprovalModalOpen] = useState(false);
+  const [showKanban, setShowKanban] = useState(false);
+  const [themeMode, setThemeMode] = useState<'slate' | 'light'>('slate');
 
   const handleRunAudit = () => {
     setAuditRunning(true);
@@ -317,6 +322,23 @@ export const FounderExecutiveDashboard: FC<FounderExecutiveDashboardProps> = ({
           </div>
 
           <div style={{ display: 'flex', gap: '8px' }}>
+            {/* Day / Night Theme Switcher */}
+            <button
+              onClick={() => setThemeMode(prev => (prev === 'slate' ? 'light' : 'slate'))}
+              style={{
+                background: 'rgba(15, 23, 42, 0.08)',
+                color: '#0F172A',
+                border: '1px solid #CBD5E1',
+                borderRadius: '8px',
+                padding: '8px 12px',
+                fontSize: '0.78rem',
+                fontWeight: 800,
+                cursor: 'pointer',
+              }}
+            >
+              {themeMode === 'slate' ? '☀️ Light Luxury' : '🌙 Sovereign Slate'}
+            </button>
+
             <button
               onClick={handleRunAudit}
               disabled={auditRunning}
@@ -364,10 +386,47 @@ export const FounderExecutiveDashboard: FC<FounderExecutiveDashboardProps> = ({
         <div
           style={{
             display: 'grid',
-            gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
+            gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))',
             gap: '10px',
           }}
         >
+          <button
+            onClick={() => setIsApprovalModalOpen(true)}
+            style={{
+              background: '#0F172A',
+              color: '#FFFFFF',
+              border: '1px solid #334155',
+              borderRadius: '10px',
+              padding: '12px',
+              textAlign: 'left',
+              cursor: 'pointer',
+              boxShadow: '0 4px 12px rgba(15, 23, 42, 0.2)',
+            }}
+          >
+            <div style={{ fontSize: '1.2rem', marginBottom: '4px' }}>✍️</div>
+            <div style={{ fontWeight: 800, fontSize: '0.85rem' }}>Multi-Stage Approvals</div>
+            <div style={{ fontSize: '0.72rem', color: '#94A3B8' }}>Manager → Legal → Founder</div>
+          </button>
+
+          <button
+            onClick={() => setShowKanban(prev => !prev)}
+            style={{
+              background: showKanban ? '#EF4444' : '#F8FAFC',
+              color: showKanban ? '#FFFFFF' : '#0F172A',
+              border: '1px solid #E2E8F0',
+              borderRadius: '10px',
+              padding: '12px',
+              textAlign: 'left',
+              cursor: 'pointer',
+            }}
+          >
+            <div style={{ fontSize: '1.2rem', marginBottom: '4px' }}>📋</div>
+            <div style={{ fontWeight: 800, fontSize: '0.85rem' }}>Department Kanban</div>
+            <div style={{ fontSize: '0.72rem', color: showKanban ? '#FEE2E2' : '#64748B' }}>
+              {showKanban ? 'Hide Task Pipeline' : 'Show 4-Stage Pipeline'}
+            </div>
+          </button>
+
           <button
             onClick={() => onNavigateToModule('ai-command')}
             style={{
@@ -434,6 +493,13 @@ export const FounderExecutiveDashboard: FC<FounderExecutiveDashboardProps> = ({
           </button>
         </div>
       </div>
+
+      {/* ── CONDITIONAL DEPARTMENT TASK KANBAN ──────────────────────────── */}
+      {showKanban && (
+        <div style={{ marginBottom: '1.75rem' }}>
+          <DepartmentTaskKanban />
+        </div>
+      )}
 
       {/* ── 4. 12 CORPORATE DEPARTMENTS LIVE HEALTH MATRIX ────────────────── */}
       <div
@@ -643,6 +709,12 @@ export const FounderExecutiveDashboard: FC<FounderExecutiveDashboardProps> = ({
           </div>
         )}
       </AnimatePresence>
+
+      {/* ── 6. MULTI-STAGE APPROVAL MODAL ─────────────────────────────────── */}
+      <MultiStageApprovalModal
+        isOpen={isApprovalModalOpen}
+        onClose={() => setIsApprovalModalOpen(false)}
+      />
     </div>
   );
 };
