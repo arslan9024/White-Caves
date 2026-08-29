@@ -1,5 +1,6 @@
 import React, { useState, useMemo, useCallback, useEffect } from 'react';
 import { useAuthContext } from './contexts/AuthContext';
+import GamifiedAnalyticsPodium from '../analytics/GamifiedAnalyticsPodium/GamifiedAnalyticsPodium';
 
 /**
  * DashboardView.jsx — High-Density Unified Command Center
@@ -346,8 +347,12 @@ export default function DashboardView() {
                 </span>
               </div>
             ))}
-          </div>
         </div>
+      </div>
+
+      {/* ═══ S-Tier Gamified Analytics Podiums & 15-Min SLA Watchdog ═══ */}
+      <div className="mb-6">
+        <GamifiedAnalyticsPodium />
       </div>
 
       {/* ═══ ROW 3: AI Quick-Action ═══ */}
