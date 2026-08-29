@@ -35,7 +35,7 @@ export const ExpensesTab: React.FC<ExpensesTabProps> = ({ expenses, onApprove, o
 
   // New Expense Form State
   const [newExpense, setNewExpense] = useState({
-    expense_id: 'EXP-101',
+    expense_id: 'EXP-001',
     amount: '',
     payment_source: 'DIRECTORS_LOAN_ACCOUNT_OWNERS_EQUITY',
     notes: '',
@@ -146,83 +146,26 @@ export const ExpensesTab: React.FC<ExpensesTabProps> = ({ expenses, onApprove, o
             cursor: 'pointer',
           }}
         >
-          All Outlays (42)
+          All Accounts ({allCatalogItems.length})
         </button>
-        <button
-          onClick={() => setSelectedCategory('CAT-01')}
-          style={{
-            padding: '6px 12px',
-            borderRadius: '6px',
-            border: selectedCategory === 'CAT-01' ? '1px solid #8B5CF6' : '1px solid #E2E8F0',
-            background: selectedCategory === 'CAT-01' ? '#8B5CF6' : '#FFFFFF',
-            color: selectedCategory === 'CAT-01' ? '#FFFFFF' : '#475569',
-            fontSize: '0.8rem',
-            fontWeight: 700,
-            cursor: 'pointer',
-          }}
-        >
-          CAT-01: Marketing & Portals (10)
-        </button>
-        <button
-          onClick={() => setSelectedCategory('CAT-02')}
-          style={{
-            padding: '6px 12px',
-            borderRadius: '6px',
-            border: selectedCategory === 'CAT-02' ? '1px solid #8B5CF6' : '1px solid #E2E8F0',
-            background: selectedCategory === 'CAT-02' ? '#8B5CF6' : '#FFFFFF',
-            color: selectedCategory === 'CAT-02' ? '#FFFFFF' : '#475569',
-            fontSize: '0.8rem',
-            fontWeight: 700,
-            cursor: 'pointer',
-          }}
-        >
-          CAT-02: Commercial Overheads (10)
-        </button>
-        <button
-          onClick={() => setSelectedCategory('CAT-03')}
-          style={{
-            padding: '6px 12px',
-            borderRadius: '6px',
-            border: selectedCategory === 'CAT-03' ? '1px solid #8B5CF6' : '1px solid #E2E8F0',
-            background: selectedCategory === 'CAT-03' ? '#8B5CF6' : '#FFFFFF',
-            color: selectedCategory === 'CAT-03' ? '#FFFFFF' : '#475569',
-            fontSize: '0.8rem',
-            fontWeight: 700,
-            cursor: 'pointer',
-          }}
-        >
-          CAT-03: Government & RERA (10)
-        </button>
-        <button
-          onClick={() => setSelectedCategory('CAT-04')}
-          style={{
-            padding: '6px 12px',
-            borderRadius: '6px',
-            border: selectedCategory === 'CAT-04' ? '1px solid #8B5CF6' : '1px solid #E2E8F0',
-            background: selectedCategory === 'CAT-04' ? '#8B5CF6' : '#FFFFFF',
-            color: selectedCategory === 'CAT-04' ? '#FFFFFF' : '#475569',
-            fontSize: '0.8rem',
-            fontWeight: 700,
-            cursor: 'pointer',
-          }}
-        >
-          CAT-04: Transport & Logistics (6)
-        </button>
-        <button
-          onClick={() => setSelectedCategory('CAT-05')}
-          style={{
-            padding: '6px 12px',
-            borderRadius: '6px',
-            border: selectedCategory === 'CAT-05' ? '1px solid #8B5CF6' : '1px solid #E2E8F0',
-            background: selectedCategory === 'CAT-05' ? '#8B5CF6' : '#FFFFFF',
-            color: selectedCategory === 'CAT-05' ? '#FFFFFF' : '#475569',
-            fontSize: '0.8rem',
-            fontWeight: 700,
-            cursor: 'pointer',
-          }}
-        >
-          CAT-05: SaaS & Professional (6)
-        </button>
+        {catalog.map(cat => (
+          <button
+            key={cat.category_id}
+            onClick={() => setSelectedCategory(cat.category_id)}
+            style={{
+              padding: '6px 12px',
+              borderRadius: '6px',
+              border: selectedCategory === cat.category_id ? '1px solid #8B5CF6' : '1px solid #E2E8F0',
+              background: selectedCategory === cat.category_id ? '#8B5CF6' : '#FFFFFF',
+              color: selectedCategory === cat.category_id ? '#FFFFFF' : '#475569',
+              fontSize: '0.8rem',
+              fontWeight: 700,
+              cursor: 'pointer',
+            }}
+          >
+            {cat.category_name} ({cat.items.length})
+          </button>
+        ))}
       </div>
 
       {/* Expenses Table */}
@@ -397,7 +340,6 @@ export const ExpensesTab: React.FC<ExpensesTabProps> = ({ expenses, onApprove, o
                 </button>
                 <button
                   onClick={() => {
-                    alert(`Expense recorded under ${newExpense.expense_id} for AED ${computedGross}. Automatically logged into ${newExpense.payment_source === 'DIRECTORS_LOAN_ACCOUNT_OWNERS_EQUITY' ? "Director's Loan Ledger" : 'Wio Bank Ledger'}.`);
                     setShowAddExpenseModal(false);
                   }}
                   style={{ flex: 1, padding: '10px', borderRadius: '8px', border: 'none', background: 'var(--accent-purple, #8B5CF6)', color: 'var(--white, #FFFFFF)', fontWeight: 800, cursor: 'pointer' }}

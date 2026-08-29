@@ -12,7 +12,8 @@ import {
   ContentArea,
   ContentHeader,
 } from '../../../pages/crm/CRMHubPage.styles';
-import type { BuildingTier } from '../../../pages/crm/CRMHubPage.logic';
+import { BuildingTier } from '../../../pages/crm/CRMHubPage.logic';
+import FounderExecutiveDashboard from './FounderExecutiveDashboard';
 
 export interface DepartmentOverviewProps {
   department: BuildingTier;
@@ -28,6 +29,10 @@ export const DepartmentOverview: FC<DepartmentOverviewProps> = ({
   department,
   onLaunchSubItem,
 }) => {
+  if (department.id === 'dept-md') {
+    return <FounderExecutiveDashboard onNavigateToModule={onLaunchSubItem} />;
+  }
+
   return (
     <ContentArea>
       {/* Dynamic Viewport Header */}

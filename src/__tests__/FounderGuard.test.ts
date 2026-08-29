@@ -26,4 +26,13 @@ describe('Founder Guard Security Law (FounderGuard.ts)', () => {
     expect(shouldShortCircuitToProfile(FOUNDER_EMAIL)).toBe(true);
     expect(shouldShortCircuitToProfile('user@example.com')).toBe(false);
   });
+
+  it('correctly identifies secondary founder email the.white.caves@gmail.com', () => {
+    const profile = evaluateFounderGuard('the.white.caves@gmail.com');
+    expect(profile.accessLevel).toBe(LEVEL_5_MASTER);
+    expect(profile.isFounder).toBe(true);
+    expect(shouldShortCircuitToProfile('the.white.caves@gmail.com')).toBe(true);
+  });
 });
+
+

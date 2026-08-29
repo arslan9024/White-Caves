@@ -2,7 +2,7 @@
 
 > **Status:** ACTIVE | **Canonical Path:** `plans/PENDING_TASKS_ONLY.md` | **Archive Copy:** `docs/plans/PENDING_TASKS_ONLY.md`  
 > **System Version:** 2.0.26  
-> **Last Updated:** 2026-08-09  
+> **Last Updated:** 2026-08-26  
 > **Active Stream:** `MASTER_PLAN.md`  
 > **Active Wave Bundle:** Wave 45 (Arabic RTL Support & PWA Offline Engine — SRS Final Phase)  
 > **Engineering Model:** Rational Unified Process (RUP)  
@@ -73,3 +73,17 @@
 | `software_docs/05_algorithms/commission_tier_acceleration.md` | `finance` | Dynamic Commission Tier Accelerator | Threshold-Trigger Split Math (50/50 to 70/30 Split) | `../02_software_design/database_architecture_sdd.md` |
 | `software_docs/05_algorithms/predictive_roi_appraisal.md` | `intelligence` | Predictive Property ROI Appraisal | Linear Regression DLD Density Arrays | `../02_software_design/tech_replacement_rules.md` |
 | `software_docs/05_algorithms/noc_express_pathfinder.md` | `conveyancing` | NOC Express Pathfinder Logic | Graph-Based Delay Analysis across developers | `../02_software_design/tech_replacement_rules.md` |
+
+---
+
+## 🚀 Global Repository Structural Rearrangement & Deduplication Pass (2026-08-26)
+
+> **Directive Token:** `@Ada — Context Ready (95% Readiness) — High-Fidelity RUP Construction Phase`  
+> **Target:** `GLOBAL_REPOSITORY_STRUCTURAL_REARRANGEMENT_AND_DEDUPLICATION_PASS`
+
+- [x] **Blueprint Ledger Ingestion:** Credit Preservation Law (`strategies/CREDIT_PRESERVATION_LAW.md`) registered.
+- [x] **Duplicate Folder Pruning:** Purge legacy `backend/services/whatsapp/` (superseded by `server/services/whatsappService.ts`).
+- [x] **Documentation Hub Parity:** Complete 16-Module HTML suites for Zoe AI (`zoeBusinessDocsRegistry.ts`) and Aurora AI (`auroraSoftwareDocsRegistry.ts`).
+- [x] **Unified Workspace Layout:** Standardize `UnifiedWorkspaceLayout.tsx` (TopNavbar + Level 5 MD Hub Sidebar).
+- [x] **Zero-Overhead Local Gates:** Validated via `npm run build`, `npm run typecheck`, and `npm run plans:validate`.
+

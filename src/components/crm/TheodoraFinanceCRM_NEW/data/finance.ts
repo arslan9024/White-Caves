@@ -26,8 +26,12 @@ export const INVOICES: Invoice[] = [
 ];
 
 export const EXPENSES: Expense[] = [
-  { id: 1, category: 'Marketing', description: 'Facebook Ads Campaign', amount: 15000, date: '2024-01-08', status: 'approved' },
-  { id: 2, category: 'Maintenance', description: 'AC Repair - Villa 48', amount: 2500, date: '2024-01-07', status: 'pending' },
-  { id: 3, category: 'Utilities', description: 'Office Electricity', amount: 3200, date: '2024-01-06', status: 'approved' },
-  { id: 4, category: 'Salaries', description: 'January Payroll', amount: 450000, date: '2024-01-01', status: 'processed' }
+  { id: 1, category: 'Advertising And Marketing', description: 'Meta Ads & Google PPC Campaign (5010)', amount: 15000, date: '2024-01-08', status: 'approved' },
+  { id: 2, category: 'Rent Expense', description: 'Office D-72 Al Barsha Lease (5200)', amount: 45000, date: '2024-01-07', status: 'approved' },
+  { id: 3, category: 'IT and Internet Expenses', description: 'AWS Cloud & Fiber Internet (5100)', amount: 3200, date: '2024-01-06', status: 'approved' },
+  { id: 4, category: 'Salaries and Employee Wages', description: 'WPS Monthly Payroll Execution (5220)', amount: 450000, date: '2024-01-01', status: 'processed' },
+  { id: 5, category: '[ Payroll-009 ] Air Travel Allowance Expense', description: 'Annual Executive Flight Provisions (5020)', amount: 18500, date: '2024-01-10', status: 'pending' },
+  { id: 6, category: 'Automobile Expense', description: 'Company Fleet Servicing & Salik Tolls (5030)', amount: 4200, date: '2024-01-09', status: 'approved' },
+  { id: 7, category: 'Furniture and Equipment', description: 'Meeting Room Smart Screens & Desks (1510)', amount: 28000, date: '2024-01-05', status: 'approved' },
+  { id: 8, category: 'Cost of Goods Sold', description: 'Direct Property Listing Fulfilment (5000)', amount: 35000, date: '2024-01-04', status: 'processed' }
 ];

@@ -132,3 +132,5 @@ export const TestimonialPodium: React.FC = () => {
     </div>
   );
 };
+
+export default TestimonialPodium;

@@ -21,8 +21,11 @@ export interface ProfileSchedulerState {
 interface LedgerDocument {
   docType?: string;
   doc_type?: string;
+  type?: string;
+  type_name?: string;
   docNo?: string;
   doc_no?: string;
+  documentNo?: string;
   authority?: string;
   expiryDate?: string;
   expiry_date?: string;
@@ -53,7 +56,7 @@ export function useProfileScheduler(): ProfileSchedulerState {
 
     const activeAlerts: DocumentExpiryAlert[] = [];
 
-    mdDocs.forEach((doc: Record<string, string>) => {
+    mdDocs.forEach((doc: LedgerDocument) => {
       const expDateStr = doc.expiryDate || doc.expiry_date;
       if (!expDateStr) return;
 

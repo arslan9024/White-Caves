@@ -14,3 +14,8 @@
 | **Henry Document Hub & OCR** | `business_docs/09_crm_features/document-generation.md` | `business_docs/04_workflows/document-workflow.md` | `plans/MASTER_PLAN.md` | `src/components/shared/HenryDocumentHub/` | `src/components/shared/HenryDocumentHub/*.test.ts*` |
 | **Zoe & Aurora Autonomous Portals** | `business_docs/03_ai_assistants/README.md` | `business_docs/04_workflows/ai-orchestration.md` | `plans/FUTURE_100_TASKS_BACKLOG.md` | `src/components/dashboard/` | `src/components/dashboard/**/*.test.ts*` |
 | **Lead Routing & Pipeline Velocity** | `business_docs/09_crm_features/lead-scoring.md` | `business_docs/04_workflows/lead-routing.md` | `plans/MASTER_PLAN.md` | `src/components/crm/` | `src/components/crm/**/*.test.ts*` |
+| **AI Command Center (44 Assistants)** | `business_docs/03_ai_assistants/README.md` | `business_docs/04_workflows/ai-orchestration.md` | `plans/MASTER_PLAN.md` | `src/components/crm/` | `src/components/crm/**/*.test.ts*` |
+| **Margaret Strategic Plans Hub (3.42)** | `business_docs/03_ai_assistants/README.md` | `business_docs/04_workflows/ai-orchestration.md` | `plans/MASTER_PLAN.md` | `src/components/crm/MargaretPlansHub/` | `src/components/crm/MargaretPlansHub/**/*.test.ts*` |
+| **Ada Chief Architecture Hub (3.43)** | `business_docs/03_ai_assistants/README.md` | `business_docs/04_workflows/ai-orchestration.md` | `plans/MASTER_PLAN.md` | `src/components/crm/AdaArchitectureHub/` | `src/components/crm/AdaArchitectureHub/**/*.test.ts*` |
+| **AEGIS Autopilot Hub (3.44)** | `business_docs/03_ai_assistants/README.md` | `business_docs/04_workflows/ai-orchestration.md` | `plans/MASTER_PLAN.md` | `src/components/crm/AegisAutopilotHub/` | `src/components/crm/AegisAutopilotHub/**/*.test.ts*` |
+

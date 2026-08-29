@@ -9,7 +9,11 @@ import { Request, Response, NextFunction } from 'express';
 import { AppError } from './errorHandler.js';
 import { isClientKycVerified } from '../services/kycService.js';
 
-export const RISKY_AMOUNT_AED = 55000;
+/**
+ * Statutory UAE goAML & FIU Cash Threshold for Real Estate (AED 55,000)
+ */
+export const GOAML_CASH_THRESHOLD_AED = 55000;
+export const RISKY_AMOUNT_AED = GOAML_CASH_THRESHOLD_AED;
 
 export function requireVerifiedKyc(clientIdExtractor?: (req: Request) => string | undefined) {
   return async (req: Request, _res: Response, next: NextFunction): Promise<void> => {

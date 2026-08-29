@@ -415,6 +415,53 @@ export const LuxuryHeroSection: React.FC<LuxuryHeroSectionProps> = ({
             </span>
             <span>Click to Search Dubai Luxury Properties...</span>
           </div>
+
+          {/* -- Luxury Branded Developer Filter Chips (T-009) -- */}
+          <div
+            style={{
+              display: 'flex',
+              flexWrap: 'wrap',
+              justifyContent: 'center',
+              gap: '8px',
+              marginTop: '12px',
+            }}
+            onClick={e => e.stopPropagation()}
+          >
+            <span style={{ fontSize: '0.75rem', color: '#94A3B8', fontWeight: 600, display: 'flex', alignItems: 'center', marginRight: '4px' }}>
+              Top Developers:
+            </span>
+            {['Emaar', 'DAMAC', 'Nakheel', 'Meraas', 'Sobha', 'Ellington'].map(dev => (
+              <button
+                key={dev}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  navigate(`/properties?developer=${encodeURIComponent(dev)}`);
+                }}
+                style={{
+                  background: 'rgba(255, 255, 255, 0.08)',
+                  border: '1px solid rgba(255, 255, 255, 0.15)',
+                  borderRadius: '20px',
+                  padding: '4px 12px',
+                  color: '#F8FAFC',
+                  fontSize: '0.75rem',
+                  fontWeight: 600,
+                  cursor: 'pointer',
+                  transition: 'all 0.2s ease',
+                  backdropFilter: 'blur(6px)',
+                }}
+                onMouseEnter={e => {
+                  e.currentTarget.style.background = '#EF4444';
+                  e.currentTarget.style.borderColor = '#EF4444';
+                }}
+                onMouseLeave={e => {
+                  e.currentTarget.style.background = 'rgba(255, 255, 255, 0.08)';
+                  e.currentTarget.style.borderColor = 'rgba(255, 255, 255, 0.15)';
+                }}
+              >
+                {dev}
+              </button>
+            ))}
+          </div>
         </motion.div>
 
         {/* -- CTA Buttons -- */}

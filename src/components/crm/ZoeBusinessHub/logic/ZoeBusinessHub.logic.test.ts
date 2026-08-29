@@ -35,7 +35,7 @@ describe('ZoeBusinessHub.logic', () => {
     act(() => {
       result.current.handleOpenDoc(ZOE_BUSINESS_DOCS[0]);
     });
-    expect(result.current.activeDoc?.code).toBe('DOC-BUS-01');
+    expect(result.current.activeDoc?.code).toBe(ZOE_BUSINESS_DOCS[0].code);
 
     act(() => {
       result.current.handleCloseDoc();

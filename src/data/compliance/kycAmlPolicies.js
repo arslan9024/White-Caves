@@ -2,7 +2,7 @@ export const KYC_AML_POLICIES = {
   version: '2.0',
   effectiveDate: '2024-01-01',
   jurisdiction: 'UAE',
-  regulatoryAuthorities: ['CBUAE', 'SCA', 'RERA', 'DLD'],
+  regulatoryAuthorities: ['CBUAE', 'SCA', 'RERA', 'DLD', 'goAML', 'FIU'],
 
   riskCategories: {
     LOW: { level: 1, label: 'Low Risk', color: '#10B981', reviewPeriod: 365 },
@@ -14,7 +14,8 @@ export const KYC_AML_POLICIES = {
   customerDueDiligence: {
     CDD: {
       name: 'Customer Due Diligence',
-      thresholdAED: 50000,
+      thresholdAED: 55000,
+      goAmlReportingRequired: true,
       documents: ['passport', 'emirates_id', 'visa', 'proof_of_address'],
       requiredFor: ['LOW', 'MEDIUM'],
       validityDays: 365
@@ -22,6 +23,7 @@ export const KYC_AML_POLICIES = {
     EDD: {
       name: 'Enhanced Due Diligence',
       thresholdAED: 500000,
+      goAmlReportingRequired: true,
       documents: ['passport', 'emirates_id', 'visa', 'proof_of_address', 'source_of_funds', 'bank_statements', 'income_proof'],
       requiredFor: ['HIGH'],
       validityDays: 180,

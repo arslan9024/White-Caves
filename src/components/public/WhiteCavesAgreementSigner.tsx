@@ -39,8 +39,6 @@ export const WhiteCavesAgreementSigner: React.FC = () => {
   const handleSignConfirm = () => {
     if (sigCanvasRef.current && !sigCanvasRef.current.isEmpty()) {
       setIsSigned(true);
-    } else {
-      alert('Please provide your digital signature before confirming.');
     }
   };
 

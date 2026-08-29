@@ -1,0 +1,223 @@
+{
+  "protocol": "AEGIS-1-12-108-ENGINEERING-GRID",
+  "version": "2026.08.29-aegis-v5-108-workforce-v1",
+  "chiefArchitect": {
+    "agent": "@Ada",
+    "name": "Ada Lovelace",
+    "title": "Chief Architect & Supreme AEGIS Gatekeeper",
+    "level": 0
+  },
+  "counts": {
+    "chiefArchitect": 1,
+    "divisionLeads": 12,
+    "supervisorsPerDivision": 9,
+    "totalSupervisors": 108,
+    "totalWorkforce": 121
+  },
+  "divisions": [
+    {
+      "id": "DIV-01",
+      "name": "Architecture & Strategic Planning",
+      "lead": "@Margaret",
+      "leadName": "Margaret Hamilton",
+      "supervisors": [
+        { "agent": "@Hamilton", "name": "Margaret Hamilton Sub-Lead", "specialty": "Sprint Milestone Decomposition" },
+        { "agent": "@Kornelia", "name": "Kornelia Task Guard", "specialty": "Goal Frame Injector & Boundary Enforcer" },
+        { "agent": "@DorothyV", "name": "Dorothy Vaughan", "specialty": "Roadmap Synchronizer" },
+        { "agent": "@Evelyn", "name": "Evelyn Boyd Granville", "specialty": "Session Handoff Logger" },
+        { "agent": "@Frances", "name": "Frances Allen", "specialty": "Refactoring Strategist" },
+        { "agent": "@Ida", "name": "Ida Rhodes", "specialty": "Context Budget Watchdog" },
+        { "agent": "@Jean", "name": "Jean Sammet", "specialty": "Risk & Architectural Drift Assessor" },
+        { "agent": "@Hedy", "name": "Hedy Lamarr", "specialty": "Multi-Agent Protocol Architect" },
+        { "agent": "@Klara", "name": "Klara Dan von Neumann", "specialty": "Milestone Release Governor" }
+      ]
+    },
+    {
+      "id": "DIV-02",
+      "name": "Lead Engineering & Code Standards",
+      "lead": "@Grace",
+      "leadName": "Grace Hopper",
+      "supervisors": [
+        { "agent": "@Hopper", "name": "Grace Hopper Sub-Lead", "specialty": "TypeScript Compiler Guard" },
+        { "agent": "@Adele", "name": "Adele Goldberg", "specialty": "Code Deduplication Engine" },
+        { "agent": "@Bessie", "name": "Bessie Blount", "specialty": "Algorithmic Optimizer" },
+        { "agent": "@Emmeline", "name": "Emmeline Pankhurst Code", "specialty": "Atomic 4-Folder Enforcer" },
+        { "agent": "@Gertrude", "name": "Gertrude Blanch", "specialty": "Dead Code Pruner" },
+        { "agent": "@Henrietta", "name": "Henrietta Swan Leavitt", "specialty": "API Signature Formatter" },
+        { "agent": "@Irene", "name": "Irene Joliot-Curie", "specialty": "Design Token Enforcer" },
+        { "agent": "@Joan", "name": "Joan Clarke", "specialty": "Console & Debug Sanitizer" },
+        { "agent": "@Kathleen", "name": "Kathleen Booth", "specialty": "Modern Syntax Migrator" }
+      ]
+    },
+    {
+      "id": "DIV-03",
+      "name": "Frontend Architecture & UX",
+      "lead": "@Una",
+      "leadName": "Una Kravets",
+      "supervisors": [
+        { "agent": "@Kravets", "name": "Una Kravets Sub-Lead", "specialty": "CSS Grid & Flexbox Master" },
+        { "agent": "@LeaV", "name": "Lea Verou", "specialty": "UI Micro-Animation Engineer" },
+        { "agent": "@TracyC", "name": "Tracy Chou", "specialty": "Mobile Touch Target Auditor" },
+        { "agent": "@AfricaK", "name": "Africa Kenyah", "specialty": "WCAG 2.2 AA Accessibility" },
+        { "agent": "@MarissaM", "name": "Marissa Mayer", "specialty": "Luxury Aesthetics Evaluator" },
+        { "agent": "@Cyra", "name": "Cyra UI Craftsman", "specialty": "Atomic Component Crafter" },
+        { "agent": "@RachelA", "name": "Rachel Andrew", "specialty": "Web Standards & Semantics" },
+        { "agent": "@JenS", "name": "Jen Simmons", "specialty": "CSS Performance & Critical Path" },
+        { "agent": "@Vitaly", "name": "Vitaly Friedman UI", "specialty": "Internationalization & RTL UI" }
+      ]
+    },
+    {
+      "id": "DIV-04",
+      "name": "Backend & High-Throughput REST",
+      "lead": "@Mira",
+      "leadName": "Mira Murati",
+      "supervisors": [
+        { "agent": "@Murati", "name": "Mira Murati Sub-Lead", "specialty": "REST Pipeline Consolidator" },
+        { "agent": "@Petra", "name": "Petra Backend Architect", "specialty": "High-Concurrency Server Tuner" },
+        { "agent": "@RuchiS", "name": "Ruchi Sanghvi", "specialty": "Memory Cache Pool Architect" },
+        { "agent": "@DanielaA", "name": "Daniela Amodei", "specialty": "Authentication & JWT Guard" },
+        { "agent": "@JaimeT", "name": "Jaime Teevan", "specialty": "Async Queue & Stream Processor" },
+        { "agent": "@Pola", "name": "Pola Rate Master", "specialty": "Rate Limiter & Traffic Shaper" },
+        { "agent": "@Tess", "name": "Tess Compression Lead", "specialty": "Payload Compression Engine" },
+        { "agent": "@Wendy", "name": "Wendy Event Broker", "specialty": "Webhook & Event Bus Broker" },
+        { "agent": "@Xenia", "name": "Xenia Daemon Guard", "specialty": "Health Check & Telemetry Daemon" }
+      ]
+    },
+    {
+      "id": "DIV-05",
+      "name": "Database & Data Pipelines",
+      "lead": "@Barbara",
+      "leadName": "Barbara Liskov",
+      "supervisors": [
+        { "agent": "@Liskov", "name": "Barbara Liskov Sub-Lead", "specialty": "MapIndexHash Engine Master" },
+        { "agent": "@AnimaA", "name": "Anima Anandkumar", "specialty": "Data Ingestion & ETL Engineer" },
+        { "agent": "@FeiFeiL", "name": "Fei-Fei Li", "specialty": "Media & Visual Asset Store" },
+        { "agent": "@Cynthia", "name": "Cynthia Dwork", "specialty": "Prisma Schema Architect" },
+        { "agent": "@Daisy", "name": "Daisy Data Guard", "specialty": "Data Consistency Watchdog" },
+        { "agent": "@Gretchen", "name": "Gretchen Query Profiler", "specialty": "Query Optimization Profiler" },
+        { "agent": "@Hilda", "name": "Hilda Transaction Lead", "specialty": "Transaction Isolation Guard" },
+        { "agent": "@Ingrid", "name": "Ingrid Cold Vault", "specialty": "Backup & Cold Storage Engine" },
+        { "agent": "@Joyce", "name": "Joyce Spatial Data", "specialty": "Geospatial Data Engineer" }
+      ]
+    },
+    {
+      "id": "DIV-06",
+      "name": "Quality Assurance & Verification",
+      "lead": "@Katherine",
+      "leadName": "Katherine Johnson",
+      "supervisors": [
+        { "agent": "@Johnson", "name": "Katherine Johnson Sub-Lead", "specialty": "Precision Calculation Auditor" },
+        { "agent": "@SalmaQA", "name": "Salma QA Lead", "specialty": "Regression Matrix Commander" },
+        { "agent": "@Vera", "name": "Vera Rubin Fuzzing", "specialty": "Edge Case & Boundary Explorer" },
+        { "agent": "@Beatrice", "name": "Beatrice Tinsley Mock", "specialty": "Mock Data & Fixture Architect" },
+        { "agent": "@Cecilia", "name": "Cecilia Payne-Gaposchkin", "specialty": "End-to-End User Flow Verifier" },
+        { "agent": "@Delia", "name": "Delia Snapshot Lead", "specialty": "Snapshot & Visual Regression" },
+        { "agent": "@Enid", "name": "Enid Coverage Enforcer", "specialty": "Code Coverage Telemetry Guard" },
+        { "agent": "@Flora", "name": "Flora Contract Tester", "specialty": "API Contract & Schema Tester" },
+        { "agent": "@Gwen", "name": "Gwen Automation Lead", "specialty": "Continuous Testing Automation" }
+      ]
+    },
+    {
+      "id": "DIV-07",
+      "name": "Security & Network Hardening",
+      "lead": "@Radia",
+      "leadName": "Radia Perlman",
+      "supervisors": [
+        { "agent": "@Perlman", "name": "Radia Perlman Sub-Lead", "specialty": "CSP & Header Defense Architect" },
+        { "agent": "@EcemK", "name": "Ecem Karaman", "specialty": "Penetration & Vulnerability Scout" },
+        { "agent": "@JoyB", "name": "Joy Buolamwini", "specialty": "Algorithmic Fairness & Bias Auditor" },
+        { "agent": "@Kendra", "name": "Kendra XSS Guard", "specialty": "Input Sanitizer & XSS Shield" },
+        { "agent": "@Lora", "name": "Lora goAML Watchdog", "specialty": "goAML & FIU Screening Watchdog" },
+        { "agent": "@MonaS", "name": "Mona Secrets Protector", "specialty": "Secrets & Credential Protector" },
+        { "agent": "@Nelly", "name": "Nelly CORS Enforcer", "specialty": "CORS & Domain Whitelist Enforcer" },
+        { "agent": "@Ophelia", "name": "Ophelia Bot Shield", "specialty": "Rate Limit Defense & Bot Shield" },
+        { "agent": "@Phoebe", "name": "Phoebe Audit Trail Guard", "specialty": "Audit Trail Immutability Guard" }
+      ]
+    },
+    {
+      "id": "DIV-08",
+      "name": "Leasing & Tenancy Contracts",
+      "lead": "@Victoria",
+      "leadName": "Victoria Woodhull",
+      "supervisors": [
+        { "agent": "@Woodhull", "name": "Victoria Woodhull Sub-Lead", "specialty": "Ejari API Contract Specialist" },
+        { "agent": "@TaraC", "name": "Tara Contracts Lead", "specialty": "PDC Cheque Vault & Calendar" },
+        { "agent": "@UnaL", "name": "Una Leasing Portal Lead", "specialty": "Landlord & Tenant Portal Specs" },
+        { "agent": "@Valerie", "name": "Valerie RDC Legal", "specialty": "Rental Dispute Center Legal Prep" },
+        { "agent": "@Wanda", "name": "Wanda Termination Lead", "specialty": "Early Lease Termination Formatter" },
+        { "agent": "@Xandra", "name": "Xandra Holiday Homes", "specialty": "Holiday Home & Tourism Dirham" },
+        { "agent": "@Yolanda", "name": "Yolanda Corporate Leases", "specialty": "Corporate Lease Agreement Spec" },
+        { "agent": "@Zelda", "name": "Zelda Snagging Guard", "specialty": "Move-In Snagging Inventory Guard" },
+        { "agent": "@Astrid", "name": "Astrid Eviction Notice Lead", "specialty": "Eviction & Legal Notice Specialist" }
+      ]
+    },
+    {
+      "id": "DIV-09",
+      "name": "FinTech & Statutory Accounting",
+      "lead": "@Invoice",
+      "leadName": "Hortense David-Weill",
+      "supervisors": [
+        { "agent": "@Hortense", "name": "Hortense VAT Sub-Lead", "specialty": "UAE VAT Form 201 Specialist" },
+        { "agent": "@TheodoraF", "name": "Theodora Corporate Tax", "specialty": "Corporate Tax 9% Engine" },
+        { "agent": "@DoraA", "name": "Dora Analytics Lead", "specialty": "Double-Entry Balance Enforcer" },
+        { "agent": "@Bella", "name": "Bella DLA Reconciler", "specialty": "Director Loan Account (DLA) Ledger" },
+        { "agent": "@Clio", "name": "Clio Split Calculator", "specialty": "Broker Tiered Split Calculator" },
+        { "agent": "@Diana", "name": "Diana Treasury Predictor", "specialty": "12-Month Treasury Cash Simulator" },
+        { "agent": "@Esther", "name": "Esther FX Converter", "specialty": "Multi-Currency FX Settlement" },
+        { "agent": "@Frida", "name": "Frida Escrow Auditor", "specialty": "DLD Escrow Account Law No. 8" },
+        { "agent": "@Greta", "name": "Greta Audit Dossier", "specialty": "External Audit Dossier Packager" }
+      ]
+    },
+    {
+      "id": "DIV-10",
+      "name": "AI Mesh, Vision & NLP",
+      "lead": "@Joelle",
+      "leadName": "Joelle Pineau",
+      "supervisors": [
+        { "agent": "@Pineau", "name": "Joelle Pineau Sub-Lead", "specialty": "44-Assistant Virtual Mesh Router" },
+        { "agent": "@CassieK", "name": "Cassie Kozyrkov", "specialty": "Decision Science & Lead Scorer" },
+        { "agent": "@ElenaCRO", "name": "Elena AVM Specialist", "specialty": "Automated Valuation Model - AVM" },
+        { "agent": "@NadiaAI", "name": "Nadia WhatsApp NLP", "specialty": "WhatsApp NLP & Conversational AI" },
+        { "agent": "@PannellumVR", "name": "Pannellum 3D Engineer", "specialty": "3D WebGL & Virtual Tour Eng" },
+        { "agent": "@PolyglotNLP", "name": "Polyglot 5-Lang NLP", "specialty": "5-Language Live Translation" },
+        { "agent": "@VisionTag", "name": "Vision AI Tagging Lead", "specialty": "AI Image Tagging & Visual QC" },
+        { "agent": "@PromptCraft", "name": "Prompt Engineering Guard", "specialty": "Prompt Engineering Optimizer" },
+        { "agent": "@TelemetryAI", "name": "Telemetry AI Watchdog", "specialty": "Multi-Agent Telemetry Watchdog" }
+      ]
+    },
+    {
+      "id": "DIV-11",
+      "name": "DevOps & Cloud Infrastructure",
+      "lead": "@Gwynne",
+      "leadName": "Gwynne Shotwell",
+      "supervisors": [
+        { "agent": "@Shotwell", "name": "Gwynne Shotwell Sub-Lead", "specialty": "Vite Bundler & Build Optimizer" },
+        { "agent": "@LisaS", "name": "Lisa Su", "specialty": "Hardware & Compute Resource Tuner" },
+        { "agent": "@AnnieE", "name": "Annie Easley", "specialty": "CI/CD Pipeline Accelerator" },
+        { "agent": "@CorinneV", "name": "Corinne Vigreux", "specialty": "PWA & Offline Workbox Architect" },
+        { "agent": "@LilaI", "name": "Lila Ibrahim", "specialty": "Server Monitoring & Uptime Daemon" },
+        { "agent": "@PolaDev", "name": "Pola Dev Config Lead", "specialty": "Environment & Secret Isolation" },
+        { "agent": "@Quinn", "name": "Quinn Asset Compression", "specialty": "Asset Compression & WebP Engine" },
+        { "agent": "@Rita", "name": "Rita Zero-Downtime", "specialty": "Zero-Downtime Deployment Guard" },
+        { "agent": "@Stella", "name": "Stella Package Security", "specialty": "Package Dependency & Security Audit" }
+      ]
+    },
+    {
+      "id": "DIV-12",
+      "name": "Research & Competitive Intel",
+      "lead": "@Elena",
+      "leadName": "Elena Cornaro Piscopia",
+      "supervisors": [
+        { "agent": "@Piscopia", "name": "Elena Piscopia Sub-Lead", "specialty": "DXB Interact Telemetry Master" },
+        { "agent": "@BayutRadar", "name": "Bayut Competitor Scout", "specialty": "Bayut & PropertyFinder Benchmarker" },
+        { "agent": "@EmaarIntel", "name": "Emaar Inventory Analyst", "specialty": "Emaar Master Cluster Tracker" },
+        { "agent": "@DamacIntel", "name": "DAMAC Hills 2 Specialist", "specialty": "DAMAC Hills 2 Cluster Specialist" },
+        { "agent": "@NakheelIntel", "name": "Nakheel Island Analyst", "specialty": "Palm Jebel Ali & Island Assets" },
+        { "agent": "@MacroWatcher", "name": "Macro Economic Sentinel", "specialty": "CBUAE & Global Macro Tracker" },
+        { "agent": "@Demographics", "name": "Buyer Demographic Scientist", "specialty": "Buyer Origin & Persona Science" },
+        { "agent": "@YieldRadar", "name": "Yield Optimization Scout", "specialty": "Gross-to-Net Yield Optimizer" },
+        { "agent": "@InnovationLab", "name": "PropTech Innovation Scout", "specialty": "Next-Gen Real Estate Tech Scout" }
+      ]
+    }
+  ]
+}

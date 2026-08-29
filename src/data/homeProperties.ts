@@ -105,4 +105,32 @@ export const HOME_PROPERTIES: HomeProperty[] = [
     image:
       'https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80',
   },
+  {
+    id: 7,
+    title: 'Amazonia Luxury Garden Villa - DAMAC Hills 2',
+    beds: 5,
+    baths: 6,
+    sqft: 4200,
+    price: 3200000,
+    amenities: ['Private Garden', 'Water Town Access', 'Parking', 'Security', 'Gym', 'Pet Friendly'],
+    location: 'DAMAC Hills 2',
+    type: 'Villa',
+    description: 'Immaculate 5-bedroom luxury villa in Amazonia Cluster with landscaped garden and instant Water Town access.',
+    image:
+      'https://images.unsplash.com/photo-1600585154340-be6161a56a0c?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80',
+  },
+  {
+    id: 8,
+    title: 'Victoria Prime Modern Townhouse - DAMAC Hills 2',
+    beds: 4,
+    baths: 4,
+    sqft: 2800,
+    price: 2150000,
+    amenities: ['Covered Parking', 'Balcony', 'Community Pool', 'Sports Town', 'Security'],
+    location: 'DAMAC Hills 2',
+    type: 'Townhouse',
+    description: 'Contemporary 4-bedroom townhouse in Victoria Cluster offering high rental yield and serene green views.',
+    image:
+      'https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80',
+  },
 ];

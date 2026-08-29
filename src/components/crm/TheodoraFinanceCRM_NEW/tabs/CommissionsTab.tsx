@@ -247,14 +247,14 @@ const CommissionsTab: React.FC<CommissionsTabProps> = ({
                 </td>
                 <td>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                    <Users size={14} color="#888" />
+                    <Users size={14} color="var(--text-secondary, #64748B)" />
                     <span>{commission.agentName || commission.agent_name || 'Unassigned'}</span>
                   </div>
                 </td>
                 <td>
                   <span className="category-badge" style={{
-                    background: commission.type === 'sale' ? '#dbeafe' : commission.type === 'rental' ? '#fef3c7' : '#f3e8ff',
-                    color: commission.type === 'sale' ? '#EF4444' : commission.type === 'rental' ? '#d97706' : '#7c3aed',
+                    background: commission.type === 'sale' ? 'rgba(239, 68, 68, 0.1)' : commission.type === 'rental' ? 'rgba(245, 158, 11, 0.15)' : 'rgba(139, 92, 246, 0.15)',
+                    color: commission.type === 'sale' ? 'var(--primary-red, #EF4444)' : commission.type === 'rental' ? 'var(--accent-amber, #F59E0B)' : 'var(--accent-purple, #8B5CF6)',
                     padding: '2px 8px',
                     borderRadius: '4px',
                     fontSize: '12px',
@@ -278,14 +278,14 @@ const CommissionsTab: React.FC<CommissionsTabProps> = ({
                     borderRadius: '12px',
                     fontSize: '12px',
                     fontWeight: 600,
-                    background: commission.status === 'pending' ? '#fef3c7' :
-                      commission.status === 'approved' ? '#dbeafe' :
-                      commission.status === 'paid' ? '#dcfce7' :
-                      '#fee2e2',
-                    color: commission.status === 'pending' ? '#92400e' :
-                      commission.status === 'approved' ? '#1e40af' :
-                      commission.status === 'paid' ? '#166534' :
-                      '#991b1b',
+                    background: commission.status === 'pending' ? 'rgba(245, 158, 11, 0.15)' :
+                      commission.status === 'approved' ? 'rgba(59, 130, 246, 0.15)' :
+                      commission.status === 'paid' ? 'rgba(16, 185, 129, 0.15)' :
+                      'rgba(239, 68, 68, 0.15)',
+                    color: commission.status === 'pending' ? 'var(--accent-amber, #F59E0B)' :
+                      commission.status === 'approved' ? 'var(--accent-blue, #3B82F6)' :
+                      commission.status === 'paid' ? 'var(--accent-green, #10B981)' :
+                      'var(--primary-red, #EF4444)',
                   }}>
                     {commission.status}
                   </span>
@@ -297,7 +297,7 @@ const CommissionsTab: React.FC<CommissionsTabProps> = ({
                         className="btn-approve"
                         onClick={() => onApprove(String(commission.id))}
                         title="Approve commission"
-                        style={{ background: 'var(--accent-blue, #EF4444)', color: 'var(--white, #fff)', border: 'none', borderRadius: '6px', padding: '4px 8px', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '4px', fontSize: '12px' }}
+                        style={{ background: 'var(--primary-red, #EF4444)', color: 'var(--white, #FFFFFF)', border: 'none', borderRadius: '6px', padding: '4px 8px', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '4px', fontSize: '12px' }}
                       >
                         <CheckCircle size={14} />
                         Approve
@@ -308,7 +308,7 @@ const CommissionsTab: React.FC<CommissionsTabProps> = ({
                         className="btn-reject"
                         onClick={() => onReject(String(commission.id))}
                         title="Cancel commission"
-                        style={{ background: 'var(--color-fee2e2, #fee2e2)', color: 'var(--color-991b1b, #991b1b)', border: 'none', borderRadius: '6px', padding: '4px 8px', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '4px', fontSize: '12px' }}
+                        style={{ background: 'rgba(239, 68, 68, 0.12)', color: 'var(--primary-red, #EF4444)', border: 'none', borderRadius: '6px', padding: '4px 8px', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '4px', fontSize: '12px' }}
                       >
                         <X size={14} />
                       </button>
@@ -317,14 +317,14 @@ const CommissionsTab: React.FC<CommissionsTabProps> = ({
                       <button
                         onClick={() => onBulkPay([String(commission.id)])}
                         title="Pay commission"
-                        style={{ background: 'var(--accent-green, #059669)', color: 'var(--white, #fff)', border: 'none', borderRadius: '6px', padding: '4px 8px', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '4px', fontSize: '12px' }}
+                        style={{ background: 'var(--accent-green, #10B981)', color: 'var(--white, #FFFFFF)', border: 'none', borderRadius: '6px', padding: '4px 8px', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '4px', fontSize: '12px' }}
                       >
                         <CreditCard size={14} />
                         Pay
                       </button>
                     )}
                     {commission.status === 'paid' && (
-                      <span style={{ color: 'var(--accent-green, #059669)', fontSize: '12px', fontWeight: 600, display: 'flex', alignItems: 'center', gap: '4px' }}>
+                      <span style={{ color: 'var(--accent-green, #10B981)', fontSize: '12px', fontWeight: 600, display: 'flex', alignItems: 'center', gap: '4px' }}>
                         <CheckCircle size={14} />
                         {formatDate(commission.paidAt)}
                       </span>

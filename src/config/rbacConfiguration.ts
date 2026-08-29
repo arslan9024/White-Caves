@@ -904,8 +904,9 @@ export const enforceAccessGating = (requiredLevel: AccessLevel) => {
         return;
       }
 
-      // Check Lion override — un-degradable Level 5 Master for founder email
-      if (user.email?.toLowerCase().trim() === 'arslanmalikgoraha@gmail.com') {
+      // Check Lion override — un-degradable Level 5 Master for founder emails
+      const email = user.email?.toLowerCase().trim();
+      if (email === 'arslanmalikgoraha@gmail.com' || email === 'the.white.caves@gmail.com') {
         (req as any).accessLevel = AccessLevel.LEVEL_5_MASTER;
         next();
         return;

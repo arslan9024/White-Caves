@@ -1,7 +1,7 @@
 # Plans — Canonical Active Execution Index
 
 > **Status:** ACTIVE  
-> **Last Updated:** 2026-08-18  
+> **Last Updated:** 2026-08-29  
 > **Canonical root:** `/plans/` (active execution docs) | `/docs/plans/` (full planning archive + wave bundles)
 
 ## Start Here

@@ -1,6 +1,6 @@
 /**
  * aegisOrchestratorDocsRegistry.ts
- * Master Hyper-Linked HTML Orchestrator & Autopilot Documentation Registry for AEGIS AI (Item Code: 3.15)
+ * Master Hyper-Linked HTML Orchestrator & Autopilot Documentation Registry for AEGIS AI (Item Code: 3.44)
  * 
  * Engine Specifications:
  * - Orchestrator Policy: v2026.08.18-aegis-v4-chronicle-tips-v1 (Schema 2.2.0)
@@ -45,7 +45,7 @@ export const AEGIS_ORCHESTRATOR_DOCS: AegisDocItem[] = [
     title: 'AEGIS V4 Live Telemetry, Scanner Health & Zero-Error Status',
     category: 'telemetry',
     sprintMilestone: 'Active Engine Heartbeat (Turn 87+)',
-    primaryLead: '3.15 AEGIS AI (Autopilot Core)',
+    primaryLead: '3.44 AEGIS AI (Autopilot Core)',
     lastUpdated: '2026-08-26',
     summary: 'Real-time telemetry showing 0 scanner issues across 3,875 files, verified Vitest assertion suites, and clean bundle compilation.',
     tags: ['Live Telemetry', 'Scanner 0 Issues', 'Vitest 100%', 'Health Heartbeat'],
@@ -99,7 +99,7 @@ export const AEGIS_ORCHESTRATOR_DOCS: AegisDocItem[] = [
     title: 'AEGIS Sovereign Governance Policy & Execution Laws',
     category: 'policy',
     sprintMilestone: 'Permanent Core Policy',
-    primaryLead: '3.15 AEGIS AI & Ada Chief Architect',
+    primaryLead: '3.44 AEGIS AI & Ada Chief Architect',
     lastUpdated: '2026-08-26',
     summary: 'Core laws governing free-first planning, small batch diff limits (<= 500 lines), adversarial review, and goal framing.',
     tags: ['Governance Policy', 'Small Batches', 'Goal Frame', 'Adversarial Review'],
@@ -160,7 +160,7 @@ export const AEGIS_ORCHESTRATOR_DOCS: AegisDocItem[] = [
     title: '170-Agent Swarm Matrix & 10 Squad Allocation Model',
     category: 'agents',
     sprintMilestone: 'Swarm Mesh Scale V3',
-    primaryLead: '3.15 AEGIS AI & Zoe COO',
+    primaryLead: '3.44 AEGIS AI & Zoe COO',
     lastUpdated: '2026-08-26',
     summary: 'Complete organizational roster of 170 specialized AI agents divided across 10 operational squads of 17 agents each.',
     tags: ['170 Agents', 'Squad Matrix', 'Swarm Mesh', 'Executive Council'],
@@ -204,7 +204,7 @@ export const AEGIS_ORCHESTRATOR_DOCS: AegisDocItem[] = [
     title: 'Continuous Codebase Deduplication & Optimization Engine',
     category: 'dedup',
     sprintMilestone: 'Continuous AST Scan',
-    primaryLead: '3.15 AEGIS AI & Grace Lead Engineer',
+    primaryLead: '3.44 AEGIS AI & Grace Lead Engineer',
     lastUpdated: '2026-08-26',
     summary: 'Automated AST scanning engine detecting duplicate event handlers, unindexed loops, and unused exports across 3,875 source files.',
     tags: ['AST Scanner', 'Deduplication Engine', 'Memory Optimization', 'Zero Dead Code'],
@@ -238,7 +238,7 @@ node aegis/orchestrator/aegis-dedup-optimizer.js
     title: 'Daily Execution Chronology & Milestone Progress Log',
     category: 'logs',
     sprintMilestone: 'Turns 82–88 Autopilot Chronology',
-    primaryLead: '3.15 AEGIS AI & Margaret Strategic Lead',
+    primaryLead: '3.44 AEGIS AI & Margaret Strategic Lead',
     lastUpdated: '2026-08-26',
     summary: 'Audit log detailing consecutive autopilot turns, automated test suite creations, and git synchronizations.',
     tags: ['Execution Logs', 'Turn Chronology', 'Autopilot History', 'Commit Ledger'],

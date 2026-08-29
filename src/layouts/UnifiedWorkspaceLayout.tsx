@@ -1,18 +1,26 @@
 /**
  * UnifiedWorkspaceLayout.tsx — View Layer (Atomic 3-Folder Pattern)
  *
- * Single Recursive Red/White/Slate Left Column Sidebar.
- * Houses the [Managing Director Hub] section group locked strictly to Level 5 sessions.
- * Palette: #EF4444 (Red) | #FFFFFF (White) | #1E293B (Slate)
+ * Upgraded Sovereign Layout with Large Sidebar Tiles, Sub-Item Accordion Trees,
+ * High-Density Telemetry Viewports, and Full Integration with Zoe AI & Aurora SWE Docs.
+ * Palette: var(--primary-red, #EF4444) | var(--white, #FFFFFF) | var(--card-dark, #1E293B)
  */
 
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { PanelLeftClose, PanelLeft, Search, ShieldCheck, ChevronDown, ChevronUp, Bell } from 'lucide-react';
+import {
+  PanelLeftClose,
+  PanelLeft,
+  Search,
+  ChevronDown,
+  ChevronUp,
+  Layers,
+} from 'lucide-react';
 import TopNavbar from '../components/TopNavbar/TopNavbar';
 import CavesFloatingSearch from '../components/CavesFloatingSearch/CavesFloatingSearch';
 import CavesWhatsAppWidget from '../components/CavesWhatsAppWidget/CavesWhatsAppWidget';
 import { useWorkspaceLayoutLogic } from './UnifiedWorkspaceLayout.logic';
+import { WORKSPACE_VIEWS, WorkspaceViewItem } from './UnifiedWorkspaceLayout.data';
 import { getLicenseStatuses, hasExpiringLicenses } from '../utils/licenseMonitors';
 import { ROLE_LABELS } from '../context/UserRoleContext';
 
@@ -34,6 +42,7 @@ export const UnifiedWorkspaceLayout: React.FC<UnifiedWorkspaceLayoutProps> = ({
   const navigate = useNavigate();
   const [isMdHubOpen, setIsMdHubOpen] = useState(true);
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
+  const [activeSubItemId, setActiveSubItemId] = useState<string | null>(null);
 
   const {
     userProfile,
@@ -53,15 +62,22 @@ export const UnifiedWorkspaceLayout: React.FC<UnifiedWorkspaceLayoutProps> = ({
   const statuses = React.useMemo(() => getLicenseStatuses(), []);
   const hasAlerts = hasExpiringLicenses(statuses);
 
+  // Match active rich view data if available
+  const richViewData: WorkspaceViewItem | undefined = React.useMemo(() => {
+    return WORKSPACE_VIEWS.find(
+      (v) => v.code === activeViewCode || v.id === activeViewCode || v.id === activeView.id
+    );
+  }, [activeViewCode, activeView]);
+
   const alertBadge = hasAlerts ? (
     <span
       style={{
         width: '10px',
         height: '10px',
-        backgroundColor: '#EF4444',
+        backgroundColor: 'var(--primary-red, #EF4444)',
         borderRadius: '50%',
         display: 'inline-block',
-        boxShadow: '0 0 8px #EF4444',
+        boxShadow: '0 0 8px var(--primary-red, #EF4444)',
         animation: 'pulse 2s infinite',
       }}
     />
@@ -74,8 +90,8 @@ export const UnifiedWorkspaceLayout: React.FC<UnifiedWorkspaceLayoutProps> = ({
         flexDirection: 'column',
         minHeight: '100vh',
         width: '100vw',
-        backgroundColor: '#FFFFFF',
-        fontFamily: "'Inter', sans-serif",
+        backgroundColor: 'var(--white, #FFFFFF)',
+        fontFamily: "'Plus Jakarta Sans', 'Inter', sans-serif",
       }}
     >
       {/* ── FIXED TOP NAVBAR ────────────────────────────────────────────────── */}
@@ -84,17 +100,17 @@ export const UnifiedWorkspaceLayout: React.FC<UnifiedWorkspaceLayoutProps> = ({
       {/* ── MAIN WORKSPACE BODY ─────────────────────────────────────────────── */}
       <div style={{ display: 'flex', flex: 1, paddingTop: '68px', height: 'calc(100vh - 68px)', overflow: 'hidden' }}>
 
-        {/* ── UNIFIED RECURSIVE LEFT SIDEBAR (Red / White / Slate Theme) ───────── */}
+        {/* ── UNIFIED RECURSIVE LEFT SIDEBAR (Red / White / Slate Theme with Big Tiles) ───────── */}
         <aside
           style={{
-            width: isSidebarCollapsed ? '72px' : '310px',
-            backgroundColor: '#1E293B',
-            color: '#FFFFFF',
+            width: isSidebarCollapsed ? '76px' : '340px',
+            backgroundColor: 'var(--bg-dark, #0F172A)',
+            color: 'var(--white, #FFFFFF)',
             display: 'flex',
             flexDirection: 'column',
-            borderRight: '2px solid #EF4444',
+            borderRight: '2px solid var(--primary-red, #EF4444)',
             flexShrink: 0,
-            transition: 'width 0.3s cubic-bezier(0.16, 1, 0.3, 1)',
+            transition: 'width 0.25s cubic-bezier(0.16, 1, 0.3, 1)',
             overflowX: 'hidden',
           }}
         >
@@ -102,7 +118,7 @@ export const UnifiedWorkspaceLayout: React.FC<UnifiedWorkspaceLayoutProps> = ({
           <div
             style={{
               padding: isSidebarCollapsed ? '16px 8px' : '16px 18px',
-              backgroundColor: '#0F172A',
+              backgroundColor: 'var(--bg-darker, #0B0F19)',
               borderBottom: '1px solid rgba(239, 68, 68, 0.3)',
               display: 'flex',
               alignItems: 'center',
@@ -111,20 +127,20 @@ export const UnifiedWorkspaceLayout: React.FC<UnifiedWorkspaceLayoutProps> = ({
             }}
           >
             {!isSidebarCollapsed && (
-              <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
                 <div
                   style={{
-                    width: '36px',
-                    height: '36px',
-                    borderRadius: '50%',
-                    background: 'linear-gradient(135deg, #EF4444 0%, #B91C1C 100%)',
+                    width: '38px',
+                    height: '38px',
+                    borderRadius: '10px',
+                    background: 'linear-gradient(135deg, var(--primary-red, #EF4444) 0%, var(--primary-red-hover, #DC2626) 100%)',
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'center',
                     fontWeight: 900,
-                    fontSize: '14px',
-                    color: '#FFFFFF',
-                    boxShadow: '0 4px 12px rgba(239, 68, 68, 0.4)',
+                    fontSize: '15px',
+                    color: 'var(--white, #FFFFFF)',
+                    boxShadow: '0 4px 14px rgba(239, 68, 68, 0.4)',
                     flexShrink: 0,
                   }}
                 >
@@ -134,8 +150,8 @@ export const UnifiedWorkspaceLayout: React.FC<UnifiedWorkspaceLayoutProps> = ({
                   <h1 style={{ margin: 0, fontSize: '14px', fontWeight: 800, color: 'var(--white, #FFFFFF)', letterSpacing: '0.5px' }}>
                     WHITE CAVES
                   </h1>
-                  <span style={{ fontSize: '9px', color: 'var(--color-94a3b8, #94A3B8)', textTransform: 'uppercase', letterSpacing: '1px', fontWeight: 700 }}>
-                    Sovereign OS · L{userProfile.accessLevel}
+                  <span style={{ fontSize: '10px', color: 'var(--text-muted, #94A3B8)', textTransform: 'uppercase', letterSpacing: '1px', fontWeight: 700 }}>
+                    Sovereign ERP · L{userProfile.accessLevel}
                   </span>
                 </div>
               </div>
@@ -147,7 +163,7 @@ export const UnifiedWorkspaceLayout: React.FC<UnifiedWorkspaceLayoutProps> = ({
               style={{
                 background: 'rgba(239, 68, 68, 0.12)',
                 border: '1px solid rgba(239, 68, 68, 0.3)',
-                color: '#EF4444',
+                color: 'var(--primary-red, #EF4444)',
                 borderRadius: '8px',
                 padding: '6px',
                 cursor: 'pointer',
@@ -165,20 +181,20 @@ export const UnifiedWorkspaceLayout: React.FC<UnifiedWorkspaceLayoutProps> = ({
           {isLevel5 && !isSidebarCollapsed && (
             <div
               style={{
-                backgroundColor: 'rgba(239, 68, 68, 0.08)',
-                borderBottom: '1.5px solid rgba(239, 68, 68, 0.4)',
+                backgroundColor: 'rgba(239, 68, 68, 0.06)',
+                borderBottom: '1.5px solid rgba(239, 68, 68, 0.35)',
               }}
             >
               <button
                 onClick={() => setIsMdHubOpen((prev) => !prev)}
                 style={{
                   width: '100%',
-                  padding: '10px 16px',
-                  backgroundColor: 'rgba(239, 68, 68, 0.15)',
+                  padding: '12px 18px',
+                  backgroundColor: 'rgba(239, 68, 68, 0.12)',
                   border: 'none',
-                  color: '#EF4444',
+                  color: 'var(--primary-red, #EF4444)',
                   fontWeight: 800,
-                  fontSize: '0.8rem',
+                  fontSize: '0.82rem',
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'space-between',
@@ -195,68 +211,90 @@ export const UnifiedWorkspaceLayout: React.FC<UnifiedWorkspaceLayoutProps> = ({
               </button>
 
               {isMdHubOpen && (
-                <div style={{ padding: '8px 12px', display: 'flex', flexDirection: 'column', gap: '6px' }}>
+                <div style={{ padding: '10px 14px', display: 'flex', flexDirection: 'column', gap: '8px' }}>
                   <button
-                    onClick={() => navigate('/crm')}
+                    onClick={() => {
+                      setActiveViewCode('MD-BRIEF');
+                      navigate('/crm');
+                    }}
                     style={{
                       width: '100%',
                       textAlign: 'left',
-                      padding: '8px 10px',
-                      borderRadius: '6px',
-                      background: '#0F172A',
+                      padding: '10px 12px',
+                      borderRadius: '8px',
+                      background: 'var(--card-dark, #1E293B)',
                       border: '1px solid rgba(239, 68, 68, 0.3)',
-                      color: '#F8FAFC',
-                      fontSize: '0.78rem',
+                      color: 'var(--bg-light, #F8FAFC)',
+                      fontSize: '0.8rem',
                       fontWeight: 700,
                       cursor: 'pointer',
                       display: 'flex',
                       alignItems: 'center',
-                      gap: '8px',
+                      gap: '10px',
+                      boxShadow: '0 2px 8px rgba(0,0,0,0.2)',
                     }}
                   >
-                    <span>📊</span> 12-Department Pipeline Overview
+                    <span style={{ fontSize: '16px' }}>📊</span>
+                    <div style={{ flex: 1 }}>
+                      <div style={{ color: 'var(--white, #FFFFFF)', fontWeight: 800 }}>Morning Briefing (08:00 AM)</div>
+                      <div style={{ fontSize: '10px', color: 'var(--text-muted, #94A3B8)' }}>12-Department Overview</div>
+                    </div>
                   </button>
 
                   <button
-                    onClick={() => navigate('/owner/governance')}
+                    onClick={() => {
+                      setActiveViewCode('MD-CRED');
+                      navigate('/profile');
+                    }}
                     style={{
                       width: '100%',
                       textAlign: 'left',
-                      padding: '8px 10px',
-                      borderRadius: '6px',
-                      background: '#0F172A',
+                      padding: '10px 12px',
+                      borderRadius: '8px',
+                      background: 'var(--card-dark, #1E293B)',
                       border: '1px solid rgba(239, 68, 68, 0.3)',
-                      color: '#F8FAFC',
-                      fontSize: '0.78rem',
+                      color: 'var(--bg-light, #F8FAFC)',
+                      fontSize: '0.8rem',
                       fontWeight: 700,
                       cursor: 'pointer',
                       display: 'flex',
                       alignItems: 'center',
-                      gap: '8px',
+                      gap: '10px',
                     }}
                   >
-                    <span>🏛️</span> Governing Expiry Monitors (DET/RERA)
+                    <span style={{ fontSize: '16px' }}>🏛️</span>
+                    <div style={{ flex: 1 }}>
+                      <div style={{ color: 'var(--white, #FFFFFF)', fontWeight: 800 }}>DET & RERA License Monitor</div>
+                      <div style={{ fontSize: '10px', color: 'var(--accent-green, #10B981)' }}>License 1388443 Valid</div>
+                    </div>
                   </button>
 
                   <button
-                    onClick={() => navigate('/owner/whatsapp')}
+                    onClick={() => {
+                      setActiveViewCode('PROG-01');
+                      navigate('/crm');
+                    }}
                     style={{
                       width: '100%',
                       textAlign: 'left',
-                      padding: '8px 10px',
-                      borderRadius: '6px',
-                      background: '#0F172A',
-                      border: '1px solid rgba(239, 68, 68, 0.3)',
-                      color: '#F8FAFC',
-                      fontSize: '0.78rem',
+                      padding: '10px 12px',
+                      borderRadius: '8px',
+                      background: 'var(--card-dark, #1E293B)',
+                      border: '1px solid rgba(16, 185, 129, 0.4)',
+                      color: 'var(--bg-light, #F8FAFC)',
+                      fontSize: '0.8rem',
                       fontWeight: 700,
                       cursor: 'pointer',
                       display: 'flex',
                       alignItems: 'center',
-                      gap: '8px',
+                      gap: '10px',
                     }}
                   >
-                    <span>🤖</span> Nadia & Nina AI Dispatch Array
+                    <span style={{ fontSize: '16px' }}>🌟</span>
+                    <div style={{ flex: 1 }}>
+                      <div style={{ color: 'var(--white, #FFFFFF)', fontWeight: 800 }}>Project Progress Telemetry</div>
+                      <div style={{ fontSize: '10px', color: 'var(--accent-blue, #3B82F6)' }}>Waves 1–68 · 100% Green</div>
+                    </div>
                   </button>
                 </div>
               )}
@@ -265,45 +303,48 @@ export const UnifiedWorkspaceLayout: React.FC<UnifiedWorkspaceLayoutProps> = ({
 
           {/* Search & Category Filter (Visible when expanded) */}
           {!isSidebarCollapsed && (
-            <div style={{ padding: '12px 14px', borderBottom: '1px solid var(--color-334155, #334155)' }}>
+            <div style={{ padding: '14px 16px', borderBottom: '1px solid var(--card-dark, #1E293B)' }}>
               <div style={{ position: 'relative', display: 'flex', alignItems: 'center' }}>
                 <input
                   type="text"
-                  placeholder="Search 100 enterprise views..."
+                  placeholder="Search views & sub-items..."
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
                   aria-label="Search workspace views"
                   style={{
                     width: '100%',
-                    padding: '8px 12px 8px 32px',
-                    borderRadius: '6px',
-                    border: '1px solid #475569',
-                    backgroundColor: '#0F172A',
-                    color: '#FFFFFF',
+                    padding: '9px 12px 9px 34px',
+                    borderRadius: '8px',
+                    border: '1px solid var(--border-color, #334155)',
+                    backgroundColor: 'var(--card-dark, #1E293B)',
+                    color: 'var(--white, #FFFFFF)',
                     fontSize: '12px',
                     outline: 'none',
                     boxSizing: 'border-box',
                   }}
                 />
-                <Search size={14} style={{ position: 'absolute', left: '10px', color: 'var(--color-94a3b8, #94A3B8)' }} />
+                <Search size={14} style={{ position: 'absolute', left: '11px', color: 'var(--text-muted, #94A3B8)' }} />
               </div>
-              <div style={{ display: 'flex', gap: '4px', overflowX: 'auto', marginTop: '8px', paddingBottom: '4px' }}>
-                {categories.slice(0, 5).map((cat) => (
+              <div style={{ display: 'flex', gap: '6px', overflowX: 'auto', marginTop: '10px', paddingBottom: '4px' }}>
+                {categories.slice(0, 6).map((cat) => (
                   <button
                     key={cat}
                     onClick={() => setActiveCategory(cat)}
                     aria-pressed={activeCategory === cat}
                     style={{
-                      padding: '3px 8px',
-                      borderRadius: '4px',
+                      padding: '4px 10px',
+                      borderRadius: '6px',
                       border: 'none',
                       fontSize: '11px',
                       fontWeight: 700,
                       cursor: 'pointer',
-                      backgroundColor: activeCategory === cat ? '#EF4444' : '#334155',
-                      color: '#FFFFFF',
+                      backgroundColor: activeCategory === cat ? 'var(--primary-red, #EF4444)' : 'var(--card-dark, #1E293B)',
+                      color: 'var(--white, #FFFFFF)',
                       whiteSpace: 'nowrap',
                       transition: 'all 0.2s ease',
+                      borderWidth: '1px',
+                      borderStyle: 'solid',
+                      borderColor: activeCategory === cat ? 'var(--primary-red, #EF4444)' : 'var(--border-color, #334155)',
                     }}
                   >
                     {cat}
@@ -313,101 +354,185 @@ export const UnifiedWorkspaceLayout: React.FC<UnifiedWorkspaceLayoutProps> = ({
             </div>
           )}
 
-          {/* Unified View Navigation */}
-          <nav style={{ flex: 1, overflowY: 'auto', padding: isSidebarCollapsed ? '12px 6px' : '12px 8px' }} aria-label="Workspace views navigation">
+          {/* Large Card-Tile View Navigation */}
+          <nav style={{ flex: 1, overflowY: 'auto', padding: isSidebarCollapsed ? '12px 6px' : '14px 12px' }} aria-label="Workspace views navigation">
             {!isSidebarCollapsed && (
-              <div style={{ fontSize: '10px', fontWeight: 800, color: 'var(--color-94a3b8, #94A3B8)', padding: '4px 10px', marginBottom: '6px', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
-                Operations Registry ({filteredViews.length} Views)
+              <div style={{ fontSize: '10px', fontWeight: 800, color: 'var(--text-muted, #94A3B8)', padding: '4px 8px', marginBottom: '8px', textTransform: 'uppercase', letterSpacing: '0.05em', display: 'flex', justifyContent: 'space-between' }}>
+                <span>Operations Tiles</span>
+                <span>{filteredViews.length} Views</span>
               </div>
             )}
-            {filteredViews.map((view) => {
-              const isActive = view.code === activeViewCode || view.id === activeViewCode;
-              return (
-                <button
-                  key={view.id}
-                  onClick={() => setActiveViewCode(view.code)}
-                  aria-current={isActive ? 'page' : undefined}
-                  title={`${view.code} - ${view.title}`}
-                  style={{
-                    width: '100%',
-                    textAlign: isSidebarCollapsed ? 'center' : 'left',
-                    padding: isSidebarCollapsed ? '8px 4px' : '8px 10px',
-                    marginBottom: '4px',
-                    borderRadius: '6px',
-                    border: 'none',
-                    backgroundColor: isActive ? '#EF4444' : 'transparent',
-                    color: isActive ? '#FFFFFF' : '#CBD5E1',
-                    cursor: 'pointer',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: isSidebarCollapsed ? 'center' : 'space-between',
-                    fontSize: '12px',
-                    fontWeight: isActive ? '700' : 'normal',
-                    transition: 'all 0.15s ease',
-                  }}
-                >
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '6px', overflow: 'hidden' }}>
-                    <span
-                      style={{
-                        fontSize: '9px',
-                        padding: '2px 4px',
-                        borderRadius: '4px',
-                        backgroundColor: isActive ? 'rgba(255,255,255,0.25)' : '#334155',
-                        color: '#FFFFFF',
-                        fontFamily: 'monospace',
-                        fontWeight: 700,
-                      }}
-                    >
-                      {view.code}
-                    </span>
-                    {!isSidebarCollapsed && (
-                      <span style={{ whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{view.title}</span>
+
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+              {filteredViews.map((view) => {
+                const isActive = view.code === activeViewCode || view.id === activeViewCode;
+                const viewRich = WORKSPACE_VIEWS.find(v => v.code === view.code || v.id === view.id);
+
+                return (
+                  <div
+                    key={view.id}
+                    style={{
+                      backgroundColor: isActive ? 'rgba(239, 68, 68, 0.12)' : 'var(--card-dark, #1E293B)',
+                      border: isActive ? '1.5px solid var(--primary-red, #EF4444)' : '1px solid rgba(255, 255, 255, 0.05)',
+                      borderRadius: '10px',
+                      padding: isSidebarCollapsed ? '10px 4px' : '12px 14px',
+                      cursor: 'pointer',
+                      transition: 'all 0.2s ease',
+                      boxShadow: isActive ? '0 4px 14px rgba(239, 68, 68, 0.25)' : 'none',
+                    }}
+                    onClick={() => {
+                      setActiveViewCode(view.code);
+                      setActiveSubItemId(null);
+                    }}
+                  >
+                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: isSidebarCollapsed ? 'center' : 'space-between', gap: '8px' }}>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '8px', overflow: 'hidden' }}>
+                        <span
+                          style={{
+                            fontSize: '9px',
+                            padding: '3px 6px',
+                            borderRadius: '4px',
+                            backgroundColor: isActive ? 'var(--primary-red, #EF4444)' : 'var(--border-color, #334155)',
+                            color: 'var(--white, #FFFFFF)',
+                            fontFamily: 'monospace',
+                            fontWeight: 800,
+                            letterSpacing: '0.5px',
+                          }}
+                        >
+                          {view.code}
+                        </span>
+
+                        {!isSidebarCollapsed && (
+                          <div style={{ overflow: 'hidden' }}>
+                            <div
+                              style={{
+                                color: 'var(--white, #FFFFFF)',
+                                fontWeight: isActive ? 800 : 700,
+                                fontSize: '13px',
+                                whiteSpace: 'nowrap',
+                                overflow: 'hidden',
+                                textOverflow: 'ellipsis',
+                              }}
+                            >
+                              {view.title}
+                            </div>
+                            <div style={{ fontSize: '10px', color: isActive ? 'var(--red-light, #FCA5A5)' : 'var(--text-muted, #94A3B8)', marginTop: '2px' }}>
+                              {viewRich?.departmentFloor || view.group}
+                            </div>
+                          </div>
+                        )}
+                      </div>
+
+                      {!isSidebarCollapsed && viewRich?.badge && (
+                        <span
+                          style={{
+                            fontSize: '9px',
+                            padding: '2px 6px',
+                            borderRadius: '9999px',
+                            backgroundColor: isActive ? 'rgba(239, 68, 68, 0.25)' : 'rgba(255, 255, 255, 0.06)',
+                            color: isActive ? 'var(--primary-red, #EF4444)' : 'var(--text-secondary, #CBD5E1)',
+                            fontWeight: 700,
+                            textTransform: 'uppercase',
+                          }}
+                        >
+                          {viewRich.badge}
+                        </span>
+                      )}
+                    </div>
+
+                    {/* Sub-Items Tree when Expanded & Active */}
+                    {!isSidebarCollapsed && isActive && viewRich?.subItems && viewRich.subItems.length > 0 && (
+                      <div
+                        style={{
+                          marginTop: '10px',
+                          paddingTop: '8px',
+                          borderTop: '1px solid rgba(239, 68, 68, 0.25)',
+                          display: 'flex',
+                          flexDirection: 'column',
+                          gap: '6px',
+                        }}
+                      >
+                        <div style={{ fontSize: '9px', fontWeight: 800, color: 'var(--red-light, #FCA5A5)', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
+                          Nested Sub-Items & Modules
+                        </div>
+                        {viewRich.subItems.map((sub) => {
+                          const isSubActive = activeSubItemId === sub.id;
+                          return (
+                            <button
+                              key={sub.id}
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                setActiveSubItemId(sub.id);
+                              }}
+                              style={{
+                                width: '100%',
+                                textAlign: 'left',
+                                padding: '6px 10px',
+                                borderRadius: '6px',
+                                backgroundColor: isSubActive ? 'var(--primary-red, #EF4444)' : 'rgba(15, 23, 42, 0.6)',
+                                border: isSubActive ? '1px solid var(--primary-red, #EF4444)' : '1px solid rgba(255, 255, 255, 0.05)',
+                                color: isSubActive ? 'var(--white, #FFFFFF)' : 'var(--border-color, #E2E8F0)',
+                                fontSize: '11px',
+                                fontWeight: isSubActive ? 700 : 500,
+                                cursor: 'pointer',
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'space-between',
+                                transition: 'all 0.15s ease',
+                              }}
+                            >
+                              <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                                <span style={{ opacity: 0.7, fontFamily: 'monospace', fontSize: '9px' }}>{sub.code}</span>
+                                <span>{sub.label}</span>
+                              </div>
+                              <span style={{ fontSize: '10px', color: isSubActive ? 'var(--white, #FFFFFF)' : 'var(--accent-green, #10B981)' }}>●</span>
+                            </button>
+                          );
+                        })}
+                      </div>
                     )}
                   </div>
-                  {!isSidebarCollapsed && (
-                    <span style={{ fontSize: '9px', opacity: 0.7, textTransform: 'uppercase' }}>{view.category}</span>
-                  )}
-                </button>
-              );
-            })}
+                );
+              })}
+            </div>
           </nav>
 
           {/* User Footer with Role Badge */}
           <div
             style={{
-              padding: isSidebarCollapsed ? '12px 6px' : '14px 16px',
-              backgroundColor: '#0F172A',
-              borderTop: '1px solid #334155',
+              padding: isSidebarCollapsed ? '12px 6px' : '14px 18px',
+              backgroundColor: 'var(--bg-darker, #0B0F19)',
+              borderTop: '1px solid var(--card-dark, #1E293B)',
               display: 'flex',
               alignItems: 'center',
               justifyContent: isSidebarCollapsed ? 'center' : 'flex-start',
-              gap: '10px',
+              gap: '12px',
             }}
           >
             <div
               style={{
-                width: '34px',
-                height: '34px',
+                width: '36px',
+                height: '36px',
                 borderRadius: '50%',
-                backgroundColor: isLevel5 ? '#EF4444' : '#334155',
-                color: '#FFFFFF',
+                backgroundColor: isLevel5 ? 'var(--primary-red, #EF4444)' : 'var(--border-color, #334155)',
+                color: 'var(--white, #FFFFFF)',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
-                fontWeight: 800,
-                fontSize: '13px',
+                fontWeight: 900,
+                fontSize: '14px',
                 flexShrink: 0,
-                boxShadow: isLevel5 ? '0 0 10px rgba(239, 68, 68, 0.4)' : 'none',
+                boxShadow: isLevel5 ? '0 0 12px rgba(239, 68, 68, 0.5)' : 'none',
               }}
             >
               {userProfile.name.charAt(0)}
             </div>
             {!isSidebarCollapsed && (
               <div style={{ overflow: 'hidden' }}>
-                <div style={{ fontSize: '12px', fontWeight: 800, color: 'var(--white, #FFFFFF)', textOverflow: 'ellipsis', overflow: 'hidden', whiteSpace: 'nowrap' }}>
+                <div style={{ fontSize: '13px', fontWeight: 800, color: 'var(--white, #FFFFFF)', textOverflow: 'ellipsis', overflow: 'hidden', whiteSpace: 'nowrap' }}>
                   {userProfile.name}
                 </div>
-                <div style={{ fontSize: '10px', color: isLevel5 ? 'var(--accent-red, #EF4444)' : 'var(--color-94a3b8, #94A3B8)', fontWeight: 700 }}>
+                <div style={{ fontSize: '10px', color: isLevel5 ? 'var(--primary-red, #EF4444)' : 'var(--text-muted, #94A3B8)', fontWeight: 700 }}>
                   {isLevel5 ? '👑 Managing Director (L5)' : `L${userProfile.accessLevel} · ${ROLE_LABELS[userProfile.role as keyof typeof ROLE_LABELS] || userProfile.role}`}
                 </div>
               </div>
@@ -417,43 +542,220 @@ export const UnifiedWorkspaceLayout: React.FC<UnifiedWorkspaceLayoutProps> = ({
 
         {/* ── MAIN CONTENT CANVAS ───────────────────────────────────────────── */}
         <main style={{ flex: 1, display: 'flex', flexDirection: 'column', backgroundColor: 'var(--white, #FFFFFF)', overflow: 'hidden' }}>
-          {/* Content Header */}
+          {/* Content Header Banner */}
           <header
             style={{
-              height: '56px',
-              borderBottom: '1px solid #E2E8F0',
-              padding: '0 24px',
+              height: '64px',
+              borderBottom: '1px solid var(--border-color, #E2E8F0)',
+              padding: '0 28px',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'space-between',
-              backgroundColor: '#FFFFFF',
+              backgroundColor: 'var(--white, #FFFFFF)',
+              boxShadow: '0 1px 3px rgba(0,0,0,0.02)',
             }}
           >
             <div>
-              <div style={{ fontSize: '11px', color: 'var(--text-secondary, #64748B)', textTransform: 'uppercase', fontWeight: '700' }}>
-                {activeView.group} · {activeView.category}
+              <div style={{ fontSize: '11px', color: 'var(--text-secondary, #64748B)', textTransform: 'uppercase', fontWeight: 700, letterSpacing: '0.05em' }}>
+                {richViewData?.departmentFloor || activeView.group} · {activeView.category}
               </div>
-              <h2 style={{ margin: 0, fontSize: '16px', fontWeight: 800, color: 'var(--color-1e293b, #1E293B)' }}>{activeView.title}</h2>
+              <h2 style={{ margin: 0, fontSize: '18px', fontWeight: 800, color: 'var(--bg-dark, #0F172A)', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                <span>{activeView.title}</span>
+                {richViewData?.assistantCode && (
+                  <span style={{ fontSize: '11px', background: 'var(--slate-100, #F1F5F9)', color: 'var(--border-color, #475569)', padding: '2px 8px', borderRadius: '6px', fontWeight: 700 }}>
+                    🤖 {richViewData.assistantCode}
+                  </span>
+                )}
+              </h2>
+            </div>
+
+            <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+              <button
+                onClick={() => navigate('/crm')}
+                style={{
+                  padding: '8px 14px',
+                  borderRadius: '8px',
+                  border: '1px solid var(--border-color, #E2E8F0)',
+                  backgroundColor: 'var(--white, #FFFFFF)',
+                  color: 'var(--bg-dark, #0F172A)',
+                  fontSize: '12px',
+                  fontWeight: 700,
+                  cursor: 'pointer',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '6px',
+                }}
+              >
+                <span>🏛️</span> Zoe Business Hub
+              </button>
+
+              <button
+                onClick={() => navigate('/owner/governance')}
+                style={{
+                  padding: '8px 14px',
+                  borderRadius: '8px',
+                  border: 'none',
+                  backgroundColor: 'var(--primary-red, #EF4444)',
+                  color: 'var(--white, #FFFFFF)',
+                  fontSize: '12px',
+                  fontWeight: 700,
+                  cursor: 'pointer',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '6px',
+                  boxShadow: '0 2px 8px rgba(239, 68, 68, 0.3)',
+                }}
+              >
+                <span>🛡️</span> Sovereign Governance
+              </button>
             </div>
           </header>
 
-          {/* Content Body */}
-          <div style={{ flex: 1, padding: '24px', overflowY: 'auto', backgroundColor: 'var(--color-f8fafc, #F8FAFC)' }}>
-            {children || (
-              <div style={{ padding: '20px', backgroundColor: 'var(--white, #FFFFFF)', borderRadius: '12px', border: '1px solid var(--text-secondary, #E2E8F0)', boxShadow: '0 4px 16px rgba(0,0,0,0.04)' }}>
-                <h3 style={{ margin: '0 0 12px', color: 'var(--color-1e293b, #1E293B)', fontWeight: 800 }}>
-                  {activeView.code}: {activeView.title}
-                </h3>
-                <p style={{ color: 'var(--text-secondary, #64748B)', fontSize: '14px', lineHeight: 1.6 }}>
-                  Active RUP Module rendering view for <strong>{userProfile.name}</strong> ({userProfile.role}). All operational parameters mapped to corporate Red (#EF4444), Crisp White (#FFFFFF), and Slate Dark (#1E293B).
-                </p>
+          {/* Content Body Viewport */}
+          <div style={{ flex: 1, padding: '28px', overflowY: 'auto', backgroundColor: 'var(--bg-light, #F8FAFC)' }}>
+            {children ? (
+              children
+            ) : (
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
+                {/* Executive Tile Overview Card */}
+                <div
+                  style={{
+                    backgroundColor: 'var(--white, #FFFFFF)',
+                    borderRadius: '16px',
+                    border: '1px solid var(--border-color, #E2E8F0)',
+                    padding: '24px',
+                    boxShadow: '0 4px 20px rgba(0,0,0,0.03)',
+                  }}
+                >
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '16px', marginBottom: '16px' }}>
+                    <div>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '6px' }}>
+                        <span style={{ backgroundColor: 'var(--primary-red, #EF4444)', color: 'var(--white, #FFFFFF)', padding: '3px 8px', borderRadius: '6px', fontSize: '11px', fontWeight: 800, fontFamily: 'monospace' }}>
+                          {activeView.code}
+                        </span>
+                        <h3 style={{ margin: 0, fontSize: '20px', fontWeight: 800, color: 'var(--bg-dark, #0F172A)' }}>
+                          {activeView.title}
+                        </h3>
+                      </div>
+                      <p style={{ margin: 0, color: 'var(--text-secondary, #64748B)', fontSize: '14px', maxWidth: '800px', lineHeight: 1.6 }}>
+                        {richViewData?.description || `Active RUP Sovereign module operating under Dubai DET license 1388443 and RERA Brokerage ORN 44483.`}
+                      </p>
+                    </div>
+
+                    <span
+                      style={{
+                        padding: '6px 12px',
+                        borderRadius: '9999px',
+                        backgroundColor: 'var(--green-bg, #ECFDF5)',
+                        color: 'var(--accent-green, #10B981)',
+                        border: '1px solid var(--green-border, #A7F3D0)',
+                        fontSize: '11px',
+                        fontWeight: 800,
+                        textTransform: 'uppercase',
+                      }}
+                    >
+                      ● Active Module · 100% Operational
+                    </span>
+                  </div>
+
+                  {/* KPI Stat Cards Grid */}
+                  {richViewData?.kpis && richViewData.kpis.length > 0 && (
+                    <div
+                      style={{
+                        display: 'grid',
+                        gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))',
+                        gap: '16px',
+                        marginTop: '20px',
+                        paddingTop: '20px',
+                        borderTop: '1px solid var(--slate-100, #F1F5F9)',
+                      }}
+                    >
+                      {richViewData.kpis.map((kpi, idx) => (
+                        <div
+                          key={idx}
+                          style={{
+                            backgroundColor: 'var(--bg-light, #F8FAFC)',
+                            borderRadius: '12px',
+                            border: '1px solid var(--border-color, #E2E8F0)',
+                            padding: '16px',
+                          }}
+                        >
+                          <div style={{ fontSize: '11px', fontWeight: 700, color: 'var(--text-secondary, #64748B)', textTransform: 'uppercase' }}>
+                            {kpi.label}
+                          </div>
+                          <div style={{ fontSize: '24px', fontWeight: 800, color: 'var(--bg-dark, #0F172A)', marginTop: '4px' }}>
+                            {kpi.value}
+                          </div>
+                          {kpi.trend && (
+                            <div style={{ fontSize: '11px', color: 'var(--accent-green, #10B981)', fontWeight: 700, marginTop: '4px' }}>
+                              ✓ {kpi.trend}
+                            </div>
+                          )}
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+
+                {/* Sub-Items Detailed Breakdown Panel */}
+                {richViewData?.subItems && richViewData.subItems.length > 0 && (
+                  <div
+                    style={{
+                      backgroundColor: 'var(--white, #FFFFFF)',
+                      borderRadius: '16px',
+                      border: '1px solid var(--border-color, #E2E8F0)',
+                      padding: '24px',
+                      boxShadow: '0 4px 20px rgba(0,0,0,0.03)',
+                    }}
+                  >
+                    <h4 style={{ margin: '0 0 16px', fontSize: '16px', fontWeight: 800, color: 'var(--bg-dark, #0F172A)', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                      <Layers size={18} style={{ color: 'var(--primary-red, #EF4444)' }} />
+                      <span>Sub-Items & Operational Capabilities ({richViewData.subItems.length})</span>
+                    </h4>
+
+                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '14px' }}>
+                      {richViewData.subItems.map((sub) => {
+                        const isSelected = activeSubItemId === sub.id;
+                        return (
+                          <div
+                            key={sub.id}
+                            onClick={() => setActiveSubItemId(sub.id)}
+                            style={{
+                              backgroundColor: isSelected ? 'rgba(239, 68, 68, 0.04)' : 'var(--bg-light, #F8FAFC)',
+                              border: isSelected ? '1.5px solid var(--primary-red, #EF4444)' : '1px solid var(--border-color, #E2E8F0)',
+                              borderRadius: '12px',
+                              padding: '16px',
+                              cursor: 'pointer',
+                              transition: 'all 0.2s ease',
+                            }}
+                          >
+                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
+                              <span style={{ fontSize: '10px', fontWeight: 800, color: 'var(--primary-red, #EF4444)', fontFamily: 'monospace', backgroundColor: 'rgba(239,68,68,0.1)', padding: '2px 6px', borderRadius: '4px' }}>
+                                {sub.code}
+                              </span>
+                              <span style={{ fontSize: '11px', color: 'var(--accent-green, #10B981)', fontWeight: 700 }}>
+                                ✓ Ready
+                              </span>
+                            </div>
+                            <div style={{ fontWeight: 800, fontSize: '14px', color: 'var(--bg-dark, #0F172A)', marginBottom: '4px' }}>
+                              {sub.label}
+                            </div>
+                            <div style={{ fontSize: '12px', color: 'var(--text-secondary, #64748B)', lineHeight: 1.4 }}>
+                              Integrated sovereign subsystem ready for instant execution.
+                            </div>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </div>
+                )}
               </div>
             )}
           </div>
         </main>
       </div>
 
-      {/* Floating Widgets */}
+      {/* Floating Action Controls */}
       <CavesFloatingSearch />
       <CavesWhatsAppWidget />
     </div>

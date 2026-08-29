@@ -1,19 +1,20 @@
 import { describe, it, expect } from 'vitest';
 import React from 'react';
 import { render } from '@testing-library/react';
+import { Provider } from 'react-redux';
+import { store } from '../../../store/store';
 import Component from './MarketStatsBanner';
 
 describe('MarketStatsBanner Component', () => {
-  it('renders or exports component cleanly', () => {
+  it('renders cleanly with Redux Provider', () => {
     expect(Component).toBeDefined();
     if (typeof Component === 'function') {
-      try {
-        const { container } = render(<Component />);
-        expect(container).toBeDefined();
-      } catch {
-        // Safe fallback for components requiring mandatory context or props
-        expect(true).toBe(true);
-      }
+      const { container } = render(
+        <Provider store={store}>
+          <Component />
+        </Provider>
+      );
+      expect(container).toBeDefined();
     }
   });
 });

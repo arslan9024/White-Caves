@@ -1,14 +1,14 @@
 import React, { useState } from 'react';
 import styled from 'styled-components';
 
-const RED = '#EF4444';
-const SLATE = '#1E293B';
+const RED = 'var(--primary-red, #EF4444)';
+const SLATE = 'var(--card-dark, #1E293B)';
 
 const DashboardContainer = styled.div`
   max-width: 1400px;
   margin: 40px auto;
   padding: 40px 24px;
-  background: #FFFFFF;
+  background: var(--white, #FFFFFF);
   border-radius: 24px;
   border: 1px solid rgba(239, 68, 68, 0.2);
   box-shadow: 0 16px 40px rgba(15, 23, 42, 0.06);
@@ -35,7 +35,7 @@ const Title = styled.h2`
 `;
 
 const Subtitle = styled.p`
-  color: #64748B;
+  color: var(--text-secondary, #64748B);
   max-width: 680px;
   font-size: 1rem;
   margin: 0 0 32px;
@@ -52,7 +52,7 @@ const Grid = styled.div`
 `;
 
 const Card = styled.div`
-  background: #F8FAFC;
+  background: var(--color-f8fafc, #F8FAFC);
   border: 1px solid rgba(239, 68, 68, 0.2);
   border-radius: 20px;
   padding: 28px;
@@ -88,12 +88,12 @@ const ValueHighlight = styled.span`
 
 const Slider = styled.input`
   width: 100%;
-  accent-color: ${RED};
+  accent-color: #EF4444;
   cursor: pointer;
 `;
 
 const MetricBox = styled.div`
-  background: #FFFFFF;
+  background: var(--white, #FFFFFF);
   border: 1px solid rgba(239, 68, 68, 0.25);
   border-radius: 16px;
   padding: 16px 20px;
@@ -139,6 +139,14 @@ export const ToolsDashboard: React.FC = () => {
         )
       : 0;
 
+  // UAE Statutory Upfront Fees (DLD + Admin + Agency + VAT + Mortgage Reg)
+  const dldTransferFee = propertyPrice * 0.04;
+  const dldAdminFee = 4300;
+  const agencyBrokerageFee = propertyPrice * 0.02 * 1.05; // 2% + 5% VAT
+  const mortgageRegistrationFee = loanAmountAED > 0 ? loanAmountAED * 0.0025 + 290 : 0;
+  const totalUpfrontFees = Math.round(dldTransferFee + dldAdminFee + agencyBrokerageFee + mortgageRegistrationFee);
+  const totalInitialCashRequired = Math.round(downPaymentAED + totalUpfrontFees);
+
   const netAnnualIncomeAED = Math.round(annualRentAED * (1 - maintenanceCostPct / 100));
   const grossYieldPct = ((annualRentAED / propertyPrice) * 100).toFixed(2);
   const netRoiPct = ((netAnnualIncomeAED / propertyPrice) * 100).toFixed(2);
@@ -147,16 +155,16 @@ export const ToolsDashboard: React.FC = () => {
     <DashboardContainer id="tools-insights">
       <div style={{ textAlign: 'center' }}>
         <SectionBadge>⚡ GAMIFIED FINTECH & INVESTMENT SUITE</SectionBadge>
-        <Title>Interactive Financial Calculators</Title>
+        <Title>Interactive Financial & UAE Mortgage Calculators</Title>
         <Subtitle style={{ margin: '0 auto 32px' }}>
-          Simulate your Dubai property mortgage, net rental yield, and cash flow in real-time.
+          Simulate your Dubai property mortgage, statutory DLD fees, net rental yield, and cash flow in real-time.
         </Subtitle>
       </div>
 
       <Grid>
         {/* Mortgage Calculator */}
         <Card>
-          <CardTitle>🧮 Smart Dubai Mortgage Simulator</CardTitle>
+          <CardTitle>🧮 Smart Dubai Mortgage & Fee Simulator</CardTitle>
           <InputGroup>
             <LabelFlex>
               <span>Property Acquisition Value</span>
@@ -221,6 +229,22 @@ export const ToolsDashboard: React.FC = () => {
             <MetricLabel>Estimated Monthly Repayment</MetricLabel>
             <MetricValue>AED {monthlyMortgageAED.toLocaleString()}/mo</MetricValue>
           </MetricBox>
+
+          <div style={{ marginTop: '14px', padding: '12px', background: 'var(--white, #FFFFFF)', borderRadius: '12px', border: '1px solid rgba(239, 68, 68, 0.15)', fontSize: '0.78rem' }}>
+            <div style={{ fontWeight: 800, color: 'var(--color-1e293b, #1E293B)', marginBottom: '4px' }}>🏛️ Statutory UAE Acquisition Outlay:</div>
+            <div style={{ display: 'flex', justifyContent: 'space-between', color: 'var(--text-secondary, #64748B)' }}>
+              <span>DLD 4% Transfer + Admin:</span>
+              <strong>AED {(dldTransferFee + dldAdminFee).toLocaleString()}</strong>
+            </div>
+            <div style={{ display: 'flex', justifyContent: 'space-between', color: 'var(--text-secondary, #64748B)', marginTop: '2px' }}>
+              <span>Brokerage (2% + 5% VAT) + Reg:</span>
+              <strong>AED {Math.round(agencyBrokerageFee + mortgageRegistrationFee).toLocaleString()}</strong>
+            </div>
+            <div style={{ display: 'flex', justifyContent: 'space-between', color: 'var(--primary-red, #EF4444)', fontWeight: 800, marginTop: '4px', borderTop: '1px solid var(--text-secondary, #E2E8F0)', paddingTop: '4px' }}>
+              <span>Total Initial Cash Required:</span>
+              <span>AED {totalInitialCashRequired.toLocaleString()}</span>
+            </div>
+          </div>
         </Card>
 
         {/* ROI Calculator */}
@@ -263,7 +287,7 @@ export const ToolsDashboard: React.FC = () => {
 
           <MetricBox>
             <MetricLabel>Estimated Net ROI Yield</MetricLabel>
-            <MetricValue style={{ color: 'var(--accent-green, #059669)' }}>{netRoiPct}% Net</MetricValue>
+            <MetricValue style={{ color: 'var(--accent-green, #10B981)' }}>{netRoiPct}% Net</MetricValue>
           </MetricBox>
 
           <MetricBox style={{ background: 'rgba(239, 68, 68, 0.08)' }}>
@@ -275,3 +299,5 @@ export const ToolsDashboard: React.FC = () => {
     </DashboardContainer>
   );
 };
+
+export default ToolsDashboard;

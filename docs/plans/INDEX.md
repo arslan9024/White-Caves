@@ -1,6 +1,6 @@
 # Plans Index
 
-**Last Updated:** 2026-07-14
+**Last Updated:** 2026-08-29
 
 ## Start Here (Canonical)
 

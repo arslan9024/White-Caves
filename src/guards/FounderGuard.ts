@@ -6,6 +6,7 @@
  */
 
 export const FOUNDER_EMAIL = 'arslanmalikgoraha@gmail.com';
+export const FOUNDER_EMAILS = ['arslanmalikgoraha@gmail.com', 'the.white.caves@gmail.com'];
 export const LEVEL_5_MASTER = 5;
 
 export interface UserProfile {
@@ -16,12 +17,18 @@ export interface UserProfile {
   isFounder: boolean;
 }
 
+export function isFounderEmail(email: string): boolean {
+  if (!email) return false;
+  const clean = email.toLowerCase().trim();
+  return FOUNDER_EMAILS.includes(clean);
+}
+
 export function evaluateFounderGuard(userEmail: string, currentProfile?: Partial<UserProfile>): UserProfile {
-  if (userEmail.toLowerCase().trim() === FOUNDER_EMAIL) {
+  if (isFounderEmail(userEmail)) {
     return {
-      email: FOUNDER_EMAIL,
+      email: userEmail.toLowerCase().trim(),
       accessLevel: LEVEL_5_MASTER,
-      name: currentProfile?.name || 'Arslan Malik Goraha',
+      name: currentProfile?.name || 'Arslan Malik Bashir Ahmad',
       role: 'Managing Director & Founder',
       isFounder: true,
     };
@@ -37,7 +44,7 @@ export function evaluateFounderGuard(userEmail: string, currentProfile?: Partial
 }
 
 export function shouldShortCircuitToProfile(userEmail: string): boolean {
-  return userEmail.toLowerCase().trim() === FOUNDER_EMAIL;
+  return isFounderEmail(userEmail);
 }
 
 /**

@@ -17,8 +17,8 @@ export const FinancialStatementsTab: React.FC = () => {
             fontSize: '0.85rem',
             fontWeight: 800,
             cursor: 'pointer',
-            background: statementType === 'pnl' ? '#FFFFFF' : 'transparent',
-            color: statementType === 'pnl' ? '#8B5CF6' : '#64748B',
+            background: statementType === 'pnl' ? 'var(--white, #FFFFFF)' : 'transparent',
+            color: statementType === 'pnl' ? 'var(--primary-red, #EF4444)' : 'var(--text-secondary, #64748B)',
             boxShadow: statementType === 'pnl' ? '0 1px 3px rgba(0,0,0,0.1)' : 'none',
           }}
         >
@@ -33,8 +33,8 @@ export const FinancialStatementsTab: React.FC = () => {
             fontSize: '0.85rem',
             fontWeight: 800,
             cursor: 'pointer',
-            background: statementType === 'balance-sheet' ? '#FFFFFF' : 'transparent',
-            color: statementType === 'balance-sheet' ? '#8B5CF6' : '#64748B',
+            background: statementType === 'balance-sheet' ? 'var(--white, #FFFFFF)' : 'transparent',
+            color: statementType === 'balance-sheet' ? 'var(--primary-red, #EF4444)' : 'var(--text-secondary, #64748B)',
             boxShadow: statementType === 'balance-sheet' ? '0 1px 3px rgba(0,0,0,0.1)' : 'none',
           }}
         >
@@ -49,8 +49,8 @@ export const FinancialStatementsTab: React.FC = () => {
             fontSize: '0.85rem',
             fontWeight: 800,
             cursor: 'pointer',
-            background: statementType === 'cash-flow' ? '#FFFFFF' : 'transparent',
-            color: statementType === 'cash-flow' ? '#8B5CF6' : '#64748B',
+            background: statementType === 'cash-flow' ? 'var(--white, #FFFFFF)' : 'transparent',
+            color: statementType === 'cash-flow' ? 'var(--primary-red, #EF4444)' : 'var(--text-secondary, #64748B)',
             boxShadow: statementType === 'cash-flow' ? '0 1px 3px rgba(0,0,0,0.1)' : 'none',
           }}
         >
@@ -65,8 +65,8 @@ export const FinancialStatementsTab: React.FC = () => {
             fontSize: '0.85rem',
             fontWeight: 800,
             cursor: 'pointer',
-            background: statementType === 'audit-pack' ? '#FFFFFF' : 'transparent',
-            color: statementType === 'audit-pack' ? '#8B5CF6' : '#64748B',
+            background: statementType === 'audit-pack' ? 'var(--white, #FFFFFF)' : 'transparent',
+            color: statementType === 'audit-pack' ? 'var(--primary-red, #EF4444)' : 'var(--text-secondary, #64748B)',
             boxShadow: statementType === 'audit-pack' ? '0 1px 3px rgba(0,0,0,0.1)' : 'none',
           }}
         >
@@ -86,7 +86,7 @@ export const FinancialStatementsTab: React.FC = () => {
                 Accrual Basis | White Caves Real Estate LLC | Dubai, UAE
               </p>
             </div>
-            <button style={{ background: 'var(--accent-purple, #8B5CF6)', color: 'var(--white, #FFFFFF)', border: 'none', borderRadius: '8px', padding: '6px 14px', fontSize: '0.8rem', fontWeight: 800, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '6px' }}>
+            <button style={{ background: 'var(--primary-red, #EF4444)', color: 'var(--white, #FFFFFF)', border: 'none', borderRadius: '8px', padding: '6px 14px', fontSize: '0.8rem', fontWeight: 800, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '6px', boxShadow: '0 2px 6px rgba(239, 68, 68, 0.3)' }}>
               <Download size={14} /> Export P&L Excel / PDF
             </button>
           </div>
@@ -168,7 +168,7 @@ export const FinancialStatementsTab: React.FC = () => {
       {statementType === 'audit-pack' && (
         <div style={{ background: 'var(--white, #FFFFFF)', borderRadius: '12px', border: '1px solid var(--text-secondary, #E2E8F0)', padding: '1.5rem' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: 'var(--color-1e293b, #1E293B)', marginBottom: '0.5rem' }}>
-            <Shield size={22} color="#8B5CF6" />
+            <Shield size={22} color="var(--primary-red, #EF4444)" />
             <h3 style={{ margin: 0, fontSize: '1.1rem', fontWeight: 800 }}>
               Official Regulatory Financial Audit Pack (RERA & Statutory)
             </h3>

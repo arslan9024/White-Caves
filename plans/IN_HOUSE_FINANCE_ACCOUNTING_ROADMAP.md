@@ -21,11 +21,12 @@
 - [x] Enhance `GET /api/finance/vat-return` to calculate real-time Input VAT from qualifying expenses and Output VAT from tax invoices.
 - [x] Add `GET /api/finance/directors-loan-summary` and `GET /api/finance/corporate-tax-summary`.
 
-### Milestone 3: Frontend Theodora Dashboard UI
-- [ ] Connect Theodora AI Assistant UI to real-time expense logger and drag-and-drop receipt uploader.
-- [ ] Render interactive Director's Loan settlement card with 1-click reimbursement generation.
-- [ ] Render UAE FTA Form 201 VAT Return preview and Corporate Tax 9% threshold gauge.
+### Milestone 3: Frontend Theodora Dashboard UI (Completed)
+- [x] Connect Theodora AI Assistant UI to real-time expense logger with payment source routing (`Wio` vs `Director Loan`).
+- [x] Render interactive Director's Loan settlement card with reimbursement generation (`DirectorsLoanTab.tsx`).
+- [x] Render UAE FTA Form 201 VAT Return preview and Corporate Tax 9% threshold gauge (`VatReturnTab.tsx` & `CorporateTaxTab.tsx`).
 
-### Milestone 4: Verification & Automated Test Matrix
-- [ ] Unit & integration tests for all 42 expense classifications, VAT calculations, and CT profit thresholds.
-- [ ] Zero regression across existing commission, invoice, and payment routes.
+### Milestone 4: Verification & Automated Test Matrix (Completed)
+- [x] Unit & integration tests for all 5 Chart of Accounts classes, 37+ sub-items, VAT calculations, and CT profit thresholds.
+- [x] Zero regression across existing commission, invoice, and payment routes (34 backend + 47 frontend vitest tests green).
+

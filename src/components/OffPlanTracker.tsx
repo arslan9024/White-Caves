@@ -340,6 +340,30 @@ const OffPlanTracker = ({
                 <PaymentPlan>Payment Plan: {project.paymentPlan}</PaymentPlan>
               </div>
 
+              {/* ── Statutory DLD Escrow Guarantee (Law No. 8 of 2007) [T-005] ── */}
+              <div
+                style={{
+                  background: 'rgba(16, 185, 129, 0.08)',
+                  border: '1px solid rgba(16, 185, 129, 0.25)',
+                  borderRadius: '10px',
+                  padding: '8px 12px',
+                  margin: '10px 0',
+                  fontSize: '0.75rem',
+                }}
+              >
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '4px' }}>
+                  <span style={{ fontWeight: 800, color: '#059669', display: 'flex', alignItems: 'center', gap: '4px' }}>
+                    🛡️ DLD Escrow Law No. 8
+                  </span>
+                  <span style={{ color: '#047857', fontWeight: 700, fontSize: '0.7rem' }}>
+                    100% Protected
+                  </span>
+                </div>
+                <div style={{ color: '#475569', fontSize: '0.72rem', lineHeight: 1.35 }}>
+                  Statutory Trust Account certified by Dubai Land Department & CBUAE.
+                </div>
+              </div>
+
               <ProjectFeatures>
                 {project.features.map((feature) => (
                   <FeaturesChip key={feature}>{feature}</FeaturesChip>

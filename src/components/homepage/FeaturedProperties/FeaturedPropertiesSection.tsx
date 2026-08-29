@@ -6,7 +6,7 @@
  */
 import React from 'react';
 import { motion } from 'framer-motion';
-import { ArrowRight, Sparkles } from 'lucide-react';
+import { ArrowRight, Sparkles, CheckCircle2, ShieldCheck } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import type { HomepageProperty } from '../../../store/slices/homepageSlice';
 import './FeaturedPropertiesSection.css';
@@ -93,6 +93,14 @@ const FeaturedCard: React.FC<FeaturedCardProps> = ({ property, index }) => {
               Featured
             </span>
           )}
+          <span className="fp-badge fp-badge--trucheck">
+            <CheckCircle2 size={11} />
+            TruCheck™
+          </span>
+          <span className="fp-badge fp-badge--trakheesi">
+            <ShieldCheck size={11} />
+            DLD Validated
+          </span>
           <span className={`fp-badge fp-badge--status fp-badge--${property.status}`}>
             {property.status}
           </span>

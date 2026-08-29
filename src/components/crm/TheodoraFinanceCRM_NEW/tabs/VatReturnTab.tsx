@@ -21,8 +21,8 @@ export const VatReturnTab: React.FC = () => {
       {/* Header Banner */}
       <div
         style={{
-          background: 'linear-gradient(135deg, #1E1B4B 0%, #312E81 100%)',
-          color: '#FFFFFF',
+          background: 'linear-gradient(135deg, var(--bg-dark, #0F172A) 0%, var(--card-dark, #1E293B) 100%)',
+          color: 'var(--white, #FFFFFF)',
           padding: '1.5rem',
           borderRadius: '12px',
           display: 'flex',
@@ -30,12 +30,12 @@ export const VatReturnTab: React.FC = () => {
           alignItems: 'center',
           flexWrap: 'wrap',
           gap: '1rem',
-          boxShadow: '0 4px 12px rgba(30, 27, 75, 0.2)',
+          boxShadow: '0 4px 12px rgba(15, 23, 42, 0.2)',
         }}
       >
         <div>
           <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-            <Building2 size={24} color="#818CF8" />
+            <Building2 size={24} color="var(--accent-blue, #3B82F6)" />
             <h3 style={{ margin: 0, fontSize: '1.25rem', fontWeight: 800 }}>
               UAE Federal Tax Authority (FTA) — Form 201 VAT Return
             </h3>
@@ -51,7 +51,7 @@ export const VatReturnTab: React.FC = () => {
             onChange={(e) => setTaxPeriod(e.target.value)}
             style={{
               background: 'rgba(255, 255, 255, 0.1)',
-              color: '#FFFFFF',
+              color: 'var(--white, #FFFFFF)',
               border: '1px solid rgba(255, 255, 255, 0.2)',
               borderRadius: '8px',
               padding: '6px 12px',
@@ -66,8 +66,8 @@ export const VatReturnTab: React.FC = () => {
 
           <button
             style={{
-              background: '#4F46E5',
-              color: '#FFFFFF',
+              background: 'var(--primary-red, #EF4444)',
+              color: 'var(--white, #FFFFFF)',
               border: 'none',
               borderRadius: '8px',
               padding: '8px 16px',
@@ -77,7 +77,7 @@ export const VatReturnTab: React.FC = () => {
               alignItems: 'center',
               gap: '6px',
               cursor: 'pointer',
-              boxShadow: '0 2px 6px rgba(79, 70, 229, 0.4)',
+              boxShadow: '0 2px 6px rgba(239, 68, 68, 0.4)',
             }}
           >
             <Download size={16} />

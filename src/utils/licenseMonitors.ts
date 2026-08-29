@@ -9,10 +9,10 @@ export interface LicenseStatus {
 }
 
 const LICENSES = [
-  { name: 'DET' as LicenseName, idNumber: '1388443', expiryDate: '2026-07-31' },
-  { name: 'RERA' as LicenseName, idNumber: '44483', expiryDate: '2026-08-15' },
-  { name: 'EJARI' as LicenseName, idNumber: '0120250814005322', expiryDate: '2026-10-01' },
-  { name: 'ICP' as LicenseName, idNumber: '2/1/1192499', expiryDate: '2026-11-20' },
+  { name: 'DET' as LicenseName, idNumber: '1388443', expiryDate: '2026-07-30' },
+  { name: 'RERA' as LicenseName, idNumber: '44483', expiryDate: '2026-07-30' },
+  { name: 'EJARI' as LicenseName, idNumber: '0120250814005322', expiryDate: '2026-08-13' },
+  { name: 'ICP' as LicenseName, idNumber: '2/1/1192499', expiryDate: '2026-08-31' },
 ];
 
 export const getLicenseStatuses = (currentDate: Date = new Date()): LicenseStatus[] => {

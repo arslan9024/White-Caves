@@ -348,10 +348,10 @@ export const JourneyHubView: React.FC<JourneyHubViewProps> = ({ moduleId }) => {
                 >
                   <div>
                     <span style={{ fontSize: '0.85rem', fontWeight: 800, color: 'var(--color-1e293b, #1E293B)' }}>
-                      {entry.resultSummary.title}
+                      {entry.result?.title || entry.journeyId}
                     </span>
                     <span style={{ fontSize: '0.72rem', color: 'var(--text-secondary, #64748B)', display: 'block', marginTop: '2px' }}>
-                      Ref: {entry.resultSummary.referenceNumber} • Completed on {new Date(entry.completedAt).toLocaleString()}
+                      Ref: {entry.result?.referenceNumber || entry.sessionId} • Completed on {new Date(entry.updatedAt || entry.createdAt).toLocaleString()}
                     </span>
                   </div>
                   <span

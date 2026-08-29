@@ -1,5 +1,5 @@
 {
-  "version": "2026.08.18-aegis-v4-chronicle-tips-v1",
+  "version": "2026.08.29-aegis-v4-omni-accelerator-v2",
   "schemaVersion": "2.2.0",
   "readinessThresholdPct": 60,
   "readinessTargetPct": 90,
@@ -10,6 +10,45 @@
   "depthGateLabel": "depth evidence",
   "deduplicationAndOptimizationEngine": {
     "enabled": true,
+    "accelerationProtocol": {
+      "targetPerformanceGainPct": 300,
+      "cacheStrategy": "MapIndexHash",
+      "maxQueryLatencyMs": 10,
+      "serverRouteConsolidation": true,
+      "zeroTokenPrecheckEnforced": true
+    },
+    "continuousAutopilotPillars": {
+      "homepageOptimization": {
+        "enabled": true,
+        "lcpTargetMs": 1200,
+        "zeroClsEnforced": true,
+        "inventoryLookup": "O(1) MapIndex"
+      },
+      "aiCommandCenterMesh": {
+        "enabled": true,
+        "assistantsTotal": 44,
+        "multiLanguageRouting": ["en", "ar", "ru", "fr", "zh"],
+        "maxResponseLatencyMs": 250
+      },
+      "dashboardsAndReporting": {
+        "enabled": true,
+        "statutoryUaeAccounting": true,
+        "realTimePnlCalculation": true,
+        "sub10msTelemetryHydration": true
+      },
+      "serverConsolidationAndStreaming": {
+        "enabled": true,
+        "gzipBrotliCompression": true,
+        "memoryCachePool": true,
+        "routePipelinesDeduplicated": true
+      },
+      "workflowEngineAutomation": {
+        "enabled": true,
+        "ejariTenancyAutomation": true,
+        "amlKycGoAmlVerification": true,
+        "vatForm201Generation": true
+      }
+    },
     "duplicateComponentSimilarityThreshold": 0.85,
     "algorithmicOptimizationPolicy": {
       "enforceTimeComplexityReduction": true,

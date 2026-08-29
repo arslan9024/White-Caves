@@ -1,11 +1,11 @@
 /**
  * margaretPlansDocsRegistry.ts
- * Master Hyper-Linked HTML Strategic Planning & Backlog Registry for Margaret AI (Item Code: 3.12)
+ * Master Hyper-Linked HTML Strategic Planning & Project Roadmap Registry for Margaret AI (Item Code: 3.42)
  * 
- * Strategic Scope:
- * - Strategic Planner: @Margaret (Apollo Software Engineering Methodology)
- * - Scope: Master Roadmaps, Pending Backlogs, Wave Execution Roadmaps, and Governance Matrices
- * - Machine-Readable Disk Source: plans/ folder
+ * Planning Specifications:
+ * - Apollo Software Engineering Methodology (Dependency-Safe Task Decomposition)
+ * - 170-Agent Swarm Orchestration Matrix (120 Free Planning + 50 Implementation)
+ * - Traceability Matrix Linking Requirements, Workflows, Wave Backlogs & Test Surfaces
  */
 
 export interface PlanSubItem {
@@ -46,7 +46,7 @@ export const MARGARET_PLANS_DOCS: PlanDocItem[] = [
     title: 'Master Recovery & Execution Plan (Waves 01–65)',
     category: 'master',
     sprintMilestone: 'Wave 65 Construction Milestone',
-    primaryPlanner: '3.12 Margaret AI (Strategic Lead)',
+    primaryPlanner: '3.42 Margaret AI (Strategic Lead)',
     lastUpdated: '2026-08-26',
     summary: 'Sovereign Master Execution Plan outlining the 120-agent free planning and 50-agent implementation mesh.',
     tags: ['Master Plan', 'Wave 01-65', 'AEGIS 170', 'Executive Milestones'],

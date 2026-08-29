@@ -1,6 +1,6 @@
 /**
  * AegisAutopilotHub.data.ts
- * Content & Translation variables for AEGIS Autopilot Hub (3.15)
+ * Content & Translation variables for AEGIS Autopilot Hub (3.44)
  */
 
 export const AEGIS_HUB_TEXT = {

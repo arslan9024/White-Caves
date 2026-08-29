@@ -560,6 +560,58 @@ export const ALL_AI_ASSISTANTS: AIAssistantOption[] = [
       { id: 'crest-bulk-valuation', label: '3.40.3 Bulk Portfolio Valuation Run', icon: '📈', badge: 'Portfolio Run' },
     ],
   },
+  {
+    id: 'archer',
+    num: '3.41',
+    name: 'Archer AI',
+    role: 'Lead Scoring & Conversion Probability',
+    icon: '🎯',
+    items: [
+      { id: 'archer-lead-scorecard', label: '3.41.1 Lead Scoring Matrix & Weights', icon: '🎯', badge: 'Scoring' },
+      { id: 'archer-routing-engine', label: '3.41.2 Agent Auto-Assignment Queue', icon: '⚡', badge: 'Routing' },
+      { id: 'archer-churn-predictor', label: '3.41.3 Buyer Churn & Stall Detector', icon: '⚠️', badge: 'Risk Shield' },
+    ],
+  },
+  {
+    id: 'margaret',
+    num: '3.42',
+    name: 'Margaret AI',
+    role: 'Strategic Planning & Master Backlog Architect',
+    icon: '🗺️',
+    items: [
+      { id: 'margaret-master-roadmap', label: '3.42.1 Master Roadmap (Waves 01–65)', icon: '🗺️', badge: 'Roadmap' },
+      { id: 'margaret-feature-matrix', label: '3.42.2 Feature Coverage & Traceability Matrix', icon: '📋', badge: 'Traceability' },
+      { id: 'margaret-backlog-allocator', label: '3.42.3 Sprint Milestone Allocation', icon: '⚡', badge: 'Apollo Sprint' },
+      { id: 'margaret-plans-docs', label: '3.42.4 Hyper-Linked Strategic Plans Hub', icon: '📜', badge: 'Plans Hub' },
+    ],
+  },
+  {
+    id: 'ada',
+    num: '3.43',
+    name: 'Ada AI',
+    role: 'Chief Architecture & SDLC Governance Gatekeeper',
+    icon: '🏛️',
+    items: [
+      { id: 'ada-topology-matrix', label: '3.43.1 Sovereign Architecture Topology', icon: '🏛️', badge: 'Topology' },
+      { id: 'ada-zero-token-gate', label: '3.43.2 Zero-Token Local Gate Verifier', icon: '🛡️', badge: 'Zero Defect' },
+      { id: 'ada-dedup-enforcer', label: '3.43.3 Deduplication Law & AST Optimizer', icon: '⚡', badge: 'Dedup Law' },
+      { id: 'ada-architecture-docs', label: '3.43.4 Hyper-Linked Architecture Hub', icon: '📜', badge: 'Architecture' },
+    ],
+  },
+  {
+    id: 'aegis',
+    num: '3.44',
+    name: 'AEGIS AI',
+    role: 'Autonomous Autopilot & Swarm Orchestrator',
+    icon: '🚀',
+    items: [
+      { id: 'aegis-telemetry-heartbeat', label: '3.44.1 Live Telemetry & Scanner Health (0 Issues)', icon: '🚀', badge: 'Heartbeat' },
+      { id: 'aegis-governance-policy', label: '3.44.2 Sovereign Governance Policy (v2026.08.18)', icon: '🛡️', badge: 'Policy' },
+      { id: 'aegis-swarm-matrix', label: '3.44.3 170-Agent Swarm Allocation Matrix', icon: '🤖', badge: '170 Swarm' },
+      { id: 'aegis-daily-chronology', label: '3.44.4 Daily Execution Chronology & Milestone Log', icon: '📊', badge: 'Chronology' },
+      { id: 'aegis-autopilot-hub', label: '3.44.5 Hyper-Linked Autopilot & Telemetry Hub', icon: '📜', badge: 'Autopilot' },
+    ],
+  },
 ];
 
 // ─── AI Teams & Squads Structure ───
@@ -673,10 +725,13 @@ export const MD_SUITE_DEPT: BuildingTier = {
   badgeColor: '#EF4444',
   icon: '👑',
   summary: 'Reserved exclusively for Arslan Malik. Controls global corporate strategy, high-stakes joint ventures, investment allocations, and unilateral override permissions across all lower operational tiers.',
-  scope: ['Global Corporate Strategy & Joint Ventures', 'Executive Overview & Management Dashboards', 'Executive Department Deck Control'],
   items: [
-    { id: 'overview', label: '1.1 Executive Overview & Live Audit', icon: '📊' },
-    { id: 'zoe', label: '1.2 Global Strategy & Department Deck', icon: '📈' },
+    { id: 'overview', label: '1.1 Executive Overview & Live Audit', icon: '👑' },
+    { id: 'ai-command', label: '1.2 1-12-108 AI Command Center', icon: '🤖' },
+    { id: 'off-plan-tracker', label: '1.3 DH2 & Off-Plan Escrow Matrix', icon: '🏰' },
+    { id: 'theodora', label: '1.4 Treasury & VAT Accounting', icon: '💰' },
+    { id: 'compliance', label: '1.5 goAML & Statutory Shield', icon: '⚖️' },
+    { id: 'journeys', label: '1.6 20 Life Cycle Journeys Hub', icon: '🗺️' },
   ],
 };
 

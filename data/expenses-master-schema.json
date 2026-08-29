@@ -1,387 +1,341 @@
 {
   "company_name": "White Caves Real Estate LLC",
   "currency": "AED",
-  "last_updated": "2026-08-23",
+  "last_updated": "2026-08-26",
   "expense_categories": [
     {
       "category_id": "CAT-01",
-      "category_name": "Marketing & Lead Generation",
+      "category_name": "Cost Of Goods Sold",
       "items": [
         {
-          "expense_id": "EXP-101",
-          "name": "Property Finder Subscriptions",
-          "description": "Monthly portal fee, premium tier credits, and featured listing spots.",
+          "expense_id": "COGS-001",
+          "name": "Cost of Goods Sold",
+          "description": "Direct property acquisition fulfillment, developer listing allocations, and deal production costs.",
           "uae_vat_rate": 5.0,
           "fta_ct_deductible": true,
-          "accounting_ledger_code": "5010"
-        },
-        {
-          "expense_id": "EXP-102",
-          "name": "Bayut & dubizzle Packages",
-          "description": "Integrated real estate listing packages, refresh tokens, and banner ads.",
-          "uae_vat_rate": 5.0,
-          "fta_ct_deductible": true,
-          "accounting_ledger_code": "5011"
-        },
-        {
-          "expense_id": "EXP-103",
-          "name": "Skyloov Platform Fees",
-          "description": "PropTech lead platform costs and specialized mapping tools.",
-          "uae_vat_rate": 5.0,
-          "fta_ct_deductible": true,
-          "accounting_ledger_code": "5012"
-        },
-        {
-          "expense_id": "EXP-104",
-          "name": "Paid Social Media Advertising",
-          "description": "Meta Ads (Facebook/Instagram), Google PPC, and LinkedIn lead campaigns.",
-          "uae_vat_rate": 0.0,
-          "fta_ct_deductible": true,
-          "accounting_ledger_code": "5020"
-        },
-        {
-          "expense_id": "EXP-105",
-          "name": "Web Hosting & Cloud Computing",
-          "description": "AWS servers, GoDaddy domain renewals, and SSL certificates for the web app.",
-          "uae_vat_rate": 5.0,
-          "fta_ct_deductible": true,
-          "accounting_ledger_code": "5030"
-        },
-        {
-          "expense_id": "EXP-106",
-          "name": "SEO & Content Marketing",
-          "description": "External optimization services and localization copy for listings.",
-          "uae_vat_rate": 5.0,
-          "fta_ct_deductible": true,
-          "accounting_ledger_code": "5040"
-        },
-        {
-          "expense_id": "EXP-107",
-          "name": "SMS & Email Marketing Gateways",
-          "description": "Twilio or Mailchimp server subscription charges to push out inventory blasts.",
-          "uae_vat_rate": 5.0,
-          "fta_ct_deductible": true,
-          "accounting_ledger_code": "5050"
-        },
-        {
-          "expense_id": "EXP-108",
-          "name": "Professional Photography & Video",
-          "description": "HD villa shoots, matterport 3D tours, and drone capture services.",
-          "uae_vat_rate": 5.0,
-          "fta_ct_deductible": true,
-          "accounting_ledger_code": "5060"
-        },
-        {
-          "expense_id": "EXP-109",
-          "name": "Graphic Design & Branding Outlays",
-          "description": "UI layout adjustments, vector logos, and social layout design.",
-          "uae_vat_rate": 5.0,
-          "fta_ct_deductible": true,
-          "accounting_ledger_code": "5070"
-        },
-        {
-          "expense_id": "EXP-110",
-          "name": "Signage & Physical Property Boards",
-          "description": "Manufacture and setup of physical 'For Sale' / 'To Lease' neighborhood frames.",
-          "uae_vat_rate": 5.0,
-          "fta_ct_deductible": true,
-          "accounting_ledger_code": "5080"
+          "accounting_ledger_code": "5000"
         }
       ]
     },
     {
       "category_id": "CAT-02",
-      "category_name": "Commercial Real Estate & Overheads",
+      "category_name": "Operating Expenses",
       "items": [
         {
-          "expense_id": "EXP-201",
-          "name": "Commercial Office Base Rent",
-          "description": "Physical corporate workspace rental charges backed by an official Ejari.",
+          "expense_id": "EXP-001",
+          "name": "Advertising And Marketing",
+          "description": "Meta Ads (Facebook/Instagram), Google PPC, LinkedIn, Property Finder, Bayut, and Dubizzle campaigns.",
           "uae_vat_rate": 5.0,
           "fta_ct_deductible": true,
-          "accounting_ledger_code": "6010"
+          "accounting_ledger_code": "5010"
         },
         {
-          "expense_id": "EXP-202",
-          "name": "Office Security Deposit",
-          "description": "Refundable transactional allocation held by the building landlord.",
-          "uae_vat_rate": 0.0,
-          "fta_ct_deductible": false,
-          "accounting_ledger_code": "1210"
-        },
-        {
-          "expense_id": "EXP-203",
-          "name": "Ejari Registration Charges",
-          "description": "Official government validation and system entry processing costs.",
+          "expense_id": "EXP-002",
+          "name": "[ Payroll-009 ] Air Travel Allowance Expense",
+          "description": "Staff annual flight ticket provisions and executive travel ticket allowances.",
           "uae_vat_rate": 0.0,
           "fta_ct_deductible": true,
-          "accounting_ledger_code": "6020"
+          "accounting_ledger_code": "5020"
         },
         {
-          "expense_id": "EXP-204",
-          "name": "DEWA Utility Bill",
-          "description": "Electricity and water consumption overhead tied directly to the commercial layout.",
+          "expense_id": "EXP-003",
+          "name": "Automobile Expense",
+          "description": "Company vehicle maintenance, Salik toll charges, registration, and fleet servicing.",
           "uae_vat_rate": 5.0,
           "fta_ct_deductible": true,
-          "accounting_ledger_code": "6030"
+          "accounting_ledger_code": "5030"
         },
         {
-          "expense_id": "EXP-205",
-          "name": "Corporate Telecommunications",
-          "description": "Business landline routing, corporate SIM cards, and office optical fiber internet.",
-          "uae_vat_rate": 5.0,
+          "expense_id": "EXP-004",
+          "name": "Bad Debt",
+          "description": "Written-off uncollectible client commissions or receivables according to IFRS 9.",
+          "uae_vat_rate": 0.0,
           "fta_ct_deductible": true,
-          "accounting_ledger_code": "6040"
+          "accounting_ledger_code": "5040"
         },
         {
-          "expense_id": "EXP-206",
-          "name": "Office Fit-Outs & Modernization",
-          "description": "Carpentry partitions, customized paint runs, and glass partitioning setups.",
-          "uae_vat_rate": 5.0,
+          "expense_id": "EXP-005",
+          "name": "Bank Fees and Charges",
+          "description": "Wio bank transactional processing fees, SWIFT international transfer charges, and account fees.",
+          "uae_vat_rate": 0.0,
           "fta_ct_deductible": true,
-          "accounting_ledger_code": "6050"
+          "accounting_ledger_code": "5050"
         },
         {
-          "expense_id": "EXP-207",
-          "name": "Office Upkeep & Cleaning Services",
-          "description": "Commercial janitorial supply run costs and office sanitization visits.",
+          "expense_id": "EXP-006",
+          "name": "Consultant Expense",
+          "description": "External legal counsel, tax advisory, AML auditing, and corporate advisory fees.",
           "uae_vat_rate": 5.0,
           "fta_ct_deductible": true,
-          "accounting_ledger_code": "6060"
+          "accounting_ledger_code": "5060"
         },
         {
-          "expense_id": "EXP-208",
-          "name": "Office Electronics & Infrastructure",
-          "description": "Dedicated workstation monitors, receipt printer models, and router boxes.",
+          "expense_id": "EXP-007",
+          "name": "Credit Card Charges",
+          "description": "Merchant gateway processing charges (Stripe, Network International, POS terminal fees).",
           "uae_vat_rate": 5.0,
           "fta_ct_deductible": true,
-          "accounting_ledger_code": "6070"
+          "accounting_ledger_code": "5070"
         },
         {
-          "expense_id": "EXP-209",
-          "name": "Pantry & Hospitality Provisioning",
-          "description": "Espresso machine capsules, drinking water, and client hosting items.",
-          "uae_vat_rate": 5.0,
+          "expense_id": "EXP-008",
+          "name": "Depreciation Expense",
+          "description": "Depreciation on company office furniture, IT hardware, and showroom fixtures.",
+          "uae_vat_rate": 0.0,
           "fta_ct_deductible": true,
-          "accounting_ledger_code": "6080"
+          "accounting_ledger_code": "5080"
         },
         {
-          "expense_id": "EXP-210",
-          "name": "Commercial Office Insurance",
-          "description": "Fire protection structure coverage and property damage indemnity layers.",
+          "expense_id": "EXP-009",
+          "name": "Fuel/Mileage Expenses",
+          "description": "Property viewing agent fuel reimbursements, ENOC/EPPCO cards, and client transit mileage.",
           "uae_vat_rate": 5.0,
           "fta_ct_deductible": true,
-          "accounting_ledger_code": "6090"
+          "accounting_ledger_code": "5090"
+        },
+        {
+          "expense_id": "EXP-010",
+          "name": "IT and Internet Expenses",
+          "description": "AWS cloud hosting, domain renewals, CRM software licenses, and optical fiber internet.",
+          "uae_vat_rate": 5.0,
+          "fta_ct_deductible": true,
+          "accounting_ledger_code": "5100"
+        },
+        {
+          "expense_id": "EXP-011",
+          "name": "Janitorial Expense",
+          "description": "Commercial office sanitization, cleaning consumables, and facility maintenance.",
+          "uae_vat_rate": 5.0,
+          "fta_ct_deductible": true,
+          "accounting_ledger_code": "5110"
+        },
+        {
+          "expense_id": "EXP-012",
+          "name": "Lodging",
+          "description": "Corporate hotel accommodations for visiting international high-net-worth investors and VIP clients.",
+          "uae_vat_rate": 5.0,
+          "fta_ct_deductible": true,
+          "accounting_ledger_code": "5120"
+        },
+        {
+          "expense_id": "EXP-013",
+          "name": "Meals and Entertainment",
+          "description": "Client hospitality, deal closing lunches, and corporate staff refreshments (50% CT deductible).",
+          "uae_vat_rate": 5.0,
+          "fta_ct_deductible": true,
+          "accounting_ledger_code": "5130"
+        },
+        {
+          "expense_id": "EXP-014",
+          "name": "Office Supplies",
+          "description": "Stationery, branded folders, contract binders, and day-to-day administrative items.",
+          "uae_vat_rate": 5.0,
+          "fta_ct_deductible": true,
+          "accounting_ledger_code": "5140"
+        },
+        {
+          "expense_id": "EXP-015",
+          "name": "Other Expenses",
+          "description": "Miscellaneous corporate operating outlays not classified in standard primary codes.",
+          "uae_vat_rate": 5.0,
+          "fta_ct_deductible": true,
+          "accounting_ledger_code": "5150"
+        },
+        {
+          "expense_id": "EXP-016",
+          "name": "Parking",
+          "description": "Commercial office parking space rental, client valet fees, and RTA public parking meters.",
+          "uae_vat_rate": 5.0,
+          "fta_ct_deductible": true,
+          "accounting_ledger_code": "5160"
+        },
+        {
+          "expense_id": "EXP-017",
+          "name": "Postage",
+          "description": "Courier shipments (Aramex/DHL/FedEx) for original contracts, title deeds, and PDC delivery.",
+          "uae_vat_rate": 5.0,
+          "fta_ct_deductible": true,
+          "accounting_ledger_code": "5170"
+        },
+        {
+          "expense_id": "EXP-018",
+          "name": "Printing and Stationery",
+          "description": "High-resolution brochure printing, luxury property portfolios, and business card batches.",
+          "uae_vat_rate": 5.0,
+          "fta_ct_deductible": true,
+          "accounting_ledger_code": "5180"
+        },
+        {
+          "expense_id": "EXP-019",
+          "name": "Purchase Discounts",
+          "description": "Early settlement discounts and vendor rebates received on procurement items.",
+          "uae_vat_rate": 0.0,
+          "fta_ct_deductible": true,
+          "accounting_ledger_code": "5190"
+        },
+        {
+          "expense_id": "EXP-020",
+          "name": "Rent Expense",
+          "description": "Commercial office lease rental (Office D-72, El Shaye - 4 Building, Al Barsha South 3rd, Ejari registered).",
+          "uae_vat_rate": 5.0,
+          "fta_ct_deductible": true,
+          "accounting_ledger_code": "5200"
+        },
+        {
+          "expense_id": "EXP-021",
+          "name": "Repairs and Maintenance",
+          "description": "Office AC servicing, lighting fixture replacements, and hardware maintenance.",
+          "uae_vat_rate": 5.0,
+          "fta_ct_deductible": true,
+          "accounting_ledger_code": "5210"
+        },
+        {
+          "expense_id": "EXP-022",
+          "name": "Salaries and Employee Wages",
+          "description": "Staff base salaries, monthly payroll processing through UAE Wages Protection System (WPS).",
+          "uae_vat_rate": 0.0,
+          "fta_ct_deductible": true,
+          "accounting_ledger_code": "5220"
+        },
+        {
+          "expense_id": "EXP-023",
+          "name": "Telephone Expense",
+          "description": "Etisalat / du business landlines, mobile corporate lines, and international dialer packages.",
+          "uae_vat_rate": 5.0,
+          "fta_ct_deductible": true,
+          "accounting_ledger_code": "5230"
+        },
+        {
+          "expense_id": "EXP-024",
+          "name": "Travel Expense",
+          "description": "International roadshows, global property expo delegate fees, and client acquisition trips.",
+          "uae_vat_rate": 5.0,
+          "fta_ct_deductible": true,
+          "accounting_ledger_code": "5240"
         }
       ]
     },
     {
       "category_id": "CAT-03",
-      "category_name": "Government, Licensing & Regulatory Fees",
+      "category_name": "Other Current Liability",
       "items": [
         {
-          "expense_id": "EXP-301",
-          "name": "DET Trade License Renewal",
-          "description": "Department of Economy and Tourism official state license issuance fee.",
+          "expense_id": "LIAB-001",
+          "name": "[ Payroll-003 ] Deductions Payable",
+          "description": "Employee payroll deductions held for remittance to designated entities.",
           "uae_vat_rate": 0.0,
-          "fta_ct_deductible": true,
-          "accounting_ledger_code": "7010"
+          "fta_ct_deductible": false,
+          "accounting_ledger_code": "2010"
         },
         {
-          "expense_id": "EXP-302",
-          "name": "RERA Corporate Registration",
-          "description": "Real Estate Regulatory Agency official brokerage registration and renewal overhead.",
+          "expense_id": "LIAB-002",
+          "name": "Employee Reimbursements",
+          "description": "Verified expense claims submitted by agents awaiting clearance from treasury.",
           "uae_vat_rate": 0.0,
-          "fta_ct_deductible": true,
-          "accounting_ledger_code": "7020"
+          "fta_ct_deductible": false,
+          "accounting_ledger_code": "2020"
         },
         {
-          "expense_id": "EXP-303",
-          "name": "RERA Broker Card Issuance",
-          "description": "Individual real estate broker license ID cards for active on-field execution.",
+          "expense_id": "LIAB-003",
+          "name": "Excise Tax Payable",
+          "description": "Statutory excise obligations payable to UAE Federal Tax Authority if applicable.",
           "uae_vat_rate": 0.0,
-          "fta_ct_deductible": true,
-          "accounting_ledger_code": "7030"
+          "fta_ct_deductible": false,
+          "accounting_ledger_code": "2030"
         },
         {
-          "expense_id": "EXP-304",
-          "name": "Trakheesi System Portal Permits",
-          "description": "Official RERA electronic tracking layout approvals for publishing properties.",
+          "expense_id": "LIAB-004",
+          "name": "GCC VAT Payable",
+          "description": "Collected output VAT on brokerage commissions awaiting quarterly FTA VAT 201 return filing.",
           "uae_vat_rate": 0.0,
-          "fta_ct_deductible": true,
-          "accounting_ledger_code": "7040"
+          "fta_ct_deductible": false,
+          "accounting_ledger_code": "2040"
         },
         {
-          "expense_id": "EXP-305",
-          "name": "Dubai Chamber of Commerce Dues",
-          "description": "Annual standard institutional subscription requirements.",
+          "expense_id": "LIAB-005",
+          "name": "[ Payroll-005 ] Hold Salary Payable",
+          "description": "Salaries on temporary administrative hold pending contract or visa onboarding completion.",
           "uae_vat_rate": 0.0,
-          "fta_ct_deductible": true,
-          "accounting_ledger_code": "7050"
+          "fta_ct_deductible": false,
+          "accounting_ledger_code": "2050"
         },
         {
-          "expense_id": "EXP-306",
-          "name": "Immigration Establishment Card",
-          "description": "General portal platform file opening and visa balance maintenance fees.",
+          "expense_id": "LIAB-006",
+          "name": "[ Payroll-004 ] Net Salary Payable",
+          "description": "Monthly WPS salary balance due for transfer to employee corporate bank accounts.",
           "uae_vat_rate": 0.0,
-          "fta_ct_deductible": true,
-          "accounting_ledger_code": "7060"
+          "fta_ct_deductible": false,
+          "accounting_ledger_code": "2060"
         },
         {
-          "expense_id": "EXP-307",
-          "name": "Employment Visa Processing Fees",
-          "description": "Medical checks, visa print runs, and Emirates ID printing for agents.",
+          "expense_id": "LIAB-007",
+          "name": "[ Payroll-001 ] Reimbursements Payable",
+          "description": "Approved travel and operational reimbursements scheduled for next payroll cycle.",
           "uae_vat_rate": 0.0,
-          "fta_ct_deductible": true,
-          "accounting_ledger_code": "7070"
+          "fta_ct_deductible": false,
+          "accounting_ledger_code": "2070"
         },
         {
-          "expense_id": "EXP-308",
-          "name": "Ministry of Human Resources (MOHRE)",
-          "description": "Official corporate labor card issuance tracks and quota application items.",
+          "expense_id": "LIAB-008",
+          "name": "[ Payroll-002 ] Statutory Deductions Payable",
+          "description": "Mandatory social security and pension deductions for eligible UAE/GCC national personnel.",
           "uae_vat_rate": 0.0,
-          "fta_ct_deductible": true,
-          "accounting_ledger_code": "7080"
-        },
-        {
-          "expense_id": "EXP-309",
-          "name": "Corporate Legalization & Attestations",
-          "description": "MOFA UAE document stamps, court notary fees, and translator tasks.",
-          "uae_vat_rate": 0.0,
-          "fta_ct_deductible": true,
-          "accounting_ledger_code": "7090"
-        },
-        {
-          "expense_id": "EXP-310",
-          "name": "Municipal Knowledge & Innovation Fees",
-          "description": "Mandatory structural add-ons affixed to state transactional tasks.",
-          "uae_vat_rate": 0.0,
-          "fta_ct_deductible": true,
-          "accounting_ledger_code": "7100"
+          "fta_ct_deductible": false,
+          "accounting_ledger_code": "2080"
         }
       ]
     },
     {
       "category_id": "CAT-04",
-      "category_name": "Transportation & Logistics (Field Operations)",
+      "category_name": "Fixed Asset",
       "items": [
         {
-          "expense_id": "EXP-401",
-          "name": "ENOC / ADNOC Fuel Runs",
-          "description": "Fuel allocations utilized for client viewings (split 70/30 for safety compliance).",
+          "expense_id": "ASSET-001",
+          "name": "Furniture and Equipment",
+          "description": "Executive desks, ergonomic chairs, showroom displays, workstations, and meeting room smart screens.",
           "uae_vat_rate": 5.0,
-          "fta_ct_deductible": true,
-          "accounting_ledger_code": "8010"
-        },
-        {
-          "expense_id": "EXP-402",
-          "name": "Salik Automated Toll Fees",
-          "description": "Electronic gate fees logged while driving across main Dubai corridors.",
-          "uae_vat_rate": 0.0,
-          "fta_ct_deductible": true,
-          "accounting_ledger_code": "8020"
-        },
-        {
-          "expense_id": "EXP-403",
-          "name": "RTA Public Parking Allocation",
-          "description": "Zone ticket printing, seasonal card buy-ins, and app balance updates.",
-          "uae_vat_rate": 0.0,
-          "fta_ct_deductible": true,
-          "accounting_ledger_code": "8030"
-        },
-        {
-          "expense_id": "EXP-404",
-          "name": "Corporate Travel Transport Runs",
-          "description": "Careem or Uber business profile allocations used to transport elite investors.",
-          "uae_vat_rate": 0.0,
-          "fta_ct_deductible": true,
-          "accounting_ledger_code": "8040"
-        },
-        {
-          "expense_id": "EXP-405",
-          "name": "Vehicle Routine Maintenance",
-          "description": "Oil changes, mechanical brake servicing, and tire rotation tracking.",
-          "uae_vat_rate": 5.0,
-          "fta_ct_deductible": true,
-          "accounting_ledger_code": "8050"
-        },
-        {
-          "expense_id": "EXP-406",
-          "name": "Vehicle Insurance & Registrations",
-          "description": "Annual comprehensive insurance coverage and RTA inspection tracking.",
-          "uae_vat_rate": 0.0,
-          "fta_ct_deductible": true,
-          "accounting_ledger_code": "8060"
+          "fta_ct_deductible": false,
+          "accounting_ledger_code": "1510"
         }
       ]
     },
     {
       "category_id": "CAT-05",
-      "category_name": "SaaS, Administration & Professional Fees",
+      "category_name": "Other Current Asset",
       "items": [
         {
-          "expense_id": "EXP-501",
-          "name": "Zoho Application Subscriptions",
-          "description": "Annual licensing costs for Zoho Books, Zoho Expense, and CRM nodes.",
-          "uae_vat_rate": 5.0,
-          "fta_ct_deductible": true,
-          "accounting_ledger_code": "9010"
-        },
-        {
-          "expense_id": "EXP-502",
-          "name": "External Professional Tax Services",
-          "description": "Outsourced Corporate Tax filing service provisions with Finhub Middle East.",
-          "uae_vat_rate": 5.0,
-          "fta_ct_deductible": true,
-          "accounting_ledger_code": "9020"
-        },
-        {
-          "expense_id": "EXP-503",
-          "name": "Auditing & Financial Compliance",
-          "description": "Annual report structuring requirements demanded by financial regulators.",
-          "uae_vat_rate": 5.0,
-          "fta_ct_deductible": true,
-          "accounting_ledger_code": "9030"
-        },
-        {
-          "expense_id": "EXP-504",
-          "name": "Custom PropTech Software Engineering",
-          "description": "Core software architecture design allocations managed by Antigravity.",
-          "uae_vat_rate": 5.0,
-          "fta_ct_deductible": true,
-          "accounting_ledger_code": "9040"
-        },
-        {
-          "expense_id": "EXP-505",
-          "name": "Physical Contract Print & Stationery",
-          "description": "High-quality token agreements, business cards, and client presentation folders.",
-          "uae_vat_rate": 5.0,
-          "fta_ct_deductible": true,
-          "accounting_ledger_code": "9050"
-        },
-        {
-          "expense_id": "EXP-506",
-          "name": "Bank Transactional Service Costs",
-          "description": "Monthly subscription base fees and processing items for Wio Business.",
+          "expense_id": "ASSET-002",
+          "name": "Advance Tax",
+          "description": "Prepaid corporate tax or withholding deposits logged with statutory tax authorities.",
           "uae_vat_rate": 0.0,
-          "fta_ct_deductible": true,
-          "accounting_ledger_code": "9060"
+          "fta_ct_deductible": false,
+          "accounting_ledger_code": "1110"
+        },
+        {
+          "expense_id": "ASSET-003",
+          "name": "Employee Advance",
+          "description": "Short-term salary advances disbursed to staff recoverable against future payroll cycles.",
+          "uae_vat_rate": 0.0,
+          "fta_ct_deductible": false,
+          "accounting_ledger_code": "1120"
+        },
+        {
+          "expense_id": "ASSET-004",
+          "name": "Prepaid Expenses",
+          "description": "Prepaid annual office rent, annual software subscriptions, and annual insurance coverage.",
+          "uae_vat_rate": 0.0,
+          "fta_ct_deductible": false,
+          "accounting_ledger_code": "1130"
+        },
+        {
+          "expense_id": "ASSET-005",
+          "name": "Sales to Customers (Cash)",
+          "description": "Direct cash receipts from clients received at office cashier desk prior to bank deposit.",
+          "uae_vat_rate": 0.0,
+          "fta_ct_deductible": false,
+          "accounting_ledger_code": "1010"
         }
       ]
     }
-  ],
-  "global_database_constraints": {
-    "mandatory_audit_fields": [
-      "transaction_id",
-      "expense_id",
-      "amount_aed",
-      "transaction_date",
-      "payment_source_type",
-      "receipt_image_url"
-    ],
-    "payment_source_types": [
-      "CORPORATE_BANK_ACCOUNT_WIO",
-      "DIRECTORS_LOAN_ACCOUNT_OWNERS_EQUITY"
-    ]
-  }
+  ]
 }

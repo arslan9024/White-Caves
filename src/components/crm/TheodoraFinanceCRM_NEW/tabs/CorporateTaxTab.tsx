@@ -24,8 +24,8 @@ export const CorporateTaxTab: React.FC = () => {
       {/* Header Card */}
       <div
         style={{
-          background: 'linear-gradient(135deg, #0F172A 0%, #1E293B 100%)',
-          color: '#FFFFFF',
+          background: 'linear-gradient(135deg, var(--bg-dark, #0F172A) 0%, var(--card-dark, #1E293B) 100%)',
+          color: 'var(--white, #FFFFFF)',
           padding: '1.5rem',
           borderRadius: '12px',
           display: 'flex',
@@ -37,7 +37,7 @@ export const CorporateTaxTab: React.FC = () => {
       >
         <div>
           <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-            <Scale size={24} color="#F59E0B" />
+            <Scale size={24} color="var(--accent-amber, #F59E0B)" />
             <h3 style={{ margin: 0, fontSize: '1.25rem', fontWeight: 800 }}>
               UAE Corporate Tax (CT) — Federal Decree-Law No. 47 of 2022
             </h3>
@@ -49,8 +49,8 @@ export const CorporateTaxTab: React.FC = () => {
 
         <button
           style={{
-            background: '#F59E0B',
-            color: '#1E293B',
+            background: 'var(--accent-amber, #F59E0B)',
+            color: 'var(--card-dark, #1E293B)',
             border: 'none',
             borderRadius: '8px',
             padding: '8px 16px',

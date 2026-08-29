@@ -60,9 +60,15 @@ export const AmlKycVerificationPanel: FC = () => {
   const [nationality, setNationality] = useState('UAE');
   const [sourceOfFunds, setSourceOfFunds] = useState('salary');
   const [verified, setVerified] = useState(false);
+  const [uploadStatus, setUploadStatus] = useState('');
 
   const highRiskNationalities = ['Iran', 'Syria', 'Yemen', 'Libya', 'Sudan', 'North Korea'];
   const risk = highRiskNationalities.includes(nationality) ? 'high' : sourceOfFunds === 'crypto' ? 'medium' : 'low';
+
+  const handleUploadClick = () => {
+    setUploadStatus('Document Uploader: Emirates ID and Passport verified & queued for goAML scan.');
+    setTimeout(() => setUploadStatus(''), 4000);
+  };
 
   return (
     <Wrapper data-testid="aml-kyc-verification-panel">
@@ -90,9 +96,14 @@ export const AmlKycVerificationPanel: FC = () => {
           <Field><Label>Transaction Amount (AED)</Label><Input placeholder="5,500,000" /></Field>
         </KycForm>
 
-        <UploadZone onClick={() => alert('Document Uploader: Select Emirates ID / Passport / Proof of Address')}>
+        <UploadZone onClick={handleUploadClick}>
           <div style={{ fontSize: '1.4rem' }}>📁</div>
           <UploadText>Upload KYC Documents (Passport, Emirates ID, Proof of Address)</UploadText>
+          {uploadStatus && (
+            <div style={{ fontSize: '0.75rem', color: 'var(--accent-green, #10B981)', fontWeight: 700, marginTop: '4px' }}>
+              {uploadStatus}
+            </div>
+          )}
         </UploadZone>
 
         <DocList>

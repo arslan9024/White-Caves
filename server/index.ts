@@ -369,11 +369,19 @@ app.get('/health', (req: Request, res: Response) => {
 
 // Public API health endpoint (used by runtime/deployment verifiers and Vercel checks)
 app.get('/api/health', (req: Request, res: Response) => {
+  const mem = process.memoryUsage();
   res.status(200).json({
     status: 'OK',
-    timestamp: new Date(),
-    environment: process.env.NODE_ENV,
-    version: process.env.APP_VERSION || '1.0.0',
+    timestamp: new Date().toISOString(),
+    environment: process.env.NODE_ENV || 'development',
+    version: process.env.APP_VERSION || '2.0.26',
+    aegisEngine: 'AEGIS-V4-Supercharged-300%',
+    uptimeSeconds: Math.floor(process.uptime()),
+    memory: {
+      rssMb: (mem.rss / 1024 / 1024).toFixed(2),
+      heapTotalMb: (mem.heapTotal / 1024 / 1024).toFixed(2),
+      heapUsedMb: (mem.heapUsed / 1024 / 1024).toFixed(2),
+    },
   });
 });
 

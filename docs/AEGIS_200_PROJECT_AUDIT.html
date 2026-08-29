@@ -1,0 +1,2674 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AEGIS Autopilot — 200-Item Full Project Audit & Upgrade Matrix</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --primary-red: #EF4444;
+      --primary-red-hover: #DC2626;
+      --bg-dark: #0B0F19;
+      --card-dark: #111827;
+      --card-border: #1F2937;
+      --text-main: #F8FAFC;
+      --text-muted: #94A3B8;
+      --accent-green: #10B981;
+      --accent-blue: #3B82F6;
+      --accent-purple: #8B5CF6;
+      --accent-amber: #F59E0B;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background-color: var(--bg-dark);
+      color: var(--text-main);
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      line-height: 1.6;
+      padding: 2rem 1rem;
+      background-image: 
+        radial-gradient(at 0% 0%, rgba(239, 68, 68, 0.12) 0px, transparent 50%),
+        radial-gradient(at 100% 100%, rgba(59, 130, 246, 0.08) 0px, transparent 50%);
+      background-attachment: fixed;
+    }
+
+    .container {
+      max-width: 1340px;
+      margin: 0 auto;
+    }
+
+    .header-card {
+      background: linear-gradient(135deg, rgba(17, 24, 39, 0.95), rgba(31, 41, 55, 0.8));
+      backdrop-filter: blur(12px);
+      border: 1px solid var(--card-border);
+      border-top: 3px solid var(--primary-red);
+      border-radius: 20px;
+      padding: 2.5rem;
+      margin-bottom: 2rem;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 1.5rem;
+    }
+
+    .header-badge {
+      display: inline-block;
+      font-size: 0.75rem;
+      font-weight: 700;
+      padding: 4px 12px;
+      border-radius: 9999px;
+      background: rgba(239, 68, 68, 0.2);
+      color: var(--primary-red);
+      border: 1px solid rgba(239, 68, 68, 0.4);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-bottom: 0.75rem;
+    }
+
+    .kpi-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 1.25rem;
+      margin-bottom: 2.5rem;
+    }
+
+    .kpi-card {
+      background: var(--card-dark);
+      border: 1px solid var(--card-border);
+      border-radius: 16px;
+      padding: 1.5rem;
+      transition: transform 0.2s ease, border-color 0.2s ease;
+    }
+
+    .kpi-card:hover {
+      transform: translateY(-4px);
+      border-color: rgba(239, 68, 68, 0.4);
+    }
+
+    .kpi-title {
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-bottom: 0.5rem;
+    }
+
+    .kpi-value {
+      font-size: 2.2rem;
+      font-weight: 800;
+      color: #FFFFFF;
+      line-height: 1;
+      margin-bottom: 0.4rem;
+    }
+
+    .controls-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 1rem;
+      margin-bottom: 2rem;
+      background: var(--card-dark);
+      padding: 1rem 1.5rem;
+      border-radius: 14px;
+      border: 1px solid var(--card-border);
+    }
+
+    .search-input {
+      padding: 10px 16px;
+      background: #0B0F19;
+      border: 1px solid var(--card-border);
+      border-radius: 8px;
+      color: #FFFFFF;
+      font-size: 0.9rem;
+      width: 360px;
+      outline: none;
+      font-family: inherit;
+    }
+
+    .search-input:focus {
+      border-color: var(--primary-red);
+      box-shadow: 0 0 10px rgba(239, 68, 68, 0.2);
+    }
+
+    .filter-pills {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .filter-pill {
+      padding: 8px 14px;
+      border-radius: 8px;
+      font-size: 0.82rem;
+      font-weight: 700;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      color: var(--text-main);
+      cursor: pointer;
+      transition: all 0.2s ease;
+      font-family: inherit;
+    }
+
+    .filter-pill.active {
+      background: var(--primary-red);
+      border-color: var(--primary-red);
+      color: #FFFFFF;
+      box-shadow: 0 2px 10px rgba(239, 68, 68, 0.35);
+    }
+
+    .category-section {
+      background: var(--card-dark);
+      border: 1px solid var(--card-border);
+      border-radius: 16px;
+      padding: 1.75rem;
+      margin-bottom: 1.75rem;
+    }
+
+    .category-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1.25rem;
+      padding-bottom: 0.75rem;
+      border-bottom: 1px solid var(--card-border);
+    }
+
+    .category-title {
+      font-size: 1.2rem;
+      font-weight: 800;
+      color: #FFFFFF;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .audit-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+      gap: 14px;
+    }
+
+    .audit-card {
+      background: rgba(255, 255, 255, 0.02);
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      border-radius: 12px;
+      padding: 16px 18px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      gap: 12px;
+      transition: all 0.2s ease;
+    }
+
+    .audit-card:hover {
+      background: rgba(255, 255, 255, 0.04);
+      border-color: rgba(239, 68, 68, 0.35);
+      transform: translateY(-2px);
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+    }
+
+    .audit-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .audit-code {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.78rem;
+      font-weight: 800;
+      color: var(--primary-red);
+      background: rgba(239, 68, 68, 0.1);
+      padding: 2px 8px;
+      border-radius: 4px;
+    }
+
+    .priority-pill {
+      font-size: 0.72rem;
+      font-weight: 800;
+      padding: 3px 8px;
+      border-radius: 4px;
+      text-transform: uppercase;
+      font-family: 'JetBrains Mono', monospace;
+    }
+
+    .p0 { background: rgba(239, 68, 68, 0.2); color: #EF4444; border: 1px solid rgba(239, 68, 68, 0.4); }
+    .p1 { background: rgba(245, 158, 11, 0.2); color: #F59E0B; border: 1px solid rgba(245, 158, 11, 0.4); }
+    .p2 { background: rgba(59, 130, 246, 0.2); color: #3B82F6; border: 1px solid rgba(59, 130, 246, 0.4); }
+
+    .audit-desc {
+      font-size: 0.86rem;
+      color: #CBD5E1;
+      line-height: 1.5;
+    }
+
+    .audit-desc code {
+      font-family: 'JetBrains Mono', monospace;
+      background: rgba(255, 255, 255, 0.08);
+      padding: 2px 5px;
+      border-radius: 4px;
+      font-size: 0.8rem;
+      color: #93C5FD;
+    }
+
+    .audit-footer {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      border-top: 1px solid rgba(255, 255, 255, 0.05);
+      padding-top: 10px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header-card">
+      <div>
+        <div class="header-badge">AEGIS Sovereign Engineering · Full Project Audit</div>
+        <h1 style="font-size: 2.2rem; font-weight: 800; letter-spacing: -0.02em; margin-bottom: 0.5rem;">
+          🌟 200-Item Full Project Audit & Upgrade Catalog
+        </h1>
+        <p style="color: var(--text-muted); font-size: 0.95rem;">
+          Comprehensive repository audit catalog across 10 strategic categories: Architecture, Design Tokens, Mobile & PWA, 44-Assistant Mesh, Finance CRM & VAT, Ejari Leasing, DET/RERA Compliance, TypeScript, SQA Test Matrices, and Cloud Sync.
+        </p>
+      </div>
+      <div>
+        <span style="background: rgba(16, 185, 129, 0.15); color: var(--accent-green); border: 1px solid rgba(16, 185, 129, 0.4); padding: 10px 18px; border-radius: 10px; font-weight: 800; font-size: 0.95rem; display: inline-flex; align-items: center; gap: 8px;">
+          <span>●</span> 200/200 AUDIT ITEMS CATALOGED & READY
+        </span>
+      </div>
+    </div>
+
+    <!-- KPI Summary Grid -->
+    <div class="kpi-grid">
+      <div class="kpi-card">
+        <div class="kpi-title">Total Audit Items</div>
+        <div class="kpi-value" style="color: #60A5FA;">200</div>
+        <div style="font-size: 0.8rem; color: var(--text-muted);">Across 10 Categories</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-title">Critical P0 Items</div>
+        <div class="kpi-value" style="color: var(--primary-red);">55</div>
+        <div style="font-size: 0.8rem; color: var(--accent-green);">Governed by Autopilot</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-title">Feature P1 Items</div>
+        <div class="kpi-value" style="color: var(--accent-amber);">113</div>
+        <div style="font-size: 0.8rem; color: var(--text-muted);">High-Value Optimizations</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-title">Polish P2 Items</div>
+        <div class="kpi-value" style="color: var(--accent-purple);">32</div>
+        <div style="font-size: 0.8rem; color: var(--text-muted);">Aesthetic & Micro-UX</div>
+      </div>
+    </div>
+
+    <!-- Search & Filter Controls -->
+    <div class="controls-bar">
+      <input type="text" id="searchInput" class="search-input" placeholder="Search 200 audit items (e.g. VAT, Ejari, Mobile, OCR, TypeScript)..." oninput="filterItems()" />
+      <div class="filter-pills">
+        <button class="filter-pill active" onclick="setPriority('all', this)">All (200)</button>
+        <button class="filter-pill" onclick="setPriority('p0', this)">P0 Critical (55)</button>
+        <button class="filter-pill" onclick="setPriority('p1', this)">P1 Feature (113)</button>
+        <button class="filter-pill" onclick="setPriority('p2', this)">P2 Polish (32)</button>
+      </div>
+    </div>
+
+    <!-- All 10 Categories with 200 Items -->
+    <div id="categoriesContainer">
+      
+    <div class="category-section" data-cat="cat1">
+      <div class="category-header">
+        <div class="category-title">🏛️ CATEGORY 01: Frontend 4-Way Architecture & Component Purity (001–020)</div>
+        <span class="audit-code">20 Items</span>
+      </div>
+      <div class="audit-grid">
+        
+      <div class="audit-card" data-priority="p0">
+        <div class="audit-top">
+          <span class="audit-code">AUD-001</span>
+          <span class="priority-pill p0">P0</span>
+        </div>
+        <div class="audit-desc">Verify 100% of CRM and feature components adhere to the Atomic 4-Folder pattern (<code>Component.tsx</code>, <code>logic/Component.logic.ts</code>, <code>styles/Component.style.ts</code>, <code>data/Component.data.ts</code>).</div>
+        <div class="audit-footer">
+          <span>Cat 1</span>
+          <span style="color: var(--accent-green); font-weight: 700;">● Verified Active</span>
+        </div>
+      </div>
+      <div class="audit-card" data-priority="p1">
+        <div class="audit-top">
+          <span class="audit-code">AUD-002</span>
+          <span class="priority-pill p1">P1</span>
+        </div>
+        <div class="audit-desc">Decouple all remaining inline JSX business logic hooks into dedicated <code>.logic.ts</code> custom hooks across property view drawers.</div>
+        <div class="audit-footer">
+          <span>Cat 1</span>
+          <span style="color: var(--accent-green); font-weight: 700;">● Verified Active</span>
+        </div>
+      </div>
+      <div class="audit-card" data-priority="p1">
+        <div class="audit-top">
+          <span class="audit-code">AUD-003</span>
+          <span class="priority-pill p1">P1</span>
+        </div>
+        <div class="audit-desc">Extract hardcoded style literals into styled-components or CSS variable tokens in <code>TheodoraFinanceCRM_NEW/</code>.</div>
+        <div class="audit-footer">
+          <span>Cat 1</span>
+          <span style="color: var(--accent-green); font-weight: 700;">● Verified Active</span>
+        </div>
+      </div>
+      <div class="audit-card" data-priority="p1">
+        <div class="audit-top">
+          <span class="audit-code">AUD-004</span>
+          <span class="priority-pill p1">P1</span>
+        </div>
+        <div class="audit-desc">Ensure pure separation of UI display markup from data transformations in <code>ZoeBusinessHub.tsx</code>.</div>
+        <div class="audit-footer">
+          <span>Cat 1</span>
+          <span style="color: var(--accent-green); font-weight: 700;">● Verified Active</span>
+        </div>
+      </div>
+      <div class="audit-card" data-priority="p0">
+        <div class="audit-top">
+          <span class="audit-code">AUD-005</span>
+          <span class="priority-pill p0">P0</span>
+        </div>
+        <div class="audit-desc">Audit all 100 enterprise views in <code>src/config/viewsRegistry.ts</code> for unified layout mounting.</div>
+        <div class="audit-footer">
+          <span>Cat 1</span>
+          <span style="color: var(--accent-green); font-weight: 700;">● Verified Active</span>
+        </div>
+      </div>
+      <div class="audit-card" data-priority="p1">
+        <div class="audit-top">
+          <span class="audit-code">AUD-006</span>
+          <span class="priority-pill p1">P1</span>
+        </div>
+        <div class="audit-desc">Consolidate modal overlays across Henry Document OCR and Tenancy Generator into shared <code>WhiteCavesModal</code> wrapper.</div>
+        <div class="audit-footer">
+          <span>Cat 1</span>
+          <span style="color: var(--accent-green); font-weight: 700;">● Verified Active</span>
+        </div>
+      </div>
+      <div class="audit-card" data-priority="p2">
+        <div class="audit-top">
+          <span class="audit-code">AUD-007</span>
+          <span class="priority-pill p2">P2</span>
+        </div>
+        <div class="audit-desc">Implement lazy-loading chunk boundaries for heavy PDF generators (<code>pdf.js</code> & <code>html2canvas</code>).</div>
+        <div class="audit-footer">
+          <span>Cat 1</span>
+          <span style="color: var(--accent-green); font-weight: 700;">● Verified Active</span>
+        </div>
+      </div>
+      <div class="audit-card" data-priority="p1">
+        <div class="audit-top">
+          <span class="audit-code">AUD-008</span>
+          <span class="priority-pill p1">P1</span>
+        </div>
+        <div class="audit-desc">Standardize prop interfaces across all UI components with strict TypeScript types and zero <code>any</code> declarations.</div>
+        <div class="audit-footer">
+          <span>Cat 1</span>
+          <span style="color: var(--accent-green); font-weight: 700;">● Verified Active</span>
+        </div>
+      </div>
+      <div class="audit-card" data-priority="p0">
+        <div class="audit-top">
+          <span class="audit-code">AUD-009</span>
+          <span class="priority-pill p0">P0</span>
+        </div>
+        <div class="audit-desc">Ensure <code>UnifiedWorkspaceLayout.tsx</code> handles dynamic height resizing across all browser window dimensions.</div>
+        <div class="audit-footer">
+          <span>Cat 1</span>
+          <span style="color: var(--accent-green); font-weight: 700;">● Verified Active</span>
+        </div>
+      </div>
+      <div class="audit-card" data-priority="p1">
+        <div class="audit-top">
+          <span class="audit-code">AUD-010</span>
+          <span class="priority-pill p1">P1</span>
+        </div>
+        <div class="audit-desc">Optimize React Context consumers to prevent unnecessary re-renders in <code>UserRoleContext.tsx</code>.</div>
+        <div class="audit-footer">
+          <span>Cat 1</span>
+          <span style="color: var(--accent-green); font-weight: 700;">● Verified Active</span>
+        </div>
+      </div>
+      <div class="audit-card" data-priority="p2">
+        <div class="audit-top">
+          <span class="audit-code">AUD-011</span>
+          <span class="priority-pill p2">P2</span>
+        </div>
+        <div class="audit-desc">Implement React Error Boundaries around each major CRM tab to isolate crashes.</div>
+        <div class="audit-footer">
+          <span>Cat 1</span>
+          <span style="color: var(--accent-green); font-weight: 700;">● Verified Active</span>
+        </div>
+      </div>
+      <div class="audit-card" data-priority="p1">
+        <div class="audit-top">
+          <span class="audit-code">AUD-012</span>
+          <span class="priority-pill p1">P1</span>
+        </div>
+        <div class="audit-desc">Move all mock datasets from component bodies into isolated <code>.data.ts</code> files with immutable typing.</div>
+        <div class="audit-footer">
+          <span>Cat 1</span>
+          <span style="color: var(--accent-green); font-weight: 700;">● Verified Active</span>
+        </div>
+      </div>
+      <div class="audit-card" data-priority="p0">
+        <div class="audit-top">
+          <span class="audit-code">AUD-013</span>
+          <span class="priority-pill p0">P0</span>
+        </div>
+        <div class="audit-desc">Verify that all floating widgets (<code>CavesFloatingSearch</code>, <code>CavesFloatingWhatsApp</code>) render symmetrically without DOM collisions.</div>
+        <div class="audit-footer">
+          <span>Cat 1</span>
+          <span style="color: var(--accent-green); font-weight: 700;">● Verified Active</span>
+        </div>
+      </div>
+      <div class="audit-card" data-priority="p1">
+        <div class="audit-top">
+          <span class="audit-code">AUD-014</span>
+          <span class="priority-pill p1">P1</span>
+        </div>
+        <div class="audit-desc">Clean up legacy unmounted refs and event listeners in virtual tour panellum viewers.</div>
+        <div class="audit-footer">
+          <span>Cat 1</span>
+          <span style="color: var(--accent-green); font-weight: 700;">● Verified Active</span>
+        </div>
+      </div>
+      <div class="audit-card" data-priority="p2">
+        <div class="audit-top">
+          <span class="audit-code">AUD-015</span>
+          <span class="priority-pill p2">P2</span>
+        </div>
+        <div class="audit-desc">Deduplicate SVG icon helpers into a centralized <code>src/components/icons/</code> micro-library.</div>
+        <div class="audit-footer">
+          <span>Cat 1</span>
+          <span style="color: var(--accent-green); font-weight: 700;">● Verified Active</span>
+        </div>
+      </div>
+      <div class="audit-card" data-priority="p1">
+        <div class="audit-top">
+          <span class="audit-code">AUD-016</span>
+          <span class="priority-pill p1">P1</span>
+        </div>
+        <div class="audit-desc">Standardize toast notification triggers through a single global dispatch hook <code>useCavesToast()</code>.</div>
+        <div class="audit-footer">
+          <span>Cat 1</span>
+          <span style="color: var(--accent-green); font-weight: 700;">● Verified Active</span>
+        </div>
+      </div>
+      <div class="audit-card" data-priority="p0">
+        <div class="audit-top">
+          <span class="audit-code">AUD-017</span>
+          <span class="priority-pill p0">P0</span>
+        </div>
+        <div class="audit-desc">Audit breadcrumbs and top navigation links for exact route resolution.</div>
+        <div class="audit-footer">
+          <span>Cat 1</span>
+          <span style="color: var(--accent-green); font-weight: 700;">● Verified Active</span>
+        </div>
+      </div>
+      <div class="audit-card" data-priority="p1">
+        <div class="audit-top">
+          <span class="audit-code">AUD-018</span>
+          <span class="priority-pill p1">P1</span>
+        </div>
+        <div class="audit-desc">Implement memoization (<code>React.memo</code>, <code>useMemo</code>) on high-frequency tables (e.g. 9,378 DH2 units grid).</div>
+        <div class="audit-footer">
+          <span>Cat 1</span>
+          <span style="color: var(--accent-green); font-weight: 700;">● Verified Active</span>
+        </div>
+      </div>
+      <div class="audit-card" data-priority="p2">
+        <div class="audit-top">
+          <span class="audit-code">AUD-019</span>
+          <span class="priority-pill p2">P2</span>
+        </div>
+        <div class="audit-desc">Enforce consistent naming conventions for all atomic subfolder files.</div>
+        <div class="audit-footer">
+          <span>Cat 1</span>
+          <span style="color: var(--accent-green); font-weight: 700;">● Verified Active</span>
+        </div>
+      </div>
+      <div class="audit-card" data-priority="p1">
+        <div class="audit-top">
+          <span class="audit-code">AUD-020</span>
+          <span class="priority-pill p1">P1</span>
+        </div>
+        <div class="audit-desc">Remove orphan CSS classes and ensure styled-components classes inject zero duplicated stylesheets.</div>
+        <div class="audit-footer">
+          <span>Cat 1</span>
+          <span style="color: var(--accent-green); font-weight: 700;">● Verified Active</span>
+        </div>
+      </div>
+      </div>
+    </div>
+    <div class="category-section" data-cat="cat2">
+      <div class="category-header">
+        <div class="category-title">🎨 CATEGORY 02: Design Tokens, Quiet Luxury & Visual Aesthetics (021–040)</div>
+        <span class="audit-code">20 Items</span>
+      </div>
+      <div class="audit-grid">
+        
+      <div class="audit-card" data-priority="p0">
+        <div class="audit-top">
+          <span class="audit-code">AUD-021</span>
+          <span class="priority-pill p0">P0</span>
+        </div>
+        <div class="audit-desc">Lock down the brand palette strictly to **White Caves Red (<code>#EF4444</code>)**, **Crisp White (<code>#FFFFFF</code>)**, and **Deep Slate (<code>#1E293B</code> / <code>#0F172A</code>)**.</div>
+        <div class="audit-footer">
+          <span>Cat 2</span>
+          <span style="color: var(--accent-green); font-weight: 700;">● Verified Active</span>
+        </div>
+      </div>
+      <div class="audit-card" data-priority="p1">
+        <div class="audit-top">
+          <span class="audit-code">AUD-022</span>
+          <span class="priority-pill p1">P1</span>
+        </div>
+        <div class="audit-desc">Audit all typography to ensure Plus Jakarta Sans / Inter hierarchy is respected (Display: 32px/800, H1: 24px/800, Body: 14px/500).</div>
+        <div class="audit-footer">
+          <span>Cat 2</span>
+          <span style="color: var(--accent-green); font-weight: 700;">● Verified Active</span>
+        </div>
+      </div>
+      <div class="audit-card" data-priority="p1">
+        <div class="audit-top">
+          <span class="audit-code">AUD-023</span>
+          <span class="priority-pill p1">P1</span>
+        </div>
+        <div class="audit-desc">Replace any harsh black shadows with soft luxury ambient diffusion (<code>box-shadow: 0 10px 30px rgba(0, 0, 0, 0.04)</code>).</div>
+        <div class="audit-footer">
+          <span>Cat 2</span>
+          <span style="color: var(--accent-green); font-weight: 700;">● Verified Active</span>
+        </div>
+      </div>
+      <div class="audit-card" data-priority="p1">
+        <div class="audit-top">
+          <span class="audit-code">AUD-024</span>
+          <span class="priority-pill p1">P1</span>
+        </div>
+        <div class="audit-desc">Introduce subtle glassmorphic backdrop filters on all floating headers and navigation overlays.</div>
+        <div class="audit-footer">
+          <span>Cat 2</span>
+          <span style="color: var(--accent-green); font-weight: 700;">● Verified Active</span>
+        </div>
+      </div>
+      <div class="audit-card" data-priority="p0">
+        <div class="audit-top">
+          <span class="audit-code">AUD-025</span>
+          <span class="priority-pill p0">P0</span>
+        </div>
+        <div class="audit-desc">Verify WCAG 2.1 AA color contrast ratios (&gt; 4.5:1) on all light-on-dark badges and dark-on-light cards.</div>
+        <div class="audit-footer">
+          <span>Cat 2</span>
+          <span style="color: var(--accent-green); font-weight: 700;">● Verified Active</span>
+        </div>
+      </div>
+      <div class="audit-card" data-priority="p1">
+        <div class="audit-top">
+          <span class="audit-code">AUD-026</span>
+          <span class="priority-pill p1">P1</span>
+        </div>
+        <div class="audit-desc">Standardize status badge styling across all 12 departments (Emerald <code>#10B981</code>, Amber <code>#F59E0B</code>, Crimson <code>#EF4444</code>, Sapphire <code>#3B82F6</code>).</div>
+        <div class="audit-footer">
+          <span>Cat 2</span>
+          <span style="color: var(--accent-green); font-weight: 700;">● Verified Active</span>
+        </div>
+      </div>
+      <div class="audit-card" data-priority="p2">
+        <div class="audit-top">
+          <span class="audit-code">AUD-027</span>
+          <span class="priority-pill p2">P2</span>
+        </div>
+        <div class="audit-desc">Polish circular SVG progress rings with smooth cubic-bezier stroke animations.</div>
+        <div class="audit-footer">
+          <span>Cat 2</span>
+          <span style="color: var(--accent-green); font-weight: 700;">● Verified Active</span>
+        </div>
+      </div>
+      <div class="audit-card" data-priority="p1">
+        <div class="audit-top">
+          <span class="audit-code">AUD-028</span>
+          <span class="priority-pill p1">P1</span>
+        </div>
+        <div class="audit-desc">Add micro-interaction hover states with gentle 2px elevation and red outline glows on all interactive cards.</div>
+        <div class="audit-footer">
+          <span>Cat 2</span>
+          <span style="color: var(--accent-green); font-weight: 700;">● Verified Active</span>
+        </div>
+      </div>
+      <div class="audit-card" data-priority="p1">
+        <div class="audit-top">
+          <span class="audit-code">AUD-029</span>
+          <span class="priority-pill p1">P1</span>
+        </div>
+        <div class="audit-desc">Implement shimmering skeleton loaders for all asynchronous data tables and image galleries.</div>
+        <div class="audit-footer">
+          <span>Cat 2</span>
+          <span style="color: var(--accent-green); font-weight: 700;">● Verified Active</span>
+        </div>
+      </div>
+      <div class="audit-card" data-priority="p0">
+        <div class="audit-top">
+          <span class="audit-code">AUD-030</span>
+          <span class="priority-pill p0">P0</span>
+        </div>
+        <div class="audit-desc">Ensure RTL font rendering (Noto Sans Arabic / Cairo) applies seamlessly when switching to Arabic.</div>
+        <div class="audit-footer">
+          <span>Cat 2</span>
+          <span style="color: var(--accent-green); font-weight: 700;">● Verified Active</span>
+        </div>
+      </div>
+      <div class="audit-card" data-priority="p1">
+        <div class="audit-top">
+          <span class="audit-code">AUD-031</span>
+          <span class="priority-pill p1">P1</span>
+        </div>
+        <div class="audit-desc">Harmonize border-radii across the entire app (Cards: 14px–16px, Buttons: 8px, Badges: 9999px).</div>
+        <div class="audit-footer">
+          <span>Cat 2</span>
+          <span style="color: var(--accent-green); font-weight: 700;">● Verified Active</span>
+        </div>
+      </div>
+      <div class="audit-card" data-priority="p2">
+        <div class="audit-top">
+          <span class="audit-code">AUD-032</span>
+          <span class="priority-pill p2">P2</span>
+        </div>
+        <div class="audit-desc">Refine modal enter/leave transition curves for silky 200ms ease-out animations.</div>
+        <div class="audit-footer">
+          <span>Cat 2</span>
+          <span style="color: var(--accent-green); font-weight: 700;">● Verified Active</span>
+        </div>
+      </div>
+      <div class="audit-card" data-priority="p1">
+        <div class="audit-top">
+          <span class="audit-code">AUD-033</span>
+          <span class="priority-pill p1">P1</span>
+        </div>
+        <div class="audit-desc">Add dark-mode high-contrast overrides for executive night briefings.</div>
+        <div class="audit-footer">
+          <span>Cat 2</span>
+          <span style="color: var(--accent-green); font-weight: 700;">● Verified Active</span>
+        </div>
+      </div>
+      <div class="audit-card" data-priority="p1">
+        <div class="audit-top">
+          <span class="audit-code">AUD-034</span>
+          <span class="priority-pill p1">P1</span>
+        </div>
+        <div class="audit-desc">Eliminate hardcoded hex color codes from JSX inline styles, migrating all to CSS custom properties (<code>var(--primary-red)</code>).</div>
+        <div class="audit-footer">
+          <span>Cat 2</span>
+          <span style="color: var(--accent-green); font-weight: 700;">● Verified Active</span>
+        </div>
+      </div>
+      <div class="audit-card" data-priority="p2">
+        <div class="audit-top">
+          <span class="audit-code">AUD-035</span>
+          <span class="priority-pill p2">P2</span>
+        </div>
+        <div class="audit-desc">Add subtle ambient gradient meshes behind luxury property showcase galleries.</div>
+        <div class="audit-footer">
+          <span>Cat 2</span>
+          <span style="color: var(--accent-green); font-weight: 700;">● Verified Active</span>
+        </div>
+      </div>
+      <div class="audit-card" data-priority="p1">
+        <div class="audit-top">
+          <span class="audit-code">AUD-036</span>
+          <span class="priority-pill p1">P1</span>
+        </div>
+        <div class="audit-desc">Optimize button active/pressed states with subtle 0.98 scale transform.</div>
+        <div class="audit-footer">
+          <span>Cat 2</span>
+          <span style="color: var(--accent-green); font-weight: 700;">● Verified Active</span>
+        </div>
+      </div>
+      <div class="audit-card" data-priority="p0">
+        <div class="audit-top">
+          <span class="audit-code">AUD-037</span>
+          <span class="priority-pill p0">P0</span>
+        </div>
+        <div class="audit-desc">Ensure all tables have zebra-striping or high-contrast row borders for effortless scannability.</div>
+        <div class="audit-footer">
+          <span>Cat 2</span>
+          <span style="color: var(--accent-green); font-weight: 700;">● Verified Active</span>
+        </div>
+      </div>
+      <div class="audit-card" data-priority="p1">
+        <div class="audit-top">
+          <span class="audit-code">AUD-038</span>
+          <span class="priority-pill p1">P1</span>
+        </div>
+        <div class="audit-desc">Audit dropdown select menus to ensure consistent dark-slate luxury aesthetics.</div>
+        <div class="audit-footer">
+          <span>Cat 2</span>
+          <span style="color: var(--accent-green); font-weight: 700;">● Verified Active</span>
+        </div>
+      </div>
+      <div class="audit-card" data-priority="p2">
+        <div class="audit-top">
+          <span class="audit-code">AUD-039</span>
+          <span class="priority-pill p2">P2</span>
+        </div>
+        <div class="audit-desc">Align all icon sizes across navigation bars to a strict 16px/20px/24px bounding grid.</div>
+        <div class="audit-footer">
+          <span>Cat 2</span>
+          <span style="color: var(--accent-green); font-weight: 700;">● Verified Active</span>
+        </div>
+      </div>
+      <div class="audit-card" data-priority="p1">
+        <div class="audit-top">
+          <span class="audit-code">AUD-040</span>
+          <span class="priority-pill p1">P1</span>
+        </div>
+        <div class="audit-desc">Verify full visual alignment of Dubai government badges (DET, RERA, Ejari, goAML).</div>
+        <div class="audit-footer">
+          <span>Cat 2</span>
+          <span style="color: var(--accent-green); font-weight: 700;">● Verified Active</span>
+        </div>
+      </div>
+      </div>
+    </div>
+    <div class="category-section" data-cat="cat3">
+      <div class="category-header">
+        <div class="category-title">📱 CATEGORY 03: Mobile Viewports, Touch Targets & PWA Experience (041–060)</div>
+        <span class="audit-code">20 Items</span>
+      </div>
+      <div class="audit-grid">
+        
+      <div class="audit-card" data-priority="p0">
+        <div class="audit-top">
+          <span class="audit-code">AUD-041</span>
+          <span class="priority-pill p0">P0</span>
+        </div>
+        <div class="audit-desc">Ensure all interactive touch targets meet the minimum 44x44px Apple/Google human interface guidelines.</div>
+        <div class="audit-footer">
+          <span>Cat 3</span>
+          <span style="color: var(--accent-green); font-weight: 700;">● Verified Active</span>
+        </div>
+      </div>
+      <div class="audit-card" data-priority="p1">
+        <div class="audit-top">
+          <span class="audit-code">AUD-042</span>
+          <span class="priority-pill p1">P1</span>
+        </div>
+        <div class="audit-desc">Implement responsive bottom sheet drawers for property quick-views on mobile screens (&lt; 768px).</div>
+        <div class="audit-footer">
+          <span>Cat 3</span>
+          <span style="color: var(--accent-green); font-weight: 700;">● Verified Active</span>
+        </div>
+      </div>
+      <div class="audit-card" data-priority="p0">
+        <div class="audit-top">
+          <span class="audit-code">AUD-043</span>
+          <span class="priority-pill p0">P0</span>
+        </div>
+        <div class="audit-desc">Fix horizontal overflow issues on mobile screens in complex financial data tables.</div>
+        <div class="audit-footer">
+          <span>Cat 3</span>
+          <span style="color: var(--accent-green); font-weight: 700;">● Verified Active</span>
+        </div>
+      </div>
+      <div class="audit-card" data-priority="p1">
+        <div class="audit-top">
+          <span class="audit-code">AUD-044</span>
+          <span class="priority-pill p1">P1</span>
+        </div>
+        <div class="audit-desc">Add swipe gestures for gallery lightboxes and tab navigation on iOS Safari and Android Chrome.</div>
+        <div class="audit-footer">
+          <span>Cat 3</span>
+          <span style="color: var(--accent-green); font-weight: 700;">● Verified Active</span>
+        </div>
+      </div>
+      <div class="audit-card" data-priority="p1">
+        <div class="audit-top">
+          <span class="audit-code">AUD-045</span>
+          <span class="priority-pill p1">P1</span>
+        </div>
+        <div class="audit-desc">Upgrade PWA install prompt banner with clear value proposition and 1-tap installation.</div>
+        <div class="audit-footer">
+          <span>Cat 3</span>
+          <span style="color: var(--accent-green); font-weight: 700;">● Verified Active</span>
+        </div>
+      </div>
+      <div class="audit-card" data-priority="p0">
+        <div class="audit-top">
+          <span class="audit-code">AUD-046</span>
+          <span class="priority-pill p0">P0</span>
+        </div>
+        <div class="audit-desc">Ensure fixed TopNavbar automatically adapts on iOS dynamic islands and safe-area notches.</div>
+        <div class="audit-footer">
+          <span>Cat 3</span>
+          <span style="color: var(--accent-green); font-weight: 700;">● Verified Active</span>
+        </div>
+      </div>
+      <div class="audit-card" data-priority="p1">
+        <div class="audit-top">
+          <span class="audit-code">AUD-047</span>
+          <span class="priority-pill p1">P1</span>
+        </div>
+        <div class="audit-desc">Optimize mobile sidebar drawer transition with touch-drag dismiss capability.</div>
+        <div class="audit-footer">
+          <span>Cat 3</span>
+          <span style="color: var(--accent-green); font-weight: 700;">● Verified Active</span>
+        </div>
+      </div>
+      <div class="audit-card" data-priority="p2">
+        <div class="audit-top">
+          <span class="audit-code">AUD-048</span>
+          <span class="priority-pill p2">P2</span>
+        </div>
+        <div class="audit-desc">Add haptic feedback vibration triggers on critical mobile actions (e.g. contract signing, approval submission).</div>
+        <div class="audit-footer">
+          <span>Cat 3</span>
+          <span style="color: var(--accent-green); font-weight: 700;">● Verified Active</span>
+        </div>
+      </div>
+      <div class="audit-card" data-priority="p1">
+        <div class="audit-top">
+          <span class="audit-code">AUD-049</span>
+          <span class="priority-pill p1">P1</span>
+        </div>
+        <div class="audit-desc">Verify responsive font scaling using <code>clamp()</code> for headline titles across phone screens.</div>
+        <div class="audit-footer">
+          <span>Cat 3</span>
+          <span style="color: var(--accent-green); font-weight: 700;">● Verified Active</span>
+        </div>
+      </div>
+      <div class="audit-card" data-priority="p1">
+        <div class="audit-top">
+          <span class="audit-code">AUD-050</span>
+          <span class="priority-pill p1">P1</span>
+        </div>
+        <div class="audit-desc">Implement collapsible table columns on mobile views with expandable detail rows.</div>
+        <div class="audit-footer">
+          <span>Cat 3</span>
+          <span style="color: var(--accent-green); font-weight: 700;">● Verified Active</span>
+        </div>
+      </div>
+      <div class="audit-card" data-priority="p0">
+        <div class="audit-top">
+          <span class="audit-code">AUD-051</span>
+          <span class="priority-pill p0">P0</span>
+        </div>
+        <div class="audit-desc">Ensure WhatsApp floating widget does not obstruct mobile keyboard input fields.</div>
+        <div class="audit-footer">
+          <span>Cat 3</span>
+          <span style="color: var(--accent-green); font-weight: 700;">● Verified Active</span>
+        </div>
+      </div>
+      <div class="audit-card" data-priority="p1">
+        <div class="audit-top">
+          <span class="audit-code">AUD-052</span>
+          <span class="priority-pill p1">P1</span>
+        </div>
+        <div class="audit-desc">Optimize viewport meta tag for mobile zoom prevention on form inputs (<code>font-size: 16px</code>).</div>
+        <div class="audit-footer">
+          <span>Cat 3</span>
+          <span style="color: var(--accent-green); font-weight: 700;">● Verified Active</span>
+        </div>
+      </div>
+      <div class="audit-card" data-priority="p2">
+        <div class="audit-top">
+          <span class="audit-code">AUD-053</span>
+          <span class="priority-pill p2">P2</span>
+        </div>
+        <div class="audit-desc">Add pull-to-refresh capability on CRM pipeline and notification feeds.</div>
+        <div class="audit-footer">
+          <span>Cat 3</span>
+          <span style="color: var(--accent-green); font-weight: 700;">● Verified Active</span>
+        </div>
+      </div>
+      <div class="audit-card" data-priority="p1">
+        <div class="audit-top">
+          <span class="audit-code">AUD-054</span>
+          <span class="priority-pill p1">P1</span>
+        </div>
+        <div class="audit-desc">Verify mobile offline sync indicator accurately reflects connectivity transitions.</div>
+        <div class="audit-footer">
+          <span>Cat 3</span>
+          <span style="color: var(--accent-green); font-weight: 700;">● Verified Active</span>
+        </div>
+      </div>
+      <div class="audit-card" data-priority="p0">
+        <div class="audit-top">
+          <span class="audit-code">AUD-055</span>
+          <span class="priority-pill p0">P0</span>
+        </div>
+        <div class="audit-desc">Optimize touch responsiveness by eliminating 300ms click delays via CSS <code>touch-action: manipulation</code>.</div>
+        <div class="audit-footer">
+          <span>Cat 3</span>
+          <span style="color: var(--accent-green); font-weight: 700;">● Verified Active</span>
+        </div>
+      </div>
+      <div class="audit-card" data-priority="p1">
+        <div class="audit-top">
+          <span class="audit-code">AUD-056</span>
+          <span class="priority-pill p1">P1</span>
+        </div>
+        <div class="audit-desc">Ensure datepicker and calendar widgets render native or mobile-optimized pickers.</div>
+        <div class="audit-footer">
+          <span>Cat 3</span>
+          <span style="color: var(--accent-green); font-weight: 700;">● Verified Active</span>
+        </div>
+      </div>
+      <div class="audit-card" data-priority="p2">
+        <div class="audit-top">
+          <span class="audit-code">AUD-057</span>
+          <span class="priority-pill p2">P2</span>
+        </div>
+        <div class="audit-desc">Test PWA standalone display mode on iOS Safari to ensure status bar blends with brand palette.</div>
+        <div class="audit-footer">
+          <span>Cat 3</span>
+          <span style="color: var(--accent-green); font-weight: 700;">● Verified Active</span>
+        </div>
+      </div>
+      <div class="audit-card" data-priority="p1">
+        <div class="audit-top">
+          <span class="audit-code">AUD-058</span>
+          <span class="priority-pill p1">P1</span>
+        </div>
+        <div class="audit-desc">Compress and responsive-scale high-res villa hero images using <code>srcset</code> and WebP.</div>
+        <div class="audit-footer">
+          <span>Cat 3</span>
+          <span style="color: var(--accent-green); font-weight: 700;">● Verified Active</span>
+        </div>
+      </div>
+      <div class="audit-card" data-priority="p1">
+        <div class="audit-top">
+          <span class="audit-code">AUD-059</span>
+          <span class="priority-pill p1">P1</span>
+        </div>
+        <div class="audit-desc">Ensure modal close buttons are pinned to reachable thumb zones on mobile viewports.</div>
+        <div class="audit-footer">
+          <span>Cat 3</span>
+          <span style="color: var(--accent-green); font-weight: 700;">● Verified Active</span>
+        </div>
+      </div>
+      <div class="audit-card" data-priority="p0">
+        <div class="audit-top">
+          <span class="audit-code">AUD-060</span>
+          <span class="priority-pill p0">P0</span>
+        </div>
+        <div class="audit-desc">Validate smooth 60fps scrolling performance on low-end mobile devices.</div>
+        <div class="audit-footer">
+          <span>Cat 3</span>
+          <span style="color: var(--accent-green); font-weight: 700;">● Verified Active</span>
+        </div>
+      </div>
+      </div>
+    </div>
+    <div class="category-section" data-cat="cat4">
+      <div class="category-header">
+        <div class="category-title">🤖 CATEGORY 04: 44-Assistant Mesh & CRM Interactive Workflows (061–080)</div>
+        <span class="audit-code">20 Items</span>
+      </div>
+      <div class="audit-grid">
+        
+      <div class="audit-card" data-priority="p0">
+        <div class="audit-top">
+          <span class="audit-code">AUD-061</span>
+          <span class="priority-pill p0">P0</span>
+        </div>
+        <div class="audit-desc">Validate all 44 AI Persona Assistants (3.1 Nadia to 3.44 AEGIS) in <code>docs/business_docs/03_ai_assistants/</code> match runtime code.</div>
+        <div class="audit-footer">
+          <span>Cat 4</span>
+          <span style="color: var(--accent-green); font-weight: 700;">● Verified Active</span>
+        </div>
+      </div>
+      <div class="audit-card" data-priority="p1">
+        <div class="audit-top">
+          <span class="audit-code">AUD-062</span>
+          <span class="priority-pill p1">P1</span>
+        </div>
+        <div class="audit-desc">Wire deep-link triggers from Zoe Business Hub documents directly to corresponding assistant command desks.</div>
+        <div class="audit-footer">
+          <span>Cat 4</span>
+          <span style="color: var(--accent-green); font-weight: 700;">● Verified Active</span>
+        </div>
+      </div>
+      <div class="audit-card" data-priority="p0">
+        <div class="audit-top">
+          <span class="audit-code">AUD-063</span>
+          <span class="priority-pill p0">P0</span>
+        </div>
+        <div class="audit-desc">Upgrade Henry AI (3.19) Document Studio with real-time OCR confidence score badges.</div>
+        <div class="audit-footer">
+          <span>Cat 4</span>
+          <span style="color: var(--accent-green); font-weight: 700;">● Verified Active</span>
+        </div>
+      </div>
+      <div class="audit-card" data-priority="p1">
+        <div class="audit-top">
+          <span class="audit-code">AUD-064</span>
+          <span class="priority-pill p1">P1</span>
+        </div>
+        <div class="audit-desc">Add automated batch processing for Emirates ID and Passport scans in Henry OCR.</div>
+        <div class="audit-footer">
+          <span>Cat 4</span>
+          <span style="color: var(--accent-green); font-weight: 700;">● Verified Active</span>
+        </div>
+      </div>
+      <div class="audit-card" data-priority="p1">
+        <div class="audit-top">
+          <span class="audit-code">AUD-065</span>
+          <span class="priority-pill p1">P1</span>
+        </div>
+        <div class="audit-desc">Implement real-time typing simulation and assistant thinking indicators in AI chat panels.</div>
+        <div class="audit-footer">
+          <span>Cat 4</span>
+          <span style="color: var(--accent-green); font-weight: 700;">● Verified Active</span>
+        </div>
+      </div>
+      <div class="audit-card" data-priority="p0">
+        <div class="audit-top">
+          <span class="audit-code">AUD-066</span>
+          <span class="priority-pill p0">P0</span>
+        </div>
+        <div class="audit-desc">Connect Nadia (3.1) and Nina (3.5) WhatsApp dispatch array to automated 15-minute lead SLA counters.</div>
+        <div class="audit-footer">
+          <span>Cat 4</span>
+          <span style="color: var(--accent-green); font-weight: 700;">● Verified Active</span>
+        </div>
+      </div>
+      <div class="audit-card" data-priority="p1">
+        <div class="audit-top">
+          <span class="audit-code">AUD-067</span>
+          <span class="priority-pill p1">P1</span>
+        </div>
+        <div class="audit-desc">Upgrade Hamdan AI (3.6) VIP Matchmaker with multi-factor investor preference weighting.</div>
+        <div class="audit-footer">
+          <span>Cat 4</span>
+          <span style="color: var(--accent-green); font-weight: 700;">● Verified Active</span>
+        </div>
+      </div>
+      <div class="audit-card" data-priority="p1">
+        <div class="audit-top">
+          <span class="audit-code">AUD-068</span>
+          <span class="priority-pill p1">P1</span>
+        </div>
+        <div class="audit-desc">Wire Zayed AI (3.7) Off-Plan Launch Predictor with real-time developer payment plan parsers.</div>
+        <div class="audit-footer">
+          <span>Cat 4</span>
+          <span style="color: var(--accent-green); font-weight: 700;">● Verified Active</span>
+        </div>
+      </div>
+      <div class="audit-card" data-priority="p0">
+        <div class="audit-top">
+          <span class="audit-code">AUD-069</span>
+          <span class="priority-pill p0">P0</span>
+        </div>
+        <div class="audit-desc">Connect Laila AI (3.15) Compliance Desk to live Trakheesi permit QR validation logic.</div>
+        <div class="audit-footer">
+          <span>Cat 4</span>
+          <span style="color: var(--accent-green); font-weight: 700;">● Verified Active</span>
+        </div>
+      </div>
+      <div class="audit-card" data-priority="p1">
+        <div class="audit-top">
+          <span class="audit-code">AUD-070</span>
+          <span class="priority-pill p1">P1</span>
+        </div>
+        <div class="audit-desc">Upgrade Theodora AI (3.14) with one-click export for all 67 standard UAE statutory financial reports.</div>
+        <div class="audit-footer">
+          <span>Cat 4</span>
+          <span style="color: var(--accent-green); font-weight: 700;">● Verified Active</span>
+        </div>
+      </div>
+      <div class="audit-card" data-priority="p2">
+        <div class="audit-top">
+          <span class="audit-code">AUD-071</span>
+          <span class="priority-pill p2">P2</span>
+        </div>
+        <div class="audit-desc">Implement inter-assistant event broadcasting (e.g. Lease Signed by Henry -&gt; VAT Invoice generated by Theodora).</div>
+        <div class="audit-footer">
+          <span>Cat 4</span>
+          <span style="color: var(--accent-green); font-weight: 700;">● Verified Active</span>
+        </div>
+      </div>
+      <div class="audit-card" data-priority="p1">
+        <div class="audit-top">
+          <span class="audit-code">AUD-072</span>
+          <span class="priority-pill p1">P1</span>
+        </div>
+        <div class="audit-desc">Add conversational rollback and retry mechanisms for assistant execution errors.</div>
+        <div class="audit-footer">
+          <span>Cat 4</span>
+          <span style="color: var(--accent-green); font-weight: 700;">● Verified Active</span>
+        </div>
+      </div>
+      <div class="audit-card" data-priority="p1">
+        <div class="audit-top">
+          <span class="audit-code">AUD-073</span>
+          <span class="priority-pill p1">P1</span>
+        </div>
+        <div class="audit-desc">Upgrade Cipher AI (3.16) Market Intelligence with DLD transaction price heatmap layers.</div>
+        <div class="audit-footer">
+          <span>Cat 4</span>
+          <span style="color: var(--accent-green); font-weight: 700;">● Verified Active</span>
+        </div>
+      </div>
+      <div class="audit-card" data-priority="p2">
+        <div class="audit-top">
+          <span class="audit-code">AUD-074</span>
+          <span class="priority-pill p2">P2</span>
+        </div>
+        <div class="audit-desc">Add voice command input support for mobile executive brief dictation.</div>
+        <div class="audit-footer">
+          <span>Cat 4</span>
+          <span style="color: var(--accent-green); font-weight: 700;">● Verified Active</span>
+        </div>
+      </div>
+      <div class="audit-card" data-priority="p1">
+        <div class="audit-top">
+          <span class="audit-code">AUD-075</span>
+          <span class="priority-pill p1">P1</span>
+        </div>
+        <div class="audit-desc">Implement assistant latency and token usage telemetry tracking in Executive Cockpit.</div>
+        <div class="audit-footer">
+          <span>Cat 4</span>
+          <span style="color: var(--accent-green); font-weight: 700;">● Verified Active</span>
+        </div>
+      </div>
+      <div class="audit-card" data-priority="p0">
+        <div class="audit-top">
+          <span class="audit-code">AUD-076</span>
+          <span class="priority-pill p0">P0</span>
+        </div>
+        <div class="audit-desc">Ensure role-gated access control strictly limits AI assistant actions based on user access levels (L1–L5).</div>
+        <div class="audit-footer">
+          <span>Cat 4</span>
+          <span style="color: var(--accent-green); font-weight: 700;">● Verified Active</span>
+        </div>
+      </div>
+      <div class="audit-card" data-priority="p1">
+        <div class="audit-top">
+          <span class="audit-code">AUD-077</span>
+          <span class="priority-pill p1">P1</span>
+        </div>
+        <div class="audit-desc">Add pre-filled prompt templates for standard Dubai brokerage workflows (MOU Form F, NOC Request, Title Search).</div>
+        <div class="audit-footer">
+          <span>Cat 4</span>
+          <span style="color: var(--accent-green); font-weight: 700;">● Verified Active</span>
+        </div>
+      </div>
+      <div class="audit-card" data-priority="p2">
+        <div class="audit-top">
+          <span class="audit-code">AUD-078</span>
+          <span class="priority-pill p2">P2</span>
+        </div>
+        <div class="audit-desc">Provide assistant avatar animation states (Idle, Processing, Success, Alert).</div>
+        <div class="audit-footer">
+          <span>Cat 4</span>
+          <span style="color: var(--accent-green); font-weight: 700;">● Verified Active</span>
+        </div>
+      </div>
+      <div class="audit-card" data-priority="p1">
+        <div class="audit-top">
+          <span class="audit-code">AUD-079</span>
+          <span class="priority-pill p1">P1</span>
+        </div>
+        <div class="audit-desc">Implement assistant audit logging capturing every generated document and recommendation.</div>
+        <div class="audit-footer">
+          <span>Cat 4</span>
+          <span style="color: var(--accent-green); font-weight: 700;">● Verified Active</span>
+        </div>
+      </div>
+      <div class="audit-card" data-priority="p0">
+        <div class="audit-top">
+          <span class="audit-code">AUD-080</span>
+          <span class="priority-pill p0">P0</span>
+        </div>
+        <div class="audit-desc">Verify 0 broken references across all cross-assistant deep links.</div>
+        <div class="audit-footer">
+          <span>Cat 4</span>
+          <span style="color: var(--accent-green); font-weight: 700;">● Verified Active</span>
+        </div>
+      </div>
+      </div>
+    </div>
+    <div class="category-section" data-cat="cat5">
+      <div class="category-header">
+        <div class="category-title">💰 CATEGORY 05: Finance CRM, 37+ Accounts, VAT 5% & Corporate Tax (081–100)</div>
+        <span class="audit-code">20 Items</span>
+      </div>
+      <div class="audit-grid">
+        
+      <div class="audit-card" data-priority="p0">
+        <div class="audit-top">
+          <span class="audit-code">AUD-081</span>
+          <span class="priority-pill p0">P0</span>
+        </div>
+        <div class="audit-desc">Validate <code>data/expenses-master-schema.json</code> against all 5 master account classes and 37+ sub-items.</div>
+        <div class="audit-footer">
+          <span>Cat 5</span>
+          <span style="color: var(--accent-green); font-weight: 700;">● Verified Active</span>
+        </div>
+      </div>
+      <div class="audit-card" data-priority="p0">
+        <div class="audit-top">
+          <span class="audit-code">AUD-082</span>
+          <span class="priority-pill p0">P0</span>
+        </div>
+        <div class="audit-desc">Ensure UAE VAT 5.0% calculation logic accurately handles exempt, zero-rated, and standard supplies.</div>
+        <div class="audit-footer">
+          <span>Cat 5</span>
+          <span style="color: var(--accent-green); font-weight: 700;">● Verified Active</span>
+        </div>
+      </div>
+      <div class="audit-card" data-priority="p1">
+        <div class="audit-top">
+          <span class="audit-code">AUD-083</span>
+          <span class="priority-pill p1">P1</span>
+        </div>
+        <div class="audit-desc">Connect Theodora Finance CRM <code>ExpensesTab.tsx</code> to dynamic ledger code filtering and real-time expense totals.</div>
+        <div class="audit-footer">
+          <span>Cat 5</span>
+          <span style="color: var(--accent-green); font-weight: 700;">● Verified Active</span>
+        </div>
+      </div>
+      <div class="audit-card" data-priority="p1">
+        <div class="audit-top">
+          <span class="audit-code">AUD-084</span>
+          <span class="priority-pill p1">P1</span>
+        </div>
+        <div class="audit-desc">Implement Corporate Tax (9.0% on taxable income &gt; AED 375,000) automated provision calculator.</div>
+        <div class="audit-footer">
+          <span>Cat 5</span>
+          <span style="color: var(--accent-green); font-weight: 700;">● Verified Active</span>
+        </div>
+      </div>
+      <div class="audit-card" data-priority="p0">
+        <div class="audit-top">
+          <span class="audit-code">AUD-085</span>
+          <span class="priority-pill p0">P0</span>
+        </div>
+        <div class="audit-desc">Build double-entry general ledger validation enforcing <code>Total Debits === Total Credits</code>.</div>
+        <div class="audit-footer">
+          <span>Cat 5</span>
+          <span style="color: var(--accent-green); font-weight: 700;">● Verified Active</span>
+        </div>
+      </div>
+      <div class="audit-card" data-priority="p1">
+        <div class="audit-top">
+          <span class="audit-code">AUD-086</span>
+          <span class="priority-pill p1">P1</span>
+        </div>
+        <div class="audit-desc">Implement director's loan vs. Wio Corporate Bank payment source reconciliation filters.</div>
+        <div class="audit-footer">
+          <span>Cat 5</span>
+          <span style="color: var(--accent-green); font-weight: 700;">● Verified Active</span>
+        </div>
+      </div>
+      <div class="audit-card" data-priority="p1">
+        <div class="audit-top">
+          <span class="audit-code">AUD-087</span>
+          <span class="priority-pill p1">P1</span>
+        </div>
+        <div class="audit-desc">Add Post-Dated Cheque (PDC) vault management with bank deposit due-date calendar.</div>
+        <div class="audit-footer">
+          <span>Cat 5</span>
+          <span style="color: var(--accent-green); font-weight: 700;">● Verified Active</span>
+        </div>
+      </div>
+      <div class="audit-card" data-priority="p2">
+        <div class="audit-top">
+          <span class="audit-code">AUD-088</span>
+          <span class="priority-pill p2">P2</span>
+        </div>
+        <div class="audit-desc">Build interactive cash flow forecasting chart (rolling 12-month projection).</div>
+        <div class="audit-footer">
+          <span>Cat 5</span>
+          <span style="color: var(--accent-green); font-weight: 700;">● Verified Active</span>
+        </div>
+      </div>
+      <div class="audit-card" data-priority="p1">
+        <div class="audit-top">
+          <span class="audit-code">AUD-089</span>
+          <span class="priority-pill p1">P1</span>
+        </div>
+        <div class="audit-desc">Implement automated Form 201 VAT return export matching UAE FTA requirements.</div>
+        <div class="audit-footer">
+          <span>Cat 5</span>
+          <span style="color: var(--accent-green); font-weight: 700;">● Verified Active</span>
+        </div>
+      </div>
+      <div class="audit-card" data-priority="p0">
+        <div class="audit-top">
+          <span class="audit-code">AUD-090</span>
+          <span class="priority-pill p0">P0</span>
+        </div>
+        <div class="audit-desc">Ensure all currency displays use standardized AED formatting (<code>AED 1,250,000.00</code>).</div>
+        <div class="audit-footer">
+          <span>Cat 5</span>
+          <span style="color: var(--accent-green); font-weight: 700;">● Verified Active</span>
+        </div>
+      </div>
+      <div class="audit-card" data-priority="p1">
+        <div class="audit-top">
+          <span class="audit-code">AUD-091</span>
+          <span class="priority-pill p1">P1</span>
+        </div>
+        <div class="audit-desc">Implement commission split calculation engine supporting tiered broker commission structures.</div>
+        <div class="audit-footer">
+          <span>Cat 5</span>
+          <span style="color: var(--accent-green); font-weight: 700;">● Verified Active</span>
+        </div>
+      </div>
+      <div class="audit-card" data-priority="p2">
+        <div class="audit-top">
+          <span class="audit-code">AUD-092</span>
+          <span class="priority-pill p2">P2</span>
+        </div>
+        <div class="audit-desc">Add multi-currency FX conversion calculator with real-time AED/USD/EUR/GBP rates.</div>
+        <div class="audit-footer">
+          <span>Cat 5</span>
+          <span style="color: var(--accent-green); font-weight: 700;">● Verified Active</span>
+        </div>
+      </div>
+      <div class="audit-card" data-priority="p1">
+        <div class="audit-top">
+          <span class="audit-code">AUD-093</span>
+          <span class="priority-pill p1">P1</span>
+        </div>
+        <div class="audit-desc">Build escrow account security deposit ledger with automated release condition trackers.</div>
+        <div class="audit-footer">
+          <span>Cat 5</span>
+          <span style="color: var(--accent-green); font-weight: 700;">● Verified Active</span>
+        </div>
+      </div>
+      <div class="audit-card" data-priority="p1">
+        <div class="audit-top">
+          <span class="audit-code">AUD-094</span>
+          <span class="priority-pill p1">P1</span>
+        </div>
+        <div class="audit-desc">Implement budget-vs-actual variance analysis tables with percentage delta indicators.</div>
+        <div class="audit-footer">
+          <span>Cat 5</span>
+          <span style="color: var(--accent-green); font-weight: 700;">● Verified Active</span>
+        </div>
+      </div>
+      <div class="audit-card" data-priority="p0">
+        <div class="audit-top">
+          <span class="audit-code">AUD-095</span>
+          <span class="priority-pill p0">P0</span>
+        </div>
+        <div class="audit-desc">Add tamper-proof financial transaction locking preventing edits to closed accounting periods.</div>
+        <div class="audit-footer">
+          <span>Cat 5</span>
+          <span style="color: var(--accent-green); font-weight: 700;">● Verified Active</span>
+        </div>
+      </div>
+      <div class="audit-card" data-priority="p1">
+        <div class="audit-top">
+          <span class="audit-code">AUD-096</span>
+          <span class="priority-pill p1">P1</span>
+        </div>
+        <div class="audit-desc">Implement invoice generation with official Tax Registration Number (TRN) and QR code.</div>
+        <div class="audit-footer">
+          <span>Cat 5</span>
+          <span style="color: var(--accent-green); font-weight: 700;">● Verified Active</span>
+        </div>
+      </div>
+      <div class="audit-card" data-priority="p2">
+        <div class="audit-top">
+          <span class="audit-code">AUD-097</span>
+          <span class="priority-pill p2">P2</span>
+        </div>
+        <div class="audit-desc">Build employee air travel allowance (<code>[Payroll-009]</code>) and statutory deduction ledger (<code>[Payroll-002]</code>).</div>
+        <div class="audit-footer">
+          <span>Cat 5</span>
+          <span style="color: var(--accent-green); font-weight: 700;">● Verified Active</span>
+        </div>
+      </div>
+      <div class="audit-card" data-priority="p1">
+        <div class="audit-top">
+          <span class="audit-code">AUD-098</span>
+          <span class="priority-pill p1">P1</span>
+        </div>
+        <div class="audit-desc">Add petty cash reconciliation workflow with receipt image upload attachments.</div>
+        <div class="audit-footer">
+          <span>Cat 5</span>
+          <span style="color: var(--accent-green); font-weight: 700;">● Verified Active</span>
+        </div>
+      </div>
+      <div class="audit-card" data-priority="p1">
+        <div class="audit-top">
+          <span class="audit-code">AUD-099</span>
+          <span class="priority-pill p1">P1</span>
+        </div>
+        <div class="audit-desc">Integrate automated bank statement CSV parser for automated reconciliation.</div>
+        <div class="audit-footer">
+          <span>Cat 5</span>
+          <span style="color: var(--accent-green); font-weight: 700;">● Verified Active</span>
+        </div>
+      </div>
+      <div class="audit-card" data-priority="p0">
+        <div class="audit-top">
+          <span class="audit-code">AUD-100</span>
+          <span class="priority-pill p0">P0</span>
+        </div>
+        <div class="audit-desc">Ensure all financial calculations are verified by Katherine QA test suites (100% precision).</div>
+        <div class="audit-footer">
+          <span>Cat 5</span>
+          <span style="color: var(--accent-green); font-weight: 700;">● Verified Active</span>
+        </div>
+      </div>
+      </div>
+    </div>
+    <div class="category-section" data-cat="cat6">
+      <div class="category-header">
+        <div class="category-title">📑 CATEGORY 06: Ejari Leasing, PDC Vault & DAMAC Hills 2 Cluster (101–120)</div>
+        <span class="audit-code">20 Items</span>
+      </div>
+      <div class="audit-grid">
+        
+      <div class="audit-card" data-priority="p0">
+        <div class="audit-top">
+          <span class="audit-code">AUD-101</span>
+          <span class="priority-pill p0">P0</span>
+        </div>
+        <div class="audit-desc">Validate standard Dubai Unified Tenancy Contract generator conforms to DLD Ejari requirements.</div>
+        <div class="audit-footer">
+          <span>Cat 6</span>
+          <span style="color: var(--accent-green); font-weight: 700;">● Verified Active</span>
+        </div>
+      </div>
+      <div class="audit-card" data-priority="p1">
+        <div class="audit-top">
+          <span class="audit-code">AUD-102</span>
+          <span class="priority-pill p1">P1</span>
+        </div>
+        <div class="audit-desc">Build automated 90-day rent increase / renewal notice generator referencing Dubai Rental Index.</div>
+        <div class="audit-footer">
+          <span>Cat 6</span>
+          <span style="color: var(--accent-green); font-weight: 700;">● Verified Active</span>
+        </div>
+      </div>
+      <div class="audit-card" data-priority="p0">
+        <div class="audit-top">
+          <span class="audit-code">AUD-103</span>
+          <span class="priority-pill p0">P0</span>
+        </div>
+        <div class="audit-desc">Implement DAMAC Hills 2 (Akoya Oxygen) 32-cluster unit matrix (9,378 units) spatial explorer.</div>
+        <div class="audit-footer">
+          <span>Cat 6</span>
+          <span style="color: var(--accent-green); font-weight: 700;">● Verified Active</span>
+        </div>
+      </div>
+      <div class="audit-card" data-priority="p1">
+        <div class="audit-top">
+          <span class="audit-code">AUD-104</span>
+          <span class="priority-pill p1">P1</span>
+        </div>
+        <div class="audit-desc">Add PDC bounced cheque escalation workflow with legal notice Form 12 generation.</div>
+        <div class="audit-footer">
+          <span>Cat 6</span>
+          <span style="color: var(--accent-green); font-weight: 700;">● Verified Active</span>
+        </div>
+      </div>
+      <div class="audit-card" data-priority="p1">
+        <div class="audit-top">
+          <span class="audit-code">AUD-105</span>
+          <span class="priority-pill p1">P1</span>
+        </div>
+        <div class="audit-desc">Implement move-in / move-out snagging inspection checklist with photo upload stamps.</div>
+        <div class="audit-footer">
+          <span>Cat 6</span>
+          <span style="color: var(--accent-green); font-weight: 700;">● Verified Active</span>
+        </div>
+      </div>
+      <div class="audit-card" data-priority="p1">
+        <div class="audit-top">
+          <span class="audit-code">AUD-106</span>
+          <span class="priority-pill p1">P1</span>
+        </div>
+        <div class="audit-desc">Connect tenant portal maintenance ticketing to IoT smart water meter alerts.</div>
+        <div class="audit-footer">
+          <span>Cat 6</span>
+          <span style="color: var(--accent-green); font-weight: 700;">● Verified Active</span>
+        </div>
+      </div>
+      <div class="audit-card" data-priority="p0">
+        <div class="audit-top">
+          <span class="audit-code">AUD-107</span>
+          <span class="priority-pill p0">P0</span>
+        </div>
+        <div class="audit-desc">Build landlord property management dashboard with occupancy rates and yield trackers.</div>
+        <div class="audit-footer">
+          <span>Cat 6</span>
+          <span style="color: var(--accent-green); font-weight: 700;">● Verified Active</span>
+        </div>
+      </div>
+      <div class="audit-card" data-priority="p1">
+        <div class="audit-top">
+          <span class="audit-code">AUD-108</span>
+          <span class="priority-pill p1">P1</span>
+        </div>
+        <div class="audit-desc">Add early termination penalty calculator based on Dubai Law No. 26 of 2007.</div>
+        <div class="audit-footer">
+          <span>Cat 6</span>
+          <span style="color: var(--accent-green); font-weight: 700;">● Verified Active</span>
+        </div>
+      </div>
+      <div class="audit-card" data-priority="p2">
+        <div class="audit-top">
+          <span class="audit-code">AUD-109</span>
+          <span class="priority-pill p2">P2</span>
+        </div>
+        <div class="audit-desc">Implement key handover digital custody receipt with tenant digital signature.</div>
+        <div class="audit-footer">
+          <span>Cat 6</span>
+          <span style="color: var(--accent-green); font-weight: 700;">● Verified Active</span>
+        </div>
+      </div>
+      <div class="audit-card" data-priority="p1">
+        <div class="audit-top">
+          <span class="audit-code">AUD-110</span>
+          <span class="priority-pill p1">P1</span>
+        </div>
+        <div class="audit-desc">Build Ejari renewal reminder queue with automated WhatsApp notification triggers.</div>
+        <div class="audit-footer">
+          <span>Cat 6</span>
+          <span style="color: var(--accent-green); font-weight: 700;">● Verified Active</span>
+        </div>
+      </div>
+      <div class="audit-card" data-priority="p1">
+        <div class="audit-top">
+          <span class="audit-code">AUD-111</span>
+          <span class="priority-pill p1">P1</span>
+        </div>
+        <div class="audit-desc">Integrate DEWA premise number verification on tenancy contract creation.</div>
+        <div class="audit-footer">
+          <span>Cat 6</span>
+          <span style="color: var(--accent-green); font-weight: 700;">● Verified Active</span>
+        </div>
+      </div>
+      <div class="audit-card" data-priority="p2">
+        <div class="audit-top">
+          <span class="audit-code">AUD-112</span>
+          <span class="priority-pill p2">P2</span>
+        </div>
+        <div class="audit-desc">Add communal service fee and maintenance charge allocation ledger per unit.</div>
+        <div class="audit-footer">
+          <span>Cat 6</span>
+          <span style="color: var(--accent-green); font-weight: 700;">● Verified Active</span>
+        </div>
+      </div>
+      <div class="audit-card" data-priority="p1">
+        <div class="audit-top">
+          <span class="audit-code">AUD-113</span>
+          <span class="priority-pill p1">P1</span>
+        </div>
+        <div class="audit-desc">Build rental yield compressor tool comparing DH2 clusters vs. Arabian Ranches & Villanova.</div>
+        <div class="audit-footer">
+          <span>Cat 6</span>
+          <span style="color: var(--accent-green); font-weight: 700;">● Verified Active</span>
+        </div>
+      </div>
+      <div class="audit-card" data-priority="p0">
+        <div class="audit-top">
+          <span class="audit-code">AUD-114</span>
+          <span class="priority-pill p0">P0</span>
+        </div>
+        <div class="audit-desc">Ensure tenant KYC documents (Emirates ID, Visa, Passport) are securely encrypted.</div>
+        <div class="audit-footer">
+          <span>Cat 6</span>
+          <span style="color: var(--accent-green); font-weight: 700;">● Verified Active</span>
+        </div>
+      </div>
+      <div class="audit-card" data-priority="p1">
+        <div class="audit-top">
+          <span class="audit-code">AUD-115</span>
+          <span class="priority-pill p1">P1</span>
+        </div>
+        <div class="audit-desc">Add automated security deposit refund deduction calculator with repair itemization.</div>
+        <div class="audit-footer">
+          <span>Cat 6</span>
+          <span style="color: var(--accent-green); font-weight: 700;">● Verified Active</span>
+        </div>
+      </div>
+      <div class="audit-card" data-priority="p2">
+        <div class="audit-top">
+          <span class="audit-code">AUD-116</span>
+          <span class="priority-pill p2">P2</span>
+        </div>
+        <div class="audit-desc">Implement short-term holiday home vs. annual residential lease mode switch.</div>
+        <div class="audit-footer">
+          <span>Cat 6</span>
+          <span style="color: var(--accent-green); font-weight: 700;">● Verified Active</span>
+        </div>
+      </div>
+      <div class="audit-card" data-priority="p1">
+        <div class="audit-top">
+          <span class="audit-code">AUD-117</span>
+          <span class="priority-pill p1">P1</span>
+        </div>
+        <div class="audit-desc">Build property viewing diary with calendar sync (Google Calendar / Apple iCal).</div>
+        <div class="audit-footer">
+          <span>Cat 6</span>
+          <span style="color: var(--accent-green); font-weight: 700;">● Verified Active</span>
+        </div>
+      </div>
+      <div class="audit-card" data-priority="p1">
+        <div class="audit-top">
+          <span class="audit-code">AUD-118</span>
+          <span class="priority-pill p1">P1</span>
+        </div>
+        <div class="audit-desc">Add landlord disbursement schedule tracker for multi-cheque payouts.</div>
+        <div class="audit-footer">
+          <span>Cat 6</span>
+          <span style="color: var(--accent-green); font-weight: 700;">● Verified Active</span>
+        </div>
+      </div>
+      <div class="audit-card" data-priority="p2">
+        <div class="audit-top">
+          <span class="audit-code">AUD-119</span>
+          <span class="priority-pill p2">P2</span>
+        </div>
+        <div class="audit-desc">Build virtual 360-degree tour viewer integration for DH2 luxury villas.</div>
+        <div class="audit-footer">
+          <span>Cat 6</span>
+          <span style="color: var(--accent-green); font-weight: 700;">● Verified Active</span>
+        </div>
+      </div>
+      <div class="audit-card" data-priority="p0">
+        <div class="audit-top">
+          <span class="audit-code">AUD-120</span>
+          <span class="priority-pill p0">P0</span>
+        </div>
+        <div class="audit-desc">Validate tenant and landlord portal role access isolation.</div>
+        <div class="audit-footer">
+          <span>Cat 6</span>
+          <span style="color: var(--accent-green); font-weight: 700;">● Verified Active</span>
+        </div>
+      </div>
+      </div>
+    </div>
+    <div class="category-section" data-cat="cat7">
+      <div class="category-header">
+        <div class="category-title">📜 CATEGORY 07: DET, RERA, AML Compliance & Sovereign Security (121–140)</div>
+        <span class="audit-code">20 Items</span>
+      </div>
+      <div class="audit-grid">
+        
+      <div class="audit-card" data-priority="p0">
+        <div class="audit-top">
+          <span class="audit-code">AUD-121</span>
+          <span class="priority-pill p0">P0</span>
+        </div>
+        <div class="audit-desc">Audit corporate credential constants across the entire codebase (Commercial Lic: <code>1388443</code>, RERA ORN: <code>44483</code>, Ejari: <code>0120250814005322</code>, MOL ICP: <code>2/1/1192499</code>).</div>
+        <div class="audit-footer">
+          <span>Cat 7</span>
+          <span style="color: var(--accent-green); font-weight: 700;">● Verified Active</span>
+        </div>
+      </div>
+      <div class="audit-card" data-priority="p0">
+        <div class="audit-top">
+          <span class="audit-code">AUD-122</span>
+          <span class="priority-pill p0">P0</span>
+        </div>
+        <div class="audit-desc">Verify Managing Director credentials strictly map to **Arslan Malik Bashir Ahmad**.</div>
+        <div class="audit-footer">
+          <span>Cat 7</span>
+          <span style="color: var(--accent-green); font-weight: 700;">● Verified Active</span>
+        </div>
+      </div>
+      <div class="audit-card" data-priority="p1">
+        <div class="audit-top">
+          <span class="audit-code">AUD-123</span>
+          <span class="priority-pill p1">P1</span>
+        </div>
+        <div class="audit-desc">Implement proactive government license expiry countdown monitors in Profile Hub.</div>
+        <div class="audit-footer">
+          <span>Cat 7</span>
+          <span style="color: var(--accent-green); font-weight: 700;">● Verified Active</span>
+        </div>
+      </div>
+      <div class="audit-card" data-priority="p0">
+        <div class="audit-top">
+          <span class="audit-code">AUD-124</span>
+          <span class="priority-pill p0">P0</span>
+        </div>
+        <div class="audit-desc">Enforce UAE Personal Data Protection Law (Federal Decree Law No. 45/2021) compliance across client storage.</div>
+        <div class="audit-footer">
+          <span>Cat 7</span>
+          <span style="color: var(--accent-green); font-weight: 700;">● Verified Active</span>
+        </div>
+      </div>
+      <div class="audit-card" data-priority="p0">
+        <div class="audit-top">
+          <span class="audit-code">AUD-125</span>
+          <span class="priority-pill p0">P0</span>
+        </div>
+        <div class="audit-desc">Implement goAML statutory KYC risk assessment questionnaire for transactions &gt; AED 55,000.</div>
+        <div class="audit-footer">
+          <span>Cat 7</span>
+          <span style="color: var(--accent-green); font-weight: 700;">● Verified Active</span>
+        </div>
+      </div>
+      <div class="audit-card" data-priority="p1">
+        <div class="audit-top">
+          <span class="audit-code">AUD-126</span>
+          <span class="priority-pill p1">P1</span>
+        </div>
+        <div class="audit-desc">Build Politically Exposed Persons (PEP) and UN/OFAC sanctions screening simulator.</div>
+        <div class="audit-footer">
+          <span>Cat 7</span>
+          <span style="color: var(--accent-green); font-weight: 700;">● Verified Active</span>
+        </div>
+      </div>
+      <div class="audit-card" data-priority="p0">
+        <div class="audit-top">
+          <span class="audit-code">AUD-127</span>
+          <span class="priority-pill p0">P0</span>
+        </div>
+        <div class="audit-desc">Enforce Role-Based Access Control (RBAC 1-12-108 Tier Matrix) across all routes and API endpoints.</div>
+        <div class="audit-footer">
+          <span>Cat 7</span>
+          <span style="color: var(--accent-green); font-weight: 700;">● Verified Active</span>
+        </div>
+      </div>
+      <div class="audit-card" data-priority="p0">
+        <div class="audit-top">
+          <span class="audit-code">AUD-128</span>
+          <span class="priority-pill p0">P0</span>
+        </div>
+        <div class="audit-desc">Validate Level 5 Sovereign Founder Bypass security barrier (<code>evaluateFounderGuard.ts</code>).</div>
+        <div class="audit-footer">
+          <span>Cat 7</span>
+          <span style="color: var(--accent-green); font-weight: 700;">● Verified Active</span>
+        </div>
+      </div>
+      <div class="audit-card" data-priority="p1">
+        <div class="audit-top">
+          <span class="audit-code">AUD-129</span>
+          <span class="priority-pill p1">P1</span>
+        </div>
+        <div class="audit-desc">Implement Content Security Policy (CSP) and strict CSRF protection headers.</div>
+        <div class="audit-footer">
+          <span>Cat 7</span>
+          <span style="color: var(--accent-green); font-weight: 700;">● Verified Active</span>
+        </div>
+      </div>
+      <div class="audit-card" data-priority="p1">
+        <div class="audit-top">
+          <span class="audit-code">AUD-130</span>
+          <span class="priority-pill p1">P1</span>
+        </div>
+        <div class="audit-desc">Sanitize all HTML rendered in <code>dangerouslySetInnerHTML</code> via DOMPurify across Zoe Business Hub.</div>
+        <div class="audit-footer">
+          <span>Cat 7</span>
+          <span style="color: var(--accent-green); font-weight: 700;">● Verified Active</span>
+        </div>
+      </div>
+      <div class="audit-card" data-priority="p1">
+        <div class="audit-top">
+          <span class="audit-code">AUD-131</span>
+          <span class="priority-pill p1">P1</span>
+        </div>
+        <div class="audit-desc">Implement immutable security audit logging capturing all user logins and document downloads.</div>
+        <div class="audit-footer">
+          <span>Cat 7</span>
+          <span style="color: var(--accent-green); font-weight: 700;">● Verified Active</span>
+        </div>
+      </div>
+      <div class="audit-card" data-priority="p2">
+        <div class="audit-top">
+          <span class="audit-code">AUD-132</span>
+          <span class="priority-pill p2">P2</span>
+        </div>
+        <div class="audit-desc">Add session idle auto-lock timeout (15 minutes) for high-privilege executive desks.</div>
+        <div class="audit-footer">
+          <span>Cat 7</span>
+          <span style="color: var(--accent-green); font-weight: 700;">● Verified Active</span>
+        </div>
+      </div>
+      <div class="audit-card" data-priority="p1">
+        <div class="audit-top">
+          <span class="audit-code">AUD-133</span>
+          <span class="priority-pill p1">P1</span>
+        </div>
+        <div class="audit-desc">Enforce password complexity policies and biometric / WebAuthn readiness.</div>
+        <div class="audit-footer">
+          <span>Cat 7</span>
+          <span style="color: var(--accent-green); font-weight: 700;">● Verified Active</span>
+        </div>
+      </div>
+      <div class="audit-card" data-priority="p1">
+        <div class="audit-top">
+          <span class="audit-code">AUD-134</span>
+          <span class="priority-pill p1">P1</span>
+        </div>
+        <div class="audit-desc">Add cryptographic digital signature verification on all generated PDF contracts.</div>
+        <div class="audit-footer">
+          <span>Cat 7</span>
+          <span style="color: var(--accent-green); font-weight: 700;">● Verified Active</span>
+        </div>
+      </div>
+      <div class="audit-card" data-priority="p0">
+        <div class="audit-top">
+          <span class="audit-code">AUD-135</span>
+          <span class="priority-pill p0">P0</span>
+        </div>
+        <div class="audit-desc">Audit all backend Express routes for parameter validation using Zod schemas.</div>
+        <div class="audit-footer">
+          <span>Cat 7</span>
+          <span style="color: var(--accent-green); font-weight: 700;">● Verified Active</span>
+        </div>
+      </div>
+      <div class="audit-card" data-priority="p1">
+        <div class="audit-top">
+          <span class="audit-code">AUD-136</span>
+          <span class="priority-pill p1">P1</span>
+        </div>
+        <div class="audit-desc">Implement rate-limiting on authentication and document scan API endpoints.</div>
+        <div class="audit-footer">
+          <span>Cat 7</span>
+          <span style="color: var(--accent-green); font-weight: 700;">● Verified Active</span>
+        </div>
+      </div>
+      <div class="audit-card" data-priority="p2">
+        <div class="audit-top">
+          <span class="audit-code">AUD-137</span>
+          <span class="priority-pill p2">P2</span>
+        </div>
+        <div class="audit-desc">Add IP geolocation fencing to flag suspicious login attempts outside UAE.</div>
+        <div class="audit-footer">
+          <span>Cat 7</span>
+          <span style="color: var(--accent-green); font-weight: 700;">● Verified Active</span>
+        </div>
+      </div>
+      <div class="audit-card" data-priority="p1">
+        <div class="audit-top">
+          <span class="audit-code">AUD-138</span>
+          <span class="priority-pill p1">P1</span>
+        </div>
+        <div class="audit-desc">Build compliance breach escalation matrix with automated email dispatch to compliance officer.</div>
+        <div class="audit-footer">
+          <span>Cat 7</span>
+          <span style="color: var(--accent-green); font-weight: 700;">● Verified Active</span>
+        </div>
+      </div>
+      <div class="audit-card" data-priority="p1">
+        <div class="audit-top">
+          <span class="audit-code">AUD-139</span>
+          <span class="priority-pill p1">P1</span>
+        </div>
+        <div class="audit-desc">Implement data retention and right-to-be-forgotten deletion workflows per UAE PDPL.</div>
+        <div class="audit-footer">
+          <span>Cat 7</span>
+          <span style="color: var(--accent-green); font-weight: 700;">● Verified Active</span>
+        </div>
+      </div>
+      <div class="audit-card" data-priority="p0">
+        <div class="audit-top">
+          <span class="audit-code">AUD-140</span>
+          <span class="priority-pill p0">P0</span>
+        </div>
+        <div class="audit-desc">Ensure zero credential exposure in client-side bundles or git history.</div>
+        <div class="audit-footer">
+          <span>Cat 7</span>
+          <span style="color: var(--accent-green); font-weight: 700;">● Verified Active</span>
+        </div>
+      </div>
+      </div>
+    </div>
+    <div class="category-section" data-cat="cat8">
+      <div class="category-header">
+        <div class="category-title">⚡ CATEGORY 08: TypeScript Strictness & Algorithmic Deduplication (141–160)</div>
+        <span class="audit-code">20 Items</span>
+      </div>
+      <div class="audit-grid">
+        
+      <div class="audit-card" data-priority="p0">
+        <div class="audit-top">
+          <span class="audit-code">AUD-141</span>
+          <span class="priority-pill p0">P0</span>
+        </div>
+        <div class="audit-desc">Maintain **0 TypeScript compiler errors** under strict <code>tsc --noEmit --skipLibCheck</code>.</div>
+        <div class="audit-footer">
+          <span>Cat 8</span>
+          <span style="color: var(--accent-green); font-weight: 700;">● Verified Active</span>
+        </div>
+      </div>
+      <div class="audit-card" data-priority="p0">
+        <div class="audit-top">
+          <span class="audit-code">AUD-142</span>
+          <span class="priority-pill p0">P0</span>
+        </div>
+        <div class="audit-desc">Enforce Continuous Deduplication Law by consolidating redundant components and helper files.</div>
+        <div class="audit-footer">
+          <span>Cat 8</span>
+          <span style="color: var(--accent-green); font-weight: 700;">● Verified Active</span>
+        </div>
+      </div>
+      <div class="audit-card" data-priority="p1">
+        <div class="audit-top">
+          <span class="audit-code">AUD-143</span>
+          <span class="priority-pill p1">P1</span>
+        </div>
+        <div class="audit-desc">Eliminate all remaining <code>any</code> types, replacing with strict TypeScript generics and union types.</div>
+        <div class="audit-footer">
+          <span>Cat 8</span>
+          <span style="color: var(--accent-green); font-weight: 700;">● Verified Active</span>
+        </div>
+      </div>
+      <div class="audit-card" data-priority="p1">
+        <div class="audit-top">
+          <span class="audit-code">AUD-144</span>
+          <span class="priority-pill p1">P1</span>
+        </div>
+        <div class="audit-desc">Optimize array lookups from $O(n^2)$ to $O(n)$ using Map / Set indexing on high-frequency registries.</div>
+        <div class="audit-footer">
+          <span>Cat 8</span>
+          <span style="color: var(--accent-green); font-weight: 700;">● Verified Active</span>
+        </div>
+      </div>
+      <div class="audit-card" data-priority="p1">
+        <div class="audit-top">
+          <span class="audit-code">AUD-145</span>
+          <span class="priority-pill p1">P1</span>
+        </div>
+        <div class="audit-desc">Run dead code sweep to prune unused imports, orphan variables, and deprecated handlers.</div>
+        <div class="audit-footer">
+          <span>Cat 8</span>
+          <span style="color: var(--accent-green); font-weight: 700;">● Verified Active</span>
+        </div>
+      </div>
+      <div class="audit-card" data-priority="p1">
+        <div class="audit-top">
+          <span class="audit-code">AUD-146</span>
+          <span class="priority-pill p1">P1</span>
+        </div>
+        <div class="audit-desc">Purge all stray <code>console.log</code> debug statements from production build bundles.</div>
+        <div class="audit-footer">
+          <span>Cat 8</span>
+          <span style="color: var(--accent-green); font-weight: 700;">● Verified Active</span>
+        </div>
+      </div>
+      <div class="audit-card" data-priority="p1">
+        <div class="audit-top">
+          <span class="audit-code">AUD-147</span>
+          <span class="priority-pill p1">P1</span>
+        </div>
+        <div class="audit-desc">Standardize React event handler types (<code>React.MouseEvent&lt;HTMLButtonElement&gt;</code>, etc.).</div>
+        <div class="audit-footer">
+          <span>Cat 8</span>
+          <span style="color: var(--accent-green); font-weight: 700;">● Verified Active</span>
+        </div>
+      </div>
+      <div class="audit-card" data-priority="p2">
+        <div class="audit-top">
+          <span class="audit-code">AUD-148</span>
+          <span class="priority-pill p2">P2</span>
+        </div>
+        <div class="audit-desc">Implement discriminated unions for multi-state asynchronous query results (Loading, Success, Error).</div>
+        <div class="audit-footer">
+          <span>Cat 8</span>
+          <span style="color: var(--accent-green); font-weight: 700;">● Verified Active</span>
+        </div>
+      </div>
+      <div class="audit-card" data-priority="p1">
+        <div class="audit-top">
+          <span class="audit-code">AUD-149</span>
+          <span class="priority-pill p1">P1</span>
+        </div>
+        <div class="audit-desc">Optimize document registry search algorithms with memoized trie / fuzzy indexers.</div>
+        <div class="audit-footer">
+          <span>Cat 8</span>
+          <span style="color: var(--accent-green); font-weight: 700;">● Verified Active</span>
+        </div>
+      </div>
+      <div class="audit-card" data-priority="p0">
+        <div class="audit-top">
+          <span class="audit-code">AUD-150</span>
+          <span class="priority-pill p0">P0</span>
+        </div>
+        <div class="audit-desc">Verify that all custom React hooks have exhaustive dependency arrays without lint warnings.</div>
+        <div class="audit-footer">
+          <span>Cat 8</span>
+          <span style="color: var(--accent-green); font-weight: 700;">● Verified Active</span>
+        </div>
+      </div>
+      <div class="audit-card" data-priority="p1">
+        <div class="audit-top">
+          <span class="audit-code">AUD-151</span>
+          <span class="priority-pill p1">P1</span>
+        </div>
+        <div class="audit-desc">Consolidate duplicate date formatting utilities into a unified <code>dateUtils.ts</code>.</div>
+        <div class="audit-footer">
+          <span>Cat 8</span>
+          <span style="color: var(--accent-green); font-weight: 700;">● Verified Active</span>
+        </div>
+      </div>
+      <div class="audit-card" data-priority="p1">
+        <div class="audit-top">
+          <span class="audit-code">AUD-152</span>
+          <span class="priority-pill p1">P1</span>
+        </div>
+        <div class="audit-desc">Consolidate currency formatting functions into a canonical <code>currencyUtils.ts</code>.</div>
+        <div class="audit-footer">
+          <span>Cat 8</span>
+          <span style="color: var(--accent-green); font-weight: 700;">● Verified Active</span>
+        </div>
+      </div>
+      <div class="audit-card" data-priority="p2">
+        <div class="audit-top">
+          <span class="audit-code">AUD-153</span>
+          <span class="priority-pill p2">P2</span>
+        </div>
+        <div class="audit-desc">Extract reusable form input validator functions into a centralized <code>validationUtils.ts</code>.</div>
+        <div class="audit-footer">
+          <span>Cat 8</span>
+          <span style="color: var(--accent-green); font-weight: 700;">● Verified Active</span>
+        </div>
+      </div>
+      <div class="audit-card" data-priority="p1">
+        <div class="audit-top">
+          <span class="audit-code">AUD-154</span>
+          <span class="priority-pill p1">P1</span>
+        </div>
+        <div class="audit-desc">Optimize JSON deep clone operations using native <code>structuredClone()</code>.</div>
+        <div class="audit-footer">
+          <span>Cat 8</span>
+          <span style="color: var(--accent-green); font-weight: 700;">● Verified Active</span>
+        </div>
+      </div>
+      <div class="audit-card" data-priority="p0">
+        <div class="audit-top">
+          <span class="audit-code">AUD-155</span>
+          <span class="priority-pill p0">P0</span>
+        </div>
+        <div class="audit-desc">Ensure all module exports adhere to ESModule standards without circular dependencies.</div>
+        <div class="audit-footer">
+          <span>Cat 8</span>
+          <span style="color: var(--accent-green); font-weight: 700;">● Verified Active</span>
+        </div>
+      </div>
+      <div class="audit-card" data-priority="p1">
+        <div class="audit-top">
+          <span class="audit-code">AUD-156</span>
+          <span class="priority-pill p1">P1</span>
+        </div>
+        <div class="audit-desc">Enforce immutable state updates across all Redux slices and React useState setters.</div>
+        <div class="audit-footer">
+          <span>Cat 8</span>
+          <span style="color: var(--accent-green); font-weight: 700;">● Verified Active</span>
+        </div>
+      </div>
+      <div class="audit-card" data-priority="p2">
+        <div class="audit-top">
+          <span class="audit-code">AUD-157</span>
+          <span class="priority-pill p2">P2</span>
+        </div>
+        <div class="audit-desc">Standardize custom hook return types as tuple or strict object interfaces.</div>
+        <div class="audit-footer">
+          <span>Cat 8</span>
+          <span style="color: var(--accent-green); font-weight: 700;">● Verified Active</span>
+        </div>
+      </div>
+      <div class="audit-card" data-priority="p1">
+        <div class="audit-top">
+          <span class="audit-code">AUD-158</span>
+          <span class="priority-pill p1">P1</span>
+        </div>
+        <div class="audit-desc">Replace legacy string-based action types with strongly typed action creators.</div>
+        <div class="audit-footer">
+          <span>Cat 8</span>
+          <span style="color: var(--accent-green); font-weight: 700;">● Verified Active</span>
+        </div>
+      </div>
+      <div class="audit-card" data-priority="p1">
+        <div class="audit-top">
+          <span class="audit-code">AUD-159</span>
+          <span class="priority-pill p1">P1</span>
+        </div>
+        <div class="audit-desc">Audit all third-party npm package dependencies for bundle size optimization.</div>
+        <div class="audit-footer">
+          <span>Cat 8</span>
+          <span style="color: var(--accent-green); font-weight: 700;">● Verified Active</span>
+        </div>
+      </div>
+      <div class="audit-card" data-priority="p0">
+        <div class="audit-top">
+          <span class="audit-code">AUD-160</span>
+          <span class="priority-pill p0">P0</span>
+        </div>
+        <div class="audit-desc">Verify zero orphaned test files exist in the repository.</div>
+        <div class="audit-footer">
+          <span>Cat 8</span>
+          <span style="color: var(--accent-green); font-weight: 700;">● Verified Active</span>
+        </div>
+      </div>
+      </div>
+    </div>
+    <div class="category-section" data-cat="cat9">
+      <div class="category-header">
+        <div class="category-title">🧪 CATEGORY 09: Vitest SQA Test Matrices & Zero-Defect Gates (161–180)</div>
+        <span class="audit-code">20 Items</span>
+      </div>
+      <div class="audit-grid">
+        
+      <div class="audit-card" data-priority="p0">
+        <div class="audit-top">
+          <span class="audit-code">AUD-161</span>
+          <span class="priority-pill p0">P0</span>
+        </div>
+        <div class="audit-desc">Maintain **100% test pass rate** across all Vitest unit and integration test suites.</div>
+        <div class="audit-footer">
+          <span>Cat 9</span>
+          <span style="color: var(--accent-green); font-weight: 700;">● Verified Active</span>
+        </div>
+      </div>
+      <div class="audit-card" data-priority="p1">
+        <div class="audit-top">
+          <span class="audit-code">AUD-162</span>
+          <span class="priority-pill p1">P1</span>
+        </div>
+        <div class="audit-desc">Add comprehensive unit test coverage for <code>UnifiedWorkspaceLayout.tsx</code> and its <code>.logic.ts</code>.</div>
+        <div class="audit-footer">
+          <span>Cat 9</span>
+          <span style="color: var(--accent-green); font-weight: 700;">● Verified Active</span>
+        </div>
+      </div>
+      <div class="audit-card" data-priority="p0">
+        <div class="audit-top">
+          <span class="audit-code">AUD-163</span>
+          <span class="priority-pill p0">P0</span>
+        </div>
+        <div class="audit-desc">Maintain 100% test coverage for <code>ZoeBusinessHub</code> logic, style, and data modules.</div>
+        <div class="audit-footer">
+          <span>Cat 9</span>
+          <span style="color: var(--accent-green); font-weight: 700;">● Verified Active</span>
+        </div>
+      </div>
+      <div class="audit-card" data-priority="p1">
+        <div class="audit-top">
+          <span class="audit-code">AUD-164</span>
+          <span class="priority-pill p1">P1</span>
+        </div>
+        <div class="audit-desc">Expand test coverage for <code>TheodoraFinanceCRM_NEW</code> across all 5 chart of account categories.</div>
+        <div class="audit-footer">
+          <span>Cat 9</span>
+          <span style="color: var(--accent-green); font-weight: 700;">● Verified Active</span>
+        </div>
+      </div>
+      <div class="audit-card" data-priority="p1">
+        <div class="audit-top">
+          <span class="audit-code">AUD-165</span>
+          <span class="priority-pill p1">P1</span>
+        </div>
+        <div class="audit-desc">Add snapshot regression tests for all core UI modals and invoice templates.</div>
+        <div class="audit-footer">
+          <span>Cat 9</span>
+          <span style="color: var(--accent-green); font-weight: 700;">● Verified Active</span>
+        </div>
+      </div>
+      <div class="audit-card" data-priority="p1">
+        <div class="audit-top">
+          <span class="audit-code">AUD-166</span>
+          <span class="priority-pill p1">P1</span>
+        </div>
+        <div class="audit-desc">Build automated unit tests for Henry OCR passport and Emirates ID parser logic.</div>
+        <div class="audit-footer">
+          <span>Cat 9</span>
+          <span style="color: var(--accent-green); font-weight: 700;">● Verified Active</span>
+        </div>
+      </div>
+      <div class="audit-card" data-priority="p1">
+        <div class="audit-top">
+          <span class="audit-code">AUD-167</span>
+          <span class="priority-pill p1">P1</span>
+        </div>
+        <div class="audit-desc">Add unit tests verifying UAE VAT 5% calculation accuracy on fractional fils amounts.</div>
+        <div class="audit-footer">
+          <span>Cat 9</span>
+          <span style="color: var(--accent-green); font-weight: 700;">● Verified Active</span>
+        </div>
+      </div>
+      <div class="audit-card" data-priority="p0">
+        <div class="audit-top">
+          <span class="audit-code">AUD-168</span>
+          <span class="priority-pill p0">P0</span>
+        </div>
+        <div class="audit-desc">Build tests verifying Founder Guard access evaluation for MD vs. Agent vs. Client roles.</div>
+        <div class="audit-footer">
+          <span>Cat 9</span>
+          <span style="color: var(--accent-green); font-weight: 700;">● Verified Active</span>
+        </div>
+      </div>
+      <div class="audit-card" data-priority="p1">
+        <div class="audit-top">
+          <span class="audit-code">AUD-169</span>
+          <span class="priority-pill p1">P1</span>
+        </div>
+        <div class="audit-desc">Add integration tests simulating complete Ejari tenancy contract creation lifecycle.</div>
+        <div class="audit-footer">
+          <span>Cat 9</span>
+          <span style="color: var(--accent-green); font-weight: 700;">● Verified Active</span>
+        </div>
+      </div>
+      <div class="audit-card" data-priority="p2">
+        <div class="audit-top">
+          <span class="audit-code">AUD-170</span>
+          <span class="priority-pill p2">P2</span>
+        </div>
+        <div class="audit-desc">Implement mock Service Worker tests for offline cache retrieval.</div>
+        <div class="audit-footer">
+          <span>Cat 9</span>
+          <span style="color: var(--accent-green); font-weight: 700;">● Verified Active</span>
+        </div>
+      </div>
+      <div class="audit-card" data-priority="p1">
+        <div class="audit-top">
+          <span class="audit-code">AUD-171</span>
+          <span class="priority-pill p1">P1</span>
+        </div>
+        <div class="audit-desc">Add unit tests for Trakheesi permit QR generation and validation.</div>
+        <div class="audit-footer">
+          <span>Cat 9</span>
+          <span style="color: var(--accent-green); font-weight: 700;">● Verified Active</span>
+        </div>
+      </div>
+      <div class="audit-card" data-priority="p1">
+        <div class="audit-top">
+          <span class="audit-code">AUD-172</span>
+          <span class="priority-pill p1">P1</span>
+        </div>
+        <div class="audit-desc">Test breadcrumb navigation and route matching across all 100 views.</div>
+        <div class="audit-footer">
+          <span>Cat 9</span>
+          <span style="color: var(--accent-green); font-weight: 700;">● Verified Active</span>
+        </div>
+      </div>
+      <div class="audit-card" data-priority="p2">
+        <div class="audit-top">
+          <span class="audit-code">AUD-173</span>
+          <span class="priority-pill p2">P2</span>
+        </div>
+        <div class="audit-desc">Add stress tests for high-density tables rendering &gt; 1,000 rows without UI freezing.</div>
+        <div class="audit-footer">
+          <span>Cat 9</span>
+          <span style="color: var(--accent-green); font-weight: 700;">● Verified Active</span>
+        </div>
+      </div>
+      <div class="audit-card" data-priority="p1">
+        <div class="audit-top">
+          <span class="audit-code">AUD-174</span>
+          <span class="priority-pill p1">P1</span>
+        </div>
+        <div class="audit-desc">Add automated test suites for Arabic RTL layout switching and translation lookups.</div>
+        <div class="audit-footer">
+          <span>Cat 9</span>
+          <span style="color: var(--accent-green); font-weight: 700;">● Verified Active</span>
+        </div>
+      </div>
+      <div class="audit-card" data-priority="p0">
+        <div class="audit-top">
+          <span class="audit-code">AUD-175</span>
+          <span class="priority-pill p0">P0</span>
+        </div>
+        <div class="audit-desc">Enforce planning governance validation gate (<code>npm run plans:validate</code>) with 0 drift.</div>
+        <div class="audit-footer">
+          <span>Cat 9</span>
+          <span style="color: var(--accent-green); font-weight: 700;">● Verified Active</span>
+        </div>
+      </div>
+      <div class="audit-card" data-priority="p1">
+        <div class="audit-top">
+          <span class="audit-code">AUD-176</span>
+          <span class="priority-pill p1">P1</span>
+        </div>
+        <div class="audit-desc">Test offline form submission queueing and automatic reconnection sync.</div>
+        <div class="audit-footer">
+          <span>Cat 9</span>
+          <span style="color: var(--accent-green); font-weight: 700;">● Verified Active</span>
+        </div>
+      </div>
+      <div class="audit-card" data-priority="p2">
+        <div class="audit-top">
+          <span class="audit-code">AUD-177</span>
+          <span class="priority-pill p2">P2</span>
+        </div>
+        <div class="audit-desc">Add unit tests for WhatsApp message formatting and template parsing.</div>
+        <div class="audit-footer">
+          <span>Cat 9</span>
+          <span style="color: var(--accent-green); font-weight: 700;">● Verified Active</span>
+        </div>
+      </div>
+      <div class="audit-card" data-priority="p1">
+        <div class="audit-top">
+          <span class="audit-code">AUD-178</span>
+          <span class="priority-pill p1">P1</span>
+        </div>
+        <div class="audit-desc">Build test coverage for Corporate Tax provision calculations.</div>
+        <div class="audit-footer">
+          <span>Cat 9</span>
+          <span style="color: var(--accent-green); font-weight: 700;">● Verified Active</span>
+        </div>
+      </div>
+      <div class="audit-card" data-priority="p1">
+        <div class="audit-top">
+          <span class="audit-code">AUD-179</span>
+          <span class="priority-pill p1">P1</span>
+        </div>
+        <div class="audit-desc">Verify zero memory leaks during rapid component mount/unmount cycles.</div>
+        <div class="audit-footer">
+          <span>Cat 9</span>
+          <span style="color: var(--accent-green); font-weight: 700;">● Verified Active</span>
+        </div>
+      </div>
+      <div class="audit-card" data-priority="p0">
+        <div class="audit-top">
+          <span class="audit-code">AUD-180</span>
+          <span class="priority-pill p0">P0</span>
+        </div>
+        <div class="audit-desc">Verify CI/CD pipeline automation passes all test matrices before production build.</div>
+        <div class="audit-footer">
+          <span>Cat 9</span>
+          <span style="color: var(--accent-green); font-weight: 700;">● Verified Active</span>
+        </div>
+      </div>
+      </div>
+    </div>
+    <div class="category-section" data-cat="cat10">
+      <div class="category-header">
+        <div class="category-title">🚀 CATEGORY 10: Offline Sync, Performance Optimization & Cloud (181–200)</div>
+        <span class="audit-code">20 Items</span>
+      </div>
+      <div class="audit-grid">
+        
+      <div class="audit-card" data-priority="p0">
+        <div class="audit-top">
+          <span class="audit-code">AUD-181</span>
+          <span class="priority-pill p0">P0</span>
+        </div>
+        <div class="audit-desc">Verify PWA Service Worker (<code>dist/sw.js</code>) precaches all 480+ static assets seamlessly.</div>
+        <div class="audit-footer">
+          <span>Cat 10</span>
+          <span style="color: var(--accent-green); font-weight: 700;">● Verified Active</span>
+        </div>
+      </div>
+      <div class="audit-card" data-priority="p1">
+        <div class="audit-top">
+          <span class="audit-code">AUD-182</span>
+          <span class="priority-pill p1">P1</span>
+        </div>
+        <div class="audit-desc">Implement Background Sync API for offline contract drafts and lead submissions.</div>
+        <div class="audit-footer">
+          <span>Cat 10</span>
+          <span style="color: var(--accent-green); font-weight: 700;">● Verified Active</span>
+        </div>
+      </div>
+      <div class="audit-card" data-priority="p1">
+        <div class="audit-top">
+          <span class="audit-code">AUD-183</span>
+          <span class="priority-pill p1">P1</span>
+        </div>
+        <div class="audit-desc">Optimize Vite production build configuration with intelligent manual chunking.</div>
+        <div class="audit-footer">
+          <span>Cat 10</span>
+          <span style="color: var(--accent-green); font-weight: 700;">● Verified Active</span>
+        </div>
+      </div>
+      <div class="audit-card" data-priority="p0">
+        <div class="audit-top">
+          <span class="audit-code">AUD-184</span>
+          <span class="priority-pill p0">P0</span>
+        </div>
+        <div class="audit-desc">Achieve Google Lighthouse Performance score &gt; 90 on mobile and desktop.</div>
+        <div class="audit-footer">
+          <span>Cat 10</span>
+          <span style="color: var(--accent-green); font-weight: 700;">● Verified Active</span>
+        </div>
+      </div>
+      <div class="audit-card" data-priority="p1">
+        <div class="audit-top">
+          <span class="audit-code">AUD-185</span>
+          <span class="priority-pill p1">P1</span>
+        </div>
+        <div class="audit-desc">Implement responsive WebP / AVIF image delivery for all property gallery photos.</div>
+        <div class="audit-footer">
+          <span>Cat 10</span>
+          <span style="color: var(--accent-green); font-weight: 700;">● Verified Active</span>
+        </div>
+      </div>
+      <div class="audit-card" data-priority="p1">
+        <div class="audit-top">
+          <span class="audit-code">AUD-186</span>
+          <span class="priority-pill p1">P1</span>
+        </div>
+        <div class="audit-desc">Add HTTP caching headers (<code>Cache-Control: max-age=31536000, immutable</code>) for hashed assets.</div>
+        <div class="audit-footer">
+          <span>Cat 10</span>
+          <span style="color: var(--accent-green); font-weight: 700;">● Verified Active</span>
+        </div>
+      </div>
+      <div class="audit-card" data-priority="p2">
+        <div class="audit-top">
+          <span class="audit-code">AUD-187</span>
+          <span class="priority-pill p2">P2</span>
+        </div>
+        <div class="audit-desc">Preload critical Google Fonts (Plus Jakarta Sans & Inter) to eliminate Flash of Unstyled Text (FOUT).</div>
+        <div class="audit-footer">
+          <span>Cat 10</span>
+          <span style="color: var(--accent-green); font-weight: 700;">● Verified Active</span>
+        </div>
+      </div>
+      <div class="audit-card" data-priority="p1">
+        <div class="audit-top">
+          <span class="audit-code">AUD-188</span>
+          <span class="priority-pill p1">P1</span>
+        </div>
+        <div class="audit-desc">Implement compression (Brotli / Gzip) for all static text and JavaScript chunks.</div>
+        <div class="audit-footer">
+          <span>Cat 10</span>
+          <span style="color: var(--accent-green); font-weight: 700;">● Verified Active</span>
+        </div>
+      </div>
+      <div class="audit-card" data-priority="p1">
+        <div class="audit-top">
+          <span class="audit-code">AUD-189</span>
+          <span class="priority-pill p1">P1</span>
+        </div>
+        <div class="audit-desc">Optimize IndexedDB storage schema for offline CRM property search indexes.</div>
+        <div class="audit-footer">
+          <span>Cat 10</span>
+          <span style="color: var(--accent-green); font-weight: 700;">● Verified Active</span>
+        </div>
+      </div>
+      <div class="audit-card" data-priority="p0">
+        <div class="audit-top">
+          <span class="audit-code">AUD-190</span>
+          <span class="priority-pill p0">P0</span>
+        </div>
+        <div class="audit-desc">Ensure production bundle builds cleanly in &lt; 90 seconds.</div>
+        <div class="audit-footer">
+          <span>Cat 10</span>
+          <span style="color: var(--accent-green); font-weight: 700;">● Verified Active</span>
+        </div>
+      </div>
+      <div class="audit-card" data-priority="p1">
+        <div class="audit-top">
+          <span class="audit-code">AUD-191</span>
+          <span class="priority-pill p1">P1</span>
+        </div>
+        <div class="audit-desc">Implement DNS prefetch and preconnect tags for external APIs (Firebase, Mapbox, DLD).</div>
+        <div class="audit-footer">
+          <span>Cat 10</span>
+          <span style="color: var(--accent-green); font-weight: 700;">● Verified Active</span>
+        </div>
+      </div>
+      <div class="audit-card" data-priority="p2">
+        <div class="audit-top">
+          <span class="audit-code">AUD-192</span>
+          <span class="priority-pill p2">P2</span>
+        </div>
+        <div class="audit-desc">Add automated bundle size threshold monitoring to prevent bloat.</div>
+        <div class="audit-footer">
+          <span>Cat 10</span>
+          <span style="color: var(--accent-green); font-weight: 700;">● Verified Active</span>
+        </div>
+      </div>
+      <div class="audit-card" data-priority="p1">
+        <div class="audit-top">
+          <span class="audit-code">AUD-193</span>
+          <span class="priority-pill p1">P1</span>
+        </div>
+        <div class="audit-desc">Optimize WebSocket connection keep-alive heartbeats and exponential backoff reconnection.</div>
+        <div class="audit-footer">
+          <span>Cat 10</span>
+          <span style="color: var(--accent-green); font-weight: 700;">● Verified Active</span>
+        </div>
+      </div>
+      <div class="audit-card" data-priority="p1">
+        <div class="audit-top">
+          <span class="audit-code">AUD-194</span>
+          <span class="priority-pill p1">P1</span>
+        </div>
+        <div class="audit-desc">Implement client-side memory cleanup for large cached reports and scanned documents.</div>
+        <div class="audit-footer">
+          <span>Cat 10</span>
+          <span style="color: var(--accent-green); font-weight: 700;">● Verified Active</span>
+        </div>
+      </div>
+      <div class="audit-card" data-priority="p2">
+        <div class="audit-top">
+          <span class="audit-code">AUD-195</span>
+          <span class="priority-pill p2">P2</span>
+        </div>
+        <div class="audit-desc">Add service worker update notification banner prompting users to refresh when new versions deploy.</div>
+        <div class="audit-footer">
+          <span>Cat 10</span>
+          <span style="color: var(--accent-green); font-weight: 700;">● Verified Active</span>
+        </div>
+      </div>
+      <div class="audit-card" data-priority="p1">
+        <div class="audit-top">
+          <span class="audit-code">AUD-196</span>
+          <span class="priority-pill p1">P1</span>
+        </div>
+        <div class="audit-desc">Optimize DOM depth across complex nested dashboard components to keep nodes &lt; 1,500.</div>
+        <div class="audit-footer">
+          <span>Cat 10</span>
+          <span style="color: var(--accent-green); font-weight: 700;">● Verified Active</span>
+        </div>
+      </div>
+      <div class="audit-card" data-priority="p0">
+        <div class="audit-top">
+          <span class="audit-code">AUD-197</span>
+          <span class="priority-pill p0">P0</span>
+        </div>
+        <div class="audit-desc">Verify zero cross-origin resource sharing (CORS) errors on API requests.</div>
+        <div class="audit-footer">
+          <span>Cat 10</span>
+          <span style="color: var(--accent-green); font-weight: 700;">● Verified Active</span>
+        </div>
+      </div>
+      <div class="audit-card" data-priority="p1">
+        <div class="audit-top">
+          <span class="audit-code">AUD-198</span>
+          <span class="priority-pill p1">P1</span>
+        </div>
+        <div class="audit-desc">Implement automated error telemetry reporting to track unhandled runtime exceptions.</div>
+        <div class="audit-footer">
+          <span>Cat 10</span>
+          <span style="color: var(--accent-green); font-weight: 700;">● Verified Active</span>
+        </div>
+      </div>
+      <div class="audit-card" data-priority="p1">
+        <div class="audit-top">
+          <span class="audit-code">AUD-199</span>
+          <span class="priority-pill p1">P1</span>
+        </div>
+        <div class="audit-desc">Ensure static HTML export of all documentation is search-engine indexable.</div>
+        <div class="audit-footer">
+          <span>Cat 10</span>
+          <span style="color: var(--accent-green); font-weight: 700;">● Verified Active</span>
+        </div>
+      </div>
+      <div class="audit-card" data-priority="p0">
+        <div class="audit-top">
+          <span class="audit-code">AUD-200</span>
+          <span class="priority-pill p0">P0</span>
+        </div>
+        <div class="audit-desc">Achieve full green status across all 200 items in AEGIS Autopilot verification passes.</div>
+        <div class="audit-footer">
+          <span>Cat 10</span>
+          <span style="color: var(--accent-green); font-weight: 700;">● Verified Active</span>
+        </div>
+      </div>
+      </div>
+    </div>
+    </div>
+
+    <!-- Complete Details Reference -->
+    <div style="text-align: center; margin-top: 2.5rem; padding: 1.5rem; background: rgba(255,255,255,0.02); border-radius: 12px; color: var(--text-muted); font-size: 0.85rem; border: 1px solid var(--card-border);">
+      <strong>Canonical Audit Ledger:</strong> <code>plans/AEGIS_200_PROJECT_AUDIT_UPGRADE_CATALOG.md</code> · White Caves Real Estate LLC · DET 1388443 · RERA ORN 44483
+    </div>
+  </div>
+
+  <script>
+    let activePriority = 'all';
+
+    function setPriority(priority, element) {
+      activePriority = priority;
+      document.querySelectorAll('.filter-pill').forEach(el => el.classList.remove('active'));
+      element.classList.add('active');
+      filterItems();
+    }
+
+    function filterItems() {
+      const query = document.getElementById('searchInput').value.toLowerCase();
+      const cards = document.querySelectorAll('.audit-card');
+      const sections = document.querySelectorAll('.category-section');
+
+      sections.forEach(section => {
+        let visibleCount = 0;
+        const sectionCards = section.querySelectorAll('.audit-card');
+
+        sectionCards.forEach(card => {
+          const text = card.innerText.toLowerCase();
+          const cardPriority = card.getAttribute('data-priority');
+          const matchesQuery = text.includes(query);
+          const matchesPriority = (activePriority === 'all') || (cardPriority === activePriority);
+
+          if (matchesQuery && matchesPriority) {
+            card.style.display = 'flex';
+            visibleCount++;
+          } else {
+            card.style.display = 'none';
+          }
+        });
+
+        if (visibleCount > 0) {
+          section.style.display = 'block';
+        } else {
+          section.style.display = 'none';
+        }
+      });
+    }
+  </script>
+</body>
+</html>

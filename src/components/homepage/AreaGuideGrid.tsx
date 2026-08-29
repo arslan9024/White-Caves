@@ -151,3 +151,5 @@ export const AreaGuideGrid: React.FC = () => {
     </div>
   );
 };
+
+export default AreaGuideGrid;

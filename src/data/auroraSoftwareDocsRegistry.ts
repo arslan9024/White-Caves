@@ -47,15 +47,15 @@ export const AURORA_SOFTWARE_DOCS: SoftwareDocItem[] = [
   {
     id: 'doc-aurora-01',
     code: 'DOC-SWE-01',
-    title: 'SRS: AI Command Center & Enterprise Assistants Specification',
+    title: 'SRS: AI Command Center & 44 Enterprise Assistants Specification',
     category: 'srs',
     phase: 'Construction (Wave 65)',
-    primaryAssistant: '3.11 Aurora AI (Architecture)',
+    primaryAssistant: '3.16 Aurora AI (CTO Architecture)',
     lastUpdated: '2026-08-26',
-    summary: 'Functional and non-functional software requirements for all 26+ specialized AI assistants across the 12 corporate floors.',
-    tags: ['SRS', 'AI Assistants', 'Henry AI 3.19', 'Theodora AI 3.14', 'Nadia AI 3.01'],
+    summary: 'Functional and non-functional software requirements for all 44 specialized AI assistants across the 12 corporate floors and executive command suite.',
+    tags: ['SRS', 'AI Command Center', '44 Assistants', 'Henry AI 3.19', 'Theodora AI 3.14', 'Zoe AI 3.4', 'Margaret AI 3.42', 'Ada AI 3.43', 'AEGIS AI 3.44'],
     subItems: [
-      { id: 'sec-srs-1', title: '1. Functional Assistant Matrix', description: 'Item codes, capabilities, and system specifications.' },
+      { id: 'sec-srs-1', title: '1. Functional Assistant Matrix (44 Personas)', description: 'Item codes 3.1 to 3.44, capabilities, and system specifications.' },
       { id: 'sec-srs-2', title: '2. Non-Functional Latency & Availability', description: 'Latency SLA < 250ms and 99.99% availability.' },
       { id: 'sec-srs-3', title: '3. Data Security & Isolation Rules', description: 'Role-gated payloads and client credential shielding.' },
       { id: 'sec-srs-4', title: '4. Inter-Assistant Event Protocol', description: 'Real-time telemetry and cross-assistant triggers.' },
@@ -63,12 +63,12 @@ export const AURORA_SOFTWARE_DOCS: SoftwareDocItem[] = [
     htmlContent: `
 <div class="doc-container">
   <div class="doc-header-badge">SOFTWARE REQUIREMENTS SPECIFICATION (SRS) · ISO/IEC/IEEE 29148</div>
-  <h1 class="doc-title">📋 AI Command Center & Enterprise Assistants Specification</h1>
+  <h1 class="doc-title">📋 AI Command Center & 44 Enterprise Assistants Specification</h1>
   <p class="doc-lead">
-    Formal specification of system requirements governing the White Caves AI Command Center, assistant dispatch protocols, and life-cycle telemetry.
+    Formal specification of system requirements governing the White Caves AI Command Center, 44 assistant dispatch protocols, and life-cycle telemetry.
   </p>
 
-  <h2 class="doc-section-heading" id="sec-srs-1">1. Core Assistant Requirement Matrix</h2>
+  <h2 class="doc-section-heading" id="sec-srs-1">1. Canonical 44-Assistant Functional Architecture</h2>
   <div class="doc-table-wrap">
     <table class="doc-table">
       <thead>
@@ -81,34 +81,52 @@ export const AURORA_SOFTWARE_DOCS: SoftwareDocItem[] = [
       </thead>
       <tbody>
         <tr>
-          <td><code>3.19</code></td>
-          <td><strong>Henry AI</strong></td>
-          <td>Document Studio & Legal Wizard</td>
-          <td>Emirates ID OCR, Passport parser, Form A generator, Unified Ejari tenancy contracts, and digital e-signature capture. <a href="#assistant-3.19" class="doc-link">View Module →</a></td>
+          <td><code>3.4</code></td>
+          <td><strong>Zoe AI</strong></td>
+          <td>Executive Advisory & Governance</td>
+          <td>Managing Director executive briefing desk, 12-department SLA monitoring, and DET 1388443 business hub. <a href="#assistant-zoe" class="doc-link">View Module →</a></td>
         </tr>
         <tr>
           <td><code>3.14</code></td>
           <td><strong>Theodora AI</strong></td>
           <td>Finance & Statutory Accounting</td>
-          <td>67 Enterprise Reports engine, double-entry general ledger, FTA Form 201 VAT audit, and Corporate Tax 9% ledger. <a href="#assistant-3.14" class="doc-link">View Module →</a></td>
+          <td>67 Enterprise Reports engine, double-entry general ledger, FTA Form 201 VAT 5% audit, and Corporate Tax 9% ledger. <a href="#assistant-theodora" class="doc-link">View Module →</a></td>
         </tr>
         <tr>
-          <td><code>3.10</code></td>
-          <td><strong>Zoe AI</strong></td>
-          <td>Executive & Regulatory Docs Hub</td>
-          <td>Hyper-linked business HTML documentation, DET 1388443 licensing, and corporate compliance oversight. <a href="#assistant-3.10" class="doc-link">View Module →</a></td>
+          <td><code>3.15</code></td>
+          <td><strong>Laila AI</strong></td>
+          <td>Regulatory Compliance & AML</td>
+          <td>PEP & sanctions screening, Trakheesi QR verification, goAML statutory risk scorecard, and broker audit file. <a href="#assistant-laila" class="doc-link">View Module →</a></td>
         </tr>
         <tr>
-          <td><code>3.11</code></td>
+          <td><code>3.16</code></td>
           <td><strong>Aurora AI</strong></td>
-          <td>Software Architecture Intelligence</td>
-          <td>SRS specifications, SDD topologies, RUP governance, and 4-way folder standards repository. <a href="#assistant-3.11" class="doc-link">View Module →</a></td>
+          <td>CTO Architecture & APIs</td>
+          <td>SRS specifications, SDD topologies, RUP lifecycles, and 4-way folder standards repository. <a href="#assistant-aurora" class="doc-link">View Module →</a></td>
         </tr>
         <tr>
-          <td><code>3.01</code></td>
-          <td><strong>Nadia AI</strong></td>
-          <td>WhatsApp Gateway & Lead Router</td>
-          <td>Omnichannel webhook ingestion, 5-minute response timer, and automated CRM deal dispatch.</td>
+          <td><code>3.19</code></td>
+          <td><strong>Henry AI</strong></td>
+          <td>Document Studio & OCR Wizard</td>
+          <td>Emirates ID OCR, Passport parser, Title Deed validation, Unified Ejari tenancy contracts, and digital signatures. <a href="#assistant-henry" class="doc-link">View Module →</a></td>
+        </tr>
+        <tr>
+          <td><code>3.42</code></td>
+          <td><strong>Margaret AI</strong></td>
+          <td>Strategic Planning & Backlog</td>
+          <td>Master Plan roadmap (Waves 01–65), sprint milestone allocation, and feature coverage traceability matrix. <a href="#assistant-margaret" class="doc-link">View Module →</a></td>
+        </tr>
+        <tr>
+          <td><code>3.43</code></td>
+          <td><strong>Ada AI</strong></td>
+          <td>Chief Architecture & SDLC</td>
+          <td>Zero-token local verification gates, deduplication law, and RBAC 1-12-108 security matrix. <a href="#assistant-ada" class="doc-link">View Module →</a></td>
+        </tr>
+        <tr>
+          <td><code>3.44</code></td>
+          <td><strong>AEGIS AI</strong></td>
+          <td>Autonomous Autopilot & Swarm</td>
+          <td>170-agent mesh orchestrator, live telemetry scanner (0 issues), and daily turn execution chronology. <a href="#assistant-aegis" class="doc-link">View Module →</a></td>
         </tr>
       </tbody>
     </table>

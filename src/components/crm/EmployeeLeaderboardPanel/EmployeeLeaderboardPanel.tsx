@@ -181,7 +181,7 @@ export const EmployeeLeaderboardPanel: FC = () => {
                 <h4>{m.name}</h4>
                 <p>{m.roleTitle}</p>
                 <span style={{ fontSize: '0.72rem', color: 'var(--accent-red, #EF4444)', fontWeight: 700 }}>
-                  Dept: {m.assignedDepartment.toUpperCase()}
+                  Dept: {(m.assignedDepartment || 'GENERAL').toUpperCase()}
                 </span>
               </Details>
               <LevelBadge $color="#D4AF37">L4 MANAGER</LevelBadge>

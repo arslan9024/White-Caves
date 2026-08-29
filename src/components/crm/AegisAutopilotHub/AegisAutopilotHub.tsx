@@ -1,6 +1,6 @@
 /**
  * AegisAutopilotHub.tsx
- * View Layer for AEGIS AI (Item Code: 3.15) Autonomous Orchestrator & Telemetry Engine
+ * View Layer for AEGIS AI (Item Code: 3.44) Autonomous Orchestrator & Telemetry Engine
  */
 
 import React, { FC } from 'react';

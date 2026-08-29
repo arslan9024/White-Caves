@@ -112,7 +112,8 @@ export const OffMarketLeadRouter: FC = () => {
   ]);
 
   const handleRoute = (id: string) => {
-    alert(`Off-Market lead ${id} routed via encrypted channel to Managing Director Private Desk`);
+    // Lead routed via encrypted channel to Managing Director Private Desk
+    setOffMarketLeads(prev => prev.map(l => l.id === id ? { ...l, status: 'Direct MD Routed' } : l));
   };
 
   return (
