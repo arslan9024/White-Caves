@@ -8,8 +8,8 @@ import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { ArrowRight, Sparkles, CheckCircle2, ShieldCheck, Eye } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
-import type { HomepageProperty } from '../../../store/slices/homepageSlice';
 import VirtualTourModal from '../../properties/VirtualTourModal';
+import PropertyComparisonDrawer, { ComparableProperty } from '../../properties/PropertyComparisonDrawer';
 import './FeaturedPropertiesSection.css';
 
 // ─── Props ────────────────────────────────────────────────────────────────────
@@ -43,9 +43,17 @@ interface FeaturedCardProps {
   property: HomepageProperty;
   index: number;
   onOpenTour: (property: HomepageProperty) => void;
+  onToggleCompare: (property: HomepageProperty) => void;
+  isCompared: boolean;
 }
 
-const FeaturedCard: React.FC<FeaturedCardProps> = ({ property, index, onOpenTour }) => {
+const FeaturedCard: React.FC<FeaturedCardProps> = ({
+  property,
+  index,
+  onOpenTour,
+  onToggleCompare,
+  isCompared,
+}) => {
   const navigate = useNavigate();
   const fallbackImage = '/images/dubai-skyline.jpg';
   const image = property.images?.[0] ?? fallbackImage;
@@ -170,7 +178,7 @@ const FeaturedCard: React.FC<FeaturedCardProps> = ({ property, index, onOpenTour
           )}
         </div>
 
-        {/* Quick action hover bar with 3D Tour */}
+        {/* Quick action hover bar with 3D Tour & Compare */}
         <div className="fp-card__actions" style={{ display: 'flex', gap: '6px' }}>
           <button
             className="fp-action-btn"
@@ -188,8 +196,8 @@ const FeaturedCard: React.FC<FeaturedCardProps> = ({ property, index, onOpenTour
               background: '#0F172A',
               color: '#FFFFFF',
               border: 'none',
-              padding: '6px 10px',
-              fontSize: '0.75rem',
+              padding: '6px 8px',
+              fontSize: '0.72rem',
               fontWeight: 800,
             }}
             onClick={e => {
@@ -198,7 +206,25 @@ const FeaturedCard: React.FC<FeaturedCardProps> = ({ property, index, onOpenTour
             }}
             title="Launch 3D WebGL Virtual Tour"
           >
-            🕶️ 3D Tour
+            🕶️ 3D
+          </button>
+          <button
+            className="fp-action-btn"
+            style={{
+              background: isCompared ? '#EF4444' : '#F1F5F9',
+              color: isCompared ? '#FFFFFF' : '#0F172A',
+              border: '1px solid #CBD5E1',
+              padding: '6px 8px',
+              fontSize: '0.72rem',
+              fontWeight: 800,
+            }}
+            onClick={e => {
+              e.stopPropagation();
+              onToggleCompare(property);
+            }}
+            title="Compare property specifications"
+          >
+            {isCompared ? '✓ Added' : '⚖️ Compare'}
           </button>
         </div>
       </div>
@@ -226,6 +252,33 @@ const FeaturedPropertiesSection: React.FC<FeaturedPropertiesSectionProps> = ({
 }) => {
   const navigate = useNavigate();
   const [selectedTourProperty, setSelectedTourProperty] = useState<HomepageProperty | null>(null);
+  const [comparedProperties, setComparedProperties] = useState<ComparableProperty[]>([]);
+  const [isCompareDrawerOpen, setIsCompareDrawerOpen] = useState(false);
+
+  const handleToggleCompare = (property: HomepageProperty) => {
+    if (comparedProperties.some(p => p.id === property.id)) {
+      setComparedProperties(prev => prev.filter(p => p.id !== property.id));
+    } else {
+      if (comparedProperties.length >= 4) {
+        alert('You can compare a maximum of 4 properties.');
+        return;
+      }
+      const newProp: ComparableProperty = {
+        id: property.id,
+        title: property.title,
+        price: property.price,
+        location: property.location,
+        bedrooms: property.bedrooms,
+        bathrooms: property.bathrooms,
+        sqft: property.sqft,
+        type: property.type || 'Luxury Residence',
+        image: property.images?.[0],
+        projectedYield: '8.5% Net ROI',
+      };
+      setComparedProperties(prev => [...prev, newProp]);
+      setIsCompareDrawerOpen(true);
+    }
+  };
 
   return (
     <section className="fp-section" id="featured-properties">
@@ -236,6 +289,18 @@ const FeaturedPropertiesSection: React.FC<FeaturedPropertiesSectionProps> = ({
         propertyTitle={selectedTourProperty?.title}
         propertyLocation={selectedTourProperty?.location}
         tourUrl={selectedTourProperty?.images?.[0]}
+      />
+
+      {/* Property Comparison Drawer */}
+      <PropertyComparisonDrawer
+        isOpen={isCompareDrawerOpen}
+        onClose={() => setIsCompareDrawerOpen(false)}
+        properties={comparedProperties}
+        onRemoveProperty={id => setComparedProperties(prev => prev.filter(p => p.id !== id))}
+        onClearAll={() => {
+          setComparedProperties([]);
+          setIsCompareDrawerOpen(false);
+        }}
       />
 
       <div className="container">
@@ -270,6 +335,8 @@ const FeaturedPropertiesSection: React.FC<FeaturedPropertiesSectionProps> = ({
                 property={property}
                 index={i}
                 onOpenTour={prop => setSelectedTourProperty(prop)}
+                onToggleCompare={prop => handleToggleCompare(prop)}
+                isCompared={comparedProperties.some(p => p.id === property.id)}
               />
             ))}
           </div>
