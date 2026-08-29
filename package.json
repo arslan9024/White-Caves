@@ -18,6 +18,7 @@
     "aegis:squads": "node aegis/orchestrator/aegis-engine.js squads",
     "aegis:benchmark": "node aegis/orchestrator/aegis-engine.js benchmark",
     "aegis:gh-sync": "node aegis/orchestrator/aegis-github-issue-sync.js",
+    "aegis:gh-resolve": "node aegis/orchestrator/aegis-github-issue-resolver.js",
     "aegis:cycle": "node aegis/orchestrator/aegis-engine.js cycle",
     "aegis:workflow:master": "node aegis/orchestrator/aegis-engine.js cycle",
     "aegis:erp:supercharge": "node aegis/orchestrator/aegis-engine.js cycle",
