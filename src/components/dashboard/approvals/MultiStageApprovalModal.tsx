@@ -226,8 +226,31 @@ export const MultiStageApprovalModal: FC<MultiStageApprovalModalProps> = ({
                   {isSigning ? 'Applying Encrypted Seal...' : '👑 Apply Sovereign Digital Seal'}
                 </button>
               ) : (
-                <div style={{ background: '#FFFFFF', borderRadius: '8px', padding: '10px', border: '1px dashed #3B82F6', textAlign: 'center', fontSize: '0.75rem', color: '#1E40AF', fontWeight: 800 }}>
-                  🛡️ Digitally Signed with White Caves Level 7 Sovereign Seal (DLD & Ejari Ready)
+                <div>
+                  <div style={{ background: '#FFFFFF', borderRadius: '8px', padding: '10px', border: '1px dashed #3B82F6', textAlign: 'center', fontSize: '0.75rem', color: '#1E40AF', fontWeight: 800, marginBottom: '8px' }}>
+                    🛡️ Digitally Signed with White Caves Level 7 Sovereign Seal (DLD & Ejari Ready)
+                  </div>
+                  <button
+                    onClick={() => window.print()}
+                    style={{
+                      width: '100%',
+                      background: '#10B981',
+                      color: '#FFFFFF',
+                      border: 'none',
+                      borderRadius: '8px',
+                      padding: '10px',
+                      fontWeight: 800,
+                      fontSize: '0.82rem',
+                      cursor: 'pointer',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      gap: '6px',
+                      boxShadow: '0 4px 12px rgba(16, 185, 129, 0.25)',
+                    }}
+                  >
+                    📄 Print / Save Statutory Executive Certificate
+                  </button>
                 </div>
               )}
             </div>
