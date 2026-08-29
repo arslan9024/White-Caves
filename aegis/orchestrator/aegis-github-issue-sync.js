@@ -62,8 +62,9 @@ async function createGitHubIssue(issue, authToken) {
         'User-Agent': 'White-Caves-AEGIS-Engine',
         'Content-Type': 'application/json',
         'Content-Length': Buffer.byteLength(data),
-        'Authorization': `token ${authToken}`,
-        'Accept': 'application/vnd.github.v3+json'
+        'Authorization': authToken.startsWith('Bearer ') ? authToken : `Bearer ${authToken}`,
+        'Accept': 'application/vnd.github+json',
+        'X-GitHub-Api-Version': '2022-11-28'
       }
     };
 

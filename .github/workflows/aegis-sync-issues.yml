@@ -1,0 +1,32 @@
+name: AEGIS 1,000 Issues GitHub Syncer
+
+on:
+  workflow_dispatch:
+    inputs:
+      batch_limit:
+        description: 'Number of issues to open in this batch (e.g. 25, 50, 100)'
+        required: true
+        default: '25'
+
+permissions:
+  contents: read
+  issues: write
+
+jobs:
+  sync-issues:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Run AEGIS GitHub Issue Creator
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          BATCH_LIMIT: ${{ github.event.inputs.batch_limit || '25' }}
+        run: |
+          node aegis/orchestrator/aegis-github-issue-sync.js ${{ github.event.inputs.batch_limit || 25 }}
