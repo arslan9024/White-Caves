@@ -21,6 +21,7 @@
     "aegis:gh-resolve": "node aegis/orchestrator/aegis-github-issue-resolver.js",
     "aegis:gh-boot": "npx tsx aegis/orchestrator/aegis-github-milestone-bootstrapper.js",
     "aegis:gh-boot:tier2": "npx tsx aegis/orchestrator/aegis-github-milestone-bootstrapper-tier2.js",
+    "aegis:solve": "node aegis/orchestrator/aegis-issue-solver-engine.js",
     "aegis:cycle": "node aegis/orchestrator/aegis-engine.js cycle",
     "aegis:workflow:master": "node aegis/orchestrator/aegis-engine.js cycle",
     "aegis:erp:supercharge": "node aegis/orchestrator/aegis-engine.js cycle",
