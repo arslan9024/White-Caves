@@ -389,6 +389,7 @@ const LeadManagementPage: FC = () => {
                   <Th>Budget</Th>
                   <Th>Contact</Th>
                   <Th>Created</Th>
+                  <Th>Assigned</Th>
                   <Th>Actions</Th>
                 </tr>
               </thead>
@@ -433,6 +434,11 @@ const LeadManagementPage: FC = () => {
                           </div>
                         </Td>
                         <Td>{formatDate(lead.created_at)}</Td>
+                        <Td>
+                          <Badge variant="info" size="small">
+                            {lead.assigned_to || 'General Pool'}
+                          </Badge>
+                        </Td>
                         <Td onClick={e => e.stopPropagation()}>
                           <div style={{ display: 'flex', gap: '0.4rem' }}>
                             <SecondaryButton onClick={() => handleEdit(lead)}>Edit</SecondaryButton>
@@ -444,7 +450,7 @@ const LeadManagementPage: FC = () => {
                   })
                 ) : (
                   <tr>
-                    <Td colSpan={9}>
+                    <Td colSpan={10}>
                       <EmptyState
                         icon={search || statusFilter !== 'all' || sourceFilter !== 'all' ? '🔎' : '🧭'}
                         title={

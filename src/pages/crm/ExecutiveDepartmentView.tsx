@@ -1,8 +1,9 @@
-import React, { FC, useState } from 'react';
+import React, { FC, useState, useEffect } from 'react';
 
 const RED = '#EF4444';
 const WHITE = '#FFFFFF';
 const SLATE = '#1E293B';
+const SLATE_LIGHT = '#334155';
 const BORDER = 'rgba(239, 68, 68, 0.2)';
 const CARD_BG = '#F8FAFC';
 const TEXT_MUTED = '#64748B';
@@ -10,114 +11,112 @@ const GREEN = '#10B981';
 const ORANGE = '#F59E0B';
 const BLUE = '#3B82F6';
 const PURPLE = '#8B5CF6';
+const GOLD = '#D4AF37';
 
-// ─────────────────────────────────────────────────────────────────────────────
-// EXECUTIVE DEPARTMENT VIEW
-// Board-level KPI deck, market position, YTD financials, succession pipeline
-// ─────────────────────────────────────────────────────────────────────────────
-
+// ─── Mock Data ────────────────────────────────────────────────────────
 const monthlyRevenue = [
   { month: 'Jan', aed: 2100000 }, { month: 'Feb', aed: 3400000 }, { month: 'Mar', aed: 4200000 },
   { month: 'Apr', aed: 3800000 }, { month: 'May', aed: 5100000 }, { month: 'Jun', aed: 4900000 },
-  { month: 'Jul', aed: 6200000 }, { month: 'Aug', aed: 0 }, { month: 'Sep', aed: 0 },
+  { month: 'Jul', aed: 6200000 }, { month: 'Aug', aed: 4800000 }, { month: 'Sep', aed: 5200000 },
   { month: 'Oct', aed: 0 }, { month: 'Nov', aed: 0 }, { month: 'Dec', aed: 0 },
 ];
 const ytdTotal = monthlyRevenue.reduce((a, m) => a + m.aed, 0);
-const maxRev = Math.max(...monthlyRevenue.map(m => m.aed));
 
-export const ExecutiveDepartmentView: FC = () => {
-  const [activeSection, setActiveSection] = useState<'board' | 'market' | 'pipeline'>('board');
+const kpis = [
+  { label: 'Revenue (YTD)', value: '39.7M', unit: 'AED', sparkline: [10, 20, 15, 30, 25, 40, 50], color: RED },
+  { label: 'Active Listings', value: '412', unit: 'Props', sparkline: [400, 405, 410, 408, 415, 412, 420], color: BLUE },
+  { label: 'New Leads (7d)', value: '1,284', unit: 'Leads', sparkline: [100, 120, 150, 130, 180, 200, 250], color: ORANGE },
+  { label: 'Conversion Rate', value: '4.2', unit: '%', sparkline: [3.8, 3.9, 4.0, 4.1, 4.0, 4.2, 4.3], color: GREEN },
+];
+
+const podiumAgents = [
+  { rank: 2, name: 'Sarah M.', rev: '8.2M', tier: 'Silver', color: '#C0C0C0' },
+  { rank: 1, name: 'Ahmed A.', rev: '12.5M', tier: 'Gold', color: GOLD },
+  { rank: 3, name: 'Elena V.', rev: '6.4M', tier: 'Bronze', color: '#CD7F32' },
+];
+
+const kanbanStages = [
+  { name: 'Prospect', count: 145, value: '28M' },
+  { name: 'Viewing', count: 84, value: '16M' },
+  { name: 'Offer', count: 32, value: '8.5M' },
+  { name: 'SPA / Escrow', count: 14, value: '4.2M' },
+  { name: 'Closed Won', count: 8, value: '2.1M' },
+];
+
+const activities = [
+  { time: '10m ago', text: 'Ahmed A. closed Villa 14 at Palm Jumeirah (12M AED)' },
+  { time: '25m ago', text: 'Sarah M. secured exclusive listing for Downtown Penthouse' },
+  { time: '1h ago', text: 'Elena V. received 5 viewing requests for Dubai Hills' },
+  { time: '2h ago', text: 'New Lead assigned to Ahmed A. (Priority: High)' },
+];
+
+// ─── Components ───────────────────────────────────────────────────────
+
+const Sparkline: FC<{ data: number[], color: string }> = ({ data, color }) => {
+  const max = Math.max(...data);
+  const min = Math.min(...data);
+  const range = max - min || 1;
+  const height = 40;
+  const width = 100;
+  
+  const points = data.map((d, i) => {
+    const x = (i / (data.length - 1)) * width;
+    const y = height - ((d - min) / range) * height;
+    return `${x},${y}`;
+  }).join(' ');
 
   return (
-    <div style={{ padding: '24px', background: WHITE, minHeight: '80vh' }}>
+    <svg width="100%" height={height} viewBox={`0 0 ${width} ${height}`} preserveAspectRatio="none">
+      <polyline points={points} fill="none" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+    </svg>
+  );
+};
+
+export const ExecutiveDepartmentView: FC = () => {
+  const [layout, setLayout] = useState('grid');
+  
+  // Real-time SLA simulation
+  const [slaTime, setSlaTime] = useState(14 * 60 + 59); // 14:59
+  
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setSlaTime(prev => (prev > 0 ? prev - 1 : 15 * 60));
+    }, 1000);
+    return () => clearInterval(timer);
+  }, []);
+
+  const formatSLA = (seconds: number) => {
+    const m = Math.floor(seconds / 60).toString().padStart(2, '0');
+    const s = (seconds % 60).toString().padStart(2, '0');
+    return `${m}:${s}`;
+  };
+
+  const isUrgent = slaTime < 300; // < 5 mins
+
+  return (
+    <div style={{ padding: '24px', background: SLATE, minHeight: '80vh', color: WHITE, fontFamily: 'Inter, sans-serif' }}>
+      
       {/* Header */}
-      <div style={{ marginBottom: '24px', borderBottom: `3px solid ${RED}`, paddingBottom: '16px' }}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-          <div>
-            <h2 style={{ margin: 0, fontSize: '1.6rem', fontWeight: 900, color: SLATE }}>
-              👑 Executive Control Centre
-            </h2>
-            <p style={{ margin: '6px 0 0 0', color: TEXT_MUTED, fontSize: '0.875rem' }}>
-              Board-level KPIs · YTD Financial Summary · Market Intelligence · Growth Pipeline
-            </p>
-          </div>
-          <div style={{ background: '#FEF2F2', border: `2px solid ${RED}`, padding: '12px 20px', borderRadius: '10px', textAlign: 'right' }}>
-            <div style={{ fontSize: '0.72rem', color: RED, fontWeight: 800, textTransform: 'uppercase' }}>YTD Revenue 2026</div>
-            <div style={{ fontSize: '2rem', fontWeight: 900, color: RED }}>
-              {(ytdTotal / 1000000).toFixed(1)}M AED
-            </div>
-            <div style={{ fontSize: '0.72rem', color: TEXT_MUTED }}>Target: 52M AED · {Math.round((ytdTotal / 52000000) * 100)}% achieved</div>
-          </div>
-        </div>
-      </div>
-
-      {/* Section Tabs */}
-      <div style={{ display: 'flex', gap: '0', borderBottom: `2px solid ${BORDER}`, marginBottom: '24px' }}>
-        {(['board', 'market', 'pipeline'] as const).map(sec => (
-          <button key={sec} onClick={() => setActiveSection(sec)}
-            style={{ background: 'none', border: 'none', borderBottom: activeSection === sec ? `3px solid ${RED}` : '3px solid transparent', padding: '10px 24px', cursor: 'pointer', fontWeight: activeSection === sec ? 700 : 500, color: activeSection === sec ? RED : TEXT_MUTED, fontSize: '0.9rem', marginBottom: '-2px' }}>
-            {sec === 'board' ? '📊 Board KPIs' : sec === 'market' ? '🌍 Market Position' : '🚀 Growth Pipeline'}
-          </button>
-        ))}
-      </div>
-
-      {/* BOARD KPIs */}
-      {activeSection === 'board' && (
+      <div style={{ marginBottom: '24px', borderBottom: `2px solid ${SLATE_LIGHT}`, paddingBottom: '16px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
         <div>
-          {/* Top-level metrics */}
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '16px', marginBottom: '24px' }}>
-            {[
-              { label: 'Total Transactions (YTD)', value: '184', sub: '+23% vs 2025', color: RED },
-              { label: 'Avg Deal Size', value: '3.8M AED', sub: 'Sale: 5.2M | Lease: 185K', color: BLUE },
-              { label: 'Net Commission Income', value: '4.27M AED', sub: 'VAT-inclusive', color: GREEN },
-              { label: 'Active Staff Headcount', value: '34 FTE', sub: '12 Brokers · 22 Support', color: PURPLE },
-            ].map(m => (
-              <div key={m.label} style={{ background: CARD_BG, padding: '18px', borderRadius: '10px', borderLeft: `5px solid ${m.color}` }}>
-                <div style={{ fontSize: '0.72rem', color: TEXT_MUTED, textTransform: 'uppercase', fontWeight: 700, marginBottom: '6px' }}>{m.label}</div>
-                <div style={{ fontSize: '1.6rem', fontWeight: 900, color: m.color }}>{m.value}</div>
-                <div style={{ fontSize: '0.75rem', color: TEXT_MUTED, marginTop: '4px' }}>{m.sub}</div>
-              </div>
-            ))}
-          </div>
-
-          {/* Revenue Bar Chart */}
-          <div style={{ background: CARD_BG, padding: '20px', borderRadius: '10px', border: `1px solid ${BORDER}`, marginBottom: '20px' }}>
-            <h3 style={{ margin: '0 0 16px 0', color: SLATE }}>Monthly Revenue Trend (AED)</h3>
-            <div style={{ display: 'flex', gap: '6px', alignItems: 'flex-end', height: '140px' }}>
-              {monthlyRevenue.map(m => {
-                const height = m.aed > 0 ? Math.round((m.aed / maxRev) * 120) : 4;
-                const isFuture = m.aed === 0;
-                return (
-                  <div key={m.month} style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '4px' }}>
-                    {m.aed > 0 && (
-                      <div style={{ fontSize: '0.6rem', color: TEXT_MUTED, fontWeight: 600 }}>
-                        {(m.aed / 1000000).toFixed(1)}M
-                      </div>
-                    )}
-                    <div style={{ width: '100%', background: isFuture ? '#E2E8F0' : RED, height: `${height}px`, borderRadius: '4px 4px 0 0', opacity: isFuture ? 0.4 : 1, transition: 'height 0.3s' }} />
-                    <div style={{ fontSize: '0.65rem', color: TEXT_MUTED, fontWeight: 600 }}>{m.month}</div>
-                  </div>
-                );
-              })}
+          <h2 style={{ margin: 0, fontSize: '1.8rem', fontWeight: 900, color: WHITE }}>
+            👑 Executive Command Center V2
+          </h2>
+          <p style={{ margin: '6px 0 0 0', color: TEXT_MUTED, fontSize: '0.9rem' }}>
+            MD Sovereign Hub · Live Deal Flow · AI Forecasts
+          </p>
+        </div>
+        <div style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
+          <div style={{ background: isUrgent ? 'rgba(239, 68, 68, 0.2)' : 'rgba(16, 185, 129, 0.2)', padding: '12px 20px', borderRadius: '8px', border: `1px solid ${isUrgent ? RED : GREEN}` }}>
+            <div style={{ fontSize: '0.7rem', color: isUrgent ? RED : GREEN, fontWeight: 700, textTransform: 'uppercase' }}>SLA Watchdog (Avg Response)</div>
+            <div style={{ fontSize: '1.4rem', fontWeight: 900, color: isUrgent ? RED : GREEN, display: 'flex', gap: '8px', alignItems: 'center' }}>
+              ⏱ {formatSLA(slaTime)}
+              {isUrgent && <span style={{ width: 8, height: 8, borderRadius: '50%', background: RED, boxShadow: `0 0 10px ${RED}` }} className="pulse-dot" />}
             </div>
           </div>
-
-          {/* P&L Summary */}
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
-            <div style={{ background: CARD_BG, padding: '20px', borderRadius: '10px', border: `1px solid ${BORDER}` }}>
-              <h4 style={{ margin: '0 0 14px 0', color: RED }}>P&L Summary — YTD 2026</h4>
-              {[
-                { label: 'Gross Commission Revenue', value: '4,272,000', type: 'income' },
-                { label: 'Staff Costs (Salaries + Commission)', value: '(2,136,000)', type: 'expense' },
-                { label: 'Office & Operations', value: '(348,000)', type: 'expense' },
-                { label: 'Marketing & Portal Fees', value: '(212,000)', type: 'expense' },
-                { label: 'Net Operating Profit', value: '1,576,000', type: 'net' },
-              ].map(row => (
-                <div key={row.label} style={{ display: 'flex', justifyContent: 'space-between', padding: '8px 0', borderBottom: '1px solid var(--text-secondary, #E2E8F0)', fontSize: '0.85rem' }}>
-                  <span style={{ color: SLATE }}>{row.label}</span>
-                  <span style={{ fontWeight: 700, color: row.type === 'income' ? GREEN : row.type === 'expense' ? RED : BLUE }}>
-                    AED {row.value}
-                  </span>
+          <button onClick={() => setLayout(l => l === 'grid' ? 'list' : 'grid')} style={{ padding: '10px 16px', background: SLATE_LIGHT, color: WHITE, border: 'none', borderRadius: '6px', cursor: 'pointer', fontWeight: 600 }}>
+            Toggle Layout
+          </button>
                 </div>
               ))}
             </div>

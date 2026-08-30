@@ -12,6 +12,28 @@ import { createLogger } from '../../../utils/logger';
 
 const log = createLogger('useLeadManagement');
 import type { AppDispatch } from '../../../store/store';
+
+// ─── AI Scoring & Logic Helpers ─────────────────────────────────────────
+
+export const calculateLeadScore = (lead: LeadFormData): number => {
+  let score = 20; // Base score
+  if (lead.email) score += 20;
+  if (lead.phone) score += 20;
+  if (lead.company) score += 10;
+  
+  const budget = Number(lead.budget);
+  if (budget > 10000000) score += 30; // 10M+ AED
+  else if (budget > 5000000) score += 20; // 5M+ AED
+  else if (budget > 1000000) score += 10;
+  
+  return Math.min(score, 100);
+};
+
+export const assignAgentForScore = (score: number): string => {
+  if (score >= 80) return 'Ahmed A.';
+  if (score >= 50) return 'Sarah M.';
+  return 'General Pool';
+};
 import {
   selectAllLeads,
   selectLeadsLoading,
@@ -210,12 +232,30 @@ export function useLeadManagement() {
 
     setErrorMessage(null);
 
+    // AI Engine: Duplicate Detection
+    const isDuplicate = allLeads.some(
+      (l) =>
+        (formData.email && l.email?.toLowerCase() === formData.email.trim().toLowerCase()) ||
+        (formData.phone && l.phone === formData.phone.trim())
+    );
+
+    if (isDuplicate) {
+      setErrorMessage('Duplicate Lead Detected: A lead with this email or phone already exists.');
+      return;
+    }
+
+    // AI Engine: Scoring & Assignment
+    const score = calculateLeadScore(formData);
+    const assigned_to = assignAgentForScore(score);
+
     const leadData = {
       ...formData,
       name: formData.name.trim(),
       email: formData.email.trim(),
       phone: formData.phone.trim(),
       budget: formData.budget ? Number(formData.budget) : undefined,
+      score,
+      assigned_to,
       created_at: new Date().toISOString(),
       last_activity: new Date().toISOString(),
     };
@@ -279,12 +319,31 @@ export function useLeadManagement() {
 
     setErrorMessage(null);
     if (selectedLead) {
+      // AI Engine: Duplicate Detection
+      const isDuplicate = allLeads.some(
+        (l) =>
+          l.id !== selectedLead.id &&
+          ((formData.email && l.email?.toLowerCase() === formData.email.trim().toLowerCase()) ||
+           (formData.phone && l.phone === formData.phone.trim()))
+      );
+
+      if (isDuplicate) {
+        setErrorMessage('Duplicate Lead Detected: A lead with this email or phone already exists.');
+        return;
+      }
+
+      // AI Engine: Recalculate Scoring & Assignment
+      const score = calculateLeadScore(formData);
+      const assigned_to = assignAgentForScore(score);
+
       const nameSnapshot = formData.name;
       dispatch(
         updateLeadAPI({
           id: selectedLead.id,
           ...formData,
           budget: formData.budget ? Number(formData.budget) : undefined,
+          score,
+          assigned_to,
           last_activity: new Date().toISOString(),
         })
       )

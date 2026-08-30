@@ -1,17 +1,17 @@
 # AEGIS V4 Deep Codebase Audit Report
 
-> **Scan Generated:** 2026-08-26T04:16:05.485Z  
-> **Total Files Scanned:** 3868 source files  
+> **Scan Generated:** 2026-08-30T02:55:40.279Z  
+> **Total Files Scanned:** 3940 source files  
 > **Status:** Deep Static Analysis Complete  
 
 ---
 
 ## 📊 Deep Metric Breakdown
 
-- **Total Source Files Scanned:** 3868
+- **Total Source Files Scanned:** 3940
 - **Hardcoded Production Mocks Detected:** 17
 - **Empty / Stubbed Event Handlers:** 3
-- **TypeScript `any` Annotations:** 11
+- **TypeScript `any` Annotations:** 12
 - **Unresolved TODO / FIXME Tags:** 0
 
 ---
@@ -44,8 +44,9 @@
 
 ---
 
-## 🏷️ TypeScript `any` Type Usages (11)
+## 🏷️ TypeScript `any` Type Usages (12)
 
+- [`src/components/homepage/Hero/HeroVideoBackground.tsx:6`](file:///C:/Users/HP/Documents/My Web Sites/AntigravityWC/White-Caves/src/components/homepage/Hero/HeroVideoBackground.tsx#L6): `y: any; // MotionValue`
 - [`src/e2e/accessibility.audit.spec.ts:48`](file:///C:/Users/HP/Documents/My Web Sites/AntigravityWC/White-Caves/src/e2e/accessibility.audit.spec.ts#L48): `async function injectAxe(page: any) {`
 - [`src/e2e/accessibility.audit.spec.ts:55`](file:///C:/Users/HP/Documents/My Web Sites/AntigravityWC/White-Caves/src/e2e/accessibility.audit.spec.ts#L55): `async function navigateAndStabilize(page: any, path: string) {`
 - [`src/e2e/accessibility.audit.spec.ts:81`](file:///C:/Users/HP/Documents/My Web Sites/AntigravityWC/White-Caves/src/e2e/accessibility.audit.spec.ts#L81): `function ensureExpectedPathOrSkip(page: any, expectedPath: string) {`

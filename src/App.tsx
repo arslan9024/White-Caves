@@ -359,6 +359,8 @@ import { useSocket } from './hooks/useSocket';
 import { AnimatePresence, motion, useReducedMotion } from 'framer-motion';
 import { CustomCursor } from './components/motion/CustomCursor';
 import { ThemeProvider as LuxuryThemeProvider } from './components/theme/ThemeProvider';
+import { HelmetProvider } from 'react-helmet-async';
+import { SEOMeta } from './components/common/SEOMeta/SEOMeta';
 
 const log = createLogger('App');
 
@@ -721,7 +723,9 @@ function App(): React.JSX.Element {
   ];
 
   return (
+    <HelmetProvider>
     <SQAErrorBoundary>
+      <SEOMeta />
       <AuthModalProvider>
         <ThemeProvider>
           <LuxuryThemeProvider>
@@ -927,6 +931,7 @@ function App(): React.JSX.Element {
         </ThemeProvider>
       </AuthModalProvider>
     </SQAErrorBoundary>
+    </HelmetProvider>
   );
 }
 

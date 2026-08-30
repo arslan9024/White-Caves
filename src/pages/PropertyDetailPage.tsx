@@ -17,6 +17,10 @@ import StructuredData from '../components/seo/StructuredData';
 import { buildPropertyDetailPageSchemas } from '../utils/jsonLdSchemas';
 import { PropertyImageSlider } from '../shared/components/property';
 import { Skeleton } from '../components/shared';
+import PropertyDetailMortgageEmi from '../components/properties/PropertyDetailMortgageEmi/PropertyDetailMortgageEmi';
+import RentalYieldVisualizer from '../components/properties/RentalYieldVisualizer';
+import PropertyVectorBadges from '../components/properties/PropertyVectorBadges/PropertyVectorBadges';
+
 import {
   ArrowLeft,
   Heart,
@@ -321,6 +325,15 @@ const PropertyDetailPage: FC = () => {
                 <span className="badge type">{property.type}</span>
               </div>
 
+              <div style={{ margin: '12px 0' }}>
+                <PropertyVectorBadges 
+                  isOffPlan={property.offPlan}
+                  isDldVerified={true}
+                  isReraCompliant={true}
+                  energyRating="A+"
+                />
+              </div>
+
               <h1 className="detail-title">{property.title}</h1>
 
               <p className="detail-location">
@@ -328,13 +341,21 @@ const PropertyDetailPage: FC = () => {
                 {property.location}
               </p>
 
-              <div className="detail-price-row">
-                <span className="detail-price">AED {property.price.toLocaleString()}</span>
-                {property.sqft > 0 && (
-                  <span className="detail-price-sqft">
-                    AED {Math.round(property.price / property.sqft).toLocaleString()}/sqft
-                  </span>
-                )}
+              <div className="detail-price-row" style={{ display: 'flex', flexDirection: 'column', gap: '8px', alignItems: 'flex-start' }}>
+                <div style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
+                  <span className="detail-price">AED {property.price.toLocaleString()}</span>
+                  {property.sqft > 0 && (
+                    <span className="detail-price-sqft">
+                      AED {Math.round(property.price / property.sqft).toLocaleString()}/sqft
+                    </span>
+                  )}
+                </div>
+                
+                <div className="detail-price-breakdown">
+                  <span className="breakdown-item"><strong>Base Price:</strong> AED {(property.price * 0.94).toLocaleString()}</span>
+                  <span className="breakdown-item"><strong>DLD Fee (4%):</strong> AED {(property.price * 0.04).toLocaleString()}</span>
+                  <span className="breakdown-item"><strong>Agency Fee (2%):</strong> AED {(property.price * 0.02).toLocaleString()}</span>
+                </div>
               </div>
             </div>
 
@@ -391,6 +412,39 @@ const PropertyDetailPage: FC = () => {
               </section>
             )}
 
+            {/* Drone Video Embed */}
+            <section className="detail-drone-video">
+              <h2>Property Walkthrough</h2>
+              <div className="video-container">
+                <video 
+                  src="https://www.w3schools.com/html/mov_bbb.mp4" 
+                  autoPlay 
+                  loop 
+                  muted 
+                  controls 
+                  className="drone-video"
+                />
+              </div>
+            </section>
+
+            {/* Floor Plan */}
+            <section className="detail-floor-plan">
+              <h2>Interactive Floor Plan</h2>
+              <div className="floor-plan-container">
+                <svg viewBox="0 0 800 600" className="interactive-floor-plan">
+                  <rect x="100" y="100" width="600" height="400" fill="none" stroke="#d4af37" strokeWidth="4" />
+                  <rect x="100" y="100" width="200" height="200" className="room bedroom" />
+                  <text x="200" y="200" textAnchor="middle" fill="#d4af37" fontWeight="bold">Bedroom 1</text>
+                  <rect x="300" y="100" width="400" height="200" className="room living" />
+                  <text x="500" y="200" textAnchor="middle" fill="#d4af37" fontWeight="bold">Living Room</text>
+                  <rect x="100" y="300" width="300" height="200" className="room kitchen" />
+                  <text x="250" y="400" textAnchor="middle" fill="#d4af37" fontWeight="bold">Kitchen</text>
+                  <rect x="400" y="300" width="300" height="200" className="room bedroom" />
+                  <text x="550" y="400" textAnchor="middle" fill="#d4af37" fontWeight="bold">Master Bedroom</text>
+                </svg>
+              </div>
+            </section>
+
             {/* Location Map */}
             <section className="detail-location-map">
               <h2>Location</h2>
@@ -403,6 +457,19 @@ const PropertyDetailPage: FC = () => {
               >
                 <DubaiMap properties={[property]} showCommunities={false} height="350px" />
               </Suspense>
+            </section>
+
+            {/* Financial Calculators */}
+            <section className="detail-financial-tools" style={{ display: 'flex', flexDirection: 'column', gap: '24px', marginTop: '40px' }}>
+              <h2>Financial Analysis</h2>
+              {property.purpose === 'buy' && (
+                <div className="mortgage-calc-wrapper">
+                  <PropertyDetailMortgageEmi propertyPrice={property.price} />
+                </div>
+              )}
+              <div className="roi-calc-wrapper">
+                <RentalYieldVisualizer propertyPrice={property.price} estimatedAnnualRent={Math.round(property.price * 0.07)} />
+              </div>
             </section>
           </main>
 

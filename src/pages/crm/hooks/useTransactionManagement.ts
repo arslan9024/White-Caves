@@ -36,6 +36,8 @@ export interface Transaction {
   notes?: string;
   created_at?: string;
   updated_at?: string;
+  commission?: number;
+  rera_status?: string;
   [key: string]: unknown;
 }
 
@@ -72,6 +74,34 @@ export const TYPE_LABELS: Record<string, string> = {
 };
 
 export const PIPELINE_STAGES = ['draft', 'pending', 'in_progress', 'completed'];
+
+// ─── AI & Business Logic Helpers ─────────────────────────────────────────
+
+export const calculateCommission = (amount: number) => {
+  const totalCommission = amount * 0.02; // 2% standard Dubai fee
+  return {
+    total: totalCommission,
+    agencySplit: totalCommission * 0.5,
+    agentSplit: totalCommission * 0.5,
+  };
+};
+
+export const validateStateTransition = (current: string, next: string): boolean => {
+  if (current === next) return true;
+  if (next === 'cancelled') return true;
+  
+  const order = ['draft', 'pending', 'in_progress', 'completed'];
+  const currentIndex = order.indexOf(current);
+  const nextIndex = order.indexOf(next);
+  
+  // Enforce linear progression or backward movement, but block skipping steps
+  if (nextIndex > currentIndex + 1) return false;
+  return true;
+};
+
+export const validateKYC = (formData: TransactionFormData): boolean => {
+  return formData.client_name.trim() !== '' && formData.property_title.trim() !== '';
+};
 
 const ITEMS_PER_PAGE = 10;
 
@@ -187,9 +217,22 @@ export function useTransactionManagement() {
   const handleCreate = useCallback(() => {
     if (!formData.amount || Number(formData.amount) <= 0) return;
 
+    // State Machine Validation (Creation is always draft or pending)
+    if (formData.status !== 'draft' && formData.status !== 'pending') {
+      setErrorMessage('New deals must start in Draft or Pending state.');
+      return;
+    }
+
+    const { total } = calculateCommission(Number(formData.amount));
+    const isKYCValid = validateKYC(formData);
+    const rera_status = isKYCValid ? 'Forms Cleared' : 'Forms Pending';
+
     const transactionData = {
       type: formData.type,
       amount: Number(formData.amount),
+      status: formData.status,
+      commission: total,
+      rera_status,
       propertyId: formData.property_title.trim() || undefined,
       leadId: formData.client_name.trim() || undefined,
       agentId: formData.agent_name.trim() || undefined,
@@ -248,6 +291,16 @@ export function useTransactionManagement() {
       return;
     }
     if (selectedTransaction) {
+      // Deal State Machine Validation
+      if (!validateStateTransition(selectedTransaction.status || 'draft', formData.status)) {
+        setErrorMessage(`Invalid status transition from ${selectedTransaction.status} to ${formData.status}. Please follow the pipeline stages.`);
+        return;
+      }
+
+      const { total } = calculateCommission(Number(formData.amount));
+      const isKYCValid = validateKYC(formData);
+      const rera_status = isKYCValid ? 'Forms Cleared' : 'Forms Pending';
+
       const typeSnapshot = formData.type;
       dispatch(
         updateTransactionAPI({
@@ -255,6 +308,8 @@ export function useTransactionManagement() {
           type: formData.type,
           status: formData.status,
           amount: Number(formData.amount) || 0,
+          commission: total,
+          rera_status,
           closingDate: formData.closing_date || undefined,
           notes: [
             formData.notes.trim(),

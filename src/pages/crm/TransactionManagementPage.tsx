@@ -350,6 +350,8 @@ const TransactionManagementPage: FC = () => {
               <Th>Client</Th>
               <Th>Agent</Th>
               <Th>Closing Date</Th>
+              <Th>Commission</Th>
+              <Th>KYC / RERA</Th>
               <Th>Actions</Th>
             </tr>
           </thead>
@@ -368,6 +370,12 @@ const TransactionManagementPage: FC = () => {
                   <Td>{transaction.client_name || '—'}</Td>
                   <Td>{transaction.agent_name || '—'}</Td>
                   <Td>{formatDate(transaction.closing_date)}</Td>
+                  <Td>{transaction.commission ? formatCurrency(transaction.commission) : '—'}</Td>
+                  <Td>
+                    <Badge variant={transaction.rera_status === 'Forms Cleared' ? 'success' : 'warning'} size="small">
+                      {transaction.rera_status || 'Forms Pending'}
+                    </Badge>
+                  </Td>
                   <Td onClick={e => e.stopPropagation()}>
                     <div style={{ display: 'flex', gap: '0.4rem' }}>
                       <SecondaryButton onClick={() => handleEdit(transaction)}>
@@ -380,7 +388,7 @@ const TransactionManagementPage: FC = () => {
               ))
             ) : (
               <tr>
-                <Td colSpan={8}>
+                <Td colSpan={10}>
                   <EmptyState>
                     {search || statusFilter !== 'all' || typeFilter !== 'all'
                       ? 'No transactions match your filters'

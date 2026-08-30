@@ -129,6 +129,14 @@ export async function syncIssuesToGitHub(batchLimit = 10) {
       await new Promise(r => setTimeout(r, 500));
     } catch (err) {
       console.error(`   ❌ Failed to sync ${issue.id}:`, err.message);
+      if (err.message.includes('401') || err.message.includes('403') || err.message.includes('Bad credentials')) {
+        console.log(`   ⚠️ Authentication failed. Diverting remaining issues to offline queue...`);
+        const offlinePath = path.join(ROOT, 'aegis', 'logs', 'offline-sync-queue.json');
+        const remaining = issues.slice(i, i + batchLimit);
+        fs.writeFileSync(offlinePath, JSON.stringify({ pendingSync: remaining }, null, 2));
+        console.log(`   💾 Saved ${remaining.length} issues to offline queue: aegis/logs/offline-sync-queue.json`);
+        break;
+      }
       break;
     }
   }

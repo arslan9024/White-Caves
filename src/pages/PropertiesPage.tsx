@@ -6,7 +6,7 @@ import PublicLayout from '../components/layout/PublicLayout';
 import PageHeroBanner from '../components/layout/PageHeroBanner';
 import PageMeta from '../components/seo/PageMeta';
 import PropertyFilterPanel from './properties/PropertyFilterPanel';
-import { PropertyDetailModal } from '../shared/components/property';
+import { PropertyDetailModal, LuxuryPropertyCard } from '../shared/components/property';
 import { Link } from 'react-router-dom';
 import {
   Grid,
@@ -173,121 +173,15 @@ const PropertiesPage: FC = () => {
               )}
 
               {filteredProperties.map(property => (
-                <article
+                <LuxuryPropertyCard
                   key={property.id}
-                  className="property-card-enhanced"
+                  property={property}
+                  isFavorite={isFavorite(property.id)}
+                  onFavoriteToggle={() => handleFavoriteToggle(property)}
                   onClick={() => setSelectedProperty(property)}
-                  tabIndex={0}
-                  onKeyDown={e => {
-                    if (e.key === 'Enter') setSelectedProperty(property);
-                  }}
-                  role="button"
-                  aria-label={`View ${property.title}`}
-                >
-                  {/* Card Image */}
-                  <div className="card-image-wrapper">
-                    <img
-                      src={property.image}
-                      alt={property.title}
-                      loading="lazy"
-                      width={400}
-                      height={260}
-                      className="card-main-image"
-                    />
-                    <div className="card-badges">
-                      {property.featured && <span className="badge featured">Featured</span>}
-                      <span className={`badge purpose ${property.purpose}`}>
-                        {property.purpose === 'buy' ? 'For Sale' : 'For Rent'}
-                      </span>
-                    </div>
-                    <button
-                      className={`card-fav-btn ${isFavorite(property.id) ? 'active' : ''}`}
-                      onClick={e => {
-                        e.stopPropagation();
-                        handleFavoriteToggle(property);
-                      }}
-                      aria-label={
-                        isFavorite(property.id) ? 'Remove from favorites' : 'Add to favorites'
-                      }
-                    >
-                      <Heart
-                        size={18}
-                        fill={isFavorite(property.id) ? '#EF4444' : 'none'}
-                        stroke={isFavorite(property.id) ? '#EF4444' : 'white'}
-                      />
-                    </button>
-                  </div>
-
-                  {/* Card Content */}
-                  <div className="card-content">
-                    <span className="card-type">{property.type}</span>
-                    <h3 className="card-title">{property.title}</h3>
-                    <p className="card-location">
-                      <MapPin size={14} />
-                      {property.location}
-                    </p>
-
-                    <div className="card-specs">
-                      <span>
-                        <Bed size={14} /> {property.beds} Beds
-                      </span>
-                      <span>
-                        <Bath size={14} /> {property.baths} Baths
-                      </span>
-                      <span>
-                        <Maximize size={14} /> {property.sqft.toLocaleString()} sqft
-                      </span>
-                    </div>
-
-                    {property.amenities.length > 0 && (
-                      <div className="card-amenities">
-                        {property.amenities.slice(0, 3).map(a => (
-                          <span key={a} className="amenity-chip">
-                            {a}
-                          </span>
-                        ))}
-                        {property.amenities.length > 3 && (
-                          <span className="amenity-chip more">
-                            +{property.amenities.length - 3}
-                          </span>
-                        )}
-                      </div>
-                    )}
-
-                    <div className="card-footer">
-                      <span className="card-price">AED {property.price.toLocaleString()}</span>
-                      <div className="card-footer-actions">
-                        <button
-                          className="card-share-btn"
-                          onClick={e => {
-                            e.stopPropagation();
-                            const url = `${window.location.origin}/property/${property.id}`;
-                            if (navigator.share) {
-                              navigator
-                                .share({ title: property.title, url })
-                                .catch(e => log.warn('Share failed:', e));
-                            } else {
-                              navigator.clipboard
-                                .writeText(url)
-                                .catch(e => log.warn('Clipboard write failed:', e));
-                            }
-                          }}
-                          aria-label="Share property"
-                        >
-                          <Share2 size={14} />
-                        </button>
-                        <Link
-                          to={`/property/${property.id}`}
-                          className="view-details-btn"
-                          onClick={e => e.stopPropagation()}
-                        >
-                          Details <ChevronRight size={14} />
-                        </Link>
-                      </div>
-                    </div>
-                  </div>
-                </article>
+                />
               ))}
+
             </div>
           </section>
         </section>

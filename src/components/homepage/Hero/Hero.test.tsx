@@ -72,7 +72,19 @@ vi.mock('../../../store/propertySlice', () => ({
 
 // Mock HeroSearchBar to isolate Hero tests from homepageSlice selectors
 vi.mock('./HeroSearchBar', () => ({
-  default: () => <div data-testid="hero-search-bar" />,
+  HeroSearchBar: () => <div data-testid="hero-search-bar" />,
+}));
+
+vi.mock('./HeroVideoBackground', () => ({
+  HeroVideoBackground: () => <div data-testid="hero-video-bg" />,
+}));
+
+vi.mock('./HeroLiveStats', () => ({
+  HeroLiveStats: ({ stats }: { stats: any[] }) => (
+    <div data-testid="hero-live-stats">
+      {stats.map(s => <span key={s.label}>{s.label}</span>)}
+    </div>
+  ),
 }));
 
 // Mock LanguageContext — return English translations via t()

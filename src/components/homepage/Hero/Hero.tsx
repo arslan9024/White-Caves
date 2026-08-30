@@ -1,85 +1,18 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React from 'react';
 import { motion, useScroll, useTransform, useReducedMotion, type Variants } from 'framer-motion';
 import { ArrowRight, Play, ChevronDown } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import type { MarketStats } from '../../../store/slices/homepageSlice';
 import { useLanguage } from '../../../context/LanguageContext';
-import { Search } from 'lucide-react';
 import './Hero.css';
-
-interface AnimatedCounterProps {
-  end: number;
-  duration?: number;
-  suffix?: string;
-  prefix?: string;
-}
-
-interface Stat {
-  number: number;
-  suffix: string;
-  prefix?: string;
-  label: string;
-}
+import { HeroVideoBackground } from './HeroVideoBackground';
+import { HeroSearchBar } from './HeroSearchBar';
+import { HeroLiveStats, type Stat } from './HeroLiveStats';
 
 interface HeroProps {
   marketStats?: MarketStats;
   isLoading?: boolean;
 }
-
-const AnimatedCounter: React.FC<AnimatedCounterProps> = ({
-  end,
-  duration = 2000,
-  suffix = '',
-  prefix = '',
-}) => {
-  const [count, setCount] = useState<number>(0);
-  const [hasStarted, setHasStarted] = useState<boolean>(false);
-  const ref = useRef<HTMLSpanElement>(null);
-
-  // Start the counter only when it enters the viewport
-  useEffect(() => {
-    const el = ref.current;
-    if (!el) return;
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        if (entry.isIntersecting) {
-          setHasStarted(true);
-          observer.disconnect();
-        }
-      },
-      { threshold: 0.5 }
-    );
-    observer.observe(el);
-    return () => observer.disconnect();
-  }, []);
-
-  useEffect(() => {
-    if (!hasStarted) return;
-    let startTime: number | undefined;
-    let animationFrame: number;
-
-    const animate = (timestamp: number): void => {
-      if (!startTime) startTime = timestamp;
-      const progress = Math.min((timestamp - startTime) / duration, 1);
-      setCount(Math.floor(progress * end));
-
-      if (progress < 1) {
-        animationFrame = requestAnimationFrame(animate);
-      }
-    };
-
-    animationFrame = requestAnimationFrame(animate);
-    return () => cancelAnimationFrame(animationFrame);
-  }, [end, duration, hasStarted]);
-
-  return (
-    <span ref={ref}>
-      {prefix}
-      {count.toLocaleString()}
-      {suffix}
-    </span>
-  );
-};
 
 const Hero = ({ marketStats, isLoading = false }: HeroProps) => {
   const navigate = useNavigate();
@@ -89,7 +22,6 @@ const Hero = ({ marketStats, isLoading = false }: HeroProps) => {
   const prefersReducedMotion = useReducedMotion();
   const { t } = useLanguage();
 
-  // Live stats from API, fallback to static values for instant render
   const stats: Stat[] = [
     {
       number: marketStats?.totalProperties ?? 500,
@@ -107,6 +39,12 @@ const Hero = ({ marketStats, isLoading = false }: HeroProps) => {
       suffix: '+',
       label: t('hero.expertAgents'),
     },
+    {
+      number: 10,
+      suffix: 'B+',
+      prefix: 'AED ',
+      label: 'Managed Assets',
+    }
   ];
 
   const containerVariants: Variants = {
@@ -114,7 +52,7 @@ const Hero = ({ marketStats, isLoading = false }: HeroProps) => {
     visible: {
       opacity: 1,
       transition: {
-        staggerChildren: 0.15,
+        staggerChildren: 0.2,
         delayChildren: 0.3,
       },
     },
@@ -125,7 +63,7 @@ const Hero = ({ marketStats, isLoading = false }: HeroProps) => {
     visible: {
       opacity: 1,
       y: 0,
-      transition: { duration: 0.6, ease: 'easeInOut' },
+      transition: { duration: 0.8, ease: [0.16, 1, 0.3, 1] }, // custom ease-out
     },
   };
 
@@ -146,25 +84,7 @@ const Hero = ({ marketStats, isLoading = false }: HeroProps) => {
 
   return (
     <section className="hero-section dubai-luxury-theme" id="home">
-      <div className="hero-background">
-        <motion.div className="hero-bg-image" style={{ y }} />
-        {/* Hidden eager-loaded img for LCP — browser prioritises this over CSS background-image */}
-        <img
-          src="https://images.unsplash.com/photo-1582268611958-ebfd161ef9cf?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80"
-          alt=""
-          aria-hidden="true"
-          loading="eager"
-          style={{
-            position: 'absolute',
-            width: 1,
-            height: 1,
-            opacity: 0,
-            pointerEvents: 'none',
-          }}
-        />
-        <div className="hero-overlay" />
-        <div className="hero-gradient-overlay" />
-      </div>
+      <HeroVideoBackground y={y} />
 
       <div className="floating-shapes">
         <motion.div
@@ -242,44 +162,11 @@ const Hero = ({ marketStats, isLoading = false }: HeroProps) => {
           {t('hero.description')}
         </motion.p>
 
-        <motion.div variants={itemVariants} style={{ cursor: 'pointer' }}>
-          <div
-            style={{
-              background: 'rgba(255, 255, 255, 0.1)',
-              backdropFilter: 'blur(10px)',
-              border: '2px solid rgba(239, 68, 68, 0.4)',
-              borderRadius: '9999px',
-              padding: '12px 28px',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              gap: '12px',
-              color: '#FFFFFF',
-              fontWeight: 800,
-              fontSize: '0.95rem',
-              boxShadow: '0 10px 30px rgba(0,0,0,0.2)',
-              margin: '0 auto',
-              maxWidth: '480px',
-            }}
-          >
-            <span
-              style={{
-                background: '#EF4444',
-                color: '#FFFFFF',
-                padding: '6px',
-                borderRadius: '50%',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-              }}
-            >
-              <Search size={16} />
-            </span>
-            <span>Click to Search Dubai Luxury Properties...</span>
-          </div>
+        <motion.div variants={itemVariants} className="w-full relative z-50">
+          <HeroSearchBar />
         </motion.div>
 
-        <motion.div className="hero-cta-group" variants={itemVariants}>
+        <motion.div className="hero-cta-group mt-8" variants={itemVariants}>
           <motion.button
             className="btn btn-primary btn-lg hero-btn-primary"
             onClick={handleBrowseProperties}
@@ -301,30 +188,7 @@ const Hero = ({ marketStats, isLoading = false }: HeroProps) => {
           </motion.button>
         </motion.div>
 
-        <motion.div className="hero-stats-grid" variants={itemVariants}>
-          {stats.map(stat => (
-            <motion.div
-              key={stat.label}
-              className="hero-stat-item"
-              whileHover={{ y: -5, scale: 1.02 }}
-              transition={{ duration: 0.2 }}
-            >
-              <span className="hero-stat-number">
-                {isLoading ? (
-                  <span className="hero-stat-skeleton" aria-hidden="true" />
-                ) : (
-                  <AnimatedCounter
-                    end={stat.number}
-                    duration={2000}
-                    suffix={stat.suffix}
-                    prefix={stat.prefix}
-                  />
-                )}
-              </span>
-              <span className="hero-stat-label">{stat.label}</span>
-            </motion.div>
-          ))}
-        </motion.div>
+        <HeroLiveStats stats={stats} isLoading={isLoading} itemVariants={itemVariants} />
 
         <motion.div className="hero-trust-badges" variants={itemVariants}>
           <div className="trust-badge">
@@ -356,3 +220,4 @@ const Hero = ({ marketStats, isLoading = false }: HeroProps) => {
 };
 
 export default Hero;
+

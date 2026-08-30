@@ -13,6 +13,18 @@
   min-height: auto;
 }
 
+.hero-video {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 100vw;
+  height: 100vh;
+  object-fit: cover;
+  transform: translate(-50%, -50%);
+  z-index: 0;
+  pointer-events: none;
+}
+
 .hero-stats-section {
   width: 100%;
   padding: 40px 0;
