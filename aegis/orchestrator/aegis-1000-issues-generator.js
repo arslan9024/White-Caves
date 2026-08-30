@@ -13,6 +13,18 @@
 
 import { execSync } from 'child_process';
 import { fileURLToPath } from 'url';
+import fs from 'fs';
+import path from 'path';
+
+const OFFLINE_QUEUE_PATH = path.resolve(process.cwd(), 'aegis/logs/offline-sync-queue.json');
+function saveToOfflineQueue(type, payload) {
+  let data = { pendingSync: [] };
+  if (fs.existsSync(OFFLINE_QUEUE_PATH)) {
+    try { data = JSON.parse(fs.readFileSync(OFFLINE_QUEUE_PATH, 'utf8')); } catch(e){}
+  }
+  data.pendingSync.push({ type, payload, timestamp: new Date().toISOString() });
+  fs.writeFileSync(OFFLINE_QUEUE_PATH, JSON.stringify(data, null, 2));
+}
 
 const REPO_OWNER = 'arslan9024';
 const REPO_NAME  = 'White-Caves';
@@ -47,54 +59,67 @@ function headers(token) {
 const sleep = ms => new Promise(r => setTimeout(r, ms));
 
 // ─── GitHub API helpers ───────────────────────────────────────────────────────
-async function createMilestone(hdrs, title, description) {
-  const r = await fetch(`https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/milestones`, {
-    method: 'POST', headers: hdrs,
-    body: JSON.stringify({ title, description, state: 'open' })
-  });
-  if (!r.ok) {
-    const e = await r.json();
-    if (e?.errors?.[0]?.code === 'already_exists') {
-      // fetch existing
-      const list = await fetch(`https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/milestones?state=open&per_page=100`, { headers: hdrs });
-      const all = await list.json();
-      return all.find(m => m.title === title);
+async function createMilestone(hdrs, title, description, attempt = 1) {
+  try {
+    const r = await fetch(`https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/milestones`, {
+      method: 'POST', headers: hdrs,
+      body: JSON.stringify({ title, description, state: 'open' })
+    });
+    if (r.status === 403 || r.status === 429) {
+      console.log(`  ⚠️ Rate limited (Milestone). Saving offline: ${title}`);
+      saveToOfflineQueue('milestone', { title, description, state: 'open' });
+      return { number: 'OFFLINE' };
     }
-    console.error('Milestone creation failed:', e);
-    return null;
+    if (!r.ok) {
+      const e = await r.json();
+      if (e?.errors?.[0]?.code === 'already_exists') {
+        const list = await fetch(`https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/milestones?state=open&per_page=100`, { headers: hdrs });
+        if (list.ok) {
+          const all = await list.json();
+          return all.find(m => m.title === title);
+        }
+      }
+      console.error('Milestone creation failed:', e);
+      saveToOfflineQueue('milestone', { title, description, state: 'open' });
+      return { number: 'OFFLINE' };
+    }
+    return r.json();
+  } catch (err) {
+    console.error(`  ❌ Network error (milestone). Saving offline: ${title}`);
+    saveToOfflineQueue('milestone', { title, description, state: 'open' });
+    return { number: 'OFFLINE' };
   }
-  return r.json();
 }
 
 async function createIssue(hdrs, title, body, milestoneNumber, labels, attempt = 1) {
-  const r = await fetch(`https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/issues`, {
-    method: 'POST', headers: hdrs,
-    body: JSON.stringify({ title, body, milestone: milestoneNumber, labels })
-  });
+  try {
+    const r = await fetch(`https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/issues`, {
+      method: 'POST', headers: hdrs,
+      body: JSON.stringify({ title, body, milestone: milestoneNumber, labels })
+    });
 
-  if (r.status === 429 || r.status === 403) {
-    // Rate limited — exponential backoff
-    if (attempt <= MAX_RETRIES) {
-      const waitMs = Math.min(30000 * Math.pow(2, attempt - 1), 120000); // 30s, 60s, 120s, 120s
-      console.log(`  ⏳ Rate limited (${r.status}). Waiting ${waitMs / 1000}s before retry ${attempt}/${MAX_RETRIES}...`);
-      await sleep(waitMs);
-      return createIssue(hdrs, title, body, milestoneNumber, labels, attempt + 1);
+    if (r.status === 429 || r.status === 403) {
+      console.log(`  ⚠️ Rate limited (${r.status}). Saving offline: ${title.substring(0, 50)}...`);
+      saveToOfflineQueue('issue', { title, body, milestoneNumber, labels });
+      return { number: 'OFFLINE' };
     }
-    console.error(`  ❌ Rate limit persists after ${MAX_RETRIES} retries: ${title}`);
-    return null;
-  }
 
-  if (!r.ok) {
-    const e = await r.json().catch(() => ({}));
-    // Duplicate issue — skip gracefully
-    if (e?.errors?.[0]?.code === 'already_exists') {
-      console.log(`  ⚠️  Already exists (skipped): ${title.substring(0, 70)}`);
-      return { number: 'SKIP' };
+    if (!r.ok) {
+      const e = await r.json().catch(() => ({}));
+      if (e?.errors?.[0]?.code === 'already_exists') {
+        console.log(`  ⚠️  Already exists (skipped): ${title.substring(0, 70)}`);
+        return { number: 'SKIP' };
+      }
+      console.error(`  ❌ Failed to create: ${title.substring(0, 70)}`, e?.message || '');
+      saveToOfflineQueue('issue', { title, body, milestoneNumber, labels });
+      return { number: 'OFFLINE' };
     }
-    console.error(`  ❌ Failed to create: ${title.substring(0, 70)}`, e?.message || '');
-    return null;
+    return r.json();
+  } catch (err) {
+    console.log(`  ⏳ Network error (fetch failed). Saving offline: ${title.substring(0, 50)}...`);
+    saveToOfflineQueue('issue', { title, body, milestoneNumber, labels });
+    return { number: 'OFFLINE' };
   }
-  return r.json();
 }
 
 // ─── Issue body builder ────────────────────────────────────────────────────────
