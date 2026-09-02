@@ -22,8 +22,9 @@
 - ✅ **W46-005 complete:** business-doc canonical root set to `docs/business_docs/` with phased migration/pointer map.
 - ✅ **W46-006 complete:** frontend overlap audit + route-entry conflict report published.
 - ✅ **W46-007 complete:** backend overlap audit + duplicate handler map published.
-- 🟡 **W46-008 next active:** safe-delete wave for superseded mirrors after pointer/link verification.
-- 📋 **W46-009…W46-010 planned:** CI anti-dup checks and closure metrics.
+- ✅ **W46-008 complete:** safe-delete wave executed with verified unreferenced mirror cleanup.
+- 🟡 **W46-009 next active:** add CI anti-duplication checks (path lint + canonical tracker consistency).
+- 📋 **W46-010 planned:** Wave 46 closure metrics and final report.
 - Backlog source: `docs/plans/waves/WAVE_46_IMPLEMENTATION_BACKLOG.md`.
 
 ---
