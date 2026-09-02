@@ -16,7 +16,7 @@
 - **Plan-first packet:** [`WAVE_46_PLAN_FIRST_PACKET.md`](./WAVE_46_PLAN_FIRST_PACKET.md)
 - **Baseline evidence:** [`DEDUP_INVENTORY_BASELINE_2026-09-03.md`](./DEDUP_INVENTORY_BASELINE_2026-09-03.md)
 - **Execution backlog:** [`docs/plans/waves/WAVE_46_IMPLEMENTATION_BACKLOG.md`](../docs/plans/waves/WAVE_46_IMPLEMENTATION_BACKLOG.md)
-- **Phase 0/1 status:** baseline, canonical policy tagging, planning-truth reconciliation, and docs/plans dedup matrix completed (W46-001..W46-004); W46-005 business-doc canonical-root decision is now active.
+- **Phase 0/1 status:** baseline, canonical policy tagging, planning-truth reconciliation, docs/plans dedup matrix, and business-doc canonical-root decision completed (W46-001..W46-005); W46-006 frontend overlap audit is now active.
 
 ---
 

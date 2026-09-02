@@ -19,8 +19,9 @@
 - ✅ **W46-002 complete:** canonical path policy tagging applied to planning mirrors with explicit reference-copy banners.
 - ✅ **W46-003 complete:** planning truth-set reconciled across canonical trackers and governance validation passed.
 - ✅ **W46-004 complete:** documentation dedup matrix published in `plans/WAVE_46_DOCS_PLANS_DEDUP_MATRIX_2026-09-03.md`.
-- 🟡 **W46-005 next active:** business-doc canonical root decision + migration map with redirects/pointers.
-- 📋 **W46-006…W46-010 planned:** frontend/backend overlap audits, safe-delete wave, CI anti-dup checks, closure metrics.
+- ✅ **W46-005 complete:** business-doc canonical root set to `docs/business_docs/` with phased migration/pointer map.
+- 🟡 **W46-006 next active:** frontend overlap audit (`src/`, `app/`, `pages/`) + route-entry conflict report.
+- 📋 **W46-007…W46-010 planned:** backend overlap audit, safe-delete wave, CI anti-dup checks, closure metrics.
 - Backlog source: `docs/plans/waves/WAVE_46_IMPLEMENTATION_BACKLOG.md`.
 
 ---
