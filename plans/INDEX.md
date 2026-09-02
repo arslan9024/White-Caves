@@ -40,10 +40,10 @@ All historical and extended planning docs live in:
 
 ## Documentation Hierarchy
 
-| Root              | Purpose                                     |
-| ----------------- | ------------------------------------------- |
-| `/plans/`         | Active execution entry points (this folder) |
-| `/docs/plans/`    | Full planning archive + wave bundles        |
-| `/business_docs/` | Business/domain operational docs            |
-| `/docs/`          | Software/engineering architecture docs      |
-| `/docs/archives/` | Superseded and historical content           |
+| Root                   | Purpose                                     |
+| ---------------------- | ------------------------------------------- |
+| `/plans/`              | Active execution entry points (this folder) |
+| `/docs/plans/`         | Full planning archive + wave bundles        |
+| `/docs/business_docs/` | Business/domain operational docs            |
+| `/docs/`               | Software/engineering architecture docs      |
+| `/docs/archives/`      | Superseded and historical content           |
