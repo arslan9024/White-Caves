@@ -20,8 +20,9 @@
 - ✅ **W46-003 complete:** planning truth-set reconciled across canonical trackers and governance validation passed.
 - ✅ **W46-004 complete:** documentation dedup matrix published in `plans/WAVE_46_DOCS_PLANS_DEDUP_MATRIX_2026-09-03.md`.
 - ✅ **W46-005 complete:** business-doc canonical root set to `docs/business_docs/` with phased migration/pointer map.
-- 🟡 **W46-006 next active:** frontend overlap audit (`src/`, `app/`, `pages/`) + route-entry conflict report.
-- 📋 **W46-007…W46-010 planned:** backend overlap audit, safe-delete wave, CI anti-dup checks, closure metrics.
+- ✅ **W46-006 complete:** frontend overlap audit + route-entry conflict report published.
+- 🟡 **W46-007 next active:** backend overlap audit (`server/routes`, `server/services`, `api/`) + duplicate handler map.
+- 📋 **W46-008…W46-010 planned:** safe-delete wave, CI anti-dup checks, closure metrics.
 - Backlog source: `docs/plans/waves/WAVE_46_IMPLEMENTATION_BACKLOG.md`.
 
 ---
