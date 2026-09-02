@@ -1,5 +1,7 @@
 # Daily Milestone Tracker — White Caves Real Estate
 
+> **⚠️ REFERENCE COPY** — Canonical active version is at [`DAILY_MILESTONE_TRACKER.md`](../../DAILY_MILESTONE_TRACKER.md). Update that file, not this one.
+
 ## 📊 Milestone Summary & Execution Ledger
 
 ## 📝 Daily Entry — 2026-09-02
