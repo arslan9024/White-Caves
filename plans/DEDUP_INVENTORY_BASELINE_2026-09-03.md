@@ -8,13 +8,13 @@
 
 ### Key Documentation Root Counts
 
-| Root                  | File Count | Notes                                                               |
-| --------------------- | ---------: | ------------------------------------------------------------------- |
-| `plans/`              |         12 | Canonical active planning root (small + curated).                   |
-| `docs/plans/`         |        876 | Large archive + wave bundles; high drift risk if treated as live.   |
-| `docs/business_docs/` |        209 | Active business documentation corpus (includes stubs/pending docs). |
-| `software_docs/`      |    MISSING | Referenced in plan text but not present at root path.               |
-| `business_docs/`      |    MISSING | Referenced in governance text but not present at root path.         |
+| Root                           | File Count | Notes                                                               |
+| ------------------------------ | ---------: | ------------------------------------------------------------------- |
+| `plans/`                       |         12 | Canonical active planning root (small + curated).                   |
+| `docs/plans/`                  |        876 | Large archive + wave bundles; high drift risk if treated as live.   |
+| `docs/business_docs/`          |        209 | Active business documentation corpus (includes stubs/pending docs). |
+| `software_docs/`               |    MISSING | Referenced in plan text but not present at root path.               |
+| `business_docs` (legacy alias) |    MISSING | Referenced in governance text but not present at root path.         |
 
 ### Canonical/Mirror Planning Files Found
 
@@ -60,7 +60,7 @@
 ### Needs-Migration Candidates
 
 - Any still-active planning content under `docs/plans/` that should be canonicalized into `/plans/`.
-- Business-doc references that point to non-existing root paths (`software_docs/`, `business_docs/`).
+- Business-doc references that point to non-existing root aliases (`software_docs`, `business_docs`).
 
 ### Needs-Review Candidates
 

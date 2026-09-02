@@ -13,7 +13,7 @@ Canonical business documentation root is:
 
 Non-canonical root:
 
-- **`business_docs/`** ❌ (not present at repository root)
+- **`business_docs` (legacy alias)** ❌ (not present at repository root)
 
 ## Evidence
 
@@ -23,15 +23,15 @@ Non-canonical root:
 - Corpus size:
   - `docs/business_docs` files: `209`
 - Reference drift snapshot:
-  - `plans` references to `business_docs/`: `18`
-  - `plans` references to `docs/business_docs/`: `2`
-  - `docs/plans` references to `business_docs/`: `679`
-  - `docs/plans` references to `docs/business_docs/`: `1`
+  - `plans` references to legacy alias `business_docs`: `18`
+  - `plans` references to canonical `docs/business_docs/`: `2`
+  - `docs/plans` references to legacy alias `business_docs`: `679`
+  - `docs/plans` references to canonical `docs/business_docs/`: `1`
 
 ## Canonical Path Policy (Business Docs)
 
 1. All new business-doc links MUST use `docs/business_docs/...`.
-2. Existing `business_docs/...` references are considered **legacy path aliases** and must be rewritten in active trackers first.
+2. Existing `business_docs` alias references are considered **legacy path aliases** and must be rewritten in active trackers first.
 3. Archive artifacts may retain legacy strings if not used as active execution inputs.
 4. Any new wave bundle that introduces business-doc dependencies must include a canonical-path check item.
 
@@ -39,7 +39,7 @@ Non-canonical root:
 
 ### Phase A — Active Trackers (P0)
 
-- Update canonical trackers under `/plans` that still use `business_docs/...` to `docs/business_docs/...`.
+- Update canonical trackers under `/plans` that still use the `business_docs` alias to `docs/business_docs/...`.
 - Scope-first targets:
   - `plans/MASTER_PLAN.md`
   - `plans/PENDING_TASKS_ONLY.md`

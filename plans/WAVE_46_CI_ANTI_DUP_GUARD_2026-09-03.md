@@ -19,7 +19,7 @@ Checks implemented:
 
 1. Required Wave 46 governance artifacts exist.
 2. Mirror planning docs include `REFERENCE COPY` banner.
-3. Active trackers avoid legacy `business_docs/` alias drift.
+3. Active trackers avoid legacy `business_docs` alias drift.
 4. Regression check ensures deleted `docs/plans/PHASE1_COMPLETE.md` is not reintroduced.
 5. Wave 46 backlog includes anti-dup task pointer.
 
