@@ -4,7 +4,7 @@ import {
   checkEndpointWithRetries,
   normalizeBaseUrl,
   verifyRuntimeEndpoints,
-} from '../../scripts/verify-runtime-endpoints.js';
+} from '../../aegis/scripts/verify-runtime-endpoints.js';
 
 describe('verify-runtime-endpoints helpers', () => {
   it('normalizes URL and strips trailing slash', () => {
@@ -19,6 +19,18 @@ describe('verify-runtime-endpoints helpers', () => {
     expect(checks.some(c => c.required && c.path === '/api/health')).toBe(true);
     expect(checks.some(c => !c.required && c.path === '/robots.txt')).toBe(true);
     expect(checks.some(c => !c.required && c.path === '/sitemap.xml')).toBe(true);
+  });
+
+  it('supports split frontend and api origins', () => {
+    const checks = buildRuntimeChecks(
+      'https://frontend.whitecaves.com',
+      'https://api.whitecaves.com'
+    );
+    const homepage = checks.find(c => c.path === '/');
+    const apiHealth = checks.find(c => c.path === '/api/health');
+
+    expect(homepage?.url).toBe('https://frontend.whitecaves.com/');
+    expect(apiHealth?.url).toBe('https://api.whitecaves.com/api/health');
   });
 
   it('fails only when required checks fail', async () => {
@@ -91,5 +103,22 @@ describe('verify-runtime-endpoints helpers', () => {
     const apiHealth = result.checks.find(c => c.path === '/api/health');
     expect(result.success).toBe(true);
     expect(apiHealth?.attempts).toBe(2);
+  });
+
+  it('verifyRuntimeEndpoints routes API check to apiBaseUrl when provided', async () => {
+    const calledUrls: string[] = [];
+    const fakeRequester = async (url: string) => {
+      calledUrls.push(url);
+      return { success: true, statusCode: 200 };
+    };
+
+    const result = await verifyRuntimeEndpoints('https://frontend.whitecaves.com', {
+      apiBaseUrl: 'https://api.whitecaves.com',
+      requester: fakeRequester,
+    });
+
+    expect(result.success).toBe(true);
+    expect(calledUrls).toContain('https://frontend.whitecaves.com/');
+    expect(calledUrls).toContain('https://api.whitecaves.com/api/health');
   });
 });
