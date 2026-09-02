@@ -17,11 +17,17 @@ export function normalizeBaseUrl(inputUrl) {
   return url.toString().replace(/\/$/, '');
 }
 
-export function buildRuntimeChecks(baseUrl) {
+export function buildRuntimeChecks(baseUrl, apiBaseUrl = baseUrl) {
   const normalized = normalizeBaseUrl(baseUrl);
+  const normalizedApi = normalizeBaseUrl(apiBaseUrl);
   return [
     { name: 'Homepage', path: '/', required: true, url: `${normalized}/` },
-    { name: 'API Health', path: '/api/health', required: true, url: `${normalized}/api/health` },
+    {
+      name: 'API Health',
+      path: '/api/health',
+      required: true,
+      url: `${normalizedApi}/api/health`,
+    },
     {
       name: 'SEO robots.txt',
       path: '/robots.txt',
@@ -60,12 +66,12 @@ export function checkEndpoint(url, timeoutMs = 10000) {
         },
       },
       res => {
-      res.resume();
-      resolve({
-        url,
-        statusCode: res.statusCode ?? 0,
-        success: res.statusCode === 200,
-      });
+        res.resume();
+        resolve({
+          url,
+          statusCode: res.statusCode ?? 0,
+          success: res.statusCode === 200,
+        });
       }
     );
 
@@ -113,8 +119,9 @@ export async function verifyRuntimeEndpoints(baseUrl, options = {}) {
   const timeoutMs = Number(options.timeoutMs ?? 10000);
   const retries = Math.max(0, Number(options.retries ?? 0));
   const retryDelayMs = Math.max(0, Number(options.retryDelayMs ?? 1500));
+  const apiBaseUrl = options.apiBaseUrl ? normalizeBaseUrl(options.apiBaseUrl) : baseUrl;
   const requester = options.requester || (url => checkEndpoint(url, timeoutMs));
-  const checks = buildRuntimeChecks(baseUrl);
+  const checks = buildRuntimeChecks(baseUrl, apiBaseUrl);
 
   const responses = await Promise.all(
     checks.map(async check => {
@@ -145,6 +152,7 @@ export async function verifyRuntimeEndpoints(baseUrl, options = {}) {
 
 async function runCli() {
   const urlArg = process.argv.find(arg => arg.startsWith('--url='));
+  const apiUrlArg = process.argv.find(arg => arg.startsWith('--api-url='));
   const timeoutArg = process.argv.find(arg => arg.startsWith('--timeout='));
   const retriesArg = process.argv.find(arg => arg.startsWith('--retries='));
   const retryDelayArg = process.argv.find(arg => arg.startsWith('--retry-delay='));
@@ -153,21 +161,31 @@ async function runCli() {
   const baseUrl = normalizeBaseUrl(
     urlArg?.split('=')[1] || process.env.RUNTIME_VERIFY_URL || process.env.DOMAIN || ''
   );
+  const apiBaseUrl = normalizeBaseUrl(
+    apiUrlArg?.split('=')[1] || process.env.RUNTIME_VERIFY_API_URL || baseUrl
+  );
   const timeoutMs = Number(timeoutArg?.split('=')[1] || 10000);
   const retries = Number(retriesArg?.split('=')[1] || 0);
   const retryDelayMs = Number(retryDelayArg?.split('=')[1] || 1500);
 
   if (dryRun) {
     console.log('🔎 Runtime endpoint checks (dry-run):');
-    console.log(`   timeout=${timeoutMs}ms retries=${retries} retryDelay=${retryDelayMs}ms`);
-    buildRuntimeChecks(baseUrl).forEach(c => {
+    console.log(
+      `   timeout=${timeoutMs}ms retries=${retries} retryDelay=${retryDelayMs}ms apiBase=${apiBaseUrl}`
+    );
+    buildRuntimeChecks(baseUrl, apiBaseUrl).forEach(c => {
       console.log(` - ${c.required ? '[required]' : '[optional]'} ${c.name}: ${c.url}`);
     });
     return;
   }
 
   console.log(`🌐 Verifying runtime endpoints: ${baseUrl}`);
-  const report = await verifyRuntimeEndpoints(baseUrl, { timeoutMs, retries, retryDelayMs });
+  const report = await verifyRuntimeEndpoints(baseUrl, {
+    timeoutMs,
+    retries,
+    retryDelayMs,
+    apiBaseUrl,
+  });
 
   report.checks.forEach(check => {
     const status = check.success ? '✅' : check.required ? '❌' : '⚠️';

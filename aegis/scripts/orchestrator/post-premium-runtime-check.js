@@ -109,7 +109,7 @@ function writeReport(status, details) {
     runStep('npm run quality:quick', 'Quick quality gate');
     stopDevProcess = await runDevStartupProbe();
     runStep(
-      `npm run verify:runtime -- --url=${DEFAULT_APP_URL} --timeout=15000 --retries=2`,
+      `npm run verify:runtime -- --url=${DEFAULT_APP_URL} --api-url=${DEFAULT_RUNTIME_URL} --timeout=15000 --retries=2`,
       'Runtime endpoint verification'
     );
 
