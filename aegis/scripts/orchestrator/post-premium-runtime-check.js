@@ -3,8 +3,8 @@ import { execSync, spawn } from 'node:child_process';
 import { mkdirSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
 
-const DEFAULT_APP_URL = process.env.APP_URL || 'http://localhost:5000';
-const DEFAULT_RUNTIME_URL = process.env.RUNTIME_VERIFY_URL || 'http://localhost:3001';
+const DEFAULT_APP_URL = process.env.APP_URL || 'http://localhost:5173';
+const DEFAULT_RUNTIME_URL = process.env.RUNTIME_VERIFY_URL || 'http://localhost:5001';
 const STARTUP_TIMEOUT_MS = Number(process.env.STARTUP_TIMEOUT_MS || 90000);
 const POLL_MS = Number(process.env.STARTUP_POLL_MS || 2000);
 
@@ -39,14 +39,14 @@ function spawnDevProcess() {
   const npmBin = getNpmBin();
 
   if (process.platform === 'win32') {
-    return spawn('cmd.exe', ['/c', npmBin, 'run', 'dev:all'], {
+    return spawn('cmd.exe', ['/c', npmBin, 'run', 'dev'], {
       stdio: 'inherit',
       shell: false,
       windowsHide: true,
     });
   }
 
-  return spawn(npmBin, ['run', 'dev:all'], {
+  return spawn(npmBin, ['run', 'dev'], {
     stdio: 'inherit',
     shell: false,
     detached: true,
@@ -54,7 +54,7 @@ function spawnDevProcess() {
 }
 
 async function runDevStartupProbe() {
-  process.stdout.write('\n[STEP] Dev startup probe (npm run dev:all)\n');
+  process.stdout.write('\n[STEP] Dev startup probe (npm run dev)\n');
 
   const devProcess = spawnDevProcess();
 
