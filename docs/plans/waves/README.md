@@ -1,6 +1,6 @@
 # Wave Bundle Index
 
-**Last Updated:** 2026-08-09
+**Last Updated:** 2026-09-03
 
 Use this index after reviewing [`../MASTER_PLAN.md`](../MASTER_PLAN.md) and [`../PENDING_TASKS_ONLY.md`](../PENDING_TASKS_ONLY.md).
 Each wave should be executed only in roadmap order.

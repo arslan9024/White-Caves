@@ -16,7 +16,7 @@
 - **Plan-first packet:** [`WAVE_46_PLAN_FIRST_PACKET.md`](./WAVE_46_PLAN_FIRST_PACKET.md)
 - **Baseline evidence:** [`DEDUP_INVENTORY_BASELINE_2026-09-03.md`](./DEDUP_INVENTORY_BASELINE_2026-09-03.md)
 - **Execution backlog:** [`docs/plans/waves/WAVE_46_IMPLEMENTATION_BACKLOG.md`](../docs/plans/waves/WAVE_46_IMPLEMENTATION_BACKLOG.md)
-- **Phase 0 status:** baseline completed; canonical policy and planning-truth reconciliation in progress.
+- **Phase 0 status:** baseline, canonical policy tagging, and planning-truth reconciliation completed (W46-001..W46-003); W46-004 documentation dedup matrix is now active.
 
 ---
 

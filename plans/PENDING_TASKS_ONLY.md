@@ -16,9 +16,10 @@
 ## ✅/📋 Wave 46 Deduplication Program Status
 
 - ✅ **W46-001 complete:** duplication baseline inventory captured in `plans/DEDUP_INVENTORY_BASELINE_2026-09-03.md`.
-- 🟡 **W46-002 in progress:** canonical path policy tagging for planning mirrors.
-- 🟡 **W46-003 in progress:** planning truth-set reconciliation across canonical trackers.
-- 📋 **W46-004…W46-010 planned:** documentation matrix, business-doc root decision, code overlap audits, safe-delete wave, CI anti-dup checks, closure metrics.
+- ✅ **W46-002 complete:** canonical path policy tagging applied to planning mirrors with explicit reference-copy banners.
+- ✅ **W46-003 complete:** planning truth-set reconciled across canonical trackers and governance validation passed.
+- 🟡 **W46-004 next active:** documentation dedup matrix (active vs archive vs superseded) now queued as immediate implementation step.
+- 📋 **W46-005…W46-010 planned:** business-doc root decision, code overlap audits, safe-delete wave, CI anti-dup checks, closure metrics.
 - Backlog source: `docs/plans/waves/WAVE_46_IMPLEMENTATION_BACKLOG.md`.
 
 ---
