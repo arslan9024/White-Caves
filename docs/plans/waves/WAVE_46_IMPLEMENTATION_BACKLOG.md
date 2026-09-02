@@ -2,24 +2,24 @@
 
 **Wave:** 46  
 **Focus:** Repository structure cleanup, mirror consolidation, and anti-duplication governance  
-**Status:** 🟢 Active  
+**Status:** ✅ Complete  
 **Date:** 2026-09-03  
 **Entry Gate:** Wave 45 planning state acknowledged + Phase 0 baseline inventory captured
 
 ---
 
-| ID      | Priority | Task                                                                                                                                     | Owner                  | Validation Command                                   | Status         |
-| ------- | -------- | ---------------------------------------------------------------------------------------------------------------------------------------- | ---------------------- | ---------------------------------------------------- | -------------- |
-| W46-001 | P0       | Produce baseline duplication inventory (plans/docs/code roots, duplicate filename hotspots, canonical conflict list)                     | @Mira + @Katherine     | Inventory file created + evidence snapshots captured | ✅ Complete    |
-| W46-002 | P0       | Define canonical path policy for plans/docs/business docs and mark mirror copies as reference-only where applicable                      | @Ada + @Margaret       | `grep` check shows canonical banners on mirrors      | ✅ Complete    |
-| W46-003 | P0       | Reconcile planning truth set: `plans/MASTER_PLAN.md`, `plans/PENDING_TASKS_ONLY.md`, `PROJECT_PROGRESS.md`, `DAILY_MILESTONE_TRACKER.md` | @Margaret + @Katherine | `npm run plans:validate`                             | ✅ Complete    |
-| W46-004 | P1       | Build documentation dedup matrix for `docs/plans/` (active vs archive vs superseded)                                                     | @Margaret              | Matrix with owner/action columns published           | ✅ Complete    |
-| W46-005 | P1       | Business docs consolidation decision: choose canonical root and map migration plan with redirects/pointers                               | @Ada + @Sofia          | Decision record + migration map merged               | ✅ Complete    |
-| W46-006 | P1       | Frontend overlap audit (`src/`, `app/`, `pages/`) and route-entry conflict report                                                        | @Mira + @Una           | Audit report + conflict list                         | ✅ Complete    |
-| W46-007 | P1       | Backend overlap audit (`server/routes`, `server/services`, `api/`) and duplicate handler map                                             | @Mira + @Radia         | Audit report + merge candidates list                 | ✅ Complete    |
-| W46-008 | P2       | Execute safe-delete wave for superseded mirrors after link and pointer verification                                                      | @Katherine             | Link check + clean git diff + no broken references   | ✅ Complete    |
-| W46-009 | P0       | Add anti-duplication governance checks to CI (duplicate-path lint + canonical tracker consistency checks)                                | @Gwynne + @Katherine   | CI pipeline green with new checks                    | ✅ Complete    |
-| W46-010 | P0       | Wave 46 closeout report with before/after metrics (dup count, stub count, file-count delta)                                              | @Margaret + @Katherine | `npm run plans:validate` + closure report published  | 🟡 In Progress |
+| ID      | Priority | Task                                                                                                                                     | Owner                  | Validation Command                                   | Status      |
+| ------- | -------- | ---------------------------------------------------------------------------------------------------------------------------------------- | ---------------------- | ---------------------------------------------------- | ----------- |
+| W46-001 | P0       | Produce baseline duplication inventory (plans/docs/code roots, duplicate filename hotspots, canonical conflict list)                     | @Mira + @Katherine     | Inventory file created + evidence snapshots captured | ✅ Complete |
+| W46-002 | P0       | Define canonical path policy for plans/docs/business docs and mark mirror copies as reference-only where applicable                      | @Ada + @Margaret       | `grep` check shows canonical banners on mirrors      | ✅ Complete |
+| W46-003 | P0       | Reconcile planning truth set: `plans/MASTER_PLAN.md`, `plans/PENDING_TASKS_ONLY.md`, `PROJECT_PROGRESS.md`, `DAILY_MILESTONE_TRACKER.md` | @Margaret + @Katherine | `npm run plans:validate`                             | ✅ Complete |
+| W46-004 | P1       | Build documentation dedup matrix for `docs/plans/` (active vs archive vs superseded)                                                     | @Margaret              | Matrix with owner/action columns published           | ✅ Complete |
+| W46-005 | P1       | Business docs consolidation decision: choose canonical root and map migration plan with redirects/pointers                               | @Ada + @Sofia          | Decision record + migration map merged               | ✅ Complete |
+| W46-006 | P1       | Frontend overlap audit (`src/`, `app/`, `pages/`) and route-entry conflict report                                                        | @Mira + @Una           | Audit report + conflict list                         | ✅ Complete |
+| W46-007 | P1       | Backend overlap audit (`server/routes`, `server/services`, `api/`) and duplicate handler map                                             | @Mira + @Radia         | Audit report + merge candidates list                 | ✅ Complete |
+| W46-008 | P2       | Execute safe-delete wave for superseded mirrors after link and pointer verification                                                      | @Katherine             | Link check + clean git diff + no broken references   | ✅ Complete |
+| W46-009 | P0       | Add anti-duplication governance checks to CI (duplicate-path lint + canonical tracker consistency checks)                                | @Gwynne + @Katherine   | CI pipeline green with new checks                    | ✅ Complete |
+| W46-010 | P0       | Wave 46 closeout report with before/after metrics (dup count, stub count, file-count delta)                                              | @Margaret + @Katherine | `npm run plans:validate` + closure report published  | ✅ Complete |
 
 ---
 
@@ -56,4 +56,5 @@ Wave 46 is complete only when:
 - W46-007 completed with backend overlap and duplicate-handler map: `plans/WAVE_46_BACKEND_OVERLAP_AUDIT_2026-09-03.md`.
 - W46-008 completed with safe-delete execution report: `plans/WAVE_46_SAFE_DELETE_REPORT_2026-09-03.md`.
 - W46-009 completed with CI anti-duplication governance checks: `plans/WAVE_46_CI_ANTI_DUP_GUARD_2026-09-03.md`.
+- W46-010 completed with final metrics closeout: `plans/WAVE_46_CLOSEOUT_REPORT_2026-09-03.md`.
 - Validation command: `npm run plans:validate` ✅ passed.

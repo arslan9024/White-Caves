@@ -47,7 +47,7 @@ Each wave should be executed only in roadmap order.
 | 43   | Audit Log Enhancement + Security Hardening                                  | 📋 Planned  | —                         | —                                            | [`Backlog`](./WAVE_43_IMPLEMENTATION_BACKLOG.md) | —                                    |
 | 44   | Landlord Portal + Advanced Analytics                                        | 📋 Planned  | —                         | —                                            | [`Backlog`](./WAVE_44_IMPLEMENTATION_BACKLOG.md) | —                                    |
 | 45   | Arabic RTL Language Support + PWA Completion (Final SRS Milestone)          | 📋 Planned  | —                         | —                                            | [`Backlog`](./WAVE_45_IMPLEMENTATION_BACKLOG.md) | —                                    |
-| 46   | Deduplication & canonicalization program (plans/docs/code convergence)      | 🟢 Active   | —                         | —                                            | [`Backlog`](./WAVE_46_IMPLEMENTATION_BACKLOG.md) | —                                    |
+| 46   | Deduplication & canonicalization program (plans/docs/code convergence)      | ✅ Complete | —                         | —                                            | [`Backlog`](./WAVE_46_IMPLEMENTATION_BACKLOG.md) | —                                    |
 
 ## Notes
 

@@ -102,3 +102,10 @@
 - Registered active backlog: `docs/plans/waves/WAVE_46_IMPLEMENTATION_BACKLOG.md` and linked it in canonical indexes.
 - Resolved governance blockers by updating wave references and stale metadata in planning surfaces.
 - Validation evidence: `npm run plans:validate` ✅ passed.
+
+13. **✅ Wave 46 Closeout Complete (2026-09-03):**
+
+- Delivered and validated all W46 tasks (`W46-001`…`W46-010`) including dedup matrix, canonical decision records, overlap audits, safe-delete execution, and CI anti-dup guardrails.
+- Added `plans:validate:full` governance gate and wired it into `.github/workflows/ci.yml`, `pr-validation.yml`, and `node.js.yml`.
+- Published final metrics closeout artifact: `plans/WAVE_46_CLOSEOUT_REPORT_2026-09-03.md`.
+- Validation evidence: `npm run plans:validate:full` ✅ passed.

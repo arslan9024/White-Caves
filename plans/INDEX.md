@@ -22,7 +22,8 @@
 | [`WAVE_46_FRONTEND_OVERLAP_AUDIT_2026-09-03.md`](./WAVE_46_FRONTEND_OVERLAP_AUDIT_2026-09-03.md)                     | frontend overlap and route-entry conflict audit (`src/app/pages`)                       | ACTIVE    |
 | [`WAVE_46_BACKEND_OVERLAP_AUDIT_2026-09-03.md`](./WAVE_46_BACKEND_OVERLAP_AUDIT_2026-09-03.md)                       | backend overlap audit + duplicate handler map (`server/routes`,`server/services`,`api`) | ACTIVE    |
 | [`WAVE_46_SAFE_DELETE_REPORT_2026-09-03.md`](./WAVE_46_SAFE_DELETE_REPORT_2026-09-03.md)                             | safe-delete wave execution report + link verification evidence                          | ACTIVE    |
-| [`WAVE_46_CI_ANTI_DUP_GUARD_2026-09-03.md`](./WAVE_46_CI_ANTI_DUP_GUARD_2026-09-03.md)                               | CI anti-duplication governance checks implementation + validation evidence               | ACTIVE    |
+| [`WAVE_46_CI_ANTI_DUP_GUARD_2026-09-03.md`](./WAVE_46_CI_ANTI_DUP_GUARD_2026-09-03.md)                               | CI anti-duplication governance checks implementation + validation evidence              | ACTIVE    |
+| [`WAVE_46_CLOSEOUT_REPORT_2026-09-03.md`](./WAVE_46_CLOSEOUT_REPORT_2026-09-03.md)                                   | final Wave 46 closure metrics and completion summary                                    | ACTIVE    |
 
 ## Wave Bundles (full archive)
 
