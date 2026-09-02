@@ -14,8 +14,13 @@ param(
 $ErrorActionPreference = "Continue"
 $root        = Resolve-Path $WorkspaceRoot
 $promptsFile = Join-Path $root "scripts\orchestrator\prompts.json"
+$promptsFallbackFile = Join-Path $root "aegis\scripts\orchestrator\prompts.json"
 $queueFile   = Join-Path $root "logs\orchestrator\task-queue.json"
 $w           = 72
+
+if (-not (Test-Path $promptsFile) -and (Test-Path $promptsFallbackFile)) {
+  $promptsFile = $promptsFallbackFile
+}
 
 # ------------------------------------------------------------------
 # 1. Gate targets (canonical list -- must stay in sync with fast-complete.ps1)
@@ -146,7 +151,7 @@ foreach ($t in $tasks) {
   # Check 3: target file resolution
   $target = Get-TargetFile $prompt
   if ($target -eq "") {
-    if ($id -like "AGC*") {
+    if ($id -like "AGC*" -or $prompt -match "RESEARCH\+PLAN:\s") {
       $agcNoTargetCount++
     } else {
       $rowIssues += "NO_TARGET: could not extract .md filename from prompt"

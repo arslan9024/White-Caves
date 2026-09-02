@@ -26,8 +26,18 @@ $ErrorActionPreference = "Continue"
 $root        = Resolve-Path $WorkspaceRoot
 $queueFile   = Join-Path $root "logs\orchestrator\task-queue.json"
 $promptsFile = Join-Path $root "scripts\orchestrator\prompts.json"
+$promptsFallbackFile = Join-Path $root "aegis\scripts\orchestrator\prompts.json"
 $browserLaunchScript = Join-Path $root "scripts\orchestrator\browser-launch.ps1"
+$browserLaunchFallbackScript = Join-Path $root "aegis\scripts\orchestrator\browser-launch.ps1"
 $w           = 72
+
+if (-not (Test-Path $promptsFile) -and (Test-Path $promptsFallbackFile)) {
+  $promptsFile = $promptsFallbackFile
+}
+
+if (-not (Test-Path $browserLaunchScript) -and (Test-Path $browserLaunchFallbackScript)) {
+  $browserLaunchScript = $browserLaunchFallbackScript
+}
 
 if (-not (Test-Path $queueFile))   { Write-Host "[ERROR] queue not found"   -ForegroundColor Red; exit 1 }
 if (-not (Test-Path $promptsFile)) { Write-Host "[ERROR] prompts not found" -ForegroundColor Red; exit 1 }
