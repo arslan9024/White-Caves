@@ -78,6 +78,8 @@
     "orchestrator:detect-premium": "node scripts/orchestrator/detect-big-premium-commit.js",
     "orchestrator:premium-guard": "node scripts/orchestrator/post-commit-premium-guard.js",
     "orchestrator:runtime-check": "node scripts/orchestrator/post-premium-runtime-check.js",
+    "plans:dedup:guard": "node aegis/scripts/validate-dedup-governance.js",
+    "plans:validate:full": "npm run plans:validate && npm run plans:dedup:guard",
     "orchestrator:prmr:handoff": "powershell -ExecutionPolicy Bypass -File scripts/orchestrator/pr-mr-handoff.ps1",
     "orchestrator:prmr:handoff:brief": "powershell -ExecutionPolicy Bypass -File scripts/orchestrator/pr-mr-handoff.ps1 -Brief",
     "orchestrator:prmr:handoff:checks": "powershell -ExecutionPolicy Bypass -File scripts/orchestrator/pr-mr-handoff.ps1 -RunChecks",

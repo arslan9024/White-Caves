@@ -18,8 +18,8 @@
 | W46-006 | P1       | Frontend overlap audit (`src/`, `app/`, `pages/`) and route-entry conflict report                                                        | @Mira + @Una           | Audit report + conflict list                         | ✅ Complete    |
 | W46-007 | P1       | Backend overlap audit (`server/routes`, `server/services`, `api/`) and duplicate handler map                                             | @Mira + @Radia         | Audit report + merge candidates list                 | ✅ Complete    |
 | W46-008 | P2       | Execute safe-delete wave for superseded mirrors after link and pointer verification                                                      | @Katherine             | Link check + clean git diff + no broken references   | ✅ Complete    |
-| W46-009 | P0       | Add anti-duplication governance checks to CI (duplicate-path lint + canonical tracker consistency checks)                                | @Gwynne + @Katherine   | CI pipeline green with new checks                    | 🟡 In Progress |
-| W46-010 | P0       | Wave 46 closeout report with before/after metrics (dup count, stub count, file-count delta)                                              | @Margaret + @Katherine | `npm run plans:validate` + closure report published  | 📋 Planned     |
+| W46-009 | P0       | Add anti-duplication governance checks to CI (duplicate-path lint + canonical tracker consistency checks)                                | @Gwynne + @Katherine   | CI pipeline green with new checks                    | ✅ Complete    |
+| W46-010 | P0       | Wave 46 closeout report with before/after metrics (dup count, stub count, file-count delta)                                              | @Margaret + @Katherine | `npm run plans:validate` + closure report published  | 🟡 In Progress |
 
 ---
 
@@ -55,4 +55,5 @@ Wave 46 is complete only when:
 - W46-006 completed with frontend overlap and route-entry conflict audit: `plans/WAVE_46_FRONTEND_OVERLAP_AUDIT_2026-09-03.md`.
 - W46-007 completed with backend overlap and duplicate-handler map: `plans/WAVE_46_BACKEND_OVERLAP_AUDIT_2026-09-03.md`.
 - W46-008 completed with safe-delete execution report: `plans/WAVE_46_SAFE_DELETE_REPORT_2026-09-03.md`.
+- W46-009 completed with CI anti-duplication governance checks: `plans/WAVE_46_CI_ANTI_DUP_GUARD_2026-09-03.md`.
 - Validation command: `npm run plans:validate` ✅ passed.

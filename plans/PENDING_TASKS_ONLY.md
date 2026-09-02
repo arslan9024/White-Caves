@@ -23,8 +23,8 @@
 - ✅ **W46-006 complete:** frontend overlap audit + route-entry conflict report published.
 - ✅ **W46-007 complete:** backend overlap audit + duplicate handler map published.
 - ✅ **W46-008 complete:** safe-delete wave executed with verified unreferenced mirror cleanup.
-- 🟡 **W46-009 next active:** add CI anti-duplication checks (path lint + canonical tracker consistency).
-- 📋 **W46-010 planned:** Wave 46 closure metrics and final report.
+- ✅ **W46-009 complete:** CI anti-duplication guardrails added to local/PR/CI workflows.
+- 🟡 **W46-010 next active:** Wave 46 closure metrics and final report.
 - Backlog source: `docs/plans/waves/WAVE_46_IMPLEMENTATION_BACKLOG.md`.
 
 ---

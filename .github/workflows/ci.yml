@@ -32,6 +32,9 @@ jobs:
       
       - name: Install dependencies
         run: npm ci
+
+      - name: Run planning + dedup governance gate
+        run: npm run plans:validate:full
       
       - name: Run linter
         run: npm run lint --if-present
