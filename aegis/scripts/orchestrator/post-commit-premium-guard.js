@@ -1,5 +1,14 @@
 #!/usr/bin/env node
 import { execSync } from 'node:child_process';
+import { resolve } from 'node:path';
+
+const detectScript = resolve('aegis', 'scripts', 'orchestrator', 'detect-big-premium-commit.js');
+const runtimeCheckScript = resolve(
+  'aegis',
+  'scripts',
+  'orchestrator',
+  'post-premium-runtime-check.js'
+);
 
 function run(command) {
   return execSync(command, { stdio: ['ignore', 'pipe', 'pipe'] })
@@ -16,7 +25,7 @@ function log(message) {
 }
 
 function main() {
-  const detectRaw = run('node scripts/orchestrator/detect-big-premium-commit.js');
+  const detectRaw = run(`node "${detectScript}"`);
   const detect = JSON.parse(detectRaw);
 
   log(`Premium commit detection: ${detect.reason}`);
@@ -30,7 +39,7 @@ function main() {
   }
 
   log('Running premium post-commit runtime guard checks...');
-  runInherit('node scripts/orchestrator/post-premium-runtime-check.js');
+  runInherit(`node "${runtimeCheckScript}"`);
 }
 
 try {
