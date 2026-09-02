@@ -46,7 +46,7 @@ Wave 46 delivered all planned tasks W46-001 through W46-010:
 - `npm run plans:validate` → ✅ passed
 - `npm run plans:validate:full` → ✅ passed
   - includes `plans:dedup:guard`
-  - current warning: missing `REFERENCE COPY` banner in `docs/plans/DAILY_MILESTONE_TRACKER.md` (advisory, non-blocking)
+  - mirror-banner advisory was resolved; current validation runs clean.
 
 ## CI Guardrails Added (W46-009 output)
 
@@ -66,6 +66,6 @@ Wave 46 delivered all planned tasks W46-001 through W46-010:
 
 ## Follow-on Actions
 
-1. Fold advisory mirror-bannering warning into next documentation hygiene pass.
+1. Preserve mirror-bannering rule in future docs updates to keep `plans:dedup:guard` warning-free.
 2. Continue archive-focused pruning for `docs/plans/` duplicate groups with the same safe-delete protocol.
 3. Keep `plans:validate:full` as required gate in all PRs touching planning governance files.

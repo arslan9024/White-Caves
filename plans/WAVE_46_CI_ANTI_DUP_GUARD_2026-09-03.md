@@ -40,7 +40,7 @@ Updated workflows to run the new combined gate:
 ## Validation Evidence
 
 - Local execution: `npm run plans:validate:full` ✅ passed
-- Output included one non-blocking advisory warning on mirror banner consistency.
+- Initial run surfaced one non-blocking mirror-banner advisory, which was resolved in follow-up sync; current `plans:validate:full` runs clean.
 
 ## Acceptance Criteria Check
 
