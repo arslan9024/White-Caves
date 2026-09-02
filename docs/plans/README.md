@@ -1,6 +1,6 @@
 # /plans — Planning Workspace
 
-**Last Updated:** 2026-07-16  
+**Last Updated:** 2026-09-03  
 **Canonical Roadmap:** [`MASTER_PLAN.md`](./MASTER_PLAN.md)
 
 This directory is the implementation planning workspace for White Caves.

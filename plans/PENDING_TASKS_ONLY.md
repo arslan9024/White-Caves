@@ -2,9 +2,9 @@
 
 > **Status:** ACTIVE | **Canonical Path:** `plans/PENDING_TASKS_ONLY.md` | **Archive Copy:** `docs/plans/PENDING_TASKS_ONLY.md`  
 > **System Version:** 2.0.26  
-> **Last Updated:** 2026-08-26  
+> **Last Updated:** 2026-09-03  
 > **Active Stream:** `MASTER_PLAN.md`  
-> **Active Wave Bundle:** Wave 45 (Arabic RTL Support & PWA Offline Engine — SRS Final Phase)  
+> **Active Wave Bundle:** Wave 46 (Deduplication & Canonicalization Program)  
 > **Engineering Model:** Rational Unified Process (RUP)  
 > **Hierarchy:** 1 Managing Director (Arsalan Malik) | 12 Department Managers | 108 Supervisors  
 > **Brand Palette:** Red (`#EF4444`) | White (`#FFFFFF`) | Slate (`#1E293B`)  
@@ -13,14 +13,24 @@
 
 ---
 
+## ✅/📋 Wave 46 Deduplication Program Status
+
+- ✅ **W46-001 complete:** duplication baseline inventory captured in `plans/DEDUP_INVENTORY_BASELINE_2026-09-03.md`.
+- 🟡 **W46-002 in progress:** canonical path policy tagging for planning mirrors.
+- 🟡 **W46-003 in progress:** planning truth-set reconciliation across canonical trackers.
+- 📋 **W46-004…W46-010 planned:** documentation matrix, business-doc root decision, code overlap audits, safe-delete wave, CI anti-dup checks, closure metrics.
+- Backlog source: `docs/plans/waves/WAVE_46_IMPLEMENTATION_BACKLOG.md`.
+
+---
+
 ## 🏛️ Master Company Credentials Ledger (`src/mocks/companyMasterLedger.json`)
 
-| Document Type | Document No. | Issue Date | Expiry Date | 90-Day Alert | 30-Day Alert | Governing Authority |
-|---|---|---|---|---|---|---|
-| **DET License** | `1388443` | 31-07-2024 | 30-07-2026 | 01-05-2026 | 30-06-2026 | Dubai Economy & Tourism (DET) |
-| **RERA ORN** | `44483` | 31-07-2024 | 30-07-2026 | 01-05-2026 | 30-06-2026 | Real Estate Regulatory Agency (RERA) |
-| **HQ Ejari** | `0120250814005322` | 14-08-2025 | 13-08-2026 | 15-05-2026 | 14-07-2026 | Dubai Land Department (DLD) |
-| **ICP Est Card** | `2/1/1192499` | 31-07-2024 | 31-08-2026 | 02-06-2026 | 01-08-2026 | Federal Authority for Identity & Citizenship |
+| Document Type    | Document No.       | Issue Date | Expiry Date | 90-Day Alert | 30-Day Alert | Governing Authority                          |
+| ---------------- | ------------------ | ---------- | ----------- | ------------ | ------------ | -------------------------------------------- |
+| **DET License**  | `1388443`          | 31-07-2024 | 30-07-2026  | 01-05-2026   | 30-06-2026   | Dubai Economy & Tourism (DET)                |
+| **RERA ORN**     | `44483`            | 31-07-2024 | 30-07-2026  | 01-05-2026   | 30-06-2026   | Real Estate Regulatory Agency (RERA)         |
+| **HQ Ejari**     | `0120250814005322` | 14-08-2025 | 13-08-2026  | 15-05-2026   | 14-07-2026   | Dubai Land Department (DLD)                  |
+| **ICP Est Card** | `2/1/1192499`      | 31-07-2024 | 31-08-2026  | 02-06-2026   | 01-08-2026   | Federal Authority for Identity & Citizenship |
 
 ---
 
@@ -54,25 +64,24 @@
 
 ## 🎨 Multi-Zone UI/UX Upgrade Parameters (@Ada RUP Construction)
 
-| Viewport Target | Architecture Tier | Action Directive | UI Pattern | Status |
-| :--- | :--- | :--- | :--- | :--- |
-| `src/components/navigation/TopNavbar.tsx` | GLOBAL_SHELL | Remove written text strings, double logo vector boundaries to 76px x 76px (`h-[76px] w-[76px]`). Enforce 50% vertical overhang past bottom red header line. Shift right. | `OverhangingLogoShell` | ✅ COMPLETED |
-| `src/components/navigation/Sidebar108/` | CRM_SIDEBAR | Unified Collapsible 1-12-108 Command Panel with Founder Sovereign Bypass for `arslanmalikgoraha@gmail.com` [Managing Director Hub]. | `Sidebar108Panel` | 🚀 ACTIVE |
-| `src/components/layout/WorkspaceShell/` | WORKSPACE_SHELL | Eliminates layout shifts with `margin-top: 64px; margin-left: 280px; padding: 24px;` and red/white skeleton screens. | `WorkspaceShellCanvas` | 🚀 ACTIVE |
-| `src/components/navigation/CavesFloatingSearch/` | FLOATING_DOCK | Balanced symmetrical floating search pill (bottom-left) + WhatsApp orb (bottom-right). | `SymmetricalFloatingPill` | 🚀 ACTIVE |
-| `src/components/analytics/GamifiedAnalyticsPodium/` | ANALYTICS_PODIUM | 3-Tier Victory Podiums (AED volume closed), 7-day mini sparklines, and 15-minute pulsing SLA tickers. | `GamifiedLuxuryPodium` | 🚀 ACTIVE |
-
+| Viewport Target                                     | Architecture Tier | Action Directive                                                                                                                                                         | UI Pattern                | Status       |
+| :-------------------------------------------------- | :---------------- | :----------------------------------------------------------------------------------------------------------------------------------------------------------------------- | :------------------------ | :----------- |
+| `src/components/navigation/TopNavbar.tsx`           | GLOBAL_SHELL      | Remove written text strings, double logo vector boundaries to 76px x 76px (`h-[76px] w-[76px]`). Enforce 50% vertical overhang past bottom red header line. Shift right. | `OverhangingLogoShell`    | ✅ COMPLETED |
+| `src/components/navigation/Sidebar108/`             | CRM_SIDEBAR       | Unified Collapsible 1-12-108 Command Panel with Founder Sovereign Bypass for `arslanmalikgoraha@gmail.com` [Managing Director Hub].                                      | `Sidebar108Panel`         | 🚀 ACTIVE    |
+| `src/components/layout/WorkspaceShell/`             | WORKSPACE_SHELL   | Eliminates layout shifts with `margin-top: 64px; margin-left: 280px; padding: 24px;` and red/white skeleton screens.                                                     | `WorkspaceShellCanvas`    | 🚀 ACTIVE    |
+| `src/components/navigation/CavesFloatingSearch/`    | FLOATING_DOCK     | Balanced symmetrical floating search pill (bottom-left) + WhatsApp orb (bottom-right).                                                                                   | `SymmetricalFloatingPill` | 🚀 ACTIVE    |
+| `src/components/analytics/GamifiedAnalyticsPodium/` | ANALYTICS_PODIUM  | 3-Tier Victory Podiums (AED volume closed), 7-day mini sparklines, and 15-minute pulsing SLA tickers.                                                                    | `GamifiedLuxuryPodium`    | 🚀 ACTIVE    |
 
 ---
 
 ## 📐 Algorithms Domain Manifest Index (`software_docs/05_algorithms/`)
 
-| File Path | Department | Algorithm Name | Mathematical / Logic Protocol | SDD Reference |
-| :--- | :--- | :--- | :--- | :--- |
-| `software_docs/05_algorithms/lead_sla_decay.md` | `comms` | Lead SLA Decay & Escalation Algorithm | Weight-Based TTL Decay Penalty Counters | `../02_software_design/rbac_state_gating_sdd.md` |
-| `software_docs/05_algorithms/commission_tier_acceleration.md` | `finance` | Dynamic Commission Tier Accelerator | Threshold-Trigger Split Math (50/50 to 70/30 Split) | `../02_software_design/database_architecture_sdd.md` |
-| `software_docs/05_algorithms/predictive_roi_appraisal.md` | `intelligence` | Predictive Property ROI Appraisal | Linear Regression DLD Density Arrays | `../02_software_design/tech_replacement_rules.md` |
-| `software_docs/05_algorithms/noc_express_pathfinder.md` | `conveyancing` | NOC Express Pathfinder Logic | Graph-Based Delay Analysis across developers | `../02_software_design/tech_replacement_rules.md` |
+| File Path                                                     | Department     | Algorithm Name                        | Mathematical / Logic Protocol                       | SDD Reference                                        |
+| :------------------------------------------------------------ | :------------- | :------------------------------------ | :-------------------------------------------------- | :--------------------------------------------------- |
+| `software_docs/05_algorithms/lead_sla_decay.md`               | `comms`        | Lead SLA Decay & Escalation Algorithm | Weight-Based TTL Decay Penalty Counters             | `../02_software_design/rbac_state_gating_sdd.md`     |
+| `software_docs/05_algorithms/commission_tier_acceleration.md` | `finance`      | Dynamic Commission Tier Accelerator   | Threshold-Trigger Split Math (50/50 to 70/30 Split) | `../02_software_design/database_architecture_sdd.md` |
+| `software_docs/05_algorithms/predictive_roi_appraisal.md`     | `intelligence` | Predictive Property ROI Appraisal     | Linear Regression DLD Density Arrays                | `../02_software_design/tech_replacement_rules.md`    |
+| `software_docs/05_algorithms/noc_express_pathfinder.md`       | `conveyancing` | NOC Express Pathfinder Logic          | Graph-Based Delay Analysis across developers        | `../02_software_design/tech_replacement_rules.md`    |
 
 ---
 
@@ -118,5 +127,3 @@
   "status": "FORENSIC_RESOLUTION_ACTIVE"
 }
 ```
-
-
