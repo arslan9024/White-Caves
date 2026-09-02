@@ -1,28 +1,11 @@
 {
-  "DU001": {
-    "v": 1,
-    "agent": "@S5",
-    "action": "EXPAND",
-    "target": "wave-16-security-hardening.md",
-    "prompt": "@S5 -- EXPAND: wave-16-security-hardening.md -> add CSRF coverage plan for all mutation routes, token issuance, validation points, and rollout verification",
-    "tags": [
-      "security",
-      "api"
-    ],
-    "lastUsed": "2026-07-28",
-    "successCount": 0,
-    "history": []
-  },
   "T001": {
     "v": 1,
     "agent": "@Sofia",
     "action": "RESEARCH+PLAN",
     "target": "compliance-baseline-expansion.md",
     "prompt": "@Sofia -- RESEARCH+PLAN: Compliance baseline expansion. Analyze current project status for frontend/backend/API/data, UI/UX, accessibility, performance, security, testing, and ops readiness; produce an implementation-ready backlog with priorities, root causes, acceptance criteria, tests, risks (P0/P1/P2), and FEEDS/FEEDS_ACK handoffs.",
-    "tags": [
-      "backlog",
-      "planning"
-    ],
+    "tags": ["backlog", "planning"],
     "lastUsed": "2026-07-27",
     "successCount": 1,
     "history": []
@@ -33,10 +16,7 @@
     "action": "RESEARCH+PLAN",
     "target": "risk-register-regulatory-penalty-table.md",
     "prompt": "@Sofia -- RESEARCH+PLAN: Risk register regulatory penalty table. Analyze current project status for frontend/backend/API/data, UI/UX, accessibility, performance, security, testing, and ops readiness; produce an implementation-ready backlog with priorities, root causes, acceptance criteria, tests, risks (P0/P1/P2), and FEEDS/FEEDS_ACK handoffs.",
-    "tags": [
-      "backlog",
-      "planning"
-    ],
+    "tags": ["backlog", "planning"],
     "lastUsed": "2026-07-27",
     "successCount": 1,
     "history": []
@@ -47,10 +27,7 @@
     "action": "RESEARCH+PLAN",
     "target": "rera-2024-updates-and-uae-pdpl-compliance-audit.md",
     "prompt": "@Sofia -- RESEARCH+PLAN: RERA 2024 updates and UAE PDPL compliance audit. Analyze current project status for frontend/backend/API/data, UI/UX, accessibility, performance, security, testing, and ops readiness; produce an implementation-ready backlog with priorities, root causes, acceptance criteria, tests, risks (P0/P1/P2), and FEEDS/FEEDS_ACK handoffs.",
-    "tags": [
-      "backlog",
-      "planning"
-    ],
+    "tags": ["backlog", "planning"],
     "lastUsed": "2026-07-27",
     "successCount": 1,
     "history": []
@@ -61,10 +38,7 @@
     "action": "RESEARCH+PLAN",
     "target": "dld/legal-integration-expansion.md",
     "prompt": "@Timnit -- RESEARCH+PLAN: DLD/legal integration expansion. Analyze current project status for frontend/backend/API/data, UI/UX, accessibility, performance, security, testing, and ops readiness; produce an implementation-ready backlog with priorities, root causes, acceptance criteria, tests, risks (P0/P1/P2), and FEEDS/FEEDS_ACK handoffs.",
-    "tags": [
-      "backlog",
-      "planning"
-    ],
+    "tags": ["backlog", "planning"],
     "lastUsed": "2026-07-27",
     "successCount": 1,
     "history": []
@@ -75,10 +49,7 @@
     "action": "RESEARCH+PLAN",
     "target": "legal-management-contract-template-library.md",
     "prompt": "@Timnit -- RESEARCH+PLAN: Legal management contract template library. Analyze current project status for frontend/backend/API/data, UI/UX, accessibility, performance, security, testing, and ops readiness; produce an implementation-ready backlog with priorities, root causes, acceptance criteria, tests, risks (P0/P1/P2), and FEEDS/FEEDS_ACK handoffs.",
-    "tags": [
-      "backlog",
-      "planning"
-    ],
+    "tags": ["backlog", "planning"],
     "lastUsed": "2026-07-27",
     "successCount": 1,
     "history": []
@@ -89,10 +60,7 @@
     "action": "RESEARCH+PLAN",
     "target": "uae-pdpl-data-subject-rights-and-consent-spec.md",
     "prompt": "@Timnit -- RESEARCH+PLAN: UAE PDPL data subject rights and consent spec. Analyze current project status for frontend/backend/API/data, UI/UX, accessibility, performance, security, testing, and ops readiness; produce an implementation-ready backlog with priorities, root causes, acceptance criteria, tests, risks (P0/P1/P2), and FEEDS/FEEDS_ACK handoffs.",
-    "tags": [
-      "backlog",
-      "planning"
-    ],
+    "tags": ["backlog", "planning"],
     "lastUsed": "2026-07-27",
     "successCount": 1,
     "history": []
@@ -103,10 +71,7 @@
     "action": "RESEARCH+PLAN",
     "target": "tenancy-legal-workflow-completion.md",
     "prompt": "@Victoria -- RESEARCH+PLAN: Tenancy legal workflow completion. Analyze current project status for frontend/backend/API/data, UI/UX, accessibility, performance, security, testing, and ops readiness; produce an implementation-ready backlog with priorities, root causes, acceptance criteria, tests, risks (P0/P1/P2), and FEEDS/FEEDS_ACK handoffs.",
-    "tags": [
-      "backlog",
-      "planning"
-    ],
+    "tags": ["backlog", "planning"],
     "lastUsed": "2026-07-27",
     "successCount": 1,
     "history": []
@@ -117,10 +82,7 @@
     "action": "RESEARCH+PLAN",
     "target": "pdc-post-dated-cheque-and-bounced-cheque-workflow.md",
     "prompt": "@Victoria -- RESEARCH+PLAN: PDC post-dated cheque and bounced cheque workflow. Analyze current project status for frontend/backend/API/data, UI/UX, accessibility, performance, security, testing, and ops readiness; produce an implementation-ready backlog with priorities, root causes, acceptance criteria, tests, risks (P0/P1/P2), and FEEDS/FEEDS_ACK handoffs.",
-    "tags": [
-      "backlog",
-      "planning"
-    ],
+    "tags": ["backlog", "planning"],
     "lastUsed": "2026-07-27",
     "successCount": 1,
     "history": []
@@ -131,10 +93,7 @@
     "action": "RESEARCH+PLAN",
     "target": "landlord-portal-kyc-and-noc-letter-generation.md",
     "prompt": "@Victoria -- RESEARCH+PLAN: Landlord portal KYC and NOC letter generation. Analyze current project status for frontend/backend/API/data, UI/UX, accessibility, performance, security, testing, and ops readiness; produce an implementation-ready backlog with priorities, root causes, acceptance criteria, tests, risks (P0/P1/P2), and FEEDS/FEEDS_ACK handoffs.",
-    "tags": [
-      "backlog",
-      "planning"
-    ],
+    "tags": ["backlog", "planning"],
     "lastUsed": "2026-07-27",
     "successCount": 1,
     "history": []
@@ -145,10 +104,7 @@
     "action": "RESEARCH+PLAN",
     "target": "tenant-portal-and-doc-gen-expansion.md",
     "prompt": "@Annie -- RESEARCH+PLAN: Tenant portal and doc-gen expansion. Analyze current project status for frontend/backend/API/data, UI/UX, accessibility, performance, security, testing, and ops readiness; produce an implementation-ready backlog with priorities, root causes, acceptance criteria, tests, risks (P0/P1/P2), and FEEDS/FEEDS_ACK handoffs.",
-    "tags": [
-      "backlog",
-      "planning"
-    ],
+    "tags": ["backlog", "planning"],
     "lastUsed": "2026-07-27",
     "successCount": 1,
     "history": []
@@ -159,10 +115,7 @@
     "action": "RESEARCH+PLAN",
     "target": "document-generation-pdf-spec.md",
     "prompt": "@Annie -- RESEARCH+PLAN: Document generation PDF spec. Analyze current project status for frontend/backend/API/data, UI/UX, accessibility, performance, security, testing, and ops readiness; produce an implementation-ready backlog with priorities, root causes, acceptance criteria, tests, risks (P0/P1/P2), and FEEDS/FEEDS_ACK handoffs.",
-    "tags": [
-      "backlog",
-      "planning"
-    ],
+    "tags": ["backlog", "planning"],
     "lastUsed": "2026-07-27",
     "successCount": 1,
     "history": []
@@ -173,10 +126,7 @@
     "action": "RESEARCH+PLAN",
     "target": "email-automation-triggers-via-resend-api.md",
     "prompt": "@Annie -- RESEARCH+PLAN: Email automation triggers via Resend API. Analyze current project status for frontend/backend/API/data, UI/UX, accessibility, performance, security, testing, and ops readiness; produce an implementation-ready backlog with priorities, root causes, acceptance criteria, tests, risks (P0/P1/P2), and FEEDS/FEEDS_ACK handoffs.",
-    "tags": [
-      "backlog",
-      "planning"
-    ],
+    "tags": ["backlog", "planning"],
     "lastUsed": "2026-07-27",
     "successCount": 1,
     "history": []
@@ -187,10 +137,7 @@
     "action": "RESEARCH+PLAN",
     "target": "ux-and-luxury-journey-synthesis.md",
     "prompt": "@Marissa -- RESEARCH+PLAN: UX and luxury journey synthesis. Analyze current project status for frontend/backend/API/data, UI/UX, accessibility, performance, security, testing, and ops readiness; produce an implementation-ready backlog with priorities, root causes, acceptance criteria, tests, risks (P0/P1/P2), and FEEDS/FEEDS_ACK handoffs.",
-    "tags": [
-      "backlog",
-      "planning"
-    ],
+    "tags": ["backlog", "planning"],
     "lastUsed": "2026-07-27",
     "successCount": 1,
     "history": []
@@ -201,10 +148,7 @@
     "action": "RESEARCH+PLAN",
     "target": "community-management-spec.md",
     "prompt": "@Marissa -- RESEARCH+PLAN: Community management spec. Analyze current project status for frontend/backend/API/data, UI/UX, accessibility, performance, security, testing, and ops readiness; produce an implementation-ready backlog with priorities, root causes, acceptance criteria, tests, risks (P0/P1/P2), and FEEDS/FEEDS_ACK handoffs.",
-    "tags": [
-      "backlog",
-      "planning"
-    ],
+    "tags": ["backlog", "planning"],
     "lastUsed": "2026-07-27",
     "successCount": 1,
     "history": []
@@ -215,10 +159,7 @@
     "action": "RESEARCH+PLAN",
     "target": "ui/ux-mobile-breakpoints-and-dark-mode-token-map.md",
     "prompt": "@Marissa -- RESEARCH+PLAN: UI/UX mobile breakpoints and dark mode token map. Analyze current project status for frontend/backend/API/data, UI/UX, accessibility, performance, security, testing, and ops readiness; produce an implementation-ready backlog with priorities, root causes, acceptance criteria, tests, risks (P0/P1/P2), and FEEDS/FEEDS_ACK handoffs.",
-    "tags": [
-      "backlog",
-      "planning"
-    ],
+    "tags": ["backlog", "planning"],
     "lastUsed": "2026-07-27",
     "successCount": 1,
     "history": []
@@ -229,10 +170,7 @@
     "action": "RESEARCH+PLAN",
     "target": "seo/marketing-strategy-enrichment.md",
     "prompt": "@Rachel -- RESEARCH+PLAN: SEO/marketing strategy enrichment. Analyze current project status for frontend/backend/API/data, UI/UX, accessibility, performance, security, testing, and ops readiness; produce an implementation-ready backlog with priorities, root causes, acceptance criteria, tests, risks (P0/P1/P2), and FEEDS/FEEDS_ACK handoffs.",
-    "tags": [
-      "backlog",
-      "planning"
-    ],
+    "tags": ["backlog", "planning"],
     "lastUsed": "2026-07-27",
     "successCount": 1,
     "history": []
@@ -243,10 +181,7 @@
     "action": "RESEARCH+PLAN",
     "target": "marketing-campaigns-whatsapp-broadcast-builder.md",
     "prompt": "@Rachel -- RESEARCH+PLAN: Marketing campaigns WhatsApp broadcast builder. Analyze current project status for frontend/backend/API/data, UI/UX, accessibility, performance, security, testing, and ops readiness; produce an implementation-ready backlog with priorities, root causes, acceptance criteria, tests, risks (P0/P1/P2), and FEEDS/FEEDS_ACK handoffs.",
-    "tags": [
-      "backlog",
-      "planning"
-    ],
+    "tags": ["backlog", "planning"],
     "lastUsed": "2026-07-27",
     "successCount": 1,
     "history": []
@@ -257,10 +192,7 @@
     "action": "RESEARCH+PLAN",
     "target": "careers-portal-spec.md",
     "prompt": "@Rachel -- RESEARCH+PLAN: Careers portal spec. Analyze current project status for frontend/backend/API/data, UI/UX, accessibility, performance, security, testing, and ops readiness; produce an implementation-ready backlog with priorities, root causes, acceptance criteria, tests, risks (P0/P1/P2), and FEEDS/FEEDS_ACK handoffs.",
-    "tags": [
-      "backlog",
-      "planning"
-    ],
+    "tags": ["backlog", "planning"],
     "lastUsed": "2026-07-27",
     "successCount": 1,
     "history": []
@@ -271,10 +203,7 @@
     "action": "RESEARCH+PLAN",
     "target": "ai-persona-and-fallback-matrix-handoff.md",
     "prompt": "@Joelle -- RESEARCH+PLAN: AI persona and fallback matrix handoff. Analyze current project status for frontend/backend/API/data, UI/UX, accessibility, performance, security, testing, and ops readiness; produce an implementation-ready backlog with priorities, root causes, acceptance criteria, tests, risks (P0/P1/P2), and FEEDS/FEEDS_ACK handoffs.",
-    "tags": [
-      "backlog",
-      "planning"
-    ],
+    "tags": ["backlog", "planning"],
     "lastUsed": "2026-07-27",
     "successCount": 1,
     "history": []
@@ -285,10 +214,7 @@
     "action": "RESEARCH+PLAN",
     "target": "ai-personas-25-35-draft-(intelligence-cluster).md",
     "prompt": "@Joelle -- RESEARCH+PLAN: AI personas 25-35 draft (Intelligence cluster). Analyze current project status for frontend/backend/API/data, UI/UX, accessibility, performance, security, testing, and ops readiness; produce an implementation-ready backlog with priorities, root causes, acceptance criteria, tests, risks (P0/P1/P2), and FEEDS/FEEDS_ACK handoffs.",
-    "tags": [
-      "backlog",
-      "planning"
-    ],
+    "tags": ["backlog", "planning"],
     "lastUsed": "2026-07-27",
     "successCount": 1,
     "history": []
@@ -299,10 +225,7 @@
     "action": "RESEARCH+PLAN",
     "target": "lead-scoring-ai-logic-and-integration-map-update.md",
     "prompt": "@Joelle -- RESEARCH+PLAN: Lead scoring AI logic and integration map update. Analyze current project status for frontend/backend/API/data, UI/UX, accessibility, performance, security, testing, and ops readiness; produce an implementation-ready backlog with priorities, root causes, acceptance criteria, tests, risks (P0/P1/P2), and FEEDS/FEEDS_ACK handoffs.",
-    "tags": [
-      "backlog",
-      "planning"
-    ],
+    "tags": ["backlog", "planning"],
     "lastUsed": "2026-07-27",
     "successCount": 1,
     "history": []
@@ -313,10 +236,7 @@
     "action": "RESEARCH+PLAN",
     "target": "valuation-and-market-inputs.md",
     "prompt": "@Fei-Fei -- RESEARCH+PLAN: Valuation and market inputs. Analyze current project status for frontend/backend/API/data, UI/UX, accessibility, performance, security, testing, and ops readiness; produce an implementation-ready backlog with priorities, root causes, acceptance criteria, tests, risks (P0/P1/P2), and FEEDS/FEEDS_ACK handoffs.",
-    "tags": [
-      "backlog",
-      "planning"
-    ],
+    "tags": ["backlog", "planning"],
     "lastUsed": "2026-07-27",
     "successCount": 1,
     "history": []
@@ -327,10 +247,7 @@
     "action": "RESEARCH+PLAN",
     "target": "market-intelligence-area-price-index-and-dld-feeds.md",
     "prompt": "@Fei-Fei -- RESEARCH+PLAN: Market intelligence area price index and DLD feeds. Analyze current project status for frontend/backend/API/data, UI/UX, accessibility, performance, security, testing, and ops readiness; produce an implementation-ready backlog with priorities, root causes, acceptance criteria, tests, risks (P0/P1/P2), and FEEDS/FEEDS_ACK handoffs.",
-    "tags": [
-      "backlog",
-      "planning"
-    ],
+    "tags": ["backlog", "planning"],
     "lastUsed": "2026-07-27",
     "successCount": 1,
     "history": []
@@ -341,10 +258,7 @@
     "action": "RESEARCH+PLAN",
     "target": "market-analytics-kpi-tiles-and-export-spec.md",
     "prompt": "@Fei-Fei -- RESEARCH+PLAN: Market analytics KPI tiles and export spec. Analyze current project status for frontend/backend/API/data, UI/UX, accessibility, performance, security, testing, and ops readiness; produce an implementation-ready backlog with priorities, root causes, acceptance criteria, tests, risks (P0/P1/P2), and FEEDS/FEEDS_ACK handoffs.",
-    "tags": [
-      "backlog",
-      "planning"
-    ],
+    "tags": ["backlog", "planning"],
     "lastUsed": "2026-07-27",
     "successCount": 1,
     "history": []
@@ -355,10 +269,7 @@
     "action": "RESEARCH+PLAN",
     "target": "data-pipeline-and-secondary-sales-bridge.md",
     "prompt": "@Anima -- RESEARCH+PLAN: Data pipeline and secondary-sales bridge. Analyze current project status for frontend/backend/API/data, UI/UX, accessibility, performance, security, testing, and ops readiness; produce an implementation-ready backlog with priorities, root causes, acceptance criteria, tests, risks (P0/P1/P2), and FEEDS/FEEDS_ACK handoffs.",
-    "tags": [
-      "backlog",
-      "planning"
-    ],
+    "tags": ["backlog", "planning"],
     "lastUsed": "2026-07-27",
     "successCount": 1,
     "history": []
@@ -369,10 +280,7 @@
     "action": "RESEARCH+PLAN",
     "target": "currency-management-and-exchange-rate-cache-spec.md",
     "prompt": "@Anima -- RESEARCH+PLAN: Currency management and exchange-rate cache spec. Analyze current project status for frontend/backend/API/data, UI/UX, accessibility, performance, security, testing, and ops readiness; produce an implementation-ready backlog with priorities, root causes, acceptance criteria, tests, risks (P0/P1/P2), and FEEDS/FEEDS_ACK handoffs.",
-    "tags": [
-      "backlog",
-      "planning"
-    ],
+    "tags": ["backlog", "planning"],
     "lastUsed": "2026-07-27",
     "successCount": 1,
     "history": []
@@ -383,10 +291,7 @@
     "action": "RESEARCH+PLAN",
     "target": "analytics-dashboard-data-pipeline-architecture.md",
     "prompt": "@Anima -- RESEARCH+PLAN: Analytics dashboard data pipeline architecture. Analyze current project status for frontend/backend/API/data, UI/UX, accessibility, performance, security, testing, and ops readiness; produce an implementation-ready backlog with priorities, root causes, acceptance criteria, tests, risks (P0/P1/P2), and FEEDS/FEEDS_ACK handoffs.",
-    "tags": [
-      "backlog",
-      "planning"
-    ],
+    "tags": ["backlog", "planning"],
     "lastUsed": "2026-07-27",
     "successCount": 1,
     "history": []
@@ -397,10 +302,7 @@
     "action": "RESEARCH+PLAN",
     "target": "inventory-investment-synthesis.md",
     "prompt": "@Mary -- RESEARCH+PLAN: Inventory-investment synthesis. Analyze current project status for frontend/backend/API/data, UI/UX, accessibility, performance, security, testing, and ops readiness; produce an implementation-ready backlog with priorities, root causes, acceptance criteria, tests, risks (P0/P1/P2), and FEEDS/FEEDS_ACK handoffs.",
-    "tags": [
-      "backlog",
-      "planning"
-    ],
+    "tags": ["backlog", "planning"],
     "lastUsed": "2026-07-27",
     "successCount": 1,
     "history": []
@@ -411,10 +313,7 @@
     "action": "RESEARCH+PLAN",
     "target": "investment-management-portfolio-dashboard-spec.md",
     "prompt": "@Mary -- RESEARCH+PLAN: Investment management portfolio dashboard spec. Analyze current project status for frontend/backend/API/data, UI/UX, accessibility, performance, security, testing, and ops readiness; produce an implementation-ready backlog with priorities, root causes, acceptance criteria, tests, risks (P0/P1/P2), and FEEDS/FEEDS_ACK handoffs.",
-    "tags": [
-      "backlog",
-      "planning"
-    ],
+    "tags": ["backlog", "planning"],
     "lastUsed": "2026-07-27",
     "successCount": 1,
     "history": []
@@ -425,10 +324,7 @@
     "action": "RESEARCH+PLAN",
     "target": "prospecting-outbound-hunterprospecting-module-spec.md",
     "prompt": "@Mary -- RESEARCH+PLAN: Prospecting outbound HunterProspecting module spec. Analyze current project status for frontend/backend/API/data, UI/UX, accessibility, performance, security, testing, and ops readiness; produce an implementation-ready backlog with priorities, root causes, acceptance criteria, tests, risks (P0/P1/P2), and FEEDS/FEEDS_ACK handoffs.",
-    "tags": [
-      "backlog",
-      "planning"
-    ],
+    "tags": ["backlog", "planning"],
     "lastUsed": "2026-07-27",
     "successCount": 1,
     "history": []
@@ -439,10 +335,7 @@
     "action": "RESEARCH+PLAN",
     "target": "financial-modeling-and-kpi-bridge.md",
     "prompt": "@Invoice -- RESEARCH+PLAN: Financial modeling and KPI bridge. Analyze current project status for frontend/backend/API/data, UI/UX, accessibility, performance, security, testing, and ops readiness; produce an implementation-ready backlog with priorities, root causes, acceptance criteria, tests, risks (P0/P1/P2), and FEEDS/FEEDS_ACK handoffs.",
-    "tags": [
-      "backlog",
-      "planning"
-    ],
+    "tags": ["backlog", "planning"],
     "lastUsed": "2026-07-27",
     "successCount": 1,
     "history": []
@@ -453,10 +346,7 @@
     "action": "RESEARCH+PLAN",
     "target": "uae-vat-reporting-fta-5%-and-cash-flow-forecast.md",
     "prompt": "@Invoice -- RESEARCH+PLAN: UAE VAT reporting FTA 5% and cash flow forecast. Analyze current project status for frontend/backend/API/data, UI/UX, accessibility, performance, security, testing, and ops readiness; produce an implementation-ready backlog with priorities, root causes, acceptance criteria, tests, risks (P0/P1/P2), and FEEDS/FEEDS_ACK handoffs.",
-    "tags": [
-      "backlog",
-      "planning"
-    ],
+    "tags": ["backlog", "planning"],
     "lastUsed": "2026-07-27",
     "successCount": 1,
     "history": []
@@ -465,12 +355,9 @@
     "v": 1,
     "agent": "@Invoice",
     "action": "RESEARCH+PLAN",
-    "target": "revenue-model-3-year-pro-forma-and-p&l-spec.md",
-    "prompt": "@Invoice -- RESEARCH+PLAN: Revenue model 3-year pro-forma and P&L spec. Analyze current project status for frontend/backend/API/data, UI/UX, accessibility, performance, security, testing, and ops readiness; produce an implementation-ready backlog with priorities, root causes, acceptance criteria, tests, risks (P0/P1/P2), and FEEDS/FEEDS_ACK handoffs.",
-    "tags": [
-      "backlog",
-      "planning"
-    ],
+    "target": "revenue-model-3-year-pro-forma-and-p\u0026l-spec.md",
+    "prompt": "@Invoice -- RESEARCH+PLAN: Revenue model 3-year pro-forma and P\u0026L spec. Analyze current project status for frontend/backend/API/data, UI/UX, accessibility, performance, security, testing, and ops readiness; produce an implementation-ready backlog with priorities, root causes, acceptance criteria, tests, risks (P0/P1/P2), and FEEDS/FEEDS_ACK handoffs.",
+    "tags": ["backlog", "planning"],
     "lastUsed": "2026-07-27",
     "successCount": 1,
     "history": []
@@ -481,10 +368,7 @@
     "action": "RESEARCH+PLAN",
     "target": "viewing-and-scheduling-contracts.md",
     "prompt": "@Booking -- RESEARCH+PLAN: Viewing and scheduling contracts. Analyze current project status for frontend/backend/API/data, UI/UX, accessibility, performance, security, testing, and ops readiness; produce an implementation-ready backlog with priorities, root causes, acceptance criteria, tests, risks (P0/P1/P2), and FEEDS/FEEDS_ACK handoffs.",
-    "tags": [
-      "backlog",
-      "planning"
-    ],
+    "tags": ["backlog", "planning"],
     "lastUsed": "2026-07-27",
     "successCount": 1,
     "history": []
@@ -495,10 +379,7 @@
     "action": "RESEARCH+PLAN",
     "target": "agent-calendar-availability-and-google-sync-spec.md",
     "prompt": "@Booking -- RESEARCH+PLAN: Agent calendar availability and Google sync spec. Analyze current project status for frontend/backend/API/data, UI/UX, accessibility, performance, security, testing, and ops readiness; produce an implementation-ready backlog with priorities, root causes, acceptance criteria, tests, risks (P0/P1/P2), and FEEDS/FEEDS_ACK handoffs.",
-    "tags": [
-      "backlog",
-      "planning"
-    ],
+    "tags": ["backlog", "planning"],
     "lastUsed": "2026-07-27",
     "successCount": 1,
     "history": []
@@ -509,10 +390,7 @@
     "action": "RESEARCH+PLAN",
     "target": "virtual-viewing-zoom-integration-and-post-viewing-flow.md",
     "prompt": "@Booking -- RESEARCH+PLAN: Virtual viewing Zoom integration and post-viewing flow. Analyze current project status for frontend/backend/API/data, UI/UX, accessibility, performance, security, testing, and ops readiness; produce an implementation-ready backlog with priorities, root causes, acceptance criteria, tests, risks (P0/P1/P2), and FEEDS/FEEDS_ACK handoffs.",
-    "tags": [
-      "backlog",
-      "planning"
-    ],
+    "tags": ["backlog", "planning"],
     "lastUsed": "2026-07-27",
     "successCount": 1,
     "history": []
@@ -523,10 +401,7 @@
     "action": "RESEARCH+PLAN",
     "target": "off-plan-handover-flow.md",
     "prompt": "@Maya -- RESEARCH+PLAN: Off-plan handover flow. Analyze current project status for frontend/backend/API/data, UI/UX, accessibility, performance, security, testing, and ops readiness; produce an implementation-ready backlog with priorities, root causes, acceptance criteria, tests, risks (P0/P1/P2), and FEEDS/FEEDS_ACK handoffs.",
-    "tags": [
-      "backlog",
-      "planning"
-    ],
+    "tags": ["backlog", "planning"],
     "lastUsed": "2026-07-27",
     "successCount": 1,
     "history": []
@@ -537,10 +412,7 @@
     "action": "RESEARCH+PLAN",
     "target": "snagging-checklist-and-handover-certificate-spec.md",
     "prompt": "@Maya -- RESEARCH+PLAN: Snagging checklist and handover certificate spec. Analyze current project status for frontend/backend/API/data, UI/UX, accessibility, performance, security, testing, and ops readiness; produce an implementation-ready backlog with priorities, root causes, acceptance criteria, tests, risks (P0/P1/P2), and FEEDS/FEEDS_ACK handoffs.",
-    "tags": [
-      "backlog",
-      "planning"
-    ],
+    "tags": ["backlog", "planning"],
     "lastUsed": "2026-07-27",
     "successCount": 1,
     "history": []
@@ -551,10 +423,7 @@
     "action": "RESEARCH+PLAN",
     "target": "off-plan-payment-plan-engine-and-escrow-compliance.md",
     "prompt": "@Maya -- RESEARCH+PLAN: Off-plan payment plan engine and escrow compliance. Analyze current project status for frontend/backend/API/data, UI/UX, accessibility, performance, security, testing, and ops readiness; produce an implementation-ready backlog with priorities, root causes, acceptance criteria, tests, risks (P0/P1/P2), and FEEDS/FEEDS_ACK handoffs.",
-    "tags": [
-      "backlog",
-      "planning"
-    ],
+    "tags": ["backlog", "planning"],
     "lastUsed": "2026-07-27",
     "successCount": 1,
     "history": []
@@ -565,10 +434,7 @@
     "action": "RESEARCH+PLAN",
     "target": "audit-and-follow-up-controls.md",
     "prompt": "@Hedy -- RESEARCH+PLAN: Audit and follow-up controls. Analyze current project status for frontend/backend/API/data, UI/UX, accessibility, performance, security, testing, and ops readiness; produce an implementation-ready backlog with priorities, root causes, acceptance criteria, tests, risks (P0/P1/P2), and FEEDS/FEEDS_ACK handoffs.",
-    "tags": [
-      "backlog",
-      "planning"
-    ],
+    "tags": ["backlog", "planning"],
     "lastUsed": "2026-07-27",
     "successCount": 1,
     "history": []
@@ -579,10 +445,7 @@
     "action": "RESEARCH+PLAN",
     "target": "activity-feed-event-types-and-personal-vs-company-feed.md",
     "prompt": "@Hedy -- RESEARCH+PLAN: Activity feed event types and personal vs company feed. Analyze current project status for frontend/backend/API/data, UI/UX, accessibility, performance, security, testing, and ops readiness; produce an implementation-ready backlog with priorities, root causes, acceptance criteria, tests, risks (P0/P1/P2), and FEEDS/FEEDS_ACK handoffs.",
-    "tags": [
-      "backlog",
-      "planning"
-    ],
+    "tags": ["backlog", "planning"],
     "lastUsed": "2026-07-27",
     "successCount": 1,
     "history": []
@@ -593,10 +456,7 @@
     "action": "RESEARCH+PLAN",
     "target": "follow-up-automation-sequence-builder-and-cron-engine.md",
     "prompt": "@Hedy -- RESEARCH+PLAN: Follow-up automation sequence builder and cron engine. Analyze current project status for frontend/backend/API/data, UI/UX, accessibility, performance, security, testing, and ops readiness; produce an implementation-ready backlog with priorities, root causes, acceptance criteria, tests, risks (P0/P1/P2), and FEEDS/FEEDS_ACK handoffs.",
-    "tags": [
-      "backlog",
-      "planning"
-    ],
+    "tags": ["backlog", "planning"],
     "lastUsed": "2026-07-27",
     "successCount": 1,
     "history": []
@@ -607,10 +467,7 @@
     "action": "RESEARCH+PLAN",
     "target": "analytics-synthesis-and-kpi-evidence.md",
     "prompt": "@Cassie -- RESEARCH+PLAN: Analytics synthesis and KPI evidence. Analyze current project status for frontend/backend/API/data, UI/UX, accessibility, performance, security, testing, and ops readiness; produce an implementation-ready backlog with priorities, root causes, acceptance criteria, tests, risks (P0/P1/P2), and FEEDS/FEEDS_ACK handoffs.",
-    "tags": [
-      "backlog",
-      "planning"
-    ],
+    "tags": ["backlog", "planning"],
     "lastUsed": "2026-07-27",
     "successCount": 1,
     "history": []
@@ -621,10 +478,7 @@
     "action": "RESEARCH+PLAN",
     "target": "agent-performance-rera-license-tracking-and-pip-spec.md",
     "prompt": "@Cassie -- RESEARCH+PLAN: Agent performance RERA license tracking and PIP spec. Analyze current project status for frontend/backend/API/data, UI/UX, accessibility, performance, security, testing, and ops readiness; produce an implementation-ready backlog with priorities, root causes, acceptance criteria, tests, risks (P0/P1/P2), and FEEDS/FEEDS_ACK handoffs.",
-    "tags": [
-      "backlog",
-      "planning"
-    ],
+    "tags": ["backlog", "planning"],
     "lastUsed": "2026-07-27",
     "successCount": 1,
     "history": []
@@ -635,10 +489,7 @@
     "action": "RESEARCH+PLAN",
     "target": "mobile-analytics-view-and-csv/excel-export-api-spec.md",
     "prompt": "@Cassie -- RESEARCH+PLAN: Mobile analytics view and CSV/Excel export API spec. Analyze current project status for frontend/backend/API/data, UI/UX, accessibility, performance, security, testing, and ops readiness; produce an implementation-ready backlog with priorities, root causes, acceptance criteria, tests, risks (P0/P1/P2), and FEEDS/FEEDS_ACK handoffs.",
-    "tags": [
-      "backlog",
-      "planning"
-    ],
+    "tags": ["backlog", "planning"],
     "lastUsed": "2026-07-27",
     "successCount": 1,
     "history": []
@@ -649,10 +500,7 @@
     "action": "RESEARCH+PLAN",
     "target": "offers-and-whatsapp-routing.md",
     "prompt": "@Jaime -- RESEARCH+PLAN: Offers and WhatsApp routing. Analyze current project status for frontend/backend/API/data, UI/UX, accessibility, performance, security, testing, and ops readiness; produce an implementation-ready backlog with priorities, root causes, acceptance criteria, tests, risks (P0/P1/P2), and FEEDS/FEEDS_ACK handoffs.",
-    "tags": [
-      "backlog",
-      "planning"
-    ],
+    "tags": ["backlog", "planning"],
     "lastUsed": "2026-07-27",
     "successCount": 1,
     "history": []
@@ -663,10 +511,7 @@
     "action": "RESEARCH+PLAN",
     "target": "whatsapp-business-api-setup-and-template-spec.md",
     "prompt": "@Jaime -- RESEARCH+PLAN: WhatsApp Business API setup and template spec. Analyze current project status for frontend/backend/API/data, UI/UX, accessibility, performance, security, testing, and ops readiness; produce an implementation-ready backlog with priorities, root causes, acceptance criteria, tests, risks (P0/P1/P2), and FEEDS/FEEDS_ACK handoffs.",
-    "tags": [
-      "backlog",
-      "planning"
-    ],
+    "tags": ["backlog", "planning"],
     "lastUsed": "2026-07-27",
     "successCount": 1,
     "history": []
@@ -677,10 +522,7 @@
     "action": "RESEARCH+PLAN",
     "target": "ninachatbot-conversation-flows-and-human-handoff-spec.md",
     "prompt": "@Jaime -- RESEARCH+PLAN: NinaChatbot conversation flows and human handoff spec. Analyze current project status for frontend/backend/API/data, UI/UX, accessibility, performance, security, testing, and ops readiness; produce an implementation-ready backlog with priorities, root causes, acceptance criteria, tests, risks (P0/P1/P2), and FEEDS/FEEDS_ACK handoffs.",
-    "tags": [
-      "backlog",
-      "planning"
-    ],
+    "tags": ["backlog", "planning"],
     "lastUsed": "2026-07-27",
     "successCount": 1,
     "history": []
@@ -691,10 +533,7 @@
     "action": "RESEARCH+PLAN",
     "target": "ai-chat-and-maintenance-mapping.md",
     "prompt": "@Corinne -- RESEARCH+PLAN: AI chat and maintenance mapping. Analyze current project status for frontend/backend/API/data, UI/UX, accessibility, performance, security, testing, and ops readiness; produce an implementation-ready backlog with priorities, root causes, acceptance criteria, tests, risks (P0/P1/P2), and FEEDS/FEEDS_ACK handoffs.",
-    "tags": [
-      "backlog",
-      "planning"
-    ],
+    "tags": ["backlog", "planning"],
     "lastUsed": "2026-07-27",
     "successCount": 1,
     "history": []
@@ -705,10 +544,7 @@
     "action": "RESEARCH+PLAN",
     "target": "ai-chat-streaming-and-token-budget-spec.md",
     "prompt": "@Corinne -- RESEARCH+PLAN: AI chat streaming and token budget spec. Analyze current project status for frontend/backend/API/data, UI/UX, accessibility, performance, security, testing, and ops readiness; produce an implementation-ready backlog with priorities, root causes, acceptance criteria, tests, risks (P0/P1/P2), and FEEDS/FEEDS_ACK handoffs.",
-    "tags": [
-      "backlog",
-      "planning"
-    ],
+    "tags": ["backlog", "planning"],
     "lastUsed": "2026-07-27",
     "successCount": 1,
     "history": []
@@ -719,780 +555,7 @@
     "action": "RESEARCH+PLAN",
     "target": "interactive-dubai-map-search-geospatial-spec.md",
     "prompt": "@Corinne -- RESEARCH+PLAN: Interactive Dubai map search geospatial spec. Analyze current project status for frontend/backend/API/data, UI/UX, accessibility, performance, security, testing, and ops readiness; produce an implementation-ready backlog with priorities, root causes, acceptance criteria, tests, risks (P0/P1/P2), and FEEDS/FEEDS_ACK handoffs.",
-    "tags": [
-      "backlog",
-      "planning"
-    ],
-    "lastUsed": "2026-07-27",
-    "successCount": 1,
-    "history": []
-  },
-  "T018": {
-    "v": 1,
-    "agent": "@Annie",
-    "action": "DRAFT",
-    "target": "draft-tenant-portal-tabs.md",
-    "prompt": "@Annie -- RESEARCH+PLAN: DRAFT tenant portal tabs. Analyze current project status for frontend/backend/API/data, UI/UX, accessibility, performance, security, testing, and ops readiness; produce an implementation-ready backlog with priorities, root causes, acceptance criteria, tests, risks (P0/P1/P2), and FEEDS/FEEDS_ACK handoffs.",
-    "tags": [
-      "backlog",
-      "planning"
-    ],
-    "lastUsed": "2026-07-27",
-    "successCount": 1,
-    "history": []
-  },
-  "T019": {
-    "v": 1,
-    "agent": "@Annie",
-    "action": "EXPAND",
-    "target": "expand-document-generation-rules.md",
-    "prompt": "@Annie -- RESEARCH+PLAN: EXPAND document generation rules. Analyze current project status for frontend/backend/API/data, UI/UX, accessibility, performance, security, testing, and ops readiness; produce an implementation-ready backlog with priorities, root causes, acceptance criteria, tests, risks (P0/P1/P2), and FEEDS/FEEDS_ACK handoffs.",
-    "tags": [
-      "backlog",
-      "planning"
-    ],
-    "lastUsed": "2026-07-27",
-    "successCount": 1,
-    "history": []
-  },
-  "T020": {
-    "v": 1,
-    "agent": "@Annie",
-    "action": "REVIEW",
-    "target": "review-email-triggers.md",
-    "prompt": "@Annie -- RESEARCH+PLAN: REVIEW email triggers. Analyze current project status for frontend/backend/API/data, UI/UX, accessibility, performance, security, testing, and ops readiness; produce an implementation-ready backlog with priorities, root causes, acceptance criteria, tests, risks (P0/P1/P2), and FEEDS/FEEDS_ACK handoffs.",
-    "tags": [
-      "backlog",
-      "planning"
-    ],
-    "lastUsed": "2026-07-27",
-    "successCount": 1,
-    "history": []
-  },
-  "T021": {
-    "v": 1,
-    "agent": "@Rachel",
-    "action": "EXPAND",
-    "target": "expand-seo-metadata.md",
-    "prompt": "@Rachel -- RESEARCH+PLAN: EXPAND SEO metadata. Analyze current project status for frontend/backend/API/data, UI/UX, accessibility, performance, security, testing, and ops readiness; produce an implementation-ready backlog with priorities, root causes, acceptance criteria, tests, risks (P0/P1/P2), and FEEDS/FEEDS_ACK handoffs.",
-    "tags": [
-      "backlog",
-      "planning"
-    ],
-    "lastUsed": "2026-07-27",
-    "successCount": 1,
-    "history": []
-  },
-  "T022": {
-    "v": 1,
-    "agent": "@Rachel",
-    "action": "DRAFT",
-    "target": "draft-marketing-workflows.md",
-    "prompt": "@Rachel -- RESEARCH+PLAN: DRAFT marketing workflows. Analyze current project status for frontend/backend/API/data, UI/UX, accessibility, performance, security, testing, and ops readiness; produce an implementation-ready backlog with priorities, root causes, acceptance criteria, tests, risks (P0/P1/P2), and FEEDS/FEEDS_ACK handoffs.",
-    "tags": [
-      "backlog",
-      "planning"
-    ],
-    "lastUsed": "2026-07-27",
-    "successCount": 1,
-    "history": []
-  },
-  "T023": {
-    "v": 1,
-    "agent": "@Rachel",
-    "action": "REVIEW",
-    "target": "review-keyword-coverage.md",
-    "prompt": "@Rachel -- RESEARCH+PLAN: REVIEW keyword coverage. Analyze current project status for frontend/backend/API/data, UI/UX, accessibility, performance, security, testing, and ops readiness; produce an implementation-ready backlog with priorities, root causes, acceptance criteria, tests, risks (P0/P1/P2), and FEEDS/FEEDS_ACK handoffs.",
-    "tags": [
-      "backlog",
-      "planning"
-    ],
-    "lastUsed": "2026-07-27",
-    "successCount": 1,
-    "history": []
-  },
-  "T024": {
-    "v": 1,
-    "agent": "@Marissa",
-    "action": "DRAFT",
-    "target": "draft-luxury-segment-spec.md",
-    "prompt": "@Marissa -- RESEARCH+PLAN: DRAFT luxury segment spec. Analyze current project status for frontend/backend/API/data, UI/UX, accessibility, performance, security, testing, and ops readiness; produce an implementation-ready backlog with priorities, root causes, acceptance criteria, tests, risks (P0/P1/P2), and FEEDS/FEEDS_ACK handoffs.",
-    "tags": [
-      "backlog",
-      "planning"
-    ],
-    "lastUsed": "2026-07-27",
-    "successCount": 1,
-    "history": []
-  },
-  "T025": {
-    "v": 1,
-    "agent": "@Marissa",
-    "action": "EXPAND",
-    "target": "expand-community-workflows.md",
-    "prompt": "@Marissa -- RESEARCH+PLAN: EXPAND community workflows. Analyze current project status for frontend/backend/API/data, UI/UX, accessibility, performance, security, testing, and ops readiness; produce an implementation-ready backlog with priorities, root causes, acceptance criteria, tests, risks (P0/P1/P2), and FEEDS/FEEDS_ACK handoffs.",
-    "tags": [
-      "backlog",
-      "planning"
-    ],
-    "lastUsed": "2026-07-27",
-    "successCount": 1,
-    "history": []
-  },
-  "T026": {
-    "v": 1,
-    "agent": "@Marissa",
-    "action": "REVIEW",
-    "target": "review-ui-consistency.md",
-    "prompt": "@Marissa -- RESEARCH+PLAN: REVIEW UI consistency. Analyze current project status for frontend/backend/API/data, UI/UX, accessibility, performance, security, testing, and ops readiness; produce an implementation-ready backlog with priorities, root causes, acceptance criteria, tests, risks (P0/P1/P2), and FEEDS/FEEDS_ACK handoffs.",
-    "tags": [
-      "backlog",
-      "planning"
-    ],
-    "lastUsed": "2026-07-27",
-    "successCount": 1,
-    "history": []
-  },
-  "T027": {
-    "v": 1,
-    "agent": "@Timnit",
-    "action": "DRAFT",
-    "target": "draft-dld-workflow.md",
-    "prompt": "@Timnit -- RESEARCH+PLAN: DRAFT DLD workflow. Analyze current project status for frontend/backend/API/data, UI/UX, accessibility, performance, security, testing, and ops readiness; produce an implementation-ready backlog with priorities, root causes, acceptance criteria, tests, risks (P0/P1/P2), and FEEDS/FEEDS_ACK handoffs.",
-    "tags": [
-      "backlog",
-      "planning"
-    ],
-    "lastUsed": "2026-07-27",
-    "successCount": 1,
-    "history": []
-  },
-  "T028": {
-    "v": 1,
-    "agent": "@Timnit",
-    "action": "EXPAND",
-    "target": "expand-legal-management-notes.md",
-    "prompt": "@Timnit -- RESEARCH+PLAN: EXPAND legal management notes. Analyze current project status for frontend/backend/API/data, UI/UX, accessibility, performance, security, testing, and ops readiness; produce an implementation-ready backlog with priorities, root causes, acceptance criteria, tests, risks (P0/P1/P2), and FEEDS/FEEDS_ACK handoffs.",
-    "tags": [
-      "backlog",
-      "planning"
-    ],
-    "lastUsed": "2026-07-27",
-    "successCount": 1,
-    "history": []
-  },
-  "T029": {
-    "v": 1,
-    "agent": "@Timnit",
-    "action": "REVIEW",
-    "target": "review-compliance-gaps.md",
-    "prompt": "@Timnit -- RESEARCH+PLAN: REVIEW compliance gaps. Analyze current project status for frontend/backend/API/data, UI/UX, accessibility, performance, security, testing, and ops readiness; produce an implementation-ready backlog with priorities, root causes, acceptance criteria, tests, risks (P0/P1/P2), and FEEDS/FEEDS_ACK handoffs.",
-    "tags": [
-      "backlog",
-      "planning"
-    ],
-    "lastUsed": "2026-07-27",
-    "successCount": 1,
-    "history": []
-  },
-  "T030": {
-    "v": 1,
-    "agent": "@Hedy",
-    "action": "DRAFT",
-    "target": "draft-audit-trail-schema.md",
-    "prompt": "@Hedy -- RESEARCH+PLAN: DRAFT audit trail schema. Analyze current project status for frontend/backend/API/data, UI/UX, accessibility, performance, security, testing, and ops readiness; produce an implementation-ready backlog with priorities, root causes, acceptance criteria, tests, risks (P0/P1/P2), and FEEDS/FEEDS_ACK handoffs.",
-    "tags": [
-      "backlog",
-      "planning"
-    ],
-    "lastUsed": "2026-07-27",
-    "successCount": 1,
-    "history": []
-  },
-  "T031": {
-    "v": 1,
-    "agent": "@Hedy",
-    "action": "EXPAND",
-    "target": "expand-activity-templates.md",
-    "prompt": "@Hedy -- RESEARCH+PLAN: EXPAND activity templates. Analyze current project status for frontend/backend/API/data, UI/UX, accessibility, performance, security, testing, and ops readiness; produce an implementation-ready backlog with priorities, root causes, acceptance criteria, tests, risks (P0/P1/P2), and FEEDS/FEEDS_ACK handoffs.",
-    "tags": [
-      "backlog",
-      "planning"
-    ],
-    "lastUsed": "2026-07-27",
-    "successCount": 1,
-    "history": []
-  },
-  "T032": {
-    "v": 1,
-    "agent": "@Hedy",
-    "action": "REVIEW",
-    "target": "review-follow-up-logic.md",
-    "prompt": "@Hedy -- RESEARCH+PLAN: REVIEW follow-up logic. Analyze current project status for frontend/backend/API/data, UI/UX, accessibility, performance, security, testing, and ops readiness; produce an implementation-ready backlog with priorities, root causes, acceptance criteria, tests, risks (P0/P1/P2), and FEEDS/FEEDS_ACK handoffs.",
-    "tags": [
-      "backlog",
-      "planning"
-    ],
-    "lastUsed": "2026-07-27",
-    "successCount": 1,
-    "history": []
-  },
-  "T033": {
-    "v": 1,
-    "agent": "@Maya",
-    "action": "DRAFT",
-    "target": "draft-off-plan-project-workflow.md",
-    "prompt": "@Maya -- RESEARCH+PLAN: DRAFT off-plan project workflow. Analyze current project status for frontend/backend/API/data, UI/UX, accessibility, performance, security, testing, and ops readiness; produce an implementation-ready backlog with priorities, root causes, acceptance criteria, tests, risks (P0/P1/P2), and FEEDS/FEEDS_ACK handoffs.",
-    "tags": [
-      "backlog",
-      "planning"
-    ],
-    "lastUsed": "2026-07-27",
-    "successCount": 1,
-    "history": []
-  },
-  "T034": {
-    "v": 1,
-    "agent": "@Maya",
-    "action": "EXPAND",
-    "target": "expand-handover-checklist.md",
-    "prompt": "@Maya -- RESEARCH+PLAN: EXPAND handover checklist. Analyze current project status for frontend/backend/API/data, UI/UX, accessibility, performance, security, testing, and ops readiness; produce an implementation-ready backlog with priorities, root causes, acceptance criteria, tests, risks (P0/P1/P2), and FEEDS/FEEDS_ACK handoffs.",
-    "tags": [
-      "backlog",
-      "planning"
-    ],
-    "lastUsed": "2026-07-27",
-    "successCount": 1,
-    "history": []
-  },
-  "T035": {
-    "v": 1,
-    "agent": "@Maya",
-    "action": "REVIEW",
-    "target": "review-milestone-rules.md",
-    "prompt": "@Maya -- RESEARCH+PLAN: REVIEW milestone rules. Analyze current project status for frontend/backend/API/data, UI/UX, accessibility, performance, security, testing, and ops readiness; produce an implementation-ready backlog with priorities, root causes, acceptance criteria, tests, risks (P0/P1/P2), and FEEDS/FEEDS_ACK handoffs.",
-    "tags": [
-      "backlog",
-      "planning"
-    ],
-    "lastUsed": "2026-07-27",
-    "successCount": 1,
-    "history": []
-  },
-  "T036": {
-    "v": 1,
-    "agent": "@Booking",
-    "action": "DRAFT",
-    "target": "draft-viewing-schema.md",
-    "prompt": "@Booking -- RESEARCH+PLAN: DRAFT viewing schema. Analyze current project status for frontend/backend/API/data, UI/UX, accessibility, performance, security, testing, and ops readiness; produce an implementation-ready backlog with priorities, root causes, acceptance criteria, tests, risks (P0/P1/P2), and FEEDS/FEEDS_ACK handoffs.",
-    "tags": [
-      "backlog",
-      "planning"
-    ],
-    "lastUsed": "2026-07-27",
-    "successCount": 1,
-    "history": []
-  },
-  "T037": {
-    "v": 1,
-    "agent": "@Booking",
-    "action": "EXPAND",
-    "target": "expand-calendar-sync.md",
-    "prompt": "@Booking -- RESEARCH+PLAN: EXPAND calendar sync. Analyze current project status for frontend/backend/API/data, UI/UX, accessibility, performance, security, testing, and ops readiness; produce an implementation-ready backlog with priorities, root causes, acceptance criteria, tests, risks (P0/P1/P2), and FEEDS/FEEDS_ACK handoffs.",
-    "tags": [
-      "backlog",
-      "planning"
-    ],
-    "lastUsed": "2026-07-27",
-    "successCount": 1,
-    "history": []
-  },
-  "T038": {
-    "v": 1,
-    "agent": "@Booking",
-    "action": "REVIEW",
-    "target": "review-appointment-flow.md",
-    "prompt": "@Booking -- RESEARCH+PLAN: REVIEW appointment flow. Analyze current project status for frontend/backend/API/data, UI/UX, accessibility, performance, security, testing, and ops readiness; produce an implementation-ready backlog with priorities, root causes, acceptance criteria, tests, risks (P0/P1/P2), and FEEDS/FEEDS_ACK handoffs.",
-    "tags": [
-      "backlog",
-      "planning"
-    ],
-    "lastUsed": "2026-07-27",
-    "successCount": 1,
-    "history": []
-  },
-  "T039": {
-    "v": 1,
-    "agent": "@Jaime",
-    "action": "DRAFT",
-    "target": "draft-offer-flow.md",
-    "prompt": "@Jaime -- RESEARCH+PLAN: DRAFT offer flow. Analyze current project status for frontend/backend/API/data, UI/UX, accessibility, performance, security, testing, and ops readiness; produce an implementation-ready backlog with priorities, root causes, acceptance criteria, tests, risks (P0/P1/P2), and FEEDS/FEEDS_ACK handoffs.",
-    "tags": [
-      "backlog",
-      "planning"
-    ],
-    "lastUsed": "2026-07-27",
-    "successCount": 1,
-    "history": []
-  },
-  "T040": {
-    "v": 1,
-    "agent": "@Jaime",
-    "action": "EXPAND",
-    "target": "expand-whatsapp-routing.md",
-    "prompt": "@Jaime -- RESEARCH+PLAN: EXPAND WhatsApp routing. Analyze current project status for frontend/backend/API/data, UI/UX, accessibility, performance, security, testing, and ops readiness; produce an implementation-ready backlog with priorities, root causes, acceptance criteria, tests, risks (P0/P1/P2), and FEEDS/FEEDS_ACK handoffs.",
-    "tags": [
-      "backlog",
-      "planning"
-    ],
-    "lastUsed": "2026-07-27",
-    "successCount": 1,
-    "history": []
-  },
-  "T041": {
-    "v": 1,
-    "agent": "@Jaime",
-    "action": "REVIEW",
-    "target": "review-broadcast-rules.md",
-    "prompt": "@Jaime -- RESEARCH+PLAN: REVIEW broadcast rules. Analyze current project status for frontend/backend/API/data, UI/UX, accessibility, performance, security, testing, and ops readiness; produce an implementation-ready backlog with priorities, root causes, acceptance criteria, tests, risks (P0/P1/P2), and FEEDS/FEEDS_ACK handoffs.",
-    "tags": [
-      "backlog",
-      "planning"
-    ],
-    "lastUsed": "2026-07-27",
-    "successCount": 1,
-    "history": []
-  },
-  "T042": {
-    "v": 1,
-    "agent": "@Fei",
-    "action": "DRAFT",
-    "target": "draft-valuation-engine.md",
-    "prompt": "@Fei-Fei -- RESEARCH+PLAN: DRAFT valuation engine. Analyze current project status for frontend/backend/API/data, UI/UX, accessibility, performance, security, testing, and ops readiness; produce an implementation-ready backlog with priorities, root causes, acceptance criteria, tests, risks (P0/P1/P2), and FEEDS/FEEDS_ACK handoffs.",
-    "tags": [
-      "backlog",
-      "planning"
-    ],
-    "lastUsed": "2026-07-27",
-    "successCount": 1,
-    "history": []
-  },
-  "T043": {
-    "v": 1,
-    "agent": "@Fei",
-    "action": "EXPAND",
-    "target": "expand-market-report-rules.md",
-    "prompt": "@Fei-Fei -- RESEARCH+PLAN: EXPAND market report rules. Analyze current project status for frontend/backend/API/data, UI/UX, accessibility, performance, security, testing, and ops readiness; produce an implementation-ready backlog with priorities, root causes, acceptance criteria, tests, risks (P0/P1/P2), and FEEDS/FEEDS_ACK handoffs.",
-    "tags": [
-      "backlog",
-      "planning"
-    ],
-    "lastUsed": "2026-07-27",
-    "successCount": 1,
-    "history": []
-  },
-  "T044": {
-    "v": 1,
-    "agent": "@Fei",
-    "action": "REVIEW",
-    "target": "review-comp-logic.md",
-    "prompt": "@Fei-Fei -- RESEARCH+PLAN: REVIEW comp logic. Analyze current project status for frontend/backend/API/data, UI/UX, accessibility, performance, security, testing, and ops readiness; produce an implementation-ready backlog with priorities, root causes, acceptance criteria, tests, risks (P0/P1/P2), and FEEDS/FEEDS_ACK handoffs.",
-    "tags": [
-      "backlog",
-      "planning"
-    ],
-    "lastUsed": "2026-07-27",
-    "successCount": 1,
-    "history": []
-  },
-  "T045": {
-    "v": 1,
-    "agent": "@Anima",
-    "action": "DRAFT",
-    "target": "draft-sales-pipeline.md",
-    "prompt": "@Anima -- RESEARCH+PLAN: DRAFT sales pipeline. Analyze current project status for frontend/backend/API/data, UI/UX, accessibility, performance, security, testing, and ops readiness; produce an implementation-ready backlog with priorities, root causes, acceptance criteria, tests, risks (P0/P1/P2), and FEEDS/FEEDS_ACK handoffs.",
-    "tags": [
-      "backlog",
-      "planning"
-    ],
-    "lastUsed": "2026-07-27",
-    "successCount": 1,
-    "history": []
-  },
-  "T046": {
-    "v": 1,
-    "agent": "@Anima",
-    "action": "EXPAND",
-    "target": "expand-currency-model.md",
-    "prompt": "@Anima -- RESEARCH+PLAN: EXPAND currency model. Analyze current project status for frontend/backend/API/data, UI/UX, accessibility, performance, security, testing, and ops readiness; produce an implementation-ready backlog with priorities, root causes, acceptance criteria, tests, risks (P0/P1/P2), and FEEDS/FEEDS_ACK handoffs.",
-    "tags": [
-      "backlog",
-      "planning"
-    ],
-    "lastUsed": "2026-07-27",
-    "successCount": 1,
-    "history": []
-  },
-  "T047": {
-    "v": 1,
-    "agent": "@Anima",
-    "action": "REVIEW",
-    "target": "review-transfer-flow.md",
-    "prompt": "@Anima -- RESEARCH+PLAN: REVIEW transfer flow. Analyze current project status for frontend/backend/API/data, UI/UX, accessibility, performance, security, testing, and ops readiness; produce an implementation-ready backlog with priorities, root causes, acceptance criteria, tests, risks (P0/P1/P2), and FEEDS/FEEDS_ACK handoffs.",
-    "tags": [
-      "backlog",
-      "planning"
-    ],
-    "lastUsed": "2026-07-27",
-    "successCount": 1,
-    "history": []
-  },
-  "T048": {
-    "v": 1,
-    "agent": "@Mary",
-    "action": "DRAFT",
-    "target": "draft-inventory-state-machine.md",
-    "prompt": "@Mary -- RESEARCH+PLAN: DRAFT inventory state machine. Analyze current project status for frontend/backend/API/data, UI/UX, accessibility, performance, security, testing, and ops readiness; produce an implementation-ready backlog with priorities, root causes, acceptance criteria, tests, risks (P0/P1/P2), and FEEDS/FEEDS_ACK handoffs.",
-    "tags": [
-      "backlog",
-      "planning"
-    ],
-    "lastUsed": "2026-07-27",
-    "successCount": 1,
-    "history": []
-  },
-  "T049": {
-    "v": 1,
-    "agent": "@Mary",
-    "action": "EXPAND",
-    "target": "expand-investor-dashboards.md",
-    "prompt": "@Mary -- RESEARCH+PLAN: EXPAND investor dashboards. Analyze current project status for frontend/backend/API/data, UI/UX, accessibility, performance, security, testing, and ops readiness; produce an implementation-ready backlog with priorities, root causes, acceptance criteria, tests, risks (P0/P1/P2), and FEEDS/FEEDS_ACK handoffs.",
-    "tags": [
-      "backlog",
-      "planning"
-    ],
-    "lastUsed": "2026-07-27",
-    "successCount": 1,
-    "history": []
-  },
-  "T050": {
-    "v": 1,
-    "agent": "@Mary",
-    "action": "REVIEW",
-    "target": "review-prospecting-notes.md",
-    "prompt": "@Mary -- RESEARCH+PLAN: REVIEW prospecting notes. Analyze current project status for frontend/backend/API/data, UI/UX, accessibility, performance, security, testing, and ops readiness; produce an implementation-ready backlog with priorities, root causes, acceptance criteria, tests, risks (P0/P1/P2), and FEEDS/FEEDS_ACK handoffs.",
-    "tags": [
-      "backlog",
-      "planning"
-    ],
-    "lastUsed": "2026-07-27",
-    "successCount": 1,
-    "history": []
-  },
-  "T051": {
-    "v": 1,
-    "agent": "@Corinne",
-    "action": "DRAFT",
-    "target": "draft-maintenance-schema.md",
-    "prompt": "@Corinne -- RESEARCH+PLAN: DRAFT maintenance schema. Analyze current project status for frontend/backend/API/data, UI/UX, accessibility, performance, security, testing, and ops readiness; produce an implementation-ready backlog with priorities, root causes, acceptance criteria, tests, risks (P0/P1/P2), and FEEDS/FEEDS_ACK handoffs.",
-    "tags": [
-      "backlog",
-      "planning"
-    ],
-    "lastUsed": "2026-07-27",
-    "successCount": 1,
-    "history": []
-  },
-  "T052": {
-    "v": 1,
-    "agent": "@Corinne",
-    "action": "EXPAND",
-    "target": "expand-ai-chat-rules.md",
-    "prompt": "@Corinne -- RESEARCH+PLAN: EXPAND AI chat rules. Analyze current project status for frontend/backend/API/data, UI/UX, accessibility, performance, security, testing, and ops readiness; produce an implementation-ready backlog with priorities, root causes, acceptance criteria, tests, risks (P0/P1/P2), and FEEDS/FEEDS_ACK handoffs.",
-    "tags": [
-      "backlog",
-      "planning"
-    ],
-    "lastUsed": "2026-07-27",
-    "successCount": 1,
-    "history": []
-  },
-  "T053": {
-    "v": 1,
-    "agent": "@Corinne",
-    "action": "REVIEW",
-    "target": "review-map-search-notes.md",
-    "prompt": "@Corinne -- RESEARCH+PLAN: REVIEW map search notes. Analyze current project status for frontend/backend/API/data, UI/UX, accessibility, performance, security, testing, and ops readiness; produce an implementation-ready backlog with priorities, root causes, acceptance criteria, tests, risks (P0/P1/P2), and FEEDS/FEEDS_ACK handoffs.",
-    "tags": [
-      "backlog",
-      "planning"
-    ],
-    "lastUsed": "2026-07-27",
-    "successCount": 1,
-    "history": []
-  },
-  "T054": {
-    "v": 1,
-    "agent": "@Amina",
-    "action": "DRAFT",
-    "target": "draft-leasing-intake-forms.md",
-    "prompt": "@Amina -- RESEARCH+PLAN: DRAFT leasing intake forms. Analyze current project status for frontend/backend/API/data, UI/UX, accessibility, performance, security, testing, and ops readiness; produce an implementation-ready backlog with priorities, root causes, acceptance criteria, tests, risks (P0/P1/P2), and FEEDS/FEEDS_ACK handoffs.",
-    "tags": [
-      "backlog",
-      "planning"
-    ],
-    "lastUsed": "2026-07-27",
-    "successCount": 1,
-    "history": []
-  },
-  "T055": {
-    "v": 1,
-    "agent": "@Amina",
-    "action": "EXPAND",
-    "target": "expand-tenant-onboarding-steps.md",
-    "prompt": "@Amina -- RESEARCH+PLAN: EXPAND tenant onboarding steps. Analyze current project status for frontend/backend/API/data, UI/UX, accessibility, performance, security, testing, and ops readiness; produce an implementation-ready backlog with priorities, root causes, acceptance criteria, tests, risks (P0/P1/P2), and FEEDS/FEEDS_ACK handoffs.",
-    "tags": [
-      "backlog",
-      "planning"
-    ],
-    "lastUsed": "2026-07-27",
-    "successCount": 1,
-    "history": []
-  },
-  "T056": {
-    "v": 1,
-    "agent": "@Amina",
-    "action": "RESEARCH+PLAN",
-    "target": "audit-missing-handoff-fields.md",
-    "prompt": "@Amina -- RESEARCH+PLAN: AUDIT missing handoff fields. Analyze current project status for frontend/backend/API/data, UI/UX, accessibility, performance, security, testing, and ops readiness; produce an implementation-ready backlog with priorities, root causes, acceptance criteria, tests, risks (P0/P1/P2), and FEEDS/FEEDS_ACK handoffs.",
-    "tags": [
-      "backlog",
-      "planning"
-    ],
-    "lastUsed": "2026-07-27",
-    "successCount": 1,
-    "history": []
-  },
-  "T057": {
-    "v": 1,
-    "agent": "@Samira",
-    "action": "DRAFT",
-    "target": "draft-document-handling-rules.md",
-    "prompt": "@Samira -- RESEARCH+PLAN: DRAFT document handling rules. Analyze current project status for frontend/backend/API/data, UI/UX, accessibility, performance, security, testing, and ops readiness; produce an implementation-ready backlog with priorities, root causes, acceptance criteria, tests, risks (P0/P1/P2), and FEEDS/FEEDS_ACK handoffs.",
-    "tags": [
-      "backlog",
-      "planning"
-    ],
-    "lastUsed": "2026-07-27",
-    "successCount": 1,
-    "history": []
-  },
-  "T058": {
-    "v": 1,
-    "agent": "@Samira",
-    "action": "EXPAND",
-    "target": "expand-attachment-validation.md",
-    "prompt": "@Samira -- RESEARCH+PLAN: EXPAND attachment validation. Analyze current project status for frontend/backend/API/data, UI/UX, accessibility, performance, security, testing, and ops readiness; produce an implementation-ready backlog with priorities, root causes, acceptance criteria, tests, risks (P0/P1/P2), and FEEDS/FEEDS_ACK handoffs.",
-    "tags": [
-      "backlog",
-      "planning"
-    ],
-    "lastUsed": "2026-07-27",
-    "successCount": 1,
-    "history": []
-  },
-  "T059": {
-    "v": 1,
-    "agent": "@Samira",
-    "action": "REVIEW",
-    "target": "review-document-completeness.md",
-    "prompt": "@Samira -- RESEARCH+PLAN: REVIEW document completeness. Analyze current project status for frontend/backend/API/data, UI/UX, accessibility, performance, security, testing, and ops readiness; produce an implementation-ready backlog with priorities, root causes, acceptance criteria, tests, risks (P0/P1/P2), and FEEDS/FEEDS_ACK handoffs.",
-    "tags": [
-      "backlog",
-      "planning"
-    ],
-    "lastUsed": "2026-07-27",
-    "successCount": 1,
-    "history": []
-  },
-  "T060": {
-    "v": 1,
-    "agent": "@Hala",
-    "action": "EXPAND",
-    "target": "expand-bilingual-clause-library.md",
-    "prompt": "@Hala -- RESEARCH+PLAN: EXPAND bilingual clause library. Analyze current project status for frontend/backend/API/data, UI/UX, accessibility, performance, security, testing, and ops readiness; produce an implementation-ready backlog with priorities, root causes, acceptance criteria, tests, risks (P0/P1/P2), and FEEDS/FEEDS_ACK handoffs.",
-    "tags": [
-      "backlog",
-      "planning"
-    ],
-    "lastUsed": "2026-07-27",
-    "successCount": 1,
-    "history": []
-  },
-  "T061": {
-    "v": 1,
-    "agent": "@Hala",
-    "action": "RESEARCH+PLAN",
-    "target": "audit-translation-mismatches.md",
-    "prompt": "@Hala -- RESEARCH+PLAN: AUDIT translation mismatches. Analyze current project status for frontend/backend/API/data, UI/UX, accessibility, performance, security, testing, and ops readiness; produce an implementation-ready backlog with priorities, root causes, acceptance criteria, tests, risks (P0/P1/P2), and FEEDS/FEEDS_ACK handoffs.",
-    "tags": [
-      "backlog",
-      "planning"
-    ],
-    "lastUsed": "2026-07-27",
-    "successCount": 1,
-    "history": []
-  },
-  "T062": {
-    "v": 1,
-    "agent": "@Hala",
-    "action": "REVIEW",
-    "target": "review-signature-blocks.md",
-    "prompt": "@Hala -- RESEARCH+PLAN: REVIEW signature blocks. Analyze current project status for frontend/backend/API/data, UI/UX, accessibility, performance, security, testing, and ops readiness; produce an implementation-ready backlog with priorities, root causes, acceptance criteria, tests, risks (P0/P1/P2), and FEEDS/FEEDS_ACK handoffs.",
-    "tags": [
-      "backlog",
-      "planning"
-    ],
-    "lastUsed": "2026-07-27",
-    "successCount": 1,
-    "history": []
-  },
-  "T063": {
-    "v": 1,
-    "agent": "@Rania",
-    "action": "DRAFT",
-    "target": "draft-support-flow.md",
-    "prompt": "@Rania -- RESEARCH+PLAN: DRAFT support flow. Analyze current project status for frontend/backend/API/data, UI/UX, accessibility, performance, security, testing, and ops readiness; produce an implementation-ready backlog with priorities, root causes, acceptance criteria, tests, risks (P0/P1/P2), and FEEDS/FEEDS_ACK handoffs.",
-    "tags": [
-      "backlog",
-      "planning"
-    ],
-    "lastUsed": "2026-07-27",
-    "successCount": 1,
-    "history": []
-  },
-  "T064": {
-    "v": 1,
-    "agent": "@Rania",
-    "action": "EXPAND",
-    "target": "expand-escalation-matrix.md",
-    "prompt": "@Rania -- RESEARCH+PLAN: EXPAND escalation matrix. Analyze current project status for frontend/backend/API/data, UI/UX, accessibility, performance, security, testing, and ops readiness; produce an implementation-ready backlog with priorities, root causes, acceptance criteria, tests, risks (P0/P1/P2), and FEEDS/FEEDS_ACK handoffs.",
-    "tags": [
-      "backlog",
-      "planning"
-    ],
-    "lastUsed": "2026-07-27",
-    "successCount": 1,
-    "history": []
-  },
-  "T065": {
-    "v": 1,
-    "agent": "@Rania",
-    "action": "REVIEW",
-    "target": "review-response-slas.md",
-    "prompt": "@Rania -- RESEARCH+PLAN: REVIEW response SLAs. Analyze current project status for frontend/backend/API/data, UI/UX, accessibility, performance, security, testing, and ops readiness; produce an implementation-ready backlog with priorities, root causes, acceptance criteria, tests, risks (P0/P1/P2), and FEEDS/FEEDS_ACK handoffs.",
-    "tags": [
-      "backlog",
-      "planning"
-    ],
-    "lastUsed": "2026-07-27",
-    "successCount": 1,
-    "history": []
-  },
-  "T066": {
-    "v": 1,
-    "agent": "@Noor",
-    "action": "DRAFT",
-    "target": "draft-criteria-summaries.md",
-    "prompt": "@Noor -- RESEARCH+PLAN: DRAFT criteria summaries. Analyze current project status for frontend/backend/API/data, UI/UX, accessibility, performance, security, testing, and ops readiness; produce an implementation-ready backlog with priorities, root causes, acceptance criteria, tests, risks (P0/P1/P2), and FEEDS/FEEDS_ACK handoffs.",
-    "tags": [
-      "backlog",
-      "planning"
-    ],
-    "lastUsed": "2026-07-27",
-    "successCount": 1,
-    "history": []
-  },
-  "T067": {
-    "v": 1,
-    "agent": "@Noor",
-    "action": "EXPAND",
-    "target": "expand-acceptance-checkpoints.md",
-    "prompt": "@Noor -- RESEARCH+PLAN: EXPAND acceptance checkpoints. Analyze current project status for frontend/backend/API/data, UI/UX, accessibility, performance, security, testing, and ops readiness; produce an implementation-ready backlog with priorities, root causes, acceptance criteria, tests, risks (P0/P1/P2), and FEEDS/FEEDS_ACK handoffs.",
-    "tags": [
-      "backlog",
-      "planning"
-    ],
-    "lastUsed": "2026-07-27",
-    "successCount": 1,
-    "history": []
-  },
-  "T068": {
-    "v": 1,
-    "agent": "@Noor",
-    "action": "RESEARCH+PLAN",
-    "target": "audit-missing-business-rules.md",
-    "prompt": "@Noor -- RESEARCH+PLAN: AUDIT missing business rules. Analyze current project status for frontend/backend/API/data, UI/UX, accessibility, performance, security, testing, and ops readiness; produce an implementation-ready backlog with priorities, root causes, acceptance criteria, tests, risks (P0/P1/P2), and FEEDS/FEEDS_ACK handoffs.",
-    "tags": [
-      "backlog",
-      "planning"
-    ],
-    "lastUsed": "2026-07-27",
-    "successCount": 1,
-    "history": []
-  },
-  "T069": {
-    "v": 1,
-    "agent": "@Amal",
-    "action": "EXPAND",
-    "target": "expand-reconciliation-steps.md",
-    "prompt": "@Amal -- RESEARCH+PLAN: EXPAND reconciliation steps. Analyze current project status for frontend/backend/API/data, UI/UX, accessibility, performance, security, testing, and ops readiness; produce an implementation-ready backlog with priorities, root causes, acceptance criteria, tests, risks (P0/P1/P2), and FEEDS/FEEDS_ACK handoffs.",
-    "tags": [
-      "backlog",
-      "planning"
-    ],
-    "lastUsed": "2026-07-27",
-    "successCount": 1,
-    "history": []
-  },
-  "T070": {
-    "v": 1,
-    "agent": "@Amal",
-    "action": "DRAFT",
-    "target": "draft-variance-handling.md",
-    "prompt": "@Amal -- RESEARCH+PLAN: DRAFT variance handling. Analyze current project status for frontend/backend/API/data, UI/UX, accessibility, performance, security, testing, and ops readiness; produce an implementation-ready backlog with priorities, root causes, acceptance criteria, tests, risks (P0/P1/P2), and FEEDS/FEEDS_ACK handoffs.",
-    "tags": [
-      "backlog",
-      "planning"
-    ],
-    "lastUsed": "2026-07-27",
-    "successCount": 1,
-    "history": []
-  },
-  "T071": {
-    "v": 1,
-    "agent": "@Amal",
-    "action": "REVIEW",
-    "target": "review-payout-logic.md",
-    "prompt": "@Amal -- RESEARCH+PLAN: REVIEW payout logic. Analyze current project status for frontend/backend/API/data, UI/UX, accessibility, performance, security, testing, and ops readiness; produce an implementation-ready backlog with priorities, root causes, acceptance criteria, tests, risks (P0/P1/P2), and FEEDS/FEEDS_ACK handoffs.",
-    "tags": [
-      "backlog",
-      "planning"
-    ],
-    "lastUsed": "2026-07-27",
-    "successCount": 1,
-    "history": []
-  },
-  "T072": {
-    "v": 1,
-    "agent": "@Yasmin",
-    "action": "EXPAND",
-    "target": "expand-comp-tables.md",
-    "prompt": "@Yasmin -- RESEARCH+PLAN: EXPAND comp tables. Analyze current project status for frontend/backend/API/data, UI/UX, accessibility, performance, security, testing, and ops readiness; produce an implementation-ready backlog with priorities, root causes, acceptance criteria, tests, risks (P0/P1/P2), and FEEDS/FEEDS_ACK handoffs.",
-    "tags": [
-      "backlog",
-      "planning"
-    ],
+    "tags": ["backlog", "planning"],
     "lastUsed": "2026-07-27",
     "successCount": 1,
     "history": []

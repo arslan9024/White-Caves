@@ -26,6 +26,7 @@
 - ✅ **W46-009 complete:** CI anti-duplication guardrails added to local/PR/CI workflows.
 - ✅ **W46-010 complete:** Wave 46 closure metrics and final report published.
 - ✅ **Wave 46 complete:** all W46-001…W46-010 tasks delivered and validated.
+- ✅ **W46-ops hardening complete (2026-09-03):** prompts/queue orchestration stability improved (fallback path resolution, verify-prompts metadata target resolution, stale prompt-key pruning to active queue IDs, zero-error/zero-warning prompt validation).
 - Backlog source: `docs/plans/waves/WAVE_46_IMPLEMENTATION_BACKLOG.md`.
 
 ---

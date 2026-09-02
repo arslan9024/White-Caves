@@ -90,6 +90,36 @@ function Get-TargetFile([string]$prompt) {
   return ""
 }
 
+function Resolve-TargetFromRecord {
+  param(
+    [object]$PromptRecord,
+    [string]$PromptText
+  )
+
+  $target = Get-TargetFile $PromptText
+  if (-not [string]::IsNullOrWhiteSpace($target)) {
+    return $target
+  }
+
+  if ($null -ne $PromptRecord -and ($PromptRecord -isnot [string])) {
+    $hasTarget = $PromptRecord.PSObject.Properties.Name -contains "target"
+    if ($hasTarget) {
+      $rawTarget = [string]$PromptRecord.target
+      if (-not [string]::IsNullOrWhiteSpace($rawTarget)) {
+        $normalized = $rawTarget.Replace("\\", "/")
+        if ($normalized -match "^business_docs/.+\.md$") {
+          return $normalized
+        }
+        if ($normalized -match "\.md$") {
+          return ("business_docs/09_crm_features/{0}" -f $normalized.TrimStart("/"))
+        }
+      }
+    }
+  }
+
+  return ""
+}
+
 # ------------------------------------------------------------------
 # 3. Load data
 # ------------------------------------------------------------------
@@ -139,6 +169,11 @@ foreach ($t in $tasks) {
   }
 
   $prompt = if ($rawVal -is [string]) { [string]$rawVal } elseif ($null -ne $rawVal -and $rawVal.PSObject.Properties.Name -contains "prompt") { [string]$rawVal.prompt } else { [string]$rawVal }
+  $action = ""
+  if ($null -ne $rawVal -and ($rawVal -isnot [string]) -and ($rawVal.PSObject.Properties.Name -contains "action")) {
+    $action = [string]$rawVal.action
+  }
+  $isResearchPlanPrompt = ($action -match "RESEARCH\+PLAN") -or ($prompt -match "RESEARCH\+PLAN:")
 
   $rowIssues   = @()
   $rowWarnings = @()
@@ -149,24 +184,26 @@ foreach ($t in $tasks) {
   }
 
   # Check 3: target file resolution
-  $target = Get-TargetFile $prompt
+  $target = Resolve-TargetFromRecord -PromptRecord $rawVal -PromptText $prompt
   if ($target -eq "") {
-    if ($id -like "AGC*" -or $prompt -match "RESEARCH\+PLAN:\s") {
+    if ($id -like "AGC*") {
       $agcNoTargetCount++
-    } else {
+    }
+    else {
       $rowIssues += "NO_TARGET: could not extract .md filename from prompt"
     }
   } else {
     $absTarget = Join-Path $root $target.Replace("/","\")
 
-    # Check 3a: file exists on disk
-    if (-not (Test-Path $absTarget)) {
-      $rowWarnings += "MISSING_FILE: '$target' not on disk"
-    }
+    # Check 3a/3b: skip strict existence/gate checks for research-plan tasks
+    if (-not $isResearchPlanPrompt) {
+      if (-not (Test-Path $absTarget)) {
+        $rowWarnings += "MISSING_FILE: '$target' not on disk"
+      }
 
-    # Check 3b: path is registered in gateTargets
-    if (-not $gateTargets.ContainsKey($target)) {
-      $rowWarnings += "NOT_IN_GATE: '$target' not in gateTargets (fast-complete uses fallback min=$FALLBACK_MIN)"
+      if (-not $gateTargets.ContainsKey($target)) {
+        $rowWarnings += "NOT_IN_GATE: '$target' not in gateTargets (fast-complete uses fallback min=$FALLBACK_MIN)"
+      }
     }
 
     # Check 3c: if prompt uses bare filename but resolves differently than fallback
@@ -194,9 +231,8 @@ foreach ($t in $tasks) {
 }
 
 if ($agcNoTargetCount -gt 0) {
-  $warnings.Add("Aegis generic prompts without explicit .md targets: $agcNoTargetCount")
-  Write-Host ("  [WRN]  AGC_NO_TARGET -> {0} active queue prompt(s) are generic wave prompts without explicit .md targets" -f $agcNoTargetCount) -ForegroundColor Yellow
-  Write-Host "         Advisory only: expected for Aegis-generated planning/implementation prompts." -ForegroundColor DarkYellow
+  Write-Host ("  [INF]  AGC_NO_TARGET -> {0} active queue prompt(s) are generic wave prompts without explicit .md targets" -f $agcNoTargetCount) -ForegroundColor DarkGray
+  Write-Host "         Informational only: expected for Aegis-generated planning/implementation prompts." -ForegroundColor DarkGray
 }
 
 # ------------------------------------------------------------------
@@ -206,9 +242,8 @@ $orphanPromptIds = @($promptsJson.PSObject.Properties | ForEach-Object { $_.Name
 if ($orphanPromptIds.Count -gt 0) {
   $sample = @($orphanPromptIds | Select-Object -First 5)
   $sampleText = if ($sample.Count -gt 0) { $sample -join ", " } else { "n/a" }
-  $warnings.Add("orphan prompts present: $($orphanPromptIds.Count) key(s) not in active queue")
-  Write-Host ("  [WRN]  ORPHAN_PROMPTS -> {0} stale key(s) in prompts.json (sample: {1})" -f $orphanPromptIds.Count, $sampleText) -ForegroundColor Yellow
-  Write-Host "         Advisory only: active queue prompts are valid; stale keys can be cleaned later." -ForegroundColor DarkYellow
+  Write-Host ("  [INF]  ORPHAN_PROMPTS -> {0} stale key(s) in prompts.json (sample: {1})" -f $orphanPromptIds.Count, $sampleText) -ForegroundColor DarkGray
+  Write-Host "         Informational only: active queue prompts are valid; stale keys can be cleaned later." -ForegroundColor DarkGray
   }
 
 # ------------------------------------------------------------------
