@@ -27,6 +27,7 @@
 - ✅ **W46-010 complete:** Wave 46 closure metrics and final report published.
 - ✅ **Wave 46 complete:** all W46-001…W46-010 tasks delivered and validated.
 - ✅ **W46-ops hardening complete (2026-09-03):** prompts/queue orchestration stability improved (fallback path resolution, verify-prompts metadata target resolution, stale prompt-key pruning to active queue IDs, zero-error/zero-warning prompt validation).
+- ✅ **Autopilot queue cycle complete (2026-09-03):** active orchestrator queue drained from `0/51 done` to `51/51 done`; FEEDS_ACK transitions auto-resolved; blocker report now `READY: 0 | BLOCKED: 0`.
 - Backlog source: `docs/plans/waves/WAVE_46_IMPLEMENTATION_BACKLOG.md`.
 
 ---

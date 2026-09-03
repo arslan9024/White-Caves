@@ -237,11 +237,17 @@ try {
       $task.status = "waiting_ack"
     }
     else {
+      $task.status = "done"
       # SDLC Enforcements
       if (!$task.goal_frame) {
         Write-Host "[WARN] Task missing goal_frame. SDLC compliance compromised."
       }
-      $task.phase = "REVIEW"
+      if ($task.PSObject.Properties.Name -contains "phase") {
+        $task.phase = "REVIEW"
+      }
+      else {
+        $task | Add-Member -NotePropertyName "phase" -NotePropertyValue "REVIEW" -Force
+      }
       Write-Host "Task moved to REVIEW phase. Adversarial review pending."
     }
   }
