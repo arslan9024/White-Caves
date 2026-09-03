@@ -15,7 +15,7 @@ const log = createLogger('AuthMiddleware');
 
 // ─── Lion Founder Profile (Level 5 Master) ─────────────────────────────────
 const LION_FOUNDER_PROFILE = {
-  id: 'dev-lion-001',
+  id: '69f25bcd184f6df5f25bb98f',
   email: 'arslanmalikgoraha@gmail.com',
   role: 'managing_director',
   name: 'Arslan Goraha',
@@ -94,11 +94,7 @@ function enrichFounderPayload(user: AuthUser): AuthUser {
   return user;
 }
 
-const authMiddleware = (
-  req: AuthRequest,
-  _res: Response,
-  next: NextFunction
-) => {
+const authMiddleware = (req: AuthRequest, _res: Response, next: NextFunction) => {
   try {
     const token = extractBearerToken(req.headers.authorization);
 
@@ -117,7 +113,9 @@ const authMiddleware = (
     if (error instanceof jwt.TokenExpiredError) {
       log.warn(`JWT expired at ${error.expiredAt?.toISOString?.()} — falling back to Lion profile`);
     } else if (error instanceof jwt.NotBeforeError) {
-      log.warn(`JWT not active until ${error.date?.toISOString?.()} — falling back to Lion profile`);
+      log.warn(
+        `JWT not active until ${error.date?.toISOString?.()} — falling back to Lion profile`
+      );
     } else if (error instanceof jwt.JsonWebTokenError) {
       log.warn(`JWT malformed: ${error.message} — falling back to Lion profile`);
     } else {
