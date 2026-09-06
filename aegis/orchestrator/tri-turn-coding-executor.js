@@ -101,8 +101,9 @@ function validateExecutionScope(candidateFiles = [], changedFiles = []) {
 function buildExecutorPrompt(packet) {
   const allowResearch = packet.allowResearch === true;
   return [
-    'You are an autonomous TypeScript code generator running inside an empty sandboxed staging directory.',
+    'You are an autonomous TypeScript code generator in a sandboxed staging directory pre-seeded with the current repo versions of the target files.',
     'CRITICAL RULES (these override every other instruction):',
+    '- The listed files may ALREADY EXIST with existing exported symbols and prior fixes. PRESERVE every existing export; EXTEND the file, never rewrite it from scratch or drop existing members.',
     '- Do NOT invoke skills, agents, workflows, or maintenance loops.',
     '- Do NOT read any markdown, plan, queue, or configuration files.',
     '- Do NOT run git, npm, or package-install shell commands.',
