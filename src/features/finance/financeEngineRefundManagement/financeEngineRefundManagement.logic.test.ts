@@ -1,237 +1,217 @@
 import { describe, expect, it } from 'vitest';
 import {
-  DEFAULT_REFUND_POLICY,
-  RefundLedger,
-  RefundTransitionError,
-  approveRefund,
-  calculateRefundAmount,
-  createRefundRecord,
-  failRefund,
-  isWithinRefundWindow,
-  processRefund,
-  rejectRefund,
+  RefundEngine,
+  RefundNotFoundError,
+  RefundValidationError,
+  calculateRefundFee,
+  createRefundEngine,
   validateRefundRequest,
   type RefundPolicy,
-  type RefundRecord,
-  type RefundRequest,
+  type RefundRequestInput,
 } from './financeEngineRefundManagement.logic';
 
-function makeRequest(overrides: Partial<RefundRequest> = {}): RefundRequest {
+const basePolicy: RefundPolicy = {
+  maxRefundWindowDays: 30,
+  processingFeePercentage: 5,
+  requiresApprovalAboveAmount: 500,
+  allowedReasons: [
+    'duplicate_payment',
+    'service_not_rendered',
+    'overpayment',
+    'goodwill',
+    'cancellation',
+  ],
+};
+
+function buildInput(overrides: Partial<RefundRequestInput> = {}): RefundRequestInput {
   return {
     id: 'refund-1',
-    orderId: 'order-1',
-    amount: 1000,
-    orderDate: new Date('2024-01-01T00:00:00.000Z'),
-    requestedAt: new Date('2024-01-05T00:00:00.000Z'),
-    reason: 'customer_request',
+    paymentId: 'payment-1',
+    requestedAmount: 100,
+    currency: 'USD',
+    reason: 'overpayment',
+    requestedAt: new Date('2024-01-10T00:00:00Z'),
+    originalPaymentAmount: 100,
+    originalPaymentDate: new Date('2024-01-01T00:00:00Z'),
     ...overrides,
   };
 }
 
-describe('isWithinRefundWindow', () => {
-  it('returns true when requestedAt is before the window closes', () => {
-    const orderDate = new Date('2024-01-01T00:00:00.000Z');
-    const requestedAt = new Date('2024-01-10T00:00:00.000Z');
-    expect(isWithinRefundWindow(orderDate, requestedAt, 30)).toBe(true);
+describe('calculateRefundFee', () => {
+  it('computes a percentage-based fee rounded to 2 decimal places', () => {
+    expect(calculateRefundFee(100, basePolicy)).toBe(5);
+    expect(calculateRefundFee(33.33, basePolicy)).toBe(1.67);
   });
 
-  it('returns true exactly on the boundary day', () => {
-    const orderDate = new Date('2024-01-01T00:00:00.000Z');
-    const requestedAt = new Date('2024-01-31T00:00:00.000Z');
-    expect(isWithinRefundWindow(orderDate, requestedAt, 30)).toBe(true);
+  it('returns zero fee for zero amount', () => {
+    expect(calculateRefundFee(0, basePolicy)).toBe(0);
   });
 
-  it('returns false once the window has elapsed', () => {
-    const orderDate = new Date('2024-01-01T00:00:00.000Z');
-    const requestedAt = new Date('2024-02-05T00:00:00.000Z');
-    expect(isWithinRefundWindow(orderDate, requestedAt, 30)).toBe(false);
-  });
-
-  it('returns false when requestedAt precedes orderDate', () => {
-    const orderDate = new Date('2024-01-10T00:00:00.000Z');
-    const requestedAt = new Date('2024-01-01T00:00:00.000Z');
-    expect(isWithinRefundWindow(orderDate, requestedAt, 30)).toBe(false);
+  it('throws RefundValidationError for negative amounts', () => {
+    expect(() => calculateRefundFee(-10, basePolicy)).toThrow(RefundValidationError);
   });
 });
 
 describe('validateRefundRequest', () => {
-  it('rejects non-positive amounts', () => {
-    const result = validateRefundRequest(makeRequest({ amount: 0 }));
-    expect(result.valid).toBe(false);
-    expect(result.reason).toMatch(/greater than zero/);
+  it('passes for a well-formed request within policy', () => {
+    expect(() => validateRefundRequest(buildInput(), basePolicy)).not.toThrow();
   });
 
-  it('rejects amounts below the policy minimum', () => {
-    const policy: RefundPolicy = { ...DEFAULT_REFUND_POLICY, minimumRefundAmount: 500 };
-    const result = validateRefundRequest(makeRequest({ amount: 100 }), policy);
-    expect(result.valid).toBe(false);
-    expect(result.reason).toMatch(/at least 500/);
+  it('rejects a missing id', () => {
+    expect(() => validateRefundRequest(buildInput({ id: '' }), basePolicy)).toThrow(
+      RefundValidationError
+    );
+  });
+
+  it('rejects amounts greater than the original payment', () => {
+    expect(() => validateRefundRequest(buildInput({ requestedAmount: 150 }), basePolicy)).toThrow(
+      /cannot exceed/
+    );
+  });
+
+  it('rejects amounts less than or equal to zero', () => {
+    expect(() => validateRefundRequest(buildInput({ requestedAmount: 0 }), basePolicy)).toThrow(
+      RefundValidationError
+    );
+  });
+
+  it('rejects reasons not allowed by policy', () => {
+    expect(() => validateRefundRequest(buildInput({ reason: 'other' }), basePolicy)).toThrow(
+      /not permitted/
+    );
+  });
+
+  it('rejects requests submitted before the original payment date', () => {
+    expect(() =>
+      validateRefundRequest(
+        buildInput({
+          requestedAt: new Date('2023-12-31T00:00:00Z'),
+          originalPaymentDate: new Date('2024-01-01T00:00:00Z'),
+        }),
+        basePolicy
+      )
+    ).toThrow(/cannot precede/);
   });
 
   it('rejects requests outside the refund window', () => {
-    const result = validateRefundRequest(
-      makeRequest({
-        orderDate: new Date('2024-01-01T00:00:00.000Z'),
-        requestedAt: new Date('2024-03-01T00:00:00.000Z'),
-      }),
-      { ...DEFAULT_REFUND_POLICY, windowDays: 30 }
+    expect(() =>
+      validateRefundRequest(
+        buildInput({ requestedAt: new Date('2024-03-01T00:00:00Z') }),
+        basePolicy
+      )
+    ).toThrow(/outside the allowed window/);
+  });
+});
+
+describe('RefundEngine.submitRequest', () => {
+  it('creates a record in the requested state with history seeded', () => {
+    const engine = createRefundEngine(basePolicy);
+    const record = engine.submitRequest(buildInput());
+
+    expect(record.status).toBe('requested');
+    expect(record.feeAmount).toBe(0);
+    expect(record.netRefundAmount).toBe(0);
+    expect(record.statusHistory).toHaveLength(1);
+    expect(record.statusHistory[0].status).toBe('requested');
+  });
+
+  it('throws when submitting a duplicate id', () => {
+    const engine = createRefundEngine(basePolicy);
+    engine.submitRequest(buildInput());
+    expect(() => engine.submitRequest(buildInput())).toThrow(RefundValidationError);
+  });
+
+  it('propagates validation failures from an invalid request', () => {
+    const engine = createRefundEngine(basePolicy);
+    expect(() => engine.submitRequest(buildInput({ requestedAmount: -5 }))).toThrow(
+      RefundValidationError
     );
-    expect(result.valid).toBe(false);
-    expect(result.reason).toMatch(/outside the allowed refund window/);
-  });
-
-  it('rejects explicitly non-refundable items', () => {
-    const policy: RefundPolicy = { ...DEFAULT_REFUND_POLICY, nonRefundableItemIds: ['item-x'] };
-    const result = validateRefundRequest(makeRequest({ itemId: 'item-x' }), policy);
-    expect(result.valid).toBe(false);
-    expect(result.reason).toContain('item-x');
-  });
-
-  it('accepts a well-formed, in-window request', () => {
-    const result = validateRefundRequest(makeRequest());
-    expect(result.valid).toBe(true);
-    expect(result.reason).toBeUndefined();
   });
 });
 
-describe('calculateRefundAmount', () => {
-  it('charges no fee under the default policy', () => {
-    const result = calculateRefundAmount(1000, DEFAULT_REFUND_POLICY);
-    expect(result).toEqual({ refundAmount: 1000, feeCharged: 0, netAmount: 1000 });
+describe('RefundEngine lifecycle transitions', () => {
+  it('processes a low-value refund directly from requested without approval', () => {
+    const engine = createRefundEngine(basePolicy);
+    engine.submitRequest(buildInput({ requestedAmount: 100 }));
+
+    const processed = engine.process('refund-1', new Date('2024-01-11T00:00:00Z'));
+
+    expect(processed.status).toBe('processed');
+    expect(processed.feeAmount).toBe(5);
+    expect(processed.netRefundAmount).toBe(95);
+    expect(processed.statusHistory.map(event => event.status)).toEqual(['requested', 'processed']);
   });
 
-  it('applies a percentage fee and rounds it', () => {
-    const policy: RefundPolicy = { ...DEFAULT_REFUND_POLICY, feePercentage: 10 };
-    const result = calculateRefundAmount(999, policy);
-    expect(result.feeCharged).toBe(100); // round(99.9) === 100
-    expect(result.netAmount).toBe(899);
+  it('requires approval before processing amounts above the threshold', () => {
+    const engine = createRefundEngine(basePolicy);
+    engine.submitRequest(buildInput({ requestedAmount: 600, originalPaymentAmount: 600 }));
+
+    expect(() => engine.process('refund-1')).toThrow(/must be approved/);
+
+    engine.approve('refund-1', 'manager-1');
+    const processed = engine.process('refund-1');
+
+    expect(processed.status).toBe('processed');
+    expect(processed.netRefundAmount).toBe(570);
   });
 
-  it('clamps out-of-range fee percentages and never returns a negative net amount', () => {
-    const policy: RefundPolicy = { ...DEFAULT_REFUND_POLICY, feePercentage: 150 };
-    const result = calculateRefundAmount(500, policy);
-    expect(result.feeCharged).toBe(500);
-    expect(result.netAmount).toBe(0);
-  });
-});
+  it('rejects a requested refund and prevents further processing', () => {
+    const engine = createRefundEngine(basePolicy);
+    engine.submitRequest(buildInput());
+    const rejected = engine.reject('refund-1', 'manager-1', 'duplicate submission');
 
-describe('createRefundRecord', () => {
-  it('creates a pending record for a valid request', () => {
-    const record = createRefundRecord(makeRequest());
-    expect(record.status).toBe('pending');
-    expect(record.rejectionReason).toBeUndefined();
-  });
-
-  it('creates a rejected record with a reason for an invalid request', () => {
-    const record = createRefundRecord(makeRequest({ amount: -5 }));
-    expect(record.status).toBe('rejected');
-    expect(record.rejectionReason).toBeDefined();
-  });
-});
-
-describe('refund state machine', () => {
-  it('walks pending -> approved -> processed with computed amounts', () => {
-    const policy: RefundPolicy = { ...DEFAULT_REFUND_POLICY, feePercentage: 5 };
-    let record = createRefundRecord(makeRequest({ amount: 2000 }), policy);
-    expect(record.status).toBe('pending');
-
-    record = approveRefund(record);
-    expect(record.status).toBe('approved');
-
-    const processedAt = new Date('2024-01-06T00:00:00.000Z');
-    record = processRefund(record, policy, processedAt);
-    expect(record.status).toBe('processed');
-    expect(record.refundAmount).toBe(2000);
-    expect(record.feeCharged).toBe(100);
-    expect(record.netAmount).toBe(1900);
-    expect(record.processedAt).toBe(processedAt);
-  });
-
-  it('allows rejecting a pending refund with a reason', () => {
-    const record = createRefundRecord(makeRequest());
-    const rejected = rejectRefund(record, 'Customer withdrew request');
     expect(rejected.status).toBe('rejected');
-    expect(rejected.rejectionReason).toBe('Customer withdrew request');
+    expect(() => engine.process('refund-1')).toThrow(RefundValidationError);
   });
 
-  it('allows failing an approved refund', () => {
-    let record = createRefundRecord(makeRequest());
-    record = approveRefund(record);
-    const failed = failRefund(record, 'Payment gateway timeout');
-    expect(failed.status).toBe('failed');
-    expect(failed.failureReason).toBe('Payment gateway timeout');
+  it('cancels a requested refund and prevents further transitions', () => {
+    const engine = createRefundEngine(basePolicy);
+    engine.submitRequest(buildInput());
+    const cancelled = engine.cancel('refund-1', 'customer-1', 'customer withdrew request');
+
+    expect(cancelled.status).toBe('cancelled');
+    expect(() => engine.approve('refund-1', 'manager-1')).toThrow(RefundValidationError);
   });
 
-  it('throws RefundTransitionError when approving a non-pending refund', () => {
-    let record = createRefundRecord(makeRequest());
-    record = approveRefund(record);
-    expect(() => approveRefund(record)).toThrow(RefundTransitionError);
+  it('throws RefundNotFoundError for unknown ids', () => {
+    const engine = createRefundEngine(basePolicy);
+    expect(() => engine.getRecord('missing')).toThrow(RefundNotFoundError);
+    expect(() => engine.approve('missing', 'manager-1')).toThrow(RefundNotFoundError);
   });
 
-  it('throws RefundTransitionError when processing a non-approved refund', () => {
-    const record = createRefundRecord(makeRequest());
-    expect(() => processRefund(record)).toThrow(RefundTransitionError);
-  });
-
-  it('throws RefundTransitionError when failing a non-approved refund', () => {
-    const record = createRefundRecord(makeRequest());
-    expect(() => failRefund(record, 'n/a')).toThrow(RefundTransitionError);
+  it('exposes requiresApproval based on policy threshold', () => {
+    const engine = createRefundEngine(basePolicy);
+    expect(engine.requiresApproval(500)).toBe(false);
+    expect(engine.requiresApproval(500.01)).toBe(true);
   });
 });
 
-describe('RefundLedger', () => {
-  it('tracks processed totals per order', () => {
-    const ledger = new RefundLedger();
-    const policy: RefundPolicy = { ...DEFAULT_REFUND_POLICY, feePercentage: 0 };
+describe('RefundEngine querying and summaries', () => {
+  it('lists records filtered by status', () => {
+    const engine = createRefundEngine(basePolicy);
+    engine.submitRequest(buildInput({ id: 'r1' }));
+    engine.submitRequest(buildInput({ id: 'r2' }));
+    engine.process('r1');
 
-    let record: RefundRecord = createRefundRecord(makeRequest({ id: 'r1', amount: 300 }), policy);
-    record = processRefund(approveRefund(record), policy);
-    ledger.upsert(record);
-
-    expect(ledger.totalProcessed('order-1')).toBe(300);
-    expect(ledger.getByOrder('order-1')).toHaveLength(1);
+    expect(engine.listByStatus('processed')).toHaveLength(1);
+    expect(engine.listByStatus('requested')).toHaveLength(1);
+    expect(engine.listAll()).toHaveLength(2);
   });
 
-  it('tracks in-flight totals separately from processed totals', () => {
-    const ledger = new RefundLedger();
-    const pending = createRefundRecord(makeRequest({ id: 'r1', amount: 200 }));
-    const approved = approveRefund(createRefundRecord(makeRequest({ id: 'r2', amount: 150 })));
-    ledger.upsert(pending);
-    ledger.upsert(approved);
+  it('aggregates a summary across processed and pending refunds', () => {
+    const engine = createRefundEngine(basePolicy);
+    engine.submitRequest(buildInput({ id: 'r1', requestedAmount: 100 }));
+    engine.submitRequest(buildInput({ id: 'r2', requestedAmount: 200 }));
+    engine.process('r1');
+    engine.reject('r2', 'manager-1', 'not eligible');
 
-    expect(ledger.totalInFlight('order-1')).toBe(350);
-    expect(ledger.totalProcessed('order-1')).toBe(0);
-  });
+    const summary = engine.getSummary();
 
-  it('replaces a record with the same id instead of duplicating it', () => {
-    const ledger = new RefundLedger();
-    const record = createRefundRecord(makeRequest({ id: 'r1', amount: 100 }));
-    ledger.upsert(record);
-    const approved = approveRefund(record);
-    ledger.upsert(approved);
-
-    const stored = ledger.getByOrder('order-1');
-    expect(stored).toHaveLength(1);
-    expect(stored[0]?.status).toBe('approved');
-  });
-
-  it('detects when an additional refund would exceed the order total', () => {
-    const ledger = new RefundLedger();
-    const policy: RefundPolicy = { ...DEFAULT_REFUND_POLICY, feePercentage: 0 };
-    const record = processRefund(
-      approveRefund(createRefundRecord(makeRequest({ id: 'r1', amount: 800 }), policy)),
-      policy
-    );
-    ledger.upsert(record);
-
-    expect(ledger.wouldExceedOrderTotal('order-1', 300, 1000)).toBe(true);
-    expect(ledger.wouldExceedOrderTotal('order-1', 100, 1000)).toBe(false);
-  });
-
-  it('clear() removes all tracked records', () => {
-    const ledger = new RefundLedger();
-    ledger.upsert(createRefundRecord(makeRequest()));
-    ledger.clear();
-    expect(ledger.getByOrder('order-1')).toHaveLength(0);
+    expect(summary.totalRequestedAmount).toBe(300);
+    expect(summary.totalProcessedAmount).toBe(100);
+    expect(summary.totalFeesCollected).toBe(5);
+    expect(summary.totalNetRefunded).toBe(95);
+    expect(summary.countByStatus.processed).toBe(1);
+    expect(summary.countByStatus.rejected).toBe(1);
   });
 });
