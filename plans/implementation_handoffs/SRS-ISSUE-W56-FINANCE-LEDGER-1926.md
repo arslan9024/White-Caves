@@ -1,7 +1,8 @@
 # SRS — W56 Finance Ledger (Software Requirements Specification)
 
 - **Parent issue**: #1926
-- **Child issues**: #2479 (original handoff), #2477 (implementation)
+- **Child issues**: #2479 (original handoff), #2477 (implementation), #2475 (extracted domain
+  types module)
 - **Component**: `src/features/finance/financeEngineDoubleEntry`
 - **Document type**: Software Requirements Specification
 - **Status**: Handoff record for the double-entry finance ledger engine scope
@@ -20,6 +21,26 @@ The module exports `validateTransaction`, `postTransaction`, `getAccountBalance`
 Requirements FR-1 through FR-13 and NFR-1 through NFR-5 are covered by the vitest suite in the
 `.logic.test.ts` file. Parent issue #1926 remains open; this document is updated in place rather
 than superseded.
+
+## 0.1 Implementation Status (issue #2475)
+
+Issue #2475 extracts the domain vocabulary referenced in §0 into its own standalone,
+dependency-free module so it can be imported without pulling in the validation/posting/reversal
+logic:
+
+- `src/features/finance/financeEngineDoubleEntry/financeEngineDoubleEntry.types.ts`
+- `src/features/finance/financeEngineDoubleEntry/financeEngineDoubleEntry.types.test.ts`
+
+This module is the single source of truth for `AccountType`, `EntrySide`, `LedgerAccount`,
+`LedgerEntry`, `LedgerTransactionCandidate`, `LedgerTransaction`, `LedgerTransactionStatus`,
+`LedgerState`, `ValidationFailureCode`, `ValidationFailure`, and `ValidationResult`, plus small
+pure runtime helpers (`isAccountType`, `isEntrySide`, `isDebitNormalAccountType`,
+`isCreditNormalAccountType`, `signedAmountForEntry`, and the `ACCOUNT_TYPES` /
+`ENTRY_SIDES` / `DEBIT_NORMAL_ACCOUNT_TYPES` / `CREDIT_NORMAL_ACCOUNT_TYPES` constants) that make
+the otherwise type-erased domain vocabulary independently unit-testable at runtime. It introduces
+no new requirements beyond those already listed in §3/§4 below; it is a packaging refinement that
+gives the types in §0 their own file and focused test suite, consistent with the original module
+decomposition in the companion SDD's §2.
 
 ## 1. Introduction
 
@@ -132,3 +153,9 @@ a straightforward deletion of the files introduced by issues #2479/#2477 (this S
 SDD, and the consolidated `financeEngineDoubleEntry.logic.ts` / `.logic.test.ts` implementation and
 test files); no schema, dependency, or runtime configuration changes are made by this scope, so no
 additional remediation is required.
+
+Issue #2475 additionally introduces `financeEngineDoubleEntry.types.ts` and
+`financeEngineDoubleEntry.types.test.ts`. Rollback of #2475 alone is deleting those two files (and
+reverting this document's §0.1 addition); it does not affect `.logic.ts`/`.logic.test.ts`, which
+remain the consolidated implementation of record per §0. No schema, dependency, or runtime
+configuration changes are made by this scope.

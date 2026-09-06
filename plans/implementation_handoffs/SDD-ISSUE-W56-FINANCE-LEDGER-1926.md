@@ -1,10 +1,12 @@
 # SDD — W56 Finance Ledger (Software Design Document)
 
 - **Parent issue**: #1926
-- **Child issues**: #2479 (original handoff), #2477 (implementation)
+- **Child issues**: #2479 (original handoff), #2477 (implementation), #2475 (extracted domain
+  types module)
 - **Component**: `src/features/finance/financeEngineDoubleEntry`
 - **Companion document**: `SRS-ISSUE-W56-FINANCE-LEDGER-1926.md`
-- **Implementation files**: `financeEngineDoubleEntry.logic.ts`, `financeEngineDoubleEntry.logic.test.ts`
+- **Implementation files**: `financeEngineDoubleEntry.logic.ts`, `financeEngineDoubleEntry.logic.test.ts`,
+  `financeEngineDoubleEntry.types.ts`, `financeEngineDoubleEntry.types.test.ts`
 
 ## 1. Design Overview
 
@@ -57,6 +59,24 @@ covering every function. This is a packaging simplification only — every funct
 and requirement mapping described below (`validateTransaction`, `postTransaction`,
 `getAccountBalance`, `reverseTransaction`, plus the full domain type set) is preserved verbatim as
 named exports of the consolidated file, so all traceability in §6 remains valid.
+
+### 2.2 Implementation Note (issue #2475)
+
+Issue #2475 extracts the domain type layer envisioned in §2's `types.ts` row into its own file,
+`financeEngineDoubleEntry.types.ts`, with a paired `financeEngineDoubleEntry.types.test.ts` suite.
+This module owns `AccountType`, `EntrySide`, `LedgerAccount`, `LedgerEntry`,
+`LedgerTransactionCandidate`, `LedgerTransaction`, `LedgerTransactionStatus`, `LedgerState`,
+`ValidationFailureCode`, `ValidationFailure`, and `ValidationResult`, plus small runtime helpers
+(`isAccountType`, `isEntrySide`, `isDebitNormalAccountType`, `isCreditNormalAccountType`,
+`signedAmountForEntry`) and the `ACCOUNT_TYPES` / `ENTRY_SIDES` / `DEBIT_NORMAL_ACCOUNT_TYPES` /
+`CREDIT_NORMAL_ACCOUNT_TYPES` constants used to validate and classify those types at runtime.
+The runtime helpers exist because TypeScript's type system alone erases at compile time, so the
+module also needs runtime-checkable behavior (type guards, normal-side classification, and signed
+balance contribution) to be meaningfully unit-testable per NFR-4 without depending on the
+posting/validation logic in `financeEngineDoubleEntry.logic.ts`. This module is standalone and has
+no dependency on `financeEngineDoubleEntry.logic.ts`; the logic module remains the consolidated
+implementation of record for validation, posting, balance derivation, and reversal, and continues
+to re-export (or structurally match) the same domain types described here.
 
 ## 3. Key Design Decisions
 
@@ -158,3 +178,8 @@ its companion SRS and the consolidated implementation/test files
 `src/features/finance/financeEngineDoubleEntry/`. No source code outside this component is
 affected, no dependencies are added, and no database or secret state is touched, so reverting this
 change is a clean, side-effect-free file removal.
+
+Issue #2475's contribution (`financeEngineDoubleEntry.types.ts` and
+`financeEngineDoubleEntry.types.test.ts`, plus this document's §2.2/§0.1 additions) can be rolled
+back independently of #2477 by deleting those two files and reverting the corresponding doc
+sections; it does not modify or depend on `financeEngineDoubleEntry.logic.ts`.
