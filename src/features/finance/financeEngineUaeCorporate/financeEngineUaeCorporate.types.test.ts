@@ -1,140 +1,189 @@
 import { describe, expect, it } from 'vitest';
+
 import {
-  DEFAULT_UAE_CORPORATE_TAX_RATE_TABLE,
-  UaeCorporateTaxValidationError,
+  assertUaeCorporateTaxCurrency,
+  assertValidUaeCorporateTaxInput,
   isUaeCorporateTaxCurrency,
   isUaeCorporateTaxRateTable,
-  type UaeCorporateTaxCalculationInput,
-  type UaeCorporateTaxCalculationResult,
+  UaeCorporateTaxValidationError,
+  type UaeCorporateTaxInput,
   type UaeCorporateTaxRateTable,
 } from './financeEngineUaeCorporate.types';
 
-describe('DEFAULT_UAE_CORPORATE_TAX_RATE_TABLE', () => {
-  it('encodes the FDL 47/2022 standard rate and Small Business Relief threshold', () => {
-    expect(DEFAULT_UAE_CORPORATE_TAX_RATE_TABLE.version).toBe('UAE-CT-FDL47-2022-v1');
-    expect(DEFAULT_UAE_CORPORATE_TAX_RATE_TABLE.smallBusinessReliefThreshold).toBe(375000);
-    expect(DEFAULT_UAE_CORPORATE_TAX_RATE_TABLE.standardRate).toBe(0.09);
-  });
+const validInput: UaeCorporateTaxInput = {
+  accountingProfitAed: 500_000,
+  nonDeductibleAddBacksAed: 10_000,
+  exemptIncomeAed: 5_000,
+  currency: 'AED',
+  rateTableVersion: '2023-06-01',
+};
 
-  it('is frozen so callers cannot mutate the shared default rate table', () => {
-    expect(Object.isFrozen(DEFAULT_UAE_CORPORATE_TAX_RATE_TABLE)).toBe(true);
-    expect(() => {
-      (DEFAULT_UAE_CORPORATE_TAX_RATE_TABLE as { standardRate: number }).standardRate = 0.5;
-    }).toThrow();
-    expect(DEFAULT_UAE_CORPORATE_TAX_RATE_TABLE.standardRate).toBe(0.09);
-  });
-});
+const validRateTable: UaeCorporateTaxRateTable = {
+  version: '2023-06-01',
+  standardRate: 0.09,
+  smallBusinessReliefThresholdAed: 375_000,
+  effectiveFrom: '2023-06-01',
+};
 
 describe('isUaeCorporateTaxCurrency', () => {
-  it('returns true only for the literal string AED', () => {
+  it('returns true for the literal AED value', () => {
     expect(isUaeCorporateTaxCurrency('AED')).toBe(true);
   });
 
-  it('returns false for other currency-like strings', () => {
+  it('returns false for any other string', () => {
     expect(isUaeCorporateTaxCurrency('USD')).toBe(false);
     expect(isUaeCorporateTaxCurrency('aed')).toBe(false);
     expect(isUaeCorporateTaxCurrency('')).toBe(false);
   });
 
   it('returns false for non-string values', () => {
-    expect(isUaeCorporateTaxCurrency(null)).toBe(false);
     expect(isUaeCorporateTaxCurrency(undefined)).toBe(false);
+    expect(isUaeCorporateTaxCurrency(null)).toBe(false);
     expect(isUaeCorporateTaxCurrency(123)).toBe(false);
-    expect(isUaeCorporateTaxCurrency({})).toBe(false);
+    expect(isUaeCorporateTaxCurrency({ currency: 'AED' })).toBe(false);
   });
 });
 
-describe('isUaeCorporateTaxRateTable', () => {
-  it('returns true for a well-formed rate table object', () => {
-    const candidate: UaeCorporateTaxRateTable = {
-      version: 'UAE-CT-FDL47-2022-v2',
-      smallBusinessReliefThreshold: 400000,
-      standardRate: 0.1,
-    };
-
-    expect(isUaeCorporateTaxRateTable(candidate)).toBe(true);
+describe('assertUaeCorporateTaxCurrency', () => {
+  it('does not throw for the literal AED value', () => {
+    expect(() => assertUaeCorporateTaxCurrency('AED')).not.toThrow();
   });
 
-  it('returns true for the shared default rate table', () => {
-    expect(isUaeCorporateTaxRateTable(DEFAULT_UAE_CORPORATE_TAX_RATE_TABLE)).toBe(true);
-  });
-
-  it('returns false when a required field is missing', () => {
-    expect(
-      isUaeCorporateTaxRateTable({
-        version: 'v1',
-        smallBusinessReliefThreshold: 375000,
-      })
-    ).toBe(false);
-  });
-
-  it('returns false when a field has the wrong type', () => {
-    expect(
-      isUaeCorporateTaxRateTable({
-        version: 'v1',
-        smallBusinessReliefThreshold: '375000',
-        standardRate: 0.09,
-      })
-    ).toBe(false);
-  });
-
-  it('returns false for null, arrays, and primitives', () => {
-    expect(isUaeCorporateTaxRateTable(null)).toBe(false);
-    expect(isUaeCorporateTaxRateTable([])).toBe(false);
-    expect(isUaeCorporateTaxRateTable('rate-table')).toBe(false);
-    expect(isUaeCorporateTaxRateTable(42)).toBe(false);
-  });
-});
-
-describe('UaeCorporateTaxValidationError', () => {
-  it('is a real Error subclass carrying the provided message', () => {
-    const error = new UaeCorporateTaxValidationError('currency must be AED');
-
-    expect(error).toBeInstanceOf(Error);
-    expect(error).toBeInstanceOf(UaeCorporateTaxValidationError);
-    expect(error.name).toBe('UaeCorporateTaxValidationError');
-    expect(error.message).toBe('currency must be AED');
-  });
-
-  it('preserves the correct prototype chain across a throw/catch boundary', () => {
-    expect.hasAssertions();
+  it('throws a UaeCorporateTaxValidationError with code INVALID_CURRENCY for other values', () => {
+    expect(() => assertUaeCorporateTaxCurrency('USD')).toThrow(UaeCorporateTaxValidationError);
 
     try {
-      throw new UaeCorporateTaxValidationError('non-AED currency rejected');
-    } catch (caught) {
-      expect(caught).toBeInstanceOf(UaeCorporateTaxValidationError);
-      if (caught instanceof UaeCorporateTaxValidationError) {
-        expect(caught.message).toBe('non-AED currency rejected');
-      }
+      assertUaeCorporateTaxCurrency('USD');
+      expect.fail('expected assertUaeCorporateTaxCurrency to throw');
+    } catch (error) {
+      expect(error).toBeInstanceOf(UaeCorporateTaxValidationError);
+      expect((error as UaeCorporateTaxValidationError).code).toBe('INVALID_CURRENCY');
+      expect((error as UaeCorporateTaxValidationError).name).toBe('UaeCorporateTaxValidationError');
+      expect((error as UaeCorporateTaxValidationError).message).toContain('USD');
     }
   });
 });
 
-describe('type contract usage', () => {
-  it('allows constructing a fully-typed calculation input using the default rate table', () => {
-    const input: UaeCorporateTaxCalculationInput = {
-      accountingProfit: 500000,
-      nonDeductibleAddBacks: 25000,
-      exemptIncome: 10000,
-      currency: 'AED',
-      rateTable: DEFAULT_UAE_CORPORATE_TAX_RATE_TABLE,
-    };
+describe('UaeCorporateTaxValidationError', () => {
+  it('is an instance of Error and preserves its code and message', () => {
+    const error = new UaeCorporateTaxValidationError('boom', 'NEGATIVE_ADD_BACKS');
 
-    expect(input.currency).toBe('AED');
-    expect(input.rateTable?.version).toBe(DEFAULT_UAE_CORPORATE_TAX_RATE_TABLE.version);
+    expect(error).toBeInstanceOf(Error);
+    expect(error).toBeInstanceOf(UaeCorporateTaxValidationError);
+    expect(error.code).toBe('NEGATIVE_ADD_BACKS');
+    expect(error.message).toBe('boom');
+    expect(error.name).toBe('UaeCorporateTaxValidationError');
+  });
+});
+
+describe('isUaeCorporateTaxRateTable', () => {
+  it('returns true for a well-formed rate table', () => {
+    expect(isUaeCorporateTaxRateTable(validRateTable)).toBe(true);
   });
 
-  it('allows constructing a fully-typed calculation result shape', () => {
-    const result: UaeCorporateTaxCalculationResult = {
-      taxableIncome: 140000,
-      taxDue: 12600,
-      reliefApplied: false,
-      rateTableVersion: DEFAULT_UAE_CORPORATE_TAX_RATE_TABLE.version,
-      currency: 'AED',
-    };
+  it('returns false when version is missing or empty', () => {
+    expect(isUaeCorporateTaxRateTable({ ...validRateTable, version: '' })).toBe(false);
+    const { version, ...withoutVersion } = validRateTable;
+    void version;
+    expect(isUaeCorporateTaxRateTable(withoutVersion)).toBe(false);
+  });
 
-    expect(result.taxDue).toBe(12600);
-    expect(result.reliefApplied).toBe(false);
-    expect(result.rateTableVersion).toBe('UAE-CT-FDL47-2022-v1');
+  it('returns false when standardRate is negative or not finite', () => {
+    expect(isUaeCorporateTaxRateTable({ ...validRateTable, standardRate: -0.01 })).toBe(false);
+    expect(isUaeCorporateTaxRateTable({ ...validRateTable, standardRate: Number.NaN })).toBe(false);
+    expect(
+      isUaeCorporateTaxRateTable({ ...validRateTable, standardRate: Number.POSITIVE_INFINITY })
+    ).toBe(false);
+  });
+
+  it('returns false when smallBusinessReliefThresholdAed is negative', () => {
+    expect(
+      isUaeCorporateTaxRateTable({ ...validRateTable, smallBusinessReliefThresholdAed: -1 })
+    ).toBe(false);
+  });
+
+  it('returns false when effectiveFrom is not an ISO-8601 date string', () => {
+    expect(isUaeCorporateTaxRateTable({ ...validRateTable, effectiveFrom: '06/01/2023' })).toBe(
+      false
+    );
+    expect(isUaeCorporateTaxRateTable({ ...validRateTable, effectiveFrom: '2023-6-1' })).toBe(
+      false
+    );
+  });
+
+  it('returns false for non-object values', () => {
+    expect(isUaeCorporateTaxRateTable(null)).toBe(false);
+    expect(isUaeCorporateTaxRateTable(undefined)).toBe(false);
+    expect(isUaeCorporateTaxRateTable('rate table')).toBe(false);
+    expect(isUaeCorporateTaxRateTable(42)).toBe(false);
+  });
+});
+
+describe('assertValidUaeCorporateTaxInput', () => {
+  it('does not throw for a fully valid input', () => {
+    expect(() => assertValidUaeCorporateTaxInput(validInput)).not.toThrow();
+  });
+
+  it('does not mutate the input object', () => {
+    const snapshot = { ...validInput };
+    assertValidUaeCorporateTaxInput(validInput);
+    expect(validInput).toEqual(snapshot);
+  });
+
+  it('throws INVALID_CURRENCY for a non-AED currency', () => {
+    const invalid = { ...validInput, currency: 'USD' } as unknown as UaeCorporateTaxInput;
+
+    try {
+      assertValidUaeCorporateTaxInput(invalid);
+      expect.fail('expected assertValidUaeCorporateTaxInput to throw');
+    } catch (error) {
+      expect(error).toBeInstanceOf(UaeCorporateTaxValidationError);
+      expect((error as UaeCorporateTaxValidationError).code).toBe('INVALID_CURRENCY');
+    }
+  });
+
+  it('throws NEGATIVE_ADD_BACKS for a negative nonDeductibleAddBacksAed', () => {
+    const invalid: UaeCorporateTaxInput = { ...validInput, nonDeductibleAddBacksAed: -1 };
+
+    try {
+      assertValidUaeCorporateTaxInput(invalid);
+      expect.fail('expected assertValidUaeCorporateTaxInput to throw');
+    } catch (error) {
+      expect(error).toBeInstanceOf(UaeCorporateTaxValidationError);
+      expect((error as UaeCorporateTaxValidationError).code).toBe('NEGATIVE_ADD_BACKS');
+    }
+  });
+
+  it('throws NEGATIVE_EXEMPT_INCOME for a negative exemptIncomeAed', () => {
+    const invalid: UaeCorporateTaxInput = { ...validInput, exemptIncomeAed: -1 };
+
+    try {
+      assertValidUaeCorporateTaxInput(invalid);
+      expect.fail('expected assertValidUaeCorporateTaxInput to throw');
+    } catch (error) {
+      expect(error).toBeInstanceOf(UaeCorporateTaxValidationError);
+      expect((error as UaeCorporateTaxValidationError).code).toBe('NEGATIVE_EXEMPT_INCOME');
+    }
+  });
+
+  it('throws INVALID_RATE_TABLE_VERSION for an empty rateTableVersion', () => {
+    const invalid: UaeCorporateTaxInput = { ...validInput, rateTableVersion: '' };
+
+    try {
+      assertValidUaeCorporateTaxInput(invalid);
+      expect.fail('expected assertValidUaeCorporateTaxInput to throw');
+    } catch (error) {
+      expect(error).toBeInstanceOf(UaeCorporateTaxValidationError);
+      expect((error as UaeCorporateTaxValidationError).code).toBe('INVALID_RATE_TABLE_VERSION');
+    }
+  });
+
+  it('accepts a zero accountingProfitAed and a negative one (floor handling is a calculation concern)', () => {
+    expect(() =>
+      assertValidUaeCorporateTaxInput({ ...validInput, accountingProfitAed: 0 })
+    ).not.toThrow();
+    expect(() =>
+      assertValidUaeCorporateTaxInput({ ...validInput, accountingProfitAed: -100 })
+    ).not.toThrow();
   });
 });

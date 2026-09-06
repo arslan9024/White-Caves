@@ -105,45 +105,72 @@ This SRS pairs with:
 This handoff is additive documentation only. Rollback consists of reverting this file;
 no code, schema, or configuration changes are made, so rollback carries no runtime risk.
 
-## 9. Implementation Completion Evidence (Child issue #2440)
+## 9. Implementation Addendum (Child Issue #2440)
 
-- Implementing child issue: #2440. Parent issue #1935 remains open; this addendum does
-  not close #1935 or #2440's parent.
-- Implementation delivered at:
-  - `src/features/finance/financeEngineUaeCorporate/financeEngineUaeCorporate.logic.ts`
-    (`calculateUaeCorporateTax` pure function, satisfying FR-1 through FR-7).
-  - `src/features/finance/financeEngineUaeCorporate/financeEngineUaeCorporate.logic.test.ts`
-    (vitest unit tests covering FR-1–FR-6 and NFR-4, including the AED 375,000/375,001
-    boundary, negative/zero profit flooring, currency rejection, determinism, and
-    input-immutability checks).
-- Required validation commands (typecheck, lint, test) must be run from the repository
-  root against these two files before merge; this addendum records the requirement, and
-  the implementing PR must attach the actual command output as evidence.
-- Rollback for the implementation: revert the two `.ts` files listed above. No other
-  files were modified; no schema, dependency, or configuration changes were introduced.
+Child issue #2440 (parent #1935) delivers the implementation PR anticipated by
+Section 7 above. It does not modify any requirement, decision, or exclusion recorded
+in Sections 1–8 of this SRS; those remain unchanged and this addendum is purely
+additive.
 
-## 10. Types Extraction Completion Evidence (Child issue #2438)
+- **Implemented module:** `src/features/finance/financeEngineUaeCorporate/financeEngineUaeCorporate.logic.ts`
+  exporting the pure function `calculate()` plus supporting types
+  (`UaeCorporateTaxInput`, `UaeCorporateTaxResult`, `UaeCorporateTaxRateTable`),
+  the versioned rate table registry (`UAE_CORPORATE_TAX_RATE_TABLES`,
+  `DEFAULT_RATE_TABLE_VERSION`), convenience constants
+  (`SMALL_BUSINESS_RELIEF_THRESHOLD_AED`, `STANDARD_CORPORATE_TAX_RATE`), the
+  typed `UaeCorporateTaxValidationError`, and a `formatAedAmount()` display helper.
+- **Test evidence:** `src/features/finance/financeEngineUaeCorporate/financeEngineUaeCorporate.logic.test.ts`
+  covers FR-1 through FR-7 with vitest, including exact boundary tests at
+  AED 375,000 and AED 375,001, zero/negative accounting profit flooring,
+  `rateTableVersion` pass-through and rejection of unknown versions, input
+  non-mutation, and rejection of non-`'AED'` currency values.
+- **Validation commands (required for merge):** `npx vitest run src/features/finance/financeEngineUaeCorporate` and
+  the repository's standard `typecheck`/`lint` scripts, run from the repository root
+  (not available inside this isolated documentation sandbox, which has no
+  `node_modules`).
+- **Scope confirmation:** No files outside the four listed in the #2440 issue body were
+  created or modified. Parent issue #1935 remains open. No GitHub mutation, database
+  operation, or secret rewrite was performed.
+- **Rollback (implementation):** Revert
+  `financeEngineUaeCorporate.logic.ts`/`financeEngineUaeCorporate.logic.test.ts` and
+  this addendum section. The module is not yet wired into any route, job, or UI, so
+  reverting it has no runtime blast radius beyond removing the pure calculation
+  function itself.
 
-- Implementing child issue: #2438. Parent issue #1935 remains open; this addendum does
-  not close #1935 or any child issue.
-- Delivered files, aligning the target module layout in the paired SDD (§2) by extracting
-  the previously-consolidated type surface into its own module:
-  - `src/features/finance/financeEngineUaeCorporate/financeEngineUaeCorporate.types.ts` —
-    exported types (`UaeCorporateTaxCurrency`, `UaeCorporateTaxRateTable`,
-    `UaeCorporateTaxCalculationInput`, `UaeCorporateTaxCalculationResult`), the frozen
-    default rate table constant (`DEFAULT_UAE_CORPORATE_TAX_RATE_TABLE`, version
-    `UAE-CT-FDL47-2022-v1`), the typed `UaeCorporateTaxValidationError`, and two type
-    guards (`isUaeCorporateTaxCurrency`, `isUaeCorporateTaxRateTable`) satisfying FR-4 and
-    FR-5 without using `any`.
-  - `financeEngineUaeCorporate.types.test.ts` — vitest unit tests with real behavior
-    assertions covering the default rate table's values and immutability, both type
-    guards' true/false branches (including malformed and non-object inputs), the
-    validation error's `Error` subclassing and prototype chain across a throw/catch
-    boundary, and structural usage of the calculation input/result types.
-- Required validation commands (typecheck, lint, test) must be run from the repository
-  root against these two files before merge; this addendum records the requirement, and
-  the implementing PR must attach the actual command output as evidence.
-- Rollback for this addendum: revert `financeEngineUaeCorporate.types.ts` and
-  `financeEngineUaeCorporate.types.test.ts`. No other file in the repository imports
-  from these two files yet, so rollback carries no downstream runtime risk. Parent issue
-  #1935 remains open and unaffected.
+## 10. Implementation Addendum (Child Issue #2438)
+
+Child issue #2438 (parent #1935) extracts the shared data contracts referenced in
+Section 9 into a dedicated types module, per the module layout anticipated in the
+paired SDD, Section 2 (`financeEngineUaeCorporate.types.ts`). This addendum does not
+change any requirement, decision, or exclusion recorded in Sections 1–9; those remain
+unchanged and this addendum is purely additive.
+
+- **Implemented module:** `src/features/finance/financeEngineUaeCorporate/financeEngineUaeCorporate.types.ts`
+  exporting `UaeCorporateTaxCurrency`, `UaeCorporateTaxRateTableVersion`,
+  `UaeCorporateTaxRateTable`, `UaeCorporateTaxInput`, `UaeCorporateTaxResult`,
+  `UaeCorporateTaxValidationErrorCode`, and the `UaeCorporateTaxValidationError` class,
+  together with runtime type guards/assertions (`isUaeCorporateTaxCurrency`,
+  `assertUaeCorporateTaxCurrency`, `isUaeCorporateTaxRateTable`,
+  `assertValidUaeCorporateTaxInput`) used to validate untrusted input against FR-1 and
+  FR-4 at the module boundary. This module contains no calculation logic (FR-7) —
+  `calculate()` and the rate table registry remain the responsibility of the
+  `.logic.ts`/`.rates.ts` modules described in Section 9.
+- **Test evidence:** `src/features/finance/financeEngineUaeCorporate/financeEngineUaeCorporate.types.test.ts`
+  covers every exported guard/assertion with vitest, including acceptance of the valid
+  `'AED'` currency and rejection of others (FR-4), rejection of malformed rate tables
+  (missing/empty version, negative or non-finite rate/threshold, non-ISO-8601
+  `effectiveFrom`), rejection of negative add-backs/exempt income and empty rate table
+  versions on `UaeCorporateTaxInput`, non-mutation of the validated input object, and
+  `instanceof`/`code`/`message` assertions on `UaeCorporateTaxValidationError`.
+- **Validation commands (required for merge):** `npx vitest run src/features/finance/financeEngineUaeCorporate` and
+  the repository's standard `typecheck`/`lint` scripts, run from the repository root
+  (not available inside this isolated documentation sandbox, which has no
+  `node_modules`).
+- **Scope confirmation:** No files outside the four listed in the #2438 issue body were
+  created or modified. Parent issue #1935 remains open. No GitHub mutation, database
+  operation, or secret rewrite was performed.
+- **Rollback (implementation):** Revert
+  `financeEngineUaeCorporate.types.ts`/`financeEngineUaeCorporate.types.test.ts` and
+  this addendum section. The types module is a pure data-contract/validation module
+  with no side effects and is not yet imported by any implementation module in this
+  sandbox, so reverting it has no runtime blast radius.
