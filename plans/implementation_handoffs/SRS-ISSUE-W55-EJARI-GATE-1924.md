@@ -103,3 +103,68 @@ with real behavioral assertions.
 See `SDD-ISSUE-W55-EJARI-GATE-1924.md` for how these requirements are
 satisfied by the documentation structure and directory layout chosen for
 this child.
+
+## 9. Addendum — Child Issue #2489 (automated validator)
+
+- Document type: SRS addendum (implementation handoff)
+- Issue: #2489
+- Parent issue: #1924 (open — pending reconciliation)
+- Workstream: W55 — Ejari Suite Production Release Gate
+
+### 9.1 Purpose
+
+Child #2489 is the sibling of #2490 anticipated by SDD section 5
+("Validation Approach"): it implements the automated structural/
+traceability validator for the Ejari Suite Production Release Gate as
+strict TypeScript, satisfying NFR-3 of this SRS.
+
+### 9.2 Additional Functional Requirements
+
+**FR-5 — Automated traceability validation**
+The gate MUST provide a pure, side-effect-free TypeScript function that,
+given a set of artifact contents, verifies each artifact contains the
+required traceability markers (`#2489`, `#1924`, `W55`). Implemented by
+`checkTraceabilityMarkers` in
+`src/features/documents/ejariSuiteProductionRelease/ejariSuiteProductionRelease.logic.ts`.
+
+**FR-6 — Automated parent-non-closure validation**
+The gate MUST provide a function that detects whether any artifact asserts
+closure of the parent issue (e.g. "closes #1924", "fixes #1924") and flags
+this as a blocking error, distinct from a lower-severity warning when the
+parent issue is merely mentioned without being described as open.
+Implemented by `checkParentIssueOpenLanguage` and `isIssueClosureAsserted`.
+
+**FR-7 — Automated exclusion/evidence validation**
+The gate MUST provide functions that verify required exclusion phrases
+(parent issue closure, bulk GitHub mutation, destructive database
+operations, production secret rewrites) and required evidence sections
+(Completion Evidence, Rollback Note) are present across the artifact set.
+Implemented by `checkExclusionPhrases` and `checkEvidenceSections`.
+
+**FR-8 — Aggregate gate evaluation**
+The gate MUST expose a single entry point,
+`evaluateEjariSuiteProductionReleaseGate`, that runs all of the above checks
+and returns an overall `ready`/`blocked` status plus the full list of
+individual check results, so downstream tooling can render a single
+pass/fail decision.
+
+### 9.3 Non-Functional Requirements (Child #2489)
+
+- **NFR-4 — Strict typing**: `ejariSuiteProductionRelease.logic.ts` uses
+  strict TypeScript with no `any` types.
+- **NFR-5 — Test coverage with real assertions**: `ejariSuiteProductionRelease.logic.test.ts`
+  uses `vitest` (`import { describe, expect, it } from 'vitest'`) and
+  asserts on real behavior (regex/string matching outcomes), never
+  placeholder assertions.
+- **NFR-6 — No side effects**: the validator module performs no file I/O,
+  network calls, or GitHub mutations; callers supply artifact text.
+
+### 9.4 Acceptance Criteria (Child #2489)
+
+1. Implementation stays within #2489's declared file list (the logic module,
+   its test file, and this SRS/SDD addendum).
+2. `ejariSuiteProductionRelease.logic.test.ts` passes when run with vitest.
+3. Completion evidence and a rollback note for #2489 are recorded (see the
+   SDD addendum, section 8).
+4. No artifact produced by #2489 asserts or implies closure of parent issue
+   #1924, which remains open pending reconciliation of all W55 children.

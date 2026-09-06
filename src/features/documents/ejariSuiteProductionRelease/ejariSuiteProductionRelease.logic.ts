@@ -1,175 +1,262 @@
 /**
- * Ejari Suite Production Release — logic module
+ * Ejari Suite Production Release Gate — automated validator logic.
  *
- * Scope (child of parent issue #1924, tracked under issue #2486):
- * Provides pure, side-effect-free helpers for evaluating whether the
- * Ejari document suite is ready for a production release. This module
- * intentionally does NOT perform any GitHub mutation, database write,
- * or secret rewrite — it only computes readiness state from data
- * supplied by the caller, and produces a rollback note for auditing.
+ * Issue: #2489
+ * Parent issue: #1924 (open — pending reconciliation)
+ * Workstream: W55 — Ejari Suite Production Release Gate
+ *
+ * This module implements the automated structural/traceability validator
+ * anticipated by the W55 gate's SDD (see
+ * plans/implementation_handoffs/SDD-ISSUE-W55-EJARI-GATE-1924.md, section 5
+ * "Validation Approach"): it inspects the textual content of the gate's
+ * documentation/code artifacts and asserts on real substrings rather than
+ * relying on manual review alone.
+ *
+ * Scope: pure, side-effect-free text analysis. It does not read files from
+ * disk, does not call GitHub, and does not mutate any state — callers are
+ * responsible for supplying artifact contents (e.g. already-read file text).
  */
 
-/** Severity of an individual release checklist item. */
-export type ReleaseCheckSeverity = 'blocking' | 'warning' | 'informational';
+/** A single documentation or code artifact under the Ejari release gate. */
+export interface EjariDocumentArtifact {
+  /** Repo-relative path used for reporting; not read from disk by this module. */
+  readonly path: string;
+  /** Raw text content of the artifact. */
+  readonly content: string;
+}
 
-/** Overall readiness status for the release. */
-export type ReleaseReadinessStatus = 'ready' | 'blocked' | 'pending';
+/** Severity of a gate rule violation or pass. */
+export type GateRuleSeverity = 'error' | 'warning';
 
-/** A single item on the production release checklist. */
-export interface ReleaseCheckItem {
-  /** Stable identifier for the check (e.g. "ejari-schema-migrated"). */
-  readonly id: string;
-  /** Human readable label describing what the check verifies. */
-  readonly label: string;
-  /** Whether the check has passed. */
+/** Result of evaluating a single rule against a single artifact. */
+export interface GateCheckResult {
+  readonly ruleId: string;
+  readonly artifactPath: string;
   readonly passed: boolean;
-  /** How severe a failure of this check is. */
-  readonly severity: ReleaseCheckSeverity;
+  readonly severity: GateRuleSeverity;
+  readonly message: string;
 }
 
-/** Aggregated result of evaluating a full checklist. */
-export interface ReleaseReadinessSummary {
-  readonly status: ReleaseReadinessStatus;
-  readonly totalChecks: number;
-  readonly passedChecks: number;
-  readonly failedChecks: number;
-  readonly blockingFailures: readonly ReleaseCheckItem[];
-  readonly warningFailures: readonly ReleaseCheckItem[];
+/** Overall status of the release gate for a set of artifacts. */
+export type GateStatus = 'ready' | 'blocked';
+
+/** Aggregated evaluation across all artifacts and rules. */
+export interface GateEvaluation {
+  readonly status: GateStatus;
+  readonly results: readonly GateCheckResult[];
+  readonly failureCount: number;
 }
 
-/** Metadata describing the release candidate being evaluated. */
-export interface ReleaseCandidate {
-  readonly version: string;
-  readonly previousStableVersion: string;
-  readonly checklist: readonly ReleaseCheckItem[];
+/** Configuration describing the traceability/exclusion contract to enforce. */
+export interface EjariGateConfig {
+  /** Identifiers that must appear verbatim in every artifact (e.g. "#2489", "#1924", "W55"). */
+  readonly requiredTraceabilityMarkers: readonly string[];
+  /** The parent issue reference whose closure must never be asserted (e.g. "#1924"). */
+  readonly parentIssueRef: string;
+  /** Phrases that must appear in at least one artifact describing excluded scope. */
+  readonly requiredExclusionPhrases: readonly string[];
+  /** Section headings that at least one artifact must contain (e.g. completion evidence, rollback). */
+  readonly requiredEvidenceSections: readonly string[];
 }
 
-/** A recorded rollback note for completion evidence / audit trail. */
-export interface RollbackNote {
-  readonly version: string;
-  readonly previousStableVersion: string;
-  readonly rollbackCommand: string;
-  readonly reason: string;
-  readonly generatedAt: string;
+/** Default configuration matching the W55 Ejari release gate contract. */
+export const DEFAULT_EJARI_GATE_CONFIG: EjariGateConfig = {
+  requiredTraceabilityMarkers: ['#2489', '#1924', 'W55'],
+  parentIssueRef: '#1924',
+  requiredExclusionPhrases: [
+    'parent issue closure',
+    'bulk GitHub mutation',
+    'destructive database operations',
+    'production secret',
+  ],
+  requiredEvidenceSections: ['Completion Evidence', 'Rollback Note'],
+};
+
+/**
+ * Patterns that assert a GitHub issue is being closed by this change
+ * (e.g. "closes #1924", "fixes #1924", "resolves #1924"), which must never
+ * apply to the parent issue reference under this gate's exclusion rules.
+ */
+const CLOSURE_VERBS = [
+  'close',
+  'closes',
+  'closed',
+  'fix',
+  'fixes',
+  'fixed',
+  'resolve',
+  'resolves',
+  'resolved',
+];
+
+function escapeRegExp(value: string): string {
+  return value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 }
 
 /**
- * Evaluates a release checklist and produces an aggregated readiness
- * summary. A release is:
- *  - "blocked" if any `blocking` severity item has failed,
- *  - "pending" if there are no blocking failures but at least one
- *    `warning` severity item has failed,
- *  - "ready" if every item has passed (informational failures do not
- *    affect readiness).
+ * Detects whether an artifact's content contains a GitHub closure keyword
+ * directly bound to the given issue reference (e.g. "closes #1924").
  */
-export function evaluateReleaseChecklist(
-  checklist: readonly ReleaseCheckItem[]
-): ReleaseReadinessSummary {
-  const totalChecks = checklist.length;
-  const passedChecks = checklist.filter(item => item.passed).length;
-  const failedChecks = totalChecks - passedChecks;
+export function isIssueClosureAsserted(content: string, issueRef: string): boolean {
+  const escapedRef = escapeRegExp(issueRef);
+  const verbAlternation = CLOSURE_VERBS.join('|');
+  const pattern = new RegExp(`\\b(?:${verbAlternation})\\s+${escapedRef}\\b`, 'i');
+  return pattern.test(content);
+}
 
-  const blockingFailures = checklist.filter(item => !item.passed && item.severity === 'blocking');
-  const warningFailures = checklist.filter(item => !item.passed && item.severity === 'warning');
+/**
+ * Checks that a single artifact contains every required traceability marker
+ * verbatim (case-sensitive, since issue/workstream IDs are not free text).
+ */
+export function checkTraceabilityMarkers(
+  artifact: EjariDocumentArtifact,
+  requiredMarkers: readonly string[] = DEFAULT_EJARI_GATE_CONFIG.requiredTraceabilityMarkers
+): GateCheckResult[] {
+  return requiredMarkers.map(marker => {
+    const passed = artifact.content.includes(marker);
+    return {
+      ruleId: `traceability:${marker}`,
+      artifactPath: artifact.path,
+      passed,
+      severity: 'error',
+      message: passed
+        ? `Traceability marker "${marker}" present in ${artifact.path}.`
+        : `Traceability marker "${marker}" is missing from ${artifact.path}.`,
+    };
+  });
+}
 
-  let status: ReleaseReadinessStatus;
-  if (blockingFailures.length > 0) {
-    status = 'blocked';
-  } else if (warningFailures.length > 0) {
-    status = 'pending';
-  } else {
-    status = 'ready';
+/**
+ * Checks that an artifact never asserts closure of the parent issue, and
+ * (when it references the parent issue at all) describes it as open.
+ */
+export function checkParentIssueOpenLanguage(
+  artifact: EjariDocumentArtifact,
+  parentIssueRef: string = DEFAULT_EJARI_GATE_CONFIG.parentIssueRef
+): GateCheckResult {
+  const closureAsserted = isIssueClosureAsserted(artifact.content, parentIssueRef);
+  const mentionsParent = artifact.content.includes(parentIssueRef);
+  const describesOpen = new RegExp(
+    `${escapeRegExp(parentIssueRef)}[^\\n]{0,40}\\bopen\\b`,
+    'i'
+  ).test(artifact.content);
+
+  if (closureAsserted) {
+    return {
+      ruleId: 'parent-issue-not-closed',
+      artifactPath: artifact.path,
+      passed: false,
+      severity: 'error',
+      message: `${artifact.path} asserts closure of parent issue ${parentIssueRef}, which is excluded scope.`,
+    };
+  }
+
+  if (mentionsParent && !describesOpen) {
+    return {
+      ruleId: 'parent-issue-not-closed',
+      artifactPath: artifact.path,
+      passed: false,
+      severity: 'warning',
+      message: `${artifact.path} references ${parentIssueRef} without describing it as open.`,
+    };
   }
 
   return {
-    status,
-    totalChecks,
-    passedChecks,
-    failedChecks,
-    blockingFailures,
-    warningFailures,
+    ruleId: 'parent-issue-not-closed',
+    artifactPath: artifact.path,
+    passed: true,
+    severity: 'error',
+    message: `${artifact.path} does not assert closure of parent issue ${parentIssueRef}.`,
   };
 }
 
 /**
- * Convenience predicate for whether a release candidate may proceed to
- * production. Equivalent to `evaluateReleaseChecklist(candidate.checklist).status === 'ready'`.
+ * Checks whether a single artifact contains a required exclusion phrase.
+ * Matching is case-insensitive since exclusion prose may vary in casing.
  */
-export function isReleaseApproved(candidate: ReleaseCandidate): boolean {
-  return evaluateReleaseChecklist(candidate.checklist).status === 'ready';
+export function checkExclusionPhrasePresent(
+  artifact: EjariDocumentArtifact,
+  phrase: string
+): boolean {
+  return artifact.content.toLowerCase().includes(phrase.toLowerCase());
 }
 
 /**
- * Builds a human-readable rollback note that records how to revert the
- * release candidate back to the previous stable version. This is
- * completion evidence only — it does not execute the rollback.
+ * Checks that, across the full artifact set, every required exclusion
+ * phrase appears in at least one artifact.
  */
-export function createRollbackNote(
-  candidate: ReleaseCandidate,
-  reason: string,
-  generatedAt: Date = new Date()
-): RollbackNote {
-  if (candidate.version.trim().length === 0) {
-    throw new Error('ReleaseCandidate.version must be a non-empty string.');
-  }
-  if (candidate.previousStableVersion.trim().length === 0) {
-    throw new Error('ReleaseCandidate.previousStableVersion must be a non-empty string.');
-  }
-
-  return {
-    version: candidate.version,
-    previousStableVersion: candidate.previousStableVersion,
-    rollbackCommand: `deploy:ejari-suite --version=${candidate.previousStableVersion}`,
-    reason,
-    generatedAt: generatedAt.toISOString(),
-  };
+export function checkExclusionPhrases(
+  artifacts: readonly EjariDocumentArtifact[],
+  requiredPhrases: readonly string[] = DEFAULT_EJARI_GATE_CONFIG.requiredExclusionPhrases
+): GateCheckResult[] {
+  return requiredPhrases.map(phrase => {
+    const matchingArtifact = artifacts.find(artifact =>
+      checkExclusionPhrasePresent(artifact, phrase)
+    );
+    return {
+      ruleId: `exclusion-phrase:${phrase}`,
+      artifactPath: matchingArtifact?.path ?? '(none)',
+      passed: matchingArtifact !== undefined,
+      severity: 'error',
+      message: matchingArtifact
+        ? `Exclusion phrase "${phrase}" found in ${matchingArtifact.path}.`
+        : `Exclusion phrase "${phrase}" was not found in any artifact.`,
+    };
+  });
 }
 
 /**
- * Produces a short, deterministic completion-evidence summary string
- * suitable for logging or attaching to an audit record. Does not
- * perform any I/O.
+ * Checks that, across the full artifact set, every required evidence
+ * section heading appears in at least one artifact.
  */
-export function buildCompletionEvidence(candidate: ReleaseCandidate): string {
-  const summary = evaluateReleaseChecklist(candidate.checklist);
-  const blocking = summary.blockingFailures.map(item => item.id).join(', ');
-  const warnings = summary.warningFailures.map(item => item.id).join(', ');
+export function checkEvidenceSections(
+  artifacts: readonly EjariDocumentArtifact[],
+  requiredSections: readonly string[] = DEFAULT_EJARI_GATE_CONFIG.requiredEvidenceSections
+): GateCheckResult[] {
+  return requiredSections.map(section => {
+    const matchingArtifact = artifacts.find(artifact => artifact.content.includes(section));
+    return {
+      ruleId: `evidence-section:${section}`,
+      artifactPath: matchingArtifact?.path ?? '(none)',
+      passed: matchingArtifact !== undefined,
+      severity: 'error',
+      message: matchingArtifact
+        ? `Evidence section "${section}" found in ${matchingArtifact.path}.`
+        : `Evidence section "${section}" was not found in any artifact.`,
+    };
+  });
+}
 
-  const lines = [
-    `Ejari Suite Production Release evidence for version ${candidate.version}`,
-    `Status: ${summary.status}`,
-    `Checks: ${summary.passedChecks}/${summary.totalChecks} passed`,
+/**
+ * Evaluates the full Ejari Suite Production Release Gate against a set of
+ * artifacts, combining traceability, parent-issue-open, exclusion-phrase,
+ * and evidence-section checks into a single pass/fail evaluation.
+ *
+ * The gate is "ready" only when there are zero error-severity failures;
+ * warning-severity failures are surfaced but do not block the gate.
+ */
+export function evaluateEjariSuiteProductionReleaseGate(
+  artifacts: readonly EjariDocumentArtifact[],
+  config: EjariGateConfig = DEFAULT_EJARI_GATE_CONFIG
+): GateEvaluation {
+  const perArtifactResults = artifacts.flatMap(artifact => [
+    ...checkTraceabilityMarkers(artifact, config.requiredTraceabilityMarkers),
+    checkParentIssueOpenLanguage(artifact, config.parentIssueRef),
+  ]);
+
+  const crossArtifactResults = [
+    ...checkExclusionPhrases(artifacts, config.requiredExclusionPhrases),
+    ...checkEvidenceSections(artifacts, config.requiredEvidenceSections),
   ];
 
-  if (blocking.length > 0) {
-    lines.push(`Blocking failures: ${blocking}`);
-  }
-  if (warnings.length > 0) {
-    lines.push(`Warning failures: ${warnings}`);
-  }
+  const results = [...perArtifactResults, ...crossArtifactResults];
+  const failureCount = results.filter(
+    result => !result.passed && result.severity === 'error'
+  ).length;
 
-  return lines.join('\n');
-}
-
-/**
- * Groups checklist items by severity for reporting/UI purposes.
- */
-export function groupChecklistBySeverity(
-  checklist: readonly ReleaseCheckItem[]
-): Record<ReleaseCheckSeverity, readonly ReleaseCheckItem[]> {
-  const blocking: ReleaseCheckItem[] = [];
-  const warning: ReleaseCheckItem[] = [];
-  const informational: ReleaseCheckItem[] = [];
-
-  for (const item of checklist) {
-    if (item.severity === 'blocking') {
-      blocking.push(item);
-    } else if (item.severity === 'warning') {
-      warning.push(item);
-    } else {
-      informational.push(item);
-    }
-  }
-
-  return { blocking, warning, informational };
+  return {
+    status: failureCount === 0 ? 'ready' : 'blocked',
+    results,
+    failureCount,
+  };
 }

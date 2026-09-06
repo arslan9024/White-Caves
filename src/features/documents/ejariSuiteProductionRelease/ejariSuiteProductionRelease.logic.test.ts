@@ -1,187 +1,238 @@
 import { describe, expect, it } from 'vitest';
 import {
-  buildCompletionEvidence,
-  createRollbackNote,
-  evaluateReleaseChecklist,
-  groupChecklistBySeverity,
-  isReleaseApproved,
-  type ReleaseCandidate,
-  type ReleaseCheckItem,
+  DEFAULT_EJARI_GATE_CONFIG,
+  checkEvidenceSections,
+  checkExclusionPhrasePresent,
+  checkExclusionPhrases,
+  checkParentIssueOpenLanguage,
+  checkTraceabilityMarkers,
+  evaluateEjariSuiteProductionReleaseGate,
+  isIssueClosureAsserted,
+  type EjariDocumentArtifact,
 } from './ejariSuiteProductionRelease.logic';
 
-const passingChecklist: readonly ReleaseCheckItem[] = [
-  { id: 'schema-migrated', label: 'Schema migrated', passed: true, severity: 'blocking' },
-  { id: 'smoke-tests', label: 'Smoke tests green', passed: true, severity: 'blocking' },
-  { id: 'docs-updated', label: 'Docs updated', passed: true, severity: 'informational' },
-];
+const compliantArtifact: EjariDocumentArtifact = {
+  path: 'plans/implementation_handoffs/SRS-ISSUE-W55-EJARI-GATE-1924.md',
+  content: `
+    Issue: #2489
+    Parent issue: #1924 (open — pending reconciliation)
+    Workstream: W55 — Ejari Suite Production Release Gate
 
-const blockedChecklist: readonly ReleaseCheckItem[] = [
-  { id: 'schema-migrated', label: 'Schema migrated', passed: false, severity: 'blocking' },
-  { id: 'smoke-tests', label: 'Smoke tests green', passed: true, severity: 'blocking' },
-  { id: 'docs-updated', label: 'Docs updated', passed: true, severity: 'informational' },
-];
+    ## Completion Evidence
+    Delivered the automated gate validator.
 
-const pendingChecklist: readonly ReleaseCheckItem[] = [
-  { id: 'schema-migrated', label: 'Schema migrated', passed: true, severity: 'blocking' },
-  {
-    id: 'perf-benchmark',
-    label: 'Perf benchmark within budget',
-    passed: false,
-    severity: 'warning',
-  },
-  { id: 'docs-updated', label: 'Docs updated', passed: true, severity: 'informational' },
-];
+    ## Rollback Note
+    Delete the added files; no runtime state was mutated.
 
-describe('evaluateReleaseChecklist', () => {
-  it('returns "ready" when every check passes', () => {
-    const summary = evaluateReleaseChecklist(passingChecklist);
-    expect(summary.status).toBe('ready');
-    expect(summary.totalChecks).toBe(3);
-    expect(summary.passedChecks).toBe(3);
-    expect(summary.failedChecks).toBe(0);
-    expect(summary.blockingFailures).toHaveLength(0);
-    expect(summary.warningFailures).toHaveLength(0);
+    Excluded scope: parent issue closure, bulk GitHub mutation,
+    destructive database operations, production secret rewrites.
+  `,
+};
+
+const secondCompliantArtifact: EjariDocumentArtifact = {
+  path: 'plans/implementation_handoffs/SDD-ISSUE-W55-EJARI-GATE-1924.md',
+  content: `
+    Issue: #2489
+    Parent issue: #1924 (open — pending reconciliation)
+    Workstream: W55 — Ejari Suite Production Release Gate
+  `,
+};
+
+describe('isIssueClosureAsserted', () => {
+  it('detects a "closes #1924" style closure keyword bound to the issue ref', () => {
+    expect(isIssueClosureAsserted('This PR closes #1924 once merged.', '#1924')).toBe(true);
   });
 
-  it('returns "blocked" when a blocking check fails, even if others pass', () => {
-    const summary = evaluateReleaseChecklist(blockedChecklist);
-    expect(summary.status).toBe('blocked');
-    expect(summary.blockingFailures).toHaveLength(1);
-    expect(summary.blockingFailures[0].id).toBe('schema-migrated');
-    expect(summary.failedChecks).toBe(1);
+  it('detects other closure verbs like "fixes" and "resolves"', () => {
+    expect(isIssueClosureAsserted('fixes #1924', '#1924')).toBe(true);
+    expect(isIssueClosureAsserted('Resolves #1924 fully.', '#1924')).toBe(true);
   });
 
-  it('returns "pending" when only warning-level checks fail', () => {
-    const summary = evaluateReleaseChecklist(pendingChecklist);
-    expect(summary.status).toBe('pending');
-    expect(summary.blockingFailures).toHaveLength(0);
-    expect(summary.warningFailures).toHaveLength(1);
-    expect(summary.warningFailures[0].id).toBe('perf-benchmark');
+  it('is case-insensitive', () => {
+    expect(isIssueClosureAsserted('CLOSES #1924', '#1924')).toBe(true);
   });
 
-  it('handles an empty checklist as ready', () => {
-    const summary = evaluateReleaseChecklist([]);
-    expect(summary.status).toBe('ready');
-    expect(summary.totalChecks).toBe(0);
-    expect(summary.passedChecks).toBe(0);
-    expect(summary.failedChecks).toBe(0);
+  it('does not flag a bare mention without a closure verb', () => {
+    expect(
+      isIssueClosureAsserted('Parent issue: #1924 (open — pending reconciliation)', '#1924')
+    ).toBe(false);
   });
 
-  it('does not let a failed informational check affect readiness', () => {
-    const checklist: readonly ReleaseCheckItem[] = [
-      { id: 'docs-updated', label: 'Docs updated', passed: false, severity: 'informational' },
-    ];
-    const summary = evaluateReleaseChecklist(checklist);
-    expect(summary.status).toBe('ready');
-    expect(summary.failedChecks).toBe(1);
+  it('does not flag closure verbs referencing a different issue number', () => {
+    expect(isIssueClosureAsserted('closes #999', '#1924')).toBe(false);
   });
 });
 
-describe('isReleaseApproved', () => {
-  it('returns true for a fully passing candidate', () => {
-    const candidate: ReleaseCandidate = {
-      version: '2.4.0',
-      previousStableVersion: '2.3.0',
-      checklist: passingChecklist,
-    };
-    expect(isReleaseApproved(candidate)).toBe(true);
+describe('checkTraceabilityMarkers', () => {
+  it('passes every marker when all are present', () => {
+    const results = checkTraceabilityMarkers(compliantArtifact);
+    expect(results).toHaveLength(DEFAULT_EJARI_GATE_CONFIG.requiredTraceabilityMarkers.length);
+    expect(results.every(result => result.passed)).toBe(true);
   });
 
-  it('returns false when blocking checks fail', () => {
-    const candidate: ReleaseCandidate = {
-      version: '2.4.0',
-      previousStableVersion: '2.3.0',
-      checklist: blockedChecklist,
+  it('fails a specific marker when it is missing', () => {
+    const artifact: EjariDocumentArtifact = {
+      path: 'x.md',
+      content: 'Issue: #2489, Workstream: W55',
     };
-    expect(isReleaseApproved(candidate)).toBe(false);
-  });
-
-  it('returns false when the release is only pending (warnings outstanding)', () => {
-    const candidate: ReleaseCandidate = {
-      version: '2.4.0',
-      previousStableVersion: '2.3.0',
-      checklist: pendingChecklist,
-    };
-    expect(isReleaseApproved(candidate)).toBe(false);
+    const results = checkTraceabilityMarkers(artifact);
+    const parentMarkerResult = results.find(result => result.ruleId === 'traceability:#1924');
+    expect(parentMarkerResult?.passed).toBe(false);
+    expect(parentMarkerResult?.message).toContain('missing');
   });
 });
 
-describe('createRollbackNote', () => {
-  const candidate: ReleaseCandidate = {
-    version: '2.4.0',
-    previousStableVersion: '2.3.0',
-    checklist: blockedChecklist,
-  };
-
-  it('builds a rollback note referencing the previous stable version', () => {
-    const fixedDate = new Date('2026-01-01T00:00:00.000Z');
-    const note = createRollbackNote(candidate, 'Schema migration failed in staging', fixedDate);
-
-    expect(note.version).toBe('2.4.0');
-    expect(note.previousStableVersion).toBe('2.3.0');
-    expect(note.rollbackCommand).toBe('deploy:ejari-suite --version=2.3.0');
-    expect(note.reason).toBe('Schema migration failed in staging');
-    expect(note.generatedAt).toBe('2026-01-01T00:00:00.000Z');
+describe('checkParentIssueOpenLanguage', () => {
+  it('passes when the parent issue is described as open', () => {
+    const result = checkParentIssueOpenLanguage(compliantArtifact);
+    expect(result.passed).toBe(true);
+    expect(result.severity).toBe('error');
   });
 
-  it('throws when the candidate version is empty', () => {
-    const invalidCandidate: ReleaseCandidate = { ...candidate, version: '   ' };
-    expect(() => createRollbackNote(invalidCandidate, 'reason')).toThrow(
-      /version must be a non-empty string/
-    );
+  it('fails with error severity when parent issue closure is asserted', () => {
+    const artifact: EjariDocumentArtifact = { path: 'bad.md', content: 'This closes #1924.' };
+    const result = checkParentIssueOpenLanguage(artifact);
+    expect(result.passed).toBe(false);
+    expect(result.severity).toBe('error');
+    expect(result.message).toContain('excluded scope');
   });
 
-  it('throws when the previous stable version is empty', () => {
-    const invalidCandidate: ReleaseCandidate = { ...candidate, previousStableVersion: '' };
-    expect(() => createRollbackNote(invalidCandidate, 'reason')).toThrow(
-      /previousStableVersion must be a non-empty string/
-    );
+  it('fails with warning severity when the parent is mentioned but not described as open', () => {
+    const artifact: EjariDocumentArtifact = {
+      path: 'ambiguous.md',
+      content: 'See parent #1924 for context.',
+    };
+    const result = checkParentIssueOpenLanguage(artifact);
+    expect(result.passed).toBe(false);
+    expect(result.severity).toBe('warning');
+  });
+
+  it('passes when the parent issue is not mentioned at all', () => {
+    const artifact: EjariDocumentArtifact = {
+      path: 'unrelated.md',
+      content: 'No parent reference here.',
+    };
+    const result = checkParentIssueOpenLanguage(artifact);
+    expect(result.passed).toBe(true);
   });
 });
 
-describe('buildCompletionEvidence', () => {
-  it('summarizes a ready release without listing failures', () => {
-    const candidate: ReleaseCandidate = {
-      version: '2.4.0',
-      previousStableVersion: '2.3.0',
-      checklist: passingChecklist,
+describe('checkExclusionPhrasePresent', () => {
+  it('matches case-insensitively', () => {
+    const artifact: EjariDocumentArtifact = {
+      path: 'x.md',
+      content: 'PARENT ISSUE CLOSURE is excluded.',
     };
-    const evidence = buildCompletionEvidence(candidate);
-    expect(evidence).toContain('Ejari Suite Production Release evidence for version 2.4.0');
-    expect(evidence).toContain('Status: ready');
-    expect(evidence).toContain('Checks: 3/3 passed');
-    expect(evidence).not.toContain('Blocking failures');
-    expect(evidence).not.toContain('Warning failures');
+    expect(checkExclusionPhrasePresent(artifact, 'parent issue closure')).toBe(true);
   });
 
-  it('lists blocking and warning failures when present', () => {
-    const candidate: ReleaseCandidate = {
-      version: '2.4.0',
-      previousStableVersion: '2.3.0',
-      checklist: [...blockedChecklist, ...pendingChecklist],
-    };
-    const evidence = buildCompletionEvidence(candidate);
-    expect(evidence).toContain('Blocking failures: schema-migrated');
-    expect(evidence).toContain('Warning failures: perf-benchmark');
+  it('returns false when the phrase is absent', () => {
+    const artifact: EjariDocumentArtifact = { path: 'x.md', content: 'Nothing relevant here.' };
+    expect(checkExclusionPhrasePresent(artifact, 'parent issue closure')).toBe(false);
   });
 });
 
-describe('groupChecklistBySeverity', () => {
-  it('partitions checklist items into their respective severity buckets', () => {
-    const grouped = groupChecklistBySeverity([...passingChecklist, ...pendingChecklist]);
-    expect(grouped.blocking.map(item => item.id)).toEqual([
-      'schema-migrated',
-      'smoke-tests',
-      'schema-migrated',
+describe('checkExclusionPhrases', () => {
+  it('passes every required phrase when found across the artifact set', () => {
+    const results = checkExclusionPhrases([compliantArtifact, secondCompliantArtifact]);
+    expect(results.every(result => result.passed)).toBe(true);
+    expect(results).toHaveLength(DEFAULT_EJARI_GATE_CONFIG.requiredExclusionPhrases.length);
+  });
+
+  it('fails phrases missing from every artifact', () => {
+    const results = checkExclusionPhrases([secondCompliantArtifact]);
+    expect(results.some(result => !result.passed)).toBe(true);
+    const missing = results.find(result => result.ruleId === 'exclusion-phrase:production secret');
+    expect(missing?.passed).toBe(false);
+    expect(missing?.artifactPath).toBe('(none)');
+  });
+});
+
+describe('checkEvidenceSections', () => {
+  it('passes when required sections are present somewhere in the artifact set', () => {
+    const results = checkEvidenceSections([compliantArtifact, secondCompliantArtifact]);
+    expect(results.every(result => result.passed)).toBe(true);
+  });
+
+  it('fails when a required section heading is absent everywhere', () => {
+    const results = checkEvidenceSections([secondCompliantArtifact]);
+    expect(results.every(result => !result.passed)).toBe(true);
+  });
+});
+
+describe('evaluateEjariSuiteProductionReleaseGate', () => {
+  it('reports "ready" with zero failures for a fully compliant artifact set', () => {
+    const evaluation = evaluateEjariSuiteProductionReleaseGate([
+      compliantArtifact,
+      secondCompliantArtifact,
     ]);
-    expect(grouped.warning.map(item => item.id)).toEqual(['perf-benchmark']);
-    expect(grouped.informational.map(item => item.id)).toEqual(['docs-updated', 'docs-updated']);
+    expect(evaluation.status).toBe('ready');
+    expect(evaluation.failureCount).toBe(0);
+    expect(evaluation.results.length).toBeGreaterThan(0);
   });
 
-  it('returns empty arrays for an empty checklist', () => {
-    const grouped = groupChecklistBySeverity([]);
-    expect(grouped.blocking).toHaveLength(0);
-    expect(grouped.warning).toHaveLength(0);
-    expect(grouped.informational).toHaveLength(0);
+  it('reports "blocked" when traceability markers are missing', () => {
+    const artifact: EjariDocumentArtifact = { path: 'incomplete.md', content: 'no markers here' };
+    const evaluation = evaluateEjariSuiteProductionReleaseGate([artifact]);
+    expect(evaluation.status).toBe('blocked');
+    expect(evaluation.failureCount).toBeGreaterThan(0);
+  });
+
+  it('reports "blocked" when parent issue closure is asserted, even if other rules pass', () => {
+    const artifact: EjariDocumentArtifact = {
+      path: 'risky.md',
+      content: `
+        Issue: #2489
+        Parent issue: #1924
+        Workstream: W55
+
+        ## Completion Evidence
+        Done.
+        ## Rollback Note
+        Revert commit.
+        parent issue closure, bulk GitHub mutation, destructive database operations, production secret
+
+        This change closes #1924.
+      `,
+    };
+    const evaluation = evaluateEjariSuiteProductionReleaseGate([artifact]);
+    expect(evaluation.status).toBe('blocked');
+    const closureResult = evaluation.results.find(
+      result => result.ruleId === 'parent-issue-not-closed'
+    );
+    expect(closureResult?.passed).toBe(false);
+  });
+
+  it('does not block the gate on warning-severity-only failures', () => {
+    const artifact: EjariDocumentArtifact = {
+      path: 'warning-only.md',
+      content: `
+        #2489 #1924 W55
+        ## Completion Evidence
+        text
+        ## Rollback Note
+        text
+        parent issue closure, bulk GitHub mutation, destructive database operations, production secret
+      `,
+    };
+    // Parent issue #1924 is mentioned but not described as "open" -> warning only.
+    const evaluation = evaluateEjariSuiteProductionReleaseGate([artifact]);
+    const closureResult = evaluation.results.find(
+      result => result.ruleId === 'parent-issue-not-closed'
+    );
+    expect(closureResult?.severity).toBe('warning');
+    expect(evaluation.status).toBe('ready');
+  });
+
+  it('supports a custom config with different required markers', () => {
+    const artifact: EjariDocumentArtifact = { path: 'custom.md', content: 'CUSTOM-MARKER only' };
+    const evaluation = evaluateEjariSuiteProductionReleaseGate([artifact], {
+      requiredTraceabilityMarkers: ['CUSTOM-MARKER'],
+      parentIssueRef: '#1924',
+      requiredExclusionPhrases: [],
+      requiredEvidenceSections: [],
+    });
+    expect(evaluation.status).toBe('ready');
+    expect(evaluation.failureCount).toBe(0);
   });
 });

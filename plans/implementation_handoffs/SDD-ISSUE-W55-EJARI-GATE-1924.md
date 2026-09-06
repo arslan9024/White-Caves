@@ -129,3 +129,119 @@ substrings), never placeholder assertions such as `expect(true).toBe(true)`.
 Identical to the contract's Rollback Note: delete the four files listed in
 Section 3 above. No compensating action is required since no code, schema,
 or GitHub state was mutated.
+
+## 8. Addendum — Child Issue #2489 (automated validator)
+
+- Document type: SDD addendum (implementation handoff)
+- Issue: #2489
+- Parent issue: #1924 (open — pending reconciliation)
+- Workstream: W55 — Ejari Suite Production Release Gate
+
+### 8.1 Overview
+
+Child #2489 implements the automated validator anticipated in section 5
+above as strict TypeScript, satisfying SRS FR-5 through FR-8 (see the SRS
+addendum, section 9).
+
+### 8.2 File/Directory Layout (Child #2489)
+
+```
+src/features/documents/ejariSuiteProductionRelease/
+├── ejariSuiteProductionRelease.logic.ts        # gate validator functions (this child)
+└── ejariSuiteProductionRelease.logic.test.ts   # vitest specs with real assertions (this child)
+```
+
+This extends, rather than replaces, the layout in section 3: the contract
+and README produced by #2490 remain the human-readable record; #2489 adds
+the machine-checkable validator alongside them in the same feature
+directory, matching the "feature-scoped location" rationale already
+established for this gate.
+
+### 8.3 Design Decisions (Child #2489)
+
+**D5 — Pure functions over a class-based validator**
+**Decision**: Expose the gate as a set of pure functions
+(`checkTraceabilityMarkers`, `checkParentIssueOpenLanguage`,
+`checkExclusionPhrases`, `checkEvidenceSections`,
+`evaluateEjariSuiteProductionReleaseGate`) plus exported types/interfaces,
+rather than a stateful class.
+**Reasoning**: The validator has no internal state to manage across calls;
+pure functions are simpler to unit test with vitest, are trivially
+tree-shakeable, and match the SDD's design goal (G2) of making
+traceability mechanical rather than relying on hidden state.
+
+**D6 — Severity-aware parent-issue check (error vs. warning)**
+**Decision**: `checkParentIssueOpenLanguage` distinguishes a hard failure
+(the artifact asserts closure of #1924 — severity `error`) from a soft
+failure (the artifact mentions #1924 without describing it as open —
+severity `warning`), and only `error`-severity failures block the overall
+gate status in `evaluateEjariSuiteProductionReleaseGate`.
+**Reasoning**: Asserting closure of the parent issue directly violates the
+excluded scope ("parent issue closure") and must always block the gate.
+Merely mentioning the parent issue without restating "open" every time is a
+much softer documentation nit that should be visible but not
+release-blocking, avoiding false-positive gate failures on otherwise
+compliant artifacts.
+
+**D7 — Caller-supplied artifact content, no file I/O**
+**Decision**: The validator operates purely on in-memory
+`EjariDocumentArtifact` objects (`{ path, content }`) rather than reading
+files from disk itself.
+**Reasoning**: Keeps the module dependency-free (no `fs` usage, no new
+dependencies), makes it trivially unit-testable with in-memory fixtures in
+`ejariSuiteProductionRelease.logic.test.ts`, and avoids the excluded scope
+of touching files outside this child's declared list at runtime.
+
+### 8.4 Validation Approach (Child #2489)
+
+`ejariSuiteProductionRelease.logic.test.ts` exercises:
+
+1. `isIssueClosureAsserted` against closure-verb variants (`closes`,
+   `fixes`, `resolves`), case-insensitivity, and non-matches for unrelated
+   issue numbers.
+2. `checkTraceabilityMarkers` for both fully-compliant and marker-missing
+   artifacts.
+3. `checkParentIssueOpenLanguage` across the open/closed/ambiguous/absent
+   scenarios described in design decision D6.
+4. `checkExclusionPhrases` and `checkEvidenceSections` across single- and
+   multi-artifact sets.
+5. `evaluateEjariSuiteProductionReleaseGate` end-to-end, including a
+   custom-config scenario, confirming `ready`/`blocked` status and
+   `failureCount` are computed correctly.
+
+Validated locally with the repository's existing vitest installation
+(`vitest run`) against this child's test file: all 22 assertions pass.
+
+### 8.5 Completion Evidence (Child #2489)
+
+- Added `ejariSuiteProductionRelease.logic.ts` implementing
+  `EjariDocumentArtifact`, `GateCheckResult`, `GateEvaluation`,
+  `EjariGateConfig`, `DEFAULT_EJARI_GATE_CONFIG`,
+  `isIssueClosureAsserted`, `checkTraceabilityMarkers`,
+  `checkParentIssueOpenLanguage`, `checkExclusionPhrasePresent`,
+  `checkExclusionPhrases`, `checkEvidenceSections`, and
+  `evaluateEjariSuiteProductionReleaseGate` — satisfying SRS FR-5 through
+  FR-8 and NFR-4/NFR-6.
+- Added `ejariSuiteProductionRelease.logic.test.ts` with 22 vitest cases
+  covering every exported function and both `ready`/`blocked` gate
+  outcomes, satisfying SRS NFR-5.
+- Extended this SRS and SDD with addendum sections (9 and 8 respectively)
+  documenting #2489's scope, decisions, and evidence without altering any
+  pre-existing #2490 content.
+- Confirmed via `tsc --noEmit --strict` that the new module type-checks
+  cleanly under the repository's strict compiler settings, and via
+  `vitest run` that all 22 tests in the new test file pass.
+
+### 8.6 Rollback Note (Child #2489)
+
+To roll back #2489 in isolation:
+
+1. Delete `src/features/documents/ejariSuiteProductionRelease/ejariSuiteProductionRelease.logic.ts`
+   and `ejariSuiteProductionRelease.logic.test.ts`.
+2. Remove sections 9 (SRS) and 8 (this SDD, i.e. this section and section
+   8.1–8.6) added by this addendum, restoring the prior #2490-only content.
+
+No other files are touched by #2489, no dependencies were added, no GitHub
+issues were closed, and no runtime code outside this feature directory
+imports from these two files, so rollback carries no blast radius. Parent
+issue #1924 remains open and is unaffected by this rollback.
