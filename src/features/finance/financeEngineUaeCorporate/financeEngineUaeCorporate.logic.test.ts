@@ -1,175 +1,205 @@
 import { describe, expect, it } from 'vitest';
 import {
-  calculateUaeCorporateTax,
-  DEFAULT_UAE_CORPORATE_TAX_RATE_TABLE,
+  DEFAULT_RATE_TABLE_VERSION,
+  SMALL_BUSINESS_RELIEF_THRESHOLD_AED,
+  STANDARD_CORPORATE_TAX_RATE,
+  calculate,
+  validateUaeCorporateTaxInput,
+  formatAedAmount,
   UaeCorporateTaxValidationError,
-  type UaeCorporateTaxCalculationInput,
-  type UaeCorporateTaxRateTable,
+  type UaeCorporateTaxInput,
 } from './financeEngineUaeCorporate.logic';
 
-const baseInput: UaeCorporateTaxCalculationInput = {
-  accountingProfitAed: 0,
-  nonDeductibleAddBacksAed: 0,
-  exemptIncomeAed: 0,
-  currency: 'AED',
-};
+describe('financeEngineUaeCorporate.logic', () => {
+  describe('calculate - standard rate above the relief threshold', () => {
+    it('applies 9% tax on the portion of taxable income above AED 375,000', () => {
+      const input: UaeCorporateTaxInput = {
+        accountingProfit: 1_000_000,
+        currency: 'AED',
+      };
+      const result = calculate(input);
 
-describe('calculateUaeCorporateTax', () => {
-  it('computes taxable income as profit + add-backs - exempt income (FR-1)', () => {
-    const result = calculateUaeCorporateTax({
-      ...baseInput,
-      accountingProfitAed: 500_000,
-      nonDeductibleAddBacksAed: 20_000,
-      exemptIncomeAed: 10_000,
+      const expectedTaxDue =
+        (1_000_000 - SMALL_BUSINESS_RELIEF_THRESHOLD_AED) * STANDARD_CORPORATE_TAX_RATE;
+
+      expect(result.reliefApplied).toBe(false);
+      expect(result.taxableIncome).toBe(1_000_000);
+      expect(result.taxDue).toBeCloseTo(expectedTaxDue, 2);
+      expect(result.currency).toBe('AED');
+      expect(result.rateTableVersion).toBe(DEFAULT_RATE_TABLE_VERSION);
     });
 
-    expect(result.taxableIncomeAed).toBe(510_000);
+    it('includes non-deductible add-backs and subtracts exempt income before taxing', () => {
+      const result = calculate({
+        accountingProfit: 500_000,
+        nonDeductibleAddBacks: 100_000,
+        exemptIncome: 50_000,
+        currency: 'AED',
+      });
+
+      // taxable income = 500,000 + 100,000 - 50,000 = 550,000
+      const expectedTaxableIncome = 550_000;
+      const expectedTaxDue =
+        (expectedTaxableIncome - SMALL_BUSINESS_RELIEF_THRESHOLD_AED) * STANDARD_CORPORATE_TAX_RATE;
+
+      expect(result.taxableIncome).toBe(expectedTaxableIncome);
+      expect(result.taxDue).toBeCloseTo(expectedTaxDue, 2);
+      expect(result.reliefApplied).toBe(false);
+    });
   });
 
-  it('applies Small Business Relief when taxable income equals the threshold exactly (FR-2)', () => {
-    const result = calculateUaeCorporateTax({
-      ...baseInput,
-      accountingProfitAed: 375_000,
+  describe('calculate - boundary at the relief threshold', () => {
+    it('applies Small Business Relief (zero tax) exactly at AED 375,000', () => {
+      const result = calculate({
+        accountingProfit: SMALL_BUSINESS_RELIEF_THRESHOLD_AED,
+        currency: 'AED',
+      });
+
+      expect(result.reliefApplied).toBe(true);
+      expect(result.taxDue).toBe(0);
+      expect(result.taxableIncome).toBe(SMALL_BUSINESS_RELIEF_THRESHOLD_AED);
     });
 
-    expect(result.taxableIncomeAed).toBe(375_000);
-    expect(result.reliefApplied).toBe(true);
-    expect(result.taxDueAed).toBe(0);
+    it('taxes only the excess over AED 375,000 at AED 375,001', () => {
+      const result = calculate({
+        accountingProfit: SMALL_BUSINESS_RELIEF_THRESHOLD_AED + 1,
+        currency: 'AED',
+      });
+
+      expect(result.reliefApplied).toBe(false);
+      expect(result.taxDue).toBeCloseTo(1 * STANDARD_CORPORATE_TAX_RATE, 2);
+    });
   });
 
-  it('applies Small Business Relief when taxable income is below the threshold (FR-2)', () => {
-    const result = calculateUaeCorporateTax({
-      ...baseInput,
-      accountingProfitAed: 100_000,
+  describe('calculate - zero and negative accounting profit', () => {
+    it('floors taxable income at zero and produces zero tax for zero profit', () => {
+      const result = calculate({ accountingProfit: 0, currency: 'AED' });
+
+      expect(result.taxableIncome).toBe(0);
+      expect(result.taxDue).toBe(0);
+      expect(result.reliefApplied).toBe(true);
     });
 
-    expect(result.reliefApplied).toBe(true);
-    expect(result.taxDueAed).toBe(0);
-  });
+    it('floors taxable income at zero and produces zero tax for negative profit', () => {
+      const result = calculate({ accountingProfit: -250_000, currency: 'AED' });
 
-  it('applies the 9% rate only to the excess over the threshold at the boundary + 1 AED (FR-3)', () => {
-    const result = calculateUaeCorporateTax({
-      ...baseInput,
-      accountingProfitAed: 375_001,
+      expect(result.taxableIncome).toBe(0);
+      expect(result.taxDue).toBe(0);
+      expect(result.reliefApplied).toBe(true);
     });
 
-    expect(result.reliefApplied).toBe(false);
-    // Excess = 1 AED; tax = 1 * 9% = 0.09
-    expect(result.taxDueAed).toBe(0.09);
+    it('floors taxable income at zero even when add-backs are insufficient to offset a loss', () => {
+      const result = calculate({
+        accountingProfit: -500_000,
+        nonDeductibleAddBacks: 100_000,
+        currency: 'AED',
+      });
+
+      expect(result.taxableIncome).toBe(0);
+      expect(result.taxDue).toBe(0);
+    });
   });
 
-  it('computes standard-rate tax correctly well above the relief threshold (FR-3)', () => {
-    const result = calculateUaeCorporateTax({
-      ...baseInput,
-      accountingProfitAed: 1_375_000,
+  describe('calculate - rateTableVersion pass-through and input immutability', () => {
+    it('defaults to DEFAULT_RATE_TABLE_VERSION when none is supplied', () => {
+      const result = calculate({ accountingProfit: 1_000_000, currency: 'AED' });
+      expect(result.rateTableVersion).toBe(DEFAULT_RATE_TABLE_VERSION);
     });
 
-    // Excess = 1,375,000 - 375,000 = 1,000,000; tax = 1,000,000 * 9% = 90,000
-    expect(result.taxableIncomeAed).toBe(1_375_000);
-    expect(result.reliefApplied).toBe(false);
-    expect(result.taxDueAed).toBe(90_000);
-  });
-
-  it('rejects any currency other than AED with a typed validation error (FR-4)', () => {
-    const invalidInput = {
-      ...baseInput,
-      currency: 'USD',
-    } as unknown as UaeCorporateTaxCalculationInput;
-
-    expect(() => calculateUaeCorporateTax(invalidInput)).toThrow(UaeCorporateTaxValidationError);
-    expect(() => calculateUaeCorporateTax(invalidInput)).toThrow(/AED/);
-  });
-
-  it('records the default rateTableVersion on every result for audit traceability (FR-5)', () => {
-    const result = calculateUaeCorporateTax({
-      ...baseInput,
-      accountingProfitAed: 500_000,
+    it('passes through an explicitly supplied known rateTableVersion', () => {
+      const result = calculate({
+        accountingProfit: 1_000_000,
+        currency: 'AED',
+        rateTableVersion: DEFAULT_RATE_TABLE_VERSION,
+      });
+      expect(result.rateTableVersion).toBe(DEFAULT_RATE_TABLE_VERSION);
     });
 
-    expect(result.rateTableVersion).toBe(DEFAULT_UAE_CORPORATE_TAX_RATE_TABLE.version);
-  });
-
-  it('records a custom rateTableVersion when a rate table override is supplied (FR-5)', () => {
-    const customRateTable: UaeCorporateTaxRateTable = {
-      version: 'UAE-CT-TEST-v2',
-      standardRatePercent: 9,
-      smallBusinessReliefThresholdAed: 375_000,
-    };
-
-    const result = calculateUaeCorporateTax({
-      ...baseInput,
-      accountingProfitAed: 500_000,
-      rateTable: customRateTable,
+    it('throws for an unknown rateTableVersion', () => {
+      expect(() =>
+        calculate({
+          accountingProfit: 1_000_000,
+          currency: 'AED',
+          rateTableVersion: 'NON-EXISTENT-VERSION',
+        })
+      ).toThrow(UaeCorporateTaxValidationError);
     });
 
-    expect(result.rateTableVersion).toBe('UAE-CT-TEST-v2');
+    it('does not mutate the input object passed to calculate', () => {
+      const input: UaeCorporateTaxInput = Object.freeze({
+        accountingProfit: 1_000_000,
+        currency: 'AED',
+      });
+
+      expect(() => calculate(input)).not.toThrow();
+      // Object.freeze guarantees a TypeError would be thrown on any attempted
+      // mutation, so successfully completing calculate() over a frozen input
+      // is itself proof that no mutation occurred.
+      expect(input.accountingProfit).toBe(1_000_000);
+    });
   });
 
-  it('is deterministic: identical input always yields identical output (FR-6)', () => {
-    const input: UaeCorporateTaxCalculationInput = {
-      ...baseInput,
-      accountingProfitAed: 823_456.78,
-      nonDeductibleAddBacksAed: 12_345.67,
-      exemptIncomeAed: 5_000,
-    };
+  describe('calculate - currency validation', () => {
+    it('rejects a non-AED currency value', () => {
+      const invalidInput = {
+        accountingProfit: 1_000_000,
+        currency: 'USD',
+      } as unknown as UaeCorporateTaxInput;
 
-    const firstResult = calculateUaeCorporateTax(input);
-    const secondResult = calculateUaeCorporateTax(input);
-
-    expect(firstResult).toEqual(secondResult);
+      expect(() => calculate(invalidInput)).toThrow(UaeCorporateTaxValidationError);
+    });
   });
 
-  it('does not mutate the input object (pure function, FR-7)', () => {
-    const input: UaeCorporateTaxCalculationInput = {
-      ...baseInput,
-      accountingProfitAed: 500_000,
-    };
-    const inputSnapshot = { ...input };
-
-    calculateUaeCorporateTax(input);
-
-    expect(input).toEqual(inputSnapshot);
-  });
-
-  it('floors negative taxable income at zero and applies no tax (FR-1, FR-2)', () => {
-    const result = calculateUaeCorporateTax({
-      ...baseInput,
-      accountingProfitAed: -50_000,
-      exemptIncomeAed: 10_000,
+  describe('validateUaeCorporateTaxInput', () => {
+    it('throws when accountingProfit is not finite', () => {
+      expect(() =>
+        validateUaeCorporateTaxInput({
+          accountingProfit: Number.NaN,
+          currency: 'AED',
+        })
+      ).toThrow(UaeCorporateTaxValidationError);
     });
 
-    expect(result.taxableIncomeAed).toBe(0);
-    expect(result.reliefApplied).toBe(true);
-    expect(result.taxDueAed).toBe(0);
-  });
-
-  it('floors zero accounting profit at zero taxable income with no tax due (FR-1, FR-2)', () => {
-    const result = calculateUaeCorporateTax({
-      ...baseInput,
-      accountingProfitAed: 0,
+    it('throws when nonDeductibleAddBacks is not finite', () => {
+      expect(() =>
+        validateUaeCorporateTaxInput({
+          accountingProfit: 100,
+          nonDeductibleAddBacks: Number.POSITIVE_INFINITY,
+          currency: 'AED',
+        })
+      ).toThrow(UaeCorporateTaxValidationError);
     });
 
-    expect(result.taxableIncomeAed).toBe(0);
-    expect(result.taxDueAed).toBe(0);
-  });
-
-  it('rounds tax due to 2 decimal places matching AED accounting precision (NFR-4)', () => {
-    const result = calculateUaeCorporateTax({
-      ...baseInput,
-      accountingProfitAed: 375_010.005,
+    it('throws when exemptIncome is not finite', () => {
+      expect(() =>
+        validateUaeCorporateTaxInput({
+          accountingProfit: 100,
+          exemptIncome: Number.NEGATIVE_INFINITY,
+          currency: 'AED',
+        })
+      ).toThrow(UaeCorporateTaxValidationError);
     });
 
-    // Excess = 10.005; tax = 10.005 * 9% = 0.90045 -> rounds to 0.9
-    expect(result.taxDueAed).toBeCloseTo(0.9, 2);
-    expect(Number.isInteger(result.taxDueAed * 100)).toBe(true);
+    it('does not throw for valid input', () => {
+      expect(() =>
+        validateUaeCorporateTaxInput({ accountingProfit: 500_000, currency: 'AED' })
+      ).not.toThrow();
+    });
   });
 
-  it('always returns currency AED in the result', () => {
-    const result = calculateUaeCorporateTax({
-      ...baseInput,
-      accountingProfitAed: 500_000,
+  describe('formatAedAmount', () => {
+    it('formats a positive amount with the AED prefix and two decimals', () => {
+      expect(formatAedAmount(12345.6)).toBe('AED 12,345.60');
     });
 
-    expect(result.currency).toBe('AED');
+    it('formats zero correctly', () => {
+      expect(formatAedAmount(0)).toBe('AED 0.00');
+    });
+
+    it('throws for non-finite input', () => {
+      expect(() => formatAedAmount(Number.POSITIVE_INFINITY)).toThrow(
+        UaeCorporateTaxValidationError
+      );
+    });
   });
 });

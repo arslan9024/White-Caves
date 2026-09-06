@@ -1,129 +1,181 @@
 /**
  * UAE Corporate Tax calculation engine.
  *
- * Handoff traceability:
- * - SRS-ISSUE-W56-FINANCE-CORPORATE-TAX-1935
- * - SDD-ISSUE-W56-FINANCE-CORPORATE-TAX-1935
- * Parent issue: #1935 (open; not closed by this module)
+ * Implements the core computation rules of UAE Federal Decree-Law No. 47 of 2022
+ * ("Corporate Tax Law") as designed in the paired handoff documents:
+ *  - SRS-ISSUE-W56-FINANCE-CORPORATE-TAX-1935.md
+ *  - SDD-ISSUE-W56-FINANCE-CORPORATE-TAX-1935.md
  *
- * This module is a pure, side-effect-free calculation engine (FR-7). It performs no
- * network, disk, or database I/O and does not mutate its inputs.
+ * Design decisions carried over from the SDD (see SDD §3):
+ *  - Pure function (`calculate`) rather than a stateful class/service.
+ *  - Rates/thresholds resolved via a versioned rate table (`rateTableVersion`)
+ *    rather than hard-coded inline, so historical recalculation remains possible
+ *    if legislation changes the rate or threshold in a future rate table version.
+ *  - `currency` is restricted to the literal type `'AED'` and validated at the
+ *    boundary; no other currency is accepted.
+ *  - Taxable income is floored at zero (no negative taxable income / refund
+ *    semantics in this scope).
+ *
+ * This module is a pure calculation engine: it performs no I/O, no network calls,
+ * and no persistence, and never mutates its input.
  */
 
-/** Currency is fixed to AED for this scope (see SRS §2.3, §3.3). */
+/** A single versioned UAE Corporate Tax rate table entry. */
+export interface UaeCorporateTaxRateTable {
+  /** Unique identifier for this rate table version, e.g. 'FDL-47-2022-v1'. */
+  version: string;
+  /** Standard corporate tax rate applied above the relief threshold (e.g. 0.09 for 9%). */
+  standardRate: number;
+  /** Small Business Relief / zero-rate threshold, in AED. */
+  reliefThresholdAed: number;
+}
+
+/** Identifier for the initial UAE Corporate Tax rate table (FDL 47/2022, as enacted). */
+export const DEFAULT_RATE_TABLE_VERSION = 'FDL-47-2022-v1';
+
+/** Registry of known, versioned UAE Corporate Tax rate tables. */
+export const UAE_CORPORATE_TAX_RATE_TABLES: Readonly<Record<string, UaeCorporateTaxRateTable>> =
+  Object.freeze({
+    [DEFAULT_RATE_TABLE_VERSION]: Object.freeze({
+      version: DEFAULT_RATE_TABLE_VERSION,
+      standardRate: 0.09,
+      reliefThresholdAed: 375_000,
+    }),
+  });
+
+/** Convenience re-export of the currently effective relief threshold, in AED. */
+export const SMALL_BUSINESS_RELIEF_THRESHOLD_AED =
+  UAE_CORPORATE_TAX_RATE_TABLES[DEFAULT_RATE_TABLE_VERSION].reliefThresholdAed;
+
+/** Convenience re-export of the currently effective standard corporate tax rate. */
+export const STANDARD_CORPORATE_TAX_RATE =
+  UAE_CORPORATE_TAX_RATE_TABLES[DEFAULT_RATE_TABLE_VERSION].standardRate;
+
+/** Currency accepted by this engine. UAE Corporate Tax is computed exclusively in AED. */
 export type UaeCorporateTaxCurrency = 'AED';
 
-/**
- * Versioned rate table describing the legislative parameters used to compute
- * corporate tax. Versioning isolates legislative changes from the calculation
- * contract (SDD §3.2).
- */
-export interface UaeCorporateTaxRateTable {
-  /** Unique identifier for this rate table revision, recorded on every result (FR-5). */
-  readonly version: string;
-  /** Standard corporate tax rate, expressed as a percentage (e.g. 9 for 9%). */
-  readonly standardRatePercent: number;
-  /** Small Business Relief threshold in AED; taxable income at or below this is tax-free. */
-  readonly smallBusinessReliefThresholdAed: number;
+/** Input parameters describing a single UAE Corporate Tax computation. */
+export interface UaeCorporateTaxInput {
+  /** Accounting (net) profit for the tax period, in AED. May be negative. */
+  accountingProfit: number;
+  /** Non-deductible expenses added back to accounting profit, in AED. Defaults to 0. */
+  nonDeductibleAddBacks?: number;
+  /** Income exempt from corporate tax, in AED. Defaults to 0. */
+  exemptIncome?: number;
+  /** Currency of the supplied amounts. Only 'AED' is accepted. */
+  currency: UaeCorporateTaxCurrency;
+  /** Rate table version to apply. Defaults to {@link DEFAULT_RATE_TABLE_VERSION}. */
+  rateTableVersion?: string;
 }
 
-/**
- * Default rate table reflecting UAE Federal Decree-Law No. 47 of 2022: a 9% standard
- * rate and an AED 375,000 Small Business Relief threshold.
- */
-export const DEFAULT_UAE_CORPORATE_TAX_RATE_TABLE: UaeCorporateTaxRateTable = {
-  version: 'UAE-CT-FDL47-2022-v1',
-  standardRatePercent: 9,
-  smallBusinessReliefThresholdAed: 375_000,
-};
-
-/** Input to a single UAE Corporate Tax calculation. */
-export interface UaeCorporateTaxCalculationInput {
-  /** Accounting (book) profit for the taxable period, in AED. May be negative. */
-  readonly accountingProfitAed: number;
-  /** Non-deductible expenses added back to arrive at taxable income, in AED. */
-  readonly nonDeductibleAddBacksAed: number;
-  /** Income exempt from corporate tax, subtracted from taxable income, in AED. */
-  readonly exemptIncomeAed: number;
-  /** Currency of the supplied amounts; must be `'AED'` (FR-4). */
-  readonly currency: UaeCorporateTaxCurrency;
-  /** Rate table to apply. Defaults to {@link DEFAULT_UAE_CORPORATE_TAX_RATE_TABLE}. */
-  readonly rateTable?: UaeCorporateTaxRateTable;
+/** Result of a UAE Corporate Tax computation. */
+export interface UaeCorporateTaxResult {
+  /** Taxable income used in the computation, in AED, floored at 0. */
+  taxableIncome: number;
+  /** Total tax due, in AED, rounded to 2 decimal places. */
+  taxDue: number;
+  /** Whether Small Business Relief (0% rate) applied to this computation. */
+  reliefApplied: boolean;
+  /** The rate table version actually applied. */
+  rateTableVersion: string;
+  /** Currency of the result. Always 'AED'. */
+  currency: UaeCorporateTaxCurrency;
 }
 
-/** Result of a UAE Corporate Tax calculation. */
-export interface UaeCorporateTaxCalculationResult {
-  /** Taxable income after add-backs/exemptions, floored at zero, rounded to 2dp. */
-  readonly taxableIncomeAed: number;
-  /** Corporate tax due, rounded to 2dp. Zero when Small Business Relief applies. */
-  readonly taxDueAed: number;
-  /** Whether Small Business Relief was applied (taxable income <= threshold). */
-  readonly reliefApplied: boolean;
-  /** Rate table version used to produce this result (FR-5, audit traceability). */
-  readonly rateTableVersion: string;
-  /** Currency of the result; always `'AED'` in this scope. */
-  readonly currency: UaeCorporateTaxCurrency;
-}
-
-/**
- * Typed validation error raised when a calculation input violates a scope invariant
- * (e.g. non-AED currency). Distinct from generic `Error` so callers can discriminate
- * validation failures from unexpected runtime errors.
- */
+/** Error thrown when UAE Corporate Tax input fails validation. */
 export class UaeCorporateTaxValidationError extends Error {
   constructor(message: string) {
     super(message);
     this.name = 'UaeCorporateTaxValidationError';
-    Object.setPrototypeOf(this, UaeCorporateTaxValidationError.prototype);
   }
 }
 
-/** Rounds a number to 2 decimal places to match AED accounting precision (NFR-4). */
-function roundToAedPrecision(value: number): number {
+function assertFiniteNumber(value: number, fieldName: string): void {
+  if (!Number.isFinite(value)) {
+    throw new UaeCorporateTaxValidationError(`${fieldName} must be a finite number.`);
+  }
+}
+
+function roundCurrency(value: number): number {
   return Math.round((value + Number.EPSILON) * 100) / 100;
 }
 
+function resolveRateTable(rateTableVersion: string | undefined): UaeCorporateTaxRateTable {
+  const version = rateTableVersion ?? DEFAULT_RATE_TABLE_VERSION;
+  const rateTable = UAE_CORPORATE_TAX_RATE_TABLES[version];
+  if (!rateTable) {
+    throw new UaeCorporateTaxValidationError(`Unknown rateTableVersion: '${version}'.`);
+  }
+  return rateTable;
+}
+
 /**
- * Computes UAE Corporate Tax due for a taxable period.
- *
- * - Taxable income = accountingProfit + nonDeductibleAddBacks - exemptIncome, floored at 0 (FR-1).
- * - If taxable income <= relief threshold, Small Business Relief applies and tax due is 0 (FR-2).
- * - Otherwise, the standard rate is applied only to the excess over the threshold (FR-3).
- * - Rejects any `currency !== 'AED'` (FR-4).
- * - Deterministic and side-effect free: identical input always yields identical output (FR-6, FR-7).
- *
- * @throws {UaeCorporateTaxValidationError} when `input.currency !== 'AED'`.
+ * Validates the raw input for a UAE Corporate Tax computation.
+ * Throws UaeCorporateTaxValidationError on any invalid input.
  */
-export function calculateUaeCorporateTax(
-  input: UaeCorporateTaxCalculationInput
-): UaeCorporateTaxCalculationResult {
+export function validateUaeCorporateTaxInput(input: UaeCorporateTaxInput): void {
+  assertFiniteNumber(input.accountingProfit, 'accountingProfit');
+
+  if (input.nonDeductibleAddBacks !== undefined) {
+    assertFiniteNumber(input.nonDeductibleAddBacks, 'nonDeductibleAddBacks');
+  }
+  if (input.exemptIncome !== undefined) {
+    assertFiniteNumber(input.exemptIncome, 'exemptIncome');
+  }
+
   if (input.currency !== 'AED') {
     throw new UaeCorporateTaxValidationError(
-      `Unsupported currency "${String(input.currency)}": UAE Corporate Tax calculations require AED.`
+      `Unsupported currency: '${String(input.currency)}'. Only 'AED' is supported.`
     );
   }
 
-  const rateTable = input.rateTable ?? DEFAULT_UAE_CORPORATE_TAX_RATE_TABLE;
+  // Validates that the rate table resolves; throws otherwise.
+  resolveRateTable(input.rateTableVersion);
+}
 
-  const rawTaxableIncome =
-    input.accountingProfitAed + input.nonDeductibleAddBacksAed - input.exemptIncomeAed;
-  const taxableIncomeAed = roundToAedPrecision(Math.max(0, rawTaxableIncome));
+/**
+ * Computes UAE Corporate Tax due for a single tax period.
+ *
+ * Taxable income = max(0, accountingProfit + nonDeductibleAddBacks - exemptIncome).
+ * Small Business Relief applies (0% / no tax due) when taxable income is at or below
+ * the rate table's relief threshold; otherwise the standard rate applies to the
+ * portion of taxable income exceeding the threshold.
+ *
+ * The input object is never mutated.
+ */
+export function calculate(input: UaeCorporateTaxInput): UaeCorporateTaxResult {
+  validateUaeCorporateTaxInput(input);
 
-  const reliefApplied = taxableIncomeAed <= rateTable.smallBusinessReliefThresholdAed;
+  const nonDeductibleAddBacks = input.nonDeductibleAddBacks ?? 0;
+  const exemptIncome = input.exemptIncome ?? 0;
+  const rateTable = resolveRateTable(input.rateTableVersion);
 
-  const taxableExcessAed = reliefApplied
-    ? 0
-    : taxableIncomeAed - rateTable.smallBusinessReliefThresholdAed;
+  const rawTaxableIncome = input.accountingProfit + nonDeductibleAddBacks - exemptIncome;
+  const taxableIncome = Math.max(rawTaxableIncome, 0);
 
-  const taxDueAed = roundToAedPrecision(
-    reliefApplied ? 0 : taxableExcessAed * (rateTable.standardRatePercent / 100)
-  );
+  const reliefApplied = taxableIncome <= rateTable.reliefThresholdAed;
+  const taxableAboveThreshold = reliefApplied ? 0 : taxableIncome - rateTable.reliefThresholdAed;
+  const taxDue = roundCurrency(taxableAboveThreshold * rateTable.standardRate);
 
   return {
-    taxableIncomeAed,
-    taxDueAed,
+    taxableIncome: roundCurrency(taxableIncome),
+    taxDue,
     reliefApplied,
     rateTableVersion: rateTable.version,
     currency: 'AED',
   };
+}
+
+/**
+ * Convenience helper: formats an AED amount for display, e.g. "AED 12,345.67".
+ */
+export function formatAedAmount(amountAed: number): string {
+  if (!Number.isFinite(amountAed)) {
+    throw new UaeCorporateTaxValidationError('amountAed must be a finite number.');
+  }
+  const formatted = new Intl.NumberFormat('en-AE', {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  }).format(amountAed);
+  return `AED ${formatted}`;
 }
