@@ -1,44 +1,73 @@
-# Finance Engine Commission Ledger
+# financeEngineCommissionLedger
 
-Tracking issue: #2460 (child of parent #1930)
+Module scope: Commission Ledger sub-feature of the Finance Engine, tracked under
+child issue #2460 (parent: #1930).
 
-## What this is
+## What this module is
 
-This directory holds the design contract for the **Finance Engine Commission
-Ledger** — the module responsible for recording and reconciling agent/broker
-commission entries produced by the finance engine.
+The Commission Ledger records commission entries earned by agents/brokers on
+property deals, tracks their lifecycle (`pending -> approved -> paid`, or
+`-> voided`), and provides summarized totals per status for reporting.
 
-This child issue is documentation-only. It establishes the agreed data model,
-lifecycle invariants, and public API surface (see
-[`financeEngineCommissionLedger.contract.md`](./financeEngineCommissionLedger.contract.md))
-that a future implementation child issue will build against. No runtime
-TypeScript source or tests are introduced here.
+The authoritative behavioral contract lives in
+[`financeEngineCommissionLedger.contract.md`](./financeEngineCommissionLedger.contract.md).
+Any implementation added to this module (services, types, tests) must conform to
+that contract. Where an existing implementation conflicts with the contract, the
+contract — aligned with the test suite — is the source of truth.
 
-## Why documentation-first
+## Directory layout (current + expected)
 
-Splitting contract definition from implementation lets the parent issue (#1930)
-track multiple independent child issues against a stable interface, reducing churn
-and merge conflicts when the actual ledger logic, persistence layer, and API
-routes are implemented in follow-up work.
+```
+financeEngineCommissionLedger/
+├── financeEngineCommissionLedger.contract.md   # domain contract (this issue)
+├── README.md                                   # this file
+└── (implementation + tests added in follow-up child issues)
+```
 
-## Scope boundaries
+## Declared scope boundaries
 
-This child issue **does not**:
+In scope for this and directly related child issues:
 
-- Close the parent issue (#1930 stays open until all child work is reconciled).
-- Perform bulk GitHub mutations.
-- Perform destructive database operations.
-- Rewrite production secrets.
-- Implement runtime business logic (deferred to a subsequent child issue).
+- Commission ledger entry modeling, validation, status transitions, and
+  aggregation logic, and their documentation.
 
-## Status
+Explicitly excluded from this and sibling child issues under parent #1930:
 
-- ✅ Contract documented
-- ⏳ Implementation — pending a future child issue
-- ⏳ Tests — pending implementation
-- ⏳ Parent issue reconciliation — pending all child issues
+- Closing the parent issue (#1930) — it remains open until all child work is
+  reconciled.
+- Bulk GitHub mutations (mass issue/PR edits, labels, etc.).
+- Destructive database operations (drops, truncations, irreversible migrations).
+- Rewriting production secrets (credentials, API keys, env values).
 
-## Rollback
+## Validation
 
-Delete this `README.md` and `financeEngineCommissionLedger.contract.md`. No other
-files, dependencies, or external state were changed by this child issue.
+Any TypeScript implementation added under this module must:
+
+- Use strict TypeScript with no `any` types.
+- Be covered by `vitest` tests using `import { describe, expect, it } from 'vitest'`
+  with real behavioral assertions (no placeholder/`expect(true).toBe(true)`-style
+  assertions).
+- Run via the repository's existing test command (e.g. `npm run test` /
+  `vitest run`) — no new test tooling is introduced by this module.
+
+## Completion evidence
+
+- This README and the accompanying contract document were added as the child-scope
+  deliverable for issue #2460.
+- No existing files or exported symbols elsewhere in the repository were modified.
+- No git, npm, or GitHub mutation commands were run as part of this change.
+
+## Rollback note
+
+To roll back this change, delete this directory
+(`src/features/finance/financeEngineCommissionLedger/`). This is a purely additive
+documentation change with no code, dependency, schema, or configuration side
+effects, so removal fully reverts it with no residual state.
+
+## Status relative to parent issue
+
+Parent issue #1930 remains **open**. This child issue (#2460) only delivers the
+contract and README documentation described above; further child issues under the
+same parent are expected to add the implementation, tests, and any integration
+points, after which the parent can be reconciled and considered for closure by the
+orchestrating process (not by this change).
