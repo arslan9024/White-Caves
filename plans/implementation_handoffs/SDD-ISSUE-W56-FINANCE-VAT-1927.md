@@ -163,6 +163,49 @@ compliance and absence of `any`.
   this issue's declared child scope.
 - Parent issue #1927 was not modified or closed.
 
+## 8a. Completion Evidence (implementation issue, #2471)
+
+- Created `financeEngineUaeFta.logic.ts`, implementing the exported API
+  from section 4 (`VatRateCategory`, `VatLineItem`, `VatLineItemResult`,
+  `VatSummary`, `calculateLineItemVat`, `summarizeVat`, `isValidUaeTrn`,
+  `InvalidTrnError`) plus an additional `assertValidUaeTrn` helper that
+  throws `InvalidTrnError` for invalid TRNs, matching the throw-free
+  predicate / typed-error design split described in section 3.3.
+- Design decision: file names use the `.logic.ts` / `.logic.test.ts`
+  suffix (rather than the bare `financeEngineUaeFta.ts` / `.test.ts` named
+  in section 2's target layout) per the concrete file paths specified by
+  the implementation issue (#2471). This is a naming-only deviation; the
+  exported symbols, signatures, and behavior match the contract exactly,
+  and the contract file's own text takes precedence as the source of
+  truth for behavior per its stated policy.
+- Rounding: implemented `round2` with an epsilon-adjusted
+  `Math.round(value * 100) / 100`, avoiding `toFixed`'s inconsistent
+  half-to-even behavior, per section 3.2.
+- Created `financeEngineUaeFta.logic.test.ts`, a vitest suite covering all
+  cases enumerated in section 6 (standard/zero-rated/exempt/out-of-scope
+  categories, a `.xx5` rounding boundary, payable and reclaimable
+  `summarizeVat` cases, TRN validation edge cases, and both error paths),
+  plus an input-immutability check.
+- Validation performed: manual execution of the exported functions via a
+  standalone `tsx` script (outside the tracked file set, deleted after
+  use) confirmed correct rounding, summary totals, TRN validation, and
+  error-throwing behavior. The repository's vitest `include` globs
+  (`src/**/*.{test,spec}.*`, etc.) do not reach this sandboxed staging
+  path, so `npx vitest run` could not be executed directly against these
+  files from this location; the test file itself is written to run
+  unmodified once placed under the real `src/` tree via
+  `npx vitest run src/features/finance/financeEngineUaeFta`.
+- No persistence, filing, or GitHub-mutation code was added, per the
+  excluded scope. Parent issue #1927 was not modified or closed.
+
+## 8b. Rollback Note (implementation issue, #2471)
+
+The two new files
+(`financeEngineUaeFta.logic.ts`, `financeEngineUaeFta.logic.test.ts`) are
+additive and self-contained: they are not imported by any other module in
+the repository at this stage. To roll back, delete both files; no build,
+lint, or other source file depends on their presence.
+
 ## 9. Rollback Note
 
 All artifacts produced by this issue are documentation-only Markdown files

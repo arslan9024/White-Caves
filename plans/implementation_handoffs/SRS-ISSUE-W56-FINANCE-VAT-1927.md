@@ -83,3 +83,23 @@ behavioral contract in
 This document is additive (new file, no references from build tooling or
 source code). To roll back, delete this file; no other artifact depends on
 its presence for compilation or runtime behavior.
+
+## 10. Completion Evidence (implementation issue, #2471)
+
+- Implemented `src/features/finance/financeEngineUaeFta/financeEngineUaeFta.logic.ts`,
+  satisfying FR-1 through FR-8 and NFR-1 through NFR-4 against the
+  behavioral contract in `financeEngineUaeFta.contract.md`.
+- Implemented the companion vitest suite
+  `src/features/finance/financeEngineUaeFta/financeEngineUaeFta.logic.test.ts`,
+  covering standard/zero-rated/exempt/out-of-scope VAT categories, a
+  round-half-up rounding boundary case, `summarizeVat` payable and
+  reclaimable cases, TRN validation edge cases (empty, too short, too
+  long, non-numeric, valid), and `RangeError`/`InvalidTrnError` error
+  paths.
+- Verified behavior manually via a standalone `tsx` script exercising the
+  exported functions (boundary rounding, summary totals, TRN validation,
+  and both error paths) with correct results, since the sandboxed staging
+  location falls outside the repository's configured vitest `include`
+  globs; no `src/`-tree files were modified to perform this check.
+- Parent issue #1927 was not modified or closed; no GitHub mutations were
+  performed.
