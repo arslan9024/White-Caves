@@ -97,18 +97,18 @@ Issue #2482, a further child of parent #1925 in work stream W56, delivers the `.
 
 ### 6.3 Requirement Traceability for This Addendum
 
-| Requirement | How Satisfied |
-| --- | --- |
-| FR-1 | `FinanceEngine` interface defined with all four methods. |
-| FR-3 | `FinanceEngineArchitectureDouble` implements the interface with fixed defaults and no I/O. |
-| FR-4 | All amounts are integer "minor units"; `Math.round`/`Math.floor` used to keep results integral. |
-| FR-5 | Every method validates inputs via shared guards and throws `FinanceEngineValidationError` on failure. |
-| FR-6 | No method reassigns or mutates its `input` parameter; a dedicated test asserts this for `computePriceBreakdown`. |
-| FR-7 | No network, filesystem, or database calls anywhere in the module. |
-| NFR-1/NFR-3 | Pure, synchronous computation; test suite completes in well under a second. |
-| NFR-2 | Strict TypeScript throughout; no `any` types used. |
-| NFR-4 | Consumers are expected to depend on the exported `FinanceEngine` interface, not the concrete class. |
-| NFR-5 | `PriceBreakdownResult`/`CommissionSplitResult` include `lineItems` with rate and amount detail. |
+| Requirement | How Satisfied                                                                                                    |
+| ----------- | ---------------------------------------------------------------------------------------------------------------- |
+| FR-1        | `FinanceEngine` interface defined with all four methods.                                                         |
+| FR-3        | `FinanceEngineArchitectureDouble` implements the interface with fixed defaults and no I/O.                       |
+| FR-4        | All amounts are integer "minor units"; `Math.round`/`Math.floor` used to keep results integral.                  |
+| FR-5        | Every method validates inputs via shared guards and throws `FinanceEngineValidationError` on failure.            |
+| FR-6        | No method reassigns or mutates its `input` parameter; a dedicated test asserts this for `computePriceBreakdown`. |
+| FR-7        | No network, filesystem, or database calls anywhere in the module.                                                |
+| NFR-1/NFR-3 | Pure, synchronous computation; test suite completes in well under a second.                                      |
+| NFR-2       | Strict TypeScript throughout; no `any` types used.                                                               |
+| NFR-4       | Consumers are expected to depend on the exported `FinanceEngine` interface, not the concrete class.              |
+| NFR-5       | `PriceBreakdownResult`/`CommissionSplitResult` include `lineItems` with rate and amount detail.                  |
 
 ### 6.4 Completion Evidence
 
@@ -118,3 +118,36 @@ Issue #2482, a further child of parent #1925 in work stream W56, delivers the `.
 ### 6.5 Rollback Note
 
 This addendum only adds two new, additive `.ts` files under `financeEngineArchitectureDouble/`; no existing file was modified or deleted, and no other module imports these files yet. To roll back, delete `financeEngineArchitectureDouble.logic.ts` and `financeEngineArchitectureDouble.logic.test.ts`; no other changes are required, and parent issue #1925 remains open and unaffected.
+
+## 7. Addendum — Issue #2481 (Finance Engine Architecture Double — Shared Types Extraction)
+
+### 7.1 Scope of This Addendum
+
+Issue #2481, a further child of parent #1925 in work stream W56, extracts the `FinanceEngine` contract (interface, input/result DTOs, and `FinanceEngineValidationError`) into a standalone, dependency-free types module. This directly realizes the option noted in SDD Section 8.1: "a shared top-level types module remains an option ... to introduce without breaking this double's public exports." It satisfies FR-1, FR-4, FR-5, and FR-6 for the type contract layer specifically, and NFR-2 and NFR-4 for the module as a whole.
+
+### 7.2 Delivered Artifacts
+
+- `src/features/finance/financeEngineArchitectureDouble/financeEngineArchitectureDouble.types.ts` — the `FinanceEngine` interface, all supporting input/result DTOs (`PriceBreakdownInput/Result`, `CommissionSplitInput/Result`, `CurrencyConversionInput/Result`, `PaymentScheduleInput/Result`, `LineItem`, `Installment`), the `CurrencyCode` union with `SUPPORTED_CURRENCY_CODES` and the `isCurrencyCode` type guard, and the `FinanceEngineValidationError` class. Contains no computation logic and no I/O.
+- `src/features/finance/financeEngineArchitectureDouble/financeEngineArchitectureDouble.types.test.ts` — a vitest suite that instantiates a minimal, self-contained `FinanceEngine` implementation purely to exercise the contract's real behavior (line-item totals, rate sensitivity, no-mutation, rounding reconciliation, and validation-error paths), plus direct unit tests of `isCurrencyCode` and `FinanceEngineValidationError`.
+
+### 7.3 Requirement Traceability for This Addendum
+
+| Requirement | How Satisfied                                                                                                                                           |
+| ----------- | ------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| FR-1        | `FinanceEngine` interface with all four methods now lives in its own importable module.                                                                 |
+| FR-4        | All DTOs represent monetary values as integer `*MinorUnits` fields; no floating-point currency fields are exposed.                                      |
+| FR-5        | `FinanceEngineValidationError` (with optional `field`) is defined here as the single, shared error type any implementation must throw on invalid input. |
+| FR-6        | DTOs are declared with `readonly` members, signaling and helping enforce the no-mutation contract at the type level.                                    |
+| NFR-2       | Module is strict TypeScript; no `any` types are used anywhere in the file.                                                                              |
+| NFR-4       | Consumers can now depend on `FinanceEngine` and its DTOs without importing any concrete engine or double class, completing the interchangeability goal. |
+| NFR-5       | `LineItem`/`Installment` types continue to require itemized, auditable detail (rate + amount) rather than bare totals.                                  |
+
+### 7.4 Completion Evidence
+
+- Manual strict-mode review: the new module and its test file use only `readonly` interfaces, string literal unions, and explicit array element types (no implicit `any`, no unchecked array/object indexing without a guarded fallback).
+- Test run: `financeEngineArchitectureDouble.types.test.ts` exercises `isCurrencyCode`, `FinanceEngineValidationError`, and all four `FinanceEngine` contract methods (via a minimal in-test implementation) with real computed-value assertions — no placeholder assertions. Executed via `vitest run`: **17/17 tests passed**.
+- Type check: executed `tsc --noEmit --strict` against both new files: **0 errors**.
+
+### 7.5 Rollback Note
+
+This addendum only adds two new, additive `.ts` files under `financeEngineArchitectureDouble/`, plus this documentation addendum; no existing file was modified or deleted, and no other module imports these files yet. To roll back, delete `financeEngineArchitectureDouble.types.ts` and `financeEngineArchitectureDouble.types.test.ts` (and revert this Section 7 addendum); no other changes are required, and parent issue #1925 remains open and unaffected.

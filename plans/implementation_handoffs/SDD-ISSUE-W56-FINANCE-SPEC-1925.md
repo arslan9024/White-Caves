@@ -123,12 +123,12 @@ This issue is the "later child issue" anticipated by Sections 3 and 4.3 of this 
 
 ### 8.2 Design Decisions and Rationale (This Issue)
 
-| Decision | Rationale |
-| --- | --- |
-| Single-file module (types + errors + config + class) | Keeps the double self-contained and independently reviewable/testable without introducing a cross-issue dependency on a not-yet-created shared types file. |
-| Remainder-to-last-installment rounding | Guarantees `totalScheduledMinorUnits` always equals the requested total exactly, satisfying FR-4's integer-minor-units intent without silent drift. |
-| Currency rate table keyed by `"FROM_TO"` string pairs | Simple, dependency-free lookup structure; supports partial overrides per test via a shallow-merged config without needing a graph/matrix data structure. |
-| Reject share percentages summing above 100% | Prevents commission double-booking, aligning with FR-5's requirement to fail loudly rather than silently produce economically nonsensical results. |
+| Decision                                              | Rationale                                                                                                                                                  |
+| ----------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Single-file module (types + errors + config + class)  | Keeps the double self-contained and independently reviewable/testable without introducing a cross-issue dependency on a not-yet-created shared types file. |
+| Remainder-to-last-installment rounding                | Guarantees `totalScheduledMinorUnits` always equals the requested total exactly, satisfying FR-4's integer-minor-units intent without silent drift.        |
+| Currency rate table keyed by `"FROM_TO"` string pairs | Simple, dependency-free lookup structure; supports partial overrides per test via a shallow-merged config without needing a graph/matrix data structure.   |
+| Reject share percentages summing above 100%           | Prevents commission double-booking, aligning with FR-5's requirement to fail loudly rather than silently produce economically nonsensical results.         |
 
 ### 8.3 Completion Evidence
 
@@ -138,3 +138,34 @@ This issue is the "later child issue" anticipated by Sections 3 and 4.3 of this 
 ### 8.4 Rollback Note
 
 Both new files are additive and unreferenced by any other module at this time. Rollback is a pure file deletion of `financeEngineArchitectureDouble.logic.ts` and `financeEngineArchitectureDouble.logic.test.ts`; no other source, config, or dependency changes were made, and parent issue #1925 remains open.
+
+## 9. Addendum — Issue #2481 (Finance Engine Architecture Double — Shared Types Extraction)
+
+This issue realizes the forward-looking option flagged in Section 8.1: a shared, standalone types module for the `FinanceEngine` contract, decoupled from any single concrete implementation file.
+
+### 9.1 Implementation Notes vs. Original Design
+
+- `financeEngineArchitectureDouble.types.ts` contains only the `FinanceEngine` interface, its DTOs, the `CurrencyCode`/`SUPPORTED_CURRENCY_CODES`/`isCurrencyCode` primitives, and `FinanceEngineValidationError`. It contains no computation logic, matching the module-layout intent of Section 3 (`financeEngine.types.ts`) but scoped to this double's directory, since this child issue's declared scope does not extend to relocating or modifying the existing `.logic.ts` module.
+- All DTO members are declared `readonly`, giving the no-mutation requirement (FR-6) a compile-time signal in addition to the runtime discipline already required of implementations.
+- A `CurrencyCode` string-literal union plus an `isCurrencyCode` type guard were added so that both this module and future consumers have one canonical way to validate untyped currency strings (e.g. from API payloads) before constructing an input DTO.
+- The test suite exercises the contract via a small, self-contained `FinanceEngine` implementation defined only within the test file, rather than importing the separately-scoped `financeEngineArchitectureDouble.logic.ts` double, to keep this issue's test coverage independent of that module's implementation details and release cadence.
+
+### 9.2 Design Decisions and Rationale (This Issue)
+
+| Decision                                                                   | Rationale                                                                                                                                                     |
+| -------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Types-only module, no logic                                                | Keeps the contract importable by both the double and any future real engine without pulling in double-specific implementation details, fully realizing NFR-4. |
+| `readonly` on all DTO fields                                               | Encodes FR-6 (no input mutation) at the type-check level, not just as a documented convention.                                                                |
+| Dedicated `CurrencyCode` union + `isCurrencyCode` guard                    | Centralizes currency validation so every implementation and consumer agrees on what a "known currency" is, reducing FR-5 drift risk.                          |
+| In-test minimal `FinanceEngine` implementation (not importing `.logic.ts`) | Proves the type contract is implementable and behaviorally sound on its own merits, independent of the separate double module's release/versioning.           |
+
+### 9.3 Completion Evidence
+
+- New files reviewed line-by-line for strict-mode compliance: no `any`, no implicit array/object typing, all public members explicitly typed.
+- `financeEngineArchitectureDouble.types.test.ts` covers `isCurrencyCode`, `FinanceEngineValidationError`, and all four `FinanceEngine` methods with real computed-value assertions (line-item totals, rate-proportional tax changes, no-input-mutation check, rounding-remainder reconciliation, and validation-error throw paths).
+- Executed `tsc --noEmit --strict` (scoped to the two new files): 0 errors.
+- Executed `vitest run financeEngineArchitectureDouble.types.test.ts`: 17/17 tests passed.
+
+### 9.4 Rollback Note
+
+Both new files are additive and unreferenced by any other module at this time. Rollback is a pure file deletion of `financeEngineArchitectureDouble.types.ts` and `financeEngineArchitectureDouble.types.test.ts` (and reverting this Section 9 addendum); no other source, config, or dependency changes were made, and parent issue #1925 remains open.
