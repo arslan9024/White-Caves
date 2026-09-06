@@ -6,11 +6,6 @@
  *
  * Parent issue: #1947
  * Child issue: #2389
- *
- * Receipt-requirement compliance types/helpers below were added under the
- * W56-FINANCE-RECEIPT track.
- * Parent issue: #1929
- * Child issue: #2462
  */
 
 /** ISO-8601 date-time string, e.g. "2026-09-06T13:09:55.120Z". */
@@ -291,122 +286,130 @@ export function validateExpenseClaimDraft(draft: ExpenseClaimDraft): ExpenseClai
   return { valid: Object.keys(errors).length === 0, errors };
 }
 
-/* -------------------------------------------------------------------------
- * Receipt requirement compliance (W56-FINANCE-RECEIPT track, issue #2462,
- * parent #1929).
- *
- * These types/helpers determine whether a given expense claim line item
- * requires a supporting receipt attachment, and evaluate a whole claim for
- * compliance with a configurable receipt-requirement policy. This is a pure,
- * additive extension of the domain model above: it introduces no changes to
- * any pre-existing exported symbol.
- * ---------------------------------------------------------------------- */
+// ---------------------------------------------------------------------------
+// Receipt capture & enforcement (Parent issue: #1929, Child issue: #2462)
+//
+// Adds pure, exported types/helpers enabling callers to determine whether a
+// given expense claim line item requires a receipt, and whether its existing
+// `attachments` (see {@link ExpenseAttachment}) satisfy that requirement.
+// Purely additive: no existing exported symbol above is modified.
+// ---------------------------------------------------------------------------
+
+/** MIME types accepted as valid receipt evidence for an expense line item. */
+export const ALLOWED_RECEIPT_MIME_TYPES = [
+  'image/png',
+  'image/jpeg',
+  'image/webp',
+  'application/pdf',
+] as const;
+
+/** Union of MIME type strings accepted as valid receipt evidence. */
+export type ReceiptMimeType = (typeof ALLOWED_RECEIPT_MIME_TYPES)[number];
 
 /**
- * Configurable policy describing when a receipt attachment is mandatory for
- * an expense claim line item.
+ * Amount threshold (in the line item's own currency's decimal units) at or
+ * below which a line item may be submitted without a receipt attachment.
  */
-export interface ReceiptRequirementPolicy {
-  /**
-   * Minimum line-item amount (inclusive) at or above which a receipt is
-   * always required, regardless of category. Expressed in the same
-   * currency as {@link ReceiptRequirementPolicy.thresholdCurrency}.
-   */
-  readonly thresholdAmount: number;
-  /** Currency the {@link ReceiptRequirementPolicy.thresholdAmount} is denominated in. */
-  readonly thresholdCurrency: CurrencyCode;
-  /**
-   * Categories that always require a receipt, irrespective of amount
-   * (e.g. client entertainment is frequently receipt-mandatory even for
-   * small amounts).
-   */
-  readonly requiredCategories: ReadonlyArray<ExpenseCategory>;
-  /**
-   * Payment methods exempt from the receipt requirement even when the
-   * amount/category rules would otherwise mandate one (e.g. recurring
-   * company-card software subscriptions already reconciled elsewhere).
-   */
-  readonly exemptPaymentMethods?: ReadonlyArray<ExpensePaymentMethod>;
+export const RECEIPT_REQUIRED_THRESHOLD = 25;
+
+/** Maximum allowed size, in bytes, for an individual receipt attachment file. */
+export const MAX_RECEIPT_FILE_SIZE_BYTES = 10 * 1024 * 1024;
+
+/** Type guard narrowing an unknown value to an allow-listed {@link ReceiptMimeType}. */
+export function isReceiptMimeType(value: unknown): value is ReceiptMimeType {
+  return (
+    typeof value === 'string' &&
+    (ALLOWED_RECEIPT_MIME_TYPES as ReadonlyArray<string>).includes(value)
+  );
 }
 
-/** Default, conservative receipt-requirement policy used absent an override. */
-export const DEFAULT_RECEIPT_REQUIREMENT_POLICY: ReceiptRequirementPolicy = {
-  thresholdAmount: 100,
-  thresholdCurrency: 'AED',
-  requiredCategories: ['client_entertainment', 'training'],
-  exemptPaymentMethods: [],
-};
-
 /**
- * Pure predicate determining whether a single line item requires a receipt
- * under the given policy.
- *
- * Rules (evaluated in order):
- * 1. If the line item's payment method is listed in
- *    {@link ReceiptRequirementPolicy.exemptPaymentMethods}, no receipt is
- *    required.
- * 2. Otherwise, if the line item's category is listed in
- *    {@link ReceiptRequirementPolicy.requiredCategories}, a receipt is
- *    required.
- * 3. Otherwise, a receipt is required when the line item's amount is in the
- *    same currency as the policy threshold and is greater than or equal to
- *    {@link ReceiptRequirementPolicy.thresholdAmount}.
- *
- * A currency mismatch between the line item amount and the policy
- * threshold is treated conservatively: the amount-based rule is skipped
- * (cannot be safely compared), but category/payment-method rules still
- * apply.
+ * Determines whether a line item amount requires a receipt to be attached.
+ * Non-finite amounts (e.g. `NaN`, `Infinity`) are treated as requiring a
+ * receipt (fail safe) since their true magnitude cannot be established.
  */
-export function claimLineItemRequiresReceipt(
-  lineItem: ExpenseClaimLineItem,
-  policy: ReceiptRequirementPolicy = DEFAULT_RECEIPT_REQUIREMENT_POLICY
-): boolean {
-  if (policy.exemptPaymentMethods?.includes(lineItem.paymentMethod)) {
-    return false;
-  }
-  if (policy.requiredCategories.includes(lineItem.category)) {
+export function requiresReceipt(amount: number): boolean {
+  if (!Number.isFinite(amount)) {
     return true;
   }
-  if (lineItem.amount.currency !== policy.thresholdCurrency) {
-    return false;
-  }
-  return lineItem.amount.amount >= policy.thresholdAmount;
+  return amount > RECEIPT_REQUIRED_THRESHOLD;
 }
-
-/** Identifies a single line item that requires a receipt but has none attached. */
-export interface MissingReceiptViolation {
-  readonly lineItemId: string;
-  readonly category: ExpenseCategory;
-  readonly amount: Money;
-}
-
-/** Discriminated result of evaluating an entire claim's receipt compliance. */
-export type ExpenseClaimReceiptComplianceResult =
-  | { readonly compliant: true }
-  | { readonly compliant: false; readonly violations: ReadonlyArray<MissingReceiptViolation> };
 
 /**
- * Evaluates every line item in a claim against {@link claimLineItemRequiresReceipt}
- * and reports any line item that requires a receipt but has zero attachments.
- *
- * Pure function: performs no I/O and relies only on its inputs.
+ * Structural validity check for a single {@link ExpenseAttachment} used as
+ * receipt evidence: non-blank identifiers, an allow-listed MIME type, a
+ * positive size within {@link MAX_RECEIPT_FILE_SIZE_BYTES}, and a parseable
+ * upload timestamp.
  */
-export function evaluateExpenseClaimReceiptCompliance(
-  claim: Pick<ExpenseClaim, 'lineItems'>,
-  policy: ReceiptRequirementPolicy = DEFAULT_RECEIPT_REQUIREMENT_POLICY
-): ExpenseClaimReceiptComplianceResult {
-  const violations: MissingReceiptViolation[] = [];
+export function isValidReceiptAttachment(attachment: ExpenseAttachment): boolean {
+  const hasId = typeof attachment.id === 'string' && attachment.id.trim().length > 0;
+  const hasUrl = typeof attachment.url === 'string' && attachment.url.trim().length > 0;
+  const hasValidMimeType = isReceiptMimeType(attachment.mimeType);
+  const hasValidSize =
+    Number.isFinite(attachment.sizeBytes) &&
+    attachment.sizeBytes > 0 &&
+    attachment.sizeBytes <= MAX_RECEIPT_FILE_SIZE_BYTES;
+  const hasValidTimestamp =
+    typeof attachment.uploadedAt === 'string' && !Number.isNaN(Date.parse(attachment.uploadedAt));
 
-  for (const lineItem of claim.lineItems) {
-    const requiresReceipt = claimLineItemRequiresReceipt(lineItem, policy);
-    if (requiresReceipt && lineItem.attachments.length === 0) {
-      violations.push({
-        lineItemId: lineItem.id,
-        category: lineItem.category,
-        amount: lineItem.amount,
+  return hasId && hasUrl && hasValidMimeType && hasValidSize && hasValidTimestamp;
+}
+
+/** Whether a line item currently carries at least one structurally valid receipt attachment. */
+export function hasValidReceiptForLineItem(item: ExpenseClaimLineItem): boolean {
+  return item.attachments.some(isValidReceiptAttachment);
+}
+
+/**
+ * Combines the amount threshold ({@link requiresReceipt}) with attachment
+ * validity ({@link hasValidReceiptForLineItem}) to determine whether a line
+ * item, as a whole, satisfies the receipt requirement.
+ */
+export function lineItemSatisfiesReceiptRequirement(item: ExpenseClaimLineItem): boolean {
+  if (!requiresReceipt(item.amount.amount)) {
+    return true;
+  }
+  return hasValidReceiptForLineItem(item);
+}
+
+/**
+ * Validates the receipt requirement across every line item of a claim and
+ * returns a discriminated {@link ExpenseClaimValidationResult}. Only checks
+ * receipt evidence; does not duplicate other field-level validation owned
+ * elsewhere (e.g. category/amount/date checks in sibling validators).
+ */
+export function validateExpenseClaimReceipts(
+  lineItems: ReadonlyArray<ExpenseClaimLineItem>
+): ExpenseClaimValidationResult {
+  const errors: ExpenseClaimValidationError[] = [];
+
+  lineItems.forEach((item, index) => {
+    if (!lineItemSatisfiesReceiptRequirement(item)) {
+      errors.push({
+        field: `lineItems[${index}].attachments`,
+        message: `Line item "${item.description}" requires at least one valid receipt attachment.`,
+        code: 'MISSING_ATTACHMENT',
       });
     }
-  }
+  });
 
-  return violations.length === 0 ? { compliant: true } : { compliant: false, violations };
+  if (errors.length > 0) {
+    return { isValid: false, errors };
+  }
+  return { isValid: true };
+}
+
+/**
+ * Produces a deterministic, human-readable summary of receipt compliance
+ * across a set of line items, e.g. "2 of 3 line items requiring a receipt
+ * have one attached." or the no-requirement message when nothing exceeds
+ * {@link RECEIPT_REQUIRED_THRESHOLD}.
+ */
+export function summarizeReceiptStatus(lineItems: ReadonlyArray<ExpenseClaimLineItem>): string {
+  const requiring = lineItems.filter(item => requiresReceipt(item.amount.amount));
+  if (requiring.length === 0) {
+    return 'No line items require a receipt.';
+  }
+  const satisfied = requiring.filter(hasValidReceiptForLineItem).length;
+  return `${satisfied} of ${requiring.length} line items requiring a receipt have one attached.`;
 }

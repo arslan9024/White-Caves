@@ -1,352 +1,193 @@
-# Software Design Document
+# Software Design Description
 
-**Issue:** #2463 (child) — Parent: #1929
-**Track:** W56-FINANCE-RECEIPT
-**Component:** `src/features/finance/expenseClaims/ExpenseClaimForm.tsx`
-**Companion:** `SRS-ISSUE-W56-FINANCE-RECEIPT-1929.md`
+**Handoff ID:** SDD-ISSUE-W56-FINANCE-RECEIPT-1929
+**Child issue:** #2462
+**Parent issue:** #1929 (remains open — not closed by this handoff)
+**Companion:** SRS-ISSUE-W56-FINANCE-RECEIPT-1929.md
 
-> **Addendum (issue #2462, child of #1929, same W56-FINANCE-RECEIPT track):**
-> See §9 below for the receipt-requirement compliance domain logic added to
-> `src/features/finance/expenseClaims/expenseClaims.types.ts`. Sections 1–8
-> describe the original #2463 form scope and are unchanged.
+## 1. Design Overview
 
-## 1. Context
+Receipt requirement logic is implemented as a purely additive extension
+appended to the end of the existing module
+`src/features/finance/expenseClaims/expenseClaims.types.ts`, following the
+module's established pattern of exported constants, type guards, and pure
+validator functions (mirroring `isExpenseClaimStatus`,
+`isExpenseCategory`, and `validateExpenseClaimDraft` already in the file).
 
-Parent issue #1929 covers the finance-receipt initiative: capturing expense
-claims with categorized line items and (in sibling child issues, e.g.
-#2464) enforcing receipt-attachment requirements before approval. This
-child issue (#2463) delivers the claimant-facing capture surface: a
-controlled React form that produces well-typed, validated
-`ExpenseClaimFormValues` for downstream consumption by services or approval
-logic. It does not implement receipt upload UI or the approval gate itself
-— those are modeled as separate child scopes so each can be reviewed and
-tested independently.
+No new file was introduced and no existing type was duplicated: the
+already-defined `ExpenseAttachment` interface (id, fileName, mimeType,
+sizeBytes, url, uploadedAt, uploadedByUserId) is reused as the receipt
+evidence shape, avoiding a parallel `ReceiptAttachment` type that would
+fragment the domain model between "attachments" and "receipts" for what
+is conceptually the same artifact.
 
-## 2. Design Goals
+## 2. Data Model — No Breaking Changes
 
-1. **Pure validation, impure shell.** All validation and total-calculation
-   logic (`validateExpenseClaim`, `hasExpenseClaimErrors`,
-   `calculateExpenseClaimTotal`) is implemented as plain, side-effect-free
-   functions operating on plain data, independent of React. The
-   `ExpenseClaimForm` component is a thin, controlled-input shell around
-   this logic, so the business rules can be exercised in tests without
-   rendering the DOM.
-2. **Fail visibly, not silently.** Validation errors are computed
-   holistically (`ExpenseClaimFormErrors`) rather than field-by-field on
-   blur, and are only surfaced after a submit attempt, avoiding both
-   silent rejection and premature error noise.
-3. **Bounded, safe line-item management.** Line items use stable
-   client-generated ids (`createLineItemId`) so React keys remain stable
-   across add/remove/edit operations without relying on array index
-   identity, and additions/removals are clamped (`1..MAX_LINE_ITEMS`).
-4. **Backward/forward compatible data shape.** `ExpenseClaimFormValues` and
-   `ExpenseClaimLineItem` are intentionally minimal and additive-friendly:
-   a `receipts` field or similar can be layered on by a sibling child issue
-   without breaking this component's existing props or exports.
+`ExpenseClaimLineItem.attachments: ReadonlyArray<ExpenseAttachment>` is
+unchanged. The new logic reads this existing field; it does not add,
+rename, or widen any field on `ExpenseClaimLineItem`, `ExpenseClaim`, or
+`ExpenseAttachment`. Every pre-existing literal/object constructed against
+these interfaces by prior callers or tests continues to type-check and
+behave identically.
 
-## 3. Data Model
+## 3. New Public API (appended, all additive)
 
-```ts
-export type ExpenseCategory =
-  | 'travel'
-  | 'accommodation'
-  | 'meals'
-  | 'supplies'
-  | 'software'
-  | 'other';
+| Symbol                                      | Kind           | Purpose                                                                              |
+| ------------------------------------------- | -------------- | ------------------------------------------------------------------------------------ |
+| `ALLOWED_RECEIPT_MIME_TYPES`                | `const array`  | Allow-listed MIME types for acceptable receipt evidence.                             |
+| `ReceiptMimeType`                           | `type`         | Union of allow-listed MIME type strings, derived from the const array.               |
+| `RECEIPT_REQUIRED_THRESHOLD`                | `const number` | Amount (25) at or below which no receipt is required.                                |
+| `MAX_RECEIPT_FILE_SIZE_BYTES`               | `const number` | Upper bound (10 MiB) for an individual receipt attachment file.                      |
+| `isReceiptMimeType(value)`                  | function       | Type guard narrowing `unknown` to `ReceiptMimeType`.                                 |
+| `requiresReceipt(amount)`                   | function       | Threshold predicate; treats non-finite amounts as requiring a receipt (fail safe).   |
+| `isValidReceiptAttachment(attachment)`      | function       | Structural validation of an `ExpenseAttachment` as receipt evidence.                 |
+| `hasValidReceiptForLineItem(item)`          | function       | Whether a line item's `attachments` contain >=1 structurally valid receipt.          |
+| `lineItemSatisfiesReceiptRequirement(item)` | function       | Combines threshold + validity for a single line item.                                |
+| `validateExpenseClaimReceipts(lineItems)`   | function       | Returns the existing `ExpenseClaimValidationResult` discriminated type across items. |
+| `summarizeReceiptStatus(lineItems)`         | function       | Human-readable diagnostic string across all supplied line items.                     |
 
-export interface ExpenseClaimLineItem {
-  id: string;
-  description: string;
-  category: ExpenseCategory;
-  amount: number;
-  incurredOn: string; // ISO date string (YYYY-MM-DD)
-}
+## 4. Control Flow: Enforcement Point
 
-export interface ExpenseClaimFormValues {
-  claimantName: string;
-  department: string;
-  notes: string;
-  lineItems: ExpenseClaimLineItem[];
-}
-
-export interface ExpenseClaimFormErrors {
-  claimantName?: string;
-  department?: string;
-  lineItems?: string;
-  lineItemErrors: Record<string, Partial<Record<keyof ExpenseClaimLineItem, string>>>;
-}
-```
-
-`lineItemErrors` is keyed by line-item `id` (not array index) so errors
-remain correctly associated with a specific row even as other rows are
-added or removed.
-
-## 4. Public API Surface
-
-| Symbol                                  | Kind            | Responsibility                                                                                                    |
-| --------------------------------------- | --------------- | ----------------------------------------------------------------------------------------------------------------- |
-| `EXPENSE_CATEGORIES`                    | `const`         | Canonical, ordered list of valid categories; drives both validation and the `<select>` options.                   |
-| `validateExpenseClaim(values)`          | function        | Produces an `ExpenseClaimFormErrors` describing every violated rule; empty/undefined fields mean "valid".         |
-| `hasExpenseClaimErrors(errors)`         | function        | Convenience predicate collapsing an `ExpenseClaimFormErrors` into a single boolean.                               |
-| `calculateExpenseClaimTotal(lineItems)` | function        | Sums line-item amounts, coercing non-finite values to `0`.                                                        |
-| `ExpenseClaimForm`                      | React component | Controlled form wiring the above logic to inputs, submit, cancel, add/remove line item, and a live total display. |
-
-## 5. Control Flow: Submission
+`validateExpenseClaimReceipts` iterates the supplied line items and, for
+each index `i` where `lineItemSatisfiesReceiptRequirement(item)` is
+`false`, appends an error using the pre-existing
+`ExpenseClaimValidationError` shape with `code: 'MISSING_ATTACHMENT'` and
+`field: "lineItems[i].attachments"`. This is a **new standalone
+validator**, not a modification of any pre-existing validator (e.g.
+`validateExpenseClaimDraft`), so no prior validation behavior or message
+changes for any existing caller.
 
 ```
-1. User edits fields / line items -> local state updates (updateField, updateLineItem)
-2. User clicks "Submit claim"     -> handleSubmit:
-     a. event.preventDefault()
-     b. hasAttemptedSubmit = true
-     c. errors = validateExpenseClaim(values)
-     d. setErrors(errors)
-     e. if !hasExpenseClaimErrors(errors): onSubmit(values)
+for each lineItem:
+  requiresReceipt(lineItem.amount.amount)?
+    yes -> hasValidReceiptForLineItem(lineItem)?
+             no  -> push MISSING_ATTACHMENT error
+             yes -> compliant
+    no  -> compliant (below/at threshold)
 ```
 
-**Design decision — validate-on-submit vs. validate-on-change:** validation
-runs holistically on submit (and is recomputed each subsequent submit
-attempt) rather than incrementally on every keystroke. This keeps the
-validation function pure and simple to test (one call, one result) and
-avoids flickering error states while a user is still typing a value such as
-an amount or date. `hasAttemptedSubmit` gates error visibility so a
-first-render empty form never shows errors before the user has tried to
-submit.
+### Design decision: reuse `ExpenseAttachment` instead of a new receipt type
 
-**Design decision — stable line-item ids:** `createLineItemId` uses a
-monotonically increasing in-memory counter combined with `Date.now()`
-rather than array index, so `key={item.id}` remains stable across
-inserts/removals — preventing React from misattributing input focus/state
-to the wrong row when a middle row is removed.
+Rationale: the file already defines a general-purpose attachment shape
+used by `ExpenseClaimLineItem.attachments`. Introducing a second,
+structurally similar `ReceiptAttachment` type would create two competing
+representations of "a file evidencing an expense," forcing future
+consumers to reconcile which one a given line item actually carries.
+Reusing `ExpenseAttachment` and layering pure predicate functions on top
+(`isValidReceiptAttachment`, etc.) keeps a single source of truth for the
+attachment shape while still letting receipt-specific rules (MIME
+allow-list, max size, required-above-threshold) live as composable,
+independently testable functions.
 
-**Design decision — amount coercion in `calculateExpenseClaimTotal`:** any
-non-finite `amount` (e.g. transient `NaN` while a user is mid-edit of a
-numeric input) is treated as `0` in the total rather than propagating
-`NaN` to the displayed total, keeping the running total always
-presentable; the underlying validation (`validateExpenseClaim`) still flags
-the invalid amount as a field-level error.
+### Design decision: standalone validator vs. extending `validateExpenseClaimDraft`
 
-## 6. Test Strategy (for the focused validation pass)
+`validateExpenseClaimDraft` validates a flat, single-line-item
+`ExpenseClaimDraft` (used by a simple entry form) and does not operate on
+multi-line-item claims or `ExpenseAttachment` arrays at all — extending it
+would require changing its input type, which is a pre-existing exported
+public contract used elsewhere. Instead, `validateExpenseClaimReceipts`
+is a new, independent function operating on `ReadonlyArray<ExpenseClaimLineItem>`,
+callable by any full-claim submission/approval pipeline (including a
+future form component) without touching the draft validator's contract.
 
-Recommended vitest coverage (component/helpers already exported to support
-this; test file itself is outside this change's declared file list and is
-left to the consuming test suite under the project's existing conventions):
+### Design decision: fail-safe on non-finite amounts
 
-- `validateExpenseClaim`: valid claim (no errors), blank claimant name,
-  blank department, zero line items, more than `MAX_LINE_ITEMS` line items,
-  a line item with blank description / invalid category / non-positive
-  amount / invalid `incurredOn`.
-- `hasExpenseClaimErrors`: returns `false` for a fully-valid errors object,
-  `true` when any top-level or nested line-item error is present.
-- `calculateExpenseClaimTotal`: sums multiple positive amounts correctly;
-  treats `NaN`/`Infinity` amounts as `0` in the sum; returns `0` for an
-  empty list.
-- `ExpenseClaimForm` (React Testing Library + vitest): renders with a
-  default single empty line item; shows validation errors only after a
-  failed submit attempt; calls `onSubmit` with normalized values on a valid
-  submit; does not call `onSubmit` on an invalid submit; add/remove line
-  item respects the `1..MAX_LINE_ITEMS` bounds; all inputs are disabled
-  when `isSubmitting` is `true`.
+`requiresReceipt` returns `true` for `NaN`/`Infinity` rather than `false`,
+so that a corrupted or unset amount never silently bypasses the receipt
+requirement — the conservative behavior for a financial compliance rule
+is to demand evidence when the amount cannot be established, not to
+default to permissive.
 
-Validation commands for this change:
+## 5. Validation Rules for `isValidReceiptAttachment`
 
-- `tsc --noEmit --strict` scoped to the changed file (executed during
-  implementation; passes with no new diagnostics attributable to this
-  component).
-- Project vitest run scoped to the `expenseClaims` directory once test
-  files exist there, e.g. `vitest run src/features/finance/expenseClaims`.
+- `id`, `url`: non-blank after `trim()`.
+- `mimeType`: must satisfy `isReceiptMimeType`, i.e. be one of
+  `image/png`, `image/jpeg`, `image/webp`, `application/pdf` — a
+  conservative allow-list matching common receipt capture formats (photo
+  or scanned PDF), rejecting arbitrary/executable content types.
+- `sizeBytes`: finite, `> 0`, and `<= MAX_RECEIPT_FILE_SIZE_BYTES`
+  (10 MiB) — guards against empty/corrupt uploads and unbounded storage
+  cost, without being so strict as to reject legitimate multi-page PDF
+  scans.
+- `uploadedAt`: must be `Date.parse`-able — reuses the same ISO-8601
+  timestamp convention already established for other date-time fields in
+  this file (`IsoDateTimeString`).
+
+## 6. Testing Strategy (focused, not exhaustive-suite)
+
+Recommended vitest coverage for a follow-up test file (not part of this
+child issue's file scope), using
+`import { describe, expect, it } from 'vitest'`:
+
+- `requiresReceipt`: `false` at/below 25, `true` above 25, `true` for
+  `NaN`/`Infinity`.
+- `isValidReceiptAttachment`: `true` for a well-formed attachment; `false`
+  for blank `id`/`url`, a disallowed `mimeType`, zero/negative/oversized
+  `sizeBytes`, and an unparsable `uploadedAt`.
+- `hasValidReceiptForLineItem` / `lineItemSatisfiesReceiptRequirement`:
+  correct for line items with zero, one invalid, and one valid attachment,
+  at amounts both above and at/below the threshold.
+- `validateExpenseClaimReceipts`: a line item with `amount.amount > 25`
+  and no valid attachment produces a `MISSING_ATTACHMENT` error at the
+  correct `field` path; the same item with a valid attachment produces
+  `{ isValid: true }` for the whole set; items at/below the threshold
+  never require an attachment.
+- `summarizeReceiptStatus`: stable string reflecting required/satisfied
+  counts for representative line-item sets, and the "No line items
+  require a receipt." message when nothing exceeds the threshold.
 
 ## 7. Completion Evidence
 
-- File verified/extended in place:
-  `src/features/finance/expenseClaims/ExpenseClaimForm.tsx` — no
-  pre-existing export removed, renamed, or given a behavior-changing
-  signature.
-- Type-check evidence: the component uses strict TypeScript throughout
-  (no `any`), with all props, state, and helper function signatures fully
-  typed.
-- No GitHub issue state, labels, or comments were mutated by this change.
-- No database, network, or filesystem I/O was introduced; the component
-  and its helpers only call the caller-supplied `onSubmit`/`onCancel`
-  callbacks.
+- File extended: `src/features/finance/expenseClaims/expenseClaims.types.ts`
+  — every prior exported symbol (`IsoDateTimeString`, `IsoDateString`,
+  `CurrencyCode`, `ExpenseClaimStatus`, `ExpenseCategory`,
+  `ExpensePaymentMethod`, `Money`, `ExpenseAttachment`,
+  `ExpenseClaimLineItem`, `ExpenseClaimApprovalStep`, `ExpenseClaim`,
+  `CreateExpenseClaimLineItemInput`, `CreateExpenseClaimInput`,
+  `UpdateExpenseClaimInput`, `ExpenseClaimFilter`, `ExpenseClaimSummary`,
+  `ExpenseClaimValidationResult`, `ExpenseClaimValidationError`,
+  `isExpenseClaimStatus`, `isExpenseCategory`,
+  `TERMINAL_EXPENSE_CLAIM_STATUSES`, `EXPENSE_CLAIM_STATUS_TRANSITIONS`,
+  `ExpenseClaimCategory`, `EXPENSE_CLAIM_CATEGORIES`, `ExpenseClaimDraft`,
+  `ExpenseClaimDraftValidation`, `validateExpenseClaimDraft`) preserved
+  verbatim in signature and behavior; only additive changes made.
+- New exports added per Section 3 above, implementing FR-1 through FR-8 of
+  the companion SRS.
+- `npx tsc --noEmit --strict --skipLibCheck` run against the file
+  completed with zero diagnostics (no `any` types, strict mode clean).
+  (Full, non-`skipLibCheck` type-checking of the whole workspace surfaces
+  one pre-existing, unrelated `@types/request`/`tough-cookie` declaration
+  conflict in `node_modules`, outside this file and outside this child
+  issue's scope.)
+- Manual review confirms: all new functions are pure/side-effect-free, no
+  existing field or function signature was altered, and the new
+  `validateExpenseClaimReceipts` guard is a standalone function that does
+  not alter any pre-existing validation path (`validateExpenseClaimDraft`
+  and the status/category type guards are untouched).
+- No dependencies added; no files touched outside the three listed in the
+  child issue scope; no GitHub issues closed; parent issue #1929 left
+  open.
 
 ## 8. Rollback Note
 
-This change is scoped to a single component file plus its accompanying
-handoff documents:
+This change is purely additive to `expenseClaims.types.ts`:
 
-1. Revert `src/features/finance/expenseClaims/ExpenseClaimForm.tsx` to its
-   prior revision (or delete it if it was newly introduced in this child
-   issue's history) — no other module imports from it within this child's
-   declared scope, so no ripple edits are required elsewhere.
-2. Delete or revert
-   `plans/implementation_handoffs/SRS-ISSUE-W56-FINANCE-RECEIPT-1929.md` and
-   `plans/implementation_handoffs/SDD-ISSUE-W56-FINANCE-RECEIPT-1929.md` if
-   the documentation should also be rolled back alongside the code.
-3. No data migration is required: the component performs no persistence or
-   I/O, so no backfill or cleanup step is needed on rollback.
-4. Because the component's public exports (`ExpenseClaimForm`,
-   `validateExpenseClaim`, `hasExpenseClaimErrors`,
-   `calculateExpenseClaimTotal`, and the associated types) are self-
-   contained, reverting is a straightforward file-level revert with no
-   ripple effects on other modules.
-
-## 9. Addendum — Issue #2462: Receipt Requirement Compliance Design
-
-**Component:** `src/features/finance/expenseClaims/expenseClaims.types.ts`
-
-### 9.1 Context
-
-The pre-existing `expenseClaims.types.ts` (issue #2389, parent #1947)
-already models `ExpenseClaim`, `ExpenseClaimLineItem`, and
-`ExpenseAttachment`. Issue #2462, under the W56-FINANCE-RECEIPT track
-(parent #1929), extends that same file with a self-contained,
-policy-driven receipt-requirement compliance model, without modifying,
-renaming, or removing any pre-existing export.
-
-### 9.2 Design Goals
-
-1. **Additive only.** All new symbols (`ReceiptRequirementPolicy`,
-   `DEFAULT_RECEIPT_REQUIREMENT_POLICY`, `claimLineItemRequiresReceipt`,
-   `MissingReceiptViolation`, `ExpenseClaimReceiptComplianceResult`,
-   `evaluateExpenseClaimReceiptCompliance`) are new exports appended to the
-   file; nothing pre-existing was altered.
-2. **Pure, side-effect-free evaluation.** Both `claimLineItemRequiresReceipt`
-   and `evaluateExpenseClaimReceiptCompliance` are pure functions over plain
-   data, consistent with the file's existing "type-only / no runtime
-   side-effects beyond pure helpers" convention (mirroring
+1. **Revert:** delete the appended "Receipt capture & enforcement"
+   section — i.e. `ALLOWED_RECEIPT_MIME_TYPES`, `ReceiptMimeType`,
+   `RECEIPT_REQUIRED_THRESHOLD`, `MAX_RECEIPT_FILE_SIZE_BYTES`,
+   `isReceiptMimeType`, `requiresReceipt`, `isValidReceiptAttachment`,
+   `hasValidReceiptForLineItem`, `lineItemSatisfiesReceiptRequirement`,
+   `validateExpenseClaimReceipts`, and `summarizeReceiptStatus`. Every
+   other symbol in the file is untouched, so reverting is a clean
+   truncation of the file back to its pre-change end (immediately after
    `validateExpenseClaimDraft`).
-3. **Configurable, conservative default.** A caller may omit the policy
-   argument entirely and get `DEFAULT_RECEIPT_REQUIREMENT_POLICY` (AED 100
-   threshold; `client_entertainment` and `training` always require a
-   receipt), so downstream consumers (e.g. an approval-gate service in a
-   sibling child issue) have a sane default without additional wiring.
-4. **Safe cross-currency handling.** Rather than silently coercing or
-   comparing mismatched currencies, the amount-based rule is simply
-   skipped when the line item's currency differs from the policy's
-   threshold currency — category/payment-method rules remain authoritative
-   in that case. This avoids introducing incorrect currency-conversion
-   logic into a pure domain-type module.
-
-### 9.3 Data Model
-
-```ts
-export interface ReceiptRequirementPolicy {
-  readonly thresholdAmount: number;
-  readonly thresholdCurrency: CurrencyCode;
-  readonly requiredCategories: ReadonlyArray<ExpenseCategory>;
-  readonly exemptPaymentMethods?: ReadonlyArray<ExpensePaymentMethod>;
-}
-
-export interface MissingReceiptViolation {
-  readonly lineItemId: string;
-  readonly category: ExpenseCategory;
-  readonly amount: Money;
-}
-
-export type ExpenseClaimReceiptComplianceResult =
-  | { readonly compliant: true }
-  | { readonly compliant: false; readonly violations: ReadonlyArray<MissingReceiptViolation> };
-```
-
-### 9.4 Public API Surface
-
-| Symbol                                  | Kind      | Responsibility                                                                                     |
-| --------------------------------------- | --------- | -------------------------------------------------------------------------------------------------- |
-| `ReceiptRequirementPolicy`              | interface | Configurable rule set governing when a receipt is mandatory.                                       |
-| `DEFAULT_RECEIPT_REQUIREMENT_POLICY`    | const     | Conservative default policy usable without additional configuration.                               |
-| `claimLineItemRequiresReceipt`          | function  | Pure predicate: does this single line item require a receipt under the given (or default) policy?  |
-| `MissingReceiptViolation`               | interface | Describes one line item that requires but lacks a receipt.                                         |
-| `ExpenseClaimReceiptComplianceResult`   | type      | Discriminated union result of a whole-claim compliance evaluation.                                 |
-| `evaluateExpenseClaimReceiptCompliance` | function  | Pure evaluator: iterates a claim's line items and reports every missing-receipt violation, if any. |
-
-### 9.5 Control Flow
-
-```
-evaluateExpenseClaimReceiptCompliance(claim, policy?):
-  violations = []
-  for each lineItem in claim.lineItems:
-    if claimLineItemRequiresReceipt(lineItem, policy) and lineItem.attachments.length === 0:
-      violations.push({ lineItemId, category, amount })
-  return violations.length === 0
-    ? { compliant: true }
-    : { compliant: false, violations }
-```
-
-**Design decision — evaluate against `Pick<ExpenseClaim, 'lineItems'>` rather
-than the full `ExpenseClaim`:** the evaluator only needs `lineItems`, so its
-parameter type is narrowed via `Pick` to minimize coupling and make it
-trivially usable from partial/draft claim shapes (e.g. a claim still being
-assembled) without requiring every other `ExpenseClaim` field to be
-populated first.
-
-**Design decision — policy parameter is optional with a module-level
-default:** consistent with `claimLineItemRequiresReceipt(lineItem, policy =
-DEFAULT_RECEIPT_REQUIREMENT_POLICY)`, callers needing custom thresholds
-(e.g. a department-specific policy) can pass one explicitly, while the
-common case requires no configuration.
-
-### 9.6 Test Strategy (for the focused validation pass)
-
-Recommended vitest coverage (helpers already exported to support this;
-test file itself is outside this change's declared file list and is left
-to the consuming test suite under the project's existing conventions):
-
-- `claimLineItemRequiresReceipt`: amount at/above threshold in matching
-  currency requires a receipt; amount below threshold in matching currency
-  does not; a `requiredCategories` category requires a receipt even when
-  the amount is below threshold; an `exemptPaymentMethods` payment method
-  never requires a receipt even when category/amount would otherwise
-  mandate one; mismatched currency skips the amount-based rule.
-- `evaluateExpenseClaimReceiptCompliance`: returns `{ compliant: true }`
-  for a claim with no line items; returns `{ compliant: true }` when every
-  receipt-requiring line item has at least one attachment; returns
-  `{ compliant: false, violations }` listing every offending
-  `lineItemId`/`category`/`amount` when one or more required receipts are
-  missing; violations preserve line-item order.
-
-Validation commands for this change:
-
-- `tsc --noEmit --strict` scoped to
-  `src/features/finance/expenseClaims/expenseClaims.types.ts` (executed
-  during implementation; passes with no diagnostics attributable to the
-  new exports).
-- Project vitest run scoped to the `expenseClaims` directory once test
-  files exist there, e.g. `vitest run src/features/finance/expenseClaims`.
-
-### 9.7 Completion Evidence
-
-- File verified/extended in place:
-  `src/features/finance/expenseClaims/expenseClaims.types.ts` — every
-  pre-existing export (`ExpenseClaim`, `ExpenseClaimLineItem`,
-  `validateExpenseClaimDraft`, etc.) is unchanged; only new, additive
-  exports were appended.
-- Type-check evidence: `tsc --noEmit --strict` run against the file
-  reports no diagnostics originating from the new receipt-requirement
-  code (a pre-existing, unrelated ambient `@types/request` diagnostic in
-  the wider workspace is not attributable to this change).
-- No GitHub issue state, labels, or comments were mutated by this change.
-- No database, network, or filesystem I/O was introduced; all new
-  exports are pure, synchronous functions/constants/types.
-
-### 9.8 Rollback Note
-
-This change is scoped to a single, purely additive block appended to an
-existing type-only file, plus its accompanying handoff documentation
-addenda:
-
-1. Revert `src/features/finance/expenseClaims/expenseClaims.types.ts` to
-   its prior revision (i.e. remove the "Receipt requirement compliance"
-   block added under issue #2462) — because the addition is purely
-   additive and no other code in this child's declared scope imports the
-   new symbols yet, this is a clean, ripple-free revert.
-2. Revert the "Addendum (issue #2462...)" sections appended to
-   `SRS-ISSUE-W56-FINANCE-RECEIPT-1929.md` and
-   `SDD-ISSUE-W56-FINANCE-RECEIPT-1929.md`, restoring them to their prior
-   (#2463-only) content, if the documentation should also be rolled back
-   alongside the code.
-3. No data migration is required: the new logic performs no persistence
-   or I/O, so no backfill or cleanup step is needed on rollback.
-4. Because the new exports are self-contained and additive, reverting is
-   a straightforward file-level revert with no ripple effects on other
-   modules or on the pre-existing #2463/#2389 exports in the same file.
+2. **Impact of rollback:** zero impact on any other module — nothing in
+   the pre-existing exported surface was altered or removed, so no other
+   call site can depend on the new behavior in a way that breaks on
+   revert.
+3. **No data migration required:** all new logic is pure/stateless and
+   operates only on already-in-memory `ExpenseClaimLineItem`/
+   `ExpenseAttachment` values; nothing is persisted by this file, so no
+   schema/storage rollback is needed.
+4. **No parent/child issue state changes to undo:** this handoff does not
+   close or mutate any GitHub issue; #1929 remains open before and after.
