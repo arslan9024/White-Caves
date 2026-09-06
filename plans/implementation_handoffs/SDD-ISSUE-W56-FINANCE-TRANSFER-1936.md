@@ -149,6 +149,77 @@ branches on rejection reason, catching missing cases at compile time.
 - Parent issue #1936 remains open; this is one reconciled child work item
   under it, not a closure of the parent.
 
+### 7.4 Completion evidence (child issue #2432 — shared domain types)
+
+- Created `src/features/finance/financeEngineIntercompanyTransfer/financeEngineIntercompanyTransfer.types.ts`,
+  a standalone, side-effect-free module containing: the `SUPPORTED_CURRENCIES`
+  allow-list and `Currency` type with an `isSupportedCurrency` guard (FR-4); the
+  closed `RejectionReason` union together with an ordered `REJECTION_REASONS`
+  runtime constant matching the fixed evaluation order in §3.1, plus an
+  `isRejectionReason` guard; the `LedgerDirection` union and `LEDGER_DIRECTIONS`
+  constant; the `IntercompanyTransferRequest`, `LedgerEntry`,
+  `PostedTransferResult`, `RejectedTransferResult`, `IntercompanyTransferResult`,
+  and `ReversalResult` interfaces/types (FR-1, FR-7, FR-8); discriminating type
+  guards `isPostedTransferResult`/`isRejectedTransferResult`; and pure result
+  constructors `createRejectedResult`/`createPostedResult`. No `any` types are
+  used anywhere in the file (§3.5), and money remains integer minor units
+  end-to-end (§3.4, NFR-2).
+- Created `src/features/finance/financeEngineIntercompanyTransfer/financeEngineIntercompanyTransfer.types.test.ts`
+  with `vitest` cases asserting real behavior: currency allow-list membership
+  (positive and negative cases, including a case-sensitivity check), the fixed
+  rejection-reason ordering and guard behavior, ledger direction constants,
+  and both result constructors/type guards narrowing correctly in both
+  directions (a posted result is accepted by `isPostedTransferResult` and
+  rejected by `isRejectedTransferResult`, and vice versa for a rejected
+  result).
+- Design decision: this file is deliberately independent of
+  `financeEngineIntercompanyTransfer.logic.ts` — it does not import from, or
+  modify, that module or its exports. The two files describe the same domain
+  contract (by design, per SDD §2's illustrative future layout listing
+  `.types.ts` as a separate file from the runtime module), but keeping them
+  decoupled means a future dedicated `.validate.ts`/`.service.ts` split (per
+  §2) can depend on this types module without a circular or redundant
+  dependency on `.logic.ts`, and this issue's scope stays limited to adding
+  new files with no risk of regressing the existing runtime module.
+- Design decision: a small set of pure, side-effect-free runtime helpers
+  (type guards and result constructors) were included alongside the type
+  declarations, rather than shipping a pure `.d.ts`-style file with zero
+  runtime code. Rationale: TypeScript interfaces/type aliases alone have no
+  runtime representation and cannot be meaningfully asserted against by
+  `vitest` with real behavior assertions (a stated technical requirement for
+  this issue); colocating narrow, single-purpose guards/constructors with the
+  types they discriminate is a common, low-risk pattern that keeps the file
+  free of business logic (validation ordering, entity lookups, posting,
+  idempotency) which remains reserved for the future `.validate.ts`/`.service.ts`
+  modules described in §2.
+- Validated with `vitest` and `tsc --noEmit` from within the sandboxed staging
+  copy of these two new files; no repository state outside the listed files
+  was modified.
+- No existing exports were modified; this issue only adds new files.
+- No new dependencies were added.
+- Parent issue #1936 remains open; this is one reconciled child work item
+  under it, not a closure of the parent.
+
+### 7.5 Rollback note (child issue #2432)
+
+This change is purely additive: one new types module plus one new test file,
+and documentation updates to this SDD and the companion SRS. To roll back:
+
+1. Delete `src/features/finance/financeEngineIntercompanyTransfer/financeEngineIntercompanyTransfer.types.ts`
+   and `financeEngineIntercompanyTransfer.types.test.ts`.
+2. Revert §7.4 of this file and the corresponding acceptance-criteria note in
+   the companion SRS (§5.2) to their prior state, or delete those additions.
+3. No other files were modified; `financeEngineIntercompanyTransfer.logic.ts` and
+   its test file are untouched, so no downstream consumer can be affected by a
+   rollback.
+4. No database, dependency, or configuration changes were made, so no further
+   reversal steps (e.g. migrations, secret rotations) are required.
+
+Rollback is low-risk: the new types module is not yet imported/consumed by
+`financeEngineIntercompanyTransfer.logic.ts` or by any other file in the
+repository, so removing it cannot regress any existing behavior. Parent issue
+#1936 remains open regardless of whether this rollback is applied.
+
 ### 7.1 Completion evidence (this issue, #2434)
 
 - Created `src/features/finance/financeEngineIntercompanyTransfer/financeEngineIntercompanyTransfer.contract.md`.

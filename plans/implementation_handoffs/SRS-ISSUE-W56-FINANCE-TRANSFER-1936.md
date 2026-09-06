@@ -99,6 +99,22 @@ entities without violating double-entry accounting invariants across entity boun
 - Completion evidence and a rollback note are recorded (see SDD handoff, §7.0 and §7.3).
 - Parent issue #1936 remains open until all child work under it is reconciled.
 
+## 5.2 Acceptance Criteria (traced to child issue #2432 — shared domain types)
+
+- FR-1 through FR-9's associated data shapes (`IntercompanyTransferRequest`,
+  `LedgerEntry`, `PostedTransferResult`, `RejectedTransferResult`,
+  `IntercompanyTransferResult`, `ReversalResult`) and NFR-1/NFR-5 are satisfied by
+  `src/features/finance/financeEngineIntercompanyTransfer/financeEngineIntercompanyTransfer.types.ts`,
+  a standalone, side-effect-free type module extracted for reuse by any future
+  validation/service layer without depending on `financeEngineIntercompanyTransfer.logic.ts`.
+- Implementation remains within the declared child scope (the `.types.ts`/`.types.test.ts`
+  pair and this SRS/SDD update only; `financeEngineIntercompanyTransfer.logic.ts` and its
+  test file were not modified).
+- Focused `vitest` tests and `tsc --noEmit` type-checking pass; see SDD §7.4 for
+  validation evidence.
+- Completion evidence and a rollback note are recorded (see SDD handoff, §7.4 and §7.5).
+- Parent issue #1936 remains open until all child work under it is reconciled.
+
 ## 6. Excluded Scope
 
 - Parent issue closure.
@@ -113,4 +129,7 @@ entities without violating double-entry accounting invariants across entity boun
 - Runtime implementation (child issue #2433):
   `src/features/finance/financeEngineIntercompanyTransfer/financeEngineIntercompanyTransfer.logic.ts`
   and `financeEngineIntercompanyTransfer.logic.test.ts`
+- Shared domain types (child issue #2432):
+  `src/features/finance/financeEngineIntercompanyTransfer/financeEngineIntercompanyTransfer.types.ts`
+  and `financeEngineIntercompanyTransfer.types.test.ts`
 - Parent issue: #1936
