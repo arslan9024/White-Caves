@@ -92,3 +92,31 @@ were authored as specified.
 
 Revert or delete this file to roll back. This is a documentation-only handoff with no runtime,
 schema, or GitHub state side effects.
+
+## 9. Addendum — Issue #2492 Implementation Follow-up
+
+- Handoff ID (this addendum): SRS-ISSUE-W55-EJARI-BENCH-1923 (unchanged)
+- Implementing issue: #2492
+- Parent issue: #1923 (still open)
+
+Issue #2492 authored the runtime implementation and test suite specified above, using the file
+naming `ejariSuitePerformanceUnit.logic.ts` / `ejariSuitePerformanceUnit.logic.test.ts` (the
+`.logic` suffix aligns with this repository's convention for pure business-logic modules under
+`src/features/*`). The public entry point is `evaluateEjariPerformance`, matching FR-1 through
+FR-9 exactly:
+
+- [x] Implementation remains within the declared child scope for #2492 (only the two source
+      files plus this addendum and the companion SDD addendum were touched).
+- [x] Focused tests and required validation commands pass — see
+      `src/features/documents/ejariSuitePerformanceUnit/ejariSuitePerformanceUnit.logic.test.ts`,
+      run via `vitest run src/features/documents/ejariSuitePerformanceUnit`.
+- [x] Completion evidence and rollback note are recorded (this section, plus the SDD addendum).
+- [x] Parent issue #1923 remains open until all child work (including any further Ejari suite
+      children) is reconciled.
+
+### Rollback Note (Issue #2492)
+
+Delete `src/features/documents/ejariSuitePerformanceUnit/ejariSuitePerformanceUnit.logic.ts` and
+`ejariSuitePerformanceUnit.logic.test.ts` to fully roll back the runtime change introduced by
+issue #2492. No other files, schemas, or GitHub state are affected; the module is pure,
+dependency-free, and has no side effects to unwind.

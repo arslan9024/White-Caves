@@ -110,3 +110,32 @@ The vitest suite must cover, at minimum:
 
 This SDD is documentation-only. Rollback is a plain revert/delete of this file; no runtime code,
 schema, or GitHub state is affected.
+
+## 11. Addendum — Issue #2492 Implementation Follow-up
+
+Issue #2492 (child of parent #1923) implemented the module described above. Two deviations from
+the originally sketched file layout in Section 2 were made deliberately:
+
+- **File naming:** `ejariSuitePerformanceUnit.logic.ts` / `ejariSuitePerformanceUnit.logic.test.ts`
+  were used instead of the bare `ejariSuitePerformanceUnit.ts` / `.test.ts` sketched in Section 2.
+  **Why:** this matches the established convention elsewhere in
+  `src/features/*/*.logic.ts` for pure, side-effect-free business-logic modules, keeping the
+  module discoverable and consistent with sibling features.
+- **Single-file implementation:** `validateSamples` and `aggregateSamples` (Section 3's `validate`
+  and `aggregate` steps) are private, non-exported helper functions colocated in
+  `ejariSuitePerformanceUnit.logic.ts` rather than split into separate files. **Why:** both
+  functions are small, tightly coupled, and have no independent reuse value outside
+  `evaluateEjariPerformance`; splitting them would add indirection without benefit while keeping
+  `evaluateEjariPerformance` as the sole public export, matching the "composing `validate` then
+  `aggregate` internally" note in Section 3.
+
+All design decisions in Sections 4-7 (throw-on-invalid-input, inclusive threshold comparison,
+`Infinity` for zero-duration throughput, no `any`/no `as`) were implemented exactly as specified,
+and the Section 8 test plan items 1-9 are each covered by a corresponding vitest case in
+`ejariSuitePerformanceUnit.logic.test.ts`.
+
+### Rollback Note (Issue #2492)
+
+Revert or delete `ejariSuitePerformanceUnit.logic.ts` and `ejariSuitePerformanceUnit.logic.test.ts`
+to fully roll back. The module is pure and dependency-free with no schema, network, or GitHub
+state side effects; no other rollback steps are required. Parent issue #1923 remains open.
