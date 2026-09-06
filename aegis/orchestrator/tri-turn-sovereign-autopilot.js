@@ -2539,7 +2539,20 @@ async function main() {
   const cycleCap = options.unlimited ? Number.POSITIVE_INFINITY : options.maxCycles;
 
   for (let i = 0; i < cycleCap; i += 1) {
-    const summary = await runCycle(options, cycleNumber);
+    let summary;
+    try {
+      summary = await runCycle(options, cycleNumber);
+    } catch (error) {
+      if (!options.unlimited) throw error;
+      consecutiveBlocked += 1;
+      console.error(
+        `⚠️ [UNLIMITED] Cycle ${cycleNumber} failed transiently: ${String(error?.message || error)}. ` +
+          `Retrying after ${options.blockedBackoffMs}ms; GitHub state remains authoritative.`
+      );
+      await sleep(options.blockedBackoffMs);
+      cycleNumber += 1;
+      continue;
+    }
     cycleNumber += 1;
 
     const canRegenerate =
