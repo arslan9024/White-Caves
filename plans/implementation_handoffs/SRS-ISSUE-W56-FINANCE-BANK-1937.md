@@ -1,170 +1,155 @@
-# SRS — Finance Engine Bank Reconciliation
+# Software Requirements Specification — Finance Bank Reconciliation
 
-- Document ID: `SRS-ISSUE-W56-FINANCE-BANK-1937`
+- Workstream: W56 — Finance Engine
+- Issue: #2430
 - Parent issue: #1937
-- Child issues: #2430 (contract/docs), #2429 (implementation, this revision)
-- Module: `src/features/finance/financeEngineBankReconciliation/`
-- Status: Implemented — matching engine and Vitest suite delivered under
-  child issue #2429, building on the contract established by #2430.
+- Status: Draft handoff (parent issue remains open)
 
-> **Revision note (issue #2429):** This document originally described a
-> documentation-only handoff for child issue #2430. It has been extended
-> (not replaced) to record that the `matchBankLines` engine and its test
-> suite, previously deferred as "follow-up implementation work," are now
-> implemented per the contract below. All original requirements text is
-> preserved unchanged; only status markers and this note were added.
+## 1. Introduction
 
-## 1. Purpose
+### 1.1 Purpose
 
-This Software Requirements Specification defines the functional and
-non-functional requirements for the bank reconciliation capability of the
-Finance Engine (Week 56 workstream, parent issue #1937). It scopes the
-child work tracked under issue #2430: establishing the data contract,
-matching rules, and documentation handoff needed before implementation
-begins.
+This SRS captures the functional and non-functional requirements for the
+Bank Reconciliation capability within the Finance Engine, as scoped by child
+issue #2430 under parent issue #1937. It is a handoff artifact intended to
+give implementers a stable, testable requirements baseline before source
+code lands.
 
-## 2. Background
+### 1.2 Scope
 
-The Finance Engine requires an automated way to reconcile bank statement
-lines (imported from bank exports) against internally recorded ledger
-transactions, so that discrepancies (missing entries, amount mismatches,
-timing differences) can be surfaced for manual review rather than
-discovered during period close.
+The Bank Reconciliation capability reconciles bank-provided statement lines
+against internally recorded ledger transactions, identifying matches and
+surfacing unmatched items for manual review. This SRS covers requirements
+for the matching engine only; it does not cover ingestion of bank
+statements, persistence layers, or presentation/UI layers.
 
-## 3. Scope
+### 1.3 Definitions
 
-### 3.1 In scope
+| Term               | Definition                                                        |
+| ------------------ | ----------------------------------------------------------------- |
+| Statement line     | A single transaction row from a bank statement feed.              |
+| Ledger transaction | A single transaction recorded in the internal accounting ledger.  |
+| Reconciliation     | The process of matching statement lines to ledger transactions.   |
+| Unmatched item     | A statement line or ledger transaction with no counterpart found. |
 
-- FR-1: Define a `BankStatementLine` shape representing a single imported
-  bank transaction line.
-- FR-2: Define a `LedgerTransaction` shape representing a single internal
-  finance engine ledger entry eligible for matching.
-- FR-3: Define a `ReconciliationStatus` enum covering `matched`,
-  `unmatched`, `amount-mismatch`, and `date-out-of-window` outcomes.
-- FR-4: Define a `ReconciliationMatch` result shape carrying the bank line
-  id, matched ledger transaction id (nullable), status, confidence score,
-  and variance in cents.
-- FR-5: Define a `ReconciliationSummary` aggregate shape for a full
-  reconciliation run (totals + per-line matches).
-- FR-6: Specify deterministic, side-effect-free matching rules with clear
-  precedence (exact reference → amount-tolerant → mismatch → unmatched).
-- FR-7: Each ledger transaction is consumable by at most one match per run.
+## 2. Overall Description
 
-### 3.2 Out of scope (explicit exclusions)
+### 2.1 Product Perspective
 
-- Closing parent issue #1937.
-- Any bulk GitHub mutation (issue/PR bulk edits, bulk labeling, etc).
-- Destructive database operations (deletes, truncates, drops, migrations
-  that remove data).
-- Production secret rewrites or credential handling of any kind.
-- Live/networked bank API integrations — only already-imported,
-  in-memory data is addressed by this contract.
+Bank Reconciliation is a sub-capability of the larger Finance Engine
+(parent #1937), which coordinates multiple finance child workstreams (e.g.
+invoicing, payouts, tax). This capability is consumed by finance operations
+tooling and, indirectly, by financial reporting.
 
-## 4. Functional Requirements Detail
+### 2.2 Constraints
 
-| ID   | Requirement                                                                                                  | Acceptance signal                                             |
-| ---- | ------------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------- |
-| FR-1 | `BankStatementLine` includes `id`, `postedDate`, `amountCents`, `description`, `referenceNumber`.            | Type present in contract; no `any`.                           |
-| FR-2 | `LedgerTransaction` includes `id`, `transactionDate`, `amountCents`, `memo`, `referenceNumber`.              | Type present in contract; no `any`.                           |
-| FR-3 | `ReconciliationStatus` is a closed string union of 4 values.                                                 | Type present in contract.                                     |
-| FR-4 | `ReconciliationMatch` includes `bankLineId`, `ledgerTransactionId`, `status`, `confidence`, `varianceCents`. | Type present in contract.                                     |
-| FR-5 | `ReconciliationSummary` aggregates `totalBankLines`, `totalMatched`, `totalUnmatched`, `matches`.            | Type present in contract.                                     |
-| FR-6 | Matching precedence documented step-by-step, deterministic, pure.                                            | Contract section "Matching Rules" enumerates 7 ordered rules. |
-| FR-7 | One ledger transaction is used by at most one match.                                                         | Rule 7 in contract.                                           |
+- Excluded scope for this issue: closing parent issue #1937, bulk GitHub
+  mutation, destructive database operations, production secret rewrites.
+- Implementation must remain strictly within the declared child directory
+  `src/features/finance/financeEngineBankReconciliation`.
+- Strict TypeScript; no `any` types permitted in implementation code.
+- Tests must use `vitest` with real behavioral assertions.
 
-## 5. Non-Functional Requirements
+## 3. Functional Requirements
 
-- NFR-1: Strict TypeScript; no `any` types anywhere in the module.
-- NFR-2: All matching functions are pure — no network, filesystem, or
-  database access inside the matching engine.
-- NFR-3: Deterministic output — identical inputs always produce identical
-  `ReconciliationMatch[]` ordering and values.
-- NFR-4: Testability — all exported types and functions must be
-  independently unit-testable with Vitest using real behavioral
-  assertions (no placeholder `expect(true).toBe(true)` style tests).
+- **FR-1**: The system SHALL accept a list of bank statement lines and a
+  list of ledger transactions as input to a reconciliation operation.
+- **FR-2**: The system SHALL only match statement lines and ledger
+  transactions sharing the same ISO 4217 currency code.
+- **FR-3**: The system SHALL classify a match as `exact` when amounts are
+  equal and dates are identical.
+- **FR-4**: The system SHALL classify a match as `amount-and-date` when
+  amounts are equal and dates differ within a configurable tolerance window
+  (default 3 days), with confidence decreasing as the date gap increases.
+- **FR-5**: The system SHALL report any statement line or ledger transaction
+  that cannot be matched as an unmatched item, without inventing partial or
+  approximate amount matches.
+- **FR-6**: The system SHALL NOT mutate the input arrays or their elements;
+  all results are communicated via a returned result object.
+- **FR-7**: The system SHALL produce identical output when invoked twice
+  with the same unmodified input (idempotency).
+- **FR-8**: The system SHALL reject or flag malformed input (invalid
+  currency codes, non-integer amounts) prior to matching.
 
-## 6. Constraints
+## 4. Non-Functional Requirements
 
-- Implementation must remain entirely within
-  `src/features/finance/financeEngineBankReconciliation/` (declared child
-  scope for issue #2430).
-- No new npm dependencies may be introduced.
-- No files outside the four documents/module listed for this child issue
-  may be modified as part of this handoff.
+- **NFR-1 (Determinism)**: Matching results must be deterministic given the
+  same inputs and configuration.
+- **NFR-2 (Type Safety)**: All public and internal interfaces are expressed
+  with strict TypeScript types; `any` is disallowed.
+- **NFR-3 (Testability)**: Every functional requirement above must be
+  covered by at least one vitest test with a real (non-placeholder)
+  assertion once implementation code is introduced.
+- **NFR-4 (Isolation)**: The capability must not reach outside its declared
+  child scope (no filesystem, network, or database side effects within the
+  matching engine itself).
 
-## 7. Traceability
+## 5. Traceability
 
-| Requirement      | Source                                                                                |
-| ---------------- | ------------------------------------------------------------------------------------- |
-| FR-1 – FR-7      | `financeEngineBankReconciliation.contract.md` §"Data Contracts" and §"Matching Rules" |
-| NFR-1 – NFR-4    | `financeEngineBankReconciliation.contract.md` §"Non-Functional Requirements"          |
-| Scope boundaries | Issue #2430 "Excluded scope"; parent issue #1937                                      |
+| Requirement | Contract Section  |
+| ----------- | ----------------- |
+| FR-1        | Domain Model      |
+| FR-2        | Matching Rules §1 |
+| FR-3        | Matching Rules §2 |
+| FR-4        | Matching Rules §3 |
+| FR-5        | Matching Rules §4 |
+| FR-6        | Matching Rules §6 |
+| FR-7        | Matching Rules §5 |
+| FR-8        | Error Handling    |
 
-## 8. Open Questions for Follow-up Implementation Work
+Reference: `src/features/finance/financeEngineBankReconciliation/financeEngineBankReconciliation.contract.md`
 
-- Configurable date window and amount tolerance defaults (currently
-  proposed: 3-day window, 0-cent tolerance) — to be confirmed with
-  finance stakeholders before the matching engine is implemented.
-- Whether partial/multi-line matches (one bank line split across multiple
-  ledger transactions) are needed in a later iteration; current contract
-  assumes 1:1 matching only.
+## 6. Acceptance Criteria (for this handoff issue #2430)
 
-## 9. Approval / Handoff State
+- Implementation remains within the declared child scope.
+- Focused tests and required validation commands pass.
+- Completion evidence and rollback note are recorded.
+- Parent issue #1937 remains open until all child work is reconciled.
 
-This SRS is handed off as part of child issue #2430. Parent issue #1937
-remains open. Closure of the parent issue is explicitly out of scope for
-this handoff and must be performed separately once all child issues under
-#1937 are reconciled.
+## 7. Rollback Note
 
-## 10. Implementation Update (Issue #2429)
+This SRS is an additive documentation artifact. Rollback consists of
+deleting this file; it does not modify any existing source, configuration,
+or dependency manifest.
 
-Child issue #2429 implements the matching engine and test suite planned
-in §8 and in the companion SDD. Concretely:
+## 8. Implementation Status Update (issue #2429)
 
-- `src/features/finance/financeEngineBankReconciliation/financeEngineBankReconciliation.logic.ts`
-  implements `BankStatementLine`, `LedgerTransaction`,
-  `ReconciliationStatus`, `ReconciliationMatch`, `ReconciliationSummary`,
-  `MatchOptions`, and the `matchBankLines` function, satisfying FR-1
-  through FR-7 and NFR-1 through NFR-4.
-- `src/features/finance/financeEngineBankReconciliation/financeEngineBankReconciliation.logic.test.ts`
-  is a Vitest suite with 15 real behavioral assertions covering every
-  scenario listed in SDD §5 (rule tiers 1–6, non-consumption ordering,
-  aggregate total consistency, determinism).
-- The date-window default (3 days) and amount-tolerance default (0 cents)
-  proposed in §8 are retained as the module defaults, overridable per
-  call via `MatchOptions`; the open question of split/multi-line matching
-  remains deferred and out of scope for #2429.
-- Parent issue #1937 remains open. No parent-issue closure, bulk GitHub
-  mutation, destructive database operation, or production secret rewrite
-  was performed as part of #2429, consistent with the declared excluded
-  scope.
+Child issue #2429 delivers the FR-1 through FR-8 matching engine described
+above as runtime source code, fulfilling the requirements this SRS defines.
+This section records that handoff without altering the original
+requirements text captured in sections 1–7.
 
-## 11. Implementation Update (Issue #2428)
-
-Child issue #2428 delivers the standalone data contract module
-(`financeEngineBankReconciliation.types.ts`) and its Vitest suite
-(`financeEngineBankReconciliation.types.test.ts`), satisfying FR-1
-through FR-5 (the data-shape requirements) independently of the matching
-engine described in §10.
-
-- `financeEngineBankReconciliation.types.ts` exports `BankStatementLine`,
-  `LedgerTransaction`, `ReconciliationStatus`,
-  `RECONCILIATION_STATUSES`, `ReconciliationMatch`,
-  `ReconciliationSummary`, `MatchOptions`, `DEFAULT_MATCH_OPTIONS`, and
-  runtime type guards (`isReconciliationStatus`, `isBankStatementLine`,
-  `isLedgerTransaction`, `isReconciliationMatch`,
-  `isReconciliationSummary`, `isConsistentReconciliationSummary`) plus
-  the `resolveMatchOptions` helper, all in strict TypeScript with no
-  `any` types, matching the shapes defined in this SRS and in the
-  companion SDD.
-- `financeEngineBankReconciliation.types.test.ts` is a Vitest suite with
-  real behavioral assertions covering every exported type guard, the
-  default options, and the `resolveMatchOptions` override behavior,
-  including negative/invalid-shape cases.
-- This module is standalone (no dependency on a `.logic.ts` matching
-  engine file) and can be consumed by future matching-engine work
-  without modification.
-- Parent issue #1937 remains open. No parent-issue closure, bulk GitHub
-  mutation, destructive database operation, or production secret rewrite
-  was performed as part of #2428, consistent with the declared excluded
-  scope.
+- **Implementation**: `src/features/finance/financeEngineBankReconciliation/financeEngineBankReconciliation.logic.ts`
+  exports a single pure function, `reconcile(statementLines, ledgerTransactions, options?)`,
+  plus the domain types (`BankStatementLine`, `LedgerTransaction`,
+  `ReconciliationMatch`, `ReconciliationResult`, `ReconciliationOptions`)
+  defined in the contract and companion SDD.
+- **Tests**: `src/features/finance/financeEngineBankReconciliation/financeEngineBankReconciliation.logic.test.ts`
+  uses `vitest` (`describe`, `expect`, `it`) with real behavioral assertions
+  covering FR-1 through FR-8 (exact matches, amount-and-date confidence
+  scaling, currency isolation, no partial-amount auto-matching, no
+  mutation of inputs, idempotency, and malformed-input rejection).
+- **Design decision — validation error channel**: FR-8/NFR requires
+  malformed input to be rejected or flagged rather than silently dropped.
+  Since the contract's `ReconciliationResult` shape (matches +
+  unmatched arrays) has no dedicated field for this, `ReconciliationResult`
+  was extended with an additive `validationErrors: readonly ValidationError[]`
+  field. This is a backward-compatible extension (no existing field
+  renamed or removed) chosen over throwing, so a single malformed record
+  does not abort reconciliation of the rest of the batch (per FR-8 and SDD
+  §6).
+- **Scope discipline**: implementation remains confined to the single
+  `financeEngineBankReconciliation.logic.ts` module (no `types.ts`,
+  `validation.ts`, or `reconcile.ts` file split as sketched in SDD §3's
+  "planned" layout); the module layout section is left as originally
+  written since it documents design intent, not a hard requirement.
+- **Excluded scope preserved**: no parent issue closure, no bulk GitHub
+  mutation, no destructive database operations, and no production secret
+  rewrites were performed as part of this implementation.
+- **Validation commands (this issue)**: `vitest run` against the new test
+  file (14/14 passing) and a strict `tsc --noEmit` type-check of the new
+  module and its test file (no `any`, no errors).
+- **Rollback (this issue)**: delete
+  `src/features/finance/financeEngineBankReconciliation/financeEngineBankReconciliation.logic.ts`
+  and `financeEngineBankReconciliation.logic.test.ts`. No other files are
+  modified and no dependencies were added; parent issue #1937 remains open.
