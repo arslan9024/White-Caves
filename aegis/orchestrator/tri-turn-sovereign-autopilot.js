@@ -1099,16 +1099,37 @@ function gitChangedFiles() {
       encoding: 'utf8',
       stdio: ['ignore', 'pipe', 'ignore'],
     });
-    return output
-      .split('\n')
-      .map(line => line.trimEnd())
-      .filter(line => line.length > 3)
-      .map(line => {
-        const entry = line.slice(3).trim();
-        const renamed = entry.split(' -> ');
-        return (renamed[renamed.length - 1] || entry).replace(/\\/g, '/');
-      })
-      .filter(Boolean);
+    const files = [];
+    for (const line of output.split('\n')) {
+      const trimmed = line.trimEnd();
+      if (trimmed.length <= 3) continue;
+      const entry = trimmed.slice(3).trim();
+      const renamed = entry.split(' -> ');
+      const filePath = (renamed[renamed.length - 1] || entry).replace(/\\/g, '/');
+      if (!filePath) continue;
+
+      // Untracked directories are reported collapsed (`?? path/`); expand them
+      // so scope validation and evidence operate on real files.
+      if (trimmed.startsWith('??') && filePath.endsWith('/')) {
+        const dirPath = path.join(ROOT, filePath);
+        const walk = dir => {
+          if (!fs.existsSync(dir)) return;
+          for (const item of fs.readdirSync(dir, { withFileTypes: true })) {
+            const full = path.join(dir, item.name);
+            if (item.isDirectory()) {
+              walk(full);
+            } else if (item.isFile()) {
+              files.push(path.relative(ROOT, full).replace(/\\/g, '/'));
+            }
+          }
+        };
+        walk(dirPath);
+        continue;
+      }
+
+      files.push(filePath);
+    }
+    return files;
   } catch {
     return [];
   }
@@ -1278,7 +1299,6 @@ async function solveSerialQueue(token, queue, options, state, cycleId) {
         const executorStatus = validateExecutorStatus(executorConfig);
         if (executorStatus.available) {
           executorAttempted = true;
-          const preRunFiles = gitChangedFiles();
           const stagingDir = path.join(
             ROOT,
             'logs',
@@ -1327,9 +1347,9 @@ async function solveSerialQueue(token, queue, options, state, cycleId) {
             }
           }
 
-          const changedFiles = filterEvidenceFiles(
-            gitChangedFiles().filter(file => !preRunFiles.includes(file))
-          );
+          // The staged file set is the authoritative evidence: it contains exactly
+          // what the executor produced this run, already constrained to candidate paths.
+          const changedFiles = filterEvidenceFiles(stagedFiles);
           const scopeCheck = validateExecutionScope(handoff.candidateFiles, changedFiles);
           if (changedFiles.length === 0 || !scopeCheck.allowed) {
             state.phase = PHASES.HALTED_BLOCKED;
