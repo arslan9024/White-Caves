@@ -184,3 +184,35 @@ introduces no implementation files.
   reverts issue #2425 with no effect on any other module, since the
   registry is a pure, dependency-free, standalone library with no external
   callers at this time. Parent issue #1938 remains open.
+
+## 11. Implementation Completion Evidence (Issue #2424)
+
+Child issue #2424 (parent #1938 remains open) delivers the shared types
+module described in §3, ahead of/alongside the `.logic.ts` layer:
+
+- `financeEngineChequeRegistry.types.ts` implements `ChequeStatus`,
+  `CHEQUE_STATUSES`, `ALLOWED_TRANSITIONS`, `ChequeRecord`,
+  `CreateChequeRecordInput`, `TransitionChequeOptions`, and the runtime
+  guards/helpers `canTransition`, `isChequeStatus`, `isChequeRecord`.
+- Design decision: `canTransition` and `ALLOWED_TRANSITIONS` (originally
+  sketched in §4.3 as part of the logic layer) were placed in the types
+  module instead, because the transition adjacency map is pure static data
+  with no dependency on `validateChequeRecord` or record construction; this
+  lets the logic layer (and any other consumer) import the transition
+  rules without a circular or premature dependency on the not-yet-existing
+  logic file.
+- `isChequeRecord` was added as a structural (shape-only) runtime type
+  guard, distinct from the logic layer's `validateChequeRecord` (which
+  enforces business invariants like `amount > 0`). This gives callers a
+  cheap way to narrow `unknown` data before invoking the stricter
+  validation, without duplicating invariant logic across files.
+- `financeEngineChequeRegistry.types.test.ts` provides Vitest coverage (19
+  assertions) for `CHEQUE_STATUSES`, `ALLOWED_TRANSITIONS`, `isChequeStatus`,
+  `canTransition`, and `isChequeRecord`, including terminal-state and
+  same-state transition rejection and malformed-record detection.
+- Validation performed: `tsc --noEmit --strict --skipLibCheck` (clean) and
+  `vitest run` (19/19 passed).
+- Rollback: deleting `financeEngineChequeRegistry.types.ts` and
+  `financeEngineChequeRegistry.types.test.ts` fully reverts issue #2424;
+  no other module imports these files yet. Parent issue #1938 remains
+  open.
