@@ -1,57 +1,29 @@
 import { describe, expect, it } from 'vitest';
 import {
-  DEFAULT_TAX_RATE,
-  SUPPORTED_TAX_INVOICE_CURRENCIES,
   TAX_INVOICE_STATUSES,
   TaxInvoiceValidationError,
-  assertValidTaxInvoiceLineItem,
-  calculateTaxInvoiceLineItemTotals,
+  assertValidLineItem,
+  calculateLineItemTotals,
   calculateTaxInvoiceTotals,
-  deriveTaxInvoiceStatus,
-  isTaxInvoiceCurrency,
-  isTaxInvoiceOverdue,
+  canTransitionTaxInvoiceStatus,
+  createDraftTaxInvoice,
+  getAllowedTaxInvoiceStatusTransitions,
   isTaxInvoiceStatus,
-  roundToCurrencyPrecision,
-  type TaxInvoice,
+  roundMoney,
+  transitionTaxInvoiceStatus,
   type TaxInvoiceLineItem,
 } from './financeEngineTaxInvoice.types';
 
-const makeLineItem = (overrides: Partial<TaxInvoiceLineItem> = {}): TaxInvoiceLineItem => ({
-  id: 'line-1',
-  description: 'Property management fee',
-  quantity: 1,
-  unitPrice: 1000,
-  taxRate: DEFAULT_TAX_RATE,
-  ...overrides,
-});
-
-const makeInvoice = (overrides: Partial<TaxInvoice> = {}): TaxInvoice => ({
-  id: 'inv-1',
-  invoiceNumber: 'TWC-2026-0001',
-  status: 'issued',
-  currency: 'AED',
-  issueDate: '2026-01-01T00:00:00.000Z',
-  dueDate: '2026-01-15T00:00:00.000Z',
-  issuer: { name: 'The White Caves LLC' },
-  recipient: { name: 'Jane Tenant' },
-  lineItems: [makeLineItem()],
-  ...overrides,
-});
-
-describe('financeEngineTaxInvoice.types constants', () => {
-  it('defines the standard UAE VAT rate', () => {
-    expect(DEFAULT_TAX_RATE).toBe(0.05);
-  });
-
-  it('lists the supported currencies including AED', () => {
-    expect(SUPPORTED_TAX_INVOICE_CURRENCIES).toContain('AED');
-    expect(SUPPORTED_TAX_INVOICE_CURRENCIES.length).toBeGreaterThan(0);
-  });
-
-  it('lists all invoice lifecycle statuses', () => {
-    expect(TAX_INVOICE_STATUSES).toEqual(['draft', 'issued', 'paid', 'overdue', 'void']);
-  });
-});
+function makeLineItem(overrides: Partial<TaxInvoiceLineItem> = {}): TaxInvoiceLineItem {
+  return {
+    id: 'line-1',
+    description: 'Service charge',
+    quantity: 2,
+    unitPrice: 100,
+    taxRatePercent: 5,
+    ...overrides,
+  };
+}
 
 describe('isTaxInvoiceStatus', () => {
   it('returns true for every known status', () => {
@@ -60,116 +32,116 @@ describe('isTaxInvoiceStatus', () => {
     }
   });
 
-  it('returns false for unknown or non-string values', () => {
+  it('returns false for unknown strings and non-strings', () => {
     expect(isTaxInvoiceStatus('cancelled')).toBe(false);
     expect(isTaxInvoiceStatus(42)).toBe(false);
+    expect(isTaxInvoiceStatus(null)).toBe(false);
     expect(isTaxInvoiceStatus(undefined)).toBe(false);
   });
 });
 
-describe('isTaxInvoiceCurrency', () => {
-  it('returns true for every supported currency', () => {
-    for (const currency of SUPPORTED_TAX_INVOICE_CURRENCIES) {
-      expect(isTaxInvoiceCurrency(currency)).toBe(true);
-    }
-  });
-
-  it('returns false for unsupported currency codes', () => {
-    expect(isTaxInvoiceCurrency('JPY')).toBe(false);
-    expect(isTaxInvoiceCurrency(123)).toBe(false);
+describe('roundMoney', () => {
+  it('rounds to 2 decimal places', () => {
+    expect(roundMoney(10.005)).toBeCloseTo(10.01, 5);
+    expect(roundMoney(10.004)).toBeCloseTo(10.0, 5);
+    expect(roundMoney(1 / 3)).toBeCloseTo(0.33, 5);
   });
 });
 
-describe('roundToCurrencyPrecision', () => {
-  it('rounds to two decimal places', () => {
-    expect(roundToCurrencyPrecision(10.005)).toBeCloseTo(10.01, 5);
-    expect(roundToCurrencyPrecision(1.005)).toBeCloseTo(1.01, 5);
-    expect(roundToCurrencyPrecision(100)).toBe(100);
-  });
-});
-
-describe('assertValidTaxInvoiceLineItem', () => {
+describe('assertValidLineItem', () => {
   it('does not throw for a valid line item', () => {
-    expect(() => assertValidTaxInvoiceLineItem(makeLineItem())).not.toThrow();
+    expect(() => assertValidLineItem(makeLineItem())).not.toThrow();
   });
 
-  it('throws TaxInvoiceValidationError for non-positive quantity', () => {
-    expect(() => assertValidTaxInvoiceLineItem(makeLineItem({ quantity: 0 }))).toThrow(
-      TaxInvoiceValidationError
-    );
-    expect(() => assertValidTaxInvoiceLineItem(makeLineItem({ quantity: -2 }))).toThrow(
-      TaxInvoiceValidationError
-    );
+  it('throws TaxInvoiceValidationError for empty id', () => {
+    expect(() => assertValidLineItem(makeLineItem({ id: '' }))).toThrow(TaxInvoiceValidationError);
   });
 
-  it('throws for a negative unit price', () => {
-    expect(() => assertValidTaxInvoiceLineItem(makeLineItem({ unitPrice: -1 }))).toThrow(
+  it('throws for empty description', () => {
+    expect(() => assertValidLineItem(makeLineItem({ description: '  ' }))).toThrow(
       TaxInvoiceValidationError
     );
   });
 
-  it('throws for a tax rate outside the 0-1 range', () => {
-    expect(() => assertValidTaxInvoiceLineItem(makeLineItem({ taxRate: 1.5 }))).toThrow(
+  it('throws for non-positive quantity', () => {
+    expect(() => assertValidLineItem(makeLineItem({ quantity: 0 }))).toThrow(
       TaxInvoiceValidationError
     );
-    expect(() => assertValidTaxInvoiceLineItem(makeLineItem({ taxRate: -0.1 }))).toThrow(
+    expect(() => assertValidLineItem(makeLineItem({ quantity: -1 }))).toThrow(
+      TaxInvoiceValidationError
+    );
+  });
+
+  it('throws for negative unitPrice', () => {
+    expect(() => assertValidLineItem(makeLineItem({ unitPrice: -5 }))).toThrow(
+      TaxInvoiceValidationError
+    );
+  });
+
+  it('throws for taxRatePercent out of [0, 100] bounds', () => {
+    expect(() => assertValidLineItem(makeLineItem({ taxRatePercent: -1 }))).toThrow(
+      TaxInvoiceValidationError
+    );
+    expect(() => assertValidLineItem(makeLineItem({ taxRatePercent: 101 }))).toThrow(
       TaxInvoiceValidationError
     );
   });
 
   it('throws for non-finite numeric fields', () => {
-    expect(() => assertValidTaxInvoiceLineItem(makeLineItem({ quantity: Number.NaN }))).toThrow(
+    expect(() => assertValidLineItem(makeLineItem({ quantity: Number.POSITIVE_INFINITY }))).toThrow(
+      TaxInvoiceValidationError
+    );
+    expect(() => assertValidLineItem(makeLineItem({ unitPrice: NaN }))).toThrow(
       TaxInvoiceValidationError
     );
   });
 });
 
-describe('calculateTaxInvoiceLineItemTotals', () => {
-  it('computes net, tax, and gross amounts using the default VAT rate', () => {
-    const totals = calculateTaxInvoiceLineItemTotals(
-      makeLineItem({ quantity: 2, unitPrice: 500, taxRate: 0.05 })
+describe('calculateLineItemTotals', () => {
+  it('computes net, tax, and gross amounts correctly', () => {
+    const totals = calculateLineItemTotals(
+      makeLineItem({ quantity: 2, unitPrice: 100, taxRatePercent: 5 })
     );
-
-    expect(totals.netAmount).toBe(1000);
-    expect(totals.taxAmount).toBe(50);
-    expect(totals.grossAmount).toBe(1050);
+    expect(totals.lineItemId).toBe('line-1');
+    expect(totals.netAmount).toBe(200);
+    expect(totals.taxAmount).toBe(10);
+    expect(totals.grossAmount).toBe(210);
   });
 
-  it('handles a zero tax rate', () => {
-    const totals = calculateTaxInvoiceLineItemTotals(
-      makeLineItem({ quantity: 3, unitPrice: 100, taxRate: 0 })
+  it('handles zero tax rate', () => {
+    const totals = calculateLineItemTotals(
+      makeLineItem({ quantity: 3, unitPrice: 50, taxRatePercent: 0 })
     );
-
-    expect(totals.netAmount).toBe(300);
+    expect(totals.netAmount).toBe(150);
     expect(totals.taxAmount).toBe(0);
-    expect(totals.grossAmount).toBe(300);
+    expect(totals.grossAmount).toBe(150);
   });
 
-  it('propagates validation errors from invalid line items', () => {
-    expect(() => calculateTaxInvoiceLineItemTotals(makeLineItem({ unitPrice: -50 }))).toThrow(
+  it('propagates validation errors for invalid line items', () => {
+    expect(() => calculateLineItemTotals(makeLineItem({ quantity: -1 }))).toThrow(
       TaxInvoiceValidationError
     );
   });
 });
 
 describe('calculateTaxInvoiceTotals', () => {
-  it('sums multiple line items into subtotal, tax total, and grand total', () => {
+  it('aggregates totals across multiple line items', () => {
     const lineItems: TaxInvoiceLineItem[] = [
-      makeLineItem({ id: 'l1', quantity: 1, unitPrice: 1000, taxRate: 0.05 }),
-      makeLineItem({ id: 'l2', quantity: 2, unitPrice: 250, taxRate: 0.05 }),
+      makeLineItem({ id: 'a', quantity: 1, unitPrice: 100, taxRatePercent: 5 }),
+      makeLineItem({ id: 'b', quantity: 2, unitPrice: 50, taxRatePercent: 10 }),
     ];
-
     const totals = calculateTaxInvoiceTotals(lineItems);
 
-    expect(totals.subtotal).toBe(1500);
-    expect(totals.taxTotal).toBe(75);
-    expect(totals.grandTotal).toBe(1575);
+    expect(totals.subtotal).toBe(200);
+    expect(totals.taxTotal).toBe(15);
+    expect(totals.grandTotal).toBe(215);
     expect(totals.lineItemTotals).toHaveLength(2);
+    expect(totals.lineItemTotals[0].lineItemId).toBe('a');
+    expect(totals.lineItemTotals[1].lineItemId).toBe('b');
   });
 
-  it('returns zeroed totals for an empty invoice', () => {
+  it('returns zeroed totals for an empty line item list', () => {
     const totals = calculateTaxInvoiceTotals([]);
-
     expect(totals.subtotal).toBe(0);
     expect(totals.taxTotal).toBe(0);
     expect(totals.grandTotal).toBe(0);
@@ -177,62 +149,120 @@ describe('calculateTaxInvoiceTotals', () => {
   });
 });
 
-describe('isTaxInvoiceOverdue', () => {
-  it('returns true when the reference date is after the due date and status is issued', () => {
-    const invoice = makeInvoice({ status: 'issued', dueDate: '2026-01-15T00:00:00.000Z' });
-    expect(isTaxInvoiceOverdue(invoice, new Date('2026-02-01T00:00:00.000Z'))).toBe(true);
+describe('createDraftTaxInvoice', () => {
+  const validInput = {
+    id: 'inv-1',
+    invoiceNumber: 'INV-0001',
+    currency: 'AED',
+    issueDate: '2026-01-01',
+    dueDate: '2026-01-31',
+    customerId: 'cust-1',
+    lineItems: [makeLineItem()],
+  };
+
+  it('creates a draft invoice with status "draft"', () => {
+    const invoice = createDraftTaxInvoice(validInput);
+    expect(invoice.status).toBe('draft');
+    expect(invoice.id).toBe('inv-1');
+    expect(invoice.invoiceNumber).toBe('INV-0001');
+    expect(invoice.lineItems).toHaveLength(1);
   });
 
-  it('returns false when the reference date is before the due date', () => {
-    const invoice = makeInvoice({ status: 'issued', dueDate: '2026-01-15T00:00:00.000Z' });
-    expect(isTaxInvoiceOverdue(invoice, new Date('2026-01-01T00:00:00.000Z'))).toBe(false);
+  it('throws when lineItems is empty', () => {
+    expect(() => createDraftTaxInvoice({ ...validInput, lineItems: [] })).toThrow(
+      TaxInvoiceValidationError
+    );
   });
 
-  it('returns false for paid invoices even if past due', () => {
-    const invoice = makeInvoice({ status: 'paid', dueDate: '2026-01-01T00:00:00.000Z' });
-    expect(isTaxInvoiceOverdue(invoice, new Date('2026-06-01T00:00:00.000Z'))).toBe(false);
+  it('throws when required string fields are blank', () => {
+    expect(() => createDraftTaxInvoice({ ...validInput, id: '' })).toThrow(
+      TaxInvoiceValidationError
+    );
+    expect(() => createDraftTaxInvoice({ ...validInput, invoiceNumber: '' })).toThrow(
+      TaxInvoiceValidationError
+    );
+    expect(() => createDraftTaxInvoice({ ...validInput, currency: '' })).toThrow(
+      TaxInvoiceValidationError
+    );
+    expect(() => createDraftTaxInvoice({ ...validInput, customerId: '' })).toThrow(
+      TaxInvoiceValidationError
+    );
   });
 
-  it('returns false for void invoices even if past due', () => {
-    const invoice = makeInvoice({ status: 'void', dueDate: '2026-01-01T00:00:00.000Z' });
-    expect(isTaxInvoiceOverdue(invoice, new Date('2026-06-01T00:00:00.000Z'))).toBe(false);
+  it('throws for malformed dates', () => {
+    expect(() => createDraftTaxInvoice({ ...validInput, issueDate: 'not-a-date' })).toThrow(
+      TaxInvoiceValidationError
+    );
+    expect(() => createDraftTaxInvoice({ ...validInput, dueDate: '2026-13-40' })).toThrow(
+      TaxInvoiceValidationError
+    );
   });
 
-  it('throws TaxInvoiceValidationError for an unparsable due date', () => {
-    const invoice = makeInvoice({ dueDate: 'not-a-date' });
-    expect(() => isTaxInvoiceOverdue(invoice)).toThrow(TaxInvoiceValidationError);
+  it('throws when dueDate is earlier than issueDate', () => {
+    expect(() =>
+      createDraftTaxInvoice({
+        ...validInput,
+        issueDate: '2026-02-01',
+        dueDate: '2026-01-01',
+      })
+    ).toThrow(TaxInvoiceValidationError);
+  });
+
+  it('propagates line item validation errors', () => {
+    expect(() =>
+      createDraftTaxInvoice({
+        ...validInput,
+        lineItems: [makeLineItem({ unitPrice: -10 })],
+      })
+    ).toThrow(TaxInvoiceValidationError);
   });
 });
 
-describe('deriveTaxInvoiceStatus', () => {
-  it('promotes an issued invoice past its due date to overdue', () => {
-    const invoice = makeInvoice({ status: 'issued', dueDate: '2026-01-15T00:00:00.000Z' });
-    expect(deriveTaxInvoiceStatus(invoice, new Date('2026-02-01T00:00:00.000Z'))).toBe('overdue');
+describe('getAllowedTaxInvoiceStatusTransitions / canTransitionTaxInvoiceStatus', () => {
+  it('allows draft -> issued and draft -> void', () => {
+    expect(getAllowedTaxInvoiceStatusTransitions('draft')).toEqual(['issued', 'void']);
+    expect(canTransitionTaxInvoiceStatus('draft', 'issued')).toBe(true);
+    expect(canTransitionTaxInvoiceStatus('draft', 'void')).toBe(true);
+    expect(canTransitionTaxInvoiceStatus('draft', 'paid')).toBe(false);
   });
 
-  it('leaves a still-current issued invoice unchanged', () => {
-    const invoice = makeInvoice({ status: 'issued', dueDate: '2026-01-15T00:00:00.000Z' });
-    expect(deriveTaxInvoiceStatus(invoice, new Date('2026-01-01T00:00:00.000Z'))).toBe('issued');
+  it('allows issued -> paid, overdue, void', () => {
+    expect(canTransitionTaxInvoiceStatus('issued', 'paid')).toBe(true);
+    expect(canTransitionTaxInvoiceStatus('issued', 'overdue')).toBe(true);
+    expect(canTransitionTaxInvoiceStatus('issued', 'void')).toBe(true);
+    expect(canTransitionTaxInvoiceStatus('issued', 'draft')).toBe(false);
   });
 
-  it('leaves draft, paid, and void invoices unchanged regardless of due date', () => {
-    expect(
-      deriveTaxInvoiceStatus(
-        makeInvoice({ status: 'draft', dueDate: '2020-01-01T00:00:00.000Z' }),
-        new Date('2026-01-01T00:00:00.000Z')
-      )
-    ).toBe('draft');
-    expect(
-      deriveTaxInvoiceStatus(
-        makeInvoice({ status: 'paid', dueDate: '2020-01-01T00:00:00.000Z' }),
-        new Date('2026-01-01T00:00:00.000Z')
-      )
-    ).toBe('paid');
-    expect(
-      deriveTaxInvoiceStatus(
-        makeInvoice({ status: 'void', dueDate: '2020-01-01T00:00:00.000Z' }),
-        new Date('2026-01-01T00:00:00.000Z')
-      )
-    ).toBe('void');
+  it('treats paid and void as terminal states', () => {
+    expect(getAllowedTaxInvoiceStatusTransitions('paid')).toEqual([]);
+    expect(getAllowedTaxInvoiceStatusTransitions('void')).toEqual([]);
+    expect(canTransitionTaxInvoiceStatus('paid', 'draft')).toBe(false);
+    expect(canTransitionTaxInvoiceStatus('void', 'issued')).toBe(false);
+  });
+});
+
+describe('transitionTaxInvoiceStatus', () => {
+  const baseInvoice = createDraftTaxInvoice({
+    id: 'inv-2',
+    invoiceNumber: 'INV-0002',
+    currency: 'AED',
+    issueDate: '2026-01-01',
+    dueDate: '2026-01-31',
+    customerId: 'cust-2',
+    lineItems: [makeLineItem()],
+  });
+
+  it('returns a new invoice object with the updated status on a valid transition', () => {
+    const issued = transitionTaxInvoiceStatus(baseInvoice, 'issued');
+    expect(issued.status).toBe('issued');
+    expect(issued).not.toBe(baseInvoice);
+    expect(baseInvoice.status).toBe('draft');
+    expect(issued.id).toBe(baseInvoice.id);
+  });
+
+  it('throws TaxInvoiceValidationError on an invalid transition', () => {
+    expect(() => transitionTaxInvoiceStatus(baseInvoice, 'paid')).toThrow(
+      TaxInvoiceValidationError
+    );
   });
 });
