@@ -1,7 +1,7 @@
 /**
  * Domain types for the double-entry finance ledger engine (work stream W56).
  *
- * Scope: parent issue #1926, child issue #2475. This module defines the
+ * Scope: parent issue #1926, child issue #2474. This module defines the
  * shared domain vocabulary consumed by the consolidated
  * `financeEngineDoubleEntry.logic.ts` module (validation, posting, balance
  * derivation, reversal) without introducing any I/O, persistence, or
