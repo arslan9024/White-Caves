@@ -87,6 +87,18 @@ entities without violating double-entry accounting invariants across entity boun
 - Completion evidence and a rollback note are recorded (see SDD handoff, §7).
 - Parent issue #1936 remains open until all child work under it is reconciled.
 
+## 5.1 Acceptance Criteria (traced to child issue #2433 — runtime implementation)
+
+- FR-1 through FR-9 are satisfied by
+  `src/features/finance/financeEngineIntercompanyTransfer/financeEngineIntercompanyTransfer.logic.ts`,
+  and NFR-1 through NFR-5 are satisfied as described in SDD §7.0.
+- Implementation remains within the declared child scope (the `.logic.ts`/`.logic.test.ts`
+  pair and this SRS/SDD update only; no other files were touched).
+- Focused `vitest` tests (12/12) and `tsc --noEmit` type-checking pass; see SDD §7.0
+  for validation evidence.
+- Completion evidence and a rollback note are recorded (see SDD handoff, §7.0 and §7.3).
+- Parent issue #1936 remains open until all child work under it is reconciled.
+
 ## 6. Excluded Scope
 
 - Parent issue closure.
@@ -98,4 +110,7 @@ entities without violating double-entry accounting invariants across entity boun
 
 - Contract: `src/features/finance/financeEngineIntercompanyTransfer/financeEngineIntercompanyTransfer.contract.md`
 - Design handoff: `plans/implementation_handoffs/SDD-ISSUE-W56-FINANCE-TRANSFER-1936.md`
+- Runtime implementation (child issue #2433):
+  `src/features/finance/financeEngineIntercompanyTransfer/financeEngineIntercompanyTransfer.logic.ts`
+  and `financeEngineIntercompanyTransfer.logic.test.ts`
 - Parent issue: #1936

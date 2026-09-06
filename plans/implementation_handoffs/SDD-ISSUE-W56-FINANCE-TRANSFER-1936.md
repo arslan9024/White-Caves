@@ -112,6 +112,43 @@ branches on rejection reason, catching missing cases at compile time.
 
 ## 7. Completion Evidence & Rollback
 
+### 7.0 Completion evidence (child issue #2433 — runtime implementation)
+
+- Created `src/features/finance/financeEngineIntercompanyTransfer/financeEngineIntercompanyTransfer.logic.ts`,
+  implementing FR-1 through FR-9 and NFR-1 through NFR-5: request validation
+  in the fixed order specified in §3.1, a pluggable `IdempotencyStore`
+  (§3.2), atomic debit/credit posting via a pluggable `LedgerPoster` (§3.3),
+  integer-minor-units money representation (§3.4), and no `any` types with a
+  closed `RejectionReason` union (§3.5). In-memory reference implementations
+  of every pluggable dependency (`EntityDirectory`, `AuthorizationChecker`,
+  `IdempotencyStore`, `LedgerPoster`, `IdGenerator`, `Clock`) are exported
+  alongside the engine factory so the module is independently usable and
+  testable without introducing a new persistence dependency.
+- Created `src/features/finance/financeEngineIntercompanyTransfer/financeEngineIntercompanyTransfer.logic.test.ts`
+  with 12 `vitest` cases covering: each rejection reason individually
+  (`SAME_ENTITY`, `NON_POSITIVE_AMOUNT`, `UNSUPPORTED_CURRENCY`,
+  `UNKNOWN_ENTITY`, `INSUFFICIENT_AUTHORIZATION`), fixed rejection-order
+  precedence, successful posting of exactly two correctly-directed entries
+  sharing a `requestId`, idempotent replay (identical result, no second
+  posting, identical entry ids), equal-and-opposite reversal without
+  mutating original entries, idempotent reversal replay, and reversal
+  failure for a `requestId` that was never posted or was rejected.
+- Deviation from the SDD §2 target layout: a single consolidated
+  `*.logic.ts`/`*.logic.test.ts` pair was used instead of separate
+  `.types.ts`/`.validate.ts`/`.service.ts` files, per the concrete file list
+  assigned to this child issue. All design decisions in §3 (validation
+  order, pluggable idempotency store, atomic posting, integer minor units,
+  no `any`) are preserved exactly; only the physical file split differs from
+  the illustrative (non-binding) layout in §2.
+- Validated with `vitest` (12/12 passing) and `tsc --noEmit` (no errors
+  attributable to the new files), run from a temporary copy under the real
+  `src/` tree and removed immediately after validation; no repository state
+  was left behind by the validation step.
+- No existing exports were modified; this issue only adds new files.
+- No new dependencies were added.
+- Parent issue #1936 remains open; this is one reconciled child work item
+  under it, not a closure of the parent.
+
 ### 7.1 Completion evidence (this issue, #2434)
 
 - Created `src/features/finance/financeEngineIntercompanyTransfer/financeEngineIntercompanyTransfer.contract.md`.
@@ -137,6 +174,24 @@ directory tree). To roll back:
 
 Rollback is low-risk: since no runtime code, exports, or dependencies were touched,
 reverting this commit cannot regress any existing behavior.
+
+### 7.3 Rollback note (child issue #2433)
+
+This change is purely additive runtime code plus documentation updates. To roll back:
+
+1. Delete `src/features/finance/financeEngineIntercompanyTransfer/financeEngineIntercompanyTransfer.logic.ts`
+   and `financeEngineIntercompanyTransfer.logic.test.ts`.
+2. Revert §7.0 of this file and the corresponding acceptance-criteria note in the
+   companion SRS (§5) to their prior state, or delete those additions.
+3. No other files were modified; no exports outside this module's own two new files
+   were added, changed, or removed, so no downstream consumer can be affected by a
+   rollback.
+4. No database, dependency, or configuration changes were made, so no further
+   reversal steps (e.g. migrations, secret rotations) are required.
+
+Rollback is low-risk: the module is not yet imported/consumed anywhere else in the
+codebase, so removing it cannot regress any existing behavior. Parent issue #1936
+remains open regardless of whether this rollback is applied.
 
 ## 8. Traceability
 
