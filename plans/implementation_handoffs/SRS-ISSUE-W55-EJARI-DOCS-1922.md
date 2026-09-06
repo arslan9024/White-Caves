@@ -104,3 +104,31 @@ pending reconciliation of any remaining sibling child issues.
 This SRS traces to the contract defined in
 `src/features/documents/ejariSuiteBusinessFlow/ejariSuiteBusinessFlow.contract.md` and is paired
 with `SDD-ISSUE-W55-EJARI-DOCS-1922.md` for design-level detail.
+
+## 8. Reconciliation Update — Child Issue #2495 (Type-Contract Extraction)
+
+Child issue #2495 extracts the type-contract layer (FR-1's `EjariCase`/`EjariFlowStage` model,
+FR-6/FR-7/FR-8's typed error classes) into a standalone module,
+`src/features/documents/ejariSuiteBusinessFlow/ejariSuiteBusinessFlow.types.ts`, with its focused
+vitest suite in the co-located `ejariSuiteBusinessFlow.types.test.ts`. This module intentionally
+contains no transition-guard logic (`canTransition`, `transitionEjariCase`, `createEjariCase`
+remain the responsibility of the sibling logic module referenced in SDD Section 10) — it supplies
+only the shared type declarations and the three typed error classes so that downstream adapters
+(persistence, notifications, GitHub sync per Section 2.2) can depend on a stable, dependency-free
+contract without importing state-machine implementation details.
+
+NFR-5 (backward-compatible public API) is satisfied: all exports named in SDD Sections 3-4
+(`EjariFlowStage`, `EjariDocumentBundle`, `EjariFlowTransition`, `EjariCase`,
+`InvalidEjariTransitionError`, `IncompleteEjariBundleError`, `TerminalEjariCaseError`) are present
+with unchanged signatures. The module additively exports `EJARI_FLOW_STAGES`,
+`TERMINAL_EJARI_FLOW_STAGES`, `isEjariFlowStage`, and `EjariDocumentBundleKey` as new supporting
+type-layer utilities; no existing symbol was removed or renamed.
+
+Acceptance criteria from Section 5 are satisfied as follows: (1) implementation is scoped to the
+single declared types file and its test file, per this child issue's file list; (2) the paired
+vitest suite exercises real behavioral assertions (stage-list contents, terminal-stage set
+membership, the `isEjariFlowStage` type guard's true/false branches, object-shape construction,
+and every typed error's `name`/`message`/typed-field contract) — no placeholder assertions are
+present; (3) completion evidence and a rollback note are recorded in the paired SDD's Section 11;
+(4) parent issue #1922 remains open, pending reconciliation of any remaining sibling child issues
+(`stateMachine.ts`/logic wiring already tracked under #2496, plus adapters).

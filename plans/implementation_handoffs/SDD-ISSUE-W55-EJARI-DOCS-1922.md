@@ -191,3 +191,57 @@ reconciliation section and the paired SRS update. To roll back, delete the two n
 and revert this section and the SRS's matching update — no other files, schemas, or dependencies
 are touched. Parent issue #1922 remains open pending reconciliation of any remaining sibling child
 issues (adapters, persistence, notifications, GitHub sync).
+
+## 11. Reconciliation Update — Child Issue #2495 (Type-Contract Extraction)
+
+**Design decision:** child issue #2495 factors the type-contract layer described in Sections 3-4
+(the `EjariFlowStage`/`EjariDocumentBundle`/`EjariFlowTransition`/`EjariCase` model plus the three
+typed error classes) into its own module,
+`src/features/documents/ejariSuiteBusinessFlow/ejariSuiteBusinessFlow.types.ts`, separate from the
+transition-guard logic already delivered in `ejariSuiteBusinessFlow.logic.ts` under #2496. This
+keeps the pure type/error contract independently importable (e.g., by future adapters that only
+need to validate shapes or catch typed errors, without pulling in `canTransition`/
+`transitionEjariCase` state-machine code), while both modules remain additive and non-conflicting:
+consumers may import either or both without duplication, since `.types.ts` does not re-declare any
+transition function and `.logic.ts`'s pre-existing inline type declarations are structurally
+identical to (and can be superseded by importing from) this new dedicated module without a
+breaking change.
+
+Two additive, non-breaking helpers were introduced beyond the SDD Section 3-4 baseline:
+
+- `EJARI_FLOW_STAGES` / `TERMINAL_EJARI_FLOW_STAGES` — canonical, enumerable stage-list and
+  terminal-stage-set constants, giving downstream code (and this module's own tests) a single
+  source of truth instead of re-deriving these lists ad hoc.
+- `isEjariFlowStage(value): value is EjariFlowStage` — a runtime type guard for validating
+  untrusted input (API payloads, persisted records) before treating a string as a strongly-typed
+  `EjariFlowStage`, addressing a gap the original Section 3 sketch (compile-time types only) did
+  not cover for boundary validation.
+
+All exports named in Sections 3-4 (`EjariFlowStage`, `EjariDocumentBundle`, `EjariFlowTransition`,
+`EjariCase`, `InvalidEjariTransitionError`, `IncompleteEjariBundleError`,
+`TerminalEjariCaseError`) are present with unchanged signatures — NFR-5 is satisfied.
+
+**Completion evidence:** the co-located vitest suite
+`ejariSuiteBusinessFlow.types.test.ts` covers: the full contents and length of
+`EJARI_FLOW_STAGES`; `TERMINAL_EJARI_FLOW_STAGES` membership (`completed`/`cancelled` true,
+non-terminal stages false); `isEjariFlowStage` true-branch for every documented stage and
+false-branch for unknown strings, case-mismatched strings, and non-string runtime values
+(`undefined`, `null`, numbers, objects, arrays); constructing a fully-typed `EjariCase` with an
+appended `EjariFlowTransition` and asserting its shape; constructing a bundle with incomplete
+documents; and, for each of the three typed error classes, asserting `instanceof Error`,
+`instanceof <ErrorClass>`, `.name`, `.message` (including the exact interpolated stage/missing-list
+text), and the additional typed fields (`fromStage`/`toStage`, `missing`, `stage`) — 15 real
+behavioral assertions across the suite, no placeholder assertions. This sandboxed handoff
+environment has no installed dependencies (no `node_modules`/`package.json` present), so `vitest
+run` and `tsc --noEmit --strict` could not be executed in-sandbox; both commands are expected to
+pass unchanged when run in the full repository, and running them there is called out as the
+required follow-up validation step before this child issue is marked done in the parent's child
+ledger.
+
+**Rollback note (#2495):** this update adds only two new source files
+(`ejariSuiteBusinessFlow.types.ts`, `ejariSuiteBusinessFlow.types.test.ts`) plus this
+reconciliation section and the paired SRS update. To roll back, delete the two new source files
+and revert this section and the SRS's matching Section 8 update — no other files, schemas, or
+dependencies are touched, and `ejariSuiteBusinessFlow.logic.ts` (from #2496) is unaffected since it
+does not import from the new types module. Parent issue #1922 remains open pending reconciliation
+of any remaining sibling child issues (adapters, persistence, notifications, GitHub sync).
