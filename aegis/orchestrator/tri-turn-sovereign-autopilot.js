@@ -2188,6 +2188,7 @@ async function runCycle(options, cycleNumber) {
       } else if (options.autoChain && !options.dryRun && broadParent) {
         // One-command autopilot: decompose the broad parent and publish its children
         // inline, then continue into the serial solve of those children.
+        const allIssues = await loadAllGitHubIssues(token);
         const childTasks = decomposeBroadIssue(broadParent, 3, {
           repositoryFiles: buildDecompositionRepositoryIndex(),
           historicalIssues: allIssues,
@@ -2216,7 +2217,6 @@ async function runCycle(options, cycleNumber) {
         const headers = ghHeaders(token);
         // Dedup against ALL issues (open + closed) by taskId so a parent is never
         // re-decomposed into children that already exist or were already solved.
-        const allIssues = await loadAllGitHubIssues(token);
         const trackedChildIds = new Set(
           allIssues
             .map(issue => String(issue.body || '').match(/AEGIS_CHILD_TASK:\s*([^\s<]+)/)?.[1])
