@@ -48,9 +48,13 @@ export const EXPENSE_CLAIM_CATEGORY_LABELS: Record<
   { en: string; ar: string }
 > = {
   travel: { en: 'Travel', ar: 'السفر' },
-  marketing: { en: 'Marketing', ar: 'التسويق' },
-  'client-entertainment': { en: 'Client entertainment', ar: 'ضيافة العملاء' },
-  'office-supplies': { en: 'Office supplies', ar: 'لوازم المكتب' },
-  'professional-services': { en: 'Professional services', ar: 'الخدمات المهنية' },
+  accommodation: { en: 'Accommodation', ar: 'الإقامة' },
+  meals: { en: 'Meals', ar: 'الوجبات' },
+  transport: { en: 'Transport', ar: 'النقل' },
+  office_supplies: { en: 'Office supplies', ar: 'لوازم المكتب' },
+  client_entertainment: { en: 'Client entertainment', ar: 'ضيافة العملاء' },
+  software_subscription: { en: 'Software subscription', ar: 'اشتراك البرمجيات' },
+  training: { en: 'Training', ar: 'التدريب' },
+  utilities: { en: 'Utilities', ar: 'المرافق' },
   other: { en: 'Other', ar: 'أخرى' },
 };

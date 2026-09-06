@@ -20,7 +20,47 @@ export type ExpenseClaimStatus =
   | 'in-review'
   | 'approved'
   | 'rejected'
+  | 'paid'
   | 'cancelled';
+
+/** Allowed next statuses from each lifecycle state (simple status machine). */
+const ALLOWED_STATUS_TRANSITIONS: Readonly<
+  Record<ExpenseClaimStatus, readonly ExpenseClaimStatus[]>
+> = {
+  draft: ['submitted'],
+  submitted: ['approved', 'rejected'],
+  'in-review': ['approved', 'rejected'],
+  approved: ['paid'],
+  rejected: ['draft'],
+  paid: [],
+  cancelled: [],
+};
+
+/** Returns the list of statuses a claim may transition to from `from`. */
+export function getAllowedExpenseClaimTransitions(
+  from: ExpenseClaimStatus
+): readonly ExpenseClaimStatus[] {
+  return ALLOWED_STATUS_TRANSITIONS[from] ?? [];
+}
+
+/** Outcome of attempting a status transition. */
+export interface ExpenseClaimTransitionResult {
+  readonly allowed: boolean;
+  readonly nextStatus: ExpenseClaimStatus;
+}
+
+/**
+ * Evaluates whether a claim may move from `from` to `to`. Pure and total:
+ * always returns the effective next status (the original status when the
+ * transition is not permitted), never throws.
+ */
+export function transitionExpenseClaimStatus(
+  from: ExpenseClaimStatus,
+  to: ExpenseClaimStatus
+): ExpenseClaimTransitionResult {
+  const allowed = getAllowedExpenseClaimTransitions(from).includes(to);
+  return { allowed, nextStatus: allowed ? to : from };
+}
 
 /** A single approval decision made by an approver on a claim. */
 export interface ApprovalRecord {
