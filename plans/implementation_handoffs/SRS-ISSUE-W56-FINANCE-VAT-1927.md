@@ -117,3 +117,46 @@ Neither file is imported by any other module in the repository yet (no
 consumer wiring was added). To roll back, delete both files; no build,
 lint, or runtime configuration references them, so no other change is
 required.
+
+## 12. Completion Evidence — Shared Types Module (Issue #2470)
+
+- Implemented `src/features/finance/financeEngineUaeFta/financeEngineUaeFta.types.ts`,
+  a types-only companion module extracting the SDD section 4 data model
+  (`VatRateCategory`, `VatLineItem`, `VatLineItemResult`, `VatSummary`)
+  into a single, shared, authoritative location, plus the runtime pieces
+  required for real (non-placeholder) test assertions against a types-only
+  module: the `VAT_RATE_CATEGORIES` const array, the `isVatRateCategory`
+  type guard, the `STANDARD_VAT_RATE` / `ZERO_VAT_RATE` /
+  `VAT_ROUNDING_DECIMAL_PLACES` constants, the `UAE_TRN_LENGTH` /
+  `UAE_TRN_PATTERN` constants (FR-6), and the `InvalidTrnError` class
+  (FR-7, SDD section 5).
+- Implemented `src/features/finance/financeEngineUaeFta/financeEngineUaeFta.types.test.ts`,
+  a vitest suite (`import { describe, expect, it } from 'vitest'`)
+  exercising 26 real-behavior assertions: category membership/order/
+  uniqueness of `VAT_RATE_CATEGORIES`, positive/negative/type-narrowing
+  cases for `isVatRateCategory`, the standard/zero VAT rate and rounding
+  constants, TRN pattern matching for valid, too-short, too-long,
+  alphanumeric, and empty TRNs, `InvalidTrnError`'s `instanceof`
+  relationship, `trn` property, message content, and `name`, and
+  construction of well-formed `VatLineItem`/`VatLineItemResult`/
+  `VatSummary` object literals to confirm the interfaces compile and
+  compose as designed.
+- Verified via `npx vitest run` against the new test file (26/26 tests
+  passed) and a strict-mode (`--strict`, no `any`) `tsc --noEmit` pass
+  against both new files (zero errors).
+- This module does not yet replace the type declarations duplicated
+  inline in `financeEngineUaeFta.logic.ts` from issue #2471; wiring
+  `financeEngineUaeFta.logic.ts` to import from this shared module is
+  left to a follow-on child issue so this issue's change stays within its
+  declared scope (types module only, no edits to sibling files).
+- No files outside the declared child scope were modified. Parent issue
+  #1927 was not closed or otherwise mutated.
+
+## 13. Rollback Note — Shared Types Module (Issue #2470)
+
+This change adds two new, self-contained files:
+`src/features/finance/financeEngineUaeFta/financeEngineUaeFta.types.ts`
+and `src/features/finance/financeEngineUaeFta/financeEngineUaeFta.types.test.ts`.
+Neither file is imported by any other module yet, so deleting both fully
+reverts this change with no further cleanup required elsewhere in the
+repository.

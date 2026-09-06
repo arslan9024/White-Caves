@@ -222,3 +222,38 @@ and `src/features/finance/financeEngineUaeFta/financeEngineUaeFta.logic.test.ts`
 Neither is imported by any other module yet, so deleting both fully
 reverts this change with no further cleanup required elsewhere in the
 repository.
+
+## 12. Completion Evidence — Shared Types Module (Issue #2470)
+
+- Implemented `src/features/finance/financeEngineUaeFta/financeEngineUaeFta.types.ts`
+  per the section 4 data model and section 5 error handling design,
+  containing only types, constants, a type guard, and the
+  `InvalidTrnError` class — no VAT arithmetic, consistent with section
+  3.4 (no persistence/I-O) and this issue's declared scope.
+- Implemented `src/features/finance/financeEngineUaeFta/financeEngineUaeFta.types.test.ts`
+  as a real-behavior vitest suite (no placeholder assertions) covering
+  the exported constants, the `isVatRateCategory` type guard, TRN pattern
+  matching edge cases, and `InvalidTrnError` construction/`instanceof`
+  behavior, plus object-literal construction checks for each exported
+  interface.
+- Validation performed: `npx vitest run` against the new test file (26/26
+  tests passed) and a standalone strict-mode, no-`any` `tsc --noEmit`
+  check against both new files (zero errors).
+- Design decision: this module deliberately does not modify or import
+  from `financeEngineUaeFta.logic.ts` (issue #2471), which currently
+  declares its own inline copies of the same interfaces. Consolidating
+  `financeEngineUaeFta.logic.ts` to import its types from this new module
+  is left to a follow-on child issue, since this issue's declared scope
+  is limited to creating the shared types module itself and must not
+  edit sibling implementation files.
+- No files outside the declared child scope were modified. Parent issue
+  #1927 was not closed or otherwise mutated.
+
+## 13. Rollback Note — Shared Types Module (Issue #2470)
+
+This change adds two new, self-contained files:
+`src/features/finance/financeEngineUaeFta/financeEngineUaeFta.types.ts`
+and `src/features/finance/financeEngineUaeFta/financeEngineUaeFta.types.test.ts`.
+Neither file is imported by any other module yet, so deleting both fully
+reverts this change with no further cleanup required elsewhere in the
+repository.
