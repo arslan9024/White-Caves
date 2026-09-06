@@ -153,3 +153,58 @@ requirements text captured in sections 1–7.
   `src/features/finance/financeEngineBankReconciliation/financeEngineBankReconciliation.logic.ts`
   and `financeEngineBankReconciliation.logic.test.ts`. No other files are
   modified and no dependencies were added; parent issue #1937 remains open.
+
+## 9. Implementation Status Update (issue #2428)
+
+Child issue #2428 delivers the shared data contract (types, enums,
+defaults, and runtime type guards) for the Bank Reconciliation capability
+described above, ahead of / alongside the matching engine implementation
+tracked under issue #2429. This section records that handoff without
+altering the original requirements text captured in sections 1–8.
+
+- **Implementation**: `src/features/finance/financeEngineBankReconciliation/financeEngineBankReconciliation.types.ts`
+  exports the domain shapes `BankStatementLine`, `LedgerTransaction`,
+  `ReconciliationMatch`, `ReconciliationSummary`, and `MatchOptions`; the
+  `ReconciliationStatus` union with its exhaustive `RECONCILIATION_STATUSES`
+  list; the `DEFAULT_MATCH_OPTIONS` constant (3-day date window, 0-cent
+  amount tolerance) and `resolveMatchOptions` helper; and runtime type
+  guards (`isReconciliationStatus`, `isBankStatementLine`,
+  `isLedgerTransaction`, `isReconciliationMatch`, `isReconciliationSummary`,
+  `isConsistentReconciliationSummary`) satisfying FR-1, FR-2 (currency-free
+  amount/date matching contract), FR-8 (structural validation), and NFR-2
+  (no `any`).
+- **Tests**: `src/features/finance/financeEngineBankReconciliation/financeEngineBankReconciliation.types.test.ts`
+  uses `vitest` (`describe`, `expect`, `it`) with real behavioral assertions
+  covering the exhaustive status list, each type guard's accept/reject
+  paths (missing fields, wrong field types, out-of-range confidence,
+  unrecognized status values, non-object inputs), `resolveMatchOptions`
+  default/partial/full override behavior, and both the positive and
+  negative cases of `isConsistentReconciliationSummary`'s aggregate
+  invariant.
+- **Design decision — types module precedes the matching engine**: this
+  issue intentionally scopes only the shared data contract, not the
+  `reconcile()` algorithm itself (tracked separately under #2429), so the
+  contract can be reviewed and stabilized independently and reused by any
+  future matching implementation without re-litigating field shapes.
+- **Design decision — type guards live alongside the types**: runtime
+  validators (`isBankStatementLine`, etc.) are colocated in the same
+  `.types.ts` module rather than a separate `validation.ts` file, since
+  they are pure, dependency-free structural checks directly tied to the
+  types they validate; this keeps the child scope to a single module pair
+  per issue #2428's file list.
+- **Scope discipline**: implementation remains confined to
+  `financeEngineBankReconciliation.types.ts` and
+  `financeEngineBankReconciliation.types.test.ts`; no other files under
+  `src/` were created or modified.
+- **Excluded scope preserved**: no parent issue closure, no bulk GitHub
+  mutation, no destructive database operations, and no production secret
+  rewrites were performed as part of this implementation.
+- **Validation commands (this issue)**: `vitest run` against
+  `financeEngineBankReconciliation.types.test.ts` (all cases passing) and a
+  strict `tsc --noEmit` type-check of the new module and its test file (no
+  `any`, no errors).
+- **Rollback (this issue)**: delete
+  `src/features/finance/financeEngineBankReconciliation/financeEngineBankReconciliation.types.ts`
+  and `financeEngineBankReconciliation.types.test.ts`. No other files are
+  modified and no dependencies were added; parent issue #1937 remains open
+  pending remaining sibling child issues under workstream W56.

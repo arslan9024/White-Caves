@@ -228,3 +228,62 @@ section records what was actually built and how it maps to the design.
   `src/features/finance/financeEngineBankReconciliation/financeEngineBankReconciliation.logic.ts`
   and `.logic.test.ts`. No other files were modified; parent issue #1937
   remains open pending remaining sibling child issues under workstream W56.
+
+## 13. Implementation Status Update (issue #2428)
+
+Child issue #2428 delivers the shared type/contract layer that both the
+design in §4 and the implementation recorded in §12 depend on. Sections
+1–12 are preserved unmodified above; this section records the types-only
+deliverable for #2428.
+
+- **Files delivered**: `financeEngineBankReconciliation.types.ts` and
+  `financeEngineBankReconciliation.types.test.ts`, matching the two-file
+  scope assigned to issue #2428.
+- **Relationship to §4 type design**: the delivered types use an
+  equivalent-but-independently-named shape (`BankStatementLine`,
+  `LedgerTransaction`, `ReconciliationMatch`, `ReconciliationSummary`,
+  `MatchOptions`, `ReconciliationStatus`) rather than the sketched
+  `ReconciliationResult` / `ReconciliationOptions` / `MatchType` names in
+  §4. This divergence is intentional: §4 was drafted as forward-looking
+  design guidance before implementation, while `.types.ts` is the actual,
+  tested contract that downstream consumers (including the `.logic.ts`
+  engine recorded in §12) must treat as source of truth going forward.
+  Field-level intent is preserved (signed integer minor-unit amounts,
+  ISO-8601 date strings, closed-interval confidence scores, exhaustive
+  status enumeration).
+- **Design decision — status enum over boolean flags**: `ReconciliationStatus`
+  is modeled as a closed string union (`matched` / `unmatched` /
+  `amount-mismatch` / `date-out-of-window`) with a paired
+  `RECONCILIATION_STATUSES` runtime array and `isReconciliationStatus`
+  guard, so status values are exhaustively enumerable and validated at
+  runtime without duplicating the literal list across modules.
+  This directly supports NFR-1 (determinism) and NFR-3 (testability) from
+  the SRS by making every valid status independently unit-testable.
+- **Design decision — `resolveMatchOptions` for partial overrides**: rather
+  than requiring callers to always supply a fully-populated
+  `MatchOptions`, `resolveMatchOptions` accepts `Partial<MatchOptions>` and
+  fills gaps from `DEFAULT_MATCH_OPTIONS` (3-day window, 0-cent tolerance,
+  per SDD §4/§8), keeping call sites terse while preserving strict typing.
+- **Design decision — aggregate consistency check kept separate from the
+  structural guard**: `isReconciliationSummary` validates shape only
+  (field presence/types, recursively valid `matches`), while
+  `isConsistentReconciliationSummary` separately validates the numeric
+  invariant `totalMatched + totalUnmatched === totalBankLines ===
+matches.length`. Splitting these means a structurally valid but
+  arithmetically inconsistent summary can be detected and reported
+  distinctly, rather than conflating two different failure modes into one
+  boolean.
+- **Testing strategy fulfilled**: the companion `.types.test.ts` covers
+  every export with real behavioral assertions — enumerated status
+  membership, guard accept/reject paths (missing/invalid fields,
+  non-object inputs, out-of-range confidence, unrecognized status
+  strings), option-resolution defaulting/overriding, and both the
+  consistent and inconsistent summary invariant cases — with no
+  placeholder assertions.
+- **Excluded scope preserved**: no parent issue closure, no bulk GitHub
+  mutation, no destructive database operations, no production secret
+  rewrites.
+- **Rollback for this issue**: delete
+  `src/features/finance/financeEngineBankReconciliation/financeEngineBankReconciliation.types.ts`
+  and `.types.test.ts`. No other files were modified; parent issue #1937
+  remains open pending remaining sibling child issues under workstream W56.
