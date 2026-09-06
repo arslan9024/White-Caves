@@ -101,6 +101,7 @@ function parseArgs() {
     executorTimeoutMs: 900000,
     decomposeBroad: false,
     publishChildTasks: false,
+    syntheticFill: false,
     quota: DEFAULT_QUOTA,
     turns: [...DEFAULT_TURNS],
     maxCycles: 1,
@@ -138,6 +139,7 @@ function parseArgs() {
       options.executorTimeoutMs = Math.max(1000, Number(arg.split('=')[1]) || 900000);
     if (arg === '--decompose-broad') options.decomposeBroad = true;
     if (arg === '--publish-child-tasks') options.publishChildTasks = true;
+    if (arg === '--synthetic-fill') options.syntheticFill = true;
     if (arg === '--require-exact-999') options.requireExact999 = true;
   }
 
@@ -231,7 +233,7 @@ function severityLabel(priority) {
   return 'severity:p3';
 }
 
-function collectDocsGovernanceIssues(quota) {
+function collectDocsGovernanceIssues(quota, allowSyntheticFill = false) {
   const files = walkFiles(['plans', 'docs', '.github'], ['.md', '.yml', '.yaml']);
   const issues = [];
 
@@ -269,10 +271,16 @@ function collectDocsGovernanceIssues(quota) {
     if (issues.length >= quota * 2) break;
   }
 
-  return fillToQuota('docs-governance', issues, quota, 'governance-hardening-opportunity');
+  return fillToQuota(
+    'docs-governance',
+    issues,
+    quota,
+    'governance-hardening-opportunity',
+    allowSyntheticFill
+  );
 }
 
-function collectFrontendIssues(quota) {
+function collectFrontendIssues(quota, allowSyntheticFill = false) {
   const files = walkFiles(['src'], ['.ts', '.tsx', '.js', '.jsx']);
   const issues = [];
 
@@ -322,10 +330,16 @@ function collectFrontendIssues(quota) {
     if (issues.length >= quota * 2) break;
   }
 
-  return fillToQuota('frontend', issues, quota, 'frontend-resilience-opportunity');
+  return fillToQuota(
+    'frontend',
+    issues,
+    quota,
+    'frontend-resilience-opportunity',
+    allowSyntheticFill
+  );
 }
 
-function collectBackendIssues(quota) {
+function collectBackendIssues(quota, allowSyntheticFill = false) {
   const files = walkFiles(['server', 'src/server'], ['.ts', '.js']);
   const issues = [];
 
@@ -376,10 +390,10 @@ function collectBackendIssues(quota) {
     if (issues.length >= quota * 2) break;
   }
 
-  return fillToQuota('backend', issues, quota, 'backend-hardening-opportunity');
+  return fillToQuota('backend', issues, quota, 'backend-hardening-opportunity', allowSyntheticFill);
 }
 
-function fillToQuota(lane, issues, quota, fillerRule) {
+function fillToQuota(lane, issues, quota, fillerRule, allowSyntheticFill = false) {
   const unique = [];
   const seen = new Set();
 
@@ -390,6 +404,10 @@ function fillToQuota(lane, issues, quota, fillerRule) {
     unique.push({ ...item, fp });
     if (unique.length >= quota) return unique;
   }
+
+  // Synthetic filler slices are opt-in only (--synthetic-fill). Default behavior:
+  // return only real detected issues so live runs never flood GitHub with noise.
+  if (!allowSyntheticFill) return unique;
 
   const sourceFiles =
     lane === 'docs-governance'
@@ -880,9 +898,9 @@ async function syncDiscoverQueueToGitHub(token, cycleId, options) {
   }
 
   const laneIssuesMap = {
-    'docs-governance': collectDocsGovernanceIssues(options.quota),
-    frontend: collectFrontendIssues(options.quota),
-    backend: collectBackendIssues(options.quota),
+    'docs-governance': collectDocsGovernanceIssues(options.quota, options.syntheticFill),
+    frontend: collectFrontendIssues(options.quota, options.syntheticFill),
+    backend: collectBackendIssues(options.quota, options.syntheticFill),
   };
 
   const discovered = [];
@@ -903,7 +921,7 @@ async function syncDiscoverQueueToGitHub(token, cycleId, options) {
   }
 
   const expectedCount = options.quota * options.turns.length;
-  if (options.strictQuota && discovered.length < expectedCount) {
+  if (options.strictQuota && options.syntheticFill && discovered.length < expectedCount) {
     throw new Error(`Discovery underflow: expected ${expectedCount}, got ${discovered.length}.`);
   }
 
@@ -1616,9 +1634,12 @@ async function runCycle(options, cycleNumber) {
 
   if (token && options.updateExistingIssuesFirst) {
     const fetchedIssues = await loadOpenGitHubIssues(token, '');
+    // The GitHub issues endpoint also returns PRs; filter them out BEFORE
+    // issueNumber filtering and maxIssues splicing so PRs never consume queue slots.
+    const issuesOnly = fetchedIssues.filter(issue => !issue.pull_request);
     let liveIssues = options.issueNumber
-      ? fetchedIssues.filter(issue => Number(issue.number) === options.issueNumber)
-      : fetchedIssues;
+      ? issuesOnly.filter(issue => Number(issue.number) === options.issueNumber)
+      : issuesOnly;
     if (options.issueNumber && liveIssues.length === 0) {
       throw new Error(
         `Requested GitHub issue #${options.issueNumber} is not open or was not found.`
