@@ -106,6 +106,9 @@ function parseArgs() {
     gitWorkflow: false,
     gitPush: false,
     autoMerge: false,
+    unlimited: false,
+    maxConsecutiveBlocked: 5,
+    blockedBackoffMs: 60000,
     baseBranch: 'main',
     quota: DEFAULT_QUOTA,
     turns: [...DEFAULT_TURNS],
@@ -159,6 +162,15 @@ function parseArgs() {
       options.gitPush = true;
       options.autoMerge = true;
     }
+    if (arg === '--unlimited') {
+      options.unlimited = true;
+      options.loop = true;
+      options.autoChain = true;
+    }
+    if (arg.startsWith('--max-consecutive-blocked='))
+      options.maxConsecutiveBlocked = Math.max(1, Number(arg.split('=')[1]) || 5);
+    if (arg.startsWith('--blocked-backoff-ms='))
+      options.blockedBackoffMs = Math.max(1000, Number(arg.split('=')[1]) || 60000);
     if (arg === '--require-exact-999') options.requireExact999 = true;
   }
 
@@ -1670,6 +1682,10 @@ async function solveSerialQueue(token, queue, options, state, cycleId) {
             stagingDir,
             prompt: buildExecutorPrompt({
               ...handoff,
+              // On a retry after a block (usually a contract conflict), let the
+              // executor research the correct API/design contract online instead
+              // of stalling for a human decision.
+              allowResearch: options.unlimited && Number(item.attempts || 0) > 0,
               excludedScope: [
                 'parent issue closure',
                 'bulk GitHub mutation',
@@ -2481,8 +2497,12 @@ async function runCycle(options, cycleNumber) {
 async function main() {
   const options = parseArgs();
   let cycleNumber = 1;
+  let consecutiveBlocked = 0;
 
-  for (let i = 0; i < options.maxCycles; i += 1) {
+  // Unlimited mode runs an unbounded loop; otherwise respect maxCycles.
+  const cycleCap = options.unlimited ? Number.POSITIVE_INFINITY : options.maxCycles;
+
+  for (let i = 0; i < cycleCap; i += 1) {
     const summary = await runCycle(options, cycleNumber);
     cycleNumber += 1;
 
@@ -2493,14 +2513,40 @@ async function main() {
 
     if (!options.loop) break;
 
-    // One-command autopilot: keep cycling while progress was made or work remains.
+    // Self-healing unlimited autopilot: blocked issues are retried with backoff
+    // across cycles (a block usually means a contract fix the next executor pass
+    // can apply). The loop only stops when the backlog is empty or the block
+    // persists beyond the consecutive-blocked budget.
     if (options.autoChain) {
       const progressed =
         Number(summary.solved) > 0 || Number(summary.created) > 0 || Number(summary.updated) > 0;
       const halted =
         summary.phase === PHASES.HALTED_BLOCKED ||
         summary.phase === PHASES.HALTED_DISCOVERY_INCOMPLETE;
+
+      if (progressed) consecutiveBlocked = 0;
+
+      if (options.unlimited && halted) {
+        consecutiveBlocked += 1;
+        if (consecutiveBlocked > options.maxConsecutiveBlocked) {
+          console.log(
+            `⛔ Unlimited loop stopped: ${consecutiveBlocked} consecutive blocked cycles (budget ${options.maxConsecutiveBlocked}). Manual review required.`
+          );
+          break;
+        }
+        console.log(
+          `🔁 [UNLIMITED] Blocked cycle ${consecutiveBlocked}/${options.maxConsecutiveBlocked}; backing off ${options.blockedBackoffMs}ms and retrying (self-heal).`
+        );
+        await sleep(options.blockedBackoffMs);
+        continue;
+      }
+
       if (halted || !progressed) {
+        if (options.unlimited) {
+          // Backlog is clear and nothing halted — work is finished.
+          console.log('✅ [UNLIMITED] Backlog clear — no open issues remain. Protocol complete.');
+          break;
+        }
         console.log('⏸️ Auto-chain loop paused: no forward progress or hard halt reached.');
         break;
       }

@@ -99,13 +99,18 @@ function validateExecutionScope(candidateFiles = [], changedFiles = []) {
 }
 
 function buildExecutorPrompt(packet) {
+  const allowResearch = packet.allowResearch === true;
   return [
     'You are an autonomous TypeScript code generator running inside an empty sandboxed staging directory.',
     'CRITICAL RULES (these override every other instruction):',
     '- Do NOT invoke skills, agents, workflows, or maintenance loops.',
     '- Do NOT read any markdown, plan, queue, or configuration files.',
-    '- Do NOT run git, npm, or network commands.',
+    '- Do NOT run git, npm, or package-install shell commands.',
+    allowResearch
+      ? '- You MAY use online search/web tools ONLY to research a correct API contract, type shape, or design decision when the existing code and the test/acceptance contract conflict. Pick the contract the tests define, and cite the source you used in your reply.'
+      : '- Do NOT use network or web tools; work only from the provided objective and acceptance criteria.',
     '- Your ONLY job: write the files listed below with production-quality code, then stop.',
+    '- When a conflict exists between an existing implementation and the expected test/acceptance contract, treat the test contract as the source of truth and align the implementation to it.',
     '',
     `Issue: #${packet.issueNumber}`,
     `Objective: ${packet.objective}`,
@@ -116,7 +121,7 @@ function buildExecutorPrompt(packet) {
     '- Strict TypeScript; no `any` types.',
     "- Test files must use vitest (`import { describe, expect, it } from 'vitest'`) with real behavior assertions, never placeholder assertions.",
     '- Do not add dependencies, do not close GitHub issues, do not touch files outside the list.',
-    'When done, reply with: changed files, what you implemented, and a rollback note.',
+    'When done, reply with: changed files, what you implemented, any design decision you resolved (and why), and a rollback note.',
   ].join('\n\n');
 }
 

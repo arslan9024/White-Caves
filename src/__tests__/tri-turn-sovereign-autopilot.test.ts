@@ -391,6 +391,32 @@ describe('tri-turn sovereign autopilot', () => {
     expect(enabled.gitPush).toBe(true);
   });
 
+  it('parses the unlimited self-healing flag with safe defaults', () => {
+    const originalArgv = process.argv;
+    process.argv = ['node', 'runner', '--autopilot'];
+    const defaults = autopilot.parseArgs();
+    expect(defaults.unlimited).toBe(false);
+    expect(defaults.maxConsecutiveBlocked).toBe(5);
+    expect(defaults.blockedBackoffMs).toBe(60000);
+
+    process.argv = [
+      'node',
+      'runner',
+      '--autopilot',
+      '--unlimited',
+      '--max-consecutive-blocked=8',
+      '--blocked-backoff-ms=30000',
+    ];
+    const enabled = autopilot.parseArgs();
+    process.argv = originalArgv;
+
+    expect(enabled.unlimited).toBe(true);
+    expect(enabled.loop).toBe(true);
+    expect(enabled.autoChain).toBe(true);
+    expect(enabled.maxConsecutiveBlocked).toBe(8);
+    expect(enabled.blockedBackoffMs).toBe(30000);
+  });
+
   it('decomposes an expense parent into bounded child tasks', () => {
     const children = autopilot.decomposeBroadIssue({
       number: 1932,
