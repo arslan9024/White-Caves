@@ -105,6 +105,7 @@ function parseArgs() {
     syntheticFill: false,
     gitWorkflow: false,
     gitPush: false,
+    autoMerge: false,
     baseBranch: 'main',
     quota: DEFAULT_QUOTA,
     turns: [...DEFAULT_TURNS],
@@ -153,6 +154,11 @@ function parseArgs() {
     }
     if (arg.startsWith('--base-branch='))
       options.baseBranch = arg.split('=').slice(1).join('=').trim() || 'main';
+    if (arg === '--auto-merge') {
+      options.gitWorkflow = true;
+      options.gitPush = true;
+      options.autoMerge = true;
+    }
     if (arg === '--require-exact-999') options.requireExact999 = true;
   }
 
@@ -1293,6 +1299,80 @@ async function ghCreatePullRequest(token, branch, parentNumber, parentTitle, clo
   return pr;
 }
 
+async function ghEnableAutoMerge(token, prNumber) {
+  // Enable GitHub auto-merge (squash) so the PR merges automatically once checks pass.
+  const headers = ghHeaders(token);
+  const query =
+    'query($n:Int!){ repository(owner:"' +
+    OWNER +
+    '", name:"' +
+    REPO +
+    '"){ pullRequest(number:$n){ id } } }';
+  const lookup = await ghFetch(`https://api.github.com/repos/${OWNER}/${REPO}/pulls/${prNumber}`, {
+    method: 'GET',
+    headers,
+  });
+  if (!lookup.ok) return false;
+  // Use the REST auto-merge endpoint (requires repo setting enabled).
+  const res = await ghFetch(
+    `https://api.github.com/repos/${OWNER}/${REPO}/pulls/${prNumber}/auto-merge`,
+    {
+      method: 'POST',
+      headers,
+      body: JSON.stringify({ merge_method: 'squash' }),
+    }
+  );
+  return res.ok;
+}
+
+async function ghTryMergeWhenGreen(token, prNumber, maxWaitMs = 120000) {
+  // Poll check status; merge (squash) once all checks succeed. Bounded wait.
+  const headers = ghHeaders(token);
+  const start = Date.now();
+  while (Date.now() - start < maxWaitMs) {
+    const prRes = await ghFetch(`https://api.github.com/repos/${OWNER}/${REPO}/pulls/${prNumber}`, {
+      method: 'GET',
+      headers,
+    });
+    if (!prRes.ok) return { merged: false, reason: 'pr-fetch-failed' };
+    const pr = await prRes.json();
+    if (pr.merged) return { merged: true, reason: 'already-merged' };
+    if (pr.mergeable_state === 'dirty' || pr.mergeable_state === 'blocked') {
+      return { merged: false, reason: `not-mergeable:${pr.mergeable_state}` };
+    }
+    const checksRes = await ghFetch(
+      `https://api.github.com/repos/${OWNER}/${REPO}/commits/${pr.head.sha}/check-runs?per_page=100`,
+      { method: 'GET', headers }
+    );
+    if (checksRes.ok) {
+      const checks = await checksRes.json();
+      const runs = Array.isArray(checks.check_runs) ? checks.check_runs : [];
+      const pending = runs.filter(r => r.status !== 'completed');
+      const failed = runs.filter(
+        r => r.status === 'completed' && !['success', 'skipped', 'neutral'].includes(r.conclusion)
+      );
+      if (failed.length > 0) return { merged: false, reason: `checks-failed:${failed.length}` };
+      if (pending.length === 0) {
+        const mergeRes = await ghFetch(
+          `https://api.github.com/repos/${OWNER}/${REPO}/pulls/${prNumber}/merge`,
+          {
+            method: 'PUT',
+            headers,
+            body: JSON.stringify({ merge_method: 'squash' }),
+          }
+        );
+        if (mergeRes.ok) {
+          return { merged: true, reason: 'merged-green' };
+        }
+        const detail = (await mergeRes.text()).slice(0, 200);
+        return { merged: false, reason: `merge-failed:${detail}` };
+      }
+    }
+    await sleep(8000);
+  }
+  return { merged: false, reason: 'timeout-waiting-checks' };
+}
+
 function collectStagedCandidateFiles(stagingDir, candidateFiles) {
   if (!stagingDir || !fs.existsSync(stagingDir)) return [];
   const allowed = new Set((candidateFiles || []).map(file => path.normalize(file)));
@@ -1450,6 +1530,20 @@ async function reconcileClosedParents(token, solvedQueue, options = {}) {
             );
             if (pr?.html_url) {
               console.log(`🔀 [GIT] PR opened for parent #${parentNumber}: ${pr.html_url}`);
+              // Auto-merge: wait for green checks, squash-merge, close parent, drop open count.
+              if (options.autoMerge && pr.number) {
+                await ghEnableAutoMerge(token, pr.number);
+                const mergeResult = await ghTryMergeWhenGreen(token, pr.number);
+                if (mergeResult.merged) {
+                  console.log(
+                    `✅ [GIT] PR #${pr.number} merged (${mergeResult.reason}); parent #${parentNumber} closed via 'Closes #${parentNumber}'.`
+                  );
+                } else {
+                  console.log(
+                    `⏳ [GIT] PR #${pr.number} not auto-merged (${mergeResult.reason}); awaiting CI/review.`
+                  );
+                }
+              }
               await ghFetch(
                 `https://api.github.com/repos/${OWNER}/${REPO}/issues/${parentNumber}/comments`,
                 {

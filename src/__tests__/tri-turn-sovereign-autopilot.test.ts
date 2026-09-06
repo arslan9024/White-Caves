@@ -376,6 +376,21 @@ describe('tri-turn sovereign autopilot', () => {
     expect(enabled.baseBranch).toBe('develop');
   });
 
+  it('parses the auto-merge flag and cascades git workflow + push', () => {
+    const originalArgv = process.argv;
+    process.argv = ['node', 'runner', '--autopilot'];
+    const defaults = autopilot.parseArgs();
+    expect(defaults.autoMerge).toBe(false);
+
+    process.argv = ['node', 'runner', '--autopilot', '--auto-merge'];
+    const enabled = autopilot.parseArgs();
+    process.argv = originalArgv;
+
+    expect(enabled.autoMerge).toBe(true);
+    expect(enabled.gitWorkflow).toBe(true);
+    expect(enabled.gitPush).toBe(true);
+  });
+
   it('decomposes an expense parent into bounded child tasks', () => {
     const children = autopilot.decomposeBroadIssue({
       number: 1932,
