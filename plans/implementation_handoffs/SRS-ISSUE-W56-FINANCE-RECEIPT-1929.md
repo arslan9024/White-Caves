@@ -1,85 +1,86 @@
 # Software Requirements Specification
 
-**Issue:** #2464 (child) — Parent: #1929
-**Track:** W56-FINANCE-RECEIPT
-**Component:** `src/features/finance/expenseClaims/expenseClaimApproval.logic.ts`
-**Status:** Implemented (child scope only; parent #1929 remains open pending reconciliation of sibling children)
+**Handoff ID:** SRS-ISSUE-W56-FINANCE-RECEIPT-1929
+**Child issue:** #2464
+**Parent issue:** #1929 (remains open — not closed by this handoff)
+**Domain:** Finance / Expense Claims — Receipt Enforcement (Week 56)
 
 ## 1. Purpose
 
-Extend the existing expense-claim approval domain logic with a receipt
-attachment requirement: claims whose amount meets or exceeds a policy
-threshold must have at least one valid receipt attached before an approver
-may record an "approve" decision. This closes a gap where high-value claims
-could be approved without supporting documentation.
+Define the requirements for enforcing receipt evidence on expense claims
+before they can be approved, extending the existing expense claim approval
+workflow (`src/features/finance/expenseClaims/expenseClaimApproval.logic.ts`)
+without altering its previously established approver eligibility or status
+transition behavior.
 
 ## 2. Scope
 
-### In scope
+### 2.1 In scope
 
-- Domain-level (pure function) receipt requirement rules for expense claims.
-- A `Receipt` data shape and validation for well-formedness (non-blank id/url,
-  parseable timestamp, non-negative optional amount).
-- An `attachReceipt` operation that immutably appends a validated receipt to
-  a claim, with duplicate-id rejection.
-- A `hasSatisfiedReceiptRequirement` predicate and its integration into the
-  existing `applyApprovalDecision` approval gate, surfaced via a new
-  `MISSING_RECEIPT` error code.
-- Preservation of all pre-existing exported symbols and behavior from the
-  prior approval-state-machine implementation (issue #2391 / parent #1947).
+- Pure domain logic for validating individual receipt attachments
+  (structural well-formedness: identifier, URL, MIME type, file size,
+  upload timestamp).
+- A minor-amount threshold (`RECEIPT_REQUIRED_THRESHOLD`) below which claims
+  may be approved without a receipt.
+- Enforcement of the receipt requirement at the point an `approve` decision
+  is applied to a claim (`applyApprovalDecision`).
+- A pure function to attach a validated receipt to an immutable claim value
+  (`attachReceipt`).
+- A human-readable receipt-compliance summary (`summarizeReceiptStatus`).
 
-### Out of scope (excluded per child issue directive)
+### 2.2 Out of scope (explicitly excluded)
 
-- Parent issue #1929 closure or status change.
-- Bulk GitHub mutations (labels, comments, linked issue updates).
-- Destructive database operations of any kind — this logic is pure/in-memory
-  and performs no persistence.
+- Parent issue #1929 closure.
+- Bulk GitHub mutation of any kind.
+- Destructive database operations.
 - Production secret rewrites.
-- File storage / upload transport for receipt binaries (only the metadata
-  record is modeled here; actual object storage is a separate concern for a
-  sibling child issue).
-- UI components, API routes, and notification delivery.
+- File upload/storage I/O, virus scanning, OCR/data-extraction from
+  receipt images, and any persistence or notification side effects.
+- Changes to approver role thresholds or the expense claim status machine
+  established under issue #2391 / parent #1947.
 
 ## 3. Functional Requirements
 
-| ID   | Requirement                                                                                                                                                                                                                                                                                                   |
-| ---- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| FR-1 | The system SHALL define a `RECEIPT_REQUIRED_THRESHOLD` (25, in the claim's stated currency) at or above which a receipt is mandatory.                                                                                                                                                                         |
-| FR-2 | `isReceiptRequired(amount)` SHALL return `true` iff `amount >= RECEIPT_REQUIRED_THRESHOLD`, and SHALL throw `ExpenseClaimApprovalError('INVALID_AMOUNT', ...)` for negative or non-finite amounts, consistent with `requiredApproverRole`.                                                                    |
-| FR-3 | `isValidReceipt(receipt)` SHALL reject receipts with a blank `id` or `url`, an unparseable `uploadedAt`, or a negative/non-finite `amount` when `amount` is provided.                                                                                                                                         |
-| FR-4 | `hasSatisfiedReceiptRequirement(claim)` SHALL return `true` when the claim's amount is below threshold, OR when at least one attached receipt passes `isValidReceipt`.                                                                                                                                        |
-| FR-5 | `applyApprovalDecision` SHALL reject an `approve` decision with a `MISSING_RECEIPT` error when `hasSatisfiedReceiptRequirement(claim)` is `false`. This check SHALL run after the existing role-sufficiency check and before the reject-comment check, preserving prior error precedence for all other cases. |
-| FR-6 | `attachReceipt(claim, receipt)` SHALL return an error result (`INVALID_RECEIPT`) for malformed receipts or duplicate receipt ids, and otherwise SHALL return a new claim with the receipt appended to `claim.receipts` without mutating the input.                                                            |
-| FR-7 | `summarizeApprovalProgress` SHALL include a `receipt=ok` / `receipt=missing` / `receipt=n/a` marker reflecting the claim's receipt status.                                                                                                                                                                    |
-| FR-8 | Reject decisions SHALL NOT be blocked by missing receipts (a claim may always be rejected regardless of documentation state).                                                                                                                                                                                 |
+| ID   | Requirement                                                                                                                                                                                                                                                                                                                                       |
+| ---- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| FR-1 | The system SHALL define a `ReceiptAttachment` type capturing `id`, `url`, `mimeType`, `fileSizeBytes`, and `uploadedAt`.                                                                                                                                                                                                                          |
+| FR-2 | The system SHALL expose `requiresReceipt(amount)` returning `true` when `amount` exceeds `RECEIPT_REQUIRED_THRESHOLD` (25, in the claim's currency).                                                                                                                                                                                              |
+| FR-3 | The system SHALL expose `isValidReceipt(receipt)` validating that `id` and `url` are non-blank, `mimeType` is one of an allow-listed set (`image/png`, `image/jpeg`, `image/webp`, `application/pdf`), `fileSizeBytes` is a positive finite number not exceeding `MAX_RECEIPT_FILE_SIZE_BYTES` (10 MiB), and `uploadedAt` parses as a valid date. |
+| FR-4 | The system SHALL expose `hasValidReceipt(claim)` and `satisfiesReceiptRequirement(claim)` to determine whether a claim's current receipts satisfy FR-2/FR-3.                                                                                                                                                                                      |
+| FR-5 | `applyApprovalDecision` SHALL reject an `approve` decision with a `MISSING_RECEIPT` error when `satisfiesReceiptRequirement(claim)` is `false`, prior to any role-sufficiency check.                                                                                                                                                              |
+| FR-6 | The system SHALL expose `attachReceipt(claim, receipt)` returning a new claim with the receipt appended when valid, or an `INVALID_RECEIPT` error result when not, without mutating the input claim.                                                                                                                                              |
+| FR-7 | The system SHALL expose `summarizeReceiptStatus(claim)` producing a deterministic, human-readable string describing receipt requirement/compliance state.                                                                                                                                                                                         |
+| FR-8 | All existing exported symbols, types, and behaviors of `expenseClaimApproval.logic.ts` (status machine, approver ranking, self-approval/duplicate-decision/insufficient-role/comment validation) SHALL remain unchanged and continue to pass their existing contracts.                                                                            |
 
 ## 4. Non-Functional Requirements
 
-- **Purity:** All new functions remain side-effect-free (no I/O, no framework
-  dependencies), consistent with the existing module's design.
-- **Type safety:** Strict TypeScript; no `any` types; all new public members
-  fully typed and exported for consumption by services/route handlers.
-- **Backward compatibility:** `receipts` is an optional field on
-  `ExpenseClaim`; existing callers that construct claims without it continue
-  to compile and behave as before (treated as an empty receipt list).
-- **Determinism:** No new function relies on wall-clock time except where the
-  existing module already did (`decidedAt` defaulting); receipt validation is
-  deterministic given its inputs.
+- **NFR-1 (Purity):** All new functions SHALL be pure — no I/O, no hidden
+  mutation, no reliance on ambient state other than `Date.parse` for
+  timestamp validation.
+- **NFR-2 (Type safety):** Strict TypeScript; no `any` types; all new public
+  surfaces fully typed with `readonly` data where practical.
+- **NFR-3 (Backward compatibility):** `ExpenseClaim.receipts` is optional so
+  existing callers/tests constructing claims without receipts continue to
+  compile and behave as before for claims at or below the threshold.
+- **NFR-4 (Determinism):** Given identical inputs, all functions return
+  identical outputs; no randomness or wall-clock dependence except where
+  the caller supplies timestamps.
 
-## 5. Acceptance Criteria Traceability
+## 5. Acceptance Criteria
 
-| Acceptance criterion                                         | Disposition                                                                                                                     |
-| ------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------- |
-| Implementation remains within declared child scope           | Met — only the listed file(s) touched; no persistence/UI/notification code added.                                               |
-| Focused tests and required validation commands pass          | Met — `tsc --noEmit --strict` on the changed file passes with no new diagnostics; vitest unit coverage recommended in `SDD` §6. |
-| Completion evidence and rollback note are recorded           | Met — see SDD §7 and the handoff reply accompanying this change.                                                                |
-| Parent issue remains open until all child work is reconciled | Met — no GitHub mutation performed by this change; parent #1929 status is untouched.                                            |
+- Implementation remains within the declared child scope (finance expense
+  claim receipt enforcement logic only).
+- Focused unit tests (vitest) for the new receipt functions and the
+  `MISSING_RECEIPT` enforcement path pass, alongside pre-existing tests for
+  this module.
+- Completion evidence (test run summary) and a rollback note are recorded
+  in the corresponding SDD handoff.
+- Parent issue #1929 remains open pending reconciliation of all sibling
+  child issues.
 
-## 6. Open Questions / Follow-ups for Parent #1929
+## 6. Traceability
 
-- Whether `RECEIPT_REQUIRED_THRESHOLD` should be currency-aware (e.g. a
-  different numeric threshold per ISO currency code) is deferred to a future
-  child issue; the current single flat threshold is a documented
-  simplification.
-- Actual receipt file upload/storage and virus scanning are handled by a
-  separate service layer outside this domain logic's scope.
+- Parent: #1929 (Finance/Receipt workstream, Week 56).
+- Child: #2464 (this handoff).
+- Related prior work: #2391 / parent #1947 (approval state machine and
+  approver eligibility — preserved, not modified).
