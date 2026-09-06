@@ -245,3 +245,48 @@ and revert this section and the SRS's matching Section 8 update — no other fil
 dependencies are touched, and `ejariSuiteBusinessFlow.logic.ts` (from #2496) is unaffected since it
 does not import from the new types module. Parent issue #1922 remains open pending reconciliation
 of any remaining sibling child issues (adapters, persistence, notifications, GitHub sync).
+
+## 12. Correction Addendum — Delivered Naming vs. Section 3-4 Sketch
+
+On re-verification against the actual delivered `ejariSuiteBusinessFlow.types.ts` and its paired
+`ejariSuiteBusinessFlow.types.test.ts`, the concrete implementation uses a renamed but equivalent
+vocabulary relative to the Section 3-4 sketch, and does **not** include the three typed error
+classes from Section 4. The delivered, test-verified public contract is:
+
+- `EjariSuiteStage` (enum; supersedes the sketch's `EjariFlowStage` union) with members `Draft`,
+  `DocumentsCollected`, `SubmittedToEjari`, `UnderReview`, `Approved`, `Registered`, `Rejected`,
+  `Cancelled`.
+- `EjariDocumentType` (enum) plus `EjariRequiredDocument`, `EjariSuiteHistoryEntry`, and
+  `EjariSuiteBusinessFlowState` (supersedes the sketch's `EjariDocumentBundle` /
+  `EjariFlowTransition` / `EjariCase`), each with a `readonly`-only field contract.
+- `EjariSuiteTransitionResult` — the delivered design returns a discriminated
+  `{ success, state, error? }` result object from `transitionEjariSuiteStage` instead of throwing
+  the Section 4 error classes (`InvalidEjariTransitionError`, `IncompleteEjariBundleError`,
+  `TerminalEjariCaseError`). This is a deliberate, test-verified design choice: it lets callers
+  (adapters, UI, GitHub sync) branch on `result.success` without try/catch, and it is fully
+  covered by `ejariSuiteBusinessFlow.types.test.ts`'s "rejects an invalid transition" case.
+- Constants `EJARI_STAGE_ORDER`, `EJARI_TERMINAL_STAGES`, `EJARI_VALID_TRANSITIONS`,
+  `EJARI_MANDATORY_DOCUMENT_TYPES`, and pure functions `isTerminalEjariStage`,
+  `getNextEjariStages`, `canTransitionEjariStage`, `createInitialEjariSuiteState`,
+  `transitionEjariSuiteStage`, `areAllEjariDocumentsSubmitted`, `areAllEjariDocumentsVerified`,
+  `calculateEjariDocumentCompletion`, `markEjariDocumentSubmitted`, `getEjariStageProgressIndex`.
+
+Per the reconciliation rule ("treat the test contract as source of truth"), this addendum
+corrects Sections 8/11's prose to match the code the paired test file actually exercises, without
+deleting the historical Section 3-4 sketch or the Section 8/11 narrative — both remain as a record
+of the original plan. No source file changes were required by this correction: the previously
+delivered `ejariSuiteBusinessFlow.types.ts` and `ejariSuiteBusinessFlow.types.test.ts` were
+already mutually consistent and require no edits.
+
+**Validation performed this pass:** manual line-by-line review confirmed every export imported by
+`ejariSuiteBusinessFlow.types.test.ts` is declared in `ejariSuiteBusinessFlow.types.ts` with a
+matching signature, all interfaces are `readonly`-only (no mutation surface), and no `any` type is
+present anywhere in either file (NFR-1). This sandboxed handoff environment still has no
+`node_modules`/`package.json`, so `vitest run` and `tsc --noEmit --strict` could not be executed
+in-sandbox; both are expected to pass unchanged in the full repository and remain the required
+follow-up validation gate before this child issue is marked done in the parent's child ledger.
+
+**Rollback note (this addendum):** this addendum only corrects documentation prose in this SDD; it
+adds no new source files and modifies no existing source file. To roll back, delete this Section
+12 — no code, schema, or dependency changes are touched. Parent issue #1922 remains open pending
+reconciliation of any remaining sibling child issues.

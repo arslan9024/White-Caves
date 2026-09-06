@@ -132,3 +132,24 @@ and every typed error's `name`/`message`/typed-field contract) — no placeholde
 present; (3) completion evidence and a rollback note are recorded in the paired SDD's Section 11;
 (4) parent issue #1922 remains open, pending reconciliation of any remaining sibling child issues
 (`stateMachine.ts`/logic wiring already tracked under #2496, plus adapters).
+
+## 9. Correction Addendum — Delivered Naming vs. Section 3-4 Sketch
+
+Re-verification against the actual delivered `ejariSuiteBusinessFlow.types.ts` /
+`ejariSuiteBusinessFlow.types.test.ts` found that the delivered public contract uses
+`EjariSuiteStage`, `EjariDocumentType`, `EjariRequiredDocument`, `EjariSuiteHistoryEntry`,
+`EjariSuiteBusinessFlowState`, and `EjariSuiteTransitionResult`, and represents transition failure
+via a `{ success, state, error? }` result object returned from `transitionEjariSuiteStage` rather
+than by throwing the SDD Section 4 error classes (`InvalidEjariTransitionError`,
+`IncompleteEjariBundleError`, `TerminalEjariCaseError`). Per the reconciliation rule ("treat the
+test contract as source of truth"), FR-6/FR-7/FR-8 are satisfied by this module in spirit — illegal
+transitions, terminal-stage transitions, and (in the sibling `.logic.ts` module) incomplete-bundle
+cases are all rejected — but via a typed result object instead of thrown error classes. This
+addendum corrects Section 8's prose to match the code the paired test file actually exercises; it
+deletes nothing and leaves Section 8 in place as a record of the original description. No source
+file changes were made or required by this correction — the previously delivered `.types.ts` and
+`.types.test.ts` were already mutually consistent.
+
+Rollback note (this addendum): documentation-only change to this SRS; delete Section 9 to revert.
+No source files are touched. Parent issue #1922 remains open pending reconciliation of any
+remaining sibling child issues.
