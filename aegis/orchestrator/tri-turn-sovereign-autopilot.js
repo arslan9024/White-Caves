@@ -1247,9 +1247,28 @@ function gitEnsureWorkBranch(parentNumber, parentTitle, options) {
   try {
     const current = gitCurrentBranch();
     if (current === branch) return { branch, created: false };
-    // Stash unrelated dirty changes so the branch switch is clean; only candidate
-    // files are committed per child, the rest stay stashed and restored after.
-    execSync('git checkout -B ' + branch, { cwd: ROOT, stdio: ['ignore', 'pipe', 'ignore'] });
+
+    // Non-destructive branch handling: NEVER use `checkout -B` (it force-resets the
+    // branch and discards working-tree + staged work, which wiped earlier fixes).
+    // If the branch already exists, switch to it; otherwise create it from the
+    // current HEAD without touching the working tree.
+    let branchExists = false;
+    try {
+      execSync(`git rev-parse --verify --quiet "refs/heads/${branch}"`, {
+        cwd: ROOT,
+        stdio: ['ignore', 'pipe', 'ignore'],
+      });
+      branchExists = true;
+    } catch {
+      branchExists = false;
+    }
+
+    if (branchExists) {
+      execSync(`git checkout "${branch}"`, { cwd: ROOT, stdio: ['ignore', 'pipe', 'ignore'] });
+      return { branch, created: false };
+    }
+
+    execSync(`git checkout -b "${branch}"`, { cwd: ROOT, stdio: ['ignore', 'pipe', 'ignore'] });
     return { branch, created: true };
   } catch {
     return { branch: gitCurrentBranch(), created: false };
