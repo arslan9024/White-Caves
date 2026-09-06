@@ -731,6 +731,28 @@ async function loadOpenGitHubIssues(token, label = 'tri-turn-sovereign') {
   return items;
 }
 
+async function loadAllGitHubIssues(token) {
+  const headers = ghHeaders(token);
+  const items = [];
+  let page = 1;
+
+  while (true) {
+    const res = await ghFetch(
+      `https://api.github.com/repos/${OWNER}/${REPO}/issues?state=all&per_page=100&page=${page}`,
+      { method: 'GET', headers }
+    );
+    if (!res.ok) break;
+    const data = await res.json();
+    if (!Array.isArray(data) || data.length === 0) break;
+    items.push(...data);
+    if (data.length < 100) break;
+    page += 1;
+    if (page > 10) break; // safety bound
+  }
+
+  return items;
+}
+
 async function loadOpenTriTurnIssues(token) {
   return loadOpenGitHubIssues(token, 'tri-turn-sovereign');
 }
@@ -1791,7 +1813,97 @@ async function runCycle(options, cycleNumber) {
           `🧩 [AUTOCHAIN] Parent #${broadParent.number} decomposed into ${childTasks.length} bounded child tasks.`
         );
         const headers = ghHeaders(token);
-        for (const child of childTasks) {
+        // Dedup against ALL issues (open + closed) by taskId so a parent is never
+        // re-decomposed into children that already exist or were already solved.
+        const allIssues = await loadAllGitHubIssues(token);
+        const trackedChildIds = new Set(
+          allIssues
+            .map(issue => String(issue.body || '').match(/AEGIS_CHILD_TASK:\s*([^\s<]+)/)?.[1])
+            .filter(Boolean)
+        );
+        const toPublish = childTasks.filter(child => !trackedChildIds.has(child.taskId));
+
+        // If every child already exists, check whether any are still open. When the
+        // parent's children are already fully solved, skip decomposition entirely.
+        if (toPublish.length === 0) {
+          const openChildrenForParent = allIssues.filter(
+            issue =>
+              !issue.pull_request &&
+              issue.state === 'open' &&
+              String(issue.body || '').includes(`AEGIS_PARENT_ISSUE: ${broadParent.number}`)
+          );
+          if (openChildrenForParent.length === 0) {
+            console.log(
+              `✅ [AUTOCHAIN] Parent #${broadParent.number} children already solved; skipping decomposition.`
+            );
+            liveIssues.splice(
+              0,
+              liveIssues.length,
+              ...liveIssues.filter(issue => Number(issue.number) !== Number(broadParent.number))
+            );
+            if (liveIssues.length === 0) {
+              return {
+                phase: PHASES.COMPLETE,
+                missing: 0,
+                queue: [],
+                created: 0,
+                updated: 0,
+                skipped: 0,
+                solved: 0,
+                milestones: {},
+              };
+            }
+            const nextQueue = hydrateExistingIssueQueue(liveIssues, options);
+            const solveResult = await solveSerialQueue(
+              token,
+              nextQueue,
+              options,
+              loadResumeState(),
+              cycleId
+            );
+            await reconcileClosedParents(token, solveResult.queue);
+            const verifiedClosedCount = solveResult.queue.filter(q => q.closed).length;
+            const summary = {
+              cycleId,
+              invokedCommand: options.loop
+                ? 'npm run aegis:sovereign999:loop'
+                : 'npm run aegis:sovereign999',
+              mode: options.autopilot ? 'autopilot' : 'manual',
+              phase: verifiedClosedCount === EXACT_TARGET ? PHASES.COMPLETE : PHASES.SOLVE_SERIAL,
+              quota: options.quota,
+              turns: options.turns,
+              queueSize: nextQueue.length,
+              created: 0,
+              updated: 0,
+              skipped: 0,
+              solved: solveResult.solved,
+              failed: solveResult.failed,
+              blocked: solveResult.blocked,
+              haltReason: '',
+              progress: calculateTriTurnProgress({
+                target: EXACT_TARGET,
+                solved: solveResult.solved,
+                blocked: solveResult.blocked,
+                failed: solveResult.failed,
+                queueSize: nextQueue.length,
+                discovered: nextQueue.length,
+              }),
+              queuePreview: solveResult.queue.slice(0, 30).map(q => ({
+                effectiveOrder: q.effectiveOrder,
+                lane: q.lane,
+                priority: q.priority,
+                status: q.status,
+                issueNumber: q.issueNumber,
+                attempts: q.attempts || 0,
+              })),
+            };
+            appendReport(summary);
+            writeJson(JSON_REPORT_PATH, summary);
+            return summary;
+          }
+        }
+
+        for (const child of toPublish) {
           const childTitle = `[AEGIS CHILD] #${broadParent.number} — ${child.taskId} — ${child.objective}`;
           const childBody = [
             `Parent issue: #${broadParent.number}`,
@@ -1809,26 +1921,30 @@ async function runCycle(options, cycleNumber) {
             `<!-- AEGIS_CHILD_TASK: ${child.taskId} -->`,
             `<!-- AEGIS_PARENT_ISSUE: ${broadParent.number} -->`,
           ].join('\n');
-          const existingChild = fetchedIssues.find(issue =>
-            String(issue.body || '').includes(`AEGIS_CHILD_TASK: ${child.taskId}`)
-          );
-          if (!existingChild) {
-            await ghFetch(`https://api.github.com/repos/${OWNER}/${REPO}/issues`, {
-              method: 'POST',
-              headers,
-              body: JSON.stringify({
-                title: childTitle,
-                body: childBody,
-                labels: ['aegis-chat-handoff'],
-              }),
-            });
-          }
+          if (trackedChildIds.has(child.taskId)) continue;
+          await ghFetch(`https://api.github.com/repos/${OWNER}/${REPO}/issues`, {
+            method: 'POST',
+            headers,
+            body: JSON.stringify({
+              title: childTitle,
+              body: childBody,
+              labels: ['aegis-chat-handoff'],
+            }),
+          });
+          trackedChildIds.add(child.taskId);
         }
         console.log(
-          `📤 [AUTOCHAIN] Published ${childTasks.length} child issue packets; continuing into serial solve.`
+          `📤 [AUTOCHAIN] Child packets ready for parent #${broadParent.number}; continuing into serial solve.`
         );
+        // The solve queue must contain ONLY the open children — never the parent.
         const refreshed = await loadOpenGitHubIssues(token, '');
-        liveIssues = refreshed.filter(issue => !issue.pull_request);
+        const openChildren = refreshed.filter(
+          issue =>
+            !issue.pull_request &&
+            (/\[AEGIS CHILD\]/i.test(issue.title || '') ||
+              /AEGIS_CHILD_TASK/i.test(issue.body || ''))
+        );
+        liveIssues.splice(0, liveIssues.length, ...openChildren);
       }
 
       if (options.childOnly) {
