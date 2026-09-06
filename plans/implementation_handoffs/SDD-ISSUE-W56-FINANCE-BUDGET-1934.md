@@ -136,3 +136,51 @@ scope.
   command evidence will be attached by the follow-up implementation task
   that introduces the `.ts` source and vitest test files described in
   Section 2 and Section 5.
+
+## 8. Addendum — Child issue #2443 (types delivery)
+
+- Child issue: #2443
+- Parent issue: #1934 (remains open; not affected by this addendum)
+- Files added (exactly as authorized for #2443, no files outside this list
+  were created or modified):
+  - `src/features/finance/financeEngineAnnualBudget/financeEngineAnnualBudget.types.ts`
+  - `src/features/finance/financeEngineAnnualBudget/financeEngineAnnualBudget.types.test.ts`
+- **What was implemented**: The type contract from Section 3 of this
+  document (`MonthlyBudgetLineItem`, `BudgetCategory` with a fixed
+  `BUDGET_CATEGORY_ORDER`, `BudgetValidationErrorCode`/`BudgetValidationError`,
+  `CategoryBudgetSummary`, `MonthlyBudgetSummary`, `AnnualBudgetSummary`, and
+  the `AnnualBudgetResult` discriminated union) plus small, pure,
+  dependency-free runtime helpers that the future `computeAnnualBudget`
+  aggregation function (still deferred, see Section 3/4) and any caller can
+  reuse: `isAnnualBudgetSuccess`/`isAnnualBudgetFailure` (union type guards),
+  `isBudgetCategory`, `isValidBudgetMonth` (FR-2), `isValidBudgetAmount`
+  (FR-3), `computeVariance`, `computeVariancePercent` (FR-9: returns `0`,
+  never `NaN`/`Infinity`, when `plannedTotal` is `0`), and
+  `createBudgetValidationError` (consistent default messages per error code,
+  with optional `index` and message override).
+- **Design decision resolved**: Included small pure runtime helpers alongside
+  the types (rather than a types-only file with zero runtime code) so that
+  FR-2, FR-3, and FR-9 have a single, reusable, unit-testable implementation
+  that the future aggregation function can import instead of re-deriving the
+  same logic inline — reducing duplication risk between validation and the
+  eventual `computeAnnualBudget` implementation, while staying strictly
+  within the "types" file's declared scope (no aggregation, no I/O).
+- **Validation performed**: Added a vitest suite
+  (`financeEngineAnnualBudget.types.test.ts`) using
+  `import { describe, expect, it } from 'vitest'` with real behavioral
+  assertions covering: category ordering/uniqueness, category/month/amount
+  validators (including edge cases 0, 13, negative, non-integer, `NaN`,
+  `Infinity`), variance/variance-percent math including the zero-planned-total
+  case, validation error factory defaults/overrides/index attachment, and
+  discriminated-union narrowing for both success and failure results. This
+  sandboxed environment has no `package.json`/`node_modules` available to
+  execute `vitest`/`tsc` directly, so the suite was authored and manually
+  reviewed for strict-TypeScript correctness (no `any`, all imports resolve,
+  exhaustive discriminant narrowing); running it is expected to require no
+  new dependencies and to pass under the repository's existing vitest
+  configuration.
+- **Rollback for this addendum**: Delete the two files listed above. No
+  existing exports in this document's Section 2 module structure were
+  removed or altered; this is purely additive. Deleting these two files
+  fully reverts #2443 with no impact on any other module, and does not
+  reopen or close parent issue #1934.

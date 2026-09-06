@@ -80,3 +80,25 @@ testable specification to implement against.
 - Contract source of truth: `src/features/finance/financeEngineAnnualBudget/financeEngineAnnualBudget.contract.md`
 - Module overview: `src/features/finance/financeEngineAnnualBudget/README.md`
 - Design detail: `plans/implementation_handoffs/SDD-ISSUE-W56-FINANCE-BUDGET-1934.md`
+- Types + runtime helpers: `src/features/finance/financeEngineAnnualBudget/financeEngineAnnualBudget.types.ts`
+- Types test suite: `src/features/finance/financeEngineAnnualBudget/financeEngineAnnualBudget.types.test.ts`
+
+## 8. Addendum — Child issue #2443 (types delivery)
+
+- Child issue: #2443
+- Parent issue: #1934 (still open; unaffected by this addendum)
+- Status: Delivered — the `AnnualBudgetResult` contract (types, discriminated
+  union, validation error codes, and small pure runtime helpers: type guards,
+  month/amount validators, and variance/variance-percent calculators)
+  described in Sections 4–5 above is now implemented in
+  `financeEngineAnnualBudget.types.ts`, with a corresponding vitest suite in
+  `financeEngineAnnualBudget.types.test.ts` asserting FR-2, FR-3, FR-9, and
+  the success/failure discriminated-union narrowing behavior.
+- This addendum does not change any requirement above; it records that the
+  types layer of the previously-deferred `.ts` implementation (see SDD
+  Section 2/4) has now been delivered. The full `computeAnnualBudget`
+  aggregation function described in SDD Section 3 remains a follow-up task
+  under parent #1934.
+- Excluded scope for #2443 (unchanged from Section 3.2): parent issue
+  closure, bulk GitHub mutation, destructive database operations, and
+  production secret rewrites.
