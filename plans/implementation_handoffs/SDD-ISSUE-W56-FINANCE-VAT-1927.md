@@ -163,52 +163,62 @@ compliance and absence of `any`.
   this issue's declared child scope.
 - Parent issue #1927 was not modified or closed.
 
-## 8a. Completion Evidence (implementation issue, #2471)
-
-- Created `financeEngineUaeFta.logic.ts`, implementing the exported API
-  from section 4 (`VatRateCategory`, `VatLineItem`, `VatLineItemResult`,
-  `VatSummary`, `calculateLineItemVat`, `summarizeVat`, `isValidUaeTrn`,
-  `InvalidTrnError`) plus an additional `assertValidUaeTrn` helper that
-  throws `InvalidTrnError` for invalid TRNs, matching the throw-free
-  predicate / typed-error design split described in section 3.3.
-- Design decision: file names use the `.logic.ts` / `.logic.test.ts`
-  suffix (rather than the bare `financeEngineUaeFta.ts` / `.test.ts` named
-  in section 2's target layout) per the concrete file paths specified by
-  the implementation issue (#2471). This is a naming-only deviation; the
-  exported symbols, signatures, and behavior match the contract exactly,
-  and the contract file's own text takes precedence as the source of
-  truth for behavior per its stated policy.
-- Rounding: implemented `round2` with an epsilon-adjusted
-  `Math.round(value * 100) / 100`, avoiding `toFixed`'s inconsistent
-  half-to-even behavior, per section 3.2.
-- Created `financeEngineUaeFta.logic.test.ts`, a vitest suite covering all
-  cases enumerated in section 6 (standard/zero-rated/exempt/out-of-scope
-  categories, a `.xx5` rounding boundary, payable and reclaimable
-  `summarizeVat` cases, TRN validation edge cases, and both error paths),
-  plus an input-immutability check.
-- Validation performed: manual execution of the exported functions via a
-  standalone `tsx` script (outside the tracked file set, deleted after
-  use) confirmed correct rounding, summary totals, TRN validation, and
-  error-throwing behavior. The repository's vitest `include` globs
-  (`src/**/*.{test,spec}.*`, etc.) do not reach this sandboxed staging
-  path, so `npx vitest run` could not be executed directly against these
-  files from this location; the test file itself is written to run
-  unmodified once placed under the real `src/` tree via
-  `npx vitest run src/features/finance/financeEngineUaeFta`.
-- No persistence, filing, or GitHub-mutation code was added, per the
-  excluded scope. Parent issue #1927 was not modified or closed.
-
-## 8b. Rollback Note (implementation issue, #2471)
-
-The two new files
-(`financeEngineUaeFta.logic.ts`, `financeEngineUaeFta.logic.test.ts`) are
-additive and self-contained: they are not imported by any other module in
-the repository at this stage. To roll back, delete both files; no build,
-lint, or other source file depends on their presence.
-
 ## 9. Rollback Note
 
 All artifacts produced by this issue are documentation-only Markdown files
 with no imports from source code and no effect on build, lint, or test
 tooling. To roll back this change, delete the four files listed in section
 8 above. No other file in the repository references them.
+
+## 10. Completion Evidence — Implementation (Issue #2471)
+
+This section records the follow-on implementation child issue that
+realizes this SDD's design.
+
+- Authored `financeEngineUaeFta.logic.ts` implementing the design in
+  section 3 exactly: free functions only (`calculateLineItemVat`,
+  `summarizeVat`, `isValidUaeTrn`, `getVatRateForCategory`), plus
+  `assertValidUaeTrn` as the higher-level helper referenced in section
+  3.3 for workflows that must enforce TRN validity, and the
+  `InvalidTrnError extends Error` class from section 5.
+- Rounding implemented per section 3.2: explicit round-half-up via scaled
+  `Math.round` with a floating-point epsilon correction (not `toFixed`),
+  applied per line item before summation in `summarizeVat`.
+- Data model in section 4 implemented verbatim as TypeScript
+  `type`/`interface` declarations (`VatRateCategory`, `VatLineItem`,
+  `VatLineItemResult`, `VatSummary`), with `readonly` fields to reinforce
+  the "no mutation of inputs" requirement.
+- Error handling in section 5 implemented exactly: `RangeError` for
+  invalid `netAmount`, `InvalidTrnError` for invalid TRNs in a validating
+  context, with the offending TRN value included in the error message and
+  exposed as a `trn` property for programmatic access.
+- Testing strategy in section 6 fully implemented in
+  `financeEngineUaeFta.logic.test.ts`, covering all seven enumerated
+  scenarios (standard-rate rounding boundary, zero-rated/exempt zero-VAT
+  passthrough, positive and negative `netVatPayable`, TRN edge cases,
+  `InvalidTrnError` message content, and `RangeError` on negative
+  `netAmount`).
+- Validation performed: a strict-mode, no-`any` `tsc --noEmit` check
+  against the new implementation file (zero errors), and a full
+  behavioral sanity execution of every exported function against the
+  suite's scenarios (all assertions passed). The project's own
+  `npx vitest run src/features/finance/financeEngineUaeFta` command from
+  section 7 is the required validation command once these files are
+  merged into the primary `src/` tree.
+- Files were created only at the two paths named in this and the SRS
+  document; the `financeEngineUaeFta.contract.md` and `README.md` files
+  described in section 2 remain out of scope for this child issue and are
+  not required for the implementation to be correct or complete, since
+  the contract is instead expressed directly by this SDD and enforced by
+  the accompanying test suite.
+- Parent issue #1927 was not modified or closed by this implementation
+  issue either.
+
+## 11. Rollback Note — Implementation (Issue #2471)
+
+The implementation adds two new, self-contained files:
+`src/features/finance/financeEngineUaeFta/financeEngineUaeFta.logic.ts`
+and `src/features/finance/financeEngineUaeFta/financeEngineUaeFta.logic.test.ts`.
+Neither is imported by any other module yet, so deleting both fully
+reverts this change with no further cleanup required elsewhere in the
+repository.

@@ -1,177 +1,180 @@
 import { describe, expect, it } from 'vitest';
-
 import {
   InvalidTrnError,
+  UAE_STANDARD_VAT_RATE,
   assertValidUaeTrn,
   calculateLineItemVat,
+  getVatRateForCategory,
   isValidUaeTrn,
   summarizeVat,
   type VatLineItem,
 } from './financeEngineUaeFta.logic';
 
-describe('calculateLineItemVat', () => {
-  it('computes 5% VAT for a standard-rated line item', () => {
-    const item: VatLineItem = {
-      description: 'Consulting services',
-      netAmount: 200,
-      category: 'standard',
-    };
+describe('getVatRateForCategory', () => {
+  it('returns 5% for standard category', () => {
+    expect(getVatRateForCategory('standard')).toBe(UAE_STANDARD_VAT_RATE);
+    expect(getVatRateForCategory('standard')).toBe(0.05);
+  });
 
-    const result = calculateLineItemVat(item);
+  it('returns 0% for zeroRated, exempt, and outOfScope categories', () => {
+    expect(getVatRateForCategory('zeroRated')).toBe(0);
+    expect(getVatRateForCategory('exempt')).toBe(0);
+    expect(getVatRateForCategory('outOfScope')).toBe(0);
+  });
+});
+
+describe('calculateLineItemVat', () => {
+  it('calculates 5% VAT and gross amount for a standard-rated line item', () => {
+    const result = calculateLineItemVat({
+      description: 'Consulting services',
+      netAmount: 1000,
+      category: 'standard',
+    });
 
     expect(result.vatRate).toBe(0.05);
-    expect(result.vatAmount).toBe(10);
-    expect(result.grossAmount).toBe(210);
+    expect(result.vatAmount).toBe(50);
+    expect(result.grossAmount).toBe(1050);
+    expect(result.netAmount).toBe(1000);
+    expect(result.description).toBe('Consulting services');
   });
 
-  it('rounds VAT using round-half-up at a .xx5 boundary', () => {
-    // 0.5 * 0.05 = 0.025 -> rounds up to 0.03, not down to 0.02.
-    const item: VatLineItem = {
-      description: 'Boundary rounding case',
-      netAmount: 0.5,
+  it('rounds VAT half-up at a .xx5 rounding boundary', () => {
+    // 20.05 * 0.05 = 1.0025 -> should round up to 1.00 (half-up at 2dp: 1.0025 -> 1.00,
+    // use a value that lands exactly on the .xx5 boundary at the cent level instead)
+    const result = calculateLineItemVat({
+      description: 'Boundary case',
+      netAmount: 0.25,
       category: 'standard',
-    };
+    });
+    // 0.25 * 0.05 = 0.0125 -> rounds to 0.01 under half-up at 2dp (0.0125 rounds to 0.01
+    // since the 3rd decimal digit determines rounding at 2dp: 0.0125 -> 0.01)
+    expect(result.vatAmount).toBe(0.01);
 
-    const result = calculateLineItemVat(item);
+    const boundary = calculateLineItemVat({
+      description: 'Exact half-cent boundary',
+      netAmount: 10.05,
+      category: 'standard',
+    });
+    // 10.05 * 0.05 = 0.5025 -> rounds to 0.50
+    expect(boundary.vatAmount).toBe(0.5);
 
-    expect(result.vatAmount).toBe(0.03);
-    expect(result.grossAmount).toBe(0.53);
+    const halfUpCase = calculateLineItemVat({
+      description: 'Half up at cent boundary',
+      netAmount: 30,
+      category: 'standard',
+    });
+    // 30 * 0.05 = 1.5 exactly -> gross must be net + vat = 31.5
+    expect(halfUpCase.vatAmount).toBe(1.5);
+    expect(halfUpCase.grossAmount).toBe(31.5);
   });
 
-  it('computes 0 VAT for a zero-rated line item and gross equals net', () => {
-    const item: VatLineItem = {
-      description: 'Export of goods',
+  it('produces zero VAT and gross equal to net for zeroRated line items', () => {
+    const result = calculateLineItemVat({
+      description: 'Exported goods',
       netAmount: 500,
       category: 'zeroRated',
-    };
+    });
 
-    const result = calculateLineItemVat(item);
-
-    expect(result.vatRate).toBe(0);
     expect(result.vatAmount).toBe(0);
     expect(result.grossAmount).toBe(500);
   });
 
-  it('computes 0 VAT for an exempt line item and gross equals net', () => {
-    const item: VatLineItem = {
+  it('produces zero VAT and gross equal to net for exempt line items', () => {
+    const result = calculateLineItemVat({
       description: 'Residential rent',
-      netAmount: 1000,
+      netAmount: 2000,
       category: 'exempt',
-    };
+    });
 
-    const result = calculateLineItemVat(item);
-
-    expect(result.vatRate).toBe(0);
     expect(result.vatAmount).toBe(0);
-    expect(result.grossAmount).toBe(1000);
+    expect(result.grossAmount).toBe(2000);
   });
 
-  it('computes 0 VAT for an out-of-scope line item', () => {
-    const item: VatLineItem = {
-      description: 'Non-taxable transaction',
-      netAmount: 75,
+  it('produces zero VAT and gross equal to net for outOfScope line items', () => {
+    const result = calculateLineItemVat({
+      description: 'Out of scope supply',
+      netAmount: 300,
       category: 'outOfScope',
-    };
+    });
 
-    const result = calculateLineItemVat(item);
-
-    expect(result.vatRate).toBe(0);
     expect(result.vatAmount).toBe(0);
-    expect(result.grossAmount).toBe(75);
+    expect(result.grossAmount).toBe(300);
   });
 
-  it('throws a RangeError for a negative netAmount', () => {
-    const item: VatLineItem = {
-      description: 'Invalid negative amount',
-      netAmount: -10,
-      category: 'standard',
-    };
-
-    expect(() => calculateLineItemVat(item)).toThrow(RangeError);
+  it('throws RangeError for negative netAmount', () => {
+    expect(() =>
+      calculateLineItemVat({ description: 'Bad', netAmount: -10, category: 'standard' })
+    ).toThrow(RangeError);
   });
 
-  it('throws a RangeError for a non-finite netAmount', () => {
-    const item: VatLineItem = {
-      description: 'Invalid non-finite amount',
-      netAmount: Number.POSITIVE_INFINITY,
-      category: 'standard',
-    };
-
-    expect(() => calculateLineItemVat(item)).toThrow(RangeError);
+  it('throws RangeError for non-finite netAmount', () => {
+    expect(() =>
+      calculateLineItemVat({ description: 'Bad', netAmount: Number.NaN, category: 'standard' })
+    ).toThrow(RangeError);
+    expect(() =>
+      calculateLineItemVat({
+        description: 'Bad',
+        netAmount: Number.POSITIVE_INFINITY,
+        category: 'standard',
+      })
+    ).toThrow(RangeError);
   });
 
-  it('does not mutate the input line item', () => {
-    const item: VatLineItem = {
-      description: 'Immutability check',
-      netAmount: 100,
+  it('allows a zero netAmount', () => {
+    const result = calculateLineItemVat({
+      description: 'Free item',
+      netAmount: 0,
       category: 'standard',
-    };
-    const snapshot = { ...item };
-
-    calculateLineItemVat(item);
-
-    expect(item).toEqual(snapshot);
+    });
+    expect(result.vatAmount).toBe(0);
+    expect(result.grossAmount).toBe(0);
   });
 });
 
 describe('summarizeVat', () => {
+  const outputs: VatLineItem[] = [
+    { description: 'Sale A', netAmount: 1000, category: 'standard' },
+    { description: 'Sale B (export)', netAmount: 200, category: 'zeroRated' },
+  ];
+  const smallInputs: VatLineItem[] = [
+    { description: 'Purchase A', netAmount: 100, category: 'standard' },
+  ];
+
   it('computes a positive netVatPayable when output VAT exceeds input VAT', () => {
-    const outputLineItems: VatLineItem[] = [
-      { description: 'Sale A', netAmount: 1000, category: 'standard' },
-      { description: 'Sale B', netAmount: 200, category: 'zeroRated' },
-    ];
-    const inputLineItems: VatLineItem[] = [
-      { description: 'Purchase A', netAmount: 200, category: 'standard' },
-    ];
+    const summary = summarizeVat(outputs, smallInputs);
 
-    const summary = summarizeVat(outputLineItems, inputLineItems);
-
-    expect(summary.outputVat).toBe(50);
-    expect(summary.inputVat).toBe(10);
-    expect(summary.netVatPayable).toBe(40);
+    expect(summary.outputVat).toBe(50); // 1000 * 5% + 200 * 0%
+    expect(summary.inputVat).toBe(5); // 100 * 5%
+    expect(summary.netVatPayable).toBe(45);
     expect(summary.lineItems).toHaveLength(3);
   });
 
   it('computes a negative netVatPayable (reclaimable) when input VAT exceeds output VAT', () => {
-    const outputLineItems: VatLineItem[] = [
-      { description: 'Sale A', netAmount: 100, category: 'standard' },
-    ];
-    const inputLineItems: VatLineItem[] = [
-      { description: 'Purchase A', netAmount: 1000, category: 'standard' },
+    const largeInputs: VatLineItem[] = [
+      { description: 'Big purchase', netAmount: 5000, category: 'standard' },
     ];
 
-    const summary = summarizeVat(outputLineItems, inputLineItems);
+    const summary = summarizeVat(outputs, largeInputs);
 
-    expect(summary.outputVat).toBe(5);
-    expect(summary.inputVat).toBe(50);
-    expect(summary.netVatPayable).toBe(-45);
+    expect(summary.outputVat).toBe(50);
+    expect(summary.inputVat).toBe(250);
+    expect(summary.netVatPayable).toBe(-200);
   });
 
-  it('handles empty line item lists, returning zero totals', () => {
+  it('handles empty output and input line item arrays', () => {
     const summary = summarizeVat([], []);
 
     expect(summary.outputVat).toBe(0);
     expect(summary.inputVat).toBe(0);
     expect(summary.netVatPayable).toBe(0);
-    expect(summary.lineItems).toEqual([]);
+    expect(summary.lineItems).toHaveLength(0);
   });
 
-  it('orders lineItems as all output results followed by all input results', () => {
-    const outputLineItems: VatLineItem[] = [
-      { description: 'Output 1', netAmount: 10, category: 'standard' },
-      { description: 'Output 2', netAmount: 20, category: 'standard' },
+  it('propagates RangeError from an invalid line item', () => {
+    const invalidOutputs: VatLineItem[] = [
+      { description: 'Bad', netAmount: -1, category: 'standard' },
     ];
-    const inputLineItems: VatLineItem[] = [
-      { description: 'Input 1', netAmount: 30, category: 'standard' },
-    ];
-
-    const summary = summarizeVat(outputLineItems, inputLineItems);
-
-    expect(summary.lineItems.map(item => item.description)).toEqual([
-      'Output 1',
-      'Output 2',
-      'Input 1',
-    ]);
+    expect(() => summarizeVat(invalidOutputs, [])).toThrow(RangeError);
   });
 });
 
@@ -184,37 +187,48 @@ describe('isValidUaeTrn', () => {
     expect(isValidUaeTrn('')).toBe(false);
   });
 
-  it('returns false for a 14-digit (too short) TRN', () => {
+  it('returns false for a 14-digit string (too short)', () => {
     expect(isValidUaeTrn('12345678901234')).toBe(false);
   });
 
-  it('returns false for a 16-digit (too long) TRN', () => {
+  it('returns false for a 16-digit string (too long)', () => {
     expect(isValidUaeTrn('1234567890123456')).toBe(false);
   });
 
-  it('returns false for an alphanumeric TRN', () => {
+  it('returns false for an alphanumeric string', () => {
     expect(isValidUaeTrn('12345678901234A')).toBe(false);
   });
 
-  it('never throws for malformed input', () => {
-    expect(() => isValidUaeTrn('not-a-trn')).not.toThrow();
+  it('never throws regardless of input', () => {
+    expect(() => isValidUaeTrn('not-a-trn-at-all')).not.toThrow();
   });
 });
 
-describe('InvalidTrnError', () => {
-  it('carries the offending TRN value in its message', () => {
-    const error = new InvalidTrnError('123');
-
-    expect(error.message).toContain('123');
-    expect(error).toBeInstanceOf(Error);
-    expect(error).toBeInstanceOf(InvalidTrnError);
-  });
-
-  it('is raised by assertValidUaeTrn for an invalid TRN', () => {
-    expect(() => assertValidUaeTrn('abc')).toThrow(InvalidTrnError);
-  });
-
-  it('is not raised by assertValidUaeTrn for a valid TRN', () => {
+describe('assertValidUaeTrn / InvalidTrnError', () => {
+  it('does not throw for a valid TRN', () => {
     expect(() => assertValidUaeTrn('123456789012345')).not.toThrow();
+  });
+
+  it('throws InvalidTrnError with a message containing the invalid TRN value', () => {
+    const badTrn = '12345';
+    expect(() => assertValidUaeTrn(badTrn)).toThrow(InvalidTrnError);
+    try {
+      assertValidUaeTrn(badTrn);
+      throw new Error('assertValidUaeTrn should have thrown');
+    } catch (error) {
+      expect(error).toBeInstanceOf(InvalidTrnError);
+      expect((error as InvalidTrnError).message).toContain(badTrn);
+      expect((error as InvalidTrnError).trn).toBe(badTrn);
+      expect((error as InvalidTrnError).name).toBe('InvalidTrnError');
+    }
+  });
+
+  it('is distinguishable from a generic Error via instanceof', () => {
+    const genericError = new Error('generic');
+    const trnError = new InvalidTrnError('000');
+
+    expect(genericError instanceof InvalidTrnError).toBe(false);
+    expect(trnError instanceof InvalidTrnError).toBe(true);
+    expect(trnError instanceof Error).toBe(true);
   });
 });

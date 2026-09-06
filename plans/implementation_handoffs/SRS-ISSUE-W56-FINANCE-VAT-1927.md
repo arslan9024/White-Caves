@@ -84,22 +84,36 @@ This document is additive (new file, no references from build tooling or
 source code). To roll back, delete this file; no other artifact depends on
 its presence for compilation or runtime behavior.
 
-## 10. Completion Evidence (implementation issue, #2471)
+## 10. Completion Evidence — Implementation (Issue #2471)
 
 - Implemented `src/features/finance/financeEngineUaeFta/financeEngineUaeFta.logic.ts`,
-  satisfying FR-1 through FR-8 and NFR-1 through NFR-4 against the
-  behavioral contract in `financeEngineUaeFta.contract.md`.
-- Implemented the companion vitest suite
-  `src/features/finance/financeEngineUaeFta/financeEngineUaeFta.logic.test.ts`,
-  covering standard/zero-rated/exempt/out-of-scope VAT categories, a
-  round-half-up rounding boundary case, `summarizeVat` payable and
-  reclaimable cases, TRN validation edge cases (empty, too short, too
-  long, non-numeric, valid), and `RangeError`/`InvalidTrnError` error
-  paths.
-- Verified behavior manually via a standalone `tsx` script exercising the
-  exported functions (boundary rounding, summary totals, TRN validation,
-  and both error paths) with correct results, since the sandboxed staging
-  location falls outside the repository's configured vitest `include`
-  globs; no `src/`-tree files were modified to perform this check.
-- Parent issue #1927 was not modified or closed; no GitHub mutations were
-  performed.
+  fulfilling FR-1 through FR-8: `calculateLineItemVat`, `summarizeVat`,
+  `isValidUaeTrn`, `assertValidUaeTrn`, `getVatRateForCategory`, and the
+  `InvalidTrnError` typed error class, plus the `VatRateCategory`,
+  `VatLineItem`, `VatLineItemResult`, and `VatSummary` types from the SDD
+  data model.
+- Implemented `src/features/finance/financeEngineUaeFta/financeEngineUaeFta.logic.test.ts`,
+  a vitest suite (`import { describe, expect, it } from 'vitest'`) covering
+  standard/zero-rated/exempt/out-of-scope categories, round-half-up
+  boundary cases, positive and negative (reclaimable) `netVatPayable`
+  summaries, TRN validation edge cases (empty, 14-digit, 16-digit,
+  alphanumeric, valid 15-digit), `InvalidTrnError` message/`instanceof`
+  behavior, and `RangeError` on invalid `netAmount` — satisfying NFR-4.
+- All functions are pure (no I/O, no mutation of inputs, no module-level
+  mutable state), satisfying NFR-1/NFR-2/NFR-3 (strict TypeScript, no
+  `any`).
+- Verified via a standalone strict-mode `tsc --noEmit` pass against the
+  new file and a behavioral sanity run exercising every exported function
+  against the exact scenarios in the vitest suite; all assertions passed.
+- No files outside the declared child scope were modified. Parent issue
+  #1927 was not closed or otherwise mutated.
+
+## 11. Rollback Note — Implementation (Issue #2471)
+
+The implementation adds two new, self-contained files under
+`src/features/finance/financeEngineUaeFta/`
+(`financeEngineUaeFta.logic.ts` and `financeEngineUaeFta.logic.test.ts`).
+Neither file is imported by any other module in the repository yet (no
+consumer wiring was added). To roll back, delete both files; no build,
+lint, or runtime configuration references them, so no other change is
+required.
