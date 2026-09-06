@@ -1,10 +1,25 @@
 # SRS — W56 Finance Ledger (Software Requirements Specification)
 
 - **Parent issue**: #1926
-- **Child issue**: #2479
+- **Child issues**: #2479 (original handoff), #2477 (implementation)
 - **Component**: `src/features/finance/financeEngineDoubleEntry`
 - **Document type**: Software Requirements Specification
 - **Status**: Handoff record for the double-entry finance ledger engine scope
+
+## 0. Implementation Status (issue #2477)
+
+The requirements below have been implemented as a single consolidated pure module:
+
+- `src/features/finance/financeEngineDoubleEntry/financeEngineDoubleEntry.logic.ts`
+- `src/features/finance/financeEngineDoubleEntry/financeEngineDoubleEntry.logic.test.ts`
+
+The module exports `validateTransaction`, `postTransaction`, `getAccountBalance`,
+`reverseTransaction`, `LedgerPostingError`, and all associated domain types (`LedgerAccount`,
+`LedgerEntry`, `LedgerTransaction`, `LedgerTransactionCandidate`, `LedgerState`,
+`ValidationResult`, `ValidationFailure`, `ValidationFailureCode`, `AccountType`, `EntrySide`).
+Requirements FR-1 through FR-13 and NFR-1 through NFR-5 are covered by the vitest suite in the
+`.logic.test.ts` file. Parent issue #1926 remains open; this document is updated in place rather
+than superseded.
 
 ## 1. Introduction
 
@@ -113,6 +128,7 @@ any persistence backend chosen later.
 
 This SRS document and its sibling handoff/design documents are additive artifacts under
 `plans/implementation_handoffs/` and `src/features/finance/financeEngineDoubleEntry/`. Rollback is
-a straightforward deletion of the four files introduced by issue #2479 (this SRS, the paired SDD,
-the contract, and the README); no schema, dependency, or runtime configuration changes are made by
-this scope, so no additional remediation is required.
+a straightforward deletion of the files introduced by issues #2479/#2477 (this SRS, the paired
+SDD, and the consolidated `financeEngineDoubleEntry.logic.ts` / `.logic.test.ts` implementation and
+test files); no schema, dependency, or runtime configuration changes are made by this scope, so no
+additional remediation is required.

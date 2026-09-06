@@ -1,10 +1,10 @@
 # SDD — W56 Finance Ledger (Software Design Document)
 
 - **Parent issue**: #1926
-- **Child issue**: #2479
+- **Child issues**: #2479 (original handoff), #2477 (implementation)
 - **Component**: `src/features/finance/financeEngineDoubleEntry`
 - **Companion document**: `SRS-ISSUE-W56-FINANCE-LEDGER-1926.md`
-- **Behavioral contract**: `../../src/features/finance/financeEngineDoubleEntry/financeEngineDoubleEntry.contract.md`
+- **Implementation files**: `financeEngineDoubleEntry.logic.ts`, `financeEngineDoubleEntry.logic.test.ts`
 
 ## 1. Design Overview
 
@@ -46,6 +46,17 @@ child issue under parent #1926.
 
 This SDD documents the design; concrete `.ts` implementation files are produced in the
 implementation phase of issue #2479 and MUST conform to this design and to the contract document.
+
+### 2.1 Implementation Note (issue #2477)
+
+The design above enumerates separate `types.ts` / `validation.ts` / `posting.ts` / `balances.ts` /
+`reversal.ts` / `index.ts` modules. The actual implementation delivered under issue #2477
+consolidates all of these responsibilities into a single file,
+`financeEngineDoubleEntry.logic.ts`, with a matching `financeEngineDoubleEntry.logic.test.ts`
+covering every function. This is a packaging simplification only — every function name, type name,
+and requirement mapping described below (`validateTransaction`, `postTransaction`,
+`getAccountBalance`, `reverseTransaction`, plus the full domain type set) is preserved verbatim as
+named exports of the consolidated file, so all traceability in §6 remains valid.
 
 ## 3. Key Design Decisions
 
@@ -142,7 +153,8 @@ of scope for this child issue — cleanly separated.
 ## 8. Rollback Note
 
 This SDD is a planning/design artifact only. Rollback consists of deleting this file together with
-its companion SRS, the contract document, and the module README — all listed in the parent issue's
-child scope for #2479. No source code outside `src/features/finance/financeEngineDoubleEntry/`
-documentation is affected, no dependencies are added, and no database or secret state is touched,
-so reverting this change is a clean, side-effect-free file removal.
+its companion SRS and the consolidated implementation/test files
+(`financeEngineDoubleEntry.logic.ts`, `financeEngineDoubleEntry.logic.test.ts`) under
+`src/features/finance/financeEngineDoubleEntry/`. No source code outside this component is
+affected, no dependencies are added, and no database or secret state is touched, so reverting this
+change is a clean, side-effect-free file removal.
