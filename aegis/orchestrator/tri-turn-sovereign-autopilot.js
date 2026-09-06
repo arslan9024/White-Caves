@@ -785,6 +785,12 @@ async function loadOpenTriTurnIssues(token) {
   return loadOpenGitHubIssues(token, 'tri-turn-sovereign');
 }
 
+async function getOpenIssueCount(token) {
+  if (!token) throw new Error('Cannot verify open issue count without GitHub authentication.');
+  const issues = await loadOpenGitHubIssues(token, '');
+  return issues.filter(issue => !issue.pull_request).length;
+}
+
 function laneFromIssue(issueOrBody, labels) {
   const labelList = (labels || [])
     .map(label => (typeof label === 'string' ? label : label?.name || ''))
@@ -2543,10 +2549,8 @@ async function main() {
 
     if (!options.loop) break;
 
-    // Self-healing unlimited autopilot: blocked issues are retried with backoff
-    // across cycles (a block usually means a contract fix the next executor pass
-    // can apply). The loop only stops when the backlog is empty or the block
-    // persists beyond the consecutive-blocked budget.
+    // Unlimited autopilot only completes after a fresh GitHub query confirms
+    // zero open issues. Blocked/no-progress cycles remain retryable.
     if (options.autoChain) {
       const progressed =
         Number(summary.solved) > 0 || Number(summary.created) > 0 || Number(summary.updated) > 0;
@@ -2556,27 +2560,26 @@ async function main() {
 
       if (progressed) consecutiveBlocked = 0;
 
-      if (options.unlimited && halted) {
-        consecutiveBlocked += 1;
-        if (consecutiveBlocked > options.maxConsecutiveBlocked) {
+      if (options.unlimited) {
+        const openIssueCount = await getOpenIssueCount(getToken());
+        if (openIssueCount === 0) {
           console.log(
-            `⛔ Unlimited loop stopped: ${consecutiveBlocked} consecutive blocked cycles (budget ${options.maxConsecutiveBlocked}). Manual review required.`
+            '✅ [UNLIMITED] BACKLOG_EMPTY — fresh GitHub query confirms zero open issues.'
           );
           break;
         }
+
+        consecutiveBlocked += 1;
         console.log(
-          `🔁 [UNLIMITED] Blocked cycle ${consecutiveBlocked}/${options.maxConsecutiveBlocked}; backing off ${options.blockedBackoffMs}ms and retrying (self-heal).`
+          `🔁 [UNLIMITED] GitHub reports ${openIssueCount} open issues; ` +
+            `${halted ? 'cycle blocked' : progressed ? 'progress recorded' : 'no progress'}; ` +
+            `retrying after ${options.blockedBackoffMs}ms.`
         );
         await sleep(options.blockedBackoffMs);
         continue;
       }
 
       if (halted || !progressed) {
-        if (options.unlimited) {
-          // Backlog is clear and nothing halted — work is finished.
-          console.log('✅ [UNLIMITED] Backlog clear — no open issues remain. Protocol complete.');
-          break;
-        }
         console.log('⏸️ Auto-chain loop paused: no forward progress or hard halt reached.');
         break;
       }
@@ -2625,6 +2628,7 @@ export {
   createCycleId,
   createIssueWorkPacket,
   fingerprintResolved,
+  getOpenIssueCount,
   parseArgs,
   reconcileClosedParents,
   resolveFixCommands,

@@ -27,7 +27,7 @@
     "aegis:workflow:master": "node aegis/orchestrator/aegis-engine.js cycle",
     "aegis:erp:supercharge": "node aegis/orchestrator/aegis-engine.js cycle",
     "aegis:md:sovereign": "node aegis/orchestrator/aegis-engine.js cycle",
-    "aegis:sovereign999": "node aegis/orchestrator/tri-turn-sovereign-autopilot.js --autopilot --quota=333 --turns=docs-governance,frontend,backend --max-attempts=3 --max-issues=10 --executor=auto --auto-chain --loop",
+    "aegis:sovereign999": "node aegis/orchestrator/tri-turn-sovereign-autopilot.js --autopilot --quota=333 --turns=docs-governance,frontend,backend --max-attempts=3 --max-issues=10 --executor=auto --auto-chain --unlimited --auto-merge --loop",
     "aegis:sovereign999:preflight": "node aegis/scripts/orchestrator/tri-turn-preflight.js",
     "aegis:sovereign999:preflight:gates": "node aegis/scripts/orchestrator/tri-turn-preflight.js --run-gates",
     "aegis:coding-executor:status": "node aegis/scripts/orchestrator/coding-executor-status.js",
