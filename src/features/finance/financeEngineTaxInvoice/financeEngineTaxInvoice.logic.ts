@@ -5,6 +5,10 @@
  * Responsible for computing tax invoice line items, aggregating totals,
  * validating invoice inputs, and generating a deterministic invoice number.
  *
+ * This module has no I/O side effects (no filesystem, no network, no
+ * database access). It only performs deterministic calculations over data
+ * supplied by the caller.
+ *
  * Parent issue: #1928
  * Child issue: #2467
  */
