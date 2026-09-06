@@ -1,50 +1,70 @@
-# Finance Engine Architecture Double
+# financeEngineArchitectureDouble
 
-> Child of #1925 (Finance Engine Architecture) · Tracked as #2483
+Issue: #2483 — child of parent issue #1925.
 
 ## What this is
 
-This directory documents the **contract** that a "finance engine architecture double" must satisfy. A double is a deterministic, in-memory stand-in for the real finance engine, used so that consumers (UI, API handlers, reporting) can be built and tested against a stable interface while the real engine's business logic is implemented across the remaining child issues of #1925.
+A test-double module scope for the finance engine, used so that other features (Redux slices,
+API route handlers, React components) can be unit- and integration-tested against a realistic,
+deterministic in-memory stand-in for the finance engine, instead of depending on the real
+implementation, a live database, or external payment/FX services.
 
-This issue (#2483) delivers **specification and handoff documentation only** — no production runtime code, no database access, and no GitHub mutation. See:
+This directory currently holds the **contract** for that double
+(`financeEngineArchitectureDouble.contract.md`). The contract is the source of truth for the
+double's public behavior; concrete TypeScript source files implementing the double are delivered
+by the implementation work tracked under parent issue #1925 and MUST conform to this contract.
 
-- [`financeEngineArchitectureDouble.contract.md`](./financeEngineArchitectureDouble.contract.md) — the behavioral contract (interface shape, invariants, validation rules) that both the real engine and any test double must honor.
-- [`../../../../plans/implementation_handoffs/SRS-ISSUE-W56-FINANCE-SPEC-1925.md`](../../../../plans/implementation_handoffs/SRS-ISSUE-W56-FINANCE-SPEC-1925.md) — Software Requirements Specification for the W56 finance work stream.
-- [`../../../../plans/implementation_handoffs/SDD-ISSUE-W56-FINANCE-SPEC-1925.md`](../../../../plans/implementation_handoffs/SDD-ISSUE-W56-FINANCE-SPEC-1925.md) — Software Design Description translating those requirements into an implementable architecture.
+## Why a "double" and not a mock
 
-## Why a "double" instead of mocking ad hoc
+A hand-rolled per-test mock (e.g. `vi.fn()` stubs) tends to encode assumptions about _how_ a
+consumer calls the finance engine rather than _what_ the finance engine actually guarantees. A
+double is a small, real, in-memory implementation: it validates input, maintains a ledger, and
+computes a real running balance, so tests exercise genuine behavior (e.g. "recording a debit then
+a credit yields the correct net balance") instead of asserting that a mock was called with certain
+arguments.
 
-Rather than letting each consumer hand-roll its own mock of finance calculations (leading to drift and inconsistent test fixtures), the finance engine is specified as an interface (`FinanceEngine`) first. A single shared double implementing that interface can then be reused across test suites, guaranteeing that:
+This aligns with the project's test policy: assertions must reflect real behavior, never
+placeholder/tautological checks.
 
-- Tests exercise the same shape of data the real engine will eventually return.
-- When the real engine ships, swapping the binding at the composition root is the only change required — call sites and test expectations built against the contract remain valid.
+## How to use it (once implemented)
 
-## Scope boundaries (this issue only)
+```ts
+import { createFinanceEngineDouble } from './financeEngineArchitectureDouble';
 
-**In scope:**
+const engine = createFinanceEngineDouble({ seed: 'unit-test-seed' });
 
-- Contract documentation for the finance engine double.
-- SRS/SDD handoff documents for the parent work stream (W56 / #1925), scoped to this child's contribution.
+engine.recordTransaction({ amount: 500, description: 'Deposit' });
+engine.recordTransaction({ amount: -120, description: 'Fee' });
 
-**Out of scope (explicitly excluded):**
+expect(engine.getBalance()).toBe(380);
+```
 
-- Closing parent issue #1925.
-- Bulk GitHub mutations (labels, milestones, cross-issue edits).
-- Destructive database operations.
-- Production secret rewrites.
-- Implementing the real finance engine's business logic (rates, tax tables, commission tiers) — tracked in other child issues.
+## Determinism guarantees
 
-## Status
+- Same seed ⇒ same computed outputs, every run, every machine.
+- No hidden network or database calls.
+- `reset()` returns the double to its just-constructed state.
 
-Parent issue #1925 remains **open**; this child (#2483) contributes documentation artifacts only and does not reconcile or close the parent. Further child issues under #1925 are expected to implement the real engine and its test doubles in code.
+See `financeEngineArchitectureDouble.contract.md` for the full behavioral contract, including the
+error contract (`FinanceEngineValidationError` with a stable `code`).
 
-## Rollback
+## Scope boundaries
 
-These are additive, standalone documentation files. To roll back this change, delete:
+This module scope, and this issue (#2483), cover only the double's contract and its documentation
+handoff artifacts. It does **not**:
 
-- `src/features/finance/financeEngineArchitectureDouble/financeEngineArchitectureDouble.contract.md`
-- `src/features/finance/financeEngineArchitectureDouble/README.md`
-- `plans/implementation_handoffs/SRS-ISSUE-W56-FINANCE-SPEC-1925.md`
-- `plans/implementation_handoffs/SDD-ISSUE-W56-FINANCE-SPEC-1925.md`
+- close parent issue #1925,
+- perform bulk GitHub mutations,
+- perform destructive database operations, or
+- rewrite production secrets.
 
-No other files, dependencies, or generated artifacts are affected. No database, secret, or GitHub state was mutated by this change.
+The parent issue (#1925) remains open until all of its child issues, including any that implement
+the double described here, are reconciled.
+
+## Related documents
+
+- `financeEngineArchitectureDouble.contract.md` — behavioral contract for this module.
+- `../../../../plans/implementation_handoffs/SRS-ISSUE-W56-FINANCE-SPEC-1925.md` — software
+  requirements specification handoff for the W56 finance spec work stream.
+- `../../../../plans/implementation_handoffs/SDD-ISSUE-W56-FINANCE-SPEC-1925.md` — software design
+  document handoff for the same work stream.
