@@ -1,215 +1,112 @@
 /**
- * financeEngineRollingMonth.logic.ts
+ * Finance Engine — Rolling Month
  *
- * Rolling-month finance engine utilities.
+ * Parent issue: #1933
+ * Child issue: #2450
  *
- * A "rolling month" window is a contiguous 30-day (or N-day) period anchored to
- * an arbitrary reference date, as opposed to a calendar-month window that is
- * anchored to the 1st of the month. This module provides pure, deterministic
- * helpers to compute rolling-month windows, bucket dated financial entries into
- * those windows, and aggregate totals per window.
+ * Pure, side-effect-free logic for computing "rolling month" windows: a
+ * continuous 1-calendar-month span `[start, end)` anchored to a fixed
+ * day-of-month, that brackets a given reference ("now") date. This is
+ * distinct from a fixed calendar-month (1st-to-1st) window, since the
+ * rolling window can start/end on any day of the month (e.g. the 15th).
  *
- * Design decisions:
- * - All functions are pure (no I/O, no mutation of inputs) so they are easy to
- *   unit test and safe to use inside reducers/selectors.
- * - Dates are handled via native `Date` objects normalized to UTC midnight to
- *   avoid timezone drift across environments.
- * - Window length defaults to 30 days but is configurable to support 28/31 day
- *   rolling windows used elsewhere in the finance engine.
+ * No I/O, no GitHub mutation, no database access — this module only
+ * computes derived data from inputs it is given.
  */
 
+/**
+ * A rolling-month window. `start` is inclusive, `end` is exclusive, both
+ * expressed as ISO 8601 timestamp strings (UTC, millisecond precision).
+ */
 export interface RollingMonthWindow {
-  /** Inclusive start of the window (UTC midnight). */
-  start: Date;
-  /** Exclusive end of the window (UTC midnight). */
-  end: Date;
-  /** Zero-based index of this window relative to the anchor date. */
-  index: number;
+  readonly start: string;
+  readonly end: string;
 }
 
-export interface FinanceEntry {
-  /** ISO date string or Date representing when the entry occurred. */
-  date: string | Date;
-  /** Signed monetary amount (positive = inflow, negative = outflow). */
-  amount: number;
-  /** Optional category/label for the entry. */
-  category?: string;
+/** Number of days in a given UTC year/month (month is 0-indexed). */
+function daysInMonthUtc(year: number, month: number): number {
+  // Day 0 of "next month" is the last day of "month".
+  return new Date(Date.UTC(year, month + 1, 0)).getUTCDate();
 }
-
-export interface RollingMonthBucket {
-  window: RollingMonthWindow;
-  entries: FinanceEntry[];
-  total: number;
-  inflow: number;
-  outflow: number;
-}
-
-export const DEFAULT_ROLLING_WINDOW_DAYS = 30;
 
 /**
- * Normalize a Date or ISO date string to a UTC-midnight Date instance.
- * Throws if the input cannot be parsed into a valid date.
+ * Builds a UTC Date for the given year/month (0-indexed) and day-of-month,
+ * clamping the day to the last valid day of that month when it overflows
+ * (e.g. day=31 in a 30-day month becomes the 30th).
  */
-export function toUtcMidnight(input: string | Date): Date {
-  const parsed = input instanceof Date ? input : new Date(input);
-  if (Number.isNaN(parsed.getTime())) {
-    throw new Error(`financeEngineRollingMonth: invalid date input "${String(input)}"`);
+function dateForMonthWithDay(year: number, month: number, day: number): Date {
+  const clampedDay = Math.min(day, daysInMonthUtc(year, month));
+  return new Date(Date.UTC(year, month, clampedDay));
+}
+
+/** Adds `delta` months to a (year, month) pair, normalizing month overflow. */
+function shiftYearMonth(
+  year: number,
+  month: number,
+  delta: number
+): { year: number; month: number } {
+  const total = year * 12 + month + delta;
+  const normalizedYear = Math.floor(total / 12);
+  const normalizedMonth = ((total % 12) + 12) % 12;
+  return { year: normalizedYear, month: normalizedMonth };
+}
+
+/**
+ * Computes the rolling-month window `[start, end)` that brackets `now`,
+ * anchored to the day-of-month of `anchor`.
+ *
+ * The window's `start` is the most recent occurrence of the anchor
+ * day-of-month that is on or before `now`, and `end` is the following
+ * month's occurrence of that same anchor day-of-month (clamped to the
+ * last day of the month when the anchor day does not exist in that
+ * month, e.g. day 31 in February).
+ *
+ * @throws {Error} if `anchor` or `now` is an invalid Date.
+ */
+export function computeRollingMonthWindow(anchor: Date, now: Date): RollingMonthWindow {
+  if (Number.isNaN(anchor.getTime())) {
+    throw new Error('Invalid anchor date');
   }
-  return new Date(Date.UTC(parsed.getUTCFullYear(), parsed.getUTCMonth(), parsed.getUTCDate()));
-}
-
-/**
- * Add a number of days to a Date, returning a new Date (does not mutate input).
- */
-export function addDays(date: Date, days: number): Date {
-  const result = new Date(date.getTime());
-  result.setUTCDate(result.getUTCDate() + days);
-  return result;
-}
-
-/**
- * Compute the number of whole days between two dates (end - start).
- */
-export function diffInDays(start: Date, end: Date): number {
-  const MS_PER_DAY = 24 * 60 * 60 * 1000;
-  return Math.round((end.getTime() - start.getTime()) / MS_PER_DAY);
-}
-
-/**
- * Build a single rolling-month window anchored at `anchorDate`, offset by
- * `index` window-lengths, using `windowDays` as the window size.
- */
-export function buildRollingMonthWindow(
-  anchorDate: string | Date,
-  index: number,
-  windowDays: number = DEFAULT_ROLLING_WINDOW_DAYS
-): RollingMonthWindow {
-  if (windowDays <= 0) {
-    throw new Error('financeEngineRollingMonth: windowDays must be a positive integer');
-  }
-  if (!Number.isInteger(index)) {
-    throw new Error('financeEngineRollingMonth: index must be an integer');
-  }
-  const anchor = toUtcMidnight(anchorDate);
-  const start = addDays(anchor, index * windowDays);
-  const end = addDays(start, windowDays);
-  return { start, end, index };
-}
-
-/**
- * Determine which rolling-month window (relative to `anchorDate`) a given
- * `entryDate` falls into. Returns the window index (can be negative for
- * dates before the anchor).
- */
-export function getRollingMonthIndex(
-  anchorDate: string | Date,
-  entryDate: string | Date,
-  windowDays: number = DEFAULT_ROLLING_WINDOW_DAYS
-): number {
-  if (windowDays <= 0) {
-    throw new Error('financeEngineRollingMonth: windowDays must be a positive integer');
-  }
-  const anchor = toUtcMidnight(anchorDate);
-  const entry = toUtcMidnight(entryDate);
-  const dayDiff = diffInDays(anchor, entry);
-  return Math.floor(dayDiff / windowDays);
-}
-
-/**
- * Returns true when `entryDate` falls within `window` (start inclusive, end exclusive).
- */
-export function isWithinRollingMonthWindow(
-  window: RollingMonthWindow,
-  entryDate: string | Date
-): boolean {
-  const entry = toUtcMidnight(entryDate);
-  return entry.getTime() >= window.start.getTime() && entry.getTime() < window.end.getTime();
-}
-
-/**
- * Group finance entries into rolling-month buckets anchored at `anchorDate`.
- * Every entry is assigned to exactly one bucket based on its date. Buckets
- * are returned sorted by window index ascending, and only buckets that
- * contain at least one entry are included.
- */
-export function groupEntriesByRollingMonth(
-  entries: FinanceEntry[],
-  anchorDate: string | Date,
-  windowDays: number = DEFAULT_ROLLING_WINDOW_DAYS
-): RollingMonthBucket[] {
-  if (windowDays <= 0) {
-    throw new Error('financeEngineRollingMonth: windowDays must be a positive integer');
+  if (Number.isNaN(now.getTime())) {
+    throw new Error('Invalid reference ("now") date');
   }
 
-  const bucketsByIndex = new Map<number, FinanceEntry[]>();
+  const anchorDay = anchor.getUTCDate();
 
-  for (const entry of entries) {
-    const index = getRollingMonthIndex(anchorDate, entry.date, windowDays);
-    const bucket = bucketsByIndex.get(index);
-    if (bucket) {
-      bucket.push(entry);
-    } else {
-      bucketsByIndex.set(index, [entry]);
-    }
+  let year = now.getUTCFullYear();
+  let month = now.getUTCMonth();
+  let start = dateForMonthWithDay(year, month, anchorDay);
+
+  if (start.getTime() > now.getTime()) {
+    const shifted = shiftYearMonth(year, month, -1);
+    year = shifted.year;
+    month = shifted.month;
+    start = dateForMonthWithDay(year, month, anchorDay);
   }
 
-  const sortedIndexes = Array.from(bucketsByIndex.keys()).sort((a, b) => a - b);
+  let endShift = shiftYearMonth(year, month, 1);
+  let end = dateForMonthWithDay(endShift.year, endShift.month, anchorDay);
 
-  return sortedIndexes.map(index => {
-    const bucketEntries = bucketsByIndex.get(index) as FinanceEntry[];
-    const window = buildRollingMonthWindow(anchorDate, index, windowDays);
-    return summarizeBucket(window, bucketEntries);
-  });
-}
-
-/**
- * Compute inflow/outflow/net totals for a set of entries within a window.
- */
-function summarizeBucket(window: RollingMonthWindow, entries: FinanceEntry[]): RollingMonthBucket {
-  let inflow = 0;
-  let outflow = 0;
-
-  for (const entry of entries) {
-    if (entry.amount >= 0) {
-      inflow += entry.amount;
-    } else {
-      outflow += entry.amount;
-    }
+  // Defensive loop: guarantees end > now even in pathological clamped-day
+  // edge cases (e.g. anchor day 31 repeatedly clamped in short months).
+  while (end.getTime() <= now.getTime()) {
+    endShift = shiftYearMonth(endShift.year, endShift.month, 1);
+    end = dateForMonthWithDay(endShift.year, endShift.month, anchorDay);
   }
 
   return {
-    window,
-    entries,
-    total: inflow + outflow,
-    inflow,
-    outflow,
+    start: start.toISOString(),
+    end: end.toISOString(),
   };
 }
 
 /**
- * Compute the current rolling-month window that contains `asOfDate`, relative
- * to a fixed `anchorDate` (e.g. an account creation date or fiscal start).
+ * Returns true when `date` falls within the rolling-month `window`
+ * (inclusive of `start`, exclusive of `end`).
  */
-export function getCurrentRollingMonthWindow(
-  anchorDate: string | Date,
-  asOfDate: string | Date,
-  windowDays: number = DEFAULT_ROLLING_WINDOW_DAYS
-): RollingMonthWindow {
-  const index = getRollingMonthIndex(anchorDate, asOfDate, windowDays);
-  return buildRollingMonthWindow(anchorDate, index, windowDays);
-}
-
-/**
- * Filter entries to only those within the rolling-month window that contains
- * `asOfDate`, and return the aggregated bucket for convenience.
- */
-export function getCurrentRollingMonthBucket(
-  entries: FinanceEntry[],
-  anchorDate: string | Date,
-  asOfDate: string | Date,
-  windowDays: number = DEFAULT_ROLLING_WINDOW_DAYS
-): RollingMonthBucket {
-  const window = getCurrentRollingMonthWindow(anchorDate, asOfDate, windowDays);
-  const matching = entries.filter(entry => isWithinRollingMonthWindow(window, entry.date));
-  return summarizeBucket(window, matching);
+export function isWithinRollingMonth(date: Date, window: RollingMonthWindow): boolean {
+  const time = date.getTime();
+  const startTime = Date.parse(window.start);
+  const endTime = Date.parse(window.end);
+  return time >= startTime && time < endTime;
 }

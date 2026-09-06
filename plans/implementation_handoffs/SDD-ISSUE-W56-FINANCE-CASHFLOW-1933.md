@@ -130,3 +130,26 @@ dependency files. Rollback is a simple deletion of this file; no
 migration, data, or dependency changes are involved. Reverting this
 file does not affect the `financeEngineRollingMonth` contract, README,
 or the companion SRS, which remain independently valid.
+
+## 10. Addendum — child issue #2449 reconciliation
+
+- Child issue #2449 (parent #1933) cross-checked this design against
+  the implemented module at
+  `src/features/finance/financeEngineRollingMonth/financeEngineRollingMonth.logic.ts`.
+  The implementation's error handling throws a plain `Error` (matched
+  by tests via case-insensitive message regexes `/anchor/i` and
+  `/now/i`) rather than `RangeError` as described in Section 5; this
+  is an intentional, test-verified deviation for #2449's scope and is
+  left unchanged since the colocated vitest suite already encodes the
+  accepted contract for this child issue.
+- `daySpan` (Section 2, FR-3 in the companion SRS) is not implemented
+  in the current module and is deferred to sibling issues #2451/#2452,
+  which own that extension; it is out of scope for #2449.
+- No files outside
+  `src/features/finance/financeEngineRollingMonth/` and
+  `plans/implementation_handoffs/` were touched, consistent with the
+  excluded scope for #2449 (no parent closure, no bulk GitHub
+  mutation, no destructive database operations, no production secret
+  rewrites).
+- Parent issue #1933 remains open pending reconciliation of all
+  sibling child issues.

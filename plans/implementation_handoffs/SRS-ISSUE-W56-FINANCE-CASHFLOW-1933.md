@@ -103,3 +103,24 @@ dependency files. Rollback is a simple deletion of this file; no
 migration, data, or dependency changes are involved. Reverting this
 file does not affect the `financeEngineRollingMonth` contract or
 README, which remain independently valid.
+
+## 10. Addendum — child issue #2449 reconciliation
+
+- Child issue #2449 (parent #1933) re-verified this handoff against the
+  live implementation at
+  `src/features/finance/financeEngineRollingMonth/financeEngineRollingMonth.logic.ts`
+  and its colocated vitest suite
+  `financeEngineRollingMonth.logic.test.ts`.
+- Verified public surface matches this SRS's traceability (Section 7):
+  `computeRollingMonthWindow`, `isWithinRollingMonth`, and the
+  `RollingMonthWindow` interface (`start`, `end`, both inclusive-lower
+  and exclusive-upper ISO strings).
+- No source or test changes were required for #2449; the existing
+  implementation and focused tests already satisfy FR-1, FR-2, FR-4,
+  and FR-5. FR-3 (`daySpan`) is tracked separately under sibling issue
+  #2451/#2452 and is out of scope for #2449.
+- Excluded scope for #2449 (parent issue closure, bulk GitHub
+  mutation, destructive database operations, production secret
+  rewrites) was fully respected — this addendum is documentation-only.
+- Parent issue #1933 remains open pending reconciliation of all
+  sibling child issues.
