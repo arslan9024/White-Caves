@@ -1,162 +1,195 @@
 import { describe, expect, it } from 'vitest';
-
 import {
-  calculateFxGain,
-  roundToCents,
-  type FxAmount,
-  type FxGainResult,
+  calculateFxGainLoss,
+  FxGainCalculationError,
+  summarizeFxGainLoss,
+  type FxTransactionInput,
 } from './financeEngineFxGain.logic';
 
-const BASE_CURRENCY = 'USD';
+function baseInput(overrides: Partial<FxTransactionInput> = {}): FxTransactionInput {
+  return {
+    transactionId: 'txn-1',
+    transactionCurrency: 'USD',
+    baseCurrency: 'AED',
+    transactionAmount: 1000,
+    bookingRate: 3.67,
+    settlementRate: 3.67,
+    settlementStatus: 'realized',
+    ...overrides,
+  };
+}
 
-describe('roundToCents', () => {
-  it('rounds a plain fractional cent value up (round-half-up)', () => {
-    expect(roundToCents(100.005)).toBe(100.01);
+describe('calculateFxGainLoss', () => {
+  it('computes a realized gain when the settlement rate rises', () => {
+    const result = calculateFxGainLoss(baseInput({ bookingRate: 3.6, settlementRate: 3.7 }));
+
+    expect(result.bookedBaseAmount).toBe(3600);
+    expect(result.settledBaseAmount).toBe(3700);
+    expect(result.gainLossAmount).toBe(100);
+    expect(result.direction).toBe('gain');
+    expect(result.settlementStatus).toBe('realized');
+    expect(result.transactionId).toBe('txn-1');
   });
 
-  it('rounds down when below the half-cent boundary', () => {
-    expect(roundToCents(100.004)).toBe(100);
+  it('computes a realized loss when the settlement rate falls', () => {
+    const result = calculateFxGainLoss(baseInput({ bookingRate: 3.7, settlementRate: 3.6 }));
+
+    expect(result.bookedBaseAmount).toBe(3700);
+    expect(result.settledBaseAmount).toBe(3600);
+    expect(result.gainLossAmount).toBe(-100);
+    expect(result.direction).toBe('loss');
   });
 
-  it('leaves already-rounded values unchanged', () => {
-    expect(roundToCents(42.5)).toBe(42.5);
-  });
-
-  it('handles negative values symmetrically', () => {
-    expect(roundToCents(-100.005)).toBe(-100);
-  });
-});
-
-describe('calculateFxGain — FR-1: realized gain/loss', () => {
-  it('reports a positive gain when settlement rate exceeds the booking rate', () => {
-    const original: FxAmount = { foreignAmount: 1000, foreignCurrency: 'EUR', rate: 1.1 };
-    const current: FxAmount = { foreignAmount: 1000, foreignCurrency: 'EUR', rate: 1.2 };
-
-    const result = calculateFxGain(original, current, BASE_CURRENCY);
-
-    expect(result.originalBaseValue).toBe(1100);
-    expect(result.currentBaseValue).toBe(1200);
-    expect(result.gainOrLoss).toBe(100);
-    expect(result.gainOrLoss).toBeGreaterThan(0);
-  });
-
-  it('reports a negative loss when settlement rate is below the booking rate', () => {
-    const original: FxAmount = { foreignAmount: 1000, foreignCurrency: 'EUR', rate: 1.2 };
-    const current: FxAmount = { foreignAmount: 1000, foreignCurrency: 'EUR', rate: 1.1 };
-
-    const result = calculateFxGain(original, current, BASE_CURRENCY);
-
-    expect(result.originalBaseValue).toBe(1200);
-    expect(result.currentBaseValue).toBe(1100);
-    expect(result.gainOrLoss).toBe(-100);
-    expect(result.gainOrLoss).toBeLessThan(0);
-  });
-});
-
-describe('calculateFxGain — FR-2: unrealized gain/loss', () => {
-  it('computes gain against a valuation-date rate using the same shape as realized calc', () => {
-    const original: FxAmount = { foreignAmount: 500, foreignCurrency: 'GBP', rate: 1.25 };
-    const valuation: FxAmount = { foreignAmount: 500, foreignCurrency: 'GBP', rate: 1.3 };
-
-    const result = calculateFxGain(original, valuation, BASE_CURRENCY);
-
-    expect(result.originalBaseValue).toBe(625);
-    expect(result.currentBaseValue).toBe(650);
-    expect(result.gainOrLoss).toBe(25);
-  });
-
-  it('computes loss against a valuation-date rate', () => {
-    const original: FxAmount = { foreignAmount: 500, foreignCurrency: 'GBP', rate: 1.3 };
-    const valuation: FxAmount = { foreignAmount: 500, foreignCurrency: 'GBP', rate: 1.25 };
-
-    const result = calculateFxGain(original, valuation, BASE_CURRENCY);
-
-    expect(result.gainOrLoss).toBe(-25);
-  });
-});
-
-describe('calculateFxGain — FR-3: sign convention', () => {
-  it('always computes gainOrLoss as currentBaseValue - originalBaseValue', () => {
-    const original: FxAmount = { foreignAmount: 300, foreignCurrency: 'JPY', rate: 0.0067 };
-    const current: FxAmount = { foreignAmount: 300, foreignCurrency: 'JPY', rate: 0.0071 };
-
-    const result = calculateFxGain(original, current, BASE_CURRENCY);
-
-    expect(result.gainOrLoss).toBe(
-      roundToCents(result.currentBaseValue - result.originalBaseValue)
+  it('computes an unrealized revaluation using the same formula path', () => {
+    const result = calculateFxGainLoss(
+      baseInput({
+        settlementStatus: 'unrealized',
+        bookingRate: 3.65,
+        settlementRate: 3.7,
+      })
     );
+
+    expect(result.gainLossAmount).toBe(50);
+    expect(result.direction).toBe('gain');
+    expect(result.settlementStatus).toBe('unrealized');
+  });
+
+  it('reports no exposure and gainLossAmount 0 when currencies match', () => {
+    const result = calculateFxGainLoss(
+      baseInput({
+        transactionCurrency: 'AED',
+        baseCurrency: 'AED',
+        bookingRate: 1,
+        settlementRate: 999,
+      })
+    );
+
+    expect(result.gainLossAmount).toBe(0);
+    expect(result.direction).toBe('none');
+    expect(result.bookedBaseAmount).toBe(1000);
+    expect(result.settledBaseAmount).toBe(1000);
+  });
+
+  it('rounds results to 2 decimal places', () => {
+    const result = calculateFxGainLoss(
+      baseInput({
+        transactionAmount: 333.333,
+        bookingRate: 3.001,
+        settlementRate: 3.002,
+      })
+    );
+
+    expect(Number.isInteger(result.bookedBaseAmount * 100)).toBe(true);
+    expect(Number.isInteger(result.settledBaseAmount * 100)).toBe(true);
+    expect(Number.isInteger(result.gainLossAmount * 100)).toBe(true);
+  });
+
+  it('throws INVALID_CURRENCY_CODE for a malformed currency code', () => {
+    expect(() => calculateFxGainLoss(baseInput({ transactionCurrency: 'usd' }))).toThrow(
+      FxGainCalculationError
+    );
+
+    try {
+      calculateFxGainLoss(baseInput({ baseCurrency: 'AE' }));
+      expect.unreachable('expected calculateFxGainLoss to throw');
+    } catch (error) {
+      expect(error).toBeInstanceOf(FxGainCalculationError);
+      expect((error as FxGainCalculationError).code).toBe('INVALID_CURRENCY_CODE');
+    }
+  });
+
+  it('throws NON_FINITE_AMOUNT for a non-finite transaction amount', () => {
+    try {
+      calculateFxGainLoss(baseInput({ transactionAmount: Number.NaN }));
+      expect.unreachable('expected calculateFxGainLoss to throw');
+    } catch (error) {
+      expect(error).toBeInstanceOf(FxGainCalculationError);
+      expect((error as FxGainCalculationError).code).toBe('NON_FINITE_AMOUNT');
+    }
+  });
+
+  it('throws NEGATIVE_AMOUNT for a negative transaction amount', () => {
+    try {
+      calculateFxGainLoss(baseInput({ transactionAmount: -50 }));
+      expect.unreachable('expected calculateFxGainLoss to throw');
+    } catch (error) {
+      expect(error).toBeInstanceOf(FxGainCalculationError);
+      expect((error as FxGainCalculationError).code).toBe('NEGATIVE_AMOUNT');
+    }
+  });
+
+  it('throws NON_POSITIVE_RATE for a zero or negative rate', () => {
+    try {
+      calculateFxGainLoss(baseInput({ bookingRate: 0 }));
+      expect.unreachable('expected calculateFxGainLoss to throw');
+    } catch (error) {
+      expect(error).toBeInstanceOf(FxGainCalculationError);
+      expect((error as FxGainCalculationError).code).toBe('NON_POSITIVE_RATE');
+    }
+
+    try {
+      calculateFxGainLoss(baseInput({ settlementRate: -1 }));
+      expect.unreachable('expected calculateFxGainLoss to throw');
+    } catch (error) {
+      expect(error).toBeInstanceOf(FxGainCalculationError);
+      expect((error as FxGainCalculationError).code).toBe('NON_POSITIVE_RATE');
+    }
+  });
+
+  it('validates in fixed precedence: currency code before amount checks', () => {
+    try {
+      calculateFxGainLoss(baseInput({ transactionCurrency: 'usd', transactionAmount: -1 }));
+      expect.unreachable('expected calculateFxGainLoss to throw');
+    } catch (error) {
+      expect((error as FxGainCalculationError).code).toBe('INVALID_CURRENCY_CODE');
+    }
   });
 });
 
-describe('calculateFxGain — FR-4: output rounding', () => {
-  it('rounds base values and gain/loss to 2 decimal places', () => {
-    const original: FxAmount = { foreignAmount: 333.333, foreignCurrency: 'EUR', rate: 1.001 };
-    const current: FxAmount = { foreignAmount: 333.333, foreignCurrency: 'EUR', rate: 1.009 };
+describe('summarizeFxGainLoss', () => {
+  it('sums gains and losses separately and computes a net amount', () => {
+    const gain = calculateFxGainLoss(
+      baseInput({ transactionId: 'g1', bookingRate: 3.6, settlementRate: 3.7 })
+    );
+    const loss = calculateFxGainLoss(
+      baseInput({ transactionId: 'l1', bookingRate: 3.7, settlementRate: 3.6 })
+    );
+    const none = calculateFxGainLoss(
+      baseInput({
+        transactionId: 'n1',
+        transactionCurrency: 'AED',
+        baseCurrency: 'AED',
+      })
+    );
 
-    const result = calculateFxGain(original, current, BASE_CURRENCY);
+    const summary = summarizeFxGainLoss([gain, loss, none]);
 
-    const isTwoDp = (n: number) => Number.isInteger(Math.round(n * 100));
-    expect(isTwoDp(result.originalBaseValue)).toBe(true);
-    expect(isTwoDp(result.currentBaseValue)).toBe(true);
-    expect(isTwoDp(result.gainOrLoss)).toBe(true);
-  });
-});
-
-describe('calculateFxGain — FR-5: invalid rate handling', () => {
-  it('throws RangeError when original.rate is zero', () => {
-    const original: FxAmount = { foreignAmount: 100, foreignCurrency: 'EUR', rate: 0 };
-    const current: FxAmount = { foreignAmount: 100, foreignCurrency: 'EUR', rate: 1 };
-
-    expect(() => calculateFxGain(original, current, BASE_CURRENCY)).toThrow(RangeError);
-  });
-
-  it('throws RangeError when current.rate is negative', () => {
-    const original: FxAmount = { foreignAmount: 100, foreignCurrency: 'EUR', rate: 1 };
-    const current: FxAmount = { foreignAmount: 100, foreignCurrency: 'EUR', rate: -1 };
-
-    expect(() => calculateFxGain(original, current, BASE_CURRENCY)).toThrow(RangeError);
+    expect(summary.totalGain).toBe(100);
+    expect(summary.totalLoss).toBe(100);
+    expect(summary.netAmount).toBe(0);
   });
 
-  it('throws RangeError when a rate is NaN', () => {
-    const original: FxAmount = { foreignAmount: 100, foreignCurrency: 'EUR', rate: Number.NaN };
-    const current: FxAmount = { foreignAmount: 100, foreignCurrency: 'EUR', rate: 1 };
+  it('returns all-zero totals for an empty list', () => {
+    const summary = summarizeFxGainLoss([]);
 
-    expect(() => calculateFxGain(original, current, BASE_CURRENCY)).toThrow(RangeError);
+    expect(summary).toEqual({ totalGain: 0, totalLoss: 0, netAmount: 0 });
   });
 
-  it('throws RangeError when a rate is non-finite (Infinity)', () => {
-    const original: FxAmount = { foreignAmount: 100, foreignCurrency: 'EUR', rate: 1 };
-    const current: FxAmount = {
-      foreignAmount: 100,
-      foreignCurrency: 'EUR',
-      rate: Number.POSITIVE_INFINITY,
-    };
+  it('computes a positive net amount when gains exceed losses', () => {
+    const gain1 = calculateFxGainLoss(
+      baseInput({ transactionId: 'g1', bookingRate: 3.6, settlementRate: 3.8 })
+    );
+    const gain2 = calculateFxGainLoss(
+      baseInput({ transactionId: 'g2', bookingRate: 3.6, settlementRate: 3.7 })
+    );
+    const loss1 = calculateFxGainLoss(
+      baseInput({ transactionId: 'l1', bookingRate: 3.7, settlementRate: 3.6 })
+    );
 
-    expect(() => calculateFxGain(original, current, BASE_CURRENCY)).toThrow(RangeError);
-  });
-});
+    const summary = summarizeFxGainLoss([gain1, gain2, loss1]);
 
-describe('calculateFxGain — FR-6: same-currency short-circuit', () => {
-  it('returns exactly zero gain/loss when foreignCurrency equals baseCurrency, regardless of rates', () => {
-    const original: FxAmount = { foreignAmount: 250, foreignCurrency: BASE_CURRENCY, rate: 999 };
-    const current: FxAmount = { foreignAmount: 999, foreignCurrency: BASE_CURRENCY, rate: 0.01 };
-
-    const result = calculateFxGain(original, current, BASE_CURRENCY);
-
-    expect(result.gainOrLoss).toBe(0);
-    expect(result.originalBaseValue).toBe(250);
-    expect(result.currentBaseValue).toBe(250);
-  });
-});
-
-describe('calculateFxGain — FR-7: determinism', () => {
-  it('produces identical results for identical inputs across repeated calls', () => {
-    const original: FxAmount = { foreignAmount: 741.19, foreignCurrency: 'CAD', rate: 0.73 };
-    const current: FxAmount = { foreignAmount: 741.19, foreignCurrency: 'CAD', rate: 0.76 };
-
-    const first: FxGainResult = calculateFxGain(original, current, BASE_CURRENCY);
-    const second: FxGainResult = calculateFxGain(original, current, BASE_CURRENCY);
-
-    expect(second).toEqual(first);
+    expect(summary.totalGain).toBe(300);
+    expect(summary.totalLoss).toBe(100);
+    expect(summary.netAmount).toBe(200);
   });
 });
