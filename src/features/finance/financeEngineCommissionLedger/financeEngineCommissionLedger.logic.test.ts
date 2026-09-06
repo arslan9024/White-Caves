@@ -1,267 +1,236 @@
 import { describe, expect, it } from 'vitest';
 import {
-  approveCommissionLedgerEntry,
-  calculateTotalCommission,
-  createCommissionLedgerEntry,
-  filterCommissionLedgerEntriesByAgent,
-  filterCommissionLedgerEntriesByDeal,
-  groupCommissionTotalsByAgent,
-  isCommissionLedgerEntryActionable,
-  markCommissionLedgerEntryPaid,
-  reverseCommissionLedgerEntry,
-  roundToCents,
+  applyTransitionToLedger,
+  CommissionLedgerEntry,
+  CommissionLedgerNotFoundError,
+  CommissionLedgerTransitionError,
+  CommissionLedgerValidationError,
+  createCommissionEntry,
+  filterByAgent,
+  filterByStatus,
+  findCommissionEntry,
   summarizeCommissionLedger,
-  validateCreateCommissionLedgerEntryInput,
-  type CommissionLedgerEntry,
-  type CreateCommissionLedgerEntryInput,
+  transitionCommissionEntry,
 } from './financeEngineCommissionLedger.logic';
 
-const baseInput: CreateCommissionLedgerEntryInput = {
-  id: 'ledger-1',
-  agentId: 'agent-1',
+const baseInput = {
   dealId: 'deal-1',
-  amount: 1000,
-  currency: 'AED',
-  createdAt: '2024-01-01T00:00:00.000Z',
+  agentId: 'agent-1',
+  grossAmount: 100000,
+  commissionRate: 0.025,
+  earnedAt: '2025-01-15T00:00:00.000Z',
 };
 
-describe('roundToCents', () => {
-  it('rounds to 2 decimal places', () => {
-    expect(roundToCents(10.005)).toBeCloseTo(10.01, 2);
-    expect(roundToCents(10.004)).toBeCloseTo(10.0, 2);
+describe('createCommissionEntry', () => {
+  it('computes commissionAmount from grossAmount and commissionRate', () => {
+    const entry = createCommissionEntry(baseInput);
+    expect(entry.commissionAmount).toBe(2500);
+    expect(entry.status).toBe('pending');
+    expect(entry.settledAt).toBeNull();
+    expect(entry.dealId).toBe('deal-1');
+    expect(entry.agentId).toBe('agent-1');
   });
 
-  it('fixes classic floating point drift', () => {
-    expect(roundToCents(0.1 + 0.2)).toBe(0.3);
-  });
-});
-
-describe('validateCreateCommissionLedgerEntryInput', () => {
-  it('returns no errors for a valid input', () => {
-    expect(validateCreateCommissionLedgerEntryInput(baseInput)).toEqual([]);
-  });
-
-  it('flags missing id, agentId and dealId', () => {
-    const errors = validateCreateCommissionLedgerEntryInput({
+  it('rounds commissionAmount to 2 decimal places', () => {
+    const entry = createCommissionEntry({
       ...baseInput,
-      id: '',
-      agentId: '  ',
-      dealId: '',
+      grossAmount: 33333.33,
+      commissionRate: 0.03,
     });
-    expect(errors).toContain('id is required');
-    expect(errors).toContain('agentId is required');
-    expect(errors).toContain('dealId is required');
+    expect(entry.commissionAmount).toBe(1000);
   });
 
-  it('flags non-positive and non-finite amounts', () => {
-    expect(validateCreateCommissionLedgerEntryInput({ ...baseInput, amount: 0 })).toContain(
-      'amount must be greater than zero'
-    );
-    expect(validateCreateCommissionLedgerEntryInput({ ...baseInput, amount: -5 })).toContain(
-      'amount must be greater than zero'
-    );
-    expect(
-      validateCreateCommissionLedgerEntryInput({
-        ...baseInput,
-        amount: Number.POSITIVE_INFINITY,
-      })
-    ).toContain('amount must be finite');
-    expect(
-      validateCreateCommissionLedgerEntryInput({
-        ...baseInput,
-        amount: Number.NaN,
-      })
-    ).toContain('amount must be a valid number');
+  it('assigns a unique id to each entry', () => {
+    const entry1 = createCommissionEntry(baseInput);
+    const entry2 = createCommissionEntry(baseInput);
+    expect(entry1.id).not.toBe(entry2.id);
   });
 
-  it('flags invalid currency codes', () => {
-    expect(validateCreateCommissionLedgerEntryInput({ ...baseInput, currency: 'aed' })).toContain(
-      'currency must be a 3-letter uppercase ISO code'
+  it('sets note to null when not provided or blank', () => {
+    const entry = createCommissionEntry(baseInput);
+    expect(entry.note).toBeNull();
+    const blankNoteEntry = createCommissionEntry({ ...baseInput, note: '   ' });
+    expect(blankNoteEntry.note).toBeNull();
+  });
+
+  it('preserves a provided note', () => {
+    const entry = createCommissionEntry({ ...baseInput, note: 'Referral bonus included' });
+    expect(entry.note).toBe('Referral bonus included');
+  });
+
+  it('throws CommissionLedgerValidationError when dealId is missing', () => {
+    expect(() => createCommissionEntry({ ...baseInput, dealId: '' })).toThrow(
+      CommissionLedgerValidationError
     );
-    expect(validateCreateCommissionLedgerEntryInput({ ...baseInput, currency: 'A' })).toContain(
-      'currency must be a 3-letter uppercase ISO code'
+  });
+
+  it('throws CommissionLedgerValidationError when agentId is missing', () => {
+    expect(() => createCommissionEntry({ ...baseInput, agentId: '  ' })).toThrow(
+      CommissionLedgerValidationError
+    );
+  });
+
+  it('throws CommissionLedgerValidationError when grossAmount is negative', () => {
+    expect(() => createCommissionEntry({ ...baseInput, grossAmount: -1 })).toThrow(
+      CommissionLedgerValidationError
+    );
+  });
+
+  it('throws CommissionLedgerValidationError when grossAmount is not finite', () => {
+    expect(() => createCommissionEntry({ ...baseInput, grossAmount: Number.NaN })).toThrow(
+      CommissionLedgerValidationError
+    );
+  });
+
+  it('throws CommissionLedgerValidationError when commissionRate is out of range', () => {
+    expect(() => createCommissionEntry({ ...baseInput, commissionRate: 1.5 })).toThrow(
+      CommissionLedgerValidationError
+    );
+    expect(() => createCommissionEntry({ ...baseInput, commissionRate: -0.1 })).toThrow(
+      CommissionLedgerValidationError
+    );
+  });
+
+  it('throws CommissionLedgerValidationError when earnedAt is not a valid date', () => {
+    expect(() => createCommissionEntry({ ...baseInput, earnedAt: 'not-a-date' })).toThrow(
+      CommissionLedgerValidationError
     );
   });
 });
 
-describe('createCommissionLedgerEntry', () => {
-  it('creates a pending entry with rounded amount', () => {
-    const entry = createCommissionLedgerEntry({ ...baseInput, amount: 999.999 });
+describe('transitionCommissionEntry', () => {
+  it('transitions from pending to paid and records settledAt', () => {
+    const entry = createCommissionEntry(baseInput);
+    const settledAt = '2025-02-01T00:00:00.000Z';
+    const updated = transitionCommissionEntry(entry, 'paid', settledAt);
+    expect(updated.status).toBe('paid');
+    expect(updated.settledAt).toBe(settledAt);
+    // original entry must not be mutated
     expect(entry.status).toBe('pending');
-    expect(entry.amount).toBe(1000);
-    expect(entry.createdAt).toBe('2024-01-01T00:00:00.000Z');
-    expect(entry.updatedAt).toBe('2024-01-01T00:00:00.000Z');
+    expect(entry.settledAt).toBeNull();
   });
 
-  it('throws for invalid input', () => {
-    expect(() => createCommissionLedgerEntry({ ...baseInput, amount: -1 })).toThrow(
-      /Invalid commission ledger entry/
+  it('transitions from pending to void', () => {
+    const entry = createCommissionEntry(baseInput);
+    const updated = transitionCommissionEntry(entry, 'void');
+    expect(updated.status).toBe('void');
+    expect(updated.settledAt).not.toBeNull();
+  });
+
+  it('returns the same entry when transitioning to the same status', () => {
+    const entry = createCommissionEntry(baseInput);
+    const updated = transitionCommissionEntry(entry, 'pending');
+    expect(updated).toBe(entry);
+  });
+
+  it('throws CommissionLedgerTransitionError for illegal transitions from paid', () => {
+    const entry = createCommissionEntry(baseInput);
+    const paid = transitionCommissionEntry(entry, 'paid');
+    expect(() => transitionCommissionEntry(paid, 'pending')).toThrow(
+      CommissionLedgerTransitionError
+    );
+    expect(() => transitionCommissionEntry(paid, 'void')).toThrow(CommissionLedgerTransitionError);
+  });
+
+  it('throws CommissionLedgerTransitionError for illegal transitions from void', () => {
+    const entry = createCommissionEntry(baseInput);
+    const voided = transitionCommissionEntry(entry, 'void');
+    expect(() => transitionCommissionEntry(voided, 'paid')).toThrow(
+      CommissionLedgerTransitionError
     );
   });
 });
 
-describe('status transitions', () => {
-  function makeEntry(): CommissionLedgerEntry {
-    return createCommissionLedgerEntry(baseInput);
-  }
-
-  it('approves a pending entry', () => {
-    const entry = makeEntry();
-    const approved = approveCommissionLedgerEntry(entry, '2024-01-02T00:00:00.000Z');
-    expect(approved.status).toBe('approved');
-    expect(approved.updatedAt).toBe('2024-01-02T00:00:00.000Z');
-    // original entry is untouched (immutability)
-    expect(entry.status).toBe('pending');
+describe('findCommissionEntry / applyTransitionToLedger', () => {
+  it('finds an entry by id', () => {
+    const entry = createCommissionEntry(baseInput);
+    const ledger: CommissionLedgerEntry[] = [entry];
+    expect(findCommissionEntry(ledger, entry.id)).toBe(entry);
   });
 
-  it('marks an approved entry as paid', () => {
-    const entry = approveCommissionLedgerEntry(makeEntry());
-    const paid = markCommissionLedgerEntryPaid(entry, '2024-01-03T00:00:00.000Z');
-    expect(paid.status).toBe('paid');
-    expect(paid.updatedAt).toBe('2024-01-03T00:00:00.000Z');
+  it('throws CommissionLedgerNotFoundError when entry id does not exist', () => {
+    expect(() => findCommissionEntry([], 'missing-id')).toThrow(CommissionLedgerNotFoundError);
   });
 
-  it('rejects marking a pending entry as paid directly', () => {
-    const entry = makeEntry();
-    expect(() => markCommissionLedgerEntryPaid(entry)).toThrow(
-      /Cannot transition commission ledger entry/
-    );
+  it('applies a transition to the correct entry within a ledger without mutating others', () => {
+    const entryA = createCommissionEntry(baseInput);
+    const entryB = createCommissionEntry({ ...baseInput, dealId: 'deal-2', agentId: 'agent-2' });
+    const ledger: CommissionLedgerEntry[] = [entryA, entryB];
+
+    const updatedLedger = applyTransitionToLedger(ledger, entryA.id, 'paid');
+
+    expect(updatedLedger).toHaveLength(2);
+    expect(updatedLedger.find(entry => entry.id === entryA.id)?.status).toBe('paid');
+    expect(updatedLedger.find(entry => entry.id === entryB.id)?.status).toBe('pending');
+    // original ledger array must remain unchanged
+    expect(ledger[0].status).toBe('pending');
   });
 
-  it('reverses a pending entry with a reason', () => {
-    const entry = makeEntry();
-    const reversed = reverseCommissionLedgerEntry(
-      entry,
-      'duplicate deal entry',
-      '2024-01-04T00:00:00.000Z'
-    );
-    expect(reversed.status).toBe('reversed');
-    expect(reversed.reversalReason).toBe('duplicate deal entry');
-  });
-
-  it('reverses an approved entry with a reason', () => {
-    const entry = approveCommissionLedgerEntry(makeEntry());
-    const reversed = reverseCommissionLedgerEntry(entry, 'deal fell through');
-    expect(reversed.status).toBe('reversed');
-  });
-
-  it('requires a non-empty reversal reason', () => {
-    const entry = makeEntry();
-    expect(() => reverseCommissionLedgerEntry(entry, '')).toThrow(
-      /non-empty reversal reason is required/
-    );
-  });
-
-  it('rejects transitions out of terminal states', () => {
-    const paid = markCommissionLedgerEntryPaid(approveCommissionLedgerEntry(makeEntry()));
-    expect(() => reverseCommissionLedgerEntry(paid, 'too late')).toThrow(
-      /Cannot transition commission ledger entry/
-    );
-
-    const reversed = reverseCommissionLedgerEntry(makeEntry(), 'cancelled');
-    expect(() => approveCommissionLedgerEntry(reversed)).toThrow(
-      /Cannot transition commission ledger entry/
+  it('throws when applying a transition to a non-existent entry id', () => {
+    const ledger: CommissionLedgerEntry[] = [createCommissionEntry(baseInput)];
+    expect(() => applyTransitionToLedger(ledger, 'bad-id', 'paid')).toThrow(
+      CommissionLedgerNotFoundError
     );
   });
 });
 
-describe('isCommissionLedgerEntryActionable', () => {
-  it('returns true for pending and approved entries', () => {
-    const pending = createCommissionLedgerEntry(baseInput);
-    expect(isCommissionLedgerEntryActionable(pending)).toBe(true);
-    expect(isCommissionLedgerEntryActionable(approveCommissionLedgerEntry(pending))).toBe(true);
+describe('filterByStatus / filterByAgent', () => {
+  it('filters entries by status', () => {
+    const pendingEntry = createCommissionEntry(baseInput);
+    const paidEntry = transitionCommissionEntry(createCommissionEntry(baseInput), 'paid');
+    const ledger: CommissionLedgerEntry[] = [pendingEntry, paidEntry];
+
+    expect(filterByStatus(ledger, 'pending')).toEqual([pendingEntry]);
+    expect(filterByStatus(ledger, 'paid')).toEqual([paidEntry]);
   });
 
-  it('returns false for terminal paid and reversed entries', () => {
-    const paid = markCommissionLedgerEntryPaid(
-      approveCommissionLedgerEntry(createCommissionLedgerEntry(baseInput))
-    );
-    expect(isCommissionLedgerEntryActionable(paid)).toBe(false);
+  it('filters entries by agent', () => {
+    const agent1Entry = createCommissionEntry(baseInput);
+    const agent2Entry = createCommissionEntry({ ...baseInput, agentId: 'agent-2' });
+    const ledger: CommissionLedgerEntry[] = [agent1Entry, agent2Entry];
 
-    const reversed = reverseCommissionLedgerEntry(
-      createCommissionLedgerEntry(baseInput),
-      'cancelled'
-    );
-    expect(isCommissionLedgerEntryActionable(reversed)).toBe(false);
+    expect(filterByAgent(ledger, 'agent-1')).toEqual([agent1Entry]);
+    expect(filterByAgent(ledger, 'agent-2')).toEqual([agent2Entry]);
+    expect(filterByAgent(ledger, 'agent-3')).toEqual([]);
   });
 });
 
-describe('aggregation helpers', () => {
-  const entries: CommissionLedgerEntry[] = [
-    createCommissionLedgerEntry({
-      ...baseInput,
-      id: 'l1',
-      agentId: 'agent-1',
-      dealId: 'deal-1',
-      amount: 100,
-    }),
-    approveCommissionLedgerEntry(
-      createCommissionLedgerEntry({
+describe('summarizeCommissionLedger', () => {
+  it('aggregates totals by status and agent', () => {
+    const pending = createCommissionEntry(baseInput); // 2500
+    const paid = transitionCommissionEntry(
+      createCommissionEntry({ ...baseInput, grossAmount: 200000, commissionRate: 0.02 }),
+      'paid'
+    ); // 4000
+    const voided = transitionCommissionEntry(
+      createCommissionEntry({
         ...baseInput,
-        id: 'l2',
-        agentId: 'agent-1',
-        dealId: 'deal-2',
-        amount: 200,
-      })
-    ),
-    markCommissionLedgerEntryPaid(
-      approveCommissionLedgerEntry(
-        createCommissionLedgerEntry({
-          ...baseInput,
-          id: 'l3',
-          agentId: 'agent-2',
-          dealId: 'deal-3',
-          amount: 300,
-        })
-      )
-    ),
-    reverseCommissionLedgerEntry(
-      createCommissionLedgerEntry({
-        ...baseInput,
-        id: 'l4',
         agentId: 'agent-2',
-        dealId: 'deal-4',
-        amount: 400,
+        grossAmount: 50000,
+        commissionRate: 0.01,
       }),
-      'cancelled'
-    ),
-  ];
+      'void'
+    ); // 500
 
-  it('calculateTotalCommission sums all or filters by status', () => {
-    expect(calculateTotalCommission(entries)).toBe(1000);
-    expect(calculateTotalCommission(entries, 'pending')).toBe(100);
-    expect(calculateTotalCommission(entries, 'approved')).toBe(200);
-    expect(calculateTotalCommission(entries, 'paid')).toBe(300);
-    expect(calculateTotalCommission(entries, 'reversed')).toBe(400);
+    const ledger: CommissionLedgerEntry[] = [pending, paid, voided];
+    const summary = summarizeCommissionLedger(ledger);
+
+    expect(summary.totalEntries).toBe(3);
+    expect(summary.totalCommission).toBe(2500 + 4000 + 500);
+    expect(summary.pendingCommission).toBe(2500);
+    expect(summary.paidCommission).toBe(4000);
+    expect(summary.voidCommission).toBe(500);
+    expect(summary.byAgent['agent-1']).toBe(2500 + 4000);
+    expect(summary.byAgent['agent-2']).toBe(500);
   });
 
-  it('groupCommissionTotalsByAgent aggregates per agent', () => {
-    expect(groupCommissionTotalsByAgent(entries)).toEqual({
-      'agent-1': 300,
-      'agent-2': 700,
-    });
-  });
-
-  it('summarizeCommissionLedger reports totals by lifecycle state', () => {
-    const summary = summarizeCommissionLedger(entries);
-    expect(summary).toEqual({
-      totalPending: 100,
-      totalApproved: 200,
-      totalPaid: 300,
-      totalReversed: 400,
-      totalOutstanding: 300,
-    });
-  });
-
-  it('filterCommissionLedgerEntriesByAgent returns only matching entries', () => {
-    const filtered = filterCommissionLedgerEntriesByAgent(entries, 'agent-1');
-    expect(filtered).toHaveLength(2);
-    expect(filtered.every(e => e.agentId === 'agent-1')).toBe(true);
-  });
-
-  it('filterCommissionLedgerEntriesByDeal returns only matching entries', () => {
-    const filtered = filterCommissionLedgerEntriesByDeal(entries, 'deal-3');
-    expect(filtered).toHaveLength(1);
-    expect(filtered[0]?.id).toBe('l3');
+  it('returns a zeroed summary for an empty ledger', () => {
+    const summary = summarizeCommissionLedger([]);
+    expect(summary.totalEntries).toBe(0);
+    expect(summary.totalCommission).toBe(0);
+    expect(summary.paidCommission).toBe(0);
+    expect(summary.pendingCommission).toBe(0);
+    expect(summary.voidCommission).toBe(0);
+    expect(summary.byAgent).toEqual({});
   });
 });

@@ -1,233 +1,251 @@
 /**
- * Finance Engine Commission Ledger — core business logic.
+ * financeEngineCommissionLedger.logic.ts
  *
- * Tracks commission ledger entries generated when a deal (property sale/
- * lease) closes and an agent becomes entitled to a commission payout.
- * The ledger is an append/transition oriented model: entries move through
- * a well defined status lifecycle and every transition returns a new
- * (immutable) entry object rather than mutating the input.
+ * Child scope of parent issue #1930 (Issue #2459).
  *
- * Status lifecycle:
- *   pending -> approved -> paid
- *   pending -> approved -> reversed
- *   pending -> reversed
+ * Provides pure, deterministic logic for maintaining a commission ledger:
+ * recording commission entries earned by agents/brokers on property deals,
+ * tracking their settlement (paid/pending/void) status, and computing
+ * aggregate summaries. No I/O, no database, no GitHub mutation — pure
+ * in-memory data transformations only, per the excluded-scope constraints.
  */
 
-export type CommissionLedgerStatus = 'pending' | 'approved' | 'paid' | 'reversed';
+/** Status of an individual commission ledger entry. */
+export type CommissionEntryStatus = 'pending' | 'paid' | 'void';
 
+/** Input required to create a new commission ledger entry. */
+export interface CommissionEntryInput {
+  /** Unique identifier of the underlying deal/transaction. */
+  dealId: string;
+  /** Unique identifier of the agent/broker earning the commission. */
+  agentId: string;
+  /** Gross sale/lease amount the commission is calculated from. */
+  grossAmount: number;
+  /** Commission rate expressed as a decimal fraction (e.g. 0.025 for 2.5%). */
+  commissionRate: number;
+  /** ISO-8601 date string for when the commission was earned. */
+  earnedAt: string;
+  /** Optional free-text note. */
+  note?: string;
+}
+
+/** A fully materialized commission ledger entry. */
 export interface CommissionLedgerEntry {
-  readonly id: string;
-  readonly agentId: string;
-  readonly dealId: string;
-  /** Commission amount, rounded to 2 decimal places. */
-  readonly amount: number;
-  readonly currency: string;
-  readonly status: CommissionLedgerStatus;
-  readonly createdAt: string;
-  readonly updatedAt: string;
-  readonly notes?: string;
-  readonly reversalReason?: string;
+  id: string;
+  dealId: string;
+  agentId: string;
+  grossAmount: number;
+  commissionRate: number;
+  commissionAmount: number;
+  status: CommissionEntryStatus;
+  earnedAt: string;
+  settledAt: string | null;
+  note: string | null;
 }
 
-export interface CreateCommissionLedgerEntryInput {
-  readonly id: string;
-  readonly agentId: string;
-  readonly dealId: string;
-  readonly amount: number;
-  readonly currency: string;
-  readonly notes?: string;
-  readonly createdAt?: string;
-}
-
+/** Aggregate summary of commission ledger entries. */
 export interface CommissionLedgerSummary {
-  readonly totalPending: number;
-  readonly totalApproved: number;
-  readonly totalPaid: number;
-  readonly totalReversed: number;
-  readonly totalOutstanding: number;
+  totalEntries: number;
+  totalCommission: number;
+  paidCommission: number;
+  pendingCommission: number;
+  voidCommission: number;
+  byAgent: Record<string, number>;
 }
 
-const VALID_STATUS_TRANSITIONS: Readonly<
-  Record<CommissionLedgerStatus, ReadonlyArray<CommissionLedgerStatus>>
-> = {
-  pending: ['approved', 'reversed'],
-  approved: ['paid', 'reversed'],
-  paid: [],
-  reversed: [],
-};
+/** Error thrown when ledger input fails validation. */
+export class CommissionLedgerValidationError extends Error {
+  constructor(message: string) {
+    super(message);
+    this.name = 'CommissionLedgerValidationError';
+  }
+}
 
-const CURRENCY_CODE_PATTERN = /^[A-Z]{3}$/;
+/** Error thrown when an operation targets an entry that does not exist. */
+export class CommissionLedgerNotFoundError extends Error {
+  constructor(entryId: string) {
+    super(`Commission ledger entry not found: ${entryId}`);
+    this.name = 'CommissionLedgerNotFoundError';
+  }
+}
 
-/** Rounds a numeric amount to 2 decimal places, avoiding common float drift. */
-export function roundToCents(value: number): number {
+/** Error thrown when a status transition is not permitted. */
+export class CommissionLedgerTransitionError extends Error {
+  constructor(from: CommissionEntryStatus, to: CommissionEntryStatus) {
+    super(`Illegal commission ledger status transition: ${from} -> ${to}`);
+    this.name = 'CommissionLedgerTransitionError';
+  }
+}
+
+/** Rounds a monetary value to 2 decimal places using standard rounding. */
+function roundCurrency(value: number): number {
   return Math.round((value + Number.EPSILON) * 100) / 100;
 }
 
-/**
- * Validates a commission ledger entry creation input.
- * Returns an array of human readable error messages; empty array means valid.
- */
-export function validateCreateCommissionLedgerEntryInput(
-  input: CreateCommissionLedgerEntryInput
-): string[] {
-  const errors: string[] = [];
-
-  if (!input.id || input.id.trim().length === 0) {
-    errors.push('id is required');
+function validateInput(input: CommissionEntryInput): void {
+  if (!input.dealId || input.dealId.trim().length === 0) {
+    throw new CommissionLedgerValidationError('dealId is required.');
   }
   if (!input.agentId || input.agentId.trim().length === 0) {
-    errors.push('agentId is required');
+    throw new CommissionLedgerValidationError('agentId is required.');
   }
-  if (!input.dealId || input.dealId.trim().length === 0) {
-    errors.push('dealId is required');
+  if (!Number.isFinite(input.grossAmount) || input.grossAmount < 0) {
+    throw new CommissionLedgerValidationError('grossAmount must be a non-negative finite number.');
   }
-  if (typeof input.amount !== 'number' || Number.isNaN(input.amount)) {
-    errors.push('amount must be a valid number');
-  } else if (!Number.isFinite(input.amount)) {
-    errors.push('amount must be finite');
-  } else if (input.amount <= 0) {
-    errors.push('amount must be greater than zero');
-  }
-  if (!input.currency || !CURRENCY_CODE_PATTERN.test(input.currency)) {
-    errors.push('currency must be a 3-letter uppercase ISO code');
-  }
-
-  return errors;
-}
-
-/**
- * Creates a new commission ledger entry in the `pending` status.
- * Throws if the input fails validation.
- */
-export function createCommissionLedgerEntry(
-  input: CreateCommissionLedgerEntryInput
-): CommissionLedgerEntry {
-  const errors = validateCreateCommissionLedgerEntryInput(input);
-  if (errors.length > 0) {
-    throw new Error(`Invalid commission ledger entry: ${errors.join(', ')}`);
-  }
-
-  const timestamp = input.createdAt ?? new Date().toISOString();
-
-  return {
-    id: input.id,
-    agentId: input.agentId,
-    dealId: input.dealId,
-    amount: roundToCents(input.amount),
-    currency: input.currency,
-    status: 'pending',
-    createdAt: timestamp,
-    updatedAt: timestamp,
-    notes: input.notes,
-  };
-}
-
-function assertTransitionAllowed(entry: CommissionLedgerEntry, next: CommissionLedgerStatus): void {
-  const allowed = VALID_STATUS_TRANSITIONS[entry.status];
-  if (!allowed.includes(next)) {
-    throw new Error(
-      `Cannot transition commission ledger entry ${entry.id} from '${entry.status}' to '${next}'`
+  if (
+    !Number.isFinite(input.commissionRate) ||
+    input.commissionRate < 0 ||
+    input.commissionRate > 1
+  ) {
+    throw new CommissionLedgerValidationError(
+      'commissionRate must be a finite number between 0 and 1.'
     );
   }
-}
-
-/** Transitions a pending entry into the approved state. */
-export function approveCommissionLedgerEntry(
-  entry: CommissionLedgerEntry,
-  updatedAt: string = new Date().toISOString()
-): CommissionLedgerEntry {
-  assertTransitionAllowed(entry, 'approved');
-  return { ...entry, status: 'approved', updatedAt };
-}
-
-/** Transitions an approved entry into the paid state. */
-export function markCommissionLedgerEntryPaid(
-  entry: CommissionLedgerEntry,
-  updatedAt: string = new Date().toISOString()
-): CommissionLedgerEntry {
-  assertTransitionAllowed(entry, 'paid');
-  return { ...entry, status: 'paid', updatedAt };
-}
-
-/** Reverses a pending or approved entry, recording the reason. */
-export function reverseCommissionLedgerEntry(
-  entry: CommissionLedgerEntry,
-  reason: string,
-  updatedAt: string = new Date().toISOString()
-): CommissionLedgerEntry {
-  if (!reason || reason.trim().length === 0) {
-    throw new Error('A non-empty reversal reason is required');
+  if (Number.isNaN(Date.parse(input.earnedAt))) {
+    throw new CommissionLedgerValidationError('earnedAt must be a valid ISO-8601 date string.');
   }
-  assertTransitionAllowed(entry, 'reversed');
+}
+
+/** Allowed forward status transitions for a commission ledger entry. */
+const ALLOWED_TRANSITIONS: Record<CommissionEntryStatus, CommissionEntryStatus[]> = {
+  pending: ['paid', 'void'],
+  paid: [],
+  void: [],
+};
+
+let autoIncrementSeed = 0;
+
+/** Generates a reasonably unique, deterministic-per-process ledger entry id. */
+function generateEntryId(): string {
+  autoIncrementSeed += 1;
+  return `commission-${Date.now()}-${autoIncrementSeed}`;
+}
+
+/**
+ * Creates a new commission ledger entry from validated input, computing the
+ * commission amount from gross amount and rate.
+ */
+export function createCommissionEntry(input: CommissionEntryInput): CommissionLedgerEntry {
+  validateInput(input);
+
+  const commissionAmount = roundCurrency(input.grossAmount * input.commissionRate);
+
   return {
-    ...entry,
-    status: 'reversed',
-    reversalReason: reason,
-    updatedAt,
+    id: generateEntryId(),
+    dealId: input.dealId,
+    agentId: input.agentId,
+    grossAmount: roundCurrency(input.grossAmount),
+    commissionRate: input.commissionRate,
+    commissionAmount,
+    status: 'pending',
+    earnedAt: input.earnedAt,
+    settledAt: null,
+    note: input.note && input.note.trim().length > 0 ? input.note : null,
   };
 }
 
 /**
- * Sums the amount of entries, optionally filtered by status.
- * Entries with mismatched currency to the first entry are still summed
- * numerically; callers are responsible for currency segregation upstream.
+ * Transitions a commission ledger entry to a new status, enforcing the
+ * allowed transition graph. Returns a new entry object; does not mutate
+ * the input.
  */
-export function calculateTotalCommission(
-  entries: ReadonlyArray<CommissionLedgerEntry>,
-  status?: CommissionLedgerStatus
-): number {
-  const filtered = status === undefined ? entries : entries.filter(e => e.status === status);
-  const total = filtered.reduce((sum, entry) => sum + entry.amount, 0);
-  return roundToCents(total);
-}
-
-/** Groups total commission amounts by agentId, across all statuses provided. */
-export function groupCommissionTotalsByAgent(
-  entries: ReadonlyArray<CommissionLedgerEntry>
-): Record<string, number> {
-  const totals: Record<string, number> = {};
-  for (const entry of entries) {
-    const current = totals[entry.agentId] ?? 0;
-    totals[entry.agentId] = roundToCents(current + entry.amount);
+export function transitionCommissionEntry(
+  entry: CommissionLedgerEntry,
+  nextStatus: CommissionEntryStatus,
+  settledAt?: string
+): CommissionLedgerEntry {
+  if (entry.status === nextStatus) {
+    return entry;
   }
-  return totals;
-}
 
-/** Builds an aggregate summary of the ledger across all lifecycle states. */
-export function summarizeCommissionLedger(
-  entries: ReadonlyArray<CommissionLedgerEntry>
-): CommissionLedgerSummary {
-  const totalPending = calculateTotalCommission(entries, 'pending');
-  const totalApproved = calculateTotalCommission(entries, 'approved');
-  const totalPaid = calculateTotalCommission(entries, 'paid');
-  const totalReversed = calculateTotalCommission(entries, 'reversed');
+  const allowed = ALLOWED_TRANSITIONS[entry.status];
+  if (!allowed.includes(nextStatus)) {
+    throw new CommissionLedgerTransitionError(entry.status, nextStatus);
+  }
+
+  const resolvedSettledAt =
+    nextStatus === 'paid' || nextStatus === 'void' ? (settledAt ?? new Date().toISOString()) : null;
 
   return {
-    totalPending,
-    totalApproved,
-    totalPaid,
-    totalReversed,
-    totalOutstanding: roundToCents(totalPending + totalApproved),
+    ...entry,
+    status: nextStatus,
+    settledAt: resolvedSettledAt,
   };
 }
 
-/** Returns only the entries belonging to a given agent. */
-export function filterCommissionLedgerEntriesByAgent(
-  entries: ReadonlyArray<CommissionLedgerEntry>,
+/** Finds an entry by id within a ledger, throwing if it does not exist. */
+export function findCommissionEntry(
+  ledger: readonly CommissionLedgerEntry[],
+  entryId: string
+): CommissionLedgerEntry {
+  const found = ledger.find(entry => entry.id === entryId);
+  if (!found) {
+    throw new CommissionLedgerNotFoundError(entryId);
+  }
+  return found;
+}
+
+/**
+ * Returns a new ledger array with the targeted entry replaced by the result
+ * of applying the given status transition. Does not mutate the input array.
+ */
+export function applyTransitionToLedger(
+  ledger: readonly CommissionLedgerEntry[],
+  entryId: string,
+  nextStatus: CommissionEntryStatus,
+  settledAt?: string
+): CommissionLedgerEntry[] {
+  const target = findCommissionEntry(ledger, entryId);
+  const updated = transitionCommissionEntry(target, nextStatus, settledAt);
+  return ledger.map(entry => (entry.id === entryId ? updated : entry));
+}
+
+/** Filters ledger entries by status. */
+export function filterByStatus(
+  ledger: readonly CommissionLedgerEntry[],
+  status: CommissionEntryStatus
+): CommissionLedgerEntry[] {
+  return ledger.filter(entry => entry.status === status);
+}
+
+/** Filters ledger entries belonging to a specific agent. */
+export function filterByAgent(
+  ledger: readonly CommissionLedgerEntry[],
   agentId: string
 ): CommissionLedgerEntry[] {
-  return entries.filter(entry => entry.agentId === agentId);
+  return ledger.filter(entry => entry.agentId === agentId);
 }
 
-/** Returns only the entries belonging to a given deal. */
-export function filterCommissionLedgerEntriesByDeal(
-  entries: ReadonlyArray<CommissionLedgerEntry>,
-  dealId: string
-): CommissionLedgerEntry[] {
-  return entries.filter(entry => entry.dealId === dealId);
-}
+/**
+ * Computes an aggregate summary of a commission ledger: totals by status
+ * and per-agent commission totals.
+ */
+export function summarizeCommissionLedger(
+  ledger: readonly CommissionLedgerEntry[]
+): CommissionLedgerSummary {
+  const summary: CommissionLedgerSummary = {
+    totalEntries: ledger.length,
+    totalCommission: 0,
+    paidCommission: 0,
+    pendingCommission: 0,
+    voidCommission: 0,
+    byAgent: {},
+  };
 
-/** Returns true if the entry can still be transitioned (not terminal). */
-export function isCommissionLedgerEntryActionable(entry: CommissionLedgerEntry): boolean {
-  return VALID_STATUS_TRANSITIONS[entry.status].length > 0;
+  for (const entry of ledger) {
+    summary.totalCommission = roundCurrency(summary.totalCommission + entry.commissionAmount);
+
+    if (entry.status === 'paid') {
+      summary.paidCommission = roundCurrency(summary.paidCommission + entry.commissionAmount);
+    } else if (entry.status === 'pending') {
+      summary.pendingCommission = roundCurrency(summary.pendingCommission + entry.commissionAmount);
+    } else {
+      summary.voidCommission = roundCurrency(summary.voidCommission + entry.commissionAmount);
+    }
+
+    const existingAgentTotal = summary.byAgent[entry.agentId] ?? 0;
+    summary.byAgent[entry.agentId] = roundCurrency(existingAgentTotal + entry.commissionAmount);
+  }
+
+  return summary;
 }
