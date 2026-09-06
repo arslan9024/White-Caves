@@ -1,65 +1,44 @@
 # Finance Engine — Intercompany Transfer
 
-Issue: #2434 · Parent issue: #1936
+Tracking: Issue #2434 · Parent: #1936
 
-## Overview
+## What this module is
 
-This module (`src/features/finance/financeEngineIntercompanyTransfer/`) will
-house the intercompany transfer capability of the White Caves finance engine:
-moving recognized ledger value between related legal entities (e.g. a
-management company and a property-owning SPV) via balanced, append-only
-ledger entries, without any external payment rail.
+`financeEngineIntercompanyTransfer` will hold the Finance Engine's logic for moving
+value between related entities inside White Caves (e.g. holding company ↔ project SPV)
+while preserving double-entry ledger integrity. This directory currently contains the
+**contract** for that module (see `financeEngineIntercompanyTransfer.contract.md`); it
+does not yet contain runtime implementation code. Implementation is intentionally
+deferred to a follow-up child issue under #1936 to keep this change's scope small and
+reviewable.
 
-This issue delivers the **contract and requirements/design handoff
-documents** that govern the implementation. It intentionally does not ship
-runtime code — see [Status](#status) below.
+## Why a contract-first approach
+
+Intercompany postings touch two entities' books atomically and must be idempotent under
+retry. Establishing the request/response shape, validation rules, and posting semantics
+up front (before writing the service) lets the eventual implementation, its tests, and
+any consuming callers (e.g. treasury workflows, reporting) be designed against a single
+agreed interface, reducing churn once code lands.
 
 ## Contents
 
-| File                                                                               | Purpose                                                                                                                                                            |
-| ---------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| `financeEngineIntercompanyTransfer.contract.md`                                    | Canonical behavioral contract: types, state machine, validation rules, concurrency/idempotency guarantees, error taxonomy. Source of truth for any implementation. |
-| `README.md`                                                                        | This file — module orientation and links to the handoff docs.                                                                                                      |
-| `../../../../plans/implementation_handoffs/SRS-ISSUE-W56-FINANCE-TRANSFER-1936.md` | Software Requirements Specification for the intercompany transfer capability.                                                                                      |
-| `../../../../plans/implementation_handoffs/SDD-ISSUE-W56-FINANCE-TRANSFER-1936.md` | Software Design Description translating the SRS into the module's internal design.                                                                                 |
+- `financeEngineIntercompanyTransfer.contract.md` — authoritative behavioral contract:
+  types, validation rules, posting semantics, idempotency, and reversal rules.
 
-## Status
+## Relationship to parent issue #1936
 
-This issue is **documentation-only**. No `.ts` source or test files are
-introduced under this directory by issue #2434. A future child issue under
-parent #1936 will implement the module per the contract, and its tests must
-be vitest-based (`import { describe, expect, it } from 'vitest'`) with real
-behavior assertions covering the state machine, validation rules, and
-idempotency guarantees defined in the contract.
+This child issue (#2434) is scoped strictly to producing the contract and its
+supporting planning documents (SRS/SDD handoffs under
+`plans/implementation_handoffs/`). It explicitly excludes:
 
-## Scope Boundaries
-
-**In scope for this issue:**
-
-- The contract document.
-- SRS/SDD handoff documents for the parent capability.
-
-**Explicitly excluded (per issue #2434):**
-
-- Closing parent issue #1936 — it remains open until all child issues under
-  it are reconciled.
+- Closing the parent issue (#1936 remains open until all child work is reconciled).
 - Bulk GitHub mutations.
 - Destructive database operations.
-- Production secret rewrites.
-- Any code outside this documentation set.
+- Rewriting production secrets.
 
-## Relationship to Parent Issue #1936
+## Next steps (tracked separately, not part of this issue)
 
-Parent issue #1936 tracks the overall finance-engine transfer initiative.
-This child issue (#2434) is one of potentially several child issues that
-each deliver a scoped, independently reviewable slice of that initiative.
-The parent issue must remain open until every child issue (including any not
-yet filed) is completed and reconciled against the parent's acceptance
-criteria.
-
-## Rollback
-
-This issue only adds new files; it does not modify any existing source,
-configuration, or test file. Rollback is a straightforward revert/deletion of
-the four files listed above with no downstream impact, since nothing else in
-the repository references them yet.
+1. Implement the TypeScript module fulfilling this contract (strict types, no `any`).
+2. Add `vitest` unit tests asserting real validation, posting, and idempotency behavior.
+3. Wire the module into the broader finance engine's entity/ledger services.
+4. Update this README once implementation lands to point at the concrete exports.

@@ -1,151 +1,145 @@
 # SDD — Finance Engine Intercompany Transfer
 
-- **Doc ID**: SDD-ISSUE-W56-FINANCE-TRANSFER-1936
-- **Issue**: #2434
-- **Parent issue**: #1936
-- **Traces to**: `SRS-ISSUE-W56-FINANCE-TRANSFER-1936.md`,
-  `financeEngineIntercompanyTransfer.contract.md`
-- **Status**: Approved for future implementation
+- **ID:** SDD-ISSUE-W56-FINANCE-TRANSFER-1936
+- **Issue:** #2434
+- **Parent issue:** #1936
+- **Workstream:** W56 — Finance Engine
+- **Document type:** Software Design Description (implementation handoff)
+- **Companion:** `SRS-ISSUE-W56-FINANCE-TRANSFER-1936.md`
 
-## 1. Purpose
+## 1. Overview
 
-This Software Design Description translates the requirements in the SRS into
-a concrete internal design for the intercompany transfer module. It is
-intended to guide the implementation delivered by a future child issue under
-parent #1936; it does not itself introduce runtime code.
+This SDD describes the design for satisfying the requirements in the companion SRS. It
+is the handoff artifact enabling a future child issue under #1936 to implement the
+runtime module at
+`src/features/finance/financeEngineIntercompanyTransfer/` without re-deriving design
+decisions.
 
-## 2. Design Goals
-
-- Keep domain logic (validation + state transitions) pure and independently
-  testable from persistence.
-- Guarantee atomicity of the debit/credit pair without leaking transaction
-  concerns into the domain layer's public API.
-- Make idempotent replay a first-class, cheaply-checked path rather than an
-  afterthought bolted onto the happy path.
-
-## 3. Proposed Module Layout
+## 2. Module Layout (target, for future implementation)
 
 ```
 src/features/finance/financeEngineIntercompanyTransfer/
-├── financeEngineIntercompanyTransfer.contract.md   (this issue)
-├── README.md                                        (this issue)
-├── types.ts                       (future) — request/record/error types
-├── validate.ts                     (future) — pure validation rules (FR-2..FR-5, FR-10)
-├── stateMachine.ts                 (future) — PENDING→VALIDATED→POSTED→REVERSED / REJECTED
-├── ledgerAdapter.ts                 (future) — persistence boundary (atomic post/reverse)
-├── intercompanyTransferService.ts  (future) — orchestrates validate → post → record
-└── __tests__/
-    ├── validate.test.ts             (future, vitest)
-    ├── stateMachine.test.ts         (future, vitest)
-    └── intercompanyTransferService.test.ts (future, vitest)
+├── financeEngineIntercompanyTransfer.contract.md   (this issue — done)
+├── README.md                                       (this issue — done)
+├── financeEngineIntercompanyTransfer.types.ts       (future)
+├── financeEngineIntercompanyTransfer.validate.ts    (future)
+├── financeEngineIntercompanyTransfer.service.ts     (future)
+└── financeEngineIntercompanyTransfer.test.ts        (future)
 ```
 
-No files under `types.ts`/`validate.ts`/etc. are created by issue #2434;
-this layout is the design baseline for the implementing child issue.
+Only the two markdown artifacts listed as "this issue — done" are created by #2434.
+The `.ts` files are explicitly out of scope for this issue and are called out here so
+the next implementer has an unambiguous starting layout.
 
-## 4. Component Design
+## 3. Design Decisions
 
-### 4.1 `validate.ts` (pure functions)
+### 3.1 Validation ordering
 
-- `validateAmount(amount: MinorUnits): IntercompanyTransferError | null`
-- `validateDistinctEntities(sourceId: string, targetId: string): IntercompanyTransferError | null`
-- `validateCurrencyMatch(sourceCurrency: CurrencyCode, targetCurrency: CurrencyCode): IntercompanyTransferError | null`
-- Composed by `validateRequest(request, context)` returning either `null`
-  (valid) or the first applicable `IntercompanyTransferError`, per SRS FR-2
-  through FR-5 and FR-10 (balance check delegated to context lookups, not
-  hardcoded state).
+Validation rules (FR-2 through FR-5, FR-9) shall be evaluated in a fixed order so that
+rejection reasons are deterministic and testable:
 
-### 4.2 `stateMachine.ts`
+1. `SAME_ENTITY`
+2. `NON_POSITIVE_AMOUNT`
+3. `UNSUPPORTED_CURRENCY`
+4. `UNKNOWN_ENTITY`
+5. `INSUFFICIENT_AUTHORIZATION`
+6. `DUPLICATE_REQUEST_ID` (checked last, since it requires a store lookup and is only
+   meaningful once the request is otherwise well-formed)
 
-- Exposes pure transition functions, e.g.
-  `transitionToValidated(record)`, `transitionToPosted(record, entries)`,
-  `transitionToRejected(record, error)`, `transitionToReversed(record, reversalEntries)`.
-- Each transition function asserts the precondition state (e.g. `POSTED` is
-  only reachable from `VALIDATED`) and throws a programming-error exception
-  (not a domain `IntercompanyTransferError`) if violated, since that
-  indicates a caller bug rather than a business rejection.
+**Rationale:** cheap, synchronous, purely structural checks (entity equality, amount
+sign, currency membership) run before any I/O-bound checks (entity lookup,
+authorization, idempotency store lookup). This keeps the common invalid-input path fast
+and avoids unnecessary store round-trips for malformed requests.
 
-### 4.3 `ledgerAdapter.ts` (persistence boundary)
+### 3.2 Idempotency store
 
-- Interface `LedgerAdapter` with:
-  - `findByRequestId(requestId: string): Promise<IntercompanyTransferRecord | null>`
-  - `postBalancedEntries(input: PostInput): Promise<{ sourceEntryId: string; targetEntryId: string }>`
-    implemented atomically (single DB transaction) by the concrete adapter.
-  - `reverseEntries(input: ReverseInput): Promise<{ sourceEntryId: string; targetEntryId: string }>`
-- The domain service depends only on this interface, enabling an in-memory
-  fake adapter for unit tests without a live database.
+The idempotency check is designed as a pluggable interface
+(`IdempotencyStore.get`/`.put`) rather than a concrete database dependency, so the
+contract does not presuppose a specific persistence technology. **Rationale:** keeps
+the contract stable regardless of which storage backend (SQL table, cache, etc.) the
+implementation issue ultimately chooses, and avoids introducing new dependencies as
+required by the excluded-scope constraints.
 
-### 4.4 `intercompanyTransferService.ts` (orchestration)
+### 3.3 Atomic posting
 
-- `submitTransfer(request, adapter): Promise<IntercompanyTransferRecord | IntercompanyTransferError>`
-  1. Look up `requestId` via `adapter.findByRequestId`; if found and payload
-     matches, return the existing record (idempotent replay, FR-7).
-  2. If found with a differing payload, return `DUPLICATE_REQUEST`.
-  3. Otherwise run `validateRequest`; on failure, persist/return a
-     `REJECTED` record with the error.
-  4. On success, call `adapter.postBalancedEntries` and transition the
-     record to `POSTED`.
-- `reverseTransfer(requestId, adapter): Promise<IntercompanyTransferRecord | IntercompanyTransferError>`
-  mirrors the above for the `POSTED → REVERSED` transition (FR-8).
+The debit/credit pair is modeled as a single "posting" operation returning both entry
+IDs or throwing, rather than two independent calls. **Rationale:** guarantees the
+"exactly two entries or none" invariant (FR-7, NFR-4) cannot be violated by a caller
+issuing only one half of the pair.
 
-## 5. Error Handling Strategy
+### 3.4 Money representation
 
-- Domain rejections (FR-2..FR-5, FR-7 duplicate conflict, FR-10 balance)
-  are returned as typed `IntercompanyTransferError` values — never thrown —
-  so callers can pattern-match without try/catch.
-- Infrastructure failures (adapter throwing due to DB unavailability) are
-  allowed to propagate as exceptions; the service layer does not swallow
-  them, preserving the distinction required by SRS/contract Section 7.
+Amounts are integers in minor units end-to-end; no `number` division/multiplication by
+non-integer factors is permitted in the contract. **Rationale:** eliminates
+floating-point rounding drift across two separate ledgers, which is a correctness
+requirement for financial reconciliation (NFR-2).
 
-## 6. Concurrency Design
+### 3.5 No `any`
 
-- Uniqueness of `requestId` is enforced at the persistence layer (e.g. a
-  unique index), not merely in application memory, so that concurrent
-  duplicate submissions cannot both succeed.
-- `postBalancedEntries` is implemented as a single atomic unit at the
-  adapter level (e.g. one DB transaction wrapping both entry inserts),
-  satisfying NFR-3.
+All interfaces are fully typed with no `any`, and rejection reasons are a closed
+string-literal union rather than a free-form string. **Rationale:** enables exhaustive
+`switch` handling in the future implementation and in any UI/reporting code that
+branches on rejection reason, catching missing cases at compile time.
 
-## 7. Test Strategy (for the future implementing issue)
+## 4. Sequence (informative)
 
-- All test files will use vitest:
-  `import { describe, expect, it } from 'vitest'`.
-- `validate.test.ts` — table-driven cases asserting real error codes for
-  each invalid input (same-entity, non-positive amount, currency mismatch,
-  unknown entity), and `null` for valid input; no placeholder assertions.
-- `stateMachine.test.ts` — asserts actual resulting `status` and entry IDs
-  after each transition, and that invalid preconditions throw.
-- `intercompanyTransferService.test.ts` — uses an in-memory fake
-  `LedgerAdapter` to assert: successful post produces two entries; replay
-  with identical `requestId`+payload returns the same record without a
-  second adapter call; replay with a different payload returns
-  `DUPLICATE_REQUEST`; reversal after posting produces compensating entries
-  and never mutates the original two.
+1. Caller submits `IntercompanyTransferRequest`.
+2. Validate structural rules (§3.1, steps 1–3).
+3. Resolve both entities; reject `UNKNOWN_ENTITY` if either is missing.
+4. Check caller authorization for `sourceEntityId`.
+5. Check idempotency store for existing `requestId`; if present, return stored result.
+6. Post debit + credit atomically; persist idempotency record.
+7. Return `IntercompanyTransferResult` with `status: 'posted'`.
 
-## 8. Traceability Matrix
+## 5. Testing Strategy (for the future implementation issue)
 
-| SRS Requirement               | Design Element                                                       |
-| ----------------------------- | -------------------------------------------------------------------- |
-| FR-1                          | `IntercompanyTransferRequest` type (contract §3)                     |
-| FR-2, FR-3, FR-4, FR-5, FR-10 | `validate.ts`                                                        |
-| FR-6, NFR-3                   | `ledgerAdapter.postBalancedEntries` (atomic)                         |
-| FR-7                          | `intercompanyTransferService.submitTransfer` idempotent replay path  |
-| FR-8                          | `stateMachine.transitionToReversed` + `ledgerAdapter.reverseEntries` |
-| FR-9                          | `ledgerAdapter.findByRequestId`                                      |
-| NFR-1                         | Strict TypeScript across all listed future files, no `any`           |
-| NFR-4, NFR-5                  | Pure domain modules + vitest test strategy (Section 7)               |
-| NFR-6                         | Section 9 — excluded scope reaffirmed                                |
+- `vitest` unit tests covering each rejection reason individually (one assertion per
+  rule, using realistic fixture data, not placeholder `expect(true).toBe(true)`).
+- A test asserting that a successful transfer produces exactly two ledger entries with
+  correct debit/credit direction and shared `requestId` correlation.
+- A test asserting idempotent replay: submitting the same `requestId` twice yields an
+  identical result and does not create a second posting.
+- A test asserting reversal produces an equal-and-opposite entry pair without mutating
+  the original entries.
 
-## 9. Excluded Scope (reaffirmed)
+## 6. Risks and Mitigations
 
-- No closure of parent issue #1936.
-- No bulk GitHub mutations.
-- No destructive database operations.
-- No production secret rewrites.
+| Risk                                                                                   | Mitigation                                                                                                                   |
+| -------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------- |
+| Future implementer conflates this contract with an existing intracompany transfer flow | README explicitly scopes this module to cross-entity transfers only.                                                         |
+| Idempotency store choice introduces a new dependency                                   | Contract mandates a pluggable interface; implementation should reuse existing persistence already available in the codebase. |
+| Floating-point amounts creep in via a UI layer sending major units                     | Contract mandates integer minor units at the boundary; conversion is a presentation-layer concern only.                      |
 
-## 10. Rollback Note
+## 7. Completion Evidence & Rollback
 
-This SDD, together with the SRS and contract, is a documentation-only
-deliverable. Reverting is limited to deleting the four files added under
-issue #2434; no source code, schema, or CI configuration depends on this
-document, so rollback has no runtime impact.
+### 7.1 Completion evidence (this issue, #2434)
+
+- Created `src/features/finance/financeEngineIntercompanyTransfer/financeEngineIntercompanyTransfer.contract.md`.
+- Created `src/features/finance/financeEngineIntercompanyTransfer/README.md`.
+- Created `plans/implementation_handoffs/SRS-ISSUE-W56-FINANCE-TRANSFER-1936.md`.
+- Created `plans/implementation_handoffs/SDD-ISSUE-W56-FINANCE-TRANSFER-1936.md` (this
+  file).
+- No runtime `.ts` source files were added or modified; no existing exports in the
+  repository were touched, so no regression surface is introduced by this issue.
+- No new dependencies were added.
+
+### 7.2 Rollback note
+
+This change is purely additive documentation (four new markdown files, one new empty
+directory tree). To roll back:
+
+1. Delete the four files listed in §7.1.
+2. Remove the now-empty
+   `src/features/finance/financeEngineIntercompanyTransfer/` directory if no other
+   issue has since added files to it.
+3. No database, dependency, or configuration changes were made, so no further reversal
+   steps (e.g. migrations, secret rotations) are required.
+
+Rollback is low-risk: since no runtime code, exports, or dependencies were touched,
+reverting this commit cannot regress any existing behavior.
+
+## 8. Traceability
+
+- Requirements: `SRS-ISSUE-W56-FINANCE-TRANSFER-1936.md`
+- Contract: `src/features/finance/financeEngineIntercompanyTransfer/financeEngineIntercompanyTransfer.contract.md`
+- Parent issue: #1936 (remains open pending reconciliation of all child work).

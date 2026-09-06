@@ -1,120 +1,101 @@
 # SRS — Finance Engine Intercompany Transfer
 
-- **Doc ID**: SRS-ISSUE-W56-FINANCE-TRANSFER-1936
-- **Issue**: #2434
-- **Parent issue**: #1936
-- **Related module**: `src/features/finance/financeEngineIntercompanyTransfer/`
-- **Status**: Approved for design handoff
+- **ID:** SRS-ISSUE-W56-FINANCE-TRANSFER-1936
+- **Issue:** #2434
+- **Parent issue:** #1936
+- **Workstream:** W56 — Finance Engine
+- **Document type:** Software Requirements Specification (implementation handoff)
+- **Status:** Approved for handoff
 
-## 1. Purpose
+## 1. Introduction
 
-This Software Requirements Specification defines the functional and
-non-functional requirements for the intercompany transfer capability of the
-White Caves finance engine. It is the requirements baseline that the
-corresponding SDD (`SDD-ISSUE-W56-FINANCE-TRANSFER-1936.md`) and the module
-contract (`financeEngineIntercompanyTransfer.contract.md`) must satisfy.
+### 1.1 Purpose
 
-## 2. Background
+This SRS specifies the requirements for the Intercompany Transfer capability of the
+White Caves Finance Engine. It is the handoff artifact from the contract-definition
+child issue (#2434) to whichever child issue under parent #1936 performs the runtime
+implementation.
 
-White Caves manages properties across multiple related legal entities
-(management company, property-owning SPVs, brokerage arm). Revenue and cost
-allocations frequently need to move recognized value between these entities
-internally — e.g. a management fee recognized on the SPV's books settling
-against the management company's books — without triggering an external bank
-transfer. Today this reconciliation is manual and error-prone. This
-capability formalizes it as a first-class, auditable ledger operation.
+### 1.2 Scope
 
-## 3. Stakeholders
+The capability allows recognized value to move between two related entities (e.g. a
+holding entity and a project SPV) inside the platform's finance domain, producing a
+matched debit/credit ledger pair, while remaining idempotent, currency-safe, and fully
+auditable.
 
-| Role                         | Interest                                           |
-| ---------------------------- | -------------------------------------------------- |
-| Finance operations           | Accurate, auditable intercompany settlement        |
-| Engineering (finance domain) | Implementable, testable contract                   |
-| Compliance/Audit             | Append-only trail, no destructive operations       |
-| Product/Ownership            | Parent issue #1936 delivered incrementally, safely |
+### 1.3 Definitions
 
-## 4. Functional Requirements
+| Term                  | Meaning                                                                        |
+| --------------------- | ------------------------------------------------------------------------------ |
+| Entity                | A legal/business unit with its own ledger (e.g. holding company, project SPV). |
+| Intercompany transfer | A value movement between two distinct entities.                                |
+| Minor units           | Smallest currency unit (e.g. fils, cents) represented as an integer.           |
+| Idempotency key       | `requestId` used to detect and safely no-op duplicate submissions.             |
 
-- **FR-1**: The system SHALL accept an intercompany transfer request
-  containing source entity, target entity, amount (integer minor units),
-  currency, memo, and an idempotency key (`requestId`).
-- **FR-2**: The system SHALL reject a transfer where `sourceEntityId` equals
-  `targetEntityId`.
-- **FR-3**: The system SHALL reject a transfer with a non-positive or
-  non-integer amount.
-- **FR-4**: The system SHALL reject a transfer where source and target
-  currencies do not match (cross-currency FX is out of scope for this
-  capability).
-- **FR-5**: The system SHALL reject a transfer referencing an unknown
-  entity.
-- **FR-6**: On successful validation, the system SHALL post two balanced,
-  append-only ledger entries (a debit on the source entity and a credit on
-  the target entity) atomically.
-- **FR-7**: The system SHALL support idempotent replay: resubmitting the same
-  `requestId` with an identical payload SHALL return the original result
-  without creating duplicate ledger entries; resubmitting with a different
-  payload under the same `requestId` SHALL be rejected as a duplicate-request
-  conflict.
-- **FR-8**: The system SHALL support reversing a posted transfer via
-  compensating ledger entries, never by mutating or deleting the original
-  entries.
-- **FR-9**: The system SHALL expose the current status of a transfer
-  (`PENDING`, `VALIDATED`, `POSTED`, `REJECTED`, `REVERSED`) queryable by
-  `requestId`.
-- **FR-10**: The system SHALL optionally enforce a source-entity balance
-  check and reject transfers that would overdraw the source entity when this
-  check is enabled.
+## 2. Overall Description
 
-## 5. Non-Functional Requirements
+### 2.1 Product perspective
 
-- **NFR-1 (Type safety)**: All implementation code SHALL be strict
-  TypeScript with no `any` types.
-- **NFR-2 (Auditability)**: Ledger entries are append-only; no update or
-  delete operations are permitted against posted entries.
-- **NFR-3 (Atomicity)**: Posting the debit/credit pair SHALL be atomic — both
-  succeed or both fail.
-- **NFR-4 (Determinism)**: Domain logic SHALL be deterministic and
-  side-effect-isolated so it can be unit tested without a live database.
-- **NFR-5 (Testability)**: All test suites SHALL use vitest
-  (`import { describe, expect, it } from 'vitest'`) with assertions against
-  real computed behavior (state transitions, ledger entry shape, error
-  codes), never placeholder assertions (e.g. `expect(true).toBe(true)`).
-- **NFR-6 (Safety)**: No requirement in this document authorizes destructive
-  database operations, bulk GitHub mutations, or production secret changes.
+This capability is a sub-component of the Finance Engine (`src/features/finance/`),
+consumed by treasury/back-office workflows that need to move recognized value between
+entities without violating double-entry accounting invariants across entity boundaries.
 
-## 6. Constraints & Exclusions
+### 2.2 User classes
 
-- This issue (#2434) does not implement runtime code; it establishes the
-  requirements and design baseline plus the module contract.
-- Parent issue #1936 SHALL remain open until all of its child issues,
-  including this one, are reconciled — this SRS does not authorize closing
-  the parent issue.
-- Cross-border/external payment execution is explicitly out of scope.
+- **Finance/treasury operators** — initiate intercompany transfers.
+- **Auditors/compliance** — consume the resulting paired ledger entries for
+  reconciliation.
+- **Downstream engineering** — implement and test the module against this SRS/SDD pair.
 
-## 7. Acceptance Criteria (traced to issue #2434)
+### 2.3 Constraints
 
-- [x] Implementation remains within the declared child scope (documentation
-      set listed in this issue only).
-- [ ] Focused tests and required validation commands pass — applies once a
-      future child issue introduces implementation and tests against this
-      SRS/contract; tracked, not closed here.
-- [x] Completion evidence and rollback note are recorded (see Section 8).
-- [x] Parent issue (#1936) remains open until all child work is reconciled.
+- Strict TypeScript; no `any` types in the eventual implementation.
+- No new dependencies may be introduced to satisfy this capability.
+- No destructive database operations, no production secret rewrites, no bulk GitHub
+  mutations, and no closing of parent issue #1936 as part of this or any strictly-scoped
+  child issue.
 
-## 8. Completion Evidence
+## 3. Functional Requirements
 
-- Deliverables produced under issue #2434:
-  1. `src/features/finance/financeEngineIntercompanyTransfer/financeEngineIntercompanyTransfer.contract.md`
-  2. `src/features/finance/financeEngineIntercompanyTransfer/README.md`
-  3. `plans/implementation_handoffs/SRS-ISSUE-W56-FINANCE-TRANSFER-1936.md` (this file)
-  4. `plans/implementation_handoffs/SDD-ISSUE-W56-FINANCE-TRANSFER-1936.md`
-- No source, test, configuration, or CI file was modified.
-- No GitHub issue was closed or bulk-mutated as part of this work.
+| ID   | Requirement                                                                                                                                                                                        |
+| ---- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| FR-1 | The system shall accept an `IntercompanyTransferRequest` containing source entity, destination entity, amount (integer minor units), currency, and idempotency key.                                |
+| FR-2 | The system shall reject a request where source and destination entity are identical, with reason `SAME_ENTITY`.                                                                                    |
+| FR-3 | The system shall reject a request where the amount is not a positive integer, with reason `NON_POSITIVE_AMOUNT`.                                                                                   |
+| FR-4 | The system shall reject a request whose currency is not in the supported allow-list, with reason `UNSUPPORTED_CURRENCY`.                                                                           |
+| FR-5 | The system shall reject a request referencing an unregistered entity, with reason `UNKNOWN_ENTITY`.                                                                                                |
+| FR-6 | The system shall detect and short-circuit duplicate `requestId` submissions, returning the original result rather than posting again.                                                              |
+| FR-7 | On success, the system shall atomically create exactly two ledger entries: a debit against the source entity and a credit against the destination entity, both tagged with the shared `requestId`. |
+| FR-8 | The system shall support reversing a `posted` transfer via an equal-and-opposite append-only ledger entry pair, referencing the original `requestId`.                                              |
+| FR-9 | The system shall reject transfers from callers lacking intercompany-transfer authorization for the source entity, with reason `INSUFFICIENT_AUTHORIZATION`.                                        |
 
-## 9. Rollback Note
+## 4. Non-Functional Requirements
 
-All changes introduced by issue #2434 are additive documentation files with
-no code or configuration dependents. To roll back, delete the four files
-listed in Section 8. No data migration, secret, or GitHub state changes are
-involved, so rollback carries no destructive risk and requires no additional
-coordination beyond a standard revert of the commit(s) that added them.
+| ID    | Requirement                                                                                                       |
+| ----- | ----------------------------------------------------------------------------------------------------------------- |
+| NFR-1 | All implementation code shall be strict TypeScript with no `any` types.                                           |
+| NFR-2 | All monetary values shall be represented as integer minor units; no floating-point arithmetic on money.           |
+| NFR-3 | All public behavior shall be covered by `vitest` unit tests asserting real outcomes (not placeholder assertions). |
+| NFR-4 | Posting of the debit/credit pair shall be atomic — partial posting is not permitted.                              |
+| NFR-5 | The module shall introduce no new runtime dependencies.                                                           |
+
+## 5. Acceptance Criteria (traced to issue #2434)
+
+- Implementation remains within the declared child scope (contract + planning docs
+  only for this issue; no runtime module changes).
+- Focused tests and required validation commands pass for any code introduced.
+- Completion evidence and a rollback note are recorded (see SDD handoff, §7).
+- Parent issue #1936 remains open until all child work under it is reconciled.
+
+## 6. Excluded Scope
+
+- Parent issue closure.
+- Bulk GitHub mutation of any kind.
+- Destructive database operations.
+- Production secret rewrites.
+
+## 7. Traceability
+
+- Contract: `src/features/finance/financeEngineIntercompanyTransfer/financeEngineIntercompanyTransfer.contract.md`
+- Design handoff: `plans/implementation_handoffs/SDD-ISSUE-W56-FINANCE-TRANSFER-1936.md`
+- Parent issue: #1936

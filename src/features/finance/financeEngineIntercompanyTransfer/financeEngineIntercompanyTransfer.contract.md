@@ -1,153 +1,144 @@
 # Contract: Finance Engine — Intercompany Transfer
 
-- **Issue**: #2434
-- **Parent issue**: #1936
-- **Module path**: `src/features/finance/financeEngineIntercompanyTransfer/`
-- **Status**: Draft (documentation-only handoff; no runtime code shipped under this issue)
+- **Issue:** #2434
+- **Parent issue:** #1936
+- **Module path:** `src/features/finance/financeEngineIntercompanyTransfer/`
+- **Status:** Draft contract (design-only child; no runtime code introduced by this issue)
 
 ## 1. Purpose
 
-Define the behavioral contract for the intercompany transfer capability of the
-White Caves finance engine. Intercompany transfers move recognized value
-(cash, receivables, or ledger credits) between two related legal entities
-inside the platform (e.g. a management company and a property-owning SPV)
-without creating external payment rails. This contract is the source of truth
-for any implementation, and any future code under this directory MUST conform
-to it. Where a prior implementation conflicts with this document, this
-document wins.
+Defines the behavioral and data contract for the Intercompany Transfer capability of the
+Finance Engine. Intercompany transfers move recognized value (cash, ledger balances, or
+booked commitments) between two related legal/business entities inside White Caves
+(e.g. a holding entity and a project SPV) while preserving double-entry integrity and
+auditability across both entities' books.
+
+This document is the source of truth for any subsequent implementation task under
+parent issue #1936. It does not itself add runtime logic — it constrains what a future
+implementation must satisfy.
 
 ## 2. Scope
 
 ### In scope
 
-- Defining the shape of an intercompany transfer request, its validation
-  rules, and its resulting ledger entries.
-- Defining the state machine governing a transfer's lifecycle.
-- Defining error conditions and how they are surfaced to callers.
-- Defining idempotency and concurrency guarantees required of any
-  implementation.
+- Contractual shape of an intercompany transfer request, its validation rules, and the
+  resulting paired ledger entries (debit on the source entity, credit on the destination
+  entity, or vice versa depending on transfer type).
+- Idempotency, currency, and rounding rules for cross-entity postings.
+- Error taxonomy for rejected/invalid transfers.
 
-### Out of scope (excluded scope for this issue)
+### Out of scope (see "Excluded scope" below)
 
-- Closing the parent issue (#1936) — remains open until all child issues
-  reconcile.
+- Closing parent issue #1936.
 - Bulk GitHub mutations of any kind.
-- Destructive database operations (drops, truncations, irreversible
-  migrations).
-- Production secret rewrites or rotation.
-- Any external/cross-border payment execution — this contract covers
-  internal ledger movement only.
+- Destructive database operations (drops, truncates, irreversible migrations).
+- Rewriting or rotating production secrets.
+- Any UI/presentation layer work — this is a finance-domain/service contract only.
 
-## 3. Core Types (contractual shape)
+## 3. Core Types (contract-level, informative — not compiled)
 
 ```ts
-/** Money is represented in integer minor units (e.g. fils/cents) to avoid
- *  floating point drift. Never model money as `number` with decimals. */
-type MinorUnits = number; // integer, non-negative for magnitudes
+/** ISO 4217 currency code, e.g. "AED", "USD". */
+export type CurrencyCode = string;
 
-type CurrencyCode = 'AED' | 'USD' | 'EUR'; // extend via a controlled enum, not `string`
+/** Entity identifier for a legal/business unit participating in intercompany transfers. */
+export type EntityId = string;
 
-interface IntercompanyTransferRequest {
-  readonly requestId: string; // caller-supplied idempotency key (UUID v4)
-  readonly sourceEntityId: string;
-  readonly targetEntityId: string;
-  readonly amount: MinorUnits;
+export type IntercompanyTransferStatus =
+  | 'pending'
+  | 'validated'
+  | 'posted'
+  | 'rejected'
+  | 'reversed';
+
+export interface IntercompanyTransferRequest {
+  /** Caller-supplied idempotency key; duplicate keys must not double-post. */
+  readonly requestId: string;
+  readonly sourceEntityId: EntityId;
+  readonly destinationEntityId: EntityId;
+  /** Positive integer minor units (e.g. fils/cents) — no floating point amounts. */
+  readonly amountMinorUnits: number;
   readonly currency: CurrencyCode;
-  readonly memo: string;
-  readonly requestedAt: string; // ISO-8601 timestamp
-  readonly requestedBy: string; // user or service principal id
+  readonly memo?: string;
+  readonly requestedAt: string; // ISO 8601
 }
 
-type IntercompanyTransferStatus = 'PENDING' | 'VALIDATED' | 'POSTED' | 'REJECTED' | 'REVERSED';
-
-interface IntercompanyTransferRecord {
+export interface IntercompanyTransferResult {
   readonly requestId: string;
   readonly status: IntercompanyTransferStatus;
-  readonly sourceEntryId: string | null; // ledger entry id, once POSTED
-  readonly targetEntryId: string | null; // ledger entry id, once POSTED
-  readonly rejectionReason: string | null;
-  readonly createdAt: string;
-  readonly updatedAt: string;
+  readonly sourceLedgerEntryId?: string;
+  readonly destinationLedgerEntryId?: string;
+  readonly rejectionReason?: IntercompanyTransferRejectionReason;
+  readonly postedAt?: string; // ISO 8601
 }
 
-interface IntercompanyTransferError {
-  readonly code:
-    | 'DUPLICATE_REQUEST'
-    | 'SAME_ENTITY'
-    | 'INVALID_AMOUNT'
-    | 'CURRENCY_MISMATCH'
-    | 'ENTITY_NOT_FOUND'
-    | 'INSUFFICIENT_BALANCE';
-  readonly message: string;
-}
+export type IntercompanyTransferRejectionReason =
+  | 'SAME_ENTITY'
+  | 'NON_POSITIVE_AMOUNT'
+  | 'UNSUPPORTED_CURRENCY'
+  | 'UNKNOWN_ENTITY'
+  | 'DUPLICATE_REQUEST_ID'
+  | 'INSUFFICIENT_AUTHORIZATION';
 ```
 
-## 4. State Machine
+## 4. Validation Rules
 
-```
-PENDING --validate success--> VALIDATED --post success--> POSTED --reverse--> REVERSED
-   |                              |
-   +--validate failure--> REJECTED
-```
+| Rule              | Condition                                                                      | Rejection code               |
+| ----------------- | ------------------------------------------------------------------------------ | ---------------------------- |
+| Distinct entities | `sourceEntityId !== destinationEntityId`                                       | `SAME_ENTITY`                |
+| Positive amount   | `amountMinorUnits > 0` and an integer                                          | `NON_POSITIVE_AMOUNT`        |
+| Known currency    | `currency` is in the supported currency allow-list                             | `UNSUPPORTED_CURRENCY`       |
+| Known entities    | both `sourceEntityId` and `destinationEntityId` resolve to registered entities | `UNKNOWN_ENTITY`             |
+| Idempotency       | `requestId` has not been previously posted                                     | `DUPLICATE_REQUEST_ID`       |
+| Authorization     | caller has intercompany-transfer permission for the source entity              | `INSUFFICIENT_AUTHORIZATION` |
 
-- A transfer starts in `PENDING` when accepted for processing.
-- `VALIDATED` requires: `sourceEntityId !== targetEntityId`, `amount > 0`,
-  both entities exist, and (if enforced) sufficient source balance.
-- `POSTED` requires two balanced ledger entries created atomically: a debit
-  on `sourceEntityId` and a credit on `targetEntityId`, same `amount` and
-  `currency`.
-- `REVERSED` is only reachable from `POSTED` and creates two compensating
-  ledger entries; it never mutates or deletes the original entries
-  (append-only ledger discipline).
-- `REJECTED` is terminal; no ledger entries are created.
+Amounts are always expressed in integer minor units to avoid floating-point rounding
+errors; any conversion to major units (display) happens only at the presentation layer,
+never inside the engine.
 
-## 5. Validation Rules
+## 5. Posting Semantics
 
-1. `amount` MUST be a positive integer (`Number.isInteger(amount) && amount > 0`).
-2. `sourceEntityId` MUST NOT equal `targetEntityId` (`SAME_ENTITY`).
-3. `requestId` MUST be unique per transfer; a repeat with the same
-   `requestId` and identical payload returns the original `IntercompanyTransferRecord`
-   (idempotent replay); a repeat with a different payload returns
-   `DUPLICATE_REQUEST`.
-4. `currency` on both sides of the transfer MUST match; cross-currency
-   transfers require an explicit FX conversion step (out of scope here) and
-   otherwise return `CURRENCY_MISMATCH`.
-5. Unknown `sourceEntityId`/`targetEntityId` returns `ENTITY_NOT_FOUND`.
-6. If balance enforcement is enabled for the source entity, insufficient
-   funds returns `INSUFFICIENT_BALANCE` and the transfer is `REJECTED`.
+A successful transfer produces **exactly two** ledger entries, created atomically
+(single transaction boundary):
 
-## 6. Concurrency & Idempotency Guarantees
+1. A debit entry of `amountMinorUnits` against `sourceEntityId`.
+2. A credit entry of `amountMinorUnits` against `destinationEntityId`.
 
-- Implementations MUST treat `requestId` as a unique constraint at the
-  persistence layer (not just an in-memory check) to survive concurrent
-  duplicate submissions.
-- Posting MUST be atomic: both ledger entries are created in a single
-  transaction, or neither is.
-- Re-processing a `POSTED` transfer with the same `requestId` MUST be a
-  no-op that returns the existing record, never a second posting.
+Both entries share the same `requestId` as a correlation key so the pair can always be
+reconciled back to the originating request, and both must be written or neither must be
+written (no partial posting).
 
-## 7. Error Handling
+## 6. Idempotency
 
-- All rejections return a typed `IntercompanyTransferError`; no exceptions
-  cross the module boundary for expected validation failures.
-- Only unexpected infrastructure failures (e.g. persistence unavailable) may
-  throw; callers MUST be able to distinguish domain rejection from
-  infrastructure failure.
+Re-submitting a request with the same `requestId` MUST return the original
+`IntercompanyTransferResult` rather than creating a second posting. This is required so
+that retried network calls (timeouts, client retries) cannot double-move funds between
+entities.
 
-## 8. Non-Functional Requirements
+## 7. Reversal
 
-- Strict TypeScript; no `any` in any implementation of this contract.
-- All public functions must be pure with respect to inputs beyond declared
-  side effects (ledger writes), to keep unit tests deterministic.
-- Any test suite implementing this contract must use vitest
-  (`import { describe, expect, it } from 'vitest'`) with real behavior
-  assertions (state transitions, computed ledger entries, error codes) —
-  never placeholder assertions.
+A `posted` transfer may transition to `reversed` by issuing an equal-and-opposite pair
+of ledger entries referencing the original `requestId`. Reversal never deletes or
+mutates the original entries (append-only ledger discipline).
 
-## 9. Traceability
+## 8. Error Handling
 
-- Parent issue: #1936 (remains open; not closed by this or any child issue).
-- This issue (#2434) delivers the contract and SRS/SDD handoff documents
-  only. Runtime implementation and its tests are tracked as subsequent child
-  work under the parent issue and must reference this contract as their
-  acceptance baseline.
+All rejections are returned as a `status: 'rejected'` result with a populated
+`rejectionReason` — the contract does not throw for expected business-rule violations.
+Unexpected infrastructure failures (e.g. database unavailable) are allowed to throw and
+are outside this contract's error taxonomy.
+
+## 9. Non-Functional Requirements
+
+- Strict TypeScript; no `any` types in any implementation that fulfills this contract.
+- All amounts are integers; no implicit floating-point arithmetic on money values.
+- All public functions implementing this contract must be independently unit-testable
+  with `vitest`, asserting real behavior (validation outcomes, posting pairs, idempotent
+  replay) rather than placeholder assertions.
+
+## 10. Traceability
+
+- Parent issue: #1936 (Finance Engine workstream, W56).
+- This issue (#2434) delivers the contract and companion planning documents only; it
+  does not implement or wire the runtime module. Implementation is tracked as a
+  follow-up child issue under #1936.
