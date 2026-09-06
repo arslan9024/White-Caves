@@ -1,8 +1,24 @@
 # Contract: financeEngineRollingMonth
 
 - Parent issue: #1933
-- Child issue: #2452
+- Child issues: #2451, #2452
 - Status: open (parent issue remains open until all child work is reconciled)
+
+## Child issue #2451
+
+Issue #2451 is a sibling child of #1933 that shares this directory's
+declared scope with #2452. #2451 contributes the implementation
+handoff artifacts (`SRS`/`SDD`) under
+`plans/implementation_handoffs/` that formalize the requirements and
+design for the parent's rolling-month/cashflow work-stream (tracked as
+`ISSUE-W56-FINANCE-CASHFLOW-1933`), and cross-references this contract
+as the authoritative functional/non-functional specification for the
+`financeEngineRollingMonth` module. #2451 does not modify the
+functional contract defined below; it documents and hands off the
+requirements/design that this contract implements. #2451 is excluded
+from parent issue closure, bulk GitHub mutation, destructive database
+operations, and production secret rewrites, matching the excluded
+scope already declared for #2452.
 
 ## Purpose
 
@@ -113,3 +129,16 @@ reconciled only when:
 3. Completion evidence is attached to #2452.
 4. No excluded-scope actions (parent closure, bulk GitHub mutation,
    destructive DB operations, secret rewrites) have been performed.
+
+Child issue #2451 is considered reconciled only when:
+
+1. `plans/implementation_handoffs/SRS-ISSUE-W56-FINANCE-CASHFLOW-1933.md`
+   and `plans/implementation_handoffs/SDD-ISSUE-W56-FINANCE-CASHFLOW-1933.md`
+   exist, are internally consistent with each other and with this
+   contract, and correctly reference parent issue #1933.
+2. Completion evidence and a rollback note are recorded in both
+   handoff documents.
+3. No excluded-scope actions (parent closure, bulk GitHub mutation,
+   destructive DB operations, secret rewrites) have been performed.
+4. Parent issue #1933 remains open until #2451, #2452, and any other
+   declared child issues are all reconciled.

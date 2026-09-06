@@ -1,10 +1,10 @@
 # financeEngineRollingMonth
 
-Child feature of the finance engine (parent issue #1933, child issue
-#2452). This module owns **rolling-month** period computation: given an
-anchor day-of-month and a reference "now" date, it derives the
-continuous rolling window `[start, end)` that brackets `now`, as
-distinct from a fixed calendar-month (1st-to-1st) window.
+Child feature of the finance engine (parent issue #1933, child issues
+#2451 and #2452). This module owns **rolling-month** period
+computation: given an anchor day-of-month and a reference "now" date,
+it derives the continuous rolling window `[start, end)` that brackets
+`now`, as distinct from a fixed calendar-month (1st-to-1st) window.
 
 See [`financeEngineRollingMonth.contract.md`](./financeEngineRollingMonth.contract.md)
 for the full functional and non-functional contract, validation
@@ -13,9 +13,13 @@ commands, and reconciliation gate.
 ## Status
 
 - Parent issue #1933: **open**
-- Child issue #2452: scope declared, documentation landed. Parent issue
-  remains open until this and all other child work under #1933 is
-  reconciled.
+- Child issue #2452: scope declared, documentation landed.
+- Child issue #2451: scope declared; contributes the SRS/SDD
+  implementation handoff documents under
+  `plans/implementation_handoffs/` (`ISSUE-W56-FINANCE-CASHFLOW-1933`)
+  that formalize requirements/design handed off from this contract.
+- Parent issue remains open until #2451, #2452, and all other child
+  work under #1933 is reconciled.
 
 ## Scope
 
@@ -65,4 +69,5 @@ other files, dependencies, or persisted data are affected.
 ## Related
 
 - Parent: #1933
-- This child: #2452
+- Child issues: #2451 (implementation handoff docs), #2452 (this
+  directory's contract/README)
