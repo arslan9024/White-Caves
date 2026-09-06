@@ -120,3 +120,35 @@ Delete `src/features/documents/ejariSuitePerformanceUnit/ejariSuitePerformanceUn
 `ejariSuitePerformanceUnit.logic.test.ts` to fully roll back the runtime change introduced by
 issue #2492. No other files, schemas, or GitHub state are affected; the module is pure,
 dependency-free, and has no side effects to unwind.
+
+## 10. Addendum — Issue #2491 Shared Type Contracts
+
+- Handoff ID (this addendum): SRS-ISSUE-W55-EJARI-BENCH-1923 (unchanged)
+- Implementing issue: #2491
+- Parent issue: #1923 (still open)
+
+Issue #2491 authored the shared, dependency-free type contracts for the Ejari Suite Performance
+Unit in `ejariSuitePerformanceUnit.types.ts`, satisfying NFR-1 (strict TypeScript, no `any`) and
+providing the `EjariPerformanceSample`, `EjariPerformanceThresholds`, and
+`EjariPerformanceReport` interfaces referenced throughout Sections 3-9 above, plus runtime type
+guards (`isEjariPerformanceSample`, `isEjariPerformanceSampleArray`,
+`isEjariPerformanceThresholds`, `isEjariPerformanceReport`) so callers can safely narrow
+`unknown` values at module boundaries without resorting to `any` or type assertions.
+
+- [x] Implementation remains within the declared child scope for #2491 (only the types file, its
+      test file, and this SRS/SDD addendum pair were touched).
+- [x] Focused tests and required validation commands pass — see
+      `src/features/documents/ejariSuitePerformanceUnit/ejariSuitePerformanceUnit.types.test.ts`,
+      run via `vitest run src/features/documents/ejariSuitePerformanceUnit`.
+- [x] Completion evidence and rollback note are recorded (this section, plus the SDD addendum).
+- [x] Parent issue #1923 remains open until all child work (including any further Ejari suite
+      children) is reconciled.
+
+### Rollback Note (Issue #2491)
+
+Delete `src/features/documents/ejariSuitePerformanceUnit/ejariSuitePerformanceUnit.types.ts` and
+`ejariSuitePerformanceUnit.types.test.ts` to fully roll back the change introduced by issue #2491.
+Note: if issue #2492's `ejariSuitePerformanceUnit.logic.ts` has been updated to import from these
+types, reverting this file first would require reverting that import as well to keep the tree
+compiling; the two changes are independent unless such an import was added. No schema, network,
+or GitHub state is affected either way.

@@ -139,3 +139,43 @@ and the Section 8 test plan items 1-9 are each covered by a corresponding vitest
 Revert or delete `ejariSuitePerformanceUnit.logic.ts` and `ejariSuitePerformanceUnit.logic.test.ts`
 to fully roll back. The module is pure and dependency-free with no schema, network, or GitHub
 state side effects; no other rollback steps are required. Parent issue #1923 remains open.
+
+## 12. Addendum — Issue #2491 Shared Type Contracts
+
+Issue #2491 (child of parent #1923) extracted the structural type contracts referenced throughout
+this SDD (Section 7 in particular) into a standalone module,
+`ejariSuitePerformanceUnit.types.ts`, so that they can be imported independently by the evaluation
+logic module (`ejariSuitePerformanceUnit.logic.ts`, issue #2492) and by any future benchmark
+harness without duplicating interface declarations.
+
+- **Design decision:** the types module exports runtime type guards
+  (`isEjariPerformanceSample`, `isEjariPerformanceSampleArray`, `isEjariPerformanceThresholds`,
+  `isEjariPerformanceReport`) in addition to the plain interfaces.
+  **Why:** interfaces alone are erased at compile time and provide no runtime narrowing ability;
+  since the module's consumers (benchmark harnesses, CI glue code) may receive `unknown` data at
+  their boundaries (e.g. parsed JSON), a dependency-free structural predicate lets them narrow
+  safely without introducing `any` or unchecked type assertions (`as`), consistent with NFR-1.
+- **Design decision:** the guards validate structural shape only (field presence and primitive
+  `typeof` correctness), not business-rule constraints such as "durationMs must not be negative"
+  or "operationName must be consistent across a batch".
+  **Why:** those constraints are the responsibility of `evaluateEjariPerformance`'s internal
+  `validateSamples` step (Section 11), which already owns FR-2 through FR-4. Duplicating those
+  rules into the type guards would create two sources of truth for the same validation logic and
+  risk them drifting out of sync.
+- **Design decision:** every interface field is declared `readonly`.
+  **Why:** this reinforces FR-9 (samples/report must not be mutated) at the type level, catching
+  accidental reassignment attempts at compile time rather than relying solely on runtime
+  discipline in the logic module.
+
+All fields declared in Section 7 (`EjariPerformanceSample`, `EjariPerformanceReport`,
+`EjariPerformanceThresholds`) are implemented exactly as specified, with no `any` types and no
+type assertions used anywhere in the module.
+
+### Rollback Note (Issue #2491)
+
+Revert or delete `ejariSuitePerformanceUnit.types.ts` and `ejariSuitePerformanceUnit.types.test.ts`
+to fully roll back. The module is pure, dependency-free, and exports no side effects. If a later
+change wired `ejariSuitePerformanceUnit.logic.ts` to import types from this module, that import
+would need to be reverted in tandem (or reduced back to locally-declared interfaces) to keep the
+tree compiling; absent such a change, this rollback is fully isolated. Parent issue #1923 remains
+open.
