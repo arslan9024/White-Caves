@@ -3,6 +3,7 @@
  *
  * Parent issue: #1933
  * Child issue: #2450
+ * Reconciled by sibling child issues: #2449, #2451, #2452
  *
  * Pure, side-effect-free logic for computing "rolling month" windows: a
  * continuous 1-calendar-month span `[start, end)` anchored to a fixed
