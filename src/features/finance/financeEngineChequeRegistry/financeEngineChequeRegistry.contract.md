@@ -1,142 +1,115 @@
-# Finance Engine Cheque Registry — Contract
+# Finance Engine — Cheque Registry Contract
 
 - Issue: #2426
 - Parent issue: #1938
-- Domain: `src/features/finance/financeEngineChequeRegistry`
+- Module path: `src/features/finance/financeEngineChequeRegistry/`
+- Status: Draft (implementation contract only — no runtime code shipped in this pass)
 
-## Purpose
+## 1. Purpose
 
-Defines the data contract, invariants, and public API surface for the Finance
-Engine Cheque Registry — the module responsible for tracking post-dated and
-issued cheques associated with finance ledger entries (rent, deposits,
-service charges) within the White Caves finance engine.
+Defines the data and behavioral contract for the **Cheque Registry** sub-module of the
+Finance Engine. The Cheque Registry is the single source of truth for tracking
+post-dated and current-dated cheques received from tenants/buyers and issued to
+vendors/owners, including their lifecycle state (received → deposited → cleared /
+bounced / cancelled).
 
-This document is the source of truth for the shape of registry records and
-the behavior of the registry's public functions. Any implementation added
-under this feature directory (and any future test suite) must conform to
-this contract.
+This contract does not implement UI or persistence; it defines the shape that any
+future implementation (service, Redux slice, Prisma model) MUST honor so that
+consuming code in Homepage/CRM finance views can be built against a stable interface.
 
-## Scope
+## 2. Scope
 
-In scope:
+### In scope
 
-- In-memory / pure-function registry of cheque records keyed by cheque ID.
-- Validation of cheque record fields (amount, cheque number, dates, status).
-- State-transition rules for cheque lifecycle (`pending` → `cleared` /
-  `bounced` / `cancelled`).
-- Query helpers (by status, by ledger reference, outstanding totals).
+- Cheque entity shape and required fields.
+- Allowed lifecycle states and legal transitions.
+- Validation rules for cheque numbers, amounts, and dates.
+- Query/filter contract for listing cheques by status, party, or date range.
+- Error contract for rejected transitions and invalid input.
 
-Out of scope (excluded per parent issue #1938 and this child issue):
+### Out of scope (excluded per issue #2426)
 
-- Parent issue closure.
-- Bulk GitHub mutation of any kind.
-- Destructive database operations (this module holds no persistence layer;
-  callers own storage).
-- Production secret rewrites.
-- Network/API integration with banking providers.
+- Closing the parent issue (#1938).
+- Bulk GitHub mutations of any kind.
+- Destructive database operations (drops, truncations, irreversible deletes).
+- Production secret rewrites (API keys, DB credentials, `.env` values).
+- Bank-integration / clearing-house network calls (future child issue).
 
-## Data Model
+## 3. Core Types (contractual shape)
 
 ```ts
-export type ChequeStatus = 'pending' | 'cleared' | 'bounced' | 'cancelled';
+export type ChequeStatus = 'RECEIVED' | 'DEPOSITED' | 'CLEARED' | 'BOUNCED' | 'CANCELLED';
 
 export interface ChequeRecord {
-  /** Unique identifier for the cheque record (UUID or ledger-scoped ID). */
-  readonly id: string;
-  /** Physical/bank cheque number as printed on the instrument. */
-  readonly chequeNumber: string;
-  /** Positive amount in the smallest currency unit is NOT used; amount is
-   * a plain decimal number in major currency units (e.g. AED). Must be > 0. */
-  readonly amount: number;
-  /** ISO-8601 date string (YYYY-MM-DD) the cheque is dated for. */
-  readonly issueDate: string;
-  /** Optional ISO-8601 date string the cheque was presented/cleared/bounced. */
-  readonly clearedDate?: string;
-  /** Reference to the originating finance ledger entry (e.g. invoice/lease ID). */
-  readonly ledgerReference: string;
-  /** Current lifecycle status. */
-  readonly status: ChequeStatus;
-  /** Free-form note (e.g. bounce reason). */
-  readonly note?: string;
+  /** Stable unique identifier (UUID v4). */
+  id: string;
+  /** Bank-printed cheque number, digits only, 6-12 chars. */
+  chequeNumber: string;
+  /** Issuing bank name. */
+  bankName: string;
+  /** Cheque face amount in minor units (fils/cents) to avoid float drift. */
+  amountMinor: number;
+  /** ISO 4217 currency code, e.g. "AED". */
+  currency: string;
+  /** ISO 8601 date the cheque is dated for. */
+  chequeDate: string;
+  /** Party the cheque was received from or issued to. */
+  counterpartyId: string;
+  /** Current lifecycle state. */
+  status: ChequeStatus;
+  /** Linked lease, sale, or payment plan identifier, if any. */
+  linkedTransactionId: string | null;
+  /** Audit timestamps (ISO 8601). */
+  createdAt: string;
+  updatedAt: string;
 }
 ```
 
-## Invariants
+## 4. Lifecycle & Legal Transitions
 
-1. `amount` MUST be a finite number strictly greater than `0`.
-2. `chequeNumber` and `ledgerReference` MUST be non-empty, trimmed strings.
-3. `issueDate` MUST be a valid ISO-8601 date string (`YYYY-MM-DD`).
-4. `clearedDate`, when present, MUST be a valid ISO-8601 date string and
-   MUST NOT be earlier than `issueDate`.
-5. Status transitions are one-directional and restricted:
-   - `pending` → `cleared`
-   - `pending` → `bounced`
-   - `pending` → `cancelled`
-   - Any other transition (including from `cleared`, `bounced`, or
-     `cancelled` to any other status, or to the same status) is invalid and
-     must be rejected.
-6. The registry never mutates a `ChequeRecord` in place; all registry
-   operations return new record instances (immutability).
-7. Registry lookups by unknown `id` return `undefined` (queries) or throw a
-   descriptive `Error` (mutating operations), never silently no-op.
-
-## Public API Surface
-
-```ts
-export function createChequeRecord(input: {
-  id: string;
-  chequeNumber: string;
-  amount: number;
-  issueDate: string;
-  ledgerReference: string;
-  note?: string;
-}): ChequeRecord;
-
-export function validateChequeRecord(record: ChequeRecord): string[]; // list of violation messages, empty = valid
-
-export function canTransition(from: ChequeStatus, to: ChequeStatus): boolean;
-
-export function transitionCheque(
-  record: ChequeRecord,
-  toStatus: ChequeStatus,
-  options?: { clearedDate?: string; note?: string }
-): ChequeRecord; // throws on invalid transition or invalid dates
-
-export function filterByStatus(
-  records: readonly ChequeRecord[],
-  status: ChequeStatus
-): ChequeRecord[];
-
-export function filterByLedgerReference(
-  records: readonly ChequeRecord[],
-  ledgerReference: string
-): ChequeRecord[];
-
-export function sumOutstandingAmount(records: readonly ChequeRecord[]): number; // sum of amount for status === 'pending'
+```
+RECEIVED   -> DEPOSITED, CANCELLED
+DEPOSITED  -> CLEARED, BOUNCED
+CLEARED    -> (terminal)
+BOUNCED    -> RECEIVED, CANCELLED   // redeposit workflow or writeoff
+CANCELLED  -> (terminal)
 ```
 
-## Error Handling
+Any transition not listed above MUST be rejected with error code
+`CHEQUE_ILLEGAL_TRANSITION`.
 
-- Invalid input to `createChequeRecord` throws `Error` with a message
-  listing the specific violation(s).
-- Invalid transitions in `transitionCheque` throw `Error` with a message of
-  the form: `Invalid cheque transition: <from> -> <to>`.
-- All exported functions are pure and free of side effects (no I/O, no
-  network, no logging).
+## 5. Validation Rules
 
-## Testing Requirements
+- `chequeNumber`: required, `^[0-9]{6,12}$`.
+- `amountMinor`: required, integer, `> 0`.
+- `currency`: required, 3-letter uppercase ISO code.
+- `chequeDate`: required, valid ISO 8601 date, not more than 5 years in the past.
+- `counterpartyId`: required, non-empty string.
+- Duplicate `(chequeNumber, bankName)` pairs for the same counterparty in a
+  non-terminal status MUST be rejected with `CHEQUE_DUPLICATE`.
 
-- Vitest (`import { describe, expect, it } from 'vitest'`) test files
-  co-located under this feature directory (e.g.
-  `financeEngineChequeRegistry.test.ts`) must assert real behavior against
-  every invariant listed above — no placeholder assertions (`expect(true).toBe(true)`).
-- Minimum coverage: creation validation, each valid/invalid transition pair,
-  query helpers, and outstanding-amount aggregation.
+## 6. Query Contract
 
-## Rollback Note
+Consumers may filter the registry by:
 
-This contract and its companion README are documentation-only additions
-under `src/features/finance/financeEngineChequeRegistry/`. To roll back,
-delete the two files in this directory; no other files are touched, no
-schema migrations are introduced, and no runtime behavior changes until an
-implementation file is added in a follow-up child issue.
+- `status?: ChequeStatus | ChequeStatus[]`
+- `counterpartyId?: string`
+- `chequeDateFrom?: string` / `chequeDateTo?: string` (ISO 8601, inclusive)
+- `linkedTransactionId?: string`
+
+Results MUST be returned sorted by `chequeDate` ascending unless otherwise specified.
+
+## 7. Error Contract
+
+| Code                        | Meaning                                          |
+| --------------------------- | ------------------------------------------------ |
+| `CHEQUE_VALIDATION_FAILED`  | One or more field validation rules failed.       |
+| `CHEQUE_ILLEGAL_TRANSITION` | Requested status transition is not permitted.    |
+| `CHEQUE_DUPLICATE`          | Duplicate active cheque number for counterparty. |
+| `CHEQUE_NOT_FOUND`          | Referenced cheque id does not exist.             |
+
+## 8. Reconciliation Note
+
+This is a scoping/contract artifact for child issue #2426 under parent #1938.
+The parent issue remains **open** until all sibling child issues under #1938 are
+reconciled; this document alone does not close any issue.

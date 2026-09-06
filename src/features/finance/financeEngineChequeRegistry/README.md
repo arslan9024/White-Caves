@@ -1,85 +1,73 @@
 # Finance Engine Cheque Registry
 
-Part of the White Caves finance engine. Tracks post-dated and issued
-cheques linked to finance ledger entries (rent, deposits, service charges).
+- Issue: #2426 (child of parent #1938)
+- Location: `src/features/finance/financeEngineChequeRegistry/`
 
-- Issue: #2426
-- Parent issue: #1938
-- Contract: [`financeEngineChequeRegistry.contract.md`](./financeEngineChequeRegistry.contract.md)
+## What this module is
 
-## Status
+The Cheque Registry sub-module of the Finance Engine tracks the full lifecycle of
+physical/post-dated cheques handled by White Caves' finance operations: cheques
+received from tenants or buyers, and cheques issued to owners/vendors. It exists to
+give a single, auditable source of truth for cheque status so that finance
+dashboards, payment reconciliation, and reporting can rely on one consistent model
+instead of ad-hoc tracking in spreadsheets or scattered payment records.
 
-Documentation and contract phase. This directory currently defines the
-data model, invariants, and public API contract that any implementation
-(and its Vitest test suite) must satisfy. Implementation code lands in a
-follow-up child issue under parent #1938.
+See [`financeEngineChequeRegistry.contract.md`](./financeEngineChequeRegistry.contract.md)
+for the authoritative data contract (types, lifecycle transitions, validation rules,
+query contract, and error codes).
 
-## Why this module exists
+## Current status
 
-Cheque handling is a recurring pain point in Dubai real-estate leasing:
-tenants commonly pay via post-dated cheques (PDCs), and finance staff need
-a reliable way to track which cheques are pending, cleared, bounced, or
-cancelled against which lease/ledger entry — independent of any specific
-bank integration.
+This pass delivers the **contract and planning artifacts only**:
 
-## Scope
+- `financeEngineChequeRegistry.contract.md` — the data/behavior contract that any
+  future service, Redux slice, or Prisma model implementing this module MUST satisfy.
+- This README, describing scope, boundaries, and how to pick up implementation.
+- Companion SRS/SDD handoff documents under `plans/implementation_handoffs/` describing
+  requirements and design for the eventual runtime implementation.
 
-- **In scope:** pure, in-memory data model + validation + lifecycle
-  transition rules + query helpers for cheque records.
-- **Out of scope:** parent issue closure, bulk GitHub mutation, destructive
-  database operations, production secret rewrites, bank/network
-  integrations, and persistence (callers own storage).
+No runtime TypeScript module (service class, Redux slice, API route) is shipped in
+this pass. This keeps the change surgical and scoped strictly to the child issue
+(#2426) without expanding into implementation, persistence, or bulk mutation work
+that belongs to later child issues under parent #1938.
 
-## Data Model (summary)
+## Scope boundaries
 
-A `ChequeRecord` has an `id`, `chequeNumber`, `amount`, `issueDate`,
-optional `clearedDate`, `ledgerReference`, `status`
-(`pending | cleared | bounced | cancelled`), and optional `note`. See the
-contract file for full field semantics and invariants.
+**In scope for #2426:**
 
-## Lifecycle
+- Defining the cheque entity shape, lifecycle, validation, and error contract.
+- Documenting how consumers (CRM finance views, payment reconciliation flows) are
+  expected to query and mutate cheque records once implemented.
 
-```
-pending ──► cleared
-pending ──► bounced
-pending ──► cancelled
-```
+**Explicitly out of scope (per issue #2426 exclusions):**
 
-No other transitions are permitted; `cleared`, `bounced`, and `cancelled`
-are terminal states.
+- Closing parent issue #1938.
+- Any bulk GitHub mutation (issue/PR bulk edits, mass closes, etc.).
+- Destructive database operations (drops, truncates, irreversible deletes).
+- Rewriting production secrets (API keys, DB credentials, `.env` values).
 
-## Public API (summary)
+## Next steps for implementation
 
-| Function                                            | Purpose                                                                      |
-| --------------------------------------------------- | ---------------------------------------------------------------------------- |
-| `createChequeRecord(input)`                         | Construct and validate a new `pending` cheque record.                        |
-| `validateChequeRecord(record)`                      | Return a list of validation violation messages (empty = valid).              |
-| `canTransition(from, to)`                           | Pure check of whether a status transition is allowed.                        |
-| `transitionCheque(record, toStatus, options?)`      | Return a new record in the target status, or throw on an invalid transition. |
-| `filterByStatus(records, status)`                   | Return records matching a given status.                                      |
-| `filterByLedgerReference(records, ledgerReference)` | Return records for a given ledger entry.                                     |
-| `sumOutstandingAmount(records)`                     | Sum of `amount` across all `pending` records.                                |
+A follow-up child issue should:
 
-Full signatures live in the contract file.
-
-## Testing
-
-Tests use Vitest:
-
-```ts
-import { describe, expect, it } from 'vitest';
-```
-
-Test files must assert real behavior (validation failures, transition
-rules, aggregation results) — never placeholder assertions.
-
-## Related documents
-
-- SRS: `plans/implementation_handoffs/SRS-ISSUE-W56-FINANCE-CHEQUE-1938.md`
-- SDD: `plans/implementation_handoffs/SDD-ISSUE-W56-FINANCE-CHEQUE-1938.md`
+1. Implement a `ChequeRegistryService` (or equivalent) satisfying the contract in
+   `financeEngineChequeRegistry.contract.md`.
+2. Add a Prisma model / migration for `ChequeRecord` (additive migration only — no
+   destructive schema changes).
+3. Add vitest unit tests covering validation rules, lifecycle transitions, and query
+   filtering, asserting real behavior (not placeholder `expect(true).toBe(true)`
+   assertions).
+4. Wire the service into finance dashboard/reporting consumers.
 
 ## Rollback
 
-This README and the contract file are additive documentation only. Removing
-this directory fully reverts the change with no impact on other modules,
-since no implementation or test files currently exist here.
+This change is documentation-only (no runtime code, no schema changes, no
+dependency changes). To roll back, delete the four files listed in the issue:
+
+- `src/features/finance/financeEngineChequeRegistry/financeEngineChequeRegistry.contract.md`
+- `src/features/finance/financeEngineChequeRegistry/README.md`
+- `plans/implementation_handoffs/SRS-ISSUE-W56-FINANCE-CHEQUE-1938.md`
+- `plans/implementation_handoffs/SDD-ISSUE-W56-FINANCE-CHEQUE-1938.md`
+
+Deleting them has no effect on any other module, build, or test, since nothing else
+references them yet.

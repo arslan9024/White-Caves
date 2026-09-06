@@ -1,167 +1,113 @@
-# Software Design Document — Finance Engine Cheque Registry
+# SDD — Finance Engine Cheque Registry
 
 - Handoff ID: SDD-ISSUE-W56-FINANCE-CHEQUE-1938
 - Issue: #2426
-- Parent issue: #1938 (remains open until all child work is reconciled)
-- Module: `src/features/finance/financeEngineChequeRegistry`
-- Companion: `SRS-ISSUE-W56-FINANCE-CHEQUE-1938.md`
+- Parent issue: #1938 (remains open — not closed by this handoff)
+- Companion document: `SRS-ISSUE-W56-FINANCE-CHEQUE-1938.md`
 
-## 1. Overview
+## 1. Design Overview
 
-This document describes the internal design for the Finance Engine Cheque
-Registry module: a pure, dependency-free TypeScript library that models
-cheque records, validates them, enforces lifecycle transitions, and offers
-query/aggregation helpers. It has no persistence, no network calls, and no
-mutation of shared state.
+The Cheque Registry is designed as an isolated sub-module under
+`src/features/finance/financeEngineChequeRegistry/`. This pass delivers only the
+contract (`financeEngineChequeRegistry.contract.md`) and planning documents; no
+runtime code is introduced yet, keeping the change surgical and reviewable.
 
-## 2. Module Layout
+The design below describes how a future implementation should be structured so
+that it satisfies the contract without further architectural decisions being
+required.
+
+## 2. Module Layout (target, for future implementation)
 
 ```
 src/features/finance/financeEngineChequeRegistry/
-├── financeEngineChequeRegistry.contract.md   # data/behavior contract (source of truth)
-├── README.md                                  # module overview
-├── financeEngineChequeRegistry.ts             # implementation (follow-up child issue)
-└── financeEngineChequeRegistry.test.ts        # Vitest suite (follow-up child issue)
+├── financeEngineChequeRegistry.contract.md   # data/behavior contract (this pass)
+├── README.md                                 # module overview (this pass)
+├── types.ts                                  # ChequeStatus, ChequeRecord (future)
+├── validation.ts                             # field + transition validation (future)
+├── chequeRegistry.service.ts                 # in-memory/service implementation (future)
+├── chequeRegistry.errors.ts                  # typed error classes (future)
+└── __tests__/
+    └── chequeRegistry.service.test.ts        # vitest suite (future)
 ```
 
-Only the two documentation files (`.contract.md`, `README.md`) are created
-by this issue (#2426). The `.ts` implementation and test files are produced
-in a follow-up child issue under parent #1938, using this SDD and the
-contract as the implementation spec.
+## 3. Design Decisions
 
-## 3. Types
+### 3.1 Monetary amounts stored as integer minor units
 
-```ts
-export type ChequeStatus = 'pending' | 'cleared' | 'bounced' | 'cancelled';
+**Decision**: `amountMinor: number` (integer) rather than a floating-point major
+unit amount.
+**Rationale**: Floating-point arithmetic on currency values is a well-known source
+of rounding defects. Storing minor units (fils/cents) as integers avoids this class
+of bug entirely and is consistent with how other Finance Engine sub-modules should
+represent money.
 
-export interface ChequeRecord {
-  readonly id: string;
-  readonly chequeNumber: string;
-  readonly amount: number;
-  readonly issueDate: string;
-  readonly clearedDate?: string;
-  readonly ledgerReference: string;
-  readonly status: ChequeStatus;
-  readonly note?: string;
-}
-```
+### 3.2 Explicit finite-state lifecycle
 
-Design decision: fields are `readonly` to make immutability a compile-time
-guarantee (NFR: pure functions, no mutation), rather than relying solely on
-runtime discipline.
+**Decision**: Cheque status transitions are defined as a fixed adjacency list
+(`RECEIVED -> DEPOSITED, CANCELLED`, etc.) rather than allowing arbitrary status
+writes.
+**Rationale**: Cheque lifecycle in finance operations has real-world legal/audit
+significance (e.g., a cleared cheque can never revert to "received"). Enforcing
+transitions at the contract level prevents invalid state from ever being persisted,
+and makes the eventual service implementation's transition-guard logic
+straightforward to test exhaustively (finite transition table).
 
-## 4. Function Design
+### 3.3 Duplicate detection scoped to (chequeNumber, bankName, counterparty) while non-terminal
 
-### 4.1 `createChequeRecord(input)`
+**Decision**: Only cheques in non-terminal states count toward duplicate detection.
+**Rationale**: Real cheque numbers can legitimately repeat over time for the same
+counterparty/bank once a prior cheque has reached a terminal state (`CLEARED` or
+`CANCELLED`). Scoping the duplicate check to active (non-terminal) records avoids
+false-positive rejections while still catching genuine double-entry mistakes.
 
-- Builds a `ChequeRecord` with `status: 'pending'` and no `clearedDate`.
-- Runs `validateChequeRecord` internally against the constructed record
-  (minus the transition-specific rules, which don't apply to creation) and
-  throws `Error(violations.join('; '))` if any violation is found.
-- Trims `chequeNumber` and `ledgerReference` before storing.
+### 3.4 Documentation-only delivery for this issue
 
-### 4.2 `validateChequeRecord(record)`
+**Decision**: This pass ships only markdown artifacts (contract, README, SRS, SDD),
+not a runtime service.
+**Rationale**: The issue's file list is explicitly documentation/contract files.
+Introducing runtime TypeScript modules, Prisma migrations, or Redux slices not
+requested by the issue would expand scope beyond the declared child boundary and
+risk touching files outside the approved list. Future child issues under #1938
+should implement the service using this contract as the binding interface.
 
-- Pure function returning `string[]` of violation messages (empty array
-  means valid). Used internally by `createChequeRecord` and
-  `transitionCheque`, and exported for standalone validation (e.g. by
-  callers validating externally constructed records, such as ones
-  deserialized from storage).
-- Checks, in order: amount > 0 and finite; chequeNumber non-empty trimmed;
-  ledgerReference non-empty trimmed; issueDate is valid ISO date;
-  clearedDate (if present) is valid ISO date and not before issueDate.
+## 4. Validation & Test Strategy (for future implementation)
 
-### 4.3 `canTransition(from, to)`
+When the runtime module is implemented, tests MUST:
 
-- Pure lookup against a `Record<ChequeStatus, ChequeStatus[]>` adjacency
-  map:
-  ```ts
-  const ALLOWED_TRANSITIONS: Record<ChequeStatus, ChequeStatus[]> = {
-    pending: ['cleared', 'bounced', 'cancelled'],
-    cleared: [],
-    bounced: [],
-    cancelled: [],
-  };
-  ```
-- Returns `ALLOWED_TRANSITIONS[from].includes(to)`.
+- Use `import { describe, expect, it } from 'vitest'`.
+- Assert real behavior: e.g. `expect(result.status).toBe('DEPOSITED')` after a
+  valid `RECEIVED -> DEPOSITED` transition, and
+  `expect(() => transition(cheque, 'CLEARED')).toThrow('CHEQUE_ILLEGAL_TRANSITION')`
+  for an illegal `RECEIVED -> CLEARED` jump.
+- Cover: field validation failures (each rule in the contract), every legal
+  transition, at least one illegal transition per state, duplicate detection, and
+  query filtering/sorting.
+- Avoid placeholder assertions (`expect(true).toBe(true)`).
 
-### 4.4 `transitionCheque(record, toStatus, options?)`
+Required validation commands for this documentation-only pass: none (no TypeScript
+source was added or modified). Future implementation PRs must run the project's
+existing lint/typecheck/test commands (e.g. `npm run typecheck`, `npm run test`)
+scoped to the new files.
 
-- Calls `canTransition(record.status, toStatus)`; throws
-  `Error('Invalid cheque transition: ' + record.status + ' -> ' + toStatus)`
-  if false.
-- When `toStatus` is `'cleared'` or `'bounced'`, requires
-  `options?.clearedDate` (defaults to not set is disallowed for `cleared`;
-  design decision: `clearedDate` is required for `cleared`/`bounced`
-  because a clearing/bounce event is inherently dated, but optional for
-  `cancelled` since cancellation may precede any bank presentation).
-- Validates the resulting record via `validateChequeRecord` before
-  returning it, so downstream state is guaranteed contract-valid.
-- Returns a new object (spread of `record` with overridden `status`,
-  `clearedDate`, `note`), never mutates the input.
+## 5. Rollback Plan
 
-### 4.5 Query/Aggregation Helpers
+This handoff introduces only new markdown files; nothing else in the repository
+references them. Rollback is a straight deletion of:
 
-- `filterByStatus`, `filterByLedgerReference`: simple `Array.prototype.filter`
-  predicates, `O(n)`, no sorting guarantees beyond input order.
-- `sumOutstandingAmount`: `records.filter(r => r.status === 'pending').reduce((sum, r) => sum + r.amount, 0)`.
+- `src/features/finance/financeEngineChequeRegistry/financeEngineChequeRegistry.contract.md`
+- `src/features/finance/financeEngineChequeRegistry/README.md`
+- `plans/implementation_handoffs/SRS-ISSUE-W56-FINANCE-CHEQUE-1938.md`
+- `plans/implementation_handoffs/SDD-ISSUE-W56-FINANCE-CHEQUE-1938.md`
 
-## 5. Design Decisions & Rationale
+No database migration, dependency change, or production configuration is touched,
+so rollback carries no data-loss or downtime risk.
 
-1. **Pure functions over a class-based registry.** A stateless functional
-   API keeps the module trivially testable and avoids introducing shared
-   mutable state, aligning with NFR-4 (no side effects) and simplifying
-   composition with any persistence layer callers choose.
-2. **Required `clearedDate` for `cleared`/`bounced` transitions.** Chosen
-   because both events represent a bank action that inherently occurred on
-   a specific date; omitting it would leave the record contract-incomplete
-   and break `sumOutstandingAmount`/reporting accuracy downstream.
-3. **String-based ISO dates rather than `Date` objects.** Keeps records
-   JSON-serializable without custom (de)serialization logic, and avoids
-   timezone ambiguity common with `Date` in cross-environment (Node/browser)
-   code.
-4. **Validation returns messages instead of throwing directly.**
-   `validateChequeRecord` is exposed as a non-throwing pure function so
-   callers (e.g. UI forms) can surface multiple validation errors at once;
-   `createChequeRecord`/`transitionCheque` wrap it and throw for
-   programmatic/contract-enforcement call sites.
+## 6. Completion Evidence
 
-## 6. Error Handling Strategy
-
-- All errors are native `Error` instances with descriptive messages (no
-  custom error classes introduced, to avoid adding public API surface not
-  required by the contract).
-- No error is ever swallowed; invalid input always throws or returns a
-  non-empty violation list.
-
-## 7. Testing Strategy
-
-- Vitest suite (`import { describe, expect, it } from 'vitest'`) covering:
-  - `createChequeRecord`: valid input succeeds; each invalid field throws.
-  - `validateChequeRecord`: returns expected violation messages for each
-    invariant breach; returns `[]` for valid input.
-  - `canTransition`: true for the three valid pairs, false for all others
-    (including same-state and terminal-state origins).
-  - `transitionCheque`: successful transition returns new object with
-    updated fields and does not mutate the original; invalid transition
-    throws with the exact `Invalid cheque transition: <from> -> <to>`
-    message.
-  - `filterByStatus`, `filterByLedgerReference`, `sumOutstandingAmount`:
-    correctness on multi-record fixtures including the empty-array edge
-    case.
-- No mocks needed; all inputs/outputs are plain data.
-
-## 8. Risks & Mitigations
-
-| Risk                                                    | Mitigation                                                                         |
-| ------------------------------------------------------- | ---------------------------------------------------------------------------------- |
-| Implementation drifts from contract in follow-up issue. | Contract file is the source of truth; SDD explicitly cross-references it in §3–§4. |
-| Ambiguity about parent issue closure.                   | Explicitly excluded in scope; parent #1938 stays open per acceptance criteria.     |
-| Scope creep into persistence/bank integration.          | Explicitly listed as out-of-scope in both SRS and this SDD.                        |
-
-## 9. Rollback Note
-
-This SDD is a documentation artifact under `plans/implementation_handoffs/`.
-Deleting this file (and its companion SRS) fully reverts this handoff with
-no effect on runtime code, configuration, or dependencies, since this issue
-introduces no implementation files.
+- Contract document defines full entity shape, lifecycle, validation, query, and
+  error contracts (see `financeEngineChequeRegistry.contract.md`).
+- README documents scope boundaries and explicitly excludes parent-issue closure,
+  bulk GitHub mutation, destructive DB operations, and secret rewrites.
+- This SDD and its companion SRS record the design rationale and traceability back
+  to issue #2426 and parent issue #1938.
+- Parent issue #1938 is not modified or closed by this work.

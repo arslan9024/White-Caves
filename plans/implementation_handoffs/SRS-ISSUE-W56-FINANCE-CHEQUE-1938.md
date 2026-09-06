@@ -1,89 +1,100 @@
-# Software Requirements Specification — Finance Engine Cheque Registry
+# SRS — Finance Engine Cheque Registry
 
 - Handoff ID: SRS-ISSUE-W56-FINANCE-CHEQUE-1938
 - Issue: #2426
-- Parent issue: #1938 (remains open until all child work is reconciled)
-- Module: `src/features/finance/financeEngineChequeRegistry`
-- Status: Documented / ready for implementation handoff
+- Parent issue: #1938 (remains open — not closed by this handoff)
+- Wave: W56 — Finance Engine hardening
 
-## 1. Purpose
+## 1. Introduction
 
-Specify the functional and non-functional requirements for a cheque
-registry within the White Caves finance engine, enabling tracking of
-post-dated and issued cheques against finance ledger entries (leases,
-invoices, deposits, service charges).
+### 1.1 Purpose
 
-## 2. Background
+This Software Requirements Specification defines the functional and non-functional
+requirements for the **Cheque Registry** capability of the Finance Engine, a
+sub-module responsible for tracking the lifecycle of cheques exchanged between
+White Caves and tenants, buyers, owners, and vendors.
 
-Parent issue #1938 tracks the broader "Finance Engine" workstream (W56).
-This child issue (#2426) delivers the requirements, design, and contract
-for the cheque-tracking sub-capability without closing the parent issue and
-without performing any bulk GitHub mutation, destructive database
-operation, or production secret rewrite.
+### 1.2 Scope
 
-## 3. Stakeholders
+The Cheque Registry:
 
-- Finance/accounts staff recording and reconciling tenant cheque payments.
-- Engineering team implementing the finance engine.
-- QA validating cheque lifecycle correctness.
+- Records cheques received (from tenants/buyers) and issued (to owners/vendors).
+- Tracks lifecycle status from receipt through clearing, bouncing, or cancellation.
+- Exposes query capability for finance dashboards and reconciliation workflows.
+- Emits structured errors for invalid input or illegal state transitions.
 
-## 4. Functional Requirements
+It does **not**, in this issue:
 
-| ID    | Requirement                                                                                                                                                                                                |
-| ----- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| FR-1  | The system SHALL represent a cheque as a `ChequeRecord` with fields: `id`, `chequeNumber`, `amount`, `issueDate`, `clearedDate?`, `ledgerReference`, `status`, `note?`.                                    |
-| FR-2  | The system SHALL validate that `amount` is a finite number strictly greater than zero.                                                                                                                     |
-| FR-3  | The system SHALL validate that `chequeNumber` and `ledgerReference` are non-empty, trimmed strings.                                                                                                        |
-| FR-4  | The system SHALL validate that `issueDate` (and `clearedDate` when present) are valid ISO-8601 (`YYYY-MM-DD`) dates.                                                                                       |
-| FR-5  | The system SHALL reject a `clearedDate` earlier than `issueDate`.                                                                                                                                          |
-| FR-6  | The system SHALL enforce cheque lifecycle transitions restricted to `pending → cleared`, `pending → bounced`, and `pending → cancelled`; all other transitions SHALL be rejected with a descriptive error. |
-| FR-7  | The system SHALL provide query helpers to filter cheque records by `status` and by `ledgerReference`.                                                                                                      |
-| FR-8  | The system SHALL provide an aggregation helper returning the total outstanding (`pending`) cheque amount across a given record set.                                                                        |
-| FR-9  | All registry operations SHALL be pure functions with no side effects; mutating operations SHALL return new record instances rather than mutating inputs.                                                   |
-| FR-10 | Invalid construction or invalid transitions SHALL throw `Error` instances carrying a human-readable violation message.                                                                                     |
+- Integrate with a bank/clearing-house API.
+- Perform automatic reconciliation against bank statements.
+- Close parent issue #1938 or any other issue.
+- Perform bulk GitHub mutations.
+- Execute destructive database operations.
+- Rewrite production secrets.
 
-## 5. Non-Functional Requirements
+### 1.3 Definitions
 
-| ID    | Requirement                                                                                                                                   |
-| ----- | --------------------------------------------------------------------------------------------------------------------------------------------- |
-| NFR-1 | Implementation SHALL use strict TypeScript with no `any` types.                                                                               |
-| NFR-2 | Test coverage SHALL use Vitest (`import { describe, expect, it } from 'vitest'`) with real behavioral assertions — no placeholder assertions. |
-| NFR-3 | The module SHALL introduce no new runtime dependencies.                                                                                       |
-| NFR-4 | The module SHALL not perform network calls, database writes, or filesystem I/O.                                                               |
-| NFR-5 | The module SHALL remain isolated under `src/features/finance/financeEngineChequeRegistry` and not modify files outside its declared scope.    |
+- **Cheque**: a negotiable instrument recorded in the registry with a defined
+  lifecycle status.
+- **Counterparty**: the tenant, buyer, owner, or vendor associated with a cheque.
+- **Linked transaction**: an optional reference to a lease, sale, or payment plan
+  the cheque is applied against.
 
-## 6. Out of Scope / Exclusions
+## 2. Overall Description
 
-- Parent issue (#1938) closure.
-- Bulk GitHub mutation of any kind.
-- Destructive database operations.
-- Production secret rewrites.
-- Bank/payment-provider network integration.
-- Persistence layer (registry is stateless; callers own storage).
+### 2.1 Product Perspective
 
-## 7. Acceptance Criteria
+The Cheque Registry is a sub-module of the broader Finance Engine (parent #1938),
+which also covers invoicing, payment plans, and reconciliation. This module is
+consumed by:
 
-1. Implementation stays within the declared child scope
-   (`src/features/finance/financeEngineChequeRegistry` and its own tests).
-2. Focused Vitest tests and required validation commands (typecheck, unit
-   tests for this module) pass.
-3. Completion evidence (test run output) and a rollback note are recorded
-   alongside the implementation.
-4. Parent issue #1938 remains open; this child issue does not close it.
+- CRM finance dashboards (cheque status widgets).
+- Payment reconciliation flows (matching cheques to invoices/payment plans).
+- Reporting exports (aging/bounced-cheque reports).
 
-## 8. Traceability
+### 2.2 User Classes
 
-| Requirement | Contract Reference                                                                                        |
-| ----------- | --------------------------------------------------------------------------------------------------------- |
-| FR-1 – FR-5 | `financeEngineChequeRegistry.contract.md` §Data Model, §Invariants                                        |
-| FR-6        | `financeEngineChequeRegistry.contract.md` §Invariants (5), §Public API `canTransition`/`transitionCheque` |
-| FR-7        | `financeEngineChequeRegistry.contract.md` §Public API `filterByStatus`/`filterByLedgerReference`          |
-| FR-8        | `financeEngineChequeRegistry.contract.md` §Public API `sumOutstandingAmount`                              |
-| FR-9, FR-10 | `financeEngineChequeRegistry.contract.md` §Invariants (6, 7), §Error Handling                             |
+- **Finance operators**: record received/issued cheques, update status as cheques
+  move through the bank clearing process.
+- **Finance managers**: query registry for reporting, aging analysis, and
+  bounced-cheque follow-up.
+- **System integrations**: automated jobs that may later poll bank statements to
+  update cheque status (out of scope for this issue; contract must support it).
 
-## 9. Rollback Note
+## 3. Functional Requirements
 
-This SRS is a documentation artifact under `plans/implementation_handoffs/`.
-Deleting this file (and its companion SDD) fully reverts this handoff with
-no effect on runtime code, since no implementation files are introduced by
-this issue.
+| ID   | Requirement                                                                                                                 | Priority |
+| ---- | --------------------------------------------------------------------------------------------------------------------------- | -------- |
+| FR-1 | System SHALL represent each cheque with the fields defined in the module contract.                                          | Must     |
+| FR-2 | System SHALL enforce validation rules on cheque number, amount, currency, and date.                                         | Must     |
+| FR-3 | System SHALL only allow the lifecycle transitions defined in the contract's transition table.                               | Must     |
+| FR-4 | System SHALL reject duplicate active cheque numbers per counterparty/bank pair.                                             | Must     |
+| FR-5 | System SHALL support filtering cheques by status, counterparty, date range, and linked transaction.                         | Should   |
+| FR-6 | System SHALL return structured error codes for validation failures, illegal transitions, duplicates, and not-found lookups. | Must     |
+| FR-7 | System SHALL sort query results by cheque date ascending by default.                                                        | Should   |
+
+## 4. Non-Functional Requirements
+
+| ID    | Requirement                                                                                 |
+| ----- | ------------------------------------------------------------------------------------------- |
+| NFR-1 | All code implementing this contract MUST use strict TypeScript with no `any` types.         |
+| NFR-2 | All monetary amounts MUST be stored/validated as integer minor units, never floats.         |
+| NFR-3 | Unit tests MUST use vitest with real behavioral assertions (no placeholder assertions).     |
+| NFR-4 | No implementation step in this wave may perform destructive database operations.            |
+| NFR-5 | No implementation step in this wave may rewrite production secrets.                         |
+| NFR-6 | No implementation step in this wave may perform bulk GitHub mutations or close issue #1938. |
+
+## 5. Acceptance Criteria (traced to issue #2426)
+
+1. Implementation remains within the declared child scope (cheque registry contract
+   and planning artifacts only for this pass).
+2. Focused tests and required validation commands pass for any code introduced.
+3. Completion evidence and a rollback note are recorded (see SDD and README).
+4. Parent issue #1938 remains open until all child work under it is reconciled.
+
+## 6. Traceability
+
+- Parent issue: #1938 (Finance Engine).
+- This issue: #2426 (Cheque Registry — contract & planning handoff, wave W56).
+- Downstream consumers: CRM finance dashboards, reconciliation workflows (future
+  child issues).
