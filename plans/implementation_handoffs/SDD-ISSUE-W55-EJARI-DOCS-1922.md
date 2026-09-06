@@ -159,3 +159,35 @@ are touched and no state, schema, or dependency changes are made.
 This SDD, together with its SRS pair, satisfies the documentation deliverable for child issue
 #2497. Parent issue #1922 remains open until all sibling child issues (covering `types.ts`,
 `stateMachine.ts`, `errors.ts`, `index.ts`, and their vitest suites) are completed and reconciled.
+
+## 10. Reconciliation Update — Child Issue #2496 (Implementation)
+
+Child issue #2496 delivered the implementation described in Sections 3–6 above. **Design
+decision:** rather than the four-file split originally sketched in Section 2
+(`types.ts` / `stateMachine.ts` / `errors.ts` / `index.ts`), the implementation consolidates all
+types, error classes, and the transition state machine into a single module,
+`src/features/documents/ejariSuiteBusinessFlow/ejariSuiteBusinessFlow.logic.ts`, with its focused
+vitest suite in `ejariSuiteBusinessFlow.logic.test.ts`. This keeps the cohesive, dependency-free
+core in one place for a module of this size while preserving every exported symbol named in
+Sections 3 and 4 (`EjariFlowStage`, `EjariDocumentBundle`, `EjariFlowTransition`, `EjariCase`,
+`InvalidEjariTransitionError`, `IncompleteEjariBundleError`, `TerminalEjariCaseError`,
+`createEjariCase`, `transitionEjariCase`, `canTransition`, `isTerminalStage`), plus the additional
+helper `getMissingDocuments` used internally by the bundle-completeness check. No existing export
+was removed or renamed. Should downstream child issues need adapters (persistence, notifications,
+GitHub sync per SRS Section 2.2), they MAY split this module further without breaking the public
+contract, since all exports are named (not default) exports.
+
+Validation evidence for #2496: `vitest run` on
+`ejariSuiteBusinessFlow.logic.test.ts` — 28/28 tests passed, covering every scenario listed in
+Section 7 (creation always at `draft`, every valid transition table row, illegal-transition
+rejection, incomplete-bundle rejection with missing-document listing, terminal-stage rejection for
+both `completed` and `cancelled`, `ejari_rejected` retry routing to `documents_pending`, and
+`isTerminalStage` coverage). A scoped `tsc --noEmit --strict` type-check of both new files passed
+with zero errors and no `any` usage, satisfying NFR-1.
+
+**Rollback note (#2496):** this update adds only two new source files
+(`ejariSuiteBusinessFlow.logic.ts`, `ejariSuiteBusinessFlow.logic.test.ts`) plus this
+reconciliation section and the paired SRS update. To roll back, delete the two new source files
+and revert this section and the SRS's matching update — no other files, schemas, or dependencies
+are touched. Parent issue #1922 remains open pending reconciliation of any remaining sibling child
+issues (adapters, persistence, notifications, GitHub sync).

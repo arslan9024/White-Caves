@@ -83,6 +83,22 @@ document flows) and shares document intake/verification primitives but owns its 
    issue's handoff.
 4. Parent issue #1922 remains open until all child issues are reconciled.
 
+## 7. Reconciliation Update — Child Issue #2496 (Implementation)
+
+Child issue #2496 implements FR-1 through FR-9 and NFR-1 through NFR-4 in
+`src/features/documents/ejariSuiteBusinessFlow/ejariSuiteBusinessFlow.logic.ts`, with the
+FR/NFR-covering vitest suite in the co-located `ejariSuiteBusinessFlow.logic.test.ts` (28
+tests, all passing). NFR-5 (backward-compatible public API) is satisfied: every export named in
+this SRS and its SDD is present and unchanged in signature; the module additionally exports one
+new supporting helper, `getMissingDocuments(bundle)`, used to implement FR-7's missing-document
+listing. This is a strictly additive extension, not a replacement, of the documented contract.
+
+Acceptance criteria from Section 5 are satisfied as follows: (1) implementation is scoped to the
+single declared logic file and its test file, per this child issue's file list; (2) `vitest run`
+and a scoped `tsc --noEmit --strict` check both pass with zero errors; (3) test-pass evidence and
+a rollback note are recorded in the paired SDD's Section 10; (4) parent issue #1922 remains open,
+pending reconciliation of any remaining sibling child issues.
+
 ## 6. Traceability
 
 This SRS traces to the contract defined in
