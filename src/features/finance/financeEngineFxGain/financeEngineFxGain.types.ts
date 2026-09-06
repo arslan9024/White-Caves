@@ -1,91 +1,95 @@
 /**
- * Finance Engine FX Gain/Loss — shared types and runtime guards.
+ * Shared type definitions for the FX Gain/Loss Calculation module.
  *
- * Issue: #2420 (child of parent #1939)
+ * Issue: #2420 (child of parent #1939, Workstream W56: Finance Engine).
  *
- * This module is the canonical source for the FX gain/loss data contract
- * (`FxAmount`, `FxGainResult`, `FxRate`) plus small, pure runtime guard and
- * assertion helpers used to validate inputs before they are handed to the
- * finance engine's FX calculation logic.
+ * This file contains only the pure type/interface/error surface for the
+ * module: no calculation logic lives here. Splitting the type contract
+ * out from the calculation logic (`financeEngineFxGain.logic.ts`, tracked
+ * under sibling issue #2421) keeps the public API independently
+ * reviewable and revertible from the implementation that consumes it.
  *
- * Design notes:
- * - Kept dependency-free and side-effect-free (NFR-2/NFR-4 of the parent
- *   SRS): no I/O, no randomness, no clock access.
- * - `FxRate` is a nominal-ish alias over `number` used purely for
- *   documentation/readability at call sites; it does not change runtime
- *   behavior.
- * - Validation mirrors FR-5 from SRS-ISSUE-W56-FINANCE-FX-1939.md: a rate of
- *   `0`, `NaN`, `Infinity`, or a negative number is invalid and MUST throw a
- *   `RangeError` rather than being silently coerced.
+ * See:
+ * - plans/implementation_handoffs/SRS-ISSUE-W56-FINANCE-FX-1939.md
+ * - plans/implementation_handoffs/SDD-ISSUE-W56-FINANCE-FX-1939.md
  */
 
-/** 1 unit of `foreignCurrency` = `rate` units of the base currency. */
-export type FxRate = number;
+/** ISO-4217-shaped currency code, e.g. `'USD'`, `'AED'`. */
+export type CurrencyCode = string;
 
-/** A monetary amount denominated in a foreign currency, with its FX rate. */
-export interface FxAmount {
-  foreignAmount: number;
-  foreignCurrency: string;
-  rate: FxRate;
-}
-
-/** Result of an FX gain/loss calculation. */
-export interface FxGainResult {
-  gainOrLoss: number;
-  originalBaseValue: number;
-  currentBaseValue: number;
+/**
+ * Input describing a single multi-currency transaction that needs its
+ * FX gain/loss calculated between booking time and settlement/valuation
+ * time.
+ */
+export interface FxTransactionInput {
+  transactionId: string;
+  transactionCurrency: CurrencyCode;
+  baseCurrency: CurrencyCode;
+  transactionAmount: number;
+  bookingRate: number;
+  settlementRate: number;
+  settlementStatus: 'realized' | 'unrealized';
 }
 
 /**
- * Type guard: returns `true` when `value` structurally satisfies `FxAmount`
- * (correct shape and primitive types), without validating that the rate is
- * within a valid numeric domain. Use `assertValidFxRate` in addition to this
- * guard when full domain validation is required.
+ * Discriminated direction of an FX gain/loss result. `'none'` is a
+ * distinct state (rather than relying on `0`/`-0` comparisons) so that
+ * downstream reporting can branch explicitly on "no FX exposure or no
+ * movement" versus a signed numeric value.
  */
-export function isFxAmount(value: unknown): value is FxAmount {
-  if (typeof value !== 'object' || value === null) {
-    return false;
+export type FxGainLossDirection = 'gain' | 'loss' | 'none';
+
+/**
+ * Result of calculating FX gain/loss for a single transaction.
+ */
+export interface FxGainLossResult {
+  transactionId: string;
+  bookedBaseAmount: number;
+  settledBaseAmount: number;
+  gainLossAmount: number;
+  direction: FxGainLossDirection;
+  settlementStatus: 'realized' | 'unrealized';
+}
+
+/**
+ * Aggregate totals produced by summarizing FX gain/loss across a batch
+ * of `FxGainLossResult` values.
+ */
+export interface FxGainLossSummary {
+  totalGain: number;
+  totalLoss: number;
+  netAmount: number;
+}
+
+/**
+ * Distinct, switchable error codes for every input-validation failure
+ * the module can raise. Kept as a closed union (rather than free-form
+ * strings on a generic `Error`) so callers can `switch` exhaustively.
+ */
+export type FxGainErrorCode =
+  | 'INVALID_CURRENCY_CODE'
+  | 'NON_FINITE_AMOUNT'
+  | 'NEGATIVE_AMOUNT'
+  | 'NON_POSITIVE_RATE';
+
+/**
+ * Typed error raised by the FX Gain/Loss module's validation logic.
+ * Carries a machine-readable `code` in addition to the human-readable
+ * `message`, so callers can branch on `code` without string-matching the
+ * message text.
+ */
+export class FxGainCalculationError extends Error {
+  public readonly code: FxGainErrorCode;
+
+  constructor(message: string, code: FxGainErrorCode) {
+    super(message);
+    this.name = 'FxGainCalculationError';
+    this.code = code;
+
+    // Restore the prototype chain so `instanceof FxGainCalculationError`
+    // checks work correctly when compiled against ES2015+ targets that
+    // extend built-ins such as `Error`.
+    Object.setPrototypeOf(this, FxGainCalculationError.prototype);
   }
-
-  const candidate = value as Record<string, unknown>;
-
-  return (
-    typeof candidate.foreignAmount === 'number' &&
-    typeof candidate.foreignCurrency === 'string' &&
-    candidate.foreignCurrency.length > 0 &&
-    typeof candidate.rate === 'number'
-  );
-}
-
-/**
- * Type guard: returns `true` when `rate` is a finite, strictly positive
- * number — the only domain of valid FX rates per FR-5.
- */
-export function isValidFxRate(rate: number): rate is FxRate {
-  return Number.isFinite(rate) && rate > 0;
-}
-
-/**
- * Asserts that `rate` is a valid FX rate (finite and strictly positive).
- * Throws `RangeError` otherwise, per FR-5.
- *
- * @param rate - the numeric rate to validate.
- * @param label - optional identifier included in the error message to help
- *   pinpoint which rate (e.g. "original.rate" vs "current.rate") failed
- *   validation.
- */
-export function assertValidFxRate(rate: number, label = 'rate'): asserts rate is FxRate {
-  if (!isValidFxRate(rate)) {
-    throw new RangeError(`FX ${label} must be a positive finite number, received: ${rate}`);
-  }
-}
-
-/**
- * Returns `true` when the two currency codes represent the same currency.
- * Comparison is case-insensitive to tolerate caller inconsistency (e.g.
- * `"usd"` vs `"USD"`) without silently treating distinct currencies as
- * equal.
- */
-export function isSameCurrency(a: string, b: string): boolean {
-  return a.trim().toUpperCase() === b.trim().toUpperCase();
 }

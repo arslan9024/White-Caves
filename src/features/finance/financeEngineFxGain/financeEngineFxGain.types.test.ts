@@ -1,126 +1,127 @@
 import { describe, expect, it } from 'vitest';
-
 import {
-  assertValidFxRate,
-  isFxAmount,
-  isSameCurrency,
-  isValidFxRate,
-  type FxAmount,
-  type FxGainResult,
+  FxGainCalculationError,
+  type FxGainErrorCode,
+  type FxGainLossDirection,
+  type FxGainLossResult,
+  type FxGainLossSummary,
+  type FxTransactionInput,
 } from './financeEngineFxGain.types';
 
-describe('financeEngineFxGain.types', () => {
-  describe('isFxAmount', () => {
-    it('returns true for a well-formed FxAmount object', () => {
-      const value: FxAmount = { foreignAmount: 100, foreignCurrency: 'USD', rate: 1.1 };
-      expect(isFxAmount(value)).toBe(true);
-    });
+describe('FxGainCalculationError', () => {
+  const codes: readonly FxGainErrorCode[] = [
+    'INVALID_CURRENCY_CODE',
+    'NON_FINITE_AMOUNT',
+    'NEGATIVE_AMOUNT',
+    'NON_POSITIVE_RATE',
+  ];
 
-    it('returns false when foreignCurrency is an empty string', () => {
-      expect(isFxAmount({ foreignAmount: 100, foreignCurrency: '', rate: 1.1 })).toBe(false);
-    });
+  it.each(codes)('constructs with message and code %s', code => {
+    const error = new FxGainCalculationError('bad input', code);
 
-    it('returns false when a required field is missing', () => {
-      expect(isFxAmount({ foreignAmount: 100, foreignCurrency: 'USD' })).toBe(false);
-    });
-
-    it('returns false when a field has the wrong type', () => {
-      expect(isFxAmount({ foreignAmount: '100', foreignCurrency: 'USD', rate: 1.1 })).toBe(false);
-    });
-
-    it('returns false for null, arrays, and primitives', () => {
-      expect(isFxAmount(null)).toBe(false);
-      expect(isFxAmount([])).toBe(false);
-      expect(isFxAmount('not an object')).toBe(false);
-      expect(isFxAmount(42)).toBe(false);
-      expect(isFxAmount(undefined)).toBe(false);
-    });
+    expect(error.message).toBe('bad input');
+    expect(error.code).toBe(code);
   });
 
-  describe('isValidFxRate', () => {
-    it('returns true for strictly positive finite numbers', () => {
-      expect(isValidFxRate(1)).toBe(true);
-      expect(isValidFxRate(0.0001)).toBe(true);
-      expect(isValidFxRate(999.99)).toBe(true);
-    });
+  it('is an instance of Error and of itself (prototype chain preserved)', () => {
+    const error = new FxGainCalculationError('bad input', 'NEGATIVE_AMOUNT');
 
-    it('returns false for zero', () => {
-      expect(isValidFxRate(0)).toBe(false);
-    });
-
-    it('returns false for negative numbers', () => {
-      expect(isValidFxRate(-1)).toBe(false);
-    });
-
-    it('returns false for NaN', () => {
-      expect(isValidFxRate(NaN)).toBe(false);
-    });
-
-    it('returns false for Infinity and -Infinity', () => {
-      expect(isValidFxRate(Infinity)).toBe(false);
-      expect(isValidFxRate(-Infinity)).toBe(false);
-    });
+    expect(error).toBeInstanceOf(Error);
+    expect(error).toBeInstanceOf(FxGainCalculationError);
   });
 
-  describe('assertValidFxRate', () => {
-    it('does not throw for a valid rate', () => {
-      expect(() => assertValidFxRate(1.25)).not.toThrow();
-    });
+  it('sets a descriptive name distinct from the generic Error name', () => {
+    const error = new FxGainCalculationError('bad input', 'NON_POSITIVE_RATE');
 
-    it('throws RangeError for a zero rate', () => {
-      expect(() => assertValidFxRate(0)).toThrow(RangeError);
-    });
-
-    it('throws RangeError for a negative rate', () => {
-      expect(() => assertValidFxRate(-5)).toThrow(RangeError);
-    });
-
-    it('throws RangeError for NaN', () => {
-      expect(() => assertValidFxRate(NaN)).toThrow(RangeError);
-    });
-
-    it('throws RangeError for Infinity', () => {
-      expect(() => assertValidFxRate(Infinity)).toThrow(RangeError);
-    });
-
-    it('includes the provided label in the error message', () => {
-      expect(() => assertValidFxRate(0, 'original.rate')).toThrow(/original\.rate/);
-    });
-
-    it('defaults the label to "rate" when omitted', () => {
-      expect(() => assertValidFxRate(-1)).toThrow(/rate must be a positive finite number/);
-    });
+    expect(error.name).toBe('FxGainCalculationError');
   });
 
-  describe('isSameCurrency', () => {
-    it('returns true for identical currency codes', () => {
-      expect(isSameCurrency('USD', 'USD')).toBe(true);
-    });
+  it('can be caught and discriminated by code without string-matching the message', () => {
+    const raise = (code: FxGainErrorCode): never => {
+      throw new FxGainCalculationError(`invalid: ${code}`, code);
+    };
 
-    it('is case-insensitive', () => {
-      expect(isSameCurrency('usd', 'USD')).toBe(true);
-    });
-
-    it('tolerates surrounding whitespace', () => {
-      expect(isSameCurrency(' USD ', 'usd')).toBe(true);
-    });
-
-    it('returns false for different currency codes', () => {
-      expect(isSameCurrency('USD', 'EUR')).toBe(false);
-    });
+    try {
+      raise('INVALID_CURRENCY_CODE');
+      throw new Error('expected raise() to throw');
+    } catch (caught) {
+      expect(caught).toBeInstanceOf(FxGainCalculationError);
+      const fxError = caught as FxGainCalculationError;
+      expect(fxError.code).toBe('INVALID_CURRENCY_CODE');
+    }
   });
 
-  describe('type-level shape sanity (compile + runtime cross-check)', () => {
-    it('accepts a value satisfying both FxAmount and FxGainResult shapes independently', () => {
-      const amount: FxAmount = { foreignAmount: 250.5, foreignCurrency: 'GBP', rate: 1.3 };
-      const result: FxGainResult = {
-        gainOrLoss: 10.25,
-        originalBaseValue: 300,
-        currentBaseValue: 310.25,
+  it('exposes readonly code that keeps its original value across catches', () => {
+    let captured: FxGainCalculationError | undefined;
+    try {
+      throw new FxGainCalculationError('rate must be positive', 'NON_POSITIVE_RATE');
+    } catch (caught) {
+      captured = caught as FxGainCalculationError;
+    }
+
+    expect(captured?.code).toBe('NON_POSITIVE_RATE');
+    expect(captured?.message).toBe('rate must be positive');
+  });
+});
+
+describe('FxTransactionInput shape', () => {
+  it('accepts a fully-populated realized transaction object', () => {
+    const input: FxTransactionInput = {
+      transactionId: 'txn-1',
+      transactionCurrency: 'USD',
+      baseCurrency: 'AED',
+      transactionAmount: 1000,
+      bookingRate: 3.6725,
+      settlementRate: 3.68,
+      settlementStatus: 'realized',
+    };
+
+    expect(input.settlementStatus).toBe('realized');
+    expect(input.transactionCurrency).toBe('USD');
+  });
+
+  it('accepts an unrealized transaction object', () => {
+    const input: FxTransactionInput = {
+      transactionId: 'txn-2',
+      transactionCurrency: 'EUR',
+      baseCurrency: 'AED',
+      transactionAmount: 500,
+      bookingRate: 4.0,
+      settlementRate: 3.95,
+      settlementStatus: 'unrealized',
+    };
+
+    expect(input.settlementStatus).toBe('unrealized');
+  });
+});
+
+describe('FxGainLossResult and FxGainLossDirection shape', () => {
+  it('supports all three direction literals', () => {
+    const directions: readonly FxGainLossDirection[] = ['gain', 'loss', 'none'];
+
+    directions.forEach(direction => {
+      const result: FxGainLossResult = {
+        transactionId: 'txn-3',
+        bookedBaseAmount: 100,
+        settledBaseAmount: direction === 'gain' ? 110 : direction === 'loss' ? 90 : 100,
+        gainLossAmount: direction === 'gain' ? 10 : direction === 'loss' ? -10 : 0,
+        direction,
+        settlementStatus: 'realized',
       };
 
-      expect(isFxAmount(amount)).toBe(true);
-      expect(result.currentBaseValue - result.originalBaseValue).toBeCloseTo(result.gainOrLoss, 5);
+      expect(result.direction).toBe(direction);
     });
+  });
+});
+
+describe('FxGainLossSummary shape', () => {
+  it('holds totalGain, totalLoss, and netAmount as numbers', () => {
+    const summary: FxGainLossSummary = {
+      totalGain: 25.5,
+      totalLoss: 10.25,
+      netAmount: 15.25,
+    };
+
+    expect(summary.netAmount).toBeCloseTo(summary.totalGain - summary.totalLoss, 5);
   });
 });
