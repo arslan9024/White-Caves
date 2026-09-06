@@ -6,6 +6,11 @@
  *
  * Parent issue: #1947
  * Child issue: #2389
+ *
+ * Receipt-requirement compliance types/helpers below were added under the
+ * W56-FINANCE-RECEIPT track.
+ * Parent issue: #1929
+ * Child issue: #2462
  */
 
 /** ISO-8601 date-time string, e.g. "2026-09-06T13:09:55.120Z". */
@@ -284,4 +289,124 @@ export function validateExpenseClaimDraft(draft: ExpenseClaimDraft): ExpenseClai
   }
 
   return { valid: Object.keys(errors).length === 0, errors };
+}
+
+/* -------------------------------------------------------------------------
+ * Receipt requirement compliance (W56-FINANCE-RECEIPT track, issue #2462,
+ * parent #1929).
+ *
+ * These types/helpers determine whether a given expense claim line item
+ * requires a supporting receipt attachment, and evaluate a whole claim for
+ * compliance with a configurable receipt-requirement policy. This is a pure,
+ * additive extension of the domain model above: it introduces no changes to
+ * any pre-existing exported symbol.
+ * ---------------------------------------------------------------------- */
+
+/**
+ * Configurable policy describing when a receipt attachment is mandatory for
+ * an expense claim line item.
+ */
+export interface ReceiptRequirementPolicy {
+  /**
+   * Minimum line-item amount (inclusive) at or above which a receipt is
+   * always required, regardless of category. Expressed in the same
+   * currency as {@link ReceiptRequirementPolicy.thresholdCurrency}.
+   */
+  readonly thresholdAmount: number;
+  /** Currency the {@link ReceiptRequirementPolicy.thresholdAmount} is denominated in. */
+  readonly thresholdCurrency: CurrencyCode;
+  /**
+   * Categories that always require a receipt, irrespective of amount
+   * (e.g. client entertainment is frequently receipt-mandatory even for
+   * small amounts).
+   */
+  readonly requiredCategories: ReadonlyArray<ExpenseCategory>;
+  /**
+   * Payment methods exempt from the receipt requirement even when the
+   * amount/category rules would otherwise mandate one (e.g. recurring
+   * company-card software subscriptions already reconciled elsewhere).
+   */
+  readonly exemptPaymentMethods?: ReadonlyArray<ExpensePaymentMethod>;
+}
+
+/** Default, conservative receipt-requirement policy used absent an override. */
+export const DEFAULT_RECEIPT_REQUIREMENT_POLICY: ReceiptRequirementPolicy = {
+  thresholdAmount: 100,
+  thresholdCurrency: 'AED',
+  requiredCategories: ['client_entertainment', 'training'],
+  exemptPaymentMethods: [],
+};
+
+/**
+ * Pure predicate determining whether a single line item requires a receipt
+ * under the given policy.
+ *
+ * Rules (evaluated in order):
+ * 1. If the line item's payment method is listed in
+ *    {@link ReceiptRequirementPolicy.exemptPaymentMethods}, no receipt is
+ *    required.
+ * 2. Otherwise, if the line item's category is listed in
+ *    {@link ReceiptRequirementPolicy.requiredCategories}, a receipt is
+ *    required.
+ * 3. Otherwise, a receipt is required when the line item's amount is in the
+ *    same currency as the policy threshold and is greater than or equal to
+ *    {@link ReceiptRequirementPolicy.thresholdAmount}.
+ *
+ * A currency mismatch between the line item amount and the policy
+ * threshold is treated conservatively: the amount-based rule is skipped
+ * (cannot be safely compared), but category/payment-method rules still
+ * apply.
+ */
+export function claimLineItemRequiresReceipt(
+  lineItem: ExpenseClaimLineItem,
+  policy: ReceiptRequirementPolicy = DEFAULT_RECEIPT_REQUIREMENT_POLICY
+): boolean {
+  if (policy.exemptPaymentMethods?.includes(lineItem.paymentMethod)) {
+    return false;
+  }
+  if (policy.requiredCategories.includes(lineItem.category)) {
+    return true;
+  }
+  if (lineItem.amount.currency !== policy.thresholdCurrency) {
+    return false;
+  }
+  return lineItem.amount.amount >= policy.thresholdAmount;
+}
+
+/** Identifies a single line item that requires a receipt but has none attached. */
+export interface MissingReceiptViolation {
+  readonly lineItemId: string;
+  readonly category: ExpenseCategory;
+  readonly amount: Money;
+}
+
+/** Discriminated result of evaluating an entire claim's receipt compliance. */
+export type ExpenseClaimReceiptComplianceResult =
+  | { readonly compliant: true }
+  | { readonly compliant: false; readonly violations: ReadonlyArray<MissingReceiptViolation> };
+
+/**
+ * Evaluates every line item in a claim against {@link claimLineItemRequiresReceipt}
+ * and reports any line item that requires a receipt but has zero attachments.
+ *
+ * Pure function: performs no I/O and relies only on its inputs.
+ */
+export function evaluateExpenseClaimReceiptCompliance(
+  claim: Pick<ExpenseClaim, 'lineItems'>,
+  policy: ReceiptRequirementPolicy = DEFAULT_RECEIPT_REQUIREMENT_POLICY
+): ExpenseClaimReceiptComplianceResult {
+  const violations: MissingReceiptViolation[] = [];
+
+  for (const lineItem of claim.lineItems) {
+    const requiresReceipt = claimLineItemRequiresReceipt(lineItem, policy);
+    if (requiresReceipt && lineItem.attachments.length === 0) {
+      violations.push({
+        lineItemId: lineItem.id,
+        category: lineItem.category,
+        amount: lineItem.amount,
+      });
+    }
+  }
+
+  return violations.length === 0 ? { compliant: true } : { compliant: false, violations };
 }
