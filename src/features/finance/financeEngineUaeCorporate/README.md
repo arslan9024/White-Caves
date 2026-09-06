@@ -2,7 +2,7 @@
 
 Finance module sub-feature: UAE Corporate Tax calculation engine for White Caves.
 
-- **Tracking issue:** #2441
+- **Tracking issue:** #2439
 - **Parent issue:** #1935 (remains open — this child scope does not close it)
 - **Status:** Contract/handoff stage. No runtime implementation is added by this change.
 
@@ -28,7 +28,7 @@ the eventual implementation PR small, focused, and easy to test.
 
 ## Scope boundaries
 
-**In scope for this child issue (#2441):**
+**In scope for this child issue (#2439):**
 
 - Documenting the module contract and interface shape.
 - Documenting the SRS/SDD handoff artifacts under `plans/implementation_handoffs/`.
@@ -50,6 +50,17 @@ the eventual implementation PR small, focused, and easy to test.
 
 ## Rollback note
 
-This change is documentation-only (markdown files under a new directory). Rollback is a
-simple revert of the added files/directory; no schema, dependency, or runtime code is
-affected.
+This change is documentation-only (markdown files under an existing directory). Rollback
+is a simple `git revert` of the commit touching these two files; no schema, dependency,
+or runtime code is affected. No tests, build outputs, or GitHub state depend on these
+files, so reverting is safe at any time.
+
+## Completion evidence
+
+- `financeEngineUaeCorporate.contract.md` and `README.md` re-reviewed against issue
+  #2439's acceptance criteria; both already declared the correct excluded scope
+  (parent closure, bulk GitHub mutation, destructive DB ops, secret rewrites) and the
+  correct in-scope boundary (contract/documentation only, within this directory).
+- Issue cross-references corrected from a stale draft number (#2441) to the current
+  tracking issue (#2439) in both files.
+- Parent issue #1935 is left open, as required.

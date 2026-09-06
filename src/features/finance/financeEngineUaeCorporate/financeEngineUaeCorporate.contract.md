@@ -1,6 +1,6 @@
 # Contract: financeEngineUaeCorporate
 
-- **Issue:** #2441 (child of parent #1935)
+- **Issue:** #2439 (child of parent #1935)
 - **Module path:** `src/features/finance/financeEngineUaeCorporate/`
 - **Status:** Draft contract — scoped documentation handoff only. No runtime code is introduced by this change set.
 
@@ -32,7 +32,7 @@ against a stable interface.
 - Declaring audit/traceability requirements (every computation must be reproducible from
   its recorded inputs and the rate table version used).
 
-### Out of scope (excluded per issue #2441)
+### Out of scope (excluded per issue #2439)
 
 - Parent issue #1935 closure.
 - Bulk GitHub mutation of any kind.
@@ -99,9 +99,20 @@ export interface FinanceEngineUaeCorporate {
 ## 6. Acceptance criteria for implementing PR
 
 - Implementation remains within `src/features/finance/financeEngineUaeCorporate/`.
-- Focused unit tests (vitest) cover: standard rate calculation, small business relief
-  boundary (exactly at 375,000 and one AED above/below), zero/negative taxable income
-  clamping, and rate-table version pass-through.
+- Focused unit tests (vitest, `import { describe, expect, it } from 'vitest'`) cover:
+  standard rate calculation, small business relief boundary (exactly at 375,000 and one
+  AED above/below), zero/negative taxable income clamping, and rate-table version
+  pass-through. Assertions must exercise real computed values — no placeholder
+  `expect(true).toBe(true)` style tests.
+- Strict TypeScript throughout the implementation; no `any` types.
 - Required validation commands (typecheck, lint, unit test) pass before merge.
 - Completion evidence and a rollback note are recorded in the PR description.
 - Parent issue #1935 remains open until all sibling child issues are reconciled.
+
+## 7. Change log
+
+- 2026-09-06 — Issue #2439: re-confirmed contract scope and acceptance criteria against
+  the child-issue tracking template; no interface changes were required — the existing
+  draft already satisfied the declared scope (documentation/contract only, no runtime
+  code, parent #1935 left open). Corrected issue cross-references from a prior draft
+  number (#2441) to the current tracking issue (#2439).
