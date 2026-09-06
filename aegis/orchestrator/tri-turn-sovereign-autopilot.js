@@ -10,6 +10,7 @@
  */
 
 import fs from 'fs';
+import os from 'os';
 import path from 'path';
 import dotenv from 'dotenv';
 import { execSync } from 'child_process';
@@ -1125,6 +1126,29 @@ function filterEvidenceFiles(files) {
   );
 }
 
+function collectStagedCandidateFiles(stagingDir, candidateFiles) {
+  if (!stagingDir || !fs.existsSync(stagingDir)) return [];
+  const allowed = new Set((candidateFiles || []).map(file => path.normalize(file)));
+  const collected = [];
+
+  const walk = dir => {
+    for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {
+      const full = path.join(dir, entry.name);
+      if (entry.isDirectory()) {
+        walk(full);
+        continue;
+      }
+      const relative = path.relative(stagingDir, full);
+      if (allowed.has(path.normalize(relative))) {
+        collected.push(relative.replace(/\\/g, '/'));
+      }
+    }
+  };
+
+  walk(stagingDir);
+  return collected;
+}
+
 async function hydrateChildScopeFromParent(item, handoff, token) {
   const body = String(item.body || '');
   const taskId = body.match(/AEGIS_CHILD_TASK:\s*([^\s<]+)/)?.[1] || '';
@@ -1256,8 +1280,13 @@ async function solveSerialQueue(token, queue, options, state, cycleId) {
         if (executorStatus.available) {
           executorAttempted = true;
           const preRunFiles = gitChangedFiles();
+          const stagingDir = path.join(
+            os.tmpdir(),
+            `aegis-executor-staging-${item.issueNumber || 'task'}-${Date.now()}`
+          );
           const execution = runCodingExecutor(handoff, executorConfig, {
             cwd: ROOT,
+            stagingDir,
             prompt: buildExecutorPrompt({
               ...handoff,
               excludedScope: [
@@ -1275,6 +1304,25 @@ async function solveSerialQueue(token, queue, options, state, cycleId) {
             writeJson(STATE_PATH, state);
             console.error(`🧱 [SOLVE] BLOCKED ${issueRef}: ${state.haltReason}`);
             break;
+          }
+
+          // Copy only candidate-matching staged files into the repository (absolute scope enforcement).
+          const stagedFiles = collectStagedCandidateFiles(
+            execution.stagingDir,
+            handoff.candidateFiles
+          );
+          for (const relative of stagedFiles) {
+            const from = path.join(execution.stagingDir, relative);
+            const to = path.join(ROOT, relative);
+            fs.mkdirSync(path.dirname(to), { recursive: true });
+            fs.copyFileSync(from, to);
+          }
+          if (execution.stagingDir) {
+            try {
+              fs.rmSync(execution.stagingDir, { recursive: true, force: true });
+            } catch {
+              // staging cleanup is best-effort
+            }
           }
 
           const changedFiles = filterEvidenceFiles(
@@ -1916,6 +1964,7 @@ export {
   canCloseGitHubIssue,
   buildExecutorInvocation,
   buildExecutorPrompt,
+  collectStagedCandidateFiles,
   filterEvidenceFiles,
   gitChangedFiles,
   resolveExecutorConfig,

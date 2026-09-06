@@ -1,5 +1,7 @@
 // @vitest-environment node
 import { beforeAll, describe, expect, it } from 'vitest';
+import fs from 'node:fs';
+import os from 'node:os';
 import path from 'node:path';
 import { pathToFileURL } from 'node:url';
 
@@ -407,5 +409,21 @@ describe('tri-turn sovereign autopilot', () => {
     ]);
 
     expect(filtered).toEqual(['src/features/documents/example/example.types.ts']);
+  });
+
+  it('collects only candidate files from the executor staging directory', () => {
+    const staging = fs.mkdtempSync(path.join(os.tmpdir(), 'aegis-staging-test-'));
+    try {
+      const wanted = 'src/features/documents/example/example.types.ts';
+      const ignored = 'src/features/documents/example/other.ts';
+      fs.mkdirSync(path.join(staging, path.dirname(wanted)), { recursive: true });
+      fs.writeFileSync(path.join(staging, wanted), 'export {};\n', 'utf8');
+      fs.writeFileSync(path.join(staging, ignored), 'export {};\n', 'utf8');
+
+      const collected = autopilot.collectStagedCandidateFiles(staging, [wanted]);
+      expect(collected).toEqual([wanted]);
+    } finally {
+      fs.rmSync(staging, { recursive: true, force: true });
+    }
   });
 });

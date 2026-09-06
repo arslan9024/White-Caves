@@ -100,21 +100,23 @@ function validateExecutionScope(candidateFiles = [], changedFiles = []) {
 
 function buildExecutorPrompt(packet) {
   return [
-    'You are the AEGIS local coding executor running in fully autonomous, non-interactive mode.',
-    'CRITICAL EXECUTION RULES (these override every other instruction):',
-    '- Do NOT read plans/, docs/, AGENTS.md, or any orchestration, queue, or memory files.',
-    '- Do NOT run git commands, install dependencies, or fetch URLs.',
-    '- Do NOT explore the repository beyond the candidate files listed below.',
-    '- Your ONLY job: create or update the candidate files so the objective and acceptance criteria are satisfied, then stop.',
+    'You are an autonomous TypeScript code generator running inside an empty sandboxed staging directory.',
+    'CRITICAL RULES (these override every other instruction):',
+    '- Do NOT invoke skills, agents, workflows, or maintenance loops.',
+    '- Do NOT read any markdown, plan, queue, or configuration files.',
+    '- Do NOT run git, npm, or network commands.',
+    '- Your ONLY job: write the files listed below with production-quality code, then stop.',
     '',
     `Issue: #${packet.issueNumber}`,
     `Objective: ${packet.objective}`,
-    `Candidate files (the ONLY files you may create or modify):\n${(packet.candidateFiles || []).map(item => `- ${item}`).join('\n') || 'none'}`,
+    `Files to create (exact relative paths from your current working directory):\n${(packet.candidateFiles || []).map(item => `- ${item}`).join('\n') || 'none'}`,
     `Acceptance criteria:\n${(packet.acceptanceCriteria || []).map(item => `- ${item}`).join('\n')}`,
     `Excluded scope:\n${(packet.excludedScope || []).map(item => `- ${item}`).join('\n')}`,
-    'Create the candidate files when they do not exist. Do not modify files outside the candidate list.',
-    'All TypeScript must compile under strict mode. Do not add new dependencies. Do not close GitHub issues.',
-    'Return changed files, commands, results, and rollback note.',
+    'Technical requirements:',
+    '- Strict TypeScript; no `any` types.',
+    "- Test files must use vitest (`import { describe, expect, it } from 'vitest'`) with real behavior assertions, never placeholder assertions.",
+    '- Do not add dependencies, do not close GitHub issues, do not touch files outside the list.',
+    'When done, reply with: changed files, what you implemented, and a rollback note.',
   ].join('\n\n');
 }
 
@@ -136,6 +138,7 @@ function runCodingExecutor(packet, config, options = {}) {
       status: status.reason,
       provider: status.provider,
       exitCode: null,
+      stagingDir: '',
       stdout: '',
       stderr: '',
     };
@@ -149,6 +152,7 @@ function runCodingExecutor(packet, config, options = {}) {
       status: commandSafety.reason,
       provider: status.provider,
       exitCode: null,
+      stagingDir: '',
       stdout: '',
       stderr: '',
     };
@@ -182,8 +186,12 @@ function runCodingExecutor(packet, config, options = {}) {
   const invocation =
     options.invocation || buildExecutorInvocation(config.command, config.provider, promptFile);
 
+  const stagingDir = String(options.stagingDir || '').trim();
+  if (stagingDir) fs.mkdirSync(stagingDir, { recursive: true });
+  const workingDir = stagingDir || options.cwd || process.cwd();
+
   const result = spawnSync(invocation, {
-    cwd: options.cwd || process.cwd(),
+    cwd: workingDir,
     shell: true,
     encoding: 'utf8',
     timeout: config.timeoutMs,
@@ -220,6 +228,7 @@ function runCodingExecutor(packet, config, options = {}) {
           : 'EXECUTOR_FAILED',
     provider: status.provider,
     exitCode: result.status,
+    stagingDir,
     stdout: String(result.stdout || '').slice(-10000),
     stderr: String(result.stderr || '').slice(-10000),
   };
