@@ -1,329 +1,272 @@
 import { describe, expect, it } from 'vitest';
 import {
-  type ClientMoneyTransaction,
-  signedAmount,
-  validateClientMoneyTransaction,
-  computeClientMoneyLedger,
-  getTotalClientMoneyBalance,
-  getClientBalance,
-  summarizeClientBalances,
-  reconcileClientMoneyAccount,
+  applyDeposit,
+  applyWithdrawal,
+  ClientMoneyAccount,
+  ClientMoneyInvariantError,
+  ClientMoneyTransaction,
+  reconcileAccount,
 } from './financeEngineClientMoney.logic';
 
-function tx(
-  overrides: Partial<ClientMoneyTransaction> &
-    Pick<ClientMoneyTransaction, 'id' | 'clientId' | 'type' | 'amount' | 'occurredAt'>
-): ClientMoneyTransaction {
-  return { ...overrides };
+function makeAccount(overrides: Partial<ClientMoneyAccount> = {}): ClientMoneyAccount {
+  return {
+    accountId: overrides.accountId ?? 'acct-001',
+    ownerType: overrides.ownerType ?? 'tenant',
+    ownerId: overrides.ownerId ?? 'tenant-42',
+    currency: overrides.currency ?? 'AED',
+    balanceMinorUnits: overrides.balanceMinorUnits ?? 0,
+    createdAt: overrides.createdAt ?? '2026-01-01T00:00:00.000Z',
+    updatedAt: overrides.updatedAt ?? '2026-01-01T00:00:00.000Z',
+  };
 }
 
-describe('signedAmount', () => {
-  it('returns a positive amount for deposit transactions', () => {
-    const t = tx({
-      id: '1',
-      clientId: 'c1',
-      type: 'deposit',
-      amount: 100,
-      occurredAt: '2024-01-01T00:00:00Z',
-    });
-    expect(signedAmount(t)).toBe(100);
+describe('applyDeposit', () => {
+  it('increases the account balance and records a matching transaction', () => {
+    const account = makeAccount({ balanceMinorUnits: 1000 });
+    const result = applyDeposit(account, 500, 'inv-1', '2026-01-02T00:00:00.000Z');
+
+    expect(result.account.balanceMinorUnits).toBe(1500);
+    expect(result.account.updatedAt).toBe('2026-01-02T00:00:00.000Z');
+    expect(result.transaction.type).toBe('deposit');
+    expect(result.transaction.amountMinorUnits).toBe(500);
+    expect(result.transaction.postedBalanceMinorUnits).toBe(1500);
+    expect(result.transaction.accountId).toBe(account.accountId);
+    expect(result.transaction.reference).toBe('inv-1');
+    expect(typeof result.transaction.transactionId).toBe('string');
+    expect(result.transaction.transactionId.length).toBeGreaterThan(0);
   });
 
-  it('returns a positive amount for transfer_in transactions', () => {
-    const t = tx({
-      id: '1',
-      clientId: 'c1',
-      type: 'transfer_in',
-      amount: 50,
-      occurredAt: '2024-01-01T00:00:00Z',
-    });
-    expect(signedAmount(t)).toBe(50);
+  it('does not mutate the original account object', () => {
+    const account = makeAccount({ balanceMinorUnits: 1000 });
+    applyDeposit(account, 500, 'inv-1', '2026-01-02T00:00:00.000Z');
+    expect(account.balanceMinorUnits).toBe(1000);
   });
 
-  it('returns a negative amount for withdrawal transactions', () => {
-    const t = tx({
-      id: '1',
-      clientId: 'c1',
-      type: 'withdrawal',
-      amount: 40,
-      occurredAt: '2024-01-01T00:00:00Z',
-    });
-    expect(signedAmount(t)).toBe(-40);
-  });
-
-  it('returns a negative amount for transfer_out and fee transactions', () => {
-    const transferOut = tx({
-      id: '1',
-      clientId: 'c1',
-      type: 'transfer_out',
-      amount: 20,
-      occurredAt: '2024-01-01T00:00:00Z',
-    });
-    const fee = tx({
-      id: '2',
-      clientId: 'c1',
-      type: 'fee',
-      amount: 5,
-      occurredAt: '2024-01-01T00:00:00Z',
-    });
-    expect(signedAmount(transferOut)).toBe(-20);
-    expect(signedAmount(fee)).toBe(-5);
-  });
-});
-
-describe('validateClientMoneyTransaction', () => {
-  it('accepts a deposit against a zero balance', () => {
-    const t = tx({
-      id: '1',
-      clientId: 'c1',
-      type: 'deposit',
-      amount: 100,
-      occurredAt: '2024-01-01T00:00:00Z',
-    });
-    const result = validateClientMoneyTransaction(t, 0);
-    expect(result.valid).toBe(true);
-    expect(result.reason).toBeUndefined();
-  });
-
-  it('rejects a withdrawal that would drive the balance negative', () => {
-    const t = tx({
-      id: '1',
-      clientId: 'c1',
-      type: 'withdrawal',
-      amount: 150,
-      occurredAt: '2024-01-01T00:00:00Z',
-    });
-    const result = validateClientMoneyTransaction(t, 100);
-    expect(result.valid).toBe(false);
-    expect(result.reason).toMatch(/negative client money balance/);
-  });
-
-  it('rejects a transaction with a negative amount', () => {
-    const t = tx({
-      id: '1',
-      clientId: 'c1',
-      type: 'deposit',
-      amount: -10,
-      occurredAt: '2024-01-01T00:00:00Z',
-    });
-    const result = validateClientMoneyTransaction(t, 100);
-    expect(result.valid).toBe(false);
-    expect(result.reason).toMatch(/non-negative finite number/);
-  });
-
-  it('rejects a transaction with a non-finite amount', () => {
-    const t = tx({
-      id: '1',
-      clientId: 'c1',
-      type: 'deposit',
-      amount: Number.POSITIVE_INFINITY,
-      occurredAt: '2024-01-01T00:00:00Z',
-    });
-    const result = validateClientMoneyTransaction(t, 100);
-    expect(result.valid).toBe(false);
-  });
-
-  it('allows a withdrawal that exactly zeroes the balance', () => {
-    const t = tx({
-      id: '1',
-      clientId: 'c1',
-      type: 'withdrawal',
-      amount: 100,
-      occurredAt: '2024-01-01T00:00:00Z',
-    });
-    const result = validateClientMoneyTransaction(t, 100);
-    expect(result.valid).toBe(true);
-  });
-});
-
-describe('computeClientMoneyLedger', () => {
-  it('computes a running balance in chronological order regardless of input order', () => {
-    const transactions: ClientMoneyTransaction[] = [
-      tx({
-        id: '2',
-        clientId: 'c1',
-        type: 'withdrawal',
-        amount: 30,
-        occurredAt: '2024-01-02T00:00:00Z',
-      }),
-      tx({
-        id: '1',
-        clientId: 'c1',
-        type: 'deposit',
-        amount: 100,
-        occurredAt: '2024-01-01T00:00:00Z',
-      }),
-      tx({ id: '3', clientId: 'c1', type: 'fee', amount: 5, occurredAt: '2024-01-03T00:00:00Z' }),
-    ];
-
-    const ledger = computeClientMoneyLedger(transactions);
-
-    expect(ledger.map(entry => entry.transaction.id)).toEqual(['1', '2', '3']);
-    expect(ledger.map(entry => entry.balanceAfter)).toEqual([100, 70, 65]);
-  });
-
-  it('throws when a transaction would overdraw the client money balance', () => {
-    const transactions: ClientMoneyTransaction[] = [
-      tx({
-        id: '1',
-        clientId: 'c1',
-        type: 'withdrawal',
-        amount: 50,
-        occurredAt: '2024-01-01T00:00:00Z',
-      }),
-    ];
-
-    expect(() => computeClientMoneyLedger(transactions)).toThrow(
-      /Invalid client money transaction/
+  it('throws ClientMoneyInvariantError for a non-positive amount', () => {
+    const account = makeAccount({ balanceMinorUnits: 1000 });
+    expect(() => applyDeposit(account, 0, 'inv-1', '2026-01-02T00:00:00.000Z')).toThrow(
+      ClientMoneyInvariantError
+    );
+    expect(() => applyDeposit(account, -100, 'inv-1', '2026-01-02T00:00:00.000Z')).toThrow(
+      ClientMoneyInvariantError
     );
   });
 
-  it('does not mutate the input transactions array', () => {
+  it('throws ClientMoneyInvariantError for a non-integer amount', () => {
+    const account = makeAccount({ balanceMinorUnits: 1000 });
+    expect(() => applyDeposit(account, 12.5, 'inv-1', '2026-01-02T00:00:00.000Z')).toThrow(
+      ClientMoneyInvariantError
+    );
+  });
+
+  it('throws ClientMoneyInvariantError for an invalid occurredAt timestamp', () => {
+    const account = makeAccount({ balanceMinorUnits: 1000 });
+    expect(() => applyDeposit(account, 100, 'inv-1', 'not-a-date')).toThrow(
+      ClientMoneyInvariantError
+    );
+  });
+});
+
+describe('applyWithdrawal', () => {
+  it('decreases the account balance when funds are sufficient', () => {
+    const account = makeAccount({ balanceMinorUnits: 1000 });
+    const result = applyWithdrawal(account, 400, 'payout-1', '2026-01-03T00:00:00.000Z');
+
+    expect(result.account.balanceMinorUnits).toBe(600);
+    expect(result.transaction.type).toBe('withdrawal');
+    expect(result.transaction.postedBalanceMinorUnits).toBe(600);
+  });
+
+  it('allows a withdrawal that exactly zeroes the balance', () => {
+    const account = makeAccount({ balanceMinorUnits: 250 });
+    const result = applyWithdrawal(account, 250, 'payout-1', '2026-01-03T00:00:00.000Z');
+    expect(result.account.balanceMinorUnits).toBe(0);
+  });
+
+  it('rejects an overdraft withdrawal without mutating the account', () => {
+    const account = makeAccount({ balanceMinorUnits: 100 });
+    expect(() => applyWithdrawal(account, 200, 'payout-1', '2026-01-03T00:00:00.000Z')).toThrow(
+      ClientMoneyInvariantError
+    );
+    expect(account.balanceMinorUnits).toBe(100);
+  });
+
+  it('throws ClientMoneyInvariantError for a non-positive amount', () => {
+    const account = makeAccount({ balanceMinorUnits: 1000 });
+    expect(() => applyWithdrawal(account, 0, 'payout-1', '2026-01-03T00:00:00.000Z')).toThrow(
+      ClientMoneyInvariantError
+    );
+  });
+});
+
+describe('reconcileAccount', () => {
+  it('returns true when replaying transactions matches the stated balance', () => {
+    const account = makeAccount({ balanceMinorUnits: 700 });
     const transactions: ClientMoneyTransaction[] = [
-      tx({
-        id: '2',
-        clientId: 'c1',
-        type: 'withdrawal',
-        amount: 30,
-        occurredAt: '2024-01-02T00:00:00Z',
-      }),
-      tx({
-        id: '1',
-        clientId: 'c1',
+      {
+        transactionId: 't1',
+        accountId: account.accountId,
         type: 'deposit',
-        amount: 100,
-        occurredAt: '2024-01-01T00:00:00Z',
-      }),
+        amountMinorUnits: 1000,
+        reference: 'ref-1',
+        occurredAt: '2026-01-01T00:00:00.000Z',
+        postedBalanceMinorUnits: 1000,
+      },
+      {
+        transactionId: 't2',
+        accountId: account.accountId,
+        type: 'withdrawal',
+        amountMinorUnits: 300,
+        reference: 'ref-2',
+        occurredAt: '2026-01-02T00:00:00.000Z',
+        postedBalanceMinorUnits: 700,
+      },
     ];
-    const original = [...transactions];
-
-    computeClientMoneyLedger(transactions);
-
-    expect(transactions).toEqual(original);
-  });
-});
-
-describe('getTotalClientMoneyBalance and getClientBalance', () => {
-  const transactions: ClientMoneyTransaction[] = [
-    tx({
-      id: '1',
-      clientId: 'c1',
-      type: 'deposit',
-      amount: 200,
-      occurredAt: '2024-01-01T00:00:00Z',
-    }),
-    tx({
-      id: '2',
-      clientId: 'c1',
-      type: 'withdrawal',
-      amount: 50,
-      occurredAt: '2024-01-02T00:00:00Z',
-    }),
-    tx({
-      id: '3',
-      clientId: 'c2',
-      type: 'deposit',
-      amount: 300,
-      occurredAt: '2024-01-01T00:00:00Z',
-    }),
-  ];
-
-  it('sums signed amounts across all clients for the total balance', () => {
-    expect(getTotalClientMoneyBalance(transactions)).toBe(450);
+    expect(reconcileAccount(account, transactions)).toBe(true);
   });
 
-  it('filters by clientId for a single client balance', () => {
-    expect(getClientBalance(transactions, 'c1')).toBe(150);
-    expect(getClientBalance(transactions, 'c2')).toBe(300);
-  });
-
-  it('returns zero for a client with no transactions', () => {
-    expect(getClientBalance(transactions, 'unknown-client')).toBe(0);
-  });
-});
-
-describe('summarizeClientBalances', () => {
-  it('groups and sorts balances by clientId', () => {
+  it('returns false when the replayed balance does not match the stated balance', () => {
+    const account = makeAccount({ balanceMinorUnits: 999 });
     const transactions: ClientMoneyTransaction[] = [
-      tx({
-        id: '1',
-        clientId: 'c2',
+      {
+        transactionId: 't1',
+        accountId: account.accountId,
         type: 'deposit',
-        amount: 300,
-        occurredAt: '2024-01-01T00:00:00Z',
-      }),
-      tx({
-        id: '2',
-        clientId: 'c1',
-        type: 'deposit',
-        amount: 200,
-        occurredAt: '2024-01-01T00:00:00Z',
-      }),
-      tx({
-        id: '3',
-        clientId: 'c1',
-        type: 'withdrawal',
-        amount: 50,
-        occurredAt: '2024-01-02T00:00:00Z',
-      }),
+        amountMinorUnits: 1000,
+        reference: 'ref-1',
+        occurredAt: '2026-01-01T00:00:00.000Z',
+        postedBalanceMinorUnits: 1000,
+      },
     ];
-
-    const summary = summarizeClientBalances(transactions);
-
-    expect(summary).toEqual([
-      { clientId: 'c1', balance: 150, transactionCount: 2 },
-      { clientId: 'c2', balance: 300, transactionCount: 1 },
-    ]);
+    expect(reconcileAccount(account, transactions)).toBe(false);
   });
 
-  it('returns an empty array for no transactions', () => {
-    expect(summarizeClientBalances([])).toEqual([]);
-  });
-});
-
-describe('reconcileClientMoneyAccount', () => {
-  const transactions: ClientMoneyTransaction[] = [
-    tx({
-      id: '1',
-      clientId: 'c1',
-      type: 'deposit',
-      amount: 500,
-      occurredAt: '2024-01-01T00:00:00Z',
-    }),
-    tx({
-      id: '2',
-      clientId: 'c1',
-      type: 'withdrawal',
-      amount: 100,
-      occurredAt: '2024-01-02T00:00:00Z',
-    }),
-  ];
-
-  it('reports reconciled when bank balance matches ledger balance', () => {
-    const result = reconcileClientMoneyAccount(transactions, 400);
-    expect(result.ledgerBalance).toBe(400);
-    expect(result.bankBalance).toBe(400);
-    expect(result.variance).toBe(0);
-    expect(result.isReconciled).toBe(true);
-    expect(result.hasShortfall).toBe(false);
+  it('replays out-of-order transactions in occurredAt ascending order', () => {
+    const account = makeAccount({ balanceMinorUnits: 700 });
+    const transactions: ClientMoneyTransaction[] = [
+      {
+        transactionId: 't2',
+        accountId: account.accountId,
+        type: 'withdrawal',
+        amountMinorUnits: 300,
+        reference: 'ref-2',
+        occurredAt: '2026-01-02T00:00:00.000Z',
+        postedBalanceMinorUnits: 700,
+      },
+      {
+        transactionId: 't1',
+        accountId: account.accountId,
+        type: 'deposit',
+        amountMinorUnits: 1000,
+        reference: 'ref-1',
+        occurredAt: '2026-01-01T00:00:00.000Z',
+        postedBalanceMinorUnits: 1000,
+      },
+    ];
+    expect(reconcileAccount(account, transactions)).toBe(true);
   });
 
-  it('detects a shortfall when the ledger balance exceeds the bank balance', () => {
-    const result = reconcileClientMoneyAccount(transactions, 350);
-    expect(result.variance).toBe(50);
-    expect(result.isReconciled).toBe(false);
-    expect(result.hasShortfall).toBe(true);
+  it('applies transfer_in and transfer_out with the same sign as deposit/withdrawal', () => {
+    const account = makeAccount({ balanceMinorUnits: 1200 });
+    const transactions: ClientMoneyTransaction[] = [
+      {
+        transactionId: 't1',
+        accountId: account.accountId,
+        type: 'transfer_in',
+        amountMinorUnits: 1500,
+        reference: 'ref-1',
+        occurredAt: '2026-01-01T00:00:00.000Z',
+        postedBalanceMinorUnits: 1500,
+      },
+      {
+        transactionId: 't2',
+        accountId: account.accountId,
+        type: 'transfer_out',
+        amountMinorUnits: 300,
+        reference: 'ref-2',
+        occurredAt: '2026-01-02T00:00:00.000Z',
+        postedBalanceMinorUnits: 1200,
+      },
+    ];
+    expect(reconcileAccount(account, transactions)).toBe(true);
   });
 
-  it('detects a surplus (negative variance) without flagging it as a shortfall', () => {
-    const result = reconcileClientMoneyAccount(transactions, 450);
-    expect(result.variance).toBe(-50);
-    expect(result.isReconciled).toBe(false);
-    expect(result.hasShortfall).toBe(false);
+  it('applies an adjustment using its recorded postedBalanceMinorUnits as the new balance', () => {
+    const account = makeAccount({ balanceMinorUnits: 850 });
+    const transactions: ClientMoneyTransaction[] = [
+      {
+        transactionId: 't1',
+        accountId: account.accountId,
+        type: 'deposit',
+        amountMinorUnits: 1000,
+        reference: 'ref-1',
+        occurredAt: '2026-01-01T00:00:00.000Z',
+        postedBalanceMinorUnits: 1000,
+      },
+      {
+        transactionId: 't2',
+        accountId: account.accountId,
+        type: 'adjustment',
+        amountMinorUnits: 0,
+        reference: 'correction',
+        occurredAt: '2026-01-02T00:00:00.000Z',
+        postedBalanceMinorUnits: 850,
+      },
+    ];
+    expect(reconcileAccount(account, transactions)).toBe(true);
   });
 
-  it('treats variances within tolerance as reconciled', () => {
-    const result = reconcileClientMoneyAccount(transactions, 400.005);
-    expect(result.isReconciled).toBe(true);
+  it('returns false (never throws) for a non-integer transaction amount', () => {
+    const account = makeAccount({ balanceMinorUnits: 100 });
+    const transactions: ClientMoneyTransaction[] = [
+      {
+        transactionId: 't1',
+        accountId: account.accountId,
+        type: 'deposit',
+        amountMinorUnits: 100.5,
+        reference: 'ref-1',
+        occurredAt: '2026-01-01T00:00:00.000Z',
+        postedBalanceMinorUnits: 100.5,
+      },
+    ];
+    expect(() => reconcileAccount(account, transactions)).not.toThrow();
+    expect(reconcileAccount(account, transactions)).toBe(false);
+  });
+
+  it('returns false for a non-positive amount on a non-adjustment transaction', () => {
+    const account = makeAccount({ balanceMinorUnits: 0 });
+    const transactions: ClientMoneyTransaction[] = [
+      {
+        transactionId: 't1',
+        accountId: account.accountId,
+        type: 'deposit',
+        amountMinorUnits: 0,
+        reference: 'ref-1',
+        occurredAt: '2026-01-01T00:00:00.000Z',
+        postedBalanceMinorUnits: 0,
+      },
+    ];
+    expect(reconcileAccount(account, transactions)).toBe(false);
+  });
+
+  it('returns false when a transaction references a different accountId', () => {
+    const account = makeAccount({ balanceMinorUnits: 1000, accountId: 'acct-001' });
+    const transactions: ClientMoneyTransaction[] = [
+      {
+        transactionId: 't1',
+        accountId: 'acct-999',
+        type: 'deposit',
+        amountMinorUnits: 1000,
+        reference: 'ref-1',
+        occurredAt: '2026-01-01T00:00:00.000Z',
+        postedBalanceMinorUnits: 1000,
+      },
+    ];
+    expect(reconcileAccount(account, transactions)).toBe(false);
+  });
+
+  it('returns true for an empty transaction list against a zero balance', () => {
+    const account = makeAccount({ balanceMinorUnits: 0 });
+    expect(reconcileAccount(account, [])).toBe(true);
   });
 });
