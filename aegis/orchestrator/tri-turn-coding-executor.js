@@ -120,13 +120,18 @@ function buildExecutorPrompt(packet) {
   ].join('\n\n');
 }
 
-function buildExecutorInvocation(command, provider, promptFile) {
+function buildExecutorInvocation(command, provider, promptText) {
   const cmd = String(command || '').trim();
-  const promptPath = String(promptFile || '').trim();
+  // Multi-line arguments are mangled by the copilot.cmd batch shim, so the prompt
+  // is flattened to a single line; the full pretty prompt is kept on disk for audit.
+  const inline = String(promptText || '')
+    .replace(/\s+/g, ' ')
+    .replace(/'/g, "''")
+    .trim();
   if (provider === 'copilot-cli') {
-    return `powershell -NoProfile -ExecutionPolicy Bypass -Command "& '${cmd}' -p (Get-Content -Raw '${promptPath}') --allow-all --no-ask-user --no-custom-instructions"`;
+    return `powershell -NoProfile -ExecutionPolicy Bypass -Command "& '${cmd}' -p '${inline}' --allow-all --no-ask-user --no-custom-instructions"`;
   }
-  return `${cmd} < "${promptPath}"`;
+  return `${cmd} -p "${inline.replace(/"/g, '\\"')}"`;
 }
 
 function runCodingExecutor(packet, config, options = {}) {
@@ -184,7 +189,7 @@ function runCodingExecutor(packet, config, options = {}) {
     );
   fs.writeFileSync(promptFile, prompt, 'utf8');
   const invocation =
-    options.invocation || buildExecutorInvocation(config.command, config.provider, promptFile);
+    options.invocation || buildExecutorInvocation(config.command, config.provider, prompt);
 
   const stagingDir = String(options.stagingDir || '').trim();
   if (stagingDir) fs.mkdirSync(stagingDir, { recursive: true });

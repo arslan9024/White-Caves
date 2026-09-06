@@ -10,7 +10,6 @@
  */
 
 import fs from 'fs';
-import os from 'os';
 import path from 'path';
 import dotenv from 'dotenv';
 import { execSync } from 'child_process';
@@ -1281,8 +1280,11 @@ async function solveSerialQueue(token, queue, options, state, cycleId) {
           executorAttempted = true;
           const preRunFiles = gitChangedFiles();
           const stagingDir = path.join(
-            os.tmpdir(),
-            `aegis-executor-staging-${item.issueNumber || 'task'}-${Date.now()}`
+            ROOT,
+            'logs',
+            'orchestrator',
+            'executor-staging',
+            `${item.issueNumber || 'task'}-${Date.now()}`
           );
           const execution = runCodingExecutor(handoff, executorConfig, {
             cwd: ROOT,
