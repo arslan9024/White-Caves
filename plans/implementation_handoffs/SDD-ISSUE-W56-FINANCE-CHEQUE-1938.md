@@ -187,32 +187,37 @@ introduces no implementation files.
 
 ## 11. Implementation Completion Evidence (Issue #2424)
 
-Child issue #2424 (parent #1938 remains open) delivers the shared types
-module described in §3, ahead of/alongside the `.logic.ts` layer:
-
-- `financeEngineChequeRegistry.types.ts` implements `ChequeStatus`,
-  `CHEQUE_STATUSES`, `ALLOWED_TRANSITIONS`, `ChequeRecord`,
-  `CreateChequeRecordInput`, `TransitionChequeOptions`, and the runtime
-  guards/helpers `canTransition`, `isChequeStatus`, `isChequeRecord`.
-- Design decision: `canTransition` and `ALLOWED_TRANSITIONS` (originally
-  sketched in §4.3 as part of the logic layer) were placed in the types
-  module instead, because the transition adjacency map is pure static data
-  with no dependency on `validateChequeRecord` or record construction; this
-  lets the logic layer (and any other consumer) import the transition
-  rules without a circular or premature dependency on the not-yet-existing
-  logic file.
-- `isChequeRecord` was added as a structural (shape-only) runtime type
-  guard, distinct from the logic layer's `validateChequeRecord` (which
-  enforces business invariants like `amount > 0`). This gives callers a
-  cheap way to narrow `unknown` data before invoking the stricter
-  validation, without duplicating invariant logic across files.
-- `financeEngineChequeRegistry.types.test.ts` provides Vitest coverage (19
-  assertions) for `CHEQUE_STATUSES`, `ALLOWED_TRANSITIONS`, `isChequeStatus`,
-  `canTransition`, and `isChequeRecord`, including terminal-state and
-  same-state transition rejection and malformed-record detection.
-- Validation performed: `tsc --noEmit --strict --skipLibCheck` (clean) and
-  `vitest run` (19/19 passed).
+- Child issue #2424 (parent #1938) adds a standalone type-contract module
+  at `src/features/finance/financeEngineChequeRegistry/financeEngineChequeRegistry.types.ts`,
+  exporting `ChequeStatus`, `CHEQUE_STATUSES`, `ChequeRecord`,
+  `ChequeRecordInput`, `ChequeTransitionOptions`, `ChequeTransitionMap`,
+  `CHEQUE_TRANSITIONS`, `isChequeStatus`, and `isChequeRecord`.
+- Design decision: `isChequeRecord` is a structural (shape/type) guard
+  only — it does not enforce the business invariants in §4 (FR-2 – FR-5),
+  such as positive `amount` or valid ISO dates. Those remain the
+  responsibility of `validateChequeRecord` in
+  `financeEngineChequeRegistry.logic.ts`, keeping a clean separation
+  between "is this the right shape" (types module) and "is this
+  business-valid" (logic module).
+- Design decision: kept this module's `ChequeStatus`/`ChequeRecord`
+  declarations independent of (not imported from)
+  `financeEngineChequeRegistry.logic.ts` to avoid introducing a
+  cross-file edit into a module owned by a separate, already-completed
+  child issue (#2425); the two type sets are structurally identical by
+  design and can be unified in a future consolidation pass if desired.
+- `src/features/finance/financeEngineChequeRegistry/financeEngineChequeRegistry.types.test.ts`
+  is a Vitest suite (`import { describe, expect, it } from 'vitest'`)
+  with real behavioral assertions (no placeholders), covering valid and
+  invalid inputs for every exported guard/constant, including a
+  type-narrowing usage check for `isChequeRecord`.
+- Completion evidence: focused run of
+  `financeEngineChequeRegistry.types.test.ts` — 21/21 tests passed;
+  standalone strict `tsc --noEmit` (matching the repo's
+  `strict`/`isolatedModules`/`ESNext` settings) on
+  `financeEngineChequeRegistry.types.ts` produced zero errors. No new
+  dependencies were added; no files outside this module's scope were
+  touched; parent issue #1938 was not closed.
 - Rollback: deleting `financeEngineChequeRegistry.types.ts` and
-  `financeEngineChequeRegistry.types.test.ts` fully reverts issue #2424;
-  no other module imports these files yet. Parent issue #1938 remains
-  open.
+  `financeEngineChequeRegistry.types.test.ts` fully reverts issue #2424
+  with no effect on any other file, since nothing else imports from this
+  module yet.
