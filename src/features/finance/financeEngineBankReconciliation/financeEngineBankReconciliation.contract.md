@@ -1,114 +1,121 @@
 # Finance Engine — Bank Reconciliation Contract
 
+- Issue: #2430
 - Parent issue: #1937
-- Child issue: #2430
-- Module path: `src/features/finance/financeEngineBankReconciliation/`
+- Module: `src/features/finance/financeEngineBankReconciliation`
 
 ## Purpose
 
-Defines the reconciliation contract between imported bank statement lines and
-internal finance engine ledger transactions. This document specifies the
-data shapes, matching rules, and status lifecycle that any implementation
-under this module must honor. It is the source of truth for the TypeScript
-types and matching engine referenced by future implementation work under
-this child issue.
+Defines the behavioral contract for the Bank Reconciliation sub-feature of the
+Finance Engine (parent workstream W56). This contract governs how bank
+statement lines are matched against internal ledger transactions, how
+discrepancies are surfaced, and how reconciliation state transitions are
+reported to callers. It exists to keep the child scope isolated from the rest
+of the Finance Engine while parent issue #1937 remains open and other
+sibling child issues are still in flight.
 
 ## Scope
 
-In scope:
+In scope for this child issue:
 
-- Bank statement line ingestion shape (`BankStatementLine`).
-- Ledger transaction shape used for matching (`LedgerTransaction`).
-- Reconciliation match result shape (`ReconciliationMatch`) and status enum.
-- Pure matching rules (exact amount + date window, reference-number match,
-  fuzzy amount tolerance) expressed as deterministic functions.
-- Summary/report shape (`ReconciliationSummary`) for a reconciliation run.
+- Contract definition for reconciliation matching rules.
+- README describing the module's intended public surface for engineering
+  handoff.
+- SRS/SDD handoff documents for the W56 finance/bank workstream.
 
-Out of scope (excluded per parent/child governance):
+Out of scope (excluded per issue #2430):
 
-- Parent issue closure.
-- Bulk GitHub mutation of any kind.
-- Destructive database operations (deletes, truncates, migrations).
-- Production secret rewrites or credential handling.
-- Any live bank API integration — this contract governs in-memory /
-  already-imported data only.
+- Closing the parent issue (#1937).
+- Any bulk GitHub mutation (label/milestone/state changes across issues).
+- Destructive database operations (drops, truncates, irreversible migrations).
+- Rewriting or rotating production secrets.
 
-## Data Contracts
+## Domain Model (contract-level)
 
 ### `BankStatementLine`
 
-| Field             | Type                     | Notes                                                       |
-| ----------------- | ------------------------ | ----------------------------------------------------------- |
-| `id`              | `string`                 | Unique identifier for the statement line.                   |
-| `postedDate`      | `string` (ISO 8601 date) | Date the transaction posted at the bank.                    |
-| `amountCents`     | `number`                 | Signed integer, cents. Positive = credit, negative = debit. |
-| `description`     | `string`                 | Raw bank-provided description.                              |
-| `referenceNumber` | `string \| null`         | Optional bank reference / check number.                     |
+| Field               | Type                | Notes                                                                                    |
+| ------------------- | ------------------- | ---------------------------------------------------------------------------------------- |
+| `id`                | `string`            | Stable unique identifier for the statement line.                                         |
+| `postedAt`          | `string` (ISO 8601) | Date the bank posted the transaction.                                                    |
+| `amountMinorUnits`  | `number` (integer)  | Signed amount in minor currency units (e.g. cents). Positive = credit, negative = debit. |
+| `currency`          | `string` (ISO 4217) | 3-letter currency code.                                                                  |
+| `description`       | `string`            | Raw bank-provided description text.                                                      |
+| `externalReference` | `string \| null`    | Bank-supplied reference number, if any.                                                  |
 
 ### `LedgerTransaction`
 
-| Field             | Type                     | Notes                                                     |
-| ----------------- | ------------------------ | --------------------------------------------------------- |
-| `id`              | `string`                 | Unique identifier for the internal ledger entry.          |
-| `transactionDate` | `string` (ISO 8601 date) | Date recorded internally.                                 |
-| `amountCents`     | `number`                 | Signed integer, cents. Same sign convention as bank line. |
-| `memo`            | `string`                 | Internal memo/description.                                |
-| `referenceNumber` | `string \| null`         | Optional reference matched against bank line.             |
-
-### `ReconciliationStatus`
-
-Enum of: `"matched" | "unmatched" | "amount-mismatch" | "date-out-of-window"`.
+| Field                  | Type                                        | Notes                                                                               |
+| ---------------------- | ------------------------------------------- | ----------------------------------------------------------------------------------- |
+| `id`                   | `string`                                    | Stable unique identifier for the internal ledger entry.                             |
+| `bookedAt`             | `string` (ISO 8601)                         | Date the transaction was booked internally.                                         |
+| `amountMinorUnits`     | `number` (integer)                          | Signed amount in minor currency units, same sign convention as `BankStatementLine`. |
+| `currency`             | `string` (ISO 4217)                         | 3-letter currency code.                                                             |
+| `memo`                 | `string`                                    | Internal memo/description.                                                          |
+| `reconciliationStatus` | `'unreconciled' \| 'matched' \| 'disputed'` | Current reconciliation state.                                                       |
 
 ### `ReconciliationMatch`
 
-| Field                 | Type                   | Notes                                                                  |
-| --------------------- | ---------------------- | ---------------------------------------------------------------------- |
-| `bankLineId`          | `string`               | Reference to `BankStatementLine.id`.                                   |
-| `ledgerTransactionId` | `string \| null`       | Reference to matched `LedgerTransaction.id`, or `null` if unmatched.   |
-| `status`              | `ReconciliationStatus` | Result of the match attempt.                                           |
-| `confidence`          | `number`               | `0` to `1` inclusive; `1` = exact reference + amount + date match.     |
-| `varianceCents`       | `number`               | Absolute difference in cents between matched amounts (`0` when exact). |
+| Field                 | Type                                       | Notes                                  |
+| --------------------- | ------------------------------------------ | -------------------------------------- |
+| `statementLineId`     | `string`                                   | ID of the matched `BankStatementLine`. |
+| `ledgerTransactionId` | `string`                                   | ID of the matched `LedgerTransaction`. |
+| `matchType`           | `'exact' \| 'amount-and-date' \| 'manual'` | How the match was derived.             |
+| `confidence`          | `number`                                   | Value in the closed interval `[0, 1]`. |
 
-### `ReconciliationSummary`
+### `ReconciliationResult`
 
-| Field            | Type                    | Notes                                                  |
-| ---------------- | ----------------------- | ------------------------------------------------------ |
-| `totalBankLines` | `number`                | Count of bank lines processed.                         |
-| `totalMatched`   | `number`                | Count of lines with status `"matched"`.                |
-| `totalUnmatched` | `number`                | Count of lines with status other than `"matched"`.     |
-| `matches`        | `ReconciliationMatch[]` | Full per-line results, same order as input bank lines. |
+| Field                         | Type                    | Notes                                                |
+| ----------------------------- | ----------------------- | ---------------------------------------------------- |
+| `matches`                     | `ReconciliationMatch[]` | All matches produced for the run.                    |
+| `unmatchedStatementLines`     | `BankStatementLine[]`   | Statement lines with no matching ledger transaction. |
+| `unmatchedLedgerTransactions` | `LedgerTransaction[]`   | Ledger transactions with no matching statement line. |
 
 ## Matching Rules
 
-1. **Exact match**: reference numbers equal (non-null, case-insensitive
-   trimmed comparison), amounts equal exactly, dates within the configured
-   window (default 3 days) → `status: "matched"`, `confidence: 1`.
-2. **Amount-tolerant match**: no reference match, but amount within
-   configured tolerance (default 0 cents — exact only unless overridden)
-   and date within window → `status: "matched"`, confidence scaled by how
-   close the amount and date are.
-3. **Amount mismatch**: date within window, reference or near-amount match
-   found but amounts differ beyond tolerance → `status: "amount-mismatch"`.
-4. **Date out of window**: otherwise-compatible candidate exists but the
-   date difference exceeds the window → `status: "date-out-of-window"`.
-5. **No candidate**: no ledger transaction meets any of the above →
-   `status: "unmatched"`, `ledgerTransactionId: null`, `confidence: 0`.
-6. Matching is deterministic and side-effect free: given the same inputs,
-   the same `ReconciliationMatch[]` is produced every run. No I/O occurs
-   inside the matching functions.
-7. A ledger transaction may be consumed by at most one match; once matched
-   it is removed from the candidate pool for subsequent bank lines.
+1. **Currency isolation** — statement lines and ledger transactions are only
+   ever compared within the same `currency` code. Cross-currency comparisons
+   MUST NOT be attempted by the matcher.
+2. **Exact match** — a statement line and a ledger transaction match with
+   `matchType: 'exact'` and `confidence: 1` when `amountMinorUnits` is equal
+   and `postedAt === bookedAt` (same calendar date).
+3. **Amount-and-date match** — when amounts are equal but dates differ by no
+   more than a configurable tolerance window (default: 3 days), the match is
+   recorded as `matchType: 'amount-and-date'` with `confidence` scaled
+   linearly from `1` (same day) down to `0.5` at the edge of the tolerance
+   window.
+4. **No partial-amount matching** — the contract does not define any
+   automatic matching for differing amounts; such cases MUST be reported as
+   unmatched and left for manual reconciliation (`matchType: 'manual'` is
+   reserved for operator-confirmed matches, never produced automatically).
+5. **Idempotency** — running the reconciliation process twice over the same
+   unmodified input MUST produce an identical `ReconciliationResult` (same
+   matches, same unmatched sets, same ordering by input index).
+6. **No mutation of inputs** — the reconciliation process MUST treat
+   `BankStatementLine[]` and `LedgerTransaction[]` inputs as read-only and
+   MUST NOT mutate `reconciliationStatus` or any other field on the caller's
+   objects; state transitions are communicated only via the returned
+   `ReconciliationResult`.
 
-## Non-Functional Requirements
+## Error Handling
 
-- Strict TypeScript, no `any` types, no implicit `any`.
-- All exported functions are pure (no network, no filesystem, no DB calls).
-- All public types and functions must be unit-testable in isolation via
-  Vitest with real behavioral assertions.
+- Invalid currency codes (not matching `^[A-Z]{3}$`) MUST cause the offending
+  record to be excluded from matching and reported via a validation error
+  channel (not silently dropped without signal).
+- Non-integer `amountMinorUnits` values are considered malformed input and
+  MUST be rejected before matching begins.
 
-## Acceptance Criteria (traceable to issue #2430)
+## Non-Goals
 
-- [ ] Implementation remains within `src/features/finance/financeEngineBankReconciliation/` (declared child scope).
-- [ ] Focused Vitest tests and required validation commands pass.
-- [ ] Completion evidence and rollback note recorded in the SDD handoff.
-- [ ] Parent issue #1937 remains open until all child work is reconciled.
+- This contract does not define persistence, API endpoints, or UI
+  presentation. Those are addressed by sibling child issues under parent
+  #1937 and are explicitly out of scope here.
+- This contract does not define currency conversion; multi-currency
+  reconciliation is out of scope for this child issue.
+
+## Traceability
+
+- Parent issue: #1937 (Finance Engine, workstream W56).
+- Child issue: #2430 (Bank Reconciliation contract + handoff).
+- Related handoff docs: `plans/implementation_handoffs/SRS-ISSUE-W56-FINANCE-BANK-1937.md`,
+  `plans/implementation_handoffs/SDD-ISSUE-W56-FINANCE-BANK-1937.md`.

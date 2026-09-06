@@ -1,62 +1,66 @@
-# financeEngineBankReconciliation
+# Finance Engine — Bank Reconciliation
 
-Bank reconciliation sub-module of the Finance Engine feature area.
-
-- Parent issue: #1937 (Finance Engine — Week 56 workstream)
-- Child issue: #2430
-- Contract: [`financeEngineBankReconciliation.contract.md`](./financeEngineBankReconciliation.contract.md)
+- Issue: #2430
+- Parent issue: #1937 (remains open until all child work under W56 is reconciled)
+- Location: `src/features/finance/financeEngineBankReconciliation`
 
 ## What this module is
 
-This module owns the reconciliation contract between imported bank
-statement lines and the finance engine's internal ledger transactions. It
-defines the data shapes (`BankStatementLine`, `LedgerTransaction`,
-`ReconciliationMatch`, `ReconciliationSummary`), the `ReconciliationStatus`
-lifecycle, and the deterministic matching rules that any TypeScript
-implementation placed in this directory must satisfy.
+This module owns the Bank Reconciliation sub-feature of the Finance Engine.
+It is responsible for matching bank statement lines against internal ledger
+transactions and reporting matches/discrepancies. It does **not** own
+persistence, HTTP/API wiring, or UI presentation — those belong to sibling
+child issues tracked under parent issue #1937.
 
-See the contract document for the full field-by-field specification and
-matching-rule precedence (exact reference match → amount-tolerant match →
-amount-mismatch → date-out-of-window → unmatched).
+See [`financeEngineBankReconciliation.contract.md`](./financeEngineBankReconciliation.contract.md)
+for the full behavioral contract (domain model, matching rules, error
+handling, non-goals).
 
-## Status
+## Scope boundary
 
-This child issue (#2430) currently establishes the contract and handoff
-documentation (SRS/SDD) for the bank reconciliation matching engine. Source
-implementation (`*.ts`) and test files (`*.test.ts`) are introduced in
-follow-up work tracked under the same parent issue and must conform to this
-contract without modification to its public shapes.
+This child issue (#2430) is documentation- and contract-level handoff work
+only. It intentionally does **not**:
 
-## Scope boundaries
+- Close the parent issue (#1937).
+- Perform any bulk GitHub mutation.
+- Perform destructive database operations.
+- Touch or rewrite production secrets.
 
-In scope for this child issue and its module directory:
+Parent issue #1937 stays open until every child issue in the W56
+finance/bank reconciliation workstream is reconciled and merged.
 
-- Contract and design documentation for bank-line-to-ledger matching.
-- Type/shape definitions and matching-rule specification.
+## Intended public surface
 
-Explicitly out of scope (see contract's "Excluded scope" section and the
-parent issue #1937 governance rules):
+When implemented, the module's public surface is expected to expose (per the
+contract):
 
-- Closing the parent issue.
-- Any bulk GitHub mutation.
-- Destructive database operations.
-- Rewriting production secrets.
-- Live bank API connectivity.
+- `BankStatementLine`, `LedgerTransaction`, `ReconciliationMatch`, and
+  `ReconciliationResult` types.
+- A pure reconciliation function with the shape
+  `reconcile(statementLines: BankStatementLine[], ledgerTransactions: LedgerTransaction[], options?: ReconciliationOptions): ReconciliationResult`
+  that never mutates its inputs (see contract §"No mutation of inputs").
 
-## Related documents
+## Handoff documents
 
-- SRS handoff: `plans/implementation_handoffs/SRS-ISSUE-W56-FINANCE-BANK-1937.md`
-- SDD handoff: `plans/implementation_handoffs/SDD-ISSUE-W56-FINANCE-BANK-1937.md`
+- SRS: `plans/implementation_handoffs/SRS-ISSUE-W56-FINANCE-BANK-1937.md`
+- SDD: `plans/implementation_handoffs/SDD-ISSUE-W56-FINANCE-BANK-1937.md`
 
 ## Validation
 
-Once implementation files land in this directory, focused validation
-should run:
+Focused validation for this child issue is documentation review: confirm the
+contract, README, SRS, and SDD are internally consistent and traceable to
+issue #2430 / parent #1937. No source code, build, or test commands are
+introduced by this change since no runtime module code was added in this
+issue's scope.
 
-```
-npx vitest run src/features/finance/financeEngineBankReconciliation
-npx tsc --noEmit
-```
+## Rollback
 
-Both commands must pass before this child issue is considered reconciled
-against the parent issue (#1937).
+This change is additive-only (new documentation files under a new
+`financeEngineBankReconciliation` directory and two new handoff docs under
+`plans/implementation_handoffs/`). To roll back, delete the four files listed
+below; no other files are touched and no dependencies were added:
+
+- `src/features/finance/financeEngineBankReconciliation/financeEngineBankReconciliation.contract.md`
+- `src/features/finance/financeEngineBankReconciliation/README.md`
+- `plans/implementation_handoffs/SRS-ISSUE-W56-FINANCE-BANK-1937.md`
+- `plans/implementation_handoffs/SDD-ISSUE-W56-FINANCE-BANK-1937.md`
