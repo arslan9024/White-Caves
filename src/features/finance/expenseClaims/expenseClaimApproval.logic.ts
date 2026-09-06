@@ -8,6 +8,12 @@
  * Scope (per issue #2391, parent #1947): approval state machine, approver
  * eligibility, and multi-level sign-off calculation for expense claims.
  * Explicitly out of scope: persistence, notifications, GitHub automation.
+ *
+ * Extension (per issue #2464, parent #1929): receipt-attachment
+ * requirements. Claims above a policy threshold must carry at least one
+ * valid receipt record before an "approve" decision may be applied. This
+ * extension is additive only; every previously exported symbol and
+ * behavior above this threshold-agnostic baseline is preserved unchanged.
  */
 
 /** Roles permitted to act as approvers within the finance workflow. */
@@ -71,6 +77,19 @@ export interface ApprovalRecord {
   readonly decidedAt: string; // ISO-8601 timestamp
 }
 
+/**
+ * A receipt document attached in support of an expense claim. `amount`, when
+ * present, is the value printed on the receipt itself (for reconciliation
+ * against the claim total); it is not required to match exactly, since a
+ * single claim may aggregate several receipts.
+ */
+export interface Receipt {
+  readonly id: string;
+  readonly url: string;
+  readonly uploadedAt: string; // ISO-8601 timestamp
+  readonly amount?: number;
+}
+
 /** The expense claim entity as understood by the approval logic. */
 export interface ExpenseClaim {
   readonly id: string;
@@ -79,6 +98,12 @@ export interface ExpenseClaim {
   readonly currency: string;
   readonly status: ExpenseClaimStatus;
   readonly approvals: readonly ApprovalRecord[];
+  /**
+   * Receipts attached in support of this claim. Optional for backward
+   * compatibility with claims constructed before receipt tracking existed;
+   * treated as an empty list when absent.
+   */
+  readonly receipts?: readonly Receipt[];
 }
 
 /** A requested approval action, prior to being validated/applied. */
@@ -97,7 +122,9 @@ export type ExpenseClaimApprovalErrorCode =
   | 'APPROVER_ALREADY_DECIDED'
   | 'INSUFFICIENT_APPROVER_ROLE'
   | 'INVALID_AMOUNT'
-  | 'INVALID_COMMENT_FOR_REJECTION';
+  | 'INVALID_COMMENT_FOR_REJECTION'
+  | 'MISSING_RECEIPT'
+  | 'INVALID_RECEIPT';
 
 export class ExpenseClaimApprovalError extends Error {
   readonly code: ExpenseClaimApprovalErrorCode;
@@ -154,6 +181,59 @@ export function requiredApproverRole(amount: number): ApproverRole {
 export function isRoleSufficientForAmount(role: ApproverRole, amount: number): boolean {
   const required = requiredApproverRole(amount);
   return ROLE_RANK[role] >= ROLE_RANK[required];
+}
+
+/**
+ * Minimum claim amount (in the claim's stated currency) at or above which at
+ * least one receipt must be attached before an "approve" decision can be
+ * applied. Below this threshold, receipts remain optional (e.g. small
+ * incidental expenses such as parking or minor supplies).
+ */
+export const RECEIPT_REQUIRED_THRESHOLD = 25;
+
+/**
+ * Returns true when a claim of the given amount must carry at least one
+ * receipt before it can be approved.
+ */
+export function isReceiptRequired(amount: number): boolean {
+  if (!Number.isFinite(amount) || amount < 0) {
+    throw new ExpenseClaimApprovalError(
+      'INVALID_AMOUNT',
+      `Expense claim amount must be a non-negative finite number, received: ${amount}`
+    );
+  }
+  return amount >= RECEIPT_REQUIRED_THRESHOLD;
+}
+
+/**
+ * Returns true when a receipt record is well-formed: it has a non-blank id
+ * and url, a parseable `uploadedAt` timestamp, and (if present) a finite,
+ * non-negative `amount`.
+ */
+export function isValidReceipt(receipt: Receipt): boolean {
+  if (receipt.id.trim() === '' || receipt.url.trim() === '') {
+    return false;
+  }
+  if (Number.isNaN(Date.parse(receipt.uploadedAt))) {
+    return false;
+  }
+  if (receipt.amount !== undefined && (!Number.isFinite(receipt.amount) || receipt.amount < 0)) {
+    return false;
+  }
+  return true;
+}
+
+/**
+ * Returns true when the claim's receipt requirement (if any) is satisfied,
+ * i.e. either no receipt is required for its amount, or it carries at least
+ * one valid receipt.
+ */
+export function hasSatisfiedReceiptRequirement(claim: ExpenseClaim): boolean {
+  if (!isReceiptRequired(claim.amount)) {
+    return true;
+  }
+  const receipts = claim.receipts ?? [];
+  return receipts.some(isValidReceipt);
 }
 
 /**
@@ -233,6 +313,17 @@ export function applyApprovalDecision(
     };
   }
 
+  if (request.decision === 'approve' && !hasSatisfiedReceiptRequirement(claim)) {
+    return {
+      ok: false,
+      error: new ExpenseClaimApprovalError(
+        'MISSING_RECEIPT',
+        `Claim ${claim.id} for ${claim.amount} ${claim.currency} requires at least one valid ` +
+          `receipt (threshold: ${RECEIPT_REQUIRED_THRESHOLD}) before it can be approved.`
+      ),
+    };
+  }
+
   if (
     request.decision === 'reject' &&
     request.comment !== undefined &&
@@ -299,6 +390,43 @@ export function submitClaim(claim: ExpenseClaim): ApprovalResult {
 }
 
 /**
+ * Attaches a receipt to a claim, returning a new claim (immutable update).
+ * Rejects malformed receipts and duplicate receipt ids so callers cannot
+ * silently accumulate invalid or repeated evidence.
+ */
+export function attachReceipt(claim: ExpenseClaim, receipt: Receipt): ApprovalResult {
+  if (!isValidReceipt(receipt)) {
+    return {
+      ok: false,
+      error: new ExpenseClaimApprovalError(
+        'INVALID_RECEIPT',
+        `Receipt ${receipt.id || '(blank id)'} is missing required fields or has an invalid ` +
+          `amount/timestamp.`
+      ),
+    };
+  }
+
+  const existing = claim.receipts ?? [];
+  if (existing.some(r => r.id === receipt.id)) {
+    return {
+      ok: false,
+      error: new ExpenseClaimApprovalError(
+        'INVALID_RECEIPT',
+        `Receipt ${receipt.id} is already attached to claim ${claim.id}.`
+      ),
+    };
+  }
+
+  return {
+    ok: true,
+    claim: {
+      ...claim,
+      receipts: [...existing, receipt],
+    },
+  };
+}
+
+/**
  * Produces a human-readable summary of a claim's current approval progress,
  * useful for UI display or audit logging.
  */
@@ -306,9 +434,14 @@ export function summarizeApprovalProgress(claim: ExpenseClaim): string {
   const required = requiredApproverRole(claim.amount);
   const approveCount = claim.approvals.filter(a => a.decision === 'approve').length;
   const rejectCount = claim.approvals.filter(a => a.decision === 'reject').length;
+  const receiptStatus = isReceiptRequired(claim.amount)
+    ? hasSatisfiedReceiptRequirement(claim)
+      ? 'receipt=ok'
+      : 'receipt=missing'
+    : 'receipt=n/a';
 
   return (
     `Claim ${claim.id}: status=${claim.status}, requires>=${required}, ` +
-    `approvals=${approveCount}, rejections=${rejectCount}`
+    `approvals=${approveCount}, rejections=${rejectCount}, ${receiptStatus}`
   );
 }
