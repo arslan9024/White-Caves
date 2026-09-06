@@ -1,49 +1,102 @@
-# Finance Engine — FX Gain/Loss
+# financeEngineFxGain
 
-- Issue: [#2422](../../../../../plans/implementation_handoffs/SRS-ISSUE-W56-FINANCE-FX-1939.md)
-- Parent issue: #1939 (Finance Engine — multi-currency support)
+FX (foreign exchange) gain/loss calculation module for the White Caves
+Finance Engine. Part of workstream W56 (parent issue #1939), child scope
+issue #2422.
 
-## What this is
+## What this module does
 
-This folder is the child-scope handoff for the **FX gain/loss calculation**
-sub-feature of the finance engine, tracked under parent issue #1939. It
-contains the functional contract (`financeEngineFxGain.contract.md`) that
-defines the expected inputs, outputs, rounding, and edge-case behavior for
-realized and unrealized FX gain/loss calculations on multi-currency finance
+Computes realized and unrealized FX gain/loss for transactions booked in a
+currency other than the ledger's base currency, by comparing the base-
+currency value at booking time against the value at settlement or
+period-end revaluation time.
+
+This is a pure, side-effect-free calculation module: it does not fetch
+exchange rates, does not read/write the database, and does not perform any
+network I/O. Callers must supply the booking rate and settlement/valuation
+rate.
+
+## Contract
+
+The full behavioral contract, including the public API surface, validation
+rules, and rounding conventions, is documented in
+[`financeEngineFxGain.contract.md`](./financeEngineFxGain.contract.md).
+That document is the source of truth; this README is a lightweight usage
+summary.
+
+## Usage
+
+```ts
+import {
+  calculateFxGainLoss,
+  summarizeFxGainLoss,
+  FxGainCalculationError,
+} from './financeEngineFxGain';
+
+const result = calculateFxGainLoss({
+  transactionId: 'INV-1001',
+  transactionCurrency: 'USD',
+  baseCurrency: 'AED',
+  transactionAmount: 1000,
+  bookingRate: 3.67,
+  settlementRate: 3.7,
+  settlementStatus: 'realized',
+});
+
+// result.gainLossAmount === 30
+// result.direction === 'gain'
+
+const summary = summarizeFxGainLoss([result]);
+// summary.totalGain === 30, summary.totalLoss === 0, summary.netAmount === 30
+```
+
+Validation failures throw a typed `FxGainCalculationError` with a
+discriminated `code` (`INVALID_CURRENCY_CODE`, `NON_FINITE_AMOUNT`,
+`NEGATIVE_AMOUNT`, or `NON_POSITIVE_RATE`) — callers should catch and
+translate this into their own error handling as needed.
+
+## Scope
+
+**In scope:** pure FX gain/loss calculation and aggregation for a batch of
 transactions.
 
-Implementation source (`financeEngineFxGain.ts`) and its vitest test suite
-(`financeEngineFxGain.test.ts`) are delivered by the implementation child
-issue that consumes this contract; this handoff establishes the agreed
-contract, the SRS, and the SDD so that implementation and QA can proceed
-without ambiguity.
+**Explicitly out of scope for this child issue (#2422):**
 
-## Why it exists
+- Closing parent issue #1939.
+- Bulk GitHub mutations.
+- Destructive database operations.
+- Production secret rewrites.
+- Currency-rate retrieval/caching or ledger posting (handled by adjacent
+  modules).
 
-The finance engine must support transactions booked in a currency other than
-the organization's base reporting currency. Whenever the exchange rate moves
-between booking and settlement (or between booking and a reporting valuation
-date), the organization realizes or accrues an FX gain or loss. This must be
-calculated consistently, deterministically, and independently of any single
-UI or persistence layer so it can be reused across invoicing, payments, and
-reporting features.
+## Testing
 
-## Scope boundaries
+Focused tests live in `financeEngineFxGain.test.ts` and run with
+[vitest](https://vitest.dev/). Run the finance-engine focused suite with:
 
-- **In scope**: pure calculation contract for realized/unrealized FX
-  gain-or-loss, rounding rules, and invalid-input handling.
-- **Out of scope**: persistence, API routes, UI, live rate-fetching, and any
-  action that would close the parent issue (#1939) or perform bulk GitHub
-  mutations, destructive database operations, or production secret rewrites.
+```sh
+npx vitest run src/features/finance/financeEngineFxGain
+```
 
-## Related documents
+## Files
 
-- Contract: `./financeEngineFxGain.contract.md`
-- SRS: `../../../../plans/implementation_handoffs/SRS-ISSUE-W56-FINANCE-FX-1939.md`
-- SDD: `../../../../plans/implementation_handoffs/SDD-ISSUE-W56-FINANCE-FX-1939.md`
+| File                              | Purpose                           |
+| --------------------------------- | --------------------------------- |
+| `financeEngineFxGain.contract.md` | Authoritative behavioral contract |
+| `README.md`                       | This usage overview               |
+| `financeEngineFxGain.ts`          | Implementation (typed, no `any`)  |
+| `financeEngineFxGain.test.ts`     | Vitest focused test suite         |
 
-## Status
+## Traceability
 
-This handoff documents the contract only. Parent issue #1939 remains open
-until all child work items (including the calculation implementation, its
-tests, and downstream integration) are reconciled.
+- Parent issue: **#1939** (remains open)
+- Child issue: **#2422**
+- SRS: `plans/implementation_handoffs/SRS-ISSUE-W56-FINANCE-FX-1939.md`
+- SDD: `plans/implementation_handoffs/SDD-ISSUE-W56-FINANCE-FX-1939.md`
+
+## Rollback
+
+This module is additive under
+`src/features/finance/financeEngineFxGain/`. To roll back, delete the
+directory; no other module currently imports from it, so no downstream
+changes are required.
