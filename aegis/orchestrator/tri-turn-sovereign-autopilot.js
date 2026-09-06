@@ -1696,6 +1696,17 @@ async function solveSerialQueue(token, queue, options, state, cycleId) {
             'executor-staging',
             `${item.issueNumber || 'task'}-${Date.now()}`
           );
+          // Seed the sandbox with the current repo versions of the candidate files so the
+          // executor EXTENDS existing contracts instead of rewriting them blind and
+          // clobbering prior fixes on copy-back.
+          for (const relative of handoff.candidateFiles || []) {
+            const repoFile = path.join(ROOT, relative);
+            const stagedFile = path.join(stagingDir, relative);
+            if (fs.existsSync(repoFile)) {
+              fs.mkdirSync(path.dirname(stagedFile), { recursive: true });
+              fs.copyFileSync(repoFile, stagedFile);
+            }
+          }
           const execution = runCodingExecutor(handoff, executorConfig, {
             cwd: ROOT,
             stagingDir,
