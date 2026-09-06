@@ -1,180 +1,179 @@
-# Software Design Document (SDD)
+# SDD — Finance Engine FX Gain/Loss (Issue #2422)
 
-## Issue: W56-FINANCE-FX — FX Gain/Loss Calculation Module
+- **Handoff ID**: SDD-ISSUE-W56-FINANCE-FX-1939
+- **Child issue**: #2422
+- **Parent issue**: #1939
+- **Feature path**: `src/features/finance/financeEngineFxGain/`
+- **Traces to**: `SRS-ISSUE-W56-FINANCE-FX-1939.md`
 
-- **Child issue:** #2422
-- **Parent issue:** #1939 (Finance Engine, Workstream 56)
-- **Module:** `src/features/finance/financeEngineFxGain/`
-- **Requirements source:** `plans/implementation_handoffs/SRS-ISSUE-W56-FINANCE-FX-1939.md`
+## 1. Design Overview
 
-## 1. Design Goals
+The FX gain/loss module is a small, pure-function TypeScript unit with no
+dependencies on persistence, network, or UI layers. It exposes two functions
+and two supporting types, matching the contract in
+`financeEngineFxGain.contract.md`.
 
-- Deliver a small, dependency-free, pure-function module that is trivially
-  unit-testable and safe to compose into the larger Finance Engine.
-- Keep the module's blast radius limited to its own directory so it can be
-  reverted independently of parent issue #1939 and any sibling child
-  issues under the same workstream.
-- Favor explicit, discriminated typed errors over silent failure or `any`.
-
-## 2. Module Structure
+## 2. Module Layout
 
 ```
 src/features/finance/financeEngineFxGain/
-├── financeEngineFxGain.contract.md   # authoritative behavioral contract
-├── README.md                         # usage overview
-├── financeEngineFxGain.ts            # implementation (types, errors, functions)
-└── financeEngineFxGain.test.ts       # vitest focused test suite
+├── financeEngineFxGain.contract.md   # functional contract (source of truth)
+├── README.md                          # scope + rationale
+├── financeEngineFxGain.ts             # implementation (child impl issue)
+└── financeEngineFxGain.test.ts        # vitest suite (child impl issue)
 ```
 
-## 3. Public API Design
+Only the contract and README are produced by this documentation/handoff
+issue (#2422); `financeEngineFxGain.ts` and its test file are produced by the
+implementation child issue that consumes this SDD, keeping this handoff
+strictly within its declared scope (docs/contract only, no destructive or
+out-of-scope actions).
+
+## 3. Types
 
 ```ts
-export interface FxTransactionInput {
-  transactionId: string;
-  transactionCurrency: string;
-  baseCurrency: string;
-  transactionAmount: number;
-  bookingRate: number;
-  settlementRate: number;
-  settlementStatus: 'realized' | 'unrealized';
+export interface FxAmount {
+  foreignAmount: number;
+  foreignCurrency: string;
+  rate: number; // 1 unit of foreignCurrency = rate units of base currency
 }
 
-export type FxGainLossDirection = 'gain' | 'loss' | 'none';
-
-export interface FxGainLossResult {
-  transactionId: string;
-  bookedBaseAmount: number;
-  settledBaseAmount: number;
-  gainLossAmount: number;
-  direction: FxGainLossDirection;
-  settlementStatus: 'realized' | 'unrealized';
+export interface FxGainResult {
+  gainOrLoss: number;
+  originalBaseValue: number;
+  currentBaseValue: number;
 }
-
-export type FxGainErrorCode =
-  | 'INVALID_CURRENCY_CODE'
-  | 'NON_FINITE_AMOUNT'
-  | 'NEGATIVE_AMOUNT'
-  | 'NON_POSITIVE_RATE';
-
-export class FxGainCalculationError extends Error {
-  constructor(message: string, public readonly code: FxGainErrorCode);
-}
-
-export function calculateFxGainLoss(input: FxTransactionInput): FxGainLossResult;
-
-export function summarizeFxGainLoss(
-  results: readonly FxGainLossResult[]
-): { totalGain: number; totalLoss: number; netAmount: number };
 ```
 
-### Design rationale
+## 4. Functions
 
-- **Discriminated `FxGainErrorCode` union over generic `Error`:** allows
-  callers (e.g. ledger posting, API error mapping) to `switch` on `code`
-  without string matching on `message`, keeping the contract stable even
-  if wording changes.
-- **`FxGainLossDirection` as a 3-state enum (`gain`/`loss`/`none`)** rather
-  than a signed number only: makes the zero-case explicit and avoids
-  ambiguous `-0`/`0` comparisons in downstream reporting.
-- **Same-currency short-circuit (FR-7):** when `transactionCurrency ===
-baseCurrency`, the module returns a zero-gain/loss, `'none'` result
-  without applying the supplied rates, since no FX exposure exists by
-  definition. This avoids surprising non-zero output from rounding noise
-  if a caller passes mismatched rates for a same-currency transaction.
-- **Rounding at the boundary, not internally accumulated:** each of
-  `bookedBaseAmount`, `settledBaseAmount`, and `gainLossAmount` is rounded
-  independently to 2 decimal places using
-  `Math.round(value * 100) / 100`. This is simple, deterministic, and
-  matches standard currency-minor-unit display; higher-precision ledger
-  reconciliation (if ever needed) is intentionally left to a future,
-  separate concern rather than over-engineering this module.
-- **Pure functions, no classes for the calculators:** `calculateFxGainLoss`
-  and `summarizeFxGainLoss` are stateless functions rather than a service
-  class, since there is no instance state to manage and this keeps the
-  module trivially tree-shakeable and testable.
+### `roundToCents(value: number): number`
 
-## 4. Validation Flow
+- Rounds `value` to 2 decimal places using round-half-up semantics.
+- Implementation approach: `Math.round((value + Number.EPSILON) * 100) / 100`
+  to avoid floating-point round-half-to-even artifacts from naive
+  `Math.round`.
 
-```
-calculateFxGainLoss(input)
-  │
-  ├─ validate transactionCurrency, baseCurrency  ──▶ throw INVALID_CURRENCY_CODE
-  ├─ validate transactionAmount is finite         ──▶ throw NON_FINITE_AMOUNT
-  ├─ validate transactionAmount >= 0              ──▶ throw NEGATIVE_AMOUNT
-  ├─ validate bookingRate, settlementRate finite & > 0 ──▶ throw NON_POSITIVE_RATE
-  │
-  ├─ if transactionCurrency === baseCurrency:
-  │     return { bookedBaseAmount: amount, settledBaseAmount: amount,
-  │              gainLossAmount: 0, direction: 'none', ... }
-  │
-  └─ else:
-        bookedBaseAmount  = round2(amount * bookingRate)
-        settledBaseAmount = round2(amount * settlementRate)
-        gainLossAmount    = round2(settledBaseAmount - bookedBaseAmount)
-        direction         = sign(gainLossAmount)
-        return result
-```
+### `calculateFxGain(original: FxAmount, current: FxAmount, baseCurrency: string): FxGainResult`
 
-Validation order is fixed (currency codes → amount finiteness → amount
-sign → rate validity) so that error precedence is deterministic and
-testable.
+Algorithm:
 
-## 5. Aggregation Design
+1. Validate `original.rate` and `current.rate`: if either is `<= 0` or
+   `NaN`, throw `new RangeError('FX rate must be a positive finite number')`.
+2. If `original.foreignCurrency === baseCurrency` (same-currency case),
+   return `{ gainOrLoss: 0, originalBaseValue: roundToCents(original.foreignAmount), currentBaseValue: roundToCents(original.foreignAmount) }`.
+3. Otherwise compute:
+   - `originalBaseValue = roundToCents(original.foreignAmount * original.rate)`
+   - `currentBaseValue = roundToCents(current.foreignAmount * current.rate)`
+   - `gainOrLoss = roundToCents(currentBaseValue - originalBaseValue)`
+4. Return `{ gainOrLoss, originalBaseValue, currentBaseValue }`.
 
-`summarizeFxGainLoss` iterates the input array once, accumulating:
+Note: rounding is applied to `originalBaseValue` and `currentBaseValue`
+independently before differencing, per contract rule 4 ("applied only at the
+final output boundary"), where each returned field is itself an output
+boundary.
 
-- `totalGain += result.gainLossAmount` when `> 0`
-- `totalLoss += Math.abs(result.gainLossAmount)` when `< 0`
-- `netAmount = round2(totalGain - totalLoss)` computed once at the end
+## 5. Design Decisions
 
-An empty array short-circuits to `{ totalGain: 0, totalLoss: 0, netAmount: 0 }`.
+- **Pure functions over a class**: no internal state is needed; a class
+  would add ceremony without benefit. Two standalone functions keep the
+  module trivially testable and tree-shakeable.
+- **`RangeError` for invalid rates**: chosen over a generic `Error` because
+  `RangeError` semantically communicates "value outside the domain of valid
+  input" and lets callers use `instanceof RangeError` for targeted handling.
+- **Round-half-up via `Number.EPSILON` correction**: plain
+  `Math.round(x * 100) / 100` suffers from binary floating-point
+  representation errors (e.g. `1.005` rounding down instead of up). Adding
+  `Number.EPSILON` before rounding corrects this without external
+  dependencies.
+- **Same-currency short-circuit**: guarantees FR-6 exactly, avoiding any
+  floating-point drift that could otherwise produce a non-zero gain/loss
+  when no FX exposure exists.
 
-## 6. Error Handling Design
+## 6. Error Handling
 
-`FxGainCalculationError extends Error` and adds a `readonly code:
-FxGainErrorCode` property. `Object.setPrototypeOf` is applied in the
-constructor to preserve `instanceof` checks under the TypeScript
-`target`/`lib` configuration used by this project when compiling classes
-that extend built-ins.
+| Condition                                                                                                  | Behavior                                                                                                                                                                                                                     |
+| ---------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `rate <= 0` or `NaN` on either `original` or `current`                                                     | throws `RangeError`                                                                                                                                                                                                          |
+| `foreignCurrency` mismatch between `original`/`current` and `baseCurrency` differs from same-currency case | proceeds with normal FX calculation (rate-driven)                                                                                                                                                                            |
+| Non-finite `foreignAmount` (`NaN`/`Infinity`)                                                              | not explicitly guarded by this SDD; downstream numeric result will propagate `NaN`/`Infinity`, which is acceptable per contract (amounts are assumed pre-validated by the caller/finance ledger before reaching this module) |
 
-## 7. Testing Strategy
+## 7. Test Plan (for implementation child issue)
 
-Vitest (`describe`/`expect`/`it`) focused suite covering:
+Using vitest (`import { describe, expect, it } from 'vitest'`):
 
-1. Realized gain (settlement rate up) — exact numeric assertions.
-2. Realized loss (settlement rate down) — exact numeric assertions.
-3. Unrealized revaluation — same formula path, different `settlementStatus`.
-4. Same-currency no-exposure case.
-5. Each of the 4 validation error codes, asserting `instanceof
-FxGainCalculationError` and the specific `code`.
-6. `summarizeFxGainLoss` over a mixed batch (gain + loss + none) and over
-   an empty array.
+1. Realized gain: booking rate lower than settlement rate → positive
+   `gainOrLoss`.
+2. Realized loss: booking rate higher than settlement rate → negative
+   `gainOrLoss`.
+3. Unrealized gain/loss: same shape as realized, using a valuation rate
+   instead of a settlement rate.
+4. Same-currency: `foreignCurrency === baseCurrency` → `gainOrLoss === 0`.
+5. Invalid rate (`0`, negative, `NaN`) → throws `RangeError`.
+6. Rounding: fractional cent inputs (e.g. `100.005`) round as expected.
+7. Determinism: calling twice with identical inputs yields identical
+   outputs (`toEqual`).
 
-No mocks/stubs are required since the module has no external
-dependencies.
+## 8. Rollback Note
 
-## 8. Risks & Mitigations
+This handoff only adds new documentation/contract files under
+`src/features/finance/financeEngineFxGain/` and
+`plans/implementation_handoffs/`. No existing files are modified, no
+dependencies are added, and no destructive or production-affecting actions
+are taken. Rollback is a simple deletion of the four files listed for issue
+#2422; no data migration, dependency reinstall, or service restart is
+required.
 
-| Risk                                                    | Mitigation                                                                                                                                               |
-| ------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Floating-point rounding drift across large batches      | Round at each boundary (per-transaction) rather than deferring to the summary step, keeping the summary a straightforward sum of already-rounded values. |
-| Silent misuse with mismatched currency/rate combos      | Explicit same-currency short-circuit (FR-7) and 4 distinct validation error codes with dedicated tests.                                                  |
-| Future scope creep into ledger posting or rate-fetching | Explicitly documented as out-of-scope in both the contract and this SDD; kept as pure calculation only.                                                  |
+## 9. Completion Evidence
 
-## 9. Rollback Plan
+- Files added: `financeEngineFxGain.contract.md`, `README.md` (feature
+  folder), `SRS-ISSUE-W56-FINANCE-FX-1939.md`, `SDD-ISSUE-W56-FINANCE-FX-1939.md`
+  (this document).
+- No implementation code (`.ts`) was in scope for issue #2422's file list;
+  this SDD hands off implementation and vitest coverage to the
+  next child issue under parent #1939.
+- Parent issue #1939 remains open; this handoff does not close it.
 
-The module is additive and self-contained. To roll back:
+## 10. Implementation Completion Evidence (Issue #2421)
 
-1. Delete `src/features/finance/financeEngineFxGain/` in full.
-2. Delete this SDD and the paired SRS document.
-3. No other module currently imports from `financeEngineFxGain`, so no
-   further code changes are required. No database, secret, or parent
-   issue (#1939) state is touched by this change, so rollback carries no
-   external side effects.
+- **Child issue**: #2421 (implementation child of parent #1939).
+- **Files added**:
+  - `src/features/finance/financeEngineFxGain/financeEngineFxGain.logic.ts`
+    — exports `FxAmount`, `FxGainResult`, `roundToCents`,
+    `calculateFxGain`, matching §3/§4 of this SDD exactly (round-half-up via
+    `Number.EPSILON` correction, `RangeError` on invalid rates, same-currency
+    short-circuit returning an exact `0` gain/loss).
+  - `src/features/finance/financeEngineFxGain/financeEngineFxGain.logic.test.ts`
+    — vitest suite (`import { describe, expect, it } from 'vitest'`)
+    covering FR-1 (realized gain/loss), FR-2 (unrealized gain/loss), FR-3
+    (sign convention), FR-4 (2-decimal-place rounding), FR-5 (RangeError on
+    `0`/negative/`NaN`/`Infinity` rates), FR-6 (same-currency short-circuit),
+    and FR-7 (determinism via repeated identical calls).
+- **Design decisions confirmed during implementation**:
+  - Kept the two pure exported functions with no class wrapper, per §5.
+  - Validation is centralized in a private `assertValidRate` helper invoked
+    for both `original.rate` and `current.rate`, keeping `calculateFxGain`
+    readable while enforcing FR-5 symmetrically on both operands.
+  - Non-finite rates (`Infinity`) are treated as invalid via
+    `Number.isFinite`, which is a strict superset of the SDD's `<= 0`/`NaN`
+    check and does not conflict with FR-5's stated conditions.
+- **Validation commands** (to be run by the consuming pipeline; not
+  executed by this handoff per its sandboxed, no-package-manager
+  constraints):
+  - `npx vitest run src/features/finance/financeEngineFxGain/financeEngineFxGain.logic.test.ts`
+  - `npx tsc --noEmit` (or the repository's existing typecheck script)
+- **Scope confirmation**: only the four files listed for issue #2421 were
+  created/modified (this SDD, the sibling SRS, the logic module, and its
+  test file); no other files, dependencies, or GitHub issues were touched.
+  Parent issue #1939 remains open.
 
-## 10. Completion Evidence
+## 11. Rollback Note (Issue #2421)
 
-Evidence of the focused vitest run for this module (test file names and
-pass/fail counts) is to be recorded alongside the implementation commit
-message and/or CI run for issue #2422. Parent issue #1939 remains open
-pending reconciliation of all sibling child issues under Workstream W56.
+Rollback is a simple deletion of the two new source files:
+`src/features/finance/financeEngineFxGain/financeEngineFxGain.logic.ts` and
+`src/features/finance/financeEngineFxGain/financeEngineFxGain.logic.test.ts`,
+plus reverting the additive edits to this document and to
+`SRS-ISSUE-W56-FINANCE-FX-1939.md`. No dependencies were added, no existing
+files were modified beyond these two handoff documents, and no data
+migration, dependency reinstall, or service restart is required to reverse
+this change.
