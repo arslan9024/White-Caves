@@ -1248,6 +1248,28 @@ async function hydrateChildScopeFromParent(item, handoff, token) {
   return handoff;
 }
 
+async function detectReconciledParents(token) {
+  if (!token) return new Set();
+  const all = await loadAllGitHubIssues(token);
+  const childByParent = new Map();
+  for (const issue of all) {
+    if (issue.pull_request) continue;
+    const parentNumber = Number(
+      String(issue.body || '').match(/AEGIS_PARENT_ISSUE:\s*(\d+)/)?.[1] || 0
+    );
+    if (parentNumber > 0) {
+      if (!childByParent.has(parentNumber)) childByParent.set(parentNumber, []);
+      childByParent.get(parentNumber).push(issue);
+    }
+  }
+  const reconciled = new Set();
+  for (const [parentNumber, children] of childByParent.entries()) {
+    const anyOpen = children.some(c => c.state === 'open');
+    if (!anyOpen && children.length > 0) reconciled.add(parentNumber);
+  }
+  return reconciled;
+}
+
 async function reconcileClosedParents(token, solvedQueue) {
   const closedChildren = solvedQueue.filter(
     q => q.closed && /\[AEGIS CHILD\]/i.test(q.title || '')
@@ -1729,8 +1751,15 @@ async function runCycle(options, cycleNumber) {
       );
     }
     if (liveIssues.length > 0) {
+      // Skip parents whose children are already fully solved so the chain advances
+      // to the next unsolved broad parent instead of stalling on a completed one.
+      const reconciledParents =
+        options.autoChain && !options.dryRun ? await detectReconciledParents(token) : new Set();
       const broadParent = liveIssues.find(
-        issue => !/\[AEGIS CHILD\]/i.test(issue.title || '') && !extractFingerprint(issue.body)
+        issue =>
+          !/\[AEGIS CHILD\]/i.test(issue.title || '') &&
+          !extractFingerprint(issue.body) &&
+          !reconciledParents.has(Number(issue.number))
       );
       if (options.decomposeBroad && broadParent) {
         const childTasks = decomposeBroadIssue(broadParent, 3);
