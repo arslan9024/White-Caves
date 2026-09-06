@@ -107,31 +107,56 @@ its paired SRS/contract/README files; there is no code, migration, or configurat
 change to undo, and no runtime behavior is affected. Parent issue #1935 is unaffected
 and remains open.
 
-## 9. Implementation Addendum (Child Issue #2440)
+## 9. Implementation Completion Evidence (Child issue #2440)
 
-Child issue #2440 (parent #1935) implements the `.ts` module target described in
-Section 2 above, using the file naming `financeEngineUaeCorporate.logic.ts` /
-`financeEngineUaeCorporate.logic.test.ts` (a `.logic` suffix distinguishes the
-calculation module from future sibling files such as `.types.ts` or `.rates.ts`
-without changing any design decision recorded in Sections 1–8, all of which remain
-unchanged and in force).
+- Implementing child issue: #2440, per this SDD's target module layout (§2). Parent
+  issue #1935 remains open and is not closed by this addendum.
+- Delivered files, aligned with the design decisions in §3:
+  - `financeEngineUaeCorporate.logic.ts` — pure function `calculateUaeCorporateTax`,
+    exported types (`UaeCorporateTaxCalculationInput`, `UaeCorporateTaxCalculationResult`,
+    `UaeCorporateTaxRateTable`, `UaeCorporateTaxCurrency`), the default rate table
+    constant (`DEFAULT_UAE_CORPORATE_TAX_RATE_TABLE`, version `UAE-CT-FDL47-2022-v1`),
+    and the typed `UaeCorporateTaxValidationError`.
+  - `financeEngineUaeCorporate.logic.test.ts` — vitest tests implementing the testing
+    strategy in §5 (standard-rate calculation, exact AED 375,000/375,001 boundary,
+    zero/negative profit flooring, `rateTableVersion` pass-through and override,
+    determinism, input-immutability, and non-AED currency rejection).
+- Naming note: the SDD's target layout (§2) anticipated separate `.types.ts`/`.rates.ts`/
+  `.ts` files; the implementation consolidates types, the default rate table, the error
+  class, and the calculation function into a single `financeEngineUaeCorporate.logic.ts`
+  module (with a matching `.logic.test.ts`) to keep the child scope minimal and avoid
+  introducing additional files not explicitly requested by the implementation issue.
+  All public symbols described in §3 remain exported and unchanged in behavior.
+- Rollback: revert `financeEngineUaeCorporate.logic.ts` and
+  `financeEngineUaeCorporate.logic.test.ts`. No other module, route, or persistence
+  layer references these files yet, so rollback carries no downstream runtime risk.
 
-- **Design decisions honored as-is:** pure function over class/service (§3.1),
-  versioned rate table over hard-coded constants (§3.2, implemented as
-  `UAE_CORPORATE_TAX_RATE_TABLES` keyed by `rateTableVersion`), AED-only currency
-  constraint (§3.3, enforced via the `UaeCorporateTaxCurrency = 'AED'` literal type
-  plus runtime validation), and flooring negative taxable income at zero (§3.4).
-- **Testing strategy executed:** all bullet points in Section 5 are covered by
-  `financeEngineUaeCorporate.logic.test.ts` using vitest with real behavioral
-  assertions (no placeholder assertions).
-- **Completion evidence:** implementation and test files exist at the paths above;
-  validation commands (`vitest run`, `typecheck`, `lint`) must be executed from the
-  repository root as part of the implementation PR, since this documentation sandbox
-  has no `node_modules`/`package.json` to run them against.
-- **Scope confirmation:** integration into reporting jobs, dashboards, or persistence
-  (§4) remains explicitly deferred and is untouched by this addendum. No parent issue
-  closure, bulk GitHub mutation, destructive database operation, or secret rewrite was
-  performed.
-- **Rollback (implementation):** revert the two `.logic.ts`/`.logic.test.ts` files and
-  this addendum section; the design/contract documentation in Sections 1–8 stands
-  independently of the implementation and requires no rollback itself.
+## 10. Types Extraction Completion Evidence (Child issue #2438)
+
+- Implementing child issue: #2438, completing the `.types.ts` file anticipated by this
+  SDD's target module layout (§2). Parent issue #1935 remains open and is not closed by
+  this addendum.
+- Delivered files:
+  - `financeEngineUaeCorporate.types.ts` — the type surface (`UaeCorporateTaxCurrency`,
+    `UaeCorporateTaxRateTable`, `UaeCorporateTaxCalculationInput`,
+    `UaeCorporateTaxCalculationResult`), the frozen `DEFAULT_UAE_CORPORATE_TAX_RATE_TABLE`
+    constant, `UaeCorporateTaxValidationError`, and the `isUaeCorporateTaxCurrency` /
+    `isUaeCorporateTaxRateTable` type guards, extracted as a standalone module per
+    design decisions §3.2–§3.4.
+  - `financeEngineUaeCorporate.types.test.ts` — vitest tests with real behavior
+    assertions per the testing strategy in §5, adapted to the type-only scope of this
+    file (rate table shape/immutability, currency/rate-table type guards, validation
+    error subclassing, and typed usage of the input/result contracts).
+- Design decision resolved: the default rate table constant in
+  `DEFAULT_UAE_CORPORATE_TAX_RATE_TABLE` is now exported as `Object.freeze`-protected to
+  prevent accidental mutation of the shared module-level singleton by consumers, since
+  it is imported by reference rather than cloned per call. This is an additive
+  hardening of §3.2 and does not change its exported shape or version string.
+- This addendum does not modify `financeEngineUaeCorporate.logic.ts`; that file's
+  existing inline type definitions (if any) remain unchanged and continue to satisfy
+  its own module's compilation, per this task's instruction to preserve all existing
+  exports.
+- Rollback: revert `financeEngineUaeCorporate.types.ts` and
+  `financeEngineUaeCorporate.types.test.ts`. No other file currently imports from these
+  two files, so rollback carries no downstream runtime risk. Parent issue #1935 remains
+  open and unaffected.
