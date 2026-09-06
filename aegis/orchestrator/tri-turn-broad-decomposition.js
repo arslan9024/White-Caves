@@ -6,8 +6,105 @@ function normalize(value) {
     .trim();
 }
 
-function buildChildTask(parent, index, objective, included, excluded, candidateFiles = []) {
+function normalizeToken(value) {
+  return normalize(value)
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, ' ')
+    .trim();
+}
+
+function deriveTraceability(parent) {
+  const title = normalize(parent?.title);
+  const waveMatch = title.match(/\[WAVE[-_ ]?(\d+)[^\]]*\]/i);
+  const domainMatch = title.match(/\[WAVE[-_ ]?\d+[-_ ]([^\]]+)\]/i);
   const parentNumber = Number(parent?.number || 0);
+  const domain = (domainMatch?.[1] || 'GENERAL')
+    .replace(/[^a-zA-Z0-9]+/g, '-')
+    .replace(/^-+|-+$/g, '')
+    .toUpperCase();
+  const wave = waveMatch?.[1] || 'UNASSIGNED';
+  const key = `W${wave}-${domain}-${parentNumber}`;
+  return {
+    srsId: `SRS-ISSUE-${key}`,
+    sddId: `SDD-ISSUE-${key}`,
+    srsPath: `plans/implementation_handoffs/SRS-ISSUE-${key}.md`,
+    sddPath: `plans/implementation_handoffs/SDD-ISSUE-${key}.md`,
+    status: 'REQUIRED',
+  };
+}
+
+function analyzeCandidateFiles(candidateFiles, repositoryFiles = [], historicalIssues = []) {
+  const candidates = [
+    ...new Set(candidateFiles.map(file => String(file).replace(/\\/g, '/'))),
+  ].sort();
+  const existingFiles = new Set(repositoryFiles.map(file => String(file).replace(/\\/g, '/')));
+  const exactMatches = candidates.filter(file => existingFiles.has(file));
+  const normalizedCandidates = new Set(candidates.map(normalizeToken));
+  const relatedFiles = repositoryFiles.filter(file => {
+    const normalized = normalizeToken(file);
+    return [...normalizedCandidates].some(
+      candidate => candidate && (normalized.includes(candidate) || candidate.includes(normalized))
+    );
+  });
+  const issueMatches = historicalIssues.filter(issue => {
+    const issueText = normalizeToken(`${issue?.title || ''} ${issue?.body || ''}`);
+    return (
+      candidates.some(file => issueText.includes(normalizeToken(file))) ||
+      candidates.some(file => issueText.includes(normalizeToken(file.split('/').pop())))
+    );
+  });
+
+  let decision = 'UNIQUE';
+  if (exactMatches.length > 0) decision = 'REUSE_EXISTING';
+  else if (issueMatches.some(issue => String(issue?.state).toLowerCase() === 'closed'))
+    decision = 'REUSE_CLOSED';
+  else if (relatedFiles.length > 0 || issueMatches.length > 0) decision = 'REVIEW_REQUIRED';
+
+  return {
+    decision,
+    confidence: decision === 'UNIQUE' ? 1 : exactMatches.length > 0 ? 0.95 : 0.65,
+    exactMatches,
+    relatedFiles: [...new Set(relatedFiles)].sort(),
+    issueMatches: issueMatches.map(issue => ({
+      number: Number(issue?.number || 0),
+      state: issue?.state || 'unknown',
+      title: normalize(issue?.title),
+    })),
+  };
+}
+
+function buildFileBoundaries(candidateFiles, index) {
+  const files = [...new Set(candidateFiles)];
+  const boundaries = {
+    view: [],
+    logic: [],
+    styles: [],
+    data: [],
+    tests: [],
+    docs: [],
+  };
+  for (const file of files) {
+    if (/\.test\.(ts|tsx|js|jsx)$/.test(file)) boundaries.tests.push(file);
+    else if (/\.md$/.test(file)) boundaries.docs.push(file);
+    else if (/style|\.css$|\.scss$/.test(file)) boundaries.styles.push(file);
+    else if (/data|locale|\.json$/.test(file)) boundaries.data.push(file);
+    else if (/\.tsx$|components?\//.test(file)) boundaries.view.push(file);
+    else boundaries.logic.push(file);
+  }
+  return { ...boundaries, owner: `CHILD-${String(index).padStart(3, '0')}` };
+}
+
+function buildChildTask(
+  parent,
+  index,
+  objective,
+  included,
+  excluded,
+  candidateFiles = [],
+  analysis = {}
+) {
+  const parentNumber = Number(parent?.number || 0);
+  const traceability = analysis.traceability || deriveTraceability(parent);
   return {
     schemaVersion: '1.0.0',
     taskId: `ISSUE-${parentNumber}-CHILD-${String(index).padStart(3, '0')}`,
@@ -20,6 +117,10 @@ function buildChildTask(parent, index, objective, included, excluded, candidateF
     objective,
     scope: { included, excluded },
     candidateFiles,
+    fileBoundaries: buildFileBoundaries(candidateFiles, index),
+    traceability,
+    analysis: analysis.analysis || analyzeCandidateFiles(candidateFiles),
+    reusePlan: analysis.reusePlan || { action: 'NO_MATCH', references: [] },
     acceptanceCriteria: [
       'Implementation remains within the declared child scope.',
       'Focused tests and required validation commands pass.',
@@ -77,9 +178,22 @@ function resolveFeatureFolder(text) {
   return 'shared';
 }
 
-function decomposeBroadIssue(parent, limit = DEFAULT_CHILD_LIMIT) {
+function decomposeBroadIssue(parent, limit = DEFAULT_CHILD_LIMIT, options = {}) {
   const title = normalize(parent?.title);
   const text = `${title}\n${normalize(parent?.body)}`.toLowerCase();
+  const traceability = deriveTraceability(parent);
+  const analysisOptions = {
+    repositoryFiles: options.repositoryFiles || [],
+    historicalIssues: options.historicalIssues || [],
+  };
+  const taskAnalysis = candidateFiles => ({
+    traceability,
+    analysis: analyzeCandidateFiles(
+      candidateFiles,
+      analysisOptions.repositoryFiles,
+      analysisOptions.historicalIssues
+    ),
+  });
   const children = [];
 
   if (/expense|receipt|approval workflow/.test(text)) {
@@ -90,7 +204,8 @@ function decomposeBroadIssue(parent, limit = DEFAULT_CHILD_LIMIT) {
         'Define the typed expense-claim domain contract and pure validation rules.',
         ['domain types', 'pure validation', 'unit tests'],
         ['upload/storage', 'provider integration', 'approval mutations'],
-        ['src/features/finance/expenseClaims/expenseClaims.types.ts']
+        ['src/features/finance/expenseClaims/expenseClaims.types.ts'],
+        taskAnalysis(['src/features/finance/expenseClaims/expenseClaims.types.ts'])
       ),
       buildChildTask(
         parent,
@@ -98,7 +213,8 @@ function decomposeBroadIssue(parent, limit = DEFAULT_CHILD_LIMIT) {
         'Build the ExpenseClaim form and local receipt metadata validation.',
         ['four-way form UI', 'localized copy', 'local receipt metadata validation'],
         ['network upload', 'storage', 'approval mutations'],
-        ['src/features/finance/expenseClaims/ExpenseClaimForm.tsx']
+        ['src/features/finance/expenseClaims/ExpenseClaimForm.tsx'],
+        taskAnalysis(['src/features/finance/expenseClaims/ExpenseClaimForm.tsx'])
       ),
       buildChildTask(
         parent,
@@ -106,7 +222,8 @@ function decomposeBroadIssue(parent, limit = DEFAULT_CHILD_LIMIT) {
         'Define pure approval state transitions and authorization-ready contracts.',
         ['transition rules', 'pure tests', 'audit event contract'],
         ['persistence', 'payment dispatch', 'authorization middleware'],
-        ['src/features/finance/expenseClaims/expenseClaimApproval.logic.ts']
+        ['src/features/finance/expenseClaims/expenseClaimApproval.logic.ts'],
+        taskAnalysis(['src/features/finance/expenseClaims/expenseClaimApproval.logic.ts'])
       )
     );
   } else {
@@ -120,7 +237,8 @@ function decomposeBroadIssue(parent, limit = DEFAULT_CHILD_LIMIT) {
         `Define the smallest typed domain contract for: ${title}.`,
         ['domain contract', 'pure validation', 'unit tests'],
         ['external integrations', 'persistence mutations', 'parent closure'],
-        [`${basePath}/${slug}.types.ts`, `${basePath}/${slug}.types.test.ts`]
+        [`${basePath}/${slug}.types.ts`, `${basePath}/${slug}.types.test.ts`],
+        taskAnalysis([`${basePath}/${slug}.types.ts`, `${basePath}/${slug}.types.test.ts`])
       ),
       buildChildTask(
         parent,
@@ -128,7 +246,8 @@ function decomposeBroadIssue(parent, limit = DEFAULT_CHILD_LIMIT) {
         `Implement the bounded UI or service slice for: ${title}.`,
         ['single bounded implementation slice', 'focused tests'],
         ['unrelated modules', 'destructive migrations', 'parent closure'],
-        [`${basePath}/${slug}.logic.ts`, `${basePath}/${slug}.logic.test.ts`]
+        [`${basePath}/${slug}.logic.ts`, `${basePath}/${slug}.logic.test.ts`],
+        taskAnalysis([`${basePath}/${slug}.logic.ts`, `${basePath}/${slug}.logic.test.ts`])
       ),
       buildChildTask(
         parent,
@@ -136,7 +255,8 @@ function decomposeBroadIssue(parent, limit = DEFAULT_CHILD_LIMIT) {
         `Add integration and release validation for: ${title}.`,
         ['integration checks', 'documentation', 'release evidence'],
         ['new feature scope', 'parent closure'],
-        [`${basePath}/${slug}.contract.md`, `${basePath}/README.md`]
+        [`${basePath}/${slug}.contract.md`, `${basePath}/README.md`],
+        taskAnalysis([`${basePath}/${slug}.contract.md`, `${basePath}/README.md`])
       )
     );
   }
@@ -144,4 +264,12 @@ function decomposeBroadIssue(parent, limit = DEFAULT_CHILD_LIMIT) {
   return children.slice(0, Math.max(1, limit));
 }
 
-export { DEFAULT_CHILD_LIMIT, decomposeBroadIssue, resolveFeatureFolder, slugifyFeatureName };
+export {
+  DEFAULT_CHILD_LIMIT,
+  analyzeCandidateFiles,
+  buildFileBoundaries,
+  decomposeBroadIssue,
+  deriveTraceability,
+  resolveFeatureFolder,
+  slugifyFeatureName,
+};

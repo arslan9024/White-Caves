@@ -457,6 +457,51 @@ describe('tri-turn sovereign autopilot', () => {
     ).toBe(true);
   });
 
+  it('adds deterministic SRS/SDD traceability and disjoint boundaries to children', () => {
+    const children = autopilot.decomposeBroadIssue({
+      number: 1943,
+      title: '[WAVE-56-FINANCE-REPORT] Finance Engine — P&L, Balance Sheet, Trial Balance Reports',
+      body: 'Finance reporting with AED formatting',
+      html_url: 'https://github.com/arslan9024/White-Caves/issues/1943',
+    });
+
+    expect(children[0].traceability.srsId).toBe('SRS-ISSUE-W56-FINANCE-REPORT-1943');
+    expect(children[0].traceability.sddId).toBe('SDD-ISSUE-W56-FINANCE-REPORT-1943');
+    expect(children[0].traceability.status).toBe('REQUIRED');
+    expect(children.every(child => child.fileBoundaries.owner.startsWith('CHILD-'))).toBe(true);
+    expect(children[0].fileBoundaries.tests.length).toBeGreaterThan(0);
+  });
+
+  it('marks existing repository files and closed issue matches for reuse', () => {
+    const children = autopilot.decomposeBroadIssue(
+      {
+        number: 1943,
+        title: '[WAVE-56-FINANCE-REPORT] Finance Engine — P&L Reports',
+        body: 'Finance reporting',
+      },
+      3,
+      {
+        repositoryFiles: [
+          'src/features/finance/financeEngineReports/financeEngineReports.types.ts',
+        ],
+        historicalIssues: [
+          {
+            number: 1888,
+            state: 'closed',
+            title: 'Finance reports types',
+            body: 'financeEngineReports.types.ts',
+          },
+        ],
+      }
+    );
+
+    expect(children[0].analysis.decision).toBe('REUSE_EXISTING');
+    expect(children[0].analysis.exactMatches).toContain(
+      'src/features/finance/financeEngineReports/financeEngineReports.types.ts'
+    );
+    expect(children[0].analysis.issueMatches[0].number).toBe(1888);
+  });
+
   it('builds a non-interactive Copilot CLI invocation with tool allowances', () => {
     const invocation = autopilot.buildExecutorInvocation(
       'C:\\Tools\\copilot.cmd',

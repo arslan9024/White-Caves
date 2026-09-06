@@ -1,0 +1,103 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "AEGIS GitHub Issue Handoff",
+  "type": "object",
+  "required": [
+    "schemaVersion",
+    "issueNumber",
+    "issueUrl",
+    "title",
+    "objective",
+    "issueType",
+    "handoffState",
+    "priority",
+    "risk",
+    "planRequired",
+    "requiresApproval",
+    "acceptanceCriteria",
+    "candidateFiles",
+    "validationCommands",
+    "closurePolicy"
+  ],
+  "properties": {
+    "schemaVersion": { "type": "string" },
+    "issueNumber": { "type": "integer", "minimum": 1 },
+    "issueUrl": { "type": "string", "format": "uri" },
+    "title": { "type": "string", "minLength": 1 },
+    "objective": { "type": "string", "minLength": 1 },
+    "issueType": {
+      "enum": [
+        "local-fingerprint-fix",
+        "repository-feature",
+        "documentation",
+        "security-sensitive",
+        "external-blocked",
+        "needs-human-decision"
+      ]
+    },
+    "handoffState": {
+      "enum": [
+        "GITHUB_OPEN",
+        "ANALYZING",
+        "PLAN_READY",
+        "WAITING_FOR_APPROVAL",
+        "IMPLEMENTING",
+        "VALIDATING",
+        "EVIDENCE_READY",
+        "CLOSURE_READY",
+        "CLOSED",
+        "BLOCKED"
+      ]
+    },
+    "priority": { "enum": ["P0", "P1", "P2", "P3"] },
+    "risk": { "enum": ["low", "medium", "high"] },
+    "planRequired": { "type": "boolean" },
+    "requiresApproval": { "type": "boolean" },
+    "acceptanceCriteria": { "type": "array", "items": { "type": "string" } },
+    "candidateFiles": { "type": "array", "items": { "type": "string" } },
+    "traceability": {
+      "type": "object",
+      "properties": {
+        "srsId": { "type": "string" },
+        "sddId": { "type": "string" },
+        "srsPath": { "type": "string" },
+        "sddPath": { "type": "string" },
+        "status": { "enum": ["EXISTING", "REQUIRED", "APPROVAL_REQUIRED"] }
+      },
+      "required": ["srsId", "sddId", "status"]
+    },
+    "analysis": {
+      "type": "object",
+      "properties": {
+        "decision": {
+          "enum": [
+            "UNIQUE",
+            "DUPLICATE",
+            "REUSE_EXISTING",
+            "REUSE_CLOSED",
+            "MERGE_CANDIDATE",
+            "REVIEW_REQUIRED"
+          ]
+        },
+        "confidence": { "type": "number", "minimum": 0, "maximum": 1 },
+        "exactMatches": { "type": "array", "items": { "type": "string" } },
+        "relatedFiles": { "type": "array", "items": { "type": "string" } },
+        "issueMatches": { "type": "array" }
+      },
+      "required": ["decision", "confidence"]
+    },
+    "fileBoundaries": { "type": "object" },
+    "dependencies": { "type": "array", "items": { "type": "string" } },
+    "validationCommands": { "type": "array", "items": { "type": "string" } },
+    "closurePolicy": {
+      "type": "object",
+      "required": ["closeOnlyAfter", "parentIssueClosureAllowed"],
+      "properties": {
+        "closeOnlyAfter": { "type": "array", "items": { "type": "string" } },
+        "parentIssueClosureAllowed": { "type": "boolean" }
+      }
+    },
+    "source": { "type": "string" },
+    "createdAt": { "type": "string", "format": "date-time" }
+  }
+}

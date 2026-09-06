@@ -20,7 +20,12 @@ import {
   buildGitHubIssueHandoff,
   classifyGitHubIssue,
 } from './tri-turn-issue-handoff.js';
-import { decomposeBroadIssue } from './tri-turn-broad-decomposition.js';
+import {
+  analyzeCandidateFiles,
+  buildFileBoundaries,
+  decomposeBroadIssue,
+  deriveTraceability,
+} from './tri-turn-broad-decomposition.js';
 import { buildCompletionArtifact, validateCompletionEvidence } from './tri-turn-evidence.js';
 import { buildClosureComment, canCloseGitHubIssue } from './tri-turn-github-closure.js';
 import {
@@ -53,6 +58,12 @@ const EXECUTION_RESULT_PATH = path.join(
   'coding-executor-result.json'
 );
 const CHILD_TASKS_PATH = path.join(ROOT, 'logs', 'orchestrator', 'github-child-tasks.json');
+const DECOMPOSITION_ANALYSIS_PATH = path.join(
+  ROOT,
+  'logs',
+  'orchestrator',
+  'decomposition-analysis.json'
+);
 
 const DEFAULT_TURNS = ['docs-governance', 'frontend', 'backend'];
 const DEFAULT_QUOTA = 333;
@@ -228,6 +239,43 @@ function walkFiles(startDirs, extensions) {
 
 function rel(filePath) {
   return path.relative(ROOT, filePath).replace(/\\/g, '/');
+}
+
+function buildDecompositionRepositoryIndex() {
+  return walkFiles(
+    ['src', 'server', 'aegis', 'plans', 'docs', 'public'],
+    ['.ts', '.tsx', '.js', '.jsx', '.mjs', '.cjs', '.md', '.json', '.css', '.scss']
+  ).map(rel);
+}
+
+function buildDecompositionAnalysis(childTasks) {
+  const tasks = Array.isArray(childTasks) ? childTasks : [];
+  const ownership = new Map();
+  const overlaps = [];
+  for (const task of tasks) {
+    for (const file of task.candidateFiles || []) {
+      const previous = ownership.get(file);
+      if (previous) overlaps.push({ file, owners: [previous, task.taskId] });
+      ownership.set(file, task.taskId);
+    }
+  }
+  return {
+    schemaVersion: '1.0.0',
+    createdAt: new Date().toISOString(),
+    traceability: tasks[0]?.traceability || null,
+    childCount: tasks.length,
+    decisions: tasks.map(task => ({
+      taskId: task.taskId,
+      decision: task.analysis?.decision || 'REVIEW_REQUIRED',
+      confidence: task.analysis?.confidence || 0,
+      exactMatches: task.analysis?.exactMatches || [],
+      relatedFiles: task.analysis?.relatedFiles || [],
+      issueMatches: task.analysis?.issueMatches || [],
+    })),
+    ownership: [...ownership.entries()].map(([file, owner]) => ({ file, owner })),
+    overlaps,
+    status: overlaps.length > 0 ? 'REVIEW_REQUIRED' : 'ANALYZED',
+  };
 }
 
 function lineIssues(content, regex, mapper) {
@@ -2058,14 +2106,19 @@ async function runCycle(options, cycleNumber) {
           !reconciledParents.has(Number(issue.number))
       );
       if (options.decomposeBroad && broadParent) {
-        const childTasks = decomposeBroadIssue(broadParent, 3);
+        const childTasks = decomposeBroadIssue(broadParent, 3, {
+          repositoryFiles: buildDecompositionRepositoryIndex(),
+          historicalIssues: fetchedIssues,
+        });
         writeJson(CHILD_TASKS_PATH, {
           parentIssueNumber: broadParent.number,
           parentIssueUrl: broadParent.html_url,
           parentState: 'open',
           childTasks,
+          analysis: buildDecompositionAnalysis(childTasks),
           createdAt: new Date().toISOString(),
         });
+        writeJson(DECOMPOSITION_ANALYSIS_PATH, buildDecompositionAnalysis(childTasks));
         console.log(
           `🧩 [DECOMPOSE] Parent #${broadParent.number} decomposed into ${childTasks.length} bounded child tasks.`
         );
@@ -2084,6 +2137,15 @@ async function runCycle(options, cycleNumber) {
               `## Excluded\n${child.scope.excluded.map(item => `- ${item}`).join('\n')}`,
               '',
               `## Candidate files\n${child.candidateFiles.map(file => `- \`${file}\``).join('\n')}`,
+              '',
+              `## Traceability\n- SRS: \`${child.traceability.srsId}\` (${child.traceability.status})\n- SDD: \`${child.traceability.sddId}\` (${child.traceability.status})\n- SRS packet: \`${child.traceability.srsPath}\`\n- SDD packet: \`${child.traceability.sddPath}\``,
+              '',
+              `## Decomposition analysis\n- Decision: **${child.analysis.decision}**\n- Confidence: **${child.analysis.confidence}**\n- Existing matches: ${child.analysis.exactMatches.join(', ') || 'none'}\n- Related files: ${child.analysis.relatedFiles.join(', ') || 'none'}\n- Historical issues: ${child.analysis.issueMatches.map(match => `#${match.number} (${match.state})`).join(', ') || 'none'}`,
+              '',
+              `## File boundaries\n${Object.entries(child.fileBoundaries)
+                .filter(([key]) => key !== 'owner')
+                .map(([key, files]) => `- ${key}: ${files.join(', ') || 'none'}`)
+                .join('\n')}`,
               '',
               `## Acceptance criteria\n${child.acceptanceCriteria.map(item => `- [ ] ${item}`).join('\n')}`,
               '',
@@ -2126,14 +2188,19 @@ async function runCycle(options, cycleNumber) {
       } else if (options.autoChain && !options.dryRun && broadParent) {
         // One-command autopilot: decompose the broad parent and publish its children
         // inline, then continue into the serial solve of those children.
-        const childTasks = decomposeBroadIssue(broadParent, 3);
+        const childTasks = decomposeBroadIssue(broadParent, 3, {
+          repositoryFiles: buildDecompositionRepositoryIndex(),
+          historicalIssues: allIssues,
+        });
         writeJson(CHILD_TASKS_PATH, {
           parentIssueNumber: broadParent.number,
           parentIssueUrl: broadParent.html_url,
           parentState: 'open',
           childTasks,
+          analysis: buildDecompositionAnalysis(childTasks),
           createdAt: new Date().toISOString(),
         });
+        writeJson(DECOMPOSITION_ANALYSIS_PATH, buildDecompositionAnalysis(childTasks));
         console.log(
           `🧩 [AUTOCHAIN] Parent #${broadParent.number} decomposed into ${childTasks.length} bounded child tasks.`
         );
@@ -2249,6 +2316,15 @@ async function runCycle(options, cycleNumber) {
             `## Excluded\n${child.scope.excluded.map(item => `- ${item}`).join('\n')}`,
             '',
             `## Candidate files\n${child.candidateFiles.map(file => `- \`${file}\``).join('\n')}`,
+            '',
+            `## Traceability\n- SRS: \`${child.traceability.srsId}\` (${child.traceability.status})\n- SDD: \`${child.traceability.sddId}\` (${child.traceability.status})\n- SRS packet: \`${child.traceability.srsPath}\`\n- SDD packet: \`${child.traceability.sddPath}\``,
+            '',
+            `## Decomposition analysis\n- Decision: **${child.analysis.decision}**\n- Confidence: **${child.analysis.confidence}**\n- Existing matches: ${child.analysis.exactMatches.join(', ') || 'none'}\n- Related files: ${child.analysis.relatedFiles.join(', ') || 'none'}\n- Historical issues: ${child.analysis.issueMatches.map(match => `#${match.number} (${match.state})`).join(', ') || 'none'}`,
+            '',
+            `## File boundaries\n${Object.entries(child.fileBoundaries)
+              .filter(([key]) => key !== 'owner')
+              .map(([key, files]) => `- ${key}: ${files.join(', ') || 'none'}`)
+              .join('\n')}`,
             '',
             `## Acceptance criteria\n${child.acceptanceCriteria.map(item => `- [ ] ${item}`).join('\n')}`,
             '',
@@ -2623,7 +2699,10 @@ export {
   buildValidationCommands,
   buildGitHubIssueHandoff,
   buildChildImplementationTask,
+  analyzeCandidateFiles,
+  buildFileBoundaries,
   decomposeBroadIssue,
+  deriveTraceability,
   classifyGitHubIssue,
   buildCompletionArtifact,
   buildClosureComment,
