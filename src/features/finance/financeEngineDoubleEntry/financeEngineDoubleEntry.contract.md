@@ -1,7 +1,8 @@
 # Finance Engine — Double Entry Contract
 
 - **Module**: `src/features/finance/financeEngineDoubleEntry`
-- **Issue**: #2479 (child of parent #1926 — "SRS/SDD: W56 Finance Ledger")
+- **Issue**: #2478 (child of parent #1926 — "SRS/SDD: W56 Finance Ledger"); tracked alongside
+  sibling child issue #2479 covering the same double-entry engine scope.
 - **Status**: Draft contract — implementation scaffolding tracked separately; this document is the
   authoritative behavioral contract that any concrete TypeScript implementation and its vitest
   suite MUST satisfy.
@@ -155,7 +156,7 @@ behavior (no placeholder `expect(true).toBe(true)`). Minimum required coverage:
 ## 8. Traceability
 
 - Parent issue: #1926
-- Child issue: #2479
+- Child issue: #2478 (this document; sibling scope #2479 covers the same engine)
 - Related handoff documents:
   - `plans/implementation_handoffs/SRS-ISSUE-W56-FINANCE-LEDGER-1926.md`
   - `plans/implementation_handoffs/SDD-ISSUE-W56-FINANCE-LEDGER-1926.md`

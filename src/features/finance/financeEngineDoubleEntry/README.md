@@ -3,7 +3,7 @@
 Double-entry bookkeeping engine for the White Caves finance/ledger subsystem.
 
 - **Parent issue**: #1926 (SRS/SDD: W56 Finance Ledger)
-- **Child issue**: #2479 (this scope)
+- **Child issue**: #2478 (this scope; sibling scope #2479 covers the same double-entry engine)
 - **Behavioral contract**: [`financeEngineDoubleEntry.contract.md`](./financeEngineDoubleEntry.contract.md)
 
 ## What this module is
@@ -48,6 +48,24 @@ coverage enumerated in section 6 of that document.
 - Bulk GitHub mutation.
 - Destructive database operations.
 - Production secret rewrites.
+
+## Completion evidence
+
+- This child scope (#2478) is documentation-only: it defines/refines the behavioral contract in
+  `financeEngineDoubleEntry.contract.md` and this README. No TypeScript source, no test files, and
+  no dependency manifests were added or modified.
+- Validation performed for this scope: manual review confirming (a) both files exist at the exact
+  paths declared for issue #2478, (b) all invariants, required operations, error-handling rules,
+  and the 10-point test contract in section 6 of the contract doc are internally consistent and
+  unambiguous, (c) no exported TypeScript symbols exist yet to preserve, so none were dropped, and
+  (d) scope boundaries (no parent closure, no bulk GitHub mutation, no destructive DB operations,
+  no secret rewrites) are respected — see "Scope boundaries" above.
+- Because no `.ts`/`.tsx` files are introduced by this scope, there are no vitest suites or
+  `tsc`/lint commands to run here; the required vitest coverage (section 6 of the contract) is
+  deferred to the follow-up implementation child issue that adds the concrete engine module.
+- Parent issue #1926 remains open; this child issue's documentation is one of several sibling
+  scopes (including #2479) that must all be reconciled before any parent-level closure is
+  considered — which is explicitly out of scope here.
 
 ## Rollback
 
