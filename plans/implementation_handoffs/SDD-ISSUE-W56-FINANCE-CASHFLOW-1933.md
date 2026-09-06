@@ -153,3 +153,36 @@ or the companion SRS, which remain independently valid.
   rewrites).
 - Parent issue #1933 remains open pending reconciliation of all
   sibling child issues.
+
+## 11. Addendum — child issue #2448 (types module design)
+
+- Child issue #2448 (parent #1933) introduced
+  `financeEngineRollingMonth.types.ts` as a pure, dependency-free
+  module: plain constants (`MIN_ROLLING_MONTH_DAY_SPAN`,
+  `MAX_ROLLING_MONTH_DAY_SPAN`, `MS_PER_DAY`), the `RollingMonthWindow`
+  interface (now including `daySpan`, closing FR-3 at the type layer),
+  and a small set of runtime validators.
+- Design rationale: `validateRollingMonthWindow` returns a discriminated
+  `RollingMonthValidationResult` (`{ valid: true }` or
+  `{ valid: false; reason: string }`) instead of throwing, so that
+  boundary validation (e.g. of persisted/transmitted data) can report a
+  specific failure reason for diagnostics without forcing callers into
+  try/catch; `isRollingMonthWindow` is layered on top as a plain
+  boolean type guard for call sites that only need narrowing. This
+  mirrors the existing module's preference for pure, exception-light
+  functions (Section 5) while keeping the throwing style
+  (`computeDaySpan`) only where an invalid _primitive_ argument (not a
+  candidate composite object) is passed directly.
+- `computeDaySpan` is exported standalone (not only as a
+  `validateRollingMonthWindow` internal) so the logic module can reuse
+  the exact same day-span derivation formula
+  (`Math.round((end - start) / MS_PER_DAY)`) described in Section 3
+  (FR-3), avoiding drift between the two modules.
+- No files outside
+  `src/features/finance/financeEngineRollingMonth/` and
+  `plans/implementation_handoffs/` were touched, consistent with the
+  excluded scope for #2448 (no parent closure, no bulk GitHub
+  mutation, no destructive database operations, no production secret
+  rewrites).
+- Parent issue #1933 remains open pending reconciliation of all
+  sibling child issues.

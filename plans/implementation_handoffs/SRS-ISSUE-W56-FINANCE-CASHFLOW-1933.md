@@ -124,3 +124,32 @@ README, which remain independently valid.
   rewrites) was fully respected — this addendum is documentation-only.
 - Parent issue #1933 remains open pending reconciliation of all
   sibling child issues.
+
+## 11. Addendum — child issue #2448 (types module)
+
+- Child issue #2448 (parent #1933) added a dedicated, implementation-free
+  types module,
+  `src/features/finance/financeEngineRollingMonth/financeEngineRollingMonth.types.ts`,
+  plus its colocated vitest suite
+  `financeEngineRollingMonth.types.test.ts`.
+- The types module formalizes FR-3's `daySpan` field (previously deferred
+  under sibling issues #2451/#2452) as part of the `RollingMonthWindow`
+  interface, and adds pure runtime validators
+  (`isValidRollingMonthAnchorDay`, `isValidIsoDateString`,
+  `computeDaySpan`, `validateRollingMonthWindow`,
+  `isRollingMonthWindow`) so values crossing serialization boundaries
+  (e.g. persisted or transmitted windows) can be checked without
+  duplicating logic already owned by
+  `financeEngineRollingMonth.logic.ts`.
+- This satisfies FR-3 and reinforces FR-5 (rejecting invalid input) at
+  the type/validation layer; FR-1, FR-2, and FR-4 remain the
+  responsibility of the logic module and are unchanged by this
+  addendum.
+- No files outside
+  `src/features/finance/financeEngineRollingMonth/` and
+  `plans/implementation_handoffs/` were touched, consistent with the
+  excluded scope for #2448 (no parent closure, no bulk GitHub
+  mutation, no destructive database operations, no production secret
+  rewrites).
+- Parent issue #1933 remains open pending reconciliation of all
+  sibling child issues.
