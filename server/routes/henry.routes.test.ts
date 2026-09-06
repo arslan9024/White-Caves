@@ -561,6 +561,45 @@ describe('Henry routes — OCR and AI extract', () => {
     expect([500, 503]).toContain(res.status);
     expect(res.body.success).toBe(false);
   });
+
+  it('POST /ai/extract returns structured fields for passport, title deed, and tenancy contract', async () => {
+    const app = await createApp();
+    const fetchMock = vi.spyOn(globalThis, 'fetch').mockResolvedValue({
+      ok: true,
+      json: async () => ({
+        response: JSON.stringify({
+          passportNumber: 'A12345678',
+          certificateNumber: 'TD-90871',
+          tenantName: 'Aisha Noor',
+          confidence: 0.92,
+        }),
+      }),
+    } as Response);
+
+    const passportRes = await request(app)
+      .post('/api/henry/ai/extract')
+      .send({ text: 'Passport No: A12345678', templateKey: 'passport' });
+    const titleDeedRes = await request(app)
+      .post('/api/henry/ai/extract')
+      .send({ text: 'Title Deed Certificate: TD-90871', templateKey: 'title_deed' });
+    const contractRes = await request(app)
+      .post('/api/henry/ai/extract')
+      .send({
+        text: 'Tenancy Contract between landlord and Aisha Noor',
+        templateKey: 'tenancy_contract',
+      });
+
+    for (const res of [passportRes, titleDeedRes, contractRes]) {
+      expect(res.status).toBe(200);
+      expect(res.body.success).toBe(true);
+      expect(res.body.data.provider).toBe('ollama');
+      expect(res.body.data.confidence).toBe(0.6);
+    }
+    expect(passportRes.body.data.fields.passportNumber).toBe('A12345678');
+    expect(titleDeedRes.body.data.fields.certificateNumber).toBe('TD-90871');
+    expect(contractRes.body.data.fields.tenantName).toBe('Aisha Noor');
+    expect(fetchMock).toHaveBeenCalledTimes(3);
+  });
 });
 
 describe('Henry routes — orchestrator trigger and event log', () => {
@@ -739,19 +778,21 @@ describe('Henry routes — AI draft, Ejari submit, translate', () => {
 
   it('POST /documents/save saves document extracted payload and returns 200', async () => {
     const app = await createApp();
-    const res = await request(app).post('/api/henry/documents/save').send({
-      docType: 'emirates_id',
-      title: 'Emirates ID - Khalif Mohamednur',
-      clientName: 'Khalif Mohamednur Ibrahim',
-      referenceNumber: '784-1984-5852080-0',
-      extractedJson: {
-        idNumber: '784-1984-5852080-0',
-        cardNumber: '146532347',
-        nationalityEn: 'Kenya',
-      },
-      confidenceScore: 1.0,
-      scannedSide: 'both',
-    });
+    const res = await request(app)
+      .post('/api/henry/documents/save')
+      .send({
+        docType: 'emirates_id',
+        title: 'Emirates ID - Khalif Mohamednur',
+        clientName: 'Khalif Mohamednur Ibrahim',
+        referenceNumber: '784-1984-5852080-0',
+        extractedJson: {
+          idNumber: '784-1984-5852080-0',
+          cardNumber: '146532347',
+          nationalityEn: 'Kenya',
+        },
+        confidenceScore: 1.0,
+        scannedSide: 'both',
+      });
 
     expect(res.status).toBe(200);
     expect(res.body.success).toBe(true);
@@ -776,5 +817,64 @@ describe('Henry routes — AI draft, Ejari submit, translate', () => {
     expect(singleRes.status).toBe(200);
     expect(singleRes.body.success).toBe(true);
     expect(singleRes.body.data.referenceNumber).toBe('784-1984-5852080-0');
+  });
+
+  it('POST /documents/save supports passport, title deed, and tenancy contract extraction records', async () => {
+    const app = await createApp();
+
+    const passportSave = await request(app)
+      .post('/api/henry/documents/save')
+      .send({
+        docType: 'passport',
+        title: 'Passport - Aisha Noor',
+        clientName: 'Aisha Noor',
+        extractedJson: { passportNumber: 'P-7788991' },
+        confidenceScore: 0.95,
+      });
+    expect(passportSave.status).toBe(200);
+    expect(passportSave.body.success).toBe(true);
+    expect(passportSave.body.data.referenceNumber).toBe('P-7788991');
+
+    const titleDeedSave = await request(app)
+      .post('/api/henry/documents/save')
+      .send({
+        docType: 'title_deed',
+        title: 'Title Deed - Marina View',
+        clientName: 'Omar Khaled',
+        extractedJson: { certificateNumber: 'TD-50011' },
+        confidenceScore: 0.91,
+      });
+    expect(titleDeedSave.status).toBe(200);
+    expect(titleDeedSave.body.success).toBe(true);
+    expect(titleDeedSave.body.data.referenceNumber).toBe('TD-50011');
+
+    const contractSave = await request(app)
+      .post('/api/henry/documents/save')
+      .send({
+        docType: 'tenancy_contract',
+        title: 'Tenancy Contract - Unit 1802',
+        clientName: 'Sara Ahmed',
+        referenceNumber: 'TC-2026-113',
+        extractedJson: { tenantName: 'Sara Ahmed' },
+        confidenceScore: 0.89,
+      });
+    expect(contractSave.status).toBe(200);
+    expect(contractSave.body.success).toBe(true);
+    expect(contractSave.body.data.referenceNumber).toBe('TC-2026-113');
+
+    const passportLatest = await request(app).get('/api/henry/documents/latest/passport');
+    expect(passportLatest.status).toBe(200);
+    expect(passportLatest.body.success).toBe(true);
+    expect(passportLatest.body.data.clientName).toBe('Aisha Noor');
+
+    const titleDeedLatest = await request(app).get('/api/henry/documents/latest/title_deed');
+    expect(titleDeedLatest.status).toBe(200);
+    expect(titleDeedLatest.body.success).toBe(true);
+    expect(titleDeedLatest.body.data.clientName).toBe('Omar Khaled');
+
+    const contractLatest = await request(app).get('/api/henry/documents/latest/tenancy_contract');
+    expect(contractLatest.status).toBe(200);
+    expect(contractLatest.body.success).toBe(true);
+    expect(contractLatest.body.data.clientName).toBe('Sara Ahmed');
   });
 });
