@@ -359,6 +359,23 @@ describe('tri-turn sovereign autopilot', () => {
     expect(optedOut.autoChain).toBe(false);
   });
 
+  it('parses git workflow flags with safe defaults', () => {
+    const originalArgv = process.argv;
+    process.argv = ['node', 'runner', '--autopilot'];
+    const defaults = autopilot.parseArgs();
+    expect(defaults.gitWorkflow).toBe(false);
+    expect(defaults.gitPush).toBe(false);
+    expect(defaults.baseBranch).toBe('main');
+
+    process.argv = ['node', 'runner', '--autopilot', '--git-push', '--base-branch=develop'];
+    const enabled = autopilot.parseArgs();
+    process.argv = originalArgv;
+
+    expect(enabled.gitWorkflow).toBe(true);
+    expect(enabled.gitPush).toBe(true);
+    expect(enabled.baseBranch).toBe('develop');
+  });
+
   it('decomposes an expense parent into bounded child tasks', () => {
     const children = autopilot.decomposeBroadIssue({
       number: 1932,

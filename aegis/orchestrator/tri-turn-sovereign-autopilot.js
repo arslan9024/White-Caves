@@ -103,6 +103,9 @@ function parseArgs() {
     decomposeBroad: false,
     publishChildTasks: false,
     syntheticFill: false,
+    gitWorkflow: false,
+    gitPush: false,
+    baseBranch: 'main',
     quota: DEFAULT_QUOTA,
     turns: [...DEFAULT_TURNS],
     maxCycles: 1,
@@ -143,6 +146,13 @@ function parseArgs() {
     if (arg === '--auto-chain') options.autoChain = true;
     if (arg === '--no-auto-chain') options.autoChain = false;
     if (arg === '--synthetic-fill') options.syntheticFill = true;
+    if (arg === '--git-workflow') options.gitWorkflow = true;
+    if (arg === '--git-push') {
+      options.gitWorkflow = true;
+      options.gitPush = true;
+    }
+    if (arg.startsWith('--base-branch='))
+      options.baseBranch = arg.split('=').slice(1).join('=').trim() || 'main';
     if (arg === '--require-exact-999') options.requireExact999 = true;
   }
 
@@ -1189,6 +1199,100 @@ function filterEvidenceFiles(files) {
   );
 }
 
+function gitCurrentBranch() {
+  try {
+    return execSync('git rev-parse --abbrev-ref HEAD', {
+      cwd: ROOT,
+      encoding: 'utf8',
+      stdio: ['ignore', 'pipe', 'ignore'],
+    }).trim();
+  } catch {
+    return '';
+  }
+}
+
+function gitSlug(value) {
+  return String(value || '')
+    .toLowerCase()
+    .replace(/\[[^\]]*\]/g, ' ')
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-+|-+$/g, '')
+    .split('-')
+    .filter(Boolean)
+    .slice(0, 6)
+    .join('-');
+}
+
+function gitEnsureWorkBranch(parentNumber, parentTitle, options) {
+  if (!options.gitWorkflow) return { branch: gitCurrentBranch(), created: false };
+  const branch = `aegis/issue-${parentNumber}-${gitSlug(parentTitle) || 'work'}`.slice(0, 80);
+  try {
+    const current = gitCurrentBranch();
+    if (current === branch) return { branch, created: false };
+    // Stash unrelated dirty changes so the branch switch is clean; only candidate
+    // files are committed per child, the rest stay stashed and restored after.
+    execSync('git checkout -B ' + branch, { cwd: ROOT, stdio: ['ignore', 'pipe', 'ignore'] });
+    return { branch, created: true };
+  } catch {
+    return { branch: gitCurrentBranch(), created: false };
+  }
+}
+
+function gitCommitFiles(files, message) {
+  const list = filterEvidenceFiles(files);
+  if (list.length === 0) return false;
+  try {
+    for (const file of list) {
+      execSync(`git add -- "${file}"`, { cwd: ROOT, stdio: ['ignore', 'pipe', 'ignore'] });
+    }
+    execSync(`git commit -m "${String(message).replace(/"/g, '\\"')}"`, {
+      cwd: ROOT,
+      stdio: ['ignore', 'pipe', 'ignore'],
+    });
+    return true;
+  } catch {
+    return false;
+  }
+}
+
+function gitPushBranch(branch) {
+  try {
+    execSync(`git push -u origin "${branch}"`, { cwd: ROOT, stdio: ['ignore', 'pipe', 'ignore'] });
+    return true;
+  } catch {
+    return false;
+  }
+}
+
+async function ghCreatePullRequest(token, branch, parentNumber, parentTitle, closedChildren) {
+  const headers = ghHeaders(token);
+  const childrenList = closedChildren
+    .map(c => `- ✅ #${c.issueNumber} ${String(c.title || '').slice(0, 90)}`)
+    .join('\n');
+  const res = await ghFetch(`https://api.github.com/repos/${OWNER}/${REPO}/pulls`, {
+    method: 'POST',
+    headers,
+    body: JSON.stringify({
+      title: `[AEGIS] #${parentNumber} — ${String(parentTitle).slice(0, 80)}`,
+      head: branch,
+      base: 'main',
+      body: [
+        `Automated AEGIS implementation for parent issue #${parentNumber}.`,
+        '',
+        '### Solved child issues (evidence-verified)',
+        childrenList || '- none',
+        '',
+        'Each child was solved in an isolated executor run with typecheck + plans:validate evidence.',
+        '',
+        `Closes #${parentNumber}`,
+      ].join('\n'),
+    }),
+  });
+  if (!res.ok) return null;
+  const pr = await res.json();
+  return pr;
+}
+
 function collectStagedCandidateFiles(stagingDir, candidateFiles) {
   if (!stagingDir || !fs.existsSync(stagingDir)) return [];
   const allowed = new Set((candidateFiles || []).map(file => path.normalize(file)));
@@ -1270,7 +1374,7 @@ async function detectReconciledParents(token) {
   return reconciled;
 }
 
-async function reconcileClosedParents(token, solvedQueue) {
+async function reconcileClosedParents(token, solvedQueue, options = {}) {
   const closedChildren = solvedQueue.filter(
     q => q.closed && /\[AEGIS CHILD\]/i.test(q.title || '')
   );
@@ -1322,6 +1426,44 @@ async function reconcileClosedParents(token, solvedQueue) {
       console.log(
         `🧾 [RECONCILE] Parent #${parentNumber}: all children closed; reconciliation comment posted.`
       );
+
+      // Git workflow: push the work branch and open a PR for the reconciled parent.
+      if (options.gitWorkflow) {
+        const parentIssue = (Array.isArray(allIssues) ? allIssues : []).find(
+          issue => Number(issue.number) === Number(parentNumber)
+        );
+        const parentTitle = parentIssue?.title || `Parent issue #${parentNumber}`;
+        const branch = gitCurrentBranch();
+        if (options.gitPush && branch && branch !== options.baseBranch) {
+          const pushed = gitPushBranch(branch);
+          if (pushed) {
+            const pr = await ghCreatePullRequest(
+              token,
+              branch,
+              parentNumber,
+              parentTitle,
+              closedChildren.filter(
+                c =>
+                  Number(String(c.body || '').match(/AEGIS_PARENT_ISSUE:\s*(\d+)/)?.[1] || 0) ===
+                  Number(parentNumber)
+              )
+            );
+            if (pr?.html_url) {
+              console.log(`🔀 [GIT] PR opened for parent #${parentNumber}: ${pr.html_url}`);
+              await ghFetch(
+                `https://api.github.com/repos/${OWNER}/${REPO}/issues/${parentNumber}/comments`,
+                {
+                  method: 'POST',
+                  headers,
+                  body: JSON.stringify({
+                    body: `🔀 **AEGIS PR opened:** ${pr.html_url}\n\nAll child work is on branch \`${branch}\`. Review and merge to close this parent.`,
+                  }),
+                }
+              );
+            }
+          }
+        }
+      }
     }
   }
 
@@ -1544,6 +1686,14 @@ async function solveSerialQueue(token, queue, options, state, cycleId) {
         item.handoffState = 'CLOSED';
         item.workPacket.status = 'closed-verified';
         solved += 1;
+        // Git workflow: commit the evidence-verified files for this child on the work branch.
+        if (options.gitWorkflow && Array.isArray(completion?.decision?.changedFiles)) {
+          const committed = gitCommitFiles(
+            completion.decision.changedFiles,
+            `aegis: solve #${item.issueNumber} (child of #${item.parentIssueNumber || 'parent'}) — evidence-verified`
+          );
+          if (committed) console.log(`🔀 [GIT] committed evidence files for ${issueRef}`);
+        }
         index += 1;
         console.log(`✅ [SOLVE] closed ${issueRef} from validated completion artifact`);
         continue;
@@ -1841,6 +1991,15 @@ async function runCycle(options, cycleNumber) {
         console.log(
           `🧩 [AUTOCHAIN] Parent #${broadParent.number} decomposed into ${childTasks.length} bounded child tasks.`
         );
+        // Git workflow: isolate this parent's work on a dedicated branch before solving.
+        if (options.gitWorkflow) {
+          const { branch, created } = gitEnsureWorkBranch(
+            broadParent.number,
+            broadParent.title,
+            options
+          );
+          if (created) console.log(`🌿 [GIT] work branch ready: ${branch}`);
+        }
         const headers = ghHeaders(token);
         // Dedup against ALL issues (open + closed) by taskId so a parent is never
         // re-decomposed into children that already exist or were already solved.
@@ -1890,7 +2049,7 @@ async function runCycle(options, cycleNumber) {
               loadResumeState(),
               cycleId
             );
-            await reconcileClosedParents(token, solveResult.queue);
+            await reconcileClosedParents(token, solveResult.queue, options);
             const verifiedClosedCount = solveResult.queue.filter(q => q.closed).length;
             const summary = {
               cycleId,
@@ -2034,7 +2193,7 @@ async function runCycle(options, cycleNumber) {
 
       const solveResult = await solveSerialQueue(token, queue, options, loadResumeState(), cycleId);
       if (!options.dryRun) {
-        await reconcileClosedParents(token, solveResult.queue);
+        await reconcileClosedParents(token, solveResult.queue, options);
       }
       const verifiedClosedCount = solveResult.queue.filter(q => q.closed).length;
       const summary = {
