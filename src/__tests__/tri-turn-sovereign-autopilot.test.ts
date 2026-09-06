@@ -346,6 +346,19 @@ describe('tri-turn sovereign autopilot', () => {
     expect(options.executorTimeoutMs).toBe(120000);
   });
 
+  it('defaults autoChain on and honors the opt-out flag', () => {
+    const originalArgv = process.argv;
+    process.argv = ['node', 'runner', '--autopilot'];
+    const defaults = autopilot.parseArgs();
+    expect(defaults.autoChain).toBe(true);
+
+    process.argv = ['node', 'runner', '--autopilot', '--no-auto-chain'];
+    const optedOut = autopilot.parseArgs();
+    process.argv = originalArgv;
+
+    expect(optedOut.autoChain).toBe(false);
+  });
+
   it('decomposes an expense parent into bounded child tasks', () => {
     const children = autopilot.decomposeBroadIssue({
       number: 1932,

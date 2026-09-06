@@ -98,6 +98,7 @@ function parseArgs() {
     executor: 'chat',
     maxIssues: 1,
     childOnly: false,
+    autoChain: true,
     executorTimeoutMs: 900000,
     decomposeBroad: false,
     publishChildTasks: false,
@@ -139,6 +140,8 @@ function parseArgs() {
       options.executorTimeoutMs = Math.max(1000, Number(arg.split('=')[1]) || 900000);
     if (arg === '--decompose-broad') options.decomposeBroad = true;
     if (arg === '--publish-child-tasks') options.publishChildTasks = true;
+    if (arg === '--auto-chain') options.autoChain = true;
+    if (arg === '--no-auto-chain') options.autoChain = false;
     if (arg === '--synthetic-fill') options.syntheticFill = true;
     if (arg === '--require-exact-999') options.requireExact999 = true;
   }
@@ -1223,6 +1226,64 @@ async function hydrateChildScopeFromParent(item, handoff, token) {
   return handoff;
 }
 
+async function reconcileClosedParents(token, solvedQueue) {
+  const closedChildren = solvedQueue.filter(
+    q => q.closed && /\[AEGIS CHILD\]/i.test(q.title || '')
+  );
+  if (closedChildren.length === 0 || !token) return [];
+
+  const headers = ghHeaders(token);
+  const reconciled = [];
+  const parentNumbers = [
+    ...new Set(
+      closedChildren
+        .map(q => Number(String(q.body || '').match(/AEGIS_PARENT_ISSUE:\s*(\d+)/)?.[1] || 0))
+        .filter(n => n > 0)
+    ),
+  ];
+
+  for (const parentNumber of parentNumbers) {
+    const childListRes = await ghFetch(
+      `https://api.github.com/repos/${OWNER}/${REPO}/issues?state=all&per_page=100`,
+      { method: 'GET', headers }
+    );
+    if (!childListRes.ok) continue;
+    const allIssues = await childListRes.json();
+    const siblings = (Array.isArray(allIssues) ? allIssues : []).filter(
+      issue =>
+        !issue.pull_request &&
+        String(issue.body || '').includes(`AEGIS_PARENT_ISSUE: ${parentNumber}`)
+    );
+    const openSiblings = siblings.filter(issue => issue.state === 'open');
+
+    if (openSiblings.length === 0 && siblings.length > 0) {
+      await ghFetch(
+        `https://api.github.com/repos/${OWNER}/${REPO}/issues/${parentNumber}/comments`,
+        {
+          method: 'POST',
+          headers,
+          body: JSON.stringify({
+            body: [
+              '✅ **AEGIS child reconciliation complete**',
+              '',
+              `All ${siblings.length} child tasks for this parent were solved and closed with verified evidence.`,
+              '',
+              '- Parent remains open for final human review/close (parent closure is never automated).',
+              `- Reconciled at: ${new Date().toISOString()}`,
+            ].join('\n'),
+          }),
+        }
+      );
+      reconciled.push(parentNumber);
+      console.log(
+        `🧾 [RECONCILE] Parent #${parentNumber}: all children closed; reconciliation comment posted.`
+      );
+    }
+  }
+
+  return reconciled;
+}
+
 function runPerIssueValidation() {
   const commands = buildValidationCommands();
 
@@ -1702,7 +1763,7 @@ async function runCycle(options, cycleNumber) {
           );
         }
 
-        if (options.dryRun || options.decomposeBroad) {
+        if (options.dryRun || (options.decomposeBroad && !options.autoChain)) {
           return {
             phase: PHASES.HALTED_DISCOVERY_INCOMPLETE,
             missing: 0,
@@ -1715,6 +1776,59 @@ async function runCycle(options, cycleNumber) {
           };
         }
         liveIssues = fetchedIssues;
+      } else if (options.autoChain && !options.dryRun && broadParent) {
+        // One-command autopilot: decompose the broad parent and publish its children
+        // inline, then continue into the serial solve of those children.
+        const childTasks = decomposeBroadIssue(broadParent, 3);
+        writeJson(CHILD_TASKS_PATH, {
+          parentIssueNumber: broadParent.number,
+          parentIssueUrl: broadParent.html_url,
+          parentState: 'open',
+          childTasks,
+          createdAt: new Date().toISOString(),
+        });
+        console.log(
+          `🧩 [AUTOCHAIN] Parent #${broadParent.number} decomposed into ${childTasks.length} bounded child tasks.`
+        );
+        const headers = ghHeaders(token);
+        for (const child of childTasks) {
+          const childTitle = `[AEGIS CHILD] #${broadParent.number} — ${child.taskId} — ${child.objective}`;
+          const childBody = [
+            `Parent issue: #${broadParent.number}`,
+            '',
+            `## Objective\n${child.objective}`,
+            '',
+            `## Included\n${child.scope.included.map(item => `- ${item}`).join('\n')}`,
+            '',
+            `## Excluded\n${child.scope.excluded.map(item => `- ${item}`).join('\n')}`,
+            '',
+            `## Candidate files\n${child.candidateFiles.map(file => `- \`${file}\``).join('\n')}`,
+            '',
+            `## Acceptance criteria\n${child.acceptanceCriteria.map(item => `- [ ] ${item}`).join('\n')}`,
+            '',
+            `<!-- AEGIS_CHILD_TASK: ${child.taskId} -->`,
+            `<!-- AEGIS_PARENT_ISSUE: ${broadParent.number} -->`,
+          ].join('\n');
+          const existingChild = fetchedIssues.find(issue =>
+            String(issue.body || '').includes(`AEGIS_CHILD_TASK: ${child.taskId}`)
+          );
+          if (!existingChild) {
+            await ghFetch(`https://api.github.com/repos/${OWNER}/${REPO}/issues`, {
+              method: 'POST',
+              headers,
+              body: JSON.stringify({
+                title: childTitle,
+                body: childBody,
+                labels: ['aegis-chat-handoff'],
+              }),
+            });
+          }
+        }
+        console.log(
+          `📤 [AUTOCHAIN] Published ${childTasks.length} child issue packets; continuing into serial solve.`
+        );
+        const refreshed = await loadOpenGitHubIssues(token, '');
+        liveIssues = refreshed.filter(issue => !issue.pull_request);
       }
 
       if (options.childOnly) {
@@ -1774,6 +1888,9 @@ async function runCycle(options, cycleNumber) {
       }
 
       const solveResult = await solveSerialQueue(token, queue, options, loadResumeState(), cycleId);
+      if (!options.dryRun) {
+        await reconcileClosedParents(token, solveResult.queue);
+      }
       const verifiedClosedCount = solveResult.queue.filter(q => q.closed).length;
       const summary = {
         cycleId,
@@ -1977,6 +2094,22 @@ async function main() {
       Number(summary.solved) === EXACT_TARGET;
 
     if (!options.loop) break;
+
+    // One-command autopilot: keep cycling while progress was made or work remains.
+    if (options.autoChain) {
+      const progressed =
+        Number(summary.solved) > 0 || Number(summary.created) > 0 || Number(summary.updated) > 0;
+      const halted =
+        summary.phase === PHASES.HALTED_BLOCKED ||
+        summary.phase === PHASES.HALTED_DISCOVERY_INCOMPLETE;
+      if (halted || !progressed) {
+        console.log('⏸️ Auto-chain loop paused: no forward progress or hard halt reached.');
+        break;
+      }
+      await sleep(1500);
+      continue;
+    }
+
     if (!canRegenerate) {
       console.log('⏸️ Loop paused: regeneration requires exactly 999 verified closes.');
       break;
@@ -2019,6 +2152,7 @@ export {
   createIssueWorkPacket,
   fingerprintResolved,
   parseArgs,
+  reconcileClosedParents,
   resolveFixCommands,
   resolveResolutionPlaybook,
   resolveSkillProfileFile,
