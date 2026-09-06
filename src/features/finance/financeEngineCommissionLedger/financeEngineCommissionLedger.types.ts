@@ -1,227 +1,253 @@
 /**
- * Type definitions for the Finance Engine Commission Ledger feature.
+ * financeEngineCommissionLedger.types.ts
  *
- * This module models the commission ledger entries that track commission
- * accruals, adjustments, and payouts for agents/brokers within the finance
- * engine. It intentionally contains only types, type guards, and pure
- * helper functions -- no side effects, no I/O.
+ * Type definitions and pure helper utilities for the Finance Engine's
+ * Commission Ledger domain. This module tracks commission entries earned
+ * by agents against deals, their lifecycle status, and derived summaries
+ * used for payout reconciliation.
+ *
+ * Parent issue: #1930
  */
 
-/** Supported commission ledger entry statuses across their lifecycle. */
-export type CommissionLedgerEntryStatus = 'pending' | 'approved' | 'paid' | 'reversed' | 'voided';
+/** Lifecycle status of a single commission ledger entry. */
+export type CommissionLedgerStatus = 'pending' | 'approved' | 'paid' | 'reversed' | 'disputed';
 
-/** The kind of monetary movement a ledger entry represents. */
-export type CommissionLedgerEntryType = 'accrual' | 'adjustment' | 'payout' | 'reversal';
+/** The category of commission being recorded. */
+export type CommissionType = 'referral' | 'sale' | 'renewal' | 'bonus' | 'override';
 
-/** ISO 4217 currency code, constrained to a 3-letter uppercase string. */
+/** ISO 4217 currency code, kept as a branded-ish string alias for clarity. */
 export type CurrencyCode = string;
 
-/**
- * A single monetary amount tied to a currency. Amounts are always stored
- * as integer minor units (e.g. cents) to avoid floating point drift.
- */
-export interface MonetaryAmount {
-  /** Integer amount in the currency's minor unit (e.g. cents). */
-  readonly minorUnits: number;
-  /** ISO 4217 currency code, e.g. "USD", "AED". */
-  readonly currency: CurrencyCode;
-}
-
-/** Identifies the party (agent/broker) a commission ledger entry belongs to. */
-export interface CommissionBeneficiary {
-  readonly id: string;
-  readonly displayName: string;
-}
-
-/** A single, immutable line item in the commission ledger. */
-export interface CommissionLedgerEntry {
-  readonly id: string;
-  readonly beneficiary: CommissionBeneficiary;
-  readonly type: CommissionLedgerEntryType;
-  readonly status: CommissionLedgerEntryStatus;
-  readonly amount: MonetaryAmount;
-  /** Related deal/transaction identifier this entry was generated from. */
-  readonly dealId: string;
-  /** ISO 8601 timestamp of when the entry was created. */
-  readonly createdAt: string;
-  /** ISO 8601 timestamp of the last status transition, if any. */
-  readonly updatedAt?: string;
-  /** Free-form note explaining adjustments or reversals. */
-  readonly memo?: string;
-}
-
-/** Aggregated ledger totals for a single beneficiary. */
-export interface CommissionLedgerSummary {
-  readonly beneficiaryId: string;
-  readonly currency: CurrencyCode;
-  readonly totalAccruedMinorUnits: number;
-  readonly totalPaidMinorUnits: number;
-  readonly totalReversedMinorUnits: number;
-  readonly outstandingMinorUnits: number;
-}
-
-/** Input required to append a new entry to the ledger. */
-export interface CreateCommissionLedgerEntryInput {
-  readonly beneficiary: CommissionBeneficiary;
-  readonly type: CommissionLedgerEntryType;
-  readonly amount: MonetaryAmount;
-  readonly dealId: string;
-  readonly memo?: string;
-}
-
-/** Valid terminal statuses that indicate no further transitions are allowed. */
-export const TERMINAL_COMMISSION_LEDGER_STATUSES: readonly CommissionLedgerEntryStatus[] = [
-  'paid',
-  'reversed',
-  'voided',
-];
-
-const COMMISSION_LEDGER_ENTRY_STATUSES: readonly CommissionLedgerEntryStatus[] = [
+/** All valid commission ledger statuses, used for guards and iteration. */
+export const COMMISSION_LEDGER_STATUSES: readonly CommissionLedgerStatus[] = [
   'pending',
   'approved',
   'paid',
   'reversed',
-  'voided',
+  'disputed',
 ];
 
-const COMMISSION_LEDGER_ENTRY_TYPES: readonly CommissionLedgerEntryType[] = [
-  'accrual',
-  'adjustment',
-  'payout',
-  'reversal',
+/** All valid commission types, used for guards and iteration. */
+export const COMMISSION_TYPES: readonly CommissionType[] = [
+  'referral',
+  'sale',
+  'renewal',
+  'bonus',
+  'override',
 ];
 
-/** Allowed status transitions for a commission ledger entry's lifecycle. */
-export const COMMISSION_LEDGER_STATUS_TRANSITIONS: Readonly<
-  Record<CommissionLedgerEntryStatus, readonly CommissionLedgerEntryStatus[]>
-> = {
-  pending: ['approved', 'voided'],
-  approved: ['paid', 'reversed', 'voided'],
-  paid: ['reversed'],
-  reversed: [],
-  voided: [],
-};
-
-/** Type guard for {@link CommissionLedgerEntryStatus}. */
-export function isCommissionLedgerEntryStatus(
-  value: unknown
-): value is CommissionLedgerEntryStatus {
-  return (
-    typeof value === 'string' &&
-    (COMMISSION_LEDGER_ENTRY_STATUSES as readonly string[]).includes(value)
-  );
+/** A single commission ledger entry belonging to an agent for a specific deal. */
+export interface CommissionLedgerEntry {
+  readonly id: string;
+  readonly agentId: string;
+  readonly dealId: string;
+  readonly type: CommissionType;
+  readonly status: CommissionLedgerStatus;
+  /** The gross deal amount the commission rate is applied to. */
+  readonly grossAmount: number;
+  /** Commission rate expressed as a decimal fraction, e.g. 0.05 for 5%. */
+  readonly commissionRate: number;
+  /** The computed commission amount (grossAmount * commissionRate), rounded. */
+  readonly netAmount: number;
+  readonly currency: CurrencyCode;
+  readonly createdAt: string;
+  readonly updatedAt: string;
+  readonly paidAt?: string;
+  readonly reversedAt?: string;
+  readonly notes?: string;
 }
 
-/** Type guard for {@link CommissionLedgerEntryType}. */
-export function isCommissionLedgerEntryType(value: unknown): value is CommissionLedgerEntryType {
-  return (
-    typeof value === 'string' &&
-    (COMMISSION_LEDGER_ENTRY_TYPES as readonly string[]).includes(value)
-  );
+/** Aggregated totals for a set of commission ledger entries, typically per agent. */
+export interface CommissionLedgerSummary {
+  readonly agentId: string;
+  readonly entryCount: number;
+  readonly totalGross: number;
+  readonly totalNet: number;
+  readonly totalPaid: number;
+  readonly totalPending: number;
+  readonly totalReversed: number;
+  readonly currency: CurrencyCode;
 }
 
-/** Returns true if the given amount is a well-formed {@link MonetaryAmount}. */
-export function isMonetaryAmount(value: unknown): value is MonetaryAmount {
-  if (typeof value !== 'object' || value === null) {
-    return false;
+/** Error thrown when commission ledger entries fail structural validation. */
+export class CommissionLedgerValidationError extends Error {
+  constructor(message: string) {
+    super(message);
+    this.name = 'CommissionLedgerValidationError';
   }
-  const candidate = value as Record<string, unknown>;
+}
+
+/** Type guard for {@link CommissionLedgerStatus}. */
+export function isCommissionLedgerStatus(value: unknown): value is CommissionLedgerStatus {
   return (
-    typeof candidate.minorUnits === 'number' &&
-    Number.isInteger(candidate.minorUnits) &&
-    typeof candidate.currency === 'string' &&
-    /^[A-Z]{3}$/.test(candidate.currency)
+    typeof value === 'string' && (COMMISSION_LEDGER_STATUSES as readonly string[]).includes(value)
   );
 }
 
-/** Type guard for {@link CommissionLedgerEntry}. */
+/** Type guard for {@link CommissionType}. */
+export function isCommissionType(value: unknown): value is CommissionType {
+  return typeof value === 'string' && (COMMISSION_TYPES as readonly string[]).includes(value);
+}
+
+/**
+ * Type guard verifying that an unknown value conforms to the
+ * {@link CommissionLedgerEntry} shape. Performs a shallow structural check;
+ * it does not validate cross-field business rules (see {@link assertValidCommissionLedgerEntry}).
+ */
 export function isCommissionLedgerEntry(value: unknown): value is CommissionLedgerEntry {
   if (typeof value !== 'object' || value === null) {
     return false;
   }
+
   const candidate = value as Record<string, unknown>;
-  const beneficiary = candidate.beneficiary as Record<string, unknown> | undefined;
+
   return (
     typeof candidate.id === 'string' &&
-    candidate.id.length > 0 &&
-    typeof beneficiary === 'object' &&
-    beneficiary !== null &&
-    typeof beneficiary.id === 'string' &&
-    typeof beneficiary.displayName === 'string' &&
-    isCommissionLedgerEntryType(candidate.type) &&
-    isCommissionLedgerEntryStatus(candidate.status) &&
-    isMonetaryAmount(candidate.amount) &&
+    typeof candidate.agentId === 'string' &&
     typeof candidate.dealId === 'string' &&
-    typeof candidate.createdAt === 'string'
+    isCommissionType(candidate.type) &&
+    isCommissionLedgerStatus(candidate.status) &&
+    typeof candidate.grossAmount === 'number' &&
+    typeof candidate.commissionRate === 'number' &&
+    typeof candidate.netAmount === 'number' &&
+    typeof candidate.currency === 'string' &&
+    typeof candidate.createdAt === 'string' &&
+    typeof candidate.updatedAt === 'string' &&
+    (candidate.paidAt === undefined || typeof candidate.paidAt === 'string') &&
+    (candidate.reversedAt === undefined || typeof candidate.reversedAt === 'string') &&
+    (candidate.notes === undefined || typeof candidate.notes === 'string')
   );
 }
 
 /**
- * Determines whether an entry may transition from `from` to `to` according
- * to {@link COMMISSION_LEDGER_STATUS_TRANSITIONS}.
+ * Asserts that a commission ledger entry is structurally valid and enforces
+ * business invariants (non-negative amounts, rate within [0, 1], consistent
+ * net amount). Throws {@link CommissionLedgerValidationError} on failure.
  */
-export function canTransitionCommissionLedgerStatus(
-  from: CommissionLedgerEntryStatus,
-  to: CommissionLedgerEntryStatus
-): boolean {
-  return COMMISSION_LEDGER_STATUS_TRANSITIONS[from].includes(to);
-}
-
-/** Returns true when the given status is terminal (no further transitions). */
-export function isTerminalCommissionLedgerStatus(status: CommissionLedgerEntryStatus): boolean {
-  return TERMINAL_COMMISSION_LEDGER_STATUSES.includes(status);
+export function assertValidCommissionLedgerEntry(entry: CommissionLedgerEntry): void {
+  if (!isCommissionLedgerEntry(entry)) {
+    throw new CommissionLedgerValidationError(
+      'Commission ledger entry failed structural validation.'
+    );
+  }
+  if (entry.grossAmount < 0) {
+    throw new CommissionLedgerValidationError('grossAmount must be non-negative.');
+  }
+  if (entry.commissionRate < 0 || entry.commissionRate > 1) {
+    throw new CommissionLedgerValidationError('commissionRate must be between 0 and 1 inclusive.');
+  }
+  const expectedNet = calculateNetCommission(entry.grossAmount, entry.commissionRate);
+  if (Math.abs(expectedNet - entry.netAmount) > 0.01) {
+    throw new CommissionLedgerValidationError(
+      `netAmount (${entry.netAmount}) does not match grossAmount * commissionRate (${expectedNet}).`
+    );
+  }
 }
 
 /**
- * Computes an aggregated {@link CommissionLedgerSummary} for a single
- * beneficiary from a list of ledger entries. All entries must share the
- * same currency; entries with a mismatched currency are ignored.
- *
- * Sign conventions: `accrual` and `payout` contribute positively toward
- * accrued/paid totals respectively; `reversal` contributes to the reversed
- * total; `adjustment` amounts may be positive or negative and are folded
- * into the accrued total.
+ * Computes the net commission amount from a gross amount and a commission
+ * rate, rounded to two decimal places (currency-safe rounding).
+ */
+export function calculateNetCommission(grossAmount: number, commissionRate: number): number {
+  return Math.round(grossAmount * commissionRate * 100) / 100;
+}
+
+/** Returns true when an entry is eligible to be paid out (approved but not yet paid/reversed). */
+export function isEntryPayable(entry: CommissionLedgerEntry): boolean {
+  return entry.status === 'approved';
+}
+
+/** Returns true when an entry represents a final, immutable state. */
+export function isEntryFinalized(entry: CommissionLedgerEntry): boolean {
+  return entry.status === 'paid' || entry.status === 'reversed';
+}
+
+/**
+ * Builds an aggregated {@link CommissionLedgerSummary} for a homogeneous list
+ * of entries belonging to the same agent and currency. Throws if the list is
+ * empty or mixes agents/currencies, since summaries are meaningless otherwise.
  */
 export function summarizeCommissionLedgerEntries(
-  beneficiaryId: string,
-  currency: CurrencyCode,
   entries: readonly CommissionLedgerEntry[]
 ): CommissionLedgerSummary {
-  let totalAccruedMinorUnits = 0;
-  let totalPaidMinorUnits = 0;
-  let totalReversedMinorUnits = 0;
-
-  for (const entry of entries) {
-    if (entry.beneficiary.id !== beneficiaryId || entry.amount.currency !== currency) {
-      continue;
-    }
-    switch (entry.type) {
-      case 'accrual':
-      case 'adjustment':
-        totalAccruedMinorUnits += entry.amount.minorUnits;
-        break;
-      case 'payout':
-        totalPaidMinorUnits += entry.amount.minorUnits;
-        break;
-      case 'reversal':
-        totalReversedMinorUnits += entry.amount.minorUnits;
-        break;
-      default: {
-        const exhaustiveCheck: never = entry.type;
-        throw new Error(`Unhandled commission ledger entry type: ${String(exhaustiveCheck)}`);
-      }
-    }
+  if (entries.length === 0) {
+    throw new CommissionLedgerValidationError(
+      'Cannot summarize an empty list of commission ledger entries.'
+    );
   }
 
-  const outstandingMinorUnits =
-    totalAccruedMinorUnits - totalPaidMinorUnits - totalReversedMinorUnits;
+  const agentId = entries[0].agentId;
+  const currency = entries[0].currency;
+
+  const summary = entries.reduce<{
+    totalGross: number;
+    totalNet: number;
+    totalPaid: number;
+    totalPending: number;
+    totalReversed: number;
+  }>(
+    (acc, entry) => {
+      if (entry.agentId !== agentId) {
+        throw new CommissionLedgerValidationError(
+          'All entries must belong to the same agentId to be summarized together.'
+        );
+      }
+      if (entry.currency !== currency) {
+        throw new CommissionLedgerValidationError(
+          'All entries must share the same currency to be summarized together.'
+        );
+      }
+
+      acc.totalGross += entry.grossAmount;
+      acc.totalNet += entry.netAmount;
+
+      if (entry.status === 'paid') {
+        acc.totalPaid += entry.netAmount;
+      } else if (entry.status === 'pending' || entry.status === 'approved') {
+        acc.totalPending += entry.netAmount;
+      } else if (entry.status === 'reversed') {
+        acc.totalReversed += entry.netAmount;
+      }
+
+      return acc;
+    },
+    {
+      totalGross: 0,
+      totalNet: 0,
+      totalPaid: 0,
+      totalPending: 0,
+      totalReversed: 0,
+    }
+  );
 
   return {
-    beneficiaryId,
+    agentId,
     currency,
-    totalAccruedMinorUnits,
-    totalPaidMinorUnits,
-    totalReversedMinorUnits,
-    outstandingMinorUnits,
+    entryCount: entries.length,
+    totalGross: Math.round(summary.totalGross * 100) / 100,
+    totalNet: Math.round(summary.totalNet * 100) / 100,
+    totalPaid: Math.round(summary.totalPaid * 100) / 100,
+    totalPending: Math.round(summary.totalPending * 100) / 100,
+    totalReversed: Math.round(summary.totalReversed * 100) / 100,
   };
+}
+
+/**
+ * Sorts commission ledger entries by createdAt ascending. Returns a new
+ * array; the input is not mutated.
+ */
+export function sortCommissionLedgerEntriesByCreatedAt(
+  entries: readonly CommissionLedgerEntry[]
+): CommissionLedgerEntry[] {
+  return [...entries].sort(
+    (a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()
+  );
+}
+
+/** Filters entries down to those matching the provided status. */
+export function filterCommissionLedgerEntriesByStatus(
+  entries: readonly CommissionLedgerEntry[],
+  status: CommissionLedgerStatus
+): CommissionLedgerEntry[] {
+  return entries.filter(entry => entry.status === status);
 }

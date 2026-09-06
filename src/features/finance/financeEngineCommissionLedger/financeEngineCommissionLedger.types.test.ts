@@ -1,184 +1,250 @@
 import { describe, expect, it } from 'vitest';
 import {
-  canTransitionCommissionLedgerStatus,
-  COMMISSION_LEDGER_STATUS_TRANSITIONS,
+  assertValidCommissionLedgerEntry,
+  calculateNetCommission,
+  CommissionLedgerEntry,
+  CommissionLedgerValidationError,
+  filterCommissionLedgerEntriesByStatus,
   isCommissionLedgerEntry,
-  isCommissionLedgerEntryStatus,
-  isCommissionLedgerEntryType,
-  isMonetaryAmount,
-  isTerminalCommissionLedgerStatus,
+  isCommissionLedgerStatus,
+  isCommissionType,
+  isEntryFinalized,
+  isEntryPayable,
+  sortCommissionLedgerEntriesByCreatedAt,
   summarizeCommissionLedgerEntries,
-  TERMINAL_COMMISSION_LEDGER_STATUSES,
-  type CommissionLedgerEntry,
 } from './financeEngineCommissionLedger.types';
 
-function makeEntry(overrides: Partial<CommissionLedgerEntry> = {}): CommissionLedgerEntry {
+function buildEntry(overrides: Partial<CommissionLedgerEntry> = {}): CommissionLedgerEntry {
+  const grossAmount = overrides.grossAmount ?? 10000;
+  const commissionRate = overrides.commissionRate ?? 0.05;
   return {
     id: 'entry-1',
-    beneficiary: { id: 'agent-1', displayName: 'Jane Agent' },
-    type: 'accrual',
-    status: 'pending',
-    amount: { minorUnits: 10000, currency: 'USD' },
+    agentId: 'agent-1',
     dealId: 'deal-1',
-    createdAt: '2026-01-01T00:00:00.000Z',
+    type: 'sale',
+    status: 'pending',
+    grossAmount,
+    commissionRate,
+    netAmount: calculateNetCommission(grossAmount, commissionRate),
+    currency: 'USD',
+    createdAt: '2024-01-01T00:00:00.000Z',
+    updatedAt: '2024-01-01T00:00:00.000Z',
     ...overrides,
   };
 }
 
-describe('isCommissionLedgerEntryStatus', () => {
-  it('returns true for every known status', () => {
-    for (const status of ['pending', 'approved', 'paid', 'reversed', 'voided']) {
-      expect(isCommissionLedgerEntryStatus(status)).toBe(true);
-    }
+describe('isCommissionLedgerStatus', () => {
+  it('accepts all known statuses', () => {
+    expect(isCommissionLedgerStatus('pending')).toBe(true);
+    expect(isCommissionLedgerStatus('approved')).toBe(true);
+    expect(isCommissionLedgerStatus('paid')).toBe(true);
+    expect(isCommissionLedgerStatus('reversed')).toBe(true);
+    expect(isCommissionLedgerStatus('disputed')).toBe(true);
   });
 
-  it('returns false for unknown or non-string values', () => {
-    expect(isCommissionLedgerEntryStatus('archived')).toBe(false);
-    expect(isCommissionLedgerEntryStatus(42)).toBe(false);
-    expect(isCommissionLedgerEntryStatus(undefined)).toBe(false);
-    expect(isCommissionLedgerEntryStatus(null)).toBe(false);
-  });
-});
-
-describe('isCommissionLedgerEntryType', () => {
-  it('returns true for every known type', () => {
-    for (const type of ['accrual', 'adjustment', 'payout', 'reversal']) {
-      expect(isCommissionLedgerEntryType(type)).toBe(true);
-    }
-  });
-
-  it('returns false for unknown values', () => {
-    expect(isCommissionLedgerEntryType('bonus')).toBe(false);
-    expect(isCommissionLedgerEntryType({})).toBe(false);
+  it('rejects unknown or non-string values', () => {
+    expect(isCommissionLedgerStatus('cancelled')).toBe(false);
+    expect(isCommissionLedgerStatus(42)).toBe(false);
+    expect(isCommissionLedgerStatus(null)).toBe(false);
+    expect(isCommissionLedgerStatus(undefined)).toBe(false);
   });
 });
 
-describe('isMonetaryAmount', () => {
-  it('accepts a well-formed monetary amount', () => {
-    expect(isMonetaryAmount({ minorUnits: 500, currency: 'AED' })).toBe(true);
+describe('isCommissionType', () => {
+  it('accepts all known types', () => {
+    expect(isCommissionType('referral')).toBe(true);
+    expect(isCommissionType('sale')).toBe(true);
+    expect(isCommissionType('renewal')).toBe(true);
+    expect(isCommissionType('bonus')).toBe(true);
+    expect(isCommissionType('override')).toBe(true);
   });
 
-  it('rejects non-integer minorUnits', () => {
-    expect(isMonetaryAmount({ minorUnits: 5.5, currency: 'AED' })).toBe(false);
-  });
-
-  it('rejects malformed currency codes', () => {
-    expect(isMonetaryAmount({ minorUnits: 500, currency: 'usd' })).toBe(false);
-    expect(isMonetaryAmount({ minorUnits: 500, currency: 'US' })).toBe(false);
-  });
-
-  it('rejects non-object input', () => {
-    expect(isMonetaryAmount(null)).toBe(false);
-    expect(isMonetaryAmount('USD 500')).toBe(false);
+  it('rejects unknown or non-string values', () => {
+    expect(isCommissionType('kickback')).toBe(false);
+    expect(isCommissionType({})).toBe(false);
   });
 });
 
 describe('isCommissionLedgerEntry', () => {
-  it('accepts a fully well-formed entry', () => {
-    expect(isCommissionLedgerEntry(makeEntry())).toBe(true);
+  it('returns true for a well-formed entry', () => {
+    expect(isCommissionLedgerEntry(buildEntry())).toBe(true);
   });
 
-  it('rejects an entry missing a beneficiary', () => {
-    const { beneficiary: _beneficiary, ...rest } = makeEntry();
+  it('returns false when required fields are missing', () => {
+    const { id: _id, ...rest } = buildEntry();
     expect(isCommissionLedgerEntry(rest)).toBe(false);
   });
 
-  it('rejects an entry with an invalid type', () => {
-    const invalid = { ...makeEntry(), type: 'bonus' };
-    expect(isCommissionLedgerEntry(invalid)).toBe(false);
+  it('returns false when status is invalid', () => {
+    expect(isCommissionLedgerEntry({ ...buildEntry(), status: 'cancelled' })).toBe(false);
   });
 
-  it('rejects an entry with a malformed amount', () => {
-    const invalid = { ...makeEntry(), amount: { minorUnits: 'oops', currency: 'USD' } };
-    expect(isCommissionLedgerEntry(invalid)).toBe(false);
-  });
-});
-
-describe('canTransitionCommissionLedgerStatus', () => {
-  it('allows pending -> approved', () => {
-    expect(canTransitionCommissionLedgerStatus('pending', 'approved')).toBe(true);
+  it('returns false for non-object values', () => {
+    expect(isCommissionLedgerEntry(null)).toBe(false);
+    expect(isCommissionLedgerEntry('entry')).toBe(false);
+    expect(isCommissionLedgerEntry(123)).toBe(false);
   });
 
-  it('allows approved -> paid', () => {
-    expect(canTransitionCommissionLedgerStatus('approved', 'paid')).toBe(true);
-  });
-
-  it('disallows pending -> paid directly', () => {
-    expect(canTransitionCommissionLedgerStatus('pending', 'paid')).toBe(false);
-  });
-
-  it('disallows any transition out of a terminal status', () => {
-    expect(canTransitionCommissionLedgerStatus('voided', 'approved')).toBe(false);
-    expect(canTransitionCommissionLedgerStatus('reversed', 'paid')).toBe(false);
-  });
-
-  it('matches the exported transition table exactly', () => {
-    for (const from of Object.keys(COMMISSION_LEDGER_STATUS_TRANSITIONS) as Array<
-      keyof typeof COMMISSION_LEDGER_STATUS_TRANSITIONS
-    >) {
-      for (const to of COMMISSION_LEDGER_STATUS_TRANSITIONS[from]) {
-        expect(canTransitionCommissionLedgerStatus(from, to)).toBe(true);
-      }
-    }
+  it('accepts optional fields when present with correct types', () => {
+    const entry = buildEntry({ paidAt: '2024-02-01T00:00:00.000Z', notes: 'ok' });
+    expect(isCommissionLedgerEntry(entry)).toBe(true);
   });
 });
 
-describe('isTerminalCommissionLedgerStatus', () => {
-  it('flags paid, reversed, and voided as terminal', () => {
-    for (const status of TERMINAL_COMMISSION_LEDGER_STATUSES) {
-      expect(isTerminalCommissionLedgerStatus(status)).toBe(true);
-    }
+describe('calculateNetCommission', () => {
+  it('computes gross * rate rounded to two decimals', () => {
+    expect(calculateNetCommission(10000, 0.05)).toBe(500);
+    expect(calculateNetCommission(999.99, 0.1)).toBe(100);
+    expect(calculateNetCommission(0, 0.5)).toBe(0);
   });
 
-  it('does not flag pending or approved as terminal', () => {
-    expect(isTerminalCommissionLedgerStatus('pending')).toBe(false);
-    expect(isTerminalCommissionLedgerStatus('approved')).toBe(false);
+  it('rounds fractional cents correctly', () => {
+    expect(calculateNetCommission(33.333, 0.1)).toBe(3.33);
+  });
+});
+
+describe('assertValidCommissionLedgerEntry', () => {
+  it('does not throw for a valid entry', () => {
+    expect(() => assertValidCommissionLedgerEntry(buildEntry())).not.toThrow();
+  });
+
+  it('throws CommissionLedgerValidationError for negative grossAmount', () => {
+    expect(() =>
+      assertValidCommissionLedgerEntry(buildEntry({ grossAmount: -100, netAmount: -5 }))
+    ).toThrow(CommissionLedgerValidationError);
+  });
+
+  it('throws for commissionRate outside [0, 1]', () => {
+    expect(() =>
+      assertValidCommissionLedgerEntry(buildEntry({ commissionRate: 1.5, netAmount: 15000 }))
+    ).toThrow(CommissionLedgerValidationError);
+  });
+
+  it('throws when netAmount is inconsistent with gross * rate', () => {
+    expect(() =>
+      assertValidCommissionLedgerEntry(
+        buildEntry({ grossAmount: 10000, commissionRate: 0.05, netAmount: 999 })
+      )
+    ).toThrow(CommissionLedgerValidationError);
+  });
+});
+
+describe('isEntryPayable', () => {
+  it('is true only for approved entries', () => {
+    expect(isEntryPayable(buildEntry({ status: 'approved' }))).toBe(true);
+    expect(isEntryPayable(buildEntry({ status: 'pending' }))).toBe(false);
+    expect(isEntryPayable(buildEntry({ status: 'paid' }))).toBe(false);
+  });
+});
+
+describe('isEntryFinalized', () => {
+  it('is true for paid or reversed entries', () => {
+    expect(isEntryFinalized(buildEntry({ status: 'paid' }))).toBe(true);
+    expect(isEntryFinalized(buildEntry({ status: 'reversed' }))).toBe(true);
+  });
+
+  it('is false for pending, approved, or disputed entries', () => {
+    expect(isEntryFinalized(buildEntry({ status: 'pending' }))).toBe(false);
+    expect(isEntryFinalized(buildEntry({ status: 'approved' }))).toBe(false);
+    expect(isEntryFinalized(buildEntry({ status: 'disputed' }))).toBe(false);
   });
 });
 
 describe('summarizeCommissionLedgerEntries', () => {
-  it('aggregates accrual, payout, and reversal totals for a beneficiary', () => {
-    const entries: CommissionLedgerEntry[] = [
-      makeEntry({ id: 'e1', type: 'accrual', amount: { minorUnits: 10000, currency: 'USD' } }),
-      makeEntry({ id: 'e2', type: 'adjustment', amount: { minorUnits: -500, currency: 'USD' } }),
-      makeEntry({ id: 'e3', type: 'payout', amount: { minorUnits: 4000, currency: 'USD' } }),
-      makeEntry({ id: 'e4', type: 'reversal', amount: { minorUnits: 1000, currency: 'USD' } }),
+  it('aggregates totals across mixed statuses for one agent', () => {
+    const entries = [
+      buildEntry({
+        id: 'e1',
+        status: 'paid',
+        grossAmount: 10000,
+        commissionRate: 0.05,
+        netAmount: 500,
+      }),
+      buildEntry({
+        id: 'e2',
+        status: 'pending',
+        grossAmount: 4000,
+        commissionRate: 0.1,
+        netAmount: 400,
+      }),
+      buildEntry({
+        id: 'e3',
+        status: 'reversed',
+        grossAmount: 2000,
+        commissionRate: 0.1,
+        netAmount: 200,
+      }),
     ];
 
-    const summary = summarizeCommissionLedgerEntries('agent-1', 'USD', entries);
+    const summary = summarizeCommissionLedgerEntries(entries);
 
-    expect(summary).toEqual({
-      beneficiaryId: 'agent-1',
-      currency: 'USD',
-      totalAccruedMinorUnits: 9500,
-      totalPaidMinorUnits: 4000,
-      totalReversedMinorUnits: 1000,
-      outstandingMinorUnits: 4500,
-    });
+    expect(summary.agentId).toBe('agent-1');
+    expect(summary.currency).toBe('USD');
+    expect(summary.entryCount).toBe(3);
+    expect(summary.totalGross).toBe(16000);
+    expect(summary.totalNet).toBe(1100);
+    expect(summary.totalPaid).toBe(500);
+    expect(summary.totalPending).toBe(400);
+    expect(summary.totalReversed).toBe(200);
   });
 
-  it('ignores entries belonging to a different beneficiary or currency', () => {
-    const entries: CommissionLedgerEntry[] = [
-      makeEntry({ id: 'e1', beneficiary: { id: 'agent-1', displayName: 'Jane' } }),
-      makeEntry({ id: 'e2', beneficiary: { id: 'agent-2', displayName: 'John' } }),
-      makeEntry({ id: 'e3', amount: { minorUnits: 10000, currency: 'AED' } }),
+  it('throws when the entry list is empty', () => {
+    expect(() => summarizeCommissionLedgerEntries([])).toThrow(CommissionLedgerValidationError);
+  });
+
+  it('throws when entries belong to different agents', () => {
+    const entries = [
+      buildEntry({ id: 'e1', agentId: 'agent-1' }),
+      buildEntry({ id: 'e2', agentId: 'agent-2' }),
+    ];
+    expect(() => summarizeCommissionLedgerEntries(entries)).toThrow(
+      CommissionLedgerValidationError
+    );
+  });
+
+  it('throws when entries have mismatched currencies', () => {
+    const entries = [
+      buildEntry({ id: 'e1', currency: 'USD' }),
+      buildEntry({ id: 'e2', currency: 'AED' }),
+    ];
+    expect(() => summarizeCommissionLedgerEntries(entries)).toThrow(
+      CommissionLedgerValidationError
+    );
+  });
+});
+
+describe('sortCommissionLedgerEntriesByCreatedAt', () => {
+  it('sorts entries ascending by createdAt without mutating input', () => {
+    const entries = [
+      buildEntry({ id: 'e2', createdAt: '2024-03-01T00:00:00.000Z' }),
+      buildEntry({ id: 'e1', createdAt: '2024-01-01T00:00:00.000Z' }),
+      buildEntry({ id: 'e3', createdAt: '2024-02-01T00:00:00.000Z' }),
+    ];
+    const originalOrder = entries.map(entry => entry.id);
+
+    const sorted = sortCommissionLedgerEntriesByCreatedAt(entries);
+
+    expect(sorted.map(entry => entry.id)).toEqual(['e1', 'e3', 'e2']);
+    expect(entries.map(entry => entry.id)).toEqual(originalOrder);
+  });
+});
+
+describe('filterCommissionLedgerEntriesByStatus', () => {
+  it('returns only entries matching the requested status', () => {
+    const entries = [
+      buildEntry({ id: 'e1', status: 'pending' }),
+      buildEntry({ id: 'e2', status: 'paid' }),
+      buildEntry({ id: 'e3', status: 'pending' }),
     ];
 
-    const summary = summarizeCommissionLedgerEntries('agent-1', 'USD', entries);
+    const pending = filterCommissionLedgerEntriesByStatus(entries, 'pending');
 
-    expect(summary.totalAccruedMinorUnits).toBe(10000);
-    expect(summary.outstandingMinorUnits).toBe(10000);
+    expect(pending).toHaveLength(2);
+    expect(pending.map(entry => entry.id)).toEqual(['e1', 'e3']);
   });
 
-  it('returns all-zero totals for an empty entry list', () => {
-    const summary = summarizeCommissionLedgerEntries('agent-1', 'USD', []);
-    expect(summary).toEqual({
-      beneficiaryId: 'agent-1',
-      currency: 'USD',
-      totalAccruedMinorUnits: 0,
-      totalPaidMinorUnits: 0,
-      totalReversedMinorUnits: 0,
-      outstandingMinorUnits: 0,
-    });
+  it('returns an empty array when no entries match', () => {
+    const entries = [buildEntry({ status: 'pending' })];
+    expect(filterCommissionLedgerEntriesByStatus(entries, 'disputed')).toEqual([]);
   });
 });
