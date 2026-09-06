@@ -104,3 +104,20 @@ This SRS pairs with:
 
 This handoff is additive documentation only. Rollback consists of reverting this file;
 no code, schema, or configuration changes are made, so rollback carries no runtime risk.
+
+## 9. Implementation Completion Evidence (Child issue #2440)
+
+- Implementing child issue: #2440. Parent issue #1935 remains open; this addendum does
+  not close #1935 or #2440's parent.
+- Implementation delivered at:
+  - `src/features/finance/financeEngineUaeCorporate/financeEngineUaeCorporate.logic.ts`
+    (`calculateUaeCorporateTax` pure function, satisfying FR-1 through FR-7).
+  - `src/features/finance/financeEngineUaeCorporate/financeEngineUaeCorporate.logic.test.ts`
+    (vitest unit tests covering FR-1–FR-6 and NFR-4, including the AED 375,000/375,001
+    boundary, negative/zero profit flooring, currency rejection, determinism, and
+    input-immutability checks).
+- Required validation commands (typecheck, lint, test) must be run from the repository
+  root against these two files before merge; this addendum records the requirement, and
+  the implementing PR must attach the actual command output as evidence.
+- Rollback for the implementation: revert the two `.ts` files listed above. No other
+  files were modified; no schema, dependency, or configuration changes were introduced.

@@ -106,3 +106,27 @@ This handoff introduces only markdown documentation. To roll back, revert this f
 its paired SRS/contract/README files; there is no code, migration, or configuration
 change to undo, and no runtime behavior is affected. Parent issue #1935 is unaffected
 and remains open.
+
+## 9. Implementation Completion Evidence (Child issue #2440)
+
+- Implementing child issue: #2440, per this SDD's target module layout (§2). Parent
+  issue #1935 remains open and is not closed by this addendum.
+- Delivered files, aligned with the design decisions in §3:
+  - `financeEngineUaeCorporate.logic.ts` — pure function `calculateUaeCorporateTax`,
+    exported types (`UaeCorporateTaxCalculationInput`, `UaeCorporateTaxCalculationResult`,
+    `UaeCorporateTaxRateTable`, `UaeCorporateTaxCurrency`), the default rate table
+    constant (`DEFAULT_UAE_CORPORATE_TAX_RATE_TABLE`, version `UAE-CT-FDL47-2022-v1`),
+    and the typed `UaeCorporateTaxValidationError`.
+  - `financeEngineUaeCorporate.logic.test.ts` — vitest tests implementing the testing
+    strategy in §5 (standard-rate calculation, exact AED 375,000/375,001 boundary,
+    zero/negative profit flooring, `rateTableVersion` pass-through and override,
+    determinism, input-immutability, and non-AED currency rejection).
+- Naming note: the SDD's target layout (§2) anticipated separate `.types.ts`/`.rates.ts`/
+  `.ts` files; the implementation consolidates types, the default rate table, the error
+  class, and the calculation function into a single `financeEngineUaeCorporate.logic.ts`
+  module (with a matching `.logic.test.ts`) to keep the child scope minimal and avoid
+  introducing additional files not explicitly requested by the implementation issue.
+  All public symbols described in §3 remain exported and unchanged in behavior.
+- Rollback: revert `financeEngineUaeCorporate.logic.ts` and
+  `financeEngineUaeCorporate.logic.test.ts`. No other module, route, or persistence
+  layer references these files yet, so rollback carries no downstream runtime risk.
