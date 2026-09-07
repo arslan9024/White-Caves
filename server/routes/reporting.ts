@@ -8,7 +8,7 @@ import { Router, Request, Response } from 'express';
 import { asyncHandler, AppError } from '../middleware/errorHandler.js';
 
 import { prisma } from '../database.js';
-import { requirePermission } from '../middleware/rbac.js';
+import { requirePermission, resolveBackendRole } from '../middleware/rbac.js';
 import { documentService } from '../services/DocumentService.js';
 import { getDashboardRoleConfig } from '../config/dashboardConfigs.js';
 
@@ -27,15 +27,24 @@ type OptionalReportGenerator = {
 };
 
 const router = Router();
+const hasAllowedRole = (role: string | undefined, allowedRoles: string[]): boolean =>
+  Boolean(role && allowedRoles.includes(resolveBackendRole(role)));
+const requireExecutiveReportRole = (role: string | undefined): void => {
+  if (!hasAllowedRole(role, ['owner', 'manager', 'admin', 'finance'])) {
+    throw new AppError('Access denied — executive reporting requires manager or above role', 403);
+  }
+};
 
 // ─── GET /api/dashboard/config ─────────────────────────────────────────
 // Role-based widget configuration payload
 router.get(
   '/config',
-  requirePermission('view_analytics'),
+  requirePermission('view_dashboard'),
   asyncHandler(async (req: Request, res: Response) => {
-    const role = req.user?.role || 'agent';
+    const role = req.user?.role;
+    if (!role) throw new AppError('User context missing', 401);
     const config = getDashboardRoleConfig(role);
+    if (!config) throw new AppError('Dashboard is not available for this role', 403);
 
     res.status(200).json({
       success: true,
@@ -47,14 +56,16 @@ router.get(
 // ─── GET /api/dashboard/preferences ────────────────────────────────────
 router.get(
   '/preferences',
-  requirePermission('view_analytics'),
+  requirePermission('view_dashboard'),
   asyncHandler(async (req: Request, res: Response) => {
     const userId = req.user?.id;
-    const role = req.user?.role || 'agent';
+    const role = req.user?.role;
 
-    if (!userId) {
+    if (!userId || !role) {
       throw new AppError('User context missing', 401);
     }
+    const roleConfig = getDashboardRoleConfig(role);
+    if (!roleConfig) throw new AppError('Dashboard is not available for this role', 403);
 
     const preference = await prisma.userDashboardPreference.findUnique({
       where: { userId },
@@ -62,7 +73,7 @@ router.get(
 
     const fallback = {
       role,
-      widgets: getDashboardRoleConfig(role).widgets,
+      widgets: roleConfig.widgets,
       layout: 'default',
     };
 
@@ -83,7 +94,7 @@ router.get(
 // ─── PUT /api/dashboard/preferences ────────────────────────────────────
 router.put(
   '/preferences',
-  requirePermission('view_analytics'),
+  requirePermission('view_dashboard'),
   asyncHandler(async (req: Request, res: Response) => {
     const userId = req.user?.id;
     const role = req.user?.role || 'agent';
@@ -136,7 +147,7 @@ router.get(
   requirePermission('view_analytics'),
   asyncHandler(async (req: Request, res: Response) => {
     // AUTHORIZATION: Financial metrics restricted to managers/owners
-    const userRole = req.user?.role || '';
+    const userRole = resolveBackendRole(req.user?.role || '');
     const allowedRoles = ['owner', 'manager', 'admin', 'finance'];
     if (!allowedRoles.includes(userRole)) {
       throw new AppError('Access denied — dashboard summary requires manager or higher role', 403);
@@ -210,7 +221,7 @@ router.get(
   asyncHandler(async (req: Request, res: Response) => {
     // AUTHORIZATION: Only managers+ can access global activity feed
     const allowedRoles = ['owner', 'manager', 'admin'];
-    if (!allowedRoles.includes(req.user?.role || '')) {
+    if (!hasAllowedRole(req.user?.role, allowedRoles)) {
       throw new AppError('Access denied — activity feed requires manager or above role', 403);
     }
 
@@ -259,7 +270,7 @@ router.get(
   asyncHandler(async (req: Request, res: Response) => {
     // AUTHORIZATION: Only managers+ can access executive analytics
     const allowedRoles = ['owner', 'manager', 'admin', 'finance'];
-    if (!allowedRoles.includes(req.user?.role || '')) {
+    if (!hasAllowedRole(req.user?.role, allowedRoles)) {
       throw new AppError('Access denied — executive analytics requires manager or above role', 403);
     }
     const [
@@ -319,7 +330,7 @@ router.get(
   asyncHandler(async (req: Request, res: Response) => {
     // AUTHORIZATION: Only managers+ can access KPI metrics
     const allowedRoles = ['owner', 'manager', 'admin', 'finance'];
-    if (!allowedRoles.includes(req.user?.role || '')) {
+    if (!hasAllowedRole(req.user?.role, allowedRoles)) {
       throw new AppError('Access denied — KPI data requires manager or above role', 403);
     }
 
@@ -356,7 +367,8 @@ router.get(
 router.get(
   '/lead-funnel',
   requirePermission('view_analytics'),
-  asyncHandler(async (_req: Request, res: Response) => {
+  asyncHandler(async (req: Request, res: Response) => {
+    requireExecutiveReportRole(req.user?.role);
     const stages = ['new', 'contacted', 'qualified', 'viewing', 'negotiating', 'won', 'lost'];
     const counts = await Promise.all(
       stages.map(status => prisma.lead.count({ where: { status } }))
@@ -395,6 +407,7 @@ router.get(
   '/trends',
   requirePermission('view_analytics'),
   asyncHandler(async (req: Request, res: Response) => {
+    requireExecutiveReportRole(req.user?.role);
     const days = parseInt(req.query.days as string) || 30;
     const startDate = new Date();
     startDate.setDate(startDate.getDate() - days);
@@ -481,7 +494,8 @@ router.get(
 router.get(
   '/property-aging',
   requirePermission('view_analytics'),
-  asyncHandler(async (_req: Request, res: Response) => {
+  asyncHandler(async (req: Request, res: Response) => {
+    requireExecutiveReportRole(req.user?.role);
     const properties = await prisma.property.findMany({
       where: { status: 'available' },
       select: { id: true, title: true, createdAt: true, price: true, location: true },
@@ -532,7 +546,7 @@ router.get(
   requirePermission('view_analytics'),
   asyncHandler(async (req: Request, res: Response) => {
     const allowedRoles = ['owner', 'manager', 'admin', 'finance', 'managing_director'];
-    if (!allowedRoles.includes(req.user?.role || '')) {
+    if (!hasAllowedRole(req.user?.role, allowedRoles)) {
       throw new AppError(
         'Access denied — agent performance report requires manager or above role',
         403
@@ -627,7 +641,7 @@ router.post(
   requirePermission('view_analytics'),
   asyncHandler(async (req: Request, res: Response) => {
     const allowedRoles = ['owner', 'manager', 'admin', 'finance', 'managing_director'];
-    if (!allowedRoles.includes(req.user?.role || '')) {
+    if (!hasAllowedRole(req.user?.role, allowedRoles)) {
       throw new AppError('Access denied — export requires manager or above role', 403);
     }
 
@@ -689,7 +703,7 @@ router.get(
   requirePermission('view_analytics'),
   asyncHandler(async (req: Request, res: Response) => {
     const allowedRoles = ['owner', 'manager', 'admin', 'finance', 'managing_director'];
-    if (!allowedRoles.includes(req.user?.role || '')) {
+    if (!hasAllowedRole(req.user?.role, allowedRoles)) {
       throw new AppError('Access denied — export poll requires manager or above role', 403);
     }
 
@@ -717,7 +731,7 @@ router.get(
   requirePermission('view_analytics'),
   asyncHandler(async (req: Request, res: Response) => {
     const allowedRoles = ['owner', 'manager', 'admin', 'finance', 'managing_director'];
-    if (!allowedRoles.includes(req.user?.role || '')) {
+    if (!hasAllowedRole(req.user?.role, allowedRoles)) {
       throw new AppError('Access denied — leasing dashboard requires manager or above role', 403);
     }
 
@@ -876,7 +890,7 @@ router.get(
   requirePermission('view_all_reports'),
   asyncHandler(async (req: Request, res: Response) => {
     const allowedRoles = ['owner', 'manager', 'admin', 'finance'];
-    if (!allowedRoles.includes(req.user?.role || '')) {
+    if (!hasAllowedRole(req.user?.role, allowedRoles)) {
       throw new AppError('Access denied — P&L report requires finance or manager role', 403);
     }
     const file = await documentService.generateMonthlyPLReport();
@@ -893,7 +907,7 @@ router.get(
   requirePermission('view_analytics'),
   asyncHandler(async (req: Request, res: Response) => {
     const allowedRoles = ['owner', 'manager', 'admin', 'finance'];
-    if (!allowedRoles.includes(req.user?.role || '')) {
+    if (!hasAllowedRole(req.user?.role, allowedRoles)) {
       throw new AppError('Access denied — KPI baseline requires manager or above role', 403);
     }
 

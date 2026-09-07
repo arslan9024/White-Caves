@@ -178,6 +178,16 @@ describe('Reporting / Dashboard Routes — /api/dashboard', () => {
     });
   });
 
+  describe('executive aggregate authorization', () => {
+    for (const endpoint of ['/lead-funnel', '/trends', '/property-aging']) {
+      it(`returns 403 for an agent requesting ${endpoint}`, async () => {
+        const res = await request(createApp('agent')).get(`/api/dashboard${endpoint}`);
+        expect(res.status).toBe(403);
+        expect(res.body.error).toMatch(/access denied/i);
+      });
+    }
+  });
+
   // ── GET /config ──────────────────────────────────────────────────
   describe('GET /api/dashboard/config', () => {
     it('returns role-based widget config', async () => {
@@ -434,10 +444,10 @@ describe('Reporting / Dashboard Routes — /api/dashboard', () => {
       expect(res.body.error).toMatch(/access denied/i);
     });
 
-    it('returns 403 for managing_director role (current allow-list contract)', async () => {
+    it('returns 200 for managing_director role through the owner alias', async () => {
       const res = await request(createApp('managing_director')).get('/api/dashboard/summary');
-      expect(res.status).toBe(403);
-      expect(res.body.error).toMatch(/access denied/i);
+      expect(res.status).toBe(200);
+      expect(res.body.success).toBe(true);
     });
 
     it('returns 200 for manager role', async () => {
@@ -670,10 +680,10 @@ describe('Reporting / Dashboard Routes — /api/dashboard', () => {
       expect(res.status).toBe(403);
     });
 
-    it('returns 403 for managing_director role (current allow-list contract)', async () => {
+    it('returns 200 for managing_director role through the owner alias', async () => {
       const res = await request(createApp('managing_director')).get('/api/dashboard/kpis');
-      expect(res.status).toBe(403);
-      expect(res.body.error).toMatch(/access denied/i);
+      expect(res.status).toBe(200);
+      expect(res.body.success).toBe(true);
     });
 
     it('returns 200 for finance role', async () => {
@@ -782,11 +792,11 @@ describe('Reporting / Dashboard Routes — /api/dashboard', () => {
       ).toBe(true);
     });
 
-    it('returns 200 for agent role', async () => {
+    it('returns 403 for agent role', async () => {
       const res = await request(createApp('agent')).get('/api/dashboard/lead-funnel');
 
-      expect(res.status).toBe(200);
-      expect(res.body.success).toBe(true);
+      expect(res.status).toBe(403);
+      expect(res.body.error).toMatch(/access denied/i);
     });
   });
 
@@ -856,11 +866,11 @@ describe('Reporting / Dashboard Routes — /api/dashboard', () => {
       expect(res.body.data.series).toHaveLength(30);
     });
 
-    it('returns 200 for agent role', async () => {
+    it('returns 403 for agent role', async () => {
       const res = await request(createApp('agent')).get('/api/dashboard/trends');
 
-      expect(res.status).toBe(200);
-      expect(res.body.success).toBe(true);
+      expect(res.status).toBe(403);
+      expect(res.body.error).toMatch(/access denied/i);
     });
   });
 
@@ -960,11 +970,11 @@ describe('Reporting / Dashboard Routes — /api/dashboard', () => {
       expect(res.body.data.avgDaysOnMarket).toBe(4);
     });
 
-    it('returns 200 for agent role', async () => {
+    it('returns 403 for agent role', async () => {
       const res = await request(createApp('agent')).get('/api/dashboard/property-aging');
 
-      expect(res.status).toBe(200);
-      expect(res.body.success).toBe(true);
+      expect(res.status).toBe(403);
+      expect(res.body.error).toMatch(/access denied/i);
     });
   });
 
@@ -1192,14 +1202,25 @@ describe('Reporting / Dashboard Routes — /api/dashboard', () => {
       expect(res.body.error).toMatch(/access denied/i);
     });
 
-    it('returns 403 for managing_director role (current allow-list contract)', async () => {
+    it('returns 200 for managing_director role through the owner alias', async () => {
+      mockPrisma.lead.findMany.mockResolvedValueOnce([]);
+      mockPrisma.lead.count.mockResolvedValueOnce(0).mockResolvedValueOnce(0);
+      mockPrisma.property.findMany.mockResolvedValueOnce([]);
+      mockPrisma.user.count.mockResolvedValueOnce(45);
+      (mockPrisma as any).viewing = {
+        findMany: vi.fn().mockResolvedValue([]),
+        count: vi.fn().mockResolvedValue(0),
+      };
+      (mockPrisma as any).offer = {
+        count: vi.fn().mockResolvedValue(0),
+      };
+
       const res = await request(createApp('managing_director')).get(
         '/api/dashboard/analytics/kpi-baseline'
       );
 
-      expect(res.status).toBe(403);
-      expect(res.body.success).toBe(false);
-      expect(res.body.error).toMatch(/access denied/i);
+      expect(res.status).toBe(200);
+      expect(res.body.success).toBe(true);
     });
 
     it('returns 200 with 8 KPI entries for manager role', async () => {

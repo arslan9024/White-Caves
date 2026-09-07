@@ -22,13 +22,13 @@ import {
   fetchKPIsAPI,
 } from '../../store/crmDataSlice';
 
-interface LeadFunnel {
+export interface LeadFunnel {
   funnel: Array<{ stage: string; count: number; percentage: number }>;
   tierDistribution: Array<{ tier: string; count: number }>;
   total: number;
 }
 
-interface TrendSeries {
+export interface TrendSeries {
   period: string;
   startDate: string;
   series: Array<{
@@ -41,14 +41,14 @@ interface TrendSeries {
   }>;
 }
 
-interface PropertyAging {
+export interface PropertyAging {
   totalAvailable: number;
   avgDaysOnMarket: number;
   buckets: Array<{ label: string; count: number }>;
   staleProperties: Array<{ id: string; title: string; daysOnMarket: number }>;
 }
 
-interface AgentPerformance {
+export interface AgentPerformance {
   agents: Array<{
     id: string;
     name: string;
@@ -63,12 +63,18 @@ interface AgentPerformance {
   total: number;
 }
 
-interface KPIs {
+export interface KPIs {
   newLeads: number;
   wonDeals: number;
   newListings: number;
   totalRevenue: number;
   avgDealSize: number;
+}
+export interface ExecutiveReport {
+  leads: { byStatus: Record<string, number>; bySource: Record<string, number> };
+  properties: { byStatus: Record<string, number>; byType: Record<string, number> };
+  commissions: Array<{ status: string; count: number; totalValue: number }>;
+  portfolioValue: number;
 }
 
 export function useReporting() {
@@ -77,14 +83,14 @@ export function useReporting() {
   const [trends, setTrends] = useState<TrendSeries | null>(null);
   const [propertyAging, setPropertyAging] = useState<PropertyAging | null>(null);
   const [agentPerformance, setAgentPerformance] = useState<AgentPerformance | null>(null);
-  const [executive, setExecutive] = useState<Record<string, unknown> | null>(null);
+  const [executive, setExecutive] = useState<ExecutiveReport | null>(null);
   const [kpis, setKpis] = useState<KPIs | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   /** Fetch all reporting data in parallel */
   const fetchAllReports = useCallback(
-    async (trendDays?: number) => {
+    async (trendDays?: number): Promise<{ failedCount: number }> => {
       setLoading(true);
       setError(null);
       try {
@@ -101,8 +107,11 @@ export function useReporting() {
         if (trendsRes.status === 'fulfilled') setTrends(trendsRes.value as unknown as TrendSeries);
         if (agingRes.status === 'fulfilled') setPropertyAging(agingRes.value as unknown as PropertyAging);
         if (agentsRes.status === 'fulfilled') setAgentPerformance(agentsRes.value as unknown as AgentPerformance);
-        if (execRes.status === 'fulfilled') setExecutive(execRes.value as Record<string, unknown>);
-        if (kpisRes.status === 'fulfilled') setKpis(kpisRes.value as unknown as KPIs);
+         if (execRes.status === 'fulfilled') setExecutive(execRes.value as unknown as ExecutiveReport);
+        if (kpisRes.status === 'fulfilled') {
+          const payload = kpisRes.value as { kpis?: KPIs };
+          setKpis(payload.kpis ?? (kpisRes.value as unknown as KPIs));
+        }
 
         // Check for any failures
         const failures = [funnelRes, trendsRes, agingRes, agentsRes, execRes, kpisRes]
@@ -110,8 +119,10 @@ export function useReporting() {
         if (failures.length > 0) {
           setError(`${failures.length} of 6 reports failed to load`);
         }
+        return { failedCount: failures.length };
       } catch (err) {
         setError(typeof err === 'string' ? err : 'Failed to fetch reports');
+        return { failedCount: 6 };
       } finally {
         setLoading(false);
       }
@@ -152,6 +163,16 @@ export function useReporting() {
     }
   }, [dispatch]);
 
+  /** Fetch property aging only */
+  const fetchAging = useCallback(async () => {
+    try {
+      const result = await dispatch(fetchPropertyAgingAPI()).unwrap();
+      setPropertyAging(result as unknown as PropertyAging);
+    } catch (err) {
+      setError(typeof err === 'string' ? err : 'Failed to fetch property aging');
+    }
+  }, [dispatch]);
+
   return {
     // Data
     leadFunnel,
@@ -170,5 +191,6 @@ export function useReporting() {
     fetchFunnel,
     fetchTrends,
     fetchAgents,
+    fetchAging,
   };
 }

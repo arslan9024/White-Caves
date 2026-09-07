@@ -14,6 +14,7 @@ import {
   ContentHeader,
 } from '../../../pages/crm/CRMHubPage.styles';
 import { CRM_MODULE_REGISTRY } from '../../../config/crmModuleRegistry';
+import { canAccessCRMModule } from '../command-center/moduleAccessPolicy';
 
 /** Minimal CRM user shape passed through to module components */
 export interface CrmUser {
@@ -68,6 +69,22 @@ export const ModuleViewport: FC<ModuleViewportProps> = ({
     );
   }
 
+  if (!canAccessCRMModule(user?.role, moduleId)) {
+    return (
+      <ContentArea>
+        <div style={{ padding: '3rem 2rem', textAlign: 'center', color: 'var(--text-secondary, #64748B)' }} role="alert">
+          <h3 style={{ margin: '0 0 0.5rem', color: 'var(--color-1e293b, #1E293B)', fontWeight: 800 }}>
+            Module access denied
+          </h3>
+          <p style={{ margin: '0 0 1.5rem', fontSize: '0.9rem' }}>
+            This module is not available for the server-assigned role.
+          </p>
+          <button onClick={onBackToOverview}>Return to workspace</button>
+        </div>
+      </ContentArea>
+    );
+  }
+
   const ModuleComponent = moduleDef.Component;
 
   return (
@@ -114,7 +131,7 @@ export const ModuleViewport: FC<ModuleViewportProps> = ({
       <div style={{ padding: '1rem' }}>
         <ErrorBoundary>
           <Suspense fallback={<SkeletonLoader width="100%" height="400px" borderRadius="16px" />}>
-            <ModuleComponent role="owner" user={user} moduleId={moduleId} />
+            <ModuleComponent role={user?.role ?? 'unauthorized'} user={user} moduleId={moduleId} />
           </Suspense>
         </ErrorBoundary>
       </div>

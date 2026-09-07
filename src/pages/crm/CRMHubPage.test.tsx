@@ -146,74 +146,18 @@ describe('CRMHubPage — Modern Atomic ERP Dashboard', () => {
     vi.restoreAllMocks();
   });
 
-  it('renders Global ERP Command Core header, live ticker, and 3-Tile Sidebar', () => {
+  it('renders the canonical Executive Command Center without legacy dashboard chrome', async () => {
     renderPage();
-
-    // Check Header
-    expect(screen.getByText(/White Caves Real Estate LLC — ERP Command Core/i)).toBeInTheDocument();
-    expect(screen.getByText(/Active Meta-Tag:/i)).toBeInTheDocument();
-
-    // Check Ticker
-    expect(screen.getByText(/USD \/ AED:/i)).toBeInTheDocument();
-    expect(screen.getByText(/DLD Daily Volume:/i)).toBeInTheDocument();
-
-    // Check 3 Sidebar Tiles
-    expect(screen.getByText(/1. MD Office \(MD Suite\)/i)).toBeInTheDocument();
-    expect(screen.getByText(/2. Corporate Departments \(12 Depts\)/i)).toBeInTheDocument();
-    expect(screen.getByText(/3. AI Command Center/i)).toBeInTheDocument();
+    expect(await screen.findByText(/Executive Command Center/i)).toBeInTheDocument();
+    expect(screen.queryByText(/DLD Daily Volume:/i)).not.toBeInTheDocument();
+    expect(screen.queryByText(/3. AI Command Center/i)).not.toBeInTheDocument();
   });
 
-  it('renders Department Executive Overview with mission scope cards and launchpad', () => {
+  it('renders decision-oriented live reporting modules', async () => {
     renderPage();
-
-    expect(screen.getByText(/Executive Summary/i)).toBeInTheDocument();
-    expect(screen.getByText(/🎯 Mission Operational Scope/i)).toBeInTheDocument();
-    expect(screen.getByText(/⚡ Operational Sub-Nodes Launchpad/i)).toBeInTheDocument();
-  });
-
-  it('toggles collapsible top header bar', () => {
-    renderPage();
-
-    const hideHeaderBtn = screen.getByTitle('Collapse Top Header Bar');
-    fireEvent.click(hideHeaderBtn);
-
-    expect(screen.getByTitle('Expand Top Header Bar')).toBeInTheDocument();
-
-    const showHeaderBtn = screen.getByTitle('Expand Top Header Bar');
-    fireEvent.click(showHeaderBtn);
-
-    expect(screen.getByTitle('Collapse Top Header Bar')).toBeInTheDocument();
-  });
-
-  it('toggles sidebar collapse state cleanly', () => {
-    renderPage();
-
-    const toggleBtn = screen.getByTitle('Collapse Sidebar');
-    fireEvent.click(toggleBtn);
-
-    expect(screen.getByTitle('Expand Sidebar')).toBeInTheDocument();
-
-    fireEvent.click(screen.getByTitle('Expand Sidebar'));
-    expect(screen.getByTitle('Collapse Sidebar')).toBeInTheDocument();
-  });
-
-  it('opens and switches to Tile 1 (MD Sovereign Suite)', () => {
-    renderPage();
-
-    const mdTile = screen.getByText(/1. MD Office \(MD Suite\)/i);
-    fireEvent.click(mdTile);
-
-    expect(screen.getByText(/Office of the Managing Director \(MD Suite\)/i)).toBeInTheDocument();
-    expect(screen.getByText(/Level 7 \(Ultimate Sovereign Access\)/i)).toBeInTheDocument();
-  });
-
-  it('opens Tile 3 AI Command Center and selects an AI Assistant with URL update', async () => {
-    renderPage();
-
-    const aiTile = screen.getByText(/3. AI Command Center/i);
-    fireEvent.click(aiTile);
-
-    expect(screen.getAllByText(/Nadia AI/i).length).toBeGreaterThanOrEqual(1);
-    expect(mockSetSearchParams).toHaveBeenCalled();
+    expect(await screen.findByText(/Lead activity/i)).toBeInTheDocument();
+    expect(screen.getByText(/Conversion funnel/i)).toBeInTheDocument();
+    expect(screen.getByText(/Inventory aging/i)).toBeInTheDocument();
+    expect(screen.getByText(/Agent performance/i)).toBeInTheDocument();
   });
 });

@@ -6,14 +6,22 @@
  */
 
 import { useState, useMemo, useEffect, useCallback } from 'react';
+import { useSelector } from 'react-redux';
 import { useSearchParams } from 'react-router-dom';
 import { useHaptics } from '../../hooks/useHaptics';
-import { useCRMHubData } from '../../hooks/crm/useCRMHubData';
 import type { SearchableOption } from '../../components/dashboard/common/SearchableSelect';
+import type { RootState } from '../../store/store';
+import { selectSessionUser } from '../../store/selectors/sessionSelectors';
+
+export interface DashboardItem {
+  id: string;
+  label: string;
+  icon: string;
+}
 
 export interface SubGroup {
   name: string;
-  items: { id: string; label: string; icon: string }[];
+  items: DashboardItem[];
 }
 
 export interface BuildingTier {
@@ -26,8 +34,8 @@ export interface BuildingTier {
   icon: string;
   summary: string;
   scope: string[];
-  subGroups?: { name?: string; id?: string; label?: string; icon?: string; items?: { id: string; label: string; icon: string }[] }[];
-  items?: { id: string; label: string; icon: string }[];
+  subGroups?: SubGroup[];
+  items?: DashboardItem[];
 }
 
 export interface AIAssistantOption {
@@ -725,6 +733,7 @@ export const MD_SUITE_DEPT: BuildingTier = {
   badgeColor: '#EF4444',
   icon: '👑',
   summary: 'Reserved exclusively for Arslan Malik. Controls global corporate strategy, high-stakes joint ventures, investment allocations, and unilateral override permissions across all lower operational tiers.',
+  scope: [],
   items: [
     { id: 'overview', label: '1.1 Executive Overview & Live Audit', icon: '👑' },
     { id: 'ai-command', label: '1.2 1-12-108 AI Command Center', icon: '🤖' },
@@ -935,7 +944,7 @@ export const TWELVE_CORPORATE_DEPARTMENTS: BuildingTier[] = [
 ];
 
 export function useCRMHubPageLogic() {
-  const { user } = useCRMHubData();
+  const user = useSelector((state: RootState) => selectSessionUser(state));
   const [searchParams, setSearchParams] = useSearchParams();
   const haptics = useHaptics();
 

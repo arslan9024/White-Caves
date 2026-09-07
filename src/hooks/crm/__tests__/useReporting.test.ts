@@ -80,6 +80,26 @@ describe('useReporting', () => {
 
       expect(result.current.leadFunnel).toBeTruthy();
     });
+
+    it('normalizes the KPI API envelope to the KPI contract', async () => {
+      mockUnwrap.mockResolvedValue({
+        period: '30d',
+        kpis: {
+          newLeads: 11,
+          wonDeals: 4,
+          newListings: 6,
+          totalRevenue: 90000,
+          avgDealSize: 22500,
+        },
+      });
+
+      const { result } = renderHook(() => useReporting());
+      await act(async () => {
+        await result.current.fetchAllReports();
+      });
+
+      expect(result.current.kpis).toEqual(expect.objectContaining({ newLeads: 11, wonDeals: 4 }));
+    });
   });
 
   describe('individual fetches', () => {

@@ -13,11 +13,12 @@ import {
   ContentHeader,
 } from '../../../pages/crm/CRMHubPage.styles';
 import { BuildingTier } from '../../../pages/crm/CRMHubPage.logic';
-import FounderExecutiveDashboard from './FounderExecutiveDashboard';
+import CommandCenter from '../command-center/CommandCenter';
 
 export interface DepartmentOverviewProps {
   department: BuildingTier;
   onLaunchSubItem: (itemId: string) => void;
+  serverRole?: string;
 }
 
 const slideUpItem: Variants = {
@@ -28,9 +29,10 @@ const slideUpItem: Variants = {
 export const DepartmentOverview: FC<DepartmentOverviewProps> = ({
   department,
   onLaunchSubItem,
+  serverRole,
 }) => {
   if (department.id === 'dept-md') {
-    return <FounderExecutiveDashboard onNavigateToModule={onLaunchSubItem} />;
+    return <CommandCenter onNavigateToModule={onLaunchSubItem} serverRole={serverRole} />;
   }
 
   return (
