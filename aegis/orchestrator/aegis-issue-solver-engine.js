@@ -14,6 +14,7 @@ import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import { execSync } from 'child_process';
+import { classifyTaskTokenTier, consolidateIssueBatch, TOKEN_TIERS } from './aegis-token-guard.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -231,6 +232,16 @@ export async function resolveAllMilestones(isDryRun = false) {
 
   console.log(`📊 Found ${milestones.length} Open Milestones and ${issues.length} Open Issues to resolve.\n`);
 
+  // Run AEGIS Token Guard analysis & consolidation
+  const tokenPlan = consolidateIssueBatch(issues);
+  console.log(`🛡️  [AEGIS Token Guard] Intake Triage & Token Conservation Analysis:`);
+  console.log(`   * Total GitHub Issues: ${issues.length}`);
+  console.log(`   * Critical P0/P1 (AI Credits Allowed): ${tokenPlan.criticalStandalone.length}`);
+  console.log(`   * Consolidated Wave Batches: ${tokenPlan.consolidatedGroups.length} (${tokenPlan.telemetry.consolidatedChildrenCount} children merged)`);
+  console.log(`   * Zero-Token Deterministic Tasks: ${tokenPlan.deterministicItems.length}`);
+  console.log(`   * Redundant Prompts Eliminated: ${tokenPlan.telemetry.estimatedPromptReduction}`);
+  console.log(`   * Estimated Tokens Preserved: ~${tokenPlan.telemetry.estimatedTokensSaved.toLocaleString()} tokens!\n`);
+
   let totalClosed = 0;
   const closedIssueNumbers = [];
 
@@ -317,8 +328,23 @@ if (process.argv[1] === fileURLToPath(import.meta.url)) {
   const resolveIdx = args.indexOf('--resolve-milestone');
   const resolveAll = args.includes('--resolve-all');
   const isDryRun = args.includes('--dry-run');
+  const tokenAudit = args.includes('--token-audit');
 
-  if (resolveAll) {
+  if (tokenAudit) {
+    fetchMilestonesAndIssues().then(({ issues }) => {
+      const tokenPlan = consolidateIssueBatch(issues);
+      console.log(`\n======================================================`);
+      console.log(`🛡️  AEGIS TOKEN & COST PREVENTION AUDIT`);
+      console.log(`======================================================`);
+      console.log(`📊 Total Open Issues: ${issues.length}`);
+      console.log(`🔥 Critical AI Credit Issues (P0/P1): ${tokenPlan.criticalStandalone.length}`);
+      console.log(`📦 Consolidated Wave Batches: ${tokenPlan.consolidatedGroups.length} (${tokenPlan.telemetry.consolidatedChildrenCount} children merged)`);
+      console.log(`⚡ Zero-Token Deterministic Tasks: ${tokenPlan.deterministicItems.length}`);
+      console.log(`💡 Redundant Agent Prompts Eliminated: ${tokenPlan.telemetry.estimatedPromptReduction}`);
+      console.log(`💰 Estimated Antigravity Tokens Saved: ~${tokenPlan.telemetry.estimatedTokensSaved.toLocaleString()} tokens!`);
+      console.log(`======================================================\n`);
+    });
+  } else if (resolveAll) {
     resolveAllMilestones(isDryRun);
   } else if (resolveIdx !== -1 && args[resolveIdx + 1]) {
     resolveMilestoneBatch(args[resolveIdx + 1], isDryRun);

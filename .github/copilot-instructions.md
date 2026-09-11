@@ -24,6 +24,12 @@ Always align implementations with these concrete technologies and existing scrip
 - **Small Iterative Batches:** Do not rewrite massive files at once. Keep Diff sizes < 500 lines or risk automated rejection.
 - **Goal Frame Consistency:** Ensure your changes strictly align with the `goal_frame` set during the Automated Discovery phase. Do not inject out-of-scope features.
 - **Technical Debt:** Unused exports and dead code will be aggressively swept. Remove deprecated logic immediately when refactoring.
+- **Antigravity Strict Token & AI Credit Conservation (PERMANENT):**
+  - **Free-Model-First Law:** All planning, doc drafting, research, and test scaffolding must utilize free-tier specialists (@Sofia, @Victoria, @Invoice, @Cassie). AI credits are strictly prohibited for non-coding tasks.
+  - **Zero-Token Deterministic Resolution:** Trivial formatting, linting, cosmetic styling, mock fixtures, and minor copy must be resolved locally with zero LLM API calls.
+  - **Context Minimization Law:** Prohibit full-file echoes, conversational pleasantries, and redundant prompt boilerplate. Output only concise diffs and minimal JSON manifests.
+  - **Child-Slice Consolidation:** Never spawn individual multi-prompt cycles for child issues of the same wave; consolidate them into a single parent batch.
+  - **High-Value Authorization Only:** Premium AI credits are reserved exclusively for P0/P1 security vulnerabilities, statutory compliance engines (Ejari, RERA, AML), and core financial/statutory calculations.
 
 ### 2.1 Frontend structure
 

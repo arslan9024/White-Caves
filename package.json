@@ -323,7 +323,7 @@
                     "aegis:context:handoff":  "node scripts/orchestrator/context-manager.js --handoff",
                     "aegis:context:bootstrap":  "node scripts/orchestrator/context-manager.js --bootstrap",
                     "aegis:context:status":  "node scripts/orchestrator/context-manager.js --status",
-                    "aegis:context:validate":  "node scripts/orchestrator/governance-audit.js --strict",
+                    "aegis:context:validate":  "node aegis/orchestrator/governance-audit.js --strict",
                     "dead-code-sweep":  "node scripts/dead-code-sweep.js",
                     "aegis:skills-sync":  "powershell -ExecutionPolicy Bypass -Command \"\u0026 { Copy-Item -Path \u0027~/.gemini/config/plugins/*/skills/*\u0027, \u0027~/.gemini/antigravity/builtin/skills/*\u0027 -Destination \u0027.agents/skills\u0027 -Recurse -Force -ErrorAction SilentlyContinue }\""
                 },

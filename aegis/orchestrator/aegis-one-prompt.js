@@ -1,6 +1,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import { spawnSync } from 'node:child_process';
+import { classifyTaskTokenTier, compressPromptContext, TOKEN_TIERS } from './aegis-token-guard.js';
 
 const cwd = process.cwd();
 const policyPath = path.join(cwd, 'aegis', 'orchestrator', 'policy.json');
@@ -156,31 +157,60 @@ function normalizeLane(lane) {
 
 function buildOverrides({ prompt, title, lane, planningAgent, implementationAgent }) {
   const stamp = new Date().toISOString();
-  const planningTitle = `[OnePrompt][Plan] ${title}`;
-  const implementationTitle = `[OnePrompt][Implement] ${title}`;
+  const triage = classifyTaskTokenTier({ title, prompt });
+  const compressedPrompt = compressPromptContext(prompt, 1800);
+
+  // Assign agent based on token tier:
+  let effectivePlanAgent = planningAgent;
+  let effectiveImpAgent = implementationAgent;
+  let planTeam = 'free-planning';
+  let impTeam = 'premium-implementation';
+
+  if (triage.tier.name === TOKEN_TIERS.ZERO_TOKEN_DETERMINISTIC.name) {
+    effectivePlanAgent = '@Sofia';
+    effectiveImpAgent = '@Katherine';
+    impTeam = 'deterministic-validation';
+  } else if (triage.tier.name === TOKEN_TIERS.FREE_TIER_SPECIALIST.name) {
+    effectivePlanAgent = '@Sofia';
+    effectiveImpAgent = '@Victoria';
+    impTeam = 'free-specialist';
+  }
+
+  const planningTitle = `[OnePrompt][Plan][${triage.tier.name}] ${title}`;
+  const implementationTitle = `[OnePrompt][Implement][${triage.tier.name}] ${title}`;
 
   return [
     {
-      agent: planningAgent,
+      agent: effectivePlanAgent,
       lane,
       phase: 'planning',
-      team: 'free-planning',
-      priority: 'critical',
-      priorityScore: 1000,
+      team: planTeam,
+      priority: triage.tier.name === TOKEN_TIERS.CRITICAL_AI_CREDIT.name ? 'critical' : 'normal',
+      priorityScore: triage.tier.name === TOKEN_TIERS.CRITICAL_AI_CREDIT.name ? 1000 : 750,
+      tokenTier: triage.tier.name,
+      tokenBudget: triage.tier.maxTokenBudget,
+      aiCreditsAllowed: triage.tier.name === TOKEN_TIERS.CRITICAL_AI_CREDIT.name,
       title: planningTitle,
-      prompt: `${planningAgent} -- PRIORITY RESEARCH+PLAN: ${title}. Source user prompt: "${prompt}". Produce an implementation-ready plan with acceptance criteria, risk level (P0/P1/P2), FEEDS/FEEDS_ACK handoffs, and concrete validation strategy.`,
+      prompt: `${effectivePlanAgent} -- [TOKEN-CONSERVATION PROTOCOL ACTIVE] PRIORITY RESEARCH+PLAN: ${title}. Prompt: "${compressedPrompt}". Produce an ultra-compact plan: acceptance criteria, risk level, and validation path. OMIT all conversational fluff to preserve token budget.`,
       createdBy: 'aegis-one-prompt',
       createdAt: stamp,
     },
     {
-      agent: implementationAgent,
+      agent: effectiveImpAgent,
       lane,
       phase: 'implementation',
-      team: 'premium-implementation',
-      priority: 'critical',
-      priorityScore: 999,
+      team: impTeam,
+      priority: triage.tier.name === TOKEN_TIERS.CRITICAL_AI_CREDIT.name ? 'critical' : 'normal',
+      priorityScore: triage.tier.name === TOKEN_TIERS.CRITICAL_AI_CREDIT.name ? 999 : 740,
+      tokenTier: triage.tier.name,
+      tokenBudget: triage.tier.maxTokenBudget,
+      aiCreditsAllowed: triage.tier.name === TOKEN_TIERS.CRITICAL_AI_CREDIT.name,
       title: implementationTitle,
-      prompt: `${implementationAgent} -- PRIORITY IMPLEMENT+VERIFY: ${title}. Source user prompt: "${prompt}". Execute a production-safe vertical slice implementation from A to Z. You MUST update the docs, SRS, SDD, and code. You MUST update the full journey details of this issue and confirm UI/UX is updated. You MUST write Vitest/Playwright tests for these changes. Finally, you MUST output a strict JSON manifest at the end of your response listing exactly the filepaths you modified, in the format: \`\`\`json\n{"modified": ["src/...", "business_docs/..."]}\n\`\`\`. Include rollback notes and verification evidence.`,
+      prompt: `${effectiveImpAgent} -- [TOKEN-CONSERVATION PROTOCOL ACTIVE: Tier ${triage.tier.name}] PRIORITY IMPLEMENT: ${title}. Prompt: "${compressedPrompt}". ${
+        triage.tier.name === TOKEN_TIERS.ZERO_TOKEN_DETERMINISTIC.name
+          ? 'Resolve deterministically using local templates. ZERO AI CREDITS ALLOWED.'
+          : 'Execute targeted slice. MUST update docs/SRS/SDD/code/tests.'
+      } Output ONLY concise code diffs and strict JSON manifest: {"status":"complete","modified":["..."]}. OMIT all conversational greetings, full-file echoes, or reasoning monologues to protect user token quota.`,
       createdBy: 'aegis-one-prompt',
       createdAt: stamp,
     },
@@ -284,9 +314,9 @@ function main() {
   savePolicy(updatedPolicy);
 
   // eslint-disable-next-line no-console
-  console.log(`[Aegis One-Prompt] Added ${overrides.length} critical overrides to policy.`);
+  console.log(`[Aegis One-Prompt] Added ${overrides.length} overrides to policy.`);
   // eslint-disable-next-line no-console
-  console.log(`[Aegis One-Prompt] Planning agent: ${args.planningAgent} | Implementation agent: ${args.implementationAgent} | Lane: ${lane}`);
+  console.log(`[Aegis One-Prompt] Planning: ${overrides[0]?.agent} | Implementation: ${overrides[1]?.agent} | Tier: ${overrides[1]?.tokenTier} | Budget: ${overrides[1]?.tokenBudget} tokens | AI Credits: ${overrides[1]?.aiCreditsAllowed}`);
 
   if (args.noRegenerate) {
     // eslint-disable-next-line no-console

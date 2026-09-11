@@ -104,6 +104,22 @@ The explicit Aegis control plane is now:
 
 ---
 
+## 🚀 AEGIS V4.1 — STRICT TOKEN PRESERVATION & AI CREDIT SHIELD (Active as of 2026-09-11)
+
+**UPGRADE:** Aegis V4 → **Aegis V4.1 (Strict Antigravity Token & AI Credit Shield)**  
+**NEW CAPABILITIES:**
+
+- **Token ROI Classifier** — Automated triaging of incoming issues into `CRITICAL_AI_CREDIT` (P0/P1 only), `FREE_TIER_SPECIALIST` (0 credit planning/docs), and `ZERO_TOKEN_DETERMINISTIC` (local AST resolution).
+- **Child-Slice Anti-Explosion Filter** — Batch consolidation of related child slices into single parent wave prompts, saving 70%+ token consumption.
+- **Strict 15,000 Token Ceiling** — Enforces hard task budget caps (down from runaway 220,000) and halts runaway retry loops.
+- **Zero-Token Trivial Resolution** — Trivial formatting, mock fixtures, and cosmetic copy changes are resolved locally with zero LLM API calls.
+- **Context Window Compressor** — Removes redundant conversational padding and large file repeats.
+
+**POLICY SOURCE:** `aegis/orchestrator/policy.json` v`2026.09.11-aegis-v4-token-preservation-v1`  
+**STATUS:** Active — Enforces strict token quota conservation and zero-waste AI credit spending across all turns.
+
+---
+
 ## 🚀 AEGIS V3 — ORCHESTRATOR & DEDUPLICATION UPGRADE (Active as of 2026-08-13)
 
 **UPGRADE:** Aegis vNext → **Aegis V3 (Deduplication, Optimization & Algorithmic Excellence)**  
