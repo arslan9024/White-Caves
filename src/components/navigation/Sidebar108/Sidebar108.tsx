@@ -10,6 +10,7 @@ import {
   FounderHubPodium,
   NavItemButton,
   SidebarFooter,
+  DragHandle,
 } from './styles/Sidebar108.style';
 import { useSidebar108Logic } from './logic/Sidebar108.logic';
 import { SIDEBAR_STATIC_DATA, FOUNDER_QUICK_ACTIONS } from './data/Sidebar108.data';
@@ -24,6 +25,7 @@ import {
   FileText,
   TrendingUp,
   Network,
+  Cpu,
 } from 'lucide-react';
 
 const ACTION_ICONS: Record<string, React.ReactNode> = {
@@ -43,19 +45,43 @@ export const Sidebar108: FC = () => {
     departments,
     expandedDeptId,
     toggleDepartment,
+    isZoeExpanded,
+    toggleZoeFeatures,
+    sidebarWidth,
+    setSidebarWidth,
     currentPath,
     handleNavigate,
     handleLogout,
   } = useSidebar108Logic();
 
+  const handleMouseDown = (e: React.MouseEvent) => {
+    e.preventDefault();
+    document.addEventListener('mousemove', handleMouseMove);
+    document.addEventListener('mouseup', handleMouseUp);
+  };
+
+  const handleMouseMove = (e: MouseEvent) => {
+    const newWidth = e.clientX;
+    if (newWidth > 200 && newWidth < 500) {
+      setSidebarWidth(newWidth);
+    }
+  };
+
+  const handleMouseUp = () => {
+    document.removeEventListener('mousemove', handleMouseMove);
+    document.removeEventListener('mouseup', handleMouseUp);
+  };
+
   return (
     <SidebarContainer
       $isCollapsed={isCollapsed}
       $isDark={isDark}
+      $sidebarWidth={sidebarWidth}
       data-testid="sidebar-108-command-panel"
       role="navigation"
       aria-label="1-12-108 Corporate Hierarchy Navigation"
     >
+      <DragHandle onMouseDown={handleMouseDown} />
       {/* ── Header Collapse Action ────────────────────────────────────────── */}
       <SidebarHeader $isDark={isDark}>
         {!isCollapsed && (
@@ -119,6 +145,55 @@ export const Sidebar108: FC = () => {
           {!isCollapsed && <span>{SIDEBAR_STATIC_DATA.dashboardLabel}</span>}
         </NavItemButton>
 
+        {/* ── Zoe Features Menu ─────────────────────────────────────────── */}
+        <div className="mb-1">
+          <NavItemButton
+            $isActive={currentPath.includes('/zoe')}
+            $isDark={isDark}
+            onClick={() => {
+              if (isCollapsed) {
+                handleNavigate('/crm/zoe/overview');
+              } else {
+                toggleZoeFeatures();
+              }
+            }}
+          >
+            <Cpu className="w-4 h-4 text-red-500" />
+            {!isCollapsed && (
+              <div className="flex-1 flex items-center justify-between overflow-hidden">
+                <span className="truncate">Zoe Features</span>
+                <ChevronDown
+                  className={`w-3.5 h-3.5 transition-transform duration-200 ${
+                    isZoeExpanded ? 'rotate-180 text-red-500' : 'text-slate-400'
+                  }`}
+                />
+              </div>
+            )}
+          </NavItemButton>
+          {!isCollapsed && isZoeExpanded && (
+            <div className="pl-6 pr-2 py-1 space-y-1">
+              <button
+                onClick={() => handleNavigate('/crm/zoe/overview')}
+                className="w-full text-left text-xs px-2.5 py-1.5 rounded hover:bg-red-500/10 text-slate-400 hover:text-red-500 flex items-center justify-between group transition-colors"
+              >
+                <span className="truncate">Overview</span>
+              </button>
+              <button
+                onClick={() => handleNavigate('/crm/zoe/ai-hub')}
+                className="w-full text-left text-xs px-2.5 py-1.5 rounded hover:bg-red-500/10 text-slate-400 hover:text-red-500 flex items-center justify-between group transition-colors"
+              >
+                <span className="truncate">AI Hub</span>
+              </button>
+              <button
+                onClick={() => handleNavigate('/crm/zoe/ai-command-center')}
+                className="w-full text-left text-xs px-2.5 py-1.5 rounded hover:bg-red-500/10 text-slate-400 hover:text-red-500 flex items-center justify-between group transition-colors"
+              >
+                <span className="truncate">AI Command Center</span>
+              </button>
+            </div>
+          )}
+        </div>
+
         {/* ── 12 Corporate Departments Listing ────────────────────────────── */}
         {!isCollapsed && (
           <div className="px-3 py-2 text-[11px] font-bold text-slate-400 uppercase tracking-wider">
@@ -126,7 +201,7 @@ export const Sidebar108: FC = () => {
           </div>
         )}
 
-        {departments.map(dept => {
+        {departments.map((dept: any) => {
           const isExpanded = expandedDeptId === dept.departmentId;
           const deptPath = `/crm/department/${dept.departmentId}`;
           const isDeptActive = currentPath.includes(dept.departmentId);
@@ -163,7 +238,7 @@ export const Sidebar108: FC = () => {
               {/* Nested Supervisors list */}
               {!isCollapsed && isExpanded && dept.supervisors && (
                 <div className="pl-6 pr-2 py-1 space-y-1">
-                  {dept.supervisors.map(sup => (
+                  {dept.supervisors.map((sup: any) => (
                     <button
                       key={sup.id}
                       onClick={() => handleNavigate(`/crm/supervisor/${sup.id}`)}

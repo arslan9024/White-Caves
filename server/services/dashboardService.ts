@@ -1,30 +1,46 @@
-/**
- * Dashboard Service
- * Business logic for dashboard metrics, analytics, and KPIs
- */
-
-import { prisma } from '../database.js';
+import Lead from '../models/Lead.js';
+import Property from '../models/Property.js';
+import Transaction from '../models/Transaction.js';
 
 class DashboardService {
-  /**
-   * Get dashboard summary data
-   */
   async getDashboardData() {
-    // Implementation pending - will aggregate lead, property, and transaction data
+    const totalLeads = await Lead.countDocuments().catch(() => 0);
+    const activeLeads = await Lead.countDocuments({ status: { $in: ['new', 'contacted', 'qualified'] } }).catch(() => 0);
+    const totalProperties = await Property.countDocuments().catch(() => 0);
+    const totalTransactions = await Transaction.countDocuments().catch(() => 0);
+    
     return {
       summary: {
-        totalLeads: 0,
-        activeLeads: 0,
-        totalProperties: 0,
-        totalTransactions: 0,
+        totalLeads,
+        activeLeads,
+        totalProperties,
+        totalTransactions,
         monthlyRevenue: 0
       }
     };
   }
 
-  /**
-   * Get market analytics
-   */
+  async getSummary() {
+    return this.getDashboardData();
+  }
+
+  async getRecentProperties(limit = 10) {
+    const properties = await Property.find().sort({ createdAt: -1 }).limit(limit).catch(() => []);
+    return { properties };
+  }
+
+  async getRecentLeads(limit = 5) {
+    const leads = await Lead.find().sort({ createdAt: -1 }).limit(limit).catch(() => []);
+    return leads;
+  }
+
+  async getPerformanceMetrics() {
+    return {
+      topAgents: [],
+      performance: {}
+    };
+  }
+
   async getMarketAnalytics() {
     return {
       priceIndex: 0,
@@ -34,46 +50,9 @@ class DashboardService {
     };
   }
 
-  /**
-   * Get agent performance metrics
-   */
-  async getAgentPerformance(limit: number = 10) {
-    return {
-      topAgents: [],
-      performance: {}
-    };
-  }
-
-  /**
-   * Get recent properties
-   */
-  async getRecentProperties(limit: number = 10) {
-    return {
-      properties: []
-    };
-  }
-
-  /**
-   * Get conversion metrics
-   */
-  async getConversionMetrics() {
-    return {
-      total: 0,
-      byAgent: {},
-      bySource: {}
-    };
-  }
-
-  /**
-   * Get revenue analytics
-   */
-  async getRevenueAnalytics() {
-    return {
-      monthlyRevenue: [],
-      commissionDistribution: {},
-      topEarners: []
-    };
+  async getRecentActivities(limit = 10) {
+    return [];
   }
 }
 
-export default DashboardService;
+export default new DashboardService();

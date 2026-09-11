@@ -1,268 +1,78 @@
-/**
- * PoaValidationPortal — Wave 48 GOAL-030
- * Power of Attorney (POA) notary document validation & legal capacity portal
- * White Caves Real Estate LLC — Compliance & Legal Suite
- */
 import React, { FC, useState } from 'react';
 import styled, { keyframes } from 'styled-components';
 
 const fadeIn = keyframes`from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}`;
+const Wrap = styled.div`width:100%;background:linear-gradient(135deg,#0F172A,#1E293B);border:2px solid rgba(59,130,246,0.25);border-radius:18px;overflow:hidden;font-family:'Inter',sans-serif;animation:${fadeIn} .4s ease`;
+const Head = styled.div`padding:14px 20px;background:rgba(59,130,246,0.05);border-bottom:1px solid rgba(59,130,246,0.12);display:flex;align-items:center;justify-content:space-between`;
+const Title = styled.h3`margin:0;color:#FFF;font-size:.9rem;font-weight:700`;
+const Body = styled.div`padding:20px;display:flex;flex-direction:column;gap:14px`;
 
-const Wrap = styled.div`
-  width: 100%;
-  background: linear-gradient(135deg, #0F172A 0%, #1E293B 100%);
-  border: 2px solid rgba(239, 68, 68, 0.25);
-  border-radius: 18px;
-  overflow: hidden;
-  font-family: 'Inter', sans-serif;
-  animation: ${fadeIn} 0.4s ease;
+const StatusBanner = styled.div<{$valid:boolean|null}>`
+  padding:16px;border-radius:12px;text-align:center;
+  background:${p=>p.$valid===null?'rgba(15,23,42,0.7)':p.$valid?'rgba(16,185,129,0.08)':'rgba(239,68,68,0.08)'};
+  border:2px solid ${p=>p.$valid===null?'rgba(100,116,139,0.2)':p.$valid?'rgba(16,185,129,0.3)':'rgba(239,68,68,0.3)'};
 `;
+const SIcon = styled.div`font-size:2.5rem;margin-bottom:6px`;
+const SLabel = styled.div<{$valid:boolean|null}>`font-size:.9rem;font-weight:800;color:${p=>p.$valid===null?'#64748B':p.$valid?'#10B981':'#EF4444'}`;
+const SRef = styled.div`font-size:.7rem;color:#64748B;margin-top:4px`;
 
-const Head = styled.div`
-  padding: 14px 20px;
-  background: rgba(239, 68, 68, 0.05);
-  border-bottom: 1px solid rgba(239, 68, 68, 0.12);
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-`;
+const FormGrid = styled.div`display:flex;flex-direction:column;gap:10px`;
+const Field = styled.div`display:flex;flex-direction:column;gap:4px`;
+const Label = styled.label`font-size:.7rem;color:#94A3B8;font-weight:600`;
+const Input = styled.input`padding:8px 10px;border-radius:7px;border:1px solid rgba(100,116,139,0.3);background:rgba(15,23,42,0.8);color:#E2E8F0;font-size:.78rem;font-weight:600;width:100%;box-sizing:border-box;outline:none;&:focus{border-color:#3B82F6}`;
 
-const Title = styled.h3`
-  margin: 0;
-  color: #FFF;
-  font-size: 0.92rem;
-  font-weight: 700;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-`;
+const CheckList = styled.div`display:flex;flex-direction:column;gap:6px`;
+const CheckRow = styled.div<{$ok:boolean}>`display:flex;align-items:center;gap:8px;padding:7px 10px;border-radius:7px;background:${p=>p.$ok?'rgba(16,185,129,0.06)':'rgba(239,68,68,0.06)'};border:1px solid ${p=>p.$ok?'rgba(16,185,129,0.15)':'rgba(239,68,68,0.15)'}`;
+const CheckLabel = styled.div`font-size:.74rem;color:#94A3B8;flex:1`;
 
-const Tag = styled.span`
-  font-size: 0.68rem;
-  font-weight: 800;
-  color: #EF4444;
-  background: rgba(239, 68, 68, 0.1);
-  padding: 3px 10px;
-  border-radius: 999px;
-  border: 1px solid rgba(239, 68, 68, 0.25);
-`;
+const ValidateBtn = styled.button`width:100%;padding:12px;border-radius:10px;border:none;background:linear-gradient(90deg,#1D4ED8,#3B82F6);color:#FFF;font-size:.85rem;font-weight:800;cursor:pointer;transition:all .2s;&:hover{filter:brightness(1.1)}`;
 
-const Body = styled.div`
-  padding: 20px;
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-`;
-
-const FormGrid = styled.div`
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 12px;
-`;
-
-const Field = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-`;
-
-const FLabel = styled.label`
-  font-size: 0.68rem;
-  font-weight: 700;
-  color: #94A3B8;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-`;
-
-const Input = styled.input`
-  padding: 8px 10px;
-  border-radius: 7px;
-  border: 1px solid rgba(100, 116, 139, 0.25);
-  background: rgba(15, 23, 42, 0.8);
-  color: #E2E8F0;
-  font-size: 0.8rem;
-  font-weight: 600;
-  width: 100%;
-  box-sizing: border-box;
-  outline: none;
-  &:focus { border-color: #EF4444; }
-`;
-
-const Select = styled.select`
-  padding: 8px 10px;
-  border-radius: 7px;
-  border: 1px solid rgba(100, 116, 139, 0.25);
-  background: rgba(15, 23, 42, 0.8);
-  color: #E2E8F0;
-  font-size: 0.8rem;
-  font-weight: 600;
-  width: 100%;
-  outline: none;
-  &:focus { border-color: #EF4444; }
-`;
-
-const ValidationBox = styled.div<{ $valid: boolean }>`
-  padding: 16px;
-  border-radius: 12px;
-  background: ${p => p.$valid ? 'rgba(16, 185, 129, 0.08)' : 'rgba(239, 68, 68, 0.08)'};
-  border: 1.5px solid ${p => p.$valid ? 'rgba(16, 185, 129, 0.35)' : 'rgba(239, 68, 68, 0.35)'};
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-`;
-
-const ScopeList = styled.div`
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 8px;
-  font-size: 0.72rem;
-`;
-
-const ScopeItem = styled.div<{ $granted: boolean }>`
-  padding: 6px 10px;
-  border-radius: 6px;
-  background: ${p => p.$granted ? 'rgba(16, 185, 129, 0.1)' : 'rgba(100, 116, 139, 0.1)'};
-  border: 1px solid ${p => p.$granted ? 'rgba(16, 185, 129, 0.25)' : 'rgba(100, 116, 139, 0.15)'};
-  color: ${p => p.$granted ? '#10B981' : '#64748B'};
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  font-weight: 700;
-`;
-
-const VerifyBtn = styled.button`
-  width: 100%;
-  padding: 12px;
-  border-radius: 10px;
-  border: none;
-  background: linear-gradient(90deg, #DC2626, #EF4444);
-  color: #FFF;
-  font-size: 0.85rem;
-  font-weight: 800;
-  cursor: pointer;
-  &:hover { filter: brightness(1.1); transform: translateY(-1px); }
-`;
+const CHECKS = ['POA Notarized by UAE Notary Public','Emirates ID of Principal Verified','Passport Copy Attached','Property Title Deed Reference Cited','Scope of Authority Clearly Defined','Expiry Date Present (max 2 years)'];
 
 export const PoaValidationPortal: FC = () => {
-  const [poaNumber, setPoaNumber] = useState('POA-DXB-2025-88419');
-  const [attorneyName, setAttorneyName] = useState('Hassan Al Khouri');
-  const [principalName, setPrincipalName] = useState('Lord George Harrington');
-  const [courtJurisdiction, setCourtJurisdiction] = useState('Dubai Notary Public (Al Barsha)');
-  const [validating, setValidating] = useState(false);
-  const [result, setResult] = useState<{
-    valid: boolean;
-    issueDate: string;
-    expiryDate: string;
-    dldCompliant2YearRule: boolean;
-    powers: { name: string; granted: boolean }[];
-  }>({
-    valid: true,
-    issueDate: '2025-11-15',
-    expiryDate: '2027-11-14',
-    dldCompliant2YearRule: true,
-    powers: [
-      { name: 'Buy & Register Properties', granted: true },
-      { name: 'Sell & Transfer Title Deeds', granted: true },
-      { name: 'Sign MOUs & DLD Form F', granted: true },
-      { name: 'Receive Cheques & Funds in Own Name', granted: false }, // DLD Rule: Attorney cannot receive purchase funds in personal account
-      { name: 'Ejari Lease Execution', granted: true },
-      { name: 'Represent at Developer NOC', granted: true },
-    ]
-  });
+  const [poaRef, setPoaRef] = useState('');
+  const [grantorName, setGrantorName] = useState('');
+  const [agentName, setAgentName] = useState('');
+  const [valid, setValid] = useState<boolean|null>(null);
+  const [checkedItems, setCheckedItems] = useState<Set<number>>(new Set([0,1,2,4]));
 
-  const handleValidate = () => {
-    setValidating(true);
-    setTimeout(() => {
-      setValidating(false);
-      setResult({
-        valid: true,
-        issueDate: '2026-01-10',
-        expiryDate: '2028-01-09',
-        dldCompliant2YearRule: true,
-        powers: [
-          { name: 'Buy & Register Properties', granted: true },
-          { name: 'Sell & Transfer Title Deeds', granted: true },
-          { name: 'Sign MOUs & DLD Form F', granted: true },
-          { name: 'Receive Cheques & Funds in Own Name', granted: false },
-          { name: 'Ejari Lease Execution', granted: true },
-          { name: 'Represent at Developer NOC', granted: true },
-        ]
-      });
-    }, 1000);
+  const toggle = (i:number) => setCheckedItems(prev=>{const n=new Set(prev);n.has(i)?n.delete(i):n.add(i);return n});
+
+  const validate = () => {
+    setValid(checkedItems.size >= 5 && !!poaRef && !!grantorName);
   };
 
   return (
     <Wrap data-testid="poa-validation-portal">
       <Head>
-        <Title>📜 Power of Attorney (POA) Notary Verification Portal</Title>
-        <Tag>DUBAI COURTS NOTARY</Tag>
+        <Title>⚖️ Power of Attorney Validation Portal</Title>
+        <div style={{fontSize:'.7rem',color:'#3B82F6',fontWeight:700}}>Notary Doc</div>
       </Head>
       <Body>
+        <StatusBanner $valid={valid}>
+          <SIcon>{valid===null?'📄':valid?'✅':'❌'}</SIcon>
+          <SLabel $valid={valid}>{valid===null?'Enter POA details to validate':valid?'POA VALIDATED — Authorization Active':'POA INVALID — Missing Requirements'}</SLabel>
+          {valid && <SRef>Ref: POA-{Date.now().toString().slice(-8)} · {new Date().toLocaleDateString('en-AE')}</SRef>}
+        </StatusBanner>
+
         <FormGrid>
-          <Field>
-            <FLabel>POA Notarization Number</FLabel>
-            <Input value={poaNumber} onChange={e => setPoaNumber(e.target.value)} />
-          </Field>
-          <Field>
-            <FLabel>Notary Jurisdiction</FLabel>
-            <Select value={courtJurisdiction} onChange={e => setCourtJurisdiction(e.target.value)}>
-              <option value="Dubai Notary Public (Al Barsha)">Dubai Notary Public (Al Barsha)</option>
-              <option value="Dubai Courts Electronic Notary (e-Notary)">Dubai Courts Electronic Notary (e-Notary)</option>
-              <option value="Abu Dhabi Judicial Department (ADJD)">Abu Dhabi Judicial Department (ADJD)</option>
-              <option value="UAE Embassy Overseas / Ministry of Foreign Affairs (MOFA)">UAE Embassy Overseas / MOFA</option>
-            </Select>
-          </Field>
-          <Field>
-            <FLabel>Authorized Attorney (Representative)</FLabel>
-            <Input value={attorneyName} onChange={e => setAttorneyName(e.target.value)} />
-          </Field>
-          <Field>
-            <FLabel>Principal / Owner Name</FLabel>
-            <Input value={principalName} onChange={e => setPrincipalName(e.target.value)} />
-          </Field>
+          <Field><Label>POA Reference Number</Label><Input value={poaRef} onChange={e=>setPoaRef(e.target.value)} placeholder="UAE-NOC-POA-2025-XXXXX" /></Field>
+          <Field><Label>Grantor (Principal) Full Name</Label><Input value={grantorName} onChange={e=>setGrantorName(e.target.value)} placeholder="Mohammed Al Rashid" /></Field>
+          <Field><Label>Attorney (Agent) Full Name</Label><Input value={agentName} onChange={e=>setAgentName(e.target.value)} placeholder="Victoria Chen" /></Field>
         </FormGrid>
 
-        <VerifyBtn onClick={handleValidate} disabled={validating}>
-          {validating ? '⏳ Validating via Dubai Courts e-Notary...' : '🔍 Verify POA Legal Capacity & 2-Year Rule'}
-        </VerifyBtn>
+        <CheckList>
+          {CHECKS.map((c,i)=>(
+            <CheckRow key={i} $ok={checkedItems.has(i)} onClick={()=>toggle(i)} style={{cursor:'pointer'}}>
+              <div style={{fontSize:'.8rem'}}>{checkedItems.has(i)?'✅':'⬜'}</div>
+              <CheckLabel>{c}</CheckLabel>
+            </CheckRow>
+          ))}
+        </CheckList>
 
-        {result && (
-          <ValidationBox $valid={result.valid}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-              <div>
-                <div style={{ fontSize: '0.95rem', fontWeight: 800, color: 'var(--white, #FFF)' }}>
-                  POA Status: {result.valid ? 'LEGAL & ACTIVE' : 'EXPIRED / INVALID'}
-                </div>
-                <div style={{ fontSize: '0.7rem', color: 'var(--color-94a3b8, #94A3B8)', marginTop: '2px' }}>
-                  Valid from {result.issueDate} to {result.expiryDate} (Within DLD 2-Year Statutory Window)
-                </div>
-              </div>
-              <span style={{ fontSize: '0.7rem', fontWeight: 800, padding: '3px 10px', borderRadius: '6px', background: 'var(--accent-green, #10B981)', color: 'var(--white, #FFF)' }}>
-                ✓ DLD TRUSTEE READY
-              </span>
-            </div>
-
-            <div style={{ fontSize: '0.72rem', fontWeight: 700, color: 'var(--text-secondary, #CBD5E1)', marginTop: '6px' }}>
-              Scope of Delegated Powers & Restrictions:
-            </div>
-
-            <ScopeList>
-              {result.powers.map((p, idx) => (
-                <ScopeItem key={idx} $granted={p.granted}>
-                  <span>{p.granted ? '✓' : '✗'}</span>
-                  <span>{p.name}</span>
-                </ScopeItem>
-              ))}
-            </ScopeList>
-
-            <div style={{ fontSize: '0.68rem', color: 'var(--accent-gold, #F59E0B)', background: 'rgba(245, 158, 11, 0.08)', padding: '8px 12px', borderRadius: '6px', lineHeight: '1.4' }}>
-              ⚠️ <strong>RERA Conveyancing Directive:</strong> POAs for selling property in Dubai cannot exceed 2 years from the date of notarization. Cheques for purchase price must be drawn strictly in the seller's name, not the POA holder.
-            </div>
-          </ValidationBox>
-        )}
+        <ValidateBtn onClick={validate}>⚖️ Validate Power of Attorney</ValidateBtn>
       </Body>
     </Wrap>
   );
 };
-
 export default PoaValidationPortal;

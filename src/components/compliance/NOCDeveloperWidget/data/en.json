@@ -1,0 +1,17 @@
+{
+  "title": "NOC Developer Request",
+  "subtitle": "Automated Request Letter Generator & Tracker",
+  "project_name": "Project Name",
+  "unit_number": "Unit Number",
+  "buyer_name": "Buyer Name",
+  "seller_name": "Seller Name",
+  "generate_noc": "Generate NOC Request",
+  "generating": "Generating...",
+  "status_tracker": "Request Tracker",
+  "status_draft": "Drafted",
+  "status_sent": "Sent to Developer",
+  "status_pending": "Pending Approval",
+  "status_approved": "Approved (NOC Received)",
+  "download_noc": "Download NOC",
+  "developer_name": "Developer Name"
+}

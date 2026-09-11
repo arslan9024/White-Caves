@@ -1,0 +1,19 @@
+{
+  "title": "RERA ORN Auto-Renewal Workflow",
+  "subtitle": "Track and manage RERA Office Registration Number (ORN) renewal.",
+  "orn_number": "ORN Number",
+  "trade_license": "Trade License",
+  "issue_date": "Issue Date",
+  "expiry_date": "Expiry Date",
+  "status_active": "Active",
+  "status_expiring": "Expiring Soon",
+  "status_expired": "Expired",
+  "days_left": "Days Left for Renewal",
+  "step_1": "1. Update DED License",
+  "step_2": "2. Verify Ejari",
+  "step_3": "3. RERA Portal Sync",
+  "step_4": "4. Final Verification",
+  "btn_sync": "Sync with RERA Trakheesi",
+  "btn_renew": "Initiate Auto-Renewal",
+  "alert_warning": "RERA ORN expires in {days} days. Ensure DED and Ejari are valid before initiating renewal."
+}

@@ -1,0 +1,14 @@
+{
+  "title": "Vitest Unit Tests",
+  "subtitle": "VAT Calc, Double-Entry Balance, Payroll Math",
+  "run_all": "Run Suite",
+  "test_step_1": "VAT Calculation Tests",
+  "test_step_2": "Double-Entry Balance Math",
+  "test_step_3": "Payroll Calculation Math",
+  "status_idle": "Idle",
+  "status_running": "Running...",
+  "status_passed": "Passed",
+  "status_failed": "Failed",
+  "coverage_title": "Code Coverage",
+  "coverage_desc": "Target: ≥ 80%"
+}

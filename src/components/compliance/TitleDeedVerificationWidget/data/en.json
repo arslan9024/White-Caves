@@ -1,0 +1,19 @@
+{
+  "title": "Title Deed Verification",
+  "subtitle": "DLD e-Title Registry & QR Validation",
+  "certificate_number": "Certificate Number",
+  "certificate_year": "Registration Year",
+  "owner_name": "Registered Owner Name",
+  "upload_qr": "Upload QR Code Image or PDF",
+  "validate_dld": "Validate with DLD",
+  "verifying": "Verifying...",
+  "status_verified": "Verified - Authentic Title Deed",
+  "status_fraud": "Invalid - Record Not Found",
+  "status_mismatch": "Mismatch - Owner details do not match registry",
+  "dld_reference": "DLD Reference ID",
+  "property_type": "Property Type",
+  "municipality": "Municipality",
+  "area": "Area / Community",
+  "issue_date": "Issue Date",
+  "share_percentage": "Ownership Share"
+}

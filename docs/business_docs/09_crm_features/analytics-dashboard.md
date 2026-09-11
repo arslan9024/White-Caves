@@ -884,3 +884,20 @@ GET /api/export/leads?
 - [ ] KPI definitions reviewed quarterly and approved by Owner
 - [ ] Every dashboard has a "Last Updated" timestamp visible to user
 - [ ] KPI ownership map exportable as PDF for management review
+
+---
+
+## Technical Update (2026-09)
+
+### Component Refactoring (Zoe Features)
+To streamline the CRM interface and improve UX, the following components have been consolidated under a new src/components/ZoeFeatures directory:
+- Overview
+- AIHub
+- AICommandCenter
+
+A "Zoe Features" parent menu has been introduced to the Sidebar108 and legacy Sidebar navigation, equipped with a draggable resize handle ($sidebarWidth state tracking) for adjustable width, enhancing the accessibility and multi-panel workflow.
+
+### Data Model & API Fixes
+The MainGridView has been successfully disconnected from static/mock dummy configurations. It now utilizes a useEffect hook pattern to fetch real-time metadata directly from /api/dashboard/summary.
+
+The backend DashboardService (server/services/dashboardService.ts) has been refactored to employ Mongoose models (Lead, Property, Transaction) and executes genuine MongoDB queries replacing placeholder return objects. It is correctly exported as an instance to support legacy routing integrations.

@@ -6,6 +6,21 @@ import {
 } from 'lucide-react';
 import { PaymentInstructionDeck, AssistantDocsTab } from './shared';
 import KYCAMLDashboard from './shared/KYCAMLDashboard';
+import { FinanceEngineProductionReleaseGateWidget } from '../finance/FinanceEngineProductionReleaseGateWidget/FinanceEngineProductionReleaseGateWidget';
+import { FinanceEngineLedgerBenchmarkWidget } from '../finance/FinanceEngineLedgerBenchmarkWidget/FinanceEngineLedgerBenchmarkWidget';
+import { FinanceEngineFTAComplianceWidget } from '../finance/FinanceEngineFTAComplianceWidget/FinanceEngineFTAComplianceWidget';
+import { FinanceEnginePlaywrightE2EWidget } from '../finance/FinanceEnginePlaywrightE2EWidget/FinanceEnginePlaywrightE2EWidget';
+import { FinanceEngineVitestUnitTestsWidget } from '../finance/FinanceEngineVitestUnitTestsWidget/FinanceEngineVitestUnitTestsWidget';
+import { FinanceRBACWidget } from '../finance/FinanceRBACWidget/FinanceRBACWidget';
+import { ZakatCalculatorWidget } from '../finance/ZakatCalculatorWidget/ZakatCalculatorWidget';
+import { IndustryBenchmarkWidget } from '../finance/IndustryBenchmarkWidget/IndustryBenchmarkWidget';
+import { InsurancePremiumWidget } from '../finance/InsurancePremiumWidget/InsurancePremiumWidget';
+import { CryptoPaymentWidget } from '../finance/CryptoPaymentWidget/CryptoPaymentWidget';
+import { InteractiveChartsWidget } from '../finance/InteractiveChartsWidget/InteractiveChartsWidget';
+import { FinanceAlertsWidget } from '../finance/FinanceAlertsWidget/FinanceAlertsWidget';
+import { FinanceI18NWidget } from '../finance/FinanceI18NWidget/FinanceI18NWidget';
+import { ArabicRTLInvoiceWidget } from '../finance/ArabicRTLInvoiceWidget/ArabicRTLInvoiceWidget';
+import { MobileFinanceWidget } from '../finance/MobileFinanceWidget/MobileFinanceWidget';
 import './AssistantDashboard.css';
 
 const INVOICES = [
@@ -92,13 +107,15 @@ const TheodoraFinanceCRM = () => {
       </div>
 
       <div className="assistant-tabs">
-        {['overview', 'invoices', 'payments', 'expenses', 'aml_monitoring', 'reports', 'docs'].map(tab => (
+        {['overview', 'invoices', 'payments', 'expenses', 'aml_monitoring', 'reports', 'gate', 'bench', 'docs'].map(tab => (
           <button
             key={tab}
             className={`tab-btn ${activeTab === tab ? 'active' : ''}`}
             onClick={() => setActiveTab(tab)}
           >
             {tab === 'aml_monitoring' ? 'AML Monitoring' :
+             tab === 'gate' ? 'Release Gate' :
+             tab === 'bench' ? 'Benchmark' :
              tab === 'docs' ? 'Documentation' :
              tab.charAt(0).toUpperCase() + tab.slice(1)}
           </button>
@@ -291,7 +308,96 @@ const TheodoraFinanceCRM = () => {
           </div>
         )}
 
-        {activeTab === 'docs' && <AssistantDocsTab assistantId="theodora" />}
+        {activeTab === 'gate' && (
+          <div style={{ marginTop: '24px' }}>
+            <FinanceEngineProductionReleaseGateWidget />
+          </div>
+        )}
+
+        {activeTab === 'bench' && (
+          <div style={{ marginTop: '24px' }}>
+            <FinanceEngineLedgerBenchmarkWidget />
+          </div>
+        )}
+
+        {activeTab === 'docs' && (
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
+            <FinanceEngineFTAComplianceWidget />
+            <AssistantDocsTab assistantId="theodora" />
+          </div>
+        )}
+
+        {activeTab === 'e2e' && (
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
+            <FinanceEnginePlaywrightE2EWidget />
+          </div>
+        )}
+
+        {activeTab === 'vitest' && (
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
+            <FinanceEngineVitestUnitTestsWidget />
+          </div>
+        )}
+
+        {activeTab === 'rbac' && (
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
+            <FinanceRBACWidget />
+          </div>
+        )}
+
+        {activeTab === 'zakat' && (
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
+            <ZakatCalculatorWidget />
+          </div>
+        )}
+
+        {activeTab === 'benchmark' && (
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
+            <IndustryBenchmarkWidget />
+          </div>
+        )}
+
+        {activeTab === 'insurance' && (
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
+            <InsurancePremiumWidget />
+          </div>
+        )}
+
+        {activeTab === 'crypto' && (
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
+            <CryptoPaymentWidget />
+          </div>
+        )}
+
+        {activeTab === 'charts' && (
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
+            <InteractiveChartsWidget />
+          </div>
+        )}
+
+        {activeTab === 'alerts' && (
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
+            <FinanceAlertsWidget />
+          </div>
+        )}
+
+        {activeTab === 'i18n' && (
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
+            <FinanceI18NWidget />
+          </div>
+        )}
+
+        {activeTab === 'rtl_invoice' && (
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
+            <ArabicRTLInvoiceWidget />
+          </div>
+        )}
+
+        {activeTab === 'mobile' && (
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
+            <MobileFinanceWidget />
+          </div>
+        )}
       </div>
     </div>
   );

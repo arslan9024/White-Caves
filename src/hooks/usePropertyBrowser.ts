@@ -37,6 +37,7 @@ interface PropertyType {
   amenities: string[];
   featured: boolean;
   yearBuilt: number;
+  isOffPlan?: boolean;
 }
 
 /** Default placeholder image when property has no images */

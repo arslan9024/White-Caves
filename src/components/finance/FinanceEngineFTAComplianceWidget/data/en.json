@@ -1,0 +1,16 @@
+{
+  "title": "FTA Compliance Reference",
+  "subtitle": "Chart of Accounts Schema Docs",
+  "schema_section_title": "Chart of Accounts Schema",
+  "coa_asset": "Assets (1000 - 1999)",
+  "coa_liability": "Liabilities (2000 - 2999)",
+  "coa_equity": "Equity (3000 - 3999)",
+  "coa_revenue": "Revenue (4000 - 4999)",
+  "coa_expense": "Expenses (5000 - 5999)",
+  "fta_section_title": "UAE FTA Regulatory Compliance",
+  "fta_vat_title": "VAT Registration (5%)",
+  "fta_vat_desc": "Standard rate applied to commercial properties and non-exempt residential property transactions.",
+  "fta_exempt_title": "Exempt Supplies",
+  "fta_exempt_desc": "Residential properties leased or sold after 3 years from their first supply.",
+  "btn_export": "Export Schema (JSON)"
+}

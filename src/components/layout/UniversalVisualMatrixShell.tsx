@@ -1,6 +1,6 @@
 import React, { FC, useState, useEffect } from 'react';
 import { Z_INDEX } from '../../styles/zIndexTokens';
-import { useTheme } from '../theme/ThemeProvider';
+import { useTheme } from '../../context/ThemeContext';
 import { useLanguage } from '../../context/LanguageContext';
 import { Sparkles, Sun, Moon, MessageSquare, Phone, Calculator, Shield, ChevronUp } from 'lucide-react';
 import ClickToChat from '../ClickToChat';
@@ -12,7 +12,7 @@ interface UniversalVisualMatrixShellProps {
 
 export const UniversalVisualMatrixShell: FC<UniversalVisualMatrixShellProps> = ({ children }) => {
   const { isDark, toggleTheme } = useTheme();
-  const { isRtl, language } = useLanguage();
+  const { isRTL, language } = useLanguage();
   const [showMortgageModal, setShowMortgageModal] = useState(false);
   const [showScrollTop, setShowScrollTop] = useState(false);
 

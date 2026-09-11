@@ -108,3 +108,4 @@
 | T05 | 3 | V3.1–V3.6 | MD Dashboard (workspace split, KPI bar, charts, right panel) | Blocked | Yes | V3:+13% | Wave 19 gate |
 | T06 | 4 | V4.1–V4.5 | Dedup audit, Linda+Henry merge, Tailwind audit, Prisma normalize, dead-imports | Pending | No | V4:+6% | — |
 | T07 | 1 | V1.1, V1.4, V1.5 | Stub gap matrix, Wave 19 deps, CRM mock data | Pending | No | V1:+4% | — |
+| T08 | 6 | V6.7-infinite-crucible | Protocol: Infinite Crucible (Phase 1 Deep Hunt) | Pending | No | V6:+10% | — |

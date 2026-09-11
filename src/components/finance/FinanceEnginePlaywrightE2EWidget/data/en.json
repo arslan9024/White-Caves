@@ -1,0 +1,15 @@
+{
+  "title": "Playwright E2E Tests",
+  "subtitle": "Invoice Create → Approve → Pay → Reconcile",
+  "run_all": "Run All Tests",
+  "status": "Status",
+  "test_step_1": "Create Invoice",
+  "test_step_2": "Approve Invoice",
+  "test_step_3": "Pay Invoice",
+  "test_step_4": "Reconcile Invoice",
+  "status_idle": "Idle",
+  "status_running": "Running...",
+  "status_passed": "Passed",
+  "status_failed": "Failed",
+  "log_title": "Test Execution Logs"
+}

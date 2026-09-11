@@ -4,13 +4,13 @@
 
 import { useState, useMemo, useCallback } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { useAuthContext } from '../../workspace/contexts/AuthContext';
-import { useTheme } from '../../../context/ThemeContext';
-import { DEPARTMENTS_108_REGISTRY } from '../../../data/assistants108Registry.data';
+import { useAuth } from '../../../../context/AuthContext';
+import { useTheme } from '../../../../context/ThemeContext';
+import { CORPORATE_DEPARTMENTS_12, SUPERVISORS_108 } from '../../../../data/assistants108Registry.data';
 import { FOUNDER_EMAIL } from '../data/Sidebar108.data';
 
 export function useSidebar108Logic() {
-  const { user, logout } = useAuthContext();
+  const { user, logout } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -22,6 +22,12 @@ export function useSidebar108Logic() {
 
   const [isCollapsed, setIsCollapsed] = useState(false);
   const [expandedDeptId, setExpandedDeptId] = useState<string | null>(null);
+  const [isZoeExpanded, setIsZoeExpanded] = useState(false);
+  const [sidebarWidth, setSidebarWidth] = useState(280);
+
+  const toggleZoeFeatures = useCallback(() => {
+    setIsZoeExpanded(prev => !prev);
+  }, []);
 
   const toggleCollapse = useCallback(() => {
     setIsCollapsed(prev => !prev);
@@ -36,7 +42,13 @@ export function useSidebar108Logic() {
   }, [user]);
 
   const departments = useMemo(() => {
-    return DEPARTMENTS_108_REGISTRY || [];
+    return (CORPORATE_DEPARTMENTS_12 || []).map(dept => ({
+      ...dept,
+      departmentId: dept.id,
+      title: dept.name,
+      accentColor: dept.color,
+      supervisors: (SUPERVISORS_108 || []).filter(s => s.departmentId === dept.id)
+    }));
   }, []);
 
   const toggleDepartment = useCallback((deptId: string) => {
@@ -59,6 +71,10 @@ export function useSidebar108Logic() {
     departments,
     expandedDeptId,
     toggleDepartment,
+    isZoeExpanded,
+    toggleZoeFeatures,
+    sidebarWidth,
+    setSidebarWidth,
     currentPath: location.pathname,
     handleNavigate,
     handleLogout: logout,

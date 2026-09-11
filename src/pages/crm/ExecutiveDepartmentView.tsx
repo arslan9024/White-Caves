@@ -74,6 +74,7 @@ const Sparkline: FC<{ data: number[], color: string }> = ({ data, color }) => {
 
 export const ExecutiveDepartmentView: FC = () => {
   const [layout, setLayout] = useState('grid');
+  const [activeSection, setActiveSection] = useState('overview');
   
   // Real-time SLA simulation
   const [slaTime, setSlaTime] = useState(14 * 60 + 59); // 14:59
@@ -117,6 +118,33 @@ export const ExecutiveDepartmentView: FC = () => {
           <button onClick={() => setLayout(l => l === 'grid' ? 'list' : 'grid')} style={{ padding: '10px 16px', background: SLATE_LIGHT, color: WHITE, border: 'none', borderRadius: '6px', cursor: 'pointer', fontWeight: 600 }}>
             Toggle Layout
           </button>
+        </div>
+      </div>
+
+      {/* TABS */}
+      <div style={{ display: 'flex', gap: '16px', marginBottom: '24px' }}>
+        {['overview', 'market', 'pipeline'].map(tab => (
+          <button 
+            key={tab}
+            onClick={() => setActiveSection(tab)}
+            style={{ padding: '8px 16px', background: activeSection === tab ? RED : 'transparent', color: activeSection === tab ? WHITE : TEXT_MUTED, border: `1px solid ${activeSection === tab ? RED : SLATE_LIGHT}`, borderRadius: '6px', cursor: 'pointer', fontWeight: 700, textTransform: 'capitalize' }}
+          >
+            {tab}
+          </button>
+        ))}
+      </div>
+
+      {/* OVERVIEW */}
+      {activeSection === 'overview' && (
+        <div>
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px', marginBottom: '20px' }}>
+            <div style={{ background: CARD_BG, padding: '20px', borderRadius: '10px', border: `1px solid ${BORDER}` }}>
+              <h4 style={{ margin: '0 0 14px 0', color: RED }}>Revenue & Active Portfolio</h4>
+              {kpis.slice(0, 2).map(kpi => (
+                <div key={kpi.label} style={{ marginBottom: '16px' }}>
+                  <div style={{ fontSize: '0.8rem', color: SLATE, fontWeight: 700 }}>{kpi.label}</div>
+                  <div style={{ fontSize: '1.5rem', fontWeight: 900, color: kpi.color }}>{kpi.value} {kpi.unit}</div>
+                  <Sparkline data={kpi.sparkline} color={kpi.color} />
                 </div>
               ))}
             </div>

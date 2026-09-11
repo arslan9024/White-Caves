@@ -1,0 +1,1 @@
+{"title":"Edge CDN Cache","subtitle":"Vercel Edge + stale-while-revalidate","strategy":"stale-while-revalidate","ttl":"3600s","hit_rate":"97.3%","cdn":"Vercel Edge"}

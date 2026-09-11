@@ -3,7 +3,7 @@
  */
 
 import { useState, useEffect, useMemo } from 'react';
-import { useTheme } from '../../../context/ThemeContext';
+import { useTheme } from '../../../../context/ThemeContext';
 import { WORKSPACE_LAYOUT_CONFIG } from '../data/WorkspaceShell.data';
 
 export function useWorkspaceShellLogic(isSidebarCollapsed = false) {

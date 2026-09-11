@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import SocialLinks from './SocialLinks';
 import { Config } from '../config/constants';
 import * as S from './Footer.styles';
+import { BrokerLicenseBadge } from './compliance/BrokerLicenseBadge/BrokerLicenseBadge';
 
 const Footer: FC = () => {
   const currentYear = new Date().getFullYear();
@@ -83,10 +84,9 @@ const Footer: FC = () => {
               </a>
             </S.StarRatingFooter>
           </S.FooterRating>
-          <S.FooterRERA>
-            <S.Badge type="rera">RERA Licensed · Lic. No. RERA-12345</S.Badge>
-            <S.Badge type="dld">Dubai Land Department Registered</S.Badge>
-          </S.FooterRERA>
+          <div style={{ marginTop: '16px' }}>
+            <BrokerLicenseBadge />
+          </div>
         </S.FooterSection>
       </S.FooterContent>
       

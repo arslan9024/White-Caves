@@ -118,6 +118,41 @@ $aegisTimedDevCheckMaxRunMinutes = 2
 $aegisTimedDevCheckRunProblemScan = $true
 $aegisProgressIntelligenceEnabled = $true
 $aegisProgressIntelligenceEveryNTasks = 1
+function Read-JsonFileSafe {
+  param(
+    [Parameter(Mandatory = $true)]
+    [string]$Path,
+    [long]$MaxBytes = 32MB,
+    [switch]$TryTmpRecovery
+  )
+  if (-not (Test-Path $Path)) { return $null }
+  $info = Get-Item -Path $Path -ErrorAction SilentlyContinue
+  if ($null -eq $info) { return $null }
+  function Try-ParseCandidate {
+    param([string]$CandidatePath)
+    try {
+      $raw = Get-Content -Path $CandidatePath -Raw -ErrorAction Stop
+      if ([string]::IsNullOrWhiteSpace($raw)) { return $null }
+      return ($raw | ConvertFrom-Json -ErrorAction Stop)
+    } catch { return $null }
+  }
+  if ($info.Length -gt $MaxBytes) {
+    if (-not $TryTmpRecovery) { return $null }
+    $dir = Split-Path -Parent $Path
+    $base = [System.IO.Path]::GetFileName($Path)
+    $tmpCandidates = @(Get-ChildItem -Path $dir -Filter ("{0}.tmp.*" -f $base) -File -ErrorAction SilentlyContinue | Sort-Object LastWriteTime -Descending)
+    foreach ($tmp in $tmpCandidates) {
+      if ($tmp.Length -gt $MaxBytes) { continue }
+      $parsed = Try-ParseCandidate -CandidatePath $tmp.FullName
+      if ($null -eq $parsed) { continue }
+      try { Copy-Item -Path $tmp.FullName -Destination $Path -Force } catch {}
+      return $parsed
+    }
+    return $null
+  }
+  return (Try-ParseCandidate -CandidatePath $Path)
+}
+
 $devSmokeScript = Join-Path $scripts "dev-smoke.ps1"
 if (Test-Path $policyFile) {
   try {
@@ -132,54 +167,6 @@ if (Test-Path $policyFile) {
       $policyDefaultMode = "autopilot"
     }
 
-
-  function Read-JsonFileSafe {
-    param(
-      [Parameter(Mandatory = $true)]
-      [string]$Path,
-      [long]$MaxBytes = 32MB,
-      [switch]$TryTmpRecovery
-    )
-
-    if (-not (Test-Path $Path)) { return $null }
-
-    $info = Get-Item -Path $Path -ErrorAction SilentlyContinue
-    if ($null -eq $info) { return $null }
-
-    function Try-ParseCandidate {
-      param([string]$CandidatePath)
-
-      try {
-        $raw = Get-Content -Path $CandidatePath -Raw -ErrorAction Stop
-        if ([string]::IsNullOrWhiteSpace($raw)) { return $null }
-        return ($raw | ConvertFrom-Json -ErrorAction Stop)
-      }
-      catch {
-        return $null
-      }
-    }
-
-    if ($info.Length -gt $MaxBytes) {
-      if (-not $TryTmpRecovery) { return $null }
-
-      $dir = Split-Path -Parent $Path
-      $base = [System.IO.Path]::GetFileName($Path)
-      $tmpCandidates = @(Get-ChildItem -Path $dir -Filter ("{0}.tmp.*" -f $base) -File -ErrorAction SilentlyContinue |
-        Sort-Object LastWriteTime -Descending)
-
-      foreach ($tmp in $tmpCandidates) {
-        if ($tmp.Length -gt $MaxBytes) { continue }
-        $parsed = Try-ParseCandidate -CandidatePath $tmp.FullName
-        if ($null -eq $parsed) { continue }
-        try { Copy-Item -Path $tmp.FullName -Destination $Path -Force } catch {}
-        return $parsed
-      }
-
-      return $null
-    }
-
-    return (Try-ParseCandidate -CandidatePath $Path)
-  }
     if ($null -ne $policy.executionMode -and $null -ne $policy.executionMode.autopilot) {
       if ($null -ne $policy.executionMode.autopilot.continuous) {
         $aegisAutopilotContinuous = [bool]$policy.executionMode.autopilot.continuous

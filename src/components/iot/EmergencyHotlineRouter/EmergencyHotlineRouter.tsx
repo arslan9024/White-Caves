@@ -1,162 +1,91 @@
-/**
- * EmergencyHotlineRouter — Wave 52 GOAL-068
- * 24/7 Emergency property maintenance hotline auto-routing to on-call engineers
- * White Caves Real Estate LLC — Asset Management & IoT Facilities Suite
- */
 import React, { FC, useState } from 'react';
 import styled, { keyframes } from 'styled-components';
 
 const fadeIn = keyframes`from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}`;
-const pulse = keyframes`0%, 100% { opacity: 1; transform: scale(1); } 50% { opacity: 0.6; transform: scale(1.03); }`;
+const pulse = keyframes`0%,100%{box-shadow:0 0 0 0 rgba(239,68,68,0.4)}50%{box-shadow:0 0 0 15px rgba(239,68,68,0)}`;
+const blink = keyframes`0%,100%{opacity:1}50%{opacity:.2}`;
+const Wrap = styled.div`width:100%;background:linear-gradient(135deg,#0A0614,#0F172A);border:2px solid rgba(239,68,68,0.35);border-radius:18px;overflow:hidden;font-family:'Inter',sans-serif;animation:${fadeIn} .4s ease`;
+const Head = styled.div`padding:14px 20px;background:rgba(239,68,68,0.08);border-bottom:1px solid rgba(239,68,68,0.2);display:flex;align-items:center;justify-content:space-between`;
+const Title = styled.h3`margin:0;color:#FFF;font-size:.9rem;font-weight:700`;
+const Body = styled.div`padding:20px;display:flex;flex-direction:column;gap:14px`;
 
-const Wrap = styled.div`
-  width: 100%;
-  background: linear-gradient(135deg, #0F172A 0%, #1E293B 100%);
-  border: 2px solid rgba(239, 68, 68, 0.25);
-  border-radius: 18px;
-  overflow: hidden;
-  font-family: 'Inter', sans-serif;
-  animation: ${fadeIn} 0.4s ease;
+const EmergencyBtn = styled.button<{$activated:boolean}>`
+  width:120px;height:120px;border-radius:50%;border:none;margin:0 auto;display:block;
+  background:${p=>p.$activated?'rgba(239,68,68,0.15)':'linear-gradient(135deg,#DC2626,#EF4444)'};
+  color:#FFF;font-size:${p=>p.$activated?'.72rem':'1.8rem'};font-weight:900;cursor:pointer;
+  animation:${p=>p.$activated?pulse:''} 1.5s ease-in-out infinite;
+  border:4px solid ${p=>p.$activated?'rgba(239,68,68,0.5)':'#DC2626'};
+  transition:all .3s;
+  ${p=>p.$activated?'line-height:1.4;':''}
 `;
 
-const Head = styled.div`
-  padding: 14px 20px;
-  background: rgba(239, 68, 68, 0.08);
-  border-bottom: 1px solid rgba(239, 68, 68, 0.18);
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
+const RouterList = styled.div`display:flex;flex-direction:column;gap:6px`;
+const RouterRow = styled.div<{$active:boolean}>`
+  display:flex;align-items:center;gap:10px;padding:9px 12px;border-radius:9px;
+  background:${p=>p.$active?'rgba(239,68,68,0.08)':'rgba(15,23,42,0.6)'};
+  border:1px solid ${p=>p.$active?'rgba(239,68,68,0.3)':'rgba(100,116,139,0.12)'};
+  transition:all .2s;
 `;
+const EngIcon = styled.div`font-size:.9rem;flex-shrink:0`;
+const EngName = styled.div`font-size:.76rem;font-weight:700;color:#E2E8F0;flex:1`;
+const EngPhone = styled.div`font-size:.68rem;color:#64748B`;
+const EngStatus = styled.div<{$active:boolean;$notified:boolean}>`font-size:.65rem;font-weight:700;padding:2px 8px;border-radius:4px;background:${p=>p.$notified?'rgba(16,185,129,0.15)':p.$active?'rgba(239,68,68,0.15)':'rgba(100,116,139,0.1)'};color:${p=>p.$notified?'#10B981':p.$active?'#EF4444':'#64748B'}`;
 
-const Title = styled.h3`
-  margin: 0;
-  color: #FFF;
-  font-size: 0.92rem;
-  font-weight: 700;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-`;
-
-const EmergencyTag = styled.span`
-  font-size: 0.68rem;
-  font-weight: 800;
-  color: #EF4444;
-  background: rgba(239, 68, 68, 0.15);
-  padding: 3px 10px;
-  border-radius: 999px;
-  border: 1px solid rgba(239, 68, 68, 0.35);
-  animation: ${pulse} 1.5s infinite;
-`;
-
-const Body = styled.div`
-  padding: 20px;
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-`;
-
-const DutyGrid = styled.div`
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 10px;
-`;
-
-const EngineerCard = styled.div<{ $onDuty: boolean }>`
-  padding: 12px;
-  border-radius: 10px;
-  background: ${p => p.$onDuty ? 'rgba(16, 185, 129, 0.08)' : 'rgba(15, 23, 42, 0.6)'};
-  border: 1px solid ${p => p.$onDuty ? 'rgba(16, 185, 129, 0.35)' : 'rgba(100, 116, 139, 0.15)'};
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-`;
-
-const EngName = styled.div`
-  font-size: 0.82rem;
-  font-weight: 800;
-  color: #FFF;
-`;
-
-const EngRole = styled.div`
-  font-size: 0.68rem;
-  color: #94A3B8;
-`;
-
-const DutyPill = styled.span<{ $onDuty: boolean }>`
-  font-size: 0.62rem;
-  font-weight: 800;
-  color: ${p => p.$onDuty ? '#10B981' : '#64748B'};
-`;
-
-const HotlineBtn = styled.button`
-  width: 100%;
-  padding: 14px;
-  border-radius: 12px;
-  border: none;
-  background: linear-gradient(90deg, #DC2626, #EF4444);
-  color: #FFF;
-  font-size: 0.88rem;
-  font-weight: 800;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-  transition: all 0.2s ease;
-  &:hover { filter: brightness(1.1); transform: translateY(-1px); }
-`;
+const ENGINEERS = [
+  {name:'Ahmad Hassan (Plumbing)',phone:'+971 50 882 4441',specialty:'Water/Pipes',oncall:true},
+  {name:'Carlos Rivera (Electrical)',phone:'+971 55 324 8822',specialty:'Power/Fire',oncall:true},
+  {name:'Sarah Park (HVAC)',phone:'+971 52 776 9901',specialty:'AC/Ventilation',oncall:false},
+  {name:'Mohammed Al Zaabi (Structural)',phone:'+971 56 441 2233',specialty:'Structural',oncall:false},
+];
 
 export const EmergencyHotlineRouter: FC = () => {
-  const [engineers] = useState([
-    { name: 'Eng. Tariq Al Nuaimi', specialty: 'Central HVAC & Chiller Systems', phone: '+971 50 994 8811', onDuty: true, eta: '18 mins' },
-    { name: 'Eng. Ramesh Patel', specialty: 'Main Electrical & Power Distribution', phone: '+971 55 442 1088', onDuty: true, eta: '22 mins' },
-    { name: 'Eng. David Sterling', specialty: 'Water Line & Fire Suppression', phone: '+971 52 771 9044', onDuty: false, eta: 'Standby' },
-  ]);
+  const [activated, setActivated] = useState(false);
+  const [notified, setNotified] = useState(new Set<number>());
 
-  const [callDispatched, setCallDispatched] = useState(false);
+  const activate = () => {
+    setActivated(true);
+    setTimeout(()=>setNotified(new Set([0,1])),1500);
+  };
 
   return (
     <Wrap data-testid="emergency-hotline-router">
       <Head>
-        <Title>🚨 24/7 Emergency Maintenance Hotline & Engineer Auto-Router</Title>
-        <EmergencyTag>LIVE DISPATCH</EmergencyTag>
+        <Title>🚨 Emergency Hotline Router</Title>
+        <div style={{fontSize:'.7rem',color:'#EF4444',fontWeight:700,animation:activated?`${blink} .8s ease-in-out infinite`:''}}>
+          {activated?'🔴 EMERGENCY ACTIVE':'Emergency Standby'}
+        </div>
       </Head>
       <Body>
-        <div style={{ fontSize: '0.72rem', color: 'var(--color-94a3b8, #94A3B8)' }}>
-          Direct VoIP routing system connecting emergency resident calls (power failure, flooding, AC failure) to geo-located on-duty facility engineers within 60 seconds.
-        </div>
-
-        <div>
-          <div style={{ fontSize: '0.68rem', fontWeight: 700, color: 'var(--color-94a3b8, #94A3B8)', textTransform: 'uppercase', marginBottom: '8px' }}>
-            On-Duty Emergency Response Engineers
-          </div>
-          <DutyGrid>
-            {engineers.map((eng, idx) => (
-              <EngineerCard key={idx} $onDuty={eng.onDuty}>
-                <EngName>{eng.name}</EngName>
-                <EngRole>{eng.specialty}</EngRole>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '4px' }}>
-                  <DutyPill $onDuty={eng.onDuty}>{eng.onDuty ? '● ON ACTIVE DUTY' : 'STANDBY'}</DutyPill>
-                  <span style={{ fontSize: '0.65rem', color: 'var(--text-secondary, #CBD5E1)' }}>ETA: {eng.eta}</span>
-                </div>
-              </EngineerCard>
-            ))}
-          </DutyGrid>
-        </div>
-
-        {callDispatched ? (
-          <div style={{ padding: '14px', borderRadius: '10px', background: 'rgba(16, 185, 129, 0.1)', border: '1px solid rgba(16, 185, 129, 0.3)', textAlign: 'center', color: 'var(--accent-green, #10B981)', fontWeight: 800, fontSize: '0.85rem' }}>
-            ✓ Emergency Hotline Call Routed to Eng. Tariq Al Nuaimi (ETA: 18 mins)! SMS Ticket Dispatched.
-          </div>
-        ) : (
-          <HotlineBtn onClick={() => setCallDispatched(true)}>
-            📞 Trigger Emergency VoIP Call to Lead Engineer (24/7 Line)
-          </HotlineBtn>
+        <EmergencyBtn $activated={activated} onClick={!activated?activate:undefined}>
+          {activated?'🚨\nEMERGENCY\nACTIVE':'🆘'}
+        </EmergencyBtn>
+        {!activated && (
+          <div style={{fontSize:'.72rem',color:'#64748B',textAlign:'center',fontStyle:'italic'}}>Press to dispatch on-call engineers immediately</div>
         )}
+
+        {activated && (
+          <div style={{padding:'12px 14px',borderRadius:'10px',background:'rgba(239,68,68,0.08)',border:'1px solid rgba(239,68,68,0.3)',fontSize:'.72rem',color:'#FCA5A5'}}>
+            🚨 <strong>EMERGENCY ACTIVATED</strong> — All on-call engineers notified via SMS + WhatsApp. Response time SLA: 15 minutes.
+          </div>
+        )}
+
+        <div style={{fontSize:'.7rem',color:'#64748B',fontWeight:600}}>On-Call Engineers</div>
+        <RouterList>
+          {ENGINEERS.map((e,i)=>(
+            <RouterRow key={i} $active={e.oncall&&activated}>
+              <EngIcon>{e.oncall?'🔴':'⬜'}</EngIcon>
+              <div style={{flex:1}}>
+                <EngName>{e.name}</EngName>
+                <EngPhone>{e.phone} · {e.specialty}</EngPhone>
+              </div>
+              <EngStatus $active={e.oncall&&activated} $notified={notified.has(i)}>
+                {notified.has(i)?'✓ NOTIFIED':e.oncall?'ON-CALL':'OFF-DUTY'}
+              </EngStatus>
+            </RouterRow>
+          ))}
+        </RouterList>
       </Body>
     </Wrap>
   );
 };
-
 export default EmergencyHotlineRouter;

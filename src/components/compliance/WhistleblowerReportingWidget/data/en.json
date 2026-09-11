@@ -1,0 +1,18 @@
+{
+  "title": "Whistleblower Reporting Portal",
+  "subtitle": "Secure, anonymous channel to report suspected AML violations, fraud, or unethical behavior.",
+  "form_type": "Report Type",
+  "type_aml": "Money Laundering (AML)",
+  "type_fraud": "Fraud / Embezzlement",
+  "type_ethics": "Code of Ethics Violation",
+  "type_other": "Other",
+  "form_details": "Incident Details",
+  "details_placeholder": "Please provide as much detail as possible...",
+  "form_evidence": "Evidence / Attachments (Optional)",
+  "form_contact": "Contact Information (Optional - Leave blank to remain anonymous)",
+  "contact_placeholder": "Email or Phone",
+  "submit_report": "Submit Anonymous Report",
+  "disclaimer": "Your identity is protected under UAE Whistleblower Protection laws. All submissions are encrypted.",
+  "success_message": "Report submitted successfully. Your reference ID is:",
+  "error_message": "Failed to submit report. Please try again."
+}

@@ -2152,6 +2152,8 @@ export const updateTransactionAPI = createAsyncThunk<
     type?: string;
     closingDate?: string;
     notes?: string;
+    commission?: number;
+    rera_status?: string;
     documents?: string[];
   },
   { rejectValue: string }

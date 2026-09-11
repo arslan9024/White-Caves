@@ -171,7 +171,10 @@ RentPayment {
 
 ## Lease Generation Flow
 
-1. Agent fills lease form (property, tenant, dates, rent amount)
+1. Agent fills lease form (property, tenant, dates, rent amount). The unified tenancy contract consists of 3 pages:
+   - **Page 1:** ~25 input values (primary parties, property info, core financial terms)
+   - **Page 2:** 1 input value (standard conditions/signatures)
+   - **Page 3:** 7 input values (special conditions, addendums, additional clauses)
 2. System generates PDF from Ejari-compliant template
 3. PDF is populated with: tenant details, property address, DLD reference, lease term, monthly rent, security deposit amount, payment due date, RERA license number
 4. Lease sent for review by leasing manager

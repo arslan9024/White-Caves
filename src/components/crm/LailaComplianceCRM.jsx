@@ -7,6 +7,21 @@ import {
 } from 'lucide-react';
 import { AssistantDocsTab } from './shared';
 import KYCAMLDashboard from './shared/KYCAMLDashboard';
+import { RERAFormWidget } from '../compliance/RERAFormWidget/RERAFormWidget';
+import { MortgageRegistrationWidget } from '../compliance/MortgageRegistrationWidget/MortgageRegistrationWidget';
+import { TitleDeedVerificationWidget } from '../compliance/TitleDeedVerificationWidget/TitleDeedVerificationWidget';
+import { SPAComplianceWidget } from '../compliance/SPAComplianceWidget/SPAComplianceWidget';
+import { OqoodRegistrationWidget } from '../compliance/OqoodRegistrationWidget/OqoodRegistrationWidget';
+import { KYCGateWidget } from '../compliance/KYCGateWidget/KYCGateWidget';
+import { AMLPolicyScreeningWidget } from '../compliance/AMLPolicyScreeningWidget/AMLPolicyScreeningWidget';
+import { GoAMLRegistrationWidget } from '../compliance/GoAMLRegistrationWidget/GoAMLRegistrationWidget';
+import { UAE_PDPL_DataPrivacyWidget } from '../compliance/UAE_PDPL_DataPrivacyWidget/UAE_PDPL_DataPrivacyWidget';
+import { RERACertificateTrackerWidget } from '../compliance/RERACertificateTrackerWidget/RERACertificateTrackerWidget';
+import { ICPEstablishmentCardWidget } from '../compliance/ICPEstablishmentCardWidget/ICPEstablishmentCardWidget';
+import { HQEjariRenewalWidget } from '../compliance/HQEjariRenewalWidget/HQEjariRenewalWidget';
+import { RERAORNAutoRenewalWidget } from '../compliance/RERAORNAutoRenewalWidget/RERAORNAutoRenewalWidget';
+import { DETLicenseMonitorWidget } from '../compliance/DETLicenseMonitorWidget/DETLicenseMonitorWidget';
+import { ComplianceArchitectureWidget } from '../compliance/ComplianceArchitectureWidget/ComplianceArchitectureWidget';
 import {
   selectComplianceEngine,
   selectComplianceMetrics,
@@ -95,13 +110,28 @@ const LailaComplianceCRM = () => {
       </div>
 
       <div className="assistant-tabs">
-        {['kyc_verification', 'contracts', 'regulations', 'docs'].map(tab => (
+        {['pdpl', 'aml_policy', 'goaml', 'kyc_gate', 'kyc_verification', 'contracts', 'regulations', 'rera_cert', 'rera_forms', 'rera_orn', 'det_license', 'icp_card', 'hq_ejari', 'mortgage', 'title_deed', 'spa', 'oqood', 'docs', 'arch_spec'].map(tab => (
           <button
             key={tab}
             className={`tab-btn ${activeTab === tab ? 'active' : ''}`}
             onClick={() => setActiveTab(tab)}
           >
-            {tab === 'kyc_verification' ? 'KYC Verification' :
+            {tab === 'pdpl' ? 'UAE PDPL' :
+             tab === 'aml_policy' ? 'AML Policy' :
+             tab === 'goaml' ? 'goAML FIU' :
+             tab === 'kyc_gate' ? 'KYC Gate' :
+             tab === 'kyc_verification' ? 'KYC Review' :
+             tab === 'rera_cert' ? 'RERA Cert Tracker' :
+             tab === 'rera_forms' ? 'RERA Forms' :
+             tab === 'rera_orn' ? 'RERA ORN Renewal' :
+             tab === 'det_license' ? 'DET License' :
+             tab === 'icp_card' ? 'ICP Est. Card' :
+             tab === 'hq_ejari' ? 'HQ Ejari' :
+             tab === 'mortgage' ? 'Mortgage Reg.' :
+             tab === 'title_deed' ? 'Title Deed Verifier' :
+             tab === 'spa' ? 'SPA Filing' :
+             tab === 'oqood' ? 'OQOOD Reg.' :
+             tab === 'arch_spec' ? 'Architecture' :
              tab === 'docs' ? 'Documentation' :
              tab.charAt(0).toUpperCase() + tab.slice(1).replace('_', ' ')}
           </button>
@@ -109,6 +139,30 @@ const LailaComplianceCRM = () => {
       </div>
 
       <div className="tab-content">
+        {activeTab === 'pdpl' && (
+          <div style={{ marginTop: '24px' }}>
+            <UAE_PDPL_DataPrivacyWidget />
+          </div>
+        )}
+
+        {activeTab === 'aml_policy' && (
+          <div style={{ marginTop: '24px' }}>
+            <AMLPolicyScreeningWidget />
+          </div>
+        )}
+
+        {activeTab === 'goaml' && (
+          <div style={{ marginTop: '24px' }}>
+            <GoAMLRegistrationWidget />
+          </div>
+        )}
+
+        {activeTab === 'kyc_gate' && (
+          <div style={{ marginTop: '24px' }}>
+            <KYCGateWidget />
+          </div>
+        )}
+
         {activeTab === 'kyc_verification' && (
           <KYCAMLDashboard 
             assistant="laila"
@@ -163,6 +217,72 @@ const LailaComplianceCRM = () => {
                 <span>Data Protection - GDPR Compliant</span>
               </div>
             </div>
+          </div>
+        )}
+
+        {activeTab === 'rera_cert' && (
+          <div style={{ marginTop: '24px' }}>
+            <RERACertificateTrackerWidget />
+          </div>
+        )}
+
+        {activeTab === 'rera_forms' && (
+          <div style={{ marginTop: '24px' }}>
+            <RERAFormWidget />
+          </div>
+        )}
+
+        {activeTab === 'rera_orn' && (
+          <div style={{ marginTop: '24px' }}>
+            <RERAORNAutoRenewalWidget />
+          </div>
+        )}
+
+        {activeTab === 'det_license' && (
+          <div style={{ marginTop: '24px' }}>
+            <DETLicenseMonitorWidget />
+          </div>
+        )}
+
+        {activeTab === 'arch_spec' && (
+          <div style={{ marginTop: '24px' }}>
+            <ComplianceArchitectureWidget />
+          </div>
+        )}
+
+        {activeTab === 'icp_card' && (
+          <div style={{ marginTop: '24px' }}>
+            <ICPEstablishmentCardWidget />
+          </div>
+        )}
+
+        {activeTab === 'hq_ejari' && (
+          <div style={{ marginTop: '24px' }}>
+            <HQEjariRenewalWidget />
+          </div>
+        )}
+
+        {activeTab === 'mortgage' && (
+          <div style={{ marginTop: '24px' }}>
+            <MortgageRegistrationWidget />
+          </div>
+        )}
+
+        {activeTab === 'title_deed' && (
+          <div style={{ marginTop: '24px' }}>
+            <TitleDeedVerificationWidget />
+          </div>
+        )}
+
+        {activeTab === 'spa' && (
+          <div style={{ marginTop: '24px' }}>
+            <SPAComplianceWidget />
+          </div>
+        )}
+
+        {activeTab === 'oqood' && (
+          <div style={{ marginTop: '24px' }}>
+            <OqoodRegistrationWidget />
           </div>
         )}
 

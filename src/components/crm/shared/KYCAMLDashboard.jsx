@@ -1,6 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { Shield, AlertTriangle, UserCheck, Search, FileText, Clock, CheckCircle, XCircle, Eye, RefreshCw, Filter, ChevronDown, User, Globe, Banknote, Building2, AlertCircle, History, FileWarning, Scale } from 'lucide-react';
 import './KYCAMLDashboard.css';
+import { SanctionsScreeningWidget } from '../../compliance/SanctionsScreeningWidget/SanctionsScreeningWidget';
+import { AMLRiskAssessmentReport } from '../../compliance/AMLRiskAssessmentReport/AMLRiskAssessmentReport';
+import { NOCDeveloperWidget } from '../../compliance/NOCDeveloperWidget/NOCDeveloperWidget';
 
 const TABS = [
   { id: 'queue', label: 'Verification Queue', icon: Clock },
@@ -9,6 +12,7 @@ const TABS = [
   { id: 'pep', label: 'PEP Screening', icon: UserCheck },
   { id: 'sanctions', label: 'Sanctions Check', icon: Globe },
   { id: 'audit', label: 'Audit Trail', icon: History },
+  { id: 'noc', label: 'Developer NOC', icon: Building2 },
   { id: 'reports', label: 'Reports', icon: FileText }
 ];
 
@@ -353,50 +357,7 @@ const PEPScreeningTab = ({ data }) => (
 
 const SanctionsCheckTab = ({ data }) => (
   <div className="kyc-tab-content">
-    <div className="kyc-sanctions-info">
-      <div className="kyc-info-card warning">
-        <h4>Sanctions Lists Checked</h4>
-        <div className="kyc-sanctions-lists">
-          <span>UN Consolidated</span>
-          <span>OFAC SDN (US)</span>
-          <span>EU Consolidated</span>
-          <span>UK Sanctions</span>
-          <span>UAE Local</span>
-        </div>
-      </div>
-    </div>
-    <div className="kyc-table-container">
-      <table className="kyc-table">
-        <thead>
-          <tr>
-            <th>Customer</th>
-            <th>Match Status</th>
-            <th>Lists Checked</th>
-            <th>Clearance</th>
-            <th>Last Checked</th>
-          </tr>
-        </thead>
-        <tbody>
-          {data.length === 0 ? (
-            <tr><td colSpan="5" className="kyc-empty">No sanctions data available</td></tr>
-          ) : data.map(profile => (
-            <tr key={profile.customerId} className={profile.sanctionsCheck?.hasMatch ? 'match-row' : ''}>
-              <td>{profile.personalInfo?.fullNameEn}</td>
-              <td>
-                {profile.sanctionsCheck?.hasMatch ? (
-                  <span className="kyc-match-badge match">Match Found</span>
-                ) : (
-                  <span className="kyc-match-badge clear">No Match</span>
-                )}
-              </td>
-              <td>{profile.sanctionsCheck?.listsChecked?.length || 0} lists</td>
-              <td><StatusBadge status={profile.sanctionsCheck?.clearanceStatus} /></td>
-              <td>{formatDateTime(profile.sanctionsCheck?.checkedAt)}</td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
-    </div>
+    <SanctionsScreeningWidget />
   </div>
 );
 
@@ -431,6 +392,9 @@ const AuditTrailTab = ({ data }) => (
 
 const ReportsTab = () => (
   <div className="kyc-tab-content">
+    <div style={{ marginBottom: '24px' }}>
+      <AMLRiskAssessmentReport />
+    </div>
     <div className="kyc-reports-grid">
       <div className="kyc-report-card">
         <FileText size={24} />
@@ -531,6 +495,12 @@ const KYCAMLDashboard = ({
         return <SanctionsCheckTab data={riskProfiles} />;
       case 'audit':
         return <AuditTrailTab data={auditLogs} />;
+      case 'noc':
+        return (
+          <div className="kyc-tab-content">
+            <NOCDeveloperWidget />
+          </div>
+        );
       case 'reports':
         return <ReportsTab />;
       default:

@@ -1,0 +1,1 @@
+{"title":"Playwright E2E Tests","subtitle":"All CTA Flows & Mobile Swipe Journey","tests":["CTA Click → Lead Form","Mobile Swipe → Carousel","WhatsApp Orb → Chat","Scroll → Property Grid","Language Toggle → RTL"],"status":["pass","pass","pass","pass","pass"]}

@@ -1,0 +1,19 @@
+{
+  "title": "RERA Form Generator",
+  "subtitle": "Auto-populate Form A, B, and F from Deal data",
+  "select_deal": "Select Deal",
+  "form_type": "Form Type",
+  "form_a": "Form A - Agent / Seller Agreement",
+  "form_b": "Form B - Agent / Buyer Agreement",
+  "form_f": "Form F - Purchase Agreement",
+  "deal_data": "CRM Deal Data",
+  "deal_value": "Deal Value (AED)",
+  "property_id": "Property ID",
+  "client_name": "Client Name",
+  "generate_form": "Auto-Populate Form",
+  "generating": "Populating...",
+  "esign_workflow": "Initiate E-Sign Workflow",
+  "status_draft": "Drafted",
+  "status_sent": "Sent for E-Sign",
+  "status_signed": "Signed by All Parties"
+}

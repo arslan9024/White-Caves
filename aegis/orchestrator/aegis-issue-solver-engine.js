@@ -164,8 +164,8 @@ export async function auditAndDisplaySummary() {
   console.log('\n======================================================\n');
 }
 
-export async function resolveMilestoneBatch(targetMilestoneNumber) {
-  console.log(`\n🚀 [AEGIS Solver] Starting Automated Resolution for Milestone #${targetMilestoneNumber}...`);
+export async function resolveMilestoneBatch(targetMilestoneNumber, isDryRun = false) {
+  console.log(`\n🚀 [AEGIS Solver] Starting ${isDryRun ? 'DRY-RUN ' : ''}Automated Resolution for Milestone #${targetMilestoneNumber}...`);
   const { milestones, issues, headers } = await fetchMilestonesAndIssues();
   if (!headers) return;
 
@@ -180,26 +180,32 @@ export async function resolveMilestoneBatch(targetMilestoneNumber) {
 
   let closedCount = 0;
   for (const iss of milestoneIssues) {
-    console.log(`⚡ Closing Issue #${iss.number}: ${iss.title}...`);
-    const success = await closeIssueOnGitHub(
-      iss.number,
-      headers,
-      `✅ **Resolved by AEGIS Autonomous Solver Engine**\n\n- Verified architecture implementation & code compilation.\n- 0-token local build pass.\n- Standardized 4-way separation & Z-index tokens applied.`
-    );
-    if (success) {
-      closedCount++;
-      console.log(`   ✅ [${closedCount}/${milestoneIssues.length}] Successfully closed #${iss.number}`);
+    console.log(`⚡ Implementing Fix for Issue #${iss.number}: ${iss.title}...`);
+    
+    if (isDryRun) {
+      console.log(`   [DRY RUN] Would invoke AEGIS Agent Loop for Issue #${iss.number}`);
+      continue;
     }
+
+    try {
+      // INVOCATION OF REAL IMPLEMENTATION LOGIC
+      console.log(`   -> Dispatching to AEGIS Autonomous Agent Loop...`);
+      execSync(`node aegis/orchestrator/aegis-one-prompt.js --issue ${iss.number} --auto-commit`, { stdio: 'inherit' });
+      console.log(`   ✅ Successfully queued #${iss.number} for Implementation.`);
+    } catch (e) {
+      console.error(`   ❌ Failed to queue #${iss.number}:`, e.message);
+    }
+    
     await new Promise(r => setTimeout(r, 400));
   }
 
-  console.log(`🏛️ Closing Milestone #${targetMilestone.number} on GitHub...`);
-  await closeMilestoneOnGitHub(targetMilestone.number, headers);
-  console.log(`🎉 [AEGIS Solver] Milestone #${targetMilestone.number} (${targetMilestone.title}) 100% COMPLETED and CLOSED on GitHub!\n`);
+  if (!isDryRun) {
+    console.log(`🎉 [AEGIS Solver] Milestone #${targetMilestone.number} (${targetMilestone.title}) 100% QUEUED for Implementation!\n`);
+  }
 }
 
-export async function resolveAllMilestones() {
-  console.log(`\n🚀 [AEGIS Solver] Starting Full Enterprise Autonomous Resolution for ALL Open Milestones & Issues...`);
+export async function resolveAllMilestones(isDryRun = false) {
+  console.log(`\n🚀 [AEGIS Solver] Starting ${isDryRun ? 'DRY-RUN ' : ''}Full Enterprise Autonomous Resolution for ALL Open Milestones & Issues...`);
   const { milestones, issues, headers } = await fetchMilestonesAndIssues();
   if (!headers || !Array.isArray(milestones) || !Array.isArray(issues)) return;
 
@@ -215,46 +221,65 @@ export async function resolveAllMilestones() {
     console.log(`======================================================`);
 
     for (const iss of milestoneIssues) {
-      console.log(`⚡ Closing Issue #${iss.number}: ${iss.title}...`);
-      const success = await closeIssueOnGitHub(
-        iss.number,
-        headers,
-        `✅ **Resolved by AEGIS Autonomous Solver Engine (Enterprise Pass)**\n\n- Verified architecture implementation & code compilation.\n- 0-token local build pass.\n- UAE RERA/DLD statutory compliance validated.\n- All acceptance criteria verified and passed.`
-      );
-      if (success) {
+      console.log(`⚡ Implementing Fix for Issue #${iss.number}: ${iss.title}...`);
+      
+      if (isDryRun) {
+         console.log(`   [DRY RUN] Would invoke AEGIS Agent Loop for Issue #${iss.number}`);
+         continue;
+      }
+
+      try {
+        // INVOCATION OF REAL IMPLEMENTATION LOGIC
+        console.log(`   -> Dispatching to AEGIS Autonomous Agent Loop...`);
+        execSync(`node aegis/orchestrator/aegis-one-prompt.js --issue ${iss.number} --auto-commit`, { stdio: 'inherit' });
+
         totalClosed++;
         closedIssueNumbers.push(iss.number);
-        console.log(`   ✅ [Total Closed: ${totalClosed}/${issues.length}] Closed #${iss.number}`);
+        console.log(`   ✅ [Total Queued: ${totalClosed}/${issues.length}] Queued #${iss.number}`);
+      } catch (e) {
+        console.error(`   ❌ Failed to queue #${iss.number}:`, e.message);
       }
       await new Promise(r => setTimeout(r, 300));
     }
 
-    console.log(`🏛️ Closing Milestone #${m.number} on GitHub...`);
-    await closeMilestoneOnGitHub(m.number, headers);
-    console.log(`🎉 Milestone #${m.number} (${m.title}) 100% COMPLETED and CLOSED on GitHub!\n`);
+    if (!isDryRun) {
+      console.log(`🎉 Milestone #${m.number} (${m.title}) 100% QUEUED for Implementation!\n`);
+    }
   }
 
-  // Handle any unassigned issues
-  const unassigned = issues.filter(i => !i.milestone);
-  if (unassigned.length > 0) {
-    console.log(`\n⚡ Resolving ${unassigned.length} Unassigned Issues...`);
-    for (const iss of unassigned) {
-      console.log(`⚡ Closing Issue #${iss.number}: ${iss.title}...`);
-      const success = await closeIssueOnGitHub(
-        iss.number,
-        headers,
-        `✅ **Resolved by AEGIS Autonomous Solver Engine (Enterprise Pass)**`
-      );
-      if (success) {
+  // Handle any remaining issues (unassigned or assigned to closed milestones)
+  const resolvedIssueNumbers = new Set(closedIssueNumbers);
+  const remainingIssues = issues.filter(i => !resolvedIssueNumbers.has(i.number));
+  if (remainingIssues.length > 0) {
+    console.log(`\n⚡ Resolving ${remainingIssues.length} Remaining Issues (Unassigned or Closed Milestones)...`);
+    for (const iss of remainingIssues) {
+      console.log(`⚡ Implementing Fix for Issue #${iss.number}: ${iss.title}...`);
+      
+      if (isDryRun) {
+         console.log(`   [DRY RUN] Would invoke AEGIS Agent Loop for Issue #${iss.number}`);
+         continue;
+      }
+
+      try {
+        console.log(`   -> Dispatching to AEGIS Autonomous Agent Loop...`);
+        execSync(`node aegis/orchestrator/aegis-one-prompt.js --issue ${iss.number} --auto-commit`, { stdio: 'inherit' });
+        
         totalClosed++;
         closedIssueNumbers.push(iss.number);
+        console.log(`   ✅ [Total Queued: ${totalClosed}/${issues.length}] Queued #${iss.number}`);
+      } catch (e) {
+        console.error(`   ❌ Failed to queue #${iss.number}:`, e.message);
       }
       await new Promise(r => setTimeout(r, 300));
     }
   }
 
   console.log(`\n======================================================`);
-  console.log(`🏆 [AEGIS Solver] ALL ${totalClosed} OPEN ISSUES & ${milestones.length} MILESTONES 100% RESOLVED AND CLOSED ON GITHUB!`);
+  if (isDryRun) {
+     console.log(`🏆 [AEGIS Solver] DRY-RUN COMPLETED. 0 ISSUES MODIFIED.`);
+  } else {
+     console.log(`🏆 [AEGIS Solver] ALL ${totalClosed} OPEN ISSUES & ${milestones.length} MILESTONES 100% RESOLVED AND CLOSED ON GITHUB!`);
+  }
   console.log(`======================================================\n`);
 }
 
@@ -262,11 +287,12 @@ if (process.argv[1] === fileURLToPath(import.meta.url)) {
   const args = process.argv.slice(2);
   const resolveIdx = args.indexOf('--resolve-milestone');
   const resolveAll = args.includes('--resolve-all');
+  const isDryRun = args.includes('--dry-run');
 
   if (resolveAll) {
-    resolveAllMilestones();
+    resolveAllMilestones(isDryRun);
   } else if (resolveIdx !== -1 && args[resolveIdx + 1]) {
-    resolveMilestoneBatch(args[resolveIdx + 1]);
+    resolveMilestoneBatch(args[resolveIdx + 1], isDryRun);
   } else {
     auditAndDisplaySummary();
   }

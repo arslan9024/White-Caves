@@ -1,0 +1,16 @@
+{
+  "title": "متتبع التدريب الإلزامي من مؤسسة التنظيم العقاري (RERA)",
+  "subtitle": "تتبع 12 ساعة من التطوير المهني المستمر (CPD) المفروضة من مؤسسة التنظيم العقاري.",
+  "progress_label": "ساعات التطوير المهني المنجزة",
+  "hours": "ساعات",
+  "of": "من",
+  "required": "مطلوب",
+  "target_hours": "12",
+  "deadline_label": "الموعد النهائي القادم للتجديد",
+  "upcoming_courses": "الدورات القادمة / المتاحة",
+  "status_compliant": "متوافق",
+  "status_at_risk": "في خطر",
+  "status_non_compliant": "غير متوافق",
+  "register_btn": "التسجيل في الدورة",
+  "view_certificate": "عرض الشهادة"
+}

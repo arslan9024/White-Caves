@@ -1,182 +1,71 @@
-/**
- * MaintenanceTicketDispatch — Wave 52 GOAL-062
- * Facilities maintenance ticket dispatch with contractor SLA countdown
- * White Caves Real Estate LLC — Asset Management & IoT Facilities Suite
- */
 import React, { FC, useState } from 'react';
 import styled, { keyframes } from 'styled-components';
 
 const fadeIn = keyframes`from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}`;
+const Wrap = styled.div`width:100%;background:linear-gradient(135deg,#0F172A,#1E293B);border:2px solid rgba(245,158,11,0.25);border-radius:18px;overflow:hidden;font-family:'Inter',sans-serif;animation:${fadeIn} .4s ease`;
+const Head = styled.div`padding:14px 20px;background:rgba(245,158,11,0.05);border-bottom:1px solid rgba(245,158,11,0.12);display:flex;align-items:center;justify-content:space-between`;
+const Title = styled.h3`margin:0;color:#FFF;font-size:.9rem;font-weight:700`;
+const Body = styled.div`padding:20px;display:flex;flex-direction:column;gap:14px`;
 
-const Wrap = styled.div`
-  width: 100%;
-  background: linear-gradient(135deg, #0F172A 0%, #1E293B 100%);
-  border: 2px solid rgba(239, 68, 68, 0.25);
-  border-radius: 18px;
-  overflow: hidden;
-  font-family: 'Inter', sans-serif;
-  animation: ${fadeIn} 0.4s ease;
+const TicketGrid = styled.div`display:flex;flex-direction:column;gap:8px`;
+const TicketCard = styled.div<{$priority:'P0'|'P1'|'P2'}>`
+  padding:12px 14px;border-radius:11px;
+  background:${p=>({P0:'rgba(239,68,68,0.09)',P1:'rgba(245,158,11,0.07)',P2:'rgba(59,130,246,0.06)'}[p.$priority])};
+  border:2px solid ${p=>({P0:'rgba(239,68,68,0.35)',P1:'rgba(245,158,11,0.25)',P2:'rgba(59,130,246,0.2)'}[p.$priority])};
 `;
+const TicketTop = styled.div`display:flex;align-items:flex-start;gap:8px;margin-bottom:6px`;
+const PBadge = styled.div<{$priority:'P0'|'P1'|'P2'}>`font-size:.65rem;font-weight:900;padding:2px 8px;border-radius:5px;flex-shrink:0;background:${p=>({P0:'rgba(239,68,68,0.2)',P1:'rgba(245,158,11,0.15)',P2:'rgba(59,130,246,0.1)'}[p.$priority])};color:${p=>({P0:'#EF4444',P1:'#F59E0B',P2:'#60A5FA'}[p.$priority])}`;
+const TicketTitle = styled.div`font-size:.78rem;font-weight:700;color:#E2E8F0;flex:1`;
+const SLATimer = styled.div<{$priority:'P0'|'P1'|'P2'}>`font-size:.72rem;font-weight:900;color:${p=>({P0:'#EF4444',P1:'#F59E0B',P2:'#60A5FA'}[p.$priority])};flex-shrink:0`;
+const TicketMeta = styled.div`display:flex;gap:10px;flex-wrap:wrap`;
+const MetaTag = styled.div`font-size:.65rem;color:#64748B`;
+const AssignedBadge = styled.div`font-size:.65rem;font-weight:700;color:#10B981;background:rgba(16,185,129,0.1);padding:2px 8px;border-radius:4px`;
 
-const Head = styled.div`
-  padding: 14px 20px;
-  background: rgba(239, 68, 68, 0.05);
-  border-bottom: 1px solid rgba(239, 68, 68, 0.12);
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-`;
+const DispatchBtn = styled.button`width:100%;padding:11px;border-radius:9px;border:none;background:linear-gradient(90deg,#D97706,#F59E0B);color:#FFF;font-size:.82rem;font-weight:800;cursor:pointer;transition:all .2s;&:hover{filter:brightness(1.1)}`;
 
-const Title = styled.h3`
-  margin: 0;
-  color: #FFF;
-  font-size: 0.92rem;
-  font-weight: 700;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-`;
-
-const StatusTag = styled.span`
-  font-size: 0.68rem;
-  font-weight: 800;
-  color: #EF4444;
-  background: rgba(239, 68, 68, 0.1);
-  padding: 3px 10px;
-  border-radius: 999px;
-  border: 1px solid rgba(239, 68, 68, 0.25);
-`;
-
-const Body = styled.div`
-  padding: 20px;
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-`;
-
-const TicketList = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-`;
-
-const TicketCard = styled.div<{ $severity: 'critical' | 'high' | 'normal' }>`
-  padding: 14px;
-  border-radius: 10px;
-  background: ${p => p.$severity === 'critical' ? 'rgba(239, 68, 68, 0.08)' : p.$severity === 'high' ? 'rgba(245, 158, 11, 0.08)' : 'rgba(15, 23, 42, 0.7)'};
-  border: 1px solid ${p => p.$severity === 'critical' ? 'rgba(239, 68, 68, 0.35)' : p.$severity === 'high' ? 'rgba(245, 158, 11, 0.3)' : 'rgba(100, 116, 139, 0.15)'};
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-`;
-
-const TicketInfo = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: 3px;
-`;
-
-const TTitle = styled.div`
-  font-size: 0.85rem;
-  font-weight: 800;
-  color: #FFF;
-  display: flex;
-  align-items: center;
-  gap: 6px;
-`;
-
-const TMeta = styled.div`
-  font-size: 0.7rem;
-  color: #94A3B8;
-`;
-
-const TContractor = styled.div`
-  font-size: 0.65rem;
-  color: #64748B;
-  font-weight: 600;
-`;
-
-const SlaBlock = styled.div`
-  text-align: right;
-`;
-
-const SlaCountdown = styled.div<{ $severity: 'critical' | 'high' | 'normal' }>`
-  font-size: 1rem;
-  font-weight: 900;
-  color: ${p => p.$severity === 'critical' ? '#EF4444' : p.$severity === 'high' ? '#F59E0B' : '#10B981'};
-`;
-
-const DispatchBtn = styled.button`
-  padding: 6px 12px;
-  border-radius: 6px;
-  border: none;
-  background: #EF4444;
-  color: #FFF;
-  font-size: 0.72rem;
-  font-weight: 700;
-  cursor: pointer;
-  margin-top: 4px;
-  &:hover { filter: brightness(1.1); }
-`;
+const TICKETS = [
+  {id:'TK-8821',priority:'P0' as const,title:'Water leak — Apt 7C flooding bathroom',unit:'Unit 7C, Tower A',age:'14 min',sla:'2h',contractor:'Ahmed Plumbing LLC',assigned:false},
+  {id:'TK-8820',priority:'P0' as const,title:'AC not working — 43°C outdoor temp',unit:'Unit 12B, Tower B',age:'38 min',sla:'2h',contractor:'CoolAir HVAC',assigned:true},
+  {id:'TK-8818',priority:'P1' as const,title:'Elevator stuck between floors 3-4',unit:'Tower A Common',age:'1h 12m',sla:'4h',contractor:'ThyssenKrupp',assigned:true},
+  {id:'TK-8815',priority:'P2' as const,title:'Lobby lightbulb replacement needed',unit:'Tower B Lobby',age:'2d 4h',sla:'72h',contractor:'Unassigned',assigned:false},
+];
 
 export const MaintenanceTicketDispatch: FC = () => {
-  const [tickets, setTickets] = useState([
-    { id: 'T-1089', issue: 'Chiller & Central AC Total Breakdown', unit: 'Penthouse 4501, Marina 23', severity: 'critical' as const, slaHoursLeft: 1.5, contractor: 'CoolTech HVAC Specialists', status: 'Dispatched' },
-    { id: 'T-1090', issue: 'Main Water Line Leakage in Kitchen', unit: 'Villa 12, Palm Jumeirah', severity: 'high' as const, slaHoursLeft: 3.8, contractor: 'Emirates Plumbing LLC', status: 'Under Review' },
-    { id: 'T-1091', issue: 'Smart Intercom & Biometric Lock Glitch', unit: 'Apartment 804, Downtown Views', severity: 'normal' as const, slaHoursLeft: 22.0, contractor: 'SmartSecure IoT Systems', status: 'Scheduled' },
-  ]);
-
-  const handleResolve = (id: string) => {
-    setTickets(prev => prev.filter(t => t.id !== id));
-    alert(`Ticket ${id} marked as inspected and resolved!`);
-  };
+  const [dispatched, setDispatched] = useState(new Set<string>());
 
   return (
     <Wrap data-testid="maintenance-ticket-dispatch">
       <Head>
-        <Title>🔧 IoT Maintenance & Contractor Dispatch SLA</Title>
-        <StatusTag>FACILITIES CONTROL</StatusTag>
+        <Title>🔧 Maintenance Ticket Dispatch</Title>
+        <div style={{fontSize:'.7rem',color:'#F59E0B',fontWeight:700}}>SLA Active</div>
       </Head>
       <Body>
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '8px', textAlign: 'center' }}>
-          <div style={{ padding: '8px', background: 'rgba(15,23,42,0.7)', borderRadius: '8px', border: '1px solid rgba(100,116,139,0.2)' }}>
-            <div style={{ fontSize: '0.62rem', color: 'var(--color-94a3b8, #94A3B8)' }}>Critical SLA</div>
-            <div style={{ fontSize: '0.95rem', fontWeight: 800, color: 'var(--accent-red, #EF4444)' }}>&lt; 4 Hours</div>
-          </div>
-          <div style={{ padding: '8px', background: 'rgba(15,23,42,0.7)', borderRadius: '8px', border: '1px solid rgba(100,116,139,0.2)' }}>
-            <div style={{ fontSize: '0.62rem', color: 'var(--color-94a3b8, #94A3B8)' }}>High SLA</div>
-            <div style={{ fontSize: '0.95rem', fontWeight: 800, color: 'var(--accent-gold, #F59E0B)' }}>&lt; 12 Hours</div>
-          </div>
-          <div style={{ padding: '8px', background: 'rgba(15,23,42,0.7)', borderRadius: '8px', border: '1px solid rgba(100,116,139,0.2)' }}>
-            <div style={{ fontSize: '0.62rem', color: 'var(--color-94a3b8, #94A3B8)' }}>Standard SLA</div>
-            <div style={{ fontSize: '0.95rem', fontWeight: 800, color: 'var(--accent-green, #10B981)' }}>&lt; 48 Hours</div>
-          </div>
-        </div>
-
-        <TicketList>
-          {tickets.map(ticket => (
-            <TicketCard key={ticket.id} $severity={ticket.severity}>
-              <TicketInfo>
-                <TTitle>
-                  <span>{ticket.id}: {ticket.issue}</span>
-                </TTitle>
-                <TMeta>📍 {ticket.unit}</TMeta>
-                <TContractor>👷 Contractor: {ticket.contractor}</TContractor>
-              </TicketInfo>
-              <SlaBlock>
-                <SlaCountdown $severity={ticket.severity}>
-                  ⏱ {ticket.slaHoursLeft}h SLA
-                </SlaCountdown>
-                <DispatchBtn onClick={() => handleResolve(ticket.id)}>
-                  ✓ Resolve Ticket
-                </DispatchBtn>
-              </SlaBlock>
+        <TicketGrid>
+          {TICKETS.map(t=>(
+            <TicketCard key={t.id} $priority={t.priority}>
+              <TicketTop>
+                <PBadge $priority={t.priority}>{t.priority}</PBadge>
+                <TicketTitle>{t.title}</TicketTitle>
+                <SLATimer $priority={t.priority}>SLA:{t.sla}</SLATimer>
+              </TicketTop>
+              <TicketMeta>
+                <MetaTag>📍 {t.unit}</MetaTag>
+                <MetaTag>⏱ {t.age} ago</MetaTag>
+                <MetaTag>🔧 {t.contractor}</MetaTag>
+                {(t.assigned||dispatched.has(t.id))&&<AssignedBadge>✓ Assigned</AssignedBadge>}
+              </TicketMeta>
+              {!t.assigned && !dispatched.has(t.id) && (
+                <button onClick={()=>setDispatched(p=>{const n=new Set(p);n.add(t.id);return n})}
+                  style={{marginTop:8,width:'100%',padding:'6px',borderRadius:'7px',border:'1px solid rgba(245,158,11,0.3)',background:'rgba(245,158,11,0.08)',color:'#F59E0B',fontSize:'.72rem',fontWeight:700,cursor:'pointer',fontFamily:'Inter,sans-serif'}}>
+                  ⚡ Dispatch Contractor
+                </button>
+              )}
             </TicketCard>
           ))}
-        </TicketList>
+        </TicketGrid>
+        <DispatchBtn>📋 Create New Maintenance Ticket</DispatchBtn>
       </Body>
     </Wrap>
   );
 };
-
 export default MaintenanceTicketDispatch;

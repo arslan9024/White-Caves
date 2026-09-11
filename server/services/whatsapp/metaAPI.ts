@@ -32,9 +32,10 @@ export interface SendMessagePayload {
   template?: {
     name: string;
     language: { code: string };
-    parameters?: {
-      body: { parameters: Array<{ type: string; text?: string }> };
-    };
+    components?: Array<{
+      type: string;
+      parameters: Array<{ type: string; text?: string }>;
+    }>;
   };
 }
 
@@ -91,6 +92,10 @@ export interface WebhookEvent {
           timestamp: string;
           recipient_id: string;
           errors?: Array<{ code: number; message: string }>;
+        }>;
+        contacts?: Array<{
+          profile?: { name?: string };
+          wa_id?: string;
         }>;
       };
     }>;
@@ -168,9 +173,16 @@ export class MetaAPIClient {
   public async sendTemplate(
     toPhoneNumber: string,
     templateName: string,
-    parameters?: string[]
+    parameters?: string[],
+    languageCode = 'en'
   ): Promise<string> {
     try {
+      const { hasWhatsAppConsent } = await import('./consentManager.js');
+      if (!(await hasWhatsAppConsent(toPhoneNumber))) {
+        console.warn(`[Meta API] Blocked template to ${toPhoneNumber} due to opt-out status.`);
+        return 'blocked_no_consent';
+      }
+
       const payload: SendMessagePayload = {
         messaging_product: 'whatsapp',
         recipient_type: 'individual',
@@ -178,16 +190,17 @@ export class MetaAPIClient {
         type: 'template',
         template: {
           name: templateName,
-          language: { code: 'en' },
+          language: { code: languageCode },
           ...(parameters && {
-            parameters: {
-              body: {
+            components: [
+              {
+                type: 'body',
                 parameters: parameters.map(param => ({
                   type: 'text',
                   text: param,
                 })),
               },
-            },
+            ],
           }),
         },
       };
@@ -209,6 +222,12 @@ export class MetaAPIClient {
    */
   public async sendImage(toPhoneNumber: string, imageUrl: string): Promise<string> {
     try {
+      const { hasWhatsAppConsent } = await import('./consentManager.js');
+      if (!(await hasWhatsAppConsent(toPhoneNumber))) {
+        console.warn(`[Meta API] Blocked image to ${toPhoneNumber} due to opt-out status.`);
+        return 'blocked_no_consent';
+      }
+
       const payload: SendMessagePayload = {
         messaging_product: 'whatsapp',
         recipient_type: 'individual',
@@ -240,6 +259,12 @@ export class MetaAPIClient {
     filename?: string
   ): Promise<string> {
     try {
+      const { hasWhatsAppConsent } = await import('./consentManager.js');
+      if (!(await hasWhatsAppConsent(toPhoneNumber))) {
+        console.warn(`[Meta API] Blocked document to ${toPhoneNumber} due to opt-out status.`);
+        return 'blocked_no_consent';
+      }
+
       const payload: SendMessagePayload = {
         messaging_product: 'whatsapp',
         recipient_type: 'individual',
@@ -428,18 +453,27 @@ export function createMetaAPIClient(config: MetaAPIConfig): MetaAPIClient {
 export async function sendTemplateMessage(
   toPhoneNumber: string,
   templateName: string,
-  _languageCode = 'en',
+  languageCode = 'en',
   bodyParams: string[] = []
 ): Promise<{ messageId: string }> {
-  if (!process.env.META_WA_ACCESS_TOKEN || !process.env.META_WA_PHONE_NUMBER_ID) {
+  const token =
+    process.env.META_WA_ACCESS_TOKEN ||
+    process.env.META_ACCESS_TOKEN ||
+    process.env.WHATSAPP_ACCESS_TOKEN;
+  const phoneNumberId =
+    process.env.META_WA_PHONE_NUMBER_ID ||
+    process.env.META_PHONE_NUMBER_ID ||
+    process.env.WHATSAPP_PHONE_NUMBER_ID;
+
+  if (!token || !phoneNumberId) {
     return { messageId: `wmid-mock-${Date.now()}-${Math.floor(Math.random() * 1000)}` };
   }
 
   const client = createMetaAPIClient({
-    accessToken: process.env.META_WA_ACCESS_TOKEN,
-    phoneNumberId: process.env.META_WA_PHONE_NUMBER_ID,
+    accessToken: token,
+    phoneNumberId,
   });
 
-  const messageId = await client.sendTemplate(toPhoneNumber, templateName, bodyParams);
+  const messageId = await client.sendTemplate(toPhoneNumber, templateName, bodyParams, languageCode);
   return { messageId: messageId || `wmid-${Date.now()}` };
 }

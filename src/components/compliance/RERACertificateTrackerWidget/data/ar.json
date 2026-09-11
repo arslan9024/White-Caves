@@ -1,0 +1,23 @@
+{
+  "title": "متتبع شهادات وسطاء مؤسسة التنظيم العقاري (RERA)",
+  "subtitle": "تتبع وإدارة شهادات RERA لـ 108 موظف",
+  "search_placeholder": "البحث عن وسيط بالاسم أو رقم التسجيل...",
+  "filter_all": "جميع الوسطاء",
+  "filter_active": "نشط",
+  "filter_expiring": "تنتهي قريباً",
+  "filter_expired": "منتهية الصلاحية",
+  "table_broker": "اسم الوسيط",
+  "table_brn": "رقم تسجيل الوسيط (BRN)",
+  "table_issue_date": "تاريخ الإصدار",
+  "table_expiry_date": "تاريخ الانتهاء",
+  "table_status": "الحالة",
+  "table_action": "إجراء",
+  "status_active": "نشط",
+  "status_expiring": "تنتهي قريباً (<30 يوم)",
+  "status_expired": "منتهية الصلاحية",
+  "renew_btn": "تجديد عبر دائرة الأراضي",
+  "upload_btn": "رفع شهادة جديدة",
+  "stats_total": "إجمالي الوسطاء",
+  "stats_active": "شهادات نشطة",
+  "stats_action_needed": "يتطلب إجراء"
+}

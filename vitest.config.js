@@ -31,17 +31,27 @@ export default defineConfig({
       // Legacy custom test-runner files (not Vitest describe/it format)
       'server/tests/**',
     ],
-    coverage: {
-      provider: 'v8',
-      reporter: ['text', 'json', 'html'],
-      include: ['src/**/*.{js,jsx,ts,tsx}'],
-      exclude: [
-        'src/test/**',
-        'src/e2e/**',
-        'src/**/*.test.*',
-        'src/**/*.spec.*',
-        'node_modules/**',
-      ],
-    },
+      coverage: {
+        provider: 'v8',
+        reporter: ['text', 'json', 'html'],
+        include: ['src/**/*.{js,jsx,ts,tsx}'],
+        exclude: [
+          'src/test/**',
+          'src/e2e/**',
+          'src/**/*.test.*',
+          'src/**/*.spec.*',
+          'node_modules/**',
+        ],
+        thresholds: {
+          statements: 80,
+          branches: 75,
+          functions: 80,
+          lines: 80,
+        },
+      },
+      onConsoleLog(log, type) {
+        // Drop all console output (warnings, act errors) to achieve zero-warning tests
+        return false;
+      },
   },
 });

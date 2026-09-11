@@ -245,6 +245,30 @@ export const WHATSAPP_TEMPLATES: Record<string, WhatsAppTemplate> = {
     bodyText: 'Dear {{1}}, your lease for {{2}} is set to expire on {{3}}. We would love to assist with your renewal. Reply RENEW to start the process or CONTACT for a callback.',
     paramCount: 3,
   },
+  lead_qualify: {
+    name: 'lead_qualify',
+    category: 'UTILITY',
+    language: 'en',
+    description: 'Lead qualification inquiry',
+    bodyText: 'Hello {{1}}, thank you for your inquiry on {{2}}! Are you interested in purchasing or renting, and what is your ideal moving timeframe? Reply 1 for Buy, 2 for Rent, or AGENT to chat with an advisor.',
+    paramCount: 2,
+  },
+  invoice_sent: {
+    name: 'invoice_sent',
+    category: 'UTILITY',
+    language: 'en',
+    description: 'Invoice and receipt notification',
+    bodyText: 'Dear {{1}}, your invoice {{2}} for AED {{3}} regarding {{4}} has been generated. You can review your statement online or download your official tax receipt here: {{5}}.',
+    paramCount: 5,
+  },
+  viewing_confirmation_ar: {
+    name: 'viewing_confirmation_ar',
+    category: 'UTILITY',
+    language: 'ar',
+    description: 'تأكيد موعد معاينة العقار باللغة العربية',
+    bodyText: 'مرحباً {{1}}، تم تأكيد موعد معاينة العقار في {{2}} بتاريخ {{3}}. سيكون وسيطك العقاري {{4}} في انتظارك. أرسل نعم للتأكيد أو مساعدة للتحدث مع وسيط.',
+    paramCount: 4,
+  },
 };
 
 /**
@@ -252,15 +276,41 @@ export const WHATSAPP_TEMPLATES: Record<string, WhatsAppTemplate> = {
  */
 export function getTemplateParams(
   templateName: string,
-  data: Record<string, string>,
+  data: Record<string, string> | string[],
 ): string[] | null {
   const template = WHATSAPP_TEMPLATES[templateName];
   if (!template) return null;
 
+  if (Array.isArray(data)) {
+    const params: string[] = [];
+    for (let i = 0; i < template.paramCount; i++) {
+      params.push(data[i] ?? '');
+    }
+    return params;
+  }
+
   // Map positional params from data
   const params: string[] = [];
+  const entries = Object.values(data);
   for (let i = 1; i <= template.paramCount; i++) {
-    params.push(data[`param${i}`] || data[`p${i}`] || '');
+    const val = data[`param${i}`] || data[`p${i}`] || data[String(i)] || entries[i - 1] || '';
+    params.push(val);
   }
   return params;
+}
+
+/**
+ * Render template body text by substituting parameters {{1}}, {{2}}, etc.
+ */
+export function renderTemplate(templateName: string, params: string[] = []): string {
+  const template = WHATSAPP_TEMPLATES[templateName];
+  if (!template) {
+    return params.length > 0 ? `[Template: ${templateName}] ${params.join(', ')}` : `[Template: ${templateName}]`;
+  }
+
+  let text = template.bodyText;
+  params.forEach((param, index) => {
+    text = text.replace(new RegExp(`\\{\\{${index + 1}\\}\\}`, 'g'), param || '');
+  });
+  return text;
 }

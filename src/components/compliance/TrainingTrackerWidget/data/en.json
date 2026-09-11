@@ -1,0 +1,16 @@
+{
+  "title": "RERA Mandatory CPD Training Tracker",
+  "subtitle": "Track your 12 hours of Continuous Professional Development (CPD) mandated by RERA.",
+  "progress_label": "CPD Hours Completed",
+  "hours": "Hours",
+  "of": "of",
+  "required": "required",
+  "target_hours": "12",
+  "deadline_label": "Next Renewal Deadline",
+  "upcoming_courses": "Upcoming / Available Courses",
+  "status_compliant": "Compliant",
+  "status_at_risk": "At Risk",
+  "status_non_compliant": "Non-Compliant",
+  "register_btn": "Register for Course",
+  "view_certificate": "View Certificate"
+}

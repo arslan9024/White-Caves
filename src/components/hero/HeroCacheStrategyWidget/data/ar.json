@@ -1,0 +1,1 @@
+{"title":"استراتيجية ذاكرة التخزين المؤقت","subtitle":"Vercel Edge + إعادة التحقق أثناء التقادم","strategy":"stale-while-revalidate","ttl":"3600s","hit_rate":"97.3%","cdn":"Vercel Edge"}

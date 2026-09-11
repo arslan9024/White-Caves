@@ -1,0 +1,23 @@
+{
+  "title": "RERA Broker Certificate Tracker",
+  "subtitle": "Track and Manage RERA Certifications for 108 Staff Members",
+  "search_placeholder": "Search broker by name or BRN...",
+  "filter_all": "All Brokers",
+  "filter_active": "Active",
+  "filter_expiring": "Expiring Soon",
+  "filter_expired": "Expired",
+  "table_broker": "Broker Name",
+  "table_brn": "BRN (Broker Reg. No)",
+  "table_issue_date": "Issue Date",
+  "table_expiry_date": "Expiry Date",
+  "table_status": "Status",
+  "table_action": "Action",
+  "status_active": "Active",
+  "status_expiring": "Expiring (<30 Days)",
+  "status_expired": "Expired",
+  "renew_btn": "Renew via DLD",
+  "upload_btn": "Upload New Cert",
+  "stats_total": "Total Brokers",
+  "stats_active": "Active Certs",
+  "stats_action_needed": "Action Needed"
+}

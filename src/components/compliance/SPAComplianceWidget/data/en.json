@@ -1,0 +1,16 @@
+{
+  "title": "SPA Compliance Checklist",
+  "subtitle": "Sale & Purchase Agreement Filing & DLD Verification",
+  "checklist_header": "Mandatory DLD SPA Clauses",
+  "clause_payment_plan": "Clear Payment Plan Details",
+  "clause_completion_date": "Anticipated Completion Date included",
+  "clause_dld_fees": "DLD 4% Transfer Fee explicitly assigned",
+  "clause_dispute_resolution": "Dispute Resolution / Arbitration Clause (DIFC/DIAC)",
+  "clause_escrow_account": "Escrow Account Details (Off-plan only)",
+  "clause_force_majeure": "Force Majeure stipulations defined",
+  "upload_spa": "Upload Signed SPA (PDF)",
+  "file_dld": "File SPA with DLD",
+  "filing": "Filing SPA...",
+  "success": "SPA successfully filed with Dubai Land Department.",
+  "progress": "Compliance Score"
+}

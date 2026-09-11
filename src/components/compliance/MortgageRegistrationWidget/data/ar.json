@@ -1,0 +1,19 @@
+{
+  "title": "تسجيل الرهن العقاري",
+  "subtitle": "حاسبة الرسوم 0.25٪ وتقديم نموذج دائرة الأراضي والأملاك",
+  "select_deal": "اختر صفقة الرهن",
+  "mortgage_amount": "مبلغ الرهن (درهم)",
+  "fee_calculation": "حساب الرسوم",
+  "dld_fee_rate": "رسوم دائرة الأراضي (0.25٪)",
+  "total_fee": "إجمالي رسوم الدائرة",
+  "knowledge_fee": "رسوم المعرفة والابتكار",
+  "grand_total": "المبلغ الإجمالي المستحق",
+  "submit_dld": "تقديم إلى الدائرة",
+  "submitting": "جاري التقديم...",
+  "status_tracker": "حالة التسجيل",
+  "status_draft": "مسودة",
+  "status_submitted": "مقدم للدائرة",
+  "status_payment": "في انتظار الدفع",
+  "status_registered": "تم تسجيل الرهن",
+  "download_certificate": "تحميل شهادة التسجيل"
+}

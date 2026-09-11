@@ -53,6 +53,9 @@ jobs:
       - name: Type check
         run: npm run typecheck
       
+      - name: Dead code sweep
+        run: npm run dead-code-sweep
+
       - name: Build check
         run: npm run build
 

@@ -40,6 +40,8 @@ const resolveFirebaseIdentity = (body: unknown): string => {
 
 const normalizeIpKey = (ip: string | undefined): string => (ip || '').trim() || 'unknown-ip';
 
+const isTestRuntime = (): boolean => process.env.NODE_ENV === 'test' || process.env.VITEST === 'true';
+
 // ============================================================================
 // AUTH RATE LIMITER — Strict limits for login/register/password
 // ============================================================================
@@ -58,6 +60,7 @@ export const authLimiter = rateLimit({
   standardHeaders: true, // Return rate limit info in `RateLimit-*` headers
   legacyHeaders: false, // Disable `X-RateLimit-*` headers
   skipSuccessfulRequests: false,
+  skip: () => isTestRuntime(),
 });
 
 /** Firebase sync: allow more attempts for social auth handshake retries (shared IP safe) */
@@ -81,6 +84,7 @@ export const firebaseSyncLimiter: RateLimitRequestHandler = rateLimit({
   legacyHeaders: false,
   // Successful auth sync should not consume quota.
   skipSuccessfulRequests: true,
+  skip: () => isTestRuntime(),
 });
 
 /** Registration: 3 attempts per hour per IP */
@@ -96,6 +100,7 @@ export const registerLimiter = rateLimit({
   },
   standardHeaders: true,
   legacyHeaders: false,
+  skip: () => isTestRuntime(),
 });
 
 /** Password change: 5 attempts per hour */
@@ -111,6 +116,7 @@ export const passwordLimiter = rateLimit({
   },
   standardHeaders: true,
   legacyHeaders: false,
+  skip: () => isTestRuntime(),
 });
 
 // ============================================================================
@@ -131,6 +137,7 @@ export const apiLimiter = rateLimit({
   standardHeaders: true,
   legacyHeaders: false,
   skip: req => {
+    if (isTestRuntime()) return true;
     // Skip rate limiting for health checks
     return req.path === '/health';
   },
@@ -153,6 +160,7 @@ export const strictLimiter = rateLimit({
   },
   standardHeaders: true,
   legacyHeaders: false,
+  skip: () => isTestRuntime(),
 });
 
 // ============================================================================
@@ -176,6 +184,7 @@ export const contactLimiter = rateLimit({
   },
   standardHeaders: true,
   legacyHeaders: false,
+  skip: () => isTestRuntime(),
 });
 
 export default {

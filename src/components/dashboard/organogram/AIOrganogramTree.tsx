@@ -10,20 +10,27 @@
 
 import React, { FC, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ASSISTANTS_108_REGISTRY, SupervisorAssistant } from '../../../data/assistants108Registry.data';
+import { CORPORATE_DEPARTMENTS_12, SUPERVISORS_108, SupervisorDef } from '../../../data/assistants108Registry.data';
+
+const ASSISTANTS_108_REGISTRY = CORPORATE_DEPARTMENTS_12.map(dept => ({
+  ...dept,
+  manager: 'Human Manager',
+  aiLead: dept.managerAi.name,
+  supervisors: SUPERVISORS_108.filter(s => s.departmentId === dept.id)
+}));
 
 export interface AIOrganogramTreeProps {
-  onSelectAssistant?: (assistant: SupervisorAssistant) => void;
+  onSelectAssistant?: (assistant: SupervisorDef) => void;
 }
 
 export const AIOrganogramTree: FC<AIOrganogramTreeProps> = ({ onSelectAssistant }) => {
-  const [selectedDeptId, setSelectedDeptId] = useState<string>('dept-01');
+  const [selectedDeptId, setSelectedDeptId] = useState<string>('luxury_sales');
   const [searchQuery, setSearchQuery] = useState<string>('');
-  const [inspectedSupervisor, setInspectedSupervisor] = useState<SupervisorAssistant | null>(null);
+  const [inspectedSupervisor, setInspectedSupervisor] = useState<SupervisorDef | null>(null);
   const [taskPrompt, setTaskPrompt] = useState<string>('');
   const [taskDispatched, setTaskDispatched] = useState<boolean>(false);
 
-  const activeDept = ASSISTANTS_108_REGISTRY.find(d => d.id === selectedDeptId) || ASSISTANTS_108_REGISTRY[0];
+  const activeDept = ASSISTANTS_108_REGISTRY.find((d: any) => d.id === selectedDeptId) || ASSISTANTS_108_REGISTRY[0];
 
   const handleDispatchTask = (e: React.FormEvent) => {
     e.preventDefault();
@@ -37,10 +44,10 @@ export const AIOrganogramTree: FC<AIOrganogramTreeProps> = ({ onSelectAssistant 
   };
 
   const filteredSupervisors = activeDept.supervisors.filter(
-    s =>
+    (s: SupervisorDef) =>
       s.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      s.role.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      s.specialization.toLowerCase().includes(searchQuery.toLowerCase())
+      s.title?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      s.specialty?.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
   return (
@@ -110,7 +117,7 @@ export const AIOrganogramTree: FC<AIOrganogramTreeProps> = ({ onSelectAssistant 
             gap: '8px',
           }}
         >
-          {ASSISTANTS_108_REGISTRY.map(dept => {
+          {ASSISTANTS_108_REGISTRY.map((dept: any) => {
             const isSelected = dept.id === selectedDeptId;
             return (
               <button
@@ -180,7 +187,7 @@ export const AIOrganogramTree: FC<AIOrganogramTreeProps> = ({ onSelectAssistant 
             gap: '10px',
           }}
         >
-          {filteredSupervisors.map(sup => (
+          {filteredSupervisors.map((sup: SupervisorDef) => (
             <motion.div
               key={sup.id}
               whileHover={{ y: -2 }}
@@ -201,8 +208,8 @@ export const AIOrganogramTree: FC<AIOrganogramTreeProps> = ({ onSelectAssistant 
                 <strong style={{ fontSize: '0.85rem', color: '#0F172A' }}>{sup.name}</strong>
                 <span
                   style={{
-                    background: sup.status === 'Active' ? '#DCFCE7' : '#DBEAFE',
-                    color: sup.status === 'Active' ? '#166534' : '#1E40AF',
+                    background: sup.status === 'active' ? '#DCFCE7' : '#DBEAFE',
+                    color: sup.status === 'active' ? '#166534' : '#1E40AF',
                     fontSize: '0.65rem',
                     fontWeight: 800,
                     padding: '2px 5px',
@@ -213,10 +220,10 @@ export const AIOrganogramTree: FC<AIOrganogramTreeProps> = ({ onSelectAssistant 
                 </span>
               </div>
               <div style={{ fontSize: '0.75rem', fontWeight: 700, color: '#EF4444', marginBottom: '4px' }}>
-                {sup.role}
+                {sup.title}
               </div>
               <p style={{ margin: 0, fontSize: '0.7rem', color: '#64748B', lineHeight: '1.3' }}>
-                {sup.specialization}
+                {sup.specialty}
               </p>
               <div style={{ display: 'flex', justifyContent: 'space-between', borderTop: '1px solid #F1F5F9', paddingTop: '6px', marginTop: '6px', fontSize: '0.68rem', color: '#94A3B8' }}>
                 <span>SLA: &lt;15m</span>
@@ -275,7 +282,7 @@ export const AIOrganogramTree: FC<AIOrganogramTreeProps> = ({ onSelectAssistant 
                     Supervisor Task Dispatcher
                   </span>
                   <h3 style={{ margin: '4px 0 0 0', fontSize: '1.1rem', fontWeight: 800 }}>
-                    🤖 {inspectedSupervisor.name} ({inspectedSupervisor.role})
+                    🤖 {inspectedSupervisor.name} ({inspectedSupervisor.title})
                   </h3>
                 </div>
                 <button
@@ -297,7 +304,7 @@ export const AIOrganogramTree: FC<AIOrganogramTreeProps> = ({ onSelectAssistant 
               {/* Body */}
               <div style={{ padding: '1.5rem', display: 'flex', flexDirection: 'column', gap: '12px' }}>
                 <div style={{ background: '#F8FAFC', padding: '10px 14px', borderRadius: '10px', border: '1px solid #E2E8F0', fontSize: '0.78rem' }}>
-                  <strong>Specialization:</strong> {inspectedSupervisor.specialization}
+                  <strong>Specialization:</strong> {inspectedSupervisor.specialty}
                   <div style={{ marginTop: '4px', color: '#059669', fontWeight: 700 }}>
                     ⏱️ Guaranteed SLA Execution: Under 15 Minutes
                   </div>

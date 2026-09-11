@@ -1,0 +1,1 @@
+{"title":"Arabic RTL Invoice Layout","subtitle":"Right-Aligned AED Figures","sample_invoice":"INV-2026-0201","client":"شركة دبي العقارية","items":[{"desc":"Commission — Villa Sale","qty":1,"price":125000},{"desc":"Valuation Fee","qty":1,"price":5000},{"desc":"Marketing Package","qty":1,"price":15000}],"total":"Total","vat":"VAT (5%)","grand_total":"Grand Total"}

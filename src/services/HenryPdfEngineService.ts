@@ -11,6 +11,8 @@
  * 4. Receipts & Tax Invoices (Security deposit & commission tax invoices with TRN and 5% VAT)
  */
 
+import QRCode from 'qrcode';
+
 export interface ContractParty {
   name: string;
   emiratesIdOrPassport: string;
@@ -381,13 +383,41 @@ class HenryPdfEngineService {
   /**
    * 4. Generates Payment Receipts & Tax Invoices with TRN & FTA 5% VAT for Tenants & Landlords
    */
-  generateTaxReceiptHtml(payload: TaxReceiptPayload): string {
+  async generateTaxReceiptHtml(payload: TaxReceiptPayload): Promise<string> {
     const isTenant = payload.billedPartyType === 'tenant' || payload.receiptType === 'tenant_service_charges';
     const isLandlord = payload.billedPartyType === 'landlord' || payload.receiptType === 'landlord_service_charges' || payload.receiptType === 'landlord_property_management';
     
     const formattedType = (payload.receiptType || 'agency_commission').replace(/_/g, ' ').toUpperCase();
     const partyBadge = isTenant ? 'TENANT SERVICE CHARGE & INVOICE' : isLandlord ? 'LANDLORD PROPERTY MANAGEMENT & SERVICE INVOICE' : 'OFFICIAL TAX INVOICE & RECEIPT';
     const partyColor = isTenant ? '#2563EB' : isLandlord ? '#16A34A' : '#EF4444';
+
+    const getTlvBuffer = (tag: number, value: string) => {
+      const valueBuffer = Buffer.from(value, 'utf-8');
+      const tagBuffer = Buffer.from([tag]);
+      const lengthBuffer = Buffer.from([valueBuffer.length]);
+      return Buffer.concat([tagBuffer, lengthBuffer, valueBuffer]);
+    };
+
+    const sellerName = 'WHITE CAVES REAL ESTATE L.L.C';
+    const vatNumber = payload.whiteCavesTrn || '100488291000003';
+    const dateTime = payload.date + 'T12:00:00Z';
+    const totalAmount = payload.totalWithVatAed.toFixed(2);
+    const vatAmount = payload.vatAmountAed.toFixed(2);
+
+    const tlvBuffer = Buffer.concat([
+      getTlvBuffer(1, sellerName),
+      getTlvBuffer(2, vatNumber),
+      getTlvBuffer(3, dateTime),
+      getTlvBuffer(4, totalAmount),
+      getTlvBuffer(5, vatAmount)
+    ]);
+    const ftaQrCodeBase64 = tlvBuffer.toString('base64');
+    const qrCodeDataUrl = await QRCode.toDataURL(ftaQrCodeBase64, { width: 120, margin: 1 });
+
+    const qrCodeHtml = `<div style="text-align: center; border: 1px solid #E2E8F0; padding: 8px; border-radius: 6px; display: inline-block; background: #fff;">
+      <img src="${qrCodeDataUrl}" alt="FTA QR Code" style="width: 100px; height: 100px;" />
+      <div style="font-size: 9px; color: #64748B; margin-top: 4px;">FTA Compliant</div>
+    </div>`;
 
     return `
       <!DOCTYPE html>
@@ -416,7 +446,8 @@ class HenryPdfEngineService {
               <div style="font-size: 11px; color: #64748B;">Office D-72, Port Saeed, Dubai, UAE • Phone: +971 4 335 0592</div>
             </div>
             <div style="text-align: right;">
-              <h3 style="margin: 0; color: #EF4444; font-size: 16px;">TAX INVOICE / VOUCHER</h3>
+              ${qrCodeHtml}
+              <h3 style="margin: 12px 0 0; color: #EF4444; font-size: 16px;">TAX INVOICE / VOUCHER</h3>
               <div style="font-weight: bold; font-size: 13px; margin-top: 4px;">Ref: ${payload.receiptNumber}</div>
               <div style="font-size: 11px; color: #64748B; margin-top: 2px;">Issue Date: ${payload.date}</div>
               <div style="font-size: 11px; color: #16A34A; font-weight: bold; margin-top: 4px;">STATUS: PAID / CLEARED</div>

@@ -1,0 +1,18 @@
+{
+  "title": "AML Policy Screening (CDD/EDD)",
+  "subtitle": "Customer Due Diligence & Global Sanctions Scan",
+  "client_details": "Client Details",
+  "client_name": "Full Legal Name",
+  "nationality": "Nationality / Jurisdiction",
+  "screening_type": "Diligence Level",
+  "cdd": "Standard CDD",
+  "edd": "Enhanced EDD",
+  "pep_screening": "PEP (Politically Exposed Person) Screening",
+  "sanctions_screening": "OFAC / UN Sanctions List Screening",
+  "scan_now": "Run AML Scan",
+  "scanning": "Scanning API Databases...",
+  "risk_score": "AML Risk Score",
+  "status_clear": "Clear - No Matches Found",
+  "status_flagged": "Flagged - Requires Manual Review",
+  "download_report": "Download CDD/EDD Report"
+}

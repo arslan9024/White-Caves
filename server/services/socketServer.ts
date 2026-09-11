@@ -237,6 +237,18 @@ export class SocketServer {
     this.io.to('crm').emit('whatsapp:meta:status', payload);
   }
 
+  /** Broadcast to all CRM users: Lead -> Bot -> Agent handoff with Context Packet */
+  emitMetaHandoff(payload: {
+    conversationId: string;
+    leadId?: string;
+    customerPhone: string;
+    customerName?: string;
+    reason: string;
+    contextPacket?: Record<string, unknown>;
+  }): void {
+    this.io.to('crm').emit('whatsapp:meta:handoff', payload);
+  }
+
   // ─── Linda Channel Emitters (whatsapp-web.js LocalAuth) ──────────────────
 
   /** Broadcast to all CRM users: new WhatsApp message via Linda channel */

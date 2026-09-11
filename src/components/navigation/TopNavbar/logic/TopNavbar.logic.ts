@@ -4,15 +4,15 @@
 
 import { useState, useRef, useCallback, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useAuthContext } from '../../workspace/contexts/AuthContext';
-import { useTheme } from '../../../context/ThemeContext';
-import { useLanguage } from '../../../context/LanguageContext';
+import { useAuth } from '../../../../context/AuthContext';
+import { useTheme } from '../../../../context/ThemeContext';
+import { useLanguage } from '../../../../context/LanguageContext';
 
 export function useTopNavbarLogic() {
-  const { user, logout } = useAuthContext();
+  const { user, logout } = useAuth();
   const navigate = useNavigate();
   const { isDark, toggleTheme } = useTheme();
-  const { language, setLanguage, isRtl } = useLanguage();
+  const { language, setLanguage, isRTL } = useLanguage();
 
   const [searchQuery, setSearchQuery] = useState('');
   const [isImpersonating, setIsImpersonating] = useState(false);
@@ -54,7 +54,7 @@ export function useTopNavbarLogic() {
     toggleTheme,
     language,
     setLanguage,
-    isRtl,
+    isRTL,
     searchQuery,
     setSearchQuery,
     searchInputRef,

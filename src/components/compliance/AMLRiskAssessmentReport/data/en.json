@@ -1,0 +1,17 @@
+{
+  "title": "Annual AML Risk Assessment",
+  "subtitle": "Typology Matrix & Risk Score Generator",
+  "generate_report": "Generate Assessment Report",
+  "generating": "Generating...",
+  "download_pdf": "Download PDF",
+  "risk_score": "Overall Risk Score",
+  "high_risk": "High Risk",
+  "medium_risk": "Medium Risk",
+  "low_risk": "Low Risk",
+  "risk_matrix": "Risk Matrix",
+  "typology_1": "Politically Exposed Persons (PEPs)",
+  "typology_2": "High-Risk Jurisdictions",
+  "typology_3": "Complex Corporate Structures",
+  "typology_4": "Cash Intensive Transactions",
+  "recommendations": "Mitigation Recommendations"
+}

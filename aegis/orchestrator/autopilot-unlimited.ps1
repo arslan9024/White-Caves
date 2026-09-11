@@ -40,7 +40,7 @@ param(
 
 $ErrorActionPreference = "Continue"
 $root     = Resolve-Path $WorkspaceRoot
-$scripts  = Join-Path $root "scripts\orchestrator"
+$scripts  = Join-Path $root "aegis\orchestrator"
 $logsDir  = Join-Path $root "logs\orchestrator"
 $w        = 72
 
@@ -321,7 +321,7 @@ while ($true) {
 
     if ($validateOk) {
       Write-Host "  Running: TypeScript check -" -ForegroundColor Cyan
-      & node --max-old-space-size=4096 ./node_modules/typescript/bin/tsc --noEmit -p tsconfig.json 2>&1 | Out-Null
+      $tsOut = & node --max-old-space-size=8192 ./node_modules/typescript/bin/tsc --noEmit -p tsconfig.json 2>&1
       $tsOk = ($LASTEXITCODE -eq 0)
       if (-not $tsOk) {
         Write-Host "  - TypeScript errors detected - HARD STOP" -ForegroundColor Red
@@ -369,7 +369,8 @@ while ($true) {
       git add business_docs/ plans/ 2>&1 | Out-Null
       $msg = "autopilot: session #$sessionNum complete [$(Get-Date -Format 'yyyy-MM-dd HH:mm')]"
       # -- Loop-guard: only commit when there is something staged
-      $cachedStatAu = (git diff --cached --stat 2>$null).Trim()
+      $gitStatOutput = git diff --cached --stat 2>$null
+      $cachedStatAu = if ($null -ne $gitStatOutput) { ($gitStatOutput -join "`n").Trim() } else { "" }
       if ([string]::IsNullOrWhiteSpace($cachedStatAu)) {
         Write-Host "  [AEGIS-SKIP] nothing staged in fallback commit path - skipping." -ForegroundColor DarkYellow
       } else {

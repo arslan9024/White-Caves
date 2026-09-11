@@ -3,8 +3,8 @@ import path from 'node:path';
 import { spawnSync } from 'node:child_process';
 
 const cwd = process.cwd();
-const policyPath = path.join(cwd, 'scripts', 'orchestrator', 'policy.json');
-const regenerateScriptPath = path.join(cwd, 'scripts', 'orchestrator', 'aegis-regenerate.ps1');
+const policyPath = path.join(cwd, 'aegis', 'orchestrator', 'policy.json');
+const regenerateScriptPath = path.join(cwd, 'aegis', 'orchestrator', 'aegis-regenerate.ps1');
 
 function parseArgs(argv) {
   const args = {
@@ -180,7 +180,7 @@ function buildOverrides({ prompt, title, lane, planningAgent, implementationAgen
       priority: 'critical',
       priorityScore: 999,
       title: implementationTitle,
-      prompt: `${implementationAgent} -- PRIORITY IMPLEMENT+VERIFY: ${title}. Source user prompt: "${prompt}". Execute a production-safe vertical slice implementation, run validations (typecheck/lint/build/tests), and include rollback notes and verification evidence.`,
+      prompt: `${implementationAgent} -- PRIORITY IMPLEMENT+VERIFY: ${title}. Source user prompt: "${prompt}". Execute a production-safe vertical slice implementation from A to Z. You MUST update the docs, SRS, SDD, and code. You MUST update the full journey details of this issue and confirm UI/UX is updated. Include rollback notes and verification evidence.`,
       createdBy: 'aegis-one-prompt',
       createdAt: stamp,
     },

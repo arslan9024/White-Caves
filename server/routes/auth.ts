@@ -17,6 +17,10 @@ import { prisma } from '../database.js';
 import { sanitizeString } from '../utils/sanitize.js';
 import logger from '../utils/logger.js';
 import { verifyFirebaseIdToken, FirebaseAdminInitError } from '../config/firebaseAdmin.js';
+import { z } from 'zod';
+import rateLimiters from '../middleware/rateLimiter.js';
+
+const { authLimiter, registerLimiter, passwordLimiter, strictLimiter, apiLimiter, firebaseSyncLimiter } = rateLimiters;
 
 const router = Router();
 
@@ -519,11 +523,17 @@ const checkAccountLockout = async (
  */
 router.post(
   '/login',
+  authLimiter,
   asyncHandler(async (req: RouteRequest, res: Response) => {
-    const { email, password } = req.body;
+    const { email, password } = req.body || {};
 
     if (!email || !password) {
       throw new AppError('Email and password are required', 400);
+    }
+
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(String(email).trim())) {
+      throw new AppError('Please provide a valid email address', 400);
     }
 
     const normalizedEmail = String(email).toLowerCase().trim();
@@ -683,23 +693,28 @@ router.post(
  */
 router.post(
   '/register',
+  registerLimiter,
   asyncHandler(async (req: RouteRequest, res: Response) => {
-    const { email, password, name, phone, department, category, role } = req.body;
+    const { email, password, name, phone, department, category, role } = req.body || {};
 
     if (!email || !password) {
       throw new AppError('Email and password are required', 400);
     }
+
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(String(email).trim())) {
       throw new AppError('Please provide a valid email address', 400);
     }
-    if (password.length < 8) {
+
+    if (typeof password !== 'string' || password.length < 8) {
       throw new AppError('Password must be at least 8 characters', 400);
     }
+
     // Require at least one letter and one number
     if (!/[a-zA-Z]/.test(password) || !/[0-9]/.test(password)) {
       throw new AppError('Password must contain at least one letter and one number', 400);
     }
+
     // Block common weak passwords
     const weakPasswords = [
       'password',
@@ -835,12 +850,28 @@ router.post(
  */
 router.post(
   '/verify-2fa',
+  strictLimiter,
   asyncHandler(async (req: RouteRequest, res: Response) => {
     const db = prisma as any;
-    const { email, code } = req.body;
+    const { email, code, twoFactorToken: body2faToken } = req.body || {};
 
     if (!email || !code) {
       throw new AppError('Email and verification code are required', 400);
+    }
+
+    const sanitizedEmail = sanitizeString(email).toLowerCase().trim();
+    const clientIp = getClientIp(req);
+
+    // IP Lockout check
+    const ipLockout = await checkIpLockout(clientIp);
+    if (ipLockout.locked) {
+      recordLoginFailure(req, 'ip_locked_out', sanitizedEmail);
+      const minutes = Math.ceil(ipLockout.retryAfterSeconds / 60);
+      res.set('Retry-After', String(ipLockout.retryAfterSeconds));
+      throw new AppError(
+        `Too many failed verification attempts from this network (${ipLockout.failureCount}). Try again in ${minutes} minute${minutes === 1 ? '' : 's'}.`,
+        429
+      );
     }
 
     // Dev-only 2FA bypass: requires BOTH NODE_ENV=development AND DEV_2FA_BYPASS=true
@@ -849,7 +880,7 @@ router.post(
       process.env.DEV_2FA_BYPASS === 'true' &&
       code === '000000'
     ) {
-      const user = await db.user.findUnique({ where: { email } });
+      const user = await db.user.findUnique({ where: { email: sanitizedEmail } });
       if (!user) throw new AppError('User not found', 404);
 
       const token = jwt.sign(
@@ -864,11 +895,52 @@ router.post(
       });
     }
 
-    const sanitizedEmail = sanitizeString(email).toLowerCase().trim();
-    const user = (await db.user.findUnique({ where: { email: sanitizedEmail } })) as any;
-    if (!user) throw new AppError('Invalid credentials', 401);
+    // Cryptographic validation of twoFactorToken if provided (body or Bearer header)
+    const bearerToken = req.headers.authorization?.startsWith('Bearer ')
+      ? req.headers.authorization.slice(7).trim()
+      : undefined;
+    const twoFactorToken = (typeof body2faToken === 'string' && body2faToken.trim()) || bearerToken;
 
-    if (!user.totpEnabled || !user.totpSecret) {
+    if (twoFactorToken) {
+      try {
+        const decoded = jwt.verify(twoFactorToken, JWT_SECRET, {
+          algorithms: ['HS256'],
+        }) as jwt.JwtPayload;
+        if (!decoded?.requires2FA || (decoded.email && decoded.email.toLowerCase().trim() !== sanitizedEmail)) {
+          throw new AppError('Invalid 2FA challenge token', 401);
+        }
+      } catch (err) {
+        if (err instanceof AppError) throw err;
+        throw new AppError('Invalid or expired 2FA challenge token', 401);
+      }
+    }
+
+    const user = (await db.user.findUnique({ where: { email: sanitizedEmail } })) as any;
+    if (!user) {
+      recordLoginFailure(req, 'unknown_user', sanitizedEmail);
+      throw new AppError('Invalid credentials', 401);
+    }
+
+    // Account status check
+    if (user.status && user.status !== 'active') {
+      recordLoginFailure(req, 'inactive', sanitizedEmail, user.id);
+      throw new AppError('Account is inactive. Contact administrator.', 403);
+    }
+
+    // Account Lockout check
+    const lockout = await checkAccountLockout(user.id);
+    if (lockout.locked) {
+      recordLoginFailure(req, 'locked_out', sanitizedEmail, user.id);
+      const minutes = Math.ceil(lockout.retryAfterSeconds / 60);
+      res.set('Retry-After', String(lockout.retryAfterSeconds));
+      throw new AppError(
+        `Account temporarily locked after ${lockout.failureCount} failed attempts. Try again in ${minutes} minute${minutes === 1 ? '' : 's'}.`,
+        429
+      );
+    }
+
+    const secret = user.totpSecret || user.twoFactorSecret;
+    if (!secret && (!Array.isArray(user.totpBackupCodes) || user.totpBackupCodes.length === 0)) {
       throw new AppError('Two-factor authentication is not enabled for this account', 400);
     }
 
@@ -878,8 +950,10 @@ router.post(
 
     if (/^\d{6}$/.test(codeStr)) {
       // Regular 6-digit TOTP
-      verified = verifyTOTP(user.totpSecret, codeStr);
-    } else if (/^[A-F0-9]{8}$/.test(codeStr)) {
+      if (secret) {
+        verified = verifyTOTP(secret, codeStr);
+      }
+    } else if (/^[A-F0-9]{8}$/.test(codeStr) && Array.isArray(user.totpBackupCodes)) {
       // Backup recovery code — check against hashed list
       for (const hashed of user.totpBackupCodes) {
         if (await bcrypt.compare(codeStr, hashed)) {
@@ -895,6 +969,7 @@ router.post(
     }
 
     if (!verified) {
+      recordLoginFailure(req, 'invalid_password', sanitizedEmail, user.id);
       logger.warn('Failed 2FA attempt', { userId: user.id });
       throw new AppError('Invalid verification code', 401);
     }
@@ -977,7 +1052,9 @@ router.post(
     // Decode the pending token to retrieve the secret
     let totpSecret: string;
     try {
-      const payload = jwt.verify(pendingToken, JWT_SECRET) as {
+      const payload = jwt.verify(pendingToken, JWT_SECRET, {
+        algorithms: ['HS256'],
+      }) as {
         userId: string;
         totpSecret: string;
       };
@@ -1481,7 +1558,8 @@ router.post(
  */
 router.post(
   '/forgot-password/request',
-  asyncHandler(async (req: Request, res: Response) => {
+  passwordLimiter,
+  asyncHandler(async (req: RouteRequest, res: Response) => {
     const rawEmail = typeof req.body?.email === 'string' ? req.body.email : '';
     const email = rawEmail.toLowerCase().trim();
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -1613,6 +1691,7 @@ router.post(
  */
 router.post(
   '/forgot-password/verify',
+  passwordLimiter,
   asyncHandler(async (req: Request, res: Response) => {
     const rawEmail = typeof req.body?.email === 'string' ? req.body.email : '';
     const rawToken = typeof req.body?.token === 'string' ? req.body.token : '';
@@ -1768,7 +1847,9 @@ router.post(
     };
 
     try {
-      payload = jwt.verify(resetSessionToken, JWT_SECRET) as {
+      payload = jwt.verify(resetSessionToken, JWT_SECRET, {
+        algorithms: ['HS256'],
+      }) as {
         purpose?: string;
         email?: string;
         tokenHash?: string;
@@ -1820,8 +1901,9 @@ router.post(
     const hashedPassword = await hashPassword(newPassword);
     await prisma.user.update({
       where: { id: user.id },
-      data: { passwordHash: hashedPassword },
+      data: { passwordHash: hashedPassword, refreshTokenHash: null },
     });
+    res.clearCookie('refresh_token', { path: '/api/auth' });
 
     const ip = getClientIp(req);
     const userAgent = String(req.headers['user-agent'] || 'unknown').slice(0, 256);
@@ -1880,10 +1962,15 @@ router.post(
     });
 
     // Invalidate refresh token in DB and clear the httpOnly cookie
+    await prisma.user
+      .update({ where: { id: userId }, data: { refreshTokenHash: null } })
+      .catch(() => {
+        /* ignore — user may already be deleted */
+      });
     const logoutCookieValue = req.cookies?.refresh_token as string | undefined;
     if (logoutCookieValue && logoutCookieValue.includes(':')) {
       const cookieUserId = logoutCookieValue.slice(0, logoutCookieValue.indexOf(':'));
-      if (cookieUserId) {
+      if (cookieUserId && cookieUserId !== userId) {
         await prisma.user
           .update({ where: { id: cookieUserId }, data: { refreshTokenHash: null } })
           .catch(() => {
@@ -1983,12 +2070,13 @@ router.put(
       }
     }
 
-    // Hash and store the new password
+    // Hash and store the new password and invalidate active refresh sessions
     const newHash = await hashPassword(newPassword);
     await prisma.user.update({
       where: { id: userId },
-      data: { passwordHash: newHash },
+      data: { passwordHash: newHash, refreshTokenHash: null },
     });
+    res.clearCookie('refresh_token', { path: '/api/auth' });
 
     // Audit success
     await prisma.activity.create({
@@ -2497,7 +2585,13 @@ const generateChallenge = (): string => {
  */
 router.post(
   '/webauthn/register/options',
-  asyncHandler(async (req: RouteRequest, res: Response) => {
+  authMiddleware,
+  asyncHandler(async (req: AuthRequest, res: Response) => {
+    const authUserId = req.user?.id;
+    if (!authUserId) {
+      throw new AppError('Authentication required', 401);
+    }
+
     const { userId, userName, displayName } = req.body;
 
     if (!userId || !userName) {
@@ -2510,6 +2604,12 @@ router.post(
       0,
       128
     );
+
+    const callerRole = (req.user?.role || '').toLowerCase();
+    const isSuperuser = callerRole === 'owner' || callerRole === 'admin';
+    if (sanitizedUserId !== authUserId && !isSuperuser) {
+      throw new AppError('Forbidden: Cannot register biometrics for another user', 403);
+    }
 
     const challenge = generateChallenge();
     pendingChallenges.set(`reg_${sanitizedUserId}`, {
@@ -2556,7 +2656,13 @@ router.post(
  */
 router.post(
   '/webauthn/register/verify',
-  asyncHandler(async (req: RouteRequest, res: Response) => {
+  authMiddleware,
+  asyncHandler(async (req: AuthRequest, res: Response) => {
+    const authUserId = req.user?.id;
+    if (!authUserId) {
+      throw new AppError('Authentication required', 401);
+    }
+
     const { userId, credential } = req.body;
 
     if (!userId || !credential?.id || !credential?.rawId) {
@@ -2564,6 +2670,12 @@ router.post(
     }
 
     const sanitizedUserId = sanitizeString(String(userId).trim()).slice(0, 128);
+
+    const callerRole = (req.user?.role || '').toLowerCase();
+    const isSuperuser = callerRole === 'owner' || callerRole === 'admin';
+    if (sanitizedUserId !== authUserId && !isSuperuser) {
+      throw new AppError('Forbidden: Cannot register biometrics for another user', 403);
+    }
 
     const pending = pendingChallenges.get(`reg_${sanitizedUserId}`);
     if (!pending || pending.expiresAt <= Date.now()) {
@@ -2767,7 +2879,13 @@ router.post(
  */
 router.delete(
   '/webauthn/credentials/:userId/:credentialId',
-  asyncHandler(async (req: Request, res: Response) => {
+  authMiddleware,
+  asyncHandler(async (req: AuthRequest, res: Response) => {
+    const authUserId = req.user?.id;
+    if (!authUserId) {
+      throw new AppError('Authentication required', 401);
+    }
+
     const rawUserId = getRouteParam(req.params.userId);
     const rawCredId = getRouteParam(req.params.credentialId);
 
@@ -2777,6 +2895,12 @@ router.delete(
 
     const sanitizedUserId = sanitizeString(decodeURIComponent(rawUserId)).slice(0, 128);
     const sanitizedCredId = sanitizeString(decodeURIComponent(rawCredId)).slice(0, 512);
+
+    const callerRole = (req.user?.role || '').toLowerCase();
+    const isSuperuser = callerRole === 'owner' || callerRole === 'admin';
+    if (sanitizedUserId !== authUserId && !isSuperuser) {
+      throw new AppError('Forbidden: Cannot delete biometrics for another user', 403);
+    }
 
     await (
       prisma as unknown as {

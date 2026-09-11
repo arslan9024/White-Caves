@@ -239,4 +239,47 @@ router.patch(
   })
 );
 
+// ─── GET /api/invoices/lease/:id/pdf — Generate FTA Compliant PDF Invoice ────────
+import henryPdfEngineService from '../../src/services/HenryPdfEngineService.js';
+
+router.get(
+  '/:id/pdf',
+  asyncHandler(async (req: AuthRequest, res: Response) => {
+    const userId = req.user?.id;
+    if (!userId) throw new AppError('Authentication required', 401);
+
+    const invoice = await prisma.invoice.findUnique({
+      where: { id: req.params.id },
+      include: {
+        propertyRef: { include: { owner: true } }
+      }
+    });
+
+    if (!invoice) throw new AppError('Invoice not found', 404);
+
+    // Build the payload
+    const payload = {
+      receiptNumber: invoice.invoiceNumber || invoice.id.slice(0, 8).toUpperCase(),
+      receiptType: invoice.notes?.includes('TYPE:rent') ? 'tenant_service_charges' : 'security_deposit',
+      billedPartyType: 'tenant',
+      amountAed: invoice.amount - (invoice.vatAmount || 0),
+      vatRatePercent: 5,
+      vatAmountAed: invoice.vatAmount || 0,
+      totalWithVatAed: invoice.amount,
+      paidBy: invoice.clientName || 'Unknown Client',
+      paidTo: 'WHITE CAVES REAL ESTATE L.L.C',
+      whiteCavesTrn: '100488291000003',
+      paymentMethod: 'bank_transfer',
+      paymentReference: invoice.id.slice(0, 12).toUpperCase(),
+      date: invoice.createdAt.toISOString().split('T')[0],
+      serviceDescription: invoice.notes || 'Property Lease Payment'
+    };
+
+    const html = await henryPdfEngineService.generateTaxReceiptHtml(payload as any);
+    
+    res.setHeader('Content-Type', 'text/html');
+    res.send(html);
+  })
+);
+
 export default router;

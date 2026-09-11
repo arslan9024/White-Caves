@@ -1,0 +1,1 @@
+{"title":"Production Release Gate","subtitle":"MD Sovereign Seal Signoff","gates":[{"name":"Unit Tests","status":"pass"},{"name":"E2E Tests","status":"pass"},{"name":"Lighthouse","status":"pass"},{"name":"A11Y Audit","status":"pass"},{"name":"MD Approval","status":"pending"}],"overall":"Awaiting MD Seal"}

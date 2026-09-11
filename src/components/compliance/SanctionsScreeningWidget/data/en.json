@@ -1,0 +1,20 @@
+{
+  "title": "Automated Sanctions Screening",
+  "subtitle": "Real-time client screening against UN, OFAC, and EU watchlists.",
+  "status_clear": "All Clear",
+  "status_flagged": "Flagged Hits",
+  "status_pending": "Screening Pending",
+  "last_scan": "Last Scan:",
+  "database_un": "UN Security Council",
+  "database_ofac": "OFAC Specially Designated Nationals",
+  "database_eu": "EU Sanctions List",
+  "database_local": "UAE Local Terrorist List",
+  "scan_now": "Run Manual Scan",
+  "view_report": "View Full Report",
+  "recent_scans": "Recent Client Scans",
+  "match_found": "Potential Match Found",
+  "no_match": "No Matches",
+  "risk_high": "High Risk",
+  "risk_low": "Low Risk",
+  "action_required": "Action Required"
+}

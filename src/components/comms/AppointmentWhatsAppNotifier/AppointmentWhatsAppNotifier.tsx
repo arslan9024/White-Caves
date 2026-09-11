@@ -1,190 +1,74 @@
-/**
- * AppointmentWhatsAppNotifier — Wave 51 GOAL-054
- * Automated viewing appointment confirmation WhatsApp message dispatch
- * White Caves Real Estate LLC — Communications & WhatsApp Suite
- */
 import React, { FC, useState } from 'react';
 import styled, { keyframes } from 'styled-components';
 
 const fadeIn = keyframes`from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}`;
+const Wrap = styled.div`width:100%;background:linear-gradient(135deg,#061208,#0A1A10);border:2px solid rgba(37,211,102,0.3);border-radius:18px;overflow:hidden;font-family:'Inter',sans-serif;animation:${fadeIn} .4s ease`;
+const Head = styled.div`padding:14px 20px;background:rgba(37,211,102,0.06);border-bottom:1px solid rgba(37,211,102,0.15);display:flex;align-items:center;justify-content:space-between`;
+const Title = styled.h3`margin:0;color:#FFF;font-size:.9rem;font-weight:700`;
+const Body = styled.div`padding:20px;display:flex;flex-direction:column;gap:14px`;
 
-const Wrap = styled.div`
-  width: 100%;
-  background: linear-gradient(135deg, #0F172A 0%, #1E293B 100%);
-  border: 2px solid rgba(37, 211, 102, 0.25);
-  border-radius: 18px;
-  overflow: hidden;
-  font-family: 'Inter', sans-serif;
-  animation: ${fadeIn} 0.4s ease;
-`;
+const MsgPreview = styled.div`padding:16px;border-radius:14px;background:rgba(15,23,42,0.9);border:1px solid rgba(37,211,102,0.2)`;
+const MsgBubble = styled.div`padding:10px 14px;border-radius:12px 12px 4px 12px;background:#25D366;max-width:85%;margin:0 0 8px auto;box-shadow:0 2px 8px rgba(37,211,102,0.2)`;
+const MsgText = styled.div`font-size:.75rem;color:#FFF;line-height:1.5`;
+const MsgTime = styled.div`font-size:.6rem;color:rgba(255,255,255,0.6);text-align:right;margin-top:4px`;
+const MsgStatus = styled.div`font-size:.75rem;color:rgba(255,255,255,0.7);text-align:right`;
 
-const Head = styled.div`
-  padding: 14px 20px;
-  background: rgba(37, 211, 102, 0.06);
-  border-bottom: 1px solid rgba(37, 211, 102, 0.15);
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-`;
+const FieldGrid = styled.div`display:grid;grid-template-columns:1fr 1fr;gap:10px`;
+const Field = styled.div`display:flex;flex-direction:column;gap:4px`;
+const Label = styled.label`font-size:.7rem;color:#94A3B8;font-weight:600`;
+const Input = styled.input`padding:8px 10px;border-radius:7px;border:1px solid rgba(37,211,102,0.2);background:rgba(15,23,42,0.8);color:#E2E8F0;font-size:.78rem;font-weight:600;width:100%;box-sizing:border-box;outline:none;&:focus{border-color:#25D366}`;
+const Select = styled.select`padding:8px 10px;border-radius:7px;border:1px solid rgba(37,211,102,0.2);background:rgba(15,23,42,0.8);color:#E2E8F0;font-size:.78rem;font-weight:600;width:100%;outline:none;&:focus{border-color:#25D366}`;
 
-const Title = styled.h3`
-  margin: 0;
-  color: #FFF;
-  font-size: 0.92rem;
-  font-weight: 700;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-`;
-
-const WaBadge = styled.span`
-  font-size: 0.68rem;
-  font-weight: 800;
-  color: #25D366;
-  background: rgba(37, 211, 102, 0.12);
-  padding: 3px 10px;
-  border-radius: 999px;
-  border: 1px solid rgba(37, 211, 102, 0.3);
-`;
-
-const Body = styled.div`
-  padding: 20px;
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-`;
-
-const FormGrid = styled.div`
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 12px;
-`;
-
-const Field = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-`;
-
-const FLabel = styled.label`
-  font-size: 0.68rem;
-  font-weight: 700;
-  color: #94A3B8;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-`;
-
-const Input = styled.input`
-  padding: 8px 10px;
-  border-radius: 7px;
-  border: 1px solid rgba(100, 116, 139, 0.25);
-  background: rgba(15, 23, 42, 0.8);
-  color: #E2E8F0;
-  font-size: 0.8rem;
-  font-weight: 600;
-  width: 100%;
-  box-sizing: border-box;
-  outline: none;
-  &:focus { border-color: #25D366; }
-`;
-
-const WhatsAppBubble = styled.div`
-  padding: 14px;
-  border-radius: 12px 12px 12px 0px;
-  background: #0B3C26;
-  border: 1px solid rgba(37, 211, 102, 0.3);
-  color: #E2E8F0;
-  font-size: 0.78rem;
-  line-height: 1.5;
-  white-space: pre-wrap;
-  position: relative;
-`;
-
-const SendBtn = styled.button`
-  width: 100%;
-  padding: 12px;
-  border-radius: 10px;
-  border: none;
-  background: linear-gradient(90deg, #128C7E, #25D366);
-  color: #FFF;
-  font-size: 0.85rem;
-  font-weight: 800;
-  cursor: pointer;
-  transition: all 0.2s ease;
-  &:hover { filter: brightness(1.1); transform: translateY(-1px); }
-`;
+const SendBtn = styled.button<{$sent:boolean}>`width:100%;padding:12px;border-radius:10px;border:none;background:${p=>p.$sent?'rgba(37,211,102,0.1)':'linear-gradient(90deg,#128C7E,#25D366)'};color:${p=>p.$sent?'#25D366':'#FFF'};font-size:.85rem;font-weight:800;cursor:pointer;transition:all .2s;&:hover{filter:brightness(1.1)}`;
 
 export const AppointmentWhatsAppNotifier: FC = () => {
-  const [clientName, setClientName] = useState('Sir Jonathan Hayes');
-  const [phone, setPhone] = useState('+971 50 123 4567');
-  const [propertyTitle, setPropertyTitle] = useState('Signature Villa, Frond N, Palm Jumeirah');
-  const [viewingDate, setViewingDate] = useState('2026-08-16');
-  const [viewingTime, setViewingTime] = useState('16:30');
-  const [agentName, setAgentName] = useState('Arsalan Malik (Managing Director)');
+  const [clientName, setClientName] = useState('Sarah Thompson');
+  const [property, setProperty] = useState('Marina Heights, Unit 14B');
+  const [date, setDate] = useState('2026-09-10');
+  const [time, setTime] = useState('14:00');
+  const [template, setTemplate] = useState('viewing');
   const [sent, setSent] = useState(false);
 
-  const previewMessage = `🌟 *White Caves Real Estate LLC — Viewing Confirmation* 🌟
-
-Dear ${clientName},
-
-Your private viewing appointment for *${propertyTitle}* has been officially scheduled.
-
-📅 *Date:* ${viewingDate}
-⏰ *Time:* ${viewingTime} (UAE Standard Time)
-📍 *Location:* ${propertyTitle}
-👤 *Hosting Agent:* ${agentName}
-
-🚘 *Access Directions & Gate Pass:*
-Your digital visitor pass code is: *WC-PASS-8842*
-Security at the main gate has been pre-cleared.
-
-Reply to this message or call our concierge desk if you require luxury chauffeur service or rescheduling.
-
-_White Caves Global Agency | RERA ORN: 44483_`;
+  const messages: Record<string, string> = {
+    viewing: `Hi ${clientName} 👋\n\nYour property viewing has been confirmed!\n\n📍 *${property}*\n📅 ${new Date(date).toLocaleDateString('en-AE',{weekday:'long',day:'numeric',month:'long'})}\n🕐 ${time} GST\n\nYour agent Victoria Chen will meet you at the lobby. Please bring your Emirates ID.\n\nSee you soon! 🏡\n— White Caves Real Estate`,
+    offer: `Dear ${clientName},\n\nGreat news! Your offer on *${property}* has been accepted! ✅\n\nNext step: Form F MOU signing at our office.\n📅 ${date} at ${time}\n\nPlease bring your passport & Emirates ID.\n\n— White Caves Real Estate`,
+    reminder: `Hi ${clientName}! 👋 Friendly reminder:\n\n⏰ Your viewing at *${property}* is tomorrow at ${time}.\n\nReply CONFIRM to confirm or RESCHEDULE to book a new time.\n\n— White Caves Team`,
+  };
 
   return (
     <Wrap data-testid="appointment-whatsapp-notifier">
       <Head>
-        <Title>💬 WhatsApp Viewing Notifier & Gate Pass Engine</Title>
-        <WaBadge>WHATSAPP BUSINESS API</WaBadge>
+        <Title>💬 WhatsApp Appointment Notifier</Title>
+        <div style={{fontSize:'.7rem',color:'#25D366',fontWeight:700}}>Auto-Send</div>
       </Head>
       <Body>
-        <FormGrid>
-          <Field>
-            <FLabel>Client Name</FLabel>
-            <Input value={clientName} onChange={e => setClientName(e.target.value)} />
+        <FieldGrid>
+          <Field><Label>Client Name</Label><Input value={clientName} onChange={e=>setClientName(e.target.value)} /></Field>
+          <Field><Label>Message Template</Label>
+            <Select value={template} onChange={e=>setTemplate(e.target.value)}>
+              <option value="viewing">Viewing Confirmation</option>
+              <option value="offer">Offer Accepted</option>
+              <option value="reminder">24h Reminder</option>
+            </Select>
           </Field>
-          <Field>
-            <FLabel>WhatsApp Phone Number</FLabel>
-            <Input value={phone} onChange={e => setPhone(e.target.value)} />
-          </Field>
-          <Field>
-            <FLabel>Viewing Date</FLabel>
-            <Input type="date" value={viewingDate} onChange={e => setViewingDate(e.target.value)} />
-          </Field>
-          <Field>
-            <FLabel>Viewing Time</FLabel>
-            <Input type="time" value={viewingTime} onChange={e => setViewingTime(e.target.value)} />
-          </Field>
-        </FormGrid>
+          <Field><Label>Property</Label><Input value={property} onChange={e=>setProperty(e.target.value)} /></Field>
+          <Field><Label>Date</Label><Input type="date" value={date} onChange={e=>setDate(e.target.value)} /></Field>
+          <Field style={{gridColumn:'1/-1'}}><Label>Time</Label><Input type="time" value={time} onChange={e=>setTime(e.target.value)} /></Field>
+        </FieldGrid>
 
-        <div>
-          <FLabel style={{ marginBottom: '6px', display: 'block' }}>WhatsApp Message Preview (Template: WC_VIEWING_CONFIRM_V2)</FLabel>
-          <WhatsAppBubble>{previewMessage}</WhatsAppBubble>
-        </div>
+        <MsgPreview>
+          <div style={{fontSize:'.65rem',color:'#4ADE80',marginBottom:8,fontWeight:600}}>📱 WhatsApp Preview</div>
+          <MsgBubble>
+            <MsgText style={{whiteSpace:'pre-wrap'}}>{messages[template]}</MsgText>
+            <MsgTime>{new Date().toLocaleTimeString('en-AE',{hour:'2-digit',minute:'2-digit'})} {sent?<MsgStatus>✓✓</MsgStatus>:<></>}</MsgTime>
+          </MsgBubble>
+        </MsgPreview>
 
-        {sent ? (
-          <div style={{ padding: '14px', borderRadius: '10px', background: 'rgba(37, 211, 102, 0.1)', border: '1px solid rgba(37, 211, 102, 0.3)', textAlign: 'center', color: 'var(--color-25d366, #25D366)', fontWeight: 800, fontSize: '0.82rem' }}>
-            ✓ WhatsApp Notification Dispatched & Delivered to {phone}!
-          </div>
-        ) : (
-          <SendBtn onClick={() => setSent(true)}>
-            📲 Dispatch WhatsApp Confirmation & Gate Pass
-          </SendBtn>
-        )}
+        <SendBtn $sent={sent} onClick={()=>setSent(true)}>
+          {sent?`✅ Sent to ${clientName}`:`📤 Send WhatsApp Message to ${clientName}`}
+        </SendBtn>
       </Body>
     </Wrap>
   );
 };
-
 export default AppointmentWhatsAppNotifier;

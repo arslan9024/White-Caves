@@ -48,6 +48,12 @@ const { mockPrisma, mockBcrypt, mockJwt } = vi.hoisted(() => {
         update: fn().mockResolvedValue({ id: 'act-1' }),
         deleteMany: fn().mockResolvedValue({ count: 0 }),
       },
+      webAuthnCredential: {
+        upsert: fn().mockResolvedValue({ id: 'cred-1' }),
+        findUnique: fn().mockResolvedValue(null),
+        deleteMany: fn().mockResolvedValue({ count: 1 }),
+        update: fn().mockResolvedValue({ id: 'cred-1' }),
+      },
     },
     mockBcrypt: {
       hash: fn().mockResolvedValue('$2a$10$newhashedpassword'),
@@ -106,7 +112,11 @@ vi.mock('../middleware/errorHandler', () => ({
 }));
 vi.mock('../middleware/auth.js', () => ({
   default: (req: any, _res: any, next: any) => {
-    // Auth middleware pass-through for tests — user is set by createApp
+    if (!req.user || !req.user.id) {
+      const err: any = new Error('No token provided');
+      err.statusCode = 401;
+      return next(err);
+    }
     next();
   },
 }));
@@ -114,7 +124,7 @@ vi.mock('../middleware/auth.js', () => ({
 import authRoutes from './auth.js';
 
 // ── Test app factory ─────────────────────────────────────────────────
-function createApp(role: string = 'owner', userId = 'user-1') {
+function createApp(role: string | null = 'owner', userId: string | null = 'user-1') {
   const app = express();
   app.use(express.json());
   // Minimal inline cookie parser for tests (avoids importing cookie-parser in test env)
@@ -133,7 +143,9 @@ function createApp(role: string = 'owner', userId = 'user-1') {
     next();
   });
   app.use((req, _res, next) => {
-    (req as any).user = { id: userId, email: 'test@whitecaves.ae', role };
+    if (userId) {
+      (req as any).user = { id: userId, email: 'test@whitecaves.ae', role: role || 'owner' };
+    }
     next();
   });
   app.use('/api/auth', authRoutes);
@@ -153,7 +165,7 @@ describe('Auth Routes — /api/auth', () => {
   // ── POST /login ──────────────────────────────────────────────────
   describe('POST /api/auth/login', () => {
     it('returns 400 if email is missing', async () => {
-      const res = await request(createApp()).post('/api/auth/login').send({ password: 'Test1234' });
+      const res = await request(createApp()).post('/api/auth/login').send({ password: 'Password123' });
       expect(res.status).toBe(400);
       expect(res.body.error).toMatch(/email.*password.*required/i);
     });
@@ -691,6 +703,57 @@ describe('Auth Routes — /api/auth', () => {
         .send({ email: 'test@whitecaves.ae' });
       expect(res.status).toBe(400);
       expect(res.body.error).toMatch(/verification code.*required/i);
+    });
+
+    it('returns 401 if twoFactorToken is invalid or does not match email', async () => {
+      mockJwt.verify.mockImplementationOnce(() => {
+        throw new Error('jwt malformed');
+      });
+      const res = await request(createApp())
+        .post('/api/auth/verify-2fa')
+        .send({ email: 'test@whitecaves.ae', code: '123456', twoFactorToken: 'bad-token' });
+      expect(res.status).toBe(401);
+      expect(res.body.error).toMatch(/invalid or expired 2fa challenge token/i);
+    });
+
+    it('records login failure and returns 401 on incorrect 2FA code', async () => {
+      mockPrisma.user.findUnique.mockResolvedValueOnce({
+        id: 'user-1',
+        email: 'test@whitecaves.ae',
+        status: 'active',
+        twoFactorEnabled: true,
+        totpSecret: 'JBSWY3DPEHPK3PXP',
+      });
+      const res = await request(createApp())
+        .post('/api/auth/verify-2fa')
+        .send({ email: 'test@whitecaves.ae', code: '999999' });
+      expect(res.status).toBe(401);
+      expect(res.body.error).toMatch(/invalid verification code/i);
+      const failAudit = mockPrisma.activity.create.mock.calls.find(
+        (c: any[]) =>
+          c[0]?.data?.action === 'login_failed' &&
+          c[0]?.data?.metadata?.reason === 'invalid_password'
+      );
+      expect(failAudit).toBeDefined();
+    });
+
+    it('returns 429 when account is locked out', async () => {
+      mockPrisma.user.findUnique.mockResolvedValueOnce({
+        id: 'user-1',
+        email: 'test@whitecaves.ae',
+        status: 'active',
+        twoFactorEnabled: true,
+        totpSecret: 'JBSWY3DPEHPK3PXP',
+      });
+      mockPrisma.activity.count.mockResolvedValueOnce(5);
+      mockPrisma.activity.findFirst.mockResolvedValueOnce({
+        createdAt: new Date(Date.now() - 5 * 60 * 1000),
+      });
+      const res = await request(createApp())
+        .post('/api/auth/verify-2fa')
+        .send({ email: 'test@whitecaves.ae', code: '123456' });
+      expect(res.status).toBe(429);
+      expect(res.body.error).toMatch(/account temporarily locked/i);
     });
   });
 

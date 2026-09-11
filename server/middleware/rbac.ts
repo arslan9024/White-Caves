@@ -77,8 +77,10 @@ export const ROLE_ALIAS_MAP: Record<string, string> = {
  * the canonical backend key used by ROLE_HIERARCHY / ROLE_PERMISSIONS.
  */
 export function resolveBackendRole(role: string): string {
+  if (!role || typeof role !== 'string') return 'user';
+  const normalized = role.toLowerCase().trim();
   // eslint-disable-next-line security/detect-object-injection
-  return ROLE_ALIAS_MAP[role] ?? role;
+  return ROLE_ALIAS_MAP[normalized] ?? normalized;
 }
 
 // ─── Role hierarchy ──────────────────────────────────────────────────────────
@@ -456,13 +458,14 @@ export function getRoleRank(role: string): number {
  *   router.delete('/api/leads/:id', requireRole('owner', 'manager', 'admin'), handler);
  */
 export function requireRole(...allowedRoles: string[]) {
+  const normalizedAllowed = allowedRoles.map(r => resolveBackendRole(r));
   return (req: AuthRequest, _res: Response, next: NextFunction) => {
     const userRole = req.user?.role;
     if (!userRole) {
       return next(new AppError('Authentication required', 401));
     }
     const resolved = resolveBackendRole(userRole);
-    if (!allowedRoles.includes(resolved)) {
+    if (!normalizedAllowed.includes(resolved)) {
       return next(new AppError(`Access denied — requires role: ${allowedRoles.join(' | ')}`, 403));
     }
     next();
@@ -531,8 +534,9 @@ export function requireAllPermissions(...requiredPermissions: string[]) {
  *   // agent(50), finance(70), admin(80), manager(90), owner(100) all pass
  */
 export function requireMinRole(minRole: string) {
+  const resolvedMinRole = resolveBackendRole(minRole);
   // eslint-disable-next-line security/detect-object-injection
-  const minLevel = ROLE_HIERARCHY[minRole] || 0;
+  const minLevel = ROLE_HIERARCHY[resolvedMinRole] ?? ROLE_HIERARCHY[minRole] ?? 0;
   return (req: AuthRequest, _res: Response, next: NextFunction) => {
     const userRole = req.user?.role;
     if (!userRole) {
@@ -582,6 +586,8 @@ export function requireMinRank(minRank: number) {
  */
 export function scopeToOwn(ownerField = 'userId') {
   const SUPERVISOR_ROLES = ['owner', 'manager', 'admin'];
+  // Sanitize field identifier to prevent prototype pollution or invalid key injection
+  const safeField = /^[a-zA-Z0-9_]+$/.test(ownerField) ? ownerField : 'userId';
   return (req: AuthRequest, _res: Response, next: NextFunction) => {
     const userRole = req.user?.role;
     const userId = req.user?.id;
@@ -591,13 +597,14 @@ export function scopeToOwn(ownerField = 'userId') {
     }
 
     const resolved = resolveBackendRole(userRole);
+    const isSupervisor = SUPERVISOR_ROLES.includes(resolved) || ((req.user?.accessLevel ?? 0) >= 5);
 
     // Supervisors see everything
-    if (SUPERVISOR_ROLES.includes(resolved)) {
+    if (isSupervisor) {
       req.ownershipFilter = {};
     } else {
       // Agents/others see only their own data
-      req.ownershipFilter = { [ownerField]: userId };
+      req.ownershipFilter = { [safeField]: userId };
     }
     next();
   };

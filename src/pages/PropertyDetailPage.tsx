@@ -327,7 +327,7 @@ const PropertyDetailPage: FC = () => {
 
               <div style={{ margin: '12px 0' }}>
                 <PropertyVectorBadges 
-                  isOffPlan={property.offPlan}
+                  isOffPlan={property.isOffPlan}
                   isDldVerified={true}
                   isReraCompliant={true}
                   energyRating="A+"
@@ -468,7 +468,7 @@ const PropertyDetailPage: FC = () => {
                 </div>
               )}
               <div className="roi-calc-wrapper">
-                <RentalYieldVisualizer propertyPrice={property.price} estimatedAnnualRent={Math.round(property.price * 0.07)} />
+                <RentalYieldVisualizer propertyPrice={property.price} expectedAnnualRent={Math.round(property.price * 0.07)} />
               </div>
             </section>
           </main>

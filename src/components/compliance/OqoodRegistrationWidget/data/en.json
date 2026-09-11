@@ -1,0 +1,21 @@
+{
+  "title": "OQOOD Registration",
+  "subtitle": "DLD Off-Plan Property Registration Portal",
+  "buyer_details": "Buyer Information",
+  "buyer_name": "Full Name",
+  "buyer_passport": "Passport / Emirates ID",
+  "buyer_nationality": "Nationality",
+  "project_details": "Project & Developer",
+  "developer_name": "Developer Name",
+  "project_name": "Project Name",
+  "unit_number": "Unit / Villa Number",
+  "financials": "Financials",
+  "purchase_price": "Purchase Price (AED)",
+  "oqood_fee": "OQOOD Registration Fee (4%)",
+  "admin_fee": "Admin & Knowledge Fee",
+  "total_payable": "Total Payable to DLD",
+  "register_oqood": "Register via OQOOD API",
+  "registering": "Registering...",
+  "success": "OQOOD Registration Successful. Certificate Generated.",
+  "dld_receipt": "DLD Receipt No: OQ-"
+}

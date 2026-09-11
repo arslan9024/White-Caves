@@ -1,211 +1,88 @@
-/**
- * PropertyConditionReportGenerator — Wave 52 GOAL-069
- * Landlord property condition report generator with photo annexures & PDF export
- * White Caves Real Estate LLC — Asset Management & Tenancy Handover Suite
- */
 import React, { FC, useState } from 'react';
 import styled, { keyframes } from 'styled-components';
 
 const fadeIn = keyframes`from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}`;
+const progress = keyframes`0%{width:0}100%{width:100%}`;
+const Wrap = styled.div`width:100%;background:linear-gradient(135deg,#0F172A,#1E293B);border:2px solid rgba(16,185,129,0.25);border-radius:18px;overflow:hidden;font-family:'Inter',sans-serif;animation:${fadeIn} .4s ease`;
+const Head = styled.div`padding:14px 20px;background:rgba(16,185,129,0.05);border-bottom:1px solid rgba(16,185,129,0.12);display:flex;align-items:center;justify-content:space-between`;
+const Title = styled.h3`margin:0;color:#FFF;font-size:.9rem;font-weight:700`;
+const Body = styled.div`padding:20px;display:flex;flex-direction:column;gap:14px`;
 
-const Wrap = styled.div`
-  width: 100%;
-  background: linear-gradient(135deg, #0F172A 0%, #1E293B 100%);
-  border: 2px solid rgba(239, 68, 68, 0.25);
-  border-radius: 18px;
-  overflow: hidden;
-  font-family: 'Inter', sans-serif;
-  animation: ${fadeIn} 0.4s ease;
+const SectionList = styled.div`display:flex;flex-direction:column;gap:6px`;
+const SectionRow = styled.div<{$ok:boolean}>`
+  display:flex;align-items:flex-start;gap:10px;padding:10px 12px;border-radius:9px;
+  background:${p=>p.$ok?'rgba(16,185,129,0.06)':'rgba(15,23,42,0.6)'};
+  border:1px solid ${p=>p.$ok?'rgba(16,185,129,0.2)':'rgba(100,116,139,0.1)'};
 `;
+const SectionIcon = styled.div`font-size:.85rem;flex-shrink:0;margin-top:2px`;
+const SectionBody = styled.div`flex:1`;
+const SectionName = styled.div`font-size:.76rem;font-weight:700;color:#CBD5E1`;
+const SectionSub = styled.div`font-size:.67rem;color:#64748B;margin-top:2px;line-height:1.4`;
+const SectionStatus = styled.div<{$ok:boolean}>`font-size:.62rem;font-weight:700;padding:2px 8px;border-radius:4px;flex-shrink:0;background:${p=>p.$ok?'rgba(16,185,129,0.15)':'rgba(245,158,11,0.12)'};color:${p=>p.$ok?'#10B981':'#F59E0B'}`;
 
-const Head = styled.div`
-  padding: 14px 20px;
-  background: rgba(239, 68, 68, 0.05);
-  border-bottom: 1px solid rgba(239, 68, 68, 0.12);
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-`;
+const PhotoGrid = styled.div`display:grid;grid-template-columns:repeat(3,1fr);gap:6px`;
+const PhotoSlot = styled.div<{$filled:boolean}>`aspect-ratio:1;border-radius:8px;background:${p=>p.$filled?'rgba(16,185,129,0.1)':'rgba(15,23,42,0.5)'};border:1px solid ${p=>p.$filled?'rgba(16,185,129,0.25)':'rgba(100,116,139,0.15)'};display:flex;align-items:center;justify-content:center;font-size:.85rem;cursor:pointer`;
 
-const Title = styled.h3`
-  margin: 0;
-  color: #FFF;
-  font-size: 0.92rem;
-  font-weight: 700;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-`;
+const PBar = styled.div`height:4px;border-radius:2px;background:rgba(30,41,59,0.5);overflow:hidden`;
+const PFill = styled.div<{$pct:number}>`height:100%;width:${p=>p.$pct}%;background:linear-gradient(90deg,#059669,#10B981);border-radius:2px;transition:width .4s ease`;
 
-const Tag = styled.span`
-  font-size: 0.68rem;
-  font-weight: 800;
-  color: #EF4444;
-  background: rgba(239, 68, 68, 0.1);
-  padding: 3px 10px;
-  border-radius: 999px;
-  border: 1px solid rgba(239, 68, 68, 0.25);
-`;
+const GenBtn = styled.button<{$done:boolean}>`width:100%;padding:12px;border-radius:10px;border:none;background:${p=>p.$done?'rgba(16,185,129,0.1)':'linear-gradient(90deg,#059669,#10B981)'};color:${p=>p.$done?'#10B981':'#FFF'};font-size:.85rem;font-weight:800;cursor:pointer;transition:all .2s;&:hover{filter:brightness(1.1)}`;
 
-const Body = styled.div`
-  padding: 20px;
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-`;
-
-const FormGrid = styled.div`
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 12px;
-`;
-
-const Field = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-`;
-
-const FLabel = styled.label`
-  font-size: 0.68rem;
-  font-weight: 700;
-  color: #94A3B8;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-`;
-
-const Input = styled.input`
-  padding: 8px 10px;
-  border-radius: 7px;
-  border: 1px solid rgba(100, 116, 139, 0.25);
-  background: rgba(15, 23, 42, 0.8);
-  color: #E2E8F0;
-  font-size: 0.8rem;
-  font-weight: 600;
-  width: 100%;
-  box-sizing: border-box;
-  outline: none;
-  &:focus { border-color: #EF4444; }
-`;
-
-const Select = styled.select`
-  padding: 8px 10px;
-  border-radius: 7px;
-  border: 1px solid rgba(100, 116, 139, 0.25);
-  background: rgba(15, 23, 42, 0.8);
-  color: #E2E8F0;
-  font-size: 0.8rem;
-  font-weight: 600;
-  width: 100%;
-  outline: none;
-  &:focus { border-color: #EF4444; }
-`;
-
-const RoomConditionList = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-`;
-
-const RoomItem = styled.div`
-  padding: 10px 14px;
-  border-radius: 8px;
-  background: rgba(15, 23, 42, 0.7);
-  border: 1px solid rgba(100, 116, 139, 0.15);
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  font-size: 0.75rem;
-`;
-
-const ExportBtn = styled.button`
-  width: 100%;
-  padding: 12px;
-  border-radius: 10px;
-  border: none;
-  background: linear-gradient(90deg, #DC2626, #EF4444);
-  color: #FFF;
-  font-size: 0.85rem;
-  font-weight: 800;
-  cursor: pointer;
-  transition: all 0.2s ease;
-  &:hover { filter: brightness(1.1); transform: translateY(-1px); }
-`;
+const SECTIONS = [
+  {icon:'🏠',name:'Exterior & Facade',sub:'Condition of paint, windows, signage',ok:true},
+  {icon:'🛋️',name:'Living & Common Areas',sub:'Flooring, walls, lighting',ok:true},
+  {icon:'🍳',name:'Kitchen',sub:'Appliances, cabinets, plumbing',ok:true},
+  {icon:'🛁',name:'Bathrooms',sub:'Tiles, fixtures, waterproofing',ok:false},
+  {icon:'❄️',name:'HVAC System',sub:'Filter condition, cooling efficiency',ok:true},
+  {icon:'🔌',name:'Electrical Systems',sub:'Panel board, outlets, earthing',ok:true},
+  {icon:'🅿️',name:'Parking & Basement',sub:'Striping, drainage, lighting',ok:false},
+  {icon:'🔒',name:'Security Systems',sub:'CCTV, access control, alarms',ok:true},
+];
 
 export const PropertyConditionReportGenerator: FC = () => {
-  const [propertyTitle, setPropertyTitle] = useState('Villa 14B, Palm Jumeirah');
-  const [landlordName, setLandlordName] = useState('Dr. Tariq Al Qasimi');
-  const [tenantName, setTenantName] = useState('Sir Jonathan Hayes');
-  const [inspectionType, setInspectionType] = useState('Move-Out Handover Inspection');
-  const [exported, setExported] = useState(false);
-
-  const rooms = [
-    { name: 'Entrance & Foyer', condition: 'Pristine (No Defect)', rating: 'Grade A' },
-    { name: 'Formal Living Room & Dining', condition: 'Minor Paint Scuff (Fair Wear & Tear)', rating: 'Grade B+' },
-    { name: 'Chef Kitchen & Appliances', condition: 'Deep Cleaned & Working (Miele Fitted)', rating: 'Grade A' },
-    { name: 'Master Bedroom Suite & Balcony', condition: 'Pristine Condition', rating: 'Grade A' },
-    { name: 'Private Pool & Garden Pavilion', condition: 'Landscaping & Pump Filter Inspected', rating: 'Grade A' },
-  ];
+  const [photos, setPhotos] = useState(new Set<number>([0,2,4]));
+  const [generated, setGenerated] = useState(false);
+  const okCount = SECTIONS.filter(s=>s.ok).length;
+  const pct = (okCount/SECTIONS.length)*100;
 
   return (
     <Wrap data-testid="property-condition-report-generator">
       <Head>
-        <Title>📑 Landlord Property Condition Report (PCR) Generator</Title>
-        <Tag>RERA HANDOVER DOC</Tag>
+        <Title>📋 Property Condition Report</Title>
+        <div style={{fontSize:'.7rem',color:'#10B981',fontWeight:700}}>{okCount}/{SECTIONS.length} OK</div>
       </Head>
       <Body>
-        <FormGrid>
-          <Field>
-            <FLabel>Property Title / Unit Ref</FLabel>
-            <Input value={propertyTitle} onChange={e => setPropertyTitle(e.target.value)} />
-          </Field>
-          <Field>
-            <FLabel>Landlord Legal Name</FLabel>
-            <Input value={landlordName} onChange={e => setLandlordName(e.target.value)} />
-          </Field>
-          <Field>
-            <FLabel>Tenant Legal Name</FLabel>
-            <Input value={tenantName} onChange={e => setTenantName(e.target.value)} />
-          </Field>
-          <Field>
-            <FLabel>Inspection Category</FLabel>
-            <Select value={inspectionType} onChange={e => setInspectionType(e.target.value)}>
-              <option value="Move-In Check-In Inspection">Move-In Check-In Inspection</option>
-              <option value="Move-Out Handover Inspection">Move-Out Handover Inspection</option>
-              <option value="Annual Tenancy Mid-Term Audit">Annual Tenancy Mid-Term Audit</option>
-            </Select>
-          </Field>
-        </FormGrid>
-
         <div>
-          <FLabel style={{ marginBottom: '8px', display: 'block' }}>Room-by-Room Handover Audit Matrix</FLabel>
-          <RoomConditionList>
-            {rooms.map((r, idx) => (
-              <RoomItem key={idx}>
-                <div>
-                  <div style={{ color: 'var(--white, #FFF)', fontWeight: 700 }}>{r.name}</div>
-                  <div style={{ color: 'var(--color-94a3b8, #94A3B8)', fontSize: '0.68rem' }}>{r.condition}</div>
-                </div>
-                <span style={{ fontSize: '0.68rem', fontWeight: 800, padding: '3px 8px', borderRadius: '4px', background: 'rgba(16,185,129,0.15)', color: 'var(--accent-green, #10B981)' }}>
-                  {r.rating}
-                </span>
-              </RoomItem>
-            ))}
-          </RoomConditionList>
+          <div style={{display:'flex',justifyContent:'space-between',fontSize:'.7rem',color:'#64748B',marginBottom:6,fontWeight:600}}>
+            <span>Overall Property Score</span><span style={{color:pct>=75?'#10B981':'#F59E0B',fontWeight:700}}>{pct.toFixed(0)}%</span>
+          </div>
+          <PBar><PFill $pct={pct} /></PBar>
         </div>
 
-        {exported ? (
-          <div style={{ padding: '14px', borderRadius: '10px', background: 'rgba(16, 185, 129, 0.1)', border: '1px solid rgba(16, 185, 129, 0.3)', textAlign: 'center', color: 'var(--accent-green, #10B981)', fontWeight: 800, fontSize: '0.82rem' }}>
-            ✓ Formal PCR Signed & PDF Exported for Landlord & Tenant Portal Archives!
-          </div>
-        ) : (
-          <ExportBtn onClick={() => setExported(true)}>
-            📥 Compile & Sign Condition Report (PDF Export)
-          </ExportBtn>
-        )}
+        <SectionList>
+          {SECTIONS.map((s,i)=>(
+            <SectionRow key={i} $ok={s.ok}>
+              <SectionIcon>{s.icon}</SectionIcon>
+              <SectionBody><SectionName>{s.name}</SectionName><SectionSub>{s.sub}</SectionSub></SectionBody>
+              <SectionStatus $ok={s.ok}>{s.ok?'✓ GOOD':'⚠ ISSUE'}</SectionStatus>
+            </SectionRow>
+          ))}
+        </SectionList>
+
+        <div style={{fontSize:'.7rem',color:'#64748B',fontWeight:600}}>📸 Site Photographs ({photos.size}/9)</div>
+        <PhotoGrid>
+          {Array.from({length:9},(_,i)=>(
+            <PhotoSlot key={i} $filled={photos.has(i)} onClick={()=>setPhotos(prev=>{const n=new Set(prev);n.has(i)?n.delete(i):n.add(i);return n})}>
+              {photos.has(i)?'📸':'➕'}
+            </PhotoSlot>
+          ))}
+        </PhotoGrid>
+
+        <GenBtn $done={generated} onClick={()=>setGenerated(true)}>
+          {generated?`✅ Report Generated — ${okCount}/${SECTIONS.length} sections passing`:'📄 Generate Condition Report PDF'}
+        </GenBtn>
       </Body>
     </Wrap>
   );
 };
-
 export default PropertyConditionReportGenerator;

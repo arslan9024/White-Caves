@@ -26,6 +26,7 @@ const VestaHandoverCRM = lazy(() => import('../../crm/VestaHandoverCRM'));
 const JunoCommunity = lazy(() => import('../../crm/JunoCommunity'));
 const KairosLuxuryCRM = lazy(() => import('../../crm/KairosLuxuryCRM'));
 const MavenInvestmentCRM = lazy(() => import('../../crm/MavenInvestmentCRM'));
+const HeroSectionCRM = lazy(() => import('../../crm/HeroSectionCRM'));
 
 const ASSISTANT_COMPONENTS = {
   linda: LindaWhatsAppCRM,
@@ -51,7 +52,8 @@ const ASSISTANT_COMPONENTS = {
   vesta: VestaHandoverCRM,
   juno: JunoCommunity,
   kairos: KairosLuxuryCRM,
-  maven: MavenInvestmentCRM
+  maven: MavenInvestmentCRM,
+  'hero-section': HeroSectionCRM
 };
 
 const LoadingSpinner = memo(() => (
@@ -62,7 +64,26 @@ const LoadingSpinner = memo(() => (
 ));
 
 const MainGridView = ({ content, activeAssistant, children }) => {
+  const [dashboardData, setDashboardData] = React.useState(null);
+  const [loading, setLoading] = React.useState(false);
+
+  React.useEffect(() => {
+    if (!activeAssistant) {
+      setLoading(true);
+      fetch('/api/dashboard/summary')
+        .then(res => res.json())
+        .then(data => {
+          setDashboardData(data.summary || data);
+          setLoading(false);
+        })
+        .catch(err => {
+          console.error(err);
+          setLoading(false);
+        });
+    }
+  }, [activeAssistant]);
   if (!activeAssistant) {
+    if (loading) return <LoadingSpinner />;
     return (
       <div className="main-grid-view">
         <div className="main-grid-placeholder">
@@ -74,18 +95,18 @@ const MainGridView = ({ content, activeAssistant, children }) => {
           <div className="quick-stats">
             <div className="stat-card">
               <LayoutDashboard size={24} />
-              <span className="stat-value">24</span>
-              <span className="stat-label">AI Assistants</span>
+              <span className="stat-value">{dashboardData?.totalLeads || 0}</span>
+              <span className="stat-label">Total Leads</span>
             </div>
             <div className="stat-card">
               <BarChart3 size={24} />
-              <span className="stat-value">10</span>
-              <span className="stat-label">Departments</span>
+              <span className="stat-value">{dashboardData?.totalProperties || 0}</span>
+              <span className="stat-label">Properties</span>
             </div>
             <div className="stat-card">
               <FileText size={24} />
-              <span className="stat-value">All</span>
-              <span className="stat-label">Online</span>
+              <span className="stat-value">{dashboardData?.totalTransactions || 0}</span>
+              <span className="stat-label">Transactions</span>
             </div>
           </div>
         </div>

@@ -718,6 +718,7 @@ export const AI_TEAMS_STRUCTURE: AITeamSquad[] = [
 // ─── MD Suite (Tile 1) Data Object ───
 export const MD_SUITE_DEPT: BuildingTier = {
   id: 'dept-md',
+  scope: [],
   num: 'MD Suite',
   name: 'Office of the Managing Director (MD Suite)',
   locationTag: 'Floor 13: MD Sovereign Suite',

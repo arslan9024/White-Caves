@@ -1,0 +1,1 @@
+{"title":"بوابة الإصدار الإنتاجي","subtitle":"ختم التوقيع السيادي للمدير العام","gates":[{"name":"اختبارات الوحدة","status":"pass"},{"name":"اختبارات E2E","status":"pass"},{"name":"Lighthouse","status":"pass"},{"name":"تدقيق إمكانية الوصول","status":"pass"},{"name":"موافقة المدير","status":"pending"}],"overall":"في انتظار ختم المدير"}

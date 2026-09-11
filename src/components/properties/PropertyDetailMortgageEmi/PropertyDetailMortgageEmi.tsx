@@ -105,8 +105,12 @@ const EmiVal = styled.div`
   color: #10B981;
 `;
 
-export const PropertyDetailMortgageEmi: FC = () => {
-  const [propertyPrice, setPropertyPrice] = useState('18500000');
+export interface PropertyDetailMortgageEmiProps {
+  propertyPrice?: number;
+}
+
+export const PropertyDetailMortgageEmi: FC<PropertyDetailMortgageEmiProps> = ({ propertyPrice: initialPrice }) => {
+  const [propertyPrice, setPropertyPrice] = useState(initialPrice ? String(initialPrice) : '18500000');
   const [downPaymentPct, setDownPaymentPct] = useState('20');
   const [interestRatePct, setInterestRatePct] = useState('4.25');
   const [tenureYears, setTenureYears] = useState('25');

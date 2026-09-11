@@ -1,6 +1,7 @@
 import { Server as HTTPServer } from 'http';
 import { Server as SocketIOServer, Socket } from 'socket.io';
 import jwt from 'jsonwebtoken';
+import { JWT_SECRET } from '../config/env.js';
 
 interface UserKPI {
   userId: string;
@@ -51,8 +52,12 @@ export class RealtimeService {
       }
 
       try {
-        const decoded = jwt.verify(token, process.env.JWT_SECRET || 'secret') as jwt.JwtPayload;
-        (socket.data as Record<string, unknown>).userId = decoded.sub || decoded.id;
+        const decoded = jwt.verify(token, JWT_SECRET, { algorithms: ['HS256'] }) as jwt.JwtPayload;
+        const userId = decoded.sub || decoded.id;
+        if (!userId) {
+          return next(new Error('Invalid token'));
+        }
+        (socket.data as Record<string, unknown>).userId = userId;
         (socket.data as Record<string, unknown>).userRole = decoded.role || 'user';
         (socket.data as Record<string, unknown>).departmentId = decoded.departmentId || 'default';
         next();

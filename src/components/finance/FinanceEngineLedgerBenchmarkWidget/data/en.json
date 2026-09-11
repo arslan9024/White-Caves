@@ -1,0 +1,14 @@
+{
+  "title": "Ledger Query Benchmark",
+  "subtitle": "Finance Engine — 1M+ Transaction Records",
+  "status_idle": "Ready to run benchmark",
+  "status_running": "Running Ledger Query Test...",
+  "status_complete": "Benchmark Complete",
+  "metric_records": "Records Queried",
+  "metric_time": "Execution Time (ms)",
+  "metric_target": "Target",
+  "metric_status": "Status",
+  "btn_run": "Run Benchmark",
+  "pass": "PASS",
+  "fail": "FAIL"
+}

@@ -1,0 +1,1 @@
+{"title":"JSON-LD Schema","subtitle":"RealEstateAgent Schema for Google Rich Results","type":"RealEstateAgent","fields":["name","url","logo","address","telephone","areaServed","priceRange"],"valid":true}

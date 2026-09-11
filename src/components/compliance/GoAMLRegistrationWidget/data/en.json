@@ -1,0 +1,22 @@
+{
+  "title": "goAML Registration & STR Filing",
+  "subtitle": "UAE Financial Intelligence Unit (FIU) Integration",
+  "transaction_details": "Transaction Details",
+  "client_name": "Client Name",
+  "amount_aed": "Amount (AED)",
+  "payment_method": "Payment Method",
+  "cash": "Cash",
+  "bank_transfer": "Bank Transfer",
+  "crypto": "Cryptocurrency",
+  "cheque": "Manager's Cheque",
+  "threshold_warning": "Warning: Cash transactions of AED 55,000 or more require mandatory reporting (DPMIR/STR) via goAML.",
+  "reason_for_suspicion": "Reason for Suspicion (if STR)",
+  "report_type": "Report Type",
+  "str": "STR (Suspicious Transaction Report)",
+  "sar": "SAR (Suspicious Activity Report)",
+  "dpmir": "DPMIR (Dealer in Precious Metals & Stones Report)",
+  "file_goaml": "File Report to goAML",
+  "filing": "Filing to UAE FIU...",
+  "success": "Report successfully filed to goAML FIU Network.",
+  "goaml_ref": "goAML Reference Number:"
+}

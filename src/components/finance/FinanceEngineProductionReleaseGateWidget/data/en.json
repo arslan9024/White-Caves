@@ -1,0 +1,14 @@
+{
+  "title": "Production Release Gate & Signoff",
+  "subtitle": "Wave 56 Finance Engine MD Sovereign Seal Signoff",
+  "status_locked": "Pending MD Approval",
+  "status_unlocked": "Sovereign Seal Applied",
+  "req_1": "All 39 Domain Issues Completed",
+  "req_2": "Build passes (npm run build) 0 Errors",
+  "req_3": "Vitest Coverage >= 80%",
+  "req_4": "E2E Tests Pass (Chrome, Firefox, Safari)",
+  "req_5": "AEGIS Health (0 Critical Drift)",
+  "req_6": "Governance Audit Passed",
+  "btn_verify": "Verify All Systems",
+  "btn_signoff": "Apply MD Sovereign Seal"
+}

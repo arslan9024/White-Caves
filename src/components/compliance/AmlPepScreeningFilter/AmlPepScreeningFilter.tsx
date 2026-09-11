@@ -1,282 +1,88 @@
-/**
- * AmlPepScreeningFilter — Wave 48 GOAL-026
- * Anti-Money Laundering (AML) high-risk PEP sanction screening filter
- * White Caves Real Estate LLC — Compliance & goAML Suite
- */
 import React, { FC, useState } from 'react';
 import styled, { keyframes } from 'styled-components';
 
 const fadeIn = keyframes`from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}`;
-const pulse = keyframes`0%, 100% { opacity: 1; } 50% { opacity: 0.5; }`;
+const Wrap = styled.div`width:100%;background:linear-gradient(135deg,#0F172A,#1E293B);border:2px solid rgba(239,68,68,0.3);border-radius:18px;overflow:hidden;font-family:'Inter',sans-serif;animation:${fadeIn} .4s ease`;
+const Head = styled.div`padding:14px 20px;background:rgba(239,68,68,0.06);border-bottom:1px solid rgba(239,68,68,0.12);display:flex;align-items:center;justify-content:space-between`;
+const Title = styled.h3`margin:0;color:#FFF;font-size:.9rem;font-weight:700`;
+const Body = styled.div`padding:20px;display:flex;flex-direction:column;gap:14px`;
 
-const Wrap = styled.div`
-  width: 100%;
-  background: linear-gradient(135deg, #0F172A 0%, #1E293B 100%);
-  border: 2px solid rgba(239, 68, 68, 0.25);
-  border-radius: 18px;
-  overflow: hidden;
-  font-family: 'Inter', sans-serif;
-  animation: ${fadeIn} 0.4s ease;
-`;
+const SearchRow = styled.div`display:grid;grid-template-columns:1fr auto;gap:10px`;
+const Input = styled.input`padding:10px 14px;border-radius:9px;border:1px solid rgba(239,68,68,0.2);background:rgba(15,23,42,0.8);color:#E2E8F0;font-size:.8rem;font-weight:600;width:100%;box-sizing:border-box;outline:none;&:focus{border-color:#EF4444};&::placeholder{color:#475569}`;
+const ScrBtn = styled.button`padding:10px 18px;border-radius:9px;border:none;background:linear-gradient(90deg,#DC2626,#EF4444);color:#FFF;font-size:.78rem;font-weight:800;cursor:pointer;white-space:nowrap;transition:all .2s;&:hover{filter:brightness(1.1)}`;
 
-const Head = styled.div`
-  padding: 14px 20px;
-  background: rgba(239, 68, 68, 0.05);
-  border-bottom: 1px solid rgba(239, 68, 68, 0.12);
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
+const ResultCard = styled.div<{$risk:'clear'|'watch'|'hit'}>`
+  padding:18px;border-radius:14px;
+  background:${p=>({clear:'rgba(16,185,129,0.07)',watch:'rgba(245,158,11,0.07)',hit:'rgba(239,68,68,0.1)'}[p.$risk])};
+  border:2px solid ${p=>({clear:'rgba(16,185,129,0.3)',watch:'rgba(245,158,11,0.3)',hit:'rgba(239,68,68,0.4)'}[p.$risk])};
 `;
+const RiskBadge = styled.div<{$risk:'clear'|'watch'|'hit'}>`
+  display:inline-flex;align-items:center;gap:6px;padding:4px 14px;border-radius:999px;
+  background:${p=>({clear:'rgba(16,185,129,0.15)',watch:'rgba(245,158,11,0.15)',hit:'rgba(239,68,68,0.2)'}[p.$risk])};
+  color:${p=>({clear:'#10B981',watch:'#F59E0B',hit:'#EF4444'}[p.$risk])};
+  font-size:.78rem;font-weight:900;margin-bottom:12px;
+`;
+const DetailRow = styled.div`display:flex;justify-content:space-between;padding:5px 0;border-bottom:1px solid rgba(100,116,139,0.08)`;
+const DL = styled.div`font-size:.72rem;color:#64748B`;
+const DV = styled.div`font-size:.72rem;font-weight:700;color:#CBD5E1`;
 
-const Title = styled.h3`
-  margin: 0;
-  color: #FFF;
-  font-size: 0.92rem;
-  font-weight: 700;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-`;
+const DatabaseList = styled.div`display:flex;flex-wrap:wrap;gap:6px`;
+const DbTag = styled.div<{$checked:boolean}>`padding:3px 10px;border-radius:5px;font-size:.65rem;font-weight:700;background:${p=>p.$checked?'rgba(16,185,129,0.12)':'rgba(100,116,139,0.12)'};color:${p=>p.$checked?'#10B981':'#475569'};border:1px solid ${p=>p.$checked?'rgba(16,185,129,0.25)':'rgba(100,116,139,0.2)'}`;
 
-const AmlBadge = styled.span`
-  font-size: 0.68rem;
-  font-weight: 800;
-  color: #EF4444;
-  background: rgba(239, 68, 68, 0.12);
-  padding: 3px 10px;
-  border-radius: 999px;
-  border: 1px solid rgba(239, 68, 68, 0.3);
-`;
+const DATABASES = ['UN Sanctions','OFAC SDN','EU Consolidated','UK HM Treasury','Interpol Red Notice','UAE FIU List','Dow Jones Adverse Media','World-Check'];
 
-const Body = styled.div`
-  padding: 20px;
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-`;
-
-const SearchRow = styled.div`
-  display: grid;
-  grid-template-columns: 2fr 1fr auto;
-  gap: 10px;
-  align-items: center;
-`;
-
-const Input = styled.input`
-  padding: 10px 12px;
-  border-radius: 8px;
-  border: 1px solid rgba(100, 116, 139, 0.25);
-  background: rgba(15, 23, 42, 0.8);
-  color: #E2E8F0;
-  font-size: 0.82rem;
-  font-weight: 600;
-  outline: none;
-  &:focus { border-color: #EF4444; }
-`;
-
-const Select = styled.select`
-  padding: 10px 12px;
-  border-radius: 8px;
-  border: 1px solid rgba(100, 116, 139, 0.25);
-  background: rgba(15, 23, 42, 0.8);
-  color: #E2E8F0;
-  font-size: 0.82rem;
-  font-weight: 600;
-  outline: none;
-  &:focus { border-color: #EF4444; }
-`;
-
-const ScreenBtn = styled.button`
-  padding: 10px 20px;
-  border-radius: 8px;
-  border: none;
-  background: linear-gradient(90deg, #DC2626, #EF4444);
-  color: #FFF;
-  font-size: 0.82rem;
-  font-weight: 800;
-  cursor: pointer;
-  white-space: nowrap;
-  &:hover { filter: brightness(1.1); }
-`;
-
-const ResultCard = styled.div<{ $risk: 'low' | 'medium' | 'high' }>`
-  padding: 16px;
-  border-radius: 12px;
-  background: ${p => p.$risk === 'high' ? 'rgba(239, 68, 68, 0.08)' : p.$risk === 'medium' ? 'rgba(245, 158, 11, 0.08)' : 'rgba(16, 185, 129, 0.08)'};
-  border: 1.5px solid ${p => p.$risk === 'high' ? 'rgba(239, 68, 68, 0.35)' : p.$risk === 'medium' ? 'rgba(245, 158, 11, 0.35)' : 'rgba(16, 185, 129, 0.35)'};
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-`;
-
-const ResultHeader = styled.div`
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-`;
-
-const SubjectName = styled.div`
-  font-size: 0.95rem;
-  font-weight: 800;
-  color: #FFF;
-`;
-
-const RiskBadge = styled.span<{ $risk: 'low' | 'medium' | 'high' }>`
-  font-size: 0.72rem;
-  font-weight: 900;
-  padding: 4px 10px;
-  border-radius: 6px;
-  background: ${p => p.$risk === 'high' ? '#EF4444' : p.$risk === 'medium' ? '#F59E0B' : '#10B981'};
-  color: #FFF;
-  animation: ${p => p.$risk === 'high' ? pulse : 'none'} 1.5s ease infinite;
-`;
-
-const WatchlistGrid = styled.div`
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 8px;
-`;
-
-const WItem = styled.div`
-  padding: 8px;
-  border-radius: 6px;
-  background: rgba(15, 23, 42, 0.7);
-  border: 1px solid rgba(100, 116, 139, 0.15);
-  text-align: center;
-  font-size: 0.68rem;
-`;
-
-const WName = styled.div`
-  color: #94A3B8;
-  font-weight: 700;
-`;
-
-const WStatus = styled.div<{ $clean: boolean }>`
-  font-weight: 800;
-  margin-top: 2px;
-  color: ${p => p.$clean ? '#10B981' : '#EF4444'};
-`;
+const PROFILES: Record<string,(typeof MOCK_RESULT)> = {};
+const MOCK_RESULT = { risk: 'hit' as 'hit'|'clear'|'watch', name: 'Test Sanctioned Entity', match: 99, list: 'OFAC SDN List', reason: 'Designated under E.O. 13224 — terrorism financing', nationality: 'Iran', dob: '1975-03-15', passport: 'XA-9812345' };
+const MOCK_CLEAR = { risk: 'clear' as 'hit'|'clear'|'watch', name: '', match: 0, list: 'None', reason: 'No adverse records found across all databases', nationality: '', dob: '', passport: '' };
 
 export const AmlPepScreeningFilter: FC = () => {
-  const [name, setName] = useState('Viktor Morozov');
-  const [nationality, setNationality] = useState('Russian Federation');
-  const [screening, setScreening] = useState(false);
-  const [result, setResult] = useState<{
-    subject: string;
-    nationality: string;
-    risk: 'low' | 'medium' | 'high';
-    pepStatus: string;
-    sanctionMatches: number;
-    unListClean: boolean;
-    ofacClean: boolean;
-    uaeSanctionClean: boolean;
-    interpolClean: boolean;
-    goAmlRef: string;
-  } | null>({
-    subject: 'Viktor Morozov',
-    nationality: 'Russian Federation',
-    risk: 'medium',
-    pepStatus: 'Politically Exposed Person (Tier 2 - Regional Minister)',
-    sanctionMatches: 0,
-    unListClean: true,
-    ofacClean: false,
-    uaeSanctionClean: true,
-    interpolClean: true,
-    goAmlRef: 'SAR-UAE-2026-9042',
-  });
+  const [name, setName] = useState('');
+  const [result, setResult] = useState<null | typeof MOCK_RESULT | typeof MOCK_CLEAR>(null);
+  const [loading, setLoading] = useState(false);
 
-  const handleScreen = () => {
-    setScreening(true);
+  const screen = () => {
+    if (!name.trim()) return;
+    setLoading(true); setResult(null);
     setTimeout(() => {
-      setScreening(false);
-      setResult({
-        subject: name,
-        nationality,
-        risk: name.toLowerCase().includes('morozov') ? 'medium' : name.toLowerCase().includes('smith') ? 'low' : 'high',
-        pepStatus: name.toLowerCase().includes('smith') ? 'Non-PEP' : 'PEP Category 2 Identified',
-        sanctionMatches: name.toLowerCase().includes('smith') ? 0 : 1,
-        unListClean: true,
-        ofacClean: name.toLowerCase().includes('smith'),
-        uaeSanctionClean: true,
-        interpolClean: true,
-        goAmlRef: `SAR-UAE-2026-${Math.floor(Math.random() * 9000 + 1000)}`,
-      });
-    }, 1200);
+      setLoading(false);
+      const isHit = name.toLowerCase().includes('sanction') || name.toLowerCase().includes('test');
+      setResult(isHit ? { ...MOCK_RESULT, name } : { ...MOCK_CLEAR, name });
+    }, 1800);
   };
 
   return (
     <Wrap data-testid="aml-pep-screening-filter">
       <Head>
-        <Title>🛡️ AML & PEP Watchlist Screening</Title>
-        <AmlBadge>UAE goAML / FIU</AmlBadge>
+        <Title>🔍 AML PEP Sanction Screening</Title>
+        <div style={{fontSize:'.7rem',color:'#EF4444',fontWeight:700}}>CBUAE AML 2024</div>
       </Head>
       <Body>
         <SearchRow>
-          <Input 
-            value={name} 
-            onChange={e => setName(e.target.value)} 
-            placeholder="Full Legal Name / Passport Identity" 
-          />
-          <Select value={nationality} onChange={e => setNationality(e.target.value)}>
-            <option value="Russian Federation">Russian Federation</option>
-            <option value="United Kingdom">United Kingdom</option>
-            <option value="United Arab Emirates">United Arab Emirates</option>
-            <option value="China">China</option>
-            <option value="United States">United States</option>
-            <option value="India">India</option>
-          </Select>
-          <ScreenBtn onClick={handleScreen} disabled={screening}>
-            {screening ? '⏳ Screening...' : '🔍 Screen Subject'}
-          </ScreenBtn>
+          <Input value={name} onChange={e=>setName(e.target.value)} onKeyDown={e=>e.key==='Enter'&&screen()} placeholder="Enter client full name..." />
+          <ScrBtn onClick={screen}>{loading?'🔍 Screening...':'🔍 Screen Now'}</ScrBtn>
         </SearchRow>
+
+        <DatabaseList>
+          {DATABASES.map(db=><DbTag key={db} $checked={!!result}>{result?'✓ ':''}{db}</DbTag>)}
+        </DatabaseList>
 
         {result && (
           <ResultCard $risk={result.risk}>
-            <ResultHeader>
-              <div>
-                <SubjectName>{result.subject}</SubjectName>
-                <div style={{ fontSize: '0.72rem', color: 'var(--color-94a3b8, #94A3B8)', marginTop: '2px' }}>
-                  Nationality: {result.nationality} | Ref: {result.goAmlRef}
-                </div>
-              </div>
-              <RiskBadge $risk={result.risk}>
-                {result.risk === 'high' ? 'HIGH RISK (BLOCKED)' : result.risk === 'medium' ? 'MEDIUM RISK (EDD REQUIRED)' : 'LOW RISK (CLEAR)'}
-              </RiskBadge>
-            </ResultHeader>
-
-            <div style={{ fontSize: '0.75rem', fontWeight: 700, color: 'var(--text-secondary, #E2E8F0)' }}>
-              👤 PEP Designation: <span style={{ color: result.risk === 'low' ? 'var(--accent-green, #10B981)' : 'var(--accent-gold, #F59E0B)' }}>{result.pepStatus}</span>
-            </div>
-
-            <WatchlistGrid>
-              <WItem>
-                <WName>UN Security Council</WName>
-                <WStatus $clean={result.unListClean}>{result.unListClean ? '✓ CLEAR' : '⚠️ MATCH'}</WStatus>
-              </WItem>
-              <WItem>
-                <WName>US OFAC SDN</WName>
-                <WStatus $clean={result.ofacClean}>{result.ofacClean ? '✓ CLEAR' : '⚠️ REVIEW'}</WStatus>
-              </WItem>
-              <WItem>
-                <WName>UAE Local Terror List</WName>
-                <WStatus $clean={result.uaeSanctionClean}>{result.uaeSanctionClean ? '✓ CLEAR' : '⚠️ MATCH'}</WStatus>
-              </WItem>
-              <WItem>
-                <WName>INTERPOL Red Notice</WName>
-                <WStatus $clean={result.interpolClean}>{result.interpolClean ? '✓ CLEAR' : '⚠️ MATCH'}</WStatus>
-              </WItem>
-            </WatchlistGrid>
-
-            {result.risk === 'medium' && (
-              <div style={{ fontSize: '0.7rem', color: 'var(--accent-gold, #F59E0B)', background: 'rgba(245, 158, 11, 0.1)', padding: '8px 12px', borderRadius: '6px', lineHeight: '1.4' }}>
-                ⚠️ <strong>Enhanced Due Diligence (EDD) Mandatory:</strong> Source of Funds (SOF) and Source of Wealth (SOW) declaration required prior to escrow disbursement.
-              </div>
-            )}
+            <RiskBadge $risk={result.risk}>
+              {result.risk==='hit'?'🔴 SANCTIONS HIT':result.risk==='watch'?'🟡 WATCH LIST':'🟢 CLEAR — No Match'}
+            </RiskBadge>
+            <DetailRow><DL>Screened Name</DL><DV>{result.name}</DV></DetailRow>
+            {result.risk==='hit' && <>
+              <DetailRow><DL>Matched List</DL><DV style={{color:'#EF4444'}}>{result.list}</DV></DetailRow>
+              <DetailRow><DL>Match Score</DL><DV style={{color:'#EF4444'}}>{result.match}%</DV></DetailRow>
+              <DetailRow><DL>Designation Reason</DL><DV>{result.reason}</DV></DetailRow>
+              <DetailRow><DL>Nationality</DL><DV>{result.nationality}</DV></DetailRow>
+            </>}
+            {result.risk==='clear' && <DetailRow><DL>Result</DL><DV style={{color:'#10B981'}}>✓ {result.reason}</DV></DetailRow>}
           </ResultCard>
         )}
       </Body>
     </Wrap>
   );
 };
-
 export default AmlPepScreeningFilter;

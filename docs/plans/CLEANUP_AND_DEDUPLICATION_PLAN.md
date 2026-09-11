@@ -1,6 +1,6 @@
 # AEGIS Deduplication & Optimization Report
 
-> **Last Updated:** 2026-08-25  
+> **Last Updated:** 2026-09-10  
 > **Engine Version:** 2026.08.13-aegis-vnext-dedup-opt-v1  
 
 ---
@@ -9,9 +9,9 @@
 
 | Metric | Result | Status | Policy Rule |
 | :--- | :--- | :--- | :--- |
-| **Source Files Scanned** | 3868 | ✅ ACTIVE | Full repository coverage |
-| **Nested O(n^2) Array Patterns** | 239 | ⚠️ ATTENTION | Enforce O(n) hash map lookups |
-| **Production Console Statements** | 256 | ℹ️ MANAGED | Prune debug logs prior to deploy |
+| **Source Files Scanned** | 4294 | ✅ ACTIVE | Full repository coverage |
+| **Nested O(n^2) Array Patterns** | 238 | ⚠️ ATTENTION | Enforce O(n) hash map lookups |
+| **Production Console Statements** | 257 | ℹ️ MANAGED | Prune debug logs prior to deploy |
 
 ---
 

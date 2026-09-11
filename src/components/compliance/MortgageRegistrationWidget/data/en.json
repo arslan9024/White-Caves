@@ -1,0 +1,19 @@
+{
+  "title": "Mortgage Registration",
+  "subtitle": "0.25% Fee Calculator & DLD Form Submission",
+  "select_deal": "Select Mortgage Deal",
+  "mortgage_amount": "Mortgage Amount (AED)",
+  "fee_calculation": "Fee Calculation",
+  "dld_fee_rate": "DLD Fee Rate (0.25%)",
+  "total_fee": "Total DLD Fee",
+  "knowledge_fee": "Knowledge & Innovation Fee",
+  "grand_total": "Grand Total to Pay",
+  "submit_dld": "Submit to DLD",
+  "submitting": "Submitting...",
+  "status_tracker": "Registration Status",
+  "status_draft": "Drafted",
+  "status_submitted": "Submitted to DLD",
+  "status_payment": "Payment Pending",
+  "status_registered": "Mortgage Registered",
+  "download_certificate": "Download Registration Certificate"
+}

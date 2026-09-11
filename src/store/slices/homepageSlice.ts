@@ -41,6 +41,9 @@ export interface MarketStats {
   averagePrice: number;
   portfolioValue: number;
   activeAgents: number;
+  occupancyRate?: number;
+  rentalYield?: number;
+  totalTransactions?: number;
 }
 
 export interface TopAgent {

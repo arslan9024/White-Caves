@@ -4,12 +4,12 @@
 
 import styled from 'styled-components';
 
-export const SidebarContainer = styled.aside<{ $isCollapsed: boolean; $isDark: boolean }>`
+export const SidebarContainer = styled.aside<{ $isCollapsed: boolean; $isDark: boolean; $sidebarWidth?: number }>`
   position: fixed;
   top: 64px;
   left: 0;
   bottom: 0;
-  width: ${({ $isCollapsed }) => ($isCollapsed ? '72px' : '280px')};
+  width: ${({ $isCollapsed, $sidebarWidth }) => ($isCollapsed ? '72px' : $sidebarWidth ? `${$sidebarWidth}px` : '280px')};
   background: ${({ $isDark }) => ($isDark ? '#0B1120' : '#FFFFFF')};
   border-right: 1px solid ${({ $isDark }) => ($isDark ? 'rgba(239, 68, 68, 0.2)' : '#F1F5F9')};
   box-shadow: ${({ $isDark }) =>
@@ -96,4 +96,17 @@ export const SidebarFooter = styled.div<{ $isDark: boolean }>`
   padding: 12px;
   border-top: 1px solid ${({ $isDark }) => ($isDark ? '#1E293B' : '#F1F5F9')};
   background: ${({ $isDark }) => ($isDark ? '#0F172A' : '#F8FAFC')};
+`;
+export const DragHandle = styled.div`
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 5px;
+  height: 100%;
+  cursor: col-resize;
+  background-color: transparent;
+  z-index: 1000;
+  &:hover {
+    background-color: rgba(239, 68, 68, 0.5);
+  }
 `;

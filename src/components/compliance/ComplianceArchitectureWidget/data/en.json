@@ -1,0 +1,14 @@
+{
+  "title": "Compliance Architecture & Engine",
+  "subtitle": "Regulatory Document Registry, Expiry Engine & AML Rules",
+  "registry_title": "Document Registry",
+  "registry_desc": "Centralized secure vault for all KYC, AML, RERA, and DED documentation.",
+  "expiry_title": "Expiry Engine",
+  "expiry_desc": "Automated chron-job tracking 90/60/30 day lifecycles for critical trade licenses.",
+  "aml_title": "AML Rule Engine",
+  "aml_desc": "Real-time PEP & sanctions screening against UN, OFAC, and EU lists.",
+  "status_active": "Engine Online",
+  "status_sync": "Last Sync: {time}",
+  "btn_reindex": "Re-index Registry",
+  "btn_run_rules": "Run AML Rules"
+}

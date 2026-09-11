@@ -1,0 +1,17 @@
+{
+  "title": "طلب شهادة عدم ممانعة من المطور",
+  "subtitle": "مولد ومتتبع رسائل الطلب الآلي",
+  "project_name": "اسم المشروع",
+  "unit_number": "رقم الوحدة",
+  "buyer_name": "اسم المشتري",
+  "seller_name": "اسم البائع",
+  "generate_noc": "إنشاء طلب شهادة عدم ممانعة",
+  "generating": "جاري الإنشاء...",
+  "status_tracker": "متتبع الطلب",
+  "status_draft": "تمت الصياغة",
+  "status_sent": "أُرسل للمطور",
+  "status_pending": "قيد الموافقة",
+  "status_approved": "تمت الموافقة (استلام الشهادة)",
+  "download_noc": "تحميل الشهادة",
+  "developer_name": "اسم المطور"
+}

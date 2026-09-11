@@ -1,0 +1,35 @@
+name: Security Scan (OWASP ZAP)
+
+on:
+  schedule:
+    # Run weekly on Sunday at midnight
+    - cron: '0 0 * * 0'
+  workflow_dispatch:
+
+jobs:
+  zap_scan:
+    runs-on: ubuntu-latest
+    name: Scan the web application
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      # Using the official OWASP ZAP full scan action
+      - name: ZAP Scan
+        uses: zaproxy/action-full-scan@v0.12.0
+        with:
+          target: 'https://whitecaves.com' # Replace with staging or production URL
+          rules_file_name: '.zap/rules.tsv'
+          cmd_options: '-a'
+          
+      - name: Create Issue on High/Medium Risk
+        if: failure()
+        uses: actions/github-script@v7
+        with:
+          script: |
+            github.rest.issues.create({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              title: '🚨 OWASP ZAP Security Scan Failed',
+              body: 'The automated weekly OWASP ZAP baseline scan detected high/medium vulnerabilities. Please review the ZAP scan report in the Actions tab.',
+            });

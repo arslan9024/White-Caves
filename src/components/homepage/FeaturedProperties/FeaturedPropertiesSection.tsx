@@ -10,6 +10,7 @@ import { ArrowRight, Sparkles, CheckCircle2, ShieldCheck, Eye } from 'lucide-rea
 import { useNavigate } from 'react-router-dom';
 import VirtualTourModal from '../../properties/VirtualTourModal';
 import PropertyComparisonDrawer, { ComparableProperty } from '../../properties/PropertyComparisonDrawer';
+import type { HomepageProperty } from '../../../store/slices/homepageSlice';
 import './FeaturedPropertiesSection.css';
 
 // ─── Props ────────────────────────────────────────────────────────────────────

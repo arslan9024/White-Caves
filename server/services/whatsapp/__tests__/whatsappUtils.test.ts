@@ -11,6 +11,7 @@ import {
   rateLimiter,
   WHATSAPP_TEMPLATES,
   getTemplateParams,
+  renderTemplate,
 } from '../whatsappUtils.js';
 
 describe('normalizePhone', () => {
@@ -109,8 +110,11 @@ describe('rateLimiter', () => {
 });
 
 describe('WHATSAPP_TEMPLATES', () => {
-  it('has 7 predefined templates', () => {
-    expect(Object.keys(WHATSAPP_TEMPLATES).length).toBe(7);
+  it('has 10 predefined templates including Wave 61 additions', () => {
+    expect(Object.keys(WHATSAPP_TEMPLATES).length).toBe(10);
+    expect(WHATSAPP_TEMPLATES.lead_qualify).toBeDefined();
+    expect(WHATSAPP_TEMPLATES.invoice_sent).toBeDefined();
+    expect(WHATSAPP_TEMPLATES.viewing_confirmation_ar).toBeDefined();
   });
 
   it('viewing_confirmation has 4 params', () => {
@@ -120,6 +124,11 @@ describe('WHATSAPP_TEMPLATES', () => {
 
   it('rera_expiry_alert has 3 params', () => {
     expect(WHATSAPP_TEMPLATES.rera_expiry_alert.paramCount).toBe(3);
+  });
+
+  it('invoice_sent has 5 params', () => {
+    expect(WHATSAPP_TEMPLATES.invoice_sent.paramCount).toBe(5);
+    expect(WHATSAPP_TEMPLATES.invoice_sent.category).toBe('UTILITY');
   });
 });
 
@@ -133,6 +142,11 @@ describe('getTemplateParams', () => {
     expect(params).toEqual(['John', 'Villa in JBR', 'Agent Smith']);
   });
 
+  it('supports array input for params', () => {
+    const params = getTemplateParams('lead_qualify', ['Sarah', 'Downtown Apartment']);
+    expect(params).toEqual(['Sarah', 'Downtown Apartment']);
+  });
+
   it('returns null for unknown template', () => {
     expect(getTemplateParams('nonexistent', {})).toBeNull();
   });
@@ -140,5 +154,21 @@ describe('getTemplateParams', () => {
   it('returns empty strings for missing params', () => {
     const params = getTemplateParams('follow_up_warm', {});
     expect(params).toEqual(['', '']);
+  });
+});
+
+describe('renderTemplate', () => {
+  it('interpolates parameters correctly into template string', () => {
+    const text = renderTemplate('viewing_confirmation', ['Fatima', 'Marina Vista 402', 'Tomorrow at 4 PM', 'Layla']);
+    expect(text).toContain('Hello Fatima');
+    expect(text).toContain('Marina Vista 402');
+    expect(text).toContain('Tomorrow at 4 PM');
+    expect(text).toContain('Layla');
+  });
+
+  it('handles fallback for unknown templates', () => {
+    const text = renderTemplate('custom_promo', ['Special Offer']);
+    expect(text).toContain('custom_promo');
+    expect(text).toContain('Special Offer');
   });
 });

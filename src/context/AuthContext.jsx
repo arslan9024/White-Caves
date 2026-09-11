@@ -10,7 +10,12 @@ export const useAuth = () => {
     }
   }, []);
 
-  return { user };
+  const logout = () => {
+    localStorage.removeItem('white-caves-user');
+    window.location.href = '/login';
+  };
+
+  return { user, logout };
 };
 
 export default useAuth;

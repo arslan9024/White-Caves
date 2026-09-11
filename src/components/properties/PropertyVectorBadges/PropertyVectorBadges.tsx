@@ -37,6 +37,10 @@ export interface PropertySpecs {
   baths?: number | string;
   sqft?: number | string;
   location?: string;
+  isOffPlan?: boolean;
+  isDldVerified?: boolean;
+  isReraCompliant?: boolean;
+  energyRating?: string;
 }
 
 export const PropertyVectorBadges: FC<PropertySpecs> = ({

@@ -1,0 +1,16 @@
+{
+  "title": "DET License Monitor",
+  "subtitle": "90/60/30-Day Renewal Countdown for Trade License",
+  "license_number": "DET License Number",
+  "issue_date": "Issue Date",
+  "expiry_date": "Expiry Date",
+  "status_active": "Active",
+  "status_expiring": "Expiring Soon",
+  "status_expired": "Expired",
+  "days_left": "Days Left",
+  "phase_90": "90-Day Notice (Preparation)",
+  "phase_60": "60-Day Notice (Ejari & Docs)",
+  "phase_30": "30-Day Notice (Final Submission)",
+  "btn_renew": "Start Renewal Process",
+  "alert_warning": "Warning: DET License expires in {days} days. Enter {phase} phase."
+}

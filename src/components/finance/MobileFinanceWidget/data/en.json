@@ -1,0 +1,1 @@
+{"title":"Mobile Finance","subtitle":"Invoice Approve, Expense Submit, P&L Snapshot","actions":[{"id":"approve","label":"Approve Invoices","count":3,"icon":"check"},{"id":"expense","label":"Submit Expense","count":0,"icon":"receipt"},{"id":"pnl","label":"P&L Snapshot","count":0,"icon":"chart"}],"pending":"Pending","approved":"Approved"}

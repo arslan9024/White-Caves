@@ -1,162 +1,87 @@
-/**
- * VipResponseSlaTracker — Wave 49 GOAL-037
- * Dedicated UHNW relationship manager SLA tracker (5-minute VIP response law)
- * White Caves Real Estate LLC — VIP Concierge Suite
- */
-import React, { FC, useEffect, useRef, useState } from 'react';
+import React, { FC, useState, useEffect } from 'react';
 import styled, { keyframes } from 'styled-components';
 
 const fadeIn = keyframes`from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}`;
-const tick = keyframes`0%,100%{transform:scale(1)}50%{transform:scale(1.06)}`;
-const glow = keyframes`0%,100%{box-shadow:0 0 8px rgba(239,68,68,0.2)}50%{box-shadow:0 0 20px rgba(239,68,68,0.5)}`;
-const breathe = keyframes`0%,100%{opacity:1}50%{opacity:0.5}`;
+const pulse = keyframes`0%,100%{opacity:1}50%{opacity:.4}`;
+const Wrap = styled.div`width:100%;background:linear-gradient(135deg,#0A0614,#0F172A);border:2px solid rgba(239,68,68,0.3);border-radius:18px;overflow:hidden;font-family:'Inter',sans-serif;animation:${fadeIn} .4s ease`;
+const Head = styled.div`padding:14px 20px;background:rgba(239,68,68,0.06);border-bottom:1px solid rgba(239,68,68,0.15);display:flex;align-items:center;justify-content:space-between`;
+const Title = styled.h3`margin:0;color:#FFF;font-size:.9rem;font-weight:700`;
+const Body = styled.div`padding:20px;display:flex;flex-direction:column;gap:14px`;
 
-const Wrap = styled.div`width:100%;background:linear-gradient(135deg,#0A0614,#0F172A);border:2px solid rgba(139,92,246,0.3);border-radius:18px;overflow:hidden;font-family:'Inter',sans-serif;animation:${fadeIn} 0.4s ease;`;
-const Head = styled.div`padding:14px 20px;background:rgba(139,92,246,0.07);border-bottom:1px solid rgba(139,92,246,0.15);display:flex;align-items:center;justify-content:space-between;`;
-const Title = styled.h3`margin:0;color:#FFF;font-size:0.9rem;font-weight:700;display:flex;align-items:center;gap:8px;`;
-const Body = styled.div`padding:20px;display:flex;flex-direction:column;gap:16px;`;
-
-const TimerRing = styled.div<{$pct:number;$breached:boolean}>`
-  width:100px;height:100px;border-radius:50%;
-  background:conic-gradient(
-    ${p=>p.$breached?'#EF4444':'#8B5CF6'} ${p=>p.$pct}%,
-    rgba(15,23,42,0.6) ${p=>p.$pct}%
-  );
-  display:flex;align-items:center;justify-content:center;margin:0 auto;
-  animation: ${p => p.$breached ? glow : tick} 1s ease-in-out infinite;
-  position:relative;
-  &::before{content:'';position:absolute;inset:10px;border-radius:50%;background:#0A0614;}
+const TimerRing = styled.div<{$overdue:boolean}>`
+  width:120px;height:120px;border-radius:50%;margin:0 auto;
+  border:4px solid ${p=>p.$overdue?'#EF4444':'rgba(100,116,139,0.2)'};
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  background:${p=>p.$overdue?'rgba(239,68,68,0.08)':'rgba(15,23,42,0.5)'};
+  animation:${p=>p.$overdue?pulse:''} 1.5s ease-in-out infinite;
+  box-shadow:${p=>p.$overdue?'0 0 20px rgba(239,68,68,0.3)':'none'};
 `;
-const TimerInner = styled.div`position:relative;z-index:1;text-align:center;`;
-const TimerNum = styled.div<{$breached:boolean}>`font-size:1.4rem;font-weight:900;color:${p=>p.$breached?'#EF4444':'#A78BFA'};`;
-const TimerLabel = styled.div`font-size:0.6rem;color:#64748B;font-weight:700;letter-spacing:0.06em;text-transform:uppercase;`;
+const TimerNum = styled.div<{$overdue:boolean}>`font-size:1.8rem;font-weight:900;color:${p=>p.$overdue?'#EF4444':'#CBD5E1'}`;
+const TimerLabel = styled.div`font-size:.65rem;color:#64748B;text-align:center`;
 
-const SlaRow = styled.div`display:flex;align-items:center;justify-content:space-between;padding:10px 14px;border-radius:10px;background:rgba(15,23,42,0.6);border:1px solid rgba(100,116,139,0.15);`;
-const SlaLeft = styled.div`display:flex;align-items:center;gap:10px;`;
-const SlaAvatar = styled.div`width:32px;height:32px;border-radius:50%;background:rgba(139,92,246,0.2);border:1.5px solid rgba(139,92,246,0.4);display:flex;align-items:center;justify-content:center;font-size:1rem;flex-shrink:0;`;
-const SlaName = styled.div`font-size:0.8rem;font-weight:700;color:#E2E8F0;`;
-const SlaMeta = styled.div`font-size:0.68rem;color:#64748B;`;
-const SlaStatus = styled.div<{$ok:boolean}>`font-size:0.72rem;font-weight:800;color:${p=>p.$ok?'#10B981':'#EF4444'};display:flex;align-items:center;gap:4px;`;
-const LiveDot = styled.div<{$color:string}>`width:6px;height:6px;border-radius:50%;background:${p=>p.$color};animation:${breathe} 1.2s ease infinite;`;
+const LeadList = styled.div`display:flex;flex-direction:column;gap:7px`;
+const LeadRow = styled.div<{$mins:number}>`
+  display:flex;align-items:center;gap:10px;padding:9px 12px;border-radius:9px;
+  background:${p=>p.$mins>5?'rgba(239,68,68,0.08)':p.$mins>2?'rgba(245,158,11,0.07)':'rgba(16,185,129,0.06)'};
+  border:1px solid ${p=>p.$mins>5?'rgba(239,68,68,0.25)':p.$mins>2?'rgba(245,158,11,0.2)':'rgba(16,185,129,0.2)'};
+`;
+const LeadAvatar = styled.div`width:30px;height:30px;border-radius:50%;background:linear-gradient(135deg,rgba(139,92,246,0.3),rgba(59,130,246,0.3));display:flex;align-items:center;justify-content:center;font-size:.75rem;flex-shrink:0`;
+const LeadInfo = styled.div`flex:1`;
+const LeadName = styled.div`font-size:.75rem;font-weight:700;color:#CBD5E1`;
+const LeadSub = styled.div`font-size:.65rem;color:#64748B;margin-top:1px`;
+const LeadTimer = styled.div<{$mins:number}>`font-size:.75rem;font-weight:900;color:${p=>p.$mins>5?'#EF4444':p.$mins>2?'#F59E0B':'#10B981'};flex-shrink:0`;
 
-const PolicyCard = styled.div`padding:12px 16px;border-radius:10px;background:rgba(139,92,246,0.06);border:1px solid rgba(139,92,246,0.18);`;
-const PolicyTitle = styled.div`font-size:0.72rem;font-weight:700;color:#A78BFA;margin-bottom:8px;text-transform:uppercase;letter-spacing:0.05em;`;
-const PolicyGrid = styled.div`display:grid;grid-template-columns:repeat(3,1fr);gap:8px;`;
-const PolicyItem = styled.div`text-align:center;`;
-const PolicyVal = styled.div<{$red?:boolean}>`font-size:1rem;font-weight:900;color:${p=>p.$red?'#EF4444':'#A78BFA'};`;
-const PolicyLab = styled.div`font-size:0.62rem;color:#64748B;margin-top:2px;`;
+const EscalateBtn = styled.button`padding:5px 12px;border-radius:6px;border:none;background:rgba(239,68,68,0.15);color:#EF4444;font-size:.65rem;font-weight:700;cursor:pointer`;
 
-const SimBtn = styled.button<{$variant?:'danger'|'ok'}>`padding:8px 18px;border-radius:8px;border:none;background:${p=>p.$variant==='danger'?'rgba(239,68,68,0.15)':p.$variant==='ok'?'rgba(16,185,129,0.15)':'rgba(139,92,246,0.12)'};color:${p=>p.$variant==='danger'?'#EF4444':p.$variant==='ok'?'#10B981':'#A78BFA'};font-size:0.75rem;font-weight:700;cursor:pointer;transition:all 0.2s;&:hover{filter:brightness(1.2);}`;
-const BtnRow = styled.div`display:flex;gap:8px;`;
-
-type Enquiry = { client: string; avatar: string; enquiry: string; startTime: number; responded: boolean; respondedAt?: number };
+const VIPS = [
+  {name:'Sheikh Abdullah Al Nahyan',src:'HNWI Referral',mins:8,budget:'AED 45M'},
+  {name:'Mr. James Rothschild',src:'JLL Referral',mins:3,budget:'AED 28M'},
+  {name:'Ms. Li Wei (Singapore Family Office)',src:'Inbound Inquiry',mins:1,budget:'AED 18M'},
+  {name:'Prince Rashed Al Qasimi',src:'Existing Client',mins:12,budget:'AED 90M'},
+];
 
 export const VipResponseSlaTracker: FC = () => {
-  const SLA_MS = 5 * 60 * 1000; // 5 minutes
-  const [now, setNow] = useState(Date.now());
-  const [enquiries, setEnquiries] = useState<Enquiry[]>([
-    { client:'Sheikh Rashid Al Maktoum', avatar:'👑', enquiry:'Palm Crown penthouse — urgent offer', startTime:Date.now()-120000, responded:false },
-    { client:'Mr. Ivan Petrov', avatar:'🇷🇺', enquiry:'Downtown skyline villa walkthrough', startTime:Date.now()-245000, responded:true, respondedAt:Date.now()-200000 },
-  ]);
-  const [stats, setStats] = useState({ responded:1, breached:0, avgSec:127 });
-  const intervalRef = useRef<ReturnType<typeof setInterval>>();
+  const [slas, setSlas] = useState(VIPS.map(v=>({...v,assigned:false})));
 
-  useEffect(() => {
-    intervalRef.current = setInterval(() => setNow(Date.now()), 1000);
-    return () => clearInterval(intervalRef.current);
-  }, []);
-
-  const addEnquiry = () => {
-    const names = ['HH Princess Hessa','Mr. Andrei Volkov','Lady Margaret Pemberton','H.E. Khalid Al Qasimi'];
-    const avatars = ['👸','🇷🇺','🇬🇧','🏆'];
-    const enquiries2 = ['Burj Khalifa penthouse viewing','World Islands private villa','Palm Crown 8BR acquisition','Off-market golf estate'];
-    const i = Math.floor(Math.random()*4);
-    setEnquiries(prev=>[...prev, { client:names[i], avatar:avatars[i], enquiry:enquiries2[i], startTime:Date.now(), responded:false }]);
-  };
-
-  const respond = (idx: number) => {
-    setEnquiries(prev=>prev.map((e,i)=>i===idx?{...e,responded:true,respondedAt:Date.now()}:e));
-    setStats(s=>({...s,responded:s.responded+1,avgSec:Math.round((s.avgSec*s.responded+Math.floor((Date.now()-enquiries[idx].startTime)/1000))/(s.responded+1))}));
-  };
-
-  const pending = enquiries.filter(e=>!e.responded);
-  const oldest = pending.length > 0 ? pending.reduce((a,b)=>a.startTime<b.startTime?a:b) : null;
-  const elapsedMs = oldest ? now - oldest.startTime : 0;
-  const pct = oldest ? Math.min(100,(elapsedMs/SLA_MS)*100) : 0;
-  const breached = elapsedMs > SLA_MS;
-  const remaining = oldest ? Math.max(0,Math.ceil((SLA_MS-elapsedMs)/1000)) : 0;
-  const remMin = Math.floor(remaining/60);
-  const remSec = remaining%60;
+  const escalate = (i:number) => setSlas(prev=>prev.map((s,j)=>j===i?{...s,assigned:true}:s));
 
   return (
     <Wrap data-testid="vip-response-sla-tracker">
       <Head>
         <Title>⚡ VIP SLA Response Tracker</Title>
-        <div style={{fontSize:'0.68rem',color:'var(--color-a78bfa, #A78BFA)',fontWeight:700}}>5-MIN RESPONSE LAW</div>
+        <div style={{fontSize:'.7rem',color:'#EF4444',fontWeight:700,animation:`${pulse} 2s ease-in-out infinite`}}>
+          🔴 LIVE
+        </div>
       </Head>
       <Body>
-        <PolicyCard>
-          <PolicyTitle>📊 Today's SLA Performance</PolicyTitle>
-          <PolicyGrid>
-            <PolicyItem><PolicyVal>{stats.responded}</PolicyVal><PolicyLab>Responded</PolicyLab></PolicyItem>
-            <PolicyItem><PolicyVal $red={stats.breached>0}>{stats.breached}</PolicyVal><PolicyLab>Breaches</PolicyLab></PolicyItem>
-            <PolicyItem><PolicyVal>{stats.avgSec}s</PolicyVal><PolicyLab>Avg Response</PolicyLab></PolicyItem>
-          </PolicyGrid>
-        </PolicyCard>
+        <TimerRing $overdue={slas.some(s=>s.mins>5&&!s.assigned)}>
+          <TimerNum $overdue={slas.some(s=>s.mins>5&&!s.assigned)}>5:00</TimerNum>
+          <TimerLabel>VIP Response<br/>SLA Window</TimerLabel>
+        </TimerRing>
 
-        {oldest ? (
-          <div style={{textAlign:'center'}}>
-            <div style={{fontSize:'0.7rem',color:'var(--color-94a3b8, #94A3B8)',marginBottom:'10px',fontWeight:600,textTransform:'uppercase',letterSpacing:'0.05em'}}>
-              {breached ? '🚨 SLA BREACHED' : '⏱ Time Remaining for Oldest Enquiry'}
-            </div>
-            <TimerRing $pct={pct} $breached={breached}>
-              <TimerInner>
-                <TimerNum $breached={breached}>{breached?'BREACH':`${remMin}:${String(remSec).padStart(2,'0')}`}</TimerNum>
-                <TimerLabel>{breached?'OVERDUE':'remaining'}</TimerLabel>
-              </TimerInner>
-            </TimerRing>
-          </div>
-        ) : (
-          <div style={{textAlign:'center',padding:'16px',borderRadius:'12px',background:'rgba(16,185,129,0.06)',border:'1px solid rgba(16,185,129,0.2)',fontSize:'0.82rem',fontWeight:700,color:'var(--accent-green, #10B981)'}}>
-            ✅ All enquiries responded to — SLA Met!
-          </div>
-        )}
-
-        <div>
-          <div style={{fontSize:'0.7rem',fontWeight:700,color:'var(--color-94a3b8, #94A3B8)',textTransform:'uppercase',letterSpacing:'0.05em',marginBottom:'8px'}}>Live Enquiry Queue</div>
-          <div style={{display:'flex',flexDirection:'column',gap:'8px'}}>
-            {enquiries.map((e,i)=>{
-              const ems = now - e.startTime;
-              const br = !e.responded && ems > SLA_MS;
-              const ok = e.responded;
-              return (
-                <SlaRow key={i}>
-                  <SlaLeft>
-                    <SlaAvatar>{e.avatar}</SlaAvatar>
-                    <div>
-                      <SlaName>{e.client}</SlaName>
-                      <SlaMeta>{e.enquiry}</SlaMeta>
-                    </div>
-                  </SlaLeft>
-                  {ok ? (
-                    <SlaStatus $ok={true}><LiveDot $color="#10B981"/>✅ {Math.floor((e.respondedAt!-e.startTime)/1000)}s</SlaStatus>
-                  ) : br ? (
-                    <SimBtn $variant="danger" onClick={()=>respond(i)}>BREACH – Respond Now</SimBtn>
-                  ) : (
-                    <SimBtn $variant="ok" onClick={()=>respond(i)}>Reply ✓</SimBtn>
-                  )}
-                </SlaRow>
-              );
-            })}
-          </div>
+        <div style={{fontSize:'.72rem',color:'#64748B',textAlign:'center',padding:'8px',background:'rgba(239,68,68,0.05)',borderRadius:'8px',border:'1px solid rgba(239,68,68,0.12)'}}>
+          ⚠️ UHNW clients must receive a response within 5 minutes. Breaches trigger auto-escalation to Director.
         </div>
 
-        <BtnRow>
-          <SimBtn onClick={addEnquiry}>+ Simulate VIP Enquiry</SimBtn>
-        </BtnRow>
+        <LeadList>
+          {slas.map((vip,i)=>(
+            <LeadRow key={i} $mins={vip.assigned?0:vip.mins}>
+              <LeadAvatar>👑</LeadAvatar>
+              <LeadInfo>
+                <LeadName>{vip.name}</LeadName>
+                <LeadSub>{vip.src} · {vip.budget}</LeadSub>
+              </LeadInfo>
+              <LeadTimer $mins={vip.assigned?0:vip.mins}>
+                {vip.assigned?'✅':vip.mins>5?`${vip.mins}m ⚠️`:`${vip.mins}m`}
+              </LeadTimer>
+              {!vip.assigned && vip.mins>5 && (
+                <EscalateBtn onClick={()=>escalate(i)}>↑ Escalate</EscalateBtn>
+              )}
+            </LeadRow>
+          ))}
+        </LeadList>
       </Body>
     </Wrap>
   );
 };
-
 export default VipResponseSlaTracker;

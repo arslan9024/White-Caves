@@ -1,148 +1,88 @@
-/**
- * AccessCardApprovalWorkflow — Wave 52 GOAL-066
- * Building access card request & approval workflow for tenants
- * White Caves Real Estate LLC — Asset Management & IoT Facilities Suite
- */
 import React, { FC, useState } from 'react';
 import styled, { keyframes } from 'styled-components';
 
 const fadeIn = keyframes`from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}`;
+const Wrap = styled.div`width:100%;background:linear-gradient(135deg,#0F172A,#1E293B);border:2px solid rgba(139,92,246,0.25);border-radius:18px;overflow:hidden;font-family:'Inter',sans-serif;animation:${fadeIn} .4s ease`;
+const Head = styled.div`padding:14px 20px;background:rgba(139,92,246,0.05);border-bottom:1px solid rgba(139,92,246,0.12);display:flex;align-items:center;justify-content:space-between`;
+const Title = styled.h3`margin:0;color:#FFF;font-size:.9rem;font-weight:700`;
+const Body = styled.div`padding:20px;display:flex;flex-direction:column;gap:14px`;
 
-const Wrap = styled.div`
-  width: 100%;
-  background: linear-gradient(135deg, #0F172A 0%, #1E293B 100%);
-  border: 2px solid rgba(16, 185, 129, 0.25);
-  border-radius: 18px;
-  overflow: hidden;
-  font-family: 'Inter', sans-serif;
-  animation: ${fadeIn} 0.4s ease;
+const RequestForm = styled.div`display:flex;flex-direction:column;gap:10px`;
+const FieldGrid = styled.div`display:grid;grid-template-columns:1fr 1fr;gap:10px`;
+const Field = styled.div`display:flex;flex-direction:column;gap:4px`;
+const Label = styled.label`font-size:.7rem;color:#94A3B8;font-weight:600`;
+const Input = styled.input`padding:8px 10px;border-radius:7px;border:1px solid rgba(139,92,246,0.2);background:rgba(15,23,42,0.8);color:#E2E8F0;font-size:.78rem;font-weight:600;width:100%;box-sizing:border-box;outline:none;&:focus{border-color:#8B5CF6}`;
+const Select = styled.select`padding:8px 10px;border-radius:7px;border:1px solid rgba(139,92,246,0.2);background:rgba(15,23,42,0.8);color:#E2E8F0;font-size:.78rem;font-weight:600;width:100%;outline:none;&:focus{border-color:#8B5CF6}`;
+
+const RequestList = styled.div`display:flex;flex-direction:column;gap:6px`;
+const RequestRow = styled.div<{$status:'pending'|'approved'|'issued'}>`
+  display:flex;align-items:center;gap:10px;padding:9px 12px;border-radius:9px;
+  background:${p=>({pending:'rgba(245,158,11,0.07)',approved:'rgba(59,130,246,0.07)',issued:'rgba(16,185,129,0.07)'}[p.$status])};
+  border:1px solid ${p=>({pending:'rgba(245,158,11,0.2)',approved:'rgba(59,130,246,0.2)',issued:'rgba(16,185,129,0.2)'}[p.$status])};
+`;
+const RName = styled.div`font-size:.75rem;font-weight:700;color:#CBD5E1;flex:1`;
+const RMeta = styled.div`font-size:.65rem;color:#64748B`;
+const RBadge = styled.div<{$status:'pending'|'approved'|'issued'}>`
+  padding:2px 8px;border-radius:5px;font-size:.6rem;font-weight:700;
+  background:${p=>({pending:'rgba(245,158,11,0.15)',approved:'rgba(59,130,246,0.15)',issued:'rgba(16,185,129,0.15)'}[p.$status])};
+  color:${p=>({pending:'#F59E0B',approved:'#60A5FA',issued:'#10B981'}[p.$status])};
 `;
 
-const Head = styled.div`
-  padding: 14px 20px;
-  background: rgba(16, 185, 129, 0.06);
-  border-bottom: 1px solid rgba(16, 185, 129, 0.15);
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-`;
+const EXISTING = [
+  {name:'Ahmed Al Farsi',unit:'Unit 14B',cardNo:'WC-ACC-8821',status:'issued' as const},
+  {name:'Sarah Thompson',unit:'Unit 7A',cardNo:'WC-ACC-7764',status:'approved' as const},
+  {name:'New Tenant Request',unit:'Unit 3C',cardNo:'Pending',status:'pending' as const},
+];
 
-const Title = styled.h3`
-  margin: 0;
-  color: #FFF;
-  font-size: 0.92rem;
-  font-weight: 700;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-`;
-
-const Tag = styled.span`
-  font-size: 0.68rem;
-  font-weight: 800;
-  color: #10B981;
-  background: rgba(16, 185, 129, 0.12);
-  padding: 3px 10px;
-  border-radius: 999px;
-  border: 1px solid rgba(16, 185, 129, 0.3);
-`;
-
-const Body = styled.div`
-  padding: 20px;
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-`;
-
-const ReqList = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-`;
-
-const ReqCard = styled.div<{ $approved: boolean }>`
-  padding: 14px;
-  border-radius: 10px;
-  background: ${p => p.$approved ? 'rgba(16, 185, 129, 0.08)' : 'rgba(15, 23, 42, 0.7)'};
-  border: 1px solid ${p => p.$approved ? 'rgba(16, 185, 129, 0.3)' : 'rgba(100, 116, 139, 0.2)'};
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-`;
-
-const RInfo = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
-`;
-
-const RName = styled.div`
-  font-size: 0.85rem;
-  font-weight: 800;
-  color: #FFF;
-`;
-
-const RDetail = styled.div`
-  font-size: 0.72rem;
-  color: #94A3B8;
-`;
-
-const ActionBtn = styled.button`
-  padding: 6px 12px;
-  border-radius: 6px;
-  border: none;
-  background: #10B981;
-  color: #FFF;
-  font-size: 0.72rem;
-  font-weight: 700;
-  cursor: pointer;
-  &:hover { filter: brightness(1.1); }
-`;
+const SubmitBtn = styled.button`width:100%;padding:12px;border-radius:10px;border:none;background:linear-gradient(90deg,#7C3AED,#8B5CF6);color:#FFF;font-size:.85rem;font-weight:800;cursor:pointer;transition:all .2s;&:hover{filter:brightness(1.1)}`;
 
 export const AccessCardApprovalWorkflow: FC = () => {
-  const [requests, setRequests] = useState([
-    { id: 'AC-301', tenant: 'Sir Jonathan Hayes', unit: 'Penthouse 4001, Marina Gate', cardType: 'Parking Barrier RFID Tag & Keycard (x2)', feeAed: 400, approved: false },
-    { id: 'AC-302', tenant: 'Dr. Fatima Al Nuaimi', unit: 'Villa 12B, Palm Jumeirah', cardType: 'Biometric Gate Access Pass', feeAed: 200, approved: true },
-    { id: 'AC-303', tenant: 'Alexander Sterling', unit: 'Apartment 1204, Downtown Views', cardType: 'Service Elevator Access Fob', feeAed: 150, approved: false },
-  ]);
-
-  const approveRequest = (id: string) => {
-    setRequests(prev => prev.map(r => r.id === id ? { ...r, approved: true } : r));
-  };
+  const [tenantName, setTenantName] = useState('');
+  const [unit, setUnit] = useState('');
+  const [cardType, setCardType] = useState('standard');
+  const [submitted, setSubmitted] = useState(false);
 
   return (
     <Wrap data-testid="access-card-approval-workflow">
       <Head>
-        <Title>🪪 Building Access Card & RFID Barrier Permit Workflow</Title>
-        <Tag>SECURITY INTEGRATION</Tag>
+        <Title>🪪 Access Card Approval Workflow</Title>
+        <div style={{fontSize:'.7rem',color:'#8B5CF6',fontWeight:700}}>Building Access</div>
       </Head>
       <Body>
-        <div style={{ fontSize: '0.72rem', color: 'var(--color-94a3b8, #94A3B8)' }}>
-          Digital tenant access card request queue linked to building security RFID controllers, automatically verifying active Ejari status before credential issuance.
-        </div>
+        <RequestForm>
+          <FieldGrid>
+            <Field><Label>Tenant Name</Label><Input value={tenantName} onChange={e=>setTenantName(e.target.value)} placeholder="Full Name" /></Field>
+            <Field><Label>Unit Number</Label><Input value={unit} onChange={e=>setUnit(e.target.value)} placeholder="e.g. 14B" /></Field>
+          </FieldGrid>
+          <Field><Label>Card Type</Label>
+            <Select value={cardType} onChange={e=>setCardType(e.target.value)}>
+              <option value="standard">Standard Access (Lobby + Unit + Gym)</option>
+              <option value="parking">Parking + Standard</option>
+              <option value="rooftop">VIP — Rooftop + All Access</option>
+              <option value="visitor">Visitor (24h temporary)</option>
+            </Select>
+          </Field>
+        </RequestForm>
 
-        <ReqList>
-          {requests.map(req => (
-            <ReqCard key={req.id} $approved={req.approved}>
-              <RInfo>
-                <RName>{req.tenant} <span style={{ fontSize: '0.68rem', color: 'var(--text-secondary, #64748B)', fontWeight: 600 }}>({req.unit})</span></RName>
-                <RDetail>💳 Requested: {req.cardType} | Admin Fee: AED {req.feeAed}</RDetail>
-              </RInfo>
-              <div>
-                {req.approved ? (
-                  <span style={{ fontSize: '0.75rem', fontWeight: 800, color: 'var(--accent-green, #10B981)' }}>✓ ISSUED & ACTIVE</span>
-                ) : (
-                  <ActionBtn onClick={() => approveRequest(req.id)}>
-                    ✓ Authorize RFID Card
-                  </ActionBtn>
-                )}
+        <SubmitBtn onClick={()=>setSubmitted(true)}>
+          {submitted?`✅ Request Submitted — Under Review`:'🪪 Submit Access Card Request'}
+        </SubmitBtn>
+
+        <div style={{fontSize:'.7rem',color:'#64748B',fontWeight:600}}>Active Access Cards</div>
+        <RequestList>
+          {EXISTING.map((r,i)=>(
+            <RequestRow key={i} $status={r.status}>
+              <div style={{fontSize:'.85rem'}}>🪪</div>
+              <div style={{flex:1}}>
+                <RName>{r.name}</RName>
+                <RMeta>{r.unit} · Card: {r.cardNo}</RMeta>
               </div>
-            </ReqCard>
+              <RBadge $status={r.status}>{({pending:'PENDING',approved:'APPROVED',issued:'ISSUED'})[r.status]}</RBadge>
+            </RequestRow>
           ))}
-        </ReqList>
+        </RequestList>
       </Body>
     </Wrap>
   );
 };
-
 export default AccessCardApprovalWorkflow;

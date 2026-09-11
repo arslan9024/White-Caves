@@ -64,6 +64,7 @@ const AuroraSoftwareHub = lazy(() => import('../components/crm/AuroraSoftwareHub
 const MargaretPlansHub = lazy(() => import('../components/crm/MargaretPlansHub'));
 const AdaArchitectureHub = lazy(() => import('../components/crm/AdaArchitectureHub'));
 const AegisAutopilotHub = lazy(() => import('../components/crm/AegisAutopilotHub'));
+const HeroSectionCRM = lazy(() => import('../components/crm/HeroSectionCRM'));
 
 // 40 Assistant Enterprise Suite Components
 const ApexCRM = lazy(() => import('../components/crm/ApexCRM'));
@@ -573,6 +574,17 @@ export const CRM_MODULE_REGISTRY: Record<string, CRMModuleDefinition> = {
     roles: ['agent', 'manager', 'admin'],
     section: 'Wave 18.1',
     Component: LeadTimeline,
+  },
+  'hero-section': {
+    id: 'hero-section',
+    label: 'Hero Section — WAVE 50',
+    icon: '✨',
+    description: 'Hero Section feature widgets: Preloader, PWA, Countdown, Schema, Counters, Awards, and more',
+    color: '#D4AF37',
+    zone: 'executive',
+    roles: ['admin', 'ceo', 'coo', 'manager'],
+    section: 'Wave 50',
+    Component: HeroSectionCRM,
   },
 };
 

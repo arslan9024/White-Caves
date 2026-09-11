@@ -1,308 +1,64 @@
-/**
- * FormFClauseGenerator — Wave 48 GOAL-023
- * Form F (MOU / Unified Sale Contract) milestone clause generator
- * White Caves Real Estate LLC — RERA Legal Suite
- */
 import React, { FC, useState } from 'react';
 import styled, { keyframes } from 'styled-components';
 
 const fadeIn = keyframes`from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}`;
-const glow = keyframes`0%,100%{box-shadow:0 0 10px rgba(239,68,68,0.2)}50%{box-shadow:0 0 22px rgba(239,68,68,0.45)}`;
+const Wrap = styled.div`width:100%;background:linear-gradient(135deg,#0F172A,#1E293B);border:2px solid rgba(245,158,11,0.25);border-radius:18px;overflow:hidden;font-family:'Inter',sans-serif;animation:${fadeIn} .4s ease`;
+const Head = styled.div`padding:14px 20px;background:rgba(245,158,11,0.05);border-bottom:1px solid rgba(245,158,11,0.12);display:flex;align-items:center;justify-content:space-between`;
+const Title = styled.h3`margin:0;color:#FFF;font-size:.9rem;font-weight:700`;
+const Body = styled.div`padding:20px;display:flex;flex-direction:column;gap:14px`;
 
-const Wrap = styled.div`
-  width: 100%;
-  background: linear-gradient(135deg, #0F172A 0%, #1E293B 100%);
-  border: 2px solid rgba(239, 68, 68, 0.25);
-  border-radius: 18px;
-  overflow: hidden;
-  font-family: 'Inter', sans-serif;
-  animation: ${fadeIn} 0.4s ease;
-`;
+const ClauseCard = styled.div`padding:14px 16px;border-radius:11px;background:rgba(15,23,42,0.7);border:1px solid rgba(245,158,11,0.2)`;
+const ClauseHeader = styled.div`display:flex;align-items:center;justify-content:space-between;margin-bottom:8px`;
+const ClauseNum = styled.div`font-size:.72rem;font-weight:800;color:#F59E0B;background:rgba(245,158,11,0.12);padding:2px 8px;border-radius:5px`;
+const ClauseTitle = styled.div`font-size:.8rem;font-weight:700;color:#CBD5E1`;
+const ClauseText = styled.div`font-size:.72rem;color:#64748B;line-height:1.55`;
+const ClauseStatus = styled.div<{$included:boolean}>`font-size:.65rem;font-weight:700;padding:2px 8px;border-radius:5px;background:${p=>p.$included?'rgba(16,185,129,0.15)':'rgba(100,116,139,0.15)'};color:${p=>p.$included?'#10B981':'#64748B'};cursor:pointer;transition:all .15s`;
 
-const Head = styled.div`
-  padding: 14px 20px;
-  background: rgba(239, 68, 68, 0.05);
-  border-bottom: 1px solid rgba(239, 68, 68, 0.12);
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-`;
+const GenBtn = styled.button`width:100%;padding:12px;border-radius:10px;border:none;background:linear-gradient(90deg,#D97706,#F59E0B);color:#FFF;font-size:.85rem;font-weight:800;cursor:pointer;transition:all .2s;&:hover{filter:brightness(1.1)}`;
 
-const Title = styled.h3`
-  margin: 0;
-  color: #FFF;
-  font-size: 0.92rem;
-  font-weight: 700;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-`;
-
-const Badge = styled.span`
-  font-size: 0.68rem;
-  font-weight: 800;
-  color: #EF4444;
-  background: rgba(239, 68, 68, 0.1);
-  padding: 3px 9px;
-  border-radius: 999px;
-  border: 1px solid rgba(239, 68, 68, 0.25);
-`;
-
-const Body = styled.div`
-  padding: 20px;
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-`;
-
-const Grid2 = styled.div`
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 12px;
-`;
-
-const Field = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-`;
-
-const FLabel = styled.label`
-  font-size: 0.68rem;
-  font-weight: 700;
-  color: #94A3B8;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-`;
-
-const Input = styled.input`
-  padding: 8px 10px;
-  border-radius: 7px;
-  border: 1px solid rgba(100, 116, 139, 0.25);
-  background: rgba(15, 23, 42, 0.8);
-  color: #E2E8F0;
-  font-size: 0.8rem;
-  font-weight: 600;
-  width: 100%;
-  box-sizing: border-box;
-  outline: none;
-  &:focus { border-color: #EF4444; }
-`;
-
-const Select = styled.select`
-  padding: 8px 10px;
-  border-radius: 7px;
-  border: 1px solid rgba(100, 116, 139, 0.25);
-  background: rgba(15, 23, 42, 0.8);
-  color: #E2E8F0;
-  font-size: 0.8rem;
-  font-weight: 600;
-  width: 100%;
-  outline: none;
-  &:focus { border-color: #EF4444; }
-`;
-
-const ClauseList = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-`;
-
-const ClauseItem = styled.div<{ $selected: boolean }>`
-  padding: 10px 12px;
-  border-radius: 8px;
-  background: ${p => p.$selected ? 'rgba(239, 68, 68, 0.08)' : 'rgba(15, 23, 42, 0.6)'};
-  border: 1px solid ${p => p.$selected ? 'rgba(239, 68, 68, 0.3)' : 'rgba(100, 116, 139, 0.15)'};
-  display: flex;
-  align-items: flex-start;
-  gap: 10px;
-  cursor: pointer;
-  transition: all 0.2s ease;
-  &:hover { border-color: rgba(239, 68, 68, 0.4); }
-`;
-
-const CheckBox = styled.input`
-  accent-color: #EF4444;
-  margin-top: 2px;
-  cursor: pointer;
-`;
-
-const ClauseText = styled.div`
-  flex: 1;
-`;
-
-const ClauseTitle = styled.div`
-  font-size: 0.78rem;
-  font-weight: 700;
-  color: #E2E8F0;
-`;
-
-const ClauseDetail = styled.div`
-  font-size: 0.68rem;
-  color: #64748B;
-  margin-top: 2px;
-  line-height: 1.4;
-`;
-
-const PreviewArea = styled.div`
-  padding: 14px;
-  border-radius: 10px;
-  background: rgba(15, 23, 42, 0.9);
-  border: 1px solid rgba(100, 116, 139, 0.2);
-  font-size: 0.72rem;
-  color: #CBD5E1;
-  max-height: 160px;
-  overflow-y: auto;
-  line-height: 1.6;
-  white-space: pre-wrap;
-  font-family: 'Courier New', Courier, monospace;
-`;
-
-const GenBtn = styled.button`
-  width: 100%;
-  padding: 12px;
-  border-radius: 10px;
-  border: none;
-  background: linear-gradient(90deg, #DC2626, #EF4444);
-  color: #FFF;
-  font-size: 0.85rem;
-  font-weight: 800;
-  cursor: pointer;
-  transition: all 0.2s ease;
-  animation: ${glow} 3s ease infinite;
-  &:hover { filter: brightness(1.1); transform: translateY(-1px); }
-`;
-
-const DEFAULT_CLAUSES = [
-  { id: 'c1', title: '10% Security Deposit Held in Escrow', desc: 'Buyer delivers 10% manager cheque payable to Trustee/Agency escrow on signing.', mandatory: true },
-  { id: 'c2', title: 'Mortgage Contingency (21-Day Period)', desc: 'Contract void without penalty if official bank loan rejection certificate is produced within 21 days.', mandatory: false },
-  { id: 'c3', title: 'NOC & Service Charge Clearance Clause', desc: 'Seller covenants to clear all master developer service charges and obtain Developer NOC before transfer.', mandatory: true },
-  { id: 'c4', title: 'Vacant on Transfer / Tenant Notice Guarantee', desc: 'Seller warrants formal 12-month notarized eviction notice served per Dubai Law 26/2007.', mandatory: false },
-  { id: 'c5', title: 'Default Penalty & Liquidated Damages', desc: 'Breaching party forfeits 10% deposit as liquidated damages per RERA unified Form F standard.', mandatory: true },
+const CLAUSES = [
+  { num: '1.1', title: 'Sale Price Agreement', text: 'The Seller agrees to sell the Property to the Buyer for a total consideration of AED [PRICE], payable as detailed herein.', init: true },
+  { num: '2.1', title: 'Completion Date', text: 'Legal completion and title transfer shall occur on [DATE] at the DLD Trustee Office, subject to NOC issuance.', init: true },
+  { num: '3.1', title: 'Deposit Forfeiture Clause', text: 'Should the Buyer default, the 10% deposit (AED [DEPOSIT]) shall be forfeited to the Seller as liquidated damages.', init: true },
+  { num: '3.2', title: 'Seller Penalty Clause', text: 'Should the Seller withdraw, the Seller shall refund double the deposit (AED [DEPOSIT×2]) to the Buyer within 14 days.', init: false },
+  { num: '4.1', title: 'Service Charge Clearance', text: 'The Seller warrants that all outstanding service charges, maintenance fees, and municipality fees are cleared prior to transfer.', init: true },
+  { num: '5.1', title: 'Vacant Possession', text: 'The Property shall be delivered vacant and in its current condition on the Completion Date, unless agreed otherwise.', init: false },
+  { num: '6.1', title: 'Mortgage Discharge', text: 'The Seller shall discharge any mortgage/charge registered on the Property no later than 5 business days before completion.', init: true },
+  { num: '7.1', title: 'Governing Law', text: 'This Agreement shall be governed by the laws of the Emirate of Dubai and the UAE, and disputes referred to Dubai Courts.', init: true },
 ];
 
 export const FormFClauseGenerator: FC = () => {
-  const [buyer, setBuyer] = useState('Alexander Sterling');
-  const [seller, setSeller] = useState('Fatima Al Suwaidi');
-  const [price, setPrice] = useState('6500000');
-  const [property, setProperty] = useState('Unit 3402, Marina Gate 1, Dubai Marina');
-  const [selectedClauses, setSelectedClauses] = useState<string[]>(['c1', 'c3', 'c5']);
-  const [generatedDoc, setGeneratedDoc] = useState<string | null>(null);
+  const [included, setIncluded] = useState<Set<string>>(new Set(CLAUSES.filter(c=>c.init).map(c=>c.num)));
+  const [generated, setGenerated] = useState(false);
 
-  const toggleClause = (id: string) => {
-    setSelectedClauses(prev => 
-      prev.includes(id) ? prev.filter(c => c !== id) : [...prev, id]
-    );
-  };
-
-  const handleGenerate = () => {
-    const clausesText = DEFAULT_CLAUSES
-      .filter(c => selectedClauses.includes(c.id))
-      .map((c, i) => `${i + 1}. ${c.title.toUpperCase()}:\n   ${c.desc}`)
-      .join('\n\n');
-
-    const contract = `========================================================
-DUBAI LAND DEPARTMENT - UNIFIED SALE CONTRACT (FORM F)
-CONTRACT REFERENCE: MOU-WC-${new Date().getFullYear()}-${Math.floor(Math.random() * 90000 + 10000)}
-========================================================
-
-FIRST PARTY (SELLER): ${seller}
-SECOND PARTY (BUYER): ${buyer}
-SUBJECT PROPERTY: ${property}
-AGREED SALE PRICE: AED ${Number(price).toLocaleString()} (UAE Dirhams)
-RERA BROKERAGE: White Caves Real Estate LLC (ORN: 44483)
-
-SPECIAL STIPULATIONS & MILESTONE CLAUSES:
---------------------------------------------------------
-${clausesText}
-
-GOVERNING LAW:
-This Contract is governed exclusively by the laws of the Emirate of Dubai 
-and Federal Laws of the UAE. Jurisdiction is Dubai Courts / RERA Committee.
-
-TIMESTAMP: ${new Date().toISOString()}
-DIGITAL SEAL: SHA256-${Math.random().toString(36).substring(2, 15).toUpperCase()}
-========================================================`;
-
-    setGeneratedDoc(contract);
-  };
+  const toggle = (num: string) => setIncluded(prev => {
+    const n = new Set(prev); n.has(num) ? n.delete(num) : n.add(num); return n;
+  });
 
   return (
     <Wrap data-testid="form-f-clause-generator">
       <Head>
-        <Title>📄 Form F (MOU) Clause Generator</Title>
-        <Badge>RERA UNIFIED 2026</Badge>
+        <Title>📄 Form F — MOU Clause Generator</Title>
+        <div style={{fontSize:'.7rem',color:'#F59E0B',fontWeight:700}}>{included.size}/8 Clauses</div>
       </Head>
       <Body>
-        <Grid2>
-          <Field>
-            <FLabel>Buyer Name</FLabel>
-            <Input value={buyer} onChange={e => setBuyer(e.target.value)} />
-          </Field>
-          <Field>
-            <FLabel>Seller Name</FLabel>
-            <Input value={seller} onChange={e => setSeller(e.target.value)} />
-          </Field>
-          <Field>
-            <FLabel>Agreed Price (AED)</FLabel>
-            <Input type="number" value={price} onChange={e => setPrice(e.target.value)} />
-          </Field>
-          <Field>
-            <FLabel>Property Details</FLabel>
-            <Input value={property} onChange={e => setProperty(e.target.value)} />
-          </Field>
-        </Grid2>
-
-        <div>
-          <FLabel style={{ marginBottom: '8px', display: 'block' }}>Standard & Contingency Clauses</FLabel>
-          <ClauseList>
-            {DEFAULT_CLAUSES.map(c => (
-              <ClauseItem 
-                key={c.id} 
-                $selected={selectedClauses.includes(c.id)}
-                onClick={() => toggleClause(c.id)}
-              >
-                <CheckBox 
-                  type="checkbox" 
-                  checked={selectedClauses.includes(c.id)} 
-                  onChange={() => {}} 
-                />
-                <ClauseText>
-                  <ClauseTitle>{c.title}</ClauseTitle>
-                  <ClauseDetail>{c.desc}</ClauseDetail>
-                </ClauseText>
-              </ClauseItem>
-            ))}
-          </ClauseList>
-        </div>
-
-        {generatedDoc ? (
-          <div>
-            <FLabel style={{ marginBottom: '6px', display: 'block' }}>Generated Unified Contract Preview</FLabel>
-            <PreviewArea>{generatedDoc}</PreviewArea>
-            <div style={{ marginTop: '8px', display: 'flex', justifyContent: 'flex-end', gap: '8px' }}>
-              <button 
-                onClick={() => setGeneratedDoc(null)}
-                style={{ padding: '6px 14px', background: 'transparent', border: '1px solid var(--color-475569, #475569)', color: 'var(--color-94a3b8, #94A3B8)', borderRadius: '6px', cursor: 'pointer', fontSize: '0.72rem' }}
-              >
-                Reset
-              </button>
-              <button 
-                onClick={() => alert('Contract sent to Trustee Office Queue & Signer Portal')}
-                style={{ padding: '6px 14px', background: 'var(--accent-green, #10B981)', border: 'none', color: 'var(--white, #FFF)', borderRadius: '6px', cursor: 'pointer', fontSize: '0.72rem', fontWeight: 700 }}
-              >
-                ✓ Dispatch to DLD Portal
-              </button>
-            </div>
-          </div>
-        ) : (
-          <GenBtn onClick={handleGenerate}>
-            ⚖️ Compile Unified Form F MOU Contract
-          </GenBtn>
-        )}
+        {CLAUSES.map(c => (
+          <ClauseCard key={c.num}>
+            <ClauseHeader>
+              <ClauseNum>§ {c.num}</ClauseNum>
+              <ClauseTitle>{c.title}</ClauseTitle>
+              <ClauseStatus $included={included.has(c.num)} onClick={()=>toggle(c.num)}>
+                {included.has(c.num)?'✓ Included':'+ Add'}
+              </ClauseStatus>
+            </ClauseHeader>
+            <ClauseText>{c.text}</ClauseText>
+          </ClauseCard>
+        ))}
+        <GenBtn onClick={()=>setGenerated(true)}>
+          {generated ? `✅ Form F Generated — ${included.size} Clauses` : `⚖️ Generate Form F MOU (${included.size} clauses)`}
+        </GenBtn>
       </Body>
     </Wrap>
   );
 };
-
 export default FormFClauseGenerator;

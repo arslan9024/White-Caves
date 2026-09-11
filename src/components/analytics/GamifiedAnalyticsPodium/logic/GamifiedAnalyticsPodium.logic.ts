@@ -3,7 +3,7 @@
  */
 
 import { useState, useEffect } from 'react';
-import { useTheme } from '../../../context/ThemeContext';
+import { useTheme } from '../../../../context/ThemeContext';
 import { TOP_BROKERS_PODIUM, MANAGER_SPARKLINES } from '../data/GamifiedAnalyticsPodium.data';
 
 export function useGamifiedAnalyticsPodiumLogic() {

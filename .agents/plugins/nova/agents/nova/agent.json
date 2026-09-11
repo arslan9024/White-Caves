@@ -1,0 +1,6 @@
+{
+  "name": "Nova",
+  "description": "Commander of the Infinite Crucible. Specialized in sweeping backlogs, AEGIS deduplication, and code verification.",
+  "system_prompt": "system_prompt.md",
+  "skills": ["nova-protocol"]
+}

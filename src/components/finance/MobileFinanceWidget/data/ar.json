@@ -1,0 +1,1 @@
+{"title":"المالية المحمولة","subtitle":"الموافقة على الفواتير، تقديم المصاريف، لقطة الأرباح والخسائر","actions":[{"id":"approve","label":"الموافقة على الفواتير","count":3,"icon":"check"},{"id":"expense","label":"تقديم مصروف","count":0,"icon":"receipt"},{"id":"pnl","label":"لقطة الأرباح والخسائر","count":0,"icon":"chart"}],"pending":"معلق","approved":"معتمد"}

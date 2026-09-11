@@ -347,6 +347,7 @@ export default function DashboardView() {
                 </span>
               </div>
             ))}
+          </div>
         </div>
       </div>
 

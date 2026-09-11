@@ -1,221 +1,96 @@
-/**
- * LeadSlaEscalationTimer — Wave 51 GOAL-053
- * 15-minute lead SLA escalation timer with auto-reassignment to available supervisors
- * White Caves Real Estate LLC — Communications & CRM Suite
- */
 import React, { FC, useState, useEffect } from 'react';
 import styled, { keyframes } from 'styled-components';
 
 const fadeIn = keyframes`from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}`;
-const pulse = keyframes`0%, 100% { opacity: 1; transform: scale(1); } 50% { opacity: 0.6; transform: scale(1.02); }`;
+const blink = keyframes`0%,100%{opacity:1}50%{opacity:0}`;
+const Wrap = styled.div`width:100%;background:linear-gradient(135deg,#0F172A,#1E293B);border:2px solid rgba(239,68,68,0.3);border-radius:18px;overflow:hidden;font-family:'Inter',sans-serif;animation:${fadeIn} .4s ease`;
+const Head = styled.div`padding:14px 20px;background:rgba(239,68,68,0.06);border-bottom:1px solid rgba(239,68,68,0.15);display:flex;align-items:center;justify-content:space-between`;
+const Title = styled.h3`margin:0;color:#FFF;font-size:.9rem;font-weight:700`;
+const Body = styled.div`padding:20px;display:flex;flex-direction:column;gap:14px`;
 
-const Wrap = styled.div`
-  width: 100%;
-  background: linear-gradient(135deg, #0F172A 0%, #1E293B 100%);
-  border: 2px solid rgba(239, 68, 68, 0.25);
-  border-radius: 18px;
-  overflow: hidden;
-  font-family: 'Inter', sans-serif;
-  animation: ${fadeIn} 0.4s ease;
+const LeadList = styled.div`display:flex;flex-direction:column;gap:7px`;
+const LeadCard = styled.div<{$mins:number;$assigned:boolean}>`
+  padding:12px 14px;border-radius:10px;
+  background:${p=>p.$assigned?'rgba(16,185,129,0.06)':p.$mins>=15?'rgba(239,68,68,0.1)':p.$mins>=8?'rgba(245,158,11,0.07)':'rgba(15,23,42,0.7)'};
+  border:2px solid ${p=>p.$assigned?'rgba(16,185,129,0.25)':p.$mins>=15?'rgba(239,68,68,0.4)':p.$mins>=8?'rgba(245,158,11,0.25)':'rgba(100,116,139,0.15)'};
+`;
+const LeadTop = styled.div`display:flex;align-items:center;justify-content:space-between;margin-bottom:6px`;
+const LeadName = styled.div`font-size:.78rem;font-weight:700;color:#E2E8F0`;
+const CountDown = styled.div<{$mins:number;$assigned:boolean}>`
+  font-size:.82rem;font-weight:900;font-family:'Courier New',monospace;
+  color:${p=>p.$assigned?'#10B981':p.$mins>=15?'#EF4444':p.$mins>=8?'#F59E0B':'#10B981'};
+  animation:${p=>!p.$assigned&&p.$mins>=15?blink:''} .8s ease-in-out infinite;
+`;
+const LeadMeta = styled.div`display:flex;gap:12px;flex-wrap:wrap`;
+const MetaChip = styled.div`font-size:.65rem;color:#64748B`;
+const AssignBtn = styled.button<{$assigned:boolean}>`
+  margin-top:8px;width:100%;padding:7px;border-radius:7px;border:none;
+  background:${p=>p.$assigned?'rgba(16,185,129,0.1)':'rgba(239,68,68,0.12)'};
+  color:${p=>p.$assigned?'#10B981':'#EF4444'};font-size:.72rem;font-weight:700;cursor:pointer;
+  font-family:'Inter',sans-serif;transition:all .15s;&:hover{filter:brightness(1.15)}
 `;
 
-const Head = styled.div`
-  padding: 14px 20px;
-  background: rgba(239, 68, 68, 0.05);
-  border-bottom: 1px solid rgba(239, 68, 68, 0.12);
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-`;
-
-const Title = styled.h3`
-  margin: 0;
-  color: #FFF;
-  font-size: 0.92rem;
-  font-weight: 700;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-`;
-
-const SlaBadge = styled.span`
-  font-size: 0.68rem;
-  font-weight: 800;
-  color: #EF4444;
-  background: rgba(239, 68, 68, 0.1);
-  padding: 3px 10px;
-  border-radius: 999px;
-  border: 1px solid rgba(239, 68, 68, 0.25);
-`;
-
-const Body = styled.div`
-  padding: 20px;
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-`;
-
-const LeadQueue = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-`;
-
-const LeadItem = styled.div<{ $urgent: boolean; $escalated: boolean }>`
-  padding: 12px 14px;
-  border-radius: 10px;
-  background: ${p => p.$escalated ? 'rgba(239, 68, 68, 0.12)' : p.$urgent ? 'rgba(245, 158, 11, 0.08)' : 'rgba(15, 23, 42, 0.7)'};
-  border: 1px solid ${p => p.$escalated ? 'rgba(239, 68, 68, 0.4)' : p.$urgent ? 'rgba(245, 158, 11, 0.3)' : 'rgba(100, 116, 139, 0.15)'};
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  animation: ${p => p.$urgent && !p.$escalated ? pulse : 'none'} 2s infinite;
-`;
-
-const LeadInfo = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: 3px;
-`;
-
-const LeadName = styled.div`
-  font-size: 0.85rem;
-  font-weight: 800;
-  color: #FFF;
-  display: flex;
-  align-items: center;
-  gap: 6px;
-`;
-
-const LeadMeta = styled.div`
-  font-size: 0.7rem;
-  color: #94A3B8;
-`;
-
-const TimerSection = styled.div`
-  text-align: right;
-`;
-
-const TimeRemaining = styled.div<{ $urgent: boolean; $escalated: boolean }>`
-  font-size: 1.1rem;
-  font-weight: 900;
-  color: ${p => p.$escalated ? '#EF4444' : p.$urgent ? '#F59E0B' : '#10B981'};
-`;
-
-const AssignedAgent = styled.div`
-  font-size: 0.65rem;
-  color: #64748B;
-  font-weight: 600;
-`;
-
-const ClaimBtn = styled.button`
-  padding: 6px 12px;
-  border-radius: 6px;
-  border: none;
-  background: #10B981;
-  color: #FFF;
-  font-size: 0.72rem;
-  font-weight: 700;
-  cursor: pointer;
-  margin-top: 4px;
-  &:hover { filter: brightness(1.1); }
-`;
-
-interface Lead {
-  id: string;
-  name: string;
-  inquiry: string;
-  source: string;
-  secondsRemaining: number;
-  assignedTo: string;
-  escalated: boolean;
-}
+const LEADS = [
+  {name:'Sheikh Abdullah Al Nahyan',src:'WhatsApp',budget:'AED 45M',intent:'Buy',initMins:18},
+  {name:'Sarah Thompson (UK Investor)',src:'Website Form',budget:'AED 12M',intent:'Invest',initMins:7},
+  {name:'Mr. Zhang Wei',src:'Instagram DM',budget:'AED 8M',intent:'Buy',initMins:3},
+  {name:'Rania Al Farsi',src:'WhatsApp',budget:'AED 3.5M',intent:'Rent',initMins:11},
+];
 
 export const LeadSlaEscalationTimer: FC = () => {
-  const [leads, setLeads] = useState<Lead[]>([
-    { id: '1', name: 'Khalid Al Mansoori', inquiry: 'AED 15M Penthouse Palm Jumeirah', source: 'WhatsApp Inbound', secondsRemaining: 742, assignedTo: 'Agent Sarah', escalated: false },
-    { id: '2', name: 'David Miller', inquiry: 'Downtown 2BR Investment Villa', source: 'PropertyFinder VIP', secondsRemaining: 184, assignedTo: 'Agent Tariq', escalated: false },
-    { id: '3', name: 'Olga Romanova', inquiry: 'Off-Plan Emaar Beachfront Cash Buyer', source: 'Direct Web Portal', secondsRemaining: 0, assignedTo: 'Supervisor Elena (Auto-Escalated)', escalated: true },
-  ]);
+  const [mins, setMins] = useState(LEADS.map(l=>l.initMins));
+  const [assigned, setAssigned] = useState<boolean[]>(LEADS.map(()=>false));
 
-  useEffect(() => {
-    const timer = setInterval(() => {
-      setLeads(prev => prev.map(lead => {
-        if (lead.secondsRemaining <= 0) {
-          return {
-            ...lead,
-            secondsRemaining: 0,
-            escalated: true,
-            assignedTo: lead.assignedTo.includes('Supervisor') ? lead.assignedTo : 'Supervisor Elena (Auto-Escalated)'
-          };
-        }
-        return { ...lead, secondsRemaining: lead.secondsRemaining - 1 };
-      }));
-    }, 1000);
-    return () => clearInterval(timer);
-  }, []);
+  useEffect(()=>{
+    const iv = setInterval(()=>setMins(prev=>prev.map((m,i)=>assigned[i]?m:m+0.016)),1000);
+    return ()=>clearInterval(iv);
+  },[assigned]);
 
-  const formatTimer = (secs: number) => {
-    const m = Math.floor(secs / 60);
-    const s = secs % 60;
-    return `${m}:${s < 10 ? '0' : ''}${s}`;
-  };
-
-  const handleClaim = (id: string) => {
-    setLeads(prev => prev.filter(lead => lead.id !== id));
-    alert('Lead Claimed & WhatsApp Session Opened with Lead!');
-  };
+  const escalate = (i:number) => setAssigned(prev=>prev.map((a,j)=>j===i?true:a));
 
   return (
     <Wrap data-testid="lead-sla-escalation-timer">
       <Head>
-        <Title>⏱️ 15-Minute Inbound Lead SLA & Escalation Engine</Title>
-        <SlaBadge>P0 DISPATCH</SlaBadge>
+        <Title>⏱️ 15-Min Lead SLA Escalation</Title>
+        <div style={{fontSize:'.7rem',color:'#EF4444',fontWeight:700,animation:`${blink} 2s infinite`}}>
+          🔴 LIVE
+        </div>
       </Head>
       <Body>
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '8px', textAlign: 'center' }}>
-          <div style={{ padding: '8px', background: 'rgba(15,23,42,0.7)', borderRadius: '8px', border: '1px solid rgba(100,116,139,0.2)' }}>
-            <div style={{ fontSize: '0.62rem', color: 'var(--color-94a3b8, #94A3B8)', textTransform: 'uppercase' }}>Target Response</div>
-            <div style={{ fontSize: '0.95rem', fontWeight: 800, color: 'var(--accent-green, #10B981)' }}>&lt; 5 Minutes</div>
-          </div>
-          <div style={{ padding: '8px', background: 'rgba(15,23,42,0.7)', borderRadius: '8px', border: '1px solid rgba(100,116,139,0.2)' }}>
-            <div style={{ fontSize: '0.62rem', color: 'var(--color-94a3b8, #94A3B8)', textTransform: 'uppercase' }}>Escalation Threshold</div>
-            <div style={{ fontSize: '0.95rem', fontWeight: 800, color: 'var(--accent-gold, #F59E0B)' }}>15 Minutes</div>
-          </div>
-          <div style={{ padding: '8px', background: 'rgba(15,23,42,0.7)', borderRadius: '8px', border: '1px solid rgba(100,116,139,0.2)' }}>
-            <div style={{ fontSize: '0.62rem', color: 'var(--color-94a3b8, #94A3B8)', textTransform: 'uppercase' }}>Auto Re-Route</div>
-            <div style={{ fontSize: '0.95rem', fontWeight: 800, color: 'var(--accent-red, #EF4444)' }}>Supervisor Pool</div>
-          </div>
+        <div style={{padding:'10px 14px',borderRadius:'9px',background:'rgba(239,68,68,0.07)',border:'1px solid rgba(239,68,68,0.2)',fontSize:'.72rem',color:'#94A3B8'}}>
+          ⚠️ Dubai RERA Best Practice: All inbound leads must receive a first response within <strong style={{color:'#EF4444'}}>15 minutes</strong>. Breach triggers auto-reassignment.
         </div>
 
-        <LeadQueue>
-          {leads.map(lead => {
-            const isUrgent = lead.secondsRemaining < 300 && !lead.escalated;
-            return (
-              <LeadItem key={lead.id} $urgent={isUrgent} $escalated={lead.escalated}>
-                <LeadInfo>
-                  <LeadName>
-                    {lead.name}
-                    <span style={{ fontSize: '0.65rem', padding: '2px 6px', borderRadius: '4px', background: 'rgba(239,68,68,0.15)', color: 'var(--accent-red, #EF4444)' }}>
-                      {lead.source}
-                    </span>
-                  </LeadName>
-                  <LeadMeta>{lead.inquiry}</LeadMeta>
-                  <AssignedAgent>👤 Assigned: {lead.assignedTo}</AssignedAgent>
-                </LeadInfo>
-                <TimerSection>
-                  <TimeRemaining $urgent={isUrgent} $escalated={lead.escalated}>
-                    {lead.escalated ? '🚨 ESCALATED' : `⏱ ${formatTimer(lead.secondsRemaining)}`}
-                  </TimeRemaining>
-                  <ClaimBtn onClick={() => handleClaim(lead.id)}>✓ Claim Lead</ClaimBtn>
-                </TimerSection>
-              </LeadItem>
-            );
-          })}
-        </LeadQueue>
+        <LeadList>
+          {LEADS.map((l,i)=>(
+            <LeadCard key={i} $mins={mins[i]} $assigned={assigned[i]}>
+              <LeadTop>
+                <LeadName>{assigned[i]?'✅ ':mins[i]>=15?'🔴 ':'⏱ '}{l.name}</LeadName>
+                <CountDown $mins={mins[i]} $assigned={assigned[i]}>
+                  {assigned[i]?'HANDLED':`${Math.floor(mins[i])}m ${Math.floor((mins[i]%1)*60).toString().padStart(2,'0')}s`}
+                </CountDown>
+              </LeadTop>
+              <LeadMeta>
+                <MetaChip>📱 {l.src}</MetaChip>
+                <MetaChip>💰 {l.budget}</MetaChip>
+                <MetaChip>🎯 {l.intent}</MetaChip>
+              </LeadMeta>
+              {!assigned[i] && mins[i]>=15 && (
+                <AssignBtn $assigned={false} onClick={()=>escalate(i)}>
+                  🔴 SLA BREACHED — Auto-Escalate to Supervisor
+                </AssignBtn>
+              )}
+              {!assigned[i] && mins[i]<15 && (
+                <AssignBtn $assigned={false} onClick={()=>escalate(i)} style={{background:'rgba(16,185,129,0.08)',color:'#10B981'}}>
+                  ✅ Mark as Contacted
+                </AssignBtn>
+              )}
+              {assigned[i] && <AssignBtn $assigned={true}>✅ Lead Handled</AssignBtn>}
+            </LeadCard>
+          ))}
+        </LeadList>
       </Body>
     </Wrap>
   );
 };
-
 export default LeadSlaEscalationTimer;

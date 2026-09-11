@@ -1,0 +1,1 @@
+{"title":"Finance RBAC","subtitle":"View-Only vs Edit vs Approve per Role Matrix","roles":["Viewer","Editor","Approver","Admin"],"permissions":["View Invoices","Create Invoices","Edit Invoices","Approve Invoices","View Reports","Export Reports","Manage Budgets","Configure VAT"],"granted":"Granted","denied":"Denied"}

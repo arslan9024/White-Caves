@@ -1,247 +1,97 @@
-/**
- * CryptoPaymentSimulator — Wave 49 GOAL-034
- * Crypto real estate payment gateway simulation with instant FX rate locks
- * White Caves Real Estate LLC — VIP Concierge Suite
- */
 import React, { FC, useState, useEffect } from 'react';
 import styled, { keyframes } from 'styled-components';
 
 const fadeIn = keyframes`from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}`;
-const pulse = keyframes`0%, 100% { opacity: 1; } 50% { opacity: 0.4; }`;
+const shimmer = keyframes`0%{background-position:-200% 0}100%{background-position:200% 0}`;
+const Wrap = styled.div`width:100%;background:linear-gradient(135deg,#0A0614,#0F172A);border:2px solid rgba(245,158,11,0.3);border-radius:18px;overflow:hidden;font-family:'Inter',sans-serif;animation:${fadeIn} .4s ease`;
+const Head = styled.div`padding:14px 20px;background:rgba(245,158,11,0.06);border-bottom:1px solid rgba(245,158,11,0.15);display:flex;align-items:center;justify-content:space-between`;
+const Title = styled.h3`margin:0;color:#FFF;font-size:.9rem;font-weight:700`;
+const Body = styled.div`padding:20px;display:flex;flex-direction:column;gap:14px`;
 
-const Wrap = styled.div`
-  width: 100%;
-  background: linear-gradient(135deg, #0A0614 0%, #0F172A 100%);
-  border: 2px solid rgba(139, 92, 246, 0.35);
-  border-radius: 18px;
-  overflow: hidden;
-  font-family: 'Inter', sans-serif;
-  animation: ${fadeIn} 0.4s ease;
+const CryptoGrid = styled.div`display:grid;grid-template-columns:repeat(3,1fr);gap:8px`;
+const CryptoCard = styled.div<{$sel:boolean}>`
+  padding:12px 8px;border-radius:12px;text-align:center;cursor:pointer;
+  background:${p=>p.$sel?'rgba(245,158,11,0.1)':'rgba(15,23,42,0.7)'};
+  border:2px solid ${p=>p.$sel?'rgba(245,158,11,0.5)':'rgba(100,116,139,0.2)'};
+  transition:all .15s;
+`;
+const CoinIcon = styled.div`font-size:1.5rem;margin-bottom:4px`;
+const CoinName = styled.div`font-size:.7rem;font-weight:800;color:#E2E8F0`;
+const CoinRate = styled.div<{$live:boolean}>`
+  font-size:.65rem;color:${p=>p.$live?'#10B981':'#64748B'};font-weight:700;margin-top:2px;
+  background:${p=>p.$live?'linear-gradient(90deg,#10B981,#34D399,#10B981)':''};
+  background-size:200% 100%;
+  animation:${p=>p.$live?shimmer:''} 2s linear infinite;
+  -webkit-background-clip:${p=>p.$live?'text':''};
+  -webkit-text-fill-color:${p=>p.$live?'transparent':''};
 `;
 
-const Head = styled.div`
-  padding: 14px 20px;
-  background: rgba(139, 92, 246, 0.08);
-  border-bottom: 1px solid rgba(139, 92, 246, 0.18);
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
+const ConvCard = styled.div`padding:18px;border-radius:14px;background:rgba(15,23,42,0.8);border:1px solid rgba(245,158,11,0.2)`;
+const ConvRow = styled.div`display:flex;justify-content:space-between;align-items:center;padding:6px 0;border-bottom:1px solid rgba(100,116,139,0.1)`;
+const CL = styled.div`font-size:.72rem;color:#64748B`;
+const CV = styled.div`font-size:.78rem;font-weight:800;color:#F59E0B`;
+
+const LockBtn = styled.button<{$locked:boolean}>`
+  width:100%;padding:12px;border-radius:10px;border:none;
+  background:${p=>p.$locked?'rgba(16,185,129,0.1)':'linear-gradient(90deg,#D97706,#F59E0B)'};
+  color:${p=>p.$locked?'#10B981':'#FFF'};font-size:.85rem;font-weight:800;cursor:pointer;transition:all .2s;
+  &:hover{filter:brightness(1.1)}
 `;
 
-const Title = styled.h3`
-  margin: 0;
-  color: #FFF;
-  font-size: 0.92rem;
-  font-weight: 700;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-`;
-
-const VipBadge = styled.span`
-  font-size: 0.68rem;
-  font-weight: 800;
-  color: #A78BFA;
-  background: rgba(139, 92, 246, 0.12);
-  padding: 3px 10px;
-  border-radius: 999px;
-  border: 1px solid rgba(139, 92, 246, 0.3);
-`;
-
-const Body = styled.div`
-  padding: 20px;
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-`;
-
-const AssetSelector = styled.div`
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 8px;
-`;
-
-const AssetCard = styled.button<{ $selected: boolean }>`
-  padding: 10px;
-  border-radius: 10px;
-  border: 1.5px solid ${p => p.$selected ? '#8B5CF6' : 'rgba(100, 116, 139, 0.2)'};
-  background: ${p => p.$selected ? 'rgba(139, 92, 246, 0.15)' : 'rgba(15, 23, 42, 0.7)'};
-  color: ${p => p.$selected ? '#FFF' : '#94A3B8'};
-  cursor: pointer;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 4px;
-  transition: all 0.2s ease;
-  &:hover { border-color: #8B5CF6; }
-`;
-
-const RateLockBanner = styled.div`
-  padding: 14px;
-  border-radius: 10px;
-  background: rgba(139, 92, 246, 0.08);
-  border: 1px solid rgba(139, 92, 246, 0.25);
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-`;
-
-const RateLockText = styled.div`
-  font-size: 0.75rem;
-  color: #CBD5E1;
-`;
-
-const TimerText = styled.div`
-  font-size: 0.85rem;
-  font-weight: 800;
-  color: #A78BFA;
-  display: flex;
-  align-items: center;
-  gap: 6px;
-`;
-
-const ConversionGrid = styled.div`
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 12px;
-`;
-
-const FieldBox = styled.div`
-  padding: 14px;
-  border-radius: 10px;
-  background: rgba(15, 23, 42, 0.8);
-  border: 1px solid rgba(100, 116, 139, 0.2);
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-`;
-
-const FLabel = styled.div`
-  font-size: 0.65rem;
-  color: #94A3B8;
-  text-transform: uppercase;
-  font-weight: 700;
-`;
-
-const FVal = styled.div`
-  font-size: 1.2rem;
-  font-weight: 900;
-  color: #FFF;
-`;
-
-const PayBtn = styled.button`
-  width: 100%;
-  padding: 14px;
-  border-radius: 12px;
-  border: none;
-  background: linear-gradient(90deg, #7C3AED, #8B5CF6);
-  color: #FFF;
-  font-size: 0.88rem;
-  font-weight: 800;
-  cursor: pointer;
-  transition: all 0.2s ease;
-  &:hover { filter: brightness(1.1); transform: translateY(-1px); }
-`;
-
-const CRYPTO_RATES: Record<string, { rateUsd: number; symbol: string; icon: string }> = {
-  USDT: { rateUsd: 1.00, symbol: '₮', icon: '💵' },
-  USDC: { rateUsd: 1.00, symbol: '$', icon: '🔵' },
-  BTC: { rateUsd: 64200, symbol: '₿', icon: '🪙' },
-  ETH: { rateUsd: 3450, symbol: 'Ξ', icon: '🔷' },
-};
+const COINS = [
+  {id:'btc',name:'Bitcoin',icon:'₿',rate:248420},
+  {id:'eth',name:'Ethereum',icon:'Ξ',rate:13420},
+  {id:'usdt',name:'USDT',icon:'₮',rate:3.67},
+  {id:'usdc',name:'USDC',icon:'$',rate:3.67},
+  {id:'ada',name:'Cardano',icon:'₳',rate:2.18},
+  {id:'bnb',name:'BNB',icon:'🔶',rate:1248},
+];
 
 export const CryptoPaymentSimulator: FC = () => {
-  const [selectedAsset, setSelectedAsset] = useState<string>('USDT');
-  const [propertyPriceAed, setPropertyPriceAed] = useState(12500000); // 12.5M AED Luxury Villa
-  const [timeLeft, setTimeLeft] = useState(900); // 15 mins rate lock (in seconds)
-  const [paid, setPaid] = useState(false);
+  const [coin, setCoin] = useState('btc');
+  const [aed, setAed] = useState(3500000);
+  const [locked, setLocked] = useState(false);
+  const [lockTimer, setLockTimer] = useState(0);
+
+  const c = COINS.find(x=>x.id===coin)!;
+  const cryptoAmt = aed / c.rate;
 
   useEffect(() => {
-    const timer = setInterval(() => {
-      setTimeLeft(prev => (prev > 0 ? prev - 1 : 900));
-    }, 1000);
-    return () => clearInterval(timer);
-  }, []);
-
-  const formatTime = (secs: number) => {
-    const m = Math.floor(secs / 60);
-    const s = secs % 60;
-    return `${m}:${s < 10 ? '0' : ''}${s}`;
-  };
-
-  const usdAmount = propertyPriceAed / 3.6725;
-  const assetConfig = CRYPTO_RATES[selectedAsset];
-  const cryptoAmount = usdAmount / assetConfig.rateUsd;
+    if(!locked) return;
+    setLockTimer(300);
+    const iv = setInterval(()=>setLockTimer(prev=>{if(prev<=0){clearInterval(iv);setLocked(false);return 0;}return prev-1;}),1000);
+    return ()=>clearInterval(iv);
+  },[locked]);
 
   return (
     <Wrap data-testid="crypto-payment-simulator">
       <Head>
-        <Title>⚡ VIP Crypto Real Estate Gateway</Title>
-        <VipBadge>ESCROW SETTLEMENT</VipBadge>
+        <Title>₿ Crypto Payment Gateway</Title>
+        <div style={{fontSize:'.7rem',color:'#F59E0B',fontWeight:700}}>FX Rate Lock</div>
       </Head>
       <Body>
-        <AssetSelector>
-          {Object.entries(CRYPTO_RATES).map(([key, item]) => (
-            <AssetCard 
-              key={key}
-              $selected={selectedAsset === key}
-              onClick={() => { setSelectedAsset(key); setPaid(false); }}
-            >
-              <span style={{ fontSize: '1.2rem' }}>{item.icon}</span>
-              <span style={{ fontWeight: 800, fontSize: '0.78rem' }}>{key}</span>
-              <span style={{ fontSize: '0.62rem', color: 'var(--text-secondary, #64748B)' }}>${item.rateUsd.toLocaleString()}</span>
-            </AssetCard>
+        <CryptoGrid>
+          {COINS.map(co=>(
+            <CryptoCard key={co.id} $sel={coin===co.id} onClick={()=>{setCoin(co.id);setLocked(false)}}>
+              <CoinIcon>{co.icon}</CoinIcon>
+              <CoinName>{co.name}</CoinName>
+              <CoinRate $live={!locked}>AED {co.rate.toLocaleString()}</CoinRate>
+            </CryptoCard>
           ))}
-        </AssetSelector>
+        </CryptoGrid>
 
-        <RateLockBanner>
-          <RateLockText>
-            🔒 Guaranteed OTC Instant Exchange Rate Lock
-          </RateLockText>
-          <TimerText>
-            <span>⏱ {formatTime(timeLeft)}</span>
-          </TimerText>
-        </RateLockBanner>
+        <ConvCard>
+          <ConvRow><CL>Property Value</CL><CV>AED {aed.toLocaleString()}</CV></ConvRow>
+          <ConvRow><CL>1 {c.name} =</CL><CV>AED {c.rate.toLocaleString()}</CV></ConvRow>
+          <ConvRow><CL>Amount Due</CL><CV>{cryptoAmt.toFixed(8)} {c.name}</CV></ConvRow>
+          {locked && <ConvRow><CL>Rate Lock Expires</CL><CV style={{color:'#10B981'}}>⏱ {Math.floor(lockTimer/60)}:{String(lockTimer%60).padStart(2,'0')}</CV></ConvRow>}
+        </ConvCard>
 
-        <ConversionGrid>
-          <FieldBox>
-            <FLabel>Purchase Price (AED)</FLabel>
-            <FVal>AED {(propertyPriceAed / 1000000).toFixed(2)}M</FVal>
-            <div style={{ fontSize: '0.68rem', color: 'var(--text-secondary, #64748B)' }}>≈ ${usdAmount.toLocaleString(undefined, { maximumFractionDigits: 0 })} USD</div>
-          </FieldBox>
-          <FieldBox>
-            <FLabel>Payable in {selectedAsset}</FLabel>
-            <FVal style={{ color: 'var(--color-a78bfa, #A78BFA)' }}>
-              {selectedAsset === 'BTC' || selectedAsset === 'ETH' 
-                ? cryptoAmount.toFixed(4) 
-                : cryptoAmount.toLocaleString(undefined, { maximumFractionDigits: 0 })} {selectedAsset}
-            </FVal>
-            <div style={{ fontSize: '0.68rem', color: 'var(--accent-green, #10B981)' }}>0.00% Slippage Protected</div>
-          </FieldBox>
-        </ConversionGrid>
-
-        {paid ? (
-          <div style={{ padding: '16px', borderRadius: '12px', background: 'rgba(16, 185, 129, 0.08)', border: '1px solid rgba(16, 185, 129, 0.3)', textAlign: 'center' }}>
-            <div style={{ fontSize: '1.2rem', marginBottom: '4px' }}>✅</div>
-            <div style={{ fontSize: '0.9rem', fontWeight: 800, color: 'var(--accent-green, #10B981)' }}>
-              Crypto Escrow Deposit Confirmed!
-            </div>
-            <div style={{ fontSize: '0.72rem', color: 'var(--text-secondary, #CBD5E1)', marginTop: '4px' }}>
-              Transaction Hash: 0x8f9c...4a2b | Direct Settlement into DLD Escrow Vault
-            </div>
-          </div>
-        ) : (
-          <PayBtn onClick={() => setPaid(true)}>
-            💳 Authorize {selectedAsset} Smart Escrow Payment
-          </PayBtn>
-        )}
-
-        <div style={{ fontSize: '0.68rem', color: 'var(--text-secondary, #64748B)', textAlign: 'center', lineHeight: '1.4' }}>
-          Regulated under VARA (Virtual Assets Regulatory Authority) Dubai & UAE Central Bank Compliance Directives.
-        </div>
+        <LockBtn $locked={locked} onClick={()=>setLocked(true)}>
+          {locked ? `🔒 Rate Locked — ${Math.floor(lockTimer/60)}:${String(lockTimer%60).padStart(2,'0')} remaining` : '⚡ Lock FX Rate (5 min window)'}
+        </LockBtn>
       </Body>
     </Wrap>
   );
 };
-
 export default CryptoPaymentSimulator;

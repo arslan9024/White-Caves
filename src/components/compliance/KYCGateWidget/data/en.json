@@ -1,0 +1,16 @@
+{
+  "title": "KYC Identity Gate",
+  "subtitle": "Mandatory ID and Source of Funds Verification",
+  "emirates_id_scan": "Emirates ID (OCR Scan)",
+  "passport_scan": "Passport Verification",
+  "source_of_funds": "Source of Funds Declaration",
+  "upload": "Upload Document",
+  "scanning": "Scanning via OCR...",
+  "verifying": "Verifying...",
+  "verified": "Verified",
+  "scan_now": "Scan & Verify",
+  "submit_kyc": "Submit KYC Dossier",
+  "submitting": "Submitting...",
+  "success": "KYC Dossier Submitted & Approved",
+  "error_doc_missing": "Please upload all required documents."
+}

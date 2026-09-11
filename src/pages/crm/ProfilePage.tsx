@@ -11,6 +11,7 @@ import { useLanguage, type LanguageType } from '../../context/LanguageContext';
 import { useGlobalCurrency, type CurrencyCode } from '../../context/CurrencyContext';
 import { useUserRole, ROLE_LABELS, type UserRole } from '../../context/UserRoleContext';
 import { safeStorage } from '../../utils/safeStorage';
+import { TrainingTrackerWidget } from '../../components/compliance/TrainingTrackerWidget/TrainingTrackerWidget';
 
 const ProfileWrapper = styled.div`
   max-width: 1400px;
@@ -771,6 +772,8 @@ export const ProfilePage: FC = () => {
                     </div>
                   </div>
                 </div>
+                
+                <TrainingTrackerWidget />
               </Card>
             )}
 

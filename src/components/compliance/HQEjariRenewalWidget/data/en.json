@@ -1,0 +1,23 @@
+{
+  "title": "HQ Ejari Registration",
+  "subtitle": "Track DLD Ejari Renewal for White Caves HQ",
+  "ejari_no": "Ejari Contract No.",
+  "location": "Location",
+  "landlord": "Landlord/Management",
+  "issue_date": "Contract Start",
+  "expiry_date": "Contract End",
+  "days_remaining": "Days to Renewal",
+  "status_active": "Active",
+  "status_expiring": "Renewal Due",
+  "status_expired": "Expired",
+  "dewa_premise": "DEWA Premise No.",
+  "makani_no": "Makani No.",
+  "renew_btn": "Proceed to Dubai REST Renewal",
+  "upload_btn": "Upload New Contract",
+  "alert_warning": "HQ Ejari expires in {days} days. Trade License renewal is blocked until Ejari is updated.",
+  "doc_checklist": "Required Documents",
+  "doc_trade_license": "Company Trade License",
+  "doc_emirates_id": "Manager Emirates ID",
+  "doc_title_deed": "Title Deed Copy",
+  "doc_dewa": "Recent DEWA Bill"
+}
