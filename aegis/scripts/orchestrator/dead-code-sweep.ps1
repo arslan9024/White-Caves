@@ -1,4 +1,4 @@
-# scripts/orchestrator/dead-code-sweep.ps1
+﻿# scripts/orchestrator/dead-code-sweep.ps1
 # AEGIS Technical Debt Removal (Phase 3 SDLC)
 # Scans git diffs or specific paths to identify newly added functions/classes lacking references.
 

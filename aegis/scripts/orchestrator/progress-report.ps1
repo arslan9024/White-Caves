@@ -1,4 +1,4 @@
-# progress-report.ps1 -- @Margaret daily progress report generator
+﻿# progress-report.ps1 -- @Margaret daily progress report generator
 # Reads queue state + gate-check to produce a markdown summary.
 # Appends one row to DAILY_MILESTONE_TRACKER.md (Orchestrator Sync Log table)
 # and prints a full @Margaret briefing to the terminal.
@@ -18,7 +18,7 @@ $ErrorActionPreference = "Stop"
 $root       = Resolve-Path $WorkspaceRoot
 $queueFile  = Join-Path $root "logs\orchestrator\task-queue.json"
 $trackerFile= Join-Path $root "DAILY_MILESTONE_TRACKER.md"
-$gateScript = Join-Path $root "scripts\orchestrator\gate-check.ps1"
+$gateScript = Join-Path $root "aegis\orchestrator\gate-check.ps1"
 
 # ------------------------------------------------------------------
 # 1. Read queue
@@ -88,7 +88,7 @@ $doneTasks = @($tasks | Where-Object { $_.status -eq "done" })
 # ------------------------------------------------------------------
 # 4. Load prompts for ready task snippets
 # ------------------------------------------------------------------
-$promptsFile = Join-Path $root "scripts\orchestrator\prompts.json"
+$promptsFile = Join-Path $root "aegis\orchestrator\prompts.json"
 $prompts = @{}
 if (Test-Path $promptsFile) {
   try {

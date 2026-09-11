@@ -1,4 +1,4 @@
-# loop-rollback.ps1 -- Restore latest or named loop snapshot stash
+﻿# loop-rollback.ps1 -- Restore latest or named loop snapshot stash
 
 param(
   [string]$WorkspaceRoot = ".",

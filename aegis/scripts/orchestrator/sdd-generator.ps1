@@ -12,7 +12,7 @@ $waveLabel = "WAVE_$('{0:D2}' -f $WaveNumber)"
 $outFile   = Join-Path $wavesDir "$waveLabel`_SDD.md"
 
 # Load policy-defined approval phrase (fallback to known default)
-$_policyFile = Join-Path $WorkspaceRoot "scripts\orchestrator\policy.json"
+$_policyFile = Join-Path $WorkspaceRoot "aegis\orchestrator\policy.json"
 $approvalPhrase  = "@Ada - Context Ready (90% Readiness) - High-Fidelity Coding Phase Approved"
 $readinessPct    = 60
 if (Test-Path $_policyFile) {

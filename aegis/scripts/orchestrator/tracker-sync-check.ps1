@@ -51,7 +51,7 @@ $warnings = [System.Collections.Generic.List[string]]::new()
 $passes = [System.Collections.Generic.List[string]]::new()
 
 # Load policy to drive approval phrase check dynamically
-$policyFile = Join-Path $root "scripts\orchestrator\policy.json"
+$policyFile = Join-Path $root "aegis\orchestrator\policy.json"
 $approvalPhrase = "@Ada - Context Ready (90% Readiness) - High-Fidelity Coding Phase Approved"
 if (Test-Path $policyFile) {
   try {

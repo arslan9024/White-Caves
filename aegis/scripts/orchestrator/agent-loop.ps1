@@ -1,4 +1,4 @@
-# agent-loop.ps1 -- Interactive 60-minute free-agent rotation runner
+﻿# agent-loop.ps1 -- Interactive 60-minute free-agent rotation runner
 #
 # Auto-detects the active agent slot from the current minute, shows their
 # READY task + prompt, opens the free tool, waits for paste confirmation,
@@ -32,15 +32,15 @@ param(
 
 $w       = 72
 $root    = Resolve-Path $WorkspaceRoot
-$scriptsPrimary = Join-Path $root "scripts\orchestrator"
-$scriptsFallback = Join-Path $root "aegis\scripts\orchestrator"
+$scriptsPrimary = Join-Path $root "aegis\orchestrator"
+$scriptsFallback = Join-Path $root "aegis\aegis\orchestrator"
 $scripts = $scriptsPrimary
 if (-not (Test-Path (Join-Path $scriptsPrimary "complete-and-advance.ps1")) -and (Test-Path (Join-Path $scriptsFallback "complete-and-advance.ps1"))) {
   $scripts = $scriptsFallback
 }
 $qFile   = Join-Path $root "logs\orchestrator\task-queue.json"
-$pFile   = Join-Path $root "scripts\orchestrator\prompts.json"
-$policyFile = Join-Path $root "scripts\orchestrator\policy.json"
+$pFile   = Join-Path $root "aegis\orchestrator\prompts.json"
+$policyFile = Join-Path $root "aegis\orchestrator\policy.json"
 $aegisScript = Join-Path $scripts "aegis-regenerate.ps1"
 $fastForwardScript = Join-Path $scripts "fast-forward.ps1"
 $ackTaskScript = Join-Path $scripts "ack-task.ps1"

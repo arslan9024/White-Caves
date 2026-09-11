@@ -1,4 +1,4 @@
-# readiness-target90.ps1 -- Evaluate documentation readiness against 90% target
+﻿# readiness-target90.ps1 -- Evaluate documentation readiness against 90% target
 # Usage:
 #   npm run orchestrator:readiness:target90
 #   npm run orchestrator:readiness:target90:brief
@@ -12,7 +12,7 @@ param(
 
 $ErrorActionPreference = "Continue"
 $root = Resolve-Path $WorkspaceRoot
-$policyFile = Join-Path $root "scripts\orchestrator\policy.json"
+$policyFile = Join-Path $root "aegis\orchestrator\policy.json"
 $w = 72
 
 # Canonical gate targets (same family as verify-prompts)

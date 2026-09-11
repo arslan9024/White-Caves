@@ -1,4 +1,4 @@
-param(
+﻿param(
   [string]$SourceBranch,
   [string]$TargetBranch = "develop",
   [switch]$RunChecks,

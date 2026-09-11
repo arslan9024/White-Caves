@@ -1,6 +1,7 @@
 import React, { FC, lazy, Suspense, useEffect, useMemo, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
+import { motion } from 'framer-motion';
 import { setProperties, type Property } from '../store/propertySlice';
 import { HOME_PROPERTIES } from '../data/homeProperties';
 import {
@@ -168,6 +169,7 @@ const HomePage: FC = () => {
     'White Caves Real Estate',
     'Dubai villas',
     'RERA licensed',
+    'property investment',
   ];
 
   const handlePropertyClick = (propertyId: number): void => {
@@ -231,7 +233,7 @@ const HomePage: FC = () => {
         jsonLd={homepageJsonLd}
       />
       <StructuredData id="home-jsonld" data={structuredDataPayload} />
-      <div className="home-page">
+      <div className="home-page" role="main">
         {homepageError && !isHomepageLoading ? (
           <div role="status" aria-live="polite" className="homepage-live-data-alert">
             <span>Live market data is temporarily unavailable. Showing trusted fallback data.</span>
@@ -256,11 +258,19 @@ const HomePage: FC = () => {
 
         <section className="home-page__trust-strip" aria-label="Market trust highlights">
           <div className="home-page__trust-grid">
-            {trustHighlights.map(item => (
-              <article key={item.label} className="home-page__trust-card">
-                <span className="home-page__trust-label">{item.label}</span>
-                <span className="home-page__trust-value">{item.value}</span>
-              </article>
+            {trustHighlights.map((item, index) => (
+              <motion.article 
+                key={item.label} 
+                className="home-page__trust-card"
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.5, delay: index * 0.1 }}
+                whileHover={{ scale: 1.05 }}
+              >
+                <span className="home-page__trust-label" aria-label={item.label}>{item.label}</span>
+                <span className="home-page__trust-value" aria-hidden="true">{item.value}</span>
+              </motion.article>
             ))}
           </div>
         </section>
@@ -316,8 +326,9 @@ const HomePage: FC = () => {
               position: 'fixed',
               inset: 0,
               zIndex: 9999,
-              background: 'rgba(15, 23, 42, 0.85)',
-              backdropFilter: 'blur(16px)',
+              background: 'rgba(15, 23, 42, 0.65)',
+              backdropFilter: 'blur(24px)',
+              WebkitBackdropFilter: 'blur(24px)',
               display: 'flex',
               alignItems: 'flex-start',
               justifyContent: 'center',
@@ -332,10 +343,12 @@ const HomePage: FC = () => {
               style={{
                 width: '100%',
                 maxWidth: '680px',
-                background: '#0F172A',
+                background: 'rgba(15, 23, 42, 0.8)',
                 border: '1px solid rgba(212, 175, 55, 0.3)',
                 borderRadius: '24px',
                 padding: '1.75rem',
+                backdropFilter: 'blur(16px)',
+                WebkitBackdropFilter: 'blur(16px)',
                 boxShadow: '0 25px 60px rgba(0,0,0,0.5), 0 0 40px rgba(6, 182, 212, 0.15)',
                 color: '#F8FAFC',
               }}

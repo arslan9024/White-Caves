@@ -50,15 +50,23 @@ const SidebarHeader = styled.div`
   margin-bottom: ${spacing[4]};
   border-bottom: 1px solid var(--border-color, rgba(239, 68, 68, 0.2));
 
-  img {
-    width: 56px;
-    height: 56px;
-    border-radius: 50%;
-    border: 2px solid #ef4444;
-    box-shadow: 0 0 15px rgba(239, 68, 68, 0.3);
-    object-fit: cover;
-  }
-`;
+    img {
+      width: 56px;
+      height: 56px;
+      border-radius: 50%;
+      border: 2px solid #ef4444;
+      box-shadow: 0 0 15px rgba(239, 68, 68, 0.3);
+      object-fit: cover;
+      transition: all 0.3s ease;
+      cursor: pointer;
+    }
+    
+    img:hover {
+      opacity: 0.8;
+      box-shadow: 0 0 20px rgba(239, 68, 68, 0.6);
+      transform: scale(1.05);
+    }
+  `;
 
 const SidebarUserInfo = styled.div`
   overflow: hidden;
@@ -195,24 +203,31 @@ const FormGroup = styled.div`
     letter-spacing: 0.02em;
   }
 
-  input,
-  select {
-    width: 100%;
-    padding: 12px 16px;
-    border: 1px solid var(--border-input, rgba(255, 255, 255, 0.15));
-    border-radius: ${borderRadius.lg};
-    background: var(--bg-input, rgba(15, 23, 42, 0.8));
-    color: var(--text-primary, #f8fafc);
-    font-size: 0.95rem;
-    transition: all 0.2s ease;
-
-    &:focus {
-      outline: none;
-      border-color: #ef4444;
-      box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.25);
+    input,
+    select {
+      width: 100%;
+      padding: 12px 16px;
+      border: 1px solid var(--border-input, rgba(255, 255, 255, 0.15));
+      border-radius: ${borderRadius.lg};
+      background: var(--bg-input, rgba(15, 23, 42, 0.8));
+      color: var(--text-primary, #f8fafc);
+      font-size: 0.95rem;
+      transition: all 0.2s ease;
+  
+      &:focus {
+        outline: none;
+        border-color: #ef4444;
+        box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.25);
+      }
+      
+      &:disabled {
+        background: rgba(15, 23, 42, 0.4);
+        color: rgba(248, 250, 252, 0.6);
+        cursor: not-allowed;
+        border-color: rgba(255, 255, 255, 0.05);
+      }
     }
-  }
-`;
+  `;
 
 const PreferencesGrid = styled.div`
   display: grid;
@@ -292,15 +307,17 @@ const SaveButton = styled.button`
   box-shadow: 0 4px 16px rgba(239, 68, 68, 0.35);
   transition: all 0.25s ease;
 
-  &:hover {
+  &:hover:not(:disabled) {
     background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%);
     transform: translateY(-2px);
     box-shadow: 0 8px 24px rgba(239, 68, 68, 0.45);
   }
 
   &:disabled {
-    opacity: 0.6;
+    opacity: 0.7;
     cursor: not-allowed;
+    background: linear-gradient(135deg, #9ca3af 0%, #6b7280 100%);
+    box-shadow: none;
   }
 `;
 
@@ -321,7 +338,13 @@ export const ProfilePage: FC = () => {
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState<
     'profile' | 'preferences' | 'rera' | 'goals' | 'security' | 'sessions' | 'shortcuts'
-  >('profile');
+  >(() => {
+    return (sessionStorage.getItem('profileActiveTab') as any) || 'profile';
+  });
+
+  useEffect(() => {
+    sessionStorage.setItem('profileActiveTab', activeTab);
+  }, [activeTab]);
 
   const {
     user,
@@ -353,13 +376,17 @@ export const ProfilePage: FC = () => {
   const [notifyEmail, setNotifyEmail] = useState<boolean>(true);
   const [notifySms, setNotifySms] = useState<boolean>(false);
 
-  const handleSavePreferences = () => {
+  const [saveSuccess, setSaveSuccess] = useState(false);
+
+  const handleSavePreferences = async () => {
     safeStorage.set('whitecaves_unit', measurementUnit);
     safeStorage.set(
       'whitecaves_notifications',
       JSON.stringify({ notifyWhatsApp, notifyEmail, notifySms })
     );
-    handleSaveProfile();
+    await handleSaveProfile();
+    setSaveSuccess(true);
+    setTimeout(() => setSaveSuccess(false), 3000);
   };
 
   const avatarSrc =
@@ -440,14 +467,18 @@ export const ProfilePage: FC = () => {
                     onChange={e => setProfileName(e.target.value)}
                   />
                 </FormGroup>
-                <FormGroup>
+                <FormGroup style={{ position: 'relative' }}>
                   <label>Direct Contact Line</label>
                   <input
                     type="text"
                     placeholder="+971 50 XXX XXXX"
                     value={profilePhone}
                     onChange={e => setProfilePhone(e.target.value)}
+                    style={{ borderColor: profilePhone && !/^\+971\s?\d{2}\s?\d{3}\s?\d{4}$/.test(profilePhone) ? '#EF4444' : '' }}
                   />
+                  {profilePhone && /^\+971\s?\d{2}\s?\d{3}\s?\d{4}$/.test(profilePhone) && (
+                    <span style={{ position: 'absolute', right: '16px', top: '38px', color: '#10B981' }}>✓</span>
+                  )}
                 </FormGroup>
                 <FormGroup>
                   <label>Profile Avatar Image URL</label>
@@ -458,8 +489,17 @@ export const ProfilePage: FC = () => {
                     onChange={e => setProfilePhotoUrl(e.target.value)}
                   />
                 </FormGroup>
-                <SaveButton onClick={handleSaveProfile} disabled={isSaving}>
-                  {isSaving ? 'Synchronizing Profile...' : 'Save Profile Changes'}
+                <SaveButton onClick={handleSavePreferences} disabled={isSaving}>
+                  {isSaving ? (
+                    <span style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}>
+                      <div style={{ width: '16px', height: '16px', border: '2px solid white', borderTopColor: 'transparent', borderRadius: '50%', animation: 'spin 1s linear infinite' }} />
+                      Synchronizing Profile...
+                    </span>
+                  ) : saveSuccess ? (
+                    '✓ Saved Successfully'
+                  ) : (
+                    'Save Profile Changes'
+                  )}
                 </SaveButton>
               </Card>
             )}

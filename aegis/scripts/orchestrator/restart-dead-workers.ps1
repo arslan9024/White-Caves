@@ -1,4 +1,4 @@
-# restart-dead-workers.ps1 -- reads PID file, checks each process, respawns dead ones
+﻿# restart-dead-workers.ps1 -- reads PID file, checks each process, respawns dead ones
 param(
   [string]$WorkspaceRoot    = ".",
   [int]$PollSeconds         = 30,

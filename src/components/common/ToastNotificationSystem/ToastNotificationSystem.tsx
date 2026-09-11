@@ -78,19 +78,30 @@ export interface ToastMessage {
 }
 
 export const ToastNotificationSystem: FC = () => {
-  const [toasts, setToasts] = useState<ToastMessage[]>([
-    { id: '1', type: 'success', title: 'Form B MOU Signed', description: 'Digital cryptographic seal verified via DLD Gateway.' },
-    { id: '2', type: 'info', title: 'New VIP Inbound Inquiry', description: 'Dr. Tariq Al Qasimi submitted an AED 65M inquiry.' },
-  ]);
+  const [toasts, setToasts] = useState<ToastMessage[]>([]);
+
+  React.useEffect(() => {
+    const handleAddToast = (event: Event) => {
+      const customEvent = event as CustomEvent<Omit<ToastMessage, 'id'>>;
+      const newToast = { id: Math.random().toString(36).substring(7), ...customEvent.detail };
+      setToasts(prev => [...prev, newToast]);
+      setTimeout(() => {
+        setToasts(prev => prev.filter(t => t.id !== newToast.id));
+      }, 5000);
+    };
+
+    window.addEventListener('add_toast', handleAddToast);
+    return () => window.removeEventListener('add_toast', handleAddToast);
+  }, []);
 
   const removeToast = (id: string) => {
     setToasts(prev => prev.filter(t => t.id !== id));
   };
 
   return (
-    <ToastStack data-testid="toast-notification-system">
+    <ToastStack data-testid="toast-notification-system" aria-live="assertive">
       {toasts.map(toast => (
-        <ToastCard key={toast.id} $type={toast.type}>
+        <ToastCard key={toast.id} $type={toast.type} role="alert">
           <Icon>
             {toast.type === 'success' ? '✓' : toast.type === 'error' ? '✕' : toast.type === 'warning' ? '⚠️' : 'ℹ️'}
           </Icon>
@@ -98,7 +109,7 @@ export const ToastNotificationSystem: FC = () => {
             <TTitle>{toast.title}</TTitle>
             <TDesc>{toast.description}</TDesc>
           </TBody>
-          <CloseBtn onClick={() => removeToast(toast.id)}>✕</CloseBtn>
+          <CloseBtn onClick={() => removeToast(toast.id)} aria-label="Close">✕</CloseBtn>
         </ToastCard>
       ))}
     </ToastStack>

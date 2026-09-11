@@ -128,7 +128,7 @@ Write-Host ""
 Write-Host "  [GROUP 0] Queue file integrity" -ForegroundColor White
 if (-not (Test-Path $queueFile)) {
   if ($CI) {
-    $initScript = Join-Path $root "scripts\orchestrator\init-queue.ps1"
+    $initScript = Join-Path $root "aegis\orchestrator\init-queue.ps1"
     if (Test-Path $initScript) {
       Write-Check "[!!]" "Queue file missing" "CI mode: attempting auto-initialize via init-queue.ps1" "DarkYellow"
       try {

@@ -1,4 +1,4 @@
-# phase-bundle-report.ps1 -- Print a concise dashboard from phase-bundle telemetry JSON
+﻿# phase-bundle-report.ps1 -- Print a concise dashboard from phase-bundle telemetry JSON
 param(
   [string]$ReportPath = "logs/orchestrator/phase-bundle-latest.json",
   [switch]$Json

@@ -1,4 +1,4 @@
-# premium-efficiency-report.ps1 -- Weekly premium usage efficiency snapshot
+﻿# premium-efficiency-report.ps1 -- Weekly premium usage efficiency snapshot
 # Usage:
 #   npm run orchestrator:premium-efficiency
 #   npm run orchestrator:premium-efficiency:brief
@@ -45,7 +45,7 @@ foreach ($row in $usageRows) {
       $rowsParsed++
 
       if ($taskText -match 'delivered|implemented|baseline|complete|kickoff') { $deliveryRows++ }
-      if ($taskText -match '\d+/\d+\s*✅|tests?\s*✅|build pass|build verified') { $verifiedRows++ }
+      if ($taskText -match '\d+/\d+\s*âœ…|tests?\s*âœ…|build pass|build verified') { $verifiedRows++ }
     }
   }
 }

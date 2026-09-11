@@ -1,4 +1,4 @@
-# verify-prompts.ps1 -- Audit every prompts.json key against fast-complete gateTargets
+﻿# verify-prompts.ps1 -- Audit every prompts.json key against fast-complete gateTargets
 # Reports: missing targets, unresolved paths, short prompts, orphaned keys, coverage.
 # Exit 0 = all OK. Exit 1 = issues found (use in CI pre-flight).
 #
@@ -13,8 +13,8 @@ param(
 
 $ErrorActionPreference = "Continue"
 $root        = Resolve-Path $WorkspaceRoot
-$promptsFile = Join-Path $root "scripts\orchestrator\prompts.json"
-$promptsFallbackFile = Join-Path $root "aegis\scripts\orchestrator\prompts.json"
+$promptsFile = Join-Path $root "aegis\orchestrator\prompts.json"
+$promptsFallbackFile = Join-Path $root "aegis\aegis\orchestrator\prompts.json"
 $queueFile   = Join-Path $root "logs\orchestrator\task-queue.json"
 $w           = 72
 

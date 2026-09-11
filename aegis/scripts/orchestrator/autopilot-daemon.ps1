@@ -1,4 +1,4 @@
-# autopilot-daemon.ps1 -- Supervises agent-loop autopilot and restarts it forever.
+﻿# autopilot-daemon.ps1 -- Supervises agent-loop autopilot and restarts it forever.
 # Ensures continuous project development even if a loop exits due to transient conditions.
 param(
   [string]$WorkspaceRoot = ".",

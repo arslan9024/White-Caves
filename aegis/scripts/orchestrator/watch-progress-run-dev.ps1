@@ -1,4 +1,4 @@
-param(
+﻿param(
   [string]$WorkspaceRoot = ".",
   [double]$ImprovementPoints = 10,
   [int]$PollSeconds = 15,

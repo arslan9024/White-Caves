@@ -1,5 +1,5 @@
-# Stops all background orchestrator workers started by start-background.ps1
-$root = Resolve-Path (Join-Path $PSScriptRoot "..\..")
+﻿# Stops all background orchestrator workers started by start-background.ps1
+$root = Resolve-Path (Join-Path $PSScriptRoot "..\..\..")
 $stateFile = Join-Path $root "logs\orchestrator\worker-processes.json"
 
 if (-not (Test-Path $stateFile)) {

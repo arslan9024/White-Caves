@@ -1,4 +1,4 @@
-# flowcharts-generator.ps1 -- Generates WAVE_0N_FLOWCHARTS.md
+﻿# flowcharts-generator.ps1 -- Generates WAVE_0N_FLOWCHARTS.md
 # Contains: 4 lane flowcharts, 1 sequence diagram, 1 queue state machine
 param(
   [string]$WorkspaceRoot = ".",

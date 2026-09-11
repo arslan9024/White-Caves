@@ -1,4 +1,4 @@
-param(
+﻿param(
   [string]$WorkspaceRoot = "."
 )
 
@@ -21,7 +21,7 @@ function T {
   }
 }
 
-# ── LANE A  (Sofia → Timnit → Victoria → Annie → Marissa → Rachel → Joelle) ──
+# â”€â”€ LANE A  (Sofia â†’ Timnit â†’ Victoria â†’ Annie â†’ Marissa â†’ Rachel â†’ Joelle) â”€â”€
 # Each agent has 3 tasks; task 2 depends on task 1 being done, task 3 on task 2.
 
 $tasks = @(
@@ -60,7 +60,7 @@ $tasks = @(
   (T "T007b" "@Joelle" "A" "AI personas 25-35 draft (Intelligence cluster)"       @("T007") $true  "@Margaret"),
   (T "T007c" "@Joelle" "A" "Lead scoring AI logic and integration map update"      @("T007b") $false $null),
 
-  # ── LANE B  (Fei-Fei → Anima → Mary → Invoice) ───────────────────────────
+  # â”€â”€ LANE B  (Fei-Fei â†’ Anima â†’ Mary â†’ Invoice) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
   # @Fei-Fei
   (T "T008"  "@Fei-Fei" "B" "Valuation and market inputs"                          @()       $true  "@Anima"),
   (T "T008b" "@Fei-Fei" "B" "Market intelligence area price index and DLD feeds"   @("T008") $true  "@Anima"),
@@ -81,7 +81,7 @@ $tasks = @(
   (T "T011b" "@Invoice" "B" "UAE VAT reporting FTA 5% and cash flow forecast"      @("T011") $false $null),
   (T "T011c" "@Invoice" "B" "Revenue model 3-year pro-forma and P&L spec"          @("T011b") $false $null),
 
-  # ── LANE C  (Booking → Maya → Hedy → Cassie) ─────────────────────────────
+  # â”€â”€ LANE C  (Booking â†’ Maya â†’ Hedy â†’ Cassie) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
   # @Booking
   (T "T012"  "@Booking" "C" "Viewing and scheduling contracts"                     @()       $true  "@Maya"),
   (T "T012b" "@Booking" "C" "Agent calendar availability and Google sync spec"     @("T012") $true  "@Maya"),
@@ -102,7 +102,7 @@ $tasks = @(
   (T "T015b" "@Cassie" "C" "Agent performance RERA license tracking and PIP spec"  @("T015") $false $null),
   (T "T015c" "@Cassie" "C" "Mobile analytics view and CSV/Excel export API spec"   @("T015b") $false $null),
 
-  # ── LANE D  (Jaime → Corinne) ─────────────────────────────────────────────
+  # â”€â”€ LANE D  (Jaime â†’ Corinne) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
   # @Jaime
   (T "T016"  "@Jaime"  "D" "Offers and WhatsApp routing"                           @()       $true  "@Corinne"),
   (T "T016b" "@Jaime"  "D" "WhatsApp Business API setup and template spec"         @("T016") $true  "@Corinne"),

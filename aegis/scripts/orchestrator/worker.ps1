@@ -1,4 +1,4 @@
-param(
+﻿param(
   [Parameter(Mandatory = $true)]
   [string]$AgentName,
   [int]$PollSeconds = 30,

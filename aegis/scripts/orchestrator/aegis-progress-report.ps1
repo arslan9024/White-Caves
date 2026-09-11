@@ -1,4 +1,4 @@
-param(
+﻿param(
   [string]$WorkspaceRoot = ".",
   [switch]$Daily,
   [switch]$Weekly,
@@ -265,9 +265,9 @@ if ($null -ne $weeklySummary) { Write-SummaryBlock -Summary $weeklySummary }
 Add-ReportLine '  CAN AEGIS IMPROVE THE PROJECT?'
 if (($null -ne $weeklySummary -and $weeklySummary.EntryCount -gt 0 -and $weeklySummary.BestPercent -gt 0) -or ($null -ne $current -and $current.Done -gt 0)) {
   $verdict = if (($null -ne $weeklySummary -and $weeklySummary.ImprovementSignal -match 'strong|positive') -or ($null -ne $current -and $current.Percent -ge 50)) {
-    'Yes — Aegis is showing measurable progress.'
+    'Yes â€” Aegis is showing measurable progress.'
   } else {
-    'Partially — Aegis is active, but progress is still uneven or early-stage.'
+    'Partially â€” Aegis is active, but progress is still uneven or early-stage.'
   }
   Add-ReportLine ("    {0}" -f $verdict)
 } else {

@@ -108,6 +108,13 @@ class APIClient {
         return this.handleUnauthorized<T>(method, url, data, config, attempt);
       }
 
+      if (response.status === 429) {
+        window.dispatchEvent(new CustomEvent('add_toast', {
+          detail: { type: 'warning', title: 'Too Many Requests', description: 'Rate limit exceeded. Please try again later.' }
+        }));
+        throw this.createErrorResponse('Too many requests', 429);
+      }
+
       if (response.status >= 500 && attempt <= API_CONFIG.RETRY.maxAttempts) {
         const delay =
           API_CONFIG.RETRY.delayMs * Math.pow(API_CONFIG.RETRY.backoffMultiplier, attempt - 1);

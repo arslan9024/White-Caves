@@ -20,7 +20,7 @@ param(
 
 $ErrorActionPreference = "Continue"
 $root     = Resolve-Path $WorkspaceRoot
-$scripts  = Join-Path $root "scripts\orchestrator"
+$scripts  = Join-Path $root "aegis\orchestrator"
 $policyUtils = Join-Path $scripts "policy-utils.ps1"
 $w        = 72
 $stepNum  = 0

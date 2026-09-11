@@ -25,10 +25,10 @@ param(
 $ErrorActionPreference = "Continue"
 $root        = Resolve-Path $WorkspaceRoot
 $queueFile   = Join-Path $root "logs\orchestrator\task-queue.json"
-$promptsFile = Join-Path $root "scripts\orchestrator\prompts.json"
-$promptsFallbackFile = Join-Path $root "aegis\scripts\orchestrator\prompts.json"
-$browserLaunchScript = Join-Path $root "scripts\orchestrator\browser-launch.ps1"
-$browserLaunchFallbackScript = Join-Path $root "aegis\scripts\orchestrator\browser-launch.ps1"
+$promptsFile = Join-Path $root "aegis\orchestrator\prompts.json"
+$promptsFallbackFile = Join-Path $root "aegis\aegis\orchestrator\prompts.json"
+$browserLaunchScript = Join-Path $root "aegis\orchestrator\browser-launch.ps1"
+$browserLaunchFallbackScript = Join-Path $root "aegis\aegis\orchestrator\browser-launch.ps1"
 $w           = 72
 
 if (-not (Test-Path $promptsFile) -and (Test-Path $promptsFallbackFile)) {

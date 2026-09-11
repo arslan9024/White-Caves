@@ -23,7 +23,7 @@ if ($Cycles -lt 1) {
 $root = Resolve-Path $WorkspaceRoot
 
 # Load policy-defined approval phrase (fallback to known default)
-$_policyFile = Join-Path $root "scripts\orchestrator\policy.json"
+$_policyFile = Join-Path $root "aegis\orchestrator\policy.json"
 $approvalPhrase = "@Ada - Context Ready (90% Readiness) - High-Fidelity Coding Phase Approved"
 if (Test-Path $_policyFile) {
   try {
