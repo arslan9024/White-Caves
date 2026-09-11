@@ -9,6 +9,7 @@ import { asyncHandler, AppError } from '../middleware/errorHandler.js';
 import type { AuthRequest } from '../middleware/auth.js';
 import { prisma } from '../database.js';
 import { requirePermission } from '../middleware/rbac.js';
+import { cacheService } from '../services/CacheService.js';
 
 const router = Router();
 
@@ -22,31 +23,39 @@ router.get(
     if (!allowedRoles.includes(req.user?.role || '')) {
       throw new AppError('Access denied — CRM dashboard requires manager or above role', 403);
     }
-    const [
-      leadCount, propertyCount, agentCount, activityCount,
-      hotLeads, recentActivity,
-    ] = await Promise.all([
-      prisma.lead.count(),
-      prisma.property.count(),
-      prisma.user.count({ where: { role: { in: ['agent', 'owner'] } } }),
-      prisma.activity.count(),
-      prisma.lead.count({ where: { status: 'qualified' } }),
-      prisma.activity.findMany({
-        orderBy: { createdAt: 'desc' },
-        take: 10,
-        include: { user: { select: { id: true, name: true } } },
-      }),
-    ]);
+    const data = await cacheService.getOrSet(
+      'wc:crm:dashboard',
+      async () => {
+        const [
+          leadCount, propertyCount, agentCount, activityCount,
+          hotLeads, recentActivity,
+        ] = await Promise.all([
+          prisma.lead.count(),
+          prisma.property.count(),
+          prisma.user.count({ where: { role: { in: ['agent', 'owner'] } } }),
+          prisma.activity.count(),
+          prisma.lead.count({ where: { status: 'qualified' } }),
+          prisma.activity.findMany({
+            orderBy: { createdAt: 'desc' },
+            take: 10,
+            include: { user: { select: { id: true, name: true } } },
+          }),
+        ]);
+
+        return {
+          stats: { leads: leadCount, properties: propertyCount, agents: agentCount, activities: activityCount, hotLeads },
+          recentActivity: recentActivity.map((a) => ({
+            id: a.id, type: a.type, action: a.action, description: a.description,
+            user: a.user?.name || 'System', timestamp: a.createdAt.toISOString(),
+          })),
+        };
+      },
+      300
+    );
 
     res.status(200).json({
       success: true,
-      data: {
-        stats: { leads: leadCount, properties: propertyCount, agents: agentCount, activities: activityCount, hotLeads },
-        recentActivity: recentActivity.map((a) => ({
-          id: a.id, type: a.type, action: a.action, description: a.description,
-          user: a.user?.name || 'System', timestamp: a.createdAt.toISOString(),
-        })),
-      },
+      data,
     });
   })
 );
@@ -61,29 +70,38 @@ router.get(
     if (!allowedRoles.includes(req.user?.role || '')) {
       throw new AppError('Access denied — CRM analytics requires manager or above role', 403);
     }
-    const [leadsBySource, leadsByStatus, propertiesByType, commissionStats] = await Promise.all([
-      prisma.lead.groupBy({ by: ['source'], _count: { _all: true } }),
-      prisma.lead.groupBy({ by: ['status'], _count: { _all: true } }),
-      prisma.property.groupBy({ by: ['type'], _count: { _all: true } }),
-      prisma.commission.aggregate({ _sum: { amount: true }, _avg: { amount: true }, _count: { _all: true } }),
-    ]);
+
+    const data = await cacheService.getOrSet(
+      'wc:crm:analytics',
+      async () => {
+        const [leadsBySource, leadsByStatus, propertiesByType, commissionStats] = await Promise.all([
+          prisma.lead.groupBy({ by: ['source'], _count: { _all: true } }),
+          prisma.lead.groupBy({ by: ['status'], _count: { _all: true } }),
+          prisma.property.groupBy({ by: ['type'], _count: { _all: true } }),
+          prisma.commission.aggregate({ _sum: { amount: true }, _avg: { amount: true }, _count: { _all: true } }),
+        ]);
+
+        return {
+          leads: {
+            bySource: leadsBySource.map((s) => ({ source: s.source, count: s._count._all })),
+            byStatus: leadsByStatus.map((s) => ({ status: s.status, count: s._count._all })),
+          },
+          properties: {
+            byType: propertiesByType.map((t) => ({ type: t.type, count: t._count._all })),
+          },
+          commissions: {
+            total: commissionStats._count._all,
+            totalValue: commissionStats._sum.amount || 0,
+            averageValue: Math.round(commissionStats._avg.amount || 0),
+          },
+        };
+      },
+      300
+    );
 
     res.status(200).json({
       success: true,
-      data: {
-        leads: {
-          bySource: leadsBySource.map((s) => ({ source: s.source, count: s._count._all })),
-          byStatus: leadsByStatus.map((s) => ({ status: s.status, count: s._count._all })),
-        },
-        properties: {
-          byType: propertiesByType.map((t) => ({ type: t.type, count: t._count._all })),
-        },
-        commissions: {
-          total: commissionStats._count._all,
-          totalValue: commissionStats._sum.amount || 0,
-          averageValue: Math.round(commissionStats._avg.amount || 0),
-        },
-      },
+      data,
     });
   })
 );

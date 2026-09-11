@@ -15,6 +15,8 @@ import { validateIdParam } from '../utils/validate.js';
 import { sanitizeString } from '../utils/sanitize.js';
 import { requirePermission } from '../middleware/rbac.js';
 import { generateTaxInvoice } from '../services/invoiceService.js';
+import { cacheService } from '../services/CacheService.js';
+import { invalidateCommissionCache } from '../services/cacheInvalidation.js';
 
 type RouteRequest = AuthRequest & Request<Record<string, string>>;
 
@@ -40,65 +42,73 @@ router.get(
   '/summary',
   requirePermission('view_payments'),
   asyncHandler(async (req: RouteRequest, res: Response) => {
-    const [
-      totalCommissions,
-      paidCommissions,
-      pendingCommissions,
-      approvedCommissions,
-      commissionsByType,
-      portfolioValue,
-    ] = await Promise.all([
-      prisma.commission.aggregate({ _sum: { amount: true }, _count: { _all: true } }),
-      prisma.commission.aggregate({
-        where: { status: 'paid' },
-        _sum: { amount: true },
-        _count: { _all: true },
-      }),
-      prisma.commission.aggregate({
-        where: { status: 'pending' },
-        _sum: { amount: true },
-        _count: { _all: true },
-      }),
-      prisma.commission.aggregate({
-        where: { status: 'approved' },
-        _sum: { amount: true },
-        _count: { _all: true },
-      }),
-      prisma.commission.groupBy({ by: ['type'], _sum: { amount: true }, _count: { _all: true } }),
-      prisma.property.aggregate({
-        where: { status: { in: ['sold', 'rented'] } },
-        _sum: { price: true },
-      }),
-    ]);
+    const data = await cacheService.getOrSet(
+      'wc:finance:summary',
+      async () => {
+        const [
+          totalCommissions,
+          paidCommissions,
+          pendingCommissions,
+          approvedCommissions,
+          commissionsByType,
+          portfolioValue,
+        ] = await Promise.all([
+          prisma.commission.aggregate({ _sum: { amount: true }, _count: { _all: true } }),
+          prisma.commission.aggregate({
+            where: { status: 'paid' },
+            _sum: { amount: true },
+            _count: { _all: true },
+          }),
+          prisma.commission.aggregate({
+            where: { status: 'pending' },
+            _sum: { amount: true },
+            _count: { _all: true },
+          }),
+          prisma.commission.aggregate({
+            where: { status: 'approved' },
+            _sum: { amount: true },
+            _count: { _all: true },
+          }),
+          prisma.commission.groupBy({ by: ['type'], _sum: { amount: true }, _count: { _all: true } }),
+          prisma.property.aggregate({
+            where: { status: { in: ['sold', 'rented'] } },
+            _sum: { price: true },
+          }),
+        ]);
 
-    const totalRevenue = portfolioValue._sum.price || 0;
-    const totalCommissionValue = totalCommissions._sum.amount || 0;
-    const netProfit = totalRevenue - totalCommissionValue;
+        const totalRevenue = portfolioValue._sum.price || 0;
+        const totalCommissionValue = totalCommissions._sum.amount || 0;
+        const netProfit = totalRevenue - totalCommissionValue;
+
+        return {
+          totalRevenue,
+          totalExpenses: totalCommissionValue,
+          netProfit,
+          commissions: {
+            total: { count: totalCommissions._count._all, value: totalCommissionValue },
+            paid: { count: paidCommissions._count._all, value: paidCommissions._sum.amount || 0 },
+            pending: {
+              count: pendingCommissions._count._all,
+              value: pendingCommissions._sum.amount || 0,
+            },
+            approved: {
+              count: approvedCommissions._count._all,
+              value: approvedCommissions._sum.amount || 0,
+            },
+          },
+          byType: commissionsByType.map(c => ({
+            type: c.type,
+            count: c._count._all,
+            value: c._sum.amount || 0,
+          })),
+        };
+      },
+      300
+    );
 
     res.status(200).json({
       success: true,
-      data: {
-        totalRevenue,
-        totalExpenses: totalCommissionValue,
-        netProfit,
-        commissions: {
-          total: { count: totalCommissions._count._all, value: totalCommissionValue },
-          paid: { count: paidCommissions._count._all, value: paidCommissions._sum.amount || 0 },
-          pending: {
-            count: pendingCommissions._count._all,
-            value: pendingCommissions._sum.amount || 0,
-          },
-          approved: {
-            count: approvedCommissions._count._all,
-            value: approvedCommissions._sum.amount || 0,
-          },
-        },
-        byType: commissionsByType.map(c => ({
-          type: c.type,
-          count: c._count._all,
-          value: c._sum.amount || 0,
-        })),
-      },
+      data,
     });
   })
 );
@@ -259,6 +269,8 @@ router.post(
       },
     });
 
+    await invalidateCommissionCache(commission.id);
+
     res.status(201).json({ success: true, data: commission });
   })
 );
@@ -332,6 +344,8 @@ router.patch(
       });
     }
 
+    await invalidateCommissionCache(id);
+
     res.status(200).json({ success: true, data: commission });
   })
 );
@@ -372,6 +386,8 @@ router.post(
           userId: req.user?.id || null,
         },
       });
+
+      await invalidateCommissionCache();
 
       res.status(200).json({
         success: true,

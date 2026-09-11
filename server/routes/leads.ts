@@ -13,6 +13,7 @@ import { prisma } from '../database.js';
 import { sanitizeString } from '../utils/sanitize.js';
 import { getSocketServer } from '../services/socketServer.js';
 import { notificationService } from '../services/NotificationService.js';
+import { invalidateLeadCache } from '../services/cacheInvalidation.js';
 
 // Unified lead status enum — single source of truth for all lead endpoints
 const VALID_LEAD_STATUSES = [
@@ -634,6 +635,8 @@ router.post(
     } catch {
       // Field not yet in schema — non-fatal, gracefully degrade
     }
+
+    await invalidateLeadCache(lead.id);
 
     res.status(201).json({ success: true, data: lead });
   })

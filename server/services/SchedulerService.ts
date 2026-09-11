@@ -6,23 +6,9 @@ import { runPermitAlertSchedulerTick } from './compliance/permitAlertScheduler.j
 import { runPropertyPermitEnforcementTick } from './compliance/propertyPermitEnforcementScheduler.js';
 import { runLeadSlaEscalationTick } from './leadWorkflowService.js';
 
-type ScheduledTask = {
-  stop(): void;
-  destroy(): void;
-};
+import cron, { type ScheduledTask } from 'node-cron';
 
-const cron = {
-  schedule: (
-    _expression: string,
-    _handler: () => void | Promise<void>,
-    _options?: { timezone?: string }
-  ): ScheduledTask => ({
-    stop: () => {},
-    destroy: () => {},
-  }),
-};
-
-type CronJobId =
+export type CronJobId =
   | 'lead-sla-escalation'
   | 'lead-rescore-daily'
   | 'permit-checks-daily'
@@ -31,20 +17,31 @@ type CronJobId =
   | 'lease-expiry-reminders-daily'
   | 'sitemap-weekly-refresh';
 
-interface CronJobInfo {
+export interface CronJobInfo {
   id: CronJobId;
   name: string;
   cronExpression: string;
   timezone: string;
-  task: unknown;
+  task: ScheduledTask | null;
   lastRunAt: string | null;
   lastStatus: 'success' | 'failed' | 'skipped' | null;
+  lastError: string | null;
+  lastDurationMs: number | null;
+  runsCount: number;
 }
 
 export class SchedulerService {
   private jobs = new Map<CronJobId, CronJobInfo>();
 
   private started = false;
+
+  isStarted(): boolean {
+    return this.started;
+  }
+
+  getJob(id: CronJobId): CronJobInfo | undefined {
+    return this.jobs.get(id);
+  }
 
   start(): void {
     if (this.started) {
@@ -59,50 +56,92 @@ export class SchedulerService {
     this.registerRentRemindersJob();
     this.registerLeaseExpiryRemindersJob();
     this.registerSitemapRefreshJob();
-    logger.warn('[SchedulerService] cron unavailable in this workspace — scheduled jobs registered with no-op scheduler');
+
     this.started = true;
-    return;
+    logger.info(`[SchedulerService] started — ${this.jobs.size} jobs registered with node-cron engine`);
   }
 
   stop(): void {
+    for (const [id, job] of this.jobs.entries()) {
+      if (job.task) {
+        try {
+          job.task.stop();
+          if (typeof job.task.destroy === 'function') {
+            job.task.destroy();
+          }
+        } catch (err) {
+          logger.warn(`[SchedulerService] error stopping task ${id}`, {
+            error: err instanceof Error ? err.message : String(err),
+          });
+        }
+      }
+    }
     this.jobs.clear();
     this.started = false;
-    logger.info('[SchedulerService] stopped');
+    logger.info('[SchedulerService] stopped — all cron jobs canceled');
   }
 
   getStatus(): Array<Omit<CronJobInfo, 'task'>> {
     return Array.from(this.jobs.values()).map(({ task, ...status }) => status);
   }
 
-  private registerLeadSlaEscalationJob(): void {
-    const id: CronJobId = 'lead-sla-escalation';
-    const cronExpression = '0 * * * *';
-    const timezone = 'Asia/Dubai';
-
+  private scheduleTask(
+    id: CronJobId,
+    name: string,
+    cronExpression: string,
+    timezone: string,
+    handler: () => Promise<Record<string, unknown>>
+  ): void {
     const task = cron.schedule(
       cronExpression,
       async () => {
-        await this.runJob(id, 'lead SLA escalation', async () => {
-          return runLeadSlaEscalationTick();
-        });
+        await this.runJob(id, name, handler);
       },
       { timezone }
     );
 
     this.jobs.set(id, {
       id,
-      name: 'Lead SLA Escalation',
+      name,
       cronExpression,
       timezone,
       task,
       lastRunAt: null,
       lastStatus: null,
+      lastError: null,
+      lastDurationMs: null,
+      runsCount: 0,
     });
   }
 
+  private registerLeadSlaEscalationJob(): void {
+    this.scheduleTask(
+      'lead-sla-escalation',
+      'Lead SLA Escalation',
+      '0 * * * *',
+      'Asia/Dubai',
+      async () => runLeadSlaEscalationTick()
+    );
+  }
+
   private registerLeadRescoreJob(): void {
-    const id: CronJobId = 'lead-rescore-daily';
-    const cronExpression = '15 1 * * *';
+    this.scheduleTask(
+      'lead-rescore-daily',
+      'Daily Lead Re-score',
+      '15 1 * * *',
+      'Asia/Dubai',
+      async () => {
+        const result = await batchRescoreLeads();
+        return {
+          scored: result.scored,
+          total: result.total,
+          upgraded: result.upgraded,
+          downgraded: result.downgraded,
+          durationMs: result.duration,
+        };
+      }
+    );
+  }
     const timezone = 'Asia/Dubai';
 
     const task = cron.schedule(

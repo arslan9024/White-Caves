@@ -22,6 +22,7 @@ import {
   requireDepartmentPermission,
 } from '../middleware/departmentAuth.js';
 import { prisma } from '../database.js';
+import { cacheService } from '../services/CacheService.js';
 
 const router = Router();
 
@@ -445,6 +446,25 @@ router.get(
   })
 );
 
+async function getDepartmentData(code: string): Promise<Record<string, unknown> | null> {
+  return await cacheService.getOrSet(
+    `wc:departments:${code}:data`,
+    async () => {
+      switch (code) {
+        case 'SALES':
+          return await getSalesData();
+        case 'FINANCE':
+          return await getFinanceData();
+        case 'HR':
+          return await getHRData();
+        default:
+          return null;
+      }
+    },
+    300
+  );
+}
+
 // â”€â”€â”€ Route: GET /api/departments/:code/data â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 router.get(
@@ -459,21 +479,10 @@ router.get(
     }
     const code = codeParam.toUpperCase();
 
-    let data: Record<string, unknown>;
-
-    switch (code) {
-      case 'SALES':
-        data = await getSalesData();
-        break;
-      case 'FINANCE':
-        data = await getFinanceData();
-        break;
-      case 'HR':
-        data = await getHRData();
-        break;
-      default:
-        res.status(404).json({ success: false, error: `Department '${code}' not found` });
-        return;
+    const data = await getDepartmentData(code);
+    if (!data) {
+      res.status(404).json({ success: false, error: `Department '${code}' not found` });
+      return;
     }
 
     res.status(200).json({ success: true, data });
@@ -493,21 +502,11 @@ router.get(
       throw new AppError('Department code is required', 400);
     }
     const code = codeParam.toUpperCase();
-    let data: Record<string, unknown>;
 
-    switch (code) {
-      case 'SALES':
-        data = await getSalesData();
-        break;
-      case 'FINANCE':
-        data = await getFinanceData();
-        break;
-      case 'HR':
-        data = await getHRData();
-        break;
-      default:
-        res.status(404).json({ success: false, error: `Department '${code}' not found` });
-        return;
+    const data = await getDepartmentData(code);
+    if (!data) {
+      res.status(404).json({ success: false, error: `Department '${code}' not found` });
+      return;
     }
 
     res.status(200).json({
@@ -531,21 +530,11 @@ router.get(
       throw new AppError('Department code is required', 400);
     }
     const code = codeParam.toUpperCase();
-    let data: Record<string, unknown>;
 
-    switch (code) {
-      case 'SALES':
-        data = await getSalesData();
-        break;
-      case 'FINANCE':
-        data = await getFinanceData();
-        break;
-      case 'HR':
-        data = await getHRData();
-        break;
-      default:
-        res.status(404).json({ success: false, error: `Department '${code}' not found` });
-        return;
+    const data = await getDepartmentData(code);
+    if (!data) {
+      res.status(404).json({ success: false, error: `Department '${code}' not found` });
+      return;
     }
 
     res.status(200).json({
@@ -569,21 +558,11 @@ router.get(
       throw new AppError('Department code is required', 400);
     }
     const code = codeParam.toUpperCase();
-    let data: Record<string, unknown>;
 
-    switch (code) {
-      case 'SALES':
-        data = await getSalesData();
-        break;
-      case 'FINANCE':
-        data = await getFinanceData();
-        break;
-      case 'HR':
-        data = await getHRData();
-        break;
-      default:
-        res.status(404).json({ success: false, error: `Department '${code}' not found` });
-        return;
+    const data = await getDepartmentData(code);
+    if (!data) {
+      res.status(404).json({ success: false, error: `Department '${code}' not found` });
+      return;
     }
 
     res.status(200).json({

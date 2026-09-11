@@ -189,18 +189,18 @@ router.get('/stats', async (req, res) => {
       stats.errorsByMessage[msgType] = (stats.errorsByMessage[msgType] || 0) + 1;
     });
 
-    // Sort by count descending
-    stats.errorsByEnvironment = Object.entries(stats.errorsByEnvironment)
-      .sort(([, a], [, b]) => b - a)
-      .reduce((obj, [key, val]) => ({ ...obj, [key]: val }), {});
+    // 300% Acceleration Protocol: O(n) Object.fromEntries instead of O(n^2) spread accumulator
+    stats.errorsByEnvironment = Object.fromEntries(
+      Object.entries(stats.errorsByEnvironment).sort(([, a], [, b]) => b - a)
+    );
 
-    stats.errorsByPage = Object.entries(stats.errorsByPage)
-      .sort(([, a], [, b]) => b - a)
-      .reduce((obj, [key, val]) => ({ ...obj, [key]: val }), {});
+    stats.errorsByPage = Object.fromEntries(
+      Object.entries(stats.errorsByPage).sort(([, a], [, b]) => b - a)
+    );
 
-    stats.errorsByMessage = Object.entries(stats.errorsByMessage)
-      .sort(([, a], [, b]) => b - a)
-      .reduce((obj, [key, val]) => ({ ...obj, [key]: val }), {});
+    stats.errorsByMessage = Object.fromEntries(
+      Object.entries(stats.errorsByMessage).sort(([, a], [, b]) => b - a)
+    );
 
     res.json({
       success: true,

@@ -7,12 +7,13 @@ import { PrismaClient } from '@prisma/client';
 import { DATABASE_URL } from './config/env.js';
 import { createLogger } from './utils/logger.js';
 import { registerLeadScoringMiddleware } from './services/ai/leadScoringMiddleware.js';
+import { CONNECTION_POOL_CONFIG, tuneMongoConnectionString } from './config/connectionPool.js';
 
 const log = createLogger('Database');
 const SLOW_QUERY_THRESHOLD_MS = Number(process.env.SLOW_QUERY_THRESHOLD_MS ?? 200);
 
 if (DATABASE_URL) {
-  process.env.DATABASE_URL = DATABASE_URL;
+  process.env.DATABASE_URL = tuneMongoConnectionString(DATABASE_URL);
 }
 
 type PrismaLikeError = { code?: string; errorCode?: string };
@@ -156,4 +157,4 @@ process.on('SIGTERM', async () => {
   process.exit(0);
 });
 
-export { prisma };
+export { prisma, CONNECTION_POOL_CONFIG };

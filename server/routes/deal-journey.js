@@ -256,16 +256,18 @@ router.get('/:userId/notifications', async (req, res) => {
 
     const notifications = [];
 
-    deals.forEach((deal) => {
-      deal.notifications
-        .filter((n) => n.recipientId.toString() === userId)
-        .forEach((n) => {
-          notifications.push({
-            ...n._doc,
-            dealId: deal._id,
-          });
-        });
-    });
+    for (const deal of deals) {
+      if (Array.isArray(deal.notifications)) {
+        for (const n of deal.notifications) {
+          if (n && n.recipientId && n.recipientId.toString() === userId) {
+            notifications.push({
+              ...n._doc,
+              dealId: deal._id,
+            });
+          }
+        }
+      }
+    }
 
     notifications.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
 

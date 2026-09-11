@@ -180,7 +180,7 @@ function buildOverrides({ prompt, title, lane, planningAgent, implementationAgen
       priority: 'critical',
       priorityScore: 999,
       title: implementationTitle,
-      prompt: `${implementationAgent} -- PRIORITY IMPLEMENT+VERIFY: ${title}. Source user prompt: "${prompt}". Execute a production-safe vertical slice implementation from A to Z. You MUST update the docs, SRS, SDD, and code. You MUST update the full journey details of this issue and confirm UI/UX is updated. Include rollback notes and verification evidence.`,
+      prompt: `${implementationAgent} -- PRIORITY IMPLEMENT+VERIFY: ${title}. Source user prompt: "${prompt}". Execute a production-safe vertical slice implementation from A to Z. You MUST update the docs, SRS, SDD, and code. You MUST update the full journey details of this issue and confirm UI/UX is updated. You MUST write Vitest/Playwright tests for these changes. Finally, you MUST output a strict JSON manifest at the end of your response listing exactly the filepaths you modified, in the format: \`\`\`json\n{"modified": ["src/...", "business_docs/..."]}\n\`\`\`. Include rollback notes and verification evidence.`,
       createdBy: 'aegis-one-prompt',
       createdAt: stamp,
     },

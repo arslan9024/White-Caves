@@ -323,14 +323,20 @@ router.get('/dashboard/properties-by-area/:area', async (req, res) => {
       propertyId: { $in: properties.map((p) => p._id) },
     }).populate('assignedAgents.agentId', 'name email');
 
-    // Merge inventory data into properties
+    // 300% Acceleration Protocol: MapIndexHash O(1) lookups instead of O(n) array scans
+    const inventoryMap = new Map();
+    for (const inv of inventoryData) {
+      if (inv && inv.propertyId) {
+        inventoryMap.set(inv.propertyId.toString(), inv);
+      }
+    }
+
+    // Merge inventory data into properties (O(n))
     const enrichedProperties = properties.map((prop) => {
-      const inv = inventoryData.find(
-        (i) => i.propertyId.toString() === prop._id.toString()
-      );
+      const inv = inventoryMap.get(prop._id.toString()) || null;
       return {
         ...prop.toObject(),
-        inventory: inv || null,
+        inventory: inv,
       };
     });
 
@@ -397,14 +403,20 @@ router.get('/dashboard/search', async (req, res) => {
       propertyId: { $in: properties.map((p) => p._id) },
     }).populate('assignedAgents.agentId', 'name email');
 
-    // Merge inventory data
+    // 300% Acceleration Protocol: MapIndexHash O(1) lookups instead of O(n) array scans
+    const inventoryMap = new Map();
+    for (const inv of inventoryData) {
+      if (inv && inv.propertyId) {
+        inventoryMap.set(inv.propertyId.toString(), inv);
+      }
+    }
+
+    // Merge inventory data (O(n))
     const enrichedProperties = properties.map((prop) => {
-      const inv = inventoryData.find(
-        (i) => i.propertyId.toString() === prop._id.toString()
-      );
+      const inv = inventoryMap.get(prop._id.toString()) || null;
       return {
         ...prop.toObject(),
-        inventory: inv || null,
+        inventory: inv,
       };
     });
 

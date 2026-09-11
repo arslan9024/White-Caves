@@ -8,7 +8,7 @@ export interface HandoffOptions {
   entities?: string[];
   leadScore?: number;
   escalationReason?: string | null;
-  budget?: number;
+  budget?: number | string;
 }
 
 export const ESCALATION_KEYWORDS = [
@@ -53,7 +53,13 @@ export async function processHandoffTriggers(
 ): Promise<boolean> {
   const keywordDetected = isHandoffKeyword(content);
   const intentEscalation = options?.intent === 'complaint' || options?.intent === 'legal_enquiry';
-  const highBudgetEscalation = Boolean(options?.budget && options.budget >= 5_000_000);
+  const budgetNum =
+    typeof options?.budget === 'number'
+      ? options.budget
+      : typeof options?.budget === 'string'
+        ? Number.parseFloat(options.budget.replace(/[^0-9.]/g, ''))
+        : 0;
+  const highBudgetEscalation = Boolean(budgetNum && budgetNum >= 5_000_000);
   const explicitEscalationReason = Boolean(options?.escalationReason);
 
   const needsHandoff =

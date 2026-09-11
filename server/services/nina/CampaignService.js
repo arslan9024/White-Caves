@@ -49,15 +49,22 @@ class CampaignService {
 
   async addToBlocklist(numbers) {
     const cleaned = numbers.map(n => PhoneNumberService.cleanNumber(n)).filter(n => n.length > 0);
-    const newNumbers = cleaned.filter(n => !this.blocklist.includes(n));
+    const currentSet = new Set(this.blocklist);
+    const newNumbers = [];
+    for (const n of cleaned) {
+      if (!currentSet.has(n)) {
+        newNumbers.push(n);
+        currentSet.add(n);
+      }
+    }
     this.blocklist.push(...newNumbers);
     return newNumbers.length;
   }
 
   async removeFromBlocklist(numbers) {
-    const cleaned = numbers.map(n => PhoneNumberService.cleanNumber(n));
+    const cleanedSet = new Set(numbers.map(n => PhoneNumberService.cleanNumber(n)));
     const before = this.blocklist.length;
-    this.blocklist = this.blocklist.filter(n => !cleaned.includes(n));
+    this.blocklist = this.blocklist.filter(n => !cleanedSet.has(n));
     return before - this.blocklist.length;
   }
 

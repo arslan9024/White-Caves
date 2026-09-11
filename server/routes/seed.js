@@ -95,17 +95,36 @@ router.post('/organization', async (req, res) => {
     }
     console.log(`Created ${services.length} services`);
 
+    // 300% Acceleration Protocol: Pre-index relationships by department in O(n) using Maps
+    const assistantsByDept = new Map();
+    for (const a of assistants) {
+      const dId = a.department.toString();
+      if (!assistantsByDept.has(dId)) assistantsByDept.set(dId, []);
+      assistantsByDept.get(dId).push(a._id);
+    }
+
+    const teamsByDept = new Map();
+    for (const t of teams) {
+      const dId = t.department.toString();
+      if (!teamsByDept.has(dId)) teamsByDept.set(dId, []);
+      teamsByDept.get(dId).push(t._id);
+    }
+
+    const servicesByDept = new Map();
+    for (const s of services) {
+      const dId = s.department.toString();
+      if (!servicesByDept.has(dId)) servicesByDept.set(dId, []);
+      servicesByDept.get(dId).push(s._id);
+    }
+
     for (const dept of departments) {
-      const deptAssistants = assistants.filter(a => a.department.toString() === dept._id.toString());
-      const deptTeams = teams.filter(t => t.department.toString() === dept._id.toString());
-      const deptServices = services.filter(s => s.department.toString() === dept._id.toString());
-      
+      const deptIdStr = dept._id.toString();
       await Department.findByIdAndUpdate(
         dept._id,
         {
-          assistants: deptAssistants.map(a => a._id),
-          teams: deptTeams.map(t => t._id),
-          services: deptServices.map(s => s._id)
+          assistants: assistantsByDept.get(deptIdStr) || [],
+          teams: teamsByDept.get(deptIdStr) || [],
+          services: servicesByDept.get(deptIdStr) || []
         },
         { session }
       );
@@ -260,17 +279,36 @@ router.post('/full', async (req, res) => {
     }
     console.log(`Created ${services.length} services`);
 
+    // 300% Acceleration Protocol: Pre-index relationships by department in O(n) using Maps
+    const assistantsByDept2 = new Map();
+    for (const a of assistants) {
+      const dId = a.department.toString();
+      if (!assistantsByDept2.has(dId)) assistantsByDept2.set(dId, []);
+      assistantsByDept2.get(dId).push(a._id);
+    }
+
+    const teamsByDept2 = new Map();
+    for (const t of teams) {
+      const dId = t.department.toString();
+      if (!teamsByDept2.has(dId)) teamsByDept2.set(dId, []);
+      teamsByDept2.get(dId).push(t._id);
+    }
+
+    const servicesByDept2 = new Map();
+    for (const s of services) {
+      const dId = s.department.toString();
+      if (!servicesByDept2.has(dId)) servicesByDept2.set(dId, []);
+      servicesByDept2.get(dId).push(s._id);
+    }
+
     for (const dept of departments) {
-      const deptAssistants = assistants.filter(a => a.department.toString() === dept._id.toString());
-      const deptTeams = teams.filter(t => t.department.toString() === dept._id.toString());
-      const deptServices = services.filter(s => s.department.toString() === dept._id.toString());
-      
+      const deptIdStr = dept._id.toString();
       await Department.findByIdAndUpdate(
         dept._id,
         {
-          assistants: deptAssistants.map(a => a._id),
-          teams: deptTeams.map(t => t._id),
-          services: deptServices.map(s => s._id)
+          assistants: assistantsByDept2.get(deptIdStr) || [],
+          teams: teamsByDept2.get(deptIdStr) || [],
+          services: servicesByDept2.get(deptIdStr) || []
         },
         { session }
       );

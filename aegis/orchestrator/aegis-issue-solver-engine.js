@@ -35,6 +35,26 @@ function getGitHubAuthToken() {
   return process.env.GITHUB_TOKEN || process.env.GH_TOKEN || '';
 }
 
+async function fetchWithRetry(url, options, maxRetries = 3) {
+  for (let i = 0; i < maxRetries; i++) {
+    try {
+      const res = await fetch(url, options);
+      if (res.status === 403 || res.status === 429) {
+        const waitTime = Math.pow(2, i) * 1000;
+        console.warn(`[AEGIS Solver] Rate limited. Retrying in ${waitTime}ms...`);
+        await new Promise(r => setTimeout(r, waitTime));
+        continue;
+      }
+      return res;
+    } catch (e) {
+      if (i === maxRetries - 1) throw e;
+      const waitTime = Math.pow(2, i) * 1000;
+      console.warn(`[AEGIS Solver] Fetch failed. Retrying in ${waitTime}ms...`);
+      await new Promise(r => setTimeout(r, waitTime));
+    }
+  }
+}
+
 export async function fetchMilestonesAndIssues() {
   const token = getGitHubAuthToken();
   if (!token) {
@@ -54,7 +74,7 @@ export async function fetchMilestonesAndIssues() {
   // 1. Fetch Milestones
   let milestones = [];
   try {
-    const mRes = await fetch(`https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/milestones?state=open&per_page=100`, { headers });
+    const mRes = await fetchWithRetry(`https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/milestones?state=open&per_page=100`, { headers });
     milestones = await mRes.json();
   } catch (e) {
     console.error('⚠️ Error fetching milestones:', e.message);
@@ -65,7 +85,7 @@ export async function fetchMilestonesAndIssues() {
   let page = 1;
   while (true) {
     try {
-      const iRes = await fetch(`https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/issues?state=open&per_page=100&page=${page}`, { headers });
+      const iRes = await fetchWithRetry(`https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/issues?state=open&per_page=100&page=${page}`, { headers });
       const issues = await iRes.json();
       if (!Array.isArray(issues) || issues.length === 0) break;
       allIssues = allIssues.concat(issues);
@@ -220,26 +240,30 @@ export async function resolveAllMilestones(isDryRun = false) {
     console.log(`🏛️ Resolving Milestone #${m.number}: ${m.title} (${milestoneIssues.length} Issues)`);
     console.log(`======================================================`);
 
-    for (const iss of milestoneIssues) {
-      console.log(`⚡ Implementing Fix for Issue #${iss.number}: ${iss.title}...`);
-      
-      if (isDryRun) {
-         console.log(`   [DRY RUN] Would invoke AEGIS Agent Loop for Issue #${iss.number}`);
-         continue;
-      }
+    // Process in batches of 5
+    for (let i = 0; i < milestoneIssues.length; i += 5) {
+      const batch = milestoneIssues.slice(i, i + 5);
+      await Promise.all(batch.map(async (iss) => {
+        console.log(`⚡ Implementing Fix for Issue #${iss.number}: ${iss.title}...`);
+        
+        if (isDryRun) {
+           console.log(`   [DRY RUN] Would invoke AEGIS Agent Loop for Issue #${iss.number}`);
+           return;
+        }
 
-      try {
-        // INVOCATION OF REAL IMPLEMENTATION LOGIC
-        console.log(`   -> Dispatching to AEGIS Autonomous Agent Loop...`);
-        execSync(`node aegis/orchestrator/aegis-one-prompt.js --issue ${iss.number} --auto-commit`, { stdio: 'inherit' });
+        try {
+          // INVOCATION OF REAL IMPLEMENTATION LOGIC
+          console.log(`   -> Dispatching to AEGIS Autonomous Agent Loop...`);
+          execSync(`node aegis/orchestrator/aegis-one-prompt.js --issue ${iss.number} --auto-commit`, { stdio: 'pipe' });
 
-        totalClosed++;
-        closedIssueNumbers.push(iss.number);
-        console.log(`   ✅ [Total Queued: ${totalClosed}/${issues.length}] Queued #${iss.number}`);
-      } catch (e) {
-        console.error(`   ❌ Failed to queue #${iss.number}:`, e.message);
-      }
-      await new Promise(r => setTimeout(r, 300));
+          totalClosed++;
+          closedIssueNumbers.push(iss.number);
+          console.log(`   ✅ [Total Queued: ${totalClosed}/${issues.length}] Queued #${iss.number}`);
+        } catch (e) {
+          console.error(`   ❌ Failed to queue #${iss.number}:`, e.message);
+        }
+      }));
+      await new Promise(r => setTimeout(r, 500));
     }
 
     if (!isDryRun) {
@@ -251,26 +275,31 @@ export async function resolveAllMilestones(isDryRun = false) {
   const resolvedIssueNumbers = new Set(closedIssueNumbers);
   const remainingIssues = issues.filter(i => !resolvedIssueNumbers.has(i.number));
   if (remainingIssues.length > 0) {
-    console.log(`\n⚡ Resolving ${remainingIssues.length} Remaining Issues (Unassigned or Closed Milestones)...`);
-    for (const iss of remainingIssues) {
-      console.log(`⚡ Implementing Fix for Issue #${iss.number}: ${iss.title}...`);
-      
-      if (isDryRun) {
-         console.log(`   [DRY RUN] Would invoke AEGIS Agent Loop for Issue #${iss.number}`);
-         continue;
-      }
-
-      try {
-        console.log(`   -> Dispatching to AEGIS Autonomous Agent Loop...`);
-        execSync(`node aegis/orchestrator/aegis-one-prompt.js --issue ${iss.number} --auto-commit`, { stdio: 'inherit' });
+    console.log(`\n⚡ Resolving ${remainingIssues.length} Remaining Issues (Unassigned or Closed Milestones) with 5x Concurrency...`);
+    
+    // Process in batches of 5
+    for (let i = 0; i < remainingIssues.length; i += 5) {
+      const batch = remainingIssues.slice(i, i + 5);
+      await Promise.all(batch.map(async (iss) => {
+        console.log(`⚡ Implementing Fix for Issue #${iss.number}: ${iss.title}...`);
         
-        totalClosed++;
-        closedIssueNumbers.push(iss.number);
-        console.log(`   ✅ [Total Queued: ${totalClosed}/${issues.length}] Queued #${iss.number}`);
-      } catch (e) {
-        console.error(`   ❌ Failed to queue #${iss.number}:`, e.message);
-      }
-      await new Promise(r => setTimeout(r, 300));
+        if (isDryRun) {
+           console.log(`   [DRY RUN] Would invoke AEGIS Agent Loop for Issue #${iss.number}`);
+           return;
+        }
+
+        try {
+          console.log(`   -> Dispatching to AEGIS Autonomous Agent Loop...`);
+          execSync(`node aegis/orchestrator/aegis-one-prompt.js --issue ${iss.number} --auto-commit`, { stdio: 'pipe' });
+          
+          totalClosed++;
+          closedIssueNumbers.push(iss.number);
+          console.log(`   ✅ [Total Queued: ${totalClosed}/${issues.length}] Queued #${iss.number}`);
+        } catch (e) {
+          console.error(`   ❌ Failed to queue #${iss.number}:`, e.message);
+        }
+      }));
+      await new Promise(r => setTimeout(r, 500));
     }
   }
 

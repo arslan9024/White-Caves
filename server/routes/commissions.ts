@@ -10,6 +10,7 @@ import { Router, Request, Response } from 'express';
 import { requirePermission } from '../middleware/rbac.js';
 import { asyncHandler } from '../middleware/errorHandler.js';
 import { prisma } from '../database.js';
+import { cacheService } from '../services/CacheService.js';
 
 const router = Router();
 
@@ -69,55 +70,63 @@ router.get(
   '/summary',
   requirePermission('view_commissions'),
   asyncHandler(async (_req: Request, res: Response) => {
-    const [total, byStatus, avgRate, topAgentRows] = await Promise.all([
-      prisma.commission.aggregate({
-        _count: { _all: true },
-        _sum: { amount: true },
-        _avg: { percentage: true },
-      }),
-      prisma.commission.groupBy({
-        by: ['status'],
-        _sum: { amount: true },
-      }),
-      prisma.commission.aggregate({ _avg: { percentage: true } }),
-      prisma.commission.groupBy({
-        by: ['agentId'],
-        _sum: { amount: true },
-        orderBy: { _sum: { amount: 'desc' } },
-        take: 1,
-      }),
-    ]);
+    const data = await cacheService.getOrSet(
+      'wc:commissions:summary',
+      async () => {
+        const [total, byStatus, avgRate, topAgentRows] = await Promise.all([
+          prisma.commission.aggregate({
+            _count: { _all: true },
+            _sum: { amount: true },
+            _avg: { percentage: true },
+          }),
+          prisma.commission.groupBy({
+            by: ['status'],
+            _sum: { amount: true },
+          }),
+          prisma.commission.aggregate({ _avg: { percentage: true } }),
+          prisma.commission.groupBy({
+            by: ['agentId'],
+            _sum: { amount: true },
+            orderBy: { _sum: { amount: 'desc' } },
+            take: 1,
+          }),
+        ]);
 
-    const sumByStatus = (status: string): number => {
-      const row = byStatus.find(r => r.status === status);
-      return row?._sum?.amount ?? 0;
-    };
+        const sumByStatus = (status: string): number => {
+          const row = byStatus.find(r => r.status === status);
+          return row?._sum?.amount ?? 0;
+        };
 
-    // Resolve top agent name if a result exists
-    let topAgent: { name: string; totalCommission: number } | undefined;
-    if (topAgentRows.length > 0) {
-      const topRow = topAgentRows[0];
-      const agent = await prisma.user.findUnique({
-        where: { id: topRow.agentId },
-        select: { name: true },
-      });
-      topAgent = {
-        name: agent?.name ?? 'Unknown',
-        totalCommission: topRow._sum?.amount ?? 0,
-      };
-    }
+        // Resolve top agent name if a result exists
+        let topAgent: { name: string; totalCommission: number } | undefined;
+        if (topAgentRows.length > 0) {
+          const topRow = topAgentRows[0];
+          const agent = await prisma.user.findUnique({
+            where: { id: topRow.agentId },
+            select: { name: true },
+          });
+          topAgent = {
+            name: agent?.name ?? 'Unknown',
+            totalCommission: topRow._sum?.amount ?? 0,
+          };
+        }
+
+        return {
+          totalCommissions: total._count._all,
+          totalAmount: total._sum?.amount ?? 0,
+          pendingAmount: sumByStatus('pending'),
+          paidAmount: sumByStatus('paid'),
+          approvedAmount: sumByStatus('approved'),
+          averageCommissionRate: avgRate._avg?.percentage ?? 0,
+          topAgent,
+        };
+      },
+      300
+    );
 
     res.status(200).json({
       success: true,
-      data: {
-        totalCommissions: total._count._all,
-        totalAmount: total._sum?.amount ?? 0,
-        pendingAmount: sumByStatus('pending'),
-        paidAmount: sumByStatus('paid'),
-        approvedAmount: sumByStatus('approved'),
-        averageCommissionRate: avgRate._avg?.percentage ?? 0,
-        topAgent,
-      },
+      data,
     });
   })
 );

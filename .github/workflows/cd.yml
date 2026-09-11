@@ -114,7 +114,7 @@ jobs:
           if [ -z "$TEST_BASE_URL" ]; then
             echo "ℹ️ STAGING_URL not set; running local smoke tests."
           fi
-          npm run test:e2e:smoke || true
+          npm run test:e2e:smoke
         env:
           TEST_BASE_URL: ${{ secrets.STAGING_URL }}
       

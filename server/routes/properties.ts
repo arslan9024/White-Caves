@@ -13,6 +13,7 @@ import { validate, rules, validateIdParam } from '../utils/validate.js';
 import { parsePagination } from '../config/pagination.js';
 import { requirePermission, scopeToOwn, requireMinRole } from '../middleware/rbac.js';
 import { cacheService } from '../services/CacheService.js';
+import { invalidatePropertyCache } from '../services/cacheInvalidation.js';
 
 const router = Router();
 
@@ -369,42 +370,50 @@ router.get(
   requirePermission('view_properties'),
   requireMinRole('manager'),
   asyncHandler(async (_req: Request, res: Response) => {
-    const [total, byStatus, byType, priceStats] = await Promise.all([
-      prisma.property.count(),
-      prisma.property.groupBy({ by: ['status'], _count: { _all: true } }),
-      prisma.property.groupBy({ by: ['type'], _count: { _all: true } }),
-      prisma.property.aggregate({
-        _sum: { price: true },
-        _avg: { price: true, sqft: true },
-        _min: { price: true },
-        _max: { price: true },
-      }),
-    ]);
+    const data = await cacheService.getOrSet(
+      'wc:properties:stats',
+      async () => {
+        const [total, byStatus, byType, priceStats] = await Promise.all([
+          prisma.property.count(),
+          prisma.property.groupBy({ by: ['status'], _count: { _all: true } }),
+          prisma.property.groupBy({ by: ['type'], _count: { _all: true } }),
+          prisma.property.aggregate({
+            _sum: { price: true },
+            _avg: { price: true, sqft: true },
+            _min: { price: true },
+            _max: { price: true },
+          }),
+        ]);
 
-    const statusCounts: Record<string, number> = {};
-    byStatus.forEach(s => {
-      statusCounts[s.status] = s._count._all;
-    });
+        const statusCounts: Record<string, number> = {};
+        byStatus.forEach(s => {
+          statusCounts[s.status] = s._count._all;
+        });
 
-    const typeCounts: Record<string, number> = {};
-    byType.forEach(t => {
-      typeCounts[t.type] = t._count._all;
-    });
+        const typeCounts: Record<string, number> = {};
+        byType.forEach(t => {
+          typeCounts[t.type] = t._count._all;
+        });
+
+        return {
+          total,
+          byStatus: statusCounts,
+          byType: typeCounts,
+          portfolioValue: priceStats._sum.price || 0,
+          averagePrice: Math.round(priceStats._avg.price || 0),
+          averageSqft: Math.round(priceStats._avg.sqft || 0),
+          priceRange: {
+            min: priceStats._min.price || 0,
+            max: priceStats._max.price || 0,
+          },
+        };
+      },
+      300
+    );
 
     res.status(200).json({
       success: true,
-      data: {
-        total,
-        byStatus: statusCounts,
-        byType: typeCounts,
-        portfolioValue: priceStats._sum.price || 0,
-        averagePrice: Math.round(priceStats._avg.price || 0),
-        averageSqft: Math.round(priceStats._avg.sqft || 0),
-        priceRange: {
-          min: priceStats._min.price || 0,
-          max: priceStats._max.price || 0,
-        },
-      },
+      data,
     });
   })
 );
@@ -415,28 +424,38 @@ router.get(
   '/inventory-stats',
   requirePermission('view_properties'),
   asyncHandler(async (_req: Request, res: Response) => {
-    const [stageCounts, titleDeedMissing, landlordPassportMissing, ejariMissing, total] =
-      await Promise.all([
-        prisma.property.groupBy({
-          by: ['inventoryStage'],
-          _count: { _all: true },
-        }),
-        prisma.property.count({ where: { titleDeedMissing: true } }),
-        prisma.property.count({ where: { landlordPassportMissing: true } }),
-        prisma.property.count({ where: { ejariMissing: true } }),
-        prisma.property.count(),
-      ]);
+    const data = await cacheService.getOrSet(
+      'wc:properties:inventory-stats',
+      async () => {
+        const [stageCounts, titleDeedMissing, landlordPassportMissing, ejariMissing, total] =
+          await Promise.all([
+            prisma.property.groupBy({
+              by: ['inventoryStage'],
+              _count: { _all: true },
+            }),
+            prisma.property.count({ where: { titleDeedMissing: true } }),
+            prisma.property.count({ where: { landlordPassportMissing: true } }),
+            prisma.property.count({ where: { ejariMissing: true } }),
+            prisma.property.count(),
+          ]);
 
-    const stages: Record<string, number> = {};
-    stageCounts.forEach(s => {
-      stages[s.inventoryStage ?? 'draft_collected'] = s._count._all;
-    });
+        const stages: Record<string, number> = {};
+        stageCounts.forEach(s => {
+          stages[s.inventoryStage ?? 'draft_collected'] = s._count._all;
+        });
+
+        return {
+          total,
+          stages,
+          docAlerts: { titleDeedMissing, landlordPassportMissing, ejariMissing },
+        };
+      },
+      300
+    );
 
     res.status(200).json({
       success: true,
-      total,
-      stages,
-      docAlerts: { titleDeedMissing, landlordPassportMissing, ejariMissing },
+      ...data,
     });
   })
 );
@@ -448,70 +467,78 @@ router.get(
   '/facets',
   requirePermission('view_properties'),
   asyncHandler(async (_req: Request, res: Response) => {
-    const [
-      furnishingGroups,
-      handoverGroups,
-      permitActive,
-      permitPending,
-      noFeeCount,
-      lowFeeCount,
-      standardFeeCount,
-    ] = await Promise.all([
-      // furnishing facets
-      prisma.property.groupBy({ by: ['furnished'], _count: { _all: true } }),
+    const data = await cacheService.getOrSet(
+      'wc:properties:facets',
+      async () => {
+        const [
+          furnishingGroups,
+          handoverGroups,
+          permitActive,
+          permitPending,
+          noFeeCount,
+          lowFeeCount,
+          standardFeeCount,
+        ] = await Promise.all([
+          // furnishing facets
+          prisma.property.groupBy({ by: ['furnished'], _count: { _all: true } }),
 
-      // handoverStage facets (via inventoryStage)
-      prisma.property.groupBy({ by: ['inventoryStage'], _count: { _all: true } }),
+          // handoverStage facets (via inventoryStage)
+          prisma.property.groupBy({ by: ['inventoryStage'], _count: { _all: true } }),
 
-      // permitStatus facets (derived from buildingPermitNumber presence)
-      prisma.property.count({
-        where: { buildingPermitNumber: { not: null } as Prisma.StringNullableFilter },
-      }),
-      prisma.property.count({ where: { buildingPermitNumber: null } }),
+          // permitStatus facets (derived from buildingPermitNumber presence)
+          prisma.property.count({
+            where: { buildingPermitNumber: { not: null } as Prisma.StringNullableFilter },
+          }),
+          prisma.property.count({ where: { buildingPermitNumber: null } }),
 
-      // feeBand facets (commissionPercent ranges)
-      prisma.property.count({
-        where: { commissionPercent: { lte: 0 } as Prisma.FloatNullableFilter },
-      }),
-      prisma.property.count({
-        where: { commissionPercent: { gt: 0, lte: 2 } as Prisma.FloatNullableFilter },
-      }),
-      prisma.property.count({
-        where: { commissionPercent: { gt: 2 } as Prisma.FloatNullableFilter },
-      }),
-    ]);
+          // feeBand facets (commissionPercent ranges)
+          prisma.property.count({
+            where: { commissionPercent: { lte: 0 } as Prisma.FloatNullableFilter },
+          }),
+          prisma.property.count({
+            where: { commissionPercent: { gt: 0, lte: 2 } as Prisma.FloatNullableFilter },
+          }),
+          prisma.property.count({
+            where: { commissionPercent: { gt: 2 } as Prisma.FloatNullableFilter },
+          }),
+        ]);
 
-    // Build furnishing counts
-    const furnishing: Record<string, number> = { furnished: 0, unfurnished: 0 };
-    furnishingGroups.forEach(g => {
-      if (g.furnished) furnishing['furnished'] = g._count._all;
-      else furnishing['unfurnished'] = g._count._all;
-    });
+        // Build furnishing counts
+        const furnishing: Record<string, number> = { furnished: 0, unfurnished: 0 };
+        furnishingGroups.forEach(g => {
+          if (g.furnished) furnishing['furnished'] = g._count._all;
+          else furnishing['unfurnished'] = g._count._all;
+        });
 
-    // Build handoverStage counts — map inventoryStage back to task param names
-    const stageReverseMap: Record<string, string> = {
-      handed_over: 'ready',
-      draft_collected: 'off-plan',
-      verified_active: 'under-construction',
-    };
-    const handoverStage: Record<string, number> = {
-      ready: 0,
-      'off-plan': 0,
-      'under-construction': 0,
-    };
-    handoverGroups.forEach(g => {
-      const label = stageReverseMap[g.inventoryStage ?? 'draft_collected'];
-      if (label) handoverStage[label] = (handoverStage[label] ?? 0) + g._count._all;
-    });
+        // Build handoverStage counts — map inventoryStage back to task param names
+        const stageReverseMap: Record<string, string> = {
+          handed_over: 'ready',
+          draft_collected: 'off-plan',
+          verified_active: 'under-construction',
+        };
+        const handoverStage: Record<string, number> = {
+          ready: 0,
+          'off-plan': 0,
+          'under-construction': 0,
+        };
+        handoverGroups.forEach(g => {
+          const label = stageReverseMap[g.inventoryStage ?? 'draft_collected'];
+          if (label) handoverStage[label] = (handoverStage[label] ?? 0) + g._count._all;
+        });
+
+        return {
+          furnishing,
+          handoverStage,
+          permitStatus: { active: permitActive, pending: permitPending },
+          feeBand: { 'no-fee': noFeeCount, 'low-fee': lowFeeCount, 'standard-fee': standardFeeCount },
+        };
+      },
+      300
+    );
 
     res.status(200).json({
       success: true,
-      data: {
-        furnishing,
-        handoverStage,
-        permitStatus: { active: permitActive, pending: permitPending },
-        feeBand: { 'no-fee': noFeeCount, 'low-fee': lowFeeCount, 'standard-fee': standardFeeCount },
-      },
+      data,
     });
   })
 );
@@ -770,8 +797,8 @@ router.post(
       },
     });
 
-    // Invalidate list cache on creation
-    await cacheService.invalidate('properties:list:*');
+    // Invalidate property cache pools on creation
+    await invalidatePropertyCache(property.id);
 
     res.status(201).json({ success: true, data: property });
   })
@@ -922,11 +949,8 @@ router.put(
       },
     });
 
-    // Invalidate caches
-    await Promise.all([
-      cacheService.invalidate('properties:list:*'),
-      cacheService.invalidate(`properties:detail:${id}`),
-    ]);
+    // Invalidate property cache pools
+    await invalidatePropertyCache(id);
 
     res.status(200).json({ success: true, data: property });
   })
@@ -1079,10 +1103,7 @@ router.patch(
       },
     });
 
-    await Promise.all([
-      cacheService.invalidate('properties:list:*'),
-      cacheService.invalidate(`properties:detail:${id}`),
-    ]);
+    await invalidatePropertyCache(id);
 
     res.status(200).json({ success: true, data: property });
   })
@@ -1124,10 +1145,7 @@ router.delete(
     });
 
     // Invalidate cached list + this specific property detail
-    await Promise.all([
-      cacheService.invalidate('properties:list:*'),
-      cacheService.invalidate(`properties:detail:${id}`),
-    ]);
+    await invalidatePropertyCache(id);
 
     res.status(200).json({ success: true, message: `Property "${existing.title}" deleted` });
   })

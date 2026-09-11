@@ -745,7 +745,8 @@ describe('Auth Routes — /api/auth', () => {
         twoFactorEnabled: true,
         totpSecret: 'JBSWY3DPEHPK3PXP',
       });
-      mockPrisma.activity.count.mockResolvedValueOnce(5);
+      // First count is IP check (0), second count is account check (5 -> locked)
+      mockPrisma.activity.count.mockResolvedValueOnce(0).mockResolvedValueOnce(5);
       mockPrisma.activity.findFirst.mockResolvedValueOnce({
         createdAt: new Date(Date.now() - 5 * 60 * 1000),
       });
@@ -1222,6 +1223,19 @@ describe('Auth Routes — /api/auth', () => {
         })
       );
     });
+
+    it('invalidates refreshTokenHash in database even when refresh cookie is absent', async () => {
+      await request(createApp('owner', 'user-logout-target'))
+        .post('/api/auth/logout')
+        .set('Cookie', `csrf_token=${csrfToken}`)
+        .set('X-CSRF-Token', csrfToken);
+      expect(mockPrisma.user.update).toHaveBeenCalledWith(
+        expect.objectContaining({
+          where: { id: 'user-logout-target' },
+          data: expect.objectContaining({ refreshTokenHash: null }),
+        })
+      );
+    });
   });
 
   // ── PUT /password ────────────────────────────────────────────────
@@ -1289,7 +1303,15 @@ describe('Auth Routes — /api/auth', () => {
         .send({ currentPassword: 'OldValid123', newPassword: 'NewValid456' });
       expect(res.status).toBe(200);
       expect(res.body.success).toBe(true);
-      expect(mockPrisma.user.update).toHaveBeenCalled();
+      expect(mockPrisma.user.update).toHaveBeenCalledWith(
+        expect.objectContaining({
+          where: { id: 'user-1' },
+          data: expect.objectContaining({ refreshTokenHash: null }),
+        })
+      );
+      const setCookie = res.headers['set-cookie'] as string[] | string | undefined;
+      const cookieStr = Array.isArray(setCookie) ? setCookie.join('; ') : String(setCookie ?? '');
+      expect(cookieStr).toContain('refresh_token=');
     });
 
     it('writes a password_changed audit row on success', async () => {
@@ -1740,6 +1762,75 @@ describe('Auth Routes — /api/auth', () => {
       const cookieStr = Array.isArray(setCookie) ? setCookie.join('; ') : String(setCookie ?? '');
       expect(cookieStr).toContain('refresh_token=');
       expect(cookieStr.toLowerCase()).toContain('httponly');
+    });
+  });
+
+  // ── WebAuthn Security Endpoints ────────────────────────────────────
+  describe('WebAuthn Endpoints Security', () => {
+    describe('POST /api/auth/webauthn/register/options', () => {
+      it('rejects unauthenticated request with 401', async () => {
+        const res = await request(createApp(null, null))
+          .post('/api/auth/webauthn/register/options')
+          .send({ userId: 'user-1', userName: 'testuser' });
+        expect(res.status).toBe(401);
+      });
+
+      it('rejects registration when caller tries to register for another user with 403', async () => {
+        const res = await request(createApp('agent', 'user-agent-1'))
+          .post('/api/auth/webauthn/register/options')
+          .send({ userId: 'victim-user-2', userName: 'victim' });
+        expect(res.status).toBe(403);
+        expect(res.body.error).toMatch(/cannot register biometrics for another user/i);
+      });
+
+      it('succeeds for authenticated caller registering for own userId', async () => {
+        const res = await request(createApp('agent', 'user-agent-1'))
+          .post('/api/auth/webauthn/register/options')
+          .send({ userId: 'user-agent-1', userName: 'testagent', displayName: 'Agent Test' });
+        expect(res.status).toBe(200);
+        expect(res.body.success).toBe(true);
+        expect(res.body.options).toBeDefined();
+        expect(res.body.options.challenge).toBeDefined();
+      });
+    });
+
+    describe('POST /api/auth/webauthn/register/verify', () => {
+      it('rejects unauthenticated request with 401', async () => {
+        const res = await request(createApp(null, null))
+          .post('/api/auth/webauthn/register/verify')
+          .send({ userId: 'user-1', credential: { id: 'c1', rawId: 'r1' } });
+        expect(res.status).toBe(401);
+      });
+
+      it('rejects verification when caller tries to verify for another user with 403', async () => {
+        const res = await request(createApp('agent', 'user-agent-1'))
+          .post('/api/auth/webauthn/register/verify')
+          .send({ userId: 'victim-user-2', credential: { id: 'c1', rawId: 'r1' } });
+        expect(res.status).toBe(403);
+        expect(res.body.error).toMatch(/cannot register biometrics for another user/i);
+      });
+    });
+
+    describe('DELETE /api/auth/webauthn/credentials/:userId/:credentialId', () => {
+      it('rejects unauthenticated request with 401', async () => {
+        const res = await request(createApp(null, null))
+          .delete('/api/auth/webauthn/credentials/user-1/cred-1');
+        expect(res.status).toBe(401);
+      });
+
+      it('rejects deletion of another user credentials with 403', async () => {
+        const res = await request(createApp('agent', 'user-agent-1'))
+          .delete('/api/auth/webauthn/credentials/victim-user-2/cred-1');
+        expect(res.status).toBe(403);
+        expect(res.body.error).toMatch(/cannot delete biometrics for another user/i);
+      });
+
+      it('succeeds when user deletes their own credential', async () => {
+        const res = await request(createApp('agent', 'user-agent-1'))
+          .delete('/api/auth/webauthn/credentials/user-agent-1/cred-1');
+        expect(res.status).toBe(200);
+        expect(res.body.success).toBe(true);
+      });
     });
   });
 });

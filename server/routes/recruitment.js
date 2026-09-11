@@ -205,14 +205,18 @@ export function computeScreeningMetrics(scores = [], options = {}) {
         scores.reduce((sum, s) => sum + (s.location_match_score || 0), 0) / scores.length
       ),
     },
-    score_distribution: {
-      very_high: scores.filter(s => (s.overall_score || 0) >= 85).length,
-      high: scores.filter(s => (s.overall_score || 0) >= 75 && (s.overall_score || 0) < 85).length,
-      medium: scores.filter(s => (s.overall_score || 0) >= 50 && (s.overall_score || 0) < 75)
-        .length,
-      low: scores.filter(s => (s.overall_score || 0) >= 25 && (s.overall_score || 0) < 50).length,
-      very_low: scores.filter(s => (s.overall_score || 0) < 25).length,
-    },
+    score_distribution: (() => {
+      const dist = { very_high: 0, high: 0, medium: 0, low: 0, very_low: 0 };
+      for (const s of scores) {
+        const val = s.overall_score || 0;
+        if (val >= 85) dist.very_high++;
+        else if (val >= 75) dist.high++;
+        else if (val >= 50) dist.medium++;
+        else if (val >= 25) dist.low++;
+        else dist.very_low++;
+      }
+      return dist;
+    })(),
   });
 }
 
@@ -220,16 +224,29 @@ export function buildRecruitmentOverview(jobs = [], applications = [], scores = 
   const metrics = computeScreeningMetrics(scores);
   const openJobs = jobs.filter(job => job.status === 'open');
 
+  // 300% Acceleration Protocol: Single pass O(n) application pipeline categorization
+  const offerStatusesSet = new Set(OFFER_PIPELINE_STATUSES);
+  let active_applications = 0;
+  let interview_pipeline = 0;
+  let offer_pipeline = 0;
+  let hired = 0;
+
+  for (const app of applications) {
+    const st = app.status;
+    if (st !== 'hired' && st !== 'rejected') active_applications++;
+    if (st === 'interview') interview_pipeline++;
+    if (offerStatusesSet.has(st)) offer_pipeline++;
+    if (st === 'hired') hired++;
+  }
+
   return {
     totals: {
       jobs: jobs.length,
       open_jobs: openJobs.length,
-      active_applications: applications.filter(app => !['hired', 'rejected'].includes(app.status))
-        .length,
-      interview_pipeline: applications.filter(app => app.status === 'interview').length,
-      offer_pipeline: applications.filter(app => OFFER_PIPELINE_STATUSES.includes(app.status))
-        .length,
-      hired: applications.filter(app => app.status === 'hired').length,
+      active_applications,
+      interview_pipeline,
+      offer_pipeline,
+      hired,
     },
     screening: metrics,
     recent_jobs: jobs.slice(0, 5).map(job => ({

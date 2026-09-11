@@ -44,11 +44,9 @@ jobs:
 
       - name: Run SEO quality gate
         run: npm run quality:seo
-        continue-on-error: true
 
       - name: Run assistant endpoint contract gate
         run: npm run test:assistant-contract
-        continue-on-error: true
       
       - name: Run unit and integration tests
         run: npm run test:forks
@@ -86,7 +84,6 @@ jobs:
       
       - name: Run E2E tests
         run: npm run test:e2e
-        continue-on-error: true
       
       - name: Upload E2E test report
         uses: actions/upload-artifact@v4
@@ -120,7 +117,6 @@ jobs:
       
       - name: Run accessibility audit tests
         run: npm run test:e2e:accessibility
-        continue-on-error: true
       
       - name: Upload accessibility report
         uses: actions/upload-artifact@v4
@@ -174,7 +170,6 @@ jobs:
       
       - name: Run performance baseline tests
         run: npm run test:e2e:performance
-        continue-on-error: true
       
       - name: Upload performance report
         uses: actions/upload-artifact@v4

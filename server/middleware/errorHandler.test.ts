@@ -64,6 +64,63 @@ describe('AppError', () => {
     expect(error.name).toBe('Error');
     expect(error instanceof Error).toBe(true);
   });
+
+  it('supports SDD signature: new AppError(statusCode, code, message)', () => {
+    const error = new AppError(404, 'PROPERTY_NOT_FOUND', 'Property 123 does not exist');
+    expect(error.statusCode).toBe(404);
+    expect(error.code).toBe('PROPERTY_NOT_FOUND');
+    expect(error.message).toBe('Property 123 does not exist');
+    expect(error.isOperational).toBe(true);
+    expect(AppError.isAppError(error)).toBe(true);
+  });
+
+  it('provides static factory methods', () => {
+    const badReq = AppError.badRequest('Invalid ID', 'INVALID_ID', [{ field: 'id', message: 'Must be UUID' }]);
+    expect(badReq.statusCode).toBe(400);
+    expect(badReq.code).toBe('INVALID_ID');
+    expect(badReq.errors).toEqual([{ field: 'id', message: 'Must be UUID' }]);
+
+    const unauth = AppError.unauthorized('Please log in');
+    expect(unauth.statusCode).toBe(401);
+    expect(unauth.code).toBe('UNAUTHORIZED');
+
+    const forbidden = AppError.forbidden();
+    expect(forbidden.statusCode).toBe(403);
+    expect(forbidden.code).toBe('FORBIDDEN');
+
+    const notFound = AppError.notFound('Contract');
+    expect(notFound.statusCode).toBe(404);
+    expect(notFound.message).toBe('Contract not found');
+
+    const conflict = AppError.conflict('Already exists');
+    expect(conflict.statusCode).toBe(409);
+
+    const validation = AppError.validation('Missing fields', [{ field: 'email', message: 'Required' }]);
+    expect(validation.statusCode).toBe(422);
+    expect(validation.message).toBe('Validation error: Missing fields');
+
+    const internal = AppError.internal('Something crashed');
+    expect(internal.statusCode).toBe(500);
+  });
+
+  it('correctly serializes via toJSON()', () => {
+    const err = new AppError('Lead not found', 404, { code: 'LEAD_NOT_FOUND' });
+    const json = err.toJSON();
+    expect(json).toEqual({
+      status: 'error',
+      success: false,
+      statusCode: 404,
+      message: 'Lead not found',
+      code: 'LEAD_NOT_FOUND',
+    });
+  });
+
+  it('detects AppError via isAppError type guard', () => {
+    expect(AppError.isAppError(new AppError('error'))).toBe(true);
+    expect(AppError.isAppError(new Error('generic'))).toBe(false);
+    expect(AppError.isAppError(null)).toBe(false);
+    expect(AppError.isAppError({ statusCode: 500 })).toBe(false);
+  });
 });
 
 // ─── asyncHandler ───────────────────────────────────────────────────────

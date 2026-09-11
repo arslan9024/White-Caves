@@ -50,13 +50,17 @@ router.post('/phone/validate', (req, res) => {
   try {
     const { numbers } = req.body;
     const results = numbers.map(n => PhoneNumberService.validateAndFormat(n));
+    let validCount = 0;
+    for (const r of results) {
+      if (r && r.valid) validCount++;
+    }
     res.json({
       success: true,
       results,
       summary: {
         total: results.length,
-        valid: results.filter(r => r.valid).length,
-        invalid: results.filter(r => !r.valid).length
+        valid: validCount,
+        invalid: results.length - validCount
       }
     });
   } catch (error) {
