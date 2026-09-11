@@ -1,4 +1,4 @@
-# blocker-auto-escalate.ps1 -- Auto-escalate retrying/waiting_ack tasks stuck for multiple cycles
+﻿# blocker-auto-escalate.ps1 -- Auto-escalate retrying/waiting_ack tasks stuck for multiple cycles
 
 param(
   [string]$WorkspaceRoot = ".",

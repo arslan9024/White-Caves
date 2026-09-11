@@ -1,4 +1,4 @@
-param(
+﻿param(
   [string]$WorkspaceRoot = ".",
   [switch]$AutoFix,
   [switch]$IncludeE2E,
@@ -19,8 +19,8 @@ Set-Location $root
 $stateDir = Join-Path $root "logs\orchestrator"
 New-Item -ItemType Directory -Path $stateDir -Force | Out-Null
 $scanLog = Join-Path $stateDir "development-practice-sweep.log"
-$problemScanScript = Join-Path $root "scripts\orchestrator\project-problem-scan.ps1"
-$policyFile = Join-Path $root "scripts\orchestrator\policy.json"
+$problemScanScript = Join-Path $root "aegis\orchestrator\project-problem-scan.ps1"
+$policyFile = Join-Path $root "aegis\orchestrator\policy.json"
 
 function Test-NpmScript {
   param(

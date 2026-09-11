@@ -1,4 +1,4 @@
-# output-log.ps1 -- Persist AI output text against a task ID.
+﻿# output-log.ps1 -- Persist AI output text against a task ID.
 # Saves to logs/orchestrator/outputs/TASKID.md  and attaches a reference
 # to the task's evidence block in the queue.
 param(
@@ -22,7 +22,7 @@ $outputsDir = Join-Path $stateDir "outputs"
 $queueFile  = Join-Path $stateDir "task-queue.json"
 New-Item -ItemType Directory -Force -Path $outputsDir | Out-Null
 
-# ── Determine content ─────────────────────────────────────────────────────────
+# â”€â”€ Determine content â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 if ($OutputFile -ne "" -and (Test-Path $OutputFile)) {
   $content = Get-Content $OutputFile -Raw
 }
@@ -34,7 +34,7 @@ else {
   exit 1
 }
 
-# ── Write output log ──────────────────────────────────────────────────────────
+# â”€â”€ Write output log â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 $logPath  = Join-Path $outputsDir "$TaskId.md"
 $header   = @(
   "# AI Output Log -- $TaskId"
@@ -52,7 +52,7 @@ $fullContent | Set-Content -Path $logPath -Encoding UTF8
 
 Write-Host "[LOGGED] Output saved to: $logPath" -ForegroundColor Green
 
-# ── Update task evidence in queue ─────────────────────────────────────────────
+# â”€â”€ Update task evidence in queue â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 $mutex = New-Object System.Threading.Mutex($false, "Global\WhiteCaves_Orchestrator_Queue")
 try {
   $null = $mutex.WaitOne()
@@ -82,7 +82,7 @@ finally {
   $mutex.ReleaseMutex()
 }
 
-# ── Summary ───────────────────────────────────────────────────────────────────
+# â”€â”€ Summary â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 Write-Host ""
 Write-Host "Output log stored. Next step:" -ForegroundColor White
 if ($TargetFile -ne "") {

@@ -8,7 +8,7 @@ param(
   [switch]$Json          # output raw JSON for other scripts to consume
 )
 
-$policyFile = Join-Path $WorkspaceRoot "scripts\orchestrator\policy.json"
+$policyFile = Join-Path $WorkspaceRoot "aegis\orchestrator\policy.json"
 $readinessThreshold = 60
 $approvalPhrase = "@Ada — Context Ready (60% Readiness) — Coding Phase Approved"
 if (Test-Path $policyFile) {

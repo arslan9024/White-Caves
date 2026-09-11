@@ -9,7 +9,7 @@ param(
 
 $stateDir   = Join-Path $WorkspaceRoot "logs\orchestrator"
 $queueFile  = Join-Path $stateDir "task-queue.json"
-$promptFile = Join-Path $WorkspaceRoot "scripts\orchestrator\prompts.json"
+$promptFile = Join-Path $WorkspaceRoot "aegis\orchestrator\prompts.json"
 
 if (-not (Test-Path $promptFile)) {
   Write-Host "[ERROR] prompts.json not found: $promptFile" -ForegroundColor Red

@@ -1,4 +1,4 @@
-# autopilot-unlimited.ps1 - White Caves Unlimited Autopilot Loop
+﻿# autopilot-unlimited.ps1 - White Caves Unlimited Autopilot Loop
 #
 # Every iteration of the loop runs the full intelligence cycle:
 #
@@ -40,7 +40,7 @@ param(
 
 $ErrorActionPreference = "Continue"
 $root     = Resolve-Path $WorkspaceRoot
-$scripts  = Join-Path $root "scripts\orchestrator"
+$scripts  = Join-Path $root "aegis\orchestrator"
 $logsDir  = Join-Path $root "logs\orchestrator"
 $w        = 72
 

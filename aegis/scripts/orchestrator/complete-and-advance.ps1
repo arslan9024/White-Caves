@@ -1,4 +1,4 @@
-# complete-and-advance.ps1 - One command to complete a task and show the next one.
+﻿# complete-and-advance.ps1 - One command to complete a task and show the next one.
 # 1. Auto-starts the task if still queued (manual free-agent mode)
 # 2. Marks the task done (or waiting_ack if FEEDS_ACK required)
 # 3. Finds and displays the agent's next queued task + prompt

@@ -1,4 +1,4 @@
-param(
+﻿param(
   [string]$WorkspaceRoot = ".",
   [string]$Reason = "Manual Aegis regeneration",
   [switch]$Force
@@ -9,11 +9,11 @@ $ErrorActionPreference = "Stop"
 $root = Resolve-Path $WorkspaceRoot
 $logsDir = Join-Path $root "logs\orchestrator"
 $queueFile = Join-Path $logsDir "task-queue.json"
-$promptsFile = Join-Path $root "scripts\orchestrator\prompts.json"
-$policyFile = Join-Path $root "scripts\orchestrator\policy.json"
+$promptsFile = Join-Path $root "aegis\orchestrator\prompts.json"
+$policyFile = Join-Path $root "aegis\orchestrator\policy.json"
 $stateFile = Join-Path $logsDir "aegis-state.json"
 $archiveDir = Join-Path $logsDir "archive"
-$discoverUpgradeScript = Join-Path $root "scripts\orchestrator\discover-upgrade.js"
+$discoverUpgradeScript = Join-Path $root "aegis\orchestrator\discover-upgrade.js"
 
 $defaultPhaseRoadmap = @(
   "Wave 09 - UX Foundation",

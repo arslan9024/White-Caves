@@ -1,4 +1,4 @@
-param(
+﻿param(
   [string]$WorkspaceRoot = ".",
   [int]$StaleMinutes = 10,
   [int]$MaxAttempts = 3

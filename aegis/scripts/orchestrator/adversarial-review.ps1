@@ -1,4 +1,4 @@
-# scripts/orchestrator/adversarial-review.ps1
+﻿# scripts/orchestrator/adversarial-review.ps1
 # AEGIS Adversarial Review Phase (Phase 2 SDLC)
 # Ensures no code survives without challenge. Fails tasks that do not meet standards.
 

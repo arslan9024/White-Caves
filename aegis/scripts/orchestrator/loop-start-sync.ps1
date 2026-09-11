@@ -1,4 +1,4 @@
-# loop-start-sync.ps1 -- Sync working branch with integration branch at loop start
+﻿# loop-start-sync.ps1 -- Sync working branch with integration branch at loop start
 # Creates stash snapshot metadata and supports optional wave feature branch creation.
 
 param(
@@ -11,7 +11,7 @@ $ErrorActionPreference = "Continue"
 $root = Resolve-Path $WorkspaceRoot
 $logsDir = Join-Path $root "logs\orchestrator"
 $snapshotFile = Join-Path $logsDir "loop-snapshots.json"
-$policyUtils = Join-Path $root "scripts\orchestrator\policy-utils.ps1"
+$policyUtils = Join-Path $root "aegis\orchestrator\policy-utils.ps1"
 $w = 72
 
 if (-not (Test-Path $logsDir)) {

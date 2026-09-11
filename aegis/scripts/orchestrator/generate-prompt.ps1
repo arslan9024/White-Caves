@@ -1,4 +1,4 @@
-# generate-prompt.ps1 -- Generate prompts from templates and optionally save to prompts.json
+﻿# generate-prompt.ps1 -- Generate prompts from templates and optionally save to prompts.json
 
 param(
   [string]$WorkspaceRoot = ".",
@@ -12,7 +12,7 @@ param(
 )
 
 $root = Resolve-Path $WorkspaceRoot
-$templateDir = Join-Path $root "scripts\orchestrator\prompt-templates"
+$templateDir = Join-Path $root "aegis\orchestrator\prompt-templates"
 $templatePath = Join-Path $templateDir (([string]$Action).ToUpper() + ".tpl")
 
 if (-not (Test-Path $templatePath)) {
@@ -33,7 +33,7 @@ Write-Host "Generated prompt:" -ForegroundColor Cyan
 Write-Host $out -ForegroundColor White
 
 if (-not [string]::IsNullOrWhiteSpace($TaskId)) {
-  $pm = Join-Path $root "scripts\orchestrator\prompt-manager.ps1"
+  $pm = Join-Path $root "aegis\orchestrator\prompt-manager.ps1"
   if (Test-Path $pm) {
     & powershell -ExecutionPolicy Bypass -File $pm -WorkspaceRoot $root -Save -TaskId $TaskId -Text $out -Agent $Agent -Action $Action -Target $File
   }

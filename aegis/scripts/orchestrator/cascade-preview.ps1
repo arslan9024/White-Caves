@@ -24,7 +24,7 @@ $SECS_PER_SESSION = 3
 $w = 72
 $root        = Resolve-Path $WorkspaceRoot
 $queueFile   = Join-Path $root "logs\orchestrator\task-queue.json"
-$promptsFile = Join-Path $root "scripts\orchestrator\prompts.json"
+$promptsFile = Join-Path $root "aegis\orchestrator\prompts.json"
 
 if (-not (Test-Path $queueFile))   { Write-Host "[ERROR] queue not found"   -ForegroundColor Red; exit 1 }
 if (-not (Test-Path $promptsFile)) { Write-Host "[ERROR] prompts not found" -ForegroundColor Red; exit 1 }

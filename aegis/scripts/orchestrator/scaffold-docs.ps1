@@ -1,4 +1,4 @@
-# scaffold-docs.ps1 -- Creates stub markdown files for every MISSING gate-check target.
+﻿# scaffold-docs.ps1 -- Creates stub markdown files for every MISSING gate-check target.
 # Moves gate-check status from MISSING to BLOCKED so free agents have real files to expand.
 #
 # Each stub contains:

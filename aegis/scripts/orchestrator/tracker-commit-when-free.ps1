@@ -1,4 +1,4 @@
-param(
+﻿param(
   [string]$WorkspaceRoot = ".",
   [int]$TimeoutSeconds = 90,
   [int]$PollIntervalSeconds = 1,

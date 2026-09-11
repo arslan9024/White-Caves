@@ -1,4 +1,4 @@
-# worker-lane.ps1 -- Lane-aware background worker.
+﻿# worker-lane.ps1 -- Lane-aware background worker.
 # Claims the next ready task in its assigned lane (A/B/C/D) every PollSeconds.
 # Uses dispatch-lane.ps1 for smarter routing instead of agent-locked dispatch.
 param(
@@ -15,7 +15,7 @@ param(
 $stateDir       = Join-Path $WorkspaceRoot "logs\orchestrator"
 $logFile        = Join-Path $stateDir "worker-lane-$Lane.log"
 $queueFile      = Join-Path $stateDir "task-queue.json"
-$policyFile     = Join-Path $WorkspaceRoot "scripts\orchestrator\policy.json"
+$policyFile     = Join-Path $WorkspaceRoot "aegis\orchestrator\policy.json"
 $aegisScript    = Join-Path $PSScriptRoot "aegis-regenerate.ps1"
 $regenStateFile = Join-Path $stateDir "aegis-regen-state.json"
 $dispatchScript = Join-Path $PSScriptRoot "dispatch-lane.ps1"

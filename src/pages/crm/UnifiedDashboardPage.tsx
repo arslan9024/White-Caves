@@ -110,7 +110,14 @@ export const UnifiedDashboardPage: FC = () => {
   const isMasterUser = isFounder || isManagingDirector || isMaster || accessLevel >= 5;
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: '20px', width: '100%', maxWidth: '1600px', margin: '0 auto' }}>
+    <div style={{ display: 'flex', flexDirection: 'column', gap: '24px', width: '100%', maxWidth: '1600px', margin: '0 auto', padding: '24px', boxSizing: 'border-box' }}>
+      {/* Real-time Indicator */}
+      <div style={{ display: 'flex', justifyContent: 'flex-end', width: '100%' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '0.8rem', color: '#64748B' }}>
+          <div style={{ width: '8px', height: '8px', borderRadius: '50%', background: '#10B981', animation: 'pulse 2s infinite' }} />
+          Live Data Active • Last updated just now
+        </div>
+      </div>
       {/* Managing Director Executive Greeting Banner */}
       <div
         style={{
@@ -139,7 +146,7 @@ export const UnifiedDashboardPage: FC = () => {
           </p>
         </div>
 
-        <div style={{ display: 'flex', gap: '20px', textAlign: 'right' }}>
+        <div style={{ display: 'flex', gap: '24px', textAlign: 'right', flexWrap: 'wrap', justifyContent: 'flex-end' }}>
           <div>
             <div style={{ fontSize: '0.75rem', color: 'var(--color-94a3b8, #94A3B8)' }}>Active Inventory</div>
             <div style={{ fontSize: '1.25rem', fontWeight: 800, color: 'var(--color-38bdf8, #38BDF8)' }}>{propertiesList.length} Units</div>
@@ -177,7 +184,10 @@ export const UnifiedDashboardPage: FC = () => {
                 cursor: 'pointer',
                 whiteSpace: 'nowrap',
                 transition: 'all 200ms ease',
+                boxShadow: isActive ? '0 4px 12px rgba(239, 68, 68, 0.15)' : 'none',
               }}
+              onMouseEnter={(e) => { if (!isActive) e.currentTarget.style.background = '#F8FAFC'; }}
+              onMouseLeave={(e) => { if (!isActive) e.currentTarget.style.background = WHITE; }}
             >
               <span style={{ fontSize: '0.7rem', fontWeight: 800, opacity: 0.6 }}>{tab.num}</span>
               <span>{tab.icon}</span>
@@ -188,7 +198,14 @@ export const UnifiedDashboardPage: FC = () => {
       </div>
 
       {/* Department Viewport Area */}
-      <React.Suspense fallback={<div style={{ padding: '40px', textAlign: 'center', color: 'var(--text-secondary, #64748B)' }}>Loading Department Viewport...</div>}>
+      <React.Suspense fallback={
+        <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', padding: '60px', minHeight: '400px', background: WHITE, borderRadius: '16px', border: '1px solid #E2E8F0' }}>
+          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '16px' }}>
+            <div style={{ width: '40px', height: '40px', border: '3px solid #E2E8F0', borderTopColor: RED, borderRadius: '50%', animation: 'spin 1s linear infinite' }} />
+            <div style={{ color: '#64748B', fontWeight: 500 }}>Loading Department Data...</div>
+          </div>
+        </div>
+      }>
         {activeDepartment === 'sales' && (
           <div style={{ background: WHITE, borderRadius: '16px', padding: '24px', border: '1px solid #E2E8F0' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '20px' }}>
@@ -213,24 +230,34 @@ export const UnifiedDashboardPage: FC = () => {
                         </div>
                       )}
                     </div>
-                    {stageLeads.slice(0, 4).map(lead => (
-                      <div
-                        key={lead.id}
-                        onClick={() => setSelectedLeadForModal(lead)}
-                        style={{
-                          background: WHITE,
-                          padding: '12px',
-                          borderRadius: '8px',
-                          marginBottom: '8px',
-                          border: '1px solid #E2E8F0',
-                          cursor: 'pointer',
-                        }}
-                      >
-                        <div style={{ fontWeight: 600, fontSize: '0.85rem' }}>{lead.name}</div>
-                        <div style={{ fontSize: '0.75rem', color: 'var(--text-secondary, #64748B)' }}>Budget: AED {lead.budgetAED?.toLocaleString()}</div>
-                        <div style={{ fontSize: '0.7rem', color: 'var(--accent-green, #059669)', marginTop: '4px' }}>Nadia Score: {lead.aiConfidenceScore}/100</div>
+                    {stageLeads.length === 0 ? (
+                      <div style={{ padding: '24px 12px', textAlign: 'center', color: '#94A3B8', fontSize: '0.85rem', border: '1px dashed #CBD5E1', borderRadius: '8px' }}>
+                        No leads in this stage
                       </div>
-                    ))}
+                    ) : (
+                      stageLeads.slice(0, 4).map(lead => (
+                        <div
+                          key={lead.id}
+                          onClick={() => setSelectedLeadForModal(lead)}
+                          style={{
+                            background: WHITE,
+                            padding: '12px',
+                            borderRadius: '8px',
+                            marginBottom: '8px',
+                            border: '1px solid #E2E8F0',
+                            cursor: 'pointer',
+                            transition: 'all 0.2s ease',
+                            boxShadow: '0 2px 4px rgba(0,0,0,0.02)'
+                          }}
+                          onMouseEnter={(e) => { e.currentTarget.style.transform = 'translateY(-2px)'; e.currentTarget.style.boxShadow = '0 4px 12px rgba(0,0,0,0.05)'; }}
+                          onMouseLeave={(e) => { e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.boxShadow = '0 2px 4px rgba(0,0,0,0.02)'; }}
+                        >
+                          <div style={{ fontWeight: 600, fontSize: '0.85rem' }}>{lead.name}</div>
+                          <div style={{ fontSize: '0.75rem', color: 'var(--text-secondary, #64748B)' }}>Budget: AED {lead.budgetAED?.toLocaleString()}</div>
+                          <div style={{ fontSize: '0.7rem', color: 'var(--accent-green, #059669)', marginTop: '4px' }}>Nadia Score: {lead.aiConfidenceScore}/100</div>
+                        </div>
+                      ))
+                    )}
                   </div>
                 );
               })}

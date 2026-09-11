@@ -1,4 +1,4 @@
-param(
+﻿param(
   [string]$WorkspaceRoot = ".",
   [string]$OutputFile = "",
   [switch]$Brief,
@@ -9,7 +9,7 @@ $root = Resolve-Path $WorkspaceRoot
 $stateDir = Join-Path $root "logs\orchestrator"
 $queueFile = Join-Path $stateDir "task-queue.json"
 $cycleFile = Join-Path $stateDir "cycle-log.json"
-$policyFile = Join-Path $root "scripts\orchestrator\policy.json"
+$policyFile = Join-Path $root "aegis\orchestrator\policy.json"
 $historyFile = Join-Path $stateDir "progress-intelligence-history.json"
 
 if ([string]::IsNullOrWhiteSpace($OutputFile)) {

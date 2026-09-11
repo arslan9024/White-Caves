@@ -1,4 +1,4 @@
-# seed-deps.ps1 -- Verifies / repairs dependsOn chains in task-queue.json.
+﻿# seed-deps.ps1 -- Verifies / repairs dependsOn chains in task-queue.json.
 # Run after init-queue.ps1 if deps appear missing or corrupted.
 # NOTE: init-queue.ps1 already hardcodes all dependsOn values, so this script
 #       normally reports "[OK]" for every entry. Its main value is as a repair

@@ -8,6 +8,8 @@ const Wrap = styled.div`
   flex-direction: column;
   align-items: center;
   justify-content: center;
+  min-height: 400px;
+  min-width: 100%;
   height: 100%;
   width: 100%;
   color: #38BDF8;
@@ -26,7 +28,7 @@ const Spinner = styled.div`
 
 export const PageLoader: FC = () => {
   return (
-    <Wrap>
+    <Wrap aria-busy="true" aria-live="polite">
       <Spinner />
       <div style={{ fontSize: '0.85rem', fontWeight: 600, letterSpacing: '1px' }}>LOADING MODULE...</div>
     </Wrap>

@@ -21,8 +21,8 @@ param(
 $ErrorActionPreference = "Continue"
 $root        = Resolve-Path $WorkspaceRoot
 $queueFile   = Join-Path $root "logs\orchestrator\task-queue.json"
-$promptsFile = Join-Path $root "scripts\orchestrator\prompts.json"
-$promptsFallbackFile = Join-Path $root "aegis\scripts\orchestrator\prompts.json"
+$promptsFile = Join-Path $root "aegis\orchestrator\prompts.json"
+$promptsFallbackFile = Join-Path $root "aegis\aegis\orchestrator\prompts.json"
 $w           = 72
 
 if (-not (Test-Path $promptsFile) -and (Test-Path $promptsFallbackFile)) {
