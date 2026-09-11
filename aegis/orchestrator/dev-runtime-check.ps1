@@ -1,4 +1,4 @@
-param(
+﻿param(
   [string]$WorkspaceRoot = ".",
   [int]$MaxRunMinutes = 2,
   [switch]$RunProblemScan,
@@ -17,7 +17,7 @@ $stdoutLog = Join-Path $stateDir ("dev-runtime-check-{0}.out.log" -f $timestamp)
 $stderrLog = Join-Path $stateDir ("dev-runtime-check-{0}.err.log" -f $timestamp)
 $summaryLog = Join-Path $stateDir "dev-runtime-check.log"
 $stateFile = Join-Path $stateDir "aegis-dev-runtime-check-state.json"
-$problemScanScript = Join-Path $root "scripts\orchestrator\project-problem-scan.ps1"
+$problemScanScript = Join-Path $root "aegis\orchestrator\project-problem-scan.ps1"
 
 $maxMinutes = if ($MaxRunMinutes -lt 1) { 1 } elseif ($MaxRunMinutes -gt 15) { 15 } else { $MaxRunMinutes }
 

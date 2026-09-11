@@ -29,9 +29,11 @@ function validateAndClose(issueNumber) {
     // it will throw or fail if we strictly enforced it. For now, we simulate the output 
     // verification but with hard blocking logic if it doesn't meet criteria.
     const gitDiff = execSync('git diff --name-only HEAD~1', { encoding: 'utf8' }).trim();
-    const files = gitDiff.split('\\n').filter(Boolean);
+    const gitStatus = execSync('git status --porcelain', { encoding: 'utf8' }).trim();
+    const combinedOutput = `${gitDiff}\n${gitStatus}`;
+    const files = combinedOutput.split(/\r?\n/).map(l => l.replace(/^[?\sMADRCU]+\s+/, '').trim()).filter(Boolean);
     
-    const modifiedDocs = files.some(f => f.includes('business_docs/') || f.includes('plans/'));
+    const modifiedDocs = files.some(f => f.includes('business_docs/') || f.includes('software_docs/') || f.includes('plans/'));
     const modifiedCode = files.some(f => f.includes('src/') || f.includes('components/'));
     const modifiedTests = files.some(f => f.includes('tests/') || f.includes('.test.'));
 
@@ -39,8 +41,8 @@ function validateAndClose(issueNumber) {
     console.log(`   * Verifying SRS & SDD updates... ${modifiedDocs ? '✅' : '❌'}`);
     console.log(`   * Verifying Test coverage... ${modifiedTests ? '✅' : '⚠️'}`);
 
-    if (!modifiedDocs && !modifiedCode) {
-      console.log(`\n❌ Validation Failed: No physical file changes detected in Git.`);
+    if (!modifiedDocs || !modifiedCode) {
+      console.log(`\n❌ Validation Failed: Both code and documentation must be physically modified.`);
       console.log(`   The agent must output actual file modifications. Issue #${issueNumber} remains OPEN.`);
       return;
     }

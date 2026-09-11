@@ -1,4 +1,4 @@
-# backlog-generator.ps1 -- Generates WAVE_0N_IMPLEMENTATION_BACKLOG.md
+﻿# backlog-generator.ps1 -- Generates WAVE_0N_IMPLEMENTATION_BACKLOG.md
 # Reads task-queue.json, groups by lane, outputs prioritised backlog table with story points.
 param(
   [string]$WorkspaceRoot = ".",

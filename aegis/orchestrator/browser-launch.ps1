@@ -1,4 +1,4 @@
-function Invoke-AegisBrowserLaunch {
+﻿function Invoke-AegisBrowserLaunch {
   param(
     [Parameter(Mandatory = $true)]
     [string]$Url,

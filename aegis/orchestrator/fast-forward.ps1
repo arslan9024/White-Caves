@@ -23,9 +23,9 @@ param(
 
 $w        = 72
 $root     = Resolve-Path $WorkspaceRoot
-$scripts  = Join-Path $root "scripts\orchestrator"
+$scripts  = Join-Path $root "aegis\orchestrator"
 $qFile    = Join-Path $root "logs\orchestrator\task-queue.json"
-$pFile    = Join-Path $root "scripts\orchestrator\prompts.json"
+$pFile    = Join-Path $root "aegis\orchestrator\prompts.json"
 $completeTaskScript = Join-Path $scripts "complete-task.ps1"
 $mutex    = New-Object System.Threading.Mutex($false, "Global\WhiteCaves_Orchestrator_Queue")
 $FALLBACK = 5

@@ -1,4 +1,4 @@
-# error-scan.ps1 -- Mandatory pre-push health/security scan
+﻿# error-scan.ps1 -- Mandatory pre-push health/security scan
 
 param(
   [string]$WorkspaceRoot = ".",
@@ -125,9 +125,9 @@ $reportJson = $report | ConvertTo-Json -Depth 8
 
 Write-Host ""
 if ($passed) {
-  Write-Host "✅ ERROR SCAN PASSED -- safe to push." -ForegroundColor Green
+  Write-Host "âœ… ERROR SCAN PASSED -- safe to push." -ForegroundColor Green
 } else {
-  Write-Host "❌ ERROR SCAN FAILED -- push blocked." -ForegroundColor Red
+  Write-Host "âŒ ERROR SCAN FAILED -- push blocked." -ForegroundColor Red
   foreach ($e in $errors) { Write-Host ("  - {0}" -f $e) -ForegroundColor Red }
   Write-Host "  Suggested fixes:" -ForegroundColor Yellow
   Write-Host "    npm run typecheck" -ForegroundColor DarkGray

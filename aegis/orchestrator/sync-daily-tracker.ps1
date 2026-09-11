@@ -1,4 +1,4 @@
-param(
+﻿param(
   [string]$WorkspaceRoot = "."
 )
 
@@ -27,8 +27,8 @@ $failed = @($tasks | Where-Object { $_.status -eq "failed" }).Count
 $line = "| $(Get-Date -Format 'MMM d') | Orchestrator Sync | @Katherine + @Margaret | Done | Queue summary: done=$done, running=$running, waiting_ack=$waiting, queued=$queued, retrying=$retrying, failed=$failed |"
 
 $content = Get-Content -Path $trackerFile -Raw
-if ($content -notmatch "## 🤖 Orchestrator Sync Log") {
-  Add-Content -Path $trackerFile -Value "`n## 🤖 Orchestrator Sync Log`n`n| Date | Milestone | Agent | Status | Notes |`n| ---- | --------- | ----- | ------ | ----- |"
+if ($content -notmatch "## ðŸ¤– Orchestrator Sync Log") {
+  Add-Content -Path $trackerFile -Value "`n## ðŸ¤– Orchestrator Sync Log`n`n| Date | Milestone | Agent | Status | Notes |`n| ---- | --------- | ----- | ------ | ----- |"
 }
 Add-Content -Path $trackerFile -Value $line
 

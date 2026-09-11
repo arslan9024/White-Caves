@@ -30,3 +30,8 @@ To meet the strict **$< 10\text{ms}$ query latency budget**, the platform indexe
 1. **Tile 1 (MD Sovereign Suite):** Level 7 executive command reserved for Arslan Malik.
 2. **Tile 2 (12 Corporate Departments):** Dedicated operational viewports for all 12 departments.
 3. **Tile 3 (AI Command Center):** 1-12-108 Organogram Tree and supervisor task dispatchers.
+
+## 4. Luxury Elements & Verification Badges (Design Standard Token #12)
+- **Component:** `BayutTruCheckBadge.tsx` (`src/components/homepage/FeaturedProperties/`)
+- **Variant 2 Specification:** Infinite CSS/Framer-Motion pulse ring (`trucheckPulse` keyframe), emerald radial gradient (`rgba(16,185,129,0.15)` to `rgba(5,150,105,0.25)`), drop shadow filter, and DLD Trakheesi cross-validation seal.
+- **Latency & Rendering Impact:** Zero CLS, lightweight SVG vectors (<1KB bundle footprint).

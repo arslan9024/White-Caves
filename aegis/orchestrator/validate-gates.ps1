@@ -4,7 +4,7 @@
 )
 
 $progressFile = Join-Path $WorkspaceRoot "PROJECT_PROGRESS.md"
-$policyFile = Join-Path $WorkspaceRoot "scripts\orchestrator\policy.json"
+$policyFile = Join-Path $WorkspaceRoot "aegis\orchestrator\policy.json"
 $readinessFile = Join-Path $WorkspaceRoot ("plans\waves\" + $WaveId + "_READINESS_PACKET.md")
 $sddFile = Join-Path $WorkspaceRoot ("plans\waves\" + $WaveId + "_SDD.md")
 $flowFile = Join-Path $WorkspaceRoot ("plans\waves\" + $WaveId + "_FLOWCHARTS.md")

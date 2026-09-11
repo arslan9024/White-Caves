@@ -1,4 +1,4 @@
-# test-rollout-generator.ps1 -- Generates WAVE_0N_TEST_ROLLOUT.md
+﻿# test-rollout-generator.ps1 -- Generates WAVE_0N_TEST_ROLLOUT.md
 # Per-module test plan (unit/integration/E2E) + staged rollout gate table.
 param(
   [string]$WorkspaceRoot = ".",

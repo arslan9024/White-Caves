@@ -1,4 +1,4 @@
-# cycle-summary.ps1 -- Record/query per-loop cycle summary data
+﻿# cycle-summary.ps1 -- Record/query per-loop cycle summary data
 
 param(
   [string]$WorkspaceRoot = ".",

@@ -30,3 +30,4 @@ The White Caves Platform is a sovereign luxury real estate enterprise resource p
 - `[FR-ROI]`: Gross vs Net ROI rental yield visualizer & 5-year capital appreciation projection.
 - `[FR-AML]`: Automated goAML verification for transactions $\ge \text{AED } 55,000$.
 - `[FR-TAX]`: FTA Form 201 VAT 5% & Corporate Tax 9% + Small Business Relief (SBR) ledger.
+- `[FR-TRU]`: Luxury Design Standard Token #12: Bayut TruCheck™ verified stamp animation (Component Variant 2) with radial micro-pulse, DLD Trakheesi cross-verification, and statutory QR link.

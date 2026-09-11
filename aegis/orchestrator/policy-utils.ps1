@@ -1,10 +1,10 @@
-function Get-OrchestratorPolicy {
+﻿function Get-OrchestratorPolicy {
   param(
     [Parameter(Mandatory = $true)]
     [string]$WorkspaceRoot
   )
 
-  $policyPath = Join-Path $WorkspaceRoot "scripts\orchestrator\policy.json"
+  $policyPath = Join-Path $WorkspaceRoot "aegis\orchestrator\policy.json"
   if (-not (Test-Path $policyPath)) {
     throw "Missing orchestrator policy file: $policyPath"
   }

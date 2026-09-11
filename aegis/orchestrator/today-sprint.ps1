@@ -1,4 +1,4 @@
-# today-sprint.ps1 -- Daily sprint sheet for free agents.
+﻿# today-sprint.ps1 -- Daily sprint sheet for free agents.
 # Shows ALL ready tasks with paste-ready prompts, file targets, section gaps,
 # and exact completion commands. One output covers the whole day's work.
 #
@@ -16,7 +16,7 @@ param(
 )
 
 $queueFile   = Join-Path $WorkspaceRoot "logs\orchestrator\task-queue.json"
-$promptsFile = Join-Path $WorkspaceRoot "scripts\orchestrator\prompts.json"
+$promptsFile = Join-Path $WorkspaceRoot "aegis\orchestrator\prompts.json"
 
 if (-not (Test-Path $queueFile))   { Write-Host "[ERROR] Queue not found."   -ForegroundColor Red; exit 1 }
 if (-not (Test-Path $promptsFile)) { Write-Host "[ERROR] Prompts not found." -ForegroundColor Red; exit 1 }
@@ -296,7 +296,7 @@ foreach ($t in $ready) {
 
   Write-Host ("  ETA     : {0}  |  Cascade value: +{1} task(s) unlocked" -f $etaStr, $cascadeVal) -ForegroundColor $(if ($fileEta -le 1) { "Green" } else { "Yellow" })
   if ($unlocks.Count -gt 0) {
-    Write-Host ("  Unlocks : → {0}" -f $unlockStr) -ForegroundColor Cyan
+    Write-Host ("  Unlocks : â†’ {0}" -f $unlockStr) -ForegroundColor Cyan
   }
   Write-Host ""
 

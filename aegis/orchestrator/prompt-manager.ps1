@@ -1,4 +1,4 @@
-# prompt-manager.ps1 -- Manage versioned prompts in prompts.json
+﻿# prompt-manager.ps1 -- Manage versioned prompts in prompts.json
 
 param(
   [string]$WorkspaceRoot = ".",
@@ -20,7 +20,7 @@ param(
 )
 
 $root = Resolve-Path $WorkspaceRoot
-$promptsFile = Join-Path $root "scripts\orchestrator\prompts.json"
+$promptsFile = Join-Path $root "aegis\orchestrator\prompts.json"
 $promptsMutex = New-Object System.Threading.Mutex($false, "Global\WhiteCaves_Orchestrator_Prompts")
 if (-not (Test-Path $promptsFile)) {
   Write-Host "[ERROR] prompts.json not found" -ForegroundColor Red

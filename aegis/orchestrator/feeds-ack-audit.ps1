@@ -1,4 +1,4 @@
-# feeds-ack-audit.ps1 -- Validate FEEDS_ACK compliance in orchestrator queue
+﻿# feeds-ack-audit.ps1 -- Validate FEEDS_ACK compliance in orchestrator queue
 # Usage:
 #   npm run orchestrator:feeds-ack:audit
 #   npm run orchestrator:feeds-ack:audit:brief

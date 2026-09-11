@@ -21,7 +21,7 @@ param(
 $ErrorActionPreference = "Continue"
 $root        = Resolve-Path $WorkspaceRoot
 $queueFile   = Join-Path $root "logs\orchestrator\task-queue.json"
-$promptsFile = Join-Path $root "scripts\orchestrator\prompts.json"
+$promptsFile = Join-Path $root "aegis\orchestrator\prompts.json"
 $w           = 72
 
 if (-not (Test-Path $queueFile))   { Write-Host "[ERROR] queue not found"   -ForegroundColor Red; exit 1 }

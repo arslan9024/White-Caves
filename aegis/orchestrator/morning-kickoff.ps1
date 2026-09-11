@@ -10,7 +10,7 @@ param(
 
 $stateDir   = Join-Path $WorkspaceRoot "logs\orchestrator"
 $queueFile  = Join-Path $stateDir "task-queue.json"
-$promptFile = Join-Path $WorkspaceRoot "scripts\orchestrator\prompts.json"
+$promptFile = Join-Path $WorkspaceRoot "aegis\orchestrator\prompts.json"
 
 if (-not (Test-Path $queueFile)) {
   Write-Host "[ERROR] Queue not found. Run: npm run orchestrator:queue:init" -ForegroundColor Red

@@ -1,4 +1,4 @@
-# session-end.ps1 -- One-command session closer for White Caves Orchestrator
+﻿# session-end.ps1 -- One-command session closer for White Caves Orchestrator
 # Counterpart to session-start.ps1.
 # Chains: fast-complete -> gate-check -> progress-report -> error-scan -> git stage -> commit -> push
 #
@@ -30,7 +30,7 @@ param(
 
 $ErrorActionPreference = "Continue"
 $root     = Resolve-Path $WorkspaceRoot
-$scripts  = Join-Path $root "scripts\orchestrator"
+$scripts  = Join-Path $root "aegis\orchestrator"
 $policyUtils = Join-Path $scripts "policy-utils.ps1"
 $w        = 72
 $stepNum  = 0
@@ -223,7 +223,7 @@ if ($Message -eq "") {
 }
 
 Push-Location $root
-# ── Loop-guard: skip commit when nothing is staged to prevent empty-commit loops
+# â”€â”€ Loop-guard: skip commit when nothing is staged to prevent empty-commit loops
 $cachedStat = (git diff --cached --stat 2>$null).Trim()
 if ([string]::IsNullOrWhiteSpace($cachedStat)) {
   Write-Host "  [AEGIS-SKIP] no changes staged - skipping commit to prevent empty-commit loop." -ForegroundColor DarkYellow

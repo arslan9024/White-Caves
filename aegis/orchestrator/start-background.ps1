@@ -1,4 +1,4 @@
-# Starts background worker pool for free-agent orchestration (Phase 4)
+﻿# Starts background worker pool for free-agent orchestration (Phase 4)
 # Spawns: 4 lane workers (A/B/C/D), N legacy agent-locked workers, 1 watchdog scheduler
 param(
   [int]$WorkerCount        = 0,   # legacy agent-locked workers (set > 0 only when explicitly needed)
@@ -10,7 +10,7 @@ param(
   [int]$AutopilotRestartDelaySeconds = 5
 )
 
-$root     = Resolve-Path (Join-Path $PSScriptRoot "..\..")
+$root     = Resolve-Path (Join-Path $PSScriptRoot "..\..\..")
 $stateDir = Join-Path $root "logs\orchestrator"
 New-Item -ItemType Directory -Force -Path $stateDir | Out-Null
 $pidFile   = Join-Path $stateDir "worker-processes.json"

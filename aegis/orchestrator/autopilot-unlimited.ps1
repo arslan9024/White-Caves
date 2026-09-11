@@ -1,4 +1,4 @@
-# autopilot-unlimited.ps1 - White Caves Unlimited Autopilot Loop
+﻿# autopilot-unlimited.ps1 - White Caves Unlimited Autopilot Loop
 #
 # Every iteration of the loop runs the full intelligence cycle:
 #

@@ -1,4 +1,4 @@
-# scripts/orchestrator/automated-discovery.ps1
+﻿# scripts/orchestrator/automated-discovery.ps1
 # AEGIS Automated Discovery Phase (Phase 1 SDLC)
 # Runs before any code implementation to establish responsibility mapping and context boundaries.
 

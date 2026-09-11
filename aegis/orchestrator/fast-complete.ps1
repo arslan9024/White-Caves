@@ -1,4 +1,4 @@
-# fast-complete.ps1 -- Cascade auto-completer for tasks whose target doc already passes gate-check.
+﻿# fast-complete.ps1 -- Cascade auto-completer for tasks whose target doc already passes gate-check.
 param(
   [string]$WorkspaceRoot = ".",
   [switch]$DryRun,
@@ -6,7 +6,7 @@ param(
 )
 
 $queueFile   = Join-Path $WorkspaceRoot "logs\orchestrator\task-queue.json"
-$promptsFile = Join-Path $WorkspaceRoot "scripts\orchestrator\prompts.json"
+$promptsFile = Join-Path $WorkspaceRoot "aegis\orchestrator\prompts.json"
 $mutex       = New-Object System.Threading.Mutex($false, "Global\WhiteCaves_Orchestrator_Queue")
 
 if (-not (Test-Path $queueFile))   { Write-Host "[ERROR] Queue not found."   -ForegroundColor Red; exit 1 }

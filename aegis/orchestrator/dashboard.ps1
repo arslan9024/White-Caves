@@ -1,4 +1,4 @@
-# dashboard.ps1 -- Rich visual orchestration dashboard
+﻿# dashboard.ps1 -- Rich visual orchestration dashboard
 # Upgraded Aegis views:
 # - Pending/Completed tasks
 # - Pending/Completed features
@@ -17,7 +17,7 @@ $stateDir    = Join-Path $WorkspaceRoot "logs\orchestrator"
 $queueFile   = Join-Path $stateDir "task-queue.json"
 $pidFile     = Join-Path $stateDir "worker-processes.json"
 $wdLog       = Join-Path $stateDir "watchdog-scheduler.log"
-$policyFile  = Join-Path $WorkspaceRoot "scripts\orchestrator\policy.json"
+$policyFile  = Join-Path $WorkspaceRoot "aegis\orchestrator\policy.json"
 $devRuntimeStateFile = Join-Path $stateDir "aegis-dev-runtime-check-state.json"
 $devRuntimeSummaryLog = Join-Path $stateDir "dev-runtime-check.log"
 $progressIntelligenceFile = Join-Path $stateDir "progress-intelligence.json"
@@ -585,7 +585,7 @@ function Show-Dashboard {
   Write-Host "  WHITE CAVES ORCHESTRATION DASHBOARD    $now" -ForegroundColor Cyan
   Write-Host "============================================================" -ForegroundColor Cyan
 
-  # ── 1. Worker pool health ──────────────────────────────────────────────────
+  # â”€â”€ 1. Worker pool health â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
   Write-Header "WORKER POOL HEALTH"
   $workers = Read-Workers
   if ($workers.Count -eq 0) {
@@ -613,7 +613,7 @@ function Show-Dashboard {
     Write-Host ("  Alive: $aliveCount / $total" + $(if ($deadCount -gt 0) { "  ($deadCount dead -- run: npm run orchestrator:bg:restart)" } else { "" })) -ForegroundColor $healthColor
   }
 
-  # ── 1.5 Timed dev runtime checks ──────────────────────────────────────────
+  # â”€â”€ 1.5 Timed dev runtime checks â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
   Write-Header "TIMED DEV RUNTIME CHECK"
   $devState = Get-TimedDevCheckState
   if ($null -eq $devState) {
@@ -639,7 +639,7 @@ function Show-Dashboard {
     Write-Host "  Action    : npm run orchestrator:dev:runtime-check" -ForegroundColor DarkGray
   }
 
-  # ── 2. Queue summary ──────────────────────────────────────────────────────
+  # â”€â”€ 2. Queue summary â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
   Write-Header "QUEUE SUMMARY"
   $queue = Read-Queue
   if ($null -eq $queue) {
@@ -871,7 +871,7 @@ function Show-Dashboard {
   }
   $topAttention = @($moduleHealthRows | Sort-Object AttentionScore -Descending | Select-Object -First 3)
 
-  # ── 2.5 Project development insights ─────────────────────────────────────
+  # â”€â”€ 2.5 Project development insights â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
   $queueCycle = if ([string]::IsNullOrWhiteSpace([string]$queue.cycle)) { "N/A" } else { [string]$queue.cycle }
   $queueGeneratedAt = Convert-ToDateSafe -Value $queue.generatedAt
   $queueGeneratedText = if ($null -ne $queueGeneratedAt) { $queueGeneratedAt.ToString("yyyy-MM-dd HH:mm") } else { "unknown" }
@@ -947,7 +947,7 @@ function Show-Dashboard {
     Write-Host ("  Focus recommendation: Lane {0} ({1}) -- attention score {2}" -f $topFocusLane.Lane, $topFocusLane.Module, $topFocusLane.AttentionScore) -ForegroundColor Magenta
   }
 
-  # ── 2.6 Progress intelligence & forecast ─────────────────────────────────
+  # â”€â”€ 2.6 Progress intelligence & forecast â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
   Write-Header "ORCHESTRATION PROGRESS INTELLIGENCE" "DarkCyan"
   $intel = Get-ProgressIntelligenceState
   if ($null -eq $intel) {
@@ -1053,7 +1053,7 @@ function Show-Dashboard {
     }
   }
 
-  # ── 3. Per-agent status table ──────────────────────────────────────────────
+  # â”€â”€ 3. Per-agent status table â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
   Write-Header "PER-AGENT STATUS"
   $agents = $tasks | Group-Object agent | Sort-Object Name
   Write-Host ("  " + "Agent".PadRight(14) + "Lane  " + "Status".PadRight(14) + "Task") -ForegroundColor White
@@ -1069,7 +1069,7 @@ function Show-Dashboard {
     }
   }
 
-  # ── 4. Pending tasks ──────────────────────────────────────────────────────
+  # â”€â”€ 4. Pending tasks â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
   Write-Header "PENDING TASKS"
   if ($pendingTasks.Count -eq 0) {
     Write-Host "  [NONE] No pending tasks." -ForegroundColor Green
@@ -1084,7 +1084,7 @@ function Show-Dashboard {
     }
   }
 
-  # ── 4.0 Priority override tasks ───────────────────────────────────────────
+  # â”€â”€ 4.0 Priority override tasks â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
   Write-Header "TOP PRIORITY OVERRIDES"
   if ($priorityTasksPending.Count -eq 0) {
     Write-Host "  [NONE] No active high/critical priority overrides pending." -ForegroundColor DarkGray
@@ -1095,7 +1095,7 @@ function Show-Dashboard {
     }
   }
 
-  # ── 4.1 Planning track view ───────────────────────────────────────────────
+  # â”€â”€ 4.1 Planning track view â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
   Write-Header "PLANNING PHASE TASKS"
   if ($planningTasks.Count -eq 0) {
     Write-Host "  [NONE] No planning tasks in current queue." -ForegroundColor DarkGray
@@ -1110,7 +1110,7 @@ function Show-Dashboard {
     }
   }
 
-  # ── 4.2 Implementation track view ─────────────────────────────────────────
+  # â”€â”€ 4.2 Implementation track view â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
   Write-Header "IMPLEMENTATION PHASE TASKS"
   if ($implementationTasks.Count -eq 0) {
     Write-Host "  [NONE] No implementation tasks in current queue." -ForegroundColor DarkGray
@@ -1125,7 +1125,7 @@ function Show-Dashboard {
     }
   }
 
-  # ── 4.3 Next-loop completion forecast ─────────────────────────────────────
+  # â”€â”€ 4.3 Next-loop completion forecast â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
   Write-Header "NEXT LOOP FORECAST"
   if ($nextTurnPredictions.Count -eq 0) {
     Write-Host "  [NONE] No immediate candidates; loop likely waits on dependencies/ACK." -ForegroundColor DarkGray
@@ -1136,7 +1136,7 @@ function Show-Dashboard {
     }
   }
 
-  # ── 5. Completed tasks ────────────────────────────────────────────────────
+  # â”€â”€ 5. Completed tasks â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
   Write-Header "COMPLETED TASKS"
   Write-Host ("  Completed total: {0}" -f $completedTasks.Count) -ForegroundColor Green
   if ($completedTasks.Count -gt 0) {
@@ -1148,7 +1148,7 @@ function Show-Dashboard {
     }
   }
 
-  # ── 6. Pending features ───────────────────────────────────────────────────
+  # â”€â”€ 6. Pending features â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
   Write-Header "PENDING FEATURES"
   if ($pendingFeatures.Count -eq 0) {
     Write-Host "  [NONE] All tracked features are complete." -ForegroundColor Green
@@ -1158,7 +1158,7 @@ function Show-Dashboard {
     }
   }
 
-  # ── 7. Completed features ─────────────────────────────────────────────────
+  # â”€â”€ 7. Completed features â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
   Write-Header "COMPLETED FEATURES"
   if ($completedFeatures.Count -eq 0) {
     Write-Host "  [NONE YET] No completed feature groups yet." -ForegroundColor DarkGray
@@ -1168,7 +1168,7 @@ function Show-Dashboard {
     }
   }
 
-  # ── 8. Module health & strength ──────────────────────────────────────────
+  # â”€â”€ 8. Module health & strength â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
   Write-Header "MODULE HEALTH & STRENGTH"
   foreach ($m in $moduleHealthRows) {
     $moduleColor = if ($m.Grade -eq "World-Class") { "Green" } elseif ($m.Grade -eq "Strong") { "Cyan" } elseif ($m.Grade -eq "Stable") { "Yellow" } else { "Red" }
@@ -1177,7 +1177,7 @@ function Show-Dashboard {
     Write-Host ("    Strength : {0}/100 | Grade: {1} | World-Class: {2}" -f $m.Strength, $m.Grade, $m.WorldClass) -ForegroundColor $moduleColor
   }
 
-  # ── 9. Aegis smart decision engine ───────────────────────────────────────
+  # â”€â”€ 9. Aegis smart decision engine â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
   Write-Header "AEGIS SMART DECISION ENGINE" "Magenta"
   if ($topAttention.Count -eq 0) {
     Write-Host "  No modules found for decisioning." -ForegroundColor DarkGray
@@ -1203,7 +1203,7 @@ function Show-Dashboard {
     }
   }
 
-  # ── 10. Waiting ACK ────────────────────────────────────────────────────────
+  # â”€â”€ 10. Waiting ACK â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
   $waitingAck = $tasks | Where-Object { $_.status -eq "waiting_ack" -or $_.status -eq "escalated" }
   if (@($waitingAck).Count -gt 0) {
     Write-Header "PENDING FEEDS_ACK (action required)" "Yellow"
@@ -1215,7 +1215,7 @@ function Show-Dashboard {
     }
   }
 
-  # ── 11. Watchdog last run ─────────────────────────────────────────────────
+  # â”€â”€ 11. Watchdog last run â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
   if (Test-Path $wdLog) {
     $lastLines = Get-Content $wdLog -Tail 4
     Write-Header "WATCHDOG SCHEDULER (last 4 log lines)" "DarkGray"
@@ -1224,7 +1224,7 @@ function Show-Dashboard {
     }
   }
 
-  # ── 12. Progress bar ──────────────────────────────────────────────────────
+  # â”€â”€ 12. Progress bar â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
   Write-Header "OVERALL PROGRESS"
   $total     = $tasks.Count
   $doneCount = ($tasks | Where-Object { $_.status -eq "done" }).Count
