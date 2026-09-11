@@ -29,5 +29,5 @@ git commit -m $commitMessage
 git push origin main
 
 Write-Host "[4/4] Starting Development Server..." -ForegroundColor Yellow
-Start-Process -FilePath "npm" -ArgumentList "run", "dev" -NoNewWindow
+Start-Process -FilePath "npm.cmd" -ArgumentList "run", "dev" -NoNewWindow
 Write-Host "✅ Rapid Sprint Protocol Complete. Dev server is running in the background." -ForegroundColor Green
