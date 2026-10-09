@@ -57,6 +57,7 @@ import lindaRoutes from './routes/linda.js';
 import metaWebhookRoutes from './routes/meta-webhook.js';
 import favoritesRoutes from './routes/favorites.js';
 import orchestratorRoutes from './routes/orchestrator.js';
+import aegisRoutes from './routes/aegis.js';
 import integrationsRoutes from './routes/integrations.js';
 import orchestrationRoutes from './routes/orchestration.js';
 import henryRoutes from './routes/henry.js';
@@ -404,6 +405,9 @@ app.get('/api/health', (req: Request, res: Response) => {
     },
   });
 });
+
+// AEGIS V5 Omni-Orchestrator Telemetry & Control API
+app.use('/api/aegis', aegisRoutes);
 
 // Database health check — Wave 15 (W15-002)
 app.get(

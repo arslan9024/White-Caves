@@ -281,6 +281,7 @@ model Property {
   @@index([status, featured, createdAt])
   @@index([status, type, price])
   @@index([status, location])
+  @@index([status, userId])
 }
 
 // ─── LEAD ───────────────────────────────────────────────────────────────
@@ -604,6 +605,7 @@ model Viewing {
   @@index([status])
   @@index([scheduledAt])
   @@index([createdAt])
+  @@index([scheduledAt, status])
 }
 
 // ─── AGENT AVAILABILITY ─────────────────────────────────────────────────
@@ -709,6 +711,7 @@ model Lease {
   @@index([status])
   @@index([endDate])
   @@index([createdAt])
+  @@index([endDate, status])
 }
 
 // ─── RENT PAYMENT SCHEDULE ───────────────────────────────────────────────

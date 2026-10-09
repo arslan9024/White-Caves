@@ -1,8 +1,18 @@
 import React, { useState, useCallback, useRef } from 'react';
+import Tesseract from 'tesseract.js';
 import { createLogger } from '../../../utils/logger';
-import { 
-  Upload, FileImage, Loader2, CheckCircle, Edit3, 
-  Download, Trash2, Copy, Eye, X, AlertCircle
+import {
+  Upload,
+  FileImage,
+  Loader2,
+  CheckCircle,
+  Edit3,
+  Download,
+  Trash2,
+  Copy,
+  Eye,
+  X,
+  AlertCircle,
 } from 'lucide-react';
 import * as S from './ImageDataExtractor.styles';
 
@@ -40,7 +50,11 @@ interface EditingCell {
   index: number;
 }
 
-const ImageDataExtractor = ({ onDataExtracted }: { onDataExtracted?: (data: ExtractedDataItem[]) => void }) => {
+const ImageDataExtractor = ({
+  onDataExtracted,
+}: {
+  onDataExtracted?: (data: ExtractedDataItem[]) => void;
+}) => {
   const [uploadedFiles, setUploadedFiles] = useState<UploadEntry[]>([]);
   const [extractedData, setExtractedData] = useState<ExtractedDataItem[]>([]);
   const [processing, setProcessing] = useState(false);
@@ -54,7 +68,7 @@ const ImageDataExtractor = ({ onDataExtracted }: { onDataExtracted?: (data: Extr
     email: /[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}/g,
     unitNumber: /(?:Villa|Apt|Unit|Apartment|Plot|Shop)\s*(?:#|No\.?|Number)?\s*\d+[A-Za-z]?/gi,
     sdNumber: /SD\d{3,5}/gi,
-    name: /(?:Mr\.?|Mrs\.?|Ms\.?|Dr\.?)\s+[A-Z][a-z]+(?:\s+[A-Z][a-z]+){1,3}/g
+    name: /(?:Mr\.?|Mrs\.?|Ms\.?|Dr\.?)\s+[A-Z][a-z]+(?:\s+[A-Z][a-z]+){1,3}/g,
   };
 
   const parseTextData = (text: string) => {
@@ -63,25 +77,48 @@ const ImageDataExtractor = ({ onDataExtracted }: { onDataExtracted?: (data: Extr
       emails: [...new Set(text.match(patterns.email) || [])],
       unitNumbers: [...new Set(text.match(patterns.unitNumber) || [])],
       sdNumbers: [...new Set(text.match(patterns.sdNumber) || [])],
-      names: [...new Set(text.match(patterns.name) || [])]
+      names: [...new Set(text.match(patterns.name) || [])],
     };
     return results;
   };
 
-  const processImage = async (file: File) => {
-    return new Promise((resolve) => {
+  const processImage = async (file: File): Promise<ExtractedDataItem> => {
+    return new Promise(resolve => {
       const reader = new FileReader();
-      reader.onload = () => {
-        setTimeout(() => {
-          const mockData = {
-            id: Date.now(),
+      reader.onload = async () => {
+        const imageUrl = reader.result;
+        try {
+          const { data } = await Tesseract.recognize(file, 'eng');
+          const rawText = data?.text?.trim() || '';
+          const effectiveText = rawText || `No text detected in ${file.name}`;
+          const parsed = parseTextData(effectiveText);
+          resolve({
+            id: Date.now() + Math.floor(Math.random() * 1000),
             fileName: file.name,
-            imageUrl: reader.result,
-            rawText: `Sample extracted text from ${file.name}\nMr. Ali Hassan\n+971 50 123 4567\nali.hassan@email.com\nVilla #45\nSD348`,
-            parsed: parseTextData(`Mr. Ali Hassan +971 50 123 4567 ali.hassan@email.com Villa #45 SD348`)
-          };
-          resolve(mockData);
-        }, 1500);
+            imageUrl,
+            rawText: effectiveText,
+            parsed,
+          });
+        } catch (err) {
+          const log = createLogger('ImageDataExtractor');
+          log.error('OCR processing failed for file', { fileName: file.name, error: err });
+          resolve({
+            id: Date.now() + Math.floor(Math.random() * 1000),
+            fileName: file.name,
+            imageUrl,
+            rawText: `Failed to extract text from ${file.name}`,
+            parsed: { phones: [], emails: [], unitNumbers: [], sdNumbers: [], names: [] },
+          });
+        }
+      };
+      reader.onerror = () => {
+        resolve({
+          id: Date.now() + Math.floor(Math.random() * 1000),
+          fileName: file.name,
+          imageUrl: null,
+          rawText: `Error reading file ${file.name}`,
+          parsed: { phones: [], emails: [], unitNumbers: [], sdNumbers: [], names: [] },
+        });
       };
       reader.readAsDataURL(file);
     });
@@ -94,8 +131,8 @@ const ImageDataExtractor = ({ onDataExtracted }: { onDataExtracted?: (data: Extr
     const allFiles = Array.from(files);
 
     // Filter by type
-    const typeValidFiles = allFiles.filter(f => 
-      f.type.startsWith('image/') || f.type === 'application/pdf'
+    const typeValidFiles = allFiles.filter(
+      f => f.type.startsWith('image/') || f.type === 'application/pdf'
     );
 
     // Filter by size and collect oversized names
@@ -109,37 +146,40 @@ const ImageDataExtractor = ({ onDataExtracted }: { onDataExtracted?: (data: Extr
         `Skipped ${oversized.length} file(s) exceeding ${MAX_FILE_SIZE_MB}MB limit: ${oversized.map(f => f.name).join(', ')}`
       );
     }
-    
+
     if (validFiles.length === 0) return;
-    
+
     setProcessing(true);
     const newUploads: UploadEntry[] = validFiles.map(f => ({
       id: Date.now() + Math.random(),
       file: f,
       name: f.name,
-      status: 'processing' as const
+      status: 'processing' as const,
     }));
-    
+
     setUploadedFiles(prev => [...prev, ...newUploads]);
-    
+
     const processedData: ExtractedDataItem[] = [];
     for (const upload of newUploads) {
-      const result = await processImage(upload.file) as ExtractedDataItem;
+      const result = (await processImage(upload.file)) as ExtractedDataItem;
       processedData.push(result);
-      setUploadedFiles(prev => 
-        prev.map(u => u.id === upload.id ? { ...u, status: 'complete' as const } : u)
+      setUploadedFiles(prev =>
+        prev.map(u => (u.id === upload.id ? { ...u, status: 'complete' as const } : u))
       );
     }
-    
+
     setExtractedData(prev => [...prev, ...processedData]);
     setProcessing(false);
   }, []);
 
-  const handleDrop = useCallback((e: React.DragEvent<HTMLDivElement>) => {
-    e.preventDefault();
-    setDragOver(false);
-    handleFiles(e.dataTransfer.files);
-  }, [handleFiles]);
+  const handleDrop = useCallback(
+    (e: React.DragEvent<HTMLDivElement>) => {
+      e.preventDefault();
+      setDragOver(false);
+      handleFiles(e.dataTransfer.files);
+    },
+    [handleFiles]
+  );
 
   const handleDragOver = useCallback((e: React.DragEvent<HTMLDivElement>) => {
     e.preventDefault();
@@ -151,14 +191,16 @@ const ImageDataExtractor = ({ onDataExtracted }: { onDataExtracted?: (data: Extr
   }, []);
 
   const handleEdit = (dataId: number, field: string, index: number, newValue: string) => {
-    setExtractedData(prev => prev.map(item => {
-      if (item.id === dataId) {
-        const updated = { ...item };
-        updated.parsed[field][index] = newValue;
-        return updated;
-      }
-      return item;
-    }));
+    setExtractedData(prev =>
+      prev.map(item => {
+        if (item.id === dataId) {
+          const updated = { ...item };
+          updated.parsed[field][index] = newValue;
+          return updated;
+        }
+        return item;
+      })
+    );
     setEditingCell(null);
   };
 
@@ -170,7 +212,7 @@ const ImageDataExtractor = ({ onDataExtracted }: { onDataExtracted?: (data: Extr
   const exportToCSV = () => {
     const rows = [];
     rows.push(['Source', 'Names', 'Phones', 'Emails', 'Units', 'SD Numbers']);
-    
+
     extractedData.forEach(data => {
       rows.push([
         data.fileName,
@@ -178,10 +220,10 @@ const ImageDataExtractor = ({ onDataExtracted }: { onDataExtracted?: (data: Extr
         data.parsed.phones.join('; '),
         data.parsed.emails.join('; '),
         data.parsed.unitNumbers.join('; '),
-        data.parsed.sdNumbers.join('; ')
+        data.parsed.sdNumbers.join('; '),
       ]);
     });
-    
+
     const csv = rows.map(r => r.map(c => `"${c}"`).join(',')).join('\n');
     const blob = new Blob([csv], { type: 'text/csv' });
     const url = URL.createObjectURL(blob);
@@ -216,9 +258,12 @@ const ImageDataExtractor = ({ onDataExtracted }: { onDataExtracted?: (data: Extr
             <S.ActionBtn onClick={exportToCSV}>
               <Download size={16} /> Export CSV
             </S.ActionBtn>
-            <S.ActionBtn 
-              $danger 
-              onClick={() => { setExtractedData([]); setUploadedFiles([]); }}
+            <S.ActionBtn
+              $danger
+              onClick={() => {
+                setExtractedData([]);
+                setUploadedFiles([]);
+              }}
             >
               <Trash2 size={16} /> Clear All
             </S.ActionBtn>
@@ -226,7 +271,7 @@ const ImageDataExtractor = ({ onDataExtracted }: { onDataExtracted?: (data: Extr
         )}
       </S.ExtractorHeader>
 
-      <S.DropZone 
+      <S.DropZone
         $active={dragOver}
         $processing={processing}
         onDrop={handleDrop}
@@ -239,10 +284,10 @@ const ImageDataExtractor = ({ onDataExtracted }: { onDataExtracted?: (data: Extr
           type="file"
           accept="image/*,.pdf"
           multiple
-          onChange={(e) => e.target.files && handleFiles(e.target.files)}
+          onChange={e => e.target.files && handleFiles(e.target.files)}
           style={{ display: 'none' }}
         />
-        
+
         {processing ? (
           <S.ProcessingState>
             <Loader2 size={40} style={{ animation: 'spin 1s linear infinite' }} />
@@ -275,63 +320,83 @@ const ImageDataExtractor = ({ onDataExtracted }: { onDataExtracted?: (data: Extr
       {extractedData.length > 0 && (
         <S.ExtractedResults>
           <h4>Extracted Data ({extractedData.length} sources)</h4>
-          
+
           {extractedData.map((data: ExtractedDataItem) => (
             <S.ResultCard key={data.id}>
               <S.ResultHeader>
                 <S.ResultSource>
-                  <S.PreviewBtn 
-                    onClick={() => setPreviewImage(typeof data.imageUrl === 'string' ? data.imageUrl : null)}
+                  <S.PreviewBtn
+                    onClick={() =>
+                      setPreviewImage(typeof data.imageUrl === 'string' ? data.imageUrl : null)
+                    }
                   >
                     <Eye size={14} />
                   </S.PreviewBtn>
                   <span>{data.fileName}</span>
                 </S.ResultSource>
                 <S.ResultActions>
-                  <button onClick={() => copyToClipboard(data)} title="Copy" aria-label="Copy extracted data">
+                  <button
+                    onClick={() => copyToClipboard(data)}
+                    title="Copy"
+                    aria-label="Copy extracted data"
+                  >
                     <Copy size={14} />
                   </button>
-                  <button onClick={() => removeData(data.id)} title="Remove" aria-label="Remove extracted data">
+                  <button
+                    onClick={() => removeData(data.id)}
+                    title="Remove"
+                    aria-label="Remove extracted data"
+                  >
                     <X size={14} />
                   </button>
                 </S.ResultActions>
               </S.ResultHeader>
-              
+
               <S.ResultData>
-                {Object.entries(data.parsed).map(([field, values]: [string, any]) => (
-                  values.length > 0 && (
-                    <S.DataField key={field}>
-                      <label>{field}</label>
-                      <S.FieldValues>
-                        {values.map((value: string, idx: number) => (
-                          <S.ValueChip key={`${field}-${idx}`}>
-                            {editingCell?.dataId === data.id && editingCell?.field === field && editingCell?.index === idx ? (
-                              <input
-                                autoFocus
-                                defaultValue={value}
-                                onBlur={(e) => handleEdit(data.id, field, idx, e.target.value)}
-                                onKeyDown={(e) => {
-                                  if (e.key === 'Enter') {
-                                    handleEdit(data.id, field, idx, (e.target as HTMLInputElement).value);
-                                  }
-                                }}
-                              />
-                            ) : (
-                              <>
-                                <span>{value}</span>
-                                <S.EditBtn 
-                                  onClick={() => setEditingCell({ dataId: data.id, field, index: idx })}
-                                >
-                                  <Edit3 size={10} />
-                                </S.EditBtn>
-                              </>
-                            )}
-                          </S.ValueChip>
-                        ))}
-                      </S.FieldValues>
-                    </S.DataField>
-                  )
-                ))}
+                {Object.entries(data.parsed).map(
+                  ([field, values]: [string, string[]]) =>
+                    values.length > 0 && (
+                      <S.DataField key={field}>
+                        <label>{field}</label>
+                        <S.FieldValues>
+                          {values.map((value: string, idx: number) => (
+                            <S.ValueChip key={`${field}-${idx}`}>
+                              {editingCell?.dataId === data.id &&
+                              editingCell?.field === field &&
+                              editingCell?.index === idx ? (
+                                <input
+                                  autoFocus
+                                  defaultValue={value}
+                                  onBlur={e => handleEdit(data.id, field, idx, e.target.value)}
+                                  onKeyDown={e => {
+                                    if (e.key === 'Enter') {
+                                      handleEdit(
+                                        data.id,
+                                        field,
+                                        idx,
+                                        (e.target as HTMLInputElement).value
+                                      );
+                                    }
+                                  }}
+                                />
+                              ) : (
+                                <>
+                                  <span>{value}</span>
+                                  <S.EditBtn
+                                    onClick={() =>
+                                      setEditingCell({ dataId: data.id, field, index: idx })
+                                    }
+                                  >
+                                    <Edit3 size={10} />
+                                  </S.EditBtn>
+                                </>
+                              )}
+                            </S.ValueChip>
+                          ))}
+                        </S.FieldValues>
+                      </S.DataField>
+                    )
+                )}
               </S.ResultData>
             </S.ResultCard>
           ))}
@@ -342,11 +407,7 @@ const ImageDataExtractor = ({ onDataExtracted }: { onDataExtracted?: (data: Extr
         <S.ImportSection>
           <AlertCircle size={16} />
           <span>Review the extracted data above, then import to inventory</span>
-          <S.ImportBtn 
-            onClick={() => onDataExtracted?.(extractedData)}
-          >
-            Import to CRM
-          </S.ImportBtn>
+          <S.ImportBtn onClick={() => onDataExtracted?.(extractedData)}>Import to CRM</S.ImportBtn>
         </S.ImportSection>
       )}
 
