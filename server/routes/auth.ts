@@ -20,7 +20,14 @@ import { verifyFirebaseIdToken, FirebaseAdminInitError } from '../config/firebas
 import { z } from 'zod';
 import rateLimiters from '../middleware/rateLimiter.js';
 
-const { authLimiter, registerLimiter, passwordLimiter, strictLimiter, apiLimiter, firebaseSyncLimiter } = rateLimiters;
+const {
+  authLimiter,
+  registerLimiter,
+  passwordLimiter,
+  strictLimiter,
+  apiLimiter,
+  firebaseSyncLimiter,
+} = rateLimiters;
 
 const router = Router();
 
@@ -192,14 +199,10 @@ const verifyPassword = async (password: string, hash: string): Promise<boolean> 
 };
 
 /**
- * Extract a best-effort client IP from common proxy headers.
- * Falls back to req.ip when no header is present.
+ * Use Express's proxy-aware client IP so only headers from configured trusted
+ * proxies can affect audit and rate-limit attribution.
  */
 const getClientIp = (req: Request): string => {
-  const fwd = req.headers['x-forwarded-for'];
-  if (typeof fwd === 'string' && fwd.length > 0) {
-    return fwd.split(',')[0].trim();
-  }
   return (req.ip || req.socket?.remoteAddress || 'unknown').toString();
 };
 
@@ -906,7 +909,10 @@ router.post(
         const decoded = jwt.verify(twoFactorToken, JWT_SECRET, {
           algorithms: ['HS256'],
         }) as jwt.JwtPayload;
-        if (!decoded?.requires2FA || (decoded.email && decoded.email.toLowerCase().trim() !== sanitizedEmail)) {
+        if (
+          !decoded?.requires2FA ||
+          (decoded.email && decoded.email.toLowerCase().trim() !== sanitizedEmail)
+        ) {
           throw new AppError('Invalid 2FA challenge token', 401);
         }
       } catch (err) {
