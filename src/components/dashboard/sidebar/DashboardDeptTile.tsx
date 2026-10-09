@@ -83,8 +83,10 @@ export const DashboardDeptTile: FC<DashboardDeptTileProps> = ({
           {/* Sub-items of the selected department */}
           <div style={{ marginTop: '0.25rem', display: 'flex', flexDirection: 'column', gap: '3px' }}>
             <DeptHeader
+              type="button"
               $active={activeTab === 'dept_summary'}
               onClick={() => onSubItemClick('dept_summary')}
+              aria-current={activeTab === 'dept_summary' ? 'page' : undefined}
             >
               <div className="left">
                 <span className="num-tag">{selectedDept.num}</span>
@@ -101,13 +103,16 @@ export const DashboardDeptTile: FC<DashboardDeptTileProps> = ({
                 return (
                   <div key={sgKey}>
                     <SubGroupHeader
+                      type="button"
                       $open={isSgOpen}
                       onClick={() => onToggleSubGroup(sgKey)}
+                      aria-expanded={isSgOpen}
+                      aria-controls={`${sgKey}-items`}
                     >
                       <span>{sgName}</span>
                       <span className="arrow">▶</span>
                     </SubGroupHeader>
-                    <NestedItemList $open={isSgOpen}>
+                    <NestedItemList $open={isSgOpen} id={`${sgKey}-items`}>
                       {(sg.items || []).map(item => (
                         <SidebarSubItem
                           key={item.id + item.label}

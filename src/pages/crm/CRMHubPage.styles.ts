@@ -132,9 +132,12 @@ export const TopLevelTileButton = styled.button<{ $open: boolean; $accentColor?:
   }
 `;
 
-export const DeptHeader = styled.div<{ $active: boolean }>`
+export const DeptHeader = styled.button<{ $active: boolean }>`
+  width: 100%;
   padding: 8px 12px;
   border-radius: 8px;
+  font: inherit;
+  text-align: left;
   background: ${props => (props.$active ? '#EF4444' : '#F8FAFC')};
   color: ${props => (props.$active ? '#FFFFFF' : '#1E293B')};
   display: flex;
@@ -143,6 +146,7 @@ export const DeptHeader = styled.div<{ $active: boolean }>`
   cursor: pointer;
   transition: all 0.2s ease;
   border: 1px solid ${props => (props.$active ? '#DC2626' : '#E2E8F0')};
+  cursor: pointer;
 
   .left {
     display: flex;
@@ -157,9 +161,13 @@ export const DeptHeader = styled.div<{ $active: boolean }>`
   }
 `;
 
-export const SubGroupHeader = styled.div<{ $open: boolean }>`
+export const SubGroupHeader = styled.button<{ $open: boolean }>`
+  width: 100%;
   padding: 6px 10px;
   border-radius: 6px;
+  border: none;
+  font: inherit;
+  text-align: left;
   background: ${props => (props.$open ? '#F1F5F9' : 'transparent')};
   color: #475569;
   font-size: 0.76rem;
@@ -170,6 +178,11 @@ export const SubGroupHeader = styled.div<{ $open: boolean }>`
   cursor: pointer;
   margin-top: 4px;
   transition: all 0.15s ease;
+
+  &:focus-visible {
+    outline: 2px solid #EF4444;
+    outline-offset: 2px;
+  }
 
   &:hover {
     background: #F1F5F9;

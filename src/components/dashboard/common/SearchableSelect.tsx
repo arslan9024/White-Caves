@@ -5,7 +5,7 @@
  * used across Dashboard Sidebar tiles (Departments, AI Assistants, etc.).
  */
 
-import React, { FC, useState, useRef, useEffect, useDeferredValue, useMemo } from 'react';
+import React, { FC, useState, useRef, useEffect, useDeferredValue, useMemo, useId } from 'react';
 import styled from 'styled-components';
 
 export interface SearchableOption {
@@ -121,6 +121,11 @@ const OptionItem = styled.div<{ $selected: boolean; $accentColor: string }>`
     background: ${props => (props.$selected ? `${props.$accentColor}25` : '#F1F5F9')};
     color: ${props => props.$accentColor};
   }
+
+  &:focus-visible {
+    outline: 2px solid ${props => props.$accentColor};
+    outline-offset: 2px;
+  }
 `;
 
 export const SearchableSelect: FC<SearchableSelectProps> = ({
@@ -135,7 +140,12 @@ export const SearchableSelect: FC<SearchableSelectProps> = ({
 }) => {
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const [searchQuery, setSearchQuery] = useState<string>('');
+  const [activeOptionIndex, setActiveOptionIndex] = useState(0);
   const wrapperRef = useRef<HTMLDivElement>(null);
+  const triggerRef = useRef<HTMLButtonElement>(null);
+  const searchInputRef = useRef<HTMLInputElement>(null);
+  const optionRefs = useRef<Array<HTMLDivElement | null>>([]);
+  const listboxId = useId();
 
   const selectedOption = useMemo(() => {
     return options.find(opt => opt.id === selectedId) || options[0];
@@ -151,6 +161,12 @@ export const SearchableSelect: FC<SearchableSelectProps> = ({
       return matchText.includes(q);
     });
   }, [options, deferredQuery]);
+
+  useEffect(() => {
+    if (!isOpen) return;
+    const selectedIndex = filteredOptions.findIndex(option => option.id === selectedId);
+    setActiveOptionIndex(selectedIndex >= 0 ? selectedIndex : 0);
+  }, [filteredOptions, isOpen, selectedId]);
 
   // Click outside listener
   useEffect(() => {
@@ -177,17 +193,66 @@ export const SearchableSelect: FC<SearchableSelectProps> = ({
   const handleSelectOption = (option: SearchableOption) => {
     onSelect(option);
     setIsOpen(false);
+    triggerRef.current?.focus();
+  };
+
+  const closeAndReturnFocus = () => {
+    setIsOpen(false);
+    triggerRef.current?.focus();
+  };
+
+  const handleSearchKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
+    if (event.key === 'ArrowDown' && filteredOptions.length > 0) {
+      event.preventDefault();
+      const index = Math.min(activeOptionIndex, filteredOptions.length - 1);
+      optionRefs.current[index]?.focus();
+    } else if (event.key === 'Escape') {
+      event.preventDefault();
+      closeAndReturnFocus();
+    }
+  };
+
+  const handleOptionKeyDown = (
+    event: React.KeyboardEvent<HTMLDivElement>,
+    index: number,
+  ) => {
+    if (event.key === 'ArrowDown') {
+      event.preventDefault();
+      optionRefs.current[Math.min(index + 1, filteredOptions.length - 1)]?.focus();
+    } else if (event.key === 'ArrowUp') {
+      event.preventDefault();
+      if (index === 0) {
+        searchInputRef.current?.focus();
+      } else {
+        optionRefs.current[index - 1]?.focus();
+      }
+    } else if (event.key === 'Home') {
+      event.preventDefault();
+      optionRefs.current[0]?.focus();
+    } else if (event.key === 'End') {
+      event.preventDefault();
+      optionRefs.current[filteredOptions.length - 1]?.focus();
+    } else if (event.key === 'Enter' || event.key === ' ') {
+      event.preventDefault();
+      const option = filteredOptions[index];
+      if (option) handleSelectOption(option);
+    } else if (event.key === 'Escape') {
+      event.preventDefault();
+      closeAndReturnFocus();
+    }
   };
 
   return (
     <DropdownWrapper ref={wrapperRef}>
       <SelectTrigger
+        ref={triggerRef}
         type="button"
         $accentColor={accentColor}
         $borderColor={borderColor}
         onClick={handleToggle}
         aria-haspopup="listbox"
         aria-expanded={isOpen}
+        aria-controls={listboxId}
       >
         <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', maxWidth: '230px' }}>
           {selectedOption ? (
@@ -208,12 +273,15 @@ export const SearchableSelect: FC<SearchableSelectProps> = ({
       </SelectTrigger>
 
       {isOpen && (
-        <DropdownMenu $accentColor={accentColor} role="listbox">
+        <DropdownMenu $accentColor={accentColor} id={listboxId} role="listbox">
           <SearchInput
+            ref={searchInputRef}
             type="text"
             placeholder={searchPlaceholder}
+            aria-label="Search options"
             value={searchQuery}
             onChange={e => setSearchQuery(e.target.value)}
+            onKeyDown={handleSearchKeyDown}
             autoFocus
           />
 
@@ -222,14 +290,21 @@ export const SearchableSelect: FC<SearchableSelectProps> = ({
               No matches found
             </div>
           ) : (
-            filteredOptions.map(option => (
+            filteredOptions.map((option, index) => (
               <OptionItem
                 key={option.id}
+                ref={element => {
+                  optionRefs.current[index] = element;
+                }}
+                id={`${listboxId}-option-${index}`}
                 role="option"
                 aria-selected={selectedId === option.id}
+                tabIndex={index === activeOptionIndex ? 0 : -1}
                 $selected={selectedId === option.id}
                 $accentColor={accentColor}
                 onClick={() => handleSelectOption(option)}
+                onFocus={() => setActiveOptionIndex(index)}
+                onKeyDown={event => handleOptionKeyDown(event, index)}
               >
                 {option.num && (
                   <span style={{ fontWeight: 800, color: accentColor, minWidth: '42px' }}>{option.num}</span>

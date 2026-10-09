@@ -45,8 +45,10 @@ export const DashboardMDTile: FC<DashboardMDTileProps> = ({
       {isOpen && !isCollapsed && (
         <div style={{ paddingLeft: '0.5rem', marginTop: '0.5rem', display: 'flex', flexDirection: 'column', gap: '4px' }}>
           <DeptHeader
+            type="button"
             $active={activeTab === 'dept_summary'}
             onClick={() => onSubItemClick('dept_summary')}
+            aria-current={activeTab === 'dept_summary' ? 'page' : undefined}
           >
             <div className="left">
               <span className="num-tag">{MD_SUITE_DEPT.num}</span>
