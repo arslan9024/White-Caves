@@ -1,5 +1,15 @@
 import React, { FC } from 'react';
-import { Award, Search, Users, AlertCircle, FilePlus, RefreshCcw, CheckCircle2, AlertTriangle, XCircle } from 'lucide-react';
+import {
+  Award,
+  Search,
+  Users,
+  AlertCircle,
+  FilePlus,
+  RefreshCcw,
+  CheckCircle2,
+  AlertTriangle,
+  XCircle,
+} from 'lucide-react';
 import { useRERACertificateTrackerLogic } from './RERACertificateTrackerWidget.logic';
 import {
   WidgetContainer,
@@ -9,7 +19,7 @@ import {
   ControlsBar,
   TrackerTable,
   StatusBadge,
-  ActionButton
+  ActionButton,
 } from './RERACertificateTrackerWidget.style';
 
 export const RERACertificateTrackerWidget: FC = () => {
@@ -22,14 +32,17 @@ export const RERACertificateTrackerWidget: FC = () => {
     setFilter,
     filteredBrokers,
     stats,
-    handleRenew
+    handleRenew,
+    handleUpload,
   } = useRERACertificateTrackerLogic();
 
   return (
     <WidgetContainer $isRtl={isRtl}>
       <WidgetHeader>
         <div>
-          <h3><Award size={28} /> {t.title}</h3>
+          <h3>
+            <Award size={28} /> {t.title}
+          </h3>
           <p>{t.subtitle}</p>
         </div>
       </WidgetHeader>
@@ -61,18 +74,35 @@ export const RERACertificateTrackerWidget: FC = () => {
       <ControlsBar>
         <div className="search-box">
           <Search size={18} className="search-icon" />
-          <input 
-            type="text" 
-            placeholder={t.search_placeholder} 
+          <input
+            type="text"
+            placeholder={t.search_placeholder}
             value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
+            onChange={e => setSearchQuery(e.target.value)}
           />
         </div>
         <div className="filter-group">
-          <button className={filter === 'all' ? 'active' : ''} onClick={() => setFilter('all')}>{t.filter_all}</button>
-          <button className={filter === 'active' ? 'active' : ''} onClick={() => setFilter('active')}>{t.filter_active}</button>
-          <button className={filter === 'expiring' ? 'active' : ''} onClick={() => setFilter('expiring')}>{t.filter_expiring}</button>
-          <button className={filter === 'expired' ? 'active' : ''} onClick={() => setFilter('expired')}>{t.filter_expired}</button>
+          <button className={filter === 'all' ? 'active' : ''} onClick={() => setFilter('all')}>
+            {t.filter_all}
+          </button>
+          <button
+            className={filter === 'active' ? 'active' : ''}
+            onClick={() => setFilter('active')}
+          >
+            {t.filter_active}
+          </button>
+          <button
+            className={filter === 'expiring' ? 'active' : ''}
+            onClick={() => setFilter('expiring')}
+          >
+            {t.filter_expiring}
+          </button>
+          <button
+            className={filter === 'expired' ? 'active' : ''}
+            onClick={() => setFilter('expired')}
+          >
+            {t.filter_expired}
+          </button>
         </div>
       </ControlsBar>
 
@@ -91,8 +121,12 @@ export const RERACertificateTrackerWidget: FC = () => {
           <tbody>
             {filteredBrokers.map(broker => (
               <tr key={broker.id}>
-                <td><span className="broker-name">{broker.name}</span></td>
-                <td><span className="brn">{broker.brn}</span></td>
+                <td>
+                  <span className="broker-name">{broker.name}</span>
+                </td>
+                <td>
+                  <span className="brn">{broker.brn}</span>
+                </td>
                 <td>{broker.issueDate}</td>
                 <td>{broker.expiryDate}</td>
                 <td>
@@ -100,17 +134,21 @@ export const RERACertificateTrackerWidget: FC = () => {
                     {broker.status === 'active' && <CheckCircle2 size={12} />}
                     {broker.status === 'expiring' && <AlertTriangle size={12} />}
                     {broker.status === 'expired' && <XCircle size={12} />}
-                    {broker.status === 'active' ? t.status_active : broker.status === 'expiring' ? t.status_expiring : t.status_expired}
+                    {broker.status === 'active'
+                      ? t.status_active
+                      : broker.status === 'expiring'
+                        ? t.status_expiring
+                        : t.status_expired}
                   </StatusBadge>
                 </td>
                 <td>
                   <div style={{ display: 'flex', gap: '8px' }}>
-                    {(broker.status === 'expiring' || broker.status === 'expired') ? (
+                    {broker.status === 'expiring' || broker.status === 'expired' ? (
                       <ActionButton $variant="primary" onClick={() => handleRenew(broker.brn)}>
                         <RefreshCcw size={14} /> {t.renew_btn}
                       </ActionButton>
                     ) : (
-                      <ActionButton $variant="secondary" onClick={() => {}}>
+                      <ActionButton $variant="secondary" onClick={() => handleUpload(broker.brn)}>
                         <FilePlus size={14} /> {t.upload_btn}
                       </ActionButton>
                     )}
@@ -121,7 +159,6 @@ export const RERACertificateTrackerWidget: FC = () => {
           </tbody>
         </table>
       </TrackerTable>
-
     </WidgetContainer>
   );
 };

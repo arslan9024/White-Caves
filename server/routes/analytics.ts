@@ -245,8 +245,8 @@ router.get(
 
     // Add Trend Metrics
     if (trends && trends.length > 0) {
-      trends.forEach((t: { area?: string; pricePerSqft?: number }) => {
-        csv += `Trend,${t.area || 'All'},${t.pricePerSqft || 0}\n`;
+      trends.forEach((t: { area?: string; avgPricePerSqft?: number; pricePerSqft?: number }) => {
+        csv += `Trend,${t.area || 'All'},${t.avgPricePerSqft ?? t.pricePerSqft ?? 0}\n`;
       });
     }
 
