@@ -129,10 +129,33 @@ export const navigateToPostLoginDestination = (
   navigate(destination, { replace });
 };
 
-export const getReturnToFromLocationState = (state: unknown): string | null => {
-  if (!state || typeof state !== 'object') return null;
-  const maybeFrom = (state as { from?: unknown }).from;
-  return typeof maybeFrom === 'string' ? sanitizeReturnToPath(maybeFrom) : null;
+export const getReturnToFromLocationState = (state: unknown, search?: string): string | null => {
+  if (state && typeof state === 'object') {
+    const maybeFrom = (state as { from?: unknown }).from;
+    if (typeof maybeFrom === 'string') {
+      const sanitized = sanitizeReturnToPath(maybeFrom);
+      if (sanitized) return sanitized;
+    }
+  }
+
+  // Fallback: check URL search parameter (e.g. ?from=/crm/leads or ?from=%2Fcrm)
+  if (typeof window !== 'undefined') {
+    const query = search !== undefined ? search : window.location.search;
+    if (query) {
+      try {
+        const params = new URLSearchParams(query);
+        const fromParam = params.get('from');
+        if (fromParam) {
+          const sanitized = sanitizeReturnToPath(fromParam);
+          if (sanitized) return sanitized;
+        }
+      } catch {
+        // ignore parse error
+      }
+    }
+  }
+
+  return null;
 };
 
 export const getPrivilegedRoleFromUser = (user: {

@@ -312,19 +312,43 @@ router.get(
       [field]: sortOrder === 'asc' ? 'asc' : 'desc',
     };
 
-    const [properties, total] = await Promise.all([
-      prisma.property.findMany({
-        where,
-        orderBy,
-        skip,
-        take: limit,
-        include: {
-          user: { select: { id: true, name: true, email: true } },
-          _count: { select: { leads: true, commissions: true } },
-        },
-      }),
-      prisma.property.count({ where }),
-    ]);
+    let properties: any[] = [];
+    let total = 0;
+    try {
+      [properties, total] = await Promise.all([
+        prisma.property.findMany({
+          where,
+          orderBy,
+          skip,
+          take: limit,
+          include: {
+            user: { select: { id: true, name: true, email: true } },
+            _count: { select: { leads: true, commissions: true } },
+          },
+        }),
+        prisma.property.count({ where }),
+      ]);
+    } catch (queryErr: any) {
+      if (queryErr?.message?.includes('Field user is required')) {
+        logger.warn(
+          '[Properties] Inconsistent user relation in database — falling back to non-joined query'
+        );
+        [properties, total] = await Promise.all([
+          prisma.property.findMany({
+            where,
+            orderBy,
+            skip,
+            take: limit,
+            include: {
+              _count: { select: { leads: true, commissions: true } },
+            },
+          }),
+          prisma.property.count({ where }),
+        ]);
+      } else {
+        throw queryErr;
+      }
+    }
 
     const payload = {
       success: true,
@@ -530,7 +554,11 @@ router.get(
           furnishing,
           handoverStage,
           permitStatus: { active: permitActive, pending: permitPending },
-          feeBand: { 'no-fee': noFeeCount, 'low-fee': lowFeeCount, 'standard-fee': standardFeeCount },
+          feeBand: {
+            'no-fee': noFeeCount,
+            'low-fee': lowFeeCount,
+            'standard-fee': standardFeeCount,
+          },
         };
       },
       300
@@ -735,6 +763,8 @@ router.post(
       verifiedBy,
       verificationNotes,
       lastRefreshedAt,
+      reraPermitNumber,
+      reraPermitExpiryDate,
     } = req.body as Record<string, unknown>;
 
     if (!title || typeof title !== 'string') throw new AppError('Property title is required', 400);
@@ -745,6 +775,25 @@ router.post(
 
     const parsedPrice = typeof price === 'number' ? price : parseFloat(String(price));
     if (isNaN(parsedPrice) || parsedPrice < 0) throw new AppError('Invalid price value', 400);
+
+    const targetStatus = status ? String(status) : 'available';
+
+    // ─── RERA PERMIT ENFORCEMENT ON CREATION (RERA Law No. 16/2007) ──────
+    // Cannot directly publish to 'available' without a valid Trakheesi permit.
+    if (targetStatus === 'available') {
+      if (!reraPermitNumber || String(reraPermitNumber).trim() === '') {
+        throw new AppError(
+          'Cannot publish property: reraPermitNumber is required (RERA Law No. 16/2007). Obtain a Trakheesi permit first or save as draft_collected.',
+          422
+        );
+      }
+      if (reraPermitExpiryDate && new Date(String(reraPermitExpiryDate)) < new Date()) {
+        throw new AppError(
+          'Cannot publish property: RERA permit has expired. Renew via Trakheesi before publishing.',
+          422
+        );
+      }
+    }
 
     const property = await prisma.property.create({
       data: {
@@ -781,6 +830,8 @@ router.post(
         verifiedBy: verifiedBy ? String(verifiedBy) : null,
         verificationNotes: verificationNotes ? sanitizeString(String(verificationNotes)) : null,
         lastRefreshedAt: lastRefreshedAt ? new Date(String(lastRefreshedAt)) : null,
+        reraPermitNumber: reraPermitNumber ? String(reraPermitNumber) : null,
+        reraPermitExpiryDate: reraPermitExpiryDate ? new Date(String(reraPermitExpiryDate)) : null,
         userId: req.user!.id,
       },
       include: {
@@ -906,6 +957,12 @@ router.put(
     if (body.landlordPassportMissing !== undefined)
       updateData.landlordPassportMissing = Boolean(body.landlordPassportMissing);
     if (body.ejariMissing !== undefined) updateData.ejariMissing = Boolean(body.ejariMissing);
+    if (body.reraPermitNumber !== undefined)
+      updateData.reraPermitNumber = body.reraPermitNumber ? String(body.reraPermitNumber) : null;
+    if (body.reraPermitExpiryDate !== undefined)
+      updateData.reraPermitExpiryDate = body.reraPermitExpiryDate
+        ? new Date(String(body.reraPermitExpiryDate))
+        : null;
 
     const nextStatus = body.status !== undefined ? String(body.status) : existing.status;
     const nextMunicipalityNumber =

@@ -39,7 +39,10 @@ function createPdcSchedule(
   monthlyRent: number,
   bankName = 'Emirates NBD'
 ): ChequeScheduleItem[] {
-  const months = Math.max(1, Math.round((endDate.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24 * 30)));
+  const months = Math.max(
+    1,
+    Math.round((endDate.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24 * 30))
+  );
   const chequeCount = Math.min(12, Math.max(1, months));
   const annualRent = monthlyRent * 12;
   const installmentAmount = Math.round(annualRent / chequeCount);
@@ -293,7 +296,7 @@ router.post(
       depositAmount,
       terms,
       leaseNumber,
-    // Schema validation enforced for payload
+      // Schema validation enforced for payload
     } = req.body;
 
     if (!propertyId) throw new AppError('propertyId is required', 400);
@@ -429,7 +432,6 @@ router.post(
     res.status(201).json({ success: true, lease, ejari: ejariResult });
   })
 );
-
 
 // ─── PATCH /api/leases/:id — Update a lease ─────────────────────────────────
 router.patch(
@@ -642,7 +644,6 @@ router.patch(
     res.json({ success: true, data: updated });
   })
 );
-
 
 // ─── DELETE /api/leases/:id — Delete a lease (draft only) ───────────────────
 router.delete(
@@ -981,16 +982,74 @@ router.patch(
     const pdc = await prisma.pDCSchedule.findUnique({ where: { id: pdcId } });
     if (!pdc || pdc.leaseId !== id) throw new AppError('PDC record not found for this lease', 404);
 
-    const { status, notes } = req.body;
+    const { status, notes, bouncedReason, clearanceDate } = req.body;
     const validStatuses = ['pending', 'presented', 'cleared', 'bounced'];
     if (!status || !validStatuses.includes(status)) {
       throw new AppError(`status must be one of: ${validStatuses.join(', ')}`, 400);
     }
 
+    const updatePayload: Prisma.PDCScheduleUpdateInput = {
+      status,
+      notes: notes || pdc.notes,
+    };
+
+    if (status === 'cleared') {
+      updatePayload.clearanceDate = clearanceDate ? new Date(clearanceDate) : new Date();
+      updatePayload.bouncedReason = null;
+    } else if (status === 'bounced') {
+      updatePayload.clearanceDate = null;
+      updatePayload.bouncedReason = bouncedReason || 'Insufficient funds or account issue';
+    }
+
     const updated = await prisma.pDCSchedule.update({
       where: { id: pdcId },
-      data: { status, notes: notes || pdc.notes },
+      data: updatePayload,
     });
+
+    // ─── Bounced Cheque Escalation Alerts ─────────────────────────────────
+    if (status === 'bounced') {
+      const reasonText = updatePayload.bouncedReason || 'Insufficient funds';
+      const alertMsg = `Rent cheque #${pdc.chequeNumber} for ${pdc.currency} ${pdc.amount.toLocaleString()} has bounced (${reasonText}). Action required.`;
+
+      await Promise.allSettled([
+        lease.tenantId
+          ? prisma.notification.create({
+              data: {
+                userId: lease.tenantId,
+                type: 'error',
+                channel: 'in_app',
+                title: 'CRITICAL: Rent Cheque Bounced',
+                message: alertMsg,
+                metadata: {
+                  leaseId: id,
+                  pdcId,
+                  chequeNumber: pdc.chequeNumber,
+                  amount: pdc.amount,
+                },
+              },
+            })
+          : Promise.resolve(),
+        prisma.notification.create({
+          data: {
+            userId: lease.landlordId,
+            type: 'warning',
+            channel: 'in_app',
+            title: 'ALERT: Tenant Cheque Bounced',
+            message: alertMsg,
+            metadata: { leaseId: id, pdcId, chequeNumber: pdc.chequeNumber, amount: pdc.amount },
+          },
+        }),
+        prisma.activity.create({
+          data: {
+            type: 'lease',
+            action: 'cheque_bounced',
+            description: `Cheque #${pdc.chequeNumber} (${pdc.currency} ${pdc.amount}) marked as bounced for lease ${id}`,
+            userId,
+            metadata: { leaseId: id, pdcId, chequeNumber: pdc.chequeNumber, reason: reasonText },
+          },
+        }),
+      ]).catch(() => {});
+    }
 
     logger.info('PDC status updated', { userId, leaseId: id, pdcId, status });
     res.json({ success: true, data: updated });

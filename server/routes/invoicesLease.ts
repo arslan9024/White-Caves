@@ -91,7 +91,7 @@ router.post(
       dueDate,
       notes,
       invoiceNumber,
-    // Schema validation enforced for payload
+      // Schema validation enforced for payload
     } = req.body;
 
     if (!leaseId) throw new AppError('leaseId is required', 400);
@@ -110,7 +110,12 @@ router.post(
     // Verify lease exists and requester has access
     const lease = await prisma.lease.findUnique({
       where: { id: leaseId },
-      select: { tenantId: true, landlordId: true, leaseNumber: true },
+      select: {
+        tenantId: true,
+        landlordId: true,
+        leaseNumber: true,
+        property: { select: { type: true } },
+      },
     });
     if (!lease) throw new AppError('Lease not found', 404);
 
@@ -119,7 +124,18 @@ router.post(
       throw new AppError('Access denied — only landlord or owner can create invoices', 403);
     }
 
-    const vatAmt = vatAmount ?? 0;
+    // Determine UAE VAT rate per FTA regulations:
+    // Commercial leases (commercial, office, retail, warehouse) are subject to 5% VAT.
+    // Residential leases are exempt / zero-rated (0% VAT).
+    const propType = lease.property?.type?.toLowerCase() || '';
+    const isCommercial =
+      propType.includes('commercial') ||
+      propType.includes('office') ||
+      propType.includes('retail') ||
+      propType.includes('warehouse');
+
+    const calculatedVat = isCommercial ? Math.round(amount * 0.05 * 100) / 100 : 0;
+    const vatAmt = typeof vatAmount === 'number' ? vatAmount : calculatedVat;
     const totalAmount = amount + vatAmt;
 
     // Generate invoice number if not provided
@@ -251,8 +267,8 @@ router.get(
     const invoice = await prisma.invoice.findUnique({
       where: { id: req.params.id },
       include: {
-        propertyRef: { include: { owner: true } }
-      }
+        propertyRef: { include: { owner: true } },
+      },
     });
 
     if (!invoice) throw new AppError('Invoice not found', 404);
@@ -260,7 +276,9 @@ router.get(
     // Build the payload
     const payload = {
       receiptNumber: invoice.invoiceNumber || invoice.id.slice(0, 8).toUpperCase(),
-      receiptType: invoice.notes?.includes('TYPE:rent') ? 'tenant_service_charges' : 'security_deposit',
+      receiptType: invoice.notes?.includes('TYPE:rent')
+        ? 'tenant_service_charges'
+        : 'security_deposit',
       billedPartyType: 'tenant',
       amountAed: invoice.amount - (invoice.vatAmount || 0),
       vatRatePercent: 5,
@@ -272,11 +290,11 @@ router.get(
       paymentMethod: 'bank_transfer',
       paymentReference: invoice.id.slice(0, 12).toUpperCase(),
       date: invoice.createdAt.toISOString().split('T')[0],
-      serviceDescription: invoice.notes || 'Property Lease Payment'
+      serviceDescription: invoice.notes || 'Property Lease Payment',
     };
 
     const html = await henryPdfEngineService.generateTaxReceiptHtml(payload as any);
-    
+
     res.setHeader('Content-Type', 'text/html');
     res.send(html);
   })

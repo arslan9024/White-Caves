@@ -58,6 +58,7 @@ vi.mock('../services/authService', () => ({
 vi.mock('../utils/safeStorage', () => ({
   safeStorage: {
     setJSON: vi.fn(),
+    getJSON: vi.fn(),
     get: vi.fn(),
     set: vi.fn(),
     remove: vi.fn(),

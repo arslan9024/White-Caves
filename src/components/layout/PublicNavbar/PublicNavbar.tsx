@@ -130,7 +130,6 @@ export const PublicNavbar = (): React.JSX.Element => {
   const logoSrc = `${baseUrl}company-logo.jpg`.replace('//', '/');
   const { t } = useLanguage();
 
-  // Build translated nav arrays inside the component so they re-render on language change
   const desktopNav: DropdownGroup[] = [
     { label: t('common.home'), path: '/' },
     {
@@ -138,6 +137,7 @@ export const PublicNavbar = (): React.JSX.Element => {
       path: '/properties',
       children: [...PUBLIC_NAV.buy.slice(0, 3), ...PUBLIC_NAV.rent.slice(0, 2)],
     },
+    { label: 'Off-Plan', path: '/off-plan' },
     { label: t('nav.services') || 'Services', path: '/services' },
     {
       label: t('nav.company') || 'Company',
@@ -240,6 +240,16 @@ export const PublicNavbar = (): React.JSX.Element => {
             {t('nav.listProperty') || 'List Property'}
           </Link>
 
+          <Link
+            to="/dashboard"
+            className="public-navbar__crm-btn"
+            title="Access White Caves AI Assistants & Corporate CRM"
+            data-testid="navbar-crm-hub-link"
+          >
+            <span>👑</span>
+            <span>AI CRM Hub</span>
+          </Link>
+
           {/* Unified User Profile & Preferences Menu (Shifted Language, Currency, & Theme here) */}
           <div className="public-navbar__user-menu-wrap" ref={userMenuRef}>
             <button
@@ -268,7 +278,10 @@ export const PublicNavbar = (): React.JSX.Element => {
               ) : (
                 <>
                   <span style={{ fontSize: '1.1rem', padding: '0 2px' }}>⚙️</span>
-                  <span className="public-navbar__user-name" style={{ color: 'var(--text-primary)' }}>
+                  <span
+                    className="public-navbar__user-name"
+                    style={{ color: 'var(--text-primary)' }}
+                  >
                     Preferences
                   </span>
                 </>

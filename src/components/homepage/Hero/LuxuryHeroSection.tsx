@@ -321,7 +321,7 @@ export const LuxuryHeroSection: React.FC<LuxuryHeroSectionProps> = ({
           <span className="luxury-hero__title-line luxury-hero__title-line--light">
             Discover Your
           </span>
-          <span className="luxury-hero__title-line luxury-hero__title-line--gold">
+          <span className="luxury-hero__title-line luxury-hero__title-line--red">
             Dream Property
           </span>
           <span className="luxury-hero__title-line luxury-hero__title-line--light">in Dubai</span>
@@ -427,13 +427,22 @@ export const LuxuryHeroSection: React.FC<LuxuryHeroSectionProps> = ({
             }}
             onClick={e => e.stopPropagation()}
           >
-            <span style={{ fontSize: '0.75rem', color: '#94A3B8', fontWeight: 600, display: 'flex', alignItems: 'center', marginRight: '4px' }}>
+            <span
+              style={{
+                fontSize: '0.75rem',
+                color: '#94A3B8',
+                fontWeight: 600,
+                display: 'flex',
+                alignItems: 'center',
+                marginRight: '4px',
+              }}
+            >
               Top Developers:
             </span>
             {['Emaar', 'DAMAC', 'Nakheel', 'Meraas', 'Sobha', 'Ellington'].map(dev => (
               <button
                 key={dev}
-                onClick={(e) => {
+                onClick={e => {
                   e.stopPropagation();
                   navigate(`/properties?developer=${encodeURIComponent(dev)}`);
                 }}

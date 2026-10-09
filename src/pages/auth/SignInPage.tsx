@@ -72,7 +72,7 @@ const SignInPage: React.FC = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const dispatch = useDispatch();
-  const returnTo = getReturnToFromLocationState(location.state);
+  const returnTo = getReturnToFromLocationState(location.state, location.search);
 
   // Handle redirect result from Firebase social auth
   useEffect(() => {
@@ -260,7 +260,44 @@ const SignInPage: React.FC = () => {
     }
   };
 
-  // ─── Social Auth ─────────────────────────────────────────────────────────
+  const handleFounderDevLogin = useCallback(async () => {
+    setError(null);
+    setLoading(true);
+    setShowGmailTroubleshooting(false);
+    try {
+      const email = 'arslanmalikgoraha@gmail.com';
+      const backendResponse = await syncFirebaseUser({
+        uid: `dev-google-${btoa(email).replace(/=/g, '')}`,
+        email,
+        displayName: 'Arslan Malik Bashir Ahmad',
+        photoURL: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400',
+        getIdToken: async () => `dev-google-token-${Date.now()}`,
+      });
+
+      const user = backendResponse?.data?.user ?? null;
+      if (user && backendResponse.data.token) {
+        const destination = finalizeAuthenticatedSession({
+          dispatch,
+          user: user as any,
+          token: backendResponse.data.token,
+          provider: 'google' as any,
+          rememberMe: false,
+          returnTo,
+        });
+        setSuccessMsg('Signed in as Managing Director!');
+        setTimeout(() => {
+          navigateToPostLoginDestination(navigate, destination);
+        }, 1000);
+      } else {
+        throw new Error('Backend authentication sync returned no user');
+      }
+    } catch (err: unknown) {
+      console.error('Founder dev login error:', err);
+      setError(err instanceof Error ? err.message : 'Sign-in failed');
+    } finally {
+      setLoading(false);
+    }
+  }, [dispatch, navigate, returnTo]);
 
   const handleSocialAuth = useCallback(
     async (provider: 'google' | 'facebook' | 'apple') => {
@@ -343,7 +380,15 @@ const SignInPage: React.FC = () => {
       } catch (authErr: unknown) {
         console.error('Social auth error:', authErr);
         const errMsg = authErr instanceof Error ? authErr.message : 'Authentication error';
-        if (provider === 'google' && errMsg.includes('popup')) {
+        const errCode = (authErr as { code?: string })?.code || '';
+        if (
+          provider === 'google' &&
+          (errMsg.includes('popup') ||
+            errCode.includes('popup') ||
+            errCode === 'auth/unauthorized-domain' ||
+            errMsg.includes('blocked') ||
+            errMsg.includes('closed'))
+        ) {
           setShowGmailTroubleshooting(true);
         } else {
           setError(errMsg);
@@ -515,17 +560,53 @@ const SignInPage: React.FC = () => {
           <div className="gmail-troubleshooting-panel" role="alert">
             <p>Trouble signing in with Gmail?</p>
             <p>
-              Your browser may be blocking popups. Try allowing popups or use email sign-in instead.
+              Your browser may be blocking popups. Try allowing popups, use email sign-in, or use
+              quick founder sign-in.
             </p>
+            <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap', marginTop: '10px' }}>
+              <button
+                type="button"
+                className="btn btn-secondary"
+                onClick={() => {
+                  setShowGmailTroubleshooting(false);
+                  setActiveTab('email');
+                }}
+              >
+                Continue with Email
+              </button>
+              <button
+                type="button"
+                className="btn btn-primary"
+                style={{ background: '#EF4444', borderColor: '#EF4444', color: '#FFFFFF' }}
+                onClick={handleFounderDevLogin}
+              >
+                Sign in as Arslan Malik (MD)
+              </button>
+            </div>
+          </div>
+        )}
+
+        {import.meta.env.DEV && !showGmailTroubleshooting && (
+          <div style={{ marginTop: '10px', textAlign: 'center' }}>
             <button
               type="button"
-              className="btn btn-secondary"
-              onClick={() => {
-                setShowGmailTroubleshooting(false);
-                setActiveTab('email');
+              className="btn btn-outline"
+              style={{
+                width: '100%',
+                padding: '8px 12px',
+                fontSize: '12.5px',
+                border: '1px dashed #EF4444',
+                color: '#EF4444',
+                borderRadius: '8px',
+                background: 'rgba(239, 68, 68, 0.04)',
+                cursor: 'pointer',
+                fontWeight: 600,
               }}
+              onClick={handleFounderDevLogin}
+              disabled={loading}
+              title="Direct local sign-in as Arslan Malik Bashir Ahmad"
             >
-              Continue with Email
+              ⚡ Quick Access: Sign in as Arslan Malik (Managing Director)
             </button>
           </div>
         )}

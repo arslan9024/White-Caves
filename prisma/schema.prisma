@@ -278,6 +278,9 @@ model Property {
   @@index([inventoryStage])
   @@index([isLocked])
   @@index([availabilityDate])
+  @@index([status, featured, createdAt])
+  @@index([status, type, price])
+  @@index([status, location])
 }
 
 // ─── LEAD ───────────────────────────────────────────────────────────────

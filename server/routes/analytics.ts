@@ -26,6 +26,11 @@ import { prisma } from '../database.js';
 
 const router = Router();
 
+// ── Root Alias ───────────────────────────────────────────────────────────
+router.get(['/', ''], (_req: Request, res: Response) => {
+  res.redirect('/api/analytics/overview');
+});
+
 // ── Market Overview ─────────────────────────────────────────────────────
 
 router.get(
@@ -232,12 +237,12 @@ router.get(
 
     // Generate CSV Content
     let csv = 'Report Type,Metric,Value\n';
-    
+
     // Add Overview Metrics
     csv += `Overview,Total Active Listings,${overview.totalAvailable}\n`;
     csv += `Overview,Total Transactions (30d),${overview.totalTransactions30d}\n`;
     csv += `Overview,Avg Price Per Sqft,${overview.avgPricePerSqft}\n`;
-    
+
     // Add Trend Metrics
     if (trends && trends.length > 0) {
       trends.forEach((t: { area?: string; pricePerSqft?: number }) => {

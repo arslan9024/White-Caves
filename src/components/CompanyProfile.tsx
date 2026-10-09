@@ -1,4 +1,5 @@
 import React, { useCallback, useState } from 'react';
+import { Link } from 'react-router-dom';
 import {
   CompanyProfileSection,
   CompanyProfileContainer,
@@ -114,11 +115,11 @@ export default function CompanyProfile() {
 
           <ProfileCard>
             <ProfileCardIcon>📋</ProfileCardIcon>
-            <h3>RERA Licensed</h3>
+            <h3>RERA &amp; DET Certified</h3>
             <p>
-              Fully licensed and regulated by the Real Estate Regulatory Agency (RERA) and Dubai
-              Land Department (DLD), ensuring complete compliance with UAE real estate laws and
-              regulations.
+              Official Dubai DET Commercial License #1388443, RERA ORN #44483, and Corporate Ejari
+              #0120260721003974. Operating under Managing Director &amp; Sole Signatory Arslan Malik
+              Bashir Ahmad.
             </p>
           </ProfileCard>
         </CompanyProfileGrid>
@@ -206,7 +207,11 @@ export default function CompanyProfile() {
                     href="https://wa.me/971563616136?text=Hello%20White%20Caves%20Real%20Estate%2C%20I%20would%20like%20to%20inquire%20about%20a%20property."
                     target="_blank"
                     rel="noopener noreferrer"
-                    style={{ color: 'var(--whatsapp-color)', textDecoration: 'none', fontWeight: 700 }}
+                    style={{
+                      color: 'var(--whatsapp-color)',
+                      textDecoration: 'none',
+                      fontWeight: 700,
+                    }}
                   >
                     Chat on WhatsApp ↗
                   </a>
@@ -243,22 +248,55 @@ export default function CompanyProfile() {
               {downloadMsg.text}
             </div>
           )}
-          <DownloadProfileBtn onClick={handleDownloadPDF}>
-            <svg
-              viewBox="0 0 24 24"
-              width="20"
-              height="20"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
+          <div
+            style={{
+              display: 'flex',
+              gap: '1rem',
+              justifyContent: 'center',
+              flexWrap: 'wrap',
+              marginBottom: '0.5rem',
+            }}
+          >
+            <Link
+              to="/dashboard"
+              style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '0.65rem',
+                padding: '0.875rem 1.8rem',
+                background: '#1E293B',
+                color: '#FFFFFF',
+                border: '1.5px solid rgba(239, 68, 68, 0.4)',
+                borderRadius: '12px',
+                fontWeight: 700,
+                fontSize: '0.95rem',
+                textDecoration: 'none',
+                boxShadow: '0 4px 16px rgba(0, 0, 0, 0.15)',
+                transition: 'all 0.2s ease',
+              }}
             >
-              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
-              <polyline points="7 10 12 15 17 10" />
-              <line x1="12" y1="15" x2="12" y2="3" />
-            </svg>
-            Download Company Profile (PDF)
-          </DownloadProfileBtn>
-          <DownloadHint>Get our complete company brochure with detailed information</DownloadHint>
+              <span>👑</span>
+              <span>Launch AI CRM &amp; Assistant Hub</span>
+            </Link>
+            <DownloadProfileBtn onClick={handleDownloadPDF}>
+              <svg
+                viewBox="0 0 24 24"
+                width="20"
+                height="20"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+              >
+                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+                <polyline points="7 10 12 15 17 10" />
+                <line x1="12" y1="15" x2="12" y2="3" />
+              </svg>
+              Download Company Profile (PDF)
+            </DownloadProfileBtn>
+          </div>
+          <DownloadHint>
+            Official White Caves Real Estate documentation &amp; corporate credentials
+          </DownloadHint>
         </CompanyProfileCTA>
       </CompanyProfileContainer>
     </CompanyProfileSection>

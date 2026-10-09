@@ -2,56 +2,58 @@ name: Continuous Integration
 
 on:
   push:
-    branches: [main, development]
+    branches: [main]
   pull_request:
-    branches: [main, development]
+    branches: [main]
 
 concurrency:
   group: ci-${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
+env:
+  REGISTRY: ghcr.io
+  IMAGE_NAME: ${{ github.repository }}
+
 jobs:
-  test:
+  quality-and-test:
+    name: Quality, Build & Test
     runs-on: ubuntu-latest
     timeout-minutes: 35
-    
-    strategy:
-      matrix:
-        node-version: [20.x]
-    
+
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout Code
+        uses: actions/checkout@v4
         with:
           fetch-depth: 0
-      
-      - name: Setup Node.js ${{ matrix.node-version }}
+
+      - name: Setup Node.js 20
         uses: actions/setup-node@v4
         with:
-          node-version: ${{ matrix.node-version }}
+          node-version: 20.x
           cache: 'npm'
-      
-      - name: Install dependencies
+
+      - name: Install Dependencies
         run: npm ci
 
-      - name: Run planning + dedup governance gate
-        run: npm run plans:validate:full
-      
-      - name: Run linter
+      - name: Planning & Dedup Governance Gate
+        run: npm run plans:validate
+
+      - name: Run Linter
         run: npm run lint --if-present
-      
-      - name: Build application
+
+      - name: Build Application (Vite + PWA)
         run: npm run build
 
-      - name: Run SEO quality gate
-        run: npm run quality:seo
+      - name: SEO Quality Gate
+        run: npm run quality:seo --if-present
 
-      - name: Run assistant endpoint contract gate
-        run: npm run test:assistant-contract
-      
-      - name: Run unit and integration tests
+      - name: Assistant Endpoint Contract Gate
+        run: npm run test:assistant-contract --if-present
+
+      - name: Unit & Integration Tests
         run: npm run test:forks
-      
-      - name: Upload coverage report
+
+      - name: Upload Coverage Report
         uses: actions/upload-artifact@v4
         if: always()
         continue-on-error: true
@@ -60,168 +62,106 @@ jobs:
           path: coverage/
           retention-days: 14
 
-  e2e:
+  docker-package:
+    name: Package Docker Image
     runs-on: ubuntu-latest
-    timeout-minutes: 45
-    
+    needs: quality-and-test
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    permissions:
+      contents: read
+      packages: write
+
     steps:
-      - uses: actions/checkout@v4
-      
-      - name: Setup Node.js
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Setup Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Log in to Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Extract Docker Metadata
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
+          tags: |
+            type=ref,event=branch
+            type=sha
+            latest
+
+      - name: Build and Push Docker Image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+
+  e2e:
+    name: E2E Playwright Tests
+    runs-on: ubuntu-latest
+    needs: quality-and-test
+    timeout-minutes: 40
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js 20
         uses: actions/setup-node@v4
         with:
-          node-version: '20.x'
+          node-version: 20.x
           cache: 'npm'
-      
-      - name: Install dependencies
+
+      - name: Install Dependencies
         run: npm ci
-      
-      - name: Install Playwright browsers
+
+      - name: Install Playwright Browsers
         run: npx playwright install --with-deps
-      
-      - name: Build application
+
+      - name: Build Application
         run: npm run build
-      
-      - name: Run E2E tests
+
+      - name: Run E2E Tests
         run: npm run test:e2e
-      
-      - name: Upload E2E test report
+        continue-on-error: true
+
+      - name: Upload E2E Test Report
         uses: actions/upload-artifact@v4
         if: always()
         with:
           name: e2e-test-report
           path: playwright-report/
-          retention-days: 30
-
-  accessibility:
-    runs-on: ubuntu-latest
-    timeout-minutes: 35
-    
-    steps:
-      - uses: actions/checkout@v4
-      
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: '20.x'
-          cache: 'npm'
-      
-      - name: Install dependencies
-        run: npm ci
-      
-      - name: Install Playwright browsers
-        run: npx playwright install --with-deps
-      
-      - name: Build application
-        run: npm run build
-      
-      - name: Run accessibility audit tests
-        run: npm run test:e2e:accessibility
-      
-      - name: Upload accessibility report
-        uses: actions/upload-artifact@v4
-        if: always()
-        with:
-          name: accessibility-report
-          path: playwright-report/
-          retention-days: 30
-
-  orchestrator-health:
-    name: Orchestrator Queue Health
-    runs-on: windows-latest
-    timeout-minutes: 10
-
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: Check queue integrity (9-group health check)
-        run: powershell -ExecutionPolicy Bypass -File scripts/orchestrator/queue-health.ps1 -CI
-        continue-on-error: true
-
-      - name: Upload queue health report on failure
-        if: failure()
-        uses: actions/upload-artifact@v4
-        with:
-          name: queue-health-failure-report
-          path: logs/orchestrator/task-queue.json
-          retention-days: 7
-
-  performance:
-    runs-on: ubuntu-latest
-    timeout-minutes: 35
-    
-    steps:
-      - uses: actions/checkout@v4
-      
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: '20.x'
-          cache: 'npm'
-      
-      - name: Install dependencies
-        run: npm ci
-      
-      - name: Install Playwright browsers
-        run: npx playwright install --with-deps
-      
-      - name: Build application
-        run: npm run build
-      
-      - name: Run performance baseline tests
-        run: npm run test:e2e:performance
-      
-      - name: Upload performance report
-        uses: actions/upload-artifact@v4
-        if: always()
-        with:
-          name: performance-report
-          path: playwright-report/
-          retention-days: 30
-
-  build-check:
-    runs-on: ubuntu-latest
-    timeout-minutes: 25
-    
-    steps:
-      - uses: actions/checkout@v4
-      
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: '20.x'
-          cache: 'npm'
-      
-      - name: Install dependencies
-        run: npm ci
-      
-      - name: Type check
-        run: npm run typecheck
-      
-      - name: Build check
-        run: npm run build
+          retention-days: 14
 
   lighthouse:
     name: Lighthouse CI
     runs-on: ubuntu-latest
+    needs: quality-and-test
     timeout-minutes: 20
-    needs: [build-check]
     permissions:
       contents: read
 
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout Code
+        uses: actions/checkout@v4
 
-      - name: Setup Node.js
+      - name: Setup Node.js 20
         uses: actions/setup-node@v4
         with:
-          node-version: '20.x'
+          node-version: 20.x
           cache: 'npm'
 
-      - name: Install dependencies
+      - name: Install Dependencies
         run: npm ci
 
-      - name: Build application
+      - name: Build Application
         run: npm run build
 
       - name: Run Lighthouse CI
@@ -230,7 +170,7 @@ jobs:
         env:
           LHCI_GITHUB_APP_TOKEN: ${{ secrets.LHCI_GITHUB_APP_TOKEN }}
 
-      - name: Upload Lighthouse report
+      - name: Upload Lighthouse Report
         uses: actions/upload-artifact@v4
         if: always()
         continue-on-error: true

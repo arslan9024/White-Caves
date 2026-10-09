@@ -46,28 +46,28 @@ interface Milestone {
 
 const teamMembers: TeamMember[] = [
   {
-    name: 'Ahmed Al Rashid',
-    role: 'CEO & Founder',
+    name: 'Arslan Malik Bashir Ahmad',
+    role: 'Managing Director & Founder',
     image: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400',
-    bio: '20+ years experience in Dubai real estate market',
+    bio: 'Founder and Sole Signatory of White Caves Real Estate LLC. Driving luxury property investments, high-yield off-plan portfolios, and sovereign AI brokerage technologies across Dubai.',
   },
   {
-    name: 'Sarah Thompson',
-    role: 'Head of Sales',
+    name: 'Zoe',
+    role: 'Chief AI Operations Officer',
+    image: 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=400',
+    bio: 'Autonomous executive intelligence orchestrating 12 real estate departments, investor workflows, and instant market insights.',
+  },
+  {
+    name: 'Ada',
+    role: 'Chief Technology Architect',
+    image: 'https://images.unsplash.com/photo-1580489944761-15a19d654956?w=400',
+    bio: 'Pioneering predictive valuation algorithms, RERA compliance automation, and real-time Dubai Land Department integration.',
+  },
+  {
+    name: 'Linda & Nadia',
+    role: 'Luxury Client Concierge Leads',
     image: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=400',
-    bio: 'Specializing in luxury villa transactions',
-  },
-  {
-    name: 'Mohammed Hassan',
-    role: 'Senior Property Consultant',
-    image: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=400',
-    bio: 'Expert in off-plan investments',
-  },
-  {
-    name: 'Elena Rodriguez',
-    role: 'Marketing Director',
-    image: 'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=400',
-    bio: 'Digital marketing strategist',
+    bio: '24/7 dedicated investor concierges providing high-touch WhatsApp advisory, private viewing itineraries, and VIP contract coordination.',
   },
 ];
 
@@ -85,10 +85,10 @@ const milestones: Milestone[] = [
 ];
 
 const awards = [
-  { text: 'Best Luxury Real Estate Agency — Dubai 2024', Icon: Trophy },
-  { text: 'Excellence in Customer Service Award 2023', Icon: Star },
-  { text: 'Top 10 Real Estate Companies in UAE 2023', Icon: Award },
-  { text: 'Innovation in Property Technology 2022', Icon: TrendingUp },
+  { text: 'Dubai DET Commercial License: #1388443 (Active & Compliant)', Icon: Shield },
+  { text: 'RERA Brokerage Registration: ORN #44483', Icon: Award },
+  { text: 'Corporate Ejari Contract: #0120260721003974', Icon: CheckCircle2 },
+  { text: 'Innovation in AI-Powered Real Estate & CRM 2024', Icon: TrendingUp },
 ];
 
 const values = [

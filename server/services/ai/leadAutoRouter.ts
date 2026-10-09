@@ -19,6 +19,7 @@
 import { prisma } from '../../database.js';
 import logger from '../../utils/logger.js';
 import { onTierChange, type TierChangeEvent } from './leadScoringMiddleware.js';
+import { convertToAED, isSupportedCurrency, type SupportedCurrency } from '../currencyService.js';
 
 // ─── Types ──────────────────────────────────────────────────────────────
 
@@ -202,6 +203,7 @@ export async function autoRouteHotLead(leadId: string): Promise<RoutingDecision 
       name: true,
       assignedToId: true,
       budget: true,
+      budgetCurrency: true,
       score: true,
       scoreTier: true,
       propertyId: true,
@@ -227,7 +229,15 @@ export async function autoRouteHotLead(leadId: string): Promise<RoutingDecision 
     return null;
   }
 
-  // Scoring algo: best conversion rate, lowest current load, experience bonus
+  // Multi-currency budget normalization to AED peg
+  const currencyCode =
+    lead.budgetCurrency && isSupportedCurrency(lead.budgetCurrency)
+      ? (lead.budgetCurrency as SupportedCurrency)
+      : 'AED';
+  const budgetInAED = lead.budget ? convertToAED(lead.budget, currencyCode) : 0;
+  const isLuxuryLead = budgetInAED >= 5_000_000;
+
+  // Scoring algo: best conversion rate, lowest current load, experience bonus, luxury routing
   let bestAgent: AgentPerformance | null = null;
   let bestScore = -1;
 
@@ -249,6 +259,11 @@ export async function autoRouteHotLead(leadId: string): Promise<RoutingDecision 
     else if (agent.totalLeads >= 20) routeScore += 15;
     else if (agent.totalLeads >= 10) routeScore += 10;
     else if (agent.totalLeads >= 5) routeScore += 5;
+
+    // 4. Luxury Lead Specialist Bonus: top converters get priority for AED 5M+ deals
+    if (isLuxuryLead && agent.conversionRate >= 0.25) {
+      routeScore += 15;
+    }
 
     if (routeScore > bestScore) {
       bestScore = routeScore;

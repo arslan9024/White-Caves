@@ -6,16 +6,34 @@
 
 // ─── Runtime-safe URL fallbacks ───────────────────────────────────────
 const FALLBACK_PUBLIC_ORIGIN = 'https://www.whitecaves.com';
-const runtimeOrigin = typeof window !== 'undefined' && window.location?.origin
-  ? window.location.origin
-  : FALLBACK_PUBLIC_ORIGIN;
+const runtimeOrigin =
+  typeof window !== 'undefined' && window.location?.origin
+    ? window.location.origin
+    : FALLBACK_PUBLIC_ORIGIN;
+
+function normalizeOrigin(raw?: string): string {
+  if (!raw || typeof raw !== 'string') {
+    return runtimeOrigin;
+  }
+  const trimmed = raw.trim();
+  if (!trimmed) {
+    return runtimeOrigin;
+  }
+  if (/^https?:\/\//i.test(trimmed)) {
+    return trimmed.replace(/\/+$/, '');
+  }
+  const isLocal = /^localhost(:\d+)?$/i.test(trimmed) || /^127\.0\.0\.1(:\d+)?$/i.test(trimmed);
+  const protocol = isLocal ? 'http://' : 'https://';
+  return `${protocol}${trimmed}`.replace(/\/+$/, '');
+}
 
 const resolvedApiUrl = import.meta.env.VITE_API_URL || '/api';
-const resolvedAppUrl = import.meta.env.VITE_APP_URL || runtimeOrigin;
+const resolvedAppUrl = normalizeOrigin(import.meta.env.VITE_APP_URL);
+const resolvedDomain = normalizeOrigin(import.meta.env.VITE_DOMAIN);
 
 export const Config = {
   /** Public-facing domain */
-  DOMAIN: import.meta.env.VITE_DOMAIN || FALLBACK_PUBLIC_ORIGIN,
+  DOMAIN: resolvedDomain,
 
   /** Backend API base URL */
   API_URL: resolvedApiUrl,
@@ -42,10 +60,7 @@ export const Config = {
     WEBSITE: 'www.whitecaves.com',
     RERA_ORN: '44483',
     RERA_LICENSE: '44483',
-    ACTIVITIES: [
-      'Real Estate Buying & Selling Brokerage',
-      'Leasing Property Brokerage Agents',
-    ],
+    ACTIVITIES: ['Real Estate Buying & Selling Brokerage', 'Leasing Property Brokerage Agents'],
     BANK: {
       NAME: 'Mashreq Bank',
       ACCOUNT_TITLE: 'WHITE CAVES REAL ESTATE L.L.C',

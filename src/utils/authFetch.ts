@@ -22,13 +22,42 @@ let refreshInFlight: Promise<boolean> | null = null;
 
 // ─── Auto-Logout ────────────────────────────────────────────────────────
 
+const PROTECTED_ROUTE_PREFIXES = [
+  '/crm',
+  '/admin',
+  '/dashboard',
+  '/tenant-portal',
+  '/landlord-portal',
+  '/portal',
+  '/profile',
+  '/settings',
+  '/select-role',
+  '/pending-approval',
+];
+
 function handleUnauthorized(): void {
   log.warn('Session expired or invalid token – logging out');
   safeStorage.remove('token');
   safeStorage.remove('userRole');
-  // Navigate to sign-in; avoids importing router (keeps util pure)
-  if (window.location.pathname !== '/signin') {
-    window.location.href = '/signin';
+
+  if (typeof window === 'undefined') return;
+
+  const pathname = window.location.pathname;
+  const isAuthPage =
+    pathname === '/signin' ||
+    pathname === '/signup' ||
+    pathname === '/login' ||
+    pathname === '/register' ||
+    pathname.startsWith('/auth/');
+  if (isAuthPage) return;
+
+  // Only force redirect to /signin if the user was on a protected route.
+  // This prevents anonymous visitors browsing public pages (/, /properties)
+  // from being abruptly kicked to the login screen.
+  const isProtectedRoute = PROTECTED_ROUTE_PREFIXES.some(prefix => pathname.startsWith(prefix));
+  if (isProtectedRoute) {
+    const returnUrl = encodeURIComponent(pathname + window.location.search + window.location.hash);
+    window.location.href = `/signin?from=${returnUrl}`;
   }
 }
 
@@ -136,7 +165,12 @@ export async function authFetch(
       : controller.signal;
 
     try {
-      return await fetch(input, { ...init, headers, signal, credentials: init?.credentials ?? 'include' });
+      return await fetch(input, {
+        ...init,
+        headers,
+        signal,
+        credentials: init?.credentials ?? 'include',
+      });
     } finally {
       if (timeoutId) clearTimeout(timeoutId);
     }
@@ -146,7 +180,8 @@ export async function authFetch(
 
   // ── Centralized HTTP-status handling ───────────────────────────────
   if (response.status === 401) {
-    const normalizedUrl = typeof input === 'string' ? input : input instanceof URL ? input.pathname : '';
+    const normalizedUrl =
+      typeof input === 'string' ? input : input instanceof URL ? input.pathname : '';
     const isRefreshRequest = normalizedUrl.startsWith(AUTH_REFRESH_ENDPOINT);
     if (!isRefreshRequest) {
       const refreshed = await attemptSessionRefresh();
@@ -190,9 +225,9 @@ function mergeAbortSignals(a: AbortSignal, b: AbortSignal): AbortSignal {
   const isAbortSignalLike = (signal: unknown): signal is AbortSignal => {
     return Boolean(
       signal &&
-      typeof signal === 'object' &&
-      'aborted' in signal &&
-      typeof (signal as AbortSignal).addEventListener === 'function'
+        typeof signal === 'object' &&
+        'aborted' in signal &&
+        typeof (signal as AbortSignal).addEventListener === 'function'
     );
   };
 
