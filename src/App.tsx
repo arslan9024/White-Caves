@@ -1,8 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { HelmetProvider } from 'react-helmet-async';
 import { SpeedInsights } from '@vercel/speed-insights/react';
-import { Provider } from 'react-redux';
-import { store } from './store/store';
 import { AppRouter } from './AppRouter';
 import { CookieConsent } from './components/common/CookieConsent';
 import { ToastNotificationSystem } from './components/common/ToastNotificationSystem/ToastNotificationSystem';
@@ -21,16 +19,14 @@ function App() {
   }, []);
 
   return (
-    <Provider store={store}>
-      <HelmetProvider>
-        <div className="app-root">
-          <AppRouter />
-        </div>
-        {consentGranted && <SpeedInsights />}
-        <CookieConsent />
-        <ToastNotificationSystem />
-      </HelmetProvider>
-    </Provider>
+    <HelmetProvider>
+      <div className="app-root">
+        <AppRouter />
+      </div>
+      {consentGranted && <SpeedInsights />}
+      <CookieConsent />
+      <ToastNotificationSystem />
+    </HelmetProvider>
   );
 }
 

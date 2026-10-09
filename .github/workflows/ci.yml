@@ -197,6 +197,9 @@ jobs:
       
       - name: Type check
         run: npm run typecheck
+
+      - name: Type check Express server
+        run: npm run typecheck:server
       
       - name: Build check
         run: npm run build
