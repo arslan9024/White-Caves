@@ -146,7 +146,11 @@ export const DeptHeader = styled.button<{ $active: boolean }>`
   cursor: pointer;
   transition: all 0.2s ease;
   border: 1px solid ${props => (props.$active ? '#DC2626' : '#E2E8F0')};
-  cursor: pointer;
+
+  &:focus-visible {
+    outline: 2px solid #EF4444;
+    outline-offset: 2px;
+  }
 
   .left {
     display: flex;

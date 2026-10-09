@@ -55,6 +55,26 @@ export const DashboardAiTile: FC<DashboardAiTileProps> = ({
     }));
   }, [filteredAssistants]);
 
+  const handleTeamSelect = (teamId: string) => {
+    setSelectedTeamId(teamId);
+    if (teamId === 'all') return;
+
+    const team = AI_TEAMS_STRUCTURE.find(candidate => candidate.id === teamId);
+    const teamAssistants = team
+      ? ALL_AI_ASSISTANTS.filter(assistant => team.assistantIds.includes(assistant.id))
+      : [];
+    if (teamAssistants.length === 0) return;
+
+    const assistant = teamAssistants.find(candidate => candidate.id === selectedAiId) ?? teamAssistants[0];
+    onSelectAiAssistant({
+      id: assistant.id,
+      num: assistant.num,
+      name: assistant.name,
+      role: assistant.role,
+      icon: assistant.icon,
+    });
+  };
+
   return (
     <div>
       <TopLevelTileButton
@@ -113,7 +133,8 @@ export const DashboardAiTile: FC<DashboardAiTileProps> = ({
             >
               <button
                 type="button"
-                onClick={() => setSelectedTeamId('all')}
+                onClick={() => handleTeamSelect('all')}
+                aria-pressed={selectedTeamId === 'all'}
                 style={{
                   display: 'flex',
                   alignItems: 'center',
@@ -136,7 +157,8 @@ export const DashboardAiTile: FC<DashboardAiTileProps> = ({
                 <button
                   key={team.id}
                   type="button"
-                  onClick={() => setSelectedTeamId(team.id)}
+                  onClick={() => handleTeamSelect(team.id)}
+                  aria-pressed={selectedTeamId === team.id}
                   style={{
                     display: 'flex',
                     alignItems: 'center',

@@ -273,7 +273,7 @@ export const SearchableSelect: FC<SearchableSelectProps> = ({
       </SelectTrigger>
 
       {isOpen && (
-        <DropdownMenu $accentColor={accentColor} id={listboxId} role="listbox">
+        <DropdownMenu $accentColor={accentColor}>
           <SearchInput
             ref={searchInputRef}
             type="text"
@@ -286,35 +286,37 @@ export const SearchableSelect: FC<SearchableSelectProps> = ({
           />
 
           {filteredOptions.length === 0 ? (
-            <div style={{ padding: '8px 10px', fontSize: '0.78rem', color: 'var(--color-94a3b8, #94A3B8)', textAlign: 'center' }}>
+            <div role="status" style={{ padding: '8px 10px', fontSize: '0.78rem', color: 'var(--color-94a3b8, #94A3B8)', textAlign: 'center' }}>
               No matches found
             </div>
           ) : (
-            filteredOptions.map((option, index) => (
-              <OptionItem
-                key={option.id}
-                ref={element => {
-                  optionRefs.current[index] = element;
-                }}
-                id={`${listboxId}-option-${index}`}
-                role="option"
-                aria-selected={selectedId === option.id}
-                tabIndex={index === activeOptionIndex ? 0 : -1}
-                $selected={selectedId === option.id}
-                $accentColor={accentColor}
-                onClick={() => handleSelectOption(option)}
-                onFocus={() => setActiveOptionIndex(index)}
-                onKeyDown={event => handleOptionKeyDown(event, index)}
-              >
-                {option.num && (
-                  <span style={{ fontWeight: 800, color: accentColor, minWidth: '42px' }}>{option.num}</span>
-                )}
-                {option.icon && <span>{option.icon}</span>}
-                <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-                  {option.name} {option.role ? `— ${option.role}` : ''}
-                </span>
-              </OptionItem>
-            ))
+            <div id={listboxId} role="listbox" aria-label="Options">
+              {filteredOptions.map((option, index) => (
+                <OptionItem
+                  key={option.id}
+                  ref={element => {
+                    optionRefs.current[index] = element;
+                  }}
+                  id={`${listboxId}-option-${index}`}
+                  role="option"
+                  aria-selected={selectedId === option.id}
+                  tabIndex={index === activeOptionIndex ? 0 : -1}
+                  $selected={selectedId === option.id}
+                  $accentColor={accentColor}
+                  onClick={() => handleSelectOption(option)}
+                  onFocus={() => setActiveOptionIndex(index)}
+                  onKeyDown={event => handleOptionKeyDown(event, index)}
+                >
+                  {option.num && (
+                    <span style={{ fontWeight: 800, color: accentColor, minWidth: '42px' }}>{option.num}</span>
+                  )}
+                  {option.icon && <span>{option.icon}</span>}
+                  <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                    {option.name} {option.role ? `— ${option.role}` : ''}
+                  </span>
+                </OptionItem>
+              ))}
+            </div>
           )}
         </DropdownMenu>
       )}

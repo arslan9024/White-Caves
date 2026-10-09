@@ -19,4 +19,38 @@ describe('DashboardAiTile', () => {
     expect(screen.getByText(/3\. AI Command Center \(40 AI\)/i)).toBeInTheDocument();
     expect(screen.getByText(/AI Teams/i)).toBeInTheDocument();
   });
+
+  it('selects an assistant belonging to the selected team', () => {
+    const onSelectAiAssistant = vi.fn();
+    render(
+      <DashboardAiTile
+        {...defaultProps}
+        onSelectAiAssistant={onSelectAiAssistant}
+      />
+    );
+
+    fireEvent.click(screen.getByRole('button', { name: /View Teams/i }));
+    fireEvent.click(screen.getByRole('button', { name: /Sales, Leads & Acquisition Squad/i }));
+
+    expect(onSelectAiAssistant).toHaveBeenCalledWith(
+      expect.objectContaining({ id: 'sophia' }),
+    );
+  });
+
+  it('keeps the selected assistant when it belongs to the selected team', () => {
+    const onSelectAiAssistant = vi.fn();
+    render(
+      <DashboardAiTile
+        {...defaultProps}
+        onSelectAiAssistant={onSelectAiAssistant}
+      />
+    );
+
+    fireEvent.click(screen.getByRole('button', { name: /View Teams/i }));
+    fireEvent.click(screen.getByRole('button', { name: /Finance, Treasury & Accounts Squad/i }));
+
+    expect(onSelectAiAssistant).toHaveBeenCalledWith(
+      expect.objectContaining({ id: 'theodora' }),
+    );
+  });
 });
