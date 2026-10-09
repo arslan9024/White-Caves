@@ -21,7 +21,7 @@ describe('SearchableSelect', () => {
     );
 
     expect(screen.getByText('Option One')).toBeInTheDocument();
-    
+
     const trigger = screen.getByText('Option One');
     fireEvent.click(trigger);
 
@@ -67,5 +67,24 @@ describe('SearchableSelect', () => {
 
     expect(screen.queryByRole('listbox')).not.toBeInTheDocument();
     expect(screen.getByRole('button')).toHaveFocus();
+  });
+
+  it('announces empty search results while keeping the listbox relationship valid', () => {
+    render(
+      <SearchableSelect
+        options={options}
+        selectedId="opt-1"
+        onSelect={vi.fn()}
+        accentColor="#EF4444"
+      />
+    );
+
+    fireEvent.click(screen.getByRole('button'));
+    fireEvent.change(screen.getByRole('textbox', { name: 'Search options' }), {
+      target: { value: 'not found' },
+    });
+
+    expect(screen.getByRole('status')).toHaveTextContent('No matches found');
+    expect(screen.getByRole('listbox')).toBeInTheDocument();
   });
 });

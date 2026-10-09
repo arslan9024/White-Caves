@@ -39,10 +39,10 @@ const SelectTrigger = styled.button<{ $accentColor: string; $borderColor?: strin
   padding: 10px 12px;
   border-radius: 10px;
   border: 1.5px solid ${props => props.$borderColor || props.$accentColor};
-  background: #FFFFFF;
+  background: #ffffff;
   font-size: 0.82rem;
   font-weight: 800;
-  color: #1E293B;
+  color: #1e293b;
   text-align: left;
   display: flex;
   justify-content: space-between;
@@ -63,7 +63,7 @@ const DropdownMenu = styled.div<{ $accentColor: string }>`
   left: 0;
   right: 0;
   margin-top: 4px;
-  background: #FFFFFF;
+  background: #ffffff;
   border: 1px solid ${props => `${props.$accentColor}40`};
   border-radius: 10px;
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
@@ -77,11 +77,11 @@ const DropdownMenu = styled.div<{ $accentColor: string }>`
     width: 5px;
   }
   &::-webkit-scrollbar-track {
-    background: #F1F5F9;
+    background: #f1f5f9;
     border-radius: 4px;
   }
   &::-webkit-scrollbar-thumb {
-    background: #CBD5E1;
+    background: #cbd5e1;
     border-radius: 4px;
   }
 `;
@@ -90,16 +90,16 @@ const SearchInput = styled.input`
   width: 100%;
   padding: 7px 10px;
   border-radius: 6px;
-  border: 1px solid #CBD5E1;
+  border: 1px solid #cbd5e1;
   font-size: 0.8rem;
   margin-bottom: 6px;
   outline: none;
-  background: #F8FAFC;
-  color: #1E293B;
+  background: #f8fafc;
+  color: #1e293b;
 
   &:focus {
-    border-color: #3B82F6;
-    background: #FFFFFF;
+    border-color: #3b82f6;
+    background: #ffffff;
   }
 `;
 
@@ -212,10 +212,7 @@ export const SearchableSelect: FC<SearchableSelectProps> = ({
     }
   };
 
-  const handleOptionKeyDown = (
-    event: React.KeyboardEvent<HTMLDivElement>,
-    index: number,
-  ) => {
+  const handleOptionKeyDown = (event: React.KeyboardEvent<HTMLDivElement>, index: number) => {
     if (event.key === 'ArrowDown') {
       event.preventDefault();
       optionRefs.current[Math.min(index + 1, filteredOptions.length - 1)]?.focus();
@@ -254,13 +251,24 @@ export const SearchableSelect: FC<SearchableSelectProps> = ({
         aria-expanded={isOpen}
         aria-controls={listboxId}
       >
-        <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', maxWidth: '230px' }}>
+        <span
+          style={{
+            overflow: 'hidden',
+            textOverflow: 'ellipsis',
+            whiteSpace: 'nowrap',
+            maxWidth: '230px',
+          }}
+        >
           {selectedOption ? (
             <>
               {selectedOption.num && (
-                <strong style={{ color: accentColor, marginRight: '6px' }}>{selectedOption.num}</strong>
+                <strong style={{ color: accentColor, marginRight: '6px' }}>
+                  {selectedOption.num}
+                </strong>
               )}
-              {selectedOption.icon && <span style={{ marginRight: '4px' }}>{selectedOption.icon}</span>}
+              {selectedOption.icon && (
+                <span style={{ marginRight: '4px' }}>{selectedOption.icon}</span>
+              )}
               {selectedOption.name}
             </>
           ) : (
@@ -285,37 +293,48 @@ export const SearchableSelect: FC<SearchableSelectProps> = ({
             autoFocus
           />
 
-          {filteredOptions.length === 0 ? (
-            <div role="status" style={{ padding: '8px 10px', fontSize: '0.78rem', color: 'var(--color-94a3b8, #94A3B8)', textAlign: 'center' }}>
-              No matches found
-            </div>
-          ) : (
-            <div id={listboxId} role="listbox" aria-label="Options">
-              {filteredOptions.map((option, index) => (
-                <OptionItem
-                  key={option.id}
-                  ref={element => {
-                    optionRefs.current[index] = element;
-                  }}
-                  id={`${listboxId}-option-${index}`}
-                  role="option"
-                  aria-selected={selectedId === option.id}
-                  tabIndex={index === activeOptionIndex ? 0 : -1}
-                  $selected={selectedId === option.id}
-                  $accentColor={accentColor}
-                  onClick={() => handleSelectOption(option)}
-                  onFocus={() => setActiveOptionIndex(index)}
-                  onKeyDown={event => handleOptionKeyDown(event, index)}
-                >
-                  {option.num && (
-                    <span style={{ fontWeight: 800, color: accentColor, minWidth: '42px' }}>{option.num}</span>
-                  )}
-                  {option.icon && <span>{option.icon}</span>}
-                  <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-                    {option.name} {option.role ? `— ${option.role}` : ''}
+          <div id={listboxId} role="listbox" aria-label="Options">
+            {filteredOptions.map((option, index) => (
+              <OptionItem
+                key={option.id}
+                ref={element => {
+                  optionRefs.current[index] = element;
+                }}
+                id={`${listboxId}-option-${index}`}
+                role="option"
+                aria-selected={selectedId === option.id}
+                tabIndex={index === activeOptionIndex ? 0 : -1}
+                $selected={selectedId === option.id}
+                $accentColor={accentColor}
+                onClick={() => handleSelectOption(option)}
+                onFocus={() => setActiveOptionIndex(index)}
+                onKeyDown={event => handleOptionKeyDown(event, index)}
+              >
+                {option.num && (
+                  <span style={{ fontWeight: 800, color: accentColor, minWidth: '42px' }}>
+                    {option.num}
                   </span>
-                </OptionItem>
-              ))}
+                )}
+                {option.icon && <span>{option.icon}</span>}
+                <span
+                  style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}
+                >
+                  {option.name} {option.role ? `— ${option.role}` : ''}
+                </span>
+              </OptionItem>
+            ))}
+          </div>
+          {filteredOptions.length === 0 && (
+            <div
+              role="status"
+              style={{
+                padding: '8px 10px',
+                fontSize: '0.78rem',
+                color: 'var(--color-94a3b8, #94A3B8)',
+                textAlign: 'center',
+              }}
+            >
+              No matches found
             </div>
           )}
         </DropdownMenu>

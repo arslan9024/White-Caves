@@ -16,7 +16,7 @@
 
 ## Validation
 
-- Focused sidebar tests: 3 files, 8 tests passed.
+- Focused sidebar tests: 3 files, 9 tests passed.
 - Changed-file ESLint: passed.
 - Client and server TypeScript checks: passed.
 - Vite production build: passed.
