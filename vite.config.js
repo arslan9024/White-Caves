@@ -50,51 +50,32 @@ export default defineConfig(async ({ command }) => {
             navigateFallback: '/offline.html',
             // Don't apply the navigation fallback for API and asset requests
             navigateFallbackDenylist: [/^\/api\//, /^\/favicon/, /^\/manifest/],
-            // Runtime cache strategies for high-traffic routes
+            // API responses can contain account-specific data; never persist or replay them offline.
             runtimeCaching: [
+              {
+                urlPattern: /^https?:\/\/[^/]+\/api\/.*$/,
+                method: 'GET',
+                handler: 'NetworkOnly',
+              },
               {
                 urlPattern: /^https?:\/\/[^/]+\/api\/.*$/,
                 method: 'POST',
                 handler: 'NetworkOnly',
-                options: {
-                  backgroundSync: {
-                    name: 'crm-writes-queue',
-                    options: { maxRetentionTime: 48 * 60 },
-                  },
-                },
+              },
+              {
+                urlPattern: /^https?:\/\/[^/]+\/api\/.*$/,
+                method: 'PUT',
+                handler: 'NetworkOnly',
               },
               {
                 urlPattern: /^https?:\/\/[^/]+\/api\/.*$/,
                 method: 'PATCH',
                 handler: 'NetworkOnly',
-                options: {
-                  backgroundSync: {
-                    name: 'crm-writes-queue',
-                    options: { maxRetentionTime: 48 * 60 },
-                  },
-                },
               },
               {
                 urlPattern: /^https?:\/\/[^/]+\/api\/.*$/,
                 method: 'DELETE',
                 handler: 'NetworkOnly',
-                options: {
-                  backgroundSync: {
-                    name: 'crm-writes-queue',
-                    options: { maxRetentionTime: 48 * 60 },
-                  },
-                },
-              },
-              {
-                // Wave 17 policy: all API GET calls use network-first with short fallback cache
-                urlPattern: /^https?:\/\/[^/]+\/api\/.*$/,
-                handler: 'NetworkFirst',
-                options: {
-                  cacheName: 'api-network-first',
-                  networkTimeoutSeconds: 5,
-                  expiration: { maxEntries: 120, maxAgeSeconds: 300 },
-                  cacheableResponse: { statuses: [0, 200] },
-                },
               },
               {
                 // Cache static built assets
