@@ -58,7 +58,9 @@ export class SchedulerService {
     this.registerSitemapRefreshJob();
 
     this.started = true;
-    logger.info(`[SchedulerService] started — ${this.jobs.size} jobs registered with node-cron engine`);
+    logger.info(
+      `[SchedulerService] started — ${this.jobs.size} jobs registered with node-cron engine`
+    );
   }
 
   stop(): void {
@@ -142,35 +144,6 @@ export class SchedulerService {
       }
     );
   }
-    const timezone = 'Asia/Dubai';
-
-    const task = cron.schedule(
-      cronExpression,
-      async () => {
-        await this.runJob(id, 'daily lead re-score', async () => {
-          const result = await batchRescoreLeads();
-          return {
-            scored: result.scored,
-            total: result.total,
-            upgraded: result.upgraded,
-            downgraded: result.downgraded,
-            durationMs: result.duration,
-          };
-        });
-      },
-      { timezone }
-    );
-
-    this.jobs.set(id, {
-      id,
-      name: 'Daily Lead Re-score',
-      cronExpression,
-      timezone,
-      task,
-      lastRunAt: null,
-      lastStatus: null,
-    });
-  }
 
   private registerPermitChecksJob(): void {
     const id: CronJobId = 'permit-checks-daily';
@@ -205,6 +178,9 @@ export class SchedulerService {
       task,
       lastRunAt: null,
       lastStatus: null,
+      lastError: null,
+      lastDurationMs: null,
+      runsCount: 0,
     });
   }
 
@@ -231,6 +207,9 @@ export class SchedulerService {
       task,
       lastRunAt: null,
       lastStatus: null,
+      lastError: null,
+      lastDurationMs: null,
+      runsCount: 0,
     });
   }
 
@@ -387,6 +366,9 @@ export class SchedulerService {
       task,
       lastRunAt: null,
       lastStatus: null,
+      lastError: null,
+      lastDurationMs: null,
+      runsCount: 0,
     });
   }
 
@@ -413,6 +395,9 @@ export class SchedulerService {
       task,
       lastRunAt: null,
       lastStatus: null,
+      lastError: null,
+      lastDurationMs: null,
+      runsCount: 0,
     });
   }
 
@@ -443,6 +428,9 @@ export class SchedulerService {
       task,
       lastRunAt: null,
       lastStatus: null,
+      lastError: null,
+      lastDurationMs: null,
+      runsCount: 0,
     });
   }
 

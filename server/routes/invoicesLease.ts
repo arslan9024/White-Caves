@@ -91,7 +91,7 @@ router.post(
       dueDate,
       notes,
       invoiceNumber,
-    // Schema validation enforced for payload
+      // Schema validation enforced for payload
     } = req.body;
 
     if (!leaseId) throw new AppError('leaseId is required', 400);
@@ -240,7 +240,9 @@ router.patch(
 );
 
 // ─── GET /api/invoices/lease/:id/pdf — Generate FTA Compliant PDF Invoice ────────
-import henryPdfEngineService from '../../src/services/HenryPdfEngineService.js';
+import henryPdfEngineService, {
+  type TaxReceiptPayload,
+} from '../../src/services/HenryPdfEngineService.js';
 
 router.get(
   '/:id/pdf',
@@ -248,35 +250,34 @@ router.get(
     const userId = req.user?.id;
     if (!userId) throw new AppError('Authentication required', 401);
 
+    const invoiceId = Array.isArray(req.params.id) ? req.params.id[0] : req.params.id;
     const invoice = await prisma.invoice.findUnique({
-      where: { id: req.params.id },
-      include: {
-        propertyRef: { include: { owner: true } }
-      }
+      where: { id: invoiceId },
     });
 
     if (!invoice) throw new AppError('Invoice not found', 404);
 
-    // Build the payload
-    const payload = {
+    const payload: TaxReceiptPayload = {
       receiptNumber: invoice.invoiceNumber || invoice.id.slice(0, 8).toUpperCase(),
-      receiptType: invoice.notes?.includes('TYPE:rent') ? 'tenant_service_charges' : 'security_deposit',
+      receiptType: invoice.notes?.includes('TYPE:rent')
+        ? 'tenant_service_charges'
+        : 'security_deposit',
       billedPartyType: 'tenant',
-      amountAed: invoice.amount - (invoice.vatAmount || 0),
-      vatRatePercent: 5,
-      vatAmountAed: invoice.vatAmount || 0,
-      totalWithVatAed: invoice.amount,
-      paidBy: invoice.clientName || 'Unknown Client',
+      amountAed: invoice.amount,
+      vatRatePercent: invoice.vatRate,
+      vatAmountAed: invoice.vatAmount,
+      totalWithVatAed: invoice.totalAmount,
+      paidBy: invoice.client || 'Unknown Client',
       paidTo: 'WHITE CAVES REAL ESTATE L.L.C',
       whiteCavesTrn: '100488291000003',
       paymentMethod: 'bank_transfer',
       paymentReference: invoice.id.slice(0, 12).toUpperCase(),
-      date: invoice.createdAt.toISOString().split('T')[0],
-      serviceDescription: invoice.notes || 'Property Lease Payment'
+      date: invoice.date.toISOString().split('T')[0],
+      serviceDescription: invoice.notes || 'Property Lease Payment',
     };
 
-    const html = await henryPdfEngineService.generateTaxReceiptHtml(payload as any);
-    
+    const html = await henryPdfEngineService.generateTaxReceiptHtml(payload);
+
     res.setHeader('Content-Type', 'text/html');
     res.send(html);
   })
