@@ -84,7 +84,7 @@ describe('Henry bounded local OCR lifecycle', () => {
     const file = new File(['synthetic PDF'], 'synthetic.pdf', { type: 'application/pdf' });
     Object.defineProperty(file, 'arrayBuffer', { value: async () => new ArrayBuffer(0) });
     pdf.getDocument.mockReturnValue({ promise: Promise.resolve({ numPages: 3 }), destroy: pdf.destroy });
-    await expect(scanner.extractDocumentText(file)).rejects.toThrow('Nothing extracted');
+    await expect(scanner.extractDocumentText(file)).rejects.toThrow('Scan at most two pages at a time.');
     expect(pdf.destroy).toHaveBeenCalledTimes(1);
     expect(ocr.createWorker).not.toHaveBeenCalled();
   });

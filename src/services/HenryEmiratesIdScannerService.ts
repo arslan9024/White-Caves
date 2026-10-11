@@ -284,6 +284,12 @@ export const SANIT_SINGH_SAMPLE_EID: EmiratesIdExtractedData = {
   scannedAt: new Date().toISOString(),
 };
 
+class PdfPageLimitError extends Error {
+  constructor() {
+    super('Scan at most two pages at a time.');
+  }
+}
+
 class HenryEmiratesIdScannerService {
   private activeSessionCache: EmiratesIdExtractedData | null = null;
   private updateListeners: Set<(data: EmiratesIdExtractedData | null) => void> = new Set();
@@ -422,13 +428,12 @@ class HenryEmiratesIdScannerService {
       const arrayBuffer = await bounded(file.arrayBuffer());
       loadingTask = pdfjs.getDocument({ data: arrayBuffer });
       const pdfDoc = await bounded(loadingTask.promise);
-      if (pdfDoc.numPages > 2) throw new Error('Scan at most two pages at a time.');
-      const numPages = Math.min(pdfDoc.numPages, 2);
+      if (pdfDoc.numPages > 2) throw new PdfPageLimitError();
 
       let combinedPdfText = '';
       const canvasDataUrls: string[] = [];
 
-      for (let i = 1; i <= numPages; i++) {
+      for (let i = 1; i <= pdfDoc.numPages; i++) {
         const page = await bounded(pdfDoc.getPage(i));
         const textContent = await bounded(page.getTextContent());
         const items = textContent.items.filter((item): item is import('pdfjs-dist/types/src/display/api').TextItem => 'str' in item)
@@ -460,8 +465,9 @@ class HenryEmiratesIdScannerService {
       }
 
       return { canvasDataUrls, pdfText: combinedPdfText };
-    } catch {
+    } catch (error) {
       logger.error('Henry PDF extraction failed');
+      if (error instanceof PdfPageLimitError) throw error;
       throw new Error('PDF could not be read. Upload at most two readable pages.');
     } finally {
       clearTimeout(timer);
@@ -577,8 +583,9 @@ class HenryEmiratesIdScannerService {
         ocrConfidence: confidences.length ? confidences.reduce((sum, value) => sum + value, 0) / confidences.length : undefined,
         warnings,
       };
-    } catch {
+    } catch (error) {
       logger.error('Henry OCR extraction failed');
+      if (error instanceof PdfPageLimitError) throw error;
       if (!streamText.trim()) throw new Error('OCR unavailable or timed out. Nothing extracted; rescan or retry.');
       return { ocrText: '', streamText, warnings: ['OCR unavailable; only PDF text was read. Review omitted or image-only fields.'] };
     } finally {

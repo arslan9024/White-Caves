@@ -48,7 +48,7 @@ export default function HenryVaultControls({ docType, options, onOptions, onSugg
     const result = await json('/api/henry/documents/search', {
       method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(filters),
     });
-    setRows(result.data); setPage(nextPage); setHasMore(result.hasMore); setLoaded(true);
+    setRows(Array.isArray(result?.data) ? result.data : []); setPage(nextPage); setHasMore(Boolean(result?.hasMore)); setLoaded(true);
   });
   const download = (id: string, side: number) => void run(async () => {
     const response = await authFetch(`/api/henry/documents/${id}/download?side=${side}`);

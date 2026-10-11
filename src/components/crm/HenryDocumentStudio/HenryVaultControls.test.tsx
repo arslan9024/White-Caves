@@ -6,6 +6,15 @@ vi.mock('../../../utils/authFetch', () => ({ authFetch: vi.fn() }));
 import { authFetch } from '../../../utils/authFetch';
 
 describe('Henry archive controls', () => {
+  it.each([{}, { data: null }, { data: {} }, { data: 'invalid' }, null])('handles malformed search responses without crashing: %j', async result => {
+    vi.mocked(authFetch).mockResolvedValueOnce(new Response(JSON.stringify(result)));
+    render(<HenryVaultControls docType="title_deed" options={{}} onOptions={vi.fn()} onSuggestion={vi.fn()} />);
+    fireEvent.click(screen.getByText('Search archive'));
+    expect(await screen.findByText('No matching active documents.')).toBeInTheDocument();
+    expect(screen.getByText('Next')).toBeDisabled();
+    expect(screen.queryByRole('alert')).not.toBeInTheDocument();
+  });
+
   it('uses exact-reference expiry filters, selected replacement and unconfirmed suggestions', async () => {
     const onOptions = vi.fn(); const onSuggestion = vi.fn();
     vi.mocked(authFetch).mockResolvedValueOnce(new Response(JSON.stringify({ data: [{ id: 'record', referenceNumber: '••••2026', expiryStatus: 'soon_expiring' }], hasMore: false })));
