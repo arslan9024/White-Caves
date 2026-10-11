@@ -5,20 +5,8 @@ import henryEmiratesIdScannerService, {
 } from './HenryEmiratesIdScannerService';
 
 describe('HenryEmiratesIdScannerService — Emirates ID OCR & MRZ Engine', () => {
-  it('correctly parses ICAO 9303 TD1 3-line MRZ zone', () => {
-    const line1 = 'ILARE1445975719784199318057330';
-    const line2 = '9302109M2611228PAK<<<<<<<<<<<6';
-    const line3 = 'BASHIR<AHMAD<<ARSLAN<MALIK<<<<';
-
-    const parsed = henryEmiratesIdScannerService.parseTD1Mrz(line1, line2, line3);
-
-    expect(parsed.idNumber).toBe('784-1993-1805733-0');
-    expect(parsed.cardNumber).toBe('144597571');
-    expect(parsed.dateOfBirth).toBe('10/02/1993');
-    expect(parsed.gender).toBe('M');
-    expect(parsed.expiryDate).toBe('22/11/2026');
-    expect(parsed.nationalityCode).toBe('PAK');
-    expect(parsed.fullNameEn).toBe('ARSLAN MALIK BASHIR AHMAD');
+  it('rejects incomplete MRZ instead of inventing missing fields', () => {
+    expect(henryEmiratesIdScannerService.parseTD1Mrz('INVALID', 'INVALID', 'INVALID')).toEqual({});
   });
 
   it('formats raw 15-digit Emirates ID string with hyphens', () => {
@@ -66,7 +54,7 @@ describe('HenryEmiratesIdScannerService — Emirates ID OCR & MRZ Engine', () =>
     const listener = vi.fn();
     const unsubscribe = henryEmiratesIdScannerService.onEmiratesIdUpdated(listener);
 
-    henryEmiratesIdScannerService.setCachedEmiratesId(MANSOOR_ALMARZOOQI_SAMPLE_EID);
+    henryEmiratesIdScannerService.setCachedEmiratesId({ ...MANSOOR_ALMARZOOQI_SAMPLE_EID, demoOnly: false, reviewConfirmed: true });
     expect(henryEmiratesIdScannerService.getCachedEmiratesId()?.idNumber).toBe('784-1990-7528093-5');
     expect(listener).toHaveBeenCalledWith(expect.objectContaining({ idNumber: '784-1990-7528093-5' }));
 
@@ -77,21 +65,20 @@ describe('HenryEmiratesIdScannerService — Emirates ID OCR & MRZ Engine', () =>
     unsubscribe();
   });
 
-  it('scans dual side files (Front and Back) and merges complete attributes', async () => {
-    const frontFile = new File(['front image content'], 'Arslan_Front.png', { type: 'image/png' });
-    const backFile = new File(['back image content'], 'Arslan_Back.jpg', { type: 'image/jpeg' });
-
+  it('scans dual sides from actual OCR content without publishing candidates', async () => {
+    const ocr = vi.spyOn(henryEmiratesIdScannerService, 'extractDocumentText').mockResolvedValue({ ocrText: 'ID Number: 784-1993-1805733-0\nName: TEST PERSON\nExpiry Date: 22/11/2026', streamText: '' });
+    const frontFile = new File(['front'], 'Front.png', { type: 'image/png' });
+    const backFile = new File(['back'], 'Back.jpg', { type: 'image/jpeg' });
     const merged = await henryEmiratesIdScannerService.scanDualSide(frontFile, backFile);
-
     expect(merged.idNumber).toBe('784-1993-1805733-0');
-    expect(merged.fullNameEn).toBe('Arslan Malik Bashir Ahmad');
     expect(merged.scannedSide).toBe('both');
-    expect(henryEmiratesIdScannerService.getCachedEmiratesId()?.fullNameEn).toBe('Arslan Malik Bashir Ahmad');
+    expect(merged.reviewConfirmed).toBe(false);
+    ocr.mockRestore();
   });
 
   it('exports extracted data directly to Tenancy Contract party object', () => {
     const party = henryEmiratesIdScannerService.toContractParty(
-      ARSLAN_MALIK_SAMPLE_EID,
+      { ...ARSLAN_MALIK_SAMPLE_EID, demoOnly: false, reviewConfirmed: true },
       '+971 56 361 6136',
       'admin@whitecaves.com'
     );
@@ -102,7 +89,7 @@ describe('HenryEmiratesIdScannerService — Emirates ID OCR & MRZ Engine', () =>
   });
 
   it('exports extracted data directly to Form B viewing payload', () => {
-    const viewing = henryEmiratesIdScannerService.toViewingClientPayload(ARSLAN_MALIK_SAMPLE_EID, {
+    const viewing = henryEmiratesIdScannerService.toViewingClientPayload({ ...ARSLAN_MALIK_SAMPLE_EID, demoOnly: false, reviewConfirmed: true }, {
       formId: 'VIEW-TEST-1',
     });
 

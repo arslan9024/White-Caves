@@ -6,7 +6,7 @@
  *   - Shared Document Upload Component (dropzone + file selector)
  *   - Form-Style Variables Extraction (Building, Property No, Plot, Area, Makani, DEWA, Owner, Purchase Price)
  * Right Side:
- *   - Uploaded Document Live Preview Pane (supports PDF, PNG, JPG, and DLD Verified Registry View)
+ *   - Uploaded Document Live Preview Pane (supports PDF, PNG, JPG, and Unverified OCR Review)
  * Bottom:
  *   - Persistent Action Controls (Discard, Copy JSON, Save to Property Vault)
  */
@@ -27,6 +27,7 @@ import {
 import henryTitleDeedScannerService, {
   DldTitleDeedExtractedData,
 } from '../../../services/HenryTitleDeedScannerService';
+import { canUseScan, scanExpiry } from '../../../services/henryScanReview';
 import HenrySharedDocumentUploader from './HenrySharedDocumentUploader';
 
 const ViewContainer = styled.div`
@@ -262,6 +263,10 @@ export const HenryTitleDeedScannerView: FC = () => {
   const [copiedJson, setCopiedJson] = useState<boolean>(false);
 
   useEffect(() => {
+    if (!canUseScan(extractedData)) henryTitleDeedScannerService.clearCachedTitleDeed();
+  }, [extractedData]);
+
+  useEffect(() => {
     if (uploadedFile) {
       const url = URL.createObjectURL(uploadedFile);
       setFilePreviewUrl(url);
@@ -273,6 +278,8 @@ export const HenryTitleDeedScannerView: FC = () => {
 
   const handleFileUpload = async (file: File) => {
     setIsScanning(true);
+    setExtractedData(null);
+    henryTitleDeedScannerService.clearCachedTitleDeed();
     setUploadedFile(file);
     setStatusMsg(`Scanning Title Deed "${file.name}"...`);
 
@@ -302,33 +309,35 @@ export const HenryTitleDeedScannerView: FC = () => {
   };
 
   const handleUpdateField = (field: keyof DldTitleDeedExtractedData, val: DldTitleDeedExtractedData[keyof DldTitleDeedExtractedData]) => {
+    henryTitleDeedScannerService.clearCachedTitleDeed();
     if (!extractedData) return;
     setExtractedData(prev => {
       if (!prev) return null;
-      const updated = { ...prev, [field]: val };
-      henryTitleDeedScannerService.setCachedTitleDeed(updated);
+      const updated = { ...prev, [field]: val, reviewConfirmed: false };
+      updated.missingFields = [!updated.certificateNumber && 'certificateNumber', !updated.ownerNameEn && 'ownerNameEn', !(updated.propertyNumber || updated.plotNumber) && 'propertyNumber'].filter((value): value is string => !!value);
+
       return updated;
     });
   };
 
   const handleSaveToVault = async () => {
-    if (!extractedData) return;
-    await henryTitleDeedScannerService.saveToDatabase(extractedData);
-    setStatusMsg(`✓ Title Deed Certificate ${extractedData.certificateNumber} saved to Property Vault & Database!`);
+    if (!extractedData || !canUseScan(extractedData) || isScanning) return;
+    const result = await henryTitleDeedScannerService.saveToDatabase(extractedData);
+    setStatusMsg(result.success ? 'Reviewed record saved to encrypted vault.' : result.error || 'Save failed.');
     setTimeout(() => setStatusMsg(null), 4000);
   };
 
   const handleAutoFillTenancy = () => {
-    if (!extractedData) return;
+    if (!extractedData || !canUseScan(extractedData) || isScanning) return;
     henryTitleDeedScannerService.setCachedTitleDeed(extractedData);
-    setStatusMsg(`✓ Auto-filled Tenancy Contract with ${extractedData.buildingNameEn} Unit ${extractedData.propertyNumber} & Landlord ${extractedData.ownerNameEn}!`);
+    setStatusMsg(`Reviewed fields available to Tenancy Contract: ${extractedData.buildingNameEn} Unit ${extractedData.propertyNumber} & Landlord ${extractedData.ownerNameEn}!`);
     setTimeout(() => setStatusMsg(null), 4000);
   };
 
   const handleCreateCrmListing = () => {
-    if (!extractedData) return;
+    if (!extractedData || !canUseScan(extractedData) || isScanning) return;
     henryTitleDeedScannerService.setCachedTitleDeed(extractedData);
-    setStatusMsg(`✓ Created CRM Property Listing draft for ${extractedData.buildingNameEn} Unit ${extractedData.propertyNumber} (${extractedData.totalAreaSqFt} Sq.Ft)!`);
+    setStatusMsg(`Reviewed fields available for CRM draft: ${extractedData.buildingNameEn} Unit ${extractedData.propertyNumber} (${extractedData.totalAreaSqFt} Sq.Ft)!`);
     setTimeout(() => setStatusMsg(null), 4000);
   };
 
@@ -353,6 +362,14 @@ export const HenryTitleDeedScannerView: FC = () => {
 
   return (
     <ViewContainer>
+      <p role="note">OCR is not proof of authenticity or ownership. Compare every field to the original before saving or autofill. Missing or uncertain values: rescan without glare, then correct below.</p>
+      {extractedData?.demoOnly && <p role="alert">Demo only — saving and autofill disabled.</p>}
+      {!!extractedData?.missingFields?.length && <p role="alert">Missing: {extractedData.missingFields.join(', ')}. Correct these fields or rescan.</p>}
+      <label><input type="checkbox" aria-label="Confirm document review" checked={!!extractedData?.reviewConfirmed}
+        disabled={!extractedData || extractedData.demoOnly || !!extractedData.missingFields?.length || isScanning}
+        onChange={event => setExtractedData(prev => prev ? { ...prev, reviewConfirmed: event.target.checked } : prev)} />
+        I compared the fields to the original and confirm use for saving and autofill.</label>
+
       {/* Status Feedback Banner */}
       {statusMsg && (
         <div style={{ background: 'var(--color-0f172a, #0F172A)', color: 'var(--color-38bdf8, #38BDF8)', padding: '8px 16px', borderRadius: '8px', fontSize: '0.82rem', fontWeight: 700 }}>
@@ -605,16 +622,16 @@ export const HenryTitleDeedScannerView: FC = () => {
         </div>
 
         <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
-          <ActionBtn $variant="secondary" onClick={handleAutoFillTenancy} disabled={!extractedData}>
+          <ActionBtn $variant="secondary" onClick={handleAutoFillTenancy} disabled={!canUseScan(extractedData) || isScanning}>
             <FileText size={13} color="#10B981" /> Auto-Fill Tenancy Lease
           </ActionBtn>
-          <ActionBtn $variant="secondary" onClick={handleCreateCrmListing} disabled={!extractedData}>
+          <ActionBtn $variant="secondary" onClick={handleCreateCrmListing} disabled={!canUseScan(extractedData) || isScanning}>
             <Building size={13} color="#38BDF8" /> Create CRM Listing
           </ActionBtn>
-          <ActionBtn $variant="secondary" onClick={handleCopyJson} disabled={!extractedData}>
+          <ActionBtn $variant="secondary" onClick={handleCopyJson} disabled={!canUseScan(extractedData) || isScanning}>
             {copiedJson ? <Check size={13} color="#10B981" /> : <Copy size={13} />} Copy Variables JSON
           </ActionBtn>
-          <ActionBtn $variant="primary" onClick={handleSaveToVault} disabled={!extractedData}>
+          <ActionBtn $variant="primary" onClick={handleSaveToVault} disabled={!canUseScan(extractedData) || isScanning}>
             <Save size={13} /> Save to Property Vault
           </ActionBtn>
         </div>

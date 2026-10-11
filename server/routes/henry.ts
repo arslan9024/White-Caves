@@ -33,6 +33,8 @@ import {
 } from '../services/henry/complianceEngine.js';
 import { HENRY_UPLOADS_PATH, OLLAMA_HOST, GROQ_API_KEY } from '../config/env.js';
 import { AuthRequest } from '../middleware/auth.js';
+import { AppError, asyncHandler } from '../middleware/errorHandler.js';
+import { decodeDocument, documentId, documentOwner, prepareDocument, validateDocumentLinks, vaultKey, vaultOperation } from '../services/henry/documentVault.js';
 
 const router = Router();
 
@@ -897,115 +899,75 @@ router.post('/translate', requireMinRole('agent'), async (req: Request, res: Res
 
 // ─── POST /api/henry/documents/save ──────────────────────────────────────────
 
-const henryDocumentStore: Array<{
-  id: string;
-  docType: 'emirates_id' | 'title_deed' | 'passport' | 'tenancy_contract' | string;
-  title: string;
-  clientName: string;
-  referenceNumber: string;
-  extractedJson: Record<string, any>;
-  confidenceScore: number;
-  scannedSide?: string;
-  documentFormat?: string;
-  createdAt: string;
-  updatedAt: string;
-}> = [];
-
-router.post('/documents/save', requireMinRole('agent'), async (req: Request, res: Response) => {
-  try {
-    const {
-      docType = 'emirates_id',
-      title = 'Extracted Document',
-      clientName = 'Client',
-      referenceNumber = '',
-      extractedJson = {},
-      confidenceScore = 1.0,
-      scannedSide = 'both',
-      documentFormat = 'application/pdf',
-    } = req.body;
-
-    const newRecord = {
-      id: `doc_${Date.now()}_${Math.random().toString(36).slice(2, 7)}`,
-      docType,
-      title,
-      clientName,
-      referenceNumber: referenceNumber || extractedJson.idNumber || extractedJson.certificateNumber || extractedJson.passportNumber || '',
-      extractedJson,
-      confidenceScore,
-      scannedSide,
-      documentFormat,
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString(),
-    };
-
-    henryDocumentStore.unshift(newRecord);
-    if (henryDocumentStore.length > 200) {
-      henryDocumentStore.pop();
-    }
-
-    res.json({
-      success: true,
-      message: `Document ${docType} successfully saved to Henry Document Database.`,
-      data: newRecord,
-    });
-  } catch (err) {
-    res.status(500).json({ success: false, error: err instanceof Error ? err.message : 'Unknown error' });
-  }
+router.use('/documents', (_req, res, next) => {
+  res.setHeader('Cache-Control', 'no-store');
+  next();
 });
 
-// ─── GET /api/henry/documents ────────────────────────────────────────────────
+router.post('/documents/save', requireMinRole('agent'), asyncHandler(async (req: AuthRequest, res) => {
+  const ownerUserId = documentOwner(req.user?.id);
+  const data = prepareDocument(req.body);
+  const links = await validateDocumentLinks(ownerUserId, req.body);
+  const result = await vaultOperation('save', () => prisma.$transaction(async tx => {
+    const replacesId = req.body.replacesId ? documentId(req.body.replacesId) : null;
+    if (replacesId && !await tx.henryScannedDocument.findFirst({ where: { id: replacesId, ownerUserId, docType: data.docType, replacedById: null } })) throw new AppError('Replacement target not found', 404);
+    const row = await tx.henryScannedDocument.create({ data: { ...data, ...links, ownerUserId } });
+    if (replacesId) await tx.henryScannedDocument.updateMany({ where: { id: replacesId, ownerUserId }, data: { replacedById: row.id } });
+    await tx.henryDocumentAudit.create({ data: { ownerUserId, documentId: row.id, action: 'save' } });
+    return row;
+  }));
+  res.json({ success: true, data: decodeDocument(result) });
+}));
 
-router.get('/documents', requireMinRole('agent'), (req: Request, res: Response) => {
-  try {
-    const { docType, clientName, limit = 50 } = req.query;
-    let list = [...henryDocumentStore];
+router.get('/documents', requireMinRole('agent'), asyncHandler(async (req: AuthRequest, res) => {
+  const ownerUserId = documentOwner(req.user?.id);
+  vaultKey();
+  const limit = Math.max(1, Math.min(100, Number(req.query.limit) || 50));
+  const page = Math.max(1, Math.floor(Number(req.query.page) || 1));
+  const query = String(req.query.q || req.query.clientName || '').toLowerCase().slice(0, 200);
+  const rows = await vaultOperation('list', () => prisma.henryScannedDocument.findMany({
+    where: { ownerUserId, ...(req.query.docType ? { docType: String(req.query.docType) } : {}) }, orderBy: { createdAt: 'desc' },
+  }));
+  const matches = rows.map(decodeDocument).filter(row => !query || [row.title, row.clientName, row.referenceNumber].some(value => String(value || '').toLowerCase().includes(query)));
+  res.json({ success: true, count: matches.length, data: matches.slice((page - 1) * limit, page * limit) });
+}));
 
-    if (docType) {
-      list = list.filter(item => item.docType === docType);
-    }
-    if (clientName) {
-      const lower = String(clientName).toLowerCase();
-      list = list.filter(item => item.clientName.toLowerCase().includes(lower));
-    }
+router.get('/documents/latest/:docType', requireMinRole('agent'), asyncHandler(async (req: AuthRequest, res) => {
+  const ownerUserId = documentOwner(req.user?.id);
+  vaultKey();
+  const row = await vaultOperation('latest', () => prisma.henryScannedDocument.findFirst({ where: { ownerUserId, docType: String(req.params.docType), replacedById: null }, orderBy: { createdAt: 'desc' } }));
+  if (!row) throw new AppError('Document not found', 404);
+  await vaultOperation('audit', () => prisma.henryDocumentAudit.create({ data: { ownerUserId, documentId: row.id, action: 'latest' } }));
+  res.json({ success: true, data: decodeDocument(row) });
+}));
 
-    res.json({
-      success: true,
-      count: list.length,
-      data: list.slice(0, Number(limit)),
-    });
-  } catch (err) {
-    res.status(500).json({ success: false, error: err instanceof Error ? err.message : 'Unknown error' });
-  }
-});
+router.patch('/documents/:id', requireMinRole('agent'), asyncHandler(async (req: AuthRequest, res) => {
+  const ownerUserId = documentOwner(req.user?.id);
+  const id = documentId(req.params.id);
+  const data = prepareDocument(req.body);
+  const links = await validateDocumentLinks(ownerUserId, req.body);
+  const row = await vaultOperation('update', () => prisma.$transaction(async tx => {
+    const found = await tx.henryScannedDocument.findFirst({ where: { id, ownerUserId, docType: data.docType, replacedById: null } });
+    if (!found) throw new AppError('Document not found', 404);
+    await tx.henryScannedDocument.updateMany({ where: { id, ownerUserId }, data: { ...data, ...links } });
+    await tx.henryDocumentAudit.create({ data: { ownerUserId, documentId: id, action: 'update' } });
+    return tx.henryScannedDocument.findFirstOrThrow({ where: { id, ownerUserId } });
+  }));
+  res.json({ success: true, data: decodeDocument(row) });
+}));
 
-// ─── GET /api/henry/documents/latest/:docType ────────────────────────────────
-
-router.get('/documents/latest/:docType', requireMinRole('agent'), (req: Request, res: Response) => {
-  try {
-    const { docType } = req.params;
-    const found = henryDocumentStore.find(item => item.docType === docType);
-    if (!found) {
-      return res.status(404).json({ success: false, error: `No active document found for type "${docType}"` });
-    }
-    res.json({ success: true, data: found });
-  } catch (err) {
-    res.status(500).json({ success: false, error: err instanceof Error ? err.message : 'Unknown error' });
-  }
-});
-
-// ─── GET /api/henry/documents/:id ────────────────────────────────────────────
-
-router.get('/documents/:id', requireMinRole('agent'), (req: Request, res: Response) => {
-  try {
-    const { id } = req.params;
-    const found = henryDocumentStore.find(item => item.id === id);
-    if (!found) {
-      return res.status(404).json({ success: false, error: `Document with ID "${id}" not found` });
-    }
-    res.json({ success: true, data: found });
-  } catch (err) {
-    res.status(500).json({ success: false, error: err instanceof Error ? err.message : 'Unknown error' });
-  }
-});
+for (const route of ['/documents/:id/download', '/documents/:id']) {
+  router.get(route, requireMinRole('agent'), asyncHandler(async (req: AuthRequest, res) => {
+    const ownerUserId = documentOwner(req.user?.id);
+    vaultKey();
+    const id = documentId(req.params.id);
+    const row = await vaultOperation('read', () => prisma.henryScannedDocument.findFirst({ where: { id, ownerUserId } }));
+    if (!row) throw new AppError('Document not found', 404);
+    await vaultOperation('audit', () => prisma.henryDocumentAudit.create({ data: { ownerUserId, documentId: id, action: route.endsWith('download') ? 'download' : 'read' } }));
+    res.setHeader('Cache-Control', 'no-store');
+    if (route.endsWith('download')) res.setHeader('Content-Disposition', 'attachment; filename="reviewed-document.json"');
+    res.json({ success: true, data: decodeDocument(row) });
+  }));
+}
 
 export default router;

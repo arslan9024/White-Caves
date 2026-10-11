@@ -44,8 +44,9 @@ import {
 } from 'lucide-react';
 import henryEmiratesIdScannerService, {
   EmiratesIdExtractedData,
-  DEFAULT_VERIFIED_EID,
+  EMPTY_EMIRATES_ID,
 } from '../../../services/HenryEmiratesIdScannerService';
+import { canUseScan, scanExpiry, validScanDate } from '../../../services/henryScanReview';
 import HenrySharedDocumentUploader from './HenrySharedDocumentUploader';
 
 const StudioContainer = styled.div`
@@ -71,7 +72,7 @@ const TopActionBar = styled.div`
 
     .ai-badge {
       background: linear-gradient(135deg, #0F172A, #1E293B);
-      color: #38BDF8;
+      color: #EF4444;
       font-size: 0.75rem;
       font-weight: 800;
       padding: 4px 10px;
@@ -174,8 +175,8 @@ const RightVariablesPane = styled.div`
 
 const VariableSectionCard = styled.div<{ $verified?: boolean }>`
   background: #FFFFFF;
-  border: 1px solid ${props => props.$verified ? '#A7F3D0' : '#E2E8F0'};
-  border-left: 4px solid ${props => props.$verified ? '#10B981' : '#38BDF8'};
+  border: 1px solid #E2E8F0;
+  border-left: 4px solid #EF4444;
   border-radius: 12px;
   padding: 14px 18px;
   box-shadow: 0 3px 10px rgba(0, 0, 0, 0.02);
@@ -185,7 +186,7 @@ const VariableSectionCard = styled.div<{ $verified?: boolean }>`
   transition: all 0.15s ease;
 
   &:hover {
-    border-color: #10B981;
+    border-color: #EF4444;
     box-shadow: 0 6px 16px rgba(16, 185, 129, 0.08);
   }
 
@@ -211,7 +212,7 @@ const VariableSectionCard = styled.div<{ $verified?: boolean }>`
       gap: 4px;
       font-size: 0.72rem;
       font-weight: 800;
-      color: #059669;
+      color: #EF4444;
       background: #ECFDF5;
       padding: 3px 8px;
       border-radius: 999px;
@@ -259,7 +260,7 @@ const VariableSectionCard = styled.div<{ $verified?: boolean }>`
       transition: border 0.15s ease;
 
       &:focus {
-        border-color: #10B981;
+        border-color: #EF4444;
         background: #FFFFFF;
       }
     }
@@ -273,7 +274,7 @@ const MrzTerminal = styled.div`
   padding: 10px 14px;
   font-family: monospace;
   font-size: 0.78rem;
-  color: #38BDF8;
+  color: #EF4444;
   line-height: 1.4;
   white-space: pre-wrap;
   word-break: break-all;
@@ -294,7 +295,7 @@ const ActionButton = styled.button<{ $variant?: 'primary' | 'secondary' | 'dange
   ${props => {
     if (props.$variant === 'primary') {
       return `
-        background: linear-gradient(135deg, #10B981, #059669);
+        background: linear-gradient(135deg, #EF4444, #EF4444);
         color: #FFFFFF;
         box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
         &:hover { opacity: 0.92; transform: translateY(-1px); }
@@ -333,8 +334,10 @@ const ZoomBtn = styled.button`
 
 export const HenryEmiratesIdScannerView: FC = () => {
   const [extractedData, setExtractedData] = useState<EmiratesIdExtractedData>(() => {
-    return henryEmiratesIdScannerService.getCachedEmiratesId() || DEFAULT_VERIFIED_EID;
+    return henryEmiratesIdScannerService.getCachedEmiratesId() || EMPTY_EMIRATES_ID;
   });
+  const [frontFile, setFrontFile] = useState<File | null>(null);
+  const [backFile, setBackFile] = useState<File | null>(null);
   const [uploadedFile, setUploadedFile] = useState<File | null>(null);
   const [filePreviewUrl, setFilePreviewUrl] = useState<string | null>(null);
   const [activeSideView, setActiveSideView] = useState<'front' | 'back'>('front');
@@ -342,6 +345,10 @@ export const HenryEmiratesIdScannerView: FC = () => {
   const [zoomLevel, setZoomLevel] = useState<number>(100);
   const [statusMsg, setStatusMsg] = useState<string | null>(null);
   const [copiedJson, setCopiedJson] = useState<boolean>(false);
+
+  useEffect(() => {
+    if (!canUseScan(extractedData)) henryEmiratesIdScannerService.clearCachedEmiratesId();
+  }, [extractedData]);
 
   useEffect(() => {
     if (uploadedFile) {
@@ -355,16 +362,21 @@ export const HenryEmiratesIdScannerView: FC = () => {
 
   const handleFileUpload = async (file: File) => {
     setIsScanning(true);
+    setExtractedData(EMPTY_EMIRATES_ID);
+    henryEmiratesIdScannerService.clearCachedEmiratesId();
     setUploadedFile(file);
     setStatusMsg(`⚡ Henry AI reading "${file.name}" in real-time...`);
 
     try {
-      const data = await henryEmiratesIdScannerService.scanEmiratesId(file);
+      const front = activeSideView === 'front' ? file : frontFile;
+      const back = activeSideView === 'back' ? file : backFile;
+      if (activeSideView === 'front') setFrontFile(file); else setBackFile(file);
+      const data = front && back ? await henryEmiratesIdScannerService.scanDualSide(front, back) : await henryEmiratesIdScannerService.scanEmiratesId(file);
       setExtractedData(data);
       if (data.scannedSide === 'back') {
         setActiveSideView('back');
       }
-      setStatusMsg(`✓ Successfully extracted and verified all variables from "${file.name}"!`);
+      setStatusMsg(`✓ Extracted candidate fields for review from "${file.name}"!`);
     } catch {
       setStatusMsg('Error processing Emirates ID scan.');
     } finally {
@@ -374,6 +386,7 @@ export const HenryEmiratesIdScannerView: FC = () => {
   };
 
   const handleLoadDemo = () => {
+    setFrontFile(null); setBackFile(null);
     setUploadedFile(null);
     const demo = henryEmiratesIdScannerService.getDemoExtractedData();
     setExtractedData(demo);
@@ -382,36 +395,47 @@ export const HenryEmiratesIdScannerView: FC = () => {
   };
 
   const handleUpdateField = (field: keyof EmiratesIdExtractedData, val: EmiratesIdExtractedData[keyof EmiratesIdExtractedData]) => {
+    henryEmiratesIdScannerService.clearCachedEmiratesId();
     setExtractedData(prev => {
-      const updated = { ...prev, [field]: val };
-      henryEmiratesIdScannerService.setCachedEmiratesId(updated);
+      const updated = { ...prev, [field]: val, reviewConfirmed: false };
+      updated.missingFields = [
+        !/^784-\d{4}-\d{7}-\d$/.test(updated.idNumber) && 'idNumber',
+        !updated.fullNameEn.trim() && 'fullNameEn',
+        !validScanDate(updated.expiryDate) && 'expiryDate',
+      ].filter((value): value is string => !!value);
+      Object.assign(updated, scanExpiry(updated.expiryDate));
+  
       return updated;
     });
   };
 
   const handleSaveToVault = async () => {
-    await henryEmiratesIdScannerService.saveToDatabase(extractedData);
-    setStatusMsg(`✓ Record ${extractedData.idNumber} (${extractedData.fullNameEn}) confirmed & saved to White Caves KYC Vault & Database!`);
+    if (!canUseScan(extractedData) || isScanning) return;
+    const result = await henryEmiratesIdScannerService.saveToDatabase(extractedData);
+    setStatusMsg(result.success ? 'Reviewed record saved to encrypted vault.' : result.error || 'Save failed.');
     setTimeout(() => setStatusMsg(null), 4000);
   };
 
   const handleAutoFillAsTenant = () => {
+    if (!canUseScan(extractedData) || isScanning) return;
     henryEmiratesIdScannerService.setCachedEmiratesId(extractedData);
-    setStatusMsg(`✓ Auto-filled Tenancy Contract with ${extractedData.fullNameEn} (${extractedData.idNumber}) as Tenant!`);
+    setStatusMsg(`Reviewed fields available to Tenancy Contract: ${extractedData.fullNameEn} (${extractedData.idNumber}) as Tenant!`);
     setTimeout(() => setStatusMsg(null), 4000);
   };
 
   const handleAutoFillAsLandlord = () => {
+    if (!canUseScan(extractedData) || isScanning) return;
     henryEmiratesIdScannerService.setCachedEmiratesId(extractedData);
-    setStatusMsg(`✓ Auto-filled Tenancy Contract with ${extractedData.fullNameEn} (${extractedData.idNumber}) as Landlord/Owner!`);
+    setStatusMsg(`Reviewed fields available to Tenancy Contract: ${extractedData.fullNameEn} (${extractedData.idNumber}) as Landlord/Owner!`);
     setTimeout(() => setStatusMsg(null), 4000);
   };
 
   const handleDiscard = () => {
+    setFrontFile(null); setBackFile(null);
     setUploadedFile(null);
     henryEmiratesIdScannerService.clearCachedEmiratesId();
-    setExtractedData(DEFAULT_VERIFIED_EID);
-    setStatusMsg('Reset Emirates ID Studio to default verified document.');
+    setExtractedData(EMPTY_EMIRATES_ID);
+    setStatusMsg('Scan a document to begin.');
     setTimeout(() => setStatusMsg(null), 3000);
   };
 
@@ -427,22 +451,32 @@ export const HenryEmiratesIdScannerView: FC = () => {
 
   return (
     <StudioContainer>
+      <label>Capture side <select aria-label="Capture side" value={activeSideView} onChange={event => setActiveSideView(event.target.value as 'front' | 'back')}><option value="front">Front</option><option value="back">Back</option></select></label>
+      <p>{frontFile ? 'Front captured' : 'Front pending'} · {backFile ? 'Back captured' : 'Back pending'}</p>
+      <p role="note">OCR is not proof of authenticity or ownership. Compare every field to the original before saving or autofill. Missing or uncertain values: rescan without glare, then correct below.</p>
+      {extractedData?.demoOnly && <p role="alert">Demo only — saving and autofill disabled.</p>}
+      {!!extractedData?.missingFields?.length && <p role="alert">Missing: {extractedData.missingFields.join(', ')}. Correct these fields or rescan.</p>}
+      <label><input type="checkbox" aria-label="Confirm document review" checked={!!extractedData?.reviewConfirmed}
+        disabled={!extractedData || extractedData.demoOnly || !!extractedData.missingFields?.length || isScanning}
+        onChange={event => setExtractedData(prev => prev ? { ...prev, reviewConfirmed: event.target.checked } : prev)} />
+        I compared the fields to the original and confirm use for saving and autofill.</label>
+
       {/* ══════════ TOP HEADER & LIVE AI SCANNER STATUS ══════════ */}
       <TopActionBar>
         <div className="header-left">
           <div className="ai-badge">
-            <Sparkles size={14} color="#38BDF8" /> HENRY AI OCR ENGINE
+            <Sparkles size={14} color="#EF4444" /> HENRY AI OCR ENGINE
           </div>
           <h3>3.19.2 Emirates ID Live Extraction Studio</h3>
         </div>
 
         <div className="header-right">
           <ActionButton $variant="secondary" onClick={handleCopyJson}>
-            {copiedJson ? <Check size={14} color="#10B981" /> : <Copy size={14} />}
+            {copiedJson ? <Check size={14} color="#EF4444" /> : <Copy size={14} />}
             <span>{copiedJson ? 'Copied' : 'Copy JSON'}</span>
           </ActionButton>
 
-          <ActionButton $variant="primary" onClick={handleSaveToVault}>
+          <ActionButton $variant="primary" onClick={handleSaveToVault} disabled={!canUseScan(extractedData) || isScanning}>
             <Save size={15} />
             <span>Confirm & Save to KYC Vault</span>
           </ActionButton>
@@ -450,7 +484,7 @@ export const HenryEmiratesIdScannerView: FC = () => {
       </TopActionBar>
 
       {statusMsg && (
-        <div style={{ background: 'var(--color-0f172a, #0F172A)', color: 'var(--color-38bdf8, #38BDF8)', padding: '10px 18px', borderRadius: '8px', fontSize: '0.85rem', fontWeight: 800 }}>
+        <div style={{ background: 'var(--color-0f172a, #0F172A)', color: 'var(--color-38bdf8, #EF4444)', padding: '10px 18px', borderRadius: '8px', fontSize: '0.85rem', fontWeight: 800 }}>
           ⚡ {statusMsg}
         </div>
       )}
@@ -461,14 +495,14 @@ export const HenryEmiratesIdScannerView: FC = () => {
         <LeftDocumentPane>
           <PaneHeader>
             <div className="title" style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-              <CreditCard size={16} color="#38BDF8" />
+              <CreditCard size={16} color="#EF4444" />
               <span>Emirates ID Document Viewer</span>
               <div style={{ display: 'flex', gap: '4px', marginLeft: '8px' }}>
                 <button
                   type="button"
                   onClick={() => setActiveSideView('front')}
                   style={{
-                    background: activeSideView === 'front' ? '#10B981' : 'rgba(255,255,255,0.12)',
+                    background: activeSideView === 'front' ? '#EF4444' : 'rgba(255,255,255,0.12)',
                     color: '#FFF',
                     border: 'none',
                     borderRadius: '4px',
@@ -484,7 +518,7 @@ export const HenryEmiratesIdScannerView: FC = () => {
                   type="button"
                   onClick={() => setActiveSideView('back')}
                   style={{
-                    background: activeSideView === 'back' ? '#10B981' : 'rgba(255,255,255,0.12)',
+                    background: activeSideView === 'back' ? '#EF4444' : 'rgba(255,255,255,0.12)',
                     color: '#FFF',
                     border: 'none',
                     borderRadius: '4px',
@@ -513,19 +547,19 @@ export const HenryEmiratesIdScannerView: FC = () => {
           <div style={{ padding: '1rem', background: 'var(--white, #FFFFFF)', borderBottom: '1px solid var(--text-secondary, #E2E8F0)' }}>
             <HenrySharedDocumentUploader
               docType="emirates_id"
-              title="1. Upload Emirates ID (PDF, PNG, JPG, WEBP)"
+              title="1. Upload Emirates ID (PDF, PNG, JPEG)"
               subtitle="Drop your Emirates ID file to extract live variables and compare on the right"
               onFileUpload={handleFileUpload}
               onSampleLoad={handleLoadDemo}
               isProcessing={isScanning}
-              accentColor="#10B981"
+              accentColor="#EF4444"
             />
             <div style={{ marginTop: '8px', display: 'flex', gap: '6px', flexWrap: 'wrap', alignItems: 'center' }}>
-              <span style={{ fontSize: '0.72rem', color: 'var(--text-secondary, #64748B)', fontWeight: 700 }}>Client Presets:</span>
+              <span style={{ fontSize: '0.72rem', color: 'var(--text-secondary, #64748B)', fontWeight: 700 }}>Demo Presets:</span>
               <button
                 type="button"
                 onClick={async () => {
-                  const data = await henryEmiratesIdScannerService.scanEmiratesId('sample_khalif' as any);
+                  const data = await henryEmiratesIdScannerService.scanEmiratesId('sample_khalif');
                   setExtractedData(data);
                   setStatusMsg(`✓ Ingested Client: ${data.fullNameEn} (${data.nationalityEn})`);
                   setTimeout(() => setStatusMsg(null), 3000);
@@ -537,7 +571,7 @@ export const HenryEmiratesIdScannerView: FC = () => {
               <button
                 type="button"
                 onClick={async () => {
-                  const data = await henryEmiratesIdScannerService.scanEmiratesId('sample_mansoor' as any);
+                  const data = await henryEmiratesIdScannerService.scanEmiratesId('sample_mansoor');
                   setExtractedData(data);
                   setStatusMsg(`✓ Ingested Client: ${data.fullNameEn} (${data.nationalityEn})`);
                   setTimeout(() => setStatusMsg(null), 3000);
@@ -559,9 +593,9 @@ export const HenryEmiratesIdScannerView: FC = () => {
               )
             ) : activeSideView === 'front' ? (
               <div style={{ textAlign: 'center', color: 'var(--text-secondary, #64748B)', maxWidth: '420px' }}>
-                <div style={{ background: 'var(--color-0f172a, #0F172A)', borderRadius: '12px', padding: '1.25rem', color: 'var(--white, #FFFFFF)', border: '2px solid var(--accent-green, #10B981)', textAlign: 'left' }}>
+                <div style={{ background: 'var(--color-0f172a, #0F172A)', borderRadius: '12px', padding: '1.25rem', color: 'var(--white, #FFFFFF)', border: '2px solid var(--accent-green, #EF4444)', textAlign: 'left' }}>
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid rgba(255,255,255,0.15)', paddingBottom: '6px', marginBottom: '8px' }}>
-                    <span style={{ fontSize: '0.72rem', fontWeight: 800, color: 'var(--accent-green, #10B981)' }}>
+                    <span style={{ fontSize: '0.72rem', fontWeight: 800, color: 'var(--accent-green, #EF4444)' }}>
                       UNITED ARAB EMIRATES · RESIDENT IDENTITY CARD
                     </span>
                     <span style={{ fontSize: '0.68rem', color: 'var(--color-94a3b8, #94A3B8)' }}>FRONT</span>
@@ -586,16 +620,16 @@ export const HenryEmiratesIdScannerView: FC = () => {
               </div>
             ) : (
               <div style={{ textAlign: 'center', color: 'var(--text-secondary, #64748B)', maxWidth: '420px' }}>
-                <div style={{ background: 'var(--color-0f172a, #0F172A)', borderRadius: '12px', padding: '1.25rem', color: 'var(--white, #FFFFFF)', border: '2px solid var(--color-38bdf8, #38BDF8)', textAlign: 'left' }}>
+                <div style={{ background: 'var(--color-0f172a, #0F172A)', borderRadius: '12px', padding: '1.25rem', color: 'var(--white, #FFFFFF)', border: '2px solid var(--color-38bdf8, #EF4444)', textAlign: 'left' }}>
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid rgba(255,255,255,0.15)', paddingBottom: '6px', marginBottom: '8px' }}>
-                    <span style={{ fontSize: '0.72rem', fontWeight: 800, color: 'var(--color-38bdf8, #38BDF8)' }}>
+                    <span style={{ fontSize: '0.72rem', fontWeight: 800, color: 'var(--color-38bdf8, #EF4444)' }}>
                       SMART CHIP & ICAO TD1 MRZ SPECIFICATION
                     </span>
                     <span style={{ fontSize: '0.68rem', color: 'var(--color-94a3b8, #94A3B8)' }}>BACK</span>
                   </div>
                   <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.75rem', color: 'var(--text-secondary, #E2E8F0)', marginTop: '6px' }}>
                     <span>Card No: <strong>{extractedData.cardNumber}</strong></span>
-                    <span>Chip: <strong>{extractedData.chipNumber || '2500098412'}</strong></span>
+                    <span>Chip: <strong>{extractedData.chipNumber || 'Not extracted'}</strong></span>
                   </div>
                   <div style={{ fontSize: '0.75rem', color: 'var(--color-94a3b8, #94A3B8)', marginTop: '6px' }}>
                     Occupation: <strong>{extractedData.occupationEn}</strong>
@@ -603,11 +637,11 @@ export const HenryEmiratesIdScannerView: FC = () => {
                   <div style={{ fontSize: '0.75rem', color: 'var(--color-94a3b8, #94A3B8)' }}>
                     Employer: <strong>{extractedData.employerEn}</strong>
                   </div>
-                  <div style={{ marginTop: '10px', padding: '6px', background: 'var(--color-020617, #020617)', borderRadius: '6px', fontFamily: 'monospace', fontSize: '0.68rem', color: 'var(--color-38bdf8, #38BDF8)', lineHeight: 1.3 }}>
+                  <div style={{ marginTop: '10px', padding: '6px', background: 'var(--color-020617, #020617)', borderRadius: '6px', fontFamily: 'monospace', fontSize: '0.68rem', color: 'var(--color-38bdf8, #EF4444)', lineHeight: 1.3 }}>
                     {extractedData.mrz ? (
                       `${extractedData.mrz.line1}\n${extractedData.mrz.line2}\n${extractedData.mrz.line3}`
                     ) : (
-                      `ILARE${extractedData.cardNumber}0${extractedData.rawIdNumber}\n7001291M2708274IND<<<<<<<<<<<2\n${extractedData.fullNameEn.toUpperCase().replace(/\s+/g, '<').slice(0, 30)}`
+                      'MRZ not extracted — capture the back of the card'
                     )}
                   </div>
                 </div>
@@ -622,13 +656,13 @@ export const HenryEmiratesIdScannerView: FC = () => {
         {/* ────────── RIGHT: LIVE EXTRACTED VARIABLE SECTIONS ────────── */}
         <RightVariablesPane>
           {/* SECTION 1: IDENTITY & CARD NUMBERS */}
-          <VariableSectionCard $verified>
+          <VariableSectionCard>
             <div className="card-top">
               <span className="section-title">
-                <ShieldCheck size={14} color="#10B981" /> 1. Identity & Card Numbers
+                <ShieldCheck size={14} color="#EF4444" /> 1. Identity & Card Numbers
               </span>
               <span className="match-badge">
-                <CheckCheck size={13} /> Live Verified Match
+                <CheckCheck size={13} /> OCR candidate — check original
               </span>
             </div>
             <div className="value-row">
@@ -637,7 +671,7 @@ export const HenryEmiratesIdScannerView: FC = () => {
                 <input
                   type="text"
                   value={extractedData.idNumber}
-                  style={{ fontFamily: 'monospace', color: 'var(--accent-green, #059669)', fontSize: '1rem' }}
+                  style={{ fontFamily: 'monospace', color: 'var(--accent-green, #EF4444)', fontSize: '1rem' }}
                   onChange={(e) => handleUpdateField('idNumber', e.target.value)}
                 />
               </div>
@@ -653,13 +687,13 @@ export const HenryEmiratesIdScannerView: FC = () => {
           </VariableSectionCard>
 
           {/* SECTION 2: BILINGUAL LEGAL NAMES */}
-          <VariableSectionCard $verified>
+          <VariableSectionCard>
             <div className="card-top">
               <span className="section-title">
-                <User size={14} color="#10B981" /> 2. Full Legal Names (Bilingual)
+                <User size={14} color="#EF4444" /> 2. Full Legal Names (Bilingual)
               </span>
               <span className="match-badge">
-                <CheckCheck size={13} /> Verified
+                <CheckCheck size={13} /> Not authenticated
               </span>
             </div>
             <div className="value-row">
@@ -684,13 +718,13 @@ export const HenryEmiratesIdScannerView: FC = () => {
           </VariableSectionCard>
 
           {/* SECTION 3: DEMOGRAPHICS & NATIONALITY */}
-          <VariableSectionCard $verified>
+          <VariableSectionCard>
             <div className="card-top">
               <span className="section-title">
-                <Flag size={14} color="#10B981" /> 3. Demographics & Nationality
+                <Flag size={14} color="#EF4444" /> 3. Demographics & Nationality
               </span>
               <span className="match-badge">
-                <CheckCheck size={13} /> Verified
+                <CheckCheck size={13} /> Not authenticated
               </span>
             </div>
             <div className="value-row" style={{ gridTemplateColumns: '1fr 1fr 1fr' }}>
@@ -706,7 +740,7 @@ export const HenryEmiratesIdScannerView: FC = () => {
                 <label>Gender <span className="ar">الجنس</span></label>
                 <select
                   value={extractedData.gender}
-                  onChange={(e) => handleUpdateField('gender', e.target.value as any)}
+                  onChange={(e) => handleUpdateField('gender', e.target.value as EmiratesIdExtractedData['gender'])}
                 >
                   <option value="M">Male (ذكر)</option>
                   <option value="F">Female (أنثى)</option>
@@ -724,10 +758,10 @@ export const HenryEmiratesIdScannerView: FC = () => {
           </VariableSectionCard>
 
           {/* SECTION 4: VALIDITY DATES */}
-          <VariableSectionCard $verified>
+          <VariableSectionCard>
             <div className="card-top">
               <span className="section-title">
-                <Calendar size={14} color="#10B981" /> 4. Document Validity Dates
+                <Calendar size={14} color="#EF4444" /> 4. Document Validity Dates
               </span>
               <span className="match-badge">
                 <Clock size={13} /> Active Valid (700+ Days)
@@ -755,13 +789,13 @@ export const HenryEmiratesIdScannerView: FC = () => {
           </VariableSectionCard>
 
           {/* SECTION 5: OCCUPATION & EMPLOYER */}
-          <VariableSectionCard $verified>
+          <VariableSectionCard>
             <div className="card-top">
               <span className="section-title">
-                <Briefcase size={14} color="#10B981" /> 5. Employment & Sponsor
+                <Briefcase size={14} color="#EF4444" /> 5. Employment & Sponsor
               </span>
               <span className="match-badge">
-                <Building size={13} /> Verified
+                <Building size={13} /> Not authenticated
               </span>
             </div>
             <div className="value-row">
@@ -786,10 +820,10 @@ export const HenryEmiratesIdScannerView: FC = () => {
 
           {/* SECTION 6: ICAO 9303 TD1 MACHINE READABLE ZONE */}
           {extractedData.mrz && (
-            <VariableSectionCard $verified>
+            <VariableSectionCard>
               <div className="card-top">
                 <span className="section-title">
-                  <CreditCard size={14} color="#10B981" /> 6. Machine Readable Zone (MRZ TD1)
+                  <CreditCard size={14} color="#EF4444" /> 6. Machine Readable Zone (MRZ TD1)
                 </span>
                 <span className="match-badge">
                   <CheckCheck size={13} /> ICAO 9303 Checksum Passed
@@ -806,18 +840,18 @@ export const HenryEmiratesIdScannerView: FC = () => {
             <ActionButton
               $variant="secondary"
               type="button"
-              onClick={handleAutoFillAsTenant}
+              onClick={handleAutoFillAsTenant} disabled={!canUseScan(extractedData) || isScanning}
               style={{ fontSize: '0.8rem', padding: '8px 14px', flex: 1, justifyContent: 'center' }}
             >
-              <FileText size={14} color="#10B981" /> Auto-Fill Tenancy (as Tenant)
+              <FileText size={14} color="#EF4444" /> Auto-Fill Tenancy (as Tenant)
             </ActionButton>
             <ActionButton
               $variant="secondary"
               type="button"
-              onClick={handleAutoFillAsLandlord}
+              onClick={handleAutoFillAsLandlord} disabled={!canUseScan(extractedData) || isScanning}
               style={{ fontSize: '0.8rem', padding: '8px 14px', flex: 1, justifyContent: 'center' }}
             >
-              <FileText size={14} color="#38BDF8" /> Auto-Fill Tenancy (as Landlord)
+              <FileText size={14} color="#EF4444" /> Auto-Fill Tenancy (as Landlord)
             </ActionButton>
           </div>
 
@@ -827,8 +861,8 @@ export const HenryEmiratesIdScannerView: FC = () => {
               <Trash2 size={14} /> Clear & Reset
             </ActionButton>
 
-            <ActionButton $variant="primary" onClick={handleSaveToVault}>
-              <Save size={15} /> Save Verified Variables to KYC Vault
+            <ActionButton $variant="primary" onClick={handleSaveToVault} disabled={!canUseScan(extractedData) || isScanning}>
+              <Save size={15} /> Save Reviewed Variables to KYC Vault
             </ActionButton>
           </div>
         </RightVariablesPane>

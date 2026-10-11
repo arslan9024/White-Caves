@@ -21,6 +21,7 @@ export interface HenrySharedDocumentUploaderProps {
   onSampleLoad?: () => void;
   onSave?: () => void;
   onDiscard?: () => void;
+  saveDisabled?: boolean;
   extractedSummary?: {
     title: string;
     fields: { label: string; value: string | number | undefined; isHighlight?: boolean }[];
@@ -185,17 +186,32 @@ export const HenrySharedDocumentUploader: FC<HenrySharedDocumentUploaderProps> =
   docType = 'auto',
   title,
   subtitle,
-  acceptedFormats = '.pdf,image/*,.docx',
+  acceptedFormats = 'application/pdf,image/png,image/jpeg',
   isProcessing = false,
   onFileUpload,
   onSampleLoad,
   onSave,
   onDiscard,
+  saveDisabled = false,
   extractedSummary,
   accentColor = '#EF4444',
 }) => {
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const cameraInputRef = useRef<HTMLInputElement>(null);
   const [isDragOver, setIsDragOver] = useState(false);
+  const [uploadError, setUploadError] = useState('');
+
+  const uploadFile = async (file: File) => {
+    if (isProcessing) return;
+    setUploadError('');
+    if (!['application/pdf', 'image/png', 'image/jpeg'].includes(file.type) || !file.size || file.size > 10 * 1024 * 1024) {
+      setUploadError('Use a PNG, JPEG or PDF under 10 MB. Rescan with all edges visible.');
+      return;
+    }
+    try { await onFileUpload(file); } catch {
+      setUploadError('Upload failed. Please rescan or retry.');
+    }
+  };
 
   const handleDragOver = (e: DragEvent<HTMLDivElement>) => {
     e.preventDefault();
@@ -212,14 +228,14 @@ export const HenrySharedDocumentUploader: FC<HenrySharedDocumentUploaderProps> =
     setIsDragOver(false);
     const file = e.dataTransfer.files?.[0];
     if (file) {
-      onFileUpload(file);
+      void uploadFile(file);
     }
   };
 
   const handleFileInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
-      onFileUpload(file);
+      void uploadFile(file);
       e.target.value = '';
     }
   };
@@ -232,7 +248,14 @@ export const HenrySharedDocumentUploader: FC<HenrySharedDocumentUploaderProps> =
         onChange={handleFileInputChange}
         accept={acceptedFormats}
         style={{ display: 'none' }}
+        aria-label="Upload document"
       />
+      <input type="file" ref={cameraInputRef} accept="image/png,image/jpeg" capture="environment"
+        onChange={handleFileInputChange} style={{ display: 'none' }} aria-label="Camera document capture" />
+      <ActionBtn type="button" disabled={isProcessing} onClick={() => cameraInputRef.current?.click()}>
+        Capture with camera
+      </ActionBtn>
+      {uploadError && <p role="alert">{uploadError}</p>}
 
       <HeaderSection>
         <div className="title-group">
@@ -254,6 +277,10 @@ export const HenrySharedDocumentUploader: FC<HenrySharedDocumentUploaderProps> =
         onDragLeave={handleDragLeave}
         onDrop={handleDrop}
         onClick={() => fileInputRef.current?.click()}
+        role="button"
+        tabIndex={0}
+        aria-label="Browse document"
+        onKeyDown={event => { if (event.key === 'Enter' || event.key === ' ') fileInputRef.current?.click(); }}
       >
         <div className="dropzone-icon">
           <UploadCloud size={32} color={accentColor} style={{ margin: '0 auto' }} />
@@ -262,7 +289,7 @@ export const HenrySharedDocumentUploader: FC<HenrySharedDocumentUploaderProps> =
           {isProcessing ? '⚡ Analyzing & Extracting Data...' : 'Drop file here or click to browse'}
         </div>
         <div className="dropzone-sub">
-          Supports official PDF, scanned PNG/JPG images, and DOCX documents
+          PNG, JPEG or PDF · maximum 10 MB · avoid glare and show all edges
         </div>
       </DropzoneBox>
 
@@ -294,7 +321,7 @@ export const HenrySharedDocumentUploader: FC<HenrySharedDocumentUploaderProps> =
             </ActionBtn>
           )}
           {onSave && (
-            <ActionBtn type="button" onClick={onSave} $variant="primary" $accentColor={accentColor}>
+            <ActionBtn type="button" onClick={onSave} disabled={saveDisabled || isProcessing} $variant="primary" $accentColor={accentColor}>
               <Save size={13} /> Save to Vault
             </ActionBtn>
           )}

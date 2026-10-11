@@ -1534,6 +1534,31 @@ model Notification {
 
 // ─── HENRY: DOCUMENT RECORD ─────────────────────────────────────────────
 
+model HenryScannedDocument {
+  id               String   @id @default(auto()) @map("_id") @db.ObjectId
+  ownerUserId      String   @db.ObjectId
+  docType          String
+  referenceHash    String
+  encryptedPayload String
+  leadId           String?  @db.ObjectId
+  propertyId       String?  @db.ObjectId
+  replacedById     String?  @db.ObjectId
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+
+  @@unique([ownerUserId, docType, referenceHash])
+  @@index([ownerUserId, docType, createdAt])
+}
+
+model HenryDocumentAudit {
+  id          String   @id @default(auto()) @map("_id") @db.ObjectId
+  ownerUserId String   @db.ObjectId
+  documentId  String   @db.ObjectId
+  action      String
+  createdAt   DateTime @default(now())
+  @@index([ownerUserId, createdAt])
+}
+
 model HenryRecord {
   id               String   @id @default(auto()) @map("_id") @db.ObjectId
   templateKey      String                         // tenancy_contract, booking_form, addendum, etc.

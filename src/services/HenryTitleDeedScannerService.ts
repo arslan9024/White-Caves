@@ -10,9 +10,11 @@
  */
 
 import { TenancyContractPayload, ContractParty } from './HenryPdfEngineService';
+import henryEmiratesIdScannerService from './HenryEmiratesIdScannerService';
+import { ScanReview, canUseScan, saveReviewedScan } from './henryScanReview';
 import { safeStorage } from '../utils/safeStorage';
 
-export interface DldTitleDeedExtractedData {
+export interface DldTitleDeedExtractedData extends ScanReview {
   // Document Meta
   certificateNumber: string; // e.g. "140764/2023"
   issueDate: string; // e.g. "18/07/2023"
@@ -66,11 +68,12 @@ export interface DldTitleDeedExtractedData {
 }
 
 export const VIRIDIS_504_SAMPLE_TITLE_DEED: DldTitleDeedExtractedData = {
+  demoOnly: true, reviewConfirmed: false,
   certificateNumber: '140764/2023',
   issueDate: '18/07/2023',
   issuingAuthorityEn: 'Government of Dubai — Land Department',
   issuingAuthorityAr: 'حكومة دبي — دائرة الأراضي والأملاك',
-  isBlockchainVerified: true,
+  isBlockchainVerified: false,
 
   propertyTypeEn: 'Hotel Apartment',
   propertyTypeAr: 'شقة فندقية',
@@ -112,11 +115,12 @@ export const VIRIDIS_504_SAMPLE_TITLE_DEED: DldTitleDeedExtractedData = {
 };
 
 export const BUKO_COMMODITY_MADINAT_HIND_TITLE_DEED_SAMPLE: DldTitleDeedExtractedData = {
+  demoOnly: true, reviewConfirmed: false,
   certificateNumber: '93757/2025',
   issueDate: '13/10/2025',
   issuingAuthorityEn: 'Government of Dubai — Land Department',
   issuingAuthorityAr: 'دائرة الأراضي والأملاك',
-  isBlockchainVerified: true,
+  isBlockchainVerified: false,
 
   propertyTypeEn: 'Land',
   propertyTypeAr: 'ارض',
@@ -166,8 +170,8 @@ class HenryTitleDeedScannerService {
    * Persists extracted Title Deed data into temporary session memory and localStorage
    */
   setCachedTitleDeed(data: DldTitleDeedExtractedData): void {
+    if (!canUseScan(data)) return;
     this.inMemoryCache = { ...data };
-    safeStorage.setJSON(HenryTitleDeedScannerService.CACHE_KEY, data);
     this.notifyListeners(this.inMemoryCache);
   }
 
@@ -176,11 +180,7 @@ class HenryTitleDeedScannerService {
    */
   getCachedTitleDeed(): DldTitleDeedExtractedData | null {
     if (this.inMemoryCache) return this.inMemoryCache;
-    const stored = safeStorage.getJSON<DldTitleDeedExtractedData>(HenryTitleDeedScannerService.CACHE_KEY);
-    if (stored) {
-      this.inMemoryCache = stored;
-      return stored;
-    }
+    safeStorage.remove(HenryTitleDeedScannerService.CACHE_KEY);
     return null;
   }
 
@@ -205,8 +205,7 @@ class HenryTitleDeedScannerService {
    * Returns benchmark reference sample 2 (BUKO COMMODITY DMCC - Plot 7354 Madinat Hind 4)
    */
   getBukoSample(): DldTitleDeedExtractedData {
-    const sample = { ...BUKO_COMMODITY_MADINAT_HIND_TITLE_DEED_SAMPLE, scannedAt: new Date().toISOString() };
-    this.setCachedTitleDeed(sample);
+    const sample = { ...BUKO_COMMODITY_MADINAT_HIND_TITLE_DEED_SAMPLE, scannedAt: new Date().toISOString(), demoOnly: true, reviewConfirmed: false, isBlockchainVerified: false };
     return sample;
   }
 
@@ -225,128 +224,37 @@ class HenryTitleDeedScannerService {
   async scanTitleDeed(
     fileOrPreset?: File | 'sample' | 'sample_viridis' | 'sample_buko'
   ): Promise<DldTitleDeedExtractedData> {
-    if (!fileOrPreset || fileOrPreset === 'sample' || fileOrPreset === 'sample_viridis') {
-      return this.getDemoExtractedData();
-    }
+    if (!fileOrPreset) throw new Error('Upload a title deed to scan.');
+    if (typeof fileOrPreset === 'string') return fileOrPreset === 'sample_buko' ? this.getBukoSample() : this.getDemoExtractedData();
+    const file = fileOrPreset;
+    if (!['image/png', 'image/jpeg', 'application/pdf'].includes(file.type) || !file.size || file.size > 10 * 1024 * 1024) throw new Error('Use a PNG, JPEG or PDF under 10 MB.');
+    const { ocrText, streamText } = await henryEmiratesIdScannerService.extractDocumentText(file);
+    const text = `${ocrText}\n${streamText}`;
+    if (!text.trim()) throw new Error('No readable text. Rescan in good lighting with all deed edges visible.');
+    return { ...this.parseDocumentText(text), documentFormat: file.type };
+  }
 
-    if (fileOrPreset === 'sample_buko') {
-      return this.getBukoSample();
-    }
-
-    const file = fileOrPreset as File;
-    const fileName = file.name || 'TitleDeed_DLD.pdf';
-    const lower = fileName.toLowerCase();
-
-    if (lower.includes('buko') || lower.includes('commodity') || lower.includes('7354') || lower.includes('20879') || lower.includes('93757') || lower.includes('1717600') || lower.includes('بوكو')) {
-      const result: DldTitleDeedExtractedData = {
-        ...BUKO_COMMODITY_MADINAT_HIND_TITLE_DEED_SAMPLE,
-        scannedAt: new Date().toISOString(),
-        documentFormat: file.type || (fileName.endsWith('.pdf') ? 'application/pdf' : 'image/png'),
-      };
-      this.setCachedTitleDeed(result);
-      return result;
-    }
-
-    // Generate unique deterministic seed from file properties
-    let hash = 0;
-    const seed = `${fileName}_${file.size}_${file.lastModified || Date.now()}`;
-    for (let i = 0; i < seed.length; i++) {
-      hash = (hash << 5) - hash + seed.charCodeAt(i);
-      hash |= 0;
-    }
-    const absHash = Math.abs(hash);
-
-    let buildingNameEn = 'CAMELIA';
-    let buildingNameAr = 'كاميليا';
-    let propertyNo = String((absHash % 900) + 101);
-    let plotNo = String((absHash % 8000) + 1000);
-    let ownerNameEn = 'Sanit Singh Nagpal';
-    let ownerNameAr = 'سانيت سينغ ناغبال';
-    let communityEn = 'DAMAC Hills 2 (Akoya Oxygen)';
-    let communityAr = 'داماك هيلز 2';
-    let areaSqM = parseFloat((120 + (absHash % 150) * 0.75).toFixed(2));
-
-    if (lower.includes('janusia') || lower.includes('2858')) {
-      buildingNameEn = 'Janusia';
-      buildingNameAr = 'جانوسيا';
-      propertyNo = 'XH2858B';
-      plotNo = '6340';
-      ownerNameEn = 'Svetlana Levitskaya';
-      ownerNameAr = 'سفيتلانا ليفيتسكايا';
-      communityEn = 'DAMAC Hills 2, Dubai';
-      areaSqM = 198.50;
-    } else if (lower.includes('viridis') || lower.includes('504')) {
-      buildingNameEn = 'VIRIDIS A';
-      buildingNameAr = 'فريديس ايه A';
-      propertyNo = '504';
-      plotNo = '5120';
-      ownerNameEn = 'AKRAM DIB NEHME';
-      ownerNameAr = 'أكرم ديب نعمة';
-      communityEn = 'Madinat Hind 4 (DAMAC Hills 2)';
-      areaSqM = 38.76;
-    } else if (lower.includes('marina') || lower.includes('gate')) {
-      buildingNameEn = 'Marina Gate Tower 2';
-      buildingNameAr = 'مارينا جيت 2';
-      propertyNo = String((absHash % 40) + 1001);
-      plotNo = '392-0541';
-      ownerNameEn = 'Alexander Wright';
-      ownerNameAr = 'ألكسندر رايت';
-      communityEn = 'Dubai Marina';
-      areaSqM = 142.20;
-    }
-
-    const certNo = `${absHash % 900000 + 100000}/2024`;
-    const dewaNo = `9180${absHash % 900000 + 100000}`;
-    const makaniNo = String(absHash % 900 + 100);
-
-    return new Promise((resolve) => {
-      setTimeout(() => {
-        const result: DldTitleDeedExtractedData = {
-          certificateNumber: certNo,
-          issueDate: new Date().toLocaleDateString('en-GB'),
-          issuingAuthorityEn: 'Government of Dubai — Land Department',
-          issuingAuthorityAr: 'حكومة دبي — دائرة الأراضي والأملاك',
-          isBlockchainVerified: true,
-          propertyTypeEn: 'Residential Townhouse / Apartment',
-          propertyTypeAr: 'وحدة سكنية',
-          communityEn,
-          communityAr,
-          plotNumber: plotNo,
-          municipalityNumber: `914-${plotNo}`,
-          buildingNumber: '1',
-          buildingNameEn,
-          buildingNameAr,
-          propertyNumber: propertyNo,
-          floorNumber: String((absHash % 25) + 1),
-          parkingNumber: `P-${absHash % 90 + 10}`,
-          mortgageStatusEn: 'Not mortgaged',
-          mortgageStatusAr: 'غير مرهونة',
-          isMortgaged: false,
-          suiteAreaSqM: parseFloat((areaSqM * 0.85).toFixed(2)),
-          balconyAreaSqM: parseFloat((areaSqM * 0.15).toFixed(2)),
-          totalAreaSqM: areaSqM,
-          totalAreaSqFt: parseFloat((areaSqM * 10.7639).toFixed(2)),
-          commonAreaSqM: 14.50,
-          ownerDldNumber: String(absHash % 9000000 + 1000000),
-          ownerNameEn,
-          ownerNameAr,
-          ownerSharePercent: 100,
-          ownedAreaSqM: areaSqM,
-          purchasedFromEn: 'DEVELOPER ESCROW REGISTRY L.L.C',
-          purchasedFromAr: 'شركة التطوير العقاري ذ.م.م',
-          registrationContractNumber: `${absHash % 900000 + 100000}/2024`,
-          registrationDate: new Date().toLocaleDateString('en-GB'),
-          purchasePriceAed: Math.round(areaSqM * 11000),
-          purchasePriceWordsEn: 'Official DLD Registered Purchase Value',
-          confidenceScore: 0.998,
-          scannedAt: new Date().toISOString(),
-          documentFormat: file.type || (fileName.endsWith('.pdf') ? 'application/pdf' : 'image/png'),
-        };
-
-        this.setCachedTitleDeed(result);
-        resolve(result);
-      }, 300);
-    });
+  parseDocumentText(text: string): DldTitleDeedExtractedData {
+    // Only explicit labelled values are extracted; filenames and registry samples are not evidence.
+    const field = (label: string) => text.match(new RegExp(`(?:${label})[ \t]*[:：][ \t]*([^\\n\\r]+)`, 'i'))?.[1]?.trim() || '';
+    const number = (label: string) => {
+      const value = field(label).replace(/,/g, '').match(/^[0-9]+(?:\.[0-9]+)?/);
+      return value ? Number(value[0]) : 0;
+    };
+    const certificateNumber = field('Certificate Number|Certificate No\\.?|Title Deed Number|رقم الشهادة');
+    const ownerNameEn = field('Owner Name|Owner|اسم المالك');
+    const propertyNumber = field('Property Number|Unit Number|Unit No\\.?|رقم العقار');
+    const plotNumber = field('Plot Number|Plot No\\.?|رقم الارض');
+    const totalAreaSqM = number('Total Area|Area SqM|المساحة');
+    const missingFields = [!certificateNumber && 'certificateNumber', !ownerNameEn && 'ownerNameEn', !(propertyNumber || plotNumber) && 'propertyNumber'].filter((value): value is string => !!value);
+    return {
+      certificateNumber, ownerNameEn, propertyNumber, plotNumber,
+      issueDate: field('Issue Date|Date of Issue'), issuingAuthorityEn: field('Issuing Authority'), issuingAuthorityAr: '', isBlockchainVerified: false,
+      propertyTypeEn: field('Property Type'), propertyTypeAr: '', communityEn: field('Community|Area Name'), communityAr: '', municipalityNumber: field('Municipality Number'), buildingNumber: field('Building Number'), buildingNameEn: field('Building Name'), buildingNameAr: '', floorNumber: field('Floor Number|Floor'), parkingNumber: field('Parking Number'), mortgageStatusEn: field('Mortgage Status'), mortgageStatusAr: '', isMortgaged: /^mortgaged$/i.test(field('Mortgage Status')),
+      suiteAreaSqM: number('Suite Area'), balconyAreaSqM: number('Balcony Area'), totalAreaSqM, totalAreaSqFt: totalAreaSqM ? Number((totalAreaSqM * 10.7639).toFixed(2)) : 0, commonAreaSqM: number('Common Area'),
+      ownerDldNumber: field('Owner DLD Number|Owner Number'), ownerNameAr: field('اسم المالك'), ownerSharePercent: number('Ownership Share|Owner Share'), ownedAreaSqM: number('Owned Area'), purchasedFromEn: field('Purchased From'), purchasedFromAr: '', registrationContractNumber: field('Registration Contract Number'), registrationDate: field('Registration Date'), purchasePriceAed: number('Purchase Price|Purchase Value'), purchasePriceWordsEn: '',
+      confidenceScore: 0, scannedAt: new Date().toISOString(), reviewConfirmed: false, demoOnly: false, missingFields,
+    };
   }
 
   /**
@@ -365,15 +273,16 @@ class HenryTitleDeedScannerService {
     extracted: DldTitleDeedExtractedData,
     basePayload: TenancyContractPayload
   ): TenancyContractPayload {
+    if (!canUseScan(extracted)) throw new Error('Confirm review before autofill.');
     const propertyTitle = `${extracted.propertyTypeEn} in ${extracted.buildingNameEn}`;
     const unitNumber = `Unit ${extracted.propertyNumber}, Floor ${extracted.floorNumber}, ${extracted.buildingNameEn}`;
     const community = `${extracted.communityEn}, Dubai (Plot: ${extracted.plotNumber})`;
 
     const landlord: ContractParty = {
       name: extracted.ownerNameEn,
-      emiratesIdOrPassport: `DLD-${extracted.ownerDldNumber}`,
-      phone: basePayload.landlord.phone || '+971 50 555 1234',
-      email: basePayload.landlord.email || 'landlord@whitecaves.ae',
+      emiratesIdOrPassport: basePayload.landlord.emiratesIdOrPassport,
+      phone: basePayload.landlord.phone || '',
+      email: basePayload.landlord.email || '',
     };
 
     return {
@@ -389,8 +298,7 @@ class HenryTitleDeedScannerService {
    * Returns demo scanned Title Deed data (Akram Dib Nehme - Viridis A Unit 504)
    */
   getDemoExtractedData(): DldTitleDeedExtractedData {
-    const demo = { ...VIRIDIS_504_SAMPLE_TITLE_DEED, scannedAt: new Date().toISOString() };
-    this.setCachedTitleDeed(demo);
+    const demo = { ...VIRIDIS_504_SAMPLE_TITLE_DEED, scannedAt: new Date().toISOString(), demoOnly: true, reviewConfirmed: false, isBlockchainVerified: false };
     return demo;
   }
 
@@ -398,6 +306,7 @@ class HenryTitleDeedScannerService {
    * Converts Extracted Title Deed into a clean CRM Property Inventory object
    */
   toCrmPropertyListing(extracted: DldTitleDeedExtractedData) {
+    if (!canUseScan(extracted)) throw new Error('Confirm review before autofill.');
     return {
       title: `${extracted.buildingNameEn} — Unit ${extracted.propertyNumber} (${extracted.propertyTypeEn})`,
       propertyType: extracted.propertyTypeEn,
@@ -422,7 +331,7 @@ class HenryTitleDeedScannerService {
    * Exports extracted data as a structured JSON object
    */
   exportToJson(extracted?: DldTitleDeedExtractedData): Record<string, any> {
-    const data = extracted || this.getCachedTitleDeed() || VIRIDIS_504_SAMPLE_TITLE_DEED;
+    const data = extracted || this.getCachedTitleDeed();
     return JSON.parse(JSON.stringify(data));
   }
 
@@ -437,35 +346,11 @@ class HenryTitleDeedScannerService {
    * Persists extracted Title Deed record to backend database and local cache
    */
   async saveToDatabase(extracted?: DldTitleDeedExtractedData): Promise<{ success: boolean; id?: string; error?: string }> {
-    const data = extracted || this.getCachedTitleDeed() || VIRIDIS_504_SAMPLE_TITLE_DEED;
-    this.setCachedTitleDeed(data);
-
-    try {
-      if (typeof window !== 'undefined') {
-        const response = await fetch('/api/henry/documents/save', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            docType: 'title_deed',
-            title: `Title Deed - ${data.buildingNameEn} #${data.propertyNumber}`,
-            clientName: data.ownerNameEn,
-            referenceNumber: data.certificateNumber,
-            extractedJson: data,
-            confidenceScore: data.confidenceScore,
-            scannedSide: 'front',
-            documentFormat: data.documentFormat || 'application/pdf',
-          }),
-        });
-
-        if (response.ok) {
-          const resJson = await response.json();
-          return { success: true, id: resJson.data?.id };
-        }
-      }
-      return { success: true, id: `local_${Date.now()}` };
-    } catch {
-      return { success: true, id: `fallback_${Date.now()}` };
-    }
+    const data = extracted || this.getCachedTitleDeed();
+    if (!data) return { success: false, error: 'No reviewed document.' };
+    const result = await saveReviewedScan('title_deed', data, data.certificateNumber, data.ownerNameEn);
+    if (result.success) this.setCachedTitleDeed(data);
+    return result;
   }
 }
 
