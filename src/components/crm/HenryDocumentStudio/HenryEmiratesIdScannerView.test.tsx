@@ -2,6 +2,7 @@ import { describe, it, expect, vi } from 'vitest';
 import { fireEvent, render, screen } from '@testing-library/react';
 import React from 'react';
 import HenryEmiratesIdScannerView from './HenryEmiratesIdScannerView';
+import eid from '../../../services/HenryEmiratesIdScannerService';
 
 describe('HenryEmiratesIdScannerView', () => {
   it('renders Emirates ID verification studio with action buttons', () => {
@@ -20,5 +21,14 @@ describe('HenryEmiratesIdScannerView', () => {
     expect(screen.getByText(/Demo only — saving and autofill disabled/i)).toBeInTheDocument();
     expect(screen.getByLabelText('Confirm document review')).toBeDisabled();
     expect(screen.getByRole('button', { name: /Confirm & Save to KYC Vault/i })).toBeDisabled();
+  });
+  it('shows unknown rather than NaN days for an impossible expiry', () => {
+    const demo = eid.getDemoExtractedData();
+    const mock = vi.spyOn(eid, 'getDemoExtractedData').mockReturnValue({ ...demo, expiryDate: '31/02/2027' });
+    render(<HenryEmiratesIdScannerView />);
+    fireEvent.click(screen.getByRole('button', { name: /Load Demo Benchmark/i }));
+    expect(screen.getByText('Unknown expiry')).toBeInTheDocument();
+    expect(screen.queryByText(/NaN days to expiry/)).not.toBeInTheDocument();
+    mock.mockRestore();
   });
 });

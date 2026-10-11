@@ -21,6 +21,15 @@ describe('Henry archive controls', () => {
     expect(vi.mocked(authFetch).mock.calls[0][0]).not.toContain('123');
     fireEvent.click(screen.getByText('Select for replacement'));
     expect(onOptions).toHaveBeenCalledWith({ replacesId: 'record' });
+    let resolveSearch!: (response: Response) => void;
+    vi.mocked(authFetch).mockReturnValueOnce(new Promise(resolve => { resolveSearch = resolve; }));
+    fireEvent.click(screen.getByText('Search archive'));
+    expect(screen.getByText('Select for replacement')).toBeDisabled();
+    onOptions.mockClear();
+    fireEvent.click(screen.getByText('Select for replacement'));
+    expect(onOptions).not.toHaveBeenCalled();
+    resolveSearch(new Response(JSON.stringify({ data: [{ id: 'record', referenceNumber: '••••2026', expiryStatus: 'soon_expiring' }], hasMore: false })));
+    await waitFor(() => expect(screen.getByText('Select for replacement')).not.toBeDisabled());
     vi.mocked(authFetch).mockResolvedValueOnce(new Response(JSON.stringify({ data: { referenceNumber: '123/2026', extractedJson: { reviewConfirmed: true, ownerNameEn: 'TEST OWNER' } } })));
     fireEvent.click(screen.getByText('Suggest from latest reviewed record'));
     fireEvent.click(await screen.findByText('Use suggestion for review'));

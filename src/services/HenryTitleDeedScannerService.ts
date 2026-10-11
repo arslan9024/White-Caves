@@ -311,27 +311,51 @@ class HenryTitleDeedScannerService {
       diagnostics.fields.totalAreaSqFt = { state: 'derived', source: 'conversion', values: ['totalAreaSqM * 10.7639104167'] };
     }
     const owners: DeedOwner[] = [];
-    // Repeated labelled owner blocks preserve association, not an assumed sole owner.
-    const ownerAliases = DEED_LABELS.ownerDldNumber!.map(label =>
-      normalizeDocumentText(label).replace(/[.*+?^${}()|[\]\\]/g, '\\$&').replace(/ /g, '[ \\t]+'));
-    const blocks = normalizeDocumentText(text).split(new RegExp(`(?=(?<![\\p{L}\\p{N}])(?:${ownerAliases.join('|')})(?![\\p{L}\\p{N}]))`, 'giu'));
     let ambiguousOwner = false;
-    for (const block of blocks) {
-      const parsed = readDocumentFields(block, DEED_LABELS).values;
-      if (!parsed.ownerDldNumber?.[0] || !parsed.ownerName?.length) continue;
-      if (!/^\d+$/.test(parsed.ownerDldNumber[0])) continue;
+    const normalizedName = (name: string) => normalizeDocumentText(name).trim().toLowerCase();
+    const addOwner = (parsed: Record<string, string[]>) => {
+      if (!parsed.ownerDldNumber?.[0] || !parsed.ownerName?.length) return;
+      if (!/^\d+$/.test(parsed.ownerDldNumber[0])) return;
       const ambiguousKeys = ['ownerDldNumber', 'ownerSharePercent', 'ownedAreaSqM'].filter(key => (parsed[key]?.length || 0) > 1);
-      if (['en', 'ar'].some(language => new Set(parsed.ownerName!.map(value => languageValue([value], language as 'en' | 'ar')).filter(Boolean)).size > 1))
+      if (['en', 'ar'].some(language => new Set(parsed.ownerName!.map(value => normalizedName(languageValue([value], language as 'en' | 'ar'))).filter(Boolean)).size > 1))
         ambiguousKeys.push('ownerName');
       if (ambiguousKeys.length) {
         ambiguousOwner = true;
         for (const key of ambiguousKeys) diagnostics.fields[key]!.state = 'conflict';
-        continue;
+        return;
       }
       const owner: DeedOwner = { dldNumber: parsed.ownerDldNumber[0], nameEn: languageValue(parsed.ownerName, 'en'), nameAr: languageValue(parsed.ownerName, 'ar'),
         sharePercent: parseDocumentNumber(parsed.ownerSharePercent?.[0] || ''), ownedAreaSqM: parseDocumentNumber(parsed.ownedAreaSqM?.[0] || '') };
-      if (!owners.some(item => JSON.stringify(item) === JSON.stringify(owner))) owners.push(owner);
-    }
+      const sameName = (item: DeedOwner) => (['nameEn', 'nameAr'] as const).every(key =>
+        !item[key] || !owner[key] || normalizedName(item[key]) === normalizedName(owner[key]));
+      const existing = owners.find(item => item.dldNumber === owner.dldNumber && sameName(item))
+        || owners.find(item => item.dldNumber === owner.dldNumber);
+      if (!existing) { owners.push(owner); return; }
+      const conflicting = [
+        ...(['nameEn', 'nameAr'] as const).filter(key => existing[key] && owner[key] && normalizedName(existing[key]) !== normalizedName(owner[key])).map(() => 'ownerName'),
+        ...(['sharePercent', 'ownedAreaSqM'] as const).filter(key => existing[key] !== undefined && owner[key] !== undefined && existing[key] !== owner[key]).map(key => key === 'sharePercent' ? 'ownerSharePercent' : key),
+      ];
+      if (conflicting.length) {
+        ambiguousOwner = true;
+        for (const key of conflicting) {
+          diagnostics.fields[key]!.state = 'conflict';
+          const candidates = key === 'ownerName' ? [existing.nameEn, existing.nameAr, owner.nameEn, owner.nameAr]
+            : key === 'ownerSharePercent' ? [existing.sharePercent, owner.sharePercent] : [existing.ownedAreaSqM, owner.ownedAreaSqM];
+          diagnostics.fields[key]!.values = [...new Set([...diagnostics.fields[key]!.values, ...candidates.filter(value => value !== undefined && value !== '').map(String)])];
+        }
+        if (!sameName(existing)) owners.push(owner);
+        return;
+      }
+      existing.nameEn ||= owner.nameEn;
+      existing.nameAr ||= owner.nameAr;
+      existing.sharePercent ??= owner.sharePercent;
+      existing.ownedAreaSqM ??= owner.ownedAreaSqM;
+    };
+    // Table rows and labelled blocks use the same association checks.
+    const ownerAliases = DEED_LABELS.ownerDldNumber!.map(label =>
+      normalizeDocumentText(label).replace(/[.*+?^${}()|[\]\\]/g, '\\$&').replace(/ /g, '[ \\t]+'));
+    const blocks = normalizeDocumentText(text).split(new RegExp(`(?=(?<![\\p{L}\\p{N}])(?:${ownerAliases.join('|')})(?![\\p{L}\\p{N}]))`, 'giu'));
+    for (const block of blocks) addOwner(readDocumentFields(block, DEED_LABELS).values);
     const lines = normalizeDocumentText(text).split('\n');
     const ownerKeys = ['ownerDldNumber', 'ownerName', 'ownerSharePercent', 'ownedAreaSqM'];
     for (let i = 0; i < lines.length; i++) {
@@ -341,10 +365,8 @@ class HenryTitleDeedScannerService {
       for (let j = i + 1; j < lines.length; j++) {
         const cells = lines[j]!.split(/\s*\|\s*/);
         if (cells.length !== headers.length || !/^\d+$/.test(cells[columns.indexOf('ownerDldNumber')] || '')) break;
-        const cell = (key: string) => cells[columns.indexOf(key)] || '';
-        const owner: DeedOwner = { dldNumber: cell('ownerDldNumber'), nameEn: languageValue([cell('ownerName')], 'en'), nameAr: languageValue([cell('ownerName')], 'ar'),
-          sharePercent: parseDocumentNumber(cell('ownerSharePercent')), ownedAreaSqM: parseDocumentNumber(cell('ownedAreaSqM')) };
-        if (!owners.some(item => JSON.stringify(item) === JSON.stringify(owner))) owners.push(owner);
+        const parsed = Object.fromEntries(ownerKeys.map(key => [key, [...new Set(cells.filter((_, index) => columns[index] === key).map(value => value.trim()).filter(Boolean))]]));
+        addOwner(parsed);
       }
     }
     if (owners.length === 1 && !ambiguousOwner) {

@@ -91,7 +91,7 @@ export default function HenryVaultControls({ docType, options, onOptions, onSugg
       <span> · Lead {row.leadId || 'none'} · Property {row.propertyId || 'none'}</span>
       <button type="button" disabled={busy} onClick={() => download(row.id, 0)}>Download original</button>
       {docType === 'emirates_id' && <button type="button" disabled={busy} onClick={() => download(row.id, 1)}>Download back</button>}
-      <button type="button" onClick={() => onOptions({ ...options, replacesId: row.id })}>Select for replacement</button>
+      <button type="button" disabled={busy} onClick={() => onOptions({ ...options, replacesId: row.id })}>Select for replacement</button>
       <button type="button" disabled={busy} onClick={() => setDeleteId(row.id)}>Request deletion</button>
       <button type="button" disabled={busy} onClick={() => void run(async () => {
         await json(`/api/henry/documents/${row.id}/reminder`, { method: 'PATCH', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ dismissed: !row.reminderDismissedAt }) });

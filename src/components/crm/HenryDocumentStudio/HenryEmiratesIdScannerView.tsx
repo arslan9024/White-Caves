@@ -787,7 +787,7 @@ export const HenryEmiratesIdScannerView: FC = () => {
                 <Calendar size={14} color="#EF4444" /> 4. Document Validity Dates
               </span>
               <span className="match-badge">
-                <Clock size={13} /> {extractedData.expiryDate ? `${scanExpiry(extractedData.expiryDate).daysUntilExpiry} days to expiry` : 'Unknown expiry'}
+                <Clock size={13} /> {validScanDate(extractedData.expiryDate) ? `${scanExpiry(extractedData.expiryDate).daysUntilExpiry} days to expiry` : 'Unknown expiry'}
               </span>
             </div>
             <div className="value-row">

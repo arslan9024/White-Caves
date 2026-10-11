@@ -1,5 +1,5 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
-import { canUseScan, saveReviewedScan, validScanDate } from './henryScanReview';
+import { canUseScan, saveReviewedScan, scanExpiry, validScanDate } from './henryScanReview';
 import eid from './HenryEmiratesIdScannerService';
 import deed from './HenryTitleDeedScannerService';
 import passport from './HenryPassportScannerService';
@@ -20,6 +20,15 @@ describe('Henry reviewed extraction safety', () => {
     expect(canUseScan({ reviewConfirmed: true, missingFields: ['name'] })).toBe(false);
     expect(canUseScan({ reviewConfirmed: true, missingFields: [] })).toBe(true);
     expect(validScanDate('31/02/2027')).toBe(false);
+  });
+  it.each(['', '31/02/2027', '29/02/2027', '00/01/2030', '01/13/2030', '2030-01-01', 'invalid'])('keeps invalid expiry %s explicitly unknown', value => {
+    expect(scanExpiry(value)).toEqual({ isExpired: false, daysUntilExpiry: NaN });
+  });
+  it('keeps valid expired, current and leap-day expiry calculations', () => {
+    vi.spyOn(Date, 'now').mockReturnValue(Date.UTC(2028, 1, 28, 15, 30));
+    expect(scanExpiry('29/02/2028')).toEqual({ isExpired: false, daysUntilExpiry: 1 });
+    expect(scanExpiry('28/02/2028')).toEqual({ isExpired: false, daysUntilExpiry: 0 });
+    expect(scanExpiry('27/02/2028')).toEqual({ isExpired: true, daysUntilExpiry: -1 });
   });
   it('leaves legacy persisted scan assets untouched and never reads unsafe defaults', () => {
     const get = vi.spyOn(Storage.prototype, 'getItem');

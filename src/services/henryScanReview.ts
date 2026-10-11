@@ -33,10 +33,12 @@ export function validScanDate(value: string): boolean {
 }
 
 export function scanExpiry(value: string): { isExpired: boolean; daysUntilExpiry: number } {
+  if (!validScanDate(value)) return { isExpired: false, daysUntilExpiry: NaN };
   const parts = value.split('/');
-  const iso = parts.length === 3 ? `${parts[2]}-${parts[1]}-${parts[0]}` : value;
+  const iso = `${parts[2]}-${parts[1]}-${parts[0]}`;
   const time = Date.parse(iso);
-  const days = Number.isFinite(time) ? Math.ceil((time - Date.now()) / 86400000) : 0;
+  const today = Math.floor(Date.now() / 86400000) * 86400000;
+  const days = (time - today) / 86400000;
   return { isExpired: Number.isFinite(time) && days < 0, daysUntilExpiry: days };
 }
 

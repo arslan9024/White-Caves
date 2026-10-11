@@ -3,8 +3,50 @@ import henryTitleDeedScannerService, {
   VIRIDIS_504_SAMPLE_TITLE_DEED,
 } from './HenryTitleDeedScannerService';
 import { DEMO_TENANCY_PAYLOAD } from '../components/crm/HenryDocumentStudio/data/HenryDocumentStudio.data';
+import { canUseScan } from './henryScanReview';
 
 describe('HenryTitleDeedScannerService — DLD Title Deed OCR & Extraction Engine', () => {
+  it('deduplicates exact rows and merges absent labelled/table owner fields', () => {
+    const data = henryTitleDeedScannerService.parseDocumentText(`Certificate Number: 900001/2030
+Unit Number: 100
+Owner Number: 100001 Owner Name: TEST OWNER اسم المالك: مالك تجريبي
+Owner Number | Owner Name | Ownership Share | Owned Area
+100001 | test owner مالك تجريبي | 100% | 20
+100001 | test owner مالك تجريبي | 100% | 20`);
+    expect(data.owners).toEqual([{ dldNumber: '100001', nameEn: 'TEST OWNER', nameAr: 'مالك تجريبي', sharePercent: 100, ownedAreaSqM: 20 }]);
+    expect(data.diagnostics?.fields.ownerName?.state).toBe('extracted');
+    expect(canUseScan({ ...data, reviewConfirmed: true })).toBe(true);
+  });
+  it('leaves unprinted shares and areas absent on duplicate owners', () => {
+    const data = henryTitleDeedScannerService.parseDocumentText(`Owner Number | Owner Name
+100001 | TEST OWNER
+100001 | TEST OWNER`);
+    expect(data.owners).toHaveLength(1);
+    expect(data.owners?.[0]?.sharePercent).toBeUndefined();
+    expect(data.owners?.[0]?.ownedAreaSqM).toBeUndefined();
+    expect(data.diagnostics?.fields.ownerSharePercent?.state).toBe('missing');
+  });
+  it.each([
+    ['100001 | TEST BETA | 50% | 20', 'ownerName'],
+    ['100001 | TEST ALPHA | 60% | 20', 'ownerSharePercent'],
+    ['100001 | TEST ALPHA | 50% | 30', 'ownedAreaSqM'],
+  ])('blocks contradictory owner row %s', (row, key) => {
+    const data = henryTitleDeedScannerService.parseDocumentText(`Owner Number | Owner Name | Ownership Share | Owned Area
+100001 | TEST ALPHA | 50% | 20
+${row}`);
+    expect(data.diagnostics?.fields[key]?.state).toBe('conflict');
+    expect(data.ownerNameEn).toBe('');
+    expect(canUseScan({ ...data, reviewConfirmed: true, missingFields: [] })).toBe(false);
+  });
+  it.each([
+    ['Owner Number | Owner Name | Owner Name', '100001 | TEST ALPHA | TEST BETA', 'ownerName'],
+    ['Owner Number | Owner Number | Owner Name', '100001 | 100002 | TEST ALPHA', 'ownerDldNumber'],
+    ['Owner Number | Owner Name | Ownership Share | Ownership Share', '100001 | TEST ALPHA | 50% | 60%', 'ownerSharePercent'],
+  ])('rejects ambiguous duplicate table columns %s', (headers, row, key) => {
+    const data = henryTitleDeedScannerService.parseDocumentText(`${headers}\n${row}`);
+    expect(data.owners).toEqual([]);
+    expect(data.diagnostics?.fields[key]?.state).toBe('conflict');
+  });
   it('scans Title Deed and returns complete 22-field bilingual property payload', async () => {
     const data = await henryTitleDeedScannerService.scanTitleDeed('sample');
 
