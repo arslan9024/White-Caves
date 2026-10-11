@@ -11,6 +11,37 @@ import deed from './HenryTitleDeedScannerService';
 import { canUseScan } from './henryScanReview';
 
 describe('Henry synthetic document extraction', () => {
+  it('locates duplicate values under the actual label rather than the first unrelated occurrence', () => {
+    const { diagnostics } = readDocumentFields('Unrelated TEST\nName: TEST\nName: TEST\nArea: ١٢٣', {
+      name: ['Name'], area: ['Area'],
+    });
+    const ranges = diagnostics.fields.name!.textRanges!;
+    expect(ranges).toHaveLength(2);
+    expect(ranges[0]!.start).toBeGreaterThan(diagnostics.sourceText!.indexOf('TEST'));
+    for (const range of ranges) expect(diagnostics.sourceText!.slice(range.start, range.end)).toBe('TEST');
+    const area = diagnostics.fields.area!.textRanges![0]!;
+    expect(diagnostics.sourceText!.slice(area.start, area.end)).toBe('123');
+    expect(markFieldReviewed(diagnostics, 'name', 'EDITED')!.fields.name!.textRanges).toBeUndefined();
+  });
+  it('bounds retained source text and omits locators beyond the retained portion', () => {
+    const { diagnostics } = readDocumentFields(`${'x'.repeat(65536)}\nName: TEST`, { name: ['Name'] });
+    expect(diagnostics.sourceText).toHaveLength(65536);
+    expect(diagnostics.fields.name!.values).toEqual(['TEST']);
+    expect(diagnostics.fields.name!.textRanges).toBeUndefined();
+  });
+  it('rebases dual-side source ranges into the combined normalized text', async () => {
+    const front = eid.parseOcrText('ID Number: 784-2001-0000001-1\nName: TEST PERSON', '');
+    const back = eid.parseOcrText('ID Number: 784-2001-0000001-1\nEmployer: TEST COMPANY', '');
+    const scan = vi.spyOn(eid, 'scanEmiratesId').mockResolvedValueOnce(front).mockResolvedValueOnce(back);
+    try {
+      const merged = await eid.scanDualSide(new File(['a'], 'front.png'), new File(['b'], 'back.png'));
+      const diagnostics = merged.diagnostics!;
+      const range = diagnostics.fields.employer!.textRanges![0]!;
+      expect(diagnostics.sourceText!.slice(range.start, range.end)).toBe('TEST COMPANY');
+      expect(range.start).toBeGreaterThan(front.diagnostics!.sourceText!.length);
+      expect(diagnostics.fields.idNumber!.textRanges).toHaveLength(2);
+    } finally { scan.mockRestore(); }
+  });
   it.each([
     ['١٬٢٣٤٫٥٦', 1234.56],
     ['۱۲۳۴٫۵۶', 1234.56],

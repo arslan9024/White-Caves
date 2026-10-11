@@ -3,6 +3,7 @@ export interface FieldEvidence {
   source: 'text' | 'mrz' | 'conversion' | 'review';
   values: string[];
   conflicts?: Record<string, string[]>;
+  textRanges?: { start: number; end: number }[];
 }
 
 export interface ExtractionDiagnostics {
@@ -10,6 +11,8 @@ export interface ExtractionDiagnostics {
   coverage: number;
   warnings: string[];
   ocrConfidence?: number;
+  /** Bounded normalized extraction text; ranges refer only to this text, not image coordinates. */
+  sourceText?: string;
 }
 
 export function normalizeDocumentText(text: string): string {
@@ -58,24 +61,36 @@ export function readDocumentFields(text: string, schema: Record<string, string[]
     return !prefix.trim() || /\|[ \t]*$/.test(prefix) || /^[ \t]*[:/|]/.test(suffix);
   });
   const values: Record<string, string[]> = Object.fromEntries(Object.keys(schema).map(key => [key, []]));
+  const ranges: Record<string, { start: number; end: number }[]> = {};
   for (let i = 0; i < matches.length; i++) {
     const match = matches[i]!;
     const alias = aliases.find(item => item.label.toLowerCase() === match[1]!.replace(/[ \t]+/g, ' ').toLowerCase());
     if (!alias) continue;
-    let segment = normalized.slice(match.index! + match[0].length, matches[i + 1]?.index ?? normalized.length)
+    let start = match.index! + match[0].length;
+    let end = matches[i + 1]?.index ?? normalized.length;
+    let segment = normalized.slice(start, end)
       .replace(/^[ \t:/|()-]+/, '').trim();
     // A bilingual label pair may have its value after the second label.
     if (!segment && matches[i + 1]) {
       const next = matches[i + 1]!;
       const nextAlias = aliases.find(item => item.label.toLowerCase() === next[1]!.replace(/[ \t]+/g, ' ').toLowerCase());
-      if (nextAlias?.key === alias.key) segment = normalized.slice(next.index! + next[0].length, matches[i + 2]?.index ?? normalized.length).replace(/^[ \t:/|()-]+/, '').trim();
+      if (nextAlias?.key === alias.key) {
+        start = next.index! + next[0].length;
+        end = matches[i + 2]?.index ?? normalized.length;
+        segment = normalized.slice(start, end).replace(/^[ \t:/|()-]+/, '').trim();
+      }
     }
     const value = segment.split('\n').find(line => line.trim())?.replace(/^[ :/|]+|[ |]+$/g, '').trim() || '';
     if (value && !values[alias.key]!.includes(value)) values[alias.key]!.push(value);
+    const offset = value ? normalized.indexOf(value, start) : -1;
+    if (offset >= start && offset + value.length <= Math.min(end, 65536)) {
+      const list = ranges[alias.key] ||= [];
+      if (!list.some(range => range.start === offset)) list.push({ start: offset, end: offset + value.length });
+    }
   }
   const fields: Record<string, FieldEvidence> = {};
-  for (const key of Object.keys(schema)) fields[key] = { state: values[key]!.length ? 'extracted' : 'missing', source: 'text', values: values[key]! };
-  return { values, diagnostics: { fields, coverage: Object.values(fields).filter(field => field.state === 'extracted').length / Object.keys(schema).length, warnings: [] } };
+  for (const key of Object.keys(schema)) fields[key] = { state: values[key]!.length ? 'extracted' : 'missing', source: 'text', values: values[key]!, textRanges: ranges[key] };
+  return { values, diagnostics: { fields, sourceText: normalized.slice(0, 65536), coverage: Object.values(fields).filter(field => field.state === 'extracted').length / Object.keys(schema).length, warnings: [] } };
 }
 
 export function languageValue(values: string[], language: 'en' | 'ar'): string {

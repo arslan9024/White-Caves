@@ -347,12 +347,18 @@ const ZoomBtn = styled.button`
 
 export const HenryEmiratesIdScannerView: FC = () => {
   const scanGeneration = useRef(0);
+  const [uploaderReset, setUploaderReset] = useState(0);
   const [scannerValues, setScannerValues] = useState<Readonly<BenchmarkValues>>();
   const [extractedData, setExtractedData] = useState<EmiratesIdExtractedData>(() => {
     return henryEmiratesIdScannerService.getCachedEmiratesId() || EMPTY_EMIRATES_ID;
   });
   const [frontFile, setFrontFile] = useState<File | null>(null);
   const [backFile, setBackFile] = useState<File | null>(null);
+  const scanInputs = useRef<{ front?: File; back?: File }>({});
+  useEffect(() => {
+    if (!frontFile) delete scanInputs.current.front;
+    if (!backFile) delete scanInputs.current.back;
+  }, [frontFile, backFile]);
   const [uploadedFile, setUploadedFile] = useState<File | null>(null);
   const [filePreviewUrl, setFilePreviewUrl] = useState<string | null>(null);
   const [activeSideView, setActiveSideView] = useState<'front' | 'back'>('front');
@@ -375,20 +381,21 @@ export const HenryEmiratesIdScannerView: FC = () => {
     }
   }, [uploadedFile]);
 
-  const handleFileUpload = async (file: File) => {
+  const handleFileUpload = async (file: File, original: File = file) => {
     const generation = ++scanGeneration.current;
     setIsScanning(true);
     setScannerValues(undefined);
     setExtractedData(EMPTY_EMIRATES_ID);
     henryEmiratesIdScannerService.clearCachedEmiratesId();
-    setUploadedFile(file);
+    setUploadedFile(original);
     setStatusMsg(`⚡ Henry AI reading "${file.name}" in real-time...`);
 
     try {
-      const front = activeSideView === 'front' ? file : frontFile;
-      const back = activeSideView === 'back' ? file : backFile;
-      if (activeSideView === 'front') setFrontFile(file);
-      else setBackFile(file);
+      const front = activeSideView === 'front' ? file : frontFile ? scanInputs.current.front || frontFile : null;
+      const back = activeSideView === 'back' ? file : backFile ? scanInputs.current.back || backFile : null;
+      scanInputs.current[activeSideView] = file;
+      if (activeSideView === 'front') setFrontFile(original);
+      else setBackFile(original);
       const data =
         front && back
           ? await henryEmiratesIdScannerService.scanDualSide(front, back)
@@ -414,6 +421,7 @@ export const HenryEmiratesIdScannerView: FC = () => {
   };
 
   const handleLoadDemo = () => {
+    setUploaderReset(previous => previous + 1);
     setScannerValues(undefined);
     scanGeneration.current++;
     setIsScanning(false);
@@ -483,6 +491,7 @@ export const HenryEmiratesIdScannerView: FC = () => {
   };
 
   const handleDiscard = () => {
+    setUploaderReset(previous => previous + 1);
     setScannerValues(undefined);
     scanGeneration.current++;
     setIsScanning(false);
@@ -525,6 +534,7 @@ export const HenryEmiratesIdScannerView: FC = () => {
         options={vaultOptions}
         onOptions={setVaultOptions}
         onSuggestion={data => {
+          setUploaderReset(previous => previous + 1);
           setScannerValues(undefined);
           scanGeneration.current++;
           setIsScanning(false);
@@ -695,6 +705,8 @@ export const HenryEmiratesIdScannerView: FC = () => {
             }}
           >
             <HenrySharedDocumentUploader
+              key={activeSideView}
+              resetSignal={uploaderReset}
               docType="emirates_id"
               title="1. Upload Emirates ID (PDF, PNG, JPEG)"
               subtitle="Drop your Emirates ID file to extract live variables and compare on the right"
@@ -725,6 +737,7 @@ export const HenryEmiratesIdScannerView: FC = () => {
                 type="button"
                 onClick={async () => {
                   scanGeneration.current++;
+                  setUploaderReset(previous => previous + 1);
                   setIsScanning(false);
                   setFrontFile(null);
                   setBackFile(null);
@@ -751,6 +764,7 @@ export const HenryEmiratesIdScannerView: FC = () => {
                 type="button"
                 onClick={async () => {
                   scanGeneration.current++;
+                  setUploaderReset(previous => previous + 1);
                   setIsScanning(false);
                   setFrontFile(null);
                   setBackFile(null);

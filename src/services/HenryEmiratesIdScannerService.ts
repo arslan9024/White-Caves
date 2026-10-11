@@ -1221,6 +1221,16 @@ class HenryEmiratesIdScannerService {
         };
       }
     }
+    const frontText = frontResult.diagnostics?.sourceText || '';
+    const backText = backResult.diagnostics?.sourceText || '';
+    const sourceText = `${frontText}\n${backText}`.slice(0, 65536);
+    for (const [key, evidence] of Object.entries(mergedFields)) {
+      const frontRanges = frontResult.diagnostics?.fields[key]?.textRanges || [];
+      const backRanges = (backResult.diagnostics?.fields[key]?.textRanges || []).map(range => ({
+        start: range.start + frontText.length + 1, end: range.end + frontText.length + 1,
+      }));
+      mergedFields[key] = { ...evidence, textRanges: [...frontRanges, ...backRanges].filter(range => range.end <= sourceText.length) };
+    }
     const merged: EmiratesIdExtractedData = {
       ...frontResult,
       idNumber: frontResult.idNumber || backResult.idNumber,
@@ -1250,6 +1260,7 @@ class HenryEmiratesIdScannerService {
       reviewConfirmed: false,
       diagnostics: {
         fields: mergedFields,
+        sourceText,
         coverage: 0,
         warnings: [
           ...(frontResult.diagnostics?.warnings || []),

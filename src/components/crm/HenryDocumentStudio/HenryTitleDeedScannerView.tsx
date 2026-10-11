@@ -264,6 +264,7 @@ const ActionBtn = styled.button<{ $variant?: 'primary' | 'secondary' | 'danger' 
 
 export const HenryTitleDeedScannerView: FC = () => {
   const scanGeneration = useRef(0);
+  const [uploaderReset, setUploaderReset] = useState(0);
   const [scannerValues, setScannerValues] = useState<Readonly<BenchmarkValues>>();
   const [extractedData, setExtractedData] = useState<DldTitleDeedExtractedData | null>(() => {
     return henryTitleDeedScannerService.getCachedTitleDeed();
@@ -291,13 +292,13 @@ export const HenryTitleDeedScannerView: FC = () => {
     }
   }, [uploadedFile]);
 
-  const handleFileUpload = async (file: File) => {
+  const handleFileUpload = async (file: File, original: File = file) => {
     const generation = ++scanGeneration.current;
     setIsScanning(true);
     setScannerValues(undefined);
     setExtractedData(null);
     henryTitleDeedScannerService.clearCachedTitleDeed();
-    setUploadedFile(file);
+    setUploadedFile(original);
     setStatusMsg(`Scanning Title Deed "${file.name}"...`);
 
     try {
@@ -322,6 +323,7 @@ export const HenryTitleDeedScannerView: FC = () => {
   };
 
   const handleLoadDemo = async () => {
+    setUploaderReset(previous => previous + 1);
     setScannerValues(undefined);
     scanGeneration.current++;
     henryTitleDeedScannerService.clearCachedTitleDeed();
@@ -393,6 +395,7 @@ export const HenryTitleDeedScannerView: FC = () => {
   };
 
   const handleDiscard = () => {
+    setUploaderReset(previous => previous + 1);
     setScannerValues(undefined);
     scanGeneration.current++;
     setIsScanning(false);
@@ -435,6 +438,7 @@ export const HenryTitleDeedScannerView: FC = () => {
         options={vaultOptions}
         onOptions={setVaultOptions}
         onSuggestion={data => {
+          setUploaderReset(previous => previous + 1);
           setScannerValues(undefined);
           scanGeneration.current++;
           setIsScanning(false);
@@ -481,6 +485,7 @@ export const HenryTitleDeedScannerView: FC = () => {
         {/* ══════════ LEFT COLUMN: UPLOADER & FORM-STYLE EXTRACTION ══════════ */}
         <LeftCol>
           <HenrySharedDocumentUploader
+            resetSignal={uploaderReset}
             docType="title_deed"
             title="3.19.3 Scan Title Deed / Oqood (شهادة ملكية)"
             subtitle="Upload Title Deed PDF or image to extract official registration parameters, plot details, and ownership records"
@@ -513,6 +518,7 @@ export const HenryTitleDeedScannerView: FC = () => {
               type="button"
               onClick={() => {
                 scanGeneration.current++;
+                setUploaderReset(previous => previous + 1);
                 setIsScanning(false);
                 setUploadedFile(null);
                 const sample = henryTitleDeedScannerService.getBukoSample();
@@ -539,6 +545,7 @@ export const HenryTitleDeedScannerView: FC = () => {
               type="button"
               onClick={() => {
                 scanGeneration.current++;
+                setUploaderReset(previous => previous + 1);
                 setIsScanning(false);
                 setUploadedFile(null);
                 const sample = henryTitleDeedScannerService.getDemoExtractedData();
@@ -867,7 +874,6 @@ export const HenryTitleDeedScannerView: FC = () => {
           <ActionBtn
             $variant="danger"
             onClick={handleDiscard}
-            disabled={!extractedData && !uploadedFile}
           >
             <Trash2 size={13} /> Discard & Clear
           </ActionBtn>

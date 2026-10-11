@@ -5,9 +5,10 @@
  * for White Caves Henry AI Document Studio.
  */
 
-import React, { FC, useRef, useState, DragEvent } from 'react';
+import React, { FC, useEffect, useRef, useState, DragEvent } from 'react';
 import styled from 'styled-components';
 import { UploadCloud, CheckCircle2, AlertCircle, FileText, Sparkles, Trash2, Save, Eye } from 'lucide-react';
+import { HenryPerspectiveEditor } from './HenryPerspectiveEditor';
 
 export type SupportedDocType = 'auto' | 'emirates_id' | 'passport' | 'title_deed' | 'contract';
 
@@ -17,11 +18,12 @@ export interface HenrySharedDocumentUploaderProps {
   subtitle?: string;
   acceptedFormats?: string;
   isProcessing?: boolean;
-  onFileUpload: (file: File) => Promise<void> | void;
+  onFileUpload: (file: File, original?: File) => Promise<void> | void;
   onSampleLoad?: () => void;
   onSave?: () => void;
   onDiscard?: () => void;
   saveDisabled?: boolean;
+  resetSignal?: number;
   extractedSummary?: {
     title: string;
     fields: { label: string; value: string | number | undefined; isHighlight?: boolean }[];
@@ -193,6 +195,7 @@ export const HenrySharedDocumentUploader: FC<HenrySharedDocumentUploaderProps> =
   onSave,
   onDiscard,
   saveDisabled = false,
+  resetSignal,
   extractedSummary,
   accentColor = '#EF4444',
 }) => {
@@ -200,16 +203,36 @@ export const HenrySharedDocumentUploader: FC<HenrySharedDocumentUploaderProps> =
   const cameraInputRef = useRef<HTMLInputElement>(null);
   const [isDragOver, setIsDragOver] = useState(false);
   const [uploadError, setUploadError] = useState('');
+  const [manualCorrection, setManualCorrection] = useState(false);
+  const correctionGeneration = useRef(0);
+  const [pendingCorrection, setPendingCorrection] = useState<{ file: File; generation: number } | null>(null);
+  const clearCorrection = () => {
+    correctionGeneration.current++;
+    setPendingCorrection(null);
+  };
+  useEffect(() => {
+    correctionGeneration.current++;
+    setPendingCorrection(null);
+    setUploadError('');
+    return () => { correctionGeneration.current++; };
+  }, [resetSignal]);
 
-  const uploadFile = async (file: File) => {
+  const uploadFile = async (file: File, original?: File) => {
     if (isProcessing) return;
     setUploadError('');
+    clearCorrection();
+    const generation = correctionGeneration.current;
     if (!['application/pdf', 'image/png', 'image/jpeg'].includes(file.type) || !file.size || file.size > 10 * 1024 * 1024) {
       setUploadError('Use a PNG, JPEG or PDF under 10 MB. Rescan with all edges visible.');
       return;
     }
-    try { await onFileUpload(file); } catch {
-      setUploadError('Upload failed. Please rescan or retry.');
+    if (manualCorrection && !original && file.type !== 'application/pdf') {
+      setPendingCorrection({ file, generation });
+      return;
+    }
+    try { await onFileUpload(file, original); } catch {
+      if (generation === correctionGeneration.current)
+        setUploadError('Upload failed. Please rescan or retry.');
     }
   };
 
@@ -256,6 +279,20 @@ export const HenrySharedDocumentUploader: FC<HenrySharedDocumentUploaderProps> =
         Capture with camera
       </ActionBtn>
       {uploadError && <p role="alert">{uploadError}</p>}
+      {(docType === 'emirates_id' || docType === 'title_deed') && <>
+        <label><input type="checkbox" checked={manualCorrection} disabled={isProcessing}
+          onChange={event => { setManualCorrection(event.target.checked); clearCorrection(); }} />
+          Manual four-corner correction before scanning</label>
+        <p>PDF corner correction is unsupported; PDFs scan without correction.</p>
+        {pendingCorrection && <HenryPerspectiveEditor key={pendingCorrection.generation}
+          file={pendingCorrection.file} onConfirm={(corrected, original) => {
+            if (pendingCorrection.generation === correctionGeneration.current)
+              void uploadFile(corrected, original);
+          }}
+          onCancel={() => {
+            if (pendingCorrection.generation === correctionGeneration.current) clearCorrection();
+          }} />}
+      </>}
 
       <HeaderSection>
         <div className="title-group">
@@ -264,7 +301,7 @@ export const HenrySharedDocumentUploader: FC<HenrySharedDocumentUploaderProps> =
         </div>
 
         {onSampleLoad && (
-          <ActionBtn type="button" onClick={onSampleLoad} $variant="secondary" disabled={isProcessing}>
+          <ActionBtn type="button" onClick={() => { clearCorrection(); onSampleLoad(); }} $variant="secondary" disabled={isProcessing}>
             <Sparkles size={13} color={accentColor} /> Load Demo Benchmark
           </ActionBtn>
         )}
@@ -316,7 +353,7 @@ export const HenrySharedDocumentUploader: FC<HenrySharedDocumentUploaderProps> =
       {(onSave || onDiscard) && (
         <ActionToolbar>
           {onDiscard && (
-            <ActionBtn type="button" onClick={onDiscard} $variant="danger">
+            <ActionBtn type="button" onClick={() => { clearCorrection(); onDiscard(); }} $variant="danger">
               <Trash2 size={13} /> Discard
             </ActionBtn>
           )}
