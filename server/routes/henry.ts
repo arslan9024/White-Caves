@@ -944,7 +944,7 @@ const searchDocuments = asyncHandler(async (req: AuthRequest, res) => {
   const links = await validateDocumentLinks(ownerUserId, filters);
   const status = String(filters.expiryStatus || '');
   if (status && !['expired', 'soon_expiring', 'current', 'unknown'].includes(status)) throw new AppError('Invalid expiry filter', 400);
-  const today = new Date();
+  const today = new Date(Math.floor(Date.now() / 86400000) * 86400000);
   const soon = new Date(Date.now() + 30 * 86400000);
   const where = { ownerUserId, ...activeDocumentFilter,
     ...(links.leadId ? { leadId: links.leadId } : {}), ...(links.propertyId ? { propertyId: links.propertyId } : {}),
@@ -997,7 +997,15 @@ router.patch('/documents/:id', requireMinRole('agent'), asyncHandler(async (req:
   const row = await vaultOperation('update', () => prisma.$transaction(async tx => {
     const found = await tx.henryScannedDocument.findFirst({ where: { id, ownerUserId, docType: data.docType, ...activeDocumentFilter } });
     if (!found) throw new AppError('Document not found', 404);
-    const changed = await tx.henryScannedDocument.updateMany({ where: { id, ownerUserId, ...activeDocumentFilter }, data: { ...data, ...links } });
+    const changed = await tx.henryScannedDocument.updateMany({
+      where: { id, ownerUserId, updatedAt: found.updatedAt, ...activeDocumentFilter },
+      data: {
+        ...data,
+        ...('leadId' in req.body ? { leadId: links.leadId } : {}),
+        ...('propertyId' in req.body ? { propertyId: links.propertyId } : {}),
+        ...(found.expiryAt?.getTime() !== data.expiryAt?.getTime() ? { reminderDismissedAt: null } : {}),
+      },
+    });
     if (changed.count !== 1) throw new AppError('Document changed; reload before updating', 409);
     await tx.henryDocumentAudit.create({ data: { ownerUserId, documentId: id, action: 'update' } });
     return tx.henryScannedDocument.findFirstOrThrow({ where: { id, ownerUserId } });

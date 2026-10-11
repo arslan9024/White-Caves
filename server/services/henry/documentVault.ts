@@ -35,10 +35,25 @@ export function prepareSource(files: Express.Multer.File[]) {
 }
 
 export function decodeSource(encryptedSource: string, index: number): { mime: string; bytes: Buffer } {
-  const sources = JSON.parse(encryption.decryptMessage(JSON.parse(encryptedSource) as EncryptedMessage, vaultKey())) as Array<{ mime: string; base64: string }>;
+  const sources = decryptVaultJson(encryptedSource);
+  if (!Array.isArray(sources) || sources.length > 2 || sources.some(source =>
+    !source || typeof source !== 'object' ||
+    !['application/pdf', 'image/png', 'image/jpeg'].includes(source.mime) ||
+    typeof source.base64 !== 'string' || !/^(?:[A-Za-z0-9+/]{4})*(?:[A-Za-z0-9+/]{2}==|[A-Za-z0-9+/]{3}=)?$/.test(source.base64)
+  )) throw new AppError('Document vault unavailable', 503);
   const source = sources[index];
   if (!source) throw new AppError('Original side not found', 404);
   return { mime: source.mime, bytes: Buffer.from(source.base64, 'base64') };
+}
+
+function decryptVaultJson(value: string): unknown {
+  const key = vaultKey();
+  try {
+    return JSON.parse(encryption.decryptMessage(JSON.parse(value) as EncryptedMessage, key));
+  } catch {
+    log.error('Document decryption failed');
+    throw new AppError('Document vault unavailable', 503);
+  }
 }
 
 export function vaultKey(): string {
@@ -103,8 +118,15 @@ export function prepareDocument(input: Record<string, unknown>, owner = '') {
   )
     throw new AppError('Valid name and expiry date required', 400);
   if (
+    input.docType === 'emirates_id' &&
+    expiryTime(fields.expiryDate) < Math.floor(Date.now() / 86400000) * 86400000 &&
+    fields.expiryAcknowledgedFor !== fields.expiryDate
+  )
+    throw new AppError('Explicit acknowledgment of this expired ID required', 400);
+  if (
     input.docType === 'title_deed' &&
-    (!fields.ownerNameEn || (!fields.propertyNumber && !fields.plotNumber))
+    (typeof fields.ownerNameEn !== 'string' || !fields.ownerNameEn.trim() ||
+      ![fields.propertyNumber, fields.plotNumber].some(value => typeof value === 'string' && value.trim()))
   )
     throw new AppError('Owner and unit or plot required', 400);
   if (Array.isArray(fields.missingFields) && fields.missingFields.length)
@@ -166,9 +188,12 @@ export function decodeDocument(row: {
   retentionUntil?: Date | null;
   reminderDismissedAt?: Date | null;
 }): Record<string, unknown> {
-  const payload = JSON.parse(
-    encryption.decryptMessage(JSON.parse(row.encryptedPayload) as EncryptedMessage, vaultKey())
-  ) as Record<string, unknown>;
+  const decrypted = decryptVaultJson(row.encryptedPayload);
+  if (!decrypted || typeof decrypted !== 'object' || Array.isArray(decrypted) ||
+    !('extractedJson' in decrypted) || !decrypted.extractedJson ||
+    typeof decrypted.extractedJson !== 'object' || Array.isArray(decrypted.extractedJson))
+    throw new AppError('Document vault unavailable', 503);
+  const payload = decrypted as Record<string, unknown>;
   const fields = (payload.extractedJson || {}) as Record<string, unknown>;
   const expiry = expiryTime(fields.expiryDate || fields.dateOfExpiry || (fields.contract as Record<string, unknown> | undefined)?.endDate);
   return {
@@ -184,7 +209,7 @@ export function decodeDocument(row: {
     retentionUntil: row.retentionUntil,
     reminderDismissedAt: row.reminderDismissedAt,
     expiryStatus: Number.isFinite(expiry)
-      ? expiry < Date.now()
+      ? expiry < Math.floor(Date.now() / 86400000) * 86400000
         ? 'expired'
         : expiry < Date.now() + 30 * 86400000 ? 'soon_expiring' : 'current'
       : 'unknown',

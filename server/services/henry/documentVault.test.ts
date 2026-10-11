@@ -3,6 +3,7 @@ import { Readable } from 'node:stream';
 
 vi.mock('../../database.js', () => ({ prisma: {} }));
 import { decodeDocument, decodeSource, maxSourceBytes, prepareDocument, prepareSource } from './documentVault.js';
+import { EncryptionService } from '../../security/encryption.service.js';
 
 const input = {
   docType: 'title_deed',
@@ -23,6 +24,51 @@ describe('Henry document vault preparation', () => {
     vi.stubEnv('HENRY_RETENTION_DAYS', '365');
   });
   afterEach(() => vi.unstubAllEnvs());
+
+  it('requires a date-specific acknowledgment for expired IDs but accepts the entire expiry day', () => {
+    vi.spyOn(Date, 'now').mockReturnValue(Date.UTC(2030, 0, 2, 12));
+    const metadata = { docType: 'emirates_id', reviewConfirmed: true,
+      extractedJson: { idNumber: '784-2000-1234567-1', fullNameEn: 'TEST OWNER', expiryDate: '01/01/2030' } };
+    try {
+      expect(() => prepareDocument(metadata, owner)).toThrow('Explicit acknowledgment');
+      expect(() => prepareDocument({ ...metadata, extractedJson: {
+        ...metadata.extractedJson, expiryAcknowledgedFor: '31/12/2029',
+      } }, owner)).toThrow('Explicit acknowledgment');
+      expect(() => prepareDocument({ ...metadata, extractedJson: {
+        ...metadata.extractedJson, expiryAcknowledgedFor: '01/01/2030',
+      } }, owner)).not.toThrow();
+      const current = prepareDocument({ ...metadata, extractedJson: {
+        ...metadata.extractedJson, expiryDate: '02/01/2030',
+      } }, owner);
+      expect(decodeDocument({ ...current, id: owner, createdAt: new Date(), updatedAt: new Date() }).expiryStatus)
+        .toBe('soon_expiring');
+    } finally { vi.restoreAllMocks(); }
+  });
+  it.each([{}, [], true, 42])('rejects non-text required deed fields: %j', value => {
+    expect(() => prepareDocument({ ...input, extractedJson: { ...input.extractedJson, ownerNameEn: value } }, owner))
+      .toThrow('Owner and unit or plot required');
+    expect(() => prepareDocument({ ...input, extractedJson: { ...input.extractedJson, plotNumber: value } }, owner))
+      .toThrow('Owner and unit or plot required');
+  });
+  it('normalizes malformed encryption JSON to a safe unavailable error', () => {
+    const row = { id: owner, docType: 'title_deed', encryptedPayload: '{PRIVATE MALFORMED DATA',
+      createdAt: new Date(), updatedAt: new Date() };
+    expect(() => decodeDocument(row)).toThrow('Document vault unavailable');
+    expect(() => decodeSource('{PRIVATE MALFORMED DATA', 0)).toThrow('Document vault unavailable');
+  });
+  it.each([null, [], { extractedJson: [] }, { extractedJson: 'invalid' }])(
+    'rejects authenticated but malformed payload shapes: %j', payload => {
+      const encryptedPayload = JSON.stringify(new EncryptionService().encryptMessage(JSON.stringify(payload), 'a'.repeat(64)));
+      expect(() => decodeDocument({ id: owner, docType: 'title_deed', encryptedPayload,
+        createdAt: new Date(), updatedAt: new Date() })).toThrow('Document vault unavailable');
+    }
+  );
+  it.each([{}, [null], [{ mime: 'text/html', base64: 'QQ==' }], [{ mime: 'application/pdf', base64: 'not base64!' }]])(
+    'rejects authenticated but malformed original shapes: %j', payload => {
+      const encrypted = JSON.stringify(new EncryptionService().encryptMessage(JSON.stringify(payload), 'a'.repeat(64)));
+      expect(() => decodeSource(encrypted, 0)).toThrow('Document vault unavailable');
+    }
+  );
 
   it.each(['ownerName', 'ownerSharePercent', 'expiryDate'])('rejects reviewed unresolved %s conflicts', field => {
     expect(() => prepareDocument({ ...input, extractedJson: { ...input.extractedJson,

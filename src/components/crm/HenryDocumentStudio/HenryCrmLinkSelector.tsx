@@ -13,7 +13,17 @@ export default function HenryCrmLinkSelector({ kind, value, onChange }: {
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState('');
   const request = useRef<AbortController | null>(null);
-  useEffect(() => () => request.current?.abort(), []);
+  useEffect(() => {
+    request.current?.abort();
+    setRows([]);
+    setQuery('');
+    setPage(1);
+    setHasMore(false);
+    setLoaded(false);
+    setBusy(false);
+    setError('');
+    return () => request.current?.abort();
+  }, [kind]);
   const load = async (nextPage: number) => {
     request.current?.abort();
     const controller = new AbortController();
@@ -24,9 +34,12 @@ export default function HenryCrmLinkSelector({ kind, value, onChange }: {
       const response = await authFetch(`/api/henry/documents/link-options?kind=${kind}&page=${nextPage}`, { signal: controller.signal });
       if (!response.ok) throw new Error('Options unavailable');
       const result: unknown = await response.json();
-      if (!result || typeof result !== 'object' || !('data' in result) || !Array.isArray(result.data)) throw new Error('Invalid options');
-      const data = result.data.filter((row): row is { id: string; name: string } =>
-        !!row && typeof row === 'object' && typeof row.id === 'string' && typeof row.name === 'string');
+      if (!result || typeof result !== 'object' || ('success' in result && result.success !== true) ||
+        !('data' in result) || !Array.isArray(result.data) || result.data.some(row =>
+          !row || typeof row !== 'object' || typeof row.id !== 'string' || !row.id.trim() ||
+          typeof row.name !== 'string' || !row.name.trim()
+        )) throw new Error('Invalid options');
+      const data = result.data as Array<{ id: string; name: string }>;
       if (controller.signal.aborted) return;
       setRows(data);
       setPage(nextPage);

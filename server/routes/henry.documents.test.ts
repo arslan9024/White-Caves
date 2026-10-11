@@ -166,9 +166,54 @@ describe('Henry persistent owner-scoped vault', () => {
       where: { id, ownerUserId: owner, docType: 'title_deed', ...activeFilter },
     });
     expect(mocks.documents.updateMany).toHaveBeenCalledWith(expect.objectContaining({
-      where: { id, ownerUserId: owner, ...activeFilter },
+      where: { id, ownerUserId: owner, updatedAt: row.updatedAt, ...activeFilter },
     }));
   });
+  it('preserves omitted CRM links and originals while reopening reminders after corrected expiry', async () => {
+    const original = { ...prepareDocument(input, owner), id, leadId: other, propertyId: owner,
+      encryptedSource: 'opaque-original', expiryAt: new Date('2030-01-01T00:00:00Z'),
+      reminderDismissedAt: new Date(), createdAt: new Date(), updatedAt: new Date() };
+    mocks.documents.findFirst.mockResolvedValue(original);
+    mocks.documents.updateMany.mockResolvedValue({ count: 1 });
+    mocks.documents.findFirstOrThrow.mockResolvedValue(original);
+    expect((await request(app()).patch(`/henry/documents/${id}`).send(input)).status).toBe(200);
+    const args = mocks.documents.updateMany.mock.calls[0][0];
+    expect(args.where.updatedAt).toEqual(original.updatedAt);
+    expect(args.data).not.toHaveProperty('leadId');
+    expect(args.data).not.toHaveProperty('propertyId');
+    expect(args.data).not.toHaveProperty('encryptedSource');
+    expect(args.data.reminderDismissedAt).toBeNull();
+  });
+  it('allows explicitly clearing links without reopening unchanged expiry reminders', async () => {
+    const row = { ...prepareDocument(input, owner), id, createdAt: new Date(), updatedAt: new Date() };
+    mocks.documents.findFirst.mockResolvedValue(row);
+    mocks.documents.updateMany.mockResolvedValue({ count: 1 });
+    mocks.documents.findFirstOrThrow.mockResolvedValue(row);
+    expect((await request(app()).patch(`/henry/documents/${id}`).send({ ...input, leadId: null })).status).toBe(200);
+    const data = mocks.documents.updateMany.mock.calls[0][0].data;
+    expect(data.leadId).toBeNull();
+    expect(data).not.toHaveProperty('propertyId');
+    expect(data).not.toHaveProperty('reminderDismissedAt');
+  });
+  it('rejects a concurrent correction without writing an audit', async () => {
+    mocks.documents.findFirst.mockResolvedValue({
+      ...prepareDocument(input, owner), id, createdAt: new Date(), updatedAt: new Date(),
+    });
+    mocks.documents.updateMany.mockResolvedValue({ count: 0 });
+    expect((await request(app()).patch(`/henry/documents/${id}`).send(input)).status).toBe(409);
+    expect(mocks.audit.create).not.toHaveBeenCalled();
+  });
+  it.each([`/henry/documents/${id}`, '/henry/documents/latest/title_deed', '/henry/documents'])(
+    'returns no parser details when encrypted metadata is malformed through %s', async route => {
+      const row = { id, docType: 'title_deed', encryptedPayload: '{PRIVATE MALFORMED DATA',
+        createdAt: new Date(), updatedAt: new Date() };
+      mocks.documents.findFirst.mockResolvedValue(row);
+      mocks.documents.findMany.mockResolvedValue([row]);
+      const response = await request(app()).get(route);
+      expect(response.status).toBe(503);
+      expect(response.body.error).toBe('Document vault unavailable');
+    }
+  );
   it('keeps missing and invalid expiry dates unknown rather than rolling invalid dates forward', () => {
     for (const expiryDate of [undefined, '31/02/2027', 'not a date']) {
       const prepared = prepareDocument({ ...input, extractedJson: { ...input.extractedJson, expiryDate } });
@@ -285,6 +330,7 @@ describe('Henry persistent owner-scoped vault', () => {
         idNumber: '784-1990-1234567-1',
         fullNameEn: 'TEST PERSON',
         expiryDate: '01/01/2020',
+        expiryAcknowledgedFor: '01/01/2020',
       },
     });
     const decoded = decodeDocument({
