@@ -1553,6 +1553,7 @@ model HenryScannedDocument {
   @@unique([ownerUserId, docType, referenceHash])
   @@index([ownerUserId, docType, createdAt])
   @@index([ownerUserId, expiryAt])
+  @@index([expiryAt, id])
 }
 
 model HenryDocumentAudit {
@@ -1562,6 +1563,15 @@ model HenryDocumentAudit {
   action      String
   createdAt   DateTime @default(now())
   @@index([ownerUserId, createdAt])
+}
+
+// Durable delivery markers and one revision-guarded scanner checkpoint.
+model HenryExpiryReminder {
+  id          String   @id @map("_id") @db.ObjectId
+  createdAt   DateTime @default(now())
+  scanCursor  String?  @db.ObjectId
+  scanExpiryAt DateTime?
+  scanRevision Int @default(0)
 }
 
 model HenryRecord {

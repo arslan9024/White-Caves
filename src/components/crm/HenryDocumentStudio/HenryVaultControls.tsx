@@ -4,6 +4,7 @@ import logger from '../../../utils/logger';
 import { ScanReview, VaultSaveOptions, hydrateVaultScan } from '../../../services/henryScanReview';
 import { EMPTY_EMIRATES_ID } from '../../../services/HenryEmiratesIdScannerService';
 import deed from '../../../services/HenryTitleDeedScannerService';
+import HenryCrmLinkSelector from './HenryCrmLinkSelector';
 
 interface VaultRow {
   id: string;
@@ -133,6 +134,11 @@ export default function HenryVaultControls({
           }}
         />
       </label>
+      <HenryCrmLinkSelector kind="lead" value={lead} onChange={id => {
+        setLead(id);
+        setLinksConfirmed(false);
+        onOptions({ ...options, leadId: undefined, propertyId: undefined });
+      }} />
       <label>
         Approved property ID
         <input
@@ -145,6 +151,11 @@ export default function HenryVaultControls({
           }}
         />
       </label>
+      <HenryCrmLinkSelector kind="property" value={property} onChange={id => {
+        setProperty(id);
+        setLinksConfirmed(false);
+        onOptions({ ...options, leadId: undefined, propertyId: undefined });
+      }} />
       <label>
         <input
           type="checkbox"

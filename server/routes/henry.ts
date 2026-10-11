@@ -968,6 +968,18 @@ const searchDocuments = asyncHandler(async (req: AuthRequest, res) => {
 router.get('/documents', requireMinRole('agent'), searchDocuments);
 router.post('/documents/search', requireMinRole('agent'), searchDocuments);
 
+router.get('/documents/link-options', requireMinRole('agent'), asyncHandler(async (req: AuthRequest, res) => {
+  const owner = documentOwner(req.user?.id);
+  const kind = req.query.kind;
+  const page = Number(req.query.page ?? 1);
+  if (!['lead', 'property'].includes(String(kind)) || !Number.isInteger(page) || page < 1 || page > 1000)
+    throw new AppError('Valid link kind and page (1–1000) required', 400);
+  const data = await vaultOperation('link-options', async () => kind === 'lead'
+    ? prisma.lead.findMany({ where: { assignedToId: owner }, select: { id: true, name: true }, orderBy: { id: 'asc' }, skip: (page - 1) * 25, take: 26 })
+    : prisma.property.findMany({ where: { userId: owner }, select: { id: true, title: true }, orderBy: { id: 'asc' }, skip: (page - 1) * 25, take: 26 }));
+  res.json({ success: true, data: data.slice(0, 25).map(row => ({ id: row.id, name: 'name' in row ? row.name : row.title })), hasMore: data.length > 25 });
+}));
+
 router.get('/documents/latest/:docType', requireMinRole('agent'), asyncHandler(async (req: AuthRequest, res) => {
   const ownerUserId = documentOwner(req.user?.id);
   vaultKey();

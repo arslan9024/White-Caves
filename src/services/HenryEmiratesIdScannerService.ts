@@ -10,6 +10,7 @@
  */
 
 import { parse as parseMrz } from 'mrz';
+import { imageQualityWarnings } from './henryImageQuality';
 import {
   ScanReview,
   VaultSaveOptions,
@@ -611,9 +612,7 @@ class HenryEmiratesIdScannerService {
           if (!width || !height || width * height > 40_000_000)
             throw new Error('Image dimensions exceed decoding budget');
           if (warnings && Math.max(width, height) < 1000)
-            warnings.push(
-              'Small source resolution; enlarging cannot restore missing detail. Rescan if characters are unclear.'
-            );
+            warnings.push('Small source resolution (heuristic advisory); enlarging cannot restore missing detail. Rescan if characters are unclear.');
           const scale = Math.min(
             2.5,
             2200 / Math.max(width, height),
@@ -633,6 +632,7 @@ class HenryEmiratesIdScannerService {
             height * scale
           );
           const imgData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+          if (warnings) warnings.push(...imageQualityWarnings(imgData, width, height).filter(warning => !warning.includes('low source resolution')));
           const d = imgData.data;
           for (let i = 0; i < d.length; i += 4) {
             const gray = 0.299 * (d[i] ?? 0) + 0.587 * (d[i + 1] ?? 0) + 0.114 * (d[i + 2] ?? 0);

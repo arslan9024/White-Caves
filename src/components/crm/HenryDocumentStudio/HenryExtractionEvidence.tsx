@@ -1,7 +1,12 @@
 import React from 'react';
 import type { ExtractionDiagnostics } from '../../../services/henryDocumentParsing';
+import { HenryBenchmarkPanel } from './HenryBenchmarkPanel';
+import type { BenchmarkValues } from '../../../services/henryBenchmark';
 
-export function HenryExtractionEvidence({ diagnostics }: { diagnostics?: ExtractionDiagnostics }) {
+export function HenryExtractionEvidence({ diagnostics, scannerValues }: {
+  diagnostics?: ExtractionDiagnostics;
+  scannerValues?: Readonly<BenchmarkValues>;
+}) {
   if (!diagnostics) return null;
   return <section aria-label="Extraction evidence">
     <p>Visible field coverage: {Math.round(diagnostics.coverage * 100)}% (not accuracy or official verification).
@@ -11,5 +16,6 @@ export function HenryExtractionEvidence({ diagnostics }: { diagnostics?: Extract
       <ul>{Object.entries(diagnostics.fields).map(([key, field]) =>
         <li key={key}>{key}: {field.state} ({field.source}){field.values.length > 0 && ` — ${field.values.join(' | ')}`}</li>)}</ul>
     </details>
+    <HenryBenchmarkPanel diagnostics={diagnostics} scannerValues={scannerValues} />
   </section>;
 }

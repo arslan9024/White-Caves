@@ -567,7 +567,26 @@ class HenryTitleDeedScannerService {
           cells.length !== headers.length ||
           !/^\d+$/.test(cells[columns.indexOf('ownerDldNumber')] || '')
         )
-          break;
+          {
+            if (cells.length === headers.length && cells.some(cell => cell.trim())) {
+              ambiguousOwner = true;
+              diagnostics.fields.ownerDldNumber!.state = 'conflict';
+              diagnostics.warnings.push('Unassociated owner table row; compare identifiers and cell boundaries manually.');
+            }
+            break;
+          }
+        // Only attach continuation rows with empty identifiers and numeric cells.
+        // Non-empty identifiers always begin a new owner, never an inferred association.
+        while (j + 1 < lines.length) {
+          const continuation = lines[j + 1]!.split(/\s*\|\s*/);
+          if (continuation.length !== headers.length ||
+            continuation.some((cell, index) => columns[index] !== 'ownerName' && cell.trim()) ||
+            !continuation.some((cell, index) => columns[index] === 'ownerName' && cell.trim())) break;
+          continuation.forEach((cell, index) => {
+            if (columns[index] === 'ownerName' && cell.trim()) cells[index] += ` ${cell.trim()}`;
+          });
+          j++;
+        }
         const parsed = Object.fromEntries(
           ownerKeys.map(key => [
             key,
@@ -583,6 +602,14 @@ class HenryTitleDeedScannerService {
         );
         addOwner(parsed);
       }
+    }
+    const shares = owners.map(owner => owner.sharePercent);
+    if (shares.some(share => share !== undefined && (share < 0 || share > 100)) ||
+      owners.length > 1 && shares.every(share => share !== undefined) &&
+      Math.abs(shares.reduce<number>((sum, share) => sum + (share ?? 0), 0) - 100) > 0.01) {
+      ambiguousOwner = true;
+      diagnostics.fields.ownerSharePercent!.state = 'conflict';
+      diagnostics.warnings.push('Owner share percentages are out of range or do not total 100%; verify the complete table without guessing.');
     }
     if (owners.length === 1 && !ambiguousOwner) {
       ownerNameEn = owners[0]!.nameEn;

@@ -55,6 +55,7 @@ import {
 } from '../../../services/henryScanReview';
 import { markFieldReviewed } from '../../../services/henryDocumentParsing';
 import { HenryExtractionEvidence } from './HenryExtractionEvidence';
+import { snapshotBenchmarkValues, type BenchmarkValues } from '../../../services/henryBenchmark';
 import HenryVaultControls from './HenryVaultControls';
 import HenrySharedDocumentUploader from './HenrySharedDocumentUploader';
 
@@ -346,6 +347,7 @@ const ZoomBtn = styled.button`
 
 export const HenryEmiratesIdScannerView: FC = () => {
   const scanGeneration = useRef(0);
+  const [scannerValues, setScannerValues] = useState<Readonly<BenchmarkValues>>();
   const [extractedData, setExtractedData] = useState<EmiratesIdExtractedData>(() => {
     return henryEmiratesIdScannerService.getCachedEmiratesId() || EMPTY_EMIRATES_ID;
   });
@@ -376,6 +378,7 @@ export const HenryEmiratesIdScannerView: FC = () => {
   const handleFileUpload = async (file: File) => {
     const generation = ++scanGeneration.current;
     setIsScanning(true);
+    setScannerValues(undefined);
     setExtractedData(EMPTY_EMIRATES_ID);
     henryEmiratesIdScannerService.clearCachedEmiratesId();
     setUploadedFile(file);
@@ -391,6 +394,7 @@ export const HenryEmiratesIdScannerView: FC = () => {
           ? await henryEmiratesIdScannerService.scanDualSide(front, back)
           : await henryEmiratesIdScannerService.scanEmiratesId(file);
       if (generation !== scanGeneration.current) return;
+      setScannerValues(snapshotBenchmarkValues(data));
       setExtractedData(data);
       if (data.scannedSide === 'back') {
         setActiveSideView('back');
@@ -410,6 +414,7 @@ export const HenryEmiratesIdScannerView: FC = () => {
   };
 
   const handleLoadDemo = () => {
+    setScannerValues(undefined);
     scanGeneration.current++;
     setIsScanning(false);
     henryEmiratesIdScannerService.clearCachedEmiratesId();
@@ -478,6 +483,7 @@ export const HenryEmiratesIdScannerView: FC = () => {
   };
 
   const handleDiscard = () => {
+    setScannerValues(undefined);
     scanGeneration.current++;
     setIsScanning(false);
     setFrontFile(null);
@@ -519,6 +525,7 @@ export const HenryEmiratesIdScannerView: FC = () => {
         options={vaultOptions}
         onOptions={setVaultOptions}
         onSuggestion={data => {
+          setScannerValues(undefined);
           scanGeneration.current++;
           setIsScanning(false);
           henryEmiratesIdScannerService.clearCachedEmiratesId();
@@ -542,7 +549,7 @@ export const HenryEmiratesIdScannerView: FC = () => {
           Missing: {extractedData.missingFields.join(', ')}. Correct these fields or rescan.
         </p>
       )}
-      <HenryExtractionEvidence diagnostics={extractedData.diagnostics} />
+      <HenryExtractionEvidence diagnostics={extractedData.diagnostics} scannerValues={scannerValues} />
       <p role="status">
         Readiness: {readiness.status.replaceAll('_', ' ')}. {readiness.reasons.join(' ')}
       </p>
@@ -723,6 +730,7 @@ export const HenryEmiratesIdScannerView: FC = () => {
                   setBackFile(null);
                   setUploadedFile(null);
                   const data = await henryEmiratesIdScannerService.scanEmiratesId('sample_khalif');
+                  setScannerValues(undefined);
                   setExtractedData(data);
                   setStatusMsg(`✓ Ingested Client: ${data.fullNameEn} (${data.nationalityEn})`);
                   setTimeout(() => setStatusMsg(null), 3000);
@@ -748,6 +756,7 @@ export const HenryEmiratesIdScannerView: FC = () => {
                   setBackFile(null);
                   setUploadedFile(null);
                   const data = await henryEmiratesIdScannerService.scanEmiratesId('sample_mansoor');
+                  setScannerValues(undefined);
                   setExtractedData(data);
                   setStatusMsg(`✓ Ingested Client: ${data.fullNameEn} (${data.nationalityEn})`);
                   setTimeout(() => setStatusMsg(null), 3000);

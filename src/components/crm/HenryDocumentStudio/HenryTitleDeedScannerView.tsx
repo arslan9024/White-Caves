@@ -35,6 +35,7 @@ import {
 } from '../../../services/henryScanReview';
 import { markFieldReviewed } from '../../../services/henryDocumentParsing';
 import { HenryExtractionEvidence } from './HenryExtractionEvidence';
+import { snapshotBenchmarkValues, type BenchmarkValues } from '../../../services/henryBenchmark';
 import HenryVaultControls from './HenryVaultControls';
 import HenrySharedDocumentUploader from './HenrySharedDocumentUploader';
 
@@ -263,6 +264,7 @@ const ActionBtn = styled.button<{ $variant?: 'primary' | 'secondary' | 'danger' 
 
 export const HenryTitleDeedScannerView: FC = () => {
   const scanGeneration = useRef(0);
+  const [scannerValues, setScannerValues] = useState<Readonly<BenchmarkValues>>();
   const [extractedData, setExtractedData] = useState<DldTitleDeedExtractedData | null>(() => {
     return henryTitleDeedScannerService.getCachedTitleDeed();
   });
@@ -292,6 +294,7 @@ export const HenryTitleDeedScannerView: FC = () => {
   const handleFileUpload = async (file: File) => {
     const generation = ++scanGeneration.current;
     setIsScanning(true);
+    setScannerValues(undefined);
     setExtractedData(null);
     henryTitleDeedScannerService.clearCachedTitleDeed();
     setUploadedFile(file);
@@ -300,6 +303,7 @@ export const HenryTitleDeedScannerView: FC = () => {
     try {
       const data = await henryTitleDeedScannerService.scanTitleDeed(file);
       if (generation !== scanGeneration.current) return;
+      setScannerValues(snapshotBenchmarkValues(data));
       setExtractedData(data);
       setStatusMsg(
         `✓ Extracted Property: ${data.buildingNameEn} #${data.propertyNumber} (${data.ownerNameEn})`
@@ -318,6 +322,7 @@ export const HenryTitleDeedScannerView: FC = () => {
   };
 
   const handleLoadDemo = async () => {
+    setScannerValues(undefined);
     scanGeneration.current++;
     henryTitleDeedScannerService.clearCachedTitleDeed();
     setIsScanning(true);
@@ -388,6 +393,7 @@ export const HenryTitleDeedScannerView: FC = () => {
   };
 
   const handleDiscard = () => {
+    setScannerValues(undefined);
     scanGeneration.current++;
     setIsScanning(false);
     setExtractedData(null);
@@ -420,7 +426,7 @@ export const HenryTitleDeedScannerView: FC = () => {
           Missing: {extractedData.missingFields.join(', ')}. Correct these fields or rescan.
         </p>
       )}
-      <HenryExtractionEvidence diagnostics={extractedData?.diagnostics} />
+      <HenryExtractionEvidence diagnostics={extractedData?.diagnostics} scannerValues={scannerValues} />
       <p role="status">
         Readiness: {readiness.status.replaceAll('_', ' ')}. {readiness.reasons.join(' ')}
       </p>
@@ -429,6 +435,7 @@ export const HenryTitleDeedScannerView: FC = () => {
         options={vaultOptions}
         onOptions={setVaultOptions}
         onSuggestion={data => {
+          setScannerValues(undefined);
           scanGeneration.current++;
           setIsScanning(false);
           henryTitleDeedScannerService.clearCachedTitleDeed();
@@ -509,6 +516,7 @@ export const HenryTitleDeedScannerView: FC = () => {
                 setIsScanning(false);
                 setUploadedFile(null);
                 const sample = henryTitleDeedScannerService.getBukoSample();
+                setScannerValues(undefined);
                 setExtractedData(sample);
                 setStatusMsg(
                   `✓ Ingested Property: ${sample.ownerNameEn} — ${sample.buildingNameEn}`
@@ -534,6 +542,7 @@ export const HenryTitleDeedScannerView: FC = () => {
                 setIsScanning(false);
                 setUploadedFile(null);
                 const sample = henryTitleDeedScannerService.getDemoExtractedData();
+                setScannerValues(undefined);
                 setExtractedData(sample);
                 setStatusMsg(
                   `✓ Ingested Property: ${sample.ownerNameEn} — ${sample.buildingNameEn}`
