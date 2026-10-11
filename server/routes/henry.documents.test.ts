@@ -84,6 +84,28 @@ describe('Henry persistent owner-scoped vault', () => {
       data: { ownerUserId: owner, documentId: id, action: 'save' },
     });
   });
+  it.each(['ownerName', 'fullName', 'expiryDate', 'nationality'])('rejects unresolved %s conflicts despite explicit review', async field => {
+      const response = await request(app()).post('/henry/documents/save').send({
+        ...input, extractedJson: { ...input.extractedJson, missingFields: [], reviewConfirmed: true,
+          diagnostics: { fields: { [field]: { state: 'conflict', source: 'text', values: ['TEST ALPHA', 'TEST BETA'] } } } },
+      });
+      expect(response.status).toBe(400);
+      expect(response.body.error).toContain('Resolve conflicting fields');
+      expect(mocks.documents.create).not.toHaveBeenCalled();
+      expect(mocks.documents.updateMany).not.toHaveBeenCalled();
+    });
+    it.each([null, [], 'invalid', { fields: null }, { fields: [] }, { fields: { ownerName: null } }, { fields: { ownerName: { state: 'resolved' } } }])('rejects malformed diagnostics before persistence: %j', async diagnostics => {
+        const response = await request(app()).post('/henry/documents/save').send({
+          ...input, extractedJson: { ...input.extractedJson, diagnostics },
+        });
+        expect(response.status).toBe(400);
+        expect(mocks.documents.create).not.toHaveBeenCalled();
+      });
+    it('accepts valid reviewed evidence after conflicts are resolved', () => {
+      expect(() => prepareDocument({ ...input, extractedJson: { ...input.extractedJson,
+        diagnostics: { fields: { ownerName: { state: 'extracted', source: 'review', values: ['TEST OWNER'] } } },
+      } })).not.toThrow();
+    });
   it('fails closed for missing key/DB or invalid authenticated owner', async () => {
     vi.stubEnv('ENCRYPTION_KEY', '');
     expect((await request(app()).get('/henry/documents')).status).toBe(503);

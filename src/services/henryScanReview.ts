@@ -1,10 +1,12 @@
 import { authFetch } from '../utils/authFetch';
 import logger from '../utils/logger';
+import type { ExtractionDiagnostics } from './henryDocumentParsing';
 
 export interface ScanReview {
   demoOnly?: boolean;
   reviewConfirmed?: boolean;
   missingFields?: string[];
+  diagnostics?: ExtractionDiagnostics;
 }
 
 export interface VaultSaveOptions {
@@ -15,7 +17,8 @@ export interface VaultSaveOptions {
 }
 
 export function canUseScan(data: ScanReview | null | undefined): boolean {
-  return !!data && !data.demoOnly && data.reviewConfirmed === true && !data.missingFields?.length;
+  return !!data && !data.demoOnly && data.reviewConfirmed === true && !data.missingFields?.length &&
+    !Object.values(data.diagnostics?.fields || {}).some(field => field.state === 'conflict');
 }
 
 export function validScanDate(value: string): boolean {
@@ -68,8 +71,8 @@ export async function saveReviewedScan(
       return { success: false, error: result.error || 'Document was not saved.' };
     }
     return { success: true, id: result.data.id };
-  } catch {
-    logger.error('Henry document save failed');
+  } catch (error) {
+    logger.error('Henry document save failed', { docType, errorName: error instanceof Error ? error.name : 'UnknownError' });
     return { success: false, error: 'Vault unavailable. Nothing was saved.' };
   }
 }

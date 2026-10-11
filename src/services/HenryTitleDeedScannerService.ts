@@ -11,9 +11,50 @@
 
 import { TenancyContractPayload, ContractParty } from './HenryPdfEngineService';
 import henryEmiratesIdScannerService from './HenryEmiratesIdScannerService';
-import { ScanReview, VaultSaveOptions, canUseScan, saveReviewedScan } from './henryScanReview';
+import { ScanReview, VaultSaveOptions, canUseScan, saveReviewedScan, validScanDate } from './henryScanReview';
+import { languageValue, normalizeDocumentDate, normalizeDocumentText, parseDocumentNumber, readDocumentFields, refreshCoverage } from './henryDocumentParsing';
+
+const DEED_LABELS: Record<string, string[]> = {
+  certificateNumber: ['Certificate Number', 'Certificate No.', 'Certificate No', 'Title Deed Number', 'Title Deed No.', 'Title Deed No', 'رقم الشهادة', 'رقم سند الملكية'],
+  issueDate: ['Issue Date', 'Date of Issue', 'تاريخ الإصدار', 'تاريخ الاصدار'],
+  issuingAuthority: ['Issuing Authority', 'جهة الإصدار'],
+  propertyType: ['Property Type', 'نوع العقار'],
+  community: ['Community', 'Area Name', 'المنطقة', 'اسم المنطقة'],
+  plotNumber: ['Plot Number', 'Plot No.', 'Land Number', 'رقم الأرض', 'رقم الارض'],
+  municipalityNumber: ['Municipality Number', 'Municipality No.', 'رقم البلدية'],
+  buildingNumber: ['Building Number', 'Building No.', 'رقم المبنى'],
+  buildingName: ['Building Name', 'اسم المبنى'],
+  propertyNumber: ['Property Number', 'Unit Number', 'Unit No.', 'رقم العقار', 'رقم الوحدة'],
+  floorNumber: ['Floor Number', 'Floor', 'رقم الطابق', 'الطابق'],
+  parkingNumber: ['Parking Number', 'Parking No.', 'رقم الموقف'],
+  mortgageStatus: ['Mortgage Status', 'حالة الرهن'],
+  suiteAreaSqM: ['Suite Area', 'مساحة الوحدة'],
+  balconyAreaSqM: ['Balcony Area', 'مساحة الشرفة'],
+  totalAreaSqM: ['Total Area', 'Area SqM', 'المساحة الإجمالية', 'المساحة الاجمالية', 'المساحة'],
+  totalAreaSqFt: ['Total Area SqFt', 'Area SqFt', 'المساحة بالقدم المربع'],
+  commonAreaSqM: ['Common Area', 'المساحة المشتركة'],
+  ownerDldNumber: ['Owner DLD Number', 'Owner Number', 'Owner No.', 'Party Number', 'رقم المالك', 'رقم الطرف'],
+  ownerName: ['Owner Name', 'Owner', 'اسم المالك'],
+  ownerSharePercent: ['Ownership Share', 'Owner Share', 'Share Percent', 'نسبة الملكية', 'الحصة'],
+  ownedAreaSqM: ['Owned Area', 'المساحة المملوكة'],
+  purchasedFrom: ['Purchased From', 'Seller Name', 'اسم البائع', 'تم الشراء من'],
+  registrationContractNumber: ['Registration Contract Number', 'Transaction Number', 'Contract Number', 'رقم العقد', 'رقم المعاملة'],
+  registrationDate: ['Registration Date', 'Transaction Date', 'تاريخ التسجيل', 'تاريخ المعاملة'],
+  purchasePriceAed: ['Purchase Price', 'Purchase Value', 'Transaction Value', 'قيمة الشراء', 'قيمة المعاملة'],
+  purchasePriceWordsEn: ['Purchase Price in Words', 'Amount in Words', 'القيمة كتابة'],
+};
+
+export interface DeedOwner {
+  dldNumber: string;
+  nameEn: string;
+  nameAr: string;
+  sharePercent?: number;
+  ownedAreaSqM?: number;
+}
 
 export interface DldTitleDeedExtractedData extends ScanReview {
+  owners?: DeedOwner[];
+  mortgageState?: 'mortgaged' | 'not_mortgaged' | 'unknown';
   // Document Meta
   certificateNumber: string; // e.g. "140764/2023"
   issueDate: string; // e.g. "18/07/2023"
@@ -169,7 +210,7 @@ class HenryTitleDeedScannerService {
    */
   setCachedTitleDeed(data: DldTitleDeedExtractedData): void {
     if (!canUseScan(data)) { this.clearCachedTitleDeed(); return; }
-    this.inMemoryCache = { ...data };
+    this.inMemoryCache = structuredClone(data);
     this.notifyListeners(this.inMemoryCache);
   }
 
@@ -177,7 +218,7 @@ class HenryTitleDeedScannerService {
    * Retrieves active Title Deed from temporary session cache
    */
   getCachedTitleDeed(): DldTitleDeedExtractedData | null {
-    if (this.inMemoryCache) return this.inMemoryCache;
+    if (this.inMemoryCache) return structuredClone(this.inMemoryCache);
     return null;
   }
 
@@ -208,7 +249,7 @@ class HenryTitleDeedScannerService {
   private notifyListeners(data: DldTitleDeedExtractedData | null): void {
     this.listeners.forEach((listener) => {
       try {
-        listener(data);
+        listener(data ? structuredClone(data) : null);
       } catch (err) {
         console.error('Error notifying Henry Title Deed cache listener:', err);
       }
@@ -224,33 +265,128 @@ class HenryTitleDeedScannerService {
     if (typeof fileOrPreset === 'string') return fileOrPreset === 'sample_buko' ? this.getBukoSample() : this.getDemoExtractedData();
     const file = fileOrPreset;
     if (!['image/png', 'image/jpeg', 'application/pdf'].includes(file.type) || !file.size || file.size > 10 * 1024 * 1024) throw new Error('Use a PNG, JPEG or PDF under 10 MB.');
-    const { ocrText, streamText } = await henryEmiratesIdScannerService.extractDocumentText(file);
+    const { ocrText, streamText, ocrConfidence, warnings } = await henryEmiratesIdScannerService.extractDocumentText(file);
     const text = `${ocrText}\n${streamText}`;
     if (!text.trim()) throw new Error('No readable text. Rescan in good lighting with all deed edges visible.');
-    return { ...this.parseDocumentText(text), documentFormat: file.type };
+    const result = this.parseDocumentText(text);
+    if (result.diagnostics) {
+      result.diagnostics.ocrConfidence = ocrConfidence;
+      result.diagnostics.warnings.push(...(warnings || []));
+    }
+    return { ...result, documentFormat: file.type };
   }
 
   parseDocumentText(text: string): DldTitleDeedExtractedData {
-    // Only explicit labelled values are extracted; filenames and registry samples are not evidence.
-    const field = (label: string) => text.match(new RegExp(`(?:${label})[ \t]*[:：][ \t]*([^\\n\\r]+)`, 'i'))?.[1]?.trim() || '';
-    const number = (label: string) => {
-      const value = field(label).replace(/,/g, '').match(/^[0-9]+(?:\.[0-9]+)?/);
-      return value ? Number(value[0]) : 0;
+    const { values, diagnostics } = readDocumentFields(text, DEED_LABELS);
+    const field = (key: string) => values[key]?.[0] || '';
+    const en = (key: string) => languageValue(values[key] || [], 'en');
+    const ar = (key: string) => languageValue(values[key] || [], 'ar');
+    const numeric = (key: string) => {
+      let value = parseDocumentNumber(field(key));
+      if (value === undefined) diagnostics.fields[key]!.state = 'missing';
+      else if (key.endsWith('SqM') && /\bsq\.? ?ft\b|ft[²2]|قدم/i.test(field(key))) {
+        value = Number((value / 10.7639104167).toFixed(2));
+        diagnostics.fields[key] = { state: 'derived', source: 'conversion', values: [field(key)] };
+      }
+      return value ?? 0; // Legacy payload uses zero; evidence explicitly distinguishes absent from visible zero.
     };
-    const certificateNumber = field('Certificate Number|Certificate No\\.?|Title Deed Number|رقم الشهادة');
-    const ownerNameEn = field('Owner Name|Owner|اسم المالك');
-    const propertyNumber = field('Property Number|Unit Number|Unit No\\.?|رقم العقار');
-    const plotNumber = field('Plot Number|Plot No\\.?|رقم الارض');
-    const totalAreaSqM = number('Total Area|Area SqM|المساحة');
+    const certificateNumber = field('certificateNumber');
+    let ownerNameEn = en('ownerName');
+    let ownerNameAr = ar('ownerName');
+    const propertyNumber = field('propertyNumber');
+    const plotNumber = field('plotNumber');
+    let totalAreaSqM = parseDocumentNumber(field('totalAreaSqM')) ?? 0;
+    if (!field('totalAreaSqM') || parseDocumentNumber(field('totalAreaSqM')) === undefined) diagnostics.fields.totalAreaSqM!.state = 'missing';
+    let totalAreaSqFt = numeric('totalAreaSqFt');
+    if (/\b(?:sq\.? ?ft|ft2|ft²)\b|قدم/i.test(field('totalAreaSqM'))) {
+      totalAreaSqFt = totalAreaSqM;
+      diagnostics.fields.totalAreaSqFt = { ...diagnostics.fields.totalAreaSqM!, state: 'extracted' };
+      diagnostics.fields.totalAreaSqM!.state = 'missing';
+    }
+    if (diagnostics.fields.totalAreaSqM!.state === 'missing' && diagnostics.fields.totalAreaSqFt!.state === 'extracted') {
+      totalAreaSqM = Number((totalAreaSqFt / 10.7639104167).toFixed(2));
+      diagnostics.fields.totalAreaSqM = { state: 'derived', source: 'conversion', values: ['totalAreaSqFt / 10.7639104167'] };
+    } else if (diagnostics.fields.totalAreaSqFt!.state === 'missing' && diagnostics.fields.totalAreaSqM!.state === 'extracted') {
+      totalAreaSqFt = Number((totalAreaSqM * 10.7639104167).toFixed(2));
+      diagnostics.fields.totalAreaSqFt = { state: 'derived', source: 'conversion', values: ['totalAreaSqM * 10.7639104167'] };
+    }
+    const owners: DeedOwner[] = [];
+    // Repeated labelled owner blocks preserve association, not an assumed sole owner.
+    const ownerAliases = DEED_LABELS.ownerDldNumber!.map(label =>
+      normalizeDocumentText(label).replace(/[.*+?^${}()|[\]\\]/g, '\\$&').replace(/ /g, '[ \\t]+'));
+    const blocks = normalizeDocumentText(text).split(new RegExp(`(?=(?<![\\p{L}\\p{N}])(?:${ownerAliases.join('|')})(?![\\p{L}\\p{N}]))`, 'giu'));
+    let ambiguousOwner = false;
+    for (const block of blocks) {
+      const parsed = readDocumentFields(block, DEED_LABELS).values;
+      if (!parsed.ownerDldNumber?.[0] || !parsed.ownerName?.length) continue;
+      if (!/^\d+$/.test(parsed.ownerDldNumber[0])) continue;
+      const ambiguousKeys = ['ownerDldNumber', 'ownerSharePercent', 'ownedAreaSqM'].filter(key => (parsed[key]?.length || 0) > 1);
+      if (['en', 'ar'].some(language => new Set(parsed.ownerName!.map(value => languageValue([value], language as 'en' | 'ar')).filter(Boolean)).size > 1))
+        ambiguousKeys.push('ownerName');
+      if (ambiguousKeys.length) {
+        ambiguousOwner = true;
+        for (const key of ambiguousKeys) diagnostics.fields[key]!.state = 'conflict';
+        continue;
+      }
+      const owner: DeedOwner = { dldNumber: parsed.ownerDldNumber[0], nameEn: languageValue(parsed.ownerName, 'en'), nameAr: languageValue(parsed.ownerName, 'ar'),
+        sharePercent: parseDocumentNumber(parsed.ownerSharePercent?.[0] || ''), ownedAreaSqM: parseDocumentNumber(parsed.ownedAreaSqM?.[0] || '') };
+      if (!owners.some(item => JSON.stringify(item) === JSON.stringify(owner))) owners.push(owner);
+    }
+    const lines = normalizeDocumentText(text).split('\n');
+    const ownerKeys = ['ownerDldNumber', 'ownerName', 'ownerSharePercent', 'ownedAreaSqM'];
+    for (let i = 0; i < lines.length; i++) {
+      const headers = lines[i]!.split(/\s*\|\s*/);
+      const columns = headers.map(header => ownerKeys.find(key => DEED_LABELS[key]!.some(label => header.trim().toLowerCase() === label.toLowerCase())));
+      if (!columns.includes('ownerDldNumber') || !columns.includes('ownerName')) continue;
+      for (let j = i + 1; j < lines.length; j++) {
+        const cells = lines[j]!.split(/\s*\|\s*/);
+        if (cells.length !== headers.length || !/^\d+$/.test(cells[columns.indexOf('ownerDldNumber')] || '')) break;
+        const cell = (key: string) => cells[columns.indexOf(key)] || '';
+        const owner: DeedOwner = { dldNumber: cell('ownerDldNumber'), nameEn: languageValue([cell('ownerName')], 'en'), nameAr: languageValue([cell('ownerName')], 'ar'),
+          sharePercent: parseDocumentNumber(cell('ownerSharePercent')), ownedAreaSqM: parseDocumentNumber(cell('ownedAreaSqM')) };
+        if (!owners.some(item => JSON.stringify(item) === JSON.stringify(owner))) owners.push(owner);
+      }
+    }
+    if (owners.length === 1 && !ambiguousOwner) {
+      ownerNameEn = owners[0]!.nameEn;
+      ownerNameAr = owners[0]!.nameAr;
+      for (const [key, value] of Object.entries({ ownerDldNumber: owners[0]!.dldNumber, ownerName: `${ownerNameEn} ${ownerNameAr}`.trim(), ownerSharePercent: owners[0]!.sharePercent, ownedAreaSqM: owners[0]!.ownedAreaSqM })) {
+        if (value !== undefined && value !== '') diagnostics.fields[key] = { state: 'extracted', source: 'text', values: [String(value)] };
+      }
+    }
+    if (owners.length > 1 || ambiguousOwner) {
+      ownerNameEn = ''; ownerNameAr = '';
+      diagnostics.fields.ownerName!.state = 'conflict';
+      diagnostics.warnings.push('Multiple owners detected. Select the authorized landlord during review; do not assume sole ownership.');
+    }
+    const status = `${en('mortgageStatus')} ${ar('mortgageStatus')}`.trim();
+    const mortgageState = /^(?:not mortgaged|unmortgaged|غير مرهون[ة]?)(?:\s|$)/i.test(status) ? 'not_mortgaged'
+      : /^(?:mortgaged|مرهون[ة]?)(?:\s|$)/i.test(status) ? 'mortgaged' : 'unknown';
+    for (const key of ['certificateNumber', 'propertyNumber', 'plotNumber', 'registrationContractNumber']) {
+      if ((values[key]?.length || 0) > 1) {
+        diagnostics.fields[key]!.state = 'conflict';
+        diagnostics.warnings.push(`Conflicting ${key}; compare source documents.`);
+      }
+    }
+    for (const key of ['issueDate', 'registrationDate']) {
+      if (!validScanDate(normalizeDocumentDate(field(key)))) diagnostics.fields[key]!.state = 'missing';
+    }
+    if (diagnostics.fields.totalAreaSqM!.state === 'extracted' && diagnostics.fields.totalAreaSqFt!.state === 'extracted' &&
+      Math.abs(totalAreaSqM * 10.7639104167 - totalAreaSqFt) > Math.max(1, totalAreaSqFt * 0.005)) {
+      diagnostics.fields.totalAreaSqFt!.state = 'conflict';
+      diagnostics.warnings.push('Printed square metre and square foot areas disagree. Review both values.');
+    }
     const missingFields = [!certificateNumber && 'certificateNumber', !ownerNameEn && 'ownerNameEn', !(propertyNumber || plotNumber) && 'propertyNumber'].filter((value): value is string => !!value);
-    return {
-      certificateNumber, ownerNameEn, propertyNumber, plotNumber,
-      issueDate: field('Issue Date|Date of Issue'), issuingAuthorityEn: field('Issuing Authority'), issuingAuthorityAr: '', isBlockchainVerified: false,
-      propertyTypeEn: field('Property Type'), propertyTypeAr: '', communityEn: field('Community|Area Name'), communityAr: '', municipalityNumber: field('Municipality Number'), buildingNumber: field('Building Number'), buildingNameEn: field('Building Name'), buildingNameAr: '', floorNumber: field('Floor Number|Floor'), parkingNumber: field('Parking Number'), mortgageStatusEn: field('Mortgage Status'), mortgageStatusAr: '', isMortgaged: /^mortgaged$/i.test(field('Mortgage Status')),
-      suiteAreaSqM: number('Suite Area'), balconyAreaSqM: number('Balcony Area'), totalAreaSqM, totalAreaSqFt: totalAreaSqM ? Number((totalAreaSqM * 10.7639).toFixed(2)) : 0, commonAreaSqM: number('Common Area'),
-      ownerDldNumber: field('Owner DLD Number|Owner Number'), ownerNameAr: field('اسم المالك'), ownerSharePercent: number('Ownership Share|Owner Share'), ownedAreaSqM: number('Owned Area'), purchasedFromEn: field('Purchased From'), purchasedFromAr: '', registrationContractNumber: field('Registration Contract Number'), registrationDate: field('Registration Date'), purchasePriceAed: number('Purchase Price|Purchase Value'), purchasePriceWordsEn: '',
-      confidenceScore: 0, scannedAt: new Date().toISOString(), reviewConfirmed: false, demoOnly: false, missingFields,
+    const result: DldTitleDeedExtractedData = {
+      certificateNumber, ownerNameEn, ownerNameAr, propertyNumber, plotNumber, owners, mortgageState,
+      issueDate: normalizeDocumentDate(field('issueDate')), issuingAuthorityEn: en('issuingAuthority'), issuingAuthorityAr: ar('issuingAuthority'), isBlockchainVerified: false,
+      propertyTypeEn: en('propertyType'), propertyTypeAr: ar('propertyType'), communityEn: en('community'), communityAr: ar('community'), municipalityNumber: field('municipalityNumber'), buildingNumber: field('buildingNumber'), buildingNameEn: en('buildingName'), buildingNameAr: ar('buildingName'), floorNumber: field('floorNumber'), parkingNumber: field('parkingNumber'), mortgageStatusEn: en('mortgageStatus'), mortgageStatusAr: ar('mortgageStatus'), isMortgaged: mortgageState === 'mortgaged',
+      suiteAreaSqM: numeric('suiteAreaSqM'), balconyAreaSqM: numeric('balconyAreaSqM'), totalAreaSqM, totalAreaSqFt, commonAreaSqM: numeric('commonAreaSqM'),
+      ownerDldNumber: owners.length > 1 || ambiguousOwner ? '' : owners[0]?.dldNumber || field('ownerDldNumber'), ownerSharePercent: owners.length > 1 || ambiguousOwner ? 0 : owners[0]?.sharePercent ?? numeric('ownerSharePercent'), ownedAreaSqM: owners.length > 1 || ambiguousOwner ? 0 : owners[0]?.ownedAreaSqM ?? numeric('ownedAreaSqM'), purchasedFromEn: en('purchasedFrom'), purchasedFromAr: ar('purchasedFrom'), registrationContractNumber: field('registrationContractNumber'), registrationDate: normalizeDocumentDate(field('registrationDate')), purchasePriceAed: numeric('purchasePriceAed'), purchasePriceWordsEn: en('purchasePriceWordsEn'),
+      confidenceScore: 0, scannedAt: new Date().toISOString(), reviewConfirmed: false, demoOnly: false, missingFields, diagnostics,
     };
+    refreshCoverage(diagnostics);
+    return result;
   }
 
   /**

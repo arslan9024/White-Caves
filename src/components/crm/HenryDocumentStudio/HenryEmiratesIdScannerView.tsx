@@ -14,7 +14,7 @@
  * - Bottom Bar: Confirm & Save to KYC Vault, Export to Tenancy Contract, Copy JSON.
  */
 
-import React, { FC, useState, useEffect } from 'react';
+import React, { FC, useState, useEffect, useRef } from 'react';
 import styled from 'styled-components';
 import {
   ShieldCheck,
@@ -47,6 +47,8 @@ import henryEmiratesIdScannerService, {
   EMPTY_EMIRATES_ID,
 } from '../../../services/HenryEmiratesIdScannerService';
 import { canUseScan, scanExpiry, validScanDate, VaultSaveOptions } from '../../../services/henryScanReview';
+import { markFieldReviewed } from '../../../services/henryDocumentParsing';
+import { HenryExtractionEvidence } from './HenryExtractionEvidence';
 import HenryVaultControls from './HenryVaultControls';
 import HenrySharedDocumentUploader from './HenrySharedDocumentUploader';
 
@@ -334,6 +336,7 @@ const ZoomBtn = styled.button`
 `;
 
 export const HenryEmiratesIdScannerView: FC = () => {
+  const scanGeneration = useRef(0);
   const [extractedData, setExtractedData] = useState<EmiratesIdExtractedData>(() => {
     return henryEmiratesIdScannerService.getCachedEmiratesId() || EMPTY_EMIRATES_ID;
   });
@@ -362,6 +365,7 @@ export const HenryEmiratesIdScannerView: FC = () => {
   }, [uploadedFile]);
 
   const handleFileUpload = async (file: File) => {
+    const generation = ++scanGeneration.current;
     setIsScanning(true);
     setExtractedData(EMPTY_EMIRATES_ID);
     henryEmiratesIdScannerService.clearCachedEmiratesId();
@@ -373,20 +377,25 @@ export const HenryEmiratesIdScannerView: FC = () => {
       const back = activeSideView === 'back' ? file : backFile;
       if (activeSideView === 'front') setFrontFile(file); else setBackFile(file);
       const data = front && back ? await henryEmiratesIdScannerService.scanDualSide(front, back) : await henryEmiratesIdScannerService.scanEmiratesId(file);
+      if (generation !== scanGeneration.current) return;
       setExtractedData(data);
       if (data.scannedSide === 'back') {
         setActiveSideView('back');
       }
       setStatusMsg(`✓ Extracted candidate fields for review from "${file.name}"!`);
-    } catch {
-      setStatusMsg('Error processing Emirates ID scan.');
+    } catch (error) {
+      if (generation === scanGeneration.current) setStatusMsg(error instanceof Error ? error.message : 'Error processing Emirates ID scan.');
     } finally {
-      setIsScanning(false);
-      setTimeout(() => setStatusMsg(null), 4000);
+      if (generation === scanGeneration.current) {
+        setIsScanning(false);
+        setTimeout(() => { if (generation === scanGeneration.current) setStatusMsg(null); }, 4000);
+      }
     }
   };
 
   const handleLoadDemo = () => {
+    scanGeneration.current++;
+    setIsScanning(false);
     henryEmiratesIdScannerService.clearCachedEmiratesId();
     setFrontFile(null); setBackFile(null);
     setUploadedFile(null);
@@ -400,6 +409,7 @@ export const HenryEmiratesIdScannerView: FC = () => {
     henryEmiratesIdScannerService.clearCachedEmiratesId();
     setExtractedData(prev => {
       const updated = { ...prev, [field]: val, reviewConfirmed: false };
+      updated.diagnostics = markFieldReviewed(prev.diagnostics, field, val);
       updated.missingFields = [
         !/^784-\d{4}-\d{7}-\d$/.test(updated.idNumber) && 'idNumber',
         !updated.fullNameEn.trim() && 'fullNameEn',
@@ -436,6 +446,8 @@ export const HenryEmiratesIdScannerView: FC = () => {
   };
 
   const handleDiscard = () => {
+    scanGeneration.current++;
+    setIsScanning(false);
     setFrontFile(null); setBackFile(null);
     setUploadedFile(null);
     henryEmiratesIdScannerService.clearCachedEmiratesId();
@@ -459,13 +471,14 @@ export const HenryEmiratesIdScannerView: FC = () => {
     <StudioContainer>
       <label>Capture side <select aria-label="Capture side" value={activeSideView} onChange={event => setActiveSideView(event.target.value as 'front' | 'back')}><option value="front">Front</option><option value="back">Back</option></select></label>
       <HenryVaultControls docType="emirates_id" options={vaultOptions} onOptions={setVaultOptions}
-        onSuggestion={data => { henryEmiratesIdScannerService.clearCachedEmiratesId(); setFrontFile(null); setBackFile(null); setUploadedFile(null); setExtractedData(data as EmiratesIdExtractedData); }} />
+        onSuggestion={data => { scanGeneration.current++; setIsScanning(false); henryEmiratesIdScannerService.clearCachedEmiratesId(); setFrontFile(null); setBackFile(null); setUploadedFile(null); setExtractedData(data as EmiratesIdExtractedData); }} />
       <p>{frontFile ? 'Front captured' : 'Front pending'} · {backFile ? 'Back captured' : 'Back pending'}</p>
       <p role="note">OCR is not proof of authenticity or ownership. Compare every field to the original before saving or autofill. Missing or uncertain values: rescan without glare, then correct below.</p>
       {extractedData?.demoOnly && <p role="alert">Demo only — saving and autofill disabled.</p>}
       {!!extractedData?.missingFields?.length && <p role="alert">Missing: {extractedData.missingFields.join(', ')}. Correct these fields or rescan.</p>}
+      <HenryExtractionEvidence diagnostics={extractedData.diagnostics} />
       <label><input type="checkbox" aria-label="Confirm document review" checked={!!extractedData?.reviewConfirmed}
-        disabled={!extractedData || extractedData.demoOnly || !!extractedData.missingFields?.length || isScanning}
+        disabled={!canUseScan({ ...extractedData, reviewConfirmed: true }) || isScanning}
         onChange={event => { henryEmiratesIdScannerService.clearCachedEmiratesId(); setExtractedData(prev => prev ? { ...prev, reviewConfirmed: event.target.checked } : prev); }} />
         I compared the fields to the original and confirm use for saving and autofill.</label>
 
@@ -567,6 +580,7 @@ export const HenryEmiratesIdScannerView: FC = () => {
               <button
                 type="button"
                 onClick={async () => {
+                  scanGeneration.current++; setIsScanning(false); setFrontFile(null); setBackFile(null); setUploadedFile(null);
                   const data = await henryEmiratesIdScannerService.scanEmiratesId('sample_khalif');
                   setExtractedData(data);
                   setStatusMsg(`✓ Ingested Client: ${data.fullNameEn} (${data.nationalityEn})`);
@@ -579,6 +593,7 @@ export const HenryEmiratesIdScannerView: FC = () => {
               <button
                 type="button"
                 onClick={async () => {
+                  scanGeneration.current++; setIsScanning(false); setFrontFile(null); setBackFile(null); setUploadedFile(null);
                   const data = await henryEmiratesIdScannerService.scanEmiratesId('sample_mansoor');
                   setExtractedData(data);
                   setStatusMsg(`✓ Ingested Client: ${data.fullNameEn} (${data.nationalityEn})`);

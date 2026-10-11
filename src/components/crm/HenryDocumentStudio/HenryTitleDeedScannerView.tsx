@@ -11,7 +11,7 @@
  *   - Persistent Action Controls (Discard, Copy JSON, Save to Property Vault)
  */
 
-import React, { FC, useState, useEffect } from 'react';
+import React, { FC, useState, useEffect, useRef } from 'react';
 import styled from 'styled-components';
 import {
   Building,
@@ -28,6 +28,8 @@ import henryTitleDeedScannerService, {
   DldTitleDeedExtractedData,
 } from '../../../services/HenryTitleDeedScannerService';
 import { canUseScan, scanExpiry, VaultSaveOptions } from '../../../services/henryScanReview';
+import { markFieldReviewed } from '../../../services/henryDocumentParsing';
+import { HenryExtractionEvidence } from './HenryExtractionEvidence';
 import HenryVaultControls from './HenryVaultControls';
 import HenrySharedDocumentUploader from './HenrySharedDocumentUploader';
 
@@ -253,6 +255,7 @@ const ActionBtn = styled.button<{ $variant?: 'primary' | 'secondary' | 'danger' 
 `;
 
 export const HenryTitleDeedScannerView: FC = () => {
+  const scanGeneration = useRef(0);
   const [extractedData, setExtractedData] = useState<DldTitleDeedExtractedData | null>(() => {
     return henryTitleDeedScannerService.getCachedTitleDeed();
   });
@@ -262,6 +265,7 @@ export const HenryTitleDeedScannerView: FC = () => {
   const [zoomLevel, setZoomLevel] = useState<number>(100);
   const [statusMsg, setStatusMsg] = useState<string | null>(null);
   const [copiedJson, setCopiedJson] = useState<boolean>(false);
+  const [vaultOptions, setVaultOptions] = useState<VaultSaveOptions>({});
 
   useEffect(() => {
     if (!canUseScan(extractedData)) henryTitleDeedScannerService.clearCachedTitleDeed();
@@ -278,6 +282,7 @@ export const HenryTitleDeedScannerView: FC = () => {
   }, [uploadedFile]);
 
   const handleFileUpload = async (file: File) => {
+    const generation = ++scanGeneration.current;
     setIsScanning(true);
     setExtractedData(null);
     henryTitleDeedScannerService.clearCachedTitleDeed();
@@ -286,17 +291,21 @@ export const HenryTitleDeedScannerView: FC = () => {
 
     try {
       const data = await henryTitleDeedScannerService.scanTitleDeed(file);
+      if (generation !== scanGeneration.current) return;
       setExtractedData(data);
       setStatusMsg(`✓ Extracted Property: ${data.buildingNameEn} #${data.propertyNumber} (${data.ownerNameEn})`);
-    } catch {
-      setStatusMsg('Error processing Title Deed.');
+    } catch (error) {
+      if (generation === scanGeneration.current) setStatusMsg(error instanceof Error ? error.message : 'Error processing Title Deed.');
     } finally {
-      setIsScanning(false);
-      setTimeout(() => setStatusMsg(null), 4000);
+      if (generation === scanGeneration.current) {
+        setIsScanning(false);
+        setTimeout(() => { if (generation === scanGeneration.current) setStatusMsg(null); }, 4000);
+      }
     }
   };
 
   const handleLoadDemo = async () => {
+    scanGeneration.current++;
     henryTitleDeedScannerService.clearCachedTitleDeed();
     setIsScanning(true);
     setUploadedFile(null);
@@ -316,6 +325,7 @@ export const HenryTitleDeedScannerView: FC = () => {
     setExtractedData(prev => {
       if (!prev) return null;
       const updated = { ...prev, [field]: val, reviewConfirmed: false };
+      updated.diagnostics = markFieldReviewed(prev.diagnostics, field, val);
       updated.missingFields = [!updated.certificateNumber && 'certificateNumber', !updated.ownerNameEn && 'ownerNameEn', !(updated.propertyNumber || updated.plotNumber) && 'propertyNumber'].filter((value): value is string => !!value);
 
       return updated;
@@ -346,6 +356,8 @@ export const HenryTitleDeedScannerView: FC = () => {
   };
 
   const handleDiscard = () => {
+    scanGeneration.current++;
+    setIsScanning(false);
     setExtractedData(null);
     setUploadedFile(null);
     henryTitleDeedScannerService.clearCachedTitleDeed();
@@ -364,16 +376,16 @@ export const HenryTitleDeedScannerView: FC = () => {
     }, 3000);
   };
 
-  const [vaultOptions, setVaultOptions] = useState<VaultSaveOptions>({});
   return (
     <ViewContainer>
       <p role="note">OCR is not proof of authenticity or ownership. Compare every field to the original before saving or autofill. Missing or uncertain values: rescan without glare, then correct below.</p>
       {extractedData?.demoOnly && <p role="alert">Demo only — saving and autofill disabled.</p>}
       {!!extractedData?.missingFields?.length && <p role="alert">Missing: {extractedData.missingFields.join(', ')}. Correct these fields or rescan.</p>}
+      <HenryExtractionEvidence diagnostics={extractedData?.diagnostics} />
       <HenryVaultControls docType="title_deed" options={vaultOptions} onOptions={setVaultOptions}
-        onSuggestion={data => { henryTitleDeedScannerService.clearCachedTitleDeed(); setUploadedFile(null); setExtractedData(data as DldTitleDeedExtractedData); }} />
+        onSuggestion={data => { scanGeneration.current++; setIsScanning(false); henryTitleDeedScannerService.clearCachedTitleDeed(); setUploadedFile(null); setExtractedData(data as DldTitleDeedExtractedData); }} />
       <label><input type="checkbox" aria-label="Confirm document review" checked={!!extractedData?.reviewConfirmed}
-        disabled={!extractedData || extractedData.demoOnly || !!extractedData.missingFields?.length || isScanning}
+        disabled={!extractedData || !canUseScan({ ...extractedData, reviewConfirmed: true }) || isScanning}
         onChange={event => { henryTitleDeedScannerService.clearCachedTitleDeed(); setExtractedData(prev => prev ? { ...prev, reviewConfirmed: event.target.checked } : prev); }} />
         I compared the fields to the original and confirm use for saving and autofill.</label>
 
@@ -402,6 +414,7 @@ export const HenryTitleDeedScannerView: FC = () => {
             <button
               type="button"
               onClick={() => {
+                scanGeneration.current++; setIsScanning(false); setUploadedFile(null);
                 const sample = henryTitleDeedScannerService.getBukoSample();
                 setExtractedData(sample);
                 setStatusMsg(`✓ Ingested Property: ${sample.ownerNameEn} — ${sample.buildingNameEn}`);
@@ -414,6 +427,7 @@ export const HenryTitleDeedScannerView: FC = () => {
             <button
               type="button"
               onClick={() => {
+                scanGeneration.current++; setIsScanning(false); setUploadedFile(null);
                 const sample = henryTitleDeedScannerService.getDemoExtractedData();
                 setExtractedData(sample);
                 setStatusMsg(`✓ Ingested Property: ${sample.ownerNameEn} — ${sample.buildingNameEn}`);
@@ -432,7 +446,7 @@ export const HenryTitleDeedScannerView: FC = () => {
                   Extracted Title Deed Variables Form
                 </h4>
                 <span style={{ fontSize: '0.75rem', color: 'var(--accent-green, #059669)', fontWeight: 800 }}>
-                  ✓ DLD Registry Validated
+                  Unverified extraction — source review required
                 </span>
               </div>
 

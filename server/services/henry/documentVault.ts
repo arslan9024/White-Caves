@@ -109,6 +109,21 @@ export function prepareDocument(input: Record<string, unknown>, owner = '') {
     throw new AppError('Owner and unit or plot required', 400);
   if (Array.isArray(fields.missingFields) && fields.missingFields.length)
     throw new AppError('Correct missing fields before saving', 400);
+  if (fields.diagnostics !== undefined) {
+    const diagnostics = fields.diagnostics;
+    if (!diagnostics || typeof diagnostics !== 'object' || Array.isArray(diagnostics))
+      throw new AppError('Invalid extraction diagnostics', 400);
+    const evidence = (diagnostics as Record<string, unknown>).fields;
+    if (!evidence || typeof evidence !== 'object' || Array.isArray(evidence))
+      throw new AppError('Invalid extraction diagnostics', 400);
+    for (const field of Object.values(evidence)) {
+      if (!field || typeof field !== 'object' || Array.isArray(field) ||
+        !['extracted', 'missing', 'derived', 'conflict'].includes(String((field as Record<string, unknown>).state)))
+        throw new AppError('Invalid extraction diagnostics', 400);
+      if ((field as Record<string, unknown>).state === 'conflict')
+        throw new AppError('Resolve conflicting fields before saving', 400);
+    }
+  }
   const payload = {
     title: typeof input.title === 'string' ? input.title.slice(0, 200) : 'Reviewed document',
     clientName: typeof input.clientName === 'string' ? input.clientName.slice(0, 200) : '',
