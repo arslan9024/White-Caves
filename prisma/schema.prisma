@@ -1540,6 +1540,10 @@ model HenryScannedDocument {
   docType          String
   referenceHash    String
   encryptedPayload String
+  encryptedSource  String?
+  expiryAt         DateTime?
+  retentionUntil   DateTime?
+  reminderDismissedAt DateTime?
   leadId           String?  @db.ObjectId
   propertyId       String?  @db.ObjectId
   replacedById     String?  @db.ObjectId
@@ -1548,6 +1552,7 @@ model HenryScannedDocument {
 
   @@unique([ownerUserId, docType, referenceHash])
   @@index([ownerUserId, docType, createdAt])
+  @@index([ownerUserId, expiryAt])
 }
 
 model HenryDocumentAudit {

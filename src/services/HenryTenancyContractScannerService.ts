@@ -11,7 +11,7 @@
  * 5. 1-Click Inter-Module Mapping (Auto-fills Preparation Studio, CRM Landlord/Tenant Profiles, Ejari Vault).
  */
 
-import { safeStorage } from '../utils/safeStorage';
+import { ScanReview, canUseScan } from './henryScanReview';
 import type { DldTenancyContractData } from './HenryTenancyContractTemplateService';
 
 export interface ScannedTenancyParty {
@@ -290,10 +290,8 @@ export const BLANK_DLD_TEMPLATE_SAMPLE: ScannedTenancyContractResult = {
   scannedAt: new Date().toISOString(),
 };
 
-const TRAINING_STORAGE_KEY = 'whitecaves_henry_contract_training_set_v1';
 
 class HenryTenancyContractScannerService {
-  private static readonly CACHE_KEY = 'whitecaves_henry_active_tenancy_contract_cache_v1';
   private inMemoryCache: ScannedTenancyContractResult | null = null;
   private listeners: Set<(data: ScannedTenancyContractResult | null) => void> = new Set();
 
@@ -303,11 +301,10 @@ class HenryTenancyContractScannerService {
   ];
 
   /**
-   * Persists extracted contract data into temporary session memory and localStorage
+   * Keeps extracted contract data in session memory only
    */
   setCachedContract(data: ScannedTenancyContractResult): void {
     this.inMemoryCache = { ...data };
-    safeStorage.setJSON(HenryTenancyContractScannerService.CACHE_KEY, data);
     this.notifyListeners(this.inMemoryCache);
   }
 
@@ -316,11 +313,6 @@ class HenryTenancyContractScannerService {
    */
   getCachedContract(): ScannedTenancyContractResult | null {
     if (this.inMemoryCache) return this.inMemoryCache;
-    const stored = safeStorage.getJSON<ScannedTenancyContractResult>(HenryTenancyContractScannerService.CACHE_KEY);
-    if (stored) {
-      this.inMemoryCache = stored;
-      return stored;
-    }
     return null;
   }
 
@@ -329,7 +321,6 @@ class HenryTenancyContractScannerService {
    */
   clearCachedContract(): void {
     this.inMemoryCache = null;
-    safeStorage.remove(HenryTenancyContractScannerService.CACHE_KEY);
     this.notifyListeners(null);
   }
 
@@ -355,7 +346,7 @@ class HenryTenancyContractScannerService {
    * Returns benchmark reference sample 1 (Sanit Singh Nagpal & Keshivani Mayadevan - Camelia 608)
    */
   getDemoExtractedData(): ScannedTenancyContractResult {
-    const demo = { ...SANIT_SINGH_CAMELIA_608_SAMPLE, scannedAt: new Date().toISOString() };
+    const demo = { ...SANIT_SINGH_CAMELIA_608_SAMPLE, scannedAt: new Date().toISOString(), demoOnly: true, reviewConfirmed: false };
     this.setCachedContract(demo);
     return demo;
   }
@@ -364,7 +355,7 @@ class HenryTenancyContractScannerService {
    * Returns benchmark reference sample 2 (Svetlana Levitskaya & William Michael Abernethy - Janusia XH2858B)
    */
   getSvetlanaJanusiaSample(): ScannedTenancyContractResult {
-    const demo = { ...SVETLANA_JANUSIA_XH2858B_SAMPLE, scannedAt: new Date().toISOString() };
+    const demo = { ...SVETLANA_JANUSIA_XH2858B_SAMPLE, scannedAt: new Date().toISOString(), demoOnly: true, reviewConfirmed: false };
     this.setCachedContract(demo);
     return demo;
   }
@@ -414,7 +405,8 @@ class HenryTenancyContractScannerService {
    * Teaches Henry AI by archiving parsed contract into reference training memory pool
    */
   teachFromScannedContract(contract: ScannedTenancyContractResult): void {
-    const existing = safeStorage.getJSON<ScannedTenancyContractResult[]>(TRAINING_STORAGE_KEY) || this.trainingMemory;
+    if (!canUseScan(contract as ScanReview)) return;
+    const existing = this.trainingMemory;
     const filtered = existing.filter(
       (c) =>
         !(
@@ -428,23 +420,21 @@ class HenryTenancyContractScannerService {
       scannedAt: new Date().toISOString(),
     });
     this.trainingMemory = filtered;
-    safeStorage.setJSON(TRAINING_STORAGE_KEY, filtered);
+    this.trainingMemory = filtered.slice(0, 20);
   }
 
   /**
    * Retrieves all reference contracts in Henry's training pool
    */
   getTrainingReferenceContracts(): ScannedTenancyContractResult[] {
-    return (
-      safeStorage.getJSON<ScannedTenancyContractResult[]>(TRAINING_STORAGE_KEY) ||
-      this.trainingMemory
-    );
+    return this.trainingMemory;
   }
 
   /**
    * Converts Extracted Scanned Contract into DldTenancyContractData for 1-click loading into the Preparation Studio
    */
-  toDldTenancyContractData(scanned: ScannedTenancyContractResult): DldTenancyContractData {
+  toDldTenancyContractData(scanned: ScannedTenancyContractResult, previewOnly = false): DldTenancyContractData {
+    if (!previewOnly && !canUseScan(scanned as ScanReview)) throw new Error('Confirm contract review before autofill.');
     return {
       contractId: `DLD-${Date.now().toString(36).toUpperCase()}`,
       contractDate: scanned.contractDate || new Date().toISOString().split('T')[0],
@@ -491,6 +481,7 @@ class HenryTenancyContractScannerService {
    * Converts Extracted Contract into CRM Landlord Profile object
    */
   toCrmLandlordProfile(scanned: ScannedTenancyContractResult) {
+    if (!canUseScan(scanned as ScanReview)) throw new Error('Confirm contract review before autofill.');
     return {
       fullName: scanned.landlord.name,
       emiratesId: scanned.landlord.emiratesId,
@@ -507,6 +498,7 @@ class HenryTenancyContractScannerService {
    * Converts Extracted Contract into CRM Tenant Profile object
    */
   toCrmTenantProfile(scanned: ScannedTenancyContractResult) {
+    if (!canUseScan(scanned as ScanReview)) throw new Error('Confirm contract review before autofill.');
     return {
       fullName: scanned.tenant.name,
       emiratesId: scanned.tenant.emiratesId,
@@ -539,35 +531,8 @@ class HenryTenancyContractScannerService {
    * Persists extracted Tenancy Contract record to backend database and session cache
    */
   async saveToDatabase(scanned?: ScannedTenancyContractResult): Promise<{ success: boolean; id?: string; error?: string }> {
-    const data = scanned || this.getCachedContract() || SANIT_SINGH_CAMELIA_608_SAMPLE;
-    this.setCachedContract(data);
-
-    try {
-      if (typeof window !== 'undefined') {
-        const response = await fetch('/api/henry/documents/save', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            docType: 'tenancy_contract',
-            title: `Tenancy Contract - ${data.property.buildingName} #${data.property.propertyNumber}`,
-            clientName: `${data.tenant.name} / ${data.landlord.name}`,
-            referenceNumber: data.contractDate || `TC_${Date.now()}`,
-            extractedJson: data,
-            confidenceScore: data.confidenceScore,
-            scannedSide: 'front',
-            documentFormat: data.documentFormat || 'application/pdf',
-          }),
-        });
-
-        if (response.ok) {
-          const resJson = await response.json();
-          return { success: true, id: resJson.data?.id };
-        }
-      }
-      return { success: true, id: `local_${Date.now()}` };
-    } catch {
-      return { success: true, id: `fallback_${Date.now()}` };
-    }
+    void scanned;
+    return { success: false, error: 'Contract archival unavailable: benchmark data requires a real OCR/review workflow. Nothing was saved.' };
   }
 }
 

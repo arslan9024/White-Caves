@@ -27,7 +27,8 @@ import {
 import henryTitleDeedScannerService, {
   DldTitleDeedExtractedData,
 } from '../../../services/HenryTitleDeedScannerService';
-import { canUseScan, scanExpiry } from '../../../services/henryScanReview';
+import { canUseScan, scanExpiry, VaultSaveOptions } from '../../../services/henryScanReview';
+import HenryVaultControls from './HenryVaultControls';
 import HenrySharedDocumentUploader from './HenrySharedDocumentUploader';
 
 const ViewContainer = styled.div`
@@ -296,6 +297,7 @@ export const HenryTitleDeedScannerView: FC = () => {
   };
 
   const handleLoadDemo = async () => {
+    henryTitleDeedScannerService.clearCachedTitleDeed();
     setIsScanning(true);
     setUploadedFile(null);
     try {
@@ -322,7 +324,9 @@ export const HenryTitleDeedScannerView: FC = () => {
 
   const handleSaveToVault = async () => {
     if (!extractedData || !canUseScan(extractedData) || isScanning) return;
-    const result = await henryTitleDeedScannerService.saveToDatabase(extractedData);
+    if (!uploadedFile) { setStatusMsg('Upload an original before archival. Suggestions alone cannot be archived.'); return; }
+    const result = await henryTitleDeedScannerService.saveToDatabase(extractedData, { ...vaultOptions, sources: [uploadedFile] });
+    if (result.success) setVaultOptions(previous => ({ ...previous, replacesId: undefined }));
     setStatusMsg(result.success ? 'Reviewed record saved to encrypted vault.' : result.error || 'Save failed.');
     setTimeout(() => setStatusMsg(null), 4000);
   };
@@ -360,14 +364,17 @@ export const HenryTitleDeedScannerView: FC = () => {
     }, 3000);
   };
 
+  const [vaultOptions, setVaultOptions] = useState<VaultSaveOptions>({});
   return (
     <ViewContainer>
       <p role="note">OCR is not proof of authenticity or ownership. Compare every field to the original before saving or autofill. Missing or uncertain values: rescan without glare, then correct below.</p>
       {extractedData?.demoOnly && <p role="alert">Demo only — saving and autofill disabled.</p>}
       {!!extractedData?.missingFields?.length && <p role="alert">Missing: {extractedData.missingFields.join(', ')}. Correct these fields or rescan.</p>}
+      <HenryVaultControls docType="title_deed" options={vaultOptions} onOptions={setVaultOptions}
+        onSuggestion={data => { henryTitleDeedScannerService.clearCachedTitleDeed(); setUploadedFile(null); setExtractedData(data as DldTitleDeedExtractedData); }} />
       <label><input type="checkbox" aria-label="Confirm document review" checked={!!extractedData?.reviewConfirmed}
         disabled={!extractedData || extractedData.demoOnly || !!extractedData.missingFields?.length || isScanning}
-        onChange={event => setExtractedData(prev => prev ? { ...prev, reviewConfirmed: event.target.checked } : prev)} />
+        onChange={event => { henryTitleDeedScannerService.clearCachedTitleDeed(); setExtractedData(prev => prev ? { ...prev, reviewConfirmed: event.target.checked } : prev); }} />
         I compared the fields to the original and confirm use for saving and autofill.</label>
 
       {/* Status Feedback Banner */}
@@ -583,7 +590,7 @@ export const HenryTitleDeedScannerView: FC = () => {
               <DeedSummaryCard>
                 <div className="header">
                   <span>GOVERNMENT OF DUBAI · LAND DEPARTMENT</span>
-                  <span>CERTIFIED</span>
+                  <span>NOT AUTHENTICATED</span>
                 </div>
                 <div className="property-title">
                   {extractedData.buildingNameEn} — Unit {extractedData.propertyNumber}

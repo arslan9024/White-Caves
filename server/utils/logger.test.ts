@@ -12,6 +12,12 @@ function importLoggerFresh() {
 }
 
 describe('server/utils/logger', () => {
+  it('omits identity query parameters and fragments from request log paths', async () => {
+    const { requestLogPath } = await importLoggerFresh();
+    expect(requestLogPath('/api/v1/henry/documents?referenceNumber=784-1990-1234567-1&docType=emirates_id')).toBe('/api/v1/henry/documents');
+    expect(requestLogPath('/api/henry/documents/search')).toBe('/api/henry/documents/search');
+    expect(requestLogPath('/api/henry/documents#identity')).toBe('/api/henry/documents');
+  });
   const originalEnv = { ...process.env };
 
   beforeEach(() => {

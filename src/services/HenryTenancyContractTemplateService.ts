@@ -11,7 +11,7 @@
  * - DLD Official Form (عقد إيجار)
  */
 
-import { safeStorage } from '../utils/safeStorage';
+import { canUseScan } from './henryScanReview';
 import type { DldTitleDeedExtractedData } from './HenryTitleDeedScannerService';
 import type { EmiratesIdExtractedData } from './HenryEmiratesIdScannerService';
 import type { InternationalPassportExtractedData } from './HenryPassportScannerService';
@@ -72,11 +72,6 @@ export interface DldTenancyContractData {
   esignToken?: string;
 }
 
-const STORAGE_KEYS = {
-  BLANK_TEMPLATE: 'whitecaves_dld_tenancy_blank_template_v1',
-  ACTIVE_DRAFT: 'whitecaves_dld_tenancy_active_draft_v1',
-  SAVED_CONTRACTS: 'whitecaves_dld_tenancy_saved_contracts_v1',
-};
 
 export const BLANK_DLD_TENANCY_CONTRACT: DldTenancyContractData = {
   contractId: '',
@@ -197,7 +192,7 @@ class HenryTenancyContractTemplateService {
   }
 
   /**
-   * Save active draft to LocalStorage & memory cache
+   * Save active draft in session memory; leave legacy storage untouched
    */
   saveDraft(data: DldTenancyContractData): void {
     const updated = {
@@ -205,21 +200,20 @@ class HenryTenancyContractTemplateService {
       updatedAt: new Date().toISOString(),
     };
     this.activeDraftMemory = updated;
-    safeStorage.setJSON(STORAGE_KEYS.ACTIVE_DRAFT, updated);
   }
 
   /**
-   * Updates the active draft in memory & safeStorage
+   * Updates the active draft in session memory
    */
   updateActiveDraft(data: DldTenancyContractData): void {
     this.saveDraft(data);
   }
 
   /**
-   * Load active draft from LocalStorage or memory cache or fall back to blank template
+   * Load only the session draft, otherwise fall back to a blank template
    */
   loadActiveDraft(): DldTenancyContractData {
-    const draft = safeStorage.getJSON<DldTenancyContractData>(STORAGE_KEYS.ACTIVE_DRAFT) || this.activeDraftMemory;
+    const draft = this.activeDraftMemory;
     if (draft && draft.contractId) {
       return draft;
     }
@@ -227,7 +221,7 @@ class HenryTenancyContractTemplateService {
   }
 
   /**
-   * Reset active draft to a fresh blank template in LocalStorage
+   * Reset active session draft to a fresh blank template
    */
   resetDraft(): DldTenancyContractData {
     const blank = this.getBlankTemplate();
@@ -236,30 +230,35 @@ class HenryTenancyContractTemplateService {
   }
 
   /**
-   * Save a finalized contract into the saved contracts registry
+   * Keep a finalized contract in the session registry, not the encrypted vault
    */
   saveContract(data: DldTenancyContractData): void {
-    const saved = safeStorage.getJSON<DldTenancyContractData[]>(STORAGE_KEYS.SAVED_CONTRACTS) || this.savedContractsMemory;
+    const saved = this.savedContractsMemory;
     const filtered = saved.filter(c => c.contractId !== data.contractId);
     filtered.unshift({
       ...data,
       updatedAt: new Date().toISOString(),
     });
-    this.savedContractsMemory = filtered;
-    safeStorage.setJSON(STORAGE_KEYS.SAVED_CONTRACTS, filtered);
+    this.savedContractsMemory = filtered.slice(0, 20);
   }
 
   /**
-   * Retrieve list of saved contracts from LocalStorage or memory cache
+   * Retrieve only contracts saved during this session
    */
   getSavedContracts(): DldTenancyContractData[] {
-    return safeStorage.getJSON<DldTenancyContractData[]>(STORAGE_KEYS.SAVED_CONTRACTS) || this.savedContractsMemory;
+    return this.savedContractsMemory;
+  }
+
+  clearSession(): void {
+    this.activeDraftMemory = null;
+    this.savedContractsMemory = [];
   }
 
   /**
    * Auto-fill contract data from scanned Title Deed
    */
   populateFromTitleDeed(current: DldTenancyContractData, deed: DldTitleDeedExtractedData): DldTenancyContractData {
+    if (!canUseScan(deed)) return current;
     return {
       ...current,
       ownerName: deed.ownerNameEn || current.ownerName,
@@ -283,6 +282,7 @@ class HenryTenancyContractTemplateService {
     eid: EmiratesIdExtractedData,
     role: 'tenant' | 'landlord' = 'tenant'
   ): DldTenancyContractData {
+    if (!canUseScan(eid)) return current;
     if (role === 'tenant') {
       return {
         ...current,
@@ -309,6 +309,7 @@ class HenryTenancyContractTemplateService {
     passport: InternationalPassportExtractedData,
     role: 'tenant' | 'landlord' = 'tenant'
   ): DldTenancyContractData {
+    if (!canUseScan(passport)) return current;
     if (role === 'tenant') {
       return {
         ...current,

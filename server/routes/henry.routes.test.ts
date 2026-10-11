@@ -101,7 +101,7 @@ const { mockEmitEvent } = vi.hoisted(() => ({
 vi.mock('../database.js', () => ({ prisma: mockPrisma }));
 
 vi.mock('../config/env.js', () => ({
-  HENRY_UPLOADS_PATH: '/tmp/henry-test-uploads',
+  HENRY_UPLOADS_PATH: 'henry-test-uploads',
   OLLAMA_HOST: 'http://localhost:11434',
   GROQ_API_KEY: '',
 }));
@@ -150,6 +150,7 @@ vi.mock('../services/orchestrator/AssistantOrchestrator.js', () => ({
 vi.mock('multer', () => {
   const diskStorage = vi.fn(() => ({}));
   const multerFn = vi.fn(() => ({
+    array: vi.fn(() => (_req: Request, _res: Response, next: NextFunction) => next()),
     single: vi.fn(
       () =>
         (
@@ -167,7 +168,7 @@ vi.mock('multer', () => {
             originalname: 'test.pdf',
             mimetype: 'application/pdf',
             // Real source file — created in beforeEach for the file-upload describe block
-            path: '/tmp/henry-test-uploads/source.pdf',
+            path: 'henry-test-uploads/source.pdf',
             size: 12,
             filename: 'source.pdf',
           };
@@ -176,6 +177,7 @@ vi.mock('multer', () => {
     ),
   }));
   (multerFn as unknown as Record<string, unknown>).diskStorage = diskStorage;
+  (multerFn as unknown as Record<string, unknown>).memoryStorage = vi.fn(() => ({}));
   return { default: multerFn };
 });
 
@@ -392,7 +394,7 @@ describe('Henry routes — file upload and download', () => {
     mockPrisma.henryRecord.create.mockResolvedValue({
       id: 'hr-file-1',
       title: 'test.pdf',
-      filePath: '/tmp/henry-test-uploads/test.pdf',
+      filePath: 'henry-test-uploads/test.pdf',
       fileType: 'other',
       status: 'active',
       tags: [],
@@ -401,8 +403,8 @@ describe('Henry routes — file upload and download', () => {
     });
     // Create a real source file so fs.renameSync inside the route can succeed
     import('fs').then(({ default: fs }) => {
-      fs.mkdirSync('/tmp/henry-test-uploads', { recursive: true });
-      fs.writeFileSync('/tmp/henry-test-uploads/source.pdf', '%PDF-1.4 test');
+      fs.mkdirSync('henry-test-uploads', { recursive: true });
+      fs.writeFileSync('henry-test-uploads/source.pdf', '%PDF-1.4 test');
     });
   });
 

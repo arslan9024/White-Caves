@@ -7,6 +7,13 @@ export interface ScanReview {
   missingFields?: string[];
 }
 
+export interface VaultSaveOptions {
+  sources?: File[];
+  leadId?: string;
+  propertyId?: string;
+  replacesId?: string;
+}
+
 export function canUseScan(data: ScanReview | null | undefined): boolean {
   return !!data && !data.demoOnly && data.reviewConfirmed === true && !data.missingFields?.length;
 }
@@ -34,21 +41,27 @@ export async function saveReviewedScan(
   docType: string,
   data: ScanReview & object,
   referenceNumber: string,
-  clientName: string
+  clientName: string,
+  options: VaultSaveOptions = {}
 ): Promise<{ success: boolean; id?: string; error?: string }> {
   if (!canUseScan(data))
     return { success: false, error: 'Review required. Demo or incomplete scans cannot be saved.' };
   try {
+    const metadata = { docType, extractedJson: data, referenceNumber, clientName, reviewConfirmed: true,
+      leadId: options.leadId, propertyId: options.propertyId, replacesId: options.replacesId };
+    let body: string | FormData = JSON.stringify(metadata);
+    if (options.sources?.length) {
+      if (options.sources.reduce((total, file) => total + file.size, 0) > 4 * 1024 * 1024)
+        return { success: false, error: 'Encrypted originals must total at most 4 MB. Compress or rescan first.' };
+      const form = new FormData();
+      form.append('metadata', JSON.stringify(metadata));
+      options.sources.forEach(file => form.append('source', file));
+      body = form;
+    }
     const response = await authFetch('/api/henry/documents/save', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        docType,
-        extractedJson: data,
-        referenceNumber,
-        clientName,
-        reviewConfirmed: true,
-      }),
+      ...(typeof body === 'string' ? { headers: { 'Content-Type': 'application/json' } } : {}),
+      body,
     });
     const result = await response.json();
     if (!response.ok || !result.success || !result.data?.id) {

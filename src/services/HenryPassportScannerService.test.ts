@@ -60,7 +60,7 @@ describe('HenryPassportScannerService — International Passport ICAO 9303 TD3 E
 
   it('exports extracted data directly to Tenancy Contract party object', () => {
     const party = henryPassportScannerService.toContractParty(
-      ARSLAN_MALIK_SAMPLE_PASSPORT,
+      { ...ARSLAN_MALIK_SAMPLE_PASSPORT, reviewConfirmed: true },
       '+971 56 361 6136',
       'admin@whitecaves.com'
     );
@@ -72,7 +72,7 @@ describe('HenryPassportScannerService — International Passport ICAO 9303 TD3 E
 
   it('exports extracted data directly to Form B viewing payload', () => {
     const viewing = henryPassportScannerService.toViewingClientPayload(
-      ARSLAN_MALIK_SAMPLE_PASSPORT,
+      { ...ARSLAN_MALIK_SAMPLE_PASSPORT, reviewConfirmed: true },
       { formId: 'VIEW-TEST-PASS' }
     );
 

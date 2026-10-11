@@ -9,9 +9,9 @@
  */
 
 import { ContractParty, ViewingFormPayload } from './HenryPdfEngineService';
-import { safeStorage } from '../utils/safeStorage';
+import { ScanReview, canUseScan } from './henryScanReview';
 
-export interface InternationalPassportExtractedData {
+export interface InternationalPassportExtractedData extends ScanReview {
   // Document Identity
   passportNumber: string; // e.g. "DR0760143"
   passportType: string; // "P" (Standard Passport)
@@ -86,16 +86,14 @@ export const ARSLAN_MALIK_SAMPLE_PASSPORT: InternationalPassportExtractedData = 
 };
 
 class HenryPassportScannerService {
-  private static readonly CACHE_KEY = 'whitecaves_henry_active_passport_cache_v1';
   private inMemoryCache: InternationalPassportExtractedData | null = null;
   private listeners: Set<(data: InternationalPassportExtractedData | null) => void> = new Set();
 
   /**
-   * Persists extracted Passport data into temporary session memory and localStorage
+   * Keeps extracted Passport data in session memory only
    */
   setCachedPassport(data: InternationalPassportExtractedData): void {
     this.inMemoryCache = { ...data };
-    safeStorage.setJSON(HenryPassportScannerService.CACHE_KEY, data);
     this.notifyListeners(this.inMemoryCache);
   }
 
@@ -104,11 +102,6 @@ class HenryPassportScannerService {
    */
   getCachedPassport(): InternationalPassportExtractedData | null {
     if (this.inMemoryCache) return this.inMemoryCache;
-    const stored = safeStorage.getJSON<InternationalPassportExtractedData>(HenryPassportScannerService.CACHE_KEY);
-    if (stored) {
-      this.inMemoryCache = stored;
-      return stored;
-    }
     return null;
   }
 
@@ -117,7 +110,6 @@ class HenryPassportScannerService {
    */
   clearCachedPassport(): void {
     this.inMemoryCache = null;
-    safeStorage.remove(HenryPassportScannerService.CACHE_KEY);
     this.notifyListeners(null);
   }
 
@@ -216,6 +208,7 @@ class HenryPassportScannerService {
     if (!fileOrPreset || fileOrPreset === 'sample') {
       const demo = {
         ...ARSLAN_MALIK_SAMPLE_PASSPORT,
+        demoOnly: true, reviewConfirmed: false,
         scannedAt: new Date().toISOString(),
       };
       this.setCachedPassport(demo);
@@ -304,6 +297,7 @@ class HenryPassportScannerService {
           confidenceScore: 0.997,
           scannedAt: new Date().toISOString(),
           documentFormat: file.type || (fileName.endsWith('.pdf') ? 'application/pdf' : 'image/png'),
+          demoOnly: true, reviewConfirmed: false,
         };
 
         this.setCachedPassport(result);
@@ -325,7 +319,7 @@ class HenryPassportScannerService {
    * Returns demo scanned Passport data (Arslan Malik - DR0760143)
    */
   getDemoExtractedData(): InternationalPassportExtractedData {
-    const demo = { ...ARSLAN_MALIK_SAMPLE_PASSPORT, scannedAt: new Date().toISOString() };
+    const demo = { ...ARSLAN_MALIK_SAMPLE_PASSPORT, scannedAt: new Date().toISOString(), demoOnly: true, reviewConfirmed: false };
     this.setCachedPassport(demo);
     return demo;
   }
@@ -338,6 +332,7 @@ class HenryPassportScannerService {
     phone: string = '+971 56 361 6136',
     email: string = 'admin@whitecaves.com'
   ): ContractParty {
+    if (!canUseScan(extracted)) throw new Error('Passport review required; benchmark extraction cannot autofill.');
     return {
       name: extracted.fullName,
       emiratesIdOrPassport: `Passport: ${extracted.passportNumber} (${extracted.issuingCountryCode})`,
@@ -353,6 +348,7 @@ class HenryPassportScannerService {
     extracted: InternationalPassportExtractedData,
     basePayload: Partial<ViewingFormPayload> = {}
   ): Partial<ViewingFormPayload> {
+    if (!canUseScan(extracted)) throw new Error('Passport review required; benchmark extraction cannot autofill.');
     return {
       ...basePayload,
       clientName: extracted.fullName,
@@ -379,35 +375,8 @@ class HenryPassportScannerService {
    * Persists extracted Passport record to backend database and session cache
    */
   async saveToDatabase(extracted?: InternationalPassportExtractedData): Promise<{ success: boolean; id?: string; error?: string }> {
-    const data = extracted || this.getCachedPassport() || ARSLAN_MALIK_SAMPLE_PASSPORT;
-    this.setCachedPassport(data);
-
-    try {
-      if (typeof window !== 'undefined') {
-        const response = await fetch('/api/henry/documents/save', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            docType: 'passport',
-            title: `Passport - ${data.fullName}`,
-            clientName: data.fullName,
-            referenceNumber: data.passportNumber,
-            extractedJson: data,
-            confidenceScore: data.confidenceScore,
-            scannedSide: 'front',
-            documentFormat: data.documentFormat || 'application/pdf',
-          }),
-        });
-
-        if (response.ok) {
-          const resJson = await response.json();
-          return { success: true, id: resJson.data?.id };
-        }
-      }
-      return { success: true, id: `local_${Date.now()}` };
-    } catch {
-      return { success: true, id: `fallback_${Date.now()}` };
-    }
+    void extracted;
+    return { success: false, error: 'Passport archival unavailable: this scanner produces benchmark data, not reviewed OCR. Nothing was saved.' };
   }
 }
 

@@ -2,6 +2,8 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { canUseScan, saveReviewedScan, validScanDate } from './henryScanReview';
 import eid from './HenryEmiratesIdScannerService';
 import deed from './HenryTitleDeedScannerService';
+import passport from './HenryPassportScannerService';
+import contract from './HenryTenancyContractScannerService';
 
 vi.mock('../utils/authFetch', () => ({ authFetch: vi.fn() }));
 import { authFetch } from '../utils/authFetch';
@@ -18,6 +20,27 @@ describe('Henry reviewed extraction safety', () => {
     expect(canUseScan({ reviewConfirmed: true, missingFields: ['name'] })).toBe(false);
     expect(canUseScan({ reviewConfirmed: true, missingFields: [] })).toBe(true);
     expect(validScanDate('31/02/2027')).toBe(false);
+  });
+  it('leaves legacy persisted scan assets untouched and never reads unsafe defaults', () => {
+    const get = vi.spyOn(Storage.prototype, 'getItem');
+    const set = vi.spyOn(Storage.prototype, 'setItem');
+    const remove = vi.spyOn(Storage.prototype, 'removeItem');
+    eid.clearCachedEmiratesId(); deed.clearCachedTitleDeed();
+    passport.clearCachedPassport(); contract.clearCachedContract();
+    expect(eid.getCachedEmiratesId()).toBeNull();
+    expect(deed.getCachedTitleDeed()).toBeNull();
+    expect(passport.getCachedPassport()).toBeNull();
+    expect(contract.getCachedContract()).toBeNull();
+    eid.setCachedEmiratesId({ ...eid.getDemoExtractedData(), demoOnly: false, reviewConfirmed: true });
+    deed.setCachedTitleDeed({ ...deed.getDemoExtractedData(), demoOnly: false, reviewConfirmed: true });
+    passport.setCachedPassport(passport.getDemoExtractedData());
+    const sample = contract.getDemoExtractedData();
+    contract.setCachedContract(sample);
+    contract.teachFromScannedContract(sample);
+    contract.getTrainingReferenceContracts();
+    expect(get).not.toHaveBeenCalled();
+    expect(set).not.toHaveBeenCalled();
+    expect(remove).not.toHaveBeenCalled();
   });
   it('cannot derive an identity from a filename or empty OCR', async () => {
     expect(eid.parseOcrText('', 'Arslan_784199318057330.png').idNumber).toBe('');
@@ -76,5 +99,20 @@ describe('Henry reviewed extraction safety', () => {
       success: false,
       error: 'Vault unavailable. Nothing was saved.',
     });
+  });
+    it('submits actual originals in multipart data without plaintext storage', async () => {
+      vi.mocked(authFetch).mockResolvedValue(new Response(JSON.stringify({ success: true, data: { id: 'saved' } })));
+      const file = new File(['%PDF-1.7'], 'source.pdf', { type: 'application/pdf' });
+      expect((await saveReviewedScan('passport', { reviewConfirmed: true }, '123', 'TEST', { sources: [file], propertyId: 'property' })).success).toBe(true);
+      const init = vi.mocked(authFetch).mock.calls.at(-1)?.[1];
+      expect(init?.body).toBeInstanceOf(FormData);
+      expect((init?.body as FormData).get('source')).toBeInstanceOf(File);
+      expect(init?.headers).toBeUndefined();
+    });
+    it('legacy benchmark callers fail honestly rather than claiming saved/autofilled', async () => {
+      expect((await passport.saveToDatabase()).success).toBe(false);
+      expect((await contract.saveToDatabase()).success).toBe(false);
+      expect(() => passport.toContractParty(passport.getDemoExtractedData())).toThrow('review required');
+      expect(() => contract.toCrmTenantProfile(contract.getDemoExtractedData())).toThrow('review');
   });
 });

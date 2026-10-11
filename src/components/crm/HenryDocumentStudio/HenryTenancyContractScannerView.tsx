@@ -218,7 +218,7 @@ export const HenryTenancyContractScannerView: FC = () => {
   });
   const [contractData, setContractData] = useState<DldTenancyContractData | null>(() => {
     const cached = henryTenancyContractScannerService.getCachedContract();
-    return cached ? henryTenancyContractScannerService.toDldTenancyContractData(cached) : null;
+    return cached ? henryTenancyContractScannerService.toDldTenancyContractData(cached, true) : null;
   });
   const [uploadedFile, setUploadedFile] = useState<File | null>(null);
   const [filePreviewUrl, setFilePreviewUrl] = useState<string | null>(null);
@@ -245,7 +245,7 @@ export const HenryTenancyContractScannerView: FC = () => {
     try {
       const result = await henryTenancyContractScannerService.scanContract(file);
       setScannedResult(result);
-      const dld = henryTenancyContractScannerService.toDldTenancyContractData(result);
+      const dld = henryTenancyContractScannerService.toDldTenancyContractData(result, true);
       setContractData(dld);
       setStatusMsg(`✓ Extracted agreement: ${result.property.buildingName} #${result.property.propertyNumber} (Rent AED ${result.financials.annualRentAed.toLocaleString()})`);
     } catch {
@@ -261,7 +261,7 @@ export const HenryTenancyContractScannerView: FC = () => {
     setUploadedFile(null);
     try {
       const demo = henryTenancyContractScannerService.getDemoExtractedData();
-      const dld = henryTenancyContractScannerService.toDldTenancyContractData(demo);
+      const dld = henryTenancyContractScannerService.toDldTenancyContractData(demo, true);
       setContractData(dld);
       setScannedResult(demo);
       setStatusMsg('✓ Loaded demo Tenancy Contract (Camelia 608).');
@@ -282,15 +282,14 @@ export const HenryTenancyContractScannerView: FC = () => {
 
   const handleLoadToJourney = () => {
     if (!contractData) return;
-    henryTenancyContractTemplateService.updateActiveDraft(contractData);
-    setStatusMsg(`✓ Loaded ${contractData.buildingName} Unit ${contractData.propertyNo} into 3.19.1 Unified Preparation Studio!`);
+    setStatusMsg('Autofill unavailable: contract benchmark data is not reviewed OCR.');
     setTimeout(() => setStatusMsg(null), 4000);
   };
 
-  const handleSaveToVault = () => {
+  const handleSaveToVault = async () => {
     if (!contractData) return;
-    henryTenancyContractTemplateService.saveContract(contractData);
-    setStatusMsg(`✓ Contract ${contractData.contractId} saved and archived to Henry Government Vault!`);
+    const result = await henryTenancyContractScannerService.saveToDatabase(scannedResult || undefined);
+    setStatusMsg(result.error || 'Nothing was saved.');
     setTimeout(() => setStatusMsg(null), 4000);
   };
 

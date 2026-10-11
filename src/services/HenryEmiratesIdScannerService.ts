@@ -10,10 +10,9 @@
  */
 
 import { parse as parseMrz } from 'mrz';
-import { ScanReview, canUseScan, saveReviewedScan, scanExpiry, validScanDate } from './henryScanReview';
+import { ScanReview, VaultSaveOptions, canUseScan, saveReviewedScan, scanExpiry, validScanDate } from './henryScanReview';
 import logger from '../utils/logger';
 import pdfWorkerUrl from 'pdfjs-dist/build/pdf.worker.min.mjs?url';
-import { safeStorage } from '../utils/safeStorage';
 import { ContractParty, ViewingFormPayload } from './HenryPdfEngineService';
 
 export interface EmiratesIdExtractedData extends ScanReview {
@@ -278,7 +277,7 @@ class HenryEmiratesIdScannerService {
    */
   setCachedEmiratesId(data: EmiratesIdExtractedData): void {
     this.activeSessionCache = { ...data };
-    if (!canUseScan(data)) { this.activeSessionCache = null; return; }
+    if (!canUseScan(data)) { this.clearCachedEmiratesId(); return; }
     this.notifyListeners(this.activeSessionCache);
   }
 
@@ -289,7 +288,6 @@ class HenryEmiratesIdScannerService {
     if (this.activeSessionCache) {
       return this.activeSessionCache;
     }
-    safeStorage.remove('whitecaves_henry_active_eid_cache_v1');
     return null;
   }
 
@@ -298,7 +296,6 @@ class HenryEmiratesIdScannerService {
    */
   clearCachedEmiratesId(): void {
     this.activeSessionCache = null;
-    safeStorage.remove('whitecaves_henry_active_eid_cache_v1');
     this.notifyListeners(null);
   }
 
@@ -756,10 +753,10 @@ class HenryEmiratesIdScannerService {
   /**
    * Persists extracted Emirates ID record to database endpoint and local session cache
    */
-  async saveToDatabase(extracted?: EmiratesIdExtractedData): Promise<{ success: boolean; id?: string; error?: string }> {
+  async saveToDatabase(extracted?: EmiratesIdExtractedData, options?: VaultSaveOptions): Promise<{ success: boolean; id?: string; error?: string }> {
     const data = extracted || this.getCachedEmiratesId();
     if (!data) return { success: false, error: 'No reviewed document.' };
-    const result = await saveReviewedScan('emirates_id', data, data.idNumber, data.fullNameEn);
+    const result = await saveReviewedScan('emirates_id', data, data.idNumber, data.fullNameEn, options);
     if (result.success) this.setCachedEmiratesId(data);
     return result;
   }

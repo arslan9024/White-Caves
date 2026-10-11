@@ -334,24 +334,22 @@ export const HenryPassportScannerView: FC = () => {
     });
   };
 
-  const handleSaveToVault = () => {
+  const handleSaveToVault = async () => {
     if (!extractedData) return;
-    henryPassportScannerService.setCachedPassport(extractedData);
-    setStatusMsg(`✓ Passport ${extractedData.passportNumber} (${extractedData.fullName}) saved to White Caves KYC Vault!`);
+    const result = await henryPassportScannerService.saveToDatabase(extractedData);
+    setStatusMsg(result.error || 'Nothing was saved.');
     setTimeout(() => setStatusMsg(null), 4000);
   };
 
   const handleAutoFillAsTenant = () => {
     if (!extractedData) return;
-    henryPassportScannerService.setCachedPassport(extractedData);
-    setStatusMsg(`✓ Auto-filled Tenancy Contract with ${extractedData.fullName} (${extractedData.passportNumber}) as Tenant!`);
+    setStatusMsg('Autofill unavailable: passport benchmark data is not reviewed OCR.');
     setTimeout(() => setStatusMsg(null), 4000);
   };
 
   const handleAutoFillAsLandlord = () => {
     if (!extractedData) return;
-    henryPassportScannerService.setCachedPassport(extractedData);
-    setStatusMsg(`✓ Auto-filled Tenancy Contract with ${extractedData.fullName} (${extractedData.passportNumber}) as Landlord/Owner!`);
+    setStatusMsg('Autofill unavailable: passport benchmark data is not reviewed OCR.');
     setTimeout(() => setStatusMsg(null), 4000);
   };
 

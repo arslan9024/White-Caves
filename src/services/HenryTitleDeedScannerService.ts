@@ -11,8 +11,7 @@
 
 import { TenancyContractPayload, ContractParty } from './HenryPdfEngineService';
 import henryEmiratesIdScannerService from './HenryEmiratesIdScannerService';
-import { ScanReview, canUseScan, saveReviewedScan } from './henryScanReview';
-import { safeStorage } from '../utils/safeStorage';
+import { ScanReview, VaultSaveOptions, canUseScan, saveReviewedScan } from './henryScanReview';
 
 export interface DldTitleDeedExtractedData extends ScanReview {
   // Document Meta
@@ -162,15 +161,14 @@ export const BUKO_COMMODITY_MADINAT_HIND_TITLE_DEED_SAMPLE: DldTitleDeedExtracte
 };
 
 class HenryTitleDeedScannerService {
-  private static readonly CACHE_KEY = 'whitecaves_henry_active_title_deed_cache_v1';
   private inMemoryCache: DldTitleDeedExtractedData | null = null;
   private listeners: Set<(data: DldTitleDeedExtractedData | null) => void> = new Set();
 
   /**
-   * Persists extracted Title Deed data into temporary session memory and localStorage
+   * Keeps reviewed Title Deed data in session memory only
    */
   setCachedTitleDeed(data: DldTitleDeedExtractedData): void {
-    if (!canUseScan(data)) return;
+    if (!canUseScan(data)) { this.clearCachedTitleDeed(); return; }
     this.inMemoryCache = { ...data };
     this.notifyListeners(this.inMemoryCache);
   }
@@ -180,7 +178,6 @@ class HenryTitleDeedScannerService {
    */
   getCachedTitleDeed(): DldTitleDeedExtractedData | null {
     if (this.inMemoryCache) return this.inMemoryCache;
-    safeStorage.remove(HenryTitleDeedScannerService.CACHE_KEY);
     return null;
   }
 
@@ -189,7 +186,6 @@ class HenryTitleDeedScannerService {
    */
   clearCachedTitleDeed(): void {
     this.inMemoryCache = null;
-    safeStorage.remove(HenryTitleDeedScannerService.CACHE_KEY);
     this.notifyListeners(null);
   }
 
@@ -345,10 +341,10 @@ class HenryTitleDeedScannerService {
   /**
    * Persists extracted Title Deed record to backend database and local cache
    */
-  async saveToDatabase(extracted?: DldTitleDeedExtractedData): Promise<{ success: boolean; id?: string; error?: string }> {
+  async saveToDatabase(extracted?: DldTitleDeedExtractedData, options?: VaultSaveOptions): Promise<{ success: boolean; id?: string; error?: string }> {
     const data = extracted || this.getCachedTitleDeed();
     if (!data) return { success: false, error: 'No reviewed document.' };
-    const result = await saveReviewedScan('title_deed', data, data.certificateNumber, data.ownerNameEn);
+    const result = await saveReviewedScan('title_deed', data, data.certificateNumber, data.ownerNameEn, options);
     if (result.success) this.setCachedTitleDeed(data);
     return result;
   }

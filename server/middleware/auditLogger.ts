@@ -9,7 +9,7 @@
 import { Request, Response, NextFunction } from 'express';
 import { Prisma } from '@prisma/client';
 import { prisma } from '../database.js';
-import logger from '../utils/logger.js';
+import logger, { requestLogPath } from '../utils/logger.js';
 
 export async function logAuditTrail(
   req: Request,
@@ -30,7 +30,7 @@ export async function logAuditTrail(
         description: `${action.toUpperCase()} on ${targetType}${targetId ? ` (${targetId})` : ''} by user ${userId || 'anonymous'}`,
         userId,
         metadata: {
-          path: req.originalUrl || req.url,
+          path: requestLogPath(req.originalUrl || req.url),
           method: req.method,
           ipAddress,
           userAgent,

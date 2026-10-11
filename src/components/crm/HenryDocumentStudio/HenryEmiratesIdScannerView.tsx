@@ -46,7 +46,8 @@ import henryEmiratesIdScannerService, {
   EmiratesIdExtractedData,
   EMPTY_EMIRATES_ID,
 } from '../../../services/HenryEmiratesIdScannerService';
-import { canUseScan, scanExpiry, validScanDate } from '../../../services/henryScanReview';
+import { canUseScan, scanExpiry, validScanDate, VaultSaveOptions } from '../../../services/henryScanReview';
+import HenryVaultControls from './HenryVaultControls';
 import HenrySharedDocumentUploader from './HenrySharedDocumentUploader';
 
 const StudioContainer = styled.div`
@@ -386,6 +387,7 @@ export const HenryEmiratesIdScannerView: FC = () => {
   };
 
   const handleLoadDemo = () => {
+    henryEmiratesIdScannerService.clearCachedEmiratesId();
     setFrontFile(null); setBackFile(null);
     setUploadedFile(null);
     const demo = henryEmiratesIdScannerService.getDemoExtractedData();
@@ -411,7 +413,10 @@ export const HenryEmiratesIdScannerView: FC = () => {
 
   const handleSaveToVault = async () => {
     if (!canUseScan(extractedData) || isScanning) return;
-    const result = await henryEmiratesIdScannerService.saveToDatabase(extractedData);
+    const sources = [frontFile, backFile].filter((file): file is File => !!file);
+    if (!sources.length) { setStatusMsg('Upload an original before archival. Suggestions alone cannot be archived.'); return; }
+    const result = await henryEmiratesIdScannerService.saveToDatabase(extractedData, { ...vaultOptions, sources });
+    if (result.success) setVaultOptions(previous => ({ ...previous, replacesId: undefined }));
     setStatusMsg(result.success ? 'Reviewed record saved to encrypted vault.' : result.error || 'Save failed.');
     setTimeout(() => setStatusMsg(null), 4000);
   };
@@ -449,16 +454,19 @@ export const HenryEmiratesIdScannerView: FC = () => {
     }, 2500);
   };
 
+  const [vaultOptions, setVaultOptions] = useState<VaultSaveOptions>({});
   return (
     <StudioContainer>
       <label>Capture side <select aria-label="Capture side" value={activeSideView} onChange={event => setActiveSideView(event.target.value as 'front' | 'back')}><option value="front">Front</option><option value="back">Back</option></select></label>
+      <HenryVaultControls docType="emirates_id" options={vaultOptions} onOptions={setVaultOptions}
+        onSuggestion={data => { henryEmiratesIdScannerService.clearCachedEmiratesId(); setFrontFile(null); setBackFile(null); setUploadedFile(null); setExtractedData(data as EmiratesIdExtractedData); }} />
       <p>{frontFile ? 'Front captured' : 'Front pending'} · {backFile ? 'Back captured' : 'Back pending'}</p>
       <p role="note">OCR is not proof of authenticity or ownership. Compare every field to the original before saving or autofill. Missing or uncertain values: rescan without glare, then correct below.</p>
       {extractedData?.demoOnly && <p role="alert">Demo only — saving and autofill disabled.</p>}
       {!!extractedData?.missingFields?.length && <p role="alert">Missing: {extractedData.missingFields.join(', ')}. Correct these fields or rescan.</p>}
       <label><input type="checkbox" aria-label="Confirm document review" checked={!!extractedData?.reviewConfirmed}
         disabled={!extractedData || extractedData.demoOnly || !!extractedData.missingFields?.length || isScanning}
-        onChange={event => setExtractedData(prev => prev ? { ...prev, reviewConfirmed: event.target.checked } : prev)} />
+        onChange={event => { henryEmiratesIdScannerService.clearCachedEmiratesId(); setExtractedData(prev => prev ? { ...prev, reviewConfirmed: event.target.checked } : prev); }} />
         I compared the fields to the original and confirm use for saving and autofill.</label>
 
       {/* ══════════ TOP HEADER & LIVE AI SCANNER STATUS ══════════ */}
@@ -764,7 +772,7 @@ export const HenryEmiratesIdScannerView: FC = () => {
                 <Calendar size={14} color="#EF4444" /> 4. Document Validity Dates
               </span>
               <span className="match-badge">
-                <Clock size={13} /> Active Valid (700+ Days)
+                <Clock size={13} /> {extractedData.expiryDate ? `${scanExpiry(extractedData.expiryDate).daysUntilExpiry} days to expiry` : 'Unknown expiry'}
               </span>
             </div>
             <div className="value-row">

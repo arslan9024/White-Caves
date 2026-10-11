@@ -37,7 +37,8 @@ describe('HenryTenancyContractScannerService — Optical AI Parser & Fill Detect
   });
 
   it('converts scanned contract to DldTenancyContractData for 1-click preparation studio loading', () => {
-    const dldData = henryTenancyContractScannerService.toDldTenancyContractData(SANIT_SINGH_CAMELIA_608_SAMPLE);
+    expect(() => henryTenancyContractScannerService.toDldTenancyContractData(SANIT_SINGH_CAMELIA_608_SAMPLE)).toThrow('review');
+    const dldData = henryTenancyContractScannerService.toDldTenancyContractData(SANIT_SINGH_CAMELIA_608_SAMPLE, true);
 
     expect(dldData.ownerName).toBe('SANIT SINGH NAGPAL');
     expect(dldData.tenantName).toBe('KESHIVANI MAYADEVAN');

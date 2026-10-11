@@ -6,7 +6,40 @@ import { createLogger } from '../../utils/logger.js';
 
 const log = createLogger('HenryVault');
 const encryption = new EncryptionService();
+// AES hex encoding + base64 must fit MongoDB's 16 MB document limit.
+export const maxSourceBytes = 4 * 1024 * 1024;
 export const documentTypes = ['emirates_id', 'title_deed', 'passport', 'tenancy_contract'] as const;
+export const activeDocumentFilter = {
+  OR: [{ replacedById: null }, { replacedById: { isSet: false } }],
+};
+
+export function referenceHash(owner: string, docType: string, reference: string): string {
+  return createHmac('sha256', vaultKey())
+    .update(`${owner}:${docType}:${reference.replace(/[\s-]/g, '').toLowerCase()}`)
+    .digest('hex');
+}
+
+export function prepareSource(files: Express.Multer.File[]) {
+  if (!files.length) return {};
+  if (files.length > 2 || files.reduce((total, file) => total + file.size, 0) > maxSourceBytes)
+    throw new AppError('Original files must total at most 4 MB', 413);
+  const sources = files.map(file => {
+    const bytes = file.buffer;
+    const mime = bytes.subarray(0, 5).toString() === '%PDF-' ? 'application/pdf'
+      : bytes.subarray(0, 8).equals(Buffer.from([137, 80, 78, 71, 13, 10, 26, 10])) ? 'image/png'
+      : bytes[0] === 255 && bytes[1] === 216 && bytes[2] === 255 ? 'image/jpeg' : null;
+    if (!mime || mime !== file.mimetype) throw new AppError('Original file signature does not match PDF, PNG or JPEG', 400);
+    return { mime, base64: bytes.toString('base64') };
+  });
+  return { encryptedSource: JSON.stringify(encryption.encryptMessage(JSON.stringify(sources), vaultKey())) };
+}
+
+export function decodeSource(encryptedSource: string, index: number): { mime: string; bytes: Buffer } {
+  const sources = JSON.parse(encryption.decryptMessage(JSON.parse(encryptedSource) as EncryptedMessage, vaultKey())) as Array<{ mime: string; base64: string }>;
+  const source = sources[index];
+  if (!source) throw new AppError('Original side not found', 404);
+  return { mime: source.mime, bytes: Buffer.from(source.base64, 'base64') };
+}
 
 export function vaultKey(): string {
   const key = process.env.ENCRYPTION_KEY;
@@ -34,12 +67,13 @@ function expiryTime(value: unknown): number {
   if (!match) return NaN;
   const time = Date.UTC(Number(match[3]), Number(match[2]) - 1, Number(match[1]));
   const date = new Date(time);
-  return date.getUTCDate() === Number(match[1]) && date.getUTCMonth() + 1 === Number(match[2])
+  return date.getUTCFullYear() === Number(match[3]) && date.getUTCDate() === Number(match[1]) && date.getUTCMonth() + 1 === Number(match[2])
     ? time
     : NaN;
 }
 
-export function prepareDocument(input: Record<string, unknown>) {
+export function prepareDocument(input: Record<string, unknown>, owner = '') {
+  if (!input || typeof input !== 'object' || Array.isArray(input)) throw new AppError('Document metadata required', 400);
   const extracted = input.extractedJson;
   if (!extracted || typeof extracted !== 'object' || Array.isArray(extracted))
     throw new AppError('Extracted fields required', 400);
@@ -91,12 +125,16 @@ export function prepareDocument(input: Record<string, unknown>) {
   const serialized = JSON.stringify(payload);
   if (serialized.length > 250000) throw new AppError('Extracted payload too large', 413);
   const key = vaultKey();
+  const expiry = expiryTime(fields.expiryDate || fields.dateOfExpiry || (fields.contract as Record<string, unknown> | undefined)?.endDate);
+  const configuredDays = Number(process.env.HENRY_RETENTION_DAYS || 365);
+  if (!Number.isInteger(configuredDays) || configuredDays < 1 || configuredDays > 3650)
+    throw new AppError('Invalid Henry retention review interval', 503);
   return {
     docType: input.docType as string,
-    referenceHash: createHmac('sha256', key)
-      .update(`${input.docType}:${reference.replace(/[\s-]/g, '').toLowerCase()}`)
-      .digest('hex'),
+    referenceHash: referenceHash(owner, String(input.docType), reference),
     encryptedPayload: JSON.stringify(encryption.encryptMessage(serialized, key)),
+    expiryAt: Number.isFinite(expiry) ? new Date(expiry) : null,
+    retentionUntil: new Date(Date.now() + configuredDays * 86400000),
   };
 }
 
@@ -107,12 +145,17 @@ export function decodeDocument(row: {
   createdAt: Date;
   updatedAt: Date;
   replacedById?: string | null;
+  leadId?: string | null;
+  propertyId?: string | null;
+  encryptedSource?: string | null;
+  retentionUntil?: Date | null;
+  reminderDismissedAt?: Date | null;
 }): Record<string, unknown> {
   const payload = JSON.parse(
     encryption.decryptMessage(JSON.parse(row.encryptedPayload) as EncryptedMessage, vaultKey())
   ) as Record<string, unknown>;
-  const fields = payload.extractedJson as Record<string, unknown>;
-  const expiry = expiryTime(fields.expiryDate);
+  const fields = (payload.extractedJson || {}) as Record<string, unknown>;
+  const expiry = expiryTime(fields.expiryDate || fields.dateOfExpiry || (fields.contract as Record<string, unknown> | undefined)?.endDate);
   return {
     ...payload,
     id: row.id,
@@ -120,10 +163,15 @@ export function decodeDocument(row: {
     createdAt: row.createdAt,
     updatedAt: row.updatedAt,
     replacedById: row.replacedById,
+    leadId: row.leadId,
+    propertyId: row.propertyId,
+    hasOriginal: !!row.encryptedSource,
+    retentionUntil: row.retentionUntil,
+    reminderDismissedAt: row.reminderDismissedAt,
     expiryStatus: Number.isFinite(expiry)
       ? expiry < Date.now()
         ? 'expired'
-        : 'current'
+        : expiry < Date.now() + 30 * 86400000 ? 'soon_expiring' : 'current'
       : 'unknown',
   };
 }

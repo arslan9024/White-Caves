@@ -11,10 +11,8 @@ import henryTenancyContractTemplateService, {
 import henryTitleDeedScannerService from '../../../../services/HenryTitleDeedScannerService';
 import henryEmiratesIdScannerService from '../../../../services/HenryEmiratesIdScannerService';
 import henryPassportScannerService from '../../../../services/HenryPassportScannerService';
-import henryTenancyContractScannerService, {
-  SANIT_SINGH_CAMELIA_608_SAMPLE,
-  SVETLANA_JANUSIA_XH2858B_SAMPLE,
-} from '../../../../services/HenryTenancyContractScannerService';
+import { canUseScan } from '../../../../services/henryScanReview';
+import henryTenancyContractScannerService from '../../../../services/HenryTenancyContractScannerService';
 
 export interface UseHenryTenancyContractModalLogicProps {
   isOpen: boolean;
@@ -106,18 +104,22 @@ export function useHenryTenancyContractModalLogic({
 
       if (targetType === 'title_deed') {
         const deedData = await henryTitleDeedScannerService.scanTitleDeed(file);
+        if (!canUseScan(deedData)) { setStatusMessage('Review and confirm in the title deed scanner first. No fields were applied.'); return; }
         setContractData(prev => henryTenancyContractTemplateService.populateFromTitleDeed(prev, deedData));
         setStatusMessage(`✓ Scanned "${file.name}": Extracted Property (${deedData.buildingNameEn || 'CAMELIA'} #${deedData.propertyNumber || '608'}) & Owner! Template updated.`);
       } else if (targetType === 'emirates_id_tenant') {
         const eidData = await henryEmiratesIdScannerService.scanEmiratesId(file);
+        if (!canUseScan(eidData)) { setStatusMessage('Review and confirm in the ID scanner first. No fields were applied.'); return; }
         setContractData(prev => henryTenancyContractTemplateService.populateFromEmiratesId(prev, eidData, 'tenant'));
         setStatusMessage(`✓ Scanned "${file.name}": Extracted Tenant (${eidData.fullNameEn || 'Tenant'})! Template updated.`);
       } else if (targetType === 'emirates_id_landlord') {
         const eidData = await henryEmiratesIdScannerService.scanEmiratesId(file);
+        if (!canUseScan(eidData)) { setStatusMessage('Review and confirm in the ID scanner first. No fields were applied.'); return; }
         setContractData(prev => henryTenancyContractTemplateService.populateFromEmiratesId(prev, eidData, 'landlord'));
         setStatusMessage(`✓ Scanned "${file.name}": Extracted Landlord (${eidData.fullNameEn || 'Owner'})! Template updated.`);
       } else if (targetType === 'passport_tenant') {
         const passportData = await henryPassportScannerService.scanPassport(file);
+        if (!canUseScan(passportData)) { setStatusMessage('Passport benchmark data cannot autofill. No fields were applied.'); return; }
         setContractData(prev => henryTenancyContractTemplateService.populateFromPassport(prev, passportData, 'tenant'));
         setStatusMessage(`✓ Scanned "${file.name}": Extracted Passport (${passportData.fullName || 'Tenant'})! Template updated.`);
       } else {
@@ -128,7 +130,7 @@ export function useHenryTenancyContractModalLogic({
         setStatusMessage(`✓ Scanned "${file.name}": Extracted all Contract fields (Property, Landlord, Tenant, Rent AED ${scannedContract.financials.annualRentAed.toLocaleString()})! Template filled.`);
       }
     } catch {
-      setStatusMessage(`Error processing "${file.name}". Falling back to optical ingestion.`);
+      setStatusMessage('Review required or scanning failed. No unconfirmed fields were applied; there is no fallback ingestion.');
     } finally {
       setIsProcessingOcr(false);
       setTimeout(() => setStatusMessage(null), 5000);
@@ -141,6 +143,7 @@ export function useHenryTenancyContractModalLogic({
     setStatusMessage('Scanning Title Deed & validating DLD Registry...');
     try {
       const deedData = await henryTitleDeedScannerService.scanTitleDeed('sample');
+      if (!canUseScan(deedData)) { setStatusMessage('Demo only. Upload and confirm review in the title deed scanner.'); return; }
       setContractData(prev =>
         henryTenancyContractTemplateService.populateFromTitleDeed(prev, deedData)
       );
@@ -159,6 +162,7 @@ export function useHenryTenancyContractModalLogic({
     setStatusMessage('Scanning Tenant Emirates ID (TD1 MRZ & Bio-Data)...');
     try {
       const eidData = await henryEmiratesIdScannerService.scanEmiratesId('sample');
+      if (!canUseScan(eidData)) { setStatusMessage('Demo only. Upload and confirm review in the ID scanner.'); return; }
       setContractData(prev =>
         henryTenancyContractTemplateService.populateFromEmiratesId(prev, eidData, 'tenant')
       );
@@ -177,6 +181,7 @@ export function useHenryTenancyContractModalLogic({
     setStatusMessage('Scanning International Passport (TD3 MRZ)...');
     try {
       const passportData = await henryPassportScannerService.scanPassport('sample');
+      if (!canUseScan(passportData)) { setStatusMessage('Passport benchmark data cannot autofill.'); return; }
       setContractData(prev =>
         henryTenancyContractTemplateService.populateFromPassport(prev, passportData, 'tenant')
       );
@@ -219,28 +224,19 @@ export function useHenryTenancyContractModalLogic({
 
   // Load Benchmark 1: Camelia 608 (Sanit Singh & Keshivani)
   const handleLoadCameliaSample = useCallback(() => {
-    const dldData = henryTenancyContractScannerService.toDldTenancyContractData(SANIT_SINGH_CAMELIA_608_SAMPLE);
-    setContractData(prev => ({ ...prev, ...(dldData as DldTenancyContractData) }));
-    henryTenancyContractTemplateService.saveDraft(dldData as DldTenancyContractData);
-    setStatusMessage('Loaded benchmark sample: Camelia Unit 608 (Sanit Singh & Keshivani).');
+    setStatusMessage('Benchmark preview only. It cannot populate a live contract.');
     setTimeout(() => setStatusMessage(null), 3500);
   }, []);
 
   // Load Benchmark 2: Janusia XH2858B (Svetlana & William Abernethy)
   const handleLoadJanusiaSample = useCallback(() => {
-    const dldData = henryTenancyContractScannerService.toDldTenancyContractData(SVETLANA_JANUSIA_XH2858B_SAMPLE);
-    setContractData(prev => ({ ...prev, ...(dldData as DldTenancyContractData) }));
-    henryTenancyContractTemplateService.saveDraft(dldData as DldTenancyContractData);
-    setStatusMessage('Loaded benchmark sample: Janusia XH2858B (Svetlana & William Abernethy).');
+    setStatusMessage('Benchmark preview only. It cannot populate a live contract.');
     setTimeout(() => setStatusMessage(null), 3500);
   }, []);
 
   // Load Complete Sample Preset
   const handleLoadSamplePreset = useCallback(() => {
-    const demo = henryTenancyContractTemplateService.getDemoPreset();
-    setContractData(demo);
-    henryTenancyContractTemplateService.saveDraft(demo);
-    setStatusMessage('Loaded official DLD sample contract (Viridis A #504).');
+    setStatusMessage('Benchmark preview only. It cannot populate a live contract.');
     setTimeout(() => setStatusMessage(null), 3000);
   }, []);
 
@@ -264,10 +260,10 @@ export function useHenryTenancyContractModalLogic({
     }, 4500);
   }, []);
 
-  // Save Finalized Contract to Vault & LocalStorage
+  // This legacy registry is session-only, not the encrypted server archive.
   const handleSaveAndArchive = useCallback(() => {
     henryTenancyContractTemplateService.saveContract(contractData);
-    setStatusMessage(`Contract ${contractData.contractId} saved and archived to Henry Vault & LocalStorage!`);
+    setStatusMessage(`Contract ${contractData.contractId} retained in session memory only. It has not been archived to the encrypted vault.`);
     setTimeout(() => setStatusMessage(null), 4000);
   }, [contractData]);
 

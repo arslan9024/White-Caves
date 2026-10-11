@@ -385,10 +385,9 @@ export const HenryTenancyContractJourneyView: FC = () => {
     }
   };
 
-  // Save Draft to Vault
-  const handleSaveToVault = () => {
+  const handleSaveForSession = () => {
     henryTenancyContractTemplateService.saveContract(contractData);
-    setStatusMsg(`✓ Contract ${contractData.contractId} saved to White Caves Vault!`);
+    setStatusMsg(`Contract ${contractData.contractId} kept for this session only. Not saved to the encrypted vault; it will be lost on reload.`);
     setTimeout(() => setStatusMsg(null), 4000);
   };
 
@@ -915,7 +914,7 @@ export const HenryTenancyContractJourneyView: FC = () => {
           {activeStage === 4 && (
             <FormCard>
               <h4 style={{ margin: 0, fontSize: '0.95rem', fontWeight: 800, color: 'var(--color-1e293b, #1E293B)' }}>
-                Stage 4: Endorsement Signatures & Vault Persistence
+                Stage 4: Endorsement Signatures & Session Draft
               </h4>
 
               <FormGrid $cols={2}>
@@ -949,8 +948,8 @@ export const HenryTenancyContractJourneyView: FC = () => {
                 <PrimaryBtn $variant="secondary" onClick={handlePrintPdf} style={{ flex: 1 }}>
                   <Printer size={14} /> Print / Save PDF
                 </PrimaryBtn>
-                <PrimaryBtn $variant="primary" onClick={handleSaveToVault} style={{ flex: 1 }}>
-                  <Save size={14} /> Save to Henry Vault
+                <PrimaryBtn $variant="primary" onClick={handleSaveForSession} style={{ flex: 1 }}>
+                  <Save size={14} /> Keep for this session only
                 </PrimaryBtn>
               </div>
 
