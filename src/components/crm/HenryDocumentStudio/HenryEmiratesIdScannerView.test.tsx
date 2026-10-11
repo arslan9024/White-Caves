@@ -2,7 +2,7 @@ import { describe, it, expect, vi } from 'vitest';
 import { fireEvent, render, screen } from '@testing-library/react';
 import React from 'react';
 import HenryEmiratesIdScannerView from './HenryEmiratesIdScannerView';
-import eid from '../../../services/HenryEmiratesIdScannerService';
+import eid, { EMPTY_EMIRATES_ID } from '../../../services/HenryEmiratesIdScannerService';
 
 describe('HenryEmiratesIdScannerView', () => {
   it('renders Emirates ID verification studio with action buttons', () => {
@@ -24,11 +24,42 @@ describe('HenryEmiratesIdScannerView', () => {
   });
   it('shows unknown rather than NaN days for an impossible expiry', () => {
     const demo = eid.getDemoExtractedData();
-    const mock = vi.spyOn(eid, 'getDemoExtractedData').mockReturnValue({ ...demo, expiryDate: '31/02/2027' });
+    const mock = vi
+      .spyOn(eid, 'getDemoExtractedData')
+      .mockReturnValue({ ...demo, expiryDate: '31/02/2027' });
     render(<HenryEmiratesIdScannerView />);
     fireEvent.click(screen.getByRole('button', { name: /Load Demo Benchmark/i }));
     expect(screen.getByText('Unknown expiry')).toBeInTheDocument();
     expect(screen.queryByText(/NaN days to expiry/)).not.toBeInTheDocument();
     mock.mockRestore();
+  });
+  it('requires fresh expired-ID acknowledgment before review or downstream reuse', () => {
+    const mock = vi.spyOn(eid, 'getCachedEmiratesId').mockReturnValue({
+      ...EMPTY_EMIRATES_ID,
+      idNumber: '784-2001-0000001-1',
+      fullNameEn: 'TEST PERSON',
+      expiryDate: '01/01/2002',
+      missingFields: [],
+      demoOnly: false,
+      reviewConfirmed: false,
+    });
+    try {
+      render(<HenryEmiratesIdScannerView />);
+      const review = screen.getByLabelText('Confirm document review');
+      const autofill = screen.getByRole('button', { name: 'Auto-Fill Tenancy (as Tenant)' });
+      expect(review).toBeDisabled();
+      expect(autofill).toBeDisabled();
+      fireEvent.click(screen.getByLabelText('Acknowledge expired ID'));
+      expect(review).not.toBeDisabled();
+      expect(autofill).toBeDisabled();
+      fireEvent.click(review);
+      expect(autofill).not.toBeDisabled();
+      fireEvent.click(screen.getByLabelText('Acknowledge expired ID'));
+      expect(review).not.toBeChecked();
+      expect(autofill).toBeDisabled();
+    } finally {
+      mock.mockRestore();
+      eid.clearCachedEmiratesId();
+    }
   });
 });
