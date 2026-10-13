@@ -9,7 +9,7 @@ import type { DashboardView, UnifiedCRMProps } from './types';
 // TYPES & CONSTANTS
 // ============================================================================
 
-// Local dashboard configuration type (used only in this component's DASHBOARD_CONFIGS)
+// Local dashboard configuration type used only in this component.
 interface LocalDashboardConfig {
   id: DashboardView;
   label: string;
@@ -20,7 +20,7 @@ interface LocalDashboardConfig {
   features: string[];
 }
 
-const DASHBOARD_CONFIGS: Record<DashboardView, LocalDashboardConfig> = {
+const LOCAL_DASHBOARD_CONFIGS: Record<DashboardView, LocalDashboardConfig> = {
   company: {
     id: 'company',
     label: 'Company Overview',
@@ -359,12 +359,12 @@ const UnifiedCRM: React.FC<UnifiedCRMProps> = ({
 
   // Get available dashboards based on user role
   const availableDashboards = useMemo(() => {
-    return Object.values(DASHBOARD_CONFIGS).filter(config => config.roles.includes(userRole));
+    return Object.values(LOCAL_DASHBOARD_CONFIGS).filter(config => config.roles.includes(userRole));
   }, [userRole]);
 
   // Get current dashboard configuration
   const currentConfig = useMemo(() => {
-    return DASHBOARD_CONFIGS[currentView];
+    return LOCAL_DASHBOARD_CONFIGS[currentView];
   }, [currentView]);
 
   // Handle view change
@@ -464,7 +464,9 @@ const UnifiedCRM: React.FC<UnifiedCRMProps> = ({
 
           {/* Features Section */}
           <Card>
-            <h3 style={{ marginTop: 0, marginBottom: 12, color: 'var(--color-333, #333)' }}>Available Features</h3>
+            <h3 style={{ marginTop: 0, marginBottom: 12, color: 'var(--color-333, #333)' }}>
+              Available Features
+            </h3>
             <FeatureList>
               {currentConfig.features.map(feature => (
                 <li key={feature}>{feature.replace(/_/g, ' ').toUpperCase()}</li>
