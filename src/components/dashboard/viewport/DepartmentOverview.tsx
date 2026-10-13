@@ -11,6 +11,9 @@ import { Badge } from '../../ui';
 import {
   ContentArea,
   ContentHeader,
+  DepartmentLaunchpadAction,
+  DepartmentLaunchpadActions,
+  DepartmentLaunchpadEmptyState,
 } from '../../../pages/crm/CRMHubPage.styles';
 import { BuildingTier } from '../../../pages/crm/CRMHubPage.logic';
 import FounderExecutiveDashboard from './FounderExecutiveDashboard';
@@ -29,6 +32,10 @@ export const DepartmentOverview: FC<DepartmentOverviewProps> = ({
   department,
   onLaunchSubItem,
 }) => {
+  const launchItems = department.subGroups
+    ? department.subGroups.flatMap(group => group.items ?? [])
+    : department.items ?? [];
+
   if (department.id === 'dept-md') {
     return <FounderExecutiveDashboard onNavigateToModule={onLaunchSubItem} />;
   }
@@ -127,62 +134,26 @@ export const DepartmentOverview: FC<DepartmentOverviewProps> = ({
           <h4 style={{ margin: '0 0 0.85rem 0', fontSize: '1.05rem', fontWeight: 800, color: 'var(--color-1e293b, #1E293B)' }}>
             ⚡ Operational Sub-Nodes Launchpad
           </h4>
-          <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.75rem' }}>
-            {department.subGroups
-              ? department.subGroups
-                  .flatMap(sg => sg.items)
-                  .filter((item): item is { id: string; label: string; icon: string } => Boolean(item))
-                  .map(item => (
-                    <motion.button
-                      whileHover={{ scale: 1.03 }}
-                      whileTap={{ scale: 0.97 }}
-                      key={item.id + item.label}
-                      onClick={() => onLaunchSubItem(item.id)}
-                      style={{
-                        background: '#FFFFFF',
-                        border: '1px solid rgba(239, 68, 68, 0.3)',
-                        borderRadius: '10px',
-                        padding: '10px 16px',
-                        fontSize: '0.85rem',
-                        fontWeight: 800,
-                        color: '#EF4444',
-                        cursor: 'pointer',
-                        display: 'flex',
-                        alignItems: 'center',
-                        gap: '8px',
-                        boxShadow: '0 2px 8px rgba(239, 68, 68, 0.08)',
-                        transition: 'all 0.15s ease',
-                      }}
-                    >
-                      <span>{item.icon}</span> Launch {item.label} ➔
-                    </motion.button>
-                  ))
-              : department.items?.map(item => (
-                  <motion.button
-                    whileHover={{ scale: 1.03 }}
-                    whileTap={{ scale: 0.97 }}
-                    key={item.id + item.label}
-                    onClick={() => onLaunchSubItem(item.id)}
-                    style={{
-                      background: '#FFFFFF',
-                      border: '1px solid rgba(239, 68, 68, 0.3)',
-                      borderRadius: '10px',
-                      padding: '10px 16px',
-                      fontSize: '0.85rem',
-                      fontWeight: 800,
-                      color: '#EF4444',
-                      cursor: 'pointer',
-                      display: 'flex',
-                      alignItems: 'center',
-                      gap: '8px',
-                      boxShadow: '0 2px 8px rgba(239, 68, 68, 0.08)',
-                      transition: 'all 0.15s ease',
-                    }}
-                  >
-                    <span>{item.icon}</span> Launch {item.label} ➔
-                  </motion.button>
-                ))}
-          </div>
+          {launchItems.length > 0 ? (
+            <DepartmentLaunchpadActions>
+              {launchItems.map(item => (
+                <DepartmentLaunchpadAction
+                  key={item.id}
+                  type="button"
+                  whileHover={{ scale: 1.03 }}
+                  whileTap={{ scale: 0.97 }}
+                  onClick={() => onLaunchSubItem(item.id)}
+                >
+                  <span aria-hidden="true">{item.icon}</span>
+                  Launch {item.label} ➔
+                </DepartmentLaunchpadAction>
+              ))}
+            </DepartmentLaunchpadActions>
+          ) : (
+            <DepartmentLaunchpadEmptyState role="status">
+              No operational modules are available for this department.
+            </DepartmentLaunchpadEmptyState>
+          )}
         </motion.div>
       </div>
     </ContentArea>

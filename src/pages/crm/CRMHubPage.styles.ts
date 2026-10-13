@@ -6,6 +6,7 @@
  */
 
 import styled from 'styled-components';
+import { motion } from 'framer-motion';
 
 export const HubContainer = styled.div`
   min-height: 100vh;
@@ -231,6 +232,58 @@ export const ContentHeader = styled.div`
   background: #F8FAFC;
   flex-wrap: wrap;
   gap: 0.75rem;
+`;
+
+export const DepartmentLaunchpadActions = styled.div`
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+
+  @media (max-width: 600px) {
+    flex-direction: column;
+  }
+`;
+
+export const DepartmentLaunchpadAction = styled(motion.button)`
+  min-height: 44px;
+  padding: 10px 16px;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  border: 1px solid rgba(239, 68, 68, 0.3);
+  border-radius: 10px;
+  background: #FFFFFF;
+  color: #EF4444;
+  font-size: 0.85rem;
+  font-weight: 800;
+  cursor: pointer;
+  box-shadow: 0 2px 8px rgba(239, 68, 68, 0.08);
+  transition: background 0.15s ease, border-color 0.15s ease, box-shadow 0.15s ease;
+
+  &:hover {
+    background: #FEF2F2;
+    border-color: #EF4444;
+  }
+
+  &:focus-visible {
+    outline: 3px solid #EF4444;
+    outline-offset: 3px;
+  }
+
+  @media (max-width: 600px) {
+    width: 100%;
+    justify-content: flex-start;
+  }
+`;
+
+export const DepartmentLaunchpadEmptyState = styled.p`
+  margin: 0;
+  padding: 1rem;
+  border: 1px dashed #CBD5E1;
+  border-radius: 10px;
+  background: #F8FAFC;
+  color: #475569;
+  font-size: 0.88rem;
 `;
 
 export const LiveCorporateTicker = styled.div`
