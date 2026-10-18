@@ -2,6 +2,8 @@
 import { BrowserRouter, Routes, Route, Navigate, useLocation, useNavigate } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 import { SpeedInsights } from '@vercel/speed-insights/react';
+import { CookieConsent } from './components/common/CookieConsent';
+import { ToastNotificationSystem } from './components/common/ToastNotificationSystem/ToastNotificationSystem';
 import { setLoading } from './store/userSlice';
 import { setTheme, setActiveRole } from './store/navigationSlice';
 import { LanguageProvider } from './context/LanguageContext';
@@ -412,10 +414,21 @@ function FounderRedirectGuard(): React.JSX.Element | null {
 function App(): React.JSX.Element {
   const dispatch = useDispatch<AppDispatch>();
   const user = useSelector((state: RootState) => selectSessionUser(state));
+  const [consentGranted, setConsentGranted] = useState(false);
 
   // Initialise real-time Socket.io connection — connects when auth token is
   // present, disconnects on logout, and pushes server events into Redux.
   useSocket();
+
+  useEffect(() => {
+    if (localStorage.getItem('wc_cookie_consent') === 'accepted') {
+      setConsentGranted(true);
+    }
+
+    const handleConsent = (): void => setConsentGranted(true);
+    window.addEventListener('consent_granted', handleConsent);
+    return () => window.removeEventListener('consent_granted', handleConsent);
+  }, []);
 
   useEffect(() => {
     const controller = new AbortController();
@@ -743,7 +756,7 @@ function App(): React.JSX.Element {
                           <a href="#main-content" className="skip-to-content">
                             Skip to main content
                           </a>
-                          <SpeedInsights />
+                          {consentGranted && <SpeedInsights />}
                           <Suspense fallback={null}>
                             <WebVitalsTracker />
                           </Suspense>
@@ -958,6 +971,8 @@ function App(): React.JSX.Element {
                             </LocationKeyWrapper>
                           </main>
                         </BrowserRouter>
+                        <CookieConsent />
+                        <ToastNotificationSystem />
                       </WorkspaceProvider>
                     </UserRoleProvider>
                   </CurrencyProvider>

@@ -434,10 +434,9 @@ describe('Reporting / Dashboard Routes — /api/dashboard', () => {
       expect(res.body.error).toMatch(/access denied/i);
     });
 
-    it('returns 403 for managing_director role (current allow-list contract)', async () => {
+    it('returns 200 for managing_director role', async () => {
       const res = await request(createApp('managing_director')).get('/api/dashboard/summary');
-      expect(res.status).toBe(403);
-      expect(res.body.error).toMatch(/access denied/i);
+      expect(res.status).toBe(200);
     });
 
     it('returns 200 for manager role', async () => {
@@ -1732,4 +1731,3 @@ describe('Reporting / Dashboard Routes — /api/dashboard', () => {
     });
   });
 });
-

@@ -19,6 +19,7 @@
  */
 
 import { Router, Response } from 'express';
+import { Prisma } from '@prisma/client';
 import { asyncHandler, AppError } from '../middleware/errorHandler.js';
 import { AuthRequest } from '../middleware/auth.js';
 import { prisma } from '../database.js';

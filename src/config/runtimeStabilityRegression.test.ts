@@ -35,7 +35,7 @@ describe('Runtime stability regressions', () => {
   });
 
   it('keeps Redux dev middleware warn thresholds configured to reduce console noise', () => {
-    const storeSource = fs.readFileSync(path.resolve(SRC_ROOT, 'store/store.tsx'), 'utf8');
+    const storeSource = fs.readFileSync(path.resolve(SRC_ROOT, 'store/store.ts'), 'utf8');
 
     expect(storeSource).toContain('const DEV_MIDDLEWARE_WARN_AFTER_MS = 128');
     expect(storeSource).toContain('serializableCheck: {');

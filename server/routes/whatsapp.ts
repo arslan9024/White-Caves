@@ -7,8 +7,9 @@ const router = Router();
 
 /** Helper to get engine from URL param */
 function getEngine(req: Request) {
-  const agentId = req.params.agentId || 'nina-md-primary';
-  return getWhatsAppEngine(agentId);
+  const parameter = req.params.agentId;
+  const agentId = Array.isArray(parameter) ? parameter[0] : parameter;
+  return getWhatsAppEngine(agentId || 'nina-md-primary');
 }
 
 /**
@@ -38,7 +39,9 @@ router.get('/:agentId/qr', async (req: Request, res: Response) => {
   if (!qrString) {
     return res.json({
       success: false,
-      message: client.isConnected() ? 'Already authenticated and connected!' : 'QR code not generated yet. Client is initializing...',
+      message: client.isConnected()
+        ? 'Already authenticated and connected!'
+        : 'QR code not generated yet. Client is initializing...',
       status: client.getStatus(),
     });
   }
@@ -91,7 +94,14 @@ function validateSendMessagePayload(body: unknown): WhatsAppSendMessagePayload {
     throw new Error('Invalid request body');
   }
   const { to, message } = body as Record<string, unknown>;
-  if (!to || typeof to !== 'string' || !to.trim() || !message || typeof message !== 'string' || !message.trim()) {
+  if (
+    !to ||
+    typeof to !== 'string' ||
+    !to.trim() ||
+    !message ||
+    typeof message !== 'string' ||
+    !message.trim()
+  ) {
     throw new Error('Both "to" and "message" string parameters are required');
   }
   return { to: to.trim(), message: message.trim() };
@@ -121,7 +131,12 @@ router.post('/:agentId/pair-code', async (req: Request, res: Response) => {
   try {
     validated = validatePairCodePayload(req.body);
   } catch (valErr) {
-    return res.status(400).json({ success: false, error: valErr instanceof Error ? valErr.message : 'Validation failed' });
+    return res
+      .status(400)
+      .json({
+        success: false,
+        error: valErr instanceof Error ? valErr.message : 'Validation failed',
+      });
   }
 
   const { phoneNumber } = validated;
@@ -134,7 +149,8 @@ router.post('/:agentId/pair-code', async (req: Request, res: Response) => {
       data: {
         phoneNumber,
         pairingCode: code,
-        instructions: 'Open WhatsApp on your phone -> Linked Devices -> Link with phone number -> Enter this code',
+        instructions:
+          'Open WhatsApp on your phone -> Linked Devices -> Link with phone number -> Enter this code',
       },
     });
   } catch (err) {
@@ -154,7 +170,12 @@ router.post('/:agentId/send', async (req: Request, res: Response) => {
   try {
     validated = validateSendMessagePayload(req.body);
   } catch (valErr) {
-    return res.status(400).json({ success: false, error: valErr instanceof Error ? valErr.message : 'Validation failed' });
+    return res
+      .status(400)
+      .json({
+        success: false,
+        error: valErr instanceof Error ? valErr.message : 'Validation failed',
+      });
   }
 
   const { to, message } = validated;
@@ -164,7 +185,8 @@ router.post('/:agentId/send', async (req: Request, res: Response) => {
     if (!client.isConnected()) {
       return res.status(400).json({
         success: false,
-        error: 'WhatsApp client is not connected yet. Please link device via QR code or Pairing Code first.',
+        error:
+          'WhatsApp client is not connected yet. Please link device via QR code or Pairing Code first.',
         status: client.getStatus(),
       });
     }
@@ -215,7 +237,12 @@ router.post('/:agentId/process', async (req: Request, res: Response) => {
   try {
     validated = validateNinaProcessPayload(req.body);
   } catch (valErr) {
-    return res.status(400).json({ success: false, error: valErr instanceof Error ? valErr.message : 'Validation failed' });
+    return res
+      .status(400)
+      .json({
+        success: false,
+        error: valErr instanceof Error ? valErr.message : 'Validation failed',
+      });
   }
 
   const { message, from, senderName } = validated;

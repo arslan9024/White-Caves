@@ -148,7 +148,7 @@
     "lint": "eslint . --ext .js,.jsx,.ts,.tsx",
     "lint:fix": "eslint . --ext .js,.jsx,.ts,.tsx --fix",
     "typecheck:server": "node --max-old-space-size=4096 ./node_modules/typescript/bin/tsc --noEmit -p tsconfig.server.json",
-    "quality:quick": "npm run typecheck && npm run lint && npm run build",
+    "quality:quick": "npm run typecheck && npm run typecheck:server && npm run lint && npm run build",
     "format": "prettier --write \"src/**/*.{js,jsx,ts,tsx,json,css,scss}\"",
     "format:check": "prettier --check \"src/**/*.{js,jsx,ts,tsx,json,css,scss}\"",
     "audit": "npm audit",
