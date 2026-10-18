@@ -694,8 +694,8 @@
   border-radius: 4px;
 }
 
-/* ── Responsive: hide desktop nav at ≤ 900px ────────────────── */
-@media (max-width: 900px) {
+/* ── Responsive: hide desktop nav when its full action set no longer fits ── */
+@media (max-width: 1100px) {
   .public-navbar__desktop-nav,
   .public-navbar__list-btn,
   .public-navbar__signin,
@@ -715,6 +715,10 @@
   .public-navbar__inner {
     padding: 0 1rem;
     height: 60px;
+  }
+
+  .public-navbar__user-name {
+    display: none;
   }
 
   .public-navbar__brand-line2 {

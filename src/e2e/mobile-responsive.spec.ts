@@ -17,12 +17,15 @@ test.describe('Mobile 375px viewport — responsive layout', () => {
     await page.setViewportSize(MOBILE_VIEWPORT);
   });
 
-  test('homepage loads without horizontal overflow at 375px', async ({ page }) => {
+  test('homepage has no horizontal overflow at supported widths', async ({ page }) => {
     await page.goto('/');
     await page.waitForLoadState('domcontentloaded');
 
-    const bodyScrollWidth = await page.evaluate(() => document.body.scrollWidth);
-    expect(bodyScrollWidth).toBeLessThanOrEqual(MOBILE_VIEWPORT.width + OVERFLOW_TOLERANCE_PX);
+    for (const width of [375, 768, 1024, 1440]) {
+      await page.setViewportSize({ width, height: MOBILE_VIEWPORT.height });
+      const documentWidth = await page.evaluate(() => document.documentElement.scrollWidth);
+      expect(documentWidth, `Document width at ${width}px viewport`).toBeLessThanOrEqual(width + 1);
+    }
 
     // Body should be visible
     await expect(page.locator('body')).toBeVisible();
