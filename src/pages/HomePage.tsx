@@ -119,6 +119,14 @@ const HomePage: FC = () => {
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, []);
 
+  useEffect(() => {
+    ensureHomepageHeroPreload();
+
+    return () => {
+      cleanupHomepageHeroPreload();
+    };
+  }, []);
+
   // Use live data when available; fall back to static dummy data before API resolves
   const displayedFeatured = useMemo(
     () => (featuredProperties.length > 0 ? featuredProperties : FALLBACK_FEATURED),
