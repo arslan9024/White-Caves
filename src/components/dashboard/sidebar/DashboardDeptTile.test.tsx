@@ -28,7 +28,12 @@ describe('DashboardDeptTile', () => {
     const onToggleSubGroup = vi.fn();
     const selectedDept = {
       ...defaultProps.selectedDept,
-      subGroups: [{ name: 'Inventory', items: [{ id: 'properties', label: 'Properties', icon: '🏠' }] }],
+      subGroups: [
+        {
+          name: '🏡 Inventory Control Center',
+          items: [{ id: 'properties', label: 'Properties', icon: '🏠' }],
+        },
+      ],
     };
     render(
       <DashboardDeptTile
@@ -38,10 +43,14 @@ describe('DashboardDeptTile', () => {
       />
     );
 
-    const subgroup = screen.getByRole('button', { name: /Inventory/ });
+    const subgroup = screen.getByRole('button', { name: /Inventory Control Center/ });
     expect(subgroup).toHaveAttribute('aria-expanded', 'false');
+    const subgroupId = subgroup.getAttribute('aria-controls');
+    expect(subgroupId).toBeTruthy();
+    expect(subgroupId).not.toMatch(/\s/);
+    expect(document.getElementById(subgroupId ?? '')).toBeInTheDocument();
     fireEvent.click(subgroup);
 
-    expect(onToggleSubGroup).toHaveBeenCalledWith('sales-Inventory');
+    expect(onToggleSubGroup).toHaveBeenCalledWith('sales-🏡 Inventory Control Center');
   });
 });
