@@ -1,0 +1,29 @@
+{
+  "title": "DLD Market Intelligence",
+  "description": "Market and regulatory updates from official UAE sources.",
+  "scope": "UAE only",
+  "loading": "Loading UAE market updates.",
+  "error": "UAE market updates could not be loaded.",
+  "empty": "No UAE market updates are available.",
+  "readSource": "Open source",
+  "articles": {
+    "dldMarket": {
+      "title": "Dubai market reports",
+      "description": "Explore official transaction data and real-estate market publications.",
+      "source": "Dubai Land Department",
+      "category": "Market data"
+    },
+    "reraUpdates": {
+      "title": "RERA regulatory updates",
+      "description": "Review Dubai real-estate guidance and regulatory notices.",
+      "source": "Real Estate Regulatory Agency",
+      "category": "Regulation"
+    },
+    "uaePolicy": {
+      "title": "UAE housing announcements",
+      "description": "Browse official UAE housing and property information.",
+      "source": "UAE Government",
+      "category": "Policy"
+    }
+  }
+}
