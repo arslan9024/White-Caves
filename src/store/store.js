@@ -1,2 +1,2 @@
-export { store, useAppDispatch, useAppSelector } from './store.tsx';
-export { default } from './store.tsx';
+export { store, useAppDispatch, useAppSelector } from './store.ts';
+export { default } from './store.ts';

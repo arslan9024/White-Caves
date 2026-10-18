@@ -24,6 +24,7 @@ import PageMeta from '../components/seo/PageMeta';
 import StructuredData from '../components/seo/StructuredData';
 import { useRecentlyViewed } from '../components/RecentlyViewed';
 import { MapContainer } from '../components/homepage/MapContainer';
+import { cleanupHomepageHeroPreload, ensureHomepageHeroPreload } from './homePagePreload';
 
 import { ToolsDashboard } from '../components/homepage/ToolsDashboard';
 import { AreaGuideGrid } from '../components/homepage/AreaGuideGrid';
@@ -247,8 +248,6 @@ const HomePage: FC = () => {
           </div>
         ) : null}
 
-
-
         {/* Phase 25: Hero is the LCP element — NOT wrapped in Suspense so it renders on first paint */}
         <Hero
           marketStats={marketStats}
@@ -259,8 +258,8 @@ const HomePage: FC = () => {
         <section className="home-page__trust-strip" aria-label="Market trust highlights">
           <div className="home-page__trust-grid">
             {trustHighlights.map((item, index) => (
-              <motion.article 
-                key={item.label} 
+              <motion.article
+                key={item.label}
                 className="home-page__trust-card"
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
@@ -268,8 +267,12 @@ const HomePage: FC = () => {
                 transition={{ duration: 0.5, delay: index * 0.1 }}
                 whileHover={{ scale: 1.05 }}
               >
-                <span className="home-page__trust-label" aria-label={item.label}>{item.label}</span>
-                <span className="home-page__trust-value" aria-hidden="true">{item.value}</span>
+                <span className="home-page__trust-label" aria-label={item.label}>
+                  {item.label}
+                </span>
+                <span className="home-page__trust-value" aria-hidden="true">
+                  {item.value}
+                </span>
               </motion.article>
             ))}
           </div>
@@ -353,13 +356,44 @@ const HomePage: FC = () => {
                 color: '#F8FAFC',
               }}
             >
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.25rem' }}>
+              <div
+                style={{
+                  display: 'flex',
+                  justifyContent: 'space-between',
+                  alignItems: 'center',
+                  marginBottom: '1.25rem',
+                }}
+              >
                 <div>
-                  <h3 style={{ margin: 0, fontSize: '1.25rem', fontWeight: 800, color: 'var(--color-f8fafc, #F8FAFC)' }}>
+                  <h3
+                    style={{
+                      margin: 0,
+                      fontSize: '1.25rem',
+                      fontWeight: 800,
+                      color: 'var(--color-f8fafc, #F8FAFC)',
+                    }}
+                  >
                     Luxury Property Search
                   </h3>
-                  <p style={{ margin: '4px 0 0', fontSize: '0.85rem', color: 'var(--color-94a3b8, #94A3B8)' }}>
-                    Press <kbd style={{ background: 'var(--color-1e293b, #1E293B)', padding: '2px 6px', borderRadius: '4px', border: '1px solid var(--color-334155, #334155)' }}>Ctrl + K</kbd> anytime to open
+                  <p
+                    style={{
+                      margin: '4px 0 0',
+                      fontSize: '0.85rem',
+                      color: 'var(--color-94a3b8, #94A3B8)',
+                    }}
+                  >
+                    Press{' '}
+                    <kbd
+                      style={{
+                        background: 'var(--color-1e293b, #1E293B)',
+                        padding: '2px 6px',
+                        borderRadius: '4px',
+                        border: '1px solid var(--color-334155, #334155)',
+                      }}
+                    >
+                      Ctrl + K
+                    </kbd>{' '}
+                    anytime to open
                   </p>
                 </div>
                 <button
@@ -388,7 +422,9 @@ const HomePage: FC = () => {
                   autoFocus
                   onKeyDown={e => {
                     if (e.key === 'Enter') {
-                      navigate(`/properties?q=${encodeURIComponent((e.target as HTMLInputElement).value)}`);
+                      navigate(
+                        `/properties?q=${encodeURIComponent((e.target as HTMLInputElement).value)}`
+                      );
                       setIsSearchOpen(false);
                     }
                   }}
@@ -407,11 +443,26 @@ const HomePage: FC = () => {
               </div>
 
               <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
-                <span style={{ fontSize: '0.75rem', fontWeight: 800, color: 'var(--color-d4af37, #D4AF37)', textTransform: 'uppercase', letterSpacing: '0.08em' }}>
+                <span
+                  style={{
+                    fontSize: '0.75rem',
+                    fontWeight: 800,
+                    color: 'var(--color-d4af37, #D4AF37)',
+                    textTransform: 'uppercase',
+                    letterSpacing: '0.08em',
+                  }}
+                >
                   Popular Luxury Destinations
                 </span>
                 <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
-                  {['Palm Jumeirah Villa', 'Downtown Penthouse', 'Dubai Marina', 'DAMAC Hills 2', 'Waterfront Estate', 'Off-Plan Investment'].map(tag => (
+                  {[
+                    'Palm Jumeirah Villa',
+                    'Downtown Penthouse',
+                    'Dubai Marina',
+                    'DAMAC Hills 2',
+                    'Waterfront Estate',
+                    'Off-Plan Investment',
+                  ].map(tag => (
                     <button
                       key={tag}
                       type="button"
@@ -436,7 +487,8 @@ const HomePage: FC = () => {
                       }}
                       onMouseLeave={e => {
                         (e.target as HTMLButtonElement).style.background = 'rgba(255,255,255,0.06)';
-                        (e.target as HTMLButtonElement).style.borderColor = 'rgba(255,255,255,0.12)';
+                        (e.target as HTMLButtonElement).style.borderColor =
+                          'rgba(255,255,255,0.12)';
                       }}
                     >
                       {tag}
