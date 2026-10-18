@@ -55,3 +55,25 @@ export const attachDossierDocument = (row: DossierRow, kind: DossierKind, id: st
   return request<DossierRow>(`${encodeURIComponent(row.id)}/links`,
     { [field]: id, updatedAt: row.updatedAt, confirmed: true }, 'PATCH');
 };
+
+export async function downloadHenryOriginal(id: string, side: number, current = () => true): Promise<void> {
+  try {
+    if (!/^[a-f0-9]{24}$/i.test(id) || ![0, 1].includes(side)) throw new Error('Invalid original selection');
+    const response = await authFetch(`/api/henry/documents/${id}/download?side=${side}`);
+    if (!response.ok) throw new Error('Original unavailable');
+    const blob = await response.blob();
+    if (!current()) return;
+    const url = URL.createObjectURL(blob);
+    try {
+      const anchor = document.createElement('a');
+      anchor.href = url;
+      anchor.download = `original-${side}`;
+      anchor.click();
+    } finally {
+      setTimeout(() => URL.revokeObjectURL(url), 1000);
+    }
+  } catch {
+    logger.error('Henry original download failed', { side });
+    throw new Error('Original unavailable. Check access and retry.');
+  }
+}

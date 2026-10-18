@@ -61,7 +61,6 @@ export function useHenryDocumentStudioLogic() {
 
   const [zoomLevel, setZoomLevel] = useState<number>(100);
   const [annotations, setAnnotations] = useState<PdfAnnotation[]>([]);
-  const [shareLinkCopied, setShareLinkCopied] = useState<boolean>(false);
 
   const [compiledHtml, setCompiledHtml] = useState<string>('');
   const requireReview = (data: object): boolean => {
@@ -139,13 +138,8 @@ export function useHenryDocumentStudioLogic() {
   }, []);
 
   const handleCopyEsignLink = useCallback(() => {
-    const link = `https://whitecaves.ae/sign/${tenancyPayload.esignToken || 'token_sec_dxb_98442_sign'}`;
-    if (navigator && navigator.clipboard) {
-      navigator.clipboard.writeText(link);
-    }
-    setShareLinkCopied(true);
-    setTimeout(() => setShareLinkCopied(false), 3000);
-  }, [tenancyPayload]);
+    setActionSuccessMessage('E-signature sharing is unavailable. No link was generated, copied or sent.');
+  }, []);
 
   const handleTriggerAiAutoFill = useCallback(() => {
     if (!requireReview(eidData)) return;
@@ -165,7 +159,7 @@ export function useHenryDocumentStudioLogic() {
     try {
       const result = await henryEmiratesIdScannerService.scanEmiratesId(file || 'sample');
       setEidData(result);
-      setActionSuccessMessage('Emirates ID successfully scanned! 18 fields extracted & verified.');
+      setActionSuccessMessage(file ? 'Emirates ID extraction candidates ready for source review; not identity verification.' : 'Emirates ID demo preview only; no uploaded document was scanned or verified.');
       setTimeout(() => setActionSuccessMessage(null), 4000);
     } finally {
       setIsScanning(false);
@@ -179,7 +173,7 @@ export function useHenryDocumentStudioLogic() {
     try {
       const result = await henryTitleDeedScannerService.scanTitleDeed(file || 'sample');
       setTitleDeedData(result);
-      setActionSuccessMessage('DLD Title Deed successfully scanned! 22+ fields extracted & verified.');
+      setActionSuccessMessage(file ? 'Title deed extraction candidates ready for source review; not ownership verification.' : 'Title deed demo preview only; no uploaded document was scanned or verified.');
       setTimeout(() => setActionSuccessMessage(null), 4000);
     } finally {
       setIsScanning(false);
@@ -193,7 +187,7 @@ export function useHenryDocumentStudioLogic() {
     try {
       const result = await henryPassportScannerService.scanPassport(file || 'sample');
       setPassportData(result);
-      setActionSuccessMessage('International Passport successfully scanned! 16+ fields & TD3 MRZ verified.');
+      setActionSuccessMessage(file ? 'Passport extraction candidates ready for source review; MRZ checks are not authenticity verification.' : 'Passport demo preview only; no uploaded document was scanned or verified.');
       setTimeout(() => setActionSuccessMessage(null), 4000);
     } finally {
       setIsScanning(false);
@@ -283,35 +277,30 @@ export function useHenryDocumentStudioLogic() {
     setTimeout(() => setActionSuccessMessage(null), 4000);
   }, [eidData]);
 
-  // Export JSON Variables to Clipboard
-  const handleCopyJsonVariables = useCallback(() => {
-    const jsonStr = henryEmiratesIdScannerService.exportToJsonString(eidData);
-    if (navigator && navigator.clipboard) {
-      navigator.clipboard.writeText(jsonStr);
+  const copyVariables = useCallback(async (json: string) => {
+    try {
+      if (!navigator.clipboard) throw new Error('Clipboard unavailable');
+      await navigator.clipboard.writeText(json);
+      setActionSuccessMessage('Current fields copied as JSON. Demo and missing values are not verified facts.');
+    } catch {
+      logger.error('Henry variable clipboard export failed');
+      setActionSuccessMessage('Clipboard export failed. No copy success is confirmed.');
     }
-    setActionSuccessMessage('All 18 Emirates ID variables copied to clipboard as JSON!');
-    setTimeout(() => setActionSuccessMessage(null), 4000);
-  }, [eidData]);
+  }, []);
+
+  const handleCopyJsonVariables = useCallback(() => {
+    void copyVariables(henryEmiratesIdScannerService.exportToJsonString(eidData));
+  }, [eidData, copyVariables]);
 
   // Export Title Deed JSON Variables to Clipboard
   const handleCopyTitleDeedJsonVariables = useCallback(() => {
-    const jsonStr = henryTitleDeedScannerService.exportToJsonString(titleDeedData);
-    if (navigator && navigator.clipboard) {
-      navigator.clipboard.writeText(jsonStr);
-    }
-    setActionSuccessMessage('All 22 DLD Title Deed variables copied to clipboard as JSON!');
-    setTimeout(() => setActionSuccessMessage(null), 4000);
-  }, [titleDeedData]);
+    void copyVariables(henryTitleDeedScannerService.exportToJsonString(titleDeedData));
+  }, [titleDeedData, copyVariables]);
 
   // Export Passport JSON Variables to Clipboard
   const handleCopyPassportJsonVariables = useCallback(() => {
-    const jsonStr = henryPassportScannerService.exportToJsonString(passportData);
-    if (navigator && navigator.clipboard) {
-      navigator.clipboard.writeText(jsonStr);
-    }
-    setActionSuccessMessage('All 16+ Passport variables copied to clipboard as JSON!');
-    setTimeout(() => setActionSuccessMessage(null), 4000);
-  }, [passportData]);
+    void copyVariables(henryPassportScannerService.exportToJsonString(passportData));
+  }, [passportData, copyVariables]);
 
   // Create CRM Property Listing from Title Deed
   const handleCreateCrmListing = useCallback(() => {
@@ -345,12 +334,7 @@ export function useHenryDocumentStudioLogic() {
     try {
       const scanned = await henryTenancyContractScannerService.scanContract(preset);
       setScannedContractData(scanned);
-      henryTenancyContractScannerService.teachFromScannedContract(scanned);
-      if (scanned.isFilled) {
-        setActionSuccessMessage(`Tenancy Contract scanned: FILLED & EXECUTED (${scanned.fillScorePercent}% Score — ${scanned.landlord.name} & ${scanned.tenant.name})!`);
-      } else {
-        setActionSuccessMessage('Tenancy Contract scanned: BLANK REUSABLE TEMPLATE (0% Filled).');
-      }
+      setActionSuccessMessage('Tenancy contract demo preview only. Field coverage does not verify execution or signatures; no model was trained.');
     } catch {
       setActionSuccessMessage('Error scanning Tenancy Contract.');
     } finally {
@@ -385,13 +369,8 @@ export function useHenryDocumentStudioLogic() {
 
   // 1-Click Copy Contract Variables JSON
   const handleCopyContractJsonVariables = useCallback(() => {
-    const jsonStr = henryTenancyContractScannerService.exportToJsonString(scannedContractData);
-    if (navigator && navigator.clipboard) {
-      navigator.clipboard.writeText(jsonStr);
-    }
-    setActionSuccessMessage('All Tenancy Contract variables exported to clipboard as JSON!');
-    setTimeout(() => setActionSuccessMessage(null), 4000);
-  }, [scannedContractData]);
+    void copyVariables(henryTenancyContractScannerService.exportToJsonString(scannedContractData));
+  }, [scannedContractData, copyVariables]);
 
   return {
     templates: DOCUMENT_TEMPLATES,
@@ -411,7 +390,6 @@ export function useHenryDocumentStudioLogic() {
     actionSuccessMessage,
     compiledHtml,
     zoomLevel,
-    shareLinkCopied,
     isTenancyModalOpen,
     handleOpenTenancyModal,
     handleCloseTenancyModal,

@@ -21,4 +21,16 @@ describe('HenryTenancyContractModal.logic', () => {
 
     expect(result.current.activeStep).toBe(2);
   });
+  it('does not mint tokens, change status or copy a synthetic signing URL', () => {
+    const clipboard = vi.fn();
+    vi.stubGlobal('navigator', { clipboard: { writeText: clipboard } });
+    try {
+      const { result } = renderHook(() => useHenryTenancyContractModalLogic({ isOpen: true, onClose: vi.fn() }));
+      const before = result.current.contractData;
+      act(() => result.current.handleGenerateEsignLink());
+      expect(result.current.contractData).toBe(before);
+      expect(result.current.statusMessage).toContain('No link was generated, copied or sent');
+      expect(clipboard).not.toHaveBeenCalled();
+    } finally { vi.unstubAllGlobals(); }
+  });
 });

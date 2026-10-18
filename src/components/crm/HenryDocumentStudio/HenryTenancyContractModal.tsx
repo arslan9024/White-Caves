@@ -69,7 +69,6 @@ export const HenryTenancyContractModal: FC<HenryTenancyContractModalProps> = ({
     zoomLevel,
     isProcessingOcr,
     statusMessage,
-    esignLinkCopied,
     compiledPreviewHtml,
     handleFieldChange,
     handleUpdateAdditionalTerm,
@@ -334,9 +333,10 @@ export const HenryTenancyContractModal: FC<HenryTenancyContractModalProps> = ({
                   <div>
                     <OcrDropzone onClick={() => deedFileInputRef.current?.click()}>
                       <UploadCloud size={28} color="var(--accent-red, #EF4444)" style={{ margin: '0 auto 8px auto' }} />
-                      <div className="dropzone-title">Upload & Scan Official DLD Title Deed / Oqood</div>
+                      <div className="dropzone-title">Upload & Review Title Deed</div>
                       <div className="dropzone-desc">
-                        Drag and drop official Title Deed PDF or image to automatically extract Building Name, Unit Number, Plot Number, Makani, DEWA Number, Area SqM, and Owner.
+                        Review labelled property, area and owner candidates in the title deed scanner first.
+                        Missing fields remain blank. Makani and DEWA require manual entry; Oqood registration is not supported.
                       </div>
                       <div style={{ display: 'flex', gap: '8px', justifyContent: 'center', marginTop: '10px' }}>
                         <HeaderBtn
@@ -836,13 +836,13 @@ export const HenryTenancyContractModal: FC<HenryTenancyContractModalProps> = ({
                       }}
                     >
                       <div style={{ fontWeight: 800, color: 'var(--color-38bdf8, #38BDF8)', fontSize: '0.9rem', marginBottom: '6px' }}>
-                        🔒 Digital E-Signature Dispatch
+                        E-signature dispatch — unavailable
                       </div>
                       <p style={{ fontSize: '0.8rem', color: 'var(--color-94a3b8, #94A3B8)', margin: '0 0 12px 0' }}>
-                        Generate a cryptographically secured E-Signature link to dispatch directly to Tenant and Landlord for instant mobile signing.
+                        No signing provider is connected here. Preparing or printing a contract does not send it or verify signatures.
                       </p>
                       <HeaderBtn $variant="primary" onClick={handleGenerateEsignLink}>
-                        <Share2 size={14} /> {esignLinkCopied ? 'Link Copied to Clipboard!' : 'Generate E-Signature Link'}
+                        <Share2 size={14} /> E-signature availability
                       </HeaderBtn>
                     </div>
 

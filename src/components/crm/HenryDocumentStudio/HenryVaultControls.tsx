@@ -6,6 +6,7 @@ import { EMPTY_EMIRATES_ID } from '../../../services/HenryEmiratesIdScannerServi
 import deed from '../../../services/HenryTitleDeedScannerService';
 import HenryCrmLinkSelector from './HenryCrmLinkSelector';
 import HenryCaseLinks from './HenryCaseLinks';
+import { downloadHenryOriginal } from '../../../services/henryOperations';
 
 interface VaultRow {
   id: string;
@@ -84,19 +85,7 @@ export default function HenryVaultControls({
       setLoaded(true);
     });
   const download = (id: string, side: number) =>
-    void run(async () => {
-      const response = await authFetch(`/api/henry/documents/${id}/download?side=${side}`);
-      if (!response.ok) throw new Error('No original available');
-      const url = URL.createObjectURL(await response.blob());
-      try {
-        const anchor = document.createElement('a');
-        anchor.href = url;
-        anchor.download = `original-${side}`;
-        anchor.click();
-      } finally {
-        setTimeout(() => URL.revokeObjectURL(url), 1000);
-      }
-    });
+    void run(() => downloadHenryOriginal(id, side));
   const useSuggestion = () =>
     void run(async () => {
       const data =

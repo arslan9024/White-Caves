@@ -5,7 +5,7 @@
  * - Inline Content Area Layout (No Modal).
  * - Left Pane: Live Document Viewer with zoom controls & crop inspection.
  * - Right Pane: Variable-by-Variable Live Comparison Cards:
- *   1. Identity Number (784-YYYY-XXXXXXX-Z) with live checksum verification
+ *   1. Identity Number candidates; MRZ check digits do not verify identity.
  *   2. Full Legal Name (Bilingual English & Arabic)
  *   3. Date of Birth, Gender & Nationality
  *   4. Issue Date & Expiry Validity
@@ -1200,7 +1200,7 @@ export const HenryEmiratesIdScannerView: FC = () => {
                   <CreditCard size={14} color="#EF4444" /> 6. Machine Readable Zone (MRZ TD1)
                 </span>
                 <span className="match-badge">
-                  <CheckCheck size={13} /> ICAO 9303 Checksum Passed
+                  <CheckCheck size={13} /> MRZ text — not authenticity proof
                 </span>
               </div>
               <MrzTerminal>

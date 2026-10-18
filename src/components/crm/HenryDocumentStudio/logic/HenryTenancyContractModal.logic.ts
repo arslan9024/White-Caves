@@ -34,7 +34,6 @@ export function useHenryTenancyContractModalLogic({
   const [zoomLevel, setZoomLevel] = useState<number>(0.85);
   const [isProcessingOcr, setIsProcessingOcr] = useState<boolean>(false);
   const [statusMessage, setStatusMessage] = useState<string | null>(null);
-  const [esignLinkCopied, setEsignLinkCopied] = useState<boolean>(false);
 
   // Initialize data on modal open
   useEffect(() => {
@@ -127,7 +126,7 @@ export function useHenryTenancyContractModalLogic({
         const scannedContract = await henryTenancyContractScannerService.scanContract(file);
         const dldData = henryTenancyContractScannerService.toDldTenancyContractData(scannedContract);
         setContractData(prev => ({ ...prev, ...(dldData as DldTenancyContractData) }));
-        setStatusMessage(`✓ Scanned "${file.name}": Extracted all Contract fields (Property, Landlord, Tenant, Rent AED ${scannedContract.financials.annualRentAed.toLocaleString()})! Template filled.`);
+        setStatusMessage('Reviewed agreement fields applied to preparation draft; missing fields need manual entry. Signatures and execution are not verified.');
       }
     } catch {
       setStatusMessage('Review required or scanning failed. No unconfirmed fields were applied; there is no fallback ingestion.');
@@ -140,7 +139,7 @@ export function useHenryTenancyContractModalLogic({
   // Step 1: Scan & Ingest Title Deed
   const handleScanTitleDeed = useCallback(async () => {
     setIsProcessingOcr(true);
-    setStatusMessage('Scanning Title Deed & validating DLD Registry...');
+    setStatusMessage('Loading title deed demo preview; no DLD registry lookup.');
     try {
       const deedData = await henryTitleDeedScannerService.scanTitleDeed('sample');
       if (!canUseScan(deedData)) { setStatusMessage('Demo only. Upload and confirm review in the title deed scanner.'); return; }
@@ -242,22 +241,7 @@ export function useHenryTenancyContractModalLogic({
 
   // Generate E-Signature Link
   const handleGenerateEsignLink = useCallback(() => {
-    const token = `ESIGN-DLD-${Date.now().toString(36).toUpperCase()}`;
-    setContractData(prev => ({
-      ...prev,
-      esignToken: token,
-      status: 'ready_for_signature',
-    }));
-    const shareableUrl = `${window.location.origin}/esign/tenancy?token=${token}`;
-    if (navigator && navigator.clipboard) {
-      navigator.clipboard.writeText(shareableUrl);
-    }
-    setEsignLinkCopied(true);
-    setStatusMessage(`E-Sign link generated and copied to clipboard! Token: ${token}`);
-    setTimeout(() => {
-      setEsignLinkCopied(false);
-      setStatusMessage(null);
-    }, 4500);
+    setStatusMessage('E-signature dispatch is unavailable. No link was generated, copied or sent; contract status is unchanged.');
   }, []);
 
   // This legacy registry is session-only, not the encrypted server archive.
@@ -319,7 +303,6 @@ export function useHenryTenancyContractModalLogic({
     zoomLevel,
     isProcessingOcr,
     statusMessage,
-    esignLinkCopied,
     compiledPreviewHtml,
     handleFieldChange,
     handleUpdateAdditionalTerm,

@@ -499,7 +499,7 @@ export const HenryTitleDeedScannerView: FC = () => {
             resetSignal={uploaderReset}
             docType="title_deed"
             title="3.19.3 Scan Title Deed / Oqood (شهادة ملكية)"
-            subtitle="Upload Title Deed PDF or image to extract official registration parameters, plot details, and ownership records"
+            subtitle="Upload Title Deed PDF or image for source-reviewed field candidates, not DLD registration or ownership verification"
             onFileUpload={handleFileUpload}
             onSampleLoad={handleLoadDemo}
             isProcessing={isScanning}

@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import { askDossier, attachDossierDocument, changeDocumentStatus, readDossier, readDossierDocument,
+import { askDossier, attachDossierDocument, changeDocumentStatus, downloadHenryOriginal, readDossier, readDossierDocument,
   type Dossier, type DossierAnswer, type DossierKind, type DossierRow } from '../../../../services/henryOperations';
 
 export function useHenryDossier(kind: DossierKind, id: string) {
@@ -54,5 +54,7 @@ export function useHenryDossier(kind: DossierKind, id: string) {
     const result = await readDossier(kind, id);
     if (current()) setData(result);
   });
-  return { data, answer, candidate, busy, error, load, ask, changeStatus, previewLink, attach };
+  const downloadOriginal = (documentId: string, side = 0) =>
+    run(current => downloadHenryOriginal(documentId, side, current));
+  return { data, answer, candidate, busy, error, load, ask, changeStatus, previewLink, attach, downloadOriginal };
 }

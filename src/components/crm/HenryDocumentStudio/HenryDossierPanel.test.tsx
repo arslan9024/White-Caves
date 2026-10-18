@@ -106,6 +106,36 @@ describe('Henry dossier operations UI', () => {
     expect(screen.queryByText('Active documents')).not.toBeInTheDocument();
     expect(screen.getByText('Select an authorized record to open its dossier.')).toBeInTheDocument();
   });
+  it('downloads citation originals through authenticated vault access and handles denial without fake links', async () => {
+    const create = vi.fn(() => 'blob:synthetic-cited-original');
+    const revoke = vi.fn();
+    const click = vi.spyOn(HTMLAnchorElement.prototype, 'click').mockImplementation(() => {});
+    vi.stubGlobal('URL', class extends URL {
+      static createObjectURL = create;
+      static revokeObjectURL = revoke;
+    });
+    let denied = false;
+    vi.mocked(authFetch).mockImplementation(async (url, init) => String(url).includes('link-options')
+      ? respond([{ id: entityId, name: 'Synthetic client' }])
+      : String(url).includes('/download?') ? new Response('synthetic-original', { status: denied ? 403 : 200 })
+        : init?.method === 'POST' ? respond({ message: 'Review original', checklist: [], unsupportedRequirements: [],
+          citations: [{ documentId: id, field: 'tenant.name', value: 'Synthetic', passages: [], evidenceNote: 'Compare original' }] })
+          : respond(empty));
+    try {
+      const view = render(<HenryDossierPanel />);
+      await selectDossier();
+      fireEvent.click(await screen.findByText('Ask about this dossier'));
+      fireEvent.click(await screen.findByText('Download cited original'));
+      await waitFor(() => expect(click).toHaveBeenCalledOnce());
+      expect(authFetch).toHaveBeenCalledWith(`/api/henry/documents/${id}/download?side=0`);
+      expect(view.container.querySelector('a')).toBeNull();
+      await waitFor(() => expect(screen.getByText('Download cited original')).not.toBeDisabled());
+      denied = true;
+      fireEvent.click(screen.getByText('Download cited original'));
+      expect(await screen.findByRole('alert')).toHaveTextContent('Original unavailable. Check access and retry.');
+      expect(click).toHaveBeenCalledOnce();
+    } finally { click.mockRestore(); vi.unstubAllGlobals(); }
+  });
   it('attaches an authorized existing document only after a masked preview and confirmation', async () => {
     vi.mocked(authFetch).mockImplementation(async (url, init) => String(url).includes('link-options')
       ? respond([{ id: entityId, name: 'Synthetic client' }])

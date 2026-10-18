@@ -534,7 +534,7 @@ export const HenryTenancyContractJourneyView: FC = () => {
 
               <HenrySharedDocumentUploader
                 docType="title_deed"
-                title="1. Upload Official DLD Title Deed / Oqood"
+                title="1. Upload Title Deed for Source Review"
                 subtitle="Scans and extracts Building Name, Unit Number, Plot, Makani, DEWA Premise & Area"
                 onFileUpload={handleUploadTitleDeed}
                 onSampleLoad={() => {
@@ -583,7 +583,7 @@ export const HenryTenancyContractJourneyView: FC = () => {
 
               <FormCard>
                 <h4 style={{ margin: 0, fontSize: '0.9rem', fontWeight: 800, color: 'var(--color-1e293b, #1E293B)' }}>
-                  Property & Landlord Verified Data
+                  Property & Landlord — User-Reviewed Fields
                 </h4>
                 <FormGrid $cols={3}>
                   <FormGroup>

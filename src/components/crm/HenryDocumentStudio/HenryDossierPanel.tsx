@@ -65,6 +65,13 @@ function DossierContents({ kind, id }: { kind: DossierKind; id: string }) {
         <p>Document {citation.documentId} · {citation.field} · reviewer-provided: {citation.value}</p>
         {citation.passages.map((passage, index) => <blockquote key={index}>OCR/native-PDF quote: {passage.text}</blockquote>)}
         <p>{citation.evidenceNote}</p>
+        <button type="button" disabled={state.busy} onClick={() => void state.downloadOriginal(citation.documentId)}>
+          Download cited original
+        </button>
+        {state.data?.active.some(row => row.id === citation.documentId && row.docType === 'emirates_id') &&
+          <button type="button" disabled={state.busy} onClick={() => void state.downloadOriginal(citation.documentId, 1)}>
+            Download cited original back
+          </button>}
       </article>)}
     </section>}
     <fieldset disabled={state.busy}>
