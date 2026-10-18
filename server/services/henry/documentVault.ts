@@ -226,6 +226,10 @@ export function decodeDocument(row: {
   replacedById?: string | null;
   leadId?: string | null;
   propertyId?: string | null;
+  tenancyId?: string | null;
+  transactionId?: string | null;
+  lifecycleStatus?: string | null;
+  signedAttestedAt?: Date | null;
   encryptedSource?: string | null;
   retentionUntil?: Date | null;
   reminderDismissedAt?: Date | null;
@@ -247,6 +251,10 @@ export function decodeDocument(row: {
     replacedById: row.replacedById,
     leadId: row.leadId,
     propertyId: row.propertyId,
+    tenancyId: row.tenancyId,
+    transactionId: row.transactionId,
+    lifecycleStatus: row.lifecycleStatus === 'signed' ? 'signed' : 'draft',
+    signedAttestedAt: row.signedAttestedAt,
     hasOriginal: !!row.encryptedSource,
     retentionUntil: row.retentionUntil,
     reminderDismissedAt: row.reminderDismissedAt,
@@ -259,8 +267,11 @@ export function decodeDocument(row: {
 }
 
 export async function validateDocumentLinks(ownerUserId: string, input: Record<string, unknown>) {
-  const leadId = input.leadId ? documentId(input.leadId) : null;
-  const propertyId = input.propertyId ? documentId(input.propertyId) : null;
+  const link = (value: unknown) => value === undefined || value === null ? null : documentId(value);
+  const leadId = link(input.leadId);
+  const propertyId = link(input.propertyId);
+  const tenancyId = link(input.tenancyId);
+  const transactionId = link(input.transactionId);
   if (
     leadId &&
     !(await prisma.lead.findFirst({
@@ -277,7 +288,13 @@ export async function validateDocumentLinks(ownerUserId: string, input: Record<s
     }))
   )
     throw new AppError('Property not accessible', 404);
-  return { leadId, propertyId };
+  if (tenancyId && !(await prisma.lease.findFirst({
+    where: { id: tenancyId, property: { userId: ownerUserId } }, select: { id: true },
+  }))) throw new AppError('Tenancy not accessible', 404);
+  if (transactionId && !(await prisma.transaction.findFirst({
+    where: { id: transactionId, agentId: ownerUserId }, select: { id: true },
+  }))) throw new AppError('Transaction not accessible', 404);
+  return { leadId, propertyId, tenancyId, transactionId };
 }
 
 export async function vaultOperation<T>(action: string, work: () => Promise<T>): Promise<T> {

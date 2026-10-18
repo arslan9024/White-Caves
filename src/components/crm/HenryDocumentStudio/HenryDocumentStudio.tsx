@@ -125,6 +125,12 @@ export const HenryDocumentStudio: FC = () => {
           <span style={{ fontSize: '0.8rem', color: 'var(--color-94a3b8, #94A3B8)' }}>Ejari: 0120260721003974</span>
         </div>
       </StudioHeader>
+      <p>
+        OCR supports Emirates ID, passport, title deed and tenancy contract only. Review every
+        extraction; neither authenticity nor signatures are verified. Ejari certificates, licences,
+        NOCs, agency forms, other agreements, receipts and cheques are not recognized or validated
+        by these scanners. Preparation templates do not add OCR capability.
+      </p>
 
       {actionSuccessMessage && (
         <div

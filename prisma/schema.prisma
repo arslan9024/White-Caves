@@ -1547,6 +1547,10 @@ model HenryScannedDocument {
   leadId           String?  @db.ObjectId
   propertyId       String?  @db.ObjectId
   replacedById     String?  @db.ObjectId
+  tenancyId        String?  @db.ObjectId
+  transactionId    String?  @db.ObjectId
+  lifecycleStatus  String?  // null/absent means draft; signed is user-attested, not verified
+  signedAttestedAt DateTime?
   createdAt        DateTime @default(now())
   updatedAt        DateTime @updatedAt
 
@@ -1554,6 +1558,10 @@ model HenryScannedDocument {
   @@index([ownerUserId, docType, createdAt])
   @@index([ownerUserId, expiryAt])
   @@index([expiryAt, id])
+  @@index([ownerUserId, leadId, createdAt])
+  @@index([ownerUserId, propertyId, createdAt])
+  @@index([ownerUserId, tenancyId, createdAt])
+  @@index([ownerUserId, transactionId, createdAt])
 }
 
 model HenryDocumentAudit {

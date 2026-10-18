@@ -35,6 +35,7 @@ import { HENRY_UPLOADS_PATH, OLLAMA_HOST, GROQ_API_KEY } from '../config/env.js'
 import { AuthRequest } from '../middleware/auth.js';
 import { AppError, asyncHandler } from '../middleware/errorHandler.js';
 import { activeDocumentFilter, decodeDocument, decodeSource, documentId, documentOwner, prepareDocument, prepareSource, referenceHash, maxSourceBytes, validateDocumentLinks, vaultKey, vaultOperation } from '../services/henry/documentVault.js';
+import dossierRouter from './henry.dossiers.js';
 
 const router = Router();
 
@@ -903,6 +904,7 @@ router.use('/documents', (_req, res, next) => {
   res.setHeader('Cache-Control', 'no-store');
   next();
 });
+router.use('/documents', dossierRouter);
 
 const sourceUpload = multer({ storage: multer.memoryStorage(), limits: { fileSize: maxSourceBytes, files: 2, fieldSize: 250000 } });
 router.post('/documents/save', requireMinRole('agent'), sourceUpload.array('source', 2), asyncHandler(async (req: AuthRequest, res) => {
@@ -951,6 +953,7 @@ const searchDocuments = asyncHandler(async (req: AuthRequest, res) => {
   const soon = new Date(Date.now() + 30 * 86400000);
   const where = { ownerUserId, ...activeDocumentFilter,
     ...(links.leadId ? { leadId: links.leadId } : {}), ...(links.propertyId ? { propertyId: links.propertyId } : {}),
+    ...(links.tenancyId ? { tenancyId: links.tenancyId } : {}), ...(links.transactionId ? { transactionId: links.transactionId } : {}),
     ...(filters.docType ? { docType: String(filters.docType) } : {}),
     ...(filters.referenceNumber ? { referenceHash: referenceHash(ownerUserId, String(filters.docType || ''), filters.referenceNumber) } : {}),
     ...(status === 'unknown' ? { AND: [{ OR: [{ expiryAt: null }, { expiryAt: { isSet: false } }] }] }
@@ -975,12 +978,14 @@ router.get('/documents/link-options', requireMinRole('agent'), asyncHandler(asyn
   const owner = documentOwner(req.user?.id);
   const kind = req.query.kind;
   const page = Number(req.query.page ?? 1);
-  if (!['lead', 'property'].includes(String(kind)) || !Number.isInteger(page) || page < 1 || page > 1000)
+  if (typeof kind !== 'string' || !['lead', 'property', 'tenancy', 'transaction'].includes(kind) || !Number.isInteger(page) || page < 1 || page > 1000)
     throw new AppError('Valid link kind and page (1–1000) required', 400);
   const data = await vaultOperation('link-options', async () => kind === 'lead'
     ? prisma.lead.findMany({ where: { assignedToId: owner }, select: { id: true, name: true }, orderBy: { id: 'asc' }, skip: (page - 1) * 25, take: 26 })
-    : prisma.property.findMany({ where: { userId: owner }, select: { id: true, title: true }, orderBy: { id: 'asc' }, skip: (page - 1) * 25, take: 26 }));
-  res.json({ success: true, data: data.slice(0, 25).map(row => ({ id: row.id, name: 'name' in row ? row.name : row.title })), hasMore: data.length > 25 });
+    : kind === 'property' ? prisma.property.findMany({ where: { userId: owner }, select: { id: true, title: true }, orderBy: { id: 'asc' }, skip: (page - 1) * 25, take: 26 })
+    : kind === 'tenancy' ? prisma.lease.findMany({ where: { property: { userId: owner } }, select: { id: true, leaseNumber: true }, orderBy: { id: 'asc' }, skip: (page - 1) * 25, take: 26 })
+    : prisma.transaction.findMany({ where: { agentId: owner }, select: { id: true, type: true }, orderBy: { id: 'asc' }, skip: (page - 1) * 25, take: 26 }));
+  res.json({ success: true, data: data.slice(0, 25).map(row => ({ id: row.id, name: 'name' in row ? row.name : 'title' in row ? row.title : 'leaseNumber' in row ? row.leaseNumber || `Tenancy …${row.id.slice(-4)}` : `${row.type} …${row.id.slice(-4)}` })), hasMore: data.length > 25 });
 }));
 
 router.get('/documents/latest/:docType', requireMinRole('agent'), asyncHandler(async (req: AuthRequest, res) => {
@@ -1006,6 +1011,10 @@ router.patch('/documents/:id', requireMinRole('agent'), asyncHandler(async (req:
         ...data,
         ...('leadId' in req.body ? { leadId: links.leadId } : {}),
         ...('propertyId' in req.body ? { propertyId: links.propertyId } : {}),
+        ...('tenancyId' in req.body ? { tenancyId: links.tenancyId } : {}),
+        ...('transactionId' in req.body ? { transactionId: links.transactionId } : {}),
+        // Field corrections invalidate a previous signature attestation; originals remain immutable.
+        lifecycleStatus: 'draft', signedAttestedAt: null,
         ...(found.expiryAt?.getTime() !== data.expiryAt?.getTime() ? { reminderDismissedAt: null } : {}),
       },
     });

@@ -3,7 +3,7 @@ import { authFetch } from '../../../utils/authFetch';
 import logger from '../../../utils/logger';
 
 export default function HenryCrmLinkSelector({ kind, value, onChange }: {
-  kind: 'lead' | 'property'; value: string; onChange: (id: string) => void;
+  kind: 'lead' | 'property' | 'tenancy' | 'transaction'; value: string; onChange: (id: string) => void;
 }) {
   const [rows, setRows] = useState<Array<{ id: string; name: string }>>([]);
   const [query, setQuery] = useState('');
@@ -57,7 +57,7 @@ export default function HenryCrmLinkSelector({ kind, value, onChange }: {
   const matches = rows.filter(row => row.name.toLocaleLowerCase().includes(query.toLocaleLowerCase()));
   return <fieldset>
     <legend>Authorized {kind} selection</legend>
-    <button type="button" disabled={busy} onClick={() => void load(1)}>Load authorized {kind === 'lead' ? 'leads' : 'properties'}</button>
+    <button type="button" disabled={busy} onClick={() => void load(1)}>Load authorized {kind === 'lead' ? 'leads' : kind === 'property' ? 'properties' : `${kind} records`}</button>
     <label>Search names on this page
       <input aria-label={`Search ${kind} names`} value={query} onChange={event => setQuery(event.target.value)} />
     </label>

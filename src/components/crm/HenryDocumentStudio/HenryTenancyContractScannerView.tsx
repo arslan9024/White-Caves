@@ -33,7 +33,8 @@ import henryTenancyContractTemplateService, {
   DldTenancyContractData,
 } from '../../../services/HenryTenancyContractTemplateService';
 import HenrySharedDocumentUploader from './HenrySharedDocumentUploader';
-import { assessScanReadiness, canUseScan } from '../../../services/henryScanReview';
+import { assessScanReadiness, canUseScan, type VaultSaveOptions } from '../../../services/henryScanReview';
+import HenryCaseLinks from './HenryCaseLinks';
 import { markFieldReviewed } from '../../../services/henryDocumentParsing';
 import { HenryExtractionEvidence } from './HenryExtractionEvidence';
 
@@ -232,6 +233,8 @@ export const HenryTenancyContractScannerView: FC = () => {
   const generation = useRef(0);
   const saving = useRef(false);
   const [isSaving, setIsSaving] = useState(false);
+  const [vaultOptions, setVaultOptions] = useState<VaultSaveOptions>({});
+  useEffect(() => { setVaultOptions({}); }, [uploadedFile]);
   useEffect(() => () => { generation.current++; }, []);
 
   useEffect(() => {
@@ -331,7 +334,7 @@ export const HenryTenancyContractScannerView: FC = () => {
     saving.current = true;
     setIsSaving(true);
     const request = generation.current;
-    const result = await henryTenancyContractScannerService.saveToDatabase(scannedResult, { sources: [uploadedFile] });
+    const result = await henryTenancyContractScannerService.saveToDatabase(scannedResult, { ...vaultOptions, sources: [uploadedFile] });
     saving.current = false;
     if (request === generation.current) {
       setIsSaving(false);
@@ -606,10 +609,11 @@ export const HenryTenancyContractScannerView: FC = () => {
             {copiedJson ? <Check size={13} color="#10B981" /> : <Copy size={13} />} Copy Variables JSON
           </ActionBtn>
           <ActionBtn $variant="primary" onClick={handleSaveToVault} disabled={!canUseScan(scannedResult) || !scannedResult?.contractReference || !uploadedFile || isSaving}>
-            <Save size={13} /> Save to Government Vault
+            <Save size={13} /> Save to encrypted vault
           </ActionBtn>
         </div>
       </BottomActionBar>
+      <HenryCaseLinks key={filePreviewUrl || 'empty'} options={vaultOptions} onOptions={setVaultOptions} />
     </ViewContainer>
   );
 };

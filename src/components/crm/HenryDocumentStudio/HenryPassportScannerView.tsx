@@ -29,7 +29,8 @@ import henryPassportScannerService, {
   InternationalPassportExtractedData,
 } from '../../../services/HenryPassportScannerService';
 import HenrySharedDocumentUploader from './HenrySharedDocumentUploader';
-import { canUseScan, assessScanReadiness, scanExpiry } from '../../../services/henryScanReview';
+import { canUseScan, assessScanReadiness, scanExpiry, type VaultSaveOptions } from '../../../services/henryScanReview';
+import HenryCaseLinks from './HenryCaseLinks';
 import { markFieldReviewed } from '../../../services/henryDocumentParsing';
 import { HenryExtractionEvidence } from './HenryExtractionEvidence';
 import henryTenancyContractTemplateService from '../../../services/HenryTenancyContractTemplateService';
@@ -290,6 +291,8 @@ export const HenryPassportScannerView: FC = () => {
   const generation = useRef(0);
   const saving = useRef(false);
   const [isSaving, setIsSaving] = useState(false);
+  const [vaultOptions, setVaultOptions] = useState<VaultSaveOptions>({});
+  useEffect(() => { setVaultOptions({}); }, [uploadedFile]);
   useEffect(() => () => { generation.current++; }, []);
 
   useEffect(() => {
@@ -354,7 +357,7 @@ export const HenryPassportScannerView: FC = () => {
     saving.current = true;
     setIsSaving(true);
     const request = generation.current;
-    const result = await henryPassportScannerService.saveToDatabase(extractedData, { sources: [uploadedFile] });
+    const result = await henryPassportScannerService.saveToDatabase(extractedData, { ...vaultOptions, sources: [uploadedFile] });
     saving.current = false;
     if (request === generation.current) {
       setIsSaving(false);
@@ -666,6 +669,7 @@ export const HenryPassportScannerView: FC = () => {
           </ActionBtn>
         </div>
       </BottomActionBar>
+      <HenryCaseLinks key={filePreviewUrl || 'empty'} options={vaultOptions} onOptions={setVaultOptions} />
     </ViewContainer>
   );
 };

@@ -311,12 +311,18 @@ describe('Henry reviewed extraction safety', () => {
         await saveReviewedScan('passport', { reviewConfirmed: true }, '123', 'TEST', {
           sources: [file],
           propertyId: 'property',
+          tenancyId: '123456789012345678901234',
+          transactionId: '223456789012345678901234',
         })
       ).success
     ).toBe(true);
     const init = vi.mocked(authFetch).mock.calls.at(-1)?.[1];
     expect(init?.body).toBeInstanceOf(FormData);
     expect((init?.body as FormData).get('source')).toBeInstanceOf(File);
+    expect(JSON.parse(String((init?.body as FormData).get('metadata')))).toMatchObject({
+      propertyId: 'property', tenancyId: '123456789012345678901234',
+      transactionId: '223456789012345678901234',
+    });
     expect(init?.headers).toBeUndefined();
   });
   it('legacy benchmark callers fail honestly rather than claiming saved/autofilled', async () => {

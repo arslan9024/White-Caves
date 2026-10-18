@@ -42,7 +42,7 @@ describe('HenryTenancyContractScannerView', () => {
       const original = file();
       fireEvent.change(screen.getByLabelText('Upload document'), { target: { files: [original] } });
       await screen.findByDisplayValue('TEST OCCUPANT');
-      const save = screen.getByRole('button', { name: /Save to Government Vault/ });
+      const save = screen.getByRole('button', { name: /Save to encrypted vault/ });
       expect(save).toBeDisabled();
       fireEvent.click(screen.getByLabelText(/I reviewed all extracted values/));
       expect(save).toBeEnabled();

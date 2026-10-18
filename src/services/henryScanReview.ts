@@ -15,6 +15,8 @@ export interface VaultSaveOptions {
   sources?: File[];
   leadId?: string;
   propertyId?: string;
+  tenancyId?: string;
+  transactionId?: string;
   replacesId?: string;
 }
 
@@ -350,6 +352,8 @@ export async function saveReviewedScan(
       reviewConfirmed: true,
       leadId: options.leadId,
       propertyId: options.propertyId,
+      tenancyId: options.tenancyId,
+      transactionId: options.transactionId,
       replacesId: options.replacesId,
     };
     let body: string | FormData = JSON.stringify(metadata);

@@ -158,9 +158,8 @@ describe('Henry Document Studio — Shared Uploader & 5 Content Area Views', () 
     expect(screen.getByText(/Demo only — cannot save or autofill/)).toBeInTheDocument();
     expect(henryTenancyContractTemplateService.loadActiveDraft().tenantName).toBe('');
 
-    // Test Save to Government Vault
-    fireEvent.click(screen.getByRole('button', { name: /Save to Government Vault/i }));
-    expect(screen.getByRole('button', { name: /Save to Government Vault/i })).toBeDisabled();
+    fireEvent.click(screen.getByRole('button', { name: /Save to encrypted vault/i }));
+    expect(screen.getByRole('button', { name: /Save to encrypted vault/i })).toBeDisabled();
     expect(contract.getCachedContract()).toBeNull();
 
     expect(screen.getByText(/1. Property Specifications/i)).toBeDefined();

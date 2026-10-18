@@ -5,6 +5,7 @@ import { ScanReview, VaultSaveOptions, hydrateVaultScan } from '../../../service
 import { EMPTY_EMIRATES_ID } from '../../../services/HenryEmiratesIdScannerService';
 import deed from '../../../services/HenryTitleDeedScannerService';
 import HenryCrmLinkSelector from './HenryCrmLinkSelector';
+import HenryCaseLinks from './HenryCaseLinks';
 
 interface VaultRow {
   id: string;
@@ -69,6 +70,8 @@ export default function HenryVaultControls({
         ...(expiry ? { expiryStatus: expiry } : {}),
         ...(options.leadId ? { leadId: options.leadId } : {}),
         ...(options.propertyId ? { propertyId: options.propertyId } : {}),
+        ...(options.tenancyId ? { tenancyId: options.tenancyId } : {}),
+        ...(options.transactionId ? { transactionId: options.transactionId } : {}),
       };
       const result = await json('/api/henry/documents/search', {
         method: 'POST',
@@ -109,6 +112,8 @@ export default function HenryVaultControls({
         replacesId: undefined,
         leadId: undefined,
         propertyId: undefined,
+        tenancyId: undefined,
+        transactionId: undefined,
       });
       setLinksConfirmed(false);
       setLead('');
@@ -179,6 +184,7 @@ export default function HenryVaultControls({
           onChange={e => setReference(e.target.value)}
         />
       </label>
+      <HenryCaseLinks additionalOnly options={options} onOptions={onOptions} />
       <label>
         Expiry filter
         <select aria-label="Expiry filter" value={expiry} onChange={e => setExpiry(e.target.value)}>
