@@ -30,6 +30,7 @@ import languageReducer from './slices/languageSlice';
 import eventBusMiddleware from './middleware/eventBusMiddleware';
 import { createLogger } from '../utils/logger';
 
+const DEV_MIDDLEWARE_WARN_AFTER_MS = 128;
 const storeLog = createLogger('Store');
 
 // Wrap middleware in error handling
@@ -79,9 +80,11 @@ export const store = configureStore({
     getDefaultMiddleware({
       serializableCheck: {
         ignoredPaths: ['aiAssistantDashboard', 'analytics'],
+        warnAfter: DEV_MIDDLEWARE_WARN_AFTER_MS,
       },
-      immutableStateInvariant: {
+      immutableCheck: {
         ignoredPaths: ['aiAssistantDashboard.notifications'],
+        warnAfter: DEV_MIDDLEWARE_WARN_AFTER_MS,
       },
     }).concat(safeEventBusMiddleware),
   devTools: import.meta.env.DEV,

@@ -1,4 +1,5 @@
-import type { LindaConfig, LindaStatus, WhatsAppMessage } from '../../lindaClient.js';
+import type { WhatsAppEngineStatus } from '../../WhatsAppEngine.js';
+import type { LindaConfig, WhatsAppMessage } from '../../lindaClient.js';
 
 export type LindaCoreMode = 'legacy' | 'shadow' | 'active';
 
@@ -16,7 +17,7 @@ export interface LindaBroadcastResult {
 }
 
 export interface LindaStatsSnapshot {
-  status: LindaStatus;
+  status: WhatsAppEngineStatus;
   isConnected: boolean;
   queuedMessages: number;
   reconnectAttempts: number;
@@ -33,7 +34,7 @@ export interface LindaCoreClientContract {
   getConversationHistory(phoneNumber: string, limit?: number): Promise<WhatsAppMessage[]>;
   getQRCode(): string | null;
   disconnect(): Promise<void>;
-  getStatus(): LindaStatus;
+  getStatus(): WhatsAppEngineStatus;
   isConnected(): boolean;
   getStats(): LindaStatsSnapshot;
 }

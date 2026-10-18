@@ -126,6 +126,7 @@ import authRoutes from './auth.js';
 // ── Test app factory ─────────────────────────────────────────────────
 function createApp(role: string | null = 'owner', userId: string | null = 'user-1') {
   const app = express();
+  app.set('trust proxy', 1);
   app.use(express.json());
   // Minimal inline cookie parser for tests (avoids importing cookie-parser in test env)
   app.use((req: any, _res: any, next: any) => {
@@ -165,7 +166,9 @@ describe('Auth Routes — /api/auth', () => {
   // ── POST /login ──────────────────────────────────────────────────
   describe('POST /api/auth/login', () => {
     it('returns 400 if email is missing', async () => {
-      const res = await request(createApp()).post('/api/auth/login').send({ password: 'Password123' });
+      const res = await request(createApp())
+        .post('/api/auth/login')
+        .send({ password: 'Password123' });
       expect(res.status).toBe(400);
       expect(res.body.error).toMatch(/email.*password.*required/i);
     });
@@ -349,7 +352,7 @@ describe('Auth Routes — /api/auth', () => {
       await request(createApp())
         .post('/api/auth/login')
         .set('User-Agent', 'vitest-suite/1.0')
-        .set('X-Forwarded-For', '203.0.113.7, 10.0.0.1')
+        .set('X-Forwarded-For', '198.51.100.99, 203.0.113.7')
         .send({ email: 'test@whitecaves.ae', password: 'Test1234' });
       const successCall = mockPrisma.activity.create.mock.calls.find(
         (c: any[]) => c[0]?.data?.action === 'login'
@@ -1813,21 +1816,24 @@ describe('Auth Routes — /api/auth', () => {
 
     describe('DELETE /api/auth/webauthn/credentials/:userId/:credentialId', () => {
       it('rejects unauthenticated request with 401', async () => {
-        const res = await request(createApp(null, null))
-          .delete('/api/auth/webauthn/credentials/user-1/cred-1');
+        const res = await request(createApp(null, null)).delete(
+          '/api/auth/webauthn/credentials/user-1/cred-1'
+        );
         expect(res.status).toBe(401);
       });
 
       it('rejects deletion of another user credentials with 403', async () => {
-        const res = await request(createApp('agent', 'user-agent-1'))
-          .delete('/api/auth/webauthn/credentials/victim-user-2/cred-1');
+        const res = await request(createApp('agent', 'user-agent-1')).delete(
+          '/api/auth/webauthn/credentials/victim-user-2/cred-1'
+        );
         expect(res.status).toBe(403);
         expect(res.body.error).toMatch(/cannot delete biometrics for another user/i);
       });
 
       it('succeeds when user deletes their own credential', async () => {
-        const res = await request(createApp('agent', 'user-agent-1'))
-          .delete('/api/auth/webauthn/credentials/user-agent-1/cred-1');
+        const res = await request(createApp('agent', 'user-agent-1')).delete(
+          '/api/auth/webauthn/credentials/user-agent-1/cred-1'
+        );
         expect(res.status).toBe(200);
         expect(res.body.success).toBe(true);
       });

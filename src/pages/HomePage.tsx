@@ -24,6 +24,7 @@ import PageMeta from '../components/seo/PageMeta';
 import StructuredData from '../components/seo/StructuredData';
 import { useRecentlyViewed } from '../components/RecentlyViewed';
 import { MapContainer } from '../components/homepage/MapContainer';
+import { cleanupHomepageHeroPreload, ensureHomepageHeroPreload } from './homePagePreload';
 
 import { ToolsDashboard } from '../components/homepage/ToolsDashboard';
 import { AreaGuideGrid } from '../components/homepage/AreaGuideGrid';
@@ -116,6 +117,14 @@ const HomePage: FC = () => {
     };
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
+  }, []);
+
+  useEffect(() => {
+    ensureHomepageHeroPreload();
+
+    return () => {
+      cleanupHomepageHeroPreload();
+    };
   }, []);
 
   // Use live data when available; fall back to static dummy data before API resolves

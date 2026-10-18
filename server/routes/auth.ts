@@ -201,14 +201,10 @@ const verifyPassword = async (password: string, hash: string): Promise<boolean> 
 };
 
 /**
- * Extract a best-effort client IP from common proxy headers.
- * Falls back to req.ip when no header is present.
+ * Use Express's proxy-aware client IP so only headers from configured trusted
+ * proxies can affect audit and rate-limit attribution.
  */
 const getClientIp = (req: Request): string => {
-  const fwd = req.headers['x-forwarded-for'];
-  if (typeof fwd === 'string' && fwd.length > 0) {
-    return fwd.split(',')[0].trim();
-  }
   return (req.ip || req.socket?.remoteAddress || 'unknown').toString();
 };
 
