@@ -3,6 +3,7 @@ import styled from 'styled-components';
 import { dossierQuestions, type DossierKind, type DossierRow } from '../../../services/henryOperations';
 import HenryCrmLinkSelector from './HenryCrmLinkSelector';
 import { useHenryDossier } from './logic/useHenryDossier';
+import { signatureDocumentTypes } from '../../../../server/shared/henryDocumentRegistry';
 
 const Panel = styled.section`
   padding: 1rem; background: #FFFFFF; color: #1E293B; border: 1px solid #1E293B;
@@ -37,7 +38,7 @@ function DossierContents({ kind, id }: { kind: DossierKind; id: string }) {
         {row.docType} · {row.referenceNumber} · {row.lifecycleStatus}
         {row.lifecycleStatus === 'signed' && ' (user-attested, not verified)'}
         {' · Document '}{row.id}
-        {row.docType === 'tenancy_contract' && <button type="button" disabled={state.busy}
+        {signatureDocumentTypes.includes(row.docType) && <button type="button" disabled={state.busy}
           onClick={() => setConfirmation(row)}>Change status for {row.referenceNumber}</button>}
       </li>)}</ul>
       {confirmation && <div role="group" aria-label="Confirm lifecycle change">

@@ -9,6 +9,7 @@ describe('HenryRecordsCRM', () => {
   it('composes operations dossiers alongside the existing studio', () => {
     render(<HenryRecordsCRM />);
     expect(screen.getByRole('region', { name: 'Henry operations dossiers' })).toBeInTheDocument();
+    expect(screen.getByRole('region', { name: 'Reviewed document intake' })).toBeInTheDocument();
     expect(screen.getByText('Existing preparation studio')).toBeInTheDocument();
   });
 });

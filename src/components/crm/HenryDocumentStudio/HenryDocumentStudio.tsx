@@ -125,10 +125,11 @@ export const HenryDocumentStudio: FC = () => {
         </div>
       </StudioHeader>
       <p>
-        OCR supports Emirates ID, passport, title deed and tenancy contract only. Review every
+        Specialized OCR scanners support Emirates ID, passport, title deed and tenancy contract. Review every
         extraction; neither authenticity nor signatures are verified. Ejari certificates, licences,
-        NOCs, agency forms, other agreements, receipts and cheques are not recognized or validated
-        by these scanners. Preparation templates do not add OCR capability.
+        NOCs, agency forms, sale agreements, invoices, receipts and cheques use the separate Reviewed document intake
+        in Henry Records: labelled fields and manual corrections only, never official validation.
+        Preparation templates do not add OCR capability.
       </p>
       <p>Studio scanner cards show synthetic demo data, not your vault records. Use the upload/review scanners
         in Henry Records for real documents. Preparation previews start with sample values; review all fields before use.</p>
@@ -215,7 +216,7 @@ export const HenryDocumentStudio: FC = () => {
             </div>
             1. Upload supported documents in Henry Records and review extraction candidates against originals.<br />
             2. Confirm review before applying fields to a preparation draft.<br />
-            3. Save reviewed supported originals explicitly to the encrypted vault. Ejari registration and certificate archival are unavailable here.
+            3. Save reviewed supported originals explicitly to the encrypted vault. Uploaded Ejari certificates can be archived through Reviewed document intake; templates do not register or issue certificates.
           </div>
         </SidebarControlPanel>
 

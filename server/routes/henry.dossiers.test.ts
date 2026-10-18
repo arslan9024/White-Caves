@@ -125,7 +125,8 @@ describe('Henry owner-scoped operations', () => {
     expect(response.body.data.active[0].referenceNumber).toBe('••••C-42');
     expect(response.body.data.active[0].encryptedSource).toBeUndefined();
     expect(response.body.data.superseded).toHaveLength(1);
-    expect(response.body.data.unsupportedRequirements).toContain('Ejari certificate');
+    expect(response.body.data.checklist).toContainEqual(expect.objectContaining({ requirement: 'inventory_ejari', acceptedTypes: ['ejari'], status: 'missing' }));
+    expect(response.body.data.unsupportedRequirements[0]).toContain('Legal sufficiency');
     expect(workflowChecklist('tenancy', [{ docType: 'tenancy_contract', lifecycleStatus: 'signed', id }], true)[2]?.status).toBe('present');
   });
   it('reports empty and bounded truncated inventories without pretending missing or latest is conclusive', async () => {

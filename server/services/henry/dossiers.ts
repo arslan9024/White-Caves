@@ -1,6 +1,7 @@
 import { prisma } from '../../database.js';
 import { AppError } from '../../middleware/errorHandler.js';
 import { activeDocumentFilter, decodeDocument, documentId, validateDocumentLinks, vaultKey } from './documentVault.js';
+import { genericDocumentRegistry, genericValidation, isGenericDocumentType } from '../../shared/henryDocumentRegistry.js';
 
 export const dossierLinks = { client: 'leadId', property: 'propertyId', tenancy: 'tenancyId', transaction: 'transactionId' } as const;
 export type DossierKind = keyof typeof dossierLinks;
@@ -36,6 +37,11 @@ export function workflowChecklist(kind: DossierKind, rows: Document[], complete:
     ...(kind === 'property' ? [] : [{ key: 'identity', types: ['emirates_id', 'passport'], signed: false }]),
     ...(kind === 'client' ? [] : [{ key: 'ownership', types: ['title_deed'], signed: false }]),
     ...(kind === 'tenancy' || rentalTransaction ? [{ key: 'signed_agreement', types: ['tenancy_contract'], signed: true }] : []),
+    ...(kind === 'transaction' && !rentalTransaction ? [{ key: 'signed_sale_agreement', types: ['sale_agreement'], signed: true }] : []),
+    ...['trade_licence', 'company_document', 'invoice', 'receipt', 'cheque',
+      ...(kind === 'tenancy' || rentalTransaction ? ['ejari'] : []),
+      ...(kind !== 'client' ? ['noc', 'agency_form'] : []),
+    ].map(type => ({ key: `inventory_${type}`, types: [type], signed: ['agency_form', 'noc'].includes(type) })),
   ];
   return requirements.map(requirement => {
     const matches = rows.filter(row => requirement.types.includes(String(row.docType)) &&
@@ -80,9 +86,7 @@ export async function readDossier(ownerUserId: string, kind: DossierKind, entity
       workflow: kind === 'transaction' ? `transaction_${transaction?.type}` : kind === 'client' ? 'client_onboarding' : kind === 'property' ? 'property_listing' : 'tenancy',
       checklist: knownTransaction ? workflowChecklist(kind, rows, complete, rentalTransaction) : [],
       unsupportedRequirements: !knownTransaction ? ['Unrecognized transaction workflow; manual review required']
-        : kind === 'tenancy' || rentalTransaction ? ['Ejari certificate', 'NOC', 'receipts', 'cheques']
-        : kind === 'transaction' ? ['Signed sale agreement / agency forms', 'NOC', 'receipts', 'cheques']
-          : kind === 'property' ? ['Listing permit / licence', 'Agency forms'] : ['Company / trade licence'],
+         : ['Legal sufficiency, government registration, signature validity and payment clearance require external/manual verification'],
     },
   };
 }
@@ -96,7 +100,7 @@ function cite(row: Document, field: string) {
   const value = field.split('.').reduce<unknown>((current, key) => object(current)[key], fields);
   if (typeof value !== 'string' && typeof value !== 'number') return [];
   const diagnostics = object(fields.diagnostics);
-  const evidence = object(object(diagnostics.fields)[field]);
+  const evidence = object(object(diagnostics.fields)[field.startsWith('values.') ? field.slice(7) : field]);
   const source = typeof diagnostics.sourceText === 'string' ? diagnostics.sourceText.slice(0, 65536) : '';
   const ranges = Array.isArray(evidence.textRanges) ? evidence.textRanges.slice(0, 3) : [];
   const passages = ranges.flatMap(range => {
@@ -114,13 +118,18 @@ function cite(row: Document, field: string) {
 
 export function answerDossier(intent: keyof typeof assistanceQuestions, dossier: Awaited<ReturnType<typeof readDossier>>, now = new Date()) {
   const { rows, result } = dossier;
-  const signed = rows.filter(row => row.docType === 'tenancy_contract' && row.lifecycleStatus === 'signed')
+  const signed = rows.filter(row => row.lifecycleStatus === 'signed' &&
+    (row.docType === 'tenancy_contract' || (row.docType === 'sale_agreement' || row.docType === 'agency_form') &&
+      genericValidation(row.docType, object(object(row.extractedJson).values)).length === 0))
     .sort((a, b) => new Date(String(b.signedAttestedAt || b.createdAt)).getTime() - new Date(String(a.signedAttestedAt || a.createdAt)).getTime());
   const agreement = signed[0];
   const citations = intent === 'agreement_summary' && agreement
-    ? ['contractReference', 'landlord.name', 'tenant.name', 'property.buildingName', 'property.propertyNumber',
-      'financials.periodFrom', 'financials.periodTo', 'financials.annualRentAed'].flatMap(field => cite(agreement, field))
-    : intent === 'latest_signed_agreement' && agreement ? cite(agreement, 'contractReference')
+    ? (isGenericDocumentType(agreement.docType)
+      ? genericDocumentRegistry[agreement.docType].fields.map(field => `values.${field.key}`)
+      : ['contractReference', 'landlord.name', 'tenant.name', 'property.buildingName', 'property.propertyNumber',
+       'financials.periodFrom', 'financials.periodTo', 'financials.annualRentAed']).flatMap(field => cite(agreement, field))
+    : intent === 'latest_signed_agreement' && agreement
+      ? cite(agreement, isGenericDocumentType(agreement.docType) ? 'values.documentReference' : 'contractReference')
       : intent === 'ids_expiring_next_month' ? rows.flatMap(row => {
         const field = row.docType === 'emirates_id' ? 'expiryDate' : row.docType === 'passport' ? 'dateOfExpiry' : '';
         const value = object(row.extractedJson)[field];
@@ -132,7 +141,7 @@ export function answerDossier(intent: keyof typeof assistanceQuestions, dossier:
       }) : [];
   return { intent, complete: result.complete,
     message: !result.complete ? 'Partial dossier (newest 100 active records): absence and latest results are not conclusive.'
-      : intent === 'missing_documents' ? 'Workflow checklist only; unsupported requirements still need manual handling.'
+      : intent === 'missing_documents' ? 'Evidence inventory only, not legal compliance. Signed entries require manual attestation; external verification remains necessary.'
         : citations.length ? 'Reviewed fields only. Signed means user-attested, not signature verification.'
           : 'No matching active reviewed records. No facts inferred.',
     checklist: intent === 'missing_documents' ? result.checklist : [],

@@ -1,4 +1,5 @@
 import { Router } from 'express';
+import { signatureDocumentTypes } from '../shared/henryDocumentRegistry.js';
 import { prisma } from '../database.js';
 import { AuthRequest } from '../middleware/auth.js';
 import { requireMinRole } from '../middleware/rbac.js';
@@ -34,8 +35,8 @@ for (const action of ['lifecycle', 'links'] as const) {
     const row = await vaultOperation(action, () => prisma.$transaction(async tx => {
       const found = await tx.henryScannedDocument.findFirst({ where: { id, ownerUserId, ...activeDocumentFilter } });
       if (!found) throw new AppError('Document not found', 404);
-      if (action === 'lifecycle' && found.docType !== 'tenancy_contract')
-        throw new AppError('Signature attestation applies only to tenancy agreements', 400);
+      if (action === 'lifecycle' && !signatureDocumentTypes.includes(found.docType))
+        throw new AppError('Signature attestation applies only to agreements, agency forms and NOCs', 400);
       const changed = await tx.henryScannedDocument.updateMany({
         where: { id, ownerUserId, updatedAt: change.updatedAt, ...activeDocumentFilter },
         data: links ? Object.fromEntries(Object.entries(links).filter(([key]) => Object.hasOwn(req.body, key))) : { lifecycleStatus: change.lifecycleStatus,

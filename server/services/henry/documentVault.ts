@@ -3,12 +3,14 @@ import { prisma } from '../../database.js';
 import { EncryptionService, EncryptedMessage } from '../../security/encryption.service.js';
 import { AppError } from '../../middleware/errorHandler.js';
 import { createLogger } from '../../utils/logger.js';
+import { supportedDocumentTypes, isGenericDocumentType } from '../../shared/henryDocumentRegistry.js';
+import { validateGenericDocument } from './genericDocumentValidation.js';
 
 const log = createLogger('HenryVault');
 const encryption = new EncryptionService();
 // AES hex encoding + base64 must fit MongoDB's 16 MB document limit.
 export const maxSourceBytes = 4 * 1024 * 1024;
-export const documentTypes = ['emirates_id', 'title_deed', 'passport', 'tenancy_contract'] as const;
+export const documentTypes = supportedDocumentTypes;
 export const activeDocumentFilter = {
   OR: [{ replacedById: null }, { replacedById: { isSet: false } }],
 };
@@ -87,6 +89,14 @@ function expiryTime(value: unknown): number {
     : NaN;
 }
 
+function documentExpiryTime(docType: unknown, fields: Record<string, unknown>): number {
+  const values = isGenericDocumentType(docType) && fields.values && typeof fields.values === 'object' &&
+    !Array.isArray(fields.values) ? fields.values as Record<string, unknown> : {};
+  return expiryTime(values.expiryDate || values.endDate || fields.expiryDate || fields.dateOfExpiry ||
+    (fields.financials as Record<string, unknown> | undefined)?.periodTo ||
+    (fields.contract as Record<string, unknown> | undefined)?.endDate);
+}
+
 export function prepareDocument(input: Record<string, unknown>, owner = '') {
   if (!input || typeof input !== 'object' || Array.isArray(input)) throw new AppError('Document metadata required', 400);
   const extracted = input.extractedJson;
@@ -103,6 +113,7 @@ export function prepareDocument(input: Record<string, unknown>, owner = '') {
     throw new AppError('Explicit review required; demos cannot be saved', 400);
   const reference =
     input.referenceNumber || fields.idNumber || fields.certificateNumber || fields.passportNumber || fields.contractReference;
+  validateGenericDocument(input.docType, fields, reference);
   if (typeof reference !== 'string' || !reference.trim() || reference.length > 100)
     throw new AppError('Document reference required', 400);
   const real = input.docType === 'passport' || input.docType === 'tenancy_contract';
@@ -204,7 +215,7 @@ export function prepareDocument(input: Record<string, unknown>, owner = '') {
   const serialized = JSON.stringify(payload);
   if (serialized.length > 250000) throw new AppError('Extracted payload too large', 413);
   const key = vaultKey();
-  const expiry = expiryTime(fields.expiryDate || fields.dateOfExpiry || (fields.financials as Record<string, unknown> | undefined)?.periodTo || (fields.contract as Record<string, unknown> | undefined)?.endDate);
+  const expiry = documentExpiryTime(input.docType, fields);
   const configuredDays = Number(process.env.HENRY_RETENTION_DAYS || 365);
   if (!Number.isInteger(configuredDays) || configuredDays < 1 || configuredDays > 3650)
     throw new AppError('Invalid Henry retention review interval', 503);
@@ -241,7 +252,7 @@ export function decodeDocument(row: {
     throw new AppError('Document vault unavailable', 503);
   const payload = decrypted as Record<string, unknown>;
   const fields = (payload.extractedJson || {}) as Record<string, unknown>;
-  const expiry = expiryTime(fields.expiryDate || fields.dateOfExpiry || (fields.financials as Record<string, unknown> | undefined)?.periodTo || (fields.contract as Record<string, unknown> | undefined)?.endDate);
+  const expiry = documentExpiryTime(row.docType, fields);
   return {
     ...payload,
     id: row.id,

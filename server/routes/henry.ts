@@ -35,6 +35,7 @@ import { HENRY_UPLOADS_PATH, OLLAMA_HOST, GROQ_API_KEY } from '../config/env.js'
 import { AuthRequest } from '../middleware/auth.js';
 import { AppError, asyncHandler } from '../middleware/errorHandler.js';
 import { activeDocumentFilter, decodeDocument, decodeSource, documentId, documentOwner, prepareDocument, prepareSource, referenceHash, maxSourceBytes, validateDocumentLinks, vaultKey, vaultOperation } from '../services/henry/documentVault.js';
+import { isGenericDocumentType } from '../shared/henryDocumentRegistry.js';
 import dossierRouter from './henry.dossiers.js';
 
 const router = Router();
@@ -913,8 +914,8 @@ router.post('/documents/save', requireMinRole('agent'), sourceUpload.array('sour
     try { req.body = JSON.parse(req.body.metadata); } catch { throw new AppError('Invalid document metadata', 400); }
   }
   const sources = (req.files as Express.Multer.File[] | undefined) || [];
-  if (['passport', 'tenancy_contract'].includes(req.body.docType) && !sources.length)
-    throw new AppError('Original passport or agreement required for archival', 400);
+  if ((['passport', 'tenancy_contract'].includes(req.body.docType) || isGenericDocumentType(req.body.docType)) && !sources.length)
+    throw new AppError('Original source required for archival', 400);
   const data = { ...prepareDocument(req.body, ownerUserId), ...prepareSource(sources) };
   const links = await validateDocumentLinks(ownerUserId, req.body);
   const result = await vaultOperation('save', () => prisma.$transaction(async tx => {

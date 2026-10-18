@@ -50,6 +50,28 @@ describe('Henry document vault preparation', () => {
     expect(() => prepareDocument({ ...input, extractedJson: { ...input.extractedJson, plotNumber: value } }, owner))
       .toThrow('Owner and unit or plot required');
   });
+  it.each([
+    { docType: 'emirates_id', expected: '2027-12-31T00:00:00.000Z',
+      extractedJson: { idNumber: '784-2000-1234567-1', fullNameEn: 'TEST OWNER', expiryDate: '31/12/2027' } },
+    { docType: 'passport', expected: '2027-12-31T00:00:00.000Z',
+      extractedJson: { passportNumber: 'T12345678', fullName: 'TEST OWNER', issuingCountryCode: 'UTO',
+        dateOfBirth: '01/01/1990', dateOfExpiry: '31/12/2027', demoOnly: false, reviewConfirmed: true } },
+    { docType: 'tenancy_contract', expected: '2027-12-31T00:00:00.000Z',
+      extractedJson: { contractReference: 'SOURCE-42', landlord: { name: 'TEST LESSOR' }, tenant: { name: 'TEST TENANT' },
+        property: { buildingName: 'TEST BUILDING', propertyNumber: '42' },
+        financials: { periodFrom: '01/01/2027', periodTo: '31/12/2027', annualRentAed: 60000 },
+        demoOnly: false, reviewConfirmed: true } },
+    { ...input, expected: null },
+  ])('preserves legacy $docType expiry without guessing one from nested generic values', ({ expected, ...metadata }) => {
+    const clock = vi.spyOn(Date, 'now').mockReturnValue(Date.UTC(2026, 9, 18, 12));
+    try {
+      const prepared = prepareDocument({ ...metadata, reviewConfirmed: true,
+        extractedJson: { ...metadata.extractedJson, values: { expiryDate: '01/01/2020' } } }, owner);
+      expect(prepared.expiryAt?.toISOString() ?? null).toBe(expected);
+      expect(decodeDocument({ ...prepared, id: owner, createdAt: new Date(), updatedAt: new Date() }).expiryStatus)
+        .toBe(expected ? 'current' : 'unknown');
+    } finally { clock.mockRestore(); }
+  });
   it('normalizes malformed encryption JSON to a safe unavailable error', () => {
     const row = { id: owner, docType: 'title_deed', encryptedPayload: '{PRIVATE MALFORMED DATA',
       createdAt: new Date(), updatedAt: new Date() };

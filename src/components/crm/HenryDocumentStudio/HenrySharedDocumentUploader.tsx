@@ -19,6 +19,8 @@ export interface HenrySharedDocumentUploaderProps {
   acceptedFormats?: string;
   isProcessing?: boolean;
   onFileUpload: (file: File, original?: File) => Promise<void> | void;
+  onFileSelected?: () => void;
+  maxFileSizeMb?: number;
   onSampleLoad?: () => void;
   onSave?: () => void;
   onDiscard?: () => void;
@@ -191,6 +193,8 @@ export const HenrySharedDocumentUploader: FC<HenrySharedDocumentUploaderProps> =
   acceptedFormats = 'application/pdf,image/png,image/jpeg',
   isProcessing = false,
   onFileUpload,
+  onFileSelected,
+  maxFileSizeMb = 10,
   onSampleLoad,
   onSave,
   onDiscard,
@@ -219,11 +223,12 @@ export const HenrySharedDocumentUploader: FC<HenrySharedDocumentUploaderProps> =
 
   const uploadFile = async (file: File, original?: File) => {
     if (isProcessing) return;
+    onFileSelected?.();
     setUploadError('');
     clearCorrection();
     const generation = correctionGeneration.current;
-    if (!['application/pdf', 'image/png', 'image/jpeg'].includes(file.type) || !file.size || file.size > 10 * 1024 * 1024) {
-      setUploadError('Use a PNG, JPEG or PDF under 10 MB. Rescan with all edges visible.');
+    if (!['application/pdf', 'image/png', 'image/jpeg'].includes(file.type) || !file.size || file.size > maxFileSizeMb * 1024 * 1024) {
+      setUploadError(`Use a PNG, JPEG or PDF under ${maxFileSizeMb} MB. Rescan with all edges visible.`);
       return;
     }
     if (manualCorrection && !original && file.type !== 'application/pdf') {
@@ -326,7 +331,7 @@ export const HenrySharedDocumentUploader: FC<HenrySharedDocumentUploaderProps> =
           {isProcessing ? '⚡ Analyzing & Extracting Data...' : 'Drop file here or click to browse'}
         </div>
         <div className="dropzone-sub">
-          PNG, JPEG or PDF · maximum 10 MB · avoid glare and show all edges
+          PNG, JPEG or PDF · maximum {maxFileSizeMb} MB · avoid glare and show all edges
         </div>
       </DropzoneBox>
 
