@@ -40,6 +40,10 @@ Local backups include index/working-tree binary patches and hash-verified untrac
 | Latest-main auth/session tests | Measured this run | 6 files / 176 tests passed, exit 0, 97.19 seconds |
 | Latest-main Henry/Drive tests | Measured this run | 696 passed / 7 failed / 1 skipped across 61 files (6 failed files); 274 seconds, exit 1. One CRLF-sensitive policy assertion and six five-second timeouts; no live-MongoDB assurance |
 | Failure replay after portability fix | Measured this run | All six affected files replayed with one worker and unchanged 5-second timeouts: 48 passed / 4 timeout failures (52 tests), exit 1, 96.10 seconds. The policy test passes; no full-suite green claim |
+| Henry timeout repair regression | Measured this run (2026-10-19) | Scoped `Henry henry Drive drive` plus the new query-helper tests: 61 files passed / 1 skipped; 709 passed / 1 skipped tests (710 total), exit 0, 543.27 seconds. Includes all four formerly timing-out cases; the configured 5-second timeout and assertions are unchanged. This is a scoped Henry/Drive suite, not the entire project suite |
+| Post-review focused regression | Measured this run (2026-10-19) | Six affected route/adapter/scanner/helper files passed 72/72 tests, exit 0, 47.98 seconds, after the hidden-text safeguard and remaining expensive button queries were addressed; default 5-second budget unchanged |
+| Latest client/server typechecks | Measured this run | Client TypeScript passed with 8 GB heap and existing `skipLibCheck`, exit 0 (631.45 seconds); server TypeScript passed, exit 0 after final helper changes. Client check was in the sequential run before the final hidden-text test-only adjustment; workspace diagnostics report no current errors |
+| Changed-file lint and production build | Measured this run | ESLint on all changed TS/TSX files passed, exit 0; production `npm run build` passed, exit 0, 2m48s, 494 PWA precache entries |
 | Portability-fix ESLint | Measured this run | Passed, exit 0; only CRLF-to-LF normalization was added to test input, with all policy assertions retained |
 | Latest-main production build | Measured this run | Vite/PWA passed, exit 0, 4m 6s; 494 precache entries. Build output stored outside the repository; tracked compiler logs untouched |
 | Latest-main governance | Measured this run | Structural governance audit passed; overall command failed, exit 1: `PROJECT_PROGRESS.md` and `docs/plans/INDEX.md` stale by 50 days. No fake date-only refresh performed |
@@ -67,14 +71,16 @@ This fresh checkout has no `logs/orchestrator` queue/cycle inputs. Running the c
 
 7. Review the two stale governance roots against this dated evidence before updating their narrative and review dates; do not erase older history or infer whole-project completion from the new Henry tests.
 
-## Remaining measured test failures
+## Henry timeout diagnosis and result (2026-10-19)
 
-- `server/routes/henry.routes.test.ts`: health-route first test times out at 5 seconds.
-- `src/components/crm/HenryDocumentStudio/HenryCorrectedArchives.test.tsx`: initial empty Emirates ID correction/reset case times out.
-- `src/components/crm/HenryDocumentStudio/HenryDocumentStudioComponents.test.tsx`: demo-side preview and prohibited confirmation/autofill/archive case times out.
-- `src/components/crm/HenryDocumentStudio/HenrySharedDocumentUploader.test.tsx`: initial empty Emirates ID late-callback invalidation case times out.
+The four historical five-second failures listed in the initial baseline were addressed without raising timeouts, skipping tests, or weakening the route, reset, stale-callback, demo-rejection, review, or original-byte assertions.
 
-These reproduced with one worker and no timeout increase. The current review has not established whether cold import/render cost, machine load, or application/test behavior is the cause. Do not weaken review/reset/privacy assertions or mark these verified without diagnosis.
+- Health-route cold import previously took about 91 seconds in the instrumented run. The Henry adapter loaded the entire `googleapis` barrel despite using only Drive. The installed Drive-specific entrypoint imported in 482 ms, exposes the expected Drive factory/OAuth2 surface, and constructed real `files.get`/`about.get` methods without a provider call. The adapter now imports that entrypoint and retains its request bounds/retry policy and separate-account behavior.
+- The Emirates ID correction/reset probe completed in 8.8 seconds; whole-scanner accessible-role lookups dominated the case. Tests now find unique visible button text and verify the role/name within its local action group; perspective-editor queries are scoped to its labelled section. The helper contract intentionally scopes accessible-name uniqueness to the local action group, and tests cover hidden controls, mismatched labels, duplicate visible text and repeated names in separate groups.
+- Initial six-file verification passed 70/70 tests at the unchanged default 5-second limit, exit 0 (114.69 seconds); after helper scope and hidden-text review, the same six-file set passed 72/72 (47.98 seconds). The remaining contract-demo button queries were also narrowed after one isolated replay hit a 5-second timeout under heavy single-worker load.
+- The scoped Henry/Drive replay passed 709 tests and skipped one pre-existing skipped test across 62 files (61 passed, 1 skipped), exit 0 (543.27 seconds). All four historical timeout cases passed. After the final helper changes, the affected six files passed 72/72; server typecheck, changed-file lint and production build also passed. The project-wide suite, current-main auth integration and browser/provider/database gates are distinct and must not be inferred from these checks.
+
+The source auth checkpoint remains unmerged: its isolated trial still had 37 semantic conflicts. The Henry verification does not change the NOT READY merge decision.
 
 ## Publishing and rollback
 
