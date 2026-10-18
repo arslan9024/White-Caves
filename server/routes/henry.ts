@@ -910,7 +910,10 @@ router.post('/documents/save', requireMinRole('agent'), sourceUpload.array('sour
   if (req.body.metadata) {
     try { req.body = JSON.parse(req.body.metadata); } catch { throw new AppError('Invalid document metadata', 400); }
   }
-  const data = { ...prepareDocument(req.body, ownerUserId), ...prepareSource((req.files as Express.Multer.File[] | undefined) || []) };
+  const sources = (req.files as Express.Multer.File[] | undefined) || [];
+  if (['passport', 'tenancy_contract'].includes(req.body.docType) && !sources.length)
+    throw new AppError('Original passport or agreement required for archival', 400);
+  const data = { ...prepareDocument(req.body, ownerUserId), ...prepareSource(sources) };
   const links = await validateDocumentLinks(ownerUserId, req.body);
   const result = await vaultOperation('save', () => prisma.$transaction(async tx => {
     const replacesId = req.body.replacesId ? documentId(req.body.replacesId) : null;

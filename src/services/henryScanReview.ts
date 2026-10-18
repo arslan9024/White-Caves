@@ -38,6 +38,49 @@ export function assessScanReadiness(data: ScanReview | null | undefined): ScanRe
       (fields[key] as string).trim()
     );
   const missing = new Set(data.missingFields || []);
+  if ('passportNumber' in fields) {
+    for (const key of ['passportNumber', 'fullName']) if (!present(key)) missing.add(key);
+    if (!present('issuingCountryCode') && !present('issuingCountry')) missing.add('issuingCountry');
+    for (const key of ['dateOfBirth', 'dateOfExpiry'])
+      if (typeof fields[key] !== 'string' || !validScanDate(fields[key] as string)) missing.add(key);
+    if (!/^[A-Z0-9]{5,12}$/i.test(String(fields.passportNumber))) missing.add('passportNumber');
+    if (validScanDate(String(fields.dateOfBirth)) &&
+      Date.parse(String(fields.dateOfBirth).split('/').reverse().join('-')) > Date.now())
+      missing.add('dateOfBirth');
+    const time = (value: unknown) => typeof value === 'string' && validScanDate(value)
+      ? Date.parse(value.split('/').reverse().join('-')) : NaN;
+    if (time(fields.dateOfBirth) >= time(fields.dateOfExpiry)) missing.add('dateOfBirth');
+    if (fields.dateOfIssue && (!Number.isFinite(time(fields.dateOfIssue)) ||
+      time(fields.dateOfIssue) < time(fields.dateOfBirth) ||
+      time(fields.dateOfIssue) > time(fields.dateOfExpiry))) missing.add('dateOfIssue');
+  }
+  if ('financials' in fields) {
+    const record = (value: unknown): Record<string, unknown> =>
+      value && typeof value === 'object' && !Array.isArray(value) ? value as Record<string, unknown> : {};
+    const landlord = record(fields.landlord), tenant = record(fields.tenant);
+    const property = record(fields.property), financials = record(fields.financials);
+    if (property.usage !== undefined && !['', 'residential', 'commercial', 'industrial'].includes(String(property.usage)))
+      missing.add('property.usage');
+    for (const key of ['areaSqM', 'areaSqFt'])
+      if (property[key] !== undefined && (typeof property[key] !== 'number' ||
+        !Number.isFinite(property[key]) || Number(property[key]) < 0)) missing.add(`property.${key}`);
+    for (const [key, value] of Object.entries({
+      'landlord.name': landlord.name, 'tenant.name': tenant.name,
+      'property.buildingName': property.buildingName, 'property.propertyNumber': property.propertyNumber,
+    })) if (typeof value !== 'string' || !value.trim() || /^(unknown|n\/a)$/i.test(value)) missing.add(key);
+    for (const key of ['periodFrom', 'periodTo'])
+      if (typeof financials[key] !== 'string' || !validScanDate(String(financials[key])))
+        missing.add(`financials.${key}`);
+    if (typeof financials.annualRentAed !== 'number' || !Number.isFinite(financials.annualRentAed) || financials.annualRentAed <= 0)
+      missing.add('financials.annualRentAed');
+    for (const key of ['contractValueAed', 'securityDepositAed'])
+      if (financials[key] !== undefined && (typeof financials[key] !== 'number' ||
+        !Number.isFinite(financials[key]) || Number(financials[key]) < 0)) missing.add(`financials.${key}`);
+    if (validScanDate(String(financials.periodFrom)) && validScanDate(String(financials.periodTo)) &&
+      Date.parse(String(financials.periodFrom).split('/').reverse().join('-')) >=
+      Date.parse(String(financials.periodTo).split('/').reverse().join('-')))
+      missing.add('financials.periodTo');
+  }
   if ('idNumber' in fields) {
     if (typeof fields.idNumber !== 'string' || !/^784-\d{4}-\d{7}-\d$/.test(fields.idNumber))
       missing.add('idNumber');
@@ -82,6 +125,8 @@ export function assessScanReadiness(data: ScanReview | null | undefined): ScanRe
     };
   const reasons: string[] = [];
   if (data.demoOnly) reasons.push('Demo documents cannot be reused.');
+  if (('passportNumber' in fields || 'financials' in fields) && data.demoOnly !== false)
+    reasons.push('A real uploaded source is required.');
   if (Object.values(data.diagnostics?.fields || {}).some(field => field.state === 'conflict'))
     reasons.push('Resolve source conflicts before reuse.');
   if (
@@ -93,6 +138,10 @@ export function assessScanReadiness(data: ScanReview | null | undefined): ScanRe
     reasons.push(
       'Expired ID: explicitly acknowledge this expiry; it is not current identification.'
     );
+  const passportExpiry = fields.dateOfExpiry;
+  if ('passportNumber' in fields && typeof passportExpiry === 'string' &&
+    scanExpiry(passportExpiry).isExpired && data.expiryAcknowledgedFor !== passportExpiry)
+    reasons.push('Expired passport: explicitly acknowledge this expiry; it is not current identification.');
   if (data.reviewConfirmed !== true) reasons.push('Confirm a fresh source review.');
   return reasons.length
     ? { status: 'needs_review', reasons }

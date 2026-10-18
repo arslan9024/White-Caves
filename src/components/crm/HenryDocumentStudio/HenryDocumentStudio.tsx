@@ -402,7 +402,7 @@ export const HenryDocumentStudio: FC = () => {
                   </div>
                   <div>
                     <span style={{ color: 'var(--text-secondary, #64748B)', display: 'block' }}>Area (Sq.M / Sq.Ft)</span>
-                    <strong style={{ color: 'var(--accent-green, #16A34A)' }}>{scannedContractData.property.areaSqM} m² ({scannedContractData.property.areaSqFt} sq.ft)</strong>
+                    <strong style={{ color: 'var(--accent-green, #16A34A)' }}>{scannedContractData.property.areaSqM ?? 'Not visible'} m² ({scannedContractData.property.areaSqFt ?? 'Not visible'} sq.ft)</strong>
                   </div>
                   <div style={{ gridColumn: 'span 2' }}>
                     <span style={{ color: 'var(--text-secondary, #64748B)', display: 'block' }}>Location / Community</span>
@@ -427,7 +427,7 @@ export const HenryDocumentStudio: FC = () => {
                   </div>
                   <div>
                     <span style={{ color: 'var(--text-secondary, #64748B)', display: 'block' }}>Security Deposit</span>
-                    <strong style={{ color: 'var(--accent-gold, #D97706)' }}>AED {scannedContractData.financials.securityDepositAed.toLocaleString()}</strong>
+                    <strong style={{ color: 'var(--accent-gold, #D97706)' }}>{scannedContractData.financials.securityDepositAed === undefined ? 'Not visible' : `AED ${scannedContractData.financials.securityDepositAed.toLocaleString()}`}</strong>
                   </div>
                   <div>
                     <span style={{ color: 'var(--text-secondary, #64748B)', display: 'block' }}>Mode of Payment</span>

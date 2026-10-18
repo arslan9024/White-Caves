@@ -11,7 +11,7 @@
  *   - Persistent Action Controls (Discard, Copy JSON, Save to Henry Vault)
  */
 
-import React, { FC, useState, useEffect, useMemo } from 'react';
+import React, { FC, useState, useEffect, useMemo, useRef } from 'react';
 import styled from 'styled-components';
 import {
   FileText,
@@ -33,6 +33,9 @@ import henryTenancyContractTemplateService, {
   DldTenancyContractData,
 } from '../../../services/HenryTenancyContractTemplateService';
 import HenrySharedDocumentUploader from './HenrySharedDocumentUploader';
+import { assessScanReadiness, canUseScan } from '../../../services/henryScanReview';
+import { markFieldReviewed } from '../../../services/henryDocumentParsing';
+import { HenryExtractionEvidence } from './HenryExtractionEvidence';
 
 const ViewContainer = styled.div`
   display: flex;
@@ -226,6 +229,10 @@ export const HenryTenancyContractScannerView: FC = () => {
   const [zoomLevel, setZoomLevel] = useState<number>(100);
   const [statusMsg, setStatusMsg] = useState<string | null>(null);
   const [copiedJson, setCopiedJson] = useState<boolean>(false);
+  const generation = useRef(0);
+  const saving = useRef(false);
+  const [isSaving, setIsSaving] = useState(false);
+  useEffect(() => () => { generation.current++; }, []);
 
   useEffect(() => {
     if (uploadedFile) {
@@ -238,25 +245,33 @@ export const HenryTenancyContractScannerView: FC = () => {
   }, [uploadedFile]);
 
   const handleFileUpload = async (file: File) => {
+    const request = ++generation.current;
+    setIsSaving(false);
+    henryTenancyContractScannerService.clearCachedContract();
+    setScannedResult(null);
+    setContractData(null);
     setIsScanning(true);
     setUploadedFile(file);
     setStatusMsg(`Reading Tenancy Agreement "${file.name}"...`);
 
     try {
       const result = await henryTenancyContractScannerService.scanContract(file);
+      if (request !== generation.current) return;
       setScannedResult(result);
       const dld = henryTenancyContractScannerService.toDldTenancyContractData(result, true);
       setContractData(dld);
       setStatusMsg(`✓ Extracted agreement: ${result.property.buildingName} #${result.property.propertyNumber} (Rent AED ${result.financials.annualRentAed.toLocaleString()})`);
     } catch {
+      if (request !== generation.current) return;
       setStatusMsg('Error processing Tenancy Contract.');
     } finally {
-      setIsScanning(false);
-      setTimeout(() => setStatusMsg(null), 4000);
+      if (request === generation.current) setIsScanning(false);
     }
   };
 
   const handleLoadDemo = async () => {
+    generation.current++;
+    henryTenancyContractScannerService.clearCachedContract();
     setIsScanning(true);
     setUploadedFile(null);
     try {
@@ -267,39 +282,72 @@ export const HenryTenancyContractScannerView: FC = () => {
       setStatusMsg('✓ Loaded demo Tenancy Contract (Camelia 608).');
     } finally {
       setIsScanning(false);
-      setTimeout(() => setStatusMsg(null), 3000);
     }
   };
 
-  const handleUpdateDldField = (field: keyof DldTenancyContractData, val: DldTenancyContractData[keyof DldTenancyContractData]) => {
-    if (!contractData) return;
-    setContractData(prev => {
-      if (!prev) return null;
-      const updated = { ...prev, [field]: val };
-      return updated;
-    });
+  const handleScanCorrection = (path: string, value: string | number) => {
+    if (!scannedResult) return;
+    const updated = { ...scannedResult, reviewConfirmed: false, missingFields: [],
+      diagnostics: markFieldReviewed(scannedResult.diagnostics, path, value) };
+    const [group, key] = path.split('.');
+    const numeric = ['financials.annualRentAed', 'financials.contractValueAed', 'financials.securityDepositAed', 'property.areaSqM', 'property.areaSqFt'].includes(path);
+    const corrected = numeric ? value === '' ? undefined : Number(value) : value;
+    if (key && (group === 'landlord' || group === 'tenant' || group === 'property' || group === 'financials'))
+      Object.assign(updated, { [group]: { ...updated[group], [key]: corrected } });
+    else if (path === 'contractReference' || path === 'contractDate')
+      Object.assign(updated, { [path]: value });
+    else if (path === 'additionalTerms') updated.additionalTerms = [String(value)];
+    else if (path === 'cheques') {
+      updated.financials = { ...updated.financials, modeOfPayment: value ? `${value} CHEQUES` : '' };
+    }
+    updated.isFilled = assessScanReadiness(updated).status !== 'needs_rescan';
+    updated.fillScorePercent = Math.round((updated.diagnostics?.coverage || 0) * 100);
+    updated.filledFieldsCount = Object.values(updated.diagnostics?.fields || {}).filter(field => field.state === 'extracted').length;
+    setScannedResult(updated);
+    setContractData(henryTenancyContractScannerService.toDldTenancyContractData(updated, true));
+    henryTenancyContractScannerService.clearCachedContract();
+  };
+
+  const handleUpdateDldField = (field: keyof DldTenancyContractData, val: string | number) => {
+    const paths: Partial<Record<keyof DldTenancyContractData, string>> = {
+      buildingName: 'property.buildingName', propertyNo: 'property.propertyNumber', plotNo: 'property.plotNumber',
+      ownerName: 'landlord.name', tenantName: 'tenant.name', annualRent: 'financials.annualRentAed',
+      contractPeriodFrom: 'financials.periodFrom', contractPeriodTo: 'financials.periodTo',
+    };
+    const path = paths[field];
+    if (path) handleScanCorrection(path, val);
   };
 
   const handleLoadToJourney = () => {
-    if (!contractData) return;
-    setStatusMsg('Autofill unavailable: contract benchmark data is not reviewed OCR.');
-    setTimeout(() => setStatusMsg(null), 4000);
+    if (!scannedResult || !canUseScan(scannedResult)) return;
+    henryTenancyContractScannerService.setCachedContract(scannedResult);
+    henryTenancyContractTemplateService.saveDraft(
+      henryTenancyContractScannerService.toDldTenancyContractData(scannedResult));
+    setStatusMsg('Reviewed agreement applied to Preparation Studio.');
   };
 
   const handleSaveToVault = async () => {
-    if (!contractData) return;
-    const result = await henryTenancyContractScannerService.saveToDatabase(scannedResult || undefined);
-    setStatusMsg(result.error || 'Nothing was saved.');
-    setTimeout(() => setStatusMsg(null), 4000);
+    if (!scannedResult || !canUseScan(scannedResult) || !uploadedFile || saving.current) return;
+    saving.current = true;
+    setIsSaving(true);
+    const request = generation.current;
+    const result = await henryTenancyContractScannerService.saveToDatabase(scannedResult, { sources: [uploadedFile] });
+    saving.current = false;
+    if (request === generation.current) {
+      setIsSaving(false);
+      setStatusMsg(result.success ? 'Reviewed agreement and original saved to encrypted vault.' : result.error || 'Nothing was saved.');
+    }
   };
 
   const handleDiscard = () => {
+    generation.current++;
+    setIsScanning(false);
+    setIsSaving(false);
     setScannedResult(null);
     setContractData(null);
     setUploadedFile(null);
     henryTenancyContractScannerService.clearCachedContract();
     setStatusMsg('Discarded Tenancy Contract data and cleared session cache.');
-    setTimeout(() => setStatusMsg(null), 3000);
   };
 
   const handleCopyJson = () => {
@@ -347,7 +395,7 @@ export const HenryTenancyContractScannerView: FC = () => {
                   Extracted Agreement Variables Form
                 </h4>
                 <span style={{ fontSize: '0.75rem', color: 'var(--accent-green, #059669)', fontWeight: 800 }}>
-                  ✓ {scannedResult?.fillScorePercent || 98}% Accuracy
+                  Source review required — not authenticity verification
                 </span>
               </div>
 
@@ -435,6 +483,41 @@ export const HenryTenancyContractScannerView: FC = () => {
                   />
                 </FormGroup>
               </FormGrid>
+              {scannedResult && <>
+                <label>Source contract reference
+                  <input aria-label="Source contract reference" value={scannedResult.contractReference || ''}
+                    onChange={e => handleScanCorrection('contractReference', e.target.value)} />
+                </label>
+                <p>Use the reference printed on the agreement. If none is present, leave blank: archival requires a source reference; no reference is invented.</p>
+                <details><summary>Additional source corrections</summary>
+                  {Object.entries(scannedResult.diagnostics?.fields || {})
+                    .filter(([key]) => !['landlord.name', 'tenant.name', 'property.buildingName', 'property.propertyNumber',
+                      'property.plotNumber', 'financials.periodFrom', 'financials.periodTo', 'financials.annualRentAed', 'contractReference'].includes(key))
+                    .map(([path, evidence]) => {
+                      const [group, key] = path.split('.');
+                      const fields = group === 'landlord' || group === 'tenant' || group === 'property' || group === 'financials'
+                        ? scannedResult[group] : null;
+                      const value = fields && key ? (fields as unknown as Record<string, unknown>)[key]
+                        : path === 'contractDate' ? scannedResult.contractDate
+                        : path === 'additionalTerms' ? scannedResult.additionalTerms.join('; ') : evidence.values[0] || '';
+                      return <label key={path} style={{ display: 'block' }}>{path}
+                        <input aria-label={path} value={String(value ?? '')}
+                          onChange={e => handleScanCorrection(path, typeof value === 'number' ? Number(e.target.value) : e.target.value)} />
+                      </label>;
+                    })}
+                </details>
+                <HenryExtractionEvidence diagnostics={scannedResult.diagnostics} />
+                {scannedResult.demoOnly ? <p role="alert">Demo only — cannot save or autofill.</p> : <>
+                  <p role="status">{assessScanReadiness(scannedResult).reasons.join(' ')}</p>
+                  <label><input type="checkbox" checked={scannedResult.reviewConfirmed === true}
+                    onChange={e => {
+                      const reviewed = { ...scannedResult, reviewConfirmed: e.target.checked };
+                      setScannedResult(reviewed);
+                      henryTenancyContractScannerService.clearCachedContract();
+                      if (canUseScan(reviewed)) henryTenancyContractScannerService.setCachedContract(reviewed);
+                    }} />I reviewed all extracted values against the original agreement.</label>
+                </>}
+              </>}
             </FormCard>
           )}
         </LeftCol>
@@ -516,13 +599,13 @@ export const HenryTenancyContractScannerView: FC = () => {
         </div>
 
         <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
-          <ActionBtn $variant="secondary" onClick={handleLoadToJourney} disabled={!contractData}>
+          <ActionBtn $variant="secondary" onClick={handleLoadToJourney} disabled={!canUseScan(scannedResult)}>
             <FileText size={13} color="#10B981" /> Load into 3.19.1 Preparation Studio
           </ActionBtn>
           <ActionBtn $variant="secondary" onClick={handleCopyJson} disabled={!contractData}>
             {copiedJson ? <Check size={13} color="#10B981" /> : <Copy size={13} />} Copy Variables JSON
           </ActionBtn>
-          <ActionBtn $variant="primary" onClick={handleSaveToVault} disabled={!contractData}>
+          <ActionBtn $variant="primary" onClick={handleSaveToVault} disabled={!canUseScan(scannedResult) || !scannedResult?.contractReference || !uploadedFile || isSaving}>
             <Save size={13} /> Save to Government Vault
           </ActionBtn>
         </div>

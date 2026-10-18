@@ -1,5 +1,7 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import scanner from './HenryEmiratesIdScannerService';
+import passport from './HenryPassportScannerService';
+import contract from './HenryTenancyContractScannerService';
 
 const ocr = vi.hoisted(() => ({
   recognize: vi.fn(),
@@ -42,6 +44,21 @@ describe('Henry bounded local OCR lifecycle', () => {
     expect(result.ocrConfidence).toBe(82);
     expect(ocr.recognize).toHaveBeenCalledTimes(1);
     expect(ocr.terminate).toHaveBeenCalledTimes(1);
+  });
+
+  it('passes actual local-worker passport and tenancy readings into their source parsers', async () => {
+    prepare();
+    const passportText = 'Full Name: SYNTHETIC TRAVELER\nPassport Number: T12345678\nCountry Code: UTO\nDate of Birth: 02/03/1990\nExpiry Date: 04/05/2035';
+    ocr.recognize.mockResolvedValue({ data: { text: passportText, confidence: 90 } });
+    const passportData = await passport.scanPassport(input);
+    expect(passportData).toMatchObject({ fullName: 'SYNTHETIC TRAVELER', demoOnly: false, reviewConfirmed: false });
+    expect(passportData.diagnostics?.ocrConfidence).toBe(90);
+    ocr.recognize.mockResolvedValue({ data: { text: 'Landlord Name: SYNTHETIC LESSOR\nTenant Name: SYNTHETIC OCCUPANT\nBuilding Name: TEST HOUSE\nUnit No: 1\nStart Date: 01/01/2027\nEnd Date: 31/12/2027\nAnnual Rent: 60000', confidence: 92 } });
+    const tenancy = await contract.scanContract(input);
+    expect(tenancy.tenant.name).toBe('SYNTHETIC OCCUPANT');
+    expect(tenancy.financials.annualRentAed).toBe(60000);
+    expect(ocr.createWorker).toHaveBeenCalledWith('eng+ara', 1, expect.any(Object));
+    expect(ocr.terminate).toHaveBeenCalledTimes(2);
   });
 
   it('stops adaptive recovery once required coverage and confidence are adequate', async () => {

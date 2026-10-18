@@ -11,7 +11,10 @@
  * 5. 1-Click Inter-Module Mapping (Auto-fills Preparation Studio, CRM Landlord/Tenant Profiles, Ejari Vault).
  */
 
-import { ScanReview, canUseScan } from './henryScanReview';
+import { ScanReview, canUseScan, saveReviewedScan, validScanDate, VaultSaveOptions } from './henryScanReview';
+import henryEmiratesIdScannerService from './HenryEmiratesIdScannerService';
+import { readDocumentFields, normalizeDocumentDate, parseDocumentNumber, flagDocumentConflicts } from './henryDocumentParsing';
+import logger from '../utils/logger';
 import type { DldTenancyContractData } from './HenryTenancyContractTemplateService';
 
 export interface ScannedTenancyParty {
@@ -24,13 +27,13 @@ export interface ScannedTenancyParty {
 }
 
 export interface ScannedTenancyProperty {
-  usage: 'residential' | 'commercial' | 'industrial';
+  usage: 'residential' | 'commercial' | 'industrial' | '';
   buildingName: string;
   propertyNumber: string;
   plotNumber: string;
   propertyType: string;
-  areaSqM: number;
-  areaSqFt: number;
+  areaSqM?: number;
+  areaSqFt?: number;
   location: string;
   makaniNo?: string;
   premisesNoDewa?: string;
@@ -40,8 +43,8 @@ export interface ScannedTenancyFinancials {
   periodFrom: string;
   periodTo: string;
   annualRentAed: number;
-  contractValueAed: number;
-  securityDepositAed: number;
+  contractValueAed?: number;
+  securityDepositAed?: number;
   modeOfPayment: string;
 }
 
@@ -54,7 +57,8 @@ export interface ScannedTenancySignatures {
 
 export type DldScannedContractResult = ScannedTenancyContractResult;
 
-export interface ScannedTenancyContractResult {
+export interface ScannedTenancyContractResult extends ScanReview {
+  contractReference?: string;
   // Classification & Fill State
   isFilled: boolean;
   fillScorePercent: number;
@@ -81,6 +85,7 @@ export interface ScannedTenancyContractResult {
 }
 
 export const SANIT_SINGH_CAMELIA_608_SAMPLE: ScannedTenancyContractResult = {
+  demoOnly: true, reviewConfirmed: false,
   isFilled: true,
   fillScorePercent: 92,
   totalFieldsCount: 20,
@@ -149,6 +154,7 @@ export const SANIT_SINGH_CAMELIA_608_SAMPLE: ScannedTenancyContractResult = {
 };
 
 export const SVETLANA_JANUSIA_XH2858B_SAMPLE: ScannedTenancyContractResult = {
+  demoOnly: true, reviewConfirmed: false,
   isFilled: true,
   fillScorePercent: 95,
   totalFieldsCount: 20,
@@ -217,6 +223,7 @@ export const SVETLANA_JANUSIA_XH2858B_SAMPLE: ScannedTenancyContractResult = {
 };
 
 export const BLANK_DLD_TEMPLATE_SAMPLE: ScannedTenancyContractResult = {
+  demoOnly: true, reviewConfirmed: false,
   isFilled: false,
   fillScorePercent: 0,
   totalFieldsCount: 20,
@@ -295,16 +302,14 @@ class HenryTenancyContractScannerService {
   private inMemoryCache: ScannedTenancyContractResult | null = null;
   private listeners: Set<(data: ScannedTenancyContractResult | null) => void> = new Set();
 
-  private trainingMemory: ScannedTenancyContractResult[] = [
-    SANIT_SINGH_CAMELIA_608_SAMPLE,
-    SVETLANA_JANUSIA_XH2858B_SAMPLE,
-  ];
+  private trainingMemory: ScannedTenancyContractResult[] = [];
 
   /**
    * Keeps extracted contract data in session memory only
    */
   setCachedContract(data: ScannedTenancyContractResult): void {
-    this.inMemoryCache = { ...data };
+    if (!canUseScan(data)) return;
+    this.inMemoryCache = structuredClone(data);
     this.notifyListeners(this.inMemoryCache);
   }
 
@@ -312,7 +317,7 @@ class HenryTenancyContractScannerService {
    * Retrieves active contract from temporary session cache
    */
   getCachedContract(): ScannedTenancyContractResult | null {
-    if (this.inMemoryCache) return this.inMemoryCache;
+    if (this.inMemoryCache && canUseScan(this.inMemoryCache)) return structuredClone(this.inMemoryCache);
     return null;
   }
 
@@ -335,9 +340,9 @@ class HenryTenancyContractScannerService {
   private notifyListeners(data: ScannedTenancyContractResult | null): void {
     this.listeners.forEach((listener) => {
       try {
-        listener(data);
+        listener(data ? structuredClone(data) : null);
       } catch (err) {
-        console.error('Error notifying Henry Tenancy Contract cache listener:', err);
+        logger.error('Henry tenancy cache listener failed', { errorName: err instanceof Error ? err.name : 'UnknownError' });
       }
     });
   }
@@ -346,8 +351,8 @@ class HenryTenancyContractScannerService {
    * Returns benchmark reference sample 1 (Sanit Singh Nagpal & Keshivani Mayadevan - Camelia 608)
    */
   getDemoExtractedData(): ScannedTenancyContractResult {
-    const demo = { ...SANIT_SINGH_CAMELIA_608_SAMPLE, scannedAt: new Date().toISOString(), demoOnly: true, reviewConfirmed: false };
-    this.setCachedContract(demo);
+    this.clearCachedContract();
+    const demo = { ...structuredClone(SANIT_SINGH_CAMELIA_608_SAMPLE), scannedAt: new Date().toISOString(), demoOnly: true, reviewConfirmed: false };
     return demo;
   }
 
@@ -355,8 +360,8 @@ class HenryTenancyContractScannerService {
    * Returns benchmark reference sample 2 (Svetlana Levitskaya & William Michael Abernethy - Janusia XH2858B)
    */
   getSvetlanaJanusiaSample(): ScannedTenancyContractResult {
-    const demo = { ...SVETLANA_JANUSIA_XH2858B_SAMPLE, scannedAt: new Date().toISOString(), demoOnly: true, reviewConfirmed: false };
-    this.setCachedContract(demo);
+    this.clearCachedContract();
+    const demo = { ...structuredClone(SVETLANA_JANUSIA_XH2858B_SAMPLE), scannedAt: new Date().toISOString(), demoOnly: true, reviewConfirmed: false };
     return demo;
   }
 
@@ -364,7 +369,8 @@ class HenryTenancyContractScannerService {
    * Returns blank template reference result
    */
   getBlankTemplateData(): ScannedTenancyContractResult {
-    return { ...BLANK_DLD_TEMPLATE_SAMPLE, scannedAt: new Date().toISOString() };
+    this.clearCachedContract();
+    return { ...structuredClone(BLANK_DLD_TEMPLATE_SAMPLE), scannedAt: new Date().toISOString() };
   }
 
   /**
@@ -373,8 +379,8 @@ class HenryTenancyContractScannerService {
   async scanContract(
     fileOrPreset?: File | 'sample' | 'sample_sanit' | 'sample_svetlana' | 'blank'
   ): Promise<ScannedTenancyContractResult> {
-    return new Promise((resolve) => {
-      setTimeout(() => {
+    this.clearCachedContract();
+    if (!(fileOrPreset instanceof File)) {
         let result: ScannedTenancyContractResult;
         if (fileOrPreset === 'blank') {
           result = this.getBlankTemplateData();
@@ -383,13 +389,97 @@ class HenryTenancyContractScannerService {
         } else {
           result = this.getDemoExtractedData();
         }
-        if (fileOrPreset instanceof File) {
-          result.documentFormat = fileOrPreset.type || (fileOrPreset.name.endsWith('.pdf') ? 'application/pdf' : 'image/png');
-        }
-        this.setCachedContract(result);
-        resolve(result);
-      }, 250);
+        return { ...structuredClone(result), demoOnly: true, reviewConfirmed: false };
+    }
+    if (!['application/pdf', 'image/png', 'image/jpeg'].includes(fileOrPreset.type) ||
+      !fileOrPreset.size || fileOrPreset.size > 10 * 1024 * 1024)
+      throw new Error('Upload a non-empty PDF, JPEG or PNG up to 10 MB.');
+    const extraction = await henryEmiratesIdScannerService.extractDocumentText(fileOrPreset, undefined, text => {
+      const parsed = this.parseContractText(text);
+      return [!!parsed.landlord.name, !!parsed.tenant.name, !!parsed.property.buildingName,
+        !!parsed.property.propertyNumber, validScanDate(parsed.financials.periodFrom),
+        validScanDate(parsed.financials.periodTo), parsed.financials.annualRentAed > 0].filter(Boolean).length / 7;
     });
+    const result = this.parseContractText([extraction.ocrText, extraction.streamText].filter(Boolean).join('\n'));
+    result.documentFormat = fileOrPreset.type;
+    result.diagnostics!.ocrConfidence = extraction.ocrConfidence;
+    result.diagnostics!.warnings.push(...(extraction.warnings || []));
+    return result;
+  }
+
+  parseContractText(text: string): ScannedTenancyContractResult {
+    const { values, diagnostics } = readDocumentFields(text, {
+      contractReference: ['Contract Number', 'Contract Reference', 'رقم العقد'],
+      contractDate: ['Contract Date', 'تاريخ العقد'],
+      'landlord.name': ['Landlord Name', 'Lessor Name', 'Owner Name', 'اسم المؤجر', 'اسم المالك'],
+      'tenant.name': ['Tenant Name', 'اسم المستأجر'],
+      'landlord.emiratesId': ['Landlord Emirates ID', 'Lessor Emirates ID', 'هوية المؤجر'],
+      'tenant.emiratesId': ['Tenant Emirates ID', 'هوية المستأجر'],
+      'landlord.phone': ['Landlord Phone', 'هاتف المؤجر'], 'tenant.phone': ['Tenant Phone', 'هاتف المستأجر'],
+      'landlord.email': ['Landlord Email'], 'tenant.email': ['Tenant Email'],
+      'landlord.licenseNo': ['Landlord License Number', 'Lessor License Number'],
+      'tenant.licenseNo': ['Tenant License Number'],
+      'landlord.licensingAuthority': ['Lessor Licensing Authority'],
+      'tenant.licensingAuthority': ['Tenant Licensing Authority'],
+      'property.buildingName': ['Building Name', 'اسم المبنى'],
+      'property.propertyNumber': ['Property Number', 'Property No', 'Unit Number', 'Unit No', 'رقم العقار', 'رقم الوحدة'],
+      'property.plotNumber': ['Plot Number', 'Plot No', 'رقم الأرض'],
+      'property.location': ['Location', 'الموقع'], 'property.propertyType': ['Property Type', 'نوع العقار'],
+      'property.areaSqM': ['Area SqM', 'Area (sqm)', 'المساحة'],
+      'property.areaSqFt': ['Area SqFt', 'Area (sqft)'],
+      'property.usage': ['Property Usage', 'استخدام العقار'],
+      'property.premisesNoDewa': ['DEWA Premises Number'], 'property.makaniNo': ['Makani Number', 'رقم مكاني'],
+      'financials.periodFrom': ['Period From', 'Start Date', 'Contract Period From', 'تاريخ البداية', 'تاريخ بدء العقد'],
+      'financials.periodTo': ['Period To', 'End Date', 'Contract Period To', 'تاريخ النهاية', 'تاريخ انتهاء العقد'],
+      'financials.annualRentAed': ['Annual Rent', 'Annual Rent AED', 'الإيجار السنوي'],
+      'financials.contractValueAed': ['Contract Value', 'قيمة العقد'],
+      'financials.securityDepositAed': ['Security Deposit', 'مبلغ التأمين'],
+      'financials.modeOfPayment': ['Mode of Payment', 'Payment Method', 'طريقة الدفع'],
+      cheques: ['Number of Cheques', 'عدد الشيكات'],
+      additionalTerms: ['Additional Terms', 'الشروط الإضافية'],
+    }, ['additionalTerms']);
+    const v = (key: string) => values[key]?.[0] || '';
+    flagDocumentConflicts(diagnostics);
+    const number = (key: string) => /[-−]\s*\d/.test(v(key)) ? undefined : parseDocumentNumber(v(key));
+    const n = (key: string) => number(key) ?? 0;
+    const party = (key: string): ScannedTenancyParty => ({
+      name: v(`${key}.name`), emiratesId: v(`${key}.emiratesId`), phone: v(`${key}.phone`), email: v(`${key}.email`),
+      licenseNo: v(`${key}.licenseNo`), licensingAuthority: v(`${key}.licensingAuthority`),
+    });
+    const usage = v('property.usage').toLowerCase();
+    const required = ['landlord.name', 'tenant.name', 'property.buildingName', 'property.propertyNumber',
+      'financials.periodFrom', 'financials.periodTo', 'financials.annualRentAed'];
+    const missingFields = required.filter(key => !v(key));
+    const countInMode = v('financials.modeOfPayment').match(/(\d+)\s*(?:cheques?|checks?|شيك)/i)?.[1];
+    if (countInMode && v('cheques') && Number(countInMode) !== Number(v('cheques'))) {
+      diagnostics.fields['financials.modeOfPayment'] = { state: 'conflict', source: 'text',
+        values: [v('financials.modeOfPayment'), `${v('cheques')} CHEQUES`] };
+    }
+    return {
+      contractReference: v('contractReference'), contractDate: normalizeDocumentDate(v('contractDate')),
+      landlord: party('landlord'), tenant: party('tenant'),
+      property: {
+        usage: ['residential', 'سكني'].includes(usage) ? 'residential'
+          : ['commercial', 'تجاري'].includes(usage) ? 'commercial'
+          : ['industrial', 'صناعي'].includes(usage) ? 'industrial' : '',
+        buildingName: v('property.buildingName'), propertyNumber: v('property.propertyNumber'),
+        plotNumber: v('property.plotNumber'), propertyType: v('property.propertyType'), location: v('property.location'),
+        areaSqM: number('property.areaSqM'), areaSqFt: number('property.areaSqFt'),
+        makaniNo: v('property.makaniNo'), premisesNoDewa: v('property.premisesNoDewa'),
+      },
+      financials: {
+        periodFrom: normalizeDocumentDate(v('financials.periodFrom')), periodTo: normalizeDocumentDate(v('financials.periodTo')),
+        annualRentAed: n('financials.annualRentAed'), contractValueAed: number('financials.contractValueAed'),
+        securityDepositAed: number('financials.securityDepositAed'),
+        modeOfPayment: v('financials.modeOfPayment') || (v('cheques') ? `${v('cheques')} CHEQUES` : ''),
+      },
+      additionalTerms: values.additionalTerms || [],
+      signatures: { hasTenantSigned: false, hasLessorSigned: false },
+      isFilled: !missingFields.length, fillScorePercent: Math.round(diagnostics.coverage * 100),
+      totalFieldsCount: Object.keys(values).length, filledFieldsCount: Object.values(values).filter(items => items.length).length,
+      missingFields, classification: Object.values(values).some(items => items.length) ? 'partially_filled' : 'blank_template',
+      confidenceScore: 0, scannedAt: new Date().toISOString(), demoOnly: false, reviewConfirmed: false, diagnostics,
+    };
   }
 
   /**
@@ -416,7 +506,7 @@ class HenryTenancyContractScannerService {
         )
     );
     filtered.unshift({
-      ...contract,
+      ...structuredClone(contract),
       scannedAt: new Date().toISOString(),
     });
     this.trainingMemory = filtered;
@@ -427,7 +517,7 @@ class HenryTenancyContractScannerService {
    * Retrieves all reference contracts in Henry's training pool
    */
   getTrainingReferenceContracts(): ScannedTenancyContractResult[] {
-    return this.trainingMemory;
+    return structuredClone(this.trainingMemory);
   }
 
   /**
@@ -436,8 +526,8 @@ class HenryTenancyContractScannerService {
   toDldTenancyContractData(scanned: ScannedTenancyContractResult, previewOnly = false): DldTenancyContractData {
     if (!previewOnly && !canUseScan(scanned as ScanReview)) throw new Error('Confirm contract review before autofill.');
     return {
-      contractId: `DLD-${Date.now().toString(36).toUpperCase()}`,
-      contractDate: scanned.contractDate || new Date().toISOString().split('T')[0],
+      contractId: scanned.contractReference || '',
+      contractDate: scanned.contractDate,
       ownerName: scanned.landlord.name,
       lessorName: scanned.landlord.name,
       lessorEmiratesId: scanned.landlord.emiratesId,
@@ -456,15 +546,15 @@ class HenryTenancyContractScannerService {
       propertyNo: scanned.property.propertyNumber,
       plotNo: scanned.property.plotNumber,
       propertyType: scanned.property.propertyType,
-      propertyAreaSqM: scanned.property.areaSqM,
+      propertyAreaSqM: scanned.property.areaSqM ?? 0,
       location: scanned.property.location,
       premisesNoDewa: scanned.property.premisesNoDewa || '',
       makaniNo: scanned.property.makaniNo || '',
       contractPeriodFrom: scanned.financials.periodFrom,
       contractPeriodTo: scanned.financials.periodTo,
       annualRent: scanned.financials.annualRentAed,
-      contractValue: scanned.financials.contractValueAed,
-      securityDepositAmount: scanned.financials.securityDepositAed,
+      contractValue: scanned.financials.contractValueAed ?? 0,
+      securityDepositAmount: scanned.financials.securityDepositAed ?? 0,
       modeOfPayment: scanned.financials.modeOfPayment,
       additionalTerms: scanned.additionalTerms,
       tenantSignature: scanned.signatures.hasTenantSigned ? scanned.tenant.name : undefined,
@@ -530,9 +620,10 @@ class HenryTenancyContractScannerService {
   /**
    * Persists extracted Tenancy Contract record to backend database and session cache
    */
-  async saveToDatabase(scanned?: ScannedTenancyContractResult): Promise<{ success: boolean; id?: string; error?: string }> {
-    void scanned;
-    return { success: false, error: 'Contract archival unavailable: benchmark data requires a real OCR/review workflow. Nothing was saved.' };
+  async saveToDatabase(scanned?: ScannedTenancyContractResult, options: VaultSaveOptions = {}): Promise<{ success: boolean; id?: string; error?: string }> {
+    if (!scanned) return { success: false, error: 'Review required. Nothing was saved.' };
+    if (!scanned.contractReference?.trim()) return { success: false, error: 'Enter a source contract reference before saving. Nothing was saved.' };
+    return saveReviewedScan('tenancy_contract', scanned, scanned.contractReference, scanned.tenant.name, options);
   }
 }
 

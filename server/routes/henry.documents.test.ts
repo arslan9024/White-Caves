@@ -27,7 +27,7 @@ vi.mock('../middleware/rbac.js', () => ({
   requireRole: () => (_req: Request, _res: Response, next: NextFunction) => next(),
 }));
 import router from './henry';
-import { prepareDocument, decodeDocument, documentOwner } from '../services/henry/documentVault';
+import { prepareDocument, decodeDocument, decodeSource, documentOwner } from '../services/henry/documentVault';
 
 const owner = '123456789012345678901234';
 const other = '223456789012345678901234';
@@ -43,6 +43,89 @@ const input = {
     confidenceScore: 0,
   },
 };
+
+const passportFields = {
+  passportNumber: 'T12345678', fullName: 'SYNTHETIC TRAVELER', issuingCountryCode: 'UTO',
+  dateOfBirth: '02/03/1990', dateOfExpiry: '04/05/2035', gender: '',
+  demoOnly: false, reviewConfirmed: true,
+};
+const tenancyFields = {
+  contractReference: 'SOURCE-42', landlord: { name: 'SYNTHETIC LESSOR' }, tenant: { name: 'SYNTHETIC OCCUPANT' },
+  property: { buildingName: 'TEST BUILDING', propertyNumber: '42' },
+  financials: { periodFrom: '01/01/2027', periodTo: '31/12/2027', annualRentAed: 60000, securityDepositAed: 3000 },
+  demoOnly: false, reviewConfirmed: true,
+};
+
+describe('passport and tenancy type-specific vault validation', () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+    vi.stubEnv('ENCRYPTION_KEY', 'a'.repeat(64));
+    vi.stubEnv('DATABASE_URL', 'mongodb://localhost/test');
+    mocks.db.$transaction.mockImplementation(async callback => callback(mocks.db));
+    mocks.audit.create.mockResolvedValue({});
+  });
+  it('accepts reviewed source-shaped passport and safe contract-reference fallback', () => {
+    const passport = prepareDocument({ docType: 'passport', reviewConfirmed: true, extractedJson: passportFields }, owner);
+    expect(passport.docType).toBe('passport');
+    const tenancy = prepareDocument({ docType: 'tenancy_contract', reviewConfirmed: true, extractedJson: tenancyFields }, owner);
+    expect(tenancy.docType).toBe('tenancy_contract');
+    expect(tenancy.expiryAt?.toISOString()).toBe('2027-12-31T00:00:00.000Z');
+  });
+
+  it('rejects demo/missing review, malformed identity and conflicting passport references', () => {
+    for (const patch of [
+      { demoOnly: true }, { demoOnly: undefined }, { reviewConfirmed: false }, { fullName: '' },
+      { passportNumber: '123' }, { dateOfBirth: '31/02/1990' }, { dateOfExpiry: '35/01/2035' },
+      { gender: 'unknown' }, { dateOfIssue: '01/01/2080' },
+    ]) expect(() => prepareDocument({ docType: 'passport', reviewConfirmed: true, extractedJson: { ...passportFields, ...patch } }, owner)).toThrow();
+    expect(() => prepareDocument({ docType: 'passport', reviewConfirmed: true, referenceNumber: 'OTHER', extractedJson: passportFields }, owner)).toThrow();
+  });
+
+  it('rejects expired passports without exact expiry acknowledgment', () => {
+    const fields = { ...passportFields, dateOfExpiry: '01/01/2020' };
+    expect(() => prepareDocument({ docType: 'passport', reviewConfirmed: true, extractedJson: fields }, owner)).toThrow('acknowledgment');
+    expect(prepareDocument({ docType: 'passport', reviewConfirmed: true, extractedJson: { ...fields, expiryAcknowledgedFor: fields.dateOfExpiry } }, owner).docType).toBe('passport');
+  });
+
+  it('rejects absent parties, property, source reference, invalid periods and amounts', () => {
+    for (const patch of [
+      { landlord: {} }, { tenant: {} }, { property: {} }, { contractReference: '' },
+      { property: { ...tenancyFields.property, areaSqM: -1 } },
+      { property: { ...tenancyFields.property, usage: 'invalid' } },
+      { financials: { ...tenancyFields.financials, periodTo: '01/01/2026' } },
+      { financials: { ...tenancyFields.financials, annualRentAed: 0 } },
+      { financials: { ...tenancyFields.financials, securityDepositAed: -1 } },
+      { demoOnly: true }, { reviewConfirmed: false },
+    ]) expect(() => prepareDocument({ docType: 'tenancy_contract', reviewConfirmed: true,
+      extractedJson: { ...tenancyFields, ...patch } }, owner)).toThrow();
+  });
+
+  it('requires originals for new passport and tenancy saves', async () => {
+    for (const [docType, extractedJson] of [['passport', passportFields], ['tenancy_contract', tenancyFields]]) {
+      const response = await request(app()).post('/henry/documents/save').send({ docType, reviewConfirmed: true, extractedJson });
+      expect(response.status).toBe(400);
+      expect(mocks.documents.create).not.toHaveBeenCalled();
+    }
+  });
+
+  it.each(['passport', 'tenancy_contract'])('persists reviewed %s metadata and original encrypted in an owner-scoped transaction', async docType => {
+    mocks.documents.create.mockImplementation(async ({ data }: { data: Record<string, unknown> }) =>
+      ({ ...data, id, createdAt: new Date(), updatedAt: new Date() }));
+    const extractedJson = docType === 'passport' ? passportFields : tenancyFields;
+    const original = Buffer.from('%PDF-1.7 synthetic original');
+    const response = await request(app()).post('/henry/documents/save')
+      .field('metadata', JSON.stringify({ docType, reviewConfirmed: true, extractedJson }))
+      .attach('source', original, { filename: 'source.pdf', contentType: 'application/pdf' });
+    expect(response.status).toBe(200);
+    expect(response.body.data).toMatchObject({ docType, hasOriginal: true, extractedJson });
+    const saved = mocks.documents.create.mock.calls[0]![0].data;
+    expect(saved.ownerUserId).toBe(owner);
+    expect(saved.encryptedPayload).not.toContain('SYNTHETIC');
+    expect(saved.encryptedSource).not.toContain(original.toString('base64'));
+    expect(decodeSource(saved.encryptedSource, 0).bytes).toEqual(original);
+    expect(mocks.audit.create).toHaveBeenCalledWith({ data: { ownerUserId: owner, documentId: id, action: 'save' } });
+  });
+});
 
 function app(userId = owner) {
   const instance = express();

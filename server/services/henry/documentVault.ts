@@ -102,9 +102,51 @@ export function prepareDocument(input: Record<string, unknown>, owner = '') {
   )
     throw new AppError('Explicit review required; demos cannot be saved', 400);
   const reference =
-    input.referenceNumber || fields.idNumber || fields.certificateNumber || fields.passportNumber;
+    input.referenceNumber || fields.idNumber || fields.certificateNumber || fields.passportNumber || fields.contractReference;
   if (typeof reference !== 'string' || !reference.trim() || reference.length > 100)
     throw new AppError('Document reference required', 400);
+  const real = input.docType === 'passport' || input.docType === 'tenancy_contract';
+  if (real && (fields.demoOnly !== false || fields.reviewConfirmed !== true))
+    throw new AppError('Explicit review of a real source required', 400);
+  const nonempty = (value: unknown): value is string =>
+    typeof value === 'string' && !!value.trim() && !/^(?:unknown|n\/?a|undefined|null|[-?]+)$/i.test(value.trim());
+  if (input.docType === 'passport') {
+    if (!nonempty(fields.fullName) || typeof fields.passportNumber !== 'string' ||
+      !/^[A-Z0-9]{5,12}$/i.test(fields.passportNumber) || reference !== fields.passportNumber ||
+      ![fields.issuingCountry, fields.issuingCountryCode].some(nonempty) ||
+      !Number.isFinite(expiryTime(fields.dateOfBirth)) || !Number.isFinite(expiryTime(fields.dateOfExpiry)) ||
+      expiryTime(fields.dateOfBirth) > Date.now() || expiryTime(fields.dateOfBirth) >= expiryTime(fields.dateOfExpiry) ||
+      !['', 'M', 'F'].includes(String(fields.gender ?? '')) ||
+      (fields.dateOfIssue && (!Number.isFinite(expiryTime(fields.dateOfIssue)) ||
+        expiryTime(fields.dateOfIssue) > expiryTime(fields.dateOfExpiry) ||
+        expiryTime(fields.dateOfIssue) < expiryTime(fields.dateOfBirth))))
+      throw new AppError('Valid passport identity, country and full-year dates required', 400);
+    if (expiryTime(fields.dateOfExpiry) < Math.floor(Date.now() / 86400000) * 86400000 &&
+      fields.expiryAcknowledgedFor !== fields.dateOfExpiry)
+      throw new AppError('Explicit acknowledgment of this expired passport required', 400);
+  }
+  if (input.docType === 'tenancy_contract') {
+    const object = (value: unknown): Record<string, unknown> =>
+      value && typeof value === 'object' && !Array.isArray(value) ? value as Record<string, unknown> : {};
+    const landlord = object(fields.landlord), tenant = object(fields.tenant);
+    const property = object(fields.property), financials = object(fields.financials);
+    if (property.usage !== undefined && !['', 'residential', 'commercial', 'industrial'].includes(String(property.usage)))
+      throw new AppError('Invalid contract property usage', 400);
+    for (const key of ['areaSqM', 'areaSqFt'])
+      if (property[key] !== undefined &&
+        (typeof property[key] !== 'number' || !Number.isFinite(property[key]) || Number(property[key]) < 0))
+        throw new AppError('Invalid contract property area', 400);
+    if (![landlord.name, tenant.name, property.buildingName, property.propertyNumber].every(nonempty) ||
+      !Number.isFinite(expiryTime(financials.periodFrom)) || !Number.isFinite(expiryTime(financials.periodTo)) ||
+      expiryTime(financials.periodFrom) >= expiryTime(financials.periodTo) ||
+      typeof financials.annualRentAed !== 'number' || !Number.isFinite(financials.annualRentAed) || financials.annualRentAed <= 0 ||
+      !nonempty(fields.contractReference) || reference !== fields.contractReference)
+      throw new AppError('Contract source reference, parties, property, dates and positive rent required', 400);
+    for (const key of ['contractValueAed', 'securityDepositAed'])
+      if (financials[key] !== undefined &&
+        (typeof financials[key] !== 'number' || !Number.isFinite(financials[key]) || Number(financials[key]) < 0))
+        throw new AppError('Invalid contract amount', 400);
+  }
   if (
     input.docType === 'emirates_id' &&
     (!/^784-?\d{4}-?\d{7}-?\d$/.test(reference) || !fields.fullNameEn || !fields.expiryDate)
@@ -162,7 +204,7 @@ export function prepareDocument(input: Record<string, unknown>, owner = '') {
   const serialized = JSON.stringify(payload);
   if (serialized.length > 250000) throw new AppError('Extracted payload too large', 413);
   const key = vaultKey();
-  const expiry = expiryTime(fields.expiryDate || fields.dateOfExpiry || (fields.contract as Record<string, unknown> | undefined)?.endDate);
+  const expiry = expiryTime(fields.expiryDate || fields.dateOfExpiry || (fields.financials as Record<string, unknown> | undefined)?.periodTo || (fields.contract as Record<string, unknown> | undefined)?.endDate);
   const configuredDays = Number(process.env.HENRY_RETENTION_DAYS || 365);
   if (!Number.isInteger(configuredDays) || configuredDays < 1 || configuredDays > 3650)
     throw new AppError('Invalid Henry retention review interval', 503);
@@ -195,7 +237,7 @@ export function decodeDocument(row: {
     throw new AppError('Document vault unavailable', 503);
   const payload = decrypted as Record<string, unknown>;
   const fields = (payload.extractedJson || {}) as Record<string, unknown>;
-  const expiry = expiryTime(fields.expiryDate || fields.dateOfExpiry || (fields.contract as Record<string, unknown> | undefined)?.endDate);
+  const expiry = expiryTime(fields.expiryDate || fields.dateOfExpiry || (fields.financials as Record<string, unknown> | undefined)?.periodTo || (fields.contract as Record<string, unknown> | undefined)?.endDate);
   return {
     ...payload,
     id: row.id,

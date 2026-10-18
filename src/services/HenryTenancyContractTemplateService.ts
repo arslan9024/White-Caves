@@ -38,7 +38,7 @@ export interface DldTenancyContractData {
   tenantPhone: string;
 
   // ── Property Information (معلومات العقار) ──
-  propertyUsage: 'residential' | 'commercial' | 'industrial';
+  propertyUsage: 'residential' | 'commercial' | 'industrial' | '';
   plotNo: string;
   makaniNo: string;
   buildingName: string;
@@ -214,7 +214,7 @@ class HenryTenancyContractTemplateService {
    */
   loadActiveDraft(): DldTenancyContractData {
     const draft = this.activeDraftMemory;
-    if (draft && draft.contractId) {
+    if (draft) {
       return draft;
     }
     return this.getBlankTemplate();
@@ -332,6 +332,14 @@ class HenryTenancyContractTemplateService {
    * Compiles the official 3-page bilingual DLD Tenancy Contract HTML matching the official Land Department layout exactly
    */
   generateDldTenancyContractHtml(data: DldTenancyContractData, page: number | 'all' = 'all'): string {
+    const escapeText = (value: string): string => value.replace(/[&<>"']/g, character => ({
+      '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;',
+    })[character]!);
+    // Every dynamic string crosses this boundary once; template markup stays trusted.
+    data = { ...data, additionalTerms: data.additionalTerms.map(escapeText) };
+    for (const [key, value] of Object.entries(data)) {
+      if (typeof value === 'string') Object.assign(data, { [key]: escapeText(value) });
+    }
     const isBlank = !data.tenantName && !data.ownerName;
 
     // Helper for dotted underline value cell
@@ -467,7 +475,7 @@ class HenryTenancyContractTemplateService {
               <div style="display: flex; gap: 24px; font-weight: 700;">
                 <span><span style="font-size: 13px;">${data.propertyUsage === 'industrial' ? '🔘' : '⚪'}</span> Industrial صناعي</span>
                 <span><span style="font-size: 13px;">${data.propertyUsage === 'commercial' ? '🔘' : '⚪'}</span> Commercial تجاري</span>
-                <span><span style="font-size: 13px;">${data.propertyUsage === 'residential' || !data.propertyUsage ? '🔘' : '⚪'}</span> Residential سكني</span>
+                <span><span style="font-size: 13px;">${data.propertyUsage === 'residential' ? '🔘' : '⚪'}</span> Residential سكني</span>
               </div>
               <span style="font-weight: 700; color: #1E293B; direction: rtl;">استخدام العقار</span>
             </div>
@@ -509,7 +517,7 @@ class HenryTenancyContractTemplateService {
               </div>
               <div style="display: flex; align-items: baseline; justify-content: space-between;">
                 <span style="font-weight: 700; color: #1E293B;">Contract Value</span>
-                <span style="flex-grow: 1; margin: 0 8px; border-bottom: 1px dotted #94A3B8; text-align: center; font-weight: 800;">${data.contractValue || data.annualRent ? `AED ${(data.contractValue || data.annualRent).toLocaleString()}` : '&nbsp;'}</span>
+                <span style="flex-grow: 1; margin: 0 8px; border-bottom: 1px dotted #94A3B8; text-align: center; font-weight: 800;">${data.contractValue ? `AED ${data.contractValue.toLocaleString()}` : '&nbsp;'}</span>
                 <span style="font-weight: 700; direction: rtl;">قيمة العقد</span>
               </div>
             </div>
@@ -765,8 +773,8 @@ class HenryTenancyContractTemplateService {
           </div>
 
           <div style="padding: 6px 10px; min-height: 180px; position: relative; z-index: 1;">
-            ${[1, 2, 3, 4, 5].map((num) => {
-              const arabicNum = ['', '١', '٢', '٣', '٤', '٥'][num];
+            ${Array.from({ length: Math.max(5, data.additionalTerms.length) }, (_, index) => index + 1).map((num) => {
+              const arabicNum = String(num).replace(/\d/g, digit => '٠١٢٣٤٥٦٧٨٩'[Number(digit)]!);
               const termValue = (data.additionalTerms && data.additionalTerms[num - 1]) 
                 ? data.additionalTerms[num - 1].replace(/^[0-9]+\.\s*/, '') 
                 : '';
@@ -774,9 +782,7 @@ class HenryTenancyContractTemplateService {
               return `
                 <div style="display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 14px; font-size: 10px;">
                   <span style="font-weight: 700; color: #1E293B; min-width: 25px;">${num}.</span>
-                  <span style="flex-grow: 1; margin: 0 10px; border-bottom: 1px dotted #94A3B8; font-weight: 700; color: #0F172A; font-size: 9.5px;">
-                    ${termValue || '&nbsp;'}
-                  </span>
+                  <span style="flex-grow: 1; margin: 0 10px; border-bottom: 1px dotted #94A3B8; font-weight: 700; color: #0F172A; font-size: 9.5px; white-space: pre-wrap;">${termValue || '&nbsp;'}</span>
                   <span style="font-weight: 700; color: #1E293B; min-width: 25px; text-align: right;">.${arabicNum}</span>
                 </div>
               `;

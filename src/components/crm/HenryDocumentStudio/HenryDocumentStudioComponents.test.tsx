@@ -133,12 +133,13 @@ describe('Henry Document Studio — Shared Uploader & 5 Content Area Views', () 
 
     // Test 1-click Auto-Fill Tenancy (as Tenant)
     fireEvent.click(screen.getByRole('button', { name: /Auto-Fill Tenancy \(as Tenant\)/i }));
-    expect(screen.getByText(/Autofill unavailable: passport benchmark data is not reviewed OCR\./)).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: /Auto-Fill Tenancy \(as Tenant\)/i })).toBeDisabled();
+    expect(screen.getByText(/Demo only — cannot save or autofill/)).toBeInTheDocument();
 
     // Test Save to KYC Vault
     fireEvent.click(screen.getByRole('button', { name: /Save to KYC Vault/i }));
-    expect(await screen.findByText(/Passport archival unavailable: this scanner produces benchmark data, not reviewed OCR. Nothing was saved\./)).toBeInTheDocument();
-    expect(passport.getCachedPassport()?.demoOnly).toBe(true);
+    expect(screen.getByRole('button', { name: /Save to KYC Vault/i })).toBeDisabled();
+    expect(passport.getCachedPassport()).toBeNull();
     expect(canUseScan(passport.getCachedPassport() || {})).toBe(false);
   });
 
@@ -153,12 +154,14 @@ describe('Henry Document Studio — Shared Uploader & 5 Content Area Views', () 
 
     // Test 1-click Load into 3.19.1 Preparation Studio
     fireEvent.click(screen.getByRole('button', { name: /Load into 3.19.1 Preparation Studio/i }));
-    expect(screen.getByText(/Autofill unavailable: contract benchmark data is not reviewed OCR\./)).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: /Load into 3.19.1 Preparation Studio/i })).toBeDisabled();
+    expect(screen.getByText(/Demo only — cannot save or autofill/)).toBeInTheDocument();
     expect(henryTenancyContractTemplateService.loadActiveDraft().tenantName).toBe('');
 
     // Test Save to Government Vault
     fireEvent.click(screen.getByRole('button', { name: /Save to Government Vault/i }));
-    expect(await screen.findByText(/Contract archival unavailable: benchmark data requires a real OCR\/review workflow. Nothing was saved\./)).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: /Save to Government Vault/i })).toBeDisabled();
+    expect(contract.getCachedContract()).toBeNull();
 
     expect(screen.getByText(/1. Property Specifications/i)).toBeDefined();
     expect(screen.getByText(/2. Landlord & Tenant Parties/i)).toBeDefined();

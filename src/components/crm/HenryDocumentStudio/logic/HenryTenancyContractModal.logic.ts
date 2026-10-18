@@ -119,7 +119,7 @@ export function useHenryTenancyContractModalLogic({
         setStatusMessage(`✓ Scanned "${file.name}": Extracted Landlord (${eidData.fullNameEn || 'Owner'})! Template updated.`);
       } else if (targetType === 'passport_tenant') {
         const passportData = await henryPassportScannerService.scanPassport(file);
-        if (!canUseScan(passportData)) { setStatusMessage('Passport benchmark data cannot autofill. No fields were applied.'); return; }
+        if (!canUseScan(passportData)) { setStatusMessage('Review the source in the Passport scanner before autofill. No fields were applied.'); return; }
         setContractData(prev => henryTenancyContractTemplateService.populateFromPassport(prev, passportData, 'tenant'));
         setStatusMessage(`✓ Scanned "${file.name}": Extracted Passport (${passportData.fullName || 'Tenant'})! Template updated.`);
       } else {

@@ -7,6 +7,7 @@
  */
 
 import React, { FC, useState, useMemo, useEffect } from 'react';
+import { canUseScan } from '../../../services/henryScanReview';
 import styled from 'styled-components';
 import {
   FileText,
@@ -331,6 +332,7 @@ export const HenryTenancyContractJourneyView: FC = () => {
     setStatusMsg(`Scanning Landlord Document "${file.name}"...`);
     try {
       const passportData = await henryPassportScannerService.scanPassport(file);
+      if (!canUseScan(passportData)) { setStatusMsg('Review the uploaded source in the Passport scanner, then apply it as landlord. No fields were applied.'); return; }
       setContractData(prev => {
         const next = henryTenancyContractTemplateService.populateFromPassport(prev, passportData, 'landlord');
         henryTenancyContractTemplateService.saveDraft(next);
@@ -371,6 +373,7 @@ export const HenryTenancyContractJourneyView: FC = () => {
     setStatusMsg(`Scanning Tenant Passport "${file.name}"...`);
     try {
       const passportData = await henryPassportScannerService.scanPassport(file);
+      if (!canUseScan(passportData)) { setStatusMsg('Review the uploaded source in the Passport scanner, then apply it as tenant. No fields were applied.'); return; }
       setContractData(prev => {
         const next = henryTenancyContractTemplateService.populateFromPassport(prev, passportData, 'tenant');
         henryTenancyContractTemplateService.saveDraft(next);

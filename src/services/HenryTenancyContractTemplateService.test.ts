@@ -108,4 +108,25 @@ describe('HenryTenancyContractTemplateService — Official DLD Tenancy Contract 
     expect(fullHtml).toContain('Know your Rights');
     expect(fullHtml).toContain('support@dubailand.gov.ae');
   });
+
+  it('escapes every dynamic string, including direct fields, signatures and multiline terms', () => {
+    const payload = `<img src=x onerror="alert(1)"><script>alert('x')</script><b>شروط & terms</b>`;
+    const data = henryTenancyContractTemplateService.getDemoPreset();
+    for (const [key, value] of Object.entries(data)) {
+      if (typeof value === 'string') Object.assign(data, { [key]: payload });
+    }
+    data.additionalTerms = [`1. ${payload}\nKeep <em>literal</em> formatting.`, '2. Ordinary clause.',
+      '3. Third.', '4. Fourth.', '5. Fifth.', '6. Last clause.'];
+    const html = henryTenancyContractTemplateService.generateDldTenancyContractHtml(data);
+    const document = new DOMParser().parseFromString(html, 'text/html');
+    expect(document.querySelector('img, script, b, em, [onerror]')).toBeNull();
+    expect(document.body.textContent).toContain(payload);
+    expect(document.body.textContent).toContain('Keep <em>literal</em> formatting.');
+    expect(document.body.textContent).toContain('Last clause.');
+    expect(html).toContain('&lt;img src=x onerror=&quot;alert(1)&quot;&gt;');
+    expect(html).toContain('&#39;x&#39;');
+    expect(html).toContain('white-space: pre-wrap');
+    expect(data.tenantName).toBe(payload);
+    expect(data.additionalTerms[0]).toContain('<img');
+  });
 });

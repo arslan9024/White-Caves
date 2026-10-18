@@ -11,7 +11,7 @@
  *   - Persistent Action Controls (Discard, Copy JSON, Save to KYC Vault)
  */
 
-import React, { FC, useState, useEffect } from 'react';
+import React, { FC, useState, useEffect, useRef } from 'react';
 import styled from 'styled-components';
 import {
   Flag,
@@ -29,6 +29,10 @@ import henryPassportScannerService, {
   InternationalPassportExtractedData,
 } from '../../../services/HenryPassportScannerService';
 import HenrySharedDocumentUploader from './HenrySharedDocumentUploader';
+import { canUseScan, assessScanReadiness, scanExpiry } from '../../../services/henryScanReview';
+import { markFieldReviewed } from '../../../services/henryDocumentParsing';
+import { HenryExtractionEvidence } from './HenryExtractionEvidence';
+import henryTenancyContractTemplateService from '../../../services/HenryTenancyContractTemplateService';
 
 const ViewContainer = styled.div`
   display: flex;
@@ -283,6 +287,10 @@ export const HenryPassportScannerView: FC = () => {
   const [zoomLevel, setZoomLevel] = useState<number>(100);
   const [statusMsg, setStatusMsg] = useState<string | null>(null);
   const [copiedJson, setCopiedJson] = useState<boolean>(false);
+  const generation = useRef(0);
+  const saving = useRef(false);
+  const [isSaving, setIsSaving] = useState(false);
+  useEffect(() => () => { generation.current++; }, []);
 
   useEffect(() => {
     if (uploadedFile) {
@@ -295,23 +303,30 @@ export const HenryPassportScannerView: FC = () => {
   }, [uploadedFile]);
 
   const handleFileUpload = async (file: File) => {
+    const request = ++generation.current;
+    setIsSaving(false);
+    henryPassportScannerService.clearCachedPassport();
+    setExtractedData(null);
     setIsScanning(true);
     setUploadedFile(file);
     setStatusMsg(`Scanning Passport "${file.name}"...`);
 
     try {
       const data = await henryPassportScannerService.scanPassport(file);
+      if (request !== generation.current) return;
       setExtractedData(data);
       setStatusMsg(`✓ Extracted Passport: ${data.fullName} (${data.passportNumber})`);
     } catch {
+      if (request !== generation.current) return;
       setStatusMsg('Error processing Passport file.');
     } finally {
-      setIsScanning(false);
-      setTimeout(() => setStatusMsg(null), 4000);
+      if (request === generation.current) setIsScanning(false);
     }
   };
 
   const handleLoadDemo = async () => {
+    generation.current++;
+    henryPassportScannerService.clearCachedPassport();
     setIsScanning(true);
     setUploadedFile(null);
     try {
@@ -320,7 +335,6 @@ export const HenryPassportScannerView: FC = () => {
       setStatusMsg(`✓ Loaded demo Passport: ${demo.fullName}`);
     } finally {
       setIsScanning(false);
-      setTimeout(() => setStatusMsg(null), 3000);
     }
   };
 
@@ -328,37 +342,50 @@ export const HenryPassportScannerView: FC = () => {
     if (!extractedData) return;
     setExtractedData(prev => {
       if (!prev) return null;
-      const updated = { ...prev, [field]: val };
-      henryPassportScannerService.setCachedPassport(updated);
+      const updated = henryPassportScannerService.refreshValidity({ ...prev, [field]: val, missingFields: [], reviewConfirmed: false, expiryAcknowledgedFor: undefined,
+        diagnostics: markFieldReviewed(prev.diagnostics, field, val) });
+      henryPassportScannerService.clearCachedPassport();
       return updated;
     });
   };
 
   const handleSaveToVault = async () => {
-    if (!extractedData) return;
-    const result = await henryPassportScannerService.saveToDatabase(extractedData);
-    setStatusMsg(result.error || 'Nothing was saved.');
-    setTimeout(() => setStatusMsg(null), 4000);
+    if (!extractedData || !canUseScan(extractedData) || !uploadedFile || saving.current) return;
+    saving.current = true;
+    setIsSaving(true);
+    const request = generation.current;
+    const result = await henryPassportScannerService.saveToDatabase(extractedData, { sources: [uploadedFile] });
+    saving.current = false;
+    if (request === generation.current) {
+      setIsSaving(false);
+      setStatusMsg(result.success ? 'Reviewed passport and original saved to encrypted vault.' : result.error || 'Nothing was saved.');
+    }
   };
 
   const handleAutoFillAsTenant = () => {
-    if (!extractedData) return;
-    setStatusMsg('Autofill unavailable: passport benchmark data is not reviewed OCR.');
-    setTimeout(() => setStatusMsg(null), 4000);
+    if (!extractedData || !canUseScan(extractedData)) return;
+    henryPassportScannerService.setCachedPassport(extractedData);
+    const draft = henryTenancyContractTemplateService.loadActiveDraft();
+    henryTenancyContractTemplateService.saveDraft(henryTenancyContractTemplateService.populateFromPassport(draft, extractedData, 'tenant'));
+    setStatusMsg('Reviewed passport applied as tenant in Preparation Studio.');
   };
 
   const handleAutoFillAsLandlord = () => {
-    if (!extractedData) return;
-    setStatusMsg('Autofill unavailable: passport benchmark data is not reviewed OCR.');
-    setTimeout(() => setStatusMsg(null), 4000);
+    if (!extractedData || !canUseScan(extractedData)) return;
+    henryPassportScannerService.setCachedPassport(extractedData);
+    const draft = henryTenancyContractTemplateService.loadActiveDraft();
+    henryTenancyContractTemplateService.saveDraft(henryTenancyContractTemplateService.populateFromPassport(draft, extractedData, 'landlord'));
+    setStatusMsg('Reviewed passport applied as landlord in Preparation Studio.');
   };
 
   const handleDiscard = () => {
+    generation.current++;
+    setIsScanning(false);
+    setIsSaving(false);
     setExtractedData(null);
     setUploadedFile(null);
     henryPassportScannerService.clearCachedPassport();
     setStatusMsg('Discarded Passport data and cleared session cache.');
-    setTimeout(() => setStatusMsg(null), 3000);
   };
 
   const handleCopyJson = () => {
@@ -401,7 +428,7 @@ export const HenryPassportScannerView: FC = () => {
                   Extracted Passport Variables Form
                 </h4>
                 <span style={{ fontSize: '0.75rem', color: 'var(--accent-blue, #2563EB)', fontWeight: 800 }}>
-                  ✓ ICAO TD3 MRZ Verified
+                  Source review required — not authenticity verification
                 </span>
               </div>
 
@@ -446,8 +473,9 @@ export const HenryPassportScannerView: FC = () => {
                   <label>Gender <span className="ar">الجنس</span></label>
                   <select
                     value={extractedData.gender}
-                    onChange={(e) => handleUpdateField('gender', e.target.value as any)}
+                    onChange={(e) => handleUpdateField('gender', e.target.value as InternationalPassportExtractedData['gender'])}
                   >
+                    <option value="">Unknown / not visible</option>
                     <option value="M">Male (ذكر)</option>
                     <option value="F">Female (أنثى)</option>
                   </select>
@@ -492,6 +520,33 @@ export const HenryPassportScannerView: FC = () => {
                 </FormGroup>
               </FormGrid>
 
+              <details><summary>Additional source corrections</summary>
+                {(['surname', 'givenNames', 'issuingCountry', 'nationalityCode', 'dateOfIssue', 'passportType',
+                  'placeOfBirth', 'fatherName', 'bookletNumber', 'trackingNumber'] as const).map(key =>
+                  <label key={key} style={{ display: 'block' }}>{key}
+                    <input aria-label={key} value={extractedData[key]} onChange={e => handleUpdateField(key, e.target.value)} />
+                  </label>)}
+              </details>
+              <HenryExtractionEvidence diagnostics={extractedData.diagnostics} />
+              {extractedData.demoOnly ? <p role="alert">Demo only — cannot save or autofill.</p> : <>
+                <p role="status">{assessScanReadiness(extractedData).reasons.join(' ')}</p>
+                {scanExpiry(extractedData.dateOfExpiry).isExpired && <label>
+                  <input type="checkbox" checked={extractedData.expiryAcknowledgedFor === extractedData.dateOfExpiry}
+                    onChange={e => {
+                      henryPassportScannerService.clearCachedPassport();
+                      setExtractedData({ ...extractedData, reviewConfirmed: false,
+                        expiryAcknowledgedFor: e.target.checked ? extractedData.dateOfExpiry : undefined });
+                    }} />
+                  I acknowledge this passport is expired and is not current identification.
+                </label>}
+                <label><input type="checkbox" checked={extractedData.reviewConfirmed === true}
+                  onChange={e => {
+                    const reviewed = { ...extractedData, reviewConfirmed: e.target.checked };
+                    setExtractedData(reviewed);
+                    henryPassportScannerService.clearCachedPassport();
+                    if (canUseScan(reviewed)) henryPassportScannerService.setCachedPassport(reviewed);
+                  }} />I reviewed all extracted values against the original passport.</label>
+              </>}
               {extractedData.mrz && (
                 <div>
                   <div style={{ fontSize: '0.72rem', fontWeight: 800, color: 'var(--text-secondary, #64748B)', marginBottom: '4px' }}>
@@ -597,16 +652,16 @@ export const HenryPassportScannerView: FC = () => {
         </div>
 
         <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
-          <ActionBtn $variant="secondary" onClick={handleAutoFillAsTenant} disabled={!extractedData}>
+          <ActionBtn $variant="secondary" onClick={handleAutoFillAsTenant} disabled={!canUseScan(extractedData)}>
             <User size={13} color="#10B981" /> Auto-Fill Tenancy (as Tenant)
           </ActionBtn>
-          <ActionBtn $variant="secondary" onClick={handleAutoFillAsLandlord} disabled={!extractedData}>
+          <ActionBtn $variant="secondary" onClick={handleAutoFillAsLandlord} disabled={!canUseScan(extractedData)}>
             <User size={13} color="#38BDF8" /> Auto-Fill Tenancy (as Landlord)
           </ActionBtn>
           <ActionBtn $variant="secondary" onClick={handleCopyJson} disabled={!extractedData}>
             {copiedJson ? <Check size={13} color="#10B981" /> : <Copy size={13} />} Copy Variables JSON
           </ActionBtn>
-          <ActionBtn $variant="primary" onClick={handleSaveToVault} disabled={!extractedData}>
+          <ActionBtn $variant="primary" onClick={handleSaveToVault} disabled={!canUseScan(extractedData) || !uploadedFile || isSaving}>
             <Save size={13} /> Save to KYC Vault
           </ActionBtn>
         </div>

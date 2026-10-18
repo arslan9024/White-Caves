@@ -25,7 +25,9 @@ export function normalizeDocumentText(text: string): string {
 }
 
 export function parseDocumentNumber(value: string): number | undefined {
-  let token = normalizeDocumentText(value).replace(/^[\s([:|-]*(?:AED|sqm|sq\.?\s*m|m[²2]|sq\.?\s*ft|ft[²2]|م[²2]|متر مربع)\s*[)\]:-]*/i, '')
+  const normalized = normalizeDocumentText(value);
+  if (/(?:^|[^\d])-\s*\d|^\s*\(\s*\d/.test(normalized)) return undefined;
+  let token = normalized.replace(/^[\s([:|-]*(?:AED|sqm|sq\.?\s*m|m[²2]|sq\.?\s*ft|ft[²2]|م[²2]|متر مربع)\s*[)\]:-]*/i, '')
     .replace(/٬/g, ',').replace(/٫/g, '.')
     .match(/(?:^|[^\d])(\d[\d ,.]*)/)?.[1]?.trim().replace(/ /g, '');
   if (!token) return undefined;
@@ -40,12 +42,20 @@ export function normalizeDocumentDate(value: string): string {
   const text = normalizeDocumentText(value);
   const iso = /\b(\d{4})[-/.](\d{1,2})[-/.](\d{1,2})\b/.exec(text);
   const local = /\b(\d{1,2})[-/.](\d{1,2})[-/.](\d{4})\b/.exec(text);
-  const parts = iso ? [iso[3], iso[2], iso[1]] : local ? [local[1], local[2], local[3]] : [];
+  const named = /(\d{1,2})\s+([\p{L}]+)(?:\s*\/\s*[\p{L}]+)?\s+(\d{4})\b/u.exec(text);
+  const months: Record<string, number> = {
+    jan: 1, feb: 2, mar: 3, apr: 4, may: 5, jun: 6, jul: 7, aug: 8, sep: 9, oct: 10, nov: 11, dec: 12,
+    يناير: 1, فبراير: 2, مارس: 3, أبريل: 4, ابريل: 4, مايو: 5, يونيو: 6, يوليو: 7,
+    أغسطس: 8, اغسطس: 8, سبتمبر: 9, أكتوبر: 10, اكتوبر: 10, نوفمبر: 11, ديسمبر: 12,
+  };
+  const month = named ? months[named[2]!.toLowerCase()] || months[named[2]!.toLowerCase().slice(0, 3)] : undefined;
+  const parts = iso ? [iso[3], iso[2], iso[1]] : local ? [local[1], local[2], local[3]]
+    : named && month ? [named[1], String(month), named[3]] : [];
   return parts.length ? parts.map((part, i) => i < 2 ? part!.padStart(2, '0') : part).join('/') : '';
 }
 
 /** Label boundaries stop neighbouring columns becoming part of a person's name. */
-export function readDocumentFields(text: string, schema: Record<string, string[]>): {
+export function readDocumentFields(text: string, schema: Record<string, string[]>, multilineFields: readonly string[] = []): {
   values: Record<string, string[]>;
   diagnostics: ExtractionDiagnostics;
 } {
@@ -54,13 +64,24 @@ export function readDocumentFields(text: string, schema: Record<string, string[]
     .sort((a, b) => b.label.length - a.label.length);
   const escaped = aliases.map(({ label }) => label.replace(/[.*+?^${}()|[\]\\]/g, '\\$&').replace(/ /g, '[ \\t]+'));
   const matcher = new RegExp(`(?<![\\p{L}\\p{N}])(${escaped.join('|')})(?![\\p{L}\\p{N}])`, 'giu');
+  let inMultilineField = false;
   const matches = [...normalized.matchAll(matcher)].filter(match => {
     if (match[1]!.includes(' ')) return true;
     const suffix = normalized.slice(match.index! + match[0].length);
     const prefix = normalized.slice(normalized.lastIndexOf('\n', match.index!) + 1, match.index!);
     return !prefix.trim() || /\|[ \t]*$/.test(prefix) || /^[ \t]*[:/|]/.test(suffix);
+  }).filter(match => {
+    const suffix = normalized.slice(match.index! + match[0].length);
+    const prefix = normalized.slice(normalized.lastIndexOf('\n', match.index!) + 1, match.index!);
+    // A known label mentioned within a clause is not a new field heading.
+    if (inMultilineField && prefix.trim() && !/^[ \t]*[:/|]/.test(suffix)) return false;
+    const alias = aliases.find(item => item.label.toLowerCase() === match[1]!.replace(/[ \t]+/g, ' ').toLowerCase());
+    inMultilineField = !!alias && multilineFields.includes(alias.key);
+    return true;
   });
   const values: Record<string, string[]> = Object.fromEntries(Object.keys(schema).map(key => [key, []]));
+  const stripLabelSeparator = (value: string) => value
+    .replace(/^[ \t:/|]+/, '').replace(/^[-(](?!\s*\d)[ \t]*/, '').trim();
   const ranges: Record<string, { start: number; end: number }[]> = {};
   for (let i = 0; i < matches.length; i++) {
     const match = matches[i]!;
@@ -68,8 +89,7 @@ export function readDocumentFields(text: string, schema: Record<string, string[]
     if (!alias) continue;
     let start = match.index! + match[0].length;
     let end = matches[i + 1]?.index ?? normalized.length;
-    let segment = normalized.slice(start, end)
-      .replace(/^[ \t:/|()-]+/, '').trim();
+    let segment = stripLabelSeparator(normalized.slice(start, end));
     // A bilingual label pair may have its value after the second label.
     if (!segment && matches[i + 1]) {
       const next = matches[i + 1]!;
@@ -77,10 +97,11 @@ export function readDocumentFields(text: string, schema: Record<string, string[]
       if (nextAlias?.key === alias.key) {
         start = next.index! + next[0].length;
         end = matches[i + 2]?.index ?? normalized.length;
-        segment = normalized.slice(start, end).replace(/^[ \t:/|()-]+/, '').trim();
+        segment = stripLabelSeparator(normalized.slice(start, end));
       }
     }
-    const value = segment.split('\n').find(line => line.trim())?.replace(/^[ :/|]+|[ |]+$/g, '').trim() || '';
+    const value = (multilineFields.includes(alias.key) ? segment
+      : segment.split('\n').find(line => line.trim()))?.replace(/^[ :/|]+|[ |]+$/g, '').trim() || '';
     if (value && !values[alias.key]!.includes(value)) values[alias.key]!.push(value);
     const offset = value ? normalized.indexOf(value, start) : -1;
     if (offset >= start && offset + value.length <= Math.min(end, 65536)) {
@@ -103,6 +124,15 @@ export function languageValue(values: string[], language: 'en' | 'ar'): string {
 export function refreshCoverage(diagnostics: ExtractionDiagnostics): void {
   const fields = Object.values(diagnostics.fields);
   diagnostics.coverage = fields.length ? fields.filter(field => field.state === 'extracted').length / fields.length : 0;
+}
+
+/** Keep disagreeing labelled readings visible instead of silently taking the first OCR source. */
+export function flagDocumentConflicts(diagnostics: ExtractionDiagnostics): void {
+  for (const field of Object.values(diagnostics.fields)) {
+    const distinct = new Set(field.values.map(value => value.toUpperCase().replace(/\s+/g, ' ').trim()));
+    if (distinct.size > 1) field.state = 'conflict';
+  }
+  refreshCoverage(diagnostics);
 }
 
 export function markFieldReviewed(diagnostics: ExtractionDiagnostics | undefined, key: string, value: unknown): ExtractionDiagnostics | undefined {
