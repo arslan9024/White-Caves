@@ -3,7 +3,6 @@ import React from 'react';
 import { render, screen, fireEvent } from '@testing-library/react';
 import { HenryDocumentStudio } from './HenryDocumentStudio';
 import henryPdfEngineService from '../../../services/HenryPdfEngineService';
-import henryPassportScannerService from '../../../services/HenryPassportScannerService';
 
 describe('Henry AI 4000% Upgrade — International Passport, Title Deed & Emirates ID Optical AI Scanners', () => {
   beforeEach(() => {
@@ -31,16 +30,18 @@ describe('Henry AI 4000% Upgrade — International Passport, Title Deed & Emirat
     expect(screen.getByText(/Create goAML KYC Audit Record/i)).toBeDefined();
   });
 
-  it('executes auto-fill from Passport as Tenant and updates Tenancy Lease state cleanly', () => {
+  it('rejects benchmark Passport autofill without opening a populated lease', () => {
     render(<HenryDocumentStudio />);
     const autoFillBtn = screen.getByText(/Auto-Fill Tenancy Lease \(as Non-Resident Tenant\)/i);
     fireEvent.click(autoFillBtn);
 
-    expect(screen.getByText(/Tenancy Lease auto-filled with Arslan Malik \(Passport DR0760143\) as Tenant!/i)).toBeDefined();
+    expect(screen.getByText('Review required. Benchmark or unconfirmed data cannot autofill or create records.')).toBeInTheDocument();
+    expect(screen.queryByText(/Tenancy Lease auto-filled/)).not.toBeInTheDocument();
+    expect(screen.getByText(/International Passport & goAML KYC Ingestion Hub/i)).toBeInTheDocument();
   });
 
-  it('generates valid Tenant Service Charge Tax Invoice with TRN and 5% VAT', () => {
-    const tenantInvoiceHtml = henryPdfEngineService.generateTaxReceiptHtml({
+  it('generates valid Tenant Service Charge Tax Invoice with TRN and 5% VAT', async () => {
+    const tenantInvoiceHtml = await henryPdfEngineService.generateTaxReceiptHtml({
       receiptNumber: 'INV-WC-TNT-2026-041',
       receiptType: 'tenant_service_charges',
       billedPartyType: 'tenant',

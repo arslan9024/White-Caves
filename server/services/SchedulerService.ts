@@ -181,6 +181,9 @@ export class SchedulerService {
       task,
       lastRunAt: null,
       lastStatus: null,
+      lastError: null,
+      lastDurationMs: null,
+      runsCount: 0,
     });
   }
 
@@ -207,6 +210,9 @@ export class SchedulerService {
       task,
       lastRunAt: null,
       lastStatus: null,
+      lastError: null,
+      lastDurationMs: null,
+      runsCount: 0,
     });
   }
 
@@ -363,6 +369,9 @@ export class SchedulerService {
       task,
       lastRunAt: null,
       lastStatus: null,
+      lastError: null,
+      lastDurationMs: null,
+      runsCount: 0,
     });
   }
 
@@ -389,6 +398,9 @@ export class SchedulerService {
       task,
       lastRunAt: null,
       lastStatus: null,
+      lastError: null,
+      lastDurationMs: null,
+      runsCount: 0,
     });
   }
 
@@ -419,6 +431,9 @@ export class SchedulerService {
       task,
       lastRunAt: null,
       lastStatus: null,
+      lastError: null,
+      lastDurationMs: null,
+      runsCount: 0,
     });
   }
 

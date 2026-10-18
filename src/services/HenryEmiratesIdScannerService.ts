@@ -336,6 +336,7 @@ class PdfPageLimitError extends Error {
 }
 
 class HenryEmiratesIdScannerService {
+  private cacheRevision = 0;
   private activeSessionCache: EmiratesIdExtractedData | null = null;
   private updateListeners: Set<(data: EmiratesIdExtractedData | null) => void> = new Set();
 
@@ -343,6 +344,7 @@ class HenryEmiratesIdScannerService {
    * Updates in-memory and session cache and notifies subscribers
    */
   setCachedEmiratesId(data: EmiratesIdExtractedData): void {
+    this.cacheRevision++;
     if (!canUseScan(data)) {
       this.clearCachedEmiratesId();
       return;
@@ -372,6 +374,7 @@ class HenryEmiratesIdScannerService {
    * Clears temporary session cache
    */
   clearCachedEmiratesId(): void {
+    this.cacheRevision++;
     this.activeSessionCache = null;
     this.notifyListeners(null);
   }
@@ -1357,6 +1360,7 @@ class HenryEmiratesIdScannerService {
   ): Promise<{ success: boolean; id?: string; error?: string }> {
     const data = extracted || this.getCachedEmiratesId();
     if (!data) return { success: false, error: 'No reviewed document.' };
+    const revision = this.cacheRevision;
     const result = await saveReviewedScan(
       'emirates_id',
       data,
@@ -1364,7 +1368,7 @@ class HenryEmiratesIdScannerService {
       data.fullNameEn,
       options
     );
-    if (result.success) this.setCachedEmiratesId(data);
+    if (result.success && revision === this.cacheRevision) this.setCachedEmiratesId(data);
     return result;
   }
 }

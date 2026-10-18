@@ -245,6 +245,7 @@ export const BUKO_COMMODITY_MADINAT_HIND_TITLE_DEED_SAMPLE: DldTitleDeedExtracte
 };
 
 class HenryTitleDeedScannerService {
+  private cacheRevision = 0;
   private inMemoryCache: DldTitleDeedExtractedData | null = null;
   private listeners: Set<(data: DldTitleDeedExtractedData | null) => void> = new Set();
 
@@ -252,6 +253,7 @@ class HenryTitleDeedScannerService {
    * Keeps reviewed Title Deed data in session memory only
    */
   setCachedTitleDeed(data: DldTitleDeedExtractedData): void {
+    this.cacheRevision++;
     if (!canUseScan(data)) {
       this.clearCachedTitleDeed();
       return;
@@ -272,6 +274,7 @@ class HenryTitleDeedScannerService {
    * Clears the active Title Deed session cache
    */
   clearCachedTitleDeed(): void {
+    this.cacheRevision++;
     this.inMemoryCache = null;
     this.notifyListeners(null);
   }
@@ -897,6 +900,7 @@ class HenryTitleDeedScannerService {
   ): Promise<{ success: boolean; id?: string; error?: string }> {
     const data = extracted || this.getCachedTitleDeed();
     if (!data) return { success: false, error: 'No reviewed document.' };
+    const revision = this.cacheRevision;
     const result = await saveReviewedScan(
       'title_deed',
       data,
@@ -904,7 +908,7 @@ class HenryTitleDeedScannerService {
       data.ownerNameEn,
       options
     );
-    if (result.success) this.setCachedTitleDeed(data);
+    if (result.success && revision === this.cacheRevision) this.setCachedTitleDeed(data);
     return result;
   }
 }

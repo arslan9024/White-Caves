@@ -37,6 +37,7 @@ import henryTenancyContractScannerService, {
 } from '../../../../services/HenryTenancyContractScannerService';
 import henryTenancyContractTemplateService from '../../../../services/HenryTenancyContractTemplateService';
 import { canUseScan, ScanReview } from '../../../../services/henryScanReview';
+import logger from '../../../../utils/logger';
 
 export function useHenryDocumentStudioLogic() {
   const [selectedTemplateId, setSelectedTemplateId] = useState<DocumentTemplateOption['id']>('passport_scanner');
@@ -82,36 +83,45 @@ export function useHenryDocumentStudioLogic() {
   }, []);
 
   useEffect(() => {
+    let active = true;
+    setCompiledHtml('');
     const generateHtml = async () => {
-      let result: string | Promise<string>;
-      switch (selectedTemplateId) {
-        case 'tenancy_contract_esign':
-          result = henryPdfEngineService.generateTenancyContractHtml(tenancyPayload, annotations);
-          break;
-        case 'government_ejari_vault':
-          result = henryPdfEngineService.generateGovernmentEjariArchiveHtml(ejariRecord);
-          break;
-        case 'viewing_form_autofill':
-          result = henryPdfEngineService.generateViewingFormHtml(viewingPayload);
-          break;
-        case 'tenant_service_receipt':
-          result = henryPdfEngineService.generateTaxReceiptHtml(tenantReceiptPayload);
-          break;
-        case 'landlord_mgmt_invoice':
-          result = henryPdfEngineService.generateTaxReceiptHtml(landlordInvoicePayload);
-          break;
-        case 'emirates_id_scanner':
-        case 'title_deed_scanner':
-        case 'passport_scanner':
-        case 'tenancy_contract_scanner':
-          result = ''; // Handled by custom interactive React inspector views
-          break;
-        default:
-          result = henryPdfEngineService.generateTenancyContractHtml(tenancyPayload, annotations);
+      try {
+        let result: string | Promise<string>;
+        switch (selectedTemplateId) {
+          case 'tenancy_contract_esign':
+            result = henryPdfEngineService.generateTenancyContractHtml(tenancyPayload, annotations);
+            break;
+          case 'government_ejari_vault':
+            result = henryPdfEngineService.generateGovernmentEjariArchiveHtml(ejariRecord);
+            break;
+          case 'viewing_form_autofill':
+            result = henryPdfEngineService.generateViewingFormHtml(viewingPayload);
+            break;
+          case 'tenant_service_receipt':
+            result = henryPdfEngineService.generateTaxReceiptHtml(tenantReceiptPayload);
+            break;
+          case 'landlord_mgmt_invoice':
+            result = henryPdfEngineService.generateTaxReceiptHtml(landlordInvoicePayload);
+            break;
+          case 'emirates_id_scanner':
+          case 'title_deed_scanner':
+          case 'passport_scanner':
+          case 'tenancy_contract_scanner':
+            result = ''; // Handled by custom interactive React inspector views
+            break;
+          default:
+            result = henryPdfEngineService.generateTenancyContractHtml(tenancyPayload, annotations);
+        }
+        const html = await result;
+        if (active) setCompiledHtml(html);
+      } catch {
+        logger.error('Henry document preview generation failed', { templateId: selectedTemplateId });
+        if (active) setActionSuccessMessage('Document preview failed. Retry before printing or exporting.');
       }
-      setCompiledHtml(await result);
     };
-    generateHtml();
+    void generateHtml();
+    return () => { active = false; };
   }, [selectedTemplateId, tenancyPayload, ejariRecord, viewingPayload, tenantReceiptPayload, landlordInvoicePayload, annotations]);
 
   const handlePrint = useCallback(() => {

@@ -265,6 +265,7 @@ const ActionBtn = styled.button<{ $variant?: 'primary' | 'secondary' | 'danger' 
 export const HenryTitleDeedScannerView: FC = () => {
   const scanGeneration = useRef(0);
   const [uploaderReset, setUploaderReset] = useState(0);
+  const [archiveReset, setArchiveReset] = useState(0);
   const [scannerValues, setScannerValues] = useState<Readonly<BenchmarkValues>>();
   const [extractedData, setExtractedData] = useState<DldTitleDeedExtractedData | null>(() => {
     return henryTitleDeedScannerService.getCachedTitleDeed();
@@ -294,6 +295,8 @@ export const HenryTitleDeedScannerView: FC = () => {
 
   const handleFileUpload = async (file: File, original: File = file) => {
     const generation = ++scanGeneration.current;
+    setVaultOptions({});
+    setArchiveReset(previous => previous + 1);
     setIsScanning(true);
     setScannerValues(undefined);
     setExtractedData(null);
@@ -323,6 +326,8 @@ export const HenryTitleDeedScannerView: FC = () => {
   };
 
   const handleLoadDemo = async () => {
+    setVaultOptions({});
+    setArchiveReset(previous => previous + 1);
     setUploaderReset(previous => previous + 1);
     setScannerValues(undefined);
     scanGeneration.current++;
@@ -361,6 +366,7 @@ export const HenryTitleDeedScannerView: FC = () => {
 
   const handleSaveToVault = async () => {
     if (!extractedData || !canUseScan(extractedData) || isScanning) return;
+    const generation = scanGeneration.current;
     if (!uploadedFile) {
       setStatusMsg('Upload an original before archival. Suggestions alone cannot be archived.');
       return;
@@ -369,6 +375,7 @@ export const HenryTitleDeedScannerView: FC = () => {
       ...vaultOptions,
       sources: [uploadedFile],
     });
+    if (generation !== scanGeneration.current) return;
     if (result.success) setVaultOptions(previous => ({ ...previous, replacesId: undefined }));
     setStatusMsg(
       result.success ? 'Reviewed record saved to encrypted vault.' : result.error || 'Save failed.'
@@ -395,6 +402,8 @@ export const HenryTitleDeedScannerView: FC = () => {
   };
 
   const handleDiscard = () => {
+    setVaultOptions({});
+    setArchiveReset(previous => previous + 1);
     setUploaderReset(previous => previous + 1);
     setScannerValues(undefined);
     scanGeneration.current++;
@@ -434,10 +443,12 @@ export const HenryTitleDeedScannerView: FC = () => {
         Readiness: {readiness.status.replaceAll('_', ' ')}. {readiness.reasons.join(' ')}
       </p>
       <HenryVaultControls
+        key={archiveReset}
         docType="title_deed"
         options={vaultOptions}
         onOptions={setVaultOptions}
         onSuggestion={data => {
+          setArchiveReset(previous => previous + 1);
           setUploaderReset(previous => previous + 1);
           setScannerValues(undefined);
           scanGeneration.current++;

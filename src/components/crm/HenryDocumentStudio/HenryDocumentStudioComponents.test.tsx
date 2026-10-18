@@ -7,7 +7,7 @@
 
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import React from 'react';
-import { render, screen, fireEvent } from '@testing-library/react';
+import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import HenrySharedDocumentUploader from './HenrySharedDocumentUploader';
 import HenryTenancyContractJourneyView from './HenryTenancyContractJourneyView';
 import HenryEmiratesIdScannerView from './HenryEmiratesIdScannerView';
@@ -15,11 +15,20 @@ import HenryTitleDeedScannerView from './HenryTitleDeedScannerView';
 import HenryPassportScannerView from './HenryPassportScannerView';
 import HenryTenancyContractScannerView from './HenryTenancyContractScannerView';
 import henryTenancyContractTemplateService from '../../../services/HenryTenancyContractTemplateService';
+import eid, { EMPTY_EMIRATES_ID } from '../../../services/HenryEmiratesIdScannerService';
+import deed from '../../../services/HenryTitleDeedScannerService';
+import passport from '../../../services/HenryPassportScannerService';
+import contract from '../../../services/HenryTenancyContractScannerService';
+import { canUseScan } from '../../../services/henryScanReview';
 
 describe('Henry Document Studio — Shared Uploader & 5 Content Area Views', () => {
   beforeEach(() => {
     vi.clearAllMocks();
     henryTenancyContractTemplateService.resetDraft();
+    eid.clearCachedEmiratesId();
+    deed.clearCachedTitleDeed();
+    passport.clearCachedPassport();
+    contract.clearCachedContract();
   });
 
   it('HenrySharedDocumentUploader renders title, dropzone, and calls onSampleLoad', () => {
@@ -63,10 +72,12 @@ describe('Henry Document Studio — Shared Uploader & 5 Content Area Views', () 
 
     // Navigate to Stage 4
     fireEvent.click(screen.getByText(/4. Signatures & Final Actions/i));
-    expect(screen.getByText(/Stage 4: Endorsement Signatures & Vault Persistence/i)).toBeDefined();
+    expect(screen.getByText(/Stage 4: Endorsement Signatures & Session Draft/i)).toBeDefined();
+    fireEvent.click(screen.getByRole('button', { name: /Keep for this session only/i }));
+    expect(screen.getByText(/Not saved to the encrypted vault; it will be lost on reload/i)).toBeInTheDocument();
   });
 
-  it('3.19.2 HenryEmiratesIdScannerView loads sample, switches front/back preview, and auto-fills tenancy', async () => {
+  it('3.19.2 previews both demo sides but forbids confirmation, autofill and archival', () => {
     render(<HenryEmiratesIdScannerView />);
 
     expect(screen.getByText(/3.19.2 Emirates ID Live Extraction Studio/i)).toBeDefined();
@@ -86,12 +97,10 @@ describe('Henry Document Studio — Shared Uploader & 5 Content Area Views', () 
     expect(screen.getByDisplayValue('784-1993-1805733-0')).toBeDefined();
     expect(screen.getByDisplayValue('Arslan Malik Bashir Ahmad')).toBeDefined();
 
-    // Test 1-click Auto-Fill Tenancy action
-    fireEvent.click(screen.getByRole('button', { name: /Auto-Fill Tenancy \(as Tenant\)/i }));
-    expect(screen.getByText(/Auto-filled Tenancy Contract with Arslan Malik/i)).toBeDefined();
-
-    // Test Save to Vault button
-    fireEvent.click(screen.getByRole('button', { name: /Save Verified Variables to KYC Vault/i }));
+    expect(screen.getByRole('button', { name: /Auto-Fill Tenancy \(as Tenant\)/i })).toBeDisabled();
+    expect(screen.getByRole('button', { name: /Confirm & Save to KYC Vault/i })).toBeDisabled();
+    expect(screen.getByLabelText('Confirm document review')).toBeDisabled();
+    expect(eid.getCachedEmiratesId()).toBeNull();
   });
 
   it('3.19.3 HenryTitleDeedScannerView loads sample and renders DLD ownership specifications and form', () => {
@@ -105,15 +114,13 @@ describe('Henry Document Studio — Shared Uploader & 5 Content Area Views', () 
     expect(screen.getByDisplayValue('VIRIDIS A')).toBeDefined();
     expect(screen.getByDisplayValue('AKRAM DIB NEHME')).toBeDefined();
 
-    // Test 1-click Auto-Fill Tenancy Lease
-    fireEvent.click(screen.getByRole('button', { name: /Auto-Fill Tenancy Lease/i }));
-    expect(screen.getByText(/Auto-filled Tenancy Contract with VIRIDIS A Unit 504/i)).toBeDefined();
-
-    // Test Save to Property Vault
-    fireEvent.click(screen.getByRole('button', { name: /Save to Property Vault/i }));
+    expect(screen.getByRole('button', { name: /Auto-Fill Tenancy Lease/i })).toBeDisabled();
+    expect(screen.getByRole('button', { name: /Save to Property Vault/i })).toBeDisabled();
+    expect(screen.getByLabelText('Confirm document review')).toBeDisabled();
+    expect(deed.getCachedTitleDeed()).toBeNull();
   });
 
-  it('3.19.4 HenryPassportScannerView loads sample and renders passport bio card, MRZ and form', () => {
+  it('3.19.4 previews passport benchmark but rejects autofill and vault persistence', async () => {
     render(<HenryPassportScannerView />);
 
     expect(screen.getByText(/3.19.4 Scan International Passport/i)).toBeDefined();
@@ -126,13 +133,16 @@ describe('Henry Document Studio — Shared Uploader & 5 Content Area Views', () 
 
     // Test 1-click Auto-Fill Tenancy (as Tenant)
     fireEvent.click(screen.getByRole('button', { name: /Auto-Fill Tenancy \(as Tenant\)/i }));
-    expect(screen.getByText(/Auto-filled Tenancy Contract with Arslan Malik/i)).toBeDefined();
+    expect(screen.getByText(/Autofill unavailable: passport benchmark data is not reviewed OCR\./)).toBeInTheDocument();
 
     // Test Save to KYC Vault
     fireEvent.click(screen.getByRole('button', { name: /Save to KYC Vault/i }));
+    expect(await screen.findByText(/Passport archival unavailable: this scanner produces benchmark data, not reviewed OCR. Nothing was saved\./)).toBeInTheDocument();
+    expect(passport.getCachedPassport()?.demoOnly).toBe(true);
+    expect(canUseScan(passport.getCachedPassport() || {})).toBe(false);
   });
 
-  it('3.19.5 HenryTenancyContractScannerView loads sample and extracts contract domains and form', () => {
+  it('3.19.5 previews contract domains without importing or persisting benchmark fields', async () => {
     render(<HenryTenancyContractScannerView />);
 
     expect(screen.getByText(/3.19.5 Scan & Extract Tenancy Agreement/i)).toBeDefined();
@@ -143,13 +153,51 @@ describe('Henry Document Studio — Shared Uploader & 5 Content Area Views', () 
 
     // Test 1-click Load into 3.19.1 Preparation Studio
     fireEvent.click(screen.getByRole('button', { name: /Load into 3.19.1 Preparation Studio/i }));
-    expect(screen.getByText(/into 3.19.1 Unified Preparation Studio/i)).toBeDefined();
+    expect(screen.getByText(/Autofill unavailable: contract benchmark data is not reviewed OCR\./)).toBeInTheDocument();
+    expect(henryTenancyContractTemplateService.loadActiveDraft().tenantName).toBe('');
 
     // Test Save to Government Vault
     fireEvent.click(screen.getByRole('button', { name: /Save to Government Vault/i }));
+    expect(await screen.findByText(/Contract archival unavailable: benchmark data requires a real OCR\/review workflow. Nothing was saved\./)).toBeInTheDocument();
 
     expect(screen.getByText(/1. Property Specifications/i)).toBeDefined();
     expect(screen.getByText(/2. Landlord & Tenant Parties/i)).toBeDefined();
     expect(screen.getByText(/3. Financial Schedules & Dates/i)).toBeDefined();
+  });
+
+  it('publishes only freshly reviewed synthetic ID fields and revokes them after editing', async () => {
+    const scan = vi.spyOn(eid, 'scanEmiratesId').mockResolvedValue({
+      ...EMPTY_EMIRATES_ID, idNumber: '784-2001-0000001-1', fullNameEn: 'SYNTHETIC TENANT',
+      expiryDate: '01/01/2099', demoOnly: false, missingFields: [], reviewConfirmed: false,
+    });
+    const createUrl = URL.createObjectURL;
+    const revokeUrl = URL.revokeObjectURL;
+    URL.createObjectURL = vi.fn().mockReturnValue('blob:synthetic');
+    URL.revokeObjectURL = vi.fn();
+    const view = render(<HenryEmiratesIdScannerView />);
+    try {
+      fireEvent.change(screen.getByLabelText('Approved lead ID'), { target: { value: 'previous-lead' } });
+      fireEvent.click(screen.getByLabelText('Confirm these existing CRM links (server checks ownership)'));
+      fireEvent.change(screen.getByLabelText('Upload document'), {
+        target: { files: [new File(['synthetic'], 'synthetic.png', { type: 'image/png' })] },
+      });
+      await waitFor(() => expect(screen.getByLabelText('Confirm document review')).not.toBeDisabled());
+      expect(screen.getByLabelText('Approved lead ID')).toHaveValue('');
+      expect(screen.getByLabelText('Confirm these existing CRM links (server checks ownership)')).not.toBeChecked();
+      const autofill = screen.getByRole('button', { name: /Auto-Fill Tenancy \(as Tenant\)/i });
+      expect(autofill).toBeDisabled();
+      fireEvent.click(screen.getByLabelText('Confirm document review'));
+      fireEvent.click(autofill);
+      expect(eid.getCachedEmiratesId()).toMatchObject({ fullNameEn: 'SYNTHETIC TENANT', reviewConfirmed: true });
+      fireEvent.change(screen.getByDisplayValue('SYNTHETIC TENANT'), { target: { value: 'CORRECTED TENANT' } });
+      expect(eid.getCachedEmiratesId()).toBeNull();
+      expect(autofill).toBeDisabled();
+      fireEvent.click(screen.getByLabelText('Confirm document review'));
+      fireEvent.click(autofill);
+      expect(eid.getCachedEmiratesId()?.fullNameEn).toBe('CORRECTED TENANT');
+    } finally {
+      view.unmount();
+      scan.mockRestore(); URL.createObjectURL = createUrl; URL.revokeObjectURL = revokeUrl; eid.clearCachedEmiratesId();
+    }
   });
 });

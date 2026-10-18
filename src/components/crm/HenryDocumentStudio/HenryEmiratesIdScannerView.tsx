@@ -348,6 +348,7 @@ const ZoomBtn = styled.button`
 export const HenryEmiratesIdScannerView: FC = () => {
   const scanGeneration = useRef(0);
   const [uploaderReset, setUploaderReset] = useState(0);
+  const [archiveReset, setArchiveReset] = useState(0);
   const [scannerValues, setScannerValues] = useState<Readonly<BenchmarkValues>>();
   const [extractedData, setExtractedData] = useState<EmiratesIdExtractedData>(() => {
     return henryEmiratesIdScannerService.getCachedEmiratesId() || EMPTY_EMIRATES_ID;
@@ -383,6 +384,8 @@ export const HenryEmiratesIdScannerView: FC = () => {
 
   const handleFileUpload = async (file: File, original: File = file) => {
     const generation = ++scanGeneration.current;
+    setVaultOptions({});
+    setArchiveReset(previous => previous + 1);
     setIsScanning(true);
     setScannerValues(undefined);
     setExtractedData(EMPTY_EMIRATES_ID);
@@ -421,6 +424,8 @@ export const HenryEmiratesIdScannerView: FC = () => {
   };
 
   const handleLoadDemo = () => {
+    setVaultOptions({});
+    setArchiveReset(previous => previous + 1);
     setUploaderReset(previous => previous + 1);
     setScannerValues(undefined);
     scanGeneration.current++;
@@ -456,6 +461,7 @@ export const HenryEmiratesIdScannerView: FC = () => {
 
   const handleSaveToVault = async () => {
     if (!canUseScan(extractedData) || isScanning) return;
+    const generation = scanGeneration.current;
     const sources = [frontFile, backFile].filter((file): file is File => !!file);
     if (!sources.length) {
       setStatusMsg('Upload an original before archival. Suggestions alone cannot be archived.');
@@ -465,6 +471,7 @@ export const HenryEmiratesIdScannerView: FC = () => {
       ...vaultOptions,
       sources,
     });
+    if (generation !== scanGeneration.current) return;
     if (result.success) setVaultOptions(previous => ({ ...previous, replacesId: undefined }));
     setStatusMsg(
       result.success ? 'Reviewed record saved to encrypted vault.' : result.error || 'Save failed.'
@@ -491,6 +498,8 @@ export const HenryEmiratesIdScannerView: FC = () => {
   };
 
   const handleDiscard = () => {
+    setVaultOptions({});
+    setArchiveReset(previous => previous + 1);
     setUploaderReset(previous => previous + 1);
     setScannerValues(undefined);
     scanGeneration.current++;
@@ -530,10 +539,12 @@ export const HenryEmiratesIdScannerView: FC = () => {
         </select>
       </label>
       <HenryVaultControls
+        key={archiveReset}
         docType="emirates_id"
         options={vaultOptions}
         onOptions={setVaultOptions}
         onSuggestion={data => {
+          setArchiveReset(previous => previous + 1);
           setUploaderReset(previous => previous + 1);
           setScannerValues(undefined);
           scanGeneration.current++;
