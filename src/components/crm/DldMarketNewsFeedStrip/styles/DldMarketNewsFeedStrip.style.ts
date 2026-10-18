@@ -2,7 +2,6 @@ import styled from 'styled-components';
 import { lightTheme } from '../../../../styles/theme';
 
 export const NewsFeedSection = styled.section`
-  width: 100%;
   margin-block-end: var(--spacing-md);
   padding: var(--spacing-md);
   color: var(--text-primary);
@@ -13,7 +12,6 @@ export const NewsFeedSection = styled.section`
   box-shadow: var(--shadow-card);
   font-family: var(--font-body);
 `;
-
 export const NewsFeedHeader = styled.div`
   display: flex;
   align-items: center;
@@ -26,7 +24,6 @@ export const NewsFeedHeader = styled.div`
     flex-direction: column;
   }
 `;
-
 export const NewsFeedTitle = styled.h2`
   display: flex;
   align-items: center;
@@ -37,7 +34,6 @@ export const NewsFeedTitle = styled.h2`
   font-size: 1.125rem;
   font-weight: 700;
 `;
-
 export const ScopeBadge = styled.span`
   flex: 0 0 auto;
   padding: var(--spacing-xs) var(--spacing-sm);
@@ -48,13 +44,11 @@ export const ScopeBadge = styled.span`
   font-size: 0.75rem;
   font-weight: 700;
 `;
-
 export const NewsFeedDescription = styled.p`
   margin: 0 0 var(--spacing-md);
   color: var(--text-secondary);
   font-size: 0.875rem;
 `;
-
 export const NewsFeedList = styled.ul`
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
@@ -71,7 +65,6 @@ export const NewsFeedList = styled.ul`
     grid-template-columns: minmax(0, 1fr);
   }
 `;
-
 export const NewsFeedItem = styled.li`
   display: flex;
   min-width: 0;
@@ -83,20 +76,17 @@ export const NewsFeedItem = styled.li`
   border: 1px solid var(--border-color);
   border-radius: var(--border-radius-md);
 `;
-
 export const NewsCategory = styled.span`
   color: var(--color-primary-dark);
   font-size: 0.75rem;
   font-weight: 700;
 `;
-
 export const NewsHeadline = styled.h3`
   margin: 0;
   color: var(--text-primary);
   font-size: 0.9375rem;
   font-weight: 700;
 `;
-
 export const NewsSummary = styled.p`
   flex: 1;
   margin: 0;
@@ -104,7 +94,6 @@ export const NewsSummary = styled.p`
   font-size: 0.8125rem;
   line-height: 1.5;
 `;
-
 export const NewsFeedFooter = styled.div`
   display: flex;
   width: 100%;
@@ -113,12 +102,10 @@ export const NewsFeedFooter = styled.div`
   gap: var(--spacing-sm);
   margin-block-start: var(--spacing-xs);
 `;
-
 export const NewsSource = styled.span`
   color: var(--text-muted);
   font-size: 0.75rem;
 `;
-
 export const SourceLink = styled.a`
   display: inline-flex;
   align-items: center;
@@ -135,7 +122,6 @@ export const SourceLink = styled.a`
     border-radius: var(--border-radius-sm);
   }
 `;
-
 export const NewsFeedStatus = styled.p`
   margin: 0;
   padding: var(--spacing-md);

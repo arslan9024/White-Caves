@@ -68,6 +68,7 @@ describe('DldMarketNewsFeedStrip', () => {
           copyKey: 'dldMarket',
           sourceUrl: 'https://example.com/global',
         },
+        { ...DLD_MARKET_NEWS_SOURCES[0] },
       ],
     });
 
@@ -78,6 +79,7 @@ describe('DldMarketNewsFeedStrip', () => {
     ).toHaveAttribute('dir', 'rtl');
     expect(screen.queryByRole('link', { name: /outside-uae/i })).not.toBeInTheDocument();
     expect(screen.getByText('تقارير سوق دبي')).toBeInTheDocument();
+    expect(screen.getAllByRole('link')).toHaveLength(DLD_MARKET_NEWS_SOURCES.length);
   });
 
   it('renders loading, error, and empty feed states accessibly', () => {
