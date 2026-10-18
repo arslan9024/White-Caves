@@ -10,14 +10,20 @@
 
 import React, { FC, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { CORPORATE_DEPARTMENTS_12, SUPERVISORS_108, SupervisorDef } from '../../../data/assistants108Registry.data';
+import {
+  CORPORATE_DEPARTMENTS_12,
+  SUPERVISORS_108,
+  SupervisorDef,
+} from '../../../data/assistants108Registry.data';
 
 const ASSISTANTS_108_REGISTRY = CORPORATE_DEPARTMENTS_12.map(dept => ({
   ...dept,
   manager: 'Human Manager',
   aiLead: dept.managerAi.name,
-  supervisors: SUPERVISORS_108.filter(s => s.departmentId === dept.id)
+  supervisors: SUPERVISORS_108.filter(s => s.departmentId === dept.id),
 }));
+
+export type DepartmentRegistryItem = (typeof ASSISTANTS_108_REGISTRY)[number];
 
 export interface AIOrganogramTreeProps {
   onSelectAssistant?: (assistant: SupervisorDef) => void;
@@ -30,7 +36,9 @@ export const AIOrganogramTree: FC<AIOrganogramTreeProps> = ({ onSelectAssistant 
   const [taskPrompt, setTaskPrompt] = useState<string>('');
   const [taskDispatched, setTaskDispatched] = useState<boolean>(false);
 
-  const activeDept = ASSISTANTS_108_REGISTRY.find((d: any) => d.id === selectedDeptId) || ASSISTANTS_108_REGISTRY[0];
+  const activeDept: DepartmentRegistryItem =
+    ASSISTANTS_108_REGISTRY.find((d: DepartmentRegistryItem) => d.id === selectedDeptId) ||
+    ASSISTANTS_108_REGISTRY[0];
 
   const handleDispatchTask = (e: React.FormEvent) => {
     e.preventDefault();
@@ -82,16 +90,29 @@ export const AIOrganogramTree: FC<AIOrganogramTreeProps> = ({ onSelectAssistant 
           <span style={{ fontSize: '1.8rem' }}>👑</span>
           <div style={{ textAlign: 'left' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-              <span style={{ fontSize: '0.68rem', background: '#EF4444', color: '#FFFFFF', padding: '2px 6px', borderRadius: '4px', fontWeight: 900, textTransform: 'uppercase' }}>
+              <span
+                style={{
+                  fontSize: '0.68rem',
+                  background: '#EF4444',
+                  color: '#FFFFFF',
+                  padding: '2px 6px',
+                  borderRadius: '4px',
+                  fontWeight: 900,
+                  textTransform: 'uppercase',
+                }}
+              >
                 Level 0 Sovereign Command
               </span>
-              <span style={{ fontSize: '0.68rem', color: '#10B981', fontWeight: 800 }}>● Live Executive Link</span>
+              <span style={{ fontSize: '0.68rem', color: '#10B981', fontWeight: 800 }}>
+                ● Live Executive Link
+              </span>
             </div>
             <h4 style={{ margin: '2px 0 0 0', fontSize: '1rem', fontWeight: 900 }}>
               Arslan Malik Bashir Ahmad (Founder & MD)
             </h4>
             <p style={{ margin: 0, fontSize: '0.75rem', color: '#94A3B8' }}>
-              Paired with <strong>AI Zoe (Chief Operations Officer)</strong> • Floor 13 Sovereign Suite
+              Paired with <strong>AI Zoe (Chief Operations Officer)</strong> • Floor 13 Sovereign
+              Suite
             </p>
           </div>
         </motion.div>
@@ -103,11 +124,28 @@ export const AIOrganogramTree: FC<AIOrganogramTreeProps> = ({ onSelectAssistant 
 
       {/* ── LEVEL 1: 12 CORPORATE DEPARTMENT MANAGERS ── */}
       <div style={{ marginBottom: '1.5rem' }}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '10px' }}>
-          <h4 style={{ margin: 0, fontSize: '0.9rem', fontWeight: 800, color: '#475569', textTransform: 'uppercase' }}>
+        <div
+          style={{
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+            marginBottom: '10px',
+          }}
+        >
+          <h4
+            style={{
+              margin: 0,
+              fontSize: '0.9rem',
+              fontWeight: 800,
+              color: '#475569',
+              textTransform: 'uppercase',
+            }}
+          >
             Level 1: 12 Corporate Department Leads ({ASSISTANTS_108_REGISTRY.length} Departments)
           </h4>
-          <span style={{ fontSize: '0.75rem', color: '#64748B' }}>Click a department to expand its 9 supervisors</span>
+          <span style={{ fontSize: '0.75rem', color: '#64748B' }}>
+            Click a department to expand its 9 supervisors
+          </span>
         </div>
 
         <div
@@ -117,7 +155,7 @@ export const AIOrganogramTree: FC<AIOrganogramTreeProps> = ({ onSelectAssistant 
             gap: '8px',
           }}
         >
-          {ASSISTANTS_108_REGISTRY.map((dept: any) => {
+          {ASSISTANTS_108_REGISTRY.map((dept: DepartmentRegistryItem) => {
             const isSelected = dept.id === selectedDeptId;
             return (
               <button
@@ -134,16 +172,32 @@ export const AIOrganogramTree: FC<AIOrganogramTreeProps> = ({ onSelectAssistant 
                   transition: 'all 0.15s ease',
                 }}
               >
-                <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '4px' }}>
+                <div
+                  style={{ display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '4px' }}
+                >
                   <span style={{ fontSize: '1.1rem' }}>{dept.icon}</span>
-                  <span style={{ fontSize: '0.75rem', fontWeight: 800, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                  <span
+                    style={{
+                      fontSize: '0.75rem',
+                      fontWeight: 800,
+                      whiteSpace: 'nowrap',
+                      overflow: 'hidden',
+                      textOverflow: 'ellipsis',
+                    }}
+                  >
                     {dept.name}
                   </span>
                 </div>
                 <div style={{ fontSize: '0.68rem', color: isSelected ? '#94A3B8' : '#64748B' }}>
                   👤 {dept.manager}
                 </div>
-                <div style={{ fontSize: '0.68rem', color: isSelected ? '#FCA5A5' : '#EF4444', fontWeight: 700 }}>
+                <div
+                  style={{
+                    fontSize: '0.68rem',
+                    color: isSelected ? '#FCA5A5' : '#EF4444',
+                    fontWeight: 700,
+                  }}
+                >
                   🤖 {dept.aiLead}
                 </div>
               </button>
@@ -153,10 +207,36 @@ export const AIOrganogramTree: FC<AIOrganogramTreeProps> = ({ onSelectAssistant 
       </div>
 
       {/* ── LEVEL 2: 9 SUPERVISORS OF SELECTED DEPARTMENT ── */}
-      <div style={{ background: '#F8FAFC', borderRadius: '12px', border: '1px solid #E2E8F0', padding: '1.25rem' }}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem', flexWrap: 'wrap', gap: '10px' }}>
+      <div
+        style={{
+          background: '#F8FAFC',
+          borderRadius: '12px',
+          border: '1px solid #E2E8F0',
+          padding: '1.25rem',
+        }}
+      >
+        <div
+          style={{
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+            marginBottom: '1rem',
+            flexWrap: 'wrap',
+            gap: '10px',
+          }}
+        >
           <div>
-            <span style={{ background: '#EF4444', color: '#FFFFFF', fontSize: '0.68rem', fontWeight: 900, padding: '2px 6px', borderRadius: '4px', textTransform: 'uppercase' }}>
+            <span
+              style={{
+                background: '#EF4444',
+                color: '#FFFFFF',
+                fontSize: '0.68rem',
+                fontWeight: 900,
+                padding: '2px 6px',
+                borderRadius: '4px',
+                textTransform: 'uppercase',
+              }}
+            >
               Level 2 Supervisors
             </span>
             <h4 style={{ margin: '4px 0 0 0', fontSize: '1.05rem', fontWeight: 800 }}>
@@ -204,7 +284,14 @@ export const AIOrganogramTree: FC<AIOrganogramTreeProps> = ({ onSelectAssistant 
                 boxShadow: '0 2px 6px rgba(0,0,0,0.02)',
               }}
             >
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '6px' }}>
+              <div
+                style={{
+                  display: 'flex',
+                  justifyContent: 'space-between',
+                  alignItems: 'flex-start',
+                  marginBottom: '6px',
+                }}
+              >
                 <strong style={{ fontSize: '0.85rem', color: '#0F172A' }}>{sup.name}</strong>
                 <span
                   style={{
@@ -219,13 +306,30 @@ export const AIOrganogramTree: FC<AIOrganogramTreeProps> = ({ onSelectAssistant 
                   {sup.status}
                 </span>
               </div>
-              <div style={{ fontSize: '0.75rem', fontWeight: 700, color: '#EF4444', marginBottom: '4px' }}>
+              <div
+                style={{
+                  fontSize: '0.75rem',
+                  fontWeight: 700,
+                  color: '#EF4444',
+                  marginBottom: '4px',
+                }}
+              >
                 {sup.title}
               </div>
               <p style={{ margin: 0, fontSize: '0.7rem', color: '#64748B', lineHeight: '1.3' }}>
                 {sup.specialty}
               </p>
-              <div style={{ display: 'flex', justifyContent: 'space-between', borderTop: '1px solid #F1F5F9', paddingTop: '6px', marginTop: '6px', fontSize: '0.68rem', color: '#94A3B8' }}>
+              <div
+                style={{
+                  display: 'flex',
+                  justifyContent: 'space-between',
+                  borderTop: '1px solid #F1F5F9',
+                  paddingTop: '6px',
+                  marginTop: '6px',
+                  fontSize: '0.68rem',
+                  color: '#94A3B8',
+                }}
+              >
                 <span>SLA: &lt;15m</span>
                 <span style={{ color: '#059669', fontWeight: 700 }}>Dispatch Task ➔</span>
               </div>
@@ -278,7 +382,17 @@ export const AIOrganogramTree: FC<AIOrganogramTreeProps> = ({ onSelectAssistant 
                 }}
               >
                 <div>
-                  <span style={{ background: '#EF4444', color: '#FFFFFF', fontSize: '0.68rem', fontWeight: 900, padding: '2px 6px', borderRadius: '4px', textTransform: 'uppercase' }}>
+                  <span
+                    style={{
+                      background: '#EF4444',
+                      color: '#FFFFFF',
+                      fontSize: '0.68rem',
+                      fontWeight: 900,
+                      padding: '2px 6px',
+                      borderRadius: '4px',
+                      textTransform: 'uppercase',
+                    }}
+                  >
                     Supervisor Task Dispatcher
                   </span>
                   <h3 style={{ margin: '4px 0 0 0', fontSize: '1.1rem', fontWeight: 800 }}>
@@ -302,8 +416,18 @@ export const AIOrganogramTree: FC<AIOrganogramTreeProps> = ({ onSelectAssistant 
               </div>
 
               {/* Body */}
-              <div style={{ padding: '1.5rem', display: 'flex', flexDirection: 'column', gap: '12px' }}>
-                <div style={{ background: '#F8FAFC', padding: '10px 14px', borderRadius: '10px', border: '1px solid #E2E8F0', fontSize: '0.78rem' }}>
+              <div
+                style={{ padding: '1.5rem', display: 'flex', flexDirection: 'column', gap: '12px' }}
+              >
+                <div
+                  style={{
+                    background: '#F8FAFC',
+                    padding: '10px 14px',
+                    borderRadius: '10px',
+                    border: '1px solid #E2E8F0',
+                    fontSize: '0.78rem',
+                  }}
+                >
                   <strong>Specialization:</strong> {inspectedSupervisor.specialty}
                   <div style={{ marginTop: '4px', color: '#059669', fontWeight: 700 }}>
                     ⏱️ Guaranteed SLA Execution: Under 15 Minutes
@@ -328,7 +452,10 @@ export const AIOrganogramTree: FC<AIOrganogramTreeProps> = ({ onSelectAssistant 
                     🚀 Task Dispatched to {inspectedSupervisor.name}! Executing in background.
                   </motion.div>
                 ) : (
-                  <form onSubmit={handleDispatchTask} style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+                  <form
+                    onSubmit={handleDispatchTask}
+                    style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}
+                  >
                     <label style={{ fontSize: '0.78rem', fontWeight: 700, color: '#475569' }}>
                       Directive / Assignment Prompt
                     </label>

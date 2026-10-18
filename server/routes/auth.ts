@@ -60,19 +60,21 @@ const getPrismaErrorCode = (error: unknown): string | null => {
 
 const isDatabaseUnavailableError = (error: unknown): boolean => {
   const errorCode = getPrismaErrorCode(error);
-  if (errorCode === 'P1001') return true;
-  if (errorCode === 'P6001') return true;
-  if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === 'P1001') return true;
-  if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === 'P6001') return true;
-  if (error instanceof Prisma.PrismaClientInitializationError) {
-    return /can't reach database server|cannot reach database server|error validating datasource|url must start with the protocol `prisma:\/\/`|url must start with the protocol `prisma\+postgres:\/\/`/i.test(
-      error.message
-    );
-  }
-  if (error && typeof error === 'object' && 'message' in error) {
+  if (errorCode === 'P1001' || errorCode === 'P6001') return true;
+  if (
+    error instanceof Prisma.PrismaClientKnownRequestError &&
+    (error.code === 'P1001' || error.code === 'P6001')
+  )
+    return true;
+  if (error instanceof Prisma.PrismaClientInitializationError) return true;
+  if (error && typeof error === 'object') {
     const message = String((error as PrismaLikeError).message || '');
-    return /can't reach database server|cannot reach database server|error validating datasource|url must start with the protocol `prisma:\/\/`|url must start with the protocol `prisma\+postgres:\/\/`/i.test(
-      message
+    const errorName = String((error as { name?: string }).name || error.constructor?.name || '');
+    return (
+      errorName.includes('PrismaClientInitializationError') ||
+      /can't reach database server|cannot reach database server|error validating datasource|url must start with the protocol `prisma:\/\/`|url must start with the protocol `prisma\+postgres:\/\/`|error creating a database connection|error in connector|dns resolution|getaddrinfo/i.test(
+        message
+      )
     );
   }
   return false;

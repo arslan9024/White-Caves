@@ -66,8 +66,13 @@ export function inferRequestOrigin(req: Request): string | null {
 function isLocalDevOrigin(origin: string): boolean {
   try {
     const parsed = new URL(origin);
+    const host = parsed.hostname;
     return (
-      (parsed.hostname === 'localhost' || parsed.hostname === '127.0.0.1') &&
+      (host === 'localhost' ||
+        host === '127.0.0.1' ||
+        host === '[::1]' ||
+        host === '::1' ||
+        host.endsWith('.localhost')) &&
       (parsed.protocol === 'http:' || parsed.protocol === 'https:')
     );
   } catch {

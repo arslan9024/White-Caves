@@ -67,11 +67,11 @@ interface PaymentInstructionDeckProps {
 const loadBankDetails = (): BankDetails => ({
   bankName: import.meta.env.VITE_BANK_NAME || 'Contact office for details',
   accountName: import.meta.env.VITE_BANK_ACCOUNT_NAME || 'WHITE CAVES REAL ESTATE L.L.C',
-  accountNumber: import.meta.env.VITE_BANK_ACCOUNT_NUMBER || '***REDACTED***',
-  iban: import.meta.env.VITE_BANK_IBAN || '***REDACTED***',
-  swiftCode: import.meta.env.VITE_BANK_SWIFT || '***REDACTED***',
-  routingCode: import.meta.env.VITE_BANK_ROUTING || '***REDACTED***',
-  accountType: import.meta.env.VITE_BANK_ACCOUNT_TYPE || 'Lite',
+  accountNumber: import.meta.env.VITE_BANK_ACCOUNT_NUMBER || 'Provided upon invoice request',
+  iban: import.meta.env.VITE_BANK_IBAN || 'Provided upon invoice request',
+  swiftCode: import.meta.env.VITE_BANK_SWIFT || 'MSHQAEADXXX',
+  routingCode: import.meta.env.VITE_BANK_ROUTING || 'Provided upon invoice request',
+  accountType: import.meta.env.VITE_BANK_ACCOUNT_TYPE || 'Corporate Business',
   branch: import.meta.env.VITE_BANK_BRANCH || 'Mashreq NEOBiz Digital',
   currency: 'AED',
 });

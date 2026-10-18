@@ -15,6 +15,7 @@ import React from 'react';
 const { mockSafeStorage, mockAuthFetch } = vi.hoisted(() => ({
   mockSafeStorage: {
     get: vi.fn((_key: string, fallback?: string) => fallback ?? null),
+    set: vi.fn(),
     getJSON: vi.fn((_key: string) => null),
     setJSON: vi.fn(),
     remove: vi.fn(),
@@ -580,7 +581,7 @@ describe('App', () => {
       renderAtRoute('/lion/dashboard');
     });
     await waitFor(() => {
-      expect(screen.getByTestId('dashboard-page')).toBeInTheDocument();
+      expect(screen.getByTestId('crm-hub-page')).toBeInTheDocument();
     });
   });
 
@@ -591,7 +592,7 @@ describe('App', () => {
       renderAtRoute('/modern-dashboard');
     });
     await waitFor(() => {
-      expect(screen.getByTestId('dashboard-page')).toBeInTheDocument();
+      expect(screen.getByTestId('crm-hub-page')).toBeInTheDocument();
     });
   });
 
@@ -602,7 +603,7 @@ describe('App', () => {
       renderAtRoute('/crm');
     });
     await waitFor(() => {
-      expect(screen.getByTestId('dashboard-page')).toBeInTheDocument();
+      expect(screen.getByTestId('crm-hub-page')).toBeInTheDocument();
     });
   });
 
@@ -627,7 +628,7 @@ describe('App', () => {
     });
     // ProtectedRoute uses server role as fallback, so dashboard renders
     await waitFor(() => {
-      expect(screen.getByTestId('dashboard-page')).toBeInTheDocument();
+      expect(screen.getByTestId('crm-hub-page')).toBeInTheDocument();
     });
   });
 

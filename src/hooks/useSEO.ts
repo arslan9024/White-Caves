@@ -29,7 +29,17 @@ export function useSEO({ title, ...seo }: UseSEOOptions): void {
 
 export function getCanonicalUrl(pathname = '/'): string {
   const sanitizedPath = pathname.startsWith('/') ? pathname : `/${pathname}`;
-  return new URL(sanitizedPath, Config.DOMAIN).toString();
+  try {
+    const rawBase =
+      Config.DOMAIN ||
+      (typeof window !== 'undefined' && window.location?.origin
+        ? window.location.origin
+        : 'https://www.whitecaves.com');
+    const base = /^https?:\/\//i.test(rawBase) ? rawBase : `https://${rawBase}`;
+    return new URL(sanitizedPath, base).toString();
+  } catch {
+    return `https://www.whitecaves.com${sanitizedPath}`;
+  }
 }
 
 export default useSEO;

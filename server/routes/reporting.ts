@@ -138,7 +138,7 @@ router.get(
   asyncHandler(async (req: Request, res: Response) => {
     // AUTHORIZATION: Financial metrics restricted to managers/owners
     const userRole = req.user?.role || '';
-    const allowedRoles = ['owner', 'manager', 'admin', 'finance'];
+    const allowedRoles = ['owner', 'manager', 'admin', 'finance', 'managing_director'];
     if (!allowedRoles.includes(userRole)) {
       throw new AppError('Access denied — dashboard summary requires manager or higher role', 403);
     }
@@ -287,7 +287,11 @@ router.get(
           prisma.lead.groupBy({ by: ['source'], _count: { _all: true } }),
           prisma.property.groupBy({ by: ['status'], _count: { _all: true } }),
           prisma.property.groupBy({ by: ['type'], _count: { _all: true } }),
-          prisma.commission.groupBy({ by: ['status'], _count: { _all: true }, _sum: { amount: true } }),
+          prisma.commission.groupBy({
+            by: ['status'],
+            _count: { _all: true },
+            _sum: { amount: true },
+          }),
           prisma.property.aggregate({ _sum: { price: true } }),
         ]);
 

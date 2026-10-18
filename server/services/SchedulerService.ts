@@ -539,6 +539,9 @@ export class SchedulerService {
           monthlyRent: true,
           currency: true,
           endDate: true,
+          tenantId: true,
+          landlordId: true,
+          property: { select: { title: true } },
           tenant: { select: { email: true, name: true } },
         },
         take: 500,
@@ -548,15 +551,44 @@ export class SchedulerService {
         const tenantEmail = lease.tenant?.email;
         const tenantName = lease.tenant?.name || 'Valued Tenant';
 
+        const expiryDateStr = lease.endDate
+          ? lease.endDate.toLocaleDateString('en-AE', { timeZone: 'Asia/Dubai' })
+          : 'upcoming';
+        const rentStr = `${lease.currency || 'AED'} ${(Number(lease.monthlyRent) || 0).toFixed(2)}/month`;
+
+        // Dispatch in-app notifications for both tenant and landlord
+        const propTitle = lease.property?.title || 'leased unit';
+        const notifTitle = `Ejari Renewal: ${days} Days Remaining`;
+        const notifMsg = `Lease for "${propTitle}" expires on ${expiryDateStr}. Notice required under Dubai Tenancy Law No. 26/2007.`;
+
+        await Promise.allSettled([
+          prisma.notification.create({
+            data: {
+              userId: lease.tenantId,
+              type: 'warning',
+              channel: 'in_app',
+              title: notifTitle,
+              message: notifMsg,
+              metadata: { leaseId: lease.id, daysRemaining: days, role: 'tenant' },
+            },
+          }),
+          prisma.notification.create({
+            data: {
+              userId: lease.landlordId,
+              type: 'warning',
+              channel: 'in_app',
+              title: notifTitle,
+              message: notifMsg,
+              metadata: { leaseId: lease.id, daysRemaining: days, role: 'landlord' },
+            },
+          }),
+        ]).catch(() => {});
+
         if (!tenantEmail) {
           skipped += 1;
           continue;
         }
 
-        const expiryDateStr = lease.endDate
-          ? lease.endDate.toLocaleDateString('en-AE', { timeZone: 'Asia/Dubai' })
-          : 'upcoming';
-        const rentStr = `${lease.currency || 'AED'} ${(Number(lease.monthlyRent) || 0).toFixed(2)}/month`;
         const template = EMAIL_TEMPLATES.paymentReminder(
           tenantName,
           rentStr,

@@ -110,7 +110,12 @@ router.post(
     // Verify lease exists and requester has access
     const lease = await prisma.lease.findUnique({
       where: { id: leaseId },
-      select: { tenantId: true, landlordId: true, leaseNumber: true },
+      select: {
+        tenantId: true,
+        landlordId: true,
+        leaseNumber: true,
+        property: { select: { type: true } },
+      },
     });
     if (!lease) throw new AppError('Lease not found', 404);
 
@@ -119,7 +124,18 @@ router.post(
       throw new AppError('Access denied — only landlord or owner can create invoices', 403);
     }
 
-    const vatAmt = vatAmount ?? 0;
+    // Determine UAE VAT rate per FTA regulations:
+    // Commercial leases (commercial, office, retail, warehouse) are subject to 5% VAT.
+    // Residential leases are exempt / zero-rated (0% VAT).
+    const propType = lease.property?.type?.toLowerCase() || '';
+    const isCommercial =
+      propType.includes('commercial') ||
+      propType.includes('office') ||
+      propType.includes('retail') ||
+      propType.includes('warehouse');
+
+    const calculatedVat = isCommercial ? Math.round(amount * 0.05 * 100) / 100 : 0;
+    const vatAmt = typeof vatAmount === 'number' ? vatAmount : calculatedVat;
     const totalAmount = amount + vatAmt;
 
     // Generate invoice number if not provided

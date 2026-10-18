@@ -16,6 +16,7 @@
 
 import { prisma } from '../../database.js';
 import logger from '../../utils/logger.js';
+import { convertToAED, isSupportedCurrency, type SupportedCurrency } from '../currencyService.js';
 
 // ─── Types ──────────────────────────────────────────────────────────────
 
@@ -168,22 +169,38 @@ async function scoreDemographic(
 
   const lead = await prisma.lead.findUnique({
     where: { id: leadId },
-    select: { budget: true, email: true, phone: true, company: true, propertyId: true, tags: true },
+    select: {
+      budget: true,
+      budgetCurrency: true,
+      email: true,
+      phone: true,
+      company: true,
+      propertyId: true,
+      tags: true,
+    },
   });
   if (!lead) return { score: 0, factors };
 
-  // 1. Budget specified (max 10 points — higher budget = more qualified)
+  // 1. Budget specified (max 10 points — higher budget = more qualified, converted to AED)
   let budgetPoints = 0;
+  let budgetInAED = 0;
+  const currencyCode =
+    lead.budgetCurrency && isSupportedCurrency(lead.budgetCurrency)
+      ? (lead.budgetCurrency as SupportedCurrency)
+      : 'AED';
+
   if (lead.budget) {
-    if (lead.budget >= 5_000_000)
+    budgetInAED = convertToAED(lead.budget, currencyCode);
+
+    if (budgetInAED >= 5_000_000)
       budgetPoints = 10; // AED 5M+ luxury
-    else if (lead.budget >= 2_000_000)
+    else if (budgetInAED >= 2_000_000)
       budgetPoints = 8; // AED 2M+ premium
-    else if (lead.budget >= 1_000_000)
+    else if (budgetInAED >= 1_000_000)
       budgetPoints = 6; // AED 1M+ standard
-    else if (lead.budget >= 500_000)
+    else if (budgetInAED >= 500_000)
       budgetPoints = 4; // AED 500K+
-    else if (lead.budget > 0) budgetPoints = 2; // Has budget
+    else if (budgetInAED > 0) budgetPoints = 2; // Has budget
   }
   score += budgetPoints;
   factors.push({
@@ -192,7 +209,9 @@ async function scoreDemographic(
     points: budgetPoints,
     maxPoints: 10,
     description: lead.budget
-      ? `Budget: AED ${lead.budget.toLocaleString()}`
+      ? currencyCode === 'AED'
+        ? `Budget: AED ${lead.budget.toLocaleString()}`
+        : `Budget: ${currencyCode} ${lead.budget.toLocaleString()} (≈ AED ${Math.round(budgetInAED).toLocaleString()})`
       : 'No budget specified',
   });
 

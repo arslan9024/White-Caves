@@ -354,13 +354,13 @@ const HomePage: FC = () => {
               style={{
                 width: '100%',
                 maxWidth: '680px',
-                background: 'rgba(15, 23, 42, 0.8)',
-                border: '1px solid rgba(212, 175, 55, 0.3)',
+                background: 'rgba(15, 23, 42, 0.85)',
+                border: '1px solid rgba(239, 68, 68, 0.35)',
                 borderRadius: '24px',
                 padding: '1.75rem',
                 backdropFilter: 'blur(16px)',
                 WebkitBackdropFilter: 'blur(16px)',
-                boxShadow: '0 25px 60px rgba(0,0,0,0.5), 0 0 40px rgba(6, 182, 212, 0.15)',
+                boxShadow: '0 25px 60px rgba(0,0,0,0.5), 0 0 40px rgba(239, 68, 68, 0.15)',
                 color: '#F8FAFC',
               }}
             >
@@ -440,7 +440,7 @@ const HomePage: FC = () => {
                     width: '100%',
                     padding: '1rem 1.25rem',
                     background: '#1E293B',
-                    border: '1px solid rgba(6, 182, 212, 0.4)',
+                    border: '1.5px solid rgba(239, 68, 68, 0.45)',
                     borderRadius: '14px',
                     color: '#FFFFFF',
                     fontSize: '1rem',
@@ -455,7 +455,7 @@ const HomePage: FC = () => {
                   style={{
                     fontSize: '0.75rem',
                     fontWeight: 800,
-                    color: 'var(--color-d4af37, #D4AF37)',
+                    color: '#EF4444',
                     textTransform: 'uppercase',
                     letterSpacing: '0.08em',
                   }}
@@ -490,8 +490,8 @@ const HomePage: FC = () => {
                         transition: 'all 0.2s ease',
                       }}
                       onMouseEnter={e => {
-                        (e.target as HTMLButtonElement).style.background = '#06B6D4';
-                        (e.target as HTMLButtonElement).style.borderColor = '#06B6D4';
+                        (e.target as HTMLButtonElement).style.background = '#EF4444';
+                        (e.target as HTMLButtonElement).style.borderColor = '#EF4444';
                       }}
                       onMouseLeave={e => {
                         (e.target as HTMLButtonElement).style.background = 'rgba(255,255,255,0.06)';

@@ -554,7 +554,7 @@ export function useSignIn() {
 
   const handleSocialAuth = useCallback(
     async (provider: string, options?: { isRetry?: boolean }): Promise<void> => {
-      if (provider === 'google' && !isFirebaseAuthConfigured) {
+      if (provider === 'google' && !isFirebaseAuthConfigured && !import.meta.env.DEV) {
         setError(googleAuthUnavailableMessage);
         return;
       }
@@ -565,25 +565,100 @@ export function useSignIn() {
           throw new Error('Invalid provider');
         }
 
+        let firebaseResult: {
+          user?: {
+            uid: string;
+            email: string | null;
+            displayName: string | null;
+            photoURL: string | null;
+            getIdToken?: (forceRefresh?: boolean) => Promise<string>;
+          };
+        } | null | void = null;
+
         switch (provider) {
           case 'google':
-            await signInWithGoogle();
+            firebaseResult = await signInWithGoogle();
             break;
           case 'facebook':
-            await signInWithFacebook();
+            firebaseResult = await signInWithFacebook();
             break;
           case 'apple':
-            await signInWithApple();
+            firebaseResult = await signInWithApple();
             break;
           default:
             throw new Error('Invalid provider');
         }
+
+        const fbUser = firebaseResult?.user;
+        if (!fbUser) {
+          return;
+        }
+
+        try {
+          const backendResponse = await syncFirebaseUser(fbUser as any);
+          if (!backendResponse?.data?.user) {
+            throw new Error('Invalid backend response: missing user data');
+          }
+
+          const backendUser = backendResponse.data.user;
+          setSocialSyncRecovery(null);
+          setSocialRetryAttempts(0);
+          setError('');
+
+          if (mode === 'signup') {
+            if (isSuperuserEmail(backendUser.email)) {
+              handleSignInSuccess({
+                ...backendUser,
+                role: 'managing_director',
+                status: 'active',
+                photoUrl: backendUser.photoUrl || fbUser.photoURL,
+                displayName: backendUser.name || fbUser.displayName,
+              });
+            } else {
+              handleSignUpSuccess(backendUser, { fromSocialProvider: provider });
+            }
+          } else {
+            handleSignInSuccess(
+              isSuperuserEmail(backendUser.email)
+                ? {
+                    ...backendUser,
+                    role: 'managing_director',
+                    status: 'active',
+                    photoUrl: backendUser.photoUrl || fbUser.photoURL,
+                    displayName: backendUser.name || fbUser.displayName,
+                  }
+                : {
+                    ...backendUser,
+                    photoUrl: backendUser.photoUrl || fbUser.photoURL,
+                    displayName: backendUser.name || fbUser.displayName,
+                  }
+            );
+          }
+        } catch (syncError: unknown) {
+          const syncMessage =
+            syncError instanceof Error && syncError.message.trim()
+              ? syncError.message.trim()
+              : 'Backend unreachable';
+
+          setSocialSyncRecovery({ provider: provider as any, reason: syncMessage });
+
+          if (shouldClearFirebaseSessionAfterSyncFailure(syncMessage)) {
+            await signOutFirebase().catch(() => {
+              // noop
+            });
+          }
+
+          setError(
+            `Google authentication is active, but backend session setup failed: ${syncMessage}. Please retry or use email login temporarily.`
+          );
+        }
       } catch (err: unknown) {
         setError(normalizeSocialAuthErrorMessage(err, provider));
+      } finally {
         setLoading(false);
       }
     },
-    [googleAuthUnavailableMessage]
+    [googleAuthUnavailableMessage, handleSignInSuccess, handleSignUpSuccess, mode]
   );
 
   const retrySocialAuth = useCallback(async (): Promise<void> => {
@@ -596,73 +671,9 @@ export function useSignIn() {
       return;
     }
 
-    if (socialSyncRecovery.provider === 'google' && firebaseAuth?.currentUser) {
-      setLoading(true);
-      setError('');
-
-      try {
-        const backendResponse = await syncFirebaseUser(firebaseAuth.currentUser);
-        if (!backendResponse?.data?.user) {
-          throw new Error('Invalid backend response: missing user data');
-        }
-
-        const backendUser = backendResponse.data.user;
-        setSocialSyncRecovery(null);
-        setSocialRetryAttempts(0);
-        setError('');
-
-        if (mode === 'signup') {
-          if (isSuperuserEmail(backendUser.email)) {
-            handleSignInSuccess({
-              ...backendUser,
-              role: 'managing_director',
-              status: 'active',
-            });
-          } else {
-            handleSignUpSuccess(backendUser, { fromSocialProvider: 'google' });
-          }
-        } else {
-          handleSignInSuccess(
-            isSuperuserEmail(backendUser.email)
-              ? { ...backendUser, role: 'managing_director', status: 'active' }
-              : backendUser
-          );
-        }
-        return;
-      } catch (syncError: unknown) {
-        const syncMessage =
-          syncError instanceof Error && syncError.message.trim()
-            ? syncError.message.trim()
-            : 'Unable to complete authentication sync';
-
-        setSocialRetryAttempts(prev => prev + 1);
-        setSocialSyncRecovery({ provider: 'google', reason: syncMessage });
-
-        if (shouldClearFirebaseSessionAfterSyncFailure(syncMessage)) {
-          await signOutFirebase().catch(() => {
-            // noop
-          });
-        }
-
-        setError(
-          `Google authentication is active, but backend session setup still failed: ${syncMessage}. Please retry or use email login temporarily.`
-        );
-      } finally {
-        setLoading(false);
-      }
-
-      return;
-    }
-
+    setSocialRetryAttempts(prev => prev + 1);
     await handleSocialAuth(socialSyncRecovery.provider, { isRetry: true });
-  }, [
-    handleSignInSuccess,
-    handleSignUpSuccess,
-    handleSocialAuth,
-    mode,
-    socialSyncRecovery,
-    socialRetryAttempts,
-  ]);
+  }, [handleSocialAuth, socialSyncRecovery, socialRetryAttempts]);
 
   const clearSocialRecovery = useCallback((): void => {
     setSocialSyncRecovery(null);

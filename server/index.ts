@@ -57,6 +57,7 @@ import lindaRoutes from './routes/linda.js';
 import metaWebhookRoutes from './routes/meta-webhook.js';
 import favoritesRoutes from './routes/favorites.js';
 import orchestratorRoutes from './routes/orchestrator.js';
+import aegisRoutes from './routes/aegis.js';
 import integrationsRoutes from './routes/integrations.js';
 import orchestrationRoutes from './routes/orchestration.js';
 import henryRoutes from './routes/henry.js';
@@ -252,7 +253,7 @@ app.use(
       return;
     }
 
-    callback(new Error('Not allowed by CORS'));
+    callback(null, { origin: false });
   })
 );
 
@@ -280,7 +281,12 @@ app.use((req: Request, res: Response, next: NextFunction) => {
 });
 
 // Body parsing
-app.use(express.json({ limit: '1mb', type: ['application/json', 'application/csp-report', 'application/reports+json'] }));
+app.use(
+  express.json({
+    limit: '1mb',
+    type: ['application/json', 'application/csp-report', 'application/reports+json'],
+  })
+);
 app.use(express.urlencoded({ limit: '1mb', extended: true }));
 
 // Cookie parsing — required for httpOnly refresh-token cookie on /api/auth/refresh
@@ -297,7 +303,12 @@ app.use(API_PREFIX, markLegacyApiDeprecated);
 // Note: req.path inside app.use('/api', ...) is relative to the /api mount point,
 // so exempt paths must omit the /api prefix. The req.is('json') guard ensures
 // multipart/form-data upload routes and other non-JSON bodies are not touched.
-const NON_SANITIZED_PATHS = new Set(['/whatsapp/webhook', '/auth/refresh', '/security/csp-report', '/csp-report']);
+const NON_SANITIZED_PATHS = new Set([
+  '/whatsapp/webhook',
+  '/auth/refresh',
+  '/security/csp-report',
+  '/csp-report',
+]);
 app.use('/api', (req: Request, _res: Response, next: NextFunction) => {
   if (
     ['POST', 'PUT', 'PATCH'].includes(req.method) &&
@@ -313,7 +324,13 @@ app.use('/api', (req: Request, _res: Response, next: NextFunction) => {
 
 // Content-Type validation for mutation endpoints
 // Exempt paths that accept non-JSON bodies (file uploads, webhooks, cookie-only endpoints).
-const NON_JSON_PATHS = new Set(['/api/whatsapp/webhook', '/api/auth/refresh', '/api/media/upload', '/api/security/csp-report', '/api/csp-report']);
+const NON_JSON_PATHS = new Set([
+  '/api/whatsapp/webhook',
+  '/api/auth/refresh',
+  '/api/media/upload',
+  '/api/security/csp-report',
+  '/api/csp-report',
+]);
 app.use('/api', (req: Request, res: Response, next) => {
   if (
     ['POST', 'PUT', 'PATCH'].includes(req.method) &&
@@ -388,6 +405,9 @@ app.get('/api/health', (req: Request, res: Response) => {
     },
   });
 });
+
+// AEGIS V5 Omni-Orchestrator Telemetry & Control API
+app.use('/api/aegis', aegisRoutes);
 
 // Database health check — Wave 15 (W15-002)
 app.get(

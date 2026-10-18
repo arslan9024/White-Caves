@@ -27,7 +27,7 @@ const roles: RoleOption[] = [
     ),
     path: '/buyer/dashboard',
     role: 'buyer',
-    color: '#212121',
+    color: '#EF4444',
   },
   {
     id: 'seller',
@@ -43,7 +43,7 @@ const roles: RoleOption[] = [
     ),
     path: '/seller/dashboard',
     role: 'seller',
-    color: '#C9A84C',
+    color: '#DC2626',
   },
   {
     id: 'tenant',
@@ -58,7 +58,7 @@ const roles: RoleOption[] = [
     ),
     path: '/landlord/dashboard',
     role: 'landlord',
-    color: '#10B981',
+    color: '#334155',
   },
   {
     id: 'agent',
@@ -73,7 +73,7 @@ const roles: RoleOption[] = [
     ),
     path: '/signin',
     role: 'agent',
-    color: '#C9A84C',
+    color: '#EF4444',
   },
 ];
 
@@ -84,10 +84,10 @@ const RoleSelectionModal: React.FC = () => {
   const modalRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    const saved = safeStorage.getJSON<{ role: string }>('preferredRole');
-    if (saved) return; // Already chosen
-    const timer = setTimeout(() => setVisible(true), 1500);
-    return () => clearTimeout(timer);
+    // Only show if explicitly triggered via window event or action, never interrupt the homepage
+    const handleOpen = () => setVisible(true);
+    window.addEventListener('open_role_modal', handleOpen);
+    return () => window.removeEventListener('open_role_modal', handleOpen);
   }, []);
 
   // Focus trap + Escape handling
@@ -147,8 +147,8 @@ const RoleSelectionModal: React.FC = () => {
         position: 'fixed',
         inset: 0,
         zIndex: 9999,
-        background: 'rgba(0,0,0,0.55)',
-        backdropFilter: 'blur(8px)',
+        background: 'rgba(15, 23, 42, 0.65)',
+        backdropFilter: 'blur(10px)',
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
@@ -162,13 +162,13 @@ const RoleSelectionModal: React.FC = () => {
       <div
         ref={modalRef}
         style={{
-          background: '#0f0f0f',
-          border: '1px solid rgba(201, 168, 76, 0.25)',
+          background: '#1E293B',
+          border: '1.5px solid rgba(239, 68, 68, 0.3)',
           borderRadius: 20,
           padding: '2.5rem 2rem',
           maxWidth: 680,
           width: '100%',
-          boxShadow: '0 30px 80px rgba(0,0,0,0.5)',
+          boxShadow: '0 30px 80px rgba(0, 0, 0, 0.5), 0 0 35px rgba(239, 68, 68, 0.15)',
           position: 'relative',
         }}
         onClick={e => e.stopPropagation()}
@@ -177,28 +177,28 @@ const RoleSelectionModal: React.FC = () => {
           <div
             style={{
               fontSize: '0.8rem',
-              fontWeight: 600,
-              letterSpacing: '0.1em',
+              fontWeight: 700,
+              letterSpacing: '0.12em',
               textTransform: 'uppercase',
-              color: '#C9A84C',
+              color: '#EF4444',
               marginBottom: '0.5rem',
             }}
           >
             Welcome to White Caves
           </div>
-          <h2 style={{ margin: 0, fontSize: '1.6rem', fontWeight: 800, color: 'var(--white, #ffffff)' }}>
+          <h2 style={{ margin: 0, fontSize: '1.6rem', fontWeight: 800, color: '#FFFFFF' }}>
             How can we assist you today?
           </h2>
           <p
-            style={{ margin: '0.5rem 0 0', color: 'rgba(255, 255, 255, 0.6)', fontSize: '0.9rem' }}
+            style={{ margin: '0.5rem 0 0', color: 'rgba(255, 255, 255, 0.7)', fontSize: '0.9rem' }}
           >
             Select your role to access personalised features and services
           </p>
           <div
             style={{
-              width: 48,
+              width: 52,
               height: 3,
-              background: 'linear-gradient(90deg, #C9A84C, #a8883a)',
+              background: 'linear-gradient(90deg, #EF4444, #F87171)',
               borderRadius: 2,
               margin: '1rem auto 0',
             }}
@@ -217,25 +217,29 @@ const RoleSelectionModal: React.FC = () => {
                 gap: '0.75rem',
                 padding: '1rem',
                 borderRadius: 12,
-                border: `2px solid ${role.color}30`,
-                background: `${role.color}08`,
+                border: '1.5px solid rgba(255, 255, 255, 0.1)',
+                background: 'rgba(255, 255, 255, 0.04)',
                 cursor: 'pointer',
                 textAlign: 'left',
                 transition: 'all 0.2s',
               }}
               onMouseEnter={e => {
                 (e.currentTarget as HTMLButtonElement).style.borderColor = role.color;
+                (e.currentTarget as HTMLButtonElement).style.background = 'rgba(239, 68, 68, 0.08)';
                 (e.currentTarget as HTMLButtonElement).style.transform = 'translateY(-2px)';
               }}
               onMouseLeave={e => {
-                (e.currentTarget as HTMLButtonElement).style.borderColor = `${role.color}30`;
+                (e.currentTarget as HTMLButtonElement).style.borderColor =
+                  'rgba(255, 255, 255, 0.1)';
+                (e.currentTarget as HTMLButtonElement).style.background =
+                  'rgba(255, 255, 255, 0.04)';
                 (e.currentTarget as HTMLButtonElement).style.transform = 'translateY(0)';
               }}
             >
               <div style={{ color: role.color, flexShrink: 0, marginTop: 2 }}>{role.icon}</div>
               <div>
                 <div
-                  style={{ fontWeight: 700, fontSize: '0.9rem', color: 'var(--white, #ffffff)', marginBottom: 2 }}
+                  style={{ fontWeight: 700, fontSize: '0.9rem', color: '#FFFFFF', marginBottom: 2 }}
                 >
                   {role.title}
                 </div>
@@ -252,7 +256,7 @@ const RoleSelectionModal: React.FC = () => {
                 <div
                   style={{
                     fontSize: '0.75rem',
-                    color: 'rgba(255, 255, 255, 0.5)',
+                    color: 'rgba(255, 255, 255, 0.6)',
                     lineHeight: 1.4,
                   }}
                 >
@@ -269,7 +273,7 @@ const RoleSelectionModal: React.FC = () => {
             style={{
               background: 'none',
               border: 'none',
-              color: '#9ca3af',
+              color: '#94A3B8',
               cursor: 'pointer',
               fontSize: '0.85rem',
               padding: '0.4rem 0.75rem',

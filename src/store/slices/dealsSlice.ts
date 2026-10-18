@@ -1,11 +1,117 @@
-import { createSlice, PayloadAction } from '@reduxjs/toolkit';
+import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';
 
-interface DealsState {
+export const fetchTenancyDeals = createAsyncThunk(
+  'deals/fetchTenancy',
+  async (params: Record<string, string> = {}, { rejectWithValue }) => {
+    try {
+      const queryParams = new URLSearchParams(params);
+      const response = await fetch(`/api/deals/tenancy?${queryParams}`);
+      if (!response.ok) throw new Error('Failed to fetch tenancy deals');
+      return response.json();
+    } catch (error: any) {
+      return rejectWithValue(error.message);
+    }
+  }
+);
+
+export const fetchSalesDeals = createAsyncThunk(
+  'deals/fetchSales',
+  async (params: Record<string, string> = {}, { rejectWithValue }) => {
+    try {
+      const queryParams = new URLSearchParams(params);
+      const response = await fetch(`/api/deals/sales?${queryParams}`);
+      if (!response.ok) throw new Error('Failed to fetch sales deals');
+      return response.json();
+    } catch (error: any) {
+      return rejectWithValue(error.message);
+    }
+  }
+);
+
+export const fetchDealByNumber = createAsyncThunk(
+  'deals/fetchByNumber',
+  async (
+    { dealNumber, dealType }: { dealNumber: string; dealType: string },
+    { rejectWithValue }
+  ) => {
+    try {
+      const endpoint = dealType === 'tenancy' ? 'tenancy' : 'sales';
+      const response = await fetch(`/api/deals/${endpoint}/${dealNumber}`);
+      if (!response.ok) throw new Error('Deal not found');
+      return response.json();
+    } catch (error: any) {
+      return rejectWithValue(error.message);
+    }
+  }
+);
+
+export const updateDealStatus = createAsyncThunk(
+  'deals/updateStatus',
+  async (
+    {
+      dealNumber,
+      dealType,
+      status,
+      notes,
+      actor,
+    }: { dealNumber: string; dealType: string; status: string; notes?: string; actor?: string },
+    { rejectWithValue }
+  ) => {
+    try {
+      const endpoint = dealType === 'tenancy' ? 'tenancy' : 'sales';
+      const response = await fetch(`/api/deals/${endpoint}/${dealNumber}/status`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ status, notes, actor }),
+      });
+      if (!response.ok) throw new Error('Failed to update status');
+      return response.json();
+    } catch (error: any) {
+      return rejectWithValue(error.message);
+    }
+  }
+);
+
+export const seedDemoData = createAsyncThunk('deals/seedDemo', async (_, { rejectWithValue }) => {
+  try {
+    const response = await fetch('/api/deals/demo/seed', { method: 'POST' });
+    if (!response.ok) throw new Error('Failed to seed demo data');
+    return response.json();
+  } catch (error: any) {
+    return rejectWithValue(error.message);
+  }
+});
+
+export const fetchDealStats = createAsyncThunk(
+  'deals/fetchStats',
+  async (_, { rejectWithValue }) => {
+    try {
+      const response = await fetch('/api/deals/stats');
+      if (!response.ok) throw new Error('Failed to fetch stats');
+      return response.json();
+    } catch (error: any) {
+      return rejectWithValue(error.message);
+    }
+  }
+);
+
+export interface DealsState {
   totalPipelineValue: number;
   dealOfTheMonth: {
     agent: string;
     value: number;
     property: string;
+  };
+  tenancyDeals: any[];
+  salesDeals: any[];
+  selectedDeal: any | null;
+  stats: any | null;
+  demoSeeded: boolean;
+  loading: boolean;
+  error: string | null;
+  pagination: {
+    tenancy: { page: number; limit: number; total: number };
+    sales: { page: number; limit: number; total: number };
   };
 }
 
@@ -16,6 +122,17 @@ const initialState: DealsState = {
     value: 12500000,
     property: 'Palm Jumeirah Signature Villa',
   },
+  tenancyDeals: [],
+  salesDeals: [],
+  selectedDeal: null,
+  stats: null,
+  demoSeeded: false,
+  loading: false,
+  error: null,
+  pagination: {
+    tenancy: { page: 1, limit: 20, total: 0 },
+    sales: { page: 1, limit: 20, total: 0 },
+  },
 };
 
 const dealsSlice = createSlice({
@@ -25,8 +142,80 @@ const dealsSlice = createSlice({
     updatePipelineValue: (state, action: PayloadAction<number>) => {
       state.totalPipelineValue = action.payload;
     },
+    setSelectedDeal: (state, action: PayloadAction<any>) => {
+      state.selectedDeal = action.payload;
+    },
+    clearSelectedDeal: state => {
+      state.selectedDeal = null;
+    },
+    clearError: state => {
+      state.error = null;
+    },
+  },
+  extraReducers: builder => {
+    builder
+      .addCase(fetchTenancyDeals.pending, state => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(fetchTenancyDeals.fulfilled, (state, action) => {
+        state.loading = false;
+        state.tenancyDeals = action.payload?.data || [];
+        if (action.payload?.pagination) {
+          state.pagination.tenancy = action.payload.pagination;
+        }
+      })
+      .addCase(fetchTenancyDeals.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload as string;
+      })
+      .addCase(fetchSalesDeals.pending, state => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(fetchSalesDeals.fulfilled, (state, action) => {
+        state.loading = false;
+        state.salesDeals = action.payload?.data || [];
+        if (action.payload?.pagination) {
+          state.pagination.sales = action.payload.pagination;
+        }
+      })
+      .addCase(fetchSalesDeals.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload as string;
+      })
+      .addCase(fetchDealByNumber.fulfilled, (state, action) => {
+        state.selectedDeal = action.payload?.data || null;
+      })
+      .addCase(updateDealStatus.fulfilled, (state, action) => {
+        const updatedDeal = action.payload?.data;
+        if (updatedDeal) {
+          const tenancyIndex = state.tenancyDeals.findIndex(
+            d => d.dealNumber === updatedDeal.dealNumber
+          );
+          if (tenancyIndex !== -1) {
+            state.tenancyDeals[tenancyIndex] = updatedDeal;
+          }
+          const salesIndex = state.salesDeals.findIndex(
+            d => d.dealNumber === updatedDeal.dealNumber
+          );
+          if (salesIndex !== -1) {
+            state.salesDeals[salesIndex] = updatedDeal;
+          }
+          if (state.selectedDeal?.dealNumber === updatedDeal.dealNumber) {
+            state.selectedDeal = updatedDeal;
+          }
+        }
+      })
+      .addCase(seedDemoData.fulfilled, state => {
+        state.demoSeeded = true;
+      })
+      .addCase(fetchDealStats.fulfilled, (state, action) => {
+        state.stats = action.payload?.data || null;
+      });
   },
 });
 
-export const { updatePipelineValue } = dealsSlice.actions;
+export const { updatePipelineValue, setSelectedDeal, clearSelectedDeal, clearError } =
+  dealsSlice.actions;
 export default dealsSlice.reducer;
