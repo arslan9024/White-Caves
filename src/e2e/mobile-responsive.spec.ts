@@ -21,10 +21,14 @@ test.describe('Mobile 375px viewport — responsive layout', () => {
     await page.goto('/');
     await page.waitForLoadState('domcontentloaded');
 
-    for (const width of [375, 768, 1024, 1440]) {
+    for (const width of [375, 768, 901, 1024, 1440]) {
       await page.setViewportSize({ width, height: MOBILE_VIEWPORT.height });
       const documentWidth = await page.evaluate(() => document.documentElement.scrollWidth);
       expect(documentWidth, `Document width at ${width}px viewport`).toBeLessThanOrEqual(width + 1);
+      await expect(page.getByTestId('navbar-profile-preferences-btn')).toHaveAttribute(
+        'aria-label',
+        'Toggle user preferences and profile menu'
+      );
 
       if (width <= 900) {
         await expect(page.locator('.public-navbar__menu-btn')).toBeVisible();

@@ -696,11 +696,16 @@
 
 /* ── Responsive: compact actions while preserving desktop navigation ───── */
 @media (min-width: 901px) and (max-width: 1100px) {
+  .public-navbar__inner {
+    gap: 1rem;
+  }
+
   .public-navbar__list-btn,
   .public-navbar__signin,
   .public-navbar__search-btn,
   .public-navbar__currency-selector,
-  .public-navbar__whatsapp-btn {
+  .public-navbar__whatsapp-btn,
+  .public-navbar__user-name {
     display: none;
   }
 }
