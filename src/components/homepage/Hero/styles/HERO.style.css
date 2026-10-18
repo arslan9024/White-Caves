@@ -1,19 +1,12 @@
 ﻿/**
- * LuxuryHeroSection.css
+ * HERO.style.css
  * @agent @Una (Luxury UI/UX Specialist)
  * @milestone MILESTONE-HERO
  *
  * Red / Black / White Design System
  * Glassmorphism Â· Premium animations Â· Luxury typography
  *
- * Design Tokens (mirrors copilot-instructions.md palette):
- *   --wc-red:          #C41E3A
- *   --wc-red-light:    #FF4D6D
- *   --wc-red-dark:     #8B0000
- *   --wc-black:         #0A0A0A
- *   --wc-white:         #FAFAFA
- *   --wc-surface:       rgba(255,255,255,0.06)
- *   --wc-surface-border: rgba(196,30,58,0.25)
+ * Colors, typography, and layering are sourced from the shared design tokens.
  */
 
 /* ============================================================
@@ -25,43 +18,56 @@
    2. LOCAL DESIGN TOKENS
    ============================================================ */
 .luxury-hero {
-  /* red spectrum */
-  --wc-red: #c41e3a;
-  --wc-red-light: #ff4d6d;
-  --wc-red-dark: #8b0000;
-  --wc-red-muted: rgba(196, 30, 58, 0.15);
-  --wc-red-gradient: linear-gradient(135deg, #c41e3a 0%, #ff4d6d 45%, #c41e3a 100%);
-  --wc-red-shimmer: linear-gradient(
-    90deg,
-    transparent 0%,
-    rgba(196, 30, 58, 0.35) 50%,
-    transparent 100%
-  );
-
-  /* Dark spectrum */
-  --wc-black: #0a0a0a;
-  --wc-charcoal: #111111;
-  --wc-overlay: rgba(8, 8, 8, 0.78);
-
-  /* Light spectrum */
-  --wc-white: #fafafa;
-  --wc-white-80: rgba(250, 250, 250, 0.8);
-  --wc-white-60: rgba(250, 250, 250, 0.6);
-  --wc-white-30: rgba(250, 250, 250, 0.3);
-
-  /* Glass surfaces */
-  --wc-surface: rgba(255, 255, 255, 0.055);
-  --wc-surface-hover: rgba(255, 255, 255, 0.09);
-  --wc-surface-border: rgba(196, 30, 58, 0.22);
-  --wc-surface-border-h: rgba(196, 30, 58, 0.5);
-  --wc-glass-shadow: 0 8px 32px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.08);
+  --wc-red: var(--wc-red-primary);
+  --wc-red-light: var(--wc-red-hover);
+  --wc-red-dark: var(--wc-red-active);
+  --wc-red-muted: var(--wc-red-subtle);
+  --wc-black: var(--wc-bg-canvas);
+  --wc-charcoal: var(--wc-bg-surface);
+  --wc-overlay: var(--wc-bg-glass);
+  --wc-white: var(--wc-text-primary);
+  --wc-white-80: var(--wc-hero-text-80);
+  --wc-white-60: var(--wc-hero-text-60);
+  --wc-white-30: var(--wc-hero-text-30);
+  --wc-surface: var(--wc-hero-surface);
+  --wc-surface-hover: var(--wc-hero-surface-hover);
+  --wc-surface-border: var(--wc-hero-surface-border);
+  --wc-surface-border-h: var(--wc-border-active);
+  --wc-glass-shadow: var(--wc-shadow-md);
 
   /* Fonts */
-  --font-display: 'Cormorant Garamond', 'Playfair Display', Georgia, serif;
-  --font-body: 'Inter', 'DM Sans', -apple-system, sans-serif;
+  --font-display: var(--wc-font-serif);
+  --font-body: var(--wc-font-body);
 
   /* Spacing */
-  --hero-max-w: 1200px;
+  --hero-max-w: 75rem;
+  --hero-z-background: var(--wc-layer-canvas);
+  --hero-z-content: var(--wc-layer-content);
+  --hero-z-toggle: var(--wc-layer-header);
+  --hero-z-scroll: var(--wc-layer-content);
+}
+
+.luxury-hero[data-theme='light'] {
+  --wc-black: var(--wc-hero-light-canvas);
+  --wc-charcoal: var(--wc-hero-light-surface);
+  --wc-overlay: var(--wc-hero-light-overlay);
+  --wc-white: var(--wc-hero-light-text);
+  --wc-white-80: var(--wc-hero-light-text-80);
+  --wc-white-60: var(--wc-hero-light-text-60);
+  --wc-white-30: var(--wc-hero-light-text-30);
+  --wc-surface: var(--wc-hero-light-glass);
+  --wc-surface-hover: var(--wc-hero-light-glass-hover);
+  --wc-surface-border: var(--wc-hero-light-border);
+  --wc-surface-border-h: var(--wc-red-primary);
+  --wc-glass-shadow: var(--wc-shadow-sm);
+}
+
+.luxury-hero[data-theme='light'] .luxury-hero__overlay-dark {
+  background: var(--wc-hero-light-overlay);
+}
+
+.luxury-hero[data-theme='light'] .luxury-hero__overlay-vignette {
+  background: var(--wc-hero-light-vignette);
 }
 
 /* ============================================================
@@ -84,7 +90,7 @@
 .luxury-hero__background {
   position: absolute;
   inset: 0;
-  z-index: 0;
+  z-index: var(--hero-z-background);
   pointer-events: none;
 }
 
@@ -112,12 +118,7 @@
 .luxury-hero__overlay-dark {
   position: absolute;
   inset: 0;
-  background: linear-gradient(
-    160deg,
-    rgba(10, 10, 10, 0.82) 0%,
-    rgba(10, 10, 10, 0.65) 50%,
-    rgba(10, 10, 10, 0.88) 100%
-  );
+  background: var(--wc-hero-dark-overlay);
 }
 
 /* Subtle red mid-gradient */
@@ -127,8 +128,8 @@
   background: linear-gradient(
     180deg,
     transparent 0%,
-    rgba(196, 30, 58, 0.06) 40%,
-    rgba(196, 30, 58, 0.03) 70%,
+    var(--wc-red-subtle) 40%,
+    transparent 70%,
     transparent 100%
   );
 }
@@ -137,7 +138,7 @@
 .luxury-hero__overlay-vignette {
   position: absolute;
   inset: 0;
-  background: radial-gradient(ellipse at center, transparent 40%, rgba(0, 0, 0, 0.55) 100%);
+  background: var(--wc-hero-vignette);
 }
 
 /* â”€â”€ red Orbs â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
@@ -153,7 +154,7 @@
   height: 480px;
   top: -8%;
   left: -12%;
-  background: radial-gradient(circle, rgba(196, 30, 58, 0.22) 0%, rgba(196, 30, 58, 0.04) 70%);
+  background: radial-gradient(circle, var(--wc-red-glow) 0%, var(--wc-red-subtle) 70%);
 }
 
 .luxury-hero__orb--2 {
@@ -161,7 +162,7 @@
   height: 360px;
   bottom: 10%;
   right: -8%;
-  background: radial-gradient(circle, rgba(255, 77, 109, 0.18) 0%, rgba(255, 77, 109, 0.03) 70%);
+  background: radial-gradient(circle, var(--wc-red-glow) 0%, var(--wc-red-subtle) 70%);
 }
 
 .luxury-hero__orb--3 {
@@ -169,7 +170,7 @@
   height: 200px;
   top: 35%;
   left: 60%;
-  background: radial-gradient(circle, rgba(196, 30, 58, 0.12) 0%, transparent 70%);
+  background: radial-gradient(circle, var(--wc-red-subtle) 0%, transparent 70%);
 }
 
 /* â”€â”€ Decorative Lines â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
@@ -181,7 +182,7 @@
 
 .luxury-hero__line {
   position: absolute;
-  background: linear-gradient(90deg, transparent, rgba(196, 30, 58, 0.18), transparent);
+  background: linear-gradient(90deg, transparent, var(--wc-red-subtle), transparent);
   height: 1px;
   width: 100%;
   animation: lineSweep 8s ease-in-out infinite;
@@ -223,7 +224,7 @@
    ============================================================ */
 .luxury-hero__content {
   position: relative;
-  z-index: 2;
+  z-index: var(--hero-z-content);
   text-align: center;
   max-width: var(--hero-max-w);
   width: 100%;
@@ -232,6 +233,37 @@
   flex-direction: column;
   align-items: center;
   gap: 0;
+}
+
+.luxury-hero__theme-toggle {
+  position: absolute;
+  inset-block-start: 6rem;
+  inset-inline-end: 1.5rem;
+  z-index: var(--hero-z-toggle);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.75rem;
+  height: 2.75rem;
+  border: 1px solid var(--wc-surface-border);
+  border-radius: var(--wc-radius-full);
+  background: var(--wc-surface);
+  color: var(--wc-white);
+  cursor: pointer;
+  transition:
+    background var(--wc-transition-normal),
+    border-color var(--wc-transition-normal),
+    color var(--wc-transition-normal);
+}
+
+.luxury-hero__theme-toggle:hover {
+  background: var(--wc-surface-hover);
+  border-color: var(--wc-red-primary);
+}
+
+.luxury-hero__theme-toggle:focus-visible {
+  outline: 2px solid var(--wc-red-primary);
+  outline-offset: 3px;
 }
 
 /* â”€â”€ Pill Badge â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
@@ -259,7 +291,7 @@
   height: 8px;
   border-radius: 50%;
   background: var(--wc-red);
-  box-shadow: 0 0 8px rgba(196, 30, 58, 0.8);
+  box-shadow: 0 0 8px var(--wc-red-glow);
   animation: pillPulse 2s ease-in-out infinite;
   flex-shrink: 0;
 }
@@ -267,12 +299,12 @@
 @keyframes pillPulse {
   0%,
   100% {
-    box-shadow: 0 0 8px rgba(196, 30, 58, 0.8);
+    box-shadow: 0 0 8px var(--wc-red-glow);
   }
   50% {
     box-shadow:
-      0 0 16px rgba(196, 30, 58, 1),
-      0 0 32px rgba(196, 30, 58, 0.4);
+      0 0 16px var(--wc-red-primary),
+      0 0 32px var(--wc-red-glow);
   }
 }
 
@@ -367,7 +399,7 @@
 }
 
 .luxury-hero__ribbon-separator {
-  color: rgba(196, 30, 58, 0.4);
+  color: var(--wc-red-glow);
   font-weight: 300;
 }
 
@@ -377,7 +409,7 @@
 }
 
 .luxury-hero__ribbon-divider {
-  color: rgba(196, 30, 58, 0.35);
+  color: var(--wc-red-glow);
   font-size: 1.25rem;
 }
 
@@ -400,6 +432,86 @@
   margin-bottom: 2rem;
 }
 
+.luxury-hero__search-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  width: 100%;
+  max-width: 31.25rem;
+  margin-inline: auto;
+  padding: 0.875rem 2rem;
+  border: 2px solid var(--wc-surface-border);
+  border-radius: var(--wc-radius-full);
+  background: var(--wc-surface);
+  box-shadow: var(--wc-glass-shadow);
+  color: var(--wc-white);
+  font: 800 1rem var(--font-body);
+  cursor: pointer;
+  transition:
+    background var(--wc-transition-normal),
+    border-color var(--wc-transition-normal);
+}
+
+.luxury-hero__search-button:hover {
+  background: var(--wc-surface-hover);
+  border-color: var(--wc-red-primary);
+}
+
+.luxury-hero__search-button:focus-visible,
+.luxury-hero__developer:focus-visible {
+  outline: 2px solid var(--wc-red-primary);
+  outline-offset: 3px;
+}
+
+.luxury-hero__search-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.375rem;
+  border-radius: var(--wc-radius-full);
+  background: var(--wc-red-primary);
+  color: var(--wc-hero-on-accent);
+}
+
+.luxury-hero__developers {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  margin-block-start: 0.75rem;
+}
+
+.luxury-hero__developers-label {
+  display: inline-flex;
+  align-items: center;
+  margin-inline-end: 0.25rem;
+  color: var(--wc-white-60);
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+.luxury-hero__developer {
+  padding: 0.25rem 0.75rem;
+  border: 1px solid var(--wc-surface-border);
+  border-radius: var(--wc-radius-full);
+  background: var(--wc-surface);
+  color: var(--wc-white);
+  font-size: 0.75rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition:
+    background var(--wc-transition-fast),
+    border-color var(--wc-transition-fast);
+}
+
+.luxury-hero__developer:hover {
+  background: var(--wc-red-primary);
+  border-color: var(--wc-red-primary);
+  color: var(--wc-hero-on-accent);
+}
+
 /* Override HeroSearchBar internal styling for luxury theme */
 .luxury-hero__search-wrapper .hero-search-bar,
 .luxury-hero__search-wrapper [class*='search-bar'],
@@ -409,9 +521,7 @@
   backdrop-filter: blur(20px) !important;
   border: 1px solid var(--wc-surface-border) !important;
   border-radius: 12px !important;
-  box-shadow:
-    0 8px 32px rgba(0, 0, 0, 0.3),
-    inset 0 1px 0 rgba(255, 255, 255, 0.06) !important;
+  box-shadow: var(--wc-glass-shadow) !important;
 }
 
 /* â”€â”€ CTA Buttons â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
@@ -452,8 +562,8 @@
 .luxury-hero__btn--red {
   background: var(--wc-red-gradient);
   background-size: 200% auto;
-  color: #0a0a0a;
-  box-shadow: 0 4px 20px rgba(196, 30, 58, 0.3);
+  color: var(--wc-hero-on-accent);
+  box-shadow: var(--wc-shadow-luxury);
 }
 
 .luxury-hero__btn--red::before {
@@ -484,12 +594,12 @@
 .luxury-hero__btn--ghost {
   background: transparent;
   color: var(--wc-red-light);
-  border: 1px solid rgba(196, 30, 58, 0.45);
-  box-shadow: inset 0 1px 0 rgba(196, 30, 58, 0.1);
+  border: 1px solid var(--wc-red-glow);
+  box-shadow: inset 0 1px 0 var(--wc-red-subtle);
 }
 
 .luxury-hero__btn--ghost:hover {
-  background: rgba(196, 30, 58, 0.08);
+  background: var(--wc-red-subtle);
   color: var(--wc-red-light);
 }
 
@@ -576,9 +686,9 @@
   margin: 0 auto;
   background: linear-gradient(
     90deg,
-    rgba(196, 30, 58, 0.08) 0%,
-    rgba(196, 30, 58, 0.2) 50%,
-    rgba(196, 30, 58, 0.08) 100%
+    transparent 0%,
+    var(--wc-red-subtle) 50%,
+    transparent 100%
   );
   background-size: 200% 100%;
   border-radius: 4px;
@@ -617,7 +727,7 @@
   text-transform: uppercase;
   padding: 6px 14px;
   background: var(--wc-surface);
-  border: 1px solid rgba(196, 30, 58, 0.12);
+  border: 1px solid var(--wc-red-subtle);
   border-radius: 999px;
   -webkit-backdrop-filter: blur(10px);
   backdrop-filter: blur(10px);
@@ -639,7 +749,7 @@
 .luxury-hero__trust-divider {
   width: 1px;
   height: 18px;
-  background: rgba(196, 30, 58, 0.2);
+  background: var(--wc-red-subtle);
 }
 
 /* ============================================================
@@ -650,7 +760,7 @@
   bottom: 36px;
   left: 50%;
   transform: translateX(-50%);
-  z-index: 3;
+  z-index: var(--hero-z-scroll);
   display: flex;
   flex-direction: column;
   align-items: center;

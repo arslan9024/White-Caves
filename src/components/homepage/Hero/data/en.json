@@ -1,0 +1,45 @@
+{
+  "sectionLabel": "White Caves Real Estate — Dubai Luxury Properties",
+  "availabilityLabel": "Property availability",
+  "availability": "Exclusive Dubai Properties · Verified & Trusted",
+  "availabilityWithCount": "{count}+ Exclusive Properties Available",
+  "heading": ["Discover Your", "Dream Property", "in Dubai"],
+  "marketLabel": "Dubai market statistics",
+  "markets": [
+    { "name": "Dubai Marina", "price": "From AED 1.2M" },
+    { "name": "Downtown Dubai", "price": "From AED 2.5M" },
+    { "name": "Palm Jumeirah", "price": "From AED 8M" }
+  ],
+  "averagePrice": "AED {amount}M avg",
+  "tagline": "White Caves Real Estate — where Dubai's most coveted residences meet world-class expertise. Explore penthouses, villas, and off-plan investments crafted for the discerning few.",
+  "search": "Search Dubai luxury properties",
+  "searchPlaceholder": "Click to Search Dubai Luxury Properties...",
+  "developersLabel": "Top Developers:",
+  "developers": [
+    { "label": "Emaar", "query": "Emaar" },
+    { "label": "DAMAC", "query": "DAMAC" },
+    { "label": "Nakheel", "query": "Nakheel" },
+    { "label": "Meraas", "query": "Meraas" },
+    { "label": "Sobha", "query": "Sobha" },
+    { "label": "Ellington", "query": "Ellington" }
+  ],
+  "findRentals": "Find Rentals",
+  "findRentalsLabel": "Find rental properties in Dubai",
+  "browseProperties": "Browse Properties",
+  "browsePropertiesLabel": "Browse all premium Dubai properties",
+  "bookConsultation": "Book Consultation",
+  "bookConsultationLabel": "Book a consultation with our Dubai property experts",
+  "statsLabel": "Key performance statistics",
+  "stats": [
+    { "label": "Premium Properties", "sublabel": "Across Dubai Emirates" },
+    { "label": "Satisfied Clients", "sublabel": "Global Investor Network" },
+    { "label": "Years of Excellence", "sublabel": "Since 2009, Dubai" },
+    { "label": "Expert Consultants", "sublabel": "RERA Certified Agents" }
+  ],
+  "trustLabel": "Trust and certification badges",
+  "trust": ["RERA Licensed", "Verified Properties", "5-Star Rated", "24/7 Support"],
+  "scrollLabel": "Scroll down to explore features",
+  "scrollText": "Scroll to Explore",
+  "switchToLight": "Switch to light mode",
+  "switchToDark": "Switch to dark mode"
+}
