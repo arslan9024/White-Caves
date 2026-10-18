@@ -1541,6 +1541,7 @@ model HenryScannedDocument {
   referenceHash    String
   encryptedPayload String
   encryptedSource  String?
+  encryptedDriveProvenance String?
   expiryAt         DateTime?
   retentionUntil   DateTime?
   reminderDismissedAt DateTime?
@@ -1562,6 +1563,45 @@ model HenryScannedDocument {
   @@index([ownerUserId, propertyId, createdAt])
   @@index([ownerUserId, tenancyId, createdAt])
   @@index([ownerUserId, transactionId, createdAt])
+}
+
+model HenryDriveConnection {
+  id               String   @id @default(auto()) @map("_id") @db.ObjectId
+  ownerUserId      String   @unique @db.ObjectId
+  encryptedPayload String
+  updatedAt        DateTime @updatedAt
+}
+
+model HenryDriveOAuthState {
+  id               String   @id @default(auto()) @map("_id") @db.ObjectId
+  ownerUserId      String   @db.ObjectId
+  stateHash        String   @unique
+  sessionHash      String
+  encryptedPayload String
+  expiresAt        DateTime
+  claimed          Boolean  @default(false)
+  @@index([ownerUserId, expiresAt])
+}
+
+// Metadata-only inventory: never participates in the reviewed-vault checklist.
+model HenryDriveSource {
+  id               String   @id @default(auto()) @map("_id") @db.ObjectId
+  ownerUserId      String   @db.ObjectId
+  fileKey          String
+  encryptedPayload String
+  stale            Boolean  @default(true)
+  reviewedVersion  String?
+  leadId           String?  @db.ObjectId
+  propertyId       String?  @db.ObjectId
+  tenancyId        String?  @db.ObjectId
+  transactionId    String?  @db.ObjectId
+  updatedAt        DateTime @updatedAt
+  @@unique([ownerUserId, fileKey])
+  @@index([ownerUserId, updatedAt])
+  @@index([ownerUserId, leadId])
+  @@index([ownerUserId, propertyId])
+  @@index([ownerUserId, tenancyId])
+  @@index([ownerUserId, transactionId])
 }
 
 model HenryDocumentAudit {

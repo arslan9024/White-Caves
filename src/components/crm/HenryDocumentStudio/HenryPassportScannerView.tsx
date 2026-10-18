@@ -31,6 +31,8 @@ import henryPassportScannerService, {
 import HenrySharedDocumentUploader from './HenrySharedDocumentUploader';
 import { canUseScan, assessScanReadiness, scanExpiry, type VaultSaveOptions } from '../../../services/henryScanReview';
 import HenryCaseLinks from './HenryCaseLinks';
+import type { DriveImport } from '../../../services/henryDrive';
+import { useDriveScannerIntake } from './logic/useDriveScannerIntake';
 import { markFieldReviewed } from '../../../services/henryDocumentParsing';
 import { HenryExtractionEvidence } from './HenryExtractionEvidence';
 import henryTenancyContractTemplateService from '../../../services/HenryTenancyContractTemplateService';
@@ -278,7 +280,7 @@ const ActionBtn = styled.button<{ $variant?: 'primary' | 'secondary' | 'danger' 
   }}
 `;
 
-export const HenryPassportScannerView: FC = () => {
+export const HenryPassportScannerView: FC<{ importedSource?: DriveImport }> = ({ importedSource }) => {
   const [extractedData, setExtractedData] = useState<InternationalPassportExtractedData | null>(() => {
     return henryPassportScannerService.getCachedPassport();
   });
@@ -327,6 +329,8 @@ export const HenryPassportScannerView: FC = () => {
     }
   };
 
+  useDriveScannerIntake(importedSource, handleFileUpload);
+
   const handleLoadDemo = async () => {
     generation.current++;
     henryPassportScannerService.clearCachedPassport();
@@ -357,7 +361,8 @@ export const HenryPassportScannerView: FC = () => {
     saving.current = true;
     setIsSaving(true);
     const request = generation.current;
-    const result = await henryPassportScannerService.saveToDatabase(extractedData, { ...vaultOptions, sources: [uploadedFile] });
+    const result = await henryPassportScannerService.saveToDatabase(extractedData, { ...vaultOptions,
+      ...(uploadedFile === importedSource?.file ? { driveOrigin: importedSource.driveOrigin } : {}), sources: [uploadedFile] });
     saving.current = false;
     if (request === generation.current) {
       setIsSaving(false);

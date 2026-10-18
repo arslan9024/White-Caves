@@ -12,6 +12,7 @@ export interface ScanReview {
 }
 
 export interface VaultSaveOptions {
+  driveOrigin?: { proof: string };
   sources?: File[];
   leadId?: string;
   propertyId?: string;
@@ -355,6 +356,7 @@ export async function saveReviewedScan(
       tenancyId: options.tenancyId,
       transactionId: options.transactionId,
       replacesId: options.replacesId,
+      driveOrigin: options.driveOrigin,
     };
     let body: string | FormData = JSON.stringify(metadata);
     if (options.sources?.length) {

@@ -35,6 +35,8 @@ import henryTenancyContractTemplateService, {
 import HenrySharedDocumentUploader from './HenrySharedDocumentUploader';
 import { assessScanReadiness, canUseScan, type VaultSaveOptions } from '../../../services/henryScanReview';
 import HenryCaseLinks from './HenryCaseLinks';
+import type { DriveImport } from '../../../services/henryDrive';
+import { useDriveScannerIntake } from './logic/useDriveScannerIntake';
 import { markFieldReviewed } from '../../../services/henryDocumentParsing';
 import { HenryExtractionEvidence } from './HenryExtractionEvidence';
 
@@ -216,7 +218,7 @@ const ActionBtn = styled.button<{ $variant?: 'primary' | 'secondary' | 'danger' 
   }}
 `;
 
-export const HenryTenancyContractScannerView: FC = () => {
+export const HenryTenancyContractScannerView: FC<{ importedSource?: DriveImport }> = ({ importedSource }) => {
   const [scannedResult, setScannedResult] = useState<DldScannedContractResult | null>(() => {
     return henryTenancyContractScannerService.getCachedContract();
   });
@@ -271,6 +273,8 @@ export const HenryTenancyContractScannerView: FC = () => {
       if (request === generation.current) setIsScanning(false);
     }
   };
+
+  useDriveScannerIntake(importedSource, handleFileUpload);
 
   const handleLoadDemo = async () => {
     generation.current++;
@@ -334,7 +338,8 @@ export const HenryTenancyContractScannerView: FC = () => {
     saving.current = true;
     setIsSaving(true);
     const request = generation.current;
-    const result = await henryTenancyContractScannerService.saveToDatabase(scannedResult, { ...vaultOptions, sources: [uploadedFile] });
+    const result = await henryTenancyContractScannerService.saveToDatabase(scannedResult, { ...vaultOptions,
+      ...(uploadedFile === importedSource?.file ? { driveOrigin: importedSource.driveOrigin } : {}), sources: [uploadedFile] });
     saving.current = false;
     if (request === generation.current) {
       setIsSaving(false);

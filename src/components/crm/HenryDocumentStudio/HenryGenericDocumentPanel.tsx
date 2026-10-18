@@ -6,6 +6,7 @@ import { HenrySharedDocumentUploader } from './HenrySharedDocumentUploader';
 import { HenryExtractionEvidence } from './HenryExtractionEvidence';
 import HenryCaseLinks from './HenryCaseLinks';
 import { useHenryGenericDocument } from './logic/useHenryGenericDocument';
+import type { DriveImport } from '../../../services/henryDrive';
 
 const Panel = styled.section`
   background: #FFFFFF; color: #1E293B; padding: 1rem; border: 1px solid #CBD5E1;
@@ -15,8 +16,8 @@ const Panel = styled.section`
   button { cursor: pointer; }
   button:disabled { cursor: default; }
 `;
-export default function HenryGenericDocumentPanel() {
-  const state = useHenryGenericDocument();
+export default function HenryGenericDocumentPanel({ importedSource }: { importedSource?: DriveImport | null }) {
+  const state = useHenryGenericDocument(importedSource);
   const scan = state.scan;
   return <Panel aria-label="Reviewed document intake">
     <h2>Reviewed document intake</h2>

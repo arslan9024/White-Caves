@@ -37,8 +37,11 @@ import { AppError, asyncHandler } from '../middleware/errorHandler.js';
 import { activeDocumentFilter, decodeDocument, decodeSource, documentId, documentOwner, prepareDocument, prepareSource, referenceHash, maxSourceBytes, validateDocumentLinks, vaultKey, vaultOperation } from '../services/henry/documentVault.js';
 import { isGenericDocumentType } from '../shared/henryDocumentRegistry.js';
 import dossierRouter from './henry.dossiers.js';
+import driveRouter from './henry.drive.js';
+import { validateDriveProvenance } from '../services/henry/driveIndex.js';
 
 const router = Router();
+router.use('/drive', driveRouter);
 
 const mockHenryRecords: Array<Record<string, any>> = [];
 const VALID_DEPARTMENTS = ['sales', 'leasing', 'finance', 'compliance', 'legal', 'operations'] as const;
@@ -916,7 +919,8 @@ router.post('/documents/save', requireMinRole('agent'), sourceUpload.array('sour
   const sources = (req.files as Express.Multer.File[] | undefined) || [];
   if ((['passport', 'tenancy_contract'].includes(req.body.docType) || isGenericDocumentType(req.body.docType)) && !sources.length)
     throw new AppError('Original source required for archival', 400);
-  const data = { ...prepareDocument(req.body, ownerUserId), ...prepareSource(sources) };
+  const data = { ...prepareDocument(req.body, ownerUserId), ...prepareSource(sources),
+    ...await validateDriveProvenance(ownerUserId, req.body.driveOrigin, sources) };
   const links = await validateDocumentLinks(ownerUserId, req.body);
   const result = await vaultOperation('save', () => prisma.$transaction(async tx => {
     const replacesId = req.body.replacesId ? documentId(req.body.replacesId) : null;

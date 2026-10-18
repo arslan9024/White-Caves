@@ -38,6 +38,8 @@ import { HenryExtractionEvidence } from './HenryExtractionEvidence';
 import { snapshotBenchmarkValues, type BenchmarkValues } from '../../../services/henryBenchmark';
 import HenryVaultControls from './HenryVaultControls';
 import HenrySharedDocumentUploader from './HenrySharedDocumentUploader';
+import type { DriveImport } from '../../../services/henryDrive';
+import { useDriveScannerIntake } from './logic/useDriveScannerIntake';
 
 const ViewContainer = styled.div`
   display: flex;
@@ -262,7 +264,7 @@ const ActionBtn = styled.button<{ $variant?: 'primary' | 'secondary' | 'danger' 
   }}
 `;
 
-export const HenryTitleDeedScannerView: FC = () => {
+export const HenryTitleDeedScannerView: FC<{ importedSource?: DriveImport }> = ({ importedSource }) => {
   const scanGeneration = useRef(0);
   const [uploaderReset, setUploaderReset] = useState(0);
   const [archiveReset, setArchiveReset] = useState(0);
@@ -325,6 +327,8 @@ export const HenryTitleDeedScannerView: FC = () => {
     }
   };
 
+  useDriveScannerIntake(importedSource, handleFileUpload);
+
   const handleLoadDemo = async () => {
     setVaultOptions({});
     setArchiveReset(previous => previous + 1);
@@ -373,6 +377,7 @@ export const HenryTitleDeedScannerView: FC = () => {
     }
     const result = await henryTitleDeedScannerService.saveToDatabase(extractedData, {
       ...vaultOptions,
+      ...(uploadedFile === importedSource?.file ? { driveOrigin: importedSource.driveOrigin } : {}),
       sources: [uploadedFile],
     });
     if (generation !== scanGeneration.current) return;

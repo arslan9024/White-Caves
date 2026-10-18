@@ -21,6 +21,21 @@ beforeEach(() => {
 afterEach(() => { cleanup(); vi.restoreAllMocks(); vi.unstubAllGlobals(); scanner.clearCachedPassport(); });
 
 describe('HenryPassportScannerView', () => {
+  it('processes an explicitly selected Drive original through the existing scanner and preserves provenance only for that exact File', async () => {
+    vi.spyOn(extractor, 'extractDocumentText').mockResolvedValue({ ocrText: sourceText, streamText: '' });
+    vi.mocked(authFetch).mockResolvedValue(new Response(JSON.stringify({ success: true, data: { id: 'a'.repeat(24) } })));
+    const original = file();
+    render(<HenryPassportScannerView importedSource={{ file: original, sourceId: 'a'.repeat(24), driveOrigin: { proof: 'synthetic-drive-proof' } }} />);
+    await screen.findByDisplayValue('TEST TRAVELER');
+    const save = screen.getByRole('button', { name: /Save to KYC Vault/ });
+    expect(save).toBeDisabled();
+    fireEvent.click(screen.getByLabelText(/I reviewed all extracted values/));
+    fireEvent.click(save);
+    await screen.findByText(/Reviewed passport and original saved/);
+    const form = vi.mocked(authFetch).mock.calls.at(-1)![1]!.body as FormData;
+    expect(form.get('source')).toBe(original);
+    expect(JSON.parse(String(form.get('metadata'))).driveOrigin).toEqual({ proof: 'synthetic-drive-proof' });
+  });
   it('renders international passport live OCR extraction studio', () => {
     render(<HenryPassportScannerView />);
 

@@ -28,6 +28,23 @@ beforeEach(() => {
 afterEach(() => { cleanup(); vi.restoreAllMocks(); vi.unstubAllGlobals(); });
 
 describe('Henry integrated generic document review', () => {
+  it('runs a selected Drive File through the real intake and submits server-validated provenance, never reusing it for a manual replacement', async () => {
+    vi.spyOn(extractor, 'extractDocumentText').mockResolvedValue({ ocrText: text('receipt'), streamText: '' });
+    const file = original();
+    render(<HenryGenericDocumentPanel importedSource={{ file, sourceId: 'a'.repeat(24), driveOrigin: { proof: 'synthetic-drive-proof' } }} />);
+    await screen.findByLabelText('Document category');
+    select('receipt'); confirm(); fireEvent.click(save());
+    await screen.findByText(/Reviewed document and immutable original saved/);
+    const calls = () => vi.mocked(authFetch).mock.calls.filter(([url]) => String(url).endsWith('/documents/save'));
+    const form = calls()[0][1]!.body as FormData;
+    expect(form.get('source')).toBe(file);
+    expect(JSON.parse(String(form.get('metadata'))).driveOrigin).toEqual({ proof: 'synthetic-drive-proof' });
+    upload(original());
+    await screen.findByLabelText('Document category');
+    select('receipt'); confirm(); fireEvent.click(save());
+    await waitFor(() => expect(calls()).toHaveLength(2));
+    expect(JSON.parse(String((calls()[1][1]!.body as FormData).get('metadata')))).not.toHaveProperty('driveOrigin');
+  });
   it.each(genericDocumentTypes)('requires explicit %s choice and renders exactly its supported fields', async type => {
     vi.spyOn(extractor, 'extractDocumentText').mockResolvedValue({ ocrText: text(type), streamText: '' });
     render(<HenryGenericDocumentPanel />);

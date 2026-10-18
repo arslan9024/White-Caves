@@ -4,6 +4,7 @@ import { dossierQuestions, type DossierKind, type DossierRow } from '../../../se
 import HenryCrmLinkSelector from './HenryCrmLinkSelector';
 import { useHenryDossier } from './logic/useHenryDossier';
 import { signatureDocumentTypes } from '../../../../server/shared/henryDocumentRegistry';
+import HenryDriveDossier from './HenryDriveDossier';
 
 const Panel = styled.section`
   padding: 1rem; background: #FFFFFF; color: #1E293B; border: 1px solid #1E293B;
@@ -83,6 +84,7 @@ function DossierContents({ kind, id }: { kind: DossierKind; id: string }) {
         <button type="button" onClick={() => void state.attach()}>Confirm link to selected dossier</button>
       </p>}
     </fieldset>
+    <HenryDriveDossier key={`${kind}:${id}`} kind={kind} id={id} />
   </>;
 }
 export default function HenryDossierPanel() {

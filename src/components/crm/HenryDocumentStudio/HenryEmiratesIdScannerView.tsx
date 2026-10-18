@@ -58,6 +58,8 @@ import { HenryExtractionEvidence } from './HenryExtractionEvidence';
 import { snapshotBenchmarkValues, type BenchmarkValues } from '../../../services/henryBenchmark';
 import HenryVaultControls from './HenryVaultControls';
 import HenrySharedDocumentUploader from './HenrySharedDocumentUploader';
+import type { DriveImport } from '../../../services/henryDrive';
+import { useDriveScannerIntake } from './logic/useDriveScannerIntake';
 
 const StudioContainer = styled.div`
   display: flex;
@@ -345,7 +347,7 @@ const ZoomBtn = styled.button`
   }
 `;
 
-export const HenryEmiratesIdScannerView: FC = () => {
+export const HenryEmiratesIdScannerView: FC<{ importedSource?: DriveImport }> = ({ importedSource }) => {
   const scanGeneration = useRef(0);
   const [uploaderReset, setUploaderReset] = useState(0);
   const [archiveReset, setArchiveReset] = useState(0);
@@ -423,6 +425,8 @@ export const HenryEmiratesIdScannerView: FC = () => {
     }
   };
 
+  useDriveScannerIntake(importedSource, handleFileUpload);
+
   const handleLoadDemo = () => {
     setVaultOptions({});
     setArchiveReset(previous => previous + 1);
@@ -469,6 +473,7 @@ export const HenryEmiratesIdScannerView: FC = () => {
     }
     const result = await henryEmiratesIdScannerService.saveToDatabase(extractedData, {
       ...vaultOptions,
+      ...(importedSource && sources.includes(importedSource.file) ? { driveOrigin: importedSource.driveOrigin } : {}),
       sources,
     });
     if (generation !== scanGeneration.current) return;
