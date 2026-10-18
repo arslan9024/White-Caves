@@ -5,6 +5,7 @@ import henryTenancyContractScannerService from '../../../services/HenryTenancyCo
 import henryTitleDeedScannerService from '../../../services/HenryTitleDeedScannerService';
 import henryEmiratesIdScannerService from '../../../services/HenryEmiratesIdScannerService';
 import henryPassportScannerService from '../../../services/HenryPassportScannerService';
+import { canUseScan } from '../../../services/henryScanReview';
 
 interface StepRendererProps {
   step: JourneyStep;
@@ -53,6 +54,7 @@ export const StepRenderer: React.FC<StepRendererProps> = ({
       const fileNameLower = file.name.toLowerCase();
       if (fileNameLower.includes('deed') || fileNameLower.includes('oqood') || fileNameLower.includes('title')) {
         const deedData = await henryTitleDeedScannerService.scanTitleDeed(file);
+        if (!canUseScan(deedData)) { setUploadStatus('Review this source in the Title Deed scanner first. No fields were applied.'); return; }
         onUpdateData({
           propertyName: deedData.buildingNameEn || data.propertyName,
           community: deedData.communityEn ? `${deedData.communityEn}, Dubai` : data.community,
@@ -66,6 +68,7 @@ export const StepRenderer: React.FC<StepRendererProps> = ({
         setUploadStatus(`✓ Scanned "${file.name}": Extracted Title Deed (${deedData.buildingNameEn} #${deedData.propertyNumber}) & Owner! Information updated.`);
       } else if (fileNameLower.includes('tenant') && (fileNameLower.includes('eid') || fileNameLower.includes('emirates'))) {
         const eidData = await henryEmiratesIdScannerService.scanEmiratesId(file);
+        if (!canUseScan(eidData)) { setUploadStatus('Review this source in the Emirates ID scanner first. No fields were applied.'); return; }
         onUpdateData({
           tenantName: eidData.fullNameEn || data.tenantName,
           tenantEmiratesId: eidData.idNumber || data.tenantEmiratesId,
@@ -74,6 +77,7 @@ export const StepRenderer: React.FC<StepRendererProps> = ({
         setUploadStatus(`✓ Scanned "${file.name}": Extracted Tenant Emirates ID (${eidData.fullNameEn})!`);
       } else if (fileNameLower.includes('passport')) {
         const passportData = await henryPassportScannerService.scanPassport(file);
+        if (!canUseScan(passportData)) { setUploadStatus('Review this source in the Passport scanner first. No fields were applied.'); return; }
         onUpdateData({
           tenantName: passportData.fullName || data.tenantName,
           tenantPassportNo: passportData.passportNumber || data.tenantPassportNo,
@@ -83,6 +87,7 @@ export const StepRenderer: React.FC<StepRendererProps> = ({
       } else {
         // Full Tenancy Contract Scan
         const scannedContract = await henryTenancyContractScannerService.scanContract(file);
+        if (!canUseScan(scannedContract)) { setUploadStatus('Select and review the document in its dedicated Henry scanner first. No fields were applied.'); return; }
         onUpdateData({
           propertyName: scannedContract.property.buildingName || data.propertyName,
           community: scannedContract.property.location || data.community,

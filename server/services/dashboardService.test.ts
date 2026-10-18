@@ -1,7 +1,7 @@
 /**
  * Dashboard Service — Tests
  * Tests all 6 service methods for correct return structure.
- * Service currently returns stub data — tests validate contract shapes.
+ * Validates disconnected defaults and mocked connected query/failure behavior.
  */
 
 import { describe, it, expect, vi, beforeEach } from 'vitest';
@@ -12,6 +12,10 @@ vi.mock('../database', () => ({
 }));
 
 import DashboardService from './dashboardService.js';
+import mongoose from 'mongoose';
+import Lead from '../models/Lead.js';
+import Property from '../models/Property.js';
+import Transaction from '../models/Transaction.js';
 
 describe('DashboardService', () => {
   let service: DashboardService;
@@ -22,6 +26,34 @@ describe('DashboardService', () => {
 
   // ─── getDashboardData ─────────────────────────────────────────────
   describe('getDashboardData', () => {
+    it.each([false, true])('awaits Mongoose query thenables with failure=%s', async failure => {
+      const leads = Lead.countDocuments();
+      const properties = Property.countDocuments();
+      const transactions = Transaction.countDocuments();
+      const revenue = Transaction.aggregate<{ total: number }>([]);
+      vi.spyOn(leads, 'exec').mockResolvedValue(7);
+      vi.spyOn(properties, 'exec').mockResolvedValue(3);
+      vi.spyOn(transactions, 'exec').mockResolvedValue(2);
+      if (failure) vi.spyOn(revenue, 'exec').mockRejectedValue(new Error('Synthetic query failure'));
+      else vi.spyOn(revenue, 'exec').mockResolvedValue([{ total: 1200 }]);
+      vi.spyOn(Lead, 'countDocuments').mockReturnValue(leads);
+      vi.spyOn(Property, 'countDocuments').mockReturnValue(properties);
+      vi.spyOn(Transaction, 'countDocuments').mockReturnValue(transactions);
+      vi.spyOn(Transaction, 'aggregate').mockReturnValue(revenue);
+      const originalState = mongoose.connection.readyState;
+      mongoose.connection.readyState = 1;
+      try {
+        const { summary } = await service.getDashboardData();
+        expect(summary).toEqual({
+          totalLeads: 7, activeLeads: 7, totalProperties: 3, totalTransactions: 2,
+          monthlyRevenue: failure ? 0 : 1200,
+        });
+      } finally {
+        mongoose.connection.readyState = originalState;
+        vi.restoreAllMocks();
+      }
+    });
+
     it('returns a summary object', async () => {
       const result = await service.getDashboardData();
       expect(result).toHaveProperty('summary');

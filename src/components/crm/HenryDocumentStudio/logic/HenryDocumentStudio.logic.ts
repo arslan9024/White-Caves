@@ -36,6 +36,8 @@ import henryTenancyContractScannerService, {
   SANIT_SINGH_CAMELIA_608_SAMPLE,
 } from '../../../../services/HenryTenancyContractScannerService';
 import henryTenancyContractTemplateService from '../../../../services/HenryTenancyContractTemplateService';
+import { canUseScan, ScanReview } from '../../../../services/henryScanReview';
+import logger from '../../../../utils/logger';
 
 export function useHenryDocumentStudioLogic() {
   const [selectedTemplateId, setSelectedTemplateId] = useState<DocumentTemplateOption['id']>('passport_scanner');
@@ -59,41 +61,66 @@ export function useHenryDocumentStudioLogic() {
 
   const [zoomLevel, setZoomLevel] = useState<number>(100);
   const [annotations, setAnnotations] = useState<PdfAnnotation[]>([]);
-  const [shareLinkCopied, setShareLinkCopied] = useState<boolean>(false);
 
   const [compiledHtml, setCompiledHtml] = useState<string>('');
+  const requireReview = (data: object): boolean => {
+    if (canUseScan(data as ScanReview)) return true;
+    setActionSuccessMessage('Review required. Benchmark or unconfirmed data cannot autofill or create records.');
+    return false;
+  };
+  useEffect(() => {
+    const eid = henryEmiratesIdScannerService.onEmiratesIdUpdated(data => setEidData(data || DEFAULT_EID_DATA));
+    const deed = henryTitleDeedScannerService.onTitleDeedUpdated(data => setTitleDeedData(data || DEFAULT_TITLE_DEED_DATA));
+    return () => {
+      eid(); deed();
+      henryEmiratesIdScannerService.clearCachedEmiratesId();
+      henryTitleDeedScannerService.clearCachedTitleDeed();
+      henryPassportScannerService.clearCachedPassport();
+      henryTenancyContractScannerService.clearCachedContract();
+      henryTenancyContractTemplateService.clearSession();
+    };
+  }, []);
 
   useEffect(() => {
+    let active = true;
+    setCompiledHtml('');
     const generateHtml = async () => {
-      let result: string | Promise<string>;
-      switch (selectedTemplateId) {
-        case 'tenancy_contract_esign':
-          result = henryPdfEngineService.generateTenancyContractHtml(tenancyPayload, annotations);
-          break;
-        case 'government_ejari_vault':
-          result = henryPdfEngineService.generateGovernmentEjariArchiveHtml(ejariRecord);
-          break;
-        case 'viewing_form_autofill':
-          result = henryPdfEngineService.generateViewingFormHtml(viewingPayload);
-          break;
-        case 'tenant_service_receipt':
-          result = henryPdfEngineService.generateTaxReceiptHtml(tenantReceiptPayload);
-          break;
-        case 'landlord_mgmt_invoice':
-          result = henryPdfEngineService.generateTaxReceiptHtml(landlordInvoicePayload);
-          break;
-        case 'emirates_id_scanner':
-        case 'title_deed_scanner':
-        case 'passport_scanner':
-        case 'tenancy_contract_scanner':
-          result = ''; // Handled by custom interactive React inspector views
-          break;
-        default:
-          result = henryPdfEngineService.generateTenancyContractHtml(tenancyPayload, annotations);
+      try {
+        let result: string | Promise<string>;
+        switch (selectedTemplateId) {
+          case 'tenancy_contract_esign':
+            result = henryPdfEngineService.generateTenancyContractHtml(tenancyPayload, annotations);
+            break;
+          case 'government_ejari_vault':
+            result = henryPdfEngineService.generateGovernmentEjariArchiveHtml(ejariRecord);
+            break;
+          case 'viewing_form_autofill':
+            result = henryPdfEngineService.generateViewingFormHtml(viewingPayload);
+            break;
+          case 'tenant_service_receipt':
+            result = henryPdfEngineService.generateTaxReceiptHtml(tenantReceiptPayload);
+            break;
+          case 'landlord_mgmt_invoice':
+            result = henryPdfEngineService.generateTaxReceiptHtml(landlordInvoicePayload);
+            break;
+          case 'emirates_id_scanner':
+          case 'title_deed_scanner':
+          case 'passport_scanner':
+          case 'tenancy_contract_scanner':
+            result = ''; // Handled by custom interactive React inspector views
+            break;
+          default:
+            result = henryPdfEngineService.generateTenancyContractHtml(tenancyPayload, annotations);
+        }
+        const html = await result;
+        if (active) setCompiledHtml(html);
+      } catch {
+        logger.error('Henry document preview generation failed', { templateId: selectedTemplateId });
+        if (active) setActionSuccessMessage('Document preview failed. Retry before printing or exporting.');
       }
-      setCompiledHtml(await result);
     };
-    generateHtml();
+    void generateHtml();
+    return () => { active = false; };
   }, [selectedTemplateId, tenancyPayload, ejariRecord, viewingPayload, tenantReceiptPayload, landlordInvoicePayload, annotations]);
 
   const handlePrint = useCallback(() => {
@@ -111,21 +138,17 @@ export function useHenryDocumentStudioLogic() {
   }, []);
 
   const handleCopyEsignLink = useCallback(() => {
-    const link = `https://whitecaves.ae/sign/${tenancyPayload.esignToken || 'token_sec_dxb_98442_sign'}`;
-    if (navigator && navigator.clipboard) {
-      navigator.clipboard.writeText(link);
-    }
-    setShareLinkCopied(true);
-    setTimeout(() => setShareLinkCopied(false), 3000);
-  }, [tenancyPayload]);
+    setActionSuccessMessage('E-signature sharing is unavailable. No link was generated, copied or sent.');
+  }, []);
 
   const handleTriggerAiAutoFill = useCallback(() => {
+    if (!requireReview(eidData)) return;
     setViewingPayload((prev) => ({
       ...prev,
-      clientName: eidData.fullNameEn || 'Alexander Wright',
-      clientPassportOrEid: eidData.idNumber || '784-1990-7654321-2',
+      clientName: eidData.fullNameEn,
+      clientPassportOrEid: eidData.idNumber,
       viewingTime: '18:00 PM',
-      feedbackNotes: `AI AUTO-FILLED from Emirates ID (${eidData.idNumber}): Client verified with ${eidData.employerEn}.`,
+      feedbackNotes: 'Auto-filled from user-reviewed fields; authenticity not verified.',
     }));
   }, [eidData]);
 
@@ -136,7 +159,7 @@ export function useHenryDocumentStudioLogic() {
     try {
       const result = await henryEmiratesIdScannerService.scanEmiratesId(file || 'sample');
       setEidData(result);
-      setActionSuccessMessage('Emirates ID successfully scanned! 18 fields extracted & verified.');
+      setActionSuccessMessage(file ? 'Emirates ID extraction candidates ready for source review; not identity verification.' : 'Emirates ID demo preview only; no uploaded document was scanned or verified.');
       setTimeout(() => setActionSuccessMessage(null), 4000);
     } finally {
       setIsScanning(false);
@@ -150,7 +173,7 @@ export function useHenryDocumentStudioLogic() {
     try {
       const result = await henryTitleDeedScannerService.scanTitleDeed(file || 'sample');
       setTitleDeedData(result);
-      setActionSuccessMessage('DLD Title Deed successfully scanned! 22+ fields extracted & verified.');
+      setActionSuccessMessage(file ? 'Title deed extraction candidates ready for source review; not ownership verification.' : 'Title deed demo preview only; no uploaded document was scanned or verified.');
       setTimeout(() => setActionSuccessMessage(null), 4000);
     } finally {
       setIsScanning(false);
@@ -164,7 +187,7 @@ export function useHenryDocumentStudioLogic() {
     try {
       const result = await henryPassportScannerService.scanPassport(file || 'sample');
       setPassportData(result);
-      setActionSuccessMessage('International Passport successfully scanned! 16+ fields & TD3 MRZ verified.');
+      setActionSuccessMessage(file ? 'Passport extraction candidates ready for source review; MRZ checks are not authenticity verification.' : 'Passport demo preview only; no uploaded document was scanned or verified.');
       setTimeout(() => setActionSuccessMessage(null), 4000);
     } finally {
       setIsScanning(false);
@@ -173,6 +196,7 @@ export function useHenryDocumentStudioLogic() {
 
   // 1-Click Auto-Fill Tenancy Lease as Tenant (Emirates ID)
   const handleAutoFillAsTenant = useCallback(() => {
+    if (!requireReview(eidData)) return;
     setTenancyPayload((prev) => ({
       ...prev,
       tenant: henryEmiratesIdScannerService.toContractParty(eidData, prev.tenant.phone, prev.tenant.email),
@@ -184,6 +208,7 @@ export function useHenryDocumentStudioLogic() {
 
   // 1-Click Auto-Fill Tenancy Lease as Landlord (Emirates ID)
   const handleAutoFillAsLandlord = useCallback(() => {
+    if (!requireReview(eidData)) return;
     setTenancyPayload((prev) => ({
       ...prev,
       landlord: henryEmiratesIdScannerService.toContractParty(eidData, prev.landlord.phone, prev.landlord.email),
@@ -195,6 +220,7 @@ export function useHenryDocumentStudioLogic() {
 
   // 1-Click Auto-Fill Tenancy Lease from Title Deed (Property & Landlord)
   const handleAutoFillTenancyFromTitleDeed = useCallback(() => {
+    if (!requireReview(titleDeedData)) return;
     setTenancyPayload((prev) => henryTitleDeedScannerService.toTenancyContractPayload(titleDeedData, prev));
     setSelectedTemplateId('tenancy_contract_esign');
     setActionSuccessMessage(`Tenancy Lease updated with ${titleDeedData.buildingNameEn} Unit ${titleDeedData.propertyNumber} and Landlord ${titleDeedData.ownerNameEn}!`);
@@ -203,6 +229,7 @@ export function useHenryDocumentStudioLogic() {
 
   // 1-Click Auto-Fill Tenancy Lease as Non-Resident Tenant (Passport)
   const handleAutoFillTenancyAsPassportTenant = useCallback(() => {
+    if (!requireReview(passportData)) return;
     setTenancyPayload((prev) => ({
       ...prev,
       tenant: henryPassportScannerService.toContractParty(passportData, prev.tenant.phone, prev.tenant.email),
@@ -214,6 +241,7 @@ export function useHenryDocumentStudioLogic() {
 
   // 1-Click Auto-Fill Tenancy Lease as Non-Resident Landlord (Passport)
   const handleAutoFillTenancyAsPassportLandlord = useCallback(() => {
+    if (!requireReview(passportData)) return;
     setTenancyPayload((prev) => ({
       ...prev,
       landlord: henryPassportScannerService.toContractParty(passportData, prev.landlord.phone, prev.landlord.email),
@@ -225,6 +253,7 @@ export function useHenryDocumentStudioLogic() {
 
   // 1-Click Auto-Fill Form B Viewing Register from Passport
   const handleAutoFillViewingFromPassport = useCallback(() => {
+    if (!requireReview(passportData)) return;
     setViewingPayload((prev) => ({
       ...prev,
       clientName: passportData.fullName,
@@ -237,6 +266,7 @@ export function useHenryDocumentStudioLogic() {
 
   // 1-Click Auto-Fill Form B Viewing Register
   const handleAutoFillViewingForm = useCallback(() => {
+    if (!requireReview(eidData)) return;
     setViewingPayload((prev) => ({
       ...prev,
       clientName: eidData.fullNameEn,
@@ -247,51 +277,49 @@ export function useHenryDocumentStudioLogic() {
     setTimeout(() => setActionSuccessMessage(null), 4000);
   }, [eidData]);
 
-  // Export JSON Variables to Clipboard
-  const handleCopyJsonVariables = useCallback(() => {
-    const jsonStr = henryEmiratesIdScannerService.exportToJsonString(eidData);
-    if (navigator && navigator.clipboard) {
-      navigator.clipboard.writeText(jsonStr);
+  const copyVariables = useCallback(async (json: string) => {
+    try {
+      if (!navigator.clipboard) throw new Error('Clipboard unavailable');
+      await navigator.clipboard.writeText(json);
+      setActionSuccessMessage('Current fields copied as JSON. Demo and missing values are not verified facts.');
+    } catch {
+      logger.error('Henry variable clipboard export failed');
+      setActionSuccessMessage('Clipboard export failed. No copy success is confirmed.');
     }
-    setActionSuccessMessage('All 18 Emirates ID variables copied to clipboard as JSON!');
-    setTimeout(() => setActionSuccessMessage(null), 4000);
-  }, [eidData]);
+  }, []);
+
+  const handleCopyJsonVariables = useCallback(() => {
+    void copyVariables(henryEmiratesIdScannerService.exportToJsonString(eidData));
+  }, [eidData, copyVariables]);
 
   // Export Title Deed JSON Variables to Clipboard
   const handleCopyTitleDeedJsonVariables = useCallback(() => {
-    const jsonStr = henryTitleDeedScannerService.exportToJsonString(titleDeedData);
-    if (navigator && navigator.clipboard) {
-      navigator.clipboard.writeText(jsonStr);
-    }
-    setActionSuccessMessage('All 22 DLD Title Deed variables copied to clipboard as JSON!');
-    setTimeout(() => setActionSuccessMessage(null), 4000);
-  }, [titleDeedData]);
+    void copyVariables(henryTitleDeedScannerService.exportToJsonString(titleDeedData));
+  }, [titleDeedData, copyVariables]);
 
   // Export Passport JSON Variables to Clipboard
   const handleCopyPassportJsonVariables = useCallback(() => {
-    const jsonStr = henryPassportScannerService.exportToJsonString(passportData);
-    if (navigator && navigator.clipboard) {
-      navigator.clipboard.writeText(jsonStr);
-    }
-    setActionSuccessMessage('All 16+ Passport variables copied to clipboard as JSON!');
-    setTimeout(() => setActionSuccessMessage(null), 4000);
-  }, [passportData]);
+    void copyVariables(henryPassportScannerService.exportToJsonString(passportData));
+  }, [passportData, copyVariables]);
 
   // Create CRM Property Listing from Title Deed
   const handleCreateCrmListing = useCallback(() => {
-    setActionSuccessMessage(`Created CRM Inventory Listing for ${titleDeedData.buildingNameEn} Unit ${titleDeedData.propertyNumber}!`);
+    if (!requireReview(titleDeedData)) return;
+    setActionSuccessMessage('CRM creation is unavailable here. Link an existing approved property in the archive controls.');
     setTimeout(() => setActionSuccessMessage(null), 4000);
   }, [titleDeedData]);
 
   // Auto-Fill Form A Seller Mandate from Title Deed
   const handleAutoFillFormA = useCallback(() => {
-    setActionSuccessMessage(`Form A Seller Mandate auto-filled for ${titleDeedData.ownerNameEn}!`);
+    if (!requireReview(titleDeedData)) return;
+    setActionSuccessMessage('Form A generation is not available in this scanner.');
     setTimeout(() => setActionSuccessMessage(null), 4000);
   }, [titleDeedData]);
 
   // Create goAML KYC Screening Record from Passport
   const handleCreateAmlKycRecord = useCallback(() => {
-    setActionSuccessMessage(`goAML KYC screening record generated for ${passportData.fullName} (CNIC: ${passportData.nationalIdentityNumber})!`);
+    if (!requireReview(passportData)) return;
+    setActionSuccessMessage('goAML record creation is not available in this scanner.');
     setTimeout(() => setActionSuccessMessage(null), 4000);
   }, [passportData]);
 
@@ -306,12 +334,7 @@ export function useHenryDocumentStudioLogic() {
     try {
       const scanned = await henryTenancyContractScannerService.scanContract(preset);
       setScannedContractData(scanned);
-      henryTenancyContractScannerService.teachFromScannedContract(scanned);
-      if (scanned.isFilled) {
-        setActionSuccessMessage(`Tenancy Contract scanned: FILLED & EXECUTED (${scanned.fillScorePercent}% Score — ${scanned.landlord.name} & ${scanned.tenant.name})!`);
-      } else {
-        setActionSuccessMessage('Tenancy Contract scanned: BLANK REUSABLE TEMPLATE (0% Filled).');
-      }
+      setActionSuccessMessage('Tenancy contract demo preview only. Field coverage does not verify execution or signatures; no model was trained.');
     } catch {
       setActionSuccessMessage('Error scanning Tenancy Contract.');
     } finally {
@@ -322,6 +345,7 @@ export function useHenryDocumentStudioLogic() {
 
   // 1-Click Load into Preparation Studio
   const handleLoadContractIntoPreparationStudio = useCallback(() => {
+    if (!requireReview(scannedContractData)) return;
     const dldData = henryTenancyContractScannerService.toDldTenancyContractData(scannedContractData);
     henryTenancyContractTemplateService.saveDraft(dldData as any);
     setIsTenancyModalOpen(true);
@@ -331,25 +355,22 @@ export function useHenryDocumentStudioLogic() {
 
   // 1-Click Create CRM Landlord Profile
   const handleCreateCrmLandlordFromContract = useCallback(() => {
-    setActionSuccessMessage(`Created CRM Landlord profile for ${scannedContractData.landlord.name} (${scannedContractData.landlord.phone})!`);
+    if (!requireReview(scannedContractData)) return;
+    setActionSuccessMessage('CRM profile creation is not available in this scanner.');
     setTimeout(() => setActionSuccessMessage(null), 4000);
   }, [scannedContractData]);
 
   // 1-Click Create CRM Tenant Profile
   const handleCreateCrmTenantFromContract = useCallback(() => {
-    setActionSuccessMessage(`Created CRM Tenant profile for ${scannedContractData.tenant.name} (${scannedContractData.tenant.phone})!`);
+    if (!requireReview(scannedContractData)) return;
+    setActionSuccessMessage('CRM profile creation is not available in this scanner.');
     setTimeout(() => setActionSuccessMessage(null), 4000);
   }, [scannedContractData]);
 
   // 1-Click Copy Contract Variables JSON
   const handleCopyContractJsonVariables = useCallback(() => {
-    const jsonStr = henryTenancyContractScannerService.exportToJsonString(scannedContractData);
-    if (navigator && navigator.clipboard) {
-      navigator.clipboard.writeText(jsonStr);
-    }
-    setActionSuccessMessage('All Tenancy Contract variables exported to clipboard as JSON!');
-    setTimeout(() => setActionSuccessMessage(null), 4000);
-  }, [scannedContractData]);
+    void copyVariables(henryTenancyContractScannerService.exportToJsonString(scannedContractData));
+  }, [scannedContractData, copyVariables]);
 
   return {
     templates: DOCUMENT_TEMPLATES,
@@ -369,7 +390,6 @@ export function useHenryDocumentStudioLogic() {
     actionSuccessMessage,
     compiledHtml,
     zoomLevel,
-    shareLinkCopied,
     isTenancyModalOpen,
     handleOpenTenancyModal,
     handleCloseTenancyModal,

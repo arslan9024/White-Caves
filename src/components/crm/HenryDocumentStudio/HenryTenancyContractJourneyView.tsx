@@ -7,6 +7,7 @@
  */
 
 import React, { FC, useState, useMemo, useEffect } from 'react';
+import { canUseScan } from '../../../services/henryScanReview';
 import styled from 'styled-components';
 import {
   FileText,
@@ -331,6 +332,7 @@ export const HenryTenancyContractJourneyView: FC = () => {
     setStatusMsg(`Scanning Landlord Document "${file.name}"...`);
     try {
       const passportData = await henryPassportScannerService.scanPassport(file);
+      if (!canUseScan(passportData)) { setStatusMsg('Review the uploaded source in the Passport scanner, then apply it as landlord. No fields were applied.'); return; }
       setContractData(prev => {
         const next = henryTenancyContractTemplateService.populateFromPassport(prev, passportData, 'landlord');
         henryTenancyContractTemplateService.saveDraft(next);
@@ -371,6 +373,7 @@ export const HenryTenancyContractJourneyView: FC = () => {
     setStatusMsg(`Scanning Tenant Passport "${file.name}"...`);
     try {
       const passportData = await henryPassportScannerService.scanPassport(file);
+      if (!canUseScan(passportData)) { setStatusMsg('Review the uploaded source in the Passport scanner, then apply it as tenant. No fields were applied.'); return; }
       setContractData(prev => {
         const next = henryTenancyContractTemplateService.populateFromPassport(prev, passportData, 'tenant');
         henryTenancyContractTemplateService.saveDraft(next);
@@ -385,10 +388,9 @@ export const HenryTenancyContractJourneyView: FC = () => {
     }
   };
 
-  // Save Draft to Vault
-  const handleSaveToVault = () => {
+  const handleSaveForSession = () => {
     henryTenancyContractTemplateService.saveContract(contractData);
-    setStatusMsg(`✓ Contract ${contractData.contractId} saved to White Caves Vault!`);
+    setStatusMsg(`Contract ${contractData.contractId} kept for this session only. Not saved to the encrypted vault; it will be lost on reload.`);
     setTimeout(() => setStatusMsg(null), 4000);
   };
 
@@ -532,7 +534,7 @@ export const HenryTenancyContractJourneyView: FC = () => {
 
               <HenrySharedDocumentUploader
                 docType="title_deed"
-                title="1. Upload Official DLD Title Deed / Oqood"
+                title="1. Upload Title Deed for Source Review"
                 subtitle="Scans and extracts Building Name, Unit Number, Plot, Makani, DEWA Premise & Area"
                 onFileUpload={handleUploadTitleDeed}
                 onSampleLoad={() => {
@@ -581,7 +583,7 @@ export const HenryTenancyContractJourneyView: FC = () => {
 
               <FormCard>
                 <h4 style={{ margin: 0, fontSize: '0.9rem', fontWeight: 800, color: 'var(--color-1e293b, #1E293B)' }}>
-                  Property & Landlord Verified Data
+                  Property & Landlord — User-Reviewed Fields
                 </h4>
                 <FormGrid $cols={3}>
                   <FormGroup>
@@ -915,7 +917,7 @@ export const HenryTenancyContractJourneyView: FC = () => {
           {activeStage === 4 && (
             <FormCard>
               <h4 style={{ margin: 0, fontSize: '0.95rem', fontWeight: 800, color: 'var(--color-1e293b, #1E293B)' }}>
-                Stage 4: Endorsement Signatures & Vault Persistence
+                Stage 4: Endorsement Signatures & Session Draft
               </h4>
 
               <FormGrid $cols={2}>
@@ -949,8 +951,8 @@ export const HenryTenancyContractJourneyView: FC = () => {
                 <PrimaryBtn $variant="secondary" onClick={handlePrintPdf} style={{ flex: 1 }}>
                   <Printer size={14} /> Print / Save PDF
                 </PrimaryBtn>
-                <PrimaryBtn $variant="primary" onClick={handleSaveToVault} style={{ flex: 1 }}>
-                  <Save size={14} /> Save to Henry Vault
+                <PrimaryBtn $variant="primary" onClick={handleSaveForSession} style={{ flex: 1 }}>
+                  <Save size={14} /> Keep for this session only
                 </PrimaryBtn>
               </div>
 

@@ -55,25 +55,31 @@ describe('HenryTenancyContractModal — Interactive Split-Pane DLD Preparation W
     expect(screen.getByText(/Stage 6: Final Review & Document Export/i)).toBeDefined();
   });
 
-  it('loads Camelia 608 and Janusia XH2858B benchmark samples on button clicks', () => {
-    render(<HenryTenancyContractModal isOpen={true} onClose={mockOnClose} />);
+  it('never replaces manually entered contract fields with benchmark samples and resets explicitly', () => {
+    render(<HenryTenancyContractModal isOpen={true} onClose={mockOnClose}
+      initialData={{ buildingName: 'SYNTHETIC BUILDING', propertyNo: 'TEST-42' }} />);
 
     // Click Camelia 608 Sample
     const cameliaBtn = screen.getByTitle(/Load benchmark sample: Camelia 608/i);
     fireEvent.click(cameliaBtn);
-    expect(screen.getByDisplayValue(/CAMELIA/i)).toBeDefined();
-    expect(screen.getByDisplayValue(/608/i)).toBeDefined();
+    expect(screen.getByText('Benchmark preview only. It cannot populate a live contract.')).toBeInTheDocument();
+    expect(screen.queryByDisplayValue(/CAMELIA/i)).not.toBeInTheDocument();
+    expect(screen.getByDisplayValue('SYNTHETIC BUILDING')).toBeInTheDocument();
+    expect(screen.getByDisplayValue('TEST-42')).toBeInTheDocument();
 
     // Click Janusia XH2858B Sample
     const janusiaBtn = screen.getByTitle(/Load benchmark sample: Janusia XH2858B/i);
     fireEvent.click(janusiaBtn);
-    expect(screen.getByDisplayValue(/Janusia/i)).toBeDefined();
-    expect(screen.getByDisplayValue(/XH2858B/i)).toBeDefined();
-    expect(screen.getByDisplayValue(/918014964/i)).toBeDefined();
+    expect(screen.queryByDisplayValue(/Janusia|XH2858B|918014964/i)).not.toBeInTheDocument();
+    expect(henryTenancyContractTemplateService.loadActiveDraft()).toMatchObject({
+      buildingName: 'SYNTHETIC BUILDING', propertyNo: 'TEST-42',
+    });
 
     // Click Blank Template
     const blankBtn = screen.getByTitle(/Reset to fresh blank official DLD template/i);
     fireEvent.click(blankBtn);
     expect(screen.queryByDisplayValue(/Janusia/i)).toBeNull();
+    expect(screen.queryByDisplayValue('SYNTHETIC BUILDING')).not.toBeInTheDocument();
+    expect(henryTenancyContractTemplateService.loadActiveDraft().buildingName).toBe('');
   });
 });

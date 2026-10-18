@@ -18,12 +18,12 @@ export const LindaStatus = WhatsAppEngineStatus;
 export type { WhatsAppMessage };
 
 /** Return the process-wide Linda singleton for broadcasts. */
-export function getLindaClient(config?: LindaConfig): LindaClient {
+export function getLindaClient(config?: LindaConfig): WhatsAppEngine {
   return getWhatsAppEngine('linda-broadcast', config);
 }
 
 /** Create a fresh LindaClient instance. */
-export function createLindaClient(config?: LindaConfig): LindaClient {
+export function createLindaClient(config?: LindaConfig): WhatsAppEngine {
   return new WhatsAppEngine({ clientId: 'linda-broadcast', ...config });
 }
 

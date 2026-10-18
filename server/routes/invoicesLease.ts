@@ -8,6 +8,7 @@
  * POST   /api/invoices/lease           — Create an invoice (deposit or rent)
  * GET    /api/invoices/lease/:id       — Get invoice detail
  * PATCH  /api/invoices/lease/:id       — Update invoice status (mark paid, cancel)
+ * GET    /api/invoices/lease/:id/pdf   — Download a lease invoice PDF
  */
 
 import { Router, Response } from 'express';
@@ -15,6 +16,7 @@ import { asyncHandler, AppError } from '../middleware/errorHandler.js';
 import { AuthRequest } from '../middleware/auth.js';
 import { prisma } from '../database.js';
 import logger from '../utils/logger.js';
+import { DocumentService } from '../services/DocumentService.js';
 
 const router = Router();
 

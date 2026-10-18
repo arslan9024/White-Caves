@@ -10,7 +10,8 @@ const { mockPrisma } = vi.hoisted(() => ({
 }));
 
 vi.mock('../database.js', () => ({ prisma: mockPrisma }));
-vi.mock('../utils/logger.js', () => ({
+vi.mock('../utils/logger.js', async importOriginal => ({
+  ...await importOriginal<typeof import('../utils/logger.js')>(),
   default: { info: vi.fn(), warn: vi.fn(), error: vi.fn() },
 }));
 
@@ -27,7 +28,7 @@ describe('Audit Logger Middleware — Wave 43 (W43-001, W43-002)', () => {
         user: { id: 'usr-101' },
         headers: { 'user-agent': 'Mozilla/5.0' },
         socket: { remoteAddress: '192.168.1.1' },
-        originalUrl: '/api/leads',
+        originalUrl: '/api/leads?referenceNumber=784-1990-1234567-1',
         method: 'POST',
       } as unknown as Request;
 
@@ -39,6 +40,7 @@ describe('Audit Logger Middleware — Wave 43 (W43-001, W43-002)', () => {
             type: 'lead',
             action: 'lead_created',
             userId: 'usr-101',
+            metadata: expect.objectContaining({ path: '/api/leads' }),
           }),
         })
       );

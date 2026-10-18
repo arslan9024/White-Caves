@@ -9,9 +9,12 @@
  */
 
 import { ContractParty, ViewingFormPayload } from './HenryPdfEngineService';
-import { safeStorage } from '../utils/safeStorage';
+import { ScanReview, canUseScan, saveReviewedScan, scanExpiry, validScanDate, VaultSaveOptions } from './henryScanReview';
+import henryEmiratesIdScannerService from './HenryEmiratesIdScannerService';
+import { readDocumentFields, normalizeDocumentDate, normalizeDocumentText, refreshCoverage, flagDocumentConflicts } from './henryDocumentParsing';
+import logger from '../utils/logger';
 
-export interface InternationalPassportExtractedData {
+export interface InternationalPassportExtractedData extends ScanReview {
   // Document Identity
   passportNumber: string; // e.g. "DR0760143"
   passportType: string; // "P" (Standard Passport)
@@ -29,7 +32,7 @@ export interface InternationalPassportExtractedData {
   fatherName: string; // "Bashir Ahmad"
   nationalIdentityNumber: string; // "32303-4339014-9" (CNIC)
   dateOfBirth: string; // "10/02/1993"
-  gender: 'M' | 'F'; // "M"
+  gender: 'M' | 'F' | '';
   placeOfBirth: string; // "MUZAFFARGARH, PAK"
   nationality: string; // "PAKISTANI"
   nationalityCode: string; // "PAK"
@@ -52,6 +55,8 @@ export interface InternationalPassportExtractedData {
 }
 
 export const ARSLAN_MALIK_SAMPLE_PASSPORT: InternationalPassportExtractedData = {
+  demoOnly: true,
+  reviewConfirmed: false,
   passportNumber: 'DR0760143',
   passportType: 'P',
   issuingCountry: 'Islamic Republic of Pakistan',
@@ -86,16 +91,15 @@ export const ARSLAN_MALIK_SAMPLE_PASSPORT: InternationalPassportExtractedData = 
 };
 
 class HenryPassportScannerService {
-  private static readonly CACHE_KEY = 'whitecaves_henry_active_passport_cache_v1';
   private inMemoryCache: InternationalPassportExtractedData | null = null;
   private listeners: Set<(data: InternationalPassportExtractedData | null) => void> = new Set();
 
   /**
-   * Persists extracted Passport data into temporary session memory and localStorage
+   * Keeps extracted Passport data in session memory only
    */
   setCachedPassport(data: InternationalPassportExtractedData): void {
-    this.inMemoryCache = { ...data };
-    safeStorage.setJSON(HenryPassportScannerService.CACHE_KEY, data);
+    if (!canUseScan(data)) return;
+    this.inMemoryCache = structuredClone(data);
     this.notifyListeners(this.inMemoryCache);
   }
 
@@ -103,12 +107,7 @@ class HenryPassportScannerService {
    * Retrieves active Passport from temporary session cache
    */
   getCachedPassport(): InternationalPassportExtractedData | null {
-    if (this.inMemoryCache) return this.inMemoryCache;
-    const stored = safeStorage.getJSON<InternationalPassportExtractedData>(HenryPassportScannerService.CACHE_KEY);
-    if (stored) {
-      this.inMemoryCache = stored;
-      return stored;
-    }
+    if (this.inMemoryCache && canUseScan(this.inMemoryCache)) return this.refreshValidity(structuredClone(this.inMemoryCache));
     return null;
   }
 
@@ -117,7 +116,6 @@ class HenryPassportScannerService {
    */
   clearCachedPassport(): void {
     this.inMemoryCache = null;
-    safeStorage.remove(HenryPassportScannerService.CACHE_KEY);
     this.notifyListeners(null);
   }
 
@@ -132,9 +130,9 @@ class HenryPassportScannerService {
   private notifyListeners(data: InternationalPassportExtractedData | null): void {
     this.listeners.forEach((listener) => {
       try {
-        listener(data);
+        listener(data ? structuredClone(data) : null);
       } catch (err) {
-        console.error('Error notifying Henry Passport cache listener:', err);
+        logger.error('Henry passport cache listener failed', { errorName: err instanceof Error ? err.name : 'UnknownError' });
       }
     });
   }
@@ -156,6 +154,18 @@ class HenryPassportScannerService {
   parseTD3Mrz(line1: string, line2: string): Partial<InternationalPassportExtractedData> {
     const l1 = (line1 || '').trim().toUpperCase();
     const l2 = (line2 || '').trim().toUpperCase();
+    const check = (value: string, digit: string) =>
+      /^\d$/.test(digit) && value.split('').reduce((sum, char, index) =>
+        sum + (char === '<' ? 0 : parseInt(char, 36)) *
+        [7, 3, 1][index % 3]!, 0) % 10 === Number(digit);
+    if (!/^P[A-Z<][A-Z<]{42}$/.test(l1) || !/^[A-Z0-9<]{44}$/.test(l2) ||
+      !/^[A-Z<]{3}$/.test(l2.slice(10, 13)) ||
+      ![l2.slice(13, 19), l2.slice(21, 27)].every(raw => /^\d{6}$/.test(raw) &&
+        validScanDate(`${raw.slice(4, 6)}/${raw.slice(2, 4)}/20${raw.slice(0, 2)}`)) ||
+      !check(l2.slice(0, 9), l2[9]!) || !check(l2.slice(13, 19), l2[19]!) ||
+      !check(l2.slice(21, 27), l2[27]!) ||
+      !(l2[42] === '<' && /^<+$/.test(l2.slice(28, 42)) || check(l2.slice(28, 42), l2[42]!)) ||
+      !check(l2.slice(0, 10) + l2.slice(13, 20) + l2.slice(21, 43), l2[43]!)) return {};
 
     // Line 1: P<PAKMALIK<<ARSLAN<<<<<<<<<<<<<<<<<<<<<<<<<<
     const passportType = l1.slice(0, 1);
@@ -178,20 +188,7 @@ class HenryPassportScannerService {
     const passportNumber = l2.slice(0, 9).replace(/</g, '');
     const nationalityCode = l2.slice(10, 13).replace(/</g, '');
 
-    const rawDob = l2.slice(13, 19); // YYMMDD
-    const gender = l2.slice(20, 21) === 'F' ? 'F' : 'M';
-    const rawExpiry = l2.slice(21, 27); // YYMMDD
-
-    const rawCnic = l2.slice(28, 41).replace(/</g, '');
-    const nationalIdentityNumber = this.formatCnicNumber(rawCnic);
-
-    const dobYear = parseInt(rawDob.slice(0, 2), 10);
-    const dobFullYear = dobYear > 40 ? 1900 + dobYear : 2000 + dobYear;
-    const dateOfBirth = `${rawDob.slice(4, 6)}/${rawDob.slice(2, 4)}/${dobFullYear}`;
-
-    const expYear = parseInt(rawExpiry.slice(0, 2), 10);
-    const expFullYear = 2000 + expYear;
-    const dateOfExpiry = `${rawExpiry.slice(4, 6)}/${rawExpiry.slice(2, 4)}/${expFullYear}`;
+    const gender = l2[20] === 'F' ? 'F' : l2[20] === 'M' ? 'M' : '';
 
     return {
       passportType,
@@ -201,10 +198,7 @@ class HenryPassportScannerService {
       fullName,
       passportNumber,
       nationalityCode,
-      dateOfBirth,
       gender,
-      dateOfExpiry,
-      nationalIdentityNumber,
       mrz: { line1: l1, line2: l2 },
     };
   }
@@ -214,102 +208,101 @@ class HenryPassportScannerService {
    */
   async scanPassport(fileOrPreset?: File | 'sample'): Promise<InternationalPassportExtractedData> {
     if (!fileOrPreset || fileOrPreset === 'sample') {
+      this.clearCachedPassport();
       const demo = {
-        ...ARSLAN_MALIK_SAMPLE_PASSPORT,
+        ...structuredClone(ARSLAN_MALIK_SAMPLE_PASSPORT),
+        demoOnly: true, reviewConfirmed: false,
         scannedAt: new Date().toISOString(),
       };
-      this.setCachedPassport(demo);
       return demo;
     }
 
-    const file = fileOrPreset as File;
-    const fileName = file.name || 'International_Passport.pdf';
-    const lower = fileName.toLowerCase();
-
-    // Generate unique deterministic seed
-    let hash = 0;
-    const seed = `${fileName}_${file.size}_${file.lastModified || Date.now()}`;
-    for (let i = 0; i < seed.length; i++) {
-      hash = (hash << 5) - hash + seed.charCodeAt(i);
-      hash |= 0;
-    }
-    const absHash = Math.abs(hash);
-
-    let fullName = 'Sarah Elizabeth Jenkins';
-    let countryCode = 'GBR';
-    let nationality = 'BRITISH CITIZEN';
-    let passportNo = `GB${absHash % 9000000 + 1000000}`;
-
-    if (lower.includes('arslan') || lower.includes('malik')) {
-      fullName = 'Arslan Malik';
-      countryCode = 'PAK';
-      nationality = 'PAKISTANI';
-      passportNo = 'DR0760143';
-    } else if (lower.includes('william') || lower.includes('abernethy')) {
-      fullName = 'William Michael Abernethy';
-      countryCode = 'USA';
-      nationality = 'UNITED STATES OF AMERICA';
-      passportNo = `US${absHash % 9000000 + 1000000}`;
-    } else if (lower.includes('svetlana') || lower.includes('levitskaya')) {
-      fullName = 'Svetlana Levitskaya';
-      countryCode = 'RUS';
-      nationality = 'RUSSIAN FEDERATION';
-      passportNo = `75${absHash % 9000000 + 1000000}`;
-    } else if (lower.includes('sanit') || lower.includes('singh')) {
-      fullName = 'Sanit Singh Nagpal';
-      countryCode = 'IND';
-      nationality = 'INDIAN';
-      passportNo = `M${absHash % 9000000 + 1000000}`;
-    }
-
-    const birthYear = 1978 + (absHash % 22);
-    const birthMonth = String((absHash % 12) + 1).padStart(2, '0');
-    const birthDay = String((absHash % 28) + 1).padStart(2, '0');
-    const dob = `${birthDay}/${birthMonth}/${birthYear}`;
-
-    const expYear = 2028 + (absHash % 6);
-    const expiry = `${birthDay}/${birthMonth}/${expYear}`;
-
-    const line1 = `P<${countryCode}${fullName.toUpperCase().replace(/\s+/g, '<')}<<<<<<<<<<<<<<<<<<<<<<<<<<`.slice(0, 44);
-    const line2 = `${passportNo}1${countryCode}${String(birthYear).slice(2)}${birthMonth}${birthDay}9M${String(expYear).slice(2)}${birthMonth}${birthDay}8<<<<<<<<<<<<<<<8`.slice(0, 44);
-
-    return new Promise((resolve) => {
-      setTimeout(() => {
-        const result: InternationalPassportExtractedData = {
-          passportNumber: passportNo,
-          passportType: 'P',
-          issuingCountry: nationality,
-          issuingCountryCode: countryCode,
-          bookletNumber: `R${absHash % 9000000 + 1000000}`,
-          trackingNumber: `99${absHash % 900000000 + 100000000}`,
-          issuingAuthority: 'PASSPORT & IMMIGRATION COMMAND',
-          surname: fullName.split(' ').slice(1).join(' ') || '',
-          givenNames: fullName.split(' ')[0] || fullName,
-          fullName,
-          fatherName: 'Guardian/Parent Name',
-          nationalIdentityNumber: `NID-${absHash % 90000000 + 10000000}`,
-          dateOfBirth: dob,
-          gender: absHash % 2 === 0 ? 'M' : 'F',
-          placeOfBirth: 'CAPITAL METROPOLIS',
-          nationality,
-          nationalityCode: countryCode,
-          dateOfIssue: `15/01/${birthYear + 20}`,
-          dateOfExpiry: expiry,
-          isExpired: false,
-          validityYears: 10,
-          mrz: {
-            line1,
-            line2,
-          },
-          confidenceScore: 0.997,
-          scannedAt: new Date().toISOString(),
-          documentFormat: file.type || (fileName.endsWith('.pdf') ? 'application/pdf' : 'image/png'),
-        };
-
-        this.setCachedPassport(result);
-        resolve(result);
-      }, 300);
+    this.clearCachedPassport();
+    if (!['application/pdf', 'image/png', 'image/jpeg'].includes(fileOrPreset.type) ||
+      !fileOrPreset.size || fileOrPreset.size > 10 * 1024 * 1024)
+      throw new Error('Upload a non-empty PDF, JPEG or PNG up to 10 MB.');
+    const extraction = await henryEmiratesIdScannerService.extractDocumentText(fileOrPreset, undefined, text => {
+      const parsed = this.parsePassportText(text);
+      return [!!parsed.passportNumber, !!parsed.fullName, !!(parsed.issuingCountry || parsed.issuingCountryCode),
+        validScanDate(parsed.dateOfBirth), validScanDate(parsed.dateOfExpiry)].filter(Boolean).length / 5;
     });
+    const result = this.parsePassportText([extraction.ocrText, extraction.streamText].filter(Boolean).join('\n'));
+    result.documentFormat = fileOrPreset.type;
+    result.diagnostics!.ocrConfidence = extraction.ocrConfidence;
+    result.diagnostics!.warnings.push(...(extraction.warnings || []));
+    return result;
+  }
+
+  parsePassportText(text: string): InternationalPassportExtractedData {
+    const { values, diagnostics } = readDocumentFields(text, {
+      passportNumber: ['Passport Number', 'Passport No.', 'Passport No', 'رقم الجواز', 'رقم جواز السفر'],
+      fullName: ['Full Name', 'Name', 'الاسم الكامل', 'الاسم'],
+      surname: ['Surname', 'اسم العائلة', 'اللقب'], givenNames: ['Given Names', 'Given Name(s)', 'Given Name', 'الأسماء'],
+      issuingCountry: ['Issuing Country', 'بلد الإصدار'], issuingCountryCode: ['Country Code', 'رمز الدولة'],
+      nationality: ['Nationality', 'الجنسية'], nationalityCode: ['Nationality Code'],
+      dateOfBirth: ['Date of Birth', 'Birth Date', 'تاريخ الميلاد'],
+      dateOfExpiry: ['Date of Expiry', 'Expiry Date', 'تاريخ الانتهاء'],
+      dateOfIssue: ['Date of Issue', 'Issue Date', 'تاريخ الإصدار'],
+      gender: ['Sex', 'Gender', 'الجنس'], placeOfBirth: ['Place of Birth', 'مكان الميلاد'],
+      fatherName: ['Father Name', 'اسم الأب'], nationalIdentityNumber: ['National ID', 'Identity Number', 'رقم الهوية'],
+      issuingAuthority: ['Issuing Authority', 'سلطة الإصدار'], bookletNumber: ['Booklet Number'],
+      trackingNumber: ['Tracking Number'], passportType: ['Passport Type'],
+    });
+    const value = (key: string) => values[key]?.[0] || '';
+    flagDocumentConflicts(diagnostics);
+    const lines = normalizeDocumentText(text).toUpperCase().split('\n').map(line => line.replace(/\s/g, ''));
+    const pairs = lines.flatMap((line, index) => /^P[A-Z<][A-Z<]{42}$/.test(line)
+      ? [{ line1: line, line2: lines[index + 1] || '' }] : []);
+    const candidates = pairs.map(pair => this.parseTD3Mrz(pair.line1, pair.line2));
+    const validCandidates = candidates.filter(candidate => !!candidate.passportNumber);
+    const result: InternationalPassportExtractedData = {
+      passportNumber: value('passportNumber'), passportType: value('passportType'),
+      issuingCountry: value('issuingCountry'), issuingCountryCode: value('issuingCountryCode'),
+      bookletNumber: value('bookletNumber'), trackingNumber: value('trackingNumber'),
+      issuingAuthority: value('issuingAuthority'), surname: value('surname'), givenNames: value('givenNames'),
+      fullName: value('fullName'), fatherName: value('fatherName'), nationalIdentityNumber: value('nationalIdentityNumber'),
+      dateOfBirth: normalizeDocumentDate(value('dateOfBirth')), gender: /^(M|MALE|ذكر)$/i.test(value('gender')) ? 'M' : /^(F|FEMALE|أنثى)$/i.test(value('gender')) ? 'F' : '',
+      placeOfBirth: value('placeOfBirth'), nationality: value('nationality'), nationalityCode: value('nationalityCode'),
+      dateOfIssue: normalizeDocumentDate(value('dateOfIssue')), dateOfExpiry: normalizeDocumentDate(value('dateOfExpiry')),
+      isExpired: false, validityYears: 0, mrz: validCandidates[0]?.mrz || pairs[0] || { line1: '', line2: '' },
+      confidenceScore: 0, scannedAt: new Date().toISOString(), demoOnly: false, reviewConfirmed: false, diagnostics,
+    };
+    for (const [key, candidate] of validCandidates.flatMap(mrz => Object.entries(mrz))) {
+      if (!candidate || typeof candidate !== 'string') continue;
+      const current = result[key as keyof InternationalPassportExtractedData];
+      const equivalent = (a: string, b: string) => a.toUpperCase().replace(/[^A-Z0-9]/g, '') === b.toUpperCase().replace(/[^A-Z0-9]/g, '');
+      const evidence = diagnostics.fields[key];
+      if (evidence?.state === 'conflict' || current && typeof current === 'string' && !equivalent(current, candidate))
+        diagnostics.fields[key] = { state: 'conflict', source: 'mrz',
+          values: [...new Set([...(evidence?.values || []), ...(typeof current === 'string' && current ? [current] : []), candidate])] };
+      else if (!current) {
+        Object.assign(result, { [key]: candidate });
+        diagnostics.fields[key] = { state: 'extracted', source: 'mrz', values: [candidate] };
+      }
+    }
+    if (!result.fullName && (result.givenNames || result.surname)) {
+      result.fullName = `${result.givenNames} ${result.surname}`.trim();
+      diagnostics.fields.fullName = { state: 'derived', source: 'text', values: [result.fullName] };
+    }
+    for (const [key, start, end] of [['dateOfBirth', 13, 19], ['dateOfExpiry', 21, 27]] as const) {
+      const readings = [...new Set(validCandidates.map(candidate => candidate.mrz!.line2.slice(start, end)))];
+      const visible = result[key];
+      const evidence = diagnostics.fields[key];
+      if (readings.length > 1 || visible && readings.some(raw => visible.split('/').reverse().join('').slice(2) !== raw))
+        diagnostics.fields[key] = { state: 'conflict', source: 'mrz',
+          values: [...new Set([...(evidence?.values || []), ...readings])] };
+    }
+    if (validCandidates.length < pairs.length) diagnostics.warnings.push('TD3 MRZ failed format or check digits; review visible fields.');
+    if (!result.dateOfBirth || !result.dateOfExpiry) diagnostics.warnings.push('Four-digit date years require visible source evidence or manual review; MRZ centuries are not guessed.');
+    refreshCoverage(diagnostics);
+    return this.refreshValidity(result);
+  }
+
+  refreshValidity(data: InternationalPassportExtractedData): InternationalPassportExtractedData {
+    const validityYears = validScanDate(data.dateOfIssue) && validScanDate(data.dateOfExpiry)
+      ? Math.max(0, Math.round((Date.parse(data.dateOfExpiry.split('/').reverse().join('-')) -
+        Date.parse(data.dateOfIssue.split('/').reverse().join('-'))) / (365.25 * 86400000))) : 0;
+    return { ...data, isExpired: scanExpiry(data.dateOfExpiry).isExpired, validityYears };
   }
 
   /**
@@ -325,8 +318,8 @@ class HenryPassportScannerService {
    * Returns demo scanned Passport data (Arslan Malik - DR0760143)
    */
   getDemoExtractedData(): InternationalPassportExtractedData {
-    const demo = { ...ARSLAN_MALIK_SAMPLE_PASSPORT, scannedAt: new Date().toISOString() };
-    this.setCachedPassport(demo);
+    this.clearCachedPassport();
+    const demo = { ...structuredClone(ARSLAN_MALIK_SAMPLE_PASSPORT), scannedAt: new Date().toISOString(), demoOnly: true, reviewConfirmed: false };
     return demo;
   }
 
@@ -335,9 +328,10 @@ class HenryPassportScannerService {
    */
   toContractParty(
     extracted: InternationalPassportExtractedData,
-    phone: string = '+971 56 361 6136',
-    email: string = 'admin@whitecaves.com'
+    phone: string = '',
+    email: string = ''
   ): ContractParty {
+    if (!canUseScan(extracted)) throw new Error('Passport review required; benchmark extraction cannot autofill.');
     return {
       name: extracted.fullName,
       emiratesIdOrPassport: `Passport: ${extracted.passportNumber} (${extracted.issuingCountryCode})`,
@@ -353,6 +347,7 @@ class HenryPassportScannerService {
     extracted: InternationalPassportExtractedData,
     basePayload: Partial<ViewingFormPayload> = {}
   ): Partial<ViewingFormPayload> {
+    if (!canUseScan(extracted)) throw new Error('Passport review required; benchmark extraction cannot autofill.');
     return {
       ...basePayload,
       clientName: extracted.fullName,
@@ -378,36 +373,9 @@ class HenryPassportScannerService {
   /**
    * Persists extracted Passport record to backend database and session cache
    */
-  async saveToDatabase(extracted?: InternationalPassportExtractedData): Promise<{ success: boolean; id?: string; error?: string }> {
-    const data = extracted || this.getCachedPassport() || ARSLAN_MALIK_SAMPLE_PASSPORT;
-    this.setCachedPassport(data);
-
-    try {
-      if (typeof window !== 'undefined') {
-        const response = await fetch('/api/henry/documents/save', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            docType: 'passport',
-            title: `Passport - ${data.fullName}`,
-            clientName: data.fullName,
-            referenceNumber: data.passportNumber,
-            extractedJson: data,
-            confidenceScore: data.confidenceScore,
-            scannedSide: 'front',
-            documentFormat: data.documentFormat || 'application/pdf',
-          }),
-        });
-
-        if (response.ok) {
-          const resJson = await response.json();
-          return { success: true, id: resJson.data?.id };
-        }
-      }
-      return { success: true, id: `local_${Date.now()}` };
-    } catch {
-      return { success: true, id: `fallback_${Date.now()}` };
-    }
+  async saveToDatabase(extracted?: InternationalPassportExtractedData, options: VaultSaveOptions = {}): Promise<{ success: boolean; id?: string; error?: string }> {
+    if (!extracted) return { success: false, error: 'Review required. Nothing was saved.' };
+    return saveReviewedScan('passport', extracted, extracted.passportNumber, extracted.fullName, options);
   }
 }
 

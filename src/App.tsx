@@ -15,6 +15,7 @@ import { UnifiedWorkspaceLayout } from './layouts/UnifiedWorkspaceLayout';
 import PortalLayout from './components/portal/PortalLayout';
 import SuspenseLoader from './components/common/SuspenseLoader';
 import RouteErrorBoundary from './components/RouteErrorBoundary';
+import HenryDriveCallback from './pages/crm/HenryDriveCallback';
 import { SQAErrorBoundary } from './components/common/SQAErrorBoundary';
 import { AuthModalProvider } from './components/auth/AuthModalProvider';
 import type { RootState, AppDispatch } from './store/store';
@@ -775,6 +776,7 @@ function App(): React.JSX.Element {
                           <main id="main-content" role="main">
                             <LocationKeyWrapper>
                               <Routes>
+                                <Route path="/henry-drive-callback" element={<RouteErrorBoundary><HenryDriveCallback /></RouteErrorBoundary>} />
                                 {publicRoutes.map(route => (
                                   <Route
                                     key={`public-${route.path}`}

@@ -101,7 +101,7 @@ const { mockEmitEvent } = vi.hoisted(() => ({
 vi.mock('../database.js', () => ({ prisma: mockPrisma }));
 
 vi.mock('../config/env.js', () => ({
-  HENRY_UPLOADS_PATH: '/tmp/henry-test-uploads',
+  HENRY_UPLOADS_PATH: 'henry-test-uploads',
   OLLAMA_HOST: 'http://localhost:11434',
   GROQ_API_KEY: '',
 }));
@@ -150,6 +150,7 @@ vi.mock('../services/orchestrator/AssistantOrchestrator.js', () => ({
 vi.mock('multer', () => {
   const diskStorage = vi.fn(() => ({}));
   const multerFn = vi.fn(() => ({
+    array: vi.fn(() => (_req: Request, _res: Response, next: NextFunction) => next()),
     single: vi.fn(
       () =>
         (
@@ -167,7 +168,7 @@ vi.mock('multer', () => {
             originalname: 'test.pdf',
             mimetype: 'application/pdf',
             // Real source file — created in beforeEach for the file-upload describe block
-            path: '/tmp/henry-test-uploads/source.pdf',
+            path: 'henry-test-uploads/source.pdf',
             size: 12,
             filename: 'source.pdf',
           };
@@ -176,6 +177,7 @@ vi.mock('multer', () => {
     ),
   }));
   (multerFn as unknown as Record<string, unknown>).diskStorage = diskStorage;
+  (multerFn as unknown as Record<string, unknown>).memoryStorage = vi.fn(() => ({}));
   return { default: multerFn };
 });
 
@@ -392,7 +394,7 @@ describe('Henry routes — file upload and download', () => {
     mockPrisma.henryRecord.create.mockResolvedValue({
       id: 'hr-file-1',
       title: 'test.pdf',
-      filePath: '/tmp/henry-test-uploads/test.pdf',
+      filePath: 'henry-test-uploads/test.pdf',
       fileType: 'other',
       status: 'active',
       tags: [],
@@ -401,8 +403,8 @@ describe('Henry routes — file upload and download', () => {
     });
     // Create a real source file so fs.renameSync inside the route can succeed
     import('fs').then(({ default: fs }) => {
-      fs.mkdirSync('/tmp/henry-test-uploads', { recursive: true });
-      fs.writeFileSync('/tmp/henry-test-uploads/source.pdf', '%PDF-1.4 test');
+      fs.mkdirSync('henry-test-uploads', { recursive: true });
+      fs.writeFileSync('henry-test-uploads/source.pdf', '%PDF-1.4 test');
     });
   });
 
@@ -737,44 +739,10 @@ describe('Henry routes — AI draft, Ejari submit, translate', () => {
     expect(mockGenerateMultiLangContract).toHaveBeenCalledOnce();
   });
 
-  it('POST /documents/save saves document extracted payload and returns 200', async () => {
+  it('POST /documents/save refuses non-persistent synthetic owners', async () => {
     const app = await createApp();
-    const res = await request(app).post('/api/henry/documents/save').send({
-      docType: 'emirates_id',
-      title: 'Emirates ID - Khalif Mohamednur',
-      clientName: 'Khalif Mohamednur Ibrahim',
-      referenceNumber: '784-1984-5852080-0',
-      extractedJson: {
-        idNumber: '784-1984-5852080-0',
-        cardNumber: '146532347',
-        nationalityEn: 'Kenya',
-      },
-      confidenceScore: 1.0,
-      scannedSide: 'both',
-    });
-
-    expect(res.status).toBe(200);
-    expect(res.body.success).toBe(true);
-    expect(res.body.data.id).toBeDefined();
-    expect(res.body.data.clientName).toBe('Khalif Mohamednur Ibrahim');
-    expect(res.body.data.referenceNumber).toBe('784-1984-5852080-0');
-
-    // Test GET /documents
-    const getRes = await request(app).get('/api/henry/documents?docType=emirates_id');
-    expect(getRes.status).toBe(200);
-    expect(getRes.body.success).toBe(true);
-    expect(getRes.body.count).toBeGreaterThanOrEqual(1);
-
-    // Test GET /documents/latest/emirates_id
-    const latestRes = await request(app).get('/api/henry/documents/latest/emirates_id');
-    expect(latestRes.status).toBe(200);
-    expect(latestRes.body.success).toBe(true);
-    expect(latestRes.body.data.clientName).toBe('Khalif Mohamednur Ibrahim');
-
-    // Test GET /documents/:id
-    const singleRes = await request(app).get(`/api/henry/documents/${res.body.data.id}`);
-    expect(singleRes.status).toBe(200);
-    expect(singleRes.body.success).toBe(true);
-    expect(singleRes.body.data.referenceNumber).toBe('784-1984-5852080-0');
+    const res = await request(app).post('/api/henry/documents/save').send({ docType: 'emirates_id', extractedJson: {} });
+    expect(res.status).toBe(401);
+    expect(res.body.success).toBe(false);
   });
 });

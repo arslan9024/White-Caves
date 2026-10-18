@@ -53,6 +53,27 @@ export default defineConfig(async ({ command }) => {
             // API responses can contain account-specific data; never persist or replay them offline.
             runtimeCaching: [
               {
+                // Private originals, OAuth codes and review mutations must never enter caches or replay queues.
+                urlPattern: /^https?:\/\/[^/]+\/api\/henry\/(?:drive|documents)(?:\/|$)/,
+                method: 'GET',
+                handler: 'NetworkOnly',
+              },
+              {
+                urlPattern: /^https?:\/\/[^/]+\/api\/henry\/(?:drive|documents)(?:\/|$)/,
+                method: 'POST',
+                handler: 'NetworkOnly',
+              },
+              {
+                urlPattern: /^https?:\/\/[^/]+\/api\/henry\/(?:drive|documents)(?:\/|$)/,
+                method: 'PATCH',
+                handler: 'NetworkOnly',
+              },
+              {
+                urlPattern: /^https?:\/\/[^/]+\/api\/henry\/(?:drive|documents)(?:\/|$)/,
+                method: 'DELETE',
+                handler: 'NetworkOnly',
+              },
+              {
                 urlPattern: /^https?:\/\/[^/]+\/api\/.*$/,
                 method: 'GET',
                 handler: 'NetworkOnly',

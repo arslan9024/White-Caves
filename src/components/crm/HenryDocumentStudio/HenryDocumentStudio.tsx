@@ -49,7 +49,6 @@ export const HenryDocumentStudio: FC = () => {
     setSelectedTemplateId,
     compiledHtml,
     zoomLevel,
-    shareLinkCopied,
     eidData,
     titleDeedData,
     passportData,
@@ -96,7 +95,7 @@ export const HenryDocumentStudio: FC = () => {
             <span>📄</span> Henry AI — Sovereign Record Keeper & Document Studio
           </h2>
           <p style={{ margin: 0, color: 'var(--color-94a3b8, #94A3B8)', fontSize: '0.88rem' }}>
-            Official DLD Unified Tenancy Contract, Passport AI Scanner, Title Deed OCR, Emirates ID Ingestion & VAT Invoices.
+            Document preparation previews and reviewed OCR candidates. No government registration or external dispatch.
           </p>
         </div>
         <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
@@ -122,9 +121,18 @@ export const HenryDocumentStudio: FC = () => {
             <FilePlus2 size={16} /> Prepare New Tenancy Contract
           </button>
           <Badge>HENRY RECORD KEEPER</Badge>
-          <span style={{ fontSize: '0.8rem', color: 'var(--color-94a3b8, #94A3B8)' }}>Ejari: 0120260721003974</span>
+          <span style={{ fontSize: '0.8rem', color: 'var(--color-94a3b8, #94A3B8)' }}>Demo / preparation previews</span>
         </div>
       </StudioHeader>
+      <p>
+        Specialized OCR scanners support Emirates ID, passport, title deed and tenancy contract. Review every
+        extraction; neither authenticity nor signatures are verified. Ejari certificates, licences,
+        NOCs, agency forms, sale agreements, invoices, receipts and cheques use the separate Reviewed document intake
+        in Henry Records: labelled fields and manual corrections only, never official validation.
+        Preparation templates do not add OCR capability.
+      </p>
+      <p>Studio scanner cards show synthetic demo data, not your vault records. Use the upload/review scanners
+        in Henry Records for real documents. Preparation previews start with sample values; review all fields before use.</p>
 
       {actionSuccessMessage && (
         <div
@@ -204,11 +212,11 @@ export const HenryDocumentStudio: FC = () => {
               }}
             >
               <ShieldCheck size={14} color="#EF4444" />
-              <span>DLD Compliance Rule</span>
+              <span>Source review workflow</span>
             </div>
-            1. Scan Passport, Title Deed & Emirates ID to extract verified data.<br />
-            2. 1-Click auto-fills Tenancy Agreement or Viewing Form.<br />
-            3. Official Government Ejari Certificate is archived in Vault.
+            1. Upload supported documents in Henry Records and review extraction candidates against originals.<br />
+            2. Confirm review before applying fields to a preparation draft.<br />
+            3. Save reviewed supported originals explicitly to the encrypted vault. Uploaded Ejari certificates can be archived through Reviewed document intake; templates do not register or issue certificates.
           </div>
         </SidebarControlPanel>
 
@@ -238,7 +246,7 @@ export const HenryDocumentStudio: FC = () => {
                       fontWeight: 800,
                     }}
                   >
-                    DLD UNIFIED TENANCY CONTRACT SCANNER & LEARNER
+                    TENANCY CONTRACT DEMO PREVIEW
                   </span>
                   <span
                     style={{
@@ -251,15 +259,15 @@ export const HenryDocumentStudio: FC = () => {
                     }}
                   >
                     {scannedContractData.isFilled
-                      ? `✅ FILLED & VALIDATED (${scannedContractData.fillScorePercent}% Score)`
+                      ? `Demo field coverage (${scannedContractData.fillScorePercent}% Score)`
                       : '⚠️ BLANK REUSABLE TEMPLATE (0% Score)'}
                   </span>
                 </div>
                 <h3 style={{ margin: '6px 0 2px', color: 'var(--color-1e293b, #1E293B)', fontSize: '18px' }}>
-                  Tenancy Contract AI Optical Scanner & Autonomous Learner
+                  Tenancy Contract Scanner — Demo Preview
                 </h3>
                 <p style={{ margin: 0, color: 'var(--text-secondary, #64748B)', fontSize: '12px' }}>
-                  Autonomous Fill Detection, Completeness Score ({scannedContractData.filledFieldsCount}/{scannedContractData.totalFieldsCount} Fields), Landlord/Tenant Grouped Extraction & Reference Training Pool.
+                  Demo field coverage ({scannedContractData.filledFieldsCount}/{scannedContractData.totalFieldsCount} Fields), not accuracy or signature verification. No autonomous learning.
                 </p>
               </div>
 
@@ -319,7 +327,7 @@ export const HenryDocumentStudio: FC = () => {
                 <div style={{ fontSize: '11px', color: 'var(--text-secondary, #64748B)', marginTop: '2px' }}>
                   {scannedContractData.missingFields.length > 0
                     ? `Missing / Optional Fields: ${scannedContractData.missingFields.join(', ')}`
-                    : 'All critical party, property, financial and addenda terms present & validated!'}
+                    : 'Demo fields populated; completeness, accuracy and legal validity are not verified.'}
                 </div>
               </div>
               <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
@@ -402,7 +410,7 @@ export const HenryDocumentStudio: FC = () => {
                   </div>
                   <div>
                     <span style={{ color: 'var(--text-secondary, #64748B)', display: 'block' }}>Area (Sq.M / Sq.Ft)</span>
-                    <strong style={{ color: 'var(--accent-green, #16A34A)' }}>{scannedContractData.property.areaSqM} m² ({scannedContractData.property.areaSqFt} sq.ft)</strong>
+                    <strong style={{ color: 'var(--accent-green, #16A34A)' }}>{scannedContractData.property.areaSqM ?? 'Not visible'} m² ({scannedContractData.property.areaSqFt ?? 'Not visible'} sq.ft)</strong>
                   </div>
                   <div style={{ gridColumn: 'span 2' }}>
                     <span style={{ color: 'var(--text-secondary, #64748B)', display: 'block' }}>Location / Community</span>
@@ -427,7 +435,7 @@ export const HenryDocumentStudio: FC = () => {
                   </div>
                   <div>
                     <span style={{ color: 'var(--text-secondary, #64748B)', display: 'block' }}>Security Deposit</span>
-                    <strong style={{ color: 'var(--accent-gold, #D97706)' }}>AED {scannedContractData.financials.securityDepositAed.toLocaleString()}</strong>
+                    <strong style={{ color: 'var(--accent-gold, #D97706)' }}>{scannedContractData.financials.securityDepositAed === undefined ? 'Not visible' : `AED ${scannedContractData.financials.securityDepositAed.toLocaleString()}`}</strong>
                   </div>
                   <div>
                     <span style={{ color: 'var(--text-secondary, #64748B)', display: 'block' }}>Mode of Payment</span>
@@ -507,14 +515,14 @@ export const HenryDocumentStudio: FC = () => {
                     ICAO 9303 TD3 PASSPORT SCANNER
                   </span>
                   <span style={{ fontSize: '11px', color: 'var(--accent-green, #16A34A)', fontWeight: 800 }}>
-                    10-YEAR VALIDITY KYC VERIFIED
+                    DEMO PASSPORT — NOT KYC VERIFICATION
                   </span>
                 </div>
                 <h3 style={{ margin: '6px 0 2px', color: 'var(--color-1e293b, #1E293B)', fontSize: '18px' }}>
-                  International Passport & goAML KYC Ingestion Hub
+                  International Passport — Demo Preview
                 </h3>
                 <p style={{ margin: 0, color: 'var(--text-secondary, #64748B)', fontSize: '12px' }}>
-                  Extracts 16+ discrete fields: Passport No, National ID (CNIC), Surname, Father Name, DOB, POB, Authority, and 2-line TD3 MRZ.
+                  Labelled passport fields and TD3 MRZ are extraction candidates when present. Missing fields remain blank; neither KYC nor ten-year validity is guaranteed.
                 </p>
               </div>
 
@@ -698,7 +706,7 @@ export const HenryDocumentStudio: FC = () => {
                     marginBottom: '10px',
                   }}
                 >
-                  3. VALIDITY & LIFESPAN (10-YEAR EXPIRY)
+                  3. DEMO DATES & DERIVED DATE SPAN
                 </div>
                 <div style={{ fontSize: '12px', lineHeight: 1.8 }}>
                   <div>
@@ -709,13 +717,13 @@ export const HenryDocumentStudio: FC = () => {
                     <span style={{ color: 'var(--accent-green, #16A34A)', fontWeight: 'bold' }}>{passportData.dateOfExpiry}</span>
                   </div>
                   <div>
-                    <strong>Validity Period:</strong> {passportData.validityYears} Years (Active & Valid)
+                    <strong>Validity Period:</strong> {passportData.validityYears} Years (derived date span, not current validity)
                   </div>
                   <div>
                     <strong>Nationality:</strong> {passportData.nationality} ({passportData.nationalityCode})
                   </div>
                   <div>
-                    <strong>Optical OCR Confidence:</strong> {(passportData.confidenceScore * 100).toFixed(1)}%
+                    <strong>Illustrative demo confidence (not measured accuracy):</strong> {(passportData.confidenceScore * 100).toFixed(1)}%
                   </div>
                 </div>
               </div>
@@ -785,14 +793,14 @@ export const HenryDocumentStudio: FC = () => {
                     DLD TITLE DEED AI SCANNER
                   </span>
                   <span style={{ fontSize: '11px', color: 'var(--accent-green, #16A34A)', fontWeight: 800 }}>
-                    BLOCKCHAIN VERIFIED (شهادة ملكية عقار)
+                    DEMO TITLE DEED — NOT OWNERSHIP VERIFICATION
                   </span>
                 </div>
                 <h3 style={{ margin: '6px 0 2px', color: 'var(--color-1e293b, #1E293B)', fontSize: '18px' }}>
                   Dubai Land Department (DLD) Title Deed Ingestion Hub
                 </h3>
                 <p style={{ margin: 0, color: 'var(--text-secondary, #64748B)', fontSize: '12px' }}>
-                  Extracts 22+ discrete properties: Community, Unit, Areas, Owner DLD ID, Contract No, and Purchase Price in AED.
+                  Demo property fields only. Real extraction depends on visible labels and owner tables; missing values remain blank.
                 </p>
               </div>
 
@@ -1067,14 +1075,14 @@ export const HenryDocumentStudio: FC = () => {
                     ICP OPTICAL AI SCANNER
                   </span>
                   <span style={{ fontSize: '11px', color: 'var(--accent-green, #16A34A)', fontWeight: 800 }}>
-                    100% OCR & MRZ ACCURACY
+                    DEMO ID — NOT IDENTITY VERIFICATION
                   </span>
                 </div>
                 <h3 style={{ margin: '6px 0 2px', color: 'var(--color-1e293b, #1E293B)', fontSize: '18px' }}>
                   UAE Resident Identity Card (Emirates ID) Ingestion Hub
                 </h3>
                 <p style={{ margin: 0, color: 'var(--text-secondary, #64748B)', fontSize: '12px' }}>
-                  Extracts all 18 discrete fields, bilingual Arabic/English names, employer, and ICAO 9303 TD1 MRZ.
+                  Demo ID fields only. Real labelled bilingual identity, dates, occupation, employer and TD1 MRZ candidates require source review; not all fields are present.
                 </p>
               </div>
 
@@ -1231,7 +1239,7 @@ export const HenryDocumentStudio: FC = () => {
                   </div>
                   <div>
                     <strong>Card Expiry Date:</strong>{' '}
-                    <span style={{ color: 'var(--accent-green, #16A34A)', fontWeight: 'bold' }}>{eidData.expiryDate}</span> (Valid)
+                    <span style={{ color: 'var(--accent-green, #16A34A)', fontWeight: 'bold' }}>{eidData.expiryDate}</span> (demo date, not validity verification)
                   </div>
                 </div>
               </div>
@@ -1268,7 +1276,7 @@ export const HenryDocumentStudio: FC = () => {
                     <strong>Issuing Place:</strong> {eidData.issuingPlaceEn} ({eidData.issuingPlaceAr})
                   </div>
                   <div>
-                    <strong>Confidence Score:</strong> {(eidData.confidenceScore * 100).toFixed(1)}%
+                    <strong>Illustrative demo confidence (not measured accuracy):</strong> {(eidData.confidenceScore * 100).toFixed(1)}%
                   </div>
                 </div>
               </div>
@@ -1325,10 +1333,9 @@ export const HenryDocumentStudio: FC = () => {
                 {selectedTemplateId === 'tenancy_contract_esign' && (
                   <ActionButton
                     onClick={handleCopyEsignLink}
-                    title="Copy E-Signature Link to Share with Client"
+                    title="No signing provider connected"
                   >
-                    {shareLinkCopied ? <Check size={14} color="#22C55E" /> : <Share2 size={14} />}
-                    {shareLinkCopied ? 'Link Copied!' : 'Share E-Sign Link'}
+                    <Share2 size={14} /> E-signature unavailable
                   </ActionButton>
                 )}
 

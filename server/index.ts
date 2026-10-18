@@ -36,7 +36,7 @@ import {
   contactLimiter,
 } from './middleware/rateLimiter.js';
 import { sanitizeDeep } from './utils/sanitize.js';
-import logger from './utils/logger.js';
+import logger, { requestLogPath } from './utils/logger.js';
 
 // Route imports (ESM-compatible)
 import authRoutes from './routes/auth.js';
@@ -268,7 +268,7 @@ app.use((req: Request, res: Response, next: NextFunction) => {
   const start = Date.now();
   res.on('finish', () => {
     const durationMs = Date.now() - start;
-    const message = `${req.method} ${req.originalUrl} ${res.statusCode} ${durationMs}ms`;
+    const message = `${req.method} ${requestLogPath(req.originalUrl)} ${res.statusCode} ${durationMs}ms`;
     if (res.statusCode >= 500) {
       logger.error(message);
     } else if (res.statusCode >= 400) {

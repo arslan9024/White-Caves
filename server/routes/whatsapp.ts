@@ -2,8 +2,16 @@
 import { getWhatsAppEngine, WhatsAppEngineStatus } from '../services/whatsapp/WhatsAppEngine.js';
 import { NinaService } from '../services/NinaService.js';
 import qrcode from 'qrcode';
+import { AppError } from '../middleware/errorHandler.js';
 
 const router = Router();
+
+router.param('agentId', (_req, _res, next, value: unknown) => {
+  if (typeof value !== 'string' || !value.trim()) {
+    return next(new AppError('agentId must be a non-empty string', 400));
+  }
+  next();
+});
 
 /** Helper to get engine from URL param */
 function getEngine(req: Request) {

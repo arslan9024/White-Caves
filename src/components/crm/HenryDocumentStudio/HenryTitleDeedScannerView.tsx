@@ -6,12 +6,12 @@
  *   - Shared Document Upload Component (dropzone + file selector)
  *   - Form-Style Variables Extraction (Building, Property No, Plot, Area, Makani, DEWA, Owner, Purchase Price)
  * Right Side:
- *   - Uploaded Document Live Preview Pane (supports PDF, PNG, JPG, and DLD Verified Registry View)
+ *   - Uploaded Document Live Preview Pane (supports PDF, PNG, JPG, and Unverified OCR Review)
  * Bottom:
  *   - Persistent Action Controls (Discard, Copy JSON, Save to Property Vault)
  */
 
-import React, { FC, useState, useEffect } from 'react';
+import React, { FC, useState, useEffect, useRef } from 'react';
 import styled from 'styled-components';
 import {
   Building,
@@ -27,7 +27,19 @@ import {
 import henryTitleDeedScannerService, {
   DldTitleDeedExtractedData,
 } from '../../../services/HenryTitleDeedScannerService';
+import {
+  assessScanReadiness,
+  canUseScan,
+  scanExpiry,
+  VaultSaveOptions,
+} from '../../../services/henryScanReview';
+import { markFieldReviewed } from '../../../services/henryDocumentParsing';
+import { HenryExtractionEvidence } from './HenryExtractionEvidence';
+import { snapshotBenchmarkValues, type BenchmarkValues } from '../../../services/henryBenchmark';
+import HenryVaultControls from './HenryVaultControls';
 import HenrySharedDocumentUploader from './HenrySharedDocumentUploader';
+import type { DriveImport } from '../../../services/henryDrive';
+import { useDriveScannerIntake } from './logic/useDriveScannerIntake';
 
 const ViewContainer = styled.div`
   display: flex;
@@ -53,8 +65,8 @@ const LeftCol = styled.div`
 `;
 
 const FormCard = styled.div`
-  background: #FFFFFF;
-  border: 1px solid #E2E8F0;
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
   border-radius: 12px;
   padding: 1.25rem;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
@@ -87,33 +99,35 @@ const FormGroup = styled.div`
     justify-content: space-between;
 
     .ar {
-      color: #94A3B8;
+      color: #94a3b8;
       font-size: 0.7rem;
       direction: rtl;
     }
   }
 
-  input, select, textarea {
-    background: #F8FAFC;
-    border: 1px solid #CBD5E1;
+  input,
+  select,
+  textarea {
+    background: #f8fafc;
+    border: 1px solid #cbd5e1;
     border-radius: 6px;
     padding: 7px 10px;
     font-size: 0.85rem;
     font-weight: 600;
-    color: #0F172A;
+    color: #0f172a;
     outline: none;
     transition: border 0.15s ease;
 
     &:focus {
-      border-color: #EF4444;
-      background: #FFFFFF;
+      border-color: #ef4444;
+      background: #ffffff;
     }
   }
 `;
 
 const RightPreviewCol = styled.div`
-  background: #FFFFFF;
-  border: 1px solid #E2E8F0;
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
   border-radius: 12px;
   box-shadow: 0 4px 16px rgba(0, 0, 0, 0.04);
   overflow: hidden;
@@ -125,8 +139,8 @@ const RightPreviewCol = styled.div`
 `;
 
 const PreviewHeader = styled.div`
-  background: #0F172A;
-  color: #FFFFFF;
+  background: #0f172a;
+  color: #ffffff;
   padding: 10px 14px;
   display: flex;
   justify-content: space-between;
@@ -148,7 +162,7 @@ const PreviewHeader = styled.div`
 
 const PreviewBody = styled.div`
   padding: 1.25rem;
-  background: #E2E8F0;
+  background: #e2e8f0;
   overflow-y: auto;
   flex: 1;
   display: flex;
@@ -159,8 +173,8 @@ const PreviewBody = styled.div`
 `;
 
 const DeedSummaryCard = styled.div`
-  background: #FFFFFF;
-  border: 2px solid #EF4444;
+  background: #ffffff;
+  border: 2px solid #ef4444;
   border-radius: 12px;
   padding: 1.25rem;
   width: 100%;
@@ -172,17 +186,17 @@ const DeedSummaryCard = styled.div`
     display: flex;
     justify-content: space-between;
     align-items: center;
-    border-bottom: 2px solid #FEE2E2;
+    border-bottom: 2px solid #fee2e2;
     padding-bottom: 8px;
     margin-bottom: 12px;
     font-weight: 800;
     font-size: 0.82rem;
-    color: #DC2626;
+    color: #dc2626;
   }
   .property-title {
     font-size: 1.15rem;
     font-weight: 900;
-    color: #0F172A;
+    color: #0f172a;
   }
   .owner-title {
     font-size: 0.95rem;
@@ -195,15 +209,15 @@ const DeedSummaryCard = styled.div`
     grid-template-columns: 1fr 1fr;
     gap: 8px;
     font-size: 0.78rem;
-    background: #F8FAFC;
+    background: #f8fafc;
     padding: 8px;
     border-radius: 6px;
   }
 `;
 
 const BottomActionBar = styled.div`
-  background: #FFFFFF;
-  border: 1px solid #E2E8F0;
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
   border-radius: 12px;
   padding: 10px 16px;
   display: flex;
@@ -250,7 +264,11 @@ const ActionBtn = styled.button<{ $variant?: 'primary' | 'secondary' | 'danger' 
   }}
 `;
 
-export const HenryTitleDeedScannerView: FC = () => {
+export const HenryTitleDeedScannerView: FC<{ importedSource?: DriveImport }> = ({ importedSource }) => {
+  const scanGeneration = useRef(0);
+  const [uploaderReset, setUploaderReset] = useState(0);
+  const [archiveReset, setArchiveReset] = useState(0);
+  const [scannerValues, setScannerValues] = useState<Readonly<BenchmarkValues>>();
   const [extractedData, setExtractedData] = useState<DldTitleDeedExtractedData | null>(() => {
     return henryTitleDeedScannerService.getCachedTitleDeed();
   });
@@ -260,6 +278,12 @@ export const HenryTitleDeedScannerView: FC = () => {
   const [zoomLevel, setZoomLevel] = useState<number>(100);
   const [statusMsg, setStatusMsg] = useState<string | null>(null);
   const [copiedJson, setCopiedJson] = useState<boolean>(false);
+  const [vaultOptions, setVaultOptions] = useState<VaultSaveOptions>({});
+  const readiness = assessScanReadiness(extractedData);
+
+  useEffect(() => {
+    if (!canUseScan(extractedData)) henryTitleDeedScannerService.clearCachedTitleDeed();
+  }, [extractedData]);
 
   useEffect(() => {
     if (uploadedFile) {
@@ -271,24 +295,47 @@ export const HenryTitleDeedScannerView: FC = () => {
     }
   }, [uploadedFile]);
 
-  const handleFileUpload = async (file: File) => {
+  const handleFileUpload = async (file: File, original: File = file) => {
+    const generation = ++scanGeneration.current;
+    setVaultOptions({});
+    setArchiveReset(previous => previous + 1);
     setIsScanning(true);
-    setUploadedFile(file);
+    setScannerValues(undefined);
+    setExtractedData(null);
+    henryTitleDeedScannerService.clearCachedTitleDeed();
+    setUploadedFile(original);
     setStatusMsg(`Scanning Title Deed "${file.name}"...`);
 
     try {
       const data = await henryTitleDeedScannerService.scanTitleDeed(file);
+      if (generation !== scanGeneration.current) return;
+      setScannerValues(snapshotBenchmarkValues(data));
       setExtractedData(data);
-      setStatusMsg(`✓ Extracted Property: ${data.buildingNameEn} #${data.propertyNumber} (${data.ownerNameEn})`);
-    } catch {
-      setStatusMsg('Error processing Title Deed.');
+      setStatusMsg(
+        `✓ Extracted Property: ${data.buildingNameEn} #${data.propertyNumber} (${data.ownerNameEn})`
+      );
+    } catch (error) {
+      if (generation === scanGeneration.current)
+        setStatusMsg(error instanceof Error ? error.message : 'Error processing Title Deed.');
     } finally {
-      setIsScanning(false);
-      setTimeout(() => setStatusMsg(null), 4000);
+      if (generation === scanGeneration.current) {
+        setIsScanning(false);
+        setTimeout(() => {
+          if (generation === scanGeneration.current) setStatusMsg(null);
+        }, 4000);
+      }
     }
   };
 
+  useDriveScannerIntake(importedSource, handleFileUpload);
+
   const handleLoadDemo = async () => {
+    setVaultOptions({});
+    setArchiveReset(previous => previous + 1);
+    setUploaderReset(previous => previous + 1);
+    setScannerValues(undefined);
+    scanGeneration.current++;
+    henryTitleDeedScannerService.clearCachedTitleDeed();
     setIsScanning(true);
     setUploadedFile(null);
     try {
@@ -301,38 +348,71 @@ export const HenryTitleDeedScannerView: FC = () => {
     }
   };
 
-  const handleUpdateField = (field: keyof DldTitleDeedExtractedData, val: DldTitleDeedExtractedData[keyof DldTitleDeedExtractedData]) => {
+  const handleUpdateField = (
+    field: keyof DldTitleDeedExtractedData,
+    val: DldTitleDeedExtractedData[keyof DldTitleDeedExtractedData]
+  ) => {
+    henryTitleDeedScannerService.clearCachedTitleDeed();
     if (!extractedData) return;
     setExtractedData(prev => {
       if (!prev) return null;
-      const updated = { ...prev, [field]: val };
-      henryTitleDeedScannerService.setCachedTitleDeed(updated);
+      const updated = { ...prev, [field]: val, reviewConfirmed: false };
+      updated.diagnostics = markFieldReviewed(prev.diagnostics, field, val);
+      updated.missingFields = [
+        !updated.certificateNumber && 'certificateNumber',
+        !updated.ownerNameEn && 'ownerNameEn',
+        !(updated.propertyNumber || updated.plotNumber) && 'propertyNumber',
+      ].filter((value): value is string => !!value);
+
       return updated;
     });
   };
 
   const handleSaveToVault = async () => {
-    if (!extractedData) return;
-    await henryTitleDeedScannerService.saveToDatabase(extractedData);
-    setStatusMsg(`✓ Title Deed Certificate ${extractedData.certificateNumber} saved to Property Vault & Database!`);
+    if (!extractedData || !canUseScan(extractedData) || isScanning) return;
+    const generation = scanGeneration.current;
+    if (!uploadedFile) {
+      setStatusMsg('Upload an original before archival. Suggestions alone cannot be archived.');
+      return;
+    }
+    const result = await henryTitleDeedScannerService.saveToDatabase(extractedData, {
+      ...vaultOptions,
+      ...(uploadedFile === importedSource?.file ? { driveOrigin: importedSource.driveOrigin } : {}),
+      sources: [uploadedFile],
+    });
+    if (generation !== scanGeneration.current) return;
+    if (result.success) setVaultOptions(previous => ({ ...previous, replacesId: undefined }));
+    setStatusMsg(
+      result.success ? 'Reviewed record saved to encrypted vault.' : result.error || 'Save failed.'
+    );
     setTimeout(() => setStatusMsg(null), 4000);
   };
 
   const handleAutoFillTenancy = () => {
-    if (!extractedData) return;
+    if (!extractedData || !canUseScan(extractedData) || isScanning) return;
     henryTitleDeedScannerService.setCachedTitleDeed(extractedData);
-    setStatusMsg(`✓ Auto-filled Tenancy Contract with ${extractedData.buildingNameEn} Unit ${extractedData.propertyNumber} & Landlord ${extractedData.ownerNameEn}!`);
+    setStatusMsg(
+      `Reviewed fields available to Tenancy Contract: ${extractedData.buildingNameEn} Unit ${extractedData.propertyNumber} & Landlord ${extractedData.ownerNameEn}!`
+    );
     setTimeout(() => setStatusMsg(null), 4000);
   };
 
   const handleCreateCrmListing = () => {
-    if (!extractedData) return;
+    if (!extractedData || !canUseScan(extractedData) || isScanning) return;
     henryTitleDeedScannerService.setCachedTitleDeed(extractedData);
-    setStatusMsg(`✓ Created CRM Property Listing draft for ${extractedData.buildingNameEn} Unit ${extractedData.propertyNumber} (${extractedData.totalAreaSqFt} Sq.Ft)!`);
+    setStatusMsg(
+      `Reviewed fields available for CRM draft: ${extractedData.buildingNameEn} Unit ${extractedData.propertyNumber} (${extractedData.totalAreaSqFt} Sq.Ft)!`
+    );
     setTimeout(() => setStatusMsg(null), 4000);
   };
 
   const handleDiscard = () => {
+    setVaultOptions({});
+    setArchiveReset(previous => previous + 1);
+    setUploaderReset(previous => previous + 1);
+    setScannerValues(undefined);
+    scanGeneration.current++;
+    setIsScanning(false);
     setExtractedData(null);
     setUploadedFile(null);
     henryTitleDeedScannerService.clearCachedTitleDeed();
@@ -353,9 +433,66 @@ export const HenryTitleDeedScannerView: FC = () => {
 
   return (
     <ViewContainer>
+      <p role="note">
+        OCR is not proof of authenticity or ownership. Compare every field to the original before
+        saving or autofill. Missing or uncertain values: rescan without glare, then correct below.
+      </p>
+      {extractedData?.demoOnly && <p role="alert">Demo only — saving and autofill disabled.</p>}
+      {!!extractedData?.missingFields?.length && (
+        <p role="alert">
+          Missing: {extractedData.missingFields.join(', ')}. Correct these fields or rescan.
+        </p>
+      )}
+      <HenryExtractionEvidence diagnostics={extractedData?.diagnostics} scannerValues={scannerValues} />
+      <p role="status">
+        Readiness: {readiness.status.replaceAll('_', ' ')}. {readiness.reasons.join(' ')}
+      </p>
+      <HenryVaultControls
+        key={archiveReset}
+        docType="title_deed"
+        options={vaultOptions}
+        onOptions={setVaultOptions}
+        onSuggestion={data => {
+          setArchiveReset(previous => previous + 1);
+          setUploaderReset(previous => previous + 1);
+          setScannerValues(undefined);
+          scanGeneration.current++;
+          setIsScanning(false);
+          henryTitleDeedScannerService.clearCachedTitleDeed();
+          setUploadedFile(null);
+          setExtractedData(data as DldTitleDeedExtractedData);
+        }}
+      />
+      <label>
+        <input
+          type="checkbox"
+          aria-label="Confirm document review"
+          checked={!!extractedData?.reviewConfirmed}
+          disabled={
+            !extractedData || !canUseScan({ ...extractedData, reviewConfirmed: true }) || isScanning
+          }
+          onChange={event => {
+            henryTitleDeedScannerService.clearCachedTitleDeed();
+            setExtractedData(prev =>
+              prev ? { ...prev, reviewConfirmed: event.target.checked } : prev
+            );
+          }}
+        />
+        I compared the fields to the original and confirm use for saving and autofill.
+      </label>
+
       {/* Status Feedback Banner */}
       {statusMsg && (
-        <div style={{ background: 'var(--color-0f172a, #0F172A)', color: 'var(--color-38bdf8, #38BDF8)', padding: '8px 16px', borderRadius: '8px', fontSize: '0.82rem', fontWeight: 700 }}>
+        <div
+          style={{
+            background: 'var(--color-0f172a, #0F172A)',
+            color: 'var(--color-38bdf8, #38BDF8)',
+            padding: '8px 16px',
+            borderRadius: '8px',
+            fontSize: '0.82rem',
+            fontWeight: 700,
+          }}
+        >
           ⚡ {statusMsg}
         </div>
       )}
@@ -364,38 +501,86 @@ export const HenryTitleDeedScannerView: FC = () => {
         {/* ══════════ LEFT COLUMN: UPLOADER & FORM-STYLE EXTRACTION ══════════ */}
         <LeftCol>
           <HenrySharedDocumentUploader
+            resetSignal={uploaderReset}
             docType="title_deed"
             title="3.19.3 Scan Title Deed / Oqood (شهادة ملكية)"
-            subtitle="Upload Title Deed PDF or image to extract official registration parameters, plot details, and ownership records"
+            subtitle="Upload Title Deed PDF or image for source-reviewed field candidates, not DLD registration or ownership verification"
             onFileUpload={handleFileUpload}
             onSampleLoad={handleLoadDemo}
             isProcessing={isScanning}
             accentColor="#EF4444"
           />
 
-          <div style={{ marginTop: '-0.5rem', marginBottom: '0.75rem', display: 'flex', gap: '6px', flexWrap: 'wrap', alignItems: 'center' }}>
-            <span style={{ fontSize: '0.72rem', color: 'var(--text-secondary, #64748B)', fontWeight: 700 }}>Property Presets:</span>
+          <div
+            style={{
+              marginTop: '-0.5rem',
+              marginBottom: '0.75rem',
+              display: 'flex',
+              gap: '6px',
+              flexWrap: 'wrap',
+              alignItems: 'center',
+            }}
+          >
+            <span
+              style={{
+                fontSize: '0.72rem',
+                color: 'var(--text-secondary, #64748B)',
+                fontWeight: 700,
+              }}
+            >
+              Property Presets:
+            </span>
             <button
               type="button"
               onClick={() => {
+                scanGeneration.current++;
+                setUploaderReset(previous => previous + 1);
+                setIsScanning(false);
+                setUploadedFile(null);
                 const sample = henryTitleDeedScannerService.getBukoSample();
+                setScannerValues(undefined);
                 setExtractedData(sample);
-                setStatusMsg(`✓ Ingested Property: ${sample.ownerNameEn} — ${sample.buildingNameEn}`);
+                setStatusMsg(
+                  `✓ Ingested Property: ${sample.ownerNameEn} — ${sample.buildingNameEn}`
+                );
                 setTimeout(() => setStatusMsg(null), 3000);
               }}
-              style={{ background: 'var(--color-f1f5f9, #F1F5F9)', border: '1px solid var(--text-secondary, #CBD5E1)', borderRadius: '4px', padding: '2px 8px', fontSize: '0.7rem', fontWeight: 700, cursor: 'pointer' }}
+              style={{
+                background: 'var(--color-f1f5f9, #F1F5F9)',
+                border: '1px solid var(--text-secondary, #CBD5E1)',
+                borderRadius: '4px',
+                padding: '2px 8px',
+                fontSize: '0.7rem',
+                fontWeight: 700,
+                cursor: 'pointer',
+              }}
             >
               BUKO COMMODITY DMCC (Madinat Hind 4 Plot 7354)
             </button>
             <button
               type="button"
               onClick={() => {
+                scanGeneration.current++;
+                setUploaderReset(previous => previous + 1);
+                setIsScanning(false);
+                setUploadedFile(null);
                 const sample = henryTitleDeedScannerService.getDemoExtractedData();
+                setScannerValues(undefined);
                 setExtractedData(sample);
-                setStatusMsg(`✓ Ingested Property: ${sample.ownerNameEn} — ${sample.buildingNameEn}`);
+                setStatusMsg(
+                  `✓ Ingested Property: ${sample.ownerNameEn} — ${sample.buildingNameEn}`
+                );
                 setTimeout(() => setStatusMsg(null), 3000);
               }}
-              style={{ background: 'var(--color-f1f5f9, #F1F5F9)', border: '1px solid var(--text-secondary, #CBD5E1)', borderRadius: '4px', padding: '2px 8px', fontSize: '0.7rem', fontWeight: 700, cursor: 'pointer' }}
+              style={{
+                background: 'var(--color-f1f5f9, #F1F5F9)',
+                border: '1px solid var(--text-secondary, #CBD5E1)',
+                borderRadius: '4px',
+                padding: '2px 8px',
+                fontSize: '0.7rem',
+                fontWeight: 700,
+                cursor: 'pointer',
+              }}
             >
               Viridis A Unit 504 (Akram Dib Nehme)
             </button>
@@ -403,50 +588,73 @@ export const HenryTitleDeedScannerView: FC = () => {
 
           {extractedData && (
             <FormCard>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                <h4 style={{ margin: 0, fontSize: '0.95rem', fontWeight: 800, color: 'var(--color-0f172a, #0F172A)' }}>
+              <div
+                style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}
+              >
+                <h4
+                  style={{
+                    margin: 0,
+                    fontSize: '0.95rem',
+                    fontWeight: 800,
+                    color: 'var(--color-0f172a, #0F172A)',
+                  }}
+                >
                   Extracted Title Deed Variables Form
                 </h4>
-                <span style={{ fontSize: '0.75rem', color: 'var(--accent-green, #059669)', fontWeight: 800 }}>
-                  ✓ DLD Registry Validated
+                <span
+                  style={{
+                    fontSize: '0.75rem',
+                    color: 'var(--accent-green, #059669)',
+                    fontWeight: 800,
+                  }}
+                >
+                  Unverified extraction — source review required
                 </span>
               </div>
 
               <FormGrid $cols={3}>
                 <FormGroup>
-                  <label>Building Name <span className="ar">اسم المبنى</span></label>
+                  <label>
+                    Building Name <span className="ar">اسم المبنى</span>
+                  </label>
                   <input
                     type="text"
                     value={extractedData.buildingNameEn}
-                    onChange={(e) => handleUpdateField('buildingNameEn', e.target.value)}
+                    onChange={e => handleUpdateField('buildingNameEn', e.target.value)}
                   />
                 </FormGroup>
                 <FormGroup>
-                  <label>Unit No. <span className="ar">رقم العقار</span></label>
+                  <label>
+                    Unit No. <span className="ar">رقم العقار</span>
+                  </label>
                   <input
                     type="text"
                     value={extractedData.propertyNumber}
                     style={{ fontWeight: 800, color: 'var(--accent-red, #EF4444)' }}
-                    onChange={(e) => handleUpdateField('propertyNumber', e.target.value)}
+                    onChange={e => handleUpdateField('propertyNumber', e.target.value)}
                   />
                 </FormGroup>
                 <FormGroup>
-                  <label>Plot No. <span className="ar">رقم الأرض</span></label>
+                  <label>
+                    Plot No. <span className="ar">رقم الأرض</span>
+                  </label>
                   <input
                     type="text"
                     value={extractedData.plotNumber}
-                    onChange={(e) => handleUpdateField('plotNumber', e.target.value)}
+                    onChange={e => handleUpdateField('plotNumber', e.target.value)}
                   />
                 </FormGroup>
               </FormGrid>
 
               <FormGrid $cols={3}>
                 <FormGroup>
-                  <label>Total Area (Sq.M) <span className="ar">المساحة متر مربع</span></label>
+                  <label>
+                    Total Area (Sq.M) <span className="ar">المساحة متر مربع</span>
+                  </label>
                   <input
                     type="number"
                     value={extractedData.totalAreaSqM}
-                    onChange={(e) => {
+                    onChange={e => {
                       const val = parseFloat(e.target.value) || 0;
                       handleUpdateField('totalAreaSqM', val);
                       handleUpdateField('totalAreaSqFt', parseFloat((val * 10.7639).toFixed(2)));
@@ -454,59 +662,73 @@ export const HenryTitleDeedScannerView: FC = () => {
                   />
                 </FormGroup>
                 <FormGroup>
-                  <label>Area (Sq.Ft) <span className="ar">المساحة قدم</span></label>
+                  <label>
+                    Area (Sq.Ft) <span className="ar">المساحة قدم</span>
+                  </label>
                   <input
                     type="number"
                     value={extractedData.totalAreaSqFt}
-                    onChange={(e) => handleUpdateField('totalAreaSqFt', parseFloat(e.target.value) || 0)}
+                    onChange={e =>
+                      handleUpdateField('totalAreaSqFt', parseFloat(e.target.value) || 0)
+                    }
                   />
                 </FormGroup>
                 <FormGroup>
-                  <label>Floor No. <span className="ar">الطابق</span></label>
+                  <label>
+                    Floor No. <span className="ar">الطابق</span>
+                  </label>
                   <input
                     type="text"
                     value={extractedData.floorNumber}
-                    onChange={(e) => handleUpdateField('floorNumber', e.target.value)}
+                    onChange={e => handleUpdateField('floorNumber', e.target.value)}
                   />
                 </FormGroup>
               </FormGrid>
 
               <FormGrid $cols={2}>
                 <FormGroup>
-                  <label>Owner Name (EN) <span className="ar">اسم المالك</span></label>
+                  <label>
+                    Owner Name (EN) <span className="ar">اسم المالك</span>
+                  </label>
                   <input
                     type="text"
                     value={extractedData.ownerNameEn}
                     style={{ fontWeight: 700 }}
-                    onChange={(e) => handleUpdateField('ownerNameEn', e.target.value)}
+                    onChange={e => handleUpdateField('ownerNameEn', e.target.value)}
                   />
                 </FormGroup>
                 <FormGroup>
-                  <label>Owner Name (AR) <span className="ar">اسم المالك بالعربية</span></label>
+                  <label>
+                    Owner Name (AR) <span className="ar">اسم المالك بالعربية</span>
+                  </label>
                   <input
                     type="text"
                     value={extractedData.ownerNameAr || ''}
-                    onChange={(e) => handleUpdateField('ownerNameAr', e.target.value)}
+                    onChange={e => handleUpdateField('ownerNameAr', e.target.value)}
                   />
                 </FormGroup>
               </FormGrid>
 
               <FormGrid $cols={2}>
                 <FormGroup>
-                  <label>Certificate No. <span className="ar">رقم السند</span></label>
+                  <label>
+                    Certificate No. <span className="ar">رقم السند</span>
+                  </label>
                   <input
                     type="text"
                     value={extractedData.certificateNumber}
                     style={{ fontFamily: 'monospace' }}
-                    onChange={(e) => handleUpdateField('certificateNumber', e.target.value)}
+                    onChange={e => handleUpdateField('certificateNumber', e.target.value)}
                   />
                 </FormGroup>
                 <FormGroup>
-                  <label>Location / Community <span className="ar">الموقع</span></label>
+                  <label>
+                    Location / Community <span className="ar">الموقع</span>
+                  </label>
                   <input
                     type="text"
                     value={extractedData.communityEn}
-                    onChange={(e) => handleUpdateField('communityEn', e.target.value)}
+                    onChange={e => handleUpdateField('communityEn', e.target.value)}
                   />
                 </FormGroup>
               </FormGrid>
@@ -525,34 +747,77 @@ export const HenryTitleDeedScannerView: FC = () => {
               <button
                 type="button"
                 onClick={() => setZoomLevel(prev => Math.max(70, prev - 15))}
-                style={{ background: 'rgba(255,255,255,0.15)', color: 'var(--white, #FFF)', border: 'none', borderRadius: '4px', padding: '2px 6px', fontSize: '0.7rem', cursor: 'pointer' }}
+                style={{
+                  background: 'rgba(255,255,255,0.15)',
+                  color: 'var(--white, #FFF)',
+                  border: 'none',
+                  borderRadius: '4px',
+                  padding: '2px 6px',
+                  fontSize: '0.7rem',
+                  cursor: 'pointer',
+                }}
               >
                 -
               </button>
-              <span style={{ fontSize: '0.72rem', color: 'var(--color-94a3b8, #94A3B8)' }}>{zoomLevel}%</span>
+              <span style={{ fontSize: '0.72rem', color: 'var(--color-94a3b8, #94A3B8)' }}>
+                {zoomLevel}%
+              </span>
               <button
                 type="button"
                 onClick={() => setZoomLevel(prev => Math.min(180, prev + 15))}
-                style={{ background: 'rgba(255,255,255,0.15)', color: 'var(--white, #FFF)', border: 'none', borderRadius: '4px', padding: '2px 6px', fontSize: '0.7rem', cursor: 'pointer' }}
+                style={{
+                  background: 'rgba(255,255,255,0.15)',
+                  color: 'var(--white, #FFF)',
+                  border: 'none',
+                  borderRadius: '4px',
+                  padding: '2px 6px',
+                  fontSize: '0.7rem',
+                  cursor: 'pointer',
+                }}
               >
                 +
               </button>
               {uploadedFile && (
-                <span style={{ fontSize: '0.72rem', color: 'var(--color-94a3b8, #94A3B8)', marginLeft: '6px' }}>
+                <span
+                  style={{
+                    fontSize: '0.72rem',
+                    color: 'var(--color-94a3b8, #94A3B8)',
+                    marginLeft: '6px',
+                  }}
+                >
                   {uploadedFile.name} ({(uploadedFile.size / 1024).toFixed(1)} KB)
                 </span>
               )}
             </div>
           </PreviewHeader>
 
-          <PreviewBody style={{ transform: `scale(${zoomLevel / 100})`, transformOrigin: 'top center', transition: 'transform 0.15s ease-out' }}>
+          <PreviewBody
+            style={{
+              transform: `scale(${zoomLevel / 100})`,
+              transformOrigin: 'top center',
+              transition: 'transform 0.15s ease-out',
+            }}
+          >
             {uploadedFile && filePreviewUrl ? (
-              <div style={{ width: '100%', height: '100%', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+              <div
+                style={{
+                  width: '100%',
+                  height: '100%',
+                  display: 'flex',
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                }}
+              >
                 {uploadedFile.type.startsWith('image/') ? (
                   <img
                     src={filePreviewUrl}
                     alt="Uploaded Title Deed"
-                    style={{ maxWidth: '100%', maxHeight: '480px', borderRadius: '8px', boxShadow: '0 8px 24px rgba(0,0,0,0.2)' }}
+                    style={{
+                      maxWidth: '100%',
+                      maxHeight: '480px',
+                      borderRadius: '8px',
+                      boxShadow: '0 8px 24px rgba(0,0,0,0.2)',
+                    }}
                   />
                 ) : (
                   <iframe
@@ -566,25 +831,48 @@ export const HenryTitleDeedScannerView: FC = () => {
               <DeedSummaryCard>
                 <div className="header">
                   <span>GOVERNMENT OF DUBAI · LAND DEPARTMENT</span>
-                  <span>CERTIFIED</span>
+                  <span>NOT AUTHENTICATED</span>
                 </div>
                 <div className="property-title">
                   {extractedData.buildingNameEn} — Unit {extractedData.propertyNumber}
                 </div>
-                <div className="owner-title">
-                  Owner: {extractedData.ownerNameEn}
-                </div>
+                <div className="owner-title">Owner: {extractedData.ownerNameEn}</div>
                 <div className="specs-row">
-                  <div><strong>Plot:</strong> {extractedData.plotNumber}</div>
-                  <div><strong>Area:</strong> {extractedData.totalAreaSqM} Sq.M ({extractedData.totalAreaSqFt} Sq.Ft)</div>
-                  <div><strong>Certificate:</strong> {extractedData.certificateNumber}</div>
-                  <div><strong>Location:</strong> {extractedData.communityEn}</div>
+                  <div>
+                    <strong>Plot:</strong> {extractedData.plotNumber}
+                  </div>
+                  <div>
+                    <strong>Area:</strong> {extractedData.totalAreaSqM} Sq.M (
+                    {extractedData.totalAreaSqFt} Sq.Ft)
+                  </div>
+                  <div>
+                    <strong>Certificate:</strong> {extractedData.certificateNumber}
+                  </div>
+                  <div>
+                    <strong>Location:</strong> {extractedData.communityEn}
+                  </div>
                 </div>
               </DeedSummaryCard>
             ) : (
-              <div style={{ textAlign: 'center', color: 'var(--color-94a3b8, #94A3B8)', padding: '3rem 1rem' }}>
-                <Building size={48} color="var(--text-secondary, #94A3B8)" style={{ margin: '0 auto 12px auto' }} />
-                <div style={{ fontWeight: 800, fontSize: '0.95rem', color: 'var(--color-334155, #334155)' }}>
+              <div
+                style={{
+                  textAlign: 'center',
+                  color: 'var(--color-94a3b8, #94A3B8)',
+                  padding: '3rem 1rem',
+                }}
+              >
+                <Building
+                  size={48}
+                  color="var(--text-secondary, #94A3B8)"
+                  style={{ margin: '0 auto 12px auto' }}
+                />
+                <div
+                  style={{
+                    fontWeight: 800,
+                    fontSize: '0.95rem',
+                    color: 'var(--color-334155, #334155)',
+                  }}
+                >
                   No Title Deed Uploaded Yet
                 </div>
                 <div style={{ fontSize: '0.8rem', marginTop: '4px' }}>
@@ -599,22 +887,42 @@ export const HenryTitleDeedScannerView: FC = () => {
       {/* ══════════ BOTTOM PERSISTENT ACTION CONTROLS ══════════ */}
       <BottomActionBar>
         <div>
-          <ActionBtn $variant="danger" onClick={handleDiscard} disabled={!extractedData && !uploadedFile}>
+          <ActionBtn
+            $variant="danger"
+            onClick={handleDiscard}
+          >
             <Trash2 size={13} /> Discard & Clear
           </ActionBtn>
         </div>
 
         <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
-          <ActionBtn $variant="secondary" onClick={handleAutoFillTenancy} disabled={!extractedData}>
+          <ActionBtn
+            $variant="secondary"
+            onClick={handleAutoFillTenancy}
+            disabled={!canUseScan(extractedData) || isScanning}
+          >
             <FileText size={13} color="#10B981" /> Auto-Fill Tenancy Lease
           </ActionBtn>
-          <ActionBtn $variant="secondary" onClick={handleCreateCrmListing} disabled={!extractedData}>
+          <ActionBtn
+            $variant="secondary"
+            onClick={handleCreateCrmListing}
+            disabled={!canUseScan(extractedData) || isScanning}
+          >
             <Building size={13} color="#38BDF8" /> Create CRM Listing
           </ActionBtn>
-          <ActionBtn $variant="secondary" onClick={handleCopyJson} disabled={!extractedData}>
-            {copiedJson ? <Check size={13} color="#10B981" /> : <Copy size={13} />} Copy Variables JSON
+          <ActionBtn
+            $variant="secondary"
+            onClick={handleCopyJson}
+            disabled={!canUseScan(extractedData) || isScanning}
+          >
+            {copiedJson ? <Check size={13} color="#10B981" /> : <Copy size={13} />} Copy Variables
+            JSON
           </ActionBtn>
-          <ActionBtn $variant="primary" onClick={handleSaveToVault} disabled={!extractedData}>
+          <ActionBtn
+            $variant="primary"
+            onClick={handleSaveToVault}
+            disabled={!canUseScan(extractedData) || isScanning}
+          >
             <Save size={13} /> Save to Property Vault
           </ActionBtn>
         </div>

@@ -24,6 +24,35 @@ interface PushNotificationInput {
 }
 
 class NotificationService {
+  /** Marker and inbox delivery commit atomically; notification deletion cannot enable redelivery. */
+  async pushOnceInApp(input: PushNotificationInput & { id: string }): Promise<boolean> {
+    try {
+      const preferences = await prisma.notificationPreference.findUnique({ where: { userId: input.userId } });
+      if (preferences?.inApp === false) return false;
+      const notification = await prisma.$transaction(async tx => {
+        await tx.henryExpiryReminder.create({ data: { id: input.id } });
+        return tx.notification.create({
+          data: {
+            userId: input.userId, title: input.title, message: input.message,
+            type: input.type ?? 'info', channel: 'in_app',
+          },
+        });
+      });
+      try {
+        getSocketServer()?.emitNotification(notification.userId, {
+          id: notification.id, type: 'warning', title: notification.title, message: notification.message,
+        });
+      } catch {
+        logger.warn('Durable in-app notification saved; realtime refresh unavailable');
+      }
+      return true;
+    } catch (error) {
+      if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === 'P2002') return false;
+      logger.warn('Durable in-app notification delivery failed');
+      throw error;
+    }
+  }
+
   async pushToUser(input: PushNotificationInput): Promise<void> {
     try {
       // Fetch user notification preferences (W24-015)

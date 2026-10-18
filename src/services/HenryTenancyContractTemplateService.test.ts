@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeEach } from 'vitest';
+import { describe, it, expect, beforeEach, vi } from 'vitest';
 import henryTenancyContractTemplateService, {
   BLANK_DLD_TENANCY_CONTRACT,
   DEMO_PREFILLED_TENANCY_CONTRACT,
@@ -21,7 +21,7 @@ describe('HenryTenancyContractTemplateService — Official DLD Tenancy Contract 
     expect(blank.additionalTerms.length).toBe(5);
   });
 
-  it('saves and loads active draft cleanly from storage', () => {
+  it('saves and loads active draft cleanly within the session', () => {
     const draft = henryTenancyContractTemplateService.getBlankTemplate();
     draft.ownerName = 'Alexander Wright';
     draft.buildingName = 'Marina Gate 2';
@@ -34,10 +34,30 @@ describe('HenryTenancyContractTemplateService — Official DLD Tenancy Contract 
     expect(loaded.buildingName).toBe('Marina Gate 2');
     expect(loaded.annualRent).toBe(120000);
   });
+  it('never reads, overwrites or erases legacy persisted contracts and drafts', () => {
+    const get = vi.spyOn(Storage.prototype, 'getItem');
+    const set = vi.spyOn(Storage.prototype, 'setItem');
+    const remove = vi.spyOn(Storage.prototype, 'removeItem');
+    try {
+      const draft = henryTenancyContractTemplateService.getBlankTemplate();
+      henryTenancyContractTemplateService.saveDraft(draft);
+      henryTenancyContractTemplateService.saveContract(draft);
+      expect(henryTenancyContractTemplateService.getSavedContracts()[0].contractId).toBe(draft.contractId);
+      expect(henryTenancyContractTemplateService.loadActiveDraft().contractId).toBe(draft.contractId);
+      henryTenancyContractTemplateService.resetDraft();
+      henryTenancyContractTemplateService.clearSession();
+      expect(henryTenancyContractTemplateService.getSavedContracts()).toEqual([]);
+      expect(get).not.toHaveBeenCalled();
+      expect(set).not.toHaveBeenCalled();
+      expect(remove).not.toHaveBeenCalled();
+    } finally { vi.restoreAllMocks(); }
+  });
 
   it('auto-populates contract fields from Title Deed extraction', () => {
-    const deedData = henryTitleDeedScannerService.getDemoExtractedData();
+    const demo = henryTitleDeedScannerService.getDemoExtractedData();
+    const deedData = { ...demo, demoOnly: false, reviewConfirmed: true };
     let contract = henryTenancyContractTemplateService.getBlankTemplate();
+    expect(henryTenancyContractTemplateService.populateFromTitleDeed(contract, demo)).toBe(contract);
 
     contract = henryTenancyContractTemplateService.populateFromTitleDeed(contract, deedData);
 
@@ -50,8 +70,10 @@ describe('HenryTenancyContractTemplateService — Official DLD Tenancy Contract 
   });
 
   it('auto-populates tenant fields from Emirates ID extraction', () => {
-    const eidData = henryEmiratesIdScannerService.getDemoExtractedData();
+    const demo = henryEmiratesIdScannerService.getDemoExtractedData();
+    const eidData = { ...demo, demoOnly: false, reviewConfirmed: true };
     let contract = henryTenancyContractTemplateService.getBlankTemplate();
+    expect(henryTenancyContractTemplateService.populateFromEmiratesId(contract, demo)).toBe(contract);
 
     contract = henryTenancyContractTemplateService.populateFromEmiratesId(contract, eidData, 'tenant');
 
@@ -60,8 +82,10 @@ describe('HenryTenancyContractTemplateService — Official DLD Tenancy Contract 
   });
 
   it('auto-populates tenant fields from International Passport extraction', () => {
-    const passportData = henryPassportScannerService.getDemoExtractedData();
+    const demo = henryPassportScannerService.getDemoExtractedData();
+    const passportData = { ...demo, demoOnly: false, reviewConfirmed: true };
     let contract = henryTenancyContractTemplateService.getBlankTemplate();
+    expect(henryTenancyContractTemplateService.populateFromPassport(contract, demo)).toBe(contract);
 
     contract = henryTenancyContractTemplateService.populateFromPassport(contract, passportData, 'tenant');
 
@@ -83,5 +107,26 @@ describe('HenryTenancyContractTemplateService — Official DLD Tenancy Contract 
     expect(fullHtml).toContain('Terms and Conditions');
     expect(fullHtml).toContain('Know your Rights');
     expect(fullHtml).toContain('support@dubailand.gov.ae');
+  });
+
+  it('escapes every dynamic string, including direct fields, signatures and multiline terms', () => {
+    const payload = `<img src=x onerror="alert(1)"><script>alert('x')</script><b>شروط & terms</b>`;
+    const data = henryTenancyContractTemplateService.getDemoPreset();
+    for (const [key, value] of Object.entries(data)) {
+      if (typeof value === 'string') Object.assign(data, { [key]: payload });
+    }
+    data.additionalTerms = [`1. ${payload}\nKeep <em>literal</em> formatting.`, '2. Ordinary clause.',
+      '3. Third.', '4. Fourth.', '5. Fifth.', '6. Last clause.'];
+    const html = henryTenancyContractTemplateService.generateDldTenancyContractHtml(data);
+    const document = new DOMParser().parseFromString(html, 'text/html');
+    expect(document.querySelector('img, script, b, em, [onerror]')).toBeNull();
+    expect(document.body.textContent).toContain(payload);
+    expect(document.body.textContent).toContain('Keep <em>literal</em> formatting.');
+    expect(document.body.textContent).toContain('Last clause.');
+    expect(html).toContain('&lt;img src=x onerror=&quot;alert(1)&quot;&gt;');
+    expect(html).toContain('&#39;x&#39;');
+    expect(html).toContain('white-space: pre-wrap');
+    expect(data.tenantName).toBe(payload);
+    expect(data.additionalTerms[0]).toContain('<img');
   });
 });

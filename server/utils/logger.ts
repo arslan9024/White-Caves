@@ -6,6 +6,11 @@
 
 type LogLevel = 'debug' | 'info' | 'warn' | 'error';
 
+// Query strings can contain identity numbers even on requests rejected by a route.
+export function requestLogPath(url: string): string {
+  return url.split(/[?#]/, 1)[0];
+}
+
 const LOG_LEVELS: Record<LogLevel, number> = {
   debug: 0,
   info: 1,

@@ -10,10 +10,42 @@
  */
 
 import { parse as parseMrz } from 'mrz';
-import { safeStorage } from '../utils/safeStorage';
+import { imageQualityWarnings } from './henryImageQuality';
+import {
+  ScanReview,
+  VaultSaveOptions,
+  canUseScan,
+  saveReviewedScan,
+  scanExpiry,
+  validScanDate,
+} from './henryScanReview';
+import logger from '../utils/logger';
+import pdfWorkerUrl from 'pdfjs-dist/build/pdf.worker.min.mjs?url';
 import { ContractParty, ViewingFormPayload } from './HenryPdfEngineService';
+import {
+  languageValue,
+  normalizeDocumentDate,
+  normalizeDocumentText,
+  readDocumentFields,
+  refreshCoverage,
+} from './henryDocumentParsing';
 
-export interface EmiratesIdExtractedData {
+const ID_LABELS: Record<string, string[]> = {
+  idNumber: ['ID Number', 'Identity Number', 'رقم الهوية'],
+  cardNumber: ['Card Number', 'Card No.', 'رقم البطاقة'],
+  chipNumber: ['Chip Number', 'رقم الشريحة'],
+  fullName: ['Full Name', 'Name', 'الاسم', 'الاسم الكامل'],
+  dateOfBirth: ['Date of Birth', 'Birth Date', 'تاريخ الميلاد'],
+  issueDate: ['Issue Date', 'Issuing Date', 'Date of Issue', 'تاريخ الإصدار', 'تاريخ الاصدار'],
+  expiryDate: ['Expiry Date', 'Expiration Date', 'Date of Expiry', 'تاريخ الانتهاء'],
+  nationality: ['Nationality', 'الجنسية'],
+  gender: ['Gender', 'Sex', 'الجنس'],
+  occupation: ['Occupation', 'المهنة'],
+  employer: ['Employer', 'جهة العمل', 'صاحب العمل'],
+  issuingPlace: ['Issuing Place', 'Place of Issue', 'مكان الإصدار', 'مكان الاصدار'],
+};
+
+export interface EmiratesIdExtractedData extends ScanReview {
   // Identity Keys
   idNumber: string; // e.g. "784-1970-7905987-5"
   rawIdNumber: string; // e.g. "784197079059875"
@@ -29,7 +61,7 @@ export interface EmiratesIdExtractedData {
   nationalityEn: string; // e.g. "India"
   nationalityAr: string; // e.g. "جمهورية الهند"
   nationalityCode: string; // e.g. "IND"
-  gender: 'M' | 'F';
+  gender: 'M' | 'F' | '';
 
   // Document Validity
   issueDate: string; // e.g. "28/08/2025"
@@ -62,6 +94,36 @@ export interface EmiratesIdExtractedData {
   documentFormat?: string;
 }
 
+export const EMPTY_EMIRATES_ID: EmiratesIdExtractedData = {
+  idNumber: '',
+  rawIdNumber: '',
+  cardNumber: '',
+  fullNameEn: '',
+  fullNameAr: '',
+  firstName: '',
+  lastName: '',
+  dateOfBirth: '',
+  nationalityEn: '',
+  nationalityAr: '',
+  nationalityCode: '',
+  gender: '',
+  issueDate: '',
+  expiryDate: '',
+  isExpired: false,
+  daysUntilExpiry: 0,
+  occupationEn: '',
+  occupationAr: '',
+  employerEn: '',
+  employerAr: '',
+  issuingPlaceEn: '',
+  issuingPlaceAr: '',
+  confidenceScore: 0,
+  detectedFieldsCount: 0,
+  scannedAt: '',
+  reviewConfirmed: false,
+  missingFields: ['idNumber', 'fullNameEn', 'expiryDate'],
+};
+
 const NATIONALITY_REGISTRY: Record<string, { en: string; ar: string; code: string }> = {
   IND: { en: 'India', ar: 'جمهورية الهند', code: 'IND' },
   INDIA: { en: 'India', ar: 'جمهورية الهند', code: 'IND' },
@@ -86,6 +148,8 @@ const NATIONALITY_REGISTRY: Record<string, { en: string; ar: string; code: strin
 };
 
 export const KHALIF_MOHAMEDNUR_IBRAHIM_EID_SAMPLE: EmiratesIdExtractedData = {
+  demoOnly: true,
+  reviewConfirmed: false,
   idNumber: '784-1984-5852080-0',
   rawIdNumber: '784198458520800',
   cardNumber: '146532347',
@@ -120,6 +184,8 @@ export const KHALIF_MOHAMEDNUR_IBRAHIM_EID_SAMPLE: EmiratesIdExtractedData = {
 };
 
 export const MANSOOR_ALMARZOOQI_SAMPLE_EID: EmiratesIdExtractedData = {
+  demoOnly: true,
+  reviewConfirmed: false,
   idNumber: '784-1990-7528093-5',
   rawIdNumber: '784199075280935',
   cardNumber: '090195436',
@@ -154,6 +220,8 @@ export const MANSOOR_ALMARZOOQI_SAMPLE_EID: EmiratesIdExtractedData = {
 };
 
 export const DEFAULT_VERIFIED_EID: EmiratesIdExtractedData = {
+  demoOnly: true,
+  reviewConfirmed: false,
   idNumber: '784-1970-7905987-5',
   rawIdNumber: '784197079059875',
   cardNumber: '148434411',
@@ -190,6 +258,8 @@ export const DEFAULT_VERIFIED_EID: EmiratesIdExtractedData = {
 };
 
 export const ARSLAN_MALIK_SAMPLE_EID: EmiratesIdExtractedData = {
+  demoOnly: true,
+  reviewConfirmed: false,
   idNumber: '784-1993-1805733-0',
   rawIdNumber: '784199318057330',
   cardNumber: '144597571',
@@ -224,6 +294,8 @@ export const ARSLAN_MALIK_SAMPLE_EID: EmiratesIdExtractedData = {
 };
 
 export const SANIT_SINGH_SAMPLE_EID: EmiratesIdExtractedData = {
+  demoOnly: true,
+  reviewConfirmed: false,
   idNumber: '784-1988-1849201-1',
   rawIdNumber: '784198818492011',
   cardNumber: '148201948',
@@ -257,7 +329,14 @@ export const SANIT_SINGH_SAMPLE_EID: EmiratesIdExtractedData = {
   scannedAt: new Date().toISOString(),
 };
 
+class PdfPageLimitError extends Error {
+  constructor() {
+    super('Scan at most two pages at a time.');
+  }
+}
+
 class HenryEmiratesIdScannerService {
+  private cacheRevision = 0;
   private activeSessionCache: EmiratesIdExtractedData | null = null;
   private updateListeners: Set<(data: EmiratesIdExtractedData | null) => void> = new Set();
 
@@ -265,8 +344,12 @@ class HenryEmiratesIdScannerService {
    * Updates in-memory and session cache and notifies subscribers
    */
   setCachedEmiratesId(data: EmiratesIdExtractedData): void {
-    this.activeSessionCache = { ...data };
-    safeStorage.setJSON('whitecaves_henry_active_eid_cache_v1', data);
+    this.cacheRevision++;
+    if (!canUseScan(data)) {
+      this.clearCachedEmiratesId();
+      return;
+    }
+    this.activeSessionCache = structuredClone(data);
     this.notifyListeners(this.activeSessionCache);
   }
 
@@ -275,12 +358,14 @@ class HenryEmiratesIdScannerService {
    */
   getCachedEmiratesId(): EmiratesIdExtractedData | null {
     if (this.activeSessionCache) {
-      return this.activeSessionCache;
-    }
-    const stored = safeStorage.getJSON<EmiratesIdExtractedData>('whitecaves_henry_active_eid_cache_v1');
-    if (stored) {
-      this.activeSessionCache = stored;
-      return stored;
+      if (!canUseScan(this.activeSessionCache)) {
+        this.clearCachedEmiratesId();
+        return null;
+      }
+      return {
+        ...structuredClone(this.activeSessionCache),
+        ...scanExpiry(this.activeSessionCache.expiryDate),
+      };
     }
     return null;
   }
@@ -289,8 +374,8 @@ class HenryEmiratesIdScannerService {
    * Clears temporary session cache
    */
   clearCachedEmiratesId(): void {
+    this.cacheRevision++;
     this.activeSessionCache = null;
-    safeStorage.remove('whitecaves_henry_active_eid_cache_v1');
     this.notifyListeners(null);
   }
 
@@ -303,9 +388,9 @@ class HenryEmiratesIdScannerService {
   }
 
   private notifyListeners(data: EmiratesIdExtractedData | null): void {
-    this.updateListeners.forEach((fn) => {
+    this.updateListeners.forEach(fn => {
       try {
-        fn(data);
+        fn(data ? structuredClone(data) : null);
       } catch (err) {
         console.error('Error in onEmiratesIdUpdated listener:', err);
       }
@@ -317,8 +402,12 @@ class HenryEmiratesIdScannerService {
    */
   detectDocumentSide(textOrFileName: string): 'front' | 'back' | 'both' {
     const lower = (textOrFileName || '').toLowerCase();
-    const hasMrz = /ilare|p<are|[0-9]{7}[a-z][0-9]{7}/i.test(lower) || lower.includes('mrz') || lower.includes('back');
-    const hasFront = /784-\d{4}-\d{7}-\d|resident identity|united arab emirates|identity card|front/i.test(lower);
+    const hasMrz =
+      /ilare|p<are|[0-9]{7}[a-z][0-9]{7}/i.test(lower) ||
+      lower.includes('mrz') ||
+      lower.includes('back');
+    const hasFront =
+      /784-\d{4}-\d{7}-\d|resident identity|united arab emirates|identity card|front/i.test(lower);
     if (hasMrz && hasFront) return 'both';
     if (hasMrz) return 'back';
     if (hasFront) return 'front';
@@ -334,15 +423,15 @@ class HenryEmiratesIdScannerService {
   }
 
   resolveNationality(input: string): { en: string; ar: string; code: string } {
-    if (!input) return { en: 'United Arab Emirates', ar: 'الإمارات العربية المتحدة', code: 'ARE' };
+    if (!input) return { en: '', ar: '', code: '' };
     const cleaned = input.toUpperCase().replace(/[^A-Z]/g, '');
 
     for (const [key, val] of Object.entries(NATIONALITY_REGISTRY)) {
-      if (cleaned.includes(key) || key.includes(cleaned)) {
+      if (cleaned === key) {
         return val;
       }
     }
-    return { en: input.trim(), ar: 'مقيم', code: 'ARE' };
+    return { en: input.trim(), ar: '', code: '' };
   }
 
   parseTD1Mrz(line1: string, line2: string, line3: string): Partial<EmiratesIdExtractedData> {
@@ -352,132 +441,209 @@ class HenryEmiratesIdScannerService {
 
     try {
       const parsed = parseMrz([l1, l2, l3]);
-      if (parsed && parsed.fields) {
+      if (parsed && parsed.valid && parsed.fields) {
         const docNumber = parsed.fields.documentNumber || l1.slice(5, 14).replace(/</g, '');
         const rawId = l1.slice(15, 30).replace(/</g, '') || parsed.fields.optional1 || '';
-        const idNumber = this.formatEmiratesId(rawId);
-        const nat = this.resolveNationality(parsed.fields.nationality || 'IND');
+        const idNumber = /^784\d{12}$/.test(rawId) ? this.formatEmiratesId(rawId) : '';
+        const nat = this.resolveNationality(parsed.fields.nationality || '');
 
         return {
-          idNumber: idNumber || '784-1970-7905987-5',
-          rawIdNumber: rawId || '784197079059875',
+          idNumber: idNumber || '',
+          rawIdNumber: idNumber ? rawId : '',
           cardNumber: docNumber,
-          dateOfBirth: parsed.fields.birthDate ? `${parsed.fields.birthDate.slice(4, 6)}/${parsed.fields.birthDate.slice(2, 4)}/19${parsed.fields.birthDate.slice(0, 2)}` : '29/01/1970',
-          gender: (parsed.fields.sex === 'female' ? 'F' : 'M'),
-          expiryDate: parsed.fields.expirationDate ? `${parsed.fields.expirationDate.slice(4, 6)}/${parsed.fields.expirationDate.slice(2, 4)}/20${parsed.fields.expirationDate.slice(0, 2)}` : '27/08/2027',
+          // TD1 dates have no century. Only a matching visible four-digit date resolves them.
+          dateOfBirth: '',
+          gender: parsed.fields.sex === 'female' ? 'F' : parsed.fields.sex === 'male' ? 'M' : '',
+          expiryDate: '',
           nationalityEn: nat.en,
           nationalityAr: nat.ar,
           nationalityCode: nat.code,
-          firstName: parsed.fields.firstName || 'Ibrahim Siraj Sulthan',
-          lastName: parsed.fields.lastName || 'Mohamed Kasim Sultan Mohammed',
-          fullNameEn: `${parsed.fields.firstName || ''} ${parsed.fields.lastName || ''}`.trim() || 'Ibrahim Siraj Sulthan Mohamed Kasim Sultan Mohammed',
+          firstName: parsed.fields.firstName || '',
+          lastName: parsed.fields.lastName || '',
+          fullNameEn:
+            `${parsed.fields.firstName || ''} ${parsed.fields.lastName || ''}`.trim() || '',
           mrz: { line1: l1, line2: l2, line3: l3 },
         };
       }
     } catch {
-      // Fallback manual parser
+      logger.warn('Henry MRZ rejected: invalid format or check digits');
     }
 
-    const cardNumber = l1.slice(5, 14).replace(/</g, '');
-    const rawIdNumber = l1.slice(15, 30).replace(/</g, '');
-    const idNumber = this.formatEmiratesId(rawIdNumber);
-
-    const rawDob = l2.slice(0, 6);
-    const gender = l2.slice(7, 8) === 'F' ? 'F' : 'M';
-    const rawExpiry = l2.slice(8, 14);
-    const rawNatCode = l2.slice(15, 18).replace(/</g, '');
-
-    const nat = this.resolveNationality(rawNatCode);
-    const dateOfBirth = `${rawDob.slice(4, 6)}/${rawDob.slice(2, 4)}/19${rawDob.slice(0, 2)}`;
-    const expiryDate = `${rawExpiry.slice(4, 6)}/${rawExpiry.slice(2, 4)}/20${rawExpiry.slice(0, 2)}`;
-
-    const nameParts = l3.split('<<').filter(Boolean);
-    const lastName = (nameParts[0] || '').replace(/</g, ' ').trim();
-    const firstName = (nameParts[1] || '').replace(/</g, ' ').trim();
-    const fullNameEn = `${firstName} ${lastName}`.trim();
-
-    return {
-      idNumber,
-      rawIdNumber,
-      cardNumber,
-      dateOfBirth,
-      gender,
-      expiryDate,
-      nationalityEn: nat.en,
-      nationalityAr: nat.ar,
-      nationalityCode: nat.code,
-      firstName,
-      lastName,
-      fullNameEn,
-      mrz: { line1: l1, line2: l2, line3: l3 },
-    };
+    return {};
   }
 
-  private async renderPdfToCanvasAndText(file: File): Promise<{ canvasDataUrl: string; pdfText: string }> {
-    if (typeof window === 'undefined') return { canvasDataUrl: '', pdfText: '' };
+  private async renderPdfToCanvasAndText(
+    file: File,
+    coverage?: (text: string) => number
+  ): Promise<{ canvasDataUrls: string[]; pdfText: string }> {
+    if (typeof window === 'undefined') return { canvasDataUrls: [], pdfText: '' };
+    let loadingTask: import('pdfjs-dist').PDFDocumentLoadingTask | undefined;
+    let timer: ReturnType<typeof setTimeout> | undefined;
+    const deadline = new Promise<never>((_, reject) => {
+      timer = setTimeout(() => {
+        if (loadingTask)
+          void loadingTask.destroy().catch(() => logger.warn('Henry timed-out PDF cleanup failed'));
+        reject(new Error('PDF reading timed out'));
+      }, 30000);
+    });
+    const bounded = <T>(operation: Promise<T>): Promise<T> => Promise.race([operation, deadline]);
     try {
       const pdfjs = await import('pdfjs-dist');
       if (pdfjs.GlobalWorkerOptions && !pdfjs.GlobalWorkerOptions.workerSrc) {
-        pdfjs.GlobalWorkerOptions.workerSrc = `https://cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version || '3.11.174'}/pdf.worker.min.js`;
+        pdfjs.GlobalWorkerOptions.workerSrc = pdfWorkerUrl;
       }
-      const arrayBuffer = await file.arrayBuffer();
-      const loadingTask = pdfjs.getDocument({ data: arrayBuffer });
-      const pdfDoc = await loadingTask.promise;
-      const numPages = Math.min(pdfDoc.numPages, 2);
+      const arrayBuffer = await bounded(file.arrayBuffer());
+      loadingTask = pdfjs.getDocument({ data: arrayBuffer });
+      const pdfDoc = await bounded(loadingTask.promise);
+      if (pdfDoc.numPages > 2) throw new PdfPageLimitError();
 
       let combinedPdfText = '';
-      let canvasDataUrl = '';
+      const canvasDataUrls: string[] = [];
 
-      for (let i = 1; i <= numPages; i++) {
-        const page = await pdfDoc.getPage(i);
-        const textContent = await page.getTextContent();
-        const pageText = textContent.items
-          .map(item => ('str' in item ? (item as { str: string }).str : ''))
-          .join(' ');
+      for (let i = 1; i <= pdfDoc.numPages; i++) {
+        const page = await bounded(pdfDoc.getPage(i));
+        const textContent = await bounded(page.getTextContent());
+        const items = textContent.items
+          .filter(
+            (item): item is import('pdfjs-dist/types/src/display/api').TextItem => 'str' in item
+          )
+          .sort(
+            (a, b) =>
+              Math.round(b.transform[5] / 3) - Math.round(a.transform[5] / 3) ||
+              a.transform[4] - b.transform[4]
+          );
+        const pageText = items
+          .map((item, index) => {
+            const previous = items[index - 1];
+            const separator =
+              previous && Math.abs(item.transform[5] - previous.transform[5]) >= 3
+                ? '\n'
+                : previous && item.transform[4] - previous.transform[4] - previous.width > 15
+                  ? ' | '
+                  : ' ';
+            return `${separator}${item.str}`;
+          })
+          .join('');
         combinedPdfText += `\n--- PAGE ${i} ---\n${pageText}`;
 
-        if (i === 1) {
-          const viewport = page.getViewport({ scale: 2.0 });
+        if (
+          coverage
+            ? coverage(pageText) < 1
+            : pageText.replace(/\s/g, '').length < 150 || (pageText.match(/:/g)?.length || 0) < 4
+        ) {
+          const base = page.getViewport({ scale: 1 });
+          const viewport = page.getViewport({
+            scale: Math.min(2, Math.sqrt(4_000_000 / (base.width * base.height))),
+          });
           const canvas = document.createElement('canvas');
           const ctx = canvas.getContext('2d');
           if (ctx) {
             canvas.width = viewport.width;
             canvas.height = viewport.height;
-            await page.render({ canvasContext: ctx, viewport, canvas } as unknown as Parameters<typeof page.render>[0]).promise;
-            canvasDataUrl = canvas.toDataURL('image/png');
+            try {
+              await bounded(
+                page.render({ canvasContext: ctx, viewport, canvas } as unknown as Parameters<
+                  typeof page.render
+                >[0]).promise
+              );
+              canvasDataUrls.push(canvas.toDataURL('image/png'));
+            } finally {
+              canvas.width = 0;
+              canvas.height = 0;
+            }
           }
         }
       }
 
-      return { canvasDataUrl, pdfText: combinedPdfText };
-    } catch {
-      return { canvasDataUrl: '', pdfText: '' };
+      return { canvasDataUrls, pdfText: combinedPdfText };
+    } catch (error) {
+      logger.error('Henry PDF extraction failed');
+      if (error instanceof PdfPageLimitError) throw error;
+      throw new Error('PDF could not be read. Upload at most two readable pages.');
+    } finally {
+      clearTimeout(timer);
+      if (loadingTask) {
+        let cleanupTimer: ReturnType<typeof setTimeout> | undefined;
+        try {
+          await Promise.race([
+            loadingTask.destroy(),
+            new Promise<never>((_, reject) => {
+              cleanupTimer = setTimeout(() => reject(new Error('PDF cleanup timeout')), 3000);
+            }),
+          ]);
+        } catch {
+          logger.warn('Henry PDF cleanup failed or timed out');
+        } finally {
+          clearTimeout(cleanupTimer);
+        }
+      }
     }
   }
 
-  private async preProcessImageOnCanvas(file: File): Promise<string> {
+  private async preProcessImageOnCanvas(
+    file: File | string,
+    rotation = 0,
+    enhance = true,
+    warnings?: string[]
+  ): Promise<string> {
     if (typeof window === 'undefined') return '';
-    return new Promise((resolve) => {
+    return new Promise(resolve => {
       const img = new Image();
+      const objectUrl = typeof file === 'string' ? file : URL.createObjectURL(file);
+      const release = () => {
+        if (typeof file !== 'string') URL.revokeObjectURL(objectUrl);
+      };
+      const timeout = window.setTimeout(() => {
+        release();
+        img.src = '';
+        resolve('');
+      }, 15000);
       img.onload = () => {
+        window.clearTimeout(timeout);
+        release();
+        let canvas: HTMLCanvasElement | undefined;
         try {
-          const canvas = document.createElement('canvas');
+          canvas = document.createElement('canvas');
           const ctx = canvas.getContext('2d');
           if (!ctx) {
             resolve('');
             return;
           }
 
-          const scale = Math.max(1.5, Math.min(2.5, 1800 / Math.max(img.width, img.height)));
-          canvas.width = img.width * scale;
-          canvas.height = img.height * scale;
+          const width = img.naturalWidth || img.width;
+          const height = img.naturalHeight || img.height;
+          if (!width || !height || width * height > 40_000_000)
+            throw new Error('Image dimensions exceed decoding budget');
+          if (warnings && Math.max(width, height) < 1000)
+            warnings.push('Small source resolution (heuristic advisory); enlarging cannot restore missing detail. Rescan if characters are unclear.');
+          const scale = Math.min(
+            2.5,
+            2200 / Math.max(width, height),
+            Math.sqrt(4_000_000 / (width * height))
+          );
+          const sideways = rotation === 90 || rotation === 270;
+          canvas.width = (sideways ? height : width) * scale;
+          canvas.height = (sideways ? width : height) * scale;
 
-          ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+          ctx.translate(canvas.width / 2, canvas.height / 2);
+          ctx.rotate((rotation * Math.PI) / 180);
+          ctx.drawImage(
+            img,
+            (-width * scale) / 2,
+            (-height * scale) / 2,
+            width * scale,
+            height * scale
+          );
           const imgData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+          if (warnings) warnings.push(...imageQualityWarnings(imgData, width, height).filter(warning => !warning.includes('low source resolution')));
           const d = imgData.data;
           for (let i = 0; i < d.length; i += 4) {
             const gray = 0.299 * (d[i] ?? 0) + 0.587 * (d[i + 1] ?? 0) + 0.114 * (d[i + 2] ?? 0);
-            const enhanced = gray > 130 ? Math.min(255, gray * 1.15) : Math.max(0, gray * 0.85);
+            const enhanced = enhance
+              ? gray > 130
+                ? Math.min(255, gray * 1.15)
+                : Math.max(0, gray * 0.85)
+              : gray;
             d[i] = enhanced;
             d[i + 1] = enhanced;
             d[i + 2] = enhanced;
@@ -485,291 +651,490 @@ class HenryEmiratesIdScannerService {
           ctx.putImageData(imgData, 0, 0);
           resolve(canvas.toDataURL('image/png'));
         } catch {
+          logger.warn('Henry image preprocessing unavailable');
           resolve('');
+        } finally {
+          if (canvas) {
+            canvas.width = 0;
+            canvas.height = 0;
+          }
+          img.onload = null;
+          img.onerror = null;
+          img.src = '';
         }
       };
-      img.onerror = () => resolve('');
-      img.src = URL.createObjectURL(file);
+      img.onerror = () => {
+        window.clearTimeout(timeout);
+        release();
+        resolve('');
+      };
+      img.src = objectUrl;
     });
   }
 
-  private async runClientOcr(file: File, onProgress?: (progress: number) => void): Promise<{ ocrText: string; streamText: string }> {
+  async extractDocumentText(
+    file: File,
+    onProgress?: (progress: number) => void,
+    coverage?: (text: string) => number
+  ): Promise<{ ocrText: string; streamText: string; ocrConfidence?: number; warnings?: string[] }> {
+    let streamText = '';
+    let worker: import('tesseract.js').Worker | undefined;
+    const warnings: string[] = [];
+    const texts: string[] = [];
+    const confidences: number[] = [];
+    const completedResult = () => ({
+      ocrText: texts.join('\n'),
+      streamText,
+      ocrConfidence: confidences.length
+        ? confidences.reduce((sum, value) => sum + value, 0) / confidences.length
+        : undefined,
+      warnings,
+    });
+    const requiredCoverage =
+      coverage ||
+      ((text: string) => {
+        const parsed = this.parseOcrText(text, '');
+        return (
+          [!!parsed.idNumber, !!parsed.fullNameEn, validScanDate(parsed.expiryDate || '')].filter(
+            Boolean
+          ).length / 3
+        );
+      });
+    const deadline = Date.now() + 90000;
+    const bounded = async <T>(operation: Promise<T>, passLimit = 30000): Promise<T> => {
+      let timer: ReturnType<typeof setTimeout> | undefined;
+      try {
+        return await Promise.race([
+          operation,
+          new Promise<never>((_, reject) => {
+            timer = setTimeout(
+              () => reject(new Error('OCR timed out. Rescan a smaller, clearer image.')),
+              Math.max(1, Math.min(passLimit, deadline - Date.now()))
+            );
+          }),
+        ]);
+      } finally {
+        clearTimeout(timer);
+      }
+    };
     try {
       if (typeof window === 'undefined') return { ocrText: '', streamText: '' };
       const isPdf = file.type === 'application/pdf' || file.name.toLowerCase().endsWith('.pdf');
 
       let ocrInput: File | string = file;
-      let streamText = '';
+      let pageImages: string[] = [];
 
       if (isPdf) {
-        const { canvasDataUrl, pdfText } = await this.renderPdfToCanvasAndText(file);
-        ocrInput = canvasDataUrl || file;
+        const { canvasDataUrls, pdfText } = await bounded(
+          this.renderPdfToCanvasAndText(file, requiredCoverage)
+        );
+        pageImages = canvasDataUrls;
+        ocrInput = canvasDataUrls[0] || file;
         streamText = pdfText;
       } else if (file.type.startsWith('image/')) {
-        const processedUrl = await this.preProcessImageOnCanvas(file);
-        ocrInput = processedUrl || file;
+        const processedUrl = await this.preProcessImageOnCanvas(file, 0, true, warnings);
+        if (!processedUrl) throw new Error('Image could not be safely decoded.');
+        ocrInput = processedUrl;
       }
 
       if (onProgress) onProgress(30);
+      if (isPdf && !pageImages.length) {
+        warnings.push(
+          'Native PDF text read without OCR. Check image-only or omitted fields against the original.'
+        );
+        return { ocrText: '', streamText, warnings };
+      }
 
       const Tesseract = await import('tesseract.js');
-      const result = await Tesseract.recognize(ocrInput, 'eng', {
+      // Language assets run locally in the worker; document pixels are never sent to an OCR API.
+      const pendingWorker = Tesseract.createWorker('eng+ara', 1, {
         logger: (m: { status?: string; progress?: number }) => {
-          if (m && m.status === 'recognizing text' && typeof m.progress === 'number' && onProgress) {
-            onProgress(30 + Math.round(m.progress * 0.65));
-          }
+          if (m.status === 'recognizing text' && typeof m.progress === 'number')
+            onProgress?.(30 + Math.round(m.progress * 60));
         },
       });
+      let expired = false;
+      pendingWorker.then(
+        async created => {
+          if (expired) {
+            try {
+              await created.terminate();
+            } catch {
+              logger.warn('Henry late worker cleanup failed');
+            }
+          }
+        },
+        () => undefined
+      );
+      try {
+        worker = await bounded(pendingWorker);
+      } catch (error) {
+        expired = true;
+        throw error;
+      }
+      for (const input of pageImages.length ? pageImages : [ocrInput]) {
+        const candidates = [await bounded(worker.recognize(input), 20000)];
+        const score = (candidate: (typeof candidates)[number]) =>
+          requiredCoverage(candidate.data.text || '');
+        const confidence = (candidate: (typeof candidates)[number]) =>
+          Number.isFinite(candidate.data.confidence) ? candidate.data.confidence : -Infinity;
+        let best = candidates[0]!;
+        try {
+          if (confidence(best) < 60 || score(best) < 1) {
+            warnings.push(
+              'Low OCR quality or missing required fields. Check focus, lighting and orientation; all fields need source review.'
+            );
+            // At most five passes per page; clean complete documents use one.
+            for (const angle of [0, 90, 180, 270]) {
+              const retryInput = await bounded(
+                this.preProcessImageOnCanvas(pageImages.length ? input : file, angle, false),
+                15000
+              );
+              if (!retryInput) continue;
+              const retry = await bounded(worker.recognize(retryInput), 20000);
+              candidates.push(retry);
+              if (
+                score(retry) > score(best) ||
+                (score(retry) === score(best) && confidence(retry) > confidence(best))
+              )
+                best = retry;
+              if (score(best) === 1 && confidence(best) >= 60) break;
+            }
+          }
+        } finally {
+          // Keep independent readable candidates even when a later pass fails.
+          texts.push(
+            [
+              ...new Set(
+                [best, ...candidates].map(candidate => candidate.data.text || '').filter(Boolean)
+              ),
+            ].join('\n')
+          );
+          if (Number.isFinite(best.data.confidence)) confidences.push(best.data.confidence);
+          else warnings.push('OCR confidence unavailable; review every field against the source.');
+        }
+      }
 
-      return {
-        ocrText: result?.data?.text || '',
-        streamText,
-      };
-    } catch {
-      return { ocrText: '', streamText: '' };
+      return completedResult();
+    } catch (error) {
+      logger.error('Henry OCR extraction failed');
+      if (error instanceof PdfPageLimitError) throw error;
+      if (!streamText.trim() && !texts.some(text => text.trim()))
+        throw new Error('OCR unavailable or timed out. Nothing extracted; rescan or retry.');
+      warnings.push(
+        'OCR recovery incomplete or timed out; completed candidates retained. Review omitted or image-only fields and compare all source evidence.'
+      );
+      return completedResult();
+    } finally {
+      if (worker) {
+        try {
+          await bounded(worker.terminate(), 3000);
+        } catch {
+          logger.warn('Henry OCR worker cleanup failed');
+        }
+      }
     }
-  }
-
-  private sanitizeOcrDigits(raw: string): string {
-    return (raw || '')
-      .replace(/[OoDd]/g, '0')
-      .replace(/[Il|]/g, '1')
-      .replace(/[Ss]/g, '5')
-      .replace(/[Bb]/g, '8')
-      .replace(/[^0-9]/g, '');
   }
 
   parseOcrText(rawText: string, fileName: string): Partial<EmiratesIdExtractedData> {
-    const fullUpper = `${rawText}\n${fileName}`.toUpperCase();
-
-    // 1. TD1 MRZ (ILARE for Resident, IDARE for UAE Citizen)
-    const mrzLines = rawText.match(/(?:ILARE|IDARE)[A-Z0-9<]{20,30}/gi);
-    if (mrzLines && mrzLines.length > 0 && mrzLines[0]) {
-      const l1 = mrzLines[0].toUpperCase();
-      const matchRest = fullUpper.match(/([0-9]{6}[0-9MF][0-9]{6}[0-9A-Z<]{16,20})[\s\S]*?([A-Z<]{20,30})/);
-      if (matchRest && matchRest[1] && matchRest[2]) {
-        return this.parseTD1Mrz(l1, matchRest[1], matchRest[2]);
-      }
-    }
-
-    // 2. Emirates ID Number
-    let detectedId = '';
-    const idRegex = /784[ -]?[0-9IOl]{4}[ -]?[0-9IOl]{7}[ -]?[0-9IOl]/i;
-    const matchId = rawText.match(idRegex);
-    if (matchId && matchId[0]) {
-      const sanitized = this.sanitizeOcrDigits(matchId[0]);
-      if (sanitized.length === 15) {
-        detectedId = this.formatEmiratesId(sanitized);
-      }
-    }
-
-    // 3. Nationality
-    let nationality = { en: 'India', ar: 'جمهورية الهند', code: 'IND' };
-    for (const [key, val] of Object.entries(NATIONALITY_REGISTRY)) {
-      if (fullUpper.includes(key)) {
-        nationality = val;
-        break;
-      }
-    }
-
-    // 4. Card Number
-    let cardNumber = '';
-    const cardMatch = rawText.match(/Card\s*Number[:\s/]+([0-9]{8,10})/i) || rawText.match(/\b(14\d{7}|1\d{8})\b/);
-    if (cardMatch && cardMatch[1]) {
-      cardNumber = cardMatch[1];
-    }
-
-    // 5. Dates
-    let dateOfBirth = '';
-    let issueDate = '';
-    let expiryDate = '';
-    const dateMatches = (rawText.match(/\b\d{2}[/.-]\d{2}[/.-]\d{4}\b/g) || []).filter(Boolean);
-    if (dateMatches.length >= 3 && dateMatches[0] && dateMatches[1] && dateMatches[2]) {
-      dateOfBirth = dateMatches[0].replace(/[-.]/g, '/');
-      issueDate = dateMatches[1].replace(/[-.]/g, '/');
-      expiryDate = dateMatches[2].replace(/[-.]/g, '/');
-    } else if (dateMatches.length === 2 && dateMatches[0] && dateMatches[1]) {
-      dateOfBirth = dateMatches[0].replace(/[-.]/g, '/');
-      expiryDate = dateMatches[1].replace(/[-.]/g, '/');
-    } else if (dateMatches.length === 1 && dateMatches[0]) {
-      dateOfBirth = dateMatches[0].replace(/[-.]/g, '/');
-    }
-
-    // 6. Names
-    let fullNameEn = '';
-    let fullNameAr = '';
-    const explicitNameMatch = rawText.match(/Name[:\s/]+([A-Za-z\s]{3,60})/i);
-    if (explicitNameMatch && explicitNameMatch[1]) {
-      fullNameEn = explicitNameMatch[1].trim();
-    }
-
-    const arabicNameMatch = rawText.match(/الاسم[:\s]+([\u0600-\u06FF\s]{4,60})/);
-    if (arabicNameMatch && arabicNameMatch[1]) {
-      fullNameAr = arabicNameMatch[1].trim();
-    }
-
-    // 7. Employment
-    let occupationEn = '';
-    let employerEn = '';
-    const occMatch = rawText.match(/Occupation[:\s]+([A-Za-z\s]{3,40})/i);
-    if (occMatch && occMatch[1]) occupationEn = occMatch[1].trim();
-
-    const empMatch = rawText.match(/Employer[:\s]+([A-Za-z0-9\s\-]{3,50})/i);
-    if (empMatch && empMatch[1]) employerEn = empMatch[1].trim();
-
-    return {
-      idNumber: detectedId,
-      cardNumber,
-      dateOfBirth,
-      issueDate,
-      expiryDate,
-      nationalityEn: nationality.en,
-      nationalityAr: nationality.ar,
+    void fileName;
+    const text = normalizeDocumentText(rawText);
+    const { values, diagnostics } = readDocumentFields(text, ID_LABELS);
+    const field = (key: string) => values[key]?.[0] || '';
+    const en = (key: string) => languageValue(values[key] || [], 'en');
+    const ar = (key: string) => languageValue(values[key] || [], 'ar');
+    const visibleIds = [...text.matchAll(/(?<!\d)784[ -]?\d{4}[ -]?\d{7}[ -]?\d(?!\d)/g)].map(
+      match => this.formatEmiratesId(match[0])
+    );
+    values.idNumber = [...new Set(visibleIds)];
+    diagnostics.fields.idNumber!.values = values.idNumber;
+    diagnostics.fields.idNumber!.state = visibleIds.length ? 'extracted' : 'missing';
+    const nationality = this.resolveNationality(en('nationality'));
+    const sex = `${field('gender')}`.trim();
+    const result: Partial<EmiratesIdExtractedData> = {
+      idNumber: values.idNumber[0] || '',
+      rawIdNumber: (values.idNumber[0] || '').replace(/\D/g, ''),
+      cardNumber: field('cardNumber'),
+      chipNumber: field('chipNumber'),
+      fullNameEn: en('fullName'),
+      fullNameAr: ar('fullName'),
+      dateOfBirth: normalizeDocumentDate(field('dateOfBirth')),
+      issueDate: normalizeDocumentDate(field('issueDate')),
+      expiryDate: normalizeDocumentDate(field('expiryDate')),
+      nationalityEn: en('nationality'),
+      nationalityAr: ar('nationality'),
       nationalityCode: nationality.code,
-      fullNameEn,
-      fullNameAr,
-      occupationEn,
-      employerEn,
+      gender: /^(?:M|male|ذكر)(?:\s|$)/i.test(sex)
+        ? 'M'
+        : /^(?:F|female|أنثى|انثى)(?:\s|$)/i.test(sex)
+          ? 'F'
+          : '',
+      occupationEn: en('occupation'),
+      occupationAr: ar('occupation'),
+      employerEn: en('employer'),
+      employerAr: ar('employer'),
+      issuingPlaceEn: en('issuingPlace'),
+      issuingPlaceAr: ar('issuingPlace'),
+      diagnostics,
     };
+    const lines = text
+      .toUpperCase()
+      .split('\n')
+      .map(line => line.replace(/\s/g, ''));
+    const mrzSources = lines
+      .map((line, index) => ({ line, index }))
+      .filter(({ line }) => /^(?:IL|ID)ARE[A-Z0-9<]+$/.test(line))
+      .map(({ index }) => ({
+        index,
+        fields: this.parseTD1Mrz(lines[index]!, lines[index + 1] || '', lines[index + 2] || ''),
+      }));
+    const mrzSource = mrzSources.find(source => source.fields.mrz) || mrzSources[0];
+    const start = mrzSource?.index ?? -1;
+    if (start >= 0) {
+      const mrz = mrzSource!.fields;
+      if (!mrz.mrz)
+        diagnostics.warnings.push(
+          'MRZ check digits or format invalid; no identity inferred from MRZ.'
+        );
+      else {
+        result.mrz = mrz.mrz;
+        result.firstName = mrz.firstName;
+        result.lastName = mrz.lastName;
+        for (const key of [
+          'idNumber',
+          'cardNumber',
+          'fullNameEn',
+          'gender',
+          'nationalityCode',
+        ] as const) {
+          const evidenceKey =
+            key === 'fullNameEn' ? 'fullName' : key === 'nationalityCode' ? 'nationality' : key;
+          const candidate = mrz[key];
+          if (!candidate) continue;
+          if (
+            result[key] &&
+            result[key]!.toUpperCase().replace(/\s+/g, ' ') !==
+              candidate.toUpperCase().replace(/\s+/g, ' ')
+          ) {
+            diagnostics.fields[evidenceKey]!.state = 'conflict';
+            diagnostics.fields[evidenceKey]!.values.push(candidate);
+            if (evidenceKey !== key) {
+              const reviewKey = key === 'nationalityCode' ? 'nationalityEn' : key;
+              diagnostics.fields[evidenceKey]!.conflicts = {
+                ...diagnostics.fields[evidenceKey]!.conflicts,
+                [reviewKey]: [result[key]!, candidate],
+              };
+            }
+            diagnostics.warnings.push(`Visible ${key} conflicts with validated MRZ.`);
+          } else if (!result[key]) {
+            Object.assign(result, { [key]: candidate });
+            diagnostics.fields[evidenceKey] = {
+              state: 'extracted',
+              source: 'mrz',
+              values: [candidate],
+            };
+          }
+        }
+        for (const key of [
+          'idNumber',
+          'cardNumber',
+          'fullNameEn',
+          'nationalityCode',
+          'gender',
+        ] as const) {
+          const candidates = [
+            ...new Set(
+              [
+                result[key],
+                ...mrzSources.filter(source => source.fields.mrz).map(source => source.fields[key]),
+              ].filter((value): value is string => !!value)
+            ),
+          ];
+          if (
+            new Set(candidates.map(value => value.trim().replace(/\s+/g, ' ').toUpperCase())).size >
+            1
+          ) {
+            const evidenceKey =
+              key === 'fullNameEn' ? 'fullName' : key === 'nationalityCode' ? 'nationality' : key;
+            const reviewKey = key === 'nationalityCode' ? 'nationalityEn' : key;
+            const evidence = diagnostics.fields[evidenceKey]!;
+            evidence.state = 'conflict';
+            evidence.values = [...new Set([...evidence.values, ...candidates])];
+            evidence.conflicts = { ...evidence.conflicts, [reviewKey]: candidates };
+            diagnostics.warnings.push(
+              `Independent MRZ candidates disagree on ${key}; compare the source.`
+            );
+          }
+        }
+        for (const [key, offset] of [
+          ['dateOfBirth', 0],
+          ['expiryDate', 8],
+        ] as const) {
+          const shortDates = [
+            ...new Set(
+              mrzSources
+                .filter(source => source.fields.mrz)
+                .map(source => lines[source.index + 1]!.slice(offset, offset + 6))
+            ),
+          ];
+          const visibleDates = (values[key] || []).map(normalizeDocumentDate).filter(validScanDate);
+          if (!visibleDates.length)
+            diagnostics.warnings.push(
+              `${key}: MRZ century ambiguous; enter the visible four-digit date.`
+            );
+          if (
+            shortDates.length > 1 ||
+            visibleDates.some(date =>
+              shortDates.some(
+                shortDate =>
+                  `${date.slice(8, 10)}${date.slice(3, 5)}${date.slice(0, 2)}` !== shortDate
+              )
+            )
+          ) {
+            diagnostics.fields[key]!.state = 'conflict';
+            diagnostics.fields[key]!.values = [
+              ...new Set([...diagnostics.fields[key]!.values, ...shortDates]),
+            ];
+            diagnostics.warnings.push(
+              `${key}: validated MRZ dates disagree with each other or visible dates; compare the source without inferring a century.`
+            );
+          }
+        }
+      }
+    }
+    for (const key of [
+      'idNumber',
+      'cardNumber',
+      'chipNumber',
+      'dateOfBirth',
+      'issueDate',
+      'expiryDate',
+    ]) {
+      const candidates = values[key]?.map(value => {
+        const date = normalizeDocumentDate(value);
+        return key.endsWith('Date') || key === 'dateOfBirth'
+          ? validScanDate(date)
+            ? date
+            : value
+          : value;
+      });
+      if (new Set(candidates).size > 1) {
+        diagnostics.fields[key]!.state = 'conflict';
+        diagnostics.warnings.push(`Conflicting ${key}; review sources.`);
+      }
+      for (const key of ['fullName', 'nationality'] as const) {
+        const conflicts: Record<string, string[]> = {};
+        for (const language of ['en', 'ar'] as const) {
+          const candidates = [
+            ...new Set(
+              (values[key] || []).map(value => languageValue([value], language)).filter(Boolean)
+            ),
+          ];
+          if (new Set(candidates.map(value => value.toUpperCase())).size > 1)
+            conflicts[`${key}${language === 'en' ? 'En' : 'Ar'}`] = candidates;
+        }
+        if (Object.keys(conflicts).length) {
+          diagnostics.fields[key]!.state = 'conflict';
+          const existing = diagnostics.fields[key]!.conflicts || {};
+          diagnostics.fields[key]!.conflicts = Object.fromEntries(
+            [...new Set([...Object.keys(existing), ...Object.keys(conflicts)])].map(reviewKey => [
+              reviewKey,
+              [...new Set([...(existing[reviewKey] || []), ...(conflicts[reviewKey] || [])])],
+            ])
+          );
+          diagnostics.warnings.push(
+            `Conflicting ${key}; review independent OCR/source candidates.`
+          );
+        }
+      }
+    }
+    for (const key of ['dateOfBirth', 'issueDate', 'expiryDate'] as const) {
+      if (!validScanDate(result[key] || '')) {
+        result[key] = '';
+        if (diagnostics.fields[key]!.state !== 'conflict')
+          diagnostics.fields[key]!.state = 'missing';
+      }
+    }
+    for (const key of ['cardNumber', 'chipNumber'] as const) {
+      if (result[key] && !/^\d{8,16}$/.test(result[key]!)) {
+        result[key] = '';
+        diagnostics.fields[key]!.state = 'missing';
+        diagnostics.warnings.push(`${key}: unreadable numeric identifier; compare the original.`);
+      }
+    }
+    if (!result.gender && diagnostics.fields.gender!.state !== 'conflict')
+      diagnostics.fields.gender!.state = 'missing';
+    refreshCoverage(diagnostics);
+    return result;
   }
 
   async scanEmiratesId(
-    fileOrPreset?: File | 'sample' | 'sample_khalif' | 'sample_mansoor' | 'sample_arslan' | 'sample_sanit',
+    fileOrPreset?:
+      | File
+      | 'sample'
+      | 'sample_khalif'
+      | 'sample_mansoor'
+      | 'sample_arslan'
+      | 'sample_sanit',
     onProgress?: (progress: number) => void
   ): Promise<EmiratesIdExtractedData> {
-    if (!fileOrPreset || fileOrPreset === 'sample') {
-      const result = {
-        ...ARSLAN_MALIK_SAMPLE_EID,
-        scannedAt: new Date().toISOString(),
-      };
-      this.setCachedEmiratesId(result);
-      return result;
+    if (!fileOrPreset) throw new Error('Upload a document to scan.');
+    if (typeof fileOrPreset === 'string') {
+      const sample =
+        fileOrPreset === 'sample_khalif'
+          ? KHALIF_MOHAMEDNUR_IBRAHIM_EID_SAMPLE
+          : fileOrPreset === 'sample_mansoor'
+            ? MANSOOR_ALMARZOOQI_SAMPLE_EID
+            : fileOrPreset === 'sample_sanit'
+              ? SANIT_SINGH_SAMPLE_EID
+              : ARSLAN_MALIK_SAMPLE_EID;
+      return { ...sample, demoOnly: true, reviewConfirmed: false };
     }
-
-    if (fileOrPreset === 'sample_khalif') {
-      const result = {
-        ...KHALIF_MOHAMEDNUR_IBRAHIM_EID_SAMPLE,
-        scannedAt: new Date().toISOString(),
-      };
-      this.setCachedEmiratesId(result);
-      return result;
-    }
-
-    if (fileOrPreset === 'sample_mansoor') {
-      const result = {
-        ...MANSOOR_ALMARZOOQI_SAMPLE_EID,
-        scannedAt: new Date().toISOString(),
-      };
-      this.setCachedEmiratesId(result);
-      return result;
-    }
-
-    if (fileOrPreset === 'sample_arslan') {
-      const result = {
-        ...ARSLAN_MALIK_SAMPLE_EID,
-        scannedAt: new Date().toISOString(),
-      };
-      this.setCachedEmiratesId(result);
-      return result;
-    }
-
-    if (fileOrPreset === 'sample_sanit') {
-      const result = {
-        ...SANIT_SINGH_SAMPLE_EID,
-        scannedAt: new Date().toISOString(),
-      };
-      this.setCachedEmiratesId(result);
-      return result;
-    }
-
     const file = fileOrPreset as File;
-    const fileName = file.name || 'Emirates_ID.pdf';
-    const lowerName = fileName.toLowerCase();
-
-    if (onProgress) onProgress(15);
-    const { ocrText, streamText } = await this.runClientOcr(file, (p) => {
-      if (onProgress) onProgress(p);
-    });
-
-    const combinedRawText = `${ocrText}\n${streamText}\n${fileName}`;
-    const parsed = this.parseOcrText(combinedRawText, fileName);
-    if (onProgress) onProgress(95);
-
-    if (lowerName.includes('khalif') || lowerName.includes('mohamednur') || lowerName.includes('5852080') || lowerName.includes('146532347') || combinedRawText.includes('KHALIF') || combinedRawText.includes('MOHAMEDNUR') || combinedRawText.includes('خليف') || combinedRawText.includes('JAYEECO')) {
-      const result = { ...KHALIF_MOHAMEDNUR_IBRAHIM_EID_SAMPLE, rawOcrText: combinedRawText, scannedAt: new Date().toISOString() };
-      this.setCachedEmiratesId(result);
-      return result;
+    if (
+      !['image/png', 'image/jpeg', 'application/pdf'].includes(file.type) ||
+      file.size > 10 * 1024 * 1024 ||
+      !file.size
+    )
+      throw new Error('Use a PNG, JPEG or PDF under 10 MB.');
+    const { ocrText, streamText, ocrConfidence, warnings } = await this.extractDocumentText(
+      file,
+      onProgress
+    );
+    const combinedRawText = `${ocrText}\n${streamText}`;
+    if (!combinedRawText.trim())
+      throw new Error(
+        'No readable text. Rescan with good lighting and all document edges visible.'
+      );
+    const parsed = this.parseOcrText(combinedRawText, '');
+    if (parsed.diagnostics) {
+      parsed.diagnostics.ocrConfidence = ocrConfidence;
+      parsed.diagnostics.warnings.push(...(warnings || []));
     }
-
-    if (lowerName.includes('mansoor') || lowerName.includes('almarzooqi') || lowerName.includes('7528093') || lowerName.includes('090195436') || combinedRawText.includes('MANSOOR') || combinedRawText.includes('ALMARZOOQI') || combinedRawText.includes('منصور')) {
-      const result = { ...MANSOOR_ALMARZOOQI_SAMPLE_EID, rawOcrText: combinedRawText, scannedAt: new Date().toISOString() };
-      this.setCachedEmiratesId(result);
-      return result;
-    }
-
-    if (lowerName.includes('arslan') || lowerName.includes('malik')) {
-      const result = { ...ARSLAN_MALIK_SAMPLE_EID, rawOcrText: combinedRawText, scannedAt: new Date().toISOString() };
-      this.setCachedEmiratesId(result);
-      return result;
-    }
-
-    if (lowerName.includes('sanit') || lowerName.includes('singh')) {
-      const result = { ...SANIT_SINGH_SAMPLE_EID, rawOcrText: combinedRawText, scannedAt: new Date().toISOString() };
-      this.setCachedEmiratesId(result);
-      return result;
-    }
-
-    // Default to the verified uploaded client data (Ibrahim Siraj)
-    const idNumber = parsed.idNumber || '784-1970-7905987-5';
-    const rawIdNumber = idNumber.replace(/\D/g, '');
-    const cardNumber = parsed.cardNumber || '148434411';
-    const fullNameEn = parsed.fullNameEn || 'Ibrahim Siraj Sulthan Mohamed Kasim Sultan Mohammed';
-    const fullNameAr = parsed.fullNameAr || 'ابراهيم سيراج سلطان محمد قاسم سلطان محمد قاسم';
-    const dateOfBirth = parsed.dateOfBirth || '29/01/1970';
-    const issueDate = parsed.issueDate || '28/08/2025';
-    const expiryDate = parsed.expiryDate || '27/08/2027';
-
-    if (onProgress) onProgress(100);
-
+    const missingFields = [
+      !/^784-\d{4}-\d{7}-\d$/.test(parsed.idNumber || '') && 'idNumber',
+      !parsed.fullNameEn?.trim() && 'fullNameEn',
+      !validScanDate(parsed.expiryDate || '') && 'expiryDate',
+    ].filter((value): value is string => !!value);
     const result: EmiratesIdExtractedData = {
-      idNumber,
-      rawIdNumber,
-      cardNumber,
-      chipNumber: '2500098412',
-      fullNameEn,
-      fullNameAr,
-      firstName: parsed.firstName || 'Ibrahim Siraj Sulthan',
-      lastName: parsed.lastName || 'Mohamed Kasim Sultan Mohammed',
-      dateOfBirth,
-      nationalityEn: parsed.nationalityEn || 'India',
-      nationalityAr: parsed.nationalityAr || 'جمهورية الهند',
-      nationalityCode: parsed.nationalityCode || 'IND',
-      gender: parsed.gender || 'M',
-      issueDate,
-      expiryDate,
-      isExpired: false,
-      daysUntilExpiry: 738,
-      occupationEn: parsed.occupationEn || 'Accountant General',
-      occupationAr: 'محاسب عام',
-      employerEn: parsed.employerEn || 'Auto Vision Trading Fzco - Daz',
-      employerAr: 'اوتو فيجن للتجارة ش م ح - داز',
-      issuingPlaceEn: 'Dubai',
-      issuingPlaceAr: 'دبي',
-      mrz: parsed.mrz || {
-        line1: `ILARE${cardNumber}0${rawIdNumber}`,
-        line2: `7001291M2708274IND<<<<<<<<<<<2`,
-        line3: `${fullNameEn.toUpperCase().replace(/\s+/g, '<')}<<<<<<<<<<<<<<<<<<<<<`.slice(0, 30),
-      },
+      ...EMPTY_EMIRATES_ID,
+      ...parsed,
+      rawIdNumber: (parsed.idNumber || '').replace(/\D/g, ''),
+      ...scanExpiry(parsed.expiryDate || ''),
       rawOcrText: combinedRawText,
-      ocrEngine: 'Tesseract.js v5 Optical Engine + pdfjs-dist',
-      confidenceScore: 0.999,
-      detectedFieldsCount: 12,
+      ocrEngine: 'Tesseract + PDF text',
+      confidenceScore: 0,
+      detectedFieldsCount: Object.values(parsed.diagnostics?.fields || {}).filter(
+        field => field.state === 'extracted'
+      ).length,
+      missingFields,
+      reviewConfirmed: false,
+      demoOnly: false,
       scannedAt: new Date().toISOString(),
       scannedSide: this.detectDocumentSide(combinedRawText),
-      documentFormat: file.type || (fileName.endsWith('.pdf') ? 'application/pdf' : 'image/png'),
+      documentFormat: file.type,
     };
-
-    this.setCachedEmiratesId(result);
+    if (onProgress) onProgress(100);
     return result;
   }
 
@@ -777,7 +1142,13 @@ class HenryEmiratesIdScannerService {
    * Alias for scanEmiratesId conforming to standard document ingestion interfaces
    */
   async scanDocument(
-    fileOrPreset?: File | 'sample' | 'sample_khalif' | 'sample_mansoor' | 'sample_arslan' | 'sample_sanit',
+    fileOrPreset?:
+      | File
+      | 'sample'
+      | 'sample_khalif'
+      | 'sample_mansoor'
+      | 'sample_arslan'
+      | 'sample_sanit',
     onProgress?: (progress: number) => void
   ): Promise<EmiratesIdExtractedData> {
     return this.scanEmiratesId(fileOrPreset, onProgress);
@@ -794,12 +1165,88 @@ class HenryEmiratesIdScannerService {
     if (onProgress) onProgress(15);
 
     const [frontResult, backResult] = await Promise.all([
-      this.scanEmiratesId(frontFile, (p) => onProgress && onProgress(Math.round(p * 0.45))),
-      this.scanEmiratesId(backFile, (p) => onProgress && onProgress(Math.round(45 + p * 0.45))),
+      this.scanEmiratesId(frontFile, p => onProgress && onProgress(Math.round(p * 0.45))),
+      this.scanEmiratesId(backFile, p => onProgress && onProgress(Math.round(45 + p * 0.45))),
     ]);
 
+    if (frontResult.idNumber && backResult.idNumber && frontResult.idNumber !== backResult.idNumber)
+      throw new Error('Front/back ID numbers differ. Rescan the same card.');
+    if (
+      frontResult.cardNumber &&
+      backResult.cardNumber &&
+      frontResult.cardNumber !== backResult.cardNumber
+    )
+      throw new Error('Front/back card numbers differ. Rescan the same card.');
+    const mergedFields = { ...(frontResult.diagnostics?.fields || {}) };
+    for (const [key, evidence] of Object.entries(backResult.diagnostics?.fields || {})) {
+      const front = mergedFields[key];
+      if (front?.state === 'conflict' || evidence.state === 'conflict') {
+        mergedFields[key] = {
+          state: 'conflict',
+          source: 'text',
+          values: [...new Set([...(front?.values || []), ...evidence.values])],
+          ...(front?.conflicts || evidence.conflicts
+            ? { conflicts: { ...front?.conflicts, ...evidence.conflicts } }
+            : {}),
+        };
+      } else if (front?.state === 'missing' || !front) mergedFields[key] = evidence;
+      else if (
+        key !== 'fullName' &&
+        key !== 'nationality' &&
+        evidence.state !== 'missing' &&
+        JSON.stringify(front.values) !== JSON.stringify(evidence.values)
+      ) {
+        const normalize = (value: string) => {
+          const date = normalizeDocumentDate(value);
+          return (key.endsWith('Date') || key === 'dateOfBirth') && validScanDate(date)
+            ? date
+            : value;
+        };
+        if (new Set([...front.values, ...evidence.values].map(normalize)).size > 1)
+          mergedFields[key] = {
+            state: 'conflict',
+            source: 'text',
+            values: [...front.values, ...evidence.values],
+          };
+      }
+    }
+    for (const key of ['fullNameEn', 'fullNameAr', 'nationalityEn', 'nationalityAr'] as const) {
+      const front = frontResult[key].trim().toUpperCase();
+      const back = backResult[key].trim().toUpperCase();
+      if (front && back && front !== back) {
+        const field = key.startsWith('fullName') ? 'fullName' : 'nationality';
+        const existing = mergedFields[field];
+        mergedFields[field] = {
+          state: 'conflict',
+          source: 'text',
+          values: [...new Set([...(existing?.values || []), frontResult[key], backResult[key]])],
+          conflicts: { ...existing?.conflicts, [key]: [frontResult[key], backResult[key]] },
+        };
+      }
+    }
+    const frontText = frontResult.diagnostics?.sourceText || '';
+    const backText = backResult.diagnostics?.sourceText || '';
+    const sourceText = `${frontText}\n${backText}`.slice(0, 65536);
+    for (const [key, evidence] of Object.entries(mergedFields)) {
+      const frontRanges = frontResult.diagnostics?.fields[key]?.textRanges || [];
+      const backRanges = (backResult.diagnostics?.fields[key]?.textRanges || []).map(range => ({
+        start: range.start + frontText.length + 1, end: range.end + frontText.length + 1,
+      }));
+      mergedFields[key] = { ...evidence, textRanges: [...frontRanges, ...backRanges].filter(range => range.end <= sourceText.length) };
+    }
     const merged: EmiratesIdExtractedData = {
       ...frontResult,
+      idNumber: frontResult.idNumber || backResult.idNumber,
+      rawIdNumber: (frontResult.idNumber || backResult.idNumber).replace(/\D/g, ''),
+      fullNameAr: frontResult.fullNameAr || backResult.fullNameAr,
+      dateOfBirth: frontResult.dateOfBirth || backResult.dateOfBirth,
+      issueDate: frontResult.issueDate || backResult.issueDate,
+      nationalityEn: frontResult.nationalityEn || backResult.nationalityEn,
+      nationalityAr: frontResult.nationalityAr || backResult.nationalityAr,
+      nationalityCode: frontResult.nationalityCode || backResult.nationalityCode,
+      gender: frontResult.gender || backResult.gender,
+      fullNameEn: frontResult.fullNameEn || backResult.fullNameEn,
+      expiryDate: frontResult.expiryDate || backResult.expiryDate,
       cardNumber: backResult.cardNumber || frontResult.cardNumber,
       chipNumber: backResult.chipNumber || frontResult.chipNumber,
       mrz: backResult.mrz || frontResult.mrz,
@@ -813,36 +1260,68 @@ class HenryEmiratesIdScannerService {
       scannedAt: new Date().toISOString(),
       scannedSide: 'both',
       documentFormat: `${frontFile.type || 'image'}, ${backFile.type || 'image'}`,
+      reviewConfirmed: false,
+      diagnostics: {
+        fields: mergedFields,
+        sourceText,
+        coverage: 0,
+        warnings: [
+          ...(frontResult.diagnostics?.warnings || []),
+          ...(backResult.diagnostics?.warnings || []),
+        ],
+      },
     };
 
-    this.setCachedEmiratesId(merged);
+    merged.missingFields = [
+      !/^784-\d{4}-\d{7}-\d$/.test(merged.idNumber) && 'idNumber',
+      !merged.fullNameEn.trim() && 'fullNameEn',
+      !validScanDate(merged.expiryDate) && 'expiryDate',
+    ].filter((value): value is string => !!value);
+    Object.assign(merged, scanExpiry(merged.expiryDate));
+    refreshCoverage(merged.diagnostics!);
+    merged.detectedFieldsCount = Object.values(mergedFields).filter(
+      field => field.state === 'extracted'
+    ).length;
     if (onProgress) onProgress(100);
     return merged;
   }
 
   getDemoExtractedData(): EmiratesIdExtractedData {
-    const demo = { ...ARSLAN_MALIK_SAMPLE_EID, scannedAt: new Date().toISOString() };
-    this.setCachedEmiratesId(demo);
+    const demo = {
+      ...ARSLAN_MALIK_SAMPLE_EID,
+      scannedAt: new Date().toISOString(),
+      demoOnly: true,
+      reviewConfirmed: false,
+    };
     return demo;
   }
 
   getIndianClientDemoData(): EmiratesIdExtractedData {
-    const demo = { ...SANIT_SINGH_SAMPLE_EID, scannedAt: new Date().toISOString() };
-    this.setCachedEmiratesId(demo);
+    const demo = {
+      ...SANIT_SINGH_SAMPLE_EID,
+      scannedAt: new Date().toISOString(),
+      demoOnly: true,
+      reviewConfirmed: false,
+    };
     return demo;
   }
 
   getIbrahimSirajDemoData(): EmiratesIdExtractedData {
-    const demo = { ...DEFAULT_VERIFIED_EID, scannedAt: new Date().toISOString() };
-    this.setCachedEmiratesId(demo);
+    const demo = {
+      ...DEFAULT_VERIFIED_EID,
+      scannedAt: new Date().toISOString(),
+      demoOnly: true,
+      reviewConfirmed: false,
+    };
     return demo;
   }
 
   toContractParty(
     extracted: EmiratesIdExtractedData,
-    phone: string = '+971 56 361 6136',
-    email: string = 'admin@whitecaves.com'
+    phone: string = '',
+    email: string = ''
   ): ContractParty {
+    if (!canUseScan(extracted)) throw new Error('Confirm review before autofill.');
     return {
       name: extracted.fullNameEn,
       emiratesIdOrPassport: extracted.idNumber,
@@ -855,6 +1334,7 @@ class HenryEmiratesIdScannerService {
     extracted: EmiratesIdExtractedData,
     basePayload: Partial<ViewingFormPayload> = {}
   ): Partial<ViewingFormPayload> {
+    if (!canUseScan(extracted)) throw new Error('Confirm review before autofill.');
     return {
       ...basePayload,
       clientName: extracted.fullNameEn,
@@ -863,7 +1343,7 @@ class HenryEmiratesIdScannerService {
   }
 
   exportToJson(extracted?: EmiratesIdExtractedData): Record<string, any> {
-    const data = extracted || this.getCachedEmiratesId() || DEFAULT_VERIFIED_EID;
+    const data = extracted || this.getCachedEmiratesId();
     return JSON.parse(JSON.stringify(data));
   }
 
@@ -874,36 +1354,22 @@ class HenryEmiratesIdScannerService {
   /**
    * Persists extracted Emirates ID record to database endpoint and local session cache
    */
-  async saveToDatabase(extracted?: EmiratesIdExtractedData): Promise<{ success: boolean; id?: string; error?: string }> {
-    const data = extracted || this.getCachedEmiratesId() || DEFAULT_VERIFIED_EID;
-    this.setCachedEmiratesId(data);
-
-    try {
-      if (typeof window !== 'undefined') {
-        const response = await fetch('/api/henry/documents/save', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            docType: 'emirates_id',
-            title: `Emirates ID - ${data.fullNameEn}`,
-            clientName: data.fullNameEn,
-            referenceNumber: data.idNumber,
-            extractedJson: data,
-            confidenceScore: data.confidenceScore,
-            scannedSide: data.scannedSide || 'both',
-            documentFormat: data.documentFormat || 'application/pdf',
-          }),
-        });
-
-        if (response.ok) {
-          const resJson = await response.json();
-          return { success: true, id: resJson.data?.id };
-        }
-      }
-      return { success: true, id: `local_${Date.now()}` };
-    } catch {
-      return { success: true, id: `fallback_${Date.now()}` };
-    }
+  async saveToDatabase(
+    extracted?: EmiratesIdExtractedData,
+    options?: VaultSaveOptions
+  ): Promise<{ success: boolean; id?: string; error?: string }> {
+    const data = extracted || this.getCachedEmiratesId();
+    if (!data) return { success: false, error: 'No reviewed document.' };
+    const revision = this.cacheRevision;
+    const result = await saveReviewedScan(
+      'emirates_id',
+      data,
+      data.idNumber,
+      data.fullNameEn,
+      options
+    );
+    if (result.success && revision === this.cacheRevision) this.setCachedEmiratesId(data);
+    return result;
   }
 }
 

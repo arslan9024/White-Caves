@@ -10,9 +10,92 @@
  */
 
 import { TenancyContractPayload, ContractParty } from './HenryPdfEngineService';
-import { safeStorage } from '../utils/safeStorage';
+import henryEmiratesIdScannerService from './HenryEmiratesIdScannerService';
+import {
+  ScanReview,
+  VaultSaveOptions,
+  canUseScan,
+  saveReviewedScan,
+  validScanDate,
+} from './henryScanReview';
+import {
+  languageValue,
+  normalizeDocumentDate,
+  normalizeDocumentText,
+  parseDocumentNumber,
+  readDocumentFields,
+  refreshCoverage,
+} from './henryDocumentParsing';
 
-export interface DldTitleDeedExtractedData {
+const DEED_LABELS: Record<string, string[]> = {
+  certificateNumber: [
+    'Certificate Number',
+    'Certificate No.',
+    'Certificate No',
+    'Title Deed Number',
+    'Title Deed No.',
+    'Title Deed No',
+    'رقم الشهادة',
+    'رقم سند الملكية',
+  ],
+  issueDate: ['Issue Date', 'Date of Issue', 'تاريخ الإصدار', 'تاريخ الاصدار'],
+  issuingAuthority: ['Issuing Authority', 'جهة الإصدار'],
+  propertyType: ['Property Type', 'نوع العقار'],
+  community: ['Community', 'Area Name', 'المنطقة', 'اسم المنطقة'],
+  plotNumber: ['Plot Number', 'Plot No.', 'Land Number', 'رقم الأرض', 'رقم الارض'],
+  municipalityNumber: ['Municipality Number', 'Municipality No.', 'رقم البلدية'],
+  buildingNumber: ['Building Number', 'Building No.', 'رقم المبنى'],
+  buildingName: ['Building Name', 'اسم المبنى'],
+  propertyNumber: ['Property Number', 'Unit Number', 'Unit No.', 'رقم العقار', 'رقم الوحدة'],
+  floorNumber: ['Floor Number', 'Floor', 'رقم الطابق', 'الطابق'],
+  parkingNumber: ['Parking Number', 'Parking No.', 'رقم الموقف'],
+  mortgageStatus: ['Mortgage Status', 'حالة الرهن'],
+  suiteAreaSqM: ['Suite Area', 'مساحة الوحدة'],
+  balconyAreaSqM: ['Balcony Area', 'مساحة الشرفة'],
+  totalAreaSqM: ['Total Area', 'Area SqM', 'المساحة الإجمالية', 'المساحة الاجمالية', 'المساحة'],
+  totalAreaSqFt: ['Total Area SqFt', 'Area SqFt', 'المساحة بالقدم المربع'],
+  commonAreaSqM: ['Common Area', 'المساحة المشتركة'],
+  ownerDldNumber: [
+    'Owner DLD Number',
+    'Owner Number',
+    'Owner No.',
+    'Party Number',
+    'رقم المالك',
+    'رقم الطرف',
+  ],
+  ownerName: ['Owner Name', 'Owner', 'اسم المالك'],
+  ownerSharePercent: ['Ownership Share', 'Owner Share', 'Share Percent', 'نسبة الملكية', 'الحصة'],
+  ownedAreaSqM: ['Owned Area', 'المساحة المملوكة'],
+  purchasedFrom: ['Purchased From', 'Seller Name', 'اسم البائع', 'تم الشراء من'],
+  registrationContractNumber: [
+    'Registration Contract Number',
+    'Transaction Number',
+    'Contract Number',
+    'رقم العقد',
+    'رقم المعاملة',
+  ],
+  registrationDate: ['Registration Date', 'Transaction Date', 'تاريخ التسجيل', 'تاريخ المعاملة'],
+  purchasePriceAed: [
+    'Purchase Price',
+    'Purchase Value',
+    'Transaction Value',
+    'قيمة الشراء',
+    'قيمة المعاملة',
+  ],
+  purchasePriceWordsEn: ['Purchase Price in Words', 'Amount in Words', 'القيمة كتابة'],
+};
+
+export interface DeedOwner {
+  dldNumber: string;
+  nameEn: string;
+  nameAr: string;
+  sharePercent?: number;
+  ownedAreaSqM?: number;
+}
+
+export interface DldTitleDeedExtractedData extends ScanReview {
+  owners?: DeedOwner[];
+  mortgageState?: 'mortgaged' | 'not_mortgaged' | 'unknown';
   // Document Meta
   certificateNumber: string; // e.g. "140764/2023"
   issueDate: string; // e.g. "18/07/2023"
@@ -66,11 +149,13 @@ export interface DldTitleDeedExtractedData {
 }
 
 export const VIRIDIS_504_SAMPLE_TITLE_DEED: DldTitleDeedExtractedData = {
+  demoOnly: true,
+  reviewConfirmed: false,
   certificateNumber: '140764/2023',
   issueDate: '18/07/2023',
   issuingAuthorityEn: 'Government of Dubai — Land Department',
   issuingAuthorityAr: 'حكومة دبي — دائرة الأراضي والأملاك',
-  isBlockchainVerified: true,
+  isBlockchainVerified: false,
 
   propertyTypeEn: 'Hotel Apartment',
   propertyTypeAr: 'شقة فندقية',
@@ -112,11 +197,13 @@ export const VIRIDIS_504_SAMPLE_TITLE_DEED: DldTitleDeedExtractedData = {
 };
 
 export const BUKO_COMMODITY_MADINAT_HIND_TITLE_DEED_SAMPLE: DldTitleDeedExtractedData = {
+  demoOnly: true,
+  reviewConfirmed: false,
   certificateNumber: '93757/2025',
   issueDate: '13/10/2025',
   issuingAuthorityEn: 'Government of Dubai — Land Department',
   issuingAuthorityAr: 'دائرة الأراضي والأملاك',
-  isBlockchainVerified: true,
+  isBlockchainVerified: false,
 
   propertyTypeEn: 'Land',
   propertyTypeAr: 'ارض',
@@ -158,16 +245,20 @@ export const BUKO_COMMODITY_MADINAT_HIND_TITLE_DEED_SAMPLE: DldTitleDeedExtracte
 };
 
 class HenryTitleDeedScannerService {
-  private static readonly CACHE_KEY = 'whitecaves_henry_active_title_deed_cache_v1';
+  private cacheRevision = 0;
   private inMemoryCache: DldTitleDeedExtractedData | null = null;
   private listeners: Set<(data: DldTitleDeedExtractedData | null) => void> = new Set();
 
   /**
-   * Persists extracted Title Deed data into temporary session memory and localStorage
+   * Keeps reviewed Title Deed data in session memory only
    */
   setCachedTitleDeed(data: DldTitleDeedExtractedData): void {
-    this.inMemoryCache = { ...data };
-    safeStorage.setJSON(HenryTitleDeedScannerService.CACHE_KEY, data);
+    this.cacheRevision++;
+    if (!canUseScan(data)) {
+      this.clearCachedTitleDeed();
+      return;
+    }
+    this.inMemoryCache = structuredClone(data);
     this.notifyListeners(this.inMemoryCache);
   }
 
@@ -175,12 +266,7 @@ class HenryTitleDeedScannerService {
    * Retrieves active Title Deed from temporary session cache
    */
   getCachedTitleDeed(): DldTitleDeedExtractedData | null {
-    if (this.inMemoryCache) return this.inMemoryCache;
-    const stored = safeStorage.getJSON<DldTitleDeedExtractedData>(HenryTitleDeedScannerService.CACHE_KEY);
-    if (stored) {
-      this.inMemoryCache = stored;
-      return stored;
-    }
+    if (this.inMemoryCache) return structuredClone(this.inMemoryCache);
     return null;
   }
 
@@ -188,8 +274,8 @@ class HenryTitleDeedScannerService {
    * Clears the active Title Deed session cache
    */
   clearCachedTitleDeed(): void {
+    this.cacheRevision++;
     this.inMemoryCache = null;
-    safeStorage.remove(HenryTitleDeedScannerService.CACHE_KEY);
     this.notifyListeners(null);
   }
 
@@ -205,15 +291,20 @@ class HenryTitleDeedScannerService {
    * Returns benchmark reference sample 2 (BUKO COMMODITY DMCC - Plot 7354 Madinat Hind 4)
    */
   getBukoSample(): DldTitleDeedExtractedData {
-    const sample = { ...BUKO_COMMODITY_MADINAT_HIND_TITLE_DEED_SAMPLE, scannedAt: new Date().toISOString() };
-    this.setCachedTitleDeed(sample);
+    const sample = {
+      ...BUKO_COMMODITY_MADINAT_HIND_TITLE_DEED_SAMPLE,
+      scannedAt: new Date().toISOString(),
+      demoOnly: true,
+      reviewConfirmed: false,
+      isBlockchainVerified: false,
+    };
     return sample;
   }
 
   private notifyListeners(data: DldTitleDeedExtractedData | null): void {
-    this.listeners.forEach((listener) => {
+    this.listeners.forEach(listener => {
       try {
-        listener(data);
+        listener(data ? structuredClone(data) : null);
       } catch (err) {
         console.error('Error notifying Henry Title Deed cache listener:', err);
       }
@@ -225,136 +316,481 @@ class HenryTitleDeedScannerService {
   async scanTitleDeed(
     fileOrPreset?: File | 'sample' | 'sample_viridis' | 'sample_buko'
   ): Promise<DldTitleDeedExtractedData> {
-    if (!fileOrPreset || fileOrPreset === 'sample' || fileOrPreset === 'sample_viridis') {
-      return this.getDemoExtractedData();
+    if (!fileOrPreset) throw new Error('Upload a title deed to scan.');
+    if (typeof fileOrPreset === 'string')
+      return fileOrPreset === 'sample_buko' ? this.getBukoSample() : this.getDemoExtractedData();
+    const file = fileOrPreset;
+    if (
+      !['image/png', 'image/jpeg', 'application/pdf'].includes(file.type) ||
+      !file.size ||
+      file.size > 10 * 1024 * 1024
+    )
+      throw new Error('Use a PNG, JPEG or PDF under 10 MB.');
+    const { ocrText, streamText, ocrConfidence, warnings } =
+      await henryEmiratesIdScannerService.extractDocumentText(file, undefined, text => {
+        const parsed = this.parseDocumentText(text);
+        return (
+          [
+            !!parsed.certificateNumber,
+            !!parsed.ownerNameEn || !!parsed.owners?.length,
+            !!(parsed.propertyNumber || parsed.plotNumber),
+          ].filter(Boolean).length / 3
+        );
+      });
+    const text = `${ocrText}\n${streamText}`;
+    if (!text.trim())
+      throw new Error('No readable text. Rescan in good lighting with all deed edges visible.');
+    const result = this.parseDocumentText(text);
+    if (result.diagnostics) {
+      result.diagnostics.ocrConfidence = ocrConfidence;
+      result.diagnostics.warnings.push(...(warnings || []));
     }
+    return { ...result, documentFormat: file.type };
+  }
 
-    if (fileOrPreset === 'sample_buko') {
-      return this.getBukoSample();
-    }
-
-    const file = fileOrPreset as File;
-    const fileName = file.name || 'TitleDeed_DLD.pdf';
-    const lower = fileName.toLowerCase();
-
-    if (lower.includes('buko') || lower.includes('commodity') || lower.includes('7354') || lower.includes('20879') || lower.includes('93757') || lower.includes('1717600') || lower.includes('بوكو')) {
-      const result: DldTitleDeedExtractedData = {
-        ...BUKO_COMMODITY_MADINAT_HIND_TITLE_DEED_SAMPLE,
-        scannedAt: new Date().toISOString(),
-        documentFormat: file.type || (fileName.endsWith('.pdf') ? 'application/pdf' : 'image/png'),
+  parseDocumentText(text: string): DldTitleDeedExtractedData {
+    const { values, diagnostics } = readDocumentFields(text, DEED_LABELS);
+    const field = (key: string) => values[key]?.[0] || '';
+    const en = (key: string) => languageValue(values[key] || [], 'en');
+    const ar = (key: string) => languageValue(values[key] || [], 'ar');
+    const squareFeet = (value: string) => /\bsq\.? ?ft\b|ft[²2]|قدم/i.test(value);
+    const normalizedNumber = (key: string, raw: string): number | undefined => {
+      const value = parseDocumentNumber(raw);
+      if (value === undefined) return undefined;
+      if (key.endsWith('SqM') && squareFeet(raw)) return value / 10.7639104167;
+      if (key.endsWith('SqFt') && /\bsq\.? ?m\b|m[²2]|متر|م[²2]/i.test(raw))
+        return value * 10.7639104167;
+      return value;
+    };
+    const numericDisagreement = (key: string, rawValues: string[]) => {
+      const candidates = rawValues
+        .map(raw => ({
+          value: normalizedNumber(key, raw),
+          converted: key.endsWith('SqM')
+            ? squareFeet(raw)
+            : key.endsWith('SqFt') && /\bsq\.? ?m\b|m[²2]|متر|م[²2]/i.test(raw),
+        }))
+        .filter(
+          (candidate): candidate is { value: number; converted: boolean } =>
+            candidate.value !== undefined
+        );
+      // Conversion allows only the rounding of printed two-decimal areas, not a percentage discrepancy.
+      return candidates.some((candidate, index) =>
+        candidates
+          .slice(index + 1)
+          .some(
+            other =>
+              Math.abs(candidate.value - other.value) >
+              (candidate.converted || other.converted
+                ? key.endsWith('SqFt')
+                  ? 0.12
+                  : 0.011
+                : 0.000001)
+          )
+      );
+    };
+    const numeric = (key: string) => {
+      let value = normalizedNumber(key, field(key));
+      if (value === undefined) diagnostics.fields[key]!.state = 'missing';
+      else if (value !== parseDocumentNumber(field(key))) {
+        value = Number(value.toFixed(2));
+        diagnostics.fields[key] = { state: 'derived', source: 'conversion', values: [field(key)] };
+      }
+      return value ?? 0; // Legacy payload uses zero; evidence explicitly distinguishes absent from visible zero.
+    };
+    const certificateNumber = field('certificateNumber');
+    let ownerNameEn = en('ownerName');
+    let ownerNameAr = ar('ownerName');
+    const propertyNumber = field('propertyNumber');
+    const plotNumber = field('plotNumber');
+    let totalAreaSqM = parseDocumentNumber(field('totalAreaSqM')) ?? 0;
+    if (!field('totalAreaSqM') || parseDocumentNumber(field('totalAreaSqM')) === undefined)
+      diagnostics.fields.totalAreaSqM!.state = 'missing';
+    let totalAreaSqFt = numeric('totalAreaSqFt');
+    if (/\b(?:sq\.? ?ft|ft2|ft²)\b|قدم/i.test(field('totalAreaSqM'))) {
+      totalAreaSqFt = totalAreaSqM;
+      diagnostics.fields.totalAreaSqFt = {
+        ...diagnostics.fields.totalAreaSqM!,
+        state: 'extracted',
       };
-      this.setCachedTitleDeed(result);
-      return result;
+      diagnostics.fields.totalAreaSqM!.state = 'missing';
     }
-
-    // Generate unique deterministic seed from file properties
-    let hash = 0;
-    const seed = `${fileName}_${file.size}_${file.lastModified || Date.now()}`;
-    for (let i = 0; i < seed.length; i++) {
-      hash = (hash << 5) - hash + seed.charCodeAt(i);
-      hash |= 0;
+    if (
+      diagnostics.fields.totalAreaSqM!.state === 'missing' &&
+      diagnostics.fields.totalAreaSqFt!.state === 'extracted'
+    ) {
+      totalAreaSqM = Number((totalAreaSqFt / 10.7639104167).toFixed(2));
+      diagnostics.fields.totalAreaSqM = {
+        state: 'derived',
+        source: 'conversion',
+        values: ['totalAreaSqFt / 10.7639104167'],
+      };
+    } else if (
+      diagnostics.fields.totalAreaSqFt!.state === 'missing' &&
+      diagnostics.fields.totalAreaSqM!.state === 'extracted'
+    ) {
+      totalAreaSqFt = Number((totalAreaSqM * 10.7639104167).toFixed(2));
+      diagnostics.fields.totalAreaSqFt = {
+        state: 'derived',
+        source: 'conversion',
+        values: ['totalAreaSqM * 10.7639104167'],
+      };
     }
-    const absHash = Math.abs(hash);
-
-    let buildingNameEn = 'CAMELIA';
-    let buildingNameAr = 'كاميليا';
-    let propertyNo = String((absHash % 900) + 101);
-    let plotNo = String((absHash % 8000) + 1000);
-    let ownerNameEn = 'Sanit Singh Nagpal';
-    let ownerNameAr = 'سانيت سينغ ناغبال';
-    let communityEn = 'DAMAC Hills 2 (Akoya Oxygen)';
-    let communityAr = 'داماك هيلز 2';
-    let areaSqM = parseFloat((120 + (absHash % 150) * 0.75).toFixed(2));
-
-    if (lower.includes('janusia') || lower.includes('2858')) {
-      buildingNameEn = 'Janusia';
-      buildingNameAr = 'جانوسيا';
-      propertyNo = 'XH2858B';
-      plotNo = '6340';
-      ownerNameEn = 'Svetlana Levitskaya';
-      ownerNameAr = 'سفيتلانا ليفيتسكايا';
-      communityEn = 'DAMAC Hills 2, Dubai';
-      areaSqM = 198.50;
-    } else if (lower.includes('viridis') || lower.includes('504')) {
-      buildingNameEn = 'VIRIDIS A';
-      buildingNameAr = 'فريديس ايه A';
-      propertyNo = '504';
-      plotNo = '5120';
-      ownerNameEn = 'AKRAM DIB NEHME';
-      ownerNameAr = 'أكرم ديب نعمة';
-      communityEn = 'Madinat Hind 4 (DAMAC Hills 2)';
-      areaSqM = 38.76;
-    } else if (lower.includes('marina') || lower.includes('gate')) {
-      buildingNameEn = 'Marina Gate Tower 2';
-      buildingNameAr = 'مارينا جيت 2';
-      propertyNo = String((absHash % 40) + 1001);
-      plotNo = '392-0541';
-      ownerNameEn = 'Alexander Wright';
-      ownerNameAr = 'ألكسندر رايت';
-      communityEn = 'Dubai Marina';
-      areaSqM = 142.20;
+    const owners: DeedOwner[] = [];
+    const ownerEvidence = new WeakMap<DeedOwner, Record<string, string[]>>();
+    let ambiguousOwner = false;
+    const normalizedName = (name: string) => normalizeDocumentText(name).trim().toLowerCase();
+    const addOwner = (parsed: Record<string, string[]>) => {
+      if (!parsed.ownerDldNumber?.[0] || !parsed.ownerName?.length) return;
+      if (!/^\d+$/.test(parsed.ownerDldNumber[0])) return;
+      const ambiguousKeys = ['ownerDldNumber', 'ownerSharePercent', 'ownedAreaSqM'].filter(key =>
+        key === 'ownerDldNumber'
+          ? (parsed[key]?.length || 0) > 1
+          : numericDisagreement(key, parsed[key] || [])
+      );
+      if (
+        ['en', 'ar'].some(
+          language =>
+            new Set(
+              parsed
+                .ownerName!.map(value =>
+                  normalizedName(languageValue([value], language as 'en' | 'ar'))
+                )
+                .filter(Boolean)
+            ).size > 1
+        )
+      )
+        ambiguousKeys.push('ownerName');
+      if (ambiguousKeys.length) {
+        ambiguousOwner = true;
+        for (const key of ambiguousKeys) diagnostics.fields[key]!.state = 'conflict';
+        return;
+      }
+      const owner: DeedOwner = {
+        dldNumber: parsed.ownerDldNumber[0],
+        nameEn: languageValue(parsed.ownerName, 'en'),
+        nameAr: languageValue(parsed.ownerName, 'ar'),
+        sharePercent: normalizedNumber('ownerSharePercent', parsed.ownerSharePercent?.[0] || ''),
+        ownedAreaSqM: normalizedNumber('ownedAreaSqM', parsed.ownedAreaSqM?.[0] || ''),
+      };
+      const sameName = (item: DeedOwner) =>
+        (['nameEn', 'nameAr'] as const).every(
+          key =>
+            !item[key] || !owner[key] || normalizedName(item[key]) === normalizedName(owner[key])
+        );
+      const existing =
+        owners.find(item => item.dldNumber === owner.dldNumber && sameName(item)) ||
+        owners.find(item => item.dldNumber === owner.dldNumber);
+      if (!existing) {
+        owners.push(owner);
+        ownerEvidence.set(owner, parsed);
+        return;
+      }
+      const conflicting = [
+        ...(['nameEn', 'nameAr'] as const)
+          .filter(
+            key =>
+              existing[key] &&
+              owner[key] &&
+              normalizedName(existing[key]) !== normalizedName(owner[key])
+          )
+          .map(() => 'ownerName'),
+        ...(['sharePercent', 'ownedAreaSqM'] as const)
+          .filter(
+            key =>
+              existing[key] !== undefined &&
+              owner[key] !== undefined &&
+              numericDisagreement(key === 'sharePercent' ? 'ownerSharePercent' : key, [
+                ...(ownerEvidence.get(existing)?.[
+                  key === 'sharePercent' ? 'ownerSharePercent' : key
+                ] || []),
+                ...(parsed[key === 'sharePercent' ? 'ownerSharePercent' : key] || []),
+              ])
+          )
+          .map(key => (key === 'sharePercent' ? 'ownerSharePercent' : key)),
+      ];
+      if (conflicting.length) {
+        ambiguousOwner = true;
+        for (const key of conflicting) {
+          diagnostics.fields[key]!.state = 'conflict';
+          const candidates =
+            key === 'ownerName'
+              ? [existing.nameEn, existing.nameAr, owner.nameEn, owner.nameAr]
+              : key === 'ownerSharePercent'
+                ? [existing.sharePercent, owner.sharePercent]
+                : [existing.ownedAreaSqM, owner.ownedAreaSqM];
+          diagnostics.fields[key]!.values = [
+            ...new Set([
+              ...diagnostics.fields[key]!.values,
+              ...candidates.filter(value => value !== undefined && value !== '').map(String),
+            ]),
+          ];
+        }
+        if (!sameName(existing)) owners.push(owner);
+        return;
+      }
+      existing.nameEn ||= owner.nameEn;
+      existing.nameAr ||= owner.nameAr;
+      existing.sharePercent ??= owner.sharePercent;
+      existing.ownedAreaSqM ??= owner.ownedAreaSqM;
+      const previous = ownerEvidence.get(existing) || {};
+      ownerEvidence.set(
+        existing,
+        Object.fromEntries(
+          Object.keys(parsed).map(key => [
+            key,
+            [...new Set([...(previous[key] || []), ...(parsed[key] || [])])],
+          ])
+        )
+      );
+    };
+    // Table rows and labelled blocks use the same association checks.
+    const ownerAliases = DEED_LABELS.ownerDldNumber!.map(label =>
+      normalizeDocumentText(label)
+        .replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
+        .replace(/ /g, '[ \\t]+')
+    );
+    const blocks = normalizeDocumentText(text).split(
+      new RegExp(`(?=(?<![\\p{L}\\p{N}])(?:${ownerAliases.join('|')})(?![\\p{L}\\p{N}]))`, 'giu')
+    );
+    for (const block of blocks) addOwner(readDocumentFields(block, DEED_LABELS).values);
+    const lines = normalizeDocumentText(text).split('\n');
+    const ownerKeys = ['ownerDldNumber', 'ownerName', 'ownerSharePercent', 'ownedAreaSqM'];
+    for (let i = 0; i < lines.length; i++) {
+      const headers = lines[i]!.split(/\s*\|\s*/);
+      const columns = headers.map(header =>
+        ownerKeys.find(key =>
+          DEED_LABELS[key]!.some(label => header.trim().toLowerCase() === label.toLowerCase())
+        )
+      );
+      if (!columns.includes('ownerDldNumber') || !columns.includes('ownerName')) continue;
+      for (let j = i + 1; j < lines.length; j++) {
+        const cells = lines[j]!.split(/\s*\|\s*/);
+        if (
+          cells.length !== headers.length ||
+          !/^\d+$/.test(cells[columns.indexOf('ownerDldNumber')] || '')
+        )
+          {
+            if (cells.length === headers.length && cells.some(cell => cell.trim())) {
+              ambiguousOwner = true;
+              diagnostics.fields.ownerDldNumber!.state = 'conflict';
+              diagnostics.warnings.push('Unassociated owner table row; compare identifiers and cell boundaries manually.');
+            }
+            break;
+          }
+        // Only attach continuation rows with empty identifiers and numeric cells.
+        // Non-empty identifiers always begin a new owner, never an inferred association.
+        while (j + 1 < lines.length) {
+          const continuation = lines[j + 1]!.split(/\s*\|\s*/);
+          if (continuation.length !== headers.length ||
+            continuation.some((cell, index) => columns[index] !== 'ownerName' && cell.trim()) ||
+            !continuation.some((cell, index) => columns[index] === 'ownerName' && cell.trim())) break;
+          continuation.forEach((cell, index) => {
+            if (columns[index] === 'ownerName' && cell.trim()) cells[index] += ` ${cell.trim()}`;
+          });
+          j++;
+        }
+        const parsed = Object.fromEntries(
+          ownerKeys.map(key => [
+            key,
+            [
+              ...new Set(
+                cells
+                  .filter((_, index) => columns[index] === key)
+                  .map(value => value.trim())
+                  .filter(Boolean)
+              ),
+            ],
+          ])
+        );
+        addOwner(parsed);
+      }
     }
-
-    const certNo = `${absHash % 900000 + 100000}/2024`;
-    const dewaNo = `9180${absHash % 900000 + 100000}`;
-    const makaniNo = String(absHash % 900 + 100);
-
-    return new Promise((resolve) => {
-      setTimeout(() => {
-        const result: DldTitleDeedExtractedData = {
-          certificateNumber: certNo,
-          issueDate: new Date().toLocaleDateString('en-GB'),
-          issuingAuthorityEn: 'Government of Dubai — Land Department',
-          issuingAuthorityAr: 'حكومة دبي — دائرة الأراضي والأملاك',
-          isBlockchainVerified: true,
-          propertyTypeEn: 'Residential Townhouse / Apartment',
-          propertyTypeAr: 'وحدة سكنية',
-          communityEn,
-          communityAr,
-          plotNumber: plotNo,
-          municipalityNumber: `914-${plotNo}`,
-          buildingNumber: '1',
-          buildingNameEn,
-          buildingNameAr,
-          propertyNumber: propertyNo,
-          floorNumber: String((absHash % 25) + 1),
-          parkingNumber: `P-${absHash % 90 + 10}`,
-          mortgageStatusEn: 'Not mortgaged',
-          mortgageStatusAr: 'غير مرهونة',
-          isMortgaged: false,
-          suiteAreaSqM: parseFloat((areaSqM * 0.85).toFixed(2)),
-          balconyAreaSqM: parseFloat((areaSqM * 0.15).toFixed(2)),
-          totalAreaSqM: areaSqM,
-          totalAreaSqFt: parseFloat((areaSqM * 10.7639).toFixed(2)),
-          commonAreaSqM: 14.50,
-          ownerDldNumber: String(absHash % 9000000 + 1000000),
-          ownerNameEn,
-          ownerNameAr,
-          ownerSharePercent: 100,
-          ownedAreaSqM: areaSqM,
-          purchasedFromEn: 'DEVELOPER ESCROW REGISTRY L.L.C',
-          purchasedFromAr: 'شركة التطوير العقاري ذ.م.م',
-          registrationContractNumber: `${absHash % 900000 + 100000}/2024`,
-          registrationDate: new Date().toLocaleDateString('en-GB'),
-          purchasePriceAed: Math.round(areaSqM * 11000),
-          purchasePriceWordsEn: 'Official DLD Registered Purchase Value',
-          confidenceScore: 0.998,
-          scannedAt: new Date().toISOString(),
-          documentFormat: file.type || (fileName.endsWith('.pdf') ? 'application/pdf' : 'image/png'),
-        };
-
-        this.setCachedTitleDeed(result);
-        resolve(result);
-      }, 300);
+    const shares = owners.map(owner => owner.sharePercent);
+    if (shares.some(share => share !== undefined && (share < 0 || share > 100)) ||
+      owners.length > 1 && shares.every(share => share !== undefined) &&
+      Math.abs(shares.reduce<number>((sum, share) => sum + (share ?? 0), 0) - 100) > 0.01) {
+      ambiguousOwner = true;
+      diagnostics.fields.ownerSharePercent!.state = 'conflict';
+      diagnostics.warnings.push('Owner share percentages are out of range or do not total 100%; verify the complete table without guessing.');
+    }
+    if (owners.length === 1 && !ambiguousOwner) {
+      ownerNameEn = owners[0]!.nameEn;
+      ownerNameAr = owners[0]!.nameAr;
+      for (const [key, value] of Object.entries({
+        ownerDldNumber: owners[0]!.dldNumber,
+        ownerName: `${ownerNameEn} ${ownerNameAr}`.trim(),
+        ownerSharePercent: owners[0]!.sharePercent,
+        ownedAreaSqM: owners[0]!.ownedAreaSqM,
+      })) {
+        if (value !== undefined && value !== '')
+          diagnostics.fields[key] = { state: 'extracted', source: 'text', values: [String(value)] };
+      }
+    }
+    if (owners.length > 1 || ambiguousOwner) {
+      ownerNameEn = '';
+      ownerNameAr = '';
+      diagnostics.fields.ownerName!.state = 'conflict';
+      diagnostics.warnings.push(
+        'Multiple owners detected. Select the authorized landlord during review; do not assume sole ownership.'
+      );
+    }
+    const status = `${en('mortgageStatus')} ${ar('mortgageStatus')}`.trim();
+    const mortgageState = /^(?:not mortgaged|unmortgaged|غير مرهون[ة]?)(?:\s|$)/i.test(status)
+      ? 'not_mortgaged'
+      : /^(?:mortgaged|مرهون[ة]?)(?:\s|$)/i.test(status)
+        ? 'mortgaged'
+        : 'unknown';
+    for (const key of [
+      'certificateNumber',
+      'propertyNumber',
+      'plotNumber',
+      'registrationContractNumber',
+    ]) {
+      if ((values[key]?.length || 0) > 1) {
+        diagnostics.fields[key]!.state = 'conflict';
+        diagnostics.warnings.push(`Conflicting ${key}; compare source documents.`);
+      }
+    }
+    for (const key of ['issueDate', 'registrationDate']) {
+      if (!validScanDate(normalizeDocumentDate(field(key))))
+        diagnostics.fields[key]!.state = 'missing';
+    }
+    const missingFields = [
+      !certificateNumber && 'certificateNumber',
+      !ownerNameEn && 'ownerNameEn',
+      !(propertyNumber || plotNumber) && 'propertyNumber',
+    ].filter((value): value is string => !!value);
+    const result: DldTitleDeedExtractedData = {
+      certificateNumber,
+      ownerNameEn,
+      ownerNameAr,
+      propertyNumber,
+      plotNumber,
+      owners,
+      mortgageState,
+      issueDate: normalizeDocumentDate(field('issueDate')),
+      issuingAuthorityEn: en('issuingAuthority'),
+      issuingAuthorityAr: ar('issuingAuthority'),
+      isBlockchainVerified: false,
+      propertyTypeEn: en('propertyType'),
+      propertyTypeAr: ar('propertyType'),
+      communityEn: en('community'),
+      communityAr: ar('community'),
+      municipalityNumber: field('municipalityNumber'),
+      buildingNumber: field('buildingNumber'),
+      buildingNameEn: en('buildingName'),
+      buildingNameAr: ar('buildingName'),
+      floorNumber: field('floorNumber'),
+      parkingNumber: field('parkingNumber'),
+      mortgageStatusEn: en('mortgageStatus'),
+      mortgageStatusAr: ar('mortgageStatus'),
+      isMortgaged: mortgageState === 'mortgaged',
+      suiteAreaSqM: numeric('suiteAreaSqM'),
+      balconyAreaSqM: numeric('balconyAreaSqM'),
+      totalAreaSqM,
+      totalAreaSqFt,
+      commonAreaSqM: numeric('commonAreaSqM'),
+      ownerDldNumber:
+        owners.length > 1 || ambiguousOwner ? '' : owners[0]?.dldNumber || field('ownerDldNumber'),
+      ownerSharePercent:
+        owners.length > 1 || ambiguousOwner
+          ? 0
+          : (owners[0]?.sharePercent ?? numeric('ownerSharePercent')),
+      ownedAreaSqM:
+        owners.length > 1 || ambiguousOwner
+          ? 0
+          : (owners[0]?.ownedAreaSqM ?? numeric('ownedAreaSqM')),
+      purchasedFromEn: en('purchasedFrom'),
+      purchasedFromAr: ar('purchasedFrom'),
+      registrationContractNumber: field('registrationContractNumber'),
+      registrationDate: normalizeDocumentDate(field('registrationDate')),
+      purchasePriceAed: numeric('purchasePriceAed'),
+      purchasePriceWordsEn: en('purchasePriceWordsEn'),
+      confidenceScore: 0,
+      scannedAt: new Date().toISOString(),
+      reviewConfirmed: false,
+      demoOnly: false,
+      missingFields,
+      diagnostics,
+    };
+    const flagConflict = (key: string) => {
+      diagnostics.fields[key]!.state = 'conflict';
+      diagnostics.warnings.push(`Conflicting ${key}; compare all source candidates.`);
+    };
+    for (const key of [
+      'suiteAreaSqM',
+      'balconyAreaSqM',
+      'totalAreaSqM',
+      'totalAreaSqFt',
+      'commonAreaSqM',
+      'purchasePriceAed',
+    ]) {
+      if (numericDisagreement(key, values[key] || [])) flagConflict(key);
+    }
+    // Compare every printed total, including aliases that contain square-foot units.
+    const totals = [
+      ...(values.totalAreaSqM || []).map(raw => ({
+        raw,
+        value: normalizedNumber('totalAreaSqM', raw),
+        converted: squareFeet(raw),
+      })),
+      ...(values.totalAreaSqFt || [])
+        .map(raw => ({ raw, value: normalizedNumber('totalAreaSqFt', raw), converted: true }))
+        .map(candidate => ({
+          ...candidate,
+          value: candidate.value === undefined ? undefined : candidate.value / 10.7639104167,
+        })),
+    ].filter(
+      (candidate): candidate is { raw: string; value: number; converted: boolean } =>
+        candidate.value !== undefined
+    );
+    if (
+      totals.some((candidate, index) =>
+        totals
+          .slice(index + 1)
+          .some(
+            other =>
+              Math.abs(candidate.value - other.value) >
+              (candidate.converted || other.converted ? 0.011 : 0.000001)
+          )
+      )
+    ) {
+      flagConflict('totalAreaSqM');
+      flagConflict('totalAreaSqFt');
+      diagnostics.fields.totalAreaSqM!.values = [
+        ...new Set(totals.map(candidate => candidate.raw)),
+      ];
+      diagnostics.fields.totalAreaSqFt!.values = [...diagnostics.fields.totalAreaSqM!.values];
+    }
+    for (const key of ['issueDate', 'registrationDate']) {
+      const dates = (values[key] || []).map(normalizeDocumentDate).filter(validScanDate);
+      if (new Set(dates).size > 1) flagConflict(key);
+    }
+    const mortgageStates = (values.mortgageStatus || []).flatMap(value => {
+      const tokens = [languageValue([value], 'en'), languageValue([value], 'ar')];
+      return tokens
+        .map(token =>
+          /^(?:not mortgaged|unmortgaged|غير مرهون[ة]?)(?:\s|$)/i.test(token)
+            ? 'not_mortgaged'
+            : /^(?:mortgaged|مرهون[ة]?)(?:\s|$)/i.test(token)
+              ? 'mortgaged'
+              : ''
+        )
+        .filter(Boolean);
     });
+    if (new Set(mortgageStates).size > 1) {
+      flagConflict('mortgageStatus');
+      result.mortgageState = 'unknown';
+    }
+    refreshCoverage(diagnostics);
+    return result;
   }
 
   /**
    * Alias for scanTitleDeed conforming to standard document ingestion interfaces
    */
-  async scanDocument(
-    fileOrPreset?: File | 'sample'
-  ): Promise<DldTitleDeedExtractedData> {
+  async scanDocument(fileOrPreset?: File | 'sample'): Promise<DldTitleDeedExtractedData> {
     return this.scanTitleDeed(fileOrPreset);
   }
 
@@ -365,15 +801,16 @@ class HenryTitleDeedScannerService {
     extracted: DldTitleDeedExtractedData,
     basePayload: TenancyContractPayload
   ): TenancyContractPayload {
+    if (!canUseScan(extracted)) throw new Error('Confirm review before autofill.');
     const propertyTitle = `${extracted.propertyTypeEn} in ${extracted.buildingNameEn}`;
     const unitNumber = `Unit ${extracted.propertyNumber}, Floor ${extracted.floorNumber}, ${extracted.buildingNameEn}`;
     const community = `${extracted.communityEn}, Dubai (Plot: ${extracted.plotNumber})`;
 
     const landlord: ContractParty = {
       name: extracted.ownerNameEn,
-      emiratesIdOrPassport: `DLD-${extracted.ownerDldNumber}`,
-      phone: basePayload.landlord.phone || '+971 50 555 1234',
-      email: basePayload.landlord.email || 'landlord@whitecaves.ae',
+      emiratesIdOrPassport: basePayload.landlord.emiratesIdOrPassport,
+      phone: basePayload.landlord.phone || '',
+      email: basePayload.landlord.email || '',
     };
 
     return {
@@ -389,8 +826,13 @@ class HenryTitleDeedScannerService {
    * Returns demo scanned Title Deed data (Akram Dib Nehme - Viridis A Unit 504)
    */
   getDemoExtractedData(): DldTitleDeedExtractedData {
-    const demo = { ...VIRIDIS_504_SAMPLE_TITLE_DEED, scannedAt: new Date().toISOString() };
-    this.setCachedTitleDeed(demo);
+    const demo = {
+      ...VIRIDIS_504_SAMPLE_TITLE_DEED,
+      scannedAt: new Date().toISOString(),
+      demoOnly: true,
+      reviewConfirmed: false,
+      isBlockchainVerified: false,
+    };
     return demo;
   }
 
@@ -398,6 +840,19 @@ class HenryTitleDeedScannerService {
    * Converts Extracted Title Deed into a clean CRM Property Inventory object
    */
   toCrmPropertyListing(extracted: DldTitleDeedExtractedData) {
+    if (!canUseScan(extracted)) throw new Error('Confirm review before autofill.');
+    const knownNumber = (
+      key: 'totalAreaSqFt' | 'totalAreaSqM' | 'purchasePriceAed'
+    ): number | undefined => {
+      const evidence = extracted.diagnostics?.fields[key];
+      return Number.isFinite(extracted[key]) &&
+        extracted[key] >= 0 &&
+        (evidence
+          ? evidence.state === 'extracted' || evidence.state === 'derived'
+          : extracted[key] > 0)
+        ? extracted[key]
+        : undefined;
+    };
     return {
       title: `${extracted.buildingNameEn} — Unit ${extracted.propertyNumber} (${extracted.propertyTypeEn})`,
       propertyType: extracted.propertyTypeEn,
@@ -408,13 +863,16 @@ class HenryTitleDeedScannerService {
       parking: extracted.parkingNumber,
       plotNumber: extracted.plotNumber,
       municipalityNumber: extracted.municipalityNumber,
-      sizeSqFt: extracted.totalAreaSqFt,
-      sizeSqM: extracted.totalAreaSqM,
+      sizeSqFt: knownNumber('totalAreaSqFt'),
+      sizeSqM: knownNumber('totalAreaSqM'),
       ownerName: extracted.ownerNameEn,
       ownerDldId: extracted.ownerDldNumber,
-      lastPurchasePriceAed: extracted.purchasePriceAed,
+      lastPurchasePriceAed: knownNumber('purchasePriceAed'),
       titleDeedNumber: extracted.certificateNumber,
-      mortgageStatus: extracted.mortgageStatusEn,
+      mortgageStatus:
+        extracted.mortgageState === 'unknown' || !extracted.mortgageStatusEn
+          ? undefined
+          : extracted.mortgageStatusEn,
     };
   }
 
@@ -422,7 +880,7 @@ class HenryTitleDeedScannerService {
    * Exports extracted data as a structured JSON object
    */
   exportToJson(extracted?: DldTitleDeedExtractedData): Record<string, any> {
-    const data = extracted || this.getCachedTitleDeed() || VIRIDIS_504_SAMPLE_TITLE_DEED;
+    const data = extracted || this.getCachedTitleDeed();
     return JSON.parse(JSON.stringify(data));
   }
 
@@ -436,36 +894,22 @@ class HenryTitleDeedScannerService {
   /**
    * Persists extracted Title Deed record to backend database and local cache
    */
-  async saveToDatabase(extracted?: DldTitleDeedExtractedData): Promise<{ success: boolean; id?: string; error?: string }> {
-    const data = extracted || this.getCachedTitleDeed() || VIRIDIS_504_SAMPLE_TITLE_DEED;
-    this.setCachedTitleDeed(data);
-
-    try {
-      if (typeof window !== 'undefined') {
-        const response = await fetch('/api/henry/documents/save', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            docType: 'title_deed',
-            title: `Title Deed - ${data.buildingNameEn} #${data.propertyNumber}`,
-            clientName: data.ownerNameEn,
-            referenceNumber: data.certificateNumber,
-            extractedJson: data,
-            confidenceScore: data.confidenceScore,
-            scannedSide: 'front',
-            documentFormat: data.documentFormat || 'application/pdf',
-          }),
-        });
-
-        if (response.ok) {
-          const resJson = await response.json();
-          return { success: true, id: resJson.data?.id };
-        }
-      }
-      return { success: true, id: `local_${Date.now()}` };
-    } catch {
-      return { success: true, id: `fallback_${Date.now()}` };
-    }
+  async saveToDatabase(
+    extracted?: DldTitleDeedExtractedData,
+    options?: VaultSaveOptions
+  ): Promise<{ success: boolean; id?: string; error?: string }> {
+    const data = extracted || this.getCachedTitleDeed();
+    if (!data) return { success: false, error: 'No reviewed document.' };
+    const revision = this.cacheRevision;
+    const result = await saveReviewedScan(
+      'title_deed',
+      data,
+      data.certificateNumber,
+      data.ownerNameEn,
+      options
+    );
+    if (result.success && revision === this.cacheRevision) this.setCachedTitleDeed(data);
+    return result;
   }
 }
 

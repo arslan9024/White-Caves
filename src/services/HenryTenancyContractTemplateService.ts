@@ -11,7 +11,7 @@
  * - DLD Official Form (عقد إيجار)
  */
 
-import { safeStorage } from '../utils/safeStorage';
+import { canUseScan } from './henryScanReview';
 import type { DldTitleDeedExtractedData } from './HenryTitleDeedScannerService';
 import type { EmiratesIdExtractedData } from './HenryEmiratesIdScannerService';
 import type { InternationalPassportExtractedData } from './HenryPassportScannerService';
@@ -38,7 +38,7 @@ export interface DldTenancyContractData {
   tenantPhone: string;
 
   // ── Property Information (معلومات العقار) ──
-  propertyUsage: 'residential' | 'commercial' | 'industrial';
+  propertyUsage: 'residential' | 'commercial' | 'industrial' | '';
   plotNo: string;
   makaniNo: string;
   buildingName: string;
@@ -72,11 +72,6 @@ export interface DldTenancyContractData {
   esignToken?: string;
 }
 
-const STORAGE_KEYS = {
-  BLANK_TEMPLATE: 'whitecaves_dld_tenancy_blank_template_v1',
-  ACTIVE_DRAFT: 'whitecaves_dld_tenancy_active_draft_v1',
-  SAVED_CONTRACTS: 'whitecaves_dld_tenancy_saved_contracts_v1',
-};
 
 export const BLANK_DLD_TENANCY_CONTRACT: DldTenancyContractData = {
   contractId: '',
@@ -197,7 +192,7 @@ class HenryTenancyContractTemplateService {
   }
 
   /**
-   * Save active draft to LocalStorage & memory cache
+   * Save active draft in session memory; leave legacy storage untouched
    */
   saveDraft(data: DldTenancyContractData): void {
     const updated = {
@@ -205,29 +200,28 @@ class HenryTenancyContractTemplateService {
       updatedAt: new Date().toISOString(),
     };
     this.activeDraftMemory = updated;
-    safeStorage.setJSON(STORAGE_KEYS.ACTIVE_DRAFT, updated);
   }
 
   /**
-   * Updates the active draft in memory & safeStorage
+   * Updates the active draft in session memory
    */
   updateActiveDraft(data: DldTenancyContractData): void {
     this.saveDraft(data);
   }
 
   /**
-   * Load active draft from LocalStorage or memory cache or fall back to blank template
+   * Load only the session draft, otherwise fall back to a blank template
    */
   loadActiveDraft(): DldTenancyContractData {
-    const draft = safeStorage.getJSON<DldTenancyContractData>(STORAGE_KEYS.ACTIVE_DRAFT) || this.activeDraftMemory;
-    if (draft && draft.contractId) {
+    const draft = this.activeDraftMemory;
+    if (draft) {
       return draft;
     }
     return this.getBlankTemplate();
   }
 
   /**
-   * Reset active draft to a fresh blank template in LocalStorage
+   * Reset active session draft to a fresh blank template
    */
   resetDraft(): DldTenancyContractData {
     const blank = this.getBlankTemplate();
@@ -236,30 +230,35 @@ class HenryTenancyContractTemplateService {
   }
 
   /**
-   * Save a finalized contract into the saved contracts registry
+   * Keep a finalized contract in the session registry, not the encrypted vault
    */
   saveContract(data: DldTenancyContractData): void {
-    const saved = safeStorage.getJSON<DldTenancyContractData[]>(STORAGE_KEYS.SAVED_CONTRACTS) || this.savedContractsMemory;
+    const saved = this.savedContractsMemory;
     const filtered = saved.filter(c => c.contractId !== data.contractId);
     filtered.unshift({
       ...data,
       updatedAt: new Date().toISOString(),
     });
-    this.savedContractsMemory = filtered;
-    safeStorage.setJSON(STORAGE_KEYS.SAVED_CONTRACTS, filtered);
+    this.savedContractsMemory = filtered.slice(0, 20);
   }
 
   /**
-   * Retrieve list of saved contracts from LocalStorage or memory cache
+   * Retrieve only contracts saved during this session
    */
   getSavedContracts(): DldTenancyContractData[] {
-    return safeStorage.getJSON<DldTenancyContractData[]>(STORAGE_KEYS.SAVED_CONTRACTS) || this.savedContractsMemory;
+    return this.savedContractsMemory;
+  }
+
+  clearSession(): void {
+    this.activeDraftMemory = null;
+    this.savedContractsMemory = [];
   }
 
   /**
    * Auto-fill contract data from scanned Title Deed
    */
   populateFromTitleDeed(current: DldTenancyContractData, deed: DldTitleDeedExtractedData): DldTenancyContractData {
+    if (!canUseScan(deed)) return current;
     return {
       ...current,
       ownerName: deed.ownerNameEn || current.ownerName,
@@ -283,6 +282,7 @@ class HenryTenancyContractTemplateService {
     eid: EmiratesIdExtractedData,
     role: 'tenant' | 'landlord' = 'tenant'
   ): DldTenancyContractData {
+    if (!canUseScan(eid)) return current;
     if (role === 'tenant') {
       return {
         ...current,
@@ -309,6 +309,7 @@ class HenryTenancyContractTemplateService {
     passport: InternationalPassportExtractedData,
     role: 'tenant' | 'landlord' = 'tenant'
   ): DldTenancyContractData {
+    if (!canUseScan(passport)) return current;
     if (role === 'tenant') {
       return {
         ...current,
@@ -331,6 +332,14 @@ class HenryTenancyContractTemplateService {
    * Compiles the official 3-page bilingual DLD Tenancy Contract HTML matching the official Land Department layout exactly
    */
   generateDldTenancyContractHtml(data: DldTenancyContractData, page: number | 'all' = 'all'): string {
+    const escapeText = (value: string): string => value.replace(/[&<>"']/g, character => ({
+      '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;',
+    })[character]!);
+    // Every dynamic string crosses this boundary once; template markup stays trusted.
+    data = { ...data, additionalTerms: data.additionalTerms.map(escapeText) };
+    for (const [key, value] of Object.entries(data)) {
+      if (typeof value === 'string') Object.assign(data, { [key]: escapeText(value) });
+    }
     const isBlank = !data.tenantName && !data.ownerName;
 
     // Helper for dotted underline value cell
@@ -466,7 +475,7 @@ class HenryTenancyContractTemplateService {
               <div style="display: flex; gap: 24px; font-weight: 700;">
                 <span><span style="font-size: 13px;">${data.propertyUsage === 'industrial' ? '🔘' : '⚪'}</span> Industrial صناعي</span>
                 <span><span style="font-size: 13px;">${data.propertyUsage === 'commercial' ? '🔘' : '⚪'}</span> Commercial تجاري</span>
-                <span><span style="font-size: 13px;">${data.propertyUsage === 'residential' || !data.propertyUsage ? '🔘' : '⚪'}</span> Residential سكني</span>
+                <span><span style="font-size: 13px;">${data.propertyUsage === 'residential' ? '🔘' : '⚪'}</span> Residential سكني</span>
               </div>
               <span style="font-weight: 700; color: #1E293B; direction: rtl;">استخدام العقار</span>
             </div>
@@ -508,7 +517,7 @@ class HenryTenancyContractTemplateService {
               </div>
               <div style="display: flex; align-items: baseline; justify-content: space-between;">
                 <span style="font-weight: 700; color: #1E293B;">Contract Value</span>
-                <span style="flex-grow: 1; margin: 0 8px; border-bottom: 1px dotted #94A3B8; text-align: center; font-weight: 800;">${data.contractValue || data.annualRent ? `AED ${(data.contractValue || data.annualRent).toLocaleString()}` : '&nbsp;'}</span>
+                <span style="flex-grow: 1; margin: 0 8px; border-bottom: 1px dotted #94A3B8; text-align: center; font-weight: 800;">${data.contractValue ? `AED ${data.contractValue.toLocaleString()}` : '&nbsp;'}</span>
                 <span style="font-weight: 700; direction: rtl;">قيمة العقد</span>
               </div>
             </div>
@@ -764,8 +773,8 @@ class HenryTenancyContractTemplateService {
           </div>
 
           <div style="padding: 6px 10px; min-height: 180px; position: relative; z-index: 1;">
-            ${[1, 2, 3, 4, 5].map((num) => {
-              const arabicNum = ['', '١', '٢', '٣', '٤', '٥'][num];
+            ${Array.from({ length: Math.max(5, data.additionalTerms.length) }, (_, index) => index + 1).map((num) => {
+              const arabicNum = String(num).replace(/\d/g, digit => '٠١٢٣٤٥٦٧٨٩'[Number(digit)]!);
               const termValue = (data.additionalTerms && data.additionalTerms[num - 1]) 
                 ? data.additionalTerms[num - 1].replace(/^[0-9]+\.\s*/, '') 
                 : '';
@@ -773,9 +782,7 @@ class HenryTenancyContractTemplateService {
               return `
                 <div style="display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 14px; font-size: 10px;">
                   <span style="font-weight: 700; color: #1E293B; min-width: 25px;">${num}.</span>
-                  <span style="flex-grow: 1; margin: 0 10px; border-bottom: 1px dotted #94A3B8; font-weight: 700; color: #0F172A; font-size: 9.5px;">
-                    ${termValue || '&nbsp;'}
-                  </span>
+                  <span style="flex-grow: 1; margin: 0 10px; border-bottom: 1px dotted #94A3B8; font-weight: 700; color: #0F172A; font-size: 9.5px; white-space: pre-wrap;">${termValue || '&nbsp;'}</span>
                   <span style="font-weight: 700; color: #1E293B; min-width: 25px; text-align: right;">.${arabicNum}</span>
                 </div>
               `;

@@ -2,11 +2,11 @@
  * HenryPdfEngineService.ts — Henry AI Document & PDF Engineering Core
  *
  * Provides comprehensive PDF compilation, print preview generation,
- * E-Signature sharing, AI Auto-Fill, and Dubai Real Estate contract formatting.
+ * preparation previews and Dubai Real Estate contract formatting. No external dispatch.
  *
  * Core Document Streams:
- * 1. Tenancy Contract (Private agreement with e-signature link sharing)
- * 2. Government Ejari Certificate (Official DLD issued certificate archival)
+ * 1. Tenancy Contract preparation (no connected signing provider)
+ * 2. Ejari layout demo (not a certificate or archival operation)
  * 3. Leasing & Viewing Forms (Form B viewing sheets with 1-Click AI Auto-Fill)
  * 4. Receipts & Tax Invoices (Security deposit & commission tax invoices with TRN and 5% VAT)
  */
@@ -149,8 +149,6 @@ class HenryPdfEngineService {
       .map((clause, idx) => `<li style="margin-bottom: 6px; font-size: 12px; line-height: 1.5;">${idx + 1}. ${clause}</li>`)
       .join('');
 
-    const esignLink = payload.esignToken ? `https://whitecaves.ae/sign/${payload.esignToken}` : 'https://whitecaves.ae/sign/demo-token-98442';
-
     return `
       <!DOCTYPE html>
       <html lang="en">
@@ -172,21 +170,21 @@ class HenryPdfEngineService {
         </style>
       </head>
       <body>
-        <div class="watermark-text">WHITE CAVES LLC</div>
+        <div class="watermark-text">PREPARATION PREVIEW</div>
 
         <div class="esign-banner no-print">
           <div>
-            <strong style="color: #991B1B; font-size: 13px;">🔗 E-SIGNATURE LINK READY FOR SHARING</strong>
-            <div style="font-size: 11px; color: #7F1D1D; margin-top: 2px;">Share link with Landlord & Tenant for secure digital execution: <code style="background: white; padding: 2px 6px; border-radius: 4px;">${esignLink}</code></div>
+            <strong style="color: #991B1B; font-size: 13px;">PREPARATION PREVIEW — NOT SIGNED</strong>
+            <div style="font-size: 11px; color: #7F1D1D; margin-top: 2px;">No signing provider is connected. No link is generated or sent.</div>
           </div>
-          <span class="badge" style="background: #16A34A;">E-SIGN ACTIVE</span>
+          <span class="badge">DRAFT ONLY</span>
         </div>
 
         <table class="header-table">
           <tr>
             <td style="vertical-align: middle;">
               <h1 style="margin: 0; font-size: 20px; color: #1E293B; letter-spacing: 0.5px;">GOVERNMENT OF DUBAI — LAND DEPARTMENT</h1>
-              <h2 style="margin: 4px 0 0; font-size: 14px; color: #EF4444; font-weight: 800;">UNIFIED TENANCY CONTRACT (FOR E-SIGNATURE)</h2>
+              <h2 style="margin: 4px 0 0; font-size: 14px; color: #EF4444; font-weight: 800;">TENANCY CONTRACT PREPARATION DRAFT</h2>
               <span style="font-size: 11px; color: #64748B;">Regulated by Law No. (26) of 2007 & Law No. (33) of 2008</span>
             </td>
             <td style="text-align: right; vertical-align: middle;">
@@ -254,14 +252,14 @@ class HenryPdfEngineService {
         </ul>
 
         <div class="stamp-box">
-          <div style="font-weight: 800; font-size: 13px;">DIGITALLY PREPARED FOR SECURE E-SIGNATURE</div>
+          <div style="font-weight: 800; font-size: 13px;">PREPARATION ONLY — SIGNATURES NOT VERIFIED</div>
           <div style="font-size: 11px; margin-top: 4px; color: #64748B;">
             Supervised by Henry AI • White Caves Real Estate LLC • RERA ORN: ${payload.broker.agencyOrn}
           </div>
           <div style="margin-top: 12px; display: flex; justify-content: space-around; font-size: 11px; font-weight: bold; color: #1E293B;">
-            <div>Lessor E-Sign: [PENDING / SECURE LINK]</div>
-            <div>Lessee E-Sign: [PENDING / SECURE LINK]</div>
-            <div>Broker Witness: [VERIFIED]</div>
+            <div>Lessor signature: [NOT VERIFIED]</div>
+            <div>Lessee signature: [NOT VERIFIED]</div>
+            <div>Broker witness: [NOT VERIFIED]</div>
           </div>
         </div>
       </body>
@@ -270,7 +268,7 @@ class HenryPdfEngineService {
   }
 
   /**
-   * 2. Displays the Official Government-Issued Ejari Certificate in Henry Vault
+   * 2. Displays a synthetic Ejari layout, never a government certificate.
    */
   generateGovernmentEjariArchiveHtml(record: GovernmentEjariRecord): string {
     return `
@@ -278,7 +276,7 @@ class HenryPdfEngineService {
       <html lang="en">
       <head>
         <meta charset="UTF-8">
-        <title>Government Ejari Certificate — ${record.ejariNumber}</title>
+        <title>Ejari Layout Demo — Not a Certificate</title>
         <style>
           body { font-family: 'Inter', sans-serif; padding: 24px; color: #0F172A; background: #FFFFFF; }
           .cert-border { border: 4px double #1E293B; padding: 24px; border-radius: 8px; background: #FFFCF9; }
@@ -292,11 +290,11 @@ class HenryPdfEngineService {
         <div class="cert-border">
           <div class="header">
             <div style="display: flex; justify-content: space-between; align-items: center;">
-              <span class="vault-badge">HENRY SOVEREIGN VAULT — OFFICIAL GOVERNMENT RECORD</span>
-              <span style="font-size: 11px; color: #64748B;">Archived: ${record.archivedAt}</span>
+              <span class="vault-badge">DEMO ONLY — NOT A GOVERNMENT RECORD</span>
+              <span style="font-size: 11px; color: #64748B;">Not archived</span>
             </div>
-            <h2 style="margin: 12px 0 2px; color: #1E293B; font-size: 18px;">GOVERNMENT OF DUBAI — LAND DEPARTMENT</h2>
-            <h3 style="margin: 0; color: #B45309; font-size: 15px;">OFFICIAL EJARI CERTIFICATE OF TENANCY REGISTRATION</h3>
+            <h2 style="margin: 12px 0 2px; color: #1E293B; font-size: 18px;">HENRY — SYNTHETIC LAYOUT PREVIEW</h2>
+            <h3 style="margin: 0; color: #B45309; font-size: 15px;">NOT AN EJARI CERTIFICATE OF REGISTRATION</h3>
             <div style="font-size: 13px; font-weight: 800; color: #1E293B; margin-top: 6px;">EJARI NUMBER: ${record.ejariNumber}</div>
           </div>
 
@@ -318,9 +316,9 @@ class HenryPdfEngineService {
           </div>
 
           <div style="margin-top: 24px; text-align: center; border-top: 1px solid #E2E8F0; padding-top: 16px;">
-            <div class="qr-box">[DLD REST QR]</div>
+            <div class="qr-box">NO QR VALIDATION</div>
             <div style="font-size: 11px; color: #64748B; margin-top: 8px;">
-              This official document was registered directly by the licensed agent with Dubai Land Department and permanently archived in Henry AI Sovereign Records Vault.
+              Synthetic demonstration only. No DLD registration, certificate verification or vault archival has occurred. Obtain the original certificate through the authorized government process.
             </div>
           </div>
         </div>
@@ -450,7 +448,7 @@ class HenryPdfEngineService {
               <h3 style="margin: 12px 0 0; color: #EF4444; font-size: 16px;">TAX INVOICE / VOUCHER</h3>
               <div style="font-weight: bold; font-size: 13px; margin-top: 4px;">Ref: ${payload.receiptNumber}</div>
               <div style="font-size: 11px; color: #64748B; margin-top: 2px;">Issue Date: ${payload.date}</div>
-              <div style="font-size: 11px; color: #16A34A; font-weight: bold; margin-top: 4px;">STATUS: PAID / CLEARED</div>
+              <div style="font-size: 11px; font-weight: bold; margin-top: 4px;">PREVIEW ONLY — PAYMENT NOT VERIFIED</div>
             </div>
           </div>
         </div>
@@ -504,7 +502,7 @@ class HenryPdfEngineService {
             </div>
             <div style="text-align: right;">
               <div style="font-size: 10px; color: #64748B;">Supervised by Henry AI Record Keeper</div>
-              <div style="font-weight: bold; color: #16A34A; font-size: 11px;">[FTA UAE COMPLIANT]</div>
+              <div style="font-weight: bold; font-size: 11px;">[TAX COMPLIANCE NOT VERIFIED]</div>
             </div>
           </div>
         </div>

@@ -33,8 +33,15 @@ import {
 } from '../services/henry/complianceEngine.js';
 import { HENRY_UPLOADS_PATH, OLLAMA_HOST, GROQ_API_KEY } from '../config/env.js';
 import { AuthRequest } from '../middleware/auth.js';
+import { AppError, asyncHandler } from '../middleware/errorHandler.js';
+import { activeDocumentFilter, decodeDocument, decodeSource, documentId, documentOwner, prepareDocument, prepareSource, referenceHash, maxSourceBytes, validateDocumentLinks, vaultKey, vaultOperation } from '../services/henry/documentVault.js';
+import { isGenericDocumentType } from '../shared/henryDocumentRegistry.js';
+import dossierRouter from './henry.dossiers.js';
+import driveRouter from './henry.drive.js';
+import { validateDriveProvenance } from '../services/henry/driveIndex.js';
 
 const router = Router();
+router.use('/drive', driveRouter);
 
 const mockHenryRecords: Array<Record<string, any>> = [];
 const VALID_DEPARTMENTS = ['sales', 'leasing', 'finance', 'compliance', 'legal', 'operations'] as const;
@@ -897,115 +904,178 @@ router.post('/translate', requireMinRole('agent'), async (req: Request, res: Res
 
 // ─── POST /api/henry/documents/save ──────────────────────────────────────────
 
-const henryDocumentStore: Array<{
-  id: string;
-  docType: 'emirates_id' | 'title_deed' | 'passport' | 'tenancy_contract' | string;
-  title: string;
-  clientName: string;
-  referenceNumber: string;
-  extractedJson: Record<string, any>;
-  confidenceScore: number;
-  scannedSide?: string;
-  documentFormat?: string;
-  createdAt: string;
-  updatedAt: string;
-}> = [];
+router.use('/documents', (_req, res, next) => {
+  res.setHeader('Cache-Control', 'no-store');
+  next();
+});
+router.use('/documents', dossierRouter);
 
-router.post('/documents/save', requireMinRole('agent'), async (req: Request, res: Response) => {
-  try {
-    const {
-      docType = 'emirates_id',
-      title = 'Extracted Document',
-      clientName = 'Client',
-      referenceNumber = '',
-      extractedJson = {},
-      confidenceScore = 1.0,
-      scannedSide = 'both',
-      documentFormat = 'application/pdf',
-    } = req.body;
-
-    const newRecord = {
-      id: `doc_${Date.now()}_${Math.random().toString(36).slice(2, 7)}`,
-      docType,
-      title,
-      clientName,
-      referenceNumber: referenceNumber || extractedJson.idNumber || extractedJson.certificateNumber || extractedJson.passportNumber || '',
-      extractedJson,
-      confidenceScore,
-      scannedSide,
-      documentFormat,
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString(),
-    };
-
-    henryDocumentStore.unshift(newRecord);
-    if (henryDocumentStore.length > 200) {
-      henryDocumentStore.pop();
+const sourceUpload = multer({ storage: multer.memoryStorage(), limits: { fileSize: maxSourceBytes, files: 2, fieldSize: 250000 } });
+router.post('/documents/save', requireMinRole('agent'), sourceUpload.array('source', 2), asyncHandler(async (req: AuthRequest, res) => {
+  const ownerUserId = documentOwner(req.user?.id);
+  if (req.body.metadata) {
+    try { req.body = JSON.parse(req.body.metadata); } catch { throw new AppError('Invalid document metadata', 400); }
+  }
+  const sources = (req.files as Express.Multer.File[] | undefined) || [];
+  if ((['passport', 'tenancy_contract'].includes(req.body.docType) || isGenericDocumentType(req.body.docType)) && !sources.length)
+    throw new AppError('Original source required for archival', 400);
+  const data = { ...prepareDocument(req.body, ownerUserId), ...prepareSource(sources),
+    ...await validateDriveProvenance(ownerUserId, req.body.driveOrigin, sources) };
+  const links = await validateDocumentLinks(ownerUserId, req.body);
+  const result = await vaultOperation('save', () => prisma.$transaction(async tx => {
+    const replacesId = req.body.replacesId ? documentId(req.body.replacesId) : null;
+    if (replacesId) {
+      const previous = await tx.henryScannedDocument.findFirst({ where: { id: replacesId, ownerUserId, docType: data.docType, ...activeDocumentFilter } });
+      if (!previous) throw new AppError('Replacement target not found', 404);
+      // Release only this active reference inside the same transaction; rollback preserves it on failure.
+      const released = await tx.henryScannedDocument.updateMany({ where: { id: replacesId, ownerUserId, ...activeDocumentFilter, referenceHash: previous.referenceHash }, data: { referenceHash: `archived:${replacesId}` } });
+      if (released.count !== 1) throw new AppError('Document changed; reload before replacing', 409);
     }
+    const row = await tx.henryScannedDocument.create({ data: { ...data, ...links, ownerUserId, replacedById: null } });
+    if (replacesId) await tx.henryScannedDocument.updateMany({ where: { id: replacesId, ownerUserId, ...activeDocumentFilter }, data: { replacedById: row.id } });
+    await tx.henryDocumentAudit.create({ data: { ownerUserId, documentId: row.id, action: 'save' } });
+    return row;
+  }));
+  res.json({ success: true, data: decodeDocument(result) });
+}));
 
-    res.json({
-      success: true,
-      message: `Document ${docType} successfully saved to Henry Document Database.`,
-      data: newRecord,
+const searchDocuments = asyncHandler(async (req: AuthRequest, res) => {
+  const ownerUserId = documentOwner(req.user?.id);
+  vaultKey();
+  const filters = req.method === 'POST' ? req.body : req.query;
+  if (!filters || typeof filters !== 'object' || Array.isArray(filters)) throw new AppError('Search metadata required', 400);
+  if (req.method === 'GET' && 'referenceNumber' in filters) throw new AppError('Use POST /documents/search with referenceNumber in the JSON body', 400);
+  const limit = Math.max(1, Math.min(100, Math.floor(Number(filters.limit) || 50)));
+  const page = Math.max(1, Math.floor(Number(filters.page) || 1));
+  if (!Number.isFinite(limit) || !Number.isSafeInteger(page) || page > 100000) throw new AppError('Invalid pagination', 400);
+  if (filters.q || filters.clientName) throw new AppError('Use exact referenceNumber with docType; substring search is not supported', 400);
+  if (filters.referenceNumber && (typeof filters.referenceNumber !== 'string' || filters.referenceNumber.length > 100))
+    throw new AppError('Invalid document reference', 400);
+  const links = await validateDocumentLinks(ownerUserId, filters);
+  const status = String(filters.expiryStatus || '');
+  if (status && !['expired', 'soon_expiring', 'current', 'unknown'].includes(status)) throw new AppError('Invalid expiry filter', 400);
+  const today = new Date(Math.floor(Date.now() / 86400000) * 86400000);
+  const soon = new Date(Date.now() + 30 * 86400000);
+  const where = { ownerUserId, ...activeDocumentFilter,
+    ...(links.leadId ? { leadId: links.leadId } : {}), ...(links.propertyId ? { propertyId: links.propertyId } : {}),
+    ...(links.tenancyId ? { tenancyId: links.tenancyId } : {}), ...(links.transactionId ? { transactionId: links.transactionId } : {}),
+    ...(filters.docType ? { docType: String(filters.docType) } : {}),
+    ...(filters.referenceNumber ? { referenceHash: referenceHash(ownerUserId, String(filters.docType || ''), filters.referenceNumber) } : {}),
+    ...(status === 'unknown' ? { AND: [{ OR: [{ expiryAt: null }, { expiryAt: { isSet: false } }] }] }
+      : status ? { expiryAt: status === 'expired' ? { lt: today } : status === 'soon_expiring' ? { gte: today, lt: soon } : { gte: soon } } : {}),
+  };
+  if (filters.referenceNumber && !filters.docType) throw new AppError('Document type required for exact reference search', 400);
+  const rows = await vaultOperation('list', () => prisma.henryScannedDocument.findMany({
+    where, orderBy: [{ createdAt: 'desc' }, { id: 'desc' }], skip: (page - 1) * limit, take: limit + 1,
+    select: { id: true, docType: true, encryptedPayload: true, createdAt: true, updatedAt: true, replacedById: true, leadId: true, propertyId: true, retentionUntil: true, reminderDismissedAt: true },
+  }));
+  const data = rows.slice(0, limit).map(row => {
+    const decoded = decodeDocument(row);
+    return { id: row.id, docType: row.docType, title: 'Reviewed document', referenceNumber: `••••${String(decoded.referenceNumber).slice(-4)}`, createdAt: row.createdAt,
+      leadId: row.leadId, propertyId: row.propertyId, expiryStatus: decoded.expiryStatus, reminderDismissedAt: row.reminderDismissedAt, retentionUntil: row.retentionUntil };
+  });
+  res.json({ success: true, count: data.length, page, hasMore: rows.length > limit, data });
+});
+router.get('/documents', requireMinRole('agent'), searchDocuments);
+router.post('/documents/search', requireMinRole('agent'), searchDocuments);
+
+router.get('/documents/link-options', requireMinRole('agent'), asyncHandler(async (req: AuthRequest, res) => {
+  const owner = documentOwner(req.user?.id);
+  const kind = req.query.kind;
+  const page = Number(req.query.page ?? 1);
+  if (typeof kind !== 'string' || !['lead', 'property', 'tenancy', 'transaction'].includes(kind) || !Number.isInteger(page) || page < 1 || page > 1000)
+    throw new AppError('Valid link kind and page (1–1000) required', 400);
+  const data = await vaultOperation('link-options', async () => kind === 'lead'
+    ? prisma.lead.findMany({ where: { assignedToId: owner }, select: { id: true, name: true }, orderBy: { id: 'asc' }, skip: (page - 1) * 25, take: 26 })
+    : kind === 'property' ? prisma.property.findMany({ where: { userId: owner }, select: { id: true, title: true }, orderBy: { id: 'asc' }, skip: (page - 1) * 25, take: 26 })
+    : kind === 'tenancy' ? prisma.lease.findMany({ where: { property: { userId: owner } }, select: { id: true, leaseNumber: true }, orderBy: { id: 'asc' }, skip: (page - 1) * 25, take: 26 })
+    : prisma.transaction.findMany({ where: { agentId: owner }, select: { id: true, type: true }, orderBy: { id: 'asc' }, skip: (page - 1) * 25, take: 26 }));
+  res.json({ success: true, data: data.slice(0, 25).map(row => ({ id: row.id, name: 'name' in row ? row.name : 'title' in row ? row.title : 'leaseNumber' in row ? row.leaseNumber || `Tenancy …${row.id.slice(-4)}` : `${row.type} …${row.id.slice(-4)}` })), hasMore: data.length > 25 });
+}));
+
+router.get('/documents/latest/:docType', requireMinRole('agent'), asyncHandler(async (req: AuthRequest, res) => {
+  const ownerUserId = documentOwner(req.user?.id);
+  vaultKey();
+  const row = await vaultOperation('latest', () => prisma.henryScannedDocument.findFirst({ where: { ownerUserId, docType: String(req.params.docType), ...activeDocumentFilter }, orderBy: { createdAt: 'desc' } }));
+  if (!row) throw new AppError('Document not found', 404);
+  await vaultOperation('audit', () => prisma.henryDocumentAudit.create({ data: { ownerUserId, documentId: row.id, action: 'latest' } }));
+  res.json({ success: true, data: decodeDocument(row) });
+}));
+
+router.patch('/documents/:id', requireMinRole('agent'), asyncHandler(async (req: AuthRequest, res) => {
+  const ownerUserId = documentOwner(req.user?.id);
+  const id = documentId(req.params.id);
+  const data = prepareDocument(req.body, ownerUserId);
+  const links = await validateDocumentLinks(ownerUserId, req.body);
+  const row = await vaultOperation('update', () => prisma.$transaction(async tx => {
+    const found = await tx.henryScannedDocument.findFirst({ where: { id, ownerUserId, docType: data.docType, ...activeDocumentFilter } });
+    if (!found) throw new AppError('Document not found', 404);
+    const changed = await tx.henryScannedDocument.updateMany({
+      where: { id, ownerUserId, updatedAt: found.updatedAt, ...activeDocumentFilter },
+      data: {
+        ...data,
+        ...('leadId' in req.body ? { leadId: links.leadId } : {}),
+        ...('propertyId' in req.body ? { propertyId: links.propertyId } : {}),
+        ...('tenancyId' in req.body ? { tenancyId: links.tenancyId } : {}),
+        ...('transactionId' in req.body ? { transactionId: links.transactionId } : {}),
+        // Field corrections invalidate a previous signature attestation; originals remain immutable.
+        lifecycleStatus: 'draft', signedAttestedAt: null,
+        ...(found.expiryAt?.getTime() !== data.expiryAt?.getTime() ? { reminderDismissedAt: null } : {}),
+      },
     });
-  } catch (err) {
-    res.status(500).json({ success: false, error: err instanceof Error ? err.message : 'Unknown error' });
-  }
-});
+    if (changed.count !== 1) throw new AppError('Document changed; reload before updating', 409);
+    await tx.henryDocumentAudit.create({ data: { ownerUserId, documentId: id, action: 'update' } });
+    return tx.henryScannedDocument.findFirstOrThrow({ where: { id, ownerUserId } });
+  }));
+  res.json({ success: true, data: decodeDocument(row) });
+}));
 
-// ─── GET /api/henry/documents ────────────────────────────────────────────────
+router.patch('/documents/:id/reminder', requireMinRole('agent'), asyncHandler(async (req: AuthRequest, res) => {
+  const ownerUserId = documentOwner(req.user?.id);
+  const id = documentId(req.params.id);
+  vaultKey();
+  await vaultOperation('reminder', () => prisma.$transaction(async tx => {
+    const changed = await tx.henryScannedDocument.updateMany({ where: { id, ownerUserId, ...activeDocumentFilter }, data: { reminderDismissedAt: req.body.dismissed === true ? new Date() : null } });
+    if (!changed.count) throw new AppError('Document not found', 404);
+    await tx.henryDocumentAudit.create({ data: { ownerUserId, documentId: id, action: 'reminder' } });
+  }));
+  res.json({ success: true });
+}));
 
-router.get('/documents', requireMinRole('agent'), (req: Request, res: Response) => {
-  try {
-    const { docType, clientName, limit = 50 } = req.query;
-    let list = [...henryDocumentStore];
+router.delete('/documents/:id', requireMinRole('agent'), asyncHandler(async (req: AuthRequest, res) => {
+  const ownerUserId = documentOwner(req.user?.id);
+  const id = documentId(req.params.id);
+  vaultKey();
+  if (req.body.confirmDocumentId !== id) throw new AppError('Explicit document deletion confirmation required', 400);
+  await vaultOperation('delete', () => prisma.$transaction(async tx => {
+    const deleted = await tx.henryScannedDocument.deleteMany({ where: { id, ownerUserId } });
+    if (deleted.count !== 1) throw new AppError('Document not found', 404);
+    await tx.henryDocumentAudit.create({ data: { ownerUserId, documentId: id, action: 'user_requested_delete' } });
+  }));
+  res.json({ success: true });
+}));
 
-    if (docType) {
-      list = list.filter(item => item.docType === docType);
+for (const route of ['/documents/:id/download', '/documents/:id']) {
+  router.get(route, requireMinRole('agent'), asyncHandler(async (req: AuthRequest, res) => {
+    const ownerUserId = documentOwner(req.user?.id);
+    vaultKey();
+    const id = documentId(req.params.id);
+    const row = await vaultOperation('read', () => prisma.henryScannedDocument.findFirst({ where: { id, ownerUserId } }));
+    if (!row) throw new AppError('Document not found', 404);
+    await vaultOperation('audit', () => prisma.henryDocumentAudit.create({ data: { ownerUserId, documentId: id, action: route.endsWith('download') ? 'download' : 'read' } }));
+    res.setHeader('Cache-Control', 'no-store');
+    if (route.endsWith('download')) {
+      if (!row.encryptedSource) throw new AppError('No original archived; reviewed fields remain available in detail', 404);
+      const index = Number(req.query.side || 0);
+      if (!Number.isInteger(index) || index < 0 || index > 1) throw new AppError('Invalid original side', 400);
+      const source = await vaultOperation('decrypt original', async () => decodeSource(row.encryptedSource!, index));
+      res.setHeader('Content-Disposition', `attachment; filename="original-${index}.${source.mime === 'application/pdf' ? 'pdf' : source.mime === 'image/png' ? 'png' : 'jpg'}"`);
+      res.setHeader('X-Content-Type-Options', 'nosniff');
+      res.type(source.mime).send(source.bytes);
+      return;
     }
-    if (clientName) {
-      const lower = String(clientName).toLowerCase();
-      list = list.filter(item => item.clientName.toLowerCase().includes(lower));
-    }
-
-    res.json({
-      success: true,
-      count: list.length,
-      data: list.slice(0, Number(limit)),
-    });
-  } catch (err) {
-    res.status(500).json({ success: false, error: err instanceof Error ? err.message : 'Unknown error' });
-  }
-});
-
-// ─── GET /api/henry/documents/latest/:docType ────────────────────────────────
-
-router.get('/documents/latest/:docType', requireMinRole('agent'), (req: Request, res: Response) => {
-  try {
-    const { docType } = req.params;
-    const found = henryDocumentStore.find(item => item.docType === docType);
-    if (!found) {
-      return res.status(404).json({ success: false, error: `No active document found for type "${docType}"` });
-    }
-    res.json({ success: true, data: found });
-  } catch (err) {
-    res.status(500).json({ success: false, error: err instanceof Error ? err.message : 'Unknown error' });
-  }
-});
-
-// ─── GET /api/henry/documents/:id ────────────────────────────────────────────
-
-router.get('/documents/:id', requireMinRole('agent'), (req: Request, res: Response) => {
-  try {
-    const { id } = req.params;
-    const found = henryDocumentStore.find(item => item.id === id);
-    if (!found) {
-      return res.status(404).json({ success: false, error: `Document with ID "${id}" not found` });
-    }
-    res.json({ success: true, data: found });
-  } catch (err) {
-    res.status(500).json({ success: false, error: err instanceof Error ? err.message : 'Unknown error' });
-  }
-});
+    res.json({ success: true, data: decodeDocument(row) });
+  }));
+}
 
 export default router;

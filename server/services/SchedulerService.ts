@@ -5,6 +5,7 @@ import { batchRescoreLeads } from './ai/leadScoringEngine.js';
 import { runPermitAlertSchedulerTick } from './compliance/permitAlertScheduler.js';
 import { runPropertyPermitEnforcementTick } from './compliance/propertyPermitEnforcementScheduler.js';
 import { runLeadSlaEscalationTick } from './leadWorkflowService.js';
+import { runHenryExpiryReminders } from './henry/expiryReminders.js';
 
 import cron, { type ScheduledTask } from 'node-cron';
 
@@ -15,6 +16,7 @@ export type CronJobId =
   | 'rent-generation-monthly'
   | 'rent-reminders-daily'
   | 'lease-expiry-reminders-daily'
+  | 'henry-expiry-reminders-daily'
   | 'sitemap-weekly-refresh';
 
 export interface CronJobInfo {
@@ -55,6 +57,7 @@ export class SchedulerService {
     this.registerMonthlyRentGenerationJob();
     this.registerRentRemindersJob();
     this.registerLeaseExpiryRemindersJob();
+    this.scheduleTask('henry-expiry-reminders-daily', 'Henry Document Expiry Review', '15 9 * * *', 'Asia/Dubai', () => runHenryExpiryReminders());
     this.registerSitemapRefreshJob();
 
     this.started = true;
