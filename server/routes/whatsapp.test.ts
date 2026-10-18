@@ -7,6 +7,7 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import express from 'express';
 import request from 'supertest';
+import { errorHandler } from '../middleware/errorHandler.js';
 
 const { mockEngine } = vi.hoisted(() => ({
   mockEngine: {
@@ -58,9 +59,27 @@ describe('WhatsApp Engine API Routes', () => {
     app = express();
     app.use(express.json());
     app.use('/api/whatsapp-engine', whatsappRouter);
+    app.use(errorHandler);
   });
 
   describe('GET /api/whatsapp-engine/:agentId/status', () => {
+    it('rejects whitespace engine identifiers before accessing the engine', async () => {
+      const res = await request(app).get('/api/whatsapp-engine/%20/status');
+      expect(res.status).toBe(400);
+    });
+
+    it('rejects Express array parameters without coercing them', async () => {
+      const invalidApp = express();
+      invalidApp.get('/invalid', (req, res, next) => {
+        req.params.agentId = ['nina-md-primary'];
+        const handler = whatsappRouter.stack.find(layer => layer.route?.path === '/:agentId/status');
+        handler?.handle(req, res, next);
+      });
+      invalidApp.use(errorHandler);
+      const res = await request(invalidApp).get('/invalid');
+      expect(res.status).toBe(400);
+    });
+
     it('returns engine status and statistics', async () => {
       const res = await request(app).get('/api/whatsapp-engine/nina-md-primary/status');
 

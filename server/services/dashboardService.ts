@@ -7,7 +7,7 @@ import logger from '../utils/logger.js';
 const isDbConnected = () => mongoose?.connection?.readyState === 1;
 
 /** Safely execute a DB query — logs failures instead of silently swallowing them. */
-async function safeQuery<T>(label: string, fn: () => Promise<T>, fallback: T): Promise<T> {
+async function safeQuery<T>(label: string, fn: () => PromiseLike<T>, fallback: T): Promise<T> {
   try {
     return await fn();
   } catch (err) {

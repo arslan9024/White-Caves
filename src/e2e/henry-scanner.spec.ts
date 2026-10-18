@@ -33,9 +33,9 @@ for (const profile of [
           window.__vite_plugin_react_preamble_installed__ = true;
         </script><script type="module">
           import React from '/node_modules/.vite/deps/react.js';
-          import { createRoot } from '/node_modules/.vite/deps/react-dom_client.js';
+          import ReactDOM from '/node_modules/.vite/deps/react-dom_client.js';
           import Scanner from '/src/components/crm/HenryDocumentStudio/HenryTitleDeedScannerView.tsx';
-          createRoot(document.getElementById('henry-browser-smoke')).render(React.createElement(Scanner));
+          ReactDOM.createRoot(document.getElementById('henry-browser-smoke')).render(React.createElement(Scanner));
         </script></body></html>`,
       }));
       await page.goto('/crm?tab=henry-scan-title-deed');
@@ -59,12 +59,13 @@ for (const profile of [
       const file = { name: 'synthetic-deed.pdf', mimeType: 'application/pdf', buffer: Buffer.from(await pdf.save()) };
       await upload.setInputFiles(file);
       await expect(review).toBeEnabled({ timeout: 30000 });
-      await expect(scanner.getByText(/Readiness: review required/)).toBeVisible();
+      await expect(scanner.getByRole('status').filter({ hasText: 'Readiness: needs review.' })).toBeVisible();
+      await expect(scanner.getByText('Native PDF text read without OCR.', { exact: false })).toBeVisible();
       await review.check();
       await expect(review).toBeChecked();
       await upload.setInputFiles(file);
       await expect(review).not.toBeChecked();
-      await expect(scanner.getByText(/Readiness: review required/)).toBeVisible({ timeout: 30000 });
+      await expect(scanner.getByRole('status').filter({ hasText: 'Readiness: needs review.' })).toBeVisible({ timeout: 30000 });
       expect(networkLeaks).toEqual([]);
       await upload.setInputFiles({ name: 'synthetic.txt', mimeType: 'text/plain', buffer: Buffer.from('SYNTHETIC') });
       await expect(scanner.getByRole('alert').filter({ hasText: /Use a PNG, JPEG or PDF/ })).toBeVisible();

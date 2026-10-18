@@ -8,6 +8,7 @@
  * POST   /api/invoices/lease           — Create an invoice (deposit or rent)
  * GET    /api/invoices/lease/:id       — Get invoice detail
  * PATCH  /api/invoices/lease/:id       — Update invoice status (mark paid, cancel)
+ * GET    /api/invoices/lease/:id/pdf   — Download a lease invoice PDF
  */
 
 import { Router, Response } from 'express';
@@ -15,6 +16,7 @@ import { asyncHandler, AppError } from '../middleware/errorHandler.js';
 import { AuthRequest } from '../middleware/auth.js';
 import { prisma } from '../database.js';
 import logger from '../utils/logger.js';
+import { DocumentService } from '../services/DocumentService.js';
 
 const router = Router();
 
@@ -255,48 +257,36 @@ router.patch(
   })
 );
 
-// ─── GET /api/invoices/lease/:id/pdf — Generate FTA Compliant PDF Invoice ────────
-import henryPdfEngineService from '../../src/services/HenryPdfEngineService.js';
-
+// ─── GET /api/invoices/lease/:id/pdf — Invoice PDF, not proof of payment ──────
 router.get(
   '/:id/pdf',
   asyncHandler(async (req: AuthRequest, res: Response) => {
     const userId = req.user?.id;
     if (!userId) throw new AppError('Authentication required', 401);
 
-    const invoice = await prisma.invoice.findUnique({
-      where: { id: req.params.id },
-      include: {
-        propertyRef: { include: { owner: true } },
-      },
-    });
+    const { id } = req.params;
+    if (typeof id !== 'string' || !id.trim()) {
+      throw new AppError('Invoice id must be a non-empty string', 400);
+    }
+    const invoice = await prisma.invoice.findUnique({ where: { id } });
 
     if (!invoice) throw new AppError('Invoice not found', 404);
 
-    // Build the payload
-    const payload = {
-      receiptNumber: invoice.invoiceNumber || invoice.id.slice(0, 8).toUpperCase(),
-      receiptType: invoice.notes?.includes('TYPE:rent')
-        ? 'tenant_service_charges'
-        : 'security_deposit',
-      billedPartyType: 'tenant',
-      amountAed: invoice.amount - (invoice.vatAmount || 0),
-      vatRatePercent: 5,
-      vatAmountAed: invoice.vatAmount || 0,
-      totalWithVatAed: invoice.amount,
-      paidBy: invoice.clientName || 'Unknown Client',
-      paidTo: 'WHITE CAVES REAL ESTATE L.L.C',
-      whiteCavesTrn: '100488291000003',
-      paymentMethod: 'bank_transfer',
-      paymentReference: invoice.id.slice(0, 12).toUpperCase(),
-      date: invoice.createdAt.toISOString().split('T')[0],
-      serviceDescription: invoice.notes || 'Property Lease Payment',
-    };
+    if (invoice.createdById !== userId && req.user?.role !== 'owner') {
+      const lease = invoice.property
+        ? await prisma.lease.findUnique({
+            where: { id: invoice.property },
+            select: { tenantId: true, landlordId: true },
+          })
+        : null;
+      if (!lease || (lease.tenantId !== userId && lease.landlordId !== userId)) {
+        throw new AppError('Access denied', 403);
+      }
+    }
 
-    const html = await henryPdfEngineService.generateTaxReceiptHtml(payload as any);
-
-    res.setHeader('Content-Type', 'text/html');
-    res.send(html);
+    const file = await new DocumentService().generateLeaseInvoicePdf(invoice);
+    res.setHeader('Content-Type', file.mimeType);
+    res.send(file.buffer);
   })
 );
 

@@ -1,6 +1,10 @@
 import { PDFDocument, StandardFonts, rgb } from 'pdf-lib';
+import PDFKitDocument from 'pdfkit';
+import { fileURLToPath } from 'node:url';
 import { prisma } from '../database.js';
 import logger from '../utils/logger.js';
+import { AppError } from '../middleware/errorHandler.js';
+import type { Invoice } from '@prisma/client';
 
 export interface GeneratedFile {
   buffer: Buffer;
@@ -34,6 +38,71 @@ function buildCsvBuffer(headers: string[], rows: Array<Array<unknown>>): Buffer 
 }
 
 export class DocumentService {
+  async generateLeaseInvoicePdf(
+    invoice: Pick<Invoice, 'id' | 'invoiceNumber' | 'client' | 'amount' | 'vatAmount' | 'totalAmount' | 'currency' | 'status' | 'createdAt' | 'dueDate'>
+  ): Promise<GeneratedFile> {
+    try {
+      const currency = invoice.currency || 'AED';
+      const lines = [
+        'WHITE CAVES REAL ESTATE L.L.C',
+        `Invoice Number: ${invoice.invoiceNumber}`,
+        `Client: ${invoice.client}`,
+        `Status: ${invoice.status}`,
+        `Issue Date: ${safeDate(invoice.createdAt)}`,
+        `Due Date: ${safeDate(invoice.dueDate)}`,
+        `Net Amount: ${currency} ${invoice.amount.toFixed(2)}`,
+        `VAT Amount: ${currency} ${invoice.vatAmount.toFixed(2)}`,
+        `Total Amount: ${currency} ${invoice.totalAmount.toFixed(2)}`,
+      ];
+      return {
+        buffer: await this.renderInvoicePdf(lines),
+        mimeType: PDF_MIME,
+        filename: `lease-invoice-${invoice.id}.pdf`,
+      };
+    } catch (error) {
+      logger.error('Lease invoice PDF generation failed', { invoiceId: invoice.id, error });
+      throw error;
+    }
+  }
+
+  private async renderInvoicePdf(lines: string[]): Promise<Buffer> {
+    const doc = new PDFKitDocument({ size: 'A4', margin: 50 });
+    const chunks: Buffer[] = [];
+    const completed = new Promise<Buffer>((resolve, reject) => {
+      doc.on('data', (chunk: Buffer) => chunks.push(chunk));
+      doc.on('end', () => resolve(Buffer.concat(chunks)));
+      doc.on('error', reject);
+    });
+    try {
+      doc.font(fileURLToPath(new URL('../assets/fonts/DejaVuSans.ttf', import.meta.url)));
+      // PDFKit exposes the underlying fontkit font only through its internal font.
+      const font = (doc as PDFKit.PDFDocument & {
+        _font: { font: { hasGlyphForCodePoint(codePoint: number): boolean } };
+      })._font.font;
+      for (const character of lines.join('')) {
+        if (!font.hasGlyphForCodePoint(character.codePointAt(0)!)) {
+          throw new AppError('This invoice contains characters not supported by PDF export.', 400);
+        }
+      }
+      doc.fillColor('#1E293B').fontSize(20).text('Lease Invoice').moveDown();
+      doc.fontSize(11);
+      for (const line of lines) {
+        // Shape Arabic phrases together (including spaces), but keep Latin and
+        // numeric runs LTR. Explicit features bypass PDFKit's per-word cache,
+        // which otherwise reverses glyphs without reversing Arabic word order.
+        const runs = line.match(/(?:(?=\p{L}|\p{M})[\p{Script=Arabic}\p{M}])+(?:[ \t]+(?:(?=\p{L}|\p{M})[\p{Script=Arabic}\p{M}])+)*|\p{N}+|[^\p{Script=Arabic}\p{M}]+|./gu) || [];
+        runs.forEach((run, index) => {
+          doc.text(run, { features: ['rtla'], continued: index < runs.length - 1 });
+        });
+        doc.moveDown(0.5);
+      }
+      doc.end();
+    } catch (error) {
+      doc.destroy(error instanceof Error ? error : new Error('Invoice PDF rendering failed'));
+    }
+    return completed;
+  }
+
   async generateContractPdf(contractId: string): Promise<GeneratedFile> {
     const contract = await prisma.contract.findUnique({
       where: { id: contractId },
@@ -532,4 +601,3 @@ export class DocumentService {
 }
 
 export const documentService = new DocumentService();
-

@@ -14,6 +14,7 @@ import { parsePagination } from '../config/pagination.js';
 import { requirePermission, scopeToOwn, requireMinRole } from '../middleware/rbac.js';
 import { cacheService } from '../services/CacheService.js';
 import { invalidatePropertyCache } from '../services/cacheInvalidation.js';
+import logger from '../utils/logger.js';
 
 const router = Router();
 

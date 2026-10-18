@@ -289,6 +289,7 @@ describe('Properties Routes — /api/properties', () => {
         status: 'available',
         municipalityNumber: 'MUN-1001',
         buildingPermitNumber: 'BPN-1001',
+        reraPermitNumber: 'SYNTHETIC-TRAKHEESI-1001',
       });
       expect(res.status).toBe(201);
       expect(res.body.success).toBe(true);
@@ -319,6 +320,7 @@ describe('Properties Routes — /api/properties', () => {
         status: 'available',
         municipalityNumber: 'MUN-1002',
         buildingPermitNumber: 'BPN-1002',
+        reraPermitNumber: 'SYNTHETIC-TRAKHEESI-1002',
       });
       expect(res.status).toBe(201);
     });
@@ -337,6 +339,7 @@ describe('Properties Routes — /api/properties', () => {
         status: 'available',
         municipalityNumber: 'MUN-1003',
         buildingPermitNumber: 'BPN-1003',
+        reraPermitNumber: 'SYNTHETIC-TRAKHEESI-1003',
       });
       expect(mockPrisma.activity.create).toHaveBeenCalled();
     });
@@ -599,4 +602,3 @@ describe('Properties Routes — /api/properties', () => {
     });
   });
 });
-
