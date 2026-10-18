@@ -10,6 +10,9 @@ import { safeStorage } from '../utils/safeStorage';
 import { auth as firebaseAuth } from '../config/firebase';
 import { HttpError } from '../utils/HttpError';
 import { authFetch } from '../utils/authFetch';
+import { createLogger } from '../utils/logger';
+
+const log = createLogger('AuthService');
 
 // ─── Types ───────────────────────────────────────────────────────────────────
 
@@ -18,6 +21,8 @@ export interface AuthUser {
   email: string;
   name: string | null;
   role: string;
+  accessLevel?: number;
+  status?: 'active' | 'pending' | 'suspended';
   department?: string | null;
   photoUrl?: string | null;
   phone?: string | null;
@@ -55,6 +60,14 @@ export interface LoginResponse {
 export interface FirebaseSyncResponse {
   success: boolean;
   data: LoginSuccessData;
+}
+
+export type FirebaseSyncIntent = 'signin' | 'signup';
+
+export interface FirebaseSyncOptions {
+  intent?: FirebaseSyncIntent;
+  /** Suppress persistence for sign-in retries; signup sessions are never persisted. */
+  persistSession?: boolean;
 }
 
 export interface RegisterResponse {
@@ -251,8 +264,8 @@ export async function loginWithEmail(email: string, password: string): Promise<L
  * Complete a 2FA-gated login by verifying the TOTP code (or backup recovery code).
  * Persists the returned JWT and fetches the current user profile.
  */
-export async function verifyTwoFactor(email: string, code: string): Promise<AuthUser> {
-  const response = (await apiClient.post('/auth/verify-2fa', { email, code })) as {
+export async function verifyTwoFactor(twoFactorToken: string, code: string): Promise<AuthUser> {
+  const response = (await apiClient.post('/auth/verify-2fa', { twoFactorToken, code })) as {
     success: boolean;
     data: { token: string; verified: boolean };
   };
@@ -340,15 +353,20 @@ export async function registerWithEmail(
  * If the user doesn't exist, creates them; if they do, issues a JWT.
  * This bridges Firebase social/phone auth with backend JWT auth.
  */
-export async function syncFirebaseUser(firebaseUser: {
-  uid: string;
-  email: string | null;
-  displayName: string | null;
-  photoURL: string | null;
-  getIdToken?: (forceRefresh?: boolean) => Promise<string>;
-}): Promise<FirebaseSyncResponse> {
+export async function syncFirebaseUser(
+  firebaseUser: {
+    uid: string;
+    email: string | null;
+    phoneNumber?: string | null;
+    displayName: string | null;
+    photoURL: string | null;
+    getIdToken?: (forceRefresh?: boolean) => Promise<string>;
+  },
+  options: FirebaseSyncOptions = {}
+): Promise<FirebaseSyncResponse> {
   let response: FirebaseSyncResponse | null = null;
   const maxAttempts = 3;
+  const intent = options.intent ?? 'signin';
 
   const resolveFirebaseToken = async (forceRefresh: boolean): Promise<string> => {
     let resolvedToken: string | null = null;
@@ -362,9 +380,7 @@ export async function syncFirebaseUser(firebaseUser: {
     }
 
     if (!resolvedToken) {
-      throw new Error(
-        'Firebase authentication token is missing. Please retry Google sign-in to establish a secure backend session.'
-      );
+      throw new Error('Firebase authentication token is missing. Please retry sign-in.');
     }
 
     return resolvedToken;
@@ -375,23 +391,22 @@ export async function syncFirebaseUser(firebaseUser: {
 
     try {
       const firebaseToken = await resolveFirebaseToken(forceRefresh);
-      console.log('Calling /auth/firebase-sync with payload:', {
-        firebaseUid: firebaseUser.uid,
-        email: firebaseUser.email,
-        name: firebaseUser.displayName,
-        photoUrl: firebaseUser.photoURL,
-      });
-      response = (await apiClient.post('/auth/firebase-sync', {
-        firebaseUid: firebaseUser.uid,
-        email: firebaseUser.email,
-        name: firebaseUser.displayName,
-        photoUrl: firebaseUser.photoURL,
-        firebaseToken,
-      })) as FirebaseSyncResponse;
-      console.log('Firebase sync response:', response);
+      response = (await apiClient.post(
+        '/auth/firebase-sync',
+        {
+          intent,
+          firebaseUid: firebaseUser.uid,
+          email: firebaseUser.email,
+          phoneNumber: firebaseUser.phoneNumber,
+          name: firebaseUser.displayName,
+          photoUrl: firebaseUser.photoURL,
+          firebaseToken,
+        },
+        { skipRefresh: true }
+      )) as FirebaseSyncResponse;
       break;
     } catch (error: unknown) {
-      console.error('Error in syncFirebaseUser attempt', attempt, error);
+      log.warn('Firebase authentication sync attempt failed', { attempt });
       const canRetry = attempt < maxAttempts && isTransientFirebaseSyncError(error);
       if (canRetry) {
         await wait(400 * attempt);
@@ -414,7 +429,9 @@ export async function syncFirebaseUser(firebaseUser: {
     throw new Error('Firebase sync succeeded but no authentication token was returned');
   }
 
-  persistToken(response.data.token);
+  if (intent === 'signin' && options.persistSession !== false) {
+    persistToken(response.data.token);
+  }
 
   return response;
 }
@@ -446,12 +463,18 @@ export async function changePassword(
  */
 export async function completeSocialRegistration(
   category: string,
-  role: string
+  role: string,
+  sessionToken: string
 ): Promise<RegisterResponse> {
-  const response = (await apiClient.post('/auth/complete-social-registration', {
-    category,
-    role,
-  })) as RegisterResponse;
+  if (!sessionToken.trim()) {
+    throw new Error('Social registration session expired. Please sign in again.');
+  }
+
+  const response = (await apiClient.post(
+    '/auth/complete-social-registration',
+    { category, role },
+    { headers: { Authorization: `Bearer ${sessionToken}` }, skipRefresh: true }
+  )) as RegisterResponse;
 
   if (response.success) {
     if (!response.data?.token) {

@@ -1,5 +1,5 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
-import { getLegacyCrmRoute, getPostLoginRoute } from './routing';
+import { canAccessReturnPath, getLegacyCrmRoute, getPostLoginRoute } from './routing';
 
 describe('getPostLoginRoute', () => {
   afterEach(() => {
@@ -37,10 +37,13 @@ describe('getPostLoginRoute', () => {
     expect(getPostLoginRoute('user', null, { profileCompleted: true })).toBe('/crm');
   });
 
-  it('routes superuser aliases and creator email to /crm', () => {
+  it('routes privileged aliases and routes creator identities only with a privileged role', () => {
     expect(getPostLoginRoute('md')).toBe('/crm');
-    expect(getPostLoginRoute('unknown-role', 'arslanmalikgoraha@gmail.com')).toBe('/crm');
-    expect(getPostLoginRoute(undefined, 'arslanmalikgoraha@gmail.com')).toBe('/crm');
+    expect(getPostLoginRoute('unknown-role', 'arslanmalikgoraha@gmail.com')).toBe(
+      '/pending-approval'
+    );
+    expect(getPostLoginRoute(undefined, 'arslanmalikgoraha@gmail.com')).toBe('/select-role');
+    expect(getPostLoginRoute('managing_director', 'arslanmalikgoraha@gmail.com')).toBe('/profile');
   });
 
   it('routes missing roles to role selection', () => {
@@ -70,5 +73,29 @@ describe('getLegacyCrmRoute', () => {
     expect(getLegacyCrmRoute('landlord')).toBe('/landlord-portal');
     expect(getLegacyCrmRoute('tenant')).toBe('/tenant-portal');
     expect(getLegacyCrmRoute(undefined)).toBe('/signin');
+  });
+});
+
+describe('role-scoped return destinations', () => {
+  it('allows a property owner into the landlord portal without a redirect loop', () => {
+    const user = { role: 'property_owner', status: 'active', profileCompleted: true };
+
+    expect(canAccessReturnPath(user, '/landlord-portal')).toBe(true);
+    expect(getPostLoginRoute(user.role)).toBe('/landlord-portal');
+  });
+
+  it('rejects return destinations belonging to a different role', () => {
+    expect(
+      canAccessReturnPath(
+        { role: 'buyer', status: 'active', profileCompleted: true },
+        '/tenant-portal'
+      )
+    ).toBe(false);
+    expect(
+      canAccessReturnPath(
+        { role: 'tenant', status: 'active', profileCompleted: true },
+        '/crm?tab=finance'
+      )
+    ).toBe(false);
   });
 });

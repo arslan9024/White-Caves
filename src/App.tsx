@@ -17,7 +17,14 @@ import type { RootState, AppDispatch } from './store/store';
 import { selectSessionUser } from './store/selectors/sessionSelectors';
 import { safeStorage } from './utils/safeStorage';
 import { authFetch } from './utils/authFetch';
-import { finalizeAuthenticatedSession, getCurrentPathWithQuery } from './utils/authSession';
+import {
+  completeClientLogout,
+  finalizeAuthenticatedSession,
+  getCurrentPathWithQuery,
+  getReturnToFromLocationState,
+  resolvePostLoginDestination,
+} from './utils/authSession';
+import { getPostLoginRoute, getSessionGate, getSessionRole } from './utils/routing';
 import {
   isCreatorSuperUserEmail,
   normalizeRoleForUserContext,
@@ -39,46 +46,18 @@ const ServerStatusPage = lazyRetry(() => import('./pages/ServerStatusPage'));
 
 // ─── Types ──────────────────────────────────────────────────────────────
 
-interface UserRoleData {
-  role: string;
-  selectedAt: string;
-  locked: boolean;
-  status?: string;
-}
-
 interface ProtectedRouteProps {
   children: ReactNode;
   allowedRoles?: string[];
 }
 
-function resolveEffectiveRole(
-  user: { role?: string; email?: string } | null,
-  storedRoleData: UserRoleData | null
-): string | null {
-  if (isCreatorSuperUserEmail(user?.email)) return CANONICAL_SUPERUSER_ROLE;
-
-  const serverRole = normalizeRoleForUserContext(user?.role, user?.email);
-  const storedRole = normalizeRoleForUserContext(storedRoleData?.role, user?.email);
-
-  if (storedRoleData && typeof storedRoleData.role === 'string') {
-    return serverRole ?? storedRole;
-  }
-
-  return serverRole;
+function resolveEffectiveRole(user: { role?: string; email?: string } | null): string | null {
+  if (isCreatorSuperUserEmail(user?.email, user?.role)) return CANONICAL_SUPERUSER_ROLE;
+  return normalizeRoleForUserContext(user?.role, user?.email);
 }
 
 function getRoleLandingPath(role: string | null | undefined, email?: string): string {
-  const normalizedRole = normalizeRoleForUserContext(role, email);
-
-  if (normalizedRole === 'landlord' || normalizedRole === 'property-owner') {
-    return '/landlord-portal';
-  }
-
-  if (normalizedRole === 'tenant') {
-    return '/tenant-portal';
-  }
-
-  return '/crm';
+  return getPostLoginRoute(role, email);
 }
 
 const LEGACY_DASHBOARD_REDIRECT_ROUTES: Array<{ path: string; to: string }> = [
@@ -105,50 +84,11 @@ function ProtectedRoute({ children, allowedRoles }: ProtectedRouteProps) {
   const location = useLocation();
   const user = useSelector((state: RootState) => selectSessionUser(state));
   const isAuthLoading = useSelector((state: RootState) => state.user.isLoading);
-  const [userData, setUserData] = useState<UserRoleData | null>(null);
-  const [isLoading, setIsLoading] = useState<boolean>(true);
-
-  const hasLocalToken = !!safeStorage.get('token');
-
-  useEffect(() => {
-    // Wait until auth check completes before making redirect decisions
-    if (isAuthLoading) return;
-    if (!user && !hasLocalToken) {
-      // No authenticated user and no local token — skip role lookup
-      // eslint-disable-next-line react-hooks/set-state-in-effect
-      setUserData(null);
-      setIsLoading(false);
-      return;
-    }
-
-    // If user is null but we have a token, wait for hydration (don't clear state)
-    if (!user && hasLocalToken) {
-      return;
-    }
-
-    // SECURITY: Use server-issued user.role as source of truth, not localStorage.
-    // localStorage 'userRole' is only used for sub-role preference (e.g., which dashboard view),
-    // but the server role must always gate access.
-    const stored = safeStorage.getJSON<UserRoleData>('userRole');
-    const effectiveRole = resolveEffectiveRole(user, stored);
-
-    if (stored && typeof stored.role === 'string' && effectiveRole) {
-      setUserData({ ...stored, role: effectiveRole });
-    } else {
-      setUserData(effectiveRole ? ({ role: effectiveRole } as UserRoleData) : null);
-    }
-    setIsLoading(false);
-  }, [user, isAuthLoading, hasLocalToken]);
-
-  // Prevent flicker: if we have a local token but user is null, we are implicitly loading
-  const isEffectivelyLoading = isLoading || isAuthLoading || (!user && hasLocalToken);
-
-  if (isEffectivelyLoading) {
-    // Show a layout skeleton or keep current state, for now use SuspenseLoader
+  if (isAuthLoading) {
     return <SuspenseLoader />;
   }
 
-  if (!user && !hasLocalToken) {
+  if (!user) {
     return (
       <Navigate
         to="/signin"
@@ -158,28 +98,45 @@ function ProtectedRoute({ children, allowedRoles }: ProtectedRouteProps) {
     );
   }
 
-  if (!userData) {
-    return <Navigate to="/select-role" replace />;
-  }
-
-  if (userData.status === 'pending') {
-    return <Navigate to="/pending-approval" replace />;
+  const gate = getSessionGate(user);
+  if (gate) {
+    return (
+      <Navigate
+        to={gate}
+        replace
+        state={{ from: getCurrentPathWithQuery(location.pathname, location.search, location.hash) }}
+      />
+    );
   }
 
   if (allowedRoles) {
-    const normalizedUserRole = normalizeRoleForUserContext(userData.role, user?.email);
+    const normalizedUserRole = getSessionRole(user.role);
     const normalizedAllowedRoles = new Set(
-      allowedRoles
-        .map(role => normalizeRoleForUserContext(role, user?.email))
-        .filter((role): role is string => Boolean(role))
+      allowedRoles.map(role => getSessionRole(role)).filter((role): role is string => Boolean(role))
     );
 
     if (!normalizedUserRole || !normalizedAllowedRoles.has(normalizedUserRole)) {
-      return <Navigate to={getRoleLandingPath(userData.role, user?.email)} replace />;
+      return <Navigate to={getRoleLandingPath(user.role, user.email)} replace />;
     }
   }
 
   return <>{children}</>;
+}
+
+interface GuestOnlyRouteProps {
+  children: ReactNode;
+}
+
+function GuestOnlyRoute({ children }: GuestOnlyRouteProps): React.JSX.Element {
+  const location = useLocation();
+  const user = useSelector((state: RootState) => selectSessionUser(state));
+  const isAuthLoading = useSelector((state: RootState) => state.user.isLoading);
+
+  if (isAuthLoading) return <SuspenseLoader />;
+  if (!user) return <>{children}</>;
+
+  const returnTo = getReturnToFromLocationState(location.state);
+  return <Navigate to={resolvePostLoginDestination({ user, returnTo })} replace />;
 }
 
 function DashboardEntryRoute() {
@@ -190,8 +147,7 @@ function DashboardEntryRoute() {
   const currentActiveRole = useSelector((state: RootState) => state.navigation?.activeRole);
   const { info } = useStatus();
   const hasShownSigninNotice = useRef(false);
-  const storedRoleData = safeStorage.getJSON<UserRoleData>('userRole');
-  const effectiveRole = resolveEffectiveRole(user, storedRoleData);
+  const effectiveRole = resolveEffectiveRole(user);
 
   useEffect(() => {
     if (!isAuthLoading && !user && !hasShownSigninNotice.current) {
@@ -231,7 +187,10 @@ function DashboardEntryRoute() {
     );
   }
 
-  if (effectiveRole === 'landlord' || effectiveRole === 'property-owner') {
+  if (
+    getSessionRole(effectiveRole) === 'landlord' ||
+    getSessionRole(effectiveRole) === 'property_owner'
+  ) {
     return <Navigate to="/landlord-portal" replace />;
   }
 
@@ -393,14 +352,10 @@ function LocationKeyWrapper({ children }: PageTransitionProps): React.JSX.Elemen
   );
 }
 
-function FounderRedirectGuard(): React.JSX.Element | null {
-  // Previously forced founder email to /profile; removed to allow full site access.
-  return null;
-}
-
 function App(): React.JSX.Element {
   const dispatch = useDispatch<AppDispatch>();
   const user = useSelector((state: RootState) => selectSessionUser(state));
+  const [authReady, setAuthReady] = useState(false);
 
   // Initialise real-time Socket.io connection — connects when auth token is
   // present, disconnects on logout, and pushes server events into Redux.
@@ -413,48 +368,44 @@ function App(): React.JSX.Element {
     const checkAuth = async () => {
       try {
         const token = safeStorage.get('token');
-        const storedUser = safeStorage.getJSON<AppUser>('user');
-
-        if (token && storedUser) {
-          finalizeAuthenticatedSession({
-            dispatch,
-            user: storedUser,
-            token,
-            provider: safeStorage.get('loginProvider') ?? 'bootstrap',
-            rememberMe: Boolean(safeStorage.getJSON<boolean>('rememberMe')),
-          });
-          dispatch(setLoading(false));
-          return;
-        }
 
         if (token) {
           const response = await authFetch('/api/auth/profile', { signal: controller.signal });
-          if (controller.signal.aborted) return;
+          if (controller.signal.aborted || safeStorage.get('token') !== token) return;
           if (response.ok) {
-            const result = await response.json();
+            const result = (await response.json()) as { data?: unknown };
+            if (
+              !result.data ||
+              typeof result.data !== 'object' ||
+              !('id' in result.data) ||
+              !('email' in result.data) ||
+              !('role' in result.data)
+            ) {
+              throw new Error('Authentication profile response is incomplete');
+            }
             finalizeAuthenticatedSession({
               dispatch,
-              user: result.data,
+              user: result.data as AppUser,
               token,
-              provider: 'bootstrap',
+              provider: safeStorage.get('loginProvider') ?? 'bootstrap',
+              rememberMe: Boolean(safeStorage.getJSON<boolean>('rememberMe')),
             });
           } else {
-            safeStorage.remove('token');
+            completeClientLogout(dispatch);
             dispatch(setLoading(false));
           }
         } else {
+          completeClientLogout(dispatch);
           dispatch(setLoading(false));
         }
       } catch (err) {
-        if (err instanceof DOMException && err.name === 'AbortError') {
-          // Avoid indefinite loading states during navigation/StrictMode aborts in development
-          dispatch(setLoading(false));
-          return;
-        }
+        if (controller.signal.aborted) return;
         // Auth check failed — user stays logged out
         log.warn('Auth check failed:', err instanceof Error ? err.message : 'Unknown error');
-        safeStorage.remove('token');
+        completeClientLogout(dispatch);
         dispatch(setLoading(false));
+      } finally {
+        if (!controller.signal.aborted) setAuthReady(true);
       }
     };
     checkAuth();
@@ -496,11 +447,29 @@ function App(): React.JSX.Element {
     </RouteErrorBoundary>
   );
 
-  const renderSignedInPage = (page: ReactNode, section: string): ReactNode =>
-    user ? renderPublicPage(page, section) : <Navigate to="/signin" replace />;
+  const renderSignedInPage = (page: ReactNode, section: string): ReactNode => {
+    if (!user) return <SignInRedirect />;
+    const gate = getSessionGate(user);
+    const sectionGate =
+      section === 'Profile'
+        ? '/profile'
+        : section === 'Role Selection'
+          ? '/select-role'
+          : '/pending-approval';
+    if (gate && gate !== sectionGate) return <Navigate to={gate} replace />;
+    if (!gate && section !== 'Profile') {
+      return <Navigate to={resolvePostLoginDestination({ user })} replace />;
+    }
+    return renderPublicPage(page, section);
+  };
 
-  const renderGuestOnlyPage = (page: ReactNode, section: string): ReactNode =>
-    user ? <Navigate to="/profile" replace /> : renderPublicPage(page, section);
+  const renderGuestOnlyPage = (page: ReactNode, section: string): ReactNode => (
+    <GuestOnlyRoute>
+      <RouteErrorBoundary section={section}>
+        <Suspense fallback={<SuspenseLoader />}>{page}</Suspense>
+      </RouteErrorBoundary>
+    </GuestOnlyRoute>
+  );
 
   const renderProtectedPortalPage = (
     page: ReactNode,
@@ -535,7 +504,7 @@ function App(): React.JSX.Element {
       section: 'Landlord Portal',
       portalType: 'landlord',
       page: <LandlordPortalPage />,
-      allowedRoles: ['landlord'],
+      allowedRoles: ['landlord', 'property_owner'],
     },
     {
       path: '/tenant-portal',
@@ -611,7 +580,7 @@ function App(): React.JSX.Element {
       path: '/landlord/rental-management',
       section: 'Rental Management',
       page: <RentalManagementPage />,
-      allowedRoles: ['landlord'],
+      allowedRoles: ['landlord', 'property_owner'],
     },
     {
       path: '/leasing-agent/tenant-screening',
@@ -719,6 +688,8 @@ function App(): React.JSX.Element {
     },
   ];
 
+  if (!authReady) return <SuspenseLoader />;
+
   return (
     <SQAErrorBoundary>
       <AuthModalProvider>
@@ -727,198 +698,213 @@ function App(): React.JSX.Element {
             <LanguageProvider>
               <WorkspaceProvider>
                 <BrowserRouter>
-                <FounderRedirectGuard />
-                {/* Accessibility: skip-to-content link (WCAG 2.1 Level A) */}
-                <a href="#main-content" className="skip-to-content">
-                  Skip to main content
-                </a>
-                <SpeedInsights />
-                <Suspense fallback={null}>
-                  <WebVitalsTracker />
-                </Suspense>
-                <Suspense fallback={null}>
-                  <UniversalComponents />
-                </Suspense>
-                {/* Phase 10 — PWA install banner (loads after idle) */}
-                <Suspense fallback={null}>
-                  <PWAInstallPrompt />
-                </Suspense>
-                {user && (
+                  {/* Accessibility: skip-to-content link (WCAG 2.1 Level A) */}
+                  <a href="#main-content" className="skip-to-content">
+                    Skip to main content
+                  </a>
+                  <SpeedInsights />
                   <Suspense fallback={null}>
-                    <BiometricPrompt onClose={() => {}} />
+                    <WebVitalsTracker />
                   </Suspense>
-                )}
-                <main id="main-content" role="main">
-                  <LocationKeyWrapper>
-                    <Routes>
-                      {publicRoutes.map(route => (
+                  <Suspense fallback={null}>
+                    <UniversalComponents />
+                  </Suspense>
+                  {/* Phase 10 — PWA install banner (loads after idle) */}
+                  <Suspense fallback={null}>
+                    <PWAInstallPrompt />
+                  </Suspense>
+                  {user && (
+                    <Suspense fallback={null}>
+                      <BiometricPrompt onClose={() => {}} />
+                    </Suspense>
+                  )}
+                  <main id="main-content" role="main">
+                    <LocationKeyWrapper>
+                      <Routes>
+                        {publicRoutes.map(route => (
+                          <Route
+                            key={`public-${route.path}`}
+                            path={route.path}
+                            element={renderPublicPage(route.page, route.section)}
+                          />
+                        ))}
                         <Route
-                          key={`public-${route.path}`}
-                          path={route.path}
-                          element={renderPublicPage(route.page, route.section)}
+                          path="/signin"
+                          element={renderGuestOnlyPage(<SignInPage />, 'Sign In')}
                         />
-                      ))}
-                      <Route path="/signin" element={renderGuestOnlyPage(<SignInPage />, 'Sign In')} />
-                      <Route path="/signup" element={renderGuestOnlyPage(<SignInPage />, 'Sign Up')} />
-                      <Route path="/login" element={<Navigate to="/signin" replace />} />
-                      <Route path="/auth/signin" element={<Navigate to="/signin" replace />} />
-                      <Route path="/forgot-password" element={<Navigate to="/" replace />} />
-                      <Route path="/reset-password" element={<Navigate to="/" replace />} />
-                      <Route
-                        path="/profile"
-                        element={renderSignedInPage(
-                          <UnifiedWorkspaceLayout>
-                            <RouteErrorBoundary section="Profile">
-                              <Suspense fallback={<SuspenseLoader />}>
-                                <ProfilePage />
-                              </Suspense>
-                            </RouteErrorBoundary>
-                          </UnifiedWorkspaceLayout>,
-                          'Profile'
-                        )}
-                      />
-                      <Route
-                        path="/select-role"
-                        element={renderSignedInPage(
-                          <RoleGateway user={user ?? {}} onRoleSelect={handleRoleSelect} />,
-                          'Role Selection'
-                        )}
-                      />
-                      <Route
-                        path="/pending-approval"
-                        element={renderSignedInPage(<PendingApprovalPage />, 'Pending Approval')}
-                      />
-                      <Route
-                        path="/status"
-                        element={renderProtectedAppPage(<ServerStatusPage />, 'Server Status', [
-                          'owner',
-                        ])}
-                      />
-
-                      {/* ==================== UNIFIED DASHBOARD ==================== */}
-                      <Route
-                        path="/crm/:department?"
-                        element={
-                          <ProtectedRoute>
-                            <DashboardEntryRoute />
-                          </ProtectedRoute>
-                        }
-                      />
-                      <Route path="/dashboard" element={<Navigate to="/crm" replace />} />
-
-                      {/* ==================== ROLE-SPECIFIC SUB-PAGES ==================== */}
-                      {roleSpecificAppRoutes.map(route => (
                         <Route
-                          key={`role-specific-${route.path}`}
-                          path={route.path}
-                          element={renderProtectedAppPage(
-                            route.page,
-                            route.section,
-                            route.allowedRoles
-                          )}
+                          path="/signup"
+                          element={renderGuestOnlyPage(<SignInPage />, 'Sign Up')}
                         />
-                      ))}
-
-                      {/* ==================== PORTAL ROUTES (Phase 2) ==================== */}
-                      {portalRoutes.map(route => (
+                        <Route path="/login" element={<Navigate to="/signin" replace />} />
+                        <Route path="/auth/signin" element={<Navigate to="/signin" replace />} />
                         <Route
-                          key={`portal-${route.path}`}
-                          path={route.path}
-                          element={renderProtectedPortalPage(
-                            route.page,
-                            route.section,
-                            route.portalType,
-                            route.allowedRoles
-                          )}
+                          path="/forgot-password"
+                          element={renderGuestOnlyPage(<SignInPage />, 'Forgot Password')}
                         />
-                      ))}
-
-                      {/* ==================== ALL DASHBOARD ROUTES → UNIFIED ==================== */}
-                      {/* Role-specific dashboard paths redirect to canonical targets */}
-                      {LEGACY_DASHBOARD_REDIRECT_ROUTES.map(route => (
                         <Route
-                          key={`legacy-dashboard-${route.path}`}
-                          path={route.path}
-                          element={<Navigate to={route.to} replace />}
+                          path="/reset-password"
+                          element={renderGuestOnlyPage(<SignInPage />, 'Reset Password')}
                         />
-                      ))}
-
-                      {/* ==================== LEGACY OWNER ROUTES → Redirect to Dashboard ==================== */}
-                      {LEGACY_OWNER_REDIRECT_ROUTES.map(route => (
                         <Route
-                          key={`legacy-owner-${route.path}`}
-                          path={route.path}
-                          element={<Navigate to={route.to} replace />}
-                        />
-                      ))}
-                      {ownerUtilityRoutes.map(route => (
-                        <Route
-                          key={`owner-utility-${route.path}`}
-                          path={route.path}
-                          element={renderProtectedAppPage(
-                            route.page,
-                            route.section,
-                            route.allowedRoles
-                          )}
-                        />
-                      ))}
-                      {ownerWhatsAppRoutes.map(route => (
-                        <Route
-                          key={`owner-whatsapp-${route.path}`}
-                          path={route.path}
-                          element={renderProtectedAppPage(route.page, route.section, ['owner'])}
-                        />
-                      ))}
-
-                      {/* ==================== CRM MANAGEMENT ROUTES ==================== */}
-                      {ownerCrmRedirectRoutes.map(route => (
-                        <Route
-                          key={`owner-crm-${route.path}`}
-                          path={route.path}
-                          element={renderProtectedRedirect(route.to, ['owner'])}
-                        />
-                      ))}
-
-                      {/* Personal Goals */}
-                      <Route
-                        path="/owner/goals/argentina"
-                        element={
-                          <ProtectedRoute allowedRoles={['owner']}>
-                            <UnifiedWorkspaceLayout>
-                              <RouteErrorBoundary section="Argentina Goal">
+                          path="/profile"
+                          element={renderSignedInPage(
+                            <UnifiedWorkspaceLayout
+                              currentUserEmail={user?.email ?? ''}
+                              currentUserRole={user?.role}
+                              currentUserAccessLevel={user?.accessLevel}
+                            >
+                              <RouteErrorBoundary section="Profile">
                                 <Suspense fallback={<SuspenseLoader />}>
-                                  <ArgentinaGoalPage />
+                                  <ProfilePage />
                                 </Suspense>
                               </RouteErrorBoundary>
-                            </UnifiedWorkspaceLayout>
-                          </ProtectedRoute>
-                        }
-                      />
-
-                      {/* Nadia AI CRM — WhatsApp Business API Dashboard */}
-                      <Route
-                        path="/nadia"
-                        element={renderProtectedAppPage(<NadiaPage />, 'Nadia AI')}
-                      />
-
-                      {/* ==================== OTHER ROUTES ==================== */}
-                      {import.meta.env.DEV && (
-                        <Route
-                          path="/design-system"
-                          element={renderPublicPage(<DesignSystemTest />, 'Design System')}
+                            </UnifiedWorkspaceLayout>,
+                            'Profile'
+                          )}
                         />
-                      )}
-                      <Route path="*" element={renderPublicPage(<NotFoundPage />, 'Not Found')} />
-                    </Routes>
-                  </LocationKeyWrapper>
-                </main>
-              </BrowserRouter>
-            </WorkspaceProvider>
-          </LanguageProvider>
-        </StatusProvider>
-      </ThemeProvider>
-    </AuthModalProvider>
-  </SQAErrorBoundary>
+                        <Route
+                          path="/select-role"
+                          element={renderSignedInPage(
+                            <RoleGateway user={user ?? {}} onRoleSelect={handleRoleSelect} />,
+                            'Role Selection'
+                          )}
+                        />
+                        <Route
+                          path="/pending-approval"
+                          element={renderSignedInPage(<PendingApprovalPage />, 'Pending Approval')}
+                        />
+                        <Route
+                          path="/status"
+                          element={renderProtectedAppPage(<ServerStatusPage />, 'Server Status', [
+                            'owner',
+                          ])}
+                        />
+
+                        {/* ==================== UNIFIED DASHBOARD ==================== */}
+                        <Route
+                          path="/crm/:department?"
+                          element={
+                            <ProtectedRoute>
+                              <DashboardEntryRoute />
+                            </ProtectedRoute>
+                          }
+                        />
+                        <Route path="/dashboard" element={<Navigate to="/crm" replace />} />
+
+                        {/* ==================== ROLE-SPECIFIC SUB-PAGES ==================== */}
+                        {roleSpecificAppRoutes.map(route => (
+                          <Route
+                            key={`role-specific-${route.path}`}
+                            path={route.path}
+                            element={renderProtectedAppPage(
+                              route.page,
+                              route.section,
+                              route.allowedRoles
+                            )}
+                          />
+                        ))}
+
+                        {/* ==================== PORTAL ROUTES (Phase 2) ==================== */}
+                        {portalRoutes.map(route => (
+                          <Route
+                            key={`portal-${route.path}`}
+                            path={route.path}
+                            element={renderProtectedPortalPage(
+                              route.page,
+                              route.section,
+                              route.portalType,
+                              route.allowedRoles
+                            )}
+                          />
+                        ))}
+
+                        {/* ==================== ALL DASHBOARD ROUTES → UNIFIED ==================== */}
+                        {/* Role-specific dashboard paths redirect to canonical targets */}
+                        {LEGACY_DASHBOARD_REDIRECT_ROUTES.map(route => (
+                          <Route
+                            key={`legacy-dashboard-${route.path}`}
+                            path={route.path}
+                            element={<Navigate to={route.to} replace />}
+                          />
+                        ))}
+
+                        {/* ==================== LEGACY OWNER ROUTES → Redirect to Dashboard ==================== */}
+                        {LEGACY_OWNER_REDIRECT_ROUTES.map(route => (
+                          <Route
+                            key={`legacy-owner-${route.path}`}
+                            path={route.path}
+                            element={<Navigate to={route.to} replace />}
+                          />
+                        ))}
+                        {ownerUtilityRoutes.map(route => (
+                          <Route
+                            key={`owner-utility-${route.path}`}
+                            path={route.path}
+                            element={renderProtectedAppPage(
+                              route.page,
+                              route.section,
+                              route.allowedRoles
+                            )}
+                          />
+                        ))}
+                        {ownerWhatsAppRoutes.map(route => (
+                          <Route
+                            key={`owner-whatsapp-${route.path}`}
+                            path={route.path}
+                            element={renderProtectedAppPage(route.page, route.section, ['owner'])}
+                          />
+                        ))}
+
+                        {/* ==================== CRM MANAGEMENT ROUTES ==================== */}
+                        {ownerCrmRedirectRoutes.map(route => (
+                          <Route
+                            key={`owner-crm-${route.path}`}
+                            path={route.path}
+                            element={renderProtectedRedirect(route.to, ['owner'])}
+                          />
+                        ))}
+
+                        {/* Personal Goals */}
+                        <Route
+                          path="/owner/goals/argentina"
+                          element={
+                            <ProtectedRoute allowedRoles={['owner']}>
+                              <UnifiedWorkspaceLayout>
+                                <RouteErrorBoundary section="Argentina Goal">
+                                  <Suspense fallback={<SuspenseLoader />}>
+                                    <ArgentinaGoalPage />
+                                  </Suspense>
+                                </RouteErrorBoundary>
+                              </UnifiedWorkspaceLayout>
+                            </ProtectedRoute>
+                          }
+                        />
+
+                        {/* Nadia AI CRM — WhatsApp Business API Dashboard */}
+                        <Route
+                          path="/nadia"
+                          element={renderProtectedAppPage(<NadiaPage />, 'Nadia AI')}
+                        />
+
+                        {/* ==================== OTHER ROUTES ==================== */}
+                        {import.meta.env.DEV && (
+                          <Route
+                            path="/design-system"
+                            element={renderPublicPage(<DesignSystemTest />, 'Design System')}
+                          />
+                        )}
+                        <Route path="*" element={renderPublicPage(<NotFoundPage />, 'Not Found')} />
+                      </Routes>
+                    </LocationKeyWrapper>
+                  </main>
+                </BrowserRouter>
+              </WorkspaceProvider>
+            </LanguageProvider>
+          </StatusProvider>
+        </ThemeProvider>
+      </AuthModalProvider>
+    </SQAErrorBoundary>
   );
 }
 

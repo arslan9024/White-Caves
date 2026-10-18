@@ -54,7 +54,7 @@ import {
 } from '../store/crmDataSlice';
 import { selectAssistant as selectAIAssistant } from '../store/slices/aiAssistantDashboardSlice';
 import { AI_ASSISTANTS_REGISTRY } from '../store/slices/aiAssistant/registry';
-import { isCreatorSuperUserEmail } from '../utils/superUserAccess';
+import { isCreatorSuperUserEmail, isSuperUserAliasRole } from '../utils/superUserAccess';
 
 // ─── Types ────────────────────────────────────────────────────
 
@@ -244,7 +244,16 @@ export function useUnifiedDashboard() {
 
       return requests;
     },
-    [dispatch, allLeads.length, leadsLoading, allProperties.length, propertiesLoading, allAgents.length, agentsLoading, overview]
+    [
+      dispatch,
+      allLeads.length,
+      leadsLoading,
+      allProperties.length,
+      propertiesLoading,
+      allAgents.length,
+      agentsLoading,
+      overview,
+    ]
   );
 
   const handleRetryAll = useCallback(() => {
@@ -257,7 +266,17 @@ export function useUnifiedDashboard() {
   const roleInfo = getRoleInfo(currentRole);
   useDocumentTitle(`${roleInfo.label} Dashboard`);
 
-  const isSuperUser = isCreatorSuperUserEmail((user as { email?: string } | null)?.email);
+  const sessionUser = user as {
+    email?: string;
+    role?: string;
+    status?: string;
+    accessLevel?: number;
+  } | null;
+  const isSuperUser =
+    sessionUser?.status === 'active' &&
+    sessionUser.accessLevel === 5 &&
+    (isCreatorSuperUserEmail(sessionUser.email, sessionUser.role) ||
+      isSuperUserAliasRole(sessionUser.role));
 
   // ─── Role-Based Data Filtering ────────────────────────────
   const filteredData = useMemo<DashboardData>(() => {
@@ -439,11 +458,14 @@ export function useUnifiedDashboard() {
   }, [dispatch]);
 
   // ─── CRM Module Handlers ──────────────────────────────────
-  const handleCRMModuleSelect = useCallback((moduleId: string): void => {
-    dispatch(clearDepartmentSelection());
-    setSelectedCRMModule(prev => (prev === moduleId ? prev : moduleId));
-    setActiveTab(prev => (prev === '' ? prev : ''));
-  }, [dispatch]);
+  const handleCRMModuleSelect = useCallback(
+    (moduleId: string): void => {
+      dispatch(clearDepartmentSelection());
+      setSelectedCRMModule(prev => (prev === moduleId ? prev : moduleId));
+      setActiveTab(prev => (prev === '' ? prev : ''));
+    },
+    [dispatch]
+  );
 
   const handleBackFromCRM = useCallback((): void => {
     dispatch(clearDepartmentSelection());

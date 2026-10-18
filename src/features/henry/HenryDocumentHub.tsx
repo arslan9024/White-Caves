@@ -19,6 +19,15 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { authFetch } from '../../utils/authFetch';
 
+const workflowButtonBase: React.CSSProperties = {
+  border: 0,
+  borderRadius: 4,
+  cursor: 'pointer',
+  fontSize: 11,
+  fontWeight: 600,
+  padding: '4px 8px',
+};
+
 // ─── Types ─────────────────────────────────────────────────────────────────
 
 export interface DocumentTemplate {
@@ -313,13 +322,6 @@ const HenryDocumentHub: React.FC<HenryDocumentHubProps> = () => {
   const [selectedOwnerEmail, setSelectedOwnerEmail] = useState('');
   const [error, setError] = useState<string | null>(null);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
-
-  // Load archive records and workflow queue on mount
-  useEffect(() => {
-    void loadRecords();
-    void loadWorkflowItems();
-  }, [loadRecords, loadWorkflowItems]);
-
   const loadRecords = useCallback(async () => {
     setIsLoading(true);
     try {
@@ -357,6 +359,12 @@ const HenryDocumentHub: React.FC<HenryDocumentHubProps> = () => {
       setIsLoadingWorkflows(false);
     }
   }, []);
+
+  // Load archive records and workflow queue on mount after their callbacks are initialized.
+  useEffect(() => {
+    void loadRecords();
+    void loadWorkflowItems();
+  }, [loadRecords, loadWorkflowItems]);
 
   const handleTemplateSelect = (template: DocumentTemplate) => {
     setActiveTemplate(template);
@@ -434,7 +442,10 @@ const HenryDocumentHub: React.FC<HenryDocumentHubProps> = () => {
             ownerUserEmail: selectedOwnerEmail || null,
             assigneeUserEmail: selectedOwnerEmail || null,
             dueDate: new Date(Date.now() + 3 * 24 * 60 * 60 * 1000).toISOString(),
-            priority: activeTemplate.key === 'key_handover' || activeTemplate.key === 'tenancy_contract' ? 'high' : 'medium',
+            priority:
+              activeTemplate.key === 'key_handover' || activeTemplate.key === 'tenancy_contract'
+                ? 'high'
+                : 'medium',
             status: 'queued',
             notes: 'Saved from Henry document hub',
           }),
@@ -608,14 +619,23 @@ const HenryDocumentHub: React.FC<HenryDocumentHubProps> = () => {
       </aside>
 
       {/* ── Main Content ── */}
-      <main style={{ flex: 1, overflowY: 'auto', background: 'var(--color-0f0f0f, #0f0f0f)', padding: 24 }}>
+      <main
+        style={{
+          flex: 1,
+          overflowY: 'auto',
+          background: 'var(--color-0f0f0f, #0f0f0f)',
+          padding: 24,
+        }}
+      >
         {/* Header */}
         {activeTemplate && (
           <div style={{ marginBottom: 20 }}>
             <h2 style={{ color: 'var(--white, #fff)', margin: '0 0 6px', fontSize: 20 }}>
               {activeTemplate.icon} {activeTemplate.label}
             </h2>
-            <p style={{ color: 'var(--color-888, #888)', margin: 0, fontSize: 13 }}>{activeTemplate.description}</p>
+            <p style={{ color: 'var(--color-888, #888)', margin: 0, fontSize: 13 }}>
+              {activeTemplate.description}
+            </p>
 
             {/* Tab bar */}
             <div style={{ display: 'flex', gap: 8, marginTop: 16 }}>
@@ -862,7 +882,14 @@ const DocumentEditor: React.FC<DocumentEditorProps> = ({
       >
         {template.fields.map(field => (
           <div key={field.name}>
-            <label style={{ display: 'block', color: 'var(--color-aaa, #aaa)', fontSize: 12, marginBottom: 4 }}>
+            <label
+              style={{
+                display: 'block',
+                color: 'var(--color-aaa, #aaa)',
+                fontSize: 12,
+                marginBottom: 4,
+              }}
+            >
               {field.label}
               {field.required && <span style={{ color: 'var(--color-e31e24, #E31E24)' }}> *</span>}
             </label>
@@ -957,7 +984,14 @@ const DocumentEditor: React.FC<DocumentEditorProps> = ({
       {/* Action Buttons */}
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12, marginTop: 24 }}>
         <div>
-          <label style={{ display: 'block', color: 'var(--color-aaa, #aaa)', fontSize: 12, marginBottom: 4 }}>
+          <label
+            style={{
+              display: 'block',
+              color: 'var(--color-aaa, #aaa)',
+              fontSize: 12,
+              marginBottom: 4,
+            }}
+          >
             Department Tag
           </label>
           <select
@@ -992,7 +1026,14 @@ const DocumentEditor: React.FC<DocumentEditorProps> = ({
           </select>
         </div>
         <div>
-          <label style={{ display: 'block', color: 'var(--color-aaa, #aaa)', fontSize: 12, marginBottom: 4 }}>
+          <label
+            style={{
+              display: 'block',
+              color: 'var(--color-aaa, #aaa)',
+              fontSize: 12,
+              marginBottom: 4,
+            }}
+          >
             Owner User Email (optional)
           </label>
           <input
@@ -1127,14 +1168,23 @@ const CompliancePanel: React.FC<CompliancePanelProps> = ({ report }) => {
               >
                 <div>
                   <span style={{ marginRight: 8 }}>{severityIcon[result.severity]}</span>
-                  <strong style={{ color: 'var(--white, #fff)', fontSize: 13 }}>{result.title}</strong>
+                  <strong style={{ color: 'var(--white, #fff)', fontSize: 13 }}>
+                    {result.title}
+                  </strong>
                   {result.uaeLawReference && (
                     <span style={{ marginLeft: 8, color: 'var(--color-666, #666)', fontSize: 11 }}>
                       ({result.uaeLawReference})
                     </span>
                   )}
                 </div>
-                <span style={{ color: 'var(--color-666, #666)', fontSize: 11, whiteSpace: 'nowrap', marginLeft: 8 }}>
+                <span
+                  style={{
+                    color: 'var(--color-666, #666)',
+                    fontSize: 11,
+                    whiteSpace: 'nowrap',
+                    marginLeft: 8,
+                  }}
+                >
                   {result.ruleId}
                 </span>
               </div>
@@ -1158,7 +1208,9 @@ const CompliancePanel: React.FC<CompliancePanelProps> = ({ report }) => {
               }}
             >
               <span style={{ marginRight: 8 }}>✅</span>
-              <strong style={{ color: 'var(--color-666, #666)', fontSize: 12 }}>{result.title}</strong>
+              <strong style={{ color: 'var(--color-666, #666)', fontSize: 12 }}>
+                {result.title}
+              </strong>
             </div>
           ))}
       </div>
@@ -1196,7 +1248,9 @@ const ArchivePanel: React.FC<ArchivePanelProps> = ({
         marginBottom: 16,
       }}
     >
-      <h3 style={{ color: 'var(--white, #fff)', margin: 0 }}>📁 Document Archive ({records.length})</h3>
+      <h3 style={{ color: 'var(--white, #fff)', margin: 0 }}>
+        📁 Document Archive ({records.length})
+      </h3>
       <button
         onClick={onRefresh}
         style={{
@@ -1222,14 +1276,23 @@ const ArchivePanel: React.FC<ArchivePanelProps> = ({
         marginBottom: 16,
       }}
     >
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
+      <div
+        style={{
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'center',
+          marginBottom: 8,
+        }}
+      >
         <strong style={{ color: '#c8b6ff', fontSize: 13 }}>⚙️ Operations queue</strong>
         <span style={{ color: '#888', fontSize: 12 }}>{workflowItems.length} item(s)</span>
       </div>
       {isLoadingWorkflows ? (
         <div style={{ color: '#888', fontSize: 12 }}>Loading workflow queue...</div>
       ) : workflowItems.length === 0 ? (
-        <div style={{ color: '#666', fontSize: 12 }}>No workflow items yet. Saving a document will queue it for review.</div>
+        <div style={{ color: '#666', fontSize: 12 }}>
+          No workflow items yet. Saving a document will queue it for review.
+        </div>
       ) : (
         <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
           {workflowItems.map(item => (
@@ -1248,7 +1311,10 @@ const ArchivePanel: React.FC<ArchivePanelProps> = ({
               <div>
                 <div style={{ color: '#fff', fontSize: 12, fontWeight: 600 }}>{item.title}</div>
                 <div style={{ color: '#888', fontSize: 11 }}>
-                  {item.templateKey} • owner: {item.ownerUserEmail ?? 'unassigned'} • assignee: {item.assigneeUserEmail ?? 'unassigned'} • due: {item.dueDate ? new Date(item.dueDate).toLocaleDateString() : 'n/a'} • {item.status}
+                  {item.templateKey} • owner: {item.ownerUserEmail ?? 'unassigned'} • assignee:{' '}
+                  {item.assigneeUserEmail ?? 'unassigned'} • due:{' '}
+                  {item.dueDate ? new Date(item.dueDate).toLocaleDateString() : 'n/a'} •{' '}
+                  {item.status}
                 </div>
                 {item.history?.length > 0 && (
                   <div style={{ color: '#a78bfa', fontSize: 10, marginTop: 4 }}>
@@ -1257,9 +1323,24 @@ const ArchivePanel: React.FC<ArchivePanelProps> = ({
                 )}
               </div>
               <div style={{ display: 'flex', gap: 6 }}>
-                <button onClick={() => onTransitionWorkflow(item.id, 'in_review')} style={{ ...buttonBase, background: '#4338ca', color: '#fff' }}>Review</button>
-                <button onClick={() => onTransitionWorkflow(item.id, 'approved')} style={{ ...buttonBase, background: '#166534', color: '#fff' }}>Approve</button>
-                <button onClick={() => onTransitionWorkflow(item.id, 'completed')} style={{ ...buttonBase, background: '#92400e', color: '#fff' }}>Complete</button>
+                <button
+                  onClick={() => onTransitionWorkflow(item.id, 'in_review')}
+                  style={{ ...workflowButtonBase, background: '#4338ca', color: '#fff' }}
+                >
+                  Review
+                </button>
+                <button
+                  onClick={() => onTransitionWorkflow(item.id, 'approved')}
+                  style={{ ...workflowButtonBase, background: '#166534', color: '#fff' }}
+                >
+                  Approve
+                </button>
+                <button
+                  onClick={() => onTransitionWorkflow(item.id, 'completed')}
+                  style={{ ...workflowButtonBase, background: '#92400e', color: '#fff' }}
+                >
+                  Complete
+                </button>
               </div>
             </div>
           ))}
@@ -1268,7 +1349,9 @@ const ArchivePanel: React.FC<ArchivePanelProps> = ({
     </div>
 
     {isLoading ? (
-      <div style={{ color: 'var(--color-888, #888)', textAlign: 'center', padding: 40 }}>Loading records...</div>
+      <div style={{ color: 'var(--color-888, #888)', textAlign: 'center', padding: 40 }}>
+        Loading records...
+      </div>
     ) : records.length === 0 ? (
       <div style={{ color: 'var(--color-555, #555)', textAlign: 'center', padding: 40 }}>
         No archived documents yet. Generate and save a document to start the archive.
@@ -1293,7 +1376,12 @@ const ArchivePanel: React.FC<ArchivePanelProps> = ({
               ].map(h => (
                 <th
                   key={h}
-                  style={{ color: 'var(--color-888, #888)', fontWeight: 600, padding: '8px 12px', textAlign: 'left' }}
+                  style={{
+                    color: 'var(--color-888, #888)',
+                    fontWeight: 600,
+                    padding: '8px 12px',
+                    textAlign: 'left',
+                  }}
                 >
                   {h}
                 </th>
@@ -1303,7 +1391,9 @@ const ArchivePanel: React.FC<ArchivePanelProps> = ({
           <tbody>
             {records.map(r => (
               <tr key={r.id} style={{ borderBottom: '1px solid var(--color-1a1a1a, #1a1a1a)' }}>
-                <td style={{ color: 'var(--color-c9a84c, #C9A84C)', padding: '8px 12px' }}>{r.templateLabel}</td>
+                <td style={{ color: 'var(--color-c9a84c, #C9A84C)', padding: '8px 12px' }}>
+                  {r.templateLabel}
+                </td>
                 <td
                   style={{
                     color: '#ccc',
@@ -1316,11 +1406,21 @@ const ArchivePanel: React.FC<ArchivePanelProps> = ({
                 >
                   {r.fileName}
                 </td>
-                <td style={{ color: 'var(--color-aaa, #aaa)', padding: '8px 12px' }}>{r.departmentTag ?? '—'}</td>
-                <td style={{ color: 'var(--color-aaa, #aaa)', padding: '8px 12px' }}>{r.ownerUserEmail ?? '—'}</td>
-                <td style={{ color: 'var(--color-aaa, #aaa)', padding: '8px 12px' }}>{r.unit ?? '—'}</td>
-                <td style={{ color: 'var(--color-aaa, #aaa)', padding: '8px 12px' }}>{r.community ?? '—'}</td>
-                <td style={{ color: 'var(--color-aaa, #aaa)', padding: '8px 12px' }}>{r.tenantName ?? '—'}</td>
+                <td style={{ color: 'var(--color-aaa, #aaa)', padding: '8px 12px' }}>
+                  {r.departmentTag ?? '—'}
+                </td>
+                <td style={{ color: 'var(--color-aaa, #aaa)', padding: '8px 12px' }}>
+                  {r.ownerUserEmail ?? '—'}
+                </td>
+                <td style={{ color: 'var(--color-aaa, #aaa)', padding: '8px 12px' }}>
+                  {r.unit ?? '—'}
+                </td>
+                <td style={{ color: 'var(--color-aaa, #aaa)', padding: '8px 12px' }}>
+                  {r.community ?? '—'}
+                </td>
+                <td style={{ color: 'var(--color-aaa, #aaa)', padding: '8px 12px' }}>
+                  {r.tenantName ?? '—'}
+                </td>
                 <td style={{ padding: '8px 12px' }}>
                   <span
                     style={{
@@ -1340,10 +1440,22 @@ const ArchivePanel: React.FC<ArchivePanelProps> = ({
                     {r.status ?? (r.isDraft ? 'draft' : 'signed')}
                   </span>
                 </td>
-                <td style={{ color: 'var(--color-666, #666)', padding: '8px 12px', whiteSpace: 'nowrap' }}>
+                <td
+                  style={{
+                    color: 'var(--color-666, #666)',
+                    padding: '8px 12px',
+                    whiteSpace: 'nowrap',
+                  }}
+                >
                   {r.signedAt ? new Date(r.signedAt).toLocaleString() : '—'}
                 </td>
-                <td style={{ color: 'var(--color-666, #666)', padding: '8px 12px', whiteSpace: 'nowrap' }}>
+                <td
+                  style={{
+                    color: 'var(--color-666, #666)',
+                    padding: '8px 12px',
+                    whiteSpace: 'nowrap',
+                  }}
+                >
                   {new Date(r.createdAt).toLocaleDateString()}
                 </td>
                 <td style={{ padding: '8px 12px' }}>

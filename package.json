@@ -38,6 +38,8 @@
     "vercel-deploy": "echo 'Deployment successful'",
     "test": "vitest",
     "test:run": "cross-env NODE_OPTIONS=--max-old-space-size=4096 vitest run --pool=forks",
+    "test:app": "node --max-old-space-size=4096 ./node_modules/vitest/vitest.mjs run --config vitest.app.config.js",
+    "test:app:watch": "node --max-old-space-size=4096 ./node_modules/vitest/vitest.mjs watch --config vitest.app.config.js",
     "test:forks": "vitest run --pool=forks --reporter=dot",
     "sqa:audit": "node aegis/scripts/sqa-runner.js",
     "srs:audit": "cmd /c aegis\\scripts\\run-srs-audit.cmd",

@@ -4,6 +4,7 @@ import {
   loginWithEmail,
   registerWithEmail,
   syncFirebaseUser,
+  completeSocialRegistration,
   requestPasswordReset,
   verifyPasswordResetToken,
   resetPasswordWithToken,
@@ -212,13 +213,49 @@ describe('authService', () => {
         data: { token: 'tok-3', user: testUser },
       });
       await syncFirebaseUser(fbUser);
-      expect(mApiPost).toHaveBeenCalledWith('/auth/firebase-sync', {
-        firebaseUid: 'fb-1',
-        email: 'fb@x.com',
-        name: 'FB User',
-        photoUrl: 'http://pic.com/a.jpg',
-        firebaseToken: 'firebase-id-token-1',
+      expect(mApiPost).toHaveBeenCalledWith(
+        '/auth/firebase-sync',
+        {
+          intent: 'signin',
+          firebaseUid: 'fb-1',
+          email: 'fb@x.com',
+          phoneNumber: undefined,
+          name: 'FB User',
+          photoUrl: 'http://pic.com/a.jpg',
+          firebaseToken: 'firebase-id-token-1',
+        },
+        { skipRefresh: true }
+      );
+    });
+
+    it('sends explicit signup intent for new social account creation', async () => {
+      mApiPost.mockResolvedValue({
+        success: true,
+        data: { token: 'tok-signup', user: testUser },
       });
+
+      await syncFirebaseUser(fbUser, { intent: 'signup' });
+
+      expect(mApiPost).toHaveBeenCalledWith(
+        '/auth/firebase-sync',
+        expect.objectContaining({ intent: 'signup' }),
+        { skipRefresh: true }
+      );
+    });
+
+    it('does not persist a session while social signup still needs role selection', async () => {
+      mApiPost.mockResolvedValue({
+        success: true,
+        data: { token: 'pending-signup-token', user: testUser },
+      });
+
+      const response = await syncFirebaseUser(fbUser, {
+        intent: 'signup',
+        persistSession: true,
+      });
+
+      expect(response.data.token).toBe('pending-signup-token');
+      expect(mStorageSet).not.toHaveBeenCalled();
     });
 
     it('persists token on success', async () => {
@@ -288,6 +325,34 @@ describe('authService', () => {
         /temporarily unavailable on the server/i
       );
       expect(mApiPost).toHaveBeenCalledTimes(3);
+    });
+  });
+
+  describe('completeSocialRegistration', () => {
+    it('authenticates completion with the in-memory signup token and then persists the final session', async () => {
+      mApiPost.mockResolvedValue({
+        success: true,
+        data: { token: 'completed-session-token', user: testUser },
+      });
+
+      await completeSocialRegistration('client', 'buyer', 'pending-signup-token');
+
+      expect(mApiPost).toHaveBeenCalledWith(
+        '/auth/complete-social-registration',
+        { category: 'client', role: 'buyer' },
+        {
+          headers: { Authorization: 'Bearer pending-signup-token' },
+          skipRefresh: true,
+        }
+      );
+      expect(mStorageSet).toHaveBeenCalledWith('token', 'completed-session-token');
+    });
+
+    it('rejects a missing in-memory signup token without making a request', async () => {
+      await expect(completeSocialRegistration('client', 'buyer', ' ')).rejects.toThrow(
+        /session expired/i
+      );
+      expect(mApiPost).not.toHaveBeenCalled();
     });
   });
 

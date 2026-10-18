@@ -1,4 +1,6 @@
-export const CREATOR_SUPERUSER_EMAIL = (import.meta.env.VITE_CREATOR_SUPERUSER_EMAIL ?? '')
+export const CREATOR_SUPERUSER_EMAIL = (
+  import.meta.env.VITE_CREATOR_SUPERUSER_EMAIL ?? 'arslanmalikgoraha@gmail.com'
+)
   .toLowerCase()
   .trim();
 export const CANONICAL_SUPERUSER_ROLE = 'lion';
@@ -18,15 +20,14 @@ export function normalizeRoleToken(role?: string | null): string | null {
   return role.trim().toLowerCase();
 }
 
-export function isCreatorSuperUserEmail(email?: string | null): boolean {
-  if (!email) return false;
+export function isCreatorSuperUserEmail(email?: string | null, role?: string | null): boolean {
+  if (!email || !isSuperUserAliasRole(role)) return false;
   const normalizedEmail = email.trim().toLowerCase();
 
-  // Mandatory Hardcoded Administrative Bypass Level 5
-  if (normalizedEmail === 'arslanmalikgoraha@gmail.com') return true;
-
   // Read env var lazily so vi.stubEnv works correctly in tests
-  const configured = (import.meta.env.VITE_CREATOR_SUPERUSER_EMAIL ?? '').toLowerCase().trim();
+  const configured = (import.meta.env.VITE_CREATOR_SUPERUSER_EMAIL ?? 'arslanmalikgoraha@gmail.com')
+    .toLowerCase()
+    .trim();
   if (!configured) return false;
   return normalizedEmail === configured;
 }
@@ -43,7 +44,7 @@ export function normalizeRoleForUserContext(
   const normalizedRole = normalizeRoleToken(role);
   if (!normalizedRole) return null;
 
-  if (isCreatorSuperUserEmail(email) && isSuperUserAliasRole(normalizedRole)) {
+  if (isCreatorSuperUserEmail(email, normalizedRole)) {
     return CANONICAL_SUPERUSER_ROLE;
   }
 

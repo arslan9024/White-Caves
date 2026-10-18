@@ -71,6 +71,14 @@ function normalizeMetadata(metadata: unknown): Record<string, unknown> {
   return {};
 }
 
+function getRequiredRouteParam(value: string | string[] | undefined, name: string): string {
+  const param = typeof value === 'string' ? value : value?.length === 1 ? value[0] : undefined;
+  if (!param?.trim()) {
+    throw new AppError(`${name} is required`, 400);
+  }
+  return param.trim();
+}
+
 // ─── GET /api/compliance/status ─────────────────────────────────────────
 // Overall compliance health check
 router.get(
@@ -233,8 +241,12 @@ router.get(
         type: l.type,
         action: l.action,
         description: l.description,
-        user: (l as any).user ? { id: (l as any).user.id, name: (l as any).user.name, role: (l as any).user.role } : null,
-        timestamp: (l as any).createdAt?.toISOString ? (l as any).createdAt.toISOString() : new Date().toISOString(),
+        user: (l as any).user
+          ? { id: (l as any).user.id, name: (l as any).user.name, role: (l as any).user.role }
+          : null,
+        timestamp: (l as any).createdAt?.toISOString
+          ? (l as any).createdAt.toISOString()
+          : new Date().toISOString(),
         metadata: l.metadata,
       })),
       pagination: { page: pageNum, pageSize: limit, total, totalPages: Math.ceil(total / limit) },
@@ -382,29 +394,43 @@ router.get(
       },
     });
 
-    const data = runs.map((run: { id: string; description: string; createdAt: Date; user: unknown; metadata: unknown }) => {
-      const metadata = normalizeMetadata(run.metadata);
-      return {
-        id: run.id,
-        description: run.description,
-        createdAt: run.createdAt,
-        user: run.user,
-        summary: {
-          notified: Number(metadata.notified || 0),
-          errors: Number(metadata.errors || 0),
-          agentCount: Number(metadata.agentCount || 0),
-          agentIds: Array.isArray(metadata.agentIds) ? metadata.agentIds : [],
-        },
-      };
-    });
+    const data = runs.map(
+      (run: {
+        id: string;
+        description: string;
+        createdAt: Date;
+        user: unknown;
+        metadata: unknown;
+      }) => {
+        const metadata = normalizeMetadata(run.metadata);
+        return {
+          id: run.id,
+          description: run.description,
+          createdAt: run.createdAt,
+          user: run.user,
+          summary: {
+            notified: Number(metadata.notified || 0),
+            errors: Number(metadata.errors || 0),
+            agentCount: Number(metadata.agentCount || 0),
+            agentIds: Array.isArray(metadata.agentIds) ? metadata.agentIds : [],
+          },
+        };
+      }
+    );
 
     res.status(200).json({
       success: true,
       data,
       summary: {
         total: data.length,
-        totalNotified: data.reduce((sum: number, run: { summary: { notified: number } }) => sum + run.summary.notified, 0),
-        totalErrors: data.reduce((sum: number, run: { summary: { errors: number } }) => sum + run.summary.errors, 0),
+        totalNotified: data.reduce(
+          (sum: number, run: { summary: { notified: number } }) => sum + run.summary.notified,
+          0
+        ),
+        totalErrors: data.reduce(
+          (sum: number, run: { summary: { errors: number } }) => sum + run.summary.errors,
+          0
+        ),
       },
     });
   })
@@ -587,28 +613,35 @@ router.get(
       db.property.count({ where: missingWhere }),
     ]);
 
-    const data = properties.map((p: { id: string; municipalityNumber?: string | null; buildingPermitNumber?: string | null; [key: string]: unknown }) => {
-      const permitStatus =
-        !p.municipalityNumber ||
-        !String(p.municipalityNumber).trim() ||
-        !p.buildingPermitNumber ||
-        !String(p.buildingPermitNumber).trim()
-          ? 'missing'
-          : 'complete';
+    const data = properties.map(
+      (p: {
+        id: string;
+        municipalityNumber?: string | null;
+        buildingPermitNumber?: string | null;
+        [key: string]: unknown;
+      }) => {
+        const permitStatus =
+          !p.municipalityNumber ||
+          !String(p.municipalityNumber).trim() ||
+          !p.buildingPermitNumber ||
+          !String(p.buildingPermitNumber).trim()
+            ? 'missing'
+            : 'complete';
 
-      return {
-        id: p.id,
-        title: p.title,
-        listingStatus: p.status,
-        location: p.location,
-        area: p.area,
-        municipalityNumber: p.municipalityNumber,
-        plotNumber: p.plotNumber,
-        buildingPermitNumber: p.buildingPermitNumber,
-        permitStatus,
-        updatedAt: p.updatedAt,
-      };
-    });
+        return {
+          id: p.id,
+          title: p.title,
+          listingStatus: p.status,
+          location: p.location,
+          area: p.area,
+          municipalityNumber: p.municipalityNumber,
+          plotNumber: p.plotNumber,
+          buildingPermitNumber: p.buildingPermitNumber,
+          permitStatus,
+          updatedAt: p.updatedAt,
+        };
+      }
+    );
 
     res.status(200).json({
       success: true,
@@ -690,33 +723,45 @@ router.get(
       },
     });
 
-    const data = runs.map((run: { id: string; action: string; description: string; createdAt: Date; user: unknown; metadata: unknown }) => {
-      const metadata = normalizeMetadata(run.metadata);
-      return {
-        id: run.id,
-        action: run.action,
-        description: run.description,
-        createdAt: run.createdAt,
-        user: run.user,
-        summary: {
-          scanned: Number(metadata.scanned || 0),
-          autoUnpublished: Number(metadata.autoUnpublished || 0),
-          errors: Number(metadata.errors || 0),
-          dryRun: metadata.dryRun === true,
-          affectedPropertyIds: Array.isArray(metadata.affectedPropertyIds)
-            ? metadata.affectedPropertyIds
-            : [],
-        },
-      };
-    });
+    const data = runs.map(
+      (run: {
+        id: string;
+        action: string;
+        description: string;
+        createdAt: Date;
+        user: unknown;
+        metadata: unknown;
+      }) => {
+        const metadata = normalizeMetadata(run.metadata);
+        return {
+          id: run.id,
+          action: run.action,
+          description: run.description,
+          createdAt: run.createdAt,
+          user: run.user,
+          summary: {
+            scanned: Number(metadata.scanned || 0),
+            autoUnpublished: Number(metadata.autoUnpublished || 0),
+            errors: Number(metadata.errors || 0),
+            dryRun: metadata.dryRun === true,
+            affectedPropertyIds: Array.isArray(metadata.affectedPropertyIds)
+              ? metadata.affectedPropertyIds
+              : [],
+          },
+        };
+      }
+    );
 
     res.status(200).json({
       success: true,
       data,
       summary: {
         total: data.length,
-        liveRuns: data.filter((r: { action: string }) => r.action === 'permit_enforcement_triggered').length,
-        dryRuns: data.filter((r: { action: string }) => r.action === 'permit_enforcement_dry_run').length,
+        liveRuns: data.filter(
+          (r: { action: string }) => r.action === 'permit_enforcement_triggered'
+        ).length,
+        dryRuns: data.filter((r: { action: string }) => r.action === 'permit_enforcement_dry_run')
+          .length,
       },
     });
   })
@@ -908,7 +953,8 @@ router.get(
         reviewComments: metadata.reviewComments || null,
         reviewedBy: metadata.reviewedBy || null,
         reviewedAt: metadata.reviewedAt || null,
-        uploadedAt: metadata.uploadedAt || (d as any).createdAt?.toISOString?.() || new Date().toISOString(),
+        uploadedAt:
+          metadata.uploadedAt || (d as any).createdAt?.toISOString?.() || new Date().toISOString(),
       };
     });
 
@@ -940,26 +986,44 @@ router.get(
       },
     });
 
-    const pending = docs.filter((d: { id: string; leadId: string | null; metadata: unknown; createdAt: Date; lead: unknown; user: unknown }) => {
-      const metadata = normalizeMetadata(d.metadata);
-      return (metadata.reviewStatus || 'pending') === 'pending';
-    });
+    const pending = docs.filter(
+      (d: {
+        id: string;
+        leadId: string | null;
+        metadata: unknown;
+        createdAt: Date;
+        lead: unknown;
+        user: unknown;
+      }) => {
+        const metadata = normalizeMetadata(d.metadata);
+        return (metadata.reviewStatus || 'pending') === 'pending';
+      }
+    );
 
     res.json({
       success: true,
-      data: pending.map((d: { id: string; leadId: string | null; metadata: unknown; createdAt: Date; lead: unknown; user: unknown }) => {
-        const metadata = normalizeMetadata(d.metadata);
-        return {
-          id: d.id,
-          leadId: d.leadId,
-          lead: d.lead,
-          uploadedBy: d.user,
-          documentType: metadata.documentType || null,
-          documentUrl: metadata.documentUrl || null,
-          uploadedAt: metadata.uploadedAt || d.createdAt.toISOString(),
-          reviewStatus: metadata.reviewStatus || 'pending',
-        };
-      }),
+      data: pending.map(
+        (d: {
+          id: string;
+          leadId: string | null;
+          metadata: unknown;
+          createdAt: Date;
+          lead: unknown;
+          user: unknown;
+        }) => {
+          const metadata = normalizeMetadata(d.metadata);
+          return {
+            id: d.id,
+            leadId: d.leadId,
+            lead: d.lead,
+            uploadedBy: d.user,
+            documentType: metadata.documentType || null,
+            documentUrl: metadata.documentUrl || null,
+            uploadedAt: metadata.uploadedAt || d.createdAt.toISOString(),
+            reviewStatus: metadata.reviewStatus || 'pending',
+          };
+        }
+      ),
       summary: {
         totalFetched: docs.length,
         pending: pending.length,
@@ -1171,22 +1235,30 @@ router.get(
 
     res.json({
       success: true,
-      data: filtered.map((a: { id: string; leadId: string | null; lead: unknown; user: unknown; metadata: unknown }) => {
-        const metadata = normalizeMetadata(a.metadata);
-        return {
-          id: a.id,
-          leadId: a.leadId,
-          lead: a.lead,
-          createdBy: a.user,
-          status: metadata.status || 'open',
-          severity: metadata.severity || 'medium',
-          flags: metadata.flags || [],
-          screening: metadata.screening || null,
-          resolvedAt: metadata.resolvedAt || null,
-          resolvedBy: metadata.resolvedBy || null,
-          createdAt: (a as any).createdAt,
-        };
-      }),
+      data: filtered.map(
+        (a: {
+          id: string;
+          leadId: string | null;
+          lead: unknown;
+          user: unknown;
+          metadata: unknown;
+        }) => {
+          const metadata = normalizeMetadata(a.metadata);
+          return {
+            id: a.id,
+            leadId: a.leadId,
+            lead: a.lead,
+            createdBy: a.user,
+            status: metadata.status || 'open',
+            severity: metadata.severity || 'medium',
+            flags: metadata.flags || [],
+            screening: metadata.screening || null,
+            resolvedAt: metadata.resolvedAt || null,
+            resolvedBy: metadata.resolvedBy || null,
+            createdAt: (a as any).createdAt,
+          };
+        }
+      ),
       summary: {
         totalFetched: alerts.length,
         returned: filtered.length,
@@ -1382,28 +1454,35 @@ router.get(
       take,
     });
 
-    const mapped = records.map((r: { id: string; leadId: string | null; metadata: unknown; createdAt: Date }) => {
-      const metadata = normalizeMetadata(r.metadata);
-      return {
-        id: r.id,
-        entityType: metadata.entityType || 'lead',
-        entityId: metadata.entityId || r.leadId,
-        purpose: metadata.purpose || null,
-        channel: metadata.channel || null,
-        status: metadata.status || 'active',
-        consentedAt: metadata.consentedAt || (r as any).createdAt?.toISOString?.() || new Date().toISOString(),
-        revokedAt: metadata.revokedAt || null,
-        createdBy: (r as any).user,
-        lead: (r as any).lead,
-      };
-    });
+    const mapped = records.map(
+      (r: { id: string; leadId: string | null; metadata: unknown; createdAt: Date }) => {
+        const metadata = normalizeMetadata(r.metadata);
+        return {
+          id: r.id,
+          entityType: metadata.entityType || 'lead',
+          entityId: metadata.entityId || r.leadId,
+          purpose: metadata.purpose || null,
+          channel: metadata.channel || null,
+          status: metadata.status || 'active',
+          consentedAt:
+            metadata.consentedAt ||
+            (r as any).createdAt?.toISOString?.() ||
+            new Date().toISOString(),
+          revokedAt: metadata.revokedAt || null,
+          createdBy: (r as any).user,
+          lead: (r as any).lead,
+        };
+      }
+    );
 
-    const filtered = mapped.filter((row: { status: unknown; entityType: unknown; entityId: unknown }) => {
-      if (status !== 'all' && String(row.status) !== status) return false;
-      if (entityType && String(row.entityType) !== entityType) return false;
-      if (entityId && String(row.entityId) !== entityId) return false;
-      return true;
-    });
+    const filtered = mapped.filter(
+      (row: { status: unknown; entityType: unknown; entityId: unknown }) => {
+        if (status !== 'all' && String(row.status) !== status) return false;
+        if (entityType && String(row.entityType) !== entityType) return false;
+        if (entityId && String(row.entityId) !== entityId) return false;
+        return true;
+      }
+    );
 
     res.json({
       success: true,
@@ -1539,16 +1618,26 @@ router.get(
           amlOpenAlerts: openAml.length,
         },
         permitIssues: permitIssues.slice(0, 20),
-        kycPendingReview: pendingKyc.slice(0, 20).map((d: { id: string; leadId: string | null; lead: unknown; metadata: unknown; createdAt: Date }) => {
-          const metadata = normalizeMetadata(d.metadata);
-          return {
-            id: d.id,
-            leadId: d.leadId,
-            lead: d.lead,
-            documentType: metadata.documentType || null,
-            uploadedAt: metadata.uploadedAt || d.createdAt.toISOString(),
-          };
-        }),
+        kycPendingReview: pendingKyc
+          .slice(0, 20)
+          .map(
+            (d: {
+              id: string;
+              leadId: string | null;
+              lead: unknown;
+              metadata: unknown;
+              createdAt: Date;
+            }) => {
+              const metadata = normalizeMetadata(d.metadata);
+              return {
+                id: d.id,
+                leadId: d.leadId,
+                lead: d.lead,
+                documentType: metadata.documentType || null,
+                uploadedAt: metadata.uploadedAt || d.createdAt.toISOString(),
+              };
+            }
+          ),
         amlOpenAlerts: openAml.slice(0, 20).map((a: { id: string; metadata: unknown }) => {
           const metadata = normalizeMetadata(a.metadata);
           return {
@@ -1603,7 +1692,7 @@ router.get(
       throw new AppError('Access denied — corporate document details require manager role', 403);
     }
 
-    const { id } = req.params;
+    const id = getRequiredRouteParam(req.params.id, 'Corporate document ID');
     const document = await getCorporateDocumentById(id);
     if (!document) {
       throw new AppError('Corporate document not found', 404);
@@ -1641,7 +1730,7 @@ router.patch(
       throw new AppError('Access denied — corporate document update requires manager role', 403);
     }
 
-    const { id } = req.params;
+    const id = getRequiredRouteParam(req.params.id, 'Corporate document ID');
     const updated = await updateCorporateDocument(id, req.body || {}, req.user?.id || undefined);
     res.status(200).json({ success: true, data: updated });
   })
@@ -1656,7 +1745,7 @@ router.patch(
       throw new AppError('Access denied — corporate document archive requires manager role', 403);
     }
 
-    const { id } = req.params;
+    const id = getRequiredRouteParam(req.params.id, 'Corporate document ID');
     const archived = await archiveCorporateDocument(id, req.user?.id || undefined);
     res.status(200).json({ success: true, data: archived });
   })
@@ -1696,7 +1785,7 @@ router.patch(
       throw new AppError('Access denied — alert acknowledgement requires manager role', 403);
     }
 
-    const { alertId } = req.params;
+    const alertId = getRequiredRouteParam(req.params.alertId, 'Alert ID');
     const updated = await acknowledgeCorporateDocumentAlert(alertId, req.user?.id || undefined);
     res.status(200).json({ success: true, data: updated });
   })
@@ -1834,7 +1923,13 @@ router.post(
       numberOfCheques,
     } = req.body;
 
-    if (!leaseId || !landlordEmiratesId || !tenantEmiratesId || !propertyAddress || !annualRentAED) {
+    if (
+      !leaseId ||
+      !landlordEmiratesId ||
+      !tenantEmiratesId ||
+      !propertyAddress ||
+      !annualRentAED
+    ) {
       throw new AppError(
         'leaseId, landlordEmiratesId, tenantEmiratesId, propertyAddress, and annualRentAED are required',
         400
@@ -1848,8 +1943,7 @@ router.post(
       propertyAddress,
       annualRentAED: Number(annualRentAED),
       leaseStartDate: leaseStartDate ?? new Date().toISOString(),
-      leaseEndDate:
-        leaseEndDate ?? new Date(Date.now() + 365 * 24 * 60 * 60 * 1000).toISOString(),
+      leaseEndDate: leaseEndDate ?? new Date(Date.now() + 365 * 24 * 60 * 60 * 1000).toISOString(),
       paymentFrequency: paymentFrequency ?? 'annual',
       numberOfCheques: numberOfCheques ?? 1,
     });

@@ -1,5 +1,5 @@
 import { useState, useEffect, useMemo, useCallback } from 'react';
-import { evaluateFounderGuard, UserProfile, FOUNDER_EMAIL } from '../guards/FounderGuard';
+import { evaluateFounderGuard, UserProfile } from '../guards/FounderGuard';
 import { VIEWS_REGISTRY, ViewDefinition } from '../config/viewsRegistry';
 
 export interface CurrencyRates {
@@ -23,7 +23,7 @@ const DEFAULT_FX_RATES: CurrencyRates = {
   GBP: 0.2145,
 };
 
-export function useWorkspaceEngine(userEmail: string = FOUNDER_EMAIL) {
+export function useWorkspaceEngine(userEmail = '') {
   const [profile, setProfile] = useState<UserProfile>(() => evaluateFounderGuard(userEmail));
   const [activeViewCode, setActiveViewCode] = useState<string>('VIEW-01');
   const [fxRates, setFxRates] = useState<CurrencyRates>(DEFAULT_FX_RATES);
@@ -45,7 +45,11 @@ export function useWorkspaceEngine(userEmail: string = FOUNDER_EMAIL) {
         const cachedTimestamp = localStorage.getItem('wc_fx_timestamp');
         const fourHoursMs = 4 * 60 * 60 * 1000;
 
-        if (cachedRates && cachedTimestamp && Date.now() - parseInt(cachedTimestamp, 10) < fourHoursMs) {
+        if (
+          cachedRates &&
+          cachedTimestamp &&
+          Date.now() - parseInt(cachedTimestamp, 10) < fourHoursMs
+        ) {
           setFxRates(JSON.parse(cachedRates));
           setIsFxLoading(false);
           return;
@@ -73,22 +77,31 @@ export function useWorkspaceEngine(userEmail: string = FOUNDER_EMAIL) {
   }, []);
 
   const activeView = useMemo(() => {
-    return VIEWS_REGISTRY.find(v => v.code === activeViewCode || v.id === activeViewCode) || VIEWS_REGISTRY[0];
+    return (
+      VIEWS_REGISTRY.find(v => v.code === activeViewCode || v.id === activeViewCode) ||
+      VIEWS_REGISTRY[0]
+    );
   }, [activeViewCode]);
 
-  const convertCurrency = useCallback((amountAED: number, targetCurrency: keyof CurrencyRates = selectedCurrency): number => {
-    const rate = fxRates[targetCurrency] || 1.0;
-    return Math.round((amountAED * rate) * 100) / 100;
-  }, [fxRates, selectedCurrency]);
+  const convertCurrency = useCallback(
+    (amountAED: number, targetCurrency: keyof CurrencyRates = selectedCurrency): number => {
+      const rate = fxRates[targetCurrency] || 1.0;
+      return Math.round(amountAED * rate * 100) / 100;
+    },
+    [fxRates, selectedCurrency]
+  );
 
-  const formatCurrency = useCallback((amountAED: number, targetCurrency: keyof CurrencyRates = selectedCurrency): string => {
-    const converted = convertCurrency(amountAED, targetCurrency);
-    return new Intl.NumberFormat('en-US', {
-      style: 'currency',
-      currency: targetCurrency,
-      maximumFractionDigits: 2,
-    }).format(converted);
-  }, [convertCurrency, selectedCurrency]);
+  const formatCurrency = useCallback(
+    (amountAED: number, targetCurrency: keyof CurrencyRates = selectedCurrency): string => {
+      const converted = convertCurrency(amountAED, targetCurrency);
+      return new Intl.NumberFormat('en-US', {
+        style: 'currency',
+        currency: targetCurrency,
+        maximumFractionDigits: 2,
+      }).format(converted);
+    },
+    [convertCurrency, selectedCurrency]
+  );
 
   const metrics = useMemo<WorkspaceMetrics>(() => {
     return {

@@ -9,21 +9,68 @@ vi.mock('../../hooks/useSignIn', () => ({
   useSignIn: () => ({
     mode: 'signin',
     step: 1,
+    activeTab: 'email',
+    setActiveTab: vi.fn(),
     loading: false,
+    forgotPasswordLoading: false,
+    verifyResetLoading: false,
+    completeResetLoading: false,
     error: null,
-    copy: { title: 'Sign In', subtitle: 'Welcome back', google: 'Sign in with Google', facebook: 'Sign in with Facebook', apple: 'Sign in with Apple', email: 'Email Address' },
+    setError: vi.fn(),
+    success: '',
+    resetStage: 'request',
+    setResetStage: vi.fn(),
+    resetToken: '',
+    setResetToken: vi.fn(),
+    newPassword: '',
+    setNewPassword: vi.fn(),
+    confirmNewPassword: '',
+    setConfirmNewPassword: vi.fn(),
+    copy: {
+      title: 'Sign In',
+      subtitle: 'Welcome back',
+      google: 'Sign in with Google',
+      facebook: 'Sign in with Facebook',
+      apple: 'Sign in with Apple',
+      email: 'Email Address',
+    },
     isGoogleAuthAvailable: true,
+    googleAuthUnavailableMessage: '',
     socialSyncRecovery: null,
-    retryLimitReached: false,
+    socialRetryAttempts: 0,
+    remainingSocialRetries: 3,
+    switchMode: vi.fn(),
+    email: '',
+    setEmail: vi.fn(),
+    password: '',
+    setPassword: vi.fn(),
+    confirmPassword: '',
+    setConfirmPassword: vi.fn(),
+    fullName: '',
+    setFullName: vi.fn(),
     selectedCategory: null,
+    setSelectedCategory: vi.fn(),
     selectedRole: null,
+    setSelectedRole: vi.fn(),
+    phone: '',
+    setPhone: vi.fn(),
+    otp: '',
+    setOtp: vi.fn(),
+    showOtpInput: false,
+    resetOtp: vi.fn(),
     twoFactorCode: '',
     setTwoFactorCode: vi.fn(),
+    handleEmailSubmit: vi.fn(),
+    handleForgotPassword: vi.fn(),
+    handleVerifyResetToken: vi.fn(),
+    handleCompletePasswordReset: vi.fn(),
+    handlePhoneSubmit: vi.fn(),
+    handleOtpVerify: vi.fn(),
+    handleSignInSuccess: vi.fn(),
     handleSocialAuth: vi.fn(),
     retrySocialAuth: vi.fn(),
     clearSocialRecovery: vi.fn(),
     proceedToRoleSelection: vi.fn(),
-    setSelectedRole: vi.fn(),
     completeSignUp: vi.fn(),
     goBackToStep: vi.fn(),
     handleTwoFactorSubmit: vi.fn(),
@@ -34,7 +81,11 @@ vi.mock('../../hooks/useSignIn', () => ({
 vi.mock('react-router-dom', () => ({
   useNavigate: () => vi.fn(),
   useLocation: () => ({ pathname: '/' }),
-  Link: ({ children, to, className }: any) => <a href={to} className={className}>{children}</a>,
+  Link: ({ children, to, className }: any) => (
+    <a href={to} className={className}>
+      {children}
+    </a>
+  ),
 }));
 
 vi.mock('../../context/WorkspaceContext', () => ({
@@ -44,11 +95,19 @@ vi.mock('../../context/WorkspaceContext', () => ({
   }),
 }));
 
+vi.mock('../../features/auth/components/BiometricLogin', () => ({
+  BiometricLoginButton: () => null,
+}));
+
 describe('AuthModal', () => {
   it('renders modal dialog correctly', () => {
     render(<AuthModal onClose={vi.fn()} />);
     expect(screen.getByRole('dialog')).toBeInTheDocument();
     expect(screen.getByText('Welcome Back')).toBeInTheDocument();
+    expect(screen.getByRole('link', { name: 'Privacy Policy' })).toHaveAttribute(
+      'href',
+      '/privacy-policy'
+    );
   });
 
   it('triggers onClose when close button is clicked', () => {

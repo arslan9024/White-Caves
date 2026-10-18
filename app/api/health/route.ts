@@ -30,14 +30,13 @@ export async function GET(): Promise<NextResponse<HealthResponse>> {
   // ── Database Ping ───────────────────────────────────────────────────────────
   let dbStatus: 'connected' | 'unreachable' = 'unreachable';
   try {
-    await prisma.$queryRaw`SELECT 1`;
+    await prisma.$runCommandRaw({ ping: 1 });
     dbStatus = 'connected';
   } catch {
     // DB offline — degrade gracefully
   }
 
-  const overallStatus: HealthResponse['status'] =
-    dbStatus === 'connected' ? 'healthy' : 'degraded';
+  const overallStatus: HealthResponse['status'] = dbStatus === 'connected' ? 'healthy' : 'degraded';
 
   const response: HealthResponse = {
     status: overallStatus,

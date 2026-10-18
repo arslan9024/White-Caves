@@ -2,7 +2,7 @@
  * Authentication Middleware
  * Validates JWT tokens and attaches user info to request
  *
- * FIX 01 (AEGIS): Structured JWT error handling with Lion founder bypass
+ * Authenticated request identity is derived only from a verified JWT.
  */
 
 import { Request, Response, NextFunction } from 'express';
@@ -13,17 +13,9 @@ import { createLogger } from '../utils/logger.js';
 
 const log = createLogger('AuthMiddleware');
 
-// ─── Lion Founder Profile (Level 5 Master) ─────────────────────────────────
-const LION_FOUNDER_PROFILE = {
-  id: 'dev-lion-001',
-  email: 'arslanmalikgoraha@gmail.com',
-  role: 'managing_director',
-  name: 'Arslan Goraha',
-  accessLevel: 5,
-  tier: 'LEVEL_5_MASTER',
-} as const;
-
-const FOUNDER_EMAIL = 'arslanmalikgoraha@gmail.com';
+const FOUNDER_EMAIL = (process.env.CREATOR_SUPERUSER_EMAIL || 'arslanmalikgoraha@gmail.com')
+  .toLowerCase()
+  .trim();
 
 export interface AuthUser {
   id: string;
@@ -39,11 +31,7 @@ export interface AuthRequest extends Request {
   user?: AuthUser;
 }
 
-type JwtPayload = {
-  id: string;
-  email: string;
-  role: string;
-};
+type JwtPayload = Pick<AuthUser, 'id' | 'email' | 'role'>;
 
 const extractBearerToken = (authorizationHeader?: string): string | null => {
   if (!authorizationHeader) return null;
@@ -51,8 +39,45 @@ const extractBearerToken = (authorizationHeader?: string): string | null => {
   return authorizationHeader.slice('Bearer '.length);
 };
 
+export const isLoopbackAddress = (address: string | undefined): boolean => {
+  if (!address) return false;
+
+  const normalizedAddress = address.toLowerCase().replace(/^::ffff:/, '');
+  return (
+    normalizedAddress === '::1' ||
+    normalizedAddress === '0:0:0:0:0:0:0:1' ||
+    /^127(?:\.\d{1,3}){3}$/.test(normalizedAddress)
+  );
+};
+
+export const shouldUseDevAuthBypass = (
+  nodeEnv: string | undefined,
+  bypassFlag: string | undefined,
+  remoteAddress: string | undefined
+): boolean =>
+  nodeEnv === 'development' && bypassFlag === 'true' && isLoopbackAddress(remoteAddress);
+
 const decodeJwt = (token: string): JwtPayload => {
-  return jwt.verify(token, JWT_SECRET) as JwtPayload;
+  const payload = jwt.verify(token, JWT_SECRET, { algorithms: ['HS256'] });
+  if (
+    typeof payload !== 'object' ||
+    payload === null ||
+    payload.requires2FA === true ||
+    typeof payload.id !== 'string' ||
+    payload.id.trim().length === 0 ||
+    typeof payload.email !== 'string' ||
+    payload.email.trim().length === 0 ||
+    typeof payload.role !== 'string' ||
+    payload.role.trim().length === 0
+  ) {
+    throw new AppError('Invalid token', 401);
+  }
+
+  return {
+    id: payload.id,
+    email: payload.email,
+    role: payload.role,
+  };
 };
 
 const mapJwtErrorToAppError = (error: unknown): AppError => {
@@ -83,10 +108,9 @@ export function verifyJwt(token: string): { id: string; email: string; role: str
  * Check if decoded user is the founder and enrich with Level 5 payload.
  */
 function enrichFounderPayload(user: AuthUser): AuthUser {
-  if (user.email?.toLowerCase() === FOUNDER_EMAIL) {
+  if (user.email?.toLowerCase() === FOUNDER_EMAIL && user.role === 'managing_director') {
     return {
       ...user,
-      role: 'managing_director',
       accessLevel: 5,
       tier: 'LEVEL_5_MASTER',
     };
@@ -94,41 +118,28 @@ function enrichFounderPayload(user: AuthUser): AuthUser {
   return user;
 }
 
-const authMiddleware = (
-  req: AuthRequest,
-  _res: Response,
-  next: NextFunction
-) => {
+const authMiddleware = (req: AuthRequest, _res: Response, next: NextFunction) => {
+  const token = extractBearerToken(req.headers.authorization);
+  if (!token) {
+    return next(new AppError('No token provided', 401));
+  }
+
   try {
-    const token = extractBearerToken(req.headers.authorization);
-
-    if (!token) {
-      // No token provided — inject Lion founder dev session
-      log.warn('No Bearer token provided — injecting Lion developer session');
-      req.user = { ...LION_FOUNDER_PROFILE };
-      return next();
+    const authenticatedUser = decodeJwt(token);
+    const requestPath = (req.originalUrl || req.path || '').split('?')[0];
+    const isSocialSignupCompletion =
+      req.method === 'POST' && requestPath.endsWith('/complete-social-registration');
+    if (authenticatedUser.role === 'social_signup_pending' && !isSocialSignupCompletion) {
+      throw new AppError('Social signup session is restricted to registration completion', 403);
     }
 
-    const decoded = decodeJwt(token);
-    req.user = enrichFounderPayload(decoded);
-    next();
-  } catch (error: unknown) {
-    // Structured JWT error classification
-    if (error instanceof jwt.TokenExpiredError) {
-      log.warn(`JWT expired at ${error.expiredAt?.toISOString?.()} — falling back to Lion profile`);
-    } else if (error instanceof jwt.NotBeforeError) {
-      log.warn(`JWT not active until ${error.date?.toISOString?.()} — falling back to Lion profile`);
-    } else if (error instanceof jwt.JsonWebTokenError) {
-      log.warn(`JWT malformed: ${error.message} — falling back to Lion profile`);
-    } else {
-      log.error('Unexpected auth error — falling back to Lion profile', {
-        error: error instanceof Error ? error.message : String(error),
-      });
-    }
-
-    // Always recover with founder profile to keep dev flow unblocked
-    req.user = { ...LION_FOUNDER_PROFILE };
+    req.user = enrichFounderPayload(authenticatedUser);
     return next();
+  } catch (error: unknown) {
+    req.user = undefined;
+    const authError = error instanceof AppError ? error : mapJwtErrorToAppError(error);
+    log.warn('JWT authentication rejected', { statusCode: authError.statusCode });
+    return next(authError);
   }
 };
 

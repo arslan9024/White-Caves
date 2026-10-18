@@ -18,11 +18,11 @@ const ExecutiveHeader = styled.header`
   align-items: flex-start;
   gap: ${spacing[6]};
   padding: ${spacing[6]};
-  background: #FFFFFF;
+  background: #ffffff;
   border: 1px solid rgba(239, 68, 68, 0.2);
   border-radius: ${borderRadius.xl};
   box-shadow: 0 4px 12px rgba(239, 68, 68, 0.05);
-  color: #1E293B;
+  color: #1e293b;
   margin-bottom: ${spacing[6]};
 
   @media (max-width: 768px) {
@@ -36,7 +36,7 @@ const AvatarContainer = styled.div`
   width: 120px;
   height: 120px;
   border-radius: 50%;
-  border: 3px solid #EF4444;
+  border: 3px solid #ef4444;
   overflow: hidden;
   img {
     width: 100%;
@@ -52,19 +52,19 @@ const HeaderContent = styled.div`
     margin: 0;
     font-size: 2rem;
     font-weight: 800;
-    color: #1E293B;
+    color: #1e293b;
   }
 
   p {
     margin: ${spacing[1]} 0 ${spacing[3]};
-    color: #64748B;
+    color: #64748b;
     font-size: 1.1rem;
   }
 `;
 
 const CRMButton = styled.button`
-  background: linear-gradient(135deg, #EF4444 0%, #EF4444 100%);
-  color: #FFFFFF;
+  background: linear-gradient(135deg, #ef4444 0%, #ef4444 100%);
+  color: #ffffff;
   border: none;
   border-radius: ${borderRadius.md};
   padding: 10px 20px;
@@ -72,7 +72,9 @@ const CRMButton = styled.button`
   font-size: 0.9rem;
   cursor: pointer;
   box-shadow: 0 4px 14px rgba(239, 68, 68, 0.35);
-  transition: transform 0.2s, box-shadow 0.2s;
+  transition:
+    transform 0.2s,
+    box-shadow 0.2s;
   display: inline-flex;
   align-items: center;
   gap: 8px;
@@ -138,18 +140,18 @@ const Grid = styled.div`
 `;
 
 const Card = styled.div`
-  background: #F8FAFC;
+  background: #f8fafc;
   border: 1px solid rgba(239, 68, 68, 0.2);
   border-radius: ${borderRadius.lg};
   padding: ${spacing[6]};
   box-shadow: 0 4px 12px rgba(239, 68, 68, 0.05);
-  color: #1E293B;
+  color: #1e293b;
 
   h2 {
     margin-top: 0;
     margin-bottom: ${spacing[4]};
     font-size: 1.25rem;
-    color: #EF4444;
+    color: #ef4444;
   }
 `;
 
@@ -160,7 +162,7 @@ const FormGroup = styled.div`
     display: block;
     margin-bottom: ${spacing[1]};
     font-weight: 700;
-    color: #1E293B;
+    color: #1e293b;
     font-size: 0.875rem;
   }
 
@@ -170,20 +172,20 @@ const FormGroup = styled.div`
     padding: ${spacing[2]} ${spacing[3]};
     border: 1px solid rgba(239, 68, 68, 0.2);
     border-radius: ${borderRadius.md};
-    background: #FFFFFF;
-    color: #1E293B;
+    background: #ffffff;
+    color: #1e293b;
     ${typography.presets.body};
 
     &:focus {
-      outline: 2px solid #EF4444;
+      outline: 2px solid #ef4444;
       border-color: transparent;
     }
   }
 `;
 
 const SaveButton = styled.button`
-  background: #EF4444;
-  color: #FFFFFF;
+  background: #ef4444;
+  color: #ffffff;
   border: none;
   border-radius: ${borderRadius.md};
   padding: ${spacing[2]} ${spacing[4]};
@@ -192,7 +194,7 @@ const SaveButton = styled.button`
   transition: background 0.2s;
 
   &:hover {
-    background: #EF4444;
+    background: #ef4444;
   }
 `;
 
@@ -200,7 +202,7 @@ const TrackerRing = styled.div<{ pct: number }>`
   width: 120px;
   height: 120px;
   border-radius: 50%;
-  background: conic-gradient(#EF4444 ${({ pct }) => pct}%, #E2E8F0 0);
+  background: conic-gradient(#ef4444 ${({ pct }) => pct}%, #e2e8f0 0);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -211,7 +213,7 @@ const TrackerRing = styled.div<{ pct: number }>`
     content: '';
     position: absolute;
     inset: 8px;
-    background: #FFFFFF;
+    background: #ffffff;
     border-radius: 50%;
   }
 
@@ -219,7 +221,7 @@ const TrackerRing = styled.div<{ pct: number }>`
     position: relative;
     font-size: 1.5rem;
     font-weight: 700;
-    color: #EF4444;
+    color: #ef4444;
   }
 `;
 
@@ -244,12 +246,12 @@ const SessionItem = styled.li`
   }
 
   strong {
-    color: #1E293B;
+    color: #1e293b;
   }
 
   span {
     font-size: 0.875rem;
-    color: #64748B;
+    color: #64748b;
   }
 `;
 
@@ -268,14 +270,15 @@ export const ProfilePage: FC = () => {
     isSaving,
   } = useUserProfile();
 
-  const isFounder = user?.email === 'arslanmalikgoraha@gmail.com';
+  const isFounder = user?.role?.toLowerCase() === 'managing_director' && user.accessLevel === 5;
 
   return (
     <PublicLayout>
       <ProfileWrapper>
         <ExecutiveHeader>
           <AvatarContainer>
-            <img alt="Profile"
+            <img
+              alt="Profile"
               src={
                 user?.photoURL ||
                 'https://ui-avatars.com/api/?name=' +
@@ -300,70 +303,72 @@ export const ProfilePage: FC = () => {
           </HeaderContent>
         </ExecutiveHeader>
 
-      <Grid>
-        <div>
-          <Card style={{ marginBottom: spacing[6] }}>
-            <h2>Client-Side Profile Configuration</h2>
-            <FormGroup>
-              <label>Full Name</label>
-              <input value={profileName} onChange={e => setProfileName(e.target.value)} />
-            </FormGroup>
-            <FormGroup>
-              <label>Direct Contact Line</label>
-              <input value={profilePhone} onChange={e => setProfilePhone(e.target.value)} />
-            </FormGroup>
-            <FormGroup>
-              <label>Language Preference</label>
-              <select value={profileLanguage} onChange={e => setProfileLanguage(e.target.value)}>
-                <option value="en">English (US)</option>
-                <option value="ar">Arabic (AE)</option>
-              </select>
-            </FormGroup>
-            <SaveButton onClick={handleSaveProfile} disabled={isSaving}>
-              {isSaving ? 'Synchronizing...' : 'Save Configuration'}
-            </SaveButton>
-          </Card>
+        <Grid>
+          <div>
+            <Card style={{ marginBottom: spacing[6] }}>
+              <h2>Client-Side Profile Configuration</h2>
+              <FormGroup>
+                <label>Full Name</label>
+                <input value={profileName} onChange={e => setProfileName(e.target.value)} />
+              </FormGroup>
+              <FormGroup>
+                <label>Direct Contact Line</label>
+                <input value={profilePhone} onChange={e => setProfilePhone(e.target.value)} />
+              </FormGroup>
+              <FormGroup>
+                <label>Language Preference</label>
+                <select value={profileLanguage} onChange={e => setProfileLanguage(e.target.value)}>
+                  <option value="en">English (US)</option>
+                  <option value="ar">Arabic (AE)</option>
+                </select>
+              </FormGroup>
+              <SaveButton onClick={handleSaveProfile} disabled={isSaving}>
+                {isSaving ? 'Synchronizing...' : 'Save Configuration'}
+              </SaveButton>
+            </Card>
 
-          <Card>
-            <h2>Active Session Logging</h2>
-            <SessionList>
-              <SessionItem>
-                <div>
-                  <strong>Current Session (Desktop)</strong>
-                  <span style={{ color: 'var(--accent-red, #EF4444)', fontWeight: 'bold' }}>Active Now</span>
-                </div>
-                <span>IP: 192.168.1.1 · Dubai, UAE</span>
-              </SessionItem>
-              <SessionItem>
-                <div>
-                  <strong>Mobile Auth (iOS Safari)</strong>
-                  <span>2 hours ago</span>
-                </div>
-                <span>IP: 10.0.0.5 · Abu Dhabi, UAE</span>
-              </SessionItem>
-            </SessionList>
-          </Card>
-        </div>
+            <Card>
+              <h2>Active Session Logging</h2>
+              <SessionList>
+                <SessionItem>
+                  <div>
+                    <strong>Current Session (Desktop)</strong>
+                    <span style={{ color: 'var(--accent-red, #EF4444)', fontWeight: 'bold' }}>
+                      Active Now
+                    </span>
+                  </div>
+                  <span>IP: 192.168.1.1 · Dubai, UAE</span>
+                </SessionItem>
+                <SessionItem>
+                  <div>
+                    <strong>Mobile Auth (iOS Safari)</strong>
+                    <span>2 hours ago</span>
+                  </div>
+                  <span>IP: 10.0.0.5 · Abu Dhabi, UAE</span>
+                </SessionItem>
+              </SessionList>
+            </Card>
+          </div>
 
-        <div>
-          <Card style={{ marginBottom: spacing[6], textAlign: 'center' }}>
-            <h2>Corporate Completion Metrics</h2>
-            <TrackerRing pct={100}>
-              <span>100%</span>
-            </TrackerRing>
-            <p style={{ color: 'var(--text-secondary, #64748B)', fontSize: '0.875rem' }}>
-              Your executive profile and corporate KYC documentation are 100% verified.
-            </p>
-          </Card>
+          <div>
+            <Card style={{ marginBottom: spacing[6], textAlign: 'center' }}>
+              <h2>Corporate Completion Metrics</h2>
+              <TrackerRing pct={100}>
+                <span>100%</span>
+              </TrackerRing>
+              <p style={{ color: 'var(--text-secondary, #64748B)', fontSize: '0.875rem' }}>
+                Your executive profile and corporate KYC documentation are 100% verified.
+              </p>
+            </Card>
 
-          <Card>
-            <h2>Biometric Security</h2>
-            <BiometricSetup />
-          </Card>
-        </div>
-      </Grid>
-    </ProfileWrapper>
-  </PublicLayout>
+            <Card>
+              <h2>Biometric Security</h2>
+              <BiometricSetup />
+            </Card>
+          </div>
+        </Grid>
+      </ProfileWrapper>
+    </PublicLayout>
   );
 };
 

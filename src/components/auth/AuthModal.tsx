@@ -1,4 +1,4 @@
-import React, { FC, ChangeEvent, useCallback, useEffect, useRef } from 'react';
+import React, { FC, useCallback, useEffect, useRef, useState } from 'react';
 import { useLocation, useNavigate, Link } from 'react-router-dom';
 import { useSignIn, USER_CATEGORIES } from '../../hooks/useSignIn';
 import { BiometricLoginButton } from '../../features/auth/components/BiometricLogin';
@@ -47,23 +47,31 @@ const getAuthLocale = (): keyof typeof AUTH_COPY => {
 interface AuthModalProps {
   mode?: 'signin' | 'signup';
   onClose: () => void;
+  presentation?: 'modal' | 'page';
 }
 
-const AuthModal: FC<AuthModalProps> = ({ mode: initialMode = 'signin', onClose }) => {
+const AuthModal: FC<AuthModalProps> = ({
+  mode: initialMode = 'signin',
+  onClose,
+  presentation = 'modal',
+}) => {
   const navigate = useNavigate();
   const location = useLocation();
   const modalRef = useRef<HTMLDivElement | null>(null);
   const closeButtonRef = useRef<HTMLButtonElement | null>(null);
   const emailInputRef = useRef<HTMLInputElement | null>(null);
+  const [showPassword, setShowPassword] = useState(false);
   const locale = getAuthLocale();
   const copy = AUTH_COPY[locale];
+  const isPage = presentation === 'page';
 
   useEffect(() => {
-    // Basic accessibility trap
-    if (closeButtonRef.current) {
+    if (!isPage && closeButtonRef.current) {
       closeButtonRef.current.focus();
+    } else {
+      emailInputRef.current?.focus();
     }
-  }, []);
+  }, [isPage]);
 
   const {
     mode,
@@ -86,7 +94,6 @@ const AuthModal: FC<AuthModalProps> = ({ mode: initialMode = 'signin', onClose }
     confirmNewPassword,
     setConfirmNewPassword,
     socialSyncRecovery,
-    socialRetryAttempts,
     remainingSocialRetries,
     isGoogleAuthAvailable,
     googleAuthUnavailableMessage,
@@ -104,8 +111,6 @@ const AuthModal: FC<AuthModalProps> = ({ mode: initialMode = 'signin', onClose }
     setSelectedCategory,
     selectedRole,
     setSelectedRole,
-    employeeId,
-    setEmployeeId,
     phone,
     setPhone,
     otp,
@@ -115,12 +120,15 @@ const AuthModal: FC<AuthModalProps> = ({ mode: initialMode = 'signin', onClose }
     twoFactorCode,
     setTwoFactorCode,
     handleTwoFactorSubmit,
-    handleSignInSuccess,
     handleSocialAuth,
     retrySocialAuth,
     clearSocialRecovery,
     handleEmailSubmit,
     handleForgotPassword,
+    handleVerifyResetToken,
+    handleCompletePasswordReset,
+    handlePhoneSubmit,
+    handleOtpVerify,
     proceedToRoleSelection,
     getRolesForCategory,
     completeSignUp,
@@ -131,16 +139,26 @@ const AuthModal: FC<AuthModalProps> = ({ mode: initialMode = 'signin', onClose }
   }, [onClose]);
 
   useEffect(() => {
-    if (initialMode === 'signup' && mode === 'signin') {
-       switchMode();
-    } else if (initialMode === 'signin' && mode === 'signup') {
-       switchMode();
-    }
-  }, [initialMode, mode, switchMode]);
+    if (!isPage && initialMode !== mode) switchMode();
+  }, [initialMode, isPage, mode, switchMode]);
 
-  const retryLimitReached = socialRetryAttempts >= 3;
+  const handleModeSwitch = useCallback(() => {
+    if (isPage) {
+      navigate(mode === 'signup' ? '/signin' : '/signup');
+      return;
+    }
+    switchMode();
+  }, [isPage, mode, navigate, switchMode]);
+
+  const retryLimitReached = remainingSocialRetries <= 0;
+  const isPasswordResetRoute =
+    location.pathname === '/forgot-password' ||
+    location.pathname === '/reset-password' ||
+    resetStage !== 'request';
 
   useEffect(() => {
+    if (isPage) return undefined;
+
     closeButtonRef.current?.focus();
 
     const handleKeyDown = (event: KeyboardEvent): void => {
@@ -184,35 +202,35 @@ const AuthModal: FC<AuthModalProps> = ({ mode: initialMode = 'signin', onClose }
     return () => {
       document.removeEventListener('keydown', handleKeyDown);
     };
-  }, [handleClose]);
+  }, [handleClose, isPage]);
 
   return (
     <div
-      className="auth-modal-overlay"
-      role="presentation"
-      onClick={handleClose}
+      className={isPage ? 'auth-page-shell' : 'auth-modal-overlay'}
+      role={isPage ? undefined : 'presentation'}
+      onClick={isPage ? undefined : handleClose}
     >
       <div
-        className="auth-modal-window"
-        role="dialog"
-        aria-modal="true"
-        aria-label={mode === 'signup' ? 'Sign up window' : 'Sign in window'}
+        className={isPage ? 'auth-modal-window auth-page-card' : 'auth-modal-window'}
+        role={isPage ? undefined : 'dialog'}
+        aria-modal={isPage ? undefined : true}
+        aria-label={isPage ? undefined : mode === 'signup' ? 'Sign up window' : 'Sign in window'}
         ref={modalRef}
         onClick={event => {
           event.stopPropagation();
         }}
       >
-        <button
-          type="button"
-          className="auth-close-btn"
-          onClick={() => {
-            onClose();
-          }}
-          aria-label="Close authentication popup"
-          ref={closeButtonRef}
-        >
-          ×
-        </button>
+        {!isPage && (
+          <button
+            type="button"
+            className="auth-close-btn"
+            onClick={handleClose}
+            aria-label="Close authentication popup"
+            ref={closeButtonRef}
+          >
+            ×
+          </button>
+        )}
 
         <Link to="/" className="auth-logo">
           <img src="/company-logo.jpg" alt="White Caves" />
@@ -222,51 +240,40 @@ const AuthModal: FC<AuthModalProps> = ({ mode: initialMode = 'signin', onClose }
         {step === 1 && (
           <>
             <div className="auth-intro">
-              <h1>{mode === 'signup' ? copy.signUpTitle : copy.signInTitle}</h1>
+              <h1 id="auth-heading">
+                {isPasswordResetRoute
+                  ? 'Reset your password'
+                  : mode === 'signup'
+                    ? copy.signUpTitle
+                    : copy.signInTitle}
+              </h1>
               <p className="auth-subtitle">
-                {mode === 'signup' ? copy.signUpSubtitle : copy.signInSubtitle}
+                {isPasswordResetRoute
+                  ? 'Recover access securely using your email address.'
+                  : mode === 'signup'
+                    ? copy.signUpSubtitle
+                    : copy.signInSubtitle}
               </p>
             </div>
 
-            {error && (
-              <div
-                style={{
-                  background: 'rgba(239,68,68,0.1)',
-                  color: '#ef4444',
-                  padding: '12px',
-                  borderRadius: '12px',
-                  fontSize: '13px',
-                  marginBottom: '24px',
-                  border: '1px solid rgba(239,68,68,0.2)',
-                }}
-              >
-                {error}
-              </div>
-            )}
-
             {socialSyncRecovery && (
-              <div
-                style={{
-                  background: 'rgba(245,158,11,0.1)',
-                  color: '#f59e0b',
-                  padding: '16px',
-                  borderRadius: '12px',
-                  fontSize: '13px',
-                  marginBottom: '24px',
-                  border: '1px solid rgba(245,158,11,0.2)',
-                }}
-              >
-                <p style={{ fontWeight: 'bold', margin: '0 0 4px 0' }}>
-                  {socialSyncRecovery.provider.toUpperCase()} Sign-in interrupted
+              <div className="auth-recovery" role="status" aria-live="polite">
+                <p className="auth-recovery-title">
+                  {socialSyncRecovery.provider.toUpperCase()} sign-in needs another try
                 </p>
-                <p style={{ margin: '0 0 12px 0' }}>{socialSyncRecovery.reason}</p>
+                <p className="auth-recovery-message">
+                  We couldn’t complete your secure session. Retry or use email sign-in.
+                </p>
+                <p className="auth-recovery-attempts" aria-live="polite">
+                  {remainingSocialRetries} retry attempts remaining
+                </p>
                 <button
                   className="btn btn-secondary btn-full"
                   disabled={loading || retryLimitReached}
+                  aria-label={`Retry ${socialSyncRecovery.provider} sign-in`}
                   onClick={() => {
                     void retrySocialAuth();
                   }}
-                  style={{ background: 'var(--amber-500-10)', color: 'var(--amber-400)', border: 'none' }}
                 >
                   {loading ? 'Retrying...' : 'Retry Sign-in'}
                 </button>
@@ -285,109 +292,390 @@ const AuthModal: FC<AuthModalProps> = ({ mode: initialMode = 'signin', onClose }
               </div>
             )}
 
-            <SocialAuthButtons
-              loading={loading}
-              onSocialAuth={handleSocialAuth}
-              label={copy.socialLabel}
-              googleText={copy.google}
-              facebookText={copy.facebook}
-              appleText={copy.apple}
-              googleDisabled={!isGoogleAuthAvailable}
-            />
+            {!isPasswordResetRoute && (
+              <>
+                <SocialAuthButtons
+                  loading={loading}
+                  onSocialAuth={handleSocialAuth}
+                  label={copy.socialLabel}
+                  googleText={copy.google}
+                  facebookText={copy.facebook}
+                  appleText={copy.apple}
+                  googleDisabled={!isGoogleAuthAvailable}
+                  providersDisabled={!isGoogleAuthAvailable}
+                  helperText={!isGoogleAuthAvailable ? googleAuthUnavailableMessage : undefined}
+                />
 
-            <div className="auth-divider">
-              <span>{copy.email}</span>
-            </div>
+                <div className="auth-divider">
+                  <span>{copy.email}</span>
+                </div>
 
-            <AuthMethodTabs
-              activeTab={activeTab}
-              onChange={setActiveTab}
-              emailLabel={copy.email}
-              phoneLabel={copy.phone}
-            />
+                <AuthMethodTabs
+                  activeTab={activeTab}
+                  onChange={tab => {
+                    setActiveTab(tab);
+                    setError('');
+                  }}
+                  emailLabel={copy.email}
+                  phoneLabel={copy.phone}
+                />
+              </>
+            )}
 
-            <div className="auth-content" style={{ marginTop: '20px' }}>
-              {activeTab === 'email' && (
-                <form onSubmit={handleEmailSubmit} className="auth-form">
-                  {mode === 'signup' && (
-                    <div className="form-group">
-                      <label htmlFor="signin-fullname">Full Name</label>
-                      <input
-                        id="signin-fullname"
-                        type="text"
-                        value={fullName}
-                        onChange={e => setFullName(e.target.value)}
-                        placeholder="John Doe"
-                        required
-                        autoComplete="name"
-                      />
-                    </div>
+            <div
+              className="auth-content"
+              id={activeTab === 'email' ? 'auth-method-email-panel' : 'auth-method-phone-panel'}
+              role={isPasswordResetRoute ? undefined : 'tabpanel'}
+              aria-labelledby={
+                isPasswordResetRoute
+                  ? undefined
+                  : activeTab === 'email'
+                    ? 'auth-method-email-tab'
+                    : 'auth-method-phone-tab'
+              }
+            >
+              {isPasswordResetRoute ? (
+                <section className="auth-reset-panel" aria-labelledby="reset-heading">
+                  <h2 id="reset-heading">
+                    {resetStage === 'request' ? 'Reset your password' : 'Password recovery'}
+                  </h2>
+                  <p className="auth-reset-copy">
+                    {resetStage === 'request'
+                      ? 'Enter the email address linked to your account. If it exists, we’ll send reset instructions.'
+                      : resetStage === 'verify'
+                        ? 'Enter the secure code sent to your inbox.'
+                        : resetStage === 'reset'
+                          ? 'Choose a new password for your account.'
+                          : resetStage === 'success'
+                            ? 'Your password has been updated. You can now sign in.'
+                            : 'Password recovery is temporarily unavailable. Please try again later.'}
+                  </p>
+
+                  {resetStage === 'request' && (
+                    <form
+                      className="auth-form"
+                      onSubmit={event => {
+                        event.preventDefault();
+                        void handleForgotPassword();
+                      }}
+                    >
+                      <div className="form-group">
+                        <label htmlFor="reset-email">Email address</label>
+                        <input
+                          ref={emailInputRef}
+                          id="reset-email"
+                          type="email"
+                          value={email}
+                          onChange={event => setEmail(event.target.value)}
+                          placeholder="you@example.com"
+                          autoComplete="email"
+                          required
+                        />
+                      </div>
+                      <button
+                        className="btn btn-primary btn-full"
+                        disabled={loading || forgotPasswordLoading}
+                      >
+                        {forgotPasswordLoading
+                          ? 'Sending instructions…'
+                          : 'Send reset instructions'}
+                      </button>
+                    </form>
                   )}
-                  <div className="form-group">
-                    <label htmlFor="signin-email">Email Address</label>
-                    <input
-                      ref={emailInputRef}
-                      id="signin-email"
-                      type="email"
-                      value={email}
-                      onChange={e => setEmail(e.target.value)}
-                      placeholder="you@example.com"
-                      required
-                      autoComplete="username"
-                    />
-                  </div>
-                  <div className="form-group">
-                    <label htmlFor="signin-password">Password</label>
-                    <input
-                      id="signin-password"
-                      type="password"
-                      value={password}
-                      onChange={e => setPassword(e.target.value)}
-                      placeholder="••••••••"
-                      required
-                      autoComplete={mode === 'signup' ? 'new-password' : 'current-password'}
-                    />
-                  </div>
-                  {mode === 'signup' && (
-                    <div className="form-group">
-                      <label htmlFor="signin-confirm-password">Confirm Password</label>
-                      <input
-                        id="signin-confirm-password"
-                        type="password"
-                        value={confirmPassword}
-                        onChange={e => setConfirmPassword(e.target.value)}
-                        placeholder="••••••••"
-                        required
-                        autoComplete="new-password"
-                      />
-                    </div>
+
+                  {resetStage === 'verify' && (
+                    <form
+                      className="auth-form"
+                      onSubmit={event => {
+                        event.preventDefault();
+                        void handleVerifyResetToken();
+                      }}
+                    >
+                      <div className="form-group">
+                        <label htmlFor="reset-code">Email verification code</label>
+                        <input
+                          id="reset-code"
+                          type="text"
+                          value={resetToken}
+                          onChange={event => setResetToken(event.target.value)}
+                          placeholder="Enter the code from your email"
+                          autoComplete="one-time-code"
+                          inputMode="numeric"
+                          required
+                        />
+                      </div>
+                      <button
+                        className="btn btn-primary btn-full"
+                        disabled={loading || verifyResetLoading}
+                      >
+                        {verifyResetLoading ? 'Verifying…' : 'Verify code'}
+                      </button>
+                    </form>
                   )}
-                  <button type="submit" className="btn btn-primary btn-full" disabled={loading}>
-                    {loading ? 'Please wait...' : mode === 'signup' ? 'Create Account' : 'Sign In'}
-                  </button>
-                  {mode === 'signin' && (
+
+                  {resetStage === 'reset' && (
+                    <form
+                      className="auth-form"
+                      onSubmit={event => {
+                        event.preventDefault();
+                        void handleCompletePasswordReset();
+                      }}
+                    >
+                      <div className="form-group">
+                        <label htmlFor="new-password">New password</label>
+                        <input
+                          id="new-password"
+                          type={showPassword ? 'text' : 'password'}
+                          value={newPassword}
+                          onChange={event => setNewPassword(event.target.value)}
+                          placeholder="Create a new password"
+                          autoComplete="new-password"
+                          required
+                        />
+                      </div>
+                      <div className="form-group">
+                        <label htmlFor="confirm-new-password">Confirm new password</label>
+                        <input
+                          id="confirm-new-password"
+                          type={showPassword ? 'text' : 'password'}
+                          value={confirmNewPassword}
+                          onChange={event => setConfirmNewPassword(event.target.value)}
+                          placeholder="Confirm your new password"
+                          autoComplete="new-password"
+                          required
+                        />
+                      </div>
+                      <button
+                        type="button"
+                        className="auth-forgot-link"
+                        onClick={() => setShowPassword(value => !value)}
+                      >
+                        {showPassword ? 'Hide passwords' : 'Show passwords'}
+                      </button>
+                      <button
+                        className="btn btn-primary btn-full"
+                        disabled={loading || completeResetLoading}
+                      >
+                        {completeResetLoading ? 'Updating password…' : 'Update password'}
+                      </button>
+                    </form>
+                  )}
+
+                  {(resetStage === 'success' || resetStage === 'locked') && (
+                    <button
+                      type="button"
+                      className="btn btn-primary btn-full"
+                      onClick={() => {
+                        setError('');
+                        setResetStage('request');
+                        if (isPage) navigate('/signin');
+                      }}
+                    >
+                      {resetStage === 'success' ? 'Return to sign in' : 'Back to sign in'}
+                    </button>
+                  )}
+
+                  {success && (
+                    <p className="auth-success" role="status">
+                      {success}
+                    </p>
+                  )}
+                  {error && (
+                    <p className="auth-error" role="alert">
+                      {error}
+                    </p>
+                  )}
+                  {resetStage !== 'success' && resetStage !== 'locked' && (
                     <button
                       type="button"
                       className="auth-forgot-link"
                       onClick={() => {
-                        void handleForgotPassword();
+                        setError('');
+                        setResetStage('request');
+                        if (isPage) navigate('/signin');
                       }}
-                      disabled={forgotPasswordLoading || loading}
-                      style={{ textAlign: 'center', marginTop: '12px' }}
                     >
-                      {forgotPasswordLoading ? 'Sending...' : 'Forgot password?'}
+                      Back to sign in
                     </button>
                   )}
-                </form>
+                </section>
+              ) : (
+                <>
+                  {activeTab === 'email' && (
+                    <form onSubmit={handleEmailSubmit} className="auth-form">
+                      {mode === 'signup' && (
+                        <div className="form-group">
+                          <label htmlFor="signin-fullname">Full name</label>
+                          <input
+                            id="signin-fullname"
+                            type="text"
+                            value={fullName}
+                            onChange={event => setFullName(event.target.value)}
+                            placeholder="Full name"
+                            autoComplete="name"
+                            required
+                          />
+                        </div>
+                      )}
+                      <div className="form-group">
+                        <label htmlFor="signin-email">Email address</label>
+                        <input
+                          ref={emailInputRef}
+                          id="signin-email"
+                          type="email"
+                          value={email}
+                          onChange={event => setEmail(event.target.value)}
+                          placeholder="you@example.com"
+                          autoComplete="username"
+                          required
+                        />
+                      </div>
+                      <div className="form-group">
+                        <label htmlFor="signin-password">Password</label>
+                        <input
+                          id="signin-password"
+                          type={showPassword ? 'text' : 'password'}
+                          value={password}
+                          onChange={event => setPassword(event.target.value)}
+                          placeholder="Enter your password"
+                          autoComplete={mode === 'signup' ? 'new-password' : 'current-password'}
+                          required
+                        />
+                      </div>
+                      {mode === 'signup' && (
+                        <div className="form-group">
+                          <label htmlFor="signin-confirm-password">Confirm password</label>
+                          <input
+                            id="signin-confirm-password"
+                            type={showPassword ? 'text' : 'password'}
+                            value={confirmPassword}
+                            onChange={event => setConfirmPassword(event.target.value)}
+                            placeholder="Confirm your password"
+                            autoComplete="new-password"
+                            required
+                          />
+                        </div>
+                      )}
+                      <button
+                        type="button"
+                        className="auth-forgot-link"
+                        onClick={() => setShowPassword(value => !value)}
+                        aria-pressed={showPassword}
+                      >
+                        {showPassword ? 'Hide password' : 'Show password'}
+                      </button>
+                      <button type="submit" className="btn btn-primary btn-full" disabled={loading}>
+                        {loading
+                          ? 'Please wait…'
+                          : mode === 'signup'
+                            ? 'Create account'
+                            : 'Sign in'}
+                      </button>
+                      {mode === 'signin' && (
+                        <button
+                          type="button"
+                          className="auth-forgot-link"
+                          onClick={() => {
+                            if (isPage) navigate('/forgot-password');
+                            else void handleForgotPassword();
+                          }}
+                          disabled={forgotPasswordLoading || loading}
+                        >
+                          Forgot password?
+                        </button>
+                      )}
+                    </form>
+                  )}
+
+                  {activeTab === 'phone' && (
+                    <>
+                      <div id="recaptcha-container" />
+                      {showOtpInput ? (
+                        <form onSubmit={handleOtpVerify} className="auth-form">
+                          <div className="form-group">
+                            <label htmlFor="phone-otp">Verification code</label>
+                            <input
+                              id="phone-otp"
+                              type="text"
+                              value={otp}
+                              onChange={event => setOtp(event.target.value)}
+                              autoComplete="one-time-code"
+                              inputMode="numeric"
+                              required
+                            />
+                          </div>
+                          <button
+                            type="submit"
+                            className="btn btn-primary btn-full"
+                            disabled={loading}
+                          >
+                            {loading ? 'Verifying…' : 'Verify phone'}
+                          </button>
+                          <button type="button" className="auth-forgot-link" onClick={resetOtp}>
+                            Use a different phone number
+                          </button>
+                        </form>
+                      ) : (
+                        <form onSubmit={handlePhoneSubmit} className="auth-form">
+                          <div className="form-group">
+                            <label htmlFor="signin-phone">Phone number</label>
+                            <input
+                              id="signin-phone"
+                              type="tel"
+                              value={phone}
+                              onChange={event => setPhone(event.target.value)}
+                              placeholder="+971 50 123 4567"
+                              autoComplete="tel"
+                              required
+                              disabled={!isGoogleAuthAvailable}
+                            />
+                          </div>
+                          {!isGoogleAuthAvailable && (
+                            <p className="auth-helper" role="status">
+                              Phone sign-in is unavailable until Firebase is configured.
+                            </p>
+                          )}
+                          <button
+                            type="submit"
+                            className="btn btn-primary btn-full"
+                            disabled={loading || !isGoogleAuthAvailable}
+                          >
+                            {loading ? 'Sending code…' : 'Send verification code'}
+                          </button>
+                        </form>
+                      )}
+                    </>
+                  )}
+
+                  <BiometricLoginButton
+                    disabled={loading}
+                    onError={biometricError =>
+                      setError(
+                        biometricError instanceof Error
+                          ? biometricError.message
+                          : 'Passkey sign-in failed.'
+                      )
+                    }
+                  />
+                  {success && (
+                    <p className="auth-success" role="status">
+                      {success}
+                    </p>
+                  )}
+                  {error && (
+                    <p className="auth-error" role="alert">
+                      {error}
+                    </p>
+                  )}
+                  <AuthModeSwitch
+                    mode={mode}
+                    onSwitch={handleModeSwitch}
+                    signInPromptText={copy.signInPromptText}
+                    signUpPromptText={copy.signUpPromptText}
+                  />
+                </>
               )}
             </div>
-
-            <AuthModeSwitch
-              mode={mode}
-              onSwitch={switchMode}
-              signInPromptText={copy.signInPromptText}
-              signUpPromptText={copy.signUpPromptText}
-            />
           </>
         )}
 
@@ -398,38 +686,20 @@ const AuthModal: FC<AuthModalProps> = ({ mode: initialMode = 'signin', onClose }
               <p className="auth-subtitle">Select your account type</p>
             </div>
 
-            <div
-              className="category-selection"
-              style={{
-                display: 'grid',
-                gridTemplateColumns: '1fr 1fr',
-                gap: '12px',
-                marginBottom: '24px',
-              }}
-            >
+            <div className="auth-category-grid">
               {USER_CATEGORIES.map(cat => (
                 <button
                   key={cat.id}
                   className={`category-card category-card--${cat.id} ${selectedCategory === cat.id ? 'selected' : ''}`}
                   onClick={() => setSelectedCategory(cat.id)}
                   type="button"
-                  style={{
-                    background:
-                      selectedCategory === cat.id ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.2)',
-                    border: `1px solid ${selectedCategory === cat.id ? '#3b82f6' : 'rgba(255,255,255,0.1)'}`,
-                    borderRadius: '12px',
-                    padding: '16px',
-                    color: '#fff',
-                    textAlign: 'left',
-                    cursor: 'pointer',
-                    transition: 'all 0.2s',
-                  }}
+                  aria-pressed={selectedCategory === cat.id}
                 >
-                  <span style={{ fontSize: '24px', display: 'block', marginBottom: '8px' }}>
+                  <span className="auth-category-icon" aria-hidden="true">
                     {cat.icon}
                   </span>
-                  <strong style={{ display: 'block', fontSize: '15px' }}>{cat.label}</strong>
-                  <span style={{ fontSize: '12px', color: 'var(--text-muted)' }}>{cat.desc}</span>
+                  <strong>{cat.label}</strong>
+                  <span className="auth-category-description">{cat.desc}</span>
                 </button>
               ))}
             </div>
@@ -458,43 +728,26 @@ const AuthModal: FC<AuthModalProps> = ({ mode: initialMode = 'signin', onClose }
               <p className="auth-subtitle">Choose your exact position</p>
             </div>
 
-            <div
-              style={{
-                display: 'grid',
-                gridTemplateColumns: '1fr',
-                gap: '8px',
-                marginBottom: '24px',
-                maxHeight: '40vh',
-                overflowY: 'auto',
-                paddingRight: '8px',
-              }}
-            >
-              {getRolesForCategory().map((role: { id: string; label: string; desc: string; icon: string }) => (
-                <button
-                  key={role.id}
-                  onClick={() => setSelectedRole(role.id)}
-                  style={{
-                    background:
-                      selectedRole === role.id ? 'rgba(59,130,246,0.1)' : 'rgba(0,0,0,0.2)',
-                    border: `1px solid ${selectedRole === role.id ? '#3b82f6' : 'rgba(255,255,255,0.1)'}`,
-                    borderRadius: '12px',
-                    padding: '12px 16px',
-                    color: '#fff',
-                    textAlign: 'left',
-                    cursor: 'pointer',
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: '12px',
-                    transition: 'all 0.2s',
-                  }}
-                >
-                  <span style={{ fontSize: '20px' }}>{role.icon}</span>
-                  <div>
-                    <strong style={{ display: 'block', fontSize: '14px' }}>{role.label}</strong>
-                    <span style={{ fontSize: '12px', color: 'var(--text-muted)' }}>{role.desc}</span>
-                  </div>
-                </button>
-              ))}
+            <div className="auth-role-grid" role="group" aria-label="Available account roles">
+              {getRolesForCategory().map(
+                (role: { id: string; label: string; desc: string; icon: string }) => (
+                  <button
+                    key={role.id}
+                    onClick={() => setSelectedRole(role.id)}
+                    type="button"
+                    className={`auth-role-option ${selectedRole === role.id ? 'selected' : ''}`}
+                    aria-pressed={selectedRole === role.id}
+                  >
+                    <span className="auth-role-icon" aria-hidden="true">
+                      {role.icon}
+                    </span>
+                    <div>
+                      <strong>{role.label}</strong>
+                      <span>{role.desc}</span>
+                    </div>
+                  </button>
+                )
+              )}
             </div>
 
             <button
@@ -522,19 +775,9 @@ const AuthModal: FC<AuthModalProps> = ({ mode: initialMode = 'signin', onClose }
             </div>
 
             {error && (
-              <div
-                style={{
-                  background: 'rgba(239,68,68,0.1)',
-                  color: '#ef4444',
-                  padding: '12px',
-                  borderRadius: '12px',
-                  fontSize: '13px',
-                  marginBottom: '24px',
-                  border: '1px solid rgba(239,68,68,0.2)',
-                }}
-              >
+              <p className="auth-error" role="alert">
                 {error}
-              </div>
+              </p>
             )}
 
             <form onSubmit={handleTwoFactorSubmit} className="auth-form">
@@ -572,20 +815,28 @@ const AuthModal: FC<AuthModalProps> = ({ mode: initialMode = 'signin', onClose }
           </>
         )}
 
-        <p
-          className="auth-footer"
-          style={{ textAlign: 'center', fontSize: '12px', color: 'var(--text-secondary)', marginTop: '32px' }}
-        >
-          By continuing, you agree to our{' '}
-          <a href="/terms" style={{ color: 'var(--text-muted)' }}>
-            Terms of Service
-          </a>{' '}
-          and{' '}
-          <a href="/privacy" style={{ color: 'var(--text-muted, #94a3b8)' }}>
-            Privacy Policy
-          </a>
+        <p className="auth-footer">
+          By continuing, you agree to our <a href="/terms">Terms of Service</a> and{' '}
+          <a href="/privacy-policy">Privacy Policy</a>
         </p>
       </div>
+      {isPage && (
+        <aside className="auth-page-visual" aria-label="White Caves Dubai real estate">
+          <div className="auth-page-visual-content">
+            <span className="auth-page-eyebrow">WHITE CAVES · DUBAI</span>
+            <h2>Your property journey, thoughtfully managed.</h2>
+            <p>
+              Sign in to continue with your properties, conversations, and personalized workspace.
+            </p>
+            <ul>
+              <li>Secure access to your account</li>
+              <li>Role-aware tools for clients and teams</li>
+              <li>Support when you need it</li>
+            </ul>
+          </div>
+          <span className="auth-page-visual-caption">White Caves Real Estate LLC</span>
+        </aside>
+      )}
     </div>
   );
 };

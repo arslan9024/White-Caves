@@ -19,7 +19,7 @@ if (!isTestRuntime && runtimeEnv === 'production') {
 
 // ─── Server ──────────────────────────────────────────────────────────────
 export const PORT = parseInt(process.env.PORT || '5001', 10);
-export const NODE_ENV = process.env.NODE_ENV || 'development';
+export const NODE_ENV = String(process.env.NODE_ENV || 'development');
 export const IS_PRODUCTION = NODE_ENV === 'production';
 
 // ─── Auth ────────────────────────────────────────────────────────────────

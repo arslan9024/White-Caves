@@ -25,22 +25,28 @@ vi.mock('../config/env', () => ({
   PORT: 3001,
 }));
 
-import authMiddleware from './auth.js';
+import authMiddleware, { isLoopbackAddress, shouldUseDevAuthBypass } from './auth.js';
 import type { AuthRequest } from './auth.js';
 import type { Response, NextFunction } from 'express';
 
 // ─── Helpers ────────────────────────────────────────────────────────────
 const TEST_SECRET = 'test-secret-key-for-auth-tests';
 
-function createToken(payload: Record<string, unknown>, secret = TEST_SECRET, expiresIn = '1h'): string {
+function createToken(
+  payload: Record<string, unknown>,
+  secret = TEST_SECRET,
+  expiresIn = '1h'
+): string {
   return jwt.sign(payload, secret, { expiresIn });
 }
 
-function mockReq(token?: string): AuthRequest {
+function mockReq(token?: string, originalUrl = '/api/auth/profile', method = 'GET'): AuthRequest {
   return {
     headers: {
       authorization: token ? `Bearer ${token}` : undefined,
     },
+    originalUrl,
+    method,
   } as unknown as AuthRequest;
 }
 
@@ -146,11 +152,9 @@ describe('authMiddleware', () => {
     });
 
     it('calls next with 401 for token signed with wrong secret', () => {
-      const token = jwt.sign(
-        { id: 'u1', email: 'e@t.com', role: 'admin' },
-        'wrong-secret-key',
-        { expiresIn: '1h' }
-      );
+      const token = jwt.sign({ id: 'u1', email: 'e@t.com', role: 'admin' }, 'wrong-secret-key', {
+        expiresIn: '1h',
+      });
       const req = mockReq(token);
       authMiddleware(req, mockRes(), next);
 
@@ -164,7 +168,9 @@ describe('authMiddleware', () => {
       const validToken = createToken({ id: 'u1', email: 'e@t.com', role: 'admin' });
       // Tamper with the payload section
       const parts = validToken.split('.');
-      parts[1] = Buffer.from(JSON.stringify({ id: 'HACKED', email: 'hacker@evil.com', role: 'owner' })).toString('base64url');
+      parts[1] = Buffer.from(
+        JSON.stringify({ id: 'HACKED', email: 'hacker@evil.com', role: 'owner' })
+      ).toString('base64url');
       const tamperedToken = parts.join('.');
 
       const req = mockReq(tamperedToken);
@@ -177,6 +183,20 @@ describe('authMiddleware', () => {
   });
 
   describe('edge cases', () => {
+    it('rejects a password-login 2FA challenge as an access token', () => {
+      const req = mockReq(
+        createToken({
+          id: 'u1',
+          email: 'e@t.com',
+          role: 'owner',
+          requires2FA: true,
+        })
+      );
+      authMiddleware(req, mockRes(), next);
+      expect(req.user).toBeUndefined();
+      expect(next).toHaveBeenCalledWith(expect.objectContaining({ statusCode: 401 }));
+    });
+
     it('does not set req.user on authentication failure', () => {
       const req = mockReq('invalid-token');
       authMiddleware(req, mockRes(), next);
@@ -194,6 +214,65 @@ describe('authMiddleware', () => {
       authMiddleware(req, mockRes(), next);
       expect(req.user).toBeDefined();
       expect(req.user!.id).toBe('u1');
+    });
+
+    it('rejects a correctly signed token without required identity claims', () => {
+      const req = mockReq(createToken({ sub: 'u1', email: 'e@t.com' }));
+      authMiddleware(req, mockRes(), next);
+
+      expect(req.user).toBeUndefined();
+      expect(next).toHaveBeenCalledWith(expect.objectContaining({ statusCode: 401 }));
+    });
+
+    it('restricts pending social-signup JWTs to the completion endpoint', () => {
+      const token = createToken({
+        id: 'pending-user',
+        email: 'pending@example.com',
+        role: 'social_signup_pending',
+      });
+      const req = mockReq(token, '/api/auth/profile', 'GET');
+
+      authMiddleware(req, mockRes(), next);
+
+      expect(req.user).toBeUndefined();
+      expect(next).toHaveBeenCalledWith(expect.objectContaining({ statusCode: 403 }));
+    });
+
+    it('allows pending social-signup JWTs only on role completion', () => {
+      const token = createToken({
+        id: 'pending-user',
+        email: 'pending@example.com',
+        role: 'social_signup_pending',
+      });
+      const req = mockReq(token, '/api/auth/complete-social-registration', 'POST');
+
+      authMiddleware(req, mockRes(), next);
+
+      expect(req.user?.role).toBe('social_signup_pending');
+      expect(next).toHaveBeenCalledWith();
+    });
+  });
+
+  describe('development bypass network guard', () => {
+    it.each(['127.0.0.1', '127.42.0.9', '::1', '0:0:0:0:0:0:0:1', '::ffff:127.0.0.1'])(
+      'allows loopback address %s',
+      address => {
+        expect(isLoopbackAddress(address)).toBe(true);
+      }
+    );
+
+    it.each(['192.168.1.4', '8.8.8.8', '::ffff:192.168.1.4', undefined])(
+      'rejects non-loopback address %s',
+      address => {
+        expect(isLoopbackAddress(address)).toBe(false);
+      }
+    );
+
+    it('requires explicit development opt-in and a loopback peer', () => {
+      expect(shouldUseDevAuthBypass('development', 'true', '127.0.0.1')).toBe(true);
+      expect(shouldUseDevAuthBypass('production', 'true', '127.0.0.1')).toBe(false);
+      expect(shouldUseDevAuthBypass('development', 'false', '127.0.0.1')).toBe(false);
+      expect(shouldUseDevAuthBypass('development', 'true', '192.168.1.4')).toBe(false);
     });
   });
 });

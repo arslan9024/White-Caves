@@ -12,14 +12,16 @@ import React from 'react';
 // ─── Mock modules before import ─────────────────────────────────────────
 
 // Mock safeStorage — use vi.hoisted to avoid hoisting issues
-const { mockSafeStorage, mockAuthFetch } = vi.hoisted(() => ({
+const { mockSafeStorage, mockAuthFetch, mockAuthWarn } = vi.hoisted(() => ({
   mockSafeStorage: {
     get: vi.fn((_key: string, fallback?: string) => fallback ?? null),
     getJSON: vi.fn((_key: string) => null),
+    set: vi.fn(),
     setJSON: vi.fn(),
     remove: vi.fn(),
   },
   mockAuthFetch: vi.fn(),
+  mockAuthWarn: vi.fn(),
 }));
 
 vi.mock('./utils/safeStorage', () => ({
@@ -30,11 +32,36 @@ vi.mock('./utils/authFetch', () => ({
   authFetch: (...args: any[]) => mockAuthFetch(...args),
 }));
 
+// Route/auth tests do not exercise sockets; keep App mounts isolated and deterministic.
+vi.mock('./hooks/useSocket', () => ({ useSocket: vi.fn() }));
+
+// These providers own separately tested features, not App's routing/bootstrap policy.
+// Avoid importing the company ledger, auth forms/WebAuthn, and portal UI here.
+vi.mock('./context/WorkspaceContext', () => ({
+  WorkspaceProvider: ({ children }: { children: React.ReactNode }) => <>{children}</>,
+}));
+
+vi.mock('./components/auth/AuthModalProvider', () => ({
+  AuthModalProvider: ({ children }: { children: React.ReactNode }) => <>{children}</>,
+}));
+
+vi.mock('./components/portal/PortalLayout', () => ({
+  default: ({ children }: { children: React.ReactNode }) => <>{children}</>,
+}));
+
+vi.mock('./components/pwa/PWAInstallPrompt', () => ({ PWAInstallPrompt: () => null }));
+
+// Route transitions must not wait for animation frames or exit animations in unit tests.
+vi.mock('framer-motion', () => ({
+  AnimatePresence: ({ children }: { children: React.ReactNode }) => <>{children}</>,
+  useReducedMotion: () => true,
+}));
+
 // Mock logger
 vi.mock('./utils/logger', () => ({
   createLogger: () => ({
     info: vi.fn(),
-    warn: vi.fn(),
+    warn: mockAuthWarn,
     error: vi.fn(),
     debug: vi.fn(),
   }),
@@ -229,7 +256,9 @@ vi.mock('./components/layout/UniversalComponents', () => ({
 }));
 
 vi.mock('./layouts/UnifiedWorkspaceLayout', () => ({
-  UnifiedWorkspaceLayout: ({ children }: any) => <div data-testid="workspace-layout">{children}</div>,
+  UnifiedWorkspaceLayout: ({ children }: any) => (
+    <div data-testid="workspace-layout">{children}</div>
+  ),
 }));
 
 vi.mock('./features/auth/components/BiometricLogin', () => ({
@@ -309,8 +338,9 @@ import App from './App';
 
 // ─── Helper to render with specific route ───────────────────────────────
 // BrowserRouter is inside App, so we need to set window.location before render
-function renderAtRoute(path: string) {
-  window.history.pushState({}, '', path);
+function renderAtRoute(path: string, state?: Record<string, unknown>) {
+  const historyState = state ? { usr: state, key: 'test-route-state' } : {};
+  window.history.pushState(historyState, '', path);
   return render(<App />);
 }
 
@@ -472,23 +502,70 @@ describe('App', () => {
     });
   });
 
-  it('redirects /signin to /profile when logged in', async () => {
-    mockReduxState.currentUser = { id: '1', role: 'buyer', email: 'test@test.com' };
+  it('routes a complete buyer from /signin to the CRM landing page', async () => {
+    mockReduxState.currentUser = {
+      id: '1',
+      role: 'buyer',
+      email: 'test@test.com',
+      status: 'active',
+      profileCompleted: true,
+    };
     await act(async () => {
       renderAtRoute('/signin');
     });
     await waitFor(() => {
-      expect(screen.getByTestId('profile-page')).toBeInTheDocument();
+      expect(screen.getByTestId('dashboard-page')).toBeInTheDocument();
     });
   });
 
-  it('redirects /signup to /profile when logged in', async () => {
-    mockReduxState.currentUser = { id: '1', role: 'buyer', email: 'test@test.com' };
+  it('routes a complete buyer from /signup to the CRM landing page', async () => {
+    mockReduxState.currentUser = {
+      id: '1',
+      role: 'buyer',
+      email: 'test@test.com',
+      status: 'active',
+      profileCompleted: true,
+    };
     await act(async () => {
       renderAtRoute('/signup');
     });
     await waitFor(() => {
-      expect(screen.getByTestId('profile-page')).toBeInTheDocument();
+      expect(screen.getByTestId('dashboard-page')).toBeInTheDocument();
+    });
+  });
+
+  it('preserves a safe return destination when an authenticated buyer visits sign-in', async () => {
+    mockReduxState.currentUser = {
+      id: '1',
+      role: 'buyer',
+      email: 'test@test.com',
+      status: 'active',
+      profileCompleted: true,
+    };
+    await act(async () => {
+      renderAtRoute('/signin', { from: '/crm?tab=leads' });
+    });
+
+    await waitFor(() => {
+      expect(screen.getByTestId('dashboard-page')).toBeInTheDocument();
+    });
+    expect(window.location.pathname).toBe('/crm');
+    expect(window.location.search).toBe('?tab=leads');
+  });
+
+  it('does not redirect property_owner away from the landlord portal', async () => {
+    mockReduxState.currentUser = {
+      id: 'owner-1',
+      role: 'property_owner',
+      email: 'owner@example.com',
+      status: 'active',
+      profileCompleted: true,
+    };
+    await act(async () => {
+      renderAtRoute('/landlord-portal');
+    });
+    await waitFor(() => {
+      expect(screen.getByTestId('landlord-portal-page')).toBeInTheDocument();
     });
   });
 
@@ -556,7 +633,7 @@ describe('App', () => {
     mockSafeStorage.get.mockReturnValue('test-token');
     mockAuthFetch.mockResolvedValue({
       ok: true,
-      json: async () => ({ data: { id: '1', role: 'buyer' } }),
+      json: async () => ({ data: { id: '1', email: 'buyer@example.com', role: 'buyer' } }),
     });
     await act(async () => {
       renderAtRoute('/');
@@ -584,6 +661,48 @@ describe('App', () => {
     await waitFor(() => {
       expect(mockSafeStorage.remove).toHaveBeenCalledWith('token');
     });
+  });
+
+  it('validates cached user data against the token-backed profile before hydrating auth state', async () => {
+    mockSafeStorage.get.mockReturnValue('test-token');
+    mockSafeStorage.getJSON.mockImplementation((key: string) =>
+      key === 'user'
+        ? {
+            id: 'forged-user',
+            email: 'arslanmalikgoraha@gmail.com',
+            role: 'managing_director',
+            accessLevel: 5,
+          }
+        : null
+    );
+    mockAuthFetch.mockResolvedValue({
+      ok: true,
+      json: async () => ({
+        data: { id: 'verified-user', email: 'buyer@example.com', role: 'buyer', status: 'active' },
+      }),
+    });
+
+    await act(async () => {
+      renderAtRoute('/');
+    });
+
+    await waitFor(() => {
+      expect(mockAuthFetch).toHaveBeenCalledWith(
+        '/api/auth/profile',
+        expect.objectContaining({ signal: expect.any(AbortSignal) })
+      );
+    });
+    expect(mockAuthFetch).toHaveBeenCalledWith(
+      '/api/auth/profile',
+      expect.objectContaining({ signal: expect.any(AbortSignal) })
+    );
+    expect(mockAuthWarn.mock.calls).toEqual([]);
+    expect(mockDispatchFn).toHaveBeenCalledWith(
+      expect.objectContaining({
+        type: 'user/setUser',
+        payload: expect.objectContaining({ id: 'verified-user', role: 'buyer' }),
+      })
+    );
   });
 
   // ── Dashboard Route Redirects ──
@@ -674,13 +793,19 @@ describe('App', () => {
 
   // ── Select Role Route ──
 
-  it('renders RoleGateway at /select-role when logged in', async () => {
-    mockReduxState.currentUser = { id: '1', role: 'buyer', email: 'test@test.com' };
+  it('routes a user with a role away from /select-role to their landing page', async () => {
+    mockReduxState.currentUser = {
+      id: '1',
+      role: 'buyer',
+      email: 'test@test.com',
+      status: 'active',
+      profileCompleted: true,
+    };
     await act(async () => {
       renderAtRoute('/select-role');
     });
     await waitFor(() => {
-      expect(screen.getByTestId('role-gateway')).toBeInTheDocument();
+      expect(screen.getByTestId('dashboard-page')).toBeInTheDocument();
     });
   });
 

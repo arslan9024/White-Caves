@@ -11,7 +11,7 @@ export function isOwnerRole(role: string | null): boolean {
   return resolveBackendRole(role ?? '') === 'owner';
 }
 
-export function isAdminOrAbove(role: string | null): boolean {
+export function isAdminOrAbove(role: string | null | undefined): boolean {
   const resolved = resolveBackendRole(role ?? '');
   // eslint-disable-next-line security/detect-object-injection
   const level = ROLE_HIERARCHY[resolved] ?? 0;

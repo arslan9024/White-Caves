@@ -9,6 +9,7 @@
  */
 
 import { NextRequest, NextResponse } from 'next/server';
+import { Prisma } from '@prisma/client';
 import { prisma, safeQuery } from '@/lib/prisma';
 
 // ─── Types ────────────────────────────────────────────────────────────────────
@@ -35,26 +36,25 @@ interface ApiError {
 export async function GET(request: NextRequest) {
   const { searchParams } = new URL(request.url);
 
-  const page    = Math.max(1, parseInt(searchParams.get('page')  ?? '1', 10));
-  const limit   = Math.min(100, parseInt(searchParams.get('limit') ?? '20', 10));
-  const status  = searchParams.get('status')  ?? undefined;
-  const source  = searchParams.get('source')  ?? undefined;
-  const search  = searchParams.get('search')  ?? undefined;
+  const page = Math.max(1, parseInt(searchParams.get('page') ?? '1', 10));
+  const limit = Math.min(100, parseInt(searchParams.get('limit') ?? '20', 10));
+  const status = searchParams.get('status') ?? undefined;
+  const source = searchParams.get('source') ?? undefined;
+  const search = searchParams.get('search') ?? undefined;
 
-  const where: Record<string, unknown> = {};
+  const where: Prisma.LeadWhereInput = {};
   if (status) where.status = status;
   if (source) where.source = source;
   if (search) {
     where.OR = [
-      { name:  { contains: search, mode: 'insensitive' } },
+      { name: { contains: search, mode: 'insensitive' } },
       { email: { contains: search, mode: 'insensitive' } },
       { phone: { contains: search, mode: 'insensitive' } },
     ];
   }
 
-  const [leads, total] = await safeQuery(
-    async (db) => {
-      // @ts-expect-error — model name inferred from schema at runtime
+  const [leads, total] = await safeQuery<[LeadRecord[], number]>(
+    async db => {
       const [rows, count] = await Promise.all([
         db.lead.findMany({
           where,
@@ -62,14 +62,24 @@ export async function GET(request: NextRequest) {
           take: limit,
           orderBy: { createdAt: 'desc' },
           select: {
-            id: true, name: true, email: true, phone: true,
-            status: true, source: true, budget: true,
-            assignedTo: true, createdAt: true,
+            id: true,
+            name: true,
+            email: true,
+            phone: true,
+            status: true,
+            source: true,
+            budget: true,
+            assignedToId: true,
+            createdAt: true,
           },
         }),
         db.lead.count({ where }),
       ]);
-      return [rows as LeadRecord[], count as number];
+      const leadRows: LeadRecord[] = rows.map(({ assignedToId, ...lead }) => ({
+        ...lead,
+        assignedTo: assignedToId,
+      }));
+      return [leadRows, count];
     },
     [[], 0] as [LeadRecord[], number]
   );
@@ -121,22 +131,18 @@ export async function POST(request: NextRequest) {
     );
   }
 
-  const lead = await safeQuery(
-    async (db) => {
-      // @ts-expect-error — model name inferred from schema at runtime
-      return db.lead.create({
-        data: {
-          name: String(name),
-          email: String(email),
-          phone: phone ? String(phone) : null,
-          source: source ? String(source) : 'website',
-          budget: typeof budget === 'number' ? budget : null,
-          status: 'new',
-        },
-      });
-    },
-    null
-  );
+  const lead = await safeQuery(async db => {
+    return db.lead.create({
+      data: {
+        name: String(name),
+        email: String(email),
+        phone: phone ? String(phone) : null,
+        source: source ? String(source) : 'website',
+        budget: typeof budget === 'number' ? budget : null,
+        status: 'new',
+      },
+    });
+  }, null);
 
   if (!lead) {
     return NextResponse.json<ApiError>(

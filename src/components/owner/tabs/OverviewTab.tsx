@@ -6,7 +6,6 @@ import { colors } from '../../../styles/theme/colors';
 import './TabStyles.css';
 import type { RootState } from '../../../store/store';
 import { SkeletonKPI } from '../../ui/Skeleton';
-import { isCreatorSuperUserEmail } from '../../../utils/superUserAccess';
 import { AI_ASSISTANTS_REGISTRY } from '../../../store/slices/aiAssistant/registry';
 
 const PRIMARY_COLOR: string = colors.primary;
@@ -84,7 +83,8 @@ const OverviewTab: React.FC<OverviewTabProps> = ({ data, loading, onQuickAction 
   const homepageSearchLeads = reduxContext?.store
     ? selectSearchLeadCount(reduxContext.store.getState() as RootState)
     : 0;
-  const isManagingDirector = isCreatorSuperUserEmail(currentUser?.email);
+  const isManagingDirector =
+    currentUser?.role?.toLowerCase() === 'managing_director' && currentUser.status === 'active';
 
   if (loading) {
     return (
@@ -228,7 +228,9 @@ const OverviewTab: React.FC<OverviewTabProps> = ({ data, loading, onQuickAction 
           <div>
             <span className="tab-section-kicker">Managing Director cockpit</span>
             <h2>Company Pulse</h2>
-            <p>Monitor every core operation, live activity, AI assistant status, and team outputs.</p>
+            <p>
+              Monitor every core operation, live activity, AI assistant status, and team outputs.
+            </p>
           </div>
           <div className="overview-hero__meta">
             <span>Hierarchy enabled</span>
@@ -318,11 +320,17 @@ const OverviewTab: React.FC<OverviewTabProps> = ({ data, loading, onQuickAction 
                   </div>
                   <div className="quick-actions-grid">
                     {moduleZones.map(zone => (
-                      <article key={zone.title} className="quick-action-btn" style={{ cursor: 'default' }}>
+                      <article
+                        key={zone.title}
+                        className="quick-action-btn"
+                        style={{ cursor: 'default' }}
+                      >
                         <span className="action-label" style={{ marginBottom: 6, fontWeight: 700 }}>
                           {zone.title}
                         </span>
-                        <span style={{ fontSize: 12, color: 'var(--color-94a3b8, #94a3b8)' }}>{zone.modules.join(' • ')}</span>
+                        <span style={{ fontSize: 12, color: 'var(--color-94a3b8, #94a3b8)' }}>
+                          {zone.modules.join(' • ')}
+                        </span>
                       </article>
                     ))}
                   </div>
@@ -338,10 +346,16 @@ const OverviewTab: React.FC<OverviewTabProps> = ({ data, loading, onQuickAction 
                   </div>
                   <div className="quick-actions-grid">
                     {assistantPreview.map(assistant => (
-                      <article key={assistant.id} className="quick-action-btn" style={{ cursor: 'default' }}>
+                      <article
+                        key={assistant.id}
+                        className="quick-action-btn"
+                        style={{ cursor: 'default' }}
+                      >
                         <span className="action-icon">{assistant.avatar}</span>
                         <span className="action-label">{assistant.name}</span>
-                        <span style={{ fontSize: 11, color: 'var(--color-94a3b8, #94a3b8)' }}>{assistant.department}</span>
+                        <span style={{ fontSize: 11, color: 'var(--color-94a3b8, #94a3b8)' }}>
+                          {assistant.department}
+                        </span>
                       </article>
                     ))}
                   </div>
@@ -365,15 +379,21 @@ const OverviewTab: React.FC<OverviewTabProps> = ({ data, loading, onQuickAction 
                     <div className="quick-actions-grid">
                       <article className="quick-action-btn" style={{ cursor: 'default' }}>
                         <span className="action-label">FunnelEconomicsDashboard</span>
-                        <span style={{ fontSize: 12, color: 'var(--color-94a3b8, #94a3b8)' }}>Conversion and revenue funnel</span>
+                        <span style={{ fontSize: 12, color: 'var(--color-94a3b8, #94a3b8)' }}>
+                          Conversion and revenue funnel
+                        </span>
                       </article>
                       <article className="quick-action-btn" style={{ cursor: 'default' }}>
                         <span className="action-label">KPIBaselineTracker</span>
-                        <span style={{ fontSize: 12, color: 'var(--color-94a3b8, #94a3b8)' }}>Target vs actual progression</span>
+                        <span style={{ fontSize: 12, color: 'var(--color-94a3b8, #94a3b8)' }}>
+                          Target vs actual progression
+                        </span>
                       </article>
                       <article className="quick-action-btn" style={{ cursor: 'default' }}>
                         <span className="action-label">LeadTimeline</span>
-                        <span style={{ fontSize: 12, color: 'var(--color-94a3b8, #94a3b8)' }}>Lead journey timing and actions</span>
+                        <span style={{ fontSize: 12, color: 'var(--color-94a3b8, #94a3b8)' }}>
+                          Lead journey timing and actions
+                        </span>
                       </article>
                     </div>
                   )}

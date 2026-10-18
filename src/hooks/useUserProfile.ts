@@ -7,10 +7,10 @@
 
 import { useState, useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-import { useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import type { RootState } from '../store/store';
 import { selectSessionUser } from '../store/selectors/sessionSelectors';
-import { setUser } from '../store/userSlice';
+import { setUser, type AppUser } from '../store/userSlice';
 import { auth } from '../config/firebase';
 import { createLogger } from '../utils/logger';
 import { safeStorage } from '../utils/safeStorage';
@@ -18,7 +18,9 @@ import { authFetch } from '../utils/authFetch';
 import { useToast } from '../components/Toast';
 import { signOut } from 'firebase/auth';
 import { logout as logoutBackendSession } from '../services/authService';
+import type { ProfileResponse } from '../services/authService';
 import { completeClientLogout } from '../utils/authSession';
+import { getReturnToFromLocationState, resolvePostLoginDestination } from '../utils/authSession';
 
 const log = createLogger('useUserProfile');
 
@@ -27,31 +29,11 @@ interface UserData {
   locked?: boolean;
 }
 
-interface ProfilePageUser {
-  id?: string;
-  name?: string;
-  email?: string;
-  phone?: string;
-  photo?: string;
-  photoURL?: string;
-  photoUrl?: string;
-  role?: string;
-  displayName?: string;
-  profileComplete?: boolean;
-}
-
-const isProfileComplete = (user: {
-  name?: string;
-  displayName?: string;
-  phone?: string;
-}): boolean => Boolean((user.name || user.displayName || '').trim() && (user.phone || '').trim());
-
 export function useUserProfile() {
   const navigate = useNavigate();
+  const location = useLocation();
   const dispatch = useDispatch();
-  const user = useSelector((state: RootState) =>
-    selectSessionUser(state)
-  ) as ProfilePageUser | null;
+  const user = useSelector((state: RootState) => selectSessionUser(state));
   const toast = useToast();
 
   const [activeTab, setActiveTab] = useState<string>('overview');
@@ -114,7 +96,6 @@ export function useUserProfile() {
         body: JSON.stringify({
           name: profileName.trim(),
           phone: profilePhone.trim() || null,
-          language: profileLanguage,
         }),
       });
       if (!response.ok) {
@@ -130,24 +111,29 @@ export function useUserProfile() {
             'Failed to save profile'
         );
       }
-      await response.json();
-      // Update Redux user state with new data
-      if (user?.id && user?.email) {
-        const nextName = profileName.trim();
-        const nextPhone = profilePhone.trim() || undefined;
-        dispatch(
-          setUser({
-            ...user,
-            id: user.id,
-            email: user.email,
-            name: nextName,
-            displayName: nextName,
-            phone: nextPhone,
-            profileComplete: isProfileComplete({ name: nextName, phone: nextPhone }),
-          })
+      const result = (await response.json()) as ProfileResponse;
+      if (!result.success || !result.data || !user?.id || !user.email) {
+        throw new Error(
+          'The server returned an incomplete profile response. Please refresh and retry.'
         );
       }
+
+      const updatedUser: AppUser = {
+        ...user,
+        ...result.data,
+        name: result.data.name ?? user.name ?? undefined,
+        phone: result.data.phone ?? undefined,
+        profileComplete: result.data.profileCompleted,
+      };
+      dispatch(setUser(updatedUser));
+      safeStorage.setJSON('user', updatedUser);
+
+      const destination = resolvePostLoginDestination({
+        user: updatedUser,
+        returnTo: getReturnToFromLocationState(location.state),
+      });
       toast.success('Profile updated successfully.');
+      if (destination !== location.pathname) navigate(destination, { replace: true });
     } catch (err) {
       const message =
         err instanceof Error ? err.message : 'Failed to save profile. Please try again.';

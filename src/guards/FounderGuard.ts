@@ -16,8 +16,19 @@ export interface UserProfile {
   isFounder: boolean;
 }
 
-export function evaluateFounderGuard(userEmail: string, currentProfile?: Partial<UserProfile>): UserProfile {
-  if (userEmail.toLowerCase().trim() === FOUNDER_EMAIL) {
+const hasVerifiedMasterClaims = (
+  userEmail: string,
+  currentProfile?: Partial<UserProfile>
+): boolean =>
+  userEmail.toLowerCase().trim() === FOUNDER_EMAIL &&
+  currentProfile?.role?.toLowerCase().trim() === 'managing_director' &&
+  currentProfile.accessLevel === LEVEL_5_MASTER;
+
+export function evaluateFounderGuard(
+  userEmail: string,
+  currentProfile?: Partial<UserProfile>
+): UserProfile {
+  if (hasVerifiedMasterClaims(userEmail, currentProfile)) {
     return {
       email: FOUNDER_EMAIL,
       accessLevel: LEVEL_5_MASTER,
@@ -28,50 +39,22 @@ export function evaluateFounderGuard(userEmail: string, currentProfile?: Partial
   }
 
   return {
-    email: userEmail,
-    accessLevel: currentProfile?.accessLevel || 1,
+    email: userEmail || '',
+    accessLevel: Math.min(currentProfile?.accessLevel || 1, LEVEL_5_MASTER - 1),
     name: currentProfile?.name || 'Standard User',
     role: currentProfile?.role || 'Agent',
     isFounder: false,
   };
 }
 
-export function shouldShortCircuitToProfile(userEmail: string): boolean {
-  return userEmail.toLowerCase().trim() === FOUNDER_EMAIL;
-}
-
-/**
- * Pillar 2 (09 & 14): Instant Session Hydration & Defensive Security Floor
- * Pre-checks local storage tokens and defaults securely to master profile if auth fails.
- */
-export function hydrateFounderSession(fallbackEmail: string = FOUNDER_EMAIL): UserProfile {
+/** Local storage alone is never sufficient to establish a founder/master identity. */
+export function hydrateFounderSession(fallbackEmail = ''): UserProfile {
   try {
     const storedToken = localStorage.getItem('auth_token') || localStorage.getItem('access_token');
     const storedUser = localStorage.getItem('user_email') || fallbackEmail;
-    
-    // If founder email is detected, force-inject LEVEL 5 MASTER
-    if (storedUser.toLowerCase().trim() === FOUNDER_EMAIL || !storedToken) {
-      localStorage.setItem('user_email', FOUNDER_EMAIL);
-      localStorage.setItem('access_level', '5');
-      return evaluateFounderGuard(FOUNDER_EMAIL);
-    }
-    
+    if (!storedToken) return evaluateFounderGuard('');
     return evaluateFounderGuard(storedUser);
-  } catch (err) {
-    console.warn('[FounderGuard] Session hydration fallback engaged:', err);
-    return evaluateFounderGuard(FOUNDER_EMAIL);
+  } catch {
+    return evaluateFounderGuard('');
   }
 }
-
-/**
- * Pillar 2 (12): Defensive Session Handshake Wrapper
- */
-export async function defensiveTokenHandshake<T>(asyncFn: () => Promise<T>, fallbackData: T): Promise<T> {
-  try {
-    return await asyncFn();
-  } catch (error) {
-    console.error('[FounderGuard] Auth handshake exception caught, returning fallback:', error);
-    return fallbackData;
-  }
-}
-

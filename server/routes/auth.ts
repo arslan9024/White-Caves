@@ -9,21 +9,31 @@ import jwt, { SignOptions } from 'jsonwebtoken';
 import bcrypt from 'bcryptjs';
 import crypto from 'node:crypto';
 import { asyncHandler, AppError } from '../middleware/errorHandler.js';
-import authMiddleware from '../middleware/auth.js';
+import authMiddleware, { shouldUseDevAuthBypass } from '../middleware/auth.js';
 import { clearCsrfToken, issueCsrfToken, requireDoubleSubmitCsrf } from '../middleware/csrf.js';
 import type { AuthRequest } from '../middleware/auth.js';
-import { JWT_SECRET, JWT_EXPIRES_SECONDS, BCRYPT_ROUNDS } from '../config/env.js';
+import { JWT_SECRET, JWT_EXPIRES_SECONDS, BCRYPT_ROUNDS, CORS_ORIGINS } from '../config/env.js';
 import { prisma } from '../database.js';
 import { sanitizeString } from '../utils/sanitize.js';
 import logger from '../utils/logger.js';
 import { verifyFirebaseIdToken, FirebaseAdminInitError } from '../config/firebaseAdmin.js';
+import {
+  generateAuthenticationOptions,
+  generateRegistrationOptions,
+  verifyAuthenticationResponse,
+  verifyRegistrationResponse,
+} from '@simplewebauthn/server';
+import type { AuthenticationResponseJSON, RegistrationResponseJSON } from '@simplewebauthn/server';
 
 const router = Router();
 
 type RouteRequest = Request<Record<string, string>>;
 const db = prisma as any;
-const SUPERUSER_EMAIL = (process.env.CREATOR_SUPERUSER_EMAIL ?? '').toLowerCase().trim();
-
+const CREATOR_SUPERUSER_EMAIL = (
+  process.env.CREATOR_SUPERUSER_EMAIL || 'arslanmalikgoraha@gmail.com'
+)
+  .toLowerCase()
+  .trim();
 type PrismaLikeError = { code?: string; errorCode?: string; message?: string };
 
 const getRouteParam = (value: string | string[] | undefined): string | null => {
@@ -45,26 +55,6 @@ const getPrismaErrorCode = (error: unknown): string | null => {
   if (typeof candidate.code === 'string') return candidate.code;
   if (typeof candidate.errorCode === 'string') return candidate.errorCode;
   return null;
-};
-
-const isDatabaseUnavailableError = (error: unknown): boolean => {
-  const errorCode = getPrismaErrorCode(error);
-  if (errorCode === 'P1001') return true;
-  if (errorCode === 'P6001') return true;
-  if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === 'P1001') return true;
-  if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === 'P6001') return true;
-  if (error instanceof Prisma.PrismaClientInitializationError) {
-    return /can't reach database server|cannot reach database server|error validating datasource|url must start with the protocol `prisma:\/\/`|url must start with the protocol `prisma\+postgres:\/\/`/i.test(
-      error.message
-    );
-  }
-  if (error && typeof error === 'object' && 'message' in error) {
-    const message = String((error as PrismaLikeError).message || '');
-    return /can't reach database server|cannot reach database server|error validating datasource|url must start with the protocol `prisma:\/\/`|url must start with the protocol `prisma\+postgres:\/\/`/i.test(
-      message
-    );
-  }
-  return false;
 };
 
 // ─── TOTP (RFC 6238) helpers — no external dependencies ─────────────────────
@@ -602,19 +592,8 @@ router.post(
       return;
     }
 
-    const isFounderBypass = normalizedEmail === 'arslanmalikgoraha@gmail.com';
-    const isSuperuser = normalizedEmail === SUPERUSER_EMAIL || isFounderBypass;
-    const effectiveUser =
-      isSuperuser && (user.role !== 'managing_director' || user.status !== 'active')
-        ? await prisma.user.update({
-            where: { id: user.id },
-            data: { role: 'managing_director', status: 'active' },
-          })
-        : user;
-
-    if (isFounderBypass) {
-      (effectiveUser as any).accessLevel = 5;
-    }
+    // Privilege comes from the persisted user record, never from an email match.
+    const effectiveUser = user;
 
     // Generate JWT token
     const token = jwt.sign(
@@ -669,7 +648,11 @@ router.post(
           department: effectiveUser.department,
           photoUrl: effectiveUser.photoUrl,
           phone: effectiveUser.phone,
-          accessLevel: (effectiveUser as any).accessLevel,
+          accessLevel:
+            effectiveUser.role === 'managing_director' &&
+            effectiveUser.email.toLowerCase().trim() === CREATOR_SUPERUSER_EMAIL
+              ? 5
+              : undefined,
           ...resolveProfileCompletion(effectiveUser),
         },
       },
@@ -717,8 +700,9 @@ router.post(
 
     // Check if user already exists
     const normalizedEmail = String(email).toLowerCase().trim();
-    const isSuperuser = normalizedEmail === SUPERUSER_EMAIL;
-
+    if (normalizedEmail === CREATOR_SUPERUSER_EMAIL) {
+      throw new AppError('This account must be provisioned by an administrator', 403);
+    }
     const existing = await prisma.user.findUnique({ where: { email: normalizedEmail } });
     if (existing) {
       throw new AppError('Email already registered', 409);
@@ -741,10 +725,7 @@ router.post(
     let assignedRole = 'agent';
     let assignedStatus: 'active' | 'pending' = 'active';
 
-    if (isSuperuser) {
-      assignedRole = 'managing_director';
-      assignedStatus = 'active';
-    } else if (normalizedCategory === 'client') {
+    if (normalizedCategory === 'client') {
       if (!normalizedRole || !clientRoles.has(normalizedRole)) {
         throw new AppError(
           'Client signup requires a valid role: buyer, seller, landlord, or tenant',
@@ -837,38 +818,47 @@ router.post(
   '/verify-2fa',
   asyncHandler(async (req: RouteRequest, res: Response) => {
     const db = prisma as any;
-    const { email, code } = req.body;
+    const { twoFactorToken, code } = req.body;
 
-    if (!email || !code) {
-      throw new AppError('Email and verification code are required', 400);
+    if (!twoFactorToken || typeof twoFactorToken !== 'string' || !code) {
+      throw new AppError('A valid 2FA challenge and verification code are required', 400);
     }
 
-    // Dev-only 2FA bypass: requires BOTH NODE_ENV=development AND DEV_2FA_BYPASS=true
-    if (
-      process.env.NODE_ENV === 'development' &&
-      process.env.DEV_2FA_BYPASS === 'true' &&
-      code === '000000'
-    ) {
-      const user = await db.user.findUnique({ where: { email } });
-      if (!user) throw new AppError('User not found', 404);
-
-      const token = jwt.sign(
-        { id: user.id, email: user.email, role: user.role },
-        JWT_SECRET,
-        JWT_SIGN_OPTIONS
-      );
-
-      return res.status(200).json({
-        success: true,
-        data: { token, verified: true },
+    let challenge: jwt.JwtPayload;
+    try {
+      const verifiedChallenge = jwt.verify(twoFactorToken, JWT_SECRET, {
+        algorithms: ['HS256'],
       });
+      if (typeof verifiedChallenge !== 'object' || verifiedChallenge === null) {
+        throw new Error('Invalid challenge payload');
+      }
+      challenge = verifiedChallenge;
+    } catch {
+      throw new AppError('2FA challenge is invalid or expired. Please sign in again.', 401);
     }
 
-    const sanitizedEmail = sanitizeString(email).toLowerCase().trim();
-    const user = (await db.user.findUnique({ where: { email: sanitizedEmail } })) as any;
-    if (!user) throw new AppError('Invalid credentials', 401);
+    if (
+      challenge.requires2FA !== true ||
+      typeof challenge.id !== 'string' ||
+      typeof challenge.email !== 'string' ||
+      typeof challenge.role !== 'string'
+    ) {
+      throw new AppError('2FA challenge is invalid or expired. Please sign in again.', 401);
+    }
 
-    if (!user.totpEnabled || !user.totpSecret) {
+    const user = (await db.user.findUnique({ where: { id: challenge.id } })) as any;
+    const userEmail = typeof user?.email === 'string' ? user.email.toLowerCase() : '';
+    if (
+      !user ||
+      userEmail !== challenge.email.toLowerCase() ||
+      user.role !== challenge.role ||
+      user.status !== 'active'
+    ) {
+      throw new AppError('2FA challenge is invalid or expired. Please sign in again.', 401);
+    }
+
+    const twoFactorSecret = user.totpSecret || user.twoFactorSecret;
+    if (!(user.totpEnabled || user.twoFactorEnabled) || !twoFactorSecret) {
       throw new AppError('Two-factor authentication is not enabled for this account', 400);
     }
 
@@ -878,7 +868,7 @@ router.post(
 
     if (/^\d{6}$/.test(codeStr)) {
       // Regular 6-digit TOTP
-      verified = verifyTOTP(user.totpSecret, codeStr);
+      verified = verifyTOTP(twoFactorSecret, codeStr);
     } else if (/^[A-F0-9]{8}$/.test(codeStr)) {
       // Backup recovery code — check against hashed list
       for (const hashed of user.totpBackupCodes) {
@@ -1188,6 +1178,11 @@ router.get(
       data: {
         ...safeUser,
         hasPassword: Boolean(passwordHash),
+        accessLevel:
+          user.role === 'managing_director' &&
+          user.email.toLowerCase().trim() === CREATOR_SUPERUSER_EMAIL
+            ? 5
+            : undefined,
         ...resolveProfileCompletion(user),
         twoFactorEnabled: Boolean(
           (user as Record<string, unknown>).twoFactorEnabled ??
@@ -1240,10 +1235,22 @@ router.patch(
         phone: true,
         department: true,
         photoUrl: true,
+        status: true,
       },
     });
 
-    res.status(200).json({ success: true, data: user });
+    res.status(200).json({
+      success: true,
+      data: {
+        ...user,
+        accessLevel:
+          user.role === 'managing_director' &&
+          user.email.toLowerCase().trim() === CREATOR_SUPERUSER_EMAIL
+            ? 5
+            : undefined,
+        ...resolveProfileCompletion(user),
+      },
+    });
   })
 );
 
@@ -1257,7 +1264,12 @@ router.patch(
 router.post(
   '/firebase-sync',
   asyncHandler(async (req: RouteRequest, res: Response) => {
-    const { firebaseUid, email, name, photoUrl, firebaseToken } = req.body;
+    const { firebaseUid, email, phoneNumber, name, photoUrl, firebaseToken, intent } = req.body;
+
+    if (intent !== undefined && intent !== 'signin' && intent !== 'signup') {
+      throw new AppError('Invalid Firebase authentication intent', 400);
+    }
+    const isSignupIntent = intent === 'signup';
 
     if (!firebaseUid) {
       throw new AppError('Firebase UID is required', 400);
@@ -1267,12 +1279,14 @@ router.post(
       throw new AppError('Firebase token is required', 400);
     }
 
-    const nodeEnv = process.env.NODE_ENV?.trim().toLowerCase();
-    const isDevLikeEnv = !nodeEnv || nodeEnv === 'development' || nodeEnv === 'test';
-    const allowDevFallback =
-      isDevLikeEnv && process.env.ALLOW_FIREBASE_SYNC_DEV_FALLBACK !== 'false';
+    const allowDevFallback = shouldUseDevAuthBypass(
+      process.env.NODE_ENV,
+      process.env.DEV_AUTH_BYPASS,
+      req.socket.remoteAddress
+    );
 
     let decodedToken: Awaited<ReturnType<typeof verifyFirebaseIdToken>>;
+    let usedDevTokenFallback = false;
     try {
       decodedToken = await verifyFirebaseIdToken(firebaseToken);
     } catch (error: unknown) {
@@ -1282,11 +1296,14 @@ router.post(
       ) {
         if (allowDevFallback) {
           // Dev-only fallback: skip token verification and trust the request body
+          usedDevTokenFallback = true;
           decodedToken = {
             uid: firebaseUid,
             email: typeof email === 'string' ? email : undefined,
+            phone_number: typeof phoneNumber === 'string' ? phoneNumber : undefined,
             name: typeof name === 'string' ? name : undefined,
             picture: typeof photoUrl === 'string' ? photoUrl : undefined,
+            email_verified: true,
           } as unknown as Awaited<ReturnType<typeof verifyFirebaseIdToken>>;
         } else {
           throw new AppError(
@@ -1296,11 +1313,14 @@ router.post(
         }
       } else if (allowDevFallback) {
         // Dev-only fallback for token verification mismatch/errors
+        usedDevTokenFallback = true;
         decodedToken = {
           uid: firebaseUid,
           email: typeof email === 'string' ? email : undefined,
+          phone_number: typeof phoneNumber === 'string' ? phoneNumber : undefined,
           name: typeof name === 'string' ? name : undefined,
           picture: typeof photoUrl === 'string' ? photoUrl : undefined,
+          email_verified: true,
         } as unknown as Awaited<ReturnType<typeof verifyFirebaseIdToken>>;
       } else {
         throw new AppError('Invalid Firebase token', 401);
@@ -1311,19 +1331,31 @@ router.post(
       throw new AppError('Firebase UID mismatch', 401);
     }
 
-    const verifiedEmail = decodedToken.email?.toLowerCase().trim();
-    if (!verifiedEmail) {
-      throw new AppError('Verified Firebase email is required', 400);
+    const verifiedEmail =
+      decodedToken.email_verified && typeof decodedToken.email === 'string'
+        ? decodedToken.email.toLowerCase().trim()
+        : null;
+    const verifiedPhone =
+      typeof decodedToken.phone_number === 'string' ? decodedToken.phone_number.trim() : null;
+    if (!verifiedEmail && !verifiedPhone) {
+      throw new AppError('Verified Firebase email or phone is required', 400);
+    }
+    if (usedDevTokenFallback && verifiedEmail !== CREATOR_SUPERUSER_EMAIL) {
+      throw new AppError(
+        'Development authentication is restricted to the provisioned owner account',
+        403
+      );
     }
 
     const normalizedBodyEmail = typeof email === 'string' ? email.toLowerCase().trim() : null;
-    if (normalizedBodyEmail && normalizedBodyEmail !== verifiedEmail) {
+    if (normalizedBodyEmail && verifiedEmail && normalizedBodyEmail !== verifiedEmail) {
       throw new AppError('Firebase email mismatch', 401);
     }
+    const normalizedBodyPhone = typeof phoneNumber === 'string' ? phoneNumber.trim() : null;
+    if (normalizedBodyPhone && normalizedBodyPhone !== verifiedPhone) {
+      throw new AppError('Firebase phone mismatch', 401);
+    }
 
-    const isFounderBypass = verifiedEmail === 'arslanmalikgoraha@gmail.com';
-    const isManagingDirector =
-      isFounderBypass || (SUPERUSER_EMAIL.length > 0 && verifiedEmail === SUPERUSER_EMAIL);
     const resolvedName =
       (typeof decodedToken.name === 'string' ? decodedToken.name : null) ||
       (typeof name === 'string' ? sanitizeString(name.trim()) : null);
@@ -1343,22 +1375,51 @@ router.post(
     };
 
     let user: FirebaseSyncUser;
-    let degradedMode = false;
 
     try {
-      const existingUser = await prisma.user.findUnique({
-        where: { email: verifiedEmail },
-      });
+      let existingUser = verifiedEmail
+        ? await prisma.user.findUnique({ where: { email: verifiedEmail } })
+        : null;
+
+      if (!existingUser && verifiedPhone) {
+        const phoneMatches = await prisma.user.findMany({
+          where: { phone: verifiedPhone, status: 'active' },
+          take: 2,
+        });
+        if (phoneMatches.length !== 1) {
+          throw new AppError('Phone sign-in is unavailable for this account', 403);
+        }
+        existingUser = phoneMatches[0];
+      }
+
+      if (
+        usedDevTokenFallback &&
+        (!existingUser ||
+          existingUser.role !== 'managing_director' ||
+          existingUser.status !== 'active')
+      ) {
+        throw new AppError(
+          'Development authentication requires an active provisioned owner account',
+          403
+        );
+      }
 
       if (existingUser) {
+        const isProvisionedManagingDirector = existingUser.role === 'managing_director';
+        const isPendingSocialSignup =
+          existingUser.role === 'social_signup_pending' && existingUser.status === 'pending';
+        if (isSignupIntent && !isProvisionedManagingDirector && !isPendingSocialSignup) {
+          throw new AppError('Account already exists. Please sign in instead.', 409);
+        }
+        if (existingUser.status === 'suspended') {
+          throw new AppError('Account is inactive. Contact administrator.', 403);
+        }
         const updatedUser = await prisma.user.update({
           where: { id: existingUser.id },
           data: {
             firebaseUid,
             name: resolvedName || existingUser.name,
             photoUrl: resolvedPhotoUrl || existingUser.photoUrl,
-            role: isManagingDirector ? 'managing_director' : existingUser.role,
-            status: 'active',
           },
         });
         user = {
@@ -1372,14 +1433,23 @@ router.post(
           photoUrl: updatedUser.photoUrl,
         };
       } else {
+        if (!verifiedEmail) {
+          throw new AppError('Phone sign-in is unavailable for this account', 403);
+        }
+        if (!isSignupIntent) {
+          throw new AppError('Account not found. Please sign up to continue.', 404);
+        }
+        if (verifiedEmail === CREATOR_SUPERUSER_EMAIL) {
+          throw new AppError('This account must be provisioned by an administrator', 403);
+        }
         const createdUser = await prisma.user.create({
           data: {
             email: verifiedEmail,
             name: resolvedName,
             photoUrl: resolvedPhotoUrl,
             firebaseUid,
-            role: isManagingDirector ? 'managing_director' : 'agent',
-            status: 'active',
+            role: 'social_signup_pending',
+            status: 'pending',
           },
         });
         user = {
@@ -1394,26 +1464,11 @@ router.post(
         };
       }
     } catch (error: unknown) {
-      if (allowDevFallback && isDatabaseUnavailableError(error)) {
-        degradedMode = true;
-        logger.warn('Firebase sync falling back to degraded mode due DB unavailability', {
-          email: verifiedEmail,
-          firebaseUid,
-          errorCode: getPrismaErrorCode(error),
-        });
-        user = {
-          id: `dev-firebase-${firebaseUid}`,
-          email: verifiedEmail,
-          name: resolvedName,
-          role: isManagingDirector ? 'managing_director' : 'agent',
-          status: 'active',
-          phone: null,
-          department: null,
-          photoUrl: resolvedPhotoUrl,
-        };
-      } else {
-        throw error;
-      }
+      logger.error('Firebase authentication sync failed', {
+        firebaseUid,
+        errorCode: getPrismaErrorCode(error),
+      });
+      throw error;
     }
 
     const token = jwt.sign(
@@ -1422,34 +1477,32 @@ router.post(
       JWT_SIGN_OPTIONS
     );
 
-    if (!degradedMode) {
-      // Generate, hash, and persist refresh token; encode userId in cookie for efficient lookup
-      const rawFbRefreshToken = crypto.randomBytes(32).toString('hex');
-      const fbRefreshTokenHash = await bcrypt.hash(rawFbRefreshToken, BCRYPT_ROUNDS);
-      await prisma.user.update({
-        where: { id: user.id },
-        data: { refreshTokenHash: fbRefreshTokenHash },
-      });
-      res.cookie('refresh_token', `${user.id}:${rawFbRefreshToken}`, {
-        httpOnly: true,
-        secure: process.env.NODE_ENV === 'production',
-        sameSite: 'strict',
-        maxAge: 7 * 24 * 60 * 60 * 1000,
-        path: '/api/auth',
-      });
+    // Generate, hash, and persist refresh token; encode userId in cookie for efficient lookup
+    const rawFbRefreshToken = crypto.randomBytes(32).toString('hex');
+    const fbRefreshTokenHash = await bcrypt.hash(rawFbRefreshToken, BCRYPT_ROUNDS);
+    await prisma.user.update({
+      where: { id: user.id },
+      data: { refreshTokenHash: fbRefreshTokenHash },
+    });
+    res.cookie('refresh_token', `${user.id}:${rawFbRefreshToken}`, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'strict',
+      maxAge: 7 * 24 * 60 * 60 * 1000,
+      path: '/api/auth',
+    });
 
-      const ip = getClientIp(req);
-      const userAgent = String(req.headers['user-agent'] || 'unknown').slice(0, 256);
-      await prisma.activity.create({
-        data: {
-          type: 'system',
-          action: 'login',
-          description: `${user.name || user.email} logged in via Firebase`,
-          userId: user.id,
-          metadata: { ip, userAgent, provider: 'firebase' } as Prisma.InputJsonValue,
-        },
-      });
-    }
+    const ip = getClientIp(req);
+    const userAgent = String(req.headers['user-agent'] || 'unknown').slice(0, 256);
+    await prisma.activity.create({
+      data: {
+        type: 'system',
+        action: 'login',
+        description: `${user.name || user.email} logged in via Firebase`,
+        userId: user.id,
+        metadata: { ip, userAgent, provider: 'firebase' } as Prisma.InputJsonValue,
+      },
+    });
 
     res.status(200).json({
       success: true,
@@ -1464,12 +1517,15 @@ router.post(
           phone: user.phone,
           department: user.department,
           photoUrl: user.photoUrl,
-          accessLevel: isFounderBypass ? 5 : undefined,
+          accessLevel:
+            user.role === 'managing_director' && verifiedEmail === CREATOR_SUPERUSER_EMAIL
+              ? 5
+              : undefined,
           ...resolveProfileCompletion(user),
         },
       },
       requiresTwoFactor: false,
-      degradedMode,
+      degradedMode: false,
     });
   })
 );
@@ -2467,261 +2523,252 @@ router.get(
 
 // ─── WebAuthn / Biometric Routes ────────────────────────────────────────────
 
-/**
- * In-memory challenge store — keyed by challengeKey (userId or 'anon_<ip>').
- * Challenges expire after 5 minutes.
- */
 interface PendingChallenge {
   challenge: string;
   userId?: string;
   expiresAt: number;
 }
-const pendingChallenges = new Map<string, PendingChallenge>();
-const CHALLENGE_TTL_MS = 5 * 60 * 1000; // 5 minutes
 
-// Prune expired challenges periodically
+interface StoredWebAuthnCredential {
+  userId: string;
+  credentialId: string;
+  publicKey: string;
+  counter: number;
+  transports: string[];
+}
+
+const webAuthnStore = prisma as unknown as {
+  webAuthnCredential: {
+    create: (args: unknown) => Promise<StoredWebAuthnCredential>;
+    findMany: (args: unknown) => Promise<StoredWebAuthnCredential[]>;
+    findUnique: (args: unknown) => Promise<StoredWebAuthnCredential | null>;
+    update: (args: unknown) => Promise<StoredWebAuthnCredential>;
+    deleteMany: (args: unknown) => Promise<{ count: number }>;
+  };
+};
+
+const pendingChallenges = new Map<string, PendingChallenge>();
+const CHALLENGE_TTL_MS = 5 * 60 * 1000;
+const WEBAUTHN_RP_ID =
+  process.env.RP_ID || (process.env.NODE_ENV === 'production' ? 'whitecaves.com' : 'localhost');
+const WEBAUTHN_EXPECTED_ORIGINS = (process.env.WEBAUTHN_ORIGINS || CORS_ORIGINS.join(','))
+  .split(',')
+  .map(origin => origin.trim())
+  .filter(Boolean);
+
 setInterval(() => {
   const now = Date.now();
-  for (const [key, c] of pendingChallenges) {
-    if (c.expiresAt <= now) pendingChallenges.delete(key);
+  for (const [key, challenge] of pendingChallenges) {
+    if (challenge.expiresAt <= now) pendingChallenges.delete(key);
   }
 }, 60 * 1000).unref();
 
-const generateChallenge = (): string => {
-  return crypto.randomBytes(32).toString('base64url');
-};
+const createChallengeId = (): string => crypto.randomUUID();
+
+const getRegistrationChallengeKey = (challengeId: string): string => `reg_${challengeId}`;
+const getAuthenticationChallengeKey = (challengeId: string): string => `auth_${challengeId}`;
 
 /**
  * POST /api/auth/webauthn/register/options
- * Generate registration challenge and options for the client.
+ * Enrollment is bound to the authenticated account; request user IDs are ignored.
  */
 router.post(
   '/webauthn/register/options',
-  asyncHandler(async (req: RouteRequest, res: Response) => {
-    const { userId, userName, displayName } = req.body;
+  authMiddleware,
+  asyncHandler(async (req: AuthRequest, res: Response) => {
+    const userId = req.user?.id;
+    if (!userId) throw new AppError('Authentication required', 401);
 
-    if (!userId || !userName) {
-      throw new AppError('userId and userName are required', 400);
+    const user = await prisma.user.findUnique({
+      where: { id: userId },
+      select: { id: true, email: true, name: true, status: true },
+    });
+    if (!user || user.status !== 'active') {
+      throw new AppError('Active account required for passkey enrollment', 403);
     }
 
-    const sanitizedUserId = sanitizeString(String(userId).trim()).slice(0, 128);
-    const sanitizedUserName = sanitizeString(String(userName).trim()).slice(0, 128);
-    const sanitizedDisplayName = sanitizeString(String(displayName || userName).trim()).slice(
-      0,
-      128
-    );
+    const existingCredentials = await webAuthnStore.webAuthnCredential.findMany({
+      where: { userId },
+      select: { credentialId: true, transports: true },
+    });
+    const options = await generateRegistrationOptions({
+      rpName: process.env.RP_NAME || 'White Caves Real Estate',
+      rpID: WEBAUTHN_RP_ID,
+      userID: Buffer.from(user.id),
+      userName: user.email,
+      userDisplayName: user.name || user.email,
+      authenticatorSelection: {
+        authenticatorAttachment: 'platform',
+        residentKey: 'required',
+        userVerification: 'required',
+      },
+      excludeCredentials: existingCredentials.map(credential => ({
+        id: credential.credentialId,
+        transports:
+          credential.transports as import('@simplewebauthn/server').AuthenticatorTransportFuture[],
+      })),
+      attestationType: 'none',
+      timeout: 60_000,
+    });
 
-    const challenge = generateChallenge();
-    pendingChallenges.set(`reg_${sanitizedUserId}`, {
-      challenge,
-      userId: sanitizedUserId,
+    const challengeId = createChallengeId();
+    pendingChallenges.set(getRegistrationChallengeKey(challengeId), {
+      challenge: options.challenge,
+      userId,
       expiresAt: Date.now() + CHALLENGE_TTL_MS,
     });
 
-    const options = {
-      challenge,
-      rp: {
-        name: process.env.RP_NAME || 'White Caves CRM',
-        id:
-          process.env.RP_ID ||
-          (process.env.NODE_ENV === 'production' ? 'whitecaves.ae' : 'localhost'),
-      },
-      user: {
-        id: Buffer.from(sanitizedUserId).toString('base64url'),
-        name: sanitizedUserName,
-        displayName: sanitizedDisplayName,
-      },
-      pubKeyCredParams: [
-        { alg: -7, type: 'public-key' as const }, // ES256
-        { alg: -257, type: 'public-key' as const }, // RS256
-      ],
-      authenticatorSelection: {
-        authenticatorAttachment: 'platform' as const,
-        userVerification: 'required' as const,
-        requireResidentKey: false,
-      },
-      timeout: 60000,
-      attestation: 'none' as const,
-    };
-
-    res.status(200).json({ success: true, options });
+    res.status(200).json({ success: true, options, challengeId });
   })
 );
 
-/**
- * POST /api/auth/webauthn/register/verify
- * Verify the registration and store the credential.
- * Note: Full attestation verification requires @simplewebauthn/server.
- * This implementation stores the credential ID and public key for use in authentication.
- */
+/** Verify a full WebAuthn registration ceremony before storing a credential. */
 router.post(
   '/webauthn/register/verify',
-  asyncHandler(async (req: RouteRequest, res: Response) => {
-    const { userId, credential } = req.body;
-
-    if (!userId || !credential?.id || !credential?.rawId) {
-      throw new AppError('userId and credential are required', 400);
+  authMiddleware,
+  asyncHandler(async (req: AuthRequest, res: Response) => {
+    const userId = req.user?.id;
+    const challengeId = typeof req.body?.challengeId === 'string' ? req.body.challengeId : '';
+    const credential = req.body?.credential as RegistrationResponseJSON | undefined;
+    if (!userId || !challengeId || !credential?.id) {
+      throw new AppError('Registration challenge and credential are required', 400);
     }
 
-    const sanitizedUserId = sanitizeString(String(userId).trim()).slice(0, 128);
-
-    const pending = pendingChallenges.get(`reg_${sanitizedUserId}`);
-    if (!pending || pending.expiresAt <= Date.now()) {
-      throw new AppError('Registration challenge expired or not found. Please try again.', 400);
+    const challengeKey = getRegistrationChallengeKey(challengeId);
+    const pending = pendingChallenges.get(challengeKey);
+    pendingChallenges.delete(challengeKey);
+    if (!pending || pending.userId !== userId || pending.expiresAt <= Date.now()) {
+      throw new AppError('Registration challenge expired or does not match this session', 401);
     }
-    pendingChallenges.delete(`reg_${sanitizedUserId}`);
 
-    const credentialId = sanitizeString(String(credential.id).trim()).slice(0, 512);
-    const rawId = sanitizeString(String(credential.rawId).trim()).slice(0, 512);
-    const publicKey = credential.response?.attestationObject
-      ? sanitizeString(String(credential.response.attestationObject).trim()).slice(0, 4096)
-      : '';
+    let verification;
+    try {
+      verification = await verifyRegistrationResponse({
+        response: credential,
+        expectedChallenge: pending.challenge,
+        expectedOrigin: WEBAUTHN_EXPECTED_ORIGINS,
+        expectedRPID: WEBAUTHN_RP_ID,
+        requireUserVerification: true,
+      });
+    } catch {
+      throw new AppError('Passkey registration could not be verified', 400);
+    }
+    if (!verification.verified || !verification.registrationInfo) {
+      throw new AppError('Passkey registration could not be verified', 400);
+    }
 
-    // Store credential — upsert by credentialId
-    await (
-      prisma as unknown as { webAuthnCredential: { upsert: (args: unknown) => Promise<unknown> } }
-    ).webAuthnCredential.upsert({
-      where: { credentialId },
-      create: {
-        userId: sanitizedUserId,
-        credentialId,
-        publicKey: publicKey || rawId,
-        counter: 0,
-        deviceType: 'platform',
-        transports: ['internal'],
-      },
-      update: {
-        lastUsedAt: new Date(),
-      },
-    });
+    const { credential: verifiedCredential, credentialDeviceType } = verification.registrationInfo;
+    try {
+      await webAuthnStore.webAuthnCredential.create({
+        data: {
+          userId,
+          credentialId: verifiedCredential.id,
+          publicKey: Buffer.from(verifiedCredential.publicKey).toString('base64url'),
+          counter: verifiedCredential.counter,
+          deviceType: credentialDeviceType,
+          transports: verifiedCredential.transports ?? [],
+        },
+      });
+    } catch (error: unknown) {
+      if (getPrismaErrorCode(error) === 'P2002') {
+        throw new AppError('This passkey is already registered', 409);
+      }
+      throw error;
+    }
 
-    logger.info('WebAuthn credential registered', { userId: sanitizedUserId, credentialId });
-
-    res.status(200).json({
-      success: true,
-      message: 'Biometric authentication registered successfully',
-    });
+    logger.info('WebAuthn credential registered', { userId });
+    res.status(200).json({ success: true, message: 'Passkey registered successfully' });
   })
 );
 
-/**
- * POST /api/auth/webauthn/authenticate/options
- * Generate authentication challenge for the client.
- */
+/** Generate a discoverable passkey authentication challenge. */
 router.post(
   '/webauthn/authenticate/options',
-  asyncHandler(async (req: RouteRequest, res: Response) => {
-    const { userId } = req.body;
-
-    const challenge = generateChallenge();
-    const challengeKey = userId
-      ? `auth_${sanitizeString(String(userId).trim()).slice(0, 128)}`
-      : `auth_anon_${getClientIp(req)}`;
-
-    pendingChallenges.set(challengeKey, {
-      challenge,
-      userId: userId ? sanitizeString(String(userId).trim()).slice(0, 128) : undefined,
+  asyncHandler(async (_req: RouteRequest, res: Response) => {
+    const options = await generateAuthenticationOptions({
+      rpID: WEBAUTHN_RP_ID,
+      userVerification: 'required',
+      timeout: 60_000,
+    });
+    const challengeId = createChallengeId();
+    pendingChallenges.set(getAuthenticationChallengeKey(challengeId), {
+      challenge: options.challenge,
       expiresAt: Date.now() + CHALLENGE_TTL_MS,
     });
 
-    const options = {
-      challenge,
-      timeout: 60000,
-      userVerification: 'required' as const,
-      rpId:
-        process.env.RP_ID ||
-        (process.env.NODE_ENV === 'production' ? 'whitecaves.ae' : 'localhost'),
-    };
-
-    res.status(200).json({ success: true, options });
+    res.status(200).json({ success: true, options, challengeId });
   })
 );
 
-/**
- * POST /api/auth/webauthn/authenticate/verify
- * Verify the biometric assertion and return a JWT session token.
- */
+/** Verify the authenticator assertion before issuing an application JWT. */
 router.post(
   '/webauthn/authenticate/verify',
   asyncHandler(async (req: RouteRequest, res: Response) => {
-    const { credential, userId } = req.body;
-
-    if (!credential?.id) {
-      throw new AppError('Credential is required', 400);
+    const challengeId = typeof req.body?.challengeId === 'string' ? req.body.challengeId : '';
+    const credential = req.body?.credential as AuthenticationResponseJSON | undefined;
+    if (!challengeId || !credential?.id) {
+      throw new AppError('Authentication challenge and credential are required', 400);
     }
 
-    const credentialId = sanitizeString(String(credential.id).trim()).slice(0, 512);
-
-    const challengeKey = userId
-      ? `auth_${sanitizeString(String(userId).trim()).slice(0, 128)}`
-      : `auth_anon_${getClientIp(req)}`;
-
+    const challengeKey = getAuthenticationChallengeKey(challengeId);
     const pending = pendingChallenges.get(challengeKey);
+    pendingChallenges.delete(challengeKey);
     if (!pending || pending.expiresAt <= Date.now()) {
-      // Also try without userId in case client sent it differently
-      let found = false;
-      for (const [key, val] of pendingChallenges) {
-        if (key.startsWith('auth_') && val.expiresAt > Date.now()) {
-          pendingChallenges.delete(key);
-          found = true;
-          break;
-        }
-      }
-      if (!found) {
-        throw new AppError('Authentication challenge expired or not found. Please try again.', 400);
-      }
-    } else {
-      pendingChallenges.delete(challengeKey);
+      throw new AppError('Authentication challenge expired or not found', 401);
     }
 
-    // Look up credential in database
-    const storedCred = await (
-      prisma as unknown as {
-        webAuthnCredential: {
-          findUnique: (
-            args: unknown
-          ) => Promise<{ userId: string; credentialId: string; counter: number } | null>;
-          update: (args: unknown) => Promise<unknown>;
-        };
-      }
-    ).webAuthnCredential.findUnique({
-      where: { credentialId },
+    const storedCredential = await webAuthnStore.webAuthnCredential.findUnique({
+      where: { credentialId: credential.id },
     });
-
-    if (!storedCred) {
-      throw new AppError('Credential not found. Please register your biometric first.', 401);
+    if (!storedCredential) {
+      throw new AppError('Passkey was not found for this account', 401);
     }
 
-    // Look up user by the userId stored with the credential
+    let verification;
+    try {
+      verification = await verifyAuthenticationResponse({
+        response: credential,
+        expectedChallenge: pending.challenge,
+        expectedOrigin: WEBAUTHN_EXPECTED_ORIGINS,
+        expectedRPID: WEBAUTHN_RP_ID,
+        credential: {
+          id: storedCredential.credentialId,
+          publicKey: new Uint8Array(Buffer.from(storedCredential.publicKey, 'base64url')),
+          counter: storedCredential.counter,
+          transports:
+            storedCredential.transports as import('@simplewebauthn/server').AuthenticatorTransportFuture[],
+        },
+        requireUserVerification: true,
+      });
+    } catch {
+      throw new AppError('Passkey assertion could not be verified', 401);
+    }
+    if (!verification.verified || !verification.authenticationInfo.userVerified) {
+      throw new AppError('Passkey assertion could not be verified', 401);
+    }
+
     const user = await prisma.user.findUnique({
-      where: { id: storedCred.userId },
+      where: { id: storedCredential.userId },
       select: {
         id: true,
         email: true,
         name: true,
         role: true,
         department: true,
+        phone: true,
         photoUrl: true,
         status: true,
       },
     });
-
-    if (!user) {
-      throw new AppError('User account not found', 401);
+    if (!user || user.status !== 'active') {
+      throw new AppError('Account is inactive or unavailable', 403);
     }
 
-    if (user.status && user.status !== 'active') {
-      throw new AppError('Account is inactive. Contact administrator.', 403);
-    }
-
-    // Update last used timestamp and counter
-    await (
-      prisma as unknown as { webAuthnCredential: { update: (args: unknown) => Promise<unknown> } }
-    ).webAuthnCredential.update({
-      where: { credentialId },
+    await webAuthnStore.webAuthnCredential.update({
+      where: { credentialId: storedCredential.credentialId },
       data: {
+        counter: verification.authenticationInfo.newCounter,
         lastUsedAt: new Date(),
-        counter: storedCred.counter + 1,
       },
     });
 
@@ -2730,21 +2777,23 @@ router.post(
       JWT_SECRET,
       JWT_SIGN_OPTIONS
     );
-
     const ip = getClientIp(req);
     const userAgent = String(req.headers['user-agent'] || 'unknown').slice(0, 256);
     await prisma.activity.create({
       data: {
         type: 'system',
         action: 'login',
-        description: `${user.name || user.email} logged in via biometric`,
+        description: `${user.name || user.email} logged in via passkey`,
         userId: user.id,
         metadata: { ip, userAgent, provider: 'webauthn' } as Prisma.InputJsonValue,
       },
     });
 
-    logger.info('WebAuthn authentication successful', { userId: user.id, email: user.email });
-
+    const accessLevel =
+      user.role === 'managing_director' &&
+      user.email.toLowerCase().trim() === CREATOR_SUPERUSER_EMAIL
+        ? 5
+        : undefined;
     res.status(200).json({
       success: true,
       userId: user.id,
@@ -2754,42 +2803,35 @@ router.post(
         email: user.email,
         name: user.name,
         role: user.role,
+        status: user.status,
         department: user.department,
+        phone: user.phone,
         photoUrl: user.photoUrl,
+        accessLevel,
+        ...resolveProfileCompletion(user),
       },
     });
   })
 );
 
-/**
- * DELETE /api/auth/webauthn/credentials/:userId/:credentialId
- * Remove a stored biometric credential.
- */
+/** Remove a credential only from the authenticated account's credential set. */
 router.delete(
-  '/webauthn/credentials/:userId/:credentialId',
-  asyncHandler(async (req: Request, res: Response) => {
-    const rawUserId = getRouteParam(req.params.userId);
-    const rawCredId = getRouteParam(req.params.credentialId);
-
-    if (!rawUserId || !rawCredId) {
-      throw new AppError('userId and credentialId are required', 400);
+  '/webauthn/credentials/:credentialId',
+  authMiddleware,
+  asyncHandler(async (req: AuthRequest, res: Response) => {
+    const userId = req.user?.id;
+    const rawCredentialId = getRouteParam(req.params.credentialId);
+    if (!userId || !rawCredentialId) {
+      throw new AppError('Authentication and credential ID are required', 400);
     }
 
-    const sanitizedUserId = sanitizeString(decodeURIComponent(rawUserId)).slice(0, 128);
-    const sanitizedCredId = sanitizeString(decodeURIComponent(rawCredId)).slice(0, 512);
-
-    await (
-      prisma as unknown as {
-        webAuthnCredential: { deleteMany: (args: unknown) => Promise<unknown> };
-      }
-    ).webAuthnCredential.deleteMany({
-      where: {
-        userId: sanitizedUserId,
-        credentialId: sanitizedCredId,
-      },
+    const credentialId = sanitizeString(decodeURIComponent(rawCredentialId)).slice(0, 512);
+    const result = await webAuthnStore.webAuthnCredential.deleteMany({
+      where: { userId, credentialId },
     });
+    if (result.count === 0) throw new AppError('Passkey was not found for this account', 404);
 
-    res.status(200).json({ success: true, message: 'Credential removed' });
+    res.status(200).json({ success: true, message: 'Passkey removed' });
   })
 );
 
@@ -2808,14 +2850,19 @@ router.post(
 
     const currentUser = await prisma.user.findUnique({
       where: { id: userId },
-      select: { id: true, email: true },
+      select: { id: true, email: true, role: true, status: true },
     });
 
     if (!currentUser) {
       throw new AppError('User not found', 404);
     }
 
-    const isSuperuser = currentUser.email.toLowerCase().trim() === SUPERUSER_EMAIL;
+    const isSuperuser = currentUser.role === 'managing_director';
+    const isPendingSocialSignup =
+      currentUser.role === 'social_signup_pending' && currentUser.status === 'pending';
+    if (!isSuperuser && !isPendingSocialSignup) {
+      throw new AppError('Social registration is already complete. Please sign in instead.', 409);
+    }
 
     const { role, category } = req.body;
     if (!isSuperuser && (!category || !role)) {

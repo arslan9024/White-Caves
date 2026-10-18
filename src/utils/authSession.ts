@@ -9,28 +9,16 @@ import {
   isCreatorSuperUserEmail,
   normalizeRoleForUserContext,
 } from './superUserAccess';
-import { getPostLoginRoute } from './routing';
+import {
+  canAccessReturnPath,
+  getPostLoginRoute,
+  getSessionGate,
+  sanitizeReturnToPath,
+} from './routing';
+import { createLogger } from './logger';
 
-const BLOCKED_RETURN_TO_PREFIXES = ['/signin', '/signup', '/login', '/auth/signin'];
-
-const isInternalPath = (path: string): boolean => {
-  return path.startsWith('/') && !path.startsWith('//') && !/^\/https?:/i.test(path);
-};
-
-export const sanitizeReturnToPath = (value?: string | null): string | null => {
-  if (!value || typeof value !== 'string') return null;
-  const candidate = value.trim();
-  if (!candidate) return null;
-  if (!isInternalPath(candidate)) return null;
-  if (
-    BLOCKED_RETURN_TO_PREFIXES.some(
-      prefix => candidate === prefix || candidate.startsWith(`${prefix}?`)
-    )
-  ) {
-    return null;
-  }
-  return candidate;
-};
+export { sanitizeReturnToPath } from './routing';
+const log = createLogger('AuthSession');
 
 export const getCurrentPathWithQuery = (pathname: string, search = '', hash = ''): string => {
   return `${pathname}${search}${hash}`;
@@ -40,12 +28,14 @@ export const resolvePostLoginDestination = (options: {
   user: Pick<AppUser, 'role' | 'status' | 'profileCompleted'> & { email?: string | null };
   returnTo?: string | null;
 }): string => {
-  if (options.user.email?.toLowerCase().trim() === 'arslanmalikgoraha@gmail.com') {
+  const gate = getSessionGate(options.user);
+  if (gate) return gate;
+  if (isCreatorSuperUserEmail(options.user.email, options.user.role)) {
     return '/profile';
   }
 
   const normalizedReturnTo = sanitizeReturnToPath(options.returnTo);
-  if (normalizedReturnTo) {
+  if (normalizedReturnTo && canAccessReturnPath(options.user, normalizedReturnTo)) {
     return normalizedReturnTo;
   }
 
@@ -63,6 +53,7 @@ const persistRolePreference = (
   const normalizedRole = normalizeRoleForUserContext(user.role, user.email);
 
   if (!normalizedRole) {
+    safeStorage.remove('userRole');
     return null;
   }
 
@@ -101,8 +92,12 @@ export const finalizeAuthenticatedSession = (options: {
   rememberMe?: boolean;
   returnTo?: string | null;
 }): string => {
-  const isManagingDirectorMaster =
-    options.user.email?.toLowerCase().trim() === 'arslanmalikgoraha@gmail.com';
+  const resolvedToken = options.token ?? safeStorage.get('token') ?? undefined;
+  if (!options.user.id || !options.user.email || !resolvedToken?.trim()) {
+    log.warn('Refused incomplete authenticated session');
+    throw new Error('Unable to establish your session. Please sign in again.');
+  }
+  const isManagingDirectorMaster = isCreatorSuperUserEmail(options.user.email, options.user.role);
 
   const resolvedRole = isManagingDirectorMaster
     ? CANONICAL_SUPERUSER_ROLE
@@ -113,8 +108,6 @@ export const finalizeAuthenticatedSession = (options: {
     role: resolvedRole ?? options.user.role,
     accessLevel: isManagingDirectorMaster ? 5 : (options.user.accessLevel ?? 1),
   };
-
-  const resolvedToken = options.token ?? safeStorage.get('token') ?? undefined;
 
   persistAuthenticatedSessionArtifacts({
     user: resolvedUser,
@@ -172,7 +165,7 @@ export const getPrivilegedRoleFromUser = (user: {
   email?: string | null;
   role?: string | null;
 }): string | null => {
-  if (isCreatorSuperUserEmail(user.email)) {
+  if (isCreatorSuperUserEmail(user.email, user.role)) {
     return CANONICAL_SUPERUSER_ROLE;
   }
 

@@ -14,7 +14,12 @@ interface CorporateDocumentFanoutResult {
   deliveryEvents: number;
 }
 
-type CorporateDocumentStatus = 'active' | 'expiring_soon' | 'expired' | 'reference_stored' | 'archived';
+type CorporateDocumentStatus =
+  | 'active'
+  | 'expiring_soon'
+  | 'expired'
+  | 'reference_stored'
+  | 'archived';
 
 export interface CorporateDocumentExpiryAlertSummary {
   scanned: number;
@@ -79,20 +84,26 @@ async function fanOutCorporateDocumentAlertNotification(args: {
   let whatsappRecipients = 0;
 
   await Promise.all(
-    recipients.map((recipient: { id: string; email?: string | null; phone?: string | null; name?: string | null }) =>
-      notificationService.pushToUser({
-        userId: recipient.id,
-        title: args.title,
-        message: args.message,
-        type: args.daysUntilExpiry <= 0 ? 'error' : 'warning',
-        channel: 'in_app',
-        metadata: {
-          documentId: args.documentId,
-          authority: args.authority,
-          daysUntilExpiry: args.daysUntilExpiry,
-        },
-      }),
-    ),
+    recipients.map(
+      (recipient: {
+        id: string;
+        email?: string | null;
+        phone?: string | null;
+        name?: string | null;
+      }) =>
+        notificationService.pushToUser({
+          userId: recipient.id,
+          title: args.title,
+          message: args.message,
+          type: args.daysUntilExpiry <= 0 ? 'error' : 'warning',
+          channel: 'in_app',
+          metadata: {
+            documentId: args.documentId,
+            authority: args.authority,
+            daysUntilExpiry: args.daysUntilExpiry,
+          },
+        })
+    )
   );
 
   if (emailEnabled) {
@@ -110,7 +121,7 @@ async function fanOutCorporateDocumentAlertNotification(args: {
               tags: [{ name: 'type', value: 'corporate_document_expiry' }],
             });
             emailRecipients += 1;
-          }),
+          })
       );
     } catch (error) {
       logger.warn('Corporate document email fanout failed', { error, documentId: args.documentId });
@@ -120,8 +131,10 @@ async function fanOutCorporateDocumentAlertNotification(args: {
   if (whatsappEnabled) {
     try {
       const accessToken = process.env.META_ACCESS_TOKEN || process.env.WHATSAPP_ACCESS_TOKEN || '';
-      const phoneNumberId = process.env.META_PHONE_NUMBER_ID || process.env.WHATSAPP_PHONE_NUMBER_ID || '';
-      const businessAccountId = process.env.META_BUSINESS_ACCOUNT_ID || process.env.WHATSAPP_BUSINESS_ACCOUNT_ID || '';
+      const phoneNumberId =
+        process.env.META_PHONE_NUMBER_ID || process.env.WHATSAPP_PHONE_NUMBER_ID || '';
+      const businessAccountId =
+        process.env.META_BUSINESS_ACCOUNT_ID || process.env.WHATSAPP_BUSINESS_ACCOUNT_ID || '';
 
       if (accessToken && phoneNumberId) {
         const { createMetaAPIClient } = await import('../whatsapp/metaAPI.js');
@@ -137,9 +150,9 @@ async function fanOutCorporateDocumentAlertNotification(args: {
                 return;
               }
 
-              await client.sendText(phone, `${args.title}: ${args.message}`);
+              await client.sendMessage(phone, `${args.title}: ${args.message}`);
               whatsappRecipients += 1;
-            }),
+            })
         );
       }
     } catch (error) {
@@ -272,7 +285,7 @@ export async function runCorporateDocumentExpiryCheck(): Promise<CorporateDocume
       data: {
         type: 'compliance',
         action: 'corporate_document_expiry_alert',
-        description: `${document.title} triggered corporate document expiry alert (${daysUntilExpiry} days)` ,
+        description: `${document.title} triggered corporate document expiry alert (${daysUntilExpiry} days)`,
         metadata: {
           documentId: document.id,
           authority: document.authority,
@@ -284,7 +297,8 @@ export async function runCorporateDocumentExpiryCheck(): Promise<CorporateDocume
     });
 
     const fanout = await fanOutCorporateDocumentAlertNotification({
-      title: daysUntilExpiry <= 0 ? 'Corporate document expired' : 'Corporate document expiry warning',
+      title:
+        daysUntilExpiry <= 0 ? 'Corporate document expired' : 'Corporate document expiry warning',
       message,
       documentId: document.id,
       authority: document.authority,
@@ -325,7 +339,7 @@ export function startCorporateDocumentExpiryScheduler(): NodeJS.Timeout {
         logger.error('Corporate document expiry scheduler error', { error });
       }
     },
-    24 * 60 * 60 * 1000,
+    24 * 60 * 60 * 1000
   );
 
   setTimeout(() => {

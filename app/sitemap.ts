@@ -14,17 +14,13 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const baseUrl = 'https://whitecaves.ae';
 
   // Fetch active property IDs
-  const propertyIds = await safeQuery(
-    async (db) => {
-      // @ts-expect-error — model inferred at runtime
-      const properties = await db.property.findMany({
-        select: { id: true, updatedAt: true },
-        take: 1000,
-      });
-      return properties as { id: string; updatedAt?: Date }[];
-    },
-    []
-  );
+  const propertyIds = await safeQuery(async db => {
+    const properties = await db.property.findMany({
+      select: { id: true, updatedAt: true },
+      take: 1000,
+    });
+    return properties as { id: string; updatedAt?: Date }[];
+  }, []);
 
   const staticRoutes: MetadataRoute.Sitemap = [
     {
@@ -53,7 +49,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     },
   ];
 
-  const propertyRoutes: MetadataRoute.Sitemap = propertyIds.map((p) => ({
+  const propertyRoutes: MetadataRoute.Sitemap = propertyIds.map(p => ({
     url: `${baseUrl}/properties/${p.id}`,
     lastModified: p.updatedAt ? new Date(p.updatedAt) : new Date(),
     changeFrequency: 'weekly',

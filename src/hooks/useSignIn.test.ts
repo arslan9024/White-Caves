@@ -20,9 +20,18 @@ const mockCompleteSocialRegistration = vi.fn();
 const mockSignInWithGoogle = vi.fn();
 const mockSignInWithFacebook = vi.fn();
 const mockSignInWithApple = vi.fn();
+const mockBackendLogin = vi.fn();
+const mockVerifyTwoFactor = vi.fn();
 const mockRequestPasswordReset = vi.fn();
 const mockVerifyPasswordResetToken = vi.fn();
 const mockResetPasswordWithToken = vi.fn();
+const mockSafeStorage = vi.hoisted(() => ({
+  setJSON: vi.fn(),
+  getJSON: vi.fn(() => null),
+  get: vi.fn(() => 'backend-jwt'),
+  set: vi.fn(),
+  remove: vi.fn(),
+}));
 
 vi.mock('react-router-dom', async () => {
   const actual = await vi.importActual('react-router-dom');
@@ -47,8 +56,9 @@ vi.mock('../config/firebase', () => ({
 }));
 
 vi.mock('../services/authService', () => ({
-  loginWithEmail: vi.fn(),
+  loginWithEmail: (...args: unknown[]) => mockBackendLogin(...args),
   registerWithEmail: vi.fn(),
+  verifyTwoFactor: (...args: unknown[]) => mockVerifyTwoFactor(...args),
   syncFirebaseUser: (...args: unknown[]) => mockSyncFirebaseUser(...args),
   completeSocialRegistration: (...args: unknown[]) => mockCompleteSocialRegistration(...args),
   requestPasswordReset: (...args: unknown[]) => mockRequestPasswordReset(...args),
@@ -57,20 +67,74 @@ vi.mock('../services/authService', () => ({
 }));
 
 vi.mock('../utils/safeStorage', () => ({
-  safeStorage: {
-    setJSON: vi.fn(),
-    getJSON: vi.fn(() => null),
-    get: vi.fn(),
-    set: vi.fn(),
-    remove: vi.fn(),
-  },
+  safeStorage: mockSafeStorage,
 }));
 
 vi.mock('../constants', () => ({
   TIMING: { NAVIGATION_DELAY: 0, SIMULATED_API_DELAY: 0 },
 }));
-
 import { useSignIn } from './useSignIn';
+
+describe('useSignIn — signed 2FA challenge', () => {
+  let store: ReturnType<typeof createStore>;
+
+  beforeEach(() => {
+    vi.clearAllMocks();
+    mockSafeStorage.get.mockReturnValue('backend-jwt');
+    store = createStore();
+  });
+
+  it('passes only the server-issued challenge token to 2FA verification', async () => {
+    mockBackendLogin.mockResolvedValue({
+      success: true,
+      requiresTwoFactor: true,
+      data: { twoFactorToken: 'short-lived-challenge' },
+    });
+    mockVerifyTwoFactor.mockResolvedValue({
+      id: 'verified-user',
+      email: 'user@example.com',
+      name: 'Verified User',
+      role: 'buyer',
+      status: 'active',
+    });
+
+    const { result } = renderHook(() => useSignIn(), { wrapper: createWrapper(store) });
+    act(() => {
+      result.current.setEmail('user@example.com');
+      result.current.setPassword('ValidPass1');
+    });
+
+    await act(async () => {
+      await result.current.handleEmailSubmit({ preventDefault: vi.fn() } as never);
+    });
+
+    expect(result.current.step).toBe(4);
+    act(() => result.current.setTwoFactorCode('123456'));
+    await act(async () => {
+      await result.current.handleTwoFactorSubmit({ preventDefault: vi.fn() } as never);
+    });
+
+    expect(mockVerifyTwoFactor).toHaveBeenCalledWith('short-lived-challenge', '123456');
+  });
+
+  it('refuses to enter the 2FA step when the server omits its challenge token', async () => {
+    mockBackendLogin.mockResolvedValue({ success: true, requiresTwoFactor: true, data: {} });
+
+    const { result } = renderHook(() => useSignIn(), { wrapper: createWrapper(store) });
+    act(() => {
+      result.current.setEmail('user@example.com');
+      result.current.setPassword('ValidPass1');
+    });
+
+    await act(async () => {
+      await result.current.handleEmailSubmit({ preventDefault: vi.fn() } as never);
+    });
+
+    expect(result.current.step).toBe(1);
+    expect(result.current.error).toMatch(/2FA challenge could not be started/i);
+    expect(mockVerifyTwoFactor).not.toHaveBeenCalled();
+  });
+});
 
 // ── Store + wrapper ───────────────────────────────────────────────────────────
 
@@ -145,7 +209,9 @@ const backendSuperuser = {
   ...backendBuyerUser,
   id: 'backend-uuid-super',
   email: 'arslanmalikgoraha@gmail.com',
-  role: 'agent',
+  role: 'managing_director',
+  status: 'active',
+  accessLevel: 5,
 };
 
 const successResponse = (user = backendBuyerUser) => ({
@@ -178,7 +244,10 @@ describe('useSignIn — handleSocialAuth (integration)', () => {
         await result.current.handleSocialAuth('google');
       });
 
-      expect(mockSyncFirebaseUser).toHaveBeenCalledWith(firebaseUser);
+      expect(mockSyncFirebaseUser).toHaveBeenCalledWith(firebaseUser, {
+        intent: 'signin',
+        persistSession: true,
+      });
     });
 
     it('clears error state after success', async () => {
@@ -212,7 +281,7 @@ describe('useSignIn — handleSocialAuth (integration)', () => {
       });
       act(() => vi.runAllTimers());
 
-      expect(mockNavigate).toHaveBeenCalledWith('/crm');
+      expect(mockNavigate).toHaveBeenCalledWith('/crm', { replace: true });
       vi.useRealTimers();
     });
 
@@ -226,7 +295,7 @@ describe('useSignIn — handleSocialAuth (integration)', () => {
       });
       act(() => vi.runAllTimers());
 
-      expect(mockNavigate).toHaveBeenCalledWith('/tenant-portal');
+      expect(mockNavigate).toHaveBeenCalledWith('/tenant-portal', { replace: true });
       vi.useRealTimers();
     });
 
@@ -240,7 +309,7 @@ describe('useSignIn — handleSocialAuth (integration)', () => {
       });
       act(() => vi.runAllTimers());
 
-      expect(mockNavigate).toHaveBeenCalledWith('/landlord-portal');
+      expect(mockNavigate).toHaveBeenCalledWith('/landlord-portal', { replace: true });
       vi.useRealTimers();
     });
 
@@ -254,7 +323,7 @@ describe('useSignIn — handleSocialAuth (integration)', () => {
       });
       act(() => vi.runAllTimers());
 
-      expect(mockNavigate).toHaveBeenCalledWith('/profile');
+      expect(mockNavigate).toHaveBeenCalledWith('/profile', { replace: true });
       vi.useRealTimers();
     });
 
@@ -268,7 +337,7 @@ describe('useSignIn — handleSocialAuth (integration)', () => {
       });
       act(() => vi.runAllTimers());
 
-      expect(mockNavigate).toHaveBeenCalledWith('/pending-approval');
+      expect(mockNavigate).toHaveBeenCalledWith('/pending-approval', { replace: true });
       vi.useRealTimers();
     });
 
@@ -282,7 +351,7 @@ describe('useSignIn — handleSocialAuth (integration)', () => {
       });
       act(() => vi.runAllTimers());
 
-      expect(mockNavigate).toHaveBeenCalledWith('/pending-approval');
+      expect(mockNavigate).toHaveBeenCalledWith('/pending-approval', { replace: true });
       vi.useRealTimers();
     });
   });
@@ -305,6 +374,10 @@ describe('useSignIn — handleSocialAuth (integration)', () => {
         await result.current.handleSocialAuth('google');
       });
 
+      expect(mockSyncFirebaseUser).toHaveBeenCalledWith(firebaseUser, {
+        intent: 'signup',
+        persistSession: false,
+      });
       expect(result.current.step).toBe(2);
       expect(mockNavigate).not.toHaveBeenCalled();
     });
@@ -333,7 +406,7 @@ describe('useSignIn — handleSocialAuth (integration)', () => {
       expect(result.current.pendingUser?.email).toBe(backendBuyerUser.email);
     });
 
-    it('does not ask role selection for superuser signup and signs in immediately', async () => {
+    it('uses the server-issued managing-director role to skip social signup onboarding', async () => {
       vi.stubEnv('VITE_CREATOR_SUPERUSER_EMAIL', 'arslanmalikgoraha@gmail.com');
       vi.useFakeTimers();
       mockSyncFirebaseUser.mockResolvedValue(successResponse(backendSuperuser));
@@ -349,8 +422,33 @@ describe('useSignIn — handleSocialAuth (integration)', () => {
 
       expect(result.current.step).toBe(1);
       expect(result.current.pendingUser).toBeNull();
-      expect(mockNavigate).toHaveBeenCalledWith('/profile');
+      expect(mockNavigate).toHaveBeenCalledWith('/profile', { replace: true });
       vi.useRealTimers();
+    });
+
+    it('does not grant founder-email privilege when the server returns a regular role', async () => {
+      mockSyncFirebaseUser.mockResolvedValue(
+        successResponse({
+          ...backendBuyerUser,
+          email: 'arslanmalikgoraha@gmail.com',
+          role: 'agent',
+          status: 'active',
+        })
+      );
+      const { result } = renderHook(() => useSignIn(), { wrapper: createWrapper(store) });
+
+      act(() => result.current.switchMode());
+      await act(async () => {
+        await result.current.handleSocialAuth('google');
+      });
+
+      expect(mockSyncFirebaseUser).toHaveBeenCalledWith(firebaseUser, {
+        intent: 'signup',
+        persistSession: false,
+      });
+      expect(result.current.step).toBe(2);
+      expect(result.current.pendingUser?.email).toBe('arslanmalikgoraha@gmail.com');
+      expect(mockNavigate).not.toHaveBeenCalled();
     });
   });
 
@@ -574,6 +672,10 @@ describe('useSignIn — handleSocialAuth (integration)', () => {
         await result.current.handleSocialAuth('google');
       });
 
+      expect(mockSyncFirebaseUser).toHaveBeenCalledWith(firebaseUser, {
+        intent: 'signup',
+        persistSession: false,
+      });
       expect(result.current.step).toBe(2);
       expect(result.current.pendingUser?.fromSocialProvider).toBe('google');
 
@@ -593,8 +695,12 @@ describe('useSignIn — handleSocialAuth (integration)', () => {
 
       act(() => vi.runAllTimers());
 
-      expect(mockCompleteSocialRegistration).toHaveBeenCalledWith('client', 'tenant');
-      expect(mockNavigate).toHaveBeenCalledWith('/tenant-portal');
+      expect(mockCompleteSocialRegistration).toHaveBeenCalledWith(
+        'client',
+        'tenant',
+        'backend-jwt'
+      );
+      expect(mockNavigate).toHaveBeenCalledWith('/tenant-portal', { replace: true });
       vi.useRealTimers();
     });
 
@@ -620,6 +726,20 @@ describe('useSignIn — handleSocialAuth (integration)', () => {
       expect(result.current.socialSyncRecovery).toBeNull();
       expect(result.current.step).toBe(2);
       expect(result.current.pendingUser?.fromSocialProvider).toBe('google');
+    });
+  });
+
+  describe('phone signup policy', () => {
+    it('rejects phone signup before requesting an OTP', async () => {
+      const { result } = renderHook(() => useSignIn(), { wrapper: createWrapper(store) });
+      act(() => result.current.switchMode());
+
+      await act(async () => {
+        await result.current.handlePhoneSubmit({ preventDefault: vi.fn() } as never);
+      });
+
+      expect(result.current.error).toMatch(/phone sign-up is unavailable/i);
+      expect(result.current.loading).toBe(false);
     });
   });
 
@@ -657,7 +777,10 @@ describe('useSignIn — handleSocialAuth (integration)', () => {
       });
 
       expect(mockSignInWithFacebook).toHaveBeenCalledTimes(1);
-      expect(mockSyncFirebaseUser).toHaveBeenCalledWith(firebaseUser);
+      expect(mockSyncFirebaseUser).toHaveBeenCalledWith(firebaseUser, {
+        intent: 'signin',
+        persistSession: true,
+      });
     });
   });
 
@@ -672,7 +795,10 @@ describe('useSignIn — handleSocialAuth (integration)', () => {
       });
 
       expect(mockSignInWithApple).toHaveBeenCalledTimes(1);
-      expect(mockSyncFirebaseUser).toHaveBeenCalledWith(firebaseUser);
+      expect(mockSyncFirebaseUser).toHaveBeenCalledWith(firebaseUser, {
+        intent: 'signin',
+        persistSession: true,
+      });
     });
   });
 
@@ -687,6 +813,39 @@ describe('useSignIn — handleSocialAuth (integration)', () => {
       });
 
       expect(result.current.error).toBe('Invalid provider');
+    });
+  });
+
+  describe('two-factor challenge flow', () => {
+    it('passes the signed server challenge token to verification instead of the account email', async () => {
+      mockBackendLogin.mockResolvedValue({
+        success: true,
+        requiresTwoFactor: true,
+        data: { twoFactorToken: 'short-lived-challenge' },
+      });
+      mockVerifyTwoFactor.mockResolvedValue({
+        ...backendBuyerUser,
+        status: 'active',
+        profileCompleted: true,
+      });
+      const { result } = renderHook(() => useSignIn(), { wrapper: createWrapper(store) });
+
+      act(() => {
+        result.current.setEmail('user@example.com');
+        result.current.setPassword('ValidPass1');
+      });
+      await act(async () => {
+        await result.current.handleEmailSubmit({ preventDefault: vi.fn() } as never);
+      });
+
+      expect(result.current.step).toBe(4);
+      act(() => result.current.setTwoFactorCode('123456'));
+      await act(async () => {
+        await result.current.handleTwoFactorSubmit({ preventDefault: vi.fn() } as never);
+      });
+
+      expect(mockVerifyTwoFactor).toHaveBeenCalledWith('short-lived-challenge', '123456');
+      expect(mockVerifyTwoFactor).not.toHaveBeenCalledWith('user@example.com', '123456');
     });
   });
 

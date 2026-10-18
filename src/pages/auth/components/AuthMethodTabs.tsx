@@ -14,15 +14,27 @@ export const AuthMethodTabs = memo(function AuthMethodTabs({
   phoneLabel,
 }: AuthMethodTabsProps) {
   return (
-    <div className="auth-tabs">
+    <div className="auth-method-tabs" role="tablist" aria-label="Sign-in method">
       <button
-        className={`auth-tab ${activeTab === 'email' ? 'active' : ''}`}
+        type="button"
+        role="tab"
+        id="auth-method-email-tab"
+        aria-selected={activeTab === 'email'}
+        aria-controls="auth-method-email-panel"
+        tabIndex={activeTab === 'email' ? 0 : -1}
+        className={`auth-method-tab ${activeTab === 'email' ? 'active' : ''}`}
         onClick={() => onChange('email')}
       >
         {emailLabel}
       </button>
       <button
-        className={`auth-tab ${activeTab === 'phone' ? 'active' : ''}`}
+        type="button"
+        role="tab"
+        id="auth-method-phone-tab"
+        aria-selected={activeTab === 'phone'}
+        aria-controls="auth-method-phone-panel"
+        tabIndex={activeTab === 'phone' ? 0 : -1}
+        className={`auth-method-tab ${activeTab === 'phone' ? 'active' : ''}`}
         onClick={() => onChange('phone')}
       >
         {phoneLabel}

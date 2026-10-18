@@ -35,11 +35,18 @@ export interface UseWorkspaceLayoutLogicReturn
 
 export function useWorkspaceLayoutLogic(
   currentUserEmail: string,
-  initialViewId: string
+  initialViewId: string,
+  currentUserRole?: string,
+  currentUserAccessLevel?: number
 ): UseWorkspaceLayoutLogicReturn {
+  const currentProfile = useMemo(
+    () => ({ role: currentUserRole, accessLevel: currentUserAccessLevel }),
+    [currentUserRole, currentUserAccessLevel]
+  );
+
   // ── State ──────────────────────────────────────────────────────────────────
   const [userProfile, setUserProfile] = useState<UserProfile>(() =>
-    evaluateFounderGuard(currentUserEmail)
+    evaluateFounderGuard(currentUserEmail, currentProfile)
   );
   const [activeViewCode, setActiveViewCode] = useState<string>(initialViewId);
   const [searchTerm, setSearchTerm] = useState<string>('');
@@ -47,28 +54,26 @@ export function useWorkspaceLayoutLogic(
 
   // ── Effects ────────────────────────────────────────────────────────────────
   useEffect(() => {
-    setUserProfile(evaluateFounderGuard(currentUserEmail));
-  }, [currentUserEmail]);
+    setUserProfile(evaluateFounderGuard(currentUserEmail, currentProfile));
+  }, [currentUserEmail, currentProfile]);
 
   // ── Derived Data ───────────────────────────────────────────────────────────
   const activeView = useMemo(
     () =>
-      VIEWS_REGISTRY.find(
-        (v) => v.code === activeViewCode || v.id === activeViewCode
-      ) || VIEWS_REGISTRY[0],
+      VIEWS_REGISTRY.find(v => v.code === activeViewCode || v.id === activeViewCode) ||
+      VIEWS_REGISTRY[0],
     [activeViewCode]
   );
 
   const categories = useMemo(
-    () => ['All', ...Array.from(new Set(VIEWS_REGISTRY.map((v) => v.category)))],
+    () => ['All', ...Array.from(new Set(VIEWS_REGISTRY.map(v => v.category)))],
     []
   );
 
   const filteredViews = useMemo(
     () =>
-      VIEWS_REGISTRY.filter((v) => {
-        const matchesCategory =
-          activeCategory === 'All' || v.category === activeCategory;
+      VIEWS_REGISTRY.filter(v => {
+        const matchesCategory = activeCategory === 'All' || v.category === activeCategory;
         const q = searchTerm.toLowerCase();
         const matchesSearch =
           v.title.toLowerCase().includes(q) ||

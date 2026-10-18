@@ -67,9 +67,24 @@ describe('authSession utilities', () => {
       expect(
         resolvePostLoginDestination({
           user: { role: 'tenant', status: 'active' },
+          returnTo: '/tenant-portal/maintenance?tab=open',
+        })
+      ).toBe('/tenant-portal/maintenance?tab=open');
+    });
+
+    it('rejects a return path that is outside the authenticated role', () => {
+      expect(
+        resolvePostLoginDestination({
+          user: { role: 'tenant', status: 'active' },
           returnTo: '/crm/custom',
         })
-      ).toBe('/crm/custom');
+      ).toBe('/tenant-portal');
+    });
+
+    it('routes property_owner aliases to the landlord portal', () => {
+      expect(
+        resolvePostLoginDestination({ user: { role: 'property_owner', status: 'active' } })
+      ).toBe('/landlord-portal');
     });
 
     it('routes pending users to pending approval page', () => {
@@ -156,6 +171,9 @@ describe('authSession utilities', () => {
 
       expect(destination).toBe('/profile');
       expect(dispatch).toHaveBeenCalledWith(setUser(expect.objectContaining({ role: 'lion' })));
+      expect(dispatch).toHaveBeenCalledWith(
+        setUser(expect.objectContaining({ role: 'lion', accessLevel: 5 }))
+      );
       expect(dispatch).toHaveBeenCalledWith(setActiveRole('lion'));
 
       const loginAction = dispatch.mock.calls
@@ -173,6 +191,7 @@ describe('authSession utilities', () => {
         expect.objectContaining({
           role: 'lion',
           email: 'arslanmalikgoraha@gmail.com',
+          accessLevel: 5,
         })
       );
       expect(mockSetJSON).toHaveBeenCalledWith(

@@ -9,7 +9,7 @@
  */
 
 import type { Metadata } from 'next';
-import { prisma, safeQuery } from '@/lib/prisma';
+import { safeQuery } from '@/lib/prisma';
 
 // ─── SEO ──────────────────────────────────────────────────────────────────────
 
@@ -43,9 +43,8 @@ interface PropertyListing {
 }
 
 async function getProperties(): Promise<PropertyListing[]> {
-  return safeQuery(
-    async (db) => {
-      // @ts-expect-error — schema model name may vary; safeQuery returns [] on miss
+  return safeQuery<PropertyListing[]>(
+    async db => {
       const results = await db.property.findMany({
         take: 24,
         orderBy: { createdAt: 'desc' },
@@ -55,14 +54,19 @@ async function getProperties(): Promise<PropertyListing[]> {
           price: true,
           bedrooms: true,
           bathrooms: true,
+          sqft: true,
           area: true,
-          community: true,
-          propertyType: true,
+          type: true,
           status: true,
           images: true,
         },
       });
-      return results as PropertyListing[];
+      return results.map(({ sqft, area, type, ...property }) => ({
+        ...property,
+        area: sqft,
+        community: area,
+        propertyType: type,
+      }));
     },
     [] // fallback: empty array when DB is offline
   );
@@ -153,15 +157,9 @@ function PropertyCard({ property }: { property: PropertyListing }) {
             marginBottom: '16px',
           }}
         >
-          {property.bedrooms != null && (
-            <span>🛏 {property.bedrooms} Bed</span>
-          )}
-          {property.bathrooms != null && (
-            <span>🚿 {property.bathrooms} Bath</span>
-          )}
-          {property.area != null && (
-            <span>📐 {property.area.toLocaleString()} sqft</span>
-          )}
+          {property.bedrooms != null && <span>🛏 {property.bedrooms} Bed</span>}
+          {property.bathrooms != null && <span>🚿 {property.bathrooms} Bath</span>}
+          {property.area != null && <span>📐 {property.area.toLocaleString()} sqft</span>}
         </div>
 
         {property.community && (
@@ -204,9 +202,7 @@ function EmptyState() {
       }}
     >
       <div style={{ fontSize: '3rem', marginBottom: '16px' }}>🏙️</div>
-      <h2 style={{ color: '#1E293B', marginBottom: '8px' }}>
-        Properties Loading Soon
-      </h2>
+      <h2 style={{ color: '#1E293B', marginBottom: '8px' }}>Properties Loading Soon</h2>
       <p style={{ fontSize: '0.95rem' }}>
         Our live Dubai inventory is being synced from DLD. Check back shortly.
       </p>
@@ -298,7 +294,7 @@ export default async function PropertiesPage() {
           }}
         >
           {properties.length > 0 ? (
-            properties.map((p) => <PropertyCard key={p.id} property={p} />)
+            properties.map(p => <PropertyCard key={p.id} property={p} />)
           ) : (
             <EmptyState />
           )}

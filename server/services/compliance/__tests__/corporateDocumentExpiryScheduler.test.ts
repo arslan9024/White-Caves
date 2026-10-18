@@ -38,9 +38,9 @@ vi.mock('../../emailService.js', () => ({
   sendEmailTracked: (...args: unknown[]) => mockSendEmailTracked(...args),
 }));
 
-const mockSendText = vi.fn();
+const mockSendMessage = vi.fn();
 const mockCreateMetaAPIClient = vi.fn(() => ({
-  sendText: (...args: unknown[]) => mockSendText(...args),
+  sendMessage: (...args: unknown[]) => mockSendMessage(...args),
 }));
 const mockNormalizePhone = vi.fn((value: string) => value);
 vi.mock('../../whatsapp/metaAPI.js', () => ({
@@ -113,7 +113,7 @@ describe('corporateDocumentExpiryScheduler', () => {
     expect(summary.statusUpdated).toBe(1);
     expect(summary.alertsCreated).toBe(1);
     expect(mockPrisma.corporateDocument.update).toHaveBeenCalledWith(
-      expect.objectContaining({ where: { id: 'doc-30' }, data: { status: 'expiring_soon' } }),
+      expect.objectContaining({ where: { id: 'doc-30' }, data: { status: 'expiring_soon' } })
     );
     expect(mockPrisma.corporateDocumentAlert.create).toHaveBeenCalledWith(
       expect.objectContaining({
@@ -121,7 +121,7 @@ describe('corporateDocumentExpiryScheduler', () => {
           alertType: 'expiry_threshold_30',
           documentId: 'doc-30',
         }),
-      }),
+      })
     );
     expect(mockPushToUser).toHaveBeenCalledTimes(2);
   });
@@ -146,7 +146,7 @@ describe('corporateDocumentExpiryScheduler', () => {
         data: expect.objectContaining({
           alertType: 'expiry_threshold_0',
         }),
-      }),
+      })
     );
   });
 
@@ -180,7 +180,7 @@ describe('corporateDocumentExpiryScheduler', () => {
 
     expect(mockSendEmailTracked).toHaveBeenCalledTimes(1);
     expect(mockCreateMetaAPIClient).toHaveBeenCalledTimes(1);
-    expect(mockSendText).toHaveBeenCalledTimes(1);
+    expect(mockSendMessage).toHaveBeenCalledTimes(1);
     expect(summary.notificationsQueued).toBe(3);
   });
 

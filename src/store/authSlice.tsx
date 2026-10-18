@@ -65,22 +65,8 @@ const detectBrowser = (): string => {
 
 import { safeStorage } from '../utils/safeStorage';
 
-const FOUNDER_EMAIL = 'arslanmalikgoraha@gmail.com';
-
-// FIX 02 (AEGIS): Hydrate user from localStorage on boot to eliminate white-screen flash
 const hydrateInitialUser = (): AppUser | null => {
-  const stored = safeStorage.getJSON<AppUser>('user');
-  if (!stored) return null;
-
-  // Founder bypass: force-inject Level 5 Master payload
-  if (stored.email?.toLowerCase() === FOUNDER_EMAIL) {
-    return {
-      ...stored,
-      role: 'managing_director',
-      accessLevel: 5,
-    };
-  }
-  return stored;
+  return safeStorage.getJSON<AppUser>('user');
 };
 
 const initialToken = safeStorage.get('token');
@@ -135,10 +121,10 @@ export const authSlice = createSlice({
       state.error = action.payload;
       state.loading = false;
     },
-    clearError: (state) => {
+    clearError: state => {
       state.error = null;
     },
-    loginStart: (state) => {
+    loginStart: state => {
       state.loading = true;
       state.error = null;
     },
@@ -151,22 +137,20 @@ export const authSlice = createSlice({
       const sessionId = generateSessionId();
       const now = new Date().toISOString();
       const expiresAt = new Date(Date.now() + state.sessionTimeout * 60 * 1000).toISOString();
-      
+
       state.user = user;
       state.token = token || null;
       state.refreshToken = refreshToken || null;
       state.loginProvider = provider || 'unknown';
       state.rememberMe = rememberMe || false;
-      
+
       state.session = {
         isLoggedIn: true,
         lastActive: now,
         expiresAt,
         activeSessionId: sessionId,
         sessions: [
-          ...state.session.sessions
-            .map(s => ({ ...s, isCurrent: false }))
-            .slice(-9),
+          ...state.session.sessions.map(s => ({ ...s, isCurrent: false })).slice(-9),
           {
             id: sessionId,
             device: detectDevice(),
@@ -176,22 +160,22 @@ export const authSlice = createSlice({
             ip: null,
             location: null,
             isCurrent: true,
-          }
+          },
         ],
       };
-      
+
       state.loginMethods = {
         social: ['google', 'facebook', 'apple', 'linkedin'].includes(provider || ''),
         email: provider === 'email',
         mobile: provider === 'phone',
       };
-      
+
       state.loading = false;
       state.error = null;
     },
     logout: (state, action: PayloadAction<{ sessionId?: string } | undefined>) => {
       const sessionId = action?.payload?.sessionId;
-      
+
       if (sessionId && sessionId !== state.session.activeSessionId) {
         state.session.sessions = state.session.sessions.filter(s => s.id !== sessionId);
       } else {
@@ -213,7 +197,7 @@ export const authSlice = createSlice({
         };
       }
     },
-    logoutAllSessions: (state) => {
+    logoutAllSessions: state => {
       state.user = null;
       state.token = null;
       state.refreshToken = null;
@@ -231,10 +215,10 @@ export const authSlice = createSlice({
         mobile: false,
       };
     },
-    updateLastActivity: (state) => {
+    updateLastActivity: state => {
       const now = new Date().toISOString();
       state.session.lastActive = now;
-      
+
       const sessionIndex = state.session.sessions.findIndex(
         s => s.id === state.session.activeSessionId
       );
@@ -246,18 +230,19 @@ export const authSlice = createSlice({
       const { token, refreshToken, expiresAt } = action.payload;
       state.token = token;
       state.refreshToken = refreshToken || state.refreshToken;
-      state.session.expiresAt = expiresAt || new Date(Date.now() + state.sessionTimeout * 60 * 1000).toISOString();
+      state.session.expiresAt =
+        expiresAt || new Date(Date.now() + state.sessionTimeout * 60 * 1000).toISOString();
       state.session.lastActive = new Date().toISOString();
     },
-    checkSessionTimeout: (state) => {
+    checkSessionTimeout: state => {
       if (!state.session.isLoggedIn) return;
-      
+
       const now = Date.now();
       const lastActive = state.session.lastActive
         ? new Date(state.session.lastActive).getTime()
         : 0;
       const timeoutMs = state.sessionTimeout * 60 * 1000;
-      
+
       if (!Number.isFinite(lastActive) || now - lastActive > timeoutMs) {
         state.user = null;
         state.token = null;

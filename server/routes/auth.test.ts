@@ -11,13 +11,29 @@ import express from 'express';
 import request from 'supertest';
 import crypto from 'crypto';
 
+const webauthn = vi.hoisted(() => ({
+  generateRegistrationOptions: vi.fn(),
+  generateAuthenticationOptions: vi.fn(),
+  verifyRegistrationResponse: vi.fn(),
+  verifyAuthenticationResponse: vi.fn(),
+}));
+vi.mock('@simplewebauthn/server', () => webauthn);
+
 // ── Hoisted mocks ────────────────────────────────────────────────────
 const { mockPrisma, mockBcrypt, mockJwt } = vi.hoisted(() => {
   const fn = vi.fn;
   return {
     mockPrisma: {
+      webAuthnCredential: {
+        create: fn(),
+        findMany: fn(),
+        findUnique: fn(),
+        update: fn(),
+        deleteMany: fn(),
+      },
       user: {
         findUnique: fn().mockResolvedValue(null),
+        findMany: fn().mockResolvedValue([]),
         create: fn().mockResolvedValue({
           id: 'user-1',
           email: 'test@whitecaves.ae',
@@ -64,6 +80,7 @@ const { mockVerifyFirebaseIdToken } = vi.hoisted(() => ({
   mockVerifyFirebaseIdToken: vi.fn().mockResolvedValue({
     uid: 'firebase-123',
     email: 'test@whitecaves.ae',
+    email_verified: true,
     name: 'Firebase Test',
     picture: 'https://example.com/firebase.jpg',
   }),
@@ -76,6 +93,7 @@ vi.mock('../config/env', () => ({
   JWT_SECRET: 'test-secret',
   JWT_EXPIRES_SECONDS: 3600,
   BCRYPT_ROUNDS: 10,
+  CORS_ORIGINS: ['http://localhost:3000'],
 }));
 vi.mock('../utils/sanitize', () => ({
   sanitizeString: (s: string) => s,
@@ -105,8 +123,13 @@ vi.mock('../middleware/errorHandler', () => ({
     Promise.resolve(fn(req, res, next)).catch(next),
 }));
 vi.mock('../middleware/auth.js', () => ({
+  shouldUseDevAuthBypass: (nodeEnv: string, bypassFlag: string, remoteAddress: string) =>
+    nodeEnv === 'development' &&
+    bypassFlag === 'true' &&
+    ['127.0.0.1', '::1', '::ffff:127.0.0.1'].includes(remoteAddress),
   default: (req: any, _res: any, next: any) => {
-    // Auth middleware pass-through for tests — user is set by createApp
+    if (!req.user?.id)
+      return next(Object.assign(new Error('Authentication required'), { statusCode: 401 }));
     next();
   },
 }));
@@ -148,6 +171,60 @@ function createApp(role: string = 'owner', userId = 'user-1') {
 describe('Auth Routes — /api/auth', () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    webauthn.generateRegistrationOptions
+      .mockReset()
+      .mockResolvedValue({ challenge: 'registration-challenge' });
+    webauthn.generateAuthenticationOptions
+      .mockReset()
+      .mockResolvedValue({ challenge: 'authentication-challenge' });
+    webauthn.verifyRegistrationResponse.mockReset().mockResolvedValue({ verified: false });
+    webauthn.verifyAuthenticationResponse.mockReset().mockResolvedValue({ verified: false });
+    mockPrisma.webAuthnCredential.findMany.mockReset().mockResolvedValue([]);
+    mockPrisma.webAuthnCredential.findUnique.mockReset().mockResolvedValue(null);
+    mockPrisma.webAuthnCredential.create.mockReset().mockResolvedValue({});
+    mockPrisma.webAuthnCredential.update.mockReset().mockResolvedValue({});
+    mockPrisma.webAuthnCredential.deleteMany.mockReset().mockResolvedValue({ count: 0 });
+    mockPrisma.user.findUnique.mockReset().mockResolvedValue(null);
+    mockPrisma.user.findMany.mockReset().mockResolvedValue([]);
+    mockPrisma.user.create.mockReset().mockResolvedValue({
+      id: 'user-1',
+      email: 'test@whitecaves.ae',
+      name: 'Test User',
+      role: 'agent',
+      department: 'sales',
+      passwordHash: '$2a$10$hashedvalue',
+      phone: null,
+      photoUrl: null,
+      status: 'active',
+    });
+    mockPrisma.user.update.mockReset().mockResolvedValue({
+      id: 'user-1',
+      email: 'test@whitecaves.ae',
+      name: 'Updated',
+      role: 'agent',
+      phone: null,
+      department: 'sales',
+      photoUrl: null,
+      status: 'active',
+    });
+    mockPrisma.activity.create.mockReset().mockResolvedValue({ id: 'act-1' });
+    mockPrisma.activity.findMany.mockReset().mockResolvedValue([]);
+    mockPrisma.activity.findUnique.mockReset().mockResolvedValue(null);
+    mockPrisma.activity.count.mockReset().mockResolvedValue(0);
+    mockPrisma.activity.findFirst.mockReset().mockResolvedValue(null);
+    mockPrisma.activity.update.mockReset().mockResolvedValue({ id: 'act-1' });
+    mockPrisma.activity.deleteMany.mockReset().mockResolvedValue({ count: 0 });
+    mockBcrypt.hash.mockReset().mockResolvedValue('$2a$10$newhashedpassword');
+    mockBcrypt.compare.mockReset().mockResolvedValue(true);
+    mockJwt.sign.mockReset().mockReturnValue('mock-jwt-token');
+    mockJwt.verify.mockReset();
+    mockVerifyFirebaseIdToken.mockReset().mockResolvedValue({
+      uid: 'firebase-123',
+      email: 'test@whitecaves.ae',
+      email_verified: true,
+      name: 'Firebase Test',
+      picture: 'https://example.com/firebase.jpg',
+    });
   });
 
   // ── POST /login ──────────────────────────────────────────────────
@@ -173,6 +250,31 @@ describe('Auth Routes — /api/auth', () => {
         .send({ email: 'unknown@test.com', password: 'Test1234' });
       expect(res.status).toBe(401);
       expect(res.body.error).toMatch(/invalid email or password/i);
+    });
+
+    it('does not promote a matching founder email during password login', async () => {
+      mockPrisma.user.findUnique.mockResolvedValueOnce({
+        id: 'founder-email-user',
+        email: 'arslanmalikgoraha@gmail.com',
+        name: 'Registered User',
+        role: 'buyer',
+        department: null,
+        passwordHash: '$2a$10$hashedvalue',
+        phone: null,
+        photoUrl: null,
+        status: 'active',
+      });
+
+      const res = await request(createApp()).post('/api/auth/login').send({
+        email: 'arslanmalikgoraha@gmail.com',
+        password: 'ValidPass1',
+      });
+
+      expect(res.status).toBe(200);
+      expect(mockJwt.sign.mock.calls[0][0]).toEqual(
+        expect.objectContaining({ role: 'buyer', id: 'founder-email-user' })
+      );
+      expect(mockPrisma.user.update.mock.calls[0][0].data).not.toHaveProperty('role');
     });
 
     it('returns 401 if password is wrong', async () => {
@@ -629,6 +731,20 @@ describe('Auth Routes — /api/auth', () => {
       );
     });
 
+    it('reserves the founder email for administrator-provisioned accounts', async () => {
+      const res = await request(createApp()).post('/api/auth/register').send({
+        email: 'arslanmalikgoraha@gmail.com',
+        password: 'ValidPass1',
+        category: 'client',
+        role: 'buyer',
+      });
+
+      expect(res.status).toBe(403);
+      expect(res.body.error).toMatch(/provisioned by an administrator/i);
+      expect(mockPrisma.user.findUnique).not.toHaveBeenCalled();
+      expect(mockPrisma.user.create).not.toHaveBeenCalled();
+    });
+
     it('logs activity on successful registration', async () => {
       mockPrisma.user.findUnique.mockResolvedValueOnce(null);
       mockPrisma.user.create.mockResolvedValueOnce({
@@ -650,47 +766,58 @@ describe('Auth Routes — /api/auth', () => {
 
   // ── POST /verify-2fa ─────────────────────────────────────────────
   describe('POST /api/auth/verify-2fa', () => {
-    it('returns 400 if email or code is missing', async () => {
-      const res = await request(createApp())
-        .post('/api/auth/verify-2fa')
-        .send({ email: 'test@whitecaves.ae' });
+    it('returns 400 when the challenge or code is missing', async () => {
+      const res = await request(createApp()).post('/api/auth/verify-2fa').send({});
       expect(res.status).toBe(400);
     });
 
-    it('verifies a code in development bypass mode', async () => {
-      const originalEnv = process.env.NODE_ENV;
-      const originalBypass = process.env.DEV_2FA_BYPASS;
-      process.env.NODE_ENV = 'development';
-      process.env.DEV_2FA_BYPASS = 'true';
-
-      mockPrisma.user.findUnique.mockResolvedValueOnce({
-        id: 'user-1',
-        email: 'test@whitecaves.ae',
-        name: 'Test User',
-        role: 'owner',
-        passwordHash: '$2a$10$validhash',
-        twoFactorEnabled: true,
-        twoFactorSecret: 'encrypted-secret',
+    it('rejects an expired or invalid signed challenge', async () => {
+      mockJwt.verify.mockImplementationOnce(() => {
+        throw new Error('expired');
       });
 
       const res = await request(createApp())
         .post('/api/auth/verify-2fa')
-        .send({ email: 'test@whitecaves.ae', code: '000000' });
+        .send({ twoFactorToken: 'expired-challenge', code: '123456' });
 
-      process.env.NODE_ENV = originalEnv;
-      process.env.DEV_2FA_BYPASS = originalBypass;
-
-      expect(res.status).toBe(200);
-      expect(res.body.success).toBe(true);
-      expect(res.body.data.token).toBe('mock-jwt-token');
+      expect(res.status).toBe(401);
+      expect(res.body.error).toMatch(/challenge is invalid or expired/i);
+      expect(mockPrisma.user.findUnique).not.toHaveBeenCalled();
     });
 
-    it('returns 400 if code is missing', async () => {
+    it('loads the account from the signed challenge, not a request email', async () => {
+      mockJwt.verify.mockReturnValueOnce({
+        id: 'user-1',
+        email: 'test@whitecaves.ae',
+        role: 'owner',
+        requires2FA: true,
+      });
+      mockPrisma.user.findUnique.mockResolvedValueOnce({
+        id: 'user-1',
+        email: 'test@whitecaves.ae',
+        role: 'owner',
+        status: 'active',
+        totpEnabled: true,
+        totpSecret: 'invalid-secret-for-test',
+        totpBackupCodes: [],
+      });
+
+      const res = await request(createApp()).post('/api/auth/verify-2fa').send({
+        twoFactorToken: 'signed-challenge',
+        email: 'attacker@whitecaves.ae',
+        code: '000000',
+      });
+
+      expect(mockPrisma.user.findUnique).toHaveBeenCalledWith({ where: { id: 'user-1' } });
+      expect(res.status).toBe(401);
+    });
+
+    it('returns 400 if the verification code is missing', async () => {
       const res = await request(createApp())
         .post('/api/auth/verify-2fa')
-        .send({ email: 'test@whitecaves.ae' });
+        .send({ twoFactorToken: 'signed-challenge' });
       expect(res.status).toBe(400);
-      expect(res.body.error).toMatch(/verification code.*required/i);
+      expect(res.body.error).toMatch(/challenge and verification code.*required/i);
     });
   });
 
@@ -796,6 +923,27 @@ describe('Auth Routes — /api/auth', () => {
       expect(res.body.success).toBe(true);
     });
 
+    it('returns server-computed profile completion after profile updates', async () => {
+      mockPrisma.user.update.mockResolvedValueOnce({
+        id: 'tenant-1',
+        email: 'tenant@example.com',
+        name: 'Tenant User',
+        role: 'tenant',
+        phone: '+971500000001',
+        department: null,
+        photoUrl: null,
+        status: 'active',
+      });
+
+      const res = await request(createApp('tenant', 'tenant-1'))
+        .patch('/api/auth/profile')
+        .send({ name: 'Tenant User', phone: '+971500000001' });
+
+      expect(res.status).toBe(200);
+      expect(res.body.data.profileCompleted).toBe(true);
+      expect(res.body.data.profileCompletion.missingFields).toEqual([]);
+    });
+
     it('returns 400 if name exceeds 100 characters', async () => {
       const res = await request(createApp('owner'))
         .patch('/api/auth/profile')
@@ -880,47 +1028,305 @@ describe('Auth Routes — /api/auth', () => {
         email: 'test@whitecaves.ae',
       });
 
-      expect(res.status).toBe(200);
+      expect(res.status, JSON.stringify(res.body)).toBe(200);
       expect(res.body.success).toBe(true);
       expect(res.body.data.token).toBe('mock-jwt-token');
       expect(mockVerifyFirebaseIdToken).toHaveBeenCalledWith('valid-token');
     });
 
-    it('uses development fallback when Firebase Admin is unavailable', async () => {
+    it('rejects Firebase identities whose email is not verified', async () => {
+      mockVerifyFirebaseIdToken.mockResolvedValueOnce({
+        uid: 'firebase-123',
+        email: 'test@whitecaves.ae',
+        email_verified: false,
+      });
+
+      const res = await request(createApp()).post('/api/auth/firebase-sync').send({
+        firebaseUid: 'firebase-123',
+        firebaseToken: 'unverified-token',
+        email: 'test@whitecaves.ae',
+      });
+
+      expect(res.status).toBe(400);
+      expect(res.body.error).toMatch(/verified firebase email or phone is required/i);
+      expect(mockPrisma.user.findUnique).not.toHaveBeenCalled();
+    });
+
+    it('preserves the persisted role for a verified founder-email Firebase account', async () => {
+      mockVerifyFirebaseIdToken.mockResolvedValueOnce({
+        uid: 'firebase-founder',
+        email: 'arslanmalikgoraha@gmail.com',
+        email_verified: true,
+        name: 'Registered User',
+      });
+      mockPrisma.user.findUnique.mockResolvedValueOnce({
+        id: 'founder-email-user',
+        email: 'arslanmalikgoraha@gmail.com',
+        name: 'Registered User',
+        role: 'buyer',
+        status: 'active',
+        department: null,
+        photoUrl: null,
+      });
+      mockPrisma.user.update.mockResolvedValueOnce({
+        id: 'founder-email-user',
+        email: 'arslanmalikgoraha@gmail.com',
+        name: 'Registered User',
+        role: 'buyer',
+        status: 'active',
+        department: null,
+        photoUrl: null,
+      });
+
+      const res = await request(createApp()).post('/api/auth/firebase-sync').send({
+        firebaseUid: 'firebase-founder',
+        firebaseToken: 'verified-token',
+        email: 'arslanmalikgoraha@gmail.com',
+      });
+
+      expect(res.status).toBe(200);
+      expect(res.body.data.user.role).toBe('buyer');
+      expect(mockPrisma.user.update.mock.calls[0][0].data).not.toHaveProperty('role');
+    });
+
+    it('does not create an account when an unknown verified identity chooses sign-in', async () => {
+      mockVerifyFirebaseIdToken.mockResolvedValueOnce({
+        uid: 'firebase-new-user',
+        email: 'new-user@example.com',
+        email_verified: true,
+      });
+
+      const res = await request(createApp()).post('/api/auth/firebase-sync').send({
+        intent: 'signin',
+        firebaseUid: 'firebase-new-user',
+        firebaseToken: 'verified-token',
+        email: 'new-user@example.com',
+      });
+
+      expect(res.status).toBe(404);
+      expect(res.body.error).toMatch(/account not found/i);
+      expect(mockPrisma.user.create).not.toHaveBeenCalled();
+    });
+
+    it('creates unknown social signups as pending accounts without an active role', async () => {
+      mockVerifyFirebaseIdToken.mockResolvedValueOnce({
+        uid: 'firebase-pending-user',
+        email: 'pending@example.com',
+        email_verified: true,
+        name: 'Pending User',
+      });
+      mockPrisma.user.create.mockResolvedValueOnce({
+        id: 'pending-user',
+        email: 'pending@example.com',
+        name: 'Pending User',
+        role: 'social_signup_pending',
+        status: 'pending',
+        phone: null,
+        department: null,
+        photoUrl: null,
+      });
+
+      const res = await request(createApp()).post('/api/auth/firebase-sync').send({
+        intent: 'signup',
+        firebaseUid: 'firebase-pending-user',
+        firebaseToken: 'verified-token',
+        email: 'pending@example.com',
+      });
+
+      expect(res.status).toBe(200);
+      expect(mockPrisma.user.create.mock.calls[0][0].data).toEqual(
+        expect.objectContaining({ role: 'social_signup_pending', status: 'pending' })
+      );
+      expect(res.body.data.user).toEqual(
+        expect.objectContaining({ role: 'social_signup_pending', status: 'pending' })
+      );
+    });
+
+    it('rejects signup intent for an already provisioned regular account', async () => {
+      mockVerifyFirebaseIdToken.mockResolvedValueOnce({
+        uid: 'firebase-existing-user',
+        email: 'existing@example.com',
+        email_verified: true,
+      });
+      mockPrisma.user.findUnique.mockResolvedValueOnce({
+        id: 'existing-user',
+        email: 'existing@example.com',
+        name: 'Existing User',
+        role: 'buyer',
+        status: 'active',
+        phone: null,
+        department: null,
+        photoUrl: null,
+      });
+
+      const res = await request(createApp()).post('/api/auth/firebase-sync').send({
+        intent: 'signup',
+        firebaseUid: 'firebase-existing-user',
+        firebaseToken: 'verified-token',
+        email: 'existing@example.com',
+      });
+
+      expect(res.status).toBe(409);
+      expect(res.body.error).toMatch(/account already exists/i);
+      expect(mockPrisma.user.update).not.toHaveBeenCalled();
+    });
+
+    it('does not allow social signup to reserve the configured founder identity', async () => {
+      mockVerifyFirebaseIdToken.mockResolvedValueOnce({
+        uid: 'firebase-founder-signup',
+        email: 'arslanmalikgoraha@gmail.com',
+        email_verified: true,
+      });
+      mockPrisma.user.findUnique.mockResolvedValueOnce(null);
+
+      const res = await request(createApp()).post('/api/auth/firebase-sync').send({
+        intent: 'signup',
+        firebaseUid: 'firebase-founder-signup',
+        firebaseToken: 'verified-token',
+        email: 'arslanmalikgoraha@gmail.com',
+      });
+
+      expect(res.status).toBe(403);
+      expect(res.body.error).toMatch(/provisioned by an administrator/i);
+      expect(mockPrisma.user.create).not.toHaveBeenCalled();
+    });
+
+    it('syncs a phone-authenticated identity only to one pre-provisioned active account', async () => {
+      mockVerifyFirebaseIdToken.mockResolvedValueOnce({
+        uid: 'firebase-phone-user',
+        phone_number: '+971501234567',
+        firebase: { sign_in_provider: 'phone' },
+      });
+      mockPrisma.user.findMany.mockResolvedValueOnce([
+        {
+          id: 'phone-user',
+          email: 'tenant@example.com',
+          name: 'Phone Tenant',
+          role: 'tenant',
+          status: 'active',
+          phone: '+971501234567',
+          department: null,
+          photoUrl: null,
+        },
+      ]);
+      mockPrisma.user.update.mockResolvedValueOnce({
+        id: 'phone-user',
+        email: 'tenant@example.com',
+        name: 'Phone Tenant',
+        role: 'tenant',
+        status: 'active',
+        phone: '+971501234567',
+        department: null,
+        photoUrl: null,
+      });
+
+      const res = await request(createApp()).post('/api/auth/firebase-sync').send({
+        firebaseUid: 'firebase-phone-user',
+        firebaseToken: 'verified-phone-token',
+        phoneNumber: '+971501234567',
+      });
+
+      expect(res.status).toBe(200);
+      expect(res.body.data.user).toEqual(
+        expect.objectContaining({ id: 'phone-user', role: 'tenant' })
+      );
+      expect(mockPrisma.user.findMany).toHaveBeenCalledWith({
+        where: { phone: '+971501234567', status: 'active' },
+        take: 2,
+      });
+      expect(mockPrisma.user.create).not.toHaveBeenCalled();
+    });
+
+    it('rejects phone numbers that do not match the Firebase-verified claim', async () => {
+      mockVerifyFirebaseIdToken.mockResolvedValueOnce({
+        uid: 'firebase-phone-user',
+        phone_number: '+971501234567',
+        firebase: { sign_in_provider: 'phone' },
+      });
+
+      const res = await request(createApp()).post('/api/auth/firebase-sync').send({
+        firebaseUid: 'firebase-phone-user',
+        firebaseToken: 'verified-phone-token',
+        phoneNumber: '+971509999999',
+      });
+
+      expect(res.status).toBe(401);
+      expect(res.body.error).toMatch(/firebase phone mismatch/i);
+      expect(mockPrisma.user.findMany).not.toHaveBeenCalled();
+    });
+
+    it('does not auto-create an account for an unmatched phone identity', async () => {
+      mockVerifyFirebaseIdToken.mockResolvedValueOnce({
+        uid: 'firebase-phone-new',
+        phone_number: '+971501234567',
+        firebase: { sign_in_provider: 'phone' },
+      });
+      mockPrisma.user.findMany.mockResolvedValueOnce([]);
+
+      const res = await request(createApp()).post('/api/auth/firebase-sync').send({
+        firebaseUid: 'firebase-phone-new',
+        firebaseToken: 'verified-phone-token',
+        phoneNumber: '+971501234567',
+      });
+
+      expect(res.status).toBe(403);
+      expect(res.body.error).toMatch(/phone sign-in is unavailable/i);
+      expect(mockPrisma.user.create).not.toHaveBeenCalled();
+    });
+
+    it('allows the explicit local Firebase fallback only for a provisioned active owner', async () => {
+      const originalNodeEnv = process.env.NODE_ENV;
+      const originalBypass = process.env.DEV_AUTH_BYPASS;
       process.env.NODE_ENV = 'development';
-      process.env.ALLOW_FIREBASE_SYNC_DEV_FALLBACK = 'true';
+      process.env.DEV_AUTH_BYPASS = 'true';
 
       const adminInitError = new Error('Firebase Admin SDK has not been initialized');
       adminInitError.name = 'FirebaseAdminInitError';
       mockVerifyFirebaseIdToken.mockRejectedValueOnce(adminInitError);
 
-      mockPrisma.user.findUnique.mockResolvedValueOnce(null);
-      mockPrisma.user.create.mockResolvedValueOnce({
-        id: 'user-dev-1',
-        email: 'devuser@whitecaves.ae',
-        name: 'Dev User',
-        role: 'agent',
+      mockPrisma.user.findUnique.mockResolvedValueOnce({
+        id: 'owner-dev-1',
+        email: 'arslanmalikgoraha@gmail.com',
+        name: 'Provisioned Owner',
+        role: 'managing_director',
         department: null,
+        photoUrl: null,
+        status: 'active',
+      });
+      mockPrisma.user.update.mockResolvedValueOnce({
+        id: 'owner-dev-1',
+        email: 'arslanmalikgoraha@gmail.com',
+        name: 'Provisioned Owner',
+        role: 'managing_director',
+        department: null,
+        phone: null,
         photoUrl: null,
         status: 'active',
       });
 
       const res = await request(createApp()).post('/api/auth/firebase-sync').send({
-        firebaseUid: 'firebase-dev-123',
+        firebaseUid: 'firebase-owner-dev',
         firebaseToken: 'dev-token',
-        email: 'devuser@whitecaves.ae',
-        name: 'Dev User',
+        email: 'arslanmalikgoraha@gmail.com',
+        name: 'Provisioned Owner',
       });
 
       expect(res.status).toBe(200);
       expect(res.body.success).toBe(true);
       expect(res.body.data.token).toBe('mock-jwt-token');
-      expect(res.body.data.user.email).toBe('devuser@whitecaves.ae');
+      expect(res.body.data.user.email).toBe('arslanmalikgoraha@gmail.com');
+      expect(res.body.data.user.role).toBe('managing_director');
+
+      process.env.NODE_ENV = originalNodeEnv;
+      if (originalBypass === undefined) delete process.env.DEV_AUTH_BYPASS;
+      else process.env.DEV_AUTH_BYPASS = originalBypass;
     });
 
-    it('uses development fallback when NODE_ENV is unset', async () => {
+    it('does not use development fallback when NODE_ENV is unset', async () => {
+      const originalNodeEnv = process.env.NODE_ENV;
+      const originalBypass = process.env.DEV_AUTH_BYPASS;
       delete process.env.NODE_ENV;
-      process.env.ALLOW_FIREBASE_SYNC_DEV_FALLBACK = 'true';
+      process.env.DEV_AUTH_BYPASS = 'true';
 
       const adminInitError = new Error('Firebase Admin SDK has not been initialized');
       adminInitError.name = 'FirebaseAdminInitError';
@@ -944,10 +1350,62 @@ describe('Auth Routes — /api/auth', () => {
         name: 'Unset Env User',
       });
 
+      expect(res.status).toBe(503);
+      expect(res.body.success).toBe(false);
+      expect(mockPrisma.user.create).not.toHaveBeenCalled();
+
+      process.env.NODE_ENV = originalNodeEnv;
+      if (originalBypass === undefined) delete process.env.DEV_AUTH_BYPASS;
+      else process.env.DEV_AUTH_BYPASS = originalBypass;
+    });
+  });
+
+  // ── POST /complete-social-registration ──────────────────────────
+  describe('POST /api/auth/complete-social-registration', () => {
+    it('allows a pending social signup to choose only an approved client role', async () => {
+      mockPrisma.user.findUnique.mockResolvedValueOnce({
+        id: 'pending-user',
+        email: 'pending@example.com',
+        role: 'social_signup_pending',
+        status: 'pending',
+      });
+      mockPrisma.user.update.mockResolvedValueOnce({
+        id: 'pending-user',
+        email: 'pending@example.com',
+        name: 'Pending User',
+        role: 'tenant',
+        status: 'active',
+        department: null,
+        phone: null,
+        photoUrl: null,
+      });
+
+      const res = await request(createApp('social_signup_pending', 'pending-user'))
+        .post('/api/auth/complete-social-registration')
+        .send({ category: 'client', role: 'tenant' });
+
       expect(res.status).toBe(200);
-      expect(res.body.success).toBe(true);
-      expect(res.body.data.token).toBe('mock-jwt-token');
-      expect(res.body.data.user.email).toBe('unsetenv@whitecaves.ae');
+      expect(mockPrisma.user.update).toHaveBeenCalledWith({
+        where: { id: 'pending-user' },
+        data: { role: 'tenant', status: 'active' },
+      });
+      expect(res.body.data.user.role).toBe('tenant');
+    });
+
+    it('does not let completed accounts re-enter role selection', async () => {
+      mockPrisma.user.findUnique.mockResolvedValueOnce({
+        id: 'buyer-user',
+        email: 'buyer@example.com',
+        role: 'buyer',
+        status: 'active',
+      });
+
+      const res = await request(createApp('buyer', 'buyer-user'))
+        .post('/api/auth/complete-social-registration')
+        .send({ category: 'staff', role: 'team-leader' });
+
+      expect(res.status).toBe(409);
+      expect(mockPrisma.user.update).not.toHaveBeenCalled();
     });
   });
 
@@ -1548,6 +2006,140 @@ describe('Auth Routes — /api/auth', () => {
       );
       expect(res.status).toBe(200);
       expect(res.body.data.windowMinutes).toBe(60 * 24 * 30);
+    });
+  });
+
+  describe('WebAuthn verified ceremonies', () => {
+    const credential = { id: 'passkey-1', rawId: 'passkey-1', type: 'public-key', response: {} };
+    const storedCredential = {
+      credentialId: 'passkey-1',
+      userId: 'user-1',
+      publicKey: Buffer.from('public-key').toString('base64url'),
+      counter: 1,
+      transports: [],
+    };
+
+    const authChallenge = async () => {
+      const response = await request(createApp())
+        .post('/api/auth/webauthn/authenticate/options')
+        .send({});
+      expect(response.status).toBe(200);
+      return response.body.challengeId as string;
+    };
+
+    it('requires authenticated identity for enrollment', async () => {
+      const response = await request(createApp('owner', ''))
+        .post('/api/auth/webauthn/register/options')
+        .send({ userId: 'victim' });
+      expect(response.status).toBe(401);
+      expect(webauthn.generateRegistrationOptions).not.toHaveBeenCalled();
+    });
+
+    it('binds enrollment to the session, ignoring caller-selected identity', async () => {
+      mockPrisma.user.findUnique.mockResolvedValueOnce({
+        id: 'user-1',
+        email: 'test@example.com',
+        name: 'Test',
+        status: 'active',
+      });
+      const response = await request(createApp())
+        .post('/api/auth/webauthn/register/options')
+        .send({ userId: 'victim' });
+      expect(response.status).toBe(200);
+      expect(webauthn.generateRegistrationOptions).toHaveBeenCalledWith(
+        expect.objectContaining({
+          userID: Buffer.from('user-1'),
+        })
+      );
+      const mismatch = await request(createApp('owner', 'other-user'))
+        .post('/api/auth/webauthn/register/verify')
+        .send({ challengeId: response.body.challengeId, credential });
+      expect(mismatch.status).toBe(401);
+      expect(mockPrisma.webAuthnCredential.create).not.toHaveBeenCalled();
+    });
+
+    it('does not store an unverified registration', async () => {
+      mockPrisma.user.findUnique.mockResolvedValueOnce({
+        id: 'user-1',
+        email: 'test@example.com',
+        status: 'active',
+      });
+      const options = await request(createApp())
+        .post('/api/auth/webauthn/register/options')
+        .send({});
+      const response = await request(createApp())
+        .post('/api/auth/webauthn/register/verify')
+        .send({ challengeId: options.body.challengeId, credential });
+      expect(response.status).toBe(400);
+      expect(mockPrisma.webAuthnCredential.create).not.toHaveBeenCalled();
+    });
+
+    it('rejects an assertion without a server challenge', async () => {
+      const response = await request(createApp())
+        .post('/api/auth/webauthn/authenticate/verify')
+        .send({ challengeId: 'invented', credential });
+      expect(response.status).toBe(401);
+      expect(mockJwt.sign).not.toHaveBeenCalled();
+    });
+
+    it('rejects cryptographically invalid assertions and issues no JWT', async () => {
+      const challengeId = await authChallenge();
+      mockPrisma.webAuthnCredential.findUnique.mockResolvedValueOnce(storedCredential);
+      webauthn.verifyAuthenticationResponse.mockRejectedValueOnce(new Error('invalid signature'));
+      const response = await request(createApp())
+        .post('/api/auth/webauthn/authenticate/verify')
+        .send({ challengeId, credential });
+      expect(response.status).toBe(401);
+      expect(mockJwt.sign).not.toHaveBeenCalled();
+      expect(mockPrisma.webAuthnCredential.update).not.toHaveBeenCalled();
+    });
+
+    it('issues a JWT only after verification and consumes the challenge', async () => {
+      const challengeId = await authChallenge();
+      mockPrisma.webAuthnCredential.findUnique.mockResolvedValueOnce(storedCredential);
+      webauthn.verifyAuthenticationResponse.mockResolvedValueOnce({
+        verified: true,
+        authenticationInfo: { userVerified: true, newCounter: 2 },
+      });
+      mockPrisma.user.findUnique.mockResolvedValueOnce({
+        id: 'user-1',
+        email: 'test@example.com',
+        name: 'Test',
+        role: 'buyer',
+        status: 'active',
+      });
+      const response = await request(createApp())
+        .post('/api/auth/webauthn/authenticate/verify')
+        .send({ challengeId, credential });
+      expect(response.status).toBe(200);
+      expect(webauthn.verifyAuthenticationResponse).toHaveBeenCalledWith(
+        expect.objectContaining({
+          expectedChallenge: 'authentication-challenge',
+          expectedOrigin: ['http://localhost:3000'],
+          requireUserVerification: true,
+        })
+      );
+      expect(mockPrisma.webAuthnCredential.update).toHaveBeenCalledWith(
+        expect.objectContaining({
+          data: expect.objectContaining({ counter: 2 }),
+        })
+      );
+      expect(mockJwt.sign).toHaveBeenCalledTimes(1);
+      const replay = await request(createApp())
+        .post('/api/auth/webauthn/authenticate/verify')
+        .send({ challengeId, credential });
+      expect(replay.status).toBe(401);
+      expect(mockJwt.sign).toHaveBeenCalledTimes(1);
+    });
+
+    it('scopes passkey removal to the authenticated owner', async () => {
+      const response = await request(createApp()).delete(
+        '/api/auth/webauthn/credentials/passkey-1'
+      );
+      expect(response.status).toBe(404);
+      expect(mockPrisma.webAuthnCredential.deleteMany).toHaveBeenCalledWith({
+        where: { userId: 'user-1', credentialId: 'passkey-1' },
+      });
     });
   });
 

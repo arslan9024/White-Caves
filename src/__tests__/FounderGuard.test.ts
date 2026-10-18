@@ -1,17 +1,24 @@
 import { describe, it, expect } from 'vitest';
-import { evaluateFounderGuard, shouldShortCircuitToProfile, FOUNDER_EMAIL, LEVEL_5_MASTER } from '../guards/FounderGuard';
+import {
+  evaluateFounderGuard,
+  hydrateFounderSession,
+  FOUNDER_EMAIL,
+  LEVEL_5_MASTER,
+} from '../guards/FounderGuard';
 
 describe('Founder Guard Security Law (FounderGuard.ts)', () => {
-  it('correctly identifies founder email and injects LEVEL_5_MASTER access level', () => {
+  it('does not grant master access based on email alone', () => {
     const profile = evaluateFounderGuard(FOUNDER_EMAIL);
     expect(profile.email).toBe(FOUNDER_EMAIL);
-    expect(profile.accessLevel).toBe(LEVEL_5_MASTER);
-    expect(profile.isFounder).toBe(true);
-    expect(profile.role).toBe('Managing Director & Founder');
+    expect(profile.accessLevel).toBe(1);
+    expect(profile.isFounder).toBe(false);
   });
 
-  it('handles case-insensitive and whitespace email variations cleanly', () => {
-    const profile = evaluateFounderGuard('  ARSLANMALIKGORAHA@GMAIL.COM  ');
+  it('accepts the founder identity only with server-provided master role and access level', () => {
+    const profile = evaluateFounderGuard(FOUNDER_EMAIL, {
+      role: 'managing_director',
+      accessLevel: LEVEL_5_MASTER,
+    });
     expect(profile.accessLevel).toBe(LEVEL_5_MASTER);
     expect(profile.isFounder).toBe(true);
   });
@@ -22,8 +29,9 @@ describe('Founder Guard Security Law (FounderGuard.ts)', () => {
     expect(profile.isFounder).toBe(false);
   });
 
-  it('correctly evaluates short-circuit boolean helper', () => {
-    expect(shouldShortCircuitToProfile(FOUNDER_EMAIL)).toBe(true);
-    expect(shouldShortCircuitToProfile('user@example.com')).toBe(false);
+  it('does not create a founder session when no authenticated token is available', () => {
+    const profile = hydrateFounderSession(FOUNDER_EMAIL);
+    expect(profile.isFounder).toBe(false);
+    expect(profile.accessLevel).toBe(1);
   });
 });

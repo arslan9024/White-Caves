@@ -9,7 +9,13 @@ interface OTPVerificationProps {
   error: string;
 }
 
-const OTPVerification: React.FC<OTPVerificationProps> = ({ phoneNumber, onVerify, onResend, loading, error }) => {
+const OTPVerification: React.FC<OTPVerificationProps> = ({
+  phoneNumber,
+  onVerify,
+  onResend,
+  loading,
+  error,
+}) => {
   const [otp, setOtp] = useState(['', '', '', '', '', '']);
   const [resendTimer, setResendTimer] = useState(60);
   const inputRefs = useRef<(HTMLInputElement | null)[]>([]);
@@ -97,13 +103,15 @@ const OTPVerification: React.FC<OTPVerificationProps> = ({ phoneNumber, onVerify
         {otp.map((digit, index) => (
           <input
             key={`otp-${index}`}
-            ref={(el) => (inputRefs.current[index] = el)}
+            ref={el => {
+              inputRefs.current[index] = el;
+            }}
             type="text"
             inputMode="numeric"
             maxLength={1}
             value={digit}
-            onChange={(e) => handleChange(index, e.target.value)}
-            onKeyDown={(e) => handleKeyDown(index, e)}
+            onChange={e => handleChange(index, e.target.value)}
+            onKeyDown={e => handleKeyDown(index, e)}
             disabled={loading}
             className={`otp-input ${error ? 'error' : ''}`}
             aria-label={`Digit ${index + 1}`}

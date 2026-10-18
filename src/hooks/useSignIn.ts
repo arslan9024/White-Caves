@@ -9,7 +9,7 @@
 import { useState, useRef, useEffect, useCallback, type FormEvent } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
-import { setUser } from '../store/userSlice';
+import type { AppDispatch } from '../store/store';
 import {
   signInWithGoogle,
   signInWithFacebook,
@@ -19,10 +19,8 @@ import {
   createRecaptchaVerifier,
   signOut as signOutFirebase,
   isFirebaseAuthConfigured,
-  firebaseAuthUnavailableReason,
   handleRedirectResult,
 } from '../config/firebase';
-import { TIMING } from '../constants';
 import {
   loginWithEmail as backendLogin,
   registerWithEmail as backendRegister,
@@ -33,9 +31,14 @@ import {
   verifyPasswordResetToken,
   resetPasswordWithToken,
   type LoginSuccessData,
+  type TwoFactorChallengeData,
 } from '../services/authService';
-import { safeStorage } from '../utils/safeStorage';
-import { getPostLoginRoute } from '../utils/routing';
+import {
+  finalizeAuthenticatedSession,
+  getReturnToFromLocationState,
+  navigateToPostLoginDestination,
+} from '../utils/authSession';
+import type { UserCredential } from 'firebase/auth';
 
 // ─── Types ──────────────────────────────────────────────────────────
 
@@ -45,6 +48,7 @@ interface PendingUser {
   name: string;
   photo?: string;
   fromSocialProvider?: string;
+  sessionToken?: string;
 }
 
 interface ConfirmationResult {
@@ -52,6 +56,7 @@ interface ConfirmationResult {
     user: {
       uid: string;
       email: string | null;
+      phoneNumber?: string | null;
       displayName: string | null;
       photoURL: string | null;
     };
@@ -71,42 +76,18 @@ interface SocialAuthErrorLike {
 }
 
 const MAX_SOCIAL_RETRY_ATTEMPTS = 3;
-const SUPERUSER_EMAIL = (import.meta.env.VITE_CREATOR_SUPERUSER_EMAIL ?? '').toLowerCase().trim();
-const AUTH_ROUTE_BLOCKLIST = new Set(['/signin', '/signup', '/select-role', '/pending-approval']);
-const CLIENT_ROLE_KEYS = new Set(['buyer', 'seller', 'landlord', 'property-owner', 'tenant']);
-const LANDLORD_ROLE_KEYS = new Set(['landlord', 'property-owner']);
 
-const normalizeRoleKey = (role: string | null | undefined): string =>
-  (role || '').toLowerCase().trim();
+const hasVerifiedMasterRole = (user: {
+  role?: string;
+  status?: string;
+  accessLevel?: number;
+}): boolean =>
+  user.role?.toLowerCase() === 'managing_director' &&
+  user.status === 'active' &&
+  user.accessLevel === 5;
 
 const toTitleCase = (value: string): string =>
   value.length > 0 ? `${value[0].toUpperCase()}${value.slice(1)}` : value;
-
-const resolveSafeReturnPath = (path: string | undefined): string | null => {
-  if (!path || !path.startsWith('/')) {
-    return null;
-  }
-
-  const normalizedPath = path.toLowerCase().trim();
-  if (AUTH_ROUTE_BLOCKLIST.has(normalizedPath) || normalizedPath.startsWith('/auth')) {
-    return null;
-  }
-
-  return path;
-};
-
-const resolveCategoryFromRole = (role: string | null | undefined): 'client' | 'staff' => {
-  const normalizedRole = normalizeRoleKey(role);
-  return CLIENT_ROLE_KEYS.has(normalizedRole) ? 'client' : 'staff';
-};
-
-const isSuperuserEmail = (value: string | null | undefined): boolean =>
-  // Read env var lazily at call time so vi.stubEnv works correctly in tests
-  (() => {
-    const configured = (import.meta.env.VITE_CREATOR_SUPERUSER_EMAIL ?? '').toLowerCase().trim();
-    if (!configured) return false;
-    return (value || '').toLowerCase().trim() === configured;
-  })();
 
 const normalizeSocialAuthErrorMessage = (error: unknown, provider: string): string => {
   const socialError = error as SocialAuthErrorLike;
@@ -238,7 +219,8 @@ export const STAFF_ROLES: UserRole[] = [
 export function useSignIn() {
   const navigate = useNavigate();
   const location = useLocation();
-  const dispatch = useDispatch();
+  const dispatch = useDispatch<AppDispatch>();
+  const returnTo = getReturnToFromLocationState(location.state);
 
   // ── Step & mode state ─────────────────────────────────────────
   const [mode, setMode] = useState<'signin' | 'signup'>('signin');
@@ -274,7 +256,7 @@ export function useSignIn() {
   const [confirmationResult, setConfirmationResult] = useState<ConfirmationResult | null>(null);
 
   // ── 2FA verification ───────────────────────────────────────────
-  const [twoFactorEmail, setTwoFactorEmail] = useState('');
+  const [twoFactorToken, setTwoFactorToken] = useState('');
   const [twoFactorCode, setTwoFactorCode] = useState('');
 
   // ── Post-auth pending user ─────────────────────────────────────
@@ -282,25 +264,19 @@ export function useSignIn() {
   const [socialSyncRecovery, setSocialSyncRecovery] = useState<SocialSyncRecovery | null>(null);
   const [socialRetryAttempts, setSocialRetryAttempts] = useState(0);
 
-  // Ref for navigation timers
-  const navTimerRef = useRef<ReturnType<typeof setTimeout>>();
   const googleAuthUnavailableMessage =
-    'Google sign-in is temporarily unavailable because Firebase authentication is not configured in this environment.' +
-    (firebaseAuthUnavailableReason ? ` ${firebaseAuthUnavailableReason}` : '');
+    'Social and phone sign-in are temporarily unavailable. Use email sign-in or try again later.';
 
   const hasResetTokenInUrl = useRef(false);
 
   useEffect(() => {
-    return () => {
-      clearTimeout(navTimerRef.current);
-    };
-  }, []);
-
-  useEffect(() => {
-    if (location.pathname === '/signup') {
-      setMode('signup');
-      setStep(1);
+    if (
+      !['/signin', '/signup', '/forgot-password', '/reset-password'].includes(location.pathname)
+    ) {
+      return;
     }
+    setMode(location.pathname === '/signup' ? 'signup' : 'signin');
+    setStep(1);
   }, [location.pathname]);
 
   useEffect(() => {
@@ -324,81 +300,50 @@ export function useSignIn() {
 
   // ── Helpers ────────────────────────────────────────────────────
 
-  const saveUserData = useCallback(
-    (category: string, role: string, status: string = 'active'): void => {
-      safeStorage.setJSON('userRole', { category, role, status, locked: true });
-    },
-    []
-  );
-
-  const resolvePostLoginRoute = useCallback(
-    (user: {
-      role?: string;
-      status?: string;
-      email?: string | null;
-      profileCompleted?: boolean;
-    }): string => {
-      const stateValue = location.state as { from?: string } | null;
-      const returnPath = resolveSafeReturnPath(stateValue?.from);
-      if (returnPath) {
-        return returnPath;
-      }
-
-      return getPostLoginRoute(user.role, user.email, {
-        status: user.status,
-        profileCompleted: user.profileCompleted,
-      });
-    },
-    [location.state]
-  );
-
   const handleSignInSuccess = useCallback(
-    (user: {
-      id: string;
-      email: string | null;
-      name: string | null;
-      displayName?: string | null;
-      role?: string;
-      status?: string;
-      phone?: string | null;
-      photoUrl?: string | null;
-      profileCompleted?: boolean;
-      profileComplete?: boolean;
-    }): void => {
+    (
+      user: {
+        id: string;
+        email: string | null;
+        name: string | null;
+        displayName?: string | null;
+        role?: string;
+        status?: string;
+        accessLevel?: number;
+        phone?: string | null;
+        photoUrl?: string | null;
+        profileCompleted?: boolean;
+        profileComplete?: boolean;
+      },
+      session?: { token?: string; provider?: string }
+    ): void => {
       const resolvedStatus = user.status?.toLowerCase().trim() || 'active';
-      const normalizedRole = isSuperuserEmail(user.email)
-        ? 'managing_director'
-        : normalizeRoleKey(user.role);
       const profileCompleted = deriveProfileCompletionSignal(user);
-      const fallbackRoute = resolvePostLoginRoute({
-        role: normalizedRole,
-        status: resolvedStatus,
-        email: user.email,
-        profileCompleted,
-      });
-
-      dispatch(
-        setUser({
+      const destination = finalizeAuthenticatedSession({
+        dispatch,
+        token: session?.token,
+        provider: session?.provider ?? 'backend',
+        returnTo,
+        user: {
           id: user.id,
           email: user.email || '',
           name: user.name || user.displayName || undefined,
           displayName: user.displayName || user.name || undefined,
-          role: normalizedRole || user.role,
-          status: resolvedStatus === 'pending' ? 'pending' : 'active',
+          role: user.role,
+          status:
+            resolvedStatus === 'active' || resolvedStatus === 'pending'
+              ? resolvedStatus
+              : 'suspended',
+          accessLevel: user.accessLevel,
           photoURL: user.photoUrl || undefined,
           phone: user.phone || undefined,
           profileCompleted,
-        })
-      );
-
-      if (normalizedRole) {
-        saveUserData(resolveCategoryFromRole(normalizedRole), normalizedRole, resolvedStatus);
-      }
-
+        },
+      });
       setSuccess('Sign in successful!');
-      navTimerRef.current = setTimeout(() => navigate(fallbackRoute), TIMING.NAVIGATION_DELAY);
+      navigateToPostLoginDestination(navigate, destination);
     },
-    [dispatch, navigate, resolvePostLoginRoute, saveUserData]
+    [dispatch, navigate, returnTo]
   );
 
   const handleSignUpSuccess = useCallback(
@@ -409,7 +354,7 @@ export function useSignIn() {
         name: string | null;
         photoUrl?: string | null;
       },
-      options?: { fromSocialProvider?: string }
+      options?: { fromSocialProvider?: string; sessionToken?: string }
     ): void => {
       setPendingUser({
         id: user.id,
@@ -417,6 +362,7 @@ export function useSignIn() {
         name: user.name || fullName,
         photo: user.photoUrl || undefined,
         fromSocialProvider: options?.fromSocialProvider,
+        sessionToken: options?.sessionToken,
       });
       setStep(2);
     },
@@ -443,12 +389,15 @@ export function useSignIn() {
     setLoading(true);
     setError('');
 
-    const status = selectedCategory === 'staff' ? 'pending' : 'active';
     const isSocialRegistration = Boolean(pendingUser?.fromSocialProvider);
 
     try {
       const response = isSocialRegistration
-        ? await completeSocialRegistration(selectedCategory, selectedRole)
+        ? await completeSocialRegistration(
+            selectedCategory,
+            selectedRole,
+            pendingUser?.sessionToken ?? ''
+          )
         : await backendRegister(
             email,
             password,
@@ -464,51 +413,17 @@ export function useSignIn() {
       }
 
       const backendUser = response.data.user;
-      const resolvedRole =
-        selectedCategory === 'staff' && !isSocialRegistration ? selectedRole : backendUser.role;
-      const normalizedRole = normalizeRoleKey(resolvedRole) || 'agent';
-      dispatch(
-        setUser({
-          id: backendUser.id,
-          email: backendUser.email,
-          name: backendUser.name || undefined,
-          role: normalizedRole,
-          status,
-        })
-      );
-      saveUserData(selectedCategory, normalizedRole, status);
-
-      if (selectedCategory === 'staff') {
-        setSuccess('Registration submitted! Your account is pending approval.');
-        navTimerRef.current = setTimeout(
-          () => navigate('/pending-approval'),
-          TIMING.SIMULATED_API_DELAY
-        );
-      } else {
-        setSuccess('Account created successfully!');
-        navTimerRef.current = setTimeout(
-          () => navigate(getPostLoginRoute(resolvedRole, backendUser.email)),
-          TIMING.NAVIGATION_DELAY
-        );
-      }
+      handleSignInSuccess(backendUser, {
+        token: response.data.token,
+        provider: pendingUser?.fromSocialProvider ?? 'email',
+      });
     } catch (err: unknown) {
       const message = err instanceof Error ? err.message : 'Registration failed';
       setError(message);
     } finally {
       setLoading(false);
     }
-  }, [
-    selectedRole,
-    selectedCategory,
-    email,
-    password,
-    fullName,
-    dispatch,
-    navigate,
-    saveUserData,
-    pendingUser,
-    resolvePostLoginRoute,
-  ]);
+  }, [selectedRole, selectedCategory, email, password, fullName, pendingUser, handleSignInSuccess]);
 
   // ── Social auth redirect handling ──────────────────────────────
   useEffect(() => {
@@ -517,7 +432,11 @@ export function useSignIn() {
         const result = await handleRedirectResult();
         if (result && result.user) {
           setLoading(true);
-          const backendResponse = await syncFirebaseUser(result.user);
+          const redirectMode = location.pathname === '/signup' ? 'signup' : 'signin';
+          const backendResponse = await syncFirebaseUser(result.user, {
+            intent: redirectMode,
+            persistSession: redirectMode === 'signin',
+          });
           if (!backendResponse?.data?.user) {
             throw new Error('Invalid backend response: missing user data');
           }
@@ -526,21 +445,21 @@ export function useSignIn() {
           setSocialRetryAttempts(0);
           setError('');
 
-          handleSignInSuccess(
-            isSuperuserEmail(backendUser.email)
-              ? {
-                  ...backendUser,
-                  role: 'managing_director',
-                  status: 'active',
-                  photoUrl: backendUser.photoUrl || result.user.photoURL,
-                  displayName: backendUser.name || result.user.displayName,
-                }
-              : {
-                  ...backendUser,
-                  photoUrl: backendUser.photoUrl || result.user.photoURL,
-                  displayName: backendUser.name || result.user.displayName,
-                }
-          );
+          if (redirectMode === 'signup' && !hasVerifiedMasterRole(backendUser)) {
+            handleSignUpSuccess(backendUser, {
+              fromSocialProvider: result.providerId || 'social',
+              sessionToken: backendResponse.data.token,
+            });
+          } else {
+            handleSignInSuccess(
+              {
+                ...backendUser,
+                photoUrl: backendUser.photoUrl || result.user.photoURL,
+                displayName: backendUser.name || result.user.displayName,
+              },
+              { token: backendResponse.data.token, provider: 'social' }
+            );
+          }
         }
       } catch (err: unknown) {
         const msg = err instanceof Error ? err.message : 'Redirect auth failed';
@@ -550,11 +469,11 @@ export function useSignIn() {
       }
     };
     void processRedirect();
-  }, [handleSignInSuccess]);
+  }, [handleSignInSuccess, handleSignUpSuccess, location.pathname]);
 
   const handleSocialAuth = useCallback(
     async (provider: string, options?: { isRetry?: boolean }): Promise<void> => {
-      if (provider === 'google' && !isFirebaseAuthConfigured) {
+      if (!isFirebaseAuthConfigured) {
         setError(googleAuthUnavailableMessage);
         return;
       }
@@ -570,26 +489,18 @@ export function useSignIn() {
       setLoading(true);
       setError('');
       try {
-        let firebaseResult: {
-          user: {
-            uid: string;
-            email: string | null;
-            displayName: string | null;
-            photoURL: string | null;
-            getIdToken?: (forceRefresh?: boolean) => Promise<string>;
-          };
-        } | null = null;
+        let firebaseResult: UserCredential | void;
 
         try {
           switch (provider) {
             case 'google':
-              firebaseResult = (await signInWithGoogle()) as typeof firebaseResult;
+              firebaseResult = await signInWithGoogle();
               break;
             case 'facebook':
-              firebaseResult = (await signInWithFacebook()) as typeof firebaseResult;
+              firebaseResult = await signInWithFacebook();
               break;
             case 'apple':
-              firebaseResult = (await signInWithApple()) as typeof firebaseResult;
+              firebaseResult = await signInWithApple();
               break;
             default:
               throw new Error('Invalid provider');
@@ -609,7 +520,10 @@ export function useSignIn() {
         }
 
         const firebaseUser = firebaseResult.user;
-        const backendResponse = await syncFirebaseUser(firebaseUser);
+        const backendResponse = await syncFirebaseUser(firebaseUser, {
+          intent: mode === 'signup' ? 'signup' : 'signin',
+          persistSession: mode === 'signin',
+        });
 
         if (!backendResponse?.data?.user) {
           throw new Error('Invalid backend response: missing user data');
@@ -621,26 +535,26 @@ export function useSignIn() {
         setError('');
 
         if (mode === 'signup') {
-          if (isSuperuserEmail(backendUser.email)) {
-            handleSignInSuccess({
-              ...backendUser,
-              role: 'managing_director',
-              status: 'active',
-              photoUrl: backendUser.photoUrl || firebaseUser.photoURL,
-              displayName: backendUser.name || firebaseUser.displayName,
-            });
+          if (hasVerifiedMasterRole(backendUser)) {
+            handleSignInSuccess(
+              {
+                ...backendUser,
+                photoUrl: backendUser.photoUrl || firebaseUser.photoURL,
+                displayName: backendUser.name || firebaseUser.displayName,
+              },
+              { token: backendResponse.data.token, provider }
+            );
           } else {
-            handleSignUpSuccess(backendUser, { fromSocialProvider: provider });
+            handleSignUpSuccess(backendUser, {
+              fromSocialProvider: provider,
+              sessionToken: backendResponse.data.token,
+            });
           }
         } else {
           handleSignInSuccess({
             ...backendUser,
             photoUrl: backendUser.photoUrl || firebaseUser.photoURL,
             displayName: backendUser.name || firebaseUser.displayName,
-            role: isSuperuserEmail(backendUser.email)
-              ? 'managing_director'
-              : backendUser.role,
-            status: isSuperuserEmail(backendUser.email) ? 'active' : backendUser.status,
           });
         }
       } catch (err: unknown) {
@@ -648,8 +562,12 @@ export function useSignIn() {
           err instanceof Error && err.message.trim()
             ? err.message.trim()
             : 'Unable to complete authentication sync';
-        setSocialSyncRecovery({ provider: provider as SupportedSocialProvider, reason: syncMessage });
+        setSocialSyncRecovery({
+          provider: provider as SupportedSocialProvider,
+          reason: syncMessage,
+        });
         setError(`backend session setup failed: ${syncMessage}`);
+      } finally {
         setLoading(false);
       }
     },
@@ -674,7 +592,10 @@ export function useSignIn() {
       setError('');
 
       try {
-        const backendResponse = await syncFirebaseUser(firebaseAuth.currentUser);
+        const backendResponse = await syncFirebaseUser(firebaseAuth.currentUser, {
+          intent: mode === 'signup' ? 'signup' : 'signin',
+          persistSession: mode === 'signin',
+        });
         if (!backendResponse?.data?.user) {
           throw new Error('Invalid backend response: missing user data');
         }
@@ -685,44 +606,33 @@ export function useSignIn() {
         setError('');
 
         if (mode === 'signup') {
-          if (isSuperuserEmail(backendUser.email)) {
-            handleSignInSuccess({
-              ...backendUser,
-              role: 'managing_director',
-              status: 'active',
+          if (hasVerifiedMasterRole(backendUser)) {
+            handleSignInSuccess(backendUser, {
+              token: backendResponse.data.token,
+              provider: 'google',
             });
           } else {
-            handleSignUpSuccess(backendUser, { fromSocialProvider: 'google' });
+            handleSignUpSuccess(backendUser, {
+              fromSocialProvider: 'google',
+              sessionToken: backendResponse.data.token,
+            });
           }
         } else {
-          handleSignInSuccess(
-            isSuperuserEmail(backendUser.email)
-              ? { ...backendUser, role: 'managing_director', status: 'active' }
-              : backendUser
-          );
+          handleSignInSuccess(backendUser, {
+            token: backendResponse.data.token,
+            provider: 'google',
+          });
         }
-        return;
       } catch (syncError: unknown) {
         const syncMessage =
           syncError instanceof Error && syncError.message.trim()
             ? syncError.message.trim()
             : 'Unable to complete authentication sync';
-
         setSocialSyncRecovery({ provider: 'google', reason: syncMessage });
-
-        if (shouldClearFirebaseSessionAfterSyncFailure(syncMessage)) {
-          await signOutFirebase().catch(() => {
-            // noop
-          });
-        }
-
-        setError(
-          `Google authentication is active, but backend session setup still failed: ${syncMessage}. Please retry or use email login temporarily.`
-        );
+        setError(`backend session setup failed: ${syncMessage}`);
       } finally {
         setLoading(false);
       }
-
       return;
     }
 
@@ -779,27 +689,6 @@ export function useSignIn() {
 
       try {
         if (mode === 'signup') {
-          if (isSuperuserEmail(normalizedEmail)) {
-            const response = await backendRegister(
-              normalizedEmail,
-              password,
-              fullName || undefined,
-              undefined,
-              undefined,
-              'staff',
-              'managing_director'
-            );
-            if (!response?.data?.user) {
-              throw new Error('Invalid response: missing user data');
-            }
-            handleSignInSuccess({
-              ...response.data.user,
-              role: 'managing_director',
-              status: 'active',
-            });
-            return;
-          }
-
           handleSignUpSuccess({
             id: 'pending-signup',
             email: normalizedEmail,
@@ -808,15 +697,17 @@ export function useSignIn() {
         } else {
           const response = await backendLogin(normalizedEmail, password);
           if (response.requiresTwoFactor) {
-            // Advance to the 2FA code-entry step.
-            // The email is stored so handleTwoFactorSubmit can send it to the server.
-            setTwoFactorEmail(normalizedEmail);
+            const challengeData = response.data as TwoFactorChallengeData;
+            if (!challengeData?.twoFactorToken) {
+              throw new Error('The 2FA challenge could not be started. Please sign in again.');
+            }
+            setTwoFactorToken(challengeData.twoFactorToken);
             setTwoFactorCode('');
             setStep(4);
           } else {
             const data = response.data as LoginSuccessData;
             if (!data?.user) throw new Error('Invalid response: missing user data');
-            handleSignInSuccess(data.user);
+            handleSignInSuccess(data.user, { token: data.token, provider: 'email' });
           }
         }
       } catch (err: unknown) {
@@ -838,7 +729,10 @@ export function useSignIn() {
       setError('');
 
       try {
-        const user = await backendVerifyTwoFactor(twoFactorEmail, twoFactorCode);
+        if (!twoFactorToken) {
+          throw new Error('The 2FA challenge has expired. Please sign in again.');
+        }
+        const user = await backendVerifyTwoFactor(twoFactorToken, twoFactorCode);
         handleSignInSuccess(user);
       } catch (err: unknown) {
         setError(err instanceof Error ? err.message : 'Verification failed');
@@ -846,7 +740,7 @@ export function useSignIn() {
         setLoading(false);
       }
     },
-    [twoFactorEmail, twoFactorCode, handleSignInSuccess]
+    [twoFactorToken, twoFactorCode, handleSignInSuccess]
   );
 
   // ── Phone auth ─────────────────────────────────────────────────
@@ -854,6 +748,12 @@ export function useSignIn() {
   const handlePhoneSubmit = useCallback(
     async (e: FormEvent<HTMLFormElement>): Promise<void> => {
       e.preventDefault();
+      if (mode === 'signup') {
+        setError(
+          'Phone sign-up is unavailable. Use email or social sign-up, or switch to sign-in.'
+        );
+        return;
+      }
       setLoading(true);
       setError('');
 
@@ -869,12 +769,18 @@ export function useSignIn() {
         setLoading(false);
       }
     },
-    [phone]
+    [mode, phone]
   );
 
   const handleOtpVerify = useCallback(
     async (e: FormEvent<HTMLFormElement>): Promise<void> => {
       e.preventDefault();
+      if (mode === 'signup') {
+        setError(
+          'Phone sign-up is unavailable. Use email or social sign-up, or switch to sign-in.'
+        );
+        return;
+      }
       setLoading(true);
       setError('');
 
@@ -885,13 +791,11 @@ export function useSignIn() {
         }
 
         try {
-          const backendResponse = await syncFirebaseUser(result.user);
+          const backendResponse = await syncFirebaseUser(result.user, {
+            intent: 'signin',
+          });
           const backendUser = backendResponse.data.user;
-          if (mode === 'signup') {
-            handleSignUpSuccess(backendUser);
-          } else {
-            handleSignInSuccess(backendUser);
-          }
+          handleSignInSuccess(backendUser);
         } catch (syncError: unknown) {
           await signOutFirebase().catch(() => {
             // noop: firebase session cleanup is best effort here
@@ -911,7 +815,7 @@ export function useSignIn() {
         setLoading(false);
       }
     },
-    [confirmationResult, otp, mode, handleSignInSuccess, handleSignUpSuccess]
+    [confirmationResult, otp, mode, handleSignInSuccess]
   );
 
   const handleForgotPassword = useCallback(async (): Promise<void> => {
@@ -1041,6 +945,8 @@ export function useSignIn() {
     setSuccess('');
     setSocialSyncRecovery(null);
     setSocialRetryAttempts(0);
+    setTwoFactorToken('');
+    setTwoFactorCode('');
   }, []);
 
   const getRolesForCategory = useCallback((): UserRole[] => {
@@ -1051,7 +957,7 @@ export function useSignIn() {
     setStep(targetStep);
     if (targetStep === 1) {
       setSelectedCategory('');
-      setTwoFactorEmail('');
+      setTwoFactorToken('');
       setTwoFactorCode('');
     }
     if (targetStep <= 2) setSelectedRole('');

@@ -15,7 +15,7 @@ import cookieParser from 'cookie-parser';
 import { Prisma } from '@prisma/client';
 import { connectDatabase, prisma } from './database.js';
 import { errorHandler, asyncHandler, AppError } from './middleware/errorHandler.js';
-import authMiddleware from './middleware/auth.js';
+import authMiddleware, { shouldUseDevAuthBypass } from './middleware/auth.js';
 import { requestIdMiddleware } from './middleware/requestId.js';
 import cspMiddleware from './middleware/csp.js';
 import {
@@ -429,59 +429,61 @@ app.use('/api/ai/chat', aiChatRoutes);
 // Write endpoints (POST/PUT/DELETE) within the router enforce their own authMiddleware.
 app.use('/api/assistants', assistantsRoutes);
 
-// Protected routes (require authentication in production, optional in development)
-if (process.env.NODE_ENV === 'production') {
+// Protected routes require JWTs except for an explicitly enabled local dev bypass.
+if (IS_PRODUCTION) {
   app.use('/api', authMiddleware);
   logger.info('🔒 Production auth middleware enabled — all /api routes require JWT');
-} else if (process.env.NODE_ENV === 'development') {
-  logger.warn('⚠️  DEV AUTH BYPASS ACTIVE — Do NOT use in production!');
-  logger.warn('   Set NODE_ENV=production to enforce JWT authentication');
-
-  // Lion Superuser: stable dev identity when DB is unreachable
-  const LION_SUPERUSER = {
-    id: 'lion-superuser-dev',
-    email: process.env.CREATOR_SUPERUSER_EMAIL || 'arslanmalikgoraha@gmail.com',
-    role: 'managing_director',
-    name: 'Arslan Malik (Lion)',
-  };
-
+} else if (process.env.NODE_ENV === 'development' && process.env.DEV_AUTH_BYPASS === 'true') {
+  logger.warn(
+    '⚠️  Explicit local development auth bypass enabled; production never honors this flag.'
+  );
   let cachedDevUser: { id: string; email: string; role: string; name?: string } | null = null;
 
   app.use('/api', async (req: Request, res: Response, next: NextFunction) => {
-    const token = req.headers.authorization?.replace('Bearer ', '');
-    if (token) {
+    if (
+      req.headers.authorization ||
+      !shouldUseDevAuthBypass(
+        process.env.NODE_ENV,
+        process.env.DEV_AUTH_BYPASS,
+        req.socket.remoteAddress
+      )
+    ) {
       return authMiddleware(req, res, next);
     }
-    // Dev fallback: look up real owner user from DB (once, then cache)
+
+    // A bypass may use only an active, already-provisioned owner account.
     try {
       if (!cachedDevUser) {
         const owner = await prisma.user.findFirst({
-          where: { email: { in: ['owner@whitecaves.ae', LION_SUPERUSER.email] } },
-          orderBy: [{ role: 'asc' }],
+          where: {
+            email: {
+              in: ['owner@whitecaves.ae', process.env.CREATOR_SUPERUSER_EMAIL || ''],
+            },
+            role: { in: ['owner', 'managing_director'] },
+            status: 'active',
+          },
         });
-        if (owner) {
-          cachedDevUser = {
-            id: owner.id,
-            email: owner.email,
-            role: owner.role,
-            name: owner.name ?? undefined,
-          };
-          logger.info(`Dev auth: using owner ${owner.name} (${owner.id})`);
-        } else {
-          cachedDevUser = LION_SUPERUSER;
-          logger.warn('Dev auth: owner not found in DB — using Lion superuser fallback');
+        if (!owner) {
+          return next(new AppError('No active development owner account is provisioned', 503));
         }
+        cachedDevUser = {
+          id: owner.id,
+          email: owner.email,
+          role: owner.role,
+          name: owner.name ?? undefined,
+        };
       }
       req.user = { ...cachedDevUser };
-    } catch {
-      // DB unreachable — fall back to Lion superuser so the app stays functional
-      req.user = { ...LION_SUPERUSER };
-      logger.warn('Dev auth: DB unreachable — Lion superuser identity applied');
+      return next();
+    } catch (error: unknown) {
+      logger.error('Explicit development auth bypass could not load a provisioned owner', {
+        error: error instanceof Error ? error.message : 'Unknown error',
+      });
+      return next(new AppError('Development authentication is temporarily unavailable', 503));
     }
-    next();
   });
 } else {
-  // Any other NODE_ENV (staging, test, etc.) — require full authentication
+  // Development without explicit opt-in, tests, staging, and all other environments fail closed.
   app.use('/api', authMiddleware);
   logger.info(`Auth middleware enabled for NODE_ENV=${process.env.NODE_ENV}`);
 }

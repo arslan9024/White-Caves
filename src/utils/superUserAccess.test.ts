@@ -1,7 +1,6 @@
-import { describe, expect, it } from 'vitest';
+import { afterEach, describe, expect, it, vi } from 'vitest';
 import {
   CANONICAL_SUPERUSER_ROLE,
-  CREATOR_SUPERUSER_EMAIL,
   isCreatorSuperUserEmail,
   isSuperUserAliasRole,
   normalizeRoleForUserContext,
@@ -9,6 +8,10 @@ import {
 } from './superUserAccess';
 
 describe('superUserAccess', () => {
+  afterEach(() => {
+    vi.unstubAllEnvs();
+  });
+
   describe('normalizeRoleToken', () => {
     it('returns null for empty-like values', () => {
       expect(normalizeRoleToken(undefined)).toBeNull();
@@ -22,12 +25,16 @@ describe('superUserAccess', () => {
   });
 
   describe('isCreatorSuperUserEmail', () => {
-    it('matches creator email case-insensitively with whitespace trimming', () => {
-      expect(isCreatorSuperUserEmail(`  ${CREATOR_SUPERUSER_EMAIL.toUpperCase()}  `)).toBe(true);
+    it('requires both the configured creator identity and a privileged server role', () => {
+      vi.stubEnv('VITE_CREATOR_SUPERUSER_EMAIL', 'master@whitecaves.ae');
+      expect(isCreatorSuperUserEmail('  MASTER@WHITECAVES.AE  ', 'managing_director')).toBe(true);
+      expect(isCreatorSuperUserEmail('master@whitecaves.ae')).toBe(false);
+      expect(isCreatorSuperUserEmail('master@whitecaves.ae', 'buyer')).toBe(false);
     });
 
     it('returns false for non-creator email', () => {
-      expect(isCreatorSuperUserEmail('other@example.com')).toBe(false);
+      vi.stubEnv('VITE_CREATOR_SUPERUSER_EMAIL', 'master@whitecaves.ae');
+      expect(isCreatorSuperUserEmail('other@example.com', 'owner')).toBe(false);
     });
   });
 
@@ -48,12 +55,17 @@ describe('superUserAccess', () => {
 
   describe('normalizeRoleForUserContext', () => {
     it('returns null when role is empty', () => {
-      expect(normalizeRoleForUserContext(undefined, CREATOR_SUPERUSER_EMAIL)).toBeNull();
+      expect(normalizeRoleForUserContext(undefined, 'master@whitecaves.ae')).toBeNull();
     });
 
     it('canonicalizes creator alias roles to lion', () => {
-      expect(normalizeRoleForUserContext('owner', CREATOR_SUPERUSER_EMAIL)).toBe(CANONICAL_SUPERUSER_ROLE);
-      expect(normalizeRoleForUserContext(' MD ', CREATOR_SUPERUSER_EMAIL)).toBe(CANONICAL_SUPERUSER_ROLE);
+      vi.stubEnv('VITE_CREATOR_SUPERUSER_EMAIL', 'master@whitecaves.ae');
+      expect(normalizeRoleForUserContext('owner', 'master@whitecaves.ae')).toBe(
+        CANONICAL_SUPERUSER_ROLE
+      );
+      expect(normalizeRoleForUserContext(' MD ', 'master@whitecaves.ae')).toBe(
+        CANONICAL_SUPERUSER_ROLE
+      );
     });
 
     it('maps md to managing_director for non-creator users', () => {
