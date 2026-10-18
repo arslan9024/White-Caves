@@ -40,3 +40,4 @@ The latest-main replay exposed one CRLF-sensitive Drive policy assertion and six
 - FEEDS: independent auth/QA review and the dated project-progress report.
 - FEEDS_ACK: pending actual review; no independent approval is claimed.
 - Status: fetch/preservation/checkpoint complete; automatic auth integration blocked by semantic conflicts. Latest-main server/client types, 176 auth/session tests, focused portability lint and production build pass. Henry replay has four persistent timeouts; governance fails on two stale roots. Release integration remains NOT READY.
+- Publication: auth checkpoint `0d455507` and initial review checkpoint `1b6069b6` pushed to their respective feature branches and verified using remote SHAs. No main push or PR creation occurred. Original worktree preservation checks passed; no Node processes remained.

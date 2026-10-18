@@ -78,9 +78,11 @@ These reproduced with one worker and no timeout increase. The current review has
 
 ## Publishing and rollback
 
+- Published and verified on GitHub: `feature/auth-signin-redesign` at `0d455507fc28250890cacbe333333db8104cf84f`; initial `integration/latest-auth-20261018` report checkpoint at `1b6069b6c30215f9be15c72bad58a23a4aab2949`. This publication metadata follows that initial report commit; it does not add an application merge.
+- Final preservation comparison confirmed unchanged primary, Explorer and executive-dashboard working changes and unchanged local main. Remote main remains `332ae197826545853313888065e8480508ab3a28`. Node process count was zero after validation.
 - The new integration branch contains latest-main plus this report/checklist and one test-only Windows portability repair, not the old auth redesign.
 - The source checkpoint remains separate. Additional unstaged auth-worktree changes were not overwritten or silently staged.
-- GitHub CLI/PR creation tooling is unavailable. A pushed branch and remote-SHA verification, if completed, are recovery/report publication, not PR approval or main integration.
+- GitHub CLI/PR creation tooling is unavailable. The pushed branches and verified remote SHAs are recovery/report publication, not PR approval or main integration. No PR was created or merged by this run.
 - To stop/revert this review, retain the recovery refs and backups, leave original worktrees intact, and review/revert only the report/test commits on the new integration branch. No destructive reset of local main, force push, branch deletion or database rollback is required.
 - Conflict path evidence: `integration-conflicts.txt` in the verified local backup directory. Build/governance logs, when produced, are stored there rather than overwriting tracked compiler logs.
 
