@@ -25,6 +25,14 @@ test.describe('Mobile 375px viewport — responsive layout', () => {
       await page.setViewportSize({ width, height: MOBILE_VIEWPORT.height });
       const documentWidth = await page.evaluate(() => document.documentElement.scrollWidth);
       expect(documentWidth, `Document width at ${width}px viewport`).toBeLessThanOrEqual(width + 1);
+
+      if (width <= 900) {
+        await expect(page.locator('.public-navbar__menu-btn')).toBeVisible();
+        await expect(page.locator('.public-navbar__desktop-nav')).toBeHidden();
+      } else {
+        await expect(page.locator('.public-navbar__desktop-nav')).toBeVisible();
+        await expect(page.locator('.public-navbar__menu-btn')).toBeHidden();
+      }
     }
 
     // Body should be visible
