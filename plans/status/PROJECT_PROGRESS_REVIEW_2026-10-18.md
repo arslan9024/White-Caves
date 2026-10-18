@@ -46,6 +46,7 @@ Local backups include index/working-tree binary patches and hash-verified untrac
 | Changed-file lint and production build | Measured this run | ESLint on all changed TS/TSX files passed, exit 0; production `npm run build` passed, exit 0, 2m48s, 494 PWA precache entries |
 | Portability-fix ESLint | Measured this run | Passed, exit 0; only CRLF-to-LF normalization was added to test input, with all policy assertions retained |
 | Latest-main production build | Measured this run | Vite/PWA passed, exit 0, 4m 6s; 494 precache entries. Build output stored outside the repository; tracked compiler logs untouched |
+| Henry-fix production rebuild | Measured this run (2026-10-19) | `npm run build` passed, exit 0, 2m 48s; 4,007 modules transformed and 494 PWA precache entries |
 | Latest-main governance | Measured this run | Structural governance audit passed; overall command failed, exit 1: `PROJECT_PROGRESS.md` and `docs/plans/INDEX.md` stale by 50 days. No fake date-only refresh performed |
 | Diff/environment safety | Measured this run | Whitespace check passed; `.env` template is ignored and contains placeholders only; no production credentials or database deployment |
 | Browser, live providers/database, independent QA | External/operator gates | Not verified by this review |
@@ -84,9 +85,9 @@ The source auth checkpoint remains unmerged: its isolated trial still had 37 sem
 
 ## Publishing and rollback
 
-- Published and verified on GitHub: `feature/auth-signin-redesign` at `0d455507fc28250890cacbe333333db8104cf84f`; initial `integration/latest-auth-20261018` report checkpoint at `1b6069b6c30215f9be15c72bad58a23a4aab2949`. This publication metadata follows that initial report commit; it does not add an application merge.
+- Published and verified on GitHub: `feature/auth-signin-redesign` at `0d455507fc28250890cacbe333333db8104cf84f`; the Henry reliability checkpoint `6cb0be5c` and progress report checkpoint `f29971ef` were pushed to `integration/latest-auth-20261018`. The integration branch remains a review branch and does not merge the auth checkpoint into main.
 - Final preservation comparison confirmed unchanged primary, Explorer and executive-dashboard working changes and unchanged local main. Remote main remains `332ae197826545853313888065e8480508ab3a28`. Node process count was zero after validation.
-- The new integration branch contains latest-main plus this report/checklist and one test-only Windows portability repair, not the old auth redesign.
+- The new integration branch contains latest-main, the report/checklist, the test-only Windows portability repair, and the scoped Henry cold-import/test-query fix. It does not contain the old auth redesign.
 - The source checkpoint remains separate. Additional unstaged auth-worktree changes were not overwritten or silently staged.
 - GitHub CLI/PR creation tooling is unavailable. The pushed branches and verified remote SHAs are recovery/report publication, not PR approval or main integration. No PR was created or merged by this run.
 - To stop/revert this review, retain the recovery refs and backups, leave original worktrees intact, and review/revert only the report/test commits on the new integration branch. No destructive reset of local main, force push, branch deletion or database rollback is required.
