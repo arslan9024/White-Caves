@@ -12,6 +12,10 @@
 
 ## 🚀 Active Wave 46 — Deduplication & Canonicalization (Kickoff)
 
+### Latest integration review (2026-10-18)
+
+The newest fetched main is `332ae197`. Local auth checkpoint `0d455507` is preserved but not integrated: a trial on a separate worktree found 37 conflicts and was discarded. Current evidence and remaining gates are recorded in [PROJECT_PROGRESS_REVIEW_2026-10-18.md](./status/PROJECT_PROGRESS_REVIEW_2026-10-18.md). Whole-project completion and ETA remain unknown without current task and quality inputs; the historical checked lists below are not new release verification.
+
 - **Goal:** Remove duplicate planning/doc/code surfaces and lock canonical ownership by path.
 - **Plan-first packet:** [`WAVE_46_PLAN_FIRST_PACKET.md`](./WAVE_46_PLAN_FIRST_PACKET.md)
 - **Baseline evidence:** [`DEDUP_INVENTORY_BASELINE_2026-09-03.md`](./DEDUP_INVENTORY_BASELINE_2026-09-03.md)
@@ -25,7 +29,7 @@
 
 ## 🏛️ RUP Software Documentation Repository Topology
 
-```
+```text
 software_docs/
 ├── core_engineering_manifest.md       <-- Master Tech Stack, RUP Rules & Workflows
 ├── tech_replacement_rules.md          <-- 12-Domain Technical Replacement Matrix

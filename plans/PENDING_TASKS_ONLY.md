@@ -15,6 +15,14 @@
 
 ## ✅/📋 Wave 46 Deduplication Program Status
 
+### Latest-code integration checkpoint (2026-10-18)
+
+- `GIT-INTEGRATION-20261018`: all four local worktrees preserved; latest main fetched at `332ae197`; old auth checkpoint `0d455507` saved separately.
+- Auth integration remains **blocked**: the isolated trial produced 37 conflicts, including security/routing and newer Henry modules; the trial was discarded without changing main or original worktrees.
+- Current-main client/server compiler checks and 176 auth/session tests pass. Henry/Drive replay exposed four reproducible 5-second timeouts after a test-only CRLF portability repair; no full-suite green or release-ready claim.
+- Evidence, limits, and next steps: [project progress review](./status/PROJECT_PROGRESS_REVIEW_2026-10-18.md) and [integration checklist](./LATEST_CODE_INTEGRATION_2026-10-18.md).
+- Historical Wave 46 statements below are retained as history, not a fresh whole-project release or completion assertion.
+
 - ✅ **W46-001 complete:** duplication baseline inventory captured in `plans/DEDUP_INVENTORY_BASELINE_2026-09-03.md`.
 - ✅ **W46-002 complete:** canonical path policy tagging applied to planning mirrors with explicit reference-copy banners.
 - ✅ **W46-003 complete:** planning truth-set reconciled across canonical trackers and governance validation passed.
