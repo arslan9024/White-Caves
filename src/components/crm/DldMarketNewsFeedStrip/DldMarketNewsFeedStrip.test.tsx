@@ -1,49 +1,34 @@
-import React from 'react';
+import React, { type ComponentProps } from 'react';
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 import { fireEvent, render, screen } from '@testing-library/react';
 import { LanguageProvider, useLanguage } from '../../../context/LanguageContext';
 import { DLD_MARKET_NEWS_SOURCES } from './data/DldMarketNewsFeedStrip.data';
 import { DldMarketNewsFeedStrip } from './DldMarketNewsFeedStrip';
 
-let languageBeforeEachTest: string | null = null;
-
-function LanguageControls() {
+function ArabicLanguageControl() {
   const { setLanguage } = useLanguage();
-
   return (
-    <>
-      <button onClick={() => setLanguage('en')} type="button">
-        English
-      </button>
-      <button onClick={() => setLanguage('ar')} type="button">
-        Arabic
-      </button>
-    </>
+    <button onClick={() => setLanguage('ar')} type="button">
+      Arabic
+    </button>
   );
 }
 
-function renderFeed(props: React.ComponentProps<typeof DldMarketNewsFeedStrip> = {}) {
-  return render(
+function feed(props: ComponentProps<typeof DldMarketNewsFeedStrip> = {}) {
+  return (
     <LanguageProvider>
-      <LanguageControls />
+      <ArabicLanguageControl />
       <DldMarketNewsFeedStrip {...props} />
     </LanguageProvider>
   );
 }
 
-describe('DldMarketNewsFeedStrip', () => {
-  beforeEach(() => {
-    languageBeforeEachTest = localStorage.getItem('whitecaves_language');
-    localStorage.setItem('whitecaves_language', 'en');
-  });
+const renderFeed = (props: ComponentProps<typeof DldMarketNewsFeedStrip> = {}) =>
+  render(feed(props));
 
-  afterEach(() => {
-    if (languageBeforeEachTest === null) {
-      localStorage.removeItem('whitecaves_language');
-    } else {
-      localStorage.setItem('whitecaves_language', languageBeforeEachTest);
-    }
-  });
+describe('DldMarketNewsFeedStrip', () => {
+  beforeEach(() => localStorage.setItem('whitecaves_language', 'en'));
+  afterEach(() => localStorage.removeItem('whitecaves_language'));
 
   it('renders accessible UAE source links in English', () => {
     renderFeed();
@@ -86,20 +71,10 @@ describe('DldMarketNewsFeedStrip', () => {
     const { rerender } = renderFeed({ isLoading: true });
     expect(screen.getByRole('status')).toHaveTextContent('Loading UAE market updates.');
 
-    rerender(
-      <LanguageProvider>
-        <LanguageControls />
-        <DldMarketNewsFeedStrip hasError />
-      </LanguageProvider>
-    );
+    rerender(feed({ hasError: true }));
     expect(screen.getByRole('alert')).toHaveTextContent('UAE market updates could not be loaded.');
 
-    rerender(
-      <LanguageProvider>
-        <LanguageControls />
-        <DldMarketNewsFeedStrip sourceItems={[]} />
-      </LanguageProvider>
-    );
+    rerender(feed({ sourceItems: [] }));
     expect(screen.getByRole('status')).toHaveTextContent('No UAE market updates are available.');
   });
 });
