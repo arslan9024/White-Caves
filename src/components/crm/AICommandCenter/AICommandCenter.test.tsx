@@ -28,6 +28,8 @@ describe('AICommandCenter View Component (1-12-108 Protocol)', () => {
     expect(screen.getByTestId('framework-integrity-status').textContent).toContain('COMPLIANT');
     expect(screen.getByText(/Open allocations in registry: 0/i)).toBeDefined();
     expect(screen.getByTestId('dept-pill-all')).toBeDefined();
+    expect(screen.getAllByTestId(/^dept-pill-/)).toHaveLength(13);
+    expect(screen.getAllByTestId(/^agent-card-/)).toHaveLength(108);
   });
 
   it('labels sample staffing entries as mock data', () => {
