@@ -51,7 +51,8 @@ router.get(
 // ─── GET /api/orchestrator/events ─────────────────────────────────────────────
 
 /**
- * Returns the last N events from the in-memory ring buffer (newest last).
+ * Returns metadata for the last N events from the in-memory ring buffer (newest last).
+ * Payloads are intentionally excluded because they may contain personal or business-sensitive data.
  * Query param: ?limit=N (1–50, default 50).
  * Accessible to manager, admin, and owner roles.
  */
@@ -61,7 +62,11 @@ router.get(
   asyncHandler(async (req: Request, res: Response) => {
     const rawLimit = parseInt(String(req.query.limit ?? '50'), 10);
     const limit = Math.max(1, Math.min(isNaN(rawLimit) ? 50 : rawLimit, 50));
-    const events = assistantOrchestrator.getRecentEvents(limit);
+    const events = assistantOrchestrator.getRecentEvents(limit).map(({ id, event, timestamp }) => ({
+      id,
+      event,
+      timestamp,
+    }));
     res.json({ success: true, data: { events, count: events.length } });
   })
 );
