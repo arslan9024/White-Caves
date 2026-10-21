@@ -57,6 +57,15 @@ describe('config/assistantRegistry', () => {
 
   // ── AI_ASSISTANTS ─────────────────────────────────────────────────
   describe('AI_ASSISTANTS', () => {
+    it('describes Zoe’s current executive oversight scope without promising autonomous control', () => {
+      expect(AI_ASSISTANTS.zoe.title).toBe(
+        'Managing Director’s Executive Assistant & AI Oversight Lead'
+      );
+      expect(AI_ASSISTANTS.zoe.capabilities).toContain('read_only_orchestrator_event_observation');
+      expect(AI_ASSISTANTS.zoe.apiEndpoints).toContain('/api/orchestrator/status');
+      expect(AI_ASSISTANTS.zoe.description).toContain('durable personal memory');
+    });
+
     it('has 40 assistants', () => {
       expect(Object.keys(AI_ASSISTANTS).length).toBe(40);
     });

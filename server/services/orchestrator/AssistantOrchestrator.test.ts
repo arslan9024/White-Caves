@@ -1,12 +1,13 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
-import { assistantOrchestrator } from './AssistantOrchestrator.js';
 
 describe('AssistantOrchestrator Zoe oversight', () => {
   afterEach(() => {
     vi.restoreAllMocks();
   });
 
-  it('registers Zoe once as a read-only observer of supported integration events', () => {
+  it('registers Zoe once as a read-only observer of supported integration events', async () => {
+    vi.resetModules();
+    const { assistantOrchestrator } = await import('./AssistantOrchestrator.js');
     const initialStatus = assistantOrchestrator.getStatus();
     const initialEventHandlers = initialStatus.handlerCount['linda:message_received'] ?? 0;
     const logSpy = vi.spyOn(console, 'info').mockImplementation(() => undefined);

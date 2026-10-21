@@ -71,7 +71,7 @@ const ZoeExecutiveCRM = () => {
         </div>
         <div className="assistant-status online">
           <span className="status-dot"></span>
-          Active
+          Workspace available
         </div>
       </div>
 

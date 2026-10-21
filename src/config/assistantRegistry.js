@@ -264,27 +264,27 @@ export const AI_ASSISTANTS = {
   zoe: {
     id: 'zoe',
     name: 'Zoe',
-    title: 'MD Executive Assistant & Strategic Intelligence',
+    title: 'Managing Director’s Executive Assistant & AI Oversight Lead',
     department: 'executive',
     icon: 'Briefcase',
-    color: '#10B981',
-    avatar: '👩‍🏫',
-    description: 'Executive AI Assistant for Managing Director Arslan Malik. Provides strategic suggestions inbox, business intelligence, KPI dashboards, and cross-department coordination.',
+    color: '#EF4444',
+    avatar: '👩‍💼',
+    description: 'Zoe’s executive workspace includes suggestions, calendar, tasks, reports, a browsable company-document library, and a read-only view of registered AssistantOrchestrator events. The document library is not a chat retrieval source; durable personal memory and autonomous task dispatch are not implemented.',
     reportsTo: {
       name: 'Arslan Malik',
       title: 'Managing Director',
       email: 'arslanmalikgoraha@gmail.com'
     },
-    capabilities: ['executive_reports', 'suggestion_inbox', 'kpi_dashboard', 'strategic_planning', 'cross_department_coordination', 'md_briefings'],
+    capabilities: ['executive_reports', 'suggestion_inbox', 'kpi_dashboard', 'strategic_planning', 'cross_department_coordination', 'md_briefings', 'company_document_library', 'read_only_orchestrator_event_observation'],
     permissions: {
       viewableBy: ['md', 'admin'],
       accessibleBy: ['md'],
       dataAccessLevel: 'full'
     },
-    apiEndpoints: ['/api/executive', '/api/suggestions', '/api/analytics'],
+    apiEndpoints: ['/api/executive', '/api/suggestions', '/api/analytics', '/api/orchestrator/status', '/api/orchestrator/events'],
     dataFlows: {
-      outputs: [],
-      inputs: ['all']
+      outputs: ['Executive oversight view'],
+      inputs: ['AssistantOrchestrator events', 'Company document library']
     }
   },
   laila: {

@@ -60,10 +60,14 @@ const mockSetMeetingSearch = vi.fn();
 const mockSetTaskFilter = vi.fn();
 const mockHandleStatusChange = vi.fn();
 const mockGetUpcomingMeetings = vi.fn().mockReturnValue([{ id: 1 }, { id: 2 }]);
+let mockActiveTab = 'suggestions';
+mockSetActiveTab.mockImplementation((tab: string) => {
+  mockActiveTab = tab;
+});
 
 vi.mock('./hooks/useExecutiveData', () => ({
   useExecutiveData: () => ({
-    activeTab: 'suggestions',
+    activeTab: mockActiveTab,
     setActiveTab: mockSetActiveTab,
     unreviewedCount: 5,
     criticalSuggestions: [{ id: 1 }, { id: 2 }],
@@ -92,6 +96,7 @@ import ZoeExecutiveCRM from './index';
 describe('ZoeExecutiveCRM', () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    mockActiveTab = 'suggestions';
     mockGetUpcomingMeetings.mockReturnValue([{ id: 1 }, { id: 2 }]);
   });
 
@@ -108,9 +113,9 @@ describe('ZoeExecutiveCRM', () => {
       expect(screen.getByText(/company reference documents, and live visibility/)).toBeInTheDocument();
     });
 
-    it('renders Active status', () => {
+    it('renders workspace availability without implying the AI is running', () => {
       render(<ZoeExecutiveCRM />);
-      expect(screen.getByText('Active')).toBeInTheDocument();
+      expect(screen.getByText('Workspace available')).toBeInTheDocument();
     });
   });
 
@@ -144,7 +149,7 @@ describe('ZoeExecutiveCRM', () => {
   });
 
   describe('tab navigation', () => {
-    it('renders all 5 tab buttons', () => {
+    it('renders all executive workspace tab buttons', () => {
       render(<ZoeExecutiveCRM />);
       expect(screen.getByText('Suggestions')).toBeInTheDocument();
       expect(screen.getByText('Calendar')).toBeInTheDocument();
@@ -180,15 +185,19 @@ describe('ZoeExecutiveCRM', () => {
     });
 
     it('opens the live assistant oversight panel', () => {
-      render(<ZoeExecutiveCRM />);
+      const { rerender } = render(<ZoeExecutiveCRM />);
       fireEvent.click(screen.getByText('AI Oversight'));
       expect(mockSetActiveTab).toHaveBeenCalledWith('ai-oversight');
+      rerender(<ZoeExecutiveCRM />);
+      expect(screen.getByTestId('zoe-oversight-panel')).toBeInTheDocument();
     });
 
-    it('opens the company knowledge library', () => {
-      render(<ZoeExecutiveCRM />);
+    it('opens the company knowledge library', async () => {
+      const { rerender } = render(<ZoeExecutiveCRM />);
       fireEvent.click(screen.getByText('Company Knowledge'));
       expect(mockSetActiveTab).toHaveBeenCalledWith('company-knowledge');
+      rerender(<ZoeExecutiveCRM />);
+      expect(await screen.findByTestId('zoe-company-knowledge')).toBeInTheDocument();
     });
   });
 

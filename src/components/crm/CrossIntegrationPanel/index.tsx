@@ -12,6 +12,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import type { FC } from 'react';
 import { authFetch } from '../../../utils/authFetch';
+import { createLogger } from '../../../utils/logger';
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -31,7 +32,6 @@ interface OrchestratorStatus {
 interface OrchestratorLogEntry {
   id: string;
   event: string;
-  payload: Record<string, unknown>;
   timestamp: string;
 }
 
@@ -53,6 +53,7 @@ const CARD_BORDER = '#E2E8F0';
 const DARK_ROW    = '#F8FAFC';
 const TEXT_MAIN   = '#1E293B';
 const TEXT_MUTED  = '#64748B';
+const logger = createLogger('ZoeOversight');
 
 const ASSISTANTS: AssistantConfig[] = [
   { id: 'zoe',   name: 'Zoe',    role: 'Executive oversight observer', metric: 'Integration event monitoring', emoji: '👩‍💼', color: BRAND_RED },
@@ -61,15 +62,6 @@ const ASSISTANTS: AssistantConfig[] = [
   { id: 'nina',  name: 'Nina',   role: 'NLP Engine',        metric: 'Intent Classification',  emoji: '🧠', color: '#1E293B' },
   { id: 'mary',  name: 'Mary',   role: 'Inventory CRM',     metric: 'Inventory integration',  emoji: '🏠', color: '#1E293B' },
   { id: 'henry', name: 'Henry',  role: 'Document Hub',      metric: 'Compliance integration', emoji: '📄', color: '#1E293B' },
-];
-
-const TOPOLOGY: Array<{ from: string; to: string; label: string }> = [
-  { from: 'Linda', to: 'Nina',  label: 'NLP route'          },
-  { from: 'Nina',  to: 'Nadia', label: 'intent → response'  },
-  { from: 'Nina',  to: 'Mary',  label: 'inventory search'   },
-  { from: 'Mary',  to: 'Linda', label: 'status broadcast'   },
-  { from: 'Nadia', to: 'Henry', label: 'compliance alert'   },
-  { from: 'Henry', to: 'Nadia', label: 'document generated' },
 ];
 
 // ─── Component ────────────────────────────────────────────────────────────────
@@ -112,6 +104,7 @@ export const CrossIntegrationPanel: FC<CrossIntegrationPanelProps> = ({ classNam
       setLastUpdated(new Date());
       setFetchError(null);
     } catch {
+      logger.error('Unable to load orchestrator oversight status.');
       setFetchError('Live oversight status is unavailable. Check your access or try again later.');
     } finally {
       setLoading(false);
@@ -311,9 +304,9 @@ export const CrossIntegrationPanel: FC<CrossIntegrationPanelProps> = ({ classNam
         })}
       </div>
 
-      {/* ── Topology Map ────────────────────────────────────────────────────── */}
+      {/* ── Registered Event Handlers ───────────────────────────────────────── */}
       <div
-        aria-label="Event topology map"
+        aria-label="Registered orchestrator event handlers"
         style={{
           background:   DARK_ROW,
           border:       `1px solid ${CARD_BORDER}`,
@@ -325,29 +318,36 @@ export const CrossIntegrationPanel: FC<CrossIntegrationPanelProps> = ({ classNam
         <div
           style={{ fontSize: '11px', color: BRAND_RED, fontWeight: 700, marginBottom: '12px', letterSpacing: '0.8px' }}
         >
-          CURRENT EVENT INTEGRATIONS
+          REGISTERED ORCHESTRATOR EVENT HANDLERS
         </div>
         <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
-          {TOPOLOGY.map(link => (
-            <div
-              key={`${link.from}-${link.to}`}
-              style={{
-                display:      'flex',
-                alignItems:   'center',
-                gap:          '5px',
-                padding:      '4px 10px',
-                background:   '#FFFFFF',
-                borderRadius: '6px',
-                border:       `1px solid ${CARD_BORDER}`,
-                fontSize:     '11px',
-              }}
-            >
-              <span style={{ color: TEXT_MAIN, fontWeight: 600 }}>{link.from}</span>
-              <span style={{ color: BRAND_RED }} aria-hidden="true">→</span>
-              <span style={{ color: TEXT_MAIN, fontWeight: 600 }}>{link.to}</span>
-              <span style={{ color: TEXT_MUTED, fontSize: '10px' }}>({link.label})</span>
-            </div>
-          ))}
+          {Object.entries(status?.handlerCount ?? {})
+            .sort(([eventA], [eventB]) => eventA.localeCompare(eventB))
+            .map(([event, count]) => (
+              <div
+                key={event}
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '5px',
+                  padding: '4px 10px',
+                  background: '#FFFFFF',
+                  borderRadius: '6px',
+                  border: `1px solid ${CARD_BORDER}`,
+                  fontSize: '11px',
+                }}
+              >
+                <code style={{ color: TEXT_MAIN }}>{event}</code>
+                <span style={{ color: TEXT_MUTED }}>
+                  {count} handler{count === 1 ? '' : 's'}
+                </span>
+              </div>
+            ))}
+          {status && Object.keys(status.handlerCount).length === 0 && (
+            <span style={{ fontSize: '11px', color: TEXT_MUTED }}>
+              No orchestrator event handlers are registered.
+            </span>
+          )}
         </div>
 
         {status && (
@@ -381,7 +381,7 @@ export const CrossIntegrationPanel: FC<CrossIntegrationPanelProps> = ({ classNam
           </p>
         )}
 
-        {!loading && events.length === 0 && (
+        {!loading && !fetchError && events.length === 0 && (
           <p style={{ margin: 0, fontSize: '12px', color: TEXT_MUTED }}>
             No integration events have been recorded in this server session.
           </p>
