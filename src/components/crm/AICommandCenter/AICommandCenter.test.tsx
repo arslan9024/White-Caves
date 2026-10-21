@@ -40,6 +40,6 @@ describe('AICommandCenter View Component (1-12-108 Protocol)', () => {
     fireEvent.click(screen.getByText('Mock open-slot staffing examples'));
     expect(screen.getByText(/Fictional demo data only/i)).toBeDefined();
     expect(screen.getByText('Amina Example')).toBeDefined();
-    expect(screen.getByText(/Active \(mock\) · fictional preview/)).toBeDefined();
+    expect(screen.getAllByText(/Active \(mock\) · fictional preview/)).toHaveLength(3);
   });
 });

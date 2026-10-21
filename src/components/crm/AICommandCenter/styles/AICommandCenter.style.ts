@@ -390,34 +390,6 @@ export const CapabilityTag = styled.span`
   font-weight: 600;
 `;
 
-export const MetricsRow = styled.div`
-  display: flex;
-  justify-content: space-between;
-  padding: 8px 12px;
-  border-radius: 8px;
-  background: var(--bg-secondary, #F8FAFC);
-  border: 1px solid var(--border-color, #E2E8F0);
-  font-size: 0.76rem;
-  font-weight: 700;
-
-  .metric-item {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 2px;
-
-    span.label {
-      color: var(--text-muted, #94A3B8);
-      font-size: 0.68rem;
-      text-transform: uppercase;
-    }
-
-    strong.val {
-      color: #0F172A;
-    }
-  }
-`;
-
 export const LaunchBtn = styled.button`
   display: flex;
   align-items: center;
