@@ -47,6 +47,12 @@ vi.mock('./tabs/ExecutivesTab', () => ({
 vi.mock('./tabs/ReportsTab', () => ({
   default: () => <div data-testid="reports-tab">Reports</div>,
 }));
+vi.mock('../CrossIntegrationPanel', () => ({
+  default: () => <div data-testid="zoe-oversight-panel">Assistant oversight</div>,
+}));
+vi.mock('../ZoeBusinessHub', () => ({
+  default: () => <div data-testid="zoe-company-knowledge">Company knowledge library</div>,
+}));
 
 // Mock useExecutiveData hook
 const mockSetActiveTab = vi.fn();
@@ -93,13 +99,13 @@ describe('ZoeExecutiveCRM', () => {
     it('renders the dashboard header', () => {
       render(<ZoeExecutiveCRM />);
       expect(
-        screen.getByText('Zoe - Executive Assistant & Strategic Intelligence')
+        screen.getByText('Zoe — Managing Director’s Executive Assistant & AI Oversight Lead')
       ).toBeInTheDocument();
     });
 
     it('renders the assistant description', () => {
       render(<ZoeExecutiveCRM />);
-      expect(screen.getByText(/Strategic insights, executive inbox/)).toBeInTheDocument();
+      expect(screen.getByText(/company reference documents, and live visibility/)).toBeInTheDocument();
     });
 
     it('renders Active status', () => {
@@ -145,6 +151,8 @@ describe('ZoeExecutiveCRM', () => {
       expect(screen.getByText('Tasks')).toBeInTheDocument();
       expect(screen.getByText('Executives')).toBeInTheDocument();
       expect(screen.getByText('Reports')).toBeInTheDocument();
+      expect(screen.getByText('AI Oversight')).toBeInTheDocument();
+      expect(screen.getByText('Company Knowledge')).toBeInTheDocument();
     });
 
     it('calls setActiveTab when a tab is clicked', () => {
@@ -169,6 +177,18 @@ describe('ZoeExecutiveCRM', () => {
       render(<ZoeExecutiveCRM />);
       fireEvent.click(screen.getByText('Reports'));
       expect(mockSetActiveTab).toHaveBeenCalledWith('reports');
+    });
+
+    it('opens the live assistant oversight panel', () => {
+      render(<ZoeExecutiveCRM />);
+      fireEvent.click(screen.getByText('AI Oversight'));
+      expect(mockSetActiveTab).toHaveBeenCalledWith('ai-oversight');
+    });
+
+    it('opens the company knowledge library', () => {
+      render(<ZoeExecutiveCRM />);
+      fireEvent.click(screen.getByText('Company Knowledge'));
+      expect(mockSetActiveTab).toHaveBeenCalledWith('company-knowledge');
     });
   });
 

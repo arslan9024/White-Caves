@@ -107,6 +107,17 @@ export interface OrchestratorStatus {
   uptime: number;
 }
 
+const EXECUTIVE_OBSERVED_EVENTS: OrchestratorEvent[] = [
+  'linda:message_received',
+  'nina:intent_classified',
+  'nadia:lead_scored',
+  'mary:property_status_changed',
+  'henry:compliance_failed',
+  'henry:document_generated',
+  'cross:viewing_booked',
+  'cross:offer_accepted',
+];
+
 // ─── Core Implementation ──────────────────────────────────────────────────────
 
 class AssistantOrchestrator extends EventEmitter {
@@ -320,6 +331,24 @@ class AssistantOrchestrator extends EventEmitter {
     });
 
     console.info('[Orchestrator] Henry handlers registered.');
+  }
+
+  /**
+   * Register Zoe as a read-only observer of the integration events currently
+   * supported by this orchestrator. This does not dispatch or execute tasks.
+   */
+  registerZoeHandlers(): void {
+    if (this.registeredAssistants.has('zoe')) return;
+
+    this.registeredAssistants.add('zoe');
+
+    for (const event of EXECUTIVE_OBSERVED_EVENTS) {
+      this.onEvent(event, () => {
+        console.info(`[Orchestrator→Zoe] Observed "${event}" for executive oversight.`);
+      });
+    }
+
+    console.info('[Orchestrator] Zoe oversight observer registered.');
   }
 
   /**

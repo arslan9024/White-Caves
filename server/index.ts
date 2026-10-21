@@ -1333,7 +1333,7 @@ const startServer = async () => {
     startAutoRouting(); // Phase 4A: auto-route hot leads to best agents
     schedulerService.start(); // Wave 12: cron automation engine
 
-    // Boot AssistantOrchestrator — register all 5 assistant handler chains
+    // Boot AssistantOrchestrator — register connected assistant handlers and Zoe's observer
     import('./services/orchestrator/AssistantOrchestrator.js')
       .then(({ assistantOrchestrator }) => {
         assistantOrchestrator.registerLindaHandlers();
@@ -1341,7 +1341,8 @@ const startServer = async () => {
         assistantOrchestrator.registerNinaHandlers();
         assistantOrchestrator.registerMaryHandlers();
         assistantOrchestrator.registerHenryHandlers();
-        logger.info('AssistantOrchestrator: all 5 assistant handlers registered.');
+        assistantOrchestrator.registerZoeHandlers();
+        logger.info('AssistantOrchestrator: 5 integration handlers and Zoe oversight observer registered.');
       })
       .catch((err: unknown) => {
         logger.warn('AssistantOrchestrator init failed:', err instanceof Error ? err.message : err);

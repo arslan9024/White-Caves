@@ -1,10 +1,9 @@
 /**
  * CrossIntegrationPanel
  *
- * Live status panel for all 5 AI assistants (Linda, Nadia, Nina, Mary, Henry)
- * and their cross-integration connections via the AssistantOrchestrator event bus.
+ * Live status panel for assistants registered with the AssistantOrchestrator event bus.
  *
- * Design: Gold (#C9A84C) / Black / White luxury theme.
+ * Registration indicates an event handler exists, not that an assistant autonomously runs tasks.
  * Polling: /api/orchestrator/status every 30 seconds.
  * Events: Last 5 from /api/orchestrator/events (newest first).
  * No external packages — inline styles only.
@@ -12,6 +11,7 @@
 
 import React, { useState, useEffect, useCallback } from 'react';
 import type { FC } from 'react';
+import { authFetch } from '../../../utils/authFetch';
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -46,20 +46,21 @@ interface AssistantConfig {
 
 // ─── Constants ────────────────────────────────────────────────────────────────
 
-const GOLD        = '#C9A84C';
-const PANEL_BG    = '#111111';
-const CARD_BG     = '#1a1a1a';
-const CARD_BORDER = '#2c2c2c';
-const DARK_ROW    = '#0d0d0d';
-const TEXT_MAIN   = '#f0ece0';
-const TEXT_MUTED  = '#888888';
+const BRAND_RED   = '#EF4444';
+const PANEL_BG    = '#FFFFFF';
+const CARD_BG     = '#FFFFFF';
+const CARD_BORDER = '#E2E8F0';
+const DARK_ROW    = '#F8FAFC';
+const TEXT_MAIN   = '#1E293B';
+const TEXT_MUTED  = '#64748B';
 
 const ASSISTANTS: AssistantConfig[] = [
-  { id: 'linda', name: 'Linda',  role: 'WhatsApp Device',  metric: 'WA Broadcast',          emoji: '💬', color: '#22c55e' },
-  { id: 'nadia', name: 'Nadia',  role: 'Meta Cloud API',   metric: 'Official WABA',          emoji: '📡', color: '#38bdf8' },
-  { id: 'nina',  name: 'Nina',   role: 'NLP Engine',       metric: 'Intent Classification',  emoji: '🧠', color: '#a78bfa' },
-  { id: 'mary',  name: 'Mary',   role: 'Inventory CRM',    metric: '9,378+ Units',           emoji: '🏠', color: '#fb923c' },
-  { id: 'henry', name: 'Henry',  role: 'Document Hub',     metric: 'Compliance Engine',      emoji: '📄', color: '#f472b6' },
+  { id: 'zoe',   name: 'Zoe',    role: 'Executive oversight observer', metric: 'Integration event monitoring', emoji: '👩‍💼', color: BRAND_RED },
+  { id: 'linda', name: 'Linda',  role: 'WhatsApp Device',   metric: 'WA Broadcast',          emoji: '💬', color: '#1E293B' },
+  { id: 'nadia', name: 'Nadia',  role: 'Meta Cloud API',    metric: 'Official WABA',          emoji: '📡', color: '#1E293B' },
+  { id: 'nina',  name: 'Nina',   role: 'NLP Engine',        metric: 'Intent Classification',  emoji: '🧠', color: '#1E293B' },
+  { id: 'mary',  name: 'Mary',   role: 'Inventory CRM',     metric: 'Inventory integration',  emoji: '🏠', color: '#1E293B' },
+  { id: 'henry', name: 'Henry',  role: 'Document Hub',      metric: 'Compliance integration', emoji: '📄', color: '#1E293B' },
 ];
 
 const TOPOLOGY: Array<{ from: string; to: string; label: string }> = [
@@ -83,32 +84,35 @@ export const CrossIntegrationPanel: FC<CrossIntegrationPanelProps> = ({ classNam
   const fetchData = useCallback(async (): Promise<void> => {
     try {
       const [statusRes, eventsRes] = await Promise.all([
-        fetch('/api/orchestrator/status'),
-        fetch('/api/orchestrator/events?limit=5'),
+        authFetch('/api/orchestrator/status'),
+        authFetch('/api/orchestrator/events?limit=5'),
       ]);
 
-      if (statusRes.ok) {
-        const body = (await statusRes.json()) as { success: boolean; data: OrchestratorStatus };
-        if (body.success) setStatus(body.data);
+      if (!statusRes.ok || !eventsRes.ok) {
+        throw new Error('Unable to load Zoe oversight status.');
       }
 
-      if (eventsRes.ok) {
-        const body = (await eventsRes.json()) as {
-          success: boolean;
-          data: { events: OrchestratorLogEntry[]; count: number };
-        };
-        if (body.success) {
-          const sorted = [...body.data.events].sort(
-            (a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime()
-          );
-          setEvents(sorted.slice(0, 5));
-        }
+      const statusBody = (await statusRes.json()) as {
+        success: boolean;
+        data: OrchestratorStatus;
+      };
+      const eventsBody = (await eventsRes.json()) as {
+        success: boolean;
+        data: { events: OrchestratorLogEntry[]; count: number };
+      };
+      if (!statusBody.success || !eventsBody.success) {
+        throw new Error('Unable to load Zoe oversight status.');
       }
 
+      const sorted = [...eventsBody.data.events].sort(
+        (a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime()
+      );
+      setStatus(statusBody.data);
+      setEvents(sorted.slice(0, 5));
       setLastUpdated(new Date());
       setFetchError(null);
-    } catch (err) {
-      setFetchError(err instanceof Error ? err.message : 'Network error');
+    } catch {
+      setFetchError('Live oversight status is unavailable. Check your access or try again later.');
     } finally {
       setLoading(false);
     }
@@ -120,32 +124,42 @@ export const CrossIntegrationPanel: FC<CrossIntegrationPanelProps> = ({ classNam
     return () => clearInterval(interval);
   }, [fetchData]);
 
-  /** Returns 'active' | 'idle' | 'unknown' for a given assistant ID */
-  const getState = (id: string): 'active' | 'idle' | 'unknown' => {
+  /** Registration means an event handler exists, not that an AI model is running. */
+  const getState = (id: string): 'registered' | 'not registered' | 'unknown' => {
     if (!status) return 'unknown';
-    return status.registeredAssistants.includes(id) ? 'active' : 'idle';
+    return status.registeredAssistants.includes(id) ? 'registered' : 'not registered';
   };
 
-  const STATE_COLOR: Record<'active' | 'idle' | 'unknown', string> = {
-    active:  '#22c55e',
-    idle:    '#eab308',
-    unknown: '#6b7280',
+  const STATE_COLOR: Record<'registered' | 'not registered' | 'unknown', string> = {
+    registered: '#EF4444',
+    'not registered': '#64748B',
+    unknown: '#64748B',
   };
 
-  /** Get the accent colour for an event name based on its namespace prefix */
   const eventColor = (eventName: string): string => {
-    if (eventName.startsWith('linda')) return '#22c55e';
-    if (eventName.startsWith('nadia')) return '#38bdf8';
-    if (eventName.startsWith('nina'))  return '#a78bfa';
-    if (eventName.startsWith('mary'))  return '#fb923c';
-    if (eventName.startsWith('henry')) return '#f472b6';
-    return GOLD;
+    return eventName.startsWith('zoe') ? BRAND_RED : '#1E293B';
   };
+
+  const assistantConfigs = new Map(ASSISTANTS.map(assistant => [assistant.id, assistant]));
+  const assistantIds = Array.from(
+    new Set([...ASSISTANTS.map(assistant => assistant.id), ...(status?.registeredAssistants ?? [])])
+  );
+  const displayedAssistants = assistantIds.map(
+    id =>
+      assistantConfigs.get(id) ?? {
+        id,
+        name: id,
+        role: 'Runtime-registered integration',
+        metric: 'Integration event handler',
+        emoji: '🤖',
+        color: BRAND_RED,
+      }
+  );
 
   return (
     <section
       className={className}
-      aria-label="AI Assistant Cross-Integration Panel"
+      aria-label="Zoe AI Oversight Panel"
       style={{
         background:   PANEL_BG,
         border:       `1px solid ${CARD_BORDER}`,
@@ -153,7 +167,7 @@ export const CrossIntegrationPanel: FC<CrossIntegrationPanelProps> = ({ classNam
         padding:      '28px',
         fontFamily:   "'Inter', 'Segoe UI', system-ui, sans-serif",
         color:        TEXT_MAIN,
-        boxShadow:    '0 4px 24px rgba(0,0,0,0.45)',
+        boxShadow:    '0 4px 24px rgba(15, 23, 42, 0.08)',
       }}
     >
 
@@ -171,12 +185,12 @@ export const CrossIntegrationPanel: FC<CrossIntegrationPanelProps> = ({ classNam
         <div>
           <h2
             id="xip-heading"
-            style={{ margin: 0, fontSize: '20px', fontWeight: 700, color: GOLD, letterSpacing: '0.3px' }}
+            style={{ margin: 0, fontSize: '20px', fontWeight: 700, color: BRAND_RED, letterSpacing: '0.3px' }}
           >
-            ⚡ AI Orchestrator — Cross-Integration
+            Zoe’s AI Oversight
           </h2>
           <p style={{ margin: '6px 0 0', fontSize: '13px', color: TEXT_MUTED }}>
-            Live status of all 5 AI assistants · event bus health · recent cross-events
+            Registered event integrations and recent activity. Registration does not mean an assistant autonomously runs tasks.
           </p>
         </div>
 
@@ -187,7 +201,7 @@ export const CrossIntegrationPanel: FC<CrossIntegrationPanelProps> = ({ classNam
             </span>
           )}
           {!loading && fetchError && (
-            <span role="alert" style={{ fontSize: '12px', color: 'var(--color-f87171, #f87171)' }}>
+            <span role="alert" style={{ fontSize: '12px', color: BRAND_RED }}>
               ⚠ {fetchError}
             </span>
           )}
@@ -197,7 +211,7 @@ export const CrossIntegrationPanel: FC<CrossIntegrationPanelProps> = ({ classNam
                 Updated {lastUpdated.toLocaleTimeString()}
               </div>
               {status && (
-                <div style={{ fontSize: '12px', color: GOLD, marginTop: '3px' }}>
+                <div style={{ fontSize: '12px', color: BRAND_RED, marginTop: '3px' }}>
                   {status.totalEventsEmitted.toLocaleString()} events · {status.uptime}s uptime
                 </div>
               )}
@@ -217,10 +231,10 @@ export const CrossIntegrationPanel: FC<CrossIntegrationPanelProps> = ({ classNam
           marginBottom:        '22px',
         }}
       >
-        {ASSISTANTS.map(a => {
+        {displayedAssistants.map(a => {
           const state    = getState(a.id);
           const dotColor = STATE_COLOR[state];
-          const isActive = state === 'active';
+          const isRegistered = state === 'registered';
 
           return (
             <article
@@ -229,7 +243,7 @@ export const CrossIntegrationPanel: FC<CrossIntegrationPanelProps> = ({ classNam
               aria-label={`${a.name} — ${state}`}
               style={{
                 background:   CARD_BG,
-                border:       `1px solid ${isActive ? `${GOLD}44` : CARD_BORDER}`,
+                border:       `1px solid ${isRegistered ? BRAND_RED : CARD_BORDER}`,
                 borderRadius: '12px',
                 padding:      '18px 16px',
                 position:     'relative',
@@ -248,17 +262,17 @@ export const CrossIntegrationPanel: FC<CrossIntegrationPanelProps> = ({ classNam
                   height:       '10px',
                   borderRadius: '50%',
                   background:   dotColor,
-                  boxShadow:    isActive ? `0 0 8px ${dotColor}88` : 'none',
+                  boxShadow:    isRegistered ? `0 0 8px ${dotColor}33` : 'none',
                 }}
               />
 
               <div style={{ fontSize: '26px', marginBottom: '10px', lineHeight: 1 }} aria-hidden="true">
                 {a.emoji}
               </div>
-              <div style={{ fontWeight: 700, fontSize: '16px', color: 'var(--white, #fff)', marginBottom: '2px' }}>
+              <div style={{ fontWeight: 700, fontSize: '16px', color: TEXT_MAIN, marginBottom: '2px' }}>
                 {a.name}
               </div>
-              <div style={{ fontSize: '11px', color: GOLD, marginBottom: '4px', fontWeight: 500 }}>
+              <div style={{ fontSize: '11px', color: BRAND_RED, marginBottom: '4px', fontWeight: 500 }}>
                 {a.role}
               </div>
               <div style={{ fontSize: '11px', color: TEXT_MUTED, marginBottom: '10px' }}>
@@ -309,9 +323,9 @@ export const CrossIntegrationPanel: FC<CrossIntegrationPanelProps> = ({ classNam
         }}
       >
         <div
-          style={{ fontSize: '11px', color: GOLD, fontWeight: 700, marginBottom: '12px', letterSpacing: '0.8px' }}
+          style={{ fontSize: '11px', color: BRAND_RED, fontWeight: 700, marginBottom: '12px', letterSpacing: '0.8px' }}
         >
-          EVENT TOPOLOGY
+          CURRENT EVENT INTEGRATIONS
         </div>
         <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
           {TOPOLOGY.map(link => (
@@ -322,14 +336,14 @@ export const CrossIntegrationPanel: FC<CrossIntegrationPanelProps> = ({ classNam
                 alignItems:   'center',
                 gap:          '5px',
                 padding:      '4px 10px',
-                background:   '#1e1e1e',
+                background:   '#FFFFFF',
                 borderRadius: '6px',
                 border:       `1px solid ${CARD_BORDER}`,
                 fontSize:     '11px',
               }}
             >
               <span style={{ color: TEXT_MAIN, fontWeight: 600 }}>{link.from}</span>
-              <span style={{ color: GOLD }} aria-hidden="true">→</span>
+              <span style={{ color: BRAND_RED }} aria-hidden="true">→</span>
               <span style={{ color: TEXT_MAIN, fontWeight: 600 }}>{link.to}</span>
               <span style={{ color: TEXT_MUTED, fontSize: '10px' }}>({link.label})</span>
             </div>
@@ -341,13 +355,13 @@ export const CrossIntegrationPanel: FC<CrossIntegrationPanelProps> = ({ classNam
             style={{ marginTop: '12px', fontSize: '11px', color: TEXT_MUTED, display: 'flex', gap: '18px', flexWrap: 'wrap' }}
           >
             <span>
-              <span style={{ color: GOLD }}>{status.registeredAssistants.length}</span>/5 handlers active
+              <span style={{ color: BRAND_RED }}>{status.registeredAssistants.length}</span> integration handlers registered
             </span>
             <span>
-              Buffer: <span style={{ color: GOLD }}>{status.ringBufferSize}</span>/50
+              Event buffer: <span style={{ color: BRAND_RED }}>{status.ringBufferSize}</span>/50 (in memory)
             </span>
             <span>
-              Total: <span style={{ color: GOLD }}>{status.totalEventsEmitted.toLocaleString()}</span> events
+              Total: <span style={{ color: BRAND_RED }}>{status.totalEventsEmitted.toLocaleString()}</span> events
             </span>
           </div>
         )}
@@ -356,7 +370,7 @@ export const CrossIntegrationPanel: FC<CrossIntegrationPanelProps> = ({ classNam
       {/* ── Recent Cross-Events ──────────────────────────────────────────────── */}
       <div>
         <h3
-          style={{ margin: '0 0 14px', fontSize: '14px', fontWeight: 700, color: GOLD, letterSpacing: '0.4px' }}
+          style={{ margin: '0 0 14px', fontSize: '14px', fontWeight: 700, color: BRAND_RED, letterSpacing: '0.4px' }}
         >
           Recent Cross-Events
         </h3>
@@ -369,13 +383,7 @@ export const CrossIntegrationPanel: FC<CrossIntegrationPanelProps> = ({ classNam
 
         {!loading && events.length === 0 && (
           <p style={{ margin: 0, fontSize: '12px', color: TEXT_MUTED }}>
-            No events recorded yet. Use{' '}
-            <code
-              style={{ fontSize: '11px', background: 'var(--color-1e1e1e, #1e1e1e)', padding: '1px 5px', borderRadius: '3px', color: GOLD }}
-            >
-              POST /api/orchestrator/emit
-            </code>{' '}
-            to emit a test event.
+            No integration events have been recorded in this server session.
           </p>
         )}
 
@@ -386,10 +394,6 @@ export const CrossIntegrationPanel: FC<CrossIntegrationPanelProps> = ({ classNam
           >
             {events.map(ev => {
               const accentColor    = eventColor(ev.event);
-              const payloadPreview = JSON.stringify(ev.payload)
-                .replace(/["{}]/g, '')
-                .slice(0, 90);
-
               return (
                 <li
                   key={ev.id}
@@ -420,7 +424,7 @@ export const CrossIntegrationPanel: FC<CrossIntegrationPanelProps> = ({ classNam
                   <span
                     style={{
                       fontSize:     '11px',
-                      color:        '#ccc',
+                      color:        TEXT_MUTED,
                       flex:         1,
                       minWidth:     0,
                       overflow:     'hidden',
@@ -428,7 +432,7 @@ export const CrossIntegrationPanel: FC<CrossIntegrationPanelProps> = ({ classNam
                       whiteSpace:   'nowrap',
                     }}
                   >
-                    {payloadPreview}
+                    Event recorded
                   </span>
 
                   <time

@@ -1,4 +1,4 @@
-import React, { Suspense } from 'react';
+import React, { Suspense, lazy } from 'react';
 import {
   Briefcase,
   Calendar,
@@ -17,8 +17,11 @@ import CalendarTab from './tabs/CalendarTab';
 import TasksTab from './tabs/TasksTab';
 import ExecutivesTab from './tabs/ExecutivesTab';
 import ReportsTab from './tabs/ReportsTab';
+import CrossIntegrationPanel from '../CrossIntegrationPanel';
 import '../AssistantDashboard.css';
 import './ZoeExecutiveCRM.css';
+
+const ZoeBusinessHub = lazy(() => import('../ZoeBusinessHub'));
 
 const ZoeExecutiveCRM = () => {
   const {
@@ -59,10 +62,11 @@ const ZoeExecutiveCRM = () => {
           <Briefcase size={28} />
         </div>
         <div className="assistant-info">
-          <h2>Zoe - Executive Assistant & Strategic Intelligence</h2>
+          <h2>Zoe — Managing Director’s Executive Assistant & AI Oversight Lead</h2>
           <p>
-            Strategic insights, executive inbox, calendar management, and cross-department
-            intelligence
+            Executive support, company reference documents, and live visibility into registered
+            assistant integrations. Zoe does not yet have durable personal memory or authority to
+            execute arbitrary assistant tasks.
           </p>
         </div>
         <div className="assistant-status online">
@@ -156,13 +160,25 @@ const ZoeExecutiveCRM = () => {
       </div>
 
       <div className="assistant-tabs">
-        {['suggestions', 'calendar', 'tasks', 'executives', 'reports'].map(tab => (
+        {[
+          'suggestions',
+          'calendar',
+          'tasks',
+          'executives',
+          'reports',
+          'ai-oversight',
+          'company-knowledge',
+        ].map(tab => (
           <button
             key={tab}
             className={`tab-btn ${activeTab === tab ? 'active' : ''}`}
             onClick={() => setActiveTab(tab)}
           >
-            {tab.charAt(0).toUpperCase() + tab.slice(1)}
+            {tab === 'ai-oversight'
+              ? 'AI Oversight'
+              : tab === 'company-knowledge'
+                ? 'Company Knowledge'
+                : tab.charAt(0).toUpperCase() + tab.slice(1)}
           </button>
         ))}
       </div>
@@ -199,6 +215,10 @@ const ZoeExecutiveCRM = () => {
               vault={vault}
             />
           )}
+
+          {activeTab === 'ai-oversight' && <CrossIntegrationPanel />}
+
+          {activeTab === 'company-knowledge' && <ZoeBusinessHub />}
         </Suspense>
       </div>
     </div>
