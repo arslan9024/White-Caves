@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { AI_ASSISTANTS_REGISTRY } from '../store/slices/aiAssistant/registry';
-import { CRM_MODULE_REGISTRY } from './crmModuleRegistry';
+import { CRM_MODULE_REGISTRY, SUPERUSER_CRM_MODULE_ORDER } from './crmModuleRegistry';
 import { getTabsForRole } from './ROLE_TAB_MAPPING';
 
 describe('Assistant rollout parity', () => {
@@ -18,6 +18,7 @@ describe('Assistant rollout parity', () => {
       zone: 'ai_command',
     });
     expect(CRM_MODULE_REGISTRY['ai-command'].Component).toBeDefined();
+    expect(SUPERUSER_CRM_MODULE_ORDER).toContain('ai-command');
   });
 
   it('includes every assistant as a tab for executive roles without duplicates', () => {
