@@ -21,4 +21,14 @@ describe('zoeBusinessDocsRegistry', () => {
     const doc04 = ZOE_BUSINESS_DOCS.find((d) => d.code === 'DOC-BUS-04');
     expect(doc04?.htmlContent).toContain('3.14 Theodora AI');
   });
+
+  it('stores the Bhatki protocol in Zoe’s AI Command Center document', () => {
+    const aiCommandDoc = ZOE_BUSINESS_DOCS.find((doc) => doc.code === 'DOC-BUS-11');
+    const protocol = aiCommandDoc?.subItems.find((item) => item.title === 'Bhatki protocol');
+
+    expect(protocol).toBeDefined();
+    expect(aiCommandDoc?.htmlContent).toContain(`id="${protocol?.id}"`);
+    expect(aiCommandDoc?.htmlContent).toContain('exactly 12 departments');
+    expect(aiCommandDoc?.htmlContent).toContain('fictional mock data');
+  });
 });

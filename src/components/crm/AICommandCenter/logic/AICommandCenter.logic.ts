@@ -8,6 +8,7 @@ import { useDispatch } from 'react-redux';
 import { ASSISTANTS_DATA, DEPARTMENTS_DATA, EXECUTIVE_DATA } from '../data/AICommandCenter.data';
 import type { SupervisorDef, DepartmentDef } from '../../../../data/assistants108Registry.data';
 import { selectAssistant } from '../../../../store/slices/aiAssistantDashboardSlice';
+import { auditFrameworkIntegrity } from './frameworkIntegrity';
 
 export function useAICommandCenterLogic() {
   const dispatch = useDispatch();
@@ -39,19 +40,36 @@ export function useAICommandCenterLogic() {
     );
   }, [selectedAssistantId]);
 
-  const stats = useMemo(() => {
-    const total = ASSISTANTS_DATA.length;
-    const optimalCount = ASSISTANTS_DATA.filter((a: SupervisorDef) => a.metrics.systemHealth === 'optimal').length;
-    const totalTasks = ASSISTANTS_DATA.reduce((acc: number, a: SupervisorDef) => acc + a.metrics.tasksCompletedToday, 0);
+  const structureAudit = useMemo(() => {
+    const supervisorsByDepartment = new Map<string, SupervisorDef[]>();
+    ASSISTANTS_DATA.forEach((supervisor: SupervisorDef) => {
+      const departmentSupervisors = supervisorsByDepartment.get(supervisor.departmentId) ?? [];
+      departmentSupervisors.push(supervisor);
+      supervisorsByDepartment.set(supervisor.departmentId, departmentSupervisors);
+    });
 
-    return {
-      totalAgents: total,
-      optimalCount,
-      totalTasksToday: totalTasks.toLocaleString(),
-      avgAccuracy: '99.8%',
-      slaAdherence: '99.8%',
-    };
+    return auditFrameworkIntegrity({
+      executive: { title: EXECUTIVE_DATA.managingDirector.title },
+      departments: DEPARTMENTS_DATA.map((department: DepartmentDef) => ({
+        code: department.code,
+        title: department.name,
+        slots: (supervisorsByDepartment.get(department.id) ?? []).map(supervisor => ({
+          id: supervisor.id,
+          status: supervisor.status,
+        })),
+      })),
+    });
   }, []);
+
+  const stats = useMemo(
+    () => ({
+      totalDepartments: structureAudit.totalDepartments,
+      totalSupervisors: structureAudit.totalSupervisors,
+      openSlots: structureAudit.openSlots.length,
+      structureValid: structureAudit.isValid,
+    }),
+    [structureAudit]
+  );
 
   const handleSelectAssistant = useCallback((id: string) => {
     setSelectedAssistantId(id);
@@ -69,7 +87,7 @@ export function useAICommandCenterLogic() {
     filteredAssistants,
     departments: DEPARTMENTS_DATA,
     executive: EXECUTIVE_DATA,
+    structureAudit,
     stats,
   };
 }
-

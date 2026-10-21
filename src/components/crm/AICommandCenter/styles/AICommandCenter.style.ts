@@ -47,14 +47,14 @@ export const HeaderBanner = styled.div`
   }
 `;
 
-export const LiveBadge = styled.span`
+export const RegistryBadge = styled.span`
   display: inline-flex;
   align-items: center;
   gap: 6px;
   padding: 6px 14px;
   border-radius: 999px;
   background: rgba(239, 68, 68, 0.1);
-  color: #EF4444;
+  color: #1E293B;
   border: 1px solid rgba(239, 68, 68, 0.3);
   font-size: 0.8rem;
   font-weight: 800;
@@ -66,13 +66,90 @@ export const LiveBadge = styled.span`
     height: 8px;
     border-radius: 50%;
     background: #EF4444;
-    box-shadow: 0 0 10px #EF4444;
-    animation: pulseRed 1.8s infinite;
+  }
+`;
+
+export const IntegrityPanel = styled.section`
+  padding: 20px 24px;
+  background: #FFFFFF;
+  color: #1E293B;
+  border: 1px solid #CBD5E1;
+  border-left: 4px solid #EF4444;
+  border-radius: 14px;
+
+  .integrity-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 16px;
+    flex-wrap: wrap;
   }
 
-  @keyframes pulseRed {
-    0%, 100% { transform: scale(1); opacity: 1; }
-    50% { transform: scale(1.3); opacity: 0.6; }
+  h2 {
+    margin: 0;
+    font-size: 1.05rem;
+  }
+
+  p {
+    margin: 6px 0 0;
+    color: #475569;
+    font-size: 0.85rem;
+    line-height: 1.5;
+  }
+
+  ul {
+    margin: 12px 0 0;
+    padding-left: 20px;
+    color: #1E293B;
+    line-height: 1.6;
+  }
+
+  li::marker {
+    color: #EF4444;
+  }
+`;
+
+export const MockAssignments = styled.details`
+  margin-top: 16px;
+  border-top: 1px solid #CBD5E1;
+  padding-top: 12px;
+
+  summary {
+    width: fit-content;
+    color: #1E293B;
+    font-size: 0.86rem;
+    font-weight: 800;
+    cursor: pointer;
+  }
+
+  summary:focus-visible {
+    outline: 3px solid #EF4444;
+    outline-offset: 3px;
+  }
+`;
+
+export const MockAssignmentList = styled.ul`
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 10px;
+  list-style: none;
+  padding: 0 !important;
+
+  li {
+    padding: 12px;
+    border: 1px solid #CBD5E1;
+    border-radius: 8px;
+  }
+
+  strong,
+  span {
+    display: block;
+  }
+
+  span {
+    margin-top: 4px;
+    color: #475569;
+    font-size: 0.78rem;
   }
 `;
 
@@ -164,6 +241,11 @@ export const SearchInputWrapper = styled.div`
       box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.18);
       background: #FFFFFF;
     }
+
+    &:focus-visible {
+      outline: 3px solid #EF4444;
+      outline-offset: 2px;
+    }
   }
 
   .search-icon {
@@ -197,6 +279,11 @@ export const DeptPill = styled.button<{ $active: boolean }>`
   &:hover {
     border-color: #EF4444;
     color: ${p => (p.$active ? '#FFFFFF' : '#EF4444')};
+  }
+
+  &:focus-visible {
+    outline: 3px solid #EF4444;
+    outline-offset: 2px;
   }
 `;
 

@@ -1,4 +1,4 @@
-import { describe, it, expect, vi } from 'vitest';
+import { describe, it, expect } from 'vitest';
 import { renderHook, act } from '@testing-library/react';
 import React from 'react';
 import { Provider } from 'react-redux';
@@ -22,7 +22,10 @@ describe('AICommandCenter.logic', () => {
     const { result } = renderHook(() => useAICommandCenterLogic(), { wrapper });
 
     expect(result.current.filteredAssistants.length).toBeGreaterThan(0);
-    expect(result.current.stats.totalAgents).toBeGreaterThan(0);
+    expect(result.current.stats.totalDepartments).toBe(12);
+    expect(result.current.stats.totalSupervisors).toBe(108);
+    expect(result.current.stats.structureValid).toBe(true);
+    expect(result.current.structureAudit.openSlots).toHaveLength(0);
 
     act(() => {
       result.current.setSearchTerm('clara');

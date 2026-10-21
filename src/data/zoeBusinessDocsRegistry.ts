@@ -789,14 +789,15 @@ export const ZOE_BUSINESS_DOCS: BusinessDocItem[] = [
     category: 'ai_command',
     departmentFloor: 'Floor 13 / Floor 05 — AI Operations Suite',
     primaryAssistant: '3.4 Zoe AI & 3.44 AEGIS AI',
-    lastUpdated: '2026-08-26',
-    summary: 'Complete operating architecture for all 44 AI assistants (3.1 Nadia to 3.44 AEGIS), task routing, intent detection, and multi-agent coordination.',
-    tags: ['44 AI Personas', 'AI Mesh', 'Nadia', 'Zoe', 'Aurora', 'Margaret', 'Ada', 'AEGIS'],
+    lastUpdated: '2026-10-21',
+    summary: 'AI assistant architecture and task coordination, with the Bhatki protocol reference for validating the configured 1-12-108 hierarchy.',
+    tags: ['44 AI Personas', 'AI Mesh', 'Nadia', 'Zoe', 'Aurora', 'Margaret', 'Ada', 'AEGIS', 'Bhatki protocol'],
     subItems: [
       { id: 'sec-11-1', title: '1. Canonical 44-Assistant Roster (3.1 to 3.44)', description: 'Complete table of all 44 AI assistants with roles and floor coordinates.' },
       { id: 'sec-11-2', title: '2. Executive Council Governance Mesh', description: 'Zoe, Aurora, Margaret, Ada, and AEGIS executive coordination.' },
       { id: 'sec-11-3', title: '3. Intent Detection & Routing Engine', description: 'Natural language classification and zero-latency subagent dispatch.' },
       { id: 'sec-11-4', title: '4. Graceful Fallback & Human Escalation Matrix', description: 'Rule-based fail-safe handling and licensed broker handover.' },
+      { id: 'sec-11-5', title: 'Bhatki protocol', description: 'Structural validation for the configured 1-12-108 hierarchy, open-slot tracking, and clearly labeled synthetic staffing examples.' },
     ],
     htmlContent: `
 <div class="doc-container">
@@ -865,6 +866,16 @@ export const ZOE_BUSINESS_DOCS: BusinessDocItem[] = [
       </tbody>
     </table>
   </div>
+  <h2 class="doc-section-heading" id="sec-11-5">Bhatki protocol — 1-12-108 structure validation</h2>
+  <p class="doc-body">
+    This protocol checks the configured company hierarchy for an assigned executive title, exactly 12 departments, and exactly 9 supervisor slots in each department (108 total).
+  </p>
+  <ul class="doc-body">
+    <li>Report missing executive details, department-count deviations, and department slot-count deviations as structural errors.</li>
+    <li>Track slots marked open or unassigned as allocation warnings; do not silently represent them as filled.</li>
+    <li>Keep structural registry results separate from live agent health, task activity, and real employee staffing records.</li>
+    <li>Mark all sample employee assignments as fictional mock data; they are not HR records or evidence of current vacancies.</li>
+  </ul>
 </div>
 `
   },

@@ -1,13 +1,19 @@
 import React, { FC, useState } from 'react';
-import { Search, Zap, CheckCircle2, Shield, Activity, ArrowUpRight, Crown, Users, LayoutGrid, GitFork } from 'lucide-react';
+import { Search, CheckCircle2, Shield, ArrowUpRight, Crown, Users, LayoutGrid, GitFork, AlertTriangle } from 'lucide-react';
 import { useAICommandCenterLogic } from './logic/AICommandCenter.logic';
-import { COMMAND_CENTER_TEXT } from './data/AICommandCenter.data';
+import {
+  COMMAND_CENTER_TEXT,
+  MOCK_STAFFING_ASSIGNMENTS,
+} from './data/AICommandCenter.data';
 import type { DepartmentDef, SupervisorDef } from '../../../data/assistants108Registry.data';
 import AIOrganogramTree from '../../dashboard/organogram/AIOrganogramTree';
 import {
   CommandCenterContainer,
   HeaderBanner,
-  LiveBadge,
+  RegistryBadge,
+  IntegrityPanel,
+  MockAssignments,
+  MockAssignmentList,
   StatsGrid,
   StatCardWrapper,
   FilterBar,
@@ -19,7 +25,6 @@ import {
   AssistantHeader,
   TagList,
   CapabilityTag,
-  MetricsRow,
   LaunchBtn,
 } from './styles/AICommandCenter.style';
 
@@ -35,6 +40,7 @@ export const AICommandCenter: FC = () => {
     filteredAssistants,
     departments,
     executive,
+    structureAudit,
     stats,
   } = useAICommandCenterLogic();
 
@@ -51,6 +57,8 @@ export const AICommandCenter: FC = () => {
           <div style={{ display: 'flex', background: '#F1F5F9', borderRadius: '8px', padding: '3px' }}>
             <button
               onClick={() => setViewMode('grid')}
+              type="button"
+              aria-pressed={viewMode === 'grid'}
               style={{
                 background: viewMode === 'grid' ? '#0F172A' : 'transparent',
                 color: viewMode === 'grid' ? '#FFFFFF' : '#475569',
@@ -69,6 +77,8 @@ export const AICommandCenter: FC = () => {
             </button>
             <button
               onClick={() => setViewMode('organogram')}
+              type="button"
+              aria-pressed={viewMode === 'organogram'}
               style={{
                 background: viewMode === 'organogram' ? '#EF4444' : 'transparent',
                 color: viewMode === 'organogram' ? '#FFFFFF' : '#475569',
@@ -87,9 +97,57 @@ export const AICommandCenter: FC = () => {
             </button>
           </div>
 
-          <LiveBadge>{COMMAND_CENTER_TEXT.header.badge}</LiveBadge>
+          <RegistryBadge>{COMMAND_CENTER_TEXT.header.badge}</RegistryBadge>
         </div>
       </HeaderBanner>
+
+      <IntegrityPanel data-testid="framework-integrity">
+        <div className="integrity-header">
+          <div>
+            <h2>{COMMAND_CENTER_TEXT.audit.title}</h2>
+            <p>{COMMAND_CENTER_TEXT.audit.description}</p>
+          </div>
+          <RegistryBadge role="status" data-testid="framework-integrity-status">
+            {structureAudit.isValid ? 'COMPLIANT' : 'REVIEW REQUIRED'}
+          </RegistryBadge>
+        </div>
+        <ul>
+          <li>Executive profile: {structureAudit.executivePresent ? '1 / 1' : '0 / 1'}</li>
+          <li>Departments: {structureAudit.totalDepartments} / 12</li>
+          <li>Supervisor slots: {structureAudit.totalSupervisors} / 108</li>
+          <li>Open allocations in registry: {structureAudit.openSlots.length}</li>
+        </ul>
+        {structureAudit.errors.length > 0 && (
+          <ul role="alert" aria-label="Structural validation errors">
+            {structureAudit.errors.map(error => <li key={error}>{error}</li>)}
+          </ul>
+        )}
+        {structureAudit.openSlots.length > 0 && (
+          <ul aria-label="Open supervisor allocations">
+            {structureAudit.openSlots.map(slot => (
+              <li key={`${slot.departmentCode}-${slot.id}`}>
+                {slot.departmentCode} · {slot.departmentTitle} · {slot.id} is unassigned.
+              </li>
+            ))}
+          </ul>
+        )}
+        {structureAudit.isValid && <p>{COMMAND_CENTER_TEXT.audit.success}</p>}
+        <MockAssignments>
+          <summary>{COMMAND_CENTER_TEXT.audit.mockAssignmentsTitle}</summary>
+          <p>{COMMAND_CENTER_TEXT.audit.mockAssignmentsDescription}</p>
+          <MockAssignmentList>
+            {MOCK_STAFFING_ASSIGNMENTS.map(assignment => (
+              <li key={assignment.slotId}>
+                <strong>{assignment.employeeName}</strong>
+                <span>{assignment.roleTitle} · {assignment.departmentCode}</span>
+                <span>{assignment.departmentName}</span>
+                <span>{assignment.slotId} · {assignment.slotStatus}</span>
+                <span>{assignment.assignmentStatus} · fictional preview</span>
+              </li>
+            ))}
+          </MockAssignmentList>
+        </MockAssignments>
+      </IntegrityPanel>
 
       {/* ── CONDITIONAL ORGANOGRAM TREE VIEW ───────────────────────────────── */}
       {viewMode === 'organogram' ? (
@@ -105,7 +163,7 @@ export const AICommandCenter: FC = () => {
         <>
           {/* ── LEVEL 0: EXECUTIVE COMMAND (1 MD + 1 ZOE) ────────────────────── */}
           <div style={{
-            background: 'linear-gradient(135deg, #1E293B 0%, #0F172A 100%)',
+            background: 'linear-gradient(135deg, #1E293B 0%, #1E293B 100%)',
             border: '1px solid rgba(239, 68, 68, 0.3)',
             borderLeft: '4px solid #EF4444',
             borderRadius: '16px',
@@ -138,7 +196,9 @@ export const AICommandCenter: FC = () => {
                   <span style={{ fontSize: '0.68rem', fontWeight: 900, background: '#EF4444', color: '#FFFFFF', padding: '2px 6px', borderRadius: '4px', textTransform: 'uppercase' }}>
                     Level 0 Sovereign Command
                   </span>
-                  <span style={{ fontSize: '0.72rem', color: '#10B981', fontWeight: 800 }}>● Active</span>
+                  <span style={{ fontSize: '0.72rem', color: '#EF4444', fontWeight: 800 }}>
+                    Configured profile
+                  </span>
                 </div>
                 <h2 style={{ margin: '2px 0 0', fontSize: '1.1rem', fontWeight: 900, color: '#FFFFFF' }}>
                   {executive.managingDirector.name}
@@ -174,34 +234,34 @@ export const AICommandCenter: FC = () => {
           <StatsGrid>
             <StatCardWrapper $color="#EF4444">
               <div className="stat-info">
-                <span className="label">{COMMAND_CENTER_TEXT.stats.activeAgentsLabel}</span>
-                <strong className="value">{stats.optimalCount} / {stats.totalAgents}</strong>
+                <span className="label">{COMMAND_CENTER_TEXT.stats.departmentsLabel}</span>
+                <strong className="value">{stats.totalDepartments} / 12</strong>
               </div>
               <div className="stat-icon"><Users size={22} /></div>
             </StatCardWrapper>
 
-            <StatCardWrapper $color="#10B981">
+            <StatCardWrapper $color="#1E293B">
               <div className="stat-info">
-                <span className="label">{COMMAND_CENTER_TEXT.stats.systemHealthLabel}</span>
-                <strong className="value">100.0% Optimal</strong>
-              </div>
-              <div className="stat-icon"><CheckCircle2 size={22} /></div>
-            </StatCardWrapper>
-
-            <StatCardWrapper $color="#F59E0B">
-              <div className="stat-info">
-                <span className="label">{COMMAND_CENTER_TEXT.stats.tasksExecutedLabel}</span>
-                <strong className="value">{stats.totalTasksToday}</strong>
-              </div>
-              <div className="stat-icon"><Activity size={22} /></div>
-            </StatCardWrapper>
-
-            <StatCardWrapper $color="#6366F1">
-              <div className="stat-info">
-                <span className="label">{COMMAND_CENTER_TEXT.stats.slaAdherenceLabel}</span>
-                <strong className="value">{stats.slaAdherence}</strong>
+                <span className="label">{COMMAND_CENTER_TEXT.stats.supervisorsLabel}</span>
+                <strong className="value">{stats.totalSupervisors} / 108</strong>
               </div>
               <div className="stat-icon"><Shield size={22} /></div>
+            </StatCardWrapper>
+
+            <StatCardWrapper $color="#1E293B">
+              <div className="stat-info">
+                <span className="label">{COMMAND_CENTER_TEXT.stats.openSlotsLabel}</span>
+                <strong className="value">{stats.openSlots}</strong>
+              </div>
+              <div className="stat-icon"><AlertTriangle size={22} /></div>
+            </StatCardWrapper>
+
+            <StatCardWrapper $color="#EF4444">
+              <div className="stat-info">
+                <span className="label">{COMMAND_CENTER_TEXT.stats.integrityLabel}</span>
+                <strong className="value">{stats.structureValid ? 'PASS' : 'REVIEW'}</strong>
+              </div>
+              <div className="stat-icon"><CheckCircle2 size={22} /></div>
             </StatCardWrapper>
           </StatsGrid>
 
@@ -211,6 +271,7 @@ export const AICommandCenter: FC = () => {
               <Search size={18} className="search-icon" />
               <input
                 type="text"
+                aria-label="Search configured supervisor profiles"
                 placeholder={COMMAND_CENTER_TEXT.filters.searchPlaceholder}
                 value={searchTerm}
                 onChange={(e: React.ChangeEvent<HTMLInputElement>) => setSearchTerm(e.target.value)}
@@ -222,15 +283,19 @@ export const AICommandCenter: FC = () => {
               <DeptPill
                 $active={selectedDept === 'all'}
                 onClick={() => setSelectedDept('all')}
+                type="button"
+                aria-pressed={selectedDept === 'all'}
                 data-testid="dept-pill-all"
               >
-                {COMMAND_CENTER_TEXT.filters.allDepartments} (108 Supervisors)
+                {COMMAND_CENTER_TEXT.filters.allDepartments} ({stats.totalSupervisors} configured)
               </DeptPill>
               {departments.map((dept: DepartmentDef) => (
                 <DeptPill
                   key={dept.id}
                   $active={selectedDept === dept.id}
                   onClick={() => setSelectedDept(dept.id)}
+                  type="button"
+                  aria-pressed={selectedDept === dept.id}
                   data-testid={`dept-pill-${dept.id}`}
                 >
                   {dept.name} ({dept.managerAi.name})
@@ -261,14 +326,14 @@ export const AICommandCenter: FC = () => {
                   </AssistantHeader>
 
                   <div style={{ fontSize: '0.78rem', fontWeight: 700, color: 'var(--primary-red, #EF4444)', margin: '0 0 6px' }}>
-                    📋 Specialty: {agent.specialty}
+                    Specialty: {agent.specialty}
                   </div>
 
                   <div style={{ margin: '0 0 8px', fontSize: '0.75rem', color: 'var(--text-secondary, #475569)', lineHeight: 1.4 }}>
-                    <strong style={{ display: 'block', color: 'var(--color-1e293b, #1E293B)', marginBottom: '2px' }}>Assigned Tasks:</strong>
+                    <strong style={{ display: 'block', color: 'var(--color-1e293b, #1E293B)', marginBottom: '2px' }}>Configured responsibilities:</strong>
                     {agent.assignedTasks.map((t, idx) => (
                       <div key={idx} style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
-                        <span style={{ color: '#10B981', fontWeight: 800 }}>•</span> {t}
+                        <span style={{ color: '#1E293B', fontWeight: 800 }}>•</span> {t}
                       </div>
                     ))}
                   </div>
@@ -279,22 +344,13 @@ export const AICommandCenter: FC = () => {
                     ))}
                   </TagList>
 
-                  <MetricsRow>
-                    <div className="metric-item">
-                      <span className="label">Accuracy</span>
-                      <strong className="val">{agent.metrics.accuracyRate}%</strong>
-                    </div>
-                    <div className="metric-item">
-                      <span className="label">SLA Speed</span>
-                      <strong className="val">{agent.slaResponseTime}</strong>
-                    </div>
-                  </MetricsRow>
-
                   <LaunchBtn
                     onClick={() => handleSelectAssistant(agent.id)}
+                    type="button"
+                    aria-label={`Select ${agent.name} profile`}
                     data-testid={`btn-launch-${agent.id}`}
                   >
-                    <span>Launch {agent.name}</span>
+                    <span>Select {agent.name}</span>
                     <ArrowUpRight size={16} />
                   </LaunchBtn>
                 </AssistantCard>
