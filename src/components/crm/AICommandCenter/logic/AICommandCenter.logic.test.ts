@@ -26,8 +26,20 @@ describe('AICommandCenter.logic', () => {
     expect(result.current.stats.totalSupervisors).toBe(108);
     expect(result.current.stats.structureValid).toBe(true);
     expect(result.current.structureAudit.openSlots).toHaveLength(0);
+    expect(result.current.departments).toHaveLength(12);
+
+    result.current.departments.forEach(department => {
+      act(() => {
+        result.current.setSelectedDept(department.id);
+      });
+      expect(result.current.filteredAssistants).toHaveLength(9);
+      expect(
+        result.current.filteredAssistants.every(supervisor => supervisor.departmentId === department.id)
+      ).toBe(true);
+    });
 
     act(() => {
+      result.current.setSelectedDept('all');
       result.current.setSearchTerm('clara');
     });
 

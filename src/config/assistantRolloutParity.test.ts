@@ -11,6 +11,15 @@ describe('Assistant rollout parity', () => {
     expect(missingModuleIds).toEqual([]);
   });
 
+  it('registers the 1-12-108 directory in the executive CRM module order', () => {
+    expect(CRM_MODULE_REGISTRY['ai-command']).toMatchObject({
+      id: 'ai-command',
+      label: '1-12-108 AI Command Center',
+      zone: 'ai_command',
+    });
+    expect(CRM_MODULE_REGISTRY['ai-command'].Component).toBeDefined();
+  });
+
   it('includes every assistant as a tab for executive roles without duplicates', () => {
     const assistantIds = new Set(Object.keys(AI_ASSISTANTS_REGISTRY));
     const executiveRoles = ['lion', 'owner', 'managing_director'];

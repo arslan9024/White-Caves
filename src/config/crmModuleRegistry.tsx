@@ -22,6 +22,7 @@ export interface CRMModuleDefinition {
 }
 
 const UnifiedCRM = lazy(() => import('../components/crm/UnifiedCRM'));
+const AICommandCenter = lazy(() => import('../components/crm/AICommandCenter'));
 const NadiaWhatsAppCRM = lazy(() => import('../components/crm/NadiaWhatsAppCRM'));
 const MaryInventoryCRM = lazy(() => import('../components/crm/MaryInventoryCRM_NEW'));
 const ClaraLeadsCRM = lazy(() => import('../components/crm/ClaraLeadsCRM_NEW'));
@@ -110,6 +111,15 @@ export const CRM_MODULE_REGISTRY: Record<string, CRMModuleDefinition> = {
     id: 'unified', label: 'Unified CRM Dashboard', icon: '🧭',
     description: 'Single command surface for superuser operations',
     color: '#E31E24', zone: 'executive', Component: UnifiedCRM,
+  },
+  'ai-command': {
+    id: 'ai-command',
+    label: '1-12-108 AI Command Center',
+    icon: '🤖',
+    description: 'Configured directory of 12 departments and 108 supervisor profiles',
+    color: '#EF4444',
+    zone: 'ai_command',
+    Component: AICommandCenter,
   },
   nadia: {
     id: 'nadia', label: 'WhatsApp CRM', icon: '💬',
@@ -590,6 +600,7 @@ export const CRM_MODULE_REGISTRY: Record<string, CRMModuleDefinition> = {
 
 export const SUPERUSER_CRM_MODULE_ORDER: string[] = [
   'unified',
+  'ai-command',
   'nadia',
   'mary',
   'clara',
@@ -659,5 +670,4 @@ export const getCRMModule = (id: string | undefined | null): CRMModuleDefinition
 
 export const resolveCRMModules = (ids: string[]): CRMModuleDefinition[] =>
   ids.map(id => getCRMModule(id)).filter((m): m is CRMModuleDefinition => Boolean(m));
-
 
