@@ -34,5 +34,7 @@
   "fiveStarRated": "5-Star Rated",
   "support247": "24/7 Support",
   "scrollLabel": "Scroll down to explore features",
-  "scrollText": "Scroll to Explore"
+  "scrollText": "Scroll to Explore",
+  "switchToLight": "Switch to light mode",
+  "switchToDark": "Switch to dark mode"
 }
