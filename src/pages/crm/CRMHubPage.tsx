@@ -7,16 +7,11 @@
 
 import React, { FC, memo } from 'react';
 import PublicLayout from '../../components/layout/PublicLayout';
-import {
-  HubContainer,
-  MainLayout,
-} from './CRMHubPage.styles';
-import {
-  useCRMHubPageLogic,
-  MD_SUITE_DEPT,
-} from './CRMHubPage.logic';
+import { HubContainer, MainLayout } from './CRMHubPage.styles';
+import { useCRMHubPageLogic, MD_SUITE_DEPT } from './CRMHubPage.logic';
 import DashboardGlobalHeader from '../../components/dashboard/header/DashboardGlobalHeader';
 import DashboardLiveTicker from '../../components/dashboard/header/DashboardLiveTicker';
+import DldMarketNewsFeedStrip from '../../components/crm/DldMarketNewsFeedStrip/DldMarketNewsFeedStrip';
 import DashboardSidebar from '../../components/dashboard/sidebar/DashboardSidebar';
 import DepartmentOverview from '../../components/dashboard/viewport/DepartmentOverview';
 import ModuleViewport from '../../components/dashboard/viewport/ModuleViewport';
@@ -67,6 +62,8 @@ export const CRMHubPage: FC = () => {
         {/* LIVE EXECUTIVE FINANCIAL & OPERATIONS TICKER */}
         <DashboardLiveTicker />
 
+        <DldMarketNewsFeedStrip />
+
         {/* MAIN DASHBOARD LAYOUT: SIDEBAR + VIEWPORT */}
         <MainLayout>
           {/* HIGH-FIDELITY 3-TILE ACCORDION SIDEBAR */}
@@ -91,10 +88,7 @@ export const CRMHubPage: FC = () => {
 
           {/* DYNAMIC VIEWPORT (Department Overview vs CRM/AI Module View) */}
           {activeTab === 'dept_summary' ? (
-            <DepartmentOverview
-              department={activeDeptObj}
-              onLaunchSubItem={handleTabChange}
-            />
+            <DepartmentOverview department={activeDeptObj} onLaunchSubItem={handleTabChange} />
           ) : (
             <ModuleViewport
               moduleId={activeTab}
