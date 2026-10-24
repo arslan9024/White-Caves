@@ -1,8 +1,16 @@
 # White Caves Real Estate LLC — Project Vision & Corporate Master Plan
 
+> **Canonical governance revision:** 2026-10-24  
+> **Authority:** Managing Director Arslan Malik Bashir Ahmad (Level 5)  
+> **Formula:** **1 – 12 – 108** (fixed staff) + **≥121 agents** (organised under the same formula)
+
+---
+
 ## 🌟 Executive Summary & Strategic Vision
 
-**White Caves Real Estate LLC** is an elite digital asset ecosystem designed for the Dubai ultra-high-net-worth (UHNW) real estate market. Combining Quiet Luxury aesthetics, high-precision financial algorithms, automated Dubai Land Department (DLD) compliance, and a 35-agent AI autonomous operating system, White Caves sets the gold standard for global real estate intelligence.
+**White Caves Real Estate LLC** is an elite digital asset ecosystem for the Dubai ultra-high-net-worth (UHNW) real estate market. It combines Quiet Luxury aesthetics, high-precision financial algorithms, automated Dubai Land Department (DLD) / RERA compliance, and a full **AEGIS** autonomous operating system.
+
+**Staff structure is fixed.** Agent mesh is organised under the same hierarchy and must remain at **minimum 121 agents** so every department can run and report progress independently.
 
 ---
 
@@ -11,67 +19,127 @@
 - **Corporate Entity:** White Caves Real Estate LLC
 - **Managing Director:** Arslan Malik Bashir Ahmad (`arslanmalikgoraha@gmail.com`)
 - **Official Portal:** `https://whitecaves.com`
-- **Department of Economy & Tourism (DET) Commercial License:** No. `1388443`
-- **Real Estate Regulatory Agency (RERA) Registration ORN:** No. `44483`
-- **Headquarters Ejari Certificate:** No. `0120250814005322` (Office D-72, El Shaye - 4 Building)
-- **ICP Establishment Card / MOL:** No. `2/1/1192499`
+- **DET Commercial License:** `1388443`
+- **RERA ORN:** `44483`
+- **HQ Ejari:** `0120250814005322` (Office D-72, El Shaye - 4 Building)
+- **ICP / MOL Establishment Card:** `2/1/1192499`
 
 ---
 
 ## 🎨 Design Philosophy & Brand Palette
 
-The White Caves interface embodies **High-Density Quiet Luxury**:
+**High-Density Quiet Luxury** — brand lockdown is mandatory:
 
-- **White Caves Red (`#EF4444`):** Primary brand accent, interactive triggers, CTA highlights, and active status indicators.
-- **Brilliant Crisp White (`#FFFFFF`):** Clean light-mode backgrounds, elevated card surfaces, and crisp typographical contrast.
-- **Deep Slate Gray (`#0F172A` / `#1E293B`):** Dark-mode luxury backdrops, rich header styling, and subtle borders.
-- **Micro-Interactions & Physics:** Powered by Framer Motion, featuring smooth spring physics, subtle hover elevations, and reduced-motion accessibility.
+| Token | Hex | Use |
+|-------|-----|-----|
+| White Caves Red | `#EF4444` | Primary accent, CTAs, active states |
+| Crisp White | `#FFFFFF` | Light canvas, elevated surfaces |
+| Deep Slate | `#0F172A` / `#1E293B` | Dark luxury backdrops, contrast text |
 
----
-
-## 👥 The 1-12-108 Organizational Hierarchy
-
-White Caves operates on a strict, scalable 5-level corporate command structure:
-
-- **Level 5: 1 Managing Director** — Sovereign executive authority (`LEVEL_5_MASTER`), strategic capital allocation, global system bypass.
-- **Level 4: 12 Department Managers** — Department heads managing business units, signing off deals, and directing AI assistant cohorts.
-- **Level 3: 108 Supervisors** — Operational team leads overseeing transactions, compliance verification, and client concierge.
-- **Level 2: Junior Agents** — Active sales, leasing, and off-plan brokers managing client pipelines.
-- **Level 1: Interns & Trainees** — Onboarding personnel gaining market and CRM proficiency.
+No off-palette colours in product UI. Motion via Framer Motion with reduced-motion respect.
 
 ---
 
-## 🤖 The 12 Corporate Departments & 35 AI Assistants Master Registry
+## 👥 Fixed Staff Hierarchy: 1 – 12 – 108
 
-| Department | Department Lead / Deputy | AI Assistants Roster | Core Mission |
-|---|---|---|---|
-| **1. Executive & Architecture** | @Ada (Chief Architect), @Margaret (Planner) | `@Ada`, `@Margaret`, `@Grace`, `@Elena`, `@Zoe` | Governance, strategic roadmaps, research intelligence, and system health. |
-| **2. Research Intelligence** | @Elena (CRO), @Iris (Deputy) | `@Elena`, `@Iris`, `@Cassie`, `@Fei-Fei`, `@Anima` | Market analytics, predictive property valuations, and macro-trend forecasting. |
-| **3. Frontend & UX Architecture** | @Una (CSS), @Lea (UI) | `@Una`, `@Lea`, `@Marissa`, `@Tracy`, `@Africa` | Responsive luxury design, accessibility, and 4-way subfolder architecture. |
-| **4. Backend & API Systems** | @Mira (CTO/API), @Petra (Deputy) | `@Mira`, `@Petra`, `@Ruchi`, `@Daniela` | High-throughput REST & GraphQL endpoints, auth microservices, real-time WebSockets. |
-| **5. Database & Data Pipelines** | @Barbara (Database), @Anima (Data Eng) | `@Barbara`, `@Anima`, `@Cassie` | Prisma ORM schemas, ledger synchronization, and caching layer integrity. |
-| **6. Security, Compliance & Legal** | @Sofia (Legal/DLD), @Katherine (QA) | `@Sofia`, `@Katherine`, `@Radia`, `@Ecem`, `@Joy` | RERA/DLD compliance, Form A/B/F/12 contracts, AML screening, and automated test gates. |
-| **7. DevOps & Infrastructure** | @Gwynne (Deployments), @Lisa (Cloud) | `@Gwynne`, `@Lisa`, `@Annie`, `@Corinne`, `@Rachel` | Zero-downtime CI/CD pipelines, Docker containerization, and cloud infrastructure. |
-| **8. Leasing & Tenancy** | @Victoria (Leasing), @Tara (Deputy) | `@Victoria`, `@Tara`, `@Daisy` | Ejari contracts, PDC post-dated cheque tracking, tenant/landlord portals. |
-| **9. Finance & VAT Analytics** | @Invoice (Finance), @Dora (Deputy) | `@Invoice`, `@Dora`, `@Theodora` | UAE FTA 5% VAT calculations, commission splits, cash flow modeling, and mortgage engines. |
-| **10. Sales & CRM Operations** | @Jaime (Productivity), @Mila (Deputy) | `@Jaime`, `@Mila`, `@Sophia`, `@Clara`, `@Mary` | Lead scoring pipelines, property matching, buyer onboarding, and deal stages. |
-| **11. Communications & Marketing** | @Rachel (SEO/Growth), @Corinne (Messaging) | `@Rachel`, `@Corinne`, `@Olivia`, `@Nina`, `@Nadia` | Omni-channel WhatsApp bots, luxury campaigns, SEO optimization, and client alerts. |
-| **12. Operations & Facility Maintenance** | @Rania (Operations), @Dina (Deputy) | `@Rania`, `@Dina`, `@Vesta`, `@Henry` | Maintenance tickets, key handover coordination, and asset maintenance audits. |
+| Level | Title | Count | Rule |
+|-------|--------|-------|------|
+| **5** | Managing Director | **1** | Sovereign authority, capital, system bypass |
+| **4** | Department Managers | **12** | One head per department |
+| **3** | Supervisors | **108** | **Exactly 9 supervisors per department** (12 × 9) |
+| **2** | Junior Agents (human) | Variable | Sales, leasing, off-plan pipelines |
+| **1** | Interns & Trainees | Variable | Onboarding |
+
+### The 12 Corporate Departments (fixed)
+
+1. Executive & Architecture  
+2. Research Intelligence  
+3. Frontend & UX Architecture  
+4. Backend & API Systems  
+5. Database & Data Pipelines  
+6. Security, Compliance & Legal  
+7. DevOps & Infrastructure  
+8. **Software Quality & Testing (SQA)**  
+9. Finance & VAT Analytics  
+10. Sales & CRM Operations  
+11. Communications & Marketing  
+12. Operations & Facility Maintenance  
+
+> **Note:** Department 8 is explicitly the **Software Quality & Testing** domain so testing is owned, measured, and not buried inside generic “Compliance”.
+
+---
+
+## 🤖 Agent Mesh: Organised Under 1 – 12 – 108 (Minimum 121)
+
+- **Do not reduce** the agent roster below **121** total agents.
+- Agents are **organised** (not trimmed) so each of the 12 departments has a clear cohort and progress can be tracked separately.
+- Recommended layout (minimum):
+  - **12** department lead agents (one per department)
+  - **108** supervisor-aligned agents (9 per department)
+  - **≥1** cross-cutting orchestrator / AEGIS core agent  
+  → **≥121** agents total
+
+Additional specialist agents may be added; they must still map to a department and reporting lane.
+
+Full named registry lives in `docs/governance/AGENT_ROSTER_1_12_108.md` and under `.agents/` (organised by department folders).
 
 ---
 
 ## 🌐 4-Language Universal Accessibility (i18n)
 
-The platform guarantees native accessibility for the global investor community:
-- **English (`en`)**: Primary global language.
-- **Arabic (`ar`)**: Official UAE native language with automated RTL layout inversion (`dir="rtl"`).
-- **Spanish (`es`)**: European & Latin American investment corridors.
-- **Russian (`ru`)**: CIS luxury property buyers and investors.
+- **English (`en`)** — LTR primary  
+- **Arabic (`ar`)** — RTL native UAE  
+- **Spanish (`es`)** — LTR international  
+- **Russian (`ru`)** — LTR international  
+
+No hardcoded product strings; use locale keys.
 
 ---
 
-## 🚀 Architectural Technical Standards
+## 🚀 Architectural Technical Standards (Mandatory)
 
-1. **Feature-First Co-Located 4-Way Folder Segregation:** `View.tsx` / `Logic.logic.ts` / `Style.style.ts` / `Data.data.ts`.
-2. **Deterministic State Management:** Redux Toolkit with sliced domain models and memoized selectors (`createSelector`).
-3. **Zero-Token Local Compilation Gate:** All production deployments must pass `npm run typecheck` with **0 errors** and vitest test suites with **100% pass rates**.
+### 1. Four-Way File Separation — **ALL components**
+
+Every UI component **must** use co-located four-way separation:
+
+```text
+ComponentName/
+  ComponentName.tsx          # View only (presentation)
+  ComponentName.logic.ts     # Behaviour / hooks / state wiring
+  ComponentName.style.ts     # Styles / tokens only
+  ComponentName.data.ts      # Static copy, maps, constants
+```
+
+Enforcement: see `docs/governance/FOUR_WAY_RULE.md` and CI checklist. New or changed components that violate this rule are not mergeable.
+
+### 2. Deterministic state
+
+Redux Toolkit with domain slices and memoized selectors (`createSelector`).
+
+### 3. Quality gates
+
+- `npm run typecheck` → **0** TypeScript errors  
+- Unit/integration tests via Vitest (lean, high-value)  
+- Critical path E2E via Playwright  
+- See `docs/governance/TESTING_POLICY.md`
+
+### 4. Brand & z-index tokens
+
+Only design tokens; no raw hex or ad-hoc z-index in feature code.
+
+---
+
+## 📦 Sibling repositories (retained for future)
+
+| Repo | Role |
+|------|------|
+| `White-Caves-DB` | Future database / data tooling |
+| `white-caves-real-estate` | Future product surface / split deploy |
+
+Do not delete; leave idle until a dedicated milestone activates them.
+
+---
+
+## 🔱 AEGIS
+
+AEGIS is the orchestration layer. **Do not trim** scripts or agents for “simplicity”. **Do organise** lanes, naming, and department ownership so progress is visible per department. See `docs/governance/AEGIS_ORGANISATION.md`.
