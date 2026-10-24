@@ -1,7 +1,7 @@
 # AEGIS Daily Milestone Tracker & Release Log
 
-> **Last updated:** 2026-10-24 (session close)  
-> **Status:** Governance + Hero 4-way/theme + CRM DLD strip on `main`  
+> **Last updated:** 2026-10-24 (MD Suite merged)  
+> **Status:** Governance + Hero + CRM DLD + **MD Suite** on `main`  
 > **Truth rule:** Never claim zero backlog unless GitHub API confirms
 
 ---
@@ -14,11 +14,14 @@
 | P0 | Hero cinematic + RTL four-way | ✅ **Merged** (#2526) |
 | P0 | Hero dark/light theme on 4-way | ✅ **Merged** (#2528 / #2529) |
 | P0 | CRM UAE DLD market intelligence strip | ✅ **Merged** (#2524) |
-| P0 | Close superseded draft #2525 | 🔄 **User action** |
+| P0 | **MD Suite** sovereign landing + L5 strip | ✅ **Merged** (#2533) |
+| P0 | Close superseded draft #2525 | ✅ **Closed** |
+| P0 | **Full CRM registries restore** (stub on main) | 🔄 **Next** |
+| P1 | Close / finish drafts #2531, #2532 | 📋 Open |
 | P1 | Legacy JSX → 4-way consolidation waves | 📋 Next |
 | P1 | `.agents/` → 12 department folders (≥121 kept) | 📋 Planned |
 | P2 | Vercel deploy reliability | 📋 Planned |
-| P2 | Issue triage / generator caps | 📋 Planned |
+| P2 | Issue triage / generator caps (~272 open) | 📋 Planned |
 
 ---
 
@@ -39,10 +42,13 @@
 3. Hero Wave 50 four-way + RTL merged (#2526).  
 4. Theme toggle rebuilt on 4-way (not old #2525) and merged (#2528/#2529).  
 5. CRM DLD UAE news strip merged (#2524).  
-6. Progress/plans/README refreshed to match reality.  
+6. Progress/plans/README refreshed (#2530).  
+7. **MD Suite** landing + command strip + email gate merged (#2533).  
+8. Docs truth-up after MD Suite (this file + progress report).  
 
 ---
 
 ## Honest backlog
 
-~**274** open issues (many auto-generated). Cap bulk generators; triage real P0s. Sibling repos retained for future.
+~**272** open issues (many auto-generated). Cap bulk generators; triage real P0s.  
+**Registries:** stub only until full AI + 12-dept lists restored. Sibling repos retained for future.

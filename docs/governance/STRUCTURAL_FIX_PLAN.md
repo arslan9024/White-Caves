@@ -1,6 +1,6 @@
 # Structural Problems — Solutions (MD-approved constraints)
 
-**Date:** 2026-10-24 (updated end of session)  
+**Date:** 2026-10-24 (updated after MD Suite merge)  
 **Constraints:** Keep AEGIS full power; keep ≥121 agents; sibling repos for future; 4-way mandatory; 12×9 supervisors fixed.
 
 ---
@@ -9,13 +9,13 @@
 
 **Solution:** Organise generation rules (see `AEGIS_ORGANISATION.md`). Cap bulk issue bots unless Level 5 runs them. Deduplicate by title+department. Progress docs must show live counts.
 
-**Status:** Policy documented; enforcement still in progress.
+**Status:** Policy documented; **~272** open issues still mostly auto-generated — enforcement in progress.
 
 ## 2. Docs vs code drift
 
 **Solution:** Single source of truth: GitHub open issues/PRs + CI. Update progress trackers when merges land. Ban “0 open issues” claims unless API confirms.
 
-**Status:** ✅ Progress + daily tracker + this plan refreshed 2026-10-24 after merge wave.
+**Status:** ✅ Progress + daily tracker + this plan refreshed **after #2533 MD Suite** (2026-10-24).
 
 ## 3. Mixed-era code (JSX/CSS vs 4-way TS)
 
@@ -51,6 +51,15 @@
 | #2526 | Hero 4-way + RTL | ✅ Merged |
 | #2528 / #2529 | Hero theme toggle | ✅ Merged |
 | #2524 | CRM DLD UAE strip | ✅ Merged |
-| #2525 | Old hero theme rewrite | ❌ **Close only** — dirty conflicts; superseded |
+| #2530 | Docs progress sync | ✅ Merged |
+| **#2533** | **MD Suite landing + L5 strip** | ✅ **Merged** |
+| #2525 | Old hero theme rewrite | ❌ **Closed** — superseded |
+| #2531 / #2532 | MD logic / full registries | 🔄 Draft — **finish registries or close** |
 
-**Do not force-merge #2525.**
+## 9. Registries integrity (post–MD Suite)
+
+**Problem:** `CRMHubPage.registries.ts` on `main` is a **stub** (3 AIs, 3 departments). Logic correctly imports it; AI Command and full dept tree are incomplete.
+
+**Solution:** Restore full `ALL_AI_ASSISTANTS` + `TWELVE_CORPORATE_DEPARTMENTS` + `MD_SUITE_DEPT` from pre-split history. **Do not trim** agents. Then close #2531 / #2532.
+
+**Status:** 🔄 Open — next P0 after docs truth-up.
