@@ -1,8 +1,6 @@
 /**
- * CRMHubPage.tsx
- *
- * White Caves Real Estate LLC — ERP Core Corporate Schema & Executive Dashboard.
- * Lean Atomic Orchestrator composing Header, Live Ticker, 3-Tile Sidebar, and Viewport Engine.
+ * CRMHubPage.tsx — ERP Core Executive Dashboard.
+ * MD / founder sessions open MD Suite first and show the command strip.
  */
 
 import React, { FC, memo } from 'react';
@@ -11,6 +9,7 @@ import { HubContainer, MainLayout } from './CRMHubPage.styles';
 import { useCRMHubPageLogic, MD_SUITE_DEPT } from './CRMHubPage.logic';
 import DashboardGlobalHeader from '../../components/dashboard/header/DashboardGlobalHeader';
 import DashboardLiveTicker from '../../components/dashboard/header/DashboardLiveTicker';
+import MDCommandStrip from '../../components/dashboard/header/MDCommandStrip';
 import DldMarketNewsFeedStrip from '../../components/crm/DldMarketNewsFeedStrip/DldMarketNewsFeedStrip';
 import DashboardSidebar from '../../components/dashboard/sidebar/DashboardSidebar';
 import DepartmentOverview from '../../components/dashboard/viewport/DepartmentOverview';
@@ -20,6 +19,7 @@ import HenryTenancyContractModal from '../../components/crm/HenryDocumentStudio/
 export const CRMHubPage: FC = () => {
   const {
     user,
+    isManagingDirector,
     activeTab,
     openTopTile,
     selectedDept,
@@ -43,13 +43,11 @@ export const CRMHubPage: FC = () => {
     toggleSubGroup,
   } = useCRMHubPageLogic();
 
-  // Active department object for the overview viewport (either MD Suite or Corporate Dept)
   const activeDeptObj = openTopTile === 'md_office' ? MD_SUITE_DEPT : selectedDept;
 
   return (
     <PublicLayout hideFooter>
       <HubContainer data-testid="crm-hub-page">
-        {/* COLLAPSIBLE GLOBAL SYSTEM HEADER BANNER */}
         <DashboardGlobalHeader
           isHeaderCollapsed={isHeaderCollapsed}
           onToggleCollapse={setIsHeaderCollapsed}
@@ -59,14 +57,19 @@ export const CRMHubPage: FC = () => {
           activeLocationTag={activeLocationTag}
         />
 
-        {/* LIVE EXECUTIVE FINANCIAL & OPERATIONS TICKER */}
+        {isManagingDirector && (
+          <MDCommandStrip
+            mdName={user?.name || 'Arslan Malik Bashir Ahmad'}
+            mdEmail={user?.email}
+            onOpenModule={handleTabChange}
+          />
+        )}
+
         <DashboardLiveTicker />
 
         <DldMarketNewsFeedStrip />
 
-        {/* MAIN DASHBOARD LAYOUT: SIDEBAR + VIEWPORT */}
         <MainLayout>
-          {/* HIGH-FIDELITY 3-TILE ACCORDION SIDEBAR */}
           <DashboardSidebar
             isCollapsed={isSidebarCollapsed}
             onToggleCollapse={() => setIsSidebarCollapsed(prev => !prev)}
@@ -77,6 +80,7 @@ export const CRMHubPage: FC = () => {
             selectedAi={selectedAi}
             selectedAiId={selectedAiId}
             openSubGroups={openSubGroups}
+            isManagingDirector={isManagingDirector}
             onMdTileClick={handleMdTileClick}
             onCorporateTileClick={handleCorporateTileClick}
             onAiTileClick={handleAiTileClick}
@@ -86,7 +90,6 @@ export const CRMHubPage: FC = () => {
             onToggleSubGroup={toggleSubGroup}
           />
 
-          {/* DYNAMIC VIEWPORT (Department Overview vs CRM/AI Module View) */}
           {activeTab === 'dept_summary' ? (
             <DepartmentOverview department={activeDeptObj} onLaunchSubItem={handleTabChange} />
           ) : (
@@ -98,7 +101,6 @@ export const CRMHubPage: FC = () => {
           )}
         </MainLayout>
 
-        {/* 3.19.1 PREPARE NEW TENANCY CONTRACT (DLD OFFICIAL FORM WIZARD) */}
         <HenryTenancyContractModal
           isOpen={isHenryTenancyModalOpen}
           onClose={() => setIsHenryTenancyModalOpen(false)}
