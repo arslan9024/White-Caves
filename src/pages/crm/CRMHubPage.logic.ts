@@ -10,6 +10,12 @@ import { useSearchParams } from 'react-router-dom';
 import { useHaptics } from '../../hooks/useHaptics';
 import { useCRMHubData } from '../../hooks/crm/useCRMHubData';
 import type { SearchableOption } from '../../components/dashboard/common/SearchableSelect';
+import {
+  MD_SOVEREIGN_EMAILS,
+  isMdSovereignEmail,
+  resolveIsManagingDirector,
+} from './mdDashboardAuth';
+export { MD_SOVEREIGN_EMAILS, isMdSovereignEmail, resolveIsManagingDirector };
 
 export interface SubGroup {
   name: string;
@@ -940,13 +946,22 @@ export function useCRMHubPageLogic() {
   const [searchParams, setSearchParams] = useSearchParams();
   const haptics = useHaptics();
 
-  // Top-Level 3 Accordion Tiles State: 'md_office' | 'corporate' | 'ai_command'
-  const [openTopTile, setOpenTopTile] = useState<'md_office' | 'corporate' | 'ai_command' | null>('corporate');
-
-  // Active module tab
-  const [activeTab, setActiveTab] = useState<string>(
-    searchParams.get('tab') || 'dept_summary'
+  const isManagingDirector = useMemo(
+    () => resolveIsManagingDirector(user),
+    [user?.email, user?.role]
   );
+  const urlTab = searchParams.get('tab');
+  const urlTile = searchParams.get('tile') as 'md_office' | 'corporate' | 'ai_command' | null;
+  const [openTopTile, setOpenTopTile] = useState<'md_office' | 'corporate' | 'ai_command' | null>(() => {
+    if (urlTile === 'md_office' || urlTile === 'corporate' || urlTile === 'ai_command') return urlTile;
+    return isManagingDirector ? 'md_office' : 'corporate';
+  });
+  const [activeTab, setActiveTab] = useState<string>(urlTab || 'dept_summary');
+  useEffect(() => {
+    if (!isManagingDirector) return;
+    if (urlTile) return;
+    setOpenTopTile(prev => (prev === null || prev === 'corporate' ? 'md_office' : prev));
+  }, [isManagingDirector, urlTile]);
 
   // Selected Department ID in Tile 2
   const [selectedDeptId, setSelectedDeptId] = useState<string>('dept-07');
@@ -993,7 +1008,10 @@ export function useCRMHubPageLogic() {
     haptics.light();
     setOpenTopTile(prev => (prev === 'md_office' ? null : 'md_office'));
     handleTabChange('dept_summary');
-  }, [haptics, handleTabChange]);
+    if (isManagingDirector) {
+      setSearchParams({ tab: 'dept_summary', tile: 'md_office' });
+    }
+  }, [haptics, handleTabChange, isManagingDirector, setSearchParams]);
 
   // Tile 2 click
   const handleCorporateTileClick = useCallback(() => {
@@ -1041,6 +1059,7 @@ export function useCRMHubPageLogic() {
 
   return {
     user,
+    isManagingDirector,
     activeTab,
     openTopTile,
     selectedDept,
