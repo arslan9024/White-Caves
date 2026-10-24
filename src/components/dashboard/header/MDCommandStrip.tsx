@@ -1,122 +1,79 @@
 /**
- * MDCommandStrip — Level-5 executive strip shown only for Managing Director.
+ * MDCommandStrip.tsx
+ *
+ * L5 executive chip strip for Managing Director sovereign landing.
+ * Visible only when isManagingDirector is true (founder email / MD role).
  */
-import React, { FC, memo } from 'react';
-import styled from 'styled-components';
+
+import React, { FC } from 'react';
 
 export interface MDCommandStripProps {
-  mdName?: string;
-  mdEmail?: string;
-  onOpenModule?: (moduleId: string) => void;
+  onLaunch?: (moduleId: string) => void;
 }
 
-const Strip = styled.section`
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  justify-content: space-between;
-  gap: 0.75rem 1rem;
-  padding: 0.65rem 1rem;
-  background: linear-gradient(90deg, #0f172a 0%, #1e293b 55%, #0f172a 100%);
-  border-bottom: 2px solid #ef4444;
-  color: #f8fafc;
-`;
+const CHIPS: { id: string; label: string; icon: string; tone: string }[] = [
+  { id: 'theodora', label: 'Treasury', icon: '💰', tone: '#10B981' },
+  { id: 'compliance', label: 'Compliance', icon: '⚖️', tone: '#6366F1' },
+  { id: 'overview', label: 'Override Desk', icon: '⚡', tone: '#EF4444' },
+];
 
-const Identity = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: 0.15rem;
-  min-width: 12rem;
-
-  strong {
-    font-size: 0.9rem;
-    font-weight: 800;
-    letter-spacing: 0.02em;
-  }
-
-  span {
-    font-size: 0.72rem;
-    color: #94a3b8;
-  }
-`;
-
-const Actions = styled.div`
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.45rem;
-`;
-
-const Chip = styled.button`
-  appearance: none;
-  border: 1px solid rgba(239, 68, 68, 0.45);
-  background: rgba(239, 68, 68, 0.12);
-  color: #fff;
-  border-radius: 9999px;
-  padding: 0.35rem 0.75rem;
-  font-size: 0.72rem;
-  font-weight: 700;
-  cursor: pointer;
-  transition: background 0.15s ease, border-color 0.15s ease;
-
-  &:hover {
-    background: rgba(239, 68, 68, 0.28);
-    border-color: #ef4444;
-  }
-
-  &:focus-visible {
-    outline: 2px solid #ef4444;
-    outline-offset: 2px;
-  }
-`;
-
-const Badge = styled.span`
-  display: inline-flex;
-  align-items: center;
-  gap: 0.35rem;
-  padding: 0.25rem 0.55rem;
-  border-radius: 6px;
-  background: #ef4444;
-  color: #fff;
-  font-size: 0.65rem;
-  font-weight: 800;
-  text-transform: uppercase;
-  letter-spacing: 0.04em;
-`;
-
-export const MDCommandStrip: FC<MDCommandStripProps> = ({
-  mdName = 'Managing Director',
-  mdEmail,
-  onOpenModule,
-}) => {
-  const launch = (id: string) => () => onOpenModule?.(id);
-
+export const MDCommandStrip: FC<MDCommandStripProps> = ({ onLaunch }) => {
   return (
-    <Strip data-testid="md-command-strip" aria-label="Managing Director command strip">
-      <Identity>
-        <strong>
-          👑 {mdName} <Badge>L5 MD</Badge>
-        </strong>
-        <span>{mdEmail || 'Sovereign session'} · Executive Directorate</span>
-      </Identity>
-      <Actions>
-        <Chip type="button" onClick={launch('dept_summary')}>
-          Command overview
-        </Chip>
-        <Chip type="button" onClick={launch('theodora')}>
-          Treasury
-        </Chip>
-        <Chip type="button" onClick={launch('compliance')}>
-          Compliance
-        </Chip>
-        <Chip type="button" onClick={launch('zoe-sovereign-override')}>
-          Override desk
-        </Chip>
-        <Chip type="button" onClick={launch('ai-command')}>
-          1–12–108 AI
-        </Chip>
-      </Actions>
-    </Strip>
+    <div
+      data-testid="md-command-strip"
+      role="region"
+      aria-label="Managing Director Command Strip"
+      style={{
+        display: 'flex',
+        alignItems: 'center',
+        gap: '0.5rem',
+        flexWrap: 'wrap',
+        padding: '0.55rem 0.85rem',
+        marginBottom: '0.75rem',
+        borderRadius: '12px',
+        background: 'linear-gradient(135deg, rgba(239,68,68,0.12) 0%, rgba(15,23,42,0.06) 100%)',
+        border: '1px solid rgba(239, 68, 68, 0.35)',
+      }}
+    >
+      <span
+        style={{
+          fontSize: '0.72rem',
+          fontWeight: 800,
+          letterSpacing: '0.04em',
+          textTransform: 'uppercase',
+          color: '#EF4444',
+          marginRight: '0.35rem',
+        }}
+      >
+        👑 MD L5
+      </span>
+      {CHIPS.map(chip => (
+        <button
+          key={chip.id}
+          type="button"
+          onClick={() => onLaunch?.(chip.id)}
+          title={chip.label}
+          style={{
+            display: 'inline-flex',
+            alignItems: 'center',
+            gap: '6px',
+            padding: '4px 10px',
+            borderRadius: '999px',
+            border: `1px solid ${chip.tone}55`,
+            background: '#0F172A',
+            color: '#F8FAFC',
+            fontSize: '0.75rem',
+            fontWeight: 700,
+            cursor: 'pointer',
+            boxShadow: '0 1px 4px rgba(15,23,42,0.15)',
+          }}
+        >
+          <span aria-hidden>{chip.icon}</span>
+          {chip.label}
+        </button>
+      ))}
+    </div>
   );
 };
 
-export default memo(MDCommandStrip);
+export default MDCommandStrip;
