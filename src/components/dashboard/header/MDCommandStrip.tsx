@@ -8,16 +8,27 @@
 import React, { FC } from 'react';
 
 export interface MDCommandStripProps {
+  mdName?: string;
+  mdEmail?: string | null;
+  onOpenModule?: (moduleId: string) => void;
+  /** @deprecated use onOpenModule */
   onLaunch?: (moduleId: string) => void;
 }
 
 const CHIPS: { id: string; label: string; icon: string; tone: string }[] = [
-  { id: 'theodora', label: 'Treasury', icon: '💰', tone: '#10B981' },
-  { id: 'compliance', label: 'Compliance', icon: '⚖️', tone: '#6366F1' },
-  { id: 'overview', label: 'Override Desk', icon: '⚡', tone: '#EF4444' },
+  { id: 'theodora', label: 'Treasury', icon: '\ud83d\udcb0', tone: '#10B981' },
+  { id: 'compliance', label: 'Compliance', icon: '\u2696\ufe0f', tone: '#6366F1' },
+  { id: 'overview', label: 'Override Desk', icon: '\u26a1', tone: '#EF4444' },
 ];
 
-export const MDCommandStrip: FC<MDCommandStripProps> = ({ onLaunch }) => {
+export const MDCommandStrip: FC<MDCommandStripProps> = ({
+  mdName = 'Managing Director',
+  mdEmail,
+  onOpenModule,
+  onLaunch,
+}) => {
+  const launch = onOpenModule || onLaunch;
+
   return (
     <div
       data-testid="md-command-strip"
@@ -35,23 +46,28 @@ export const MDCommandStrip: FC<MDCommandStripProps> = ({ onLaunch }) => {
         border: '1px solid rgba(239, 68, 68, 0.35)',
       }}
     >
-      <span
-        style={{
-          fontSize: '0.72rem',
-          fontWeight: 800,
-          letterSpacing: '0.04em',
-          textTransform: 'uppercase',
-          color: '#EF4444',
-          marginRight: '0.35rem',
-        }}
-      >
-        👑 MD L5
-      </span>
+      <div style={{ display: 'flex', flexDirection: 'column', marginRight: '0.5rem' }}>
+        <span
+          style={{
+            fontSize: '0.72rem',
+            fontWeight: 800,
+            letterSpacing: '0.04em',
+            textTransform: 'uppercase',
+            color: '#EF4444',
+          }}
+        >
+          \ud83d\udc51 MD L5
+        </span>
+        <span style={{ fontSize: '0.7rem', color: '#64748B', fontWeight: 600 }}>
+          {mdName}
+          {mdEmail ? ` \u00b7 ${mdEmail}` : ''}
+        </span>
+      </div>
       {CHIPS.map(chip => (
         <button
           key={chip.id}
           type="button"
-          onClick={() => onLaunch?.(chip.id)}
+          onClick={() => launch?.(chip.id)}
           title={chip.label}
           style={{
             display: 'inline-flex',
