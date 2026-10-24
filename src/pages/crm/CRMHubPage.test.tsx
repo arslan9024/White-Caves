@@ -14,7 +14,6 @@ import { MemoryRouter } from 'react-router-dom';
 import { LanguageProvider } from '../../context/LanguageContext';
 import { CurrencyProvider } from '../../context/CurrencyContext';
 
-// ── Mocks ────────────────────────────────────────────────────────
 const mockNavigate = vi.fn();
 const mockSetSearchParams = vi.fn();
 let mockSearchParamTab = 'dept_summary';
@@ -31,7 +30,6 @@ vi.mock('react-router-dom', async () => {
   };
 });
 
-// Mock lazy-loaded CRM modules
 vi.mock('../../components/crm/ClaraLeadsCRM_NEW', () => ({
   default: () => <div data-testid="ClaraLeadsCRM">ClaraLeadsCRM Module</div>,
 }));
@@ -54,7 +52,6 @@ vi.mock('../../components/crm/NadiaWhatsAppCRM', () => ({
   default: () => <div data-testid="NadiaWhatsAppCRM">NadiaWhatsAppCRM Module</div>,
 }));
 
-// Mock UI components
 vi.mock('../../components/ui', () => ({
   Badge: ({
     children,
@@ -80,8 +77,6 @@ import crmDataReducer from '../../store/crmDataSlice';
 import userReducer from '../../store/userSlice';
 import authReducer from '../../store/authSlice';
 
-// ── Helpers ──────────────────────────────────────────────────────
-
 const createMockStore = () => {
   return configureStore({
     reducer: {
@@ -94,8 +89,8 @@ const createMockStore = () => {
         currentUser: {
           id: 'u1',
           name: 'Arslan Malik',
-          role: 'owner',
-          email: 'arslan@whitecaves.ae',
+          role: 'managing_director',
+          email: 'arslanmalikgoraha@gmail.com',
         },
         loading: false,
         error: null,
@@ -104,8 +99,8 @@ const createMockStore = () => {
         user: {
           id: 'u1',
           displayName: 'Arslan Malik',
-          email: 'arslan@whitecaves.ae',
-          role: 'owner',
+          email: 'arslanmalikgoraha@gmail.com',
+          role: 'managing_director',
         },
         token: 'tok',
         refreshToken: null,
@@ -142,8 +137,6 @@ const renderPage = () => {
   );
 };
 
-// ── Tests ────────────────────────────────────────────────────────
-
 describe('CRMHubPage — Modern Atomic ERP Dashboard', () => {
   beforeEach(() => {
     vi.spyOn(console, 'error').mockImplementation(() => {});
@@ -159,16 +152,14 @@ describe('CRMHubPage — Modern Atomic ERP Dashboard', () => {
   it('renders Global ERP Command Core header, live ticker, and 3-Tile Sidebar', () => {
     renderPage();
 
-    // Check Header
     expect(screen.getByText(/White Caves Real Estate LLC — ERP Command Core/i)).toBeInTheDocument();
     expect(screen.getByText(/Active Meta-Tag:/i)).toBeInTheDocument();
 
-    // Check Ticker
     expect(screen.getByText(/USD \/ AED:/i)).toBeInTheDocument();
     expect(screen.getByText(/DLD Daily Volume:/i)).toBeInTheDocument();
     expect(screen.getByRole('region', { name: 'DLD Market Intelligence' })).toBeInTheDocument();
 
-    // Check 3 Sidebar Tiles
+    expect(screen.getByTestId('md-command-strip')).toBeInTheDocument();
     expect(screen.getByText(/1. MD Office \(MD Suite\)/i)).toBeInTheDocument();
     expect(screen.getByText(/2. Corporate Departments \(12 Depts\)/i)).toBeInTheDocument();
     expect(screen.getByText(/3. AI Command Center/i)).toBeInTheDocument();

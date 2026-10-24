@@ -1,8 +1,5 @@
 /**
- * DashboardSidebar.tsx
- *
- * Master Dashboard Sidebar container aggregating Tile 1 (MD Suite),
- * Tile 2 (12 Corporate Departments), and Tile 3 (26 AI Command Center).
+ * DashboardSidebar.tsx — Tile 1 MD Suite, Tile 2 Corporate, Tile 3 AI Command.
  */
 
 import React, { FC } from 'react';
@@ -29,6 +26,7 @@ export interface DashboardSidebarProps {
   selectedAi: AIAssistantOption;
   selectedAiId: string;
   openSubGroups: Record<string, boolean>;
+  isManagingDirector?: boolean;
   onMdTileClick: () => void;
   onCorporateTileClick: () => void;
   onAiTileClick: () => void;
@@ -48,6 +46,7 @@ export const DashboardSidebar: FC<DashboardSidebarProps> = ({
   selectedAi,
   selectedAiId,
   openSubGroups,
+  isManagingDirector = false,
   onMdTileClick,
   onCorporateTileClick,
   onAiTileClick,
@@ -58,12 +57,11 @@ export const DashboardSidebar: FC<DashboardSidebarProps> = ({
 }) => {
   return (
     <UnifiedSidebar $collapsed={isCollapsed} data-testid="dashboard-sidebar">
-      {/* Sidebar Header & Brand */}
       <SidebarHeader>
         {!isCollapsed ? (
           <div className="brand">
             <span>🏛️</span>
-            <span>Corporate Deck</span>
+            <span>{isManagingDirector ? 'MD Command Deck' : 'Corporate Deck'}</span>
           </div>
         ) : (
           <div style={{ fontSize: '1.1rem', margin: '0 auto' }}>🏛️</div>
@@ -80,16 +78,15 @@ export const DashboardSidebar: FC<DashboardSidebarProps> = ({
         </button>
       </SidebarHeader>
 
-      {/* TILE 1: MD SUITE */}
       <DashboardMDTile
         isOpen={openTopTile === 'md_office'}
         isCollapsed={isCollapsed}
         activeTab={activeTab}
+        isManagingDirector={isManagingDirector}
         onTileClick={onMdTileClick}
         onSubItemClick={onSubItemClick}
       />
 
-      {/* TILE 2: 12 CORPORATE DEPARTMENTS */}
       <DashboardDeptTile
         isOpen={openTopTile === 'corporate'}
         isCollapsed={isCollapsed}
@@ -103,7 +100,6 @@ export const DashboardSidebar: FC<DashboardSidebarProps> = ({
         onToggleSubGroup={onToggleSubGroup}
       />
 
-      {/* TILE 3: 26 AI COMMAND CENTER */}
       <DashboardAiTile
         isOpen={openTopTile === 'ai_command'}
         isCollapsed={isCollapsed}
