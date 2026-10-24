@@ -51,4 +51,13 @@ describe('LuxuryHeroSection Component', () => {
     expect(screen.getByText('عقار أحلامك')).toBeInTheDocument();
     expect(screen.getByRole('button', { name: 'التبديل إلى الوضع الفاتح' })).toBeInTheDocument();
   });
+
+  it('uses English language metadata when hero copy falls back to English', () => {
+    window.localStorage.setItem('whitecaves_language', 'es');
+    const { container } = renderHero();
+
+    const hero = container.querySelector('.luxury-hero');
+    expect(hero).toHaveAttribute('lang', 'en');
+    expect(screen.getByText('Discover Your')).toBeInTheDocument();
+  });
 });

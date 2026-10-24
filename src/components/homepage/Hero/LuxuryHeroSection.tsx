@@ -134,7 +134,7 @@ export const LuxuryHeroSection: React.FC<LuxuryHeroSectionProps> = ({
       className="luxury-hero"
       id="home"
       aria-label={copy.sectionLabel}
-      lang={language}
+      lang={language === 'ar' ? 'ar' : 'en'}
       dir={isRTL ? 'rtl' : 'ltr'}
       data-theme={isDark ? 'dark' : 'light'}
     >
