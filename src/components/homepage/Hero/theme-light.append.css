@@ -1,0 +1,67 @@
+/* Theme toggle + light surfaces — loaded via LuxuryHeroSection.css import chain */
+
+.luxury-hero__theme-toggle {
+  position: absolute;
+  top: 1.25rem;
+  inset-inline-end: 1.25rem;
+  z-index: calc(var(--hero-layer-content, 10) + 2);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.5rem;
+  height: 2.5rem;
+  border-radius: 9999px;
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  background: rgba(15, 23, 42, 0.55);
+  color: #ffffff;
+  cursor: pointer;
+  backdrop-filter: blur(8px);
+  transition: background 0.2s ease, border-color 0.2s ease, color 0.2s ease;
+}
+
+.luxury-hero__theme-toggle:hover {
+  border-color: #ef4444;
+  color: #ef4444;
+}
+
+.luxury-hero__theme-toggle:focus-visible {
+  outline: 2px solid #ef4444;
+  outline-offset: 2px;
+}
+
+.luxury-hero[data-theme='light'] .luxury-hero__theme-toggle {
+  background: rgba(255, 255, 255, 0.85);
+  border-color: rgba(15, 23, 42, 0.12);
+  color: #0f172a;
+}
+
+.luxury-hero[data-theme='light'] .luxury-hero__overlay-dark {
+  background: linear-gradient(
+    180deg,
+    rgba(248, 250, 252, 0.55) 0%,
+    rgba(241, 245, 249, 0.35) 45%,
+    rgba(15, 23, 42, 0.25) 100%
+  );
+}
+
+.luxury-hero[data-theme='light'] .luxury-hero__title-line--light,
+.luxury-hero[data-theme='light'] .luxury-hero__tagline,
+.luxury-hero[data-theme='light'] .luxury-hero__pill-text,
+.luxury-hero[data-theme='light'] .luxury-hero__ribbon-label,
+.luxury-hero[data-theme='light'] .luxury-hero__ribbon-value,
+.luxury-hero[data-theme='light'] .luxury-hero__developer-label,
+.luxury-hero[data-theme='light'] .luxury-hero__scroll-text,
+.luxury-hero[data-theme='light'] .luxury-hero__trust-badge {
+  color: #0f172a;
+}
+
+.luxury-hero[data-theme='light'] .luxury-hero__stat-card {
+  background: rgba(255, 255, 255, 0.82);
+  border-color: rgba(15, 23, 42, 0.08);
+  color: #0f172a;
+}
+
+.luxury-hero[data-theme='light'] .luxury-hero__btn--ghost {
+  border-color: rgba(15, 23, 42, 0.2);
+  color: #0f172a;
+}

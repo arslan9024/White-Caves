@@ -3,6 +3,7 @@ import { fireEvent, render, screen } from '@testing-library/react';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { MemoryRouter, useLocation } from 'react-router-dom';
 import { LanguageProvider } from '../../../context/LanguageContext';
+import { ThemeProvider } from '../../../context/ThemeContext';
 import LuxuryHeroSection from './LuxuryHeroSection';
 
 vi.mock('framer-motion', async () => {
@@ -43,15 +44,18 @@ const CurrentLocation = () => {
   );
 };
 
-const renderHero = (language: 'en' | 'ar', onSearchClick = vi.fn()) => {
+const renderHero = (language: 'en' | 'ar', onSearchClick = vi.fn(), themeMode: 'dark' | 'light' = 'dark') => {
   localStorage.setItem('whitecaves_language', language);
+  localStorage.setItem('themeMode', themeMode);
   const view = render(
-    <LanguageProvider>
-      <MemoryRouter>
-        <LuxuryHeroSection onSearchClick={onSearchClick} />
-        <CurrentLocation />
-      </MemoryRouter>
-    </LanguageProvider>
+    <ThemeProvider>
+      <LanguageProvider>
+        <MemoryRouter>
+          <LuxuryHeroSection onSearchClick={onSearchClick} />
+          <CurrentLocation />
+        </MemoryRouter>
+      </LanguageProvider>
+    </ThemeProvider>
   );
 
   return { ...view, onSearchClick };
@@ -59,6 +63,8 @@ const renderHero = (language: 'en' | 'ar', onSearchClick = vi.fn()) => {
 
 afterEach(() => {
   localStorage.removeItem('whitecaves_language');
+  localStorage.removeItem('themeMode');
+  localStorage.removeItem('theme');
 });
 
 describe('LuxuryHeroSection', () => {
@@ -82,5 +88,18 @@ describe('LuxuryHeroSection', () => {
     expect(
       screen.getByRole('button', { name: 'ابحث عن العقارات الفاخرة في دبي' })
     ).toBeInTheDocument();
+  });
+
+  it('switches between dark and light theme via shared ThemeContext', () => {
+    const { container } = renderHero('en', vi.fn(), 'dark');
+    const hero = container.querySelector('.luxury-hero');
+    expect(hero).toHaveAttribute('data-theme', 'dark');
+
+    fireEvent.click(screen.getByRole('button', { name: 'Switch to light mode' }));
+    expect(hero).toHaveAttribute('data-theme', 'light');
+    expect(screen.getByRole('button', { name: 'Switch to dark mode' })).toHaveAttribute(
+      'aria-pressed',
+      'false'
+    );
   });
 });

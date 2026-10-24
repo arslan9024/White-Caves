@@ -3,14 +3,14 @@
  * @agent @Una (Luxury UI/UX Specialist)
  * @milestone MILESTONE-HERO
  *
- * White Caves Hero — Red / White palette
- * Glassmorphism stat cards · Framer Motion cinematic entrance
- * Parallax Dubai skyline · Animated gold counters · Premium search bar
+ * White Caves Hero — Red / White / Slate palette
+ * Four-way: View + logic/HERO.logic + styles/HERO.style + data/*
+ * Dark/light via ThemeContext · EN/AR RTL · reduced motion
  */
 
 import React from 'react';
 import { motion } from 'framer-motion';
-import { ArrowRight, Search, Phone, Star, Shield, Award } from 'lucide-react';
+import { ArrowRight, Search, Phone, Star, Shield, Award, Sun, Moon } from 'lucide-react';
 import type { HeroMarketStats } from './data/HERO.data';
 import {
   heroContainerVariants,
@@ -23,8 +23,6 @@ import {
 } from './logic/HERO.logic';
 import { HERO_COUNTER_DURATION } from './data/HERO.data';
 import { heroLayerStyle } from './styles/HERO.style';
-
-// --- Types -------------------------------------------------------------------
 
 interface AnimatedRedCounterProps {
   end: number;
@@ -57,8 +55,6 @@ const StatIcon: React.FC<{ icon: LuxuryStatCard['icon'] }> = ({ icon }) => {
   return <Star size={16} aria-hidden="true" />;
 };
 
-// --- Animated Gold Counter ---------------------------------------------------
-
 const AnimatedRedCounter: React.FC<AnimatedRedCounterProps> = ({
   end,
   duration = HERO_COUNTER_DURATION,
@@ -78,8 +74,6 @@ const AnimatedRedCounter: React.FC<AnimatedRedCounterProps> = ({
   );
 };
 
-// --- Main Component ----------------------------------------------------------
-
 export const LuxuryHeroSection: React.FC<LuxuryHeroSectionProps> = ({
   marketStats,
   isLoading = false,
@@ -95,6 +89,8 @@ export const LuxuryHeroSection: React.FC<LuxuryHeroSectionProps> = ({
     handleBrowseProperties,
     handleDeveloperClick,
     handleFindRentals,
+    handleThemeToggle,
+    isDark,
     isRTL,
     language,
     marketAreas,
@@ -110,30 +106,23 @@ export const LuxuryHeroSection: React.FC<LuxuryHeroSectionProps> = ({
       className="luxury-hero"
       id="home"
       data-testid="hero-section"
+      data-theme={isDark ? 'dark' : 'light'}
       dir={isRTL ? 'rtl' : 'ltr'}
       lang={language}
       style={heroLayerStyle}
       aria-labelledby="luxury-hero-title"
     >
-      {/* -- Background Layer ------------------------------- */}
       <div className="luxury-hero__background" aria-hidden="true">
-        {/* Parallax Dubai Skyline */}
         <motion.div className="luxury-hero__skyline" style={{ y: skylineY }} aria-hidden="true" />
-
-        {/* LCP-optimized image (invisible, browser prioritises it) — Phase 25: url must match preload href + CSS bg url */}
         <img
           src="/images/dubai-skyline.jpg"
           alt=""
           aria-hidden="true"
           className="luxury-hero__lcp-image"
         />
-
-        {/* Overlay layers */}
         <div className="luxury-hero__overlay-dark" />
         <div className="luxury-hero__overlay-gradient" />
         <div className="luxury-hero__overlay-vignette" />
-
-        {/* Animated gold orbs */}
         <motion.div
           className="luxury-hero__orb luxury-hero__orb--1"
           variants={heroOrbVariants}
@@ -164,8 +153,6 @@ export const LuxuryHeroSection: React.FC<LuxuryHeroSectionProps> = ({
                 }
           }
         />
-
-        {/* Gold particle lines */}
         <div className="luxury-hero__lines" aria-hidden="true">
           <div className="luxury-hero__line luxury-hero__line--1" />
           <div className="luxury-hero__line luxury-hero__line--2" />
@@ -173,7 +160,16 @@ export const LuxuryHeroSection: React.FC<LuxuryHeroSectionProps> = ({
         </div>
       </div>
 
-      {/* -- Content Layer ---------------------------------- */}
+      <button
+        type="button"
+        className="luxury-hero__theme-toggle"
+        onClick={handleThemeToggle}
+        aria-label={isDark ? copy.switchToLight : copy.switchToDark}
+        aria-pressed={isDark}
+      >
+        {isDark ? <Sun size={18} aria-hidden="true" /> : <Moon size={18} aria-hidden="true" />}
+      </button>
+
       <motion.div
         className="luxury-hero__content container"
         style={{ opacity: contentOpacity, y: contentY }}
@@ -181,7 +177,6 @@ export const LuxuryHeroSection: React.FC<LuxuryHeroSectionProps> = ({
         initial={prefersReducedMotion ? false : 'hidden'}
         animate="visible"
       >
-        {/* -- Top Pill Badge -- */}
         <motion.div className="luxury-hero__pill" variants={heroItemVariants} role="status">
           <span className="luxury-hero__pill-dot" aria-hidden="true" />
           <span className="luxury-hero__pill-text">{availabilityText}</span>
@@ -190,7 +185,6 @@ export const LuxuryHeroSection: React.FC<LuxuryHeroSectionProps> = ({
           </span>
         </motion.div>
 
-        {/* -- Hero Headline -- */}
         <motion.h1
           id="luxury-hero-title"
           className="luxury-hero__title"
@@ -207,7 +201,6 @@ export const LuxuryHeroSection: React.FC<LuxuryHeroSectionProps> = ({
           </span>
         </motion.h1>
 
-        {/* -- Market Price Ribbon -- */}
         <motion.div
           className="luxury-hero__market-ribbon"
           variants={heroItemVariants}
@@ -231,12 +224,10 @@ export const LuxuryHeroSection: React.FC<LuxuryHeroSectionProps> = ({
           ))}
         </motion.div>
 
-        {/* -- Tagline -- */}
         <motion.p className="luxury-hero__tagline" variants={heroItemVariants}>
           {copy.tagline}
         </motion.p>
 
-        {/* -- Search Bar -- */}
         <motion.div
           className="luxury-hero__search-wrapper"
           variants={heroItemVariants}
@@ -252,7 +243,6 @@ export const LuxuryHeroSection: React.FC<LuxuryHeroSectionProps> = ({
             <span>{copy.searchAction}</span>
           </button>
 
-          {/* -- Luxury Branded Developer Filter Chips (T-009) -- */}
           <div className="luxury-hero__developer-list">
             <span className="luxury-hero__developer-label">{copy.developerHeading}</span>
             {developers.map(dev => (
@@ -268,7 +258,6 @@ export const LuxuryHeroSection: React.FC<LuxuryHeroSectionProps> = ({
           </div>
         </motion.div>
 
-        {/* -- CTA Buttons -- */}
         <motion.div className="luxury-hero__cta-group" variants={heroItemVariants}>
           <motion.button
             className="luxury-hero__btn luxury-hero__btn--red"
@@ -304,7 +293,6 @@ export const LuxuryHeroSection: React.FC<LuxuryHeroSectionProps> = ({
           </motion.button>
         </motion.div>
 
-        {/* -- Gold Stat Cards -- */}
         <motion.div
           className="luxury-hero__stats"
           variants={heroStatsContainerVariants}
@@ -357,7 +345,6 @@ export const LuxuryHeroSection: React.FC<LuxuryHeroSectionProps> = ({
           ))}
         </motion.div>
 
-        {/* -- Trust Badges -- */}
         <motion.div
           className="luxury-hero__trust-strip"
           variants={heroItemVariants}
@@ -385,7 +372,6 @@ export const LuxuryHeroSection: React.FC<LuxuryHeroSectionProps> = ({
         </motion.div>
       </motion.div>
 
-      {/* -- Scroll Indicator ------------------------------- */}
       <motion.button
         className="luxury-hero__scroll-cue"
         onClick={scrollToContent}
