@@ -71,10 +71,13 @@ npm run aegis:health              # AEGIS health (organised, not removed)
 | Homepage Hero four-way + EN/AR RTL | On `main` (#2526) |
 | Hero dark/light theme toggle | On `main` (#2528 / #2529) |
 | CRM DLD UAE market intelligence strip | On `main` (#2524) |
+| **MD Suite** sovereign landing + L5 command strip | On `main` (**#2533**) |
 
-**Housekeeping:** Close superseded draft [#2525](https://github.com/arslan9024/White-Caves/pull/2525) (do not merge).
+**MD login:** `arslanmalikgoraha@gmail.com` (and founder emails) → **MD Suite** first + L5 chips.  
 
-**Next:** legacy → 4-way waves · organise `.agents/` (≥121) · Vercel reliability.
+**Honest gap:** CRM AI / department **registries are stubbed** until full list restore.  
+
+**Next:** full registries restore · legacy → 4-way waves · organise `.agents/` (≥121) · Vercel reliability.
 
 ---
 
