@@ -13,6 +13,16 @@
 
 ---
 
+## Wave 53 CRM Dashboard News Feed — Implementation Packet
+
+- **Goal:** Add an accessible, bilingual DLD market-intelligence strip that displays UAE-sourced items only.
+- **Scope:** Four-part component under `src/components/crm/DldMarketNewsFeedStrip/`, integrated beside the dashboard live ticker.
+- **Validation:** Focused tests (9 passed), component TypeScript, ESLint, and production build passed; repository-wide typecheck exceeded the 4 GB heap.
+- **Review:** No actionable comments returned; CodeQL skipped analysis because the database exceeded its size limit.
+- **Status:** Code complete; GitHub Actions are awaiting approval.
+
+---
+
 ## ✅/📋 Wave 46 Deduplication Program Status
 
 - ✅ **W46-001 complete:** duplication baseline inventory captured in `plans/DEDUP_INVENTORY_BASELINE_2026-09-03.md`.

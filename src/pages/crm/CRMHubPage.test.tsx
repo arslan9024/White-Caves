@@ -91,12 +91,22 @@ const createMockStore = () => {
     },
     preloadedState: {
       user: {
-        currentUser: { id: 'u1', name: 'Arslan Malik', role: 'owner', email: 'arslan@whitecaves.ae' },
+        currentUser: {
+          id: 'u1',
+          name: 'Arslan Malik',
+          role: 'owner',
+          email: 'arslan@whitecaves.ae',
+        },
         loading: false,
         error: null,
       } as unknown as ReturnType<typeof userReducer>,
       auth: {
-        user: { id: 'u1', displayName: 'Arslan Malik', email: 'arslan@whitecaves.ae', role: 'owner' },
+        user: {
+          id: 'u1',
+          displayName: 'Arslan Malik',
+          email: 'arslan@whitecaves.ae',
+          role: 'owner',
+        },
         token: 'tok',
         refreshToken: null,
         session: {
@@ -156,6 +166,7 @@ describe('CRMHubPage — Modern Atomic ERP Dashboard', () => {
     // Check Ticker
     expect(screen.getByText(/USD \/ AED:/i)).toBeInTheDocument();
     expect(screen.getByText(/DLD Daily Volume:/i)).toBeInTheDocument();
+    expect(screen.getByRole('region', { name: 'DLD Market Intelligence' })).toBeInTheDocument();
 
     // Check 3 Sidebar Tiles
     expect(screen.getByText(/1. MD Office \(MD Suite\)/i)).toBeInTheDocument();
