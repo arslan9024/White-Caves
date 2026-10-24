@@ -1,7 +1,7 @@
 # AEGIS Daily Milestone Tracker & Release Log
 
-> **Last updated:** 2026-10-24 (continue session)  
-> **Status:** Governance docs + README + 4-way inventory script on branch; product PRs still blocked on CI  
+> **Last updated:** 2026-10-24 (session close)  
+> **Status:** Governance + Hero 4-way/theme + CRM DLD strip on `main`  
 > **Truth rule:** Never claim zero backlog unless GitHub API confirms
 
 ---
@@ -10,15 +10,15 @@
 
 | Priority | Item | Status |
 |----------|------|--------|
-| P0 | Governance 1–12–108, 4-way, SQA, agent org | ✅ On `chore/governance-1-12-108-4way-progress-sync` |
-| P0 | README + progress truth + `check-four-way.mjs` | ✅ This commit |
-| P0 | AEGIS lane index (`aegis/README.md`) | ✅ Organise only, no trim |
-| P0 | PR #2526 Hero cinematic / RTL | 🔴 Vercel **failure** — must fix deploy |
-| P0 | PR #2525 Hero theme bilingual | 🔄 Unstable; merge after #2526 |
-| P1 | PR #2524 CRM UAE news strip | 🔄 Unstable |
-| P1 | Open governance PR → review → merge `main` | 🔄 Awaiting PR create/submit |
-| P1 | Legacy JSX → 4-way waves | 📋 After governance on main |
-| P2 | `.agents/` → 12 department folders (≥121 kept) | 📋 Planned |
+| P0 | Governance 1–12–108, 4-way, SQA, agent org | ✅ **Merged** (#2527) |
+| P0 | Hero cinematic + RTL four-way | ✅ **Merged** (#2526) |
+| P0 | Hero dark/light theme on 4-way | ✅ **Merged** (#2528 / #2529) |
+| P0 | CRM UAE DLD market intelligence strip | ✅ **Merged** (#2524) |
+| P0 | Close superseded draft #2525 | 🔄 **User action** |
+| P1 | Legacy JSX → 4-way consolidation waves | 📋 Next |
+| P1 | `.agents/` → 12 department folders (≥121 kept) | 📋 Planned |
+| P2 | Vercel deploy reliability | 📋 Planned |
+| P2 | Issue triage / generator caps | 📋 Planned |
 
 ---
 
@@ -34,11 +34,12 @@
 
 ## Session log — 2026-10-24
 
-1. Deep analysis of repo vs progress claims (drift fixed in docs).  
-2. Governance pack committed (vision, four-way rule, testing policy, AEGIS org, agent roster, structural plan, PR template).  
-3. README rewritten to match formula; progress trackers updated.  
-4. `scripts/check-four-way.mjs` added for legacy inventory.  
-5. Confirmed #2526 status context **Vercel failure** — unblock requires deploy fix, not merge.  
+1. Deep analysis; fixed docs vs code drift.  
+2. Governance pack merged to `main` (#2527).  
+3. Hero Wave 50 four-way + RTL merged (#2526).  
+4. Theme toggle rebuilt on 4-way (not old #2525) and merged (#2528/#2529).  
+5. CRM DLD UAE news strip merged (#2524).  
+6. Progress/plans/README refreshed to match reality.  
 
 ---
 

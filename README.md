@@ -18,7 +18,7 @@
 | **AEGIS** | Full power retained; **organise** by lane — [AEGIS_ORGANISATION.md](docs/governance/AEGIS_ORGANISATION.md) |
 | **Testing** | Lean, high-value — [TESTING_POLICY.md](docs/governance/TESTING_POLICY.md) |
 
-**Vision:** [PROJECT_VISION.md](PROJECT_VISION.md) · **Progress (truthful):** [PROJECT_PROGRESS_REPORT.md](PROJECT_PROGRESS_REPORT.md) · **Daily:** [DAILY_MILESTONE_TRACKER.md](DAILY_MILESTONE_TRACKER.md)
+**Vision:** [PROJECT_VISION.md](PROJECT_VISION.md) · **Progress:** [PROJECT_PROGRESS_REPORT.md](PROJECT_PROGRESS_REPORT.md) · **Daily:** [DAILY_MILESTONE_TRACKER.md](DAILY_MILESTONE_TRACKER.md)
 
 ---
 
@@ -63,15 +63,18 @@ npm run aegis:health              # AEGIS health (organised, not removed)
 
 ---
 
-## Active unblock (product PRs)
+## Recent deliveries (2026-10-24)
 
-| PR | Topic | Note |
-|----|--------|------|
-| [#2526](https://github.com/arslan9024/White-Caves/pull/2526) | Hero cinematic + RTL 4-way | Vercel deploy failed — fix before merge |
-| [#2525](https://github.com/arslan9024/White-Caves/pull/2525) | Hero dark/light bilingual | Sequence after #2526 if both touch Hero |
-| [#2524](https://github.com/arslan9024/White-Caves/pull/2524) | CRM UAE market intelligence | After Hero path stable |
+| Area | Status |
+|------|--------|
+| Governance 1–12–108 + 4-way rule + SQA policy | On `main` (#2527) |
+| Homepage Hero four-way + EN/AR RTL | On `main` (#2526) |
+| Hero dark/light theme toggle | On `main` (#2528 / #2529) |
+| CRM DLD UAE market intelligence strip | On `main` (#2524) |
 
-Do **not** force-merge while checks are red.
+**Housekeeping:** Close superseded draft [#2525](https://github.com/arslan9024/White-Caves/pull/2525) (do not merge).
+
+**Next:** legacy → 4-way waves · organise `.agents/` (≥121) · Vercel reliability.
 
 ---
 

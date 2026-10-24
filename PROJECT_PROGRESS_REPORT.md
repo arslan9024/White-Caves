@@ -1,46 +1,59 @@
 # White Caves — Project Progress Report (Truthful Sync)
 
-> **Report date:** 2026-10-24 (continue)  
+> **Report date:** 2026-10-24 (end of session)  
 > **Repository:** https://github.com/arslan9024/White-Caves  
-> **Branch (in flight):** `chore/governance-1-12-108-4way-progress-sync`  
+> **Branch tip:** `main`  
 > **Build version:** 2.0.26  
 
 ---
 
 ## Executive summary
 
-Governance and documentation are being aligned to the MD formula (**1–12–108** staff, **≥121** agents, **4-way mandatory**, **Dept 8 SQA**, AEGIS organised not trimmed).  
-Product delivery is gated by **three open PRs** with **unstable / failed checks** — especially **#2526 Vercel failure**.
+Governance (**1–12–108**, **≥121 agents**, **4-way mandatory**, **Dept 8 SQA**, AEGIS organised not trimmed) is **on `main`**.  
+Product PRs for Hero and CRM from this wave are **merged**. One superseded draft (**#2525**) remains open and should be **closed without merge**.
 
 ### Live snapshot
 
 | Metric | Value |
 |--------|--------|
-| Open issues | ~274 |
-| Product PRs | #2524, #2525, #2526 |
-| #2526 CI | **Vercel deployment failed** |
-| Governance | Docs + README + four-way inventory script on feature branch |
+| Open product/governance PRs (actionable) | **0** (only #2525 leftover to close) |
+| Open issues | ~274 (many auto-generated; triage ongoing) |
 | Sibling repos | Retained for future |
 
 ---
 
-## Completed this revision
+## Merged this session (2026-10-24)
+
+| PR | Topic | Result |
+|----|--------|--------|
+| **#2527** | Governance 1–12–108, 4-way rule, SQA, progress truth, README, inventory script | ✅ Merged |
+| **#2526** | Hero cinematic + bilingual RTL **four-way** | ✅ Merged |
+| **#2528** / **#2529** | Hero **dark/light** theme toggle on 4-way Hero | ✅ Merged |
+| **#2524** | CRM **UAE-only DLD market intelligence** strip (four-way) | ✅ Merged |
+
+**Do not merge #2525** — conflicts with current Hero; superseded by #2526 + #2528/#2529.
+
+---
+
+## Completed on `main`
 
 - [x] `PROJECT_VISION.md` — 1–12–108, Dept 8, ≥121 agents, 4-way law  
 - [x] `docs/governance/*` — FOUR_WAY, TESTING, AEGIS, AGENTS, STRUCTURAL plan  
-- [x] Progress + daily trackers de-hype  
-- [x] PR template with department / 4-way / SQA checks  
-- [x] README sync  
+- [x] PR template (department / 4-way / SQA)  
 - [x] `scripts/check-four-way.mjs`  
 - [x] `aegis/README.md` lane index  
+- [x] `LuxuryHeroSection` four-way + EN/AR RTL + ThemeContext toggle  
+- [x] `DldMarketNewsFeedStrip` four-way CRM integration  
+
+---
 
 ## Next (ordered)
 
-1. Open/merge governance PR to `main`.  
-2. Fix Vercel on #2526 (inspect deploy logs); re-run checks.  
-3. Merge #2526 → #2525 → #2524 when green.  
-4. Run `node scripts/check-four-way.mjs` and start legacy consolidation wave.  
-5. Organise `.agents/` into 12 department folders (keep all agents).  
+1. **Close #2525** on GitHub (superseded).  
+2. Run `node scripts/check-four-way.mjs` → start **legacy JSX → 4-way** waves.  
+3. Organise `.agents/` into **12 department folders** (keep all; ≥121).  
+4. Cap AEGIS bulk issue generators; triage real P0 issues.  
+5. Investigate recurring **Vercel** preview failures (Dept 7).  
 
 ---
 
@@ -49,8 +62,9 @@ Product delivery is gated by **three open PRs** with **unstable / failed checks*
 | Gate | Rule |
 |------|------|
 | Typecheck | 0 errors on merge to `main` |
-| Tests | Lean critical-path (see TESTING_POLICY) |
+| Tests | Lean critical-path (TESTING_POLICY) |
 | Docs | Match GitHub; no false zero-backlog |
-| Deploy | Red Vercel blocks merge |
+| Four-way | Mandatory for new/changed UI |
+| Agents / AEGIS | Organise, **do not trim** |
 
-**Sign-off lanes:** Dept 1 Executive · Dept 8 SQA · Dept 3 Frontend (Hero PRs) · Dept 7 DevOps (Vercel).
+**Sign-off lanes:** Dept 1 Executive · Dept 3 Frontend · Dept 8 SQA · Dept 7 DevOps · Dept 10 CRM.
